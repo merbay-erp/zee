@@ -3,7 +3,7 @@
 //! Tür denetiminden geçmiş programı çalıştırır. Çıktı satır listesi olarak
 //! döner; CLI bunu ekrana basar, testler doğrudan karşılaştırır.
 
-use crate::agac::{AritmetikIslec, Cumle, Ifade, Islec};
+use crate::agac::{AritmetikIslec, Cumle, Ifade, Islec, Ozellik};
 use crate::tani::Tani;
 use std::collections::{HashMap, VecDeque};
 
@@ -53,6 +53,7 @@ pub enum Deger {
     TamSayi(i64),
     Metin(String),
     Mantiksal(bool),
+    Liste(Vec<Deger>),
 }
 
 impl Deger {
@@ -61,6 +62,11 @@ impl Deger {
             Deger::TamSayi(s) => s.to_string(),
             Deger::Metin(m) => m.clone(),
             Deger::Mantiksal(b) => if *b { "doğru" } else { "yanlış" }.to_string(),
+            Deger::Liste(ogeler) => ogeler
+                .iter()
+                .map(|o| o.metne())
+                .collect::<Vec<_>>()
+                .join(", "),
         }
     }
 }
@@ -151,6 +157,28 @@ fn blok_calistir(
                     }
                 }
             }
+            Cumle::Ekle { hedef, deger, satir } => {
+                let ad = match hedef {
+                    Ifade::Degisken { cozulmus: Some(ad), .. } => ad.clone(),
+                    _ => return Err(ic_hata(*satir)),
+                };
+                let deger = degerlendir(deger, ortam, cikti, *satir)?;
+                match ortam.get_mut(&ad) {
+                    Some(Deger::Liste(ogeler)) => ogeler.push(deger),
+                    _ => return Err(ic_hata(*satir)),
+                }
+            }
+            Cumle::HerBiri { ad, kaynak, govde, satir } => {
+                let kaynak = kaynak.as_ref().ok_or_else(|| ic_hata(*satir))?;
+                let ogeler = match degerlendir(kaynak, ortam, cikti, *satir)? {
+                    Deger::Liste(ogeler) => ogeler,
+                    _ => return Err(ic_hata(*satir)),
+                };
+                for oge in ogeler {
+                    ortam.insert(ad.clone(), oge);
+                    blok_calistir(govde, ortam, cikti)?;
+                }
+            }
             Cumle::Artir { ifade, miktar, satir } => {
                 guncelle(ifade, miktar, ortam, cikti, *satir, 1)?;
             }
@@ -202,6 +230,40 @@ fn degerlendir(
         Ifade::MetinSabiti(m) => Ok(Deger::Metin(m.clone())),
         Ifade::SayiSabiti(s) => Ok(Deger::TamSayi(*s)),
         Ifade::MantiksalSabiti(b) => Ok(Deger::Mantiksal(*b)),
+        Ifade::BosListe => Ok(Deger::Liste(Vec::new())),
+        Ifade::ListeSabiti(ogeler) => {
+            let mut degerler = Vec::new();
+            for oge in ogeler {
+                degerler.push(degerlendir(oge, ortam, io, satir)?);
+            }
+            Ok(Deger::Liste(degerler))
+        }
+        Ifade::Ozellik { nesne, ozellik } => {
+            let ogeler = match degerlendir(nesne, ortam, io, satir)? {
+                Deger::Liste(ogeler) => ogeler,
+                _ => return Err(ic_hata(satir)),
+            };
+            match ozellik {
+                Ozellik::Adet => Ok(Deger::TamSayi(ogeler.len() as i64)),
+                Ozellik::Ilk | Ozellik::Son => {
+                    let oge = if *ozellik == Ozellik::Ilk {
+                        ogeler.first()
+                    } else {
+                        ogeler.last()
+                    };
+                    oge.cloned().ok_or_else(|| {
+                        Tani::yeni(
+                            "C007",
+                            "Liste boş: ilki/sonu alınamaz.".into(),
+                            satir,
+                            1,
+                            1,
+                        )
+                        .onerili("Önce \"listenin adedi\" ile boş olup olmadığını kontrol et.".into())
+                    })
+                }
+            }
+        }
         Ifade::Rastgele { alt, ust } => {
             let alt = tam_sayi(degerlendir(alt, ortam, io, satir)?, satir)?;
             let ust = tam_sayi(degerlendir(ust, ortam, io, satir)?, satir)?;

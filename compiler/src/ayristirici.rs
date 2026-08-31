@@ -5,7 +5,7 @@
 //! dillerdeki "ilk keyword'e bak" yaklaşımının aynadaki karşılığıdır ve
 //! deterministik ayrıştırmayı mümkün kılar.
 
-use crate::agac::{AritmetikIslec, Cumle, Ifade, Islec, KosulKolu};
+use crate::agac::{AritmetikIslec, Cumle, Ifade, Islec, KosulKolu, Ozellik};
 use crate::sozcukleyici::{Token, TokenTur};
 use crate::tani::Tani;
 
@@ -119,6 +119,7 @@ impl Ayristirici {
             Some("artır") => self.artir_azalt_ayristir(satir_tokenlari, satir_no, true),
             Some("azalt") => self.artir_azalt_ayristir(satir_tokenlari, satir_no, false),
             Some("sor") => self.sor_ayristir(satir_tokenlari, satir_no),
+            Some("ekle") => self.ekle_ayristir(satir_tokenlari, satir_no),
             Some(k) if kosul_kelimesi(k) => self.ise_ayristir(satir_tokenlari, satir_no),
             _ => {
                 let ilk = satir_tokenlari.first().cloned();
@@ -215,16 +216,34 @@ impl Ayristirici {
     }
 
     fn aralik_ayristir(&mut self, tokenlar: Vec<Token>, satir: usize) -> Result<Cumle, Tani> {
+        // her <ad> için — koleksiyon döngüsü (örtük çoğul, K-013)
+        if tokenlar.len() == 3 && kelime_mi(&tokenlar[0], "her") {
+            let ad = match &tokenlar[1].tur {
+                TokenTur::Kelime(k) => k.clone(),
+                _ => {
+                    return Err(Tani::yeni(
+                        "S010",
+                        "\"her ... için\" döngüsünde bir ad bekleniyor.".into(),
+                        satir,
+                        1,
+                        1,
+                    ))
+                }
+            };
+            let govde = self.alt_blok(satir)?;
+            return Ok(Cumle::HerBiri { ad, kaynak: None, govde, satir });
+        }
+
         // Beklenen biçim: <a> den <b> e kadar her <ad> için
         let hata = || {
             Tani::yeni(
                 "S010",
-                "Aralık döngüsü tanınmadı.".into(),
+                "Döngü tanınmadı.".into(),
                 satir,
                 1,
                 1,
             )
-            .onerili("Örnek: 1 den 100 e kadar her sayı için".into())
+            .onerili("Örnekler: her sayı için · 1 den 100 e kadar her sayı için".into())
         };
         let mut t = tokenlar.into_iter().peekable();
 
@@ -294,6 +313,23 @@ impl Ayristirici {
         } else {
             Ok(Cumle::Azalt { ifade, miktar, satir })
         }
+    }
+
+    fn ekle_ayristir(&mut self, mut tokenlar: Vec<Token>, satir: usize) -> Result<Cumle, Tani> {
+        tokenlar.pop(); // "ekle"
+        if tokenlar.len() < 2 {
+            return Err(Tani::yeni(
+                "S018",
+                "Ekleme için hedef liste ve değer gerekir.".into(),
+                satir,
+                1,
+                1,
+            )
+            .onerili("Örnek: sayılara 5 ekle".into()));
+        }
+        let hedef = tekil_ifade(tokenlar.remove(0))?;
+        let deger = ile_ifadesi(&tokenlar, satir)?;
+        Ok(Cumle::Ekle { hedef, deger, satir })
     }
 
     fn sor_ayristir(&mut self, mut tokenlar: Vec<Token>, satir: usize) -> Result<Cumle, Tani> {
@@ -419,57 +455,67 @@ fn ile_ifadesi(tokenlar: &[Token], satir: usize) -> Result<Ifade, Tani> {
     if let Some(ifade) = yapili_kalip(tokenlar)? {
         return Ok(ifade);
     }
-    let mut parcalar = Vec::new();
-    let mut bekleyen: Option<Token> = None;
+
+    // "ile" üzerinden parçalara böl; her parça kendi başına bir bölgedir
+    // (tek token ya da yapılı kalıp: "sayıların adedi" gibi).
+    let mut parcalar: Vec<Ifade> = Vec::new();
+    let mut bolge: Vec<Token> = Vec::new();
     for token in tokenlar {
         if kelime_mi(token, "ile") {
-            match bekleyen.take() {
-                Some(t) => parcalar.push(tekil_ifade(t)?),
-                None => {
-                    return Err(Tani::yeni(
-                        "S014",
-                        "\"ile\"den önce bir değer olmalı.".into(),
-                        token.satir,
-                        token.sutun,
-                        token.uzunluk,
-                    ))
-                }
-            }
-        } else {
-            if let Some(onceki) = bekleyen.take() {
+            if bolge.is_empty() {
                 return Err(Tani::yeni(
-                    "S015",
-                    "İki değer yan yana geldi; aralarına \"ile\" koy.".into(),
+                    "S014",
+                    "\"ile\"den önce bir değer olmalı.".into(),
                     token.satir,
                     token.sutun,
                     token.uzunluk,
-                )
-                .onerili(format!(
-                    "Örnek: {} ile {}",
-                    goster(&onceki),
-                    goster(token)
-                )));
+                ));
             }
-            bekleyen = Some(token.clone());
+            parcalar.push(bolge_ifadesi(&bolge, satir)?);
+            bolge.clear();
+        } else {
+            bolge.push(token.clone());
         }
     }
-    match bekleyen {
-        Some(t) => parcalar.push(tekil_ifade(t)?),
-        None => {
-            return Err(Tani::yeni(
-                "S014",
-                "\"ile\"den sonra bir değer olmalı.".into(),
-                satir,
-                1,
-                1,
-            ))
-        }
+    if bolge.is_empty() {
+        return Err(Tani::yeni(
+            "S014",
+            "\"ile\"den sonra bir değer olmalı.".into(),
+            satir,
+            1,
+            1,
+        ));
     }
+    parcalar.push(bolge_ifadesi(&bolge, satir)?);
+
     if parcalar.len() == 1 {
         Ok(parcalar.pop().unwrap())
     } else {
         Ok(Ifade::Birlestir(parcalar))
     }
+}
+
+/// Tek "ile" parçası: tek token ya da yapılı kalıp.
+fn bolge_ifadesi(tokenlar: &[Token], _satir: usize) -> Result<Ifade, Tani> {
+    if tokenlar.len() == 1 {
+        return tekil_ifade(tokenlar[0].clone());
+    }
+    if let Some(ifade) = yapili_kalip(tokenlar)? {
+        return Ok(ifade);
+    }
+    let ikinci = &tokenlar[1];
+    Err(Tani::yeni(
+        "S015",
+        "İki değer yan yana geldi; aralarına \"ile\" koy ya da bilinen bir kalıp kullan.".into(),
+        ikinci.satir,
+        ikinci.sutun,
+        ikinci.uzunluk,
+    )
+    .onerili(format!(
+        "Örnek: {} ile {} — ya da: sayıların adedi, a ile b nin toplamı",
+        goster(&tokenlar[0]),
+        goster(ikinci)
+    )))
 }
 
 /// Koşul ifadesi: yüklem satır sonundadır.
@@ -610,6 +656,54 @@ fn yapili_kalip(tokenlar: &[Token]) -> Result<Option<Ifade>, Tani> {
     // W ın sayısı — ek, ada bitişiktir ("yanıtın"); çözümleyici ayıklar.
     if n == 2 && son == "sayısı" {
         return Ok(Some(Ifade::Sayisi(Box::new(tekil_ifade(tokenlar[0].clone())?))));
+    }
+
+    // boş liste
+    if n == 2 && kelime(0) == Some("boş") && son == "liste" {
+        return Ok(Some(Ifade::BosListe));
+    }
+
+    // W ın adedi / ilki / sonu — liste özellikleri. "aded" öneki, ekli
+    // biçimleri de yakalar ("adedine", "adediyle").
+    if n == 2 {
+        let ozellik = if son.starts_with("aded") {
+            Some(Ozellik::Adet)
+        } else if son == "ilki" {
+            Some(Ozellik::Ilk)
+        } else if son == "sonu" {
+            Some(Ozellik::Son)
+        } else {
+            None
+        };
+        if let Some(ozellik) = ozellik {
+            return Ok(Some(Ifade::Ozellik {
+                nesne: Box::new(tekil_ifade(tokenlar[0].clone())?),
+                ozellik,
+            }));
+        }
+    }
+
+    // e1, e2, ... listesi
+    if son == "listesi" && n >= 2 {
+        let govde = &tokenlar[..n - 1];
+        let mut ogeler = Vec::new();
+        let mut deger_sirasi = true;
+        for token in govde {
+            if deger_sirasi {
+                ogeler.push(tekil_ifade(token.clone())?);
+                deger_sirasi = false;
+            } else {
+                if token.tur != TokenTur::Virgul {
+                    return Ok(None);
+                }
+                deger_sirasi = true;
+            }
+        }
+        if deger_sirasi {
+            // sonda virgül kaldı
+            return Ok(None);
+        }
+        return Ok(Some(Ifade::ListeSabiti(ogeler)));
     }
 
     // A ile B arasında rastgele sayı

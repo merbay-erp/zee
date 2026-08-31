@@ -98,6 +98,35 @@ fn golden_05_kosullar() {
 }
 
 #[test]
+fn golden_08_listeler() {
+    let cikti = kaynagi_calistir(&golden("08-listeler.dil")).expect("08 çalışmalı");
+    assert_eq!(
+        cikti,
+        vec!["Adet: 5", "İlk: 3", "Son: 5", "3", "7", "1", "9", "5"]
+    );
+}
+
+#[test]
+fn golden_09_liste_isleme() {
+    let cikti = kaynagi_calistir(&golden("09-liste-isleme.dil")).expect("09 çalışmalı");
+    assert_eq!(cikti, vec!["Toplam: 345", "Geçen sayısı: 3"]);
+}
+
+#[test]
+fn bos_liste_ilki_calisma_hatasi() {
+    let kaynak = "sayılar boş liste olsun\nsayıların ilki yaz\n";
+    let hata = kaynagi_calistir(kaynak).expect_err("boş listenin ilki hata olmalı");
+    assert_eq!(hata.kod, "C007");
+}
+
+#[test]
+fn ortuk_cogul_bulunamazsa_hata() {
+    let kaynak = "her elma için\n    elmayı yaz\n";
+    let hata = kaynagi_calistir(kaynak).expect_err("kapsamda elmalar yoksa hata");
+    assert_eq!(hata.kod, "A003");
+}
+
+#[test]
 fn golden_06_donguler() {
     let cikti = kaynagi_calistir(&golden("06-donguler.dil")).expect("06 çalışmalı");
     let mut beklenen: Vec<String> = std::iter::repeat("Merhaba".to_string()).take(10).collect();

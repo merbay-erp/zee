@@ -17,6 +17,8 @@ pub enum Tur {
     TamSayi,
     Metin,
     Mantiksal,
+    /// v0: yalnız TamSayı öğeli liste (Liste<TamSayı>).
+    Liste,
 }
 
 impl Tur {
@@ -25,6 +27,7 @@ impl Tur {
             Tur::TamSayi => "TamSayı",
             Tur::Metin => "Metin",
             Tur::Mantiksal => "Mantıksal",
+            Tur::Liste => "Liste",
         }
     }
 }
@@ -131,6 +134,90 @@ fn blok_denetle(cumleler: &mut [Cumle], ortam: &mut HashMap<String, Tur>) -> Res
                     blok_denetle(blok, ortam)?;
                 }
             }
+            Cumle::Ekle { hedef, deger, satir } => {
+                let satir = *satir;
+                let hedef_tur = ifade_denetle(hedef, ortam, satir)?;
+                if hedef_tur != Tur::Liste {
+                    return Err(Tani::yeni(
+                        "T012",
+                        format!("Ekleme bir listeye yapılır; hedef {} türünde.", hedef_tur.adi()),
+                        satir,
+                        1,
+                        1,
+                    )
+                    .onerili("Önce \"<ad> boş liste olsun\" ya da \"... listesi olsun\" ile liste tanımla.".into()));
+                }
+                let deger_tur = ifade_denetle(deger, ortam, satir)?;
+                if deger_tur != Tur::TamSayi {
+                    return Err(Tani::yeni(
+                        "T011",
+                        format!("v0'da listeler yalnız TamSayı tutar; {} eklenemez.", deger_tur.adi()),
+                        satir,
+                        1,
+                        1,
+                    ));
+                }
+            }
+            Cumle::HerBiri { ad, kaynak, govde, satir } => {
+                let satir = *satir;
+                if kaynak.is_none() {
+                    // Örtük çoğul (K-013): "her sayı için" → kapsamda "sayılar" aranır.
+                    let adaylar = [format!("{}lar", ad), format!("{}ler", ad)];
+                    let bulunanlar: Vec<String> = adaylar
+                        .iter()
+                        .filter(|aday| ortam.get(aday.as_str()) == Some(&Tur::Liste))
+                        .cloned()
+                        .collect();
+                    match bulunanlar.len() {
+                        1 => {
+                            let kaynak_adi = bulunanlar.into_iter().next().unwrap();
+                            *kaynak = Some(Ifade::Degisken {
+                                ham: kaynak_adi.clone(),
+                                cozulmus: Some(kaynak_adi),
+                                satir,
+                                sutun: 1,
+                                uzunluk: 1,
+                            });
+                        }
+                        0 => {
+                            return Err(Tani::yeni(
+                                "A003",
+                                format!(
+                                    "\"her {} için\" gezilecek listeyi bulamadı: kapsamda \"{}lar\" ya da \"{}ler\" adında bir liste yok.",
+                                    ad, ad, ad
+                                ),
+                                satir,
+                                1,
+                                1,
+                            )
+                            .onerili(format!("Önce listeyi tanımla: {}lar 1, 2, 3 listesi olsun", ad)))
+                        }
+                        _ => {
+                            return Err(Tani::yeni(
+                                "A002",
+                                format!("\"her {} için\" iki listeye birden çözülebiliyor.", ad),
+                                satir,
+                                1,
+                                1,
+                            ))
+                        }
+                    }
+                }
+                if let Some(k) = kaynak {
+                    let tur = ifade_denetle(k, ortam, satir)?;
+                    if tur != Tur::Liste {
+                        return Err(Tani::yeni(
+                            "T013",
+                            format!("\"her ... için\" bir liste ister; burada {} var.", tur.adi()),
+                            satir,
+                            1,
+                            1,
+                        ));
+                    }
+                }
+                ortam.insert(ad.clone(), Tur::TamSayi);
+                blok_denetle(govde, ortam)?;
+            }
             Cumle::Sor { istem, satir } => {
                 let satir = *satir;
                 ifade_denetle(istem, ortam, satir)?;
@@ -174,6 +261,35 @@ fn ifade_denetle(
         Ifade::MetinSabiti(_) => Ok(Tur::Metin),
         Ifade::SayiSabiti(_) => Ok(Tur::TamSayi),
         Ifade::MantiksalSabiti(_) => Ok(Tur::Mantiksal),
+        Ifade::BosListe => Ok(Tur::Liste),
+        Ifade::ListeSabiti(ogeler) => {
+            for oge in ogeler {
+                let tur = ifade_denetle(oge, ortam, satir)?;
+                if tur != Tur::TamSayi {
+                    return Err(Tani::yeni(
+                        "T011",
+                        format!("v0'da listeler yalnız TamSayı tutar; öğelerden biri {}.", tur.adi()),
+                        satir,
+                        1,
+                        1,
+                    ));
+                }
+            }
+            Ok(Tur::Liste)
+        }
+        Ifade::Ozellik { nesne, .. } => {
+            let tur = ifade_denetle(nesne, ortam, satir)?;
+            if tur != Tur::Liste {
+                return Err(Tani::yeni(
+                    "T014",
+                    format!("adedi/ilki/sonu bir listenin özellikleridir; burada {} var.", tur.adi()),
+                    satir,
+                    1,
+                    1,
+                ));
+            }
+            Ok(Tur::TamSayi)
+        }
         Ifade::Rastgele { alt, ust } => {
             for uc in [&mut **alt, &mut **ust] {
                 let tur = ifade_denetle(uc, ortam, satir)?;
