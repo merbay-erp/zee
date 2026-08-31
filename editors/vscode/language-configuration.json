@@ -1,0 +1,16 @@
+{
+  "comments": {
+    "lineComment": "#"
+  },
+  "brackets": [],
+  "autoClosingPairs": [
+    { "open": "\"", "close": "\"", "notIn": ["string"] }
+  ],
+  "surroundingPairs": [
+    ["\"", "\""]
+  ],
+  "indentationRules": {
+    "increaseIndentPattern": "^(?!#).*(tekrarla|için|sürece|değilse|olarak|göre|geldiğinde|içinde|ise)\\s*(#.*)?$|^\\s*(işlem|yapı|test)\\b.*$",
+    "decreaseIndentPattern": "^\\s*$"
+  }
+}

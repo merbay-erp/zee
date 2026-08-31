@@ -1,0 +1,56 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Türkçe Programlama Dili",
+  "scopeName": "source.dil",
+  "patterns": [
+    { "include": "#yorum" },
+    { "include": "#metin" },
+    { "include": "#sayi" },
+    { "include": "#tanim" },
+    { "include": "#kontrol" },
+    { "include": "#eylem" },
+    { "include": "#sabit" },
+    { "include": "#baglayici" },
+    { "include": "#tur" }
+  ],
+  "repository": {
+    "yorum": {
+      "name": "comment.line.number-sign.dil",
+      "match": "#.*$"
+    },
+    "metin": {
+      "name": "string.quoted.double.dil",
+      "begin": "\"",
+      "end": "\"",
+      "patterns": []
+    },
+    "sayi": {
+      "name": "constant.numeric.dil",
+      "match": "\\b[0-9]+\\b"
+    },
+    "tanim": {
+      "name": "keyword.declaration.dil",
+      "match": "(?<![\\wçğıöşüÇĞİÖŞÜ])(işlem|yapı|test|al|döndür|kullan|modül|paket)(?![\\wçğıöşüÇĞİÖŞÜ])"
+    },
+    "kontrol": {
+      "name": "keyword.control.dil",
+      "match": "(?<![\\wçğıöşüÇĞİÖŞÜ])(ise|değilse|tekrarla|için|sürece|kadar|kez|her|olduğu|olana|göre|geldiğinde|eşzamanlı|olarak|bekle|içinde|yetişmezse|dene)(?![\\wçğıöşüÇĞİÖŞÜ])"
+    },
+    "eylem": {
+      "name": "support.function.dil",
+      "match": "(?<![\\wçğıöşüÇĞİÖŞÜ])(yaz|olsun|ekle|artır|azalt|sor|böl|başlat|gönder|bitir|getir|yak|söndür|oku)(?![\\wçğıöşüÇĞİÖŞÜ])"
+    },
+    "sabit": {
+      "name": "constant.language.dil",
+      "match": "(?<![\\wçğıöşüÇĞİÖŞÜ])(doğru|yanlış|yok|var|boş)(?![\\wçğıöşüÇĞİÖŞÜ])"
+    },
+    "baglayici": {
+      "name": "keyword.operator.word.dil",
+      "match": "(?<![\\wçğıöşüÇĞİÖŞÜ])(ile|ve|veya|daha|diye|yeni)(?![\\wçğıöşüÇĞİÖŞÜ])"
+    },
+    "tur": {
+      "name": "entity.name.type.dil",
+      "match": "(?<![\\wçğıöşüÇĞİÖŞÜ])[A-ZÇĞİÖŞÜ][\\wçğıöşü]*(?![\\wçğıöşüÇĞİÖŞÜ])"
+    }
+  }
+}
