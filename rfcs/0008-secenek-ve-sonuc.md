@@ -1,6 +1,8 @@
 # RFC-0008 — Seçenek ve Sonuç
 
-- **Durum:** taslak
+- **Durum:** taslak — **§4.1 GERÇEKLENDİ** (31 Ağu 2026): `"..." hatasını
+  döndür`, Sonuç<değer> parametreli tür, başarı dallarının otomatik
+  sarmalanması; 10 test yeşil (K-030)
 - **Tarih:** 31 Ağustos 2026
 - **İlgili günlük kayıtları:** K-017 (var/yok), K-018 (dene)
 - **İlgili golden programlar:** 15, 16, 17
@@ -52,8 +54,11 @@ değilse
     "Okunamadı: " ile sonucun hatası yaz
 ```
 
-- **Doğuş (v0):** yalnız `... okumayı dene` gibi yerleşik dene-ifadeleri
-  Sonuç üretir. Kullanıcı işlemleri Sonuç DÖNDÜREMEZ (v0 eksiği, §4.1).
+- **Doğuş:** yerleşik dene-ifadeleri VE kullanıcı işlemleri: bir işlemde
+  `"sıfıra bölünmez" hatasını döndür` ile değer dönüşü karışırsa işlemin türü
+  Sonuç<değer> olur; başarı dalları çözümleyicide işaretlenip çalışma
+  zamanında otomatik sarılır. Sonuç'u olduğu gibi geçiren işlem (tek dönüş
+  türü zaten Sonuç) ÇİFT SARILMAZ — testli.
 - **Sorgu:** `başarılıysa` / `başarısızsa`. **Erişim:** `değeri` (başarısızken
   C009), `hatası` (başarılıyken C009) — yanlış tarafa erişim daima yakalanır.
 - **Düz biçim sözleşmesi:** dene'siz okuma (`dosyasının satırları`) hata
@@ -69,9 +74,8 @@ Türkçe tanıyla biter; fark, Sonuç'un programa DEVAM şansı vermesidir.
 
 ## 4. Açık sorular
 
-1. **Kullanıcı işlemlerinden Sonuç:** `hata "..." döndür` benzeri bir kalıp
-   gerekli — sözdizimi adayı: `"bölen sıfır" hatasını döndür`. Hata türünün
-   Metin'den zengin türe evrimi (RFC-0007) buna bağlı.
+1. **Kullanıcı işlemlerinden Sonuç:** GERÇEKLENDİ — `hatasını döndür`.
+   Kalan: hata türünün Metin'den zengin türe evrimi (kod + mesaj + veri).
 2. **Akış-duyarlı daraltma:** `bulunan varsa` bloğu içinde `bulunanın değeri`
    statik olarak güvenli sayılabilir (C008 derleme hatasına dönüşür). Öğretici
    değeri yüksek; denetleyici karmaşıklığı orta. v1 hedefi.

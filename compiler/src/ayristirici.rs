@@ -500,8 +500,16 @@ impl Ayristirici {
 
     fn dondur_ayristir(&mut self, mut tokenlar: Vec<Token>, satir: usize) -> Result<Cumle, Tani> {
         tokenlar.pop(); // "döndür"
+
+        // `<mesaj> hatasını döndür` — Sonuç-hata dönüşü (RFC-0008 §4.1).
+        if matches!(tokenlar.last(), Some(t) if kelime_mi(t, "hatasını")) {
+            tokenlar.pop();
+            let mesaj = ile_ifadesi(&tokenlar, satir, &self.islem_adlari)?;
+            return Ok(Cumle::HataDondur { mesaj, satir });
+        }
+
         let deger = ile_ifadesi(&tokenlar, satir, &self.islem_adlari)?;
-        Ok(Cumle::Dondur { deger, satir })
+        Ok(Cumle::Dondur { deger, sonuca_sarmala: false, satir })
     }
 
     /// `sonucu toplamı sayıların adedine böl`

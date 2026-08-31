@@ -98,8 +98,8 @@ pub enum Deger {
     Sozluk(Vec<(String, Deger)>),
     /// Seçenek'in boş hali; dolu hali değerin kendisidir.
     Yok,
-    /// v0: Sonuç<Metin, Metin>.
-    Sonuc { basarili: bool, icerik: String },
+    /// Sonuç: başarılıysa değer, değilse hata metni (Metin) taşır.
+    Sonuc { basarili: bool, icerik: Box<Deger> },
     /// Yapı örneği: yalın alan adı → değer (tanım sırasıyla).
     Yapi(Vec<(String, Deger)>),
     Tarih { yil: i64, ay: u32, gun: u32 },
@@ -147,9 +147,9 @@ impl Deger {
                 .join(", "),
             Deger::Sonuc { basarili, icerik } => {
                 if *basarili {
-                    icerik.clone()
+                    icerik.metne()
                 } else {
-                    format!("hata: {}", icerik)
+                    format!("hata: {}", icerik.metne())
                 }
             }
             Deger::Tarih { yil, ay, gun } => {
@@ -491,9 +491,21 @@ fn blok_calistir(
                     _ => return Err(ic_hata(*satir)),
                 }
             }
-            Cumle::Dondur { deger, satir } => {
+            Cumle::Dondur { deger, sonuca_sarmala, satir } => {
                 let sonuc = degerlendir(deger, ortam, program, cikti, *satir)?;
+                let sonuc = if *sonuca_sarmala {
+                    Deger::Sonuc { basarili: true, icerik: Box::new(sonuc) }
+                } else {
+                    sonuc
+                };
                 return Ok(Akis::Don(sonuc));
+            }
+            Cumle::HataDondur { mesaj, satir } => {
+                let mesaj = degerlendir(mesaj, ortam, program, cikti, *satir)?;
+                return Ok(Akis::Don(Deger::Sonuc {
+                    basarili: false,
+                    icerik: Box::new(mesaj),
+                }));
             }
             Cumle::BolVeAta { hedef, pay, payda, satir } => {
                 let pay = degerlendir(pay, ortam, program, cikti, *satir)?;
@@ -847,7 +859,7 @@ fn degerlendir(
                 1,
             )
             .onerili("Önce \"... varsa\" ile kontrol et.".into())),
-            Deger::Sonuc { basarili: true, icerik } => Ok(Deger::Metin(icerik)),
+            Deger::Sonuc { basarili: true, icerik } => Ok(*icerik),
             Deger::Sonuc { basarili: false, .. } => Err(Tani::yeni(
                 "C009",
                 "Sonuç başarısız: değeri yerine hatası var.".into(),
@@ -859,7 +871,7 @@ fn degerlendir(
             dolu => Ok(dolu),
         },
         Ifade::SonucHatasi(nesne) => match degerlendir(nesne, ortam, program, io, satir)? {
-            Deger::Sonuc { basarili: false, icerik } => Ok(Deger::Metin(icerik)),
+            Deger::Sonuc { basarili: false, icerik } => Ok(*icerik),
             Deger::Sonuc { basarili: true, .. } => Err(Tani::yeni(
                 "C009",
                 "Sonuç başarılı: hatası yok, değeri var.".into(),
@@ -881,8 +893,14 @@ fn degerlendir(
                 _ => return Err(ic_hata(satir)),
             };
             Ok(match io.dosya_oku(&yol) {
-                Ok(icerik) => Deger::Sonuc { basarili: true, icerik },
-                Err(hata) => Deger::Sonuc { basarili: false, icerik: hata },
+                Ok(icerik) => Deger::Sonuc {
+                    basarili: true,
+                    icerik: Box::new(Deger::Metin(icerik)),
+                },
+                Err(hata) => Deger::Sonuc {
+                    basarili: false,
+                    icerik: Box::new(Deger::Metin(hata)),
+                },
             })
         }
         Ifade::TabloOku(yol) => {
