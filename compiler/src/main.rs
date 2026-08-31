@@ -227,6 +227,9 @@ fn birim_yukleyici(klasor: &std::path::Path) -> impl FnMut(&str) -> Result<Strin
 struct GercekIo {
     tohum: u64,
     argumanlar: Vec<String>,
+    baslangic: std::time::Instant,
+    dinleyici: Option<std::net::TcpListener>,
+    bekleyen_akis: Option<std::net::TcpStream>,
 }
 
 impl GercekIo {
@@ -238,7 +241,13 @@ impl GercekIo {
             | 1;
         // `dil çalıştır program.dil selam dünya` → programa ["selam", "dünya"] gider.
         let argumanlar = std::env::args().skip(3).collect();
-        GercekIo { tohum, argumanlar }
+        GercekIo {
+            tohum,
+            argumanlar,
+            baslangic: std::time::Instant::now(),
+            dinleyici: None,
+            bekleyen_akis: None,
+        }
     }
 }
 
@@ -285,6 +294,96 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
     }
     fn argumanlar(&mut self) -> Vec<String> {
         self.argumanlar.clone()
+    }
+    fn http_getir(&mut self, url: &str) -> Result<(i64, String), String> {
+        use std::io::{Read, Write};
+        // v0: yalnız http:// (TLS elle yazılmaz — ADR-001; https Faz 5 kararı).
+        let kalan = url
+            .strip_prefix("http://")
+            .ok_or_else(|| {
+                if url.starts_with("https://") {
+                    "v0 https (TLS) desteklemez; http:// kullan".to_string()
+                } else {
+                    "adres http:// ile başlamalı".to_string()
+                }
+            })?;
+        let (konak, yol) = match kalan.split_once('/') {
+            Some((konak, yol)) => (konak.to_string(), format!("/{}", yol)),
+            None => (kalan.to_string(), "/".to_string()),
+        };
+        let adres = if konak.contains(':') { konak.clone() } else { format!("{}:80", konak) };
+        let mut akis = std::net::TcpStream::connect(&adres).map_err(|e| e.to_string())?;
+        write!(
+            akis,
+            "GET {} HTTP/1.1\r\nHost: {}\r\nConnection: close\r\n\r\n",
+            yol, konak
+        )
+        .map_err(|e| e.to_string())?;
+        let mut ham = Vec::new();
+        akis.read_to_end(&mut ham).map_err(|e| e.to_string())?;
+        let metin = String::from_utf8_lossy(&ham);
+        let durum: i64 = metin
+            .lines()
+            .next()
+            .and_then(|satir| satir.split_whitespace().nth(1))
+            .and_then(|kod| kod.parse().ok())
+            .ok_or("HTTP yanıtı çözülemedi")?;
+        let govde = metin
+            .split_once("\r\n\r\n")
+            .map(|(_, g)| g.to_string())
+            .unwrap_or_default();
+        Ok((durum, govde))
+    }
+    fn sunucu_kur(&mut self, kapi: i64) -> Result<(), String> {
+        let dinleyici = std::net::TcpListener::bind(("127.0.0.1", kapi as u16))
+            .map_err(|e| e.to_string())?;
+        println!("Sunucu dinliyor: http://127.0.0.1:{}", kapi);
+        self.dinleyici = Some(dinleyici);
+        Ok(())
+    }
+    fn istek_al(&mut self) -> Option<String> {
+        use std::io::Read;
+        let dinleyici = self.dinleyici.as_ref()?;
+        loop {
+            let (mut akis, _) = dinleyici.accept().ok()?;
+            let mut tampon = [0u8; 4096];
+            let okunan = akis.read(&mut tampon).ok()?;
+            let istek = String::from_utf8_lossy(&tampon[..okunan]).to_string();
+            let yol = istek
+                .lines()
+                .next()
+                .and_then(|satir| satir.split_whitespace().nth(1))
+                .map(str::to_string);
+            if let Some(yol) = yol {
+                self.bekleyen_akis = Some(akis);
+                return Some(yol);
+            }
+        }
+    }
+    fn yanit_gonder(&mut self, yanit: &str) {
+        use std::io::Write;
+        if let Some(mut akis) = self.bekleyen_akis.take() {
+            let govde = yanit.as_bytes();
+            let _ = write!(
+                akis,
+                "HTTP/1.1 200 OK\r\nContent-Type: text/plain; charset=utf-8\r\nContent-Length: {}\r\nConnection: close\r\n\r\n",
+                govde.len()
+            );
+            let _ = akis.write_all(govde);
+        }
+    }
+    fn sensor_acik_mi(&mut self, _ad: &str) -> bool {
+        // Donanım bağlı değil: simülatörde sensörler kapalı okunur (bölüm 17).
+        false
+    }
+    fn isik_ayarla(&mut self, ad: &str, yansin: bool) {
+        println!("[ışık] {} {}", ad, if yansin { "yandı" } else { "söndü" });
+    }
+    fn bekle_ms(&mut self, milisaniye: i64) {
+        std::thread::sleep(std::time::Duration::from_millis(milisaniye.max(0) as u64));
+    }
+    fn an_ms(&mut self) -> i64 {
+        self.baslangic.elapsed().as_millis() as i64
     }
     fn rastgele(&mut self, alt: i64, ust: i64) -> i64 {
         // xorshift64*

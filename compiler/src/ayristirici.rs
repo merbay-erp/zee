@@ -262,6 +262,120 @@ impl Ayristirici {
             Some("böl") => self.bol_ayristir(satir_tokenlari, satir_no),
             Some("göre") => self.gore_ayristir(satir_tokenlari, satir_no),
             Some("olmalı") => self.olmali_ayristir(satir_tokenlari, satir_no),
+            Some("başlat") => {
+                let t = &satir_tokenlari;
+                if t.len() == 4 && kelime_mi(&t[1], "kapısında") && kelime_mi(&t[2], "sunucu") {
+                    let kapi = tekil_ifade(t[0].clone())?;
+                    Ok(Cumle::SunucuBaslat { kapi, satir: satir_no })
+                } else {
+                    Err(Tani::yeni(
+                        "S035",
+                        "Sunucu \"<kapı> kapısında sunucu başlat\" biçiminde açılır.".into(),
+                        satir_no,
+                        1,
+                        1,
+                    )
+                    .onerili("Örnek: 8080 kapısında sunucu başlat".into()))
+                }
+            }
+            Some("geldiğinde") => {
+                let t = &satir_tokenlari;
+                if t.len() == 4 && kelime_mi(&t[1], "adresine") && kelime_mi(&t[2], "istek") {
+                    let yol = tekil_ifade(t[0].clone())?;
+                    let govde = self.alt_blok(satir_no)?;
+                    Ok(Cumle::IstekGeldiginde { yol, govde, satir: satir_no })
+                } else {
+                    Err(Tani::yeni(
+                        "S036",
+                        "Olay kaydı \"<yol> adresine istek geldiğinde\" biçimindedir.".into(),
+                        satir_no,
+                        1,
+                        1,
+                    ))
+                }
+            }
+            Some("gönder") => {
+                let mut t = satir_tokenlari;
+                t.pop(); // gönder
+                if matches!(t.last(), Some(son) if kelime_mi(son, "yanıtını")) {
+                    t.pop();
+                    let deger = ile_ifadesi(&t, satir_no, &self.islem_adlari)?;
+                    Ok(Cumle::YanitGonder { deger, satir: satir_no })
+                } else {
+                    Err(Tani::yeni(
+                        "S037",
+                        "Yanıt \"<değer> yanıtını gönder\" biçiminde gönderilir.".into(),
+                        satir_no,
+                        1,
+                        1,
+                    ))
+                }
+            }
+            Some("olarak") => {
+                if satir_tokenlari.len() == 2 && kelime_mi(&satir_tokenlari[0], "eşzamanlı") {
+                    self.eszamanli_ayristir(satir_no)
+                } else {
+                    Err(Tani::yeni(
+                        "S038",
+                        "Eşzamanlı blok \"eşzamanlı olarak\" ile başlar.".into(),
+                        satir_no,
+                        1,
+                        1,
+                    ))
+                }
+            }
+            Some("bekle") => {
+                let mut t = satir_tokenlari;
+                t.pop(); // bekle
+                if t.len() == 1 && kelime_mi(&t[0], "hepsini") {
+                    Ok(Cumle::HepsiniBekle { satir: satir_no })
+                } else {
+                    let sure = ile_ifadesi(&t, satir_no, &self.islem_adlari)?;
+                    Ok(Cumle::Bekle { sure, satir: satir_no })
+                }
+            }
+            Some("içinde") => {
+                let mut t = satir_tokenlari;
+                t.pop(); // içinde
+                let sure = ile_ifadesi(&t, satir_no, &self.islem_adlari)?;
+                let govde = self.alt_blok(satir_no)?;
+                let mut yetismezse = None;
+                if matches!(&self.bak().tur, TokenTur::Kelime(k) if k == "yetişmezse") {
+                    let kol_satiri = self.bak().satir;
+                    let kol = self.satir_oku();
+                    if kol.len() != 1 {
+                        return Err(Tani::yeni(
+                            "S036",
+                            "\"yetişmezse\" tek başına bir satır olmalı.".into(),
+                            kol_satiri,
+                            1,
+                            1,
+                        ));
+                    }
+                    yetismezse = Some(self.alt_blok(kol_satiri)?);
+                }
+                Ok(Cumle::IcindeBlogu { sure, govde, yetismezse, satir: satir_no })
+            }
+            Some("yak") | Some("söndür") => {
+                let yansin = son_kelime.as_deref() == Some("yak");
+                let t = &satir_tokenlari;
+                if t.len() == 3 && kelime_mi(&t[1], "ışığı") {
+                    if let TokenTur::Kelime(isik) = &t[0].tur {
+                        return Ok(Cumle::IsikAyarla {
+                            isik: isik.clone(),
+                            yansin,
+                            satir: satir_no,
+                        });
+                    }
+                }
+                Err(Tani::yeni(
+                    "S039",
+                    "Işık \"<renk> ışığı yak\" ya da \"<renk> ışığı söndür\" ile sürülür.".into(),
+                    satir_no,
+                    1,
+                    1,
+                ))
+            }
             Some("kullan") => {
                 if self.derinlik > 0 {
                     return Err(Tani::yeni(
@@ -520,6 +634,58 @@ impl Ayristirici {
             self.ilerle();
         }
         Ok(Cumle::YapiTanimi(Yapi { ad, alanlar, satir }))
+    }
+
+    /// `eşzamanlı olarak` bloğu: her satır `<ad> <ifade>` görev bağlamasıdır
+    /// (RFC-0011 §1). v0 yürütmesi sıralıdır (tek iş parçacıklı model).
+    fn eszamanli_ayristir(&mut self, satir: usize) -> Result<Cumle, Tani> {
+        match self.bak().tur {
+            TokenTur::Girinti => {
+                self.ilerle();
+            }
+            _ => {
+                return Err(Tani::yeni(
+                    "S038",
+                    "\"eşzamanlı olarak\" satırından sonra girintili görevler gelir.".into(),
+                    satir,
+                    1,
+                    1,
+                ))
+            }
+        }
+        self.derinlik += 1;
+        let mut gorevler = Vec::new();
+        loop {
+            match &self.bak().tur {
+                TokenTur::Cikinti | TokenTur::DosyaSonu => break,
+                TokenTur::SatirSonu => {
+                    self.ilerle();
+                }
+                _ => {
+                    let gorev_satiri = self.satir_oku();
+                    let gorev_no = gorev_satiri.first().map(|t| t.satir).unwrap_or(satir);
+                    let ad = match gorev_satiri.first().map(|t| &t.tur) {
+                        Some(TokenTur::Kelime(ad)) if gorev_satiri.len() >= 2 => ad.clone(),
+                        _ => {
+                            return Err(Tani::yeni(
+                                "S038",
+                                "Görev satırı \"<ad> <ifade>\" biçimindedir.".into(),
+                                gorev_no,
+                                1,
+                                1,
+                            ))
+                        }
+                    };
+                    let deger = ile_ifadesi(&gorev_satiri[1..], gorev_no, &self.islem_adlari)?;
+                    gorevler.push((ad, deger, gorev_no));
+                }
+            }
+        }
+        self.derinlik -= 1;
+        if let TokenTur::Cikinti = self.bak().tur {
+            self.ilerle();
+        }
+        Ok(Cumle::Eszamanli { gorevler, satir })
     }
 
     /// `test "<açıklama>"` + gövde (K-025).
@@ -1024,6 +1190,8 @@ fn kosul_kelimesi(kelime: &str) -> bool {
             | "başarısızsa"
             | "boşsa"
             | "doluysa"
+            | "açıksa"
+            | "kapalıysa"
     )
 }
 
@@ -1267,6 +1435,16 @@ fn kosul_atomu(tokenlar: &[Token], satir: usize) -> Result<Ifade, Tani> {
 
     let yuklem = kelimeler[n - 1].ok_or_else(hata)?;
     let yuklem_koku = yuklem.trim_end_matches("se").trim_end_matches("sa");
+
+    // <sensör> açıksa / kapalıysa — IoT simülatörü (golden 29).
+    if n == 2 && (yuklem == "açıksa" || yuklem == "kapalıysa") {
+        if let TokenTur::Kelime(ad) = &tokenlar[0].tur {
+            return Ok(Ifade::SensorAcik {
+                ad: ad.clone(),
+                olumsuz: yuklem == "kapalıysa",
+            });
+        }
+    }
 
     // X çiftse / X tekse
     if n == 2 && (yuklem == "çiftse" || yuklem == "tekse") {
@@ -1558,6 +1736,19 @@ fn yapili_kalip(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifade>
             tarih: Box::new(tekil_ifade(tokenlar[0].clone())?),
             miktar: Box::new(tekil_ifade(tokenlar[1].clone())?),
         }));
+    }
+
+    // "..." adresinden gelen yanıt → AğYanıtı (golden 24).
+    if n == 4 && kelime(1) == Some("adresinden") && kelime(2) == Some("gelen") && son == "yanıt" {
+        return Ok(Some(Ifade::HttpGetir(Box::new(tekil_ifade(tokenlar[0].clone())?))));
+    }
+
+    // W ın durum kodu / gövdesi — AğYanıtı özellikleri.
+    if n == 3 && kelime(1) == Some("durum") && (son == "kodu" || son == "kodunu") {
+        return Ok(Some(Ifade::DurumKodu(Box::new(tekil_ifade(tokenlar[0].clone())?))));
+    }
+    if n == 2 && (son == "gövdesi" || son == "gövdesini") {
+        return Ok(Some(Ifade::Govde(Box::new(tekil_ifade(tokenlar[0].clone())?))));
     }
 
     // Süre sabiti: <sayı|ondalık|yarım> saniye/dakika/saat (RFC-0011/0013).

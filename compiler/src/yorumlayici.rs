@@ -23,6 +23,22 @@ pub trait GirdiCikti {
     fn simdi(&mut self) -> (i64, u32, u32, u32, u32);
     /// Komut satırı argümanları (programa aktarılanlar).
     fn argumanlar(&mut self) -> Vec<String>;
+    /// HTTP GET: (durum kodu, gövde). GercekIo v0 yalnız http:// destekler.
+    fn http_getir(&mut self, url: &str) -> Result<(i64, String), String>;
+    /// Sunucu dinlemesini kurar (golden 25).
+    fn sunucu_kur(&mut self, kapi: i64) -> Result<(), String>;
+    /// Sıradaki isteğin yolunu verir; None = sunucu kapanıyor.
+    fn istek_al(&mut self) -> Option<String>;
+    /// Son isteğe yanıt gönderir.
+    fn yanit_gonder(&mut self, yanit: &str);
+    /// Sensör durumu (IoT simülatörü): "kapı" açık mı?
+    fn sensor_acik_mi(&mut self, ad: &str) -> bool;
+    /// Işık eyleyicisi (IoT simülatörü).
+    fn isik_ayarla(&mut self, ad: &str, yansin: bool);
+    /// Bekleme (GercekIo gerçekten uyur; testlerde sessiz).
+    fn bekle_ms(&mut self, milisaniye: i64);
+    /// Tekdüze artan an ölçümü (zaman aşımı hesabı, milisaniye).
+    fn an_ms(&mut self) -> i64;
 }
 
 /// Çıktıyı toplayan, girdiyi ve "rastgele" sayıları hazır kuyruktan veren IO
@@ -35,6 +51,14 @@ pub struct ToplayanIo {
     /// Sabit "şimdi" — testlerde determinizm.
     pub zaman: (i64, u32, u32, u32, u32),
     pub argumanlar: Vec<String>,
+    /// Sahte HTTP: url → (durum, gövde).
+    pub http_yanitlari: HashMap<String, (i64, String)>,
+    /// Sahte sunucu: istek kuyruğu ve (istek → yanıt) kayıtları.
+    pub istekler: VecDeque<String>,
+    pub sunucu_yanitlari: Vec<(String, String)>,
+    /// Sahte sensörler (varsayılan kapalı) ve an ölçümü kuyruğu.
+    pub sensorler: HashMap<String, bool>,
+    pub an_degerleri: VecDeque<i64>,
     pub cikti: Vec<String>,
 }
 
@@ -46,6 +70,11 @@ impl ToplayanIo {
             dosyalar: HashMap::new(),
             zaman: (2026, 8, 31, 14, 30),
             argumanlar: Vec::new(),
+            http_yanitlari: HashMap::new(),
+            istekler: VecDeque::new(),
+            sunucu_yanitlari: Vec::new(),
+            sensorler: HashMap::new(),
+            an_degerleri: VecDeque::new(),
             cikti: Vec::new(),
         }
     }
@@ -83,6 +112,39 @@ impl GirdiCikti for ToplayanIo {
     fn argumanlar(&mut self) -> Vec<String> {
         self.argumanlar.clone()
     }
+    fn http_getir(&mut self, url: &str) -> Result<(i64, String), String> {
+        self.http_yanitlari
+            .get(url)
+            .cloned()
+            .ok_or_else(|| format!("\"{}\" adresine bağlanılamadı", url))
+    }
+    fn sunucu_kur(&mut self, _kapi: i64) -> Result<(), String> {
+        Ok(())
+    }
+    fn istek_al(&mut self) -> Option<String> {
+        let yol = self.istekler.pop_front()?;
+        self.sunucu_yanitlari.push((yol.clone(), String::new()));
+        Some(yol)
+    }
+    fn yanit_gonder(&mut self, yanit: &str) {
+        if let Some((_, bos)) = self.sunucu_yanitlari.last_mut() {
+            *bos = yanit.to_string();
+        }
+    }
+    fn sensor_acik_mi(&mut self, ad: &str) -> bool {
+        self.sensorler.get(ad).copied().unwrap_or(false)
+    }
+    fn isik_ayarla(&mut self, ad: &str, yansin: bool) {
+        self.cikti.push(format!(
+            "[ışık] {} {}",
+            ad,
+            if yansin { "yandı" } else { "söndü" }
+        ));
+    }
+    fn bekle_ms(&mut self, _milisaniye: i64) {}
+    fn an_ms(&mut self) -> i64 {
+        self.an_degerleri.pop_front().unwrap_or(0)
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -106,6 +168,8 @@ pub enum Deger {
     Saat { saat: u32, dakika: u32 },
     /// Milisaniye cinsinden süre.
     Sure { milisaniye: i64 },
+    /// HTTP yanıtı: durum kodu + gövde.
+    AgYaniti { durum: i64, govde: String },
 }
 
 const AY_ADLARI: [&str; 12] = [
@@ -158,6 +222,7 @@ impl Deger {
                 format!("{} {} {}", gun, AY_ADLARI[(*ay as usize).saturating_sub(1) % 12], yil)
             }
             Deger::Saat { saat, dakika } => format!("{:02}:{:02}", saat, dakika),
+            Deger::AgYaniti { durum, govde } => format!("[{}] {}", durum, govde),
             Deger::Sure { milisaniye } => {
                 let ms = *milisaniye;
                 if ms % 3_600_000 == 0 {
@@ -288,9 +353,39 @@ pub fn calistir_io(program: &Program, io: &mut dyn GirdiCikti) -> Result<(), Tan
     let mut ortam: HashMap<String, Deger> = HashMap::new();
     match blok_calistir(&program.cumleler, &mut ortam, program, io) {
         // "programı bitir" olağan bir sonlanmadır (Ç000 iç nöbetçisi).
-        Err(tani) if tani.kod == "Ç000" => Ok(()),
-        sonuc => sonuc.map(|_| ()),
+        Err(tani) if tani.kod == "Ç000" => return Ok(()),
+        Err(tani) => return Err(tani),
+        Ok(_) => {}
     }
+
+    // Sunucu kurulduysa dinlemeye geç (golden 25): kayıtlı "geldiğinde"
+    // gövdeleri istek başına taze ortamda koşulur.
+    if ortam.contains_key("(sunucu)") {
+        while let Some(yol) = io.istek_al() {
+            let mut eslesti = false;
+            for cumle in &program.cumleler {
+                if let Cumle::IstekGeldiginde { yol: kayitli, govde, satir } = cumle {
+                    let mut bos_ortam: HashMap<String, Deger> = HashMap::new();
+                    let kayitli =
+                        degerlendir(kayitli, &bos_ortam, program, io, *satir)?.metne();
+                    if kayitli == yol {
+                        let sonuc = blok_calistir(govde, &mut bos_ortam, program, io);
+                        match sonuc {
+                            Err(tani) if tani.kod == "Ç000" => return Ok(()),
+                            Err(tani) => return Err(tani),
+                            Ok(_) => {}
+                        }
+                        eslesti = true;
+                        break;
+                    }
+                }
+            }
+            if !eslesti {
+                io.yanit_gonder(&format!("aranan sayfa yok: {}", yol));
+            }
+        }
+    }
+    Ok(())
 }
 
 /// Tek bir testi taze ortamda koşar; ilk doğrulama/çalışma hatasında durur.
@@ -455,6 +550,61 @@ fn blok_calistir(
                         }
                     }
                 }
+            }
+            Cumle::SunucuBaslat { kapi, satir } => {
+                let kapi = tam_sayi(degerlendir(kapi, ortam, program, cikti, *satir)?, *satir)?;
+                cikti.sunucu_kur(kapi).map_err(|hata| {
+                    Tani::yeni("C017", format!("Sunucu kurulamadı: {}.", hata), *satir, 1, 1)
+                })?;
+                // Dinleme, program gövdesi bitince başlar (calistir_io).
+                ortam.insert("(sunucu)".to_string(), Deger::TamSayi(kapi));
+            }
+            Cumle::IstekGeldiginde { .. } => {
+                // Yalnız kayıt: gövde, sunucu döngüsünde istek gelince koşulur.
+            }
+            Cumle::YanitGonder { deger, satir } => {
+                let deger = degerlendir(deger, ortam, program, cikti, *satir)?;
+                cikti.yanit_gonder(&deger.metne());
+            }
+            Cumle::Eszamanli { gorevler, satir } => {
+                // v0 yürütmesi sıralıdır (RFC-0011 §4: tek iş parçacıklı model);
+                // gözlemlenebilir davranış eşzamanlı modele denktir.
+                let _ = satir;
+                for (ad, deger, gorev_satiri) in gorevler {
+                    let sonuc = degerlendir(deger, ortam, program, cikti, *gorev_satiri)?;
+                    ortam.insert(ad.clone(), sonuc);
+                }
+            }
+            Cumle::HepsiniBekle { .. } => {}
+            Cumle::IcindeBlogu { sure, govde, yetismezse, satir } => {
+                let sure_ms = match degerlendir(sure, ortam, program, cikti, *satir)? {
+                    Deger::Sure { milisaniye } => milisaniye,
+                    _ => return Err(ic_hata(*satir)),
+                };
+                let baslangic = cikti.an_ms();
+                if let Akis::Don(d) = blok_calistir(govde, ortam, program, cikti)? {
+                    return Ok(Akis::Don(d));
+                }
+                let gecen = cikti.an_ms().saturating_sub(baslangic);
+                // v0 yaklaşımı (RFC-0011 §3): erken iptal yok; süre aşıldıysa
+                // "yetişmezse" kolu geç-kalma bildirimi olarak koşulur.
+                if gecen > sure_ms {
+                    if let Some(blok) = yetismezse {
+                        if let Akis::Don(d) = blok_calistir(blok, ortam, program, cikti)? {
+                            return Ok(Akis::Don(d));
+                        }
+                    }
+                }
+            }
+            Cumle::IsikAyarla { isik, yansin, .. } => {
+                cikti.isik_ayarla(isik, *yansin);
+            }
+            Cumle::Bekle { sure, satir } => {
+                let sure_ms = match degerlendir(sure, ortam, program, cikti, *satir)? {
+                    Deger::Sure { milisaniye } => milisaniye,
+                    _ => return Err(ic_hata(*satir)),
+                };
+                cikti.bekle_ms(sure_ms);
             }
             Cumle::ProgramiBitir { satir } => {
                 return Err(Tani::yeni("Ç000", "programı bitir".into(), *satir, 1, 1));
@@ -825,6 +975,29 @@ fn degerlendir(
             Ok(Deger::Saat { saat, dakika })
         }
         Ifade::SureSabiti { milisaniye } => Ok(Deger::Sure { milisaniye: *milisaniye }),
+        Ifade::HttpGetir(url) => {
+            let url = match degerlendir(url, ortam, program, io, satir)? {
+                Deger::Metin(m) => m,
+                _ => return Err(ic_hata(satir)),
+            };
+            let (durum, govde) = io.http_getir(&url).map_err(|hata| {
+                Tani::yeni("C018", format!("Ağ isteği başarısız: {}.", hata), satir, 1, 1)
+                    .onerili("Ağ hatası yönetilecekse ileride \"getirmeyi dene\" gelecek (RFC-0008 §4.3).".into())
+            })?;
+            Ok(Deger::AgYaniti { durum, govde })
+        }
+        Ifade::DurumKodu(nesne) => match degerlendir(nesne, ortam, program, io, satir)? {
+            Deger::AgYaniti { durum, .. } => Ok(Deger::TamSayi(durum)),
+            _ => Err(ic_hata(satir)),
+        },
+        Ifade::Govde(nesne) => match degerlendir(nesne, ortam, program, io, satir)? {
+            Deger::AgYaniti { govde, .. } => Ok(Deger::Metin(govde)),
+            _ => Err(ic_hata(satir)),
+        },
+        Ifade::SensorAcik { ad, olumsuz } => {
+            let acik = io.sensor_acik_mi(ad);
+            Ok(Deger::Mantiksal(acik != *olumsuz))
+        }
         Ifade::KomutArgumanlari => Ok(Deger::Liste(
             io.argumanlar().into_iter().map(Deger::Metin).collect(),
         )),

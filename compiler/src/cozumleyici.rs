@@ -86,6 +86,8 @@ pub enum Tur {
     Saat,
     /// Milisaniye hassasiyetli süre (RFC-0011/0013).
     Sure,
+    /// HTTP yanıtı: durum kodu + gövde (golden 24).
+    AgYaniti,
 }
 
 impl Tur {
@@ -105,6 +107,7 @@ impl Tur {
             Tur::Tarih => "Tarih".into(),
             Tur::Saat => "Saat".into(),
             Tur::Sure => "Süre".into(),
+            Tur::AgYaniti => "AğYanıtı".into(),
         }
     }
 
@@ -152,6 +155,7 @@ pub fn denetle_coklu(program: &mut Program) -> Vec<Tani> {
         islemler: std::mem::take(&mut program.islemler),
         imzalar: HashMap::new(),
         yapilar: program.yapilar.clone(),
+        bekleyen_gorevler: std::collections::HashSet::new(),
     };
     let mut donusler = Vec::new();
     for cumle in program.cumleler.iter_mut() {
@@ -215,6 +219,7 @@ pub fn denetle(program: &mut Program) -> Result<(), Tani> {
         islemler: std::mem::take(&mut program.islemler),
         imzalar: HashMap::new(),
         yapilar: program.yapilar.clone(),
+        bekleyen_gorevler: std::collections::HashSet::new(),
     };
     let mut donusler = Vec::new();
     let mut sonuc = blok_denetle(&mut program.cumleler, &mut ortam, &mut baglam, &mut donusler, false);
@@ -251,6 +256,8 @@ struct Baglam {
     islemler: HashMap<String, Islem>,
     imzalar: HashMap<String, Imza>,
     yapilar: Vec<Yapi>,
+    /// `eşzamanlı olarak` görev adları; `hepsini bekle`ye dek erişilemez (T033).
+    bekleyen_gorevler: std::collections::HashSet<String>,
 }
 
 /// Yapı alanı tür yazımını çözer ("TamSayı" → Tur::TamSayi).
@@ -504,6 +511,94 @@ fn blok_denetle(
                 blok_denetle(govde, ortam, baglam, donusler, islem_icinde)?;
             }
             Cumle::ProgramiBitir { .. } => {}
+            Cumle::SunucuBaslat { kapi, satir } => {
+                let satir = *satir;
+                let tur = ifade_denetle(kapi, ortam, baglam, satir)?;
+                if tur != Tur::TamSayi {
+                    return Err(Tani::yeni(
+                        "T034",
+                        format!("Kapı numarası TamSayı olmalı; burada {} var.", tur.adi()),
+                        satir,
+                        1,
+                        1,
+                    ));
+                }
+            }
+            Cumle::IstekGeldiginde { yol, govde, satir } => {
+                let satir = *satir;
+                let tur = ifade_denetle(yol, ortam, baglam, satir)?;
+                if tur != Tur::Metin {
+                    return Err(Tani::yeni(
+                        "T034",
+                        format!("İstek yolu Metin olmalı; burada {} var.", tur.adi()),
+                        satir,
+                        1,
+                        1,
+                    ));
+                }
+                // Her istek taze ortamda işlenir (kapsülleme).
+                let mut istek_ortami: HashMap<String, Tur> = HashMap::new();
+                blok_denetle(govde, &mut istek_ortami, baglam, donusler, islem_icinde)?;
+            }
+            Cumle::YanitGonder { deger, satir } => {
+                let satir = *satir;
+                ifade_denetle(deger, ortam, baglam, satir)?;
+            }
+            Cumle::Eszamanli { gorevler, satir } => {
+                let satir = *satir;
+                for (ad, deger, gorev_satiri) in gorevler.iter_mut() {
+                    let tur = ifade_denetle(deger, ortam, baglam, *gorev_satiri)?;
+                    if let Some(eski) = ortam.get(ad.as_str()) {
+                        if *eski != tur {
+                            return Err(Tani::yeni(
+                                "T002",
+                                format!("\"{}\" daha önce {} türündeydi.", ad, eski.adi()),
+                                satir,
+                                1,
+                                1,
+                            ));
+                        }
+                    }
+                    ortam.insert(ad.clone(), tur);
+                    baglam.bekleyen_gorevler.insert(ad.clone());
+                }
+            }
+            Cumle::HepsiniBekle { .. } => {
+                baglam.bekleyen_gorevler.clear();
+            }
+            Cumle::IcindeBlogu { sure, govde, yetismezse, satir } => {
+                let satir = *satir;
+                let tur = ifade_denetle(sure, ortam, baglam, satir)?;
+                if tur != Tur::Sure {
+                    return Err(Tani::yeni(
+                        "T034",
+                        format!("\"içinde\" bir Süre ister; burada {} var.", tur.adi()),
+                        satir,
+                        1,
+                        1,
+                    )
+                    .onerili("Örnek: 5 saniye içinde".into()));
+                }
+                blok_denetle(govde, ortam, baglam, donusler, islem_icinde)?;
+                if let Some(blok) = yetismezse {
+                    blok_denetle(blok, ortam, baglam, donusler, islem_icinde)?;
+                }
+            }
+            Cumle::IsikAyarla { .. } => {}
+            Cumle::Bekle { sure, satir } => {
+                let satir = *satir;
+                let tur = ifade_denetle(sure, ortam, baglam, satir)?;
+                if tur != Tur::Sure {
+                    return Err(Tani::yeni(
+                        "T034",
+                        format!("\"bekle\" bir Süre ister; burada {} var.", tur.adi()),
+                        satir,
+                        1,
+                        1,
+                    )
+                    .onerili("Örnek: yarım saniye bekle".into()));
+                }
+            }
             Cumle::Sor { istem, satir } => {
                 let satir = *satir;
                 ifade_denetle(istem, ortam, baglam, satir)?;
@@ -971,6 +1066,46 @@ fn ifade_denetle(
         Ifade::SuAninSaati => Ok(Tur::Saat),
         Ifade::KomutArgumanlari => Ok(Tur::Liste(VeriTuru::Metin)),
         Ifade::SureSabiti { .. } => Ok(Tur::Sure),
+        Ifade::HttpGetir(url) => {
+            let tur = ifade_denetle(url, ortam, baglam, satir)?;
+            if tur != Tur::Metin {
+                return Err(Tani::yeni(
+                    "T034",
+                    format!("Adres Metin olmalı; burada {} var.", tur.adi()),
+                    satir,
+                    1,
+                    1,
+                ));
+            }
+            Ok(Tur::AgYaniti)
+        }
+        Ifade::DurumKodu(nesne) => {
+            let tur = ifade_denetle(nesne, ortam, baglam, satir)?;
+            if tur != Tur::AgYaniti {
+                return Err(Tani::yeni(
+                    "T034",
+                    format!("\"durum kodu\" bir ağ yanıtı ister; burada {} var.", tur.adi()),
+                    satir,
+                    1,
+                    1,
+                ));
+            }
+            Ok(Tur::TamSayi)
+        }
+        Ifade::Govde(nesne) => {
+            let tur = ifade_denetle(nesne, ortam, baglam, satir)?;
+            if tur != Tur::AgYaniti {
+                return Err(Tani::yeni(
+                    "T034",
+                    format!("\"gövdesi\" bir ağ yanıtı ister; burada {} var.", tur.adi()),
+                    satir,
+                    1,
+                    1,
+                ));
+            }
+            Ok(Tur::Metin)
+        }
+        Ifade::SensorAcik { .. } => Ok(Tur::Mantiksal),
         Ifade::GunSonrasi { tarih, miktar } => {
             let tarih_turu = ifade_denetle(tarih, ortam, baglam, satir)?;
             if tarih_turu != Tur::Tarih {
@@ -1168,6 +1303,19 @@ fn ifade_denetle(
         }
         Ifade::Degisken { ham, cozulmus, satir, sutun, uzunluk } => {
             let ad = ad_cozumle(ham, ortam, *satir, *sutun, *uzunluk)?;
+            // RFC-0011 §1: görev sonucuna "hepsini bekle"den önce erişilemez.
+            if baglam.bekleyen_gorevler.contains(&ad) {
+                return Err(Tani::yeni(
+                    "T033",
+                    format!(
+                        "\"{}\" bir eşzamanlı görev: sonucuna \"hepsini bekle\"den önce erişilemez.",
+                        ad
+                    ),
+                    *satir,
+                    *sutun,
+                    *uzunluk,
+                ));
+            }
             let tur = ortam[&ad];
             *cozulmus = Some(ad);
             Ok(tur)

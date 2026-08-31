@@ -143,6 +143,14 @@ pub enum Ifade {
     KomutArgumanlari,
     /// Süre sabiti: `5 saniye`, `yarım saniye`, `1,5 dakika` → milisaniye.
     SureSabiti { milisaniye: i64 },
+    /// `"..." adresinden gelen yanıt` → AğYanıtı (golden 24).
+    HttpGetir(Box<Ifade>),
+    /// `cevabın durum kodu` → TamSayı.
+    DurumKodu(Box<Ifade>),
+    /// `cevabın gövdesi` → Metin.
+    Govde(Box<Ifade>),
+    /// `kapı açıksa` — IoT sensör okuması (golden 29, simülatör).
+    SensorAcik { ad: String, olumsuz: bool },
     /// `argümanlar boşsa` — liste/metin boş mu.
     BosMu { nesne: Box<Ifade>, olumsuz: bool },
     /// Genitif aritmetik (K-008): "a ile b nin toplamı", "x in y ye bölümü".
@@ -288,6 +296,27 @@ pub enum Cumle {
     CagriCumlesi { cagri: Ifade, satir: usize },
     /// `programı bitir` — programı olağan biçimde sonlandırır (K-024).
     ProgramiBitir { satir: usize },
+    /// `8080 kapısında sunucu başlat` (golden 25).
+    SunucuBaslat { kapi: Ifade, satir: usize },
+    /// `"/durum" adresine istek geldiğinde` + gövde — olay kaydı (K-022).
+    IstekGeldiginde { yol: Ifade, govde: Vec<Cumle>, satir: usize },
+    /// `"çalışıyor" yanıtını gönder` — istek gövdesi içinde.
+    YanitGonder { deger: Ifade, satir: usize },
+    /// `eşzamanlı olarak` bloğu: görev bağlamaları (RFC-0011).
+    Eszamanli { gorevler: Vec<(String, Ifade, usize)>, satir: usize },
+    /// `hepsini bekle` — görev sonuçları bundan sonra kullanılabilir.
+    HepsiniBekle { satir: usize },
+    /// `<süre> içinde` + gövde + `yetişmezse` (golden 27, RFC-0011 §3).
+    IcindeBlogu {
+        sure: Ifade,
+        govde: Vec<Cumle>,
+        yetismezse: Option<Vec<Cumle>>,
+        satir: usize,
+    },
+    /// `kırmızı ışığı yak/söndür` (golden 29, simülatör).
+    IsikAyarla { isik: String, yansin: bool, satir: usize },
+    /// `yarım saniye bekle`.
+    Bekle { sure: Ifade, satir: usize },
     /// `yaşların "Ayşe" değeri 10 olsun` — sözlüğe yazma (K-015).
     SozlukAta {
         sozluk: Ifade,
