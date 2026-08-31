@@ -2045,7 +2045,7 @@ pub fn ad_cozumle(
 
 /// Ek ayıklama adayları: yaygın hal/iyelik/araç ekleri + ünsüz yumuşaması geri çevrimi.
 /// (K-011: desteklenen ek listesi sürümlemeli grammar'ın parçasıdır.)
-fn kok_adaylari(ham: &str) -> Vec<String> {
+pub(crate) fn kok_adaylari(ham: &str) -> Vec<String> {
     const EKLER: [&str; 44] = [
         "yı", "yi", "yu", "yü", // belirtme (ünlüyle biten kök)
         "nın", "nin", "nun", "nün", // tamlayan

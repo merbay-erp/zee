@@ -3,8 +3,11 @@
 ## dillsp — LSP sunucusu
 
 Derle: `cargo build --release` → `compiler/target/release/dillsp`.
-Canlı Türkçe tanılar (çoklu, RFC-0010) + kalıp kelime tamamlama sunar;
-birimleri dosyanın klasöründen çözer.
+Sunduğu yetenekler: canlı Türkçe tanılar (çoklu, RFC-0010), kalıp kelime
+tamamlama, **hover** (kalıp kelimesine Türkçe açıklama + örnek; ada, tanım
+satırı) ve **tanıma git** (işlem/yapı başlığına ya da `olsun`/`al` satırına —
+ek almış kullanımlar morfolojiyle çözülür: `sayacı` → `sayaç`). Birimleri
+dosyanın klasöründen çözer.
 
 ### Helix (`~/.config/helix/languages.toml`)
 
