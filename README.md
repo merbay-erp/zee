@@ -23,15 +23,18 @@ ilk milestone). Bootstrap derleyici: [compiler/](compiler/) (Rust, sıfır bağ�
 cd compiler && cargo build && ./target/debug/dil çalıştır ../merhaba.dil
 ```
 
-Çalışan golden programlar (regression testte): **01–09, 12, 13, 14** —
-**v0.1 kabul listesindeki 4 program da çalışıyor** (Merhaba Dünya, hesap
-makinesi, sayı tahmini, not ortalaması). Desteklenen yüzey: `olsun`, `yaz`,
-`ile`, `ise/değilse` zinciri, dört döngü (`kez tekrarla`, aralık, `olduğu
-sürece`, `olana kadar`), `artır/azalt`, `diye sor`/`yanıt`, rastgele sayı,
-genitif aritmetik, listeler (`listesi`, `boş liste`, `ekle`, `adedi/ilki/sonu`,
-örtük çoğulla `her ... için`), **işlem tanımı ve çağrısı** (çok kelimeli adlar,
-parametreler, `döndür` — K-016 geçici sözdizimi), ek ayıklamalı ad çözümleme
-("sayacı" → "sayaç") ve Türkçe kodlu tanılar (S/A/T/C).
+Çalışan golden programlar (regression testte): **01–18, 22, 23** (30'da 20) —
+**v0.1 kabul listesindeki 4 program da çalışıyor.** Desteklenen yüzey: `olsun`,
+`yaz` (ekrana ve `dosyasına`), `ile`, `ise/değilse` zinciri, dört döngü,
+`artır/azalt`, `diye sor`/`yanıt`, rastgele sayı, genitif aritmetik, listeler
+(örtük çoğulla `her ... için`), sözlükler (sıra korumalı), metin işlemleri
+(Türkçe İ/ı kurallarıyla `büyük/küçük harflisi`), `Seçenek` (`var/yok`),
+`Sonuç` (`dosyasını okumayı dene`, `başarılıysa`), dosya satırları/yazma,
+**işlem tanımı ve çağrısı** (K-016 geçici sözdizimi), **yapılar** (`yapı`,
+`yeni`, iyelik ekiyle alan erişimi), **desen eşleştirme** (`göre / ise`),
+üç mekanizmalı morfoloji (ek ayıklama + ünsüz yumuşaması + ünlü düşmesi geri
+çevrimi: sayacı→sayaç, şekle→şekil) ve Türkçe kodlu tanılar (S/A/T/C).
+VS Code eklentisi: [editors/vscode/](editors/vscode/).
 
 Tarih arşivi: ilk README'ler [docs/tarih/](docs/tarih/) altında dondurulmuştur;
 `baslangic` ve `dogum` git etiketleri ilk commit'leri kalıcı işaretler.
