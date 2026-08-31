@@ -157,6 +157,9 @@ pub fn denetle_coklu(program: &mut Program) -> Vec<Tani> {
         yapilar: program.yapilar.clone(),
         bekleyen_gorevler: std::collections::HashSet::new(),
         denetim_yigini: Vec::new(),
+        dolu_secenekler: std::collections::HashSet::new(),
+        basarili_sonuclar: std::collections::HashSet::new(),
+        basarisiz_sonuclar: std::collections::HashSet::new(),
     };
     for cumle in program.cumleler.iter_mut() {
         if let Err(tani) = blok_denetle(std::slice::from_mut(cumle), &mut ortam, &mut baglam) {
@@ -208,6 +211,9 @@ pub fn denetle(program: &mut Program) -> Result<(), Tani> {
         yapilar: program.yapilar.clone(),
         bekleyen_gorevler: std::collections::HashSet::new(),
         denetim_yigini: Vec::new(),
+        dolu_secenekler: std::collections::HashSet::new(),
+        basarili_sonuclar: std::collections::HashSet::new(),
+        basarisiz_sonuclar: std::collections::HashSet::new(),
     };
     let mut sonuc = blok_denetle(&mut program.cumleler, &mut ortam, &mut baglam);
 
@@ -241,6 +247,11 @@ struct Baglam {
     /// Denetimi süren işlemler (özyineleme desteği): ad + parametre türleri +
     /// o ana dek görülen dönüş türleri. `döndür` en üsttekine yazar.
     denetim_yigini: Vec<ImzaKaydi>,
+    /// Akış-duyarlı daraltma (RFC-0008 §4.2): "X varsa" dalında X'in değeri
+    /// güvenlidir; "X başarılıysa" dalında değeri, "başarısızsa" dalında hatası.
+    dolu_secenekler: std::collections::HashSet<String>,
+    basarili_sonuclar: std::collections::HashSet<String>,
+    basarisiz_sonuclar: std::collections::HashSet<String>,
 }
 
 struct ImzaKaydi {
@@ -304,6 +315,56 @@ fn kapsam_baslat(ortam: &HashMap<String, Tur>) -> std::collections::HashSet<Stri
 
 fn kapsam_bitir(ortam: &mut HashMap<String, Tur>, kapsam: &std::collections::HashSet<String>) {
     ortam.retain(|ad, _| kapsam.contains(ad));
+}
+
+/// Koşuldan daraltma çıkarır: 1=dolu Seçenek, 2=boş, 3=başarılı, 4=başarısız.
+fn daraltma_cikar(kosul: &Ifade) -> Option<(u8, String)> {
+    match kosul {
+        Ifade::SecenekVar { nesne, olumsuz } => {
+            nesne_adi(nesne).map(|ad| (if *olumsuz { 2 } else { 1 }, ad))
+        }
+        Ifade::SonucBasarili { nesne, olumsuz } => {
+            nesne_adi(nesne).map(|ad| (if *olumsuz { 4 } else { 3 }, ad))
+        }
+        _ => None,
+    }
+}
+
+fn nesne_adi(nesne: &Ifade) -> Option<String> {
+    match nesne {
+        Ifade::Degisken { cozulmus: Some(ad), .. } => Some(ad.clone()),
+        _ => None,
+    }
+}
+
+fn daraltma_ekle(baglam: &mut Baglam, tur_kodu: u8, ad: &str) {
+    match tur_kodu {
+        1 => {
+            baglam.dolu_secenekler.insert(ad.to_string());
+        }
+        3 => {
+            baglam.basarili_sonuclar.insert(ad.to_string());
+        }
+        4 => {
+            baglam.basarisiz_sonuclar.insert(ad.to_string());
+        }
+        _ => {}
+    }
+}
+
+fn daraltma_cikar_geri(baglam: &mut Baglam, tur_kodu: u8, ad: &str) {
+    match tur_kodu {
+        1 => {
+            baglam.dolu_secenekler.remove(ad);
+        }
+        3 => {
+            baglam.basarili_sonuclar.remove(ad);
+        }
+        4 => {
+            baglam.basarisiz_sonuclar.remove(ad);
+        }
+        _ => {}
+    }
 }
 
 fn blok_denetle(
@@ -400,18 +461,47 @@ fn blok_denetle(
             }
             Cumle::Ise { kollar, degilse, satir } => {
                 let satir = *satir;
+                let mut son_kol_daraltmasi: Option<(u8, String)> = None;
                 for kol in kollar.iter_mut() {
                     let tur = ifade_denetle(&mut kol.kosul, ortam, baglam, satir)?;
                     if tur != Tur::Mantiksal {
                         return Err(Tani::yeni("T005", "\"ise\" bir koşul ister.".into(), satir, 1, 1));
                     }
+                    // Daraltma çıkarımı (RFC-0008 §4.2).
+                    let daraltma = daraltma_cikar(&kol.kosul);
+                    son_kol_daraltmasi = daraltma.clone();
+                    if let Some((tur_kodu, ad)) = &daraltma {
+                        daraltma_ekle(baglam, *tur_kodu, ad);
+                    }
                     let kapsam = kapsam_baslat(ortam);
-                    blok_denetle(&mut kol.govde, ortam, baglam)?;
+                    let sonuc = blok_denetle(&mut kol.govde, ortam, baglam);
+                    if let Some((tur_kodu, ad)) = &daraltma {
+                        daraltma_cikar_geri(baglam, *tur_kodu, ad);
+                    }
+                    sonuc?;
                     kapsam_bitir(ortam, &kapsam);
                 }
                 if let Some(blok) = degilse {
+                    // "X varsa ... değilse" dalında X boştur; "X yoksa ... değilse"
+                    // ve "başarısızsa ... değilse" dallarında TERSİ daraltılır.
+                    let ters = son_kol_daraltmasi
+                        .filter(|_| kollar.len() == 1)
+                        .and_then(|(kod, ad)| match kod {
+                            1 => None,             // varsa'nın değilse'si: boş
+                            2 => Some((1, ad)),    // yoksa'nın değilse'si: dolu
+                            3 => Some((4, ad)),    // başarılıysa'nın değilse'si: başarısız
+                            4 => Some((3, ad)),    // başarısızsa'nın değilse'si: başarılı
+                            _ => None,
+                        });
+                    if let Some((tur_kodu, ad)) = &ters {
+                        daraltma_ekle(baglam, *tur_kodu, ad);
+                    }
                     let kapsam = kapsam_baslat(ortam);
-                    blok_denetle(blok, ortam, baglam)?;
+                    let sonuc = blok_denetle(blok, ortam, baglam);
+                    if let Some((tur_kodu, ad)) = &ters {
+                        daraltma_cikar_geri(baglam, *tur_kodu, ad);
+                    }
+                    sonuc?;
                     kapsam_bitir(ortam, &kapsam);
                 }
             }
@@ -1219,9 +1309,44 @@ fn ifade_denetle(
         }
         Ifade::IcDeger(nesne) => {
             let tur = ifade_denetle(nesne, ortam, baglam, satir)?;
+            let ad = nesne_adi(nesne);
             match tur {
-                Tur::Secenek(e) => Ok(e.ture()),
-                Tur::Sonuc(e) => Ok(e.ture()),
+                Tur::Secenek(e) => {
+                    if let Some(ad) = ad {
+                        if !baglam.dolu_secenekler.contains(&ad) {
+                            return Err(Tani::yeni(
+                                "T036",
+                                format!(
+                                    "\"{}\" boş olabilir: değeri ancak \"varsa\" dalında alınır.",
+                                    ad
+                                ),
+                                satir,
+                                1,
+                                1,
+                            )
+                            .onerili(format!("Önce kontrol et: {} varsa", ad)));
+                        }
+                    }
+                    Ok(e.ture())
+                }
+                Tur::Sonuc(e) => {
+                    if let Some(ad) = ad {
+                        if !baglam.basarili_sonuclar.contains(&ad) {
+                            return Err(Tani::yeni(
+                                "T036",
+                                format!(
+                                    "\"{}\" başarısız olabilir: değeri ancak \"başarılıysa\" dalında alınır.",
+                                    ad
+                                ),
+                                satir,
+                                1,
+                                1,
+                            )
+                            .onerili(format!("Önce kontrol et: {} başarılıysa", ad)));
+                        }
+                    }
+                    Ok(e.ture())
+                }
                 baska => Err(Tani::yeni(
                     "T024",
                     format!("\"değeri\" bir Seçenek ya da Sonuç ister; burada {} var.", baska.adi()),
@@ -1233,6 +1358,23 @@ fn ifade_denetle(
         }
         Ifade::SonucHatasi(nesne) => {
             let tur = ifade_denetle(nesne, ortam, baglam, satir)?;
+            if matches!(tur, Tur::Sonuc(_)) {
+                if let Some(ad) = nesne_adi(nesne) {
+                    if !baglam.basarisiz_sonuclar.contains(&ad) {
+                        return Err(Tani::yeni(
+                            "T036",
+                            format!(
+                                "\"{}\" başarılı olabilir: hatası ancak \"başarısızsa\" dalında okunur.",
+                                ad
+                            ),
+                            satir,
+                            1,
+                            1,
+                        )
+                        .onerili(format!("Önce kontrol et: {} başarısızsa", ad)));
+                    }
+                }
+            }
             if !matches!(tur, Tur::Sonuc(_)) {
                 return Err(Tani::yeni(
                     "T024",

@@ -106,6 +106,7 @@ türetilmiştir; yeni kod eklenince bu dosya güncellenir — CI'a bağlanması 
 | T033 | Görev sonucuna erken erişim | Eşzamanlı görev adları `hepsini bekle`den sonra kullanılır (RFC-0011 §1) |
 | T034 | Ağ/süre/sunucu kalıbı tür uyuşmazlığı | Kapı TamSayı, yol/adres Metin, `içinde`/`bekle` Süre ister |
 | T035 | Özyinelemeden önce temel durum yok | Temel durumu üste yaz: önce bir dalda döndür, sonra özyinelemeli adım |
+| T036 | Korumasız Seçenek/Sonuç erişimi | `değeri` ancak `varsa`/`başarılıysa`, `hatası` ancak `başarısızsa` dalında (RFC-0008 §4.2) |
 
 ## C — Çalışma zamanı
 
@@ -119,7 +120,7 @@ türetilmiştir; yeni kod eklenince bu dosya güncellenir — CI'a bağlanması 
 | C005 | Soruya verilecek girdi kalmadı | Etkileşimsiz koşuda girdi sayısı sorulardan az |
 | C006 | Rastgele aralığı ters | Alt uç üstten büyük olamaz |
 | C007 | Boş listenin ilki/sonu | Önce `adedi` ile kontrol et |
-| C008 | Boş Seçenek'in değeri | Önce `varsa` ile kontrol et |
+| C008 | Boş Seçenek'in değeri (çalışma zamanı savunması) | Normalde T036 derlemede yakalar; görülürse bildir |
 | C009 | Sonuç'un yanlış tarafı | başarılıysa → değeri; değilse → hatası |
 | C010 | Sözlükte anahtar yok | Önce `sözlükte <anahtar> varsa` |
 | C011 | Biçimleyici token güvencesi bozuldu | Dosya yazılmadı; derleyici hatasıdır — bildir |
