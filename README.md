@@ -1,6 +1,9 @@
-# Türkçe Programlama Dili — çalışma adı: *zee* (belirlenecek)
+# zee — Türkçe Programlama Dili
 
 > "Türkçe düşün. Türkçe yaz. Makine kesin olarak anlasın."
+
+*Zeynep Eliz Erbay için. Bu dil, bir babanın kızına bıraktığı mirastır:
+kendi dilinde düşünüp kendi dilinde inşa edebilsin diye.*
 
 İlkokuldaki bir çocuğun başlayabileceği, profesyonelin bırakmak zorunda kalmayacağı,
 Türkçenin doğal akışına göre tasarlanmış **deterministik** genel amaçlı programlama dili.
@@ -10,7 +13,22 @@ Bu bir çeviri katmanı değildir (`if→eğer` makyajı yok); AI semantiğin pa
 - Master plan: [docs/master-plan.md](docs/master-plan.md) (kaynak: [docs/Turkce_Programlama_Dili_Master_Proje_Dokumani.docx](docs/Turkce_Programlama_Dili_Master_Proje_Dokumani.docx))
 - İlkeler: [MANIFESTO.md](MANIFESTO.md)
 
-## Durum: Faz 0 — Felsefe ve grammar discovery
+## Durum: Faz 1 — Interpreter (Faz 0 tamamlandı)
+
+**31 Ağustos 2026 — proje doğdu.** `merhaba.dil` kendi lexer → parser → tür
+denetimi → yorumlayıcı zincirimizden geçip çalıştı (master plan bölüm 41'deki
+ilk milestone). Bootstrap derleyici: [compiler/](compiler/) (Rust, sıfır bağımlılık).
+
+```bash
+cd compiler && cargo build && ./target/debug/dil çalıştır ../merhaba.dil
+```
+
+Çalışan golden programlar (regression testte): **01, 02, 03, 04, 05, 06** —
+Merhaba Dünya ve hesap makinesi dahil (v0.1 kabul listesindeki 4 programın 2'si).
+Desteklenen yüzey: `olsun`, `yaz`, `ile`, `ise/değilse` zinciri, `kez tekrarla`,
+aralık döngüsü, `olduğu sürece`, `artır/azalt`, `diye sor`/`yanıt`, genitif
+aritmetik ("a ile b nin toplamı"), "yanıtın sayısı", ek ayıklamalı ad çözümleme
+("sayacı" → "sayaç") ve Türkçe kodlu tanılar (S/A/T/C).
 
 Grammar masa başında tek seferde dondurulmaz. Önce **30 golden program** yazılır;
 sözdizimi bu gerçek kullanım örneklerinden çıkarılır. Her syntax değişikliği bu

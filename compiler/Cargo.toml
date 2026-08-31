@@ -1,0 +1,13 @@
+[package]
+name = "dil"
+version = "0.0.1"
+edition = "2021"
+description = "Türkçe programlama dili — bootstrap derleyici (Stage 0)"
+
+[[bin]]
+name = "dil"
+path = "src/main.rs"
+
+[lib]
+name = "dil"
+path = "src/lib.rs"
