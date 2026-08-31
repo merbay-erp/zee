@@ -1,0 +1,23 @@
+# Market Hesabı — sepetteki her şeyi topla, kdv ekle.
+# Öğretilen: ondalık para hesabı, liste gezme, işlem ve test yazma.
+
+işlem kdvli tutarı hesapla
+    tutarı al
+    kdv tutar ile 0,2 nin çarpımı olsun
+    sonucu tutar ile kdvnin toplamı olsun
+    sonucu döndür
+
+fiyatlar 12,50, 8,75, 24,90 listesi olsun
+
+toplam 0,0 olsun
+her fiyat için
+    toplamı fiyatla artır
+
+"Ara toplam: " ile toplam ile " lira" yaz
+
+ödenecek toplam için kdvli tutarı hesapla olsun
+"KDV dahil: " ile ödenecek ile " lira" yaz
+
+test "kdv beşte bir ekler"
+    x 100,0 için kdvli tutarı hesapla olsun
+    x 120,0 a eşit olmalı

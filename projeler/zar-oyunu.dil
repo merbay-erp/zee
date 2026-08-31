@@ -1,0 +1,31 @@
+# Zar Oyunu — sen mi büyük atarsın, bilgisayar mı?
+# Öğretilen: rastgele sayı, koşul zinciri, döngüyle tekrar.
+
+senin_puanın 0 olsun
+bilgisayarın_puanı 0 olsun
+
+3 kez tekrarla
+    senin_zarın 1 ile 6 arasında rastgele sayı olsun
+    bilgisayarın_zarı 1 ile 6 arasında rastgele sayı olsun
+
+    "Senin zarın: " ile senin_zarın yaz
+    "Bilgisayarın zarı: " ile bilgisayarın_zarı yaz
+
+    senin_zarın bilgisayarın_zarından büyükse
+        "Bu eli sen aldın!" yaz
+        senin_puanını 1 artır
+    değilse bilgisayarın_zarı senin_zarından büyükse
+        "Bu eli bilgisayar aldı" yaz
+        bilgisayarın_puanını 1 artır
+    değilse
+        "Berabere!" yaz
+
+"---" yaz
+"Sen: " ile senin_puanın ile " — Bilgisayar: " ile bilgisayarın_puanı yaz
+
+senin_puanın bilgisayarın_puanından büyükse
+    "Oyunu SEN kazandın!" yaz
+değilse bilgisayarın_puanı senin_puanından büyükse
+    "Oyunu bilgisayar kazandı" yaz
+değilse
+    "Oyun berabere bitti" yaz
