@@ -1,0 +1,11 @@
+# Golden 31'in kullandığı birim (RFC-0009: dosya = birim).
+
+işlem kdvli fiyatı hesapla
+    fiyatı al
+    kdv fiyat ile 0,2 nin çarpımı olsun
+    sonucu fiyat ile kdvnin toplamı olsun
+    sonucu döndür
+
+test "kdv doğru eklenir"
+    x 100,0 için kdvli fiyatı hesapla olsun
+    x 120,0 a eşit olmalı

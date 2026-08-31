@@ -1,0 +1,9 @@
+# 31 — Birimler (korpus genişletmesi, RFC-0009 §2)
+# Sınanan: "X birimini kullan" — tanımlar görünür, üst düzey kapsüllü,
+# birim testleri "dil dene" kapsamında.
+
+hesap_araclari birimini kullan
+
+etiket 49,90 olsun
+öde etiket için kdvli fiyatı hesapla olsun
+"Ödenecek: " ile öde ile " lira" yaz

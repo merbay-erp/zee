@@ -188,6 +188,20 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   kuralına aday: işlem adı `böl`/`al` ile bitmesin.
 - **Durum:** geçici — RFC-0008'de belgelendi, 10 testle sabit.
 
+## K-031 — Korpus tamamlandı ve genişledi (31 Ağu akşamı)
+
+- **Durum:** 30 golden programın 30'u da bootstrap zincirinden geçip
+  çalışıyor; korpus 32'ye genişledi (31 birimler, 32 ondalık market) ve
+  A11 (nokta-ondalık) anti-örneği eklendi.
+- **Revizyon:** golden 26, RFC-0011'in K-023 çözümüne göre yeniden yazıldı
+  (görev bağlamaları + hepsini bekle; bekle-öncesi erişim T033).
+- **v0 yaklaşımları (dürüst kayıt):** zaman aşımı erken iptal etmez, geç
+  kalmayı bildirir (RFC-0011 §3 notu); eşzamanlı blok tek iş parçacıklı
+  modelde sıralı yürür (gözlemsel eşdeğer, RFC-0011 §4); https yok (C018
+  tanısı yönlendirir); sunucu testte istek kuyruğuyla hermetik.
+- **bulgu:** birim adında tire kullanılamıyor (tanımlayıcı kuralı) —
+  "hesap-araclari" → "hesap_araclari". RFC-0009 dosya adı kuralına not.
+
 ## K-012 — Liste sabiti: `3, 7, 1, 9 listesi`
 
 - **Karar:** Virgülle ayrılmış değerler + `listesi`. Boş: `boş liste`.

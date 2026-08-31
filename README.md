@@ -24,8 +24,8 @@ ilk milestone). Bootstrap derleyici: [compiler/](compiler/) (Rust, sıfır bağ�
 cd compiler && cargo build && ./target/debug/dil çalıştır ../merhaba.dil
 ```
 
-Çalışan golden programlar (regression testte): **01–23, 28, 30** (30'da 24;
-kalan 24–27 ve 29 ağ/eşzamanlılık/donanım — Faz 5–6 stdlib işi) —
+Çalışan golden programlar (regression testte): **32'de 32 — KORPUSUN TAMAMI**
+(orijinal 30 + genişletme: 31 birimler, 32 ondalık market) —
 **v0.1 kabul listesindeki 4 program da çalışıyor.** Desteklenen yüzey: `olsun`,
 `yaz` (ekrana ve `dosyasına`), `ile`, `ise/değilse` zinciri, dört döngü,
 `artır/azalt`, `diye sor`/`yanıt`, rastgele sayı, genitif aritmetik, listeler
@@ -34,14 +34,17 @@ kalan 24–27 ve 29 ağ/eşzamanlılık/donanım — Faz 5–6 stdlib işi) —
 `Sonuç` (`dosyasını okumayı dene`, `başarılıysa`), dosya satırları/yazma,
 **işlem tanımı ve çağrısı** (K-016 geçici sözdizimi), **yapılar** (`yapı`,
 `yeni`, iyelik ekiyle alan erişimi), **desen eşleştirme** (`göre / ise`),
-CSV/JSON okuma, tarih/saat (Türkçe ay adları, `1 gün sonrası`), komut satırı
-argümanları + `programı bitir`, **test blokları** (`dil dene`, `... olmalı`
-doğrulaması beklenen/bulunan gösterir), üç mekanizmalı morfoloji (ek ayıklama +
-ünsüz yumuşaması + ünlü düşmesi geri çevrimi: sayacı→sayaç, şekle→şekil) ve
-Türkçe kodlu tanılar (S/A/T/C/D).
-VS Code eklentisi: [editors/vscode/](editors/vscode/).
-Determinizm testlerde de tam: rastgelelik, saat, dosyalar ve argümanlar IO
-soyutlamasından gelir; `dil dene` her testi taze ortam + hermetik IO ile koşar.
+CSV/JSON okuma, tarih/saat, komut satırı argümanları, **test blokları**
+(`dil dene`), **Ondalık** (3,14 — onluk tam aritmetik: 0,1+0,2=0,3),
+**Süre** (yarım saniye), **birimler** (`X birimini kullan`), **Sonuç dönüşü**
+(`hatasını döndür`), `ve/veya/değilse` mantığı, **HTTP istemcisi** ve
+**web sunucusu** (gerçek TCP; testlerde sahte), **eşzamanlı bloklar**
+(RFC-0011: bekle-öncesi erişim derleme hatası), **zaman aşımı**, **ESP32
+simülatörü**, üç mekanizmalı morfoloji ve 90+ Türkçe kodlu tanı.
+Araçlar: `dil çalıştır/denetle(--json, çoklu tanı)/dene/biçimle/hata/yeni` +
+**dillsp** LSP sunucusu ([editors/](editors/)).
+Determinizm testlerde tam: rastgelelik, saat, dosyalar, HTTP, sunucu istekleri,
+sensörler ve an ölçümü IO soyutlamasından gelir — 124 test hermetik koşar.
 
 Tarih arşivi: ilk README'ler [docs/tarih/](docs/tarih/) altında dondurulmuştur;
 `baslangic` ve `dogum` git etiketleri ilk commit'leri kalıcı işaretler.
