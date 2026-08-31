@@ -48,8 +48,9 @@ Araçlar: `dil çalıştır/denetle(--json, çoklu tanı)/dene/biçimle/hata/yen
 Determinizm testlerde tam: rastgelelik, saat, dosyalar, HTTP, sunucu istekleri,
 sensörler ve an ölçümü IO soyutlamasından gelir — 124 test hermetik koşar.
 
-Tarih arşivi: ilk README'ler [docs/tarih/](docs/tarih/) altında dondurulmuştur;
-`baslangic` ve `dogum` git etiketleri ilk commit'leri kalıcı işaretler.
+Uzak depo: **github.com/merbay-erp/zee** (özel; lisans seçilmeden — bölüm 26 —
+herkese açılmayacak, K-032). Tarih arşivi: ilk README'ler [docs/tarih/](docs/tarih/)
+altında dondurulmuştur; `baslangic` ve `dogum` etiketleri GitHub'a da itildi.
 
 ### v0.1 kabul kriterleri durumu (master plan bölüm 33)
 
@@ -60,8 +61,8 @@ Tarih arşivi: ilk README'ler [docs/tarih/](docs/tarih/) altında dondurulmuştu
 | Girinti blokları deterministik | ✅ (sekme/karışık girinti hatası testli) |
 | Temel type errors Türkçe ve kaynak konumlu | ✅ (S/A/T/C kodları + öneri) |
 | Formatter idempotent | ✅ `dil biçimle` — 30 golden dosyada idempotentlik testli |
-| Windows/macOS/Linux interpreter/CLI | 🔄 macOS'ta doğrulandı; CI matrisi hazır ([ci.yml](.github/workflows/ci.yml)) |
-| Golden corpus CI'da | ✅ cargo test + CI tanımı (uzak repoya itilince aktif) |
+| Windows/macOS/Linux interpreter/CLI | ✅ CI matrisi aktif — github.com/merbay-erp/zee (özel depo) |
+| Golden corpus CI'da | ✅ her push'ta 3 platformda koşuyor |
 | Kaynak kodda İngilizce keyword gerekmez | ✅ |
 
 Grammar masa başında tek seferde dondurulmaz. Önce **30 golden program** yazılır;
