@@ -120,6 +120,17 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             format!("\"{}\" dosyası okunamadı: {}", yol, hata)
         })
     }
+    fn dosya_yaz(&mut self, yol: &str, satir: &str, ekleme: bool) -> Result<(), String> {
+        use std::io::Write;
+        let sonuc = std::fs::OpenOptions::new()
+            .create(true)
+            .append(ekleme)
+            .write(true)
+            .truncate(!ekleme)
+            .open(yol)
+            .and_then(|mut dosya| writeln!(dosya, "{}", satir));
+        sonuc.map_err(|hata| format!("\"{}\" dosyasına yazılamadı: {}", yol, hata))
+    }
     fn rastgele(&mut self, alt: i64, ust: i64) -> i64 {
         // xorshift64*
         let mut x = self.tohum;

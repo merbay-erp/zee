@@ -17,6 +17,8 @@ pub trait GirdiCikti {
     fn rastgele(&mut self, alt: i64, ust: i64) -> i64;
     /// Dosya içeriğini okur; hata durumunda Türkçe hata metni döner.
     fn dosya_oku(&mut self, yol: &str) -> Result<String, String>;
+    /// Bir satırı dosyaya yazar (ekleme=false: baştan yaz; true: sona ekle).
+    fn dosya_yaz(&mut self, yol: &str, satir: &str, ekleme: bool) -> Result<(), String>;
 }
 
 /// Çıktıyı toplayan, girdiyi ve "rastgele" sayıları hazır kuyruktan veren IO
@@ -56,6 +58,15 @@ impl GirdiCikti for ToplayanIo {
             .get(yol)
             .cloned()
             .ok_or_else(|| format!("\"{}\" dosyası bulunamadı", yol))
+    }
+    fn dosya_yaz(&mut self, yol: &str, satir: &str, ekleme: bool) -> Result<(), String> {
+        let girdi = self.dosyalar.entry(yol.to_string()).or_default();
+        if !ekleme {
+            girdi.clear();
+        }
+        girdi.push_str(satir);
+        girdi.push('\n');
+        Ok(())
     }
 }
 
@@ -266,6 +277,27 @@ fn blok_calistir(
             Cumle::Azalt { ifade, miktar, satir } => {
                 guncelle(ifade, miktar, ortam, islemler, cikti, *satir, -1)?;
             }
+            Cumle::Gore { konu, kollar, degilse, satir } => {
+                let konu = degerlendir(konu, ortam, islemler, cikti, *satir)?;
+                let mut eslesti = false;
+                for (deger, govde) in kollar {
+                    let deger = degerlendir(deger, ortam, islemler, cikti, *satir)?;
+                    if deger == konu {
+                        if let Akis::Don(d) = blok_calistir(govde, ortam, islemler, cikti)? {
+                            return Ok(Akis::Don(d));
+                        }
+                        eslesti = true;
+                        break;
+                    }
+                }
+                if !eslesti {
+                    if let Some(blok) = degilse {
+                        if let Akis::Don(d) = blok_calistir(blok, ortam, islemler, cikti)? {
+                            return Ok(Akis::Don(d));
+                        }
+                    }
+                }
+            }
             Cumle::IslemTanimi(islem) => return Err(ic_hata(islem.satir)),
             Cumle::Dondur { deger, satir } => {
                 let sonuc = degerlendir(deger, ortam, islemler, cikti, *satir)?;
@@ -295,6 +327,16 @@ fn blok_calistir(
                 } else {
                     return Err(ic_hata(*satir));
                 }
+            }
+            Cumle::DosyayaYaz { yol, icerik, ekleme, satir } => {
+                let yol = match degerlendir(yol, ortam, islemler, cikti, *satir)? {
+                    Deger::Metin(m) => m,
+                    _ => return Err(ic_hata(*satir)),
+                };
+                let icerik = degerlendir(icerik, ortam, islemler, cikti, *satir)?.metne();
+                cikti.dosya_yaz(&yol, &icerik, *ekleme).map_err(|hata| {
+                    Tani::yeni("C013", format!("Dosyaya yazılamadı: {}.", hata), *satir, 1, 1)
+                })?;
             }
             Cumle::SozlukAta { sozluk, anahtar, deger, satir } => {
                 let ad = match sozluk {
@@ -533,6 +575,23 @@ fn degerlendir(
                 Ok(icerik) => Deger::Sonuc { basarili: true, icerik },
                 Err(hata) => Deger::Sonuc { basarili: false, icerik: hata },
             })
+        }
+        Ifade::DosyaSatirlari(yol) => {
+            let yol = match degerlendir(yol, ortam, islemler, io, satir)? {
+                Deger::Metin(m) => m,
+                _ => return Err(ic_hata(satir)),
+            };
+            let icerik = io.dosya_oku(&yol).map_err(|hata| {
+                Tani::yeni("C012", format!("Dosya okunamadı: {}.", hata), satir, 1, 1).onerili(
+                    "Hatası yönetilecekse \"... dosyasını okumayı dene\" ile Sonuç al.".into(),
+                )
+            })?;
+            Ok(Deger::Liste(
+                icerik
+                    .lines()
+                    .map(|satir| Deger::Metin(satir.to_string()))
+                    .collect(),
+            ))
         }
         Ifade::Rastgele { alt, ust } => {
             let alt = tam_sayi(degerlendir(alt, ortam, islemler, io, satir)?, satir)?;

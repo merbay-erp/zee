@@ -311,6 +311,40 @@ fn blok_denetle(
                 // Son cevap örtük "yanıt" adına Metin olarak bağlanır (K-007).
                 ortam.insert("yanıt".to_string(), Tur::Metin);
             }
+            Cumle::Gore { konu, kollar, degilse, satir } => {
+                let satir = *satir;
+                let konu_turu = ifade_denetle(konu, ortam, baglam, satir)?;
+                if konu_turu.veri_turu().is_none() {
+                    return Err(Tani::yeni(
+                        "T026",
+                        format!("\"göre\" eşleştirmesi TamSayı ya da Metin ister; burada {} var.", konu_turu.adi()),
+                        satir,
+                        1,
+                        1,
+                    ));
+                }
+                for (deger, govde) in kollar.iter_mut() {
+                    let kol_turu = ifade_denetle(deger, ortam, baglam, satir)?;
+                    if kol_turu != konu_turu {
+                        return Err(Tani::yeni(
+                            "T026",
+                            format!(
+                                "Eşleştirme kolu {} olmalı ({} ile karşılaştırılıyor); burada {} var.",
+                                konu_turu.adi(),
+                                konu_turu.adi(),
+                                kol_turu.adi()
+                            ),
+                            satir,
+                            1,
+                            1,
+                        ));
+                    }
+                    blok_denetle(govde, ortam, baglam, donusler, islem_icinde)?;
+                }
+                if let Some(blok) = degilse {
+                    blok_denetle(blok, ortam, baglam, donusler, islem_icinde)?;
+                }
+            }
             Cumle::IslemTanimi(islem) => {
                 // Hoist sonrası burada görünmemeli.
                 return Err(Tani::yeni(
@@ -395,6 +429,20 @@ fn blok_denetle(
                         1,
                     ));
                 }
+            }
+            Cumle::DosyayaYaz { yol, icerik, satir, .. } => {
+                let satir = *satir;
+                let yol_turu = ifade_denetle(yol, ortam, baglam, satir)?;
+                if yol_turu != Tur::Metin {
+                    return Err(Tani::yeni(
+                        "T025",
+                        format!("Dosya yolu Metin olmalı; burada {} var.", yol_turu.adi()),
+                        satir,
+                        1,
+                        1,
+                    ));
+                }
+                ifade_denetle(icerik, ortam, baglam, satir)?;
             }
             Cumle::CagriCumlesi { cagri, satir } => {
                 let satir = *satir;
@@ -639,6 +687,19 @@ fn ifade_denetle(
                 ));
             }
             Ok(Tur::Sonuc)
+        }
+        Ifade::DosyaSatirlari(yol) => {
+            let tur = ifade_denetle(yol, ortam, baglam, satir)?;
+            if tur != Tur::Metin {
+                return Err(Tani::yeni(
+                    "T025",
+                    format!("Dosya yolu Metin olmalı; burada {} var.", tur.adi()),
+                    satir,
+                    1,
+                    1,
+                ));
+            }
+            Ok(Tur::Liste(VeriTuru::Metin))
         }
         Ifade::Rastgele { alt, ust } => {
             for uc in [&mut **alt, &mut **ust] {
@@ -986,9 +1047,11 @@ fn kok_adaylari(ham: &str) -> Vec<String> {
                 continue;
             }
             adaylar.push(kok.to_string());
+
+            let karakterler: Vec<char> = kok.chars().collect();
+
             // Ünsüz yumuşaması geri çevrimi: sayacı→sayac→sayaç, kitabı→kitab→kitap,
             // yurdu→yurd→yurt, çocuğu→çocuğ→çocuk.
-            let mut karakterler: Vec<char> = kok.chars().collect();
             if let Some(son) = karakterler.last().copied() {
                 let sertlesmis = match son {
                     'c' => Some('ç'),
@@ -998,8 +1061,32 @@ fn kok_adaylari(ham: &str) -> Vec<String> {
                     _ => None,
                 };
                 if let Some(yeni) = sertlesmis {
-                    *karakterler.last_mut().unwrap() = yeni;
-                    adaylar.push(karakterler.into_iter().collect());
+                    let mut aday = karakterler.clone();
+                    *aday.last_mut().unwrap() = yeni;
+                    adaylar.push(aday.into_iter().collect());
+                }
+            }
+
+            // Ünlü düşmesi geri çevrimi: şekle→şekl→şekil, burnu→burn→burun,
+            // oğlu→oğl→oğul. Son iki harf ünsüzse araya uyumlu dar ünlü girer.
+            let n = karakterler.len();
+            if n >= 3 {
+                let unlu = |k: char| "aeıioöuüAEIİOÖUÜ".contains(k);
+                if !unlu(karakterler[n - 1]) && !unlu(karakterler[n - 2]) {
+                    if let Some(&onceki_unlu) =
+                        karakterler[..n - 2].iter().rev().find(|&&k| unlu(k))
+                    {
+                        let dar = match onceki_unlu {
+                            'a' | 'ı' => 'ı',
+                            'e' | 'i' => 'i',
+                            'o' | 'u' => 'u',
+                            'ö' | 'ü' => 'ü',
+                            _ => 'i',
+                        };
+                        let mut aday = karakterler.clone();
+                        aday.insert(n - 1, dar);
+                        adaylar.push(aday.into_iter().collect());
+                    }
                 }
             }
         }

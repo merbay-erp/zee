@@ -181,6 +181,35 @@ fn golden_16_sonuc_ve_hata() {
 }
 
 #[test]
+fn golden_17_dosya_okuma() {
+    let program = dil::kaynagi_derle(&golden("17-dosya-okuma.dil")).expect("17 derlenmeli");
+    let mut io = dil::yorumlayici::ToplayanIo::yeni(Vec::new());
+    io.dosyalar.insert("siir.txt".into(), "bir\niki\nüç\n".into());
+    dil::yorumlayici::calistir_io(&program, &mut io).expect("17 çalışmalı");
+    assert_eq!(io.cikti, vec!["bir", "iki", "üç", "Toplam 3 satır"]);
+}
+
+#[test]
+fn golden_18_dosya_yazma() {
+    let program = dil::kaynagi_derle(&golden("18-dosya-yazma.dil")).expect("18 derlenmeli");
+    let mut io = dil::yorumlayici::ToplayanIo::yeni(Vec::new());
+    dil::yorumlayici::calistir_io(&program, &mut io).expect("18 çalışmalı");
+    assert_eq!(io.cikti, vec!["Günlük kaydedildi"]);
+    assert_eq!(
+        io.dosyalar.get("günlük.txt").map(String::as_str),
+        Some("Bugün hava güzeldi\nYarın da güzel olsun\n")
+    );
+}
+
+#[test]
+fn olmayan_dosyanin_satirlari_turkce_hata() {
+    let kaynak = "satırlar \"yok.txt\" dosyasının satırları olsun\nsatırların adedi yaz\n";
+    let hata = kaynagi_calistir(kaynak).expect_err("olmayan dosya çalışma hatası olmalı");
+    assert_eq!(hata.kod, "C012");
+    assert!(hata.oneri.as_deref().unwrap_or("").contains("dene"));
+}
+
+#[test]
 fn turkce_buyuk_kucuk_harf_i_kurali() {
     // A07 anti-örneğindeki tuzak: i→İ, ı→I (İngilizce i→I DEĞİL).
     let kaynak = "ad \"izmir ılık\" olsun\nadın büyük harflisi yaz\nbaslik \"İZMİR ILIK\" olsun\nbasliğin küçük harflisi yaz\n";
@@ -193,6 +222,20 @@ fn bos_secenegin_degeri_calisma_hatasi() {
     let kaynak = "işlem hiç bulma\n    sayıyı al\n    sayı 0 dan küçükse\n        sayıyı döndür\n    yok döndür\n\nbulunan 5 için hiç bulma olsun\nbulunanın değeri yaz\n";
     let hata = kaynagi_calistir(kaynak).expect_err("boş Seçenek'in değeri hata olmalı");
     assert_eq!(hata.kod, "C008");
+}
+
+#[test]
+fn golden_23_desen_eslestirme() {
+    let cikti = kaynagi_calistir(&golden("23-desen-eslestirme.dil")).expect("23 çalışmalı");
+    assert_eq!(cikti, vec!["4 köşesi var"]);
+}
+
+#[test]
+fn unlu_dusmesi_geri_cevrimi() {
+    // "şekle göre" → şekil; "burnu yaz" → burun.
+    let kaynak = "burun 5 olsun\nburnu yaz\n";
+    let cikti = kaynagi_calistir(kaynak).expect("burnu → burun çözülmeli");
+    assert_eq!(cikti, vec!["5"]);
 }
 
 #[test]

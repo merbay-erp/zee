@@ -141,6 +141,7 @@ impl Ayristirici {
             Some("ekle") => self.ekle_ayristir(satir_tokenlari, satir_no),
             Some("döndür") => self.dondur_ayristir(satir_tokenlari, satir_no),
             Some("böl") => self.bol_ayristir(satir_tokenlari, satir_no),
+            Some("göre") => self.gore_ayristir(satir_tokenlari, satir_no),
             Some(k) if kosul_kelimesi(k) => self.ise_ayristir(satir_tokenlari, satir_no),
             _ => {
                 // Tanımlı bir işlem adına biten satır → çağrı cümlesi.
@@ -303,6 +304,14 @@ impl Ayristirici {
 
     fn yaz_ayristir(&mut self, mut tokenlar: Vec<Token>, satir: usize) -> Result<Cumle, Tani> {
         tokenlar.pop(); // "yaz"
+
+        // Hedefli yazma (K-019): `"X" dosyasına ... yaz`.
+        if tokenlar.len() >= 3 && kelime_mi(&tokenlar[1], "dosyasına") {
+            let yol = tekil_ifade(tokenlar[0].clone())?;
+            let icerik = ile_ifadesi(&tokenlar[2..], satir, &self.islem_adlari)?;
+            return Ok(Cumle::DosyayaYaz { yol, icerik, ekleme: false, satir });
+        }
+
         let deger = ile_ifadesi(&tokenlar, satir, &self.islem_adlari)?;
         Ok(Cumle::Yaz { deger, satir })
     }
@@ -506,6 +515,14 @@ impl Ayristirici {
 
     fn ekle_ayristir(&mut self, mut tokenlar: Vec<Token>, satir: usize) -> Result<Cumle, Tani> {
         tokenlar.pop(); // "ekle"
+
+        // Dosyanın sonuna ekleme (K-019): `"X" dosyasına ... ekle`.
+        if tokenlar.len() >= 3 && kelime_mi(&tokenlar[1], "dosyasına") {
+            let yol = tekil_ifade(tokenlar[0].clone())?;
+            let icerik = ile_ifadesi(&tokenlar[2..], satir, &self.islem_adlari)?;
+            return Ok(Cumle::DosyayaYaz { yol, icerik, ekleme: true, satir });
+        }
+
         if tokenlar.len() < 2 {
             return Err(Tani::yeni(
                 "S018",
@@ -519,6 +536,85 @@ impl Ayristirici {
         let hedef = tekil_ifade(tokenlar.remove(0))?;
         let deger = ile_ifadesi(&tokenlar, satir, &self.islem_adlari)?;
         Ok(Cumle::Ekle { hedef, deger, satir })
+    }
+
+    /// `<konu> a göre` — desen eşleştirme başlığı (K-021). Gövde kolları
+    /// `<değer> ise` başlıklı bloklardır; varsayılan kol `değilse`.
+    fn gore_ayristir(&mut self, mut tokenlar: Vec<Token>, satir: usize) -> Result<Cumle, Tani> {
+        tokenlar.pop(); // "göre"
+        // Yönelme eki konuya bitişik ("şekle") ya da sabit sonrası ayrık olabilir.
+        if let Some(t) = tokenlar.last() {
+            if matches!(&t.tur, TokenTur::Kelime(k) if AYRIK_EKLER.contains(&k.as_str())) {
+                tokenlar.pop();
+            }
+        }
+        if tokenlar.len() != 1 {
+            return Err(Tani::yeni(
+                "S024",
+                "Eşleştirme \"<konu> a göre\" biçiminde başlar.".into(),
+                satir,
+                1,
+                1,
+            )
+            .onerili("Örnek: şekle göre".into()));
+        }
+        let konu = tekil_ifade(tokenlar.pop().unwrap())?;
+
+        // Gövde: kollar.
+        match self.bak().tur {
+            TokenTur::Girinti => {
+                self.ilerle();
+            }
+            _ => {
+                return Err(Tani::yeni(
+                    "S007",
+                    "\"göre\" başlığından sonra girintili kollar bekleniyor.".into(),
+                    satir,
+                    1,
+                    1,
+                ))
+            }
+        }
+        self.derinlik += 1;
+
+        let mut kollar = Vec::new();
+        let mut degilse = None;
+        loop {
+            match &self.bak().tur {
+                TokenTur::Cikinti | TokenTur::DosyaSonu => break,
+                TokenTur::SatirSonu => {
+                    self.ilerle();
+                }
+                _ => {
+                    let kol_satiri = self.satir_oku();
+                    let kol_no = kol_satiri.first().map(|t| t.satir).unwrap_or(satir);
+                    if kol_satiri.len() == 1 && kelime_mi(&kol_satiri[0], "değilse") {
+                        degilse = Some(self.alt_blok(kol_no)?);
+                        continue;
+                    }
+                    if kol_satiri.len() == 2 && kelime_mi(&kol_satiri[1], "ise") {
+                        let deger = tekil_ifade(kol_satiri[0].clone())?;
+                        let govde = self.alt_blok(kol_no)?;
+                        kollar.push((deger, govde));
+                        continue;
+                    }
+                    return Err(Tani::yeni(
+                        "S024",
+                        "Eşleştirme kolu \"<değer> ise\" ya da \"değilse\" olmalı.".into(),
+                        kol_no,
+                        1,
+                        1,
+                    )
+                    .onerili("Örnek:\n    \"kare\" ise\n        \"4 köşesi var\" yaz".into()));
+                }
+            }
+        }
+
+        self.derinlik -= 1;
+        if let TokenTur::Cikinti = self.bak().tur {
+            self.ilerle();
+        }
+        Ok(Cumle::Gore { konu, kollar, degilse, satir })
     }
 
     fn sor_ayristir(&mut self, mut tokenlar: Vec<Token>, satir: usize) -> Result<Cumle, Tani> {
@@ -968,6 +1064,13 @@ fn yapili_kalip(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifade>
         && son == "dene"
     {
         return Ok(Some(Ifade::DosyaOkumayiDene(Box::new(tekil_ifade(
+            tokenlar[0].clone(),
+        )?))));
+    }
+
+    // "..." dosyasının satırları → Liste<Metin>.
+    if n == 3 && kelime(1) == Some("dosyasının") && son == "satırları" {
+        return Ok(Some(Ifade::DosyaSatirlari(Box::new(tekil_ifade(
             tokenlar[0].clone(),
         )?))));
     }

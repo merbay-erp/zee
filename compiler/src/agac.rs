@@ -97,6 +97,9 @@ pub enum Ifade {
     SonucBasarili { nesne: Box<Ifade>, olumsuz: bool },
     /// `"..." dosyasını okumayı dene` → Sonuç (K-018).
     DosyaOkumayiDene(Box<Ifade>),
+    /// `"..." dosyasının satırları` → Liste<Metin>. Düz biçim: hata anında
+    /// Türkçe çalışma hatası verir (Sonuç isteyen "dene" kullanır — K-018).
+    DosyaSatirlari(Box<Ifade>),
     /// Genitif aritmetik (K-008): "a ile b nin toplamı", "x in y ye bölümü".
     Aritmetik {
         islec: AritmetikIslec,
@@ -181,6 +184,13 @@ pub enum Cumle {
         govde: Vec<Cumle>,
         satir: usize,
     },
+    /// `<konu> a göre` + `<değer> ise` kolları + isteğe bağlı `değilse` (K-021).
+    Gore {
+        konu: Ifade,
+        kollar: Vec<(Ifade, Vec<Cumle>)>,
+        degilse: Option<Vec<Cumle>>,
+        satir: usize,
+    },
     /// `işlem <ad>` tanımı — hoist ile Program.islemler'e taşınır.
     IslemTanimi(Islem),
     /// `sonucu döndür` — yalnız işlem içinde geçerli.
@@ -199,6 +209,14 @@ pub enum Cumle {
         sozluk: Ifade,
         anahtar: Ifade,
         deger: Ifade,
+        satir: usize,
+    },
+    /// `"X" dosyasına ... yaz/ekle` — hedefli yazma (K-019).
+    /// `ekleme` true ise sona ekler, değilse dosyayı baştan yazar.
+    DosyayaYaz {
+        yol: Ifade,
+        icerik: Ifade,
+        ekleme: bool,
         satir: usize,
     },
 }
