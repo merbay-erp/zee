@@ -378,6 +378,20 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
 - **Test:** koleksiyon_testi::kalan_kalibi_okul_kurali; asal projesi artık
   gerçek kalıbı kullanıyor.
 
+## K-047 — Çocuk modu: `dil çalıştır --güvenli`
+
+- **Karar:** Master plan bölüm 16'nın sandbox maddesi: `--güvenli` bayrağıyla
+  ağ ve sunucu tamamen kapalı (Türkçe hata), dosya erişimi çalışma klasörüyle
+  sınırlı (mutlak yol ve `..` kesilir). Gerçekleme IO katmanında sargıdır
+  (GuvenliIo) — dil çekirdeğine tek satır dokunulmadı; sargı HER IO'yu
+  sarabilir, testleri hermetiktir.
+- **İncelik:** sargının hatası sıradan IO hatasıdır: `... okumayı dene`
+  onu Sonuç'a çevirir — çocuk modunda bile hata YÖNETİLEBİLİR kalır.
+- **Sınır bilinci:** bu bir süreç-düzeyi hapishane değildir (işletim sistemi
+  izolasyonu Faz sonrası); okul senaryosundaki "yanlışlıkla dışarı yazma /
+  ağa çıkma" sınıfını kapatır. Playground zaten en katı sandbox'tır.
+- **Test:** guvenli_testi.rs (6 test).
+
 ## K-012 — Liste sabiti: `3, 7, 1, 9 listesi`
 
 - **Karar:** Virgülle ayrılmış değerler + `listesi`. Boş: `boş liste`.

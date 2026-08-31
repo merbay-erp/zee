@@ -81,6 +81,7 @@ internet gerekmez, katalog `dil`in içindedir.
 |---|---|
 | `dil yeni <ad>` | testli başlangıç projesi kurar |
 | `dil çalıştır <dosya>` | programı çalıştırır (`dil çalıştır oyun.dil Ali Ayşe` → argümanlar programa gider) |
+| `dil çalıştır --güvenli <dosya>` | çocuk modu: ağ kapalı, dosyalar programın klasörüyle sınırlı |
 | `dil dene <dosya>` | `test "..."` bloklarını koşar |
 | `dil biçimle <dosya>` | kodu resmi biçime getirir (girinti, boşluklar) |
 | `dil denetle <dosya>` | çalıştırmadan hata arar (`--json`: makine çıktısı) |

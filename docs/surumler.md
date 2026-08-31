@@ -10,9 +10,13 @@ sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
   eklemeyle türlenir; metin listeleri ve metin sözlükleri artık kurulabilir.
   KIRICI: hiç eklenmemiş boş listenin `ilki` artık derleme hatası (T014;
   eskiden çalışma anında C007).
+- **Çocuk modu** (K-047): `dil çalıştır --güvenli` — ağ/sunucu kapalı,
+  dosyalar çalışma klasörüyle sınırlı; hata `dene` ile yönetilebilir.
 - **Kalan işlemi** (K-046): `17 nin 5 e bölümünden kalanı` — okul kuralı,
   kalan hiç negatif olmaz.
 - **Zamir n'si morfolojisi** (K-041): `bilgisayarın_zarından` çözülür.
+- **VS Code**: elle yazılmış LSP istemcisi (npm'siz) — canlı tanılar,
+  hover, tanıma git, tamamlama editörde. ADR-008 (self-hosting aşamaları) kabul.
 - dillsp: hover (Türkçe açıklama) + tanıma git. Performans arşivi
   (docs/olcumler.md) ve `olcum` koşucusu. Proje kitaplığı 8 projeye çıktı.
 

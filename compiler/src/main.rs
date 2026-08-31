@@ -5,7 +5,7 @@
 use std::process::ExitCode;
 
 fn main() -> ExitCode {
-    // Derinlik sınırına (C019, 1000) kadar özyineleme her platformda doğal
+    // Derinlik sınırına (C019, 500) kadar özyineleme her platformda doğal
     // yığını taşırmamalı; Windows ana iş parçacığı 1 MB olduğundan iş
     // 32 MB yığınlı bir iş parçacığında koşar (K-040).
     std::thread::Builder::new()
@@ -18,10 +18,19 @@ fn main() -> ExitCode {
 }
 
 fn govde() -> ExitCode {
-    let argumanlar: Vec<String> = std::env::args().skip(1).collect();
+    let mut argumanlar: Vec<String> = std::env::args().skip(1).collect();
+    // Çocuk modu (K-047): --güvenli bayrağı komuttan bağımsız yakalanır.
+    let guvenli = argumanlar.iter().any(|a| a == "--güvenli" || a == "--guvenli");
+    argumanlar.retain(|a| a != "--güvenli" && a != "--guvenli");
 
     match argumanlar.first().map(|s| s.as_str()) {
-        Some("çalıştır") | Some("calistir") => dosya_ile(&argumanlar, calistir_komutu),
+        Some("çalıştır") | Some("calistir") => {
+            if guvenli {
+                dosya_ile(&argumanlar, calistir_guvenli_komutu)
+            } else {
+                dosya_ile(&argumanlar, calistir_komutu)
+            }
+        }
         Some("denetle") => denetle_yolu(&argumanlar),
         Some("biçimle") | Some("bicimle") => bicimle_komutu(&argumanlar),
         Some("dene") => dosya_ile(&argumanlar, dene_komutu),
@@ -43,6 +52,7 @@ fn kullanim() {
     eprintln!("Kullanım:");
     eprintln!("  dil yeni <ad>              yeni proje klasörü oluşturur");
     eprintln!("  dil çalıştır <dosya.dil>   programı çalıştırır");
+    eprintln!("  dil çalıştır --güvenli ... çocuk modu: ağ kapalı, dosyalar klasörle sınırlı");
     eprintln!("  dil denetle <dosya.dil>    çalıştırmadan denetler (--json: makine çıktısı)");
     eprintln!("  dil dene <dosya.dil>       test bloklarını koşar");
     eprintln!("  dil biçimle <dosya.dil>    dosyayı resmi biçime getirir");
@@ -411,6 +421,19 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
 }
 
 fn calistir_komutu(kaynak: &str, klasor: &std::path::Path) -> ExitCode {
+    calistir_io_ile(kaynak, klasor, &mut GercekIo::yeni())
+}
+
+/// Çocuk modu (K-047): ağ/sunucu kapalı, dosyalar çalışma klasörüyle sınırlı.
+fn calistir_guvenli_komutu(kaynak: &str, klasor: &std::path::Path) -> ExitCode {
+    calistir_io_ile(kaynak, klasor, &mut dil::yorumlayici::GuvenliIo::yeni(GercekIo::yeni()))
+}
+
+fn calistir_io_ile(
+    kaynak: &str,
+    klasor: &std::path::Path,
+    io: &mut dyn dil::yorumlayici::GirdiCikti,
+) -> ExitCode {
     let mut yukleyici = birim_yukleyici(klasor);
     let program = match dil::kaynagi_derle_birimlerle(kaynak, &mut yukleyici) {
         Ok(program) => program,
@@ -419,7 +442,7 @@ fn calistir_komutu(kaynak: &str, klasor: &std::path::Path) -> ExitCode {
             return ExitCode::FAILURE;
         }
     };
-    match dil::yorumlayici::calistir_io(&program, &mut GercekIo::yeni()) {
+    match dil::yorumlayici::calistir_io(&program, io) {
         Ok(()) => ExitCode::SUCCESS,
         Err(tani) => {
             eprint!("{}", tani.raporla(kaynak));
