@@ -4,3 +4,4 @@
 [toolchain]
 channel = "1.93.1"
 components = ["clippy"]
+targets = ["wasm32-unknown-unknown"]  # playground derlemesi

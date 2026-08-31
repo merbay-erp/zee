@@ -22,6 +22,7 @@ jobs:
         with:
           toolchain: 1.93.1
           components: clippy
+          targets: wasm32-unknown-unknown
       - name: Testler (golden korpus + biçimleyici)
         working-directory: compiler
         run: cargo test --locked || cargo test
@@ -40,3 +41,8 @@ jobs:
       - name: Milestone dosyası çalışıyor
         working-directory: compiler
         run: cargo run -- çalıştır ../merhaba.dil
+      # Playground çekirdeği wasm hedefinde derlenmeye devam etmeli (K-039).
+      - name: Playground (wasm) derlenir
+        if: matrix.os == 'ubuntu-latest'
+        working-directory: compiler
+        run: cargo build --release --target wasm32-unknown-unknown --lib

@@ -1,5 +1,11 @@
 # 5 dakikada başla
 
+## 0. Kurulumsuz yol: playground
+
+Hiçbir şey kurmadan denemek istersen: `playground/zee-playground.html`
+dosyasını çift tıkla — derleyici sayfanın içinde, tarayıcıda yaz-çalıştır.
+(Dosya depoda yoksa `playground/olustur.sh` ile bir kez üret.)
+
 ## 1. Kur (bir kez)
 
 ```bash
