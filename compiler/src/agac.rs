@@ -141,6 +141,8 @@ pub enum Ifade {
     GunSonrasi { tarih: Box<Ifade>, miktar: Box<Ifade> },
     /// `komut satırından gelenler` → Liste<Metin>.
     KomutArgumanlari,
+    /// Süre sabiti: `5 saniye`, `yarım saniye`, `1,5 dakika` → milisaniye.
+    SureSabiti { milisaniye: i64 },
     /// `argümanlar boşsa` — liste/metin boş mu.
     BosMu { nesne: Box<Ifade>, olumsuz: bool },
     /// Genitif aritmetik (K-008): "a ile b nin toplamı", "x in y ye bölümü".
@@ -153,6 +155,10 @@ pub enum Ifade {
     Sayisi(Box<Ifade>),
     /// Metinden ondalığa dönüşüm (RFC-0013): "yanıtın ondalığı".
     Ondaligi(Box<Ifade>),
+    /// `yanıtın sayısını almayı dene` → Sonuç<TamSayı> (RFC-0008 §4.3).
+    SayiyiDene(Box<Ifade>),
+    /// `yanıtın ondalığını almayı dene` → Sonuç<Ondalık>.
+    OndaligiDene(Box<Ifade>),
     /// "yeni Öğrenci" — alanları varsayılan değerli yeni yapı örneği (K-020).
     YeniYapi { yapi_adi: String },
     /// "ayşenin adı" — iyelik ekiyle alan okuma (K-020). `alan` ham yazımdır

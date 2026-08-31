@@ -104,6 +104,8 @@ pub enum Deger {
     Yapi(Vec<(String, Deger)>),
     Tarih { yil: i64, ay: u32, gun: u32 },
     Saat { saat: u32, dakika: u32 },
+    /// Milisaniye cinsinden süre.
+    Sure { milisaniye: i64 },
 }
 
 const AY_ADLARI: [&str; 12] = [
@@ -156,6 +158,25 @@ impl Deger {
                 format!("{} {} {}", gun, AY_ADLARI[(*ay as usize).saturating_sub(1) % 12], yil)
             }
             Deger::Saat { saat, dakika } => format!("{:02}:{:02}", saat, dakika),
+            Deger::Sure { milisaniye } => {
+                let ms = *milisaniye;
+                if ms % 3_600_000 == 0 {
+                    format!("{} saat", ms / 3_600_000)
+                } else if ms % 60_000 == 0 {
+                    format!("{} dakika", ms / 60_000)
+                } else if ms % 1000 == 0 {
+                    format!("{} saniye", ms / 1000)
+                } else {
+                    // Küsuratlı: saniye cinsinden ondalık basım (1500 → "1,5 saniye").
+                    let mut govde = ms;
+                    let mut olcek = 3u32;
+                    while olcek > 1 && govde % 10 == 0 {
+                        govde /= 10;
+                        olcek -= 1;
+                    }
+                    format!("{} saniye", Deger::Ondalik { govde, olcek }.metne())
+                }
+            }
         }
     }
 }
@@ -586,6 +607,17 @@ fn sayisal_islem(
     sag: &Deger,
     satir: usize,
 ) -> Result<Deger, Tani> {
+    // Süre + Süre (checker yalnız topla/çıkar bırakır).
+    if let (Deger::Sure { milisaniye: a }, Deger::Sure { milisaniye: b }) = (sol, sag) {
+        let sonuc = match islec {
+            AritmetikIslec::Topla => a.checked_add(*b),
+            AritmetikIslec::Cikar => a.checked_sub(*b),
+            _ => return Err(ic_hata(satir)),
+        }
+        .ok_or_else(|| tasma(satir))?;
+        return Ok(Deger::Sure { milisaniye: sonuc });
+    }
+
     let her_iki_tam = matches!((sol, sag), (Deger::TamSayi(_), Deger::TamSayi(_)));
     let a = sayisal_ac(sol).ok_or_else(|| ic_hata(satir))?;
     let b = sayisal_ac(sag).ok_or_else(|| ic_hata(satir))?;
@@ -792,6 +824,7 @@ fn degerlendir(
             let (_, _, _, saat, dakika) = io.simdi();
             Ok(Deger::Saat { saat, dakika })
         }
+        Ifade::SureSabiti { milisaniye } => Ok(Deger::Sure { milisaniye: *milisaniye }),
         Ifade::KomutArgumanlari => Ok(Deger::Liste(
             io.argumanlar().into_iter().map(Deger::Metin).collect(),
         )),
@@ -976,6 +1009,17 @@ fn degerlendir(
             let sag = degerlendir(sag, ortam, program, io, satir)?;
             // Sayısal çift değer üzerinden hizalanarak karşılaştırılır
             // (2 = 2,0 doğrudur; 1,5 < 2 çalışır — RFC-0013 §2).
+            if let (Deger::Sure { milisaniye: a }, Deger::Sure { milisaniye: b }) = (&sol, &sag)
+            {
+                let sonuc = match islec {
+                    Islec::Esit => a == b,
+                    Islec::Buyuk => a > b,
+                    Islec::Kucuk => a < b,
+                    Islec::BuyukEsit => a >= b,
+                    Islec::KucukEsit => a <= b,
+                };
+                return Ok(Deger::Mantiksal(sonuc));
+            }
             let sonuc = match (sayisal_ac(&sol), sayisal_ac(&sag)) {
                 (Some(a), Some(b)) => {
                     let (ga, gb, _) = hizala(a, b);
@@ -1028,6 +1072,64 @@ fn degerlendir(
             }
             islem_cagir(islem_adi, degerler, program, io, satir)?
                 .ok_or_else(|| ic_hata(satir))
+        }
+        Ifade::SayiyiDene(ic) => {
+            let metin = match degerlendir(ic, ortam, program, io, satir)? {
+                Deger::Metin(m) => m,
+                _ => return Err(ic_hata(satir)),
+            };
+            let kirpilmis = metin.trim();
+            Ok(match kirpilmis.parse::<i64>() {
+                Ok(sayi) => Deger::Sonuc {
+                    basarili: true,
+                    icerik: Box::new(Deger::TamSayi(sayi)),
+                },
+                Err(_) => Deger::Sonuc {
+                    basarili: false,
+                    icerik: Box::new(Deger::Metin(format!(
+                        "\"{}\" sayıya çevrilemedi",
+                        kirpilmis
+                    ))),
+                },
+            })
+        }
+        Ifade::OndaligiDene(ic) => {
+            let metin = match degerlendir(ic, ortam, program, io, satir)? {
+                Deger::Metin(m) => m,
+                _ => return Err(ic_hata(satir)),
+            };
+            let kirpilmis = metin.trim().to_string();
+            let deneme = (|| {
+                let (tam, kesir) = match kirpilmis.split_once(',') {
+                    Some((tam, kesir)) => (tam, kesir),
+                    None => (kirpilmis.as_str(), "0"),
+                };
+                if tam.is_empty()
+                    || kesir.is_empty()
+                    || kesir.len() > 9
+                    || !tam.chars().all(|k| k.is_ascii_digit())
+                    || !kesir.chars().all(|k| k.is_ascii_digit())
+                {
+                    return None;
+                }
+                let olcek = kesir.len() as u32;
+                let govde = tam
+                    .parse::<i128>()
+                    .ok()?
+                    .checked_mul(10i128.pow(olcek))?
+                    .checked_add(kesir.parse::<i128>().ok()?)?;
+                ondalik_yap(govde, olcek, satir).ok()
+            })();
+            Ok(match deneme {
+                Some(deger) => Deger::Sonuc { basarili: true, icerik: Box::new(deger) },
+                None => Deger::Sonuc {
+                    basarili: false,
+                    icerik: Box::new(Deger::Metin(format!(
+                        "\"{}\" ondalığa çevrilemedi",
+                        kirpilmis
+                    ))),
+                },
+            })
         }
         Ifade::Ondaligi(ic) => {
             let metin = match degerlendir(ic, ortam, program, io, satir)? {

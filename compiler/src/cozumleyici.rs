@@ -84,6 +84,8 @@ pub enum Tur {
     Yapi(usize),
     Tarih,
     Saat,
+    /// Milisaniye hassasiyetli süre (RFC-0011/0013).
+    Sure,
 }
 
 impl Tur {
@@ -102,6 +104,7 @@ impl Tur {
             Tur::Yapi(_) => "Yapı".into(),
             Tur::Tarih => "Tarih".into(),
             Tur::Saat => "Saat".into(),
+            Tur::Sure => "Süre".into(),
         }
     }
 
@@ -902,6 +905,7 @@ fn ifade_denetle(
         Ifade::BugununTarihi => Ok(Tur::Tarih),
         Ifade::SuAninSaati => Ok(Tur::Saat),
         Ifade::KomutArgumanlari => Ok(Tur::Liste(VeriTuru::Metin)),
+        Ifade::SureSabiti { .. } => Ok(Tur::Sure),
         Ifade::GunSonrasi { tarih, miktar } => {
             let tarih_turu = ifade_denetle(tarih, ortam, baglam, satir)?;
             if tarih_turu != Tur::Tarih {
@@ -1114,7 +1118,8 @@ fn ifade_denetle(
             let sol_tur = ifade_denetle(sol, ortam, baglam, satir)?;
             let sag_tur = ifade_denetle(sag, ortam, baglam, satir)?;
             let esitlik = *islec == Islec::Esit;
-            if !esitlik && (!sol_tur.sayisal() || !sag_tur.sayisal()) {
+            let iki_sure = sol_tur == Tur::Sure && sag_tur == Tur::Sure;
+            if !esitlik && !iki_sure && (!sol_tur.sayisal() || !sag_tur.sayisal()) {
                 let sorunlu = if !sol_tur.sayisal() { sol_tur } else { sag_tur };
                 return Err(Tani::yeni(
                     "T001",
@@ -1185,7 +1190,38 @@ fn ifade_denetle(
             }
             Ok(Tur::Mantiksal)
         }
-        Ifade::Aritmetik { sol, sag, .. } => {
+        Ifade::Aritmetik { islec, sol, sag } => {
+            // Süre + Süre: yalnız toplama/çıkarma (RFC-0011).
+            {
+                let sol_on = ifade_denetle(sol, ortam, baglam, satir)?;
+                let sag_on = ifade_denetle(sag, ortam, baglam, satir)?;
+                if sol_on == Tur::Sure || sag_on == Tur::Sure {
+                    if sol_on != Tur::Sure || sag_on != Tur::Sure {
+                        return Err(Tani::yeni(
+                            "T008",
+                            format!(
+                                "Süre yalnız süreyle toplanıp çıkarılır; burada {} ile {} var.",
+                                sol_on.adi(),
+                                sag_on.adi()
+                            ),
+                            satir,
+                            1,
+                            1,
+                        ));
+                    }
+                    return match islec {
+                        crate::agac::AritmetikIslec::Topla
+                        | crate::agac::AritmetikIslec::Cikar => Ok(Tur::Sure),
+                        _ => Err(Tani::yeni(
+                            "T008",
+                            "Süre çarpılamaz ve bölünemez (v0).".into(),
+                            satir,
+                            1,
+                            1,
+                        )),
+                    };
+                }
+            }
             let mut ondalik_var = false;
             for taraf in [&mut **sol, &mut **sag] {
                 let tur = ifade_denetle(taraf, ortam, baglam, satir)?;
@@ -1218,6 +1254,32 @@ fn ifade_denetle(
                 ));
             }
             Ok(Tur::TamSayi)
+        }
+        Ifade::SayiyiDene(ic) => {
+            let tur = ifade_denetle(ic, ortam, baglam, satir)?;
+            if tur != Tur::Metin {
+                return Err(Tani::yeni(
+                    "T009",
+                    format!("\"almayı dene\" kalıbı Metin ister; burada {} var.", tur.adi()),
+                    satir,
+                    1,
+                    1,
+                ));
+            }
+            Ok(Tur::Sonuc(VeriTuru::TamSayi))
+        }
+        Ifade::OndaligiDene(ic) => {
+            let tur = ifade_denetle(ic, ortam, baglam, satir)?;
+            if tur != Tur::Metin {
+                return Err(Tani::yeni(
+                    "T009",
+                    format!("\"almayı dene\" kalıbı Metin ister; burada {} var.", tur.adi()),
+                    satir,
+                    1,
+                    1,
+                ));
+            }
+            Ok(Tur::Sonuc(VeriTuru::Ondalik))
         }
         Ifade::Ondaligi(ic) => {
             let tur = ifade_denetle(ic, ortam, baglam, satir)?;

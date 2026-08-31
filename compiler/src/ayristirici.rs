@@ -563,7 +563,12 @@ impl Ayristirici {
         tokenlar.pop(); // "olsun"
 
         // Sözlüğe yazma: `yaşların "Ayşe" değeri 10 olsun` (K-015).
-        if tokenlar.len() >= 4 && kelime_mi(&tokenlar[2], "değeri") {
+        // Ayrım: "değeri"nden sonra "ile" geliyorsa bu bir sözlük ataması değil,
+        // değeri `X in değeri ile ...` zinciri olan normal bir tanımdır.
+        if tokenlar.len() >= 4
+            && kelime_mi(&tokenlar[2], "değeri")
+            && !kelime_mi(&tokenlar[3], "ile")
+        {
             let sozluk = tekil_ifade(tokenlar[0].clone())?;
             let anahtar = tekil_ifade(tokenlar[1].clone())?;
             let deger = ile_ifadesi(&tokenlar[3..], satir, &self.islem_adlari)?;
@@ -1437,6 +1442,16 @@ fn yapili_kalip(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifade>
         }
     }
 
+    // W ın sayısını/ondalığını almayı dene → Sonuç (RFC-0008 §4.3: mastar + dene).
+    if n == 4 && kelime(2) == Some("almayı") && son == "dene" {
+        if kelime(1) == Some("sayısını") {
+            return Ok(Some(Ifade::SayiyiDene(Box::new(tekil_ifade(tokenlar[0].clone())?))));
+        }
+        if kelime(1) == Some("ondalığını") {
+            return Ok(Some(Ifade::OndaligiDene(Box::new(tekil_ifade(tokenlar[0].clone())?))));
+        }
+    }
+
     // "..." dosyasını okumayı dene → Sonuç.
     if n == 4
         && kelime(1) == Some("dosyasını")
@@ -1482,6 +1497,41 @@ fn yapili_kalip(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifade>
             tarih: Box::new(tekil_ifade(tokenlar[0].clone())?),
             miktar: Box::new(tekil_ifade(tokenlar[1].clone())?),
         }));
+    }
+
+    // Süre sabiti: <sayı|ondalık|yarım> saniye/dakika/saat (RFC-0011/0013).
+    if n == 2 {
+        let katsayi = match son {
+            "saniye" => Some(1000i128),
+            "dakika" => Some(60_000i128),
+            "saat" => Some(3_600_000i128),
+            _ => None,
+        };
+        if let Some(katsayi) = katsayi {
+            let milisaniye: Option<i128> = match &tokenlar[0].tur {
+                TokenTur::TamSayi(s) if *s >= 0 => Some(*s as i128 * katsayi),
+                TokenTur::Ondalik { govde, olcek } if *govde >= 0 => {
+                    let payda = 10i128.pow(*olcek);
+                    let pay = *govde as i128 * katsayi;
+                    // Yarımdan yukarı yuvarla (milisaniyeye).
+                    Some((2 * pay + payda) / (2 * payda))
+                }
+                TokenTur::Kelime(k) if k == "yarım" => Some(katsayi / 2),
+                _ => None,
+            };
+            if let Some(ms) = milisaniye {
+                let ms = i64::try_from(ms).map_err(|_| {
+                    Tani::yeni(
+                        "S006",
+                        "Süre değeri sınırı aşıyor.".into(),
+                        tokenlar[0].satir,
+                        tokenlar[0].sutun,
+                        tokenlar[0].uzunluk,
+                    )
+                })?;
+                return Ok(Some(Ifade::SureSabiti { milisaniye: ms }));
+            }
+        }
     }
 
     // yeni <Yapı> — yeni yapı örneği (K-020).
@@ -1545,22 +1595,27 @@ fn yapili_kalip(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifade>
         _ => None,
     };
     if let Some(islec) = toplama_islec {
-        // [X, ile, Y, op] — Y'nin tamlayan eki bitişik; ya da
-        // [X, ile, Y, ek, op] — sabitlerde ek ayrık (K-011).
-        let uygun = (n == 4 && kelime(1) == Some("ile"))
-            || (n == 5
-                && kelime(1) == Some("ile")
-                && kelime(3).map(|e| TAMLAYAN_EKLER.contains(&e)).unwrap_or(false));
-        if uygun {
-            let sol = tekil_ifade(tokenlar[0].clone())?;
-            let sag = tekil_ifade(tokenlar[2].clone())?;
-            return Ok(Some(Ifade::Aritmetik {
-                islec,
-                sol: Box::new(sol),
-                sag: Box::new(sag),
-            }));
-        }
-        return Ok(None);
+        // Kalıp SONDAN çözülür: [SOL-BÖLGE, ile, Y, op] ya da
+        // [SOL-BÖLGE, ile, Y, tamlayan-ek, op] (sabitlerde ek ayrık, K-011).
+        // Sol taraf çok tokenli olabilir ("denemenin değeri ile 2 nin çarpımı").
+        let (ile_indeksi, sag_indeksi) = if n >= 4 && kelime(n - 3) == Some("ile") {
+            (n - 3, n - 2)
+        } else if n >= 5
+            && kelime(n - 4) == Some("ile")
+            && kelime(n - 2).map(|e| TAMLAYAN_EKLER.contains(&e)).unwrap_or(false)
+        {
+            (n - 4, n - 3)
+        } else {
+            return Ok(None);
+        };
+        let satir = tokenlar[0].satir;
+        let sol = bolge_ifadesi(&tokenlar[..ile_indeksi], satir, islemler)?;
+        let sag = tekil_ifade(tokenlar[sag_indeksi].clone())?;
+        return Ok(Some(Ifade::Aritmetik {
+            islec,
+            sol: Box::new(sol),
+            sag: Box::new(sag),
+        }));
     }
 
     // X in Y ye bölümü
