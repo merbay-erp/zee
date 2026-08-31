@@ -11,22 +11,124 @@ pub mod sozcukleyici;
 pub mod tani;
 pub mod yorumlayici;
 
-use agac::{Cumle, Program};
+use agac::{Cumle, Islem, Program, Test, Yapi};
+use std::collections::HashMap;
 use tani::Tani;
 
-/// Kaynağı çalıştırılabilir programa derler (sözcükle + ayrıştır + denetle).
-/// İşlem tanımları Program.islemler'e kaldırılır (hoist).
-pub fn kaynagi_derle(kaynak: &str) -> Result<Program, Tani> {
-    let tokenlar = sozcukleyici::sozcukle(kaynak)?;
-    let cumleler = ayristirici::ayristir(tokenlar)?;
+/// Birim yükleyici: birim adını kaynak metne çevirir (RFC-0009). CLI gerçek
+/// dosya sisteminden okur; testler sahte tablodan verir — birim çözümü de
+/// determinizm ilkesine uyar.
+pub type BirimYukleyici<'a> = dyn FnMut(&str) -> Result<String, String> + 'a;
 
-    let mut islemler = std::collections::HashMap::new();
-    let mut yapilar: Vec<agac::Yapi> = Vec::new();
-    let mut testler: Vec<agac::Test> = Vec::new();
+/// Kaynağı çalıştırılabilir programa derler. Birim kullanmayan kaynaklar için;
+/// `kullan` görülürse A010 verir (yükleyici bağlanmamış).
+pub fn kaynagi_derle(kaynak: &str) -> Result<Program, Tani> {
+    kaynagi_derle_birimlerle(kaynak, &mut |ad: &str| {
+        Err(format!("\"{}\" birimi bu bağlamda yüklenemez", ad))
+    })
+}
+
+/// Kaynağı, birimlerini yükleyerek derler (sözcükle + birim çözümü +
+/// tohumlu ayrıştırma + hoist + denetle).
+pub fn kaynagi_derle_birimlerle(
+    kaynak: &str,
+    yukleyici: &mut BirimYukleyici,
+) -> Result<Program, Tani> {
+    let mut yigin: Vec<String> = Vec::new();
+    let (cumleler, islemler, yapilar, testler) =
+        dosyayi_coz(kaynak, None, yukleyici, &mut yigin)?;
+    let mut program = Program { cumleler, islemler, yapilar, testler };
+    cozumleyici::denetle(&mut program)?;
+    Ok(program)
+}
+
+/// Bir kaynak dosyayı çözer: birimlerini özyinelemeli yükler, kendi
+/// tanımlarını içe alınanlarla birleştirir. `birim_adi` None ise ana dosyadır.
+#[allow(clippy::type_complexity)]
+fn dosyayi_coz(
+    kaynak: &str,
+    birim_adi: Option<&str>,
+    yukleyici: &mut BirimYukleyici,
+    yigin: &mut Vec<String>,
+) -> Result<(Vec<Cumle>, HashMap<String, Islem>, Vec<Yapi>, Vec<Test>), Tani> {
+    let tokenlar = sozcukleyici::sozcukle(kaynak)?;
+
+    // 1) Birimleri önden yükle (çağrı tanıma için işlem adları gerekli).
+    let mut islemler: HashMap<String, Islem> = HashMap::new();
+    let mut islem_kaynagi: HashMap<String, String> = HashMap::new();
+    let mut yapilar: Vec<Yapi> = Vec::new();
+    let mut yapi_kaynagi: HashMap<String, String> = HashMap::new();
+    let mut testler: Vec<Test> = Vec::new();
+
+    for (ad, satir) in ayristirici::kullanilan_birimler(&tokenlar) {
+        if yigin.iter().any(|y| y == &ad) || birim_adi == Some(ad.as_str()) {
+            return Err(Tani::yeni(
+                "A009",
+                format!(
+                    "Birimler birbirini döngüsel kullanıyor: {} → {}.",
+                    yigin.join(" → "),
+                    ad
+                ),
+                satir,
+                1,
+                1,
+            )
+            .onerili("Ortak tanımları üçüncü bir birime taşı.".into()));
+        }
+        let icerik = yukleyici(&ad).map_err(|hata| {
+            Tani::yeni(
+                "A010",
+                format!("\"{}\" birimi yüklenemedi: {}.", ad, hata),
+                satir,
+                1,
+                1,
+            )
+            .onerili(format!(
+                "Aynı klasörde {}.dil dosyası olmalı (RFC-0009).",
+                ad
+            ))
+        })?;
+        yigin.push(ad.clone());
+        let (_, birim_islemleri, birim_yapilari, birim_testleri) =
+            dosyayi_coz(&icerik, Some(&ad), yukleyici, yigin)?;
+        yigin.pop();
+
+        for (islem_adi, islem) in birim_islemleri {
+            if let Some(onceki) = islem_kaynagi.get(&islem_adi) {
+                return Err(cakisma("işlemi", &islem_adi, onceki, &ad, satir));
+            }
+            islem_kaynagi.insert(islem_adi.clone(), ad.clone());
+            islemler.insert(islem_adi, islem);
+        }
+        for yapi in birim_yapilari {
+            if let Some(onceki) = yapi_kaynagi.get(&yapi.ad) {
+                return Err(cakisma("yapısı", &yapi.ad, onceki, &ad, satir));
+            }
+            yapi_kaynagi.insert(yapi.ad.clone(), ad.clone());
+            yapilar.push(yapi);
+        }
+        // Birimin testleri de görünür olur (RFC-0009 §2); ad birimle önek alır.
+        for mut test in birim_testleri {
+            if !test.ad.starts_with(&format!("{}: ", ad)) {
+                test.ad = format!("{}: {}", ad, test.ad);
+            }
+            testler.push(test);
+        }
+    }
+
+    // 2) İçe alınan işlem adlarıyla tohumlanmış ayrıştırma.
+    let tohum: Vec<String> = islemler.keys().cloned().collect();
+    let cumleler = ayristirici::ayristir_tohumla(tokenlar, tohum)?;
+
+    // 3) Kendi tanımlarını ayıkla ve birleştir.
     let mut kalan = Vec::new();
     for cumle in cumleler {
         match cumle {
+            Cumle::Kullan { .. } => {} // 1. adımda çözüldü
             Cumle::IslemTanimi(islem) => {
+                if let Some(birim) = islem_kaynagi.get(&islem.ad) {
+                    return Err(cakisma("işlemi", &islem.ad, birim, "bu dosya", islem.satir));
+                }
                 if islemler.contains_key(&islem.ad) {
                     return Err(Tani::yeni(
                         "A005",
@@ -40,6 +142,9 @@ pub fn kaynagi_derle(kaynak: &str) -> Result<Program, Tani> {
             }
             Cumle::TestBlogu(test) => testler.push(test),
             Cumle::YapiTanimi(yapi) => {
+                if let Some(birim) = yapi_kaynagi.get(&yapi.ad) {
+                    return Err(cakisma("yapısı", &yapi.ad, birim, "bu dosya", yapi.satir));
+                }
                 if yapilar.iter().any(|y| y.ad == yapi.ad) {
                     return Err(Tani::yeni(
                         "A006",
@@ -55,9 +160,28 @@ pub fn kaynagi_derle(kaynak: &str) -> Result<Program, Tani> {
         }
     }
 
-    let mut program = Program { cumleler: kalan, islemler, yapilar, testler };
-    cozumleyici::denetle(&mut program)?;
-    Ok(program)
+    // Birim olarak yüklenen dosyanın üst düzey cümleleri İÇE ALINMAZ
+    // (kapsülleme, RFC-0009 §2): dosya kendi başına çalıştırılabilir kalır,
+    // birim olarak yalnız tanımlarını verir.
+    if birim_adi.is_some() {
+        kalan.clear();
+    }
+
+    Ok((kalan, islemler, yapilar, testler))
+}
+
+fn cakisma(tur: &str, ad: &str, birinci: &str, ikinci: &str, satir: usize) -> Tani {
+    Tani::yeni(
+        "A008",
+        format!(
+            "\"{}\" {} iki kaynaktan geliyor: \"{}\" ve \"{}\". Sessiz gölgeleme yoktur.",
+            ad, tur, birinci, ikinci
+        ),
+        satir,
+        1,
+        1,
+    )
+    .onerili("Adlardan birini değiştir ya da tek kaynakta topla (RFC-0009 §2.3).".into())
 }
 
 /// Kaynağı denetler, çalıştırmaz.

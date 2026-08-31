@@ -120,7 +120,13 @@ fn denetle_yolu(argumanlar: &[String]) -> ExitCode {
             return ExitCode::from(2);
         }
     };
-    match dil::kaynagi_denetle(&kaynak) {
+    let klasor = std::path::Path::new(yol)
+        .parent()
+        .filter(|p| !p.as_os_str().is_empty())
+        .unwrap_or_else(|| std::path::Path::new("."))
+        .to_path_buf();
+    let mut yukleyici = birim_yukleyici(&klasor);
+    match dil::kaynagi_derle_birimlerle(&kaynak, &mut yukleyici).map(|_| ()) {
         Ok(()) => {
             if json {
                 println!("{{\"durum\":\"temiz\",\"tanilar\":[]}}");
@@ -177,10 +183,17 @@ fn bicimle_komutu(argumanlar: &[String]) -> ExitCode {
     }
 }
 
-fn dosya_ile(argumanlar: &[String], komut: fn(&str) -> ExitCode) -> ExitCode {
+fn dosya_ile(argumanlar: &[String], komut: fn(&str, &std::path::Path) -> ExitCode) -> ExitCode {
     match argumanlar.get(1) {
         Some(yol) => match std::fs::read_to_string(yol) {
-            Ok(kaynak) => komut(&kaynak),
+            Ok(kaynak) => {
+                let klasor = std::path::Path::new(yol)
+                    .parent()
+                    .filter(|p| !p.as_os_str().is_empty())
+                    .unwrap_or_else(|| std::path::Path::new("."))
+                    .to_path_buf();
+                komut(&kaynak, &klasor)
+            }
             Err(hata) => {
                 eprintln!("\"{}\" dosyası okunamadı: {}", yol, hata);
                 ExitCode::from(2)
@@ -190,6 +203,18 @@ fn dosya_ile(argumanlar: &[String], komut: fn(&str) -> ExitCode) -> ExitCode {
             eprintln!("Bir .dil dosyası belirtmelisin. Örnek: dil çalıştır merhaba.dil");
             ExitCode::from(2)
         }
+    }
+}
+
+/// Ana dosyanın klasöründen birim yükler: `<klasör>/<ad>.dil` (RFC-0009 §4:
+/// başka arama yolu yoktur). Ad, tanımlayıcı kurallarına uymalıdır.
+fn birim_yukleyici(klasor: &std::path::Path) -> impl FnMut(&str) -> Result<String, String> + '_ {
+    move |ad: &str| {
+        if ad.contains(['/', '\\', '.']) {
+            return Err("birim adı yol içeremez".into());
+        }
+        let yol = klasor.join(format!("{}.dil", ad));
+        std::fs::read_to_string(&yol).map_err(|hata| format!("{} ({})", hata, yol.display()))
     }
 }
 
@@ -269,8 +294,9 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
     }
 }
 
-fn calistir_komutu(kaynak: &str) -> ExitCode {
-    let program = match dil::kaynagi_derle(kaynak) {
+fn calistir_komutu(kaynak: &str, klasor: &std::path::Path) -> ExitCode {
+    let mut yukleyici = birim_yukleyici(klasor);
+    let program = match dil::kaynagi_derle_birimlerle(kaynak, &mut yukleyici) {
         Ok(program) => program,
         Err(tani) => {
             eprint!("{}", tani.raporla(kaynak));
@@ -286,8 +312,11 @@ fn calistir_komutu(kaynak: &str) -> ExitCode {
     }
 }
 
-fn dene_komutu(kaynak: &str) -> ExitCode {
-    let sonuclar = match dil::kaynagi_dene(kaynak) {
+fn dene_komutu(kaynak: &str, klasor: &std::path::Path) -> ExitCode {
+    let mut yukleyici = birim_yukleyici(klasor);
+    let sonuclar = match dil::kaynagi_derle_birimlerle(kaynak, &mut yukleyici)
+        .map(|program| dil::programi_dene(&program))
+    {
         Ok(sonuclar) => sonuclar,
         Err(tani) => {
             eprint!("{}", tani.raporla(kaynak));

@@ -251,6 +251,9 @@ pub enum Cumle {
     IslemTanimi(Islem),
     /// `yapı <Ad>` tanımı — hoist ile Program.yapilar'a taşınır.
     YapiTanimi(Yapi),
+    /// `hesaplar birimini kullan` (RFC-0009) — derleme öncesi çözülür,
+    /// hoist aşamasında düşürülür; çalışma zamanına ulaşmaz.
+    Kullan { birim: String, satir: usize },
     /// `test "..."` bloğu — hoist ile Program.testler'e taşınır.
     TestBlogu(Test),
     /// `kare 16 ya eşit olmalı` — doğrulama (K-025). Koşul tutmazsa D001.

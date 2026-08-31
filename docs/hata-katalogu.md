@@ -45,6 +45,7 @@ türetilmiştir; yeni kod eklenince bu dosya güncellenir — CI'a bağlanması 
 | S031 | `değilse` tek başına | `değilse` bir `... ise` bloğunun hemen ardından, aynı hizada gelir |
 | S032 | Ondalık kısım 9 haneden uzun | Ondalık hassasiyeti en çok 9 hanedir (RFC-0013) |
 | S033 | Boşluk-virgül-rakam dizisi belirsiz | Ondalıksa bitişik yaz (`3,14`); liste ayracıysa virgülden sonra boşluk bırak (`3, 14`) |
+| S034 | Birim kullanımı biçimi | `hesaplar birimini kullan` — aynı klasördeki hesaplar.dil dosyasını alır |
 
 ## A — Ad çözümleme
 
@@ -56,6 +57,9 @@ türetilmiştir; yeni kod eklenince bu dosya güncellenir — CI'a bağlanması 
 | A005 | Aynı adla ikinci işlem tanımı | İşlem adları benzersizdir |
 | A006 | Aynı adla ikinci yapı tanımı | Yapı adları benzersizdir |
 | A007 | `yeni <Ad>` — yapı tanımlı değil | Yapıyı kullanmadan önce tanımla |
+| A008 | Ad iki kaynaktan geliyor (birim çakışması) | Sessiz gölgeleme yoktur: adlardan birini değiştir ya da tek kaynakta topla (RFC-0009) |
+| A009 | Birimler döngüsel kullanıyor | Ortak tanımları üçüncü bir birime taşı |
+| A010 | Birim yüklenemedi | Aynı klasörde `<ad>.dil` dosyası olmalı (RFC-0009 §4) |
 
 ## T — Tür denetimi
 

@@ -10,15 +10,66 @@ use crate::sozcukleyici::{Token, TokenTur};
 use crate::tani::Tani;
 
 pub fn ayristir(tokenlar: Vec<Token>) -> Result<Vec<Cumle>, Tani> {
+    ayristir_tohumla(tokenlar, Vec::new())
+}
+
+/// Birimlerden gelen işlem adlarıyla tohumlanmış ayrıştırma (RFC-0009):
+/// çağrı tanıma "tanımlı işlem adıyla bitiyor mu?" kuralına dayandığı için
+/// içe alınan adların ayrıştırma başlamadan bilinmesi gerekir.
+pub fn ayristir_tohumla(tokenlar: Vec<Token>, islem_adlari: Vec<String>) -> Result<Vec<Cumle>, Tani> {
     let mut ayristirici = Ayristirici {
         tokenlar,
         konum: 0,
         derinlik: 0,
-        islem_adlari: Vec::new(),
+        islem_adlari,
     };
     let program = ayristirici.blok_ayristir()?;
     ayristirici.bekle_dosya_sonu()?;
     Ok(program)
+}
+
+/// Üst düzeydeki `X birimini kullan` satırlarını (ad, satır) olarak toplar.
+/// Tam ayrıştırmadan ÖNCE çağrılır ki birimler yüklenip işlem adları
+/// tohumlanabilsin; kalıp, ayrıştırıcıdaki Kullan koluyla birebir aynıdır.
+pub fn kullanilan_birimler(tokenlar: &[Token]) -> Vec<(String, usize)> {
+    let mut sonuc = Vec::new();
+    let mut derinlik = 0usize;
+    let mut satir_basi = true;
+    let mut i = 0;
+    while i < tokenlar.len() {
+        match &tokenlar[i].tur {
+            TokenTur::Girinti => {
+                derinlik += 1;
+                satir_basi = true;
+            }
+            TokenTur::Cikinti => {
+                derinlik = derinlik.saturating_sub(1);
+                satir_basi = true;
+            }
+            TokenTur::SatirSonu => satir_basi = true,
+            TokenTur::Kelime(ad) if satir_basi && derinlik == 0 => {
+                let birimini = matches!(
+                    tokenlar.get(i + 1).map(|t| &t.tur),
+                    Some(TokenTur::Kelime(k)) if k == "birimini"
+                );
+                let kullan = matches!(
+                    tokenlar.get(i + 2).map(|t| &t.tur),
+                    Some(TokenTur::Kelime(k)) if k == "kullan"
+                );
+                let satir_bitti = matches!(
+                    tokenlar.get(i + 3).map(|t| &t.tur),
+                    Some(TokenTur::SatirSonu) | None
+                );
+                if birimini && kullan && satir_bitti {
+                    sonuc.push((ad.clone(), tokenlar[i].satir));
+                }
+                satir_basi = false;
+            }
+            _ => satir_basi = false,
+        }
+        i += 1;
+    }
+    sonuc
 }
 
 struct Ayristirici {
@@ -150,6 +201,35 @@ impl Ayristirici {
             Some("böl") => self.bol_ayristir(satir_tokenlari, satir_no),
             Some("göre") => self.gore_ayristir(satir_tokenlari, satir_no),
             Some("olmalı") => self.olmali_ayristir(satir_tokenlari, satir_no),
+            Some("kullan") => {
+                if self.derinlik > 0 {
+                    return Err(Tani::yeni(
+                        "S021",
+                        "Birim kullanımı en dış düzeyde olmalı.".into(),
+                        satir_no,
+                        1,
+                        1,
+                    ));
+                }
+                match (
+                    satir_tokenlari.first().map(|t| &t.tur),
+                    satir_tokenlari.get(1).map(|t| &t.tur),
+                ) {
+                    (Some(TokenTur::Kelime(birim)), Some(TokenTur::Kelime(b)))
+                        if satir_tokenlari.len() == 3 && b == "birimini" =>
+                    {
+                        Ok(Cumle::Kullan { birim: birim.clone(), satir: satir_no })
+                    }
+                    _ => Err(Tani::yeni(
+                        "S034",
+                        "Birim kullanımı \"<ad> birimini kullan\" biçiminde yazılır.".into(),
+                        satir_no,
+                        1,
+                        1,
+                    )
+                    .onerili("Örnek: hesaplar birimini kullan — aynı klasördeki hesaplar.dil dosyasını alır.".into())),
+                }
+            }
             Some("bitir") => {
                 if satir_tokenlari.len() == 2 && kelime_mi(&satir_tokenlari[0], "programı") {
                     Ok(Cumle::ProgramiBitir { satir: satir_no })

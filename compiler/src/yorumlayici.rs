@@ -441,6 +441,7 @@ fn blok_calistir(
             Cumle::IslemTanimi(islem) => return Err(ic_hata(islem.satir)),
             Cumle::YapiTanimi(yapi) => return Err(ic_hata(yapi.satir)),
             Cumle::TestBlogu(test) => return Err(ic_hata(test.satir)),
+            Cumle::Kullan { satir, .. } => return Err(ic_hata(*satir)),
             Cumle::Olmali { kosul, satir } => {
                 // Karşılaştırmalarda iki tarafın değeri tanıya yazılır —
                 // "beklenen/bulunan" göstermek öğretici hata ilkesinin gereği.
