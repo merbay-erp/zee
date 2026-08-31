@@ -1,0 +1,65 @@
+# RFC-0010 — Hata ve Tanılama Standardı
+
+- **Durum:** kabul (yaşayan standardı belgeler)
+- **Tarih:** 31 Ağustos 2026
+- **İlgili günlük kayıtları:** K-026; hata kataloğu bekçisi
+- **Gerçekleme:** `compiler/src/tani.rs`, `docs/hata-katalogu.md`, `katalog_testi.rs`
+
+## Özet
+
+Her tanı aynı sözleşmeye uyar: **kod + Türkçe açıklama + kaynak konumu +
+işaret + öneri + katalog bağlantısı**. Tanı bir ceza değil, dersin kendisidir.
+
+## 1. Tanı sözleşmesi (bağlayıcı)
+
+```
+HATA T001
+
+Büyüklük karşılaştırması sayılar arasında yapılır; burada Metin var.
+
+2 | toplam 10 dan büyükse
+    ^
+
+Öneri:
+Karşılaştırılan iki değerin de sayı olduğundan emin ol.
+
+Ayrıntı için: dil hata T001
+```
+
+Kurallar:
+
+1. **Kod:** `Ö###` — S sözdizimi, A ad çözümleme, T tür, C çalışma zamanı,
+   D doğrulama, Ç iç akış (kullanıcı görmez). Numara asla yeniden kullanılmaz.
+2. **Açıklama:** tek cümle, Türkçe, teknik jargonsuz; neyin OLDUĞU söylenir.
+3. **Konum:** 1 tabanlı satır/sütun + işaret uzunluğu; kaynak satırı basılır.
+4. **Öneri:** eyleme dönük — kullanıcının bir SONRAKİ adımı. Değer içeren
+   hatalarda somut değerler gösterilir (D001: "Beklenen: 5 — bulunan: 4";
+   A001: tanımlı adların listesi; T028: yapının alan listesi).
+5. **Katalog bağlantısı:** her rapor `dil hata <kod>` satırıyla biter; katalog
+   ikiliye gömülüdür, çevrimdışı çalışır.
+6. **İlk hatada durma (v0):** derleyici ilk tanıda durur. Çoklu tanı toplama
+   açık soru §3.1.
+
+## 2. Süreç bekçileri (bağlayıcı)
+
+- **Katalog eşleme testi:** kaynaktaki her tanı kodu `docs/hata-katalogu.md`de
+  belgeli olmalı ve tersi (`katalog_testi.rs` — CI'da). Belgelenmemiş hata
+  gemiye binemez.
+- **Makine çıktısı:** `dil denetle --json` aynı tanıyı RFC 8259 JSON'la verir;
+  alan adları (`kod, mesaj, satir, sutun, uzunluk, oneri`) kararlıdır —
+  editör entegrasyonları buna güvenebilir.
+- Tanı metinleri regression testlerinde kod + içerik düzeyinde sabitlenir.
+
+## 3. Açık sorular
+
+1. Çoklu tanı (ilk hatada durmak yerine toplamak) — LSP deneyimi için gerekli
+   olacak; ayrıştırıcıda hata kurtarma (recovery) tasarımı ister.
+2. Uyarı (warning) kavramı: v0'da yalnız hata var. Aday ilk uyarı: yalnız
+   büyük/küçük harfle ayrışan adlar (A07).
+3. Çocuk modu üslubu: aynı kod için daha kısa/yumuşak metin varyantı
+   (bölüm 16); tek kaynak-çift üslup mimarisi.
+
+## Dört soru süzgeci
+
+Doğal ✓ · Deterministik ✓ (kod sabit, biçim sabit) · Öğrenilebilir ✓ (hatanın
+kendisi ders) · Savunulabilir ✓ (JSON sözleşmesi + katalog bekçisi).

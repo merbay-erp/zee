@@ -9,6 +9,7 @@ kendi dilinde düşünüp kendi dilinde inşa edebilsin diye.*
 Türkçenin doğal akışına göre tasarlanmış **deterministik** genel amaçlı programlama dili.
 Bu bir çeviri katmanı değildir (`if→eğer` makyajı yok); AI semantiğin parçası değildir.
 
+- **Hemen başla:** [docs/baslangic.md](docs/baslangic.md) — 5 dakikada kurulum, ilk proje, araç kutusu
 - Geçici dosya uzantısı: **`.dil`**
 - Master plan: [docs/master-plan.md](docs/master-plan.md) (kaynak: [docs/Turkce_Programlama_Dili_Master_Proje_Dokumani.docx](docs/Turkce_Programlama_Dili_Master_Proje_Dokumani.docx))
 - İlkeler: [MANIFESTO.md](MANIFESTO.md)
