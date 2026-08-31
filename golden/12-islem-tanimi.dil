@@ -1,0 +1,19 @@
+# 12 — İşlem tanımı (master plandaki örnek, bölüm 6)
+# Sınanan: "işlem <eylem cümlesi adı>", parametre bildirimi "sayıları al",
+# "sonucu döndür". İşlem ÇAĞRISI sözdizimi AÇIK KARARDIR (K-016).
+
+işlem ortalamayı hesapla
+    sayıları al
+
+    toplam 0 olsun
+    her sayı için
+        toplamı sayıyla artır
+
+    sonucu toplamı sayıların adedine böl
+    sonucu döndür
+
+notlar 80, 90, 100 listesi olsun
+
+# AÇIK (K-016): aşağıdaki çağrı biçimi geçici öneridir.
+ortalama notlar için ortalamayı hesapla olsun
+ortalamayı yaz

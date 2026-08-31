@@ -1,0 +1,8 @@
+# 20 — JSON verisi
+# Sınanan: JSON okuma ve alan erişimi — sözlük kalıbıyla aynı: "kişinin ad değeri".
+# İç içe erişim: "kişinin adres değerinin şehir değeri" (uzun — bkz. günlük K-015).
+
+kişi "kisi.json" dosyasından okunan veri olsun
+
+"Ad: " ile kişinin "ad" değeri yaz
+"Yaş: " ile kişinin "yaş" değeri yaz

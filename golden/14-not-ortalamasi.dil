@@ -1,0 +1,21 @@
+# 14 — Not ortalaması (v0.1 kabul programı)
+# Sınanan: işlem + liste + koşul birlikte; uçtan uca küçük program.
+
+işlem ortalamayı hesapla
+    sayıları al
+
+    toplam 0 olsun
+    her sayı için
+        toplamı sayıyla artır
+
+    sonucu toplamı sayıların adedine böl
+    sonucu döndür
+
+notlar 70, 85, 90, 60 listesi olsun
+ortalama notlar için ortalamayı hesapla olsun
+
+"Ortalama: " ile ortalama yaz
+ortalama 50 veya daha büyükse
+    "Geçtin" yaz
+değilse
+    "Kaldın" yaz

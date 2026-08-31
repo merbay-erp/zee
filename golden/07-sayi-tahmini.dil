@@ -1,0 +1,18 @@
+# 07 — Sayı tahmini oyunu (v0.1 kabul programı)
+# Sınanan: rastgele sayı, "olana kadar tekrarla" = until (K-006),
+# koşul zinciri + girdi + dönüşüm birlikte.
+
+gizli 1 ile 100 arasında rastgele sayı olsun
+bildi yanlış olsun
+
+bildi doğru olana kadar tekrarla
+    "Tahminin?" diye sor
+    tahmin yanıtın sayısı olsun
+
+    tahmin gizliden küçükse
+        "Daha büyük söyle" yaz
+    değilse tahmin gizliden büyükse
+        "Daha küçük söyle" yaz
+    değilse
+        "Bildin!" yaz
+        bildi doğru olsun

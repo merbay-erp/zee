@@ -1,0 +1,14 @@
+# 29 — ESP32: kapı sensörü ve LED (master plandaki örnek, bölüm 17)
+# Sınanan: fiziksel dünya kalıpları — sensör okuma koşulu, eyleyici komutları,
+# "yarım saniye bekle". Donanım isimleri kart tanım paketinden gelir.
+
+kapı açıksa
+    kırmızı ışığı yak
+değilse
+    yeşil ışığı yak
+
+10 kez tekrarla
+    mavi ışığı yak
+    yarım saniye bekle
+    mavi ışığı söndür
+    yarım saniye bekle

@@ -1,0 +1,16 @@
+# 11 — Metin işlemleri
+# Sınanan: metin özellikleri (uzunluğu, büyük/küçük harflisi, kelimeleri),
+# "içeriyorsa" koşulu.
+
+cümle "Türkçe düşün, Türkçe yaz" olsun
+
+"Uzunluk: " ile cümlenin uzunluğu yaz
+cümlenin büyük harflisi yaz
+cümlenin küçük harflisi yaz
+
+cümle "Türkçe" içeriyorsa
+    "Geçiyor" yaz
+
+kelimeler cümlenin kelimeleri olsun
+her kelime için
+    kelimeyi yaz

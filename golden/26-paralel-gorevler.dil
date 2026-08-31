@@ -1,0 +1,15 @@
+# 26 — Paralel görevler (master plandaki örnek, bölüm 10)
+# Sınanan: structured concurrency — "eşzamanlı olarak" bloğu, "hepsini bekle".
+# AÇIK: blok sonunda "sonucu döndür" neyi döndürür? Üç değerin birleşimi
+# nasıl adlanır? — bkz. günlük K-023.
+
+işlem müşteri özetini getir
+    müşteriyi al
+
+    eşzamanlı olarak
+        profil müşterinin profilini getir
+        faturalar müşterinin faturalarını getir
+        cihazlar müşterinin cihazlarını getir
+
+    hepsini bekle
+    sonucu döndür

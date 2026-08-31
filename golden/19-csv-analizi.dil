@@ -1,0 +1,12 @@
+# 19 — CSV analizi
+# Sınanan: tablo verisi okuma, satırın sütun değerine erişim
+# ("satırın not değeri" — sözlük erişimiyle aynı kalıp, K-015).
+
+tablo "notlar.csv" dosyasından okunan tablo olsun
+
+toplam 0 olsun
+tablodaki her satır için
+    toplamı satırın "not" değeriyle artır
+
+ortalama toplamın tablonun satır adedine bölümü olsun
+"Ortalama: " ile ortalama yaz

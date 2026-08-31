@@ -1,0 +1,9 @@
+# 27 — Zaman aşımı ve iptal
+# Sınanan: timeout birinci sınıf — "5 saniye içinde ... yetişmezse" (K-023).
+# Süre sabitleri: "5 saniye", "yarım saniye" (29'da).
+
+5 saniye içinde
+    veri "https://ornek.dev/rapor" adresinden gelen yanıt olsun
+    verinin gövdesini yaz
+yetişmezse
+    "Zaman aşımı, sonra tekrar dene" yaz

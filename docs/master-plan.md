@@ -1,0 +1,486 @@
+TÜRKÇE PROGRAMLAMA DİLİ
+Uçtan Uca Master Proje Dokümanı
+Dil • Derleyici • Runtime • Standart Kütüphane • Paket Ekosistemi • Tooling • Eğitim
+“Türkçe düşün. Türkçe yaz. Makine kesin olarak anlasın.”
+Sürüm: 1.0    |    Tarih: 31 Ağustos 2026    |    Çalışma adı: Belirlenecek    |    Geçici uzantı: .dil
+Vizyon: İlkokuldaki bir çocuğun başlayabileceği, profesyonelin bırakmak zorunda kalmayacağı Türkçe genel amaçlı programlama dili.
+
+# 1. Yönetici özeti
+Bu proje İngilizce programlama dillerinin anahtar kelimelerini Türkçeye çeviren bir katman değil; Türkçenin doğal akışına göre tasarlanmış deterministik bir programlama dili ve onun eksiksiz ekosistemidir. Ekosistem; derleyici, runtime, standart kütüphane, paket yöneticisi ve registry, formatter, test sistemi, LSP, debugger, dokümantasyon üreticisi, web playground, editör eklentileri ve eğitim materyallerini kapsar.
+Temel amaç İngilizce ve sembol bariyerini azaltırken profesyonel gücü korumaktır. Kullanıcı temel programlarda süslü parantez, noktalı virgül, &&, ||, != gibi işaretlerle başlamak zorunda kalmamalı; girinti ve kontrollü Türkçe kalıplarla kod yazmalıdır. Dil bir çocuk oyuncağı değil, çocukların da kullanabileceği ciddi bir genel amaçlı dil olacaktır.
+Dil AI ile yorumlanmayacaktır. AI kod üretebilir, açıklayabilir veya hata çözümüne yardım edebilir; programın anlamını yalnız lexer, parser, type checker ve compiler belirler. Uzun vadeli sembolik hedef self-hosting’dir: derleyicinin önemli bölümünün kendi Türkçe kaynak kodundan kendisini derleyebilmesi.
+# 2. Manifesto ve değişmez ilkeler
+Türkçe-first: İngilizce anahtar kelime zorunluluğu yok.
+Çeviri dili değil: if→eğer, function→fonksiyon makyajıyla yetinilmeyecek.
+Deterministik: aynı geçerli kaynak tek AST ve tek semantik anlam üretir.
+AI semantiğin parçası değildir; compiler hiçbir cümleyi tahmin etmez.
+Noktalama minimum, belirsizlik sıfırdır; girinti blok yapısını belirler.
+Statik tür güvenliği + yerel tür çıkarımı birlikte kullanılır.
+Null-safety, kaynak güvenliği ve structured concurrency güvenli varsayımlardır.
+Hata mesajları Türkçe, öğretici ve eyleme dönüktür.
+Çocuk dostudur ama oyuncak değildir.
+Cloud, LLM veya tek ticari sağlayıcı zorunlu değildir; offline toolchain mümkündür.
+Tooling ürünün parçasıdır: formatter, LSP, test, paket, docs, debugger.
+Çekirdek küçük ve kararlı; kütüphane katmanı daha hızlı evrilir.
+Self-hosting uzun vadeli bağımsızlık hedefidir.
+# 3. Hedef kullanıcılar ve başarı ölçütleri
+8–14 yaş: dakikalar içinde ilk çalışan program; oyun, robot veya sensör projesi.
+Lise/üniversite: algoritma, veri yapıları, dosya, ağ, test ve hata yönetimi.
+Profesyonel: production servis, CLI, IoT, FFI, concurrency ve güçlü tooling.
+Eğitimci: offline sınıf kurulumu, ders setleri, güvenli sandbox ve örnek projeler.
+Ekosistem geliştiricisi: paket, kütüphane, araç ve platform adaptörü.
+Başarı hedefleri: ilk kurulumdan Merhaba Dünya’ya 10 dakikadan kısa süre; başlangıç örneklerinin en az %90’ında gereksiz noktalama olmaması; kullanıcıya dönük compiler hata mesajlarının tamamının Türkçe olması; Windows/macOS/Linux resmi toolchain; x86-64 ve ARM64 Tier-1; ilk kararlı sürümde en az 100 örnek ve 20 eğitim projesi.
+# 4. Kontrollü Türkçe ve dilbilim sınırı
+Türkçe sondan eklemeli ve yüklem-sonlu bir dildir. Tasarım İngilizce fiil-önce API kalıplarını kopyalamak yerine nesne→eylem akışını kullanacaktır. Buna rağmen v1 tam serbest doğal dil olmayacaktır; kontrollü Türkçe kullanılacaktır. Böylece okunabilirlik korunurken parser deterministik kalır.
+NFC Unicode normalizasyonu.
+ç, ğ, ı, İ, ö, ş, ü tanımlayıcılarda doğal destek.
+Büyük/küçük harf davranışı spesifikasyonda kesin tanımlanır.
+Homoglyph/confusable tanımlayıcılar için compiler uyarısı.
+İyelik ve hal eklerinin desteklenen biçimleri grammar’da açıkça tanımlanır.
+Morfolojik serbestlik heuristic ile değil sürümlemeli grammar ile genişler.
+# 5. Grammar discovery yöntemi
+Grammar masa başında tek seferde dondurulmayacaktır. Önce 30 adet golden-source program yazılacak; syntax bu gerçek kullanım örneklerinden çıkarılacaktır. Her syntax değişikliği bu corpus üzerinde regression testine girecektir.
+Merhaba Dünya
+Hesap makinesi
+Not ortalaması
+Sayı tahmini
+Dosya okuyucu
+CSV analiz
+HTTP istemcisi
+Mini web sunucusu
+PostgreSQL/SQLite örneği
+CLI aracı
+ESP32 LED/sensör
+Basit 2D oyun
+JSON API
+Paralel görev
+Paket oluşturma
+Test yazma
+# 6. Sözdizimi taslakları
+"Dünyaya merhaba" yaz
+isim "Ayşe" olsun
+yaş 10 olsun
+
+yaş 8 veya daha büyükse
+    isim ile " programlamaya başlayabilir" yaz
+değilse
+    "Biraz daha oyun zamanı" yaz
+10 kez tekrarla
+    "Merhaba" yaz
+1 den 100 e kadar her sayı için
+    sayı çiftse
+        sayıyı yaz
+işlem ortalamayı hesapla
+    sayıları al
+    toplam 0 olsun
+
+    her sayı için
+        toplamı sayıyla artır
+
+    sonucu toplamı sayıların adedine böl
+    sonucu döndür
+8080 kapısında sunucu başlat
+
+"/durum" adresine istek geldiğinde
+    "çalışıyor" yanıtını gönder
+# 7. Temel dil yüzeyi
+Değer tanımı: “isim Ayşe olsun”.
+Fonksiyon: “işlem”.
+Sonuç: “döndür”.
+Koşul: “… ise / değilse”.
+Döngü: “tekrarla / her … için”.
+Mantıksal: “doğru / yanlış”.
+Null: mümkün olduğunca Seçenek türü; “boş” yalnız açık durumlarda.
+Veri yapısı: “yapı”; OOP zorunlu paradigma olmayacak.
+Modül: “modül” veya “birim”; kullanıcı testiyle karar.
+Paket: “paket”; import için “kullan”.
+Async: “eşzamanlı / bekle” ailesi.
+# 8. Tür sistemi
+Statik tür güvenliği ve yerel tür çıkarımı birlikte kullanılır. Yeni başlayan tür yazmak zorunda kalmaz; public API ve belirsiz durumlarda açık tür kullanılır.
+TamSayı
+GerçekSayı
+Ondalık
+Metin
+Mantıksal
+Liste<T>
+Sözlük<K,V>
+Küme<T>
+Seçenek<T>
+Sonuç<T,Hata>
+Tarih
+Saat
+Süre
+Para
+Tehlikeli implicit conversion yok.
+Exhaustive pattern matching hedeflenir.
+Integer overflow davranışı debug/release arasında sürpriz yaratmayacak şekilde tanımlanır.
+Generics ve trait/interface benzeri soyutlama ayrı ADR ile tasarlanır.
+# 9. Bellek, kaynak ve hata modeli
+v0.x için GC ve ARC prototipleri benchmark edilir. Ownership ancak öğrenilebilirliği bozmadan gerçek fayda sağlarsa değerlendirilir. Dosya, soket ve kilit gibi kaynaklar lexical scope ile otomatik kapanmalıdır.
+Beklenen hatalar Sonuç<T,Hata> ile taşınır. Panic yalnız invariant ihlali gibi geri dönülemez durumlar içindir.
+HATA T104
+
+"toplam" burada Sayı olarak kullanılamaz.
+
+12 | toplam "Mustafa" olsun
+13 | sonuç toplam ile 10 un toplamı olsun
+             ^^^^^^
+
+"toplam" bir Metin değeridir.
+Bu işlem için Sayı gerekiyor.
+
+Öneri:
+"toplam" değişkenine verilen değeri kontrol et.
+# 10. Eşzamanlılık
+Structured concurrency hedeflenir. Parent scope iptal olduğunda child işler sahipsiz kalmaz. Timeout ve cancellation birinci sınıftır. Data race varsayılan olarak zorlaştırılır.
+eşzamanlı olarak
+    profil müşterinin profilini getir
+    faturalar müşterinin faturalarını getir
+    cihazlar müşterinin cihazlarını getir
+
+hepsini bekle
+sonucu döndür
+# 11. Derleyici ve runtime mimarisi
+Kaynak .dil
+  ↓ Unicode normalizasyonu
+Lexer
+  ↓
+Parser
+  ↓
+AST
+  ↓
+Ad çözümleme
+  ↓
+Tür kontrolü
+  ↓
+HIR
+  ↓
+MIR
+  ↓
+Optimizasyon
+  ↓
+Backend
+  ├─ Interpreter / bytecode
+  ├─ x86-64 native
+  ├─ ARM64 native
+  └─ WebAssembly
+Bootstrap derleyici için Rust güçlü adaydır. Parser için handwritten recursive-descent + Pratt yaklaşımı değerlendirilir. İlk çalışan semantiği hızlı doğrulamak için interpreter/bytecode, ardından Cranelift ve LLVM karşılaştırması yapılır. Backend kararı benchmark, debug deneyimi, binary boyutu, compile süresi ve bakım maliyetiyle ADR üzerinden verilir.
+# 12. Self-hosting stratejisi
+Stage 0: Rust bootstrap compiler.
+Stage 1: standart kütüphanenin parçaları yeni dilde.
+Stage 2: parser/type checker bölümleri yeni dilde.
+Stage 3: compiler kendi kaynak kodunu derler.
+Stage 4: ardışık compiler çıktıları reproducible-build ile doğrulanır.
+Stage 5: bootstrap trust için diverse double compiling araştırılır.
+# 13. Standart kütüphane
+Temel: Metin, Sayı, Liste, Sözlük, Küme, Seçenek, Sonuç.
+Sistem: Dosya, Dizin, Yol, Süreç, Ortam.
+Zaman: Tarih, Saat, Süre.
+Ağ: TCP, UDP, DNS, HTTP istemci/sunucu.
+Veri: JSON, CSV ve ortak DB sürücü sözleşmesi.
+Güvenlik: hash, HMAC, güvenli rastgele; düşük seviyeli kripto ayrı modülde.
+Test: assertion, fixture, snapshot ve property test.
+IoT: GPIO, seri, I2C, SPI platform paketleri.
+Grafik: 2D başlangıç paketi; çekirdeğe gömülmez.
+# 14. Proje, build ve paket sistemi
+dil yeni uzay-oyunum
+dil ekle grafik
+dil dene
+dil çalıştır
+dil derle
+dil paketle
+dil yayınla
+Tek manifest + deterministik lock dosyası.
+SemVer.
+İmzalı metadata, checksum ve provenance.
+Namespace politikası; typosquatting/dependency confusion koruması.
+Yanked sürümler ve güvenlik duyuruları.
+Offline cache ve okul mirror desteği.
+Reproducible package build ve SBOM.
+Registry API açık spesifikasyon.
+Keyfi post-install script varsayılan olarak yasak veya capability ile sınırlı.
+# 15. Geliştirici araçları
+dil: resmi CLI.
+dilfmt: tek resmi formatter.
+dillsp: LSP; completion, rename, go-to-definition, diagnostics.
+diltest: unit, integration, snapshot, property test.
+dildoc: kaynak yorumlarından API dokümantasyonu.
+dilpaket: registry istemcisi.
+Debugger: DAP uyumu ve Türkçe stack trace.
+Playground: mümkün olduğunca client-side WASM sandbox.
+VS Code ilk resmi entegrasyon; JetBrains/Neovim sonra.
+# 16. Eğitim ve kullanıcı deneyimi
+Özel IDE ilk hedef değildir. Önce güçlü VS Code eklentisi ve web playground geliştirilir. Eğitim başarısı syntax ezberinden çok algoritmik düşünmeyi kolaylaştırmasıyla ölçülür.
+Türkçe autocomplete, hover ve hata açıklaması.
+Hata mesajında “neden?” bağlantısı.
+Çocuk modu: dosya, ağ ve process erişimi sandbox.
+Öğretmen modu: şablonlar ve izin profilleri.
+İnternetsiz okul kurulumu.
+Oyun, robot, matematik, hikâye ve web proje setleri.
+Ekran okuyucu, klavye ve yüksek kontrast desteği.
+# 17. IoT ve fiziksel dünya
+Çocuklar için fiziksel sonuç güçlü motivasyondur. ESP32, micro:bit ve Arduino sınıfı cihazlar için güvenli eğitim paketleri planlanır.
+kapı açıksa
+    kırmızı ışığı yak
+değilse
+    yeşil ışığı yak
+USB/seri yükleme aracı.
+Kart tanım paketleri.
+Donanım olmadan simulator.
+Offline kullanım.
+Elektriksel güvenlik ve sınıf laboratuvarı dokümanları.
+# 18. Güvenlik modeli
+Paket metadata/provenance imzalanır.
+Registry publish passkey/2FA destekler.
+Build scriptler sandbox/capability modeliyle sınırlandırılır.
+Unicode confusable kontrolü.
+Unsafe/FFI açık ve görünür sınırdır.
+Compiler fuzzing ve parser property/differential testleri.
+SBOM, checksum ve security advisory.
+Playground CPU/RAM/süre/IO limitleri.
+Paket kurulumunda keyfi post-install varsayılan olarak yasak.
+Secret değerlerin loglanmasını engelleyen tür/capability yaklaşımı ileri araştırma konusu.
+# 19. FFI ve mevcut ekosistem
+Yeni dil ilk günden bütün kütüphaneleri yeniden yazamaz. C ABI birincil köprü adayıdır. Rust/C/C++ ve platform API’leri için generator/adapters sonra gelir.
+FFI unsafe boundary.
+Harici İngilizce API’ler Türkçe wrapper ile sunulabilir.
+ABI sürümleme politikası.
+Native paketlerde OS/architecture metadata.
+Ownership, lifetime ve crash sınırları açıkça belgelenir.
+# 20. Platform hedefleri
+Tier 1: Windows x86-64, macOS ARM64/x86-64, Linux x86-64/ARM64.
+Tier 2: WebAssembly.
+Tier 3: ESP32/microcontroller subset veya özel backend araştırması.
+CI tüm Tier-1 hedeflerde conformance çalıştırır.
+Platform davranışı stdlib adapter’larında izole edilir.
+# 21. Test ve doğrulama
+Lexer/parser golden tests.
+AST snapshot tests.
+Compile-pass/compile-fail corpus.
+Property-based testing.
+Fuzzing.
+Differential backend tests.
+Runtime memory/resource tests.
+Resmi conformance suite.
+Reproducible-build checks.
+Package/registry supply-chain tests.
+LSP protocol tests.
+Cross-platform integration.
+Performance regression benchmarks.
+Çocuk, öğretmen ve profesyonel usability testleri.
+# 22. Performans hedefleri
+İlk hedef en hızlı dil olmak değildir. Önce correctness, tanılama kalitesi ve öğrenilebilirlik gelir. Performans sürekli ölçülür ve regression bütçeleri tanımlanır.
+Küçük projede anlık typecheck.
+Incremental build.
+Compiler memory sınırları.
+Native binary startup.
+Runtime throughput/latency benchmark seti.
+LSP p95 yanıt süresi.
+Paket çözümleme süresi.
+Benchmark sonuçlarının sürümler arası arşivlenmesi.
+# 23. Resmi dil spesifikasyonu
+Lexical ve Unicode kuralları.
+EBNF grammar.
+Ad çözümleme ve scope.
+Tür sistemi ve dönüşümler.
+Evaluation order.
+Numeric overflow.
+Memory/resource semantics.
+Concurrency/cancellation.
+Error model.
+Module/package resolution.
+FFI/ABI.
+Standard library stability.
+Deprecation ve compatibility politikası.
+Breaking change sessizce yapılamaz. Büyük dil evrimleri için edition benzeri model değerlendirilebilir.
+# 24. Repository ve bileşen yapısı
+turkce-dil/
+  compiler/
+    lexer/
+    parser/
+    ast/
+    types/
+    hir/
+    mir/
+    backend/
+  runtime/
+  stdlib/
+  cli/
+  formatter/
+  lsp/
+  debugger/
+  package-manager/
+  registry/
+  playground/
+  editors/vscode/
+  examples/
+  education/
+  spec/
+  rfcs/
+  adr/
+  tests/
+    conformance/
+    compile-pass/
+    compile-fail/
+    fuzz/
+    golden/
+  docs/
+# 25. Yönetişim, RFC ve ADR
+Dil değişikliği RFC ister.
+Güvenlik/mimari sınır değişikliği ADR ister.
+Core team ve maintainer rolleri.
+Code of Conduct.
+Security policy ve özel bildirim kanalı.
+Sürüm takvimi ve deprecation süresi.
+Trademark/isim politikası.
+Paket registry moderasyon politikası.
+Eğitimci ve kullanıcı geri bildirim mekanizması.
+Kurucu vizyon korunırken bus-factor tek kişi olmamalıdır.
+# 26. Lisans ve sürdürülebilirlik
+Çekirdek dilin çocukların ve eğitim kurumlarının önüne ücret duvarı koymaması temel ilkedir. Lisans seçimi hukuk incelemesiyle yapılır; Apache-2.0/MIT ve copyleft seçenekleri topluluk ve ticari kullanım etkileriyle karşılaştırılır.
+Compiler, stdlib, CLI ve temel tooling ücretsiz/açık kaynak hedefi.
+Registry açık protokollü; alternatif mirror/registry mümkün.
+Sürdürülebilirlik bağış, sponsor, eğitim, destek veya kurumsal hizmetlerden gelebilir; dilin kendisi kilitlenmez.
+Marka kullanımı ile kod lisansı ayrılır.
+# 27. CI/CD ve release engineering
+Her PR: format, lint, unit, compile-pass/fail, conformance subset.
+Nightly: full conformance, fuzz corpus, cross-platform, sanitizer, benchmark.
+Release candidate: reproducible build, SBOM, provenance, imza, security scan.
+Binary dağıtımları checksum ve signature ile.
+Nightly/beta/stable kanalları.
+Rollback ve yanked release prosedürü.
+Compiler bootstrap zinciri ayrıca doğrulanır.
+# 28. Gizlilik ve telemetri
+Compiler ve araçlar varsayılan olarak kullanıcı kaynak kodunu veya kişisel veriyi toplamaz. Telemetri varsa opt-in, açık şemalı ve kapatılabilir olur.
+Crash raporlarında kaynak kodu varsayılan olarak gönderilmez.
+Paket indirme istatistiği minimum veriyle tutulur.
+Eğitim/UX araştırması ayrı açık rıza ile.
+Telemetry schema public belgelenir.
+# 29. Dokümantasyon mimarisi
+5 dakikada başla.
+Dil turu.
+Resmi referans.
+Compiler hata kataloğu.
+Standart kütüphane API.
+Paket geliştirme rehberi.
+FFI rehberi.
+Öğretmen rehberi.
+Çocuk proje kitaplığı.
+RFC/ADR arşivi.
+Migration ve edition rehberleri.
+# 30. Ürün yüzeyi ve web
+Ana site: manifesto, indir, öğren, doküman, paketler, playground.
+Paket registry araması.
+Paylaşılabilir playground örnekleri.
+Sürüm ve güvenlik duyuruları.
+Topluluk katkı rehberi.
+Türkçe birincil; yabancı katkıcılar için İngilizce dokümantasyon eklenebilir, dil yüzeyi Türkçe kalır.
+# 31. Yol haritası
+Faz 0 — Felsefe: manifesto, 30 golden program, isim araştırması, grammar ilkeleri.
+Faz 1 — Interpreter: lexer, parser, AST, temel türler, koşul/döngü/işlem, Türkçe diagnostics.
+Faz 2 — Dil çekirdeği: modül, koleksiyon, Seçenek/Sonuç, formatter, test runner.
+Faz 3 — Tooling: LSP, VS Code, docs, package manifest ve local package manager.
+Faz 4 — Native: HIR/MIR, backend, x86-64/ARM64, debug info.
+Faz 5 — Ekosistem: registry, imza/provenance, stdlib ağ/veri/sistem modülleri.
+Faz 6 — Eğitim: playground, dersler, IoT başlangıç paketi, öğretmen pilotu.
+Faz 7 — Self-hosting: compiler parçalarını yeni dile taşıma.
+Faz 8 — 1.0: spesifikasyon freeze, compatibility, security audit, conformance, stable release.
+# 32. İlk 90 günlük uygulanabilir plan
+Hafta 1–2: manifesto + 30 golden program + 10 anti-example; syntax karar günlüğü.
+Hafta 3–4: lexer + Unicode kuralları + indentation tokenları + parser skeleton.
+Hafta 5–6: AST + isim çözümleme + TamSayı/Metin/Mantıksal + değişken/koşul/döngü.
+Hafta 7–8: işlem/return + Liste + Seçenek/Sonuç ilk taslağı + interpreter.
+Hafta 9: Türkçe diagnostic framework + compile-fail corpus.
+Hafta 10: resmi formatter + CLI: çalıştır/denetle/biçimle.
+Hafta 11: VS Code syntax/LSP minimum.
+Hafta 12: v0.1 demo; 10 öğrenci + 5 profesyonel usability oturumu; grammar revizyonu.
+# 33. v0.1 kabul kriterleri
+Merhaba Dünya, hesap makinesi, not ortalaması ve sayı tahmini çalışır.
+Türkçe tanımlayıcılar sorunsuz.
+Girinti blokları deterministik.
+Temel type errors Türkçe ve kaynak konumlu.
+Formatter idempotent.
+Windows/macOS/Linux üzerinde interpreter/CLI çalışır.
+Golden corpus CI’da.
+Kaynak kodda İngilizce keyword yazmak gerekmez.
+# 34. v1.0 tamamlanma tanımı
+Resmi grammar/type/runtime spesifikasyonu yayımlanmış.
+Tier-1 platformlarda conformance yeşil.
+Native x86-64/ARM64 toolchain.
+Kararlı paket formatı ve registry.
+Formatter, LSP, debugger, test ve docs production kalitesinde.
+Stdlib temel/sistem/ağ/veri alanlarını kapsar.
+Supply-chain imza/provenance/SBOM hattı.
+Security audit ve fuzzing operasyonu.
+Compatibility/deprecation politikası.
+En az bir gerçek eğitim pilotu ve birkaç gerçek profesyonel proje.
+Self-hosting tamamen bitmemiş olsa bile compiler’ın anlamlı parçaları kendi dilinde.
+# 35. Risk kaydı
+Doğal Türkçe ile deterministik grammar gerilimi — controlled Turkish + golden corpus.
+Morfoloji kapsamı patlatabilir — v1 varyantlarını sınırlı tut.
+Çocuk dostuluğu dili güçsüzleştirebilir — progressive disclosure.
+Tek kişi bus-factor — RFC, doküman, test, topluluk.
+Tooling yükü compiler’dan büyük olabilir — LSP/DAP standartlarını kullan.
+Kütüphane eksikliği benimsemeyi öldürebilir — C ABI/FFI köprüsü.
+Registry supply-chain riski — imza, provenance, namespace, 2FA.
+Native backend çok erken zaman yiyebilir — önce interpreter ile semantiği doğrula.
+İsim/marka çakışması — isim seçmeden domain/trademark/repo taraması.
+Türkçe ile sınırlı algılanma — bilinçli hedef; katkıcı dokümanı çok dilli olabilir.
+# 36. Açık tasarım kararları
+Dil adı ve dosya uzantısı.
+GC mi ARC mi?
+Cranelift mi LLVM mi, ikisi birden mi?
+Case sensitivity davranışı.
+modül mü birim mi?
+Generic syntax tamamen sembolsüz nasıl olacak?
+Pattern matching Türkçe yüzeyi.
+Async/await yerine nihai kelime ailesi.
+Trait/interface kavramının Türkçe adı.
+Macro/metaprogramming olacak mı?
+Reflection seviyesi.
+Package namespace modeli.
+Microcontroller desteği ana dil mi subset mi?
+# 37. İlk RFC listesi
+RFC-0001 — Dil Manifestosu ve Tasarım İlkeleri
+RFC-0002 — Lexical ve Unicode Kuralları
+RFC-0003 — Girinti ve Blok Modeli
+RFC-0004 — Değer Tanımı ve Scope
+RFC-0005 — Koşullar ve Mantıksal İfadeler
+RFC-0006 — İşlemler ve Parametreler
+RFC-0007 — Temel Tür Sistemi
+RFC-0008 — Seçenek ve Sonuç
+RFC-0009 — Modül ve Paket Modeli
+RFC-0010 — Hata ve Tanılama Standardı
+RFC-0011 — Structured Concurrency
+RFC-0012 — FFI ve Unsafe Sınırı
+# 38. İlk ADR listesi
+ADR-001 — Bootstrap implementasyon dili
+ADR-002 — Parser stratejisi
+ADR-003 — İlk execution modeli: interpreter/bytecode
+ADR-004 — Bellek yönetimi prototip kararı
+ADR-005 — Native backend seçimi
+ADR-006 — Paket registry trust modeli
+ADR-007 — Telemetri ve gizlilik
+ADR-008 — Self-hosting aşamaları
+# 39. Ekip ve rol modeli
+Dil mimarı: semantik ve uzun vadeli vizyon.
+Compiler: parser, types, IR, backend.
+Runtime/stdlib: memory, IO, network, platform.
+Tooling: LSP, formatter, debugger, editor.
+Package/security: registry, signing, provenance.
+Education: pedagojik içerik ve okul pilotları.
+Language/UX: Türkçe dilbilim, okunabilirlik ve usability.
+Release: CI, conformance, reproducible builds.
+Başlangıçta bir kişi birden çok rolü taşıyabilir. Rol ayrımı, ileride katkı geldiğinde sorumluluk sınırını net tutmak içindir.
+# 40. Proje felsefesinin korunması
+Bu projenin başarısı yalnız compiler’ın çalışması değildir. Başarı; Türkçe konuşan bir çocuğun yabancı syntax bariyerine takılmadan algoritmik düşünceyle tanışması, aynı dilin yıllar sonra onu terk etmeye zorlamaması ve ekosistemin tek bir şirketin kapalı ürünü haline gelmemesidir.
+Her yeni özellik şu dört sorudan geçmelidir: Türkçe doğal mı? Deterministik mi? Öğrenilebilir mi? Profesyonel ölçekte savunulabilir mi? Dördünden biri hayırsa özellik yeniden tasarlanır.
+# 41. İlk gerçek milestone
+İlk kutlanacak milestone web sitesi, logo veya paket registry değildir. Tek bir dosya:
+merhaba.dil
+ve tek satır:
+"Dünyaya merhaba" yaz
+Bu dosya kendi lexer/parser/type checker zincirimizden geçip çalıştığında proje doğmuş sayılır. İkinci sembolik milestone, compiler’ın kendi dilinde yazılmış bir parçasını derlemesidir. Son büyük sembolik milestone ise kendi compiler’ının kendisini derlemesidir.
+# 42. Son söz
+Amaç yalnız yeni bir syntax üretmek değil; Türkçe konuşan insanların bilgisayara kendi dillerinin düşünme ritmiyle kesin talimat verebildiği, öğrenme ile profesyonel üretim arasındaki duvarı azaltan kalıcı bir teknik eser bırakmaktır.
+Projenin temel cümlesi değişmez: Çocukların kullanabileceği bir dil yapacağız; çocuk dili yapmayacağız.

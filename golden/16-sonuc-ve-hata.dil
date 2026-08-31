@@ -1,0 +1,10 @@
+# 16 — Sonuç türü ve hata yönetimi
+# Sınanan: beklenen hatalar Sonuç<T,Hata> ile taşınır — "…meyi dene" ifadesi
+# Sonuç üretir (K-018); "başarılıysa", "sonucun değeri / sonucun hatası".
+
+sonuç "veriler.txt" dosyasını okumayı dene olsun
+
+sonuç başarılıysa
+    sonucun değerini yaz
+değilse
+    "Okunamadı: " ile sonucun hatası yaz

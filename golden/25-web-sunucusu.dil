@@ -1,0 +1,11 @@
+# 25 — Mini web sunucusu (master plandaki örnek, bölüm 6)
+# Sınanan: "8080 kapısında sunucu başlat", olay bloğu:
+# "X adresine istek geldiğinde", "yanıtını gönder" (K-022).
+
+8080 kapısında sunucu başlat
+
+"/durum" adresine istek geldiğinde
+    "çalışıyor" yanıtını gönder
+
+"/selam" adresine istek geldiğinde
+    "Merhaba ziyaretçi" yanıtını gönder
