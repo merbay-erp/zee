@@ -6,9 +6,9 @@ Dil değişikliği RFC ister (master plan bölüm 25). Şablon: [0000-sablon.md]
 
 | No | Başlık | Durum | Beslendiği günlük kayıtları |
 |---|---|---|---|
-| RFC-0001 | Dil Manifestosu ve Tasarım İlkeleri | taslak kaynağı hazır (MANIFESTO.md) | — |
-| RFC-0002 | Lexical ve Unicode Kuralları | bekliyor | K-001, K-011, K-014, A07, A08 |
-| RFC-0003 | Girinti ve Blok Modeli | bekliyor | A06 |
+| RFC-0001 | [Dil Manifestosu ve Tasarım İlkeleri](0001-dil-manifestosu.md) | **kabul** | — |
+| RFC-0002 | [Lexical ve Unicode Kuralları](0002-lexical-ve-unicode.md) | **taslak** | K-001, K-011, K-014, A07, A08 |
+| RFC-0003 | [Girinti ve Blok Modeli](0003-girinti-ve-blok.md) | **taslak** | A06 |
 | RFC-0004 | Değer Tanımı ve Scope | bekliyor | K-003 |
 | RFC-0005 | Koşullar ve Mantıksal İfadeler | bekliyor | K-005, K-010, A03 |
 | RFC-0006 | İşlemler ve Parametreler | bekliyor | **K-016 (en kritik)**, K-007, K-014 |

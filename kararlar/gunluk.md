@@ -115,6 +115,17 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   → RFC-0002'nin en kritik konusu.
 - **Programlar:** tümü.
 
+## K-026 — Homoglyph ve birleştirici im reddi (31 Ağu, v0 gerçeklemesi)
+
+- **Karar:** Tanımlayıcı alfabesi ASCII + Türkçe harfler + şapkalı ünlüler
+  (â î û — "kâr"). Başka alfabeden harf → S028 (kod noktasıyla); birleştirici
+  im (U+0300–U+036F) → S029 ("birleşik karakteri kullan"). A08 anti-örneği
+  artık makine doğrulamalı.
+- **Gerekçe:** Determinizm + supply-chain güvenliği (bölüm 18); "görünüşte
+  özdeş, gerçekte farklı" tanımlayıcı sınıfı kökten kapandı. Tam NFC yerine
+  daha katı "birleşik biçim zorunlu" kuralı: tablo gerektirmez, v0'da yeterli.
+- **Durum:** geçici — RFC-0002 §2'de belgelendi.
+
 ## K-012 — Liste sabiti: `3, 7, 1, 9 listesi`
 
 - **Karar:** Virgülle ayrılmış değerler + `listesi`. Boş: `boş liste`.

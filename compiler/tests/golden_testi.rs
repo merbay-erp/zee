@@ -421,6 +421,31 @@ fn sekme_girinti_reddedilir() {
 }
 
 #[test]
+fn a08_homoglyph_reddedilir() {
+    // anti-ornekler/A08: Kiril "а" (U+0430) Latin "a" ile görünüşte özdeş.
+    let kaynak = "s\u{0430}yı 5 olsun\nsayıyı yaz\n";
+    let hata = kaynagi_calistir(kaynak).expect_err("homoglyph reddedilmeli");
+    assert_eq!(hata.kod, "S028");
+    assert!(hata.mesaj.contains("U+0430"), "kod noktası gösterilmeli: {}", hata.mesaj);
+}
+
+#[test]
+fn birlestirici_im_reddedilir() {
+    // "ğ" yerine g + U+0306 (breve): NFC zorunluluğu (RFC-0002).
+    let kaynak = "dag\u{0306} 5 olsun\n";
+    let hata = kaynagi_calistir(kaynak).expect_err("birleştirici im reddedilmeli");
+    assert_eq!(hata.kod, "S029");
+}
+
+#[test]
+fn sapkali_unluler_kabul_edilir() {
+    // Türkçe yazımdaki şapkalı ünlüler (kâr) tanımlayıcıda geçerlidir.
+    let kaynak = "kâr 100 olsun\nkârı yaz\n";
+    let cikti = kaynagi_calistir(kaynak).expect("şapkalı ünlü çalışmalı");
+    assert_eq!(cikti, vec!["100"]);
+}
+
+#[test]
 fn a06_parantezli_blok_reddedilir() {
     // anti-ornekler/A06: girinti yerine süslü parantez.
     let kaynak = "10 kez tekrarla {\n    \"Merhaba\" yaz\n}\n";

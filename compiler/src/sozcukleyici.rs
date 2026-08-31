@@ -39,6 +39,14 @@ impl Token {
     }
 }
 
+/// Tanımlayıcılarda geçerli karakterler: ASCII harf/rakam, alt çizgi,
+/// Türkçe harfler ve Türkçe yazımda kullanılan şapkalı ünlüler (kâr, îma).
+fn harf_gecerli(k: char) -> bool {
+    k.is_ascii_alphanumeric()
+        || k == '_'
+        || "çÇğĞıİöÖşŞüÜâÂîÎûÛ".contains(k)
+}
+
 /// Kaynağı tokenlara ayırır. İlk hatada durur (v0 davranışı).
 pub fn sozcukle(kaynak: &str) -> Result<Vec<Token>, Tani> {
     let mut tokenlar = Vec::new();
@@ -163,6 +171,27 @@ pub fn sozcukle(kaynak: &str) -> Result<Vec<Token>, Tani> {
                 let mut kelime = String::new();
                 while let Some(&r) = kalanlar.peek() {
                     if r.is_alphanumeric() || r == '_' {
+                        // Homoglyph koruması (A08, bölüm 18): tanımlayıcılar yalnız
+                        // Türkçe/Latin harfler taşır. Kiril "а" gibi görünüşte özdeş
+                        // karakterler sessizce kabul edilmez, burada yakalanır.
+                        if !harf_gecerli(r) {
+                            return Err(Tani::yeni(
+                                "S028",
+                                format!(
+                                    "Tanımlayıcıda Türkçe/Latin dışı karakter: \"{}\" (U+{:04X}).",
+                                    r, r as u32
+                                ),
+                                satir_no,
+                                sutun,
+                                1,
+                            )
+                            .onerili(
+                                "Bu karakter başka bir alfabeden geliyor ve Latin benzerleriyle \
+                                 karıştırılabilir. Tanımlayıcılarda yalnız Türkçe/Latin harfler, \
+                                 rakamlar ve alt çizgi kullanılabilir."
+                                    .into(),
+                            ));
+                        }
                         kelime.push(r);
                         kalanlar.next();
                         sutun += 1;
@@ -172,6 +201,21 @@ pub fn sozcukle(kaynak: &str) -> Result<Vec<Token>, Tani> {
                 }
                 let uzunluk = kelime.chars().count();
                 tokenlar.push(Token::yeni(TokenTur::Kelime(kelime), satir_no, baslangic_sutun, uzunluk));
+            } else if ('\u{0300}'..='\u{036F}').contains(&k) {
+                // Birleştirici imler: v0 kuralı kaynak metnin önceden birleştirilmiş
+                // (NFC) karakterlerle yazılmasıdır (RFC-0002).
+                return Err(Tani::yeni(
+                    "S029",
+                    format!("Birleştirici im (U+{:04X}) desteklenmiyor.", k as u32),
+                    satir_no,
+                    sutun,
+                    1,
+                )
+                .onerili(
+                    "Harf ve işaretini ayrı yazmak yerine birleşik karakteri kullan \
+                     (örneğin g + ˘ yerine tek karakter ğ)."
+                        .into(),
+                ));
             } else if k == ',' {
                 kalanlar.next();
                 tokenlar.push(Token::yeni(TokenTur::Virgul, satir_no, sutun, 1));
