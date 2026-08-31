@@ -5,7 +5,9 @@
   Kesinleşme usability + korpus genişletmesiyle
 - **Tarih:** 31 Ağustos 2026
 - **İlgili günlük kayıtları:** RFC-0002 §6.3, RFC-0007 §4.1
-- **Gerçekleme:** yok (bu RFC yol açar)
+- **Gerçekleme:** sözcükleyici (bitişik virgül, S032/S033), tür sistemi
+  (Tur::Ondalik + genişleme kuralları), yorumlayıcı (i128 onluk çekirdek),
+  biçimleyici; testler `ondalik_testi.rs` (18) — günlük kaydı K-028
 
 ## Özet
 
