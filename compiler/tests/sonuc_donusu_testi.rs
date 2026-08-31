@@ -58,13 +58,23 @@ yarım başarılıysa
 }
 
 #[test]
-fn yanlis_tarafa_erisim_calisma_hatasi() {
+fn yanlis_tarafa_erisim_derleme_hatasi() {
+    // v0.2 daraltma (K-037): eski C009 çalışma hatası artık derleme zamanında
+    // T036 olarak yakalanır — yanlış tarafa erişim programa hiç giremez.
     let kaynak = format!(
         "{}\nbölüm 10 ve 2 ile güvenle paylaştır olsun\nbölümün hatası yaz\n",
         GUVENLI_BOL
     );
-    let hata = kaynagi_calistir(&kaynak).expect_err("başarılıyken hatası → C009");
-    assert_eq!(hata.kod, "C009");
+    let hata = kaynagi_calistir(&kaynak).expect_err("korumasız hatası → T036");
+    assert_eq!(hata.kod, "T036");
+
+    // Her iki dal daraltmayla güvenli: başarılıysa değeri, değilse hatası.
+    let kaynak = format!(
+        "{}\nbölüm 10 ve 2 ile güvenle paylaştır olsun\nbölüm başarılıysa\n    bölümün değeri yaz\ndeğilse\n    bölümün hatası yaz\n",
+        GUVENLI_BOL
+    );
+    let cikti = kaynagi_calistir(&kaynak).expect("iki dal da güvenli olmalı");
+    assert_eq!(cikti, vec!["5"]);
 }
 
 #[test]
