@@ -168,8 +168,15 @@ fn satiri_parcala(icerik: &str, satir_no: usize) -> Result<(Vec<String>, Option<
             karakterler.next();
             let mut metin = String::from("\"");
             let mut kapandi = false;
-            for ic in karakterler.by_ref() {
+            while let Some(ic) = karakterler.next() {
                 metin.push(ic);
+                if ic == '\\' {
+                    // Kaçış: sonraki karakter tırnak bile olsa metnin içindedir.
+                    if let Some(kacan) = karakterler.next() {
+                        metin.push(kacan);
+                    }
+                    continue;
+                }
                 if ic == '"' {
                     kapandi = true;
                     break;
@@ -213,6 +220,7 @@ fn satiri_parcala(icerik: &str, satir_no: usize) -> Result<(Vec<String>, Option<
             }
         } else {
             // Kelime ya da sayı: boşluk, virgül ve # dışındaki her şey.
+            // (Eksi işareti rakama bitişikse sayının parçasıdır.)
             let mut parca = String::new();
             while let Some(&r) = karakterler.peek() {
                 if r == ' ' || r == ',' || r == '#' || r == '"' {
