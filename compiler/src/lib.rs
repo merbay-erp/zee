@@ -10,13 +10,36 @@ pub mod sozcukleyici;
 pub mod tani;
 pub mod yorumlayici;
 
-use agac::Cumle;
+use agac::{Cumle, Program};
 use tani::Tani;
 
 /// Kaynağı çalıştırılabilir programa derler (sözcükle + ayrıştır + denetle).
-pub fn kaynagi_derle(kaynak: &str) -> Result<Vec<Cumle>, Tani> {
+/// İşlem tanımları Program.islemler'e kaldırılır (hoist).
+pub fn kaynagi_derle(kaynak: &str) -> Result<Program, Tani> {
     let tokenlar = sozcukleyici::sozcukle(kaynak)?;
-    let mut program = ayristirici::ayristir(tokenlar)?;
+    let cumleler = ayristirici::ayristir(tokenlar)?;
+
+    let mut islemler = std::collections::HashMap::new();
+    let mut kalan = Vec::new();
+    for cumle in cumleler {
+        match cumle {
+            Cumle::IslemTanimi(islem) => {
+                if islemler.contains_key(&islem.ad) {
+                    return Err(Tani::yeni(
+                        "A005",
+                        format!("\"{}\" işlemi birden çok kez tanımlandı.", islem.ad),
+                        islem.satir,
+                        1,
+                        1,
+                    ));
+                }
+                islemler.insert(islem.ad.clone(), islem);
+            }
+            baska => kalan.push(baska),
+        }
+    }
+
+    let mut program = Program { cumleler: kalan, islemler };
     cozumleyici::denetle(&mut program)?;
     Ok(program)
 }

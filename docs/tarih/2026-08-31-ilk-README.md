@@ -1,9 +1,6 @@
-# zee — Türkçe Programlama Dili
+# Türkçe Programlama Dili — çalışma adı: *zee* (belirlenecek)
 
 > "Türkçe düşün. Türkçe yaz. Makine kesin olarak anlasın."
-
-*Zeynep Eliz Erbay için. Bu dil, bir babanın kızına bıraktığı mirastır:
-kendi dilinde düşünüp kendi dilinde inşa edebilsin diye.*
 
 İlkokuldaki bir çocuğun başlayabileceği, profesyonelin bırakmak zorunda kalmayacağı,
 Türkçenin doğal akışına göre tasarlanmış **deterministik** genel amaçlı programlama dili.
@@ -13,28 +10,7 @@ Bu bir çeviri katmanı değildir (`if→eğer` makyajı yok); AI semantiğin pa
 - Master plan: [docs/master-plan.md](docs/master-plan.md) (kaynak: [docs/Turkce_Programlama_Dili_Master_Proje_Dokumani.docx](docs/Turkce_Programlama_Dili_Master_Proje_Dokumani.docx))
 - İlkeler: [MANIFESTO.md](MANIFESTO.md)
 
-## Durum: Faz 1 — Interpreter (Faz 0 tamamlandı)
-
-**31 Ağustos 2026 — proje doğdu.** `merhaba.dil` kendi lexer → parser → tür
-denetimi → yorumlayıcı zincirimizden geçip çalıştı (master plan bölüm 41'deki
-ilk milestone). Bootstrap derleyici: [compiler/](compiler/) (Rust, sıfır bağımlılık).
-
-```bash
-cd compiler && cargo build && ./target/debug/dil çalıştır ../merhaba.dil
-```
-
-Çalışan golden programlar (regression testte): **01–09, 12, 13, 14** —
-**v0.1 kabul listesindeki 4 program da çalışıyor** (Merhaba Dünya, hesap
-makinesi, sayı tahmini, not ortalaması). Desteklenen yüzey: `olsun`, `yaz`,
-`ile`, `ise/değilse` zinciri, dört döngü (`kez tekrarla`, aralık, `olduğu
-sürece`, `olana kadar`), `artır/azalt`, `diye sor`/`yanıt`, rastgele sayı,
-genitif aritmetik, listeler (`listesi`, `boş liste`, `ekle`, `adedi/ilki/sonu`,
-örtük çoğulla `her ... için`), **işlem tanımı ve çağrısı** (çok kelimeli adlar,
-parametreler, `döndür` — K-016 geçici sözdizimi), ek ayıklamalı ad çözümleme
-("sayacı" → "sayaç") ve Türkçe kodlu tanılar (S/A/T/C).
-
-Tarih arşivi: ilk README'ler [docs/tarih/](docs/tarih/) altında dondurulmuştur;
-`baslangic` ve `dogum` git etiketleri ilk commit'leri kalıcı işaretler.
+## Durum: Faz 0 — Felsefe ve grammar discovery
 
 Grammar masa başında tek seferde dondurulmaz. Önce **30 golden program** yazılır;
 sözdizimi bu gerçek kullanım örneklerinden çıkarılır. Her syntax değişikliği bu

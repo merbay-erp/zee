@@ -1,5 +1,26 @@
 //! Soyut sözdizimi ağacı (AST).
 
+use std::collections::HashMap;
+
+/// Derlenmiş program: üst düzey cümleler + ada göre işlem tanımları.
+/// İşlem gövdeleri buraya kaldırılır (hoist); hem denetleyici hem yorumlayıcı
+/// aynı kayıttan okur.
+#[derive(Debug, Clone)]
+pub struct Program {
+    pub cumleler: Vec<Cumle>,
+    pub islemler: HashMap<String, Islem>,
+}
+
+/// "işlem ortalamayı hesapla" tanımı. Ad çok kelimeli bir eylem cümlesidir.
+#[derive(Debug, Clone)]
+pub struct Islem {
+    pub ad: String,
+    /// Yalın parametre adları ("sayıları al" → "sayılar").
+    pub parametreler: Vec<String>,
+    pub govde: Vec<Cumle>,
+    pub satir: usize,
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub enum Islec {
     Buyuk,
@@ -58,6 +79,13 @@ pub enum Ifade {
     },
     /// Metinden sayıya dönüşüm (K-009): "yanıtın sayısı".
     Sayisi(Box<Ifade>),
+    /// İşlem çağrısı (K-016, geçici sözdizimi): "notlar için ortalamayı hesapla",
+    /// çok argüman: "a ve b ile selamla".
+    IslemCagrisi {
+        islem_adi: String,
+        argumanlar: Vec<Ifade>,
+        satir: usize,
+    },
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -122,4 +150,17 @@ pub enum Cumle {
         govde: Vec<Cumle>,
         satir: usize,
     },
+    /// `işlem <ad>` tanımı — hoist ile Program.islemler'e taşınır.
+    IslemTanimi(Islem),
+    /// `sonucu döndür` — yalnız işlem içinde geçerli.
+    Dondur { deger: Ifade, satir: usize },
+    /// `sonucu toplamı sayıların adedine böl` — payı paydaya bölüp hedefe atar.
+    BolVeAta {
+        hedef: String,
+        pay: Ifade,
+        payda: Ifade,
+        satir: usize,
+    },
+    /// Değer beklemeyen işlem çağrısı cümlesi: `"Ayşe" ve 10 ile selamla`.
+    CagriCumlesi { cagri: Ifade, satir: usize },
 }

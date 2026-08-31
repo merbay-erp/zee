@@ -168,6 +168,15 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   2. Sonuç-bağlama biçimi: `notlar için ortalamayı hesapla, sonucu ortalama olsun`
   3. İsimlendirilmiş argümanlar: `ortalamayı hesapla: sayılar notlar olsun ...`
 - **Programlar:** 12, 13, 14, 15, 30.
+- **Güncelleme (31 Ağu 2026, v0 gerçeklemesi):** Geçici biçim bootstrap parser'da
+  gerçeklendi ve golden 12/13/14 çalışıyor. Uygulamada öğrenilenler:
+  - Çağrı tanıma "satır, tanımlı bir işlem adıyla bitiyor mu?" kuralıyla
+    deterministik oluyor; bu yüzden **işlem çağrıdan önce tanımlanmalı** (v0 kuralı).
+  - En uzun işlem adı önce eşlenir; tanımlı bir işlem adıyla biten ama ayraçsız
+    bölge hata verir (S019) — sessiz yanlış yorum yok.
+  - v0 monomorfizmi: işlem gövdesi İLK çağrının argüman türleriyle denetlenir,
+    imza sabitlenir; sonraki çağrılar imzaya uymalı (T017). Özyineleme v0'da
+    yok (T016). RFC-0006 bu kısıtları da ele almalı.
 
 ## K-017 — Seçenek türü yüzeyi: `var/yok`
 

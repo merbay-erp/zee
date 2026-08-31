@@ -135,6 +135,38 @@ fn golden_06_donguler() {
     assert_eq!(cikti, beklenen);
 }
 
+#[test]
+fn golden_12_islem_tanimi() {
+    let cikti = kaynagi_calistir(&golden("12-islem-tanimi.dil")).expect("12 çalışmalı");
+    assert_eq!(cikti, vec!["90"]);
+}
+
+#[test]
+fn golden_13_islem_parametreleri() {
+    let cikti = kaynagi_calistir(&golden("13-islem-parametreleri.dil")).expect("13 çalışmalı");
+    assert_eq!(cikti, vec!["Merhaba genç Ayşe", "Merhaba Mustafa"]);
+}
+
+#[test]
+fn golden_14_not_ortalamasi() {
+    let cikti = kaynagi_calistir(&golden("14-not-ortalamasi.dil")).expect("14 çalışmalı");
+    assert_eq!(cikti, vec!["Ortalama: 76", "Geçtin"]);
+}
+
+#[test]
+fn ozyineleme_v0_reddedilir() {
+    let kaynak = "işlem kendini çağır\n    kendini çağır\n\nkendini çağır\n";
+    let hata = kaynagi_calistir(kaynak).expect_err("özyineleme v0'da reddedilmeli");
+    assert_eq!(hata.kod, "T016");
+}
+
+#[test]
+fn dondurmeyen_islem_ifadede_reddedilir() {
+    let kaynak = "işlem selam ver\n    \"selam\" yaz\n\nx selam ver olsun\nx yaz\n";
+    let hata = kaynagi_calistir(kaynak).expect_err("değer döndürmeyen işlem ifadede hata olmalı");
+    assert_eq!(hata.kod, "T019");
+}
+
 // ---- compile-fail: anti-örnekler ve tanı kalitesi ----
 
 #[test]

@@ -5,12 +5,17 @@
 //! dillerdeki "ilk keyword'e bak" yaklaşımının aynadaki karşılığıdır ve
 //! deterministik ayrıştırmayı mümkün kılar.
 
-use crate::agac::{AritmetikIslec, Cumle, Ifade, Islec, KosulKolu, Ozellik};
+use crate::agac::{AritmetikIslec, Cumle, Ifade, Islec, Islem, KosulKolu, Ozellik};
 use crate::sozcukleyici::{Token, TokenTur};
 use crate::tani::Tani;
 
 pub fn ayristir(tokenlar: Vec<Token>) -> Result<Vec<Cumle>, Tani> {
-    let mut ayristirici = Ayristirici { tokenlar, konum: 0 };
+    let mut ayristirici = Ayristirici {
+        tokenlar,
+        konum: 0,
+        derinlik: 0,
+        islem_adlari: Vec::new(),
+    };
     let program = ayristirici.blok_ayristir()?;
     ayristirici.bekle_dosya_sonu()?;
     Ok(program)
@@ -19,6 +24,11 @@ pub fn ayristir(tokenlar: Vec<Token>) -> Result<Vec<Cumle>, Tani> {
 struct Ayristirici {
     tokenlar: Vec<Token>,
     konum: usize,
+    /// Blok derinliği: işlem tanımları yalnız en dış düzeyde.
+    derinlik: usize,
+    /// Şimdiye dek tanımlanan işlem adları — çağrılar bunlarla eşlenir.
+    /// v0 kuralı: işlem, çağrılmadan ÖNCE tanımlanmış olmalı.
+    islem_adlari: Vec<String>,
 }
 
 /// Sayı/sabit sonrası ayrık yazılan hal ekleri (K-011): "1 den", "100 e", "0 dan".
@@ -80,7 +90,9 @@ impl Ayristirici {
                 .onerili("Alt satırları 4 boşluk içeriden yaz.".into()))
             }
         }
+        self.derinlik += 1;
         let govde = self.blok_ayristir()?;
+        self.derinlik -= 1;
         if let TokenTur::Cikinti = self.bak().tur {
             self.ilerle();
         }
@@ -106,6 +118,13 @@ impl Ayristirici {
     }
 
     fn cumle_ayristir(&mut self) -> Result<Cumle, Tani> {
+        // "işlem ..." satırı ilk kelimesinden tanınır (tanım başlığı, yüklem değil).
+        if let TokenTur::Kelime(k) = &self.bak().tur {
+            if k == "işlem" {
+                return self.islem_ayristir();
+            }
+        }
+
         let satir_tokenlari = self.satir_oku();
         let satir_no = satir_tokenlari.first().map(|t| t.satir).unwrap_or(1);
         let son_kelime = son_kelime(&satir_tokenlari);
@@ -120,8 +139,16 @@ impl Ayristirici {
             Some("azalt") => self.artir_azalt_ayristir(satir_tokenlari, satir_no, false),
             Some("sor") => self.sor_ayristir(satir_tokenlari, satir_no),
             Some("ekle") => self.ekle_ayristir(satir_tokenlari, satir_no),
+            Some("döndür") => self.dondur_ayristir(satir_tokenlari, satir_no),
+            Some("böl") => self.bol_ayristir(satir_tokenlari, satir_no),
             Some(k) if kosul_kelimesi(k) => self.ise_ayristir(satir_tokenlari, satir_no),
             _ => {
+                // Tanımlı bir işlem adına biten satır → çağrı cümlesi.
+                if let Some(cagri) =
+                    cagri_kalibi(&satir_tokenlari, satir_no, &self.islem_adlari)?
+                {
+                    return Ok(Cumle::CagriCumlesi { cagri, satir: satir_no });
+                }
                 let ilk = satir_tokenlari.first().cloned();
                 let (sutun, uzunluk) = ilk.map(|t| (t.sutun, t.uzunluk)).unwrap_or((1, 1));
                 Err(Tani::yeni(
@@ -134,18 +161,149 @@ impl Ayristirici {
                 .onerili(
                     "Desteklenen kalıplar: \"... yaz\", \"<ad> ... olsun\", \"<n> kez tekrarla\", \
                      \"<a> den <b> e kadar her <ad> için\", \"... olduğu sürece\", \"... ise / değilse\", \
-                     \"<ad> <n> artır/azalt\"."
+                     \"<ad> <n> artır/azalt\", \"işlem <ad>\", \"... döndür\", işlem çağrısı. \
+                     Çağrılan işlem daha önce tanımlanmış olmalı."
                         .into(),
                 ))
             }
         }
     }
 
+    /// `işlem <çok kelimeli ad>` + gövde. Gövdenin başındaki "X al" satırları
+    /// parametre bildirimidir.
+    fn islem_ayristir(&mut self) -> Result<Cumle, Tani> {
+        let mut baslik = self.satir_oku();
+        let satir = baslik.first().map(|t| t.satir).unwrap_or(1);
+        if self.derinlik > 0 {
+            return Err(Tani::yeni(
+                "S021",
+                "İşlem tanımı en dış düzeyde olmalı.".into(),
+                satir,
+                1,
+                1,
+            ));
+        }
+        baslik.remove(0); // "işlem"
+        let mut ad_kelimeleri = Vec::new();
+        for token in &baslik {
+            match &token.tur {
+                TokenTur::Kelime(k) => ad_kelimeleri.push(k.clone()),
+                _ => {
+                    return Err(Tani::yeni(
+                        "S022",
+                        "İşlem adı yalnız kelimelerden oluşur.".into(),
+                        token.satir,
+                        token.sutun,
+                        token.uzunluk,
+                    ))
+                }
+            }
+        }
+        if ad_kelimeleri.is_empty() {
+            return Err(Tani::yeni(
+                "S022",
+                "İşlemin bir adı olmalı.".into(),
+                satir,
+                1,
+                1,
+            )
+            .onerili("Örnek: işlem ortalamayı hesapla".into()));
+        }
+        let ad = ad_kelimeleri.join(" ");
+        self.islem_adlari.push(ad.clone());
+
+        // Gövde.
+        match self.bak().tur {
+            TokenTur::Girinti => {
+                self.ilerle();
+            }
+            _ => {
+                return Err(Tani::yeni(
+                    "S007",
+                    "İşlem başlığından sonra girintili bir gövde bekleniyor.".into(),
+                    satir,
+                    1,
+                    1,
+                ))
+            }
+        }
+        self.derinlik += 1;
+
+        // Parametre satırları: tam olarak `<ad> al`.
+        let mut parametreler = Vec::new();
+        loop {
+            let param = match (&self.tokenlar.get(self.konum), &self.tokenlar.get(self.konum + 1)) {
+                (Some(a), Some(b)) => match (&a.tur, &b.tur) {
+                    (TokenTur::Kelime(ad), TokenTur::Kelime(al)) if al == "al" => {
+                        match self.tokenlar.get(self.konum + 2).map(|t| &t.tur) {
+                            Some(TokenTur::SatirSonu) => Some(yalin_ad(ad)),
+                            _ => None,
+                        }
+                    }
+                    _ => None,
+                },
+                _ => None,
+            };
+            match param {
+                Some(p) => {
+                    parametreler.push(p);
+                    self.satir_oku();
+                }
+                None => break,
+            }
+        }
+
+        let govde = self.blok_ayristir()?;
+        self.derinlik -= 1;
+        if let TokenTur::Cikinti = self.bak().tur {
+            self.ilerle();
+        }
+
+        Ok(Cumle::IslemTanimi(Islem { ad, parametreler, govde, satir }))
+    }
+
+    fn dondur_ayristir(&mut self, mut tokenlar: Vec<Token>, satir: usize) -> Result<Cumle, Tani> {
+        tokenlar.pop(); // "döndür"
+        let deger = ile_ifadesi(&tokenlar, satir, &self.islem_adlari)?;
+        Ok(Cumle::Dondur { deger, satir })
+    }
+
+    /// `sonucu toplamı sayıların adedine böl`
+    fn bol_ayristir(&mut self, mut tokenlar: Vec<Token>, satir: usize) -> Result<Cumle, Tani> {
+        tokenlar.pop(); // "böl"
+        if tokenlar.len() < 3 {
+            return Err(Tani::yeni(
+                "S023",
+                "Bölme cümlesi \"<hedef> <pay> <payda> böl\" biçiminde yazılır.".into(),
+                satir,
+                1,
+                1,
+            )
+            .onerili("Örnek: sonucu toplamı sayıların adedine böl".into()));
+        }
+        let hedef_token = tokenlar.remove(0);
+        let hedef = match hedef_token.tur {
+            TokenTur::Kelime(k) => yalin_ad(&k),
+            _ => {
+                return Err(Tani::yeni(
+                    "S023",
+                    "Bölmenin hedefi bir ad olmalı.".into(),
+                    satir,
+                    hedef_token.sutun,
+                    hedef_token.uzunluk,
+                ))
+            }
+        };
+        let pay = tekil_ifade(tokenlar.remove(0))?;
+        let payda = bolge_ifadesi(&tokenlar, satir, &self.islem_adlari)?;
+        Ok(Cumle::BolVeAta { hedef, pay, payda, satir })
+    }
+
     // ---- cümle türleri ----
 
     fn yaz_ayristir(&mut self, mut tokenlar: Vec<Token>, satir: usize) -> Result<Cumle, Tani> {
         tokenlar.pop(); // "yaz"
-        let deger = ile_ifadesi(&tokenlar, satir)?;
+        let deger = ile_ifadesi(&tokenlar, satir, &self.islem_adlari)?;
         Ok(Cumle::Yaz { deger, satir })
     }
 
@@ -175,7 +333,7 @@ impl Ayristirici {
                 .onerili("Örnek: yaş 10 olsun".into()))
             }
         };
-        let deger = ile_ifadesi(&tokenlar, satir)?;
+        let deger = ile_ifadesi(&tokenlar, satir, &self.islem_adlari)?;
         Ok(Cumle::Olsun { ad, deger, satir, sutun, uzunluk })
     }
 
@@ -210,7 +368,7 @@ impl Ayristirici {
                 .onerili("Örnekler: 10 kez tekrarla · bildi doğru olana kadar tekrarla".into()))
             }
         }
-        let adet = ile_ifadesi(&tokenlar, satir)?;
+        let adet = ile_ifadesi(&tokenlar, satir, &self.islem_adlari)?;
         let govde = self.alt_blok(satir)?;
         Ok(Cumle::KezTekrarla { adet, govde, satir })
     }
@@ -307,7 +465,7 @@ impl Ayristirici {
         }
         let hedef_token = tokenlar.remove(0);
         let ifade = tekil_ifade(hedef_token)?;
-        let miktar = ile_ifadesi(&tokenlar, satir)?;
+        let miktar = ile_ifadesi(&tokenlar, satir, &self.islem_adlari)?;
         if artir {
             Ok(Cumle::Artir { ifade, miktar, satir })
         } else {
@@ -328,7 +486,7 @@ impl Ayristirici {
             .onerili("Örnek: sayılara 5 ekle".into()));
         }
         let hedef = tekil_ifade(tokenlar.remove(0))?;
-        let deger = ile_ifadesi(&tokenlar, satir)?;
+        let deger = ile_ifadesi(&tokenlar, satir, &self.islem_adlari)?;
         Ok(Cumle::Ekle { hedef, deger, satir })
     }
 
@@ -349,7 +507,7 @@ impl Ayristirici {
                 .onerili("Örnek: \"Adın ne?\" diye sor — cevap \"yanıt\" adıyla kullanılır.".into()))
             }
         }
-        let istem = ile_ifadesi(&tokenlar, satir)?;
+        let istem = ile_ifadesi(&tokenlar, satir, &self.islem_adlari)?;
         Ok(Cumle::Sor { istem, satir })
     }
 
@@ -447,12 +605,12 @@ const TAMLAYAN_EKLER: [&str; 8] = ["nın", "nin", "nun", "nün", "ın", "in", "u
 
 /// İfade bölgesi: önce yapılı kalıplar (aritmetik genitif, "…ın sayısı"),
 /// bulunamazsa "ile" zinciri.
-fn ile_ifadesi(tokenlar: &[Token], satir: usize) -> Result<Ifade, Tani> {
+fn ile_ifadesi(tokenlar: &[Token], satir: usize, islemler: &[String]) -> Result<Ifade, Tani> {
     if tokenlar.is_empty() {
         return Err(Tani::yeni("S013", "Burada bir değer bekleniyor.".into(), satir, 1, 1));
     }
 
-    if let Some(ifade) = yapili_kalip(tokenlar)? {
+    if let Some(ifade) = yapili_kalip(tokenlar, islemler)? {
         return Ok(ifade);
     }
 
@@ -471,7 +629,7 @@ fn ile_ifadesi(tokenlar: &[Token], satir: usize) -> Result<Ifade, Tani> {
                     token.uzunluk,
                 ));
             }
-            parcalar.push(bolge_ifadesi(&bolge, satir)?);
+            parcalar.push(bolge_ifadesi(&bolge, satir, islemler)?);
             bolge.clear();
         } else {
             bolge.push(token.clone());
@@ -486,7 +644,7 @@ fn ile_ifadesi(tokenlar: &[Token], satir: usize) -> Result<Ifade, Tani> {
             1,
         ));
     }
-    parcalar.push(bolge_ifadesi(&bolge, satir)?);
+    parcalar.push(bolge_ifadesi(&bolge, satir, islemler)?);
 
     if parcalar.len() == 1 {
         Ok(parcalar.pop().unwrap())
@@ -496,11 +654,11 @@ fn ile_ifadesi(tokenlar: &[Token], satir: usize) -> Result<Ifade, Tani> {
 }
 
 /// Tek "ile" parçası: tek token ya da yapılı kalıp.
-fn bolge_ifadesi(tokenlar: &[Token], _satir: usize) -> Result<Ifade, Tani> {
+fn bolge_ifadesi(tokenlar: &[Token], _satir: usize, islemler: &[String]) -> Result<Ifade, Tani> {
     if tokenlar.len() == 1 {
         return tekil_ifade(tokenlar[0].clone());
     }
-    if let Some(ifade) = yapili_kalip(tokenlar)? {
+    if let Some(ifade) = yapili_kalip(tokenlar, islemler)? {
         return Ok(ifade);
     }
     let ikinci = &tokenlar[1];
@@ -640,7 +798,7 @@ fn kosul_ifadesi(tokenlar: &[Token], satir: usize) -> Result<Ifade, Tani> {
 ///   X in Y ye bölümü                    (ekler adlara bitişik — 3 token,
 ///                                        sabitlerde ayrık — 4 ya da 5 token)
 ///   W ın sayısı                         ("yanıtın sayısı" — 2 token)
-fn yapili_kalip(tokenlar: &[Token]) -> Result<Option<Ifade>, Tani> {
+fn yapili_kalip(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifade>, Tani> {
     let n = tokenlar.len();
     let kelime = |i: usize| -> Option<&str> {
         match &tokenlar[i].tur {
@@ -652,6 +810,12 @@ fn yapili_kalip(tokenlar: &[Token]) -> Result<Option<Ifade>, Tani> {
         Some(k) => k,
         None => return Ok(None),
     };
+
+    // İşlem çağrısı ifadesi: bölge tanımlı bir işlem adıyla bitiyorsa.
+    let ilk_satir = tokenlar[0].satir;
+    if let Some(cagri) = cagri_kalibi(tokenlar, ilk_satir, islemler)? {
+        return Ok(Some(cagri));
+    }
 
     // W ın sayısı — ek, ada bitişiktir ("yanıtın"); çözümleyici ayıklar.
     if n == 2 && son == "sayısı" {
@@ -787,6 +951,111 @@ fn yapili_kalip(tokenlar: &[Token]) -> Result<Option<Ifade>, Tani> {
     }
 
     Ok(None)
+}
+
+/// Belirtme eki almış adı yalın hale getirir ("sayıları"→"sayılar", "adı"→"ad").
+/// Tanım anında kapsam olmadığı için yapısaldır: yalnız ek atılır, ünsüz
+/// yumuşaması geri çevrilmez ("sonucu"→"sonuc"); çözümleyicinin aday üretimi
+/// iki yönü de denediğinden gövde içi başvurular tutarlı çözülür.
+fn yalin_ad(ekli: &str) -> String {
+    for ek in ["yı", "yi", "yu", "yü", "ı", "i", "u", "ü"] {
+        if let Some(kok) = ekli.strip_suffix(ek) {
+            if kok.chars().count() >= 2 {
+                return kok.to_string();
+            }
+        }
+    }
+    ekli.to_string()
+}
+
+/// Satır sonu, tanımlı bir işlem adıyla bitiyorsa çağrı üretir (K-016 geçici
+/// sözdizimi): `<argümanlar> için/ile <işlem adı>`; argümanlar "ve" ile ayrılır.
+/// En uzun ad önce denenir (determinizm).
+fn cagri_kalibi(
+    tokenlar: &[Token],
+    satir: usize,
+    islemler: &[String],
+) -> Result<Option<Ifade>, Tani> {
+    let n = tokenlar.len();
+    if n == 0 {
+        return Ok(None);
+    }
+
+    let mut adaylar: Vec<&String> = islemler.iter().collect();
+    adaylar.sort_by_key(|ad| std::cmp::Reverse(ad.split(' ').count()));
+
+    for ad in adaylar {
+        let kelimeler: Vec<&str> = ad.split(' ').collect();
+        let k = kelimeler.len();
+        if k > n {
+            continue;
+        }
+        let kuyruk_uyar = tokenlar[n - k..]
+            .iter()
+            .zip(&kelimeler)
+            .all(|(token, kelime)| matches!(&token.tur, TokenTur::Kelime(t) if t == kelime));
+        if !kuyruk_uyar {
+            continue;
+        }
+
+        let mut arg_bolgesi = &tokenlar[..n - k];
+        let mut argumanlar = Vec::new();
+        if !arg_bolgesi.is_empty() {
+            // Sondaki ayraç: "için" ya da "ile".
+            let ayrac_var = matches!(
+                &arg_bolgesi[arg_bolgesi.len() - 1].tur,
+                TokenTur::Kelime(a) if a == "için" || a == "ile"
+            );
+            if !ayrac_var {
+                return Err(Tani::yeni(
+                    "S019",
+                    format!(
+                        "\"{}\" çağrısında argümanlar \"için\" ya da \"ile\" ile ayrılır.",
+                        ad
+                    ),
+                    satir,
+                    1,
+                    1,
+                )
+                .onerili(format!("Örnek: notlar için {}", ad)));
+            }
+            arg_bolgesi = &arg_bolgesi[..arg_bolgesi.len() - 1];
+            let mut bolge: Vec<Token> = Vec::new();
+            for token in arg_bolgesi {
+                if kelime_mi(token, "ve") {
+                    if bolge.len() != 1 {
+                        return Err(arg_hatasi(ad, satir));
+                    }
+                    argumanlar.push(tekil_ifade(bolge.pop().unwrap())?);
+                } else {
+                    bolge.push(token.clone());
+                }
+            }
+            if bolge.len() != 1 {
+                return Err(arg_hatasi(ad, satir));
+            }
+            argumanlar.push(tekil_ifade(bolge.pop().unwrap())?);
+        }
+
+        return Ok(Some(Ifade::IslemCagrisi {
+            islem_adi: ad.clone(),
+            argumanlar,
+            satir,
+        }));
+    }
+
+    Ok(None)
+}
+
+fn arg_hatasi(ad: &str, satir: usize) -> Tani {
+    Tani::yeni(
+        "S020",
+        format!("\"{}\" çağrısında her argüman tek bir değer olmalı; \"ve\" ile ayrılır.", ad),
+        satir,
+        1,
+        1,
+    )
+    .onerili("Örnek: \"Ayşe\" ve 10 ile selamla".into())
 }
 
 fn goster(token: &Token) -> String {
