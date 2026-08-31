@@ -2037,21 +2037,24 @@ fn cagri_kalibi(
                 .onerili(format!("Örnek: notlar için {}", ad)));
             }
             arg_bolgesi = &arg_bolgesi[..arg_bolgesi.len() - 1];
+            // Her argüman bir BÖLGEDİR (v0.2, S020 esnetildi): tek değer ya da
+            // yapılı kalıp ("sayıların adedi", "3,14", "yanıtın sayısı"...).
             let mut bolge: Vec<Token> = Vec::new();
             for token in arg_bolgesi {
                 if kelime_mi(token, "ve") {
-                    if bolge.len() != 1 {
+                    if bolge.is_empty() {
                         return Err(arg_hatasi(ad, satir));
                     }
-                    argumanlar.push(tekil_ifade(bolge.pop().unwrap())?);
+                    argumanlar.push(bolge_ifadesi(&bolge, satir, islemler)?);
+                    bolge.clear();
                 } else {
                     bolge.push(token.clone());
                 }
             }
-            if bolge.len() != 1 {
+            if bolge.is_empty() {
                 return Err(arg_hatasi(ad, satir));
             }
-            argumanlar.push(tekil_ifade(bolge.pop().unwrap())?);
+            argumanlar.push(bolge_ifadesi(&bolge, satir, islemler)?);
         }
 
         return Ok(Some(Ifade::IslemCagrisi {
@@ -2067,12 +2070,12 @@ fn cagri_kalibi(
 fn arg_hatasi(ad: &str, satir: usize) -> Tani {
     Tani::yeni(
         "S020",
-        format!("\"{}\" çağrısında her argüman tek bir değer olmalı; \"ve\" ile ayrılır.", ad),
+        format!("\"{}\" çağrısında \"ve\"nin iki yanında da bir argüman olmalı.", ad),
         satir,
         1,
         1,
     )
-    .onerili("Örnek: \"Ayşe\" ve 10 ile selamla".into())
+    .onerili("Örnek: \"Ayşe\" ve 10 ile selamla — argüman bir kalıp da olabilir: sayıların adedi ve 3 ile ...".into())
 }
 
 fn goster(token: &Token) -> String {

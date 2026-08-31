@@ -106,3 +106,22 @@ y 3 için karıştır olsun
     let hata = kaynagi_calistir(kaynak).expect_err("dönüş birleşimi T018");
     assert_eq!(hata.kod, "T018");
 }
+
+#[test]
+fn cok_tokenli_cagri_argumanlari() {
+    // v0.2: argümanlar bölge olabilir (S020 esnetildi).
+    let kaynak = "\
+işlem topla
+    birinciyi al
+    ikinciyi al
+    toplam birinci ile ikincinin toplamı olsun
+    toplamı döndür
+
+sayılar 1, 2, 3 listesi olsun
+taban 3,5 olsun
+x sayıların adedi ve tabanın tam kısmı ile topla olsun
+x yaz
+";
+    let cikti = kaynagi_calistir(kaynak).expect("bölge argümanlar çalışmalı");
+    assert_eq!(cikti, vec!["6"]);
+}
