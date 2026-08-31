@@ -41,8 +41,8 @@ jobs:
       - name: Milestone dosyası çalışıyor
         working-directory: compiler
         run: cargo run -- çalıştır ../merhaba.dil
-      # Playground çekirdeği wasm hedefinde derlenmeye devam etmeli (K-039).
+      # Playground çekirdeği wasm hedefinde derlenmeye devam etmeli (K-039/K-040).
       - name: Playground (wasm) derlenir
         if: matrix.os == 'ubuntu-latest'
         working-directory: compiler
-        run: cargo build --release --target wasm32-unknown-unknown --lib
+        run: cargo rustc --release --target wasm32-unknown-unknown --lib --crate-type cdylib -- -C link-arg=-zstack-size=16777216

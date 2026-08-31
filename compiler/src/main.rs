@@ -5,6 +5,19 @@
 use std::process::ExitCode;
 
 fn main() -> ExitCode {
+    // Derinlik sınırına (C019, 1000) kadar özyineleme her platformda doğal
+    // yığını taşırmamalı; Windows ana iş parçacığı 1 MB olduğundan iş
+    // 32 MB yığınlı bir iş parçacığında koşar (K-040).
+    std::thread::Builder::new()
+        .name("dil".into())
+        .stack_size(32 * 1024 * 1024)
+        .spawn(govde)
+        .expect("iş parçacığı açılamadı")
+        .join()
+        .expect("iş parçacığı düştü")
+}
+
+fn govde() -> ExitCode {
     let argumanlar: Vec<String> = std::env::args().skip(1).collect();
 
     match argumanlar.first().map(|s| s.as_str()) {

@@ -773,10 +773,11 @@ fn islem_cagir(
     satir: usize,
 ) -> Result<Option<Deger>, Tani> {
     // Özyineleme korkuluğu (v0.2): Rust yığını taşmadan Türkçe tanı ver.
-    if derinlik > 5000 {
+    // Sınır, tarayıcı motorlarının ~1 MB'lik çağrı yığınına bile payla sığmalı (K-040).
+    if derinlik > 500 {
         return Err(Tani::yeni(
             "C019",
-            format!("\"{}\" çağrı derinliği 5000'i aştı: temel durum hiç yakalanmıyor olabilir.", ad),
+            format!("\"{}\" çağrı derinliği 500'ü aştı: temel durum hiç yakalanmıyor olabilir.", ad),
             satir,
             1,
             1,

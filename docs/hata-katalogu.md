@@ -130,7 +130,7 @@ türetilmiştir; yeni kod eklenince bu dosya güncellenir — CI'a bağlanması 
 | C016 | JSON biçim hatası | v0: düz nesne + metin değerler |
 | C017 | Sunucu kurulamadı | Kapı boşta mı? Düşük kapılar (<1024) yönetici ister |
 | C018 | Ağ isteği başarısız | v0 yalnız http:// destekler (TLS yok); adresi ve bağlantıyı kontrol et |
-| C019 | Çağrı derinliği 5000'i aştı | Özyinelemeli adım her seferinde temel duruma yaklaşmalı |
+| C019 | Çağrı derinliği 500'ü aştı | Özyinelemeli adım her seferinde temel duruma yaklaşmalı |
 
 ## D — Doğrulama
 

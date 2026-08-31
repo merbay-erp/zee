@@ -285,6 +285,26 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   gidiş-dönüş dahil); 7 örnek tarayıcıda elle koşuldu (faktöriyel, testler,
   tohum=1 ile kazanılan tahmin oyunu dahil).
 
+## K-040 — İkinci CI dersi: derinlik sınırı doğal yığına sığmalı
+
+- **Olay:** K-035'in 5000'lik C019 sınırı, yorumlayıcının Rust çerçeveleriyle
+  çarpılınca 8 MB'lik test yığınlarının TAM KENARINA denk geldi — yerelde kıl
+  payı geçti, CI'da üç platformda da doğal yığın taşmasıyla düştü. Windows'ta
+  ayrıca Cargo.toml'daki `cdylib` bildirimi bin ile PDB adı çakıştırıp uyarı
+  üretti ("uyarı yok" ilkesine aykırı).
+- **Ölçüm:** wasm'da taşan doğrusal bellek DEĞİL, tarayıcı motorunun kendi
+  çağrı yığını çıktı (V8 ~1 MB, ayarlanamaz): ölçümde ~700 dil-seviyesinde
+  taşıyor. En dar platform bu.
+- **Karar:** C019 sınırı **500** — V8'e bile ~%40 payla sığar, eğitim dili
+  için fazlasıyla derin; sınır her platformda AYNI (determinizm: aynı program
+  her yerde aynı sonucu verir). CLI işi 32 MB yığınlı iş parçacığında koşar
+  (Windows ana iş parçacığı 1 MB'dır). `cdylib` Cargo.toml'dan çıktı;
+  playground `cargo rustc --crate-type cdylib` ile hedefe özgü derlenir ve
+  wasm gölge yığını 16 MB'a ayarlanır (`-zstack-size`).
+- **İlke:** Dilin verdiği her sınır, dilin KENDİ tanısıyla karşılanmalı —
+  altındaki makinenin taşmasıyla değil. Sınır seçerken en dar platform
+  (Windows ana iş parçacığı, wasm doğrusal bellek) ölçü alınır.
+
 ## K-012 — Liste sabiti: `3, 7, 1, 9 listesi`
 
 - **Karar:** Virgülle ayrılmış değerler + `listesi`. Boş: `boş liste`.
