@@ -22,7 +22,7 @@ fn golden_korpus_idempotent() {
         assert_eq!(bir, iki, "idempotent değil: {:?}", yol.file_name());
         sayilan += 1;
     }
-    assert_eq!(sayilan, 30, "30 golden programın hepsi taranmalı");
+    assert!(sayilan >= 33, "genişletilmiş korpusun tamamı taranmalı (bulunan: {})", sayilan);
 }
 
 #[test]

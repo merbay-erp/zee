@@ -114,3 +114,34 @@ fn golden_29_esp32_simulatoru() {
     calistir_io(&program, &mut io).expect("29 çalışmalı");
     assert_eq!(io.cikti[0], "[ışık] yeşil yandı");
 }
+
+#[test]
+fn golden_31_birimler() {
+    let klasor = format!("{}/../golden", env!("CARGO_MANIFEST_DIR"));
+    let mut yukleyici = |ad: &str| -> Result<String, String> {
+        std::fs::read_to_string(format!("{}/{}.dil", klasor, ad)).map_err(|e| e.to_string())
+    };
+    let program = dil::kaynagi_derle_birimlerle(&golden("31-birimler.dil"), &mut yukleyici)
+        .expect("31 derlenmeli");
+    let mut io = ToplayanIo::yeni(Vec::new());
+    calistir_io(&program, &mut io).expect("31 çalışmalı");
+    assert_eq!(io.cikti, vec!["Ödenecek: 59,88 lira"]);
+
+    // Birimin kendi testi de dene kapsamında.
+    let sonuclar = dil::programi_dene(&program);
+    assert!(sonuclar.iter().any(|s| s.ad == "hesap_araclari: kdv doğru eklenir"));
+    assert!(sonuclar.iter().all(|s| s.hata.is_none()));
+}
+
+#[test]
+fn golden_32_ondalik_market() {
+    let cikti = dil::kaynagi_calistir(&golden("32-ondalik-market.dil")).expect("32 çalışmalı");
+    assert_eq!(
+        cikti,
+        vec![
+            "Tutar: 49,975 lira",
+            "Yuvarlak: 50 lira",
+            "Ondalıklar tam: sürpriz yok",
+        ]
+    );
+}
