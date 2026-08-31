@@ -203,6 +203,42 @@ const KALIP_KELIMELERI: [&str; 40] = [
     "dene", "bitir", "saniye", "dakika", "hatasını",
 ];
 
+/// Hover açıklamaları: kalıp kelimesi → tek satır Türkçe açıklama + örnek.
+/// (Kaynak: spec/02-dizim ve dil turu; kelime kalıbın son ya da ayırt edici
+/// parçasıdır.)
+const KELIME_ACIKLAMALARI: [(&str, &str); 30] = [
+    ("yaz", "Cümleyi bitirir: değeri ekrana (ya da `X dosyasına`) yazar.\n\n`\"Merhaba\" ile isim yaz`"),
+    ("olsun", "Ad tanımlar ya da var olan ada atar; tür ilk değerden çıkar ve sonra değişmez.\n\n`yaş 10 olsun`"),
+    ("ise", "Koşul dalı açar; koşul yüklem-sonludur (`...se/...sa`).\n\n`yaş 8 veya daha büyükse`"),
+    ("değilse", "Bir `... ise` bloğunun aksi dalı; `değilse <koşul>` ile zincirlenir.\n\n`değilse tahmin gizliden büyükse`"),
+    ("tekrarla", "Döngü açar: `10 kez tekrarla` ya da `bildi doğru olana kadar tekrarla`."),
+    ("için", "İki iş görür: `her sayı için` (gezinme) ve `4 için karesini hesapla` (işlem çağrısı)."),
+    ("sürece", "Koşullu döngü: `sayaç 0 dan büyük olduğu sürece`."),
+    ("sor", "Kullanıcıya sorar; cevap `yanıt` adına gelir.\n\n`\"Adın ne?\" diye sor`"),
+    ("yanıt", "Son `diye sor` cevabı. Sayı gerekiyorsa: `yanıtın sayısı`."),
+    ("ile", "Değerleri birleştirir: metinde ekleme, aritmetik kalıpta ilk terim, çağrıda ayraç."),
+    ("işlem", "İşlem tanımı açar; parametreler gövde başında `... al`, dönüş `... döndür`.\n\n`işlem karesini hesapla`"),
+    ("al", "İşlem parametresi bildirir (gövdenin başında).\n\n`sayıyı al`"),
+    ("döndür", "İşlemden değer döndürür. `yok döndür` Seçenek, `\"...\" hatasını döndür` Sonuç üretir."),
+    ("yapı", "Alanları türleriyle bildirilen kayıt türü tanımlar; `yeni <Ad>` ile kurulur."),
+    ("yeni", "Bir yapıdan değer oluşturur.\n\n`ayşe yeni Öğrenci olsun`"),
+    ("test", "Test bloğu açar; `dil dene` (ve playground) koşar. Doğrulama: `... olmalı`."),
+    ("olmalı", "Test doğrulaması: `kare 16 ya eşit olmalı`. Tutmazsa D001 beklenen/bulunanı gösterir."),
+    ("ekle", "Listeye öğe ekler ya da dosya sonuna satır ekler.\n\n`sayılara 5 ekle`"),
+    ("artır", "Sayıyı yerinde artırır.\n\n`toplamı notla artır`"),
+    ("azalt", "Sayıyı yerinde azaltır.\n\n`sayacı 1 azalt`"),
+    ("böl", "Bölme cümlesi: `ortalamayı toplamı adede böl`."),
+    ("göre", "Desen eşleştirme açar; kollar `\"kare\" ise`, varsayılan `değilse`."),
+    ("dene", "Başarabilir işi Sonuç'a çevirir: `dosyasını okumayı dene`, `sayısını almayı dene`."),
+    ("varsa", "Seçenek sorgusu; bu dalda `değeri` erişimi güvenlidir (T036 daraltması)."),
+    ("başarılıysa", "Sonuç sorgusu; bu dalda `değeri` güvenlidir, `değilse` dalında `hatası`."),
+    ("yok", "Değerin yokluğu (Seçenek). Koleksiyon boşluğu ayrıdır: `boşsa`."),
+    ("kullan", "Birim bağlar: `hesap_araclari birimini kullan` — dosya = birim (RFC-0009)."),
+    ("bitir", "`programı bitir` — programı o noktada sonlandırır."),
+    ("bekle", "`yarım saniye bekle` ya da eşzamanlı bloktan sonra `hepsini bekle`."),
+    ("listesi", "Liste sabiti: `3, 7, 1, 9 listesi`. Virgülden sonra boşluk liste ayracıdır."),
+];
+
 #[derive(Default)]
 pub struct Sunucu {
     belgeler: HashMap<String, String>,
@@ -232,7 +268,9 @@ impl Sunucu {
             "initialize" => {
                 let sonuc = format!(
                     "{{\"capabilities\":{{\"textDocumentSync\":1,\
-                     \"completionProvider\":{{}}}},\
+                     \"completionProvider\":{{}},\
+                     \"hoverProvider\":true,\
+                     \"definitionProvider\":true}},\
                      \"serverInfo\":{{\"name\":\"dillsp\",\"version\":{}}}}}",
                     json_metin_yaz(env!("CARGO_PKG_VERSION"))
                 );
@@ -264,6 +302,41 @@ impl Sunucu {
                 cikti
                     .govdeler
                     .push(yanit(kimlik, &format!("[{}]", ogeler.join(","))));
+            }
+            "textDocument/hover" => {
+                let sonuc = konum_parametreleri(&mesaj)
+                    .and_then(|(uri, satir, sutun)| {
+                        let metin = self.belgeler.get(&uri)?;
+                        let kelime = konumdaki_kelime(metin, satir, sutun)?;
+                        aciklama_uret(metin, &kelime)
+                    })
+                    .map(|aciklama| {
+                        format!(
+                            "{{\"contents\":{{\"kind\":\"markdown\",\"value\":{}}}}}",
+                            json_metin_yaz(&aciklama)
+                        )
+                    })
+                    .unwrap_or_else(|| "null".into());
+                cikti.govdeler.push(yanit(kimlik, &sonuc));
+            }
+            "textDocument/definition" => {
+                let sonuc = konum_parametreleri(&mesaj)
+                    .and_then(|(uri, satir, sutun)| {
+                        let metin = self.belgeler.get(&uri)?;
+                        let kelime = konumdaki_kelime(metin, satir, sutun)?;
+                        let (tanim_satiri, bas, uzunluk) = tanimi_bul(metin, &kelime)?;
+                        Some(format!(
+                            "{{\"uri\":{},\"range\":{{\"start\":{{\"line\":{},\"character\":{}}},\
+                             \"end\":{{\"line\":{},\"character\":{}}}}}}}",
+                            json_metin_yaz(&uri),
+                            tanim_satiri,
+                            bas,
+                            tanim_satiri,
+                            bas + uzunluk
+                        ))
+                    })
+                    .unwrap_or_else(|| "null".into());
+                cikti.govdeler.push(yanit(kimlik, &sonuc));
             }
             "shutdown" => cikti.govdeler.push(yanit(kimlik, "null")),
             "exit" => cikti.devam = false,
@@ -297,6 +370,113 @@ impl Sunucu {
             govde.join(",")
         )
     }
+}
+
+/// textDocument + position parametrelerini söker (satır/sütun 0 tabanlı).
+fn konum_parametreleri(mesaj: &Json) -> Option<(String, usize, usize)> {
+    let parametreler = mesaj.alan("params")?;
+    let uri = parametreler
+        .alan("textDocument")?
+        .alan("uri")?
+        .metin()?
+        .to_string();
+    let konum = parametreler.alan("position")?;
+    let sayi = |alan: &str| -> Option<usize> {
+        match konum.alan(alan)? {
+            Json::Sayi(s) => Some(*s as usize),
+            _ => None,
+        }
+    };
+    Some((uri, sayi("line")?, sayi("character")?))
+}
+
+/// Konumdaki kelimeyi döner. Sütun UTF-16 birimidir; dilin alfabesi BMP
+/// içinde kaldığından karakter sayımıyla birebirdir.
+fn konumdaki_kelime(metin: &str, satir: usize, sutun: usize) -> Option<String> {
+    let satir_metni = metin.lines().nth(satir)?;
+    let karakterler: Vec<char> = satir_metni.chars().collect();
+    let kelime_harfi = |k: char| k.is_alphanumeric() || k == '_';
+    if sutun >= karakterler.len() || !kelime_harfi(karakterler[sutun]) {
+        return None;
+    }
+    let mut bas = sutun;
+    while bas > 0 && kelime_harfi(karakterler[bas - 1]) {
+        bas -= 1;
+    }
+    let mut son = sutun;
+    while son < karakterler.len() && kelime_harfi(karakterler[son]) {
+        son += 1;
+    }
+    Some(karakterler[bas..son].iter().collect())
+}
+
+/// Kelimenin kendisi + morfolojik kök adayları (çözümleyiciyle aynı kurallar).
+fn adaylar(kelime: &str) -> Vec<String> {
+    let mut liste = vec![kelime.to_string()];
+    liste.extend(crate::cozumleyici::kok_adaylari(kelime));
+    liste
+}
+
+/// Hover içeriği: önce kalıp kelimesi açıklaması, yoksa belgedeki tanım satırı.
+fn aciklama_uret(metin: &str, kelime: &str) -> Option<String> {
+    for (kalip, aciklama) in KELIME_ACIKLAMALARI {
+        if kelime == kalip {
+            return Some(format!("**{}** — {}", kalip, aciklama));
+        }
+    }
+    let (satir, _, _) = tanimi_bul(metin, kelime)?;
+    let tanim = metin.lines().nth(satir)?.trim();
+    Some(format!("Tanım (satır {}):\n```\n{}\n```", satir + 1, tanim))
+}
+
+/// Kelimenin tanımlandığı yeri arar: işlem/yapı başlığı, `... olsun` ya da
+/// `... al` satırı. Dönen: (satır, sütun, uzunluk) — hepsi karakter cinsinden.
+fn tanimi_bul(metin: &str, kelime: &str) -> Option<(usize, usize, usize)> {
+    let adaylar = adaylar(kelime);
+    let kelime_konumu = |satir: &str, hedefler: &[String]| -> Option<(usize, usize)> {
+        let mut sutun = 0usize;
+        for parca in satir.split(' ') {
+            let temiz = parca.trim();
+            if hedefler.iter().any(|h| h == temiz) {
+                return Some((sutun, temiz.chars().count()));
+            }
+            sutun += parca.chars().count() + 1;
+        }
+        None
+    };
+
+    // 1) işlem / yapı başlıkları: başlıktaki HERHANGİ bir kelime aday
+    //    kökle eşleşirse başlığa gider (işlem adları çok kelimeli olabilir).
+    for (no, satir) in metin.lines().enumerate() {
+        let kirpik = satir.trim_start();
+        if kirpik.starts_with("işlem ") || kirpik.starts_with("yapı ") {
+            if let Some((sutun, uzunluk)) = kelime_konumu(satir, &adaylar) {
+                return Some((no, sutun, uzunluk));
+            }
+        }
+    }
+    // 2) Değer tanımı (`<ad> ... olsun`) ya da parametre (`<ad>ı al`):
+    //    satırın İLK kelimesi aday kökle eşleşmeli.
+    for (no, satir) in metin.lines().enumerate() {
+        let kirpik = satir.trim_start();
+        let Some(ilk) = kirpik.split(' ').next() else { continue };
+        let ilk_adaylar = adaylar_ile_kesisir(ilk, &adaylar);
+        if !ilk_adaylar {
+            continue;
+        }
+        if kirpik.ends_with(" olsun") || kirpik.ends_with(" al") {
+            let girinti = satir.chars().count() - kirpik.chars().count();
+            return Some((no, girinti, ilk.chars().count()));
+        }
+    }
+    None
+}
+
+/// İlk kelimenin kendi kök adayları, aranan adaylarla kesişiyor mu?
+/// (Kullanımdaki ek ile tanımdaki ek farklı olabilir: `sayacı` ↔ `sayaç`.)
+fn adaylar_ile_kesisir(ilk: &str, aranan: &[String]) -> bool {
+    let ilk_kokler = adaylar(ilk);
+    ilk_kokler.iter().any(|k| aranan.iter().any(|a| a == k))
 }
 
 fn yanit(kimlik: Option<&Json>, sonuc: &str) -> String {

@@ -70,3 +70,55 @@ fn exit_dongusu_durdurur() {
     assert!(sunucu.mesaj_isle(r#"{"jsonrpc":"2.0","id":2,"method":"shutdown"}"#).devam);
     assert!(!sunucu.mesaj_isle(r#"{"jsonrpc":"2.0","method":"exit"}"#).devam);
 }
+
+#[test]
+fn hover_kalip_kelimesini_aciklar() {
+    let mut sunucu = Sunucu::yeni();
+    sunucu.mesaj_isle(r#"{"jsonrpc":"2.0","method":"textDocument/didOpen","params":{"textDocument":{"uri":"file:///tmp/h.dil","text":"\"selam\" yaz\n"}}}"#);
+    // 0. satır, 8. karakter → "yaz" kelimesi.
+    let cikti = sunucu.mesaj_isle(r#"{"jsonrpc":"2.0","id":9,"method":"textDocument/hover","params":{"textDocument":{"uri":"file:///tmp/h.dil"},"position":{"line":0,"character":8}}}"#);
+    let yanit = &cikti.govdeler[0];
+    assert!(yanit.contains("**yaz**"), "{}", yanit);
+    assert!(yanit.contains("markdown"), "{}", yanit);
+}
+
+#[test]
+fn hover_kullanici_tanimini_gosterir() {
+    let mut sunucu = Sunucu::yeni();
+    sunucu.mesaj_isle(r#"{"jsonrpc":"2.0","method":"textDocument/didOpen","params":{"textDocument":{"uri":"file:///tmp/h2.dil","text":"sayaç 3 olsun\nsayacı yaz\n"}}}"#);
+    // 1. satır, 2. karakter → "sayacı" — tanımı 0. satırdaki "sayaç".
+    let cikti = sunucu.mesaj_isle(r#"{"jsonrpc":"2.0","id":10,"method":"textDocument/hover","params":{"textDocument":{"uri":"file:///tmp/h2.dil"},"position":{"line":1,"character":2}}}"#);
+    let yanit = &cikti.govdeler[0];
+    assert!(yanit.contains("sayaç 3 olsun"), "{}", yanit);
+}
+
+#[test]
+fn tanima_git_islem_basligina_gider() {
+    let mut sunucu = Sunucu::yeni();
+    let ac = r#"{"jsonrpc":"2.0","method":"textDocument/didOpen","params":{"textDocument":{"uri":"file:///tmp/t.dil","text":"işlem karesini hesapla\n    sayıyı al\n    sonucu sayı ile sayının çarpımı olsun\n    sonucu döndür\n\nkare 4 için karesini hesapla olsun\n"}}}"#;
+    sunucu.mesaj_isle(ac);
+    // 5. satır "kare 4 için karesini hesapla olsun" — 21. karakter "hesapla" içinde.
+    let cikti = sunucu.mesaj_isle(r#"{"jsonrpc":"2.0","id":11,"method":"textDocument/definition","params":{"textDocument":{"uri":"file:///tmp/t.dil"},"position":{"line":5,"character":21}}}"#);
+    let yanit = &cikti.govdeler[0];
+    assert!(yanit.contains("\"line\":0"), "işlem başlığına gitmeli: {}", yanit);
+}
+
+#[test]
+fn tanima_git_ekli_degiskeni_cozer() {
+    let mut sunucu = Sunucu::yeni();
+    sunucu.mesaj_isle(r#"{"jsonrpc":"2.0","method":"textDocument/didOpen","params":{"textDocument":{"uri":"file:///tmp/t2.dil","text":"sayaç 3 olsun\nsayacı 1 azalt\n"}}}"#);
+    // 1. satır "sayacı" (ek almış kullanım) → 0. satırdaki "sayaç ... olsun".
+    let cikti = sunucu.mesaj_isle(r#"{"jsonrpc":"2.0","id":12,"method":"textDocument/definition","params":{"textDocument":{"uri":"file:///tmp/t2.dil"},"position":{"line":1,"character":3}}}"#);
+    let yanit = &cikti.govdeler[0];
+    assert!(yanit.contains("\"line\":0"), "{}", yanit);
+    assert!(yanit.contains("\"character\":0"), "{}", yanit);
+}
+
+#[test]
+fn hover_bilinmeyen_konumda_null() {
+    let mut sunucu = Sunucu::yeni();
+    sunucu.mesaj_isle(r#"{"jsonrpc":"2.0","method":"textDocument/didOpen","params":{"textDocument":{"uri":"file:///tmp/h3.dil","text":"\"selam\" yaz\n"}}}"#);
+    // Tırnak içine hover → kelime yok → null.
+    let cikti = sunucu.mesaj_isle(r#"{"jsonrpc":"2.0","id":13,"method":"textDocument/hover","params":{"textDocument":{"uri":"file:///tmp/h3.dil"},"position":{"line":0,"character":3}}}"#);
+    assert!(cikti.govdeler[0].contains("\"result\":null"), "{}", cikti.govdeler[0]);
+}
