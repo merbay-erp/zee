@@ -265,8 +265,12 @@ pub enum Cumle {
         deger: Ifade,
         satir: usize,
     },
-    /// `sonucu döndür` — yalnız işlem içinde geçerli.
-    Dondur { deger: Ifade, satir: usize },
+    /// `sonucu döndür` — yalnız işlem içinde geçerli. `sonuca_sarmala`
+    /// çözümleyicide işaretlenir: işlemin birleşik dönüş türü Sonuç ise
+    /// başarı dalları çalışma zamanında Sonuç'a sarılır (RFC-0008 §4.1).
+    Dondur { deger: Ifade, sonuca_sarmala: bool, satir: usize },
+    /// `"sıfıra bölünmez" hatasını döndür` — işlemi Sonuç-hata ile bitirir.
+    HataDondur { mesaj: Ifade, satir: usize },
     /// `sonucu toplamı sayıların adedine böl` — payı paydaya bölüp hedefe atar.
     BolVeAta {
         hedef: String,

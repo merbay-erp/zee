@@ -113,6 +113,13 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   `sayıyı` → `sayı` + `-yı`. Lexer değil, ad çözümleme katmanının işi olmalı;
   desteklenen ek listesi sürümlemeli grammar'da sabitlenmeli (bölüm 4).
   → RFC-0002'nin en kritik konusu.
+- **bulgu (31 Ağu, y-tamponu belirsizliği):** "payı" hem pa+yı hem pay+ı
+  okunabilir; kapsamsız yapısal ayıklamada (işlem parametre bildirimi) bu
+  KÖKTEN belirsizdir. Kapsamlı çözümde aday-kök eşlemesi sorunu zaten çözer
+  ("payın" tek adaylı: pay). v0 kuralı: parametre bildirimi tampon biçimi
+  yeğler (sayıyı→sayı); y ile biten kök adlar (pay, boy, köy) parametre
+  bildiriminde belirsizliğe düşer — RFC-0006 adayı: yalın bildirime izin
+  (`pay al` gibi) ya da sözlükçe. Şimdilik: net gövdeli adlar öner.
 - **Programlar:** tümü.
 
 ## K-026 — Homoglyph ve birleştirici im reddi (31 Ağu, v0 gerçeklemesi)
@@ -166,6 +173,20 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   dosyayla — determinizm korunur. Arama yolu TEK: ana dosyanın klasörü.
 - **Durum:** geçici — RFC-0009 §2 gerçeklendi; paket katmanı (manifest,
   registry) Faz 3/5'te.
+
+## K-030 — Kullanıcı işlemlerinden Sonuç dönüşü (31 Ağu, RFC-0008 §4.1)
+
+- **Karar:** `"sıfıra bölünmez" hatasını döndür` işlemi Sonuç-hata ile bitirir.
+  Dönüş birleşimi: değer T + hata → Sonuç<T>; başarı dallarındaki `döndür`ler
+  çözümleyicide işaretlenir ve çalışma zamanında otomatik Sonuç'a sarılır —
+  kullanıcı sarmalama diye bir kavram öğrenmez. Sonuç türü değer-parametreli
+  oldu (Sonuç<TamSayı>, Sonuç<Ondalık>...); hata tarafı v0'da Metin. Yalnız
+  hata döndüren işlem T018; hata+yok karışımı T018; mesaj Metin değilse T032.
+  Sonuç'u geçiren işlem çift sarılmaz.
+- **bulgu:** "böl" ile biten işlem adları cümle konumunda BolVeAta ile çakışır
+  (ifade konumunda sorun yok — çağrı kalıbı önce denenir). RFC-0006 kelime
+  kuralına aday: işlem adı `böl`/`al` ile bitmesin.
+- **Durum:** geçici — RFC-0008'de belgelendi, 10 testle sabit.
 
 ## K-012 — Liste sabiti: `3, 7, 1, 9 listesi`
 

@@ -96,6 +96,7 @@ türetilmiştir; yeni kod eklenince bu dosya güncellenir — CI'a bağlanması 
 | T029 | `gün sonrası` Tarih + TamSayı ister | — |
 | T030 | `boşsa` liste/sözlük/metin ister | — |
 | T031 | ve/veya parçası ya da `değilse` içi koşul değil | Her parça Mantıksal olmalı |
+| T032 | Hata mesajı Metin değil | `"sıfıra bölünmez" hatasını döndür` (RFC-0008 §4.1) |
 
 ## C — Çalışma zamanı
 
