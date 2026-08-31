@@ -136,6 +136,66 @@ fn golden_06_donguler() {
 }
 
 #[test]
+fn golden_10_sozlukler() {
+    let cikti = kaynagi_calistir(&golden("10-sozlukler.dil")).expect("10 çalışmalı");
+    assert_eq!(cikti, vec!["Ayşe 10 yaşında", "Ayşe: 10", "Ali: 12"]);
+}
+
+#[test]
+fn golden_11_metin_islemleri() {
+    let cikti = kaynagi_calistir(&golden("11-metin-islemleri.dil")).expect("11 çalışmalı");
+    assert_eq!(
+        cikti,
+        vec![
+            "Uzunluk: 24",
+            "TÜRKÇE DÜŞÜN, TÜRKÇE YAZ",
+            "türkçe düşün, türkçe yaz",
+            "Geçiyor",
+            "Türkçe",
+            "düşün,",
+            "Türkçe",
+            "yaz",
+        ]
+    );
+}
+
+#[test]
+fn golden_15_secenek_turu() {
+    let cikti = kaynagi_calistir(&golden("15-secenek-turu.dil")).expect("15 çalışmalı");
+    assert_eq!(cikti, vec!["Bulundu: 8"]);
+}
+
+#[test]
+fn golden_16_sonuc_ve_hata() {
+    // Dosya varsa: değer okunur.
+    let program = dil::kaynagi_derle(&golden("16-sonuc-ve-hata.dil")).expect("16 derlenmeli");
+    let mut io = dil::yorumlayici::ToplayanIo::yeni(Vec::new());
+    io.dosyalar.insert("veriler.txt".into(), "merhaba veri".into());
+    dil::yorumlayici::calistir_io(&program, &mut io).expect("16 çalışmalı");
+    assert_eq!(io.cikti, vec!["merhaba veri"]);
+
+    // Dosya yoksa: hata dalı çalışır, program ÇÖKMEZ.
+    let mut io = dil::yorumlayici::ToplayanIo::yeni(Vec::new());
+    dil::yorumlayici::calistir_io(&program, &mut io).expect("hata dalı da çalışmalı");
+    assert_eq!(io.cikti, vec!["Okunamadı: \"veriler.txt\" dosyası bulunamadı"]);
+}
+
+#[test]
+fn turkce_buyuk_kucuk_harf_i_kurali() {
+    // A07 anti-örneğindeki tuzak: i→İ, ı→I (İngilizce i→I DEĞİL).
+    let kaynak = "ad \"izmir ılık\" olsun\nadın büyük harflisi yaz\nbaslik \"İZMİR ILIK\" olsun\nbasliğin küçük harflisi yaz\n";
+    let cikti = kaynagi_calistir(kaynak).expect("Türkçe harf dönüşümü çalışmalı");
+    assert_eq!(cikti, vec!["İZMİR ILIK", "izmir ılık"]);
+}
+
+#[test]
+fn bos_secenegin_degeri_calisma_hatasi() {
+    let kaynak = "işlem hiç bulma\n    sayıyı al\n    sayı 0 dan küçükse\n        sayıyı döndür\n    yok döndür\n\nbulunan 5 için hiç bulma olsun\nbulunanın değeri yaz\n";
+    let hata = kaynagi_calistir(kaynak).expect_err("boş Seçenek'in değeri hata olmalı");
+    assert_eq!(hata.kod, "C008");
+}
+
+#[test]
 fn golden_12_islem_tanimi() {
     let cikti = kaynagi_calistir(&golden("12-islem-tanimi.dil")).expect("12 çalışmalı");
     assert_eq!(cikti, vec!["90"]);

@@ -15,6 +15,8 @@ pub trait GirdiCikti {
     fn sor(&mut self, istem: &str) -> Option<String>;
     /// [alt, ust] aralığında (uçlar dahil) rastgele sayı.
     fn rastgele(&mut self, alt: i64, ust: i64) -> i64;
+    /// Dosya içeriğini okur; hata durumunda Türkçe hata metni döner.
+    fn dosya_oku(&mut self, yol: &str) -> Result<String, String>;
 }
 
 /// Çıktıyı toplayan, girdiyi ve "rastgele" sayıları hazır kuyruktan veren IO
@@ -22,6 +24,8 @@ pub trait GirdiCikti {
 pub struct ToplayanIo {
     pub girdiler: VecDeque<String>,
     pub rastgele_degerler: VecDeque<i64>,
+    /// Sahte dosya sistemi: yol → içerik (testlerde determinizm).
+    pub dosyalar: HashMap<String, String>,
     pub cikti: Vec<String>,
 }
 
@@ -30,6 +34,7 @@ impl ToplayanIo {
         ToplayanIo {
             girdiler: girdiler.into(),
             rastgele_degerler: VecDeque::new(),
+            dosyalar: HashMap::new(),
             cikti: Vec::new(),
         }
     }
@@ -46,6 +51,12 @@ impl GirdiCikti for ToplayanIo {
     fn rastgele(&mut self, alt: i64, _ust: i64) -> i64 {
         self.rastgele_degerler.pop_front().unwrap_or(alt)
     }
+    fn dosya_oku(&mut self, yol: &str) -> Result<String, String> {
+        self.dosyalar
+            .get(yol)
+            .cloned()
+            .ok_or_else(|| format!("\"{}\" dosyası bulunamadı", yol))
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -54,6 +65,12 @@ pub enum Deger {
     Metin(String),
     Mantiksal(bool),
     Liste(Vec<Deger>),
+    /// Ekleme sırası korunur (deterministik gezinme).
+    Sozluk(Vec<(String, Deger)>),
+    /// Seçenek'in boş hali; dolu hali değerin kendisidir.
+    Yok,
+    /// v0: Sonuç<Metin, Metin>.
+    Sonuc { basarili: bool, icerik: String },
 }
 
 impl Deger {
@@ -67,8 +84,45 @@ impl Deger {
                 .map(|o| o.metne())
                 .collect::<Vec<_>>()
                 .join(", "),
+            Deger::Sozluk(girdiler) => girdiler
+                .iter()
+                .map(|(anahtar, deger)| format!("{}: {}", anahtar, deger.metne()))
+                .collect::<Vec<_>>()
+                .join(", "),
+            Deger::Yok => "yok".to_string(),
+            Deger::Sonuc { basarili, icerik } => {
+                if *basarili {
+                    icerik.clone()
+                } else {
+                    format!("hata: {}", icerik)
+                }
+            }
         }
     }
+}
+
+/// Türkçe kurallarla büyük harfe çevirme: i→İ, ı→I (A07 anti-örneğindeki tuzak).
+fn turkce_buyuk(metin: &str) -> String {
+    metin
+        .chars()
+        .flat_map(|k| match k {
+            'i' => vec!['İ'],
+            'ı' => vec!['I'],
+            _ => k.to_uppercase().collect(),
+        })
+        .collect()
+}
+
+/// Türkçe kurallarla küçük harfe çevirme: İ→i, I→ı.
+fn turkce_kucuk(metin: &str) -> String {
+    metin
+        .chars()
+        .flat_map(|k| match k {
+            'İ' => vec!['i'],
+            'I' => vec!['ı'],
+            _ => k.to_lowercase().collect(),
+        })
+        .collect()
 }
 
 pub fn calistir(program: &Program) -> Result<Vec<String>, Tani> {
@@ -192,6 +246,11 @@ fn blok_calistir(
                 let kaynak = kaynak.as_ref().ok_or_else(|| ic_hata(*satir))?;
                 let ogeler = match degerlendir(kaynak, ortam, islemler, cikti, *satir)? {
                     Deger::Liste(ogeler) => ogeler,
+                    // Sözlük üzerinde gezinme anahtarları verir (ekleme sırasıyla).
+                    Deger::Sozluk(girdiler) => girdiler
+                        .into_iter()
+                        .map(|(anahtar, _)| Deger::Metin(anahtar))
+                        .collect(),
                     _ => return Err(ic_hata(*satir)),
                 };
                 for oge in ogeler {
@@ -235,6 +294,26 @@ fn blok_calistir(
                     islem_cagir(islem_adi, degerler, islemler, cikti, *satir)?;
                 } else {
                     return Err(ic_hata(*satir));
+                }
+            }
+            Cumle::SozlukAta { sozluk, anahtar, deger, satir } => {
+                let ad = match sozluk {
+                    Ifade::Degisken { cozulmus: Some(ad), .. } => ad.clone(),
+                    _ => return Err(ic_hata(*satir)),
+                };
+                let anahtar = match degerlendir(anahtar, ortam, islemler, cikti, *satir)? {
+                    Deger::Metin(m) => m,
+                    _ => return Err(ic_hata(*satir)),
+                };
+                let deger = degerlendir(deger, ortam, islemler, cikti, *satir)?;
+                match ortam.get_mut(&ad) {
+                    Some(Deger::Sozluk(girdiler)) => {
+                        match girdiler.iter_mut().find(|(a, _)| *a == anahtar) {
+                            Some((_, eski)) => *eski = deger,
+                            None => girdiler.push((anahtar, deger)),
+                        }
+                    }
+                    _ => return Err(ic_hata(*satir)),
                 }
             }
         }
@@ -312,13 +391,10 @@ fn degerlendir(
             Ok(Deger::Liste(degerler))
         }
         Ifade::Ozellik { nesne, ozellik } => {
-            let ogeler = match degerlendir(nesne, ortam, islemler, io, satir)? {
-                Deger::Liste(ogeler) => ogeler,
-                _ => return Err(ic_hata(satir)),
-            };
-            match ozellik {
-                Ozellik::Adet => Ok(Deger::TamSayi(ogeler.len() as i64)),
-                Ozellik::Ilk | Ozellik::Son => {
+            let nesne = degerlendir(nesne, ortam, islemler, io, satir)?;
+            match (ozellik, nesne) {
+                (Ozellik::Adet, Deger::Liste(ogeler)) => Ok(Deger::TamSayi(ogeler.len() as i64)),
+                (Ozellik::Ilk, Deger::Liste(ogeler)) | (Ozellik::Son, Deger::Liste(ogeler)) => {
                     let oge = if *ozellik == Ozellik::Ilk {
                         ogeler.first()
                     } else {
@@ -335,7 +411,128 @@ fn degerlendir(
                         .onerili("Önce \"listenin adedi\" ile boş olup olmadığını kontrol et.".into())
                     })
                 }
+                (Ozellik::Uzunluk, Deger::Metin(m)) => {
+                    Ok(Deger::TamSayi(m.chars().count() as i64))
+                }
+                (Ozellik::Kelimeler, Deger::Metin(m)) => Ok(Deger::Liste(
+                    m.split_whitespace()
+                        .map(|k| Deger::Metin(k.to_string()))
+                        .collect(),
+                )),
+                _ => Err(ic_hata(satir)),
             }
+        }
+        Ifade::BosSozluk => Ok(Deger::Sozluk(Vec::new())),
+        Ifade::SozlukDegeri { sozluk, anahtar } => {
+            let girdiler = match degerlendir(sozluk, ortam, islemler, io, satir)? {
+                Deger::Sozluk(girdiler) => girdiler,
+                _ => return Err(ic_hata(satir)),
+            };
+            let anahtar = match degerlendir(anahtar, ortam, islemler, io, satir)? {
+                Deger::Metin(m) => m,
+                _ => return Err(ic_hata(satir)),
+            };
+            girdiler
+                .into_iter()
+                .find(|(a, _)| *a == anahtar)
+                .map(|(_, d)| d)
+                .ok_or_else(|| {
+                    Tani::yeni(
+                        "C010",
+                        format!("Sözlükte \"{}\" anahtarı yok.", anahtar),
+                        satir,
+                        1,
+                        1,
+                    )
+                    .onerili("Önce \"sözlükte <anahtar> varsa\" ile kontrol et.".into())
+                })
+        }
+        Ifade::SozlukteVar { sozluk, anahtar, olumsuz } => {
+            let girdiler = match degerlendir(sozluk, ortam, islemler, io, satir)? {
+                Deger::Sozluk(girdiler) => girdiler,
+                _ => return Err(ic_hata(satir)),
+            };
+            let anahtar = match degerlendir(anahtar, ortam, islemler, io, satir)? {
+                Deger::Metin(m) => m,
+                _ => return Err(ic_hata(satir)),
+            };
+            let var = girdiler.iter().any(|(a, _)| *a == anahtar);
+            Ok(Deger::Mantiksal(var != *olumsuz))
+        }
+        Ifade::MetinDonusum { nesne, buyuk } => {
+            let metin = match degerlendir(nesne, ortam, islemler, io, satir)? {
+                Deger::Metin(m) => m,
+                _ => return Err(ic_hata(satir)),
+            };
+            Ok(Deger::Metin(if *buyuk {
+                turkce_buyuk(&metin)
+            } else {
+                turkce_kucuk(&metin)
+            }))
+        }
+        Ifade::Icerir { metin, aranan } => {
+            let metin = match degerlendir(metin, ortam, islemler, io, satir)? {
+                Deger::Metin(m) => m,
+                _ => return Err(ic_hata(satir)),
+            };
+            let aranan = match degerlendir(aranan, ortam, islemler, io, satir)? {
+                Deger::Metin(m) => m,
+                _ => return Err(ic_hata(satir)),
+            };
+            Ok(Deger::Mantiksal(metin.contains(&aranan)))
+        }
+        Ifade::YokSabiti => Ok(Deger::Yok),
+        Ifade::SecenekVar { nesne, olumsuz } => {
+            let deger = degerlendir(nesne, ortam, islemler, io, satir)?;
+            let var = deger != Deger::Yok;
+            Ok(Deger::Mantiksal(var != *olumsuz))
+        }
+        Ifade::IcDeger(nesne) => match degerlendir(nesne, ortam, islemler, io, satir)? {
+            Deger::Yok => Err(Tani::yeni(
+                "C008",
+                "Değer yok: boş Seçenek'in değeri alınamaz.".into(),
+                satir,
+                1,
+                1,
+            )
+            .onerili("Önce \"... varsa\" ile kontrol et.".into())),
+            Deger::Sonuc { basarili: true, icerik } => Ok(Deger::Metin(icerik)),
+            Deger::Sonuc { basarili: false, .. } => Err(Tani::yeni(
+                "C009",
+                "Sonuç başarısız: değeri yerine hatası var.".into(),
+                satir,
+                1,
+                1,
+            )
+            .onerili("Önce \"... başarılıysa\" ile kontrol et.".into())),
+            dolu => Ok(dolu),
+        },
+        Ifade::SonucHatasi(nesne) => match degerlendir(nesne, ortam, islemler, io, satir)? {
+            Deger::Sonuc { basarili: false, icerik } => Ok(Deger::Metin(icerik)),
+            Deger::Sonuc { basarili: true, .. } => Err(Tani::yeni(
+                "C009",
+                "Sonuç başarılı: hatası yok, değeri var.".into(),
+                satir,
+                1,
+                1,
+            )),
+            _ => Err(ic_hata(satir)),
+        },
+        Ifade::SonucBasarili { nesne, olumsuz } => {
+            match degerlendir(nesne, ortam, islemler, io, satir)? {
+                Deger::Sonuc { basarili, .. } => Ok(Deger::Mantiksal(basarili != *olumsuz)),
+                _ => Err(ic_hata(satir)),
+            }
+        }
+        Ifade::DosyaOkumayiDene(yol) => {
+            let yol = match degerlendir(yol, ortam, islemler, io, satir)? {
+                Deger::Metin(m) => m,
+                _ => return Err(ic_hata(satir)),
+            };
+            Ok(match io.dosya_oku(&yol) {
+                Ok(icerik) => Deger::Sonuc { basarili: true, icerik },
+                Err(hata) => Deger::Sonuc { basarili: false, icerik: hata },
+            })
         }
         Ifade::Rastgele { alt, ust } => {
             let alt = tam_sayi(degerlendir(alt, ortam, islemler, io, satir)?, satir)?;

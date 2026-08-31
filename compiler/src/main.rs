@@ -76,6 +76,11 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             Ok(_) => Some(cevap.trim_end_matches(['\n', '\r']).to_string()),
         }
     }
+    fn dosya_oku(&mut self, yol: &str) -> Result<String, String> {
+        std::fs::read_to_string(yol).map_err(|hata| {
+            format!("\"{}\" dosyası okunamadı: {}", yol, hata)
+        })
+    }
     fn rastgele(&mut self, alt: i64, ust: i64) -> i64 {
         // xorshift64*
         let mut x = self.tohum;

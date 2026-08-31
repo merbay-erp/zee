@@ -65,12 +65,38 @@ pub enum Ifade {
     Cift(Box<Ifade>),
     /// "sayı tekse".
     Tek(Box<Ifade>),
-    /// "3, 7, 1, 9 listesi" (K-012). v0: yalnız TamSayı öğeler.
+    /// "3, 7, 1, 9 listesi" (K-012). Öğeler tek türden olmalı.
     ListeSabiti(Vec<Ifade>),
     /// "boş liste".
     BosListe,
-    /// Liste özellikleri: "sayıların adedi / ilki / sonu".
+    /// Liste/metin özellikleri: "sayıların adedi", "cümlenin uzunluğu"...
     Ozellik { nesne: Box<Ifade>, ozellik: Ozellik },
+    /// "boş sözlük" — v0: Sözlük<Metin, TamSayı>.
+    BosSozluk,
+    /// "yaşların (anahtar) değeri" — sözlükten okuma (K-015).
+    SozlukDegeri { sozluk: Box<Ifade>, anahtar: Box<Ifade> },
+    /// "yaşlarda (anahtar) varsa/yoksa" (K-015).
+    SozlukteVar {
+        sozluk: Box<Ifade>,
+        anahtar: Box<Ifade>,
+        olumsuz: bool,
+    },
+    /// "cümlenin büyük/küçük harflisi" — Türkçe kurallarla (İ/i, I/ı).
+    MetinDonusum { nesne: Box<Ifade>, buyuk: bool },
+    /// "cümle (aranan) içeriyorsa".
+    Icerir { metin: Box<Ifade>, aranan: Box<Ifade> },
+    /// "yok" sabiti — Seçenek türünün boş hali (K-017).
+    YokSabiti,
+    /// "X varsa/yoksa" — Seçenek dolu mu (K-017).
+    SecenekVar { nesne: Box<Ifade>, olumsuz: bool },
+    /// "X in değeri" — Seçenek/Sonuç içindeki değer; boşken çalışma hatası.
+    IcDeger(Box<Ifade>),
+    /// "sonucun hatası" — Sonuç'un hata metni (K-018).
+    SonucHatasi(Box<Ifade>),
+    /// "X başarılıysa/başarısızsa" (K-018).
+    SonucBasarili { nesne: Box<Ifade>, olumsuz: bool },
+    /// `"..." dosyasını okumayı dene` → Sonuç (K-018).
+    DosyaOkumayiDene(Box<Ifade>),
     /// Genitif aritmetik (K-008): "a ile b nin toplamı", "x in y ye bölümü".
     Aritmetik {
         islec: AritmetikIslec,
@@ -90,9 +116,14 @@ pub enum Ifade {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Ozellik {
+    /// Liste: öğe sayısı.
     Adet,
     Ilk,
     Son,
+    /// Metin: karakter sayısı ("cümlenin uzunluğu").
+    Uzunluk,
+    /// Metin: boşluklardan bölünmüş kelime listesi ("cümlenin kelimeleri").
+    Kelimeler,
 }
 
 #[derive(Debug, Clone)]
@@ -163,4 +194,11 @@ pub enum Cumle {
     },
     /// Değer beklemeyen işlem çağrısı cümlesi: `"Ayşe" ve 10 ile selamla`.
     CagriCumlesi { cagri: Ifade, satir: usize },
+    /// `yaşların "Ayşe" değeri 10 olsun` — sözlüğe yazma (K-015).
+    SozlukAta {
+        sozluk: Ifade,
+        anahtar: Ifade,
+        deger: Ifade,
+        satir: usize,
+    },
 }

@@ -309,6 +309,15 @@ impl Ayristirici {
 
     fn olsun_ayristir(&mut self, mut tokenlar: Vec<Token>, satir: usize) -> Result<Cumle, Tani> {
         tokenlar.pop(); // "olsun"
+
+        // Sözlüğe yazma: `yaşların "Ayşe" değeri 10 olsun` (K-015).
+        if tokenlar.len() >= 4 && kelime_mi(&tokenlar[2], "değeri") {
+            let sozluk = tekil_ifade(tokenlar[0].clone())?;
+            let anahtar = tekil_ifade(tokenlar[1].clone())?;
+            let deger = ile_ifadesi(&tokenlar[3..], satir, &self.islem_adlari)?;
+            return Ok(Cumle::SozlukAta { sozluk, anahtar, deger, satir });
+        }
+
         if tokenlar.len() < 2 {
             return Err(Tani::yeni(
                 "S008",
@@ -374,6 +383,28 @@ impl Ayristirici {
     }
 
     fn aralik_ayristir(&mut self, tokenlar: Vec<Token>, satir: usize) -> Result<Cumle, Tani> {
+        // <koleksiyon>daki her <ad> için — açık kaynaklı döngü
+        if tokenlar.len() == 4 && kelime_mi(&tokenlar[1], "her") {
+            if let TokenTur::Kelime(kaynakli) = &tokenlar[0].tur {
+                let kok = ["daki", "deki", "taki", "teki"]
+                    .iter()
+                    .find_map(|ek| kaynakli.strip_suffix(ek));
+                if let (Some(kok), TokenTur::Kelime(ad)) = (kok, &tokenlar[2].tur) {
+                    let t = &tokenlar[0];
+                    let kaynak = Ifade::Degisken {
+                        ham: kok.to_string(),
+                        cozulmus: None,
+                        satir: t.satir,
+                        sutun: t.sutun,
+                        uzunluk: t.uzunluk,
+                    };
+                    let ad = ad.clone();
+                    let govde = self.alt_blok(satir)?;
+                    return Ok(Cumle::HerBiri { ad, kaynak: Some(kaynak), govde, satir });
+                }
+            }
+        }
+
         // her <ad> için — koleksiyon döngüsü (örtük çoğul, K-013)
         if tokenlar.len() == 3 && kelime_mi(&tokenlar[0], "her") {
             let ad = match &tokenlar[1].tur {
@@ -558,7 +589,16 @@ fn kelime_mi(token: &Token, beklenen: &str) -> bool {
 fn kosul_kelimesi(kelime: &str) -> bool {
     matches!(
         kelime,
-        "büyükse" | "küçükse" | "eşitse" | "çiftse" | "tekse"
+        "büyükse"
+            | "küçükse"
+            | "eşitse"
+            | "çiftse"
+            | "tekse"
+            | "varsa"
+            | "yoksa"
+            | "içeriyorsa"
+            | "başarılıysa"
+            | "başarısızsa"
     )
 }
 
@@ -583,6 +623,7 @@ fn tekil_ifade(token: Token) -> Result<Ifade, Tani> {
         TokenTur::TamSayi(s) => Ok(Ifade::SayiSabiti(s)),
         TokenTur::Kelime(k) if k == "doğru" => Ok(Ifade::MantiksalSabiti(true)),
         TokenTur::Kelime(k) if k == "yanlış" => Ok(Ifade::MantiksalSabiti(false)),
+        TokenTur::Kelime(k) if k == "yok" => Ok(Ifade::YokSabiti),
         TokenTur::Kelime(k) => Ok(Ifade::Degisken {
             ham: k,
             cozulmus: None,
@@ -719,6 +760,39 @@ fn kosul_ifadesi(tokenlar: &[Token], satir: usize) -> Result<Ifade, Tani> {
         });
     }
 
+    // X varsa / X yoksa — Seçenek dolu mu.
+    if n == 2 && (yuklem == "varsa" || yuklem == "yoksa") {
+        return Ok(Ifade::SecenekVar {
+            nesne: Box::new(tekil_ifade(tokenlar[0].clone())?),
+            olumsuz: yuklem == "yoksa",
+        });
+    }
+
+    // X başarılıysa / başarısızsa — Sonuç durumu.
+    if n == 2 && (yuklem == "başarılıysa" || yuklem == "başarısızsa") {
+        return Ok(Ifade::SonucBasarili {
+            nesne: Box::new(tekil_ifade(tokenlar[0].clone())?),
+            olumsuz: yuklem == "başarısızsa",
+        });
+    }
+
+    // S de (anahtar) varsa/yoksa — sözlükte anahtar var mı.
+    if n == 3 && (yuklem == "varsa" || yuklem == "yoksa") {
+        return Ok(Ifade::SozlukteVar {
+            sozluk: Box::new(tekil_ifade(tokenlar[0].clone())?),
+            anahtar: Box::new(tekil_ifade(tokenlar[1].clone())?),
+            olumsuz: yuklem == "yoksa",
+        });
+    }
+
+    // M (aranan) içeriyorsa.
+    if n == 3 && yuklem == "içeriyorsa" {
+        return Ok(Ifade::Icerir {
+            metin: Box::new(tekil_ifade(tokenlar[0].clone())?),
+            aranan: Box::new(tekil_ifade(tokenlar[1].clone())?),
+        });
+    }
+
     // X Y veya daha büyükse/küçükse
     if n == 5 && kelimeler[2] == Some("veya") && kelimeler[3] == Some("daha") {
         let islec = match yuklem_koku {
@@ -822,13 +896,18 @@ fn yapili_kalip(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifade>
         return Ok(Some(Ifade::Sayisi(Box::new(tekil_ifade(tokenlar[0].clone())?))));
     }
 
-    // boş liste
-    if n == 2 && kelime(0) == Some("boş") && son == "liste" {
-        return Ok(Some(Ifade::BosListe));
+    // boş liste / boş sözlük
+    if n == 2 && kelime(0) == Some("boş") {
+        if son == "liste" {
+            return Ok(Some(Ifade::BosListe));
+        }
+        if son == "sözlük" {
+            return Ok(Some(Ifade::BosSozluk));
+        }
     }
 
-    // W ın adedi / ilki / sonu — liste özellikleri. "aded" öneki, ekli
-    // biçimleri de yakalar ("adedine", "adediyle").
+    // W ın adedi / ilki / sonu / uzunluğu / kelimeleri — özellikler.
+    // "aded" öneki ekli biçimleri de yakalar ("adedine", "adediyle").
     if n == 2 {
         let ozellik = if son.starts_with("aded") {
             Some(Ozellik::Adet)
@@ -836,6 +915,10 @@ fn yapili_kalip(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifade>
             Some(Ozellik::Ilk)
         } else if son == "sonu" {
             Some(Ozellik::Son)
+        } else if son == "uzunluğu" {
+            Some(Ozellik::Uzunluk)
+        } else if son == "kelimeleri" {
+            Some(Ozellik::Kelimeler)
         } else {
             None
         };
@@ -845,6 +928,48 @@ fn yapili_kalip(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifade>
                 ozellik,
             }));
         }
+    }
+
+    // W ın değeri — Seçenek/Sonuç içindeki değer; W ın hatası — Sonuç hatası.
+    if n == 2 && (son == "değeri" || son == "değerini") {
+        return Ok(Some(Ifade::IcDeger(Box::new(tekil_ifade(tokenlar[0].clone())?))));
+    }
+    if n == 2 && (son == "hatası" || son == "hatasını") {
+        return Ok(Some(Ifade::SonucHatasi(Box::new(tekil_ifade(tokenlar[0].clone())?))));
+    }
+
+    // S in (anahtar) değeri — sözlükten okuma.
+    if n == 3 && son == "değeri" {
+        return Ok(Some(Ifade::SozlukDegeri {
+            sozluk: Box::new(tekil_ifade(tokenlar[0].clone())?),
+            anahtar: Box::new(tekil_ifade(tokenlar[1].clone())?),
+        }));
+    }
+
+    // W ın büyük/küçük harflisi — Türkçe harf kurallarıyla.
+    if n == 3 && son == "harflisi" {
+        let buyuk = match kelime(1) {
+            Some("büyük") => Some(true),
+            Some("küçük") => Some(false),
+            _ => None,
+        };
+        if let Some(buyuk) = buyuk {
+            return Ok(Some(Ifade::MetinDonusum {
+                nesne: Box::new(tekil_ifade(tokenlar[0].clone())?),
+                buyuk,
+            }));
+        }
+    }
+
+    // "..." dosyasını okumayı dene → Sonuç.
+    if n == 4
+        && kelime(1) == Some("dosyasını")
+        && kelime(2) == Some("okumayı")
+        && son == "dene"
+    {
+        return Ok(Some(Ifade::DosyaOkumayiDene(Box::new(tekil_ifade(
+            tokenlar[0].clone(),
+        )?))));
     }
 
     // e1, e2, ... listesi
