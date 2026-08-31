@@ -84,13 +84,13 @@ korpus üzerinde regression testine girer.
 | Ne | Nerede | Durum |
 |---|---|---|
 | Manifesto ve değişmez ilkeler | [MANIFESTO.md](MANIFESTO.md) | ✅ ilk sürüm |
-| 30 golden program | [golden/](golden/) | ✅ ilk taslak — hepsi **geçici** sözdizimi |
+| 32 golden program | [golden/](golden/) | ✅ tamamı regression testte; sözdizimi RFC'lerle geçici kabulde |
 | 10 anti-örnek | [anti-ornekler/](anti-ornekler/) | ✅ ilk sürüm |
 | Syntax karar günlüğü | [kararlar/gunluk.md](kararlar/gunluk.md) | ✅ işleniyor |
-| RFC süreci | [rfcs/](rfcs/) | ✅ RFC-0001 kabul; 0002–0006 taslak (0006 = kritik çağrı kararı) |
-| ADR süreci | [adr/](adr/) | 📋 şablon + planlanan liste |
-| Hata kataloğu | [docs/hata-katalogu.md](docs/hata-katalogu.md) | ✅ 83 kod, kaynakla tutarlılığı testli |
-| Spesifikasyon | [spec/](spec/) | ⏳ korpus olgunlaşınca |
+| RFC süreci | [rfcs/](rfcs/) | ✅ 13 RFC: 2 kabul, 10 geçici kabul, 1 taslak (K-043) |
+| ADR süreci | [adr/](adr/) | ✅ 5 kabul (001-003, 007, 009); kalanı faza bağlı |
+| Hata kataloğu | [docs/hata-katalogu.md](docs/hata-katalogu.md) | ✅ 106 kod, kaynakla tutarlılığı testli |
+| Spesifikasyon | [spec/](spec/) | ✅ başladı — normatif çekirdek (RFC'lere bağlar) |
 
 ### Golden korpus hakkında
 
