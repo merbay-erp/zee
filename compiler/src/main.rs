@@ -9,9 +9,11 @@ fn main() -> ExitCode {
 
     match argumanlar.first().map(|s| s.as_str()) {
         Some("çalıştır") | Some("calistir") => dosya_ile(&argumanlar, calistir_komutu),
-        Some("denetle") => dosya_ile(&argumanlar, denetle_komutu),
+        Some("denetle") => denetle_yolu(&argumanlar),
         Some("biçimle") | Some("bicimle") => bicimle_komutu(&argumanlar),
         Some("dene") => dosya_ile(&argumanlar, dene_komutu),
+        Some("hata") => hata_komutu(&argumanlar),
+        Some("yeni") => yeni_komutu(&argumanlar),
         Some("sürüm") | Some("surum") => {
             println!("dil {} — Türkçe programlama dili (bootstrap, Stage 0)", env!("CARGO_PKG_VERSION"));
             ExitCode::SUCCESS
@@ -26,11 +28,116 @@ fn main() -> ExitCode {
 fn kullanim() {
     eprintln!("Türkçe programlama dili — resmi CLI\n");
     eprintln!("Kullanım:");
+    eprintln!("  dil yeni <ad>              yeni proje klasörü oluşturur");
     eprintln!("  dil çalıştır <dosya.dil>   programı çalıştırır");
-    eprintln!("  dil denetle <dosya.dil>    çalıştırmadan denetler");
+    eprintln!("  dil denetle <dosya.dil>    çalıştırmadan denetler (--json: makine çıktısı)");
     eprintln!("  dil dene <dosya.dil>       test bloklarını koşar");
     eprintln!("  dil biçimle <dosya.dil>    dosyayı resmi biçime getirir");
+    eprintln!("  dil hata <kod>             bir hata kodunu açıklar (örn. dil hata T001)");
     eprintln!("  dil sürüm                  sürümü gösterir");
+}
+
+/// Hata kataloğu ikiliye gömülüdür: çevrimdışı sınıfta da `dil hata T001` çalışır.
+const HATA_KATALOGU: &str = include_str!("../../docs/hata-katalogu.md");
+
+fn hata_komutu(argumanlar: &[String]) -> ExitCode {
+    let kod = match argumanlar.get(1) {
+        Some(kod) => kod.to_uppercase(),
+        None => {
+            eprintln!("Bir hata kodu belirtmelisin. Örnek: dil hata T001");
+            return ExitCode::from(2);
+        }
+    };
+    let onek = format!("| {} ", kod);
+    for satir in HATA_KATALOGU.lines() {
+        if satir.starts_with(&onek) {
+            let hucreler: Vec<&str> = satir.split('|').map(str::trim).collect();
+            // Biçim: | kod | ne oldu | çözüm |
+            if hucreler.len() >= 4 {
+                println!("HATA {}", kod);
+                println!("\nNe oldu:\n{}", hucreler[2]);
+                if hucreler[3] != "—" && !hucreler[3].is_empty() {
+                    println!("\nÇözüm:\n{}", hucreler[3]);
+                }
+                return ExitCode::SUCCESS;
+            }
+        }
+    }
+    eprintln!("\"{}\" katalogda bulunamadı. Tam katalog: docs/hata-katalogu.md", kod);
+    ExitCode::FAILURE
+}
+
+fn yeni_komutu(argumanlar: &[String]) -> ExitCode {
+    let ad = match argumanlar.get(1) {
+        Some(ad) if !ad.is_empty() && !ad.contains(['/', '\\', '.']) => ad,
+        _ => {
+            eprintln!("Geçerli bir proje adı belirtmelisin. Örnek: dil yeni uzay-oyunum");
+            return ExitCode::from(2);
+        }
+    };
+    let klasor = std::path::Path::new(ad);
+    if klasor.exists() {
+        eprintln!("\"{}\" zaten var; üzerine yazılmadı.", ad);
+        return ExitCode::FAILURE;
+    }
+    let program = format!(
+        "# {} — ilk programın!\n# Çalıştır: dil çalıştır program.dil\n# Testleri koş: dil dene program.dil\n\n\"Merhaba! Bu {} projesi.\" yaz\n\n\"Adın ne?\" diye sor\n\"Hoş geldin \" ile yanıt yaz\n\ntest \"karşılama hazır\"\n    selam \"Hoş geldin\" olsun\n    selam \"Hoş geldin\" e eşit olmalı\n",
+        ad, ad
+    );
+    let beni_oku = format!(
+        "# {}\n\nTürkçe programlama diliyle yazılmış bir proje.\n\n```bash\ndil çalıştır program.dil\n```\n\n```bash\ndil dene program.dil\n```\n\nBiçim düzeltme: `dil biçimle program.dil` · Hata açıklama: `dil hata <kod>`\n",
+        ad
+    );
+    let sonuc = std::fs::create_dir(klasor)
+        .and_then(|_| std::fs::write(klasor.join("program.dil"), program))
+        .and_then(|_| std::fs::write(klasor.join("BENIOKU.md"), beni_oku));
+    match sonuc {
+        Ok(()) => {
+            println!("Oluşturuldu: {}/", ad);
+            println!("Başlamak için: dil çalıştır {}/program.dil", ad);
+            ExitCode::SUCCESS
+        }
+        Err(hata) => {
+            eprintln!("Proje oluşturulamadı: {}", hata);
+            ExitCode::FAILURE
+        }
+    }
+}
+
+fn denetle_yolu(argumanlar: &[String]) -> ExitCode {
+    let json = argumanlar.iter().any(|a| a == "--json");
+    let yol = match argumanlar.iter().skip(1).find(|a| !a.starts_with("--")) {
+        Some(yol) => yol,
+        None => {
+            eprintln!("Bir .dil dosyası belirtmelisin. Örnek: dil denetle merhaba.dil");
+            return ExitCode::from(2);
+        }
+    };
+    let kaynak = match std::fs::read_to_string(yol) {
+        Ok(kaynak) => kaynak,
+        Err(hata) => {
+            eprintln!("\"{}\" dosyası okunamadı: {}", yol, hata);
+            return ExitCode::from(2);
+        }
+    };
+    match dil::kaynagi_denetle(&kaynak) {
+        Ok(()) => {
+            if json {
+                println!("{{\"durum\":\"temiz\",\"tanilar\":[]}}");
+            } else {
+                println!("Denetim temiz: sözdizimi ve türler geçerli.");
+            }
+            ExitCode::SUCCESS
+        }
+        Err(tani) => {
+            if json {
+                println!("{{\"durum\":\"hata\",\"tanilar\":[{}]}}", tani.json());
+            } else {
+                eprint!("{}", tani.raporla(&kaynak));
+            }
+            ExitCode::FAILURE
+        }
+    }
 }
 
 fn bicimle_komutu(argumanlar: &[String]) -> ExitCode {
@@ -213,15 +320,3 @@ fn dene_komutu(kaynak: &str) -> ExitCode {
     }
 }
 
-fn denetle_komutu(kaynak: &str) -> ExitCode {
-    match dil::kaynagi_denetle(kaynak) {
-        Ok(()) => {
-            println!("Denetim temiz: sözdizimi ve türler geçerli.");
-            ExitCode::SUCCESS
-        }
-        Err(tani) => {
-            eprint!("{}", tani.raporla(kaynak));
-            ExitCode::FAILURE
-        }
-    }
-}

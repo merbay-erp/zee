@@ -41,8 +41,43 @@ impl Tani {
         if let Some(oneri) = &self.oneri {
             cikti.push_str(&format!("\nÖneri:\n{}\n", oneri));
         }
+        cikti.push_str(&format!("\nAyrıntı için: dil hata {}\n", self.kod));
         cikti
     }
+
+    /// Makine-okunur tek satır JSON (editör entegrasyonları: `dil denetle --json`).
+    pub fn json(&self) -> String {
+        let oneri = match &self.oneri {
+            Some(oneri) => format!("\"{}\"", json_kacis(oneri)),
+            None => "null".to_string(),
+        };
+        format!(
+            "{{\"kod\":\"{}\",\"mesaj\":\"{}\",\"satir\":{},\"sutun\":{},\"uzunluk\":{},\"oneri\":{}}}",
+            json_kacis(&self.kod),
+            json_kacis(&self.mesaj),
+            self.satir,
+            self.sutun,
+            self.uzunluk,
+            oneri
+        )
+    }
+}
+
+/// JSON metin kaçışı (RFC 8259): tırnak, ters bölü ve kontrol karakterleri.
+fn json_kacis(metin: &str) -> String {
+    let mut cikti = String::with_capacity(metin.len());
+    for k in metin.chars() {
+        match k {
+            '"' => cikti.push_str("\\\""),
+            '\\' => cikti.push_str("\\\\"),
+            '\n' => cikti.push_str("\\n"),
+            '\r' => cikti.push_str("\\r"),
+            '\t' => cikti.push_str("\\t"),
+            k if (k as u32) < 0x20 => cikti.push_str(&format!("\\u{:04x}", k as u32)),
+            k => cikti.push(k),
+        }
+    }
+    cikti
 }
 
 impl fmt::Display for Tani {

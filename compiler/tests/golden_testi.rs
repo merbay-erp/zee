@@ -489,6 +489,29 @@ fn a06_parantezli_blok_reddedilir() {
     assert_eq!(hata.kod, "S001");
 }
 
+#[test]
+fn tani_json_cikti_ve_kacis() {
+    // Mesajlarda çift tırnak geçer ("x" adı...): JSON kaçışı doğru olmalı.
+    let hata = kaynagi_calistir("bilinmeyeni yaz\n").expect_err("A001 bekleniyor");
+    let json = hata.json();
+    assert!(json.starts_with("{\"kod\":\"A001\""), "kod alanı: {}", json);
+    assert!(json.contains("\\\"bilinmeyeni\\\""), "tırnaklar kaçışlanmalı: {}", json);
+    assert!(json.contains("\"satir\":1"), "konum alanları: {}", json);
+    assert!(json.ends_with("}"), "geçerli nesne: {}", json);
+}
+
+#[test]
+fn rapor_ayrinti_satiri_icerir() {
+    let kaynak = "x \"a\" olsun\nx 5 den büyükse\n    x yaz\n";
+    let hata = kaynagi_calistir(kaynak).expect_err("T001");
+    let rapor = hata.raporla(kaynak);
+    assert!(
+        rapor.contains("Ayrıntı için: dil hata T001"),
+        "rapor katalog bağlantısı içermeli: {}",
+        rapor
+    );
+}
+
 // ---- ad çözümleme: ek ayıklama (K-011) ----
 
 #[test]
