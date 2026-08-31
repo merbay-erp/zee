@@ -17,6 +17,8 @@ use std::collections::HashMap;
 pub enum VeriTuru {
     TamSayi,
     Metin,
+    /// v0'da örtük olarak Sözlük<Metin, TamSayı> demektir (CSV satırları).
+    Sozluk,
 }
 
 impl VeriTuru {
@@ -24,12 +26,36 @@ impl VeriTuru {
         match self {
             VeriTuru::TamSayi => "TamSayı",
             VeriTuru::Metin => "Metin",
+            VeriTuru::Sozluk => "Sözlük",
         }
     }
     fn ture(&self) -> Tur {
         match self {
             VeriTuru::TamSayi => Tur::TamSayi,
             VeriTuru::Metin => Tur::Metin,
+            VeriTuru::Sozluk => Tur::Sozluk(SozlukDegerTuru::TamSayi),
+        }
+    }
+}
+
+/// Sözlük değerlerinin türü (v0: TamSayı ya da Metin).
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum SozlukDegerTuru {
+    TamSayi,
+    Metin,
+}
+
+impl SozlukDegerTuru {
+    fn ture(&self) -> Tur {
+        match self {
+            SozlukDegerTuru::TamSayi => Tur::TamSayi,
+            SozlukDegerTuru::Metin => Tur::Metin,
+        }
+    }
+    fn adi(&self) -> &'static str {
+        match self {
+            SozlukDegerTuru::TamSayi => "TamSayı",
+            SozlukDegerTuru::Metin => "Metin",
         }
     }
 }
@@ -40,8 +66,8 @@ pub enum Tur {
     Metin,
     Mantiksal,
     Liste(VeriTuru),
-    /// v0: Sözlük<Metin, TamSayı>.
-    Sozluk,
+    /// Sözlük<Metin, değer türü>; anahtarlar v0'da hep Metin.
+    Sozluk(SozlukDegerTuru),
     Secenek(VeriTuru),
     /// v0: Sonuç<Metin, Metin> (değer ve hata metin).
     Sonuc,
@@ -49,6 +75,8 @@ pub enum Tur {
     Yok,
     /// Kullanıcı yapısı — Program.yapilar'a indeks.
     Yapi(usize),
+    Tarih,
+    Saat,
 }
 
 impl Tur {
@@ -58,11 +86,13 @@ impl Tur {
             Tur::Metin => "Metin".into(),
             Tur::Mantiksal => "Mantıksal".into(),
             Tur::Liste(e) => format!("Liste<{}>", e.adi()),
-            Tur::Sozluk => "Sözlük".into(),
+            Tur::Sozluk(e) => format!("Sözlük<Metin, {}>", e.adi()),
             Tur::Secenek(e) => format!("Seçenek<{}>", e.adi()),
             Tur::Sonuc => "Sonuç".into(),
             Tur::Yok => "yok".into(),
             Tur::Yapi(_) => "Yapı".into(),
+            Tur::Tarih => "Tarih".into(),
+            Tur::Saat => "Saat".into(),
         }
     }
 
@@ -326,7 +356,7 @@ fn blok_denetle(
                         .filter(|aday| {
                             matches!(
                                 ortam.get(aday.as_str()),
-                                Some(Tur::Liste(_)) | Some(Tur::Sozluk)
+                                Some(Tur::Liste(_)) | Some(Tur::Sozluk(_))
                             )
                         })
                         .cloned()
@@ -370,7 +400,7 @@ fn blok_denetle(
                     Some(k) => match ifade_denetle(k, ortam, baglam, satir)? {
                         Tur::Liste(oge) => oge.ture(),
                         // Sözlük üzerinde gezinme anahtarları (Metin) verir.
-                        Tur::Sozluk => Tur::Metin,
+                        Tur::Sozluk(_) => Tur::Metin,
                         baska => {
                             return Err(Tani::yeni(
                                 "T013",
@@ -389,6 +419,7 @@ fn blok_denetle(
                 ortam.insert(ad.clone(), oge_turu);
                 blok_denetle(govde, ortam, baglam, donusler, islem_icinde)?;
             }
+            Cumle::ProgramiBitir { .. } => {}
             Cumle::Sor { istem, satir } => {
                 let satir = *satir;
                 ifade_denetle(istem, ortam, baglam, satir)?;
@@ -555,16 +586,19 @@ fn blok_denetle(
             Cumle::SozlukAta { sozluk, anahtar, deger, satir } => {
                 let satir = *satir;
                 let sozluk_turu = ifade_denetle(sozluk, ortam, baglam, satir)?;
-                if sozluk_turu != Tur::Sozluk {
-                    return Err(Tani::yeni(
-                        "T021",
-                        format!("\"değeri ... olsun\" bir sözlük ister; hedef {} türünde.", sozluk_turu.adi()),
-                        satir,
-                        1,
-                        1,
-                    )
-                    .onerili("Önce \"<ad> boş sözlük olsun\" ile sözlük tanımla.".into()));
-                }
+                let beklenen_deger = match sozluk_turu {
+                    Tur::Sozluk(e) => e.ture(),
+                    baska => {
+                        return Err(Tani::yeni(
+                            "T021",
+                            format!("\"değeri ... olsun\" bir sözlük ister; hedef {} türünde.", baska.adi()),
+                            satir,
+                            1,
+                            1,
+                        )
+                        .onerili("Önce \"<ad> boş sözlük olsun\" ile sözlük tanımla.".into()));
+                    }
+                };
                 let anahtar_turu = ifade_denetle(anahtar, ortam, baglam, satir)?;
                 if anahtar_turu != Tur::Metin {
                     return Err(Tani::yeni(
@@ -576,10 +610,14 @@ fn blok_denetle(
                     ));
                 }
                 let deger_turu = ifade_denetle(deger, ortam, baglam, satir)?;
-                if deger_turu != Tur::TamSayi {
+                if deger_turu != beklenen_deger {
                     return Err(Tani::yeni(
                         "T021",
-                        format!("v0'da sözlük değeri TamSayı olmalı; burada {} var.", deger_turu.adi()),
+                        format!(
+                            "Bu sözlük {} değerler taşıyor; {} verilemez.",
+                            beklenen_deger.adi(),
+                            deger_turu.adi()
+                        ),
                         satir,
                         1,
                         1,
@@ -689,6 +727,7 @@ fn ifade_denetle(
                 (Ozellik::Ilk, Tur::Liste(e)) | (Ozellik::Son, Tur::Liste(e)) => Ok(e.ture()),
                 (Ozellik::Uzunluk, Tur::Metin) => Ok(Tur::TamSayi),
                 (Ozellik::Kelimeler, Tur::Metin) => Ok(Tur::Liste(VeriTuru::Metin)),
+                (Ozellik::Yil, Tur::Tarih) => Ok(Tur::TamSayi),
                 (_, baska) => Err(Tani::yeni(
                     "T014",
                     format!("Bu özellik {} türüne uygulanamaz.", baska.adi()),
@@ -701,18 +740,22 @@ fn ifade_denetle(
                 )),
             }
         }
-        Ifade::BosSozluk => Ok(Tur::Sozluk),
+        // Boş sözlüğün değer türü v0'da TamSayı varsayılır (K-015).
+        Ifade::BosSozluk => Ok(Tur::Sozluk(SozlukDegerTuru::TamSayi)),
         Ifade::SozlukDegeri { sozluk, anahtar } => {
             let sozluk_turu = ifade_denetle(sozluk, ortam, baglam, satir)?;
-            if sozluk_turu != Tur::Sozluk {
-                return Err(Tani::yeni(
-                    "T021",
-                    format!("\"değeri\" ile okuma bir sözlük ister; burada {} var.", sozluk_turu.adi()),
-                    satir,
-                    1,
-                    1,
-                ));
-            }
+            let deger_turu = match sozluk_turu {
+                Tur::Sozluk(e) => e,
+                baska => {
+                    return Err(Tani::yeni(
+                        "T021",
+                        format!("\"değeri\" ile okuma bir sözlük ister; burada {} var.", baska.adi()),
+                        satir,
+                        1,
+                        1,
+                    ));
+                }
+            };
             let anahtar_turu = ifade_denetle(anahtar, ortam, baglam, satir)?;
             if anahtar_turu != Tur::Metin {
                 return Err(Tani::yeni(
@@ -723,11 +766,11 @@ fn ifade_denetle(
                     1,
                 ));
             }
-            Ok(Tur::TamSayi)
+            Ok(deger_turu.ture())
         }
         Ifade::SozlukteVar { sozluk, anahtar, .. } => {
             let sozluk_turu = ifade_denetle(sozluk, ortam, baglam, satir)?;
-            if sozluk_turu != Tur::Sozluk {
+            if !matches!(sozluk_turu, Tur::Sozluk(_)) {
                 return Err(Tani::yeni(
                     "T021",
                     format!("\"varsa\" sorgusu burada bir sözlük ister; {} var.", sozluk_turu.adi()),
@@ -777,6 +820,45 @@ fn ifade_denetle(
             Ok(Tur::Mantiksal)
         }
         Ifade::YokSabiti => Ok(Tur::Yok),
+        Ifade::BugununTarihi => Ok(Tur::Tarih),
+        Ifade::SuAninSaati => Ok(Tur::Saat),
+        Ifade::KomutArgumanlari => Ok(Tur::Liste(VeriTuru::Metin)),
+        Ifade::GunSonrasi { tarih, miktar } => {
+            let tarih_turu = ifade_denetle(tarih, ortam, baglam, satir)?;
+            if tarih_turu != Tur::Tarih {
+                return Err(Tani::yeni(
+                    "T029",
+                    format!("\"gün sonrası\" bir Tarih ister; burada {} var.", tarih_turu.adi()),
+                    satir,
+                    1,
+                    1,
+                ));
+            }
+            let miktar_turu = ifade_denetle(miktar, ortam, baglam, satir)?;
+            if miktar_turu != Tur::TamSayi {
+                return Err(Tani::yeni(
+                    "T029",
+                    format!("Gün sayısı TamSayı olmalı; burada {} var.", miktar_turu.adi()),
+                    satir,
+                    1,
+                    1,
+                ));
+            }
+            Ok(Tur::Tarih)
+        }
+        Ifade::BosMu { nesne, .. } => {
+            let tur = ifade_denetle(nesne, ortam, baglam, satir)?;
+            match tur {
+                Tur::Liste(_) | Tur::Sozluk(_) | Tur::Metin => Ok(Tur::Mantiksal),
+                baska => Err(Tani::yeni(
+                    "T030",
+                    format!("\"boşsa\" liste, sözlük ya da metin ister; burada {} var.", baska.adi()),
+                    satir,
+                    1,
+                    1,
+                )),
+            }
+        }
         Ifade::YeniYapi { yapi_adi } => {
             match baglam.yapilar.iter().position(|y| y.ad == *yapi_adi) {
                 Some(i) => Ok(Tur::Yapi(i)),
@@ -894,6 +976,32 @@ fn ifade_denetle(
                 ));
             }
             Ok(Tur::Liste(VeriTuru::Metin))
+        }
+        Ifade::TabloOku(yol) => {
+            let tur = ifade_denetle(yol, ortam, baglam, satir)?;
+            if tur != Tur::Metin {
+                return Err(Tani::yeni(
+                    "T025",
+                    format!("Dosya yolu Metin olmalı; burada {} var.", tur.adi()),
+                    satir,
+                    1,
+                    1,
+                ));
+            }
+            Ok(Tur::Liste(VeriTuru::Sozluk))
+        }
+        Ifade::VeriOku(yol) => {
+            let tur = ifade_denetle(yol, ortam, baglam, satir)?;
+            if tur != Tur::Metin {
+                return Err(Tani::yeni(
+                    "T025",
+                    format!("Dosya yolu Metin olmalı; burada {} var.", tur.adi()),
+                    satir,
+                    1,
+                    1,
+                ));
+            }
+            Ok(Tur::Sozluk(SozlukDegerTuru::Metin))
         }
         Ifade::Rastgele { alt, ust } => {
             for uc in [&mut **alt, &mut **ust] {

@@ -120,6 +120,21 @@ pub enum Ifade {
     /// `"..." dosyasının satırları` → Liste<Metin>. Düz biçim: hata anında
     /// Türkçe çalışma hatası verir (Sonuç isteyen "dene" kullanır — K-018).
     DosyaSatirlari(Box<Ifade>),
+    /// `"..." dosyasından okunan tablo` → Liste<Sözlük> (CSV; başlık satırı
+    /// anahtar olur, hücreler v0'da TamSayı).
+    TabloOku(Box<Ifade>),
+    /// `"..." dosyasından okunan veri` → Sözlük<Metin, Metin> (düz JSON nesnesi).
+    VeriOku(Box<Ifade>),
+    /// `bugünün tarihi` → Tarih (saat kaynağı IO soyutlamasından gelir).
+    BugununTarihi,
+    /// `şu anın saati` → Saat.
+    SuAninSaati,
+    /// `bugünün 1 gün sonrası` → Tarih.
+    GunSonrasi { tarih: Box<Ifade>, miktar: Box<Ifade> },
+    /// `komut satırından gelenler` → Liste<Metin>.
+    KomutArgumanlari,
+    /// `argümanlar boşsa` — liste/metin boş mu.
+    BosMu { nesne: Box<Ifade>, olumsuz: bool },
     /// Genitif aritmetik (K-008): "a ile b nin toplamı", "x in y ye bölümü".
     Aritmetik {
         islec: AritmetikIslec,
@@ -152,6 +167,8 @@ pub enum Ozellik {
     Uzunluk,
     /// Metin: boşluklardan bölünmüş kelime listesi ("cümlenin kelimeleri").
     Kelimeler,
+    /// Tarih: yıl bileşeni ("bugünün yılı").
+    Yil,
 }
 
 #[derive(Debug, Clone)]
@@ -242,6 +259,8 @@ pub enum Cumle {
     },
     /// Değer beklemeyen işlem çağrısı cümlesi: `"Ayşe" ve 10 ile selamla`.
     CagriCumlesi { cagri: Ifade, satir: usize },
+    /// `programı bitir` — programı olağan biçimde sonlandırır (K-024).
+    ProgramiBitir { satir: usize },
     /// `yaşların "Ayşe" değeri 10 olsun` — sözlüğe yazma (K-015).
     SozlukAta {
         sozluk: Ifade,

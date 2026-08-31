@@ -19,6 +19,10 @@ pub trait GirdiCikti {
     fn dosya_oku(&mut self, yol: &str) -> Result<String, String>;
     /// Bir satırı dosyaya yazar (ekleme=false: baştan yaz; true: sona ekle).
     fn dosya_yaz(&mut self, yol: &str, satir: &str, ekleme: bool) -> Result<(), String>;
+    /// Şimdiki zaman: (yıl, ay, gün, saat, dakika). v0'da UTC.
+    fn simdi(&mut self) -> (i64, u32, u32, u32, u32);
+    /// Komut satırı argümanları (programa aktarılanlar).
+    fn argumanlar(&mut self) -> Vec<String>;
 }
 
 /// Çıktıyı toplayan, girdiyi ve "rastgele" sayıları hazır kuyruktan veren IO
@@ -28,6 +32,9 @@ pub struct ToplayanIo {
     pub rastgele_degerler: VecDeque<i64>,
     /// Sahte dosya sistemi: yol → içerik (testlerde determinizm).
     pub dosyalar: HashMap<String, String>,
+    /// Sabit "şimdi" — testlerde determinizm.
+    pub zaman: (i64, u32, u32, u32, u32),
+    pub argumanlar: Vec<String>,
     pub cikti: Vec<String>,
 }
 
@@ -37,6 +44,8 @@ impl ToplayanIo {
             girdiler: girdiler.into(),
             rastgele_degerler: VecDeque::new(),
             dosyalar: HashMap::new(),
+            zaman: (2026, 8, 31, 14, 30),
+            argumanlar: Vec::new(),
             cikti: Vec::new(),
         }
     }
@@ -68,6 +77,12 @@ impl GirdiCikti for ToplayanIo {
         girdi.push('\n');
         Ok(())
     }
+    fn simdi(&mut self) -> (i64, u32, u32, u32, u32) {
+        self.zaman
+    }
+    fn argumanlar(&mut self) -> Vec<String> {
+        self.argumanlar.clone()
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -84,7 +99,14 @@ pub enum Deger {
     Sonuc { basarili: bool, icerik: String },
     /// Yapı örneği: yalın alan adı → değer (tanım sırasıyla).
     Yapi(Vec<(String, Deger)>),
+    Tarih { yil: i64, ay: u32, gun: u32 },
+    Saat { saat: u32, dakika: u32 },
 }
+
+const AY_ADLARI: [&str; 12] = [
+    "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
+    "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık",
+];
 
 impl Deger {
     fn metne(&self) -> String {
@@ -115,8 +137,41 @@ impl Deger {
                     format!("hata: {}", icerik)
                 }
             }
+            Deger::Tarih { yil, ay, gun } => {
+                format!("{} {} {}", gun, AY_ADLARI[(*ay as usize).saturating_sub(1) % 12], yil)
+            }
+            Deger::Saat { saat, dakika } => format!("{:02}:{:02}", saat, dakika),
         }
     }
+}
+
+/// CLI'nin sistem saatini çevirmesi için dışa açık sarmalayıcı.
+pub fn gunlerden_tarih_utc(gunler: i64) -> (i64, u32, u32) {
+    gunlerden_tarih(gunler)
+}
+
+/// Gregoryen tarih ↔ gün sayısı (Howard Hinnant'ın algoritmaları; 1970-01-01 = 0).
+fn gunlerden_tarih(z: i64) -> (i64, u32, u32) {
+    let z = z + 719468;
+    let devir = if z >= 0 { z } else { z - 146096 } / 146097;
+    let devir_gunu = (z - devir * 146097) as u64;
+    let yil_gunu = (devir_gunu - devir_gunu / 1460 + devir_gunu / 36524 - devir_gunu / 146096) / 365;
+    let yil = yil_gunu as i64 + devir * 400;
+    let yilin_gunu = devir_gunu - (365 * yil_gunu + yil_gunu / 4 - yil_gunu / 100);
+    let ay_kaba = (5 * yilin_gunu + 2) / 153;
+    let gun = (yilin_gunu - (153 * ay_kaba + 2) / 5 + 1) as u32;
+    let ay = if ay_kaba < 10 { ay_kaba + 3 } else { ay_kaba - 9 } as u32;
+    (if ay <= 2 { yil + 1 } else { yil }, ay, gun)
+}
+
+fn tarihten_gunler(yil: i64, ay: u32, gun: u32) -> i64 {
+    let yil = if ay <= 2 { yil - 1 } else { yil };
+    let devir = if yil >= 0 { yil } else { yil - 399 } / 400;
+    let devir_yili = (yil - devir * 400) as u64;
+    let yilin_gunu =
+        (153 * (if ay > 2 { ay - 3 } else { ay + 9 }) as u64 + 2) / 5 + gun as u64 - 1;
+    let devir_gunu = devir_yili * 365 + devir_yili / 4 - devir_yili / 100 + yilin_gunu;
+    devir * 146097 + devir_gunu as i64 - 719468
 }
 
 /// Türkçe kurallarla büyük harfe çevirme: i→İ, ı→I (A07 anti-örneğindeki tuzak).
@@ -151,8 +206,11 @@ pub fn calistir(program: &Program) -> Result<Vec<String>, Tani> {
 
 pub fn calistir_io(program: &Program, io: &mut dyn GirdiCikti) -> Result<(), Tani> {
     let mut ortam: HashMap<String, Deger> = HashMap::new();
-    blok_calistir(&program.cumleler, &mut ortam, program, io)?;
-    Ok(())
+    match blok_calistir(&program.cumleler, &mut ortam, program, io) {
+        // "programı bitir" olağan bir sonlanmadır (Ç000 iç nöbetçisi).
+        Err(tani) if tani.kod == "Ç000" => Ok(()),
+        sonuc => sonuc.map(|_| ()),
+    }
 }
 
 /// Tek bir testi taze ortamda koşar; ilk doğrulama/çalışma hatasında durur.
@@ -162,8 +220,10 @@ pub fn test_calistir(
     io: &mut dyn GirdiCikti,
 ) -> Result<(), Tani> {
     let mut ortam: HashMap<String, Deger> = HashMap::new();
-    blok_calistir(&test.govde, &mut ortam, program, io)?;
-    Ok(())
+    match blok_calistir(&test.govde, &mut ortam, program, io) {
+        Err(tani) if tani.kod == "Ç000" => Ok(()),
+        sonuc => sonuc.map(|_| ()),
+    }
 }
 
 /// Blok çalıştırmanın sonucu: normal akış mı, "döndür" ile erken çıkış mı.
@@ -315,6 +375,9 @@ fn blok_calistir(
                         }
                     }
                 }
+            }
+            Cumle::ProgramiBitir { satir } => {
+                return Err(Tani::yeni("Ç000", "programı bitir".into(), *satir, 1, 1));
             }
             Cumle::IslemTanimi(islem) => return Err(ic_hata(islem.satir)),
             Cumle::YapiTanimi(yapi) => return Err(ic_hata(yapi.satir)),
@@ -530,6 +593,7 @@ fn degerlendir(
                         .map(|k| Deger::Metin(k.to_string()))
                         .collect(),
                 )),
+                (Ozellik::Yil, Deger::Tarih { yil, .. }) => Ok(Deger::TamSayi(yil)),
                 _ => Err(ic_hata(satir)),
             }
         }
@@ -593,6 +657,35 @@ fn degerlendir(
             Ok(Deger::Mantiksal(metin.contains(&aranan)))
         }
         Ifade::YokSabiti => Ok(Deger::Yok),
+        Ifade::BugununTarihi => {
+            let (yil, ay, gun, _, _) = io.simdi();
+            Ok(Deger::Tarih { yil, ay, gun })
+        }
+        Ifade::SuAninSaati => {
+            let (_, _, _, saat, dakika) = io.simdi();
+            Ok(Deger::Saat { saat, dakika })
+        }
+        Ifade::KomutArgumanlari => Ok(Deger::Liste(
+            io.argumanlar().into_iter().map(Deger::Metin).collect(),
+        )),
+        Ifade::GunSonrasi { tarih, miktar } => {
+            let (yil, ay, gun) = match degerlendir(tarih, ortam, program, io, satir)? {
+                Deger::Tarih { yil, ay, gun } => (yil, ay, gun),
+                _ => return Err(ic_hata(satir)),
+            };
+            let miktar = tam_sayi(degerlendir(miktar, ortam, program, io, satir)?, satir)?;
+            let (yil, ay, gun) = gunlerden_tarih(tarihten_gunler(yil, ay, gun) + miktar);
+            Ok(Deger::Tarih { yil, ay, gun })
+        }
+        Ifade::BosMu { nesne, olumsuz } => {
+            let bos = match degerlendir(nesne, ortam, program, io, satir)? {
+                Deger::Liste(ogeler) => ogeler.is_empty(),
+                Deger::Sozluk(girdiler) => girdiler.is_empty(),
+                Deger::Metin(m) => m.is_empty(),
+                _ => return Err(ic_hata(satir)),
+            };
+            Ok(Deger::Mantiksal(bos != *olumsuz))
+        }
         Ifade::YeniYapi { yapi_adi } => {
             let yapi = program
                 .yapilar
@@ -675,6 +768,26 @@ fn degerlendir(
                 Ok(icerik) => Deger::Sonuc { basarili: true, icerik },
                 Err(hata) => Deger::Sonuc { basarili: false, icerik: hata },
             })
+        }
+        Ifade::TabloOku(yol) => {
+            let yol = match degerlendir(yol, ortam, program, io, satir)? {
+                Deger::Metin(m) => m,
+                _ => return Err(ic_hata(satir)),
+            };
+            let icerik = io.dosya_oku(&yol).map_err(|hata| {
+                Tani::yeni("C012", format!("Dosya okunamadı: {}.", hata), satir, 1, 1)
+            })?;
+            csv_ayristir(&icerik, satir)
+        }
+        Ifade::VeriOku(yol) => {
+            let yol = match degerlendir(yol, ortam, program, io, satir)? {
+                Deger::Metin(m) => m,
+                _ => return Err(ic_hata(satir)),
+            };
+            let icerik = io.dosya_oku(&yol).map_err(|hata| {
+                Tani::yeni("C012", format!("Dosya okunamadı: {}.", hata), satir, 1, 1)
+            })?;
+            json_nesnesi_ayristir(&icerik, satir)
         }
         Ifade::DosyaSatirlari(yol) => {
             let yol = match degerlendir(yol, ortam, program, io, satir)? {
@@ -817,6 +930,126 @@ fn mantiksal(deger: Deger, satir: usize) -> Result<bool, Tani> {
         Deger::Mantiksal(b) => Ok(b),
         _ => Err(ic_hata(satir)),
     }
+}
+
+/// CSV ayrıştırma (v0): ilk satır başlıklar, hücreler TamSayı.
+/// Ayırıcı virgüldür; hücre içi tırnaklama v0'da desteklenmez.
+fn csv_ayristir(icerik: &str, satir: usize) -> Result<Deger, Tani> {
+    let mut satirlar = icerik.lines().filter(|s| !s.trim().is_empty());
+    let basliklar: Vec<String> = match satirlar.next() {
+        Some(baslik) => baslik.split(',').map(|b| b.trim().to_string()).collect(),
+        None => {
+            return Err(Tani::yeni("C015", "CSV dosyası boş.".into(), satir, 1, 1));
+        }
+    };
+    let mut tablo = Vec::new();
+    for (indeks, veri_satiri) in satirlar.enumerate() {
+        let hucreler: Vec<&str> = veri_satiri.split(',').map(str::trim).collect();
+        if hucreler.len() != basliklar.len() {
+            return Err(Tani::yeni(
+                "C015",
+                format!(
+                    "CSV {}. veri satırında {} hücre var; başlıkta {} sütun tanımlı.",
+                    indeks + 1,
+                    hucreler.len(),
+                    basliklar.len()
+                ),
+                satir,
+                1,
+                1,
+            ));
+        }
+        let mut kayit = Vec::new();
+        for (baslik, hucre) in basliklar.iter().zip(hucreler) {
+            let deger: i64 = hucre.parse().map_err(|_| {
+                Tani::yeni(
+                    "C015",
+                    format!(
+                        "CSV {}. veri satırındaki \"{}\" hücresi sayı değil (v0'da hücreler TamSayı).",
+                        indeks + 1,
+                        hucre
+                    ),
+                    satir,
+                    1,
+                    1,
+                )
+            })?;
+            kayit.push((baslik.clone(), Deger::TamSayi(deger)));
+        }
+        tablo.push(Deger::Sozluk(kayit));
+    }
+    Ok(Deger::Liste(tablo))
+}
+
+/// Düz JSON nesnesi ayrıştırma (v0): {"anahtar": "metin", ...}.
+/// İç içe nesne/dizi ve metin dışı değerler v0'da desteklenmez.
+fn json_nesnesi_ayristir(icerik: &str, satir: usize) -> Result<Deger, Tani> {
+    let hata = |mesaj: String| Tani::yeni("C016", mesaj, satir, 1, 1);
+    let mut karakterler = icerik.chars().peekable();
+
+    fn bosluk_atla(k: &mut std::iter::Peekable<std::str::Chars>) {
+        while matches!(k.peek(), Some(' ' | '\n' | '\r' | '\t')) {
+            k.next();
+        }
+    }
+    fn metin_oku(
+        k: &mut std::iter::Peekable<std::str::Chars>,
+    ) -> Result<String, String> {
+        if k.next() != Some('"') {
+            return Err("tırnak bekleniyordu".into());
+        }
+        let mut metin = String::new();
+        loop {
+            match k.next() {
+                Some('"') => return Ok(metin),
+                Some('\\') => match k.next() {
+                    Some('"') => metin.push('"'),
+                    Some('\\') => metin.push('\\'),
+                    Some('n') => metin.push('\n'),
+                    Some('t') => metin.push('\t'),
+                    _ => return Err("bilinmeyen kaçış".into()),
+                },
+                Some(c) => metin.push(c),
+                None => return Err("metin kapanmadı".into()),
+            }
+        }
+    }
+
+    bosluk_atla(&mut karakterler);
+    if karakterler.next() != Some('{') {
+        return Err(hata("JSON verisi \"{\" ile başlamalı (v0: düz nesne).".into()));
+    }
+    let mut girdiler = Vec::new();
+    loop {
+        bosluk_atla(&mut karakterler);
+        if karakterler.peek() == Some(&'}') {
+            karakterler.next();
+            break;
+        }
+        let anahtar = metin_oku(&mut karakterler)
+            .map_err(|m| hata(format!("JSON anahtarı okunamadı: {}.", m)))?;
+        bosluk_atla(&mut karakterler);
+        if karakterler.next() != Some(':') {
+            return Err(hata(format!("\"{}\" anahtarından sonra \":\" bekleniyor.", anahtar)));
+        }
+        bosluk_atla(&mut karakterler);
+        if karakterler.peek() != Some(&'"') {
+            return Err(hata(format!(
+                "\"{}\" anahtarının değeri metin değil; v0'da JSON değerleri metin olmalı.",
+                anahtar
+            )));
+        }
+        let deger = metin_oku(&mut karakterler)
+            .map_err(|m| hata(format!("JSON değeri okunamadı: {}.", m)))?;
+        girdiler.push((anahtar, Deger::Metin(deger)));
+        bosluk_atla(&mut karakterler);
+        match karakterler.next() {
+            Some(',') => continue,
+            Some('}') => break,
+            _ => return Err(hata("JSON nesnesinde \",\" ya da \"}\" bekleniyor.".into())),
+        }
+    }
+    Ok(Deger::Sozluk(girdiler))
 }
 
 /// Tür denetiminden geçmiş programda görünmemesi gereken durum.

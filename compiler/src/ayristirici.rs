@@ -150,6 +150,19 @@ impl Ayristirici {
             Some("böl") => self.bol_ayristir(satir_tokenlari, satir_no),
             Some("göre") => self.gore_ayristir(satir_tokenlari, satir_no),
             Some("olmalı") => self.olmali_ayristir(satir_tokenlari, satir_no),
+            Some("bitir") => {
+                if satir_tokenlari.len() == 2 && kelime_mi(&satir_tokenlari[0], "programı") {
+                    Ok(Cumle::ProgramiBitir { satir: satir_no })
+                } else {
+                    Err(Tani::yeni(
+                        "S027",
+                        "Sonlandırma \"programı bitir\" biçiminde yazılır.".into(),
+                        satir_no,
+                        1,
+                        1,
+                    ))
+                }
+            }
             Some(k) if kosul_kelimesi(k) => self.ise_ayristir(satir_tokenlari, satir_no),
             _ => {
                 // Tanımlı bir işlem adına biten satır → çağrı cümlesi.
@@ -839,6 +852,8 @@ fn kosul_kelimesi(kelime: &str) -> bool {
             | "içeriyorsa"
             | "başarılıysa"
             | "başarısızsa"
+            | "boşsa"
+            | "doluysa"
     )
 }
 
@@ -1008,6 +1023,14 @@ fn kosul_ifadesi(tokenlar: &[Token], satir: usize) -> Result<Ifade, Tani> {
         });
     }
 
+    // X boşsa / doluysa — koleksiyon ya da metin boş mu.
+    if n == 2 && (yuklem == "boşsa" || yuklem == "doluysa") {
+        return Ok(Ifade::BosMu {
+            nesne: Box::new(tekil_ifade(tokenlar[0].clone())?),
+            olumsuz: yuklem == "doluysa",
+        });
+    }
+
     // X başarılıysa / başarısızsa — Sonuç durumu.
     if n == 2 && (yuklem == "başarılıysa" || yuklem == "başarısızsa") {
         return Ok(Ifade::SonucBasarili {
@@ -1159,6 +1182,8 @@ fn yapili_kalip(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifade>
             Some(Ozellik::Uzunluk)
         } else if son == "kelimeleri" {
             Some(Ozellik::Kelimeler)
+        } else if son == "yılı" {
+            Some(Ozellik::Yil)
         } else {
             None
         };
@@ -1171,15 +1196,16 @@ fn yapili_kalip(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifade>
     }
 
     // W ın değeri — Seçenek/Sonuç içindeki değer; W ın hatası — Sonuç hatası.
-    if n == 2 && (son == "değeri" || son == "değerini") {
+    let deger_kelimesi = matches!(son, "değeri" | "değerini" | "değerine" | "değeriyle");
+    if n == 2 && deger_kelimesi {
         return Ok(Some(Ifade::IcDeger(Box::new(tekil_ifade(tokenlar[0].clone())?))));
     }
     if n == 2 && (son == "hatası" || son == "hatasını") {
         return Ok(Some(Ifade::SonucHatasi(Box::new(tekil_ifade(tokenlar[0].clone())?))));
     }
 
-    // S in (anahtar) değeri — sözlükten okuma.
-    if n == 3 && son == "değeri" {
+    // S in (anahtar) değeri — sözlükten okuma (ekli biçimler: değeriyle, değerine).
+    if n == 3 && deger_kelimesi {
         return Ok(Some(Ifade::SozlukDegeri {
             sozluk: Box::new(tekil_ifade(tokenlar[0].clone())?),
             anahtar: Box::new(tekil_ifade(tokenlar[1].clone())?),
@@ -1217,6 +1243,35 @@ fn yapili_kalip(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifade>
         return Ok(Some(Ifade::DosyaSatirlari(Box::new(tekil_ifade(
             tokenlar[0].clone(),
         )?))));
+    }
+
+    // "..." dosyasından okunan tablo/veri → CSV tablosu / JSON nesnesi.
+    if n == 4 && kelime(1) == Some("dosyasından") && kelime(2) == Some("okunan") {
+        if son == "tablo" {
+            return Ok(Some(Ifade::TabloOku(Box::new(tekil_ifade(tokenlar[0].clone())?))));
+        }
+        if son == "veri" {
+            return Ok(Some(Ifade::VeriOku(Box::new(tekil_ifade(tokenlar[0].clone())?))));
+        }
+    }
+
+    // bugünün tarihi / şu anın saati / komut satırından gelenler.
+    if n == 2 && kelime(0) == Some("bugünün") && son == "tarihi" {
+        return Ok(Some(Ifade::BugununTarihi));
+    }
+    if n == 3 && kelime(0) == Some("şu") && kelime(1) == Some("anın") && son == "saati" {
+        return Ok(Some(Ifade::SuAninSaati));
+    }
+    if n == 3 && kelime(0) == Some("komut") && kelime(1) == Some("satırından") && son == "gelenler" {
+        return Ok(Some(Ifade::KomutArgumanlari));
+    }
+
+    // T nin <n> gün sonrası — tarih aritmetiği.
+    if n == 4 && kelime(2) == Some("gün") && son == "sonrası" {
+        return Ok(Some(Ifade::GunSonrasi {
+            tarih: Box::new(tekil_ifade(tokenlar[0].clone())?),
+            miktar: Box::new(tekil_ifade(tokenlar[1].clone())?),
+        }));
     }
 
     // yeni <Yapı> — yeni yapı örneği (K-020).

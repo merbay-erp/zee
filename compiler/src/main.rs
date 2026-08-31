@@ -90,6 +90,7 @@ fn dosya_ile(argumanlar: &[String], komut: fn(&str) -> ExitCode) -> ExitCode {
 /// Rastgelelik: sistem saatiyle tohumlanan xorshift (bağımlılıksız).
 struct GercekIo {
     tohum: u64,
+    argumanlar: Vec<String>,
 }
 
 impl GercekIo {
@@ -99,7 +100,9 @@ impl GercekIo {
             .map(|s| s.as_nanos() as u64)
             .unwrap_or(0x5EED)
             | 1;
-        GercekIo { tohum }
+        // `dil çalıştır program.dil selam dünya` → programa ["selam", "dünya"] gider.
+        let argumanlar = std::env::args().skip(3).collect();
+        GercekIo { tohum, argumanlar }
     }
 }
 
@@ -132,6 +135,20 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             .open(yol)
             .and_then(|mut dosya| writeln!(dosya, "{}", satir));
         sonuc.map_err(|hata| format!("\"{}\" dosyasına yazılamadı: {}", yol, hata))
+    }
+    fn simdi(&mut self) -> (i64, u32, u32, u32, u32) {
+        // v0: UTC. Yerel saat dilimi desteği stdlib Zaman modülüyle gelecek.
+        let saniye = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map(|s| s.as_secs() as i64)
+            .unwrap_or(0);
+        let gunler = saniye.div_euclid(86400);
+        let gun_ici = saniye.rem_euclid(86400);
+        let (yil, ay, gun) = dil::yorumlayici::gunlerden_tarih_utc(gunler);
+        (yil, ay, gun, (gun_ici / 3600) as u32, ((gun_ici % 3600) / 60) as u32)
+    }
+    fn argumanlar(&mut self) -> Vec<String> {
+        self.argumanlar.clone()
     }
     fn rastgele(&mut self, alt: i64, ust: i64) -> i64 {
         // xorshift64*

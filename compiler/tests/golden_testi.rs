@@ -225,6 +225,49 @@ fn bos_secenegin_degeri_calisma_hatasi() {
 }
 
 #[test]
+fn golden_21_tarih_ve_saat() {
+    // Sabit saat: 31 Ağustos 2026, 14:30 (ToplayanIo varsayılanı).
+    let program = dil::kaynagi_derle(&golden("21-tarih-ve-saat.dil")).expect("21 derlenmeli");
+    let mut io = dil::yorumlayici::ToplayanIo::yeni(Vec::new());
+    dil::yorumlayici::calistir_io(&program, &mut io).expect("21 çalışmalı");
+    assert_eq!(
+        io.cikti,
+        vec![
+            "Bugün: 31 Ağustos 2026",
+            "Yıl: 2026",
+            "Saat: 14:30",
+            "Yarın: 1 Eylül 2026",
+        ]
+    );
+}
+
+#[test]
+fn golden_28_cli_araci() {
+    let program = dil::kaynagi_derle(&golden("28-cli-araci.dil")).expect("28 derlenmeli");
+
+    // Argümanlarla: her birine selam.
+    let mut io = dil::yorumlayici::ToplayanIo::yeni(Vec::new());
+    io.argumanlar = vec!["Zeynep".into(), "Eliz".into()];
+    dil::yorumlayici::calistir_io(&program, &mut io).expect("28 çalışmalı");
+    assert_eq!(io.cikti, vec!["Merhaba Zeynep", "Merhaba Eliz"]);
+
+    // Argümansız: kullanım yazısı + programı bitir (çökme yok, döngü koşulmaz).
+    let mut io = dil::yorumlayici::ToplayanIo::yeni(Vec::new());
+    dil::yorumlayici::calistir_io(&program, &mut io).expect("bitir olağan sonlanmadır");
+    assert_eq!(io.cikti, vec!["Kullanım: selamla <isim> <isim> ..."]);
+}
+
+#[test]
+fn yil_donumu_gecisi() {
+    let kaynak = "bugün bugünün tarihi olsun\nsonra bugünün 130 gün sonrası olsun\nsonrayı yaz\n";
+    let program = dil::kaynagi_derle(kaynak).expect("derlenmeli");
+    let mut io = dil::yorumlayici::ToplayanIo::yeni(Vec::new());
+    dil::yorumlayici::calistir_io(&program, &mut io).expect("çalışmalı");
+    // 31 Ağu 2026 + 130 gün = 8 Ocak 2027.
+    assert_eq!(io.cikti, vec!["8 Ocak 2027"]);
+}
+
+#[test]
 fn golden_22_yapilar() {
     let cikti = kaynagi_calistir(&golden("22-yapilar.dil")).expect("22 çalışmalı");
     assert_eq!(cikti, vec!["Ayşe 10 yaşında"]);
@@ -282,6 +325,39 @@ fn dondurmeyen_islem_ifadede_reddedilir() {
     let kaynak = "işlem selam ver\n    \"selam\" yaz\n\nx selam ver olsun\nx yaz\n";
     let hata = kaynagi_calistir(kaynak).expect_err("değer döndürmeyen işlem ifadede hata olmalı");
     assert_eq!(hata.kod, "T019");
+}
+
+#[test]
+fn golden_19_csv_analizi() {
+    let program = dil::kaynagi_derle(&golden("19-csv-analizi.dil")).expect("19 derlenmeli");
+    let mut io = dil::yorumlayici::ToplayanIo::yeni(Vec::new());
+    io.dosyalar
+        .insert("notlar.csv".into(), "not\n45\n90\n72\n38\n100\n".into());
+    dil::yorumlayici::calistir_io(&program, &mut io).expect("19 çalışmalı");
+    assert_eq!(io.cikti, vec!["Ortalama: 69"]);
+}
+
+#[test]
+fn golden_20_json_verisi() {
+    let program = dil::kaynagi_derle(&golden("20-json-verisi.dil")).expect("20 derlenmeli");
+    let mut io = dil::yorumlayici::ToplayanIo::yeni(Vec::new());
+    io.dosyalar.insert(
+        "kisi.json".into(),
+        "{\n  \"ad\": \"Ayşe\",\n  \"şehir\": \"İzmir\"\n}\n".into(),
+    );
+    dil::yorumlayici::calistir_io(&program, &mut io).expect("20 çalışmalı");
+    assert_eq!(io.cikti, vec!["Ad: Ayşe", "Şehir: İzmir"]);
+}
+
+#[test]
+fn csv_sayi_olmayan_hucre_turkce_hata() {
+    let kaynak = "tablo \"t.csv\" dosyasından okunan tablo olsun\ntablonun adedi yaz\n";
+    let program = dil::kaynagi_derle(kaynak).expect("derlenmeli");
+    let mut io = dil::yorumlayici::ToplayanIo::yeni(Vec::new());
+    io.dosyalar.insert("t.csv".into(), "ad,not\nAyşe,90\n".into());
+    let hata = dil::yorumlayici::calistir_io(&program, &mut io).expect_err("hücre hatası");
+    assert_eq!(hata.kod, "C015");
+    assert!(hata.mesaj.contains("Ayşe"), "sorunlu hücre gösterilmeli: {}", hata.mesaj);
 }
 
 #[test]
