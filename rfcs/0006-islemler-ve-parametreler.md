@@ -53,7 +53,8 @@ Kurallar (hepsi gerçeklenmiş ve testli):
    sözdiziminde yoktur (S004'e düşer, öneri açıklar).
 2. **En uzun ad önce eşlenir** (determinizm; iç içe ad çakışmalarında).
 3. Argümanlar addan önce gelir ve `için` ya da `ile` ayracıyla biter (S019);
-   birden çok argüman `ve` ile ayrılır, her biri tek değerdir (S020, v0).
+   birden çok argüman `ve` ile ayrılır; her dilim tam bir ifade bölgesidir
+   (v0.2, K-038): `tabanın tam kısmı için yuvarla` geçerli.
 4. **v0 monomorfizmi:** gövde İLK çağrının argüman türleriyle denetlenir; imza
    sabitlenir (T017), parametre sayısı uymazsa T015. Özyineleme v0'da yok (T016).
 
@@ -98,7 +99,7 @@ A ifade konumunda, B öğretici/adım-adım stilde). C yalnız A/B yetersiz kal�
    `sayıları al (Liste<TamSayı>)` benzeri isteğe bağlı tür eki — sözdizimi
    tasarlanmadı.
 3. Çok değerli dönüş (K-023'ün "hepsini bekle" sorusuyla birleşik).
-4. Argümanların çok-tokenli ifade olabilmesi (S020 kısıtının kaldırılması).
+4. ~~Argümanların çok-tokenli ifade olabilmesi~~ — GERÇEKLENDİ (v0.2, K-038).
 
 ## Dört soru süzgeci (mevcut A yüzeyi için)
 
