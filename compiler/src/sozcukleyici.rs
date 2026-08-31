@@ -16,6 +16,8 @@ pub enum TokenTur {
     Metin(String),
     /// Tam sayı sabiti.
     TamSayi(i64),
+    /// Ondalık sabit (RFC-0013): `3,14` → govde=314, olcek=2. Onluk tam değer.
+    Ondalik { govde: i64, olcek: u32 },
     /// Tanımlayıcı ya da kalıp kelimesi (yaz, olsun, ise, ile...).
     Kelime(String),
     Virgul,
@@ -107,7 +109,11 @@ pub fn sozcukle(kaynak: &str) -> Result<Vec<Token>, Tani> {
         // Satır içeriği.
         let mut sutun = girinti + 1;
         let mut kalanlar = kalan.chars().peekable();
+        // Token'lar hiçbir zaman boşlukla bitmez; bu yüzden "önceki karakter
+        // boşluktu" bilgisi her turda başlangıç karakterinden türetilebilir.
+        let mut bosluktan_sonra = true;
         while let Some(&k) = kalanlar.peek() {
+            let bosluk_mu = k == ' ';
             if k == ' ' {
                 kalanlar.next();
                 sutun += 1;
@@ -160,12 +166,65 @@ pub fn sozcukle(kaynak: &str) -> Result<Vec<Token>, Tani> {
                         sayi_metni.len(),
                     )
                 })?;
-                tokenlar.push(Token::yeni(
-                    TokenTur::TamSayi(deger),
-                    satir_no,
-                    baslangic_sutun,
-                    sayi_metni.len(),
-                ));
+
+                // Bitişik virgül kuralı (RFC-0013): rakam,rakam → ondalık sabit.
+                let ondalik_mi = {
+                    let mut ileri = kalanlar.clone();
+                    ileri.next() == Some(',')
+                        && ileri.peek().map(|r| r.is_ascii_digit()) == Some(true)
+                };
+                if ondalik_mi {
+                    kalanlar.next(); // ','
+                    sutun += 1;
+                    let mut kesir_metni = String::new();
+                    while let Some(&r) = kalanlar.peek() {
+                        if r.is_ascii_digit() {
+                            kesir_metni.push(r);
+                            kalanlar.next();
+                            sutun += 1;
+                        } else {
+                            break;
+                        }
+                    }
+                    if kesir_metni.len() > 9 {
+                        return Err(Tani::yeni(
+                            "S032",
+                            format!(
+                                "Ondalık kısım en çok 9 hane olabilir; burada {} hane var.",
+                                kesir_metni.len()
+                            ),
+                            satir_no,
+                            baslangic_sutun,
+                            sayi_metni.len() + 1 + kesir_metni.len(),
+                        ));
+                    }
+                    let olcek = kesir_metni.len() as u32;
+                    let govde = deger
+                        .checked_mul(10i64.pow(olcek))
+                        .and_then(|t| t.checked_add(kesir_metni.parse::<i64>().unwrap_or(0)))
+                        .ok_or_else(|| {
+                            Tani::yeni(
+                                "S006",
+                                format!("\"{},{}\" sayısı çok büyük.", sayi_metni, kesir_metni),
+                                satir_no,
+                                baslangic_sutun,
+                                sayi_metni.len() + 1 + kesir_metni.len(),
+                            )
+                        })?;
+                    tokenlar.push(Token::yeni(
+                        TokenTur::Ondalik { govde, olcek },
+                        satir_no,
+                        baslangic_sutun,
+                        sayi_metni.len() + 1 + kesir_metni.len(),
+                    ));
+                } else {
+                    tokenlar.push(Token::yeni(
+                        TokenTur::TamSayi(deger),
+                        satir_no,
+                        baslangic_sutun,
+                        sayi_metni.len(),
+                    ));
+                }
             } else if k.is_alphabetic() || k == '_' {
                 let baslangic_sutun = sutun;
                 let mut kelime = String::new();
@@ -218,9 +277,32 @@ pub fn sozcukle(kaynak: &str) -> Result<Vec<Token>, Tani> {
                 ));
             } else if k == ',' {
                 kalanlar.next();
+                // "3 ,14" gibi boşluk-virgül-rakam dizisi: ondalık mı liste mi
+                // belirsiz görünür; öğretici tanıyla reddedilir (RFC-0013 §1).
+                if bosluktan_sonra
+                    && kalanlar.peek().map(|r| r.is_ascii_digit()) == Some(true)
+                {
+                    return Err(Tani::yeni(
+                        "S033",
+                        "Virgülden önce boşluk, sonra rakam: ondalık mı liste mi belirsiz.".into(),
+                        satir_no,
+                        sutun,
+                        1,
+                    )
+                    .onerili(
+                        "Ondalık sayıysa bitişik yaz: 3,14 — liste ayracıysa virgülden sonra boşluk bırak: 3, 14"
+                            .into(),
+                    ));
+                }
                 tokenlar.push(Token::yeni(TokenTur::Virgul, satir_no, sutun, 1));
                 sutun += 1;
             } else {
+                let oneri = if k == '.' {
+                    "Ondalık ayracı Türkçede virgüldür: 3.14 değil 3,14 yaz (RFC-0013)."
+                } else {
+                    "Bu dilde noktalama en azdadır: süslü parantez, noktalı virgül ve \
+                     sembolik işleçler kullanılmaz. Kalıpları kelimelerle yaz."
+                };
                 return Err(Tani::yeni(
                     "S001",
                     format!("Beklenmeyen karakter: \"{}\"", k),
@@ -228,12 +310,9 @@ pub fn sozcukle(kaynak: &str) -> Result<Vec<Token>, Tani> {
                     sutun,
                     1,
                 )
-                .onerili(
-                    "Bu dilde noktalama en azdadır: süslü parantez, noktalı virgül ve \
-                     sembolik işleçler kullanılmaz. Kalıpları kelimelerle yaz."
-                        .into(),
-                ));
+                .onerili(oneri.into()));
             }
+            bosluktan_sonra = bosluk_mu;
         }
 
         tokenlar.push(Token::yeni(TokenTur::SatirSonu, satir_no, sutun, 1));

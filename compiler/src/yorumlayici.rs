@@ -88,6 +88,9 @@ impl GirdiCikti for ToplayanIo {
 #[derive(Debug, Clone, PartialEq)]
 pub enum Deger {
     TamSayi(i64),
+    /// Onluk tam değer: govde/10^olcek; hep normalize saklanır (olcek >= 1,
+    /// sondaki sıfırlar atılmış). Böylece 1,50 ve 1,5 aynı değerdir.
+    Ondalik { govde: i64, olcek: u32 },
     Metin(String),
     Mantiksal(bool),
     Liste(Vec<Deger>),
@@ -112,6 +115,18 @@ impl Deger {
     fn metne(&self) -> String {
         match self {
             Deger::TamSayi(s) => s.to_string(),
+            Deger::Ondalik { govde, olcek } => {
+                let isaret = if *govde < 0 { "-" } else { "" };
+                let mutlak = govde.unsigned_abs();
+                let carpan = 10u64.pow(*olcek);
+                format!(
+                    "{}{},{:0genislik$}",
+                    isaret,
+                    mutlak / carpan,
+                    mutlak % carpan,
+                    genislik = *olcek as usize
+                )
+            }
             Deger::Metin(m) => m.clone(),
             Deger::Mantiksal(b) => if *b { "doğru" } else { "yanlış" }.to_string(),
             Deger::Liste(ogeler) => ogeler
@@ -172,6 +187,50 @@ fn tarihten_gunler(yil: i64, ay: u32, gun: u32) -> i64 {
         (153 * (if ay > 2 { ay - 3 } else { ay + 9 }) as u64 + 2) / 5 + gun as u64 - 1;
     let devir_gunu = devir_yili * 365 + devir_yili / 4 - devir_yili / 100 + yilin_gunu;
     devir * 146097 + devir_gunu as i64 - 719468
+}
+
+/// Ondalık kurucu: normalize eder (sondaki sıfırlar atılır, olcek >= 1) ve
+/// i64 sınırını denetler (C002).
+fn ondalik_yap(mut govde: i128, mut olcek: u32, satir: usize) -> Result<Deger, Tani> {
+    while olcek > 1 && govde % 10 == 0 {
+        govde /= 10;
+        olcek -= 1;
+    }
+    if olcek == 0 {
+        govde = govde.checked_mul(10).ok_or_else(|| tasma(satir))?;
+        olcek = 1;
+    }
+    let govde = i64::try_from(govde).map_err(|_| tasma(satir))?;
+    Ok(Deger::Ondalik { govde, olcek })
+}
+
+fn tasma(satir: usize) -> Tani {
+    Tani::yeni("C002", "İşlem sonucu sayı sınırını aştı.".into(), satir, 1, 1)
+}
+
+/// Sayısal değeri (govde, olcek) çiftine açar; TamSayı olcek 0 ile gelir.
+fn sayisal_ac(deger: &Deger) -> Option<(i128, u32)> {
+    match deger {
+        Deger::TamSayi(v) => Some((*v as i128, 0)),
+        Deger::Ondalik { govde, olcek } => Some((*govde as i128, *olcek)),
+        _ => None,
+    }
+}
+
+/// İki sayıyı ortak ölçeğe hizalar.
+fn hizala(a: (i128, u32), b: (i128, u32)) -> (i128, i128, u32) {
+    let ortak = a.1.max(b.1);
+    let ga = a.0 * 10i128.pow(ortak - a.1);
+    let gb = b.0 * 10i128.pow(ortak - b.1);
+    (ga, gb, ortak)
+}
+
+/// Yarımlar sıfırdan uzağa yuvarlanarak bölme (okul kuralı, RFC-0013 §2).
+fn yuvarla_bol(pay: i128, payda: i128) -> i128 {
+    let isaret = if (pay < 0) != (payda < 0) { -1 } else { 1 };
+    let p = pay.abs();
+    let q = payda.abs();
+    isaret * ((2 * p + q) / (2 * q))
 }
 
 /// Türkçe kurallarla büyük harfe çevirme: i→İ, ı→I (A07 anti-örneğindeki tuzak).
@@ -436,18 +495,10 @@ fn blok_calistir(
                 return Ok(Akis::Don(sonuc));
             }
             Cumle::BolVeAta { hedef, pay, payda, satir } => {
-                let pay = tam_sayi(degerlendir(pay, ortam, program, cikti, *satir)?, *satir)?;
-                let payda = tam_sayi(degerlendir(payda, ortam, program, cikti, *satir)?, *satir)?;
-                if payda == 0 {
-                    return Err(Tani::yeni(
-                        "C003",
-                        "Sıfıra bölme yapılamaz.".into(),
-                        *satir,
-                        1,
-                        1,
-                    ));
-                }
-                ortam.insert(hedef.clone(), Deger::TamSayi(pay / payda));
+                let pay = degerlendir(pay, ortam, program, cikti, *satir)?;
+                let payda = degerlendir(payda, ortam, program, cikti, *satir)?;
+                let sonuc = sayisal_islem(&AritmetikIslec::Bol, &pay, &payda, *satir)?;
+                ortam.insert(hedef.clone(), sonuc);
             }
             Cumle::CagriCumlesi { cagri, satir } => {
                 if let Ifade::IslemCagrisi { islem_adi, argumanlar, .. } = cagri {
@@ -514,6 +565,59 @@ fn islem_cagir(
     }
 }
 
+/// Genitif aritmetiğin sayısal çekirdeği: iki TamSayı → TamSayı (tam bölme);
+/// Ondalık karışımı → Ondalık (bölme 9 haneye, yarımlar sıfırdan uzağa).
+fn sayisal_islem(
+    islec: &AritmetikIslec,
+    sol: &Deger,
+    sag: &Deger,
+    satir: usize,
+) -> Result<Deger, Tani> {
+    let her_iki_tam = matches!((sol, sag), (Deger::TamSayi(_), Deger::TamSayi(_)));
+    let a = sayisal_ac(sol).ok_or_else(|| ic_hata(satir))?;
+    let b = sayisal_ac(sag).ok_or_else(|| ic_hata(satir))?;
+
+    if *islec == AritmetikIslec::Bol && b.0 == 0 {
+        return Err(Tani::yeni("C003", "Sıfıra bölme yapılamaz.".into(), satir, 1, 1)
+            .onerili("Bölmeden önce bölenin sıfır olup olmadığını kontrol et.".into()));
+    }
+
+    if her_iki_tam {
+        let sonuc = match islec {
+            AritmetikIslec::Topla => a.0.checked_add(b.0),
+            AritmetikIslec::Cikar => a.0.checked_sub(b.0),
+            AritmetikIslec::Carp => a.0.checked_mul(b.0),
+            AritmetikIslec::Bol => a.0.checked_div(b.0),
+        }
+        .ok_or_else(|| tasma(satir))?;
+        let sonuc = i64::try_from(sonuc).map_err(|_| tasma(satir))?;
+        return Ok(Deger::TamSayi(sonuc));
+    }
+
+    match islec {
+        AritmetikIslec::Topla | AritmetikIslec::Cikar => {
+            let (ga, gb, ortak) = hizala(a, b);
+            let sonuc = if *islec == AritmetikIslec::Topla { ga + gb } else { ga - gb };
+            ondalik_yap(sonuc, ortak, satir)
+        }
+        AritmetikIslec::Carp => {
+            let mut govde = a.0.checked_mul(b.0).ok_or_else(|| tasma(satir))?;
+            let mut olcek = a.1 + b.1;
+            if olcek > 9 {
+                govde = yuvarla_bol(govde, 10i128.pow(olcek - 9));
+                olcek = 9;
+            }
+            ondalik_yap(govde, olcek, satir)
+        }
+        AritmetikIslec::Bol => {
+            // Hedef ölçek 9: q = ga * 10^(9 - sa + sb) / gb (9 >= sa garantili).
+            let ust = 9 - a.1 + b.1;
+            let pay = a.0.checked_mul(10i128.pow(ust)).ok_or_else(|| tasma(satir))?;
+            ondalik_yap(yuvarla_bol(pay, b.0), 9, satir)
+        }
+    }
+}
+
 fn guncelle(
     hedef: &Ifade,
     miktar: &Ifade,
@@ -527,21 +631,11 @@ fn guncelle(
         Ifade::Degisken { cozulmus: Some(ad), .. } => ad.clone(),
         _ => return Err(ic_hata(satir)),
     };
-    let miktar = tam_sayi(degerlendir(miktar, ortam, program, io, satir)?, satir)?;
-    let eski = match ortam.get(&ad) {
-        Some(Deger::TamSayi(s)) => *s,
-        _ => return Err(ic_hata(satir)),
-    };
-    let yeni = eski.checked_add(yon * miktar).ok_or_else(|| {
-        Tani::yeni(
-            "C002",
-            format!("\"{}\" değeri taştı: TamSayı sınırı aşıldı.", ad),
-            satir,
-            1,
-            1,
-        )
-    })?;
-    ortam.insert(ad, Deger::TamSayi(yeni));
+    let miktar = degerlendir(miktar, ortam, program, io, satir)?;
+    let eski = ortam.get(&ad).cloned().ok_or_else(|| ic_hata(satir))?;
+    let islec = if yon > 0 { AritmetikIslec::Topla } else { AritmetikIslec::Cikar };
+    let yeni = sayisal_islem(&islec, &eski, &miktar, satir)?;
+    ortam.insert(ad, yeni);
     Ok(())
 }
 
@@ -555,12 +649,24 @@ fn degerlendir(
     match ifade {
         Ifade::MetinSabiti(m) => Ok(Deger::Metin(m.clone())),
         Ifade::SayiSabiti(s) => Ok(Deger::TamSayi(*s)),
+        Ifade::OndalikSabiti { govde, olcek } => {
+            ondalik_yap(*govde as i128, *olcek, satir)
+        }
         Ifade::MantiksalSabiti(b) => Ok(Deger::Mantiksal(*b)),
         Ifade::BosListe => Ok(Deger::Liste(Vec::new())),
         Ifade::ListeSabiti(ogeler) => {
             let mut degerler = Vec::new();
             for oge in ogeler {
                 degerler.push(degerlendir(oge, ortam, program, io, satir)?);
+            }
+            // Sayısal karışım Ondalık'a genişler (RFC-0013 §2): öğeler gerçekten
+            // dönüştürülür ki listenin türü ile içeriği tutarlı kalsın.
+            if degerler.iter().any(|d| matches!(d, Deger::Ondalik { .. })) {
+                for deger in degerler.iter_mut() {
+                    if let Deger::TamSayi(v) = deger {
+                        *deger = ondalik_yap(*v as i128 * 10, 1, satir)?;
+                    }
+                }
             }
             Ok(Deger::Liste(degerler))
         }
@@ -594,6 +700,14 @@ fn degerlendir(
                         .collect(),
                 )),
                 (Ozellik::Yil, Deger::Tarih { yil, .. }) => Ok(Deger::TamSayi(yil)),
+                (Ozellik::TamKisim, Deger::Ondalik { govde, olcek }) => {
+                    // Sıfıra doğru kırpma (Rust tam bölmesiyle aynı).
+                    Ok(Deger::TamSayi(govde / 10i64.pow(olcek)))
+                }
+                (Ozellik::Yuvarlanmis, Deger::Ondalik { govde, olcek }) => {
+                    let sonuc = yuvarla_bol(govde as i128, 10i128.pow(olcek));
+                    Ok(Deger::TamSayi(i64::try_from(sonuc).map_err(|_| tasma(satir))?))
+                }
                 _ => Err(ic_hata(satir)),
             }
         }
@@ -698,6 +812,7 @@ fn degerlendir(
                 .map(|(alan, tur)| {
                     let varsayilan = match tur.as_str() {
                         "TamSayı" => Deger::TamSayi(0),
+                        "Ondalık" => Deger::Ondalik { govde: 0, olcek: 1 },
                         "Mantıksal" => Deger::Mantiksal(false),
                         _ => Deger::Metin(String::new()),
                     };
@@ -840,19 +955,23 @@ fn degerlendir(
         Ifade::Karsilastirma { sol, sag, islec } => {
             let sol = degerlendir(sol, ortam, program, io, satir)?;
             let sag = degerlendir(sag, ortam, program, io, satir)?;
-            let sonuc = match islec {
-                Islec::Esit => sol == sag,
-                _ => {
-                    let sol = tam_sayi(sol, satir)?;
-                    let sag = tam_sayi(sag, satir)?;
+            // Sayısal çift değer üzerinden hizalanarak karşılaştırılır
+            // (2 = 2,0 doğrudur; 1,5 < 2 çalışır — RFC-0013 §2).
+            let sonuc = match (sayisal_ac(&sol), sayisal_ac(&sag)) {
+                (Some(a), Some(b)) => {
+                    let (ga, gb, _) = hizala(a, b);
                     match islec {
-                        Islec::Buyuk => sol > sag,
-                        Islec::Kucuk => sol < sag,
-                        Islec::BuyukEsit => sol >= sag,
-                        Islec::KucukEsit => sol <= sag,
-                        Islec::Esit => unreachable!(),
+                        Islec::Esit => ga == gb,
+                        Islec::Buyuk => ga > gb,
+                        Islec::Kucuk => ga < gb,
+                        Islec::BuyukEsit => ga >= gb,
+                        Islec::KucukEsit => ga <= gb,
                     }
                 }
+                _ => match islec {
+                    Islec::Esit => sol == sag,
+                    _ => return Err(ic_hata(satir)),
+                },
             };
             Ok(Deger::Mantiksal(sonuc))
         }
@@ -879,30 +998,9 @@ fn degerlendir(
             Ok(Deger::Mantiksal(s % 2 != 0))
         }
         Ifade::Aritmetik { islec, sol, sag } => {
-            let sol = tam_sayi(degerlendir(sol, ortam, program, io, satir)?, satir)?;
-            let sag = tam_sayi(degerlendir(sag, ortam, program, io, satir)?, satir)?;
-            let sonuc = match islec {
-                AritmetikIslec::Topla => sol.checked_add(sag),
-                AritmetikIslec::Cikar => sol.checked_sub(sag),
-                AritmetikIslec::Carp => sol.checked_mul(sag),
-                AritmetikIslec::Bol => {
-                    if sag == 0 {
-                        return Err(Tani::yeni(
-                            "C003",
-                            "Sıfıra bölme yapılamaz.".into(),
-                            satir,
-                            1,
-                            1,
-                        )
-                        .onerili("Bölmeden önce bölenin sıfır olup olmadığını kontrol et.".into()));
-                    }
-                    sol.checked_div(sag)
-                }
-            };
-            let sonuc = sonuc.ok_or_else(|| {
-                Tani::yeni("C002", "İşlem sonucu TamSayı sınırını aştı.".into(), satir, 1, 1)
-            })?;
-            Ok(Deger::TamSayi(sonuc))
+            let sol = degerlendir(sol, ortam, program, io, satir)?;
+            let sag = degerlendir(sag, ortam, program, io, satir)?;
+            sayisal_islem(islec, &sol, &sag, satir)
         }
         Ifade::IslemCagrisi { islem_adi, argumanlar, .. } => {
             let mut degerler = Vec::new();
@@ -911,6 +1009,41 @@ fn degerlendir(
             }
             islem_cagir(islem_adi, degerler, program, io, satir)?
                 .ok_or_else(|| ic_hata(satir))
+        }
+        Ifade::Ondaligi(ic) => {
+            let metin = match degerlendir(ic, ortam, program, io, satir)? {
+                Deger::Metin(m) => m,
+                _ => return Err(ic_hata(satir)),
+            };
+            let kirpilmis = metin.trim();
+            let hata = || {
+                Tani::yeni(
+                    "C004",
+                    format!("\"{}\" ondalığa çevrilemedi.", kirpilmis),
+                    satir,
+                    1,
+                    1,
+                )
+                .onerili("Ondalık, virgülle yazılır. Örnek: 3,14".into())
+            };
+            let (tam, kesir) = match kirpilmis.split_once(',') {
+                Some((tam, kesir)) => (tam, kesir),
+                None => (kirpilmis, "0"),
+            };
+            if tam.is_empty()
+                || kesir.is_empty()
+                || kesir.len() > 9
+                || !tam.chars().all(|k| k.is_ascii_digit())
+                || !kesir.chars().all(|k| k.is_ascii_digit())
+            {
+                return Err(hata());
+            }
+            let olcek = kesir.len() as u32;
+            let govde = (tam.parse::<i128>().map_err(|_| hata())?)
+                .checked_mul(10i128.pow(olcek))
+                .and_then(|t| t.checked_add(kesir.parse::<i128>().ok()?))
+                .ok_or_else(hata)?;
+            ondalik_yap(govde, olcek, satir)
         }
         Ifade::Sayisi(ic) => {
             let metin = match degerlendir(ic, ortam, program, io, satir)? {

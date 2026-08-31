@@ -43,6 +43,8 @@ türetilmiştir; yeni kod eklenince bu dosya güncellenir — CI'a bağlanması 
 | S029 | Birleştirici im (U+0300–U+036F) | Birleşik karakteri kullan: g + ˘ değil ğ (RFC-0002 §2) |
 | S030 | `ve` ile `veya` aynı koşulda karıştı | Öncelik parantezsiz belirsizdir: tek tür bağlaç kullan ya da koşulu ayrı `ise` basamaklarına böl (K-027) |
 | S031 | `değilse` tek başına | `değilse` bir `... ise` bloğunun hemen ardından, aynı hizada gelir |
+| S032 | Ondalık kısım 9 haneden uzun | Ondalık hassasiyeti en çok 9 hanedir (RFC-0013) |
+| S033 | Boşluk-virgül-rakam dizisi belirsiz | Ondalıksa bitişik yaz (`3,14`); liste ayracıysa virgülden sonra boşluk bırak (`3, 14`) |
 
 ## A — Ad çözümleme
 

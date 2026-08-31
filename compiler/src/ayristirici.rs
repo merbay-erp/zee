@@ -892,6 +892,7 @@ fn tekil_ifade(token: Token) -> Result<Ifade, Tani> {
     match token.tur {
         TokenTur::Metin(m) => Ok(Ifade::MetinSabiti(m)),
         TokenTur::TamSayi(s) => Ok(Ifade::SayiSabiti(s)),
+        TokenTur::Ondalik { govde, olcek } => Ok(Ifade::OndalikSabiti { govde, olcek }),
         TokenTur::Kelime(k) if k == "doğru" => Ok(Ifade::MantiksalSabiti(true)),
         TokenTur::Kelime(k) if k == "yanlış" => Ok(Ifade::MantiksalSabiti(false)),
         TokenTur::Kelime(k) if k == "yok" => Ok(Ifade::YokSabiti),
@@ -1262,9 +1263,12 @@ fn yapili_kalip(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifade>
         return Ok(Some(cagri));
     }
 
-    // W ın sayısı — ek, ada bitişiktir ("yanıtın"); çözümleyici ayıklar.
+    // W ın sayısı / ondalığı — ek, ada bitişiktir ("yanıtın"); çözümleyici ayıklar.
     if n == 2 && son == "sayısı" {
         return Ok(Some(Ifade::Sayisi(Box::new(tekil_ifade(tokenlar[0].clone())?))));
+    }
+    if n == 2 && son == "ondalığı" {
+        return Ok(Some(Ifade::Ondaligi(Box::new(tekil_ifade(tokenlar[0].clone())?))));
     }
 
     // boş liste / boş sözlük
@@ -1292,6 +1296,8 @@ fn yapili_kalip(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifade>
             Some(Ozellik::Kelimeler)
         } else if son == "yılı" {
             Some(Ozellik::Yil)
+        } else if son == "yuvarlanmışı" {
+            Some(Ozellik::Yuvarlanmis)
         } else {
             None
         };
@@ -1310,6 +1316,14 @@ fn yapili_kalip(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifade>
     }
     if n == 2 && (son == "hatası" || son == "hatasını") {
         return Ok(Some(Ifade::SonucHatasi(Box::new(tekil_ifade(tokenlar[0].clone())?))));
+    }
+
+    // X in tam kısmı — ondalığın virgül öncesi (RFC-0013).
+    if n == 3 && kelime(1) == Some("tam") && son == "kısmı" {
+        return Ok(Some(Ifade::Ozellik {
+            nesne: Box::new(tekil_ifade(tokenlar[0].clone())?),
+            ozellik: Ozellik::TamKisim,
+        }));
     }
 
     // S in (anahtar) değeri — sözlükten okuma (ekli biçimler: değeriyle, değerine).
