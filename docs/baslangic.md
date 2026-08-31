@@ -95,5 +95,6 @@ internet gerekmez, katalog `dil`in içindedir.
   numaralı, hepsi çalışır belge niteliğinde.
 - Dilin OLMADIĞI şeyler: [anti-ornekler/](../anti-ornekler/)
 - Hata sözlüğü: [hata-katalogu.md](hata-katalogu.md)
+- Normatif tanım: [../spec/](../spec/) — dilin resmi spesifikasyonu
 - Tasarım kararlarının tamamı: [../rfcs/](../rfcs/) ve [../kararlar/gunluk.md](../kararlar/gunluk.md)
 - VS Code renklendirme: [../editors/vscode/](../editors/vscode/)

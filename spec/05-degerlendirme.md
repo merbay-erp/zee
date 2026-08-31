@@ -1,0 +1,45 @@
+# 05 — Değerlendirme
+
+Normatif kaynak: RFC-0001 §7 (determinizm), ADR-003 (yürütme modeli),
+RFC-0013 (ondalık aritmetik). Tanı kodları: C bölümü.
+
+## Yürütme modeli (TANIMLI)
+
+Program, cümlelerin yazılı sırasıyla yürütülür. Bir cümlenin içindeki
+ifadeler tek biçimde ayrışır ve alt ifadeleri bir kez değerlendirilir;
+gözlemlenebilir yan etkiler (yazma, sorma, dosya, ağ) kaynak sırasını izler.
+
+## Determinizm sözü (TANIMLI — RFC-0001 §7)
+
+Aynı program + aynı girdiler + aynı IO dünyası (tohum, saat, dosyalar,
+ağ cevapları) = **her platformda aynı çıktı**. Bunu mümkün kılan kural:
+zaman, rastgelelik, dosya, ağ, sensör ve an ölçümü dahil BÜTÜN dış dünya
+IO soyutlamasının arkasındadır; dil çekirdeğinde gizli kaynak yoktur.
+Playground'da tohum görünürdür; testlerde IO dünyası tamamen sahtedir.
+
+## Sayısal anlam (TANIMLI)
+
+- TamSayı i64'tür. Taşma sessizce **sarmalanmaz**: taşan işlem C002 verir.
+- Sıfıra bölme C003. TamSayı bölmesi tam bölümdür (kalan atılır).
+- Ondalık, onluk tam sayıdır: gövde × 10⁻ᵏ (k ≤ 9). Ara işlemler 128 bitte
+  yapılır; temsil edilemeyen sonuç C002 ailesinde tanıya düşer, ikilik
+  kayan nokta HİÇBİR aşamada kullanılmaz. `0,1 + 0,2 = 0,3` kimliktir.
+- Yuvarlama: yarımlar sıfırdan uzağa (`2,5 → 3`, `-2,5 → -3`).
+
+## Çağrı derinliği (TANIMLI — K-040)
+
+Çağrı derinliği 500 ile sınırlıdır; aşımı C019 Türkçe tanısıdır. Sınır her
+platformda AYNIDIR ve dilin kendi tanısıyla karşılanır — altındaki
+makinenin yığın taşmasıyla değil. Sınır, en dar hedef platforma (tarayıcı
+motoru çağrı yığını) paylı seçilmiştir.
+
+## Girdi bitişi (TANIMLI)
+
+Etkileşimsiz koşuda `diye sor` için girdi kalmadıysa C005. `programı bitir`
+programı o noktada, o ana dek üretilmiş çıktıyla sonlandırır.
+
+## Çalışma zamanı tanıları
+
+Çalışma hatası da tanı sözleşmesine uyar (kod + mesaj + konum + öneri) ve
+programı durdurur. "Beklenen" hatalar (dosya yok, çevrilemeyen metin...)
+için Sonuç üreten `... dene` biçimleri **TANIMLI** yoldur — bkz. 06.
