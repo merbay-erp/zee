@@ -1,6 +1,8 @@
 # RFC-0013 — Ondalık Sayılar
 
-- **Durum:** taslak (tür sisteminin en büyük eksiğini kapatma önerisi)
+- **Durum:** taslak — **yüzey gerçeklendi** (31 Ağu 2026): bitişik virgül kuralı,
+  onluk aritmetik, S032/S033 tanıları, biçimleyici desteği; 18 test yeşil.
+  Kesinleşme usability + korpus genişletmesiyle
 - **Tarih:** 31 Ağustos 2026
 - **İlgili günlük kayıtları:** RFC-0002 §6.3, RFC-0007 §4.1
 - **Gerçekleme:** yok (bu RFC yol açar)

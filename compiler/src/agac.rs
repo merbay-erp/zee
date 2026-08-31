@@ -62,6 +62,8 @@ pub enum AritmetikIslec {
 pub enum Ifade {
     MetinSabiti(String),
     SayiSabiti(i64),
+    /// Ondalık sabit (RFC-0013): onluk tam değer, govde/10^olcek.
+    OndalikSabiti { govde: i64, olcek: u32 },
     /// "doğru" / "yanlış" (master plan bölüm 7).
     MantiksalSabiti(bool),
     /// "1 ile 100 arasında rastgele sayı" — iki uç dahil.
@@ -149,6 +151,8 @@ pub enum Ifade {
     },
     /// Metinden sayıya dönüşüm (K-009): "yanıtın sayısı".
     Sayisi(Box<Ifade>),
+    /// Metinden ondalığa dönüşüm (RFC-0013): "yanıtın ondalığı".
+    Ondaligi(Box<Ifade>),
     /// "yeni Öğrenci" — alanları varsayılan değerli yeni yapı örneği (K-020).
     YeniYapi { yapi_adi: String },
     /// "ayşenin adı" — iyelik ekiyle alan okuma (K-020). `alan` ham yazımdır
@@ -175,6 +179,10 @@ pub enum Ozellik {
     Kelimeler,
     /// Tarih: yıl bileşeni ("bugünün yılı").
     Yil,
+    /// Ondalık: virgülden önceki kısım, sıfıra doğru kırpma ("tam kısmı").
+    TamKisim,
+    /// Ondalık: en yakın tam sayıya, yarımlar sıfırdan uzağa ("yuvarlanmışı").
+    Yuvarlanmis,
 }
 
 #[derive(Debug, Clone)]

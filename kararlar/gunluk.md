@@ -139,6 +139,19 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   birebir çalışıyor ve regression testinde.
 - **Durum:** geçici — RFC-0005'te belgelendi.
 
+## K-028 — Ondalık sayılar (31 Ağu, RFC-0013 gerçeklemesi)
+
+- **Karar:** Türkçe ondalık virgülü bitişiklik kuralıyla dile girdi:
+  `3,14` (bitişik) ondalık sabit, `3, 14` (boşluklu) liste ayracı. Ara durum
+  `3 ,14` S033 öğretici tanısı alır; `3.14` yazana S001 önerisi virgülü
+  gösterir. Tür onluk TAM değerlidir: 0,1+0,2 tam olarak 0,3 (float sürprizi
+  yok). Bölme 9 haneye, yarımlar sıfırdan uzağa (okul kuralı). TamSayı→Ondalık
+  genişlemesi kayıpsız olduğundan örtük serbest; tersi açık kalıp ister
+  (`tam kısmı`, `yuvarlanmışı`). TamSayı hedefe ondalık artış T006.
+- **Gerekçe ve ayrıntı:** RFC-0013. Biçimleyici ondalık tokeni bölmez ve
+  liste virgülünden sonra hep boşluk basar — iki kullanım görsel olarak ayrışır.
+- **Durum:** geçici (RFC taslak; yüzey gerçeklendi, 18 testle sabitlendi).
+
 ## K-012 — Liste sabiti: `3, 7, 1, 9 listesi`
 
 - **Karar:** Virgülle ayrılmış değerler + `listesi`. Boş: `boş liste`.

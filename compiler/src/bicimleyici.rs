@@ -187,7 +187,30 @@ fn satiri_parcala(icerik: &str, satir_no: usize) -> Result<(Vec<String>, Option<
             tokenlar.push(metin);
         } else if k == ',' {
             karakterler.next();
-            tokenlar.push(",".to_string());
+            // Bitişik virgül kuralı (RFC-0013): rakam,rakam tek ondalık tokendir.
+            // Bir ondalık tokenda en çok bir virgül olur: "2,5,7" zinciri
+            // "2,5" + ayraç + "7..." biçiminde ayrışmalıdır (sözcükleyiciyle aynı).
+            let onceki_rakamla_bitiyor = tokenlar
+                .last()
+                .map(|t| {
+                    t.chars().last().is_some_and(|s| s.is_ascii_digit()) && !t.contains(',')
+                })
+                == Some(true);
+            let sonraki_rakam = karakterler.peek().map(|r| r.is_ascii_digit()) == Some(true);
+            if onceki_rakamla_bitiyor && sonraki_rakam {
+                let son = tokenlar.last_mut().expect("önceki token var");
+                son.push(',');
+                while let Some(&r) = karakterler.peek() {
+                    if r.is_ascii_digit() {
+                        son.push(r);
+                        karakterler.next();
+                    } else {
+                        break;
+                    }
+                }
+            } else {
+                tokenlar.push(",".to_string());
+            }
         } else {
             // Kelime ya da sayı: boşluk, virgül ve # dışındaki her şey.
             let mut parca = String::new();

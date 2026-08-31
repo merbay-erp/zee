@@ -27,7 +27,9 @@ fn golden_korpus_idempotent() {
 
 #[test]
 fn dagitik_bosluklar_toparlanir() {
-    let girdi = "isim    \"Ayşe\"   olsun\nsayılar 3 ,7,   1 listesi olsun\n";
+    // Not: "3 ,7" artık S033'tür (RFC-0013 bitişik virgül kuralı); dağınık
+    // girdi virgülden-sonra-boşluk biçimleriyle sınanır.
+    let girdi = "isim    \"Ayşe\"   olsun\nsayılar 3,  7,   1 listesi olsun\n";
     let beklenen = "isim \"Ayşe\" olsun\nsayılar 3, 7, 1 listesi olsun\n";
     assert_eq!(bicimle(girdi).unwrap(), beklenen);
 }

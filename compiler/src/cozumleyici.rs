@@ -17,6 +17,7 @@ use std::collections::HashMap;
 pub enum VeriTuru {
     TamSayi,
     Metin,
+    Ondalik,
     /// v0'da örtük olarak Sözlük<Metin, TamSayı> demektir (CSV satırları).
     Sozluk,
 }
@@ -26,6 +27,7 @@ impl VeriTuru {
         match self {
             VeriTuru::TamSayi => "TamSayı",
             VeriTuru::Metin => "Metin",
+            VeriTuru::Ondalik => "Ondalık",
             VeriTuru::Sozluk => "Sözlük",
         }
     }
@@ -33,6 +35,7 @@ impl VeriTuru {
         match self {
             VeriTuru::TamSayi => Tur::TamSayi,
             VeriTuru::Metin => Tur::Metin,
+            VeriTuru::Ondalik => Tur::Ondalik,
             VeriTuru::Sozluk => Tur::Sozluk(SozlukDegerTuru::TamSayi),
         }
     }
@@ -63,6 +66,8 @@ impl SozlukDegerTuru {
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum Tur {
     TamSayi,
+    /// Onluk tam değerli ondalık sayı (RFC-0013).
+    Ondalik,
     Metin,
     Mantiksal,
     Liste(VeriTuru),
@@ -83,6 +88,7 @@ impl Tur {
     pub fn adi(&self) -> String {
         match self {
             Tur::TamSayi => "TamSayı".into(),
+            Tur::Ondalik => "Ondalık".into(),
             Tur::Metin => "Metin".into(),
             Tur::Mantiksal => "Mantıksal".into(),
             Tur::Liste(e) => format!("Liste<{}>", e.adi()),
@@ -100,8 +106,14 @@ impl Tur {
         match self {
             Tur::TamSayi => Some(VeriTuru::TamSayi),
             Tur::Metin => Some(VeriTuru::Metin),
+            Tur::Ondalik => Some(VeriTuru::Ondalik),
             _ => None,
         }
+    }
+
+    /// TamSayı ya da Ondalık mı? (Karışımda TamSayı, Ondalık'a kayıpsız genişler.)
+    fn sayisal(&self) -> bool {
+        matches!(self, Tur::TamSayi | Tur::Ondalik)
     }
 }
 
@@ -124,7 +136,7 @@ pub fn denetle(program: &mut Program) -> Result<(), Tani> {
                     1,
                     1,
                 )
-                .onerili("Kullanılabilir alan türleri: TamSayı, Metin, Mantıksal.".into()));
+                .onerili("Kullanılabilir alan türleri: TamSayı, Ondalık, Metin, Mantıksal.".into()));
             }
         }
     }
@@ -174,6 +186,7 @@ struct Baglam {
 fn alan_turu(yazim: &str) -> Option<Tur> {
     match yazim {
         "TamSayı" => Some(Tur::TamSayi),
+        "Ondalık" => Some(Tur::Ondalik),
         "Metin" => Some(Tur::Metin),
         "Mantıksal" => Some(Tur::Mantiksal),
         _ => None,
@@ -558,9 +571,10 @@ fn blok_denetle(
             }
             Cumle::BolVeAta { hedef, pay, payda, satir } => {
                 let satir = *satir;
+                let mut ondalik_var = false;
                 for taraf in [&mut *pay, &mut *payda] {
                     let tur = ifade_denetle(taraf, ortam, baglam, satir)?;
-                    if tur != Tur::TamSayi {
+                    if !tur.sayisal() {
                         return Err(Tani::yeni(
                             "T008",
                             format!("Bölme sayılar arasında yapılır; burada {} var.", tur.adi()),
@@ -569,19 +583,22 @@ fn blok_denetle(
                             1,
                         ));
                     }
+                    ondalik_var |= tur == Tur::Ondalik;
                 }
+                // İki TamSayı → tam bölme (mevcut davranış); Ondalık karışımı → Ondalık.
+                let sonuc_turu = if ondalik_var { Tur::Ondalik } else { Tur::TamSayi };
                 if let Some(eski) = ortam.get(hedef.as_str()) {
-                    if *eski != Tur::TamSayi {
+                    if *eski != sonuc_turu {
                         return Err(Tani::yeni(
                             "T002",
-                            format!("\"{}\" {} türünde; bölme sonucu verilemez.", hedef, eski.adi()),
+                            format!("\"{}\" {} türünde; {} bölme sonucu verilemez.", hedef, eski.adi(), sonuc_turu.adi()),
                             satir,
                             1,
                             1,
                         ));
                     }
                 }
-                ortam.insert(hedef.clone(), Tur::TamSayi);
+                ortam.insert(hedef.clone(), sonuc_turu);
             }
             Cumle::SozlukAta { sozluk, anahtar, deger, satir } => {
                 let satir = *satir;
@@ -654,7 +671,7 @@ fn blok_denetle(
             Cumle::Artir { ifade, miktar, satir } | Cumle::Azalt { ifade, miktar, satir } => {
                 let satir = *satir;
                 let hedef_tur = ifade_denetle(ifade, ortam, baglam, satir)?;
-                if hedef_tur != Tur::TamSayi {
+                if !hedef_tur.sayisal() {
                     return Err(Tani::yeni(
                         "T006",
                         format!("Artırma/azaltma sayı ister; hedef {} türünde.", hedef_tur.adi()),
@@ -664,14 +681,24 @@ fn blok_denetle(
                     ));
                 }
                 let miktar_tur = ifade_denetle(miktar, ortam, baglam, satir)?;
-                if miktar_tur != Tur::TamSayi {
+                if !miktar_tur.sayisal() {
                     return Err(Tani::yeni(
                         "T006",
-                        format!("Artırma/azaltma miktarı TamSayı olmalı; burada {} var.", miktar_tur.adi()),
+                        format!("Artırma/azaltma miktarı sayı olmalı; burada {} var.", miktar_tur.adi()),
                         satir,
                         1,
                         1,
                     ));
+                }
+                if hedef_tur == Tur::TamSayi && miktar_tur == Tur::Ondalik {
+                    return Err(Tani::yeni(
+                        "T006",
+                        "TamSayı hedefe Ondalık miktar eklenemez: sonuç tam sayı kalamaz.".into(),
+                        satir,
+                        1,
+                        1,
+                    )
+                    .onerili("Hedefi ondalık başlat (örn. 0,0 olsun) ya da miktarı tam sayı yap.".into()));
                 }
             }
         }
@@ -688,6 +715,7 @@ fn ifade_denetle(
     match ifade {
         Ifade::MetinSabiti(_) => Ok(Tur::Metin),
         Ifade::SayiSabiti(_) => Ok(Tur::TamSayi),
+        Ifade::OndalikSabiti { .. } => Ok(Tur::Ondalik),
         Ifade::MantiksalSabiti(_) => Ok(Tur::Mantiksal),
         // Boş listenin öğe türü v0'da TamSayı varsayılır (tür çıkarımı RFC-0007).
         Ifade::BosListe => Ok(Tur::Liste(VeriTuru::TamSayi)),
@@ -707,13 +735,24 @@ fn ifade_denetle(
                 match oge_turu {
                     None => oge_turu = Some(veri),
                     Some(onceki) if onceki != veri => {
-                        return Err(Tani::yeni(
-                            "T011",
-                            "Bir listenin bütün öğeleri aynı türden olmalı.".into(),
-                            satir,
-                            1,
-                            1,
-                        ));
+                        // TamSayı + Ondalık karışımı Ondalık'a genişler (RFC-0013 §2);
+                        // yorumlayıcı öğeleri gerçekten genişletir.
+                        let sayisal_karisim = matches!(
+                            (onceki, veri),
+                            (VeriTuru::TamSayi, VeriTuru::Ondalik)
+                                | (VeriTuru::Ondalik, VeriTuru::TamSayi)
+                        );
+                        if sayisal_karisim {
+                            oge_turu = Some(VeriTuru::Ondalik);
+                        } else {
+                            return Err(Tani::yeni(
+                                "T011",
+                                "Bir listenin bütün öğeleri aynı türden olmalı.".into(),
+                                satir,
+                                1,
+                                1,
+                            ));
+                        }
                     }
                     _ => {}
                 }
@@ -728,6 +767,9 @@ fn ifade_denetle(
                 (Ozellik::Uzunluk, Tur::Metin) => Ok(Tur::TamSayi),
                 (Ozellik::Kelimeler, Tur::Metin) => Ok(Tur::Liste(VeriTuru::Metin)),
                 (Ozellik::Yil, Tur::Tarih) => Ok(Tur::TamSayi),
+                (Ozellik::TamKisim, Tur::Ondalik) | (Ozellik::Yuvarlanmis, Tur::Ondalik) => {
+                    Ok(Tur::TamSayi)
+                }
                 (_, baska) => Err(Tani::yeni(
                     "T014",
                     format!("Bu özellik {} türüne uygulanamaz.", baska.adi()),
@@ -736,7 +778,7 @@ fn ifade_denetle(
                     1,
                 )
                 .onerili(
-                    "adedi/ilki/sonu listeler, uzunluğu/kelimeleri metinler içindir.".into(),
+                    "adedi/ilki/sonu listeler, uzunluğu/kelimeleri metinler, tam kısmı/yuvarlanmışı ondalıklar içindir.".into(),
                 )),
             }
         }
@@ -1035,8 +1077,8 @@ fn ifade_denetle(
             let sol_tur = ifade_denetle(sol, ortam, baglam, satir)?;
             let sag_tur = ifade_denetle(sag, ortam, baglam, satir)?;
             let esitlik = *islec == Islec::Esit;
-            if !esitlik && (sol_tur != Tur::TamSayi || sag_tur != Tur::TamSayi) {
-                let sorunlu = if sol_tur != Tur::TamSayi { sol_tur } else { sag_tur };
+            if !esitlik && (!sol_tur.sayisal() || !sag_tur.sayisal()) {
+                let sorunlu = if !sol_tur.sayisal() { sol_tur } else { sag_tur };
                 return Err(Tani::yeni(
                     "T001",
                     format!(
@@ -1049,7 +1091,7 @@ fn ifade_denetle(
                 )
                 .onerili("Karşılaştırılan iki değerin de sayı olduğundan emin ol.".into()));
             }
-            if esitlik && sol_tur != sag_tur {
+            if esitlik && sol_tur != sag_tur && !(sol_tur.sayisal() && sag_tur.sayisal()) {
                 return Err(Tani::yeni(
                     "T001",
                     format!(
@@ -1107,9 +1149,10 @@ fn ifade_denetle(
             Ok(Tur::Mantiksal)
         }
         Ifade::Aritmetik { sol, sag, .. } => {
+            let mut ondalik_var = false;
             for taraf in [&mut **sol, &mut **sag] {
                 let tur = ifade_denetle(taraf, ortam, baglam, satir)?;
-                if tur != Tur::TamSayi {
+                if !tur.sayisal() {
                     return Err(Tani::yeni(
                         "T008",
                         format!("Aritmetik işlem sayılar arasında yapılır; burada {} var.", tur.adi()),
@@ -1121,8 +1164,10 @@ fn ifade_denetle(
                         "Metni sayıya çevirmek için \"<metnin> sayısı\" kalıbını kullan.".into(),
                     ));
                 }
+                ondalik_var |= tur == Tur::Ondalik;
             }
-            Ok(Tur::TamSayi)
+            // TamSayı → Ondalık genişlemesi kayıpsızdır (RFC-0013 §2).
+            Ok(if ondalik_var { Tur::Ondalik } else { Tur::TamSayi })
         }
         Ifade::Sayisi(ic) => {
             let tur = ifade_denetle(ic, ortam, baglam, satir)?;
@@ -1136,6 +1181,19 @@ fn ifade_denetle(
                 ));
             }
             Ok(Tur::TamSayi)
+        }
+        Ifade::Ondaligi(ic) => {
+            let tur = ifade_denetle(ic, ortam, baglam, satir)?;
+            if tur != Tur::Metin {
+                return Err(Tani::yeni(
+                    "T009",
+                    format!("\"ondalığı\" kalıbı Metin ister; burada {} var.", tur.adi()),
+                    satir,
+                    1,
+                    1,
+                ));
+            }
+            Ok(Tur::Ondalik)
         }
         Ifade::IslemCagrisi { islem_adi, argumanlar, satir: cagri_satiri } => {
             let cagri_satiri = *cagri_satiri;

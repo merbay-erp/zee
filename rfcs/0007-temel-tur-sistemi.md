@@ -24,7 +24,7 @@ tür adları yalnız yapı alanlarında görünür. Tehlikeli örtük dönüşü
 | Sonuç | değer/hata ikisi de Metin (v0) | ✅ kısmi |
 | Tarih, Saat | IO soyutlamalı saat; Türkçe basım | ✅ |
 | Yapılar | kullanıcı tanımlı; alanlar TamSayı/Metin/Mantıksal | ✅ |
-| GerçekSayı/Ondalık | — | ❌ açık soru §4.1 |
+| Ondalık | onluk tam değer, 9 hane; RFC-0013 gerçeklendi | ✅ |
 | Küme\<T\>, Süre, Para | — | ❌ stdlib fazları |
 
 ## 2. Çıkarım ve açık tür
@@ -47,10 +47,9 @@ tür adları yalnız yapı alanlarında görünür. Tehlikeli örtük dönüşü
 
 ## 4. Açık sorular
 
-1. **GerçekSayı/Ondalık:** en büyük eksik. Türkçe ondalık ayracı virgüldür ama
-   virgül liste ayracıdır (RFC-0002 §6.3). Adaylar: (a) nokta kabul et
-   (yazım-dışı ama tanıdık), (b) `3 tam 14` sözel kalıbı, (c) bağlamla virgül.
-   Karar ayrı RFC ister; Para/Süre türleri buna bağlı.
+1. **GerçekSayı/Ondalık:** ÇÖZÜLDÜ — RFC-0013 bitişik virgül kuralı + onluk
+   tam aritmetikle gerçeklendi (3,14; 0,1+0,2=0,3). Kayan nokta (bilimsel iş)
+   gerekirse ileri düzey paket konusu olarak kaldı.
 2. **Generics ve trait/arayüz:** kullanıcı işlemleri v0'da ilk-çağrı
    monomorfizmiyle idare ediyor (RFC-0006 §2.4); gerçek çokbiçimlilik ADR işi.
 3. **Tür adlarının Türkçe çekimi:** hata mesajlarında "Liste<TamSayı>" teknik

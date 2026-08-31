@@ -26,7 +26,7 @@
     },
     "sayi": {
       "name": "constant.numeric.dil",
-      "match": "\\b[0-9]+\\b"
+      "match": "\\b[0-9]+(,[0-9]+)?\\b"
     },
     "tanim": {
       "name": "keyword.declaration.dil",

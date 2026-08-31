@@ -18,7 +18,7 @@ Dil değişikliği RFC ister (master plan bölüm 25). Şablon: [0000-sablon.md]
 | RFC-0010 | [Hata ve Tanılama Standardı](0010-hata-ve-tanilama.md) | **kabul** | K-026 |
 | RFC-0011 | [Structured Concurrency](0011-structured-concurrency.md) | **taslak** (K-023 çözümü içinde) | K-023 |
 | RFC-0012 | [FFI ve Tehlikeli Sınır](0012-ffi-ve-tehlikeli-sinir.md) | **taslak** | A10 |
-| RFC-0013 | [Ondalık Sayılar](0013-ondalik-sayilar.md) | **taslak** (bitişik virgül kuralı) | RFC-0002 §6.3 |
+| RFC-0013 | [Ondalık Sayılar](0013-ondalik-sayilar.md) | **taslak — yüzey gerçeklendi** | RFC-0002 §6.3 |
 
 **Durum özeti:** planlanan 12 RFC'nin 12'si + ek 0013 yazıldı — 2 kabul
 (0001 manifesto, 0010 tanılama), 11 taslak. Taslakların kesinleşme kapısı:
