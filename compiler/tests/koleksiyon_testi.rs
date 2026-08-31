@@ -75,3 +75,21 @@ fn mantiksal_olmayan_ad_kosul_olamaz() {
     let hata = kaynagi_calistir("x 5 olsun\nx ise\n    \"a\" yaz\n").expect_err("T005");
     assert_eq!(hata.kod, "T005");
 }
+
+#[test]
+fn kalan_kalibi_okul_kurali() {
+    // K-046: "X in Y ye bölümünden kalanı" — kalan daima negatif değildir.
+    let kaynak = "\
+k 17 nin 5 e bölümünden kalanı olsun
+k yaz
+eksi 0 ile 7 nin farkı olsun
+eksinin 3 e bölümünden kalanı yaz
+";
+    assert_eq!(kaynagi_calistir(kaynak).expect("çalışmalı"), vec!["2", "2"]);
+
+    let hata = kaynagi_calistir("x 10 un 0 a bölümünden kalanı olsun\n").expect_err("C003");
+    assert_eq!(hata.kod, "C003");
+
+    let hata = kaynagi_calistir("x 2,5 un 2 ye bölümünden kalanı olsun\n").expect_err("T008");
+    assert_eq!(hata.kod, "T008");
+}

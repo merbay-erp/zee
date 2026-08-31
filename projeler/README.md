@@ -15,7 +15,7 @@ kutusuna satır satır yaz.) Ya da: `dil çalıştır projeler/<dosya>.dil`
 | [quiz.dil](quiz.dil) | karşılaştırma, puan sayma | Soruları kendi derslerinden seç |
 | [zar-oyunu.dil](zar-oyunu.dil) | rastgelelik, koşul zinciri | 3 el yerine "5'e ilk ulaşan" yap |
 | [market-listesi.dil](market-listesi.dil) | ondalık para, işlem + test | İndirim işlemi ekle, testini yaz |
-| [asal-sayilar.dil](asal-sayilar.dil) | iç içe döngü, bölünebilme hilesi | 100'e kadar çıkar; ikiz asalları bul |
+| [asal-sayilar.dil](asal-sayilar.dil) | iç içe döngü, bölümden kalan | 100'e kadar çıkar; ikiz asalları bul |
 | [kumbara.dil](kumbara.dil) | "olana kadar", büyüyen harçlık | Haftalık zam yerine faiz dene |
 | [gizli-dil.dil](gizli-dil.dil) | sözlük = şifre defteri | Çözücüyü de yaz (tersine defter) |
 

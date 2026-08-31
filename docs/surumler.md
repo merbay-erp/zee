@@ -10,6 +10,8 @@ sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
   eklemeyle türlenir; metin listeleri ve metin sözlükleri artık kurulabilir.
   KIRICI: hiç eklenmemiş boş listenin `ilki` artık derleme hatası (T014;
   eskiden çalışma anında C007).
+- **Kalan işlemi** (K-046): `17 nin 5 e bölümünden kalanı` — okul kuralı,
+  kalan hiç negatif olmaz.
 - **Zamir n'si morfolojisi** (K-041): `bilgisayarın_zarından` çözülür.
 - dillsp: hover (Türkçe açıklama) + tanıma git. Performans arşivi
   (docs/olcumler.md) ve `olcum` koşucusu. Proje kitaplığı 8 projeye çıktı.

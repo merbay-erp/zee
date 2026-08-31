@@ -68,6 +68,9 @@ sayacı 1 azalt
 ortalamayı toplamı adede böl
 ```
 
+Kalan (mod) da okul diliyle: `17 nin 5 e bölümünden kalanı` → `2`.
+Kalan hiç negatif olmaz (okul kuralı, K-046).
+
 TamSayı gerektiğinde Ondalığa kendiliğinden genişler; tersi bilinçlidir:
 `ondalığın tam kısmı`, `ondalığın yuvarlanmışı`.
 
