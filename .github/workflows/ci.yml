@@ -41,6 +41,12 @@ jobs:
       - name: Milestone dosyası çalışıyor
         working-directory: compiler
         run: cargo run -- çalıştır ../merhaba.dil
+      # Ölçüm koşucusu derlenir ve koşar (bölüm 22; süre eşiği YOK — CI
+      # makineleri gürültülü, sayılar yalnız yerel release arşivine girer).
+      - name: Ölçüm koşucusu çalışır
+        if: matrix.os == 'ubuntu-latest'
+        working-directory: compiler
+        run: cargo run --release --bin olcum -- --hizli
       # Playground çekirdeği wasm hedefinde derlenmeye devam etmeli (K-039/K-040).
       - name: Playground (wasm) derlenir
         if: matrix.os == 'ubuntu-latest'
