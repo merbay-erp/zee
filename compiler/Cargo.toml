@@ -9,7 +9,9 @@ description = "Türkçe programlama dili — bootstrap derleyici (Stage 0)"
 name = "dil"
 path = "src/main.rs"
 
+# Not: cdylib burada bildirilmez — Windows'ta bin ile PDB adı çakışıp uyarı
+# üretiyordu (K-040). Playground, hedefe özgü olarak şöyle derlenir:
+#   cargo rustc --release --target wasm32-unknown-unknown --lib --crate-type cdylib
 [lib]
 name = "dil"
 path = "src/lib.rs"
-crate-type = ["cdylib", "rlib"]
