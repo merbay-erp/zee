@@ -421,6 +421,42 @@ fn sekme_girinti_reddedilir() {
 }
 
 #[test]
+fn ve_zinciri_ve_kisa_devre() {
+    let kaynak = "yaş 16 olsun\nyaş 8 veya daha büyükse ve yaş 18 den küçükse\n    \"genç\" yaz\ndeğilse\n    \"değil\" yaz\n";
+    let cikti = kaynagi_calistir(kaynak).expect("ve zinciri çalışmalı");
+    assert_eq!(cikti, vec!["genç"]);
+}
+
+#[test]
+fn veya_zinciri() {
+    let kaynak = "gün 7 olsun\ngün 6 ya eşitse veya gün 7 ye eşitse\n    \"hafta sonu\" yaz\n";
+    let cikti = kaynagi_calistir(kaynak).expect("veya zinciri çalışmalı");
+    assert_eq!(cikti, vec!["hafta sonu"]);
+}
+
+#[test]
+fn ve_veya_karisimi_reddedilir() {
+    let kaynak = "x 1 olsun\nx 1 e eşitse ve x 2 ye eşitse veya x 3 e eşitse\n    \"olmaz\" yaz\n";
+    let hata = kaynagi_calistir(kaynak).expect_err("karışım belirsizdir");
+    assert_eq!(hata.kod, "S030");
+}
+
+#[test]
+fn a03_dogrusu_calisir() {
+    // anti-ornekler/A03'ün "doğrusu" bölümü: sembolsüz mantık, değilse olumsuzlaması.
+    let kaynak = "a 5 olsun\nb 7 olsun\nc 9 olsun\nd 3 olsun\ne yanlış olsun\n\na b ye eşit değilse ve c d den küçük değilse\n    \"birinci\" yaz\ndeğilse e doğru değilse\n    \"ikinci\" yaz\ndeğilse\n    \"üçüncü\" yaz\n";
+    let cikti = kaynagi_calistir(kaynak).expect("A03 doğrusu çalışmalı");
+    assert_eq!(cikti, vec!["birinci"]);
+}
+
+#[test]
+fn mantiksal_degerin_olumsuzu() {
+    let kaynak = "bayrak yanlış olsun\nbayrak değilse\n    \"kapalı\" yaz\n";
+    let cikti = kaynagi_calistir(kaynak).expect("tekil olumsuzlama çalışmalı");
+    assert_eq!(cikti, vec!["kapalı"]);
+}
+
+#[test]
 fn a08_homoglyph_reddedilir() {
     // anti-ornekler/A08: Kiril "а" (U+0430) Latin "a" ile görünüşte özdeş.
     let kaynak = "s\u{0430}yı 5 olsun\nsayıyı yaz\n";

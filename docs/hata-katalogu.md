@@ -41,6 +41,8 @@ türetilmiştir; yeni kod eklenince bu dosya güncellenir — CI'a bağlanması 
 | S027 | Sonlandırma biçimi | `programı bitir` |
 | S028 | Türkçe/Latin dışı karakter (homoglyph koruması) | Tanı kod noktasını gösterir (örn. Kiril а = U+0430); yalnız Türkçe/Latin harf kullan |
 | S029 | Birleştirici im (U+0300–U+036F) | Birleşik karakteri kullan: g + ˘ değil ğ (RFC-0002 §2) |
+| S030 | `ve` ile `veya` aynı koşulda karıştı | Öncelik parantezsiz belirsizdir: tek tür bağlaç kullan ya da koşulu ayrı `ise` basamaklarına böl (K-027) |
+| S031 | `değilse` tek başına | `değilse` bir `... ise` bloğunun hemen ardından, aynı hizada gelir |
 
 ## A — Ad çözümleme
 
@@ -87,6 +89,7 @@ türetilmiştir; yeni kod eklenince bu dosya güncellenir — CI'a bağlanması 
 | T028 | Yapı alanı yok / yanlış tür | Tanı mevcut alanları listeler |
 | T029 | `gün sonrası` Tarih + TamSayı ister | — |
 | T030 | `boşsa` liste/sözlük/metin ister | — |
+| T031 | ve/veya parçası ya da `değilse` içi koşul değil | Her parça Mantıksal olmalı |
 
 ## C — Çalışma zamanı
 

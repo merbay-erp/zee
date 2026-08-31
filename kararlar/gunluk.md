@@ -126,6 +126,19 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   daha katı "birleşik biçim zorunlu" kuralı: tablo gerektirmez, v0'da yeterli.
 - **Durum:** geçici — RFC-0002 §2'de belgelendi.
 
+## K-027 — Mantıksal bağlaçlar: `ve` / `veya` / `değilse` (31 Ağu, v0 gerçeklemesi)
+
+- **Karar:** Koşullar `ve` ya da `veya` ile zincirlenir (kısa devreli);
+  olumsuzlama yüklem sonundaki `değilse` ile yapılır (`x 5 e eşit değilse`,
+  `bildi doğru değilse`, `bayrak değilse`). **ve/veya karışımı hatadır (S030)**:
+  parantez olmadığı için öncelik belirsiz kalırdı; determinizm ilkesi gereği
+  kullanıcı koşulu böler ya da tek tür bağlaç kullanır.
+- **Bulgu:** `veya daha` ikilisi karşılaştırma kalıbına aittir
+  ("90 veya daha büyükse") — zincir ayracı sayılmaz; ayrıştırıcı bir token
+  ileri bakarak ayırt eder. A03 anti-örneğinin "doğrusu" bölümü artık
+  birebir çalışıyor ve regression testinde.
+- **Durum:** geçici — RFC-0005'te belgelendi.
+
 ## K-012 — Liste sabiti: `3, 7, 1, 9 listesi`
 
 - **Karar:** Virgülle ayrılmış değerler + `listesi`. Boş: `boş liste`.

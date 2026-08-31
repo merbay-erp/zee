@@ -81,6 +81,12 @@ pub enum Ifade {
         sag: Box<Ifade>,
         islec: Islec,
     },
+    /// "A ve B ve C" / "A veya B" — mantıksal zincir (K-027). `hepsi` true ise
+    /// VE (kısa devre: ilk yanlışta durur), false ise VEYA (ilk doğruda durur).
+    /// ve/veya karışımı parantezsiz belirsiz olduğundan ayrıştırıcıda hatadır.
+    MantiksalZincir { hepsi: bool, parcalar: Vec<Ifade> },
+    /// "... değilse" olumsuzlaması: `x 5 e eşit değilse`, `bildi doğru değilse`.
+    Degil(Box<Ifade>),
     /// "sayı çiftse" (doğruysa çift).
     Cift(Box<Ifade>),
     /// "sayı tekse".

@@ -163,6 +163,22 @@ impl Ayristirici {
                     ))
                 }
             }
+            // Satır sonundaki "değilse": olumsuzlanmış koşul başlığı
+            // ("x 5 e eşit değilse"). Tek başına "değilse" ise başıboş else'tir.
+            Some("değilse") => {
+                if satir_tokenlari.len() == 1 {
+                    Err(Tani::yeni(
+                        "S031",
+                        "\"değilse\" tek başına duramaz.".into(),
+                        satir_no,
+                        1,
+                        1,
+                    )
+                    .onerili("\"değilse\" bir \"... ise\" bloğunun hemen ardından, aynı hizada gelir.".into()))
+                } else {
+                    self.ise_ayristir(satir_tokenlari, satir_no)
+                }
+            }
             Some(k) if kosul_kelimesi(k) => self.ise_ayristir(satir_tokenlari, satir_no),
             _ => {
                 // Tanımlı bir işlem adına biten satır → çağrı cümlesi.
@@ -972,7 +988,81 @@ fn bolge_ifadesi(tokenlar: &[Token], _satir: usize, islemler: &[String]) -> Resu
     )))
 }
 
-/// Koşul ifadesi: yüklem satır sonundadır.
+/// Koşul ifadesi: önce ve/veya zinciri ayrılır, parçalar atomik koşuldur.
+///
+/// K-027 kuralı: `A ve B ve C` ya da `A veya B` serbesttir; ve/veya KARIŞIMI
+/// parantezsiz belirsiz olduğundan hatadır (S030) — kullanıcı koşulu böler.
+/// "veya daha" ikilisi karşılaştırma kalıbına aittir ("90 veya daha büyükse"),
+/// zincir ayracı sayılmaz.
+fn kosul_ifadesi(tokenlar: &[Token], satir: usize) -> Result<Ifade, Tani> {
+    let mut baglac: Option<bool> = None; // true = ve, false = veya
+    let mut bolgeler: Vec<&[Token]> = Vec::new();
+    let mut baslangic = 0usize;
+
+    for i in 0..tokenlar.len() {
+        let bu = match &tokenlar[i].tur {
+            TokenTur::Kelime(k) if k == "ve" => Some(true),
+            TokenTur::Kelime(k) if k == "veya" => {
+                let sonraki_daha = matches!(
+                    tokenlar.get(i + 1).map(|t| &t.tur),
+                    Some(TokenTur::Kelime(d)) if d == "daha"
+                );
+                if sonraki_daha {
+                    None
+                } else {
+                    Some(false)
+                }
+            }
+            _ => None,
+        };
+        if let Some(bu) = bu {
+            match baglac {
+                Some(onceki) if onceki != bu => {
+                    return Err(Tani::yeni(
+                        "S030",
+                        "\"ve\" ile \"veya\" aynı koşulda karıştırılamaz: hangisinin önce \
+                         geleceği belirsiz olur."
+                            .into(),
+                        tokenlar[i].satir,
+                        tokenlar[i].sutun,
+                        tokenlar[i].uzunluk,
+                    )
+                    .onerili(
+                        "Koşulu ayrı \"ise\" basamaklarına böl ya da tek tür bağlaç kullan."
+                            .into(),
+                    ));
+                }
+                _ => baglac = Some(bu),
+            }
+            bolgeler.push(&tokenlar[baslangic..i]);
+            baslangic = i + 1;
+        }
+    }
+    bolgeler.push(&tokenlar[baslangic..]);
+
+    if bolgeler.len() == 1 {
+        return kosul_atomu(tokenlar, satir);
+    }
+    let mut parcalar = Vec::new();
+    for bolge in &bolgeler {
+        if bolge.is_empty() {
+            return Err(Tani::yeni(
+                "S030",
+                "Bağlacın iki yanında da bir koşul olmalı.".into(),
+                satir,
+                1,
+                1,
+            ));
+        }
+        parcalar.push(kosul_atomu(bolge, satir)?);
+    }
+    Ok(Ifade::MantiksalZincir {
+        hepsi: baglac.unwrap_or(true),
+        parcalar,
+    })
+}
+
+/// Atomik koşul: yüklem sondadır.
 ///
 /// Desteklenen kalıplar (K-010):
 ///   X Y veya daha büyükse   → X >= Y
@@ -981,14 +1071,32 @@ fn bolge_ifadesi(tokenlar: &[Token], _satir: usize, islemler: &[String]) -> Resu
 ///   X Y den küçükse         → X < Y
 ///   X Y e eşitse            → X == Y    (e/a/ye/ya)
 ///   X çiftse / X tekse
+///   ... değilse             → olumsuzlama: "x 5 e eşit değilse", "bildi doğru değilse"
 /// "olduğu sürece" içinde yüklem çıplak gelir: "büyük", "küçük", "eşit".
-fn kosul_ifadesi(tokenlar: &[Token], satir: usize) -> Result<Ifade, Tani> {
+fn kosul_atomu(tokenlar: &[Token], satir: usize) -> Result<Ifade, Tani> {
     let hata = || {
         Tani::yeni("S016", "Koşul tanınmadı.".into(), satir, 1, 1).onerili(
             "Örnekler: yaş 8 veya daha büyükse · puan 50 den küçükse · sayı 5 e eşitse · sayı çiftse"
                 .into(),
         )
     };
+
+    // "... değilse" olumsuzlaması: içteki koşul olumlu biçimiyle ayrıştırılır.
+    // "x 5 e eşit değilse" → içerideki "x 5 e eşit" çıplak yüklem kalıbıdır.
+    if tokenlar.len() >= 2 {
+        if let TokenTur::Kelime(k) = &tokenlar[tokenlar.len() - 1].tur {
+            if k == "değilse" {
+                let kalan = &tokenlar[..tokenlar.len() - 1];
+                let ic = if kalan.len() == 1 {
+                    // "bayrak değilse" — Mantıksal değerin doğrudan olumsuzu.
+                    tekil_ifade(kalan[0].clone())?
+                } else {
+                    kosul_atomu(kalan, satir)?
+                };
+                return Ok(Ifade::Degil(Box::new(ic)));
+            }
+        }
+    }
 
     let kelimeler: Vec<Option<&str>> = tokenlar
         .iter()

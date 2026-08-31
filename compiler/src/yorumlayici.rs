@@ -856,6 +856,20 @@ fn degerlendir(
             };
             Ok(Deger::Mantiksal(sonuc))
         }
+        Ifade::MantiksalZincir { hepsi, parcalar } => {
+            // Kısa devre: VE ilk yanlışta, VEYA ilk doğruda durur.
+            for parca in parcalar {
+                let deger = mantiksal(degerlendir(parca, ortam, program, io, satir)?, satir)?;
+                if deger != *hepsi {
+                    return Ok(Deger::Mantiksal(deger));
+                }
+            }
+            Ok(Deger::Mantiksal(*hepsi))
+        }
+        Ifade::Degil(ic) => {
+            let deger = mantiksal(degerlendir(ic, ortam, program, io, satir)?, satir)?;
+            Ok(Deger::Mantiksal(!deger))
+        }
         Ifade::Cift(ic) => {
             let s = tam_sayi(degerlendir(ic, ortam, program, io, satir)?, satir)?;
             Ok(Deger::Mantiksal(s % 2 == 0))

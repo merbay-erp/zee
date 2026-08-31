@@ -1064,6 +1064,35 @@ fn ifade_denetle(
             }
             Ok(Tur::Mantiksal)
         }
+        Ifade::MantiksalZincir { parcalar, .. } => {
+            for parca in parcalar {
+                let tur = ifade_denetle(parca, ortam, baglam, satir)?;
+                if tur != Tur::Mantiksal {
+                    return Err(Tani::yeni(
+                        "T031",
+                        format!("ve/veya zincirinin her parçası koşul olmalı; burada {} var.", tur.adi()),
+                        satir,
+                        1,
+                        1,
+                    ));
+                }
+            }
+            Ok(Tur::Mantiksal)
+        }
+        Ifade::Degil(ic) => {
+            let tur = ifade_denetle(ic, ortam, baglam, satir)?;
+            if tur != Tur::Mantiksal {
+                return Err(Tani::yeni(
+                    "T031",
+                    format!("\"değilse\" bir koşulu olumsuzlar; burada {} var.", tur.adi()),
+                    satir,
+                    1,
+                    1,
+                )
+                .onerili("Örnekler: x 5 e eşit değilse · bildi doğru değilse".into()));
+            }
+            Ok(Tur::Mantiksal)
+        }
         Ifade::Cift(ic) | Ifade::Tek(ic) => {
             let tur = ifade_denetle(ic, ortam, baglam, satir)?;
             if tur != Tur::TamSayi {
