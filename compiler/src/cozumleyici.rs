@@ -104,7 +104,26 @@ pub fn denetle(program: &mut Program) -> Result<(), Tani> {
         yapilar: program.yapilar.clone(),
     };
     let mut donusler = Vec::new();
-    let sonuc = blok_denetle(&mut program.cumleler, &mut ortam, &mut baglam, &mut donusler, false);
+    let mut sonuc = blok_denetle(&mut program.cumleler, &mut ortam, &mut baglam, &mut donusler, false);
+
+    // Testler ana programdan bağımsız, taze ortamda denetlenir.
+    if sonuc.is_ok() {
+        for test in program.testler.iter_mut() {
+            let mut test_ortami: HashMap<String, Tur> = HashMap::new();
+            let mut test_donusleri = Vec::new();
+            sonuc = blok_denetle(
+                &mut test.govde,
+                &mut test_ortami,
+                &mut baglam,
+                &mut test_donusleri,
+                false,
+            );
+            if sonuc.is_err() {
+                break;
+            }
+        }
+    }
+
     program.islemler = baglam.islemler;
     sonuc
 }
@@ -428,6 +447,29 @@ fn blok_denetle(
                     1,
                     1,
                 ));
+            }
+            Cumle::TestBlogu(test) => {
+                return Err(Tani::yeni(
+                    "S021",
+                    format!("\"{}\" test bloğu beklenmeyen yerde.", test.ad),
+                    test.satir,
+                    1,
+                    1,
+                ));
+            }
+            Cumle::Olmali { kosul, satir } => {
+                let satir = *satir;
+                let tur = ifade_denetle(kosul, ortam, baglam, satir)?;
+                if tur != Tur::Mantiksal {
+                    return Err(Tani::yeni(
+                        "T005",
+                        "\"olmalı\" bir koşul ister.".into(),
+                        satir,
+                        1,
+                        1,
+                    )
+                    .onerili("Örnek: kare 16 ya eşit olmalı".into()));
+                }
             }
             Cumle::AlanAta { nesne, alan, deger, satir } => {
                 let satir = *satir;

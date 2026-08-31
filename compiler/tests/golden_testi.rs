@@ -284,6 +284,35 @@ fn dondurmeyen_islem_ifadede_reddedilir() {
     assert_eq!(hata.kod, "T019");
 }
 
+#[test]
+fn golden_30_testler() {
+    let sonuclar = dil::kaynagi_dene(&golden("30-testler.dil")).expect("30 derlenmeli");
+    assert_eq!(sonuclar.len(), 2);
+    for sonuc in &sonuclar {
+        assert!(sonuc.hata.is_none(), "test geçmeli: {} — {:?}", sonuc.ad, sonuc.hata);
+    }
+}
+
+#[test]
+fn kalan_test_beklenen_bulunan_gosterir() {
+    let kaynak = "test \"bilerek kalan\"\n    x 2 ile 2 nin toplamı olsun\n    x 5 e eşit olmalı\n";
+    let sonuclar = dil::kaynagi_dene(kaynak).expect("derlenmeli");
+    let hata = sonuclar[0].hata.as_ref().expect("test kalmalı");
+    assert_eq!(hata.kod, "D001");
+    assert!(
+        hata.mesaj.contains("Beklenen: 5") && hata.mesaj.contains("bulunan: 4"),
+        "beklenen/bulunan gösterilmeli: {}",
+        hata.mesaj
+    );
+}
+
+#[test]
+fn calistir_testleri_atlar() {
+    let kaynak = "\"program\" yaz\n\ntest \"ayrı dünya\"\n    1 1 e eşit olmalı\n";
+    let cikti = kaynagi_calistir(kaynak).expect("çalışmalı");
+    assert_eq!(cikti, vec!["program"], "test blokları çalıştırmada koşulmamalı");
+}
+
 // ---- compile-fail: anti-örnekler ve tanı kalitesi ----
 
 #[test]

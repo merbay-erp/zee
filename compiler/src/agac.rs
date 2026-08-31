@@ -11,6 +11,16 @@ pub struct Program {
     pub islemler: HashMap<String, Islem>,
     /// Yapı tanımları; Tur::Yapi bu listeye indeksle işaret eder.
     pub yapilar: Vec<Yapi>,
+    /// `test "..."` blokları — `dil çalıştır` bunları atlar, `dil dene` koşar.
+    pub testler: Vec<Test>,
+}
+
+/// `test "<açıklama>"` bloğu (K-025). Her test taze bir ortamda koşar.
+#[derive(Debug, Clone)]
+pub struct Test {
+    pub ad: String,
+    pub govde: Vec<Cumle>,
+    pub satir: usize,
 }
 
 /// "yapı Öğrenci" tanımı: alan adı + tür yazımı ("TamSayı", "Metin"...).
@@ -210,6 +220,10 @@ pub enum Cumle {
     IslemTanimi(Islem),
     /// `yapı <Ad>` tanımı — hoist ile Program.yapilar'a taşınır.
     YapiTanimi(Yapi),
+    /// `test "..."` bloğu — hoist ile Program.testler'e taşınır.
+    TestBlogu(Test),
+    /// `kare 16 ya eşit olmalı` — doğrulama (K-025). Koşul tutmazsa D001.
+    Olmali { kosul: Ifade, satir: usize },
     /// `ayşenin adı "Ayşe" olsun` — alan yazma (K-020).
     AlanAta {
         nesne: Ifade,

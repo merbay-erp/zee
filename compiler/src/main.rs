@@ -11,6 +11,7 @@ fn main() -> ExitCode {
         Some("çalıştır") | Some("calistir") => dosya_ile(&argumanlar, calistir_komutu),
         Some("denetle") => dosya_ile(&argumanlar, denetle_komutu),
         Some("biçimle") | Some("bicimle") => bicimle_komutu(&argumanlar),
+        Some("dene") => dosya_ile(&argumanlar, dene_komutu),
         Some("sürüm") | Some("surum") => {
             println!("dil {} — Türkçe programlama dili (bootstrap, Stage 0)", env!("CARGO_PKG_VERSION"));
             ExitCode::SUCCESS
@@ -27,6 +28,7 @@ fn kullanim() {
     eprintln!("Kullanım:");
     eprintln!("  dil çalıştır <dosya.dil>   programı çalıştırır");
     eprintln!("  dil denetle <dosya.dil>    çalıştırmadan denetler");
+    eprintln!("  dil dene <dosya.dil>       test bloklarını koşar");
     eprintln!("  dil biçimle <dosya.dil>    dosyayı resmi biçime getirir");
     eprintln!("  dil sürüm                  sürümü gösterir");
 }
@@ -157,6 +159,40 @@ fn calistir_komutu(kaynak: &str) -> ExitCode {
             eprint!("{}", tani.raporla(kaynak));
             ExitCode::FAILURE
         }
+    }
+}
+
+fn dene_komutu(kaynak: &str) -> ExitCode {
+    let sonuclar = match dil::kaynagi_dene(kaynak) {
+        Ok(sonuclar) => sonuclar,
+        Err(tani) => {
+            eprint!("{}", tani.raporla(kaynak));
+            return ExitCode::FAILURE;
+        }
+    };
+    if sonuclar.is_empty() {
+        println!("Bu dosyada test yok. Test eklemek için: test \"açıklama\"");
+        return ExitCode::SUCCESS;
+    }
+    let mut gecen = 0usize;
+    for sonuc in &sonuclar {
+        match &sonuc.hata {
+            None => {
+                println!("✓ {}", sonuc.ad);
+                gecen += 1;
+            }
+            Some(tani) => {
+                println!("✗ {}", sonuc.ad);
+                eprint!("{}", tani.raporla(kaynak));
+            }
+        }
+    }
+    let kalan = sonuclar.len() - gecen;
+    println!("\n{} test: {} geçti, {} kaldı", sonuclar.len(), gecen, kalan);
+    if kalan == 0 {
+        ExitCode::SUCCESS
+    } else {
+        ExitCode::FAILURE
     }
 }
 

@@ -155,6 +155,17 @@ pub fn calistir_io(program: &Program, io: &mut dyn GirdiCikti) -> Result<(), Tan
     Ok(())
 }
 
+/// Tek bir testi taze ortamda koşar; ilk doğrulama/çalışma hatasında durur.
+pub fn test_calistir(
+    program: &Program,
+    test: &crate::agac::Test,
+    io: &mut dyn GirdiCikti,
+) -> Result<(), Tani> {
+    let mut ortam: HashMap<String, Deger> = HashMap::new();
+    blok_calistir(&test.govde, &mut ortam, program, io)?;
+    Ok(())
+}
+
 /// Blok çalıştırmanın sonucu: normal akış mı, "döndür" ile erken çıkış mı.
 pub enum Akis {
     Devam,
@@ -307,6 +318,40 @@ fn blok_calistir(
             }
             Cumle::IslemTanimi(islem) => return Err(ic_hata(islem.satir)),
             Cumle::YapiTanimi(yapi) => return Err(ic_hata(yapi.satir)),
+            Cumle::TestBlogu(test) => return Err(ic_hata(test.satir)),
+            Cumle::Olmali { kosul, satir } => {
+                // Karşılaştırmalarda iki tarafın değeri tanıya yazılır —
+                // "beklenen/bulunan" göstermek öğretici hata ilkesinin gereği.
+                let (tuttu, detay) = match kosul {
+                    Ifade::Karsilastirma { sol, sag, .. } => {
+                        let sol_deger = degerlendir(sol, ortam, program, cikti, *satir)?;
+                        let sag_deger = degerlendir(sag, ortam, program, cikti, *satir)?;
+                        let sonuc =
+                            mantiksal(degerlendir(kosul, ortam, program, cikti, *satir)?, *satir)?;
+                        (
+                            sonuc,
+                            format!(
+                                " Beklenen: {} — bulunan: {}.",
+                                sag_deger.metne(),
+                                sol_deger.metne()
+                            ),
+                        )
+                    }
+                    _ => (
+                        mantiksal(degerlendir(kosul, ortam, program, cikti, *satir)?, *satir)?,
+                        String::new(),
+                    ),
+                };
+                if !tuttu {
+                    return Err(Tani::yeni(
+                        "D001",
+                        format!("Doğrulama tutmadı.{}", detay),
+                        *satir,
+                        1,
+                        1,
+                    ));
+                }
+            }
             Cumle::AlanAta { nesne, alan, deger, satir } => {
                 let ad = match nesne {
                     Ifade::Degisken { cozulmus: Some(ad), .. } => ad.clone(),

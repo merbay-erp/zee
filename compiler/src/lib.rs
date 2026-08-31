@@ -22,6 +22,7 @@ pub fn kaynagi_derle(kaynak: &str) -> Result<Program, Tani> {
 
     let mut islemler = std::collections::HashMap::new();
     let mut yapilar: Vec<agac::Yapi> = Vec::new();
+    let mut testler: Vec<agac::Test> = Vec::new();
     let mut kalan = Vec::new();
     for cumle in cumleler {
         match cumle {
@@ -37,6 +38,7 @@ pub fn kaynagi_derle(kaynak: &str) -> Result<Program, Tani> {
                 }
                 islemler.insert(islem.ad.clone(), islem);
             }
+            Cumle::TestBlogu(test) => testler.push(test),
             Cumle::YapiTanimi(yapi) => {
                 if yapilar.iter().any(|y| y.ad == yapi.ad) {
                     return Err(Tani::yeni(
@@ -53,7 +55,7 @@ pub fn kaynagi_derle(kaynak: &str) -> Result<Program, Tani> {
         }
     }
 
-    let mut program = Program { cumleler: kalan, islemler, yapilar };
+    let mut program = Program { cumleler: kalan, islemler, yapilar, testler };
     cozumleyici::denetle(&mut program)?;
     Ok(program)
 }
@@ -75,4 +77,30 @@ pub fn kaynagi_calistir_girdiyle(kaynak: &str, girdiler: Vec<String>) -> Result<
     let mut io = yorumlayici::ToplayanIo::yeni(girdiler);
     yorumlayici::calistir_io(&program, &mut io)?;
     Ok(io.cikti)
+}
+
+/// Bir testin sonucu: `hata` None ise geçti.
+pub struct TestSonucu {
+    pub ad: String,
+    pub hata: Option<Tani>,
+}
+
+/// Programın testlerini koşar. v0: her test taze ortamda ve dış dünyaya
+/// dokunmayan hermetik IO ile çalışır (gerçek dosya/ağ erişimi yok).
+pub fn programi_dene(program: &Program) -> Vec<TestSonucu> {
+    program
+        .testler
+        .iter()
+        .map(|test| {
+            let mut io = yorumlayici::ToplayanIo::yeni(Vec::new());
+            let hata = yorumlayici::test_calistir(program, test, &mut io).err();
+            TestSonucu { ad: test.ad.clone(), hata }
+        })
+        .collect()
+}
+
+/// Kaynağı derleyip testlerini koşar.
+pub fn kaynagi_dene(kaynak: &str) -> Result<Vec<TestSonucu>, Tani> {
+    let program = kaynagi_derle(kaynak)?;
+    Ok(programi_dene(&program))
 }

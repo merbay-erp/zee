@@ -5,7 +5,7 @@
 //! dillerdeki "ilk keyword'e bak" yaklaşımının aynadaki karşılığıdır ve
 //! deterministik ayrıştırmayı mümkün kılar.
 
-use crate::agac::{AritmetikIslec, Cumle, Ifade, Islec, Islem, KosulKolu, Ozellik, Yapi};
+use crate::agac::{AritmetikIslec, Cumle, Ifade, Islec, Islem, KosulKolu, Ozellik, Test, Yapi};
 use crate::sozcukleyici::{Token, TokenTur};
 use crate::tani::Tani;
 
@@ -127,6 +127,9 @@ impl Ayristirici {
             if k == "yapı" {
                 return self.yapi_ayristir();
             }
+            if k == "test" {
+                return self.test_ayristir();
+            }
         }
 
         let satir_tokenlari = self.satir_oku();
@@ -146,6 +149,7 @@ impl Ayristirici {
             Some("döndür") => self.dondur_ayristir(satir_tokenlari, satir_no),
             Some("böl") => self.bol_ayristir(satir_tokenlari, satir_no),
             Some("göre") => self.gore_ayristir(satir_tokenlari, satir_no),
+            Some("olmalı") => self.olmali_ayristir(satir_tokenlari, satir_no),
             Some(k) if kosul_kelimesi(k) => self.ise_ayristir(satir_tokenlari, satir_no),
             _ => {
                 // Tanımlı bir işlem adına biten satır → çağrı cümlesi.
@@ -346,6 +350,43 @@ impl Ayristirici {
             self.ilerle();
         }
         Ok(Cumle::YapiTanimi(Yapi { ad, alanlar, satir }))
+    }
+
+    /// `test "<açıklama>"` + gövde (K-025).
+    fn test_ayristir(&mut self) -> Result<Cumle, Tani> {
+        let baslik = self.satir_oku();
+        let satir = baslik.first().map(|t| t.satir).unwrap_or(1);
+        if self.derinlik > 0 {
+            return Err(Tani::yeni(
+                "S021",
+                "Test bloğu en dış düzeyde olmalı.".into(),
+                satir,
+                1,
+                1,
+            ));
+        }
+        let ad = match baslik.get(1).map(|t| &t.tur) {
+            Some(TokenTur::Metin(ad)) if baslik.len() == 2 => ad.clone(),
+            _ => {
+                return Err(Tani::yeni(
+                    "S026",
+                    "Test bloğu \"test \\\"<açıklama>\\\"\" biçiminde başlar.".into(),
+                    satir,
+                    1,
+                    1,
+                )
+                .onerili("Örnek: test \"toplama doğru çalışır\"".into()))
+            }
+        };
+        let govde = self.alt_blok(satir)?;
+        Ok(Cumle::TestBlogu(Test { ad, govde, satir }))
+    }
+
+    /// `<koşul> olmalı` — doğrulama cümlesi (K-025).
+    fn olmali_ayristir(&mut self, mut tokenlar: Vec<Token>, satir: usize) -> Result<Cumle, Tani> {
+        tokenlar.pop(); // "olmalı"
+        let kosul = kosul_ifadesi(&tokenlar, satir)?;
+        Ok(Cumle::Olmali { kosul, satir })
     }
 
     fn dondur_ayristir(&mut self, mut tokenlar: Vec<Token>, satir: usize) -> Result<Cumle, Tani> {
