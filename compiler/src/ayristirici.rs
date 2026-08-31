@@ -30,8 +30,15 @@ pub fn ayristir_tohumla(tokenlar: Vec<Token>, islem_adlari: Vec<String>) -> Resu
 /// cümleden sürülür. Böylece tek geçişte birden çok tanı toplanır.
 pub fn ayristir_kurtarmali(
     tokenlar: Vec<Token>,
-    islem_adlari: Vec<String>,
+    mut islem_adlari: Vec<String>,
 ) -> (Vec<Cumle>, Vec<Tani>) {
+    // Dosyanın kendi işlem başlıkları önden tohumlanır: çağrı tanıma tanım
+    // sırasından bağımsızdır (karşılıklı özyineleme, ana-kod-üstte düzeni).
+    for ad in islem_adlarini_tara(&tokenlar) {
+        if !islem_adlari.contains(&ad) {
+            islem_adlari.push(ad);
+        }
+    }
     let mut ayristirici = Ayristirici {
         tokenlar,
         konum: 0,
@@ -68,6 +75,47 @@ pub fn ayristir_kurtarmali(
     }
 
     (cumleler, tanilar)
+}
+
+/// Üst düzeydeki `işlem <ad>` başlıklarını önden toplar: çağrı tanıma böylece
+/// dosya GENELİNDE çalışır (tanım çağrıdan sonra da gelebilir; karşılıklı
+/// özyineleme parse düzeyinde mümkün olur — RFC-0006 güncellemesi).
+pub fn islem_adlarini_tara(tokenlar: &[Token]) -> Vec<String> {
+    let mut adlar = Vec::new();
+    let mut derinlik = 0usize;
+    let mut satir_basi = true;
+    let mut i = 0;
+    while i < tokenlar.len() {
+        match &tokenlar[i].tur {
+            TokenTur::Girinti => {
+                derinlik += 1;
+                satir_basi = true;
+            }
+            TokenTur::Cikinti => {
+                derinlik = derinlik.saturating_sub(1);
+                satir_basi = true;
+            }
+            TokenTur::SatirSonu => satir_basi = true,
+            TokenTur::Kelime(k) if satir_basi && derinlik == 0 && k == "işlem" => {
+                let mut kelimeler = Vec::new();
+                let mut j = i + 1;
+                while let Some(token) = tokenlar.get(j) {
+                    match &token.tur {
+                        TokenTur::Kelime(ad) => kelimeler.push(ad.clone()),
+                        _ => break,
+                    }
+                    j += 1;
+                }
+                if !kelimeler.is_empty() {
+                    adlar.push(kelimeler.join(" "));
+                }
+                satir_basi = false;
+            }
+            _ => satir_basi = false,
+        }
+        i += 1;
+    }
+    adlar
 }
 
 /// Üst düzeydeki `X birimini kullan` satırlarını (ad, satır) olarak toplar.
@@ -455,7 +503,7 @@ impl Ayristirici {
                     "Desteklenen kalıplar: \"... yaz\", \"<ad> ... olsun\", \"<n> kez tekrarla\", \
                      \"<a> den <b> e kadar her <ad> için\", \"... olduğu sürece\", \"... ise / değilse\", \
                      \"<ad> <n> artır/azalt\", \"işlem <ad>\", \"... döndür\", işlem çağrısı. \
-                     Çağrılan işlem daha önce tanımlanmış olmalı."
+                     Çağrılan işlem bu dosyada (ya da kullanılan bir birimde) tanımlı olmalı."
                         .into(),
                 ))
             }
@@ -503,7 +551,9 @@ impl Ayristirici {
             .onerili("Örnek: işlem ortalamayı hesapla".into()));
         }
         let ad = ad_kelimeleri.join(" ");
-        self.islem_adlari.push(ad.clone());
+        if !self.islem_adlari.contains(&ad) {
+            self.islem_adlari.push(ad.clone());
+        }
 
         // Gövde.
         match self.bak().tur {

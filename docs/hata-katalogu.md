@@ -85,7 +85,7 @@ türetilmiştir; yeni kod eklenince bu dosya güncellenir — CI'a bağlanması 
 | T013 | `her ... için` kaynağı liste/sözlük değil | — |
 | T014 | Özellik bu türe uygulanamaz | adedi/ilki/sonu → liste; uzunluğu/kelimeleri → metin; yılı → tarih |
 | T015 | Çağrı argüman sayısı yanlış | İşlemin parametre sayısına bak |
-| T016 | İşlem kendi kendini çağırıyor | v0'da özyineleme yok (RFC-0006 adayı) |
+| T016 | İşlem kaydı bulunamadı | Derleyici iç hatası olabilir — bildir (özyineleme v0.2'de serbest) |
 | T017 | Argüman türleri imzaya uymuyor | İmza ilk çağrıda sabitlenir (v0 monomorfizmi) |
 | T018 | Dönüş türleri tutarsız | Tek tür döndür; `yok` + tür → Seçenek olur |
 | T019 | Değer döndürmeyen işlem ifade konumunda | İşleme `... döndür` ekle ya da cümle olarak çağır |
@@ -104,6 +104,7 @@ türetilmiştir; yeni kod eklenince bu dosya güncellenir — CI'a bağlanması 
 | T032 | Hata mesajı Metin değil | `"sıfıra bölünmez" hatasını döndür` (RFC-0008 §4.1) |
 | T033 | Görev sonucuna erken erişim | Eşzamanlı görev adları `hepsini bekle`den sonra kullanılır (RFC-0011 §1) |
 | T034 | Ağ/süre/sunucu kalıbı tür uyuşmazlığı | Kapı TamSayı, yol/adres Metin, `içinde`/`bekle` Süre ister |
+| T035 | Özyinelemeden önce temel durum yok | Temel durumu üste yaz: önce bir dalda döndür, sonra özyinelemeli adım |
 
 ## C — Çalışma zamanı
 
@@ -127,6 +128,7 @@ türetilmiştir; yeni kod eklenince bu dosya güncellenir — CI'a bağlanması 
 | C016 | JSON biçim hatası | v0: düz nesne + metin değerler |
 | C017 | Sunucu kurulamadı | Kapı boşta mı? Düşük kapılar (<1024) yönetici ister |
 | C018 | Ağ isteği başarısız | v0 yalnız http:// destekler (TLS yok); adresi ve bağlantıyı kontrol et |
+| C019 | Çağrı derinliği 5000'i aştı | Özyinelemeli adım her seferinde temel duruma yaklaşmalı |
 
 ## D — Doğrulama
 

@@ -314,10 +314,11 @@ fn golden_14_not_ortalamasi() {
 }
 
 #[test]
-fn ozyineleme_v0_reddedilir() {
+fn temel_durumsuz_ozyineleme_reddedilir() {
+    // v0.2: özyineleme serbest ama temel durum ÖNCE gelmeli (T035).
     let kaynak = "işlem kendini çağır\n    kendini çağır\n\nkendini çağır\n";
-    let hata = kaynagi_calistir(kaynak).expect_err("özyineleme v0'da reddedilmeli");
-    assert_eq!(hata.kod, "T016");
+    let hata = kaynagi_calistir(kaynak).expect_err("temel durumsuz özyineleme T035");
+    assert_eq!(hata.kod, "T035");
 }
 
 #[test]
