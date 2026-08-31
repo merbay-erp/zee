@@ -1937,9 +1937,12 @@ fn yapili_kalip(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifade>
         }));
     }
 
-    // X in Y ye bölümü
-    if son == "bölümü" {
-        let govde = &tokenlar[..n - 1];
+    // X in Y ye bölümü — ve kalanı: "X in Y ye bölümünden kalanı" (K-046).
+    let kalan_kalibi = son == "kalanı"
+        && n >= 4
+        && kelime(n - 2) == Some("bölümünden");
+    if son == "bölümü" || kalan_kalibi {
+        let govde = if kalan_kalibi { &tokenlar[..n - 2] } else { &tokenlar[..n - 1] };
         let mut i = 0;
         if i >= govde.len() {
             return Ok(None);
@@ -1973,7 +1976,7 @@ fn yapili_kalip(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifade>
         let sol = tekil_ifade(sol_token)?;
         let sag = tekil_ifade(sag_token)?;
         return Ok(Some(Ifade::Aritmetik {
-            islec: AritmetikIslec::Bol,
+            islec: if kalan_kalibi { AritmetikIslec::Kalan } else { AritmetikIslec::Bol },
             sol: Box::new(sol),
             sag: Box::new(sag),
         }));

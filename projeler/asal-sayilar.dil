@@ -1,6 +1,6 @@
 # Asal Sayı Avcısı — 2'den 50'ye kadar asalları bul.
-# Öğretilen: iç içe döngü, bölünebilme hilesi (kalan işlemi olmadan!),
-# mantıksal bayrak ("bölünmedi ise"). Püf nokta: (n / d) * d yalnız n, d'ye tam bölünüyorsa n eder.
+# Öğretilen: iç içe döngü, "bölümünden kalanı" (K-046), mantıksal bayrak
+# ("bölünmedi ise"). Kalan 0 ise sayı tam bölünüyor demektir.
 
 asallar boş liste olsun
 
@@ -9,9 +9,8 @@ asallar boş liste olsun
 
     2 den 49 a kadar her bölen için
         bölen adaydan küçükse
-            bölüm adayın bölene bölümü olsun
-            geri_çarpım bölüm ile bölenin çarpımı olsun
-            geri_çarpım adaya eşitse
+            kalan adayın bölene bölümünden kalanı olsun
+            kalan 0 a eşitse
                 bölünmedi yanlış olsun
 
     bölünmedi ise

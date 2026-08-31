@@ -818,7 +818,7 @@ fn sayisal_islem(
     let a = sayisal_ac(sol).ok_or_else(|| ic_hata(satir))?;
     let b = sayisal_ac(sag).ok_or_else(|| ic_hata(satir))?;
 
-    if *islec == AritmetikIslec::Bol && b.0 == 0 {
+    if matches!(islec, AritmetikIslec::Bol | AritmetikIslec::Kalan) && b.0 == 0 {
         return Err(Tani::yeni("C003", "Sıfıra bölme yapılamaz.".into(), satir, 1, 1)
             .onerili("Bölmeden önce bölenin sıfır olup olmadığını kontrol et.".into()));
     }
@@ -829,6 +829,8 @@ fn sayisal_islem(
             AritmetikIslec::Cikar => a.0.checked_sub(b.0),
             AritmetikIslec::Carp => a.0.checked_mul(b.0),
             AritmetikIslec::Bol => a.0.checked_div(b.0),
+            // K-046: okul kuralı — kalan daima negatif değildir.
+            AritmetikIslec::Kalan => a.0.checked_rem_euclid(b.0),
         }
         .ok_or_else(|| tasma(satir))?;
         let sonuc = i64::try_from(sonuc).map_err(|_| tasma(satir))?;
@@ -856,6 +858,8 @@ fn sayisal_islem(
             let pay = a.0.checked_mul(10i128.pow(ust)).ok_or_else(|| tasma(satir))?;
             ondalik_yap(yuvarla_bol(pay, b.0), 9, satir)
         }
+        // Denetleyici kalanı Ondalık'a hiç bırakmaz (K-046, T008).
+        AritmetikIslec::Kalan => Err(ic_hata(satir)),
     }
 }
 

@@ -21,6 +21,9 @@ Playground'da tohum görünürdür; testlerde IO dünyası tamamen sahtedir.
 
 - TamSayı i64'tür. Taşma sessizce **sarmalanmaz**: taşan işlem C002 verir.
 - Sıfıra bölme C003. TamSayı bölmesi tam bölümdür (kalan atılır).
+- Kalan (`bölümünden kalanı`, K-046) yalnız TamSayılar arasındadır ve okul
+  kuralına uyar: sonuç DAİMA 0 ≤ kalan < |bölen| (Öklit kalanı). Sıfıra
+  kalan C003.
 - Ondalık, onluk tam sayıdır: gövde × 10⁻ᵏ (k ≤ 9). Ara işlemler 128 bitte
   yapılır; temsil edilemeyen sonuç C002 ailesinde tanıya düşer, ikilik
   kayan nokta HİÇBİR aşamada kullanılmaz. `0,1 + 0,2 = 0,3` kimliktir.

@@ -368,6 +368,16 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   aldı; 7 yeni koleksiyon testi. Liste öğesi v0'da TamSayı/Ondalık/Metin/
   satır; sözlük değeri TamSayı/Metin (T011/T021 önerili söyler).
 
+## K-046 — Kalan: `X in Y ye bölümünden kalanı`
+
+- **bulgu:** Asal avcısı projesi kalan işlemi olmadan "(n/d)·d = n" hilesine
+  mecbur kalmıştı — eksik, korpusla kanıtlandı.
+- **Karar:** Okul diliyle: `17 nin 5 e bölümünden kalanı`. Yalnız TamSayı
+  (T008; Ondalık için önce `tam kısmı`). Sıfıra kalan C003. Anlam okul
+  kuralı: kalan DAİMA 0 ≤ kalan < |bölen| (rem_euclid; −7'nin 3'e kalanı 2).
+- **Test:** koleksiyon_testi::kalan_kalibi_okul_kurali; asal projesi artık
+  gerçek kalıbı kullanıyor.
+
 ## K-012 — Liste sabiti: `3, 7, 1, 9 listesi`
 
 - **Karar:** Virgülle ayrılmış değerler + `listesi`. Boş: `boş liste`.

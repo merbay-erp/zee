@@ -56,6 +56,8 @@ pub enum AritmetikIslec {
     Cikar,
     Carp,
     Bol,
+    /// Bölümden kalan (K-046): okul kuralı — kalan daima 0 ≤ kalan < |bölen|.
+    Kalan,
 }
 
 #[derive(Debug, Clone)]

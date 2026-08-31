@@ -1675,6 +1675,26 @@ fn ifade_denetle(
             Ok(Tur::Mantiksal)
         }
         Ifade::Aritmetik { islec, sol, sag } => {
+            // K-046: kalan yalnız TamSayılar arasında (okul kavramı tam bölmeye ait).
+            if matches!(islec, crate::agac::AritmetikIslec::Kalan) {
+                let sol_tur = ifade_denetle(sol, ortam, baglam, satir)?;
+                let sag_tur = ifade_denetle(sag, ortam, baglam, satir)?;
+                if sol_tur != Tur::TamSayi || sag_tur != Tur::TamSayi {
+                    return Err(Tani::yeni(
+                        "T008",
+                        format!(
+                            "Kalan iki TamSayı ister; burada {} ile {} var.",
+                            sol_tur.adi(),
+                            sag_tur.adi()
+                        ),
+                        satir,
+                        1,
+                        1,
+                    )
+                    .onerili("Ondalık için önce tam kısmını al.".into()));
+                }
+                return Ok(Tur::TamSayi);
+            }
             // Süre + Süre: yalnız toplama/çıkarma (RFC-0011).
             {
                 let sol_on = ifade_denetle(sol, ortam, baglam, satir)?;
