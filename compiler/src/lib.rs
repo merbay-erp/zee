@@ -5,6 +5,7 @@
 
 pub mod agac;
 pub mod ayristirici;
+pub mod bicimleyici;
 pub mod cozumleyici;
 pub mod sozcukleyici;
 pub mod tani;

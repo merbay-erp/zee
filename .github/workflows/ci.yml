@@ -1,0 +1,30 @@
+# Golden korpus + derleyici CI'ı (master plan bölüm 27).
+# Depo bir GitHub uzak sunucusuna itildiğinde kendiliğinden çalışır.
+# Tier-1 hedefleri: Linux x86-64, macOS ARM64, Windows x86-64.
+
+name: dil
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Testler (golden korpus + biçimleyici)
+        working-directory: compiler
+        run: cargo test --locked || cargo test
+      - name: Uyarı yok
+        working-directory: compiler
+        run: cargo build 2>&1 | (! grep -i warning)
+        shell: bash
+      - name: Milestone dosyası çalışıyor
+        working-directory: compiler
+        run: cargo run -- çalıştır ../merhaba.dil

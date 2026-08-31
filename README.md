@@ -36,6 +36,19 @@ parametreler, `döndür` — K-016 geçici sözdizimi), ek ayıklamalı ad çöz
 Tarih arşivi: ilk README'ler [docs/tarih/](docs/tarih/) altında dondurulmuştur;
 `baslangic` ve `dogum` git etiketleri ilk commit'leri kalıcı işaretler.
 
+### v0.1 kabul kriterleri durumu (master plan bölüm 33)
+
+| Kriter | Durum |
+|---|---|
+| Merhaba Dünya, hesap makinesi, not ortalaması, sayı tahmini çalışır | ✅ hepsi regression testte |
+| Türkçe tanımlayıcılar sorunsuz | ✅ |
+| Girinti blokları deterministik | ✅ (sekme/karışık girinti hatası testli) |
+| Temel type errors Türkçe ve kaynak konumlu | ✅ (S/A/T/C kodları + öneri) |
+| Formatter idempotent | ✅ `dil biçimle` — 30 golden dosyada idempotentlik testli |
+| Windows/macOS/Linux interpreter/CLI | 🔄 macOS'ta doğrulandı; CI matrisi hazır ([ci.yml](.github/workflows/ci.yml)) |
+| Golden corpus CI'da | ✅ cargo test + CI tanımı (uzak repoya itilince aktif) |
+| Kaynak kodda İngilizce keyword gerekmez | ✅ |
+
 Grammar masa başında tek seferde dondurulmaz. Önce **30 golden program** yazılır;
 sözdizimi bu gerçek kullanım örneklerinden çıkarılır. Her syntax değişikliği bu
 korpus üzerinde regression testine girer.

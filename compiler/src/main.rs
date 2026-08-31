@@ -10,6 +10,7 @@ fn main() -> ExitCode {
     match argumanlar.first().map(|s| s.as_str()) {
         Some("çalıştır") | Some("calistir") => dosya_ile(&argumanlar, calistir_komutu),
         Some("denetle") => dosya_ile(&argumanlar, denetle_komutu),
+        Some("biçimle") | Some("bicimle") => bicimle_komutu(&argumanlar),
         Some("sürüm") | Some("surum") => {
             println!("dil {} — Türkçe programlama dili (bootstrap, Stage 0)", env!("CARGO_PKG_VERSION"));
             ExitCode::SUCCESS
@@ -26,7 +27,45 @@ fn kullanim() {
     eprintln!("Kullanım:");
     eprintln!("  dil çalıştır <dosya.dil>   programı çalıştırır");
     eprintln!("  dil denetle <dosya.dil>    çalıştırmadan denetler");
+    eprintln!("  dil biçimle <dosya.dil>    dosyayı resmi biçime getirir");
     eprintln!("  dil sürüm                  sürümü gösterir");
+}
+
+fn bicimle_komutu(argumanlar: &[String]) -> ExitCode {
+    let yol = match argumanlar.get(1) {
+        Some(yol) => yol,
+        None => {
+            eprintln!("Bir .dil dosyası belirtmelisin. Örnek: dil biçimle merhaba.dil");
+            return ExitCode::from(2);
+        }
+    };
+    let kaynak = match std::fs::read_to_string(yol) {
+        Ok(kaynak) => kaynak,
+        Err(hata) => {
+            eprintln!("\"{}\" dosyası okunamadı: {}", yol, hata);
+            return ExitCode::from(2);
+        }
+    };
+    match dil::bicimleyici::bicimle(&kaynak) {
+        Ok(bicimli) if bicimli == kaynak => {
+            println!("Zaten biçimli: {}", yol);
+            ExitCode::SUCCESS
+        }
+        Ok(bicimli) => match std::fs::write(yol, &bicimli) {
+            Ok(()) => {
+                println!("Biçimlendi: {}", yol);
+                ExitCode::SUCCESS
+            }
+            Err(hata) => {
+                eprintln!("\"{}\" dosyasına yazılamadı: {}", yol, hata);
+                ExitCode::from(2)
+            }
+        },
+        Err(tani) => {
+            eprint!("{}", tani.raporla(&kaynak));
+            ExitCode::FAILURE
+        }
+    }
 }
 
 fn dosya_ile(argumanlar: &[String], komut: fn(&str) -> ExitCode) -> ExitCode {
