@@ -180,7 +180,20 @@ impl Ayristirici {
 
     fn tekrarla_ayristir(&mut self, mut tokenlar: Vec<Token>, satir: usize) -> Result<Cumle, Tani> {
         tokenlar.pop(); // "tekrarla"
-        // Beklenen biçim: <ifade> kez tekrarla
+
+        // <koşul> olana kadar tekrarla
+        let n = tokenlar.len();
+        if n >= 3
+            && kelime_mi(&tokenlar[n - 1], "kadar")
+            && kelime_mi(&tokenlar[n - 2], "olana")
+        {
+            tokenlar.truncate(n - 2);
+            let kosul = kosul_ifadesi(&tokenlar, satir)?;
+            let govde = self.alt_blok(satir)?;
+            return Ok(Cumle::OlanaKadar { kosul, govde, satir });
+        }
+
+        // <ifade> kez tekrarla
         match tokenlar.last() {
             Some(t) if kelime_mi(t, "kez") => {
                 tokenlar.pop();
@@ -188,12 +201,12 @@ impl Ayristirici {
             _ => {
                 return Err(Tani::yeni(
                     "S009",
-                    "Sayılı döngü \"<n> kez tekrarla\" biçiminde yazılır.".into(),
+                    "Döngü \"<n> kez tekrarla\" ya da \"<koşul> olana kadar tekrarla\" biçiminde yazılır.".into(),
                     satir,
                     1,
                     1,
                 )
-                .onerili("Örnek: 10 kez tekrarla".into()))
+                .onerili("Örnekler: 10 kez tekrarla · bildi doğru olana kadar tekrarla".into()))
             }
         }
         let adet = ile_ifadesi(&tokenlar, satir)?;
@@ -374,6 +387,8 @@ fn tekil_ifade(token: Token) -> Result<Ifade, Tani> {
     match token.tur {
         TokenTur::Metin(m) => Ok(Ifade::MetinSabiti(m)),
         TokenTur::TamSayi(s) => Ok(Ifade::SayiSabiti(s)),
+        TokenTur::Kelime(k) if k == "doğru" => Ok(Ifade::MantiksalSabiti(true)),
+        TokenTur::Kelime(k) if k == "yanlış" => Ok(Ifade::MantiksalSabiti(false)),
         TokenTur::Kelime(k) => Ok(Ifade::Degisken {
             ham: k,
             cozulmus: None,
@@ -536,6 +551,37 @@ fn kosul_ifadesi(tokenlar: &[Token], satir: usize) -> Result<Ifade, Tani> {
         }
     }
 
+    // X Y-ekli büyükse/küçükse/eşitse — ek ada bitişik: "tahmin gizliden küçükse".
+    // Çözümleyici eki ayıklar (K-011).
+    if n == 3 {
+        let islec = match yuklem_koku {
+            "büyük" => Some(Islec::Buyuk),
+            "küçük" => Some(Islec::Kucuk),
+            "eşit" => Some(Islec::Esit),
+            _ => None,
+        };
+        if let Some(islec) = islec {
+            let sol = tekil_ifade(tokenlar[0].clone())?;
+            let sag = tekil_ifade(tokenlar[1].clone())?;
+            return Ok(Ifade::Karsilastirma {
+                sol: Box::new(sol),
+                sag: Box::new(sag),
+                islec,
+            });
+        }
+    }
+
+    // X Y — düz eşitlik ("bildi doğru olana kadar").
+    if n == 2 {
+        let sol = tekil_ifade(tokenlar[0].clone())?;
+        let sag = tekil_ifade(tokenlar[1].clone())?;
+        return Ok(Ifade::Karsilastirma {
+            sol: Box::new(sol),
+            sag: Box::new(sag),
+            islec: Islec::Esit,
+        });
+    }
+
     Err(hata())
 }
 
@@ -564,6 +610,18 @@ fn yapili_kalip(tokenlar: &[Token]) -> Result<Option<Ifade>, Tani> {
     // W ın sayısı — ek, ada bitişiktir ("yanıtın"); çözümleyici ayıklar.
     if n == 2 && son == "sayısı" {
         return Ok(Some(Ifade::Sayisi(Box::new(tekil_ifade(tokenlar[0].clone())?))));
+    }
+
+    // A ile B arasında rastgele sayı
+    if n == 6
+        && son == "sayı"
+        && kelime(1) == Some("ile")
+        && kelime(3) == Some("arasında")
+        && kelime(4) == Some("rastgele")
+    {
+        let alt = tekil_ifade(tokenlar[0].clone())?;
+        let ust = tekil_ifade(tokenlar[2].clone())?;
+        return Ok(Some(Ifade::Rastgele { alt: Box::new(alt), ust: Box::new(ust) }));
     }
 
     // X ile Y nin toplamı/farkı/çarpımı

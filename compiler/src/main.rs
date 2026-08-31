@@ -46,7 +46,21 @@ fn dosya_ile(argumanlar: &[String], komut: fn(&str) -> ExitCode) -> ExitCode {
 }
 
 /// Gerçek ekran + klavye IO'su: istem yazılır, cevap stdin'den okunur.
-struct GercekIo;
+/// Rastgelelik: sistem saatiyle tohumlanan xorshift (bağımlılıksız).
+struct GercekIo {
+    tohum: u64,
+}
+
+impl GercekIo {
+    fn yeni() -> GercekIo {
+        let tohum = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map(|s| s.as_nanos() as u64)
+            .unwrap_or(0x5EED)
+            | 1;
+        GercekIo { tohum }
+    }
+}
 
 impl dil::yorumlayici::GirdiCikti for GercekIo {
     fn yazdir(&mut self, satir: String) {
@@ -62,6 +76,16 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             Ok(_) => Some(cevap.trim_end_matches(['\n', '\r']).to_string()),
         }
     }
+    fn rastgele(&mut self, alt: i64, ust: i64) -> i64 {
+        // xorshift64*
+        let mut x = self.tohum;
+        x ^= x >> 12;
+        x ^= x << 25;
+        x ^= x >> 27;
+        self.tohum = x;
+        let genislik = (ust - alt) as u64 + 1;
+        alt + (x.wrapping_mul(0x2545F4914F6CDD1D) % genislik) as i64
+    }
 }
 
 fn calistir_komutu(kaynak: &str) -> ExitCode {
@@ -72,7 +96,7 @@ fn calistir_komutu(kaynak: &str) -> ExitCode {
             return ExitCode::FAILURE;
         }
     };
-    match dil::yorumlayici::calistir_io(&program, &mut GercekIo) {
+    match dil::yorumlayici::calistir_io(&program, &mut GercekIo::yeni()) {
         Ok(()) => ExitCode::SUCCESS,
         Err(tani) => {
             eprint!("{}", tani.raporla(kaynak));

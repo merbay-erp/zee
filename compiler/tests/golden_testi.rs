@@ -72,6 +72,26 @@ fn sayiya_cevrilemeyen_girdi() {
 }
 
 #[test]
+fn golden_07_sayi_tahmini() {
+    // Determinizm: "rastgele" sayı testte sabit kuyruktan gelir (gizli = 42).
+    let program = dil::kaynagi_derle(&golden("07-sayi-tahmini.dil")).expect("07 derlenmeli");
+    let mut io = dil::yorumlayici::ToplayanIo::yeni(vec!["50".into(), "30".into(), "42".into()]);
+    io.rastgele_degerler.push_back(42);
+    dil::yorumlayici::calistir_io(&program, &mut io).expect("07 çalışmalı");
+    assert_eq!(
+        io.cikti,
+        vec![
+            "Tahminin?",
+            "Daha küçük söyle",
+            "Tahminin?",
+            "Daha büyük söyle",
+            "Tahminin?",
+            "Bildin!",
+        ]
+    );
+}
+
+#[test]
 fn golden_05_kosullar() {
     let cikti = kaynagi_calistir(&golden("05-kosullar.dil")).expect("05 çalışmalı");
     assert_eq!(cikti, vec!["İyi"]);

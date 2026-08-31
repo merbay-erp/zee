@@ -103,13 +103,14 @@ fn blok_denetle(cumleler: &mut [Cumle], ortam: &mut HashMap<String, Tur>) -> Res
                 ortam.insert(ad.clone(), Tur::TamSayi);
                 blok_denetle(govde, ortam)?;
             }
-            Cumle::OlduguSurece { kosul, govde, satir } => {
+            Cumle::OlduguSurece { kosul, govde, satir }
+            | Cumle::OlanaKadar { kosul, govde, satir } => {
                 let satir = *satir;
                 let tur = ifade_denetle(kosul, ortam, satir)?;
                 if tur != Tur::Mantiksal {
                     return Err(Tani::yeni(
                         "T005",
-                        "\"olduğu sürece\" bir koşul ister.".into(),
+                        "Koşullu döngü bir koşul ister.".into(),
                         satir,
                         1,
                         1,
@@ -172,6 +173,22 @@ fn ifade_denetle(
     match ifade {
         Ifade::MetinSabiti(_) => Ok(Tur::Metin),
         Ifade::SayiSabiti(_) => Ok(Tur::TamSayi),
+        Ifade::MantiksalSabiti(_) => Ok(Tur::Mantiksal),
+        Ifade::Rastgele { alt, ust } => {
+            for uc in [&mut **alt, &mut **ust] {
+                let tur = ifade_denetle(uc, ortam, satir)?;
+                if tur != Tur::TamSayi {
+                    return Err(Tani::yeni(
+                        "T010",
+                        format!("Rastgele sayının uçları TamSayı olmalı; burada {} var.", tur.adi()),
+                        satir,
+                        1,
+                        1,
+                    ));
+                }
+            }
+            Ok(Tur::TamSayi)
+        }
         Ifade::Degisken { ham, cozulmus, satir, sutun, uzunluk } => {
             let ad = ad_cozumle(ham, ortam, *satir, *sutun, *uzunluk)?;
             let tur = ortam[&ad];

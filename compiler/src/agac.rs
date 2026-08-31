@@ -21,6 +21,10 @@ pub enum AritmetikIslec {
 pub enum Ifade {
     MetinSabiti(String),
     SayiSabiti(i64),
+    /// "doğru" / "yanlış" (master plan bölüm 7).
+    MantiksalSabiti(bool),
+    /// "1 ile 100 arasında rastgele sayı" — iki uç dahil.
+    Rastgele { alt: Box<Ifade>, ust: Box<Ifade> },
     /// Kaynaktaki ham kelime; ad çözümleme ek ayıklamasıyla `cozulmus`ü doldurur.
     Degisken {
         ham: String,
@@ -80,6 +84,9 @@ pub enum Cumle {
     },
     /// `<koşul> olduğu sürece` + blok
     OlduguSurece { kosul: Ifade, govde: Vec<Cumle>, satir: usize },
+    /// `<koşul> olana kadar tekrarla` + blok (K-006). Koşul her turdan ÖNCE
+    /// sınanır; doğruysa döngü biter.
+    OlanaKadar { kosul: Ifade, govde: Vec<Cumle>, satir: usize },
     /// `... ise / değilse ... ise / değilse` zinciri (K-005)
     Ise {
         kollar: Vec<KosulKolu>,
