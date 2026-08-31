@@ -412,6 +412,7 @@ Ayrıntı için: dil hata T036
 |---|---|
 | `dil yeni <ad>` | testli başlangıç projesi |
 | `dil çalıştır <dosya>` | çalıştırır |
+| `dil çalıştır --güvenli <dosya>` | çocuk modu: ağ kapalı, dosyalar klasörle sınırlı |
 | `dil dene <dosya>` | testleri koşar |
 | `dil biçimle <dosya>` | resmi biçime getirir |
 | `dil denetle <dosya>` | çalıştırmadan bütün hataları listeler (`--json`) |

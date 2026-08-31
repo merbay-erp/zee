@@ -2,7 +2,7 @@
   "name": "dil-vscode",
   "displayName": "Türkçe Programlama Dili (.dil)",
   "description": "Türkçe programlama dili için sözdizimi renklendirme ve düzenleyici desteği (çalışma adı: zee)",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "publisher": "zee-dil",
   "license": "SEE LICENSE IN ../../README.md",
   "engines": {
@@ -31,6 +31,20 @@
         "scopeName": "source.dil",
         "path": "./syntaxes/dil.tmLanguage.json"
       }
-    ]
-  }
+    ],
+    "configuration": {
+      "title": "dil",
+      "properties": {
+        "dil.lspYolu": {
+          "type": "string",
+          "default": "dillsp",
+          "description": "dillsp ikilisinin yolu (PATH'te değilse tam yol ver)."
+        }
+      }
+    }
+  },
+  "main": "./extension.js",
+  "activationEvents": [
+    "onLanguage:dil"
+  ]
 }

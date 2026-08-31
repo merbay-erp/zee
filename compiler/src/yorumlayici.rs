@@ -41,6 +41,81 @@ pub trait GirdiCikti {
     fn an_ms(&mut self) -> i64;
 }
 
+/// Çocuk modu sargısı (K-047, master plan bölüm 16): sarılan IO ne olursa
+/// olsun ağ ve sunucu kapalıdır; dosya erişimi çalışma klasörüyle sınırlıdır
+/// (mutlak yol ve ".." yasak). Diğer her şey içteki IO'ya aynen gider.
+pub struct GuvenliIo<T: GirdiCikti> {
+    pub ic: T,
+}
+
+impl<T: GirdiCikti> GuvenliIo<T> {
+    pub fn yeni(ic: T) -> GuvenliIo<T> {
+        GuvenliIo { ic }
+    }
+
+    fn yol_izinli(yol: &str) -> Result<(), String> {
+        let mutlak = yol.starts_with('/')
+            || yol.starts_with('\\')
+            || yol.chars().nth(1) == Some(':');
+        let ust_dizin = yol.split(['/', '\\']).any(|parca| parca == "..");
+        if mutlak || ust_dizin {
+            return Err(format!(
+                "güvenli modda yalnız çalışma klasöründeki dosyalara erişilir; \"{}\" dışarıyı gösteriyor",
+                yol
+            ));
+        }
+        Ok(())
+    }
+}
+
+impl<T: GirdiCikti> GirdiCikti for GuvenliIo<T> {
+    fn yazdir(&mut self, satir: String) {
+        self.ic.yazdir(satir);
+    }
+    fn sor(&mut self, istem: &str) -> Option<String> {
+        self.ic.sor(istem)
+    }
+    fn rastgele(&mut self, alt: i64, ust: i64) -> i64 {
+        self.ic.rastgele(alt, ust)
+    }
+    fn dosya_oku(&mut self, yol: &str) -> Result<String, String> {
+        Self::yol_izinli(yol)?;
+        self.ic.dosya_oku(yol)
+    }
+    fn dosya_yaz(&mut self, yol: &str, satir: &str, ekleme: bool) -> Result<(), String> {
+        Self::yol_izinli(yol)?;
+        self.ic.dosya_yaz(yol, satir, ekleme)
+    }
+    fn simdi(&mut self) -> (i64, u32, u32, u32, u32) {
+        self.ic.simdi()
+    }
+    fn argumanlar(&mut self) -> Vec<String> {
+        self.ic.argumanlar()
+    }
+    fn http_getir(&mut self, _url: &str) -> Result<(i64, String), String> {
+        Err("güvenli modda ağ erişimi kapalı".into())
+    }
+    fn sunucu_kur(&mut self, _kapi: i64) -> Result<(), String> {
+        Err("güvenli modda sunucu açılamaz".into())
+    }
+    fn istek_al(&mut self) -> Option<String> {
+        None
+    }
+    fn yanit_gonder(&mut self, _yanit: &str) {}
+    fn sensor_acik_mi(&mut self, ad: &str) -> bool {
+        self.ic.sensor_acik_mi(ad)
+    }
+    fn isik_ayarla(&mut self, ad: &str, yansin: bool) {
+        self.ic.isik_ayarla(ad, yansin);
+    }
+    fn bekle_ms(&mut self, milisaniye: i64) {
+        self.ic.bekle_ms(milisaniye);
+    }
+    fn an_ms(&mut self) -> i64 {
+        self.ic.an_ms()
+    }
+}
+
 /// Çıktıyı toplayan, girdiyi ve "rastgele" sayıları hazır kuyruktan veren IO
 /// (testler ve lib arayüzü — determinizm burada da korunur).
 pub struct ToplayanIo {
