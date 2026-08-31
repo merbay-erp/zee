@@ -46,6 +46,11 @@ türetilmiştir; yeni kod eklenince bu dosya güncellenir — CI'a bağlanması 
 | S032 | Ondalık kısım 9 haneden uzun | Ondalık hassasiyeti en çok 9 hanedir (RFC-0013) |
 | S033 | Boşluk-virgül-rakam dizisi belirsiz | Ondalıksa bitişik yaz (`3,14`); liste ayracıysa virgülden sonra boşluk bırak (`3, 14`) |
 | S034 | Birim kullanımı biçimi | `hesaplar birimini kullan` — aynı klasördeki hesaplar.dil dosyasını alır |
+| S035 | Sunucu açma biçimi | `8080 kapısında sunucu başlat` |
+| S036 | Olay/zaman aşımı bloğu biçimi | `"/durum" adresine istek geldiğinde` · `yetişmezse` tek başına satır |
+| S037 | Yanıt gönderme biçimi | `"çalışıyor" yanıtını gönder` |
+| S038 | Eşzamanlı blok biçimi | `eşzamanlı olarak` + girintide `<ad> <ifade>` görev satırları |
+| S039 | Işık komutu biçimi | `kırmızı ışığı yak` / `mavi ışığı söndür` |
 
 ## A — Ad çözümleme
 
@@ -97,6 +102,8 @@ türetilmiştir; yeni kod eklenince bu dosya güncellenir — CI'a bağlanması 
 | T030 | `boşsa` liste/sözlük/metin ister | — |
 | T031 | ve/veya parçası ya da `değilse` içi koşul değil | Her parça Mantıksal olmalı |
 | T032 | Hata mesajı Metin değil | `"sıfıra bölünmez" hatasını döndür` (RFC-0008 §4.1) |
+| T033 | Görev sonucuna erken erişim | Eşzamanlı görev adları `hepsini bekle`den sonra kullanılır (RFC-0011 §1) |
+| T034 | Ağ/süre/sunucu kalıbı tür uyuşmazlığı | Kapı TamSayı, yol/adres Metin, `içinde`/`bekle` Süre ister |
 
 ## C — Çalışma zamanı
 
@@ -118,6 +125,8 @@ türetilmiştir; yeni kod eklenince bu dosya güncellenir — CI'a bağlanması 
 | C013 | Dosyaya yazılamadı | Yol/izin kontrolü |
 | C015 | CSV biçim hatası | Sütun sayısı başlıkla eşleşmeli; v0 hücreleri TamSayı |
 | C016 | JSON biçim hatası | v0: düz nesne + metin değerler |
+| C017 | Sunucu kurulamadı | Kapı boşta mı? Düşük kapılar (<1024) yönetici ister |
+| C018 | Ağ isteği başarısız | v0 yalnız http:// destekler (TLS yok); adresi ve bağlantıyı kontrol et |
 
 ## D — Doğrulama
 

@@ -1,15 +1,23 @@
-# 26 — Paralel görevler (master plandaki örnek, bölüm 10)
-# Sınanan: structured concurrency — "eşzamanlı olarak" bloğu, "hepsini bekle".
-# AÇIK: blok sonunda "sonucu döndür" neyi döndürür? Üç değerin birleşimi
-# nasıl adlanır? — bkz. günlük K-023.
+# 26 — Paralel görevler (RFC-0011 gerçeklemesi)
+# Revizyon (31 Ağu): master plandaki örnekte "sonucu döndür" tanımsızdı
+# (K-023). RFC-0011 §1 kuralı: eşzamanlı bloktaki her satır bir görev
+# bağlamasıdır; adlar "hepsini bekle"den SONRA sıradan değerdir, önce
+# erişim derleme hatasıdır (T033).
 
-işlem müşteri özetini getir
-    müşteriyi al
+işlem profili getir
+    kimi al
+    birleşik kim ile " profili" olsun
+    birleşiği döndür
 
-    eşzamanlı olarak
-        profil müşterinin profilini getir
-        faturalar müşterinin faturalarını getir
-        cihazlar müşterinin cihazlarını getir
+işlem faturaları getir
+    kimi al
+    birleşik kim ile " faturaları" olsun
+    birleşiği döndür
 
-    hepsini bekle
-    sonucu döndür
+eşzamanlı olarak
+    profil "Ayşe" için profili getir
+    faturalar "Ayşe" için faturaları getir
+
+hepsini bekle
+profil yaz
+faturalar yaz
