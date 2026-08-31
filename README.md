@@ -68,8 +68,9 @@ korpus üzerinde regression testine girer.
 | 30 golden program | [golden/](golden/) | ✅ ilk taslak — hepsi **geçici** sözdizimi |
 | 10 anti-örnek | [anti-ornekler/](anti-ornekler/) | ✅ ilk sürüm |
 | Syntax karar günlüğü | [kararlar/gunluk.md](kararlar/gunluk.md) | ✅ işleniyor |
-| RFC süreci | [rfcs/](rfcs/) | 📋 şablon + planlanan liste |
+| RFC süreci | [rfcs/](rfcs/) | ✅ RFC-0001 kabul; 0002–0003 taslak |
 | ADR süreci | [adr/](adr/) | 📋 şablon + planlanan liste |
+| Hata kataloğu | [docs/hata-katalogu.md](docs/hata-katalogu.md) | ✅ 83 kod, kaynakla tutarlılığı testli |
 | Spesifikasyon | [spec/](spec/) | ⏳ korpus olgunlaşınca |
 
 ### Golden korpus hakkında

@@ -129,7 +129,7 @@ fn ortuk_cogul_bulunamazsa_hata() {
 #[test]
 fn golden_06_donguler() {
     let cikti = kaynagi_calistir(&golden("06-donguler.dil")).expect("06 çalışmalı");
-    let mut beklenen: Vec<String> = std::iter::repeat("Merhaba".to_string()).take(10).collect();
+    let mut beklenen: Vec<String> = std::iter::repeat_n("Merhaba".to_string(), 10).collect();
     beklenen.extend((1..=100).filter(|s| s % 2 == 0).map(|s| s.to_string()));
     beklenen.extend(["3", "2", "1"].map(String::from));
     assert_eq!(cikti, beklenen);

@@ -25,6 +25,9 @@ jobs:
         working-directory: compiler
         run: cargo build 2>&1 | (! grep -i warning)
         shell: bash
+      - name: Clippy temiz
+        working-directory: compiler
+        run: cargo clippy --all-targets -- -D warnings
       - name: Milestone dosyası çalışıyor
         working-directory: compiler
         run: cargo run -- çalıştır ../merhaba.dil
