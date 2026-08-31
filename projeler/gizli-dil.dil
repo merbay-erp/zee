@@ -1,0 +1,22 @@
+# Gizli Dil — cümleni kelime kelime şifreye çevir.
+# Öğretilen: sözlük = şifre defteri, kelimelere ayırma, "varsa" kontrolü.
+
+şifre_defteri boş sözlük olsun
+şifre_defterinin "merhaba" değeri "zumzum" olsun
+şifre_defterinin "okul" değeri "balina" olsun
+şifre_defterinin "çok" değeri "fıstık" olsun
+şifre_defterinin "güzel" değeri "yıldızlı" olsun
+
+"Bir cümle yaz:" diye sor
+cümle yanıtın küçük harflisi olsun
+
+gizli "" olsun
+kelimeler cümlenin kelimeleri olsun
+her kelime için
+    şifre_defterinde kelime varsa
+        gizli gizli ile şifre_defterinin kelime değeri ile " " olsun
+    değilse
+        gizli gizli ile kelime ile " " olsun
+
+"Gizli hali: " ile gizli yaz
+"Defterde olmayan kelimeler olduğu gibi kalır — deftere yenilerini ekle!" yaz

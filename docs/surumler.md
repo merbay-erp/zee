@@ -3,6 +3,17 @@
 Her sürüm: ne eklendi, ne değişti, neyin sözü verildi. Kırıcı değişiklik
 sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 
+## Yolda (v0.3.0'a birikenler)
+
+- **Mantıksal ad tek başına koşul** (K-044): `hazır ise` / `hazır değilse`.
+- **Boş koleksiyon tür çıkarımı** (K-045): `boş liste`/`boş sözlük` ilk
+  eklemeyle türlenir; metin listeleri ve metin sözlükleri artık kurulabilir.
+  KIRICI: hiç eklenmemiş boş listenin `ilki` artık derleme hatası (T014;
+  eskiden çalışma anında C007).
+- **Zamir n'si morfolojisi** (K-041): `bilgisayarın_zarından` çözülür.
+- dillsp: hover (Türkçe açıklama) + tanıma git. Performans arşivi
+  (docs/olcumler.md) ve `olcum` koşucusu. Proje kitaplığı 8 projeye çıktı.
+
 ## v0.2.0 — 31 Ağustos 2026
 
 **Tema: dil derinleşti, derleyici tarayıcıya taşındı.**

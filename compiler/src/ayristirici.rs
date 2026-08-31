@@ -482,6 +482,8 @@ impl Ayristirici {
                     self.ise_ayristir(satir_tokenlari, satir_no)
                 }
             }
+            // "asal ise" — Mantıksal adın kendisi koşuldur (K-044).
+            Some("ise") => self.ise_ayristir(satir_tokenlari, satir_no),
             Some(k) if kosul_kelimesi(k) => self.ise_ayristir(satir_tokenlari, satir_no),
             _ => {
                 // Tanımlı bir işlem adına biten satır → çağrı cümlesi.
@@ -1454,6 +1456,15 @@ fn kosul_atomu(tokenlar: &[Token], satir: usize) -> Result<Ifade, Tani> {
         )
     };
 
+    // Saf koşaç ayrı yazılmışsa düşer: "asal ise" → koşul "asal" (K-044).
+    if tokenlar.len() >= 2 {
+        if let TokenTur::Kelime(k) = &tokenlar[tokenlar.len() - 1].tur {
+            if k == "ise" {
+                return kosul_atomu(&tokenlar[..tokenlar.len() - 1], satir);
+            }
+        }
+    }
+
     // "... değilse" olumsuzlaması: içteki koşul olumlu biçimiyle ayrıştırılır.
     // "x 5 e eşit değilse" → içerideki "x 5 e eşit" çıplak yüklem kalıbıdır.
     if tokenlar.len() >= 2 {
@@ -1479,6 +1490,12 @@ fn kosul_atomu(tokenlar: &[Token], satir: usize) -> Result<Ifade, Tani> {
         })
         .collect();
     let n = tokenlar.len();
+    // Tek kelimelik koşul: Mantıksal adın kendisi — "asal ise". Olumsuzu
+    // zaten vardı ("asal değilse"); bakışım K-044 ile tamamlandı. Tür
+    // bekçisi ifadenin Mantıksal olmasını ayrıca zorlar.
+    if n == 1 {
+        return tekil_ifade(tokenlar[0].clone());
+    }
     if n < 2 {
         return Err(hata());
     }

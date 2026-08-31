@@ -87,3 +87,27 @@ bilgisayarın_zarı 3 olsun
 ";
     assert_eq!(kaynagi_calistir(kaynak).expect("çalışmalı"), vec!["büyük"]);
 }
+
+#[test]
+fn asal_avcisi_dogru_sayar() {
+    let cikti = kaynagi_calistir(&proje("asal-sayilar.dil")).expect("çalışmalı");
+    assert_eq!(cikti[0], "2 ile 50 arasındaki asallar:");
+    assert_eq!(cikti.last().unwrap(), "Toplam 15 asal bulundu");
+    assert!(cikti.contains(&"47".to_string()));
+    assert!(!cikti.contains(&"49".to_string()), "49 = 7x7 asal değil");
+}
+
+#[test]
+fn kumbara_hedefe_ulasir() {
+    let cikti = kaynagi_calistir(&proje("kumbara.dil")).expect("çalışmalı");
+    assert!(cikti.contains(&"Hafta 12: 285,0 lira".to_string()));
+    assert_eq!(cikti.last().unwrap(), "250,0 liraya 12 haftada ulaştın!");
+}
+
+#[test]
+fn gizli_dil_kelime_cevirir() {
+    let girdiler = vec!["okul çok güzel bugün".to_string()];
+    let cikti =
+        kaynagi_calistir_girdiyle(&proje("gizli-dil.dil"), girdiler).expect("çalışmalı");
+    assert!(cikti.contains(&"Gizli hali: balina fıstık yıldızlı bugün ".to_string()));
+}

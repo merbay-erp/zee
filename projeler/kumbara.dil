@@ -1,0 +1,17 @@
+# Kumbara — hedefe kaç haftada ulaşırsın?
+# Öğretilen: ondalık para, "olana kadar tekrarla", büyüyen harçlık.
+
+hedef 250,0 olsun
+birikim 0,0 olsun
+harçlık 10,0 olsun
+hafta 0 olsun
+
+birikim hedef veya daha büyük olana kadar tekrarla
+    haftayı 1 artır
+    birikimi harçlıkla artır
+    "Hafta " ile hafta ile ": " ile birikim ile " lira" yaz
+
+    harçlık harçlık ile 2,5 un toplamı olsun
+
+"" yaz
+hedef ile " liraya " ile hafta ile " haftada ulaştın!" yaz

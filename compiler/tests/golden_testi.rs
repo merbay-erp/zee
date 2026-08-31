@@ -113,9 +113,23 @@ fn golden_09_liste_isleme() {
 }
 
 #[test]
-fn bos_liste_ilki_calisma_hatasi() {
+fn bos_liste_ilki_derleme_hatasi() {
+    // K-045: hiç eklenmemiş listenin ilki artık DERLEME hatası (öğe türü belirsiz).
     let kaynak = "sayılar boş liste olsun\nsayıların ilki yaz\n";
-    let hata = kaynagi_calistir(kaynak).expect_err("boş listenin ilki hata olmalı");
+    let hata = kaynagi_calistir(kaynak).expect_err("belirsiz listenin ilki T014");
+    assert_eq!(hata.kod, "T014");
+}
+
+#[test]
+fn kosullu_bos_kalan_listenin_ilki_c007() {
+    // Tür eklemeyle somutlaştı ama çalışma anında liste boş kaldı → C007 yaşıyor.
+    let kaynak = "\
+sayılar boş liste olsun
+1 2 den büyükse
+    sayılara 5 ekle
+sayıların ilki yaz
+";
+    let hata = kaynagi_calistir(kaynak).expect_err("boş kalan listenin ilki C007");
     assert_eq!(hata.kod, "C007");
 }
 
