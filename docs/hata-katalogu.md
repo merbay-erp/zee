@@ -121,7 +121,7 @@ türetilmiştir; yeni kod eklenince bu dosya güncellenir — CI'a bağlanması 
 | C006 | Rastgele aralığı ters | Alt uç üstten büyük olamaz |
 | C007 | Boş listenin ilki/sonu | Önce `adedi` ile kontrol et |
 | C008 | Boş Seçenek'in değeri (çalışma zamanı savunması) | Normalde T036 derlemede yakalar; görülürse bildir |
-| C009 | Sonuç'un yanlış tarafı | başarılıysa → değeri; değilse → hatası |
+| C009 | Sonuç'un yanlış tarafı (iç savunma — korumasız erişim derlemede T036 ile yakalanır) | başarılıysa → değeri; değilse → hatası |
 | C010 | Sözlükte anahtar yok | Önce `sözlükte <anahtar> varsa` |
 | C011 | Biçimleyici token güvencesi bozuldu | Dosya yazılmadı; derleyici hatasıdır — bildir |
 | C012 | Dosya okunamadı (düz biçim) | Hata yönetilecekse `... okumayı dene` ile Sonuç al |
