@@ -389,6 +389,34 @@ fn calistir_testleri_atlar() {
     assert_eq!(cikti, vec!["program"], "test blokları çalıştırmada koşulmamalı");
 }
 
+#[test]
+fn coklu_tani_toplanir() {
+    // Üç bağımsız hata tek geçişte raporlanır (RFC-0010 §3.1).
+    let kaynak = "\
+bilinmeyeni yaz
+x \"a\" olsun
+x 5 den büyükse
+    x yaz
+tanınmayan bir şey
+son 1 olsun
+sonu yaz
+";
+    let mut yukleyici = |_: &str| Err("yok".to_string());
+    let tanilar = dil::kaynagi_tanilari(kaynak, &mut yukleyici);
+    let kodlar: Vec<&str> = tanilar.iter().map(|t| t.kod.as_str()).collect();
+    assert!(kodlar.len() >= 3, "en az 3 tanı: {:?}", kodlar);
+    assert!(kodlar.contains(&"A001"), "{:?}", kodlar);
+    assert!(kodlar.contains(&"T001"), "{:?}", kodlar);
+    assert!(kodlar.contains(&"S004"), "{:?}", kodlar);
+}
+
+#[test]
+fn coklu_tani_temiz_dosyada_bos() {
+    let mut yukleyici = |_: &str| Err("yok".to_string());
+    let tanilar = dil::kaynagi_tanilari("\"selam\" yaz\n", &mut yukleyici);
+    assert!(tanilar.is_empty(), "{:?}", tanilar.first().map(|t| &t.mesaj));
+}
+
 // ---- compile-fail: anti-örnekler ve tanı kalitesi ----
 
 #[test]

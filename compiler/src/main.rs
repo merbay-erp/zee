@@ -126,23 +126,27 @@ fn denetle_yolu(argumanlar: &[String]) -> ExitCode {
         .unwrap_or_else(|| std::path::Path::new("."))
         .to_path_buf();
     let mut yukleyici = birim_yukleyici(&klasor);
-    match dil::kaynagi_derle_birimlerle(&kaynak, &mut yukleyici).map(|_| ()) {
-        Ok(()) => {
-            if json {
-                println!("{{\"durum\":\"temiz\",\"tanilar\":[]}}");
-            } else {
-                println!("Denetim temiz: sözdizimi ve türler geçerli.");
-            }
-            ExitCode::SUCCESS
+    // Denetim TÜM tanıları toplar (RFC-0010 §3.1) — çalıştır ilk hatada durur.
+    let tanilar = dil::kaynagi_tanilari(&kaynak, &mut yukleyici);
+    if tanilar.is_empty() {
+        if json {
+            println!("{{\"durum\":\"temiz\",\"tanilar\":[]}}");
+        } else {
+            println!("Denetim temiz: sözdizimi ve türler geçerli.");
         }
-        Err(tani) => {
-            if json {
-                println!("{{\"durum\":\"hata\",\"tanilar\":[{}]}}", tani.json());
-            } else {
+        ExitCode::SUCCESS
+    } else {
+        if json {
+            let govde: Vec<String> = tanilar.iter().map(|t| t.json()).collect();
+            println!("{{\"durum\":\"hata\",\"tanilar\":[{}]}}", govde.join(","));
+        } else {
+            for tani in &tanilar {
                 eprint!("{}", tani.raporla(&kaynak));
+                eprintln!();
             }
-            ExitCode::FAILURE
+            eprintln!("{} tanı bulundu.", tanilar.len());
         }
+        ExitCode::FAILURE
     }
 }
 

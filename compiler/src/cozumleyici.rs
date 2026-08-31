@@ -123,6 +123,71 @@ impl Tur {
     }
 }
 
+/// Çoklu denetim (RFC-0010 §3.1): üst düzey cümle başına hata toplanır;
+/// bir cümlenin hatası sonrakilerin denetimini durdurmaz. LSP/denetle --json
+/// bu görünümü kullanır; derleme (çalıştır) ilk tanıda durur.
+pub fn denetle_coklu(program: &mut Program) -> Vec<Tani> {
+    let mut tanilar = Vec::new();
+    let mut ortam: HashMap<String, Tur> = HashMap::new();
+    for yapi in &program.yapilar {
+        for (alan, tur_yazimi) in &yapi.alanlar {
+            if alan_turu(tur_yazimi).is_none() {
+                tanilar.push(
+                    Tani::yeni(
+                        "T027",
+                        format!(
+                            "\"{}\" yapısındaki \"{}\" alanının türü tanınmadı: \"{}\".",
+                            yapi.ad, alan, tur_yazimi
+                        ),
+                        yapi.satir,
+                        1,
+                        1,
+                    )
+                    .onerili("Kullanılabilir alan türleri: TamSayı, Ondalık, Metin, Mantıksal.".into()),
+                );
+            }
+        }
+    }
+    let mut baglam = Baglam {
+        islemler: std::mem::take(&mut program.islemler),
+        imzalar: HashMap::new(),
+        yapilar: program.yapilar.clone(),
+    };
+    let mut donusler = Vec::new();
+    for cumle in program.cumleler.iter_mut() {
+        if let Err(tani) = blok_denetle(
+            std::slice::from_mut(cumle),
+            &mut ortam,
+            &mut baglam,
+            &mut donusler,
+            false,
+        ) {
+            tanilar.push(tani);
+            if tanilar.len() >= 20 {
+                break;
+            }
+        }
+    }
+    for test in program.testler.iter_mut() {
+        let mut test_ortami: HashMap<String, Tur> = HashMap::new();
+        let mut test_donusleri = Vec::new();
+        if let Err(tani) = blok_denetle(
+            &mut test.govde,
+            &mut test_ortami,
+            &mut baglam,
+            &mut test_donusleri,
+            false,
+        ) {
+            tanilar.push(tani);
+            if tanilar.len() >= 20 {
+                break;
+            }
+        }
+    }
+    program.islemler = baglam.islemler;
+    tanilar
+}
+
 /// Programı yerinde çözümler ve tür denetiminden geçirir.
 ///
 /// İşlemler ilk çağrı anında, argüman türleriyle denetlenir (v0 monomorfizmi):
