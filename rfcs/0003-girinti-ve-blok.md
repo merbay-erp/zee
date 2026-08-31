@@ -1,6 +1,7 @@
 # RFC-0003 — Girinti ve Blok Modeli
 
-- **Durum:** taslak (gerçeklenmiş davranışı belgeler; bir açık soru)
+- **Durum:** **geçici kabul** (31 Ağu 2026 — yüzey gerçeklendi ve korpusla
+  sabitlendi; onay kapısı: usability oturumları. Bir açık soru işaretli.)
 - **Tarih:** 31 Ağustos 2026
 - **İlgili günlük kayıtları:** K-006 (döngüler), K-005 (koşullar); anti-örnek A06
 - **İlgili golden programlar:** 05, 06, 12, 23, 25, 30 (iç içe bloklar)

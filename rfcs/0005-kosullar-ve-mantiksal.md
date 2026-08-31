@@ -1,6 +1,7 @@
 # RFC-0005 — Koşullar ve Mantıksal İfadeler
 
-- **Durum:** taslak
+- **Durum:** **geçici kabul** (31 Ağu 2026 — ve/veya/değilse dahil yüzey
+  gerçeklendi ve korpusla sabitlendi; onay kapısı: usability oturumları.)
 - **Tarih:** 31 Ağustos 2026
 - **İlgili günlük kayıtları:** K-005 (ise/değilse), K-010 (karşılaştırmalar), K-027 (bağlaçlar)
 - **İlgili golden programlar:** 05, 06, 07, 09, 23; anti-örnek A03, A05

@@ -1,6 +1,7 @@
 # RFC-0004 — Değer Tanımı ve Kapsam
 
-- **Durum:** taslak
+- **Durum:** **geçici kabul** (31 Ağu 2026 — kapsam kuralı K-034 ile karara
+  bağlandı ve gerçeklendi; onay kapısı: usability oturumları.)
 - **Tarih:** 31 Ağustos 2026
 - **İlgili günlük kayıtları:** K-003 (olsun), K-011 (ek yazımı), K-020 (alan atama önceliği)
 - **İlgili golden programlar:** 02, 07, 22

@@ -1,6 +1,7 @@
 # RFC-0007 — Temel Tür Sistemi
 
-- **Durum:** taslak
+- **Durum:** **geçici kabul** (31 Ağu 2026 — tür yüzeyi gerçeklendi; dönüş
+  birleşimi, genişleme ve daraltma testli; onay kapısı: usability oturumları.)
 - **Tarih:** 31 Ağustos 2026
 - **İlgili günlük kayıtları:** K-009 (dönüşüm), K-014 bulgu 3 (tür/değer adları)
 - **İlgili golden programlar:** tümü; özellikle 08–11, 19–22
