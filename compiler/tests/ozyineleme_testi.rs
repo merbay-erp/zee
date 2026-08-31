@@ -86,7 +86,14 @@ işlem düş
 
 x 5 için düş olsun
 ";
-    let hata = kaynagi_calistir(kaynak).expect_err("sonsuz iniş C019 vermeli");
+    // Debug derlemede yorumlayıcı çerçeveleri platforma göre şişebilir;
+    // sınıra dokunan tek test kendi yığınını getirir (K-040 — CLI da öyle).
+    let hata = std::thread::Builder::new()
+        .stack_size(64 * 1024 * 1024)
+        .spawn(move || kaynagi_calistir(kaynak).expect_err("sonsuz iniş C019 vermeli"))
+        .expect("iş parçacığı açılamadı")
+        .join()
+        .expect("iş parçacığı düştü");
     assert_eq!(hata.kod, "C019");
     assert!(hata.oneri.as_deref().unwrap_or("").contains("temel durum"));
 }

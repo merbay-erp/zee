@@ -303,7 +303,10 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   wasm gölge yığını 16 MB'a ayarlanır (`-zstack-size`).
 - **İlke:** Dilin verdiği her sınır, dilin KENDİ tanısıyla karşılanmalı —
   altındaki makinenin taşmasıyla değil. Sınır seçerken en dar platform
-  (Windows ana iş parçacığı, wasm doğrusal bellek) ölçü alınır.
+  (Windows ana iş parçacığı, motorların çağrı yığını) ölçü alınır.
+- **Ek:** Debug derlemede çerçeveler platforma göre şişer (ubuntu'da 500
+  seviye bile 8 MB test yığınını aşabildi) — sınıra dokunan tek test
+  (derinlik_korkulugu) CLI gibi kendi 64 MB yığınını getirir.
 
 ## K-012 — Liste sabiti: `3, 7, 1, 9 listesi`
 
