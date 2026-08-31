@@ -218,10 +218,13 @@ fn turkce_buyuk_kucuk_harf_i_kurali() {
 }
 
 #[test]
-fn bos_secenegin_degeri_calisma_hatasi() {
+fn korumasiz_secenek_erisimi_derleme_hatasi() {
+    // v0.2 akış-duyarlı daraltma (RFC-0008 §4.2): eski C008 çalışma hatası
+    // artık derleme zamanında T036 olarak yakalanır — hata daha erken, daha iyi.
     let kaynak = "işlem hiç bulma\n    sayıyı al\n    sayı 0 dan küçükse\n        sayıyı döndür\n    yok döndür\n\nbulunan 5 için hiç bulma olsun\nbulunanın değeri yaz\n";
-    let hata = kaynagi_calistir(kaynak).expect_err("boş Seçenek'in değeri hata olmalı");
-    assert_eq!(hata.kod, "C008");
+    let hata = kaynagi_calistir(kaynak).expect_err("korumasız erişim T036");
+    assert_eq!(hata.kod, "T036");
+    assert!(hata.oneri.as_deref().unwrap_or("").contains("varsa"));
 }
 
 #[test]
