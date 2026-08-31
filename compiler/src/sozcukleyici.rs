@@ -125,11 +125,46 @@ pub fn sozcukle(kaynak: &str) -> Result<Vec<Token>, Tani> {
                 sutun += 1;
                 let mut icerik = String::new();
                 let mut kapandi = false;
-                for ic in kalanlar.by_ref() {
+                while let Some(ic) = kalanlar.next() {
                     sutun += 1;
                     if ic == '"' {
                         kapandi = true;
                         break;
+                    }
+                    // Kaçışlar (RFC-0002 §6.1): \" tırnak, \\ ters bölü, \n yeni satır.
+                    if ic == '\\' {
+                        match kalanlar.next() {
+                            Some('"') => {
+                                sutun += 1;
+                                icerik.push('"');
+                            }
+                            Some('\\') => {
+                                sutun += 1;
+                                icerik.push('\\');
+                            }
+                            Some('n') => {
+                                sutun += 1;
+                                icerik.push('\n');
+                            }
+                            baska => {
+                                return Err(Tani::yeni(
+                                    "S040",
+                                    format!(
+                                        "Bilinmeyen kaçış dizisi: \\{}",
+                                        baska.map(String::from).unwrap_or_default()
+                                    ),
+                                    satir_no,
+                                    sutun,
+                                    2,
+                                )
+                                .onerili(
+                                    "Metin içinde tırnak için \\\", ters bölü için \\\\, \
+                                     yeni satır için \\n kullanılır."
+                                        .into(),
+                                ));
+                            }
+                        }
+                        continue;
                     }
                     icerik.push(ic);
                 }
@@ -145,9 +180,17 @@ pub fn sozcukle(kaynak: &str) -> Result<Vec<Token>, Tani> {
                 }
                 let uzunluk = icerik.chars().count() + 2;
                 tokenlar.push(Token::yeni(TokenTur::Metin(icerik), satir_no, baslangic_sutun, uzunluk));
-            } else if k.is_ascii_digit() {
+            } else if k.is_ascii_digit()
+                || (k == '-'
+                    && kalanlar.clone().nth(1).map(|r| r.is_ascii_digit()) == Some(true))
+            {
                 let baslangic_sutun = sutun;
                 let mut sayi_metni = String::new();
+                if k == '-' {
+                    sayi_metni.push('-');
+                    kalanlar.next();
+                    sutun += 1;
+                }
                 while let Some(&r) = kalanlar.peek() {
                     if r.is_ascii_digit() {
                         sayi_metni.push(r);
@@ -199,9 +242,14 @@ pub fn sozcukle(kaynak: &str) -> Result<Vec<Token>, Tani> {
                         ));
                     }
                     let olcek = kesir_metni.len() as u32;
+                    // İşaret-duyarlı kurulum: -3,14 → -(3*100 + 14) = -314.
+                    let eksi = sayi_metni.starts_with('-');
+                    let kesir: i64 = kesir_metni.parse().unwrap_or(0);
                     let govde = deger
-                        .checked_mul(10i64.pow(olcek))
-                        .and_then(|t| t.checked_add(kesir_metni.parse::<i64>().unwrap_or(0)))
+                        .checked_abs()
+                        .and_then(|d| d.checked_mul(10i64.pow(olcek)))
+                        .and_then(|t| t.checked_add(kesir))
+                        .map(|g| if eksi { -g } else { g })
                         .ok_or_else(|| {
                             Tani::yeni(
                                 "S006",
