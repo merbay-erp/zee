@@ -36,9 +36,9 @@ değilse
   Seçenek\<T\> olur (dönüş birleşimi, T018). Yalnız `yok` döndüren işlem
   hatadır ("içi belirlenemiyor").
 - **Sorgu:** `varsa` / `yoksa` (T023: yalnız Seçenek üzerinde).
-- **Erişim:** `<adın> değeri`; boşken **C008** çalışma hatası — tanı "önce
-  varsa ile kontrol et" der. Derleme zamanı akış-duyarlı daraltma (varsa
-  bloğunda değeri güvenli sayma) v1 adayı, §4.2.
+- **Erişim:** `<adın> değeri` — yalnız `varsa` (ya da `yoksa`nın `değilse`
+  dalı) içinde statik güvenli; dal dışı korumasız erişim **T036** derleme
+  hatasıdır (v0.2, K-037). C008 artık yalnız iç savunmadır.
 - **Kelime seçimi:** `boş` bilinçli olarak koleksiyonlara ayrıldı
   (`boş liste`, `argümanlar boşsa`); yokluk her zaman `yok`. İki kavramın
   karışmaması çocuk öğretiminde önemli.
@@ -76,9 +76,9 @@ Türkçe tanıyla biter; fark, Sonuç'un programa DEVAM şansı vermesidir.
 
 1. **Kullanıcı işlemlerinden Sonuç:** GERÇEKLENDİ — `hatasını döndür`.
    Kalan: hata türünün Metin'den zengin türe evrimi (kod + mesaj + veri).
-2. **Akış-duyarlı daraltma:** `bulunan varsa` bloğu içinde `bulunanın değeri`
-   statik olarak güvenli sayılabilir (C008 derleme hatasına dönüşür). Öğretici
-   değeri yüksek; denetleyici karmaşıklığı orta. v1 hedefi.
+2. ~~Akış-duyarlı daraltma~~ — GERÇEKLENDİ (v0.2, K-037/T036): varsa /
+   başarılıysa / başarısızsa dalları ve `değilse` tersinmeleri daraltır;
+   tam veri-akışı analizi bilinçli olarak yok (anlaşılabilirlik).
 3. **`dene`nin genelleşmesi:** `sayısını almayı dene` (C004'ü Sonuç'a çevirir),
    ileride `adresten getirmeyi dene`. Kalıp: mastar + dene.
 4. **Zorunlu ele alma:** kullanılmayan Sonuç değeri uyarı vermeli mi

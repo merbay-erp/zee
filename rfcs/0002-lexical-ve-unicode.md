@@ -37,8 +37,8 @@ Kaynak metnin karakter kuralları ve token dizisi. Girinti kuralları RFC-0003't
 
 | Token | Biçim | Notlar |
 |---|---|---|
-| Metin | `"..."` | Kaçış dizisi **yok** (v0): `"` metin içinde yazılamaz — açık soru §6. Kapanmayan tırnak → S002 |
-| TamSayı | ASCII rakamlar | i64; sınır aşımı → S006. Negatif SABİT yok; eksi değerler ifadeyle üretilir (açık soru §6) |
+| Metin | `"..."` | Kaçışlar (v0.2, K-036): `\"` `\\` `\n`; bilinmeyen kaçış → S040. Kapanmayan tırnak → S002 |
+| TamSayı | ASCII rakamlar | i64; sınır aşımı → S006. Negatif sabit `-3` geçerli (v0.2, K-036): işaret rakama bitişik |
 | Kelime | tanımlayıcı alfabesi | Anahtar kelime DEĞİLDİR — bkz. §5 |
 | Virgül | `,` | Liste sabiti ve ileride argüman ayracı |
 | SatirSonu / Girinti / Cikinti | — | RFC-0003 |
@@ -69,9 +69,9 @@ dağıtım). Sonuçları:
 
 ## 6. Açık sorular
 
-1. Metin kaçış dizileri: `\"` ve `\n` v0'da yok. Aday: RFC-0005 dönemi;
-   çocuk-okunurluğu için `\` yerine alternatifler de değerlendirilecek.
-2. Negatif sayı sabiti (`-5`): "noktalama minimum" ile `-` işareti gerilimi.
+1. ~~Metin kaçış dizileri~~ — GERÇEKLENDİ (v0.2, K-036): `\"` `\\` `\n`, S040.
+2. ~~Negatif sayı sabiti~~ — GERÇEKLENDİ (v0.2, K-036): işaret rakama bitişikse
+   sabittir; ondalıkta işaret gövdeye bir kez uygulanır.
 3. Ondalık/GerçekSayı sözdizimi (Türkçe ondalık virgülü mü, nokta mı? —
    virgül liste ayracıyla çakışır; ciddi tasarım işi).
 4. Büyük/küçük yalnız-fark uyarısı (A07) ve confusable denetiminin tanımlayıcı
