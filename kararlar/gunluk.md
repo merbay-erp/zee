@@ -344,6 +344,30 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   yanıtlar: "bu yüzeye güvenerek program yazabilir miyim?" — geçici kabul
   = evet, kırıcı değişiklik ancak sürüm notuyla.
 
+## K-044 — Mantıksal ad tek başına koşuldur
+
+- **bulgu:** Asal avcısı projesinde çıktı: bayrağı sınamanın doğal yolu
+  yoktu — `asal doğru ya eşitse` çalışıyor ama eğreti; çocuk `asal ise`
+  yazar. Olumsuzu (`bayrak değilse`) zaten vardı: bakışım eksikti.
+- **Karar:** `X ise` — X Mantıksal bir ada çözülüyorsa koşuldur; saf koşaç
+  ayrı kelime `ise` atom düzeyinde düşürülür. Tür bekçisi Mantıksal olmayanı
+  T005 ile reddeder. `değilse` olumsuzlaması bedavaya gelir.
+- **Test:** koleksiyon_testi::mantiksal_ad_tek_basina_kosuldur.
+
+## K-045 — Boş koleksiyonun türü ilk eklemeyle somutlaşır
+
+- **bulgu:** Gizli dil projesinde çıktı: `boş sözlük` değer türünü TamSayı
+  varsayıyordu — METİN SÖZLÜĞÜ KURULAMIYORDU; `boş liste` de aynıydı.
+  Çocuk programlarının yarısı metin koleksiyonu ister.
+- **Karar:** `boş liste` / `boş sözlük` "henüz belirsiz" doğar; İLK
+  ekleme/atama türü somutlar ve bağlama yazar. Belirsizken okuma (ilki,
+  gezme, değeri) DERLEME hatasıdır ("önce öğe ekle" önerili). Boş sabit ile
+  somut eş, yeniden atamada iki yönde uzlaşır (T002 değildir). Boş kalan
+  ama türü somut listenin ilki C007 olarak yaşar (koşullu ekleme yolu).
+- **Etki:** golden'ın bos_liste_ilki testi C007→T014 derleme yükseltmesi
+  aldı; 7 yeni koleksiyon testi. Liste öğesi v0'da TamSayı/Ondalık/Metin/
+  satır; sözlük değeri TamSayı/Metin (T011/T021 önerili söyler).
+
 ## K-012 — Liste sabiti: `3, 7, 1, 9 listesi`
 
 - **Karar:** Virgülle ayrılmış değerler + `listesi`. Boş: `boş liste`.

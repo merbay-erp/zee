@@ -20,6 +20,9 @@ pub enum VeriTuru {
     Ondalik,
     /// v0'da örtük olarak Sözlük<Metin, TamSayı> demektir (CSV satırları).
     Sozluk,
+    /// Boş koleksiyonun henüz belirlenmemiş öğe türü (K-045): ilk eklemede
+    /// somutlaşır. Guard'lı yollar dışında ture() çağrılmaz.
+    Bilinmeyen,
 }
 
 impl VeriTuru {
@@ -28,6 +31,7 @@ impl VeriTuru {
             VeriTuru::TamSayi => "TamSayı",
             VeriTuru::Metin => "Metin",
             VeriTuru::Ondalik => "Ondalık",
+            VeriTuru::Bilinmeyen => "belirsiz",
             VeriTuru::Sozluk => "Sözlük",
         }
     }
@@ -36,6 +40,7 @@ impl VeriTuru {
             VeriTuru::TamSayi => Tur::TamSayi,
             VeriTuru::Metin => Tur::Metin,
             VeriTuru::Ondalik => Tur::Ondalik,
+            VeriTuru::Bilinmeyen => Tur::Yok, // guard'lar erişimi engeller
             VeriTuru::Sozluk => Tur::Sozluk(SozlukDegerTuru::TamSayi),
         }
     }
@@ -44,6 +49,8 @@ impl VeriTuru {
 /// Sözlük değerlerinin türü (v0: TamSayı ya da Metin).
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum SozlukDegerTuru {
+    /// Boş sözlüğün henüz belirlenmemiş değer türü (K-045).
+    Bilinmeyen,
     TamSayi,
     Metin,
 }
@@ -51,12 +58,14 @@ pub enum SozlukDegerTuru {
 impl SozlukDegerTuru {
     fn ture(&self) -> Tur {
         match self {
+            SozlukDegerTuru::Bilinmeyen => Tur::Yok, // guard'lar erişimi engeller
             SozlukDegerTuru::TamSayi => Tur::TamSayi,
             SozlukDegerTuru::Metin => Tur::Metin,
         }
     }
     fn adi(&self) -> &'static str {
         match self {
+            SozlukDegerTuru::Bilinmeyen => "belirsiz",
             SozlukDegerTuru::TamSayi => "TamSayı",
             SozlukDegerTuru::Metin => "Metin",
         }
@@ -330,6 +339,29 @@ fn daraltma_cikar(kosul: &Ifade) -> Option<(u8, String)> {
     }
 }
 
+/// K-045: derleyici türünü VeriTuru'ya indirger (liste öğesi çıkarımı için).
+fn veri_turu_yap(tur: &Tur) -> Option<VeriTuru> {
+    match tur {
+        Tur::TamSayi => Some(VeriTuru::TamSayi),
+        Tur::Metin => Some(VeriTuru::Metin),
+        Tur::Ondalik => Some(VeriTuru::Ondalik),
+        Tur::Sozluk(SozlukDegerTuru::TamSayi) => Some(VeriTuru::Sozluk),
+        _ => None,
+    }
+}
+
+/// K-045: biri "henüz boş" (Bilinmeyen) koleksiyonsa somut eşiyle uzlaşır;
+/// dönen tür bağlamın yeni türüdür. Uzlaşma yoksa None (T002 yolu).
+fn bos_koleksiyon_uzlasi(eski: &Tur, yeni: &Tur) -> Option<Tur> {
+    match (eski, yeni) {
+        (Tur::Liste(VeriTuru::Bilinmeyen), Tur::Liste(_)) => Some(*yeni),
+        (Tur::Liste(_), Tur::Liste(VeriTuru::Bilinmeyen)) => Some(*eski),
+        (Tur::Sozluk(SozlukDegerTuru::Bilinmeyen), Tur::Sozluk(_)) => Some(*yeni),
+        (Tur::Sozluk(_), Tur::Sozluk(SozlukDegerTuru::Bilinmeyen)) => Some(*eski),
+        _ => None,
+    }
+}
+
 fn nesne_adi(nesne: &Ifade) -> Option<String> {
     match nesne {
         Ifade::Degisken { cozulmus: Some(ad), .. } => Some(ad.clone()),
@@ -380,9 +412,13 @@ fn blok_denetle(
             }
             Cumle::Olsun { ad, deger, satir, sutun, uzunluk } => {
                 let satir = *satir;
-                let tur = ifade_denetle(deger, ortam, baglam, satir)?;
+                let mut tur = ifade_denetle(deger, ortam, baglam, satir)?;
                 if let Some(eski) = ortam.get(ad.as_str()) {
-                    if *eski != tur {
+                    // K-045: boş koleksiyon somut eşiyle iki yönde uzlaşır —
+                    // "x boş liste olsun" sonrası somut liste (ve tersi) T002 değildir.
+                    if let Some(uzlasi) = bos_koleksiyon_uzlasi(eski, &tur) {
+                        tur = uzlasi;
+                    } else if *eski != tur {
                         return Err(Tani::yeni(
                             "T002",
                             format!(
@@ -509,6 +545,24 @@ fn blok_denetle(
                 let satir = *satir;
                 let hedef_tur = ifade_denetle(hedef, ortam, baglam, satir)?;
                 let oge = match hedef_tur {
+                    // K-045: boş listenin öğe türü ilk eklemeyle somutlaşır.
+                    Tur::Liste(VeriTuru::Bilinmeyen) => {
+                        let deger_tur = ifade_denetle(deger, ortam, baglam, satir)?;
+                        let Some(yeni_oge) = veri_turu_yap(&deger_tur) else {
+                            return Err(Tani::yeni(
+                                "T011",
+                                format!("Liste öğesi {} olamaz.", deger_tur.adi()),
+                                satir,
+                                1,
+                                1,
+                            )
+                            .onerili("v0'da liste öğesi TamSayı, Ondalık, Metin ya da satır (Sözlük) olabilir.".into()));
+                        };
+                        if let Some(ad) = nesne_adi(hedef) {
+                            ortam.insert(ad, Tur::Liste(yeni_oge));
+                        }
+                        yeni_oge
+                    }
                     Tur::Liste(oge) => oge,
                     baska => {
                         return Err(Tani::yeni(
@@ -588,6 +642,16 @@ fn blok_denetle(
                 }
                 let oge_turu = match kaynak {
                     Some(k) => match ifade_denetle(k, ortam, baglam, satir)? {
+                        Tur::Liste(VeriTuru::Bilinmeyen) => {
+                            return Err(Tani::yeni(
+                                "T013",
+                                "Bu liste henüz boş: öğe türü belli değil.".into(),
+                                satir,
+                                1,
+                                1,
+                            )
+                            .onerili("Gezmeden önce listeye en az bir öğe ekle.".into()));
+                        }
                         Tur::Liste(oge) => oge.ture(),
                         // Sözlük üzerinde gezinme anahtarları (Metin) verir.
                         Tur::Sozluk(_) => Tur::Metin,
@@ -917,6 +981,28 @@ fn blok_denetle(
                 let satir = *satir;
                 let sozluk_turu = ifade_denetle(sozluk, ortam, baglam, satir)?;
                 let beklenen_deger = match sozluk_turu {
+                    // K-045: boş sözlüğün değer türü ilk atamayla somutlaşır.
+                    Tur::Sozluk(SozlukDegerTuru::Bilinmeyen) => {
+                        let deger_tur = ifade_denetle(deger, ortam, baglam, satir)?;
+                        let yeni_deger = match deger_tur {
+                            Tur::TamSayi => SozlukDegerTuru::TamSayi,
+                            Tur::Metin => SozlukDegerTuru::Metin,
+                            baska => {
+                                return Err(Tani::yeni(
+                                    "T021",
+                                    format!("Sözlük değeri {} olamaz.", baska.adi()),
+                                    satir,
+                                    1,
+                                    1,
+                                )
+                                .onerili("v0'da sözlük değeri TamSayı ya da Metin olabilir.".into()));
+                            }
+                        };
+                        if let Some(ad) = nesne_adi(sozluk) {
+                            ortam.insert(ad, Tur::Sozluk(yeni_deger));
+                        }
+                        yeni_deger.ture()
+                    }
                     Tur::Sozluk(e) => e.ture(),
                     baska => {
                         return Err(Tani::yeni(
@@ -1031,7 +1117,8 @@ fn ifade_denetle(
         Ifade::OndalikSabiti { .. } => Ok(Tur::Ondalik),
         Ifade::MantiksalSabiti(_) => Ok(Tur::Mantiksal),
         // Boş listenin öğe türü v0'da TamSayı varsayılır (tür çıkarımı RFC-0007).
-        Ifade::BosListe => Ok(Tur::Liste(VeriTuru::TamSayi)),
+        // K-045: öğe türü ilk eklemede somutlaşır.
+        Ifade::BosListe => Ok(Tur::Liste(VeriTuru::Bilinmeyen)),
         Ifade::ListeSabiti(ogeler) => {
             let mut oge_turu: Option<VeriTuru> = None;
             for oge in ogeler {
@@ -1076,6 +1163,15 @@ fn ifade_denetle(
             let tur = ifade_denetle(nesne, ortam, baglam, satir)?;
             match (ozellik, tur) {
                 (Ozellik::Adet, Tur::Liste(_)) => Ok(Tur::TamSayi),
+                (Ozellik::Ilk, Tur::Liste(VeriTuru::Bilinmeyen))
+                | (Ozellik::Son, Tur::Liste(VeriTuru::Bilinmeyen)) => Err(Tani::yeni(
+                    "T014",
+                    "Bu liste henüz boş: ilki/sonu yok.".into(),
+                    satir,
+                    1,
+                    1,
+                )
+                .onerili("Önce listeye öğe ekle.".into())),
                 (Ozellik::Ilk, Tur::Liste(e)) | (Ozellik::Son, Tur::Liste(e)) => Ok(e.ture()),
                 (Ozellik::Uzunluk, Tur::Metin) => Ok(Tur::TamSayi),
                 (Ozellik::Kelimeler, Tur::Metin) => Ok(Tur::Liste(VeriTuru::Metin)),
@@ -1095,11 +1191,21 @@ fn ifade_denetle(
                 )),
             }
         }
-        // Boş sözlüğün değer türü v0'da TamSayı varsayılır (K-015).
-        Ifade::BosSozluk => Ok(Tur::Sozluk(SozlukDegerTuru::TamSayi)),
+        // K-045: değer türü ilk atamada somutlaşır (eski varsayım TamSayı idi).
+        Ifade::BosSozluk => Ok(Tur::Sozluk(SozlukDegerTuru::Bilinmeyen)),
         Ifade::SozlukDegeri { sozluk, anahtar } => {
             let sozluk_turu = ifade_denetle(sozluk, ortam, baglam, satir)?;
             let deger_turu = match sozluk_turu {
+                Tur::Sozluk(SozlukDegerTuru::Bilinmeyen) => {
+                    return Err(Tani::yeni(
+                        "T021",
+                        "Bu sözlük henüz boş: değer türü belli değil.".into(),
+                        satir,
+                        1,
+                        1,
+                    )
+                    .onerili("Önce bir değer ata: sözlüğün \"anahtar\" değeri ... olsun".into()));
+                }
                 Tur::Sozluk(e) => e,
                 baska => {
                     return Err(Tani::yeni(

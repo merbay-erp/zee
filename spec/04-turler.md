@@ -18,6 +18,14 @@ RFC-0011/golden 24-27'de).
 - Bir listenin bütün öğeleri aynı türdendir (T011); sözlük değer türü
   sözlüğün türüne uyar (T021).
 
+## Boş koleksiyon çıkarımı (TANIMLI — K-045)
+
+`boş liste` / `boş sözlük` belirsiz öğe/değer türüyle doğar; **ilk**
+ekleme/atama türü somutlar ve bağlamı günceller. Belirsizken okuma
+(`ilki`, gezme, `değeri`) derleme hatasıdır. Boş sabit, somut eşiyle
+yeniden atamada iki yönde uzlaşır — bu T002 sayılmaz. Mantıksal bir ad
+tek başına koşuldur: `hazır ise` (K-044); Mantıksal olmayan ad T005.
+
 ## Sayısal genişleme (TANIMLI)
 
 TamSayı, Ondalık beklenen yerde kendiliğinden Ondalığa genişler. Tersi

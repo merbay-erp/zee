@@ -86,7 +86,8 @@ Zincir: `değilse tahmin gizliden büyükse ...` — else-if.
 Bağlaçlar: `ve` / `veya` (aynı koşulda karıştırmak S030 hatasıdır:
 belirsizlik dile giremez; basamakla). Olumsuzlama: `... değilse`.
 Sık koşullar: `çiftse/tekse`, `boşsa`, `içeriyorsa`, `eşitse`,
-`küçükse/büyükse`.
+`küçükse/büyükse`. Mantıksal bir ad tek başına koşuldur: `hazır ise` /
+`hazır değilse` (K-044).
 
 ## 6. Döngüler — dört tane
 
@@ -134,7 +135,9 @@ her not için
         geçenlere notu ekle
 ```
 
-Bir listenin bütün öğeleri aynı türdendir (T011).
+Bir listenin bütün öğeleri aynı türdendir (T011). `boş liste`nin öğe
+türü İLK eklemeyle belli olur (K-045): `adlara "Zeynep" ekle` → metin
+listesi. Eklemeden okumaya kalkarsan derleyici "önce öğe ekle" der.
 
 ## 8. Sözlükler
 
@@ -149,7 +152,9 @@ yaşlardaki her ad için
     ad ile ": " ile yaşların ad değeri yaz
 ```
 
-Sıra korunur: eklediğin sırayla gezersin (determinizm).
+Sıra korunur: eklediğin sırayla gezersin (determinizm). `boş sözlük`ün
+değer türü de ilk atamayla belli olur (K-045) — metin değerli şifre
+defterleri serbest (bkz. projeler/gizli-dil.dil).
 
 ## 9. Metin işlemleri
 
