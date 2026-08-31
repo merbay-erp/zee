@@ -492,6 +492,16 @@ fn blok_denetle(
                     1,
                 ));
             }
+            Cumle::Kullan { birim, satir } => {
+                // Birimler derleme öncesi çözülüp hoist'te düşürülür.
+                return Err(Tani::yeni(
+                    "S021",
+                    format!("\"{}\" birim kullanımı beklenmeyen yerde.", birim),
+                    *satir,
+                    1,
+                    1,
+                ));
+            }
             Cumle::TestBlogu(test) => {
                 return Err(Tani::yeni(
                     "S021",

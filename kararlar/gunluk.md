@@ -152,6 +152,21 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   liste virgülünden sonra hep boşluk basar — iki kullanım görsel olarak ayrışır.
 - **Durum:** geçici (RFC taslak; yüzey gerçeklendi, 18 testle sabitlendi).
 
+## K-029 — Birim sistemi: `X birimini kullan` (31 Ağu, RFC-0009 gerçeklemesi)
+
+- **Karar:** Dosya = birim; `hesaplar birimini kullan` aynı klasördeki
+  hesaplar.dil'i alır. Birimin işlem/yapı/test tanımları görünür olur; üst
+  düzey cümleleri İÇE ALINMAZ (kapsülleme — dosya kendi başına da
+  çalıştırılabilir kalır). Çakışma sessiz gölgelenmez (A008, iki kaynak da
+  söylenir); döngü A009; bulunamayan birim A010. `dil dene` birim testlerini
+  "birim: test adı" önekiyle birlikte koşar.
+- **Mimari not:** Çağrı tanıma işlem adlarına dayandığından birimler tam
+  ayrıştırmadan ÖNCE yüklenir (ön tarama + tohumlu ayrıştırma). Birim
+  yükleme de IO soyutlamasındadır: testler sahte tabloyla, CLI gerçek
+  dosyayla — determinizm korunur. Arama yolu TEK: ana dosyanın klasörü.
+- **Durum:** geçici — RFC-0009 §2 gerçeklendi; paket katmanı (manifest,
+  registry) Faz 3/5'te.
+
 ## K-012 — Liste sabiti: `3, 7, 1, 9 listesi`
 
 - **Karar:** Virgülle ayrılmış değerler + `listesi`. Boş: `boş liste`.

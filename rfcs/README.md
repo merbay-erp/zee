@@ -14,7 +14,7 @@ Dil değişikliği RFC ister (master plan bölüm 25). Şablon: [0000-sablon.md]
 | RFC-0006 | [İşlemler ve Parametreler](0006-islemler-ve-parametreler.md) | **taslak — en kritik karar** | K-016, K-007, K-014 |
 | RFC-0007 | [Temel Tür Sistemi](0007-temel-tur-sistemi.md) | **taslak** | K-009, K-014 |
 | RFC-0008 | [Seçenek ve Sonuç](0008-secenek-ve-sonuc.md) | **taslak** | K-017, K-018 |
-| RFC-0009 | [Modül ve Paket Modeli](0009-modul-ve-paket.md) | **taslak** ("birim" önerisi) | — |
+| RFC-0009 | [Modül ve Paket Modeli](0009-modul-ve-paket.md) | **taslak — birim katmanı gerçeklendi** | K-029 |
 | RFC-0010 | [Hata ve Tanılama Standardı](0010-hata-ve-tanilama.md) | **kabul** | K-026 |
 | RFC-0011 | [Structured Concurrency](0011-structured-concurrency.md) | **taslak** (K-023 çözümü içinde) | K-023 |
 | RFC-0012 | [FFI ve Tehlikeli Sınır](0012-ffi-ve-tehlikeli-sinir.md) | **taslak** | A10 |
