@@ -236,6 +236,55 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
 - **Etki:** 32 golden programın hiçbiri sızıntıya dayanmıyordu — korpus
   değişmeden yeşil kaldı; RFC-0004 §Kapsam bölümü karara güncellenecek.
 
+## K-035 — Özyineleme v0.2 (T035 "temel durum önce")
+
+- **Karar:** İşlem kendini (veya karşılıklı olarak birbirini) çağırabilir.
+  Tür çıkarımı "o ana dek görülen dönüşler" üzerinden yapılır: özyinelemeli
+  çağrı, temel durum dönüşünden ÖNCE gelirse T035 ("temel durumu özyinelemeli
+  çağrıdan önce yaz"). Bu, tür değişkenleri olmadan deterministik çıkarım
+  sağlar ve iyi özyineleme alışkanlığını dilin kendisi öğretir.
+- **Karar:** Çalışma zamanı derinlik sınırı 5000 → C019 (taşma yerine Türkçe
+  tanı). Karşılıklı özyineleme için işlem adları ön-taranır (tanım sırası
+  serbest).
+- **bulgu:** `verilen özyineleme` ifadesi son birleşimle tutarsızsa T018.
+
+## K-036 — Metin kaçışları ve negatif sabitler
+
+- **Karar:** Metin içinde `\"`, `\\`, `\n` kaçışları; bilinmeyen kaçış S040
+  (önerili). Negatif sayı sabitleri (`-3`, `-3,14`) işaret-farkında okunur;
+  ondalıkta işaret gövdeye bir kez uygulanır (K-011 bitişik virgül kuralı
+  değişmedi).
+
+## K-037 — Akış-duyarlı daraltma (T036, RFC-0008 kapanışı)
+
+- **Karar:** `X varsa` / `X başarılıysa` / `X başarısızsa` dallarında (ve
+  `yoksa`/`değilse` tersinmelerinde) `X in değeri` / `X in hatası` erişimi
+  statik güvenlidir; dal dışında korumasız erişim T036 derleme hatasıdır.
+  C008 artık yalnız iç savunma. Tam veri-akışı analizi YOKTUR — tek koşullu
+  `... ise` kolları ve `değilse` tersinmesi kadar dar, o kadar da anlaşılır.
+- **Etki:** "boş değeri açmak" hatası çalışma zamanından derleme zamanına
+  taşındı; öğrenciye tanı, koşulun Türkçesiyle konuşur ("Önce kontrol et:
+  deneme başarılıysa").
+
+## K-038 — Çok-tokenli çağrı argümanları
+
+- **Karar:** `A ile B için işle` çağrısında her "ve/ile" dilimi tam bir ifade
+  bölgesi olarak ayrıştırılır (tek token sınırı kalktı): `tabanın tam kısmı
+  için yuvarla` yazılabilir.
+
+## K-039 — Playground: derleyici tarayıcıda (Faz 6 erken teslim)
+
+- **Karar:** Derleyici wasm32-unknown-unknown hedefine `--lib` olarak derlenir
+  (ADR-001 korunur: wasm-bindgen YOK, elle C-ABI: uzunluk-önekli UTF-8 tampon).
+  `playground/olustur.sh` tek dosyalık `zee-playground.html` üretir — dil.wasm
+  base64 gömülü, çift tıkla açılır, internet gerekmez.
+- **Karar:** PlaygroundIo = ToplayanIo determinizmi + görünür tohum alanı:
+  aynı tohum + aynı girdi = her zaman aynı çıktı (bölüm 27 tarayıcıda da
+  geçerli). Ağ/sunucu playground'da kapalı (Türkçe hata ile).
+- **Doğrulama:** Çekirdek doğal derlemede de testlenir (playground_testi, C-ABI
+  gidiş-dönüş dahil); 7 örnek tarayıcıda elle koşuldu (faktöriyel, testler,
+  tohum=1 ile kazanılan tahmin oyunu dahil).
+
 ## K-012 — Liste sabiti: `3, 7, 1, 9 listesi`
 
 - **Karar:** Virgülle ayrılmış değerler + `listesi`. Boş: `boş liste`.

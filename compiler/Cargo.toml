@@ -12,3 +12,4 @@ path = "src/main.rs"
 [lib]
 name = "dil"
 path = "src/lib.rs"
+crate-type = ["cdylib", "rlib"]

@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>zee playground</title>
+<style>
+  :root { --murekkep:#1c1c28; --kagit:#fbfaf7; --vurgu:#b0413e; --yesil:#2e6e4e; --cizgi:#d9d4c8; }
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: "Iowan Old Style", Georgia, serif; background: var(--kagit); color: var(--murekkep); min-height: 100vh; display: flex; flex-direction: column; }
+  header { padding: 20px 24px 12px; border-bottom: 3px double var(--cizgi); display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+  header h1 { font-size: 26px; letter-spacing: .5px; }
+  header h1 em { color: var(--vurgu); font-style: normal; }
+  header .slogan { color: #6b6659; font-size: 14px; font-style: italic; }
+  main { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 0; min-height: 0; }
+  @media (max-width: 800px) { main { grid-template-columns: 1fr; } }
+  .sutun { display: flex; flex-direction: column; padding: 16px 24px; min-width: 0; }
+  .sutun + .sutun { border-left: 1px solid var(--cizgi); }
+  label { font-size: 12px; text-transform: uppercase; letter-spacing: .12em; color: #6b6659; margin-bottom: 6px; display: block; }
+  textarea, pre { font-family: "SF Mono", ui-monospace, Menlo, monospace; font-size: 14px; line-height: 1.55; }
+  textarea { width: 100%; border: 1px solid var(--cizgi); border-radius: 6px; padding: 12px; background: #fff; resize: vertical; }
+  #kaynak { min-height: 300px; flex: 1; }
+  #girdiler { min-height: 64px; margin-top: 10px; }
+  .arac { display: flex; gap: 10px; align-items: center; margin: 12px 0; flex-wrap: wrap; }
+  button { font: inherit; padding: 9px 22px; border-radius: 6px; border: 1px solid var(--murekkep); background: var(--murekkep); color: var(--kagit); cursor: pointer; }
+  button:hover { background: var(--vurgu); border-color: var(--vurgu); }
+  select { font: inherit; padding: 8px 10px; border: 1px solid var(--cizgi); border-radius: 6px; background: #fff; }
+  #cikti { flex: 1; white-space: pre-wrap; overflow: auto; background: #14141d; color: #e8e6df; border-radius: 6px; padding: 14px; min-height: 300px; }
+  #cikti.hata { color: #ffb3ae; }
+  footer { padding: 10px 24px; border-top: 1px solid var(--cizgi); font-size: 12.5px; color: #6b6659; }
+  .kisayol { opacity: .75; font-size: 12px; }
+</style>
+</head>
+<body>
+<header>
+  <h1><em>zee</em> playground</h1>
+  <span class="slogan">Türkçe düşün. Türkçe yaz. Makine kesin olarak anlasın.</span>
+</header>
+<main>
+  <section class="sutun">
+    <div class="arac">
+      <label for="ornek" style="margin:0">Örnek:</label>
+      <select id="ornek"></select>
+      <label for="tohum" style="margin:0">Tohum:</label>
+      <input id="tohum" type="number" value="1" min="1" style="font:inherit;width:74px;padding:8px 10px;border:1px solid var(--cizgi);border-radius:6px">
+      <button id="calistir">Çalıştır ▸</button>
+      <span class="kisayol">(Ctrl/⌘ + Enter)</span>
+    </div>
+    <label for="kaynak">Kaynak (.dil)</label>
+    <textarea id="kaynak" spellcheck="false"></textarea>
+    <label for="girdiler" style="margin-top:12px">Girdiler — her satır bir "diye sor" cevabı</label>
+    <textarea id="girdiler" spellcheck="false" placeholder="Zeynep"></textarea>
+  </section>
+  <section class="sutun">
+    <label>Çıktı</label>
+    <pre id="cikti">Çalıştır'a bas — program tarayıcının içinde, senin bilgisayarında koşar. Hiçbir şey internete gitmez.</pre>
+  </section>
+</main>
+<footer>
+  zee v__SURUM__ · derleyici WebAssembly olarak bu sayfanın içinde · aynı tohum + aynı girdi = her zaman aynı çıktı · Zeynep Eliz için
+</footer>
+<script>
+const ORNEKLER = {
+  "Merhaba Dünya": `"Dünyaya merhaba" yaz\n`,
+  "Selamlaşma": `"Adın ne?" diye sor\n"Merhaba " ile yanıt yaz\n"Hoş geldin!" yaz\n`,
+  "Yaş kontrolü": `yaş 10 olsun\nyaş 8 veya daha büyükse\n    "Programlamaya başlayabilirsin!" yaz\ndeğilse\n    "Biraz daha oyun zamanı" yaz\n`,
+  "Sayı tahmini": `gizli 1 ile 100 arasında rastgele sayı olsun\nbildi yanlış olsun\n\nbildi doğru olana kadar tekrarla\n    "Tahminin?" diye sor\n    tahmin yanıtın sayısı olsun\n\n    tahmin gizliden küçükse\n        "Daha büyük söyle" yaz\n    değilse tahmin gizliden büyükse\n        "Daha küçük söyle" yaz\n    değilse\n        "Bildin!" yaz\n        bildi doğru olsun\n`,
+  "Market (ondalık)": `kilo 2,5 olsun\nbirim_fiyat 19,99 olsun\ntutar kilo ile birim_fiyatın çarpımı olsun\n\n"Tutar: " ile tutar ile " lira" yaz\n"Yuvarlak: " ile tutarın yuvarlanmışı ile " lira" yaz\n\nkontrol 0,1 ile 0,2 nin toplamı olsun\nkontrol 0,3 e eşitse\n    "Ondalıklar tam: sürpriz yok" yaz\n`,
+  "Faktöriyel (özyineleme)": `işlem faktöriyelini hesapla\n    sayıyı al\n\n    sayı 1 den küçükse\n        1 döndür\n    bir_eksiği sayı ile 1 in farkı olsun\n    alt bir_eksiği için faktöriyelini hesapla olsun\n    sonucu sayı ile altın çarpımı olsun\n    sonucu döndür\n\n1 den 7 ye kadar her sayı için\n    sonuç sayı için faktöriyelini hesapla olsun\n    sayı ile "! = " ile sonuç yaz\n`,
+  "Test yazma": `işlem karesini hesapla\n    sayıyı al\n    sonucu sayı ile sayının çarpımı olsun\n    sonucu döndür\n\ntest "kare doğru hesaplanır"\n    kare 4 için karesini hesapla olsun\n    kare 16 ya eşit olmalı\n\n"Testler aşağıda —" yaz\n`
+};
+
+const WASM_B64 = "__WASM_B64__";
+
+let wasm = null;
+
+async function wasmYukle() {
+  const ikili = Uint8Array.from(atob(WASM_B64), k => k.charCodeAt(0));
+  const { instance } = await WebAssembly.instantiate(ikili.buffer, {});
+  wasm = instance.exports;
+}
+
+function metniBellege(metin) {
+  const bayt = new TextEncoder().encode(metin);
+  const ptr = wasm.dil_bellek_ayir(bayt.length || 1);
+  new Uint8Array(wasm.memory.buffer, ptr, bayt.length).set(bayt);
+  return [ptr, bayt.length];
+}
+
+function calistir() {
+  const ciktiAlani = document.getElementById("cikti");
+  if (!wasm) { ciktiAlani.textContent = "Derleyici yükleniyor…"; return; }
+  const kaynak = document.getElementById("kaynak").value;
+  const girdiler = document.getElementById("girdiler").value;
+  const tohum = BigInt(Math.max(1, Number(document.getElementById("tohum").value) || 1));
+
+  const [kPtr, kLen] = metniBellege(kaynak);
+  const [gPtr, gLen] = metniBellege(girdiler);
+  const sonucPtr = wasm.dil_calistir(kPtr, kLen, gPtr, gLen, tohum);
+
+  const bellek = new Uint8Array(wasm.memory.buffer);
+  const uzunluk = new DataView(wasm.memory.buffer).getUint32(sonucPtr, true);
+  const metin = new TextDecoder().decode(bellek.subarray(sonucPtr + 4, sonucPtr + 4 + uzunluk));
+
+  wasm.dil_bellek_birak(kPtr, kLen || 1);
+  wasm.dil_bellek_birak(gPtr, gLen || 1);
+  wasm.dil_bellek_birak(sonucPtr, 4 + uzunluk);
+
+  ciktiAlani.textContent = metin.length ? metin : "(çıktı yok)";
+  ciktiAlani.classList.toggle("hata", metin.includes("HATA "));
+}
+
+const ornekSecici = document.getElementById("ornek");
+for (const ad of Object.keys(ORNEKLER)) {
+  const secenek = document.createElement("option");
+  secenek.textContent = ad;
+  ornekSecici.appendChild(secenek);
+}
+ornekSecici.addEventListener("change", () => {
+  document.getElementById("kaynak").value = ORNEKLER[ornekSecici.value];
+  document.getElementById("girdiler").value = ornekSecici.value === "Selamlaşma" ? "Zeynep" :
+    ornekSecici.value === "Sayı tahmini" ? "50\n75\n88\n81\n84\n82" : "";
+});
+document.getElementById("kaynak").value = ORNEKLER["Merhaba Dünya"];
+document.getElementById("calistir").addEventListener("click", calistir);
+document.addEventListener("keydown", (olay) => {
+  if ((olay.ctrlKey || olay.metaKey) && olay.key === "Enter") calistir();
+});
+wasmYukle().then(() => {
+  document.getElementById("cikti").textContent = "Derleyici hazır. Çalıştır'a bas!";
+});
+</script>
+</body>
+</html>

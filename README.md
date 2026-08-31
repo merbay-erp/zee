@@ -42,11 +42,19 @@ CSV/JSON okuma, tarih/saat, komut satırı argümanları, **test blokları**
 (`hatasını döndür`), `ve/veya/değilse` mantığı, **HTTP istemcisi** ve
 **web sunucusu** (gerçek TCP; testlerde sahte), **eşzamanlı bloklar**
 (RFC-0011: bekle-öncesi erişim derleme hatası), **zaman aşımı**, **ESP32
-simülatörü**, üç mekanizmalı morfoloji ve 90+ Türkçe kodlu tanı.
+simülatörü**, **özyineleme** (T035 "temel durum önce", C019 derinlik sınırı),
+**blok kapsamı** (K-034), **akış-duyarlı daraltma** (T036: korumasız
+değer/hata erişimi derleme hatası), metin kaçışları ve negatif sabitler,
+üç mekanizmalı morfoloji ve 90+ Türkçe kodlu tanı.
 Araçlar: `dil çalıştır/denetle(--json, çoklu tanı)/dene/biçimle/hata/yeni` +
 **dillsp** LSP sunucusu ([editors/](editors/)).
 Determinizm testlerde tam: rastgelelik, saat, dosyalar, HTTP, sunucu istekleri,
-sensörler ve an ölçümü IO soyutlamasından gelir — 124 test hermetik koşar.
+sensörler ve an ölçümü IO soyutlamasından gelir — 132 test hermetik koşar.
+
+**Playground:** `playground/olustur.sh` derleyiciyi WebAssembly'e derler ve
+tek dosyalık `playground/zee-playground.html` üretir — çift tıkla aç, tarayıcıda
+yaz-çalıştır; kurulum ve internet gerekmez. Aynı tohum + aynı girdi = her zaman
+aynı çıktı (determinizm tarayıcıda da geçerli, K-039).
 
 Uzak depo: **github.com/merbay-erp/zee** (özel; lisans seçilmeden — bölüm 26 —
 herkese açılmayacak, K-032). Tarih arşivi: ilk README'ler [docs/tarih/](docs/tarih/)
