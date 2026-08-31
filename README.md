@@ -16,7 +16,7 @@ Bu bir çeviri katmanı değildir (`if→eğer` makyajı yok); AI semantiğin pa
 - Master plan: [docs/master-plan.md](docs/master-plan.md) (kaynak: [docs/Turkce_Programlama_Dili_Master_Proje_Dokumani.docx](docs/Turkce_Programlama_Dili_Master_Proje_Dokumani.docx))
 - İlkeler: [MANIFESTO.md](MANIFESTO.md)
 
-## Durum: Faz 1 — Interpreter (Faz 0 tamamlandı)
+## Durum: **v0.1 TAMAMLANDI** (31 Ağustos 2026) — Faz 2+ sürüyor
 
 **31 Ağustos 2026 — proje doğdu.** `merhaba.dil` kendi lexer → parser → tür
 denetimi → yorumlayıcı zincirimizden geçip çalıştı (master plan bölüm 41'deki
@@ -61,7 +61,7 @@ altında dondurulmuştur; `baslangic` ve `dogum` etiketleri GitHub'a da itildi.
 | Girinti blokları deterministik | ✅ (sekme/karışık girinti hatası testli) |
 | Temel type errors Türkçe ve kaynak konumlu | ✅ (S/A/T/C kodları + öneri) |
 | Formatter idempotent | ✅ `dil biçimle` — 30 golden dosyada idempotentlik testli |
-| Windows/macOS/Linux interpreter/CLI | ✅ CI matrisi aktif — github.com/merbay-erp/zee (özel depo) |
+| Windows/macOS/Linux interpreter/CLI | ✅ üç platformda CI yeşil (31 Ağu 2026) |
 | Golden corpus CI'da | ✅ her push'ta 3 platformda koşuyor |
 | Kaynak kodda İngilizce keyword gerekmez | ✅ |
 
