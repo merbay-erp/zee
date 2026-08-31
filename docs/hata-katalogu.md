@@ -1,0 +1,125 @@
+# Derleyici hata kataloğu
+
+Her tanı: **kod + Türkçe açıklama + kaynak konumu + işaret + öneri** biçiminde
+basılır (RFC-0001 §8). Bu katalog, koddaki her tanının ne zaman doğduğunu ve
+nasıl çözüldüğünü listeler. Kaynak: `compiler/src/` (kodlar gerçeklemeden
+türetilmiştir; yeni kod eklenince bu dosya güncellenir — CI'a bağlanması planlı).
+
+Ön ekler: **S** sözdizimi/sözcükleme · **A** ad çözümleme · **T** tür denetimi ·
+**C** çalışma zamanı · **D** doğrulama (test) · **Ç** iç akış (kullanıcıya görünmez).
+
+## S — Sözdizimi ve sözcükleme
+
+| Kod | Ne oldu | Çözüm |
+|---|---|---|
+| S001 | Beklenmeyen karakter (sembolik işleç, parantez...) | Kalıpları kelimelerle yaz; bkz. anti-örnek A03/A06 |
+| S002 | Metin sabiti kapanmadan satır bitti | Kapatan `"` ekle |
+| S003 | Girintide sekme (tab) | 4 boşluk kullan (RFC-0003) |
+| S004 | Cümle tanınmadı — satır bilinen bir eylemle bitmiyor | Desteklenen kalıplar öneride listelenir; işlem çağrısıysa işlem önce tanımlanmalı |
+| S005 | Girinti hizası hiçbir açık blokla eşleşmiyor | Satırı bloklardan birinin hizasına getir |
+| S006 | Sayı TamSayı sınırından büyük | Daha küçük değer kullan (i64 sınırı) |
+| S007 | Blok bekleyen satırdan sonra girinti yok | Alt satırları 4 boşluk içeriden yaz |
+| S008 | `olsun` tanımında ad ya da değer eksik | Örnek: `isim "Ayşe" olsun` |
+| S009 | Döngü biçimi tanınmadı | `10 kez tekrarla` ya da `... olana kadar tekrarla` |
+| S010 | `için` döngüsü tanınmadı | `her sayı için` ya da `1 den 100 e kadar her sayı için` |
+| S011 | Koşullu döngü biçimi | `<koşul> olduğu sürece` |
+| S012 | Artır/azalt eksik parça | `toplamı sayıyla artır` · `sayacı 1 azalt` |
+| S013 | Değer bekleniyordu | İfade konumu boş kalmış |
+| S014 | `ile`nin önü/arkası boş | `a ile b` biçiminde iki taraf da dolu olmalı |
+| S015 | İki değer yan yana, kalıp yok | Araya `ile` koy ya da bilinen kalıp kullan (`sayıların adedi`) |
+| S016 | Koşul tanınmadı | Örnekler: `yaş 8 veya daha büyükse` · `sayı çiftse` |
+| S017 | Soru biçimi | `"Adın ne?" diye sor` |
+| S018 | Ekleme cümlesi eksik parça | `sayılara 5 ekle` |
+| S019 | İşlem çağrısında ayraç yok | Argümanlardan sonra `için` ya da `ile` gelir |
+| S020 | Çağrı argümanı tek değer değil | Argümanları `ve` ile ayır: `"Ayşe" ve 10 ile selamla` |
+| S021 | işlem/yapı/test tanımı yanlış yerde | Tanımlar en dış düzeyde olmalı |
+| S022 | İşlem adı geçersiz | Ad yalnız kelimelerden oluşur: `işlem ortalamayı hesapla` |
+| S023 | Bölme cümlesi eksik parça | `sonucu toplamı adede böl` |
+| S024 | Eşleştirme biçimi | Başlık `şekle göre`; kollar `"kare" ise` / `değilse` |
+| S025 | Yapı tanımı biçimi | `yapı Öğrenci` + alanlar `yaş TamSayı` |
+| S026 | Test bloğu biçimi | `test "toplama doğru çalışır"` |
+| S027 | Sonlandırma biçimi | `programı bitir` |
+| S028 | Türkçe/Latin dışı karakter (homoglyph koruması) | Tanı kod noktasını gösterir (örn. Kiril а = U+0430); yalnız Türkçe/Latin harf kullan |
+| S029 | Birleştirici im (U+0300–U+036F) | Birleşik karakteri kullan: g + ˘ değil ğ (RFC-0002 §2) |
+
+## A — Ad çözümleme
+
+| Kod | Ne oldu | Çözüm |
+|---|---|---|
+| A001 | Ad bu kapsamda tanımlı değil | Önce `<ad> <değer> olsun`; tanı tanımlı adları listeler |
+| A002 | Ad birden çok köke çözülüyor (belirsizlik) | Adlardan birini değiştir — belirsizlik dilde hatadır |
+| A003 | `her X için` gezilecek listeyi bulamadı | Kapsamda `Xlar`/`Xler` adlı liste olmalı (örtük çoğul, K-013) |
+| A005 | Aynı adla ikinci işlem tanımı | İşlem adları benzersizdir |
+| A006 | Aynı adla ikinci yapı tanımı | Yapı adları benzersizdir |
+| A007 | `yeni <Ad>` — yapı tanımlı değil | Yapıyı kullanmadan önce tanımla |
+
+## T — Tür denetimi
+
+| Kod | Ne oldu | Çözüm |
+|---|---|---|
+| T001 | Karşılaştırma tür uyuşmazlığı | Büyüklük sayılar arasında; eşitlik aynı türler arasında |
+| T002 | Değerin türü değiştirilmeye çalışıldı | Tür sonradan değişmez; yeni ad kullan |
+| T003 | Tekrar adedi TamSayı değil | `10 kez tekrarla` |
+| T004 | Aralık uçları TamSayı değil | `1 den 100 e kadar` |
+| T005 | ise/döngü/olmalı koşul istiyor | Koşul kalıbı kullan (K-010) |
+| T006 | Artır/azalt sayı istiyor | Hedef ve miktar TamSayı olmalı |
+| T007 | Çift/tek sorgusu TamSayı ister | — |
+| T008 | Aritmetik sayılar arasında | Metni sayıya çevir: `<metnin> sayısı` |
+| T009 | `sayısı` kalıbı Metin ister | — |
+| T010 | Rastgele uçları TamSayı değil | `1 ile 100 arasında rastgele sayı` |
+| T011 | Liste öğe türü uyuşmazlığı | Bir listenin bütün öğeleri aynı türden |
+| T012 | Ekleme hedefi liste değil | Önce `boş liste olsun` |
+| T013 | `her ... için` kaynağı liste/sözlük değil | — |
+| T014 | Özellik bu türe uygulanamaz | adedi/ilki/sonu → liste; uzunluğu/kelimeleri → metin; yılı → tarih |
+| T015 | Çağrı argüman sayısı yanlış | İşlemin parametre sayısına bak |
+| T016 | İşlem kendi kendini çağırıyor | v0'da özyineleme yok (RFC-0006 adayı) |
+| T017 | Argüman türleri imzaya uymuyor | İmza ilk çağrıda sabitlenir (v0 monomorfizmi) |
+| T018 | Dönüş türleri tutarsız | Tek tür döndür; `yok` + tür → Seçenek olur |
+| T019 | Değer döndürmeyen işlem ifade konumunda | İşleme `... döndür` ekle ya da cümle olarak çağır |
+| T020 | `döndür` işlem dışında | Yalnız işlem gövdesinde geçerli |
+| T021 | Sözlük işlemi tür uyuşmazlığı | v0: anahtar Metin; değer türü sözlüğün türüne uymalı |
+| T022 | Metin işlemi Metin ister | harflisi/içeriyorsa |
+| T023 | `varsa` Seçenek ister | Seçenek, `yok döndür` içeren işlemden doğar |
+| T024 | değeri/hatası/başarılıysa yanlış türde | Seçenek ya da Sonuç üzerinde kullan |
+| T025 | Dosya yolu Metin değil | — |
+| T026 | `göre` eşleştirme türleri | Konu TamSayı/Metin; kollar konuyla aynı türde |
+| T027 | Yapı alanının türü tanınmadı | Kullanılabilir: TamSayı, Metin, Mantıksal |
+| T028 | Yapı alanı yok / yanlış tür | Tanı mevcut alanları listeler |
+| T029 | `gün sonrası` Tarih + TamSayı ister | — |
+| T030 | `boşsa` liste/sözlük/metin ister | — |
+
+## C — Çalışma zamanı
+
+| Kod | Ne oldu | Çözüm |
+|---|---|---|
+| C000 | İç tutarlılık hatası | Derleyici hatasıdır — lütfen bildir |
+| C001 | Değer bulunamadı | (İç duruma yakın; görülmesi beklenmez) |
+| C002 | TamSayı taşması | Değerleri küçült; taşma sessizce sarmalanmaz (RFC-0001 §7) |
+| C003 | Sıfıra bölme | Önce böleni kontrol et |
+| C004 | Metin sayıya çevrilemedi | `sayısı` yalnız rakam içeren metni çevirir |
+| C005 | Soruya verilecek girdi kalmadı | Etkileşimsiz koşuda girdi sayısı sorulardan az |
+| C006 | Rastgele aralığı ters | Alt uç üstten büyük olamaz |
+| C007 | Boş listenin ilki/sonu | Önce `adedi` ile kontrol et |
+| C008 | Boş Seçenek'in değeri | Önce `varsa` ile kontrol et |
+| C009 | Sonuç'un yanlış tarafı | başarılıysa → değeri; değilse → hatası |
+| C010 | Sözlükte anahtar yok | Önce `sözlükte <anahtar> varsa` |
+| C011 | Biçimleyici token güvencesi bozuldu | Dosya yazılmadı; derleyici hatasıdır — bildir |
+| C012 | Dosya okunamadı (düz biçim) | Hata yönetilecekse `... okumayı dene` ile Sonuç al |
+| C013 | Dosyaya yazılamadı | Yol/izin kontrolü |
+| C015 | CSV biçim hatası | Sütun sayısı başlıkla eşleşmeli; v0 hücreleri TamSayı |
+| C016 | JSON biçim hatası | v0: düz nesne + metin değerler |
+
+## D — Doğrulama
+
+| Kod | Ne oldu | Çözüm |
+|---|---|---|
+| D001 | `olmalı` koşulu tutmadı | Tanı beklenen/bulunan değerleri gösterir; `dil dene` testte raporlar |
+
+## Ç — İç akış
+
+| Kod | Not |
+|---|---|
+| Ç000 | `programı bitir` iç nöbetçisi; çalıştırıcı yakalar, kullanıcı asla görmez |
+
+> Boşluklar bilinçlidir: A004 ve C014 ayrılmış ama kullanılmamıştır; yeni
+> tanılar sıradaki boş numarayı alır.
