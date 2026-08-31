@@ -17,14 +17,23 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+      # rust-toolchain.toml sürümü sabitler; action yalnız rustup'ı hazırlar.
       - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.93.1
+          components: clippy
       - name: Testler (golden korpus + biçimleyici)
         working-directory: compiler
         run: cargo test --locked || cargo test
       - name: Uyarı yok
         working-directory: compiler
-        run: cargo build 2>&1 | (! grep -i warning)
         shell: bash
+        run: |
+          cikti="$(cargo build 2>&1)"
+          printf '%s\n' "$cikti"
+          case "$cikti" in
+            *warning*|*Warning*) echo "UYARI BULUNDU — temiz derleme ilkesi (RFC-0001 §11)"; exit 1 ;;
+          esac
       - name: Clippy temiz
         working-directory: compiler
         run: cargo clippy --all-targets -- -D warnings
