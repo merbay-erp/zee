@@ -202,6 +202,20 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
 - **bulgu:** birim adında tire kullanılamıyor (tanımlayıcı kuralı) —
   "hesap-araclari" → "hesap_araclari". RFC-0009 dosya adı kuralına not.
 
+## K-032 — Devredilen üç karar (31 Ağu akşamı, kurucu yetki devriyle)
+
+- **Dil adı:** zee (ADR-009). Uzantı .dil ve CLI `dil` korunur; çakışma
+  taraması yapıldı (hobi deneyleri dışında temiz), TÜRKPATENT tescili hukuk
+  incelemesine not edildi.
+- **K-016 işlem çağrısı:** Seçenek A (için/ile) GEÇİCİ KABUL — 5+ golden
+  programlık gerçekleme deneyimi, yüklem-sonlu ritimle uyum ve sıfır ek
+  noktalama gerekçesiyle. Usability oturumları onay kapısıdır; protokol
+  docs/usability-kiti.md'de hazır. Oturumlar B'yi (sonuç-bağlama) güçlü
+  gösterirse RFC-0006 revize edilir — korpus etkisi bölümü bunu zaten planlıyor.
+- **Uzak depo:** GitHub'a özel (private) depo olarak itilir — CI üç platformda
+  koşar, v0.1'in son kriteri kapanır. Herkese açma kararı kurucuya kalır
+  (lisans seçimi — bölüm 26 — henüz yapılmadı; açmadan önce LİSANS şart).
+
 ## K-012 — Liste sabiti: `3, 7, 1, 9 listesi`
 
 - **Karar:** Virgülle ayrılmış değerler + `listesi`. Boş: `boş liste`.

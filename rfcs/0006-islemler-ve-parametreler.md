@@ -1,7 +1,9 @@
 # RFC-0006 — İşlemler ve Parametreler
 
-- **Durum:** taslak — **dilin en kritik açık kararı** (K-016); karar
-  usability oturumları sonrası kesinleşir
+- **Durum:** **geçici kabul** (31 Ağu 2026, kurucunun devrettiği yetkiyle):
+  Seçenek A (için/ile yüzeyi) resmî yüzeydir; usability oturumları ONAY
+  KAPISI olarak kalır — oturum bulguları aksini gösterirse bu karar B lehine
+  revize edilir (K-032). Karar gerekçesi §3'te
 - **Tarih:** 31 Ağustos 2026
 - **İlgili günlük kayıtları:** K-016 (çağrı sözdizimi), K-014 (kelime çakışmaları), K-007 (yanıt)
 - **İlgili golden programlar:** 12, 13, 14, 15, 30
