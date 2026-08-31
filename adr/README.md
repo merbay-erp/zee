@@ -7,9 +7,9 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 
 | No | Başlık | Durum |
 |---|---|---|
-| ADR-001 | Bootstrap implementasyon dili (aday: Rust) | bekliyor — Hafta 3 başında karara bağlanacak |
-| ADR-002 | Parser stratejisi (aday: elle yazılmış recursive-descent + Pratt) | bekliyor |
-| ADR-003 | İlk execution modeli: interpreter/bytecode | bekliyor |
+| ADR-001 | [Bootstrap dili: Rust + sıfır bağımlılık](001-bootstrap-dili.md) | **kabul** |
+| ADR-002 | [Parser: elle yazılmış, yüklem-sonlu dağıtım](002-parser-stratejisi.md) | **kabul** |
+| ADR-003 | [İlk yürütme: ağaç-yürüyen yorumlayıcı + IO soyutlaması](003-ilk-yurutme-modeli.md) | **kabul** |
 | ADR-004 | Bellek yönetimi prototip kararı (GC / ARC benchmark) | bekliyor |
 | ADR-005 | Native backend seçimi (Cranelift / LLVM) | bekliyor — Faz 4 |
 | ADR-006 | Paket registry trust modeli | bekliyor — Faz 5 |
