@@ -10,10 +10,7 @@ fn main() {
     let stdout = std::io::stdout();
     let mut cikti = stdout.lock();
 
-    loop {
-        let Some(govde) = mesaj_oku(&mut girdi) else {
-            break; // stdin kapandı
-        };
+    while let Some(govde) = mesaj_oku(&mut girdi) {
         let sonuc = sunucu.mesaj_isle(&govde);
         for yanit in &sonuc.govdeler {
             let _ = write!(cikti, "Content-Length: {}\r\n\r\n{}", yanit.len(), yanit);

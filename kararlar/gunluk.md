@@ -216,6 +216,17 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   koşar, v0.1'in son kriteri kapanır. Herkese açma kararı kurucuya kalır
   (lisans seçimi — bölüm 26 — henüz yapılmadı; açmadan önce LİSANS şart).
 
+## K-033 — İlk CI dersi: araç zinciri sabitlenir (31 Ağu akşamı)
+
+- **Olay:** İlk push'ta CI üç platformda kırıldı — CI'daki gezici "stable"
+  Rust (1.98) yereldekinden (1.93) yeniydi ve yeni clippy lint'i (while_let_loop)
+  ile farklı davranış getirdi. Reproducible-build ilkesinin (bölüm 27) tam da
+  öngördüğü tuzak, ilk gün yaşandı ve kapatıldı.
+- **Karar:** `compiler/rust-toolchain.toml` sürümü sabitler (1.93.1); yükseltme
+  bilinçli commit'tir. CI "uyarı yok" adımı kabuk tuhaflıklarından bağımsız,
+  çıktısı görünür biçimde yeniden yazıldı. Clippy'nin bulduğu lint haklıydı
+  ve düzeltildi (dillsp while let).
+
 ## K-012 — Liste sabiti: `3, 7, 1, 9 listesi`
 
 - **Karar:** Virgülle ayrılmış değerler + `listesi`. Boş: `boş liste`.

@@ -1,0 +1,6 @@
+# Tekrarlanabilirlik (ADR-001, master plan bölüm 27): her ortam aynı derleyici.
+# Sürüm yükseltmeleri bilinçli commit'le yapılır; CI'daki gezici "stable"
+# 31 Ağu 2026'da yerelden farklı lint'lerle kırılmıştı (K-033 adayı not).
+[toolchain]
+channel = "1.93.1"
+components = ["clippy"]
