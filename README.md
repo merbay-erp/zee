@@ -12,11 +12,14 @@ Türkçenin doğal akışına göre tasarlanmış **deterministik** genel amaçl
 Bu bir çeviri katmanı değildir (`if→eğer` makyajı yok); AI semantiğin parçası değildir.
 
 - **Hemen başla:** [docs/baslangic.md](docs/baslangic.md) — 5 dakikada kurulum, ilk proje, araç kutusu
+- **Dili gez:** [docs/dil-turu.md](docs/dil-turu.md) — bütün yüzey, çalışan örneklerle
 - Dosya uzantısı: **`.dil`** (kalıcı — ADR-009)
 - Master plan: [docs/master-plan.md](docs/master-plan.md) (kaynak: [docs/Turkce_Programlama_Dili_Master_Proje_Dokumani.docx](docs/Turkce_Programlama_Dili_Master_Proje_Dokumani.docx))
 - İlkeler: [MANIFESTO.md](MANIFESTO.md)
 
-## Durum: **v0.1 TAMAMLANDI** (31 Ağustos 2026) — Faz 2+ sürüyor
+## Durum: **v0.2.0** (31 Ağustos 2026) — Faz 2+ sürüyor
+
+Sürüm geçmişi ve ayrıntılar: [docs/surumler.md](docs/surumler.md).
 
 **31 Ağustos 2026 — proje doğdu.** `merhaba.dil` kendi lexer → parser → tür
 denetimi → yorumlayıcı zincirimizden geçip çalıştı (master plan bölüm 41'deki

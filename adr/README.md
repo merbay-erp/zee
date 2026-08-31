@@ -14,5 +14,5 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-004 | Bellek yönetimi prototip kararı (GC / ARC benchmark) | bekliyor |
 | ADR-005 | Native backend seçimi (Cranelift / LLVM) | bekliyor — Faz 4 |
 | ADR-006 | Paket registry trust modeli | bekliyor — Faz 5 |
-| ADR-007 | Telemetri ve gizlilik | bekliyor |
+| ADR-007 | [Telemetri ve gizlilik: araçlar veri toplamaz](007-telemetri-ve-gizlilik.md) | **kabul** |
 | ADR-008 | Self-hosting aşamaları | bekliyor |

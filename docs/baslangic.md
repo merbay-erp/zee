@@ -89,7 +89,8 @@ internet gerekmez, katalog `dil`in içindedir.
 
 ## 6. Daha fazlası
 
-- Dilin bütün örnekleri: [golden/](../golden/) — 30 program, kolaydan zora
+- Dilin bütün yüzeyi tek yazıda: [dil-turu.md](dil-turu.md)
+- Dilin bütün örnekleri: [golden/](../golden/) — 32 program, kolaydan zora
   numaralı, hepsi çalışır belge niteliğinde.
 - Dilin OLMADIĞI şeyler: [anti-ornekler/](../anti-ornekler/)
 - Hata sözlüğü: [hata-katalogu.md](hata-katalogu.md)
