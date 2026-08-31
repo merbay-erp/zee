@@ -156,16 +156,10 @@ pub fn denetle_coklu(program: &mut Program) -> Vec<Tani> {
         imzalar: HashMap::new(),
         yapilar: program.yapilar.clone(),
         bekleyen_gorevler: std::collections::HashSet::new(),
+        denetim_yigini: Vec::new(),
     };
-    let mut donusler = Vec::new();
     for cumle in program.cumleler.iter_mut() {
-        if let Err(tani) = blok_denetle(
-            std::slice::from_mut(cumle),
-            &mut ortam,
-            &mut baglam,
-            &mut donusler,
-            false,
-        ) {
+        if let Err(tani) = blok_denetle(std::slice::from_mut(cumle), &mut ortam, &mut baglam) {
             tanilar.push(tani);
             if tanilar.len() >= 20 {
                 break;
@@ -174,14 +168,7 @@ pub fn denetle_coklu(program: &mut Program) -> Vec<Tani> {
     }
     for test in program.testler.iter_mut() {
         let mut test_ortami: HashMap<String, Tur> = HashMap::new();
-        let mut test_donusleri = Vec::new();
-        if let Err(tani) = blok_denetle(
-            &mut test.govde,
-            &mut test_ortami,
-            &mut baglam,
-            &mut test_donusleri,
-            false,
-        ) {
+        if let Err(tani) = blok_denetle(&mut test.govde, &mut test_ortami, &mut baglam) {
             tanilar.push(tani);
             if tanilar.len() >= 20 {
                 break;
@@ -220,22 +207,15 @@ pub fn denetle(program: &mut Program) -> Result<(), Tani> {
         imzalar: HashMap::new(),
         yapilar: program.yapilar.clone(),
         bekleyen_gorevler: std::collections::HashSet::new(),
+        denetim_yigini: Vec::new(),
     };
-    let mut donusler = Vec::new();
-    let mut sonuc = blok_denetle(&mut program.cumleler, &mut ortam, &mut baglam, &mut donusler, false);
+    let mut sonuc = blok_denetle(&mut program.cumleler, &mut ortam, &mut baglam);
 
     // Testler ana programdan bağımsız, taze ortamda denetlenir.
     if sonuc.is_ok() {
         for test in program.testler.iter_mut() {
             let mut test_ortami: HashMap<String, Tur> = HashMap::new();
-            let mut test_donusleri = Vec::new();
-            sonuc = blok_denetle(
-                &mut test.govde,
-                &mut test_ortami,
-                &mut baglam,
-                &mut test_donusleri,
-                false,
-            );
+            sonuc = blok_denetle(&mut test.govde, &mut test_ortami, &mut baglam);
             if sonuc.is_err() {
                 break;
             }
@@ -258,6 +238,17 @@ struct Baglam {
     yapilar: Vec<Yapi>,
     /// `eşzamanlı olarak` görev adları; `hepsini bekle`ye dek erişilemez (T033).
     bekleyen_gorevler: std::collections::HashSet<String>,
+    /// Denetimi süren işlemler (özyineleme desteği): ad + parametre türleri +
+    /// o ana dek görülen dönüş türleri. `döndür` en üsttekine yazar.
+    denetim_yigini: Vec<ImzaKaydi>,
+}
+
+struct ImzaKaydi {
+    ad: String,
+    parametre_turleri: Vec<Tur>,
+    donusler: Vec<Tur>,
+    /// Özyinelemeli kullanımlara verilen tür (son birleşimle doğrulanır).
+    verilen_ozyineleme: Option<Tur>,
 }
 
 /// Yapı alanı tür yazımını çözer ("TamSayı" → Tur::TamSayi).
@@ -308,8 +299,6 @@ fn blok_denetle(
     cumleler: &mut [Cumle],
     ortam: &mut HashMap<String, Tur>,
     baglam: &mut Baglam,
-    donusler: &mut Vec<Tur>,
-    islem_icinde: bool,
 ) -> Result<(), Tani> {
     for cumle in cumleler {
         match cumle {
@@ -357,7 +346,7 @@ fn blok_denetle(
                         1,
                     ));
                 }
-                blok_denetle(govde, ortam, baglam, donusler, islem_icinde)?;
+                blok_denetle(govde, ortam, baglam)?;
             }
             Cumle::AralikDongusu { ad, bastan, sona, govde, satir } => {
                 let satir = *satir;
@@ -376,7 +365,7 @@ fn blok_denetle(
                 // Döngü değişkeni gövde kapsamında tanımlıdır (RFC-0004'e not:
                 // v0'da düz kapsam kullanılıyor).
                 ortam.insert(ad.clone(), Tur::TamSayi);
-                blok_denetle(govde, ortam, baglam, donusler, islem_icinde)?;
+                blok_denetle(govde, ortam, baglam)?;
             }
             Cumle::OlduguSurece { kosul, govde, satir }
             | Cumle::OlanaKadar { kosul, govde, satir } => {
@@ -391,7 +380,7 @@ fn blok_denetle(
                         1,
                     ));
                 }
-                blok_denetle(govde, ortam, baglam, donusler, islem_icinde)?;
+                blok_denetle(govde, ortam, baglam)?;
             }
             Cumle::Ise { kollar, degilse, satir } => {
                 let satir = *satir;
@@ -400,10 +389,10 @@ fn blok_denetle(
                     if tur != Tur::Mantiksal {
                         return Err(Tani::yeni("T005", "\"ise\" bir koşul ister.".into(), satir, 1, 1));
                     }
-                    blok_denetle(&mut kol.govde, ortam, baglam, donusler, islem_icinde)?;
+                    blok_denetle(&mut kol.govde, ortam, baglam)?;
                 }
                 if let Some(blok) = degilse {
-                    blok_denetle(blok, ortam, baglam, donusler, islem_icinde)?;
+                    blok_denetle(blok, ortam, baglam)?;
                 }
             }
             Cumle::Ekle { hedef, deger, satir } => {
@@ -508,7 +497,7 @@ fn blok_denetle(
                     None => unreachable!("örtük çoğul yukarıda dolduruldu"),
                 };
                 ortam.insert(ad.clone(), oge_turu);
-                blok_denetle(govde, ortam, baglam, donusler, islem_icinde)?;
+                blok_denetle(govde, ortam, baglam)?;
             }
             Cumle::ProgramiBitir { .. } => {}
             Cumle::SunucuBaslat { kapi, satir } => {
@@ -538,7 +527,7 @@ fn blok_denetle(
                 }
                 // Her istek taze ortamda işlenir (kapsülleme).
                 let mut istek_ortami: HashMap<String, Tur> = HashMap::new();
-                blok_denetle(govde, &mut istek_ortami, baglam, donusler, islem_icinde)?;
+                blok_denetle(govde, &mut istek_ortami, baglam)?;
             }
             Cumle::YanitGonder { deger, satir } => {
                 let satir = *satir;
@@ -579,9 +568,9 @@ fn blok_denetle(
                     )
                     .onerili("Örnek: 5 saniye içinde".into()));
                 }
-                blok_denetle(govde, ortam, baglam, donusler, islem_icinde)?;
+                blok_denetle(govde, ortam, baglam)?;
                 if let Some(blok) = yetismezse {
-                    blok_denetle(blok, ortam, baglam, donusler, islem_icinde)?;
+                    blok_denetle(blok, ortam, baglam)?;
                 }
             }
             Cumle::IsikAyarla { .. } => {}
@@ -633,10 +622,10 @@ fn blok_denetle(
                             1,
                         ));
                     }
-                    blok_denetle(govde, ortam, baglam, donusler, islem_icinde)?;
+                    blok_denetle(govde, ortam, baglam)?;
                 }
                 if let Some(blok) = degilse {
-                    blok_denetle(blok, ortam, baglam, donusler, islem_icinde)?;
+                    blok_denetle(blok, ortam, baglam)?;
                 }
             }
             Cumle::IslemTanimi(islem) => {
@@ -733,29 +722,22 @@ fn blok_denetle(
             }
             Cumle::Dondur { deger, satir, .. } => {
                 let satir = *satir;
-                if !islem_icinde {
-                    return Err(Tani::yeni(
-                        "T020",
-                        "\"döndür\" yalnız bir işlemin içinde kullanılır.".into(),
-                        satir,
-                        1,
-                        1,
-                    ));
-                }
                 let tur = ifade_denetle(deger, ortam, baglam, satir)?;
-                donusler.push(tur);
+                match baglam.denetim_yigini.last_mut() {
+                    Some(kayit) => kayit.donusler.push(tur),
+                    None => {
+                        return Err(Tani::yeni(
+                            "T020",
+                            "\"döndür\" yalnız bir işlemin içinde kullanılır.".into(),
+                            satir,
+                            1,
+                            1,
+                        ))
+                    }
+                }
             }
             Cumle::HataDondur { mesaj, satir } => {
                 let satir = *satir;
-                if !islem_icinde {
-                    return Err(Tani::yeni(
-                        "T020",
-                        "\"hatasını döndür\" yalnız bir işlemin içinde kullanılır.".into(),
-                        satir,
-                        1,
-                        1,
-                    ));
-                }
                 let tur = ifade_denetle(mesaj, ortam, baglam, satir)?;
                 if tur != Tur::Metin {
                     return Err(Tani::yeni(
@@ -767,7 +749,18 @@ fn blok_denetle(
                     )
                     .onerili("Örnek: \"sıfıra bölünmez\" hatasını döndür".into()));
                 }
-                donusler.push(Tur::Hata);
+                match baglam.denetim_yigini.last_mut() {
+                    Some(kayit) => kayit.donusler.push(Tur::Hata),
+                    None => {
+                        return Err(Tani::yeni(
+                            "T020",
+                            "\"hatasını döndür\" yalnız bir işlemin içinde kullanılır.".into(),
+                            satir,
+                            1,
+                            1,
+                        ))
+                    }
+                }
             }
             Cumle::BolVeAta { hedef, pay, payda, satir } => {
                 let satir = *satir;
@@ -1564,9 +1557,12 @@ fn donusleri_sarmala(cumleler: &mut [Cumle]) {
 }
 
 /// İşlem çağrısını denetler. İlk çağrıda gövde, argüman türleriyle denetlenip
-/// imza sabitlenir; sonraki çağrılar imzaya uymalıdır. Gövde denetlenirken
-/// işlem kayıttan geçici olarak çıkarılır — bu da özyinelemeyi doğal biçimde
-/// yakalar (v0'da desteklenmez).
+/// imza sabitlenir (v0 monomorfizmi); sonraki çağrılar imzaya uymalıdır.
+///
+/// ÖZYİNELEME (v0.2): denetimi süren bir işlem kendini (ya da karşılıklı
+/// olarak birbirini) çağırabilir. Özyinelemeli çağrının türü, o ana dek
+/// görülen dönüş dallarından çıkarılır — bu yüzden TEMEL DURUM ÖNCE yazılır
+/// (T035): hem tür çıkarımı hem sonsuz döngüye karşı pedagojik korkuluk.
 fn cagri_denetle(
     ad: &str,
     arg_turleri: &[Tur],
@@ -1600,11 +1596,64 @@ fn cagri_denetle(
         return Ok(imza.donus);
     }
 
+    // Özyinelemeli (ya da karşılıklı özyinelemeli) çağrı: denetim yığınında.
+    if let Some(indeks) = baglam.denetim_yigini.iter().position(|k| k.ad == ad) {
+        if baglam.denetim_yigini[indeks].parametre_turleri != arg_turleri {
+            return Err(Tani::yeni(
+                "T017",
+                format!(
+                    "\"{}\" özyinelemeli çağrısındaki argüman türleri ilk çağrıyla uyuşmuyor.",
+                    ad
+                ),
+                satir,
+                1,
+                1,
+            ));
+        }
+        let tahmin =
+            donusleri_birlestir(ad, &baglam.denetim_yigini[indeks].donusler, satir)?;
+        let tahmin = match tahmin {
+            Some(tur) => tur,
+            None => {
+                return Err(Tani::yeni(
+                    "T035",
+                    format!(
+                        "\"{}\" özyinelemeli çağrıdan ÖNCE en az bir dalda değer döndürmeli.",
+                        ad
+                    ),
+                    satir,
+                    1,
+                    1,
+                )
+                .onerili(
+                    "Temel durumu üste yaz: önce \"n 1 e eşitse\" gibi bir dalda döndür, \
+                     sonra özyinelemeli adım. Bu, sonsuz döngüye karşı da ilk korkuluktur."
+                        .into(),
+                ));
+            }
+        };
+        let kayit = &mut baglam.denetim_yigini[indeks];
+        match kayit.verilen_ozyineleme {
+            None => kayit.verilen_ozyineleme = Some(tahmin),
+            Some(onceki) if onceki != tahmin => {
+                return Err(Tani::yeni(
+                    "T018",
+                    format!("\"{}\" özyinelemeli kullanımları farklı türlere çıkıyor.", ad),
+                    satir,
+                    1,
+                    1,
+                ));
+            }
+            _ => {}
+        }
+        return Ok(Some(tahmin));
+    }
+
     let mut islem = baglam.islemler.remove(ad).ok_or_else(|| {
         Tani::yeni(
             "T016",
             format!(
-                "\"{}\" işlemi burada çağrılamaz: v0'da bir işlem kendi kendini çağıramaz.",
+                "\"{}\" işleminin kaydı bulunamadı — derleyici iç hatası olabilir, bildir.",
                 ad
             ),
             satir,
@@ -1614,13 +1663,14 @@ fn cagri_denetle(
     })?;
 
     if islem.parametreler.len() != arg_turleri.len() {
+        let beklenen = islem.parametreler.len();
         baglam.islemler.insert(ad.to_string(), islem);
         return Err(Tani::yeni(
             "T015",
             format!(
                 "\"{}\" {} parametre bekler, {} argüman verildi.",
                 ad,
-                baglam.islemler[ad].parametreler.len(),
+                beklenen,
                 arg_turleri.len()
             ),
             satir,
@@ -1634,128 +1684,136 @@ fn cagri_denetle(
         islem_ortami.insert(param.clone(), *tur);
     }
 
-    let mut donusler = Vec::new();
-    let denetim = blok_denetle(&mut islem.govde, &mut islem_ortami, baglam, &mut donusler, true);
+    baglam.denetim_yigini.push(ImzaKaydi {
+        ad: ad.to_string(),
+        parametre_turleri: arg_turleri.to_vec(),
+        donusler: Vec::new(),
+        verilen_ozyineleme: None,
+    });
+    let denetim = blok_denetle(&mut islem.govde, &mut islem_ortami, baglam);
+    let kayit = baglam.denetim_yigini.pop().expect("kayıt az önce eklendi");
     // Gövde her durumda kayda geri konur; hata olsa bile kayıt tutarlı kalır.
-    if let Err(hata) = denetim {
-        baglam.islemler.insert(ad.to_string(), islem);
-        return Err(hata);
+    if denetim.is_ok() && kayit.donusler.contains(&Tur::Hata) {
+        donusleri_sarmala(&mut islem.govde);
     }
+    baglam.islemler.insert(ad.to_string(), islem);
+    denetim?;
 
-    // Dönüş birleşimi: tek tür → o tür; tür + "yok" → Seçenek<tür> (K-017);
-    // tür + "hata" → Sonuç<tür> (RFC-0008 §4.1) — başarı dalları sarmalanır.
-    let donus = {
-        let mut ayrik: Vec<Tur> = Vec::new();
-        for t in &donusler {
-            if !ayrik.contains(t) {
-                ayrik.push(*t);
-            }
+    let donus = donusleri_birlestir(ad, &kayit.donusler, satir)?;
+
+    // Özyinelemeli kullanıma verilen tür, son birleşimle çelişmemeli
+    // (örn. temel durum TamSayı verip sonradan "yok döndür" eklemek).
+    if let Some(verilen) = kayit.verilen_ozyineleme {
+        if donus != Some(verilen) {
+            return Err(Tani::yeni(
+                "T018",
+                format!(
+                    "\"{}\" işleminde özyinelemeli kullanım {} sayılmıştı ama dönüş birleşimi {} çıktı.",
+                    ad,
+                    verilen.adi(),
+                    donus.map(|d| d.adi()).unwrap_or_else(|| "dönüşsüz".into())
+                ),
+                satir,
+                1,
+                1,
+            )
+            .onerili(
+                "yok/hatasını döndür dallarını özyinelemeli adımdan ÖNCE, temel durumla \
+                 birlikte en üste yaz."
+                    .into(),
+            ));
         }
-
-        if ayrik.contains(&Tur::Hata) {
-            let degerler: Vec<Tur> = ayrik.iter().copied().filter(|t| *t != Tur::Hata).collect();
-            match degerler.as_slice() {
-                [] => {
-                    baglam.islemler.insert(ad.to_string(), islem);
-                    return Err(Tani::yeni(
-                        "T018",
-                        format!("\"{}\" yalnız hata döndürüyor; en az bir dalda değer döndür.", ad),
-                        satir,
-                        1,
-                        1,
-                    ));
-                }
-                [tek] => match tek.veri_turu() {
-                    Some(veri) => {
-                        // Başarı dallarını çalışma zamanında Sonuç'a sar.
-                        donusleri_sarmala(&mut islem.govde);
-                        let donus = Some(Tur::Sonuc(veri));
-                        baglam.imzalar.insert(
-                            ad.to_string(),
-                            Imza { parametre_turleri: arg_turleri.to_vec(), donus },
-                        );
-                        baglam.islemler.insert(ad.to_string(), islem);
-                        return Ok(donus);
-                    }
-                    None => {
-                        baglam.islemler.insert(ad.to_string(), islem);
-                        return Err(Tani::yeni(
-                            "T018",
-                            format!("\"{}\" Sonuç içinde {} taşıyamaz (v0).", ad, tek.adi()),
-                            satir,
-                            1,
-                            1,
-                        ));
-                    }
-                },
-                _ => {
-                    baglam.islemler.insert(ad.to_string(), islem);
-                    return Err(Tani::yeni(
-                        "T018",
-                        format!(
-                            "\"{}\" hata ile birlikte birden çok değer türü döndürüyor; tek tür seç.",
-                            ad
-                        ),
-                        satir,
-                        1,
-                        1,
-                    ));
-                }
-            }
-        }
-
-        baglam.islemler.insert(ad.to_string(), islem);
-
-        match ayrik.as_slice() {
-            [] => None,
-            [tek] => {
-                if *tek == Tur::Yok {
-                    return Err(Tani::yeni(
-                        "T018",
-                        format!(
-                            "\"{}\" yalnız \"yok\" döndürüyor; Seçenek'in içi belirlenemiyor.",
-                            ad
-                        ),
-                        satir,
-                        1,
-                        1,
-                    )
-                    .onerili("En az bir dalda gerçek bir değer döndür.".into()));
-                }
-                Some(*tek)
-            }
-            [a, b] if *a == Tur::Yok || *b == Tur::Yok => {
-                let dolu = if *a == Tur::Yok { *b } else { *a };
-                match dolu.veri_turu() {
-                    Some(veri) => Some(Tur::Secenek(veri)),
-                    None => {
-                        return Err(Tani::yeni(
-                            "T018",
-                            format!("\"{}\" Seçenek içinde {} taşıyamaz (v0).", ad, dolu.adi()),
-                            satir,
-                            1,
-                            1,
-                        ));
-                    }
-                }
-            }
-            _ => {
-                return Err(Tani::yeni(
-                    "T018",
-                    format!("\"{}\" farklı türlerde değerler döndürüyor; tek tür seç.", ad),
-                    satir,
-                    1,
-                    1,
-                ));
-            }
-        }
-    };
+    }
 
     baglam.imzalar.insert(
         ad.to_string(),
         Imza { parametre_turleri: arg_turleri.to_vec(), donus },
     );
     Ok(donus)
+}
+
+/// Dönüş dallarını tek türe birleştirir: {T}→T; {T,Yok}→Seçenek<T>;
+/// {T,Hata}→Sonuç<T>; boş→None; tutarsızlık→T018.
+fn donusleri_birlestir(ad: &str, donusler: &[Tur], satir: usize) -> Result<Option<Tur>, Tani> {
+    let mut ayrik: Vec<Tur> = Vec::new();
+    for t in donusler {
+        if !ayrik.contains(t) {
+            ayrik.push(*t);
+        }
+    }
+
+    if ayrik.contains(&Tur::Hata) {
+        let degerler: Vec<Tur> = ayrik.iter().copied().filter(|t| *t != Tur::Hata).collect();
+        return match degerler.as_slice() {
+            [] => Err(Tani::yeni(
+                "T018",
+                format!("\"{}\" yalnız hata döndürüyor; en az bir dalda değer döndür.", ad),
+                satir,
+                1,
+                1,
+            )),
+            [tek] => match tek.veri_turu() {
+                Some(veri) => Ok(Some(Tur::Sonuc(veri))),
+                None => Err(Tani::yeni(
+                    "T018",
+                    format!("\"{}\" Sonuç içinde {} taşıyamaz (v0).", ad, tek.adi()),
+                    satir,
+                    1,
+                    1,
+                )),
+            },
+            _ => Err(Tani::yeni(
+                "T018",
+                format!(
+                    "\"{}\" hata ile birlikte birden çok değer türü döndürüyor; tek tür seç.",
+                    ad
+                ),
+                satir,
+                1,
+                1,
+            )),
+        };
+    }
+
+    match ayrik.as_slice() {
+        [] => Ok(None),
+        [tek] => {
+            if *tek == Tur::Yok {
+                return Err(Tani::yeni(
+                    "T018",
+                    format!(
+                        "\"{}\" yalnız \"yok\" döndürüyor; Seçenek'in içi belirlenemiyor.",
+                        ad
+                    ),
+                    satir,
+                    1,
+                    1,
+                )
+                .onerili("En az bir dalda gerçek bir değer döndür.".into()));
+            }
+            Ok(Some(*tek))
+        }
+        [a, b] if *a == Tur::Yok || *b == Tur::Yok => {
+            let dolu = if *a == Tur::Yok { *b } else { *a };
+            match dolu.veri_turu() {
+                Some(veri) => Ok(Some(Tur::Secenek(veri))),
+                None => Err(Tani::yeni(
+                    "T018",
+                    format!("\"{}\" Seçenek içinde {} taşıyamaz (v0).", ad, dolu.adi()),
+                    satir,
+                    1,
+                    1,
+                )),
+            }
+        }
+        _ => Err(Tani::yeni(
+            "T018",
+            format!("\"{}\" farklı türlerde değerler döndürüyor; tek tür seç.", ad),
+            satir,
+            1,
+            1,
+        )),
+    }
 }
 
 /// Hal eki almış tanımlayıcıyı kapsamdaki tanımlı adlara karşı çözer.

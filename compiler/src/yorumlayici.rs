@@ -351,7 +351,7 @@ pub fn calistir(program: &Program) -> Result<Vec<String>, Tani> {
 
 pub fn calistir_io(program: &Program, io: &mut dyn GirdiCikti) -> Result<(), Tani> {
     let mut ortam: HashMap<String, Deger> = HashMap::new();
-    match blok_calistir(&program.cumleler, &mut ortam, program, io) {
+    match blok_calistir(&program.cumleler, &mut ortam, program, io, 0) {
         // "programı bitir" olağan bir sonlanmadır (Ç000 iç nöbetçisi).
         Err(tani) if tani.kod == "Ç000" => return Ok(()),
         Err(tani) => return Err(tani),
@@ -367,9 +367,9 @@ pub fn calistir_io(program: &Program, io: &mut dyn GirdiCikti) -> Result<(), Tan
                 if let Cumle::IstekGeldiginde { yol: kayitli, govde, satir } = cumle {
                     let mut bos_ortam: HashMap<String, Deger> = HashMap::new();
                     let kayitli =
-                        degerlendir(kayitli, &bos_ortam, program, io, *satir)?.metne();
+                        degerlendir(kayitli, &bos_ortam, program, io, 0, *satir)?.metne();
                     if kayitli == yol {
-                        let sonuc = blok_calistir(govde, &mut bos_ortam, program, io);
+                        let sonuc = blok_calistir(govde, &mut bos_ortam, program, io, 0);
                         match sonuc {
                             Err(tani) if tani.kod == "Ç000" => return Ok(()),
                             Err(tani) => return Err(tani),
@@ -395,7 +395,7 @@ pub fn test_calistir(
     io: &mut dyn GirdiCikti,
 ) -> Result<(), Tani> {
     let mut ortam: HashMap<String, Deger> = HashMap::new();
-    match blok_calistir(&test.govde, &mut ortam, program, io) {
+    match blok_calistir(&test.govde, &mut ortam, program, io, 0) {
         Err(tani) if tani.kod == "Ç000" => Ok(()),
         sonuc => sonuc.map(|_| ()),
     }
@@ -412,15 +412,16 @@ fn blok_calistir(
     ortam: &mut HashMap<String, Deger>,
     program: &Program,
     cikti: &mut dyn GirdiCikti,
+    derinlik: usize,
 ) -> Result<Akis, Tani> {
     for cumle in cumleler {
         match cumle {
             Cumle::Yaz { deger, satir } => {
-                let sonuc = degerlendir(deger, ortam, program, cikti, *satir)?;
+                let sonuc = degerlendir(deger, ortam, program, cikti, derinlik, *satir)?;
                 cikti.yazdir(sonuc.metne());
             }
             Cumle::Sor { istem, satir } => {
-                let istem = degerlendir(istem, ortam, program, cikti, *satir)?.metne();
+                let istem = degerlendir(istem, ortam, program, cikti, derinlik, *satir)?.metne();
                 let cevap = cikti.sor(&istem).ok_or_else(|| {
                     Tani::yeni(
                         "C005",
@@ -433,45 +434,45 @@ fn blok_calistir(
                 ortam.insert("yanıt".to_string(), Deger::Metin(cevap));
             }
             Cumle::Olsun { ad, deger, satir, .. } => {
-                let sonuc = degerlendir(deger, ortam, program, cikti, *satir)?;
+                let sonuc = degerlendir(deger, ortam, program, cikti, derinlik, *satir)?;
                 ortam.insert(ad.clone(), sonuc);
             }
             Cumle::KezTekrarla { adet, govde, satir } => {
-                let adet = tam_sayi(degerlendir(adet, ortam, program, cikti, *satir)?, *satir)?;
+                let adet = tam_sayi(degerlendir(adet, ortam, program, cikti, derinlik, *satir)?, *satir)?;
                 for _ in 0..adet.max(0) {
-                    if let Akis::Don(d) = blok_calistir(govde, ortam, program, cikti)? {
+                    if let Akis::Don(d) = blok_calistir(govde, ortam, program, cikti, derinlik)? {
                         return Ok(Akis::Don(d));
                     }
                 }
             }
             Cumle::AralikDongusu { ad, bastan, sona, govde, satir } => {
-                let bastan = tam_sayi(degerlendir(bastan, ortam, program, cikti, *satir)?, *satir)?;
-                let sona = tam_sayi(degerlendir(sona, ortam, program, cikti, *satir)?, *satir)?;
+                let bastan = tam_sayi(degerlendir(bastan, ortam, program, cikti, derinlik, *satir)?, *satir)?;
+                let sona = tam_sayi(degerlendir(sona, ortam, program, cikti, derinlik, *satir)?, *satir)?;
                 for deger in bastan..=sona {
                     ortam.insert(ad.clone(), Deger::TamSayi(deger));
-                    if let Akis::Don(d) = blok_calistir(govde, ortam, program, cikti)? {
+                    if let Akis::Don(d) = blok_calistir(govde, ortam, program, cikti, derinlik)? {
                         return Ok(Akis::Don(d));
                     }
                 }
             }
             Cumle::OlduguSurece { kosul, govde, satir } => {
                 loop {
-                    let devam = mantiksal(degerlendir(kosul, ortam, program, cikti, *satir)?, *satir)?;
+                    let devam = mantiksal(degerlendir(kosul, ortam, program, cikti, derinlik, *satir)?, *satir)?;
                     if !devam {
                         break;
                     }
-                    if let Akis::Don(d) = blok_calistir(govde, ortam, program, cikti)? {
+                    if let Akis::Don(d) = blok_calistir(govde, ortam, program, cikti, derinlik)? {
                         return Ok(Akis::Don(d));
                     }
                 }
             }
             Cumle::OlanaKadar { kosul, govde, satir } => {
                 loop {
-                    let bitti = mantiksal(degerlendir(kosul, ortam, program, cikti, *satir)?, *satir)?;
+                    let bitti = mantiksal(degerlendir(kosul, ortam, program, cikti, derinlik, *satir)?, *satir)?;
                     if bitti {
                         break;
                     }
-                    if let Akis::Don(d) = blok_calistir(govde, ortam, program, cikti)? {
+                    if let Akis::Don(d) = blok_calistir(govde, ortam, program, cikti, derinlik)? {
                         return Ok(Akis::Don(d));
                     }
                 }
@@ -479,8 +480,8 @@ fn blok_calistir(
             Cumle::Ise { kollar, degilse, satir } => {
                 let mut islendi = false;
                 for kol in kollar {
-                    if mantiksal(degerlendir(&kol.kosul, ortam, program, cikti, *satir)?, *satir)? {
-                        if let Akis::Don(d) = blok_calistir(&kol.govde, ortam, program, cikti)? {
+                    if mantiksal(degerlendir(&kol.kosul, ortam, program, cikti, derinlik, *satir)?, *satir)? {
+                        if let Akis::Don(d) = blok_calistir(&kol.govde, ortam, program, cikti, derinlik)? {
                             return Ok(Akis::Don(d));
                         }
                         islendi = true;
@@ -489,7 +490,7 @@ fn blok_calistir(
                 }
                 if !islendi {
                     if let Some(blok) = degilse {
-                        if let Akis::Don(d) = blok_calistir(blok, ortam, program, cikti)? {
+                        if let Akis::Don(d) = blok_calistir(blok, ortam, program, cikti, derinlik)? {
                             return Ok(Akis::Don(d));
                         }
                     }
@@ -500,7 +501,7 @@ fn blok_calistir(
                     Ifade::Degisken { cozulmus: Some(ad), .. } => ad.clone(),
                     _ => return Err(ic_hata(*satir)),
                 };
-                let deger = degerlendir(deger, ortam, program, cikti, *satir)?;
+                let deger = degerlendir(deger, ortam, program, cikti, derinlik, *satir)?;
                 match ortam.get_mut(&ad) {
                     Some(Deger::Liste(ogeler)) => ogeler.push(deger),
                     _ => return Err(ic_hata(*satir)),
@@ -508,7 +509,7 @@ fn blok_calistir(
             }
             Cumle::HerBiri { ad, kaynak, govde, satir } => {
                 let kaynak = kaynak.as_ref().ok_or_else(|| ic_hata(*satir))?;
-                let ogeler = match degerlendir(kaynak, ortam, program, cikti, *satir)? {
+                let ogeler = match degerlendir(kaynak, ortam, program, cikti, derinlik, *satir)? {
                     Deger::Liste(ogeler) => ogeler,
                     // Sözlük üzerinde gezinme anahtarları verir (ekleme sırasıyla).
                     Deger::Sozluk(girdiler) => girdiler
@@ -519,24 +520,24 @@ fn blok_calistir(
                 };
                 for oge in ogeler {
                     ortam.insert(ad.clone(), oge);
-                    if let Akis::Don(d) = blok_calistir(govde, ortam, program, cikti)? {
+                    if let Akis::Don(d) = blok_calistir(govde, ortam, program, cikti, derinlik)? {
                         return Ok(Akis::Don(d));
                     }
                 }
             }
             Cumle::Artir { ifade, miktar, satir } => {
-                guncelle(ifade, miktar, ortam, program, cikti, *satir, 1)?;
+                guncelle(ifade, miktar, ortam, program, cikti, derinlik, *satir, 1)?;
             }
             Cumle::Azalt { ifade, miktar, satir } => {
-                guncelle(ifade, miktar, ortam, program, cikti, *satir, -1)?;
+                guncelle(ifade, miktar, ortam, program, cikti, derinlik, *satir, -1)?;
             }
             Cumle::Gore { konu, kollar, degilse, satir } => {
-                let konu = degerlendir(konu, ortam, program, cikti, *satir)?;
+                let konu = degerlendir(konu, ortam, program, cikti, derinlik, *satir)?;
                 let mut eslesti = false;
                 for (deger, govde) in kollar {
-                    let deger = degerlendir(deger, ortam, program, cikti, *satir)?;
+                    let deger = degerlendir(deger, ortam, program, cikti, derinlik, *satir)?;
                     if deger == konu {
-                        if let Akis::Don(d) = blok_calistir(govde, ortam, program, cikti)? {
+                        if let Akis::Don(d) = blok_calistir(govde, ortam, program, cikti, derinlik)? {
                             return Ok(Akis::Don(d));
                         }
                         eslesti = true;
@@ -545,14 +546,14 @@ fn blok_calistir(
                 }
                 if !eslesti {
                     if let Some(blok) = degilse {
-                        if let Akis::Don(d) = blok_calistir(blok, ortam, program, cikti)? {
+                        if let Akis::Don(d) = blok_calistir(blok, ortam, program, cikti, derinlik)? {
                             return Ok(Akis::Don(d));
                         }
                     }
                 }
             }
             Cumle::SunucuBaslat { kapi, satir } => {
-                let kapi = tam_sayi(degerlendir(kapi, ortam, program, cikti, *satir)?, *satir)?;
+                let kapi = tam_sayi(degerlendir(kapi, ortam, program, cikti, derinlik, *satir)?, *satir)?;
                 cikti.sunucu_kur(kapi).map_err(|hata| {
                     Tani::yeni("C017", format!("Sunucu kurulamadı: {}.", hata), *satir, 1, 1)
                 })?;
@@ -563,7 +564,7 @@ fn blok_calistir(
                 // Yalnız kayıt: gövde, sunucu döngüsünde istek gelince koşulur.
             }
             Cumle::YanitGonder { deger, satir } => {
-                let deger = degerlendir(deger, ortam, program, cikti, *satir)?;
+                let deger = degerlendir(deger, ortam, program, cikti, derinlik, *satir)?;
                 cikti.yanit_gonder(&deger.metne());
             }
             Cumle::Eszamanli { gorevler, satir } => {
@@ -571,18 +572,18 @@ fn blok_calistir(
                 // gözlemlenebilir davranış eşzamanlı modele denktir.
                 let _ = satir;
                 for (ad, deger, gorev_satiri) in gorevler {
-                    let sonuc = degerlendir(deger, ortam, program, cikti, *gorev_satiri)?;
+                    let sonuc = degerlendir(deger, ortam, program, cikti, derinlik, *gorev_satiri)?;
                     ortam.insert(ad.clone(), sonuc);
                 }
             }
             Cumle::HepsiniBekle { .. } => {}
             Cumle::IcindeBlogu { sure, govde, yetismezse, satir } => {
-                let sure_ms = match degerlendir(sure, ortam, program, cikti, *satir)? {
+                let sure_ms = match degerlendir(sure, ortam, program, cikti, derinlik, *satir)? {
                     Deger::Sure { milisaniye } => milisaniye,
                     _ => return Err(ic_hata(*satir)),
                 };
                 let baslangic = cikti.an_ms();
-                if let Akis::Don(d) = blok_calistir(govde, ortam, program, cikti)? {
+                if let Akis::Don(d) = blok_calistir(govde, ortam, program, cikti, derinlik)? {
                     return Ok(Akis::Don(d));
                 }
                 let gecen = cikti.an_ms().saturating_sub(baslangic);
@@ -590,7 +591,7 @@ fn blok_calistir(
                 // "yetişmezse" kolu geç-kalma bildirimi olarak koşulur.
                 if gecen > sure_ms {
                     if let Some(blok) = yetismezse {
-                        if let Akis::Don(d) = blok_calistir(blok, ortam, program, cikti)? {
+                        if let Akis::Don(d) = blok_calistir(blok, ortam, program, cikti, derinlik)? {
                             return Ok(Akis::Don(d));
                         }
                     }
@@ -600,7 +601,7 @@ fn blok_calistir(
                 cikti.isik_ayarla(isik, *yansin);
             }
             Cumle::Bekle { sure, satir } => {
-                let sure_ms = match degerlendir(sure, ortam, program, cikti, *satir)? {
+                let sure_ms = match degerlendir(sure, ortam, program, cikti, derinlik, *satir)? {
                     Deger::Sure { milisaniye } => milisaniye,
                     _ => return Err(ic_hata(*satir)),
                 };
@@ -618,10 +619,10 @@ fn blok_calistir(
                 // "beklenen/bulunan" göstermek öğretici hata ilkesinin gereği.
                 let (tuttu, detay) = match kosul {
                     Ifade::Karsilastirma { sol, sag, .. } => {
-                        let sol_deger = degerlendir(sol, ortam, program, cikti, *satir)?;
-                        let sag_deger = degerlendir(sag, ortam, program, cikti, *satir)?;
+                        let sol_deger = degerlendir(sol, ortam, program, cikti, derinlik, *satir)?;
+                        let sag_deger = degerlendir(sag, ortam, program, cikti, derinlik, *satir)?;
                         let sonuc =
-                            mantiksal(degerlendir(kosul, ortam, program, cikti, *satir)?, *satir)?;
+                            mantiksal(degerlendir(kosul, ortam, program, cikti, derinlik, *satir)?, *satir)?;
                         (
                             sonuc,
                             format!(
@@ -632,7 +633,7 @@ fn blok_calistir(
                         )
                     }
                     _ => (
-                        mantiksal(degerlendir(kosul, ortam, program, cikti, *satir)?, *satir)?,
+                        mantiksal(degerlendir(kosul, ortam, program, cikti, derinlik, *satir)?, *satir)?,
                         String::new(),
                     ),
                 };
@@ -651,7 +652,7 @@ fn blok_calistir(
                     Ifade::Degisken { cozulmus: Some(ad), .. } => ad.clone(),
                     _ => return Err(ic_hata(*satir)),
                 };
-                let deger = degerlendir(deger, ortam, program, cikti, *satir)?;
+                let deger = degerlendir(deger, ortam, program, cikti, derinlik, *satir)?;
                 match ortam.get_mut(&ad) {
                     Some(Deger::Yapi(alanlar)) => {
                         match alanlar.iter_mut().find(|(a, _)| a == alan) {
@@ -663,7 +664,7 @@ fn blok_calistir(
                 }
             }
             Cumle::Dondur { deger, sonuca_sarmala, satir } => {
-                let sonuc = degerlendir(deger, ortam, program, cikti, *satir)?;
+                let sonuc = degerlendir(deger, ortam, program, cikti, derinlik, *satir)?;
                 let sonuc = if *sonuca_sarmala {
                     Deger::Sonuc { basarili: true, icerik: Box::new(sonuc) }
                 } else {
@@ -672,15 +673,15 @@ fn blok_calistir(
                 return Ok(Akis::Don(sonuc));
             }
             Cumle::HataDondur { mesaj, satir } => {
-                let mesaj = degerlendir(mesaj, ortam, program, cikti, *satir)?;
+                let mesaj = degerlendir(mesaj, ortam, program, cikti, derinlik, *satir)?;
                 return Ok(Akis::Don(Deger::Sonuc {
                     basarili: false,
                     icerik: Box::new(mesaj),
                 }));
             }
             Cumle::BolVeAta { hedef, pay, payda, satir } => {
-                let pay = degerlendir(pay, ortam, program, cikti, *satir)?;
-                let payda = degerlendir(payda, ortam, program, cikti, *satir)?;
+                let pay = degerlendir(pay, ortam, program, cikti, derinlik, *satir)?;
+                let payda = degerlendir(payda, ortam, program, cikti, derinlik, *satir)?;
                 let sonuc = sayisal_islem(&AritmetikIslec::Bol, &pay, &payda, *satir)?;
                 ortam.insert(hedef.clone(), sonuc);
             }
@@ -688,19 +689,19 @@ fn blok_calistir(
                 if let Ifade::IslemCagrisi { islem_adi, argumanlar, .. } = cagri {
                     let mut degerler = Vec::new();
                     for arg in argumanlar {
-                        degerler.push(degerlendir(arg, ortam, program, cikti, *satir)?);
+                        degerler.push(degerlendir(arg, ortam, program, cikti, derinlik, *satir)?);
                     }
-                    islem_cagir(islem_adi, degerler, program, cikti, *satir)?;
+                    islem_cagir(islem_adi, degerler, program, cikti, derinlik + 1, *satir)?;
                 } else {
                     return Err(ic_hata(*satir));
                 }
             }
             Cumle::DosyayaYaz { yol, icerik, ekleme, satir } => {
-                let yol = match degerlendir(yol, ortam, program, cikti, *satir)? {
+                let yol = match degerlendir(yol, ortam, program, cikti, derinlik, *satir)? {
                     Deger::Metin(m) => m,
                     _ => return Err(ic_hata(*satir)),
                 };
-                let icerik = degerlendir(icerik, ortam, program, cikti, *satir)?.metne();
+                let icerik = degerlendir(icerik, ortam, program, cikti, derinlik, *satir)?.metne();
                 cikti.dosya_yaz(&yol, &icerik, *ekleme).map_err(|hata| {
                     Tani::yeni("C013", format!("Dosyaya yazılamadı: {}.", hata), *satir, 1, 1)
                 })?;
@@ -710,11 +711,11 @@ fn blok_calistir(
                     Ifade::Degisken { cozulmus: Some(ad), .. } => ad.clone(),
                     _ => return Err(ic_hata(*satir)),
                 };
-                let anahtar = match degerlendir(anahtar, ortam, program, cikti, *satir)? {
+                let anahtar = match degerlendir(anahtar, ortam, program, cikti, derinlik, *satir)? {
                     Deger::Metin(m) => m,
                     _ => return Err(ic_hata(*satir)),
                 };
-                let deger = degerlendir(deger, ortam, program, cikti, *satir)?;
+                let deger = degerlendir(deger, ortam, program, cikti, derinlik, *satir)?;
                 match ortam.get_mut(&ad) {
                     Some(Deger::Sozluk(girdiler)) => {
                         match girdiler.iter_mut().find(|(a, _)| *a == anahtar) {
@@ -736,14 +737,26 @@ fn islem_cagir(
     argumanlar: Vec<Deger>,
     program: &Program,
     io: &mut dyn GirdiCikti,
+    derinlik: usize,
     satir: usize,
 ) -> Result<Option<Deger>, Tani> {
+    // Özyineleme korkuluğu (v0.2): Rust yığını taşmadan Türkçe tanı ver.
+    if derinlik > 5000 {
+        return Err(Tani::yeni(
+            "C019",
+            format!("\"{}\" çağrı derinliği 5000'i aştı: temel durum hiç yakalanmıyor olabilir.", ad),
+            satir,
+            1,
+            1,
+        )
+        .onerili("Özyinelemeli adımın her seferinde temel duruma yaklaştığından emin ol.".into()));
+    }
     let islem = program.islemler.get(ad).ok_or_else(|| ic_hata(satir))?;
     let mut yerel: HashMap<String, Deger> = HashMap::new();
     for (param, deger) in islem.parametreler.iter().zip(argumanlar) {
         yerel.insert(param.clone(), deger);
     }
-    match blok_calistir(&islem.govde, &mut yerel, program, io)? {
+    match blok_calistir(&islem.govde, &mut yerel, program, io, derinlik)? {
         Akis::Don(deger) => Ok(Some(deger)),
         Akis::Devam => Ok(None),
     }
@@ -813,12 +826,14 @@ fn sayisal_islem(
     }
 }
 
+#[allow(clippy::too_many_arguments)] // iç yürütme yardımcı; bağlam nesnesi v0.3'te
 fn guncelle(
     hedef: &Ifade,
     miktar: &Ifade,
     ortam: &mut HashMap<String, Deger>,
     program: &Program,
     io: &mut dyn GirdiCikti,
+    derinlik: usize,
     satir: usize,
     yon: i64,
 ) -> Result<(), Tani> {
@@ -826,7 +841,7 @@ fn guncelle(
         Ifade::Degisken { cozulmus: Some(ad), .. } => ad.clone(),
         _ => return Err(ic_hata(satir)),
     };
-    let miktar = degerlendir(miktar, ortam, program, io, satir)?;
+    let miktar = degerlendir(miktar, ortam, program, io, derinlik, satir)?;
     let eski = ortam.get(&ad).cloned().ok_or_else(|| ic_hata(satir))?;
     let islec = if yon > 0 { AritmetikIslec::Topla } else { AritmetikIslec::Cikar };
     let yeni = sayisal_islem(&islec, &eski, &miktar, satir)?;
@@ -839,6 +854,7 @@ fn degerlendir(
     ortam: &HashMap<String, Deger>,
     program: &Program,
     io: &mut dyn GirdiCikti,
+    derinlik: usize,
     satir: usize,
 ) -> Result<Deger, Tani> {
     match ifade {
@@ -852,7 +868,7 @@ fn degerlendir(
         Ifade::ListeSabiti(ogeler) => {
             let mut degerler = Vec::new();
             for oge in ogeler {
-                degerler.push(degerlendir(oge, ortam, program, io, satir)?);
+                degerler.push(degerlendir(oge, ortam, program, io, derinlik, satir)?);
             }
             // Sayısal karışım Ondalık'a genişler (RFC-0013 §2): öğeler gerçekten
             // dönüştürülür ki listenin türü ile içeriği tutarlı kalsın.
@@ -866,7 +882,7 @@ fn degerlendir(
             Ok(Deger::Liste(degerler))
         }
         Ifade::Ozellik { nesne, ozellik } => {
-            let nesne = degerlendir(nesne, ortam, program, io, satir)?;
+            let nesne = degerlendir(nesne, ortam, program, io, derinlik, satir)?;
             match (ozellik, nesne) {
                 (Ozellik::Adet, Deger::Liste(ogeler)) => Ok(Deger::TamSayi(ogeler.len() as i64)),
                 (Ozellik::Ilk, Deger::Liste(ogeler)) | (Ozellik::Son, Deger::Liste(ogeler)) => {
@@ -908,11 +924,11 @@ fn degerlendir(
         }
         Ifade::BosSozluk => Ok(Deger::Sozluk(Vec::new())),
         Ifade::SozlukDegeri { sozluk, anahtar } => {
-            let girdiler = match degerlendir(sozluk, ortam, program, io, satir)? {
+            let girdiler = match degerlendir(sozluk, ortam, program, io, derinlik, satir)? {
                 Deger::Sozluk(girdiler) => girdiler,
                 _ => return Err(ic_hata(satir)),
             };
-            let anahtar = match degerlendir(anahtar, ortam, program, io, satir)? {
+            let anahtar = match degerlendir(anahtar, ortam, program, io, derinlik, satir)? {
                 Deger::Metin(m) => m,
                 _ => return Err(ic_hata(satir)),
             };
@@ -932,11 +948,11 @@ fn degerlendir(
                 })
         }
         Ifade::SozlukteVar { sozluk, anahtar, olumsuz } => {
-            let girdiler = match degerlendir(sozluk, ortam, program, io, satir)? {
+            let girdiler = match degerlendir(sozluk, ortam, program, io, derinlik, satir)? {
                 Deger::Sozluk(girdiler) => girdiler,
                 _ => return Err(ic_hata(satir)),
             };
-            let anahtar = match degerlendir(anahtar, ortam, program, io, satir)? {
+            let anahtar = match degerlendir(anahtar, ortam, program, io, derinlik, satir)? {
                 Deger::Metin(m) => m,
                 _ => return Err(ic_hata(satir)),
             };
@@ -944,7 +960,7 @@ fn degerlendir(
             Ok(Deger::Mantiksal(var != *olumsuz))
         }
         Ifade::MetinDonusum { nesne, buyuk } => {
-            let metin = match degerlendir(nesne, ortam, program, io, satir)? {
+            let metin = match degerlendir(nesne, ortam, program, io, derinlik, satir)? {
                 Deger::Metin(m) => m,
                 _ => return Err(ic_hata(satir)),
             };
@@ -955,11 +971,11 @@ fn degerlendir(
             }))
         }
         Ifade::Icerir { metin, aranan } => {
-            let metin = match degerlendir(metin, ortam, program, io, satir)? {
+            let metin = match degerlendir(metin, ortam, program, io, derinlik, satir)? {
                 Deger::Metin(m) => m,
                 _ => return Err(ic_hata(satir)),
             };
-            let aranan = match degerlendir(aranan, ortam, program, io, satir)? {
+            let aranan = match degerlendir(aranan, ortam, program, io, derinlik, satir)? {
                 Deger::Metin(m) => m,
                 _ => return Err(ic_hata(satir)),
             };
@@ -976,7 +992,7 @@ fn degerlendir(
         }
         Ifade::SureSabiti { milisaniye } => Ok(Deger::Sure { milisaniye: *milisaniye }),
         Ifade::HttpGetir(url) => {
-            let url = match degerlendir(url, ortam, program, io, satir)? {
+            let url = match degerlendir(url, ortam, program, io, derinlik, satir)? {
                 Deger::Metin(m) => m,
                 _ => return Err(ic_hata(satir)),
             };
@@ -986,11 +1002,11 @@ fn degerlendir(
             })?;
             Ok(Deger::AgYaniti { durum, govde })
         }
-        Ifade::DurumKodu(nesne) => match degerlendir(nesne, ortam, program, io, satir)? {
+        Ifade::DurumKodu(nesne) => match degerlendir(nesne, ortam, program, io, derinlik, satir)? {
             Deger::AgYaniti { durum, .. } => Ok(Deger::TamSayi(durum)),
             _ => Err(ic_hata(satir)),
         },
-        Ifade::Govde(nesne) => match degerlendir(nesne, ortam, program, io, satir)? {
+        Ifade::Govde(nesne) => match degerlendir(nesne, ortam, program, io, derinlik, satir)? {
             Deger::AgYaniti { govde, .. } => Ok(Deger::Metin(govde)),
             _ => Err(ic_hata(satir)),
         },
@@ -1002,16 +1018,16 @@ fn degerlendir(
             io.argumanlar().into_iter().map(Deger::Metin).collect(),
         )),
         Ifade::GunSonrasi { tarih, miktar } => {
-            let (yil, ay, gun) = match degerlendir(tarih, ortam, program, io, satir)? {
+            let (yil, ay, gun) = match degerlendir(tarih, ortam, program, io, derinlik, satir)? {
                 Deger::Tarih { yil, ay, gun } => (yil, ay, gun),
                 _ => return Err(ic_hata(satir)),
             };
-            let miktar = tam_sayi(degerlendir(miktar, ortam, program, io, satir)?, satir)?;
+            let miktar = tam_sayi(degerlendir(miktar, ortam, program, io, derinlik, satir)?, satir)?;
             let (yil, ay, gun) = gunlerden_tarih(tarihten_gunler(yil, ay, gun) + miktar);
             Ok(Deger::Tarih { yil, ay, gun })
         }
         Ifade::BosMu { nesne, olumsuz } => {
-            let bos = match degerlendir(nesne, ortam, program, io, satir)? {
+            let bos = match degerlendir(nesne, ortam, program, io, derinlik, satir)? {
                 Deger::Liste(ogeler) => ogeler.is_empty(),
                 Deger::Sozluk(girdiler) => girdiler.is_empty(),
                 Deger::Metin(m) => m.is_empty(),
@@ -1041,7 +1057,7 @@ fn degerlendir(
             Ok(Deger::Yapi(alanlar))
         }
         Ifade::AlanErisim { nesne, alan } => {
-            let alanlar = match degerlendir(nesne, ortam, program, io, satir)? {
+            let alanlar = match degerlendir(nesne, ortam, program, io, derinlik, satir)? {
                 Deger::Yapi(alanlar) => alanlar,
                 _ => return Err(ic_hata(satir)),
             };
@@ -1052,11 +1068,11 @@ fn degerlendir(
                 .ok_or_else(|| ic_hata(satir))
         }
         Ifade::SecenekVar { nesne, olumsuz } => {
-            let deger = degerlendir(nesne, ortam, program, io, satir)?;
+            let deger = degerlendir(nesne, ortam, program, io, derinlik, satir)?;
             let var = deger != Deger::Yok;
             Ok(Deger::Mantiksal(var != *olumsuz))
         }
-        Ifade::IcDeger(nesne) => match degerlendir(nesne, ortam, program, io, satir)? {
+        Ifade::IcDeger(nesne) => match degerlendir(nesne, ortam, program, io, derinlik, satir)? {
             Deger::Yok => Err(Tani::yeni(
                 "C008",
                 "Değer yok: boş Seçenek'in değeri alınamaz.".into(),
@@ -1076,7 +1092,7 @@ fn degerlendir(
             .onerili("Önce \"... başarılıysa\" ile kontrol et.".into())),
             dolu => Ok(dolu),
         },
-        Ifade::SonucHatasi(nesne) => match degerlendir(nesne, ortam, program, io, satir)? {
+        Ifade::SonucHatasi(nesne) => match degerlendir(nesne, ortam, program, io, derinlik, satir)? {
             Deger::Sonuc { basarili: false, icerik } => Ok(*icerik),
             Deger::Sonuc { basarili: true, .. } => Err(Tani::yeni(
                 "C009",
@@ -1088,13 +1104,13 @@ fn degerlendir(
             _ => Err(ic_hata(satir)),
         },
         Ifade::SonucBasarili { nesne, olumsuz } => {
-            match degerlendir(nesne, ortam, program, io, satir)? {
+            match degerlendir(nesne, ortam, program, io, derinlik, satir)? {
                 Deger::Sonuc { basarili, .. } => Ok(Deger::Mantiksal(basarili != *olumsuz)),
                 _ => Err(ic_hata(satir)),
             }
         }
         Ifade::DosyaOkumayiDene(yol) => {
-            let yol = match degerlendir(yol, ortam, program, io, satir)? {
+            let yol = match degerlendir(yol, ortam, program, io, derinlik, satir)? {
                 Deger::Metin(m) => m,
                 _ => return Err(ic_hata(satir)),
             };
@@ -1110,7 +1126,7 @@ fn degerlendir(
             })
         }
         Ifade::TabloOku(yol) => {
-            let yol = match degerlendir(yol, ortam, program, io, satir)? {
+            let yol = match degerlendir(yol, ortam, program, io, derinlik, satir)? {
                 Deger::Metin(m) => m,
                 _ => return Err(ic_hata(satir)),
             };
@@ -1120,7 +1136,7 @@ fn degerlendir(
             csv_ayristir(&icerik, satir)
         }
         Ifade::VeriOku(yol) => {
-            let yol = match degerlendir(yol, ortam, program, io, satir)? {
+            let yol = match degerlendir(yol, ortam, program, io, derinlik, satir)? {
                 Deger::Metin(m) => m,
                 _ => return Err(ic_hata(satir)),
             };
@@ -1130,7 +1146,7 @@ fn degerlendir(
             json_nesnesi_ayristir(&icerik, satir)
         }
         Ifade::DosyaSatirlari(yol) => {
-            let yol = match degerlendir(yol, ortam, program, io, satir)? {
+            let yol = match degerlendir(yol, ortam, program, io, derinlik, satir)? {
                 Deger::Metin(m) => m,
                 _ => return Err(ic_hata(satir)),
             };
@@ -1147,8 +1163,8 @@ fn degerlendir(
             ))
         }
         Ifade::Rastgele { alt, ust } => {
-            let alt = tam_sayi(degerlendir(alt, ortam, program, io, satir)?, satir)?;
-            let ust = tam_sayi(degerlendir(ust, ortam, program, io, satir)?, satir)?;
+            let alt = tam_sayi(degerlendir(alt, ortam, program, io, derinlik, satir)?, satir)?;
+            let ust = tam_sayi(degerlendir(ust, ortam, program, io, derinlik, satir)?, satir)?;
             if alt > ust {
                 return Err(Tani::yeni(
                     "C006",
@@ -1173,13 +1189,13 @@ fn degerlendir(
         Ifade::Birlestir(parcalar) => {
             let mut metin = String::new();
             for parca in parcalar {
-                metin.push_str(&degerlendir(parca, ortam, program, io, satir)?.metne());
+                metin.push_str(&degerlendir(parca, ortam, program, io, derinlik, satir)?.metne());
             }
             Ok(Deger::Metin(metin))
         }
         Ifade::Karsilastirma { sol, sag, islec } => {
-            let sol = degerlendir(sol, ortam, program, io, satir)?;
-            let sag = degerlendir(sag, ortam, program, io, satir)?;
+            let sol = degerlendir(sol, ortam, program, io, derinlik, satir)?;
+            let sag = degerlendir(sag, ortam, program, io, derinlik, satir)?;
             // Sayısal çift değer üzerinden hizalanarak karşılaştırılır
             // (2 = 2,0 doğrudur; 1,5 < 2 çalışır — RFC-0013 §2).
             if let (Deger::Sure { milisaniye: a }, Deger::Sure { milisaniye: b }) = (&sol, &sag)
@@ -1214,7 +1230,7 @@ fn degerlendir(
         Ifade::MantiksalZincir { hepsi, parcalar } => {
             // Kısa devre: VE ilk yanlışta, VEYA ilk doğruda durur.
             for parca in parcalar {
-                let deger = mantiksal(degerlendir(parca, ortam, program, io, satir)?, satir)?;
+                let deger = mantiksal(degerlendir(parca, ortam, program, io, derinlik, satir)?, satir)?;
                 if deger != *hepsi {
                     return Ok(Deger::Mantiksal(deger));
                 }
@@ -1222,32 +1238,32 @@ fn degerlendir(
             Ok(Deger::Mantiksal(*hepsi))
         }
         Ifade::Degil(ic) => {
-            let deger = mantiksal(degerlendir(ic, ortam, program, io, satir)?, satir)?;
+            let deger = mantiksal(degerlendir(ic, ortam, program, io, derinlik, satir)?, satir)?;
             Ok(Deger::Mantiksal(!deger))
         }
         Ifade::Cift(ic) => {
-            let s = tam_sayi(degerlendir(ic, ortam, program, io, satir)?, satir)?;
+            let s = tam_sayi(degerlendir(ic, ortam, program, io, derinlik, satir)?, satir)?;
             Ok(Deger::Mantiksal(s % 2 == 0))
         }
         Ifade::Tek(ic) => {
-            let s = tam_sayi(degerlendir(ic, ortam, program, io, satir)?, satir)?;
+            let s = tam_sayi(degerlendir(ic, ortam, program, io, derinlik, satir)?, satir)?;
             Ok(Deger::Mantiksal(s % 2 != 0))
         }
         Ifade::Aritmetik { islec, sol, sag } => {
-            let sol = degerlendir(sol, ortam, program, io, satir)?;
-            let sag = degerlendir(sag, ortam, program, io, satir)?;
+            let sol = degerlendir(sol, ortam, program, io, derinlik, satir)?;
+            let sag = degerlendir(sag, ortam, program, io, derinlik, satir)?;
             sayisal_islem(islec, &sol, &sag, satir)
         }
         Ifade::IslemCagrisi { islem_adi, argumanlar, .. } => {
             let mut degerler = Vec::new();
             for arg in argumanlar {
-                degerler.push(degerlendir(arg, ortam, program, io, satir)?);
+                degerler.push(degerlendir(arg, ortam, program, io, derinlik, satir)?);
             }
-            islem_cagir(islem_adi, degerler, program, io, satir)?
+            islem_cagir(islem_adi, degerler, program, io, derinlik + 1, satir)?
                 .ok_or_else(|| ic_hata(satir))
         }
         Ifade::SayiyiDene(ic) => {
-            let metin = match degerlendir(ic, ortam, program, io, satir)? {
+            let metin = match degerlendir(ic, ortam, program, io, derinlik, satir)? {
                 Deger::Metin(m) => m,
                 _ => return Err(ic_hata(satir)),
             };
@@ -1267,7 +1283,7 @@ fn degerlendir(
             })
         }
         Ifade::OndaligiDene(ic) => {
-            let metin = match degerlendir(ic, ortam, program, io, satir)? {
+            let metin = match degerlendir(ic, ortam, program, io, derinlik, satir)? {
                 Deger::Metin(m) => m,
                 _ => return Err(ic_hata(satir)),
             };
@@ -1305,7 +1321,7 @@ fn degerlendir(
             })
         }
         Ifade::Ondaligi(ic) => {
-            let metin = match degerlendir(ic, ortam, program, io, satir)? {
+            let metin = match degerlendir(ic, ortam, program, io, derinlik, satir)? {
                 Deger::Metin(m) => m,
                 _ => return Err(ic_hata(satir)),
             };
@@ -1340,7 +1356,7 @@ fn degerlendir(
             ondalik_yap(govde, olcek, satir)
         }
         Ifade::Sayisi(ic) => {
-            let metin = match degerlendir(ic, ortam, program, io, satir)? {
+            let metin = match degerlendir(ic, ortam, program, io, derinlik, satir)? {
                 Deger::Metin(m) => m,
                 _ => return Err(ic_hata(satir)),
             };
