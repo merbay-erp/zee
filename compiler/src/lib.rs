@@ -21,6 +21,7 @@ pub fn kaynagi_derle(kaynak: &str) -> Result<Program, Tani> {
     let cumleler = ayristirici::ayristir(tokenlar)?;
 
     let mut islemler = std::collections::HashMap::new();
+    let mut yapilar: Vec<agac::Yapi> = Vec::new();
     let mut kalan = Vec::new();
     for cumle in cumleler {
         match cumle {
@@ -36,11 +37,23 @@ pub fn kaynagi_derle(kaynak: &str) -> Result<Program, Tani> {
                 }
                 islemler.insert(islem.ad.clone(), islem);
             }
+            Cumle::YapiTanimi(yapi) => {
+                if yapilar.iter().any(|y| y.ad == yapi.ad) {
+                    return Err(Tani::yeni(
+                        "A006",
+                        format!("\"{}\" yapısı birden çok kez tanımlandı.", yapi.ad),
+                        yapi.satir,
+                        1,
+                        1,
+                    ));
+                }
+                yapilar.push(yapi);
+            }
             baska => kalan.push(baska),
         }
     }
 
-    let mut program = Program { cumleler: kalan, islemler };
+    let mut program = Program { cumleler: kalan, islemler, yapilar };
     cozumleyici::denetle(&mut program)?;
     Ok(program)
 }

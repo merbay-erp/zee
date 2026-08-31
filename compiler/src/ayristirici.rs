@@ -5,7 +5,7 @@
 //! dillerdeki "ilk keyword'e bak" yaklaşımının aynadaki karşılığıdır ve
 //! deterministik ayrıştırmayı mümkün kılar.
 
-use crate::agac::{AritmetikIslec, Cumle, Ifade, Islec, Islem, KosulKolu, Ozellik};
+use crate::agac::{AritmetikIslec, Cumle, Ifade, Islec, Islem, KosulKolu, Ozellik, Yapi};
 use crate::sozcukleyici::{Token, TokenTur};
 use crate::tani::Tani;
 
@@ -118,10 +118,14 @@ impl Ayristirici {
     }
 
     fn cumle_ayristir(&mut self) -> Result<Cumle, Tani> {
-        // "işlem ..." satırı ilk kelimesinden tanınır (tanım başlığı, yüklem değil).
+        // "işlem ..." ve "yapı ..." satırları ilk kelimesinden tanınır
+        // (tanım başlıkları, yüklem değil).
         if let TokenTur::Kelime(k) = &self.bak().tur {
             if k == "işlem" {
                 return self.islem_ayristir();
+            }
+            if k == "yapı" {
+                return self.yapi_ayristir();
             }
         }
 
@@ -263,6 +267,87 @@ impl Ayristirici {
         Ok(Cumle::IslemTanimi(Islem { ad, parametreler, govde, satir }))
     }
 
+    /// `yapı <Ad>` + alan satırları (`ad Metin`, `yaş TamSayı`).
+    fn yapi_ayristir(&mut self) -> Result<Cumle, Tani> {
+        let baslik = self.satir_oku();
+        let satir = baslik.first().map(|t| t.satir).unwrap_or(1);
+        if self.derinlik > 0 {
+            return Err(Tani::yeni(
+                "S021",
+                "Yapı tanımı en dış düzeyde olmalı.".into(),
+                satir,
+                1,
+                1,
+            ));
+        }
+        let ad = match baslik.get(1).map(|t| &t.tur) {
+            Some(TokenTur::Kelime(ad)) if baslik.len() == 2 => ad.clone(),
+            _ => {
+                return Err(Tani::yeni(
+                    "S025",
+                    "Yapı tanımı \"yapı <Ad>\" biçiminde başlar.".into(),
+                    satir,
+                    1,
+                    1,
+                )
+                .onerili("Örnek: yapı Öğrenci — tür adları büyük harfle başlar.".into()))
+            }
+        };
+
+        match self.bak().tur {
+            TokenTur::Girinti => {
+                self.ilerle();
+            }
+            _ => {
+                return Err(Tani::yeni(
+                    "S007",
+                    "Yapı başlığından sonra girintili alan listesi bekleniyor.".into(),
+                    satir,
+                    1,
+                    1,
+                ))
+            }
+        }
+        self.derinlik += 1;
+
+        let mut alanlar = Vec::new();
+        loop {
+            match &self.bak().tur {
+                TokenTur::Cikinti | TokenTur::DosyaSonu => break,
+                TokenTur::SatirSonu => {
+                    self.ilerle();
+                }
+                _ => {
+                    let alan_satiri = self.satir_oku();
+                    let alan_no = alan_satiri.first().map(|t| t.satir).unwrap_or(satir);
+                    match (alan_satiri.first().map(|t| &t.tur), alan_satiri.get(1).map(|t| &t.tur)) {
+                        (Some(TokenTur::Kelime(alan)), Some(TokenTur::Kelime(tur)))
+                            if alan_satiri.len() == 2 =>
+                        {
+                            alanlar.push((alan.clone(), tur.clone()));
+                        }
+                        _ => {
+                            return Err(Tani::yeni(
+                                "S025",
+                                "Yapı alanı \"<ad> <Tür>\" biçiminde yazılır.".into(),
+                                alan_no,
+                                1,
+                                1,
+                            )
+                            .onerili("Örnek: yaş TamSayı".into()))
+                        }
+                    }
+                }
+            }
+        }
+
+        self.derinlik -= 1;
+        if let TokenTur::Cikinti = self.bak().tur {
+            self.ilerle();
+        }
+        Ok(Cumle::YapiTanimi(Yapi { ad, alanlar, satir }))
+    }
+
     fn dondur_ayristir(&mut self, mut tokenlar: Vec<Token>, satir: usize) -> Result<Cumle, Tani> {
         tokenlar.pop(); // "döndür"
         let deger = ile_ifadesi(&tokenlar, satir, &self.islem_adlari)?;
@@ -325,6 +410,24 @@ impl Ayristirici {
             let anahtar = tekil_ifade(tokenlar[1].clone())?;
             let deger = ile_ifadesi(&tokenlar[3..], satir, &self.islem_adlari)?;
             return Ok(Cumle::SozlukAta { sozluk, anahtar, deger, satir });
+        }
+
+        // Alan yazma: `ayşenin adı "Ayşe" olsun` (K-020). Kural: tam üç token,
+        // ilki tamlayan ekli bir ad, ikincisi alan adı, üçüncüsü tek değer —
+        // AMA kuyruk `yanıtın sayısı` gibi yapılı bir kalıpsa bu normal bir
+        // değer tanımıdır ("tahmin yanıtın sayısı olsun"); kalıplar önce gelir.
+        if tokenlar.len() == 3 {
+            if let (TokenTur::Kelime(nesne), TokenTur::Kelime(alan)) =
+                (&tokenlar[0].tur, &tokenlar[1].tur)
+            {
+                let kuyruk_kalip = yapili_kalip(&tokenlar[1..], &self.islem_adlari)?.is_some();
+                if !kuyruk_kalip && tamlayan_ekli(nesne) && alan != "ile" {
+                    let nesne = tekil_ifade(tokenlar[0].clone())?;
+                    let alan = alan.clone();
+                    let deger = tekil_ifade(tokenlar[2].clone())?;
+                    return Ok(Cumle::AlanAta { nesne, alan, deger, satir });
+                }
+            }
         }
 
         if tokenlar.len() < 2 {
@@ -1075,6 +1178,24 @@ fn yapili_kalip(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifade>
         )?))));
     }
 
+    // yeni <Yapı> — yeni yapı örneği (K-020).
+    if n == 2 && kelime(0) == Some("yeni") {
+        return Ok(Some(Ifade::YeniYapi { yapi_adi: son.to_string() }));
+    }
+
+    // <nesne-in> <alan> — iyelik ekiyle alan okuma (K-020). Adlı kalıplardan
+    // SONRA denenir; alan adı "değeri", "adedi" gibi ayrılmış kelimeler olamaz.
+    if n == 2 {
+        if let (Some(nesne), Some(alan)) = (kelime(0), kelime(1)) {
+            if tamlayan_ekli(nesne) && alan != "ile" {
+                return Ok(Some(Ifade::AlanErisim {
+                    nesne: Box::new(tekil_ifade(tokenlar[0].clone())?),
+                    alan: alan.to_string(),
+                }));
+            }
+        }
+    }
+
     // e1, e2, ... listesi
     if son == "listesi" && n >= 2 {
         let govde = &tokenlar[..n - 1];
@@ -1179,6 +1300,11 @@ fn yapili_kalip(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifade>
     }
 
     Ok(None)
+}
+
+/// Kelime tamlayan (genitif) ekiyle mi bitiyor? ("ayşenin", "öğrencinin")
+fn tamlayan_ekli(kelime: &str) -> bool {
+    TAMLAYAN_EKLER.iter().any(|ek| kelime.ends_with(ek)) && kelime.chars().count() > 3
 }
 
 /// Belirtme eki almış adı yalın hale getirir ("sayıları"→"sayılar", "adı"→"ad").

@@ -206,6 +206,15 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
 - **Karar:** `ayşenin adı`, `ayşenin yaşı 10 olsun`. Nokta operatörü yok.
 - **AÇIK:** Zincirlenme: `öğrencinin okulunun adı` — kaç seviye doğal kalır?
 - **Programlar:** 22, 26.
+- **bulgu (31 Ağu, v0 gerçeklemesi):** Alan-atama deseni `-in` ile doğal biten
+  adlarla çakışıyor: `tahmin yanıtın sayısı olsun` satırında "tahmin" tamlayan
+  ekli sanılabiliyor. v0 çözümü: kuyruk yapılı bir kalıpsa (örn. "yanıtın
+  sayısı") normal değer tanımı kazanır; kalıplar alan-atamadan önce denenir.
+  Deterministik ama incelikli — RFC-0004/0006 bu öncelik sırasını resmî grammar
+  kuralı olarak yazmalı. Ayrıca ünlü düşmesi geri çevrimi morfoloji motoruna
+  girdi (şekle→şekil, burnu→burun) — desteklenen ek/çekim listesi artık üç
+  mekanizma içeriyor: ek ayıklama, ünsüz yumuşaması geri çevrimi, ünlü düşmesi
+  geri çevrimi (K-011 sürümlemeli grammar kapsamına eklenecek).
 
 ## K-021 — Desen eşleştirme: `X e göre / ... ise`
 

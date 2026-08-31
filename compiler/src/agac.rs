@@ -9,6 +9,16 @@ use std::collections::HashMap;
 pub struct Program {
     pub cumleler: Vec<Cumle>,
     pub islemler: HashMap<String, Islem>,
+    /// Yapı tanımları; Tur::Yapi bu listeye indeksle işaret eder.
+    pub yapilar: Vec<Yapi>,
+}
+
+/// "yapı Öğrenci" tanımı: alan adı + tür yazımı ("TamSayı", "Metin"...).
+#[derive(Debug, Clone)]
+pub struct Yapi {
+    pub ad: String,
+    pub alanlar: Vec<(String, String)>,
+    pub satir: usize,
 }
 
 /// "işlem ortalamayı hesapla" tanımı. Ad çok kelimeli bir eylem cümlesidir.
@@ -108,6 +118,11 @@ pub enum Ifade {
     },
     /// Metinden sayıya dönüşüm (K-009): "yanıtın sayısı".
     Sayisi(Box<Ifade>),
+    /// "yeni Öğrenci" — alanları varsayılan değerli yeni yapı örneği (K-020).
+    YeniYapi { yapi_adi: String },
+    /// "ayşenin adı" — iyelik ekiyle alan okuma (K-020). `alan` ham yazımdır
+    /// ("adı"); çözümleyici yapı tanımındaki yalın ada ("ad") çevirir.
+    AlanErisim { nesne: Box<Ifade>, alan: String },
     /// İşlem çağrısı (K-016, geçici sözdizimi): "notlar için ortalamayı hesapla",
     /// çok argüman: "a ve b ile selamla".
     IslemCagrisi {
@@ -193,6 +208,15 @@ pub enum Cumle {
     },
     /// `işlem <ad>` tanımı — hoist ile Program.islemler'e taşınır.
     IslemTanimi(Islem),
+    /// `yapı <Ad>` tanımı — hoist ile Program.yapilar'a taşınır.
+    YapiTanimi(Yapi),
+    /// `ayşenin adı "Ayşe" olsun` — alan yazma (K-020).
+    AlanAta {
+        nesne: Ifade,
+        alan: String,
+        deger: Ifade,
+        satir: usize,
+    },
     /// `sonucu döndür` — yalnız işlem içinde geçerli.
     Dondur { deger: Ifade, satir: usize },
     /// `sonucu toplamı sayıların adedine böl` — payı paydaya bölüp hedefe atar.

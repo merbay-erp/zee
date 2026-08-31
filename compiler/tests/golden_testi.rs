@@ -225,6 +225,20 @@ fn bos_secenegin_degeri_calisma_hatasi() {
 }
 
 #[test]
+fn golden_22_yapilar() {
+    let cikti = kaynagi_calistir(&golden("22-yapilar.dil")).expect("22 çalışmalı");
+    assert_eq!(cikti, vec!["Ayşe 10 yaşında"]);
+}
+
+#[test]
+fn yapida_olmayan_alan_turkce_hata() {
+    let kaynak = "yapı Kedi\n    ad Metin\n\nkedi yeni Kedi olsun\nkedinin kuyruğu 5 olsun\n";
+    let hata = kaynagi_calistir(kaynak).expect_err("olmayan alan hata olmalı");
+    assert_eq!(hata.kod, "T028");
+    assert!(hata.mesaj.contains("ad"), "hata alan listesini saymalı: {}", hata.mesaj);
+}
+
+#[test]
 fn golden_23_desen_eslestirme() {
     let cikti = kaynagi_calistir(&golden("23-desen-eslestirme.dil")).expect("23 çalışmalı");
     assert_eq!(cikti, vec!["4 köşesi var"]);

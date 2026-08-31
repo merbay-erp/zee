@@ -7,7 +7,7 @@
 //!
 //! Ünsüz yumuşamasının geri çevrimi desteklenir: "sayacı" → "sayac" → "sayaç".
 
-use crate::agac::{Cumle, Ifade, Islec, Islem, Ozellik, Program};
+use crate::agac::{Cumle, Ifade, Islec, Islem, Ozellik, Program, Yapi};
 
 use crate::tani::Tani;
 use std::collections::HashMap;
@@ -47,6 +47,8 @@ pub enum Tur {
     Sonuc,
     /// Yalnız "yok" sabitinin türü; dönüş birleşiminde Seçenek'e erir.
     Yok,
+    /// Kullanıcı yapısı — Program.yapilar'a indeks.
+    Yapi(usize),
 }
 
 impl Tur {
@@ -60,6 +62,7 @@ impl Tur {
             Tur::Secenek(e) => format!("Seçenek<{}>", e.adi()),
             Tur::Sonuc => "Sonuç".into(),
             Tur::Yok => "yok".into(),
+            Tur::Yapi(_) => "Yapı".into(),
         }
     }
 
@@ -78,9 +81,27 @@ impl Tur {
 /// imza ilk çağrıda sabitlenir, sonraki çağrılar imzaya uymalıdır.
 pub fn denetle(program: &mut Program) -> Result<(), Tani> {
     let mut ortam: HashMap<String, Tur> = HashMap::new();
+    for yapi in &program.yapilar {
+        for (alan, tur_yazimi) in &yapi.alanlar {
+            if alan_turu(tur_yazimi).is_none() {
+                return Err(Tani::yeni(
+                    "T027",
+                    format!(
+                        "\"{}\" yapısındaki \"{}\" alanının türü tanınmadı: \"{}\".",
+                        yapi.ad, alan, tur_yazimi
+                    ),
+                    yapi.satir,
+                    1,
+                    1,
+                )
+                .onerili("Kullanılabilir alan türleri: TamSayı, Metin, Mantıksal.".into()));
+            }
+        }
+    }
     let mut baglam = Baglam {
         islemler: std::mem::take(&mut program.islemler),
         imzalar: HashMap::new(),
+        yapilar: program.yapilar.clone(),
     };
     let mut donusler = Vec::new();
     let sonuc = blok_denetle(&mut program.cumleler, &mut ortam, &mut baglam, &mut donusler, false);
@@ -97,6 +118,50 @@ struct Imza {
 struct Baglam {
     islemler: HashMap<String, Islem>,
     imzalar: HashMap<String, Imza>,
+    yapilar: Vec<Yapi>,
+}
+
+/// Yapı alanı tür yazımını çözer ("TamSayı" → Tur::TamSayi).
+fn alan_turu(yazim: &str) -> Option<Tur> {
+    match yazim {
+        "TamSayı" => Some(Tur::TamSayi),
+        "Metin" => Some(Tur::Metin),
+        "Mantıksal" => Some(Tur::Mantiksal),
+        _ => None,
+    }
+}
+
+/// Ham alan yazımını ("adı", "yaşı") yapı tanımındaki yalın ada çözer.
+fn alan_cozumle(yapi: &Yapi, ham: &str, satir: usize) -> Result<String, Tani> {
+    if yapi.alanlar.iter().any(|(a, _)| a == ham) {
+        return Ok(ham.to_string());
+    }
+    let adaylar = kok_adaylari(ham);
+    let eslesenler: Vec<&String> = yapi
+        .alanlar
+        .iter()
+        .map(|(a, _)| a)
+        .filter(|a| adaylar.iter().any(|aday| aday == *a))
+        .collect();
+    match eslesenler.len() {
+        1 => Ok(eslesenler[0].clone()),
+        _ => Err(Tani::yeni(
+            "T028",
+            format!(
+                "\"{}\" yapısında \"{}\" diye bir alan yok. Alanlar: {}.",
+                yapi.ad,
+                ham,
+                yapi.alanlar
+                    .iter()
+                    .map(|(a, _)| a.as_str())
+                    .collect::<Vec<_>>()
+                    .join(", ")
+            ),
+            satir,
+            1,
+            1,
+        )),
+    }
 }
 
 fn blok_denetle(
@@ -354,6 +419,55 @@ fn blok_denetle(
                     1,
                     1,
                 ));
+            }
+            Cumle::YapiTanimi(yapi) => {
+                return Err(Tani::yeni(
+                    "S021",
+                    format!("\"{}\" yapı tanımı beklenmeyen yerde.", yapi.ad),
+                    yapi.satir,
+                    1,
+                    1,
+                ));
+            }
+            Cumle::AlanAta { nesne, alan, deger, satir } => {
+                let satir = *satir;
+                let nesne_turu = ifade_denetle(nesne, ortam, baglam, satir)?;
+                let yapi_indeksi = match nesne_turu {
+                    Tur::Yapi(i) => i,
+                    baska => {
+                        return Err(Tani::yeni(
+                            "T028",
+                            format!("Alan yazma bir yapı ister; burada {} var.", baska.adi()),
+                            satir,
+                            1,
+                            1,
+                        ));
+                    }
+                };
+                let yapi = baglam.yapilar[yapi_indeksi].clone();
+                let yalin = alan_cozumle(&yapi, alan, satir)?;
+                let beklenen = yapi
+                    .alanlar
+                    .iter()
+                    .find(|(a, _)| *a == yalin)
+                    .and_then(|(_, t)| alan_turu(t))
+                    .expect("alan türü doğrulandı");
+                let deger_turu = ifade_denetle(deger, ortam, baglam, satir)?;
+                if deger_turu != beklenen {
+                    return Err(Tani::yeni(
+                        "T028",
+                        format!(
+                            "\"{}\" alanı {} türünde; {} verilemez.",
+                            yalin,
+                            beklenen.adi(),
+                            deger_turu.adi()
+                        ),
+                        satir,
+                        1,
+                        1,
+                    ));
+                }
+                *alan = yalin;
             }
             Cumle::Dondur { deger, satir } => {
                 let satir = *satir;
@@ -621,6 +735,44 @@ fn ifade_denetle(
             Ok(Tur::Mantiksal)
         }
         Ifade::YokSabiti => Ok(Tur::Yok),
+        Ifade::YeniYapi { yapi_adi } => {
+            match baglam.yapilar.iter().position(|y| y.ad == *yapi_adi) {
+                Some(i) => Ok(Tur::Yapi(i)),
+                None => Err(Tani::yeni(
+                    "A007",
+                    format!("\"{}\" adında bir yapı tanımlı değil.", yapi_adi),
+                    satir,
+                    1,
+                    1,
+                )
+                .onerili("Önce \"yapı <Ad>\" ile tanımla; yapı, kullanımından önce gelmeli.".into())),
+            }
+        }
+        Ifade::AlanErisim { nesne, alan } => {
+            let nesne_turu = ifade_denetle(nesne, ortam, baglam, satir)?;
+            let yapi_indeksi = match nesne_turu {
+                Tur::Yapi(i) => i,
+                baska => {
+                    return Err(Tani::yeni(
+                        "T028",
+                        format!("Alan okuma bir yapı ister; burada {} var.", baska.adi()),
+                        satir,
+                        1,
+                        1,
+                    ));
+                }
+            };
+            let yapi = baglam.yapilar[yapi_indeksi].clone();
+            let yalin = alan_cozumle(&yapi, alan, satir)?;
+            let tur = yapi
+                .alanlar
+                .iter()
+                .find(|(a, _)| *a == yalin)
+                .and_then(|(_, t)| alan_turu(t))
+                .expect("alan türü doğrulandı");
+            *alan = yalin;
+            Ok(tur)
+        }
         Ifade::SecenekVar { nesne, .. } => {
             let tur = ifade_denetle(nesne, ortam, baglam, satir)?;
             match tur {
