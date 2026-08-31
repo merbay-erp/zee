@@ -1,6 +1,8 @@
 # RFC-0011 — Structured Concurrency
 
-- **Durum:** taslak (tasarım — gerçekleme Faz 5; K-023'ün sorusunu ÇÖZER)
+- **Durum:** **geçici kabul — yüzey** (31 Ağu 2026: görev bağlamaları,
+  hepsini bekle, T033 ve zaman aşımı gerçeklendi — v0 gözlemsel-eşdeğer sıralı
+  model. Gerçek paralellik Faz 5'te; K-023'ün sorusunu ÇÖZER.)
 - **Tarih:** 31 Ağustos 2026
 - **İlgili günlük kayıtları:** K-023 ("hepsini bekle sonrası sonucu döndür neyi döndürür?")
 - **İlgili golden programlar:** 26 (paralel görevler), 27 (zaman aşımı)

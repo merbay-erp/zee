@@ -1,6 +1,7 @@
 # RFC-0002 — Lexical ve Unicode Kuralları
 
-- **Durum:** taslak (gerçeklenmiş davranışı belgeler; açık sorular işaretli)
+- **Durum:** **geçici kabul** (31 Ağu 2026 — yüzey gerçeklendi ve korpusla
+  sabitlendi; onay kapısı: usability oturumları. Kalan açık sorular §6'da.)
 - **Tarih:** 31 Ağustos 2026
 - **İlgili günlük kayıtları:** K-001 (yorum), K-011 (ek yazımı), K-014 (kelime çakışmaları)
 - **İlgili golden programlar:** tümü; anti-örnekler A07, A08

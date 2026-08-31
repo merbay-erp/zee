@@ -1,8 +1,8 @@
 # RFC-0008 — Seçenek ve Sonuç
 
-- **Durum:** taslak — **§4.1 GERÇEKLENDİ** (31 Ağu 2026): `"..." hatasını
-  döndür`, Sonuç<değer> parametreli tür, başarı dallarının otomatik
-  sarmalanması; 10 test yeşil (K-030)
+- **Durum:** **geçici kabul** (31 Ağu 2026 — tam yüzey gerçeklendi:
+  `hatasını döndür`, Sonuç<değer>, otomatik sarmalama VE akış-duyarlı
+  daraltma T036/K-037; onay kapısı: usability oturumları)
 - **Tarih:** 31 Ağustos 2026
 - **İlgili günlük kayıtları:** K-017 (var/yok), K-018 (dene)
 - **İlgili golden programlar:** 15, 16, 17

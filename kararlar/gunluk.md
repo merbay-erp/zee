@@ -331,6 +331,19 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
 - **Not:** zar oyunu hermetik IO'da deterministiktir ve testi bunu sabitler
   (determinizm sözü örnek katmanında da sınanıyor).
 
+## K-043 — RFC statü kuralı ve toplu geçiş
+
+- **Kural:** Bir RFC ancak (a) yüzeyi gerçeklenmiş VE (b) korpus ya da
+  regression testine bağlanmışsa **geçici kabul**e geçer; tam **kabul**
+  usability kapısını bekler. Gerçeklenmemiş tasarım taslak kalır.
+- **Uygulama (31 Ağu akşamı):** 0002, 0003, 0004, 0005, 0007, 0008, 0009
+  (birim katmanı), 0011 (yüzey), 0013 → geçici kabul. 0012 (FFI) taslak —
+  Faz 4/5. Sayım: 2 kabul, 10 geçici kabul, 1 taslak.
+- **Gerekçe:** "taslak" etiketi, testle sabitlenmiş gerçek davranışı temsil
+  etmiyordu; belge gerçeğin gerisine düşüyordu. Statü artık şu soruyu
+  yanıtlar: "bu yüzeye güvenerek program yazabilir miyim?" — geçici kabul
+  = evet, kırıcı değişiklik ancak sürüm notuyla.
+
 ## K-012 — Liste sabiti: `3, 7, 1, 9 listesi`
 
 - **Karar:** Virgülle ayrılmış değerler + `listesi`. Boş: `boş liste`.

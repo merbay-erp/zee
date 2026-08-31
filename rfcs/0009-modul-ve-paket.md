@@ -1,8 +1,8 @@
 # RFC-0009 — Modül ve Paket Modeli
 
-- **Durum:** taslak — **birim katmanı (§2) gerçeklendi** (31 Ağu 2026):
-  kullan/tohumlu ayrıştırma/A008-A010 tanıları/birim testleri dene kapsamında;
-  9 test yeşil (K-029). Paket katmanı (§3) Faz 3/5
+- **Durum:** **geçici kabul — birim katmanı (§2)** (31 Ağu 2026:
+  kullan/tohumlu ayrıştırma/A008-A010/birim testleri; onay kapısı: usability).
+  Paket katmanı (§3) TASLAK — Faz 3/5
 - **Tarih:** 31 Ağustos 2026
 - **İlgili günlük kayıtları:** master plan bölüm 7 ("modül mü birim mi; kullanıcı testiyle karar"), bölüm 14
 - **Gerçekleme:** `lib.rs` (dosyayi_coz + BirimYukleyici), `ayristirici.rs`
