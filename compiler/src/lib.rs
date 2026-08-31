@@ -228,3 +228,89 @@ pub fn kaynagi_dene(kaynak: &str) -> Result<Vec<TestSonucu>, Tani> {
     let program = kaynagi_derle(kaynak)?;
     Ok(programi_dene(&program))
 }
+
+/// TÜM tanıları toplar (RFC-0010 §3.1): sözcükleme ilk hatada durur (nadir);
+/// ayrıştırma cümle atlayarak, denetim cümle başına sürerek toplar.
+/// Boş liste = temiz. `dil denetle` ve LSP bu görünümü kullanır.
+pub fn kaynagi_tanilari(kaynak: &str, yukleyici: &mut BirimYukleyici) -> Vec<Tani> {
+    let tokenlar = match sozcukleyici::sozcukle(kaynak) {
+        Ok(tokenlar) => tokenlar,
+        Err(tani) => return vec![tani],
+    };
+
+    // Birimleri yükle; birim hataları da listeye girer ama ana dosya denetimi sürer.
+    let mut tanilar = Vec::new();
+    let mut islemler: HashMap<String, Islem> = HashMap::new();
+    let mut yapilar: Vec<Yapi> = Vec::new();
+    let mut testler: Vec<Test> = Vec::new();
+    let mut yigin: Vec<String> = Vec::new();
+    for (ad, satir) in ayristirici::kullanilan_birimler(&tokenlar) {
+        match yukleyici(&ad) {
+            Ok(icerik) => {
+                yigin.push(ad.clone());
+                match dosyayi_coz(&icerik, Some(&ad), yukleyici, &mut yigin) {
+                    Ok((_, birim_islemleri, birim_yapilari, birim_testleri)) => {
+                        islemler.extend(birim_islemleri);
+                        yapilar.extend(birim_yapilari);
+                        testler.extend(birim_testleri);
+                    }
+                    Err(tani) => tanilar.push(tani),
+                }
+                yigin.pop();
+            }
+            Err(hata) => tanilar.push(
+                Tani::yeni(
+                    "A010",
+                    format!("\"{}\" birimi yüklenemedi: {}.", ad, hata),
+                    satir,
+                    1,
+                    1,
+                )
+                .onerili(format!("Aynı klasörde {}.dil dosyası olmalı (RFC-0009).", ad)),
+            ),
+        }
+    }
+
+    let tohum: Vec<String> = islemler.keys().cloned().collect();
+    let (cumleler, ayristirma_tanilari) = ayristirici::ayristir_kurtarmali(tokenlar, tohum);
+    tanilar.extend(ayristirma_tanilari);
+
+    // Hoist (çakışmalar tanı olur, tanımlar yine de alınır ki devamı denetlensin).
+    let mut kalan = Vec::new();
+    for cumle in cumleler {
+        match cumle {
+            Cumle::Kullan { .. } => {}
+            Cumle::IslemTanimi(islem) => {
+                if islemler.contains_key(&islem.ad) {
+                    tanilar.push(Tani::yeni(
+                        "A005",
+                        format!("\"{}\" işlemi birden çok kez tanımlandı.", islem.ad),
+                        islem.satir,
+                        1,
+                        1,
+                    ));
+                }
+                islemler.insert(islem.ad.clone(), islem);
+            }
+            Cumle::TestBlogu(test) => testler.push(test),
+            Cumle::YapiTanimi(yapi) => {
+                if yapilar.iter().any(|y| y.ad == yapi.ad) {
+                    tanilar.push(Tani::yeni(
+                        "A006",
+                        format!("\"{}\" yapısı birden çok kez tanımlandı.", yapi.ad),
+                        yapi.satir,
+                        1,
+                        1,
+                    ));
+                } else {
+                    yapilar.push(yapi);
+                }
+            }
+            baska => kalan.push(baska),
+        }
+    }
+
+    let mut program = Program { cumleler: kalan, islemler, yapilar, testler };
+    tanilar.extend(cozumleyici::denetle_coklu(&mut program));
+    tanilar
+}

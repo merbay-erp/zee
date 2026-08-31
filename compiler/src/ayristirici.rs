@@ -17,15 +17,57 @@ pub fn ayristir(tokenlar: Vec<Token>) -> Result<Vec<Cumle>, Tani> {
 /// çağrı tanıma "tanımlı işlem adıyla bitiyor mu?" kuralına dayandığı için
 /// içe alınan adların ayrıştırma başlamadan bilinmesi gerekir.
 pub fn ayristir_tohumla(tokenlar: Vec<Token>, islem_adlari: Vec<String>) -> Result<Vec<Cumle>, Tani> {
+    let (cumleler, mut tanilar) = ayristir_kurtarmali(tokenlar, islem_adlari);
+    if tanilar.is_empty() {
+        Ok(cumleler)
+    } else {
+        Err(tanilar.remove(0))
+    }
+}
+
+/// Hata KURTARMALI ayrıştırma (RFC-0010 §3.1): bir cümle ayrıştırılamazsa
+/// tanı kaydedilir, o satır (varsa girintili gövdesiyle) atlanır ve sonraki
+/// cümleden sürülür. Böylece tek geçişte birden çok tanı toplanır.
+pub fn ayristir_kurtarmali(
+    tokenlar: Vec<Token>,
+    islem_adlari: Vec<String>,
+) -> (Vec<Cumle>, Vec<Tani>) {
     let mut ayristirici = Ayristirici {
         tokenlar,
         konum: 0,
         derinlik: 0,
         islem_adlari,
     };
-    let program = ayristirici.blok_ayristir()?;
-    ayristirici.bekle_dosya_sonu()?;
-    Ok(program)
+    let mut cumleler = Vec::new();
+    let mut tanilar = Vec::new();
+
+    loop {
+        match ayristirici.bak().tur {
+            TokenTur::DosyaSonu => break,
+            TokenTur::SatirSonu | TokenTur::Cikinti => {
+                ayristirici.ilerle();
+            }
+            TokenTur::Girinti => {
+                // Başıboş girinti (önceki satır hatalıydı): gövdeyi atla.
+                ayristirici.dengeyi_atla();
+            }
+            _ => match ayristirici.cumle_ayristir() {
+                Ok(cumle) => cumleler.push(cumle),
+                Err(tani) => {
+                    tanilar.push(tani);
+                    if tanilar.len() >= 20 {
+                        break; // tanı seli koruması
+                    }
+                    // Kurtarma: hatalı cümlenin olası gövdesini atla.
+                    if matches!(ayristirici.bak().tur, TokenTur::Girinti) {
+                        ayristirici.dengeyi_atla();
+                    }
+                }
+            },
+        }
+    }
+
+    (cumleler, tanilar)
 }
 
 /// Üst düzeydeki `X birimini kullan` satırlarını (ad, satır) olarak toplar.
@@ -98,15 +140,34 @@ impl Ayristirici {
         token
     }
 
-    fn bekle_dosya_sonu(&mut self) -> Result<(), Tani> {
-        match self.bak().tur {
-            TokenTur::DosyaSonu => Ok(()),
-            _ => {
-                let t = self.bak().clone();
-                Err(Tani::yeni("S004", "Dosya sonunda beklenmeyen içerik.".into(), t.satir, t.sutun, t.uzunluk))
+    /// Girinti..Cikinti dengeli bölgesini (iç içe dahil) atlar — hata kurtarma.
+    fn dengeyi_atla(&mut self) {
+        if !matches!(self.bak().tur, TokenTur::Girinti) {
+            return;
+        }
+        self.ilerle();
+        let mut derinlik = 1usize;
+        loop {
+            match self.bak().tur {
+                TokenTur::Girinti => {
+                    derinlik += 1;
+                    self.ilerle();
+                }
+                TokenTur::Cikinti => {
+                    derinlik -= 1;
+                    self.ilerle();
+                    if derinlik == 0 {
+                        return;
+                    }
+                }
+                TokenTur::DosyaSonu => return,
+                _ => {
+                    self.ilerle();
+                }
             }
         }
     }
+
 
     /// Bir satırın tokenlarını (SatirSonu hariç) toplar.
     fn satir_oku(&mut self) -> Vec<Token> {
