@@ -27,20 +27,17 @@ tür değişimi yasaktır (T002).
 4. **Örtük adlar:** `diye sor` cevabı `yanıt` adını Metin türüyle bağlar (K-007).
    Döngü değişkenleri (`her sayı için`, aralık döngüsü) gövde için bağlanır.
 
-## Kapsam modeli (v0 — dürüst durum)
+## Kapsam modeli (v0.2'de KARARA BAĞLANDI — K-034)
 
-- **Üst düzey ve blok gövdeleri TEK ortam paylaşır** (düz kapsam): `ise` ya da
-  döngü gövdesinde tanımlanan ad, bloktan sonra da görünür. Döngü değişkeni de
-  döngüden sonra son değeriyle kalır.
+- **Blok kapsamı:** gövdede doğan ad gövdeyle ölür (döngü değişkeni dahil);
+  dıştaki ada atama kalıcıdır. Gölgeleme yapısal olarak yoktur. Çözümleyici ve
+  yorumlayıcı aynı kuralı uygular; kapsam_testi.rs sabitler.
 - **İşlem gövdesi taze ortamda çalışır:** yalnız parametrelerini görür; üst
   düzey adlara erişemez (kapanış/global yok). Testler de taze ortam alır.
 
 ## Açık sorular (v1 kararları)
 
-1. **Blok kapsamı:** düz kapsam çocuk için basit ("yazdığım her şey durur") ama
-   büyük programda ad sızıntısı yapar. Öneri: v1'de blok kapsamı + "gölgeleme
-   yasak" (aynı ad iç blokta yeniden TANIMLANAMAZ; atama serbest). Usability
-   oturunda sınanacak.
+1. ~~Blok kapsamı~~ — KARARA BAĞLANDI (K-034, v0.2'de gerçeklendi).
 2. **Sabitler:** `değişmez pi 3 olsun` benzeri bir kalıp gerekli mi? (Ondalık
    türü RFC-0007'ye bağlı.)
 3. **İlk tanım / yeniden atama ayrımı:** ayrı kalıp (örn. tanım `olsun`,

@@ -295,6 +295,17 @@ fn alan_cozumle(yapi: &Yapi, ham: &str, satir: usize) -> Result<String, Tani> {
     }
 }
 
+/// Blok kapsamı (RFC-0004 kararı, v0.2): gövdeye girerken ad kümesi alınır,
+/// çıkarken gövdede DOĞAN adlar düşer. Dıştaki ada atama kalıcıdır; içerde
+/// aynı adla yeniden tanım diye bir şey yoktur (gölgeleme yapısal olarak yok).
+fn kapsam_baslat(ortam: &HashMap<String, Tur>) -> std::collections::HashSet<String> {
+    ortam.keys().cloned().collect()
+}
+
+fn kapsam_bitir(ortam: &mut HashMap<String, Tur>, kapsam: &std::collections::HashSet<String>) {
+    ortam.retain(|ad, _| kapsam.contains(ad));
+}
+
 fn blok_denetle(
     cumleler: &mut [Cumle],
     ortam: &mut HashMap<String, Tur>,
@@ -346,7 +357,9 @@ fn blok_denetle(
                         1,
                     ));
                 }
+                let kapsam = kapsam_baslat(ortam);
                 blok_denetle(govde, ortam, baglam)?;
+                kapsam_bitir(ortam, &kapsam);
             }
             Cumle::AralikDongusu { ad, bastan, sona, govde, satir } => {
                 let satir = *satir;
@@ -362,10 +375,11 @@ fn blok_denetle(
                         ));
                     }
                 }
-                // Döngü değişkeni gövde kapsamında tanımlıdır (RFC-0004'e not:
-                // v0'da düz kapsam kullanılıyor).
+                // Döngü değişkeni gövde kapsamındadır ve gövdeyle ölür (RFC-0004).
+                let kapsam = kapsam_baslat(ortam);
                 ortam.insert(ad.clone(), Tur::TamSayi);
                 blok_denetle(govde, ortam, baglam)?;
+                kapsam_bitir(ortam, &kapsam);
             }
             Cumle::OlduguSurece { kosul, govde, satir }
             | Cumle::OlanaKadar { kosul, govde, satir } => {
@@ -380,7 +394,9 @@ fn blok_denetle(
                         1,
                     ));
                 }
+                let kapsam = kapsam_baslat(ortam);
                 blok_denetle(govde, ortam, baglam)?;
+                kapsam_bitir(ortam, &kapsam);
             }
             Cumle::Ise { kollar, degilse, satir } => {
                 let satir = *satir;
@@ -389,10 +405,14 @@ fn blok_denetle(
                     if tur != Tur::Mantiksal {
                         return Err(Tani::yeni("T005", "\"ise\" bir koşul ister.".into(), satir, 1, 1));
                     }
+                    let kapsam = kapsam_baslat(ortam);
                     blok_denetle(&mut kol.govde, ortam, baglam)?;
+                    kapsam_bitir(ortam, &kapsam);
                 }
                 if let Some(blok) = degilse {
+                    let kapsam = kapsam_baslat(ortam);
                     blok_denetle(blok, ortam, baglam)?;
+                    kapsam_bitir(ortam, &kapsam);
                 }
             }
             Cumle::Ekle { hedef, deger, satir } => {
@@ -496,8 +516,10 @@ fn blok_denetle(
                     },
                     None => unreachable!("örtük çoğul yukarıda dolduruldu"),
                 };
+                let kapsam = kapsam_baslat(ortam);
                 ortam.insert(ad.clone(), oge_turu);
                 blok_denetle(govde, ortam, baglam)?;
+                kapsam_bitir(ortam, &kapsam);
             }
             Cumle::ProgramiBitir { .. } => {}
             Cumle::SunucuBaslat { kapi, satir } => {
@@ -568,9 +590,13 @@ fn blok_denetle(
                     )
                     .onerili("Örnek: 5 saniye içinde".into()));
                 }
+                let kapsam = kapsam_baslat(ortam);
                 blok_denetle(govde, ortam, baglam)?;
+                kapsam_bitir(ortam, &kapsam);
                 if let Some(blok) = yetismezse {
+                    let kapsam = kapsam_baslat(ortam);
                     blok_denetle(blok, ortam, baglam)?;
+                    kapsam_bitir(ortam, &kapsam);
                 }
             }
             Cumle::IsikAyarla { .. } => {}
@@ -622,10 +648,14 @@ fn blok_denetle(
                             1,
                         ));
                     }
+                    let kapsam = kapsam_baslat(ortam);
                     blok_denetle(govde, ortam, baglam)?;
+                    kapsam_bitir(ortam, &kapsam);
                 }
                 if let Some(blok) = degilse {
+                    let kapsam = kapsam_baslat(ortam);
                     blok_denetle(blok, ortam, baglam)?;
+                    kapsam_bitir(ortam, &kapsam);
                 }
             }
             Cumle::IslemTanimi(islem) => {

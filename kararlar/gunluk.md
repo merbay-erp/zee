@@ -227,6 +227,15 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   çıktısı görünür biçimde yeniden yazıldı. Clippy'nin bulduğu lint haklıydı
   ve düzeltildi (dillsp while let).
 
+## K-034 — Blok kapsamı kararı (v0.2, RFC-0004 kapanışı)
+
+- **Karar:** Gövdede doğan ad gövdeyle ölür; döngü değişkeni dahil. Dıştaki
+  ada atama kalıcıdır. Gölgeleme yapısal olarak yoktur (içerde aynı adla
+  "olsun" = dıştakine atama; tür bekçisi T002 aynen çalışır). Çözümleyici ve
+  yorumlayıcı birebir aynı kuralı uygular (kapsam_baslat/kapsam_bitir).
+- **Etki:** 32 golden programın hiçbiri sızıntıya dayanmıyordu — korpus
+  değişmeden yeşil kaldı; RFC-0004 §Kapsam bölümü karara güncellenecek.
+
 ## K-012 — Liste sabiti: `3, 7, 1, 9 listesi`
 
 - **Karar:** Virgülle ayrılmış değerler + `listesi`. Boş: `boş liste`.

@@ -407,6 +407,16 @@ pub enum Akis {
     Don(Deger),
 }
 
+/// Blok kapsamı (RFC-0004): gövdede doğan adlar gövde bitince düşer;
+/// dıştaki ada atama kalıcıdır. Çözümleyicideki kuralın birebir aynısı.
+fn kapsam_baslat(ortam: &HashMap<String, Deger>) -> std::collections::HashSet<String> {
+    ortam.keys().cloned().collect()
+}
+
+fn kapsam_bitir(ortam: &mut HashMap<String, Deger>, kapsam: &std::collections::HashSet<String>) {
+    ortam.retain(|ad, _| kapsam.contains(ad));
+}
+
 fn blok_calistir(
     cumleler: &[Cumle],
     ortam: &mut HashMap<String, Deger>,
@@ -439,23 +449,28 @@ fn blok_calistir(
             }
             Cumle::KezTekrarla { adet, govde, satir } => {
                 let adet = tam_sayi(degerlendir(adet, ortam, program, cikti, derinlik, *satir)?, *satir)?;
+                let kapsam = kapsam_baslat(ortam);
                 for _ in 0..adet.max(0) {
                     if let Akis::Don(d) = blok_calistir(govde, ortam, program, cikti, derinlik)? {
                         return Ok(Akis::Don(d));
                     }
                 }
+                kapsam_bitir(ortam, &kapsam);
             }
             Cumle::AralikDongusu { ad, bastan, sona, govde, satir } => {
                 let bastan = tam_sayi(degerlendir(bastan, ortam, program, cikti, derinlik, *satir)?, *satir)?;
                 let sona = tam_sayi(degerlendir(sona, ortam, program, cikti, derinlik, *satir)?, *satir)?;
+                let kapsam = kapsam_baslat(ortam);
                 for deger in bastan..=sona {
                     ortam.insert(ad.clone(), Deger::TamSayi(deger));
                     if let Akis::Don(d) = blok_calistir(govde, ortam, program, cikti, derinlik)? {
                         return Ok(Akis::Don(d));
                     }
                 }
+                kapsam_bitir(ortam, &kapsam);
             }
             Cumle::OlduguSurece { kosul, govde, satir } => {
+                let kapsam = kapsam_baslat(ortam);
                 loop {
                     let devam = mantiksal(degerlendir(kosul, ortam, program, cikti, derinlik, *satir)?, *satir)?;
                     if !devam {
@@ -465,8 +480,10 @@ fn blok_calistir(
                         return Ok(Akis::Don(d));
                     }
                 }
+                kapsam_bitir(ortam, &kapsam);
             }
             Cumle::OlanaKadar { kosul, govde, satir } => {
+                let kapsam = kapsam_baslat(ortam);
                 loop {
                     let bitti = mantiksal(degerlendir(kosul, ortam, program, cikti, derinlik, *satir)?, *satir)?;
                     if bitti {
@@ -476,23 +493,28 @@ fn blok_calistir(
                         return Ok(Akis::Don(d));
                     }
                 }
+                kapsam_bitir(ortam, &kapsam);
             }
             Cumle::Ise { kollar, degilse, satir } => {
                 let mut islendi = false;
                 for kol in kollar {
                     if mantiksal(degerlendir(&kol.kosul, ortam, program, cikti, derinlik, *satir)?, *satir)? {
+                        let kapsam = kapsam_baslat(ortam);
                         if let Akis::Don(d) = blok_calistir(&kol.govde, ortam, program, cikti, derinlik)? {
                             return Ok(Akis::Don(d));
                         }
+                        kapsam_bitir(ortam, &kapsam);
                         islendi = true;
                         break;
                     }
                 }
                 if !islendi {
                     if let Some(blok) = degilse {
+                        let kapsam = kapsam_baslat(ortam);
                         if let Akis::Don(d) = blok_calistir(blok, ortam, program, cikti, derinlik)? {
                             return Ok(Akis::Don(d));
                         }
+                        kapsam_bitir(ortam, &kapsam);
                     }
                 }
             }
@@ -518,12 +540,14 @@ fn blok_calistir(
                         .collect(),
                     _ => return Err(ic_hata(*satir)),
                 };
+                let kapsam = kapsam_baslat(ortam);
                 for oge in ogeler {
                     ortam.insert(ad.clone(), oge);
                     if let Akis::Don(d) = blok_calistir(govde, ortam, program, cikti, derinlik)? {
                         return Ok(Akis::Don(d));
                     }
                 }
+                kapsam_bitir(ortam, &kapsam);
             }
             Cumle::Artir { ifade, miktar, satir } => {
                 guncelle(ifade, miktar, ortam, program, cikti, derinlik, *satir, 1)?;
@@ -537,18 +561,22 @@ fn blok_calistir(
                 for (deger, govde) in kollar {
                     let deger = degerlendir(deger, ortam, program, cikti, derinlik, *satir)?;
                     if deger == konu {
+                        let kapsam = kapsam_baslat(ortam);
                         if let Akis::Don(d) = blok_calistir(govde, ortam, program, cikti, derinlik)? {
                             return Ok(Akis::Don(d));
                         }
+                        kapsam_bitir(ortam, &kapsam);
                         eslesti = true;
                         break;
                     }
                 }
                 if !eslesti {
                     if let Some(blok) = degilse {
+                        let kapsam = kapsam_baslat(ortam);
                         if let Akis::Don(d) = blok_calistir(blok, ortam, program, cikti, derinlik)? {
                             return Ok(Akis::Don(d));
                         }
+                        kapsam_bitir(ortam, &kapsam);
                     }
                 }
             }
@@ -583,17 +611,21 @@ fn blok_calistir(
                     _ => return Err(ic_hata(*satir)),
                 };
                 let baslangic = cikti.an_ms();
+                let kapsam = kapsam_baslat(ortam);
                 if let Akis::Don(d) = blok_calistir(govde, ortam, program, cikti, derinlik)? {
                     return Ok(Akis::Don(d));
                 }
+                kapsam_bitir(ortam, &kapsam);
                 let gecen = cikti.an_ms().saturating_sub(baslangic);
                 // v0 yaklaşımı (RFC-0011 §3): erken iptal yok; süre aşıldıysa
                 // "yetişmezse" kolu geç-kalma bildirimi olarak koşulur.
                 if gecen > sure_ms {
                     if let Some(blok) = yetismezse {
+                        let kapsam = kapsam_baslat(ortam);
                         if let Akis::Don(d) = blok_calistir(blok, ortam, program, cikti, derinlik)? {
                             return Ok(Akis::Don(d));
                         }
+                        kapsam_bitir(ortam, &kapsam);
                     }
                 }
             }
