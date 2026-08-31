@@ -308,6 +308,29 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   seviye bile 8 MB test yığınını aşabildi) — sınıra dokunan tek test
   (derinlik_korkulugu) CLI gibi kendi 64 MB yığınını getirir.
 
+## K-041 — Zamir n'si: iyelikli köke hâl eki
+
+- **bulgu:** Proje kitaplığı yazılırken çıktı: `bilgisayarın_zarı` adına
+  ayrılma eki gelince Türkçe araya zamir n'si koyar (`zarından`), çözümleyici
+  ek listesinde bu biçimler yoktu → A001.
+- **Karar:** Ek listesine iyelikli-kök biçimleri eklendi: `ndan/nden`,
+  `nda/nde`, `na/ne`, `nı/ni/nu/nü` (K-011 listesi sürümlemeli grammar'ın
+  parçası). Yanlış-pozitif adaylar zararsızdır: çözüm kapsamdaki adlara
+  bakar, çakışma zaten A002 ile hatadır.
+- **Etki:** 154 test değişmeden yeşil; `ayşenin yaşından` gibi doğal
+  biçimler artık çalışır. Test: projeler_testi::zamir_nsi_cozulur.
+
+## K-042 — Proje kitaplığı: golden'ın oyun bahçesi
+
+- **Karar:** `projeler/` açıldı (master plan bölüm 16/29 "çocuk proje
+  kitaplığı"): golden korpus dilin belgesi, projeler dilin oyun bahçesi.
+  İlk beş: çarpım tablosu, hikâye makinesi, quiz, zar oyunu, market hesabı.
+  Her proje başında "Öğretilen: ..." satırı + README'de "şunu da dene" fikri.
+- **Kural:** kitaplıktaki her proje regression testindedir
+  (projeler_testi.rs) — çalışmayan örnek bu depoda barınamaz.
+- **Not:** zar oyunu hermetik IO'da deterministiktir ve testi bunu sabitler
+  (determinizm sözü örnek katmanında da sınanıyor).
+
 ## K-012 — Liste sabiti: `3, 7, 1, 9 listesi`
 
 - **Karar:** Virgülle ayrılmış değerler + `listesi`. Boş: `boş liste`.

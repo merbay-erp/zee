@@ -1,0 +1,37 @@
+# Bilgi Yarışması — 3 soru, puanını gör.
+# Öğretilen: cevap karşılaştırma, puan biriktirme, sonuç değerlendirme.
+
+puan 0 olsun
+
+"Türkiye'nin başkenti neresi?" diye sor
+yanıt "Ankara" ya eşitse
+    "Doğru!" yaz
+    puanı 1 artır
+değilse
+    "Yanlış — doğrusu: Ankara" yaz
+
+"7 ile 8 in çarpımı kaçtır?" diye sor
+cevap yanıtın sayısı olsun
+cevap 56 ya eşitse
+    "Doğru!" yaz
+    puanı 1 artır
+değilse
+    "Yanlış — doğrusu: 56" yaz
+
+"Bir haftada kaç gün vardır?" diye sor
+cevap2 yanıtın sayısı olsun
+cevap2 7 ye eşitse
+    "Doğru!" yaz
+    puanı 1 artır
+değilse
+    "Yanlış — doğrusu: 7" yaz
+
+"" yaz
+"Puanın: " ile puan ile " / 3" yaz
+
+puan 3 e eşitse
+    "Mükemmel! Hepsini bildin!" yaz
+değilse puan 2 ye eşitse
+    "Çok iyi!" yaz
+değilse
+    "Tekrar denemek ister misin?" yaz

@@ -1,0 +1,8 @@
+# Çarpım Tablosu — 1'den 10'a kadar bütün tablo.
+# Öğretilen: iç içe döngü, aralık, hizalı çıktı.
+
+1 den 10 a kadar her sayı için
+    "--- " ile sayı ile " tablosu ---" yaz
+    1 den 10 a kadar her çarpan için
+        sonuç sayı ile çarpanın çarpımı olsun
+        sayı ile " x " ile çarpan ile " = " ile sonuç yaz

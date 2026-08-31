@@ -1,0 +1,28 @@
+# Hikâye Makinesi — cevaplarınla kendi masalını yaz.
+# Öğretilen: sorma, cevabı saklama, metin birleştirme.
+
+"Bir kahraman adı söyle:" diye sor
+kahraman yanıt olsun
+
+"Bir hayvan söyle:" diye sor
+hayvan yanıt olsun
+
+"Bir yer söyle:" diye sor
+yer yanıt olsun
+
+"Bir sayı söyle:" diye sor
+gün yanıtın sayısı olsun
+
+"" yaz
+"Bir varmış bir yokmuş..." yaz
+kahraman ile " adında bir kahraman varmış." yaz
+"En yakın arkadaşı bir " ile hayvan ile "mış." yaz
+"Birlikte " ile yer ile " diye bir yere yolculuk etmişler." yaz
+"Yol tam " ile gün ile " gün sürmüş." yaz
+
+gün 7 den büyükse
+    "Uzun bir yolculukmuş doğrusu!" yaz
+değilse
+    "Kısa ama unutulmaz bir yolculukmuş." yaz
+
+"Ve sonsuza dek mutlu yaşamışlar." yaz

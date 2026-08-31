@@ -13,6 +13,7 @@ Bu bir çeviri katmanı değildir (`if→eğer` makyajı yok); AI semantiğin pa
 
 - **Hemen başla:** [docs/baslangic.md](docs/baslangic.md) — 5 dakikada kurulum, ilk proje, araç kutusu
 - **Dili gez:** [docs/dil-turu.md](docs/dil-turu.md) — bütün yüzey, çalışan örneklerle
+- **Oynayarak öğren:** [projeler/](projeler/) — çocuk proje kitaplığı (hepsi regression testte)
 - Dosya uzantısı: **`.dil`** (kalıcı — ADR-009)
 - Master plan: [docs/master-plan.md](docs/master-plan.md) (kaynak: [docs/Turkce_Programlama_Dili_Master_Proje_Dokumani.docx](docs/Turkce_Programlama_Dili_Master_Proje_Dokumani.docx))
 - İlkeler: [MANIFESTO.md](MANIFESTO.md)
@@ -52,7 +53,7 @@ değer/hata erişimi derleme hatası), metin kaçışları ve negatif sabitler,
 Araçlar: `dil çalıştır/denetle(--json, çoklu tanı)/dene/biçimle/hata/yeni` +
 **dillsp** LSP sunucusu ([editors/](editors/)).
 Determinizm testlerde tam: rastgelelik, saat, dosyalar, HTTP, sunucu istekleri,
-sensörler ve an ölçümü IO soyutlamasından gelir — 154 test hermetik koşar.
+sensörler ve an ölçümü IO soyutlamasından gelir — 160 test hermetik koşar.
 
 **Playground:** `playground/olustur.sh` derleyiciyi WebAssembly'e derler ve
 tek dosyalık `playground/zee-playground.html` üretir — çift tıkla aç, tarayıcıda
