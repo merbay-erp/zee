@@ -105,3 +105,30 @@ reddi yaz
 ";
     assert_eq!(kaynagi_calistir(kaynak).expect("çalışmalı"), vec!["2", "9"]);
 }
+
+#[test]
+fn silme_liste_ve_sozluk() {
+    // K-059: ilk eşleşen öğe/anahtar silinir; yoksa sessizce hiçbir şey olmaz.
+    let kaynak = "\
+sayılar 3, 5, 5, 7 listesi olsun
+sayılardan 5 i sil
+sayılardan 99 u sil
+sayıların adedi yaz
+defter boş sözlük olsun
+defterin \"elma\" değeri \"kırmızı\" olsun
+defterin \"muz\" değeri \"sarı\" olsun
+defterden \"elma\" yı sil
+defterdeki her ad için
+    adı yaz
+";
+    assert_eq!(kaynagi_calistir(kaynak).expect("çalışmalı"), vec!["3", "muz"]);
+}
+
+#[test]
+fn silme_tur_bekcileri() {
+    let hata = kaynagi_calistir("sayılar 1, 2 listesi olsun\nsayılardan \"a\" yı sil\n")
+        .expect_err("T011");
+    assert_eq!(hata.kod, "T011");
+    let hata = kaynagi_calistir("veri 5 olsun\nveriden 1 i sil\n").expect_err("T012");
+    assert_eq!(hata.kod, "T012");
+}

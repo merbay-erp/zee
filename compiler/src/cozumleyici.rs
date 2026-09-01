@@ -712,6 +712,44 @@ fn blok_denetle(
                 let satir = *satir;
                 ifade_denetle(deger, ortam, baglam, satir)?;
             }
+            Cumle::Sil { kap, deger, satir } => {
+                let satir = *satir;
+                let kap_turu = ifade_denetle(kap, ortam, baglam, satir)?;
+                let deger_turu = ifade_denetle(deger, ortam, baglam, satir)?;
+                match kap_turu {
+                    Tur::Liste(oge) if oge != VeriTuru::Bilinmeyen => {
+                        if deger_turu != oge.ture() {
+                            return Err(Tani::yeni(
+                                "T011",
+                                format!("{} listesinden {} silinemez.", oge.adi(), deger_turu.adi()),
+                                satir,
+                                1,
+                                1,
+                            ));
+                        }
+                    }
+                    Tur::Sozluk(_) => {
+                        if deger_turu != Tur::Metin {
+                            return Err(Tani::yeni(
+                                "T021",
+                                "Sözlükten silme anahtarla (Metin) yapılır.".into(),
+                                satir,
+                                1,
+                                1,
+                            ));
+                        }
+                    }
+                    baska => {
+                        return Err(Tani::yeni(
+                            "T012",
+                            format!("Silme bir liste ya da sözlük ister; hedef {} türünde.", baska.adi()),
+                            satir,
+                            1,
+                            1,
+                        ));
+                    }
+                }
+            }
             Cumle::CerezYaz { ad, deger, satir } => {
                 let satir = *satir;
                 let ad_turu = ifade_denetle(ad, ortam, baglam, satir)?;

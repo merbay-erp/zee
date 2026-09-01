@@ -179,3 +179,28 @@ fn onekli_rota_kuyrugu_yakalar() {
     assert_eq!(io.sunucu_yanitlari[0].1, "yazı no: 42");
     assert_eq!(io.sunucu_yanitlari[1].1, "ana sayfa");
 }
+
+#[test]
+fn girisli_panel_not_siler() {
+    // K-059 pratiği: dosya-satırı silme SAF ZEE (süz + birleştir + yaz).
+    let kaynak = std::fs::read_to_string("../projeler/girisli-panel.dil").expect("okunmalı");
+    let program = dil::kaynagi_derle(&kaynak).expect("derlenmeli");
+    let mut io = ToplayanIo::yeni(Vec::new());
+    io.istekler = vec!["POST /giris-yap\nparola=zee2026".to_string()].into();
+    calistir_io(&program, &mut io).expect("giriş turu");
+    let (_, kimlik) = io.yazilan_cerezler[0].clone();
+
+    let mut io2 = ToplayanIo::yeni(Vec::new());
+    io2.dosyalar = io.dosyalar.clone();
+    io2.istekler = vec![
+        format!("POST /kaydet\nçerez oturum={}\nnot=Silinecek", kimlik),
+        format!("POST /kaydet\nçerez oturum={}\nnot=Kalacak", kimlik),
+        format!("/sil?not=Silinecek\nçerez oturum={}", kimlik),
+        "/".to_string(),
+    ]
+    .into();
+    calistir_io(&program, &mut io2).expect("silme turu");
+    let son = &io2.sunucu_yanitlari[3].1;
+    assert!(son.contains("Kalacak"), "{}", son);
+    assert!(!son.contains("Silinecek"), "silinen not listede kalmamalı: {}", son);
+}

@@ -848,6 +848,26 @@ fn blok_calistir(
                     _ => return Err(ic_hata(*satir)),
                 }
             }
+            Cumle::Sil { kap, deger, satir } => {
+                let ad = match kap {
+                    Ifade::Degisken { cozulmus: Some(ad), .. } => ad.clone(),
+                    _ => return Err(ic_hata(*satir)),
+                };
+                let aranan = degerlendir(deger, ortam, program, cikti, derinlik, *satir)?;
+                match ortam.get_mut(&ad) {
+                    Some(Deger::Liste(ogeler)) => {
+                        // İlk eşleşen öğe çıkar; yoksa sessizce hiçbir şey olmaz (K-059).
+                        if let Some(yer) = ogeler.iter().position(|o| degerler_esit(o, &aranan)) {
+                            ogeler.remove(yer);
+                        }
+                    }
+                    Some(Deger::Sozluk(girdiler)) => {
+                        let anahtar = aranan.metne();
+                        girdiler.retain(|(a, _)| *a != anahtar);
+                    }
+                    _ => return Err(ic_hata(*satir)),
+                }
+            }
             Cumle::HerBiri { ad, kaynak, govde, satir } => {
                 let kaynak = kaynak.as_ref().ok_or_else(|| ic_hata(*satir))?;
                 let ogeler = match degerlendir(kaynak, ortam, program, cikti, derinlik, *satir)? {

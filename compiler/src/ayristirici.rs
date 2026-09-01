@@ -306,6 +306,33 @@ impl Ayristirici {
             Some("azalt") => self.artir_azalt_ayristir(satir_tokenlari, satir_no, false),
             Some("sor") => self.sor_ayristir(satir_tokenlari, satir_no),
             Some("ekle") => self.ekle_ayristir(satir_tokenlari, satir_no),
+            // Silme (K-059): "<kap>tan <değer> [ayrık ek] sil".
+            Some("sil") => {
+                let mut t = satir_tokenlari;
+                t.pop(); // sil
+                // Değerle "sil" arasında ayrık belirtme eki olabilir: "5 i sil".
+                if t.len() == 3 {
+                    if let TokenTur::Kelime(k) = &t[2].tur {
+                        if ["i", "ı", "u", "ü", "yi", "yı", "yu", "yü"].contains(&k.as_str()) {
+                            t.pop();
+                        }
+                    }
+                }
+                if t.len() == 2 {
+                    let kap = tekil_ifade(t[0].clone())?;
+                    let deger = tekil_ifade(t[1].clone())?;
+                    Ok(Cumle::Sil { kap, deger, satir: satir_no })
+                } else {
+                    Err(Tani::yeni(
+                        "S042",
+                        "Silme \"<kap>tan <değer> sil\" biçiminde yazılır.".into(),
+                        satir_no,
+                        1,
+                        1,
+                    )
+                    .onerili("Örnek: sayılardan 5 i sil · defterden \"elma\" yı sil".into()))
+                }
+            }
             Some("döndür") => self.dondur_ayristir(satir_tokenlari, satir_no),
             Some("böl") => self.bol_ayristir(satir_tokenlari, satir_no),
             Some("göre") => self.gore_ayristir(satir_tokenlari, satir_no),

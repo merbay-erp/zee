@@ -46,6 +46,7 @@ türetilmiştir; yeni kod eklenince bu dosya güncellenir — CI'a bağlanması 
 | S032 | Ondalık kısım 9 haneden uzun | Ondalık hassasiyeti en çok 9 hanedir (RFC-0013) |
 | S033 | Boşluk-virgül-rakam dizisi belirsiz | Ondalıksa bitişik yaz (`3,14`); liste ayracıysa virgülden sonra boşluk bırak (`3, 14`) |
 | S041 | Yönlendirme biçimi | `"/liste" adresine yönlendir` (K-051) |
+| S042 | Silme biçimi | `sayılardan 5 i sil` · `defterden "elma" yı sil` (K-059) |
 | S040 | Bilinmeyen kaçış dizisi | Metinde yalnız \" (tırnak), \\\\ (ters bölü) ve \\n (yeni satır) geçerli |
 | S034 | Birim kullanımı biçimi | `hesaplar birimini kullan` — aynı klasördeki hesaplar.dil dosyasını alır |
 | S035 | Sunucu açma biçimi | `8080 kapısında sunucu başlat` |
