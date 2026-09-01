@@ -244,7 +244,11 @@ bu sözleşmeyi kullanır. `yerel_bağımlılıklar` başka zee projelerini pake
 olarak bağlar; `X paketini kullan` doğrudan bağımlılığı alır. `dil kilitle`
 geçişli grafiği göreli yol, sürüm, kenar ve SHA-256 kaynak özetiyle
 deterministik `proje.kilit` dosyasına sabitler. Registry, imza/provenance,
-SBOM ve uzak sürüm çözümü henüz başlamamıştır.
+SBOM ve uzak sürüm çözümü bu aşamada henüz başlamamıştı. K-094'te deterministik
+`.zep`, Ed25519 yayın bildirimi, SPDX 3.0.1 SBOM ve SLSA v1 provenance çalışan
+ilk dağıtım çekirdeğine dönüştü. Uzak registry rol zinciri, doğrulanmış cache,
+yanked/duyuru ve exact sürüm istemcisi henüz tamamlanmamıştır; V1-P1-07 açık
+kalır.
 `dil ekle <yerel-yol> [proje]` (K-079) aday grafiği diske yazmadan çözer;
 başarılıysa yorumu koruyan resmî biçimde bildirimi ve kilidi günceller,
 yazma hatasında önceki iki dosyayı geri yüklemeyi dener.

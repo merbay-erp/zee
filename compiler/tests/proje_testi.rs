@@ -393,6 +393,7 @@ fn yeni_komutu_proje_bildirimi_uretir() {
     let git_yoksay = std::fs::read_to_string(proje.join(".gitignore")).expect("gitignore");
     assert!(git_yoksay.contains(".zee-yazma-kilidi"));
     assert!(git_yoksay.contains("*.zee-gecici-*"));
+    assert!(git_yoksay.contains("*.zee-anahtar"));
 
     let dene = Command::new(env!("CARGO_BIN_EXE_dil"))
         .arg("dene")

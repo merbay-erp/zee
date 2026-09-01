@@ -2,8 +2,8 @@
 
 - **Durum:** **geçici kabul — birim (§2), proje (§3), yerel paket + kilit
   (§4.1), tam public kaynak ABI'si** (K-029/K-076/K-078/K-086; onay kapısı:
-  usability). Uzak registry,
-  yayın ve imza katmanı (§4.2) TASLAK — Faz 5.
+  usability). K-094 yayın çekirdeği RFC-0020/spec-18'de çalışır; uzak registry
+  istemcisi §4.2/ADR-006/RFC-0020 §6 kapsamında sürmektedir.
 - **Tarih:** 31 Ağustos 2026
 - **İlgili günlük kayıtları:** master plan bölüm 7 ("modül mü birim mi; kullanıcı testiyle karar"), bölüm 14
 - **Gerçekleme:** `lib.rs` (kökenli yükleyici + T039 public sınırı),
@@ -138,12 +138,17 @@ durur. Başarılı kaldırma K-079'un aday-grafik-doğrulama ve iki dosyalı ger
 sözleşmesini kullanır. Kaldırılan doğrudan paket başka bir paketin bağımlılığı
 ise çözülmüş grafikte geçişli olarak kalabilir.
 
-### 4.2 Uzak paketler ve yayın (Faz 5 — taslak)
+### 4.2 Uzak paketler ve yayın (Faz 5 — K-094 yayın çekirdeği)
 
-- Registry adına göre `dil ekle <ad>`, sürüm aralığı ve adresleme ayrıca
-  tasarlanacaktır; var olan komut yalnız açık yerel yolu kabul eder.
-- `dil paketle` / `dil yayınla` Faz 5
-  (imza, provenance, SBOM — bölüm 14/18 gereksinimleri o RFC'lerde).
+- `dil anahtar üret` ve `dil paketle`, deterministik `.zep`, SPDX 3.0.1 SBOM,
+  SLSA v1 provenance ve Ed25519 `zee-yayin-v1` üretir. Kesin biçim ve saldırı
+  sınırları RFC-0020 §1–5 ile spec/18'dedir.
+- Registry adına göre uzak `dil ekle <ad@X.Y.Z>`, eşik kök rol zinciri,
+  doğrulanmış cache, yanked ve duyuru ADR-006/RFC-0020 §6 kararına bağlıdır;
+  henüz çalışan yüzey değildir. Var olan `dil ekle` yalnız açık yerel yolu
+  kabul eder.
+- Sürüm aralığı bilinçli olarak kararlaştırılmamıştır; ilk uzak istemci exact
+  `X.Y.Z` dışında seçim yapmayacaktır.
 - Paket adları küçük harf Türkçe tanımlayıcıdır; typosquatting/confusable
   denetimi RFC-0002'nin S028 altyapısını registry tarafında yeniden kullanır.
 

@@ -7,8 +7,8 @@ Türkçenin doğal akışına göre tasarlanmış **deterministik** genel amaçl
 Bu bir çeviri katmanı değildir (`if→eğer` makyajı yok); AI semantiğin parçası değildir.
 
 - Geçici dosya uzantısı: **`.dil`**
-- Master plan: [docs/master-plan.md](docs/master-plan.md) (kaynak: [docs/Turkce_Programlama_Dili_Master_Proje_Dokumani.docx](docs/Turkce_Programlama_Dili_Master_Proje_Dokumani.docx))
-- İlkeler: [MANIFESTO.md](MANIFESTO.md)
+- Master plan: [docs/master-plan.md](../master-plan.md) (kaynak: [docs/Turkce_Programlama_Dili_Master_Proje_Dokumani.docx](../Turkce_Programlama_Dili_Master_Proje_Dokumani.docx))
+- İlkeler: [MANIFESTO.md](../../MANIFESTO.md)
 
 ## Durum: Faz 0 — Felsefe ve grammar discovery
 
@@ -18,20 +18,20 @@ korpus üzerinde regression testine girer.
 
 | Ne | Nerede | Durum |
 |---|---|---|
-| Manifesto ve değişmez ilkeler | [MANIFESTO.md](MANIFESTO.md) | ✅ ilk sürüm |
-| 30 golden program | [golden/](golden/) | ✅ ilk taslak — hepsi **geçici** sözdizimi |
-| 10 anti-örnek | [anti-ornekler/](anti-ornekler/) | ✅ ilk sürüm |
-| Syntax karar günlüğü | [kararlar/gunluk.md](kararlar/gunluk.md) | ✅ işleniyor |
-| RFC süreci | [rfcs/](rfcs/) | 📋 şablon + planlanan liste |
-| ADR süreci | [adr/](adr/) | 📋 şablon + planlanan liste |
-| Spesifikasyon | [spec/](spec/) | ⏳ korpus olgunlaşınca |
+| Manifesto ve değişmez ilkeler | [MANIFESTO.md](../../MANIFESTO.md) | ✅ ilk sürüm |
+| 30 golden program | [golden/](../../golden/) | ✅ ilk taslak — hepsi **geçici** sözdizimi |
+| 10 anti-örnek | [anti-ornekler/](../../anti-ornekler/) | ✅ ilk sürüm |
+| Syntax karar günlüğü | [kararlar/gunluk.md](../../kararlar/gunluk.md) | ✅ işleniyor |
+| RFC süreci | [rfcs/](../../rfcs/) | 📋 şablon + planlanan liste |
+| ADR süreci | [adr/](../../adr/) | 📋 şablon + planlanan liste |
+| Spesifikasyon | [spec/](../../spec/) | ⏳ korpus olgunlaşınca |
 
 ### Golden korpus hakkında
 
 - Programlar kolaydan zora doğru numaralıdır (`01`–`30`) ve her biri başındaki
   yorumda **neyi sınadığını** ve varsa **açık kararları** belirtir.
 - Buradaki her sözdizimi **önerdir, söz değildir.** Kesinleşme RFC ile olur;
-  gerekçeler [kararlar/gunluk.md](kararlar/gunluk.md)'de tutulur.
+  gerekçeler [kararlar/gunluk.md](../../kararlar/gunluk.md)'de tutulur.
 - Master plandaki kategorilerden PostgreSQL/SQLite, basit 2D oyun ve paket
   oluşturma bilinçli olarak korpus dışıdır: bunlar stdlib/CLI API tasarımı
   gerektirir ve korpusun sonraki genişletmesinde eklenecektir.

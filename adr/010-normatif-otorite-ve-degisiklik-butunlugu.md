@@ -64,6 +64,24 @@ Kullanıcıya görünen bir dil/araç davranışı ancak gerekenlerin tamamı va
 
 Bu zincirin bir halkası eksikse özellik release-gate'te açık kalır.
 
+### 4. Dokümantasyon tazelik kapısı
+
+Her toplu geliştirme işinin etki incelemesi; spec, RFC/ADR indeksleri, hata
+kataloğu, sürüm notu, v1 kapısı, master plan, README ve ilgili rehberleri
+kapsar. Gereken belge kodla **aynı commit** içindedir; belgeyi sonraya bırakmak
+tamamlanma değildir. Değişmeyen dosya, “etkilenmedi” kararının sonucudur.
+
+Makine en az şu yapısal bayatlıkları CI'da engeller:
+
+- kaynak tanısı ↔ `docs/hata-katalogu.md` birebirliği;
+- her RFC/ADR/spec dosyasının kendi indeksinde bulunması;
+- depo içi Markdown bağlantılarının var olan hedefe gitmesi.
+
+Anlamsal bayatlık bütünüyle otomatik bulunamaz. Bu nedenle son kullanıcıya
+görünen gerçek, `docs/surumler.md` ve `docs/v1-surum-kapilari.md` içinde açık
+özellik/eksik kanıt ayrımıyla elle doğrulanır. Proje kökündeki `AGENTS.md` bu
+kapıyı sonraki geliştirme oturumları için kalıcı çalışma kuralı yapar.
+
 ## Sonuçlar
 
 - Spec güncel dil için tek okunacak yer olur; RFC geçmişi silmeden gerekçeyi

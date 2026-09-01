@@ -121,6 +121,17 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   korpusuyla 360 test ve 142 etkin + 1 ayrılmış kod yeşildir. V1-P1-05'in
   makine tarafı tamamdır; gerçek çocuk/profesyonel usability sonucu gelmeden
   kapı dürüstçe açık kalır.
+- **Tekrar üretilebilir paket yayını** (K-094, ADR-006/RFC-0020/spec-18):
+  `dil anahtar üret` var olanı ezmeyen Unix 0600 Ed25519 yayıncı anahtarı ve
+  yeni proje iskeletlerinde `*.zee-anahtar` Git dışlama koruması;
+  `dil paketle` platform metadata'sı taşımayan sıralı `.zep`, SPDX 3.0.1
+  JSON-LD SBOM, in-toto/SLSA v1 provenance ve üçünü ad+boyut+SHA-256 ile
+  imzalayan `zee-yayin-v1` üretir. `SOURCE_DATE_EPOCH` ile dört dosya byte-byte
+  yinelenir. İmza/paket/SBOM/provenance oynama, path traversal/fazladan byte,
+  sembolik bağ ve yerel yol bağımlılığı fail-closed testlidir. P012 eklendi.
+  Bu yayın öz-imzası tek başına registry güveni değildir; TUF tarzı eşik kök,
+  targets/snapshot/timestamp, doğrulanmış cache, yanked ve duyuru tamamlanana
+  kadar V1-P1-07 açık kalır. Doküman tazelik testiyle toplam 370 test yeşildir.
 
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`

@@ -141,6 +141,8 @@ fn govde() -> ExitCode {
         Some("çıkar") | Some("cikar") => cikar_komutu(&argumanlar),
         Some("ekle") => ekle_komutu(&argumanlar),
         Some("kilitle") => kilitle_komutu(&argumanlar),
+        Some("anahtar") => anahtar_komutu(&argumanlar),
+        Some("paketle") => paketle_komutu(&argumanlar),
         Some("paketler") => paketler_komutu(&argumanlar),
         Some("hata") => hata_komutu(&argumanlar),
         Some("belge") => belge_komutu(&argumanlar),
@@ -177,6 +179,8 @@ fn kullanim() {
     eprintln!("  dil ekle <yerel-yol> [proje] yerel paketi doğrulayıp ekler ve kilitler");
     eprintln!("  dil çıkar <paket> [proje]    kullanılmayan doğrudan paketi kaldırır");
     eprintln!("  dil kilitle <proje>         yerel bağımlılıkları proje.kilit'e sabitler");
+    eprintln!("  dil anahtar üret <dosya>    0600 izinli Ed25519 yayıncı anahtarı üretir");
+    eprintln!("  dil paketle [proje] --anahtar <dosya> [--çıktı <klasör>]");
     eprintln!("  dil paketler [proje]        doğrudan/geçişli bağımlılık grafiğini gösterir");
     eprintln!("  dil hata <kod>             bir hata kodunu açıklar (örn. dil hata T001)");
     eprintln!(
@@ -355,7 +359,7 @@ fn yeni_komutu(argumanlar: &[String]) -> ExitCode {
         "# {}\n\nTürkçe programlama diliyle yazılmış bir proje. `proje.dil` giriş dosyasını, sürümü, morfoloji profilini ve yerel bağımlılıkları tanımlar; `proje.kilit` bağımlılık kararını sabitler.\n\n```bash\ndil çalıştır .\n```\n\n```bash\ndil dene .\n```\n\nDenetim: `dil denetle .` · Bütün projeyi biçimle: `dil biçimle .` · Bağımlılıkları sabitle: `dil kilitle .` · Hata açıklama: `dil hata <kod>`\n",
         ad
     );
-    let git_yoksay = ".zee-yazma-kilidi\n*.zee-gecici-*\n";
+    let git_yoksay = ".zee-yazma-kilidi\n*.zee-gecici-*\n*.zee-anahtar\n";
     let sonuc = std::fs::create_dir(klasor)
         .and_then(|_| std::fs::write(klasor.join("program.dil"), program))
         .and_then(|_| std::fs::write(klasor.join("proje.dil"), bildirim))
@@ -469,6 +473,96 @@ fn kilitle_komutu(argumanlar: &[String]) -> ExitCode {
         Err(hata) => {
             eprintln!("{}", hata);
             ExitCode::from(2)
+        }
+    }
+}
+
+fn anahtar_komutu(argumanlar: &[String]) -> ExitCode {
+    if argumanlar.len() != 3 || !matches!(argumanlar[1].as_str(), "üret" | "uret") {
+        eprintln!("Kullanım: dil anahtar üret <dosya>");
+        return ExitCode::from(2);
+    }
+    let yol = std::path::Path::new(&argumanlar[2]);
+    match dil::tedarik::anahtar_uret(yol) {
+        Ok(kimlik) => {
+            println!("Yayıncı anahtarı üretildi: {}", yol.display());
+            println!("Açık anahtar kimliği: {}", kimlik);
+            println!("Özel anahtarı paylaşma; güvenli bir yedeğini ayrı yerde sakla.");
+            ExitCode::SUCCESS
+        }
+        Err(hata) => {
+            eprintln!("P012: Anahtar üretilemedi: {}", hata);
+            ExitCode::FAILURE
+        }
+    }
+}
+
+fn paketle_komutu(argumanlar: &[String]) -> ExitCode {
+    let mut proje: Option<&str> = None;
+    let mut anahtar: Option<&str> = None;
+    let mut cikti: Option<&str> = None;
+    let mut i = 1;
+    while i < argumanlar.len() {
+        match argumanlar[i].as_str() {
+            "--anahtar" => {
+                let Some(deger) = argumanlar.get(i + 1) else {
+                    eprintln!("--anahtar ardından özel anahtar dosyası ister.");
+                    return ExitCode::from(2);
+                };
+                if anahtar.replace(deger).is_some() {
+                    eprintln!("--anahtar birden çok kez verilemez.");
+                    return ExitCode::from(2);
+                }
+                i += 2;
+            }
+            "--çıktı" | "--cikti" => {
+                let Some(deger) = argumanlar.get(i + 1) else {
+                    eprintln!("--çıktı ardından klasör ister.");
+                    return ExitCode::from(2);
+                };
+                if cikti.replace(deger).is_some() {
+                    eprintln!("--çıktı birden çok kez verilemez.");
+                    return ExitCode::from(2);
+                }
+                i += 2;
+            }
+            bilinmeyen if bilinmeyen.starts_with('-') => {
+                eprintln!("Bilinmeyen paketle seçeneği: {}", bilinmeyen);
+                return ExitCode::from(2);
+            }
+            yol => {
+                if proje.replace(yol).is_some() {
+                    eprintln!(
+                        "Kullanım: dil paketle [proje] --anahtar <dosya> [--çıktı <klasör>]"
+                    );
+                    return ExitCode::from(2);
+                }
+                i += 1;
+            }
+        }
+    }
+    let Some(anahtar) = anahtar else {
+        eprintln!("Paket imzası için --anahtar <dosya> gerekli.");
+        return ExitCode::from(2);
+    };
+    let proje = std::path::Path::new(proje.unwrap_or("."));
+    let varsayilan_cikti = proje.join("hedef").join("paket");
+    let cikti = cikti
+        .map(std::path::PathBuf::from)
+        .unwrap_or(varsayilan_cikti);
+    match dil::tedarik::paketle(proje, std::path::Path::new(anahtar), &cikti) {
+        Ok(uretim) => {
+            println!("Paketlendi: {}", uretim.paket.display());
+            println!("SHA-256: {}", uretim.paket_ozeti);
+            println!("SBOM: {}", uretim.sbom.display());
+            println!("Provenance: {}", uretim.provenance.display());
+            println!("İmzalı yayın: {}", uretim.yayin.display());
+            println!("Yayıncı: {}", uretim.yayinci_anahtar_kimligi);
+            ExitCode::SUCCESS
+        }
+        Err(hata) => {
+            eprintln!("P012: Paketlenemedi: {}", hata);
+            ExitCode::FAILURE
         }
     }
 }

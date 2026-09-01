@@ -25,10 +25,11 @@ Dil değişikliği RFC ister (master plan bölüm 25). Şablon: [0000-sablon.md]
 | RFC-0017 | [Web Oturumu, Yetki, CSRF ve Güvenilir Proxy](0017-web-oturum-ve-csrf.md) | **geçici kabul** | K-082, K-088, V1-P0-03 |
 | RFC-0018 | [Sürümlü Morfoloji Profili](0018-surumlu-morfoloji-profili.md) | **geçici kabul** | K-011, K-072, K-089, V1-P1-02 |
 | RFC-0019 | [Değer Semantiği ve Gezme İmleci](0019-deger-semantigi-ve-gezme-imleci.md) | **geçici kabul** (makine kanıtı; usability bekliyor) | K-034, K-060, K-074, K-093, V1-P1-05 |
+| RFC-0020 | [Paket Yayını ve Registry Güven Zinciri](0020-paket-yayini-ve-registry-guveni.md) | **geçici kabul** (K-094 yayın çekirdeği; uzak POUF gerçekleniyor) | K-094, V1-P1-07, ADR-006 |
 
-**Durum özeti (1 Eylül 2026, K-093):** 19 RFC — 2 kabul (0001, 0010),
-15 geçici kabul (yüzey gerçeklendi + korpusla/testle sabitlendi; onay kapısı
-usability oturumları), 2 taslak: 0012 (FFI — Faz 4/5) ve 0014 (standart
-kitaplık — çalışan prototiple).
+**Durum özeti (1 Eylül 2026, K-094):** 20 RFC — 2 kabul (0001, 0010),
+16 geçici kabul (RFC-0020'nin yalnız yayın çekirdeği normatiftir; uzak kayıt
+istemcisi tamamlanmadan registry sözü verilmez), 2 taslak: 0012 (FFI — Faz
+4/5) ve 0014 (standart kitaplık — çalışan prototiple).
 Kural: bir RFC ancak yüzeyi gerçeklenmiş VE regression testine bağlanmışsa
 geçici kabule geçer; tam kabul usability kapısından geçmeyi bekler.
