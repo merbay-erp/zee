@@ -32,7 +32,7 @@ use self::baglam::{Baglam, Imza, ImzaKaydi};
 use self::cagri::cagri_denetle;
 use self::cumle::blok_denetle;
 use self::donus::{blok_kesin_sonlanir, donusleri_birlestir, donusleri_sarmala};
-use self::ifade::ifade_denetle;
+use self::ifade::{hir_ifadesi_kaydet, ifade_denetle};
 use self::sembol::{
     alan_cozumle, kapsam_baslat, kapsam_bitir, sembol_cozumle, SembolTablosu,
 };

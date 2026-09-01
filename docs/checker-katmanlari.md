@@ -50,10 +50,10 @@ Tek-tanı ve çoklu-tanı girişleri aynı katmanları aynı sırada kullanır.
 - B-010/K-101, yapı/işlem/sembol kimliklerini kararlı newtype'lara taşıdı;
   ayrıntılı sahiplik [semantic kimlik rehberindedir](semantic-kimlik-modeli.md).
 - B-018/K-102 kaynak→token→parsed→bağlı program fazlarını türledi. K-103,
-  checker sonucunu ayrı Typed HIR tür/bağ kaydına taşıdı; B-019'un kalan
-  dilimi runtime'ın kaynak adıyla semantic karar vermesini bitirecektir.
+  checker sonucunu ayrı Typed HIR tür/bağ kaydına taşıdı; K-104 runtime'ın
+  kaynak adıyla semantic karar vermesini bitirdi ve B-019'u kapattı.
 - B-017, katmanlar arası AST/HIR değişmezlerini debug/test aşamasında ayrıca
   doğrulayacaktır.
 
-B-007/B-017 açık, B-019 kısmen kalır; K-101 semantic ID, K-102 faz tipi ve
-K-103 typed HIR üretim temelini kapatır.
+B-007/B-017 açık kalır; K-101 semantic ID, K-102 faz tipi, K-103 typed HIR
+üretimi ve K-104 runtime tüketim temelini kapatır.

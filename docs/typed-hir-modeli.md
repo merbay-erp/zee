@@ -4,7 +4,7 @@ Bu belge ADR-016'nın uygulama rehberidir. Faz sırası için
 [derleyici faz modeli](derleyici-faz-modeli.md), kimlik kuralları için
 [semantic kimlik modeli](semantic-kimlik-modeli.md) birlikte okunur.
 
-## K-103 ile kurulan çekirdek
+## K-103/K-104 ile çalışan hat
 
 ```text
 Parsed AST
@@ -14,14 +14,16 @@ Bound AST + HirOlusturmaBilgisi
    │ zorunlu lowering
    ▼
 HirProgram
-   ├─ HirDugumId → Tur
+   ├─ HirDugumId → HirIfadeTuru::Deger(Tur) / DegerDondurmez
    ├─ HirDugumId → SymbolId / IslemId / YapiId
    ├─ semantic ID → canonical tanım
    └─ salt-okunur kaynak AST (tanı ve v0 uyumluluğu)
 ```
 
 `BaglanmisProgram` artık `HirProgram` taşır. `hir().ifade_bilgisi(ifade)` bir
-ifadenin düğüm kimliğini, checker'ın kanıtladığı türü ve semantic bağını verir.
+ifadenin düğüm kimliğini, checker'ın kanıtladığı değer/dönüşsüz türünü ve
+semantic bağını verir. Değer konumunda olmayan çağrı cümlesi türsüz bırakılmaz;
+`HirIfadeTuru::DegerDondurmez` taşır.
 `sembol_adi`, `islem` ve `yapi` sorguları depolama konumunu ID'den ayrı tutar.
 
 ## Neden AST hemen silinmedi?
@@ -31,12 +33,17 @@ formatter, LSP ve Türkçe tanılar da kaynak yazımına ihtiyaç duyar. AST'yi 
 committe kopya bir dev enum'a çevirmek, semantik kazanım olmadan geniş hata
 yüzeyi oluşturur. Bunun yerine geçiş iki kanıtlı dilimdir:
 
-1. K-103: typed HIR kaydı zorunlu faz ürünü olur.
-2. B-019 ardılı: standart runtime değişken/işlem/yapı kararlarını yalnız HIR
-   bağlarından alır; kaynak adı yalnız tanı/gösterim verisidir.
+1. K-103: typed HIR kaydı zorunlu faz ürünü oldu.
+2. K-104: standart runtime ve `dene`, değişken/işlem/yapı kararlarını yalnız
+   HIR bağlarından almaya başladı; kaynak adı yalnız tanı/gösterim verisidir.
 
-Bu ikinci dilim bitmeden backlog kapatılmaz. Raw `Program` alan v0 API'nin
-ad-temelli davranışı uyumluluk sınırıdır, yeni iç kod için örnek değildir.
+B-019 iki dilimle kapandı. Raw `Program` alan v0 API'nin ad-temelli davranışı
+uyumluluk sınırıdır, yeni iç kod için örnek değildir.
+
+`yorumlayici/hir_gecisi.rs` iki yürütme kolunu açıkça ayırır. HIR kolu bağ
+bulamazsa kaynak adına geri düşmez; iç değişmez hatası verir. Scheduler görev
+ifadelerini klonlamak yerine özgün düğümü ödünç alır, böylece HIR kimliği
+eşzamanlı yürütmede korunur.
 
 ## Düğüm kimliği ve ömür
 

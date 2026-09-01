@@ -1441,10 +1441,28 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   HIR kaydını bulmak için private locator'dır. Public semantic düğüm kimliği
   `HirDugumId`dir; kutulu program yer değiştirmez ve bağlı program klonlanmaz.
 - **Dürüst sınır:** Runtime henüz bütün semantic kararlarını HIR bağından
-  almıyor. B-019/V1-P0-14 bu geçiş tamamlanana kadar KISMEN'dir; zorunlu
-  source span B-020'dir. Zee kaynak semantiği ve normatif spec değişmedi.
+  almıyordu. K-104 sonradan bu geçişi tamamlayıp B-019/V1-P0-14'ü kapattı;
+  zorunlu source span B-020'dir. Zee kaynak semantiği ve normatif spec değişmedi.
 - **Kanıt:** ADR-016, typed HIR rehberi; ifade türü+SymbolId, işlem/yapı ID
   dizini ve HIR'sız bağlı programı reddeden üç yeni test. Toplam 409 test.
+
+## K-104 — Standart runtime'ı HIR bağlarına geçir (1 Eyl)
+
+- **Karar:** Fazlı çalıştırma ve `dene`, `CalistirmaProgrami::Hir` kolunu
+  kullanır. Bu kol değişken, işlem ve yapı seçimlerini yalnız `HirBagi`ndan
+  alır; kaynak adı eksik/bozuksa ona geri düşerek semantic karar uydurmaz.
+- **Uyumluluk:** Raw `Program` alan v0 embedding API'si ayrı `Ham` kolunda
+  ad-temelli davranışını korur. Zee kaynak dili, çıktı, tanı ve scheduler
+  sırası değişmedi.
+- **Eşzamanlılık:** Görev ifadesi klonlanmaz; özgün AST/HIR düğümünü ödünç
+  alır. Böylece checker'ın düğüm bağı scheduler future'ında da korunur.
+- **Mimari:** HIR/raw adaptörü 140 satır bütçeli
+  `yorumlayici/hir_gecisi.rs` sahibidir; runtime ve faz kökleri ilanlı
+  bütçelerini aşmaz.
+- **Kanıt:** Değişken kaynak adını ve işlem+yapı adlarını checker sonrasında
+  bilerek bozan iki test yalnız HIR ID'leriyle aynı sonucu üretir. Standard
+  runtime mimari testi ve dönüşsüz çağrının açık HIR türüyle dört yeni test,
+  toplam 413 test; B-019 ve V1-P0-14 kapandı.
 
 ---
 

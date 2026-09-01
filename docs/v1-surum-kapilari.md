@@ -3,7 +3,7 @@
 Bu liste bir dilek listesi değildir: `1.0.0` etiketi bu kapılar kapatılmadan
 atılmaz. Amaç yeni özellik sayısını büyütmek değil, çocuktan profesyonele aynı
 dilin verdiği sözleri kanıtlamaktır. Bulgular 1 Eylül 2026'da derleyici
-kaynakları, spec, RFC'ler ve 409 test üzerinden yeniden doğrulanmıştır.
+kaynakları, spec, RFC'ler ve 413 test üzerinden yeniden doğrulanmıştır.
 
 Durumlar: **KAPALI** = kanıtı var · **AÇIK** = v1 engeli · **KARAR** = önce
 normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
@@ -25,7 +25,7 @@ normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
 | V1-P0-11 Checker semantik kuralları tek sahipli katmanlardadır | **KAPALI (K-100)** | Checker kökü yalnız geçiş sırası ve public yeniden dışa aktarımı taşır; tür, bağlam, sembol, akış, çağrı, sözleşme, etki/yetkinlik ve dönüş kuralları ayrı modüllerdedir. | ADR-013 + [checker katman rehberi](checker-katmanlari.md); beş kaynak-mimari testi kök bütçesini, katman sahipliğini ve public API'yi korur. Kaynak semantiği değişmeden toplam 398 test yeşildir. |
 | V1-P0-12 Semantic identity depolama konumundan ayrıdır | **KAPALI (K-101)** | Yapı, işlem ve sembol bağları `YapiId`/`IslemId`/`SymbolId` taşır. `Tur::Yapi` vektör indeksi değildir; işlem imzası/özyineleme ID ile anahtarlanır ve çözülmüş AST kaynak adının yanında kimliği korur. | ADR-014 + [semantic kimlik rehberi](semantic-kimlik-modeli.md); yapı depolama ve işlem çağrı sırası tersleme, SymbolId bağı ve indeks-gerileme mimari testi. Toplam 402 test yeşildir. |
 | V1-P0-13 Derleyici veri fazları kodda ayırt edilebilirdir | **KAPALI (K-102)** | Kaynak, token, parsed AST, bağlanmamış ve checker'dan geçmiş bağlı program ayrı Rust türleridir. Standart çalıştırma bağlı program ister; eski raw `Program` yalnız uyumluluk adaptörüdür. | ADR-015 + [faz modeli](derleyici-faz-modeli.md); parsed/bound bağ testi, eski API eşdeğerliği, standart-hat mimari testi ve yanlış geçişin derlenmediği compile-fail kanıtı. Toplam 406 test yeşildir. |
-| V1-P0-14 Runtime typed HIR bağlarını tüketir | **KISMEN (K-103 çekirdek)** | Bağlı program her denetlenmiş ifade için `HirDugumId`, açık tür ve semantic ID bağı taşıyan zorunlu `HirProgram` üretir. Kaynak AST tanı/v0 uyumluluğu için korunur. | ADR-016 + [typed HIR modeli](typed-hir-modeli.md); tür/SymbolId, işlem/yapı ID dizini ve HIR'sız bağlı-program gerilemesi için üç test. Toplam 409 test yeşildir. Kapanış: standart runtime'ın değişken/işlem/yapı kararlarında yalnız HIR bağını kullanması. |
+| V1-P0-14 Runtime typed HIR bağlarını tüketir | **KAPALI (K-103/K-104)** | Bağlı program her denetlenmiş ifade için `HirDugumId`, açık `Deger(Tur)`/`DegerDondurmez` türü ve semantic ID bağı taşıyan zorunlu `HirProgram` üretir. Standart runtime ve `dene` değişken/işlem/yapı kararlarını yalnız `HirBagi` ile yapar; kaynak AST tanı/v0 uyumluluğu için korunur. | ADR-016 + [typed HIR modeli](typed-hir-modeli.md); tür/SymbolId, dönüşsüz çağrı, işlem/yapı ID dizini, HIR'sız bağlı program, bozulan kaynak adına rağmen ID ile çalışma ve standard-hat mimari kanıtları. Toplam 413 test yeşildir. |
 
 ## P1 — profesyonel kapasite kapıları
 
@@ -67,8 +67,8 @@ normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
    kapattı. K-100 checker semantik katmanlarını tek sahipli hale getirip
    V1-P0-11'i kapattı. K-101 semantic identity'yi depolama konumundan ayırıp
    V1-P0-12'yi kapattı. K-102 gerçek veri fazlarını türleyip V1-P0-13'ü
-   kapattı. K-103 typed HIR üretim çekirdeğini kurdu; sıradaki omurga işi
-   B-019 runtime tüketim dilimidir.
+   kapattı. K-103 typed HIR üretim çekirdeğini, K-104 bağlı runtime tüketimini
+   tamamlayıp V1-P0-14'ü kapattı; sıradaki omurga işi B-020 source span'dir.
 8. Yeni dil özelliğinden önce bağlayıcı sıra
    [öncelikli backlog](oncelikli-backlog.md) içindeki P0 compiler omurgasıdır.
 

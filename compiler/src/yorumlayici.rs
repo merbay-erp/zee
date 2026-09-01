@@ -4,10 +4,13 @@
 //! döner; CLI bunu ekrana basar, testler doğrudan karşılaştırır.
 
 mod cumle;
+mod hir_gecisi;
 mod ifade;
 
 use self::cumle::blok_calistir_async;
+use self::hir_gecisi::CalistirmaProgrami;
 use self::ifade::degerlendir_async;
+pub use self::hir_gecisi::{calistir_baglanmis, calistir_baglanmis_io, test_calistir_baglanmis};
 
 use crate::agac::{
     AritmetikIslec, Cumle, HttpYontemi, Ifade, Islec, IslemTuru, Ozellik, Program, RotaErisimi,
@@ -1060,21 +1063,6 @@ pub fn calistir(program: &Program) -> Result<Vec<String>, Tani> {
     Ok(io.cikti)
 }
 
-/// Faz bilgisini koruyan yürütme girişi. Standart kaynak→çalıştır hattı bunu
-/// kullanır; raw `Program` alan fonksiyonlar v0 Rust API uyumluluğu içindir.
-pub fn calistir_baglanmis(
-    program: &crate::faz::BaglanmisProgram,
-) -> Result<Vec<String>, Tani> {
-    calistir(program.program())
-}
-
-pub fn calistir_baglanmis_io(
-    program: &crate::faz::BaglanmisProgram,
-    io: &mut dyn GirdiCikti,
-) -> Result<(), Tani> {
-    calistir_io(program.program(), io)
-}
-
 pub fn calistir_io(program: &Program, io: &mut dyn GirdiCikti) -> Result<(), Tani> {
     calistir_io_kodla(program, io).map(|_| ())
 }
@@ -1082,9 +1070,16 @@ pub fn calistir_io(program: &Program, io: &mut dyn GirdiCikti) -> Result<(), Tan
 /// calistir_io + çıkış kodu (K-069): "programı 1 ile bitir" → Ok(1);
 /// olağan bitiş → Ok(0). CLI süreç çıkış kodunu buradan alır.
 pub fn calistir_io_kodla(program: &Program, io: &mut dyn GirdiCikti) -> Result<i64, Tani> {
+    calistir_program_kodla(CalistirmaProgrami::Ham(program), io)
+}
+
+fn calistir_program_kodla(
+    program: CalistirmaProgrami<'_>,
+    io: &mut dyn GirdiCikti,
+) -> Result<i64, Tani> {
     let kodu = |tani: &Tani| tani.mesaj.parse::<i64>().unwrap_or(0);
     let mut ortam: HashMap<String, Deger> = HashMap::new();
-    match blok_calistir(&program.cumleler, &mut ortam, program, io, 0) {
+    match blok_calistir(&program.program().cumleler, &mut ortam, program, io, 0) {
         // "programı bitir" olağan bir sonlanmadır (Ç000 iç nöbetçisi).
         Err(tani) if tani.kod == "Ç000" => return Ok(kodu(&tani)),
         Err(tani) => return Err(tani),
@@ -1112,7 +1107,7 @@ pub fn calistir_io_kodla(program: &Program, io: &mut dyn GirdiCikti) -> Result<i
             );
             let mut eslesti = false;
             let mut yol_eslesti = false;
-            for cumle in &program.cumleler {
+            for cumle in &program.program().cumleler {
                 if let Cumle::IstekGeldiginde {
                     yontem,
                     yol: kayitli,
@@ -1205,7 +1200,13 @@ pub fn test_calistir(
     io: &mut dyn GirdiCikti,
 ) -> Result<(), Tani> {
     let mut ortam: HashMap<String, Deger> = HashMap::new();
-    match blok_calistir(&test.govde, &mut ortam, program, io, 0) {
+    match blok_calistir(
+        &test.govde,
+        &mut ortam,
+        CalistirmaProgrami::Ham(program),
+        io,
+        0,
+    ) {
         Err(tani) if tani.kod == "Ç000" => Ok(()),
         sonuc => sonuc.map(|_| ()),
     }
@@ -1359,10 +1360,9 @@ async fn gorev_bekleme_noktasi(milisaniye: i64) {
     GorevBeklemeNoktasi { milisaniye, sinyal_verildi: false }.await;
 }
 
-#[derive(Clone)]
-struct BekleyenGorev {
+struct BekleyenGorev<'a> {
     ad: String,
-    ifade: Ifade,
+    ifade: &'a Ifade,
     satir: usize,
     ortam: HashMap<String, Deger>,
 }
@@ -1382,10 +1382,10 @@ struct GorevCalismasi<'a> {
 /// Kaynak sırasını bağlayıcı zamanlama sırası yapar. Her turda hazır görevler
 /// birer kez poll edilir; hiçbiri hazır değilse saat en yakın beklemeye kadar
 /// tek adımda ilerler. Aynı anda yalnız bir görev çalıştığı için data race yoktur.
-async fn gorevleri_calistir(
-    gorevler: Vec<BekleyenGorev>,
-    program: &Program,
-    io: &mut dyn GirdiCikti,
+async fn gorevleri_calistir<'a>(
+    gorevler: Vec<BekleyenGorev<'a>>,
+    program: CalistirmaProgrami<'a>,
+    io: &'a mut dyn GirdiCikti,
     derinlik: usize,
 ) -> Result<Vec<(String, Deger)>, Tani> {
     let ortak = Rc::new(RefCell::new(io));
@@ -1401,7 +1401,7 @@ async fn gorevleri_calistir(
             let satir = gorev.satir;
             let gelecek = Box::pin(async move {
                 degerlendir_async(
-                    &ifade,
+                    ifade,
                     &ortam,
                     program,
                     &mut gorev_io,
@@ -1583,7 +1583,7 @@ fn gezme_ogesini_geri_yaz(
 fn blok_calistir(
     cumleler: &[Cumle],
     ortam: &mut HashMap<String, Deger>,
-    program: &Program,
+    program: CalistirmaProgrami<'_>,
     cikti: &mut dyn GirdiCikti,
     derinlik: usize,
 ) -> Result<Akis, Tani> {
@@ -1592,9 +1592,10 @@ fn blok_calistir(
 
 /// İşlemi taze bir ortamda çalıştırır; "döndür" değeri varsa onu verir.
 async fn islem_cagir(
-    ad: &str,
+    cagri: &Ifade,
+    kaynak_adi: &str,
     argumanlar: Vec<Deger>,
-    program: &Program,
+    program: CalistirmaProgrami<'_>,
     io: &mut dyn GirdiCikti,
     derinlik: usize,
     satir: usize,
@@ -1604,14 +1605,15 @@ async fn islem_cagir(
     if derinlik > 500 {
         return Err(Tani::yeni(
             "C019",
-            format!("\"{}\" çağrı derinliği 500'ü aştı: temel durum hiç yakalanmıyor olabilir.", ad),
+            format!("\"{}\" çağrı derinliği 500'ü aştı: temel durum hiç yakalanmıyor olabilir.", kaynak_adi),
             satir,
             1,
             1,
         )
         .onerili("Özyinelemeli adımın her seferinde temel duruma yaklaştığından emin ol.".into()));
     }
-    let islem = program.islemler.get(ad).ok_or_else(|| ic_hata(satir))?;
+    let islem = program.islem(cagri, kaynak_adi).ok_or_else(|| ic_hata(satir))?;
+    let ad = islem.ad.as_str();
     let eylem = islem.tur == IslemTuru::Eylem;
     let mut yerel: HashMap<String, Deger> = HashMap::new();
     for (param, deger) in islem.parametreler.iter().zip(argumanlar) {
@@ -1786,16 +1788,19 @@ async fn guncelle(
     hedef: &Ifade,
     miktar: &Ifade,
     ortam: &mut HashMap<String, Deger>,
-    program: &Program,
+    program: CalistirmaProgrami<'_>,
     io: &mut dyn GirdiCikti,
     derinlik: usize,
     satir: usize,
     yon: i64,
 ) -> Result<(), Tani> {
-    let ad = match hedef {
-        Ifade::Degisken { cozulmus: Some(ad), .. } => ad.clone(),
-        _ => return Err(ic_hata(satir)),
+    let ham_ad = match hedef {
+        Ifade::Degisken { cozulmus, .. } => cozulmus.as_deref(),
+        _ => None,
     };
+    let ad = program
+        .sembol_adi(hedef, ham_ad)
+        .ok_or_else(|| ic_hata(satir))?;
     let miktar = degerlendir_async(miktar, ortam, program, io, derinlik, satir).await?;
     let eski = ortam.get(&ad).cloned().ok_or_else(|| ic_hata(satir))?;
     let islec = if yon > 0 { AritmetikIslec::Topla } else { AritmetikIslec::Cikar };
@@ -1807,7 +1812,7 @@ async fn guncelle(
 fn degerlendir(
     ifade: &Ifade,
     ortam: &HashMap<String, Deger>,
-    program: &Program,
+    program: CalistirmaProgrami<'_>,
     io: &mut dyn GirdiCikti,
     derinlik: usize,
     satir: usize,

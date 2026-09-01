@@ -117,6 +117,11 @@ impl BaglanmisProgram {
         &self.hir
     }
 
+    #[cfg(test)]
+    pub(crate) fn hir_mut(&mut self) -> &mut HirProgram {
+        &mut self.hir
+    }
+
     /// Eski `Program` tüketicileri için yalnız başarılı checker geçişinden
     /// sonra faz bilgisini bilinçli olarak siler.
     pub fn into_program(self) -> Program {

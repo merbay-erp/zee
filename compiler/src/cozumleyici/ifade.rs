@@ -25,6 +25,21 @@ pub(super) fn ifade_denetle(
         }
         _ => crate::hir::HirBagi::Yok,
     };
+    hir_ifadesi_kaydet(
+        baglam,
+        adres,
+        crate::hir::HirIfadeTuru::Deger(tur),
+        bag,
+    );
+    Ok(tur)
+}
+
+pub(super) fn hir_ifadesi_kaydet(
+    baglam: &mut Baglam,
+    adres: usize,
+    tur: crate::hir::HirIfadeTuru,
+    bag: crate::hir::HirBagi,
+) {
     let hir_kimligi = baglam
         .hir_ifadeleri
         .get(&adres)
@@ -32,8 +47,7 @@ pub(super) fn ifade_denetle(
         .unwrap_or_else(|| crate::hir::HirDugumId::yeni(baglam.hir_ifadeleri.len()));
     baglam
         .hir_ifadeleri
-        .insert(adres, crate::hir::HirIfadeBilgisi::yeni(hir_kimligi, tur, bag));
-    Ok(tur)
+        .insert(adres, crate::hir::HirIfadeBilgisi::yeni_turle(hir_kimligi, tur, bag));
 }
 
 fn ifade_denetle_ic(

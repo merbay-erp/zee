@@ -2,7 +2,7 @@
 
 - **Durum:** kabul
 - **Tarih:** 1 Eylül 2026
-- **İlgili kayıt:** K-103, B-019, V1-P0-14
+- **İlgili kayıt:** K-103, K-104, B-019, V1-P0-14
 
 ## Bağlam
 
@@ -18,7 +18,8 @@ Başarılı checker geçişi artık AST'den ayrı bir `HirProgram` üretir. Her
 denetlenmiş ifade şu bilgileri taşır:
 
 - program içi kararlı `HirDugumId`,
-- açık `Tur`,
+- değer üretiyorsa `Deger(Tur)`, çağrı cümlesiyse `DegerDondurmez` taşıyan
+  açık `HirIfadeTuru`,
 - varsa `SymbolId`, `IslemId` veya `YapiId` bağı.
 
 `BaglanmisProgram` doğrudan `Program` değil, zorunlu `HirProgram` sahibidir.
@@ -31,13 +32,17 @@ aynı süreç içinde eşleyen private locator'dır; semantic identity veya publ
 API değildir. AST, checker sonrasında kutulu HIR sahipliğine taşınır ve bağlı
 program klonlanamaz; böylece locator HIR ömrü boyunca yer değiştirmez.
 
-## Aşamalı geçiş sınırı
+## Aşamalı geçiş
 
-K-103 HIR üretimini ve faz sahipliğini kurar. B-019 ancak bağlı runtime
-değişken, işlem ve yapı kararlarını kaynak adından değil HIR bağından aldığında
-kapanır. Bu nedenle K-103 sonunda B-019 ve V1-P0-14 **kısmen** durumundadır.
-Raw `Program` runtime'ı v0 embedding uyumluluğu olarak ad-temelli kalabilir;
-standart bağlı hat HIR tüketicisine dönüştürülecektir.
+K-103 HIR üretimini ve faz sahipliğini kurdu. K-104 bağlı runtime ile `dene`
+hattını `CalistirmaProgrami::Hir` koluna geçirdi: değişken, işlem ve yapı
+seçimleri `HirBagi` üzerinden yapılır; kaynak adı HIR kolunda yedek çözüm
+değildir. Raw `Program` runtime'ı v0 embedding uyumluluğu olarak ad-temelli
+kalır. Böylece B-019 ve V1-P0-14 kapanmıştır.
+
+Eşzamanlı görev ifadeleri klonlanmaz; özgün HIR düğümünü ödünç alır. Bu,
+private AST locator'ının scheduler içinde de aynı semantic kayda gitmesini
+sağlar.
 
 B-020 her semantic düğümde zorunlu source span'i ayrıca kurar. Span eksikliği,
 HIR'ın tür ve bağ gerçeğini AST'ye geri itmek için gerekçe değildir.
@@ -49,13 +54,13 @@ HIR'ın tür ve bağ gerçeğini AST'ye geri itmek için gerekçe değildir.
 3. Değişken/çağrı/yapı ifadelerinin HIR bağı çıplak kaynak adı değildir.
 4. `BaglanmisProgram`, HIR sahipliğini atlayıp yalnız AST taşıyamaz.
 5. Eski `Program` adaptörü ancak HIR üretildikten sonra faz bilgisini siler.
-6. Runtime HIR geçişi tamamlanmadan B-019 kapalı gösterilmez.
+6. Standart kaynak çalıştırma ve test hattı `CalistirmaProgrami::Hir` kullanır.
 
 ## Sonuçlar
 
 - Checker tür sonucu artık geçici dönüş değeri olmaktan çıkıp sonraki fazın
   kalıcı girdisidir.
 - Semantic bağlar AST alanlarında uyumluluk için dursa da tek gelecek yönü HIR'dır.
-- İki davranış ve bir mimari test HIR tür/bağ kayıtlarını ve zorunlu faz
-  sahipliğini korur.
+- Beş davranış ve iki mimari test HIR tür/bağ kayıtlarını, zorunlu faz
+  sahipliğini ve runtime'ın kaynak adına geri düşmemesini korur.
 - Zee kaynak semantiği değişmediğinden yeni normatif spec gerekmez.
