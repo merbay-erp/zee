@@ -275,7 +275,8 @@ impl Sunucu {
                     "{{\"capabilities\":{{\"textDocumentSync\":1,\
                      \"completionProvider\":{{}},\
                      \"hoverProvider\":true,\
-                     \"definitionProvider\":true}},\
+                     \"definitionProvider\":true,\
+                     \"renameProvider\":true}},\
                      \"serverInfo\":{{\"name\":\"dillsp\",\"version\":{}}}}}",
                     json_metin_yaz(env!("CARGO_PKG_VERSION"))
                 );
@@ -321,6 +322,11 @@ impl Sunucu {
                             json_metin_yaz(&aciklama)
                         )
                     })
+                    .unwrap_or_else(|| "null".into());
+                cikti.govdeler.push(yanit(kimlik, &sonuc));
+            }
+            "textDocument/rename" => {
+                let sonuc = yeniden_adlandir(&mesaj, &self.belgeler)
                     .unwrap_or_else(|| "null".into());
                 cikti.govdeler.push(yanit(kimlik, &sonuc));
             }
@@ -486,6 +492,79 @@ fn tanimi_bul(metin: &str, kelime: &str) -> Option<(usize, usize, usize)> {
 fn adaylar_ile_kesisir(ilk: &str, aranan: &[String]) -> bool {
     let ilk_kokler = adaylar(ilk);
     ilk_kokler.iter().any(|k| aranan.iter().any(|a| a == k))
+}
+
+/// Morfoloji-farkındalıklı yeniden adlandırma (K-072): kökü bul, belgedeki
+/// bütün ekli/eksiz kullanımları yeni köke Türkçe uyumla giydirerek değiştir.
+/// Metin sabitleri ve # yorumları dokunulmaz.
+fn yeniden_adlandir(
+    mesaj: &Json,
+    belgeler: &std::collections::HashMap<String, String>,
+) -> Option<String> {
+    let (uri, satir, sutun) = konum_parametreleri(mesaj)?;
+    let yeni_ad = mesaj.alan("params")?.alan("newName")?.metin()?.to_string();
+    if yeni_ad.is_empty() || !yeni_ad.chars().all(|k| k.is_alphanumeric() || k == '_') {
+        return None;
+    }
+    let metin = belgeler.get(&uri)?;
+    let kelime = konumdaki_kelime(metin, satir, sutun)?;
+    // Kök: belgede tanımlı ada çöz (tanım satırından yalın ad).
+    let (tanim_satiri, tanim_sutunu, tanim_uzunlugu) = tanimi_bul(metin, &kelime)?;
+    let kok: String = metin
+        .lines()
+        .nth(tanim_satiri)?
+        .chars()
+        .skip(tanim_sutunu)
+        .take(tanim_uzunlugu)
+        .collect();
+
+    let mut duzenlemeler = Vec::new();
+    for (satir_no, satir_metni) in metin.lines().enumerate() {
+        let karakterler: Vec<char> = satir_metni.chars().collect();
+        let mut i = 0usize;
+        let mut tirnakta = false;
+        while i < karakterler.len() {
+            let k = karakterler[i];
+            if k == '"' {
+                tirnakta = !tirnakta;
+                i += 1;
+                continue;
+            }
+            if !tirnakta && k == '#' {
+                break;
+            }
+            let kelime_harfi = |k: char| k.is_alphanumeric() || k == '_';
+            if !tirnakta && kelime_harfi(k) {
+                let bas = i;
+                while i < karakterler.len() && kelime_harfi(karakterler[i]) {
+                    i += 1;
+                }
+                let soz: String = karakterler[bas..i].iter().collect();
+                let yeni = if soz == kok {
+                    Some(yeni_ad.clone())
+                } else {
+                    crate::cozumleyici::ek_coz(&soz, &kok)
+                        .map(|ek| crate::cozumleyici::ek_uydur(&yeni_ad, ek))
+                };
+                if let Some(yeni) = yeni {
+                    duzenlemeler.push(format!(
+                        "{{\"range\":{{\"start\":{{\"line\":{},\"character\":{}}},\"end\":{{\"line\":{},\"character\":{}}}}},\"newText\":{}}}",
+                        satir_no, bas, satir_no, i, json_metin_yaz(&yeni)
+                    ));
+                }
+                continue;
+            }
+            i += 1;
+        }
+    }
+    if duzenlemeler.is_empty() {
+        return None;
+    }
+    Some(format!(
+        "{{\"changes\":{{{}:[{}]}}}}",
+        json_metin_yaz(&uri),
+        duzenlemeler.join(",")
+    ))
 }
 
 fn yanit(kimlik: Option<&Json>, sonuc: &str) -> String {

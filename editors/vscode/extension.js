@@ -158,6 +158,21 @@ function activate(baglam) {
         return new vscode.Location(vscode.Uri.parse(sonuc.uri), alan_cevir(sonuc.range));
       },
     }),
+    vscode.languages.registerRenameProvider("dil", {
+      async provideRenameEdits(belge, konum, yeniAd) {
+        const params = konum_params(belge, konum);
+        params.newName = yeniAd;
+        const sonuc = await iste("textDocument/rename", params);
+        if (!sonuc || !sonuc.changes) return null;
+        const duzenleme = new vscode.WorkspaceEdit();
+        for (const [uri, degisiklikler] of Object.entries(sonuc.changes)) {
+          for (const d of degisiklikler) {
+            duzenleme.replace(vscode.Uri.parse(uri), alan_cevir(d.range), d.newText);
+          }
+        }
+        return duzenleme;
+      },
+    }),
     vscode.languages.registerCompletionItemProvider("dil", {
       async provideCompletionItems(belge, konum) {
         const sonuc = await iste("textDocument/completion", konum_params(belge, konum));
