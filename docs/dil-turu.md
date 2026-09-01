@@ -453,7 +453,8 @@ sessiz gölgelemez, hatadır (A008).
 
 **Gömülü standart kitaplık** (RFC-0014, deneysel): `matematik` (mutlak, üs,
 tam karekök, obeb, okek), `liste_araclari` (toplam, uçlar, ortalama) ve
-`metin_araclari` (tersi, ünlü sayımı, baş harf)
+`metin_araclari` (tersi, ünlü sayımı, baş harf) ve `sozluk_araclari`
+(`en çok geçeni bul`)
 derleyicinin içindedir — kurulum gerektirmez, playground'da bile çalışır:
 
 ```

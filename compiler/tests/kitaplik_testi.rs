@@ -109,3 +109,24 @@ fn medyan_iki_tiple_calisir() {
     );
     assert_eq!(ondalik, vec!["2,5"]);
 }
+
+#[test]
+fn toplam_iki_tiple_ondalik_doner() {
+    // Deneysel kitaplık kırıcı değişikliği (sürüm notlu): toplam daima Ondalık.
+    let tam = gomulu_kostur(
+        "liste_araclari birimini kullan\n\nsayılar 3, 7 listesi olsun\ntoplam sayılar için toplamını hesapla olsun\ntoplam yaz\n",
+    );
+    assert_eq!(tam, vec!["10,0"]);
+    let ondalik = gomulu_kostur(
+        "liste_araclari birimini kullan\n\nfiyatlar 1,5, 2,25 listesi olsun\ntoplam fiyatlar için toplamını hesapla olsun\ntoplamın kuruşlusu yaz\n",
+    );
+    assert_eq!(ondalik, vec!["3,75"]);
+}
+
+#[test]
+fn en_cok_geceni_bulur() {
+    let cikti = gomulu_kostur(
+        "sozluk_araclari birimini kullan\n\nsayaçlar boş sözlük olsun\nsayaçların \"elma\" değeri 2 olsun\nsayaçların \"armut\" değeri 5 olsun\nkazanan sayaçlar için en çok geçeni bul olsun\nkazanan yaz\n",
+    );
+    assert_eq!(cikti, vec!["armut"]);
+}

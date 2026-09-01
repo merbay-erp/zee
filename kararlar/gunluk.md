@@ -646,6 +646,19 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   aynen korunur).
 - **Proje:** roket.dil — geri sayımın (K-068) beş satırlık vitrini.
 
+## K-070 — Kitaplık olgunlaşması: Ondalık toplam + sozluk_araclari
+
+- **Karar (deneysel-kırıcı, sürüm notlu):** `toplamını hesapla` ve
+  `ortalamasını hesapla` daima Ondalık döner — K-068 notundaki köşe
+  (TamSayı'ya bağlı gövde × terfi) kökten kapandı; TamSayı listeleri
+  çağrı genişlemesiyle (K-067) girer. Deneysel etiket tam bu yüzden
+  vardı: kırıcı değişiklik erken ve ucuzken yapıldı.
+- **Yeni birim:** `sozluk_araclari` — `en çok geçeni bul`
+  (Sözlük<Metin,TamSayı>; eşitlikte İLK eklenen kazanır — determinizm).
+  Gömülü birim sayısı 4.
+- **Doğrulama:** `artır` karışık tipte genişliyor (Ondalık hedef +
+  TamSayı miktar ✓) — toplamın tek gövdeyle iki tipe hizmeti bundan.
+
 ## K-012 — Liste sabiti: `3, 7, 1, 9 listesi`
 
 - **Karar:** Virgülle ayrılmış değerler + `listesi`. Boş: `boş liste`.

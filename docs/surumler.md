@@ -11,6 +11,9 @@ sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
   boş dönüş tuzağı kapandı). roket.dil projesi.
 - **Çıkış kodu** (K-069, K-024 kapanışı): `programı 1 ile bitir` —
   süreç kodu kabuğa gider (0–255, C020); CLI otomasyon kapısı.
+- **Kitaplık** (K-070): `toplamını/ortalamasını hesapla` artık DAİMA
+  Ondalık döner (deneysel-kırıcı; TamSayı listeleri genişlemeyle girer).
+  Yeni gömülü birim: `sozluk_araclari` (`en çok geçeni bul`).
 
 - **Para biçimi** (K-065): `tutarın kuruşlusu` — daima iki hane.
 - **Sayısal genişleme çağrıda + imza terfisi** (K-067): Liste<TamSayı> →

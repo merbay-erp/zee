@@ -1,0 +1,28 @@
+# sozluk_araclari — gömülü standart birim (RFC-0014, deneysel).
+# Sayaç sözlükleri için yardımcılar (Sözlük<Metin, TamSayı>).
+
+# En büyük değere sahip anahtar; eşitlikte İLK eklenen kazanır (determinizm).
+işlem en çok geçeni bul
+    sayaçları al
+
+    kazanan "" olsun
+    rekor 0 olsun
+    ilk doğru olsun
+    sayaçlardaki her anahtar için
+        değer sayaçların anahtar değeri olsun
+        ilk ise
+            kazanan anahtar olsun
+            rekor değer olsun
+            ilk yanlış olsun
+        değer rekordan büyükse
+            kazanan anahtar olsun
+            rekor değer olsun
+    kazananı döndür
+
+test "en çok geçen kelime"
+    sayaçlar boş sözlük olsun
+    sayaçların "bal" değeri 3 olsun
+    sayaçların "tut" değeri 1 olsun
+    sayaçların "ye" değeri 3 olsun
+    kazanan sayaçlar için en çok geçeni bul olsun
+    kazanan "bal" a eşit olmalı
