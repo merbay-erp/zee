@@ -220,3 +220,23 @@ seçilenin sonu yaz
 ";
     assert_eq!(kaynagi_calistir(kaynak).expect("çalışmalı"), vec!["3", "6"]);
 }
+
+#[test]
+fn ondalik_degerli_sozluk() {
+    // K-067: para sözlükleri.
+    let kaynak = "\
+fiyatlar boş sözlük olsun
+fiyatların \"çay\" değeri 45,50 olsun
+fiyatların \"un\" değeri 28,75 olsun
+
+toplam 0,0 olsun
+fiyatlardaki her ürün için
+    toplamı fiyatların ürün değeriyle artır
+toplamın kuruşlusu yaz
+fiyatların json metni yaz
+";
+    assert_eq!(
+        kaynagi_calistir(kaynak).expect("çalışmalı"),
+        vec!["74,25", "{\"çay\":45.5,\"un\":28.75}"]
+    );
+}

@@ -95,3 +95,17 @@ fn matematik_ussu_dogal_adla_cagrilir() {
     let cikti = gomulu_kostur("matematik birimini kullan\n\nx 3 ve 4 ile üssünü hesapla olsun\nx yaz\n");
     assert_eq!(cikti, vec!["81"]);
 }
+
+#[test]
+fn medyan_iki_tiple_calisir() {
+    // Monomorfizm program başına: TamSayı ve Ondalık listeleri ayrı
+    // programlarda aynı işlemi kullanabilir.
+    let tam = gomulu_kostur(
+        "liste_araclari birimini kullan\n\nsayılar 1, 2, 3, 10 listesi olsun\norta sayılar için medyanını hesapla olsun\norta yaz\n",
+    );
+    assert_eq!(tam, vec!["2,5"]);
+    let ondalik = gomulu_kostur(
+        "liste_araclari birimini kullan\n\nfiyatlar 1,5, 2,5, 9,5 listesi olsun\norta fiyatlar için medyanını hesapla olsun\norta yaz\n",
+    );
+    assert_eq!(ondalik, vec!["2,5"]);
+}

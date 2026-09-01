@@ -6,6 +6,9 @@ sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 ## Yolda (v0.6.0'a birikenler)
 
 - **Para biçimi** (K-065): `tutarın kuruşlusu` — daima iki hane.
+- **Sayısal genişleme çağrıda + imza terfisi** (K-067): Liste<TamSayı> →
+  Liste<Ondalık> parametre; dar imza geniş argümanla terfi eder. Sözlük
+  değerleri Ondalık olabilir. Kitaplığa medyan girdi.
 - **Evrensel metin hali** (K-066): `değerin metni`; `dil belge` artık
   işlem açıklamalarını basar; playground'da Envanter vitrini.
 - JSON okuma hoşgörüsü (K-063), alan-özellik gölgelemesi (K-064),

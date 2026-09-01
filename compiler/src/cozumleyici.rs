@@ -59,6 +59,8 @@ impl VeriTuru {
 pub enum SozlukDegerTuru {
     /// Boş sözlüğün henüz belirlenmemiş değer türü (K-045).
     Bilinmeyen,
+    /// Para/oran sözlükleri (K-067).
+    Ondalik,
     TamSayi,
     Metin,
 }
@@ -67,6 +69,7 @@ impl SozlukDegerTuru {
     fn ture(&self) -> Tur {
         match self {
             SozlukDegerTuru::Bilinmeyen => Tur::Yok, // guard'lar erişimi engeller
+            SozlukDegerTuru::Ondalik => Tur::Ondalik,
             SozlukDegerTuru::TamSayi => Tur::TamSayi,
             SozlukDegerTuru::Metin => Tur::Metin,
         }
@@ -74,6 +77,7 @@ impl SozlukDegerTuru {
     fn adi(&self) -> &'static str {
         match self {
             SozlukDegerTuru::Bilinmeyen => "belirsiz",
+            SozlukDegerTuru::Ondalik => "Ondalık",
             SozlukDegerTuru::TamSayi => "TamSayı",
             SozlukDegerTuru::Metin => "Metin",
         }
@@ -1064,6 +1068,7 @@ fn blok_denetle(
                         let deger_tur = ifade_denetle(deger, ortam, baglam, satir)?;
                         let yeni_deger = match deger_tur {
                             Tur::TamSayi => SozlukDegerTuru::TamSayi,
+                            Tur::Ondalik => SozlukDegerTuru::Ondalik,
                             Tur::Metin => SozlukDegerTuru::Metin,
                             baska => {
                                 return Err(Tani::yeni(
@@ -1073,7 +1078,7 @@ fn blok_denetle(
                                     1,
                                     1,
                                 )
-                                .onerili("v0'da sözlük değeri TamSayı ya da Metin olabilir.".into()));
+                                .onerili("Sözlük değeri TamSayı, Ondalık ya da Metin olabilir.".into()));
                             }
                         };
                         if let Some(ad) = nesne_adi(sozluk) {
@@ -2087,7 +2092,54 @@ fn cagri_denetle(
                 1,
             ));
         }
-        if imza.parametre_turleri != arg_turleri {
+        // K-067: çağrıda genişleme — TamSayı argüman Ondalık parametreye,
+        // Liste<TamSayı> argüman Liste<Ondalık> parametreye uyar (skaler
+        // genişleme kuralının doğal uzantısı; ters yön yine bilinçli değil).
+        let uyumlu = imza.parametre_turleri.len() == arg_turleri.len()
+            && imza
+                .parametre_turleri
+                .iter()
+                .zip(arg_turleri.iter())
+                .all(|(param, arg)| {
+                    param == arg
+                        || matches!((param, arg), (Tur::Ondalik, Tur::TamSayi))
+                        || matches!(
+                            (param, arg),
+                            (
+                                Tur::Liste(VeriTuru::Ondalik),
+                                Tur::Liste(VeriTuru::TamSayi)
+                            )
+                        )
+                });
+        if !uyumlu {
+            // K-067 imza terfisi: uyumsuzluk YALNIZ ters-genişlemeyse
+            // (param TamSayı[-listesi], arg Ondalık[-listesi]) imza kaldırılır
+            // ve gövde geniş türlerle ilk-çağrı gibi yeniden denetlenir —
+            // sonuç, çağrı sırasından bağımsız en geniş imzadır. Gövde geniş
+            // türle geçerli değilse doğal tanısı çıkar. Özyineleme denetimi
+            // sürerken terfi yapılmaz (T017 kalır).
+            let yalniz_ters_genisleme = imza
+                .parametre_turleri
+                .iter()
+                .zip(arg_turleri.iter())
+                .all(|(param, arg)| {
+                    param == arg
+                        || matches!((param, arg), (Tur::Ondalik, Tur::TamSayi))
+                        || matches!(
+                            (param, arg),
+                            (Tur::Liste(VeriTuru::Ondalik), Tur::Liste(VeriTuru::TamSayi))
+                        )
+                        || matches!((param, arg), (Tur::TamSayi, Tur::Ondalik))
+                        || matches!(
+                            (param, arg),
+                            (Tur::Liste(VeriTuru::TamSayi), Tur::Liste(VeriTuru::Ondalik))
+                        )
+                });
+            let ozyinelemede = baglam.denetim_yigini.iter().any(|k| k.ad == ad);
+            if yalniz_ters_genisleme && !ozyinelemede {
+                baglam.imzalar.remove(ad);
+                return cagri_denetle(ad, arg_turleri, baglam, satir);
+            }
             return Err(Tani::yeni(
                 "T017",
                 format!("\"{}\" çağrısındaki argüman türleri işlemin imzasına uymuyor.", ad),

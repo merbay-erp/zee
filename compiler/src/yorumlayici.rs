@@ -1351,6 +1351,9 @@ fn degerlendir(
                         .collect(),
                 )),
                 (Ozellik::Yil, Deger::Tarih { yil, .. }) => Ok(Deger::TamSayi(yil)),
+                // K-067 terfisi: TamSayı üzerinde tam kısmı/yuvarlanmışı kimliktir.
+                (Ozellik::TamKisim, Deger::TamSayi(s))
+                | (Ozellik::Yuvarlanmis, Deger::TamSayi(s)) => Ok(Deger::TamSayi(s)),
                 (Ozellik::TamKisim, Deger::Ondalik { govde, olcek }) => {
                     // Sıfıra doğru kırpma (Rust tam bölmesiyle aynı).
                     Ok(Deger::TamSayi(govde / 10i64.pow(olcek)))
