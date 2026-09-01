@@ -150,3 +150,21 @@ fn mini_site_html_uretir() {
     assert!(obeb.contains("obebi: <b>12</b>"), "{}", obeb);
     assert!(io.sunucu_yanitlari[2].1.contains("aranan sayfa yok"));
 }
+
+#[test]
+fn envanter_stok_defteri() {
+    let cikti = kaynagi_calistir(&proje("envanter.dil")).expect("çalışmalı");
+    assert!(cikti.contains(&"Toplam stok değeri: 1824,5 lira".to_string()));
+    assert!(cikti.contains(&"Alfabetik: çay, şeker, un".to_string()), "{:?}", cikti);
+}
+
+#[test]
+fn envanter_json_yedegi_yazilir() {
+    let kaynak = proje("envanter.dil");
+    let program = dil::kaynagi_derle(&kaynak).expect("derlenmeli");
+    let mut io = dil::yorumlayici::ToplayanIo::yeni(Vec::new());
+    dil::yorumlayici::calistir_io(&program, &mut io).expect("çalışmalı");
+    let yedek = io.dosyalar.get("envanter.json").expect("yedek dosyası olmalı");
+    assert!(yedek.starts_with("[{\"ad\":\"çay\""), "{}", &yedek[..40.min(yedek.len())]);
+    assert!(yedek.contains("\"fiyat\":52.0"));
+}

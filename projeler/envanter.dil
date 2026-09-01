@@ -1,0 +1,49 @@
+# Envanter — küçük stok defteri (kayıt tabloları iş başında).
+# Öğretilen: yapı listesi (K-060), Ondalık para, Türk alfabesiyle
+# sıralama (K-056), JSON yedeği (K-054).
+
+yapı Ürün
+    ad Metin
+    adet TamSayı
+    fiyat Ondalık
+
+işlem ürün kur
+    adı al
+    sayıyı al
+    tutarı al
+
+    yeni_ürün yeni Ürün olsun
+    yeni_ürünün adı ad olsun
+    yeni_ürünün adedi sayı olsun
+    yeni_ürünün fiyatı tutar olsun
+    yeni_ürünü döndür
+
+ürünler boş liste olsun
+
+çay "çay" ve 12 ve 45,50 ile ürün kur olsun
+ürünlere çayı ekle
+un "un" ve 30 ve 28,75 ile ürün kur olsun
+ürünlere unu ekle
+şeker "şeker" ve 8 ve 52,00 ile ürün kur olsun
+ürünlere şekeri ekle
+
+"--- stok ---" yaz
+toplam 0,0 olsun
+her ürün için
+    birim ürünün fiyatı olsun
+    sayı ürünün adedi olsun
+    tutar birim ile sayının çarpımı olsun
+    ürünün adı ile ": " ile sayı ile " x " ile birim ile " = " ile tutar yaz
+    toplamı tutarla artır
+
+"Toplam stok değeri: " ile toplam ile " lira" yaz
+
+adlar boş liste olsun
+her ürün için
+    adlara ürünün adını ekle
+sıralı adların sıralanmışı olsun
+alfabetik sıralının ", " ile birleşmişi olsun
+"Alfabetik: " ile alfabetik yaz
+
+"envanter.json" dosyasına ürünlerin json metni yaz
+"Yedek alındı: envanter.json" yaz
