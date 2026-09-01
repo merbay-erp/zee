@@ -275,6 +275,14 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   üç yeni regresyonla toplam 435 test yeşildir, B-016/V1-P0-21 kapandı.
   K-105 HTTP timeout testindeki tek-read sahte sunucu yarışı da başlığın
   bütünüyle tüketilmesiyle giderildi; macOS RST kararsızlığı kaldırıldı.
+- **AST/HIR invariant kapısı** (K-112, ADR-023): parser AST'sinde çözülmüş
+  ad/semantic ID/checker işareti; bağlı programda eksik, yinelenen veya yetim
+  HIR kaydı ve varyantla uyuşmayan semantic bağ debug/test faz çıkışında
+  fail-closed C000 olur. Açık doğrulama API'si faz, yapısal yol, açıklama ve
+  satır taşır. Kapı, özellik erişimi alan erişimine çevrilirken klonlanan alt
+  düğümün eski HIR kaydını yetim bıraktığını buldu; dönüşüm artık kutuyu taşır
+  ve beklenmeyen varyantta T016 döndürür. Üç integration ve iki HIR unit
+  regresyonuyla toplam 440 test yeşildir; B-017/V1-P0-22 kapandı.
 
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`

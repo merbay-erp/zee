@@ -24,9 +24,11 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
    üretimi ve gecelik libFuzzer hattı kurdu; B-015 kapandı (432 test).
 8. K-111 morfoloji üret→çöz uzayını, bütün-aday A002 kararını, NFC/NFD
    sınırını ve gecelik mutation hattını büyüttü; B-016 kapandı (435 test).
-9. Sıradaki makine omurgası B-017'dir.
-10. Üçüncü sprint: B-027/B-028 → B-030/B-031 → B-043/B-044.
-11. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
+9. K-112/ADR-023 parser AST ve bağlı typed-HIR arasındaki yürütülebilir
+   invariant kapısını kurdu; B-017 kapandı (440 test).
+10. Sıradaki makine omurgası B-021, ardından B-022'dir.
+11. Üçüncü sprint: B-027/B-028 → B-030/B-031 → B-043/B-044.
+12. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
 
 ## P0 — V1 öncesi dil ve derleyici omurgası
 
@@ -120,8 +122,15 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   hedefi gecelik korpus büyütür; ilk smoke 527.966 girdiyi ihlalsiz tamamladı.
   [Doğrulama rehberi](morfoloji-dogrulama.md) ve üç yeni regresyonla
   V1-P0-21 kapandı; toplam 435 test yeşildir.
-- **B-017 · AÇIK — AST invariant doğrulayıcı ekle.** Test/debug aşamasında
-  çözülmüş ad, yapı kimliği ve imkânsız ifade durumlarını doğrula.
+- **B-017 · KAPALI (K-112) — AST/HIR invariant doğrulayıcı ekle.** Parser
+  AST'sinde çözülmüş ad/semantic ID/checker işareti yasaktır. Bağlanmış
+  programda her AST ifadesi tek ve benzersiz `HirDugumId`, açık tür, kaynak
+  aralığı ve varyantla uyumlu semantic bağ taşır; HIR tablosunda yetim kayıt
+  kalamaz. Debug/test faz geçişleri ihlali yapısal yol taşıyan C000'e çevirir.
+  Özellik→alan dönüşümündeki klon kaynaklı gerçek bir yetim HIR kaydı bulunup
+  alt kutuyu taşıyan güvenli dönüşümle düzeltildi. ADR-023,
+  [invariant rehberi](ast-hir-invariantleri.md), üç integration ve iki unit
+  regresyonuyla V1-P0-22 kapandı; toplam 440 test yeşildir.
 - **B-018 · KAPALI (K-102) — compiler faz sınırlarını kodda görünür yap.**
   `KaynakMetni → TokenAkisi → AyristirilmisAst → BaglanmamisProgram →
   BaglanmisProgram → interpreter` hattı gerçek API türleri oldu. Standart
@@ -239,5 +248,5 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 ## Bir sonraki somut kapı
 
 İnsan kanıtı hattında B-001, doldurulmuş gerçek usability formları ve önceden
-ilan edilmiş eşikleri bekler. Makine hattında B-016/K-111 kapandı; sıradaki iş
-B-017 AST invariant doğrulayıcıdır.
+ilan edilmiş eşikleri bekler. Makine hattında B-017/K-112 kapandı; sıradaki iş
+B-021 LSP hata kurtarma planı, ardından B-022 tanı kimliği fixture kapısıdır.

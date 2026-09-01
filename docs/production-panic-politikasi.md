@@ -47,6 +47,7 @@ K-109'da 46 production nokta temizlendi. Öne çıkanlar:
 - `SymbolId` yapay 32-bit kapasite assertion'ı taşımaz.
 
 Bu kapı, keyfî UTF-8 parser girdisinin tamamında panic-free olmayı tek başına
-kanıtlamaz. B-015/K-110 [fuzz hattı](fuzzing.md) bu kullanıcı girdisi
-sınırını kapattı; B-017 AST invariant doğrulayıcı malformed iç yapıların ardıl
-kanıtıdır.
+kanıtlamaz. B-015/K-110 [fuzz hattı](fuzzing.md) kullanıcı girdisi sınırını;
+B-017/K-112 [AST/HIR invariant kapısı](ast-hir-invariantleri.md) malformed iç
+yapıların parser/checker sonrası kanıtını kapattı. İhlaller panic yerine faz
+ve yapısal yol taşıyan C000'e dönüşür.

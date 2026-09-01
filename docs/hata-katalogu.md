@@ -135,7 +135,7 @@ türetilmiştir; yeni kod eklenince bu dosya güncellenir — CI'a bağlanması 
 
 | Kod | Ne oldu | Çözüm |
 |---|---|---|
-| C000 | İç tutarlılık hatası | Derleyici hatasıdır — lütfen bildir |
+| C000 | İç tutarlılık hatası; AST/HIR invariant ihlalinde faz ve yapısal düğüm yolu da gösterilir | Derleyici hatasıdır — lütfen bildir |
 | C001 | Değer bulunamadı | (İç duruma yakın; görülmesi beklenmez) |
 | C002 | TamSayı taşması | Değerleri küçült; taşma sessizce sarmalanmaz (RFC-0001 §7) |
 | C003 | Sıfıra bölme | Önce böleni kontrol et |

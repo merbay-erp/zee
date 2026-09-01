@@ -30,6 +30,7 @@ pub mod faz;
 pub mod guvenlik;
 pub mod hir;
 pub mod intrinsic;
+pub mod invariant;
 pub mod kimlik;
 pub mod sozcukleyici;
 pub mod tani;

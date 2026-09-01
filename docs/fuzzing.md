@@ -65,4 +65,5 @@ dosya okuma sınırında reddedilir. 64 KiB sınırı bir dil dosyası boyut sı
 değildir. Morfoloji hedefinin 128 byte girdisi en çok 64 kod noktalı geçerli
 kök üretir; bu tanımlayıcı uzunluğu sınırı değildir. Ayrıştırılmış Unicode
 biçimleri kaynak lexer'ında S029'dur. Malformed, elle kurulmuş token/AST
-yapıları B-017'nin invariant doğrulayıcısına aittir.
+yapıları B-017/K-112'nin tamamladığı
+[AST/HIR invariant doğrulayıcısına](ast-hir-invariantleri.md) aittir.

@@ -25,6 +25,7 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-020 | [Zorunlu HIR kaynak aralığı](020-zorunlu-hir-kaynak-araligi.md) | **kabul** (K-108/B-020) |
 | ADR-021 | [Production panic politikası](021-production-panic-politikasi.md) | **kabul** (K-109/B-014) |
 | ADR-022 | [Lexer/parser fuzz politikası](022-lexer-parser-fuzz-politikasi.md) | **kabul** (K-110/B-015) |
+| ADR-023 | [AST/HIR invariant doğrulama politikası](023-ast-hir-invariant-politikasi.md) | **kabul** (K-112/B-017) |
 | ADR-004 | Bellek yönetimi prototip kararı (GC / ARC benchmark) | bekliyor |
 | ADR-005 | Native backend seçimi (Cranelift / LLVM) | bekliyor — Faz 4 |
 | ADR-007 | [Telemetri ve gizlilik: araçlar veri toplamaz](007-telemetri-ve-gizlilik.md) | **kabul** |

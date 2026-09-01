@@ -46,15 +46,22 @@ Parsed AST → Resolution sonucu → Typed HIR → Execution/Lowering
 
 K-104 ile standart runtime ve `dene` değişken/işlem/yapı kararını yalnız bu
 HIR bağından alır; B-019 kapanmıştır. K-108 her semantic HIR düğümüne kesin
-token aralığı veya dürüst satır zarfı koyup B-020'yi kapattı. Ayrıntı
-[typed HIR rehberindedir](typed-hir-modeli.md).
+token aralığı veya dürüst satır zarfı koyup B-020'yi kapattı. K-112 parser
+çıkışında semantic alanların boş, checker çıkışında AST↔HIR eşlemesinin tam ve
+tekil olduğunu debug/test aşamasında otomatik doğrular. İhlal faz+yapısal yol
+taşıyan C000'dir. Ayrıntı [typed HIR rehberinde](typed-hir-modeli.md) ve
+[invariant rehberindedir](ast-hir-invariantleri.md).
 
 ## Kanıt ve büyüme kuralı
 
 - `faz_modeli_testi.rs` parsed/bound farkını ve eski API uyumluluğunu sınar.
+- `invariant_testi.rs` parsed AST saflığını, bağlı AST/HIR tamlığını ve
+  imkânsız sentetik biçimlerin reddini sınar.
 - `faz.rs` compile-fail örneği yanlış geçişin derlenmediğini kanıtlar.
 - `mimari_sinir_testi.rs` standart hattın faz türlerini gerçekten kullandığını
   ve modül bütçesini korur.
 - Yeni compiler aşaması çıplak tuple/type alias ile gizlenmez; veri türü,
   geçiş sahibi, hata biçimi ve hangi önceki fazı tükettiği aynı ADR/rehber
   değişikliğinde yazılır.
+- Yeni AST/HIR varyantı, `invariant` ziyaretçisinde alt düğümleri ve beklenen
+  semantic bağı tanımlanmadan tamamlanmış sayılmaz.

@@ -86,10 +86,12 @@ Araçlar: `dil çalıştır(--güvenli/--deneysel-web/--web-proxy)/parola-özeti
 + **dillsp** LSP sunucusu — tanılar, hover, tanıma git, **morfolojili
 yeniden adlandırma (F2)** ([editors/](editors/)).
 Determinizm testlerde tam: rastgelelik, saat, dosyalar, HTTP, sunucu istekleri,
-sensörler ve an ölçümü IO soyutlamasından gelir — 435 test hermetik koşar.
+sensörler ve an ölçümü IO soyutlamasından gelir — 440 test hermetik koşar.
 Lexer/parser panic-free ve morfoloji üret→çöz sözlerini ayrıca kalıcı saldırı
 korpusları, deterministik üretim ve gecelik [libFuzzer hattı](docs/fuzzing.md)
-denetler.
+denetler. Parser sonrası AST ile checker sonrası typed HIR arasındaki iç
+sözleşme de debug/test hattında yürütülebilir
+[invariant kapısıyla](docs/ast-hir-invariantleri.md) doğrulanır.
 
 **Playground:** `playground/olustur.sh` derleyiciyi WebAssembly'e derler ve
 tek dosyalık `playground/zee-playground.html` üretir — çift tıkla aç, tarayıcıda
@@ -130,7 +132,7 @@ korpus üzerinde regression testine girer.
 | 11 anti-örnek | [anti-ornekler/](anti-ornekler/) | ✅ (A11: nokta-ondalık) |
 | Syntax karar günlüğü | [kararlar/gunluk.md](kararlar/gunluk.md) | ✅ işleniyor |
 | RFC süreci | [rfcs/](rfcs/) | ✅ 21 RFC: 2 kabul, 17 geçici kabul, 2 taslak |
-| ADR süreci | [adr/](adr/) | ✅ 14 kabul (001-003, 006-016); 004/005 faz verisi bekliyor |
+| ADR süreci | [adr/](adr/) | ✅ 21 kabul (001-003, 006-023); 004/005 faz verisi bekliyor |
 | Hata kataloğu | [docs/hata-katalogu.md](docs/hata-katalogu.md) | ✅ 144 etkin kod + 1 ayrılmış kod, kaynakla tutarlılığı testli |
 | Spesifikasyon | [spec/](spec/) | ✅ başladı — normatif çekirdek (RFC'lere bağlar) |
 
@@ -209,6 +211,10 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   K-111 `zee-tr-1` üret→çöz değişmezini 4.096 geniş kök, bütün adaylarda
   fail-closed A002, NFC/NFD sınırı ve ayrı gecelik morfoloji fuzz hedefiyle
   sertleştirdi.
+  K-112/ADR-023 parser AST'sinin semantic bağ taşımamasını ve her bağlı AST
+  ifadesinin tam bir typed-HIR kaydıyla eşleşmesini yürütülebilir invariant
+  kapısına bağladı. Bu kapı özellik→alan dönüşümündeki gerçek bir yetim HIR
+  kaydını buldu; dönüşüm artık alt düğümü klonlamak yerine taşıyor.
   Uygulama sırası
   [öncelikli backlog](docs/oncelikli-backlog.md) ile sabittir.
   Bağlayıcı liste: [docs/v1-surum-kapilari.md](docs/v1-surum-kapilari.md).
