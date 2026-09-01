@@ -24,9 +24,11 @@ Playground'da tohum görünürdür; testlerde IO dünyası tamamen sahtedir.
 - Kalan (`bölümünden kalanı`, K-046) yalnız TamSayılar arasındadır ve okul
   kuralına uyar: sonuç DAİMA 0 ≤ kalan < |bölen| (Öklit kalanı). Sıfıra
   kalan C003.
-- Ondalık, onluk tam sayıdır: gövde × 10⁻ᵏ (k ≤ 9). Ara işlemler 128 bitte
-  yapılır; temsil edilemeyen sonuç C002 ailesinde tanıya düşer, ikilik
-  kayan nokta HİÇBİR aşamada kullanılmaz. `0,1 + 0,2 = 0,3` kimliktir.
+- Ondalık, keyfî uzunlukta imzalı katsayı ve onluk ölçek taşır: gövde ×
+  10⁻ᵏ. Toplama, çıkarma, çarpma ve sonlu onluk bölme TAMDIR; ikilik kayan
+  nokta HİÇBİR aşamada kullanılmaz. `0,1 + 0,2 = 0,3` kimliktir.
+- Sonsuz açılımlı Ondalık bölme 34 anlamlı haneye, yarımlar sıfırdan uzağa
+  yuvarlanır. Bu tek yuvarlama noktası ve örnekleri spec/16'da tanımlıdır.
 - Yuvarlama: yarımlar sıfırdan uzağa (`2,5 → 3`, `-2,5 → -3`).
 
 ## Gezme ve yazma (TANIMLI — K-074)

@@ -50,9 +50,29 @@ c 1,5 saniye olsun
 c yaz
 d 1 saat olsun
 d yaz
+e 0,0005 saniye olsun
+e yaz
+f 0,12345678901234567890 saniye olsun
+f yaz
 ";
     let cikti = kaynagi_calistir(kaynak).expect("çalışmalı");
-    assert_eq!(cikti, vec!["0,5 saniye", "2 dakika", "1,5 saniye", "1 saat"]);
+    assert_eq!(
+        cikti,
+        vec![
+            "0,5 saniye",
+            "2 dakika",
+            "1,5 saniye",
+            "1 saat",
+            "0,001 saniye",
+            "0,123 saniye",
+        ]
+    );
+
+    let hata = kaynagi_calistir(
+        "x 999999999999999999999999999999999999999999999999,0 saat olsun\n",
+    )
+    .expect_err("S006 bekleniyor");
+    assert_eq!(hata.kod, "S006");
 }
 
 #[test]

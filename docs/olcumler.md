@@ -10,6 +10,25 @@ Regression bütçesi (v0.3 hedefi): bir sürüm, bir önceki arşiv satırına g
 herhangi bir yükte %50'den fazla yavaşlıyorsa sürüm notunda gerekçelenmek
 **ZORUNDA**dır.
 
+## v0.8.0 birikimi / K-092 — 1 Eylül 2026 · Apple M4 Pro, macOS 26.5, Rust 1.93.1
+
+| Yük | Medyan | v0.6.0'a göre |
+|---|---|---|
+| derleme | 14,6 ms | +%8 |
+| özyineleme | 39,8 ms | **+%121** |
+| döngü | 12,3 ms | **+%116** |
+| liste | 1,8 ms | **+%125** |
+| ondalık | 6,8 ms | **+%467** |
+| metin | 0,8 ms | **+%60** |
+
+Okuma: K-087–K-092 birikimi yorumlayıcıya async/structured scheduler,
+yapılandırılmış Hata ve keyfî hassasiyetli Ondalık çekirdeklerini ekledi.
+Ondalık artışı K-092'nin bilinçli exact `BigInt` kapasite maliyetidir: 20 bin
+işlem hâlâ 6,8 ms'de biter ve para/ölçüm doğruluğu için kabul edilmiştir.
+TamSayı sıcak yolu K-092 içinde BigInt'ten ayrıldı; tabloda bu düzeltme
+sonrasındaki değer vardır. Diğer >%50 sapmalar kapasite gerekçesiyle kalıcı
+kabul edilmiş sayılmaz; v0.8 optimizasyon işinin ölçülü başlangıç noktasıdır.
+
 ## v0.6.0 — 1 Eylül 2026 · Apple M4 Pro, macOS 26.5, Rust 1.93.1
 
 | Yük | Medyan | v0.4.0'a göre |

@@ -9,6 +9,7 @@ pub mod bicimleyici;
 pub mod kalici_dosya;
 pub mod lsp;
 pub mod morfoloji;
+mod ondalik;
 pub mod paket;
 pub mod proje;
 pub mod wasm_api;

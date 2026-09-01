@@ -148,7 +148,7 @@ pub enum Ifade {
     MetinSabiti(String),
     SayiSabiti(i64),
     /// Ondalık sabit (RFC-0013): onluk tam değer, govde/10^olcek.
-    OndalikSabiti { govde: i64, olcek: u32 },
+    OndalikSabiti { govde: String, olcek: u32 },
     /// "doğru" / "yanlış" (master plan bölüm 7).
     MantiksalSabiti(bool),
     /// "1 ile 100 arasında rastgele sayı" — iki uç dahil.

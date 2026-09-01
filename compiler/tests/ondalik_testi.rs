@@ -59,10 +59,10 @@ fn tam_bolme_degismedi() {
 
 #[test]
 fn ondalik_bolme_yuvarlama() {
-    // 10,0 / 3 → 9 hane, yarımlar sıfırdan uzağa.
+    // 10,0 / 3 → 34 anlamlı hane, yarımlar sıfırdan uzağa.
     let kaynak = "bölüm 10,0 ın 3 e bölümü olsun\nbölüm yaz\n";
     let cikti = kaynagi_calistir(kaynak).expect("çalışmalı");
-    assert_eq!(cikti, vec!["3,333333333"]);
+    assert_eq!(cikti, vec!["3,333333333333333333333333333333333"]);
 }
 
 #[test]
@@ -137,9 +137,77 @@ fn nokta_ondalik_yonlendirmesi() {
 }
 
 #[test]
-fn olcek_siniri() {
-    let hata = kaynagi_calistir("x 1,1234567890 olsun\n").expect_err("S032 bekleniyor");
-    assert_eq!(hata.kod, "S032");
+fn keyfi_hassasiyetli_sabit_kayipsizdir() {
+    let kaynak = "x 1,123456789012345678901234567890123456789 olsun\nx yaz\n";
+    let cikti = kaynagi_calistir(kaynak).expect("çalışmalı");
+    assert_eq!(cikti, vec!["1,123456789012345678901234567890123456789"]);
+}
+
+#[test]
+fn buyuk_katsayi_ve_sonlu_bolum_tamdir() {
+    let kaynak = "\
+a 123456789012345678901234567890,12 olsun
+tutar a ile 100,0 ın çarpımı olsun
+tutar yaz
+tutarın binlikli kuruşlusu yaz
+c 1,0 ın 8 e bölümü olsun
+c yaz
+";
+    let cikti = kaynagi_calistir(kaynak).expect("çalışmalı");
+    assert_eq!(
+        cikti,
+        vec![
+            "12345678901234567890123456789012,0",
+            "12.345.678.901.234.567.890.123.456.789.012,00",
+            "0,125",
+        ]
+    );
+}
+
+#[test]
+fn cok_kucuk_deger_karsilastirma_ve_jsonda_korunur() {
+    let kaynak = "\
+a 0,0000000000000000000000000000000001 olsun
+oran a ile 2 nin çarpımı olsun
+oran yaz
+oran a dan büyükse
+    \"büyük\" yaz
+oranın json metni yaz
+";
+    let cikti = kaynagi_calistir(kaynak).expect("çalışmalı");
+    assert_eq!(
+        cikti,
+        vec![
+            "0,0000000000000000000000000000000002",
+            "büyük",
+            "0.0000000000000000000000000000000002",
+        ]
+    );
+}
+
+#[test]
+fn uzun_negatif_girdi_ondaliga_kayipsiz_cevrilir() {
+    let kaynak = "\"Değer?\" diye sor\nx yanıtın ondalığı olsun\nx yaz\n";
+    let cikti = dil::kaynagi_calistir_girdiyle(
+        kaynak,
+        vec!["-987654321098765432109876543210,12345678901234567890".into()],
+    )
+    .expect("çalışmalı");
+    assert_eq!(
+        cikti,
+        vec![
+            "Değer?",
+            "-987654321098765432109876543210,1234567890123456789",
+        ]
+    );
+}
+
+#[test]
+fn buyuk_ondaligi_tam_sayiya_daraltma_tasma_verir() {
+    let kaynak =
+        "değer 999999999999999999999999999999,5 olsun\ndeğerin tam kısmı yaz\n";
+    let hata = kaynagi_calistir(kaynak).expect_err("C002 bekleniyor");
+    assert_eq!(hata.kod, "C002");
 }
 
 #[test]

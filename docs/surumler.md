@@ -101,6 +101,16 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   korur; yerleşik denemeler kararlı kod üretir. S044/T052 olumsuzları,
   yeniden yayma ve geriye uyum regresyonlarıyla 350 test ve 142 katalog
   kodunda V1-P1-04 kapandı.
+- **Keyfî hassasiyetli Ondalık** (K-092, RFC-0013/spec-16): ilk bootstrap'ın
+  dokuz kesir hanesi ve i64/i128 katsayı sınırı kaldırıldı. Tek Ondalık türü
+  keyfî uzunlukta katsayı+ölçek taşır; toplama/çıkarma/çarpma ve sonlu onluk
+  bölüm tamdır. Sonsuz bölüm platformdan bağımsız 34 anlamlı haneye,
+  yarımlar sıfırdan uzağa yuvarlanır. Uzun sabit ve negatif metin dönüşümü,
+  büyük/küçük değer, exact `1/8`, `10/3` bağlamı, karşılaştırma, JSON/para ve
+  i64 daraltma taşmasıyla 356 test yeşildir. S032 emekliye ayrıldı; katalog
+  141 etkin + 1 ayrılmış kod taşır. Release ölçümünde 20 bin exact Ondalık
+  toplaması 6,8 ms'dir; `BigInt` kapasite maliyeti ölçüm arşivinde görünürdür.
+  V1-P1-01 kapandı.
 
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`

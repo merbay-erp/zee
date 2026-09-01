@@ -36,7 +36,10 @@ hazır doğru olsun
 - Bir adın türü sonradan değişmez (`yaş "on" olsun` → T002).
 - Ondalık sayı **bitişik virgülle** yazılır: `3,14` ondalıktır,
   `3, 14` iki öğeli listedir (RFC-0013). `0,1 ile 0,2 nin toplamı`
-  tam olarak `0,3`tür — onluk aritmetik, ikilik sürpriz yok.
+  tam olarak `0,3`tür — onluk aritmetik, ikilik sürpriz yok. Ondalıkta
+  dokuz-hane/makine-sayısı sınırı yoktur; çok büyük para ve çok küçük ölçüm
+  değerleri aynı türde kayıpsız taşınır. Yalnız sonsuz açılımlı bölme
+  deterministik 34 anlamlı haneye yuvarlanır (K-092/spec-16).
 - Negatif sabit işaretle bitişiktir: `-3`, `-3,14`.
 
 ### Ekli adlar ve `zee-tr-1`

@@ -9,6 +9,7 @@ use crate::agac::{
     AritmetikIslec, Cumle, HttpYontemi, Ifade, Islec, Islem, IslemTuru, KosulKolu, Ozellik,
     Parametre, RotaErisimi, Test, Yapi,
 };
+use crate::ondalik::Ondalik;
 use crate::sozcukleyici::{Token, TokenTur};
 use crate::tani::Tani;
 
@@ -2352,11 +2353,21 @@ fn yapili_kalip(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifade>
         if let Some(katsayi) = katsayi {
             let milisaniye: Option<i128> = match &tokenlar[0].tur {
                 TokenTur::TamSayi(s) if *s >= 0 => Some(*s as i128 * katsayi),
-                TokenTur::Ondalik { govde, olcek } if *govde >= 0 => {
-                    let payda = 10i128.pow(*olcek);
-                    let pay = *govde as i128 * katsayi;
-                    // Yarımdan yukarı yuvarla (milisaniyeye).
-                    Some((2 * pay + payda) / (2 * payda))
+                TokenTur::Ondalik { govde, olcek } => {
+                    match Ondalik::govdeden(govde, *olcek) {
+                        Some(ondalik) if !ondalik.negatif_mi() => Some(
+                            ondalik.katsayiyla_yuvarla_i128(katsayi).ok_or_else(|| {
+                                Tani::yeni(
+                                    "S006",
+                                    "Süre değeri sınırı aşıyor.".into(),
+                                    tokenlar[0].satir,
+                                    tokenlar[0].sutun,
+                                    tokenlar[0].uzunluk,
+                                )
+                            })?,
+                        ),
+                        _ => None,
+                    }
                 }
                 TokenTur::Kelime(k) if k == "yarım" => Some(katsayi / 2),
                 _ => None,

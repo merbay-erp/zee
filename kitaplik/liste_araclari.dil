@@ -52,7 +52,7 @@ test "toplam ve uçlar"
 test "ortalama ondalık döner"
     notlar 50, 60, 71 listesi olsun
     ortalama notlar için ortalamasını hesapla olsun
-    ortalama 60,333333333 a eşit olmalı
+    ortalama 60,33333333333333333333333333333333 a eşit olmalı
 
 # Sıralı kopyanın ortancası; çift adette iki ortancanın ortalaması.
 # Dönüş her zaman Ondalık (tutarlı imza).

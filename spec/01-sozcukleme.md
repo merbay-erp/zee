@@ -21,7 +21,7 @@ Normatif kaynak: RFC-0002 (geçici kabul), RFC-0013. Tanı kodları:
 |---|---|---|
 | Metin | `"..."` | Kapanmayan tırnak S002. Kaçışlar: `\"` `\\` `\n`; başkası S040 |
 | TamSayı | rakamlar, isteğe bağlı bitişik `-` | i64 dışına taşan sabit S006 |
-| Ondalık | `3,14` — virgül **bitişik** | ondalık kısım en çok 9 hane (S032) |
+| Ondalık | `3,14` — virgül **bitişik** | tam ve kesir haneleri keyfî uzunluktadır; kaynak boyuyla sınırlıdır |
 | Kelime | tanımlayıcı alfabesi | ekleriyle birlikte tek token |
 | Virgül | `,` | liste ayracı — sonrasında boşluk beklenir |
 
@@ -31,6 +31,10 @@ Normatif kaynak: RFC-0002 (geçici kabul), RFC-0013. Tanı kodları:
 boşluk-virgül-rakam dizisi belirsizdir ve **YASAK**tır (S033): tanı iki
 düzeltmeyi de önerir. Negatif sabitte işaret rakama bitişiktir: `-3,14`
 tek sabittir ve işaret gövdeye bir kez uygulanır.
+
+Ondalık sabit katsayısı TamSayı'nın i64 sınırına bağlı değildir:
+`123456789012345678901234567890,12` geçerlidir. Eski dokuz kesir hanesi
+sınırı K-092 ile kaldırılmış, S032 yeniden kullanılmamak üzere ayrılmıştır.
 
 ## Girinti tokenları
 
