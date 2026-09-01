@@ -2,7 +2,7 @@
 # Öğretilen: form verisi (örtük "istek" sözlüğü), kaydet-sonrası yönlendirme,
 # html güvenlisi (K-051), dosyada saklama. Yönetim gizli yoldadır:
 # /yonet-gizli123 — anahtarı değiştirmeyi unutma!
-# Production için uygun DEĞİLDİR: kimlik/yetki/CSRF/atomik durum yoktur.
+# Production için uygun DEĞİLDİR: kimlik/yetki/CSRF henüz yoktur.
 # Çalıştır: dil çalıştır --deneysel-web panel-not-defteri.dil
 # Adres → http://127.0.0.1:8091
 
@@ -17,9 +17,14 @@ işlem sayfayı giydir
     sayfa "<!doctype html><html lang=tr><meta charset=utf-8>" ile stil ile gövde olsun
     sayfayı döndür
 
+eylem notu kaydet
+    notu Metin olarak al
+    değer döndürmez
+    "notlar.txt" dosyasına notu ekle
+
 8091 kapısında sunucu başlat
 
-"/" adresine istek geldiğinde
+GET "/" adresine istek geldiğinde
     liste "" olsun
     satırlar "notlar.txt" dosyasının satırları olsun
     her satır için
@@ -29,20 +34,18 @@ işlem sayfayı giydir
     sayfa gövde için sayfayı giydir olsun
     sayfa yanıtını gönder
 
-"/yonet-gizli123" adresine istek geldiğinde
+GET "/yonet-gizli123" adresine istek geldiğinde
     form "<h1>Yeni not</h1><form method=post action=/kaydet-gizli123><input name=not placeholder=notunu-yaz autofocus> <button>Kaydet</button></form><p><a href=/>listeye dön</a></p>" olsun
     sayfa form için sayfayı giydir olsun
     sayfa yanıtını gönder
 
-"/kaydet-gizli123" adresine istek geldiğinde
-    yöntem isteğin "yöntem" değeri olsun
-    yöntem "POST" a eşitse
-        istekte "not" varsa
-            yeni isteğin "not" değeri olsun
-            yeni boşsa
-                "/yonet-gizli123" adresine yönlendir
-            değilse
-                "notlar.txt" dosyasına yeni ekle
-                "/" adresine yönlendir
+POST "/kaydet-gizli123" adresine istek geldiğinde
+    istekte "not" varsa
+        yeni isteğin "not" değeri olsun
+        yeni boşsa
+            "/yonet-gizli123" adresine yönlendir
+        değilse
+            yeni ile notu kaydet
+            "/" adresine yönlendir
     değilse
         "/yonet-gizli123" adresine yönlendir

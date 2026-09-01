@@ -195,22 +195,23 @@ fn json_metin_yaz(metin: &str) -> String {
 // ---------- sunucu ----------
 
 /// Tamamlama önerileri: dilin kalıp kelimeleri (kaynağı: ayrıştırıcı yüzeyi).
-const KALIP_KELIMELERI: [&str; 63] = [
+const KALIP_KELIMELERI: [&str; 70] = [
     "yaz", "olsun", "ise", "değilse", "tekrarla", "için", "kez", "her", "kadar",
     "sürece", "olduğu", "olana", "ile", "ve", "veya", "diye", "sor", "yanıt",
-    "işlem", "al", "döndür", "yapı", "test", "olmalı", "ekle", "artır", "azalt",
+    "işlem", "eylem", "al", "döndür", "yapı", "test", "olmalı", "ekle", "artır", "azalt",
     "böl", "göre", "kullan", "birimini", "paketini", "doğru", "yanlış", "yok", "yeni",
     "dene", "bitir", "saniye", "dakika", "hatasını",
     "varsa", "yoksa", "başarılıysa", "başarısızsa", "sil", "yönlendir",
     "adresine", "çerezine", "sıralanmışı", "parçaları", "birleşmişi", "değişmişi",
     "içermeli", "olmamalı", "kuruşlusu", "metni", "harfleri", "kırpılmışı",
-    "arasındaki", "günler", "önekli", "kalanı",
+    "arasındaki", "günler", "önekli", "kalanı", "GET", "HEAD", "POST", "PUT", "PATCH",
+    "DELETE",
 ];
 
 /// Hover açıklamaları: kalıp kelimesi → tek satır Türkçe açıklama + örnek.
 /// (Kaynak: spec/02-dizim ve dil turu; kelime kalıbın son ya da ayırt edici
 /// parçasıdır.)
-const KELIME_ACIKLAMALARI: [(&str, &str); 33] = [
+const KELIME_ACIKLAMALARI: [(&str, &str); 34] = [
     ("yaz", "Cümleyi bitirir: değeri ekrana (ya da `X dosyasına`) yazar.\n\n`\"Merhaba\" ile isim yaz`"),
     ("olsun", "Ad tanımlar ya da var olan ada atar; tür ilk değerden çıkar ve sonra değişmez.\n\n`yaş 10 olsun`"),
     ("ise", "Koşul dalı açar; koşul yüklem-sonludur (`...se/...sa`).\n\n`yaş 8 veya daha büyükse`"),
@@ -222,6 +223,7 @@ const KELIME_ACIKLAMALARI: [(&str, &str); 33] = [
     ("yanıt", "Son `diye sor` cevabı. Sayı gerekiyorsa: `yanıtın sayısı`."),
     ("ile", "Değerleri birleştirir: metinde ekleme, aritmetik kalıpta ilk terim, çağrıda ayraç."),
     ("işlem", "İşlem tanımı açar; başlangıç parametresi `... al`dır. Birim/paket sözleşmesinde `... <Tür> olarak al` ve ardından `<Tür> döndürür` ya da `değer döndürmez` yazılır; değer `... döndür` ile çıkar.\n\n`işlem karesini hesapla`"),
+    ("eylem", "HTTP protokolünden bağımsız, açık imzalı uygulama iş kuralı ve transaction sınırı tanımlar. Web, CLI ya da görevden aynı biçimde çağrılır.\n\n`eylem notu kaydet`"),
     ("al", "İşlem parametresi bildirir. Başlangıç: `sayıyı al`; açık API: `sayıyı Ondalık olarak al`."),
     ("döndür", "İşlemden değer döndürür. `yok döndür` Seçenek, `\"...\" hatasını döndür` Sonuç üretir."),
     ("yapı", "Alanları türleriyle bildirilen kayıt türü tanımlar; `yeni <Ad>` ile kurulur."),
@@ -485,11 +487,14 @@ fn tanimi_bul(metin: &str, kelime: &str) -> Option<(usize, usize, usize)> {
         None
     };
 
-    // 1) işlem / yapı başlıkları: başlıktaki HERHANGİ bir kelime aday
+    // 1) işlem / eylem / yapı başlıkları: başlıktaki HERHANGİ bir kelime aday
     //    kökle eşleşirse başlığa gider (işlem adları çok kelimeli olabilir).
     for (no, satir) in metin.lines().enumerate() {
         let kirpik = satir.trim_start();
-        if kirpik.starts_with("işlem ") || kirpik.starts_with("yapı ") {
+        if kirpik.starts_with("işlem ")
+            || kirpik.starts_with("eylem ")
+            || kirpik.starts_with("yapı ")
+        {
             if let Some((sutun, uzunluk)) = kelime_konumu(satir, &adaylar) {
                 return Some((no, sutun, uzunluk));
             }

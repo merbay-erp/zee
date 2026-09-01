@@ -117,6 +117,12 @@ türetilmiştir; yeni kod eklenince bu dosya güncellenir — CI'a bağlanması 
 | T040 | Açık dönüş türü tanınmadı | Örn. `TamSayı döndürür`, `Metin seçeneği döndürür` ya da `değer döndürmez` |
 | T041 | Bildirilen dönüş ile gövde uyuşmuyor | Dönüş bildirimi ve bütün `döndür` dalları aynı türü üretmeli |
 | T042 | Değer döndüren işlemin bir yolu gövde sonuna düşebilir | Her koşul/eşleştirme yolunda döndür veya sona ortak dönüş ekle |
+| T043 | Eylemin açık girdi/dönüş sözleşmesi eksik | Bütün girdileri türleriyle yaz; dönüş türünü ya da değer döndürmediğini bildir |
+| T044 | Eylem HTTP adaptörüne bağımlı | Yanıt/yönlendirme/çerezi rotada bırak; eylem yalnız iş kuralını taşısın |
+| T045 | GET/HEAD durum değiştirebilir | Değişikliği POST/PUT/PATCH/DELETE rotasından açık bir eylemle çağır |
+| T046 | Rota uygulama durumunu doğrudan ya da yazıcı işlemle değiştiriyor | Yazmayı açık imzalı bir eylem içine taşı |
+| T047 | Aynı yöntem ve yol birden çok rotaya bağlı | Her yöntem+yol çiftini yalnız bir kez tanımla |
+| T048 | Eylem geri alınamayan ekran/girdi/donanım etkisi taşıyor | Bu etkiyi çağıran adaptöre taşı; eylemde transaction destekli kaynakları kullan |
 
 ## C — Çalışma zamanı
 
@@ -142,6 +148,7 @@ türetilmiştir; yeni kod eklenince bu dosya güncellenir — CI'a bağlanması 
 | C018 | Ağ isteği başarısız | v0 yalnız http:// destekler (TLS yok); adresi ve bağlantıyı kontrol et |
 | C019 | Çağrı derinliği 500'ü aştı | Özyinelemeli adım her seferinde temel duruma yaklaşmalı |
 | C020 | Çıkış kodu 0–255 dışında | `programı 0 ile bitir` … `programı 255 ile bitir` (K-069) |
+| C021 | Eylem transaction'ı başlatılamadı, tamamlanamadı ya da geri alınamadı | Kalıcı kaynağın yol/izin durumunu denetle; yarım başarı ayrıntısını kaybetmeden raporla |
 
 ## D — Doğrulama
 

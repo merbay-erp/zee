@@ -39,6 +39,7 @@ fn katalog_kaynakla_birebir() {
         "src/sozcukleyici.rs",
         "src/ayristirici.rs",
         "src/cozumleyici.rs",
+        "src/eylem.rs",
         "src/yorumlayici.rs",
         "src/bicimleyici.rs",
         "src/proje.rs",

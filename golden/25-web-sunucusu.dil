@@ -1,12 +1,12 @@
 # 25 — Deneysel mini web sunucusu yüzeyi (master plan bölüm 6, K-082)
 # Sınanan: "8080 kapısında sunucu başlat", olay bloğu:
-# "X adresine istek geldiğinde", "yanıtını gönder" (K-022).
+# "GET X adresine istek geldiğinde", "yanıtını gönder" (K-022/K-087).
 # Gerçek TCP yalnız `dil çalıştır --deneysel-web ...` ile localhost'ta açılır.
 
 8080 kapısında sunucu başlat
 
-"/durum" adresine istek geldiğinde
+GET "/durum" adresine istek geldiğinde
     "çalışıyor" yanıtını gönder
 
-"/selam" adresine istek geldiğinde
+GET "/selam" adresine istek geldiğinde
     "Merhaba ziyaretçi" yanıtını gönder

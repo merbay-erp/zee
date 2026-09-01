@@ -52,6 +52,18 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   döner. Liste/özyineleme/çağrı sırası ve gerçek paket
   olumsuzuyla ve örtük yeniden-dışa-açma yasağıyla toplam 289 test, 127
   katalog kodu. V1-P0-01 kapandı.
+- **Uygulama eylemi ve yöntemli web adaptörü** (K-087, RFC-0015/spec-11):
+  açık imzalı `eylem` aynı çağrı sözdizimiyle web/CLI/görev/test bağlamında
+  kullanılır; HTTP yanıtı/çerezi ve geri alınamayan ekran/girdi/donanım etkisi
+  taşıyamaz. GET/HEAD'in doğrudan ve çağrı grafiğindeki dolaylı yazması T045,
+  rota içi uygulama yazması T046'dır. Açık GET/HEAD/POST/PUT/PATCH/DELETE,
+  404/405, 64 KiB+100 alan için 413 ve 30 saniye için 504 gerçeklendi. Her
+  eylem çalışma hatası ya da başarısız Sonuçta geri alınan iç içe dosya
+  savepoint'i taşır; IO desteği yoksa C021 ile fail-closed davranır. Gerçek TCP
+  HEAD gövdesini bastırır. Geri alma, araya giren başka yazarın verisini
+  ezmek yerine C021 verir. Hermetik ve gerçek CLI geri alma kanıtlarıyla 304
+  test ve 134 katalog kodunda V1-P0-02
+  kapandı. Çok-dosyalı süreç-çökmesi atomikliği bu sözün parçası değildir.
 
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`

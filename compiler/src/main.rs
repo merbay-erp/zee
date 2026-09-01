@@ -880,6 +880,17 @@ struct GercekIo {
     deneysel_web: bool,
     dinleyici: Option<std::net::TcpListener>,
     bekleyen_akis: Option<std::net::TcpStream>,
+    bekleyen_head: bool,
+    /// İç içe eylemler için dosya savepoint'leri: yol → çağrı başındaki içerik.
+    eylem_yedekleri:
+        Vec<std::collections::HashMap<std::path::PathBuf, EylemDosyaYedegi>>,
+}
+
+#[derive(Clone)]
+struct EylemDosyaYedegi {
+    onceki: Option<Vec<u8>>,
+    /// Bu savepoint'in hedefte bıraktığını en son gördüğü bütün içerik.
+    beklenen: Option<Vec<u8>>,
 }
 
 impl GercekIo {
@@ -902,6 +913,8 @@ impl GercekIo {
             deneysel_web,
             dinleyici: None,
             bekleyen_akis: None,
+            bekleyen_head: false,
+            eylem_yedekleri: Vec::new(),
         }
     }
 
@@ -952,8 +965,35 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
     }
     fn dosya_yaz(&mut self, yol: &str, satir: &str, ekleme: bool) -> Result<(), String> {
         let gercek_yol = self.dosya_yolu(yol);
+        if self
+            .eylem_yedekleri
+            .iter()
+            .any(|yedek| !yedek.contains_key(&gercek_yol))
+        {
+            let onceki = match std::fs::read(&gercek_yol) {
+                Ok(icerik) => Some(icerik),
+                Err(hata) if hata.kind() == std::io::ErrorKind::NotFound => None,
+                Err(hata) => return Err(format!("transaction yedeği alınamadı: {}", hata)),
+            };
+            for yedek in &mut self.eylem_yedekleri {
+                yedek.entry(gercek_yol.clone()).or_insert_with(|| {
+                    EylemDosyaYedegi {
+                        onceki: onceki.clone(),
+                        beklenen: onceki.clone(),
+                    }
+                });
+            }
+        }
         dil::kalici_dosya::atomik_satir_yaz(&gercek_yol, satir, ekleme)
-            .map_err(|hata| format!("\"{}\" dosyasına yazılamadı: {}", yol, hata))
+            .map_err(|hata| format!("\"{}\" dosyasına yazılamadı: {}", yol, hata))?;
+        let sonraki = std::fs::read(&gercek_yol)
+            .map_err(|hata| format!("transaction yazımı doğrulanamadı: {}", hata))?;
+        for yedek in &mut self.eylem_yedekleri {
+            if let Some(kayit) = yedek.get_mut(&gercek_yol) {
+                kayit.beklenen = Some(sonraki.clone());
+            }
+        }
+        Ok(())
     }
     fn simdi(&mut self) -> (i64, u32, u32, u32, u32) {
         // v0: UTC. Yerel saat dilimi desteği stdlib Zaman modülüyle gelecek.
@@ -1083,7 +1123,8 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         let dinleyici = self.dinleyici.as_ref()?;
         loop {
             let (mut akis, _) = dinleyici.accept().ok()?;
-            let mut tampon = [0u8; 65536];
+            // 64 KiB gövde + en çok 16 KiB başlangıç satırı/başlık alanı.
+            let mut tampon = [0u8; 80 * 1024];
             let mut okunan = akis.read(&mut tampon).ok()?;
             // Content-Length gövdesi ilk okumaya sığmadıysa tamamla (K-051).
             let baslik_sonu = tampon[..okunan]
@@ -1097,6 +1138,24 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                     .find_map(|s| s.strip_prefix("content-length:"))
                     .and_then(|s| s.trim().parse().ok())
                     .unwrap_or(0);
+                if beklenen > dil::yorumlayici::AZAMI_ISTEK_GOVDESI {
+                    use std::io::Write;
+                    let govde = b"istek govdesi 64 KiB sinirini asiyor";
+                    let head = basliklar
+                        .lines()
+                        .next()
+                        .and_then(|satir| satir.split_whitespace().next())
+                        .is_some_and(|yontem| yontem == "head");
+                    let _ = write!(
+                        akis,
+                        "HTTP/1.1 413 Payload Too Large\r\nContent-Type: text/plain; charset=utf-8\r\nContent-Length: {}\r\nConnection: close\r\n\r\n",
+                        govde.len()
+                    );
+                    if !head {
+                        let _ = akis.write_all(govde);
+                    }
+                    continue;
+                }
                 while okunan < tampon.len() && okunan - govde_basi < beklenen {
                     match akis.read(&mut tampon[okunan..]) {
                         Ok(0) | Err(_) => break,
@@ -1122,6 +1181,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                     })
                     .unwrap_or_default();
                 self.bekleyen_akis = Some(akis);
+                self.bekleyen_head = yontem.eq_ignore_ascii_case("HEAD");
                 let cerez_satiri = if cerez.is_empty() {
                     String::new()
                 } else {
@@ -1138,9 +1198,44 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
     fn cerez_sil(&mut self, ad: &str) {
         self.bekleyen_silinen_cerezler.push(ad.to_string());
     }
+    fn eylem_baslat(&mut self) -> Result<(), String> {
+        self.eylem_yedekleri.push(std::collections::HashMap::new());
+        Ok(())
+    }
+    fn eylem_tamamla(&mut self) -> Result<(), String> {
+        self.eylem_yedekleri
+            .pop()
+            .map(|_| ())
+            .ok_or_else(|| "açık eylem transaction'ı yok".into())
+    }
+    fn eylem_geri_al(&mut self) -> Result<(), String> {
+        let yedek = self
+            .eylem_yedekleri
+            .pop()
+            .ok_or_else(|| "açık eylem transaction'ı yok".to_string())?;
+        let mut girdiler = yedek.into_iter().collect::<Vec<_>>();
+        girdiler.sort_by(|(a, _), (b, _)| a.cmp(b));
+        for (yol, kayit) in girdiler {
+            dil::kalici_dosya::atomik_karsilastir_ve_geri_al(
+                &yol,
+                kayit.beklenen.as_deref(),
+                kayit.onceki.as_deref(),
+            )
+            .map_err(|hata| format!("\"{}\" geri yüklenemedi: {}", yol.display(), hata))?;
+            // İç savepoint geri alındıysa dış savepoint artık hedefte geri
+            // yüklenen içeriği bekler; sonraki dış rollback bunu doğrular.
+            for ust in &mut self.eylem_yedekleri {
+                if let Some(ust_kayit) = ust.get_mut(&yol) {
+                    ust_kayit.beklenen = kayit.onceki.clone();
+                }
+            }
+        }
+        Ok(())
+    }
     fn yanit_gonder(&mut self, yanit: &str) {
         use std::io::Write;
         if let Some(mut akis) = self.bekleyen_akis.take() {
+            let head = std::mem::take(&mut self.bekleyen_head);
             let govde = yanit.as_bytes();
             // Gövde işaretlemeyle başlıyorsa tarayıcıya HTML olarak sun
             // (K-050): zee ile web sayfası servis etmenin önünü açar.
@@ -1166,12 +1261,45 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                 govde.len(),
                 cerez_basliklari
             );
-            let _ = akis.write_all(govde);
+            if !head {
+                let _ = akis.write_all(govde);
+            }
+        }
+    }
+    fn durum_yaniti_gonder(&mut self, durum: u16, yanit: &str) {
+        use std::io::Write;
+        let aciklama = match durum {
+            400 => "Bad Request",
+            401 => "Unauthorized",
+            403 => "Forbidden",
+            404 => "Not Found",
+            405 => "Method Not Allowed",
+            413 => "Payload Too Large",
+            431 => "Request Header Fields Too Large",
+            504 => "Gateway Timeout",
+            _ => "Error",
+        };
+        self.bekleyen_cerezler.clear();
+        self.bekleyen_silinen_cerezler.clear();
+        if let Some(mut akis) = self.bekleyen_akis.take() {
+            let head = std::mem::take(&mut self.bekleyen_head);
+            let govde = yanit.as_bytes();
+            let _ = write!(
+                akis,
+                "HTTP/1.1 {} {}\r\nContent-Type: text/plain; charset=utf-8\r\nContent-Length: {}\r\nConnection: close\r\n\r\n",
+                durum,
+                aciklama,
+                govde.len()
+            );
+            if !head {
+                let _ = akis.write_all(govde);
+            }
         }
     }
     fn yonlendir_gonder(&mut self, adres: &str) {
         use std::io::Write;
         if let Some(mut akis) = self.bekleyen_akis.take() {
+            self.bekleyen_head = false;
             let mut cerez_basliklari = String::new();
             for (ad, deger) in self.bekleyen_cerezler.drain(..) {
                 cerez_basliklari.push_str(&format!(

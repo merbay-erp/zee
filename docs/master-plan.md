@@ -81,12 +81,13 @@ işlem ortalamayı hesapla
     sonucu döndür
 8080 kapısında sunucu başlat
 
-"/durum" adresine istek geldiğinde
+GET "/durum" adresine istek geldiğinde
     "çalışıyor" yanıtını gönder
 
 Stage 0'da gerçek soket yalnız `dil çalıştır --deneysel-web ...` açık izniyle
-localhost eğitim/prototipi için kurulur (K-082). Production route/action,
-oturum ve transaction sözleşmesi RFC-0015/V1-P0-02..04 kapısıdır.
+localhost eğitim/prototipi için kurulur (K-082). K-087 yöntemli rota, uygulama
+eylemi, etki denetimi ve yerel transaction/savepoint sözleşmesini kapattı.
+Production oturum/çerez/CSRF/TLS sınırı K-088/V1-P0-03 kapısıdır.
 # 7. Temel dil yüzeyi
 Değer tanımı: “isim Ayşe olsun”.
 Fonksiyon: “işlem”.

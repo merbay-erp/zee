@@ -33,6 +33,33 @@ impl Drop for GeciciKlasor {
 }
 
 #[test]
+fn gercek_io_eylem_hatasinda_dosyalari_geri_alir() {
+    let gecici = GeciciKlasor::yeni();
+    let kaynak = gecici.yol().join("geri-al.dil");
+    std::fs::write(gecici.yol().join("bir.txt"), "eski\n").expect("ilk durum");
+    std::fs::write(
+        &kaynak,
+        "eylem bozuk kaydet\n    değer döndürmez\n    \"bir.txt\" dosyasına \"yeni\" yaz\n    \"iki.txt\" dosyasına \"yarım\" yaz\n    sonuç 1 in 0 a bölümü olsun\n\nbozuk kaydet\n",
+    )
+    .expect("kaynak");
+
+    let cikti = Command::new(env!("CARGO_BIN_EXE_dil"))
+        .args(["çalıştır", kaynak.to_str().expect("utf8")])
+        .output()
+        .expect("CLI çalışmalı");
+    assert!(!cikti.status.success(), "çalışma hatası süreçte görünmeli");
+    assert!(String::from_utf8_lossy(&cikti.stderr).contains("C003"));
+    assert_eq!(
+        std::fs::read_to_string(gecici.yol().join("bir.txt")).unwrap(),
+        "eski\n"
+    );
+    assert!(
+        !gecici.yol().join("iki.txt").exists(),
+        "eylemin yarım oluşturduğu dosya kalmamalı"
+    );
+}
+
+#[test]
 fn gercek_io_iki_surecte_ekleme_kaybetmez() {
     let gecici = GeciciKlasor::yeni();
     let ikili = env!("CARGO_BIN_EXE_dil");

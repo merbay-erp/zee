@@ -53,7 +53,7 @@ fn form_govdesi_post_ile_gelir() {
     let kaynak = "\
 8080 kapısında sunucu başlat
 
-\"/kaydet\" adresine istek geldiğinde
+POST \"/kaydet\" adresine istek geldiğinde
     istekte \"not\" varsa
         \"alındı: \" ile isteğin \"not\" değeri yanıtını gönder
 ";
@@ -266,14 +266,229 @@ fn cerez_silme_kaydedilir() {
     let kaynak = "\
 8080 kapısında sunucu başlat
 
-\"/cikis\" adresine istek geldiğinde
+POST \"/cikis\" adresine istek geldiğinde
     \"oturum\" çerezini sil
     \"/\" adresine yönlendir
 ";
-    let io = sunucuyla(kaynak, vec!["/cikis"]);
+    let io = sunucuyla(kaynak, vec!["POST /cikis"]);
     assert_eq!(
         io.yazilan_cerezler,
         vec![("oturum".into(), "×silindi".into())]
     );
     assert_eq!(io.sunucu_yanitlari[0].1, "→ /");
+}
+
+#[test]
+fn eylem_ayni_is_kuralini_cli_ve_webden_calistirir() {
+    let kaynak = "\
+eylem notu kaydet
+    notu Metin olarak al
+    değer döndürmez
+    \"notlar.txt\" dosyasına notu ekle
+
+\"CLI notu\" ile notu kaydet
+8080 kapısında sunucu başlat
+
+POST \"/notlar\" adresine istek geldiğinde
+    not isteğin \"not\" değeri olsun
+    not ile notu kaydet
+    \"kaydedildi\" yanıtını gönder
+";
+    let program = dil::kaynagi_derle(kaynak).expect("eylem derlenmeli");
+    let mut io = ToplayanIo::yeni(Vec::new());
+    io.istekler = vec!["POST /notlar\nnot=Web+notu".to_string()].into();
+    calistir_io(&program, &mut io).expect("iki adaptör de çalışmalı");
+    assert_eq!(io.dosyalar["notlar.txt"], "CLI notu\nWeb notu\n");
+    assert_eq!(io.sunucu_yanitlari[0].1, "kaydedildi");
+}
+
+#[test]
+fn eylem_acik_imza_ister() {
+    let kaynak = "\
+eylem notu kaydet
+    notu al
+    \"notlar.txt\" dosyasına notu ekle
+";
+    let hata = dil::kaynagi_derle(kaynak).expect_err("T043 bekleniyor");
+    assert_eq!(hata.kod, "T043");
+}
+
+#[test]
+fn get_dogrudan_ve_dolayli_yazmayi_reddeder() {
+    let dogrudan = "\
+GET \"/sil\" adresine istek geldiğinde
+    \"durum.txt\" dosyasına \"değişti\" yaz
+";
+    assert_eq!(dil::kaynagi_derle(dogrudan).expect_err("T045").kod, "T045");
+
+    let dolayli = "\
+eylem durumu değiştir
+    değer döndürmez
+    \"durum.txt\" dosyasına \"değişti\" yaz
+
+GET \"/sil\" adresine istek geldiğinde
+    durumu değiştir
+";
+    assert_eq!(dil::kaynagi_derle(dolayli).expect_err("T045").kod, "T045");
+}
+
+#[test]
+fn yazan_post_rotasi_mutlaka_eylem_cagirir() {
+    let kaynak = "\
+POST \"/notlar\" adresine istek geldiğinde
+    \"notlar.txt\" dosyasına \"doğrudan\" ekle
+";
+    assert_eq!(dil::kaynagi_derle(kaynak).expect_err("T046").kod, "T046");
+}
+
+#[test]
+fn eylem_http_adaptorune_baglanamaz() {
+    let kaynak = "\
+eylem yanıt ver
+    değer döndürmez
+    \"olmaz\" yanıtını gönder
+";
+    assert_eq!(dil::kaynagi_derle(kaynak).expect_err("T044").kod, "T044");
+}
+
+#[test]
+fn eylem_geri_alinamayan_ciktiyi_tasimaz() {
+    let kaynak = "\
+eylem raporu üret
+    değer döndürmez
+    \"yarım çıktı\" yaz
+";
+    assert_eq!(dil::kaynagi_derle(kaynak).expect_err("T048").kod, "T048");
+}
+
+#[test]
+fn yanlis_yontem_405_olmayan_yol_404_doner() {
+    let kaynak = "\
+8080 kapısında sunucu başlat
+
+POST \"/notlar\" adresine istek geldiğinde
+    \"tamam\" yanıtını gönder
+";
+    let io = sunucuyla(kaynak, vec!["GET /notlar", "GET /yok"]);
+    assert_eq!(io.sunucu_durumlari, vec![405, 404]);
+    assert!(io.sunucu_yanitlari[0].1.contains("HTTP yöntemini"));
+    assert!(io.sunucu_yanitlari[1].1.contains("aranan sayfa yok"));
+}
+
+#[test]
+fn fazla_govde_ve_alan_413_doner() {
+    let kaynak = "\
+8080 kapısında sunucu başlat
+
+POST \"/al\" adresine istek geldiğinde
+    \"tamam\" yanıtını gönder
+";
+    let buyuk = format!("POST /al\nveri={}", "x".repeat(64 * 1024 + 1));
+    let alanlar = (0..101)
+        .map(|i| format!("a{}=1", i))
+        .collect::<Vec<_>>()
+        .join("&");
+    let program = dil::kaynagi_derle(kaynak).expect("derlenmeli");
+    let mut io = ToplayanIo::yeni(Vec::new());
+    io.istekler = vec![buyuk, format!("POST /al\n{}", alanlar)].into();
+    calistir_io(&program, &mut io).expect("sunucu sürmeli");
+    assert_eq!(io.sunucu_durumlari, vec![413, 413]);
+}
+
+#[test]
+fn put_patch_delete_govdeleri_cozulur() {
+    let kaynak = "\
+8080 kapısında sunucu başlat
+
+PUT \"/put\" adresine istek geldiğinde
+    isteğin \"değer\" değeri yanıtını gönder
+PATCH \"/patch\" adresine istek geldiğinde
+    isteğin \"değer\" değeri yanıtını gönder
+DELETE \"/delete\" adresine istek geldiğinde
+    isteğin \"değer\" değeri yanıtını gönder
+";
+    let io = sunucuyla(
+        kaynak,
+        vec![
+            "PUT /put\ndeğer=bir",
+            "PATCH /patch\ndeğer=iki",
+            "DELETE /delete\ndeğer=üç",
+        ],
+    );
+    assert_eq!(
+        io.sunucu_yanitlari
+            .iter()
+            .map(|(_, govde)| govde.as_str())
+            .collect::<Vec<_>>(),
+        vec!["bir", "iki", "üç"]
+    );
+}
+
+#[test]
+fn istek_son_tarihi_504_doner() {
+    let kaynak = "\
+8080 kapısında sunucu başlat
+
+GET \"/yavaş\" adresine istek geldiğinde
+    31 saniye bekle
+    \"geç kaldı\" yanıtını gönder
+";
+    let io = sunucuyla(kaynak, vec!["GET /yavaş"]);
+    assert_eq!(io.sunucu_durumlari, vec![504]);
+    assert_eq!(io.sunucu_yanitlari[0].1, "istek 30 saniyelik son tarihini aştı");
+}
+
+#[test]
+fn eylem_calisma_hatasinda_tum_dosyalari_geri_alir() {
+    let kaynak = "\
+eylem bozuk kaydet
+    değer döndürmez
+    \"bir.txt\" dosyasına \"bir\" yaz
+    \"iki.txt\" dosyasına \"iki\" yaz
+    sonuç 1 in 0 a bölümü olsun
+
+bozuk kaydet
+";
+    let program = dil::kaynagi_derle(kaynak).expect("derlenmeli");
+    let mut io = ToplayanIo::yeni(Vec::new());
+    let hata = calistir_io(&program, &mut io).expect_err("çalışma hatası");
+    assert_eq!(hata.kod, "C003");
+    assert!(io.dosyalar.is_empty(), "yarım yazma görünmemeli");
+}
+
+#[test]
+fn basarisiz_sonuc_ic_savepointi_geri_alir() {
+    let kaynak = "\
+eylem iç adımı dene
+    Metin sonucu döndürür
+    \"gunluk.txt\" dosyasına \"iç\" ekle
+    başarılı yanlış olsun
+    başarılı ise
+        \"beklenmeyen başarı\" döndür
+    değilse
+        \"beklenen hata\" hatasını döndür
+
+eylem dış adımı çalıştır
+    değer döndürmez
+    \"gunluk.txt\" dosyasına \"önce\" ekle
+    sonuç iç adımı dene olsun
+    \"gunluk.txt\" dosyasına \"sonra\" ekle
+
+dış adımı çalıştır
+";
+    let program = dil::kaynagi_derle(kaynak).expect("derlenmeli");
+    let mut io = ToplayanIo::yeni(Vec::new());
+    calistir_io(&program, &mut io).expect("dış eylem tamamlanmalı");
+    assert_eq!(io.dosyalar["gunluk.txt"], "önce\nsonra\n");
+}
+
+#[test]
+fn ayni_yontem_ve_yol_iki_kez_baglanamaz() {
+    let kaynak = "\
+GET \"/x\" adresine istek geldiğinde
+    \"bir\" yanıtını gönder
+GET \"/x\" adresine istek geldiğinde
+    \"iki\" yanıtını gönder
+";
+    assert_eq!(dil::kaynagi_derle(kaynak).expect_err("T047").kod, "T047");
 }
