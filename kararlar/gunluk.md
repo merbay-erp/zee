@@ -1481,6 +1481,24 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   sınırı ve deadline'sız küçük loopback yanıtı için üç yeni test. Toplam 416
   test; B-025'in ağ dilimi ve V1-P0-15 kapandı.
 
+## K-106 — Web oturum deposunu sınırla, ömrü mutlaklaştır (1 Eyl)
+
+- **Karar:** Process içi depo en çok 4096 toplam ve 1024 anonim oturum taşır.
+  Süresi dolanlar istek başında silinir. Kota dolunca en uzun süredir
+  kullanılmayan anonim kayıt; eşit erişimde oluşturma sırasına göre tahliye
+  edilir. Kimlikli kayıt anonimden önce kurban edilmez.
+- **Fail-closed:** Depo yalnız kimlikli oturumlarla doluysa yeni giriş mevcut
+  bir kullanıcıyı düşürmek yerine hata olur. Anonim form isteği bellek
+  kullanımını sınırsız büyütemez.
+- **Ömür:** Anonim 10 dakika, kimlikli 30 dakika oluşturma anından başlayan
+  mutlak ömürdür. Erişim yalnız LRU sırasını günceller, expiry'yi kaydırmaz.
+- **Deployment sınırı:** Depo process-local'dır; mevcut güvenli profil tek
+  runtime process'i içindir. Per-IP/rate-limit ve atomik paylaşımlı depo
+  B-046'da açık kalır; sticky session ortak revoke değildir.
+- **Kanıt:** ADR-018 + spec/12; anonim LRU, anonimin kimlikli girişe yer açması,
+  yalnız kimlikli doluluk reddi ve kaymayan expiry. Üç yeni testle toplam 419;
+  V1-P0-16 kapandı, B-046 process içi dilimde tamamlandı.
+
 ---
 
 ## Sonraki adım
@@ -1489,5 +1507,5 @@ Korpus 10 öğrenci + 5 profesyonel usability oturumuna (Hafta 12 hedefi, erkeni
 Hafta 2'de kağıt üstünde) sesli okutulacak; her kayıt için "doğal mı /
 deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
-Makine hattında B-046/K-106 sınırlı web oturum deposu, ardından B-047/K-107
-LSP girdi sertleştirmesi gelir; B-020 source span bu güvenlik dilimini izler.
+Makine hattında B-047/K-107 LSP girdi sertleştirmesi gelir; B-020 source span
+bu güvenlik dilimini izler.

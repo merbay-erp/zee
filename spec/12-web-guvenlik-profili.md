@@ -54,7 +54,7 @@ Başarılı `oturuma al` cümlesi:
    ayrı bir 256 bit CSRF belirteci üretir;
 3. depoda oturum kimliğinin yalnız SHA-256 özetini, kullanıcıyı, rolü,
    CSRF belirtecini ve son geçerlilik anını tutar;
-4. oturumu 30 dakika ile sınırlar.
+4. oturumu oluşturma anından başlayan mutlak 30 dakika ile sınırlar.
 
 Bu döndürme session fixation saldırısına karşı normatif davranıştır.
 Roller istemciden okunmaz; sunucu oturum kaydından denetlenir. Kimlik
@@ -62,7 +62,12 @@ gerektiren rotaya anonim istek 401, doğru kimlik fakat yanlış rol 403 döner.
 
 `oturumu kapat` sunucu kaydını iptal eder ve oturum çerezini `Max-Age=0` ile
 sonlandırır. Eski belirteç yeniden kullanılamaz. Süresi dolan kayıt istek
-başında silinir.
+başında silinir. Geçerli erişim tahliye sırasını günceller ama son geçerlilik
+anını ileri taşımaz; ömür sliding değildir.
+
+Process içi depo en çok 4096 toplam oturum tutar. Yalnız kimliği doğrulanmış
+kayıtlarla doluysa yeni giriş, var olan bir kullanıcıyı düşürmek yerine
+fail-closed hata olur.
 
 ## 3. CSRF
 
@@ -73,7 +78,10 @@ csrf csrf belirteci olsun
 form "<input type=hidden name=_csrf value=\"" ile csrf ile "\">" olsun
 ```
 
-Geçerli oturum yoksa ifade 10 dakikalık anonim form oturumu oluşturur.
+Geçerli oturum yoksa ifade oluşturma anından başlayan mutlak 10 dakikalık
+anonim form oturumu oluşturur. Depoda aynı anda en çok 1024 anonim oturum
+bulunur. Anonim veya toplam kota dolduğunda en uzun süredir kullanılmayan
+anonim kayıt tahliye edilir; aynı erişim anında oluşturma sırası belirleyicidir.
 Belirteç sunucu oturumuna bağlı synchronizer token'dır. Her POST, PUT,
 PATCH ve DELETE isteğinde `_csrf` alanı otomatik denetlenir. Oturum, alan veya
 eşleşme yoksa rota gövdesi çalışmadan 403 döner.
@@ -130,8 +138,11 @@ ayrıca geçerlidir.
 
 Native CLI CSPRNG ve Argon2id capability'sini taşır. WASM playground
 production oturumu veya parola özeti üretmez; parola doğrulaması başarısız
-olur. TLS sertifikası, secret dağıtımı, kaba-kuvvet/rate-limit ve çok süreçli
-paylaşılan oturum deposu deployment katmanının sorumluluğudur; bu profil
-bunları varmış gibi göstermez.
+olur. TLS sertifikası, secret dağıtımı ve kaba-kuvvet/rate-limit deployment
+katmanının sorumluluğudur. Process-local oturum deposu nedeniyle mevcut profil
+tek bir zee runtime process'i içindir. Birden çok runtime process'i, aynı
+rotation/revoke/expiry semantiğini atomik sağlayan paylaşımlı depo adaptörü
+gelene kadar bu production profilinin dışındadır; sticky session ortak revoke
+sözünün yerine geçmez.
 
 Normatif gerekçe: RFC-0017. Rota/eylem ayrımı: RFC-0015 ve spec/11.

@@ -539,6 +539,7 @@ ADR-014 — Yapı, işlem ve sembol semantic kimlikleri
 ADR-015 — Derleyici fazlarını Rust türleriyle görünür kılma
 ADR-016 — Typed HIR çekirdeği ve aşamalı runtime geçişi
 ADR-017 — Native ağ I/O kaynak sınırları
+ADR-018 — Sınırlı web oturum deposu ve mutlak ömür
 # 39. Ekip ve rol modeli
 Dil mimarı: semantik ve uzun vadeli vizyon.
 Compiler: parser, types, IR, backend.
@@ -562,10 +563,11 @@ typed HIR tür/bağ çekirdeğini kurdu, K-104 standart runtime'ı bu bağlara
 geçirdi. 1 Eylül güvenlik incelemesi source span'in önüne sınırsız ağ/oturum/
 LSP girdisini aldı: K-105/ADR-017 native HTTP istemcisine varsayılan 30 saniye
 ve 8 MiB yanıt, yerel sunucuya 10 saniye mutlak istek okuma sınırı koydu.
-Sınırlı oturum deposu ve LSP girdi sertleştirmesinden sonra source span,
-fuzz/panic audit'i ve IO trace/replay gelir. P0 maddeleri kapanmadan yeni dil
-özelliği varsayılan olarak öne alınmaz; yarım güvenlik/correctness dilimi önce
-atomik olarak tamamlanır.
+K-106/ADR-018 process içi oturum deposunu 4096 toplam/1024 anonim kayıtla
+sınırlayıp anonim LRU ve kaymayan mutlak ömrü bağladı. LSP girdi
+sertleştirmesinden sonra source span, fuzz/panic audit'i ve IO trace/replay
+gelir. P0 maddeleri kapanmadan yeni dil özelliği varsayılan olarak öne alınmaz;
+yarım güvenlik/correctness dilimi önce atomik olarak tamamlanır.
 
 K-016'nın makine hazırlığı K-096 ile
 [karar paketine](k016-cagri-karar-paketi.md) bağlandı: önce serbest üretim,
@@ -594,8 +596,8 @@ bağlanmış programı ayrı türlere taşıyan B-018, K-102/ADR-015 ile tamamla
 standart runtime yalnız bağlı giriş kullanır. B-019, K-103/K-104/ADR-016 ile
 checker türleri ve ID bağlarını zorunlu HIR'a taşıdı; runtime ve `dene` bu
 bağları tek semantic karar kaynağı yapar. Güvenlik incelemesiyle K-105 ağ
-kaynak sınırlarını kapattı; sırada B-046/K-106 oturum deposu ve B-047/K-107
-LSP girdisi, ardından B-020 source span vardır.
+kaynak sınırlarını, K-106 process içi oturum kotasını kapattı; sırada
+B-047/K-107 LSP girdisi, ardından B-020 source span vardır.
 # 40. Proje felsefesinin korunması
 Bu projenin başarısı yalnız compiler’ın çalışması değildir. Başarı; Türkçe konuşan bir çocuğun yabancı syntax bariyerine takılmadan algoritmik düşünceyle tanışması, aynı dilin yıllar sonra onu terk etmeye zorlamaması ve ekosistemin tek bir şirketin kapalı ürünü haline gelmemesidir.
 Her yeni özellik şu dört sorudan geçmelidir: Türkçe doğal mı? Deterministik mi? Öğrenilebilir mi? Profesyonel ölçekte savunulabilir mi? Dördünden biri hayırsa özellik yeniden tasarlanır.

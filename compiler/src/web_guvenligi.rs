@@ -9,6 +9,8 @@ use std::collections::HashMap;
 
 pub const OTURUM_OMRU_SANIYE: i64 = 30 * 60;
 pub const ANONIM_OTURUM_OMRU_SANIYE: i64 = 10 * 60;
+pub const AZAMI_OTURUM_SAYISI: usize = 4096;
+pub const AZAMI_ANONIM_OTURUM_SAYISI: usize = 1024;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct WebReddi {
@@ -28,12 +30,28 @@ struct Oturum {
     kullanici: Option<String>,
     rol: Option<String>,
     son_gecerlilik_ms: i64,
+    son_erisim_ms: i64,
+    olusturma_sirasi: u64,
 }
 
-#[derive(Default)]
 pub struct WebGuvenligi {
     oturumlar: HashMap<String, Oturum>,
     gelen_belirtec: Option<String>,
+    sonraki_olusturma_sirasi: u64,
+    azami_oturum: usize,
+    azami_anonim_oturum: usize,
+}
+
+impl Default for WebGuvenligi {
+    fn default() -> Self {
+        Self {
+            oturumlar: HashMap::new(),
+            gelen_belirtec: None,
+            sonraki_olusturma_sirasi: 0,
+            azami_oturum: AZAMI_OTURUM_SAYISI,
+            azami_anonim_oturum: AZAMI_ANONIM_OTURUM_SAYISI,
+        }
+    }
 }
 
 impl WebGuvenligi {
@@ -41,10 +59,25 @@ impl WebGuvenligi {
         Self::default()
     }
 
-    /// Her istekten önce çağrılır. Süresi dolmuş kayıt aynı anda iptal edilir.
+    #[cfg(test)]
+    fn sinirli(azami_oturum: usize, azami_anonim_oturum: usize) -> Self {
+        Self {
+            azami_oturum,
+            azami_anonim_oturum: azami_anonim_oturum.min(azami_oturum),
+            ..Self::default()
+        }
+    }
+
+    /// Her istekten önce çağrılır. Süresi dolmuş kayıt aynı anda iptal edilir;
+    /// erişim LRU sırasını günceller ama mutlak geçerlilik anını uzatmaz.
     pub fn istegi_baslat(&mut self, belirtec: Option<&str>, an_ms: i64) {
         self.gelen_belirtec = belirtec.map(str::to_string);
         self.suresi_dolani_sil(an_ms);
+        if let Some(belirtec) = belirtec {
+            if let Some(oturum) = self.oturumlar.get_mut(&anahtar(belirtec)) {
+                oturum.son_erisim_ms = an_ms;
+            }
+        }
     }
 
     /// Form GET'inde synchronizer token verir; oturum yoksa kısa ömürlü anonim
@@ -60,16 +93,19 @@ impl WebGuvenligi {
         if let Some(oturum) = self.gecerli_oturum(an_ms) {
             return Ok((oturum.csrf.clone(), None));
         }
+        self.oturum_yeri_ac(true)?;
         let belirtec = uret()?;
         let csrf = uret()?;
         let omur = ANONIM_OTURUM_OMRU_SANIYE;
-        self.oturumlar.insert(
-            anahtar(&belirtec),
+        self.oturum_ekle(
+            &belirtec,
             Oturum {
                 csrf: csrf.clone(),
                 kullanici: None,
                 rol: None,
                 son_gecerlilik_ms: an_ms.saturating_add(omur * 1000),
+                son_erisim_ms: an_ms,
+                olusturma_sirasi: 0,
             },
         );
         self.gelen_belirtec = Some(belirtec.clone());
@@ -151,16 +187,19 @@ impl WebGuvenligi {
         F: FnMut() -> Result<String, String>,
     {
         self.gecerli_oturumu_sil();
+        self.oturum_yeri_ac(false)?;
         let belirtec = uret()?;
         let csrf = uret()?;
         let omur = OTURUM_OMRU_SANIYE;
-        self.oturumlar.insert(
-            anahtar(&belirtec),
+        self.oturum_ekle(
+            &belirtec,
             Oturum {
                 csrf,
                 kullanici: Some(kullanici),
                 rol: Some(rol),
                 son_gecerlilik_ms: an_ms.saturating_add(omur * 1000),
+                son_erisim_ms: an_ms,
+                olusturma_sirasi: 0,
             },
         );
         self.gelen_belirtec = Some(belirtec.clone());
@@ -195,6 +234,46 @@ impl WebGuvenligi {
     fn suresi_dolani_sil(&mut self, an_ms: i64) {
         self.oturumlar
             .retain(|_, oturum| oturum.son_gecerlilik_ms > an_ms);
+    }
+
+    fn oturum_yeri_ac(&mut self, anonim: bool) -> Result<(), String> {
+        if anonim
+            && self.anonim_oturum_sayisi() >= self.azami_anonim_oturum
+            && !self.en_eski_anonim_oturumu_sil()
+        {
+            return Err("anonim web oturumu kapasitesi dolu".into());
+        }
+        while self.oturumlar.len() >= self.azami_oturum {
+            if !self.en_eski_anonim_oturumu_sil() {
+                return Err("web oturumu kapasitesi dolu; yeni giriş reddedildi".into());
+            }
+        }
+        Ok(())
+    }
+
+    fn anonim_oturum_sayisi(&self) -> usize {
+        self.oturumlar
+            .values()
+            .filter(|oturum| oturum.kullanici.is_none())
+            .count()
+    }
+
+    fn en_eski_anonim_oturumu_sil(&mut self) -> bool {
+        let aday = self
+            .oturumlar
+            .iter()
+            .filter(|(_, oturum)| oturum.kullanici.is_none())
+            .min_by_key(|(_, oturum)| (oturum.son_erisim_ms, oturum.olusturma_sirasi))
+            .map(|(anahtar, _)| anahtar.clone());
+        aday
+            .map(|anahtar| self.oturumlar.remove(&anahtar).is_some())
+            .unwrap_or(false)
+    }
+
+    fn oturum_ekle(&mut self, belirtec: &str, mut oturum: Oturum) {
+        oturum.olusturma_sirasi = self.sonraki_olusturma_sirasi;
+        self.sonraki_olusturma_sirasi = self.sonraki_olusturma_sirasi.saturating_add(1);
+        self.oturumlar.insert(anahtar(belirtec), oturum);
     }
 }
 
@@ -278,12 +357,24 @@ mod tests {
     }
 
     #[test]
-    fn suresi_dolan_oturum_401_olur() {
+    fn erisim_mutlak_oturum_omrunu_uzatmaz() {
         let mut depo = WebGuvenligi::yeni();
         depo.istegi_baslat(None, 0);
         let yeni = depo
             .oturum_ac("Zeynep".into(), "okur".into(), 0, uretici())
             .unwrap();
+        depo.istegi_baslat(
+            Some(&yeni.belirtec),
+            (OTURUM_OMRU_SANIYE - 1) * 1000,
+        );
+        assert!(depo
+            .denetle(
+                &RotaErisimi::Oturumlu,
+                None,
+                false,
+                (OTURUM_OMRU_SANIYE - 1) * 1000,
+            )
+            .is_ok());
         depo.istegi_baslat(Some(&yeni.belirtec), (OTURUM_OMRU_SANIYE + 1) * 1000);
         assert_eq!(
             depo.denetle(
@@ -296,6 +387,86 @@ mod tests {
             .durum,
             401
         );
+    }
+
+    #[test]
+    fn anonim_kota_en_uzun_suredir_kullanilmayani_tahliye_eder() {
+        let mut depo = WebGuvenligi::sinirli(3, 2);
+        let mut uret = uretici();
+        depo.istegi_baslat(None, 0);
+        let (csrf_bir, bir) = depo.csrf_belirteci(0, &mut uret).unwrap();
+        let bir = bir.unwrap();
+        depo.istegi_baslat(None, 1);
+        let (csrf_iki, iki) = depo.csrf_belirteci(1, &mut uret).unwrap();
+        let iki = iki.unwrap();
+
+        depo.istegi_baslat(Some(&bir.belirtec), 2);
+        depo.istegi_baslat(None, 3);
+        let (csrf_uc, uc) = depo.csrf_belirteci(3, &mut uret).unwrap();
+        let uc = uc.unwrap();
+        assert_eq!(depo.oturum_sayisi(), 2);
+
+        depo.istegi_baslat(Some(&iki.belirtec), 4);
+        assert_eq!(
+            depo.denetle(&RotaErisimi::HerkeseAcik, Some(&csrf_iki), true, 4)
+                .unwrap_err()
+                .durum,
+            403
+        );
+        depo.istegi_baslat(Some(&bir.belirtec), 5);
+        assert!(depo
+            .denetle(&RotaErisimi::HerkeseAcik, Some(&csrf_bir), true, 5)
+            .is_ok());
+        depo.istegi_baslat(Some(&uc.belirtec), 6);
+        assert!(depo
+            .denetle(&RotaErisimi::HerkeseAcik, Some(&csrf_uc), true, 6)
+            .is_ok());
+    }
+
+    #[test]
+    fn toplam_kota_doluyken_anonim_once_tahliye_edilir() {
+        let mut depo = WebGuvenligi::sinirli(2, 2);
+        let mut uret = uretici();
+        depo.istegi_baslat(None, 0);
+        let (_, bir) = depo.csrf_belirteci(0, &mut uret).unwrap();
+        let bir = bir.unwrap();
+        depo.istegi_baslat(None, 1);
+        depo.csrf_belirteci(1, &mut uret).unwrap();
+        depo.istegi_baslat(None, 2);
+        let giris = depo
+            .oturum_ac("Zeynep".into(), "okur".into(), 2, &mut uret)
+            .unwrap();
+        assert_eq!(depo.oturum_sayisi(), 2);
+
+        depo.istegi_baslat(Some(&bir.belirtec), 3);
+        assert_eq!(
+            depo.denetle(&RotaErisimi::HerkeseAcik, None, true, 3)
+                .unwrap_err()
+                .durum,
+            403
+        );
+        depo.istegi_baslat(Some(&giris.belirtec), 4);
+        assert!(depo
+            .denetle(&RotaErisimi::Oturumlu, None, false, 4)
+            .is_ok());
+    }
+
+    #[test]
+    fn yalniz_kimlikli_kayitlarla_dolu_depo_yeni_girisi_reddeder() {
+        let mut depo = WebGuvenligi::sinirli(2, 1);
+        let mut uret = uretici();
+        depo.istegi_baslat(None, 0);
+        depo.oturum_ac("Bir".into(), "okur".into(), 0, &mut uret)
+            .unwrap();
+        depo.istegi_baslat(None, 1);
+        depo.oturum_ac("İki".into(), "okur".into(), 1, &mut uret)
+            .unwrap();
+        depo.istegi_baslat(None, 2);
+        let hata = depo
+            .oturum_ac("Üç".into(), "okur".into(), 2, &mut uret)
+            .unwrap_err();
+        assert!(hata.contains("kapasitesi dolu"));
+        assert_eq!(depo.oturum_sayisi(), 2);
     }
 
     #[test]
