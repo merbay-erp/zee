@@ -386,6 +386,10 @@ cevap "https://ornek.dev/durum" adresinden gelen yanıt olsun
     "çalışıyor" yanıtını gönder
 ```
 
+Gerçek TCP dinleyicisi production sözleşmesi değildir ve güvenli varsayılanla
+kapalıdır. Yalnız localhost eğitim/prototipi için açıkça
+`dil çalıştır --deneysel-web program.dil` denir; CLI görünür uyarı verir.
+
 Deneysel eşzamanlılık ve süre yüzeyi:
 
 ```
@@ -414,10 +418,12 @@ verisi HTML'e daima `html güvenlisi` ile gömülür:
 
 ```
 "/kaydet" adresine istek geldiğinde
-    istekte "not" varsa
-        yeni isteğin "not" değeri olsun
-        "notlar.txt" dosyasına yeni ekle
-        "/" adresine yönlendir
+    yöntem isteğin "yöntem" değeri olsun
+    yöntem "POST" a eşitse
+        istekte "not" varsa
+            yeni isteğin "not" değeri olsun
+            "notlar.txt" dosyasına yeni ekle
+            "/" adresine yönlendir
 
 # listede: satırın html güvenlisi  ← kullanıcı verisi kaçışlanır
 ```
@@ -435,8 +441,10 @@ Oturum için çerez kapısı (K-052): `çerezler` sözlüğü + `çerezine yaz`:
 "oturum" çerezini sil            # çıkışta (Max-Age=0, K-073)
 ```
 
-Çalışan örnekler: projeler/panel-not-defteri.dil (temel) ve
-projeler/girisli-panel.dil (parola + oturumlu — mantık saf zee).
+Çalışan eğitim örnekleri: projeler/panel-not-defteri.dil (temel) ve
+projeler/girisli-panel.dil (parola + oturum akışı). İkisi de açıkça deneysel
+localhost demosudur; kimlik/yetki/CSRF/atomik durum tamamlanmadan production
+örneği sayılmaz (RFC-0015, K-082).
 
 ## 19. Fiziksel dünya (ESP32)
 

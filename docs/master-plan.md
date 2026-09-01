@@ -83,6 +83,10 @@ işlem ortalamayı hesapla
 
 "/durum" adresine istek geldiğinde
     "çalışıyor" yanıtını gönder
+
+Stage 0'da gerçek soket yalnız `dil çalıştır --deneysel-web ...` açık izniyle
+localhost eğitim/prototipi için kurulur (K-082). Production route/action,
+oturum ve transaction sözleşmesi RFC-0015/V1-P0-02..04 kapısıdır.
 # 7. Temel dil yüzeyi
 Değer tanımı: “isim Ayşe olsun”.
 Fonksiyon: “işlem”.

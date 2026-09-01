@@ -13,9 +13,15 @@ fn sunucuyla(kaynak: &str, istekler: Vec<&str>) -> ToplayanIo {
 
 #[test]
 fn istek_parcala_sorgu_ve_govde() {
-    let (yontem, yol, veriler) = istek_parcala("POST /kaydet?k=1\nad=Zeynep+Eliz&not=%C3%A7ok%20iyi");
+    let (yontem, yol, veriler) =
+        istek_parcala("POST /kaydet?k=1\nad=Zeynep+Eliz&not=%C3%A7ok%20iyi");
     assert_eq!((yontem.as_str(), yol.as_str()), ("POST", "/kaydet"));
-    let bul = |a: &str| veriler.iter().find(|(ad, _)| ad == a).map(|(_, d)| d.as_str());
+    let bul = |a: &str| {
+        veriler
+            .iter()
+            .find(|(ad, _)| ad == a)
+            .map(|(_, d)| d.as_str())
+    };
     assert_eq!(bul("k"), Some("1"));
     assert_eq!(bul("ad"), Some("Zeynep Eliz"));
     assert_eq!(bul("not"), Some("çok iyi"));
@@ -36,7 +42,10 @@ fn sorgu_verisi_rotada_okunur() {
     \"Merhaba \" ile ad yanıtını gönder
 ";
     let io = sunucuyla(kaynak, vec!["/selamla?ad=Zeynep"]);
-    assert_eq!(io.sunucu_yanitlari, vec![("/selamla".into(), "Merhaba Zeynep".into())]);
+    assert_eq!(
+        io.sunucu_yanitlari,
+        vec![("/selamla".into(), "Merhaba Zeynep".into())]
+    );
 }
 
 #[test]
@@ -61,7 +70,10 @@ fn yonlendirme_kaydedilir() {
     \"/yeni\" adresine yönlendir
 ";
     let io = sunucuyla(kaynak, vec!["/eski"]);
-    assert_eq!(io.sunucu_yanitlari, vec![("/eski".into(), "→ /yeni".into())]);
+    assert_eq!(
+        io.sunucu_yanitlari,
+        vec![("/eski".into(), "→ /yeni".into())]
+    );
 }
 
 #[test]
@@ -107,11 +119,21 @@ fn panel_not_defteri_tam_dongu() {
     calistir_io(&program, &mut io).expect("çalışmalı");
 
     assert_eq!(io.sunucu_yanitlari.len(), 4);
-    assert!(io.sunucu_yanitlari[0].1.contains("İlk notun"), "başlangıç notu listede olmalı");
+    assert!(
+        io.sunucu_yanitlari[0].1.contains("İlk notun"),
+        "başlangıç notu listede olmalı"
+    );
     assert!(io.sunucu_yanitlari[1].1.contains("<form method=post"));
-    assert_eq!(io.sunucu_yanitlari[2].1, "→ /", "kaydet sonrası ana sayfaya yönlendirme");
+    assert_eq!(
+        io.sunucu_yanitlari[2].1, "→ /",
+        "kaydet sonrası ana sayfaya yönlendirme"
+    );
     let son_liste = &io.sunucu_yanitlari[3].1;
-    assert!(son_liste.contains("Süt al &lt;b&gt;"), "not kaçışlanmış görünmeli: {}", son_liste);
+    assert!(
+        son_liste.contains("Süt al &lt;b&gt;"),
+        "not kaçışlanmış görünmeli: {}",
+        son_liste
+    );
     assert!(!son_liste.contains("<b>"), "ham HTML sızmamalı");
 }
 
@@ -130,9 +152,18 @@ fn girisli_panel_oturum_dongusu() {
     .into();
     calistir_io(&program, &mut io).expect("ilk tur çalışmalı");
 
-    assert_eq!(io.sunucu_yanitlari[0].1, "→ /giris", "çerezsiz yönetim girişe atmalı");
-    assert_eq!(io.sunucu_yanitlari[1].1, "→ /giris", "yanlış parola girişe atmalı");
-    assert_eq!(io.sunucu_yanitlari[2].1, "→ /yonet", "doğru parola yönetime almalı");
+    assert_eq!(
+        io.sunucu_yanitlari[0].1, "→ /giris",
+        "çerezsiz yönetim girişe atmalı"
+    );
+    assert_eq!(
+        io.sunucu_yanitlari[1].1, "→ /giris",
+        "yanlış parola girişe atmalı"
+    );
+    assert_eq!(
+        io.sunucu_yanitlari[2].1, "→ /yonet",
+        "doğru parola yönetime almalı"
+    );
     assert_eq!(io.yazilan_cerezler.len(), 1, "oturum çerezi yazılmalı");
     let (cerez_adi, kimlik) = io.yazilan_cerezler[0].clone();
     assert_eq!(cerez_adi, "oturum");
@@ -149,10 +180,22 @@ fn girisli_panel_oturum_dongusu() {
     .into();
     let _ = kimlik;
     calistir_io(&program, &mut io2).expect("ikinci tur çalışmalı");
-    assert!(io2.sunucu_yanitlari[0].1.contains("<form"), "geçerli çerez formu açmalı");
-    assert_eq!(io2.sunucu_yanitlari[1].1, "→ /", "kaydet ana sayfaya dönmeli");
-    assert!(io2.sunucu_yanitlari[2].1.contains("Gizli plan"), "not listede olmalı");
-    assert_eq!(io2.sunucu_yanitlari[3].1, "→ /giris", "sahte çerez reddedilmeli");
+    assert!(
+        io2.sunucu_yanitlari[0].1.contains("<form"),
+        "geçerli çerez formu açmalı"
+    );
+    assert_eq!(
+        io2.sunucu_yanitlari[1].1, "→ /",
+        "kaydet ana sayfaya dönmeli"
+    );
+    assert!(
+        io2.sunucu_yanitlari[2].1.contains("Gizli plan"),
+        "not listede olmalı"
+    );
+    assert_eq!(
+        io2.sunucu_yanitlari[3].1, "→ /giris",
+        "sahte çerez reddedilmeli"
+    );
 }
 
 #[test]
@@ -197,12 +240,24 @@ fn girisli_panel_not_siler() {
         format!("POST /kaydet\nçerez oturum={}\nnot=Kalacak", kimlik),
         format!("/sil?not=Silinecek\nçerez oturum={}", kimlik),
         "/".to_string(),
+        format!("POST /sil\nçerez oturum={}\nnot=Silinecek", kimlik),
+        "/".to_string(),
     ]
     .into();
     calistir_io(&program, &mut io2).expect("silme turu");
-    let son = &io2.sunucu_yanitlari[3].1;
+    let get_sonrasi = &io2.sunucu_yanitlari[3].1;
+    assert!(
+        get_sonrasi.contains("Silinecek"),
+        "GET durum değiştirmemeli: {}",
+        get_sonrasi
+    );
+    let son = &io2.sunucu_yanitlari[5].1;
     assert!(son.contains("Kalacak"), "{}", son);
-    assert!(!son.contains("Silinecek"), "silinen not listede kalmamalı: {}", son);
+    assert!(
+        !son.contains("Silinecek"),
+        "silinen not listede kalmamalı: {}",
+        son
+    );
 }
 
 #[test]
@@ -216,6 +271,9 @@ fn cerez_silme_kaydedilir() {
     \"/\" adresine yönlendir
 ";
     let io = sunucuyla(kaynak, vec!["/cikis"]);
-    assert_eq!(io.yazilan_cerezler, vec![("oturum".into(), "×silindi".into())]);
+    assert_eq!(
+        io.yazilan_cerezler,
+        vec![("oturum".into(), "×silindi".into())]
+    );
     assert_eq!(io.sunucu_yanitlari[0].1, "→ /");
 }

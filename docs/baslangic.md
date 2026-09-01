@@ -114,6 +114,7 @@ internet gerekmez, katalog `dil`in içindedir.
 | `dil yeni <ad>` | testli başlangıç projesi kurar |
 | `dil çalıştır <dosya\|proje>` | dosyayı ya da `proje.dil` taşıyan klasörü çalıştırır; sonraki argümanlar programa gider |
 | `dil çalıştır --güvenli <dosya\|proje>` | çocuk modu: ağ kapalı, dosyalar programın klasörüyle sınırlı |
+| `dil çalıştır --deneysel-web <dosya\|proje>` | yalnız localhost eğitim/prototipi için gerçek TCP web yüzeyine açıkça izin verir |
 | `dil dene <dosya\|proje>` | `test "..."` bloklarını koşar |
 | `dil biçimle <dosya\|proje>` | dosyayı veya projedeki bütün `.dil` kaynaklarını resmi biçime getirir |
 | `dil denetle <dosya\|proje>` | çalıştırmadan hata arar (`--json`: makine çıktısı) |

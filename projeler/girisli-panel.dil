@@ -1,7 +1,9 @@
-# Girişli Panel — parola + oturumlu GERÇEK admin panel (K-052).
+# Girişli Panel — parola + oturum akışını öğreten DENEYSEL localhost demosu.
 # Öğretilen: çerez okuma/yazma, oturumu DOSYADA saklama, korumalı rotalar.
 # Oturum mantığının tamamı zee ile yazılmıştır — dil yalnız çerez kapısını verir.
-# Parola: zee2026 (değiştir!). Çalıştır → http://127.0.0.1:8092
+# Production için uygun DEĞİLDİR: düz parola, küçük token, CSRF/HTTPS yoktur.
+# Çalıştır: dil çalıştır --deneysel-web girisli-panel.dil
+# Parola: zee2026 (yalnız demo). Adres → http://127.0.0.1:8092
 
 deneme "notlar.txt" dosyasını okumayı dene olsun
 deneme başarısızsa
@@ -46,16 +48,20 @@ işlem oturumu geçerli mi
     sayfa yanıtını gönder
 
 "/giris-yap" adresine istek geldiğinde
-    istekte "parola" varsa
-        verilen isteğin "parola" değeri olsun
-        verilen "zee2026" ya eşitse
-            rastgele_sayı 100000 ile 999999 arasında rastgele sayı olsun
-            kimlik "" ile rastgele_sayı olsun
-            "oturumlar.txt" dosyasına kimlik ekle
-            "oturum" çerezine kimlik yaz
-            "/yonet" adresine yönlendir
-        değilse
-            "/giris" adresine yönlendir
+    yöntem isteğin "yöntem" değeri olsun
+    yöntem "POST" a eşitse
+        istekte "parola" varsa
+            verilen isteğin "parola" değeri olsun
+            verilen "zee2026" ya eşitse
+                rastgele_sayı 100000 ile 999999 arasında rastgele sayı olsun
+                kimlik "" ile rastgele_sayı olsun
+                "oturumlar.txt" dosyasına kimlik ekle
+                "oturum" çerezine kimlik yaz
+                "/yonet" adresine yönlendir
+            değilse
+                "/giris" adresine yönlendir
+    değilse
+        "/giris" adresine yönlendir
 
 "/yonet" adresine istek geldiğinde
     izinli yanlış olsun
@@ -68,51 +74,59 @@ işlem oturumu geçerli mi
         satırlar "notlar.txt" dosyasının satırları olsun
         her satır için
             güvenli satırın html güvenlisi olsun
-            liste liste ile "<li>" ile güvenli ile " <a href=\"/sil?not=" ile güvenli ile "\">[sil]</a></li>" olsun
+            liste liste ile "<li>" ile güvenli ile " <form method=post action=/sil style=\"display:inline\"><input type=hidden name=not value=\"" ile güvenli ile "\"><button>[sil]</button></form></li>" olsun
 
-        form "<h1>Yeni not</h1><form method=post action=/kaydet><input name=not placeholder=notunu-yaz autofocus> <button>Kaydet</button></form><ul>" ile liste ile "</ul><p><a href=/>listeye dön</a> · <a href=/cikis>çıkış</a></p>" olsun
+        form "<h1>Yeni not</h1><form method=post action=/kaydet><input name=not placeholder=notunu-yaz autofocus> <button>Kaydet</button></form><ul>" ile liste ile "</ul><p><a href=/>listeye dön</a></p><form method=post action=/cikis><button>çıkış</button></form>" olsun
         sayfa form için sayfayı giydir olsun
         sayfa yanıtını gönder
     izinli değilse
         "/giris" adresine yönlendir
 
 "/kaydet" adresine istek geldiğinde
+    yöntem isteğin "yöntem" değeri olsun
     izinli yanlış olsun
     çerezlerde "oturum" varsa
         kimlik çerezlerin "oturum" değeri olsun
         izinli kimlik için oturumu geçerli mi olsun
 
     izinli ise
-        istekte "not" varsa
-            yeni isteğin "not" değeri olsun
-            yeni boşsa
-                "/yonet" adresine yönlendir
-            değilse
-                "notlar.txt" dosyasına yeni ekle
-                "/" adresine yönlendir
+        yöntem "POST" a eşitse
+            istekte "not" varsa
+                yeni isteğin "not" değeri olsun
+                yeni boşsa
+                    "/yonet" adresine yönlendir
+                değilse
+                    "notlar.txt" dosyasına yeni ekle
+                    "/" adresine yönlendir
+        değilse
+            "/yonet" adresine yönlendir
     izinli değilse
         "/giris" adresine yönlendir
 
 "/sil" adresine istek geldiğinde
+    yöntem isteğin "yöntem" değeri olsun
     izinli yanlış olsun
     çerezlerde "oturum" varsa
         kimlik çerezlerin "oturum" değeri olsun
         izinli kimlik için oturumu geçerli mi olsun
 
     izinli ise
-        istekte "not" varsa
-            hedef isteğin "not" değeri olsun
-            kalanlar boş liste olsun
-            satırlar "notlar.txt" dosyasının satırları olsun
-            her satır için
-                satır hedefe eşit değilse
-                    kalanlara satırı ekle
-            yenisi kalanların "\n" ile birleşmişi olsun
-            "notlar.txt" dosyasına yenisi yaz
+        yöntem "POST" a eşitse
+            istekte "not" varsa
+                hedef isteğin "not" değeri olsun
+                kalanlar boş liste olsun
+                satırlar "notlar.txt" dosyasının satırları olsun
+                her satır için
+                    satır hedefe eşit değilse
+                        kalanlara satırı ekle
+                yenisi kalanların "\n" ile birleşmişi olsun
+                "notlar.txt" dosyasına yenisi yaz
         "/yonet" adresine yönlendir
     izinli değilse
         "/giris" adresine yönlendir
 
 "/cikis" adresine istek geldiğinde
-    "oturum" çerezini sil
+    yöntem isteğin "yöntem" değeri olsun
+    yöntem "POST" a eşitse
+        "oturum" çerezini sil
     "/" adresine yönlendir

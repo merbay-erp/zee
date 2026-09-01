@@ -23,12 +23,15 @@ fn govde() -> ExitCode {
     let guvenli = argumanlar
         .iter()
         .any(|a| a == "--güvenli" || a == "--guvenli");
-    argumanlar.retain(|a| a != "--güvenli" && a != "--guvenli");
+    let deneysel_web = argumanlar.iter().any(|a| a == "--deneysel-web");
+    argumanlar.retain(|a| a != "--güvenli" && a != "--guvenli" && a != "--deneysel-web");
 
     match argumanlar.first().map(|s| s.as_str()) {
         Some("çalıştır") | Some("calistir") => {
             if guvenli {
                 dosya_ile(&argumanlar, calistir_guvenli_komutu)
+            } else if deneysel_web {
+                dosya_ile(&argumanlar, calistir_deneysel_web_komutu)
             } else {
                 dosya_ile(&argumanlar, calistir_komutu)
             }
@@ -63,6 +66,7 @@ fn kullanim() {
     eprintln!("  dil yeni <ad>              yeni proje klasörü oluşturur");
     eprintln!("  dil çalıştır <dosya|proje> programı çalıştırır");
     eprintln!("  dil çalıştır --güvenli ... çocuk modu: ağ kapalı, dosyalar klasörle sınırlı");
+    eprintln!("  dil çalıştır --deneysel-web ... localhost web prototipine açıkça izin verir");
     eprintln!("  dil denetle <dosya|proje>  çalıştırmadan denetler (--json: makine çıktısı)");
     eprintln!("  dil dene <dosya|proje>     test bloklarını koşar");
     eprintln!("  dil biçimle <dosya|proje>  dosyayı ya da bütün projeyi biçimler");
@@ -869,12 +873,14 @@ struct GercekIo {
     tohum: u64,
     argumanlar: Vec<String>,
     baslangic: std::time::Instant,
+    /// Üretim sözleşmesi tamamlanmamış localhost TCP yüzeyine açık opt-in.
+    deneysel_web: bool,
     dinleyici: Option<std::net::TcpListener>,
     bekleyen_akis: Option<std::net::TcpStream>,
 }
 
 impl GercekIo {
-    fn yeni(kok: &std::path::Path) -> GercekIo {
+    fn yeni(kok: &std::path::Path, deneysel_web: bool) -> GercekIo {
         let tohum = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
             .map(|s| s.as_nanos() as u64)
@@ -890,6 +896,7 @@ impl GercekIo {
             tohum,
             argumanlar,
             baslangic: std::time::Instant::now(),
+            deneysel_web,
             dinleyici: None,
             bekleyen_akis: None,
         }
@@ -910,7 +917,7 @@ fn program_argumanlari() -> Vec<String> {
     std::env::args()
         .skip(2)
         .filter_map(|arguman| {
-            if arguman == "--güvenli" || arguman == "--guvenli" {
+            if arguman == "--güvenli" || arguman == "--guvenli" || arguman == "--deneysel-web" {
                 None
             } else if kaynak_goruldu {
                 Some(arguman)
@@ -1014,6 +1021,12 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         Ok((durum, govde))
     }
     fn sunucu_kur(&mut self, kapi: i64) -> Result<(), String> {
+        if !self.deneysel_web {
+            return Err(
+                "web yüzeyi üretim kullanımı için hazır değil; localhost prototipini bilinçli açmak için `dil çalıştır --deneysel-web <dosya|proje>` kullan"
+                    .into(),
+            );
+        }
         let dinleyici =
             std::net::TcpListener::bind(("127.0.0.1", kapi as u16)).map_err(|e| e.to_string())?;
         println!("Sunucu dinliyor: http://127.0.0.1:{}", kapi);
@@ -1158,14 +1171,22 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
 }
 
 fn calistir_komutu(girdi: &KaynakGirdisi) -> ExitCode {
-    calistir_io_ile(girdi, &mut GercekIo::yeni(&girdi.klasor))
+    calistir_io_ile(girdi, &mut GercekIo::yeni(&girdi.klasor, false))
+}
+
+/// K-082: localhost web prototipi üretim korkuluğunu yalnız açık opt-in'le geçer.
+fn calistir_deneysel_web_komutu(girdi: &KaynakGirdisi) -> ExitCode {
+    eprintln!(
+        "UYARI: deneysel web yüzeyi yalnız localhost eğitim/prototipi içindir; üretim güvenlik sözleşmesi değildir."
+    );
+    calistir_io_ile(girdi, &mut GercekIo::yeni(&girdi.klasor, true))
 }
 
 /// Çocuk modu (K-047): ağ/sunucu kapalı, dosyalar çalışma klasörüyle sınırlı.
 fn calistir_guvenli_komutu(girdi: &KaynakGirdisi) -> ExitCode {
     calistir_io_ile(
         girdi,
-        &mut dil::yorumlayici::GuvenliIo::yeni(GercekIo::yeni(&girdi.klasor)),
+        &mut dil::yorumlayici::GuvenliIo::yeni(GercekIo::yeni(&girdi.klasor, false)),
     )
 }
 

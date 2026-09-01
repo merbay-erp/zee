@@ -1,8 +1,10 @@
-# Panel Not Defteri — admin panelli gerçek web uygulaması.
+# Panel Not Defteri — form akışını öğreten DENEYSEL localhost demosu.
 # Öğretilen: form verisi (örtük "istek" sözlüğü), kaydet-sonrası yönlendirme,
 # html güvenlisi (K-051), dosyada saklama. Yönetim gizli yoldadır:
 # /yonet-gizli123 — anahtarı değiştirmeyi unutma!
-# Çalıştır: dil çalıştır panel-not-defteri.dil → http://127.0.0.1:8091
+# Production için uygun DEĞİLDİR: kimlik/yetki/CSRF/atomik durum yoktur.
+# Çalıştır: dil çalıştır --deneysel-web panel-not-defteri.dil
+# Adres → http://127.0.0.1:8091
 
 deneme "notlar.txt" dosyasını okumayı dene olsun
 deneme başarısızsa
@@ -33,10 +35,14 @@ işlem sayfayı giydir
     sayfa yanıtını gönder
 
 "/kaydet-gizli123" adresine istek geldiğinde
-    istekte "not" varsa
-        yeni isteğin "not" değeri olsun
-        yeni boşsa
-            "/yonet-gizli123" adresine yönlendir
-        değilse
-            "notlar.txt" dosyasına yeni ekle
-            "/" adresine yönlendir
+    yöntem isteğin "yöntem" değeri olsun
+    yöntem "POST" a eşitse
+        istekte "not" varsa
+            yeni isteğin "not" değeri olsun
+            yeni boşsa
+                "/yonet-gizli123" adresine yönlendir
+            değilse
+                "notlar.txt" dosyasına yeni ekle
+                "/" adresine yönlendir
+    değilse
+        "/yonet-gizli123" adresine yönlendir

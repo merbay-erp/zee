@@ -1,6 +1,7 @@
-# 25 — Mini web sunucusu (master plandaki örnek, bölüm 6)
+# 25 — Deneysel mini web sunucusu yüzeyi (master plan bölüm 6, K-082)
 # Sınanan: "8080 kapısında sunucu başlat", olay bloğu:
 # "X adresine istek geldiğinde", "yanıtını gönder" (K-022).
+# Gerçek TCP yalnız `dil çalıştır --deneysel-web ...` ile localhost'ta açılır.
 
 8080 kapısında sunucu başlat
 
