@@ -3,7 +3,7 @@
 Bu liste bir dilek listesi değildir: `1.0.0` etiketi bu kapılar kapatılmadan
 atılmaz. Amaç yeni özellik sayısını büyütmek değil, çocuktan profesyonele aynı
 dilin verdiği sözleri kanıtlamaktır. Bulgular 1 Eylül 2026'da derleyici
-kaynakları, spec, RFC'ler ve 356 test üzerinden yeniden doğrulanmıştır.
+kaynakları, spec, RFC'ler ve 360 test üzerinden yeniden doğrulanmıştır.
 
 Durumlar: **KAPALI** = kanıtı var · **AÇIK** = v1 engeli · **KARAR** = önce
 normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
@@ -27,7 +27,7 @@ normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
 | V1-P1-02 Morfoloji deterministik ve sürümlenebilirdir | **KAPALI (K-089)** | `zee-tr-1` profili soyut ekleri, yüzeyleri, iki katman sınırını ve kanonik üretimi tek modülde sabitler. Doğrudan eşleşme önce; sonra 0=A001, 1=çözüm, 2+=A002, heuristik yoktur. İyelik ayrı kimlikle iki katmanlı üretilir; LSP aynı profili kullanır. | RFC-0018 + spec/13; tablo snapshot'ı, düzenli kök×bütün tek/iki katman `üret→çöz` property'leri, ters ses değişimi ve A002 belirsizlik korpusu. `proje.dil` profili pinler (P011); `proje.kilit` v2 paket profillerini taşır. Kırıcı tablo değişikliği yeni profil+ana sürüm/edition ister. |
 | V1-P1-03 Structured concurrency adı runtime gerçeğini aşmaz | **KAPALI (K-090)** | `Eszamanli` görevleri dış ortam snapshot'ıyla kaydeder; `HepsiniBekle` kaynak sıralı tek-thread scheduler'da `bekle` noktalarında gerçekten dönüşümlü ilerletir. İç görev ağacının beklemesi dış kardeşe kadar yayılır. Aynı anda tek görev çalışır; data race yoktur. | RFC-0011 + spec/14; 2 sn+1 sn görevlerin 2 sn'de biten sabit izi, iç ağaç↔dış kardeş ilerlemesi, aynı-anda kaynak sırası, T033/T051 sahiplik, ilk hata→kardeş iptali, dış deadline→bütün ağaç ve görevde atomik eylem rollback kanıtları. Çok çekirdekli paralellik v1 sözü değildir. |
 | V1-P1-04 Sonuç hata tarafı yapılandırılmıştır | **KAPALI (K-091)** | `Sonuç<T>` hata tarafı değişmez `Hata`dır: kararlı kod, Türkçe mesaj, `Seçenek<Hata>` neden zinciri ve sıra korumalı Metin sözlüğü verisi taşır. Kod `göre` ile eşlenir; neden güvenli daraltmayla açılır; tam yapı deterministik JSON olur. Eski metin hataları `GENEL` koduyla aynı insan çıktısını korur. | RFC-0008 §3 + spec/15; kod/mesaj/eşleme, iç içe neden, veri+JSON, yeniden yayma, yerleşik kodlar, S044/T052 olumsuzları ve eski kaynak regresyonları. |
-| V1-P1-05 Gezmede yazma kullanıcı zihniyle doğrulanmıştır | **AÇIK** | Spec K-074 kopya bağlayıp tur sonunda listeye geri yazmayı normatif yapıyor; davranış testli ama aliasing modeli henüz yok. | Çocuk/profesyonel usability sonucu; değer/reference semantiği RFC'si; yeniden bağlama ve alan yazma ayrımının conformance testleri. |
+| V1-P1-05 Gezmede yazma kullanıcı zihniyle doğrulanmıştır | **AÇIK — makine tarafı K-093 ile tamam** | RFC-0019/spec-17 derin değer kopyasını ve liste için değer-sonuç imlecini tanımlar: alan yazma ile yeniden bağlama aynı sıraya geri yansır; paylaşılan alias yoktur. Kaynak ekleme/silme/yeniden bağlama/aynı-kaynak iç içe gezme T053'tür. Alan/rebind, alias ve 1–24 uzunluk conformance kanıtı yeşildir. | `docs/usability-kiti.md` G1/G2/G3 kartlarıyla gerçek 10 öğrenci + 5 profesyonel sonucu. Önceden taahhütlü eşik sağlanmadan kapatılmaz. |
 | V1-P1-06 Yerel modül/paket paylaşımı | **KAPALI (K-076–K-080)** | Kökenli birim/paket yükleme, doğrudan sınır, SHA-256 kilit, güvenli ekle/çıkar ve grafik görünümü çalışıyor. | P001–P010/A011 ve proje entegrasyon testleri; deterministik kilit. |
 | V1-P1-07 Dağıtım/registry güven zinciri | **AÇIK** | Uzak registry, imza/provenance, SBOM ve yanked/güvenlik duyurusu henüz taslak. | Ayrı güvenlik RFC/ADR'leri, imzalı metadata, reproducible paket, offline cache/mirror ve saldırı testleri. |
 
@@ -44,8 +44,9 @@ normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
    sözcüksel sahiplik ve kardeş iptalini koydu. K-091 Sonuç'un hata tarafını
    kodlu, zincirli ve geriye uyumlu Hata değerine dönüştürdü. K-092 Ondalık
    kapasitesini keyfî katsayı + açık 34 haneli sonsuz bölüm kuralıyla kapattı.
-5. K-089 `zee-tr-1` morfolojisini property kanıtıyla dondurdu. Sırada gezme
-   değer/reference kararını usability + property kanıtıyla tamamlamak var.
+5. K-089 `zee-tr-1` morfolojisini property kanıtıyla dondurdu. K-093 gezmenin
+   değer/reference kararını RFC-0019/spec-17, T053 ve property korpusuyla
+   makine tarafında tamamladı; yalnız gerçek usability formları bekleniyor.
 
 Her kapının kapanışı: karar + spec + olumlu/olumsuz test + sürüm notu. Yalnız
 “kod çalışıyor” işareti v1 kanıtı değildir (ADR-010).

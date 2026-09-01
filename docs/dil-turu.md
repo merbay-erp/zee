@@ -150,7 +150,23 @@ her sayı için
 ```
 
 `her sayı için` gezerken listeyi **örtük çoğuldan** bulur: `sayı` → `sayılar`
-(K-013). Süzme + biriktirme:
+(K-013). Döngü adı öğenin yazılabilir imlecidir; yeniden bağlarsan kaynak
+listedeki aynı sıra değişir (K-093):
+
+```dil
+her sayı için
+    sayı 0 olsun
+
+sayıların json metni yaz       # [0,0,0,0,0]
+```
+
+zee değerleri bağımsız kopyalardır: `yedek sayılar olsun` sonrasında yedeği
+değiştirmek asıl listeyi değiştirmez. Gezme sırasında kaynak kabın kendisini
+büyütmek, silmek, yeniden bağlamak veya aynı kaynağı iç içe gezmek T053'tür;
+değişiklikleri ayrı listede toplayıp gezme bitince uygula. Bu tek kural sıra
+kaymasını ve “hangi öğeye geri yazıldı?” belirsizliğini engeller.
+
+Süzme + biriktirme:
 
 ```
 geçenler boş liste olsun
@@ -364,6 +380,10 @@ her öğrenci için
 her öğrenci için                 # gezerken değiştir → listeye yansır (K-074)
     öğrencinin yaşı 11 olsun
 ```
+
+Alan yazma ile `öğrenci başka_öğrenci olsun` yeniden bağlaması aynı
+değer-sonuç kuralına tabidir: turun son `öğrenci` değeri kaynak listedeki aynı
+sıraya geri yazılır. Önceden başka ada alınmış liste/yapı kopyaları değişmez.
 
 ## 14. Desen eşleştirme
 

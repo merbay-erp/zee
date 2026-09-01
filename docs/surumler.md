@@ -111,6 +111,16 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   141 etkin + 1 ayrılmış kod taşır. Release ölçümünde 20 bin exact Ondalık
   toplaması 6,8 ms'dir; `BigInt` kapasite maliyeti ölçüm arşivinde görünürdür.
   V1-P1-01 kapandı.
+- **Değer semantiği ve gezme imleci** (K-093, RFC-0019/spec-17): bütün
+  kullanıcı değerleri derin kopyadır; gizli paylaşılan alias yoktur. Liste
+  gezmesi öğeyi kopyalayıp turun sonunda aynı sıraya geri yazan değer-sonuç
+  imlecidir; alan yazma ve yeniden bağlama aynı kalıcı sonucu verir. Gezilen
+  kaynağı ekleme/silme/yeniden bağlama, sözlüğe yazma ve aynı kaynağı iç içe
+  gezme T053 ile derlemede durur; doğal `sayılara` yüzeyi artık A002 yerine
+  doğrudan bu tanıyı alır. Derin kopya, beş olumsuz ve 1–24 uzunluk property
+  korpusuyla 360 test ve 142 etkin + 1 ayrılmış kod yeşildir. V1-P1-05'in
+  makine tarafı tamamdır; gerçek çocuk/profesyonel usability sonucu gelmeden
+  kapı dürüstçe açık kalır.
 
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`

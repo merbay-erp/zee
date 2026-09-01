@@ -116,6 +116,10 @@ K-092 ile Ondalık tek keyfî hassasiyetli onluk türdür: tam işlemler kayıps
 yalnız sonsuz açılımlı bölüm 34 anlamlı haneye deterministik yuvarlanır
 (RFC-0013/spec-16). Çocuk için `0,1+0,2=0,3` sözüyle profesyonel para/ölçüm
 kapasitesi aynı türde birleşir.
+K-093 ile bütün değerler derin kopyadır; paylaşılan gizli nesne kimliği yoktur.
+Liste gezmesi değer-sonuç imleciyle alan yazmayı ve yeniden bağlamayı aynı
+sıraya geri taşır. Gezilen kaynağın biçimi T053 ile sabittir
+(RFC-0019/spec-17); insan zihinsel modeli usability kartlarını bekler.
 TamSayı
 GerçekSayı
 Ondalık

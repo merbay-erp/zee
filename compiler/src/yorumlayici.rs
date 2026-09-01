@@ -1536,6 +1536,28 @@ fn kapsam_bitir(ortam: &mut HashMap<String, Deger>, kapsam: &std::collections::H
     ortam.retain(|ad, _| kapsam.contains(ad));
 }
 
+/// K-093 değer-sonuç gezme imleci: turun son döngü değerini kaynak listenin
+/// aynı sırasına kopyalar. Kaynağın biçimi denetleyicide T053 ile sabitlenir;
+/// bu yüzden sıra kayması ya da başka bir listeye sessiz yazma mümkün değildir.
+fn gezme_ogesini_geri_yaz(
+    ortam: &mut HashMap<String, Deger>,
+    kaynak_adi: Option<&str>,
+    dongu_adi: &str,
+    sira: usize,
+) {
+    let Some(kaynak_adi) = kaynak_adi else {
+        return;
+    };
+    let Some(guncel) = ortam.get(dongu_adi).cloned() else {
+        return;
+    };
+    if let Some(Deger::Liste(ogeler)) = ortam.get_mut(kaynak_adi) {
+        if let Some(yer) = ogeler.get_mut(sira) {
+            *yer = guncel;
+        }
+    }
+}
+
 fn blok_calistir(
     cumleler: &[Cumle],
     ortam: &mut HashMap<String, Deger>,
@@ -1698,8 +1720,8 @@ fn blok_calistir_async<'a>(
                         .collect(),
                     _ => return Err(ic_hata(*satir)),
                 };
-                // K-074: kaynak bir ADSA, gövdedeki öğe değişikliği listeye
-                // GERİ YAZILIR — "gezerken değiştirdim ama değişmedi" tuzağı yok.
+                // K-093: kaynak listeyse döngü adı değer-sonuç imlecidir;
+                // alan yazma ve yeniden bağlama aynı sıraya GERİ YAZILIR.
                 let kaynak_adi = match kaynak {
                     Ifade::Degisken { cozulmus: Some(kaynak_adi), .. } => Some(kaynak_adi.clone()),
                     _ => None,
@@ -1711,19 +1733,17 @@ fn blok_calistir_async<'a>(
                 let kapsam = kapsam_baslat(ortam);
                 for (sira, oge) in ogeler.into_iter().enumerate() {
                     ortam.insert(ad.clone(), oge);
-                    if let Akis::Don(d) = blok_calistir_async(govde, ortam, program, cikti, derinlik).await? {
-                        return Ok(Akis::Don(d));
-                    }
+                    let akis = blok_calistir_async(govde, ortam, program, cikti, derinlik).await?;
                     if liste_mi {
-                        if let (Some(kaynak_adi), Some(guncel)) =
-                            (kaynak_adi.as_deref(), ortam.get(ad).cloned())
-                        {
-                            if let Some(Deger::Liste(ogeler)) = ortam.get_mut(kaynak_adi) {
-                                if let Some(yer) = ogeler.get_mut(sira) {
-                                    *yer = guncel;
-                                }
-                            }
-                        }
+                        gezme_ogesini_geri_yaz(
+                            ortam,
+                            kaynak_adi.as_deref(),
+                            ad,
+                            sira,
+                        );
+                    }
+                    if let Akis::Don(d) = akis {
+                        return Ok(Akis::Don(d));
                     }
                 }
                 kapsam_bitir(ortam, &kapsam);

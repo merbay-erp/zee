@@ -192,6 +192,7 @@ pub fn denetle_coklu(program: &mut Program) -> Vec<Tani> {
         dolu_secenekler: std::collections::HashSet::new(),
         basarili_sonuclar: std::collections::HashSet::new(),
         basarisiz_sonuclar: std::collections::HashSet::new(),
+        gezilen_koleksiyonlar: std::collections::HashSet::new(),
     };
     if let Err(tani) = acik_islemleri_denetle(&mut baglam) {
         tanilar.push(tani);
@@ -270,6 +271,7 @@ pub fn denetle(program: &mut Program) -> Result<(), Tani> {
         dolu_secenekler: std::collections::HashSet::new(),
         basarili_sonuclar: std::collections::HashSet::new(),
         basarisiz_sonuclar: std::collections::HashSet::new(),
+        gezilen_koleksiyonlar: std::collections::HashSet::new(),
     };
     let mut sonuc = acik_islemleri_denetle(&mut baglam);
     if sonuc.is_ok() {
@@ -314,6 +316,9 @@ struct Baglam {
     dolu_secenekler: std::collections::HashSet<String>,
     basarili_sonuclar: std::collections::HashSet<String>,
     basarisiz_sonuclar: std::collections::HashSet<String>,
+    /// K-093: gezme boyunca biçimi sabit kalan kaynak listeler/sözlükler.
+    /// Aynı kaynağı yeniden bağlama, ekleme, silme ve iç içe gezme T053'tür.
+    gezilen_koleksiyonlar: std::collections::HashSet<String>,
 }
 
 struct ImzaKaydi {
@@ -599,6 +604,47 @@ fn nesne_adi(nesne: &Ifade) -> Option<String> {
     }
 }
 
+fn gezilen_koleksiyonu_degistirme_tanisi(ad: &str, satir: usize) -> Tani {
+    Tani::yeni(
+        "T053",
+        format!(
+            "\"{}\" gezilirken koleksiyonun kendisi değiştirilemez.",
+            ad
+        ),
+        satir,
+        1,
+        1,
+    )
+    .onerili(
+        "Öğeyi döngü adıyla güncelle; ekleme/silme gerekiyorsa değişiklikleri ayrı bir listede topla ve gezme bitince uygula."
+            .into(),
+    )
+}
+
+fn gezilen_hedefi_denetle(ifade: &Ifade, baglam: &Baglam, satir: usize) -> Result<(), Tani> {
+    let aday = match ifade {
+        Ifade::Degisken {
+            cozulmus: Some(ad), ..
+        } => baglam.gezilen_koleksiyonlar.get(ad).cloned(),
+        Ifade::Degisken { ham, .. } => {
+            let kokler = crate::morfoloji::kok_adaylari(ham);
+            let mut eslesenler = baglam
+                .gezilen_koleksiyonlar
+                .iter()
+                .filter(|ad| **ad == *ham || kokler.iter().any(|kok| kok == *ad))
+                .cloned()
+                .collect::<Vec<_>>();
+            eslesenler.sort();
+            eslesenler.into_iter().next()
+        }
+        _ => None,
+    };
+    if let Some(ad) = aday {
+        return Err(gezilen_koleksiyonu_degistirme_tanisi(&ad, satir));
+    }
+    Ok(())
+}
+
 fn daraltma_ekle(baglam: &mut Baglam, tur_kodu: u8, ad: &str) {
     match tur_kodu {
         1 => {
@@ -644,6 +690,9 @@ fn blok_denetle(
             }
             Cumle::Olsun { ad, deger, satir, sutun, uzunluk } => {
                 let satir = *satir;
+                if baglam.gezilen_koleksiyonlar.contains(ad) {
+                    return Err(gezilen_koleksiyonu_degistirme_tanisi(ad, satir));
+                }
                 if baglam.bekleyen_gorevler.contains(ad) {
                     return Err(Tani::yeni(
                         "T033",
@@ -788,6 +837,7 @@ fn blok_denetle(
             }
             Cumle::Ekle { hedef, deger, satir } => {
                 let satir = *satir;
+                gezilen_hedefi_denetle(hedef, baglam, satir)?;
                 let hedef_tur = ifade_denetle(hedef, ortam, baglam, satir)?;
                 let oge = match hedef_tur {
                     // K-045: boş listenin öğe türü ilk eklemeyle somutlaşır.
@@ -915,9 +965,19 @@ fn blok_denetle(
                     },
                     None => unreachable!("örtük çoğul yukarıda dolduruldu"),
                 };
+                let kaynak_adi = kaynak
+                    .as_ref()
+                    .and_then(nesne_adi)
+                    .expect("gezme kaynağı çözülmüş bir ad olmalı");
+                if kaynak_adi == *ad || baglam.gezilen_koleksiyonlar.contains(&kaynak_adi) {
+                    return Err(gezilen_koleksiyonu_degistirme_tanisi(&kaynak_adi, satir));
+                }
                 let kapsam = kapsam_baslat(ortam);
                 ortam.insert(ad.clone(), oge_turu);
-                blok_denetle(govde, ortam, baglam)?;
+                baglam.gezilen_koleksiyonlar.insert(kaynak_adi.clone());
+                let sonuc = blok_denetle(govde, ortam, baglam);
+                baglam.gezilen_koleksiyonlar.remove(&kaynak_adi);
+                sonuc?;
                 kapsam_bitir(ortam, &kapsam);
             }
             Cumle::ProgramiBitir { kod, satir } => {
@@ -978,6 +1038,7 @@ fn blok_denetle(
             }
             Cumle::Sil { kap, deger, satir } => {
                 let satir = *satir;
+                gezilen_hedefi_denetle(kap, baglam, satir)?;
                 let kap_turu = ifade_denetle(kap, ortam, baglam, satir)?;
                 let deger_turu = ifade_denetle(deger, ortam, baglam, satir)?;
                 match kap_turu {
@@ -1430,6 +1491,7 @@ fn blok_denetle(
             }
             Cumle::SozlukAta { sozluk, anahtar, deger, satir } => {
                 let satir = *satir;
+                gezilen_hedefi_denetle(sozluk, baglam, satir)?;
                 let sozluk_turu = ifade_denetle(sozluk, ortam, baglam, satir)?;
                 let beklenen_deger = match sozluk_turu {
                     // K-045: boş sözlüğün değer türü ilk atamayla somutlaşır.

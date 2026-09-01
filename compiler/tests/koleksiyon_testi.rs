@@ -328,6 +328,93 @@ her kutu için
 }
 
 #[test]
+fn gezmede_yeniden_baglama_listeye_yansir() {
+    // K-093: döngü adı değer-sonuç imlecidir; alan yazma gibi doğrudan
+    // yeniden bağlama da turun aynı sırasına geri yazılır.
+    let kaynak = "\
+sayılar 1, 2, 3 listesi olsun
+her sayı için
+    sayı 7 olsun
+sayıların json metni yaz
+";
+    assert_eq!(
+        kaynagi_calistir(kaynak).expect("çalışmalı"),
+        vec!["[7,7,7]"]
+    );
+}
+
+#[test]
+fn gezmede_deger_kopyalari_alias_olusturmaz() {
+    // K-093: yapı/liste ataması derin değer kopyasıdır. Gezme yalnız kaynak
+    // listenin öğesini günceller; önceden alınmış kopya değişmez.
+    let kaynak = "\
+yapı Kutu
+    adet TamSayı
+
+asıllar boş liste olsun
+bir yeni Kutu olsun
+birin adedi 1 olsun
+asıllara biri ekle
+kopyalar asıllar olsun
+
+asıllardaki her kutu için
+    kutunun adedi 9 olsun
+    kopyalara kutuyu ekle
+
+asılların json metni yaz
+kopyaların json metni yaz
+";
+    assert_eq!(
+        kaynagi_calistir(kaynak).expect("çalışmalı"),
+        vec!["[{\"adet\":9}]", "[{\"adet\":1},{\"adet\":9}]"]
+    );
+}
+
+#[test]
+fn gezilen_koleksiyonun_bicimi_sabittir() {
+    // K-093: sıra kayması/lost update yerine öğretici ve statik T053.
+    let kaynaklar = [
+        "sayılar 1, 2 listesi olsun\nher sayı için\n    sayılara 3 ekle\n",
+        "sayılar 1, 2 listesi olsun\nher sayı için\n    sayılardan sayıyı sil\n",
+        "sayılar 1, 2 listesi olsun\nher sayı için\n    sayılar 3, 4 listesi olsun\n",
+        "değerler 1, 2 listesi olsun\ndeğerlerdeki her sayı için\n    değerlerdeki her öteki için\n        ötekiyi yaz\n",
+        "defter boş sözlük olsun\ndefterin \"a\" değeri 1 olsun\ndefterdeki her ad için\n    defterin \"b\" değeri 2 olsun\n",
+    ];
+    for (sira, kaynak) in kaynaklar.into_iter().enumerate() {
+        let hata = kaynagi_calistir(kaynak).expect_err("T053 vermeli");
+        assert_eq!(hata.kod, "T053", "senaryo {}", sira + 1);
+        assert!(hata.mesaj.contains("gezilirken"));
+        assert!(
+            hata.oneri
+                .as_deref()
+                .unwrap_or_default()
+                .contains("ayrı bir listede")
+        );
+    }
+}
+
+#[test]
+fn gezmede_deger_sonuc_ozelligi_uzunluktan_bagimsizdir() {
+    // Küçük property korpusu: boş olmayan farklı liste uzunluklarında her
+    // sıra tam bir kez ve aynı değer-sonuç kuralıyla değiştirilir.
+    for adet in 1..=24 {
+        let ogeler = (1..=adet)
+            .map(|sayi| sayi.to_string())
+            .collect::<Vec<_>>()
+            .join(", ");
+        let beklenen = std::iter::repeat_n("7", adet).collect::<Vec<_>>().join(",");
+        let kaynak = format!(
+            "sayılar {} listesi olsun\nher sayı için\n    sayı 7 olsun\nsayıların json metni yaz\n",
+            ogeler
+        );
+        assert_eq!(
+            kaynagi_calistir(&kaynak).expect("çalışmalı"),
+            vec![format!("[{}]", beklenen)]
+        );
+    }
+}
+
+#[test]
 fn binlikli_kuruslusu_turk_yazimi() {
     // K-075: binlik ayraç NOKTA, ondalık VİRGÜL — "1.234.567,89".
     let kaynak = "\

@@ -62,6 +62,13 @@ yerini gösterir ve bir öneri taşır. Sınıf kuralı önerimiz:
 (A002, S030, S033) sessizce bir anlama bağlanmaz, hata verir — bu bir
 tartışma fırsatıdır: "makine neden emin olamadı?"
 
+Liste gezmesini tek cümleyle öğretin: **“Öğenin son hâli aynı yere geri gider;
+ama gezerken sepetin kendisini büyütüp küçültmeyiz.”** `her sayı için / sayı
+0 olsun` listeyi günceller; `sayılara 4 ekle` aynı gövdede T053 verir ve ayrı
+bir değişiklik listesi önerir. `yedek sayılar olsun` ise bağımsız bir kopyadır.
+Bu üç ayrımın öğrenci tarafından nasıl tahmin edildiğini usability kitindeki
+G1/G2/G3 kartlarıyla kaydedin; doğru cevabı karttan önce öğretmeyin.
+
 ## 4. Test yazmayı erken öğretin
 
 `test "..."` bloğu + `... olmalı` doğrulaması dilin parçasıdır ve
