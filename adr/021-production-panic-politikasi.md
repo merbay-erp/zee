@@ -50,8 +50,8 @@ bileşene ayrıldı; yapay kapasite panic'i kaldırıldı.
 3. Test cfg'si production muafiyeti yaratmak için kullanılamaz.
 4. Elle kurulmuş geçersiz public AST, process panic'i yerine kodlu tanı verir.
 5. Bu ADR bounds/indexing ve fuzz kaynaklı bütün olası Rust panic'lerini tek
-   başına kanıtlamaz; lexer/parser fuzz B-015, AST invariant doğrulayıcı B-017
-   ile tamamlanır.
+   başına kanıtlamaz; lexer/parser fuzz B-015/K-110/ADR-022 ile tamamlandı,
+   AST invariant doğrulayıcı B-017 ile tamamlanacaktır.
 
 ## Sonuçlar
 

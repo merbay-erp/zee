@@ -40,3 +40,11 @@ sınırı K-092 ile kaldırılmış, S032 yeniden kullanılmamak üzere ayrılm�
 
 Satır sonu, girinti ve çıkıntı sözcükleyici tarafından üretilir; kurallar
 02 — Dizim'dedir. Girintide sekme **YASAK** (S003).
+
+## Sağlamlık doğrulaması
+
+K-110/ADR-022 fuzz hedefi, 64 KiB'a kadar geçerli UTF-8 mutation girdilerini
+lexer ve iki parser yolunda yürütür. Unicode/homoglyph, emoji, combining im,
+CRLF, sekme/girinti, metin kaçışı, dev sayı ve virgül korpusu her ana testte de
+yeniden oynatılır. Kabul edilen sonuç token+AST veya kodlu tanıdır; process
+panic'i kabul edilmez. İşletim ayrıntıları [fuzz rehberindedir](../docs/fuzzing.md).

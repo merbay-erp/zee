@@ -38,6 +38,10 @@ jobs:
       - name: Clippy temiz
         working-directory: compiler
         run: cargo clippy --all-targets -- -D warnings
+      - name: Fuzz hedefi stable araç zincirinde derlenir
+        if: matrix.os == 'ubuntu-latest'
+        working-directory: compiler
+        run: cargo check --manifest-path fuzz/Cargo.toml --locked --bin lexer_parser
       - name: Milestone dosyası çalışıyor
         working-directory: compiler
         run: cargo run -- çalıştır ../merhaba.dil

@@ -1,0 +1,10 @@
+doğru ise
+    yanlış ise
+        doğru ise
+            "derin" yaz
+        değilse
+            "dal" yaz
+    değilse
+        "orta" yaz
+değilse
+    "dış" yaz
