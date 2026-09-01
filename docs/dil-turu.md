@@ -380,6 +380,16 @@ hesap_araclari birimini kullan
 Tanımlar görünür, birimin üst düzey cümleleri kapsüllüdür; ad çakışması
 sessiz gölgelemez, hatadır (A008).
 
+**Gömülü standart kitaplık** (RFC-0014, deneysel): `matematik` (mutlak, üs,
+tam karekök, obeb, okek) ve `liste_araclari` (toplam, uçlar, ortalama)
+derleyicinin içindedir — kurulum gerektirmez, playground'da bile çalışır:
+
+```
+matematik birimini kullan
+
+x 48 ve 36 ile obebini hesapla olsun
+```
+
 ## 21. Komut satırı
 
 ```

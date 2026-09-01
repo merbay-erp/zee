@@ -392,6 +392,25 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   ağa çıkma" sınıfını kapatır. Playground zaten en katı sandbox'tır.
 - **Test:** guvenli_testi.rs (6 test).
 
+## K-048 — Standart kitaplık: RFC-0014 + gömülü prototip
+
+- **Karar:** RFC-0014 yazıldı: çekirdek/kitaplık sınırı (turnusol: "IO'ya ya
+  da yeni sözdizimine muhtaç mı?"), adlandırma düzeni (yüklem-sonlu Türkçe
+  işlem adları), dağıtım = GÖMÜLÜ kitaplık (include_str — kurulumsuz,
+  internetsiz, playground dahil), kararlılık sözleşmesi (testsiz gömülü
+  birim olamaz; imza değişikliği sürüm notu ister).
+- **Prototip:** kitaplik/matematik.dil (mutlak, üs, tam karekök, obeb-Öklit,
+  okek) ve kitaplik/liste_araclari.dil (toplam, uçlar, Ondalık ortalama) —
+  zee'yle yazıldı, 7 zee-testi CI'da. Çözüm sırası: önce yerel klasör, yoksa
+  gömülü; A010 gömülü adları listeler. Playground'da birimler ilk kez
+  çalışır oldu (yükleyici gömülüden beslenir); playground raporu birimden
+  miras testleri saymaz.
+- **Sınır bilinci:** ADR-008 Stage 1 RESMÎ olarak başlamadı (usability
+  kapısı) — bu, RFC'nin yürütülebilir taslağıdır, deneysel etiketlidir.
+- **bulgu (ünsüz ikizleşmesi):** "üssü al" kökü çözülemedi (üs→üssü, ss);
+  morfolojide ikizleşme geri çevrimi yok — K-011 ek listesi adayı. Geçici
+  çözüm: parametre adı "kuvvet".
+
 ## K-012 — Liste sabiti: `3, 7, 1, 9 listesi`
 
 - **Karar:** Virgülle ayrılmış değerler + `listesi`. Boş: `boş liste`.

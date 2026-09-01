@@ -32,6 +32,22 @@ pub fn kaynagi_derle(kaynak: &str) -> Result<Program, Tani> {
 
 /// Kaynağı, birimlerini yükleyerek derler (sözcükle + birim çözümü +
 /// tohumlu ayrıştırma + hoist + denetle).
+/// Gömülü standart kitaplık (RFC-0014, deneysel): standart birimler ikiliye
+/// gömülüdür — kurulumsuz ve internetsiz çalışır, playground dahil.
+/// Çözüm sırası: önce yerel klasör, bulunamazsa buradaki gömülü kaynak.
+pub fn gomulu_birim(ad: &str) -> Option<&'static str> {
+    match ad {
+        "matematik" => Some(include_str!("../../kitaplik/matematik.dil")),
+        "liste_araclari" => Some(include_str!("../../kitaplik/liste_araclari.dil")),
+        _ => None,
+    }
+}
+
+/// Gömülü birim adları (A010 tanısında listelenir).
+pub fn gomulu_birim_adlari() -> &'static [&'static str] {
+    &["matematik", "liste_araclari"]
+}
+
 pub fn kaynagi_derle_birimlerle(
     kaynak: &str,
     yukleyici: &mut BirimYukleyici,

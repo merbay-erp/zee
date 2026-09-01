@@ -358,8 +358,12 @@ impl Sunucu {
             if ad.contains(['/', '\\', '.']) {
                 return Err("birim adı yol içeremez".into());
             }
-            std::fs::read_to_string(klasor.join(format!("{}.dil", ad)))
-                .map_err(|hata| hata.to_string())
+            match std::fs::read_to_string(klasor.join(format!("{}.dil", ad))) {
+                Ok(kaynak) => Ok(kaynak),
+                Err(hata) => crate::gomulu_birim(ad)
+                    .map(str::to_string)
+                    .ok_or_else(|| hata.to_string()),
+            }
         };
         let tanilar = crate::kaynagi_tanilari(&metin, &mut yukleyici);
         let govde: Vec<String> = tanilar.iter().map(lsp_tanisi).collect();
