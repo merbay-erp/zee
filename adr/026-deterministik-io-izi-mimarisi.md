@@ -69,5 +69,6 @@ kaydedilir. Bu, bütün izin gizli olmadığı anlamına gelmez.
 - Runtime kökü yalnız modül/re-export taşır; 27 IO metodunun format ve
   sarmalayıcı sahipliği `yorumlayici/io_izi.rs` içindedir ve 1.250 satır
   mimari bütçeye bağlıdır.
-- Saat/rastgele tohum ve sanal zaman ilerleme semantiğinin sürüm sözleşmesi
-  ardıl B-028 işidir; şema-1 mevcut gözlenen sonuçları kaydeder.
+- Saat/rastgele tohum ve sanal zaman ilerleme semantiği K-116/ADR-027 ile
+  `zee-io-1` profiline bağlandı; şema-1 algoritmayı değil gözlenen sonuçları
+  kaydetmeye devam eder.

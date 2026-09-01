@@ -34,9 +34,13 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 12. K-115/RFC-0022/ADR-026 bütün runtime IO çağrılarını sürümlü kanonik
     trace/replay protokolüne ve `dil iz kaydet/oynat` CLI'ına bağladı; B-027
     kapandı (455 test).
-13. Sıradaki makine omurgası B-028 saat/rastgele semantiğini sürümlemektir.
-14. Üçüncü sprint: B-028 → B-030/B-031 → B-043/B-044.
-15. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
+13. K-116/RFC-0023/ADR-027 tohum→dizi algoritmasını, tam i64 aralığını,
+    sanal saati ve hermetik adaptör gözlemlerini `zee-io-1` profiline bağladı;
+    B-028 kapandı (460 test).
+14. Sıradaki makine omurgası B-030/B-031 paket artefaktı conformance ve
+    adversarial arşiv korpusudur.
+15. Üçüncü sprint: B-030/B-031 → B-043/B-044.
+16. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
 
 ## P0 — V1 öncesi dil ve derleyici omurgası
 
@@ -203,8 +207,14 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   farkı veya artan olayda fail-closed durur. `dil iz kaydet/oynat`, RFC-0022,
   ADR-026, [IO izi rehberi](io-izi.md) ve yedi regresyonla V1-P0-25 kapandı;
   toplam 455 test yeşildir.
-- **B-028 · SIRADA — saat/rastgele semantiğini sürümle.** Seed, zaman ilerleme
-  ve gözlenebilir fake-IO davranışı spec sözleşmesi olmalıdır.
+- **B-028 · KAPALI (K-116) — saat/rastgele semantiğini sürümle.**
+  `zee-io-1`; tohum karışımı+xorshift64* conformance vektörünü, yansız ve tam
+  i64 uçları-dahil eşlemeyi, takvim/tekdüze saat ayrımını, sanal bekleme ve
+  geriye-gitmeme kuralını, FIFO rastgele/girdi fallback'lerini ve görünür
+  sahte dosya/ağ/sensör davranışını bağlar. RFC-0023, ADR-027,
+  [spec/22](../spec/22-deterministik-io-profili.md),
+  [profil rehberi](deterministik-io-profili.md) ve beş conformance testiyle
+  V1-P0-26 kapandı; toplam 460 test yeşildir.
 - **B-046 · KISMEN (K-106) — web oturum deposunu sınırlı ve ölçeklenebilir
   yap.** Process içi depo 4096 toplam/1024 anonim kotası, anonim LRU tahliyesi
   ve kaymayan mutlak 10/30 dakika ömür taşır. Yalnız kimlikli kayıtlarla dolu
@@ -271,5 +281,6 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 ## Bir sonraki somut kapı
 
 İnsan kanıtı hattında B-001, doldurulmuş gerçek usability formları ve önceden
-ilan edilmiş eşikleri bekler. Makine hattında B-027/K-115 kapandı; sıradaki iş
-B-028 saat/rastgele ve fake-IO semantiğini sürümlemektir.
+ilan edilmiş eşikleri bekler. Makine hattında B-028/K-116 kapandı; sıradaki iş
+B-030 platformlar arası kanonik paket conformance'ı ile B-031 adversarial
+arşiv korpusudur.

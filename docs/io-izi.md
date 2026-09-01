@@ -34,8 +34,9 @@ uyuşan bir koşu başarılı görüntüsü vermez.
 - Dosya yazma, HTTP, çerez, oturum, transaction veya donanım etkisini yeniden
   uygulamaz; yalnız aynı çağrının yapıldığını doğrular.
 - Yedekleme, güvenlik yetkisi veya production audit logu değildir.
-- Saat/rastgele algoritmasının görünmeyen tohumunu V1 ABI'si ilan etmez; B-028
-  bu semantiğin ardıl kapısıdır.
+- Saat/rastgele algoritmasını yeniden çalıştırmaz; kayıtlı sonuçları kullanır.
+  Etkin algoritma ve sanal saat [deterministik IO profilinde](deterministik-io-profili.md)
+  `zee-io-1` adıyla ayrıca sürümlüdür.
 
 ## Gizlilik
 

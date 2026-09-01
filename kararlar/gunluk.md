@@ -1688,6 +1688,27 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   sızıntısı, kaynak değişimi ve üzerine yazma reddi için beş çekirdek+iki CLI
   regresyonu. Toplam 455 test yeşildir; B-027/V1-P0-25 kapandı.
 
+## K-116 — Tohum, saat ve hermetik dünyayı `zee-io-1` profiline bağla (2 Eyl)
+
+- **Sorun:** CLI ve playground aynı xorshift ailesini kopya kodla, farklı
+  durum hazırlama noktalarıyla yürütüyordu. Sanal saatin ve `ToplayanIo`
+  fallback'lerinin testlerde gözlenebilir olmasına rağmen sürüm kimliği yoktu;
+  tam i64 aralığı mevcut çıkarma hesabını taşırabiliyordu.
+- **Karar:** Tek `SurumluRastgele` sahibi, `zee-io-1` profilinde tohum XOR
+  karışımını, xorshift64* adımlarını, yansız reddetme eşikli uçları-dahil
+  eşlemeyi ve tam i64 desteğini taşır. Tohum 7'nin `[1,100]` ilk altı sonucu
+  `47,29,69,71,26,60` kalıcı conformance vektörüdür.
+- **Zaman:** Takvim UTC görünümü ile deadline'a ait tekdüze an ayrıdır.
+  Hermetik an 0'dan başlar; negatif bekleme ilerletmez, eski enjeksiyon saati
+  geri götürmez, bekleme takvimi oynatmaz. Scheduler en yakın ortak uyanışa
+  ilerleme sözünü korur.
+- **Fake IO:** Girdi/rastgele FIFO, aralığa kırpma+alt-uç fallback'i, istem
+  çıktı sırası, LF'li dosya, exact URL/yol, kapalı varsayılan sensör ve ışık
+  çıktı biçimi normatifleşti. Güvenlik tokenları OS CSPRNG'sinde kalır.
+- **Kanıt:** RFC-0023, ADR-027, spec/22 ve profil rehberi; profil+dizi, tam
+  i64, rastgele kuyruk, sanal saat ve bütünleşik fake-IO/playground için beş
+  conformance testi. Toplam 460 test yeşildir; B-028/V1-P0-26 kapandı.
+
 ---
 
 ## Sonraki adım
@@ -1696,5 +1717,5 @@ Korpus 10 öğrenci + 5 profesyonel usability oturumuna (Hafta 12 hedefi, erkeni
 Hafta 2'de kağıt üstünde) sesli okutulacak; her kayıt için "doğal mı /
 deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
-Makine hattında B-027/K-115 kapandı. Sırada B-028 saat/rastgele tohum ve
-sanal zaman ilerleme semantiğinin sürümlenmesi vardır.
+Makine hattında B-028/K-116 kapandı. Sırada B-030 platformlar arası kanonik
+paket conformance'ı ve B-031 adversarial arşiv korpusu vardır.

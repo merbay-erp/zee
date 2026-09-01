@@ -179,9 +179,10 @@ fn govde() -> ExitCode {
         Some("yeni") => yeni_komutu(&argumanlar),
         Some("sürüm") | Some("surum") => {
             println!(
-                "dil {} — Türkçe programlama dili (bootstrap, Stage 0) — morfoloji {}",
+                "dil {} — Türkçe programlama dili (bootstrap, Stage 0) — morfoloji {} — IO {}",
                 env!("CARGO_PKG_VERSION"),
-                dil::morfoloji::MORFOLOJI_PROFILI
+                dil::morfoloji::MORFOLOJI_PROFILI,
+                dil::yorumlayici::DETERMINISTIK_IO_PROFILI,
             );
             ExitCode::SUCCESS
         }
@@ -1281,14 +1282,14 @@ fn girdiyi_oku(yol: &std::path::Path) -> Result<KaynakGirdisi, GirdiHatasi> {
 }
 
 /// Gerçek ekran + klavye IO'su: istem yazılır, cevap stdin'den okunur.
-/// Rastgelelik: sistem saatiyle tohumlanan xorshift (bağımlılıksız).
+/// Rastgelelik: sistem saatiyle tohumlanan sürümlü `zee-io-1` üreteci.
 struct GercekIo {
     /// Sonraki yanıtla gönderilecek Set-Cookie başlıkları (K-052).
     bekleyen_cerezler: Vec<BekleyenCerez>,
     bekleyen_silinen_cerezler: Vec<String>,
     /// Göreli dosya yollarının kökü: giriş kaynağının klasörü (K-076).
     kok: std::path::PathBuf,
-    tohum: u64,
+    rastgele: dil::yorumlayici::SurumluRastgele,
     argumanlar: Vec<String>,
     baslangic: std::time::Instant,
     /// Üretim sözleşmesi tamamlanmamış localhost TCP yüzeyine açık opt-in.
@@ -1334,7 +1335,7 @@ impl GercekIo {
             bekleyen_cerezler: Vec::new(),
             bekleyen_silinen_cerezler: Vec::new(),
             kok: kok.to_path_buf(),
-            tohum,
+            rastgele: dil::yorumlayici::SurumluRastgele::yeni(tohum),
             argumanlar,
             baslangic: std::time::Instant::now(),
             web_modu,
@@ -2148,14 +2149,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         self.baslangic.elapsed().as_millis() as i64
     }
     fn rastgele(&mut self, alt: i64, ust: i64) -> i64 {
-        // xorshift64*
-        let mut x = self.tohum;
-        x ^= x >> 12;
-        x ^= x << 25;
-        x ^= x >> 27;
-        self.tohum = x;
-        let genislik = (ust - alt) as u64 + 1;
-        alt + (x.wrapping_mul(0x2545F4914F6CDD1D) % genislik) as i64
+        self.rastgele.aralikta(alt, ust)
     }
 }
 

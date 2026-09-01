@@ -23,7 +23,7 @@ Derleyici şu fiziksel sınırlara ayrılır:
 |---|---|---|
 | parser | token akışı, blok ve tanım orkestrasyonu | `ayristirici/cumle.rs`, `ayristirici/ifade.rs` |
 | checker | tür modeli, bağlam ve denetim orkestrasyonu | `cozumleyici/cumle.rs`, `cozumleyici/ifade.rs`, `cozumleyici/cagri.rs` |
-| runtime | IO, scheduler, değer modeli ve orkestrasyon | `yorumlayici/cumle.rs`, `yorumlayici/ifade.rs`, `yorumlayici/hir_gecisi.rs`, `yorumlayici/io_izi.rs` |
+| runtime | IO, scheduler, değer modeli ve orkestrasyon | `yorumlayici/cumle.rs`, `yorumlayici/ifade.rs`, `yorumlayici/hir_gecisi.rs`, `yorumlayici/io_izi.rs`, `yorumlayici/io_profili.rs` |
 
 Modüller `pub(super)` ile yalnız kendi üst fazına açılır; crate'in public
 API'sini büyütmez. Bu taşıma davranış değişikliği değildir.
@@ -62,3 +62,6 @@ Hata kataloğu bekçisi de `compiler/src` altındaki bütün Rust modüllerini
 - K-104 bağlı typed-HIR geçişini `yorumlayici/hir_gecisi.rs`, K-115 sürümlü
   IO trace/replay protokolünü `yorumlayici/io_izi.rs` sahibine ayırdı;
   gerekçeli bütçeler faz rehberinde kayıtlıdır.
+- K-116 `zee-io-1` tohum ve aralık algoritmasını
+  `yorumlayici/io_profili.rs` sahibine ayırdı; 80 satırlık bütçe ve kırıcı
+  profil değişikliği kuralı faz rehberinde kayıtlıdır.

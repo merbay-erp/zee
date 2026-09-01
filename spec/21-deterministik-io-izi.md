@@ -46,5 +46,6 @@ ham/geri çevrilebilir alan olamaz; yalnız ayrı SHA-256 parmak izleri kaydedil
 ## Sınır
 
 Kaynak program iz içine gömülmez. Derleme/birim yükleme yürütme IO izi değildir.
-Saat/rastgele tohum ve sanal zaman ilerleme algoritmasının sürüm sözleşmesi
-B-028 kapsamındadır; şema-1 bugün gözlenen çağrı, sonuç ve sırayı korur.
+Saat/rastgele tohum ve sanal zaman ilerleme algoritması spec/22'deki
+`zee-io-1` profilidir. Şema-1 profil algoritmasını yeniden çalıştırmaz;
+gözlenen çağrı, sonuç ve sırayı korur.

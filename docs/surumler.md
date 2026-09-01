@@ -307,6 +307,14 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   argümanları yalnız SHA-256 parmak izi taşır; izin geri kalanı özel veri kabul
   edilir. Beş çekirdek ve iki CLI regresyonuyla toplam 455 test yeşildir;
   B-027/V1-P0-25 kapandı.
+- **Sürümlü deterministik IO profili** (K-116, RFC-0023, ADR-027): CLI ve
+  playground'un kopya rastgele üreticileri tek `SurumluRastgele` sahibinde
+  birleşti. `zee-io-1`; tohum karışımı+xorshift64* dizi snapshot'ını, yansız
+  uçları-dahil eşlemeyi ve tam i64 aralığını bağlar. Hermetik takvim ile
+  tekdüze saat ayrıldı; negatif/eski zaman geri gidemez, sanal bekleme takvimi
+  oynatmaz. FIFO girdi/rastgele fallback'i ve sahte dosya/ağ/sensör çıktıları
+  da conformance kapsamındadır. Beş regresyonla toplam 460 test yeşildir;
+  B-028/V1-P0-26 kapandı.
 
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`

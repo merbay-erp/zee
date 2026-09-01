@@ -9,7 +9,8 @@ dayanır; hayal ürünü özellik yoktur.
 **A — Hiç kurulum yok (önerilen başlangıç):** `playground/zee-playground.html`
 dosyasını USB'yle ya da ağ paylaşımıyla dağıt. Çift tıklayınca tarayıcıda
 açılır; derleyicinin tamamı dosyanın içindedir, internet GEREKMEZ ve hiçbir
-veri dışarı gitmez (ADR-007). Aynı tohum + aynı girdi = her makinede aynı
+veri dışarı gitmez (ADR-007). `zee-io-1` profiliyle aynı tohum + aynı girdi =
+her makinede aynı
 çıktı — sınıfta "bende farklı çıktı" tartışması yaşanmaz.
 
 **B — Bilgisayara kurulum:** tek dosya `dil` ikilisi kopyalanır (PATH'e

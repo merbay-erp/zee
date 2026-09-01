@@ -63,6 +63,8 @@ olarak Sonuç'a çevrilmez.
 
 `test "<açıklama>"` blokları `dil dene` ile koşar. Her test **taze ortamda**
 ve **hermetik IO** ile çalışır: saat sabit, rastgelelik tohumlu, dosya/ağ
-sahte. Başarısız doğrulama D001'dir ve beklenen/bulunan değerleri gösterir.
+sahte. Bu dünyanın tohum, sanal saat, FIFO/fallback ve görünür adaptör
+davranışı spec/22'deki `zee-io-1` profilidir. Başarısız doğrulama D001'dir ve
+beklenen/bulunan değerleri gösterir.
 Testler kaynak dosyanın yanında yaşar ve playground dahil her yürütücüde
 aynı sonucu verir.

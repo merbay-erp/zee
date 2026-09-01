@@ -424,6 +424,8 @@ test "kare doğru hesaplanır"
 
 Testler taze ortamda ve hermetik IO ile koşar: rastgelelik, saat ve
 dosyalar test dünyasından gelir — aynı test her makinede aynı sonucu verir.
+Tohum, sanal saat ve sahte dünya davranışı
+[`zee-io-1` profilinde](deterministik-io-profili.md) sürümlüdür.
 
 ## 16. Dosyalar, CSV, JSON
 
@@ -460,6 +462,11 @@ yarım saniye bekle
 ```
 
 Süre birinci sınıftır: `5 saniye`, `yarım saniye`.
+
+Playground'da görünen tohum `zee-io-1` profilini besler; aynı tohum ve aynı
+rastgele çağrı sırası her platformda aynı diziyi verir. Takvim saati ile
+deadline için kullanılan, beklemeyle ilerleyen tekdüze saat ayrıdır. Bu
+rastgelelik oyun/simülasyon içindir; güvenlik belirteçleri OS CSPRNG'si kullanır.
 
 ## 18. Ağ ve eşzamanlılık
 

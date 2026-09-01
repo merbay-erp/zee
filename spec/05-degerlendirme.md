@@ -1,8 +1,8 @@
 # 05 — Değerlendirme
 
 Normatif kaynak: RFC-0001 §7 (determinizm), ADR-003 (yürütme modeli),
-RFC-0013 (ondalık aritmetik), RFC-0022/ADR-026 (IO izi). Tanı kodları: C
-bölümü.
+RFC-0013 (ondalık aritmetik), RFC-0022/ADR-026 (IO izi), RFC-0023/ADR-027
+(`zee-io-1`). Tanı kodları: C bölümü.
 
 ## Yürütme modeli (TANIMLI)
 
@@ -23,7 +23,8 @@ protokol olarak kaydedilebilir; `dil iz oynat` aynı çağrı/argüman sırasın
 etki uygulamadan yeniden yürütür. İlk fark ve tüketilmeyen olay hatadır. Tam
 byte biçimi, bütçeler ve gizlilik sınırı [spec/21](21-deterministik-io-izi.md)
 içindedir. Rastgele tohum algoritması ile sanal zaman ilerlemesinin taşınabilir
-sürüm semantiği B-028'e kadar açık kalır.
+sürüm semantiği [spec/22](22-deterministik-io-profili.md) içindeki
+`zee-io-1` profiliyle tanımlıdır.
 
 ## Sayısal anlam (TANIMLI)
 

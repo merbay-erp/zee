@@ -7,6 +7,7 @@ mod cumle;
 mod hir_gecisi;
 mod ifade;
 mod io_izi;
+mod io_profili;
 
 use self::cumle::blok_calistir_async;
 use self::hir_gecisi::CalistirmaProgrami;
@@ -15,6 +16,7 @@ pub use self::hir_gecisi::{calistir_baglanmis, calistir_baglanmis_io, test_calis
 pub use self::io_izi::{
     IzKaydedenIo, IzYenidenOynatici, AZAMI_IO_IZ_BAYTI, AZAMI_IO_IZ_OLAYI,
 };
+pub use self::io_profili::{SurumluRastgele, DETERMINISTIK_IO_PROFILI};
 
 use crate::agac::{
     AritmetikIslec, Cumle, HttpYontemi, Ifade, Islec, IslemTuru, Ozellik, Program, RotaErisimi,
@@ -703,8 +705,14 @@ impl GirdiCikti for ToplayanIo {
         self.cikti.push(istem.to_string());
         self.girdiler.pop_front()
     }
-    fn rastgele(&mut self, alt: i64, _ust: i64) -> i64 {
-        self.rastgele_degerler.pop_front().unwrap_or(alt)
+    fn rastgele(&mut self, alt: i64, ust: i64) -> i64 {
+        if alt > ust {
+            return alt;
+        }
+        self.rastgele_degerler
+            .pop_front()
+            .unwrap_or(alt)
+            .clamp(alt, ust)
     }
     fn dosya_oku(&mut self, yol: &str) -> Result<String, String> {
         self.dosyalar

@@ -86,7 +86,7 @@ Araçlar: `dil çalıştır(--güvenli/--deneysel-web/--web-proxy)/iz(kaydet/oyn
 + **dillsp** LSP sunucusu — tanılar, hover, tanıma git, **morfolojili
 yeniden adlandırma (F2)** ([editors/](editors/)).
 Determinizm testlerde tam: rastgelelik, saat, dosyalar, HTTP, sunucu istekleri,
-sensörler ve an ölçümü IO soyutlamasından gelir — 455 test hermetik koşar.
+sensörler ve an ölçümü IO soyutlamasından gelir — 460 test hermetik koşar.
 Lexer/parser panic-free ve morfoloji üret→çöz sözlerini ayrıca kalıcı saldırı
 korpusları, deterministik üretim ve gecelik [libFuzzer hattı](docs/fuzzing.md)
 denetler. Parser sonrası AST ile checker sonrası typed HIR arasındaki iç
@@ -96,7 +96,8 @@ sözleşme de debug/test hattında yürütülebilir
 **Playground:** `playground/olustur.sh` derleyiciyi WebAssembly'e derler ve
 tek dosyalık `playground/zee-playground.html` üretir — çift tıkla aç, tarayıcıda
 yaz-çalıştır; kurulum ve internet gerekmez. Aynı tohum + aynı girdi = her zaman
-aynı çıktı (determinizm tarayıcıda da geçerli, K-039).
+aynı çıktı (`zee-io-1` [deterministik IO profili](docs/deterministik-io-profili.md),
+K-039/K-116).
 
 **Gömülü kitaplık** (RFC-0014): `matematik` ve `liste_araclari` birimleri
 zee'yle yazılıdır ([kitaplik/](kitaplik/)) ve ikiliye gömülüdür — playground
@@ -131,8 +132,8 @@ korpus üzerinde regression testine girer.
 | 33 golden program | [golden/](golden/) | ✅ tamamı regression testte; sözdizimi RFC'lerle geçici kabulde |
 | 11 anti-örnek | [anti-ornekler/](anti-ornekler/) | ✅ (A11: nokta-ondalık) |
 | Syntax karar günlüğü | [kararlar/gunluk.md](kararlar/gunluk.md) | ✅ işleniyor |
-| RFC süreci | [rfcs/](rfcs/) | ✅ 22 RFC: 2 kabul, 18 geçici kabul, 2 taslak |
-| ADR süreci | [adr/](adr/) | ✅ 24 kabul (001-003, 006-026); 004/005 faz verisi bekliyor |
+| RFC süreci | [rfcs/](rfcs/) | ✅ 23 RFC: 2 kabul, 19 geçici kabul, 2 taslak |
+| ADR süreci | [adr/](adr/) | ✅ 25 kabul (001-003, 006-027); 004/005 faz verisi bekliyor |
 | Hata kataloğu | [docs/hata-katalogu.md](docs/hata-katalogu.md) | ✅ 145 etkin + 3 ayrılmış kod; kaynak ve sürüm kimliği testli |
 | Spesifikasyon | [spec/](spec/) | ✅ başladı — normatif çekirdek (RFC'lere bağlar) |
 
@@ -227,6 +228,10 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   kanonik şema-1 izine bağladı. `dil iz kaydet/oynat`, gerçek koşuyu atomik
   kaydedip dış dünyaya yeniden dokunmadan fail-closed oynatır; ayrıntılar
   [IO izi rehberindedir](docs/io-izi.md).
+  K-116/RFC-0023 rastgele tohum dizisini, tam i64 aralık eşlemesini, sanal
+  saati ve hermetik adaptör gözlemlerini `zee-io-1` profiline sabitledi;
+  [profil rehberi](docs/deterministik-io-profili.md) kırıcı değişikliği yeni
+  kimliğe zorlar.
   Uygulama sırası
   [öncelikli backlog](docs/oncelikli-backlog.md) ile sabittir.
   Bağlayıcı liste: [docs/v1-surum-kapilari.md](docs/v1-surum-kapilari.md).
