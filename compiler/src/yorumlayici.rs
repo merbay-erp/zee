@@ -89,6 +89,100 @@ fn url_coz(metin: &str) -> String {
     String::from_utf8_lossy(&baytlar).into_owned()
 }
 
+/// Türk alfabesi sırası (K-056): a b c ç d e f g ğ h ı i j k l m n o ö p r s ş t u ü v y z.
+fn turkce_harf_sirasi(k: char) -> (u8, u32) {
+    const ALFABE: &str = "abcçdefgğhıijklmnoöprsştuüvyz";
+    let kucuk = match k {
+        'İ' => 'i',
+        'I' => 'ı',
+        _ => k.to_lowercase().next().unwrap_or(k),
+    };
+    match ALFABE.chars().position(|a| a == kucuk) {
+        Some(sira) => (0, sira as u32),
+        None => (1, k as u32),
+    }
+}
+
+/// İki metni Türk alfabesine göre karşılaştırır (K-056, TANIMLI).
+fn turkce_karsilastir(a: &str, b: &str) -> std::cmp::Ordering {
+    a.chars()
+        .map(turkce_harf_sirasi)
+        .cmp(b.chars().map(turkce_harf_sirasi))
+}
+
+/// Sıralama anahtarı: sayılar sayısal, metinler Türk alfabesiyle.
+fn deger_sirasi(a: &Deger, b: &Deger) -> std::cmp::Ordering {
+    match (a, b) {
+        (Deger::TamSayi(x), Deger::TamSayi(y)) => x.cmp(y),
+        (Deger::Ondalik { .. }, _) | (_, Deger::Ondalik { .. }) => {
+            let ac = ondalik_kiyas(a);
+            let bc = ondalik_kiyas(b);
+            ac.cmp(&bc)
+        }
+        (Deger::Metin(x), Deger::Metin(y)) => turkce_karsilastir(x, y),
+        _ => std::cmp::Ordering::Equal,
+    }
+}
+
+fn ondalik_kiyas(d: &Deger) -> i128 {
+    match d {
+        Deger::TamSayi(s) => (*s as i128) * 1_000_000_000,
+        Deger::Ondalik { govde, olcek } => {
+            (*govde as i128) * 10i128.pow(9 - *olcek.min(&9))
+        }
+        _ => 0,
+    }
+}
+
+/// Üyelik eşitliği (K-058): sayı/metin/mantıksal değerler.
+fn degerler_esit(a: &Deger, b: &Deger) -> bool {
+    match (a, b) {
+        (Deger::TamSayi(x), Deger::TamSayi(y)) => x == y,
+        (Deger::Metin(x), Deger::Metin(y)) => x == y,
+        (Deger::Mantiksal(x), Deger::Mantiksal(y)) => x == y,
+        (Deger::Ondalik { .. }, _) | (_, Deger::Ondalik { .. }) => {
+            ondalik_kiyas(a) == ondalik_kiyas(b)
+        }
+        _ => false,
+    }
+}
+
+/// Satır sözlükleri listesini CSV metnine çevirir (K-058): başlıklar ilk
+/// satırın anahtar sırasından; virgül/tırnak/yeni satır RFC 4180 gibi kaçar.
+fn csv_yaz(satirlar: &[Deger]) -> String {
+    let mut cikti = String::new();
+    let Some(Deger::Sozluk(ilk)) = satirlar.first() else {
+        return cikti;
+    };
+    let basliklar: Vec<&String> = ilk.iter().map(|(a, _)| a).collect();
+    let hucre = |m: &str| -> String {
+        if m.contains(',') || m.contains('"') || m.contains('\n') {
+            format!("\"{}\"", m.replace('"', "\"\""))
+        } else {
+            m.to_string()
+        }
+    };
+    cikti.push_str(&basliklar.iter().map(|b| hucre(b)).collect::<Vec<_>>().join(","));
+    cikti.push('\n');
+    for satir in satirlar {
+        if let Deger::Sozluk(girdiler) = satir {
+            let hucreler: Vec<String> = basliklar
+                .iter()
+                .map(|b| {
+                    girdiler
+                        .iter()
+                        .find(|(a, _)| a == *b)
+                        .map(|(_, d)| hucre(&d.metne()))
+                        .unwrap_or_default()
+                })
+                .collect();
+            cikti.push_str(&hucreler.join(","));
+            cikti.push('\n');
+        }
+    }
+    cikti
+}
+
 /// Değeri JSON metnine serileştirir (K-054): Sözlük, Liste, Metin, sayılar,
 /// Mantıksal. Sözlük anahtar sırası korunur (determinizm).
 fn json_yaz(deger: &Deger) -> String {
@@ -1174,6 +1268,17 @@ fn degerlendir(
                     })
                 }
                 (Ozellik::Kirpilmis, Deger::Metin(m)) => Ok(Deger::Metin(m.trim().to_string())),
+                (Ozellik::Siralanmis, Deger::Liste(mut ogeler)) => {
+                    ogeler.sort_by(deger_sirasi);
+                    Ok(Deger::Liste(ogeler))
+                }
+                (Ozellik::Ters, Deger::Liste(mut ogeler)) => {
+                    ogeler.reverse();
+                    Ok(Deger::Liste(ogeler))
+                }
+                (Ozellik::CsvMetin, Deger::Liste(satirlar)) => {
+                    Ok(Deger::Metin(csv_yaz(&satirlar)))
+                }
                 (Ozellik::Harfler, Deger::Metin(m)) => Ok(Deger::Liste(
                     m.chars().map(|k| Deger::Metin(k.to_string())).collect(),
                 )),
@@ -1238,6 +1343,15 @@ fn degerlendir(
                 })
         }
         Ifade::SozlukteVar { sozluk, anahtar, olumsuz } => {
+            {
+                // K-058: liste üyeliği — aynı yüzey.
+                let kap = degerlendir(sozluk, ortam, program, io, derinlik, satir)?;
+                if let Deger::Liste(ogeler) = kap {
+                    let aranan = degerlendir(anahtar, ortam, program, io, derinlik, satir)?;
+                    let var = ogeler.iter().any(|o| degerler_esit(o, &aranan));
+                    return Ok(Deger::Mantiksal(var != *olumsuz));
+                }
+            }
             let girdiler = match degerlendir(sozluk, ortam, program, io, derinlik, satir)? {
                 Deger::Sozluk(girdiler) => girdiler,
                 _ => return Err(ic_hata(satir)),
@@ -1307,6 +1421,19 @@ fn degerlendir(
         Ifade::KomutArgumanlari => Ok(Deger::Liste(
             io.argumanlar().into_iter().map(Deger::Metin).collect(),
         )),
+        Ifade::GunFarki { birinci, ikinci } => {
+            let bir = degerlendir(birinci, ortam, program, io, derinlik, satir)?;
+            let iki = degerlendir(ikinci, ortam, program, io, derinlik, satir)?;
+            match (bir, iki) {
+                (
+                    Deger::Tarih { yil: y1, ay: a1, gun: g1 },
+                    Deger::Tarih { yil: y2, ay: a2, gun: g2 },
+                ) => Ok(Deger::TamSayi(
+                    tarihten_gunler(y2, a2, g2) - tarihten_gunler(y1, a1, g1),
+                )),
+                _ => Err(ic_hata(satir)),
+            }
+        }
         Ifade::GunSonrasi { tarih, miktar } => {
             let (yil, ay, gun) = match degerlendir(tarih, ortam, program, io, derinlik, satir)? {
                 Deger::Tarih { yil, ay, gun } => (yil, ay, gun),

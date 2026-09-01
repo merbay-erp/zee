@@ -149,6 +149,8 @@ pub enum Ifade {
     SuAninSaati,
     /// `bugünün 1 gün sonrası` → Tarih.
     GunSonrasi { tarih: Box<Ifade>, miktar: Box<Ifade> },
+    /// `başlangıç ile bitiş arasındaki günler` → TamSayı, işaretli (K-057).
+    GunFarki { birinci: Box<Ifade>, ikinci: Box<Ifade> },
     /// `komut satırından gelenler` → Liste<Metin>.
     KomutArgumanlari,
     /// Süre sabiti: `5 saniye`, `yarım saniye`, `1,5 dakika` → milisaniye.
@@ -215,6 +217,12 @@ pub enum Ozellik {
     Harfler,
     /// Serileştirilebilir değerin JSON metni (K-054).
     JsonMetin,
+    /// Liste: Türk alfabesi sırasıyla (ya da sayısal) sıralanmış kopya (K-056).
+    Siralanmis,
+    /// Liste: ters çevrilmiş kopya (K-056).
+    Ters,
+    /// Satır sözlükleri listesinin CSV metni (K-058).
+    CsvMetin,
 }
 
 #[derive(Debug, Clone)]

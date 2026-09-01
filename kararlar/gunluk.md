@@ -509,6 +509,27 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   kullanıcı tarafında çıkarılır (`yolun "/yazi/" yerine "" değişmişi`) —
   dile şablon-rota karmaşası girmedi.
 
+## K-056 — Sıralama: `listenin sıralanmışı` — Türk alfabesiyle
+
+- **Karar:** `sıralanmışı` (TamSayı/Ondalık sayısal; Metin TÜRK ALFABESİ
+  sırasıyla: a b c ç d e f g ğ h ı i j k l m n o ö p r s ş t u ü v y z —
+  TANIMLI, gerçekleme turkce_karsilastir) ve `tersi` (liste ters çevirme).
+  Çekirdeğe girdi çünkü kullanıcı katında yazılamazdı (indeks/çıkarma yok) —
+  turnusolun "muhtaçlık" koşulu.
+- **Not:** kararlı sıralama; eşitler özgün sırada kalır (determinizm).
+
+## K-057 — Tarih farkı: `X ile Y arasındaki günler`
+
+- **Karar:** İşaretli TamSayı: Y − X (X'ten Y'ye). "Doğum günüme kaç gün
+  kaldı?" doğal olarak pozitif. İki taraf da Tarih (T029).
+
+## K-058 — Liste üyeliği + CSV yazma
+
+- **Karar:** `sayılarda 5 varsa` — sözlük üyeliğinin yüzeyi listelere
+  genişledi (sayı/metin listeleri; tür bekçisi T021). `tablonun csv metni`:
+  satır sözlükleri listesi → CSV (başlıklar ilk satırın anahtar sırasından;
+  virgül/tırnak/yeni satır RFC 4180 gibi kaçar).
+
 ## K-012 — Liste sabiti: `3, 7, 1, 9 listesi`
 
 - **Karar:** Virgülle ayrılmış değerler + `listesi`. Boş: `boş liste`.

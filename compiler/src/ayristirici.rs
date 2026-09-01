@@ -1748,6 +1748,10 @@ fn yapili_kalip(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifade>
             Some(Ozellik::Kirpilmis)
         } else if son == "harfleri" {
             Some(Ozellik::Harfler)
+        } else if son == "sıralanmışı" {
+            Some(Ozellik::Siralanmis)
+        } else if son == "tersi" {
+            Some(Ozellik::Ters)
         } else {
             None
         };
@@ -1781,6 +1785,26 @@ fn yapili_kalip(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifade>
         return Ok(Some(Ifade::SozlukDegeri {
             sozluk: Box::new(tekil_ifade(tokenlar[0].clone())?),
             anahtar: Box::new(tekil_ifade(tokenlar[1].clone())?),
+        }));
+    }
+
+    // X ile Y arasındaki günler — işaretli tarih farkı (K-057).
+    if n == 5
+        && son == "günler"
+        && kelime(1) == Some("ile")
+        && kelime(3) == Some("arasındaki")
+    {
+        return Ok(Some(Ifade::GunFarki {
+            birinci: Box::new(tekil_ifade(tokenlar[0].clone())?),
+            ikinci: Box::new(tekil_ifade(tokenlar[2].clone())?),
+        }));
+    }
+
+    // W ın csv metni — tablo serileştirme (K-058).
+    if n == 3 && son == "metni" && kelime(1) == Some("csv") {
+        return Ok(Some(Ifade::Ozellik {
+            nesne: Box::new(tekil_ifade(tokenlar[0].clone())?),
+            ozellik: Ozellik::CsvMetin,
         }));
     }
 
