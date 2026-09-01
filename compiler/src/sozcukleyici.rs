@@ -16,8 +16,8 @@ pub enum TokenTur {
     Metin(String),
     /// Tam sayı sabiti.
     TamSayi(i64),
-    /// Ondalık sabit (RFC-0013): `3,14` → govde=314, olcek=2. Onluk tam değer.
-    Ondalik { govde: i64, olcek: u32 },
+    /// Ondalık sabit (RFC-0013): `3,14` → govde="314", olcek=2. Onluk tam değer.
+    Ondalik { govde: String, olcek: u32 },
     /// Tanımlayıcı ya da kalıp kelimesi (yaz, olsun, ise, ile...).
     Kelime(String),
     Virgul,
@@ -200,16 +200,6 @@ pub fn sozcukle(kaynak: &str) -> Result<Vec<Token>, Tani> {
                         break;
                     }
                 }
-                let deger: i64 = sayi_metni.parse().map_err(|_| {
-                    Tani::yeni(
-                        "S006",
-                        format!("\"{}\" sayısı çok büyük.", sayi_metni),
-                        satir_no,
-                        baslangic_sutun,
-                        sayi_metni.len(),
-                    )
-                })?;
-
                 // Bitişik virgül kuralı (RFC-0013): rakam,rakam → ondalık sabit.
                 let ondalik_mi = {
                     let mut ileri = kalanlar.clone();
@@ -229,36 +219,27 @@ pub fn sozcukle(kaynak: &str) -> Result<Vec<Token>, Tani> {
                             break;
                         }
                     }
-                    if kesir_metni.len() > 9 {
-                        return Err(Tani::yeni(
-                            "S032",
-                            format!(
-                                "Ondalık kısım en çok 9 hane olabilir; burada {} hane var.",
-                                kesir_metni.len()
-                            ),
+                    let olcek = u32::try_from(kesir_metni.len()).map_err(|_| {
+                        Tani::yeni(
+                            "S006",
+                            "Ondalık sabit işlenemeyecek kadar uzun.".into(),
                             satir_no,
                             baslangic_sutun,
                             sayi_metni.len() + 1 + kesir_metni.len(),
-                        ));
-                    }
-                    let olcek = kesir_metni.len() as u32;
-                    // İşaret-duyarlı kurulum: -3,14 → -(3*100 + 14) = -314.
+                        )
+                    })?;
+                    // İşaret-duyarlı metinsel katsayı: boyut yalnız kaynak boyuyla sınırlıdır.
                     let eksi = sayi_metni.starts_with('-');
-                    let kesir: i64 = kesir_metni.parse().unwrap_or(0);
-                    let govde = deger
-                        .checked_abs()
-                        .and_then(|d| d.checked_mul(10i64.pow(olcek)))
-                        .and_then(|t| t.checked_add(kesir))
-                        .map(|g| if eksi { -g } else { g })
-                        .ok_or_else(|| {
-                            Tani::yeni(
-                                "S006",
-                                format!("\"{},{}\" sayısı çok büyük.", sayi_metni, kesir_metni),
-                                satir_no,
-                                baslangic_sutun,
-                                sayi_metni.len() + 1 + kesir_metni.len(),
-                            )
-                        })?;
+                    let tam = sayi_metni.trim_start_matches('-').trim_start_matches('0');
+                    let govde_rakamlari = format!("{}{}", tam, kesir_metni);
+                    let govde_rakamlari = govde_rakamlari.trim_start_matches('0');
+                    let govde = if govde_rakamlari.is_empty() {
+                        "0".to_string()
+                    } else if eksi {
+                        format!("-{}", govde_rakamlari)
+                    } else {
+                        govde_rakamlari.to_string()
+                    };
                     tokenlar.push(Token::yeni(
                         TokenTur::Ondalik { govde, olcek },
                         satir_no,
@@ -266,6 +247,15 @@ pub fn sozcukle(kaynak: &str) -> Result<Vec<Token>, Tani> {
                         sayi_metni.len() + 1 + kesir_metni.len(),
                     ));
                 } else {
+                    let deger: i64 = sayi_metni.parse().map_err(|_| {
+                        Tani::yeni(
+                            "S006",
+                            format!("\"{}\" sayısı çok büyük.", sayi_metni),
+                            satir_no,
+                            baslangic_sutun,
+                            sayi_metni.len(),
+                        )
+                    })?;
                     tokenlar.push(Token::yeni(
                         TokenTur::TamSayi(deger),
                         satir_no,

@@ -1,6 +1,6 @@
 //! Playground köprüsü (Faz 6): derleyiciyi tarayıcıya taşıyan C-ABI yüzeyi.
 //!
-//! wasm-bindgen KULLANILMAZ (ADR-001 sıfır bağımlılık): bellek elle yönetilir.
+//! wasm-bindgen KULLANILMAZ (ADR-001 küçük bağımlılık yüzeyi): bellek elle yönetilir.
 //! Sözleşme:
 //! - `dil_bellek_ayir(n)` → n baytlık tampon işaretçisi (JS kaynağı buraya yazar)
 //! - `dil_calistir(kaynak, k_len, girdi, g_len, tohum)` → sonuç tamponu:

@@ -47,7 +47,10 @@ fn liste_araclari_birimi_kullanilir() {
     let cikti = gomulu_kostur(
         "liste_araclari birimini kullan\n\nnotlar 50, 60, 71 listesi olsun\no notlar için ortalamasını hesapla olsun\no yaz\nb notlar için en büyüğünü bul olsun\nb yaz\n",
     );
-    assert_eq!(cikti, vec!["60,333333333", "71,0"]);
+    assert_eq!(
+        cikti,
+        vec!["60,33333333333333333333333333333333", "71,0"]
+    );
 }
 
 #[test]

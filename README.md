@@ -24,7 +24,8 @@ Sürüm geçmişi ve ayrıntılar: [docs/surumler.md](docs/surumler.md).
 
 **31 Ağustos 2026 — proje doğdu.** `merhaba.dil` kendi lexer → parser → tür
 denetimi → yorumlayıcı zincirimizden geçip çalıştı (master plan bölüm 41'deki
-ilk milestone). Bootstrap derleyici: [compiler/](compiler/) (Rust, sıfır bağımlılık).
+ilk milestone). Bootstrap derleyici: [compiler/](compiler/) (Rust; denetlenmiş,
+kilitli bağımlılıklar).
 
 ```bash
 cd compiler && cargo build && ./target/debug/dil çalıştır ..
@@ -49,7 +50,8 @@ içerik özetiyle deterministik `proje.kilit` dosyasına sabitler (K-078).
 **işlem tanımı ve çağrısı** (K-016 geçici sözdizimi), **yapılar** (`yapı`,
 `yeni`, iyelik ekiyle alan erişimi), **desen eşleştirme** (`göre / ise`),
 CSV/JSON okuma, tarih/saat, komut satırı argümanları, **test blokları**
-(`dil dene`), **Ondalık** (3,14 — onluk tam aritmetik: 0,1+0,2=0,3),
+(`dil dene`), **keyfî hassasiyetli Ondalık** (3,14 — tam onluk aritmetik:
+0,1+0,2=0,3; yalnız sonsuz bölüm 34 anlamlı hane),
 **Süre** (yarım saniye), **birimler** (`X birimini kullan`), **Sonuç dönüşü**
 (`hatasını döndür`), `ve/veya/değilse` mantığı, **HTTP istemcisi** ve
 **deneysel web sunucusu** (localhost TCP; testlerde sahte), **yapılandırılmış
@@ -75,12 +77,13 @@ parametre türleri**
 (`sayıyı Ondalık olarak al`) ve public **dönüş sözleşmesi**
 (`Ondalık döndürür` / `değer döndürmez`), **proje bildirimi** (`proje.dil`, klasörden
 çalıştır/denetle/dene), **yerel paketler** (`X paketini kullan`), süreçler
-arası kilitli **atomik dosya yazma** ve 142 Türkçe kodlu tanı.
+arası kilitli **atomik dosya yazma** ve 141 etkin Türkçe kodlu tanı
+(1 tarihsel kod ayrılmıştır).
 Araçlar: `dil çalıştır(--güvenli/--deneysel-web/--web-proxy)/parola-özeti/denetle(--json)/dene/biçimle/ekle/çıkar/kilitle/paketler/hata/belge/morfoloji/yeni`
 + **dillsp** LSP sunucusu — tanılar, hover, tanıma git, **morfolojili
 yeniden adlandırma (F2)** ([editors/](editors/)).
 Determinizm testlerde tam: rastgelelik, saat, dosyalar, HTTP, sunucu istekleri,
-sensörler ve an ölçümü IO soyutlamasından gelir — 350 test hermetik koşar.
+sensörler ve an ölçümü IO soyutlamasından gelir — 356 test hermetik koşar.
 
 **Playground:** `playground/olustur.sh` derleyiciyi WebAssembly'e derler ve
 tek dosyalık `playground/zee-playground.html` üretir — çift tıkla aç, tarayıcıda
@@ -122,7 +125,7 @@ korpus üzerinde regression testine girer.
 | Syntax karar günlüğü | [kararlar/gunluk.md](kararlar/gunluk.md) | ✅ işleniyor |
 | RFC süreci | [rfcs/](rfcs/) | ✅ 18 RFC: 2 kabul, 14 geçici kabul, 2 taslak |
 | ADR süreci | [adr/](adr/) | ✅ 7 kabul (001-003, 007-010); 004/005/006 faz verisi bekliyor |
-| Hata kataloğu | [docs/hata-katalogu.md](docs/hata-katalogu.md) | ✅ 142 kod, kaynakla tutarlılığı testli |
+| Hata kataloğu | [docs/hata-katalogu.md](docs/hata-katalogu.md) | ✅ 141 etkin kod + 1 ayrılmış kod, kaynakla tutarlılığı testli |
 | Spesifikasyon | [spec/](spec/) | ✅ başladı — normatif çekirdek (RFC'lere bağlar) |
 
 ### Golden korpus hakkında

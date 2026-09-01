@@ -4,7 +4,7 @@
 //! publishDiagnostics (çoklu tanı, RFC-0010), completion (kalıp kelimeleri),
 //! shutdown/exit. İkili: `dillsp` (stdio üzerinden JSON-RPC).
 //!
-//! JSON ayrıştırıcı elle yazılmıştır (ADR-001 sıfır bağımlılık kuralı).
+//! JSON ayrıştırıcı elle yazılmıştır (ADR-001: dil semantiği çekirdekte kalır).
 
 use crate::tani::Tani;
 use std::collections::HashMap;

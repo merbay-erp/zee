@@ -16,6 +16,10 @@ path = "src/main.rs"
 name = "dil"
 path = "src/lib.rs"
 
+[dependencies]
+num-bigint = "0.5.1"
+num-traits = "0.2.19"
+
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 argon2 = { version = "0.6.0", features = ["getrandom"] }
 getrandom = "0.4.3"

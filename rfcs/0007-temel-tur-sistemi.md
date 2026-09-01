@@ -26,7 +26,7 @@ aşamalı geçer. Tehlikeli örtük dönüşüm yoktur.
 | Sonuç | değer/hata ikisi de Metin (v0) | ✅ kısmi |
 | Tarih, Saat | IO soyutlamalı saat; Türkçe basım | ✅ |
 | Yapılar | kullanıcı tanımlı; alanlar TamSayı/Metin/Mantıksal | ✅ |
-| Ondalık | onluk tam değer, 9 hane; RFC-0013 gerçeklendi | ✅ |
+| Ondalık | keyfî katsayılı onluk değer; yalnız sonsuz bölüm 34 anlamlı hane | ✅ K-092 |
 | Küme\<T\>, Süre, Para | — | ❌ stdlib fazları |
 
 ## 2. Çıkarım ve açık tür
@@ -52,9 +52,10 @@ aşamalı geçer. Tehlikeli örtük dönüşüm yoktur.
 
 ## 4. Açık sorular
 
-1. **GerçekSayı/Ondalık:** ÇÖZÜLDÜ — RFC-0013 bitişik virgül kuralı + onluk
-   tam aritmetikle gerçeklendi (3,14; 0,1+0,2=0,3). Kayan nokta (bilimsel iş)
-   gerekirse ileri düzey paket konusu olarak kaldı.
+1. **GerçekSayı/Ondalık:** ÇÖZÜLDÜ — RFC-0013/K-092 bitişik virgül kuralı +
+   keyfî hassasiyetli onluk aritmetikle gerçeklendi
+   (`3,14`; `0,1+0,2=0,3`). Kullanıcıya ikinci, ikilik kayan noktalı sayı
+   türü açılmaz; bilimsel gösterim ayrı bir sözdizimi kararıdır.
 2. **Generics ve trait/arayüz:** başlangıç işlemleri çağrı-güdümlü kalır;
    public işlemler tam açık ve v1'de bilinçli monomorfiktir (K-083/K-086,
    spec/10). Gerçek çokbiçimlilik v2+ ADR/RFC işidir.

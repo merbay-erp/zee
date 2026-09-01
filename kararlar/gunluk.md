@@ -1195,6 +1195,34 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
 - **Durum:** geçici kabul; RFC-0008 §3 ve normatif spec/15 ile V1-P1-04
   kapandı.
 
+## K-092 — Ondalıkta keyfî hassasiyet ve açık bölüm bağlamı (1 Eyl)
+
+- **Karar:** Kullanıcıya çocuk ve profesyonel için ayrı sayı türleri
+  açılmayacak. `Ondalık`, imzalı keyfî uzunlukta katsayı + onluk ölçek taşıyan
+  tek exact onluk türdür. İlk bootstrap'ın dokuz kesir hanesi ile i64/i128
+  katsayı sınırı dil semantiği değildi; kaldırıldı.
+- **Exact sınır:** Toplama, çıkarma, çarpma ve sade paydası yalnız 2/5 asal
+  çarpanlı bölme kayıpsızdır. İkilik kayan nokta çekirdeğe girmez. TamSayı i64
+  kalır ve Ondalığa kayıpsız genişler; Ondalıktan TamSayıya daralma görünürdür.
+- **Sonsuz bölüm:** Sonlu olmayan açılım tam 34 anlamlı haneye, yarımlar
+  sıfırdan uzağa yuvarlanır. Bağlam platformdan bağımsızdır ve sessiz küresel
+  ayarla değişmez. `1/3` için ilk sıfırlar sayılmaz; `10/3` tam kısımdaki
+  haneyi sayar. İleride özel bağlam gerekirse görünür API + ayrı RFC ister.
+- **Gerekçe:** Dokuz hane para örneklerine yetse de genel amaçlı dil sözü için
+  yapaydı; büyük ERP tutarı, uzun kur zinciri ve küçük bilimsel ölçüm aynı
+  anda duvara çarpıyordu. Sınırsız exact bölme matematiksel olarak mümkün
+  değildir; 34 hane bu tek zorunlu yuvarlama noktasını geniş ve denetlenebilir
+  kılar. Çocuk yine yalnız virgüllü sayıyı öğrenir, profesyonel aynı türü terk
+  etmek zorunda kalmaz.
+- **Göç:** S032 üretimden kaldırıldı ve kod kataloğunda başka anlamda
+  kullanılamayacak tarihsel kayıt olarak ayrıldı. `3 ,14` S033 ve `3.14` S001
+  yönlendirmesi değişmedi.
+- **Kanıt:** Keyfî sabit/katsayı, çok küçük değer, exact `1/8`, 34 haneli
+  `10/3`, negatif uzun metin dönüşümü, karşılaştırma, JSON, para ve i64
+  daraltma taşması; toplam 356 test. RFC-0013 revizyonu ve normatif spec/16
+  ile V1-P1-01 kapandı.
+- **Durum:** geçici kabul; usability onayı RFC'nin tam kabul kapısıdır.
+
 ---
 
 ## Sonraki adım

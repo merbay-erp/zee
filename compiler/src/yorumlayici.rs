@@ -6,6 +6,7 @@
 use crate::agac::{
     AritmetikIslec, Cumle, HttpYontemi, Ifade, Islec, IslemTuru, Ozellik, Program, RotaErisimi,
 };
+use crate::ondalik::Ondalik;
 use crate::tani::Tani;
 use crate::web_guvenligi::{WebGuvenligi, WebReddi, YeniOturum};
 use std::cell::{Cell, RefCell};
@@ -154,23 +155,14 @@ fn turkce_karsilastir(a: &str, b: &str) -> std::cmp::Ordering {
 fn deger_sirasi(a: &Deger, b: &Deger) -> std::cmp::Ordering {
     match (a, b) {
         (Deger::TamSayi(x), Deger::TamSayi(y)) => x.cmp(y),
-        (Deger::Ondalik { .. }, _) | (_, Deger::Ondalik { .. }) => {
-            let ac = ondalik_kiyas(a);
-            let bc = ondalik_kiyas(b);
-            ac.cmp(&bc)
+        (Deger::Ondalik(_), _) | (_, Deger::Ondalik(_)) => {
+            match (sayisal_ac(a), sayisal_ac(b)) {
+                (Some(sol), Some(sag)) => sol.karsilastir(&sag),
+                _ => std::cmp::Ordering::Equal,
+            }
         }
         (Deger::Metin(x), Deger::Metin(y)) => turkce_karsilastir(x, y),
         _ => std::cmp::Ordering::Equal,
-    }
-}
-
-fn ondalik_kiyas(d: &Deger) -> i128 {
-    match d {
-        Deger::TamSayi(s) => (*s as i128) * 1_000_000_000,
-        Deger::Ondalik { govde, olcek } => {
-            (*govde as i128) * 10i128.pow(9 - *olcek.min(&9))
-        }
-        _ => 0,
     }
 }
 
@@ -180,9 +172,10 @@ fn degerler_esit(a: &Deger, b: &Deger) -> bool {
         (Deger::TamSayi(x), Deger::TamSayi(y)) => x == y,
         (Deger::Metin(x), Deger::Metin(y)) => x == y,
         (Deger::Mantiksal(x), Deger::Mantiksal(y)) => x == y,
-        (Deger::Ondalik { .. }, _) | (_, Deger::Ondalik { .. }) => {
-            ondalik_kiyas(a) == ondalik_kiyas(b)
-        }
+        (Deger::Ondalik(_), _) | (_, Deger::Ondalik(_)) => match (sayisal_ac(a), sayisal_ac(b)) {
+            (Some(sol), Some(sag)) => sol.karsilastir(&sag).is_eq(),
+            _ => false,
+        },
         _ => false,
     }
 }
@@ -228,7 +221,7 @@ fn csv_yaz(satirlar: &[Deger]) -> String {
 fn json_yaz(deger: &Deger) -> String {
     match deger {
         Deger::TamSayi(s) => s.to_string(),
-        Deger::Ondalik { .. } => deger.metne().replace(',', "."),
+        Deger::Ondalik(ondalik) => ondalik.json_metni(),
         Deger::Mantiksal(b) => if *b { "true".into() } else { "false".into() },
         Deger::Metin(m) => json_metin_kacir(m),
         Deger::Liste(ogeler) => format!(
@@ -889,9 +882,9 @@ pub struct HataDegeri {
 #[derive(Debug, Clone, PartialEq)]
 pub enum Deger {
     TamSayi(i64),
-    /// Onluk tam değer: govde/10^olcek; hep normalize saklanır (olcek >= 1,
-    /// sondaki sıfırlar atılmış). Böylece 1,50 ve 1,5 aynı değerdir.
-    Ondalik { govde: i64, olcek: u32 },
+    /// Onluk tam değer: keyfî uzunlukta katsayı/ölçek; hep normalize saklanır.
+    /// Box, büyük çekirdeğin çalışma zamanı değer çerçevesini şişirmesini önler.
+    Ondalik(Box<Ondalik>),
     Metin(String),
     Mantiksal(bool),
     Liste(Vec<Deger>),
@@ -931,18 +924,7 @@ impl Deger {
     fn metne(&self) -> String {
         match self {
             Deger::TamSayi(s) => s.to_string(),
-            Deger::Ondalik { govde, olcek } => {
-                let isaret = if *govde < 0 { "-" } else { "" };
-                let mutlak = govde.unsigned_abs();
-                let carpan = 10u64.pow(*olcek);
-                format!(
-                    "{}{},{:0genislik$}",
-                    isaret,
-                    mutlak / carpan,
-                    mutlak % carpan,
-                    genislik = *olcek as usize
-                )
-            }
+            Deger::Ondalik(ondalik) => ondalik.metne(),
             Deger::Metin(m) => m.clone(),
             Deger::Mantiksal(b) => if *b { "doğru" } else { "yanlış" }.to_string(),
             Deger::Liste(ogeler) => ogeler
@@ -986,13 +968,9 @@ impl Deger {
                     format!("{} saniye", ms / 1000)
                 } else {
                     // Küsuratlı: saniye cinsinden ondalık basım (1500 → "1,5 saniye").
-                    let mut govde = ms;
-                    let mut olcek = 3u32;
-                    while olcek > 1 && govde % 10 == 0 {
-                        govde /= 10;
-                        olcek -= 1;
-                    }
-                    format!("{} saniye", Deger::Ondalik { govde, olcek }.metne())
+                    let ondalik = Ondalik::govdeden(&ms.to_string(), 3)
+                        .expect("i64 katsayısı geçerli Ondalık olmalı");
+                    format!("{} saniye", ondalik.metne())
                 }
             }
         }
@@ -1028,48 +1006,21 @@ fn tarihten_gunler(yil: i64, ay: u32, gun: u32) -> i64 {
     devir * 146097 + devir_gunu as i64 - 719468
 }
 
-/// Ondalık kurucu: normalize eder (sondaki sıfırlar atılır, olcek >= 1) ve
-/// i64 sınırını denetler (C002).
-fn ondalik_yap(mut govde: i128, mut olcek: u32, satir: usize) -> Result<Deger, Tani> {
-    while olcek > 1 && govde % 10 == 0 {
-        govde /= 10;
-        olcek -= 1;
-    }
-    if olcek == 0 {
-        govde = govde.checked_mul(10).ok_or_else(|| tasma(satir))?;
-        olcek = 1;
-    }
-    let govde = i64::try_from(govde).map_err(|_| tasma(satir))?;
-    Ok(Deger::Ondalik { govde, olcek })
+fn ondalik_degeri(ondalik: Ondalik) -> Deger {
+    Deger::Ondalik(Box::new(ondalik))
 }
 
 fn tasma(satir: usize) -> Tani {
     Tani::yeni("C002", "İşlem sonucu sayı sınırını aştı.".into(), satir, 1, 1)
 }
 
-/// Sayısal değeri (govde, olcek) çiftine açar; TamSayı olcek 0 ile gelir.
-fn sayisal_ac(deger: &Deger) -> Option<(i128, u32)> {
+/// Sayısal değeri kayıpsız ortak Ondalık çekirdeğine açar.
+fn sayisal_ac(deger: &Deger) -> Option<Ondalik> {
     match deger {
-        Deger::TamSayi(v) => Some((*v as i128, 0)),
-        Deger::Ondalik { govde, olcek } => Some((*govde as i128, *olcek)),
+        Deger::TamSayi(v) => Some(Ondalik::tam(*v)),
+        Deger::Ondalik(ondalik) => Some((**ondalik).clone()),
         _ => None,
     }
-}
-
-/// İki sayıyı ortak ölçeğe hizalar.
-fn hizala(a: (i128, u32), b: (i128, u32)) -> (i128, i128, u32) {
-    let ortak = a.1.max(b.1);
-    let ga = a.0 * 10i128.pow(ortak - a.1);
-    let gb = b.0 * 10i128.pow(ortak - b.1);
-    (ga, gb, ortak)
-}
-
-/// Yarımlar sıfırdan uzağa yuvarlanarak bölme (okul kuralı, RFC-0013 §2).
-fn yuvarla_bol(pay: i128, payda: i128) -> i128 {
-    let isaret = if (pay < 0) != (payda < 0) { -1 } else { 1 };
-    let p = pay.abs();
-    let q = payda.abs();
-    isaret * ((2 * p + q) / (2 * q))
 }
 
 /// Türkçe kurallarla büyük harfe çevirme: i→İ, ı→I (A07 anti-örneğindeki tuzak).
@@ -2171,7 +2122,7 @@ async fn islem_cagir(
     let eylem = islem.tur == IslemTuru::Eylem;
     let mut yerel: HashMap<String, Deger> = HashMap::new();
     for (param, deger) in islem.parametreler.iter().zip(argumanlar) {
-        let deger = parametre_degerini_genislet(deger, param.tur_yazimi.as_deref(), satir)?;
+        let deger = parametre_degerini_genislet(deger, param.tur_yazimi.as_deref());
         yerel.insert(param.ad.clone(), deger);
     }
     if eylem {
@@ -2243,48 +2194,46 @@ fn transaction_hatasi(ad: &str, eylem: &str, hata: &str, satir: usize) -> Tani {
 fn parametre_degerini_genislet(
     deger: Deger,
     tur_yazimi: Option<&str>,
-    satir: usize,
-) -> Result<Deger, Tani> {
+) -> Deger {
     let Some(yazim) = tur_yazimi else {
-        return Ok(deger);
+        return deger;
     };
     match (yazim, deger) {
-        ("Ondalık", Deger::TamSayi(sayi)) => ondalik_yap(sayi as i128, 0, satir),
-        ("Ondalık listesi", Deger::Liste(ogeler)) => Ok(Deger::Liste(
+        ("Ondalık", Deger::TamSayi(sayi)) => ondalik_degeri(Ondalik::tam(sayi)),
+        ("Ondalık listesi", Deger::Liste(ogeler)) => Deger::Liste(
             ogeler
                 .into_iter()
-                .map(|oge| parametre_degerini_genislet(oge, Some("Ondalık"), satir))
-                .collect::<Result<Vec<_>, _>>()?,
-        )),
-        ("Ondalık sözlüğü", Deger::Sozluk(girdiler)) => Ok(Deger::Sozluk(
+                .map(|oge| parametre_degerini_genislet(oge, Some("Ondalık")))
+                .collect(),
+        ),
+        ("Ondalık sözlüğü", Deger::Sozluk(girdiler)) => Deger::Sozluk(
             girdiler
                 .into_iter()
                 .map(|(ad, deger)| {
-                    parametre_degerini_genislet(deger, Some("Ondalık"), satir)
-                        .map(|deger| (ad, deger))
+                    (ad, parametre_degerini_genislet(deger, Some("Ondalık")))
                 })
-                .collect::<Result<Vec<_>, _>>()?,
-        )),
-        ("Ondalık seçeneği", Deger::Yok) => Ok(Deger::Yok),
+                .collect(),
+        ),
+        ("Ondalık seçeneği", Deger::Yok) => Deger::Yok,
         ("Ondalık seçeneği", deger) => {
-            parametre_degerini_genislet(deger, Some("Ondalık"), satir)
+            parametre_degerini_genislet(deger, Some("Ondalık"))
         }
         ("Ondalık sonucu", Deger::Sonuc { basarili, icerik }) if basarili => {
-            Ok(Deger::Sonuc {
+            Deger::Sonuc {
                 basarili,
                 icerik: Box::new(parametre_degerini_genislet(
                     *icerik,
                     Some("Ondalık"),
-                    satir,
-                )?),
-            })
+                )),
+            }
         }
-        (_, deger) => Ok(deger),
+        (_, deger) => deger,
     }
 }
 
 /// Genitif aritmetiğin sayısal çekirdeği: iki TamSayı → TamSayı (tam bölme);
-/// Ondalık karışımı → Ondalık (bölme 9 haneye, yarımlar sıfırdan uzağa).
+/// Ondalık karışımı → keyfî hassasiyetli Ondalık. Sonlu bölüm tamdır; sonsuz
+/// açılım yalnız Ondalık çekirdeğinin açık 34 anlamlı hane kuralıyla yuvarlanır.
 fn sayisal_islem(
     islec: &AritmetikIslec,
     sol: &Deger,
@@ -2302,53 +2251,41 @@ fn sayisal_islem(
         return Ok(Deger::Sure { milisaniye: sonuc });
     }
 
-    let her_iki_tam = matches!((sol, sag), (Deger::TamSayi(_), Deger::TamSayi(_)));
+    // TamSayı sıcak yolu BigInt kurmaz; keyfî çekirdek yalnız Ondalık gerçekten
+    // işleme girdiğinde devreye girer.
+    if let (Deger::TamSayi(a), Deger::TamSayi(b)) = (sol, sag) {
+        if matches!(islec, AritmetikIslec::Bol | AritmetikIslec::Kalan) && *b == 0 {
+            return Err(Tani::yeni("C003", "Sıfıra bölme yapılamaz.".into(), satir, 1, 1)
+                .onerili("Bölmeden önce bölenin sıfır olup olmadığını kontrol et.".into()));
+        }
+        let sonuc = match islec {
+            AritmetikIslec::Topla => a.checked_add(*b),
+            AritmetikIslec::Cikar => a.checked_sub(*b),
+            AritmetikIslec::Carp => a.checked_mul(*b),
+            AritmetikIslec::Bol => a.checked_div(*b),
+            // K-046: okul kuralı — kalan daima negatif değildir.
+            AritmetikIslec::Kalan => a.checked_rem_euclid(*b),
+        }
+        .ok_or_else(|| tasma(satir))?;
+        return Ok(Deger::TamSayi(sonuc));
+    }
+
     let a = sayisal_ac(sol).ok_or_else(|| ic_hata(satir))?;
     let b = sayisal_ac(sag).ok_or_else(|| ic_hata(satir))?;
-
-    if matches!(islec, AritmetikIslec::Bol | AritmetikIslec::Kalan) && b.0 == 0 {
+    if matches!(islec, AritmetikIslec::Bol | AritmetikIslec::Kalan) && b.sifir_mi() {
         return Err(Tani::yeni("C003", "Sıfıra bölme yapılamaz.".into(), satir, 1, 1)
             .onerili("Bölmeden önce bölenin sıfır olup olmadığını kontrol et.".into()));
     }
 
-    if her_iki_tam {
-        let sonuc = match islec {
-            AritmetikIslec::Topla => a.0.checked_add(b.0),
-            AritmetikIslec::Cikar => a.0.checked_sub(b.0),
-            AritmetikIslec::Carp => a.0.checked_mul(b.0),
-            AritmetikIslec::Bol => a.0.checked_div(b.0),
-            // K-046: okul kuralı — kalan daima negatif değildir.
-            AritmetikIslec::Kalan => a.0.checked_rem_euclid(b.0),
-        }
-        .ok_or_else(|| tasma(satir))?;
-        let sonuc = i64::try_from(sonuc).map_err(|_| tasma(satir))?;
-        return Ok(Deger::TamSayi(sonuc));
-    }
-
-    match islec {
-        AritmetikIslec::Topla | AritmetikIslec::Cikar => {
-            let (ga, gb, ortak) = hizala(a, b);
-            let sonuc = if *islec == AritmetikIslec::Topla { ga + gb } else { ga - gb };
-            ondalik_yap(sonuc, ortak, satir)
-        }
-        AritmetikIslec::Carp => {
-            let mut govde = a.0.checked_mul(b.0).ok_or_else(|| tasma(satir))?;
-            let mut olcek = a.1 + b.1;
-            if olcek > 9 {
-                govde = yuvarla_bol(govde, 10i128.pow(olcek - 9));
-                olcek = 9;
-            }
-            ondalik_yap(govde, olcek, satir)
-        }
-        AritmetikIslec::Bol => {
-            // Hedef ölçek 9: q = ga * 10^(9 - sa + sb) / gb (9 >= sa garantili).
-            let ust = 9 - a.1 + b.1;
-            let pay = a.0.checked_mul(10i128.pow(ust)).ok_or_else(|| tasma(satir))?;
-            ondalik_yap(yuvarla_bol(pay, b.0), 9, satir)
-        }
+    let sonuc = match islec {
+        AritmetikIslec::Topla => a.topla(&b),
+        AritmetikIslec::Cikar => a.cikar(&b),
+        AritmetikIslec::Carp => a.carp(&b).ok_or_else(|| tasma(satir))?,
+        AritmetikIslec::Bol => a.bol(&b).ok_or_else(|| tasma(satir))?,
         // Denetleyici kalanı Ondalık'a hiç bırakmaz (K-046, T008).
-        AritmetikIslec::Kalan => Err(ic_hata(satir)),
-    }
+        AritmetikIslec::Kalan => return Err(ic_hata(satir)),
+    };
+    Ok(ondalik_degeri(sonuc))
 }
 
 #[allow(clippy::too_many_arguments)] // iç yürütme yardımcı; bağlam nesnesi v0.3'te
@@ -2397,9 +2334,9 @@ fn degerlendir_async<'a>(
     match ifade {
         Ifade::MetinSabiti(m) => Ok(Deger::Metin(m.clone())),
         Ifade::SayiSabiti(s) => Ok(Deger::TamSayi(*s)),
-        Ifade::OndalikSabiti { govde, olcek } => {
-            ondalik_yap(*govde as i128, *olcek, satir)
-        }
+        Ifade::OndalikSabiti { govde, olcek } => Ondalik::govdeden(govde, *olcek)
+            .map(ondalik_degeri)
+            .ok_or_else(|| ic_hata(satir)),
         Ifade::MantiksalSabiti(b) => Ok(Deger::Mantiksal(*b)),
         Ifade::CsrfBelirteci => io.csrf_belirteci().map(Deger::Metin).map_err(|hata| {
             Tani::yeni(
@@ -2423,10 +2360,10 @@ fn degerlendir_async<'a>(
             }
             // Sayısal karışım Ondalık'a genişler (RFC-0013 §2): öğeler gerçekten
             // dönüştürülür ki listenin türü ile içeriği tutarlı kalsın.
-            if degerler.iter().any(|d| matches!(d, Deger::Ondalik { .. })) {
+            if degerler.iter().any(|d| matches!(d, Deger::Ondalik(_))) {
                 for deger in degerler.iter_mut() {
                     if let Deger::TamSayi(v) = deger {
-                        *deger = ondalik_yap(*v as i128 * 10, 1, satir)?;
+                        *deger = ondalik_degeri(Ondalik::tam(*v));
                     }
                 }
             }
@@ -2457,46 +2394,15 @@ fn degerlendir_async<'a>(
                 (Ozellik::Metni, deger) => Ok(Deger::Metin(deger.metne())),
                 (
                     Ozellik::BinlikliKuruslu,
-                    deger @ (Deger::Ondalik { .. } | Deger::TamSayi(_)),
+                    deger @ (Deger::Ondalik(_) | Deger::TamSayi(_)),
                 ) => {
-                    let (govde, olcek) = match deger {
-                        Deger::TamSayi(s) => (s as i128, 0u32),
-                        Deger::Ondalik { govde, olcek } => (govde as i128, olcek),
-                        _ => unreachable!(),
-                    };
-                    let kurus = if olcek > 2 {
-                        yuvarla_bol(govde, 10i128.pow(olcek - 2))
-                    } else {
-                        govde * 10i128.pow(2 - olcek)
-                    };
-                    let isaret = if kurus < 0 { "-" } else { "" };
-                    let mutlak = kurus.abs();
-                    let tam = (mutlak / 100).to_string();
-                    // Binlik ayraç NOKTA (Türk yazımı): 1824 → 1.824.
-                    let mut gruplu = String::new();
-                    for (i, k) in tam.chars().enumerate() {
-                        if i > 0 && (tam.len() - i) % 3 == 0 {
-                            gruplu.push('.');
-                        }
-                        gruplu.push(k);
-                    }
-                    Ok(Deger::Metin(format!("{}{},{:02}", isaret, gruplu, mutlak % 100)))
+                    let ondalik = sayisal_ac(&deger).expect("sayısal desen denetlendi");
+                    Ok(Deger::Metin(ondalik.kuruslu(true)))
                 }
-                (Ozellik::Kuruslu, deger @ (Deger::Ondalik { .. } | Deger::TamSayi(_))) => {
+                (Ozellik::Kuruslu, deger @ (Deger::Ondalik(_) | Deger::TamSayi(_))) => {
                     // K-065: daima iki hane; yarımlar sıfırdan uzağa (dil kuralı).
-                    let (govde, olcek) = match deger {
-                        Deger::TamSayi(s) => (s as i128, 0u32),
-                        Deger::Ondalik { govde, olcek } => (govde as i128, olcek),
-                        _ => unreachable!(),
-                    };
-                    let kurus = if olcek > 2 {
-                        yuvarla_bol(govde, 10i128.pow(olcek - 2))
-                    } else {
-                        govde * 10i128.pow(2 - olcek)
-                    };
-                    let isaret = if kurus < 0 { "-" } else { "" };
-                    let mutlak = kurus.abs();
-                    Ok(Deger::Metin(format!("{}{},{:02}", isaret, mutlak / 100, mutlak % 100)))
+                    let ondalik = sayisal_ac(&deger).expect("sayısal desen denetlendi");
+                    Ok(Deger::Metin(ondalik.kuruslu(false)))
                 }
                 (Ozellik::Siralanmis, Deger::Liste(mut ogeler)) => {
                     ogeler.sort_by(deger_sirasi);
@@ -2546,14 +2452,14 @@ fn degerlendir_async<'a>(
                 // K-067 terfisi: TamSayı üzerinde tam kısmı/yuvarlanmışı kimliktir.
                 (Ozellik::TamKisim, Deger::TamSayi(s))
                 | (Ozellik::Yuvarlanmis, Deger::TamSayi(s)) => Ok(Deger::TamSayi(s)),
-                (Ozellik::TamKisim, Deger::Ondalik { govde, olcek }) => {
-                    // Sıfıra doğru kırpma (Rust tam bölmesiyle aynı).
-                    Ok(Deger::TamSayi(govde / 10i64.pow(olcek)))
-                }
-                (Ozellik::Yuvarlanmis, Deger::Ondalik { govde, olcek }) => {
-                    let sonuc = yuvarla_bol(govde as i128, 10i128.pow(olcek));
-                    Ok(Deger::TamSayi(i64::try_from(sonuc).map_err(|_| tasma(satir))?))
-                }
+                (Ozellik::TamKisim, Deger::Ondalik(ondalik)) => ondalik
+                    .tam_kismi()
+                    .map(Deger::TamSayi)
+                    .ok_or_else(|| tasma(satir)),
+                (Ozellik::Yuvarlanmis, Deger::Ondalik(ondalik)) => ondalik
+                    .yuvarlanmisi()
+                    .map(Deger::TamSayi)
+                    .ok_or_else(|| tasma(satir)),
                 _ => Err(ic_hata(satir)),
             }
         }
@@ -2728,7 +2634,7 @@ fn degerlendir_async<'a>(
                 .map(|(alan, tur)| {
                     let varsayilan = match tur.as_str() {
                         "TamSayı" => Deger::TamSayi(0),
-                        "Ondalık" => Deger::Ondalik { govde: 0, olcek: 1 },
+                        "Ondalık" => ondalik_degeri(Ondalik::tam(0)),
                         "Mantıksal" => Deger::Mantiksal(false),
                         _ => Deger::Metin(String::new()),
                     };
@@ -2931,20 +2837,26 @@ fn degerlendir_async<'a>(
                 };
                 return Ok(Deger::Mantiksal(sonuc));
             }
-            let sonuc = match (sayisal_ac(&sol), sayisal_ac(&sag)) {
-                (Some(a), Some(b)) => {
-                    let (ga, gb, _) = hizala(a, b);
-                    match islec {
-                        Islec::Esit => ga == gb,
-                        Islec::Buyuk => ga > gb,
-                        Islec::Kucuk => ga < gb,
-                        Islec::BuyukEsit => ga >= gb,
-                        Islec::KucukEsit => ga <= gb,
-                    }
-                }
-                _ => match islec {
-                    Islec::Esit => sol == sag,
-                    _ => return Err(ic_hata(satir)),
+            let sonuc = match (&sol, &sag) {
+                (Deger::TamSayi(a), Deger::TamSayi(b)) => match islec {
+                    Islec::Esit => a == b,
+                    Islec::Buyuk => a > b,
+                    Islec::Kucuk => a < b,
+                    Islec::BuyukEsit => a >= b,
+                    Islec::KucukEsit => a <= b,
+                },
+                _ => match (sayisal_ac(&sol), sayisal_ac(&sag)) {
+                    (Some(a), Some(b)) => match islec {
+                        Islec::Esit => a.karsilastir(&b).is_eq(),
+                        Islec::Buyuk => a.karsilastir(&b).is_gt(),
+                        Islec::Kucuk => a.karsilastir(&b).is_lt(),
+                        Islec::BuyukEsit => !a.karsilastir(&b).is_lt(),
+                        Islec::KucukEsit => !a.karsilastir(&b).is_gt(),
+                    },
+                    _ => match islec {
+                        Islec::Esit => sol == sag,
+                        _ => return Err(ic_hata(satir)),
+                    },
                 },
             };
             Ok(Deger::Mantiksal(sonuc))
@@ -3010,27 +2922,7 @@ fn degerlendir_async<'a>(
                 _ => return Err(ic_hata(satir)),
             };
             let kirpilmis = metin.trim().to_string();
-            let deneme = (|| {
-                let (tam, kesir) = match kirpilmis.split_once(',') {
-                    Some((tam, kesir)) => (tam, kesir),
-                    None => (kirpilmis.as_str(), "0"),
-                };
-                if tam.is_empty()
-                    || kesir.is_empty()
-                    || kesir.len() > 9
-                    || !tam.chars().all(|k| k.is_ascii_digit())
-                    || !kesir.chars().all(|k| k.is_ascii_digit())
-                {
-                    return None;
-                }
-                let olcek = kesir.len() as u32;
-                let govde = tam
-                    .parse::<i128>()
-                    .ok()?
-                    .checked_mul(10i128.pow(olcek))?
-                    .checked_add(kesir.parse::<i128>().ok()?)?;
-                ondalik_yap(govde, olcek, satir).ok()
-            })();
+            let deneme = Ondalik::metinden(&kirpilmis).map(ondalik_degeri);
             Ok(match deneme {
                 Some(deger) => Deger::Sonuc { basarili: true, icerik: Box::new(deger) },
                 None => Deger::Sonuc {
@@ -3058,24 +2950,9 @@ fn degerlendir_async<'a>(
                 )
                 .onerili("Ondalık, virgülle yazılır. Örnek: 3,14".into())
             };
-            let (tam, kesir) = match kirpilmis.split_once(',') {
-                Some((tam, kesir)) => (tam, kesir),
-                None => (kirpilmis, "0"),
-            };
-            if tam.is_empty()
-                || kesir.is_empty()
-                || kesir.len() > 9
-                || !tam.chars().all(|k| k.is_ascii_digit())
-                || !kesir.chars().all(|k| k.is_ascii_digit())
-            {
-                return Err(hata());
-            }
-            let olcek = kesir.len() as u32;
-            let govde = (tam.parse::<i128>().map_err(|_| hata())?)
-                .checked_mul(10i128.pow(olcek))
-                .and_then(|t| t.checked_add(kesir.parse::<i128>().ok()?))
-                .ok_or_else(hata)?;
-            ondalik_yap(govde, olcek, satir)
+            Ondalik::metinden(kirpilmis)
+                .map(ondalik_degeri)
+                .ok_or_else(hata)
         }
         Ifade::Sayisi(ic) => {
             let metin = match degerlendir_async(ic, ortam, program, io, derinlik, satir).await? {

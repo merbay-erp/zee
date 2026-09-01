@@ -5,10 +5,14 @@ Tanı kodları: T bölümü.
 
 ## Tür envanteri
 
-TamSayı (i64) · Ondalık (onluk: gövde × 10⁻ᵏ, k ≤ 9) · Metin · Mantıksal ·
+TamSayı (i64) · Ondalık (keyfî katsayılı onluk: gövde × 10⁻ᵏ) · Metin · Mantıksal ·
 Liste\<T\> · Sözlük\<Metin, T\> (ekleme sırası korunur) · Seçenek\<T\> ·
 Sonuç\<T\> (hata tarafı daima Hata) · Hata · Tarih · Saat · Süre · yapı
 türleri · görev/ağ yanıtı (yüzeyleri RFC-0011/golden 24-27'de).
+
+Ondalık tek profesyonel onluk sayı türüdür; katsayı ve ölçek sabit bir makine
+kelimesine sığmak zorunda değildir. Tam işlemler ve sonsuz bölme bağlamı
+spec/16'da tanımlıdır.
 
 ## Değişmezlik ve çıkarım (TANIMLI)
 
