@@ -1,0 +1,19 @@
+# Kelime Sayacı — cümlede hangi kelime kaç kez geçiyor?
+# Öğretilen: sayaç sözlüğü (K-045 çıkarımıyla), kelimelere ayırma,
+# "yoksa sıfırla başlat" deseni.
+
+"Bir cümle yaz:" diye sor
+cümle yanıtın küçük harflisi olsun
+
+sayaçlar boş sözlük olsun
+
+kelimeler cümlenin kelimeleri olsun
+her kelime için
+    sayaçlarda kelime yoksa
+        sayaçların kelime değeri 0 olsun
+    eski sayaçların kelime değeri olsun
+    sayaçların kelime değeri eski ile 1 in toplamı olsun
+
+"--- sayım ---" yaz
+sayaçlardaki her söz için
+    söz ile ": " ile sayaçların söz değeri yaz

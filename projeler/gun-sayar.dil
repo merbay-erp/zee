@@ -1,0 +1,17 @@
+# Gün Sayar — bugünden ileriye tarih yolculuğu.
+# Öğretilen: Tarih türü, "gün sonrası" aritmetiği, tarih özellikleri.
+
+bugün bugünün tarihi olsun
+"Bugün: " ile bugün yaz
+"Yıl: " ile bugünün yılı yaz
+
+yarın bugünün 1 gün sonrası olsun
+"Yarın: " ile yarın yaz
+
+hafta_sonra bugünün 7 gün sonrası olsun
+"Bir hafta sonra: " ile hafta_sonra yaz
+
+yüz_gün bugünün 100 gün sonrası olsun
+"100 gün sonra: " ile yüz_gün yaz
+
+"Sen de dene: doğum gününe kaç gün kaldıysa o kadarını ekle!" yaz

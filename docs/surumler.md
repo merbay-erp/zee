@@ -3,7 +3,18 @@
 Her sürüm: ne eklendi, ne değişti, neyin sözü verildi. Kırıcı değişiklik
 sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 
-## Yolda (v0.3.0'a birikenler)
+## v0.3.0 — 1 Eylül 2026
+
+**Tema: dil günlük Türkçeye yaklaştı; standart kitaplığın tohumu atıldı.**
+
+- **Gömülü standart kitaplık** (RFC-0014 taslak + çalışan prototip, K-048):
+  `matematik` (mutlak, üs, tam karekök, obeb-Öklit, okek) ve
+  `liste_araclari` (toplam, uçlar, Ondalık ortalama) — zee'yle yazıldı,
+  ikiliye gömülü, playground dahil her yerde kurulumsuz; kendi test
+  blokları CI'da. Çözüm: yerel klasör → gömülü.
+- **Öğretmen rehberi** (docs/ogretmen-rehberi.md): internetsiz sınıf
+  kurulumu, 10 oturumluk ders sırası, hata kültürü.
+- Proje kitaplığı 10 projeye çıktı (kelime sayacı, gün sayar).
 
 - **Mantıksal ad tek başına koşul** (K-044): `hazır ise` / `hazır değilse`.
 - **Boş koleksiyon tür çıkarımı** (K-045): `boş liste`/`boş sözlük` ilk

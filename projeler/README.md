@@ -18,6 +18,8 @@ kutusuna satır satır yaz.) Ya da: `dil çalıştır projeler/<dosya>.dil`
 | [asal-sayilar.dil](asal-sayilar.dil) | iç içe döngü, bölümden kalan | 100'e kadar çıkar; ikiz asalları bul |
 | [kumbara.dil](kumbara.dil) | "olana kadar", büyüyen harçlık | Haftalık zam yerine faiz dene |
 | [gizli-dil.dil](gizli-dil.dil) | sözlük = şifre defteri | Çözücüyü de yaz (tersine defter) |
+| [kelime-sayaci.dil](kelime-sayaci.dil) | sayaç sözlüğü, "yoksa sıfırla" | En çok geçen kelimeyi de bul |
+| [gun-sayar.dil](gun-sayar.dil) | Tarih türü, gün aritmetiği | Doğum gününe kaç gün kaldığını hesapla |
 
 Hepsi regression testindedir (`compiler/tests/projeler_testi.rs`) — dil
 değişirse bu projeler kırılamaz; kırılırsa CI söyler.
