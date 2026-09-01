@@ -298,6 +298,15 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   aynı kodun sessiz anlam değişimi ya da emekli kodun yeniden kullanılması
   testi kırar. A004, C014 ve S032 açık mezar taşıdır. Bir fixture regresyonuyla
   toplam 448 test yeşildir; B-022/V1-P0-24 kapandı.
+- **Deterministik IO izi ve replay** (K-115, RFC-0022, ADR-026): bütün 27
+  `GirdiCikti` yöntemi işlem, argüman, sonuç ve tek küresel sırayla kanonik
+  şema-1 izine alınabilir. `dil iz kaydet/oynat` gerçek koşuyu atomik kaydeder,
+  yeniden oynatmada dosya/ağ/web/donanım etkilerini uygulamadan protokolü
+  birebir doğrular ve artan olayı reddeder. Okuyucu 64 MiB/100.000 olay/4.096
+  alan sınırını ve işlem-özel şemaları yürütmeden önce denetler. Parola ile PHC
+  argümanları yalnız SHA-256 parmak izi taşır; izin geri kalanı özel veri kabul
+  edilir. Beş çekirdek ve iki CLI regresyonuyla toplam 455 test yeşildir;
+  B-027/V1-P0-25 kapandı.
 
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`

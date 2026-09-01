@@ -394,6 +394,7 @@ fn yeni_komutu_proje_bildirimi_uretir() {
     assert!(git_yoksay.contains(".zee-yazma-kilidi"));
     assert!(git_yoksay.contains("*.zee-gecici-*"));
     assert!(git_yoksay.contains("*.zee-anahtar"));
+    assert!(git_yoksay.contains("*.zee-io-izi"));
 
     let dene = Command::new(env!("CARGO_BIN_EXE_dil"))
         .arg("dene")

@@ -31,9 +31,12 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
     (447 test).
 11. K-114/ADR-025 tanı kodu↔anlam bağını 148 kayıtlı sürüm fixture'ı ve üç
     yeniden kullanılamaz mezar taşıyla sabitledi; B-022 kapandı (448 test).
-12. Sıradaki makine omurgası B-027 deterministik IO trace/replay'dir.
-13. Üçüncü sprint: B-027/B-028 → B-030/B-031 → B-043/B-044.
-14. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
+12. K-115/RFC-0022/ADR-026 bütün runtime IO çağrılarını sürümlü kanonik
+    trace/replay protokolüne ve `dil iz kaydet/oynat` CLI'ına bağladı; B-027
+    kapandı (455 test).
+13. Sıradaki makine omurgası B-028 saat/rastgele semantiğini sürümlemektir.
+14. Üçüncü sprint: B-028 → B-030/B-031 → B-043/B-044.
+15. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
 
 ## P0 — V1 öncesi dil ve derleyici omurgası
 
@@ -193,8 +196,13 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   modelde merkezileştirme hâlâ açıktır.
 - **B-026 · AÇIK — cancellation-safety audit'i.** Dosya temp'i, web yanıtı,
   oturum mutation'ı ve diğer yan etkilerin iptal/yarım kalma davranışını testle.
-- **B-027 · SIRADA — deterministik IO trace/replay biçimi tasarla.** Event,
-  argüman, sonuç ve sıra sürümlü/kanonik bir formatta olmalıdır.
+- **B-027 · KAPALI (K-115) — deterministik IO trace/replay biçimi tasarla.**
+  Bütün `GirdiCikti` çağrıları işlem, argüman, sonuç ve kesintisiz sırayla
+  şema-1 kanonik izine girer. 64 MiB/100.000 olay/4.096 alan sınırı ve kapalı
+  işlem şeması yürütme öncesi doğrulanır; replay dış etki uygulamaz, argüman
+  farkı veya artan olayda fail-closed durur. `dil iz kaydet/oynat`, RFC-0022,
+  ADR-026, [IO izi rehberi](io-izi.md) ve yedi regresyonla V1-P0-25 kapandı;
+  toplam 455 test yeşildir.
 - **B-028 · SIRADA — saat/rastgele semantiğini sürümle.** Seed, zaman ilerleme
   ve gözlenebilir fake-IO davranışı spec sözleşmesi olmalıdır.
 - **B-046 · KISMEN (K-106) — web oturum deposunu sınırlı ve ölçeklenebilir
@@ -263,5 +271,5 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 ## Bir sonraki somut kapı
 
 İnsan kanıtı hattında B-001, doldurulmuş gerçek usability formları ve önceden
-ilan edilmiş eşikleri bekler. Makine hattında B-022/K-114 kapandı; sıradaki iş
-B-027 deterministik IO trace/replay biçimidir.
+ilan edilmiş eşikleri bekler. Makine hattında B-027/K-115 kapandı; sıradaki iş
+B-028 saat/rastgele ve fake-IO semantiğini sürümlemektir.

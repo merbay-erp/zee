@@ -23,7 +23,7 @@ Derleyici şu fiziksel sınırlara ayrılır:
 |---|---|---|
 | parser | token akışı, blok ve tanım orkestrasyonu | `ayristirici/cumle.rs`, `ayristirici/ifade.rs` |
 | checker | tür modeli, bağlam ve denetim orkestrasyonu | `cozumleyici/cumle.rs`, `cozumleyici/ifade.rs`, `cozumleyici/cagri.rs` |
-| runtime | IO, scheduler, değer modeli ve orkestrasyon | `yorumlayici/cumle.rs`, `yorumlayici/ifade.rs` |
+| runtime | IO, scheduler, değer modeli ve orkestrasyon | `yorumlayici/cumle.rs`, `yorumlayici/ifade.rs`, `yorumlayici/hir_gecisi.rs`, `yorumlayici/io_izi.rs` |
 
 Modüller `pub(super)` ile yalnız kendi üst fazına açılır; crate'in public
 API'sini büyütmez. Bu taşıma davranış değişikliği değildir.
@@ -59,3 +59,6 @@ Hata kataloğu bekçisi de `compiler/src` altındaki bütün Rust modüllerini
   devredildi; checker kökü 143 satırlık orkestrasyona indi.
 - K-101/ADR-014 semantic ID kayıtları `baglam`, `sembol` ve `cagri`
   katmanlarına eklendi; gerekçeli bütçe değişikliği faz rehberinde kayıtlıdır.
+- K-104 bağlı typed-HIR geçişini `yorumlayici/hir_gecisi.rs`, K-115 sürümlü
+  IO trace/replay protokolünü `yorumlayici/io_izi.rs` sahibine ayırdı;
+  gerekçeli bütçeler faz rehberinde kayıtlıdır.

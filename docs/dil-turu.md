@@ -663,12 +663,19 @@ Ayrıntı için: dil hata T036
 | `dil yeni <ad>` | testli başlangıç projesi |
 | `dil çalıştır <dosya\|proje>` | dosyayı ya da `proje.dil` taşıyan klasörü çalıştırır |
 | `dil çalıştır --güvenli <dosya\|proje>` | çocuk modu: ağ kapalı, dosyalar klasörle sınırlı |
+| `dil iz kaydet <iz> <program> [argümanlar]` | gerçek koşunun bütün runtime IO protokolünü atomik kaydeder |
+| `dil iz oynat <iz> <program>` | kaydı dış etki uygulamadan birebir yeniden oynatır |
 | `dil dene <dosya\|proje>` | testleri koşar |
 | `dil biçimle <dosya\|proje>` | tek kaynağı veya bütün projeyi resmi biçime getirir |
 | `dil denetle <dosya\|proje>` | çalıştırmadan bütün hataları listeler (`--json`) |
 | `dil hata <kod>` | hata kodunu açıklar |
 | `dil belge <birim>` | birimin işlemlerini listeler |
 | `dil morfoloji [kelime]` | sürümlü ek tablosunu veya kelimenin bütün kök+ek çözümlerini gösterir |
+
+IO izi kullanıcı girdisi, dosya/ağ gövdesi, argüman, çerez veya token
+taşıyabilir; hex alanları şifreli değildir. `*.zee-io-izi` Git dışında tutulur
+ama yine de özel veri gibi saklanmalıdır. Kayıt, replay ve sınırların tamamı
+[IO izi rehberindedir](io-izi.md).
 
 Editör desteği: `dillsp` — tanılar, hover, tanıma git, **morfolojili
 yeniden adlandırma (F2)** ([editors/](../editors/)). Gelen tek JSON-RPC

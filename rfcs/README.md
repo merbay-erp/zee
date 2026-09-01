@@ -27,9 +27,10 @@ Dil değişikliği RFC ister (master plan bölüm 25). Şablon: [0000-sablon.md]
 | RFC-0019 | [Değer Semantiği ve Gezme İmleci](0019-deger-semantigi-ve-gezme-imleci.md) | **geçici kabul** (makine kanıtı; usability bekliyor) | K-034, K-060, K-074, K-093, V1-P1-05 |
 | RFC-0020 | [Paket Yayını ve Registry Güven Zinciri](0020-paket-yayini-ve-registry-guveni.md) | **geçici kabul** (K-094 yayın; K-095 metadata güveni; taşıma/cache/CLI açık) | K-094, K-095, V1-P1-07, ADR-006 |
 | RFC-0021 | [İfade Grameri Büyüme Mimarisi](0021-ifade-grameri-mimarisi.md) | **geçici kabul** (K-097 katmanlar + tam tüketim conformance'ı) | K-004, K-008, K-010, K-016, K-027, K-038, K-097 |
+| RFC-0022 | [Deterministik IO Trace/Replay](0022-deterministik-io-izi.md) | **geçici kabul** (K-115 şema-1 + CLI; saat/rastgele sürüm semantiği B-028) | K-115, B-027, V1-P0-25 |
 
-**Durum özeti (1 Eylül 2026, K-114):** 21 RFC — 2 kabul (0001, 0010),
-17 geçici kabul (RFC-0020'nin yayın ve metadata doğrulama katmanı normatiftir;
+**Durum özeti (1 Eylül 2026, K-115):** 22 RFC — 2 kabul (0001, 0010),
+18 geçici kabul (RFC-0020'nin yayın ve metadata doğrulama katmanı normatiftir;
 taşıma/cache/CLI tamamlanmadan uzak paket kullanımı sözü verilmez), 2 taslak: 0012 (FFI — Faz
 4/5) ve 0014 (standart kitaplık — çalışan prototiple).
 Kural: bir RFC ancak yüzeyi gerçeklenmiş VE regression testine bağlanmışsa

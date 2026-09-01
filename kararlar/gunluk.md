@@ -1666,6 +1666,28 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   katalog↔fixture regresyonu. Kaynak↔katalog kapısıyla birlikte bütün 148 kayıt
   çift yönden korunur; toplam 448 test yeşildir. B-022/V1-P0-24 kapandı.
 
+## K-115 — Bütün runtime IO sınırını sürümlü iz ve replay'e bağla (1 Eyl)
+
+- **Sorun:** Hermetik `ToplayanIo` testlerde dış dünyayı denetliyordu; gerçek
+  bir CLI koşusunun klavye, rastgelelik, saat, dosya, ağ, web ve sensör
+  konuşmasını sonradan birebir üretmenin sürümlü artefaktı yoktu.
+- **Karar:** `GirdiCikti` sözleşmesinin 27 yönteminin tamamı işlem,
+  argümanlar, sonuç ve 1 tabanlı küresel sırayla şema-1 izine alınır. Replay
+  sıradaki olay dışında arama yapmaz; işlem/argüman farkında veya artan olayda
+  fail-closed durur ve hiçbir dış etkiyi yeniden uygulamaz.
+- **Biçim ve sınır:** Başlık+sıralı satırlar, kanonik onluklar ve küçük harfli
+  hex UTF-8 alanları tek byte biçimini verir. 64 MiB, 100.000 olay ve olay
+  başına 4.096 alan bütçesiyle kapalı işlem/sonuç şeması yürütme öncesi
+  doğrulanır; kırıcı sözlük değişimi yeni sürüm ister.
+- **Kullanıcı ve sır sınırı:** `dil iz kaydet/oynat` izi atomik yazar, kaynak
+  üzerine yazmayı reddeder ve replay çıktısını yalnız tam tüketimden sonra
+  gösterir. İz varsayılan olarak Git dışıdır ve özel veri kabul edilir;
+  parola ile PHC özeti yalnız SHA-256 parmak izi taşır.
+- **Kanıt:** RFC-0022, ADR-026, spec/21 ve IO izi rehberi; byte snapshot'ı,
+  bütün IO yüzeyli round-trip, sıra/argüman/tam tüketim, bozuk şema, sır
+  sızıntısı, kaynak değişimi ve üzerine yazma reddi için beş çekirdek+iki CLI
+  regresyonu. Toplam 455 test yeşildir; B-027/V1-P0-25 kapandı.
+
 ---
 
 ## Sonraki adım
@@ -1674,5 +1696,5 @@ Korpus 10 öğrenci + 5 profesyonel usability oturumuna (Hafta 12 hedefi, erkeni
 Hafta 2'de kağıt üstünde) sesli okutulacak; her kayıt için "doğal mı /
 deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
-Makine hattında B-022/K-114 kapandı. Sırada B-027 deterministik IO
-trace/replay biçimi vardır.
+Makine hattında B-027/K-115 kapandı. Sırada B-028 saat/rastgele tohum ve
+sanal zaman ilerleme semantiğinin sürümlenmesi vardır.

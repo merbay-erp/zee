@@ -30,7 +30,9 @@ compiler/src/
 └── yorumlayici.rs            değer/IO/scheduler ve yürütme orkestrasyonu
     └── yorumlayici/
         ├── cumle.rs          cümle yürütme
-        └── ifade.rs          ifade değerlendirme
+        ├── ifade.rs          ifade değerlendirme
+        ├── hir_gecisi.rs     bağlı typed-HIR / raw uyumluluk geçişi
+        └── io_izi.rs         sürümlü bütün-IO kayıt ve dış etkisiz replay
 ```
 
 Alt modüller yalnız üst fazına `pub(super)` görünür. Dil kütüphanesinin public
@@ -52,6 +54,7 @@ API'si bu iç ayrımla büyümez.
 | dönüş/control-flow | checker `donus` | Seçenek/Sonuç ve tüm-yollar kanıtı |
 | etki/yetkinlik | checker `etki` | ADR-011, intrinsic kaydı ve web kuralları |
 | yürütme semantiği | runtime `cumle` veya `ifade` | ADR-003, değerlendirme sırası testi |
+| IO kayıt/replay protokolü | runtime `io_izi` | RFC-0022, ADR-026, spec/21 ve şema snapshot'ı |
 | alan adaptörü | intrinsic kaydı | ADR-011 rehberi, yetkinlik/etki/runtime |
 
 ## Büyüme bütçesi
@@ -87,3 +90,7 @@ bütçesine sahiptir ve bağlı programın HIR'sız kurulması mimari testte dur
 K-104 HIR/raw uyumluluk ayrımını `yorumlayici/hir_gecisi.rs` sahibine taşıdı;
 140 satır bütçesi ve standard-hat testi runtime kökünün yeniden şişmesini ya
 da bağlı yürütmenin kaynak adına geri düşmesini engeller.
+K-115/RFC-0022 bütün `GirdiCikti` iz şemasını ve iki sarmalayıcıyı
+`yorumlayici/io_izi.rs` sahibine ayırdı. 1.250 satır bütçesi runtime kökünün
+protokol ayrıntılarını geri yutmasını engeller; biçim/işlem şeması değişikliği
+ADR-026 ve spec/21 ile aynı atomik değişiklikte ele alınır.

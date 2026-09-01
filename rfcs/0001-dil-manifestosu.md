@@ -30,7 +30,9 @@ ekosistemin tek bir şirketin kapalı ürünü olmaması. Temel cümle:
 3. **Deterministik.** Aynı geçerli kaynak tek AST ve tek semantik anlam üretir.
    Belirsizlik çözülemiyorsa bu bir derleme hatasıdır (örnek: A002 belirsiz ad).
    Rastgelelik, saat, dosya ve argümanlar yorumlayıcıda IO soyutlamasının
-   arkasındadır; test koşuları bit-bit tekrarlanabilir.
+   arkasındadır; test koşuları bit-bit tekrarlanabilir. Gerçek koşuların bütün
+   IO protokolü RFC-0022/spec-21 uyarınca sürümlü izlenip dış etkisiz replay
+   edilebilir.
 4. **AI semantiğin parçası değildir.** Programın anlamını yalnız sözcükleyici,
    ayrıştırıcı, tür denetçisi ve yorumlayıcı/derleyici belirler. Hiçbir aşama
    tahmin yapmaz; ad çözümleme dahi aday üretip TANIMLI adlarla eşleme yapar

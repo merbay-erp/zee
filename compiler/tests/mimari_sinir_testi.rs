@@ -70,6 +70,7 @@ fn handler_modulleri_yeni_domain_icin_sinir_tasir() {
         ("src/yorumlayici/cumle.rs", 600),
         ("src/yorumlayici/ifade.rs", 730),
         ("src/yorumlayici/hir_gecisi.rs", 140),
+        ("src/yorumlayici/io_izi.rs", 1_250),
     ] {
         satir_butcesini_denetle(goreli, butce);
     }
