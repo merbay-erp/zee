@@ -99,7 +99,7 @@ türetilmiştir; yeni kod eklenince bu dosya güncellenir — CI'a bağlanması 
 | T024 | değeri/hatası/başarılıysa yanlış türde | Seçenek ya da Sonuç üzerinde kullan |
 | T025 | Dosya yolu Metin değil | — |
 | T026 | `göre` eşleştirme türleri | Konu TamSayı/Metin; kollar konuyla aynı türde |
-| T027 | Yapı alanının türü tanınmadı | Kullanılabilir: TamSayı, Metin, Mantıksal |
+| T027 | Yapı alanının türü tanınmadı | Kullanılabilir: TamSayı, Ondalık, Metin, Mantıksal |
 | T028 | Yapı alanı yok / yanlış tür | Tanı mevcut alanları listeler |
 | T029 | `gün sonrası` Tarih + TamSayı ister | — |
 | T030 | `boşsa` liste/sözlük/metin ister | — |

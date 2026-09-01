@@ -132,3 +132,57 @@ fn silme_tur_bekcileri() {
     let hata = kaynagi_calistir("veri 5 olsun\nveriden 1 i sil\n").expect_err("T012");
     assert_eq!(hata.kod, "T012");
 }
+
+#[test]
+fn yapi_listesi_kayit_tablosu() {
+    // K-060: Liste<Yapı> — kayıt tabloları. Ekleme türü somutlar, gezmede
+    // alan erişimi çalışır, JSON nesne listesi üretir.
+    let kaynak = "\
+yapı Kitap
+    ad Metin
+    fiyat Ondalık
+
+kitaplar boş liste olsun
+
+birinci yeni Kitap olsun
+birincinin adı \"Masallar\" olsun
+birincinin fiyatı 45,50 olsun
+kitaplara birinciyi ekle
+
+ikinci yeni Kitap olsun
+ikincinin adı \"Şiirler\" olsun
+kitaplara ikinciyi ekle
+
+toplam 0,0 olsun
+her kitap için
+    şimdiki kitabın fiyatı olsun
+    toplamı şimdikiyle artır
+toplam yaz
+kitapların json metni yaz
+";
+    let cikti = kaynagi_calistir(kaynak).expect("çalışmalı");
+    assert_eq!(cikti[0], "45,5");
+    assert_eq!(
+        cikti[1],
+        "[{\"ad\":\"Masallar\",\"fiyat\":45.5},{\"ad\":\"Şiirler\",\"fiyat\":0.0}]"
+    );
+}
+
+#[test]
+fn yapi_listesine_yanlis_yapi_giremez() {
+    let kaynak = "\
+yapı Kedi
+    ad Metin
+
+yapı Köpek
+    ad Metin
+
+kediler boş liste olsun
+tekir yeni Kedi olsun
+kedilere tekiri ekle
+karabaş yeni Köpek olsun
+kedilere karabaşı ekle
+";
+    let hata = kaynagi_calistir(kaynak).expect_err("T011");
+    assert_eq!(hata.kod, "T011");
+}

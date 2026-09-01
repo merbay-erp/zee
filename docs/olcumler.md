@@ -10,6 +10,21 @@ Regression bütçesi (v0.3 hedefi): bir sürüm, bir önceki arşiv satırına g
 herhangi bir yükte %50'den fazla yavaşlıyorsa sürüm notunda gerekçelenmek
 **ZORUNDA**dır.
 
+## v0.4.0 — 1 Eylül 2026 · Apple M4 Pro, macOS 26.5, Rust 1.93.1
+
+| Yük | Medyan | v0.2.0'a göre |
+|---|---|---|
+| derleme | 13,6 ms | +%10 |
+| özyineleme | 19,0 ms | +%5 |
+| döngü | 6,6 ms | +%12 |
+| liste | 0,9 ms | — |
+| ondalık | 1,2 ms | — |
+| metin | 0,5 ms | — |
+
+Okuma: iki sürümde eklenen büyük yüzey (web katmanı, metin dalgası,
+sıralama, yapı listeleri) çekirdek maliyetleri bütçe (%50) içinde tuttu;
+döngüdeki +%12, cümle eşlemesine eklenen yeni kollardan — izlenecek.
+
 ## v0.2.0 — 31 Ağustos 2026 · Apple M4 Pro, macOS 26.5, Rust 1.93.1
 
 | Yük | Medyan | Açıklama |

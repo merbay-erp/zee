@@ -10,6 +10,9 @@ sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 - **Tarih farkı** (K-057): `X ile Y arasındaki günler` (işaretli).
 - **Liste üyeliği + CSV yazma** (K-058): `sayılarda 5 varsa`;
   `tablonun csv metni`.
+- **Yapı listeleri** (K-060): kayıt tabloları — `boş liste`ye yapı ekle,
+  gez, alan oku; `json metni` nesne listesi üretir. (T027 belgesi düzeltildi:
+  Ondalık alan zaten vardı.)
 - **Silme** (K-059): `sayılardan 5 i sil` / `defterden "elma" yı sil` —
   yoksa sessiz (idempotent). Girişli panele gerçek silme rotası eklendi
   (dosya-satırı silme saf zee: süz + birleştir + yaz).

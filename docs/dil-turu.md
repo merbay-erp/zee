@@ -299,6 +299,18 @@ ayşenin yaşı 10 olsun
 
 Alan erişimi iyelik ekiyle: `ayşenin adı`.
 
+Yapı LİSTELERİ kayıt tablosudur (K-060):
+
+```
+öğrenciler boş liste olsun
+öğrencilere ayşeyi ekle          # öğe türü: Öğrenci
+
+her öğrenci için
+    öğrencinin adı yaz
+
+öğrencilerin json metni yaz      # [{"ad":"Ayşe",...},...]
+```
+
 ## 14. Desen eşleştirme
 
 ```

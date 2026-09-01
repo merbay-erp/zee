@@ -195,6 +195,14 @@ fn json_yaz(deger: &Deger) -> String {
             "[{}]",
             ogeler.iter().map(json_yaz).collect::<Vec<_>>().join(",")
         ),
+        Deger::Yapi(alanlar) => format!(
+            "{{{}}}",
+            alanlar
+                .iter()
+                .map(|(a, d)| format!("{}:{}", json_metin_kacir(a), json_yaz(d)))
+                .collect::<Vec<_>>()
+                .join(",")
+        ),
         Deger::Sozluk(girdiler) => format!(
             "{{{}}}",
             girdiler
