@@ -3,6 +3,14 @@
 Her sürüm: ne eklendi, ne değişti, neyin sözü verildi. Kırıcı değişiklik
 sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 
+## Yolda (v0.5.0'a birikenler)
+
+- **Sıralama** (K-056): `sıralanmışı` — Metinler Türk alfabesi sırasıyla
+  (ç, ğ, ı, i, ö, ş, ü yerli yerinde; TANIMLI); `tersi`.
+- **Tarih farkı** (K-057): `X ile Y arasındaki günler` (işaretli).
+- **Liste üyeliği + CSV yazma** (K-058): `sayılarda 5 varsa`;
+  `tablonun csv metni`.
+
 ## v0.4.0 — 1 Eylül 2026
 
 **Tema: dil, kurucunun gerçek projelerine hazırlanıyor — web ve metin.**

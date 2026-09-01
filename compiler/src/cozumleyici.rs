@@ -1206,6 +1206,15 @@ fn ifade_denetle(
                 (Ozellik::Uzunluk, Tur::Metin) => Ok(Tur::TamSayi),
                 (Ozellik::HtmlGuvenli, Tur::Metin) => Ok(Tur::Metin),
                 (Ozellik::Kirpilmis, Tur::Metin) => Ok(Tur::Metin),
+                (Ozellik::Siralanmis, Tur::Liste(oge))
+                    if matches!(oge, VeriTuru::TamSayi | VeriTuru::Ondalik | VeriTuru::Metin) =>
+                {
+                    Ok(Tur::Liste(oge))
+                }
+                (Ozellik::Ters, Tur::Liste(oge)) if oge != VeriTuru::Bilinmeyen => {
+                    Ok(Tur::Liste(oge))
+                }
+                (Ozellik::CsvMetin, Tur::Liste(VeriTuru::Sozluk)) => Ok(Tur::Metin),
                 (Ozellik::Harfler, Tur::Metin) => Ok(Tur::Liste(VeriTuru::Metin)),
                 (Ozellik::JsonMetin, Tur::Sozluk(_))
                 | (Ozellik::JsonMetin, Tur::Liste(_))
@@ -1270,6 +1279,29 @@ fn ifade_denetle(
         }
         Ifade::SozlukteVar { sozluk, anahtar, .. } => {
             let sozluk_turu = ifade_denetle(sozluk, ortam, baglam, satir)?;
+            // K-058: aynı yüzey listede üyelik de sorar: "sayılarda 5 varsa".
+            if let Tur::Liste(oge) = sozluk_turu {
+                if !matches!(oge, VeriTuru::TamSayi | VeriTuru::Ondalik | VeriTuru::Metin) {
+                    return Err(Tani::yeni(
+                        "T021",
+                        "Listede üyelik yalnız sayı/metin listelerinde sorulur.".into(),
+                        satir,
+                        1,
+                        1,
+                    ));
+                }
+                let aranan = ifade_denetle(anahtar, ortam, baglam, satir)?;
+                if aranan != oge.ture() {
+                    return Err(Tani::yeni(
+                        "T021",
+                        format!("{} listesinde {} aranamaz.", oge.adi(), aranan.adi()),
+                        satir,
+                        1,
+                        1,
+                    ));
+                }
+                return Ok(Tur::Mantiksal);
+            }
             if !matches!(sozluk_turu, Tur::Sozluk(_)) {
                 return Err(Tani::yeni(
                     "T021",
@@ -1595,6 +1627,20 @@ fn ifade_denetle(
                 ));
             }
             Ok(Tur::Sozluk(SozlukDegerTuru::Metin))
+        }
+        Ifade::GunFarki { birinci, ikinci } => {
+            let b = ifade_denetle(birinci, ortam, baglam, satir)?;
+            let i = ifade_denetle(ikinci, ortam, baglam, satir)?;
+            if b != Tur::Tarih || i != Tur::Tarih {
+                return Err(Tani::yeni(
+                    "T029",
+                    format!("\"arasındaki günler\" iki Tarih ister; burada {} ile {} var.", b.adi(), i.adi()),
+                    satir,
+                    1,
+                    1,
+                ));
+            }
+            Ok(Tur::TamSayi)
         }
         Ifade::Parcala { metin, ayrac } => {
             let m = ifade_denetle(metin, ortam, baglam, satir)?;

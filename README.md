@@ -51,12 +51,12 @@ simülatörü**, **özyineleme** (T035 "temel durum önce", C019 derinlik sını
 değer/hata erişimi derleme hatası), metin kaçışları ve negatif sabitler,
 **web uygulama katmanı** (form/istek sözlüğü, çerezli oturum, yönlendirme,
 html güvenlisi, önekli rotalar), **metin cerrahisi** (parçala/birleştir/
-değiştir/kırp/harfler), **JSON yazma**,
+değiştir/kırp/harfler), **JSON/CSV yazma**, **Türk alfabesiyle sıralama**,
 üç mekanizmalı morfoloji ve 90+ Türkçe kodlu tanı.
 Araçlar: `dil çalıştır/denetle(--json, çoklu tanı)/dene/biçimle/hata/yeni` +
 **dillsp** LSP sunucusu ([editors/](editors/)).
 Determinizm testlerde tam: rastgelelik, saat, dosyalar, HTTP, sunucu istekleri,
-sensörler ve an ölçümü IO soyutlamasından gelir — 213 test hermetik koşar.
+sensörler ve an ölçümü IO soyutlamasından gelir — 219 test hermetik koşar.
 
 **Playground:** `playground/olustur.sh` derleyiciyi WebAssembly'e derler ve
 tek dosyalık `playground/zee-playground.html` üretir — çift tıkla aç, tarayıcıda

@@ -138,6 +138,15 @@ her not için
         geçenlere notu ekle
 ```
 
+Sıralama ve arkadaşları (K-056/058):
+
+```
+sıralı adların sıralanmışı olsun    # Metinler TÜRK ALFABESİYLE sıralanır
+ters sıralının tersi olsun
+sayılarda 5 varsa                   # liste üyeliği
+    "beş listede" yaz
+```
+
 Bir listenin bütün öğeleri aynı türdendir (T011). `boş liste`nin öğe
 türü İLK eklemeyle belli olur (K-045): `adlara "Zeynep" ekle` → metin
 listesi. Eklemeden okumaya kalkarsan derleyici "önce öğe ekle" der.
@@ -328,6 +337,7 @@ kişi "kisi.json" dosyasından okunan veri olsun
 "Ad: " ile kişinin "ad" değeri yaz
 
 "veri.json" dosyasına kişinin json metni yaz   # yazma (K-054)
+"yedek.csv" dosyasına tablonun csv metni yaz   # CSV yazma (K-058)
 ```
 
 ## 17. Tarih, saat, süre
