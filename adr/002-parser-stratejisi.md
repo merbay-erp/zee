@@ -2,6 +2,7 @@
 
 - **Durum:** kabul
 - **Tarih:** 31 Ağustos 2026
+- **Revizyon:** 1 Eylül 2026 — K-097/RFC-0021 ile ifade katmanları bağlandı
 
 ## Bağlam
 
@@ -19,8 +20,14 @@ Parser üreteci (LALR/PEG) mi, elle yazım mı? Türkçenin yüklem-sonlu yapıs
 2. **Anahtar kelimesiz sözcükleyici:** kelimelerin anlamı tamamen konumdan
    gelir; `not`, `sayaç` gibi kelimeler serbest kalır (RFC-0002 §5).
 
-Pratt katmanı henüz yok: ifadeler kalıp-temelli ("yapılı kalıplar") okunuyor;
-sembolik işleç önceliği diye bir şey olmadığından Pratt'a ihtiyaç doğmadı.
+3. **Katmanlı ifade bölgeleri:** Cümle dağıtımından sonra değer/koşul bölgesi
+   primary → erişim/postfix → çağrı → aritmetik → birleştirme → karşılaştırma
+   → boolean güç sırasına bağlıdır (RFC-0021/spec-20). Her kalıp bölgenin
+   tamamını tüketir; kısmi eşleşme başka anlama düşmez.
+
+Pratt katmanı bugün yoktur: ifadeler Türkçe tam-bölge kalıplarıyla okunur;
+sembolik serbest infix operatör önceliği olmadığı için Pratt tek başına ek
+değer sağlamaz. Böyle bir yüzey gelirse bu ADR yeniden açılır.
 
 ## Gerekçe
 
@@ -29,11 +36,14 @@ sembolik işleç önceliği diye bir şey olmadığından Pratt'a ihtiyaç doğm
   zorlaştırırdı.
 - Tanı kalitesi: her hata elle yazılmış Türkçe mesaj + öneri taşıyor
   (83 kod, katalog bekçili) — üreteç çıktısıyla ulaşılması zor.
-- Maliyet: grammar tek kaynaktan (EBNF) üretilmiyor; RFC'ler + golden korpus
-  + `bekle_dosya_sonu` düzeyinde el disiplini gerekiyor. Conformance suite
-  (Faz 8) bu riski taşıyacak.
+- Maliyet: parser normatif grammar'dan üretilmiyor; spec/20 katman tablosu,
+  RFC-0021 uzatma protokolü, golden/anti-example ve bağımsız ifade conformance
+  testi bu riski taşır.
 
 ## Sonuçlar
 
-Resmi EBNF, spesifikasyon dondurmasında (v1.0) parser'dan TÜRETİLECEK ve
-differential testle doğrulanacak; parser'ın kendisi referans gerçekleme kalır.
+Niyet EBNF'si ve normatif katman sırası artık RFC-0021/spec-20'dedir; parser
+referans gerçekleme kalır. B-005'te mega fonksiyonlar parçalanırken modül
+sınırları bu katmanları izleyecek, davranış conformance testiyle korunacaktır.
+Gelecekte ikinci compiler geldiğinde spec/20 + ortak korpus kaynak olur;
+Rust fonksiyon sırası normatif kaynak sayılmaz.

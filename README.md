@@ -85,7 +85,7 @@ Araçlar: `dil çalıştır(--güvenli/--deneysel-web/--web-proxy)/parola-özeti
 + **dillsp** LSP sunucusu — tanılar, hover, tanıma git, **morfolojili
 yeniden adlandırma (F2)** ([editors/](editors/)).
 Determinizm testlerde tam: rastgelelik, saat, dosyalar, HTTP, sunucu istekleri,
-sensörler ve an ölçümü IO soyutlamasından gelir — 378 test hermetik koşar.
+sensörler ve an ölçümü IO soyutlamasından gelir — 386 test hermetik koşar.
 
 **Playground:** `playground/olustur.sh` derleyiciyi WebAssembly'e derler ve
 tek dosyalık `playground/zee-playground.html` üretir — çift tıkla aç, tarayıcıda
@@ -125,7 +125,7 @@ korpus üzerinde regression testine girer.
 | 33 golden program | [golden/](golden/) | ✅ tamamı regression testte; sözdizimi RFC'lerle geçici kabulde |
 | 11 anti-örnek | [anti-ornekler/](anti-ornekler/) | ✅ (A11: nokta-ondalık) |
 | Syntax karar günlüğü | [kararlar/gunluk.md](kararlar/gunluk.md) | ✅ işleniyor |
-| RFC süreci | [rfcs/](rfcs/) | ✅ 20 RFC: 2 kabul, 16 geçici kabul, 2 taslak |
+| RFC süreci | [rfcs/](rfcs/) | ✅ 21 RFC: 2 kabul, 17 geçici kabul, 2 taslak |
 | ADR süreci | [adr/](adr/) | ✅ 8 kabul (001-003, 006-010); 004/005 faz verisi bekliyor |
 | Hata kataloğu | [docs/hata-katalogu.md](docs/hata-katalogu.md) | ✅ 144 etkin kod + 1 ayrılmış kod, kaynakla tutarlılığı testli |
 | Spesifikasyon | [spec/](spec/) | ✅ başladı — normatif çekirdek (RFC'lere bağlar) |
@@ -168,7 +168,9 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   yayıncı, yanked ve kritik duyuru metadata doğrulamasını kurar; taşıma,
   kalıcı cache/offline ve CLI tamamlanana kadar kapı açık kalır.
   K-096, çalışan A çağrı yüzeyini nihai seçim saymadan tek-genel-sözdizimi
-  kapısını ve anonim sonuç arşivini hazırladı. İnsan kanıtı beklenirken
+  kapısını ve anonim sonuç arşivini hazırladı. K-097 ifade parser'ını primary
+  → postfix → çağrı → aritmetik → birleştirme → karşılaştırma → boolean
+  katmanlarına ve tam tüketim kuralına bağladı. İnsan kanıtı beklenirken
   uygulama sırası [öncelikli backlog](docs/oncelikli-backlog.md) ile sabittir.
   Bağlayıcı liste: [docs/v1-surum-kapilari.md](docs/v1-surum-kapilari.md).
 

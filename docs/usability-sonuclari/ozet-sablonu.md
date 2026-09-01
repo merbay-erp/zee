@@ -21,7 +21,7 @@
 - Serbest üretimde yinelenen kalıp kümeleri ve sayıları:
 - Sıra etkisi gözlendi mi:
 - Önceden ilan edilen eşik sonucu:
-- Karar: `A / C / B-003'e geri dön / veri yetersiz — K-016 açık`
+- Karar: `A / C / RFC-0021'i yeniden aç / veri yetersiz — K-016 açık`
 - Kararın gerekçesi (ham sayıdan türetilmiş):
 
 ## K-093 ön-taahhüt sayımı

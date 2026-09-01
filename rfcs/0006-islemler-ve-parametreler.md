@@ -100,9 +100,10 @@ hipotezdir, sonuç değildir. V1 bağlama göre ikinci bir çağrı biçimi taş
 tek genel yüzey değere bağlama, cümle çağrısı, iç içe ifade, dönüş,
 özyineleme, tanım sırası ve çok-tokenli argüman bağlamlarının tamamını
 karşılayacaktır. B kullanıcıların güçlü doğal tercihi olsa bile bugün tek
-başına iç içe ifade vermediğinden doğrudan ek sözdizimi olmaz; B-003 expression
-grammar tasarım turunu tetikler. C de aynı mimari tur ve migration kanıtı
-olmadan seçilemez. Kör kartlar, sıra dengelemesi ve sayısal eşikler
+başına iç içe ifade vermediğinden doğrudan ek sözdizimi olmaz; K-097 ile
+dondurulan RFC-0021'i yeniden açan ikinci tasarım turunu tetikler. C de aynı
+RFC revizyonu ve migration kanıtı olmadan seçilemez.
+Kör kartlar, sıra dengelemesi ve sayısal eşikler
 [K-016 karar paketinde](../docs/k016-cagri-karar-paketi.md) bağlayıcıdır.
 
 ## 4. Bilinen gerilimler (K-014 devamı)

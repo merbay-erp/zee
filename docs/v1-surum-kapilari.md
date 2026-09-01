@@ -3,7 +3,7 @@
 Bu liste bir dilek listesi değildir: `1.0.0` etiketi bu kapılar kapatılmadan
 atılmaz. Amaç yeni özellik sayısını büyütmek değil, çocuktan profesyonele aynı
 dilin verdiği sözleri kanıtlamaktır. Bulgular 1 Eylül 2026'da derleyici
-kaynakları, spec, RFC'ler ve 378 test üzerinden yeniden doğrulanmıştır.
+kaynakları, spec, RFC'ler ve 386 test üzerinden yeniden doğrulanmıştır.
 
 Durumlar: **KAPALI** = kanıtı var · **AÇIK** = v1 engeli · **KARAR** = önce
 normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
@@ -19,6 +19,7 @@ normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
 | V1-P0-05 Deadline gerçekten iptal eder | **KAPALI (K-085)** | `IcindeBlogu` mutlak son tarihi sahipli Ç001 ile blok/işlem/döngü sınırlarına yayar. `bekle` kalan süreye kırpılır; HTTP aşamaları kalan tek bütçeyi alır. İç içe tarihlerde en erken sahip kazanır. | RFC-0011 + spec/09; geç ağ yanıtı çıktıya dönüşmez, uzun bekleme sonrası cümle çalışmaz, iç/dış `yetişmezse` sahipliği sanal saatle sabittir. Tek kesintisiz ifade/platform syscall sınırı normatif işbirlikli modeldir. |
 | V1-P0-06 Normatif otorite tek ve izlenebilirdir | **KAPALI (K-081)** | Spec/RFC drift'i doğrulandı. | ADR-010 belge rollerini ve atomik değişiklik sözleşmesini bağladı; RFC-0006/0011 güncel gerçek ve hedefi ayırdı. |
 | V1-P0-07 İşlem çağrısı tek genel ve kullanıcıyla doğrulanmış yüzeydir | **KARAR — K-096 deney hazır** | A (`için`/`ile`) çalışan geçici yüzeydir; nihai V1 seçimi değildir. Serbest üretim, kör A/B/C kartları, sıra dengelemesi, yedi teknik bağlam ve alt grup eşikleri önden bağlandı. | [K-016 karar paketi](k016-cagri-karar-paketi.md) uyarınca gerçek 10 çocuk + 5 profesyonel formu; eşik geçen tek grammar; parser/formatter/LSP ile golden+anti-example kanıtı; RFC-0006/spec-02 ve migration'ın aynı atomik değişiklikte güncellenmesi. |
+| V1-P0-08 İfade gramerinin büyüme önceliği açık ve fail-closed'dur | **KAPALI (K-097)** | Primary→erişim/postfix→çağrı→aritmetik→birleştirme→karşılaştırma→boolean katmanları ve tam bölge tüketimi normatiftir. Karışık `ve/veya` ya da tanımsız katman birleşimi sessiz AST üretmez; işlem-adı kuyruğu güçlü postfix'i gölgelemez, tam işlem adı sıfır-argüman çağrısını korur. | RFC-0021 + spec/20 + ADR-002 revizyonu; çağrı/postfix→aritmetik, karşılaştırma→boolean, postfix/işlem-adı kuyruğu, tam sıfır-argüman ve en uzun işlem adı, S030/S015 sınırlarını koruyan sekiz bağımsız conformance testi. Yeni ifade yüzeyi katman+çakışma+formatter/test protokolü olmadan eklenemez. |
 
 ## P1 — profesyonel kapasite kapıları
 
@@ -54,7 +55,9 @@ normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
    kalıcı durum, doğrulanmış cache/offline ve exact CLI/kilit entegrasyonu da
    saldırı korpusundan geçince kapanacaktır.
 7. K-096 çağrı deneyi gerçek insan verisini bekler; V1-P0-07 bu kanıt olmadan
-   kapanmaz. Yeni dil özelliğinden önce bağlayıcı sıra
+   kapanmaz. K-097 expression grammar katmanlarını dondurdu ve V1-P0-08'i
+   kapattı; fiziksel parser parçalama B-005'te bu sınırları izleyecek.
+8. Yeni dil özelliğinden önce bağlayıcı sıra
    [öncelikli backlog](oncelikli-backlog.md) içindeki P0 compiler omurgasıdır.
 
 Her kapının kapanışı: karar + spec + olumlu/olumsuz test + sürüm notu. Yalnız

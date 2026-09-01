@@ -3,8 +3,9 @@
 - **Durum:** **geçici kabul** (31 Ağu 2026 — ve/veya/değilse dahil yüzey
   gerçeklendi ve korpusla sabitlendi; onay kapısı: usability oturumları.)
 - **Tarih:** 31 Ağustos 2026
-- **İlgili günlük kayıtları:** K-005 (ise/değilse), K-010 (karşılaştırmalar), K-027 (bağlaçlar)
+- **İlgili günlük kayıtları:** K-005 (ise/değilse), K-010 (karşılaştırmalar), K-027 (bağlaçlar), K-097 (ifade katmanları)
 - **İlgili golden programlar:** 05, 06, 07, 09, 23; anti-örnek A03, A05
+- **Normatif katman:** spec/20, RFC-0021
 - **Gerçekleme:** `kosul_ifadesi`/`kosul_atomu` (`ayristirici.rs`); testler `a03_dogrusu_calisir` vd.
 
 ## Özet
@@ -63,6 +64,9 @@ Yüklem sonuna gelir; içteki koşul olumlu biçimiyle okunur:
   kuralı (VE bağlar gibi) çocuk için görünmez tuzak olurdu (anti-örnek A05
   ilkesi). Kullanıcı ya tek tür bağlaç kullanır ya da koşulu `ise`
   basamaklarına böler — her iki çözüm de okunur Türkçedir.
+- K-097/RFC-0021 sırası gereği her karşılaştırma önce tek AST olur, boolean
+  zincir sonra kurulur. `veya daha` karşılaştırma bölgesinde tam tüketildiği
+  için boolean ayırıcı değildir.
 
 ## 5. Açık sorular
 
@@ -82,5 +86,6 @@ Doğal ✓ (yüklem-sonlu, ekli koşul Türkçenin kendisi) · Deterministik ✓
 
 ## Korpus etkisi
 
-Yok — golden 05/07/09 zaten bu kalıplarla yazılı; A03'ün "doğrusu" artık
-regression testinde birebir çalışıyor.
+Golden 05/07/09 ve A03 değişmedi. Karşılaştırma→boolean katman sırası ile
+S030 fail-closed sınırı ayrıca `ifade_grameri_testi.rs` conformance dosyasına
+bağlandı.

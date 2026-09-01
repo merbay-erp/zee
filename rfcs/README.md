@@ -10,7 +10,7 @@ Dil değişikliği RFC ister (master plan bölüm 25). Şablon: [0000-sablon.md]
 | RFC-0002 | [Lexical ve Unicode Kuralları](0002-lexical-ve-unicode.md) | **geçici kabul** | K-001, K-011, K-014, K-089, A07, A08 |
 | RFC-0003 | [Girinti ve Blok Modeli](0003-girinti-ve-blok.md) | **geçici kabul** | A06 |
 | RFC-0004 | [Değer Tanımı ve Kapsam](0004-deger-tanimi-ve-kapsam.md) | **geçici kabul** (K-034) | K-003, K-011, K-020 |
-| RFC-0005 | [Koşullar ve Mantıksal İfadeler](0005-kosullar-ve-mantiksal.md) | **geçici kabul** | K-005, K-010, K-027, A03 |
+| RFC-0005 | [Koşullar ve Mantıksal İfadeler](0005-kosullar-ve-mantiksal.md) | **geçici kabul** (K-097 katman sırası) | K-005, K-010, K-027, K-097, A03 |
 | RFC-0006 | [İşlemler ve Parametreler](0006-islemler-ve-parametreler.md) | **geçici kabul** (K-086 tam public imza; K-096 karşılaştırmalı çağrı usability kapısı) | K-016, K-032, K-083, K-086, K-096 |
 | RFC-0007 | [Temel Tür Sistemi](0007-temel-tur-sistemi.md) | **geçici kabul** | K-009, K-014 |
 | RFC-0008 | [Seçenek ve Sonuç](0008-secenek-ve-sonuc.md) | **geçici kabul** (daraltma + yapılandırılmış Hata) | K-017, K-018, K-030, K-091 |
@@ -26,9 +26,10 @@ Dil değişikliği RFC ister (master plan bölüm 25). Şablon: [0000-sablon.md]
 | RFC-0018 | [Sürümlü Morfoloji Profili](0018-surumlu-morfoloji-profili.md) | **geçici kabul** | K-011, K-072, K-089, V1-P1-02 |
 | RFC-0019 | [Değer Semantiği ve Gezme İmleci](0019-deger-semantigi-ve-gezme-imleci.md) | **geçici kabul** (makine kanıtı; usability bekliyor) | K-034, K-060, K-074, K-093, V1-P1-05 |
 | RFC-0020 | [Paket Yayını ve Registry Güven Zinciri](0020-paket-yayini-ve-registry-guveni.md) | **geçici kabul** (K-094 yayın; K-095 metadata güveni; taşıma/cache/CLI açık) | K-094, K-095, V1-P1-07, ADR-006 |
+| RFC-0021 | [İfade Grameri Büyüme Mimarisi](0021-ifade-grameri-mimarisi.md) | **geçici kabul** (K-097 katmanlar + tam tüketim conformance'ı) | K-004, K-008, K-010, K-016, K-027, K-038, K-097 |
 
-**Durum özeti (1 Eylül 2026, K-095):** 20 RFC — 2 kabul (0001, 0010),
-16 geçici kabul (RFC-0020'nin yayın ve metadata doğrulama katmanı normatiftir;
+**Durum özeti (1 Eylül 2026, K-097):** 21 RFC — 2 kabul (0001, 0010),
+17 geçici kabul (RFC-0020'nin yayın ve metadata doğrulama katmanı normatiftir;
 taşıma/cache/CLI tamamlanmadan uzak paket kullanımı sözü verilmez), 2 taslak: 0012 (FFI — Faz
 4/5) ve 0014 (standart kitaplık — çalışan prototiple).
 Kural: bir RFC ancak yüzeyi gerçeklenmiş VE regression testine bağlanmışsa
