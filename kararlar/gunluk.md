@@ -621,6 +621,10 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   terfi yok. Bulgu kaynağı: birim testi TamSayı listesiyle imzayı
   kilitleyip Ondalık kullanıcıyı düşürüyordu (monomorfizm × birim testi
   köşesi) — kökten kapandı.
+- **Sınır düzeltmesi (1 Eyl 2026, K-081):** K-067 yalnız saklanan sayısal
+  imzayı en geniş tipe ulaştırır; public işlem sözleşmesini çağrı yerlerinden
+  bağımsızlaştırmaz. Önceki “çağrı sırasından bağımsız sonuç” cümlesi fazla
+  güçlüdür. Açık tür/generic/global kısıt seçimi V1-P0-01'de kapanacaktır.
 - **Ek:** `tam kısmı`/`yuvarlanmışı` TamSayı üzerinde kimliktir (terfi
   sonrası gövde güvenliği). Kitaplığa `medyanını hesapla` girdi (saf zee,
   gezme-sayma deseni; dönüş daima Ondalık).
@@ -810,6 +814,24 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   başarısız işlem değişmezliğini ve kullanım kaldırıldıktan sonraki başarılı
   çıkarma/kilit yenilemeyi sınar.
 
+## K-081 — Spec bugünün dili; RFC değişikliğin yetkisidir
+
+- **Sorun:** Kaynak denetiminde RFC-0006'nın eski tanım/özyineleme kısıtını,
+  RFC-0011'in ise hedef deadline iptalini bugünkü sıralı/geç-ölçümlü runtime'la
+  aynı kipte anlattığı doğrulandı. İki belge çatışınca “niyeti tahmin et” bir
+  dil için kabul edilemez.
+- **Karar:** ADR-010 belge rollerini bağladı. Manifesto anayasa; kabul ADR'si
+  mimari sınır; spec geçerli dilin kesin sözleşmesi; RFC değişiklik
+  gerekçesi/yetkisi; test yürütülebilir kanıt; gerçekleme bunlara uyar.
+  Çelişki sürüm engelidir, sessizce bir taraf seçilmez.
+- **v1 disiplini:** `docs/v1-surum-kapilari.md` P0/P1 bulgularını kaynak
+  kanıtıyla dondurur. Paket/modül eksikliği K-076–K-080 ile kapalıdır; işlem
+  imzası, action/session, atomik durum, deadline, morfoloji, typed hata ve
+  registry kapıları açıktır.
+- **Web yönü:** RFC-0015 route'u adaptör, tekrar kullanılabilir iş kuralını
+  eylem olarak ayırır. Production sözü verilene dek çalışan TCP/çerez yüzeyi
+  deneysel ve açık opt-in olmak zorundadır.
+
 ## K-012 — Liste sabiti: `3, 7, 1, 9 listesi`
 
 - **Karar:** Virgülle ayrılmış değerler + `listesi`. Boş: `boş liste`.
@@ -872,6 +894,10 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   - v0 monomorfizmi: işlem gövdesi İLK çağrının argüman türleriyle denetlenir,
     imza sabitlenir; sonraki çağrılar imzaya uymalı (T017). Özyineleme v0'da
     yok (T016). RFC-0006 bu kısıtları da ele almalı.
+- **Tarihsel not (1 Eyl 2026, K-081):** Yukarıdaki üç madde ilk bootstrap
+  anını kaydeder; güncel dil davranışı değildir. Başlık ön-tarama,
+  özyineleme/T035/C019 ve K-067 sayısal imza terfisi gerçeklenmiştir. Güncel
+  sözleşme spec/02 + spec/04'tedir; public imza modeli V1-P0-01 kapısıdır.
 
 ## K-017 — Seçenek türü yüzeyi: `var/yok`
 

@@ -205,8 +205,8 @@ pub fn denetle_coklu(program: &mut Program) -> Vec<Tani> {
 
 /// Programı yerinde çözümler ve tür denetiminden geçirir.
 ///
-/// İşlemler ilk çağrı anında, argüman türleriyle denetlenir (v0 monomorfizmi):
-/// imza ilk çağrıda sabitlenir, sonraki çağrılar imzaya uymalıdır.
+/// İşlemler ilk çağrı anında, argüman türleriyle denetlenir (v0 çağrı-güdümlü
+/// imza); sayısal imza K-067 ile genişleyebilir, diğer çağrılar uymalıdır.
 pub fn denetle(program: &mut Program) -> Result<(), Tani> {
     let mut ortam: HashMap<String, Tur> = HashMap::new();
     for yapi in &program.yapilar {
@@ -253,7 +253,7 @@ pub fn denetle(program: &mut Program) -> Result<(), Tani> {
     sonuc
 }
 
-/// İlk çağrıda sabitlenen işlem imzası.
+/// İlk çağrıda çıkarılan, sayısal genişlemeyle değişebilen işlem imzası.
 struct Imza {
     parametre_turleri: Vec<Tur>,
     donus: Option<Tur>,
@@ -2095,8 +2095,8 @@ fn donusleri_sarmala(cumleler: &mut [Cumle]) {
     }
 }
 
-/// İşlem çağrısını denetler. İlk çağrıda gövde, argüman türleriyle denetlenip
-/// imza sabitlenir (v0 monomorfizmi); sonraki çağrılar imzaya uymalıdır.
+/// İşlem çağrısını denetler. İlk çağrıda gövde argüman türleriyle denetlenir;
+/// sayısal imza K-067 ile genişleyebilir, diğer çağrılar imzaya uymalıdır.
 ///
 /// ÖZYİNELEME (v0.2): denetimi süren bir işlem kendini (ya da karşılıklı
 /// olarak birbirini) çağırabilir. Özyinelemeli çağrının türü, o ana dek
@@ -2146,8 +2146,10 @@ fn cagri_denetle(
             // K-067 imza terfisi: uyumsuzluk YALNIZ ters-genişlemeyse
             // (param TamSayı[-listesi], arg Ondalık[-listesi]) imza kaldırılır
             // ve gövde geniş türlerle ilk-çağrı gibi yeniden denetlenir —
-            // sonuç, çağrı sırasından bağımsız en geniş imzadır. Gövde geniş
-            // türle geçerli değilse doğal tanısı çıkar. Özyineleme denetimi
+            // saklanan imza bu iki tür içinde en geniş biçime ulaşır. Bu,
+            // public sözleşmeyi bütün çağrı yerlerinden bağımsız yapmaz
+            // (V1-P0-01). Gövde geniş türle geçerli değilse doğal tanısı çıkar.
+            // Özyineleme denetimi
             // sürerken terfi yapılmaz (T017 kalır).
             let yalniz_ters_genisleme = imza
                 .parametre_turleri

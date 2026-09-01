@@ -140,6 +140,11 @@ eşzamanlı olarak
 
 hepsini bekle
 sonucu döndür
+
+**Stage 0 sınırı:** Bu bölüm hedef mimaridir. Mevcut v0 runtime görevleri
+kaynak sırasında yürütür ve deadline'ı gövde bittikten sonra ölçer; gerçek
+iptal V1-P0-05, scheduler V1-P1-03 kapısıdır. Bağlayıcı durum:
+[v1 sürüm kapıları](v1-surum-kapilari.md).
 # 11. Derleyici ve runtime mimarisi
 Kaynak .dil
   ↓ Unicode normalizasyonu

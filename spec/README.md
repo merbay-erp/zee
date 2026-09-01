@@ -1,10 +1,11 @@
 # zee dil spesifikasyonu (normatif çekirdek)
 
-Bu klasör dilin **normatif** tanımıdır (master plan bölüm 23): bir cümlenin
-geçerli olup olmadığı ve ne anlama geldiği konusunda son söz buradadır ve
-buradan bağlanan RFC'lerdedir. Golden korpus ile regression testleri bu
-tanımın yürütülebilir eşleniğidir — spec ile test çelişirse bu bir hatadır
-ve hangisinin düzeltileceği RFC ile karara bağlanır.
+Bu klasör geçerli dilin **normatif** tanımıdır (master plan bölüm 23,
+ADR-010): bir cümlenin bugün geçerli olup olmadığı ve ne anlama geldiği
+konusunda ayrıntılı son söz buradadır. RFC değişikliğin gerekçesi/yetkisidir;
+spec ve conformance testi aynı değişiklikte güncellenmeden yürürlükteki anlamı
+değiştirmez. Golden korpus ile regression testleri bu tanımın yürütülebilir
+kanıtıdır — spec ile test çelişirse sürüm engellenir.
 
 ## Sözleşme dili
 
@@ -33,5 +34,5 @@ Kırıcı değişiklik sessizce yapılamaz: davranış değişikliği RFC'den ge
 
 Eşzamanlılık/iptalin tam anlamı (RFC-0011 yüzeyi geçici kabul; gerçek
 paralellik Faz 5), FFI/ABI (RFC-0012, Faz 4/5), standart kütüphane kararlılık
-politikası, paket çözümü (RFC-0009 §3), deprecation/edition modeli.
+politikası, uzak paket/registry (RFC-0009 §4.2), deprecation/edition modeli.
 Bu başlıklar karara bağlandıkça buraya bölüm olarak eklenir.
