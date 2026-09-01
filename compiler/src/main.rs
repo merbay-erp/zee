@@ -4,6 +4,10 @@
 
 use std::process::ExitCode;
 
+const VARSAYILAN_HTTP_ZAMAN_ASIMI_MS: i64 = 30_000;
+const AZAMI_HTTP_YANITI: usize = 8 * 1024 * 1024;
+const HTTP_ISTEK_OKUMA_SURESI: std::time::Duration = std::time::Duration::from_secs(10);
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 enum WebModu {
     Kapali,
@@ -1353,6 +1357,7 @@ fn ham_http_hatasi_gonder(
 fn http_durum_aciklamasi(durum: u16) -> &'static str {
     match durum {
         400 => "Bad Request",
+        408 => "Request Timeout",
         401 => "Unauthorized",
         403 => "Forbidden",
         404 => "Not Found",
@@ -1365,6 +1370,61 @@ fn http_durum_aciklamasi(durum: u16) -> &'static str {
         504 => "Gateway Timeout",
         _ => "Error",
     }
+}
+
+fn son_tarihli_soket_oku(
+    akis: &mut std::net::TcpStream,
+    tampon: &mut [u8],
+    son_tarih: std::time::Instant,
+) -> std::io::Result<usize> {
+    use std::io::Read;
+    let kalan = son_tarih
+        .checked_duration_since(std::time::Instant::now())
+        .filter(|sure| !sure.is_zero())
+        .ok_or_else(|| std::io::Error::new(std::io::ErrorKind::TimedOut, "son tarih doldu"))?;
+    akis.set_read_timeout(Some(kalan))?;
+    akis.read(tampon)
+}
+
+fn http_yanitini_sinirli_oku(
+    akis: &mut std::net::TcpStream,
+    son_tarih: std::time::Instant,
+    azami_bayt: usize,
+) -> Result<Vec<u8>, String> {
+    let mut ham = Vec::with_capacity(azami_bayt.min(8 * 1024));
+    let mut parca = [0u8; 8 * 1024];
+    loop {
+        let kalan = azami_bayt.saturating_add(1).saturating_sub(ham.len());
+        if kalan == 0 {
+            return Err(format!(
+                "HTTP yanıtı {} MiB sınırını aşıyor",
+                azami_bayt / (1024 * 1024)
+            ));
+        }
+        let sinir = kalan.min(parca.len());
+        match son_tarihli_soket_oku(akis, &mut parca[..sinir], son_tarih) {
+            Ok(0) => break,
+            Ok(okunan) => {
+                ham.extend_from_slice(&parca[..okunan]);
+                if ham.len() > azami_bayt {
+                    return Err(format!(
+                        "HTTP yanıtı {} MiB sınırını aşıyor",
+                        azami_bayt / (1024 * 1024)
+                    ));
+                }
+            }
+            Err(hata)
+                if matches!(
+                    hata.kind(),
+                    std::io::ErrorKind::TimedOut | std::io::ErrorKind::WouldBlock
+                ) =>
+            {
+                return Err("HTTP isteği zaman aşımına uğradı".into());
+            }
+            Err(hata) => return Err(hata.to_string()),
+        }
+    }
+    Ok(ham)
 }
 
 fn program_argumanlari() -> Vec<String> {
@@ -1470,7 +1530,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         url: &str,
         zaman_asimi_ms: Option<i64>,
     ) -> Result<(i64, String), String> {
-        use std::io::{Read, Write};
+        use std::io::Write;
         use std::net::ToSocketAddrs;
         // v0: yalnız http:// (TLS elle yazılmaz — ADR-001; https Faz 5 kararı).
         let kalan = url.strip_prefix("http://").ok_or_else(|| {
@@ -1489,59 +1549,48 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         } else {
             format!("{}:80", konak)
         };
-        let baslangic = std::time::Instant::now();
-        let kalan_sure = |toplam_ms: i64| -> Result<std::time::Duration, String> {
-            let gecen = baslangic.elapsed().as_millis() as i64;
-            let kalan = toplam_ms.saturating_sub(gecen);
-            if kalan <= 0 {
-                Err("son tarih doldu".into())
-            } else {
-                Ok(std::time::Duration::from_millis(kalan as u64))
-            }
-        };
-        let mut akis = match zaman_asimi_ms {
-            Some(kalan) => {
-                let adresler: Vec<_> = adres
-                    .to_socket_addrs()
-                    .map_err(|e| e.to_string())?
-                    .collect();
-                if adresler.is_empty() {
-                    return Err("adres çözülemedi".into());
-                }
-                let mut baglanti = None;
-                let mut son_hata = None;
-                for soket in adresler {
-                    let sure = kalan_sure(kalan)?;
-                    match std::net::TcpStream::connect_timeout(&soket, sure) {
-                        Ok(akis) => {
-                            baglanti = Some(akis);
-                            break;
-                        }
-                        Err(hata) => son_hata = Some(hata.to_string()),
-                    }
-                }
-                baglanti.ok_or_else(|| {
-                    son_hata.unwrap_or_else(|| "sunucuya bağlanılamadı".to_string())
-                })?
-            }
-            None => std::net::TcpStream::connect(&adres).map_err(|e| e.to_string())?,
-        };
-        if let Some(kalan) = zaman_asimi_ms {
-            akis.set_write_timeout(Some(kalan_sure(kalan)?))
-                .map_err(|e| e.to_string())?;
+        let toplam_ms = zaman_asimi_ms.unwrap_or(VARSAYILAN_HTTP_ZAMAN_ASIMI_MS);
+        if toplam_ms <= 0 {
+            return Err("son tarih doldu".into());
         }
+        let son_tarih = std::time::Instant::now()
+            .checked_add(std::time::Duration::from_millis(toplam_ms as u64))
+            .ok_or_else(|| "HTTP zaman aşımı aralığı geçersiz".to_string())?;
+        let kalan_sure = || -> Result<std::time::Duration, String> {
+            son_tarih
+                .checked_duration_since(std::time::Instant::now())
+                .filter(|sure| !sure.is_zero())
+                .ok_or_else(|| "son tarih doldu".into())
+        };
+        let adresler: Vec<_> = adres
+            .to_socket_addrs()
+            .map_err(|e| e.to_string())?
+            .collect();
+        if adresler.is_empty() {
+            return Err("adres çözülemedi".into());
+        }
+        let mut baglanti = None;
+        let mut son_hata = None;
+        for soket in adresler {
+            match std::net::TcpStream::connect_timeout(&soket, kalan_sure()?) {
+                Ok(akis) => {
+                    baglanti = Some(akis);
+                    break;
+                }
+                Err(hata) => son_hata = Some(hata.to_string()),
+            }
+        }
+        let mut akis = baglanti
+            .ok_or_else(|| son_hata.unwrap_or_else(|| "sunucuya bağlanılamadı".to_string()))?;
+        akis.set_write_timeout(Some(kalan_sure()?))
+            .map_err(|e| e.to_string())?;
         write!(
             akis,
             "GET {} HTTP/1.1\r\nHost: {}\r\nConnection: close\r\n\r\n",
             yol, konak
         )
         .map_err(|e| e.to_string())?;
-        if let Some(kalan) = zaman_asimi_ms {
-            akis.set_read_timeout(Some(kalan_sure(kalan)?))
-                .map_err(|e| e.to_string())?;
-        }
-        let mut ham = Vec::new();
-        akis.read_to_end(&mut ham).map_err(|e| e.to_string())?;
+        let ham = http_yanitini_sinirli_oku(&mut akis, son_tarih, AZAMI_HTTP_YANITI)?;
         let metin = String::from_utf8_lossy(&ham);
         let durum: i64 = metin
             .lines()
@@ -1573,11 +1622,17 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         Ok(())
     }
     fn istek_al(&mut self) -> Option<String> {
-        use std::io::Read;
         let dinleyici = self.dinleyici.as_ref()?;
         'istekler: loop {
             let (mut akis, _) = dinleyici.accept().ok()?;
             let https = self.guvenli_proxy_origin().is_some();
+            let son_tarih = std::time::Instant::now() + HTTP_ISTEK_OKUMA_SURESI;
+            if akis
+                .set_write_timeout(Some(HTTP_ISTEK_OKUMA_SURESI))
+                .is_err()
+            {
+                continue;
+            }
             let mut tampon = Vec::with_capacity(80 * 1024);
             let govde_basi = loop {
                 if let Some(yer) = tampon.windows(4).position(|p| p == b"\r\n\r\n") {
@@ -1595,9 +1650,25 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                 }
                 let mut parca = [0u8; 4096];
                 let sinir = (16 * 1024 - tampon.len()).min(parca.len());
-                match akis.read(&mut parca[..sinir]) {
-                    Ok(0) | Err(_) => continue 'istekler,
+                match son_tarihli_soket_oku(&mut akis, &mut parca[..sinir], son_tarih) {
+                    Ok(0) => continue 'istekler,
                     Ok(okunan) => tampon.extend_from_slice(&parca[..okunan]),
+                    Err(hata)
+                        if matches!(
+                            hata.kind(),
+                            std::io::ErrorKind::TimedOut | std::io::ErrorKind::WouldBlock
+                        ) =>
+                    {
+                        ham_http_hatasi_gonder(
+                            &mut akis,
+                            408,
+                            "istek 10 saniyede tamamlanmadı",
+                            false,
+                            https,
+                        );
+                        continue 'istekler;
+                    }
+                    Err(_) => continue 'istekler,
                 }
             };
             let Ok(baslik_metni) = std::str::from_utf8(&tampon[..govde_basi]) else {
@@ -1659,8 +1730,12 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             while tampon.len() < toplam {
                 let onceki = tampon.len();
                 tampon.resize(toplam, 0);
-                match akis.read(&mut tampon[onceki..toplam]) {
-                    Ok(0) | Err(_) => {
+                match son_tarihli_soket_oku(
+                    &mut akis,
+                    &mut tampon[onceki..toplam],
+                    son_tarih,
+                ) {
+                    Ok(0) => {
                         ham_http_hatasi_gonder(
                             &mut akis,
                             400,
@@ -1671,6 +1746,31 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                         continue 'istekler;
                     }
                     Ok(okunan) => tampon.truncate(onceki + okunan),
+                    Err(hata)
+                        if matches!(
+                            hata.kind(),
+                            std::io::ErrorKind::TimedOut | std::io::ErrorKind::WouldBlock
+                        ) =>
+                    {
+                        ham_http_hatasi_gonder(
+                            &mut akis,
+                            408,
+                            "istek 10 saniyede tamamlanmadı",
+                            false,
+                            https,
+                        );
+                        continue 'istekler;
+                    }
+                    Err(_) => {
+                        ham_http_hatasi_gonder(
+                            &mut akis,
+                            400,
+                            "istek gövdesi Content-Length'ten kısa",
+                            false,
+                            https,
+                        );
+                        continue 'istekler;
+                    }
                 }
             }
             let istek = String::from_utf8_lossy(&tampon[..toplam]).to_string();
@@ -2022,6 +2122,8 @@ fn dene_komutu(girdi: &KaynakGirdisi) -> ExitCode {
 #[cfg(test)]
 mod web_profili_testleri {
     use super::*;
+    use dil::yorumlayici::GirdiCikti;
+    use std::io::Write;
 
     #[test]
     fn guvenli_origin_yalniz_https_sema_ve_host_kabul_eder() {
@@ -2096,5 +2198,53 @@ mod web_profili_testleri {
         assert!(basliklar.contains("Content-Security-Policy"));
         assert!(basliklar.contains("X-Content-Type-Options: nosniff"));
         assert!(!guvenlik_basliklari(false).contains("Strict-Transport-Security"));
+    }
+
+    #[test]
+    fn soket_okumasi_mutlak_son_tarihi_gecemez() {
+        let dinleyici = std::net::TcpListener::bind(("127.0.0.1", 0)).unwrap();
+        let adres = dinleyici.local_addr().unwrap();
+        let mut istemci = std::net::TcpStream::connect(adres).unwrap();
+        let (mut sunucu, _) = dinleyici.accept().unwrap();
+        sunucu.write_all(b"x").unwrap();
+        let gecmis = std::time::Instant::now()
+            .checked_sub(std::time::Duration::from_millis(1))
+            .unwrap();
+        let mut bayt = [0u8; 1];
+        let hata = son_tarihli_soket_oku(&mut istemci, &mut bayt, gecmis).unwrap_err();
+        assert_eq!(hata.kind(), std::io::ErrorKind::TimedOut);
+    }
+
+    #[test]
+    fn http_yaniti_bayt_sinirini_asamaz() {
+        let dinleyici = std::net::TcpListener::bind(("127.0.0.1", 0)).unwrap();
+        let adres = dinleyici.local_addr().unwrap();
+        let mut istemci = std::net::TcpStream::connect(adres).unwrap();
+        let (mut sunucu, _) = dinleyici.accept().unwrap();
+        sunucu.write_all(&[b'x'; 65]).unwrap();
+        drop(sunucu);
+        let son_tarih = std::time::Instant::now() + std::time::Duration::from_secs(1);
+        let hata = http_yanitini_sinirli_oku(&mut istemci, son_tarih, 64).unwrap_err();
+        assert!(hata.contains("sınırını aşıyor"));
+    }
+
+    #[test]
+    fn http_istemcisi_deadline_yokken_de_varsayilan_sureyi_kullanir() {
+        let dinleyici = std::net::TcpListener::bind(("127.0.0.1", 0)).unwrap();
+        let adres = dinleyici.local_addr().unwrap();
+        let sunucu = std::thread::spawn(move || {
+            let (mut akis, _) = dinleyici.accept().unwrap();
+            let mut istek = [0u8; 1024];
+            let _ = std::io::Read::read(&mut akis, &mut istek).unwrap();
+            akis.write_all(b"HTTP/1.1 200 OK\r\nContent-Length: 7\r\nConnection: close\r\n\r\nmerhaba")
+                .unwrap();
+        });
+        let mut io = GercekIo::yeni(std::path::Path::new("."), WebModu::Kapali);
+        let (durum, govde) = io
+            .http_getir(&format!("http://{}/", adres), None)
+            .expect("varsayılan deadline ile yanıt");
+        assert_eq!(durum, 200);
+        assert_eq!(govde, "merhaba");
+        sunucu.join().unwrap();
     }
 }

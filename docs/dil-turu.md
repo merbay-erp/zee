@@ -464,7 +464,7 @@ Süre birinci sınıftır: `5 saniye`, `yarım saniye`.
 ## 18. Ağ ve eşzamanlılık
 
 ```
-cevap "https://ornek.dev/durum" adresinden gelen yanıt olsun
+cevap "http://127.0.0.1:8081/durum" adresinden gelen yanıt olsun
 "Durum: " ile cevabın durum kodu yaz
 
 8080 kapısında sunucu başlat
@@ -475,6 +475,9 @@ GET "/durum" adresine istek geldiğinde
 Gerçek TCP dinleyicisi production sözleşmesi değildir ve güvenli varsayılanla
 kapalıdır. Yalnız localhost eğitim/prototipi için açıkça
 `dil çalıştır --deneysel-web program.dil` denir; CLI görünür uyarı verir.
+Native bootstrap istemcisi bugün yalnız `http://` destekler; deadline yazılmasa
+bile 30 saniyede durur ve başlıklar dahil 8 MiB'dan büyük yanıtı reddeder.
+TLS istemci backend'i henüz verilmiş söz değildir; Zee TLS'yi elle yazmayacaktır.
 
 Deneysel eşzamanlılık ve süre yüzeyi:
 
@@ -487,7 +490,7 @@ hepsini bekle
 profil yaz
 
 5 saniye içinde
-    veri "https://ornek.dev/rapor" adresinden gelen yanıt olsun
+    veri "http://127.0.0.1:8081/rapor" adresinden gelen yanıt olsun
 yetişmezse
     "Zaman aşımı, sonra tekrar dene" yaz
 ```

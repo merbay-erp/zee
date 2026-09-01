@@ -14,9 +14,11 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 2. İnsan kanıtı bekleyen kapılar: B-001/K-096 + B-002/K-093.
 3. Tamamlanan compiler omurgası: B-003/K-097, B-004/K-098, B-005/K-099,
    B-006/K-100, B-010/K-101, B-018/K-102 ve B-019/K-103–K-104 (413 test).
-4. Sıradaki makine işi: B-020; ardından B-014–B-017.
-5. Üçüncü sprint: B-027/B-028 → B-030/B-031 → B-043/B-044.
-6. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
+4. Güvenlik incelemesi: K-105 ağ deadline/bellek sınırını kapattı (416 test);
+   sırada B-046/K-106 oturum deposu ve B-047/K-107 LSP girdi sınırı vardır.
+5. Ardından makine omurgası B-020 ve B-014–B-017 ile sürer.
+6. Üçüncü sprint: B-027/B-028 → B-030/B-031 → B-043/B-044.
+7. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
 
 ## P0 — V1 öncesi dil ve derleyici omurgası
 
@@ -119,17 +121,36 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 ## P1 — Runtime ve güvenlik
 
 - **B-023 · SIRADA — web/sensör/HTTP'yi capability modeline bağla.** Ağ,
-  sandbox dosya sistemi ve sensör yetkisi merkezi compile/runtime politikası olsun.
+  sandbox dosya sistemi ve sensör yetkisi merkezi compile/runtime politikası
+  olsun; outbound hedef/SSRF politikası B-049 ile aynı sınırda kapanır.
 - **B-024 · KAPALI İLKE — HTTPS/TLS'yi elle yazma.** Gerektiğinde kilitli,
   battle-tested backend kullan; Zee kriptografi/TLS gerçeklemeye dönüşmez.
-- **B-025 · AÇIK — ortak `KaynakSinirlari` modeli.** Recursion, input/body,
-  allocation, koleksiyon, görev, deadline ve output bütçelerini merkezileştir.
+- **B-025 · KISMEN (K-105) — ortak `KaynakSinirlari` modeli.** K-105 native
+  HTTP istemcisini varsayılan 30 saniye + 8 MiB wire yanıtla, yerel sunucu
+  okumasını 10 saniyelik mutlak bütçeyle sınırladı. Recursion, ortak input/body,
+  allocation, koleksiyon, görev, eşzamanlı bağlantı ve output bütçelerini tek
+  modelde merkezileştirme hâlâ açıktır.
 - **B-026 · AÇIK — cancellation-safety audit'i.** Dosya temp'i, web yanıtı,
   oturum mutation'ı ve diğer yan etkilerin iptal/yarım kalma davranışını testle.
 - **B-027 · SIRADA — deterministik IO trace/replay biçimi tasarla.** Event,
   argüman, sonuç ve sıra sürümlü/kanonik bir formatta olmalıdır.
 - **B-028 · SIRADA — saat/rastgele semantiğini sürümle.** Seed, zaman ilerleme
   ve gözlenebilir fake-IO davranışı spec sözleşmesi olmalıdır.
+- **B-046 · SIRADA — web oturum deposunu sınırlı ve ölçeklenebilir yap.** Süresi
+  dolan kayıt temizliğine ek olarak toplam/anonim oturum kotası ve deterministik
+  tahliye gerekir. Mutlak ömür bilinçli seçim olarak spec'te açıklanmalı; çok
+  süreçli ortak depo production kapısı olarak fail-closed tasarlanmalıdır.
+- **B-047 · SIRADA — LSP çerçeve ve JSON girdisini sertleştir.** Başlık ile
+  `Content-Length`, JSON iç içelik ve toplam düğüm sınırı taşımalı; geçersiz
+  surrogate çifti ile kaçışsız U+0000..U+001F reddedilmeli ve panic korpusu
+  bulunmalıdır.
+- **B-048 · AÇIK — atomik replace metadata sözleşmesini tamamla.** İzin biti
+  dışındaki owner/group, ACL, xattr ve platform güvenlik etiketlerinin korunma
+  veya açıkça desteklenmeme davranışı platform testleriyle belgelenmelidir.
+- **B-049 · AÇIK — outbound ağ güven profilini kapat.** Battle-tested HTTPS
+  backend, redirect/yanıt sınırları ve host/IP/port capability politikası
+  birlikte tasarlanmalı; Zee TLS'yi elle yazmamalı ve güvenilmeyen kod varsayılan
+  olarak iç ağ/metadata hedeflerine erişememelidir.
 
 ## P1 — Paketleme ve supply chain
 
@@ -178,6 +199,7 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 ## Bir sonraki somut kapı
 
 İnsan kanıtı hattında B-001, doldurulmuş gerçek usability formları ve önceden
-ilan edilmiş eşikleri bekler. Makine hattında sıradaki iş B-020'dir: K-103/
-K-104 HIR'ındaki her semantic düğüme source span'i yapısal olarak zorunlu
-kılmalıdır.
+ilan edilmiş eşikleri bekler. Makine hattında sıradaki iş B-046/K-106'dır:
+web oturum deposu anonim isteklerle sınırsız büyüyememelidir. Ardından
+B-047/K-107 LSP girdi sınırı kapanır; K-103/K-104 HIR'ına zorunlu source span
+ekleyen B-020 bu güvenlik diliminden sonra gelir.

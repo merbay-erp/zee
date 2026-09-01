@@ -225,6 +225,13 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   ödünç alır. Kaynak adlarını bilerek bozan iki regresyon ve standard-hat
   mimari testi ve dönüşsüz çağrı HIR kanıtıyla toplam 413 test yeşildir;
   B-019/V1-P0-14 kapandı.
+- **Sınırlı native ağ I/O** (K-105, ADR-017): HTTP istemcisi kaynakta deadline
+  yoksa 30 saniyelik mutlak varsayılan bütçe kullanır; bütün adres denemesi,
+  yazma ve her okuma aynı kalan süreyi tüketir. Başlıklar dahil wire yanıt
+  8 MiB ile sınırlıdır. Yerel sunucu başlık+gövdeyi kabulden başlayan mutlak
+  10 saniyede tamamlatır, bayt damlatmak süreyi yenilemez ve aşım 408 olur;
+  yanıt socket'i de 10 saniye yazma zaman aşımı taşır. Üç loopback sınır
+  testiyle toplam 416 test yeşildir; B-025'in ağ dilimi ve V1-P0-15 kapandı.
 
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`
