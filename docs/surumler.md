@@ -16,7 +16,11 @@ sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
   form, UTF-8 yüzde çözümü), `adresine yönlendir` (303, S041),
   `html güvenlisi` (XSS kaçışlaması). Kanıt: panel-not-defteri projesi —
   formlu, dosyada saklayan, gizli yollu admin panel (tarayıcıda canlı +
-  hermetik tam-döngü testi). Sınır: çerez/oturum Faz 5'te.
+  hermetik tam-döngü testi). Sınır: HTTPS/hash Faz 5'te.
+- **Oturum kapısı** (K-052): örtük `çerezler` sözlüğü + `çerezine yaz`
+  (Set-Cookie, HttpOnly). Oturum mantığı saf zee'de: girisli-panel projesi
+  (parola → dosyada oturum kimliği → korumalı rotalar; sahte çerez reddi
+  testli). Parola düz metin — hash Faz 5.
 
 ## v0.3.0 — 1 Eylül 2026
 

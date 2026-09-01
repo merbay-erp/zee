@@ -12,7 +12,40 @@ use std::collections::{HashMap, VecDeque};
 /// Ham istek metnini çözer (K-051). Biçim: "YÖNTEM yol?sorgu\ngövde" ya da
 /// yalnız "/yol" (= GET). Dönen: (yöntem, salt yol, istek sözlüğü girdileri).
 pub fn istek_parcala(ham: &str) -> (String, String, Vec<(String, String)>) {
-    let (ilk_satir, govde) = ham.split_once('\n').unwrap_or((ham, ""));
+    let (yontem, yol, veriler, _) = istek_parcala_cerezli(ham);
+    (yontem, yol, veriler)
+}
+
+/// (ad, değer) çiftleri — istek verileri ve çerezler bu biçimde taşınır.
+pub type AdDegerler = Vec<(String, String)>;
+
+/// istek_parcala + çerezler (K-052). İkinci satır "çerez a=1; b=2" ise
+/// Cookie başlığıdır; kalan satırlar gövdedir.
+pub fn istek_parcala_cerezli(ham: &str) -> (String, String, AdDegerler, AdDegerler) {
+    let (ilk_satir, kalan) = ham.split_once('\n').unwrap_or((ham, ""));
+    let (cerez_satiri, govde) = match kalan.strip_prefix("çerez ") {
+        Some(devam) => match devam.split_once('\n') {
+            Some((c, g)) => (c, g),
+            None => (devam, ""),
+        },
+        None => ("", kalan),
+    };
+    let mut cerezler: Vec<(String, String)> = Vec::new();
+    for cift in cerez_satiri.split(';') {
+        let cift = cift.trim();
+        if cift.is_empty() {
+            continue;
+        }
+        let (ad, deger) = cift.split_once('=').unwrap_or((cift, ""));
+        cerezler.push((ad.trim().to_string(), deger.trim().to_string()));
+    }
+    let ham = ilk_satir;
+    let govde_tam = govde;
+    let (yontem, yol, veriler) = istek_govdesiyle(ham, govde_tam);
+    (yontem, yol, veriler, cerezler)
+}
+
+fn istek_govdesiyle(ilk_satir: &str, govde: &str) -> (String, String, Vec<(String, String)>) {
     let (yontem, hedef) = match ilk_satir.split_once(' ') {
         Some((y, h)) => (y.to_uppercase(), h.trim()),
         None => ("GET".to_string(), ilk_satir.trim()),
@@ -80,6 +113,8 @@ pub trait GirdiCikti {
     fn yanit_gonder(&mut self, yanit: &str);
     /// 303 yönlendirmesi gönderir (K-051).
     fn yonlendir_gonder(&mut self, adres: &str);
+    /// Sonraki yanıta Set-Cookie iliştirir (K-052).
+    fn cerez_yaz(&mut self, ad: &str, deger: &str);
     /// Sensör durumu (IoT simülatörü): "kapı" açık mı?
     fn sensor_acik_mi(&mut self, ad: &str) -> bool;
     /// Işık eyleyicisi (IoT simülatörü).
@@ -152,6 +187,7 @@ impl<T: GirdiCikti> GirdiCikti for GuvenliIo<T> {
     }
     fn yanit_gonder(&mut self, _yanit: &str) {}
     fn yonlendir_gonder(&mut self, _adres: &str) {}
+    fn cerez_yaz(&mut self, _ad: &str, _deger: &str) {}
     fn sensor_acik_mi(&mut self, ad: &str) -> bool {
         self.ic.sensor_acik_mi(ad)
     }
@@ -180,6 +216,8 @@ pub struct ToplayanIo {
     pub http_yanitlari: HashMap<String, (i64, String)>,
     /// Sahte sunucu: istek kuyruğu ve (istek → yanıt) kayıtları.
     pub istekler: VecDeque<String>,
+    /// Sunucunun Set-Cookie ile yazdığı çerezler (K-052 testleri için).
+    pub yazilan_cerezler: Vec<(String, String)>,
     pub sunucu_yanitlari: Vec<(String, String)>,
     /// Sahte sensörler (varsayılan kapalı) ve an ölçümü kuyruğu.
     pub sensorler: HashMap<String, bool>,
@@ -197,6 +235,7 @@ impl ToplayanIo {
             argumanlar: Vec::new(),
             http_yanitlari: HashMap::new(),
             istekler: VecDeque::new(),
+            yazilan_cerezler: Vec::new(),
             sunucu_yanitlari: Vec::new(),
             sensorler: HashMap::new(),
             an_degerleri: VecDeque::new(),
@@ -261,6 +300,9 @@ impl GirdiCikti for ToplayanIo {
         if let Some((_, bos)) = self.sunucu_yanitlari.last_mut() {
             *bos = format!("→ {}", adres);
         }
+    }
+    fn cerez_yaz(&mut self, ad: &str, deger: &str) {
+        self.yazilan_cerezler.push((ad.to_string(), deger.to_string()));
     }
     fn sensor_acik_mi(&mut self, ad: &str) -> bool {
         self.sensorler.get(ad).copied().unwrap_or(false)
@@ -493,9 +535,12 @@ pub fn calistir_io(program: &Program, io: &mut dyn GirdiCikti) -> Result<(), Tan
     // gövdeleri istek başına taze ortamda koşulur.
     if ortam.contains_key("(sunucu)") {
         while let Some(ham) = io.istek_al() {
-            let (_, yol, veriler) = istek_parcala(&ham);
+            let (_, yol, veriler, cerezler) = istek_parcala_cerezli(&ham);
             let istek_sozlugu = Deger::Sozluk(
                 veriler.into_iter().map(|(a, d)| (a, Deger::Metin(d))).collect(),
+            );
+            let cerez_sozlugu = Deger::Sozluk(
+                cerezler.into_iter().map(|(a, d)| (a, Deger::Metin(d))).collect(),
             );
             let mut eslesti = false;
             for cumle in &program.cumleler {
@@ -505,6 +550,7 @@ pub fn calistir_io(program: &Program, io: &mut dyn GirdiCikti) -> Result<(), Tan
                         degerlendir(kayitli, &bos_ortam, program, io, 0, *satir)?.metne();
                     if kayitli == yol {
                         bos_ortam.insert("istek".into(), istek_sozlugu.clone());
+                        bos_ortam.insert("çerezler".into(), cerez_sozlugu.clone());
                         let sonuc = blok_calistir(govde, &mut bos_ortam, program, io, 0);
                         match sonuc {
                             Err(tani) if tani.kod == "Ç000" => return Ok(()),
@@ -734,6 +780,11 @@ fn blok_calistir(
             Cumle::Yonlendir { adres, satir } => {
                 let hedef = degerlendir(adres, ortam, program, cikti, derinlik, *satir)?.metne();
                 cikti.yonlendir_gonder(&hedef);
+            }
+            Cumle::CerezYaz { ad, deger, satir } => {
+                let ad = degerlendir(ad, ortam, program, cikti, derinlik, *satir)?.metne();
+                let deger = degerlendir(deger, ortam, program, cikti, derinlik, *satir)?.metne();
+                cikti.cerez_yaz(&ad, &deger);
             }
             Cumle::Eszamanli { gorevler, satir } => {
                 // v0 yürütmesi sıralıdır (RFC-0011 §4: tek iş parçacıklı model);

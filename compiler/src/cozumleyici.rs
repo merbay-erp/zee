@@ -705,11 +705,26 @@ fn blok_denetle(
                 // verisi örtük "istek" sözlüğünde gelir (K-051).
                 let mut istek_ortami: HashMap<String, Tur> = HashMap::new();
                 istek_ortami.insert("istek".into(), Tur::Sozluk(SozlukDegerTuru::Metin));
+                istek_ortami.insert("çerezler".into(), Tur::Sozluk(SozlukDegerTuru::Metin));
                 blok_denetle(govde, &mut istek_ortami, baglam)?;
             }
             Cumle::YanitGonder { deger, satir } => {
                 let satir = *satir;
                 ifade_denetle(deger, ortam, baglam, satir)?;
+            }
+            Cumle::CerezYaz { ad, deger, satir } => {
+                let satir = *satir;
+                let ad_turu = ifade_denetle(ad, ortam, baglam, satir)?;
+                let deger_turu = ifade_denetle(deger, ortam, baglam, satir)?;
+                if ad_turu != Tur::Metin || deger_turu != Tur::Metin {
+                    return Err(Tani::yeni(
+                        "T034",
+                        "Çerez adı ve değeri Metin olmalı.".into(),
+                        satir,
+                        1,
+                        1,
+                    ));
+                }
             }
             Cumle::Yonlendir { adres, satir } => {
                 let satir = *satir;

@@ -1,0 +1,92 @@
+# Girişli Panel — parola + oturumlu GERÇEK admin panel (K-052).
+# Öğretilen: çerez okuma/yazma, oturumu DOSYADA saklama, korumalı rotalar.
+# Oturum mantığının tamamı zee ile yazılmıştır — dil yalnız çerez kapısını verir.
+# Parola: zee2026 (değiştir!). Çalıştır → http://127.0.0.1:8092
+
+deneme "notlar.txt" dosyasını okumayı dene olsun
+deneme başarısızsa
+    "notlar.txt" dosyasına "Panel kuruldu — ilk notunu ekle!" yaz
+
+işlem sayfayı giydir
+    gövdeyi al
+
+    stil "<style>body{font-family:Georgia,serif;max-width:640px;margin:40px auto;padding:0 16px;color:#1c1c28;background:#fbfaf7}h1{color:#b0413e}a{color:#2e6e4e}li{margin:6px 0}input{font:inherit;padding:8px}button{font:inherit;padding:8px 18px}</style>" olsun
+    sayfa "<!doctype html><html lang=tr><meta charset=utf-8>" ile stil ile gövde olsun
+    sayfayı döndür
+
+işlem oturumu geçerli mi
+    anahtarı al
+
+    anahtar boşsa
+        yanlış döndür
+    sonuç "oturumlar.txt" dosyasını okumayı dene olsun
+    sonuç başarısızsa
+        yanlış döndür
+    değilse
+        kayıtlar sonucun değeri olsun
+        kayıtlar anahtar içeriyorsa
+            doğru döndür
+    yanlış döndür
+
+8092 kapısında sunucu başlat
+
+"/" adresine istek geldiğinde
+    liste "" olsun
+    satırlar "notlar.txt" dosyasının satırları olsun
+    her satır için
+        liste liste ile "<li>" ile satırın html güvenlisi ile "</li>" olsun
+
+    gövde "<h1>Not Defteri</h1><ul>" ile liste ile "</ul><p><a href=/yonet>yönetim</a></p>" olsun
+    sayfa gövde için sayfayı giydir olsun
+    sayfa yanıtını gönder
+
+"/giris" adresine istek geldiğinde
+    form "<h1>Giriş</h1><form method=post action=/giris-yap><input type=password name=parola placeholder=parola autofocus> <button>Gir</button></form>" olsun
+    sayfa form için sayfayı giydir olsun
+    sayfa yanıtını gönder
+
+"/giris-yap" adresine istek geldiğinde
+    istekte "parola" varsa
+        verilen isteğin "parola" değeri olsun
+        verilen "zee2026" ya eşitse
+            rastgele_sayı 100000 ile 999999 arasında rastgele sayı olsun
+            kimlik "" ile rastgele_sayı olsun
+            "oturumlar.txt" dosyasına kimlik ekle
+            "oturum" çerezine kimlik yaz
+            "/yonet" adresine yönlendir
+        değilse
+            "/giris" adresine yönlendir
+
+"/yonet" adresine istek geldiğinde
+    izinli yanlış olsun
+    çerezlerde "oturum" varsa
+        kimlik çerezlerin "oturum" değeri olsun
+        izinli kimlik için oturumu geçerli mi olsun
+
+    izinli ise
+        form "<h1>Yeni not</h1><form method=post action=/kaydet><input name=not placeholder=notunu-yaz autofocus> <button>Kaydet</button></form><p><a href=/>listeye dön</a> · <a href=/cikis>çıkış</a></p>" olsun
+        sayfa form için sayfayı giydir olsun
+        sayfa yanıtını gönder
+    izinli değilse
+        "/giris" adresine yönlendir
+
+"/kaydet" adresine istek geldiğinde
+    izinli yanlış olsun
+    çerezlerde "oturum" varsa
+        kimlik çerezlerin "oturum" değeri olsun
+        izinli kimlik için oturumu geçerli mi olsun
+
+    izinli ise
+        istekte "not" varsa
+            yeni isteğin "not" değeri olsun
+            yeni boşsa
+                "/yonet" adresine yönlendir
+            değilse
+                "notlar.txt" dosyasına yeni ekle
+                "/" adresine yönlendir
+    izinli değilse
+        "/giris" adresine yönlendir
+
+"/cikis" adresine istek geldiğinde
+    "oturum" çerezine "" yaz
+    "/" adresine yönlendir

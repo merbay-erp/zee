@@ -291,6 +291,8 @@ fn birim_yukleyici(klasor: &std::path::Path) -> impl FnMut(&str) -> Result<Strin
 /// Gerçek ekran + klavye IO'su: istem yazılır, cevap stdin'den okunur.
 /// Rastgelelik: sistem saatiyle tohumlanan xorshift (bağımlılıksız).
 struct GercekIo {
+    /// Sonraki yanıtla gönderilecek Set-Cookie başlıkları (K-052).
+    bekleyen_cerezler: Vec<(String, String)>,
     tohum: u64,
     argumanlar: Vec<String>,
     baslangic: std::time::Instant,
@@ -308,6 +310,7 @@ impl GercekIo {
         // `dil çalıştır program.dil selam dünya` → programa ["selam", "dünya"] gider.
         let argumanlar = std::env::args().skip(3).collect();
         GercekIo {
+            bekleyen_cerezler: Vec::new(),
             tohum,
             argumanlar,
             baslangic: std::time::Instant::now(),
@@ -440,10 +443,26 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             let (yontem, hedef) = (parcalar.next(), parcalar.next());
             if let (Some(yontem), Some(hedef)) = (yontem, hedef) {
                 let govde = istek.split_once("\r\n\r\n").map(|(_, g)| g).unwrap_or("");
+                // Cookie başlığı "çerez ..." satırı olarak taşınır (K-052).
+                let cerez = istek
+                    .lines()
+                    .find_map(|s| {
+                        let kucuk = s.to_lowercase();
+                        kucuk.strip_prefix("cookie:").map(|_| s[7..].trim().to_string())
+                    })
+                    .unwrap_or_default();
                 self.bekleyen_akis = Some(akis);
-                return Some(format!("{} {}\n{}", yontem, hedef, govde));
+                let cerez_satiri = if cerez.is_empty() {
+                    String::new()
+                } else {
+                    format!("çerez {}\n", cerez)
+                };
+                return Some(format!("{} {}\n{}{}", yontem, hedef, cerez_satiri, govde));
             }
         }
+    }
+    fn cerez_yaz(&mut self, ad: &str, deger: &str) {
+        self.bekleyen_cerezler.push((ad.to_string(), deger.to_string()));
     }
     fn yanit_gonder(&mut self, yanit: &str) {
         use std::io::Write;
@@ -456,11 +475,17 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             } else {
                 "text/plain"
             };
+            let mut cerez_basliklari = String::new();
+            for (ad, deger) in self.bekleyen_cerezler.drain(..) {
+                cerez_basliklari
+                    .push_str(&format!("Set-Cookie: {}={}; Path=/; HttpOnly\r\n", ad, deger));
+            }
             let _ = write!(
                 akis,
-                "HTTP/1.1 200 OK\r\nContent-Type: {}; charset=utf-8\r\nContent-Length: {}\r\nConnection: close\r\n\r\n",
+                "HTTP/1.1 200 OK\r\nContent-Type: {}; charset=utf-8\r\nContent-Length: {}\r\n{}Connection: close\r\n\r\n",
                 tur,
-                govde.len()
+                govde.len(),
+                cerez_basliklari
             );
             let _ = akis.write_all(govde);
         }
@@ -468,10 +493,16 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
     fn yonlendir_gonder(&mut self, adres: &str) {
         use std::io::Write;
         if let Some(mut akis) = self.bekleyen_akis.take() {
+            let mut cerez_basliklari = String::new();
+            for (ad, deger) in self.bekleyen_cerezler.drain(..) {
+                cerez_basliklari
+                    .push_str(&format!("Set-Cookie: {}={}; Path=/; HttpOnly\r\n", ad, deger));
+            }
             let _ = write!(
                 akis,
-                "HTTP/1.1 303 See Other\r\nLocation: {}\r\nContent-Length: 0\r\nConnection: close\r\n\r\n",
-                adres
+                "HTTP/1.1 303 See Other\r\nLocation: {}\r\nContent-Length: 0\r\n{}Connection: close\r\n\r\n",
+                adres,
+                cerez_basliklari
             );
         }
     }

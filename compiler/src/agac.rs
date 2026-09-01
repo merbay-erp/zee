@@ -308,6 +308,8 @@ pub enum Cumle {
     YanitGonder { deger: Ifade, satir: usize },
     /// `"/liste" adresine yönlendir` — 303 yönlendirmesi (K-051).
     Yonlendir { adres: Ifade, satir: usize },
+    /// `"oturum" çerezine kimlik yaz` — yanıtla Set-Cookie gönderilir (K-052).
+    CerezYaz { ad: Ifade, deger: Ifade, satir: usize },
     /// `eşzamanlı olarak` bloğu: görev bağlamaları (RFC-0011).
     Eszamanli { gorevler: Vec<(String, Ifade, usize)>, satir: usize },
     /// `hepsini bekle` — görev sonuçları bundan sonra kullanılabilir.
