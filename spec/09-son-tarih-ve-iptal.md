@@ -24,7 +24,11 @@ zee iptali işbirliklidir. Runtime:
 
 son tarihi denetler. `bekle`, kalan süreden uzun uyumaz; kalan kadar bekleyip
 gövdeyi iptal eder. HTTP bağlantı, yazma ve okuma zaman aşımları kalan tek
-bütçeden beslenir. Süre dolmuş bir ağ yanıtı değere ya da çıktıya dönüşemez.
+bütçeden beslenir. Her socket okuması kalan mutlak süreyi yeniden hesaplar;
+aralıklı veri gelişi deadline'ı ileri taşımaz. Kaynakta `içinde` yoksa native
+HTTP istemcisi 30 saniyelik mutlak varsayılan son tarih ve başlıklar dahil
+8 MiB wire yanıt sınırı kullanır. Süre dolmuş veya sınırı aşmış ağ yanıtı
+değere ya da çıktıya dönüşemez.
 
 İptal gözlendikten sonra yeni çıktı, dosya yazma, çerez/yanıt veya eyleyici
 etkisi başlatılamaz. Son tarih dolmadan tamamlanmış dış etkiler geri alınmaz;

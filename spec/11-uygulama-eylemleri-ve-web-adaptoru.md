@@ -89,11 +89,15 @@ Her istek varsayılan olarak:
 
 - en çok 64 KiB gövde;
 - sorgu ve gövde toplamında en çok 100 alan;
+- bağlantı kabulünden başlık ve gövdenin tamamına kadar 10 saniye mutlak okuma;
 - K-085 işbirlikli iptal modelinde 30 saniye son tarih
 
-taşır. Gövde/alan sınırı aşımı 413, son tarih aşımı 504'tür. Gerçek TCP adaptörü
+taşır. Gövde/alan sınırı aşımı 413, eksik başlık/gövdeyi yavaşça taşıyan socket
+okuma süresi aşımı 408, uygulama son tarihi aşımı 504'tür. Gerçek TCP adaptörü
 bildirilen `Content-Length` sınırı aşınca gövdeyi uygulamaya vermeden 413 döner.
-Bu limitleri büyüten kaynak sözdizimi v1'de yoktur.
+Okuma süresi her parçada kalan mutlak bütçeye ayarlanır; bayt damlatmak süreyi
+yenilemez. Yanıt yazma socket'i de 10 saniye ile sınırlıdır. Bu limitleri
+büyüten kaynak sözdizimi v1'de yoktur.
 
 ## 6. Eylem transaction'ı ve iç içe savepoint
 

@@ -121,7 +121,10 @@ sözleşmesini bozar ve YASAKTIR.
 Yanıtlar `no-store`, `nosniff`, `DENY`, `no-referrer`, kısıtlı CSP taşır;
 HTTPS profilinde HSTS de eklenir. 16 KiB başlık, 64 KiB gövde, tek
 `Content-Length` ve `Transfer-Encoding` reddi request-smuggling/yığın
-korkuluklarıdır. Spec/11'in 100 alan ve 30 saniye sınırı ayrıca geçerlidir.
+korkuluklarıdır. Başlık ile gövdenin tamamı bağlantı kabulünden başlayan
+10 saniyelik mutlak okuma bütçesini aşarsa 408 döner; yanıt yazımı da 10 saniye
+socket zaman aşımı taşır. Spec/11'in 100 alan ve 30 saniye uygulama sınırı
+ayrıca geçerlidir.
 
 ## 6. Platform sınırı
 

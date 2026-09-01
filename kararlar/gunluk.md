@@ -1464,6 +1464,23 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   runtime mimari testi ve dönüşsüz çağrının açık HIR türüyle dört yeni test,
   toplam 413 test; B-019 ve V1-P0-14 kapandı.
 
+## K-105 — Native ağ bekleme ve bellek sınırını kapat (1 Eyl)
+
+- **Karar:** Native HTTP istemcisi açık `içinde` yoksa 30 saniyelik mutlak
+  son tarih kurar; bağlantı denemeleri, yazma ve her okuma tek kalan bütçeyi
+  tüketir. Başlıklar dahil wire yanıt en çok 8 MiB'dır.
+- **Sunucu:** Yerel TCP adaptörü başlık ve ilan edilmiş gövdenin tamamını
+  kabulden başlayan 10 saniyelik mutlak sürede ister. Her okumada yalnız kalan
+  süre kullanılır; yavaş bayt akışı süreyi yenilemez ve aşım 408'dir. Yanıt
+  yazımı da 10 saniye socket sınırı taşır.
+- **Sınır:** DNS çözümlemesi işbirlikli platform sınırıdır. Native istemci
+  bugün yalnız `http://` taşır; Zee TLS'yi elle yazmaz. Sınırlı oturum deposu,
+  LSP girdisi, HTTPS/hedef capability politikası ve ortak `KaynakSinirlari`
+  ardıl işlerdir.
+- **Kanıt:** ADR-017 ve spec/09/11/12; geçmiş mutlak tarih, 8 MiB okuyucu
+  sınırı ve deadline'sız küçük loopback yanıtı için üç yeni test. Toplam 416
+  test; B-025'in ağ dilimi ve V1-P0-15 kapandı.
+
 ---
 
 ## Sonraki adım
@@ -1472,3 +1489,5 @@ Korpus 10 öğrenci + 5 profesyonel usability oturumuna (Hafta 12 hedefi, erkeni
 Hafta 2'de kağıt üstünde) sesli okutulacak; her kayıt için "doğal mı /
 deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
+Makine hattında B-046/K-106 sınırlı web oturum deposu, ardından B-047/K-107
+LSP girdi sertleştirmesi gelir; B-020 source span bu güvenlik dilimini izler.

@@ -3,7 +3,7 @@
 Bu liste bir dilek listesi değildir: `1.0.0` etiketi bu kapılar kapatılmadan
 atılmaz. Amaç yeni özellik sayısını büyütmek değil, çocuktan profesyonele aynı
 dilin verdiği sözleri kanıtlamaktır. Bulgular 1 Eylül 2026'da derleyici
-kaynakları, spec, RFC'ler ve 413 test üzerinden yeniden doğrulanmıştır.
+kaynakları, spec, RFC'ler ve 416 test üzerinden yeniden doğrulanmıştır.
 
 Durumlar: **KAPALI** = kanıtı var · **AÇIK** = v1 engeli · **KARAR** = önce
 normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
@@ -26,6 +26,7 @@ normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
 | V1-P0-12 Semantic identity depolama konumundan ayrıdır | **KAPALI (K-101)** | Yapı, işlem ve sembol bağları `YapiId`/`IslemId`/`SymbolId` taşır. `Tur::Yapi` vektör indeksi değildir; işlem imzası/özyineleme ID ile anahtarlanır ve çözülmüş AST kaynak adının yanında kimliği korur. | ADR-014 + [semantic kimlik rehberi](semantic-kimlik-modeli.md); yapı depolama ve işlem çağrı sırası tersleme, SymbolId bağı ve indeks-gerileme mimari testi. Toplam 402 test yeşildir. |
 | V1-P0-13 Derleyici veri fazları kodda ayırt edilebilirdir | **KAPALI (K-102)** | Kaynak, token, parsed AST, bağlanmamış ve checker'dan geçmiş bağlı program ayrı Rust türleridir. Standart çalıştırma bağlı program ister; eski raw `Program` yalnız uyumluluk adaptörüdür. | ADR-015 + [faz modeli](derleyici-faz-modeli.md); parsed/bound bağ testi, eski API eşdeğerliği, standart-hat mimari testi ve yanlış geçişin derlenmediği compile-fail kanıtı. Toplam 406 test yeşildir. |
 | V1-P0-14 Runtime typed HIR bağlarını tüketir | **KAPALI (K-103/K-104)** | Bağlı program her denetlenmiş ifade için `HirDugumId`, açık `Deger(Tur)`/`DegerDondurmez` türü ve semantic ID bağı taşıyan zorunlu `HirProgram` üretir. Standart runtime ve `dene` değişken/işlem/yapı kararlarını yalnız `HirBagi` ile yapar; kaynak AST tanı/v0 uyumluluğu için korunur. | ADR-016 + [typed HIR modeli](typed-hir-modeli.md); tür/SymbolId, dönüşsüz çağrı, işlem/yapı ID dizini, HIR'sız bağlı program, bozulan kaynak adına rağmen ID ile çalışma ve standard-hat mimari kanıtları. Toplam 413 test yeşildir. |
+| V1-P0-15 Native ağ bekleme ve bellek sınırı | **KAPALI (K-105)** | Deadline yazılmasa da HTTP istemcisi 30 saniyelik mutlak bütçe ve başlıklar dahil 8 MiB wire yanıt sınırı taşır. Yerel sunucu başlık+gövdeyi kabulden başlayan 10 saniyede tamamlatır; her okuma yalnız kalan süreyi alır ve aşım 408'dir. | ADR-017 + spec/09/11/12; geçmiş mutlak tarihte hazır baytı bile okumama, yanıt boyut reddi ve deadline'sız küçük loopback yanıtı. Toplam 416 test yeşildir. DNS iptali platform sınırı; oturum/LSP sınırları ayrı açık kapıdır. |
 
 ## P1 — profesyonel kapasite kapıları
 
@@ -68,8 +69,11 @@ normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
    V1-P0-11'i kapattı. K-101 semantic identity'yi depolama konumundan ayırıp
    V1-P0-12'yi kapattı. K-102 gerçek veri fazlarını türleyip V1-P0-13'ü
    kapattı. K-103 typed HIR üretim çekirdeğini, K-104 bağlı runtime tüketimini
-   tamamlayıp V1-P0-14'ü kapattı; sıradaki omurga işi B-020 source span'dir.
-8. Yeni dil özelliğinden önce bağlayıcı sıra
+   tamamlayıp V1-P0-14'ü kapattı.
+8. K-105/ADR-017 native ağın sınırsız bekleme ve bellek yollarını kapattı.
+   Güvenlik sırasında B-046/K-106 sınırlı oturum deposu ve B-047/K-107 LSP
+   girdi sertleştirmesi B-020 source span'in önüne alınmıştır.
+9. Yeni dil özelliğinden önce bağlayıcı sıra
    [öncelikli backlog](oncelikli-backlog.md) içindeki P0 compiler omurgasıdır.
 
 Her kapının kapanışı: karar + spec + olumlu/olumsuz test + sürüm notu. Yalnız
