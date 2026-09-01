@@ -1,0 +1,2 @@
+# .dil kaynakları her platformda LF iner (deterministik bayt — bölüm 27).
+*.dil text eol=lf

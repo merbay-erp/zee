@@ -73,7 +73,11 @@ fn projeler_ve_kitaplik_bicimli() {
         girdiler.sort();
         assert!(!girdiler.is_empty());
         for dosya in girdiler {
-            let kaynak = std::fs::read_to_string(&dosya).expect("okunmalı");
+            // Windows checkout'u CRLF verebilir; kıyas LF üzerinden yapılır
+            // (.gitattributes LF'i zorlar, bu satır ek savunmadır).
+            let kaynak = std::fs::read_to_string(&dosya)
+                .expect("okunmalı")
+                .replace("\r\n", "\n");
             let bir = bicimle(&kaynak)
                 .unwrap_or_else(|h| panic!("{:?} biçimlenmeli: {}", dosya.file_name(), h));
             assert_eq!(
