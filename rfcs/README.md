@@ -21,9 +21,10 @@ Dil değişikliği RFC ister (master plan bölüm 25). Şablon: [0000-sablon.md]
 | RFC-0013 | [Ondalık Sayılar](0013-ondalik-sayilar.md) | **geçici kabul** | K-028 |
 | RFC-0014 | [Standart Kitaplık](0014-standart-kitaplik.md) | **taslak — çalışan prototip ekli** | K-046, K-048, RFC-0002 §6.3 |
 | RFC-0015 | [Uygulama Eylemleri ve Web Güvenlik Sınırı](0015-uygulama-eylemleri.md) | **taslak — production kapısı** | K-081, ADR-010 |
+| RFC-0016 | [Atomik Kalıcı Dosya Sözleşmesi](0016-atomik-kalici-dosya.md) | **geçici kabul** | K-019, K-084, V1-P0-04 |
 
-**Durum özeti (1 Eyl 2026, K-081):** 15 RFC — 2 kabul (0001, 0010),
-10 geçici kabul (yüzey gerçeklendi + korpusla/testle sabitlendi; onay kapısı
+**Durum özeti (1 Eyl 2026, K-084):** 16 RFC — 2 kabul (0001, 0010),
+11 geçici kabul (yüzey gerçeklendi + korpusla/testle sabitlendi; onay kapısı
 usability oturumları), 3 taslak: 0012 (FFI — Faz 4/5), 0014 (standart
 kitaplık — çalışan dört-birimlik prototiple), 0015 (uygulama eylemi ve
 production web sınırı).

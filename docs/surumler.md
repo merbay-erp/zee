@@ -28,6 +28,12 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   çağrılmasa da denetlenir, imza çağrıyla değişmez. Liste/sözlük/Seçenek/Sonuç
   ve yapı tür yazımları desteklenir; TamSayı→Ondalık runtime değeri de
   genişler. T037/T038, golden 33 ve çağrı sırası permütasyonlarıyla 270 test.
+- **Atomik kalıcı dosya** (K-084, RFC-0016): `dosyasına ... yaz/ekle`
+  aynı klasörde geçici dosya + disk eşzamanlama + atomik replace kullanır.
+  Unix `flock` / Windows `LockFileEx` süreç kilidi iki yazarın
+  güncellemesini korur; ani süreç sonu kilidi bırakır. Biçimleyici, paket
+  bildirimi ve `proje.kilit` tek-dosya yazmaları da aynı çekirdeğe taşındı.
+  Hata enjeksiyonu, eşzamanlı okuyucu ve iki bağımsız CLI yazarıyla 276 test.
 
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`

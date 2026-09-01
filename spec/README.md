@@ -29,6 +29,7 @@ Kırıcı değişiklik sessizce yapılamaz: davranış değişikliği RFC'den ge
 | [05 — Değerlendirme](05-degerlendirme.md) | yürütme sırası, taşma, determinizm | RFC-0001 §7, ADR-003 |
 | [06 — Hata modeli](06-hata-modeli.md) | tanı sözleşmesi, Seçenek/Sonuç, test | RFC-0008, RFC-0010 |
 | [07 — Birimler](07-birimler.md) | birim çözümü ve kapsülleme | RFC-0009 §2 |
+| [08 — Kalıcı dosya IO](08-kalici-dosya.md) | atomik yazma, süreçler arası yarış ve dayanıklılık | RFC-0016 |
 
 ## Faza bağlı — henüz spec dışı
 

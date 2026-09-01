@@ -866,6 +866,24 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   yapı/listeler; dar→geniş ve geniş→dar çağrı sırası; runtime tür eşitliği.
   Toplam 270 test ve 122 kataloglu Türkçe tanı.
 
+## K-084 — Kalıcı dosya tek commit, yazarlar tek sıra
+
+- **Karar:** Mevcut `dosyasına ... yaz/ekle` yüzeyi değişmez; resmî gerçek
+  runtime tek-dosya güncellemesini RFC-0016/spec-08 sözleşmesiyle atomik yapar.
+- **Commit modeli:** Aynı klasörde işletim sistemi süreç kilidi; aynı klasörde
+  geçici dosyaya tam yazma + disk eşzamanlama; Unix atomik rename / Windows
+  replace+write-through. Okuyucu eski ya da yeni bütünü görür, arasını görmez.
+- **Yarış:** `ekle` kilit altında oku-değiştir-replace'tir; iki thread ve iki
+  bağımsız zee süreci 80 satırın tamamını korur. Kilit dosyası silinmez; ani
+  süreç sonu tanıtıcıyı kapattığında işletim sistemi kilidi bırakır.
+- **Hata sınırı:** Replace öncesi hata eski hedefi korur ve geçiciyi temizler.
+  Kilit/durability desteği olmayan platform güvenli olmayan fallback yerine
+  görünür hata verir. Çok-dosyalı iş transaction'ı RFC-0015'te kalır.
+- **Araç zinciri:** `dil biçimle`, paket bildirimi geri-yüklemesi ve
+  `proje.kilit` de aynı atomik tek-dosya çekirdeğine taşındı.
+- **Kanıt:** 5 kalıcılık birim testi (kısmi okuma karşı-örneği dahil) + iki
+  bağımsız CLI süreci regresyonu; toplam 276 test. V1-P0-04 kapandı.
+
 ## K-012 — Liste sabiti: `3, 7, 1, 9 listesi`
 
 - **Karar:** Virgülle ayrılmış değerler + `listesi`. Boş: `boş liste`.
