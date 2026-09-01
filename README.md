@@ -16,6 +16,7 @@ Bu bir çeviri katmanı değildir (`if→eğer` makyajı yok); AI semantiğin pa
 - **Oynayarak öğren:** [projeler/](projeler/) — çocuk proje kitaplığı (hepsi regression testte)
 - Dosya uzantısı: **`.dil`** (kalıcı — ADR-009)
 - Master plan: [docs/master-plan.md](docs/master-plan.md) (kaynak: [docs/Turkce_Programlama_Dili_Master_Proje_Dokumani.docx](docs/Turkce_Programlama_Dili_Master_Proje_Dokumani.docx))
+- V1 öncesi sıralı mühendislik backlog'u: [docs/oncelikli-backlog.md](docs/oncelikli-backlog.md)
 - İlkeler: [MANIFESTO.md](MANIFESTO.md)
 
 ## Durum: **v0.7.0** (1 Eylül 2026) — Faz 2+ sürüyor
@@ -78,13 +79,13 @@ parametre türleri**
 (`sayıyı Ondalık olarak al`) ve public **dönüş sözleşmesi**
 (`Ondalık döndürür` / `değer döndürmez`), **proje bildirimi** (`proje.dil`, klasörden
 çalıştır/denetle/dene), **yerel paketler** (`X paketini kullan`), süreçler
-arası kilitli **atomik dosya yazma** ve 142 etkin Türkçe kodlu tanı
+arası kilitli **atomik dosya yazma** ve 144 etkin Türkçe kodlu tanı
 (1 tarihsel kod ayrılmıştır).
 Araçlar: `dil çalıştır(--güvenli/--deneysel-web/--web-proxy)/parola-özeti/denetle(--json)/dene/biçimle/ekle/çıkar/kilitle/paketler/hata/belge/morfoloji/yeni`
 + **dillsp** LSP sunucusu — tanılar, hover, tanıma git, **morfolojili
 yeniden adlandırma (F2)** ([editors/](editors/)).
 Determinizm testlerde tam: rastgelelik, saat, dosyalar, HTTP, sunucu istekleri,
-sensörler ve an ölçümü IO soyutlamasından gelir — 370 test hermetik koşar.
+sensörler ve an ölçümü IO soyutlamasından gelir — 378 test hermetik koşar.
 
 **Playground:** `playground/olustur.sh` derleyiciyi WebAssembly'e derler ve
 tek dosyalık `playground/zee-playground.html` üretir — çift tıkla aç, tarayıcıda
@@ -124,9 +125,9 @@ korpus üzerinde regression testine girer.
 | 33 golden program | [golden/](golden/) | ✅ tamamı regression testte; sözdizimi RFC'lerle geçici kabulde |
 | 11 anti-örnek | [anti-ornekler/](anti-ornekler/) | ✅ (A11: nokta-ondalık) |
 | Syntax karar günlüğü | [kararlar/gunluk.md](kararlar/gunluk.md) | ✅ işleniyor |
-| RFC süreci | [rfcs/](rfcs/) | ✅ 18 RFC: 2 kabul, 14 geçici kabul, 2 taslak |
-| ADR süreci | [adr/](adr/) | ✅ 7 kabul (001-003, 007-010); 004/005/006 faz verisi bekliyor |
-| Hata kataloğu | [docs/hata-katalogu.md](docs/hata-katalogu.md) | ✅ 142 etkin kod + 1 ayrılmış kod, kaynakla tutarlılığı testli |
+| RFC süreci | [rfcs/](rfcs/) | ✅ 20 RFC: 2 kabul, 16 geçici kabul, 2 taslak |
+| ADR süreci | [adr/](adr/) | ✅ 8 kabul (001-003, 006-010); 004/005 faz verisi bekliyor |
+| Hata kataloğu | [docs/hata-katalogu.md](docs/hata-katalogu.md) | ✅ 144 etkin kod + 1 ayrılmış kod, kaynakla tutarlılığı testli |
 | Spesifikasyon | [spec/](spec/) | ✅ başladı — normatif çekirdek (RFC'lere bağlar) |
 
 ### Golden korpus hakkında
@@ -145,7 +146,7 @@ korpus üzerinde regression testine girer.
 v0.3 sürüm notlarına bak). Şimdiki kapılar:
 
 - **Usability oturumları (kurucu):** K-016 çağrı sözdiziminin onayı ve
-  15 "geçici kabul" RFC'nin tam kabulü — kit hazır: docs/usability-kiti.md.
+  16 "geçici kabul" RFC'nin tam kabulü — kit hazır: docs/usability-kiti.md.
 - **Lisans (bölüm 26, kurucu):** seçilmeden depo herkese açılmaz; site ve
   topluluk (bölüm 30) bunun arkasında.
 - **Makine tarafı:** K-081–K-093 ile v1'in altı P0 kapısı ve beş P1
@@ -159,8 +160,11 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   değer-sonuç imleci ve T053 kaynak sabitliğiyle tanımlıdır. Gezme usability
   kapısı gerçek insan formlarını bekler. K-094 paket yayın çekirdeği aynı
   kaynaktan deterministik `.zep`, Ed25519 imzalı yayın, SPDX 3.0.1 SBOM ve
-  SLSA v1 provenance üretir; uzak eşik-kök registry/cache/yanked/duyuru zinciri
-  ADR-006/RFC-0020 üzerinden ilerler ve tamamlanana kadar kapı açık kalır.
+  SLSA v1 provenance üretir. K-095 ağ dışı sabit root, eşik ve çift eşikli
+  rotasyon, timestamp/snapshot/targets, rollback/expiry/mix-and-match, yanlış
+  yayıncı, yanked ve kritik duyuru metadata doğrulamasını kurar; taşıma,
+  kalıcı cache/offline ve CLI tamamlanana kadar kapı açık kalır.
+  Uygulama sırası [öncelikli backlog](docs/oncelikli-backlog.md) ile sabittir.
   Bağlayıcı liste: [docs/v1-surum-kapilari.md](docs/v1-surum-kapilari.md).
 
 ## İlk gerçek milestone

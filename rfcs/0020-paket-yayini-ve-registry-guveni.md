@@ -1,11 +1,12 @@
 # RFC-0020 — Paket Yayını ve Registry Güven Zinciri
 
-- **Durum:** geçici kabul — yayın çekirdeği gerçeklendi; uzak kayıt POUF'u ve
-  istemci saldırı kapıları tamamlanmadan registry kısmı yürürlükte değildir
+- **Durum:** geçici kabul — yayın çekirdeği ve registry metadata doğrulayıcısı
+  gerçeklendi; taşıma/cache/CLI tamamlanmadan uzak paket kullanımı yürürlükte değildir
 - **Tarih:** 1 Eylül 2026
-- **İlgili günlük kaydı:** K-094
+- **İlgili günlük kaydı:** K-094, K-095
 - **Mimari karar:** ADR-006
-- **Normatif çalışan yüzey:** [spec/18](../spec/18-paket-yayini.md)
+- **Normatif çalışan yüzey:** [spec/18](../spec/18-paket-yayini.md),
+  [spec/19](../spec/19-registry-metadata-guveni.md)
 
 ## Özet
 
@@ -20,8 +21,11 @@ Bu RFC iki aşamayı bilinçli ayırır:
 
 - **A — yayın çekirdeği (çalışıyor):** `dil anahtar üret`, `dil paketle`,
   `.zep`, SPDX 3.0.1, SLSA v1, Ed25519 yayın bildirimi ve doğrulama.
-- **B — uzak kayıt (kararı kabul, gerçekleme sürüyor):** eşik kök, dört rol,
-  exact sürüm çözümü, doğrulanmış cache, yanked ve güvenlik duyurusu.
+- **B1 — metadata güveni (çalışıyor):** ağ dışı sabit root, eşik ve çift eşikli
+  rotasyon, dört rol, rollback/expiry/mix-and-match, exact targets yetkisi,
+  yanked ve güvenlik duyurusu politikası.
+- **B2 — uzak kullanım (gerçekleme sürüyor):** limitli taşıma, kalıcı metadata
+  durumu, doğrulanmış cache, offline hit/miss, manifest/kilit ve CLI.
 
 ## 1. Komut yüzeyi
 
@@ -138,14 +142,29 @@ bilinmeyen/tekrarlı alanı reddeder. Doğrulayıcı Ed25519 imzasından sonra:
 
 çapraz doğrular. Başarıdan önce kaynaklar yürütülmez veya cache'e kabul edilmez.
 
-## 6. Registry POUF v1 — bağlayıcı tasarım, henüz çalışan yüzey değil
+## 6. Registry POUF v1 — metadata doğrulayıcı çalışıyor
+
+Her rol kapalı şemalı `{ "imzali": ..., "imzalar": [...] }` zarfıdır. Dosya
+`serde_json::to_vec_pretty` girintisi ve tek son satır sonuyla kanoniktir;
+haritalar anahtar sırasında, imzalar `anahtar_kimligi` sırasında kesin artar.
+Bilinmeyen/tekrarlı alan veya farklı byte gösterimi reddedilir. İmza girdisi:
+
+```text
+"zee-registry-v1\0" || UTF8(rol) || "\0" || COMPACT_JSON(imzali)
+```
+
+Root şeması `zee-registry-root-v1`; diğerleri sırasıyla
+`zee-registry-targets-v1`, `zee-registry-snapshot-v1` ve
+`zee-registry-timestamp-v1`dir. Wire alanları ve bütün limitler spec/19'da
+normatiftir.
 
 ### 6.1 Roller
 
 `root`, `targets`, `snapshot`, `timestamp` TUF anlamlarıyla ayrıdır. Her rol
 bir anahtar kümesi ve `1..N` eşik taşır. Root başlangıç özeti ağ dışında
 sabitlenir; ardışık root sürümü hem eski hem yeni root eşiğince imzalanır.
-Metadata sürümü pozitif ve monoton; süre sonu RFC 3339 UTC'dir.
+Metadata sürümü pozitif ve monoton; süre sonu yalnız kesin
+`YYYY-MM-DDTHH:MM:SSZ` UTC'dir. `tutarli_anlik` true olmak zorundadır.
 
 `targets` exact `ad@X.Y.Z` için yayıncı kimliği, dört hedefin özet+boyutu,
 yanked durumu ve duyuru kimliklerini bağlar. `snapshot`, bütün targets rol
@@ -163,7 +182,11 @@ dosyalarının sürüm/özet/boyutunu; `timestamp` güncel snapshot'ı bağlar.
 8. ancak bundan sonra aynı dosya sistemindeki geçiciden içerik-adresli cache'e
    atomik taşınır ve kilit üretilir.
 
-Görülen en yüksek metadata sürümleri cache durumunda kalıcıdır. Mirror yalnız
+Görülen en yüksek metadata sürümleri ve aynı sürümde eşdeğerliği koruyan tam
+byte SHA-256 özetleri cache durumunda kalıcıdır. Sürümü aynı ama özeti farklı
+metadata da rollback/equivocation olarak reddedilir. Durum yalnız bütün zincir
+başarıyla doğrulandıktan sonra tek işlem olarak uygulanır; geçersiz ileri
+sürümlü bir timestamp kalıcı fast-forward zehirlenmesi yaratmaz. Mirror yalnız
 base URL'dir; kök kimliği ve hedef kararına katılmaz. Derleme/çalıştırma ağ
 kullanmaz; kilitli doğrulanmış cache olmadan P-serisi tedarik tanısı verir.
 
@@ -172,6 +195,15 @@ kullanmaz; kilitli doğrulanmış cache olmadan P-serisi tedarik tanısı verir.
 İlk uzak yüzey `ad@X.Y.Z` dışında sürüm ifadesi kabul etmez. SemVer aralığı,
 ön-sürüm seçimi, özellik çözümü ve çoklu registry önceliği dependency confusion
 riski nedeniyle bu RFC'nin v1 POUF'una sessizce eklenemez.
+
+### 6.4 Limitler ve targets şeması
+
+Root 1 MiB, timestamp 64 KiB, snapshot 1 MiB, targets 8 MiB; anahtar ve zarf
+imzası 256, hedef ve duyuru ayrı ayrı 100.000 ile sınırlıdır. Targets
+`<ad>@X.Y.Z` anahtarında paket/sürüm/morfoloji, izinli yayıncı kimliği,
+yanked, duyuru kimlikleri ve dört yayın dosyasının kesin ad/boyut/SHA-256
+bağını taşır. `.zep` 64 MiB, SBOM/provenance 8 MiB, yayın bildirimi 1 MiB
+sınırındadır. Üst rolün boyut bağı ayrıştırmadan önce uygulanır.
 
 ## 7. Yanked ve duyuru politikası
 
@@ -183,10 +215,10 @@ duyuru yeni kilidi varsayılan engeller; baypas gerekçesi kilitte görünürdü
 
 ## 8. Hata ve atomiklik
 
-Yayın/anahtar üretim yüzeyinin kararlı kodu P012'dir. Uzak istemci kodları
-gerçeklemeyle birlikte P013+ alanında ayrılaştırılacaktır; çalışmayan koda
-şimdiden sahte tanı atanmaz. `dil paketle`, kendi çıktısını tüketici
-doğrulayıcıyla doğrulamadan hiçbir çıktı yazmaz. Her çıktı atomik tek-dosya
+Yayın/anahtar üretim yüzeyinin kararlı kodu P012'dir. Registry metadata/kök
+güven zinciri P013, exact hedef/yayıncı/yanked/duyuru politikası P014'tür.
+Kalıcı cache/taşıma tanıları gerçeklemeyle ayrılaştırılacaktır. `dil paketle`,
+kendi çıktısını tüketici doğrulayıcıyla doğrulamadan hiçbir çıktı yazmaz. Her çıktı atomik tek-dosya
 yazımı kullanır; dört dosyanın süreç çökmesine dayanıklı tek transaction olduğu
 sözü verilmez. İçerik-adresli adlar ve her kullanımda doğrulama yarım kümeyi
 yayın saymaz.
@@ -202,7 +234,10 @@ yayın saymaz.
 - path traversal, fazladan byte, sıra/tekillik ve limit olumsuzları;
 - üretici çıktısının aynı doğrulayıcıdan geçmesi.
 
-Registry aşaması tamam sayılmadan ayrıca root eşik/rotasyon, eski root,
-rollback, freeze/expiry, mix-and-match, fast-forward, endless-data, yanlış
-yayıncı, yanked, kritik duyuru, bozuk cache, çevrimdışı hit/miss ve kötü ayna
-testleri zorunludur. V1-P1-07 bu ikinci liste tamamlanana kadar açık kalır.
+K-095 metadata aşaması root eşik/çift eşikli rotasyon, rollback,
+freeze/expiry, aynı sürümlü farklı içerik, mix-and-match, geçersiz
+fast-forward durum zehirleme, endless-metadata sınırı, yanlış yayıncı, yanked
+ve kritik duyuru testlerini kanıtlar. Registry bütünü tamam sayılmadan ayrıca
+kalıcı durum çökme atomikliği, bozuk cache, çevrimdışı hit/miss, kötü ayna,
+taşıma boyut aşımı ve exact kilit entegrasyonu zorunludur. V1-P1-07 bu kalan
+liste tamamlanana kadar açık kalır.

@@ -246,9 +246,11 @@ geçişli grafiği göreli yol, sürüm, kenar ve SHA-256 kaynak özetiyle
 deterministik `proje.kilit` dosyasına sabitler. Registry, imza/provenance,
 SBOM ve uzak sürüm çözümü bu aşamada henüz başlamamıştı. K-094'te deterministik
 `.zep`, Ed25519 yayın bildirimi, SPDX 3.0.1 SBOM ve SLSA v1 provenance çalışan
-ilk dağıtım çekirdeğine dönüştü. Uzak registry rol zinciri, doğrulanmış cache,
-yanked/duyuru ve exact sürüm istemcisi henüz tamamlanmamıştır; V1-P1-07 açık
-kalır.
+ilk dağıtım çekirdeğine dönüştü. K-095 ağ dışı root sabitlemesi, eşik/çift
+eşikli rotasyon, timestamp→snapshot→targets bağları, rollback/expiry ve exact
+yayıncı/yanked/duyuru politikasını çalışan metadata doğrulayıcısına dönüştürdü.
+Limitli uzak taşıma, kalıcı metadata/cache, offline hit/miss, exact manifest/
+kilit ve CLI henüz tamamlanmamıştır; V1-P1-07 açık kalır.
 `dil ekle <yerel-yol> [proje]` (K-079) aday grafiği diske yazmadan çözer;
 başarılıysa yorumu koruyan resmî biçimde bildirimi ve kilidi günceller,
 yazma hatasında önceki iki dosyayı geri yüklemeyi dener.
@@ -538,6 +540,17 @@ Education: pedagojik içerik ve okul pilotları.
 Language/UX: Türkçe dilbilim, okunabilirlik ve usability.
 Release: CI, conformance, reproducible builds.
 Başlangıçta bir kişi birden çok rolü taşıyabilir. Rol ayrımı, ileride katkı geldiğinde sorumluluk sınırını net tutmak içindir.
+
+# 40. V1 öncesi öncelikli mühendislik backlog'u
+
+Hızlı büyüyen bootstrap derleyicinin omurgasını yeni özelliklerden önce
+sağlamlaştıran bağlayıcı uygulama sırası
+[docs/oncelikli-backlog.md](oncelikli-backlog.md) içindedir. İlk kapılar K-016
+çağrı usability kararı, K-093 gezme usability sonucu, genellenebilir expression
+grammar mimarisi ve core AST→capability/intrinsic ayrımıdır. HIR/SymbolId/faz
+sınırı, fuzz/panic audit'i ve IO trace/replay bunları izler. P0 maddeleri
+kapanmadan yeni dil özelliği varsayılan olarak öne alınmaz; yarım güvenlik/
+correctness dilimi önce atomik olarak tamamlanır.
 # 40. Proje felsefesinin korunması
 Bu projenin başarısı yalnız compiler’ın çalışması değildir. Başarı; Türkçe konuşan bir çocuğun yabancı syntax bariyerine takılmadan algoritmik düşünceyle tanışması, aynı dilin yıllar sonra onu terk etmeye zorlamaması ve ekosistemin tek bir şirketin kapalı ürünü haline gelmemesidir.
 Her yeni özellik şu dört sorudan geçmelidir: Türkçe doğal mı? Deterministik mi? Öğrenilebilir mi? Profesyonel ölçekte savunulabilir mi? Dördünden biri hayırsa özellik yeniden tasarlanır.

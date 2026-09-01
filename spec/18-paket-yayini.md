@@ -2,9 +2,9 @@
 
 Normatif kaynak: RFC-0020 §1–5/8. Mimari sınır: ADR-006. Tanı: P012.
 
-Bu bölüm çalışan yerel yayın zincirini tanımlar. Uzak registry rol/istemci
-protokolü RFC-0020 §6'da kararlaştırılmış ama henüz bu normatif çalışan yüzeyin
-parçası değildir.
+Bu bölüm çalışan yerel yayın zincirini tanımlar. Registry rol metadata
+doğrulaması artık [spec/19](19-registry-metadata-guveni.md)'da çalışır;
+taşıma/cache/CLI bu bölümün ve çalışan uzak bağımlılık yüzeyinin parçası değildir.
 
 ## Komutlar (TANIMLI)
 

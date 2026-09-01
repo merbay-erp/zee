@@ -14,7 +14,7 @@ Dil değişikliği RFC ister (master plan bölüm 25). Şablon: [0000-sablon.md]
 | RFC-0006 | [İşlemler ve Parametreler](0006-islemler-ve-parametreler.md) | **geçici kabul** (K-086 tam public imza; çağrı yüzeyi usability kapısı) | K-016, K-032, K-083, K-086 |
 | RFC-0007 | [Temel Tür Sistemi](0007-temel-tur-sistemi.md) | **geçici kabul** | K-009, K-014 |
 | RFC-0008 | [Seçenek ve Sonuç](0008-secenek-ve-sonuc.md) | **geçici kabul** (daraltma + yapılandırılmış Hata) | K-017, K-018, K-030, K-091 |
-| RFC-0009 | [Modül ve Paket Modeli](0009-modul-ve-paket.md) | **geçici kabul** (birim + proje + yerel paket/kilit + public kaynak ABI); uzak registry taslak | K-029, K-076, K-078, K-086 |
+| RFC-0009 | [Modül ve Paket Modeli](0009-modul-ve-paket.md) | **geçici kabul** (birim + proje + yerel paket/kilit + public kaynak ABI); registry metadata güveni çalışır, uzak bağımlılık entegrasyonu açık | K-029, K-076, K-078, K-086, K-095 |
 | RFC-0010 | [Hata ve Tanılama Standardı](0010-hata-ve-tanilama.md) | **kabul** | K-026 |
 | RFC-0011 | [Structured Concurrency](0011-structured-concurrency.md) | **geçici kabul** (K-085 deadline; K-090 deterministik scheduler+sahiplik) | K-023, K-085, K-090 |
 | RFC-0012 | [FFI ve Tehlikeli Sınır](0012-ffi-ve-tehlikeli-sinir.md) | **taslak** | A10 |
@@ -25,11 +25,11 @@ Dil değişikliği RFC ister (master plan bölüm 25). Şablon: [0000-sablon.md]
 | RFC-0017 | [Web Oturumu, Yetki, CSRF ve Güvenilir Proxy](0017-web-oturum-ve-csrf.md) | **geçici kabul** | K-082, K-088, V1-P0-03 |
 | RFC-0018 | [Sürümlü Morfoloji Profili](0018-surumlu-morfoloji-profili.md) | **geçici kabul** | K-011, K-072, K-089, V1-P1-02 |
 | RFC-0019 | [Değer Semantiği ve Gezme İmleci](0019-deger-semantigi-ve-gezme-imleci.md) | **geçici kabul** (makine kanıtı; usability bekliyor) | K-034, K-060, K-074, K-093, V1-P1-05 |
-| RFC-0020 | [Paket Yayını ve Registry Güven Zinciri](0020-paket-yayini-ve-registry-guveni.md) | **geçici kabul** (K-094 yayın çekirdeği; uzak POUF gerçekleniyor) | K-094, V1-P1-07, ADR-006 |
+| RFC-0020 | [Paket Yayını ve Registry Güven Zinciri](0020-paket-yayini-ve-registry-guveni.md) | **geçici kabul** (K-094 yayın; K-095 metadata güveni; taşıma/cache/CLI açık) | K-094, K-095, V1-P1-07, ADR-006 |
 
-**Durum özeti (1 Eylül 2026, K-094):** 20 RFC — 2 kabul (0001, 0010),
-16 geçici kabul (RFC-0020'nin yalnız yayın çekirdeği normatiftir; uzak kayıt
-istemcisi tamamlanmadan registry sözü verilmez), 2 taslak: 0012 (FFI — Faz
+**Durum özeti (1 Eylül 2026, K-095):** 20 RFC — 2 kabul (0001, 0010),
+16 geçici kabul (RFC-0020'nin yayın ve metadata doğrulama katmanı normatiftir;
+taşıma/cache/CLI tamamlanmadan uzak paket kullanımı sözü verilmez), 2 taslak: 0012 (FFI — Faz
 4/5) ve 0014 (standart kitaplık — çalışan prototiple).
 Kural: bir RFC ancak yüzeyi gerçeklenmiş VE regression testine bağlanmışsa
 geçici kabule geçer; tam kabul usability kapısından geçmeyi bekler.

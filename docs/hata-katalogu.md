@@ -180,6 +180,8 @@ türetilmiştir; yeni kod eklenince bu dosya güncellenir — CI'a bağlanması 
 | P010 | Kaldırılmak istenen paket en az bir proje kaynağında hâlâ kullanılıyor | Önce `<ad> paketini kullan` satırını ve pakete bağlı çağrıları kaldır |
 | P011 | Projenin sabitlediği morfoloji profili bu derleyicide desteklenmiyor | Derleyiciyi/projeyi uyumlu sürüme getir; v1 için `morfoloji "zee-tr-1" olsun` kullan |
 | P012 | Yayıncı anahtarı veya tekrar üretilebilir paket/imza/SBOM/provenance zinciri üretilemedi | Anahtar izin/biçimini, kaynak paket limitlerini ve yerel bağımlılık/sembolik bağ olmadığını denetle; ayrıntı fail-closed nedeni gösterir |
+| P013 | Registry root/metadata imzası, eşik, sürüm, süre, kanonik biçim, üst rol boyut/özet bağı veya kalıcı geçmiş doğrulanamadı | Registry kök sabitlemesini ve rol metadata zincirini yenile; doğrulanmayan aynayı/cache durumunu kullanma |
+| P014 | Exact hedef bulunamadı; targets yayıncı/paket bağı uyuşmadı; sürüm yanked ya da etkin kritik duyurudan etkilendi | Doğru exact sürüm/yayıncıyı seç; yanked/duyuru baypasını yalnız açık gerekçe ve kilit kaydıyla uygula |
 
 ## Ç — İç akış
 

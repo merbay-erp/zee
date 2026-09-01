@@ -1,6 +1,6 @@
 # ADR-006 — Paket registry güven modeli
 
-- **Durum:** kabul (çekirdek yayın zinciri K-094; uzak istemci aşamalı gerçekleme)
+- **Durum:** kabul (yayın K-094; registry metadata güveni K-095; taşıma/cache sürüyor)
 - **Tarih:** 1 Eylül 2026
 - **Normatif ayrıntı:** RFC-0020, spec/18
 
@@ -101,10 +101,14 @@ destekli saklamalıdır; zee bir düz dosyayı HSM eşdeğeri saymaz.
 ## Aşamalı gerçekleme durumu
 
 K-094'ün ilk dilimi §3'ü gerçekler: anahtar üretimi, `.zep`, SPDX, SLSA,
-imzalı yayın, çapraz doğrulama, limitler ve oynama testleri çalışır. Registry
-rolleri, uzak istemci, kalıcı metadata sürümü, yanked/duyuru ve doğrulanmış
-cache tamamlanana kadar V1-P1-07 **AÇIK** kalır. Belgede kararın kabul edilmiş
-olması gerçeklenmemiş ağ güvencesi iddiası değildir.
+imzalı yayın, çapraz doğrulama, limitler ve oynama testleri çalışır. K-095;
+ağ dışı root sabitlemesini, eşik/çift eşikli ardışık rotasyonu,
+timestamp→snapshot→targets bağlarını, tek güncelleme saatini, sürüm+özet
+rollback/equivocation durumunu ve exact yayıncı/yanked/duyuru politikasını
+çalışan byte doğrulayıcısına dönüştürür. Kalıcı durum dosyası, uzak taşıma,
+doğrulanmış cache, offline hit/miss, manifest/kilit ve CLI tamamlanana kadar
+V1-P1-07 **AÇIK** kalır. Belgede kararın kabul edilmiş olması gerçeklenmemiş
+ağ/cache güvencesi iddiası değildir.
 
 ## Sonuçlar
 

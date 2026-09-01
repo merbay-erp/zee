@@ -44,6 +44,7 @@ fn katalog_kaynakla_birebir() {
         "src/bicimleyici.rs",
         "src/proje.rs",
         "src/paket.rs",
+        "src/registry.rs",
         "src/tedarik.rs",
         "src/lib.rs",
         "src/main.rs",
@@ -71,6 +72,13 @@ fn katalog_kaynakla_birebir() {
         for parca in icerik.split("eprintln!(\"") {
             if let Some(ilk) = parca.split('"').next() {
                 kaynak_kodlari.extend(kodlari_topla(ilk));
+            }
+        }
+        // Konumsuz registry güven/politika hataları kapalı hata türünde
+        // doğrudan `kod: "P..."` alanıyla doğar.
+        for parca in icerik.split("kod: \"") {
+            if let Some(kod) = parca.split('"').next() {
+                kaynak_kodlari.extend(kodlari_topla(kod));
             }
         }
         // Nöbetçi karşılaştırmaları da (tani.kod == "Ç000") kataloğa girmeli.
