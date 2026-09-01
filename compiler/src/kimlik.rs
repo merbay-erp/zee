@@ -25,25 +25,25 @@ macro_rules! sirali_kimlik {
 sirali_kimlik!(YapiId);
 sirali_kimlik!(IslemId);
 
-/// Bir sembol tablosundaki tanımı gösterir. Üst 32 bit kapsamı, alt 32 bit
-/// o kapsamdaki tanım sırasını taşır; bu düzen depolama indeksi olarak
-/// kullanılamaz.
-#[repr(transparent)]
+/// Bir sembol tablosundaki tanımı gösterir. Kapsam ve o kapsamdaki tanım
+/// sırası ayrı bileşenlerdir; bu düzen depolama indeksi olarak kullanılamaz
+/// ve kaynak büyüklüğüne yapay 32-bit panic sınırı koymaz.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
-pub struct SymbolId(u64);
+pub struct SymbolId {
+    kapsam: usize,
+    sira: usize,
+}
 
 impl SymbolId {
-    pub(crate) fn yeni(kapsam: usize, sira: usize) -> Self {
-        assert!(kapsam <= u32::MAX as usize, "sembol kapsamı u32 sınırını aştı");
-        assert!(sira <= u32::MAX as usize, "sembol sırası u32 sınırını aştı");
-        Self(((kapsam as u64) << 32) | sira as u64)
+    pub(crate) const fn yeni(kapsam: usize, sira: usize) -> Self {
+        Self { kapsam, sira }
     }
 
-    pub const fn kapsam(self) -> u32 {
-        (self.0 >> 32) as u32
+    pub const fn kapsam(self) -> usize {
+        self.kapsam
     }
 
-    pub const fn sirasi(self) -> u32 {
-        self.0 as u32
+    pub const fn sirasi(self) -> usize {
+        self.sira
     }
 }

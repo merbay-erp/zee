@@ -1,3 +1,15 @@
+#![cfg_attr(
+    not(test),
+    deny(
+        clippy::unwrap_used,
+        clippy::expect_used,
+        clippy::panic,
+        clippy::unreachable,
+        clippy::todo,
+        clippy::unimplemented
+    )
+)]
+
 //! `dil` — resmi CLI (master plan bölüm 15).
 //!
 //! Komutlar Türkçedir: çalıştır, denetle, sürüm.
@@ -88,13 +100,24 @@ fn main() -> ExitCode {
     // Derinlik sınırına (C019, 500) kadar özyineleme her platformda doğal
     // yığını taşırmamalı; Windows ana iş parçacığı 1 MB olduğundan iş
     // 32 MB yığınlı bir iş parçacığında koşar (K-040).
-    std::thread::Builder::new()
+    let is_parcacigi = match std::thread::Builder::new()
         .name("dil".into())
         .stack_size(32 * 1024 * 1024)
         .spawn(govde)
-        .expect("iş parçacığı açılamadı")
-        .join()
-        .expect("iş parçacığı düştü")
+    {
+        Ok(is_parcacigi) => is_parcacigi,
+        Err(hata) => {
+            eprintln!("dil çalışma iş parçacığı açılamadı: {}", hata);
+            return ExitCode::FAILURE;
+        }
+    };
+    match is_parcacigi.join() {
+        Ok(kod) => kod,
+        Err(_) => {
+            eprintln!("dil çalışma iş parçacığı beklenmedik biçimde durdu.");
+            ExitCode::FAILURE
+        }
+    }
 }
 
 fn govde() -> ExitCode {
@@ -1119,7 +1142,7 @@ fn girdiyi_oku(yol: &std::path::Path) -> Result<KaynakGirdisi, GirdiHatasi> {
     if yol.is_dir() {
         let proje = dil::paket::ProjeGrafigi::cozumle(yol).map_err(GirdiHatasi::from)?;
         proje.kilidi_denetle().map_err(GirdiHatasi::from)?;
-        let giris = proje.ana_giris();
+        let giris = proje.ana_giris().map_err(GirdiHatasi::Mesaj)?;
         let klasor = proje
             .ana_giris_yolu()
             .parent()
@@ -1616,7 +1639,9 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                 "Sunucu dinliyor: {} (yerel proxy hedefi http://127.0.0.1:{})",
                 origin.tam, kapi
             ),
-            WebModu::Kapali => unreachable!(),
+            WebModu::Kapali => {
+                return Err("web yüzeyi kapalıyken sunucu kurulamaz".into());
+            }
         }
         self.dinleyici = Some(dinleyici);
         Ok(())

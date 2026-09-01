@@ -18,9 +18,11 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
    kotası ve K-107 LSP tek-girdi sınırını kapattı (426 test).
 5. K-108/ADR-020 her semantic HIR düğümünde kaynak aralığını zorunlu yaptı;
    B-020 kapandı (427 test).
-6. Sıradaki makine omurgası B-014–B-017'dir.
-7. Üçüncü sprint: B-027/B-028 → B-030/B-031 → B-043/B-044.
-8. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
+6. K-109/ADR-021 production panic audit'inde 46 noktayı temizleyip dört crate
+   köküne kalıcı lint kapısı koydu; B-014 kapandı (429 test).
+7. Sıradaki makine omurgası B-015–B-017'dir.
+8. Üçüncü sprint: B-027/B-028 → B-030/B-031 → B-043/B-044.
+9. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
 
 ## P0 — V1 öncesi dil ve derleyici omurgası
 
@@ -88,8 +90,15 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   `Ayristirici::islem_adlari` artık dosya/birim başlıklarının ön-tarandığını,
   tanım sırasından bağımsız çağrı ve karşılıklı özyinelemeyi doğru açıklar;
   tarihsel karar günlüğü eski davranışı açıkça tarihsel diye korur.
-- **B-014 · AÇIK — production `unwrap/expect` audit'i.** Matematiksel invariant,
-  malformed AST ve IO/external state sınıflarını ayır; son ikisini tanıya çevir.
+- **B-014 · KAPALI (K-109) — production `unwrap/expect` audit'i.** 46
+  production `unwrap`/`expect`/`panic!`/`unreachable!` noktası kaldırıldı.
+  Kullanıcı/bozuk AST/IO durumları T016, C000, `Result` veya açık CLI hatasına
+  iner; scheduler process'i düşürmez. `lib`, `dil`, `dillsp` ve `olcum`
+  crate'leri test dışı derlemede bu dört kalıbın yanında `todo!` ve
+  `unimplemented!`ı da Clippy `deny` ile reddeder. `SymbolId`nin iki 32-bit
+  kapasite assertion'ı ayrı `usize` bileşenlerle kaldırıldı. ADR-021,
+  [uygulama rehberi](production-panic-politikasi.md) ve iki regresyonla
+  V1-P0-19 kapandı; toplam 429 test yeşildir.
 - **B-015 · AÇIK — lexer/parser fuzzing.** Her UTF-8 girişte panic-free sözünü
   Unicode, emoji, combining im, girinti, dev sayı ve virgül saldırılarıyla kanıtla.
 - **B-016 · AÇIK — morfoloji property/fuzz testini büyüt.** Üret→çöz,
@@ -213,6 +222,6 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 ## Bir sonraki somut kapı
 
 İnsan kanıtı hattında B-001, doldurulmuş gerçek usability formları ve önceden
-ilan edilmiş eşikleri bekler. Makine hattında B-020/K-108 kapandı; sıradaki iş
-B-014 production panic/`unwrap` audit'idir. Ardından B-015 lexer/parser fuzz,
-B-016 morfoloji property/fuzz ve B-017 AST invariant doğrulayıcı gelir.
+ilan edilmiş eşikleri bekler. Makine hattında B-014/K-109 kapandı; sıradaki iş
+B-015 lexer/parser fuzz korpusudur. Ardından B-016 morfoloji property/fuzz ve
+B-017 AST invariant doğrulayıcı gelir.

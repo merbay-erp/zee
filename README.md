@@ -85,7 +85,7 @@ Araçlar: `dil çalıştır(--güvenli/--deneysel-web/--web-proxy)/parola-özeti
 + **dillsp** LSP sunucusu — tanılar, hover, tanıma git, **morfolojili
 yeniden adlandırma (F2)** ([editors/](editors/)).
 Determinizm testlerde tam: rastgelelik, saat, dosyalar, HTTP, sunucu istekleri,
-sensörler ve an ölçümü IO soyutlamasından gelir — 427 test hermetik koşar.
+sensörler ve an ölçümü IO soyutlamasından gelir — 429 test hermetik koşar.
 
 **Playground:** `playground/olustur.sh` derleyiciyi WebAssembly'e derler ve
 tek dosyalık `playground/zee-playground.html` üretir — çift tıkla aç, tarayıcıda
@@ -197,6 +197,9 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   K-108/ADR-020 her semantic typed-HIR ifadesine zorunlu kaynak aralığı
   ekledi; kesin token konumu olmayan eski AST düğümleri uydurma sütun yerine
   kaynak satırı zarfı taşır.
+  K-109/ADR-021 production'daki 46 doğrudan panic noktasını tanı/sonuca
+  çevirdi; `lib`, `dil`, `dillsp` ve `olcum` yeni unwrap/expect/panic
+  kullanımını test dışı Clippy kapısında reddeder.
   Uygulama sırası
   [öncelikli backlog](docs/oncelikli-backlog.md) ile sabittir.
   Bağlayıcı liste: [docs/v1-surum-kapilari.md](docs/v1-surum-kapilari.md).

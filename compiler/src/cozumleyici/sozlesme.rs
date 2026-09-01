@@ -6,7 +6,9 @@ pub(super) fn acik_islemleri_denetle(baglam: &mut Baglam) -> Result<(), Tani> {
     let mut adlar = baglam.islemler.keys().cloned().collect::<Vec<_>>();
     adlar.sort();
     for ad in adlar {
-        let islem = baglam.islemler.get(&ad).expect("ad haritadan geldi").clone();
+        let Some(islem) = baglam.islemler.get(&ad).cloned() else {
+            continue;
+        };
         let turler = acik_parametre_turleri(&islem, baglam)?;
         let satir = islem.satir;
         if let Some(turler) = turler {
@@ -106,7 +108,9 @@ pub(super) fn acik_parametre_turleri(
         .parametreler
         .iter()
         .map(|parametre| {
-            let yazim = parametre.tur_yazimi.as_deref().expect("hepsi açık");
+            let yazim = parametre.tur_yazimi.as_deref().ok_or_else(|| {
+                ic_tutarlilik_hatasi("Açık parametrenin tür yazımı kayboldu", parametre.satir)
+            })?;
             parametre_turu(yazim, baglam).ok_or_else(|| {
                 Tani::yeni(
                     "T038",

@@ -161,7 +161,7 @@ pub fn ek_zinciri_coz(kelime: &str, kok: &str) -> Option<Vec<SoyutEk>> {
 
 /// Tek eki Türkçe uyum kurallarıyla köke giydirir.
 pub fn ek_uydur(kok: &str, ek: SoyutEk) -> String {
-    ek_zinciri_uydur(kok, &[ek]).expect("tek ek her zaman geçerlidir")
+    eki_uydur(kok, ek, None)
 }
 
 /// Geçerli bir v1 ek zincirinin kanonik yüzeyini üretir.
@@ -249,8 +249,10 @@ fn kok_bicimleri(govde: &str) -> Vec<String> {
         };
         if let Some(sert) = sert {
             let mut aday = harfler.clone();
-            *aday.last_mut().expect("son harf var") = sert;
-            benzersiz_ekle(&mut adaylar, aday.into_iter().collect());
+            if let Some(son) = aday.last_mut() {
+                *son = sert;
+                benzersiz_ekle(&mut adaylar, aday.into_iter().collect());
+            }
         }
     }
 
@@ -268,8 +270,10 @@ fn kok_bicimleri(govde: &str) -> Vec<String> {
             _ => None,
         };
         if let Some(sert) = sert {
-            *tekli_harfler.last_mut().expect("tekli kök boş değil") = sert;
-            benzersiz_ekle(&mut adaylar, tekli_harfler.into_iter().collect());
+            if let Some(son) = tekli_harfler.last_mut() {
+                *son = sert;
+                benzersiz_ekle(&mut adaylar, tekli_harfler.into_iter().collect());
+            }
         }
     }
 

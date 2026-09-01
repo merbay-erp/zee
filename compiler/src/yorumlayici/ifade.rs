@@ -134,12 +134,12 @@ pub(super) fn degerlendir_async<'a>(
                     Ozellik::BinlikliKuruslu,
                     deger @ (Deger::Ondalik(_) | Deger::TamSayi(_)),
                 ) => {
-                    let ondalik = sayisal_ac(&deger).expect("sayısal desen denetlendi");
+                    let ondalik = sayisal_ac(&deger).ok_or_else(|| ic_hata(satir))?;
                     Ok(Deger::Metin(ondalik.kuruslu(true)))
                 }
                 (Ozellik::Kuruslu, deger @ (Deger::Ondalik(_) | Deger::TamSayi(_))) => {
                     // K-065: daima iki hane; yarımlar sıfırdan uzağa (dil kuralı).
-                    let ondalik = sayisal_ac(&deger).expect("sayısal desen denetlendi");
+                    let ondalik = sayisal_ac(&deger).ok_or_else(|| ic_hata(satir))?;
                     Ok(Deger::Metin(ondalik.kuruslu(false)))
                 }
                 (Ozellik::Siralanmis, Deger::Liste(mut ogeler)) => {

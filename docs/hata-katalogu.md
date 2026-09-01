@@ -92,7 +92,7 @@ türetilmiştir; yeni kod eklenince bu dosya güncellenir — CI'a bağlanması 
 | T013 | `her ... için` kaynağı liste/sözlük değil | — |
 | T014 | Özellik bu türe uygulanamaz | adedi/ilki/sonu → liste; uzunluğu/kelimeleri → metin; yılı → tarih |
 | T015 | Çağrı argüman sayısı yanlış | İşlemin parametre sayısına bak |
-| T016 | İşlem kaydı bulunamadı | Derleyici iç hatası olabilir — bildir (özyineleme v0.2'de serbest) |
+| T016 | Checker semantic kaydı bulunamadı | İşlem/sembol/yapı/HIR iç tutarlılık hatası olabilir — bildir (özyineleme v0.2'de serbest) |
 | T017 | Argüman türleri işlem imzasına uymuyor | Çıkarımlı imzayı aynı türle çağır; public API'de `<ad> <Tür> olarak al` sözleşmesine uy |
 | T018 | Dönüş türleri tutarsız | Tek tür döndür; `yok` + tür → Seçenek olur |
 | T019 | Değer döndürmeyen işlem ifade konumunda | İşleme `... döndür` ekle ya da cümle olarak çağır |

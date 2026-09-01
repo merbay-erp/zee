@@ -85,16 +85,16 @@ pub fn sozcukle(kaynak: &str) -> Result<Vec<Token>, Tani> {
         }
 
         // Girinti/Cikinti tokenları.
-        let onceki = *girinti_yigini.last().unwrap();
+        let onceki = girinti_yigini.last().copied().unwrap_or(0);
         if girinti > onceki {
             girinti_yigini.push(girinti);
             tokenlar.push(Token::yeni(TokenTur::Girinti, satir_no, 1, girinti));
         } else if girinti < onceki {
-            while *girinti_yigini.last().unwrap() > girinti {
+            while girinti_yigini.last().copied().unwrap_or(0) > girinti {
                 girinti_yigini.pop();
                 tokenlar.push(Token::yeni(TokenTur::Cikinti, satir_no, 1, 1));
             }
-            if *girinti_yigini.last().unwrap() != girinti {
+            if girinti_yigini.last().copied().unwrap_or(0) != girinti {
                 return Err(Tani::yeni(
                     "S005",
                     "Girinti hizası önceki bloklardan hiçbiriyle uyuşmuyor.".into(),

@@ -155,16 +155,15 @@ where
 {
     let (mut dosya, mut gecici) = gecici_dosya_ac(hedef)?;
     dosya.write_all(icerik)?;
+    let gecici_yol = gecici.yol.as_deref().ok_or_else(|| {
+        io::Error::new(io::ErrorKind::NotFound, "zee geçici dosya yolu kayboldu")
+    })?;
     if let Ok(eski) = std::fs::metadata(hedef) {
-        std::fs::set_permissions(
-            gecici.yol.as_deref().expect("geçici yol var"),
-            eski.permissions(),
-        )?;
+        std::fs::set_permissions(gecici_yol, eski.permissions())?;
     }
     dosya.sync_all()?;
     drop(dosya);
 
-    let gecici_yol = gecici.yol.as_deref().expect("geçici yol var");
     degistir(gecici_yol, hedef)?;
     gecici.yol = None;
     klasoru_eszamanla(ebeveyn(hedef))

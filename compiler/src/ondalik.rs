@@ -57,6 +57,10 @@ impl Ondalik {
         Self::yeni(BigInt::from(sayi), 0)
     }
 
+    pub fn katsayidan(sayi: i64, olcek: u32) -> Self {
+        Self::yeni(BigInt::from(sayi), olcek)
+    }
+
     /// Kullanıcı metni: isteğe bağlı `-`, rakamlar ve isteğe bağlı Türkçe
     /// ondalık virgülü. Nokta kabul edilmez.
     pub fn metinden(metin: &str) -> Option<Self> {

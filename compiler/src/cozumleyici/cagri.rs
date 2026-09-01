@@ -271,7 +271,12 @@ pub(super) fn cagri_denetle(
         verilen_ozyineleme: None,
     });
     let denetim = blok_denetle(&mut islem.govde, &mut islem_ortami, baglam);
-    let kayit = baglam.denetim_yigini.pop().expect("kayıt az önce eklendi");
+    let kayit = baglam.denetim_yigini.pop().ok_or_else(|| {
+        ic_tutarlilik_hatasi(
+            format!("\"{}\" işleminin denetim kaydı kayboldu", ad),
+            satir,
+        )
+    })?;
     // Gövde her durumda kayda geri konur; hata olsa bile kayıt tutarlı kalır.
     if denetim.is_ok() && kayit.donusler.contains(&Tur::HataDonusu) {
         donusleri_sarmala(&mut islem.govde);

@@ -1,3 +1,15 @@
+#![cfg_attr(
+    not(test),
+    deny(
+        clippy::unwrap_used,
+        clippy::expect_used,
+        clippy::panic,
+        clippy::unreachable,
+        clippy::todo,
+        clippy::unimplemented
+    )
+)]
+
 //! `olcum` — performans ölçüm koşucusu (master plan bölüm 22).
 //!
 //! İlke: önce doğruluk, sonra hız — ama hız SÜREKLİ ölçülür. Bu koşucu
@@ -58,26 +70,35 @@ fn is_yukleri() -> Vec<IsYuku> {
     ]
 }
 
-fn olc(yuk: &IsYuku, tur: usize) -> Vec<f64> {
+fn olc(yuk: &IsYuku, tur: usize) -> Result<Vec<f64>, String> {
     let mut sureler = Vec::with_capacity(tur);
     for _ in 0..tur {
         let baslangic = Instant::now();
         if yuk.ad == "derleme" {
-            dil::kaynagi_derle(&yuk.kaynak).expect("derleme yükü geçerli olmalı");
+            dil::kaynagi_derle(&yuk.kaynak)
+                .map_err(|tani| format!("{} yükü derlenemedi: {}", yuk.ad, tani.mesaj))?;
         } else {
-            dil::kaynagi_calistir(&yuk.kaynak).expect("iş yükü çalışmalı");
+            dil::kaynagi_calistir(&yuk.kaynak)
+                .map_err(|tani| format!("{} yükü çalışmadı: {}", yuk.ad, tani.mesaj))?;
         }
         sureler.push(baslangic.elapsed().as_secs_f64() * 1000.0);
     }
-    sureler
+    Ok(sureler)
 }
 
 fn medyan(sureler: &mut [f64]) -> f64 {
-    sureler.sort_by(|a, b| a.partial_cmp(b).unwrap());
+    sureler.sort_by(f64::total_cmp);
     sureler[sureler.len() / 2]
 }
 
 fn main() {
+    if let Err(hata) = olcumleri_calistir() {
+        eprintln!("Ölçüm hatası: {}", hata);
+        std::process::exit(1);
+    }
+}
+
+fn olcumleri_calistir() -> Result<(), String> {
     let hizli = std::env::args().any(|a| a == "--hizli");
     let tur = if hizli { 1 } else { 5 };
     let profil = if cfg!(debug_assertions) { "debug" } else { "release" };
@@ -88,12 +109,13 @@ fn main() {
 
     for yuk in is_yukleri() {
         // Isınma turu ölçüme girmez.
-        olc(&yuk, 1);
-        let mut sureler = olc(&yuk, tur);
+        olc(&yuk, 1)?;
+        let mut sureler = olc(&yuk, tur)?;
         println!("{:<12} {:>8.1} ms  {}", yuk.ad, medyan(&mut sureler), yuk.aciklama);
     }
 
     if cfg!(debug_assertions) {
         println!("\nNot: arşive yalnız --release ölçümleri girer (docs/olcumler.md).");
     }
+    Ok(())
 }
