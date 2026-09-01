@@ -111,6 +111,63 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
     })
 }
 
+/// Yerel bağımlılık alanını resmî biçimde günceller. Önce eski bildirim,
+/// sonra üretilen bildirim doğrulanır; hata varsa çağıran hiçbir şey yazmaz.
+/// Yorumlar ve diğer alanlar korunur, yollar sıralanıp tekilleştirilir.
+pub fn yerel_bagimliliklari_guncelle(
+    kaynak: &str,
+    yollar: &[String],
+) -> Result<String, Tani> {
+    bildirimi_oku(kaynak)?;
+    let mut yollar = yollar.to_vec();
+    yollar.sort();
+    yollar.dedup();
+    for yol in &yollar {
+        if let Err(neden) = bagimlilik_yolunu_dogrula(yol) {
+            return Err(proje_hatasi(
+                "P005",
+                &format!("Geçersiz yerel bağımlılık yolu \"{}\": {}.", yol, neden),
+                1,
+                "Göreli bir proje klasörü yaz; örnek: ../ortak",
+            ));
+        }
+    }
+
+    let ifade = if yollar.is_empty() {
+        "boş liste".to_string()
+    } else {
+        let ogeler = yollar
+            .iter()
+            .map(|yol| format!("\"{}\"", metni_kacir(yol)))
+            .collect::<Vec<_>>()
+            .join(", ");
+        format!("{} listesi", ogeler)
+    };
+    let yeni_satir = format!("yerel_bağımlılıklar {} olsun", ifade);
+    let mut satirlar = Vec::new();
+    let mut degisti = false;
+    for satir in kaynak.lines() {
+        let kirpilmis = satir.trim_start();
+        if !kirpilmis.starts_with('#')
+            && kirpilmis.split_whitespace().next() == Some("yerel_bağımlılıklar")
+        {
+            satirlar.push(yeni_satir.clone());
+            degisti = true;
+        } else {
+            satirlar.push(satir.to_string());
+        }
+    }
+    if !degisti {
+        if satirlar.last().is_some_and(|satir| !satir.is_empty()) {
+            satirlar.push(String::new());
+        }
+        satirlar.push(yeni_satir);
+    }
+    let aday = format!("{}\n", satirlar.join("\n"));
+    bildirimi_oku(&aday)?;
+    crate::bicimleyici::bicimle(&aday)
+}
+
 fn gerekli_metni_al(
     alanlar: &mut HashMap<String, (Ifade, usize)>,
     ad: &str,
@@ -240,6 +297,10 @@ fn bagimlilik_yolunu_dogrula(yol: &str) -> Result<(), &'static str> {
         return Err("yol bir proje klasörü göstermeli");
     }
     Ok(())
+}
+
+fn metni_kacir(metin: &str) -> String {
+    metin.replace('\\', "\\\\").replace('"', "\\\"")
 }
 
 fn cumle_satiri(cumle: &Cumle) -> usize {

@@ -115,9 +115,18 @@ Bağımlılık değişikliği ancak kullanıcı `dil kilitle` diyerek sabitlenir
 Derleme boyunca kilit denetlenen bellek görüntüsü kullanılır; denetimden sonra
 kaynak yeniden okunmaz.
 
+`dil ekle <yerel-yol> [proje]` (K-079), elle manifest düzenlemenin güvenli
+karşılığıdır. Yol kabuğun çalışma klasöründen çözülür, manifestte proje köküne
+göre göreli `/` ayraçlı biçimde saklanır. Yorumlar/alanlar korunur, yollar
+sıralanıp tekilleştirilir. Aday manifest ve bütün geçişli grafik **yazmadan
+önce** doğrulanır; başarısız çözüm mevcut manifest/kilide dokunmaz. Kilit yazma
+hatasında eski iki dosya geri yüklenir. Aynı kanonik kök farklı yol yazımıyla
+ikinci kez eklenmez.
+
 ### 4.2 Uzak paketler ve yayın (Faz 5 — taslak)
 
-- `dil ekle`, sürüm aralığı ve registry adresleme ayrıca tasarlanacaktır.
+- Registry adına göre `dil ekle <ad>`, sürüm aralığı ve adresleme ayrıca
+  tasarlanacaktır; var olan komut yalnız açık yerel yolu kabul eder.
 - `dil paketle` / `dil yayınla` Faz 5
   (imza, provenance, SBOM — bölüm 14/18 gereksinimleri o RFC'lerde).
 - Paket adları küçük harf Türkçe tanımlayıcıdır; typosquatting/confusable

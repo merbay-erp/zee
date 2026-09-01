@@ -775,6 +775,24 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   deterministiktir; geçişli pakete doğrudan erişim ve bildirim döngüsü
   regression testlerinde reddedilir.
 
+## K-079 — Paketi elle değil, doğrulayarak ekle: `dil ekle`
+
+- **Sorun:** K-078 güvenli bir çalışma grafiği kurdu ama kullanıcı listeyi
+  elle düzenlemek, sonra ayrıca kilitlemek zorundaydı. Yazım hatası, yinelenen
+  yol ve yarım işlem profesyonel araç sözleşmesine aykırıydı.
+- **Karar:** `dil ekle <yerel-yol> [proje]`. Paket yolu çağıran kabuğa göre
+  çözülür; bildirimde proje köküne göre göreli, `/` ayraçlı saklanır.
+- **Doğrulama-önce:** Yeni manifest yalnız bellekte üretilir; bütün geçişli
+  grafik döngü, ad, giriş ve kaynak sınırlarıyla çözülmeden tek bayt yazılmaz.
+- **Koruma:** Var olan yorumlar ve alanlar kalır; bağımlılık yolları sıralanır
+  ve tekilleştirilir. Aynı kanonik paket farklı yol yazımıyla verilirse ikinci
+  kayıt açılmaz. Projenin kendisini eklemek açık P007'dir.
+- **Bütünlük:** Başarıda manifest ve kilit güncellenir. Kilit yazımı başarısız
+  olursa eski manifest ve kilit geri yüklenir; başarısız aday çözümde ikisi de
+  byte-byte aynı kalır.
+- **Kanıt:** CLI entegrasyonu yorum koruma, çalışır paket, idempotent tekrar,
+  öz-bağımlılık reddi ve hata sonrası manifest/kilit değişmezliğini sınar.
+
 ## K-012 — Liste sabiti: `3, 7, 1, 9 listesi`
 
 - **Karar:** Virgülle ayrılmış değerler + `listesi`. Boş: `boş liste`.

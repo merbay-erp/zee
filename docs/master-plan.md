@@ -209,6 +209,9 @@ olarak bağlar; `X paketini kullan` doğrudan bağımlılığı alır. `dil kili
 geçişli grafiği göreli yol, sürüm, kenar ve SHA-256 kaynak özetiyle
 deterministik `proje.kilit` dosyasına sabitler. Registry, imza/provenance,
 SBOM ve uzak sürüm çözümü henüz başlamamıştır.
+`dil ekle <yerel-yol> [proje]` (K-079) aday grafiği diske yazmadan çözer;
+başarılıysa yorumu koruyan resmî biçimde bildirimi ve kilidi günceller,
+yazma hatasında önceki iki dosyayı geri yüklemeyi dener.
 # 15. Geliştirici araçları
 dil: resmi CLI.
 dilfmt: tek resmi formatter.

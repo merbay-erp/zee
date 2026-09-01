@@ -64,3 +64,7 @@ birimin işlem adlarını çağrı çözümünde görür.
   verir. Kilit doğrulandıktan sonra aynı komut kaynakları yeniden okumaz.
 - Kaynak toplama gizli/hedef klasörleri ve sembolik bağları izlemez; paket
   girişi ve birimleri kendi proje köklerinin dışına çıkamaz (P009).
+- `dil ekle <yerel-yol> [proje]` yolu kanonik çözer ama manifestte ana proje
+  köküne göre göreli ve `/` ayraçlı saklar. Aday manifest/grafik yazmadan önce
+  doğrulanır; yorumlar korunur, yollar sıralanır ve yinelenen gerçek kök
+  yeniden eklenmez (K-079).
