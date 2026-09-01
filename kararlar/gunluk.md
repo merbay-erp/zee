@@ -1349,6 +1349,24 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   HTTP/sensör/web/parola davranış korpusu korunarak toplam 393 test yeşil;
   B-004 ve V1-P0-09 kapandı.
 
+## K-099 — Derleyici fiziksel faz ve handler sınırları (1 Eyl)
+
+- **Karar:** Parser cümle/ifade; checker cümle/ifade/çağrı; runtime
+  cümle/ifade handler modüllerine ayrılır. Kök dosya token/bağlam/değer/IO ve
+  faz orkestrasyonunu taşır; alt handler'lar yalnız `pub(super)` görünürdür.
+- **Ölçü:** Parser kökü 2709→1160, checker 3067→963, runtime 3181→1965
+  satıra indi. Taşınan kodun sırası ve içeriği korunarak public API ve zee
+  kaynak semantiği değiştirilmedi.
+- **Büyüme kapısı:** Kaynak-mimari testi büyük handler adlarının köke geri
+  dönmesini ve kök/handler dosyalarının ilanlı satır bütçesini sessizce
+  aşmasını engeller. Bütçe dolunca sayı yükseltmek yerine yeni sorumluluk
+  modülü ya da ortak handler çıkarılır; gerekçeli değişiklik ADR-012 ve faz
+  rehberini aynı committe günceller. Hata kataloğu bekçisi de sabit kök liste
+  yerine bütün `src` alt modüllerini özyinelemeli ve sıralı tarar.
+- **Kanıt:** ADR-012, ADR-002/003 revizyonları ve derleyici faz rehberi; üç
+  mimari sınır testi. Mevcut 393 davranış testi korunup toplam 396 test yeşil;
+  B-005 ve V1-P0-10 kapandı. Sıradaki omurga işi B-006'dır.
+
 ---
 
 ## Sonraki adım

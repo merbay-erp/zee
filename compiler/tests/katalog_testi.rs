@@ -4,6 +4,7 @@
 //! Yeni bir Tani::yeni("X123", ...) eklenip katalog unutulursa bu test kırılır.
 
 use std::collections::BTreeSet;
+use std::path::{Path, PathBuf};
 
 /// Metindeki `Ö###` biçimli kodları toplar (Ö ∈ {S,A,T,C,D,P,Ç}).
 fn kodlari_topla(metin: &str) -> BTreeSet<String> {
@@ -30,26 +31,31 @@ fn kodlari_topla(metin: &str) -> BTreeSet<String> {
     kodlar
 }
 
+fn rust_kaynaklarini_topla(klasor: &Path, dosyalar: &mut Vec<PathBuf>) {
+    let mut girdiler = std::fs::read_dir(klasor)
+        .expect("kaynak klasörü okunmalı")
+        .map(|girdi| girdi.expect("kaynak girdisi okunmalı").path())
+        .collect::<Vec<_>>();
+    girdiler.sort();
+    for yol in girdiler {
+        if yol.is_dir() {
+            rust_kaynaklarini_topla(&yol, dosyalar);
+        } else if yol.extension().and_then(|uzanti| uzanti.to_str()) == Some("rs") {
+            dosyalar.push(yol);
+        }
+    }
+}
+
 #[test]
 fn katalog_kaynakla_birebir() {
     let kok = env!("CARGO_MANIFEST_DIR");
 
     let mut kaynak_kodlari = BTreeSet::new();
-    for dosya in [
-        "src/sozcukleyici.rs",
-        "src/ayristirici.rs",
-        "src/cozumleyici.rs",
-        "src/eylem.rs",
-        "src/yorumlayici.rs",
-        "src/bicimleyici.rs",
-        "src/proje.rs",
-        "src/paket.rs",
-        "src/registry.rs",
-        "src/tedarik.rs",
-        "src/lib.rs",
-        "src/main.rs",
-    ] {
-        let icerik = std::fs::read_to_string(format!("{}/{}", kok, dosya)).expect(dosya);
+    let mut dosyalar = Vec::new();
+    rust_kaynaklarini_topla(&Path::new(kok).join("src"), &mut dosyalar);
+    for dosya in dosyalar {
+        let icerik = std::fs::read_to_string(&dosya)
+            .unwrap_or_else(|_| panic!("{} okunmalı", dosya.display()));
         // Yalnız gerçekten üretilen kodlar: Tani::yeni("...") ilk argümanları.
         for parca in icerik.split("Tani::yeni(") {
             if let Some(tirnakli) = parca.trim_start().strip_prefix('"') {

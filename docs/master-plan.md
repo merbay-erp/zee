@@ -533,6 +533,7 @@ ADR-008 — Self-hosting aşamaları
 ADR-009 — Dilin adı
 ADR-010 — Normatif otorite ve değişiklik bütünlüğü
 ADR-011 — Core AST intrinsic/yetkinlik sınırı
+ADR-012 — Derleyici fiziksel faz modülleri
 # 39. Ekip ve rol modeli
 Dil mimarı: semantik ve uzun vadeli vizyon.
 Compiler: parser, types, IR, backend.
@@ -567,11 +568,14 @@ B-003, K-097 ile tamamlandı: RFC-0021/spec-20/ADR-002 primary → erişim/postf
 → çağrı → aritmetik → birleştirme → karşılaştırma → boolean katmanlarını,
 tam bölge tüketimini ve her yeni ifade yüzeyinin çakışma+conformance kapısını
 bağlar. Parser'daki fiziksel fonksiyon/modül ayrımı bu davranışı değiştirmeden
-B-005'te yapılacaktır. B-004, K-098/ADR-011 ile tamamlandı: HTTP, sensör, CSRF
+B-005/K-099'da tamamlandı. B-004, K-098/ADR-011 ile tamamlandı: HTTP, sensör, CSRF
 ve parola kaynak yüzeyleri tek `Intrinsic { kimlik, argumanlar }` AST düğümüne
 indirilir; tür imzası, gereken yetkinlik ve statik etki merkezi kayıttadır.
-Kaynak semantiği değişmedi. Sıradaki omurga işi parser/checker/runtime mega
-handler'larını bu kararlı sınıra göre fiziksel modüllere ayırmaktır (B-005).
+Kaynak semantiği değişmedi. B-005, K-099/ADR-012 ile parser cümle/ifade,
+checker cümle/ifade/çağrı, runtime cümle/ifade fazlarına ayrıldı ve kaynak-mimari
+bütçe testi yeniden birleşmeyi durdurdu. Sıradaki omurga işi checker'ın sembol,
+tür, akış, çağrı, etki ve dönüş fazlarını semantik olarak katmanlaştırmaktır
+(B-006).
 # 40. Proje felsefesinin korunması
 Bu projenin başarısı yalnız compiler’ın çalışması değildir. Başarı; Türkçe konuşan bir çocuğun yabancı syntax bariyerine takılmadan algoritmik düşünceyle tanışması, aynı dilin yıllar sonra onu terk etmeye zorlamaması ve ekosistemin tek bir şirketin kapalı ürünü haline gelmemesidir.
 Her yeni özellik şu dört sorudan geçmelidir: Türkçe doğal mı? Deterministik mi? Öğrenilebilir mi? Profesyonel ölçekte savunulabilir mi? Dördünden biri hayırsa özellik yeniden tasarlanır.

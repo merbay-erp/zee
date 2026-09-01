@@ -71,8 +71,8 @@ tek yerde kalır.
 - Tür/yetkinlik/etki metadatası `compiler/src/intrinsic.rs` içinde tek kaynak
   oldu. B-006 katmanlaştırması ve B-023 izin modeli artık bu kayıt üstünde
   ilerleyebilir.
-- Runtime bugün merkezi kimlik dağıtımı yapar. Handler'ların fiziksel modül
-  sınırlarına ayrılması davranış değiştirmeyen B-005 işidir.
+- Runtime merkezi kimlik dağıtımı yapar. Handler'ların fiziksel modül
+  sınırları B-005/K-099 ve ADR-012 ile davranış değişmeden ayrılmıştır.
 - Kaynak davranışı değişmediği için yeni normatif dil spec'i açılmadı; mevcut
   RFC/spec cümle anlamları geçerlidir. Bu ADR yalnız derleyici mimarisini bağlar.
 

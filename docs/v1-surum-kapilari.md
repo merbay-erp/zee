@@ -3,7 +3,7 @@
 Bu liste bir dilek listesi değildir: `1.0.0` etiketi bu kapılar kapatılmadan
 atılmaz. Amaç yeni özellik sayısını büyütmek değil, çocuktan profesyonele aynı
 dilin verdiği sözleri kanıtlamaktır. Bulgular 1 Eylül 2026'da derleyici
-kaynakları, spec, RFC'ler ve 393 test üzerinden yeniden doğrulanmıştır.
+kaynakları, spec, RFC'ler ve 396 test üzerinden yeniden doğrulanmıştır.
 
 Durumlar: **KAPALI** = kanıtı var · **AÇIK** = v1 engeli · **KARAR** = önce
 normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
@@ -21,6 +21,7 @@ normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
 | V1-P0-07 İşlem çağrısı tek genel ve kullanıcıyla doğrulanmış yüzeydir | **KARAR — K-096 deney hazır** | A (`için`/`ile`) çalışan geçici yüzeydir; nihai V1 seçimi değildir. Serbest üretim, kör A/B/C kartları, sıra dengelemesi, yedi teknik bağlam ve alt grup eşikleri önden bağlandı. | [K-016 karar paketi](k016-cagri-karar-paketi.md) uyarınca gerçek 10 çocuk + 5 profesyonel formu; eşik geçen tek grammar; parser/formatter/LSP ile golden+anti-example kanıtı; RFC-0006/spec-02 ve migration'ın aynı atomik değişiklikte güncellenmesi. |
 | V1-P0-08 İfade gramerinin büyüme önceliği açık ve fail-closed'dur | **KAPALI (K-097)** | Primary→erişim/postfix→çağrı→aritmetik→birleştirme→karşılaştırma→boolean katmanları ve tam bölge tüketimi normatiftir. Karışık `ve/veya` ya da tanımsız katman birleşimi sessiz AST üretmez; işlem-adı kuyruğu güçlü postfix'i gölgelemez, tam işlem adı sıfır-argüman çağrısını korur. | RFC-0021 + spec/20 + ADR-002 revizyonu; çağrı/postfix→aritmetik, karşılaştırma→boolean, postfix/işlem-adı kuyruğu, tam sıfır-argüman ve en uzun işlem adı, S030/S015 sınırlarını koruyan sekiz bağımsız conformance testi. Yeni ifade yüzeyi katman+çakışma+formatter/test protokolü olmadan eklenemez. |
 | V1-P0-09 Alan adaptörleri core AST'yi şişirmez | **KAPALI (K-098)** | HTTP, sensör, CSRF ve parola yüzeyleri ayrı AST varyantları değil, kararlı kimlik ve sıralı argüman taşıyan tek `Intrinsic` düğümüdür. Tür imzası, gereken yetkinlik ve statik etki merkezi kayıttadır; kullanıcı kaynakları değişmemiştir. | ADR-011 + [intrinsic/yetkinlik rehberi](intrinsic-yetkinlik-modeli.md); kayıt tekilliği, dört lowering ve iki tür olumsuzu için yedi bağımsız test, mevcut alan davranış korpusu. Yeni intrinsic kayıt+lowering+tür+etki+runtime+olumlu/olumsuz kanıt olmadan eklenemez. |
+| V1-P0-10 Derleyici handler büyümesi fiziksel faz sınırındadır | **KAPALI (K-099)** | Parser cümle/ifade, checker cümle/ifade/çağrı, runtime cümle/ifade modüllerine ayrıdır; kökler orkestrasyon ve ortak modellere sahiptir. Alt modüller yalnız üst fazına görünür, public API değişmez. | ADR-012 + [faz rehberi](derleyici-faz-sinirlari.md); üç kaynak-mimari testi büyük handler'ların köke dönmesini ve kök/modül satır bütçelerinin sessizce aşılmasını engeller. Tam 393 davranış testi değişmeden toplam 396 test yeşildir. |
 
 ## P1 — profesyonel kapasite kapıları
 
@@ -58,7 +59,8 @@ normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
 7. K-096 çağrı deneyi gerçek insan verisini bekler; V1-P0-07 bu kanıt olmadan
    kapanmaz. K-097 expression grammar katmanlarını dondurdu ve V1-P0-08'i
    kapattı. K-098 alan yüzeylerini generic intrinsic/yetkinlik modeline taşıdı
-   ve V1-P0-09'u kapattı; fiziksel handler ayrımı B-005'te bu sınırları izleyecek.
+   ve V1-P0-09'u kapattı. K-099 fiziksel faz sınırlarını kurup V1-P0-10'u
+   kapattı; sıradaki omurga işi B-006 checker katmanlaştırmasıdır.
 8. Yeni dil özelliğinden önce bağlayıcı sıra
    [öncelikli backlog](oncelikli-backlog.md) içindeki P0 compiler omurgasıdır.
 

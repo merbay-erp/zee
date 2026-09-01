@@ -167,7 +167,8 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   çakışma matrisi, AST/lowering,
   formatter ve olumlu/olumsuz conformance kanıtı olmadan parser'a dal
   ekleyemez. Sekiz bağımsız testle toplam 386 test yeşil; kullanıcı yüzeyi
-  değişmeden V1-P0-08 kapandı. Fiziksel parser parçalama B-005'e ayrıldı.
+  değişmeden V1-P0-08 kapandı. Fiziksel parser parçalama B-005/K-099'da
+  tamamlandı.
 - **Core AST intrinsic/yetkinlik sınırı** (K-098, ADR-011): HTTP, sensör,
   CSRF ve parola için dört alan-özel AST varyantı kaldırıldı. Mevcut Türkçe
   cümleler parser'da ad alanlı kararlı kimlik ve sıralı argüman taşıyan tek
@@ -177,7 +178,16 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   yerine genel olumsuzlamayı kullanır. Kimlik tekilliği, dört lowering ve iki
   tür olumsuzuyla yedi yeni test; mevcut HTTP/sensör/web/parola regresyonları
   dahil toplam 393 test yeşildir. Kaynak semantiği değişmeden B-004 ve
-  V1-P0-09 kapandı; fiziksel handler ayrımı B-005, izin politikası B-023'tür.
+  V1-P0-09 kapandı; fiziksel handler ayrımı B-005/K-099'da tamamlandı, izin
+  politikası B-023'tür.
+- **Derleyici fiziksel faz sınırları** (K-099, ADR-012): 2709 satırlık parser
+  cümle/ifade, 3067 satırlık checker cümle/ifade/çağrı ve 3181 satırlık
+  runtime cümle/ifade handler modüllerine ayrıldı. Kökler 1160/963/1965 satıra
+  indi; alt modüller yalnız `pub(super)` görünür ve public Rust API değişmedi.
+  Üç kaynak-mimari testi büyük handler'ların köke dönmesini ve ilan edilmiş
+  faz bütçelerinin aşılmasını engeller. Hata kataloğu taraması yeni alt
+  modülleri özyinelemeli kapsar. 393 davranış testi aynen korunup toplam 396
+  test yeşil kaldı; kaynak semantiği değişmeden B-005/V1-P0-10 kapandı.
 
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`
