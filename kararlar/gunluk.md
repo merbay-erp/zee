@@ -625,6 +625,18 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   sonrası gövde güvenliği). Kitaplığa `medyanını hesapla` girdi (saf zee,
   gezme-sayma deseni; dönüş daima Ondalık).
 
+## K-068 — Aralık iki yönde: `5 ten 1 e kadar` geri sayar
+
+- **bulgu:** Geri aralık SESSİZCE boş dönüyordu — sessiz hiçlik,
+  determinizm ilkesine aykırı bir tuzak sınıfı.
+- **Karar:** `<a> dan <b> e kadar` iki yönde çalışır (adım daima 1;
+  a>b ise azalarak). Çocuğun roket geri sayımı doğal yazımıyla çalışır.
+- **Not (kitaplık sınırı):** `toplamını hesapla` gövdesi `toplam 0 olsun`
+  ile TamSayı'ya bağlı — Ondalık listeyle terfi denetimi T006'ya düşer;
+  Ondalık toplam şimdilik kullanıcı tarafında üç satırdır (medyan gibi
+  hep-Ondalık yapmak TamSayı kullanıcılarını kırardı). RFC-0014 açık
+  sorusuna eklendi sayılır.
+
 ## K-012 — Liste sabiti: `3, 7, 1, 9 listesi`
 
 - **Karar:** Virgülle ayrılmış değerler + `listesi`. Boş: `boş liste`.
