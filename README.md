@@ -27,8 +27,12 @@ denetimi → yorumlayıcı zincirimizden geçip çalıştı (master plan bölüm
 ilk milestone). Bootstrap derleyici: [compiler/](compiler/) (Rust, sıfır bağımlılık).
 
 ```bash
-cd compiler && cargo build && ./target/debug/dil çalıştır ../merhaba.dil
+cd compiler && cargo build && ./target/debug/dil çalıştır ..
 ```
+
+Kök klasörün `proje.dil` bildirimi vardır: `dil çalıştır <klasör>`,
+`dil denetle <klasör>` ve `dil dene <klasör>` giriş dosyasını buradan bulur.
+Bildirim de sıradan zee sözdizimidir (K-076); ayrı bir yapılandırma dili yoktur.
 
 Çalışan golden programlar (regression testte): **32'de 32 — KORPUSUN TAMAMI**
 (orijinal 30 + genişletme: 31 birimler, 32 ondalık market) —
@@ -55,12 +59,13 @@ değiştir/kırp/harfler), **JSON/CSV yazma**, **Türk alfabesiyle sıralama**,
 **silme** ve **çıkış kodu** (`programı 2 ile bitir`), bölümden **kalan**,
 geri sayan aralık, para biçimi `kuruşlusu`, evrensel `metni`, çerez
 üçlemesi (oku/yaz/**sil**), çok katmanlı morfoloji (zamir n'si, ikizleşme,
-iki katmanlı ek zinciri) ve 109 Türkçe kodlu tanı.
+iki katmanlı ek zinciri), **proje bildirimi** (`proje.dil`, klasörden
+çalıştır/denetle/dene) ve 113 Türkçe kodlu tanı.
 Araçlar: `dil çalıştır(--güvenli)/denetle(--json)/dene/biçimle/hata/belge/yeni`
 + **dillsp** LSP sunucusu — tanılar, hover, tanıma git, **morfolojili
 yeniden adlandırma (F2)** ([editors/](editors/)).
 Determinizm testlerde tam: rastgelelik, saat, dosyalar, HTTP, sunucu istekleri,
-sensörler ve an ölçümü IO soyutlamasından gelir — 247 test hermetik koşar.
+sensörler ve an ölçümü IO soyutlamasından gelir — 255 test hermetik koşar.
 
 **Playground:** `playground/olustur.sh` derleyiciyi WebAssembly'e derler ve
 tek dosyalık `playground/zee-playground.html` üretir — çift tıkla aç, tarayıcıda
@@ -102,7 +107,7 @@ korpus üzerinde regression testine girer.
 | Syntax karar günlüğü | [kararlar/gunluk.md](kararlar/gunluk.md) | ✅ işleniyor |
 | RFC süreci | [rfcs/](rfcs/) | ✅ 13 RFC: 2 kabul, 10 geçici kabul, 1 taslak (K-043) |
 | ADR süreci | [adr/](adr/) | ✅ 6 kabul (001-003, 007-009); 004/005/006 faz verisi bekliyor |
-| Hata kataloğu | [docs/hata-katalogu.md](docs/hata-katalogu.md) | ✅ 109 kod, kaynakla tutarlılığı testli |
+| Hata kataloğu | [docs/hata-katalogu.md](docs/hata-katalogu.md) | ✅ 113 kod, kaynakla tutarlılığı testli |
 | Spesifikasyon | [spec/](spec/) | ✅ başladı — normatif çekirdek (RFC'lere bağlar) |
 
 ### Golden korpus hakkında
@@ -124,9 +129,9 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   10 "geçici kabul" RFC'nin tam kabulü — kit hazır: docs/usability-kiti.md.
 - **Lisans (bölüm 26, kurucu):** seçilmeden depo herkese açılmaz; site ve
   topluluk (bölüm 30) bunun arkasında.
-- **Makine tarafı sıradaki:** RFC-0014'ün usability sonrası kesinleşmesi,
-  ADR-004 için ölçüm biriktirme (docs/olcumler.md), Faz kapıları geldikçe
-  paket/native/paralellik.
+- **Makine tarafı sıradaki:** K-076 proje modelinin üstüne yerel bağımlılık +
+  deterministik kilit dosyası; RFC-0014'ün usability sonrası kesinleşmesi,
+  ADR-004 ölçümleri ve Faz kapıları geldikçe native/paralellik.
 
 ## İlk gerçek milestone
 

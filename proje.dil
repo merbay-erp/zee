@@ -1,0 +1,6 @@
+# zee'nin kendi proje bildirimi (K-076).
+# Kök klasörde `dil çalıştır .` ilk milestone'u çalıştırır.
+
+proje "zee" olsun
+sürüm "0.7.0" olsun
+giriş "merhaba.dil" olsun

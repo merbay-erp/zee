@@ -5,13 +5,13 @@
 
 use std::collections::BTreeSet;
 
-/// Metindeki `Ö###` biçimli kodları toplar (Ö ∈ {S,A,T,C,D,Ç}).
+/// Metindeki `Ö###` biçimli kodları toplar (Ö ∈ {S,A,T,C,D,P,Ç}).
 fn kodlari_topla(metin: &str) -> BTreeSet<String> {
     let mut kodlar = BTreeSet::new();
     let karakterler: Vec<char> = metin.chars().collect();
     for i in 0..karakterler.len().saturating_sub(3) {
         let on_ek = karakterler[i];
-        if !matches!(on_ek, 'S' | 'A' | 'T' | 'C' | 'D' | 'Ç') {
+        if !matches!(on_ek, 'S' | 'A' | 'T' | 'C' | 'D' | 'P' | 'Ç') {
             continue;
         }
         // Önceki karakter harf/rakamsa bu bir kelimenin ortasıdır.
@@ -41,11 +41,20 @@ fn katalog_kaynakla_birebir() {
         "src/cozumleyici.rs",
         "src/yorumlayici.rs",
         "src/bicimleyici.rs",
+        "src/proje.rs",
         "src/lib.rs",
     ] {
         let icerik = std::fs::read_to_string(format!("{}/{}", kok, dosya)).expect(dosya);
         // Yalnız gerçekten üretilen kodlar: Tani::yeni("...") ilk argümanları.
         for parca in icerik.split("Tani::yeni(") {
+            if let Some(tirnakli) = parca.trim_start().strip_prefix('"') {
+                if let Some(kapali) = tirnakli.split('"').next() {
+                    kaynak_kodlari.extend(kodlari_topla(kapali));
+                }
+            }
+        }
+        // proje.rs aynı tanı iskeletini `proje_hatasi` yardımcısıyla kurar.
+        for parca in icerik.split("proje_hatasi(") {
             if let Some(tirnakli) = parca.trim_start().strip_prefix('"') {
                 if let Some(kapali) = tirnakli.split('"').next() {
                     kaynak_kodlari.extend(kodlari_topla(kapali));
@@ -85,7 +94,7 @@ fn katalog_kaynakla_birebir() {
     );
 
     // Akıl sağlığı: en az bilinen çekirdek kodlar mevcut.
-    for cekirdek in ["S001", "A001", "T001", "C003", "D001"] {
+    for cekirdek in ["S001", "A001", "T001", "C003", "D001", "P001"] {
         assert!(kaynak_kodlari.contains(cekirdek), "çekirdek kod kayıp: {}", cekirdek);
     }
 }

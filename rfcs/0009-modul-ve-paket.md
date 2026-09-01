@@ -1,8 +1,8 @@
 # RFC-0009 — Modül ve Paket Modeli
 
-- **Durum:** **geçici kabul — birim katmanı (§2)** (31 Ağu 2026:
-  kullan/tohumlu ayrıştırma/A008-A010/birim testleri; onay kapısı: usability).
-  Paket katmanı (§3) TASLAK — Faz 3/5
+- **Durum:** **geçici kabul — birim katmanı (§2) + proje bildirimi (§3)**
+  (K-029/K-076; onay kapısı: usability). Yerel/uzak bağımlılık ve kilit
+  katmanı (§4) TASLAK — Faz 3/5.
 - **Tarih:** 31 Ağustos 2026
 - **İlgili günlük kayıtları:** master plan bölüm 7 ("modül mü birim mi; kullanıcı testiyle karar"), bölüm 14
 - **Gerçekleme:** `lib.rs` (dosyayi_coz + BirimYukleyici), `ayristirici.rs`
@@ -39,9 +39,30 @@ Kurallar (öneri):
    (`hesapların ortalamayı hesapla`sı?) v2 sorusu.
 4. Döngüsel `kullan` hatadır (deterministik yükleme sırası).
 5. Görünürlük: v1'de her tanım dışa açıktır; `özel` işaretleyicisi açık soru
-   §5.2 (çocuk basitliği ↔ kapsülleme).
+   §6.2 (çocuk basitliği ↔ kapsülleme).
 
-## 3. Paket modeli (projeler arası — Faz 3/5)
+## 3. Proje bildirimi (K-076 — gerçeklendi)
+
+Her gerçek proje kökünde tek `proje.dil` taşır. Ayrı bir TOML/JSON biçimi
+öğretilmez; bildirim geçerli, yan etkisiz zee kaynağıdır:
+
+```
+proje "uzay-oyunum" olsun
+sürüm "0.1.0" olsun
+giriş "program.dil" olsun
+```
+
+- Alanlar zorunlu ve tektir; bilinmeyen alan P001'dir.
+- Sürüm üç sayılıdır (`X.Y.Z`); giriş proje içinde kalan göreli `.dil`
+  yoludur (P003/P004).
+- `dil çalıştır/denetle/dene <klasör>` bildirimin girişini kullanır.
+- `dil biçimle <klasör>` proje ağacındaki bütün `.dil` kaynaklarını yol
+  sırasıyla, önce tümünü doğrulayıp sonra yazar (K-077; kaynak hatası yüzünden
+  yarım biçimleme yok).
+- `dil yeni <ad>` çalışan program, test, BENIOKU ve bildirimi birlikte üretir.
+- Bildirim yolunun proje dışına çıkamaması bütün platformlarda aynı denetlenir.
+
+## 4. Paket modeli (projeler arası — Faz 3/5)
 
 - Tek manifest: `proje.dil` benzeri TEK dosya (ad, sürüm, bağımlılıklar) +
   deterministik `kilit` dosyası. Manifestin kendisi de dilin sözdizimiyle
@@ -58,13 +79,13 @@ grafik paketini kullan
 - Paket adları küçük harf Türkçe tanımlayıcıdır; typosquatting/confusable
   denetimi RFC-0002'nin S028 altyapısını registry tarafında yeniden kullanır.
 
-## 4. Çözüm sırası
+## 5. Çözüm sırası
 
 `kullan` çözümü deterministiktir: (1) aynı klasör birimi → (2) proje
 bağımlılığı (kilit dosyasındaki sürüm) → başka arama yolu YOK (gizli global
 paket dizini yok; çevrimdışı okul kurulumunda sürpriz yok).
 
-## 5. Açık sorular
+## 6. Açık sorular
 
 1. birim/modül kelime kararı (usability).
 2. `özel` görünürlük işareti v1'de mi v2'de mi.

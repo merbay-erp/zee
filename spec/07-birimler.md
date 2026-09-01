@@ -1,6 +1,6 @@
-# 07 — Birimler
+# 07 — Birimler ve projeler
 
-Normatif kaynak: RFC-0009 §2 (geçici kabul). Paket katmanı (§3) spec dışı —
+Normatif kaynak: RFC-0009 §2–3 (geçici kabul). Paket katmanı (§4) spec dışı —
 Faz 3/5.
 
 ## Model (TANIMLI)
@@ -26,3 +26,19 @@ Birim çözümü de IO soyutlamasının arkasındadır (BirimYukleyici): testler
 birimler sahte dünyadan gelir, determinizm sözü birim yüklemede de geçerlidir.
 Ayrıştırma "ön tarama + tohumlu ayrıştırma" ile yapılır: kullanan dosya,
 birimin işlem adlarını çağrı çözümünde görür.
+
+## Proje bildirimi (TANIMLI — K-076)
+
+- Proje kökünde `proje.dil` bulunur; bildirim de geçerli zee kaynağıdır.
+- Tam olarak üç Metin alanı tanımlar: `proje`, `sürüm`, `giriş`.
+- Sürüm `X.Y.Z`; giriş proje içindeki göreli bir `.dil` yoludur. Mutlak yol,
+  `..`, ters bölü ve platform sürücü öneki yasaktır (P003/P004).
+- `dil çalıştır`, `dil denetle` ve `dil dene` bir klasör aldığında giriş
+  kaynağını bu bildirimden bulur; doğrudan dosya kullanımı geriye uyumludur.
+- `dil biçimle <klasör>` gizli/hedef klasörleri ve sembolik bağları izlemeden
+  bütün `.dil` kaynaklarını sıralı toplar. Önce hepsi bellekte doğrulanır;
+  herhangi biri hatalıysa hiçbir kaynak yazılmaz (K-077).
+- Çalışan programın göreli dosya IO yolları giriş dosyasının klasöründen
+  çözülür; çağıran kabuğun o anki klasörü programın anlamını değiştirmez.
+- Bildirimde yan etki, işlem, yapı, test, bilinmeyen veya tekrarlı alan yoktur
+  (P001/P002). Böylece proje keşfi kaynak çalıştırmadan deterministiktir.

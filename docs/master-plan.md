@@ -199,6 +199,12 @@ Offline cache ve okul mirror desteği.
 Reproducible package build ve SBOM.
 Registry API açık spesifikasyon.
 Keyfi post-install script varsayılan olarak yasak veya capability ile sınırlı.
+
+**Gerçekleme notu — 1 Eylül 2026 (K-076):** İlk proje katmanı çalışır:
+geçerli zee sözdizimli `proje.dil` adı, `X.Y.Z` sürümü ve göreli giriş
+dosyasını tanımlar; `dil çalıştır/denetle/dene <klasör>` ve `dil yeni`
+bu sözleşmeyi kullanır. Yerel bağımlılık + deterministik kilit dosyası bu
+temelin üstündeki sıradaki Faz 3 kapısıdır; registry henüz başlamamıştır.
 # 15. Geliştirici araçları
 dil: resmi CLI.
 dilfmt: tek resmi formatter.
