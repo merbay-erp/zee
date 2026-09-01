@@ -6,6 +6,8 @@ sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 ## Yolda (v0.6.0'a birikenler)
 
 - **Para biçimi** (K-065): `tutarın kuruşlusu` — daima iki hane.
+- **Evrensel metin hali** (K-066): `değerin metni`; `dil belge` artık
+  işlem açıklamalarını basar; playground'da Envanter vitrini.
 - JSON okuma hoşgörüsü (K-063), alan-özellik gölgelemesi (K-064),
   envanter projesi; işlemden liste dönüşü testle sabitlendi; biçim
   hijyeni projeler+kitaplığa genişledi.

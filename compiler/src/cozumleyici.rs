@@ -1260,6 +1260,7 @@ fn ifade_denetle(
                     Ozellik::Ters => "tersi",
                     Ozellik::CsvMetin => "metni",
                     Ozellik::Kuruslu => "kuruşlusu",
+                    Ozellik::Metni => "metni",
                 };
                 let yapi = &baglam.yapilar[yapi_indeksi];
                 if let Ok(alan) = alan_cozumle(yapi, soz, satir) {
@@ -1297,6 +1298,8 @@ fn ifade_denetle(
                 (Ozellik::Kuruslu, Tur::Ondalik) | (Ozellik::Kuruslu, Tur::TamSayi) => {
                     Ok(Tur::Metin)
                 }
+                // K-066: her değerin resmî metin hali (yaz ile aynı temsil).
+                (Ozellik::Metni, _) => Ok(Tur::Metin),
                 (Ozellik::CsvMetin, Tur::Liste(VeriTuru::Sozluk))
                 | (Ozellik::CsvMetin, Tur::Liste(VeriTuru::MetinSozluk)) => Ok(Tur::Metin),
                 (Ozellik::Harfler, Tur::Metin) => Ok(Tur::Liste(VeriTuru::Metin)),

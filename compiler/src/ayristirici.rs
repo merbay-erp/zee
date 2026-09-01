@@ -1781,6 +1781,8 @@ fn yapili_kalip(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifade>
             Some(Ozellik::Ters)
         } else if son == "kuruşlusu" {
             Some(Ozellik::Kuruslu)
+        } else if son == "metni" {
+            Some(Ozellik::Metni)
         } else {
             None
         };

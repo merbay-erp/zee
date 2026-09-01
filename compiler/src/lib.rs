@@ -57,6 +57,15 @@ pub fn birim_ozeti(kaynak: &str) -> String {
     let satirlar: Vec<&str> = kaynak.lines().collect();
     for (i, satir) in satirlar.iter().enumerate() {
         if let Some(ad) = satir.strip_prefix("işlem ") {
+            // K-066 eki: işlemin hemen üstündeki # satırları açıklamadır.
+            let mut aciklama = Vec::new();
+            for onceki in satirlar[..i].iter().rev() {
+                match onceki.strip_prefix('#') {
+                    Some(metin) => aciklama.push(metin.trim().to_string()),
+                    None => break,
+                }
+            }
+            aciklama.reverse();
             let mut parametreler = Vec::new();
             for devam in satirlar.iter().skip(i + 1) {
                 let kirpik = devam.trim();
@@ -74,6 +83,9 @@ pub fn birim_ozeti(kaynak: &str) -> String {
                 cikti.push_str(&format!("  ({})", parametreler.join(", ")));
             }
             cikti.push('\n');
+            for satir in &aciklama {
+                cikti.push_str(&format!("      # {}\n", satir));
+            }
         } else if satir.starts_with("test ") {
             test_sayisi += 1;
         }

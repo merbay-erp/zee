@@ -41,6 +41,8 @@ Her proje tek oturumluktur; "şunu da dene" satırı ödevin kendisidir.
 | 8 | [market-listesi](../projeler/market-listesi.dil) | işlem yazmak, TEST yazmak |
 | 9 | [kelime-sayaci](../projeler/kelime-sayaci.dil) | sayaç sözlüğü deseni |
 | 10 | [gun-sayar](../projeler/gun-sayar.dil) | tarih aritmetiği |
+| 11 | [envanter](../projeler/envanter.dil) | kayıt tabloları, para biçimi, JSON yedeği |
+| 12 | [mini-site](../projeler/mini-site.dil) | kendi web siteni sun! |
 
 Sonrası: golden korpus (kolaydan zora numaralı 32 program) ve
 [dil turu](dil-turu.md).

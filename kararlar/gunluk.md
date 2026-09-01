@@ -597,6 +597,18 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
 - **Hijyen kuralı:** biçimleyici testi projeler/ ve kitaplik/'i de kapsar:
   depodaki her .dil hem idempotent hem ZATEN resmi biçimde olmak zorunda.
 
+## K-066 — Evrensel metin hali: `değerin metni`
+
+- **Karar:** Her değerin resmî metin temsili (yaz ile birebir aynı biçim):
+  `sayının metni` → "42", `oranın metni` → "3,5", `bayrağın metni` →
+  "doğru". `"" ile sayı` hilesine gerek kalmadı. Tek özel durum: `json
+  metni` / `csv metni` iki-kelimeli kalıpları önceliklidir (n==3 önce
+  denenir); yapılar K-064 gölgelemesiyle "metni" ALANINI da kullanabilir.
+- **Ek:** `dil belge` işlem üstündeki # satırlarını açıklama olarak basar;
+  matematik biriminin işlemleri örnek açıklamalar aldı. Playground'a
+  "Envanter (kayıtlar)" vitrini eklendi (wasm'da doğrulandı: kuruşlu +
+  json çıktısı); öğretmen rehberi 12 oturuma çıktı.
+
 ## K-012 — Liste sabiti: `3, 7, 1, 9 listesi`
 
 - **Karar:** Virgülle ayrılmış değerler + `listesi`. Boş: `boş liste`.
