@@ -1,7 +1,7 @@
 # RFC-0014 — Standart Kitaplık: sınır, adlandırma, dağıtım
 
 - **Durum:** taslak — **çalışan prototip ekli** (1 Eyl 2026): `kitaplik/`
-  altında zee'yle yazılmış ilk iki birim, ikiliye gömülü ve testli.
+  altında zee'yle yazılmış DÖRT birim, ikiliye gömülü ve testli.
   Kesinleşme kapısı: usability oturumları (ADR-008 Stage 1 kapısıyla aynı).
 - **Tarih:** 1 Eylül 2026
 - **Bağlam:** master plan bölüm 13; ADR-008 (Stage 1: "stdlib'in parçaları
@@ -94,10 +94,12 @@ için gömülü birimleri de listeler.
 - **`matematik`**: `mutlak değerini hesapla` · `üssünü hesapla` (üs ≥ 0) ·
   `tam karekökünü hesapla` (Newton, taban) · `obebini hesapla` (Öklit,
   K-046 kalanıyla) · `okekini hesapla`.
-- **`liste_araclari`**: `toplamını hesapla` · `en büyüğünü bul` ·
-  `en küçüğünü bul` · `ortalamasını hesapla` (Ondalık döner).
-- Metin yardımcıları BİLİNÇLİ yok: harf düzeyinde erişim dilde henüz
-  tanımsız (AÇIK — tür RFC'si ister); yarımşar API sözü verilmez.
+- **`liste_araclari`**: `toplamını hesapla` · `en büyüğünü/küçüğünü bul` ·
+  `ortalamasını hesapla` · `medyanını hesapla` (toplam/ortalama/medyan
+  DAİMA Ondalık döner — K-070).
+- **`metin_araclari`** (K-053 harf erişimi doğunca): `tersini hesapla` ·
+  `ünlülerini say` · `baş harfini bul`.
+- **`sozluk_araclari`**: `en çok geçeni bul` (eşitlikte ilk eklenen).
 
 ## 8. Açık sorular
 

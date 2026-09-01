@@ -7,6 +7,8 @@
 - **canlı Türkçe tanılar** (yazarken altını çizer, kod + öneriyle),
 - **hover** (kalıp kelimesine açıklama + örnek; ada, tanım satırı),
 - **tanıma git** (işlem/yapı başlığına ya da `olsun` satırına),
+- **yeniden adlandırma (F2)** — ekler Türkçe uyumla yeniden giydirilir
+  (`sayaç`→`puan` ⇒ `sayacı`→`puanı`; K-072),
 - **tamamlama** (kalıp kelimeleri).
 
 LSP istemcisi elle yazılmıştır ([extension.js](extension.js)) — npm

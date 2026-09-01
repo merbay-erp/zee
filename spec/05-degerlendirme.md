@@ -36,6 +36,12 @@ platformda AYNIDIR ve dilin kendi tanısıyla karşılanır — altındaki
 makinenin yığın taşmasıyla değil. Sınır, en dar hedef platforma (tarayıcı
 motoru çağrı yığını) paylı seçilmiştir.
 
+## Program sonlanması (TANIMLI — K-069)
+
+`programı bitir` = çıkış kodu 0; `programı <n> ile bitir` süreç çıkış
+kodunu belirler. Kod TamSayı (T034) ve 0–255 aralığında (C020) olmak
+**ZORUNDA**dır; CLI bu kodu işletim sistemine aynen iletir.
+
 ## Girdi bitişi (TANIMLI)
 
 Etkileşimsiz koşuda `diye sor` için girdi kalmadıysa C005. `programı bitir`

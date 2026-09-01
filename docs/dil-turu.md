@@ -505,8 +505,8 @@ Ayrıntı için: dil hata T036
 | `dil hata <kod>` | hata kodunu açıklar |
 | `dil belge <birim>` | birimin işlemlerini listeler |
 
-Editör desteği: `dillsp` LSP sunucusu ([editors/](../editors/)) +
-VS Code renklendirme. Kurulumsuz deneme: [playground](../playground/).
+Editör desteği: `dillsp` — tanılar, hover, tanıma git, **morfolojili
+yeniden adlandırma (F2)** ([editors/](../editors/)). Kurulumsuz deneme: [playground](../playground/).
 
 ---
 
