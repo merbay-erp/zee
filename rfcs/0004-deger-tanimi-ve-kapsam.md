@@ -18,7 +18,7 @@ tür değişimi yasaktır (T002).
    Güncellemede tür korunmalıdır: `x 5 olsun` sonrası `x "a" olsun` → **T002**
    ("türü sonradan değişemez; yeni ad kullan").
 2. **Ad yalın yazılır.** Tanımda ek yoktur (`toplam 0 olsun`); KULLANIMDA ekler
-   bitişiktir ve ad çözümleme aday-kök eşlemesiyle yalına döner (RFC-0002 morfoloji;
+   bitişiktir ve ad çözümleme aday-kök eşlemesiyle yalına döner (RFC-0018;
    `toplamı`, `sayacı`→`sayaç`, `şekle`→`şekil`).
 3. **`olsun` satırının yorumlanma önceliği** (belirsizlik çözümü, deterministik):
    1. `<sözlük-in> <anahtar> değeri <değer> olsun` → sözlüğe yazma (K-015)

@@ -144,12 +144,14 @@ fn govde() -> ExitCode {
         Some("paketler") => paketler_komutu(&argumanlar),
         Some("hata") => hata_komutu(&argumanlar),
         Some("belge") => belge_komutu(&argumanlar),
+        Some("morfoloji") => morfoloji_komutu(&argumanlar),
         Some("parola-özeti") | Some("parola-ozeti") => parola_ozeti_komutu(&argumanlar),
         Some("yeni") => yeni_komutu(&argumanlar),
         Some("sürüm") | Some("surum") => {
             println!(
-                "dil {} — Türkçe programlama dili (bootstrap, Stage 0)",
-                env!("CARGO_PKG_VERSION")
+                "dil {} — Türkçe programlama dili (bootstrap, Stage 0) — morfoloji {}",
+                env!("CARGO_PKG_VERSION"),
+                dil::morfoloji::MORFOLOJI_PROFILI
             );
             ExitCode::SUCCESS
         }
@@ -180,7 +182,35 @@ fn kullanim() {
     eprintln!(
         "  dil belge <birim>          bir birimin işlemlerini listeler (örn. dil belge matematik)"
     );
+    eprintln!("  dil morfoloji [kelime]    etkin ek profilini veya kelimenin çözümlerini gösterir");
     eprintln!("  dil sürüm                  sürümü gösterir");
+}
+
+fn morfoloji_komutu(argumanlar: &[String]) -> ExitCode {
+    if argumanlar.len() > 2 {
+        eprintln!("Kullanım: dil morfoloji [kelime]");
+        return ExitCode::from(2);
+    }
+    let Some(kelime) = argumanlar.get(1) else {
+        print!("{}", dil::morfoloji::profil_dokumu());
+        return ExitCode::SUCCESS;
+    };
+    let cozumler = dil::morfoloji::cozumleri_bul(kelime);
+    println!("{} — morfoloji {}", kelime, dil::morfoloji::MORFOLOJI_PROFILI);
+    if cozumler.is_empty() {
+        println!("Ekli kök çözümü yok.");
+    } else {
+        for cozum in cozumler {
+            let ekler = cozum
+                .ekler
+                .iter()
+                .map(|ek| ek.adi())
+                .collect::<Vec<_>>()
+                .join(" + ");
+            println!("- {} + {}", cozum.kok, ekler);
+        }
+    }
+    ExitCode::SUCCESS
 }
 
 fn parola_ozeti_komutu(argumanlar: &[String]) -> ExitCode {
@@ -317,11 +347,12 @@ fn yeni_komutu(argumanlar: &[String]) -> ExitCode {
         ad, ad
     );
     let bildirim = format!(
-        "# zee proje bildirimi — bu dosya da geçerli zee sözdizimidir.\n\nproje \"{}\" olsun\nsürüm \"0.1.0\" olsun\ngiriş \"program.dil\" olsun\nyerel_bağımlılıklar boş liste olsun\n",
-        ad
+        "# zee proje bildirimi — bu dosya da geçerli zee sözdizimidir.\n\nproje \"{}\" olsun\nsürüm \"0.1.0\" olsun\nmorfoloji \"{}\" olsun\ngiriş \"program.dil\" olsun\nyerel_bağımlılıklar boş liste olsun\n",
+        ad,
+        dil::morfoloji::MORFOLOJI_PROFILI,
     );
     let beni_oku = format!(
-        "# {}\n\nTürkçe programlama diliyle yazılmış bir proje. `proje.dil` giriş dosyasını, sürümü ve yerel bağımlılıkları tanımlar; `proje.kilit` bağımlılık kararını sabitler.\n\n```bash\ndil çalıştır .\n```\n\n```bash\ndil dene .\n```\n\nDenetim: `dil denetle .` · Bütün projeyi biçimle: `dil biçimle .` · Bağımlılıkları sabitle: `dil kilitle .` · Hata açıklama: `dil hata <kod>`\n",
+        "# {}\n\nTürkçe programlama diliyle yazılmış bir proje. `proje.dil` giriş dosyasını, sürümü, morfoloji profilini ve yerel bağımlılıkları tanımlar; `proje.kilit` bağımlılık kararını sabitler.\n\n```bash\ndil çalıştır .\n```\n\n```bash\ndil dene .\n```\n\nDenetim: `dil denetle .` · Bütün projeyi biçimle: `dil biçimle .` · Bağımlılıkları sabitle: `dil kilitle .` · Hata açıklama: `dil hata <kod>`\n",
         ad
     );
     let git_yoksay = ".zee-yazma-kilidi\n*.zee-gecici-*\n";
@@ -616,7 +647,7 @@ fn paketler_komutu(argumanlar: &[String]) -> ExitCode {
     }
     for paket in paketler {
         println!(
-            "{}: {} {} · {} · sha256:{}",
+            "{}: {} {} · morfoloji {} · {} · sha256:{}",
             if paket.dogrudan {
                 "doğrudan"
             } else {
@@ -624,6 +655,7 @@ fn paketler_komutu(argumanlar: &[String]) -> ExitCode {
             },
             paket.ad,
             paket.surum,
+            paket.morfoloji,
             paket.yol,
             paket.ozet
         );

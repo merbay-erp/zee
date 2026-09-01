@@ -25,7 +25,8 @@ sudo cp compiler/target/release/dil /usr/local/bin/dil
 dil yeni ilk-projem
 ```
 
-Yeni klasörde `proje.dil` bulunur; giriş dosyası ve sürüm burada tanımlıdır.
+Yeni klasörde `proje.dil` bulunur; giriş dosyası, proje sürümü ve
+`morfoloji "zee-tr-1" olsun` profil sabitlemesi burada tanımlıdır.
 Bu nedenle dosya adını ezberlemeden projeyi çalıştırabilirsin:
 
 ```bash
@@ -62,7 +63,8 @@ hesap paketini kullan
 
 Bağımlılık kaynağı değişirse zee eski kilitle sessizce devam etmez (P008);
 değişikliği inceledikten sonra yeniden `dil kilitle .` çalıştırırsın.
-Grafiği görmek için `dil paketler .` kullanabilirsin. Bir paketi kaldırmadan
+Grafiği sürüm ve morfoloji profilleriyle görmek için `dil paketler .`
+kullanabilirsin. Bir paketi kaldırmadan
 önce kaynaklardaki `X paketini kullan` satırını ve ona bağlı çağrıları kaldır;
 sonra `dil çıkar X .` çalıştır. Paket hâlâ kullanılıyorsa P010 gelir ve bildirim
 ile kilit dosyasına dokunulmaz.
@@ -124,6 +126,7 @@ internet gerekmez, katalog `dil`in içindedir.
 | `dil paketler [proje]` | doğrudan ve geçişli paket grafiğini sürüm/yol/özetle gösterir |
 | `dil hata <kod>` | bir hata kodunu açıklar |
 | `dil belge <birim>` | birimin işlemlerini listeler (örn. `dil belge matematik`) |
+| `dil morfoloji [kelime]` | etkin ek profilini veya bir kelimenin bütün yapısal çözümlerini gösterir |
 | `dil sürüm` | sürümü gösterir |
 
 ## 6. Daha fazlası

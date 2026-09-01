@@ -34,7 +34,7 @@ ekosistemin tek bir şirketin kapalı ürünü olmaması. Temel cümle:
 4. **AI semantiğin parçası değildir.** Programın anlamını yalnız sözcükleyici,
    ayrıştırıcı, tür denetçisi ve yorumlayıcı/derleyici belirler. Hiçbir aşama
    tahmin yapmaz; ad çözümleme dahi aday üretip TANIMLI adlarla eşleme yapar
-   (RFC-0002, morfoloji bölümü).
+   (RFC-0018, `zee-tr-1` morfoloji profili).
 5. **Noktalama minimum, belirsizlik sıfır.** Kabul edilen noktalama: çift
    tırnak (metin), virgül (liste/argüman ayracı), `#` (yorum). Süslü parantez,
    noktalı virgül ve sembolik işleçler çekirdek yüzeyde yoktur

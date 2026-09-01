@@ -5,6 +5,7 @@
 //! ```text
 //! proje "benim-projem" olsun
 //! sürüm "0.1.0" olsun
+//! morfoloji "zee-tr-1" olsun
 //! giriş "program.dil" olsun
 //! yerel_bağımlılıklar "../ortak" listesi olsun
 //! ```
@@ -18,6 +19,8 @@ use std::path::{Component, Path};
 pub struct ProjeBildirimi {
     pub ad: String,
     pub surum: String,
+    /// Kaynak adlarının hangi sürümlü Türkçe ek tablosuyla çözüleceği.
+    pub morfoloji: String,
     pub giris: String,
     /// Her yol, kendi `proje.dil` bildirimi olan yerel bir projedir. Paket adı
     /// ve sürümü bağımlı projenin bildiriminden gelir; iki yerde tekrarlanmaz.
@@ -26,8 +29,8 @@ pub struct ProjeBildirimi {
 
 /// `proje.dil` kaynağını doğrular ve proje sözleşmesine çevirir.
 ///
-/// Bildirim geçerli zee kaynağı olmak zorundadır; bunun üstüne yalnız üç
-/// alanlı, yan etkisiz ve deterministik proje biçimi daraltması uygulanır.
+/// Bildirim geçerli zee kaynağı olmak zorundadır; bunun üstüne yalnız tanımlı
+/// alanları kabul eden, yan etkisiz ve deterministik proje biçimi uygulanır.
 pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
     let program = crate::kaynagi_derle(kaynak)?;
     if !program.islemler.is_empty() || !program.yapilar.is_empty() || !program.testler.is_empty() {
@@ -54,13 +57,13 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
         };
         if !matches!(
             ad.as_str(),
-            "proje" | "sürüm" | "giriş" | "yerel_bağımlılıklar"
+            "proje" | "sürüm" | "morfoloji" | "giriş" | "yerel_bağımlılıklar"
         ) {
             return Err(proje_hatasi(
                 "P001",
                 &format!("\"{}\" proje bildirimi alanı değil.", ad),
                 satir,
-                "Geçerli alanlar: proje, sürüm, giriş, yerel_bağımlılıklar.",
+                "Geçerli alanlar: proje, sürüm, morfoloji, giriş, yerel_bağımlılıklar.",
             ));
         }
         if alanlar.insert(ad.clone(), (deger, satir)).is_some() {
@@ -75,6 +78,11 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
 
     let (ad, ad_satiri) = gerekli_metni_al(&mut alanlar, "proje")?;
     let (surum, surum_satiri) = gerekli_metni_al(&mut alanlar, "sürüm")?;
+    let (morfoloji, morfoloji_satiri) = istege_bagli_metni_al(
+        &mut alanlar,
+        "morfoloji",
+        crate::morfoloji::MORFOLOJI_PROFILI,
+    )?;
     let (giris, giris_satiri) = gerekli_metni_al(&mut alanlar, "giriş")?;
     let yerel_bagimliliklar = bagimliliklari_al(&mut alanlar)?;
 
@@ -94,6 +102,17 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
             "Sürümü üç sayıyla yaz: 0.1.0",
         ));
     }
+    if morfoloji != crate::morfoloji::MORFOLOJI_PROFILI {
+        return Err(proje_hatasi(
+            "P011",
+            &format!("\"{}\" morfoloji profili bu derleyicide desteklenmiyor.", morfoloji),
+            morfoloji_satiri,
+            &format!(
+                "Bu sürüm için `morfoloji \"{}\" olsun` yaz.",
+                crate::morfoloji::MORFOLOJI_PROFILI
+            ),
+        ));
+    }
     if let Err(neden) = girisi_dogrula(&giris) {
         return Err(proje_hatasi(
             "P004",
@@ -106,9 +125,29 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
     Ok(ProjeBildirimi {
         ad,
         surum,
+        morfoloji,
         giris,
         yerel_bagimliliklar,
     })
+}
+
+fn istege_bagli_metni_al(
+    alanlar: &mut HashMap<String, (Ifade, usize)>,
+    ad: &str,
+    varsayilan: &str,
+) -> Result<(String, usize), Tani> {
+    let Some((ifade, satir)) = alanlar.remove(ad) else {
+        return Ok((varsayilan.to_string(), 1));
+    };
+    match ifade {
+        Ifade::MetinSabiti(deger) => Ok((deger, satir)),
+        _ => Err(proje_hatasi(
+            "P001",
+            &format!("\"{}\" alanı Metin olmalı.", ad),
+            satir,
+            &format!("Örnek: {} \"...\" olsun", ad),
+        )),
+    }
 }
 
 /// Yerel bağımlılık alanını resmî biçimde günceller. Önce eski bildirim,

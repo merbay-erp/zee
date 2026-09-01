@@ -39,6 +39,7 @@ pub struct ProjeGrafigi {
 pub struct PaketBilgisi {
     pub ad: String,
     pub surum: String,
+    pub morfoloji: String,
     pub yol: String,
     pub ozet: String,
     pub dogrudan: bool,
@@ -121,6 +122,7 @@ impl ProjeGrafigi {
             .map(|dugum| PaketBilgisi {
                 ad: dugum.bildirim.ad.clone(),
                 surum: dugum.bildirim.surum.clone(),
+                morfoloji: dugum.bildirim.morfoloji.clone(),
                 yol: goreli_yol(&self.ana_kok, &dugum.kok),
                 ozet: dugum.ozet.clone(),
                 dogrudan: dogrudan_kokler.contains(&dugum.kok),
@@ -200,12 +202,13 @@ impl ProjeGrafigi {
     pub fn kilit_metni(&self) -> String {
         let ana = self.ana_dugum();
         let mut metin = String::from(
-            "# zee bağımlılık kilidi — `dil kilitle` üretir; elle düzenleme.\nkilit_sürümü 1\n",
+            "# zee bağımlılık kilidi — `dil kilitle` üretir; elle düzenleme.\nkilit_sürümü 2\n",
         );
         metin.push_str(&format!(
-            "ana \"{}\" \"{}\"\n",
+            "ana \"{}\" \"{}\" \"{}\"\n",
             kacis(&ana.bildirim.ad),
-            kacis(&ana.bildirim.surum)
+            kacis(&ana.bildirim.surum),
+            kacis(&ana.bildirim.morfoloji)
         ));
 
         let mut paketler: Vec<&ProjeDugumu> = self
@@ -216,9 +219,10 @@ impl ProjeGrafigi {
         paketler.sort_by(|a, b| a.bildirim.ad.cmp(&b.bildirim.ad).then(a.kok.cmp(&b.kok)));
         for paket in paketler {
             metin.push_str(&format!(
-                "paket \"{}\" \"{}\" \"{}\" \"sha256:{}\"\n",
+                "paket \"{}\" \"{}\" \"{}\" \"{}\" \"sha256:{}\"\n",
                 kacis(&paket.bildirim.ad),
                 kacis(&paket.bildirim.surum),
+                kacis(&paket.bildirim.morfoloji),
                 kacis(&goreli_yol(&self.ana_kok, &paket.kok)),
                 paket.ozet
             ));
