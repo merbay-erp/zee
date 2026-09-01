@@ -240,3 +240,13 @@ fiyatların json metni yaz
         vec!["74,25", "{\"çay\":45.5,\"un\":28.75}"]
     );
 }
+
+#[test]
+fn aralik_geri_sayar() {
+    // K-068: aralık iki yönde çalışır.
+    let kaynak = "3 ten 1 e kadar her sayı için\n    sayıyı yaz\n\"ateşle\" yaz\n";
+    assert_eq!(
+        kaynagi_calistir(kaynak).expect("çalışmalı"),
+        vec!["3", "2", "1", "ateşle"]
+    );
+}

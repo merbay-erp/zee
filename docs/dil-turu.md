@@ -100,7 +100,7 @@ Sık koşullar: `çiftse/tekse`, `boşsa`, `içeriyorsa`, `eşitse`,
 10 kez tekrarla
     "Merhaba" yaz
 
-1 den 100 e kadar her sayı için
+1 den 100 e kadar her sayı için        # 5 ten 1 e: geri sayar (K-068)
     sayı çiftse
         sayıyı yaz
 

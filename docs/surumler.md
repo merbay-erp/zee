@@ -3,7 +3,12 @@
 Her sürüm: ne eklendi, ne değişti, neyin sözü verildi. Kırıcı değişiklik
 sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 
-## Yolda (v0.6.0'a birikenler)
+## v0.6.0 — 1 Eylül 2026
+
+**Tema: tip sistemi olgunlaştı, dil ayrıntıda medenileşti.**
+
+- **Aralık iki yönde** (K-068): `5 ten 1 e kadar` geri sayar (sessiz
+  boş dönüş tuzağı kapandı).
 
 - **Para biçimi** (K-065): `tutarın kuruşlusu` — daima iki hane.
 - **Sayısal genişleme çağrıda + imza terfisi** (K-067): Liste<TamSayı> →

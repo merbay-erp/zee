@@ -8,7 +8,8 @@ kodları: S bölümü.
 zee'de gramer birimi **cümledir** ve cümlenin türünü **son kelimesi**
 belirler: `... yaz`, `... olsun`, `... tekrarla`, `... döndür`, `... sor`,
 `... ekle`, `... artır/azalt/böl`, `... bitir`, `... bekle`, `... başlat`,
-`... gönder`, `... yak/söndür`, `... kullan`, `... olmalı`. Türkçenin
+`... gönder`, `... yak/söndür`, `... kullan`, `... olmalı`, `... sil`,
+`... yönlendir` (yaz'ın hedefli biçimleri: `dosyasına`, `çerezine`). Türkçenin
 yüklem-sonlu doğası ayrıştırma kuralının kendisidir; sembolik işleç ve
 parantez **YASAK**tır (S001) — anlam kelimelerle kurulur.
 

@@ -788,7 +788,13 @@ fn blok_calistir(
                 let bastan = tam_sayi(degerlendir(bastan, ortam, program, cikti, derinlik, *satir)?, *satir)?;
                 let sona = tam_sayi(degerlendir(sona, ortam, program, cikti, derinlik, *satir)?, *satir)?;
                 let kapsam = kapsam_baslat(ortam);
-                for deger in bastan..=sona {
+                // K-068: aralık iki yönde çalışır — "5 ten 1 e kadar" geri sayar.
+                let degerler: Vec<i64> = if bastan <= sona {
+                    (bastan..=sona).collect()
+                } else {
+                    (sona..=bastan).rev().collect()
+                };
+                for deger in degerler {
                     ortam.insert(ad.clone(), Deger::TamSayi(deger));
                     if let Akis::Don(d) = blok_calistir(govde, ortam, program, cikti, derinlik)? {
                         return Ok(Akis::Don(d));
