@@ -111,3 +111,21 @@ fn gizli_dil_kelime_cevirir() {
         kaynagi_calistir_girdiyle(&proje("gizli-dil.dil"), girdiler).expect("çalışmalı");
     assert!(cikti.contains(&"Gizli hali: balina fıstık yıldızlı bugün ".to_string()));
 }
+
+#[test]
+fn kelime_sayaci_dogru_sayar() {
+    let girdiler = vec!["bal tut bal ye bal".to_string()];
+    let cikti =
+        kaynagi_calistir_girdiyle(&proje("kelime-sayaci.dil"), girdiler).expect("çalışmalı");
+    assert!(cikti.contains(&"bal: 3".to_string()));
+    assert!(cikti.contains(&"tut: 1".to_string()));
+}
+
+#[test]
+fn gun_sayar_sahte_takvimle() {
+    // Hermetik saat: ToplayanIo 31 Ağustos 2026'da yaşar.
+    let cikti = kaynagi_calistir(&proje("gun-sayar.dil")).expect("çalışmalı");
+    assert!(cikti[0].starts_with("Bugün: "), "{}", cikti[0]);
+    assert!(cikti.contains(&"Yıl: 2026".to_string()));
+    assert!(cikti.iter().any(|s| s.starts_with("Yarın: ")), "{:?}", cikti);
+}

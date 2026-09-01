@@ -18,7 +18,7 @@ Bu bir çeviri katmanı değildir (`if→eğer` makyajı yok); AI semantiğin pa
 - Master plan: [docs/master-plan.md](docs/master-plan.md) (kaynak: [docs/Turkce_Programlama_Dili_Master_Proje_Dokumani.docx](docs/Turkce_Programlama_Dili_Master_Proje_Dokumani.docx))
 - İlkeler: [MANIFESTO.md](MANIFESTO.md)
 
-## Durum: **v0.2.0** (31 Ağustos 2026) — Faz 2+ sürüyor
+## Durum: **v0.3.0** (1 Eylül 2026) — Faz 2+ sürüyor
 
 Sürüm geçmişi ve ayrıntılar: [docs/surumler.md](docs/surumler.md).
 
@@ -53,12 +53,18 @@ değer/hata erişimi derleme hatası), metin kaçışları ve negatif sabitler,
 Araçlar: `dil çalıştır/denetle(--json, çoklu tanı)/dene/biçimle/hata/yeni` +
 **dillsp** LSP sunucusu ([editors/](editors/)).
 Determinizm testlerde tam: rastgelelik, saat, dosyalar, HTTP, sunucu istekleri,
-sensörler ve an ölçümü IO soyutlamasından gelir — 183 test hermetik koşar.
+sensörler ve an ölçümü IO soyutlamasından gelir — 191 test hermetik koşar.
 
 **Playground:** `playground/olustur.sh` derleyiciyi WebAssembly'e derler ve
 tek dosyalık `playground/zee-playground.html` üretir — çift tıkla aç, tarayıcıda
 yaz-çalıştır; kurulum ve internet gerekmez. Aynı tohum + aynı girdi = her zaman
 aynı çıktı (determinizm tarayıcıda da geçerli, K-039).
+
+**Gömülü kitaplık** (RFC-0014): `matematik` ve `liste_araclari` birimleri
+zee'yle yazılıdır ([kitaplik/](kitaplik/)) ve ikiliye gömülüdür — playground
+dahil her yerde kurulumsuz çalışır. **Çocuk modu:** `dil çalıştır --güvenli`
+(ağ kapalı, dosyalar klasörle sınırlı, K-047). Sınıf için:
+[docs/ogretmen-rehberi.md](docs/ogretmen-rehberi.md).
 
 Uzak depo: **github.com/merbay-erp/zee** (özel; lisans seçilmeden — bölüm 26 —
 herkese açılmayacak, K-032). Tarih arşivi: ilk README'ler [docs/tarih/](docs/tarih/)
@@ -102,14 +108,18 @@ korpus üzerinde regression testine girer.
   oluşturma bilinçli olarak korpus dışıdır: bunlar stdlib/CLI API tasarımı
   gerektirir ve korpusun sonraki genişletmesinde eklenecektir.
 
-## Sonraki adımlar (90 günlük plan)
+## Sonraki adımlar
 
-- **Hafta 1–2 (bu faz):** korpus revizyonu — golden programları gerçek kullanıcılara
-  okutup karar günlüğünü güncelle; anti-örnekleri netleştir.
-- **Hafta 3–4:** Rust bootstrap: lexer + Unicode kuralları (NFC) + girinti
-  tokenları + parser iskeleti.
-- **Hafta 5–8:** AST, isim çözümleme, temel türler, koşul/döngü/işlem, interpreter.
-- **Hafta 9–12:** Türkçe diagnostic framework, formatter, CLI, VS Code minimum, v0.1 demo.
+90 günlük başlangıç planının makine tarafı 2 günde kapandı (v0.1 → v0.2 →
+v0.3 sürüm notlarına bak). Şimdiki kapılar:
+
+- **Usability oturumları (kurucu):** K-016 çağrı sözdiziminin onayı ve
+  10 "geçici kabul" RFC'nin tam kabulü — kit hazır: docs/usability-kiti.md.
+- **Lisans (bölüm 26, kurucu):** seçilmeden depo herkese açılmaz; site ve
+  topluluk (bölüm 30) bunun arkasında.
+- **Makine tarafı sıradaki:** RFC-0014'ün usability sonrası kesinleşmesi,
+  ADR-004 için ölçüm biriktirme (docs/olcumler.md), Faz kapıları geldikçe
+  paket/native/paralellik.
 
 ## İlk gerçek milestone
 
