@@ -671,7 +671,10 @@ Ayrıntı için: dil hata T036
 | `dil morfoloji [kelime]` | sürümlü ek tablosunu veya kelimenin bütün kök+ek çözümlerini gösterir |
 
 Editör desteği: `dillsp` — tanılar, hover, tanıma git, **morfolojili
-yeniden adlandırma (F2)** ([editors/](../editors/)). Kurulumsuz deneme: [playground](../playground/).
+yeniden adlandırma (F2)** ([editors/](../editors/)). Gelen tek JSON-RPC
+çerçevesi 8 KiB başlık/8 MiB gövde; JSON 128 iç içelik/100 bin düğüm sınırı
+taşır. Geçersiz Unicode fail-closed reddedilir. Kurulumsuz deneme:
+[playground](../playground/).
 
 ---
 

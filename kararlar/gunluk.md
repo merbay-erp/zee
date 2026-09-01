@@ -1499,6 +1499,21 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   yalnız kimlikli doluluk reddi ve kaymayan expiry. Üç yeni testle toplam 419;
   V1-P0-16 kapandı, B-046 process içi dilimde tamamlandı.
 
+## K-107 — LSP çerçeve ve JSON girdisini fail-closed sınırla (1 Eyl)
+
+- **Çerçeve:** `dillsp` en çok 8 KiB başlık ve 8 MiB gövde kabul eder. Tam bir
+  ve yalnız bir `Content-Length` tahsisten önce doğrulanır; UTF-8/çerçeve
+  hatasında akış konumu uydurulmadan process Türkçe hatayla kapanır.
+- **JSON bütçesi:** En çok 128 iç içelik ve 100.000 değer düğümü ayrıştırılır.
+  Doğrudan API de 8 MiB metin sınırını taşır.
+- **Unicode:** Yüksek surrogate yalnız geçerli düşük surrogate ile birleşir;
+  yanlış/eksik çift, tek düşük surrogate ve kaçışsız U+0000..U+001F reddedilir.
+  Önceki çıkarma taşması/panic yolu yoktur.
+- **Dürüst sınır:** Açık belgelerin toplam belleği, çıktı büyümesi ve istek
+  zaman bütçesi B-025'te kalır; tek-girdi parser/framing kapısı kapanmıştır.
+- **Kanıt:** ADR-019, üç çerçeve ve dört JSON olumsuz/sınır testi. Yedi yeni
+  testle toplam 426; B-047 ve V1-P0-17 kapandı.
+
 ---
 
 ## Sonraki adım
@@ -1507,5 +1522,5 @@ Korpus 10 öğrenci + 5 profesyonel usability oturumuna (Hafta 12 hedefi, erkeni
 Hafta 2'de kağıt üstünde) sesli okutulacak; her kayıt için "doğal mı /
 deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
-Makine hattında B-047/K-107 LSP girdi sertleştirmesi gelir; B-020 source span
-bu güvenlik dilimini izler.
+Makine hattında B-020 source span gelir; ardından B-014 fuzz/property korpusu
+ve B-015–B-017 denetimleri izler.

@@ -3,7 +3,7 @@
 Bu liste bir dilek listesi değildir: `1.0.0` etiketi bu kapılar kapatılmadan
 atılmaz. Amaç yeni özellik sayısını büyütmek değil, çocuktan profesyonele aynı
 dilin verdiği sözleri kanıtlamaktır. Bulgular 1 Eylül 2026'da derleyici
-kaynakları, spec, RFC'ler ve 419 test üzerinden yeniden doğrulanmıştır.
+kaynakları, spec, RFC'ler ve 426 test üzerinden yeniden doğrulanmıştır.
 
 Durumlar: **KAPALI** = kanıtı var · **AÇIK** = v1 engeli · **KARAR** = önce
 normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
@@ -28,6 +28,7 @@ normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
 | V1-P0-14 Runtime typed HIR bağlarını tüketir | **KAPALI (K-103/K-104)** | Bağlı program her denetlenmiş ifade için `HirDugumId`, açık `Deger(Tur)`/`DegerDondurmez` türü ve semantic ID bağı taşıyan zorunlu `HirProgram` üretir. Standart runtime ve `dene` değişken/işlem/yapı kararlarını yalnız `HirBagi` ile yapar; kaynak AST tanı/v0 uyumluluğu için korunur. | ADR-016 + [typed HIR modeli](typed-hir-modeli.md); tür/SymbolId, dönüşsüz çağrı, işlem/yapı ID dizini, HIR'sız bağlı program, bozulan kaynak adına rağmen ID ile çalışma ve standard-hat mimari kanıtları. Toplam 413 test yeşildir. |
 | V1-P0-15 Native ağ bekleme ve bellek sınırı | **KAPALI (K-105)** | Deadline yazılmasa da HTTP istemcisi 30 saniyelik mutlak bütçe ve başlıklar dahil 8 MiB wire yanıt sınırı taşır. Yerel sunucu başlık+gövdeyi kabulden başlayan 10 saniyede tamamlatır; her okuma yalnız kalan süreyi alır ve aşım 408'dir. | ADR-017 + spec/09/11/12; geçmiş mutlak tarihte hazır baytı bile okumama, yanıt boyut reddi ve deadline'sız küçük loopback yanıtı. Toplam 416 test yeşildir. DNS iptali platform sınırı; oturum/LSP sınırları ayrı açık kapıdır. |
 | V1-P0-16 Process içi oturum belleği sınırlıdır | **KAPALI (K-106)** | Depo 4096 toplam/1024 anonim kayıtla sınırlı; süresi dolanlar önce silinir, en eski erişimli anonim deterministik tahliye edilir. Kimlikli kayıt rastgele düşürülmez; dolu kimlikli depo yeni girişi reddeder. 10/30 dakika ömür mutlaktır. | ADR-018 + spec/12; anonim LRU, anonimin girişe yer açması, kimlikli doluluk reddi ve erişimin expiry'yi kaydırmaması. Toplam 419 test yeşildir. Çok süreçli ortak depo ayrı deployment kapısıdır. |
+| V1-P0-17 LSP tek-girdi kaynağı sınırlıdır | **KAPALI (K-107)** | `dillsp` 8 KiB başlık/8 MiB gövdeyi tahsis öncesi, tek `Content-Length` ile doğrular. JSON 128 iç içelik/100 bin düğümle sınırlı; yanlış vekil çifti, tek düşük vekil ve kaçışsız kontrol karakteri reddedilir. | ADR-019 + üç framing ve dört parser regresyonu; derinlik/düğüm sınırı panic öncesi durur. Toplam 426 test yeşildir. Toplam açık belge/çıktı bütçesi B-025'tedir. |
 
 ## P1 — profesyonel kapasite kapıları
 
@@ -72,8 +73,8 @@ normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
    kapattı. K-103 typed HIR üretim çekirdeğini, K-104 bağlı runtime tüketimini
    tamamlayıp V1-P0-14'ü kapattı.
 8. K-105/ADR-017 native ağın sınırsız bekleme ve bellek yollarını, K-106/
-   ADR-018 process içi oturum kotasını ve mutlak ömrü kapattı. Güvenlik
-   sırasında B-047/K-107 LSP girdi sertleştirmesi B-020 source span'in önündedir.
+   ADR-018 process içi oturum kotasını ve mutlak ömrü, K-107/ADR-019 LSP
+   tek-girdi sınırını kapattı. Sıradaki omurga B-020 source span'dir.
 9. Yeni dil özelliğinden önce bağlayıcı sıra
    [öncelikli backlog](oncelikli-backlog.md) içindeki P0 compiler omurgasıdır.
 

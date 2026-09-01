@@ -10,6 +10,12 @@ ek almış kullanımlar morfolojiyle çözülür: `sayacı` → `sayaç`). Birim
 kullanan kaynağın klasöründen, yerel paketleri `proje.dil`/`proje.kilit`
 grafiğinden çözer.
 
+K-107 güvenlik sınırı: gelen JSON-RPC çerçevesi en çok 8 KiB başlık ve 8 MiB
+gövde taşır; tam bir `Content-Length` zorunludur. JSON en çok 128 iç içelik ve
+100.000 değer düğümü kabul eder; geçersiz Unicode vekili ya da kaçışsız kontrol
+karakteri reddedilir. Bozuk çerçevede `dillsp` akışı tahmin etmeyip kapanır;
+editör process'i yeniden başlatabilir.
+
 ### Helix (`~/.config/helix/languages.toml`)
 
 ```toml
