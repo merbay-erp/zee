@@ -73,7 +73,8 @@ Kalan hiç negatif olmaz (okul kuralı, K-046).
 
 TamSayı gerektiğinde Ondalığa kendiliğinden genişler; tersi bilinçlidir:
 `ondalığın tam kısmı`, `ondalığın yuvarlanmışı`. Para gösterimi:
-`tutarın kuruşlusu` → `"1824,50"` (daima iki hane, K-065). Her değerin
+`tutarın kuruşlusu` → `"1824,50"`; binlikli: `tutarın binlikli kuruşlusu`
+→ `"1.234.567,89"` (Türk yazımı, K-075). Her değerin
 resmî metin hali: `sayının metni` → `"42"` (K-066).
 
 ## 5. Koşullar
@@ -311,6 +312,9 @@ her öğrenci için
     öğrencinin adı yaz
 
 öğrencilerin json metni yaz      # [{"ad":"Ayşe",...},...]
+
+her öğrenci için                 # gezerken değiştir → listeye yansır (K-074)
+    öğrencinin yaşı 11 olsun
 ```
 
 ## 14. Desen eşleştirme

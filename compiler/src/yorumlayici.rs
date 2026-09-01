@@ -906,11 +906,32 @@ fn blok_calistir(
                         .collect(),
                     _ => return Err(ic_hata(*satir)),
                 };
+                // K-074: kaynak bir ADSA, gövdedeki öğe değişikliği listeye
+                // GERİ YAZILIR — "gezerken değiştirdim ama değişmedi" tuzağı yok.
+                let kaynak_adi = match kaynak {
+                    Ifade::Degisken { cozulmus: Some(kaynak_adi), .. } => Some(kaynak_adi.clone()),
+                    _ => None,
+                };
+                let liste_mi = matches!(
+                    kaynak_adi.as_deref().and_then(|a| ortam.get(a)),
+                    Some(Deger::Liste(_))
+                );
                 let kapsam = kapsam_baslat(ortam);
-                for oge in ogeler {
+                for (sira, oge) in ogeler.into_iter().enumerate() {
                     ortam.insert(ad.clone(), oge);
                     if let Akis::Don(d) = blok_calistir(govde, ortam, program, cikti, derinlik)? {
                         return Ok(Akis::Don(d));
+                    }
+                    if liste_mi {
+                        if let (Some(kaynak_adi), Some(guncel)) =
+                            (kaynak_adi.as_deref(), ortam.get(ad).cloned())
+                        {
+                            if let Some(Deger::Liste(ogeler)) = ortam.get_mut(kaynak_adi) {
+                                if let Some(yer) = ogeler.get_mut(sira) {
+                                    *yer = guncel;
+                                }
+                            }
+                        }
                     }
                 }
                 kapsam_bitir(ortam, &kapsam);
@@ -1340,6 +1361,33 @@ fn degerlendir(
                 }
                 (Ozellik::Kirpilmis, Deger::Metin(m)) => Ok(Deger::Metin(m.trim().to_string())),
                 (Ozellik::Metni, deger) => Ok(Deger::Metin(deger.metne())),
+                (
+                    Ozellik::BinlikliKuruslu,
+                    deger @ (Deger::Ondalik { .. } | Deger::TamSayi(_)),
+                ) => {
+                    let (govde, olcek) = match deger {
+                        Deger::TamSayi(s) => (s as i128, 0u32),
+                        Deger::Ondalik { govde, olcek } => (govde as i128, olcek),
+                        _ => unreachable!(),
+                    };
+                    let kurus = if olcek > 2 {
+                        yuvarla_bol(govde, 10i128.pow(olcek - 2))
+                    } else {
+                        govde * 10i128.pow(2 - olcek)
+                    };
+                    let isaret = if kurus < 0 { "-" } else { "" };
+                    let mutlak = kurus.abs();
+                    let tam = (mutlak / 100).to_string();
+                    // Binlik ayraç NOKTA (Türk yazımı): 1824 → 1.824.
+                    let mut gruplu = String::new();
+                    for (i, k) in tam.chars().enumerate() {
+                        if i > 0 && (tam.len() - i) % 3 == 0 {
+                            gruplu.push('.');
+                        }
+                        gruplu.push(k);
+                    }
+                    Ok(Deger::Metin(format!("{}{},{:02}", isaret, gruplu, mutlak % 100)))
+                }
                 (Ozellik::Kuruslu, deger @ (Deger::Ondalik { .. } | Deger::TamSayi(_))) => {
                     // K-065: daima iki hane; yarımlar sıfırdan uzağa (dil kuralı).
                     let (govde, olcek) = match deger {

@@ -29,6 +29,13 @@ Playground'da tohum görünürdür; testlerde IO dünyası tamamen sahtedir.
   kayan nokta HİÇBİR aşamada kullanılmaz. `0,1 + 0,2 = 0,3` kimliktir.
 - Yuvarlama: yarımlar sıfırdan uzağa (`2,5 → 3`, `-2,5 → -3`).
 
+## Gezme ve yazma (TANIMLI — K-074)
+
+`her X için` gezmesi öğenin KOPYASINI bağlar; ancak kaynak bir ad
+olduğundan (dilbilgisi gereği hep öyledir) her turun sonunda döngü
+değişkeninin son değeri listedeki öğeye GERİ YAZILIR — gövdedeki alan
+değişikliği kalıcıdır. Sözlük gezmesi anahtarları verir; yansıma yoktur.
+
 ## Çağrı derinliği (TANIMLI — K-040)
 
 Çağrı derinliği 500 ile sınırlıdır; aşımı C019 Türkçe tanısıdır. Sınır her
