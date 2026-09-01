@@ -23,14 +23,15 @@ Parsed AST
        ▼
 Bound AST
   kaynak ad + YapiId / IslemId / SymbolId
-       │ B-018/B-019
+       │ B-019
        ▼
 Typed HIR (gelecek)
   açık kimlik + tür + source span
 ```
 
-Kaynak adı şimdilik runtime ve kaliteli Türkçe tanılar için korunur. Bu çift
-taşıma geçiş köprüsüdür; HIR işi tamamlanınca runtime çözülmemiş kaynak adıyla
+K-102/B-018 bu aşamaları ayrı faz tiplerinde görünür yaptı. Kaynak adı şimdilik
+runtime ve kaliteli Türkçe tanılar için korunur. Bu çift taşıma geçiş
+köprüsüdür; B-019 HIR işi tamamlanınca runtime çözülmemiş kaynak adıyla
 semantic karar vermemelidir.
 
 ## Yeni kod için kurallar

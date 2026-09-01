@@ -14,6 +14,7 @@ pub mod paket;
 pub mod proje;
 pub mod wasm_api;
 pub mod cozumleyici;
+pub mod faz;
 pub mod guvenlik;
 pub mod intrinsic;
 pub mod kimlik;
@@ -27,6 +28,7 @@ pub mod web_guvenligi;
 pub mod yorumlayici;
 
 use agac::{Cumle, Islem, KullanimTuru, Program, Test, Yapi};
+use faz::{BaglanmamisProgram, BaglanmisProgram, KaynakMetni};
 use std::collections::HashMap;
 use tani::Tani;
 
@@ -56,7 +58,13 @@ pub type KokenliBirimYukleyici<'a> =
 /// Kaynağı çalıştırılabilir programa derler. Birim kullanmayan kaynaklar için;
 /// `kullan` görülürse A010 verir (yükleyici bağlanmamış).
 pub fn kaynagi_derle(kaynak: &str) -> Result<Program, Tani> {
-    kaynagi_derle_birimlerle(kaynak, &mut |ad: &str| {
+    kaynagi_fazli_derle(kaynak).map(BaglanmisProgram::into_program)
+}
+
+/// Kaynağı faz bilgisini silmeden derler. Yeni derleyici/runtime kodu bu
+/// yüzeyi tercih eder; `kaynagi_derle` geriye uyum için `Program` döndürür.
+pub fn kaynagi_fazli_derle(kaynak: &str) -> Result<BaglanmisProgram, Tani> {
+    kaynagi_fazli_derle_birimlerle(kaynak, &mut |ad: &str| {
         Err(format!("\"{}\" birimi bu bağlamda yüklenemez", ad))
     })
 }
@@ -143,6 +151,13 @@ pub fn kaynagi_derle_birimlerle(
     kaynak: &str,
     yukleyici: &mut BirimYukleyici,
 ) -> Result<Program, Tani> {
+    kaynagi_fazli_derle_birimlerle(kaynak, yukleyici).map(BaglanmisProgram::into_program)
+}
+
+pub fn kaynagi_fazli_derle_birimlerle(
+    kaynak: &str,
+    yukleyici: &mut BirimYukleyici,
+) -> Result<BaglanmisProgram, Tani> {
     let mut kokenli = |istek: BirimIstegi<'_>| {
         if istek.tur == KullanimTuru::Paket {
             return Err("paket çözümü için proje bağlamı gerekir".into());
@@ -152,7 +167,7 @@ pub fn kaynagi_derle_birimlerle(
             koken: istek.ad.to_string(),
         })
     };
-    kaynagi_derle_kokenlerle(kaynak, None, &mut kokenli)
+    kaynagi_fazli_derle_kokenlerle(kaynak, None, &mut kokenli)
 }
 
 /// Kaynağı gerçek dosya/paket kökenini koruyarak derler. CLI ve proje araçları
@@ -162,12 +177,25 @@ pub fn kaynagi_derle_kokenlerle(
     koken: Option<&str>,
     yukleyici: &mut KokenliBirimYukleyici,
 ) -> Result<Program, Tani> {
+    kaynagi_fazli_derle_kokenlerle(kaynak, koken, yukleyici)
+        .map(BaglanmisProgram::into_program)
+}
+
+pub fn kaynagi_fazli_derle_kokenlerle(
+    kaynak: &str,
+    koken: Option<&str>,
+    yukleyici: &mut KokenliBirimYukleyici,
+) -> Result<BaglanmisProgram, Tani> {
     let mut yigin: Vec<String> = Vec::new();
     let (cumleler, islemler, yapilar, testler) =
         dosyayi_coz(kaynak, koken, true, yukleyici, &mut yigin)?;
-    let mut program = Program { cumleler, islemler, yapilar, testler };
-    cozumleyici::denetle(&mut program)?;
-    Ok(program)
+    BaglanmamisProgram::yeni(Program {
+        cumleler,
+        islemler,
+        yapilar,
+        testler,
+    })
+    .denetle()
 }
 
 /// Bir kaynak dosyayı çözer: birimlerini özyinelemeli yükler, kendi
@@ -180,7 +208,7 @@ fn dosyayi_coz(
     yukleyici: &mut KokenliBirimYukleyici,
     yigin: &mut Vec<String>,
 ) -> Result<(Vec<Cumle>, HashMap<String, Islem>, Vec<Yapi>, Vec<Test>), Tani> {
-    let tokenlar = sozcukleyici::sozcukle(kaynak)?;
+    let tokenlar = KaynakMetni::yeni(kaynak).sozcukle()?;
 
     // 1) Birimleri önden yükle (çağrı tanıma için işlem adları gerekli).
     let mut islemler: HashMap<String, Islem> = HashMap::new();
@@ -189,7 +217,7 @@ fn dosyayi_coz(
     let mut yapi_kaynagi: HashMap<String, String> = HashMap::new();
     let mut testler: Vec<Test> = Vec::new();
 
-    for (ad, tur, satir) in ayristirici::kullanilan_birimler(&tokenlar) {
+    for (ad, tur, satir) in ayristirici::kullanilan_birimler(tokenlar.tokenlar()) {
         let yuklenen = yukleyici(BirimIstegi {
             ad: &ad,
             tur,
@@ -246,7 +274,7 @@ fn dosyayi_coz(
         .filter(|islem| islem.disari_acik)
         .map(|islem| islem.ad.clone())
         .collect();
-    let cumleler = ayristirici::ayristir_tohumla(tokenlar, tohum)?;
+    let cumleler = tokenlar.ayristir(tohum)?.into_cumleler();
 
     // 3) Kendi tanımlarını ayıkla ve birleştir.
     let mut kalan = Vec::new();
@@ -400,7 +428,7 @@ fn cakisma(tur: &str, ad: &str, birinci: &str, ikinci: &str, satir: usize) -> Ta
 
 /// Kaynağı denetler, çalıştırmaz.
 pub fn kaynagi_denetle(kaynak: &str) -> Result<(), Tani> {
-    kaynagi_derle(kaynak).map(|_| ())
+    kaynagi_fazli_derle(kaynak).map(|_| ())
 }
 
 /// Kaynağı uçtan uca çalıştırır; çıktı satırlarını döndürür.
@@ -411,9 +439,9 @@ pub fn kaynagi_calistir(kaynak: &str) -> Result<Vec<String>, Tani> {
 /// Kaynağı hazır girdi satırlarıyla çalıştırır ("diye sor" cevapları sırayla
 /// bu listeden gelir); istemler de çıktıya dahildir.
 pub fn kaynagi_calistir_girdiyle(kaynak: &str, girdiler: Vec<String>) -> Result<Vec<String>, Tani> {
-    let program = kaynagi_derle(kaynak)?;
+    let program = kaynagi_fazli_derle(kaynak)?;
     let mut io = yorumlayici::ToplayanIo::yeni(girdiler);
-    yorumlayici::calistir_io(&program, &mut io)?;
+    yorumlayici::calistir_baglanmis_io(&program, &mut io)?;
     Ok(io.cikti)
 }
 
@@ -439,8 +467,8 @@ pub fn programi_dene(program: &Program) -> Vec<TestSonucu> {
 
 /// Kaynağı derleyip testlerini koşar.
 pub fn kaynagi_dene(kaynak: &str) -> Result<Vec<TestSonucu>, Tani> {
-    let program = kaynagi_derle(kaynak)?;
-    Ok(programi_dene(&program))
+    let program = kaynagi_fazli_derle(kaynak)?;
+    Ok(programi_dene(program.program()))
 }
 
 /// TÜM tanıları toplar (RFC-0010 §3.1): sözcükleme ilk hatada durur (nadir);
@@ -465,7 +493,7 @@ pub fn kaynagi_tanilari_kokenlerle(
     koken: Option<&str>,
     yukleyici: &mut KokenliBirimYukleyici,
 ) -> Vec<Tani> {
-    let tokenlar = match sozcukleyici::sozcukle(kaynak) {
+    let tokenlar = match KaynakMetni::yeni(kaynak).sozcukle() {
         Ok(tokenlar) => tokenlar,
         Err(tani) => return vec![tani],
     };
@@ -476,7 +504,7 @@ pub fn kaynagi_tanilari_kokenlerle(
     let mut yapilar: Vec<Yapi> = Vec::new();
     let mut testler: Vec<Test> = Vec::new();
     let mut yigin: Vec<String> = Vec::new();
-    for (ad, tur, satir) in ayristirici::kullanilan_birimler(&tokenlar) {
+    for (ad, tur, satir) in ayristirici::kullanilan_birimler(tokenlar.tokenlar()) {
         match yukleyici(BirimIstegi {
             ad: &ad,
             tur,
@@ -509,7 +537,8 @@ pub fn kaynagi_tanilari_kokenlerle(
         .filter(|islem| islem.disari_acik)
         .map(|islem| islem.ad.clone())
         .collect();
-    let (cumleler, ayristirma_tanilari) = ayristirici::ayristir_kurtarmali(tokenlar, tohum);
+    let (ast, ayristirma_tanilari) = tokenlar.ayristir_kurtarmali(tohum);
+    let cumleler = ast.into_cumleler();
     tanilar.extend(ayristirma_tanilari);
 
     // Hoist (çakışmalar tanı olur, tanımlar yine de alınır ki devamı denetlensin).

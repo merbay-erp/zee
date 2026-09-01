@@ -1060,6 +1060,21 @@ pub fn calistir(program: &Program) -> Result<Vec<String>, Tani> {
     Ok(io.cikti)
 }
 
+/// Faz bilgisini koruyan yürütme girişi. Standart kaynak→çalıştır hattı bunu
+/// kullanır; raw `Program` alan fonksiyonlar v0 Rust API uyumluluğu içindir.
+pub fn calistir_baglanmis(
+    program: &crate::faz::BaglanmisProgram,
+) -> Result<Vec<String>, Tani> {
+    calistir(program.program())
+}
+
+pub fn calistir_baglanmis_io(
+    program: &crate::faz::BaglanmisProgram,
+    io: &mut dyn GirdiCikti,
+) -> Result<(), Tani> {
+    calistir_io(program.program(), io)
+}
+
 pub fn calistir_io(program: &Program, io: &mut dyn GirdiCikti) -> Result<(), Tani> {
     calistir_io_kodla(program, io).map(|_| ())
 }

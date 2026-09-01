@@ -1400,11 +1400,33 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   `Degisken`/`YeniYapi`/`IslemCagrisi` AST düğümünde kaynak adının yanına
   semantik kimliği yazar.
 - **Sınır:** Kimlikler derleme birimi içindir; kalıcı paket/ABI ID'si değildir.
-  Runtime'ın kaynak adından tamamen ayrılıp typed HIR tüketmesi B-018/B-019
-  kapsamındadır. Zee kaynak semantiği ve normatif spec değişmedi.
+  Faz tipleri B-018/K-102 ile tamamlandı; runtime'ın kaynak adından tamamen
+  ayrılıp typed HIR tüketmesi B-019 kapsamındadır. Zee kaynak semantiği ve
+  normatif spec değişmedi.
 - **Kanıt:** ADR-014, semantic kimlik rehberi; yapı depolama sırası ve işlem
   çağrı sırası tersleme, SymbolId bağı ve indeks-gerileme mimari testi. Dört
   yeni testle toplam 402 test yeşil; B-010 ve V1-P0-12 kapandı.
+
+## K-102 — Derleyici veri fazlarını türlerde görünür kıl (1 Eyl)
+
+- **Karar:** Kaynak, token, parsed AST, hoist edilmiş bağlanmamış program ve
+  checker'dan geçmiş bağlı program aynı çıplak veri tipi gibi taşınmaz.
+  `KaynakMetni`, `TokenAkisi`, `AyristirilmisAst`, `BaglanmamisProgram` ve
+  `BaglanmisProgram` gerçek standart hattın ayrı Rust türleridir.
+- **Geçiş:** `BaglanmamisProgram` crate dışından kurulamaz;
+  `BaglanmisProgram` yalnız başarılı ad/ID çözümü + tür/akış/etki checker
+  geçişinden doğar. Standart denetle/çalıştır/dene API'leri fazlı hattı ve
+  `calistir_baglanmis[_io]` runtime girişini kullanır.
+- **Uyumluluk:** Raw `Program` döndüren/alan v0 Rust API'leri korunur; faz
+  bilgisini yalnız checker başarısından sonra silen adaptörlerdir. Zee kaynak
+  dili, tanılar, runtime sırası ve normatif spec değişmedi.
+- **Dürüst sınır:** Bağlı program hâlâ AST'dir; ayrı Resolution ürünü, typed
+  HIR ve zorunlu semantic span B-019/B-020'dir. B-018 bu işleri tamamlanmış
+  saymaz.
+- **Kanıt:** ADR-015, derleyici faz rehberi, parsed/bound ID farkı, eski API
+  eşdeğerliği, standart-hat mimari testi ve yanlış parsed→runtime geçişi için
+  compile-fail. Dört yeni testle toplam 406 test yeşil; B-018 ve V1-P0-13
+  kapandı.
 
 ---
 

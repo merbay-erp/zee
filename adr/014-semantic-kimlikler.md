@@ -47,8 +47,8 @@ tanı ve mevcut runtime uyumluluğu için yanında korunur.
    bağımsızdır.
 5. Kimlikler bir derleme birimi içindeki semantic identity'dir; kalıcı paket,
    ABI ya da ağ protokolü kimliği değildir.
-6. Runtime'ın kaynak adını bırakıp yalnız ID tüketmesi B-018/B-019 faz/HIR
-   geçişidir; bu ADR o işler tamamlanmış gibi davranmaz.
+6. Faz türleri B-018/K-102 ile görünürdür. Runtime'ın kaynak adını bırakıp
+   yalnız ID/HIR tüketmesi B-019 geçişidir; bu ADR o işi tamamlanmış saymaz.
 
 ## Sonuçlar
 

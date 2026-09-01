@@ -85,7 +85,7 @@ Araçlar: `dil çalıştır(--güvenli/--deneysel-web/--web-proxy)/parola-özeti
 + **dillsp** LSP sunucusu — tanılar, hover, tanıma git, **morfolojili
 yeniden adlandırma (F2)** ([editors/](editors/)).
 Determinizm testlerde tam: rastgelelik, saat, dosyalar, HTTP, sunucu istekleri,
-sensörler ve an ölçümü IO soyutlamasından gelir — 402 test hermetik koşar.
+sensörler ve an ölçümü IO soyutlamasından gelir — 406 test hermetik koşar.
 
 **Playground:** `playground/olustur.sh` derleyiciyi WebAssembly'e derler ve
 tek dosyalık `playground/zee-playground.html` üretir — çift tıkla aç, tarayıcıda
@@ -126,7 +126,7 @@ korpus üzerinde regression testine girer.
 | 11 anti-örnek | [anti-ornekler/](anti-ornekler/) | ✅ (A11: nokta-ondalık) |
 | Syntax karar günlüğü | [kararlar/gunluk.md](kararlar/gunluk.md) | ✅ işleniyor |
 | RFC süreci | [rfcs/](rfcs/) | ✅ 21 RFC: 2 kabul, 17 geçici kabul, 2 taslak |
-| ADR süreci | [adr/](adr/) | ✅ 12 kabul (001-003, 006-014); 004/005 faz verisi bekliyor |
+| ADR süreci | [adr/](adr/) | ✅ 13 kabul (001-003, 006-015); 004/005 faz verisi bekliyor |
 | Hata kataloğu | [docs/hata-katalogu.md](docs/hata-katalogu.md) | ✅ 144 etkin kod + 1 ayrılmış kod, kaynakla tutarlılığı testli |
 | Spesifikasyon | [spec/](spec/) | ✅ başladı — normatif çekirdek (RFC'lere bağlar) |
 
@@ -182,7 +182,9 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   [semantik katmanlara](docs/checker-katmanlari.md) ayırdı. İnsan kanıtı
   beklenirken K-101/ADR-014 yapı, işlem ve yerel sembolleri çıplak
   indeks/adlardan ayıran `YapiId`/`IslemId`/`SymbolId`
-  [semantic kimlik modelini](docs/semantic-kimlik-modeli.md) kurdu. Uygulama
+  [semantic kimlik modelini](docs/semantic-kimlik-modeli.md) kurdu.
+  K-102/ADR-015 kaynak, token, parsed AST, bağlanmamış ve bağlanmış programı
+  ayrı [faz tiplerine](docs/derleyici-faz-modeli.md) taşıdı. Uygulama
   sırası [öncelikli backlog](docs/oncelikli-backlog.md) ile sabittir.
   Bağlayıcı liste: [docs/v1-surum-kapilari.md](docs/v1-surum-kapilari.md).
 

@@ -1,4 +1,4 @@
-//! B-005/B-006/B-010 derleyici faz, checker katmanı ve semantic ID regresyonları.
+//! B-005/B-006/B-010/B-018 derleyici faz ve semantic sınır regresyonları.
 
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -63,6 +63,7 @@ fn handler_modulleri_yeni_domain_icin_sinir_tasir() {
         ("src/cozumleyici/sozlesme.rs", 180),
         ("src/cozumleyici/turler.rs", 300),
         ("src/kimlik.rs", 80),
+        ("src/faz.rs", 160),
         ("src/yorumlayici/cumle.rs", 600),
         ("src/yorumlayici/ifade.rs", 730),
     ] {
@@ -115,4 +116,23 @@ fn semantic_kimlikler_depolama_indeksine_geri_donmez() {
             "{goreli} YapiId'yi vektör indeksi gibi kullanmamalı"
         );
     }
+}
+
+#[test]
+fn standart_hat_faz_turlerini_atlayamaz() {
+    let faz = kaynak("src/faz.rs");
+    for tur in [
+        "struct KaynakMetni",
+        "struct TokenAkisi",
+        "struct AyristirilmisAst",
+        "struct BaglanmamisProgram",
+        "struct BaglanmisProgram",
+    ] {
+        assert!(faz.contains(tur), "derleme fazı kodda görünür olmalı: {tur}");
+    }
+
+    let kok = kaynak("src/lib.rs");
+    assert!(kok.contains("KaynakMetni::yeni(kaynak).sozcukle()"));
+    assert!(kok.contains("BaglanmamisProgram::yeni"));
+    assert!(kok.contains("calistir_baglanmis_io(&program"));
 }

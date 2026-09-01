@@ -203,7 +203,15 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   kullanır. Checker çözülmüş değişken, yapı oluşturma ve işlem çağrısı AST
   düğümlerini ID ile bağlar; kaynak adını tanı/runtime geçişi için korur. Üç
   davranış ve bir mimari testle toplam 402 test yeşildir; kaynak semantiği
-  değişmeden B-010/V1-P0-12 kapandı. Sıradaki omurga B-018 faz modelidir.
+  değişmeden B-010/V1-P0-12 kapandı; faz modeli B-018/K-102 ile tamamlandı.
+- **Tür güvenli derleyici fazları** (K-102, ADR-015): `KaynakMetni`,
+  `TokenAkisi`, `AyristirilmisAst`, crate-içi `BaglanmamisProgram` ve yalnız
+  başarılı checker'ın üretebildiği `BaglanmisProgram` eklendi. Standart
+  denetle/çalıştır/dene hatları fazlı API ve `calistir_baglanmis[_io]`
+  girişlerini kullanır; eski raw `Program` API'si yalnız uyumluluk adaptörüdür.
+  Parsed AST'nin doğrudan yürütülemeyeceği compile-fail dahil dört yeni testle
+  toplam 406 test yeşildir. Kaynak semantiği değişmeden B-018/V1-P0-13
+  kapandı; ayrı typed HIR B-019 olarak açık kaldı.
 
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`

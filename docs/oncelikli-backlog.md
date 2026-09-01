@@ -13,8 +13,8 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 1. Tamamlanan önkoşul: K-095 registry metadata güveni (378 test).
 2. İnsan kanıtı bekleyen kapılar: B-001/K-096 + B-002/K-093.
 3. Tamamlanan compiler omurgası: B-003/K-097, B-004/K-098, B-005/K-099,
-   B-006/K-100 ve B-010/K-101 (402 test).
-4. Sıradaki makine işi: B-018; ardından B-019/B-020 → B-014–B-017.
+   B-006/K-100, B-010/K-101 ve B-018/K-102 (406 test).
+4. Sıradaki makine işi: B-019; ardından B-020 → B-014–B-017.
 5. Üçüncü sprint: B-027/B-028 → B-030/B-031 → B-043/B-044.
 6. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
 
@@ -69,7 +69,8 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   özyineleme yığını `IslemId`, sembol tablosu ad→(`SymbolId`, tür) kullanır.
   Checker `Degisken`/`YeniYapi`/`IslemCagrisi` bağlarını AST'ye yazar. ADR-014,
   [rehber](semantic-kimlik-modeli.md), üç davranış ve bir mimari testle
-  V1-P0-12 kapandı; runtime'ın yalnız ID/HIR tüketmesi B-018/B-019'dur.
+  V1-P0-12 kapandı. Faz tipleri B-018/K-102 ile tamamlandı; runtime'ın yalnız
+  ID/HIR tüketmesi B-019'dur.
 - **B-011 · KISMEN — gözlenebilir concurrency determinizmini V1 garantisi yap.**
   spec/14 tek-thread semantiği tanımlar; gelecekte multicore yürütmenin gözlenen
   sıra/sonucu değiştiremeyeceği açık compatibility sözüne bağlanmalıdır.
@@ -91,8 +92,14 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   belirsizliğin sessiz seçilmemesi ve normalizasyon varyantları.
 - **B-017 · AÇIK — AST invariant doğrulayıcı ekle.** Test/debug aşamasında
   çözülmüş ad, yapı kimliği ve imkânsız ifade durumlarını doğrula.
-- **B-018 · SIRADA — compiler faz sınırlarını kodda görünür yap.** Source →
-  Tokens → Parsed AST → Resolution → Typed HIR → Execution/Lowering.
+- **B-018 · KAPALI (K-102) — compiler faz sınırlarını kodda görünür yap.**
+  `KaynakMetni → TokenAkisi → AyristirilmisAst → BaglanmamisProgram →
+  BaglanmisProgram → interpreter` hattı gerçek API türleri oldu. Standart
+  denetle/çalıştır/dene yolu yalnız başarılı checker'ın ürettiği bağlı
+  programdan geçer; raw `Program` yüzeyi v0 embedding adaptörüdür. ADR-015,
+  [faz rehberi](derleyici-faz-modeli.md), iki davranış, bir mimari ve bir
+  compile-fail testi V1-P0-13'ü kapattı. Resolution+tür bugün birleşik checker
+  geçişidir; ayrı Typed HIR B-019 olarak açık kalır.
 - **B-019 · SIRADA — typed HIR tasarla.** Runtime kaynak belirsizliği yerine
   açık SymbolId ve tür taşıyan gösterimi tüketmelidir.
 - **B-020 · SIRADA — her semantic node'da source span garanti et.** `Node<T>`
@@ -163,7 +170,7 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 
 ## Bir sonraki somut kapı
 
-K-095'in atomik güvenlik dilimi kapandı; sıradaki iş B-001'dir. B-001,
-“tek syntax seçildi” iddiasıyla değil; doldurulmuş gerçek usability formları,
-önceden ilan edilmiş eşik, kabul edilen RFC-0006 revizyonu, grammar/spec ve
-golden/anti-example kanıtıyla kapanır.
+İnsan kanıtı hattında B-001, doldurulmuş gerçek usability formları ve önceden
+ilan edilmiş eşikleri bekler. Makine hattında sıradaki iş B-019 typed HIR'dır;
+B-018'in bağlı AST'sini açık SymbolId/tür taşıyan, runtime'ın kaynak
+belirsizliğiyle karşılaşmadığı ayrı temsile dönüştürmelidir.
