@@ -1,11 +1,11 @@
 # RFC-0006 — İşlemler ve Parametreler
 
-- **Durum:** **geçici kabul** (31 Ağu 2026, kurucunun devrettiği yetkiyle):
-  Seçenek A (için/ile yüzeyi) resmî yüzeydir; usability oturumları ONAY
-  KAPISI olarak kalır — oturum bulguları aksini gösterirse bu karar B lehine
-  revize edilir (K-032). Karar gerekçesi §3'te
+- **Durum:** **geçici kabul**: Seçenek A (`için`/`ile`) çalışan ve normatif
+  geçici yüzeydir; V1 için seçilmiş nihai yüzey değildir. K-096 ile gerçek
+  kullanıcı verisi öncesinde A/B/C kör karşılaştırması, tek-genel-sözdizimi
+  koşulu ve karar eşikleri donduruldu. Karar gerekçesi §3'te
 - **Tarih:** 31 Ağustos 2026
-- **İlgili günlük kayıtları:** K-016 (çağrı sözdizimi), K-014 (kelime çakışmaları), K-007 (yanıt), K-067 (sayısal genişleme), K-083/K-086 (açık imza)
+- **İlgili günlük kayıtları:** K-016/K-096 (çağrı sözdizimi ve karar deneyi), K-014 (kelime çakışmaları), K-007 (yanıt), K-067 (sayısal genişleme), K-083/K-086 (açık imza)
 - **İlgili golden programlar:** 12, 13, 14, 15, 30
 - **Gerçekleme:** `islem_ayristir`/`cagri_kalibi` (`ayristirici.rs`),
   `cagri_denetle` + açık dönüş/akış kanıtı (`cozumleyici.rs`), public sınır
@@ -95,9 +95,15 @@ Uygulama deneyimiyle güncellenmiş karşılaştırma:
 - ✗ "Noktalama minimum" ilkesinden ilk büyük taviz; çocuğun ilk karşılaştığı
   parantez olur (manifesto 5 gerilimi).
 
-**Öneri (usability'de sınanacak):** A kalır; B'nin cümle biçimi, dönüş değeri
-olan işlemler İÇİN EK olarak değerlendirilir (ikisi aynı anda yaşayabilir:
-A ifade konumunda, B öğretici/adım-adım stilde). C yalnız A/B yetersiz kalırsa.
+**Önden bağlanmış karar yöntemi (K-096):** A bugünkü gerçekleme olduğu için
+hipotezdir, sonuç değildir. V1 bağlama göre ikinci bir çağrı biçimi taşımayacak;
+tek genel yüzey değere bağlama, cümle çağrısı, iç içe ifade, dönüş,
+özyineleme, tanım sırası ve çok-tokenli argüman bağlamlarının tamamını
+karşılayacaktır. B kullanıcıların güçlü doğal tercihi olsa bile bugün tek
+başına iç içe ifade vermediğinden doğrudan ek sözdizimi olmaz; B-003 expression
+grammar tasarım turunu tetikler. C de aynı mimari tur ve migration kanıtı
+olmadan seçilemez. Kör kartlar, sıra dengelemesi ve sayısal eşikler
+[K-016 karar paketinde](../docs/k016-cagri-karar-paketi.md) bağlayıcıdır.
 
 ## 4. Bilinen gerilimler (K-014 devamı)
 
@@ -127,6 +133,8 @@ K-086/spec-10 ile çağrı sırasından bağımsızdır.
 
 ## Korpus etkisi
 
-Karar A'da kalırsa yok. B eklenirse golden 12/14'e alternatif biçim örneği
-eklenir; C gelirse korpus ve anti-örnek A06 gerekçesi güncellenmek zorunda —
-bu da C'nin maliyetinin bir parçası.
+Gerçek katılımcı eşiği sağlanmadan korpus veya parser göçü yapılmaz. Karar
+geldiğinde ham anonim formlar ve özet; bu RFC, spec/02, parser/formatter/LSP,
+golden ve anti-example korpusu, README, sürüm notu, v1 kapısı ve backlog tek
+atomik değişiklikte güncellenir. A kalırsa da karar kanıtı korpusa bağlanır;
+B/C yönü seçilirse eski yüzey aynı ana sürümde sessizce kaldırılmaz.

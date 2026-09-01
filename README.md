@@ -145,8 +145,11 @@ korpus üzerinde regression testine girer.
 90 günlük başlangıç planının makine tarafı 2 günde kapandı (v0.1 → v0.2 →
 v0.3 sürüm notlarına bak). Şimdiki kapılar:
 
-- **Usability oturumları (kurucu):** K-016 çağrı sözdiziminin onayı ve
-  16 "geçici kabul" RFC'nin tam kabulü — kit hazır: docs/usability-kiti.md.
+- **Usability oturumları (kurucu):** K-016 çağrı sözdizimi için serbest üretim,
+  kör A/B/C kartları ve karar eşikleri önden bağlandı; gerçek 10 çocuk + 5
+  profesyonel verisi bekleniyor. Uygulama:
+  [oturum kiti](docs/usability-kiti.md) · bağlayıcı
+  [karar paketi](docs/k016-cagri-karar-paketi.md).
 - **Lisans (bölüm 26, kurucu):** seçilmeden depo herkese açılmaz; site ve
   topluluk (bölüm 30) bunun arkasında.
 - **Makine tarafı:** K-081–K-093 ile v1'in altı P0 kapısı ve beş P1
@@ -164,7 +167,9 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   rotasyon, timestamp/snapshot/targets, rollback/expiry/mix-and-match, yanlış
   yayıncı, yanked ve kritik duyuru metadata doğrulamasını kurar; taşıma,
   kalıcı cache/offline ve CLI tamamlanana kadar kapı açık kalır.
-  Uygulama sırası [öncelikli backlog](docs/oncelikli-backlog.md) ile sabittir.
+  K-096, çalışan A çağrı yüzeyini nihai seçim saymadan tek-genel-sözdizimi
+  kapısını ve anonim sonuç arşivini hazırladı. İnsan kanıtı beklenirken
+  uygulama sırası [öncelikli backlog](docs/oncelikli-backlog.md) ile sabittir.
   Bağlayıcı liste: [docs/v1-surum-kapilari.md](docs/v1-surum-kapilari.md).
 
 ## İlk gerçek milestone

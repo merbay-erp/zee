@@ -178,8 +178,9 @@ struct Ayristirici {
     konum: usize,
     /// Blok derinliği: işlem tanımları yalnız en dış düzeyde.
     derinlik: usize,
-    /// Şimdiye dek tanımlanan işlem adları — çağrılar bunlarla eşlenir.
-    /// v0 kuralı: işlem, çağrılmadan ÖNCE tanımlanmış olmalı.
+    /// Dosya başlıkları ve yüklenen birimlerden önceden toplanmış işlem adları.
+    /// Çağrı eşlemesi kaynak tanım sırasından bağımsızdır; tanım çağrıdan sonra
+    /// gelebilir ve karşılıklı özyineleme bu ön-taramaya dayanır.
     islem_adlari: Vec<String>,
 }
 

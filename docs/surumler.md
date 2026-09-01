@@ -146,6 +146,15 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   toplam 378 test;
   P013/P014 ile 144 etkin + 1 ayrılmış tanı yeşildir. Taşıma, kalıcı durum
   dosyası, doğrulanmış cache/offline ve CLI bitmeden V1-P1-07 açık kalır.
+- **K-016 çağrı karar deneyi** (K-096, RFC-0006/spec-02): çalışan A yüzeyi
+  nihai V1 kararı sayılmadan önce serbest üretim, kör A/B/C kartları, üç sıra
+  grubuna dengeli dağıtım, çocuk/profesyonel alt grup eşikleri ve yedi teknik
+  bağlam önden bağlandı. B güçlü çıkarsa ikinci çağrı sözdizimi eklenmeyecek;
+  B-003 expression grammar turuna dönülecek. Anonim katılımcı/özet şablonları
+  ve kişisel veri koruması hazırlandı. Parser'ın eski tanım-sırası yorumu güncel
+  ön-tarama/karşılıklı özyineleme gerçeğine düzeltildi. Dil yüzeyi değişmedi;
+  378 test tabanı korunuyor ve V1-P0-07 gerçek 10 çocuk + 5 profesyonel
+  sonucu gelene kadar açık kalıyor.
 
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`
