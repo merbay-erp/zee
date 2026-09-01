@@ -133,6 +133,11 @@ Generics ve trait/interface benzeri soyutlama ayrı ADR ile tasarlanır.
 # 9. Bellek, kaynak ve hata modeli
 v0.x için GC ve ARC prototipleri benchmark edilir. Ownership ancak öğrenilebilirliği bozmadan gerçek fayda sağlarsa değerlendirilir. Dosya, soket ve kilit gibi kaynaklar lexical scope ile otomatik kapanmalıdır.
 Beklenen hatalar Sonuç<T,Hata> ile taşınır. Panic yalnız invariant ihlali gibi geri dönülemez durumlar içindir.
+
+**Stage 0 gerçeklemesi:** K-091 ile `Hata`; kararlı kod, Türkçe mesaj,
+`Seçenek<Hata>` neden zinciri ve Metin sözlüğü veri taşır. Eski düz mesaj
+biçimi `GENEL` koduyla aynı çıktıyı korur; kod eşleme ve deterministik JSON
+spec/15'te bağlayıcıdır.
 HATA T104
 
 "toplam" burada Sayı olarak kullanılamaz.

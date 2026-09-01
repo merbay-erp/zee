@@ -195,12 +195,13 @@ fn json_metin_yaz(metin: &str) -> String {
 // ---------- sunucu ----------
 
 /// Tamamlama önerileri: dilin kalıp kelimeleri (kaynağı: ayrıştırıcı yüzeyi).
-const KALIP_KELIMELERI: [&str; 80] = [
+const KALIP_KELIMELERI: [&str; 87] = [
     "yaz", "olsun", "ise", "değilse", "tekrarla", "için", "kez", "her", "kadar",
     "sürece", "olduğu", "olana", "ile", "ve", "veya", "diye", "sor", "yanıt",
     "işlem", "eylem", "al", "döndür", "yapı", "test", "olmalı", "ekle", "artır", "azalt",
     "böl", "göre", "kullan", "birimini", "paketini", "doğru", "yanlış", "yok", "yeni",
-    "dene", "bitir", "saniye", "dakika", "hatasını",
+    "dene", "bitir", "saniye", "dakika", "hatasını", "kodlu", "nedeniyle",
+    "verisiyle", "kodu", "mesajı", "nedeni", "verisi",
     "varsa", "yoksa", "başarılıysa", "başarısızsa", "sil", "yönlendir",
     "adresine", "çerezine", "sıralanmışı", "parçaları", "birleşmişi", "değişmişi",
     "içermeli", "olmamalı", "kuruşlusu", "metni", "harfleri", "kırpılmışı",
@@ -212,7 +213,7 @@ const KALIP_KELIMELERI: [&str; 80] = [
 /// Hover açıklamaları: kalıp kelimesi → tek satır Türkçe açıklama + örnek.
 /// (Kaynak: spec/02-dizim ve dil turu; kelime kalıbın son ya da ayırt edici
 /// parçasıdır.)
-const KELIME_ACIKLAMALARI: [(&str, &str); 40] = [
+const KELIME_ACIKLAMALARI: [(&str, &str); 44] = [
     ("yaz", "Cümleyi bitirir: değeri ekrana (ya da `X dosyasına`) yazar.\n\n`\"Merhaba\" ile isim yaz`"),
     ("olsun", "Ad tanımlar ya da var olan ada atar; tür ilk değerden çıkar ve sonra değişmez.\n\n`yaş 10 olsun`"),
     ("ise", "Koşul dalı açar; koşul yüklem-sonludur (`...se/...sa`).\n\n`yaş 8 veya daha büyükse`"),
@@ -226,7 +227,11 @@ const KELIME_ACIKLAMALARI: [(&str, &str); 40] = [
     ("işlem", "İşlem tanımı açar; başlangıç parametresi `... al`dır. Birim/paket sözleşmesinde `... <Tür> olarak al` ve ardından `<Tür> döndürür` ya da `değer döndürmez` yazılır; değer `... döndür` ile çıkar.\n\n`işlem karesini hesapla`"),
     ("eylem", "HTTP protokolünden bağımsız, açık imzalı uygulama iş kuralı ve transaction sınırı tanımlar. Web, CLI ya da görevden aynı biçimde çağrılır.\n\n`eylem notu kaydet`"),
     ("al", "İşlem parametresi bildirir. Başlangıç: `sayıyı al`; açık API: `sayıyı Ondalık olarak al`."),
-    ("döndür", "İşlemden değer döndürür. `yok döndür` Seçenek, `\"...\" hatasını döndür` Sonuç üretir."),
+    ("döndür", "İşlemden değer döndürür. `yok döndür` Seçenek, `\"...\" hatasını döndür` Sonuç üretir. Yapılandırılmış biçim: `\"KOD\" kodlu \"mesaj\" hatasını döndür`."),
+    ("kodlu", "Kararlı etiketli Hata üretir. Kod A-Z ile başlar; A-Z, 0-9 ve `_` kullanır.\n\n`\"DOSYA_YOK\" kodlu \"Dosya bulunamadı\" hatasını döndür`"),
+    ("nedeniyle", "Yeni bir Hata'yı başka bir Hata ile sararak neden zinciri kurar."),
+    ("verisiyle", "Hata'ya Metin sözlüğü biçiminde makinece okunabilir bağlam ekler."),
+    ("kodu", "Hata'nın kararlı etiketini verir; `göre` ile eşlenebilir.\n\n`hatanın kodu`"),
     ("yapı", "Alanları türleriyle bildirilen kayıt türü tanımlar; `yeni <Ad>` ile kurulur."),
     ("yeni", "Bir yapıdan değer oluşturur.\n\n`ayşe yeni Öğrenci olsun`"),
     ("test", "Test bloğu açar; `dil dene` (ve playground) koşar. Doğrulama: `... olmalı`."),

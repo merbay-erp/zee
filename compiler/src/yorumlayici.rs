@@ -251,6 +251,21 @@ fn json_yaz(deger: &Deger) -> String {
                 .collect::<Vec<_>>()
                 .join(",")
         ),
+        Deger::Hata(hata) => {
+            let neden = hata
+                .neden
+                .as_deref()
+                .map(|neden| json_yaz(&Deger::Hata(Box::new(neden.clone()))))
+                .unwrap_or_else(|| "null".into());
+            let veri = json_yaz(&Deger::Sozluk(hata.veri.clone()));
+            format!(
+                "{{\"kod\":{},\"mesaj\":{},\"neden\":{},\"veri\":{}}}",
+                json_metin_kacir(&hata.kod),
+                json_metin_kacir(&hata.mesaj),
+                neden,
+                veri
+            )
+        }
         baska => json_metin_kacir(&baska.metne()),
     }
 }
@@ -864,6 +879,14 @@ impl GirdiCikti for ToplayanIo {
 }
 
 #[derive(Debug, Clone, PartialEq)]
+pub struct HataDegeri {
+    pub kod: String,
+    pub mesaj: String,
+    pub neden: Option<Box<HataDegeri>>,
+    pub veri: Vec<(String, Deger)>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
 pub enum Deger {
     TamSayi(i64),
     /// Onluk tam değer: govde/10^olcek; hep normalize saklanır (olcek >= 1,
@@ -876,8 +899,10 @@ pub enum Deger {
     Sozluk(Vec<(String, Deger)>),
     /// Seçenek'in boş hali; dolu hali değerin kendisidir.
     Yok,
-    /// Sonuç: başarılıysa değer, değilse hata metni (Metin) taşır.
+    /// Sonuç: başarılıysa değer, değilse yapılandırılmış Hata taşır.
     Sonuc { basarili: bool, icerik: Box<Deger> },
+    /// Kod, insana dönük mesaj, isteğe bağlı neden zinciri ve bağlam verisi.
+    Hata(Box<HataDegeri>),
     /// Yapı örneği: yalın alan adı → değer (tanım sırasıyla).
     Yapi(Vec<(String, Deger)>),
     Tarih { yil: i64, ay: u32, gun: u32 },
@@ -894,6 +919,15 @@ const AY_ADLARI: [&str; 12] = [
 ];
 
 impl Deger {
+    fn hata(kod: impl Into<String>, mesaj: impl Into<String>) -> Self {
+        Self::Hata(Box::new(HataDegeri {
+            kod: kod.into(),
+            mesaj: mesaj.into(),
+            neden: None,
+            veri: Vec::new(),
+        }))
+    }
+
     fn metne(&self) -> String {
         match self {
             Deger::TamSayi(s) => s.to_string(),
@@ -934,6 +968,9 @@ impl Deger {
                     format!("hata: {}", icerik.metne())
                 }
             }
+            // Geriye uyum: `sonucun hatası yaz` eskisi gibi yalnız anlaşılır
+            // mesajı gösterir; kod/veri açık özelliklerle alınır (K-091).
+            Deger::Hata(hata) => hata.mesaj.clone(),
             Deger::Tarih { yil, ay, gun } => {
                 format!("{} {} {}", gun, AY_ADLARI[(*ay as usize).saturating_sub(1) % 12], yil)
             }
@@ -2010,12 +2047,45 @@ fn blok_calistir_async<'a>(
                 };
                 return Ok(Akis::Don(sonuc));
             }
-            Cumle::HataDondur { mesaj, satir } => {
+            Cumle::HataDondur { kod, mesaj, neden, veri, satir } => {
                 let mesaj = degerlendir_async(mesaj, ortam, program, cikti, derinlik, *satir).await?;
+                let mut hata = match (kod, mesaj) {
+                    (None, hata @ Deger::Hata(_)) => hata,
+                    (kod, Deger::Metin(mesaj)) => {
+                        Deger::hata(kod.clone().unwrap_or_else(|| "GENEL".into()), mesaj)
+                    }
+                    _ => return Err(ic_hata(*satir)),
+                };
+                let neden = match neden {
+                    Some(ifade) => match degerlendir_async(
+                        ifade, ortam, program, cikti, derinlik, *satir,
+                    ).await? {
+                        Deger::Hata(hata) => Some(hata),
+                        _ => return Err(ic_hata(*satir)),
+                    },
+                    None => None,
+                };
+                let veri = match veri {
+                    Some(ifade) => match degerlendir_async(
+                        ifade, ortam, program, cikti, derinlik, *satir,
+                    ).await? {
+                        Deger::Sozluk(veri) => veri,
+                        _ => return Err(ic_hata(*satir)),
+                    },
+                    None => Vec::new(),
+                };
+                if let Deger::Hata(yapilandirilmis) = &mut hata {
+                    if neden.is_some() {
+                        yapilandirilmis.neden = neden;
+                    }
+                    if !veri.is_empty() {
+                        yapilandirilmis.veri = veri;
+                    }
+                }
                 son_tarihi_denetle(cikti, *satir)?;
                 return Ok(Akis::Don(Deger::Sonuc {
                     basarili: false,
-                    icerik: Box::new(mesaj),
+                    icerik: Box::new(hata),
                 }));
             }
             Cumle::BolVeAta { hedef, pay, payda, satir } => {
@@ -2466,6 +2536,13 @@ fn degerlendir_async<'a>(
                         .collect(),
                 )),
                 (Ozellik::Yil, Deger::Tarih { yil, .. }) => Ok(Deger::TamSayi(yil)),
+                (Ozellik::HataKodu, Deger::Hata(hata)) => Ok(Deger::Metin(hata.kod)),
+                (Ozellik::HataMesaji, Deger::Hata(hata)) => Ok(Deger::Metin(hata.mesaj)),
+                (Ozellik::HataNedeni, Deger::Hata(hata)) => Ok(match hata.neden {
+                    Some(neden) => Deger::Hata(neden),
+                    None => Deger::Yok,
+                }),
+                (Ozellik::HataVerisi, Deger::Hata(hata)) => Ok(Deger::Sozluk(hata.veri)),
                 // K-067 terfisi: TamSayı üzerinde tam kısmı/yuvarlanmışı kimliktir.
                 (Ozellik::TamKisim, Deger::TamSayi(s))
                 | (Ozellik::Yuvarlanmis, Deger::TamSayi(s)) => Ok(Deger::TamSayi(s)),
@@ -2725,7 +2802,7 @@ fn degerlendir_async<'a>(
                 },
                 Err(hata) => Deger::Sonuc {
                     basarili: false,
-                    icerik: Box::new(Deger::Metin(hata)),
+                    icerik: Box::new(Deger::hata("DOSYA_OKUMA", hata)),
                 },
             })
         }
@@ -2920,7 +2997,7 @@ fn degerlendir_async<'a>(
                 },
                 Err(_) => Deger::Sonuc {
                     basarili: false,
-                    icerik: Box::new(Deger::Metin(format!(
+                    icerik: Box::new(Deger::hata("SAYI_BICIMI", format!(
                         "\"{}\" sayıya çevrilemedi",
                         kirpilmis
                     ))),
@@ -2958,7 +3035,7 @@ fn degerlendir_async<'a>(
                 Some(deger) => Deger::Sonuc { basarili: true, icerik: Box::new(deger) },
                 None => Deger::Sonuc {
                     basarili: false,
-                    icerik: Box::new(Deger::Metin(format!(
+                    icerik: Box::new(Deger::hata("ONDALIK_BICIMI", format!(
                         "\"{}\" ondalığa çevrilemedi",
                         kirpilmis
                     ))),

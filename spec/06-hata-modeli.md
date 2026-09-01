@@ -21,12 +21,19 @@ görünmez; Ç000 `programı bitir` nöbetçisidir).
    erişimi T036'dır ve programa hiç giremez.
 2. **Beklenen dünya hatası** → değere dönüştürülür: `... dene` Sonuç üretir
    (`dosyasını okumayı dene`, `sayısını almayı dene`); işlemden hata
-   `"..." hatasını döndür` ile çıkar (mesaj Metin — T032).
+   `"..." hatasını döndür` ile çıkar. Sonuç'un hata tarafı spec/15'teki
+   yapılandırılmış `Hata`dır: kod, mesaj, neden ve veri taşır. Eski metin
+   biçimi `GENEL` koduyla aynı çıktıyı korur; kodlu üretim
+   `"DOSYA_YOK" kodlu "..." hatasını döndür` biçimidir.
 3. **Beklenmeyen çalışma hatası** → C tanısıyla durdurma (taşma C002,
    sıfıra bölme C003...). Sessiz devam **YASAK**tır.
 
 `boş`/`yok` ayrımı bilinçlidir: koleksiyonun boşluğu `boşsa`, değerin
 yokluğu Seçenek'tir; `null` kavramı dilde yoktur.
+
+Yönetilebilir `Hata` ile S/A/T/C/D/Ç tanısı ayrı katmanlardır. Hata programın
+eşleyip sürdürebildiği değerdir; tanı derleme/çalıştırma raporudur ve örtük
+olarak Sonuç'a çevrilmez.
 
 ## Test anlamı (TANIMLI)
 

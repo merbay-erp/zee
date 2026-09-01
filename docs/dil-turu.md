@@ -318,7 +318,20 @@ değilse
 
 `yanıtın sayısını almayı dene` — kullanıcı girdisini güvenle sayıya çevirir.
 Kendi işleminden hata döndürmek: `"sıfıra bölünmez" hatasını döndür`.
-`değeri`/`hatası` erişimi Seçenek'teki gibi daraltmayla korunur (T036).
+Bu eski biçim aynı mesajı göstermeye devam eder; arka planda `GENEL` kodlu
+yapılandırılmış Hata üretir. Profesyonel biçim kod, neden ve veri taşır:
+
+```zee
+bilgi boş sözlük olsun
+bilginin "dosya" değeri "ayarlar.dil" olsun
+"AYAR_OKUNAMADI" kodlu "Ayarlar yüklenemedi" hatasını alt_hata nedeniyle bilgi verisiyle döndür
+```
+
+Başarısız dalda `hata sonucun hatası olsun` denebilir. Ardından `hatanın kodu`,
+`hatanın mesajı`, `hatanın nedeni` (Seçenek\<Hata\>) ve `hatanın verisi`
+okunur; kod `göre / ise` ile eşlenebilir. `hata yaz` yalnız anlaşılır mesajı
+gösterir, `hatanın json metni` bütün zinciri taşır. `değeri`/`hatası` erişimi
+Seçenek'teki gibi daraltmayla korunur (T036).
 
 ## 13. Yapılar
 

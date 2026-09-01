@@ -319,9 +319,18 @@ fn cumle_bilgisi(cumle: &Cumle, bilgi: &mut Bilgi) {
             bilgi.geri_alinamaz = true;
             ifade_bilgisi(deger, bilgi);
         }
-        Cumle::Olmali { kosul: deger, .. }
-        | Cumle::Dondur { deger, .. }
-        | Cumle::HataDondur { mesaj: deger, .. } => ifade_bilgisi(deger, bilgi),
+        Cumle::Olmali { kosul: deger, .. } | Cumle::Dondur { deger, .. } => {
+            ifade_bilgisi(deger, bilgi)
+        }
+        Cumle::HataDondur { mesaj, neden, veri, .. } => {
+            ifade_bilgisi(mesaj, bilgi);
+            if let Some(neden) = neden {
+                ifade_bilgisi(neden, bilgi);
+            }
+            if let Some(veri) = veri {
+                ifade_bilgisi(veri, bilgi);
+            }
+        }
         Cumle::Olsun { deger, .. } => ifade_bilgisi(deger, bilgi),
         Cumle::KezTekrarla { adet, govde, .. } => {
             ifade_bilgisi(adet, bilgi);

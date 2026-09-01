@@ -7,8 +7,8 @@ Tanı kodları: T bölümü.
 
 TamSayı (i64) · Ondalık (onluk: gövde × 10⁻ᵏ, k ≤ 9) · Metin · Mantıksal ·
 Liste\<T\> · Sözlük\<Metin, T\> (ekleme sırası korunur) · Seçenek\<T\> ·
-Sonuç\<T\> · Tarih · Saat · Süre · yapı türleri · görev/ağ yanıtı (yüzeyleri
-RFC-0011/golden 24-27'de).
+Sonuç\<T\> (hata tarafı daima Hata) · Hata · Tarih · Saat · Süre · yapı
+türleri · görev/ağ yanıtı (yüzeyleri RFC-0011/golden 24-27'de).
 
 ## Değişmezlik ve çıkarım (TANIMLI)
 
@@ -66,11 +66,15 @@ Bir işlemin dönüş kümesi birleşir:
 
 - {T} → T
 - {T, `yok`} → Seçenek\<T\> (yalnız `yok` **YASAK**: içi belirlenemez, T018)
-- {T, `hatasını döndür`} → Sonuç\<T\> (yalnız hata **YASAK**, T018)
+- {T, `hatasını döndür`} → Sonuç\<T, Hata\> (kaynak gösterimi `Sonuç<T>`;
+  yalnız hata **YASAK**, T018)
 - İki farklı değer türü **YASAK** (T018).
 
 Başarı dalları otomatik sarmalanır: `sayıyı döndür`, Sonuç\<TamSayı\>
 işlemde başarı olarak sarılır.
+
+Hata `kod/mesaj/neden/veri` alanlı birinci sınıf türdür. `sonucun hatası`
+Hata üretir; alanlar ve üretim kuralları spec/15'tedir.
 
 ## Akış-duyarlı daraltma (TANIMLI — K-037)
 

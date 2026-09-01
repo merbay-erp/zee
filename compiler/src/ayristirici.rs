@@ -1082,11 +1082,100 @@ impl Ayristirici {
     fn dondur_ayristir(&mut self, mut tokenlar: Vec<Token>, satir: usize) -> Result<Cumle, Tani> {
         tokenlar.pop(); // "döndür"
 
-        // `<mesaj> hatasını döndür` — Sonuç-hata dönüşü (RFC-0008 §4.1).
-        if matches!(tokenlar.last(), Some(t) if kelime_mi(t, "hatasını")) {
-            tokenlar.pop();
-            let mesaj = ile_ifadesi(&tokenlar, satir, &self.islem_adlari)?;
-            return Ok(Cumle::HataDondur { mesaj, satir });
+        // `<mesaj> hatasını döndür` — geriye uyumlu Sonuç-hata dönüşü.
+        // K-091 yapılandırılmış biçimi:
+        // `<KOD> kodlu <mesaj> hatasını [<hata> nedeniyle] [<sözlük> verisiyle] döndür`.
+        if let Some(hata_konumu) = tokenlar.iter().position(|t| kelime_mi(t, "hatasını")) {
+            let bas = &tokenlar[..hata_konumu];
+            let ekler = &tokenlar[hata_konumu + 1..];
+            let kodlu = bas.iter().position(|t| kelime_mi(t, "kodlu"));
+            let (kod, mesaj_tokenlari) = match kodlu {
+                Some(konum) => {
+                    if konum != 1 {
+                        return Err(Tani::yeni(
+                            "S044",
+                            "Hata kodu tek bir metin sabiti olmalı.".into(),
+                            satir,
+                            1,
+                            1,
+                        )
+                        .onerili("Örnek: \"DOSYA_YOK\" kodlu \"Dosya bulunamadı\" hatasını döndür".into()));
+                    }
+                    let kod = match &bas[0].tur {
+                        TokenTur::Metin(kod) if gecerli_hata_kodu(kod) => kod.clone(),
+                        TokenTur::Metin(_) => {
+                            return Err(Tani::yeni(
+                                "S044",
+                                "Hata kodu A-Z ile başlamalı; yalnız A-Z, 0-9 ve _ içermeli.".into(),
+                                satir,
+                                bas[0].sutun,
+                                bas[0].uzunluk,
+                            )
+                            .onerili("Örnek kod: \"DOSYA_YOK\"".into()))
+                        }
+                        _ => {
+                            return Err(Tani::yeni(
+                                "S044",
+                                "Hata kodu kararlı bir metin sabiti olmalı.".into(),
+                                satir,
+                                bas[0].sutun,
+                                bas[0].uzunluk,
+                            )
+                            .onerili("Örnek kod: \"DOSYA_YOK\"".into()))
+                        }
+                    };
+                    (Some(kod), &bas[konum + 1..])
+                }
+                None => (None, bas),
+            };
+            let mesaj = ile_ifadesi(mesaj_tokenlari, satir, &self.islem_adlari)?;
+
+            let neden_konumu = ekler.iter().position(|t| kelime_mi(t, "nedeniyle"));
+            let veri_konumu = ekler.iter().position(|t| kelime_mi(t, "verisiyle"));
+            if neden_konumu.is_some_and(|n| veri_konumu.is_some_and(|v| n > v))
+                || ekler.iter().filter(|t| kelime_mi(t, "nedeniyle")).count() > 1
+                || ekler.iter().filter(|t| kelime_mi(t, "verisiyle")).count() > 1
+            {
+                return Err(Tani::yeni(
+                    "S044",
+                    "Hata ekleri önce `nedeniyle`, sonra `verisiyle` yazılır.".into(),
+                    satir,
+                    1,
+                    1,
+                ));
+            }
+            if ekler.last().is_some_and(|t| {
+                !kelime_mi(t, "nedeniyle") && !kelime_mi(t, "verisiyle")
+            }) || (neden_konumu.is_none() && veri_konumu.is_none() && !ekler.is_empty())
+            {
+                return Err(Tani::yeni(
+                    "S044",
+                    "Hata ekleri `<hata> nedeniyle` ve `<sözlük> verisiyle` biçimindedir.".into(),
+                    satir,
+                    1,
+                    1,
+                ));
+            }
+            let neden = match neden_konumu {
+                Some(konum) => Some(ile_ifadesi(
+                    &ekler[..konum],
+                    satir,
+                    &self.islem_adlari,
+                )?),
+                None => None,
+            };
+            let veri = match veri_konumu {
+                Some(konum) => {
+                    let baslangic = neden_konumu.map_or(0, |n| n + 1);
+                    Some(ile_ifadesi(
+                        &ekler[baslangic..konum],
+                        satir,
+                        &self.islem_adlari,
+                    )?)
+                }
+                None => None,
+            };
+            return Ok(Cumle::HataDondur { kod, mesaj, neden, veri, satir });
         }
 
         let deger = ile_ifadesi(&tokenlar, satir, &self.islem_adlari)?;
@@ -1520,6 +1609,12 @@ impl Ayristirici {
 
         Ok(Cumle::Ise { kollar, degilse, satir })
     }
+}
+
+fn gecerli_hata_kodu(kod: &str) -> bool {
+    let mut harfler = kod.chars();
+    matches!(harfler.next(), Some('A'..='Z'))
+        && harfler.all(|k| k.is_ascii_uppercase() || k.is_ascii_digit() || k == '_')
 }
 
 // ---- yardımcılar ----
@@ -2051,6 +2146,14 @@ fn yapili_kalip(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifade>
             Some(Ozellik::Ters)
         } else if son == "kuruşlusu" {
             Some(Ozellik::Kuruslu)
+        } else if matches!(son, "kodu" | "kodunu" | "koduna" | "koduyla") {
+            Some(Ozellik::HataKodu)
+        } else if matches!(son, "mesajı" | "mesajını" | "mesajına" | "mesajıyla") {
+            Some(Ozellik::HataMesaji)
+        } else if matches!(son, "nedeni" | "nedenini" | "nedenine" | "nedeniyle") {
+            Some(Ozellik::HataNedeni)
+        } else if matches!(son, "verisi" | "verisini" | "verisine" | "verisiyle") {
+            Some(Ozellik::HataVerisi)
         } else if son == "metni" {
             Some(Ozellik::Metni)
         } else {

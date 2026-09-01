@@ -24,6 +24,8 @@ pub enum VeriTuru {
     Yapi(usize),
     /// Metin değerli satır sözlüğü (K-062): CSV satırları böyle okunur.
     MetinSozluk,
+    /// Yapılandırılmış beklenen hata değeri (K-091).
+    Hata,
     /// Boş koleksiyonun henüz belirlenmemiş öğe türü (K-045): ilk eklemede
     /// somutlaşır. Guard'lı yollar dışında ture() çağrılmaz.
     Bilinmeyen,
@@ -39,6 +41,7 @@ impl VeriTuru {
             VeriTuru::Yapi(_) => "Yapı",
             VeriTuru::Sozluk => "Sözlük",
             VeriTuru::MetinSozluk => "satır",
+            VeriTuru::Hata => "Hata",
         }
     }
     fn ture(&self) -> Tur {
@@ -50,6 +53,7 @@ impl VeriTuru {
             VeriTuru::Yapi(i) => Tur::Yapi(*i),
             VeriTuru::Sozluk => Tur::Sozluk(SozlukDegerTuru::TamSayi),
             VeriTuru::MetinSozluk => Tur::Sozluk(SozlukDegerTuru::Metin),
+            VeriTuru::Hata => Tur::Hata,
         }
     }
 }
@@ -95,12 +99,14 @@ pub enum Tur {
     /// Sözlük<Metin, değer türü>; anahtarlar v0'da hep Metin.
     Sozluk(SozlukDegerTuru),
     Secenek(VeriTuru),
-    /// Sonuç<değer, Metin>: değer türü parametreli, hata hep Metin (v0).
+    /// Sonuç<değer, Hata>: değer türü parametreli, hata yapılandırılmıştır.
     Sonuc(VeriTuru),
     /// Yalnız "yok" sabitinin türü; dönüş birleşiminde Seçenek'e erir.
     Yok,
-    /// Yalnız "hatasını döndür"ün iç işareti; birleşimde Sonuç'a erir.
+    /// Kullanıcının erişebildiği yapılandırılmış beklenen hata değeri (K-091).
     Hata,
+    /// Yalnız "hatasını döndür"ün iç işareti; birleşimde Sonuç'a erir.
+    HataDonusu,
     /// Kullanıcı yapısı — Program.yapilar'a indeks.
     Yapi(usize),
     Tarih,
@@ -123,7 +129,8 @@ impl Tur {
             Tur::Secenek(e) => format!("Seçenek<{}>", e.adi()),
             Tur::Sonuc(e) => format!("Sonuç<{}>", e.adi()),
             Tur::Yok => "yok".into(),
-            Tur::Hata => "hata".into(),
+            Tur::Hata => "Hata".into(),
+            Tur::HataDonusu => "hata dönüşü".into(),
             Tur::Yapi(_) => "Yapı".into(),
             Tur::Tarih => "Tarih".into(),
             Tur::Saat => "Saat".into(),
@@ -137,6 +144,7 @@ impl Tur {
             Tur::TamSayi => Some(VeriTuru::TamSayi),
             Tur::Metin => Some(VeriTuru::Metin),
             Tur::Ondalik => Some(VeriTuru::Ondalik),
+            Tur::Hata => Some(VeriTuru::Hata),
             _ => None,
         }
     }
@@ -359,6 +367,7 @@ fn parametre_turu(yazim: &str, yapilar: &[Yapi]) -> Option<Tur> {
         "Saat" => Some(Tur::Saat),
         "Süre" => Some(Tur::Sure),
         "AğYanıtı" => Some(Tur::AgYaniti),
+        "Hata" => Some(Tur::Hata),
         _ => yapilar
             .iter()
             .position(|yapi| yapi.ad == ad)
@@ -1312,7 +1321,7 @@ fn blok_denetle(
                     }
                 }
             }
-            Cumle::HataDondur { mesaj, satir } => {
+            Cumle::HataDondur { kod, mesaj, neden, veri, satir } => {
                 let satir = *satir;
                 bekleyen_gorev_olmadigini_denetle(
                     baglam,
@@ -1321,18 +1330,62 @@ fn blok_denetle(
                     "Hata döndürmeden önce görevleri bekle.",
                 )?;
                 let tur = ifade_denetle(mesaj, ortam, baglam, satir)?;
-                if tur != Tur::Metin {
+                let yeniden_yayma = kod.is_none() && tur == Tur::Hata;
+                if tur != Tur::Metin && !yeniden_yayma {
                     return Err(Tani::yeni(
                         "T032",
-                        format!("Hata mesajı Metin olmalı; burada {} var.", tur.adi()),
+                        format!(
+                            "Hata mesajı Metin, yeniden yayılan değer Hata olmalı; burada {} var.",
+                            tur.adi()
+                        ),
                         satir,
                         1,
                         1,
                     )
                     .onerili("Örnek: \"sıfıra bölünmez\" hatasını döndür".into()));
                 }
+                if yeniden_yayma && (neden.is_some() || veri.is_some()) {
+                    return Err(Tani::yeni(
+                        "T052",
+                        "Yeniden yayılan Hata'ya neden/veri eklenemez; yeni kodlu bir hata ile sar.".into(),
+                        satir,
+                        1,
+                        1,
+                    )
+                    .onerili("Örnek: \"UST_HATA\" kodlu \"İşlem tamamlanamadı\" hatasını eski_hata nedeniyle döndür".into()));
+                }
+                if let Some(neden) = neden {
+                    let neden_turu = ifade_denetle(neden, ortam, baglam, satir)?;
+                    if neden_turu != Tur::Hata {
+                        return Err(Tani::yeni(
+                            "T052",
+                            format!("Hatanın nedeni Hata olmalı; burada {} var.", neden_turu.adi()),
+                            satir,
+                            1,
+                            1,
+                        ));
+                    }
+                }
+                if let Some(veri) = veri {
+                    let veri_turu = ifade_denetle(veri, ortam, baglam, satir)?;
+                    if !matches!(
+                        veri_turu,
+                        Tur::Sozluk(SozlukDegerTuru::Metin | SozlukDegerTuru::Bilinmeyen)
+                    ) {
+                        return Err(Tani::yeni(
+                            "T052",
+                            format!(
+                                "Hatanın verisi Metin sözlüğü olmalı; burada {} var.",
+                                veri_turu.adi()
+                            ),
+                            satir,
+                            1,
+                            1,
+                        ));
+                    }
+                }
                 match baglam.denetim_yigini.last_mut() {
-                    Some(kayit) => kayit.donusler.push(Tur::Hata),
+                    Some(kayit) => kayit.donusler.push(Tur::HataDonusu),
                     None => {
                         return Err(Tani::yeni(
                             "T020",
@@ -1629,6 +1682,10 @@ fn ifade_denetle(
                     Ozellik::Kuruslu => "kuruşlusu",
                     Ozellik::Metni => "metni",
                     Ozellik::BinlikliKuruslu => "kuruşlusu",
+                    Ozellik::HataKodu => "kodu",
+                    Ozellik::HataMesaji => "mesajı",
+                    Ozellik::HataNedeni => "nedeni",
+                    Ozellik::HataVerisi => "verisi",
                 };
                 let yapi = &baglam.yapilar[yapi_indeksi];
                 if let Ok(alan) = alan_cozumle(yapi, soz, satir) {
@@ -1677,11 +1734,19 @@ fn ifade_denetle(
                 | (Ozellik::JsonMetin, Tur::Metin)
                 | (Ozellik::JsonMetin, Tur::TamSayi)
                 | (Ozellik::JsonMetin, Tur::Ondalik)
-                | (Ozellik::JsonMetin, Tur::Mantiksal) => Ok(Tur::Metin),
+                | (Ozellik::JsonMetin, Tur::Mantiksal)
+                | (Ozellik::JsonMetin, Tur::Hata) => Ok(Tur::Metin),
                 (Ozellik::Kelimeler, Tur::Metin) => Ok(Tur::Liste(VeriTuru::Metin)),
                 (Ozellik::Yil, Tur::Tarih) => Ok(Tur::TamSayi),
                 (Ozellik::TamKisim, Tur::Ondalik) | (Ozellik::Yuvarlanmis, Tur::Ondalik) => {
                     Ok(Tur::TamSayi)
+                }
+                (Ozellik::HataKodu, Tur::Hata) | (Ozellik::HataMesaji, Tur::Hata) => {
+                    Ok(Tur::Metin)
+                }
+                (Ozellik::HataNedeni, Tur::Hata) => Ok(Tur::Secenek(VeriTuru::Hata)),
+                (Ozellik::HataVerisi, Tur::Hata) => {
+                    Ok(Tur::Sozluk(SozlukDegerTuru::Metin))
                 }
                 (_, baska) => Err(Tani::yeni(
                     "T014",
@@ -2017,7 +2082,7 @@ fn ifade_denetle(
                     1,
                 ));
             }
-            Ok(Tur::Metin)
+            Ok(Tur::Hata)
         }
         Ifade::SonucBasarili { nesne, .. } => {
             let tur = ifade_denetle(nesne, ortam, baglam, satir)?;
@@ -2681,7 +2746,7 @@ fn cagri_denetle(
     let denetim = blok_denetle(&mut islem.govde, &mut islem_ortami, baglam);
     let kayit = baglam.denetim_yigini.pop().expect("kayıt az önce eklendi");
     // Gövde her durumda kayda geri konur; hata olsa bile kayıt tutarlı kalır.
-    if denetim.is_ok() && kayit.donusler.contains(&Tur::Hata) {
+    if denetim.is_ok() && kayit.donusler.contains(&Tur::HataDonusu) {
         donusleri_sarmala(&mut islem.govde);
     }
     let kesin_sonlanir = blok_kesin_sonlanir(&islem.govde);
@@ -2791,7 +2856,7 @@ fn cumle_kesin_sonlanir(cumle: &Cumle) -> bool {
 }
 
 /// Dönüş dallarını tek türe birleştirir: {T}→T; {T,Yok}→Seçenek<T>;
-/// {T,Hata}→Sonuç<T>; boş→None; tutarsızlık→T018.
+/// {T,HataDonusu}→Sonuç<T>; boş→None; tutarsızlık→T018.
 fn donusleri_birlestir(ad: &str, donusler: &[Tur], satir: usize) -> Result<Option<Tur>, Tani> {
     let mut ayrik: Vec<Tur> = Vec::new();
     for t in donusler {
@@ -2800,8 +2865,12 @@ fn donusleri_birlestir(ad: &str, donusler: &[Tur], satir: usize) -> Result<Optio
         }
     }
 
-    if ayrik.contains(&Tur::Hata) {
-        let degerler: Vec<Tur> = ayrik.iter().copied().filter(|t| *t != Tur::Hata).collect();
+    if ayrik.contains(&Tur::HataDonusu) {
+        let degerler: Vec<Tur> = ayrik
+            .iter()
+            .copied()
+            .filter(|t| *t != Tur::HataDonusu)
+            .collect();
         return match degerler.as_slice() {
             [] => Err(Tani::yeni(
                 "T018",
