@@ -348,7 +348,16 @@ impl Ayristirici {
                 if t.len() == 4 && kelime_mi(&t[1], "adresine") && kelime_mi(&t[2], "istek") {
                     let yol = tekil_ifade(t[0].clone())?;
                     let govde = self.alt_blok(satir_no)?;
-                    Ok(Cumle::IstekGeldiginde { yol, govde, satir: satir_no })
+                    Ok(Cumle::IstekGeldiginde { yol, onekli: false, govde, satir: satir_no })
+                } else if t.len() == 5
+                    && kelime_mi(&t[1], "önekli")
+                    && kelime_mi(&t[2], "adrese")
+                    && kelime_mi(&t[3], "istek")
+                {
+                    // "/yazi/" önekli adrese istek geldiğinde (K-055).
+                    let yol = tekil_ifade(t[0].clone())?;
+                    let govde = self.alt_blok(satir_no)?;
+                    Ok(Cumle::IstekGeldiginde { yol, onekli: true, govde, satir: satir_no })
                 } else {
                     Err(Tani::yeni(
                         "S036",
@@ -1262,6 +1271,8 @@ fn kosul_kelimesi(kelime: &str) -> bool {
             | "varsa"
             | "yoksa"
             | "içeriyorsa"
+            | "başlıyorsa"
+            | "bitiyorsa"
             | "başarılıysa"
             | "başarısızsa"
             | "boşsa"
@@ -1581,6 +1592,18 @@ fn kosul_atomu(tokenlar: &[Token], satir: usize) -> Result<Ifade, Tani> {
     }
 
     // M (aranan) içeriyorsa.
+    // X P ile başlıyorsa / bitiyorsa (K-053).
+    if n == 4
+        && kelimeler[2] == Some("ile")
+        && (yuklem == "başlıyorsa" || yuklem == "bitiyorsa")
+    {
+        return Ok(Ifade::MetinSinari {
+            metin: Box::new(tekil_ifade(tokenlar[0].clone())?),
+            parca: Box::new(tekil_ifade(tokenlar[1].clone())?),
+            bitis: yuklem == "bitiyorsa",
+        });
+    }
+
     if n == 3 && yuklem == "içeriyorsa" {
         return Ok(Ifade::Icerir {
             metin: Box::new(tekil_ifade(tokenlar[0].clone())?),
@@ -1721,6 +1744,10 @@ fn yapili_kalip(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifade>
             Some(Ozellik::Yil)
         } else if son == "yuvarlanmışı" {
             Some(Ozellik::Yuvarlanmis)
+        } else if son == "kırpılmışı" {
+            Some(Ozellik::Kirpilmis)
+        } else if son == "harfleri" {
+            Some(Ozellik::Harfler)
         } else {
             None
         };
@@ -1754,6 +1781,34 @@ fn yapili_kalip(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifade>
         return Ok(Some(Ifade::SozlukDegeri {
             sozluk: Box::new(tekil_ifade(tokenlar[0].clone())?),
             anahtar: Box::new(tekil_ifade(tokenlar[1].clone())?),
+        }));
+    }
+
+    // W ın json metni — serileştirme (K-054).
+    if n == 3 && son == "metni" && kelime(1) == Some("json") {
+        return Ok(Some(Ifade::Ozellik {
+            nesne: Box::new(tekil_ifade(tokenlar[0].clone())?),
+            ozellik: Ozellik::JsonMetin,
+        }));
+    }
+
+    // W ın X ile parçaları / birleşmişi (K-053).
+    if n == 4 && kelime(2) == Some("ile") && (son == "parçaları" || son == "birleşmişi") {
+        let sol = Box::new(tekil_ifade(tokenlar[0].clone())?);
+        let ayrac = Box::new(tekil_ifade(tokenlar[1].clone())?);
+        return Ok(Some(if son == "parçaları" {
+            Ifade::Parcala { metin: sol, ayrac }
+        } else {
+            Ifade::ListeBirlestir { liste: sol, ayrac }
+        }));
+    }
+
+    // W ın E yerine Y değişmişi (K-053).
+    if n == 5 && kelime(2) == Some("yerine") && son == "değişmişi" {
+        return Ok(Some(Ifade::Degistir {
+            metin: Box::new(tekil_ifade(tokenlar[0].clone())?),
+            eski: Box::new(tekil_ifade(tokenlar[1].clone())?),
+            yeni: Box::new(tekil_ifade(tokenlar[3].clone())?),
         }));
     }
 

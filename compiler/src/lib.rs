@@ -39,13 +39,14 @@ pub fn gomulu_birim(ad: &str) -> Option<&'static str> {
     match ad {
         "matematik" => Some(include_str!("../../kitaplik/matematik.dil")),
         "liste_araclari" => Some(include_str!("../../kitaplik/liste_araclari.dil")),
+        "metin_araclari" => Some(include_str!("../../kitaplik/metin_araclari.dil")),
         _ => None,
     }
 }
 
 /// Gömülü birim adları (A010 tanısında listelenir).
 pub fn gomulu_birim_adlari() -> &'static [&'static str] {
-    &["matematik", "liste_araclari"]
+    &["matematik", "liste_araclari", "metin_araclari"]
 }
 
 /// Bir birimin insan-okur özeti: işlem başlıkları (parametreleriyle) ve

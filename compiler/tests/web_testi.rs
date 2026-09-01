@@ -154,3 +154,28 @@ fn girisli_panel_oturum_dongusu() {
     assert!(io2.sunucu_yanitlari[2].1.contains("Gizli plan"), "not listede olmalı");
     assert_eq!(io2.sunucu_yanitlari[3].1, "→ /giris", "sahte çerez reddedilmeli");
 }
+
+#[test]
+fn onekli_rota_kuyrugu_yakalar() {
+    // K-055: "/yazi/" önekli adrese... — kimlik, yol metninden çıkarılır.
+    let kaynak = "\
+8080 kapısında sunucu başlat
+
+\"/yazi/\" önekli adrese istek geldiğinde
+    yol isteğin \"yol\" değeri olsun
+    kimlik yolun \"/yazi/\" yerine \"\" değişmişi olsun
+    \"yazı no: \" ile kimlik yanıtını gönder
+
+\"/\" adresine istek geldiğinde
+    \"ana sayfa\" yanıtını gönder
+";
+    let io = {
+        let program = dil::kaynagi_derle(kaynak).expect("derlenmeli");
+        let mut io = ToplayanIo::yeni(Vec::new());
+        io.istekler = vec!["/yazi/42".to_string(), "/".to_string()].into();
+        calistir_io(&program, &mut io).expect("çalışmalı");
+        io
+    };
+    assert_eq!(io.sunucu_yanitlari[0].1, "yazı no: 42");
+    assert_eq!(io.sunucu_yanitlari[1].1, "ana sayfa");
+}

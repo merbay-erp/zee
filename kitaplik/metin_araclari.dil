@@ -1,0 +1,43 @@
+# metin_araclari — gömülü standart birim (RFC-0014, deneysel).
+# Harf temelli metin yardımcıları (K-053 harfleri üzerine kurulu).
+
+işlem tersini hesapla
+    kaynağı al
+
+    ters "" olsun
+    harfler kaynağın harfleri olsun
+    her harf için
+        ters harf ile ters olsun
+    tersi döndür
+
+işlem ünlülerini say
+    kaynağı al
+
+    sayaç 0 olsun
+    harfler kaynağın harfleri olsun
+    her harf için
+        "aeıioöuüAEIİOÖUÜ" harf içeriyorsa
+            sayacı 1 artır
+    sayacı döndür
+
+işlem baş harfini bul
+    kaynağı al
+
+    temiz kaynağın kırpılmışı olsun
+    harfler temizin harfleri olsun
+    harfler boşsa
+        "" döndür
+    ilk harflerin ilki olsun
+    ilki döndür
+
+test "ters çevirme Türkçe harflerle"
+    ters "çilek" için tersini hesapla olsun
+    ters "keliç" e eşit olmalı
+
+test "ünlü sayımı"
+    adet "programlama" için ünlülerini say olsun
+    adet 4 e eşit olmalı
+
+test "baş harf kırpar"
+    harf "  zeynep" için baş harfini bul olsun
+    harf "z" ye eşit olmalı
