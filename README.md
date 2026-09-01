@@ -86,7 +86,7 @@ Araçlar: `dil çalıştır(--güvenli/--deneysel-web/--web-proxy)/parola-özeti
 + **dillsp** LSP sunucusu — tanılar, hover, tanıma git, **morfolojili
 yeniden adlandırma (F2)** ([editors/](editors/)).
 Determinizm testlerde tam: rastgelelik, saat, dosyalar, HTTP, sunucu istekleri,
-sensörler ve an ölçümü IO soyutlamasından gelir — 440 test hermetik koşar.
+sensörler ve an ölçümü IO soyutlamasından gelir — 447 test hermetik koşar.
 Lexer/parser panic-free ve morfoloji üret→çöz sözlerini ayrıca kalıcı saldırı
 korpusları, deterministik üretim ve gecelik [libFuzzer hattı](docs/fuzzing.md)
 denetler. Parser sonrası AST ile checker sonrası typed HIR arasındaki iç
@@ -132,7 +132,7 @@ korpus üzerinde regression testine girer.
 | 11 anti-örnek | [anti-ornekler/](anti-ornekler/) | ✅ (A11: nokta-ondalık) |
 | Syntax karar günlüğü | [kararlar/gunluk.md](kararlar/gunluk.md) | ✅ işleniyor |
 | RFC süreci | [rfcs/](rfcs/) | ✅ 21 RFC: 2 kabul, 17 geçici kabul, 2 taslak |
-| ADR süreci | [adr/](adr/) | ✅ 21 kabul (001-003, 006-023); 004/005 faz verisi bekliyor |
+| ADR süreci | [adr/](adr/) | ✅ 22 kabul (001-003, 006-024); 004/005 faz verisi bekliyor |
 | Hata kataloğu | [docs/hata-katalogu.md](docs/hata-katalogu.md) | ✅ 144 etkin kod + 1 ayrılmış kod, kaynakla tutarlılığı testli |
 | Spesifikasyon | [spec/](spec/) | ✅ başladı — normatif çekirdek (RFC'lere bağlar) |
 
@@ -215,6 +215,10 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   ifadesinin tam bir typed-HIR kaydıyla eşleşmesini yürütülebilir invariant
   kapısına bağladı. Bu kapı özellik→alan dönüşümündeki gerçek bir yetim HIR
   kaydını buldu; dönüşüm artık alt düğümü klonlamak yerine taşıyor.
+  K-113/ADR-024 kurtarmalı parser'ı cümle sonu+dengeli girinti sınırlarına
+  bağladı. İç hata sağlam kardeşi bloktan dışarı sızdırmıyor; yapı, `göre` ve
+  eşzamanlı bloklar sonraki sağlam satırı koruyor. CLI/LSP tanıları kaynak
+  sırasında ve belge başına en çok 20 kayıtla yayımlanıyor.
   Uygulama sırası
   [öncelikli backlog](docs/oncelikli-backlog.md) ile sabittir.
   Bağlayıcı liste: [docs/v1-surum-kapilari.md](docs/v1-surum-kapilari.md).

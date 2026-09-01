@@ -47,6 +47,10 @@ K-104 standart runtime ve `dene` hattını bu bağlara geçirdi. Zorunlu span
 K-108/ADR-020 ile sonradan tamamlandı. B-018'in sözü mevcut gerçek fazların
 yanlış adlandırılmadan türlerde görünür olmasıdır.
 
+K-113/ADR-024 kurtarmalı çoklu-tanı yolunda kısmi AST'nin cümle ve dengeli
+girinti sınırlarında kurulmasını bağladı. Bu değer `AyristirilmisAst` olarak
+kalır; hata varken `BaglanmisProgram` veya yürütme girişine yükseltilmez.
+
 ## Değişmezler
 
 1. Parsed AST doğrudan `calistir_baglanmis[_io]` girişine verilemez.
@@ -64,4 +68,6 @@ yanlış adlandırılmadan türlerde görünür olmasıdır.
 - `compile_fail` kanıtı parsed AST'nin fazlı runtime'a verilemediğini korur.
 - İki davranış ve bir kaynak-mimari testi standart hat ile uyumluluk
   adaptörünü korur.
+- Parser recovery regresyonları kısmi AST'nin faz etiketini aşmadan sağlam
+  kardeşleri doğru ebeveyn blokta tuttuğunu korur.
 - Zee kaynak dili değişmediği için yeni normatif spec gerekmez.

@@ -15,6 +15,18 @@ Kod aileleri: **S** sözcükleme/dizim · **A** ad çözümü · **T** tür ·
 **C** çalışma zamanı · **D** test doğrulaması · **Ç** iç akış (kullanıcıya
 görünmez; Ç000 `programı bitir` nöbetçisidir).
 
+### Çoklu tanı ve kurtarma (TANIMLI — RFC-0010 §2.1)
+
+Normal derleme ve çalışma ilk tanıda durur. `dil denetle`, JSON çıktısı ve LSP
+aynı çoklu-tanı hattını kullanır. Lexer başarılıysa parser hatalı cümlenin
+satır sonuna, varsa yalnız ona ait dengeli girinti gövdesinin sonuna
+senkronlanır; sonraki aynı-girintili kardeş korunur. Kısmi AST yürütülebilir
+değildir.
+
+Parser/birim/checker tanıları kaynak konumunda kararlı sıradadır ve belge
+başına en çok 20 kayıt yayımlanır. Lexer'ın token üretemediği lexical hata tek
+tanıdır. Bu bütçe tanı kimliğini veya kodunu değiştirmez.
+
 ## Hata sınıflandırması (TANIMLI — RFC-0008)
 
 1. **Programcı hatası** → derleme tanısı (S/A/T). Örn. korumasız `değeri`

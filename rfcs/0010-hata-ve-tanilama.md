@@ -2,8 +2,9 @@
 
 - **Durum:** kabul (yaşayan standardı belgeler)
 - **Tarih:** 31 Ağustos 2026
-- **İlgili günlük kayıtları:** K-026; hata kataloğu bekçisi
-- **Gerçekleme:** `compiler/src/tani.rs`, `docs/hata-katalogu.md`, `katalog_testi.rs`
+- **İlgili günlük kayıtları:** K-026, K-113; hata kataloğu bekçisi
+- **Gerçekleme:** `compiler/src/tani.rs`, `compiler/src/ayristirici/kurtarma.rs`,
+  `docs/hata-katalogu.md`, `katalog_testi.rs`, `parser_kurtarma_testi.rs`
 
 ## Özet
 
@@ -37,8 +38,8 @@ Kurallar:
    A001: tanımlı adların listesi; T028: yapının alan listesi).
 5. **Katalog bağlantısı:** her rapor `dil hata <kod>` satırıyla biter; katalog
    ikiliye gömülüdür, çevrimdışı çalışır.
-6. **İlk hatada durma (v0):** derleyici ilk tanıda durur. Çoklu tanı toplama
-   açık soru §3.1.
+6. **İki tüketim modu:** normal derleme/çalıştırma ilk tanıda durur. `denetle`
+   ve LSP, §2.1'deki sınırlı kurtarma hattıyla birden çok tanı verir.
 
 ## 2. Süreç bekçileri (bağlayıcı)
 
@@ -50,13 +51,28 @@ Kurallar:
   editör entegrasyonları buna güvenebilir.
 - Tanı metinleri regression testlerinde kod + içerik düzeyinde sabitlenir.
 
+### 2.1 Çoklu tanı ve parser kurtarma (bağlayıcı)
+
+`dil denetle`, JSON çıktısı ve LSP aynı çoklu-tanı görünümünü kullanır.
+Lexer token üretemediği lexical hatada tek tanı döner. Lexer başarılıysa
+parser şu güvenilir senkronizasyon noktalarında sürer:
+
+1. Hatalı cümlenin `SatirSonu` sınırı tüketilir.
+2. Cümle bir alt gövde açtıysa yalnız ona ait dengeli `Girinti`…`Cikinti`
+   bölgesi atlanır.
+3. Sonraki aynı-girintili kardeş kendi ebeveyn bloğunda ayrıştırılır.
+
+Kurtarma fiziksel kapsam derinliğini sonraki cümleye sızdıramaz. Kısmi AST
+normal parser'ın üretemeyeceği boş/imkânsız düğüm taşıyamaz ve yürütülebilir
+program sayılmaz. Parser, birim ve checker tanıları `(satır, sütun, kod,
+mesaj)` sırasıyla deterministiktir; belge başına en çok 20 tanı yayımlanır.
+Bu sayı daha çok hata olmadığı anlamına gelmez, editör tanı seli bütçesidir.
+
 ## 3. Açık sorular
 
-1. Çoklu tanı (ilk hatada durmak yerine toplamak) — LSP deneyimi için gerekli
-   olacak; ayrıştırıcıda hata kurtarma (recovery) tasarımı ister.
-2. Uyarı (warning) kavramı: v0'da yalnız hata var. Aday ilk uyarı: yalnız
+1. Uyarı (warning) kavramı: v0'da yalnız hata var. Aday ilk uyarı: yalnız
    büyük/küçük harfle ayrışan adlar (A07).
-3. Çocuk modu üslubu: aynı kod için daha kısa/yumuşak metin varyantı
+2. Çocuk modu üslubu: aynı kod için daha kısa/yumuşak metin varyantı
    (bölüm 16); tek kaynak-çift üslup mimarisi.
 
 ## Dört soru süzgeci

@@ -13,7 +13,8 @@ compiler/src/
 ├── ayristirici.rs            token/blok/tanım orkestrasyonu
 │   └── ayristirici/
 │       ├── cumle.rs          cümle son-yüklem dağıtımı
-│       └── ifade.rs          RFC-0021 ifade katmanları ve çağrı lowering'i
+│       ├── ifade.rs          RFC-0021 ifade katmanları ve çağrı lowering'i
+│       └── kurtarma.rs       cümle/girinti senkronizasyonu ve tanı bütçesi
 ├── cozumleyici.rs            checker geçiş orkestrasyonu ve public API
 │   └── cozumleyici/
 │       ├── akis.rs           daraltma, gezme ve görev akışı
@@ -41,6 +42,7 @@ API'si bu iç ayrımla büyümez.
 |---|---|---|
 | yeni cümle son-yüklemi | parser `cumle` | checker/runtime `cumle`, RFC/spec |
 | yeni ifade/postfix | parser `ifade` | RFC-0021 çakışma matrisi, checker/runtime `ifade` |
+| parser hata kurtarma | parser `kurtarma` | RFC-0010, kısmi AST invariantı ve LSP tanı sırası |
 | işlem çağrı uzlaştırması | checker `cagri` | RFC-0006/spec-02/10 ve usability kararı |
 | public işlem sözleşmesi | checker `sozlesme` | paket/birim API ve semver sınırı |
 | tür yazımı/uzlaşması | checker `turler` | ifade handler'ı ve olumsuz test |
@@ -76,6 +78,9 @@ mimari testle engellenir. Kimlik kuralları ADR-014 ve
 K-102/ADR-015 veri fazlarını [ayrı tiplerde](derleyici-faz-modeli.md) bağladı;
 `faz.rs` bütçesi ve standart-hat testi parsed AST'nin yürütülebilir program
 gibi kullanılmasını engeller.
+K-113/ADR-024 cümle ve dengeli girinti senkronizasyonunu ayrı `kurtarma`
+modülüne taşıdı; 160 satır bütçesi parser kökünün recovery ayrıntılarını geri
+yutmasını engeller.
 K-103/ADR-016 checker'ın tür ve semantic bağ çıktısını
 [typed HIR çekirdeğine](typed-hir-modeli.md) taşıdı; `hir.rs` ayrı 180 satır
 bütçesine sahiptir ve bağlı programın HIR'sız kurulması mimari testte durur.

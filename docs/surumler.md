@@ -283,6 +283,15 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   düğümün eski HIR kaydını yetim bıraktığını buldu; dönüşüm artık kutuyu taşır
   ve beklenmeyen varyantta T016 döndürür. Üç integration ve iki HIR unit
   regresyonuyla toplam 440 test yeşildir; B-017/V1-P0-22 kapandı.
+- **Parser hata kurtarma ve LSP tanı bütçesi** (K-113, ADR-024): kurtarmalı
+  parser hatalı cümlede satır sonuna, varsa yalnız ona ait dengeli girinti
+  gövdesinin sonuna senkronlanır. Sağlam kardeşler ebeveyn blokta kalır;
+  fiziksel derinlik sonraki üst düzey tanıma sızmaz. Yapı alanı, `göre` kolu,
+  eşzamanlı görev, `değilse` ve `yetişmezse` sonraki geçerli satırı korur.
+  CLI/LSP parser+birim+checker tanıları kaynak sırasında ve belge başına en
+  çok 20 kayıttır. Altı parser ve bir gerçek LSP regresyonuyla toplam 447 test
+  yeşildir. Recovery yolunu da çalıştıran 31 saniyelik lexer/parser smoke'u
+  977.014 mutation'ı çökmesiz tamamladı; B-021/V1-P0-23 kapandı.
 
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`

@@ -326,15 +326,20 @@ impl Ayristirici {
                     let kol_satiri = self.bak().satir;
                     let kol = self.satir_oku();
                     if kol.len() != 1 {
-                        return Err(Tani::yeni(
+                        self.tani_kaydet(Tani::yeni(
                             "S036",
                             "\"yetişmezse\" tek başına bir satır olmalı.".into(),
                             kol_satiri,
                             1,
                             1,
                         ));
+                        self.bekleyen_govdeyi_atla();
+                    } else {
+                        match self.alt_blok(kol_satiri) {
+                            Ok(govde) => yetismezse = Some(govde),
+                            Err(tani) => self.tani_kaydet(tani),
+                        }
                     }
-                    yetismezse = Some(self.alt_blok(kol_satiri)?);
                 }
                 Ok(Cumle::IcindeBlogu { sure, govde, yetismezse, satir: satir_no })
             }

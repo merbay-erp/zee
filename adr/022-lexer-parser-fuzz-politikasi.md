@@ -17,7 +17,9 @@ başına kanıtlamaz. Örnek testler de mutation kaynaklı bileşimleri aramaz.
 1. Tek libFuzzer hedefi `&str` kabul eder; UTF-8 olmayan byte dizileri dil
    kaynağı sayılmaz ve kaynak okuma sınırının sorumluluğundadır.
 2. Başarılı lexer çıktısı hem normal hem hata-kurtarmalı parser API'sine verilir.
-   Lexer tanısı geçerli ve beklenen bir sonuçtur; fuzz crash'i değildir.
+   Kurtarmalı yolun cümle/girinti senkronizasyonu K-113/ADR-024 ile ayrıca
+   bağlanmıştır. Lexer tanısı geçerli ve beklenen bir sonuçtur; fuzz crash'i
+   değildir.
 3. Kalıcı başlangıç korpusu Unicode/homoglyph, emoji, birleştirici im, CRLF,
    sekme/girinti, metin kaçışı, büyük sayı, ondalık virgül ve blokları kapsar.
    Zee kalıp sözlüğü mutation'ı anlamlı tokenlara yönlendirir.
