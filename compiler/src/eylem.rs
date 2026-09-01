@@ -5,6 +5,7 @@
 //! GET/HEAD adaptörleri hiçbir durum-yazma etkisine ulaşamaz.
 
 use crate::agac::{Cumle, HttpYontemi, Ifade, Islem, IslemTuru, Program};
+use crate::intrinsic::{self, IntrinsicEtkisi};
 use crate::tani::Tani;
 use std::collections::{HashMap, HashSet};
 
@@ -543,14 +544,17 @@ fn ifade_bilgisi(ifade: &Ifade, bilgi: &mut Bilgi) {
             ifade_bilgisi(alt, bilgi);
             ifade_bilgisi(ust, bilgi);
         }
-        Ifade::ParolaDogrula { parola, ozet } => {
-            ifade_bilgisi(parola, bilgi);
-            ifade_bilgisi(ozet, bilgi);
-        }
-        Ifade::CsrfBelirteci => {
+        Ifade::Intrinsic { kimlik, argumanlar } => {
+            for arguman in argumanlar {
+                ifade_bilgisi(arguman, bilgi);
+            }
             // Uygulama durumu değil, güvenlik adaptörünün kısa ömürlü ve
             // anlam taşımayan synchronizer oturumudur. GET'te üretilebilir.
-            bilgi.web = true;
+            if intrinsic::tanim(kimlik)
+                .is_some_and(|tanim| tanim.etki == IntrinsicEtkisi::WebAdaptoru)
+            {
+                bilgi.web = true;
+            }
         }
         Ifade::Birlestir(parcalar)
         | Ifade::MantiksalZincir { parcalar, .. }
@@ -572,7 +576,6 @@ fn ifade_bilgisi(ifade: &Ifade, bilgi: &mut Bilgi) {
         | Ifade::DosyaSatirlari(ic)
         | Ifade::TabloOku(ic)
         | Ifade::VeriOku(ic)
-        | Ifade::HttpGetir(ic)
         | Ifade::DurumKodu(ic)
         | Ifade::Govde(ic)
         | Ifade::BosMu { nesne: ic, .. }
@@ -604,7 +607,6 @@ fn ifade_bilgisi(ifade: &Ifade, bilgi: &mut Bilgi) {
         | Ifade::SuAninSaati
         | Ifade::KomutArgumanlari
         | Ifade::SureSabiti { .. }
-        | Ifade::SensorAcik { .. }
         | Ifade::YeniYapi { .. } => {}
     }
 }

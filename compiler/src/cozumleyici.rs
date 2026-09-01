@@ -8,6 +8,7 @@
 //! Ünsüz yumuşamasının geri çevrimi desteklenir: "sayacı" → "sayac" → "sayaç".
 
 use crate::agac::{Cumle, Ifade, Islec, Islem, Ozellik, Program, Yapi};
+use crate::intrinsic::{self, IntrinsicTuru};
 
 use crate::tani::Tani;
 use std::collections::HashMap;
@@ -152,6 +153,14 @@ impl Tur {
     /// TamSayı ya da Ondalık mı? (Karışımda TamSayı, Ondalık'a kayıpsız genişler.)
     fn sayisal(&self) -> bool {
         matches!(self, Tur::TamSayi | Tur::Ondalik)
+    }
+}
+
+fn intrinsic_turunu_cevir(tur: IntrinsicTuru) -> Tur {
+    match tur {
+        IntrinsicTuru::Metin => Tur::Metin,
+        IntrinsicTuru::Mantiksal => Tur::Mantiksal,
+        IntrinsicTuru::AgYaniti => Tur::AgYaniti,
     }
 }
 
@@ -1661,20 +1670,31 @@ fn ifade_denetle(
         Ifade::SayiSabiti(_) => Ok(Tur::TamSayi),
         Ifade::OndalikSabiti { .. } => Ok(Tur::Ondalik),
         Ifade::MantiksalSabiti(_) => Ok(Tur::Mantiksal),
-        Ifade::CsrfBelirteci => Ok(Tur::Metin),
-        Ifade::ParolaDogrula { parola, ozet } => {
-            let parola_turu = ifade_denetle(parola, ortam, baglam, satir)?;
-            let ozet_turu = ifade_denetle(ozet, ortam, baglam, satir)?;
-            if parola_turu != Tur::Metin || ozet_turu != Tur::Metin {
+        Ifade::Intrinsic { kimlik, argumanlar } => {
+            let Some(tanim) = intrinsic::tanim(kimlik) else {
                 return Err(Tani::yeni(
                     "T034",
-                    "Parola ve Argon2id özeti Metin olmalı.".into(),
+                    format!("Derleyici \"{}\" iç işlemini tanımıyor.", kimlik),
                     satir,
                     1,
                     1,
                 ));
+            };
+            if argumanlar.len() != tanim.arguman_turleri.len() {
+                return Err(Tani::yeni("T034", tanim.tur_hatasi.into(), satir, 1, 1));
             }
-            Ok(Tur::Mantiksal)
+            for (arguman, beklenen) in argumanlar.iter_mut().zip(tanim.arguman_turleri) {
+                let bulunan = ifade_denetle(arguman, ortam, baglam, satir)?;
+                if bulunan != intrinsic_turunu_cevir(*beklenen) {
+                    let mesaj = if kimlik == intrinsic::HTTP_GETIR {
+                        format!("Adres Metin olmalı; burada {} var.", bulunan.adi())
+                    } else {
+                        tanim.tur_hatasi.into()
+                    };
+                    return Err(Tani::yeni("T034", mesaj, satir, 1, 1));
+                }
+            }
+            Ok(intrinsic_turunu_cevir(tanim.donus_turu))
         }
         // Boş listenin öğe türü v0'da TamSayı varsayılır (tür çıkarımı RFC-0007).
         // K-045: öğe türü ilk eklemede somutlaşır.
@@ -1939,19 +1959,6 @@ fn ifade_denetle(
         Ifade::SuAninSaati => Ok(Tur::Saat),
         Ifade::KomutArgumanlari => Ok(Tur::Liste(VeriTuru::Metin)),
         Ifade::SureSabiti { .. } => Ok(Tur::Sure),
-        Ifade::HttpGetir(url) => {
-            let tur = ifade_denetle(url, ortam, baglam, satir)?;
-            if tur != Tur::Metin {
-                return Err(Tani::yeni(
-                    "T034",
-                    format!("Adres Metin olmalı; burada {} var.", tur.adi()),
-                    satir,
-                    1,
-                    1,
-                ));
-            }
-            Ok(Tur::AgYaniti)
-        }
         Ifade::DurumKodu(nesne) => {
             let tur = ifade_denetle(nesne, ortam, baglam, satir)?;
             if tur != Tur::AgYaniti {
@@ -1978,7 +1985,6 @@ fn ifade_denetle(
             }
             Ok(Tur::Metin)
         }
-        Ifade::SensorAcik { .. } => Ok(Tur::Mantiksal),
         Ifade::GunSonrasi { tarih, miktar } => {
             let tarih_turu = ifade_denetle(tarih, ortam, baglam, satir)?;
             if tarih_turu != Tur::Tarih {

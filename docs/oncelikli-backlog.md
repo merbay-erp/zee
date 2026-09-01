@@ -12,8 +12,8 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 
 1. Tamamlanan önkoşul: K-095 registry metadata güveni (378 test).
 2. İnsan kanıtı bekleyen kapılar: B-001/K-096 + B-002/K-093.
-3. Tamamlanan compiler omurgası: B-003/K-097 (386 test).
-4. Sıradaki makine işi: B-004; ardından B-005/B-006 →
+3. Tamamlanan compiler omurgası: B-003/K-097 ve B-004/K-098 (393 test).
+4. Sıradaki makine işi: B-005; ardından B-006 →
    B-010/B-018/B-019/B-020 → B-014–B-017.
 5. Üçüncü sprint: B-027/B-028 → B-030/B-031 → B-043/B-044.
 6. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
@@ -35,9 +35,13 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   testi güçlü birleşimleri, işlem-adı kuyruğunun postfix'i gölgelememesini,
   tam sıfır-argüman çağrısını, en uzun çağrıyı ve fail-closed sınırları korur;
   fiziksel fonksiyon/modül parçalama B-005'in davranış-korumalı işidir.
-- **B-004 · SIRADA — domain özelliklerini core AST'den ayır.**
-  HTTP, sensör, CSRF ve parola yüzeylerini kaynak yazımını bozmadan generic
-  çağrı/intrinsic/capability lowering modeline taşı.
+- **B-004 · KAPALI (K-098) — domain özelliklerini core AST'den ayır.**
+  HTTP, sensör, CSRF ve parola yüzeyleri kaynak yazımı değişmeden tek generic
+  `Intrinsic { kimlik, argumanlar }` düğümüne indirildi. Tür imzası,
+  yetkinlik ve etki ADR-011'deki merkezi kayıtta birleşti; kapalı sensör koşulu
+  genel olumsuzlamayı kullanır. Yedi lowering/imza testi ve mevcut davranış
+  korpusuyla V1-P0-09 kapandı. Fiziksel runtime/parser handler ayrımı B-005,
+  proje/paket izin politikası B-023 kapsamındadır.
 - **B-005 · AÇIK — mega fonksiyon büyümesini durdur.** Parser, checker ve
   runtime handler'larını domain/faz sınırlarına ayır; yeni özellik doğrudan
   yüzlerce satır ekleyemez.

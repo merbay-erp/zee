@@ -238,21 +238,14 @@ pub enum Ifade {
     KomutArgumanlari,
     /// Süre sabiti: `5 saniye`, `yarım saniye`, `1,5 dakika` → milisaniye.
     SureSabiti { milisaniye: i64 },
-    /// `"..." adresinden gelen yanıt` → AğYanıtı (golden 24).
-    HttpGetir(Box<Ifade>),
+    /// Kaynak yüzeyinin kararlı bir iç işleme indirilmiş biçimi (ADR-011).
+    /// Alan bilgisi çekirdek AST varyantına değil merkezi intrinsic kaydına
+    /// aittir; böylece yeni adaptörler AST şemasını büyütmez.
+    Intrinsic { kimlik: String, argumanlar: Vec<Ifade> },
     /// `cevabın durum kodu` → TamSayı.
     DurumKodu(Box<Ifade>),
     /// `cevabın gövdesi` → Metin.
     Govde(Box<Ifade>),
-    /// `kapı açıksa` — IoT sensör okuması (golden 29, simülatör).
-    SensorAcik { ad: String, olumsuz: bool },
-    /// `csrf belirteci` — sunucu tarafı oturuma bağlı form belirteci (K-088).
-    CsrfBelirteci,
-    /// `verilen parola_özeti ile doğrulanıyorsa` — Argon2id PHC doğrulaması.
-    ParolaDogrula {
-        parola: Box<Ifade>,
-        ozet: Box<Ifade>,
-    },
     /// `argümanlar boşsa` — liste/metin boş mu.
     BosMu { nesne: Box<Ifade>, olumsuz: bool },
     /// Genitif aritmetik (K-008): "a ile b nin toplamı", "x in y ye bölümü".

@@ -6,6 +6,7 @@
 use crate::agac::{
     AritmetikIslec, Cumle, HttpYontemi, Ifade, Islec, IslemTuru, Ozellik, Program, RotaErisimi,
 };
+use crate::intrinsic::{self, CSRF_BELIRTECI, HTTP_GETIR, PAROLA_DOGRULA, SENSOR_ACIK_MI};
 use crate::ondalik::Ondalik;
 use crate::tani::Tani;
 use crate::web_guvenligi::{WebGuvenligi, WebReddi, YeniOturum};
@@ -2358,19 +2359,79 @@ fn degerlendir_async<'a>(
             .map(ondalik_degeri)
             .ok_or_else(|| ic_hata(satir)),
         Ifade::MantiksalSabiti(b) => Ok(Deger::Mantiksal(*b)),
-        Ifade::CsrfBelirteci => io.csrf_belirteci().map(Deger::Metin).map_err(|hata| {
-            Tani::yeni(
-                "C022",
-                format!("CSRF belirteci üretilemedi: {}.", hata),
-                satir,
-                1,
-                1,
-            )
-        }),
-        Ifade::ParolaDogrula { parola, ozet } => {
-            let parola = degerlendir_async(parola, ortam, program, io, derinlik, satir).await?.metne();
-            let ozet = degerlendir_async(ozet, ortam, program, io, derinlik, satir).await?.metne();
-            Ok(Deger::Mantiksal(io.parola_dogrula(&parola, &ozet)))
+        Ifade::Intrinsic { kimlik, argumanlar } => {
+            let Some(tanim) = intrinsic::tanim(kimlik) else {
+                return Err(ic_hata(satir));
+            };
+            if argumanlar.len() != tanim.arguman_turleri.len() {
+                return Err(ic_hata(satir));
+            }
+            let mut degerler = Vec::with_capacity(argumanlar.len());
+            for arguman in argumanlar {
+                degerler.push(
+                    degerlendir_async(arguman, ortam, program, io, derinlik, satir).await?,
+                );
+            }
+            match kimlik.as_str() {
+                CSRF_BELIRTECI => io.csrf_belirteci().map(Deger::Metin).map_err(|hata| {
+                    Tani::yeni(
+                        "C022",
+                        format!("CSRF belirteci üretilemedi: {}.", hata),
+                        satir,
+                        1,
+                        1,
+                    )
+                }),
+                PAROLA_DOGRULA => {
+                    let [parola, ozet] = degerler.as_slice() else {
+                        return Err(ic_hata(satir));
+                    };
+                    Ok(Deger::Mantiksal(
+                        io.parola_dogrula(&parola.metne(), &ozet.metne()),
+                    ))
+                }
+                HTTP_GETIR => {
+                    let [Deger::Metin(url)] = degerler.as_slice() else {
+                        return Err(ic_hata(satir));
+                    };
+                    let zaman_asimi_ms = son_tarih_kalani(io, satir)?.map(|(_, kalan)| kalan);
+                    if gorevde_miyiz() {
+                        // İstek adaptörüne girmeden kardeşlere bir tur ver. Mevcut IO
+                        // trait'i senkrondur; adaptör çağrısının içi atomik kalır.
+                        gorev_bekleme_noktasi(0).await;
+                    }
+                    let (durum, govde) = match io.http_getir(url, zaman_asimi_ms) {
+                        Ok(yanit) => {
+                            son_tarihi_denetle(io, satir)?;
+                            yanit
+                        }
+                        Err(hata) => {
+                            son_tarihi_denetle(io, satir)?;
+                            return Err(
+                                Tani::yeni(
+                                    "C018",
+                                    format!("Ağ isteği başarısız: {}.", hata),
+                                    satir,
+                                    1,
+                                    1,
+                                )
+                                .onerili(
+                                    "Ağ hatası yönetilecekse ileride \"getirmeyi dene\" gelecek (RFC-0008 §4.3)."
+                                        .into(),
+                                ),
+                            );
+                        }
+                    };
+                    Ok(Deger::AgYaniti { durum, govde })
+                }
+                SENSOR_ACIK_MI => {
+                    let [Deger::Metin(ad)] = degerler.as_slice() else {
+                        return Err(ic_hata(satir));
+                    };
+                    Ok(Deger::Mantiksal(io.sensor_acik_mi(ad)))
+                }
+                _ => Err(ic_hata(satir)),
+            }
         }
         Ifade::BosListe => Ok(Deger::Liste(Vec::new())),
         Ifade::ListeSabiti(ogeler) => {
@@ -2561,41 +2622,6 @@ fn degerlendir_async<'a>(
             Ok(Deger::Saat { saat, dakika })
         }
         Ifade::SureSabiti { milisaniye } => Ok(Deger::Sure { milisaniye: *milisaniye }),
-        Ifade::HttpGetir(url) => {
-            let url = match degerlendir_async(url, ortam, program, io, derinlik, satir).await? {
-                Deger::Metin(m) => m,
-                _ => return Err(ic_hata(satir)),
-            };
-            let zaman_asimi_ms = son_tarih_kalani(io, satir)?.map(|(_, kalan)| kalan);
-            if gorevde_miyiz() {
-                // İstek adaptörüne girmeden kardeşlere bir tur ver. Mevcut IO
-                // trait'i senkrondur; adaptör çağrısının içi atomik kalır.
-                gorev_bekleme_noktasi(0).await;
-            }
-            let (durum, govde) = match io.http_getir(&url, zaman_asimi_ms) {
-                Ok(yanit) => {
-                    son_tarihi_denetle(io, satir)?;
-                    yanit
-                }
-                Err(hata) => {
-                    son_tarihi_denetle(io, satir)?;
-                    return Err(
-                        Tani::yeni(
-                            "C018",
-                            format!("Ağ isteği başarısız: {}.", hata),
-                            satir,
-                            1,
-                            1,
-                        )
-                        .onerili(
-                            "Ağ hatası yönetilecekse ileride \"getirmeyi dene\" gelecek (RFC-0008 §4.3)."
-                                .into(),
-                        ),
-                    );
-                }
-            };
-            Ok(Deger::AgYaniti { durum, govde })
-        }
         Ifade::DurumKodu(nesne) => match degerlendir_async(nesne, ortam, program, io, derinlik, satir).await? {
             Deger::AgYaniti { durum, .. } => Ok(Deger::TamSayi(durum)),
             _ => Err(ic_hata(satir)),
@@ -2604,10 +2630,6 @@ fn degerlendir_async<'a>(
             Deger::AgYaniti { govde, .. } => Ok(Deger::Metin(govde)),
             _ => Err(ic_hata(satir)),
         },
-        Ifade::SensorAcik { ad, olumsuz } => {
-            let acik = io.sensor_acik_mi(ad);
-            Ok(Deger::Mantiksal(acik != *olumsuz))
-        }
         Ifade::KomutArgumanlari => Ok(Deger::Liste(
             io.argumanlar().into_iter().map(Deger::Metin).collect(),
         )),
