@@ -91,7 +91,7 @@ türetilmiştir; yeni kod eklenince bu dosya güncellenir — CI'a bağlanması 
 | T014 | Özellik bu türe uygulanamaz | adedi/ilki/sonu → liste; uzunluğu/kelimeleri → metin; yılı → tarih |
 | T015 | Çağrı argüman sayısı yanlış | İşlemin parametre sayısına bak |
 | T016 | İşlem kaydı bulunamadı | Derleyici iç hatası olabilir — bildir (özyineleme v0.2'de serbest) |
-| T017 | Argüman türleri imzaya uymuyor | İmza ilk çağrıda sabitlenir (v0 monomorfizmi) |
+| T017 | Argüman türleri işlem imzasına uymuyor | Çıkarımlı imzayı aynı türle çağır; public API'de `<ad> <Tür> olarak al` sözleşmesine uy |
 | T018 | Dönüş türleri tutarsız | Tek tür döndür; `yok` + tür → Seçenek olur |
 | T019 | Değer döndürmeyen işlem ifade konumunda | İşleme `... döndür` ekle ya da cümle olarak çağır |
 | T020 | `döndür` işlem dışında | Yalnız işlem gövdesinde geçerli |
@@ -111,6 +111,8 @@ türetilmiştir; yeni kod eklenince bu dosya güncellenir — CI'a bağlanması 
 | T034 | Ağ/süre/sunucu kalıbı tür uyuşmazlığı | Kapı TamSayı, yol/adres Metin, `içinde`/`bekle` Süre ister |
 | T035 | Özyinelemeden önce temel durum yok | Temel durumu üste yaz: önce bir dalda döndür, sonra özyinelemeli adım |
 | T036 | Korumasız Seçenek/Sonuç erişimi | `değeri` ancak `varsa`/`başarılıysa`, `hatası` ancak `başarısızsa` dalında (RFC-0008 §4.2) |
+| T037 | Bir işlemde açık ve çıkarımlı parametre türleri karışık | Bütün parametreleri `<ad> <Tür> olarak al` yaz ya da hepsini çıkarımlı bırak |
+| T038 | Açık parametre türü tanınmadı | Örn. `TamSayı`, `Ondalık listesi`, `Metin sözlüğü` ya da tanımlı bir yapı adı kullan |
 
 ## C — Çalışma zamanı
 

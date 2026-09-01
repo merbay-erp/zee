@@ -1,0 +1,13 @@
+# 33 — Açık işlem imzası (K-083)
+# Sınanan: `<ad> <Tür> olarak al`; public sözleşme çağrı sırasından bağımsızdır.
+
+işlem yarısını bul
+    sayıyı Ondalık olarak al
+    sonuç sayının 2 ye bölümü olsun
+    sonucu döndür
+
+tam_sonuç 5 için yarısını bul olsun
+ondalık_sonuç 7,0 için yarısını bul olsun
+
+tam_sonucu yaz
+ondalık_sonucu yaz

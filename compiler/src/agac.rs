@@ -35,9 +35,17 @@ pub struct Yapi {
 #[derive(Debug, Clone)]
 pub struct Islem {
     pub ad: String,
-    /// Yalın parametre adları ("sayıları al" → "sayılar").
-    pub parametreler: Vec<String>,
+    pub parametreler: Vec<Parametre>,
     pub govde: Vec<Cumle>,
+    pub satir: usize,
+}
+
+/// İşlem parametresi. Başlangıç yüzeyi `sayıyı al`; açık API sözleşmesi
+/// `sayıyı Ondalık olarak al` (K-083). Tür yazımı çözümleyicide doğrulanır.
+#[derive(Debug, Clone)]
+pub struct Parametre {
+    pub ad: String,
+    pub tur_yazimi: Option<String>,
     pub satir: usize,
 }
 

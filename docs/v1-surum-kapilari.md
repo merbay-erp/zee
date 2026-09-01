@@ -3,7 +3,7 @@
 Bu liste bir dilek listesi değildir: `1.0.0` etiketi bu kapılar kapatılmadan
 atılmaz. Amaç yeni özellik sayısını büyütmek değil, çocuktan profesyonele aynı
 dilin verdiği sözleri kanıtlamaktır. Bulgular 1 Eylül 2026'da derleyici
-kaynakları, spec, RFC'ler ve 262 test üzerinden yeniden doğrulanmıştır.
+kaynakları, spec, RFC'ler ve 270 test üzerinden yeniden doğrulanmıştır.
 
 Durumlar: **KAPALI** = kanıtı var · **AÇIK** = v1 engeli · **KARAR** = önce
 normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
@@ -12,7 +12,7 @@ normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
 
 | Kapı | Durum | Kaynakta görülen gerçek | Kapanma kanıtı |
 |---|---|---|---|
-| V1-P0-01 İşlem imzası çağrı sırasından bağımsızdır | **AÇIK** | `cozumleyici::cagri_denetle` gövdeyi çağrı argümanıyla denetler; K-067 yalnız TamSayı→Ondalık ailesinde imzayı terfi ettirir. Manifesto public API'de açık tür ister, fakat sözdizimi yoktur. | Public işlem parametre/dönüş sözleşmesi (açık tür, gerçek generic veya bütün-program kısıt çözümü); çağrı sırası permütasyonlarında aynı imza/tanı ve runtime türü conformance testleri. |
+| V1-P0-01 İşlem imzası çağrı sırasından bağımsızdır | **AÇIK (K-083 temeli var)** | Başlangıç `<ad> al` çağrı-güdümlüdür. `<ad> <Tür> olarak al` açık imzası çağrı beklemeden denetlenir, çağrıyla terfi etmez; TamSayı→Ondalık runtime dönüşümü ve çağrı sırası permütasyonu testlidir. | Paket/public sınırında açık imza zorunluluğu ve ABI politikası; generic ya da bilinçli monomorfik model; açık imzalı bütün kapsayıcı/özyineleme permütasyon conformance paketi. |
 | V1-P0-02 Web route ile uygulama eylemi ayrıdır | **AÇIK (K-082 korkuluğu var)** | `IstekGeldiginde` rota yolunu eşler; yöntem `istek` sözlüğünde sıradan metindir. Yetki, CSRF, idempotency, gövde sınırı ve transaction sözleşmesi yoktur. Gerçek TCP yalnız `--deneysel-web` opt-in'iyle açılır; örneklerde GET mutasyonu kaldırılmıştır. | RFC-0015'in kabulü; yöntemli route; form/API/CLI/job tarafından çağrılabilen eylem; GET'in durum değiştirmediği dil düzeyi olumsuz testler. |
 | V1-P0-03 Oturum ve çerez üretim güvenliği | **AÇIK** | Gerçek IO çereze yalnız `HttpOnly` ekler; Secure/SameSite/ömür politikası yoktur. `girisli-panel` rastgele sayı + düz parola kullanan eğitim demosudur. | CSPRNG token, hash'li kimlik bilgisi, süre/rotation/revoke, güvenli çerez politikası, CSRF ve HTTPS/proxy sınırı; saldırı regresyonları. |
 | V1-P0-04 Kalıcı durum atomik ve yarış güvenlidir | **AÇIK** | `GercekIo::dosya_yaz` doğrudan truncate/append eder. Bugünkü sunucu istekleri sıralı olduğundan tek süreçte request yarışı yoktur; çoklu süreç ve gelecekteki concurrency korunmaz. | Atomik değiştir/replace primitive'i, kilit veya transactional store; hata enjeksiyonu, iki-yazar ve süreç çökmesi testleri. |

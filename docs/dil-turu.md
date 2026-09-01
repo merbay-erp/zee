@@ -225,8 +225,22 @@ kare 4 için karesini hesapla olsun
 tabanın tam kısmı için yuvarla
 ```
 
-İmza ilk çağrıda sabitlenir (v0 monomorfizmi, T017); işlem çağrıdan sonra
-da tanımlanabilir (adlar ön-taranır).
+Başlangıçta tür yazmak gerekmez; bu durumda imza çağrıdan çıkarılır. Paket,
+kütüphane ve uzun ömürlü API için bütün parametreler açık yazılabilir:
+
+```
+işlem yarısını bul
+    sayıyı Ondalık olarak al
+    sonuç sayının 2 ye bölümü olsun
+    sonucu döndür
+```
+
+Açık imzalı gövde hiç çağrılmasa bile denetlenir; imza sonraki çağrıyla
+değişmez. TamSayı, Ondalık beklenen çağrıda hem statik olarak hem runtime
+değeriyle Ondalığa genişler. `Ondalık listesi`, `Metin sözlüğü`,
+`TamSayı seçeneği`, `Metin sonucu` ve yapı adları da geçerli tür yazımlarıdır.
+Bir işlemin parametreleri ya bütünüyle açık ya bütünüyle çıkarımlıdır
+(T037/T038, K-083). İşlem çağrıdan sonra da tanımlanabilir (adlar ön-taranır).
 
 ### Özyineleme
 

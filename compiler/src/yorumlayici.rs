@@ -1207,11 +1207,57 @@ fn islem_cagir(
     let islem = program.islemler.get(ad).ok_or_else(|| ic_hata(satir))?;
     let mut yerel: HashMap<String, Deger> = HashMap::new();
     for (param, deger) in islem.parametreler.iter().zip(argumanlar) {
-        yerel.insert(param.clone(), deger);
+        let deger = parametre_degerini_genislet(deger, param.tur_yazimi.as_deref(), satir)?;
+        yerel.insert(param.ad.clone(), deger);
     }
     match blok_calistir(&islem.govde, &mut yerel, program, io, derinlik)? {
         Akis::Don(deger) => Ok(Some(deger)),
         Akis::Devam => Ok(None),
+    }
+}
+
+/// Açık Ondalık sözleşmesine gelen TamSayıyı runtime'da da genişletir; statik
+/// tür ile gerçek değer ayrışmaz. Kapsayıcılarda aynı kural özyinelemelidir.
+fn parametre_degerini_genislet(
+    deger: Deger,
+    tur_yazimi: Option<&str>,
+    satir: usize,
+) -> Result<Deger, Tani> {
+    let Some(yazim) = tur_yazimi else {
+        return Ok(deger);
+    };
+    match (yazim, deger) {
+        ("Ondalık", Deger::TamSayi(sayi)) => ondalik_yap(sayi as i128, 0, satir),
+        ("Ondalık listesi", Deger::Liste(ogeler)) => Ok(Deger::Liste(
+            ogeler
+                .into_iter()
+                .map(|oge| parametre_degerini_genislet(oge, Some("Ondalık"), satir))
+                .collect::<Result<Vec<_>, _>>()?,
+        )),
+        ("Ondalık sözlüğü", Deger::Sozluk(girdiler)) => Ok(Deger::Sozluk(
+            girdiler
+                .into_iter()
+                .map(|(ad, deger)| {
+                    parametre_degerini_genislet(deger, Some("Ondalık"), satir)
+                        .map(|deger| (ad, deger))
+                })
+                .collect::<Result<Vec<_>, _>>()?,
+        )),
+        ("Ondalık seçeneği", Deger::Yok) => Ok(Deger::Yok),
+        ("Ondalık seçeneği", deger) => {
+            parametre_degerini_genislet(deger, Some("Ondalık"), satir)
+        }
+        ("Ondalık sonucu", Deger::Sonuc { basarili, icerik }) if basarili => {
+            Ok(Deger::Sonuc {
+                basarili,
+                icerik: Box::new(parametre_degerini_genislet(
+                    *icerik,
+                    Some("Ondalık"),
+                    satir,
+                )?),
+            })
+        }
+        (_, deger) => Ok(deger),
     }
 }
 

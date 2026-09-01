@@ -846,6 +846,26 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   sızmayan bayrağı; web entegrasyonu GET silmenin durumu koruduğunu, POST'un
   sildiğini sınar. Toplam 262 test.
 
+## K-083 — Başlangıçta çıkarım, kalıcı API'de açık işlem imzası
+
+- **Yüzey:** Eski `sayıyı al` çocuk/başlangıç akışında değişmez.
+  `sayıyı Ondalık olarak al`, `sayıları Ondalık listesi olarak al` public ve
+  paket sözleşmesine aşamalı geçiştir. Yapı adı ve kontrollü
+  liste/sözlük/Seçenek/Sonuç tür yazımları geçerlidir.
+- **Semantik:** Bir işlemde bütün parametreler açık ya da bütünü çıkarımlıdır
+  (T037); bilinmeyen yazım T038. Açık gövde hiç çağrılmasa bile tanım
+  aşamasında denetlenir; dönüş gövdeden çıkarılıp imzaya bağlanır ve sonraki
+  çağrı bu imzayı terfi ettiremez.
+- **Tür bütünlüğü:** Açık Ondalık parametreye TamSayı kayıpsız genişleyebilir;
+  yalnız checker etiketi değil gerçek runtime değeri de Ondalığa çevrilir.
+  Liste/sözlük/Seçenek/Sonuç kapsayıcılarında aynı kural özyinelemelidir.
+- **Sınır:** V1-P0-01 bütünüyle kapanmadı. Paket/public işlemlerde zorunluluk,
+  açık ABI uyumluluğu ve generic model sıradaki karardır. K-083 bu kararın
+  güvenilir çekirdeğini kırmadan ekler.
+- **Kanıt:** golden 33; çağrılmayan hatalı gövde; kısmi/bilinmeyen imza;
+  yapı/listeler; dar→geniş ve geniş→dar çağrı sırası; runtime tür eşitliği.
+  Toplam 270 test ve 122 kataloglu Türkçe tanı.
+
 ## K-012 — Liste sabiti: `3, 7, 1, 9 listesi`
 
 - **Karar:** Virgülle ayrılmış değerler + `listesi`. Boş: `boş liste`.

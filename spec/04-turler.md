@@ -39,13 +39,21 @@ v1'de açık tür/generic/kısıt çözümü V1-P0-01 kapısıdır. Tersi
 örtük DEĞİLDİR: Ondalıktan tam sayıya `tam kısmı` (sıfıra doğru) ya da
 `yuvarlanmışı` (yarımlar sıfırdan uzağa) ile bilinçli inilir.
 
-## İşlem imzaları (TANIMLI — v0 monomorfizmi)
+## İşlem imzaları (TANIMLI — K-083 progressive disclosure)
 
-İşlemin parametre ve dönüş türleri **ilk çağrıda** çıkarılır; sonraki
-çağrılar imzaya uymak **ZORUNLU**dur (T015 sayı, T017 tür). Yukarıdaki
-TamSayı→Ondalık terfisi tek istisnadır ve gövdeyi yeniden denetler. Özyinelemeli
-çağrının türü "o ana dek görülen dönüşlerden" çıkarılır; bu yüzden temel
-durum özyinelemeli çağrıdan önce en az bir dönüş vermiş olmalıdır (T035).
+- `<ad> al` başlangıç biçiminde parametre/dönüş türleri ilk çağrıdan çıkarılır;
+  sonraki çağrılar imzaya uymak ZORUNDADIR (T015/T017). Sayısal terfi mümkündür.
+- `<ad> <Tür> olarak al` açık biçiminde bütün parametreler tanımın
+  sözleşmesidir. İşlem hiç çağrılmadan gövdesi bu türlerle denetlenir; dönüş
+  türü gövdeden o anda çıkarılır ve imza çağrıyla terfi etmez.
+- Açık ve çıkarımlı parametre aynı işlemde karıştırılamaz (T037); bilinmeyen
+  tür T038'dir. Tür yazımı: basit tür/yapı adı veya `T listesi`, `T sözlüğü`,
+  `T seçeneği`, `T sonucu` kontrollü Türkçe biçimleridir.
+- Açık Ondalık parametreye TamSayı (ve kapsayıcı eşleri) kayıpsız genişler;
+  runtime değeri de dönüştürülür, statik/gerçek tür ayrışmaz.
+
+Özyinelemeli çağrının türü “o ana dek görülen dönüşlerden” çıkarılır; bu yüzden
+temel durum özyinelemeli çağrıdan önce en az bir dönüş vermiş olmalıdır (T035).
 
 ## Dönüş birleşimi (TANIMLI — RFC-0008)
 

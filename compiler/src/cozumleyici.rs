@@ -182,6 +182,11 @@ pub fn denetle_coklu(program: &mut Program) -> Vec<Tani> {
         basarili_sonuclar: std::collections::HashSet::new(),
         basarisiz_sonuclar: std::collections::HashSet::new(),
     };
+    if let Err(tani) = acik_islemleri_denetle(&mut baglam) {
+        tanilar.push(tani);
+        program.islemler = baglam.islemler;
+        return tanilar;
+    }
     for cumle in program.cumleler.iter_mut() {
         if let Err(tani) = blok_denetle(std::slice::from_mut(cumle), &mut ortam, &mut baglam) {
             tanilar.push(tani);
@@ -205,8 +210,8 @@ pub fn denetle_coklu(program: &mut Program) -> Vec<Tani> {
 
 /// Programı yerinde çözümler ve tür denetiminden geçirir.
 ///
-/// İşlemler ilk çağrı anında, argüman türleriyle denetlenir (v0 çağrı-güdümlü
-/// imza); sayısal imza K-067 ile genişleyebilir, diğer çağrılar uymalıdır.
+/// Çıkarımlı işlemler ilk çağrı argümanlarıyla; açık imzalı işlemler ise
+/// tanım sözleşmesiyle çağrı beklemeden denetlenir (K-083).
 pub fn denetle(program: &mut Program) -> Result<(), Tani> {
     let mut ortam: HashMap<String, Tur> = HashMap::new();
     for yapi in &program.yapilar {
@@ -236,7 +241,10 @@ pub fn denetle(program: &mut Program) -> Result<(), Tani> {
         basarili_sonuclar: std::collections::HashSet::new(),
         basarisiz_sonuclar: std::collections::HashSet::new(),
     };
-    let mut sonuc = blok_denetle(&mut program.cumleler, &mut ortam, &mut baglam);
+    let mut sonuc = acik_islemleri_denetle(&mut baglam);
+    if sonuc.is_ok() {
+        sonuc = blok_denetle(&mut program.cumleler, &mut ortam, &mut baglam);
+    }
 
     // Testler ana programdan bağımsız, taze ortamda denetlenir.
     if sonuc.is_ok() {
@@ -253,10 +261,13 @@ pub fn denetle(program: &mut Program) -> Result<(), Tani> {
     sonuc
 }
 
-/// İlk çağrıda çıkarılan, sayısal genişlemeyle değişebilen işlem imzası.
+/// Çıkarımlı ya da açık işlem imzası. Yalnız çıkarımlı imza sayısal
+/// genişlemeyle değişebilir.
 struct Imza {
     parametre_turleri: Vec<Tur>,
     donus: Option<Tur>,
+    /// K-083 açık parametre sözleşmesi çağrılarla terfi ettirilemez.
+    acik: bool,
 }
 
 struct Baglam {
@@ -283,6 +294,26 @@ struct ImzaKaydi {
     verilen_ozyineleme: Option<Tur>,
 }
 
+/// Açık imzalı (ve parametresiz) işlemler çağrı beklemeden denetlenir. Böylece
+/// kütüphane API'sindeki gövde hatası kullanılmadığı için gizli kalamaz.
+fn acik_islemleri_denetle(baglam: &mut Baglam) -> Result<(), Tani> {
+    let mut adlar = baglam.islemler.keys().cloned().collect::<Vec<_>>();
+    adlar.sort();
+    for ad in adlar {
+        let (turler, satir) = {
+            let islem = baglam.islemler.get(&ad).expect("ad haritadan geldi");
+            (
+                acik_parametre_turleri(islem, &baglam.yapilar)?,
+                islem.satir,
+            )
+        };
+        if let Some(turler) = turler {
+            cagri_denetle(&ad, &turler, baglam, satir)?;
+        }
+    }
+    Ok(())
+}
+
 /// Yapı alanı tür yazımını çözer ("TamSayı" → Tur::TamSayi).
 fn alan_turu(yazim: &str) -> Option<Tur> {
     match yazim {
@@ -292,6 +323,113 @@ fn alan_turu(yazim: &str) -> Option<Tur> {
         "Mantıksal" => Some(Tur::Mantiksal),
         _ => None,
     }
+}
+
+/// K-083 parametre tür yazımını çözer. Sembolik generic yerine kontrollü
+/// Türkçe kullanılır: `Ondalık listesi`, `Metin sözlüğü`, `Öğrenci`.
+fn parametre_turu(yazim: &str, yapilar: &[Yapi]) -> Option<Tur> {
+    let basit = |ad: &str| match ad {
+        "TamSayı" => Some(Tur::TamSayi),
+        "Ondalık" => Some(Tur::Ondalik),
+        "Metin" => Some(Tur::Metin),
+        "Mantıksal" => Some(Tur::Mantiksal),
+        "Tarih" => Some(Tur::Tarih),
+        "Saat" => Some(Tur::Saat),
+        "Süre" => Some(Tur::Sure),
+        "AğYanıtı" => Some(Tur::AgYaniti),
+        _ => yapilar
+            .iter()
+            .position(|yapi| yapi.ad == ad)
+            .map(Tur::Yapi),
+    };
+    if let Some(kok) = yazim.strip_suffix(" listesi") {
+        return basit(kok)
+            .and_then(|tur| veri_turu_yap(&tur))
+            .map(Tur::Liste);
+    }
+    if let Some(kok) = yazim.strip_suffix(" sözlüğü") {
+        return match basit(kok)? {
+            Tur::TamSayi => Some(Tur::Sozluk(SozlukDegerTuru::TamSayi)),
+            Tur::Ondalik => Some(Tur::Sozluk(SozlukDegerTuru::Ondalik)),
+            Tur::Metin => Some(Tur::Sozluk(SozlukDegerTuru::Metin)),
+            _ => None,
+        };
+    }
+    if let Some(kok) = yazim.strip_suffix(" seçeneği") {
+        return basit(kok)
+            .and_then(|tur| veri_turu_yap(&tur))
+            .map(Tur::Secenek);
+    }
+    if let Some(kok) = yazim.strip_suffix(" sonucu") {
+        return basit(kok)
+            .and_then(|tur| veri_turu_yap(&tur))
+            .map(Tur::Sonuc);
+    }
+    basit(yazim)
+}
+
+/// None: bütün parametreler başlangıç yüzeyinde çıkarımlı. Some: açık imza.
+fn acik_parametre_turleri(
+    islem: &Islem,
+    yapilar: &[Yapi],
+) -> Result<Option<Vec<Tur>>, Tani> {
+    if islem.parametreler.is_empty() {
+        return Ok(Some(Vec::new()));
+    }
+    let acik_sayisi = islem
+        .parametreler
+        .iter()
+        .filter(|parametre| parametre.tur_yazimi.is_some())
+        .count();
+    if acik_sayisi == 0 {
+        return Ok(None);
+    }
+    if acik_sayisi != islem.parametreler.len() {
+        let satir = islem
+            .parametreler
+            .iter()
+            .find(|parametre| parametre.tur_yazimi.is_none())
+            .map(|parametre| parametre.satir)
+            .unwrap_or(islem.satir);
+        return Err(Tani::yeni(
+            "T037",
+            format!(
+                "\"{}\" işleminde açık ve çıkarımlı parametreler karıştırılamaz.",
+                islem.ad
+            ),
+            satir,
+            1,
+            1,
+        )
+        .onerili(
+            "İşlemin bütün parametrelerine tür yaz ya da başlangıç yüzeyinde hepsini çıkarımlı bırak."
+                .into(),
+        ));
+    }
+    islem
+        .parametreler
+        .iter()
+        .map(|parametre| {
+            let yazim = parametre.tur_yazimi.as_deref().expect("hepsi açık");
+            parametre_turu(yazim, yapilar).ok_or_else(|| {
+                Tani::yeni(
+                    "T038",
+                    format!(
+                        "\"{}\" parametresinin türü tanınmadı: \"{}\".",
+                        parametre.ad, yazim
+                    ),
+                    parametre.satir,
+                    1,
+                    1,
+                )
+                .onerili(
+                    "Örnekler: TamSayı, Ondalık, Metin, Mantıksal, Ondalık listesi, Metin sözlüğü."
+                        .into(),
+                )
+            })
+        })
+        .collect::<Result<Vec<_>, _>>()
+        .map(Some)
 }
 
 /// Ham alan yazımını ("adı", "yaşı") yapı tanımındaki yalın ada çözer.
@@ -2095,6 +2233,39 @@ fn donusleri_sarmala(cumleler: &mut [Cumle]) {
     }
 }
 
+fn cagri_turu_uyumlu(parametre: &Tur, arguman: &Tur) -> bool {
+    parametre == arguman
+        || matches!((parametre, arguman), (Tur::Ondalik, Tur::TamSayi))
+        || matches!(
+            (parametre, arguman),
+            (
+                Tur::Liste(VeriTuru::Ondalik),
+                Tur::Liste(VeriTuru::TamSayi)
+            )
+        )
+        || matches!(
+            (parametre, arguman),
+            (
+                Tur::Sozluk(SozlukDegerTuru::Ondalik),
+                Tur::Sozluk(SozlukDegerTuru::TamSayi)
+            )
+        )
+        || matches!(
+            (parametre, arguman),
+            (
+                Tur::Secenek(VeriTuru::Ondalik),
+                Tur::Secenek(VeriTuru::TamSayi)
+            )
+        )
+        || matches!(
+            (parametre, arguman),
+            (
+                Tur::Sonuc(VeriTuru::Ondalik),
+                Tur::Sonuc(VeriTuru::TamSayi)
+            )
+        )
+}
+
 /// İşlem çağrısını denetler. İlk çağrıda gövde argüman türleriyle denetlenir;
 /// sayısal imza K-067 ile genişleyebilir, diğer çağrılar imzaya uymalıdır.
 ///
@@ -2126,22 +2297,11 @@ fn cagri_denetle(
         // K-067: çağrıda genişleme — TamSayı argüman Ondalık parametreye,
         // Liste<TamSayı> argüman Liste<Ondalık> parametreye uyar (skaler
         // genişleme kuralının doğal uzantısı; ters yön yine bilinçli değil).
-        let uyumlu = imza.parametre_turleri.len() == arg_turleri.len()
-            && imza
-                .parametre_turleri
-                .iter()
-                .zip(arg_turleri.iter())
-                .all(|(param, arg)| {
-                    param == arg
-                        || matches!((param, arg), (Tur::Ondalik, Tur::TamSayi))
-                        || matches!(
-                            (param, arg),
-                            (
-                                Tur::Liste(VeriTuru::Ondalik),
-                                Tur::Liste(VeriTuru::TamSayi)
-                            )
-                        )
-                });
+        let uyumlu = imza
+            .parametre_turleri
+            .iter()
+            .zip(arg_turleri.iter())
+            .all(|(param, arg)| cagri_turu_uyumlu(param, arg));
         if !uyumlu {
             // K-067 imza terfisi: uyumsuzluk YALNIZ ters-genişlemeyse
             // (param TamSayı[-listesi], arg Ondalık[-listesi]) imza kaldırılır
@@ -2169,7 +2329,7 @@ fn cagri_denetle(
                         )
                 });
             let ozyinelemede = baglam.denetim_yigini.iter().any(|k| k.ad == ad);
-            if yalniz_ters_genisleme && !ozyinelemede {
+            if yalniz_ters_genisleme && !ozyinelemede && !imza.acik {
                 baglam.imzalar.remove(ad);
                 return cagri_denetle(ad, arg_turleri, baglam, satir);
             }
@@ -2267,14 +2427,51 @@ fn cagri_denetle(
         ));
     }
 
+    let acik_turler = match acik_parametre_turleri(&islem, &baglam.yapilar) {
+        Ok(turler) => turler,
+        Err(tani) => {
+            baglam.islemler.insert(ad.to_string(), islem);
+            return Err(tani);
+        }
+    };
+    let acik = acik_turler.is_some();
+    let denetim_turleri = acik_turler.unwrap_or_else(|| arg_turleri.to_vec());
+    if !denetim_turleri
+        .iter()
+        .zip(arg_turleri.iter())
+        .all(|(parametre, arguman)| cagri_turu_uyumlu(parametre, arguman))
+    {
+        let beklenen = denetim_turleri
+            .iter()
+            .map(Tur::adi)
+            .collect::<Vec<_>>()
+            .join(", ");
+        let bulunan = arg_turleri
+            .iter()
+            .map(Tur::adi)
+            .collect::<Vec<_>>()
+            .join(", ");
+        baglam.islemler.insert(ad.to_string(), islem);
+        return Err(Tani::yeni(
+            "T017",
+            format!(
+                "\"{}\" çağrısı açık işlem imzasına uymuyor: beklenen {}, bulunan {}.",
+                ad, beklenen, bulunan
+            ),
+            satir,
+            1,
+            1,
+        ));
+    }
+
     let mut islem_ortami: HashMap<String, Tur> = HashMap::new();
-    for (param, tur) in islem.parametreler.iter().zip(arg_turleri) {
-        islem_ortami.insert(param.clone(), *tur);
+    for (param, tur) in islem.parametreler.iter().zip(denetim_turleri.iter()) {
+        islem_ortami.insert(param.ad.clone(), *tur);
     }
 
     baglam.denetim_yigini.push(ImzaKaydi {
         ad: ad.to_string(),
-        parametre_turleri: arg_turleri.to_vec(),
+        parametre_turleri: denetim_turleri.clone(),
         donusler: Vec::new(),
         verilen_ozyineleme: None,
     });
@@ -2315,7 +2512,11 @@ fn cagri_denetle(
 
     baglam.imzalar.insert(
         ad.to_string(),
-        Imza { parametre_turleri: arg_turleri.to_vec(), donus },
+        Imza {
+            parametre_turleri: denetim_turleri,
+            donus,
+            acik,
+        },
     );
     Ok(donus)
 }
