@@ -232,6 +232,13 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   10 saniyede tamamlatır, bayt damlatmak süreyi yenilemez ve aşım 408 olur;
   yanıt socket'i de 10 saniye yazma zaman aşımı taşır. Üç loopback sınır
   testiyle toplam 416 test yeşildir; B-025'in ağ dilimi ve V1-P0-15 kapandı.
+- **Sınırlı web oturum deposu** (K-106, ADR-018): process içi depo 4096
+  toplam/1024 anonim kayıtla sınırlıdır. Süresi dolanlar önce silinir; kota
+  dolunca en uzun süredir kullanılmayan anonim kayıt oluşturma sırasıyla
+  deterministik tahliye edilir. Kimlikli oturum rastgele düşürülmez; yalnız
+  kimlikli doluluk yeni girişi fail-closed reddeder. 10/30 dakikalık ömür
+  mutlak ve kaymazdır. Üç yeni kota/tahliye testiyle toplam 419 test yeşildir;
+  V1-P0-16 kapandı, çok süreçli ortak depo B-046'da açık kaldı.
 
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`

@@ -14,8 +14,9 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 2. İnsan kanıtı bekleyen kapılar: B-001/K-096 + B-002/K-093.
 3. Tamamlanan compiler omurgası: B-003/K-097, B-004/K-098, B-005/K-099,
    B-006/K-100, B-010/K-101, B-018/K-102 ve B-019/K-103–K-104 (413 test).
-4. Güvenlik incelemesi: K-105 ağ deadline/bellek sınırını kapattı (416 test);
-   sırada B-046/K-106 oturum deposu ve B-047/K-107 LSP girdi sınırı vardır.
+4. Güvenlik incelemesi: K-105 ağ deadline/bellek, K-106 process içi oturum
+   kotası ve mutlak ömrü kapattı (419 test); sırada B-047/K-107 LSP girdi
+   sınırı vardır.
 5. Ardından makine omurgası B-020 ve B-014–B-017 ile sürer.
 6. Üçüncü sprint: B-027/B-028 → B-030/B-031 → B-043/B-044.
 7. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
@@ -136,10 +137,11 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   argüman, sonuç ve sıra sürümlü/kanonik bir formatta olmalıdır.
 - **B-028 · SIRADA — saat/rastgele semantiğini sürümle.** Seed, zaman ilerleme
   ve gözlenebilir fake-IO davranışı spec sözleşmesi olmalıdır.
-- **B-046 · SIRADA — web oturum deposunu sınırlı ve ölçeklenebilir yap.** Süresi
-  dolan kayıt temizliğine ek olarak toplam/anonim oturum kotası ve deterministik
-  tahliye gerekir. Mutlak ömür bilinçli seçim olarak spec'te açıklanmalı; çok
-  süreçli ortak depo production kapısı olarak fail-closed tasarlanmalıdır.
+- **B-046 · KISMEN (K-106) — web oturum deposunu sınırlı ve ölçeklenebilir
+  yap.** Process içi depo 4096 toplam/1024 anonim kotası, anonim LRU tahliyesi
+  ve kaymayan mutlak 10/30 dakika ömür taşır. Yalnız kimlikli kayıtlarla dolu
+  depo yeni girişi fail-closed reddeder. Per-IP/rate-limit ve atomik çok süreçli
+  ortak depo hâlâ açık deployment dilimidir; mevcut profil tek process'tir.
 - **B-047 · SIRADA — LSP çerçeve ve JSON girdisini sertleştir.** Başlık ile
   `Content-Length`, JSON iç içelik ve toplam düğüm sınırı taşımalı; geçersiz
   surrogate çifti ile kaçışsız U+0000..U+001F reddedilmeli ve panic korpusu
@@ -199,7 +201,7 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 ## Bir sonraki somut kapı
 
 İnsan kanıtı hattında B-001, doldurulmuş gerçek usability formları ve önceden
-ilan edilmiş eşikleri bekler. Makine hattında sıradaki iş B-046/K-106'dır:
-web oturum deposu anonim isteklerle sınırsız büyüyememelidir. Ardından
-B-047/K-107 LSP girdi sınırı kapanır; K-103/K-104 HIR'ına zorunlu source span
-ekleyen B-020 bu güvenlik diliminden sonra gelir.
+ilan edilmiş eşikleri bekler. Makine hattında sıradaki iş B-047/K-107'dir:
+LSP çerçevesi ve JSON ayrıştırıcısı sınırsız girdi, derinlik ve geçersiz Unicode
+taşıyamamalıdır. K-103/K-104 HIR'ına zorunlu source span ekleyen B-020 bu
+güvenlik diliminden sonra gelir.
