@@ -3,7 +3,7 @@
 Bu liste bir dilek listesi değildir: `1.0.0` etiketi bu kapılar kapatılmadan
 atılmaz. Amaç yeni özellik sayısını büyütmek değil, çocuktan profesyonele aynı
 dilin verdiği sözleri kanıtlamaktır. Bulgular 1 Eylül 2026'da derleyici
-kaynakları, spec, RFC'ler ve 432 test üzerinden yeniden doğrulanmıştır.
+kaynakları, spec, RFC'ler ve 435 test üzerinden yeniden doğrulanmıştır.
 
 Durumlar: **KAPALI** = kanıtı var · **AÇIK** = v1 engeli · **KARAR** = önce
 normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
@@ -32,6 +32,7 @@ normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
 | V1-P0-18 Semantic HIR düğümleri kaynak kökenlidir | **KAPALI (K-108)** | Her `HirIfadeBilgisi` zorunlu `HirKaynakAraligi` taşır; `Option`/konumsuz kurucu yoktur. Değişkenlerde kesin token aralığı, diğer mevcut AST ifadelerinde sahte sütun yerine kaynak satırı zarfı vardır; bileşenler sıfır olamaz. | ADR-020 + [typed HIR modeli](typed-hir-modeli.md); kesin değişken aralığı, bileşik ifade satır zarfı ve ayrı kaynak-aralığı modülünü koruyan davranış+mimari kanıtlar. Toplam 427 test yeşildir; bütün AST'ye kesin sütun yayılımı B-050'dir. |
 | V1-P0-19 Production doğrudan panic yüzeyi kapalıdır | **KAPALI (K-109)** | Lexer'dan CLI'a 46 `unwrap`/`expect`/açık panic noktası sonuç veya kodlu tanıya dönüştü. Dört production crate kökü test dışında `unwrap`, `expect`, `panic!`, `unreachable!`, `todo!` ve `unimplemented!` kullanımını derleme hatası yapar; `SymbolId` yapay kapasite assertion'ı taşımaz. | ADR-021 + [production panic rehberi](production-panic-politikasi.md); sıfır konumlu elle kurulmuş AST'nin T016 üretimi ve dört crate lint sahipliği regresyonu. Clippy all-targets temiz, toplam 429 test yeşildir. Kullanıcı UTF-8 fuzz kanıtı B-015/K-110 ile kapandı; malformed iç yapı kanıtı B-017'dedir. |
 | V1-P0-20 Lexer/parser kullanıcı UTF-8 girdisinde panic-free denetlenir | **KAPALI (K-110)** | `&str` libFuzzer hedefi başarılı lexer çıktısını normal ve hata-kurtarmalı parser yollarında yürütür. 64 KiB kampanya sınırı, beş saniye tek-girdi timeout'u, sekiz saldırı tohumu ve Zee mutation sözlüğü vardır; gecelik korpus cache ile büyür ve crash artifact olarak kalır. | ADR-022 + [fuzz rehberi](fuzzing.md); korpus replay, 4.096 deterministik UTF-8 üretimi ve 64 KiB sayı/virgül/girinti regresyonları. İlk smoke 1.048.287 girdiyi crash/panic olmadan tamamladı; toplam 432 test yeşildir. Malformed elle kurulmuş AST B-017'dedir. |
+| V1-P0-21 Morfoloji üret→çöz ve belirsizlik değişmezleri sürekli denetlenir | **KAPALI (K-111)** | `zee-tr-1` bütün geçerli tek/iki katmanları 4.096 üretilmiş kökte geri çözer. 2.048 yüzey bütün yapısal kökleri kapsama alındığında çoklu aday A002'dir. NFC kabul edilir; ayrıştırılmış NFD kaynak S029'dur. Ayrı gecelik fuzz hedefi byte girdiden geçerli kök üretir. | RFC-0018 + spec/13 + [morfoloji doğrulama rehberi](morfoloji-dogrulama.md); üç stable regresyon ve 527.966 girdilik ilk mutation smoke'u ihlalsizdir. Toplam 435 test yeşildir; bütün dizilerin biçimsel ispatı iddia edilmez. |
 
 ## P1 — profesyonel kapasite kapıları
 
@@ -80,7 +81,8 @@ normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
    tek-girdi sınırını kapattı. K-108/ADR-020 her semantic HIR ifadesine
    zorunlu kaynak aralığı ekleyip V1-P0-18'i, K-109/ADR-021 production
    doğrudan panic yüzeyini kapatıp V1-P0-19'u, K-110/ADR-022 lexer/parser fuzz
-   hattını kurup V1-P0-20'yi tamamladı.
+   hattını kurup V1-P0-20'yi tamamladı. K-111 morfoloji property/fuzz hattıyla
+   V1-P0-21'i kapattı.
 9. Yeni dil özelliğinden önce bağlayıcı sıra
    [öncelikli backlog](oncelikli-backlog.md) içindeki P0 compiler omurgasıdır.
 

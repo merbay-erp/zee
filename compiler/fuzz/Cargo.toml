@@ -19,3 +19,10 @@ path = "fuzz_targets/lexer_parser.rs"
 test = false
 doc = false
 bench = false
+
+[[bin]]
+name = "morfoloji"
+path = "fuzz_targets/morfoloji.rs"
+test = false
+doc = false
+bench = false

@@ -89,6 +89,12 @@ sürümü/edition geçiş kararı gerekir.
 
 - `compiler/tests/morfoloji_v1.snapshot`
 - `compiler/tests/morfoloji_testi.rs`: tablo, tek/iki katman property,
-  kanonik üretim golden'ları, ters ses değişimi, belirsizlik korpusu, CLI
+  kanonik üretim golden'ları, ters ses değişimi, belirsizlik korpusu, CLI;
+  ayrıca 4.096 deterministik kök, 2.048 bütün-aday kararı ve NFC/NFD sınırı
+- `compiler/fuzz/fuzz_targets/morfoloji.rs`: byte girdiden geçerli kök üreten
+  gecelik üret→çöz ve fail-closed belirsizlik mutation hedefi
 - `compiler/tests/lsp_testi.rs`: tek/iki katmanlı rename
 - `compiler/tests/proje_testi.rs`: profil sabitleme, P011, kilit v2 ve sürüm CLI
+
+K-111/B-016 kanıtının çalıştırma, crash küçültme ve dürüst sınır ayrıntıları
+[morfoloji doğrulama rehberindedir](../docs/morfoloji-dogrulama.md).

@@ -22,9 +22,11 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
    köküne kalıcı lint kapısı koydu; B-014 kapandı (429 test).
 7. K-110/ADR-022 lexer/parser'a kalıcı saldırı korpusu, deterministik UTF-8
    üretimi ve gecelik libFuzzer hattı kurdu; B-015 kapandı (432 test).
-8. Sıradaki makine omurgası B-016–B-017'dir.
-9. Üçüncü sprint: B-027/B-028 → B-030/B-031 → B-043/B-044.
-10. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
+8. K-111 morfoloji üret→çöz uzayını, bütün-aday A002 kararını, NFC/NFD
+   sınırını ve gecelik mutation hattını büyüttü; B-016 kapandı (435 test).
+9. Sıradaki makine omurgası B-017'dir.
+10. Üçüncü sprint: B-027/B-028 → B-030/B-031 → B-043/B-044.
+11. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
 
 ## P0 — V1 öncesi dil ve derleyici omurgası
 
@@ -110,8 +112,14 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   ile büyütür, crash girdisini artifact yapar. İlk yerel smoke 1.048.287
   girdiyi crash/panic olmadan tamamladı. ADR-022, [fuzz rehberi](fuzzing.md)
   ve üç regresyonla V1-P0-20 kapandı; toplam 432 test yeşildir.
-- **B-016 · AÇIK — morfoloji property/fuzz testini büyüt.** Üret→çöz,
-  belirsizliğin sessiz seçilmemesi ve normalizasyon varyantları.
+- **B-016 · KAPALI (K-111) — morfoloji property/fuzz testini büyüt.** Profilin
+  bütün geçerli tek/iki katman zincirleri 4.096 deterministik kökte üret→çöz
+  değişmezini korur. Üretilmiş 2.048 yüzey bütün adayları kapsama alınarak
+  sınandı; çoklu aday daima A002'dir. `ğ/ö/ş/â/İ` NFC biçimleri kabul, NFD
+  ayrıştırmaları S029'dur. Byte girdiden geçerli kök üreten ayrı libFuzzer
+  hedefi gecelik korpus büyütür; ilk smoke 527.966 girdiyi ihlalsiz tamamladı.
+  [Doğrulama rehberi](morfoloji-dogrulama.md) ve üç yeni regresyonla
+  V1-P0-21 kapandı; toplam 435 test yeşildir.
 - **B-017 · AÇIK — AST invariant doğrulayıcı ekle.** Test/debug aşamasında
   çözülmüş ad, yapı kimliği ve imkânsız ifade durumlarını doğrula.
 - **B-018 · KAPALI (K-102) — compiler faz sınırlarını kodda görünür yap.**
@@ -231,5 +239,5 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 ## Bir sonraki somut kapı
 
 İnsan kanıtı hattında B-001, doldurulmuş gerçek usability formları ve önceden
-ilan edilmiş eşikleri bekler. Makine hattında B-015/K-110 kapandı; sıradaki iş
-B-016 morfoloji property/fuzz, ardından B-017 AST invariant doğrulayıcıdır.
+ilan edilmiş eşikleri bekler. Makine hattında B-016/K-111 kapandı; sıradaki iş
+B-017 AST invariant doğrulayıcıdır.

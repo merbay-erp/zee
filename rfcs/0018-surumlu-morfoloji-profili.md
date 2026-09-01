@@ -1,8 +1,8 @@
 # RFC-0018 — Sürümlü Morfoloji Profili
 
-- **Durum:** geçici kabul — K-089 gerçeklendi ve dönüşümlü property korpusuna bağlandı
+- **Durum:** geçici kabul — K-089 gerçeklendi, K-111 sürekli property/fuzz kanıtına bağladı
 - **Tarih:** 1 Eylül 2026
-- **İlgili kararlar:** K-011, K-041, K-049, K-061, K-072, K-089; V1-P1-02
+- **İlgili kararlar:** K-011, K-041, K-049, K-061, K-072, K-089, K-111; V1-P1-02, V1-P0-21
 - **Normatif karşılık:** spec/03 ve spec/13
 - **Gerçekleme:** `compiler/src/morfoloji.rs`; `morfoloji_testi.rs`, `lsp_testi.rs`, `proje_testi.rs`
 
@@ -64,6 +64,11 @@ farklı profilleri sessizce karıştıramaz.
   tamamını ve A002 sonucunu kilitler.
 - LSP iki katmanlı biçimi yeni kökün ünlü/ünsüz yapısına göre yeniden üretir.
 - Bildirim, kilit ve CLI profil görünürlüğü entegrasyon testlidir.
+- K-111 geniş katmanı 4.096 deterministik kökün bütün geçerli zincirlerini,
+  2.048 bütün-aday A002 kararını ve NFC olumlu/NFD→S029 olumsuzlarını stable
+  testte yürütür. Ayrı gecelik libFuzzer hedefi byte girdiden geçerli Zee kökü
+  üretip aynı değişmezleri mutation ile arar; işletim ayrıntıları
+  [morfoloji doğrulama rehberindedir](../docs/morfoloji-dogrulama.md).
 
 ## Reddedilen yollar
 
