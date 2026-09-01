@@ -49,9 +49,10 @@ Tek-tanı ve çoklu-tanı girişleri aynı katmanları aynı sırada kullanır.
 - B-007, çıkarımlı yerel işlem imzasını çağrı sırasından bağımsız yapacaktır.
 - B-010/K-101, yapı/işlem/sembol kimliklerini kararlı newtype'lara taşıdı;
   ayrıntılı sahiplik [semantic kimlik rehberindedir](semantic-kimlik-modeli.md).
-- B-018/B-019, bu bağları açık Resolution/Typed HIR fazına taşıyacak ve
-  runtime'ın kaynak adıyla semantic karar vermesini bitirecektir.
+- B-018/K-102 kaynak→token→parsed→bağlı program fazlarını türledi. B-019 bu
+  bağları ayrı Resolution/Typed HIR temsiline taşıyacak ve runtime'ın kaynak
+  adıyla semantic karar vermesini bitirecektir.
 - B-017, katmanlar arası AST/HIR değişmezlerini debug/test aşamasında ayrıca
   doğrulayacaktır.
 
-B-007/B-017/B-018/B-019 açık kalır; K-101 yalnız semantic ID temelini kapatır.
+B-007/B-017/B-019 açık kalır; K-101 semantic ID, K-102 faz tipi temelini kapatır.

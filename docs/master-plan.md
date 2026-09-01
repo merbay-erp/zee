@@ -536,6 +536,7 @@ ADR-011 — Core AST intrinsic/yetkinlik sınırı
 ADR-012 — Derleyici fiziksel faz modülleri
 ADR-013 — Checker semantik katmanları ve tek sahiplik
 ADR-014 — Yapı, işlem ve sembol semantic kimlikleri
+ADR-015 — Derleyici fazlarını Rust türleriyle görünür kılma
 # 39. Ekip ve rol modeli
 Dil mimarı: semantik ve uzun vadeli vizyon.
 Compiler: parser, types, IR, backend.
@@ -554,8 +555,8 @@ sağlamlaştıran bağlayıcı uygulama sırası
 [docs/oncelikli-backlog.md](oncelikli-backlog.md) içindedir. İlk kapılar K-016
 çağrı usability kararı, K-093 gezme usability sonucu, genellenebilir expression
 grammar mimarisi ve core AST→capability/intrinsic ayrımıdır. HIR/SymbolId/faz
-zincirinin SymbolId temeli K-101 ile tamamlandı; açık faz/HIR sınırı,
-fuzz/panic audit'i ve IO trace/replay bunu izler. P0 maddeleri
+zincirinin SymbolId temeli K-101, açık faz tipleri K-102 ile tamamlandı; typed
+HIR, fuzz/panic audit'i ve IO trace/replay bunu izler. P0 maddeleri
 kapanmadan yeni dil özelliği varsayılan olarak öne alınmaz; yarım güvenlik/
 correctness dilimi önce atomik olarak tamamlanır.
 
@@ -581,9 +582,10 @@ kökünü orkestrasyona indirdi; tür, bağlam, sembol, akış, çağrı, sözle
 etki/yetkinlik ve dönüş kurallarını tek sahipli katmanlara ayırdı. Sıradaki
 omurga B-010, K-101/ADR-014 ile tamamlandı: `YapiId`, `IslemId` ve `SymbolId`
 kaynak adı, semantic identity ve fiziksel depolamayı ayırır; AST checker
-sonrası açık bağları taşır. Sıradaki iş Source → Tokens → Parsed AST →
-Resolution → Typed HIR → Execution/Lowering fazlarını kodda görünür kılan
-B-018'dir.
+sonrası açık bağları taşır. Kaynak, token, parsed AST, bağlanmamış ve
+bağlanmış programı ayrı türlere taşıyan B-018, K-102/ADR-015 ile tamamlandı;
+standart runtime yalnız bağlı giriş kullanır. Ayrı Resolution çıktısı ve Typed
+HIR'ı kuracak sıradaki iş B-019'dur.
 # 40. Proje felsefesinin korunması
 Bu projenin başarısı yalnız compiler’ın çalışması değildir. Başarı; Türkçe konuşan bir çocuğun yabancı syntax bariyerine takılmadan algoritmik düşünceyle tanışması, aynı dilin yıllar sonra onu terk etmeye zorlamaması ve ekosistemin tek bir şirketin kapalı ürünü haline gelmemesidir.
 Her yeni özellik şu dört sorudan geçmelidir: Türkçe doğal mı? Deterministik mi? Öğrenilebilir mi? Profesyonel ölçekte savunulabilir mi? Dördünden biri hayırsa özellik yeniden tasarlanır.

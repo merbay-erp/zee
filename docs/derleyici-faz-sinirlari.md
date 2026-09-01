@@ -8,6 +8,7 @@ olduğunu açık tutmaktır.
 
 ```text
 compiler/src/
+├── faz.rs                    source→token→parsed→bound program tipleri
 ├── kimlik.rs                 YapiId/IslemId/SymbolId newtype'ları
 ├── ayristirici.rs            token/blok/tanım orkestrasyonu
 │   └── ayristirici/
@@ -72,3 +73,6 @@ K-101 ile `baglam`, `sembol` ve `cagri` bütçeleri semantic ID kayıtlarını
 taşıyacak kadar gerekçeli biçimde genişletildi; çıplak indeks geri dönüşü ayrı
 mimari testle engellenir. Kimlik kuralları ADR-014 ve
 [semantic kimlik rehberinde](semantic-kimlik-modeli.md) bağlayıcıdır.
+K-102/ADR-015 veri fazlarını [ayrı tiplerde](derleyici-faz-modeli.md) bağladı;
+`faz.rs` bütçesi ve standart-hat testi parsed AST'nin yürütülebilir program
+gibi kullanılmasını engeller.
