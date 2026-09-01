@@ -14,7 +14,6 @@ pub mod paket;
 pub mod proje;
 pub mod wasm_api;
 pub mod cozumleyici;
-mod eylem;
 pub mod guvenlik;
 pub mod intrinsic;
 pub mod sozcukleyici;

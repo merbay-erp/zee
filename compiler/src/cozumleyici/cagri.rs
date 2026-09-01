@@ -1,5 +1,38 @@
 use super::*;
 
+fn cagri_turu_uyumlu(parametre: &Tur, arguman: &Tur) -> bool {
+    parametre == arguman
+        || matches!((parametre, arguman), (Tur::Ondalik, Tur::TamSayi))
+        || matches!(
+            (parametre, arguman),
+            (
+                Tur::Liste(VeriTuru::Ondalik),
+                Tur::Liste(VeriTuru::TamSayi)
+            )
+        )
+        || matches!(
+            (parametre, arguman),
+            (
+                Tur::Sozluk(SozlukDegerTuru::Ondalik),
+                Tur::Sozluk(SozlukDegerTuru::TamSayi)
+            )
+        )
+        || matches!(
+            (parametre, arguman),
+            (
+                Tur::Secenek(VeriTuru::Ondalik),
+                Tur::Secenek(VeriTuru::TamSayi)
+            )
+        )
+        || matches!(
+            (parametre, arguman),
+            (
+                Tur::Sonuc(VeriTuru::Ondalik),
+                Tur::Sonuc(VeriTuru::TamSayi)
+            )
+        )
+}
+
 /// İşlem çağrısını denetler. İlk çağrıda gövde argüman türleriyle denetlenir;
 /// sayısal imza K-067 ile genişleyebilir, diğer çağrılar imzaya uymalıdır.
 ///

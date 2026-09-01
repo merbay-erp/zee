@@ -1343,7 +1343,7 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   kapısından geçmek zorundadır.
 - **Sınır:** Yetkinlik bugün ihtiyacı sınıflandırır, izin vermez. Proje/paket
   izin politikası B-023; parser/checker/runtime fiziksel handler ayrımı B-005;
-  checker faz ayrımı B-006 işidir.
+  checker faz ayrımı B-006/K-100 ile sonradan tamamlandı.
 - **Kanıt:** ADR-011 ve intrinsic/yetkinlik uygulama rehberi; kayıt tekilliği,
   dört lowering ve iki tür olumsuzunu kapsayan yedi bağımsız test. Mevcut
   HTTP/sensör/web/parola davranış korpusu korunarak toplam 393 test yeşil;
@@ -1365,7 +1365,25 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   yerine bütün `src` alt modüllerini özyinelemeli ve sıralı tarar.
 - **Kanıt:** ADR-012, ADR-002/003 revizyonları ve derleyici faz rehberi; üç
   mimari sınır testi. Mevcut 393 davranış testi korunup toplam 396 test yeşil;
-  B-005 ve V1-P0-10 kapandı. Sıradaki omurga işi B-006'dır.
+  B-005 ve V1-P0-10 kapandı. Checker'ın semantik sahipliği B-006/K-100'dür.
+
+## K-100 — Checker semantik katmanları ve tek sahiplik (1 Eyl)
+
+- **Karar:** Checker kökü semantik kural deposu değildir; yalnız denetim
+  sırasını orkestre eder ve korunması gereken public Rust API'sini yeniden
+  dışa aktarır. Türler, bağlam, sembol, akış, çağrı, public sözleşme,
+  etki/yetkinlik ve dönüş/control-flow ayrı sahip modüllerdedir.
+- **Geçiş sırası:** Etki/yetkinlik denetimi → tür yazımları → açık işlem
+  sözleşmeleri → cümle/ifade ile sembol/akış/çağrı → dönüş kanıtı. Böylece
+  fail-closed etki geçişi tür hatalarından bağımsız, dönüş birleşimi çağrı
+  çıkarımından ayrı kalır.
+- **Uyumluluk:** `cozumleyici.rs` 963→143 satıra indi. Eski `eylem.rs` aynı
+  davranış ve tanılarla checker'ın `etki` katmanına taşındı. Public `Tur`,
+  `VeriTuru`, `SozlukDegerTuru` ve `ad_cozumle` yüzeyi korunur; zee kaynak
+  dili, tanı sözleşmesi ve normatif spec değişmedi.
+- **Kanıt:** ADR-013, checker katman rehberi ve kök bütçesi/tek sahiplik/public
+  API'yi koruyan toplam beş mimari test. İki yeni testle toplam 398 test yeşil;
+  B-006 ve V1-P0-11 kapandı. Sıradaki omurga işi B-010 semantic ID modelidir.
 
 ---
 
