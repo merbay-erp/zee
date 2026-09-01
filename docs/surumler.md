@@ -3,7 +3,9 @@
 Her sürüm: ne eklendi, ne değişti, neyin sözü verildi. Kırıcı değişiklik
 sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 
-## Yolda (v0.5.0'a birikenler)
+## v0.5.0 — 1 Eylül 2026
+
+**Tema: kayıtlar ve koleksiyonlar — dil, veri işlerinin dili oldu.**
 
 - **Sıralama** (K-056): `sıralanmışı` — Metinler Türk alfabesi sırasıyla
   (ç, ğ, ı, i, ö, ş, ü yerli yerinde; TANIMLI); `tersi`.
