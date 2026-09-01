@@ -587,7 +587,10 @@ K-114/ADR-025 145 etkin ve 3 ayrılmış tanının kod↔anlam bağını sürüm
 fixture'a sabitledi. K-115/RFC-0022/ADR-026 bütün runtime IO çağrılarını
 kanonik, sürümlü ve dış etkisiz replay edilebilen bir iz protokolüne bağladı;
 `dil iz kaydet/oynat` kullanıcı kapısı ve gizlilik sınırları birlikte geldi.
-Şimdi saat/rastgelelik semantiğinin sürümlenmesi gelir. P0 maddeleri
+K-116/RFC-0023/ADR-027 tohumdan rastgele diziye geçişi, tam i64 aralık
+eşlemesini, sanal saat ilerlemesini ve hermetik adaptör gözlemlerini
+`zee-io-1` profiline sabitledi. Şimdi paket artefaktının platformlar arası
+conformance'ı ve adversarial arşiv korpusu gelir. P0 maddeleri
 kapanmadan yeni dil özelliği varsayılan olarak öne alınmaz;
 yarım güvenlik/correctness dilimi önce atomik olarak tamamlanır.
 
@@ -624,8 +627,9 @@ audit'ini, K-110 lexer/parser fuzz hattını, K-111 morfoloji property/fuzz
 kapısını, K-112 AST/HIR invariant doğrulayıcıyı ve K-113 parser hata kurtarma
 kapısını kapattı. K-114 tanı kodlarının sürümler arası semantic kimliğini ve
 mezar taşlarını fixture'a bağladı. K-115 bütün `GirdiCikti` protokolünü
-byte-kanonik trace/replay ile kapattı. Sıradaki omurga B-028 saat/rastgele
-tohum ve sanal zaman ilerleme semantiğidir.
+byte-kanonik trace/replay ile kapattı. K-116 rastgelelik, saat ve fake-IO
+semantiğini `zee-io-1` profiliyle sürümledi. Sıradaki omurga B-030/B-031
+kanonik paket conformance'ı ve adversarial arşiv korpusudur.
 # 40. Proje felsefesinin korunması
 Bu projenin başarısı yalnız compiler’ın çalışması değildir. Başarı; Türkçe konuşan bir çocuğun yabancı syntax bariyerine takılmadan algoritmik düşünceyle tanışması, aynı dilin yıllar sonra onu terk etmeye zorlamaması ve ekosistemin tek bir şirketin kapalı ürünü haline gelmemesidir.
 Her yeni özellik şu dört sorudan geçmelidir: Türkçe doğal mı? Deterministik mi? Öğrenilebilir mi? Profesyonel ölçekte savunulabilir mi? Dördünden biri hayırsa özellik yeniden tasarlanır.

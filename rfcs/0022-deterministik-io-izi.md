@@ -99,12 +99,13 @@ Replay program argümanlarını izden alır; komuta yeni argüman eklenemez.
 Kullanıcı çıktısı ancak iz eksiksiz eşleştiğinde basılır. İz kaynak programın
 üzerine yazılamaz.
 
-## 6. Açık ardıl
+## 6. Deterministik profil ilişkisi
 
-B-028; gerçek ve hermetik adaptörlerde rastgele tohum, takvim zamanı,
-tekdüze saat ve bekleme ilerlemesinin sürüm semantiğini ayrıca bağlar. Bu RFC
-şema-1'de gözlenen sonuç ve sırayı dondurur; görünmeyen tohum algoritmasını
-henüz taşınabilir dil ABI'si ilan etmez.
+B-028/K-116, gerçek ve hermetik adaptörlerde rastgele tohum, takvim zamanı,
+tekdüze saat ve bekleme ilerlemesini RFC-0023/spec-22'deki `zee-io-1`
+profiline bağladı. Bu RFC'nin şema-1'i profili yeniden hesaplamaz; gözlenen
+sonuç ve sırayı dondurur. Böylece eski iz yeni profil gerçeklemelerinde de
+kayıtlı sonuçla oynatılır.
 
 ## Dört soru süzgeci
 

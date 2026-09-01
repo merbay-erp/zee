@@ -42,6 +42,10 @@ yalnız bir görev çalıştığından paylaşılan bellekte data race sınıfı
 Görevlerin yerel ortamları birbirinden ayrıdır; dış dünya etkileri ortak IO
 adaptörüne yukarıdaki kesin sırayla gider.
 
+Tekdüze saatin 0 başlangıcı, geriye gitmeme, negatif bekleme ve takvim
+saatinden ayrılma kuralları spec/22'deki `zee-io-1` profilidir. Scheduler bu
+tek ortak saati en yakın uyanışa taşır; ayrı görev saatleri uydurmaz.
+
 `eylem` transaction'ı tek bir scheduler dilimidir: savepoint açılışı ile
 tamamlama/geri alma arasına kardeş görev giremez. Bu, transaction sahipliğini
 korur; uzun eylem kardeş görevi ancak eylem bittikten sonra ilerletebilir.

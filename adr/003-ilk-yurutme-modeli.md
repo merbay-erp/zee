@@ -2,8 +2,8 @@
 
 - **Durum:** kabul
 - **Tarih:** 31 Ağustos 2026
-- **Revizyon:** 1 Eylül 2026 — K-099/ADR-012 ile cümle yürütme ve ifade
-  değerlendirme handler'ları fiziksel modüllere ayrıldı
+- **Revizyon:** 2 Eylül 2026 — K-116/ADR-027 ile tohum, rastgelelik ve sanal
+  saat `zee-io-1` profiline bağlandı
 
 ## Bağlam
 
@@ -33,6 +33,8 @@ ve komut satırı argümanlarının TAMAMI tek trait arkasında.
   bytecode/native geçişinde (ADR-005) tanımlanacak.
 - Yorumlayıcı, gelecekteki backend'ler için referans semantik kaynağıdır:
   differential test (bölüm 21) yorumlayıcıya karşı koşacak.
+- IO soyutlamasının tohum, saat ve hermetik adaptör gözlemleri RFC-0023/
+  spec-22'de `zee-io-1` adıyla sürümlüdür; kırıcı değişiklik yeni profil ister.
 - İşlem çağrısında gövde klonlanmıyor; derin özyineleme Rust yığınını
   kullanırdı — v0'da özyineleme zaten yasak (T016), kaldırılırken yığın
   derinliği sınırı eklenecek.

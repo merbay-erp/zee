@@ -32,7 +32,8 @@ compiler/src/
         ├── cumle.rs          cümle yürütme
         ├── ifade.rs          ifade değerlendirme
         ├── hir_gecisi.rs     bağlı typed-HIR / raw uyumluluk geçişi
-        └── io_izi.rs         sürümlü bütün-IO kayıt ve dış etkisiz replay
+        ├── io_izi.rs         sürümlü bütün-IO kayıt ve dış etkisiz replay
+        └── io_profili.rs     `zee-io-1` tohum ve aralık algoritması
 ```
 
 Alt modüller yalnız üst fazına `pub(super)` görünür. Dil kütüphanesinin public
@@ -55,6 +56,7 @@ API'si bu iç ayrımla büyümez.
 | etki/yetkinlik | checker `etki` | ADR-011, intrinsic kaydı ve web kuralları |
 | yürütme semantiği | runtime `cumle` veya `ifade` | ADR-003, değerlendirme sırası testi |
 | IO kayıt/replay protokolü | runtime `io_izi` | RFC-0022, ADR-026, spec/21 ve şema snapshot'ı |
+| tohum/rastgele profil semantiği | runtime `io_profili` | RFC-0023, ADR-027, spec/22 ve dizi snapshot'ı |
 | alan adaptörü | intrinsic kaydı | ADR-011 rehberi, yetkinlik/etki/runtime |
 
 ## Büyüme bütçesi
@@ -94,3 +96,7 @@ K-115/RFC-0022 bütün `GirdiCikti` iz şemasını ve iki sarmalayıcıyı
 `yorumlayici/io_izi.rs` sahibine ayırdı. 1.250 satır bütçesi runtime kökünün
 protokol ayrıntılarını geri yutmasını engeller; biçim/işlem şeması değişikliği
 ADR-026 ve spec/21 ile aynı atomik değişiklikte ele alınır.
+K-116/RFC-0023 CLI ve playground rastgeleliğini `yorumlayici/io_profili.rs`
+sahibinde birleştirdi. 80 satır bütçesi `zee-io-1` algoritmasını runtime
+kökünden ayırır; dizi snapshot'ını kıran değişiklik ADR-027/spec-22 ve yeni
+profil kimliği olmadan yapılamaz.

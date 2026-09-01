@@ -32,7 +32,8 @@ ekosistemin tek bir şirketin kapalı ürünü olmaması. Temel cümle:
    Rastgelelik, saat, dosya ve argümanlar yorumlayıcıda IO soyutlamasının
    arkasındadır; test koşuları bit-bit tekrarlanabilir. Gerçek koşuların bütün
    IO protokolü RFC-0022/spec-21 uyarınca sürümlü izlenip dış etkisiz replay
-   edilebilir.
+   edilebilir; tohum, rastgele dizi ve sanal saat RFC-0023/spec-22'deki
+   `zee-io-1` profiline bağlıdır.
 4. **AI semantiğin parçası değildir.** Programın anlamını yalnız sözcükleyici,
    ayrıştırıcı, tür denetçisi ve yorumlayıcı/derleyici belirler. Hiçbir aşama
    tahmin yapmaz; ad çözümleme dahi aday üretip TANIMLI adlarla eşleme yapar

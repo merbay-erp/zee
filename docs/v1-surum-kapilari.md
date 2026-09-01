@@ -3,7 +3,7 @@
 Bu liste bir dilek listesi değildir: `1.0.0` etiketi bu kapılar kapatılmadan
 atılmaz. Amaç yeni özellik sayısını büyütmek değil, çocuktan profesyonele aynı
 dilin verdiği sözleri kanıtlamaktır. Bulgular 1 Eylül 2026'da derleyici
-kaynakları, spec, RFC'ler ve 455 test üzerinden yeniden doğrulanmıştır.
+kaynakları, spec, RFC'ler ve 460 test üzerinden yeniden doğrulanmıştır.
 
 Durumlar: **KAPALI** = kanıtı var · **AÇIK** = v1 engeli · **KARAR** = önce
 normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
@@ -37,6 +37,7 @@ normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
 | V1-P0-23 Parser çoklu tanıda kapsamı ve kardeşleri korur | **KAPALI (K-113)** | Hatalı cümle satır sonunda ve yalnız kendisine ait dengeli girinti gövdesinin sonunda senkronlanır. Sağlam kardeş ebeveyn blokta kalır, parser derinliği sonraki üst tanıma sızmaz. CLI/LSP birleşik tanıları kaynak sırasında ve belge başına en çok 20 kayıttır. | RFC-0010 §2.1 + ADR-024 + [parser kurtarma rehberi](parser-hata-kurtarma.md); iç kardeş, yapı alanı, derinlik, eşzamanlı görev, `göre` kolu, tanı bütçesi ve gerçek LSP sırası için yedi regresyon. Toplam 447 test yeşildir. |
 | V1-P0-24 Tanı kodu sürümler arasında aynı olayı anlatır | **KAPALI (K-114)** | 145 etkin ve 3 ayrılmış kod; aile uyumlu tekil semantik anahtar, aktif/mezar taşı durumu ve kanonik katalog özetiyle şema-1 fixture'ına sabittir. Anlam değişikliği yeni kod ister; ayrılmış kod yeniden etkinleşemez. | RFC-0010 §2.2 + ADR-025 + [tanı kimliği rehberi](tani-kimligi.md); kaynak↔katalog ve katalog↔fixture kapıları bütün 148 kimliği iki bağımsız testte korur. Toplam 448 test yeşildir. |
 | V1-P0-25 Gerçek IO koşusu dış etkisiz ve birebir yeniden oynatılabilir | **KAPALI (K-115)** | Bütün 27 `GirdiCikti` yöntemi sürümlü şema-1 izinde tek küresel sıra, işlem, argüman ve sonuç taşır. Replay dış etkileri uygulamaz; ilk sıra/işlem/argüman farkında ve artan olayda fail-closed durur. 64 MiB/100.000 olay/4.096 alan sınırı yürütme öncesidir; parola/PHC yalnız parmak izi olur. | RFC-0022 + ADR-026 + spec/21 + [IO izi rehberi](io-izi.md); byte snapshot'ı, bütün IO yüzeyli round-trip, sıra/argüman/tam tüketim, bozuk şema, sır sızıntısı, CLI kaynak farkı ve üzerine yazma reddi için yedi regresyon. Toplam 455 test yeşildir. |
+| V1-P0-26 Tohum, saat ve hermetik IO gözlemleri sürümlüdür | **KAPALI (K-116)** | `zee-io-1` tohum karışımı+xorshift64* dizi vektörünü, yansız uçları-dahil tam i64 eşlemeyi, takvim/tekdüze saat ayrımını, geriye gitmeyen sanal beklemeyi ve FIFO/fallback+sahte dosya/ağ/sensör gözlemlerini bağlar. CLI/playground tek PRNG sahibidir; güvenlik belirteçleri OS CSPRNG'de kalır. | RFC-0023 + ADR-027 + spec/22 + [profil rehberi](deterministik-io-profili.md); profil/dizi snapshot'ı, tam i64, rastgele kuyruk sınırı, sanal saat ve bütünleşik fake-IO/playground için beş conformance testi. Toplam 460 test yeşildir. |
 
 ## P1 — profesyonel kapasite kapıları
 
@@ -90,6 +91,8 @@ normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
    kurtarma politikasıyla V1-P0-23'ü ve K-114 tanı kimliği fixture'ıyla
    V1-P0-24'ü kapattı. K-115/RFC-0022 bütün runtime IO sınırını sürümlü,
    kanonik ve dış etkisiz replay protokolüne bağlayıp V1-P0-25'i kapattı.
+   K-116/RFC-0023 tohum, sanal saat ve hermetik adaptör davranışını
+   `zee-io-1` profiline sabitleyip V1-P0-26'yı kapattı.
 9. Yeni dil özelliğinden önce bağlayıcı sıra
    [öncelikli backlog](oncelikli-backlog.md) içindeki P0 compiler omurgasıdır.
 

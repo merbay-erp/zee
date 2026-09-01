@@ -11,13 +11,13 @@
 //! Bu modül doğal (native) derlemede de derlenir ve testlenir — determinizm
 //! garantisi playground'da da aynıdır.
 
-use crate::yorumlayici::{GirdiCikti, ToplayanIo};
+use crate::yorumlayici::{GirdiCikti, SurumluRastgele, ToplayanIo};
 
 /// Tarayıcı IO'su: ToplayanIo'nun determinizmi + tohumlu rastgelelik.
 /// Dosya sistemi RAM'dedir (sayfa yenilenince uçar — playground sözleşmesi).
 struct PlaygroundIo {
     ic: ToplayanIo,
-    tohum: u64,
+    rastgele: SurumluRastgele,
 }
 
 impl GirdiCikti for PlaygroundIo {
@@ -28,14 +28,7 @@ impl GirdiCikti for PlaygroundIo {
         self.ic.sor(istem)
     }
     fn rastgele(&mut self, alt: i64, ust: i64) -> i64 {
-        // xorshift64* — CLI'dekiyle aynı üreteç, tohum JS'ten gelir.
-        let mut x = self.tohum | 1;
-        x ^= x >> 12;
-        x ^= x << 25;
-        x ^= x >> 27;
-        self.tohum = x;
-        let genislik = (ust - alt) as u64 + 1;
-        alt + (x.wrapping_mul(0x2545F4914F6CDD1D) % genislik) as i64
+        self.rastgele.aralikta(alt, ust)
     }
     fn dosya_oku(&mut self, yol: &str) -> Result<String, String> {
         self.ic.dosya_oku(yol)
@@ -99,7 +92,7 @@ pub fn playgroundda_calistir(kaynak: &str, girdiler: &str, tohum: u64) -> String
     };
     let mut io = PlaygroundIo {
         ic: ToplayanIo::yeni(girdi_listesi),
-        tohum: tohum ^ 0x5EED_2EE5,
+        rastgele: SurumluRastgele::yeni(tohum),
     };
 
     // Playground'da birimler gömülü kitaplıktan gelir (RFC-0014): yerel

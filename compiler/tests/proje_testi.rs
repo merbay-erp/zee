@@ -417,6 +417,7 @@ fn surum_komutu_etkin_morfoloji_profilini_gosterir() {
     assert!(cikti.status.success());
     let stdout = String::from_utf8(cikti.stdout).expect("utf8");
     assert!(stdout.contains("morfoloji zee-tr-1"), "{}", stdout);
+    assert!(stdout.contains("IO zee-io-1"), "{}", stdout);
 }
 
 #[test]
