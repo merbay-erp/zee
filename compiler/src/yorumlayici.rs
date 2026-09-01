@@ -8,7 +8,13 @@ use crate::agac::{
 };
 use crate::tani::Tani;
 use crate::web_guvenligi::{WebGuvenligi, WebReddi, YeniOturum};
+use std::cell::{Cell, RefCell};
 use std::collections::{HashMap, VecDeque};
+use std::future::Future;
+use std::pin::Pin;
+use std::rc::Rc;
+use std::sync::Arc;
+use std::task::{Context, Poll, Wake, Waker};
 
 /// Girdi/çıktı ve rastgelelik soyutlaması: testler deterministik kuyruk
 /// kullanır, CLI gerçek klavye/ekran ve gerçek rastgelelik.
@@ -348,6 +354,109 @@ pub trait GirdiCikti {
     fn bekle_ms(&mut self, milisaniye: i64);
     /// Tekdüze artan an ölçümü (zaman aşımı hesabı, milisaniye).
     fn an_ms(&mut self) -> i64;
+}
+
+/// Eşzamanlı görev geleceklerinin aynı gerçek IO'yu sırayla kullanmasını sağlar.
+/// `RefCell` yalnız tek iş parçacıklı scheduler içinde ödünç denetimidir; aynı
+/// anda yalnız poll edilen görev IO'ya erişebilir.
+#[derive(Clone)]
+struct PaylasilanIo<'a> {
+    ic: Rc<RefCell<&'a mut dyn GirdiCikti>>,
+}
+
+impl GirdiCikti for PaylasilanIo<'_> {
+    fn yazdir(&mut self, satir: String) {
+        self.ic.borrow_mut().yazdir(satir);
+    }
+    fn sor(&mut self, istem: &str) -> Option<String> {
+        self.ic.borrow_mut().sor(istem)
+    }
+    fn rastgele(&mut self, alt: i64, ust: i64) -> i64 {
+        self.ic.borrow_mut().rastgele(alt, ust)
+    }
+    fn dosya_oku(&mut self, yol: &str) -> Result<String, String> {
+        self.ic.borrow_mut().dosya_oku(yol)
+    }
+    fn dosya_yaz(&mut self, yol: &str, satir: &str, ekleme: bool) -> Result<(), String> {
+        self.ic.borrow_mut().dosya_yaz(yol, satir, ekleme)
+    }
+    fn simdi(&mut self) -> (i64, u32, u32, u32, u32) {
+        self.ic.borrow_mut().simdi()
+    }
+    fn argumanlar(&mut self) -> Vec<String> {
+        self.ic.borrow_mut().argumanlar()
+    }
+    fn http_getir(
+        &mut self,
+        url: &str,
+        zaman_asimi_ms: Option<i64>,
+    ) -> Result<(i64, String), String> {
+        self.ic.borrow_mut().http_getir(url, zaman_asimi_ms)
+    }
+    fn sunucu_kur(&mut self, kapi: i64) -> Result<(), String> {
+        self.ic.borrow_mut().sunucu_kur(kapi)
+    }
+    fn istek_al(&mut self) -> Option<String> {
+        self.ic.borrow_mut().istek_al()
+    }
+    fn yanit_gonder(&mut self, yanit: &str) {
+        self.ic.borrow_mut().yanit_gonder(yanit);
+    }
+    fn durum_yaniti_gonder(&mut self, durum: u16, yanit: &str) {
+        self.ic.borrow_mut().durum_yaniti_gonder(durum, yanit);
+    }
+    fn yonlendir_gonder(&mut self, adres: &str) -> Result<(), String> {
+        self.ic.borrow_mut().yonlendir_gonder(adres)
+    }
+    fn cerez_yaz(&mut self, ad: &str, deger: &str) -> Result<(), String> {
+        self.ic.borrow_mut().cerez_yaz(ad, deger)
+    }
+    fn cerez_sil(&mut self, ad: &str) -> Result<(), String> {
+        self.ic.borrow_mut().cerez_sil(ad)
+    }
+    fn rota_guvenligini_denetle(
+        &mut self,
+        erisim: &RotaErisimi,
+        csrf: Option<&str>,
+        csrf_gerekli: bool,
+    ) -> Result<(), WebReddi> {
+        self.ic
+            .borrow_mut()
+            .rota_guvenligini_denetle(erisim, csrf, csrf_gerekli)
+    }
+    fn csrf_belirteci(&mut self) -> Result<String, String> {
+        self.ic.borrow_mut().csrf_belirteci()
+    }
+    fn oturum_ac(&mut self, kullanici: &str, rol: &str) -> Result<(), String> {
+        self.ic.borrow_mut().oturum_ac(kullanici, rol)
+    }
+    fn oturum_kapat(&mut self) -> Result<(), String> {
+        self.ic.borrow_mut().oturum_kapat()
+    }
+    fn parola_dogrula(&mut self, parola: &str, ozet: &str) -> bool {
+        self.ic.borrow_mut().parola_dogrula(parola, ozet)
+    }
+    fn eylem_baslat(&mut self) -> Result<(), String> {
+        self.ic.borrow_mut().eylem_baslat()
+    }
+    fn eylem_tamamla(&mut self) -> Result<(), String> {
+        self.ic.borrow_mut().eylem_tamamla()
+    }
+    fn eylem_geri_al(&mut self) -> Result<(), String> {
+        self.ic.borrow_mut().eylem_geri_al()
+    }
+    fn sensor_acik_mi(&mut self, ad: &str) -> bool {
+        self.ic.borrow_mut().sensor_acik_mi(ad)
+    }
+    fn isik_ayarla(&mut self, ad: &str, yansin: bool) {
+        self.ic.borrow_mut().isik_ayarla(ad, yansin);
+    }
+    fn bekle_ms(&mut self, milisaniye: i64) {
+        self.ic.borrow_mut().bekle_ms(milisaniye);
+    }
+    fn an_ms(&mut self) -> i64 {
+        self.ic.borrow_mut().an_ms()
+    }
 }
 
 /// Çocuk modu sargısı (K-047, master plan bölüm 16): sarılan IO ne olursa
@@ -1107,6 +1216,10 @@ struct SonTarih {
 thread_local! {
     static SON_TARIHLER: std::cell::RefCell<Vec<SonTarih>> =
         const { std::cell::RefCell::new(Vec::new()) };
+    /// Yalnız scheduler bir görev future'ını poll ederken doludur. `bekle`
+    /// bu kanala süreyi bırakıp Pending döner; scheduler zamanı ilerletir.
+    static GOREV_BEKLEME_SINYALI: RefCell<Option<Rc<Cell<Option<i64>>>>> =
+        const { RefCell::new(None) };
 }
 
 static SON_TARIH_KIMLIGI: std::sync::atomic::AtomicU64 =
@@ -1176,6 +1289,255 @@ fn bu_son_tarihin_iptali(tani: &Tani, kimlik: u64) -> bool {
     tani.kod == "Ç001" && tani.mesaj.parse::<u64>() == Ok(kimlik)
 }
 
+struct BosUyandirici;
+
+impl Wake for BosUyandirici {
+    fn wake(self: Arc<Self>) {}
+}
+
+fn bos_uyandirici() -> Waker {
+    Waker::from(Arc::new(BosUyandirici))
+}
+
+/// Üst düzey yorumlama Pending üretmez; Pending yalnız görev scheduler'ının
+/// sahip olduğu future'larda anlamlıdır.
+fn hazir_calistir<T>(mut gelecek: Pin<Box<dyn Future<Output = T> + '_>>) -> T {
+    let uyandirici = bos_uyandirici();
+    let mut baglam = Context::from_waker(&uyandirici);
+    match gelecek.as_mut().poll(&mut baglam) {
+        Poll::Ready(sonuc) => sonuc,
+        Poll::Pending => panic!("görev future'ı scheduler dışında beklemeye geçti"),
+    }
+}
+
+struct GorevBeklemeNoktasi {
+    milisaniye: i64,
+    sinyal_verildi: bool,
+}
+
+impl Future for GorevBeklemeNoktasi {
+    type Output = ();
+
+    fn poll(mut self: Pin<&mut Self>, _baglam: &mut Context<'_>) -> Poll<Self::Output> {
+        if self.sinyal_verildi {
+            return Poll::Ready(());
+        }
+        let bulundu = GOREV_BEKLEME_SINYALI.with(|yuva| {
+            let yuva = yuva.borrow();
+            if let Some(sinyal) = yuva.as_ref() {
+                sinyal.set(Some(self.milisaniye.max(0)));
+                true
+            } else {
+                false
+            }
+        });
+        if bulundu {
+            self.sinyal_verildi = true;
+            Poll::Pending
+        } else {
+            // Bu future yalnız görev içinde kurulmalıdır.
+            Poll::Ready(())
+        }
+    }
+}
+
+fn gorevde_miyiz() -> bool {
+    GOREV_BEKLEME_SINYALI.with(|yuva| yuva.borrow().is_some())
+}
+
+async fn gorev_bekleme_noktasi(milisaniye: i64) {
+    GorevBeklemeNoktasi { milisaniye, sinyal_verildi: false }.await;
+}
+
+#[derive(Clone)]
+struct BekleyenGorev {
+    ad: String,
+    ifade: Ifade,
+    satir: usize,
+    ortam: HashMap<String, Deger>,
+}
+
+type GorevGelecegi<'a> = Pin<Box<dyn Future<Output = Result<Deger, Tani>> + 'a>>;
+
+struct GorevCalismasi<'a> {
+    ad: String,
+    satir: usize,
+    gelecek: Option<GorevGelecegi<'a>>,
+    sinyal: Rc<Cell<Option<i64>>>,
+    uyanma_ani: Option<i64>,
+    son_tarihler: Vec<SonTarih>,
+    sonuc: Option<Deger>,
+}
+
+/// Kaynak sırasını bağlayıcı zamanlama sırası yapar. Her turda hazır görevler
+/// birer kez poll edilir; hiçbiri hazır değilse saat en yakın beklemeye kadar
+/// tek adımda ilerler. Aynı anda yalnız bir görev çalıştığı için data race yoktur.
+async fn gorevleri_calistir(
+    gorevler: Vec<BekleyenGorev>,
+    program: &Program,
+    io: &mut dyn GirdiCikti,
+    derinlik: usize,
+) -> Result<Vec<(String, Deger)>, Tani> {
+    let ortak = Rc::new(RefCell::new(io));
+    let ana_son_tarihler = SON_TARIHLER.with(|yuva| std::mem::take(&mut *yuva.borrow_mut()));
+    let ana_sinyal = GOREV_BEKLEME_SINYALI.with(|yuva| yuva.borrow_mut().take());
+
+    let mut calismalar = gorevler
+        .into_iter()
+        .map(|gorev| {
+            let mut gorev_io = PaylasilanIo { ic: Rc::clone(&ortak) };
+            let ifade = gorev.ifade;
+            let ortam = gorev.ortam;
+            let satir = gorev.satir;
+            let gelecek = Box::pin(async move {
+                degerlendir_async(
+                    &ifade,
+                    &ortam,
+                    program,
+                    &mut gorev_io,
+                    derinlik,
+                    satir,
+                )
+                .await
+            });
+            GorevCalismasi {
+                ad: gorev.ad,
+                satir,
+                gelecek: Some(gelecek),
+                sinyal: Rc::new(Cell::new(None)),
+                uyanma_ani: None,
+                son_tarihler: ana_son_tarihler.clone(),
+                sonuc: None,
+            }
+        })
+        .collect::<Vec<_>>();
+
+    let uyandirici = bos_uyandirici();
+    let mut poll_baglami = Context::from_waker(&uyandirici);
+    let mut simdi = ortak.borrow_mut().an_ms();
+    let sonuc = (async {
+        loop {
+            let mut ilerledi = false;
+            for sira in 0..calismalar.len() {
+                let hazir = calismalar[sira].gelecek.is_some()
+                    && calismalar[sira].uyanma_ani.is_none_or(|an| an <= simdi);
+                if !hazir {
+                    continue;
+                }
+                ilerledi = true;
+                calismalar[sira].uyanma_ani = None;
+                calismalar[sira].sinyal.set(None);
+
+                SON_TARIHLER.with(|yuva| {
+                    *yuva.borrow_mut() = std::mem::take(&mut calismalar[sira].son_tarihler);
+                });
+                GOREV_BEKLEME_SINYALI.with(|yuva| {
+                    *yuva.borrow_mut() = Some(Rc::clone(&calismalar[sira].sinyal));
+                });
+                let poll = calismalar[sira]
+                    .gelecek
+                    .as_mut()
+                    .expect("hazır görev future taşır")
+                    .as_mut()
+                    .poll(&mut poll_baglami);
+                GOREV_BEKLEME_SINYALI.with(|yuva| {
+                    *yuva.borrow_mut() = ana_sinyal.clone();
+                });
+                SON_TARIHLER.with(|yuva| {
+                    calismalar[sira].son_tarihler = std::mem::take(&mut *yuva.borrow_mut());
+                });
+                // Atomik bir host çağrısı ya da iç görev grubu saati ilerletmiş
+                // olabilir; kardeşlerin uyanma anları gerçek tekdüze saatle kalır.
+                simdi = simdi.max(ortak.borrow_mut().an_ms());
+
+                match poll {
+                    Poll::Ready(Ok(deger)) => {
+                        calismalar[sira].gelecek = None;
+                        calismalar[sira].sonuc = Some(deger);
+                    }
+                    Poll::Ready(Err(mut tani)) => {
+                        let iptal_edilenler = calismalar
+                            .iter()
+                            .enumerate()
+                            .filter(|(i, g)| *i != sira && g.gelecek.is_some())
+                            .map(|(_, g)| g.ad.as_str())
+                            .collect::<Vec<_>>();
+                        let iptal = if iptal_edilenler.is_empty() {
+                            String::new()
+                        } else {
+                            format!(
+                                " Kardeş görevler iptal edildi: {}.",
+                                iptal_edilenler.join(", ")
+                            )
+                        };
+                        // Ç000 çıkış kodunu, Ç001 deadline sahibini mesajında
+                        // taşır; iç akış nöbetçilerini metinsel olarak sarmalama.
+                        if tani.kod != "Ç000" && tani.kod != "Ç001" {
+                            tani.mesaj = format!(
+                                "\"{}\" görevi başarısız oldu.{} {}",
+                                calismalar[sira].ad, iptal, tani.mesaj
+                            );
+                        }
+                        return Err(tani);
+                    }
+                    Poll::Pending => {
+                        let sure = calismalar[sira].sinyal.take().ok_or_else(|| {
+                            Tani::yeni(
+                                "C000",
+                                format!(
+                                    "\"{}\" görevi bekleme nedeni bildirmeden durdu.",
+                                    calismalar[sira].ad
+                                ),
+                                calismalar[sira].satir,
+                                1,
+                                1,
+                            )
+                        })?;
+                        calismalar[sira].uyanma_ani = Some(simdi.saturating_add(sure));
+                    }
+                }
+            }
+
+            if calismalar.iter().all(|g| g.gelecek.is_none()) {
+                return Ok(calismalar
+                    .iter_mut()
+                    .map(|g| {
+                        (
+                            g.ad.clone(),
+                            g.sonuc.take().expect("biten görev sonuç taşır"),
+                        )
+                    })
+                    .collect());
+            }
+
+            let en_yakin = calismalar
+                .iter()
+                .filter_map(|g| g.uyanma_ani)
+                .min()
+                .ok_or_else(|| ic_hata(1))?;
+            if en_yakin > simdi {
+                let gecis = en_yakin.saturating_sub(simdi);
+                if ana_sinyal.is_some() {
+                    // İç görev ağacının beklemesi üst scheduler'a çıkar; böylece
+                    // amca/teyze görevler de çocuklar uyurken ilerleyebilir.
+                    gorev_bekleme_noktasi(gecis).await;
+                    simdi = en_yakin.max(ortak.borrow_mut().an_ms());
+                } else {
+                    ortak.borrow_mut().bekle_ms(gecis);
+                    simdi = en_yakin;
+                }
+            } else if !ilerledi {
+                return Err(ic_hata(1));
+            }
+        }
+    })
+    .await;
+
+    GOREV_BEKLEME_SINYALI.with(|yuva| *yuva.borrow_mut() = ana_sinyal);
+    SON_TARIHLER.with(|yuva| *yuva.borrow_mut() = ana_son_tarihler);
+    sonuc
+}
+
 /// Blok kapsamı (RFC-0004): gövdede doğan adlar gövde bitince düşer;
 /// dıştaki ada atama kalıcıdır. Çözümleyicideki kuralın birebir aynısı.
 fn kapsam_baslat(ortam: &HashMap<String, Deger>) -> std::collections::HashSet<String> {
@@ -1193,15 +1555,27 @@ fn blok_calistir(
     cikti: &mut dyn GirdiCikti,
     derinlik: usize,
 ) -> Result<Akis, Tani> {
+    hazir_calistir(blok_calistir_async(cumleler, ortam, program, cikti, derinlik))
+}
+
+fn blok_calistir_async<'a>(
+    cumleler: &'a [Cumle],
+    ortam: &'a mut HashMap<String, Deger>,
+    program: &'a Program,
+    cikti: &'a mut dyn GirdiCikti,
+    derinlik: usize,
+) -> Pin<Box<dyn Future<Output = Result<Akis, Tani>> + 'a>> {
+    Box::pin(async move {
     son_tarihi_denetle(cikti, 1)?;
+    let mut bekleyen_gorevler: Option<Vec<BekleyenGorev>> = None;
     for cumle in cumleler {
         match cumle {
             Cumle::Yaz { deger, satir } => {
-                let sonuc = degerlendir(deger, ortam, program, cikti, derinlik, *satir)?;
+                let sonuc = degerlendir_async(deger, ortam, program, cikti, derinlik, *satir).await?;
                 cikti.yazdir(sonuc.metne());
             }
             Cumle::Sor { istem, satir } => {
-                let istem = degerlendir(istem, ortam, program, cikti, derinlik, *satir)?.metne();
+                let istem = degerlendir_async(istem, ortam, program, cikti, derinlik, *satir).await?.metne();
                 let cevap = cikti.sor(&istem).ok_or_else(|| {
                     Tani::yeni(
                         "C005",
@@ -1214,22 +1588,22 @@ fn blok_calistir(
                 ortam.insert("yanıt".to_string(), Deger::Metin(cevap));
             }
             Cumle::Olsun { ad, deger, satir, .. } => {
-                let sonuc = degerlendir(deger, ortam, program, cikti, derinlik, *satir)?;
+                let sonuc = degerlendir_async(deger, ortam, program, cikti, derinlik, *satir).await?;
                 ortam.insert(ad.clone(), sonuc);
             }
             Cumle::KezTekrarla { adet, govde, satir } => {
-                let adet = tam_sayi(degerlendir(adet, ortam, program, cikti, derinlik, *satir)?, *satir)?;
+                let adet = tam_sayi(degerlendir_async(adet, ortam, program, cikti, derinlik, *satir).await?, *satir)?;
                 let kapsam = kapsam_baslat(ortam);
                 for _ in 0..adet.max(0) {
-                    if let Akis::Don(d) = blok_calistir(govde, ortam, program, cikti, derinlik)? {
+                    if let Akis::Don(d) = blok_calistir_async(govde, ortam, program, cikti, derinlik).await? {
                         return Ok(Akis::Don(d));
                     }
                 }
                 kapsam_bitir(ortam, &kapsam);
             }
             Cumle::AralikDongusu { ad, bastan, sona, govde, satir } => {
-                let bastan = tam_sayi(degerlendir(bastan, ortam, program, cikti, derinlik, *satir)?, *satir)?;
-                let sona = tam_sayi(degerlendir(sona, ortam, program, cikti, derinlik, *satir)?, *satir)?;
+                let bastan = tam_sayi(degerlendir_async(bastan, ortam, program, cikti, derinlik, *satir).await?, *satir)?;
+                let sona = tam_sayi(degerlendir_async(sona, ortam, program, cikti, derinlik, *satir).await?, *satir)?;
                 let kapsam = kapsam_baslat(ortam);
                 // K-068: aralık iki yönde çalışır — "5 ten 1 e kadar" geri sayar.
                 let degerler: Vec<i64> = if bastan <= sona {
@@ -1239,7 +1613,7 @@ fn blok_calistir(
                 };
                 for deger in degerler {
                     ortam.insert(ad.clone(), Deger::TamSayi(deger));
-                    if let Akis::Don(d) = blok_calistir(govde, ortam, program, cikti, derinlik)? {
+                    if let Akis::Don(d) = blok_calistir_async(govde, ortam, program, cikti, derinlik).await? {
                         return Ok(Akis::Don(d));
                     }
                 }
@@ -1248,11 +1622,11 @@ fn blok_calistir(
             Cumle::OlduguSurece { kosul, govde, satir } => {
                 let kapsam = kapsam_baslat(ortam);
                 loop {
-                    let devam = mantiksal(degerlendir(kosul, ortam, program, cikti, derinlik, *satir)?, *satir)?;
+                    let devam = mantiksal(degerlendir_async(kosul, ortam, program, cikti, derinlik, *satir).await?, *satir)?;
                     if !devam {
                         break;
                     }
-                    if let Akis::Don(d) = blok_calistir(govde, ortam, program, cikti, derinlik)? {
+                    if let Akis::Don(d) = blok_calistir_async(govde, ortam, program, cikti, derinlik).await? {
                         return Ok(Akis::Don(d));
                     }
                 }
@@ -1261,11 +1635,11 @@ fn blok_calistir(
             Cumle::OlanaKadar { kosul, govde, satir } => {
                 let kapsam = kapsam_baslat(ortam);
                 loop {
-                    let bitti = mantiksal(degerlendir(kosul, ortam, program, cikti, derinlik, *satir)?, *satir)?;
+                    let bitti = mantiksal(degerlendir_async(kosul, ortam, program, cikti, derinlik, *satir).await?, *satir)?;
                     if bitti {
                         break;
                     }
-                    if let Akis::Don(d) = blok_calistir(govde, ortam, program, cikti, derinlik)? {
+                    if let Akis::Don(d) = blok_calistir_async(govde, ortam, program, cikti, derinlik).await? {
                         return Ok(Akis::Don(d));
                     }
                 }
@@ -1274,9 +1648,9 @@ fn blok_calistir(
             Cumle::Ise { kollar, degilse, satir } => {
                 let mut islendi = false;
                 for kol in kollar {
-                    if mantiksal(degerlendir(&kol.kosul, ortam, program, cikti, derinlik, *satir)?, *satir)? {
+                    if mantiksal(degerlendir_async(&kol.kosul, ortam, program, cikti, derinlik, *satir).await?, *satir)? {
                         let kapsam = kapsam_baslat(ortam);
-                        if let Akis::Don(d) = blok_calistir(&kol.govde, ortam, program, cikti, derinlik)? {
+                        if let Akis::Don(d) = blok_calistir_async(&kol.govde, ortam, program, cikti, derinlik).await? {
                             return Ok(Akis::Don(d));
                         }
                         kapsam_bitir(ortam, &kapsam);
@@ -1287,7 +1661,7 @@ fn blok_calistir(
                 if !islendi {
                     if let Some(blok) = degilse {
                         let kapsam = kapsam_baslat(ortam);
-                        if let Akis::Don(d) = blok_calistir(blok, ortam, program, cikti, derinlik)? {
+                        if let Akis::Don(d) = blok_calistir_async(blok, ortam, program, cikti, derinlik).await? {
                             return Ok(Akis::Don(d));
                         }
                         kapsam_bitir(ortam, &kapsam);
@@ -1299,7 +1673,7 @@ fn blok_calistir(
                     Ifade::Degisken { cozulmus: Some(ad), .. } => ad.clone(),
                     _ => return Err(ic_hata(*satir)),
                 };
-                let deger = degerlendir(deger, ortam, program, cikti, derinlik, *satir)?;
+                let deger = degerlendir_async(deger, ortam, program, cikti, derinlik, *satir).await?;
                 match ortam.get_mut(&ad) {
                     Some(Deger::Liste(ogeler)) => ogeler.push(deger),
                     _ => return Err(ic_hata(*satir)),
@@ -1310,7 +1684,7 @@ fn blok_calistir(
                     Ifade::Degisken { cozulmus: Some(ad), .. } => ad.clone(),
                     _ => return Err(ic_hata(*satir)),
                 };
-                let aranan = degerlendir(deger, ortam, program, cikti, derinlik, *satir)?;
+                let aranan = degerlendir_async(deger, ortam, program, cikti, derinlik, *satir).await?;
                 match ortam.get_mut(&ad) {
                     Some(Deger::Liste(ogeler)) => {
                         // İlk eşleşen öğe çıkar; yoksa sessizce hiçbir şey olmaz (K-059).
@@ -1327,7 +1701,7 @@ fn blok_calistir(
             }
             Cumle::HerBiri { ad, kaynak, govde, satir } => {
                 let kaynak = kaynak.as_ref().ok_or_else(|| ic_hata(*satir))?;
-                let ogeler = match degerlendir(kaynak, ortam, program, cikti, derinlik, *satir)? {
+                let ogeler = match degerlendir_async(kaynak, ortam, program, cikti, derinlik, *satir).await? {
                     Deger::Liste(ogeler) => ogeler,
                     // Sözlük üzerinde gezinme anahtarları verir (ekleme sırasıyla).
                     Deger::Sozluk(girdiler) => girdiler
@@ -1349,7 +1723,7 @@ fn blok_calistir(
                 let kapsam = kapsam_baslat(ortam);
                 for (sira, oge) in ogeler.into_iter().enumerate() {
                     ortam.insert(ad.clone(), oge);
-                    if let Akis::Don(d) = blok_calistir(govde, ortam, program, cikti, derinlik)? {
+                    if let Akis::Don(d) = blok_calistir_async(govde, ortam, program, cikti, derinlik).await? {
                         return Ok(Akis::Don(d));
                     }
                     if liste_mi {
@@ -1367,19 +1741,19 @@ fn blok_calistir(
                 kapsam_bitir(ortam, &kapsam);
             }
             Cumle::Artir { ifade, miktar, satir } => {
-                guncelle(ifade, miktar, ortam, program, cikti, derinlik, *satir, 1)?;
+                guncelle(ifade, miktar, ortam, program, cikti, derinlik, *satir, 1).await?;
             }
             Cumle::Azalt { ifade, miktar, satir } => {
-                guncelle(ifade, miktar, ortam, program, cikti, derinlik, *satir, -1)?;
+                guncelle(ifade, miktar, ortam, program, cikti, derinlik, *satir, -1).await?;
             }
             Cumle::Gore { konu, kollar, degilse, satir } => {
-                let konu = degerlendir(konu, ortam, program, cikti, derinlik, *satir)?;
+                let konu = degerlendir_async(konu, ortam, program, cikti, derinlik, *satir).await?;
                 let mut eslesti = false;
                 for (deger, govde) in kollar {
-                    let deger = degerlendir(deger, ortam, program, cikti, derinlik, *satir)?;
+                    let deger = degerlendir_async(deger, ortam, program, cikti, derinlik, *satir).await?;
                     if deger == konu {
                         let kapsam = kapsam_baslat(ortam);
-                        if let Akis::Don(d) = blok_calistir(govde, ortam, program, cikti, derinlik)? {
+                        if let Akis::Don(d) = blok_calistir_async(govde, ortam, program, cikti, derinlik).await? {
                             return Ok(Akis::Don(d));
                         }
                         kapsam_bitir(ortam, &kapsam);
@@ -1390,7 +1764,7 @@ fn blok_calistir(
                 if !eslesti {
                     if let Some(blok) = degilse {
                         let kapsam = kapsam_baslat(ortam);
-                        if let Akis::Don(d) = blok_calistir(blok, ortam, program, cikti, derinlik)? {
+                        if let Akis::Don(d) = blok_calistir_async(blok, ortam, program, cikti, derinlik).await? {
                             return Ok(Akis::Don(d));
                         }
                         kapsam_bitir(ortam, &kapsam);
@@ -1398,7 +1772,7 @@ fn blok_calistir(
                 }
             }
             Cumle::SunucuBaslat { kapi, satir } => {
-                let kapi = tam_sayi(degerlendir(kapi, ortam, program, cikti, derinlik, *satir)?, *satir)?;
+                let kapi = tam_sayi(degerlendir_async(kapi, ortam, program, cikti, derinlik, *satir).await?, *satir)?;
                 cikti.sunucu_kur(kapi).map_err(|hata| {
                     Tani::yeni("C017", format!("Sunucu kurulamadı: {}.", hata), *satir, 1, 1)
                 })?;
@@ -1409,11 +1783,11 @@ fn blok_calistir(
                 // Yalnız kayıt: gövde, sunucu döngüsünde istek gelince koşulur.
             }
             Cumle::YanitGonder { deger, satir } => {
-                let deger = degerlendir(deger, ortam, program, cikti, derinlik, *satir)?;
+                let deger = degerlendir_async(deger, ortam, program, cikti, derinlik, *satir).await?;
                 cikti.yanit_gonder(&deger.metne());
             }
             Cumle::Yonlendir { adres, satir } => {
-                let hedef = degerlendir(adres, ortam, program, cikti, derinlik, *satir)?.metne();
+                let hedef = degerlendir_async(adres, ortam, program, cikti, derinlik, *satir).await?.metne();
                 cikti.yonlendir_gonder(&hedef).map_err(|hata| {
                     Tani::yeni(
                         "C022",
@@ -1425,14 +1799,14 @@ fn blok_calistir(
                 })?;
             }
             Cumle::CerezSil { ad, satir } => {
-                let ad = degerlendir(ad, ortam, program, cikti, derinlik, *satir)?.metne();
+                let ad = degerlendir_async(ad, ortam, program, cikti, derinlik, *satir).await?.metne();
                 cikti.cerez_sil(&ad).map_err(|hata| {
                     Tani::yeni("C022", format!("Çerez silinemedi: {}.", hata), *satir, 1, 1)
                 })?;
             }
             Cumle::CerezYaz { ad, deger, satir } => {
-                let ad = degerlendir(ad, ortam, program, cikti, derinlik, *satir)?.metne();
-                let deger = degerlendir(deger, ortam, program, cikti, derinlik, *satir)?.metne();
+                let ad = degerlendir_async(ad, ortam, program, cikti, derinlik, *satir).await?.metne();
+                let deger = degerlendir_async(deger, ortam, program, cikti, derinlik, *satir).await?.metne();
                 cikti.cerez_yaz(&ad, &deger).map_err(|hata| {
                     Tani::yeni("C022", format!("Çerez yazılamadı: {}.", hata), *satir, 1, 1)
                 })?;
@@ -1446,8 +1820,8 @@ fn blok_calistir(
                 satir,
             } => {
                 let kullanici =
-                    degerlendir(kullanici, ortam, program, cikti, derinlik, *satir)?.metne();
-                let rol = degerlendir(rol, ortam, program, cikti, derinlik, *satir)?.metne();
+                    degerlendir_async(kullanici, ortam, program, cikti, derinlik, *satir).await?.metne();
+                let rol = degerlendir_async(rol, ortam, program, cikti, derinlik, *satir).await?.metne();
                 cikti.oturum_ac(&kullanici, &rol).map_err(|hata| {
                     Tani::yeni(
                         "C022",
@@ -1470,18 +1844,33 @@ fn blok_calistir(
                 })?;
             }
             Cumle::Eszamanli { gorevler, satir } => {
-                // v0 yürütmesi sıralıdır (RFC-0011 §4: tek iş parçacıklı model);
-                // gözlemlenebilir davranış eşzamanlı modele denktir.
-                let _ = satir;
-                for (ad, deger, gorev_satiri) in gorevler {
-                    let sonuc = degerlendir(deger, ortam, program, cikti, derinlik, *gorev_satiri)?;
-                    ortam.insert(ad.clone(), sonuc);
-                    son_tarihi_denetle(cikti, *gorev_satiri)?;
+                if bekleyen_gorevler.is_some() {
+                    return Err(ic_hata(*satir));
                 }
+                let baslangic_ortami = ortam.clone();
+                bekleyen_gorevler = Some(
+                    gorevler
+                        .iter()
+                        .map(|(ad, ifade, gorev_satiri)| BekleyenGorev {
+                            ad: ad.clone(),
+                            ifade: ifade.clone(),
+                            satir: *gorev_satiri,
+                            ortam: baslangic_ortami.clone(),
+                        })
+                        .collect(),
+                );
             }
-            Cumle::HepsiniBekle { .. } => {}
+            Cumle::HepsiniBekle { satir } => {
+                let gorevler = bekleyen_gorevler.take().ok_or_else(|| ic_hata(*satir))?;
+                for (ad, sonuc) in
+                    gorevleri_calistir(gorevler, program, cikti, derinlik).await?
+                {
+                    ortam.insert(ad, sonuc);
+                }
+                son_tarihi_denetle(cikti, *satir)?;
+            }
             Cumle::IcindeBlogu { sure, govde, yetismezse, satir } => {
-                let sure_ms = match degerlendir(sure, ortam, program, cikti, derinlik, *satir)? {
+                let sure_ms = match degerlendir_async(sure, ortam, program, cikti, derinlik, *satir).await? {
                     Deger::Sure { milisaniye } => milisaniye,
                     _ => return Err(ic_hata(*satir)),
                 };
@@ -1490,7 +1879,7 @@ fn blok_calistir(
                 let nobetci = SonTarihNobetcisi::yeni(son_tarih);
                 let kimlik = nobetci.kimlik;
                 let kapsam = kapsam_baslat(ortam);
-                let sonuc = blok_calistir(govde, ortam, program, cikti, derinlik);
+                let sonuc = blok_calistir_async(govde, ortam, program, cikti, derinlik).await;
                 kapsam_bitir(ortam, &kapsam);
                 drop(nobetci);
                 match sonuc {
@@ -1500,7 +1889,7 @@ fn blok_calistir(
                         if let Some(blok) = yetismezse {
                             let kapsam = kapsam_baslat(ortam);
                             if let Akis::Don(d) =
-                                blok_calistir(blok, ortam, program, cikti, derinlik)?
+                                blok_calistir_async(blok, ortam, program, cikti, derinlik).await?
                             {
                                 return Ok(Akis::Don(d));
                             }
@@ -1514,24 +1903,32 @@ fn blok_calistir(
                 cikti.isik_ayarla(isik, *yansin);
             }
             Cumle::Bekle { sure, satir } => {
-                let sure_ms = match degerlendir(sure, ortam, program, cikti, derinlik, *satir)? {
+                let sure_ms = match degerlendir_async(sure, ortam, program, cikti, derinlik, *satir).await? {
                     Deger::Sure { milisaniye } => milisaniye,
                     _ => return Err(ic_hata(*satir)),
                 };
                 if let Some((son, kalan)) = son_tarih_kalani(cikti, *satir)? {
                     if sure_ms >= kalan {
-                        cikti.bekle_ms(kalan);
+                        if gorevde_miyiz() {
+                            gorev_bekleme_noktasi(kalan).await;
+                        } else {
+                            cikti.bekle_ms(kalan);
+                        }
                         return Err(son_tarih_tanisi(son, *satir));
                     }
                 }
-                cikti.bekle_ms(sure_ms);
+                if gorevde_miyiz() {
+                    gorev_bekleme_noktasi(sure_ms).await;
+                } else {
+                    cikti.bekle_ms(sure_ms);
+                }
             }
             Cumle::ProgramiBitir { kod, satir } => {
                 // Ç000 mesajı çıkış kodunu taşır (K-069): "0" ya da verilen kod.
                 let kod = match kod {
                     Some(ifade) => {
                         let deger = tam_sayi(
-                            degerlendir(ifade, ortam, program, cikti, derinlik, *satir)?,
+                            degerlendir_async(ifade, ortam, program, cikti, derinlik, *satir).await?,
                             *satir,
                         )?;
                         if !(0..=255).contains(&deger) {
@@ -1558,10 +1955,10 @@ fn blok_calistir(
                 // "beklenen/bulunan" göstermek öğretici hata ilkesinin gereği.
                 let (tuttu, detay) = match kosul {
                     Ifade::Karsilastirma { sol, sag, .. } => {
-                        let sol_deger = degerlendir(sol, ortam, program, cikti, derinlik, *satir)?;
-                        let sag_deger = degerlendir(sag, ortam, program, cikti, derinlik, *satir)?;
+                        let sol_deger = degerlendir_async(sol, ortam, program, cikti, derinlik, *satir).await?;
+                        let sag_deger = degerlendir_async(sag, ortam, program, cikti, derinlik, *satir).await?;
                         let sonuc =
-                            mantiksal(degerlendir(kosul, ortam, program, cikti, derinlik, *satir)?, *satir)?;
+                            mantiksal(degerlendir_async(kosul, ortam, program, cikti, derinlik, *satir).await?, *satir)?;
                         (
                             sonuc,
                             format!(
@@ -1572,7 +1969,7 @@ fn blok_calistir(
                         )
                     }
                     _ => (
-                        mantiksal(degerlendir(kosul, ortam, program, cikti, derinlik, *satir)?, *satir)?,
+                        mantiksal(degerlendir_async(kosul, ortam, program, cikti, derinlik, *satir).await?, *satir)?,
                         String::new(),
                     ),
                 };
@@ -1591,7 +1988,7 @@ fn blok_calistir(
                     Ifade::Degisken { cozulmus: Some(ad), .. } => ad.clone(),
                     _ => return Err(ic_hata(*satir)),
                 };
-                let deger = degerlendir(deger, ortam, program, cikti, derinlik, *satir)?;
+                let deger = degerlendir_async(deger, ortam, program, cikti, derinlik, *satir).await?;
                 match ortam.get_mut(&ad) {
                     Some(Deger::Yapi(alanlar)) => {
                         match alanlar.iter_mut().find(|(a, _)| a == alan) {
@@ -1603,7 +2000,7 @@ fn blok_calistir(
                 }
             }
             Cumle::Dondur { deger, sonuca_sarmala, satir } => {
-                let sonuc = degerlendir(deger, ortam, program, cikti, derinlik, *satir)?;
+                let sonuc = degerlendir_async(deger, ortam, program, cikti, derinlik, *satir).await?;
                 // Erken dönüş, cümle sonundaki ortak denetimi atlamamalıdır.
                 son_tarihi_denetle(cikti, *satir)?;
                 let sonuc = if *sonuca_sarmala {
@@ -1614,7 +2011,7 @@ fn blok_calistir(
                 return Ok(Akis::Don(sonuc));
             }
             Cumle::HataDondur { mesaj, satir } => {
-                let mesaj = degerlendir(mesaj, ortam, program, cikti, derinlik, *satir)?;
+                let mesaj = degerlendir_async(mesaj, ortam, program, cikti, derinlik, *satir).await?;
                 son_tarihi_denetle(cikti, *satir)?;
                 return Ok(Akis::Don(Deger::Sonuc {
                     basarili: false,
@@ -1622,8 +2019,8 @@ fn blok_calistir(
                 }));
             }
             Cumle::BolVeAta { hedef, pay, payda, satir } => {
-                let pay = degerlendir(pay, ortam, program, cikti, derinlik, *satir)?;
-                let payda = degerlendir(payda, ortam, program, cikti, derinlik, *satir)?;
+                let pay = degerlendir_async(pay, ortam, program, cikti, derinlik, *satir).await?;
+                let payda = degerlendir_async(payda, ortam, program, cikti, derinlik, *satir).await?;
                 let sonuc = sayisal_islem(&AritmetikIslec::Bol, &pay, &payda, *satir)?;
                 ortam.insert(hedef.clone(), sonuc);
             }
@@ -1631,19 +2028,19 @@ fn blok_calistir(
                 if let Ifade::IslemCagrisi { islem_adi, argumanlar, .. } = cagri {
                     let mut degerler = Vec::new();
                     for arg in argumanlar {
-                        degerler.push(degerlendir(arg, ortam, program, cikti, derinlik, *satir)?);
+                        degerler.push(degerlendir_async(arg, ortam, program, cikti, derinlik, *satir).await?);
                     }
-                    islem_cagir(islem_adi, degerler, program, cikti, derinlik + 1, *satir)?;
+                    islem_cagir(islem_adi, degerler, program, cikti, derinlik + 1, *satir).await?;
                 } else {
                     return Err(ic_hata(*satir));
                 }
             }
             Cumle::DosyayaYaz { yol, icerik, ekleme, satir } => {
-                let yol = match degerlendir(yol, ortam, program, cikti, derinlik, *satir)? {
+                let yol = match degerlendir_async(yol, ortam, program, cikti, derinlik, *satir).await? {
                     Deger::Metin(m) => m,
                     _ => return Err(ic_hata(*satir)),
                 };
-                let icerik = degerlendir(icerik, ortam, program, cikti, derinlik, *satir)?.metne();
+                let icerik = degerlendir_async(icerik, ortam, program, cikti, derinlik, *satir).await?.metne();
                 cikti.dosya_yaz(&yol, &icerik, *ekleme).map_err(|hata| {
                     Tani::yeni("C013", format!("Dosyaya yazılamadı: {}.", hata), *satir, 1, 1)
                 })?;
@@ -1653,11 +2050,11 @@ fn blok_calistir(
                     Ifade::Degisken { cozulmus: Some(ad), .. } => ad.clone(),
                     _ => return Err(ic_hata(*satir)),
                 };
-                let anahtar = match degerlendir(anahtar, ortam, program, cikti, derinlik, *satir)? {
+                let anahtar = match degerlendir_async(anahtar, ortam, program, cikti, derinlik, *satir).await? {
                     Deger::Metin(m) => m,
                     _ => return Err(ic_hata(*satir)),
                 };
-                let deger = degerlendir(deger, ortam, program, cikti, derinlik, *satir)?;
+                let deger = degerlendir_async(deger, ortam, program, cikti, derinlik, *satir).await?;
                 match ortam.get_mut(&ad) {
                     Some(Deger::Sozluk(girdiler)) => {
                         match girdiler.iter_mut().find(|(a, _)| *a == anahtar) {
@@ -1671,11 +2068,16 @@ fn blok_calistir(
         }
         son_tarihi_denetle(cikti, 1)?;
     }
+    if let Some(gorevler) = bekleyen_gorevler {
+        let satir = gorevler.first().map(|g| g.satir).unwrap_or(1);
+        return Err(ic_hata(satir));
+    }
     Ok(Akis::Devam)
+    })
 }
 
 /// İşlemi taze bir ortamda çalıştırır; "döndür" değeri varsa onu verir.
-fn islem_cagir(
+async fn islem_cagir(
     ad: &str,
     argumanlar: Vec<Deger>,
     program: &Program,
@@ -1713,7 +2115,17 @@ fn islem_cagir(
             )
         })?;
     }
-    let sonuc = blok_calistir(&islem.govde, &mut yerel, program, io, derinlik);
+    // Eylem transaction'ı tek bir scheduler dilimidir. Böylece iki görevin
+    // savepoint'leri iç içe geçmez; başarı/geri alma her zaman doğru sahibindir.
+    let askidaki_gorev_sinyali = if eylem {
+        GOREV_BEKLEME_SINYALI.with(|yuva| yuva.borrow_mut().take())
+    } else {
+        None
+    };
+    let sonuc = blok_calistir_async(&islem.govde, &mut yerel, program, io, derinlik).await;
+    if eylem {
+        GOREV_BEKLEME_SINYALI.with(|yuva| *yuva.borrow_mut() = askidaki_gorev_sinyali);
+    }
     if !eylem {
         return match sonuc? {
             Akis::Don(deger) => Ok(Some(deger)),
@@ -1870,7 +2282,7 @@ fn sayisal_islem(
 }
 
 #[allow(clippy::too_many_arguments)] // iç yürütme yardımcı; bağlam nesnesi v0.3'te
-fn guncelle(
+async fn guncelle(
     hedef: &Ifade,
     miktar: &Ifade,
     ortam: &mut HashMap<String, Deger>,
@@ -1884,7 +2296,7 @@ fn guncelle(
         Ifade::Degisken { cozulmus: Some(ad), .. } => ad.clone(),
         _ => return Err(ic_hata(satir)),
     };
-    let miktar = degerlendir(miktar, ortam, program, io, derinlik, satir)?;
+    let miktar = degerlendir_async(miktar, ortam, program, io, derinlik, satir).await?;
     let eski = ortam.get(&ad).cloned().ok_or_else(|| ic_hata(satir))?;
     let islec = if yon > 0 { AritmetikIslec::Topla } else { AritmetikIslec::Cikar };
     let yeni = sayisal_islem(&islec, &eski, &miktar, satir)?;
@@ -1900,6 +2312,18 @@ fn degerlendir(
     derinlik: usize,
     satir: usize,
 ) -> Result<Deger, Tani> {
+    hazir_calistir(degerlendir_async(ifade, ortam, program, io, derinlik, satir))
+}
+
+fn degerlendir_async<'a>(
+    ifade: &'a Ifade,
+    ortam: &'a HashMap<String, Deger>,
+    program: &'a Program,
+    io: &'a mut dyn GirdiCikti,
+    derinlik: usize,
+    satir: usize,
+) -> Pin<Box<dyn Future<Output = Result<Deger, Tani>> + 'a>> {
+    Box::pin(async move {
     match ifade {
         Ifade::MetinSabiti(m) => Ok(Deger::Metin(m.clone())),
         Ifade::SayiSabiti(s) => Ok(Deger::TamSayi(*s)),
@@ -1917,15 +2341,15 @@ fn degerlendir(
             )
         }),
         Ifade::ParolaDogrula { parola, ozet } => {
-            let parola = degerlendir(parola, ortam, program, io, derinlik, satir)?.metne();
-            let ozet = degerlendir(ozet, ortam, program, io, derinlik, satir)?.metne();
+            let parola = degerlendir_async(parola, ortam, program, io, derinlik, satir).await?.metne();
+            let ozet = degerlendir_async(ozet, ortam, program, io, derinlik, satir).await?.metne();
             Ok(Deger::Mantiksal(io.parola_dogrula(&parola, &ozet)))
         }
         Ifade::BosListe => Ok(Deger::Liste(Vec::new())),
         Ifade::ListeSabiti(ogeler) => {
             let mut degerler = Vec::new();
             for oge in ogeler {
-                degerler.push(degerlendir(oge, ortam, program, io, derinlik, satir)?);
+                degerler.push(degerlendir_async(oge, ortam, program, io, derinlik, satir).await?);
             }
             // Sayısal karışım Ondalık'a genişler (RFC-0013 §2): öğeler gerçekten
             // dönüştürülür ki listenin türü ile içeriği tutarlı kalsın.
@@ -1939,7 +2363,7 @@ fn degerlendir(
             Ok(Deger::Liste(degerler))
         }
         Ifade::Ozellik { nesne, ozellik } => {
-            let nesne = degerlendir(nesne, ortam, program, io, derinlik, satir)?;
+            let nesne = degerlendir_async(nesne, ortam, program, io, derinlik, satir).await?;
             match (ozellik, nesne) {
                 (Ozellik::Adet, Deger::Liste(ogeler)) => Ok(Deger::TamSayi(ogeler.len() as i64)),
                 (Ozellik::Ilk, Deger::Liste(ogeler)) | (Ozellik::Son, Deger::Liste(ogeler)) => {
@@ -2058,11 +2482,11 @@ fn degerlendir(
         }
         Ifade::BosSozluk => Ok(Deger::Sozluk(Vec::new())),
         Ifade::SozlukDegeri { sozluk, anahtar } => {
-            let girdiler = match degerlendir(sozluk, ortam, program, io, derinlik, satir)? {
+            let girdiler = match degerlendir_async(sozluk, ortam, program, io, derinlik, satir).await? {
                 Deger::Sozluk(girdiler) => girdiler,
                 _ => return Err(ic_hata(satir)),
             };
-            let anahtar = match degerlendir(anahtar, ortam, program, io, derinlik, satir)? {
+            let anahtar = match degerlendir_async(anahtar, ortam, program, io, derinlik, satir).await? {
                 Deger::Metin(m) => m,
                 _ => return Err(ic_hata(satir)),
             };
@@ -2084,18 +2508,18 @@ fn degerlendir(
         Ifade::SozlukteVar { sozluk, anahtar, olumsuz } => {
             {
                 // K-058: liste üyeliği — aynı yüzey.
-                let kap = degerlendir(sozluk, ortam, program, io, derinlik, satir)?;
+                let kap = degerlendir_async(sozluk, ortam, program, io, derinlik, satir).await?;
                 if let Deger::Liste(ogeler) = kap {
-                    let aranan = degerlendir(anahtar, ortam, program, io, derinlik, satir)?;
+                    let aranan = degerlendir_async(anahtar, ortam, program, io, derinlik, satir).await?;
                     let var = ogeler.iter().any(|o| degerler_esit(o, &aranan));
                     return Ok(Deger::Mantiksal(var != *olumsuz));
                 }
             }
-            let girdiler = match degerlendir(sozluk, ortam, program, io, derinlik, satir)? {
+            let girdiler = match degerlendir_async(sozluk, ortam, program, io, derinlik, satir).await? {
                 Deger::Sozluk(girdiler) => girdiler,
                 _ => return Err(ic_hata(satir)),
             };
-            let anahtar = match degerlendir(anahtar, ortam, program, io, derinlik, satir)? {
+            let anahtar = match degerlendir_async(anahtar, ortam, program, io, derinlik, satir).await? {
                 Deger::Metin(m) => m,
                 _ => return Err(ic_hata(satir)),
             };
@@ -2103,7 +2527,7 @@ fn degerlendir(
             Ok(Deger::Mantiksal(var != *olumsuz))
         }
         Ifade::MetinDonusum { nesne, buyuk } => {
-            let metin = match degerlendir(nesne, ortam, program, io, derinlik, satir)? {
+            let metin = match degerlendir_async(nesne, ortam, program, io, derinlik, satir).await? {
                 Deger::Metin(m) => m,
                 _ => return Err(ic_hata(satir)),
             };
@@ -2114,11 +2538,11 @@ fn degerlendir(
             }))
         }
         Ifade::Icerir { metin, aranan } => {
-            let metin = match degerlendir(metin, ortam, program, io, derinlik, satir)? {
+            let metin = match degerlendir_async(metin, ortam, program, io, derinlik, satir).await? {
                 Deger::Metin(m) => m,
                 _ => return Err(ic_hata(satir)),
             };
-            let aranan = match degerlendir(aranan, ortam, program, io, derinlik, satir)? {
+            let aranan = match degerlendir_async(aranan, ortam, program, io, derinlik, satir).await? {
                 Deger::Metin(m) => m,
                 _ => return Err(ic_hata(satir)),
             };
@@ -2135,11 +2559,16 @@ fn degerlendir(
         }
         Ifade::SureSabiti { milisaniye } => Ok(Deger::Sure { milisaniye: *milisaniye }),
         Ifade::HttpGetir(url) => {
-            let url = match degerlendir(url, ortam, program, io, derinlik, satir)? {
+            let url = match degerlendir_async(url, ortam, program, io, derinlik, satir).await? {
                 Deger::Metin(m) => m,
                 _ => return Err(ic_hata(satir)),
             };
             let zaman_asimi_ms = son_tarih_kalani(io, satir)?.map(|(_, kalan)| kalan);
+            if gorevde_miyiz() {
+                // İstek adaptörüne girmeden kardeşlere bir tur ver. Mevcut IO
+                // trait'i senkrondur; adaptör çağrısının içi atomik kalır.
+                gorev_bekleme_noktasi(0).await;
+            }
             let (durum, govde) = match io.http_getir(&url, zaman_asimi_ms) {
                 Ok(yanit) => {
                     son_tarihi_denetle(io, satir)?;
@@ -2164,11 +2593,11 @@ fn degerlendir(
             };
             Ok(Deger::AgYaniti { durum, govde })
         }
-        Ifade::DurumKodu(nesne) => match degerlendir(nesne, ortam, program, io, derinlik, satir)? {
+        Ifade::DurumKodu(nesne) => match degerlendir_async(nesne, ortam, program, io, derinlik, satir).await? {
             Deger::AgYaniti { durum, .. } => Ok(Deger::TamSayi(durum)),
             _ => Err(ic_hata(satir)),
         },
-        Ifade::Govde(nesne) => match degerlendir(nesne, ortam, program, io, derinlik, satir)? {
+        Ifade::Govde(nesne) => match degerlendir_async(nesne, ortam, program, io, derinlik, satir).await? {
             Deger::AgYaniti { govde, .. } => Ok(Deger::Metin(govde)),
             _ => Err(ic_hata(satir)),
         },
@@ -2180,8 +2609,8 @@ fn degerlendir(
             io.argumanlar().into_iter().map(Deger::Metin).collect(),
         )),
         Ifade::GunFarki { birinci, ikinci } => {
-            let bir = degerlendir(birinci, ortam, program, io, derinlik, satir)?;
-            let iki = degerlendir(ikinci, ortam, program, io, derinlik, satir)?;
+            let bir = degerlendir_async(birinci, ortam, program, io, derinlik, satir).await?;
+            let iki = degerlendir_async(ikinci, ortam, program, io, derinlik, satir).await?;
             match (bir, iki) {
                 (
                     Deger::Tarih { yil: y1, ay: a1, gun: g1 },
@@ -2193,16 +2622,16 @@ fn degerlendir(
             }
         }
         Ifade::GunSonrasi { tarih, miktar } => {
-            let (yil, ay, gun) = match degerlendir(tarih, ortam, program, io, derinlik, satir)? {
+            let (yil, ay, gun) = match degerlendir_async(tarih, ortam, program, io, derinlik, satir).await? {
                 Deger::Tarih { yil, ay, gun } => (yil, ay, gun),
                 _ => return Err(ic_hata(satir)),
             };
-            let miktar = tam_sayi(degerlendir(miktar, ortam, program, io, derinlik, satir)?, satir)?;
+            let miktar = tam_sayi(degerlendir_async(miktar, ortam, program, io, derinlik, satir).await?, satir)?;
             let (yil, ay, gun) = gunlerden_tarih(tarihten_gunler(yil, ay, gun) + miktar);
             Ok(Deger::Tarih { yil, ay, gun })
         }
         Ifade::BosMu { nesne, olumsuz } => {
-            let bos = match degerlendir(nesne, ortam, program, io, derinlik, satir)? {
+            let bos = match degerlendir_async(nesne, ortam, program, io, derinlik, satir).await? {
                 Deger::Liste(ogeler) => ogeler.is_empty(),
                 Deger::Sozluk(girdiler) => girdiler.is_empty(),
                 Deger::Metin(m) => m.is_empty(),
@@ -2232,7 +2661,7 @@ fn degerlendir(
             Ok(Deger::Yapi(alanlar))
         }
         Ifade::AlanErisim { nesne, alan } => {
-            let alanlar = match degerlendir(nesne, ortam, program, io, derinlik, satir)? {
+            let alanlar = match degerlendir_async(nesne, ortam, program, io, derinlik, satir).await? {
                 Deger::Yapi(alanlar) => alanlar,
                 _ => return Err(ic_hata(satir)),
             };
@@ -2243,11 +2672,11 @@ fn degerlendir(
                 .ok_or_else(|| ic_hata(satir))
         }
         Ifade::SecenekVar { nesne, olumsuz } => {
-            let deger = degerlendir(nesne, ortam, program, io, derinlik, satir)?;
+            let deger = degerlendir_async(nesne, ortam, program, io, derinlik, satir).await?;
             let var = deger != Deger::Yok;
             Ok(Deger::Mantiksal(var != *olumsuz))
         }
-        Ifade::IcDeger(nesne) => match degerlendir(nesne, ortam, program, io, derinlik, satir)? {
+        Ifade::IcDeger(nesne) => match degerlendir_async(nesne, ortam, program, io, derinlik, satir).await? {
             Deger::Yok => Err(Tani::yeni(
                 "C008",
                 "Değer yok: boş Seçenek'in değeri alınamaz.".into(),
@@ -2267,7 +2696,7 @@ fn degerlendir(
             .onerili("Önce \"... başarılıysa\" ile kontrol et.".into())),
             dolu => Ok(dolu),
         },
-        Ifade::SonucHatasi(nesne) => match degerlendir(nesne, ortam, program, io, derinlik, satir)? {
+        Ifade::SonucHatasi(nesne) => match degerlendir_async(nesne, ortam, program, io, derinlik, satir).await? {
             Deger::Sonuc { basarili: false, icerik } => Ok(*icerik),
             Deger::Sonuc { basarili: true, .. } => Err(Tani::yeni(
                 "C009",
@@ -2279,13 +2708,13 @@ fn degerlendir(
             _ => Err(ic_hata(satir)),
         },
         Ifade::SonucBasarili { nesne, olumsuz } => {
-            match degerlendir(nesne, ortam, program, io, derinlik, satir)? {
+            match degerlendir_async(nesne, ortam, program, io, derinlik, satir).await? {
                 Deger::Sonuc { basarili, .. } => Ok(Deger::Mantiksal(basarili != *olumsuz)),
                 _ => Err(ic_hata(satir)),
             }
         }
         Ifade::DosyaOkumayiDene(yol) => {
-            let yol = match degerlendir(yol, ortam, program, io, derinlik, satir)? {
+            let yol = match degerlendir_async(yol, ortam, program, io, derinlik, satir).await? {
                 Deger::Metin(m) => m,
                 _ => return Err(ic_hata(satir)),
             };
@@ -2301,7 +2730,7 @@ fn degerlendir(
             })
         }
         Ifade::TabloOku(yol) => {
-            let yol = match degerlendir(yol, ortam, program, io, derinlik, satir)? {
+            let yol = match degerlendir_async(yol, ortam, program, io, derinlik, satir).await? {
                 Deger::Metin(m) => m,
                 _ => return Err(ic_hata(satir)),
             };
@@ -2311,7 +2740,7 @@ fn degerlendir(
             csv_ayristir(&icerik, satir)
         }
         Ifade::VeriOku(yol) => {
-            let yol = match degerlendir(yol, ortam, program, io, derinlik, satir)? {
+            let yol = match degerlendir_async(yol, ortam, program, io, derinlik, satir).await? {
                 Deger::Metin(m) => m,
                 _ => return Err(ic_hata(satir)),
             };
@@ -2321,7 +2750,7 @@ fn degerlendir(
             json_nesnesi_ayristir(&icerik, satir)
         }
         Ifade::DosyaSatirlari(yol) => {
-            let yol = match degerlendir(yol, ortam, program, io, derinlik, satir)? {
+            let yol = match degerlendir_async(yol, ortam, program, io, derinlik, satir).await? {
                 Deger::Metin(m) => m,
                 _ => return Err(ic_hata(satir)),
             };
@@ -2338,8 +2767,8 @@ fn degerlendir(
             ))
         }
         Ifade::Parcala { metin, ayrac } => {
-            let m = degerlendir(metin, ortam, program, io, derinlik, satir)?.metne();
-            let a = degerlendir(ayrac, ortam, program, io, derinlik, satir)?.metne();
+            let m = degerlendir_async(metin, ortam, program, io, derinlik, satir).await?.metne();
+            let a = degerlendir_async(ayrac, ortam, program, io, derinlik, satir).await?.metne();
             let parcalar: Vec<Deger> = if a.is_empty() {
                 m.chars().map(|k| Deger::Metin(k.to_string())).collect()
             } else {
@@ -2348,8 +2777,8 @@ fn degerlendir(
             Ok(Deger::Liste(parcalar))
         }
         Ifade::ListeBirlestir { liste, ayrac } => {
-            let l = degerlendir(liste, ortam, program, io, derinlik, satir)?;
-            let a = degerlendir(ayrac, ortam, program, io, derinlik, satir)?.metne();
+            let l = degerlendir_async(liste, ortam, program, io, derinlik, satir).await?;
+            let a = degerlendir_async(ayrac, ortam, program, io, derinlik, satir).await?.metne();
             match l {
                 Deger::Liste(ogeler) => Ok(Deger::Metin(
                     ogeler.iter().map(|o| o.metne()).collect::<Vec<_>>().join(&a),
@@ -2358,9 +2787,9 @@ fn degerlendir(
             }
         }
         Ifade::Degistir { metin, eski, yeni } => {
-            let m = degerlendir(metin, ortam, program, io, derinlik, satir)?.metne();
-            let e = degerlendir(eski, ortam, program, io, derinlik, satir)?.metne();
-            let y = degerlendir(yeni, ortam, program, io, derinlik, satir)?.metne();
+            let m = degerlendir_async(metin, ortam, program, io, derinlik, satir).await?.metne();
+            let e = degerlendir_async(eski, ortam, program, io, derinlik, satir).await?.metne();
+            let y = degerlendir_async(yeni, ortam, program, io, derinlik, satir).await?.metne();
             if e.is_empty() {
                 return Err(Tani::yeni(
                     "C004",
@@ -2374,13 +2803,13 @@ fn degerlendir(
             Ok(Deger::Metin(m.replace(&e, &y)))
         }
         Ifade::MetinSinari { metin, parca, bitis } => {
-            let m = degerlendir(metin, ortam, program, io, derinlik, satir)?.metne();
-            let p = degerlendir(parca, ortam, program, io, derinlik, satir)?.metne();
+            let m = degerlendir_async(metin, ortam, program, io, derinlik, satir).await?.metne();
+            let p = degerlendir_async(parca, ortam, program, io, derinlik, satir).await?.metne();
             Ok(Deger::Mantiksal(if *bitis { m.ends_with(&p) } else { m.starts_with(&p) }))
         }
         Ifade::Rastgele { alt, ust } => {
-            let alt = tam_sayi(degerlendir(alt, ortam, program, io, derinlik, satir)?, satir)?;
-            let ust = tam_sayi(degerlendir(ust, ortam, program, io, derinlik, satir)?, satir)?;
+            let alt = tam_sayi(degerlendir_async(alt, ortam, program, io, derinlik, satir).await?, satir)?;
+            let ust = tam_sayi(degerlendir_async(ust, ortam, program, io, derinlik, satir).await?, satir)?;
             if alt > ust {
                 return Err(Tani::yeni(
                     "C006",
@@ -2405,13 +2834,13 @@ fn degerlendir(
         Ifade::Birlestir(parcalar) => {
             let mut metin = String::new();
             for parca in parcalar {
-                metin.push_str(&degerlendir(parca, ortam, program, io, derinlik, satir)?.metne());
+                metin.push_str(&degerlendir_async(parca, ortam, program, io, derinlik, satir).await?.metne());
             }
             Ok(Deger::Metin(metin))
         }
         Ifade::Karsilastirma { sol, sag, islec } => {
-            let sol = degerlendir(sol, ortam, program, io, derinlik, satir)?;
-            let sag = degerlendir(sag, ortam, program, io, derinlik, satir)?;
+            let sol = degerlendir_async(sol, ortam, program, io, derinlik, satir).await?;
+            let sag = degerlendir_async(sag, ortam, program, io, derinlik, satir).await?;
             // Sayısal çift değer üzerinden hizalanarak karşılaştırılır
             // (2 = 2,0 doğrudur; 1,5 < 2 çalışır — RFC-0013 §2).
             if let (Deger::Sure { milisaniye: a }, Deger::Sure { milisaniye: b }) = (&sol, &sag)
@@ -2446,7 +2875,7 @@ fn degerlendir(
         Ifade::MantiksalZincir { hepsi, parcalar } => {
             // Kısa devre: VE ilk yanlışta, VEYA ilk doğruda durur.
             for parca in parcalar {
-                let deger = mantiksal(degerlendir(parca, ortam, program, io, derinlik, satir)?, satir)?;
+                let deger = mantiksal(degerlendir_async(parca, ortam, program, io, derinlik, satir).await?, satir)?;
                 if deger != *hepsi {
                     return Ok(Deger::Mantiksal(deger));
                 }
@@ -2454,32 +2883,32 @@ fn degerlendir(
             Ok(Deger::Mantiksal(*hepsi))
         }
         Ifade::Degil(ic) => {
-            let deger = mantiksal(degerlendir(ic, ortam, program, io, derinlik, satir)?, satir)?;
+            let deger = mantiksal(degerlendir_async(ic, ortam, program, io, derinlik, satir).await?, satir)?;
             Ok(Deger::Mantiksal(!deger))
         }
         Ifade::Cift(ic) => {
-            let s = tam_sayi(degerlendir(ic, ortam, program, io, derinlik, satir)?, satir)?;
+            let s = tam_sayi(degerlendir_async(ic, ortam, program, io, derinlik, satir).await?, satir)?;
             Ok(Deger::Mantiksal(s % 2 == 0))
         }
         Ifade::Tek(ic) => {
-            let s = tam_sayi(degerlendir(ic, ortam, program, io, derinlik, satir)?, satir)?;
+            let s = tam_sayi(degerlendir_async(ic, ortam, program, io, derinlik, satir).await?, satir)?;
             Ok(Deger::Mantiksal(s % 2 != 0))
         }
         Ifade::Aritmetik { islec, sol, sag } => {
-            let sol = degerlendir(sol, ortam, program, io, derinlik, satir)?;
-            let sag = degerlendir(sag, ortam, program, io, derinlik, satir)?;
+            let sol = degerlendir_async(sol, ortam, program, io, derinlik, satir).await?;
+            let sag = degerlendir_async(sag, ortam, program, io, derinlik, satir).await?;
             sayisal_islem(islec, &sol, &sag, satir)
         }
         Ifade::IslemCagrisi { islem_adi, argumanlar, .. } => {
             let mut degerler = Vec::new();
             for arg in argumanlar {
-                degerler.push(degerlendir(arg, ortam, program, io, derinlik, satir)?);
+                degerler.push(degerlendir_async(arg, ortam, program, io, derinlik, satir).await?);
             }
-            islem_cagir(islem_adi, degerler, program, io, derinlik + 1, satir)?
+            islem_cagir(islem_adi, degerler, program, io, derinlik + 1, satir).await?
                 .ok_or_else(|| ic_hata(satir))
         }
         Ifade::SayiyiDene(ic) => {
-            let metin = match degerlendir(ic, ortam, program, io, derinlik, satir)? {
+            let metin = match degerlendir_async(ic, ortam, program, io, derinlik, satir).await? {
                 Deger::Metin(m) => m,
                 _ => return Err(ic_hata(satir)),
             };
@@ -2499,7 +2928,7 @@ fn degerlendir(
             })
         }
         Ifade::OndaligiDene(ic) => {
-            let metin = match degerlendir(ic, ortam, program, io, derinlik, satir)? {
+            let metin = match degerlendir_async(ic, ortam, program, io, derinlik, satir).await? {
                 Deger::Metin(m) => m,
                 _ => return Err(ic_hata(satir)),
             };
@@ -2537,7 +2966,7 @@ fn degerlendir(
             })
         }
         Ifade::Ondaligi(ic) => {
-            let metin = match degerlendir(ic, ortam, program, io, derinlik, satir)? {
+            let metin = match degerlendir_async(ic, ortam, program, io, derinlik, satir).await? {
                 Deger::Metin(m) => m,
                 _ => return Err(ic_hata(satir)),
             };
@@ -2572,7 +3001,7 @@ fn degerlendir(
             ondalik_yap(govde, olcek, satir)
         }
         Ifade::Sayisi(ic) => {
-            let metin = match degerlendir(ic, ortam, program, io, derinlik, satir)? {
+            let metin = match degerlendir_async(ic, ortam, program, io, derinlik, satir).await? {
                 Deger::Metin(m) => m,
                 _ => return Err(ic_hata(satir)),
             };
@@ -2589,6 +3018,7 @@ fn degerlendir(
             })
         }
     }
+    })
 }
 
 fn tam_sayi(deger: Deger, satir: usize) -> Result<i64, Tani> {

@@ -82,6 +82,17 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   giydirir. `proje.dil` profili sabitler (P011), `proje.kilit` v2 ana/paket
   profilini taşır; `dil morfoloji [kelime]` kararı görünür kılar. 333 test ve
   139 katalog koduyla V1-P1-02 kapandı.
+- **Deterministik görev scheduler'ı** (K-090, RFC-0011/spec-14):
+  `eşzamanlı olarak` görevleri artık kaynak sırasında bitiren sahte bir blok
+  değildir; `hepsini bekle`, tek iş parçacıklı future scheduler'ında görevleri
+  `bekle` noktalarında dönüşümlü ilerletir. Kaynak sırası bağlayıcıdır; 2 sn ve
+  1 sn bekleyen görevler toplam 2 sn'de biter ve data race oluşmaz. İlk
+  yönetilmemiş hata bekleyen kardeşleri sonraki yan etkileri başlamadan iptal
+  eder; dış son tarih bütün görev ağacına yayılır. T051 her grubu aynı
+  sözcüksel kapsamda tek join'e zorlar; T033 sonuç erişimini join sonrasına
+  bırakır. Eylem transaction'ları savepoint sahipliği için atomik scheduler
+  dilimidir. 343 test ve 140 katalog koduyla V1-P1-03 kapandı; çok çekirdekli
+  paralellik v1 sözü değildir.
 
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`

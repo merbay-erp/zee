@@ -156,10 +156,12 @@ eşzamanlı olarak
 hepsini bekle
 sonucu döndür
 
-**Stage 0 sınırı:** K-085 ile deadline mutlak son tarih olarak blok/işlem/döngü
-sınırlarına yayılır; bekleme kalan süreye kırpılır, HTTP kalan bütçeyi alır ve
-iptalden sonraki yan etkiler çalışmaz. Görevler hâlâ kaynak sırasında yürür;
-gerçek paralel scheduler V1-P1-03 kapısıdır. Bağlayıcı durum:
+**Stage 0 gerçeklemesi:** K-090 ile görevler deterministik tek-thread
+scheduler'da `bekle` noktalarında dönüşümlü ilerler; `hepsini bekle` sonuçları
+birleştirir. Sözcüksel sahiplik T051 ile sahipsiz görevi engeller, ilk hata
+kardeşleri iptal eder. K-085 mutlak son tarihi bütün görev ağacına yayılır;
+bekleme kalan süreye kırpılır ve iptalden sonraki yan etkiler çalışmaz.
+Çok çekirdekli paralellik v1 sözü değildir. Bağlayıcı anlam: spec/14 ve
 [v1 sürüm kapıları](v1-surum-kapilari.md).
 # 11. Derleyici ve runtime mimarisi
 Kaynak .dil

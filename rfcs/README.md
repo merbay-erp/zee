@@ -16,7 +16,7 @@ Dil değişikliği RFC ister (master plan bölüm 25). Şablon: [0000-sablon.md]
 | RFC-0008 | [Seçenek ve Sonuç](0008-secenek-ve-sonuc.md) | **geçici kabul** (daraltma dahil) | K-017, K-018, K-030 |
 | RFC-0009 | [Modül ve Paket Modeli](0009-modul-ve-paket.md) | **geçici kabul** (birim + proje + yerel paket/kilit + public kaynak ABI); uzak registry taslak | K-029, K-076, K-078, K-086 |
 | RFC-0010 | [Hata ve Tanılama Standardı](0010-hata-ve-tanilama.md) | **kabul** | K-026 |
-| RFC-0011 | [Structured Concurrency](0011-structured-concurrency.md) | **geçici kabul** (K-085 deadline; paralellik Faz 5) | K-023, K-085 |
+| RFC-0011 | [Structured Concurrency](0011-structured-concurrency.md) | **geçici kabul** (K-085 deadline; K-090 deterministik scheduler+sahiplik) | K-023, K-085, K-090 |
 | RFC-0012 | [FFI ve Tehlikeli Sınır](0012-ffi-ve-tehlikeli-sinir.md) | **taslak** | A10 |
 | RFC-0013 | [Ondalık Sayılar](0013-ondalik-sayilar.md) | **geçici kabul** | K-028 |
 | RFC-0014 | [Standart Kitaplık](0014-standart-kitaplik.md) | **taslak — çalışan prototip ekli** | K-046, K-048, RFC-0002 §6.3 |
@@ -25,7 +25,7 @@ Dil değişikliği RFC ister (master plan bölüm 25). Şablon: [0000-sablon.md]
 | RFC-0017 | [Web Oturumu, Yetki, CSRF ve Güvenilir Proxy](0017-web-oturum-ve-csrf.md) | **geçici kabul** | K-082, K-088, V1-P0-03 |
 | RFC-0018 | [Sürümlü Morfoloji Profili](0018-surumlu-morfoloji-profili.md) | **geçici kabul** | K-011, K-072, K-089, V1-P1-02 |
 
-**Durum özeti (1 Eylül 2026, K-089):** 18 RFC — 2 kabul (0001, 0010),
+**Durum özeti (1 Eylül 2026, K-090):** 18 RFC — 2 kabul (0001, 0010),
 14 geçici kabul (yüzey gerçeklendi + korpusla/testle sabitlendi; onay kapısı
 usability oturumları), 2 taslak: 0012 (FFI — Faz 4/5) ve 0014 (standart
 kitaplık — çalışan prototiple).

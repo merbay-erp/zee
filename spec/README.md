@@ -35,11 +35,12 @@ Kırıcı değişiklik sessizce yapılamaz: davranış değişikliği RFC'den ge
 | [11 — Uygulama eylemleri ve web adaptörü](11-uygulama-eylemleri-ve-web-adaptoru.md) | açık eylem imzası, etki çıkarımı, yöntemli rota, savepoint/geri alma | RFC-0015 |
 | [12 — Web güvenlik profili](12-web-guvenlik-profili.md) | erişim politikası, Argon2id, sunucu oturumu/rol, CSRF, güvenli çerez ve HTTPS proxy sınırı | RFC-0017 |
 | [13 — Sürümlü morfoloji profili](13-surumlu-morfoloji-profili.md) | `zee-tr-1`, ek tablosu, çözüm↔üretim, proje/paket sabitlemesi | RFC-0018 |
+| [14 — Yapılandırılmış eşzamanlılık](14-yapilandirilmis-eszamanlilik.md) | görev grubu, deterministik scheduler, sahiplik, hata/iptal yayılımı | RFC-0011, K-090 |
 
 ## Faza bağlı — henüz spec dışı
 
-Gerçek paralel görev zamanlayıcısı (RFC-0011, Faz 5), ikili FFI/ABI (RFC-0012,
-Faz 4/5), standart kütüphane kararlılık
+Çok çekirdekli paralellik ve yarış/akış/dinamik görev yüzeyleri (RFC-0011),
+ikili FFI/ABI (RFC-0012, Faz 4/5), standart kütüphane kararlılık
 politikası, çok süreçli web durumu/idempotency (RFC-0015/0017), uzak
 paket/registry (RFC-0009 §4.2) ve genel deprecation/edition modeli. Morfoloji
 profili için kırıcı sürüm sınırı spec/13'te şimdiden tanımlıdır.
