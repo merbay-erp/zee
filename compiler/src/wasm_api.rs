@@ -60,6 +60,7 @@ impl GirdiCikti for PlaygroundIo {
     }
     fn yanit_gonder(&mut self, _yanit: &str) {}
     fn yonlendir_gonder(&mut self, _adres: &str) {}
+    fn cerez_yaz(&mut self, _ad: &str, _deger: &str) {}
     fn sensor_acik_mi(&mut self, ad: &str) -> bool {
         self.ic.sensor_acik_mi(ad)
     }

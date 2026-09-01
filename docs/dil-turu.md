@@ -370,7 +370,17 @@ verisi HTML'e daima `html güvenlisi` ile gömülür:
 # listede: satırın html güvenlisi  ← kullanıcı verisi kaçışlanır
 ```
 
-Çalışan admin panel örneği: projeler/panel-not-defteri.dil.
+Oturum için çerez kapısı (K-052): `çerezler` sözlüğü + `çerezine yaz`:
+
+```
+çerezlerde "oturum" varsa
+    kimlik çerezlerin "oturum" değeri olsun
+    ...
+"oturum" çerezine kimlik yaz
+```
+
+Çalışan örnekler: projeler/panel-not-defteri.dil (temel) ve
+projeler/girisli-panel.dil (parola + oturumlu — mantık saf zee).
 
 ## 19. Fiziksel dünya (ESP32)
 

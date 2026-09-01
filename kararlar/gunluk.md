@@ -464,6 +464,27 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
 - **Mimari:** istek ayrıştırma tek yerde (istek_parcala) — sahte ve gerçek
   sunucu aynı yolu koşar; hermetik test gerçeği temsil eder.
 
+## K-052 — Oturum kapısı: çerez okuma/yazma
+
+- **Mandat (kurucu):** "daha giriş aşamasında; her projemde kullanabileceğim
+  ileri seviye bir dil olmalı" — sıradaki sütun gerçek giriş/oturum.
+- **Karar:** Dile yalnız IO kapısı girdi (turnusol, RFC-0014): rota
+  gövdesinde örtük `çerezler` sözlüğü (Cookie başlığından) ve
+  `"oturum" çerezine kimlik yaz` cümlesi (yanıtla Set-Cookie; Path=/;
+  HttpOnly). OTURUM MANTIĞININ TAMAMI ZEE'DE: rastgele kimlik üret,
+  oturumlar.txt'ye ekle, korumalı rotada dosyadan doğrula
+  (projeler/girisli-panel.dil — `işlem oturumu geçerli mi`).
+- **Kanıt:** tarayıcıda canlı (çerezsiz /yonet → /giris; yanlış parola
+  reddi; girişten sonra korumalı form) + hermetik tam döngü testi
+  (sahte çerez reddi dahil). İstek biçimi: "YÖNTEM yol\nçerez a=1; b=2\ngövde".
+- **Sınır bilinci (değişmedi):** parola kaynak/dosyada DÜZ metin — hash
+  yok (bölüm 13 güvenlik katmanı Faz sonrası); HTTPS yok. Bu panel yerel
+  ağ/ders düzeyidir; internete çıkacak sürüm Faz 5 güvenlik dalgasını bekler.
+- **bulgu (yumuşama, üçüncü kez):** "kimliği al" → kimliğ. Yapısal
+  ayıklamada k→ğ tersinmesi belirsiz (dağı→dağ meşru). Ders kalıcı:
+  parametre adını yalın-ünsüzle bitir (anahtar, gövde, kuvvet-yerine-üs
+  ikizleşmeden çalışır). Usability kitine eklendi sayılır.
+
 ## K-012 — Liste sabiti: `3, 7, 1, 9 listesi`
 
 - **Karar:** Virgülle ayrılmış değerler + `listesi`. Boş: `boş liste`.

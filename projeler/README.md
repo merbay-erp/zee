@@ -22,6 +22,7 @@ kutusuna satır satır yaz.) Ya da: `dil çalıştır projeler/<dosya>.dil`
 | [gun-sayar.dil](gun-sayar.dil) | Tarih türü, gün aritmetiği | Doğum gününe kaç gün kaldığını hesapla |
 | [mini-site.dil](mini-site.dil) | GERÇEK web sitesi: sunucu + rotalar + HTML | Yeni bir sayfa rotası ekle |
 | [panel-not-defteri.dil](panel-not-defteri.dil) | admin panel: form + kaydet + yönlendir | Silme rotası ekle; anahtarı değiştir |
+| [girisli-panel.dil](girisli-panel.dil) | parola + oturum (çerez) — mantık saf zee | Çıkışta oturumu dosyadan da sil |
 
 Hepsi regression testindedir (`compiler/tests/projeler_testi.rs`) — dil
 değişirse bu projeler kırılamaz; kırılırsa CI söyler.

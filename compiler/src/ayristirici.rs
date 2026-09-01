@@ -844,6 +844,13 @@ impl Ayristirici {
     fn yaz_ayristir(&mut self, mut tokenlar: Vec<Token>, satir: usize) -> Result<Cumle, Tani> {
         tokenlar.pop(); // "yaz"
 
+        // Çereze yazma (K-052): `"oturum" çerezine kimlik yaz`.
+        if tokenlar.len() >= 3 && kelime_mi(&tokenlar[1], "çerezine") {
+            let ad = tekil_ifade(tokenlar[0].clone())?;
+            let deger = ile_ifadesi(&tokenlar[2..], satir, &self.islem_adlari)?;
+            return Ok(Cumle::CerezYaz { ad, deger, satir });
+        }
+
         // Hedefli yazma (K-019): `"X" dosyasına ... yaz`.
         if tokenlar.len() >= 3 && kelime_mi(&tokenlar[1], "dosyasına") {
             let yol = tekil_ifade(tokenlar[0].clone())?;

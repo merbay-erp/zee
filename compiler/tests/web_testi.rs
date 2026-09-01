@@ -114,3 +114,43 @@ fn panel_not_defteri_tam_dongu() {
     assert!(son_liste.contains("Süt al &lt;b&gt;"), "not kaçışlanmış görünmeli: {}", son_liste);
     assert!(!son_liste.contains("<b>"), "ham HTML sızmamalı");
 }
+
+#[test]
+fn girisli_panel_oturum_dongusu() {
+    // Tam güvenlik akışı, hermetik: çerezsiz yönet → girişe; yanlış parola →
+    // girişe; doğru parola → çerez + yönet; çerezle kaydet → not listede.
+    let kaynak = std::fs::read_to_string("../projeler/girisli-panel.dil").expect("okunmalı");
+    let program = dil::kaynagi_derle(&kaynak).expect("derlenmeli");
+    let mut io = ToplayanIo::yeni(Vec::new());
+    io.istekler = vec![
+        "/yonet".to_string(),
+        "POST /giris-yap\nparola=yanlis".to_string(),
+        "POST /giris-yap\nparola=zee2026".to_string(),
+    ]
+    .into();
+    calistir_io(&program, &mut io).expect("ilk tur çalışmalı");
+
+    assert_eq!(io.sunucu_yanitlari[0].1, "→ /giris", "çerezsiz yönetim girişe atmalı");
+    assert_eq!(io.sunucu_yanitlari[1].1, "→ /giris", "yanlış parola girişe atmalı");
+    assert_eq!(io.sunucu_yanitlari[2].1, "→ /yonet", "doğru parola yönetime almalı");
+    assert_eq!(io.yazilan_cerezler.len(), 1, "oturum çerezi yazılmalı");
+    let (cerez_adi, kimlik) = io.yazilan_cerezler[0].clone();
+    assert_eq!(cerez_adi, "oturum");
+
+    // İkinci tur: aynı sahte dünyada (dosyalar taşınır) çerezle korumalı işlemler.
+    let mut io2 = ToplayanIo::yeni(Vec::new());
+    io2.dosyalar = io.dosyalar.clone();
+    io2.istekler = vec![
+        format!("/yonet\nçerez oturum={}", kimlik),
+        format!("POST /kaydet\nçerez oturum={}\nnot=Gizli+plan", kimlik),
+        "/".to_string(),
+        "POST /kaydet\nçerez oturum=sahte999\nnot=Korsan".to_string(),
+    ]
+    .into();
+    let _ = kimlik;
+    calistir_io(&program, &mut io2).expect("ikinci tur çalışmalı");
+    assert!(io2.sunucu_yanitlari[0].1.contains("<form"), "geçerli çerez formu açmalı");
+    assert_eq!(io2.sunucu_yanitlari[1].1, "→ /", "kaydet ana sayfaya dönmeli");
+    assert!(io2.sunucu_yanitlari[2].1.contains("Gizli plan"), "not listede olmalı");
+    assert_eq!(io2.sunucu_yanitlari[3].1, "→ /giris", "sahte çerez reddedilmeli");
+}
