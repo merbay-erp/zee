@@ -39,8 +39,8 @@ Projeler `yerel_bağımlılıklar` ile başka zee projelerini doğrudan paket ol
 alabilir; `dil kilitle .` bütün geçişli grafiği göreli yol, sürüm ve SHA-256
 içerik özetiyle deterministik `proje.kilit` dosyasına sabitler (K-078).
 
-Çalışan golden programlar (regression testte): **33'te 33 — KORPUSUN TAMAMI**
-(orijinal 30 + 31 birimler, 32 ondalık market, 33 açık işlem imzası) —
+Çalışan golden programlar (regression testte): **NUMARALI KORPUSUN TAMAMI**
+(orijinal seri + birimler, ondalık market ve açık işlem imzası) —
 **v0.1 kabul listesindeki 4 program da çalışıyor.** Desteklenen yüzey: `olsun`,
 `yaz` (ekrana ve `dosyasına`), `ile`, `ise/değilse` zinciri, dört döngü,
 `artır/azalt`, `diye sor`/`yanıt`, rastgele sayı, genitif aritmetik, listeler
@@ -80,13 +80,12 @@ parametre türleri**
 (`sayıyı Ondalık olarak al`) ve public **dönüş sözleşmesi**
 (`Ondalık döndürür` / `değer döndürmez`), **proje bildirimi** (`proje.dil`, klasörden
 çalıştır/denetle/dene), **yerel paketler** (`X paketini kullan`), süreçler
-arası kilitli **atomik dosya yazma** ve 145 etkin Türkçe kodlu tanı
-(3 tarihsel kod ayrılmış mezar taşıdır).
+arası kilitli **atomik dosya yazma** ve sürüm kimlikli Türkçe tanı kataloğu.
 Araçlar: `dil çalıştır(--güvenli/--deneysel-web/--web-proxy)/iz(kaydet/oynat)/parola-özeti/denetle(--json)/dene/biçimle/ekle/çıkar/kilitle/paketler/anahtar(üret)/paketle/hata/belge/morfoloji/yeni`
 + **dillsp** LSP sunucusu — tanılar, hover, tanıma git, **morfolojili
 yeniden adlandırma (F2)** ([editors/](editors/)).
 Determinizm testlerde tam: rastgelelik, saat, dosyalar, HTTP, sunucu istekleri,
-sensörler ve an ölçümü IO soyutlamasından gelir — 463 test hermetik koşar.
+sensörler ve an ölçümü IO soyutlamasından gelir; bütün testler hermetik koşar.
 Lexer/parser panic-free ve morfoloji üret→çöz sözlerini ayrıca kalıcı saldırı
 korpusları, deterministik üretim ve gecelik [libFuzzer hattı](docs/fuzzing.md)
 denetler. Parser sonrası AST ile checker sonrası typed HIR arasındaki iç
@@ -117,7 +116,7 @@ altında dondurulmuştur; `baslangic` ve `dogum` etiketleri GitHub'a da itildi.
 | Türkçe tanımlayıcılar sorunsuz | ✅ |
 | Girinti blokları deterministik | ✅ (sekme/karışık girinti hatası testli) |
 | Temel type errors Türkçe ve kaynak konumlu | ✅ (S/A/T/C kodları + öneri) |
-| Formatter idempotent | ✅ `dil biçimle` — 30 golden dosyada idempotentlik testli |
+| Formatter idempotent | ✅ `dil biçimle` — bütün golden dosyalarında idempotentlik testli |
 | Windows/macOS/Linux interpreter/CLI | ✅ üç platformda CI yeşil (31 Ağu 2026) |
 | Golden corpus CI'da | ✅ her push'ta 3 platformda koşuyor |
 | Kaynak kodda İngilizce keyword gerekmez | ✅ |
@@ -129,13 +128,28 @@ korpus üzerinde regression testine girer.
 | Ne | Nerede | Durum |
 |---|---|---|
 | Manifesto ve değişmez ilkeler | [MANIFESTO.md](MANIFESTO.md) | ✅ ilk sürüm |
-| 33 golden program | [golden/](golden/) | ✅ tamamı regression testte; sözdizimi RFC'lerle geçici kabulde |
-| 11 anti-örnek | [anti-ornekler/](anti-ornekler/) | ✅ (A11: nokta-ondalık) |
+| Golden programlar | [golden/](golden/) | ✅ tamamı regression testte; sözdizimi RFC'lerle geçici kabulde |
+| Anti-örnekler | [anti-ornekler/](anti-ornekler/) | ✅ geçersiz yüzeyler kalıcı korpusta |
 | Syntax karar günlüğü | [kararlar/gunluk.md](kararlar/gunluk.md) | ✅ işleniyor |
-| RFC süreci | [rfcs/](rfcs/) | ✅ 23 RFC: 2 kabul, 19 geçici kabul, 2 taslak |
-| ADR süreci | [adr/](adr/) | ✅ 26 kabul (001-003, 006-028); 004/005 faz verisi bekliyor |
-| Hata kataloğu | [docs/hata-katalogu.md](docs/hata-katalogu.md) | ✅ 145 etkin + 3 ayrılmış kod; kaynak ve sürüm kimliği testli |
+| RFC süreci | [rfcs/](rfcs/) | ✅ durum dağılımı aşağıdaki canlı tabloda |
+| ADR süreci | [adr/](adr/) | ✅ kabul sayısı aşağıdaki canlı tabloda; 004/005 faz verisi bekliyor |
+| Hata kataloğu | [docs/hata-katalogu.md](docs/hata-katalogu.md) | ✅ kaynak ve sürüm kimliği testli |
 | Spesifikasyon | [spec/](spec/) | ✅ başladı — normatif çekirdek (RFC'lere bağlar) |
+| Kanıt haritası | [docs/depo-butunlugu.md](docs/depo-butunlugu.md) | ✅ bütün RFC/ADR/spec → test yolları ve canlı sayılar CI'da |
+
+<!-- ZEE-DEPO-SAYILARI:BEGIN -->
+<!-- `cd compiler && cargo run --bin depo_sayilari -- --yaz` üretir. Elle değiştirme. -->
+### Canlı depo sayıları
+
+| Ölçüm | Tek kaynaklı değer |
+|---|---:|
+| Golden program | **33/33** |
+| Rust + doctest vakası | **465** |
+| Tanı kimliği | **145 etkin + 3 ayrılmış** |
+| RFC | **23** (2 kabul, 19 geçici kabul, 2 taslak) |
+| ADR | **26** (26 kabul) |
+| Normatif spec bölümü | **22** |
+<!-- ZEE-DEPO-SAYILARI:END -->
 
 ### Golden korpus hakkında
 
@@ -238,6 +252,9 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   adlı sabit fixture üç Tier-1 işletim sisteminde aynı byte'ı arar ve
   [80 vakalık saldırı korpusu](docs/zep-conformance.md) ayraç benzerleriyle
   görünmez bidi yollarını fail-closed reddeder.
+  K-118/ADR-010 her RFC/ADR/spec'i test dosyalarına bağlayan
+  [kanıt haritasını](docs/depo-butunlugu.md) ve README canlı sayı üreticisini
+  tazelik testine bağladı; sayılar artık elle tutulmuyor.
   Uygulama sırası
   [öncelikli backlog](docs/oncelikli-backlog.md) ile sabittir.
   Bağlayıcı liste: [docs/v1-surum-kapilari.md](docs/v1-surum-kapilari.md).

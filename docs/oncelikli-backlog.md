@@ -40,9 +40,12 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 14. K-117/ADR-028 `.zep` yollarını NFC'ye kanonikledi; Tier-1 işletim sistemi
     fixture'ı ve 80 vakalık kalıcı saldırı korpusuyla B-030/B-031 kapandı
     (463 test).
-15. Sıradaki makine omurgası B-043 spec↔code kanıt haritası ve B-044 hareketli
-    sayıların tek kaynağıdır.
-16. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
+15. K-118/ADR-010 revizyonu 71 RFC/ADR/spec belgesini test dosyalarına bağladı;
+    README canlı sayılarını depo ağacından üreten araçla B-043/B-044 kapandı
+    (465 test).
+16. Sıradaki makine omurgası B-041 LSP SymbolId/HIR bağı ve B-042 formatter
+    parse-equivalence kanıtıdır.
+17. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
 
 ## P0 — V1 öncesi dil ve derleyici omurgası
 
@@ -276,17 +279,22 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   morfolojili adlarda parser metin tahmininden kurtulmalıdır.
 - **B-042 · KISMEN — formatter parse-equivalence property.** İdempotence vardır;
   `parse(format(x))` semantiği `parse(x)` ile eşit olmalıdır.
-- **B-043 · SIRADA — spec↔code kanıt haritası.** Her RFC/ADR/spec'in test
-  dosyalarını makine-okunur tek tabloda izle.
-- **B-044 · SIRADA — hareketli README sayılarını tek kaynaktan üret.** Golden,
-  tanı, RFC/ADR ve test sayıları script/xtask çıktısı olup tazelik testinde
-  doğrulanmalıdır.
+- **B-043 · KAPALI (K-118) — spec↔code kanıt haritası.** 23 RFC, 26 ADR ve
+  22 spec bölümü `docs/kanit-haritasi-v1.tsv` içinde `kanitli/kismi/taslak`
+  durumu, yürütülebilir test yolları ve açık kapsam notuyla birebir izlenir.
+  Tazelik testi eksik/yinelenen belgeyi, olmayan ya da test taşımayan kanıt
+  dosyasını ve testsiz tamamlanmış satırı reddeder.
+- **B-044 · KAPALI (K-118) — hareketli README sayılarını tek kaynaktan üret.**
+  `depo_sayilari`; golden, Rust+doctest, tanı kimliği, RFC durumları, ADR ve
+  spec sayılarını gerçek dosyalardan çıkarır. `--yaz` README bloğunu atomik
+  üretir, `--denetle` byte farkını CI hatası yapar; bakım sözleşmesi
+  [depo bütünlüğü rehberindedir](depo-butunlugu.md).
 - **B-045 · KAPALI İLKE — self-hosting'e erken atlama.** P0 omurga ve semantik
   V1 yaklaşmadan Rust bootstrap'tan ikinci compiler'a borç kopyalanmaz.
 
 ## Bir sonraki somut kapı
 
 İnsan kanıtı hattında B-001, doldurulmuş gerçek usability formları ve önceden
-ilan edilmiş eşikleri bekler. Makine hattında B-030/B-031/K-117 kapandı;
-sıradaki iş B-043 spec↔code kanıt haritası ile B-044 hareketli README/test/RFC/
-ADR sayılarının tek kaynaktan üretilmesidir.
+ilan edilmiş eşikleri bekler. Makine hattında B-043/B-044/K-118 kapandı;
+sıradaki iş B-041 LSP'nin SymbolId/HIR bağı ve B-042 formatter
+parse-equivalence property kanıtıdır.

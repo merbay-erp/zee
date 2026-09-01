@@ -12,7 +12,7 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-003 | [İlk yürütme: ağaç-yürüyen yorumlayıcı + IO soyutlaması](003-ilk-yurutme-modeli.md) | **kabul** |
 | ADR-006 | [Paket registry güven modeli](006-paket-registry-guven-modeli.md) | **kabul** (K-094 yayın; K-095 metadata; K-117 kanonik yol; taşıma/cache aşamalı) |
 | ADR-009 | [Dilin adı: zee](009-dil-adi.md) | **kabul** (kurucu yetki devriyle) |
-| ADR-010 | [Normatif otorite ve değişiklik bütünlüğü](010-normatif-otorite-ve-degisiklik-butunlugu.md) | **kabul** |
+| ADR-010 | [Normatif otorite ve değişiklik bütünlüğü](010-normatif-otorite-ve-degisiklik-butunlugu.md) | **kabul** (K-118 kanıt/sayı tazelik kapısı) |
 | ADR-011 | [Core AST intrinsic/yetkinlik sınırı](011-intrinsic-yetkinlik-siniri.md) | **kabul** (K-098/B-004) |
 | ADR-012 | [Derleyici fiziksel faz modülleri](012-derleyici-faz-modulleri.md) | **kabul** (K-099/B-005) |
 | ADR-013 | [Checker semantik katmanları](013-checker-katmanlari.md) | **kabul** (K-100/B-006) |

@@ -1731,6 +1731,28 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   [`.zep` conformance rehberi](../docs/zep-conformance.md), sürüm notu ve
   V1-P1-08 aynı değişiklikte güncellendi. B-030/B-031 kapandı.
 
+## K-118 — Normatif kanıtı ve hareketli depo sayılarını makineye bağla (2 Eyl)
+
+- **Sorun:** RFC/ADR/spec indeksleri dosyanın varlığını gösteriyor, hangi testin
+  hangi sözü kanıtladığını tek yerde göstermiyordu. README'deki golden, test,
+  tanı ve karar sayıları da her dilimde elle aranıp değiştiriliyor; unutulan
+  sayı semantik belgeden daha az ciddi olmayan drift üretiyordu.
+- **Kanıt haritası:** 23 RFC, 26 ADR ve 22 spec bölümü; `kanitli`, `kismi` veya
+  `taslak` durumu, gerçek Rust test dosyaları ve açık kapsam notuyla 71 satırlı
+  sürümlü TSV'de birebir bağlandı. Yeni/yinelenen/eksik belge, olmayan ya da
+  test taşımayan `.rs` yolu ve testsiz tamamlanmış kayıt CI'da reddedilir.
+- **Tek sayı kaynağı:** `depo_sayilari`; numaralı golden dosyalarını,
+  `#[test]`+compile-fail doctest vakalarını, tanı fixture durumlarını, RFC durum
+  satırlarını ve ADR/spec dosyalarını doğrudan sayar. `--yaz` README işaretli
+  bloğunu atomik günceller; `--denetle` byte farkında başarısız olur.
+- **Kapsam:** Tarihsel K kayıtlarındaki o güne ait test toplamları snapshot'tır;
+  araç yalnız README'deki bugünkü canlı tabloyu sahiplenir. Harita test
+  dosyasının varlığını yapısal kanıtlar; testin normatif iddiayı gerçekten
+  karşıladığı yine kod incelemesinin sorumluluğudur.
+- **Kanıt:** ADR-010 revizyonu, [depo bütünlüğü rehberi](../docs/depo-butunlugu.md),
+  harita kapsamı ve README üretici tazeliği için iki yeni regresyon. Toplam 465
+  test yeşildir; B-043/B-044 kapandı.
+
 ---
 
 ## Sonraki adım
@@ -1739,5 +1761,5 @@ Korpus 10 öğrenci + 5 profesyonel usability oturumuna (Hafta 12 hedefi, erkeni
 Hafta 2'de kağıt üstünde) sesli okutulacak; her kayıt için "doğal mı /
 deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
-Makine hattında B-030/B-031/K-117 kapandı. Sırada B-043 spec↔code kanıt
-haritası ve B-044 hareketli test/RFC/ADR sayılarının tek kaynağı vardır.
+Makine hattında B-043/B-044/K-118 kapandı. Sırada B-041 LSP'nin SymbolId/HIR
+bağı ve B-042 formatter parse-equivalence property kanıtı vardır.
