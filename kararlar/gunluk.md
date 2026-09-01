@@ -573,6 +573,22 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
 - **Korpus revizyonu:** golden 19 yeni anlamla güncellendi (ham → sayısı →
   artır); çıktı değişmedi. `csv metni` her iki satır türünü yazar.
 
+## K-063 — JSON okuma hoşgörüsü: her değer Metin gelir
+
+- **Karar:** `dosyasından okunan veri` artık sayı/true/false/null değerleri
+  REDDETMEZ: hepsi Metin gelir (CSV felsefesi, K-062). Sayı noktası dilin
+  virgülüne çevrilir ("1.35" → "1,35" — `ondalığı` doğrudan çalışır);
+  true/false → doğru/yanlış; null → boş metin. İç içe nesne/dizi hâlâ C016.
+
+## K-064 — Alan adı, özellik kelimesini gölgeleyebilir
+
+- **bulgu:** Envanter projesi: `ürünün adedi` T014 verdi — "adet" alanı,
+  `adedi` liste-özelliğine yenildi.
+- **Karar:** Nesne YAPI ise ve özellik kelimesi bir alana çözülüyorsa bu
+  alan erişimidir — denetleyici ifadeyi AlanErisim'e yeniden yazar (örtük
+  çoğul emsali). Alan adları dilin özellik kelimeleriyle çakışabilir;
+  çocuk "adet" alanını korkmadan kullanır.
+
 ## K-012 — Liste sabiti: `3, 7, 1, 9 listesi`
 
 - **Karar:** Virgülle ayrılmış değerler + `listesi`. Boş: `boş liste`.

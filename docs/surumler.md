@@ -7,6 +7,11 @@ sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 
 **Tema: kayıtlar ve koleksiyonlar — dil, veri işlerinin dili oldu.**
 
+- **JSON okuma hoşgörüsü** (K-063): sayı/bool/null değerler Metin gelir
+  (nokta → virgül); yalnız iç içe yapı C016.
+- **Alan, özelliği gölgeler** (K-064): `ürünün adedi` alan okur —
+  denetleyici yeniden yazımı. Envanter projesi eklendi (stok defteri).
+
 - **Sıralama** (K-056): `sıralanmışı` — Metinler Türk alfabesi sırasıyla
   (ç, ğ, ı, i, ö, ş, ü yerli yerinde; TANIMLI); `tersi`.
 - **Tarih farkı** (K-057): `X ile Y arasındaki günler` (işaretli).

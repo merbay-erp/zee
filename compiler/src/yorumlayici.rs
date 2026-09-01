@@ -1965,14 +1965,41 @@ fn json_nesnesi_ayristir(icerik: &str, satir: usize) -> Result<Deger, Tani> {
             return Err(hata(format!("\"{}\" anahtarından sonra \":\" bekleniyor.", anahtar)));
         }
         bosluk_atla(&mut karakterler);
-        if karakterler.peek() != Some(&'"') {
-            return Err(hata(format!(
-                "\"{}\" anahtarının değeri metin değil; v0'da JSON değerleri metin olmalı.",
-                anahtar
-            )));
-        }
-        let deger = metin_oku(&mut karakterler)
-            .map_err(|m| hata(format!("JSON değeri okunamadı: {}.", m)))?;
+        // K-063: sayı/true/false/null değerleri de METİN olarak gelir (CSV
+        // felsefesi): sayı gerekirse `değerin sayısı` ile bilinçli çevrilir.
+        // Ondalık nokta, dilin virgülüne çevrilir; true/false → doğru/yanlış.
+        let deger = if karakterler.peek() == Some(&'"') {
+            metin_oku(&mut karakterler)
+                .map_err(|m| hata(format!("JSON değeri okunamadı: {}.", m)))?
+        } else {
+            let mut ham = String::new();
+            while matches!(
+                karakterler.peek(),
+                Some(k) if !matches!(k, ',' | '}' | ' ' | '\n' | '\r' | '\t')
+            ) {
+                ham.push(karakterler.next().unwrap());
+            }
+            match ham.as_str() {
+                "" => {
+                    return Err(hata(format!(
+                        "\"{}\" anahtarının değeri okunamadı.",
+                        anahtar
+                    )))
+                }
+                "true" => "doğru".to_string(),
+                "false" => "yanlış".to_string(),
+                "null" => String::new(),
+                sayi if sayi.chars().all(|k| k.is_ascii_digit() || k == '-' || k == '.') => {
+                    sayi.replace('.', ",")
+                }
+                _ => {
+                    return Err(hata(format!(
+                        "\"{}\" anahtarının değeri anlaşılamadı (iç içe nesne/dizi v0'da yok).",
+                        anahtar
+                    )))
+                }
+            }
+        };
         girdiler.push((anahtar, Deger::Metin(deger)));
         bosluk_atla(&mut karakterler);
         match karakterler.next() {

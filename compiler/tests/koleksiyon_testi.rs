@@ -186,3 +186,17 @@ kedilere karabaşı ekle
     let hata = kaynagi_calistir(kaynak).expect_err("T011");
     assert_eq!(hata.kod, "T011");
 }
+
+#[test]
+fn ozellik_kelimesiyle_cakisan_alan_okunur() {
+    // K-064: "ürünün adedi" — alan adı özellik kelimesiyle çakışsa da alan kazanır.
+    let kaynak = "\
+yapı Ürün
+    adet TamSayı
+
+kalem yeni Ürün olsun
+kalemin adedi 7 olsun
+kalemin adedi yaz
+";
+    assert_eq!(kaynagi_calistir(kaynak).expect("çalışmalı"), vec!["7"]);
+}

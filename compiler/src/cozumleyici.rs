@@ -1239,6 +1239,37 @@ fn ifade_denetle(
         }
         Ifade::Ozellik { nesne, ozellik } => {
             let tur = ifade_denetle(nesne, ortam, baglam, satir)?;
+            // K-064: nesne bir yapıysa ve özellik kelimesi bir ALANA çözülüyorsa
+            // bu aslında alan erişimidir ("ürünün adedi" → alan "adet").
+            // Örtük-çoğul emsalindeki gibi ifade yeniden yazılır.
+            if let Tur::Yapi(yapi_indeksi) = tur {
+                let soz = match ozellik {
+                    Ozellik::Adet => "adedi",
+                    Ozellik::Ilk => "ilki",
+                    Ozellik::Son => "sonu",
+                    Ozellik::Uzunluk => "uzunluğu",
+                    Ozellik::Kelimeler => "kelimeleri",
+                    Ozellik::Yil => "yılı",
+                    Ozellik::TamKisim => "kısmı",
+                    Ozellik::Yuvarlanmis => "yuvarlanmışı",
+                    Ozellik::HtmlGuvenli => "güvenlisi",
+                    Ozellik::Kirpilmis => "kırpılmışı",
+                    Ozellik::Harfler => "harfleri",
+                    Ozellik::JsonMetin => "metni",
+                    Ozellik::Siralanmis => "sıralanmışı",
+                    Ozellik::Ters => "tersi",
+                    Ozellik::CsvMetin => "metni",
+                };
+                let yapi = &baglam.yapilar[yapi_indeksi];
+                if let Ok(alan) = alan_cozumle(yapi, soz, satir) {
+                    let yeni = Ifade::AlanErisim {
+                        nesne: nesne.clone(),
+                        alan: alan.clone(),
+                    };
+                    *ifade = yeni;
+                    return ifade_denetle(ifade, ortam, baglam, satir);
+                }
+            }
             match (ozellik, tur) {
                 (Ozellik::Adet, Tur::Liste(_)) => Ok(Tur::TamSayi),
                 (Ozellik::Ilk, Tur::Liste(VeriTuru::Bilinmeyen))

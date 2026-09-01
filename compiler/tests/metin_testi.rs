@@ -103,3 +103,17 @@ fn metin_dalgasinin_tur_bekcileri() {
         .expect_err("Metin listesi değil");
     assert_eq!(hata.kod, "T022");
 }
+
+#[test]
+fn json_okuma_sayi_bool_metin_gelir() {
+    // K-063: sayı/true/false/null reddedilmez — Metin gelir (nokta → virgül).
+    let program = dil::kaynagi_derle(
+        "kişi \"k.json\" dosyasından okunan veri olsun\nkişinin \"yaş\" değeri yaz\nkişinin \"boy\" değeri yaz\nkişinin \"üye\" değeri yaz\n",
+    )
+    .expect("derlenmeli");
+    let mut io = dil::yorumlayici::ToplayanIo::yeni(Vec::new());
+    use dil::yorumlayici::GirdiCikti;
+    io.dosya_yaz("k.json", "{\"yaş\": 10, \"boy\": 1.35, \"üye\": true}", false).unwrap();
+    dil::yorumlayici::calistir_io(&program, &mut io).expect("çalışmalı");
+    assert_eq!(io.cikti, vec!["10", "1,35", "doğru"]);
+}
