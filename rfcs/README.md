@@ -23,6 +23,7 @@ Dil değişikliği RFC ister (master plan bölüm 25). Şablon: [0000-sablon.md]
 
 **Durum özeti (31 Ağu 2026 akşamı, K-043):** planlanan 12 RFC + ek 0013 —
 2 kabul (0001, 0010), 10 geçici kabul (yüzey gerçeklendi + korpusla/testle
-sabitlendi; onay kapısı usability oturumları), 1 taslak (0012 FFI — Faz 4/5).
+sabitlendi; onay kapısı usability oturumları), 2 taslak: 0012 (FFI — Faz
+4/5) ve 0014 (standart kitaplık — çalışan dört-birimlik prototiple).
 Kural: bir RFC ancak yüzeyi gerçeklenmiş VE regression testine bağlanmışsa
 geçici kabule geçer; tam kabul usability kapısından geçmeyi bekler.

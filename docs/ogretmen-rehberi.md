@@ -70,9 +70,10 @@ saat sahte dünyadan gelir, aynı test herkeste aynı sonucu verir.
 
 ## 5. Gömülü kitaplık
 
-`matematik birimini kullan` (mutlak değer, üs, tam karekök, obeb, okek) ve
-`liste_araclari birimini kullan` (toplam, en büyük/küçük, ortalama) her
-yerde — playground dahil — kurulumsuz çalışır. Obeb işlemi ders kitabındaki
+dört gömülü birim her yerde — `matematik` (mutlak, üs, karekök, obeb,
+okek), `liste_araclari` (toplam, uçlar, ortalama, medyan),
+`metin_araclari` (tersi, ünlü sayımı) ve `sozluk_araclari` (en çok
+geçen) — — playground dahil — kurulumsuz çalışır. Obeb işlemi ders kitabındaki
 Öklit yönteminin kendisidir; kaynak kodu [kitaplik/](../kitaplik/) altında
 zee'yle yazılıdır ve ÇOCUKLA BİRLİKTE OKUNABİLİR.
 

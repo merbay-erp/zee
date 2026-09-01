@@ -52,9 +52,13 @@ değer/hata erişimi derleme hatası), metin kaçışları ve negatif sabitler,
 **web uygulama katmanı** (form/istek sözlüğü, çerezli oturum, yönlendirme,
 html güvenlisi, önekli rotalar), **metin cerrahisi** (parçala/birleştir/
 değiştir/kırp/harfler), **JSON/CSV yazma**, **Türk alfabesiyle sıralama**,
-üç mekanizmalı morfoloji ve 90+ Türkçe kodlu tanı.
-Araçlar: `dil çalıştır/denetle(--json, çoklu tanı)/dene/biçimle/hata/yeni` +
-**dillsp** LSP sunucusu ([editors/](editors/)).
+**silme** ve **çıkış kodu** (`programı 2 ile bitir`), bölümden **kalan**,
+geri sayan aralık, para biçimi `kuruşlusu`, evrensel `metni`, çerez
+üçlemesi (oku/yaz/**sil**), çok katmanlı morfoloji (zamir n'si, ikizleşme,
+iki katmanlı ek zinciri) ve 109 Türkçe kodlu tanı.
+Araçlar: `dil çalıştır(--güvenli)/denetle(--json)/dene/biçimle/hata/belge/yeni`
++ **dillsp** LSP sunucusu — tanılar, hover, tanıma git, **morfolojili
+yeniden adlandırma (F2)** ([editors/](editors/)).
 Determinizm testlerde tam: rastgelelik, saat, dosyalar, HTTP, sunucu istekleri,
 sensörler ve an ölçümü IO soyutlamasından gelir — 245 test hermetik koşar.
 
@@ -98,7 +102,7 @@ korpus üzerinde regression testine girer.
 | Syntax karar günlüğü | [kararlar/gunluk.md](kararlar/gunluk.md) | ✅ işleniyor |
 | RFC süreci | [rfcs/](rfcs/) | ✅ 13 RFC: 2 kabul, 10 geçici kabul, 1 taslak (K-043) |
 | ADR süreci | [adr/](adr/) | ✅ 6 kabul (001-003, 007-009); 004/005/006 faz verisi bekliyor |
-| Hata kataloğu | [docs/hata-katalogu.md](docs/hata-katalogu.md) | ✅ 106 kod, kaynakla tutarlılığı testli |
+| Hata kataloğu | [docs/hata-katalogu.md](docs/hata-katalogu.md) | ✅ 109 kod, kaynakla tutarlılığı testli |
 | Spesifikasyon | [spec/](spec/) | ✅ başladı — normatif çekirdek (RFC'lere bağlar) |
 
 ### Golden korpus hakkında
