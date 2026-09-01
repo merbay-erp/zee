@@ -134,3 +134,22 @@ tamın kuruşlusu yaz
         vec!["1824,50", "3,46", "5,00"]
     );
 }
+
+#[test]
+fn metni_ozelligi_evrensel() {
+    // K-066: her değerin resmî metin hali — yaz ile aynı temsil.
+    let kaynak = "\
+sayı 42 olsun
+kimlik sayının metni olsun
+birleşik \"no-\" ile kimlik olsun
+birleşik yaz
+oran 3,5 olsun
+oranın metni yaz
+bayrak doğru olsun
+bayrağın metni yaz
+";
+    assert_eq!(
+        kaynagi_calistir(kaynak).expect("çalışmalı"),
+        vec!["no-42", "3,5", "doğru"]
+    );
+}

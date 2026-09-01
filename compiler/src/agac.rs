@@ -225,6 +225,8 @@ pub enum Ozellik {
     CsvMetin,
     /// Para gösterimi (K-065): daima iki ondalık hane — "1824,50".
     Kuruslu,
+    /// Değerin resmî metin temsili (K-066) — `yaz` ile aynı biçim.
+    Metni,
 }
 
 #[derive(Debug, Clone)]

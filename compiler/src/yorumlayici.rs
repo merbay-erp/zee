@@ -1296,6 +1296,7 @@ fn degerlendir(
                     })
                 }
                 (Ozellik::Kirpilmis, Deger::Metin(m)) => Ok(Deger::Metin(m.trim().to_string())),
+                (Ozellik::Metni, deger) => Ok(Deger::Metin(deger.metne())),
                 (Ozellik::Kuruslu, deger @ (Deger::Ondalik { .. } | Deger::TamSayi(_))) => {
                     // K-065: daima iki hane; yarımlar sıfırdan uzağa (dil kuralı).
                     let (govde, olcek) = match deger {

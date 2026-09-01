@@ -73,7 +73,8 @@ Kalan hiç negatif olmaz (okul kuralı, K-046).
 
 TamSayı gerektiğinde Ondalığa kendiliğinden genişler; tersi bilinçlidir:
 `ondalığın tam kısmı`, `ondalığın yuvarlanmışı`. Para gösterimi:
-`tutarın kuruşlusu` → `"1824,50"` (daima iki hane, K-065).
+`tutarın kuruşlusu` → `"1824,50"` (daima iki hane, K-065). Her değerin
+resmî metin hali: `sayının metni` → `"42"` (K-066).
 
 ## 5. Koşullar
 

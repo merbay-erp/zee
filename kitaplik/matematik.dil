@@ -1,6 +1,7 @@
 # matematik — gömülü standart birim (RFC-0014, deneysel).
 # Saf tam sayı matematiği; IO yok, sözdizimi yok: kitaplığın tam yeri.
 
+# Sayının işaretsiz büyüklüğü.
 işlem mutlak değerini hesapla
     sayıyı al
     sayı 0 dan küçükse
@@ -34,6 +35,7 @@ işlem tam karekökünü hesapla
             bitti doğru olsun
     tahmini döndür
 
+# En büyük ortak bölen — Öklit yöntemi (kalanla).
 işlem obebini hesapla
     birinciyi al
     ikinciyi al
