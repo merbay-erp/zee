@@ -501,11 +501,11 @@ Ayrıntı için: dil hata T036
 | Komut | Ne yapar |
 |---|---|
 | `dil yeni <ad>` | testli başlangıç projesi |
-| `dil çalıştır <dosya>` | çalıştırır |
-| `dil çalıştır --güvenli <dosya>` | çocuk modu: ağ kapalı, dosyalar klasörle sınırlı |
-| `dil dene <dosya>` | testleri koşar |
-| `dil biçimle <dosya>` | resmi biçime getirir |
-| `dil denetle <dosya>` | çalıştırmadan bütün hataları listeler (`--json`) |
+| `dil çalıştır <dosya\|proje>` | dosyayı ya da `proje.dil` taşıyan klasörü çalıştırır |
+| `dil çalıştır --güvenli <dosya\|proje>` | çocuk modu: ağ kapalı, dosyalar klasörle sınırlı |
+| `dil dene <dosya\|proje>` | testleri koşar |
+| `dil biçimle <dosya\|proje>` | tek kaynağı veya bütün projeyi resmi biçime getirir |
+| `dil denetle <dosya\|proje>` | çalıştırmadan bütün hataları listeler (`--json`) |
 | `dil hata <kod>` | hata kodunu açıklar |
 | `dil belge <birim>` | birimin işlemlerini listeler |
 

@@ -7,7 +7,7 @@ use std::fmt;
 
 #[derive(Debug, Clone)]
 pub struct Tani {
-    /// Hata kodu: S### sözdizimi, A### ad çözümleme, T### tür.
+    /// Hata kodu: S### sözdizimi, A### ad çözümleme, T### tür, P### proje.
     pub kod: String,
     pub mesaj: String,
     /// 1 tabanlı satır numarası.

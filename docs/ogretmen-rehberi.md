@@ -22,8 +22,9 @@ dil çalıştır --güvenli program.dil
 `--güvenli` çocuk modudur (K-047): ağ ve sunucu kapalı, dosya erişimi
 programın klasörüyle sınırlı. Sınıf makinelerinde ölçünüz bu olsun.
 
-**C — Proje iskeleti:** `dil yeni uzay-oyunum` — içinde çalışan bir
-program + bir test olan klasör üretir.
+**C — Proje iskeleti:** `dil yeni uzay-oyunum` — içinde `proje.dil`, çalışan
+bir program ve bir test olan klasör üretir. Ardından `dil çalıştır uzay-oyunum`
+ya da klasörün içinde `dil çalıştır .` yeterlidir.
 
 ## 2. Önerilen ders sırası (projeler/ kitaplığıyla)
 

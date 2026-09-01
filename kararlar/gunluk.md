@@ -712,6 +712,39 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
 - **Karar:** `tutarın binlikli kuruşlusu` → "1.234.567,89" — binlik ayraç
   NOKTA, ondalık VİRGÜL (Türk yazım kuralı). kuruşlusu ailesinin üstüne.
 
+## K-076 — Proje bir klasördür: `proje.dil`
+
+- **İhtiyaç (kurucu):** zee yalnız örneklerde değil, kurucunun bütün gerçek
+  projelerinde kullanılacak; tek dosya akışı profesyonel ölçeğin temeli olamaz.
+- **Karar:** Proje kökünde ayrı biçim öğretmeyen, geçerli zee sözdizimli
+  `proje.dil`: `proje "ad" olsun`, `sürüm "X.Y.Z" olsun`,
+  `giriş "program.dil" olsun`. Üç alan zorunlu/tek; giriş proje dışına
+  çıkamaz. P001–P004 tanıları Türkçe ve katalogludur.
+- **Araç:** `dil çalıştır/denetle/dene <klasör>` giriş dosyasını bildirimden
+  bulur; doğrudan `.dil` yolu geriye uyumludur. `dil yeni` bildirimi ve
+  klasör-temelli komutları hazır verir. zee deposunun kökü de kendi
+  `proje.dil`ini taşır: dil, kendisini proje olarak tanır.
+- **Yan bulgu:** `dil çalıştır --güvenli ...` bayrağı eski argüman hesabında
+  programa kaynak yolunu sızdırıyordu; kaynak-sonrası ayrımıyla kapandı.
+  Gerçek dosya IO'su da kabuğun çağrıldığı klasöre bağlıydı; artık göreli
+  yollar giriş dosyasının klasöründen çözülür. Proje nereden çağrılırsa
+  çağrılsın kendi verisini kendi yanında tutar.
+- **Kanıt:** 7 proje entegrasyon testi; birim kullanan proje uçtan uca
+  çalıştır/denetle/dene; güvenli argüman ve iskelet üretimi regression'da.
+- **Sonraki katman:** yerel bağımlılık çözümü + deterministik kilit dosyası;
+  bunun üstüne registry/provenance gelir. Kök sırayı atlamaz.
+
+## K-077 — Proje çapında güvenli biçimleme
+
+- **Karar:** `dil biçimle <proje-klasörü>` bütün `.dil` kaynaklarını
+  deterministik yol sırasında toplar. Gizli klasör, `target`/`hedef` ve
+  sembolik bağ izlenmez.
+- **Bütünlük sözü:** Önce her kaynak bellekte biçimlenir; bir tanesi bile
+  hatalıysa HİÇBİR dosyaya yazılmaz. Böylece büyük projede yarım kalmış
+  biçimleme durumu doğmaz.
+- **Kanıt:** alt klasörde birim + giriş + bildirim birlikte biçimlenir;
+  üç dosyanın resmî çıktısı entegrasyon testinde sabittir.
+
 ## K-012 — Liste sabiti: `3, 7, 1, 9 listesi`
 
 - **Karar:** Virgülle ayrılmış değerler + `listesi`. Boş: `boş liste`.

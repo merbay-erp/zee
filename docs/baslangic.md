@@ -25,15 +25,21 @@ sudo cp compiler/target/release/dil /usr/local/bin/dil
 dil yeni ilk-projem
 ```
 
+Yeni klasörde `proje.dil` bulunur; giriş dosyası ve sürüm burada tanımlıdır.
+Bu nedenle dosya adını ezberlemeden projeyi çalıştırabilirsin:
+
 ```bash
-dil çalıştır ilk-projem/program.dil
+dil çalıştır ilk-projem
 ```
 
 Program adını sorar, seni selamlar — ve içinde hazır bir test vardır:
 
 ```bash
-dil dene ilk-projem/program.dil
+dil dene ilk-projem
 ```
+
+Proje klasöründeysen daha da kısadır: `dil çalıştır .`, `dil dene .`,
+`dil denetle .`.
 
 ## 3. Kendi programını yaz
 
@@ -80,11 +86,11 @@ internet gerekmez, katalog `dil`in içindedir.
 | Komut | Ne yapar |
 |---|---|
 | `dil yeni <ad>` | testli başlangıç projesi kurar |
-| `dil çalıştır <dosya>` | programı çalıştırır (`dil çalıştır oyun.dil Ali Ayşe` → argümanlar programa gider) |
-| `dil çalıştır --güvenli <dosya>` | çocuk modu: ağ kapalı, dosyalar programın klasörüyle sınırlı |
-| `dil dene <dosya>` | `test "..."` bloklarını koşar |
-| `dil biçimle <dosya>` | kodu resmi biçime getirir (girinti, boşluklar) |
-| `dil denetle <dosya>` | çalıştırmadan hata arar (`--json`: makine çıktısı) |
+| `dil çalıştır <dosya\|proje>` | dosyayı ya da `proje.dil` taşıyan klasörü çalıştırır; sonraki argümanlar programa gider |
+| `dil çalıştır --güvenli <dosya\|proje>` | çocuk modu: ağ kapalı, dosyalar programın klasörüyle sınırlı |
+| `dil dene <dosya\|proje>` | `test "..."` bloklarını koşar |
+| `dil biçimle <dosya\|proje>` | dosyayı veya projedeki bütün `.dil` kaynaklarını resmi biçime getirir |
+| `dil denetle <dosya\|proje>` | çalıştırmadan hata arar (`--json`: makine çıktısı) |
 | `dil hata <kod>` | bir hata kodunu açıklar |
 | `dil belge <birim>` | birimin işlemlerini listeler (örn. `dil belge matematik`) |
 | `dil sürüm` | sürümü gösterir |

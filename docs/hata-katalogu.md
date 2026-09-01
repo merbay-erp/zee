@@ -6,7 +6,8 @@ nasıl çözüldüğünü listeler. Kaynak: `compiler/src/` (kodlar gerçeklemed
 türetilmiştir; yeni kod eklenince bu dosya güncellenir — CI'a bağlanması planlı).
 
 Ön ekler: **S** sözdizimi/sözcükleme · **A** ad çözümleme · **T** tür denetimi ·
-**C** çalışma zamanı · **D** doğrulama (test) · **Ç** iç akış (kullanıcıya görünmez).
+**C** çalışma zamanı · **D** doğrulama (test) · **P** proje · **Ç** iç akış
+(kullanıcıya görünmez).
 
 ## S — Sözdizimi ve sözcükleme
 
@@ -140,6 +141,15 @@ türetilmiştir; yeni kod eklenince bu dosya güncellenir — CI'a bağlanması 
 | Kod | Ne oldu | Çözüm |
 |---|---|---|
 | D001 | `olmalı` koşulu tutmadı | Tanı beklenen/bulunan değerleri gösterir; `dil dene` testte raporlar |
+
+## P — Proje bildirimi
+
+| Kod | Ne oldu | Çözüm |
+|---|---|---|
+| P001 | `proje.dil` bilinmeyen/tekrarlı alan ya da değer tanımı dışında cümle içeriyor | Yalnız `proje`, `sürüm`, `giriş` Metin alanlarını birer kez tanımla |
+| P002 | Zorunlu proje alanı eksik | Eksik `proje`, `sürüm` veya `giriş` satırını ekle |
+| P003 | Proje adı ya da `X.Y.Z` sürümü geçersiz | Boş olmayan ad ve üç sayılı sürüm kullan: `0.1.0` |
+| P004 | Giriş mutlak, proje dışına çıkan veya `.dil` olmayan yol | Proje içinde kalan göreli `.dil` yolu kullan |
 
 ## Ç — İç akış
 

@@ -12,6 +12,16 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
+  `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`
+  bildirimi hazır üretir. P001–P004 Türkçe proje tanıları. Doğrudan dosya
+  kullanımı geriye uyumludur. Göreli dosya IO'su giriş klasörüne sabitlendi;
+  `--güvenli` bayrağının program argümanına sızması da kapandı. Yerel
+  paket/kilit katmanının temeli.
+- **Proje çapında biçimleme** (K-077): `dil biçimle <klasör>` bütün `.dil`
+  kaynaklarını deterministik yol sırasında biçimler; önce tamamını doğrular,
+  tek hata varsa hiçbir dosyaya dokunmaz.
+
 - **Gezmede yazma yansır** (K-074): `her kutu için / kutunun adedi ...`
   listeye geri yazılır — kopya tuzağı kapandı (TANIMLI).
 - **Türk para yazımı** (K-075): `binlikli kuruşlusu` → "1.234.567,89".
