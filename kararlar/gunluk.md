@@ -670,6 +670,23 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
 - **Sayım düzeltmesi:** anti-örnek 11'dir (A11 nokta-ondalık) — README
   10 diyordu.
 
+## K-072 — Morfoloji-farkındalıklı yeniden adlandırma
+
+- **Karar:** dillsp `textDocument/rename` destekler ve EKLERİ YENİDEN
+  GİYDİRİR: sayaç→puan denince sayacı→puanı, sayaçla→puanla,
+  sayaçtan→puandan. Çekirdek: ileri morfoloji üreteci `ek_uydur`
+  (ünlü uyumu dörtlü/ikili, y/n tamponları, sert ünsüz benzeşmesi ta/te,
+  çok-hecede p→b, ç→c, t→d, k→ğ yumuşaması, nk→ng her hecede:
+  renk→rengi) + çözümleyici `ek_coz` (yüzey ekten soyut ek kimliği;
+  yumuşama/ikizleşme/ünlü düşmesi geri çevrimleriyle).
+- **Sınırlar (dürüst):** tek katman ekler (fiyatıyla gibi zincirler
+  değiştirilmez — dokunulmadan bırakılır), metin sabitleri ve # yorumları
+  DOKUNULMAZ (testli), tek-heceli yumuşama istisnaları (top→topu ✓ ama
+  hukuk→hukuku gibi istisnalar üretilmez — önizlemede elle düzeltilir).
+- **Testler:** üç senaryo (ek seti, yumuşama+nk, ünlü tamponları) + gerçek
+  dillsp'ye karşı Node birlikte-çalışma. VS Code istemcisine
+  RenameProvider eklendi (F2 çalışır).
+
 ## K-012 — Liste sabiti: `3, 7, 1, 9 listesi`
 
 - **Karar:** Virgülle ayrılmış değerler + `listesi`. Boş: `boş liste`.

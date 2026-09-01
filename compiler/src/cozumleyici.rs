@@ -2439,6 +2439,199 @@ pub fn ad_cozumle(
     }
 }
 
+
+// ---------- İleri morfoloji: ek uydurma (K-072, yeniden adlandırma) ----------
+
+/// Soyut ek türü — çözümlenen yüzey ekinin dilbilgisel kimliği.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub(crate) enum SoyutEk {
+    Belirtme,
+    Tamlayan,
+    Yonelme,
+    Ayrilma,
+    Bulunma,
+    Arac,
+    CogulYonelme,
+}
+
+/// Kelimeyi verilen köke göre çözer: hangi soyut ek? (Yalnız tek katman;
+/// yumuşama/ikizleşme/ünlü düşmesi geri çevrimleri hesaba katılır.)
+pub(crate) fn ek_coz(kelime: &str, kok: &str) -> Option<SoyutEk> {
+    if kelime == kok {
+        return None;
+    }
+    let dene = |ekler: &[&str], tur: SoyutEk| -> Option<SoyutEk> {
+        for ek in ekler {
+            if let Some(govde) = kelime.strip_suffix(ek) {
+                if govde == kok {
+                    return Some(tur);
+                }
+                // Yumuşama: kitabı → kitab ≠ kitap; sertleştir ve kıyasla.
+                let harfler: Vec<char> = govde.chars().collect();
+                if let Some(&son) = harfler.last() {
+                    let sert = match son {
+                        'b' => Some('p'),
+                        'c' => Some('ç'),
+                        'd' => Some('t'),
+                        'ğ' => Some('k'),
+                        _ => None,
+                    };
+                    if let Some(sert) = sert {
+                        let mut aday: Vec<char> = harfler.clone();
+                        *aday.last_mut().unwrap() = sert;
+                        let aday: String = aday.iter().collect();
+                        if aday == kok {
+                            return Some(tur);
+                        }
+                        // nk→ng özel durumu: rengi → reng → renk.
+                        if son == 'g' {
+                        }
+                    }
+                    if son == 'g' {
+                        let mut aday: Vec<char> = harfler.clone();
+                        *aday.last_mut().unwrap() = 'k';
+                        let aday: String = aday.iter().collect();
+                        if aday == kok {
+                            return Some(tur);
+                        }
+                    }
+                    // İkizleşme: üssü → üss → üs.
+                    let n = harfler.len();
+                    if n >= 2 && harfler[n - 1] == harfler[n - 2] {
+                        let aday: String = harfler[..n - 1].iter().collect();
+                        if aday == kok {
+                            return Some(tur);
+                        }
+                    }
+                }
+                // Ünlü düşmesi: şekli → şekl → şekil.
+                let unlu = |k: char| "aeıioöuü".contains(k);
+                let n = harfler.len();
+                if n >= 2 && !unlu(harfler[n - 1]) && !unlu(harfler[n - 2]) {
+                    if let Some(&onceki) = harfler[..n - 1].iter().rev().find(|&&k| unlu(k)) {
+                        let dar = match onceki {
+                            'a' | 'ı' => 'ı',
+                            'e' | 'i' => 'i',
+                            'o' | 'u' => 'u',
+                            _ => 'ü',
+                        };
+                        let mut aday = harfler.clone();
+                        aday.insert(n - 1, dar);
+                        let aday: String = aday.into_iter().collect();
+                        if aday == kok {
+                            return Some(tur);
+                        }
+                    }
+                }
+            }
+        }
+        None
+    };
+    dene(&["lara", "lere"], SoyutEk::CogulYonelme)
+        .or_else(|| dene(&["nın", "nin", "nun", "nün", "ın", "in", "un", "ün"], SoyutEk::Tamlayan))
+        .or_else(|| dene(&["yla", "yle", "la", "le"], SoyutEk::Arac))
+        .or_else(|| dene(&["dan", "den", "tan", "ten"], SoyutEk::Ayrilma))
+        .or_else(|| dene(&["da", "de", "ta", "te"], SoyutEk::Bulunma))
+        .or_else(|| dene(&["yı", "yi", "yu", "yü", "ı", "i", "u", "ü"], SoyutEk::Belirtme))
+        .or_else(|| dene(&["ya", "ye", "a", "e"], SoyutEk::Yonelme))
+}
+
+/// Yeni köke soyut eki Türkçe uyum kurallarıyla giydirir (K-072).
+/// Yumuşama: çok heceli p/ç/t/k + ünlüyle başlayan ek (renk→rengi özel).
+pub(crate) fn ek_uydur(kok: &str, ek: SoyutEk) -> String {
+    let harfler: Vec<char> = kok.chars().collect();
+    let unlu = |k: char| "aeıioöuüAEIİOÖUÜ".contains(k);
+    let son_unlu = harfler.iter().rev().find(|&&k| unlu(k)).copied().unwrap_or('e');
+    let dar = match son_unlu {
+        'a' | 'ı' | 'A' | 'I' => 'ı',
+        'e' | 'i' | 'E' | 'İ' => 'i',
+        'o' | 'u' | 'O' | 'U' => 'u',
+        _ => 'ü',
+    };
+    let genis = matches!(son_unlu, 'a' | 'ı' | 'o' | 'u' | 'A' | 'I' | 'O' | 'U');
+    let son = *harfler.last().unwrap_or(&'e');
+    let unluyle_biter = unlu(son);
+    let hece = harfler.iter().filter(|&&k| unlu(k)).count();
+    let sert_unsuz = "fstkçşhpFSTKÇŞHP".contains(son);
+
+    // Ünlüyle başlayan ek gelirken yumuşama (çok hecelide).
+    let govde_yumusat = |ek_unluyle_baslar: bool| -> String {
+        if !ek_unluyle_baslar || unluyle_biter {
+            return kok.to_string();
+        }
+        // nk→ng her hecede güvenilir (renk→rengi); diğer yumuşamalar çok hecede.
+        let nk = harfler.len() >= 2
+            && harfler[harfler.len() - 1] == 'k'
+            && harfler[harfler.len() - 2] == 'n';
+        if hece < 2 && !nk {
+            return kok.to_string();
+        }
+        let mut h = harfler.clone();
+        let n = h.len();
+        match h[n - 1] {
+            'p' => h[n - 1] = 'b',
+            'ç' => h[n - 1] = 'c',
+            't' => h[n - 1] = 'd',
+            'k' => {
+                if n >= 2 && h[n - 2] == 'n' {
+                    h[n - 1] = 'g';
+                } else {
+                    h[n - 1] = 'ğ';
+                }
+            }
+            _ => {}
+        }
+        h.into_iter().collect()
+    };
+
+    match ek {
+        SoyutEk::Belirtme => {
+            if unluyle_biter {
+                format!("{}y{}", kok, dar)
+            } else {
+                format!("{}{}", govde_yumusat(true), dar)
+            }
+        }
+        SoyutEk::Tamlayan => {
+            if unluyle_biter {
+                format!("{}n{}n", kok, dar)
+            } else {
+                format!("{}{}n", govde_yumusat(true), dar)
+            }
+        }
+        SoyutEk::Yonelme => {
+            let sesli = if genis { 'a' } else { 'e' };
+            if unluyle_biter {
+                format!("{}y{}", kok, sesli)
+            } else {
+                format!("{}{}", govde_yumusat(true), sesli)
+            }
+        }
+        SoyutEk::Ayrilma => {
+            let sesli = if genis { 'a' } else { 'e' };
+            let baslangic = if sert_unsuz { 't' } else { 'd' };
+            format!("{}{}{}n", kok, baslangic, sesli)
+        }
+        SoyutEk::Bulunma => {
+            let sesli = if genis { 'a' } else { 'e' };
+            let baslangic = if sert_unsuz { 't' } else { 'd' };
+            format!("{}{}{}", kok, baslangic, sesli)
+        }
+        SoyutEk::Arac => {
+            let sesli = if genis { 'a' } else { 'e' };
+            if unluyle_biter {
+                format!("{}yl{}", kok, sesli)
+            } else {
+                format!("{}l{}", kok, sesli)
+            }
+        }
+        SoyutEk::CogulYonelme => {
+            let sesli = if genis { 'a' } else { 'e' };
+            format!("{}l{}r{}", kok, sesli, sesli)
+        }
+    }
+}
+
 /// Ek ayıklama adayları: yaygın hal/iyelik/araç ekleri + ünsüz yumuşaması geri çevrimi.
 /// (K-011: desteklenen ek listesi sürümlemeli grammar'ın parçasıdır.)
 pub(crate) fn kok_adaylari(ham: &str) -> Vec<String> {

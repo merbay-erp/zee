@@ -11,6 +11,9 @@ sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
   boş dönüş tuzağı kapandı). roket.dil projesi.
 - **Çıkış kodu** (K-069, K-024 kapanışı): `programı 1 ile bitir` —
   süreç kodu kabuğa gider (0–255, C020); CLI otomasyon kapısı.
+- **Yeniden adlandırma** (K-072): dillsp + VS Code F2 — morfoloji
+  farkındalıklı: ekler yeni köke Türkçe uyumla giydirilir (sayacı→puanı,
+  renk→rengi). Metin/yorum dokunulmaz; tek katman ek kapsamı.
 - **Doğrulamalar** (K-071): `içermeli`, genel `olmamalı`, çıplak `boş`
   atomu — test kültürü zenginleşti. Ölçüm: döngü izlemesi kapandı
   (v0.6.0 satırı; v0.2 tabanının altında).

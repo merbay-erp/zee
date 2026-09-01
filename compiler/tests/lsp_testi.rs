@@ -122,3 +122,45 @@ fn hover_bilinmeyen_konumda_null() {
     let cikti = sunucu.mesaj_isle(r#"{"jsonrpc":"2.0","id":13,"method":"textDocument/hover","params":{"textDocument":{"uri":"file:///tmp/h3.dil"},"position":{"line":0,"character":3}}}"#);
     assert!(cikti.govdeler[0].contains("\"result\":null"), "{}", cikti.govdeler[0]);
 }
+
+#[test]
+fn yeniden_adlandirma_ekleri_giydirir() {
+    // K-072: sayaç → puan; sayacı → puanı, sayaçla → puanla, sayaçtan → puandan.
+    let mut sunucu = Sunucu::yeni();
+    sunucu.mesaj_isle(r#"{"jsonrpc":"2.0","method":"textDocument/didOpen","params":{"textDocument":{"uri":"file:///tmp/r.dil","text":"sayaç 3 olsun\nsayacı 1 azalt\nsayaçla topla\nsayaçtan düş\n\"sayacı\" yaz\n"}}}"#);
+    let cikti = sunucu.mesaj_isle(r#"{"jsonrpc":"2.0","id":21,"method":"textDocument/rename","params":{"textDocument":{"uri":"file:///tmp/r.dil"},"position":{"line":0,"character":2},"newName":"puan"}}"#);
+    let yanit = &cikti.govdeler[0];
+    assert!(yanit.contains("\"newText\":\"puan\""), "{}", yanit);
+    assert!(yanit.contains("\"newText\":\"puanı\""), "{}", yanit);
+    assert!(yanit.contains("\"newText\":\"puanla\""), "{}", yanit);
+    assert!(yanit.contains("\"newText\":\"puandan\""), "{}", yanit);
+    // Metin sabitindeki "sayacı" DOKUNULMAZ: yalnız 4 düzenleme olmalı.
+    assert_eq!(yanit.matches("newText").count(), 4, "{}", yanit);
+}
+
+#[test]
+fn yeniden_adlandirma_yumusama_uretir() {
+    // puan → kitap: puanı → kitabı (p→b); renk hedefi: rengi (nk→ng).
+    let mut sunucu = Sunucu::yeni();
+    sunucu.mesaj_isle(r#"{"jsonrpc":"2.0","method":"textDocument/didOpen","params":{"textDocument":{"uri":"file:///tmp/r2.dil","text":"puan 3 olsun\npuanı yaz\npuana 1 ekleyemezsin\n"}}}"#);
+    let cikti = sunucu.mesaj_isle(r#"{"jsonrpc":"2.0","id":22,"method":"textDocument/rename","params":{"textDocument":{"uri":"file:///tmp/r2.dil"},"position":{"line":0,"character":1},"newName":"kitap"}}"#);
+    let yanit = &cikti.govdeler[0];
+    assert!(yanit.contains("\"newText\":\"kitabı\""), "{}", yanit);
+    assert!(yanit.contains("\"newText\":\"kitaba\""), "{}", yanit);
+
+    let mut sunucu = Sunucu::yeni();
+    sunucu.mesaj_isle(r#"{"jsonrpc":"2.0","method":"textDocument/didOpen","params":{"textDocument":{"uri":"file:///tmp/r3.dil","text":"puan 3 olsun\npuanı yaz\n"}}}"#);
+    let cikti = sunucu.mesaj_isle(r#"{"jsonrpc":"2.0","id":23,"method":"textDocument/rename","params":{"textDocument":{"uri":"file:///tmp/r3.dil"},"position":{"line":0,"character":1},"newName":"renk"}}"#);
+    assert!(cikti.govdeler[0].contains("\"newText\":\"rengi\""), "{}", cikti.govdeler[0]);
+}
+
+#[test]
+fn yeniden_adlandirma_unluyle_bitene_tampon() {
+    // sayı → elma? elmayı; tamlayan: elmanın.
+    let mut sunucu = Sunucu::yeni();
+    sunucu.mesaj_isle(r#"{"jsonrpc":"2.0","method":"textDocument/didOpen","params":{"textDocument":{"uri":"file:///tmp/r4.dil","text":"sayı 3 olsun\nsayıyı yaz\nsayının metni yaz\n"}}}"#);
+    let cikti = sunucu.mesaj_isle(r#"{"jsonrpc":"2.0","id":24,"method":"textDocument/rename","params":{"textDocument":{"uri":"file:///tmp/r4.dil"},"position":{"line":0,"character":1},"newName":"elma"}}"#);
+    let yanit = &cikti.govdeler[0];
+    assert!(yanit.contains("\"newText\":\"elmayı\""), "{}", yanit);
+    assert!(yanit.contains("\"newText\":\"elmanın\""), "{}", yanit);
+}
