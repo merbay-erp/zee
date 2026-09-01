@@ -14,6 +14,7 @@
 use std::ops::Deref;
 
 use crate::agac::{Cumle, Program};
+use crate::hir::HirProgram;
 use crate::sozcukleyici::Token;
 use crate::tani::Tani;
 
@@ -94,10 +95,8 @@ impl BaglanmamisProgram {
     }
 
     pub(crate) fn denetle(mut self) -> Result<BaglanmisProgram, Tani> {
-        crate::cozumleyici::denetle(&mut self.program)?;
-        Ok(BaglanmisProgram {
-            program: self.program,
-        })
+        let bilgi = crate::cozumleyici::denetle_ve_hir_bilgisi(&mut self.program)?;
+        Ok(BaglanmisProgram { hir: HirProgram::yeni(self.program, bilgi) })
     }
 }
 
@@ -105,20 +104,23 @@ impl BaglanmamisProgram {
 ///
 /// Bu temsil bugün hâlâ AST'dir. Ayrı ve açık tür taşıyan HIR, B-019'un
 /// sorumluluğudur; bu ad o işi tamamlanmış gibi göstermez.
-#[derive(Debug, Clone)]
 pub struct BaglanmisProgram {
-    program: Program,
+    hir: HirProgram,
 }
 
 impl BaglanmisProgram {
     pub fn program(&self) -> &Program {
-        &self.program
+        self.hir.program()
+    }
+
+    pub fn hir(&self) -> &HirProgram {
+        &self.hir
     }
 
     /// Eski `Program` tüketicileri için yalnız başarılı checker geçişinden
     /// sonra faz bilgisini bilinçli olarak siler.
     pub fn into_program(self) -> Program {
-        self.program
+        self.hir.into_program()
     }
 }
 
@@ -126,6 +128,6 @@ impl Deref for BaglanmisProgram {
     type Target = Program;
 
     fn deref(&self) -> &Self::Target {
-        &self.program
+        self.hir.program()
     }
 }

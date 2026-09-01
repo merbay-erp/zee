@@ -1,4 +1,4 @@
-//! B-005/B-006/B-010/B-018 derleyici faz ve semantic sınır regresyonları.
+//! B-005/B-006/B-010/B-018/B-019 derleyici faz ve semantic sınır regresyonları.
 
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -53,10 +53,10 @@ fn handler_modulleri_yeni_domain_icin_sinir_tasir() {
         ("src/ayristirici/cumle.rs", 500),
         ("src/ayristirici/ifade.rs", 1_150),
         ("src/cozumleyici/cumle.rs", 1_000),
-        ("src/cozumleyici/ifade.rs", 920),
+        ("src/cozumleyici/ifade.rs", 960),
         ("src/cozumleyici/cagri.rs", 380),
         ("src/cozumleyici/akis.rs", 150),
-        ("src/cozumleyici/baglam.rs", 120),
+        ("src/cozumleyici/baglam.rs", 150),
         ("src/cozumleyici/donus.rs", 180),
         ("src/cozumleyici/etki.rs", 650),
         ("src/cozumleyici/sembol.rs", 200),
@@ -64,6 +64,7 @@ fn handler_modulleri_yeni_domain_icin_sinir_tasir() {
         ("src/cozumleyici/turler.rs", 300),
         ("src/kimlik.rs", 80),
         ("src/faz.rs", 160),
+        ("src/hir.rs", 180),
         ("src/yorumlayici/cumle.rs", 600),
         ("src/yorumlayici/ifade.rs", 730),
     ] {
@@ -135,4 +136,21 @@ fn standart_hat_faz_turlerini_atlayamaz() {
     assert!(kok.contains("KaynakMetni::yeni(kaynak).sozcukle()"));
     assert!(kok.contains("BaglanmamisProgram::yeni"));
     assert!(kok.contains("calistir_baglanmis_io(&program"));
+}
+
+#[test]
+fn baglanmis_program_typed_hir_olmadan_uretilemez() {
+    let faz = kaynak("src/faz.rs");
+    assert!(faz.contains("hir: HirProgram"));
+    assert!(faz.contains("denetle_ve_hir_bilgisi"));
+
+    let hir = kaynak("src/hir.rs");
+    for kanit in [
+        "struct HirProgram",
+        "struct HirDugumId",
+        "struct HirIfadeBilgisi",
+        "enum HirBagi",
+    ] {
+        assert!(hir.contains(kanit), "typed HIR kanıtı eksik: {kanit}");
+    }
 }

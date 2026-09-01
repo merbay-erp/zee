@@ -76,3 +76,6 @@ mimari testle engellenir. Kimlik kuralları ADR-014 ve
 K-102/ADR-015 veri fazlarını [ayrı tiplerde](derleyici-faz-modeli.md) bağladı;
 `faz.rs` bütçesi ve standart-hat testi parsed AST'nin yürütülebilir program
 gibi kullanılmasını engeller.
+K-103/ADR-016 checker'ın tür ve semantic bağ çıktısını
+[typed HIR çekirdeğine](typed-hir-modeli.md) taşıdı; `hir.rs` ayrı 180 satır
+bütçesine sahiptir ve bağlı programın HIR'sız kurulması mimari testte durur.

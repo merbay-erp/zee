@@ -23,16 +23,19 @@ Parsed AST
        ▼
 Bound AST
   kaynak ad + YapiId / IslemId / SymbolId
-       │ B-019
+       │ K-103 / ADR-016
        ▼
-Typed HIR (gelecek)
-  açık kimlik + tür + source span
+Typed HIR çekirdeği
+  HirDugumId + açık kimlik + tür
+       │ B-019 kalan dilim / B-020
+       ▼
+HIR-bağlı runtime + zorunlu source span
 ```
 
-K-102/B-018 bu aşamaları ayrı faz tiplerinde görünür yaptı. Kaynak adı şimdilik
-runtime ve kaliteli Türkçe tanılar için korunur. Bu çift taşıma geçiş
-köprüsüdür; B-019 HIR işi tamamlanınca runtime çözülmemiş kaynak adıyla
-semantic karar vermemelidir.
+K-102/B-018 aşamaları ayrı faz tiplerinde görünür yaptı; K-103 her denetlenmiş
+ifadenin türünü ve semantic bağını ayrı HIR kaydına taşıdı. Kaynak adı kaliteli
+Türkçe tanı ve v0 uyumluluğu için korunur. B-019 tamamlandığında standart
+runtime kaynak adıyla semantic karar vermemelidir.
 
 ## Yeni kod için kurallar
 
@@ -48,5 +51,6 @@ semantic karar vermemelidir.
 
 `semantic_kimlik_testi.rs` yapı depolama sırasını ve işlem çağrı sırasını ters
 çevirerek kimliklerin değişmediğini, çözülmüş değişkenin `SymbolId` taşıdığını
-kanıtlar. `mimari_sinir_testi.rs`, `Yapi(usize)` ve `yapilar[id]` gerilemesini
-reddeder. Tam test, Clippy ve WASM kapıları her değişiklikte yine zorunludur.
+kanıtlar. `hir_modeli_testi.rs` bu bağların açık türle HIR'a geçtiğini;
+`mimari_sinir_testi.rs`, `Yapi(usize)`, `yapilar[id]` ve HIR'sız bağlı program
+gerilemesini reddeder. Tam test, Clippy ve WASM kapıları yine zorunludur.

@@ -6,6 +6,42 @@ pub(super) fn ifade_denetle(
     baglam: &mut Baglam,
     satir: usize,
 ) -> Result<Tur, Tani> {
+    let adres = crate::hir::ifade_adresi(ifade);
+    let tur = ifade_denetle_ic(ifade, ortam, baglam, satir)?;
+    let bag = match ifade {
+        Ifade::Degisken {
+            sembol_kimligi: Some(kimlik),
+            cozulmus: Some(ad),
+            ..
+        } => {
+            baglam.hir_sembol_adi_ekle(*kimlik, ad.clone());
+            crate::hir::HirBagi::Sembol(*kimlik)
+        }
+        Ifade::IslemCagrisi { islem_kimligi: Some(kimlik), .. } => {
+            crate::hir::HirBagi::Islem(*kimlik)
+        }
+        Ifade::YeniYapi { yapi_kimligi: Some(kimlik), .. } => {
+            crate::hir::HirBagi::Yapi(*kimlik)
+        }
+        _ => crate::hir::HirBagi::Yok,
+    };
+    let hir_kimligi = baglam
+        .hir_ifadeleri
+        .get(&adres)
+        .map(|bilgi| bilgi.kimlik())
+        .unwrap_or_else(|| crate::hir::HirDugumId::yeni(baglam.hir_ifadeleri.len()));
+    baglam
+        .hir_ifadeleri
+        .insert(adres, crate::hir::HirIfadeBilgisi::yeni(hir_kimligi, tur, bag));
+    Ok(tur)
+}
+
+fn ifade_denetle_ic(
+    ifade: &mut Ifade,
+    ortam: &SembolTablosu,
+    baglam: &mut Baglam,
+    satir: usize,
+) -> Result<Tur, Tani> {
     match ifade {
         Ifade::MetinSabiti(_) => Ok(Tur::Metin),
         Ifade::SayiSabiti(_) => Ok(Tur::TamSayi),

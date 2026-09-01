@@ -212,6 +212,13 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   Parsed AST'nin doğrudan yürütülemeyeceği compile-fail dahil dört yeni testle
   toplam 406 test yeşildir. Kaynak semantiği değişmeden B-018/V1-P0-13
   kapandı; ayrı typed HIR B-019 olarak açık kaldı.
+- **Typed HIR çekirdeği** (K-103, ADR-016): checker'ın her denetlenmiş ifade
+  için ürettiği tür ve `SymbolId`/`IslemId`/`YapiId` bağı ayrı
+  `HirIfadeBilgisi` kaydına taşındı; `HirDugumId` program içi semantic düğüm
+  kimliğidir. `BaglanmisProgram` artık zorunlu `HirProgram` sahibidir; AST
+  tanı ve v0 uyumluluğu için salt-okunur kalır. İki davranış ve bir mimari
+  testle toplam 409 test yeşildir. B-019/V1-P0-14, standart runtime HIR
+  bağlarını tek karar kaynağı yaptığında kapanacaktır.
 
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`

@@ -114,6 +114,13 @@ pub fn denetle_coklu(program: &mut Program) -> Vec<Tani> {
 /// Çıkarımlı işlemler ilk çağrı argümanlarıyla; açık imzalı işlemler ise
 /// tanım sözleşmesiyle çağrı beklemeden denetlenir (K-083).
 pub fn denetle(program: &mut Program) -> Result<(), Tani> {
+    denetle_ve_hir_bilgisi(program).map(|_| ())
+}
+
+/// Programı denetler ve başarılı geçişin typed HIR lowering bilgisini verir.
+pub(crate) fn denetle_ve_hir_bilgisi(
+    program: &mut Program,
+) -> Result<crate::hir::HirOlusturmaBilgisi, Tani> {
     etki::denetle(program)?;
     let mut ortam = SembolTablosu::yeni(0);
     if let Some(tani) = yapi_turu_tanilari(&program.yapilar).into_iter().next() {
@@ -139,6 +146,8 @@ pub fn denetle(program: &mut Program) -> Result<(), Tani> {
         }
     }
 
+    let hir_bilgisi = sonuc.as_ref().ok().map(|_| baglam.hir_bilgisi());
     program.islemler = baglam.islemler;
-    sonuc
+    sonuc?;
+    Ok(hir_bilgisi.expect("başarılı checker HIR bilgisi üretmeli"))
 }
