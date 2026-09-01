@@ -43,9 +43,10 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 15. K-118/ADR-010 revizyonu 71 RFC/ADR/spec belgesini test dosyalarına bağladı;
     README canlı sayılarını depo ağacından üreten araçla B-043/B-044 kapandı
     (465 test).
-16. Sıradaki makine omurgası B-041 LSP SymbolId/HIR bağı ve B-042 formatter
-    parse-equivalence kanıtıdır.
-17. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
+16. K-119 tam parser token izini 33 golden programın dağınık-boşluk
+    varyantında eşitleyip iki tarafı ayrıştırarak B-042'yi kapattı (467 test).
+17. Sıradaki makine omurgası B-041 LSP SymbolId/HIR bağıdır.
+18. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
 
 ## P0 — V1 öncesi dil ve derleyici omurgası
 
@@ -277,8 +278,12 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   parser/checker/runtime p50/p95 CI artefact ve trend olmalıdır.
 - **B-041 · SIRADA — LSP'yi SymbolId/HIR'a bağla.** Rename/definition özellikle
   morfolojili adlarda parser metin tahmininden kurtulmalıdır.
-- **B-042 · KISMEN — formatter parse-equivalence property.** İdempotence vardır;
-  `parse(format(x))` semantiği `parse(x)` ile eşit olmalıdır.
+- **B-042 · KAPALI (K-119) — formatter parse-equivalence property.** C011
+  güvencesi artık `SatirSonu`, `Girinti`, `Cikinti` ve `DosyaSonu` dahil tam
+  parser token izini byte-konumlarından bağımsız kıyaslar. Sayısal 33 golden
+  programın metin/yorumları koruyan deterministik dağınık-boşluk varyantı
+  biçimlenir; önce/sonra izi eşit ve iki parser geçişi de başarılı olmak
+  zorundadır. İdempotence ve proje/kitaplık resmî biçim kapıları korunur.
 - **B-043 · KAPALI (K-118) — spec↔code kanıt haritası.** 23 RFC, 26 ADR ve
   22 spec bölümü `docs/kanit-haritasi-v1.tsv` içinde `kanitli/kismi/taslak`
   durumu, yürütülebilir test yolları ve açık kapsam notuyla birebir izlenir.
@@ -295,6 +300,5 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 ## Bir sonraki somut kapı
 
 İnsan kanıtı hattında B-001, doldurulmuş gerçek usability formları ve önceden
-ilan edilmiş eşikleri bekler. Makine hattında B-043/B-044/K-118 kapandı;
-sıradaki iş B-041 LSP'nin SymbolId/HIR bağı ve B-042 formatter
-parse-equivalence property kanıtıdır.
+ilan edilmiş eşikleri bekler. Makine hattında B-042/K-119 kapandı; sıradaki iş
+B-041 LSP'nin SymbolId/HIR bağıdır.

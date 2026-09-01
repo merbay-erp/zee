@@ -1753,6 +1753,25 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   harita kapsamı ve README üretici tazeliği için iki yeni regresyon. Toplam 465
   test yeşildir; B-043/B-044 kapandı.
 
+## K-119 — Formatter'ı tam parser-token eşdeğerliğine bağla (2 Eyl)
+
+- **Sorun:** C011 biçimleme öncesi/sonrası token türlerini kıyaslıyor fakat
+  `SatirSonu`nu bilinçli olarak süzüyordu. Formatter bugün cümleleri
+  birleştirmese de bu oracle, gelecekte iki cümleyi tek satıra taşıyan bir
+  gerilemeyi anlam değişikliği saymayabilirdi. B-042 bu nedenle kısmi kaldı.
+- **Karar:** Parser'ın yapısal girdisi `SatirSonu`, `Girinti`, `Cikinti` ve
+  `DosyaSonu` dahil bütündür. Yalnız satır/sütun/uzunluk gibi kaynak haritası
+  konumları biçimlemeyle değişebilir. Tam `TokenTur` dizisi eşit değilse C011
+  sonucu yazmadan durur.
+- **Property korpusu:** Sayısal 33 golden programın dış boşlukları ve girinti
+  genişlikleri deterministik dağıtılır; metin sabiti ile yorum gövdeleri aynen
+  kalır. Her varyant biçimlenir, önce/sonra tam parser izi eşitlenir ve iki
+  taraf da birim işlem adlarıyla tohumlanmış gerçek parser'dan geçirilir.
+  Ayrı regresyon, iki cümle ile tek satırın izini özellikle farklı tutar.
+- **Sözleşme:** RFC-0021, ADR-002 ve spec/20 aynı kapıyı tanımlar; kanıt
+  haritası yeni testi üç belgeye bağlar. Kullanıcı sözdizimi ve resmî çıktı
+  değişmedi. İki yeni regresyonla toplam 467 test yeşildir; B-042 kapandı.
+
 ---
 
 ## Sonraki adım
@@ -1761,5 +1780,5 @@ Korpus 10 öğrenci + 5 profesyonel usability oturumuna (Hafta 12 hedefi, erkeni
 Hafta 2'de kağıt üstünde) sesli okutulacak; her kayıt için "doğal mı /
 deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
-Makine hattında B-043/B-044/K-118 kapandı. Sırada B-041 LSP'nin SymbolId/HIR
-bağı ve B-042 formatter parse-equivalence property kanıtı vardır.
+Makine hattında B-042/K-119 kapandı. Sırada B-041 LSP'nin SymbolId/HIR bağı
+vardır.
