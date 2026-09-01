@@ -1,10 +1,11 @@
 # liste_araclari — gömülü standart birim (RFC-0014, deneysel).
 # Sayı listeleri için biriktirme yardımcıları.
 
+# Dönüş daima Ondalık (tutarlı imza — TamSayı listesi genişlemeyle girer).
 işlem toplamını hesapla
     sayıları al
 
-    toplam 0 olsun
+    toplam 0,0 olsun
     her sayı için
         toplamı sayıyla artır
     toplamı döndür
@@ -31,15 +32,14 @@ işlem ortalamasını hesapla
     sayıları al
 
     toplam sayılar için toplamını hesapla olsun
-    ondalıklı toplam ile 1,0 in çarpımı olsun
     adet sayıların adedi olsun
-    sonuç ondalıklının adede bölümü olsun
+    sonuç toplamın adede bölümü olsun
     sonucu döndür
 
 test "toplam ve uçlar"
     sayılar 3, 7, 1, 9 listesi olsun
     toplam sayılar için toplamını hesapla olsun
-    toplam 20 ye eşit olmalı
+    toplam 20,0 a eşit olmalı
     büyük sayılar için en büyüğünü bul olsun
     büyük 9 a eşit olmalı
     küçük sayılar için en küçüğünü bul olsun
