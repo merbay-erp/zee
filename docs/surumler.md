@@ -150,11 +150,24 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   nihai V1 kararı sayılmadan önce serbest üretim, kör A/B/C kartları, üç sıra
   grubuna dengeli dağıtım, çocuk/profesyonel alt grup eşikleri ve yedi teknik
   bağlam önden bağlandı. B güçlü çıkarsa ikinci çağrı sözdizimi eklenmeyecek;
-  B-003 expression grammar turuna dönülecek. Anonim katılımcı/özet şablonları
-  ve kişisel veri koruması hazırlandı. Parser'ın eski tanım-sırası yorumu güncel
-  ön-tarama/karşılıklı özyineleme gerçeğine düzeltildi. Dil yüzeyi değişmedi;
-  378 test tabanı korunuyor ve V1-P0-07 gerçek 10 çocuk + 5 profesyonel
-  sonucu gelene kadar açık kalıyor.
+  B-003/RFC-0021 expression grammar turuna dönülecek. Anonim katılımcı/özet
+  şablonları ve kişisel veri koruması hazırlandı. Parser'ın eski tanım-sırası
+  yorumu güncel ön-tarama/karşılıklı özyineleme gerçeğine düzeltildi. Dil
+  yüzeyi değişmedi; 378 test tabanı korunuyor ve V1-P0-07 gerçek 10 çocuk +
+  5 profesyonel sonucu gelene kadar açık kalıyor.
+- **Katmanlı ifade grameri** (K-097, RFC-0021/spec-20/ADR-002): mevcut yüzey
+  primary → erişim/postfix → çağrı → aritmetik → birleştirme → karşılaştırma
+  → boolean güç sırasına ve tam bölge tüketimine bağlandı. `ile`/`ve` gibi
+  bağlama göre ayrılan kelimelerin sahipliği, en uzun işlem adı, karışık
+  `ve/veya` için S030, işlem-adı kuyruğunun postfix'i gölgelememesi, tam
+  sıfır-argüman çağrısının korunması ve tanımsız katman birleşimi için
+  fail-closed davranış normatifleşti. Böylece görünür `sayısı` işleminin
+  `metnin sayısı` ifadesini yanlış S019'a çevirdiği çakışma, geçerli tam
+  sıfır-argüman çağrılarını bozmadan kapandı. Yeni ifade özelliği katman,
+  çakışma matrisi, AST/lowering,
+  formatter ve olumlu/olumsuz conformance kanıtı olmadan parser'a dal
+  ekleyemez. Sekiz bağımsız testle toplam 386 test yeşil; kullanıcı yüzeyi
+  değişmeden V1-P0-08 kapandı. Fiziksel parser parçalama B-005'e ayrıldı.
 
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`

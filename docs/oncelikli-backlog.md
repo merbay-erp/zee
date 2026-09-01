@@ -11,10 +11,12 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 ## Uygulama sırası
 
 1. Tamamlanan önkoşul: K-095 registry metadata güveni (378 test).
-2. İlk sprint: B-001'in gerçek insan kanıtı + B-002 → B-003 → B-004.
-3. İkinci sprint: B-005/B-006 → B-010/B-018/B-019/B-020 → B-014–B-017.
-4. Üçüncü sprint: B-027/B-028 → B-030/B-031 → B-043/B-044.
-5. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
+2. İnsan kanıtı bekleyen kapılar: B-001/K-096 + B-002/K-093.
+3. Tamamlanan compiler omurgası: B-003/K-097 (386 test).
+4. Sıradaki makine işi: B-004; ardından B-005/B-006 →
+   B-010/B-018/B-019/B-020 → B-014–B-017.
+5. Üçüncü sprint: B-027/B-028 → B-030/B-031 → B-043/B-044.
+6. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
 
 ## P0 — V1 öncesi dil ve derleyici omurgası
 
@@ -26,9 +28,13 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 - **B-002 · AÇIK — K-093 gezme zihinsel modelini kullanıcıyla doğrula.**
   Değer-sonuç imleci makine tarafında tamamdır; V1-P1-05 için 10 öğrenci +
   5 profesyonel eşiği [usability kitinde](usability-kiti.md) bekler.
-- **B-003 · SIRADA — expression grammar büyüme mimarisini kararlaştır.**
-  Primary → erişim/postfix → çağrı → aritmetik → karşılaştırma → boolean
-  katmanlarını genellenebilir parser ve RFC/ADR ile tanımla.
+- **B-003 · KAPALI (K-097) — expression grammar büyüme mimarisini
+  kararlaştır.** Primary → erişim/postfix → çağrı → aritmetik → birleştirme →
+  karşılaştırma → boolean sırası, tam bölge tüketimi ve yeni yüzey uzatma
+  protokolü RFC-0021/spec-20/ADR-002'de bağlandı. Sekiz bağımsız conformance
+  testi güçlü birleşimleri, işlem-adı kuyruğunun postfix'i gölgelememesini,
+  tam sıfır-argüman çağrısını, en uzun çağrıyı ve fail-closed sınırları korur;
+  fiziksel fonksiyon/modül parçalama B-005'in davranış-korumalı işidir.
 - **B-004 · SIRADA — domain özelliklerini core AST'den ayır.**
   HTTP, sensör, CSRF ve parola yüzeylerini kaynak yazımını bozmadan generic
   çağrı/intrinsic/capability lowering modeline taşı.

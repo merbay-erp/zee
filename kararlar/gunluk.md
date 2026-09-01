@@ -1293,13 +1293,40 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   ayrı tutulur; isim/e-posta/ses/video depoya alınmaz.
 - **Tek yüzey:** V1 değere bağlama, cümle çağrısı, iç içe ifade, dönüş,
   özyineleme, tanım sırası ve çok-tokenli argümanı tek genel grammar ile
-  karşılar. B güçlü çıkarsa doğrudan ek sözdizimi olmaz; B-003 expression
-  grammar turu açılır. C de grammar+migration kanıtı olmadan seçilemez.
+  karşılar. B güçlü çıkarsa doğrudan ek sözdizimi olmaz; B-003/RFC-0021
+  expression grammar turu açılır. C de grammar+migration kanıtı olmadan
+  seçilemez.
 - **Makine hazırlığı:** Karar paketi, uygulama kiti, anonim katılımcı/özet
   şablonları hazırdır. Parser'daki “tanım önce” tarihsel yorumu, gerçek
   başlık ön-taraması ve karşılıklı özyineleme davranışına düzeltildi.
 - **Durum:** B-001 KISMEN; V1-P0-07 KARAR. İnsan kanıtı beklenirken dil
   yüzeyi ve 378 test tabanı değişmedi.
+
+## K-097 — İfade grameri katmanları ve tam tüketim (1 Eyl)
+
+- **Karar:** İfadeler en güçlüden en zayıfa primary → erişim/postfix → çağrı
+  → aritmetik → birleştirme → karşılaştırma → boolean katmanlarıyla büyür.
+  Elle yazılmış yüklem-sonlu recursive descent korunur; bugünkü Türkçe
+  tam-bölge kalıpları için Pratt zorunlu değildir.
+- **Tam tüketim:** Bir katman bütün bölgeyi tek AST olarak tüketir veya
+  başarısız olur; önek eşleşmesiyle artan tokenı başka anlama bırakmaz. `ile`
+  önce tam çağrı/aritmetik kalıbına, aksi halde birleştirmeye aittir. Çağrı
+  adlarında en uzun görünür ad kazanır. İşlem-adının yalnız kuyruk eşleşmesi
+  daha güçlü primary/postfix ifadesini gölgeleyemez; bütün bölge işlem adıyla
+  birebir aynıysa geriye uyumlu sıfır-argüman çağrısı korunur. Bu ayrım,
+  görünür `sayısı` işleminin `metnin sayısı` ifadesini yanlış S019'a çeviren
+  yanlış tanıyı geçerli çağrıları bozmadan kapatır.
+- **Belirsizlik:** `ve`/`veya` aynı koşulda karışırsa öncelik uydurulmaz
+  (S030). Çağrı sonrası genel postfix ve genel aritmetik-karşılaştırma
+  bileşimleri bugün ara ad ister; sessiz AST yerine S015 verir. K-016/C sonucu
+  gelmeden parantez varsayılmaz.
+- **Büyüme kapısı:** Yeni ifade yüzeyi katmanını, bölge sınırını, `ile/ve/veya`
+  ve morfoloji çakışmasını, AST/lowering sonucunu, formatter etkisini ve
+  olumlu/olumsuz testlerini aynı RFC/spec değişikliğinde göstermek zorundadır.
+- **Kanıt:** RFC-0021 + spec/20 + ADR-002 revizyonu; çağrı/postfix→aritmetik,
+  karşılaştırma→boolean, postfix/işlem-adı kuyruğu, tam sıfır-argüman, en uzun
+  çağrı, S030 ve S015 sınırlarını kapsayan sekiz bağımsız test. Toplam 386 test; V1-P0-08 ve
+  B-003 kapandı. Dosya/fonksiyon parçalama davranış-korumalı B-005 işidir.
 
 ---
 

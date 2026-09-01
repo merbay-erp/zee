@@ -1,7 +1,7 @@
 # 02 — Dizim
 
 Normatif kaynak: RFC-0003 (girinti/blok), RFC-0006 (işlem/çağrı). Tanı
-kodları: S bölümü.
+kodları: S bölümü. İfade içi katman ve tam tüketim kuralları spec/20'dedir.
 
 ## Yüklem-sonlu dağıtım (TANIMLI)
 

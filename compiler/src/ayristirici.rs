@@ -1,4 +1,5 @@
-//! Ayrıştırıcı (parser) — elle yazılmış recursive descent (ADR-002 adayı).
+//! Ayrıştırıcı (parser) — elle yazılmış yüklem-sonlu recursive descent
+//! (ADR-002, RFC-0021/spec-20).
 //!
 //! Türkçe yüklem-sonlu olduğu için cümlenin türü satırın SON kelimesinden
 //! anlaşılır: "... yaz", "... olsun", "... tekrarla", "... ise". Bu, İngilizce
@@ -1699,8 +1700,13 @@ fn tekil_ifade(token: Token) -> Result<Ifade, Tani> {
 /// Tamlayan (genitif) ayrık ekleri: "10 un", "3 ün".
 const TAMLAYAN_EKLER: [&str; 8] = ["nın", "nin", "nun", "nün", "ın", "in", "un", "ün"];
 
-/// İfade bölgesi: önce yapılı kalıplar (aritmetik genitif, "…ın sayısı"),
-/// bulunamazsa "ile" zinciri.
+/// Değer ifadesinin geçiş girdisi (RFC-0021/spec-20).
+///
+/// Bugünkü uyumluluk yolu bütün bölgeyi önce yapılandırılmış katmanlarda
+/// (erişim/postfix → çağrı → aritmetik) dener; yalnız hiçbir tam kalıp
+/// tüketmezse `ile` birleştirmesine düşer. Karşılaştırma ve boolean zincir
+/// kendi cümle bağlamında bunun üstündedir. Yeni ifade özelliği gelişigüzel
+/// bir üst-düzey dal olarak değil, RFC-0021'deki tek katmana eklenir.
 fn ile_ifadesi(tokenlar: &[Token], satir: usize, islemler: &[String]) -> Result<Ifade, Tani> {
     if tokenlar.is_empty() {
         return Err(Tani::yeni("S013", "Burada bir değer bekleniyor.".into(), satir, 1, 1));
@@ -1772,7 +1778,7 @@ fn bolge_ifadesi(tokenlar: &[Token], _satir: usize, islemler: &[String]) -> Resu
     )))
 }
 
-/// Koşul ifadesi: önce ve/veya zinciri ayrılır, parçalar atomik koşuldur.
+/// Boolean katmanı: önce ve/veya zinciri ayrılır, parçalar karşılaştırmadır.
 ///
 /// K-027 kuralı: `A ve B ve C` ya da `A veya B` serbesttir; ve/veya KARIŞIMI
 /// parantezsiz belirsiz olduğundan hatadır (S030) — kullanıcı koşulu böler.
@@ -1846,7 +1852,7 @@ fn kosul_ifadesi(tokenlar: &[Token], satir: usize) -> Result<Ifade, Tani> {
     })
 }
 
-/// Atomik koşul: yüklem sondadır.
+/// Karşılaştırma katmanı: yüklem sondadır.
 ///
 /// Desteklenen kalıplar (K-010):
 ///   X Y veya daha büyükse   → X >= Y
@@ -2071,9 +2077,10 @@ fn kosul_atomu(tokenlar: &[Token], satir: usize) -> Result<Ifade, Tani> {
     Err(hata())
 }
 
-/// Yapılı ifade kalıpları (K-008, K-009). Eşleşme yoksa Ok(None) döner ve
-/// bölge "ile" zinciri olarak okunur. Kalıplar deterministiktir: bölgenin
-/// TAMAMI eşleşmelidir, kısmi eşleşme zincire düşer.
+/// Primary + erişim/postfix + çağrı + aritmetik katmanlarının bugünkü
+/// uyumluluk gerçekleyicisi (RFC-0021/spec-20). Eşleşme yoksa Ok(None) döner
+/// ve bölge `ile` birleştirmesi olarak okunur. Kalıplar deterministiktir:
+/// bölgenin TAMAMI eşleşmelidir; kısmi eşleşme başka anlama düşmez.
 ///
 ///   X ile Y nin toplamı/farkı/çarpımı   (ekli ad: "ikincinin toplamı" — 4 token)
 ///   X ile 10 un toplamı                 (ayrık ekli sabit — 5 token)
@@ -2093,9 +2100,11 @@ fn yapili_kalip(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifade>
         None => return Ok(None),
     };
 
-    // İşlem çağrısı ifadesi: bölge tanımlı bir işlem adıyla bitiyorsa.
+    // Bütün bölge görünür işlem adıysa sıfır argümanlı çağrıdır. Bu eski ve
+    // geçerli çağrı biçimini korur; yalnız işlem-adı KUYRUĞUNUN daha güçlü bir
+    // postfix'i gölgelemesi aşağıdaki katman sırasıyla engellenir.
     let ilk_satir = tokenlar[0].satir;
-    if let Some(cagri) = cagri_kalibi(tokenlar, ilk_satir, islemler)? {
+    if let Some(cagri) = sifir_argumanli_cagri(tokenlar, ilk_satir, islemler) {
         return Ok(Some(cagri));
     }
 
@@ -2441,6 +2450,13 @@ fn yapili_kalip(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifade>
         return Ok(Some(Ifade::Rastgele { alt: Box::new(alt), ust: Box::new(ust) }));
     }
 
+    // Çağrı katmanı primary ve erişim/postfix'ten sonra, aritmetikten önce
+    // gelir (RFC-0021/spec-20). Böylece görünür bir `sayısı` işlemi,
+    // `metnin sayısı` postfix ifadesini bağlama göre gölgeleyemez.
+    if let Some(cagri) = cagri_kalibi(tokenlar, ilk_satir, islemler)? {
+        return Ok(Some(cagri));
+    }
+
     // X ile Y nin toplamı/farkı/çarpımı
     let toplama_islec = match son {
         "toplamı" => Some(AritmetikIslec::Topla),
@@ -2561,8 +2577,7 @@ fn cagri_kalibi(
         return Ok(None);
     }
 
-    let mut adaylar: Vec<&String> = islemler.iter().collect();
-    adaylar.sort_by_key(|ad| std::cmp::Reverse(ad.split(' ').count()));
+    let adaylar = sirali_islem_adlari(islemler);
 
     for ad in adaylar {
         let kelimeler: Vec<&str> = ad.split(' ').collect();
@@ -2628,6 +2643,34 @@ fn cagri_kalibi(
     }
 
     Ok(None)
+}
+
+/// Bütün bölge görünür işlem adıysa eski sıfır-argüman çağrısını korur.
+/// Suffix tabanlı parametreli çağrı, primary/postfix katmanından sonra denenir.
+fn sifir_argumanli_cagri(tokenlar: &[Token], satir: usize, islemler: &[String]) -> Option<Ifade> {
+    let n = tokenlar.len();
+    for ad in sirali_islem_adlari(islemler) {
+        let kelimeler: Vec<&str> = ad.split(' ').collect();
+        if kelimeler.len() == n
+            && tokenlar
+                .iter()
+                .zip(&kelimeler)
+                .all(|(token, kelime)| matches!(&token.tur, TokenTur::Kelime(t) if t == kelime))
+        {
+            return Some(Ifade::IslemCagrisi {
+                islem_adi: ad.clone(),
+                argumanlar: Vec::new(),
+                satir,
+            });
+        }
+    }
+    None
+}
+
+fn sirali_islem_adlari(islemler: &[String]) -> Vec<&String> {
+    let mut adaylar: Vec<&String> = islemler.iter().collect();
+    adaylar.sort_by_key(|ad| std::cmp::Reverse(ad.split(' ').count()));
+    adaylar
 }
 
 fn arg_hatasi(ad: &str, satir: usize) -> Tani {

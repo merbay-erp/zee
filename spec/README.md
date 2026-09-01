@@ -41,6 +41,7 @@ Kırıcı değişiklik sessizce yapılamaz: davranış değişikliği RFC'den ge
 | [17 — Değer semantiği ve gezme](17-deger-semantigi-ve-gezme.md) | derin değer kopyası, liste değer-sonuç imleci ve T053 kaynak sabitliği | RFC-0019, K-093 |
 | [18 — Tekrar üretilebilir paket yayını](18-paket-yayini.md) | `.zep`, Ed25519 yayın imzası, SPDX SBOM ve SLSA provenance | RFC-0020, ADR-006, K-094 |
 | [19 — Registry metadata güven zinciri](19-registry-metadata-guveni.md) | eşik root/rotasyon, çevrimiçi rol bağları, rollback/expiry ve targets yayıncı politikası | RFC-0020, ADR-006, K-095 |
+| [20 — İfade grameri](20-ifade-grameri.md) | primary→postfix→çağrı→aritmetik→birleştirme→karşılaştırma→boolean katmanları ve tam tüketim | RFC-0021, ADR-002, K-097 |
 
 ## Faza bağlı — henüz spec dışı
 

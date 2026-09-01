@@ -557,7 +557,15 @@ K-016'nın makine hazırlığı K-096 ile
 sonra sıra dengeli kör A/B/C kartları; 10 çocuk + 5 profesyonel alt grup
 eşikleri ve yedi teknik bağlam. A çalışan hipotezdir, insan verisi değildir.
 V1 yalnız bir genel çağrı grammar'ı taşır; B'nin güçlü çıkması ikinci yüzey
-eklemek yerine B-003 expression grammar tasarımını tetikler.
+eklemek yerine K-097 ile dondurulan RFC-0021 expression grammar mimarisini
+yeniden açar.
+
+B-003, K-097 ile tamamlandı: RFC-0021/spec-20/ADR-002 primary → erişim/postfix
+→ çağrı → aritmetik → birleştirme → karşılaştırma → boolean katmanlarını,
+tam bölge tüketimini ve her yeni ifade yüzeyinin çakışma+conformance kapısını
+bağlar. Parser'daki fiziksel fonksiyon/modül ayrımı bu davranışı değiştirmeden
+B-005'te yapılacaktır; sıradaki omurga işi core AST'den domain
+intrinsic/capability ayrımıdır (B-004).
 # 40. Proje felsefesinin korunması
 Bu projenin başarısı yalnız compiler’ın çalışması değildir. Başarı; Türkçe konuşan bir çocuğun yabancı syntax bariyerine takılmadan algoritmik düşünceyle tanışması, aynı dilin yıllar sonra onu terk etmeye zorlamaması ve ekosistemin tek bir şirketin kapalı ürünü haline gelmemesidir.
 Her yeni özellik şu dört sorudan geçmelidir: Türkçe doğal mı? Deterministik mi? Öğrenilebilir mi? Profesyonel ölçekte savunulabilir mi? Dördünden biri hayırsa özellik yeniden tasarlanır.

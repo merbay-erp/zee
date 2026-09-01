@@ -95,6 +95,19 @@ TamSayı gerektiğinde Ondalığa kendiliğinden genişler; tersi bilinçlidir:
 → `"1.234.567,89"` (Türk yazımı, K-075). Her değerin
 resmî metin hali: `sayının metni` → `"42"` (K-066).
 
+### İfadeler nasıl bağlanır?
+
+Günlük kullanımda öncelik tablosu ezberlemen gerekmez. Dilin kesin düzeni,
+küçük parçadan büyük cümleye şöyledir: temel değer → özellik/erişim → işlem
+çağrısı → aritmetik → metin birleştirme → karşılaştırma → `ve`/`veya`.
+Örneğin `2 için biri ekle ile 4 ün çarpımı` önce çağrıyı, sonra çarpımı kurar.
+
+Bugün tanımlanmamış iki uzun ifadeyi parantezle zorlamak yerine sonucu bir ada
+bağla ve sonraki satırda kullan. `ve` ile `veya` aynı koşulda karışmaz; dil
+gizli öncelik uydurmaz. Bu büyüme sözleşmesinin ayrıntısı
+[RFC-0021](../rfcs/0021-ifade-grameri-mimarisi.md) ve
+[spec/20](../spec/20-ifade-grameri.md) içindedir.
+
 ## 5. Koşullar
 
 Koşul da yüklem-sonlu: `...se/...sa` ile biter.

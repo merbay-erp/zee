@@ -8,7 +8,7 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | No | Başlık | Durum |
 |---|---|---|
 | ADR-001 | [Bootstrap dili: Rust + küçük/kilitli bağımlılık yüzeyi](001-bootstrap-dili.md) | **kabul** (K-088/K-092 revizyonu) |
-| ADR-002 | [Parser: elle yazılmış, yüklem-sonlu dağıtım](002-parser-stratejisi.md) | **kabul** |
+| ADR-002 | [Parser: elle yazılmış, yüklem-sonlu dağıtım](002-parser-stratejisi.md) | **kabul** (K-097 katmanlı ifade bölgeleri revizyonu) |
 | ADR-003 | [İlk yürütme: ağaç-yürüyen yorumlayıcı + IO soyutlaması](003-ilk-yurutme-modeli.md) | **kabul** |
 | ADR-006 | [Paket registry güven modeli](006-paket-registry-guven-modeli.md) | **kabul** (K-094 yayın; K-095 metadata güveni; taşıma/cache aşamalı) |
 | ADR-009 | [Dilin adı: zee](009-dil-adi.md) | **kabul** (kurucu yetki devriyle) |

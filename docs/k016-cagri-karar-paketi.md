@@ -73,8 +73,8 @@ notlar için ortalamayı hesapla, sonucu ortalama olsun
 
 Sesli okunuşu güçlüdür; fakat tek başına iç içe ifade, koşul ve doğrudan dönüş
 biçimi vermez. Bu aday 15 kişide çok güçlü çıkarsa doğrudan “ek sözdizimi”
-olarak alınmaz: B-003 expression grammar işi öne gelir ve aynı zihinsel modeli
-genel bir ifade biçimine dönüştüren ikinci tasarım turu yapılır.
+olarak alınmaz: K-097/RFC-0021 katmanları yeniden açılır ve aynı zihinsel
+modeli genel bir ifade biçimine dönüştüren ikinci tasarım turu yapılır.
 
 ### Aday C — açık ifade sınırı
 
@@ -84,7 +84,7 @@ ortalama (notlar için ortalamayı hesapla) olsun
 
 İç içe ifadeyi genel çözer; fakat noktalama-minimum ve ilk öğrenme hedefinde
 parantez maliyeti taşır. C seçilirse parantezin bütün expression grammar
-katmanındaki anlamı B-003/RFC ile birlikte dondurulur.
+katmanındaki anlamı RFC-0021 revizyonuyla birlikte dondurulur.
 
 “Hiçbiri; ben şöyle yazardım: ____” her kartta gerçek bir seçenektir.
 
@@ -129,10 +129,11 @@ Sonuç:
 
 - **A tüm eşikleri geçerse:** RFC-0006/spec-02 tam kabul adayı olur; K-016
   golden/anti-example ve öğretim metniyle dondurulur.
-- **C tüm eşikleri geçerse:** B-003 expression grammar ile ortak RFC
-  revizyonundan sonra migration yapılır; A aynı ana sürümde sessizce silinmez.
+- **C tüm eşikleri geçerse:** RFC-0021 expression grammar revizyonundan sonra
+  migration yapılır; A aynı ana sürümde sessizce silinmez.
 - **B doğal tercih eşiğini geçerse:** B teknik genellik koşulunu bugün
-  sağlamadığı için karar kapanmaz; B-003 öne alınır ve genel ikinci tur yapılır.
+  sağlamadığı için karar kapanmaz; RFC-0021 yeniden açılır ve genel ikinci
+  tur yapılır.
 - **Hiçbiri geçmezse veya gruplar ayrışırsa:** K-016 açık kalır; veri/tasarım
   turu genişletilir. Çocuk sonucu profesyonel sonucu adına veya tersi yönde
   ezilmez.

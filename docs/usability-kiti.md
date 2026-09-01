@@ -71,8 +71,9 @@ yazım kusuru ayrıca kaydedilir ama anlam puanına gizlice eklenmez.
 Karar basit A/B çoğunluğuyla verilmez. Toplam ve çocuk/profesyonel alt grup
 eşikleri, yedi teknik bağlam ve B'nin tek başına iç içe ifade vermemesi
 [karar paketinin §5'inde](k016-cagri-karar-paketi.md) önceden taahhütlüdür.
-Kart B güçlü çıkarsa doğrudan ikinci sözdizimi eklenmez; B-003 expression
-grammar turu yapılır. Ham veri olmadan A da kesinleşmiş sayılmaz.
+Kart B güçlü çıkarsa doğrudan ikinci sözdizimi eklenmez; K-097 ile dondurulan
+RFC-0021 expression grammar mimarisi yeniden açılır. Ham veri olmadan A da
+kesinleşmiş sayılmaz.
 
 ## K-093 gezme/değer kartları (kritik)
 
