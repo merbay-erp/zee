@@ -44,7 +44,8 @@ içerik özetiyle deterministik `proje.kilit` dosyasına sabitler (K-078).
 `artır/azalt`, `diye sor`/`yanıt`, rastgele sayı, genitif aritmetik, listeler
 (örtük çoğulla `her ... için`), sözlükler (sıra korumalı), metin işlemleri
 (Türkçe İ/ı kurallarıyla `büyük/küçük harflisi`), `Seçenek` (`var/yok`),
-`Sonuç` (`dosyasını okumayı dene`, `başarılıysa`), dosya satırları/yazma,
+`Sonuç` (`dosyasını okumayı dene`, `başarılıysa`) ve **yapılandırılmış Hata**
+(K-091: kod, mesaj, neden zinciri, veri ve geriye uyumlu gösterim), dosya satırları/yazma,
 **işlem tanımı ve çağrısı** (K-016 geçici sözdizimi), **yapılar** (`yapı`,
 `yeni`, iyelik ekiyle alan erişimi), **desen eşleştirme** (`göre / ise`),
 CSV/JSON okuma, tarih/saat, komut satırı argümanları, **test blokları**
@@ -74,12 +75,12 @@ parametre türleri**
 (`sayıyı Ondalık olarak al`) ve public **dönüş sözleşmesi**
 (`Ondalık döndürür` / `değer döndürmez`), **proje bildirimi** (`proje.dil`, klasörden
 çalıştır/denetle/dene), **yerel paketler** (`X paketini kullan`), süreçler
-arası kilitli **atomik dosya yazma** ve 140 Türkçe kodlu tanı.
+arası kilitli **atomik dosya yazma** ve 142 Türkçe kodlu tanı.
 Araçlar: `dil çalıştır(--güvenli/--deneysel-web/--web-proxy)/parola-özeti/denetle(--json)/dene/biçimle/ekle/çıkar/kilitle/paketler/hata/belge/morfoloji/yeni`
 + **dillsp** LSP sunucusu — tanılar, hover, tanıma git, **morfolojili
 yeniden adlandırma (F2)** ([editors/](editors/)).
 Determinizm testlerde tam: rastgelelik, saat, dosyalar, HTTP, sunucu istekleri,
-sensörler ve an ölçümü IO soyutlamasından gelir — 343 test hermetik koşar.
+sensörler ve an ölçümü IO soyutlamasından gelir — 350 test hermetik koşar.
 
 **Playground:** `playground/olustur.sh` derleyiciyi WebAssembly'e derler ve
 tek dosyalık `playground/zee-playground.html` üretir — çift tıkla aç, tarayıcıda
@@ -121,7 +122,7 @@ korpus üzerinde regression testine girer.
 | Syntax karar günlüğü | [kararlar/gunluk.md](kararlar/gunluk.md) | ✅ işleniyor |
 | RFC süreci | [rfcs/](rfcs/) | ✅ 18 RFC: 2 kabul, 14 geçici kabul, 2 taslak |
 | ADR süreci | [adr/](adr/) | ✅ 7 kabul (001-003, 007-010); 004/005/006 faz verisi bekliyor |
-| Hata kataloğu | [docs/hata-katalogu.md](docs/hata-katalogu.md) | ✅ 140 kod, kaynakla tutarlılığı testli |
+| Hata kataloğu | [docs/hata-katalogu.md](docs/hata-katalogu.md) | ✅ 142 kod, kaynakla tutarlılığı testli |
 | Spesifikasyon | [spec/](spec/) | ✅ başladı — normatif çekirdek (RFC'lere bağlar) |
 
 ### Golden korpus hakkında
@@ -143,14 +144,15 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   14 "geçici kabul" RFC'nin tam kabulü — kit hazır: docs/usability-kiti.md.
 - **Lisans (bölüm 26, kurucu):** seçilmeden depo herkese açılmaz; site ve
   topluluk (bölüm 30) bunun arkasında.
-- **Makine tarafı sıradaki:** K-081–K-090 ile v1'in altı P0 kapısı ve iki P1
+- **Makine tarafı sıradaki:** K-081–K-091 ile v1'in altı P0 kapısı ve üç P1
   kapısı kapandı:
   normatif otorite, public işlem sözleşmesi, atomik kalıcılık, gerçek son
   tarih iptali, uygulama eylemi ve production oturum/CSRF/proxy profili.
   `zee-tr-1` morfolojisi profil/snapshot/property korpusuyla sabitlendi;
   deterministik scheduler, görev sahipliği ve hata/iptal yayılımı gerçeklendi.
-  Sıradaki kanıt yapılandırılmış hata değeridir; ardından ondalık/gezme
-  kararları gelir. Uzak registry, imza/provenance ve SBOM
+  Sonuç'un hata tarafı kod/mesaj/neden/veri taşıyan, eski çıktıyı koruyan
+  Hata değeridir. Sıradaki kararlar ondalık/gezmedir. Uzak registry,
+  imza/provenance ve SBOM
   ayrı güvenlik RFC'leriyle ilerler.
   Bağlayıcı liste: [docs/v1-surum-kapilari.md](docs/v1-surum-kapilari.md).
 

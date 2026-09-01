@@ -212,7 +212,7 @@ pub enum Ifade {
     SecenekVar { nesne: Box<Ifade>, olumsuz: bool },
     /// "X in değeri" — Seçenek/Sonuç içindeki değer; boşken çalışma hatası.
     IcDeger(Box<Ifade>),
-    /// "sonucun hatası" — Sonuç'un hata metni (K-018).
+    /// "sonucun hatası" — Sonuç'un yapılandırılmış Hata değeri (K-091).
     SonucHatasi(Box<Ifade>),
     /// "X başarılıysa/başarısızsa" (K-018).
     SonucBasarili { nesne: Box<Ifade>, olumsuz: bool },
@@ -319,6 +319,14 @@ pub enum Ozellik {
     Metni,
     /// Binlik ayraçlı para (K-075): "1.824,50" — Türk yazımı.
     BinlikliKuruslu,
+    /// Yapılandırılmış Hata'nın kararlı etiketi (K-091).
+    HataKodu,
+    /// Yapılandırılmış Hata'nın insana dönük açıklaması (K-091).
+    HataMesaji,
+    /// Yapılandırılmış Hata'nın isteğe bağlı alt nedeni (K-091).
+    HataNedeni,
+    /// Yapılandırılmış Hata'nın Metin değerli bağlam sözlüğü (K-091).
+    HataVerisi,
 }
 
 #[derive(Debug, Clone)]
@@ -405,8 +413,16 @@ pub enum Cumle {
     /// çözümleyicide işaretlenir: işlemin birleşik dönüş türü Sonuç ise
     /// başarı dalları çalışma zamanında Sonuç'a sarılır (RFC-0008 §4.1).
     Dondur { deger: Ifade, sonuca_sarmala: bool, satir: usize },
-    /// `"sıfıra bölünmez" hatasını döndür` — işlemi Sonuç-hata ile bitirir.
-    HataDondur { mesaj: Ifade, satir: usize },
+    /// `"sıfıra bölünmez" hatasını döndür` geriye uyumlu biçimidir.
+    /// `"PAYDA_SIFIR" kodlu "..." hatasını <neden> nedeniyle <veri> verisiyle
+    /// döndür` yapılandırılmış biçimidir (K-091).
+    HataDondur {
+        kod: Option<String>,
+        mesaj: Ifade,
+        neden: Option<Ifade>,
+        veri: Option<Ifade>,
+        satir: usize,
+    },
     /// `sonucu toplamı sayıların adedine böl` — payı paydaya bölüp hedefe atar.
     BolVeAta {
         hedef: String,

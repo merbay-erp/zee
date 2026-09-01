@@ -93,6 +93,14 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   bırakır. Eylem transaction'ları savepoint sahipliği için atomik scheduler
   dilimidir. 343 test ve 140 katalog koduyla V1-P1-03 kapandı; çok çekirdekli
   paralellik v1 sözü değildir.
+- **Yapılandırılmış Hata değeri** (K-091, RFC-0008/spec-15): `Sonuç<T>` hata
+  tarafı artık kod, Türkçe mesaj, `Seçenek<Hata>` neden zinciri ve Metin
+  sözlüğü verisi taşır. `hatanın kodu` `göre` ile eşlenir; neden `varsa` ile
+  güvenle açılır; `hatanın json metni` bütün zinciri sabit anahtar sırasında
+  verir. Eski `"..." hatasını döndür` `GENEL` koduyla aynı kullanıcı çıktısını
+  korur; yerleşik denemeler kararlı kod üretir. S044/T052 olumsuzları,
+  yeniden yayma ve geriye uyum regresyonlarıyla 350 test ve 142 katalog
+  kodunda V1-P1-04 kapandı.
 
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`

@@ -1170,6 +1170,31 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   scheduler noktasıdır.
 - **Durum:** geçici kabul; RFC-0011 ve normatif spec/14 ile V1-P1-03 kapandı.
 
+## K-091 — Sonuç'un yapılandırılmış Hata değeri (1 Eyl)
+
+- **Karar:** `Sonuç<T>` hata tarafı düz Metin değil, değişmez `Hata`dır.
+  `Hata`; kararlı `kodu`, Türkçe `mesajı`, `Seçenek<Hata>` `nedeni` ve
+  sıra korumalı Metin sözlüğü `verisi` alanlarını taşır. Kod
+  `[A-Z][A-Z0-9_]*` biçimindedir ve `göre / ise` ile eşlenir.
+- **Yüzey:** `"DOSYA_YOK" kodlu "Dosya bulunamadı" hatasını döndür` temel
+  biçimdir. Var olan Hata `nedeniyle`, Metin sözlüğü `verisiyle` eklenir;
+  ikisi birlikteyse neden önce gelir. Neden `varsa` ile güvenle açılır.
+- **Geriye uyum:** Eski `"mesaj" hatasını döndür` `GENEL` kodlu Hata üretir.
+  `sonucun hatası`, `hata yaz`, metin birleştirme ve `hatanın metni` yine
+  yalnız mesajı gösterir. Böylece eski kaynak ve kullanıcı çıktısı değişmez;
+  yapı yalnız açık alan erişimi ya da `hatanın json metni` ile görünür.
+- **Yeniden yayma:** Bir Hata `hata hatasını döndür` ile kayıpsız yayılır.
+  Zenginleştirme eski değeri değiştirmez; yeni kodlu hata onu neden olarak
+  sarar. Değişmez üretim, neden zincirinin döngüsüz kalmasını sağlar.
+- **Yerleşikler:** Dosya/sayı/ondalık denemeleri sırasıyla `DOSYA_OKUMA`,
+  `SAYI_BICIMI`, `ONDALIK_BICIMI` kodlarını üretir. Bu etiketler public
+  eşleme sözleşmesidir; anlam değişimi semver incelemesi ister.
+- **Kanıt:** Hata açık imzada taşınır; kod/mesaj/eşleme, neden daraltması,
+  veri+deterministik JSON, yeniden yayma, üç yerleşik kod, S044/T052
+  olumsuzları ve eski kaynak regresyonları 350 testte yeşildir.
+- **Durum:** geçici kabul; RFC-0008 §3 ve normatif spec/15 ile V1-P1-04
+  kapandı.
+
 ---
 
 ## Sonraki adım

@@ -1,19 +1,23 @@
 # RFC-0008 — Seçenek ve Sonuç
 
-- **Durum:** **geçici kabul** (31 Ağu 2026 — tam yüzey gerçeklendi:
-  `hatasını döndür`, Sonuç<değer>, otomatik sarmalama VE akış-duyarlı
-  daraltma T036/K-037; onay kapısı: usability oturumları)
-- **Tarih:** 31 Ağustos 2026
-- **İlgili günlük kayıtları:** K-017 (var/yok), K-018 (dene)
+- **Durum:** **geçici kabul** (31 Ağu 2026; K-091 revizyonu 1 Eyl 2026 —
+  `hatasını döndür`, Sonuç<değer, Hata>, otomatik sarmalama,
+  akış-duyarlı daraltma ve yapılandırılmış hata yüzeyi gerçeklendi;
+  onay kapısı: usability oturumları)
+- **Tarih:** 31 Ağustos 2026; K-091 revizyonu 1 Eylül 2026
+- **İlgili günlük kayıtları:** K-017 (var/yok), K-018 (dene), K-091 (Hata)
 - **İlgili golden programlar:** 15, 16, 17
 - **Gerçekleme:** YokSabiti/SecenekVar/IcDeger/SonucBasarili/SonucHatasi/
-  DosyaOkumayiDene (`agac.rs` + üç katman); C008/C009/C012, T018/T023/T024
+  DosyaOkumayiDene ve `HataDegeri` (`agac.rs` + üç katman);
+  S044, C008/C009/C012, T018/T023/T024/T052
 
 ## Özet
 
 Dilde null yoktur. "Değer olmayabilir" Seçenek'tir ve Türkçenin en doğal
 ikilisiyle konuşur: **var/yok**. "İşlem başarısız olabilir" Sonuç'tur:
-**dene → başarılıysa → değeri/hatası**.
+**dene → başarılıysa → değeri/hatası**. Hata tarafı düz metin değil;
+çocuğa anlaşılır mesajı, profesyonele kararlı kodu ve bağlamı birlikte veren
+bir `Hata` değeridir.
 
 ## 1. Seçenek (K-017)
 
@@ -56,7 +60,7 @@ değilse
 
 - **Doğuş:** yerleşik dene-ifadeleri VE kullanıcı işlemleri: bir işlemde
   `"sıfıra bölünmez" hatasını döndür` ile değer dönüşü karışırsa işlemin türü
-  Sonuç<değer> olur; başarı dalları çözümleyicide işaretlenip çalışma
+  Sonuç<değer, Hata> olur; başarı dalları çözümleyicide işaretlenip çalışma
   zamanında otomatik sarılır. Sonuç'u olduğu gibi geçiren işlem (tek dönüş
   türü zaten Sonuç) ÇİFT SARILMAZ — testli.
 - **Sorgu:** `başarılıysa` / `başarısızsa`. **Erişim:** `değeri` (başarısızken
@@ -66,16 +70,66 @@ değilse
   YÖNETİLECEKSE dene, yönetilmeyecekse düz biçim** — programın kısa hali
   kirlenmeden, hata yönetimi isteyene açık.
 
-## 3. Panik ayrımı (master plan bölüm 9)
+## 3. Yapılandırılmış Hata (K-091)
+
+`Hata` değişmez, birinci sınıf ve etiketli bir değerdir:
+
+| Alan | Tür | Anlam |
+|---|---|---|
+| `kodu` | Metin | Makinece eşlenen kararlı etiket |
+| `mesajı` | Metin | İnsana dönük Türkçe açıklama |
+| `nedeni` | Seçenek\<Hata\> | İsteğe bağlı alt neden; zincir kurar |
+| `verisi` | Sözlük\<Metin, Metin\> | Sıra korumalı tanı bağlamı |
+
+Üretim biçimleri:
+
+```zee
+"olmadı" hatasını döndür
+"DOSYA_YOK" kodlu "Dosya bulunamadı" hatasını döndür
+"AYAR_OKUNAMADI" kodlu "Ayarlar yüklenemedi" hatasını alt_hata nedeniyle döndür
+"KAYIT_GECERSIZ" kodlu "Kayıt doğrulanamadı" hatasını bilgi verisiyle döndür
+```
+
+İlk satır geriye uyum içindir ve `GENEL` kodlu Hata üretir. Yapılandırılmış
+kod metin sabitidir; `[A-Z][A-Z0-9_]*` biçimindedir (S044). Neden `Hata`, veri
+Metin sözlüğü olmalıdır (T052). İkisi birlikteyse önce `nedeniyle`, sonra
+`verisiyle` gelir. Var olan Hata `hata hatasını döndür` ile yapısını kaybetmeden
+yeniden yayılır; zenginleştirme gerekiyorsa yeni kodlu hata eskiyi neden olarak
+sarır. Böylece neden grafiği üretim anında yönlü ve döngüsüzdür.
+
+```zee
+sonuç başarısızsa
+    hata sonucun hatası olsun
+    kod hatanın kodu olsun
+    koda göre
+        "DOSYA_YOK" ise
+            "Dosyayı seçer misin?" yaz
+        değilse
+            hatanın mesajı yaz
+
+    neden hatanın nedeni olsun
+    neden varsa
+        alt nedenin değeri olsun
+        altın kodu yaz
+```
+
+`sonucun hatası` artık `Hata` döndürür. Bununla birlikte `hata yaz`, metin
+birleştirme ve `hatanın metni` yalnız mesajı basar; eski program çıktıları
+değişmez. Tam yapı `hatanın json metni` ile deterministik olarak serileşir.
+Yerleşik denemeler `DOSYA_OKUMA`, `SAYI_BICIMI` ve `ONDALIK_BICIMI` kodlarını
+üretir. Kodlar public sözleşmenin parçasıdır; değişmeleri semver incelemesi
+ister.
+
+## 4. Panik ayrımı (master plan bölüm 9)
 
 Beklenen hatalar Sonuç ile taşınır; C-kodlu çalışma hataları (sıfıra bölme,
 boş listenin ilki...) invariant ihlalidir ve programı durdurur. v0'da ikisi de
 Türkçe tanıyla biter; fark, Sonuç'un programa DEVAM şansı vermesidir.
 
-## 4. Açık sorular
+## 5. Açık sorular
 
-1. **Kullanıcı işlemlerinden Sonuç:** GERÇEKLENDİ — `hatasını döndür`.
-   Kalan: hata türünün Metin'den zengin türe evrimi (kod + mesaj + veri).
+1. ~~Kullanıcı işlemlerinden Sonuç ve yapılandırılmış hata~~ — GERÇEKLENDİ:
+   `hatasını döndür`, K-091 `Hata` kod/mesaj/neden/veri sözleşmesi.
 2. ~~Akış-duyarlı daraltma~~ — GERÇEKLENDİ (v0.2, K-037/T036): varsa /
    başarılıysa / başarısızsa dalları ve `değilse` tersinmeleri daraltır;
    tam veri-akışı analizi bilinçli olarak yok (anlaşılabilirlik).
@@ -89,9 +143,12 @@ Türkçe tanıyla biter; fark, Sonuç'un programa DEVAM şansı vermesidir.
 
 Doğal ✓ (var/yok ve dene Türkçede tam karşılık) · Deterministik ✓ (yanlış
 taraf erişimi daima tanılı) · Öğrenilebilir ✓ (null kavramı hiç öğretilmiyor —
-"yok" zaten bilinen kelime) · Savunulabilir — §4.1 kapanınca tam ✓.
+"yok" zaten bilinen kelime) · Savunulabilir ✓ (kod ve zincir açık;
+eski metin gösterimi korunuyor).
 
 ## Korpus etkisi
 
-§4.1 kabulünde golden 15/16'ya kullanıcı-tanımlı Sonuç örneği eklenir;
-§4.3 kabulünde golden 04 (sayıya çevirme) dene'li varyant kazanır.
+Golden 15/16'nın eski insan çıktısı korunur. K-091 conformance korpusu;
+kod/eşleme, neden+veri, deterministik JSON, yeniden yayma, üç yerleşik kod ve
+S044/T052 olumsuzlarını ayrıca kilitler. `dene`nin yeni işlemlere genelleşmesi
+gelecekte kendi olumlu/olumsuz korpusunu ister.
