@@ -41,6 +41,17 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   deadline sahibi `yetişmezse` kolu çalışır; iptal sonrası yan etki yoktur.
   Ç001 iç nöbetçisiyle 123 katalog kodu ve toplam 279 test; playground'da
   ardışık sanal beklemeler de aynı son tarih anlamını taşır.
+- **Tam public işlem sözleşmesi** (K-086, spec-10): yerel başlangıç
+  işlemlerinde `sayıyı al` çıkarımı korunur; birim/paket işlemleri bütün
+  parametrelerini `<ad> <Tür> olarak al` ve dönüşünü `<Tür> döndürür` ya da
+  `değer döndürmez` ile açıkça bildirir. Dönüş türü gövdeyle ve bütün akış
+  yollarıyla kanıtlanır (T039–T042). v1 public modeli bilinçli monomorfik
+  kaynak ABI'sidir; kırıcı semver sınırı spec'te sabittir. Standart kitaplık
+  bu sözleşmeye geçirildi; `liste_araclari` somut Ondalık ABI'si taşır,
+  TamSayı listeleri çağrıda genişler ve uç sonuçları da `71,0` gibi Ondalık
+  döner. Liste/özyineleme/çağrı sırası ve gerçek paket
+  olumsuzuyla ve örtük yeniden-dışa-açma yasağıyla toplam 289 test, 127
+  katalog kodu. V1-P0-01 kapandı.
 
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`

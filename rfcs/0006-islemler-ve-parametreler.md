@@ -5,10 +5,11 @@
   KAPISI olarak kalır — oturum bulguları aksini gösterirse bu karar B lehine
   revize edilir (K-032). Karar gerekçesi §3'te
 - **Tarih:** 31 Ağustos 2026
-- **İlgili günlük kayıtları:** K-016 (çağrı sözdizimi), K-014 (kelime çakışmaları), K-007 (yanıt), K-067 (sayısal genişleme)
+- **İlgili günlük kayıtları:** K-016 (çağrı sözdizimi), K-014 (kelime çakışmaları), K-007 (yanıt), K-067 (sayısal genişleme), K-083/K-086 (açık imza)
 - **İlgili golden programlar:** 12, 13, 14, 15, 30
-- **Gerçekleme:** `islem_ayristir`/`cagri_kalibi` (`ayristirici.rs`), `cagri_denetle`
-  (`cozumleyici.rs`), `islem_cagir` (`yorumlayici.rs`)
+- **Gerçekleme:** `islem_ayristir`/`cagri_kalibi` (`ayristirici.rs`),
+  `cagri_denetle` + açık dönüş/akış kanıtı (`cozumleyici.rs`), public sınır
+  (`lib.rs`), `islem_cagir` (`yorumlayici.rs`)
 
 ## Özet
 
@@ -34,11 +35,12 @@ işlem ortalamayı hesapla
   benzersizdir (A005).
 - Parametreler belirtme ekiyle bildirilir (`sayıları al` → parametre `sayılar`);
   yalnız gövdenin başında tanınır. Başlangıç biçimi tam iki kelimedir.
-- K-083 progressive disclosure: public/paket API'sinde
-  `sayıları Ondalık listesi olarak al` açık sözleşmesi kullanılabilir. Bir
+- K-083/K-086 progressive disclosure: public/paket API'sinde
+  `sayıları Ondalık listesi olarak al` + `Ondalık döndürür` tam sözleşmesi
+  zorunludur. Bir
   işlemin bütün parametreleri açık ya da bütünü çıkarımlı olmak zorundadır.
-  Açık gövde çağrı beklemeden denetlenir; dönüş türü gövdeden çıkarılıp
-  sabitlenir ve çağrılar imzayı terfi ettiremez.
+  Açık gövde çağrı beklemeden denetlenir; bildirilen dönüş gövde birleşimi ve
+  bütün olağan akış yollarıyla doğrulanır, çağrılar imzayı terfi ettiremez.
 - `döndür` yalnız işlem içinde (T020); dönüş türleri tek olmalı, `yok` ile
   karışım Seçenek üretir (T018 → RFC-0008).
 - İşlem gövdesi taze ortamda çalışır: dış değişken görmez (RFC-0004).
@@ -65,8 +67,9 @@ Kurallar (hepsi gerçeklenmiş ve testli):
    sayı/listelerde TamSayı→Ondalık genişlemesi kabul edilir. Dar imza sonra
    geniş argüman görürse K-067 ile kaldırılır ve gövde geniş türle yeniden
    denetlenir. Diğer tür farkları T017, parametre sayısı T015'tir. Bu model
-   public API için v1 sözleşmesi değildir. K-083 açık parametre sözleşmesini
-   ekledi; generic ve paket/public zorunluluğu V1-P0-01'de kalır.
+   public API için v1 sözleşmesi değildir. K-083 açık parametreyi, K-086 açık
+   dönüşü ve paket/public zorunluluğunu ekledi. v1 public model bilinçli olarak
+   monomorfiktir; generic sözdizimi v2+ sorusudur.
 5. Özyineleme ve karşılıklı özyineleme geçerlidir. Özyinelemeli çağrıdan önce
    en az bir dönüşlü temel durum görülmelidir (T035); çağrı derinliği 500'dür
    (C019).
@@ -106,11 +109,10 @@ A ifade konumunda, B öğretici/adım-adım stilde). C yalnız A/B yetersiz kal�
 
 ## 5. Açık sorular
 
-1. ~~Parametrelerde açık tür~~ — K-083 ile
-   `sayıları TamSayı listesi olarak al` gerçeklendi. Kalan: paket/public
-   sınırında zorunluluk ve açık ABI uyumluluk politikası.
-2. Generic işlem ile açık türün birlikte progressive disclosure modeli;
-   generic sözdizimi hâlâ AÇIK.
+1. ~~Parametrelerde ve dönüşte açık tür~~ — K-083/K-086 ile
+   `sayıları Ondalık listesi olarak al` + `Ondalık döndürür` gerçeklendi;
+   paket/public sınırında zorunlu, kaynak ABI/semver politikası spec/10'dadır.
+2. Generic işlem sözdizimi v1 kapsamı dışında, v2+ için AÇIK.
 3. Çok değerli dönüş (K-023'ün "hepsini bekle" sorusuyla birleşik).
 4. ~~Özyineleme ve tanım-sonrası çağrı~~ — GERÇEKLENDİ (v0.2, T035/C019).
 5. ~~Argümanların çok-tokenli ifade olabilmesi~~ — GERÇEKLENDİ (v0.2, K-038).
@@ -120,8 +122,8 @@ A ifade konumunda, B öğretici/adım-adım stilde). C yalnız A/B yetersiz kal�
 Doğal — kısmen ✓ (usability verisi şart) · Deterministik ✓ (en-uzun-ad +
 başlık ön-tarama kuralları) · Öğrenilebilir ✓ (tanım tarafı çok güçlü: "işlem
 ortalamayı hesapla / sayıları al" sesli okunuşta kendini açıklıyor) ·
-Savunulabilir — çağrı yüzeyi usability kapısını, public imza modeli ise
-V1-P0-01'i bekliyor.
+Savunulabilir — çağrı yüzeyi usability kapısını bekliyor; public imza modeli
+K-086/spec-10 ile çağrı sırasından bağımsızdır.
 
 ## Korpus etkisi
 

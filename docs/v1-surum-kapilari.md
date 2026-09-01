@@ -3,7 +3,7 @@
 Bu liste bir dilek listesi değildir: `1.0.0` etiketi bu kapılar kapatılmadan
 atılmaz. Amaç yeni özellik sayısını büyütmek değil, çocuktan profesyonele aynı
 dilin verdiği sözleri kanıtlamaktır. Bulgular 1 Eylül 2026'da derleyici
-kaynakları, spec, RFC'ler ve 279 test üzerinden yeniden doğrulanmıştır.
+kaynakları, spec, RFC'ler ve 289 test üzerinden yeniden doğrulanmıştır.
 
 Durumlar: **KAPALI** = kanıtı var · **AÇIK** = v1 engeli · **KARAR** = önce
 normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
@@ -12,7 +12,7 @@ normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
 
 | Kapı | Durum | Kaynakta görülen gerçek | Kapanma kanıtı |
 |---|---|---|---|
-| V1-P0-01 İşlem imzası çağrı sırasından bağımsızdır | **AÇIK (K-083 temeli var)** | Başlangıç `<ad> al` çağrı-güdümlüdür. `<ad> <Tür> olarak al` açık imzası çağrı beklemeden denetlenir, çağrıyla terfi etmez; TamSayı→Ondalık runtime dönüşümü ve çağrı sırası permütasyonu testlidir. | Paket/public sınırında açık imza zorunluluğu ve ABI politikası; generic ya da bilinçli monomorfik model; açık imzalı bütün kapsayıcı/özyineleme permütasyon conformance paketi. |
+| V1-P0-01 İşlem imzası çağrı sırasından bağımsızdır | **KAPALI (K-083/K-086)** | Yerel başlangıç `<ad> al` çıkarımını korur. Birim/paket işlemlerinde bütün parametre türleri ve `<Tür> döndürür` / `değer döndürmez` zorunludur (T039); gövde dönüşü ve bütün yollar doğrulanır (T040–T042). | spec/10 v1'i bilinçli monomorfik kaynak ABI'si olarak tanımlar; kırıcı semver sınırları belirgindir. Çağrılmayan gövde, paket olumsuzu, liste genişlemesi, özyineleme ve iki çağrı sırası conformance testlidir. |
 | V1-P0-02 Web route ile uygulama eylemi ayrıdır | **AÇIK (K-082 korkuluğu var)** | `IstekGeldiginde` rota yolunu eşler; yöntem `istek` sözlüğünde sıradan metindir. Yetki, CSRF, idempotency, gövde sınırı ve transaction sözleşmesi yoktur. Gerçek TCP yalnız `--deneysel-web` opt-in'iyle açılır; örneklerde GET mutasyonu kaldırılmıştır. | RFC-0015'in kabulü; yöntemli route; form/API/CLI/job tarafından çağrılabilen eylem; GET'in durum değiştirmediği dil düzeyi olumsuz testler. |
 | V1-P0-03 Oturum ve çerez üretim güvenliği | **AÇIK** | Gerçek IO çereze yalnız `HttpOnly` ekler; Secure/SameSite/ömür politikası yoktur. `girisli-panel` rastgele sayı + düz parola kullanan eğitim demosudur. | CSPRNG token, hash'li kimlik bilgisi, süre/rotation/revoke, güvenli çerez politikası, CSRF ve HTTPS/proxy sınırı; saldırı regresyonları. |
 | V1-P0-04 Kalıcı durum atomik ve yarış güvenlidir | **KAPALI (K-084)** | Tek-dosya `yaz/ekle`, aynı klasörde temp+sync+atomik replace yapar; Unix/Windows işletim sistemi kilidi thread ve süreç yazarlarını sıralar. Okuyucu yalnız eski/yeni bütün sürümü görür. | RFC-0016 + spec/08; replace hata enjeksiyonu eski veriyi korur, iki thread ve iki bağımsız CLI süreci satır kaybetmez, Drop'suz ani süreç sonu kilidi bırakır. Çok-kaynaklı uygulama transaction'ı V1-P0-02/RFC-0015 sınırındadır. |
@@ -35,8 +35,8 @@ normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
 
 1. Güvenli olmayan çalışan web/eşzamanlılık yüzeylerinin opt-in sınırını koru
    (K-082); son tarih iptali artık K-085 ile ayrı ve tanımlıdır.
-2. Public işlem tür sözleşmesini çöz; çünkü kitaplık, paket ve eylem API'lerinin
-   hepsi bunun üstüne oturur.
+2. K-083/K-086 public işlem sözleşmesini kitaplık, paket ve gelecekteki eylem
+   API'lerinin değişmez tabanı olarak koru.
 3. K-084 tek-dosya atomikliğinin üstüne uygulama eylemi + çok-kaynaklı
    transaction modelini kur; yalnız web'e özel olmasın.
 4. K-085 deadline çekirdeğinin üstüne gerçek scheduler ve yapılandırılmış hata

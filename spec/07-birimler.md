@@ -12,6 +12,10 @@ spec dışıdır — Faz 5.
 - Kullanan dosya, birimin **tanımlarını** (işlem, yapı) görür; birimin
   **üst düzey cümleleri kapsüllüdür** — kullananın çıktısına karışmaz.
 - Birimin testleri `dil dene` kapsamına `birim: <ad>` önekiyle katılır.
+- Dışa çıkan her işlem tam, monomorfik public sözleşme taşır: bütün parametre
+  türleriyle birlikte `<Tür> döndürür` ya da `değer döndürmez` (T039, spec/10).
+- Birimin kendi aldığı işlem, bir üst kaynağa örtük yeniden açılmaz. Birim
+  gövdesi onu çağırabilir; kullanan yalnız birimin doğrudan tanımını görür.
 
 ## Çakışma ve döngü (TANIMLI)
 
@@ -55,6 +59,8 @@ birimin işlem adlarını çağrı çözümünde görür.
 - Paket de birim gibi yalnız işlem/yapı/test tanımlarını dışarı verir; üst
   düzey cümleleri çalışmaz. Paket içi birim, onu kullanan gerçek dosyanın
   klasöründen çözülür.
+- Paket işlemlerinde de aynı tam public imza zorunludur; yalnız paket içinde
+  çağrılması ya da hiç çağrılmaması bu zorunluluğu değiştirmez.
 - Geçişli bağımlılık çözülür ve kilitlenir ama doğrudan bildirilmedikçe
   kaynakta kullanılamaz. Bildirim döngüsü ve aynı adlı ayrı paket hatadır.
 - `dil kilitle <proje>` bütün grafiği ada göre sıralı `proje.kilit` dosyasına

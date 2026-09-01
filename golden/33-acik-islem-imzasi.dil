@@ -1,8 +1,10 @@
-# 33 — Açık işlem imzası (K-083)
-# Sınanan: `<ad> <Tür> olarak al`; public sözleşme çağrı sırasından bağımsızdır.
+# 33 — Açık işlem imzası (K-083/K-086)
+# Sınanan: açık parametre + `<Tür> döndürür`; public sözleşme çağrı sırasından
+# bağımsızdır.
 
 işlem yarısını bul
     sayıyı Ondalık olarak al
+    Ondalık döndürür
     sonuç sayının 2 ye bölümü olsun
     sonucu döndür
 

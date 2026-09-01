@@ -37,8 +37,8 @@ Projeler `yerel_bağımlılıklar` ile başka zee projelerini doğrudan paket ol
 alabilir; `dil kilitle .` bütün geçişli grafiği göreli yol, sürüm ve SHA-256
 içerik özetiyle deterministik `proje.kilit` dosyasına sabitler (K-078).
 
-Çalışan golden programlar (regression testte): **32'de 32 — KORPUSUN TAMAMI**
-(orijinal 30 + genişletme: 31 birimler, 32 ondalık market) —
+Çalışan golden programlar (regression testte): **33'te 33 — KORPUSUN TAMAMI**
+(orijinal 30 + 31 birimler, 32 ondalık market, 33 açık işlem imzası) —
 **v0.1 kabul listesindeki 4 program da çalışıyor.** Desteklenen yüzey: `olsun`,
 `yaz` (ekrana ve `dosyasına`), `ile`, `ise/değilse` zinciri, dört döngü,
 `artır/azalt`, `diye sor`/`yanıt`, rastgele sayı, genitif aritmetik, listeler
@@ -65,14 +65,15 @@ değiştir/kırp/harfler), **JSON/CSV yazma**, **Türk alfabesiyle sıralama**,
 geri sayan aralık, para biçimi `kuruşlusu`, evrensel `metni`, çerez
 üçlemesi (oku/yaz/**sil**), çok katmanlı morfoloji (zamir n'si, ikizleşme,
 iki katmanlı ek zinciri), **açık işlem parametre türleri**
-(`sayıyı Ondalık olarak al`), **proje bildirimi** (`proje.dil`, klasörden
+(`sayıyı Ondalık olarak al`) ve public **dönüş sözleşmesi**
+(`Ondalık döndürür` / `değer döndürmez`), **proje bildirimi** (`proje.dil`, klasörden
 çalıştır/denetle/dene), **yerel paketler** (`X paketini kullan`), süreçler
-arası kilitli **atomik dosya yazma** ve 123 Türkçe kodlu tanı.
+arası kilitli **atomik dosya yazma** ve 127 Türkçe kodlu tanı.
 Araçlar: `dil çalıştır(--güvenli/--deneysel-web)/denetle(--json)/dene/biçimle/ekle/çıkar/kilitle/paketler/hata/belge/yeni`
 + **dillsp** LSP sunucusu — tanılar, hover, tanıma git, **morfolojili
 yeniden adlandırma (F2)** ([editors/](editors/)).
 Determinizm testlerde tam: rastgelelik, saat, dosyalar, HTTP, sunucu istekleri,
-sensörler ve an ölçümü IO soyutlamasından gelir — 279 test hermetik koşar.
+sensörler ve an ölçümü IO soyutlamasından gelir — 289 test hermetik koşar.
 
 **Playground:** `playground/olustur.sh` derleyiciyi WebAssembly'e derler ve
 tek dosyalık `playground/zee-playground.html` üretir — çift tıkla aç, tarayıcıda
@@ -114,7 +115,7 @@ korpus üzerinde regression testine girer.
 | Syntax karar günlüğü | [kararlar/gunluk.md](kararlar/gunluk.md) | ✅ işleniyor |
 | RFC süreci | [rfcs/](rfcs/) | ✅ 16 RFC: 2 kabul, 11 geçici kabul, 3 taslak |
 | ADR süreci | [adr/](adr/) | ✅ 7 kabul (001-003, 007-010); 004/005/006 faz verisi bekliyor |
-| Hata kataloğu | [docs/hata-katalogu.md](docs/hata-katalogu.md) | ✅ 123 kod, kaynakla tutarlılığı testli |
+| Hata kataloğu | [docs/hata-katalogu.md](docs/hata-katalogu.md) | ✅ 127 kod, kaynakla tutarlılığı testli |
 | Spesifikasyon | [spec/](spec/) | ✅ başladı — normatif çekirdek (RFC'lere bağlar) |
 
 ### Golden korpus hakkında
@@ -136,10 +137,9 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   10 "geçici kabul" RFC'nin tam kabulü — kit hazır: docs/usability-kiti.md.
 - **Lisans (bölüm 26, kurucu):** seçilmeden depo herkese açılmaz; site ve
   topluluk (bölüm 30) bunun arkasında.
-- **Makine tarafı sıradaki:** yeni yüzey eklemeden önce kaynak kod ve test
-  kanıtlı v1.0 sürüm kapıları: işlem tür çıkarımının çağrı sırasından
-  bağımsızlığı, web/oturum güvenlik sınırı, kalıcı durumun atomikliği,
-  eşzamanlılık/zaman aşımı sözleşmesi ve normatif belge otoritesi. Uzak
+- **Makine tarafı sıradaki:** K-081–K-086 ile normatif otorite, public işlem
+  sözleşmesi, atomik kalıcılık ve gerçek son tarih iptali kapandı. Kalan P0
+  odağı web eylemi/transaction ile üretim güvenli oturum sınırıdır. Uzak
   registry, imza/provenance ve SBOM bundan sonra ayrı güvenlik RFC'leriyle.
   Bağlayıcı liste: [docs/v1-surum-kapilari.md](docs/v1-surum-kapilari.md).
 

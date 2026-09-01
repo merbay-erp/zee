@@ -2,7 +2,8 @@
 # Harf temelli metin yardımcıları (K-053 harfleri üzerine kurulu).
 
 işlem tersini hesapla
-    kaynağı al
+    kaynağı Metin olarak al
+    Metin döndürür
 
     ters "" olsun
     harfler kaynağın harfleri olsun
@@ -11,7 +12,8 @@ işlem tersini hesapla
     tersi döndür
 
 işlem ünlülerini say
-    kaynağı al
+    kaynağı Metin olarak al
+    TamSayı döndürür
 
     sayaç 0 olsun
     harfler kaynağın harfleri olsun
@@ -21,7 +23,8 @@ işlem ünlülerini say
     sayacı döndür
 
 işlem baş harfini bul
-    kaynağı al
+    kaynağı Metin olarak al
+    Metin döndürür
 
     temiz kaynağın kırpılmışı olsun
     harfler temizin harfleri olsun

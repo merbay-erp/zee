@@ -34,12 +34,13 @@ TamSayı, Ondalık beklenen yerde kendiliğinden Ondalığa genişler — işlem
 çağrısı dahil (Liste<TamSayı> → Liste<Ondalık> parametre, K-067); dar
 imza geniş argümanla TERFİ eder (gövde geniş türle yeniden denetlenir;
 saklanan imza bu iki sayısal tür içinde geniş biçime ulaşır). Bu v0
-korkuluğu public işlem sözleşmesini çağrı yerlerinden bağımsız yapmaz;
-v1'de açık tür/generic/kısıt çözümü V1-P0-01 kapısıdır. Tersi
+korkuluğu yalnız yerel başlangıç işlemlerinde geçerlidir. Birim/paket
+işlemleri K-086 ile tam ve monomorfik açık imza taşır; çağrı onları terfi
+ettiremez. Tersi
 örtük DEĞİLDİR: Ondalıktan tam sayıya `tam kısmı` (sıfıra doğru) ya da
 `yuvarlanmışı` (yarımlar sıfırdan uzağa) ile bilinçli inilir.
 
-## İşlem imzaları (TANIMLI — K-083 progressive disclosure)
+## İşlem imzaları (TANIMLI — K-083/K-086 progressive disclosure)
 
 - `<ad> al` başlangıç biçiminde parametre/dönüş türleri ilk çağrıdan çıkarılır;
   sonraki çağrılar imzaya uymak ZORUNDADIR (T015/T017). Sayısal terfi mümkündür.
@@ -51,6 +52,10 @@ v1'de açık tür/generic/kısıt çözümü V1-P0-01 kapısıdır. Tersi
   `T seçeneği`, `T sonucu` kontrollü Türkçe biçimleridir.
 - Açık Ondalık parametreye TamSayı (ve kapsayıcı eşleri) kayıpsız genişler;
   runtime değeri de dönüştürülür, statik/gerçek tür ayrışmaz.
+- Birim/paket üzerinden dışa açılan her işlem bütün parametrelerini ve
+  `<Tür> döndürür` / `değer döndürmez` satırını yazmak ZORUNDADIR (T039).
+  Bildirim gövde dönüşüyle birebir uyuşur (T040–T042); v1 public modeli
+  monomorfiktir ve kaynak ABI kuralları spec/10'dadır.
 
 Özyinelemeli çağrının türü “o ana dek görülen dönüşlerden” çıkarılır; bu yüzden
 temel durum özyinelemeli çağrıdan önce en az bir dönüş vermiş olmalıdır (T035).

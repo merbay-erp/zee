@@ -1,11 +1,13 @@
 # RFC-0009 — Modül ve Paket Modeli
 
 - **Durum:** **geçici kabul — birim (§2), proje (§3), yerel paket + kilit
-  (§4.1)** (K-029/K-076/K-078; onay kapısı: usability). Uzak registry,
+  (§4.1), tam public kaynak ABI'si** (K-029/K-076/K-078/K-086; onay kapısı:
+  usability). Uzak registry,
   yayın ve imza katmanı (§4.2) TASLAK — Faz 5.
 - **Tarih:** 31 Ağustos 2026
 - **İlgili günlük kayıtları:** master plan bölüm 7 ("modül mü birim mi; kullanıcı testiyle karar"), bölüm 14
-- **Gerçekleme:** `lib.rs` (kökenli yükleyici), `paket.rs` (grafik, SHA-256,
+- **Gerçekleme:** `lib.rs` (kökenli yükleyici + T039 public sınırı),
+  `paket.rs` (grafik, SHA-256,
   kilit), `proje.rs` (bildirim), `ayristirici.rs` (`birimini/paketini`);
   testler `birim_testi.rs` + `proje_testi.rs`.
 
@@ -35,6 +37,9 @@ Kurallar (öneri):
    tanımlayıcı kurallarına uyar (RFC-0002).
 2. Alınan birimin **işlem, yapı ve test** tanımları görünür olur; üst düzey
    değişkenleri görünmez (kapsülleme; RFC-0004 taze-ortam ilkesiyle uyumlu).
+   Her görünür işlem bütün parametre ve dönüş türlerini açıkça bildirir
+   (K-086/spec-10); eksik sözleşme T039'dur. Birimin aldığı başka işlemler
+   örtük re-export edilmez.
 3. Ad çakışması (iki birim aynı işlem adını verirse) **hatadır** — sessiz
    gölgeleme yok; tanı iki kaynağı da gösterir. Nitelikli erişim
    (`hesapların ortalamayı hesapla`sı?) v2 sorusu.
@@ -94,8 +99,9 @@ Kurallar:
 2. Yalnız **doğrudan** bildirilen paket kullanılabilir. Geçişli bağımlılık
    grafikte bulunsa bile kullananın API'si değildir (A011).
 3. Paket girişinin işlem, yapı ve testleri görünür; üst düzey cümleleri
-   kapsüllüdür. Paket içindeki `X birimini kullan`, X'i paketin kendi kaynak
-   klasöründe çözer; kaynak kökeni özyineleme boyunca korunur.
+   kapsüllüdür. Görünür işlemler tam monomorfik kaynak ABI'si taşır. Paket
+   içindeki `X birimini kullan`, X'i paketin kendi kaynak klasöründe çözer;
+   kaynak kökeni özyineleme boyunca korunur.
 4. Bildirim bağımlılık döngüsü, kaynak kullanım döngüsü, ad çakışması ve proje
    dışına çıkan giriş/birim sembolik bağı sessizce kabul edilmez (P007/P009,
    A008/A009).
