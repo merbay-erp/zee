@@ -1,6 +1,6 @@
 # Envanter — küçük stok defteri (kayıt tabloları iş başında).
 # Öğretilen: yapı listesi (K-060), Ondalık para, Türk alfabesiyle
-# sıralama (K-056), JSON yedeği (K-054).
+# sıralama (K-056), JSON yedeği (K-054), para biçimi kuruşlusu (K-065).
 
 yapı Ürün
     ad Metin
@@ -33,10 +33,12 @@ her ürün için
     birim ürünün fiyatı olsun
     sayı ürünün adedi olsun
     tutar birim ile sayının çarpımı olsun
-    ürünün adı ile ": " ile sayı ile " x " ile birim ile " = " ile tutar yaz
+    güzel tutarın kuruşlusu olsun
+    ürünün adı ile ": " ile sayı ile " x " ile birim ile " = " ile güzel yaz
     toplamı tutarla artır
 
-"Toplam stok değeri: " ile toplam ile " lira" yaz
+toplam_güzel toplamın kuruşlusu olsun
+"Toplam stok değeri: " ile toplam_güzel ile " lira" yaz
 
 adlar boş liste olsun
 her ürün için

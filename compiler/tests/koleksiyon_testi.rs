@@ -200,3 +200,23 @@ kalemin adedi yaz
 ";
     assert_eq!(kaynagi_calistir(kaynak).expect("çalışmalı"), vec!["7"]);
 }
+
+#[test]
+fn islemden_liste_donusu() {
+    let kaynak = "\
+işlem çiftleri topla
+    sayıları al
+
+    çiftler boş liste olsun
+    her sayı için
+        sayı çiftse
+            çiftlere sayıyı ekle
+    çiftleri döndür
+
+hepsi 1, 2, 3, 4, 5, 6 listesi olsun
+seçilen hepsi için çiftleri topla olsun
+seçilenin adedi yaz
+seçilenin sonu yaz
+";
+    assert_eq!(kaynagi_calistir(kaynak).expect("çalışmalı"), vec!["3", "6"]);
+}

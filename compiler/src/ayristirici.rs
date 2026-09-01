@@ -1779,6 +1779,8 @@ fn yapili_kalip(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifade>
             Some(Ozellik::Siralanmis)
         } else if son == "tersi" {
             Some(Ozellik::Ters)
+        } else if son == "kuruşlusu" {
+            Some(Ozellik::Kuruslu)
         } else {
             None
         };

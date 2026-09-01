@@ -589,6 +589,14 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   çoğul emsali). Alan adları dilin özellik kelimeleriyle çakışabilir;
   çocuk "adet" alanını korkmadan kullanır.
 
+## K-065 — Para biçimi: `tutarın kuruşlusu`
+
+- **Karar:** Daima iki ondalık hane: 1824,5 → "1824,50"; 5 → "5,00";
+  3,456 → "3,46" (yarımlar sıfırdan uzağa — dil kuralı). Ondalık ve
+  TamSayı üzerinde; sonuç Metin. Envanter projesi geçti.
+- **Hijyen kuralı:** biçimleyici testi projeler/ ve kitaplik/'i de kapsar:
+  depodaki her .dil hem idempotent hem ZATEN resmi biçimde olmak zorunda.
+
 ## K-012 — Liste sabiti: `3, 7, 1, 9 listesi`
 
 - **Karar:** Virgülle ayrılmış değerler + `listesi`. Boş: `boş liste`.

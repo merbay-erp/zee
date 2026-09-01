@@ -58,3 +58,31 @@ fn bicim_tokenlara_dokunmaz() {
     let bicimli = bicimle(girdi).unwrap();
     assert!(bicimli.contains("\"iki   boşluk , korunur\""));
 }
+
+/// Proje kitaplığı + gömülü kitaplık da biçim hijyenine tabidir: biçimleme
+/// idempotenttir VE depodaki dosyalar zaten resmi biçimdedir.
+#[test]
+fn projeler_ve_kitaplik_bicimli() {
+    for klasor in ["projeler", "kitaplik"] {
+        let yol = format!("{}/../{}", env!("CARGO_MANIFEST_DIR"), klasor);
+        let mut girdiler: Vec<_> = std::fs::read_dir(&yol)
+            .expect("klasör okunmalı")
+            .map(|g| g.expect("girdi").path())
+            .filter(|y| y.extension().is_some_and(|u| u == "dil"))
+            .collect();
+        girdiler.sort();
+        assert!(!girdiler.is_empty());
+        for dosya in girdiler {
+            let kaynak = std::fs::read_to_string(&dosya).expect("okunmalı");
+            let bir = bicimle(&kaynak)
+                .unwrap_or_else(|h| panic!("{:?} biçimlenmeli: {}", dosya.file_name(), h));
+            assert_eq!(
+                bir, kaynak,
+                "{:?} resmi biçimde değil — `dil biçimle` koş",
+                dosya.file_name()
+            );
+            let iki = bicimle(&bir).expect("ikinci geçiş");
+            assert_eq!(bir, iki, "{:?} idempotent değil", dosya.file_name());
+        }
+    }
+}
