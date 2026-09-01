@@ -279,3 +279,24 @@ fn roket_geri_sayar() {
     assert_eq!(cikti.last().unwrap(), "🚀 ATEŞLE!");
     assert!(cikti.contains(&"5".to_string()) && cikti.contains(&"1".to_string()));
 }
+
+#[test]
+fn yeni_dogrulamalar_icermeli_olmamali() {
+    // K-071: içermeli + olmamalı (genel olumsuz) + çıplak boş atomu.
+    let kaynak = "\
+test \"zengin doğrulamalar\"
+    cümle \"zeytin dalı\" olsun
+    cümle \"zeytin\" içermeli
+    sayılar 1, 2 listesi olsun
+    sayılar boş olmamalı
+    kare 16 olsun
+    kare 17 ye eşit olmamalı
+";
+    let sonuclar = dil::kaynagi_dene(kaynak).expect("derlenmeli");
+    assert!(sonuclar[0].hata.is_none());
+
+    // Başarısızlık yolu D001 verir.
+    let kaynak = "test \"düşer\"\n    cümle \"a\" olsun\n    cümle \"yok\" içermeli\n";
+    let sonuclar = dil::kaynagi_dene(kaynak).expect("derlenmeli");
+    assert!(sonuclar[0].hata.is_some());
+}

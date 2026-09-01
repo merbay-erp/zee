@@ -354,6 +354,31 @@ impl Ayristirici {
                 }
             }
             Some("olmalı") => self.olmali_ayristir(satir_tokenlari, satir_no),
+            // K-071 (K-025 adayları): olumsuz doğrulama + içerme doğrulaması.
+            Some("olmamalı") => {
+                let mut t = satir_tokenlari;
+                t.pop(); // olmamalı
+                let ic = kosul_ifadesi(&t, satir_no)?;
+                Ok(Cumle::Olmali { kosul: Ifade::Degil(Box::new(ic)), satir: satir_no })
+            }
+            Some("içermeli") => {
+                let t = &satir_tokenlari;
+                if t.len() == 3 {
+                    let kosul = Ifade::Icerir {
+                        metin: Box::new(tekil_ifade(t[0].clone())?),
+                        aranan: Box::new(tekil_ifade(t[1].clone())?),
+                    };
+                    Ok(Cumle::Olmali { kosul, satir: satir_no })
+                } else {
+                    Err(Tani::yeni(
+                        "S026",
+                        "İçerme doğrulaması \"<metin> <parça> içermeli\" biçiminde yazılır.".into(),
+                        satir_no,
+                        1,
+                        1,
+                    ))
+                }
+            }
             Some("başlat") => {
                 let t = &satir_tokenlari;
                 if t.len() == 4 && kelime_mi(&t[1], "kapısında") && kelime_mi(&t[2], "sunucu") {
@@ -1635,6 +1660,14 @@ fn kosul_atomu(tokenlar: &[Token], satir: usize) -> Result<Ifade, Tani> {
             metin: Box::new(tekil_ifade(tokenlar[0].clone())?),
             parca: Box::new(tekil_ifade(tokenlar[1].clone())?),
             bitis: yuklem == "bitiyorsa",
+        });
+    }
+
+    // Çıplak boş/dolu (K-071): "liste boş olmamalı", "... boş olduğu sürece".
+    if n == 2 && (yuklem == "boş" || yuklem == "dolu") {
+        return Ok(Ifade::BosMu {
+            nesne: Box::new(tekil_ifade(tokenlar[0].clone())?),
+            olumsuz: yuklem == "dolu",
         });
     }
 
