@@ -195,7 +195,7 @@ fn json_metin_yaz(metin: &str) -> String {
 // ---------- sunucu ----------
 
 /// Tamamlama önerileri: dilin kalıp kelimeleri (kaynağı: ayrıştırıcı yüzeyi).
-const KALIP_KELIMELERI: [&str; 70] = [
+const KALIP_KELIMELERI: [&str; 80] = [
     "yaz", "olsun", "ise", "değilse", "tekrarla", "için", "kez", "her", "kadar",
     "sürece", "olduğu", "olana", "ile", "ve", "veya", "diye", "sor", "yanıt",
     "işlem", "eylem", "al", "döndür", "yapı", "test", "olmalı", "ekle", "artır", "azalt",
@@ -205,13 +205,14 @@ const KALIP_KELIMELERI: [&str; 70] = [
     "adresine", "çerezine", "sıralanmışı", "parçaları", "birleşmişi", "değişmişi",
     "içermeli", "olmamalı", "kuruşlusu", "metni", "harfleri", "kırpılmışı",
     "arasındaki", "günler", "önekli", "kalanı", "GET", "HEAD", "POST", "PUT", "PATCH",
-    "DELETE",
+    "DELETE", "herkese", "açık", "oturum", "gerekli", "yetkisi", "rolüyle",
+    "alanı", "belirteci", "doğrulanıyorsa", "kullanıcısını",
 ];
 
 /// Hover açıklamaları: kalıp kelimesi → tek satır Türkçe açıklama + örnek.
 /// (Kaynak: spec/02-dizim ve dil turu; kelime kalıbın son ya da ayırt edici
 /// parçasıdır.)
-const KELIME_ACIKLAMALARI: [(&str, &str); 34] = [
+const KELIME_ACIKLAMALARI: [(&str, &str); 40] = [
     ("yaz", "Cümleyi bitirir: değeri ekrana (ya da `X dosyasına`) yazar.\n\n`\"Merhaba\" ile isim yaz`"),
     ("olsun", "Ad tanımlar ya da var olan ada atar; tür ilk değerden çıkar ve sonra değişmez.\n\n`yaş 10 olsun`"),
     ("ise", "Koşul dalı açar; koşul yüklem-sonludur (`...se/...sa`).\n\n`yaş 8 veya daha büyükse`"),
@@ -246,6 +247,12 @@ const KELIME_ACIKLAMALARI: [(&str, &str); 34] = [
     ("sil", "Listeden ilk eşleşen öğeyi ya da sözlükten anahtarı siler; yoksa sessizdir.\n\n`sayılardan 5 i sil`"),
     ("yönlendir", "Web: tarayıcıyı başka adrese gönderir (303).\n\n`\"/liste\" adresine yönlendir`"),
     ("çerezine", "Web: yanıtla Set-Cookie gönderir; okumak için rota içinde `çerezler` sözlüğü hazırdır.\n\n`\"oturum\" çerezine kimlik yaz`"),
+    ("herkese", "Durum değiştiren rotanın açık erişim politikasıdır; CSRF yine zorunludur.\n\n`herkese açık`"),
+    ("oturum", "Kimliği doğrulanmış kullanıcı isteyen rota politikasıdır.\n\n`oturum gerekli`"),
+    ("yetkisi", "Sunucu tarafı rozet denetimi yapan rota politikasıdır.\n\n`\"yönetici\" yetkisi gerekli`"),
+    ("belirteci", "Form için sunucu oturumuna bağlı CSRF değeri üretir.\n\n`csrf csrf belirteci olsun`"),
+    ("doğrulanıyorsa", "Parolayı Argon2id PHC özetiyle doğrular; düz parola karşılaştırması yapmaz.\n\n`verilen özet ile doğrulanıyorsa`"),
+    ("rolüyle", "Başarılı girişte yeni, döndürülmüş sunucu oturumu açar.\n\n`\"Zeynep\" kullanıcısını \"yönetici\" rolüyle oturuma al`"),
 ];
 
 #[derive(Default)]

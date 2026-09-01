@@ -93,6 +93,7 @@ pub(crate) fn denetle(program: &Program) -> Result<(), Tani> {
             continue;
         };
         let yontem = yontem.unwrap_or(HttpYontemi::Get);
+        rota_onsozunu_denetle(yontem, govde, *satir)?;
         let dogrudan_rota = blok_bilgisi(govde);
         let toplam = toplam_bilgi(&dogrudan_rota, &etkiler);
 
@@ -167,6 +168,62 @@ pub(crate) fn denetle(program: &Program) -> Result<(), Tani> {
                 ));
             }
         }
+    }
+    Ok(())
+}
+
+fn rota_onsozunu_denetle(
+    yontem: HttpYontemi,
+    govde: &[Cumle],
+    rota_satiri: usize,
+) -> Result<(), Tani> {
+    let mut politika_goruldu = false;
+    let mut onsoz_bitti = false;
+    for cumle in govde {
+        match cumle {
+            Cumle::RotaPolitikasi { satir, .. } => {
+                if politika_goruldu || onsoz_bitti {
+                    return Err(Tani::yeni(
+                        "T050",
+                        "Rota erişim politikası gövdenin ilk ve tek politika cümlesi olmalı."
+                            .into(),
+                        *satir,
+                        1,
+                        1,
+                    ));
+                }
+                politika_goruldu = true;
+            }
+            Cumle::RotaAlaniGerekli { satir, .. } => {
+                if !politika_goruldu || onsoz_bitti {
+                    return Err(Tani::yeni(
+                        "T050",
+                        "Zorunlu istek alanları erişim politikasının hemen ardından gelmeli."
+                            .into(),
+                        *satir,
+                        1,
+                        1,
+                    ));
+                }
+            }
+            _ => onsoz_bitti = true,
+        }
+    }
+    if !yontem.guvenli() && !politika_goruldu {
+        return Err(Tani::yeni(
+            "T049",
+            format!(
+                "{} rotası açık bir erişim politikası taşımıyor.",
+                yontem.yazimi()
+            ),
+            rota_satiri,
+            1,
+            1,
+        )
+        .onerili(
+            "Gövdenin ilk satırına `herkese açık`, `oturum gerekli` ya da `\"rol\" yetkisi gerekli` yaz."
+                .into(),
+        ));
     }
     Ok(())
 }
@@ -362,6 +419,19 @@ fn cumle_bilgisi(cumle: &Cumle, bilgi: &mut Bilgi) {
             bilgi.durum_yazma = true;
             ifade_bilgisi(ad, bilgi);
         }
+        Cumle::RotaPolitikasi { .. } | Cumle::RotaAlaniGerekli { .. } => {
+            bilgi.web = true;
+        }
+        Cumle::OturumAc { kullanici, rol, .. } => {
+            bilgi.web = true;
+            bilgi.durum_yazma = true;
+            ifade_bilgisi(kullanici, bilgi);
+            ifade_bilgisi(rol, bilgi);
+        }
+        Cumle::OturumKapat { .. } => {
+            bilgi.web = true;
+            bilgi.durum_yazma = true;
+        }
         Cumle::Sil { kap, deger, .. } => {
             ifade_bilgisi(kap, bilgi);
             ifade_bilgisi(deger, bilgi);
@@ -463,6 +533,15 @@ fn ifade_bilgisi(ifade: &Ifade, bilgi: &mut Bilgi) {
         Ifade::Rastgele { alt, ust } => {
             ifade_bilgisi(alt, bilgi);
             ifade_bilgisi(ust, bilgi);
+        }
+        Ifade::ParolaDogrula { parola, ozet } => {
+            ifade_bilgisi(parola, bilgi);
+            ifade_bilgisi(ozet, bilgi);
+        }
+        Ifade::CsrfBelirteci => {
+            // Uygulama durumu değil, güvenlik adaptörünün kısa ömürlü ve
+            // anlam taşımayan synchronizer oturumudur. GET'te üretilebilir.
+            bilgi.web = true;
         }
         Ifade::Birlestir(parcalar)
         | Ifade::MantiksalZincir { parcalar, .. }

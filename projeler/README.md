@@ -7,8 +7,10 @@ tek dosyadır, kolaydan zora sıralıdır ve bir çocuğun tek oturuşta bitirip
 En kolay yol: `playground/zee-playground.html`'i çift tıkla aç, projeyi
 yapıştır, Çalıştır'a bas. (Girdi isteyen projelerde cevaplarını Girdiler
 kutusuna satır satır yaz.) Ya da: `dil çalıştır projeler/<dosya>.dil`.
-Üç web demosu yalnız localhost için
+Üç web demosu localhost'ta
 `dil çalıştır --deneysel-web projeler/<dosya>.dil` ile açıkça çalıştırılır.
+`girisli-panel` ayrıca HTTPS reverse proxy arkasında
+`dil çalıştır --web-proxy https://panel.example ...` profilini gösterir.
 
 | Proje | Öğrettiği | Fikir: şunu da dene |
 |---|---|---|
@@ -23,8 +25,8 @@ kutusuna satır satır yaz.) Ya da: `dil çalıştır projeler/<dosya>.dil`.
 | [kelime-sayaci.dil](kelime-sayaci.dil) | sayaç sözlüğü, "yoksa sıfırla" | En çok geçen kelimeyi de bul |
 | [gun-sayar.dil](gun-sayar.dil) | Tarih türü, gün aritmetiği | Doğum gününe kaç gün kaldığını hesapla |
 | [mini-site.dil](mini-site.dil) | deneysel localhost sitesi: yöntemli rotalar + HTML | Yeni bir GET sayfa rotası ekle |
-| [panel-not-defteri.dil](panel-not-defteri.dil) | deneysel form: POST adaptörü + yeniden kullanılabilir eylem | Aynı kaydetme eylemini CLI'dan çağır |
-| [girisli-panel.dil](girisli-panel.dil) | yöntemli rota + transaction'lı eylem + eğitim oturumu — production değil | Güvenli token politikasını tartış |
+| [panel-not-defteri.dil](panel-not-defteri.dil) | CSRF korumalı form + POST adaptörü + yeniden kullanılabilir eylem | Aynı kaydetme eylemini CLI'dan çağır |
+| [girisli-panel.dil](girisli-panel.dil) | Argon2id + sunucu oturumu/rol + CSRF + transaction'lı eylem | Demo parolasını kendi PHC özetinle değiştir |
 | [envanter.dil](envanter.dil) | stok defteri: yapı listesi + JSON yedek | CSV yedeği de al; en pahalıyı bul |
 | [roket.dil](roket.dil) | geri sayan aralık, bekleme | 10'dan başlat; kaçışta iptal ekle |
 

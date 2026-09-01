@@ -7,7 +7,7 @@
 
 use crate::agac::{
     AritmetikIslec, Cumle, HttpYontemi, Ifade, Islec, Islem, IslemTuru, KosulKolu, Ozellik,
-    Parametre, Test, Yapi,
+    Parametre, RotaErisimi, Test, Yapi,
 };
 use crate::sozcukleyici::{Token, TokenTur};
 use crate::tani::Tani;
@@ -310,6 +310,104 @@ impl Ayristirici {
         let son_kelime = son_kelime(&satir_tokenlari);
 
         match son_kelime.as_deref() {
+            Some("açık") => {
+                if satir_tokenlari.len() == 2 && kelime_mi(&satir_tokenlari[0], "herkese") {
+                    Ok(Cumle::RotaPolitikasi {
+                        erisim: RotaErisimi::HerkeseAcik,
+                        satir: satir_no,
+                    })
+                } else {
+                    Err(Tani::yeni(
+                        "S043",
+                        "Açık rota politikası `herkese açık` biçimindedir.".into(),
+                        satir_no,
+                        1,
+                        1,
+                    ))
+                }
+            }
+            Some("gerekli") => {
+                let t = &satir_tokenlari;
+                if t.len() == 2 && kelime_mi(&t[0], "oturum") {
+                    Ok(Cumle::RotaPolitikasi {
+                        erisim: RotaErisimi::Oturumlu,
+                        satir: satir_no,
+                    })
+                } else if t.len() == 3 && kelime_mi(&t[1], "yetkisi") {
+                    let TokenTur::Metin(rol) = &t[0].tur else {
+                        return Err(Tani::yeni(
+                            "S043",
+                            "Yetki rolü sabit Metin olmalı: `\"yönetici\" yetkisi gerekli`.".into(),
+                            satir_no,
+                            1,
+                            1,
+                        ));
+                    };
+                    Ok(Cumle::RotaPolitikasi {
+                        erisim: RotaErisimi::Rol(rol.clone()),
+                        satir: satir_no,
+                    })
+                } else if t.len() == 3 && kelime_mi(&t[1], "alanı") {
+                    let TokenTur::Metin(ad) = &t[0].tur else {
+                        return Err(Tani::yeni(
+                            "S043",
+                            "İstek alanı sabit Metin olmalı: `\"parola\" alanı gerekli`.".into(),
+                            satir_no,
+                            1,
+                            1,
+                        ));
+                    };
+                    Ok(Cumle::RotaAlaniGerekli {
+                        ad: ad.clone(),
+                        satir: satir_no,
+                    })
+                } else {
+                    Err(Tani::yeni(
+                        "S043",
+                        "Rota önsözü `oturum gerekli`, `\"rol\" yetkisi gerekli` ya da `\"alan\" alanı gerekli` biçimindedir."
+                            .into(),
+                        satir_no,
+                        1,
+                        1,
+                    ))
+                }
+            }
+            Some("al") => {
+                let t = &satir_tokenlari;
+                if t.len() == 6
+                    && kelime_mi(&t[1], "kullanıcısını")
+                    && kelime_mi(&t[3], "rolüyle")
+                    && kelime_mi(&t[4], "oturuma")
+                {
+                    Ok(Cumle::OturumAc {
+                        kullanici: tekil_ifade(t[0].clone())?,
+                        rol: tekil_ifade(t[2].clone())?,
+                        satir: satir_no,
+                    })
+                } else {
+                    Err(Tani::yeni(
+                        "S043",
+                        "Oturum `\"kullanıcı\" kullanıcısını \"rol\" rolüyle oturuma al` biçiminde açılır."
+                            .into(),
+                        satir_no,
+                        1,
+                        1,
+                    ))
+                }
+            }
+            Some("kapat") => {
+                if satir_tokenlari.len() == 2 && kelime_mi(&satir_tokenlari[0], "oturumu") {
+                    Ok(Cumle::OturumKapat { satir: satir_no })
+                } else {
+                    Err(Tani::yeni(
+                        "S043",
+                        "Oturum `oturumu kapat` biçiminde sonlandırılır.".into(),
+                        satir_no,
+                        1,
+                        1,
+                    ))
+                }
+            }
             Some("yaz") => self.yaz_ayristir(satir_tokenlari, satir_no),
             Some("olsun") => self.olsun_ayristir(satir_tokenlari, satir_no),
             Some("tekrarla") => self.tekrarla_ayristir(satir_tokenlari, satir_no),
@@ -1450,6 +1548,7 @@ fn kosul_kelimesi(kelime: &str) -> bool {
             | "içeriyorsa"
             | "başlıyorsa"
             | "bitiyorsa"
+            | "doğrulanıyorsa"
             | "başarılıysa"
             | "başarısızsa"
             | "boşsa"
@@ -1735,6 +1834,14 @@ fn kosul_atomu(tokenlar: &[Token], satir: usize) -> Result<Ifade, Tani> {
         });
     }
 
+    // <parola> <Argon2id PHC özeti> ile doğrulanıyorsa.
+    if n == 4 && kelimeler[2] == Some("ile") && yuklem == "doğrulanıyorsa" {
+        return Ok(Ifade::ParolaDogrula {
+            parola: Box::new(tekil_ifade(tokenlar[0].clone())?),
+            ozet: Box::new(tekil_ifade(tokenlar[1].clone())?),
+        });
+    }
+
     // X varsa / X yoksa — Seçenek dolu mu.
     if n == 2 && (yuklem == "varsa" || yuklem == "yoksa") {
         return Ok(Ifade::SecenekVar {
@@ -1910,6 +2017,10 @@ fn yapili_kalip(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifade>
         if son == "sözlük" {
             return Ok(Some(Ifade::BosSozluk));
         }
+    }
+
+    if n == 2 && kelime(0) == Some("csrf") && son == "belirteci" {
+        return Ok(Some(Ifade::CsrfBelirteci));
     }
 
     // W ın adedi / ilki / sonu / uzunluğu / kelimeleri — özellikler.

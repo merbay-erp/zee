@@ -33,11 +33,12 @@ Kırıcı değişiklik sessizce yapılamaz: davranış değişikliği RFC'den ge
 | [09 — Son tarih ve iptal](09-son-tarih-ve-iptal.md) | `içinde/yetişmezse`, işbirlikli iptal ve iç içe deadline | RFC-0011 |
 | [10 — Dışa açık işlem sözleşmesi](10-disari-acik-islem-sozlesmesi.md) | public imza, dönüş kanıtı ve v1 kaynak ABI'si | RFC-0006, RFC-0007, RFC-0009 |
 | [11 — Uygulama eylemleri ve web adaptörü](11-uygulama-eylemleri-ve-web-adaptoru.md) | açık eylem imzası, etki çıkarımı, yöntemli rota, savepoint/geri alma | RFC-0015 |
+| [12 — Web güvenlik profili](12-web-guvenlik-profili.md) | erişim politikası, Argon2id, sunucu oturumu/rol, CSRF, güvenli çerez ve HTTPS proxy sınırı | RFC-0017 |
 
 ## Faza bağlı — henüz spec dışı
 
 Gerçek paralel görev zamanlayıcısı (RFC-0011, Faz 5), ikili FFI/ABI (RFC-0012,
 Faz 4/5), standart kütüphane kararlılık
-politikası, production web/action/oturum/transaction (RFC-0015), uzak
+politikası, çok süreçli web durumu/idempotency (RFC-0015/0017), uzak
 paket/registry (RFC-0009 §4.2), deprecation/edition modeli.
 Bu başlıklar karara bağlandıkça buraya bölüm olarak eklenir.

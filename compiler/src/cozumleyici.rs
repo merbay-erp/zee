@@ -992,6 +992,26 @@ fn blok_denetle(
                     ));
                 }
             }
+            Cumle::RotaPolitikasi { .. } | Cumle::RotaAlaniGerekli { .. } => {}
+            Cumle::OturumAc {
+                kullanici,
+                rol,
+                satir,
+            } => {
+                let satir = *satir;
+                let kullanici_turu = ifade_denetle(kullanici, ortam, baglam, satir)?;
+                let rol_turu = ifade_denetle(rol, ortam, baglam, satir)?;
+                if kullanici_turu != Tur::Metin || rol_turu != Tur::Metin {
+                    return Err(Tani::yeni(
+                        "T034",
+                        "Oturum kullanıcısı ve rolü Metin olmalı.".into(),
+                        satir,
+                        1,
+                        1,
+                    ));
+                }
+            }
+            Cumle::OturumKapat { .. } => {}
             Cumle::Yonlendir { adres, satir } => {
                 let satir = *satir;
                 let tur = ifade_denetle(adres, ortam, baglam, satir)?;
@@ -1417,6 +1437,21 @@ fn ifade_denetle(
         Ifade::SayiSabiti(_) => Ok(Tur::TamSayi),
         Ifade::OndalikSabiti { .. } => Ok(Tur::Ondalik),
         Ifade::MantiksalSabiti(_) => Ok(Tur::Mantiksal),
+        Ifade::CsrfBelirteci => Ok(Tur::Metin),
+        Ifade::ParolaDogrula { parola, ozet } => {
+            let parola_turu = ifade_denetle(parola, ortam, baglam, satir)?;
+            let ozet_turu = ifade_denetle(ozet, ortam, baglam, satir)?;
+            if parola_turu != Tur::Metin || ozet_turu != Tur::Metin {
+                return Err(Tani::yeni(
+                    "T034",
+                    "Parola ve Argon2id özeti Metin olmalı.".into(),
+                    satir,
+                    1,
+                    1,
+                ));
+            }
+            Ok(Tur::Mantiksal)
+        }
         // Boş listenin öğe türü v0'da TamSayı varsayılır (tür çıkarımı RFC-0007).
         // K-045: öğe türü ilk eklemede somutlaşır.
         Ifade::BosListe => Ok(Tur::Liste(VeriTuru::Bilinmeyen)),

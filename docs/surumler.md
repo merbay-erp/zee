@@ -64,6 +64,16 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   ezmek yerine C021 verir. Hermetik ve gerçek CLI geri alma kanıtlarıyla 304
   test ve 134 katalog kodunda V1-P0-02
   kapandı. Çok-dosyalı süreç-çökmesi atomikliği bu sözün parçası değildir.
+- **Production web güvenlik profili** (K-088, RFC-0017/spec-12): unsafe rota
+  ilk satırda public/oturum/rol politikasını açıklar (T049/T050), zorunlu
+  alanlar 400 ve otomatik synchronizer CSRF 403 kapısından geçer. Native
+  runtime 256 bit OS CSPRNG belirteç üretir, oturum kimliğinin yalnız SHA-256
+  özetini sunucuda tutar; girişte session+CSRF rotation, 30 dakika ömür,
+  sunucu rolü ve logout revoke vardır. `dil parola-özeti` Argon2id PHC üretir.
+  `--web-proxy https://host` loopback'teki HTTPS proxy için Host/proto/Origin
+  doğrular; `__Host-` Secure+HttpOnly+SameSite=Lax çerez, HSTS/CSP ve CRLF/
+  request-smuggling korkuluklarını uygular. 321 test ve 138 katalog koduyla
+  V1-P0-03 kapandı.
 
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`

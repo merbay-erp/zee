@@ -20,13 +20,13 @@ Dil değişikliği RFC ister (master plan bölüm 25). Şablon: [0000-sablon.md]
 | RFC-0012 | [FFI ve Tehlikeli Sınır](0012-ffi-ve-tehlikeli-sinir.md) | **taslak** | A10 |
 | RFC-0013 | [Ondalık Sayılar](0013-ondalik-sayilar.md) | **geçici kabul** | K-028 |
 | RFC-0014 | [Standart Kitaplık](0014-standart-kitaplik.md) | **taslak — çalışan prototip ekli** | K-046, K-048, RFC-0002 §6.3 |
-| RFC-0015 | [Uygulama Eylemleri ve Web Güvenlik Sınırı](0015-uygulama-eylemleri.md) | **geçici kabul — K-087 çekirdeği, K-088 açık** | K-081, K-087, ADR-010 |
+| RFC-0015 | [Uygulama Eylemleri ve Web Güvenlik Sınırı](0015-uygulama-eylemleri.md) | **geçici kabul — K-087 eylem, K-088 profil** | K-081, K-087, K-088, ADR-010 |
 | RFC-0016 | [Atomik Kalıcı Dosya Sözleşmesi](0016-atomik-kalici-dosya.md) | **geçici kabul** | K-019, K-084, V1-P0-04 |
+| RFC-0017 | [Web Oturumu, Yetki, CSRF ve Güvenilir Proxy](0017-web-oturum-ve-csrf.md) | **geçici kabul** | K-082, K-088, V1-P0-03 |
 
-**Durum özeti (1 Eyl 2026, K-084):** 16 RFC — 2 kabul (0001, 0010),
-11 geçici kabul (yüzey gerçeklendi + korpusla/testle sabitlendi; onay kapısı
-usability oturumları), 3 taslak: 0012 (FFI — Faz 4/5), 0014 (standart
-kitaplık — çalışan dört-birimlik prototiple), 0015 (uygulama eylemi ve
-production web sınırı).
+**Durum özeti (1 Eylül 2026, K-088):** 17 RFC — 2 kabul (0001, 0010),
+13 geçici kabul (yüzey gerçeklendi + korpusla/testle sabitlendi; onay kapısı
+usability oturumları), 2 taslak: 0012 (FFI — Faz 4/5) ve 0014 (standart
+kitaplık — çalışan prototiple).
 Kural: bir RFC ancak yüzeyi gerçeklenmiş VE regression testine bağlanmışsa
 geçici kabule geçer; tam kabul usability kapısından geçmeyi bekler.

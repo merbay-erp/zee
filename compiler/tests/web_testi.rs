@@ -1,14 +1,73 @@
 //! Web dalgası (K-051): örtük "istek" sözlüğü (sorgu + form), yönlendirme,
 //! html güvenlisi. Hepsi hermetik — sahte istek kuyruğuyla.
 
-use dil::yorumlayici::{calistir_io, istek_parcala, ToplayanIo};
+use dil::agac::RotaErisimi;
+use dil::yorumlayici::{calistir_io, istek_parcala, GirdiCikti, ToplayanIo};
 
 fn sunucuyla(kaynak: &str, istekler: Vec<&str>) -> ToplayanIo {
+    let csrf_gerekli = istekler.iter().any(|istek| unsafe_istek(istek));
     let program = dil::kaynagi_derle(kaynak).expect("derlenmeli");
     let mut io = ToplayanIo::yeni(Vec::new());
-    io.istekler = istekler.into_iter().map(str::to_string).collect();
+    let (oturum, csrf) = if csrf_gerekli {
+        io.istekler.push_back("GET /__test-csrf".into());
+        assert!(io.istek_al().is_some());
+        let csrf = io.csrf_belirteci().expect("CSRF oturumu");
+        let (_, oturum) = io.yazilan_cerezler[0].clone();
+        io.sunucu_yanitlari.clear();
+        io.sunucu_durumlari.clear();
+        io.yazilan_cerezler.clear();
+        io.guvenli_cerezler.clear();
+        (oturum, csrf)
+    } else {
+        (String::new(), String::new())
+    };
+    let mut kuyruk = Vec::new();
+    kuyruk.extend(istekler.into_iter().map(|istek| {
+        if unsafe_istek(istek) {
+            csrfli_istek_ile(istek, &oturum, &csrf)
+        } else {
+            istek.to_string()
+        }
+    }));
+    io.istekler = kuyruk.into();
     calistir_io(&program, &mut io).expect("çalışmalı");
     io
+}
+
+fn unsafe_istek(istek: &str) -> bool {
+    matches!(
+        istek.split_whitespace().next(),
+        Some("POST" | "PUT" | "PATCH" | "DELETE")
+    )
+}
+
+/// ToplayanIo'nun hermetik belirteç üreticisi ilk anonim oturumda 1'i
+/// oturum kimliği, 2'yi CSRF olarak 64 haneli hex'e çevirir.
+fn csrfli_istek(istek: &str) -> String {
+    let oturum = format!("{:064x}", 1);
+    let csrf = format!("{:064x}", 2);
+    csrfli_istek_ile(istek, &oturum, &csrf)
+}
+
+fn csrfli_istek_ile(istek: &str, oturum: &str, csrf: &str) -> String {
+    let mut satirlar = istek.lines();
+    let ilk = satirlar.next().unwrap_or(istek);
+    let mut cerezler = Vec::new();
+    let mut govde = Vec::new();
+    for satir in satirlar {
+        if let Some(cerez) = satir.strip_prefix("çerez ") {
+            cerezler.push(cerez.to_string());
+        } else {
+            govde.push(satir.to_string());
+        }
+    }
+    cerezler.push(format!("__Host-zee-oturum={}", oturum));
+    let mut govde = govde.join("\n");
+    if !govde.is_empty() {
+        govde.push('&');
+    }
+    govde.push_str(&format!("_csrf={}", csrf));
+    format!("{}\nçerez {}\n{}", ilk, cerezler.join("; "), govde)
 }
 
 #[test]
@@ -33,6 +92,110 @@ fn istek_parcala_sorgu_ve_govde() {
 }
 
 #[test]
+fn toplayan_io_anonim_oturumu_sonraki_istege_tasir() {
+    let mut io = ToplayanIo::yeni(Vec::new());
+    io.istekler.push_back("GET /form".into());
+    assert!(io.istek_al().is_some());
+    let csrf = io.csrf_belirteci().expect("CSRF");
+    let (_, oturum) = io.yazilan_cerezler[0].clone();
+    io.istekler.push_back(format!(
+        "POST /kaydet\nçerez __Host-zee-oturum={}\n_csrf={}",
+        oturum, csrf
+    ));
+    assert!(io.istek_al().is_some());
+    assert!(io
+        .rota_guvenligini_denetle(&RotaErisimi::HerkeseAcik, Some(&csrf), true)
+        .is_ok());
+}
+
+#[test]
+fn csrf_form_rotasindan_durum_degistiren_rotaya_tasinir() {
+    let kaynak = "\
+8080 kapısında sunucu başlat
+GET \"/form\" adresine istek geldiğinde
+    csrf belirteci yanıtını gönder
+POST \"/kaydet\" adresine istek geldiğinde
+    herkese açık
+    \"tamam\" yanıtını gönder
+";
+    let program = dil::kaynagi_derle(kaynak).expect("derlenmeli");
+    let mut io = ToplayanIo::yeni(Vec::new());
+    io.istekler = vec!["GET /form".to_string(), csrfli_istek("POST /kaydet")].into();
+    calistir_io(&program, &mut io).expect("çalışmalı");
+    assert_eq!(io.sunucu_durumlari, vec![200, 200]);
+    assert_eq!(io.sunucu_yanitlari[1].1, "tamam");
+}
+
+#[test]
+fn unsafe_rota_politikasiz_derlenmez_ve_onsoz_sirasi_sabittir() {
+    let politikasiz = "\
+POST \"/kaydet\" adresine istek geldiğinde
+    \"tamam\" yanıtını gönder
+";
+    assert_eq!(
+        dil::kaynagi_derle(politikasiz).expect_err("T049").kod,
+        "T049"
+    );
+
+    let gec = "\
+POST \"/kaydet\" adresine istek geldiğinde
+    \"hazır\" yaz
+    herkese açık
+    \"tamam\" yanıtını gönder
+";
+    assert_eq!(dil::kaynagi_derle(gec).expect_err("T050").kod, "T050");
+}
+
+#[test]
+fn csrf_ve_zorunlu_alan_kapilari_403_400_ve_200_ayirir() {
+    let kaynak = "\
+8080 kapısında sunucu başlat
+POST \"/kaydet\" adresine istek geldiğinde
+    herkese açık
+    \"ad\" alanı gerekli
+    \"tamam\" yanıtını gönder
+";
+    let program = dil::kaynagi_derle(kaynak).expect("derlenmeli");
+    let mut io = ToplayanIo::yeni(Vec::new());
+    io.istekler.push_back("GET /form".into());
+    io.istek_al();
+    let csrf = io.csrf_belirteci().expect("csrf");
+    let (_, oturum) = io.yazilan_cerezler[0].clone();
+    io.sunucu_yanitlari.clear();
+    io.sunucu_durumlari.clear();
+    io.istekler = vec![
+        "POST /kaydet\nad=Zeynep".to_string(),
+        format!(
+            "POST /kaydet\nçerez __Host-zee-oturum={}\nad=Zeynep",
+            oturum
+        ),
+        csrfli_istek_ile("POST /kaydet\nad=Zeynep", &oturum, "sahte"),
+        csrfli_istek_ile("POST /kaydet", &oturum, &csrf),
+        csrfli_istek_ile("POST /kaydet\nad=Zeynep", &oturum, &csrf),
+    ]
+    .into();
+    calistir_io(&program, &mut io).expect("sunucu sürmeli");
+    assert_eq!(io.sunucu_durumlari, vec![403, 403, 403, 400, 200]);
+    assert!(io.sunucu_yanitlari[3].1.contains("zorunlu istek alanı"));
+    assert_eq!(io.sunucu_yanitlari[4].1, "tamam");
+}
+
+#[test]
+fn yonlendirme_baslik_enjeksiyonu_c022_ile_reddedilir() {
+    let kaynak = "\
+8080 kapısında sunucu başlat
+GET \"/git\" adresine istek geldiğinde
+    hedef isteğin \"hedef\" değeri olsun
+    hedef adresine yönlendir
+";
+    let program = dil::kaynagi_derle(kaynak).expect("derlenmeli");
+    let mut io = ToplayanIo::yeni(Vec::new());
+    io.istekler = vec!["GET /git?hedef=%2Fiyi%0D%0AX-Sahte%3A+evet".to_string()].into();
+    let hata = calistir_io(&program, &mut io).expect_err("enjeksiyon reddedilmeli");
+    assert_eq!(hata.kod, "C022");
+}
+
+#[test]
 fn sorgu_verisi_rotada_okunur() {
     let kaynak = "\
 8080 kapısında sunucu başlat
@@ -54,6 +217,7 @@ fn form_govdesi_post_ile_gelir() {
 8080 kapısında sunucu başlat
 
 POST \"/kaydet\" adresine istek geldiğinde
+    herkese açık
     istekte \"not\" varsa
         \"alındı: \" ile isteğin \"not\" değeri yanıtını gönder
 ";
@@ -112,7 +276,7 @@ fn panel_not_defteri_tam_dongu() {
     io.istekler = vec![
         "/".to_string(),
         "/yonet-gizli123".to_string(),
-        "POST /kaydet-gizli123\nnot=S%C3%BCt+al+%3Cb%3E".to_string(),
+        csrfli_istek("POST /kaydet-gizli123\nnot=S%C3%BCt+al+%3Cb%3E"),
         "/".to_string(),
     ]
     .into();
@@ -139,63 +303,73 @@ fn panel_not_defteri_tam_dongu() {
 
 #[test]
 fn girisli_panel_oturum_dongusu() {
-    // Tam güvenlik akışı, hermetik: çerezsiz yönet → girişe; yanlış parola →
-    // girişe; doğru parola → çerez + yönet; çerezle kaydet → not listede.
+    // Tam güvenlik akışı: 401 → form/anonim CSRF → yanlış parola →
+    // girişte session rotation → rol kapısı → korumalı yazma.
     let kaynak = std::fs::read_to_string("../projeler/girisli-panel.dil").expect("okunmalı");
     let program = dil::kaynagi_derle(&kaynak).expect("derlenmeli");
     let mut io = ToplayanIo::yeni(Vec::new());
     io.istekler = vec![
         "/yonet".to_string(),
-        "POST /giris-yap\nparola=yanlis".to_string(),
-        "POST /giris-yap\nparola=zee2026".to_string(),
+        "/giris".to_string(),
+        csrfli_istek("POST /giris-yap\nparola=yanlis"),
+        csrfli_istek("POST /giris-yap\nparola=zee2026"),
     ]
     .into();
     calistir_io(&program, &mut io).expect("ilk tur çalışmalı");
 
+    assert_eq!(io.sunucu_durumlari[0], 401);
+    assert!(io.sunucu_yanitlari[1].1.contains("name=_csrf"));
     assert_eq!(
-        io.sunucu_yanitlari[0].1, "→ /giris",
-        "çerezsiz yönetim girişe atmalı"
-    );
-    assert_eq!(
-        io.sunucu_yanitlari[1].1, "→ /giris",
+        io.sunucu_yanitlari[2].1, "→ /giris",
         "yanlış parola girişe atmalı"
     );
     assert_eq!(
-        io.sunucu_yanitlari[2].1, "→ /yonet",
+        io.sunucu_yanitlari[3].1, "→ /yonet",
         "doğru parola yönetime almalı"
     );
-    assert_eq!(io.yazilan_cerezler.len(), 1, "oturum çerezi yazılmalı");
-    let (cerez_adi, kimlik) = io.yazilan_cerezler[0].clone();
-    assert_eq!(cerez_adi, "oturum");
+    assert_eq!(io.yazilan_cerezler.len(), 2, "anonim ve giriş oturumları");
+    let (cerez_adi, kimlik) = io.yazilan_cerezler[1].clone();
+    assert_eq!(cerez_adi, "__Host-zee-oturum");
+    assert_ne!(io.yazilan_cerezler[0].1, kimlik, "session rotation");
+    let guvenli = &io.guvenli_cerezler[1];
+    assert!(guvenli.secure && guvenli.http_only);
+    assert_eq!(guvenli.same_site, "Lax");
+    assert_eq!(guvenli.yol, "/");
+    assert_eq!(guvenli.azami_omur_saniye, 30 * 60);
+    let csrf = format!("{:064x}", 4);
 
-    // İkinci tur: aynı sahte dünyada (dosyalar taşınır) çerezle korumalı işlemler.
-    let mut io2 = ToplayanIo::yeni(Vec::new());
-    io2.dosyalar = io.dosyalar.clone();
-    io2.istekler = vec![
-        format!("/yonet\nçerez oturum={}", kimlik),
-        format!("POST /kaydet\nçerez oturum={}\nnot=Gizli+plan", kimlik),
+    // Aynı sunucu tarafı oturum deposuyla ikinci istek grubu.
+    io.istekler = vec![
+        format!("/yonet\nçerez __Host-zee-oturum={}", kimlik),
+        csrfli_istek_ile("POST /kaydet\nnot=Gizli+plan", &kimlik, &csrf),
         "/".to_string(),
-        "POST /kaydet\nçerez oturum=sahte999\nnot=Korsan".to_string(),
+        csrfli_istek_ile("POST /kaydet\nnot=Korsan", "sahte999", &csrf),
     ]
     .into();
-    let _ = kimlik;
-    calistir_io(&program, &mut io2).expect("ikinci tur çalışmalı");
+    calistir_io(&program, &mut io).expect("ikinci tur çalışmalı");
     assert!(
-        io2.sunucu_yanitlari[0].1.contains("<form"),
+        io.sunucu_yanitlari[4].1.contains("<form"),
         "geçerli çerez formu açmalı"
     );
     assert_eq!(
-        io2.sunucu_yanitlari[1].1, "→ /",
+        io.sunucu_yanitlari[5].1, "→ /",
         "kaydet ana sayfaya dönmeli"
     );
     assert!(
-        io2.sunucu_yanitlari[2].1.contains("Gizli plan"),
+        io.sunucu_yanitlari[6].1.contains("Gizli plan"),
         "not listede olmalı"
     );
-    assert_eq!(
-        io2.sunucu_yanitlari[3].1, "→ /giris",
-        "sahte çerez reddedilmeli"
-    );
+    assert_eq!(io.sunucu_durumlari[7], 403, "sahte çerez reddedilmeli");
+
+    io.istekler = vec![
+        csrfli_istek_ile("POST /cikis", &kimlik, &csrf),
+        format!("/yonet\nçerez __Host-zee-oturum={}", kimlik),
+    ]
+    .into();
+    calistir_io(&program, &mut io).expect("çıkış turu");
+    assert_eq!(io.sunucu_yanitlari[8].1, "→ /");
+    assert_eq!(io.sunucu_durumlari[9], 401, "eski oturum iptal edilmeli");
+    assert_eq!(io.guvenli_cerezler.last().unwrap().azami_omur_saniye, 0);
 }
 
 #[test]
@@ -229,29 +403,34 @@ fn girisli_panel_not_siler() {
     let kaynak = std::fs::read_to_string("../projeler/girisli-panel.dil").expect("okunmalı");
     let program = dil::kaynagi_derle(&kaynak).expect("derlenmeli");
     let mut io = ToplayanIo::yeni(Vec::new());
-    io.istekler = vec!["POST /giris-yap\nparola=zee2026".to_string()].into();
+    io.istekler = vec![
+        "/giris".to_string(),
+        csrfli_istek("POST /giris-yap\nparola=zee2026"),
+    ]
+    .into();
     calistir_io(&program, &mut io).expect("giriş turu");
-    let (_, kimlik) = io.yazilan_cerezler[0].clone();
+    let (_, kimlik) = io.yazilan_cerezler[1].clone();
+    let csrf = format!("{:064x}", 4);
 
-    let mut io2 = ToplayanIo::yeni(Vec::new());
-    io2.dosyalar = io.dosyalar.clone();
-    io2.istekler = vec![
-        format!("POST /kaydet\nçerez oturum={}\nnot=Silinecek", kimlik),
-        format!("POST /kaydet\nçerez oturum={}\nnot=Kalacak", kimlik),
+    io.sunucu_yanitlari.clear();
+    io.sunucu_durumlari.clear();
+    io.istekler = vec![
+        csrfli_istek_ile("POST /kaydet\nnot=Silinecek", &kimlik, &csrf),
+        csrfli_istek_ile("POST /kaydet\nnot=Kalacak", &kimlik, &csrf),
         format!("/sil?not=Silinecek\nçerez oturum={}", kimlik),
         "/".to_string(),
-        format!("POST /sil\nçerez oturum={}\nnot=Silinecek", kimlik),
+        csrfli_istek_ile("POST /sil\nnot=Silinecek", &kimlik, &csrf),
         "/".to_string(),
     ]
     .into();
-    calistir_io(&program, &mut io2).expect("silme turu");
-    let get_sonrasi = &io2.sunucu_yanitlari[3].1;
+    calistir_io(&program, &mut io).expect("silme turu");
+    let get_sonrasi = &io.sunucu_yanitlari[3].1;
     assert!(
         get_sonrasi.contains("Silinecek"),
         "GET durum değiştirmemeli: {}",
         get_sonrasi
     );
-    let son = &io2.sunucu_yanitlari[5].1;
+    let son = &io.sunucu_yanitlari[5].1;
     assert!(son.contains("Kalacak"), "{}", son);
     assert!(
         !son.contains("Silinecek"),
@@ -267,6 +446,7 @@ fn cerez_silme_kaydedilir() {
 8080 kapısında sunucu başlat
 
 POST \"/cikis\" adresine istek geldiğinde
+    herkese açık
     \"oturum\" çerezini sil
     \"/\" adresine yönlendir
 ";
@@ -290,15 +470,19 @@ eylem notu kaydet
 8080 kapısında sunucu başlat
 
 POST \"/notlar\" adresine istek geldiğinde
+    herkese açık
     not isteğin \"not\" değeri olsun
     not ile notu kaydet
     \"kaydedildi\" yanıtını gönder
 ";
-    let program = dil::kaynagi_derle(kaynak).expect("eylem derlenmeli");
-    let mut io = ToplayanIo::yeni(Vec::new());
-    io.istekler = vec!["POST /notlar\nnot=Web+notu".to_string()].into();
-    calistir_io(&program, &mut io).expect("iki adaptör de çalışmalı");
-    assert_eq!(io.dosyalar["notlar.txt"], "CLI notu\nWeb notu\n");
+    let io = sunucuyla(kaynak, vec!["POST /notlar\nnot=Web+notu"]);
+    assert_eq!(
+        io.dosyalar["notlar.txt"],
+        "CLI notu\nWeb notu\n",
+        "durum={:?}, yanıt={:?}",
+        io.sunucu_durumlari,
+        io.sunucu_yanitlari
+    );
     assert_eq!(io.sunucu_yanitlari[0].1, "kaydedildi");
 }
 
@@ -336,6 +520,7 @@ GET \"/sil\" adresine istek geldiğinde
 fn yazan_post_rotasi_mutlaka_eylem_cagirir() {
     let kaynak = "\
 POST \"/notlar\" adresine istek geldiğinde
+    herkese açık
     \"notlar.txt\" dosyasına \"doğrudan\" ekle
 ";
     assert_eq!(dil::kaynagi_derle(kaynak).expect_err("T046").kod, "T046");
@@ -367,6 +552,7 @@ fn yanlis_yontem_405_olmayan_yol_404_doner() {
 8080 kapısında sunucu başlat
 
 POST \"/notlar\" adresine istek geldiğinde
+    herkese açık
     \"tamam\" yanıtını gönder
 ";
     let io = sunucuyla(kaynak, vec!["GET /notlar", "GET /yok"]);
@@ -381,6 +567,7 @@ fn fazla_govde_ve_alan_413_doner() {
 8080 kapısında sunucu başlat
 
 POST \"/al\" adresine istek geldiğinde
+    herkese açık
     \"tamam\" yanıtını gönder
 ";
     let buyuk = format!("POST /al\nveri={}", "x".repeat(64 * 1024 + 1));
@@ -401,10 +588,13 @@ fn put_patch_delete_govdeleri_cozulur() {
 8080 kapısında sunucu başlat
 
 PUT \"/put\" adresine istek geldiğinde
+    herkese açık
     isteğin \"değer\" değeri yanıtını gönder
 PATCH \"/patch\" adresine istek geldiğinde
+    herkese açık
     isteğin \"değer\" değeri yanıtını gönder
 DELETE \"/delete\" adresine istek geldiğinde
+    herkese açık
     isteğin \"değer\" değeri yanıtını gönder
 ";
     let io = sunucuyla(

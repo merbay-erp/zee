@@ -13,8 +13,10 @@ pub mod proje;
 pub mod wasm_api;
 pub mod cozumleyici;
 mod eylem;
+pub mod guvenlik;
 pub mod sozcukleyici;
 pub mod tani;
+pub mod web_guvenligi;
 pub mod yorumlayici;
 
 use agac::{Cumle, Islem, KullanimTuru, Program, Test, Yapi};

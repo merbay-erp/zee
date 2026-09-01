@@ -122,6 +122,8 @@ capability, uzun ömürlü kilitleme ve günlükleme kararı gerektirir.
 
 K-087 rota/eylem ayrımını, yöntem güvenliğini, kaynak limitini ve yerel
 transaction sözleşmesini kurar. Kimlik doğrulama, yetkilendirme, CSRF,
-idempotency anahtarı, güvenli oturum/çerez ve TLS/proxy güveni K-088 kapsamıdır.
+güvenli oturum/çerez ve TLS/proxy güveni K-088 ile
+[spec/12](12-web-guvenlik-profili.md)'de tanımlıdır. Idempotency anahtarı
+ayrı açık kapıdır.
 Bu nedenle gerçek TCP yüzeyi `--deneysel-web` açık seçimini korur; bu bölüm tek
 başına “production web framework” sözü değildir.

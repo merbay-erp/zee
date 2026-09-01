@@ -60,7 +60,9 @@ simülatörü**, **özyineleme** (T035 "temel durum önce", C019 derinlik sını
 değer/hata erişimi derleme hatası), metin kaçışları ve negatif sabitler,
 **uygulama eylemleri ve yöntemli web adaptörü** (`eylem`, GET/HEAD salt-okuma
 kanıtı, POST/PUT/PATCH/DELETE, 404/405/413/504, iç içe dosya savepoint'i),
-form/istek sözlüğü, çerezli eğitim demosu, yönlendirme, html güvenlisi ve
+**güvenli web profili** (Argon2id, 256 bit CSPRNG sunucu oturumu/rol,
+rotation/revoke/ömür, otomatik CSRF, `__Host-` çerez, HTTPS proxy Origin
+kapısı), form/istek sözlüğü, yönlendirme, html güvenlisi ve
 önekli rotalar, **metin cerrahisi** (parçala/birleştir/
 değiştir/kırp/harfler), **JSON/CSV yazma**, **Türk alfabesiyle sıralama**,
 **silme** ve **çıkış kodu** (`programı 2 ile bitir`), bölümden **kalan**,
@@ -70,12 +72,12 @@ iki katmanlı ek zinciri), **açık işlem parametre türleri**
 (`sayıyı Ondalık olarak al`) ve public **dönüş sözleşmesi**
 (`Ondalık döndürür` / `değer döndürmez`), **proje bildirimi** (`proje.dil`, klasörden
 çalıştır/denetle/dene), **yerel paketler** (`X paketini kullan`), süreçler
-arası kilitli **atomik dosya yazma** ve 134 Türkçe kodlu tanı.
-Araçlar: `dil çalıştır(--güvenli/--deneysel-web)/denetle(--json)/dene/biçimle/ekle/çıkar/kilitle/paketler/hata/belge/yeni`
+arası kilitli **atomik dosya yazma** ve 138 Türkçe kodlu tanı.
+Araçlar: `dil çalıştır(--güvenli/--deneysel-web/--web-proxy)/parola-özeti/denetle(--json)/dene/biçimle/ekle/çıkar/kilitle/paketler/hata/belge/yeni`
 + **dillsp** LSP sunucusu — tanılar, hover, tanıma git, **morfolojili
 yeniden adlandırma (F2)** ([editors/](editors/)).
 Determinizm testlerde tam: rastgelelik, saat, dosyalar, HTTP, sunucu istekleri,
-sensörler ve an ölçümü IO soyutlamasından gelir — 304 test hermetik koşar.
+sensörler ve an ölçümü IO soyutlamasından gelir — 321 test hermetik koşar.
 
 **Playground:** `playground/olustur.sh` derleyiciyi WebAssembly'e derler ve
 tek dosyalık `playground/zee-playground.html` üretir — çift tıkla aç, tarayıcıda
@@ -115,9 +117,9 @@ korpus üzerinde regression testine girer.
 | 33 golden program | [golden/](golden/) | ✅ tamamı regression testte; sözdizimi RFC'lerle geçici kabulde |
 | 11 anti-örnek | [anti-ornekler/](anti-ornekler/) | ✅ (A11: nokta-ondalık) |
 | Syntax karar günlüğü | [kararlar/gunluk.md](kararlar/gunluk.md) | ✅ işleniyor |
-| RFC süreci | [rfcs/](rfcs/) | ✅ 16 RFC: 2 kabul, 11 geçici kabul, 3 taslak |
+| RFC süreci | [rfcs/](rfcs/) | ✅ 17 RFC: 2 kabul, 13 geçici kabul, 2 taslak |
 | ADR süreci | [adr/](adr/) | ✅ 7 kabul (001-003, 007-010); 004/005/006 faz verisi bekliyor |
-| Hata kataloğu | [docs/hata-katalogu.md](docs/hata-katalogu.md) | ✅ 134 kod, kaynakla tutarlılığı testli |
+| Hata kataloğu | [docs/hata-katalogu.md](docs/hata-katalogu.md) | ✅ 138 kod, kaynakla tutarlılığı testli |
 | Spesifikasyon | [spec/](spec/) | ✅ başladı — normatif çekirdek (RFC'lere bağlar) |
 
 ### Golden korpus hakkında
@@ -136,14 +138,15 @@ korpus üzerinde regression testine girer.
 v0.3 sürüm notlarına bak). Şimdiki kapılar:
 
 - **Usability oturumları (kurucu):** K-016 çağrı sözdiziminin onayı ve
-  10 "geçici kabul" RFC'nin tam kabulü — kit hazır: docs/usability-kiti.md.
+  13 "geçici kabul" RFC'nin tam kabulü — kit hazır: docs/usability-kiti.md.
 - **Lisans (bölüm 26, kurucu):** seçilmeden depo herkese açılmaz; site ve
   topluluk (bölüm 30) bunun arkasında.
-- **Makine tarafı sıradaki:** K-081–K-087 ile normatif otorite, public işlem
-  sözleşmesi, atomik kalıcılık, gerçek son tarih iptali ve web'den bağımsız
-  uygulama eylemi kapandı. Kalan tek P0 odağı K-088 üretim güvenli oturum,
-  çerez, CSRF ve HTTPS/proxy sınırıdır. Uzak
-  registry, imza/provenance ve SBOM bundan sonra ayrı güvenlik RFC'leriyle.
+- **Makine tarafı sıradaki:** K-081–K-088 ile v1'in altı P0 kapısı kapandı:
+  normatif otorite, public işlem sözleşmesi, atomik kalıcılık, gerçek son
+  tarih iptali, uygulama eylemi ve production oturum/CSRF/proxy profili.
+  Sıradaki kanıt sırası P1'de morfoloji sürümlemesi, gerçek scheduler ve
+  yapılandırılmış hata değeridir. Uzak registry, imza/provenance ve SBOM
+  ayrı güvenlik RFC'leriyle ilerler.
   Bağlayıcı liste: [docs/v1-surum-kapilari.md](docs/v1-surum-kapilari.md).
 
 ## İlk gerçek milestone

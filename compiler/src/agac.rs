@@ -68,6 +68,15 @@ pub enum HttpYontemi {
     Delete,
 }
 
+/// Rota erişim sözleşmesi. Güvenli olmayan her rota bunu gövdesinin ilk
+/// cümlesinde açıklar; "public" olma da sessiz varsayım değildir (K-088).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum RotaErisimi {
+    HerkeseAcik,
+    Oturumlu,
+    Rol(String),
+}
+
 impl HttpYontemi {
     pub fn ayristir(yazim: &str) -> Option<Self> {
         match yazim {
@@ -237,6 +246,13 @@ pub enum Ifade {
     Govde(Box<Ifade>),
     /// `kapı açıksa` — IoT sensör okuması (golden 29, simülatör).
     SensorAcik { ad: String, olumsuz: bool },
+    /// `csrf belirteci` — sunucu tarafı oturuma bağlı form belirteci (K-088).
+    CsrfBelirteci,
+    /// `verilen parola_özeti ile doğrulanıyorsa` — Argon2id PHC doğrulaması.
+    ParolaDogrula {
+        parola: Box<Ifade>,
+        ozet: Box<Ifade>,
+    },
     /// `argümanlar boşsa` — liste/metin boş mu.
     BosMu { nesne: Box<Ifade>, olumsuz: bool },
     /// Genitif aritmetik (K-008): "a ile b nin toplamı", "x in y ye bölümü".
@@ -424,6 +440,18 @@ pub enum Cumle {
     Sil { kap: Ifade, deger: Ifade, satir: usize },
     /// `"oturum" çerezini sil` — tarayıcıya Max-Age=0 gönderilir (K-073).
     CerezSil { ad: Ifade, satir: usize },
+    /// `herkese açık` / `oturum gerekli` / `"rol" yetkisi gerekli`.
+    RotaPolitikasi { erisim: RotaErisimi, satir: usize },
+    /// `"alan" alanı gerekli` — eksik/boş form-sorgu değeri 400'dür.
+    RotaAlaniGerekli { ad: String, satir: usize },
+    /// `"Mustafa" kullanıcısını "yönetici" rolüyle oturuma al`.
+    OturumAc {
+        kullanici: Ifade,
+        rol: Ifade,
+        satir: usize,
+    },
+    /// `oturumu kapat` — sunucu kaydını iptal eder ve çerezi sonlandırır.
+    OturumKapat { satir: usize },
     /// `eşzamanlı olarak` bloğu: görev bağlamaları (RFC-0011).
     Eszamanli { gorevler: Vec<(String, Ifade, usize)>, satir: usize },
     /// `hepsini bekle` — görev sonuçları bundan sonra kullanılabilir.
