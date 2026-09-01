@@ -29,6 +29,9 @@ pub(super) struct Baglam {
     /// K-093: gezme boyunca biçimi sabit kalan kaynak listeler/sözlükler.
     /// Aynı kaynağı yeniden bağlama, ekleme, silme ve iç içe gezme T053'tür.
     pub(super) gezilen_koleksiyonlar: std::collections::HashSet<String>,
+    /// Checker'ın HIR lowering'e devrettiği ifade türü ve semantic bağları.
+    pub(super) hir_ifadeleri: HashMap<usize, crate::hir::HirIfadeBilgisi>,
+    hir_sembol_adlari: HashMap<SymbolId, String>,
 }
 
 impl Baglam {
@@ -67,7 +70,26 @@ impl Baglam {
             basarili_sonuclar: std::collections::HashSet::new(),
             basarisiz_sonuclar: std::collections::HashSet::new(),
             gezilen_koleksiyonlar: std::collections::HashSet::new(),
+            hir_ifadeleri: HashMap::new(),
+            hir_sembol_adlari: HashMap::new(),
         }
+    }
+
+    pub(super) fn hir_bilgisi(&self) -> crate::hir::HirOlusturmaBilgisi {
+        crate::hir::HirOlusturmaBilgisi {
+            ifadeler: self.hir_ifadeleri.clone(),
+            sembol_adlari: self.hir_sembol_adlari.clone(),
+            islem_adlari: self
+                .islem_kimlikleri
+                .iter()
+                .map(|(ad, kimlik)| (*kimlik, ad.clone()))
+                .collect(),
+            yapi_konumlari: self.yapi_konumlari.clone(),
+        }
+    }
+
+    pub(super) fn hir_sembol_adi_ekle(&mut self, kimlik: SymbolId, ad: String) {
+        self.hir_sembol_adlari.entry(kimlik).or_insert(ad);
     }
 
     pub(super) fn yapi_kimligi(&self, ad: &str) -> Option<YapiId> {

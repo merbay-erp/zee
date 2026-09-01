@@ -40,11 +40,12 @@ bu adaptörlere ancak checker başarısından sonra iner.
 
 ## Açık sınır
 
-Bugünkü checker ad çözümü ile tür denetimini aynı AST-mutasyon geçişinde yapar.
-`BaglanmisProgram`, typed HIR değildir ve öyle adlandırılmaz. Ayrı Resolution
-çıktısı, her düğümde açık tür/span taşıyan HIR ve runtime'ın yalnız HIR
-tüketmesi B-019/B-020 kapsamındadır. B-018'in sözü, mevcut gerçek fazların
-yanlış adlandırılmadan türlerde görünür olmasıdır.
+Checker ad çözümü ile tür denetimini aynı AST-mutasyon geçişinde yapar. Bu ADR
+anında `BaglanmisProgram` typed HIR değildi. K-103/ADR-016 sonradan her
+denetlenmiş ifadeye açık tür/ID bağı veren HIR çekirdeğini zorunlu sahip yaptı;
+runtime'ın yalnız HIR bağı tüketmesi B-019'un kalan dilimi, zorunlu span ise
+B-020'dir. B-018'in sözü mevcut gerçek fazların yanlış adlandırılmadan
+türlerde görünür olmasıdır.
 
 ## Değişmezler
 

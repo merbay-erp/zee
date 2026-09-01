@@ -1428,6 +1428,24 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   compile-fail. Dört yeni testle toplam 406 test yeşil; B-018 ve V1-P0-13
   kapandı.
 
+## K-103 — Checker kanıtını zorunlu typed HIR'a taşı (1 Eyl)
+
+- **Karar:** Başarılı checker geçişinin tür sonuçları geçici dönüş değeri
+  olarak kaybolmaz. Her denetlenmiş ifade program içi `HirDugumId`, açık
+  `Tur` ve varsa `SymbolId`/`IslemId`/`YapiId` bağıyla `HirProgram`a yazılır.
+- **Faz sahipliği:** `BaglanmisProgram` artık çıplak AST değil zorunlu HIR
+  sahibidir. Kaynak AST Türkçe tanı, formatter/LSP ve v0 Rust API uyumluluğu
+  için salt-okunur korunur; eski `into_program` yalnız HIR üretiminden sonra
+  faz bilgisini siler.
+- **Ömür:** Checker'daki AST adresi public kimlik değildir; yalnız aynı süreçte
+  HIR kaydını bulmak için private locator'dır. Public semantic düğüm kimliği
+  `HirDugumId`dir; kutulu program yer değiştirmez ve bağlı program klonlanmaz.
+- **Dürüst sınır:** Runtime henüz bütün semantic kararlarını HIR bağından
+  almıyor. B-019/V1-P0-14 bu geçiş tamamlanana kadar KISMEN'dir; zorunlu
+  source span B-020'dir. Zee kaynak semantiği ve normatif spec değişmedi.
+- **Kanıt:** ADR-016, typed HIR rehberi; ifade türü+SymbolId, işlem/yapı ID
+  dizini ve HIR'sız bağlı programı reddeden üç yeni test. Toplam 409 test.
+
 ---
 
 ## Sonraki adım

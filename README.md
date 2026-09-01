@@ -85,7 +85,7 @@ Araçlar: `dil çalıştır(--güvenli/--deneysel-web/--web-proxy)/parola-özeti
 + **dillsp** LSP sunucusu — tanılar, hover, tanıma git, **morfolojili
 yeniden adlandırma (F2)** ([editors/](editors/)).
 Determinizm testlerde tam: rastgelelik, saat, dosyalar, HTTP, sunucu istekleri,
-sensörler ve an ölçümü IO soyutlamasından gelir — 406 test hermetik koşar.
+sensörler ve an ölçümü IO soyutlamasından gelir — 409 test hermetik koşar.
 
 **Playground:** `playground/olustur.sh` derleyiciyi WebAssembly'e derler ve
 tek dosyalık `playground/zee-playground.html` üretir — çift tıkla aç, tarayıcıda
@@ -126,7 +126,7 @@ korpus üzerinde regression testine girer.
 | 11 anti-örnek | [anti-ornekler/](anti-ornekler/) | ✅ (A11: nokta-ondalık) |
 | Syntax karar günlüğü | [kararlar/gunluk.md](kararlar/gunluk.md) | ✅ işleniyor |
 | RFC süreci | [rfcs/](rfcs/) | ✅ 21 RFC: 2 kabul, 17 geçici kabul, 2 taslak |
-| ADR süreci | [adr/](adr/) | ✅ 13 kabul (001-003, 006-015); 004/005 faz verisi bekliyor |
+| ADR süreci | [adr/](adr/) | ✅ 14 kabul (001-003, 006-016); 004/005 faz verisi bekliyor |
 | Hata kataloğu | [docs/hata-katalogu.md](docs/hata-katalogu.md) | ✅ 144 etkin kod + 1 ayrılmış kod, kaynakla tutarlılığı testli |
 | Spesifikasyon | [spec/](spec/) | ✅ başladı — normatif çekirdek (RFC'lere bağlar) |
 
@@ -184,8 +184,11 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   indeks/adlardan ayıran `YapiId`/`IslemId`/`SymbolId`
   [semantic kimlik modelini](docs/semantic-kimlik-modeli.md) kurdu.
   K-102/ADR-015 kaynak, token, parsed AST, bağlanmamış ve bağlanmış programı
-  ayrı [faz tiplerine](docs/derleyici-faz-modeli.md) taşıdı. Uygulama
-  sırası [öncelikli backlog](docs/oncelikli-backlog.md) ile sabittir.
+  ayrı [faz tiplerine](docs/derleyici-faz-modeli.md) taşıdı. K-103/ADR-016
+  checker'ın ifade türleri ile sembol/işlem/yapı bağlarını zorunlu
+  [typed HIR çekirdeğine](docs/typed-hir-modeli.md) indirdi; B-019'un runtime
+  tüketimi dilimi sürüyor. Uygulama sırası
+  [öncelikli backlog](docs/oncelikli-backlog.md) ile sabittir.
   Bağlayıcı liste: [docs/v1-surum-kapilari.md](docs/v1-surum-kapilari.md).
 
 ## İlk gerçek milestone

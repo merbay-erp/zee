@@ -12,7 +12,7 @@ için [checker katmanları](checker-katmanlari.md) birlikte okunur.
 | `TokenAkisi` | konumlu lexer tokenları | `ayristir(...)` veya kurtarmalı parser |
 | `AyristirilmisAst` | hoist/çözüm görmemiş `Cumle` ağacı | birim/paket çözümü + hoist |
 | `BaglanmamisProgram` | cümle, işlem, yapı ve test koleksiyonu | checker `denetle()` geçişi |
-| `BaglanmisProgram` | ad/ID bağları ve tür denetimi tamam AST | interpreter veya bilinçli eski-API adaptörü |
+| `BaglanmisProgram` | checker kanıtlı AST + zorunlu typed HIR | HIR tüketen interpreter veya bilinçli eski-API adaptörü |
 
 ```text
 source ──lexer──> tokens ──parser──> parsed AST ──hoist──> unbound program
@@ -33,18 +33,19 @@ dayanmaz.
 `BaglanmisProgram::program()` immutable görünüm verir. `into_program()` faz
 bilgisini bilinçli silen sınırdır; checker öncesi çağrılamaz.
 
-## Bilinçli boşluk: HIR
+## K-103 sonrası HIR geçişi
 
-`BaglanmisProgram` hâlâ kaynak AST'sidir. Değişken düğümü hem kaynak adını hem
-`SymbolId`yi, çağrı/yapı düğümü hem adı hem ID'yi taşır. Bu geçiş biçimi
-B-019'daki typed HIR değildir. Hedef hat şöyledir:
+`BaglanmisProgram` artık ADR-016'daki `HirProgram`ı zorunlu taşır. Her
+denetlenmiş ifade `HirDugumId`, açık tür ve varsa semantic ID bağına sahiptir;
+kaynak AST tanı ve v0 uyumluluğu için salt-okunur korunur. Hedef hat şöyledir:
 
 ```text
 Parsed AST → Resolution sonucu → Typed HIR → Execution/Lowering
 ```
 
-B-019 açık tür ve yalnız ID taşıyan HIR'ı; B-020 her semantic düğümde zorunlu
-source span'i kurmadan runtime kaynak AST'den kopmuş sayılmaz.
+B-019'un kalan dilimi standart runtime'ın değişken/işlem/yapı kararını yalnız
+bu HIR bağından almasıdır. B-020 her semantic düğümde zorunlu source span'i
+kuracaktır. Ayrıntı [typed HIR rehberindedir](typed-hir-modeli.md).
 
 ## Kanıt ve büyüme kuralı
 

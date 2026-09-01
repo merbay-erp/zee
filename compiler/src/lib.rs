@@ -16,6 +16,7 @@ pub mod wasm_api;
 pub mod cozumleyici;
 pub mod faz;
 pub mod guvenlik;
+pub mod hir;
 pub mod intrinsic;
 pub mod kimlik;
 pub mod sozcukleyici;

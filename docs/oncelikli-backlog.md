@@ -13,8 +13,9 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 1. Tamamlanan önkoşul: K-095 registry metadata güveni (378 test).
 2. İnsan kanıtı bekleyen kapılar: B-001/K-096 + B-002/K-093.
 3. Tamamlanan compiler omurgası: B-003/K-097, B-004/K-098, B-005/K-099,
-   B-006/K-100, B-010/K-101 ve B-018/K-102 (406 test).
-4. Sıradaki makine işi: B-019; ardından B-020 → B-014–B-017.
+   B-006/K-100, B-010/K-101 ve B-018/K-102; B-019'un K-103 HIR çekirdeği
+   (409 test).
+4. Sıradaki makine işi: B-019 runtime tüketimi; ardından B-020 → B-014–B-017.
 5. Üçüncü sprint: B-027/B-028 → B-030/B-031 → B-043/B-044.
 6. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
 
@@ -100,8 +101,13 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   [faz rehberi](derleyici-faz-modeli.md), iki davranış, bir mimari ve bir
   compile-fail testi V1-P0-13'ü kapattı. Resolution+tür bugün birleşik checker
   geçişidir; ayrı Typed HIR B-019 olarak açık kalır.
-- **B-019 · SIRADA — typed HIR tasarla.** Runtime kaynak belirsizliği yerine
-  açık SymbolId ve tür taşıyan gösterimi tüketmelidir.
+- **B-019 · KISMEN (K-103 çekirdek) — typed HIR tasarla.** Başarılı checker
+  artık her denetlenmiş ifade için `HirDugumId`, açık `Tur` ve varsa
+  `SymbolId`/`IslemId`/`YapiId` bağı üretir; `BaglanmisProgram` zorunlu
+  `HirProgram` sahibidir. ADR-016, [HIR rehberi](typed-hir-modeli.md), iki
+  davranış ve bir mimari testle üretim/faz sahipliği kanıtlandı. Kapanış için
+  standart runtime değişken, işlem ve yapı kararlarını kaynak AST adından
+  değil yalnız HIR bağından almalıdır.
 - **B-020 · SIRADA — her semantic node'da source span garanti et.** `Node<T>`
   ya da eşdeğeri spansiz düğümü yapısal olarak zorlaştırmalıdır.
 - **B-021 · AÇIK — LSP odaklı error recovery planı.** Cümle sınırı ve girinti
@@ -171,6 +177,6 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 ## Bir sonraki somut kapı
 
 İnsan kanıtı hattında B-001, doldurulmuş gerçek usability formları ve önceden
-ilan edilmiş eşikleri bekler. Makine hattında sıradaki iş B-019 typed HIR'dır;
-B-018'in bağlı AST'sini açık SymbolId/tür taşıyan, runtime'ın kaynak
-belirsizliğiyle karşılaşmadığı ayrı temsile dönüştürmelidir.
+ilan edilmiş eşikleri bekler. Makine hattında sıradaki iş B-019'un runtime
+tüketim dilimidir; K-103'te üretilen açık tür/ID HIR kayıtları değişken,
+işlem ve yapı kararlarının tek standard-hat kaynağı olmalıdır.
