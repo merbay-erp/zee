@@ -85,7 +85,7 @@ Araçlar: `dil çalıştır(--güvenli/--deneysel-web/--web-proxy)/parola-özeti
 + **dillsp** LSP sunucusu — tanılar, hover, tanıma git, **morfolojili
 yeniden adlandırma (F2)** ([editors/](editors/)).
 Determinizm testlerde tam: rastgelelik, saat, dosyalar, HTTP, sunucu istekleri,
-sensörler ve an ölçümü IO soyutlamasından gelir — 409 test hermetik koşar.
+sensörler ve an ölçümü IO soyutlamasından gelir — 413 test hermetik koşar.
 
 **Playground:** `playground/olustur.sh` derleyiciyi WebAssembly'e derler ve
 tek dosyalık `playground/zee-playground.html` üretir — çift tıkla aç, tarayıcıda
@@ -184,10 +184,10 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   indeks/adlardan ayıran `YapiId`/`IslemId`/`SymbolId`
   [semantic kimlik modelini](docs/semantic-kimlik-modeli.md) kurdu.
   K-102/ADR-015 kaynak, token, parsed AST, bağlanmamış ve bağlanmış programı
-  ayrı [faz tiplerine](docs/derleyici-faz-modeli.md) taşıdı. K-103/ADR-016
+  ayrı [faz tiplerine](docs/derleyici-faz-modeli.md) taşıdı. K-103/K-104 ve ADR-016
   checker'ın ifade türleri ile sembol/işlem/yapı bağlarını zorunlu
-  [typed HIR çekirdeğine](docs/typed-hir-modeli.md) indirdi; B-019'un runtime
-  tüketimi dilimi sürüyor. Uygulama sırası
+  [typed HIR'a](docs/typed-hir-modeli.md) indirdi; standart runtime ve `dene`
+  hattı semantic kararlarını yalnız bu bağlardan alır. Uygulama sırası
   [öncelikli backlog](docs/oncelikli-backlog.md) ile sabittir.
   Bağlayıcı liste: [docs/v1-surum-kapilari.md](docs/v1-surum-kapilari.md).
 

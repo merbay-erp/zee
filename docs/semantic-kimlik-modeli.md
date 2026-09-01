@@ -27,15 +27,15 @@ Bound AST
        ▼
 Typed HIR çekirdeği
   HirDugumId + açık kimlik + tür
-       │ B-019 kalan dilim / B-020
+       │ K-104 / B-020
        ▼
 HIR-bağlı runtime + zorunlu source span
 ```
 
 K-102/B-018 aşamaları ayrı faz tiplerinde görünür yaptı; K-103 her denetlenmiş
-ifadenin türünü ve semantic bağını ayrı HIR kaydına taşıdı. Kaynak adı kaliteli
-Türkçe tanı ve v0 uyumluluğu için korunur. B-019 tamamlandığında standart
-runtime kaynak adıyla semantic karar vermemelidir.
+ifadenin türünü ve semantic bağını ayrı HIR kaydına taşıdı. K-104 standart
+runtime ve `dene` hattını bu bağlara geçirdi. Kaynak adı kaliteli Türkçe tanı
+ve v0 uyumluluğu için korunur; bağlı runtime kaynak adıyla semantic karar vermez.
 
 ## Yeni kod için kurallar
 

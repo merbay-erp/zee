@@ -10,6 +10,9 @@ use crate::agac::{Ifade, Islem, Program, Yapi};
 use crate::cozumleyici::Tur;
 use crate::kimlik::{IslemId, SymbolId, YapiId};
 
+#[cfg(test)]
+mod testler;
+
 /// Bir ifadenin kaynak yazımından bağımsız semantic bağı.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum HirBagi {
@@ -17,6 +20,15 @@ pub enum HirBagi {
     Sembol(SymbolId),
     Islem(IslemId),
     Yapi(YapiId),
+}
+
+/// Bir HIR ifadesinin değer üretme sözleşmesi. Çağrı cümlesi gibi ifadeler
+/// semantic düğümdür ama değer konumunda değildir; bu durum tür eksikliği
+/// yerine açık `DegerDondurmez` olarak taşınır.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum HirIfadeTuru {
+    Deger(Tur),
+    DegerDondurmez,
 }
 
 /// Bir HIR programı içindeki semantic ifade düğümünün kararlı kimliği.
@@ -38,12 +50,16 @@ impl HirDugumId {
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct HirIfadeBilgisi {
     kimlik: HirDugumId,
-    tur: Tur,
+    tur: HirIfadeTuru,
     bag: HirBagi,
 }
 
 impl HirIfadeBilgisi {
-    pub(crate) const fn yeni(kimlik: HirDugumId, tur: Tur, bag: HirBagi) -> Self {
+    pub(crate) const fn yeni_turle(
+        kimlik: HirDugumId,
+        tur: HirIfadeTuru,
+        bag: HirBagi,
+    ) -> Self {
         Self { kimlik, tur, bag }
     }
 
@@ -51,7 +67,7 @@ impl HirIfadeBilgisi {
         self.kimlik
     }
 
-    pub const fn tur(self) -> Tur {
+    pub const fn tur(self) -> HirIfadeTuru {
         self.tur
     }
 
@@ -116,6 +132,11 @@ impl HirProgram {
 
     pub(crate) fn into_program(self) -> Program {
         *self.program
+    }
+
+    #[cfg(test)]
+    pub(crate) fn program_mut(&mut self) -> &mut Program {
+        &mut self.program
     }
 }
 

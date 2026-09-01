@@ -2,7 +2,7 @@
 
 use dil::agac::{Cumle, Ifade};
 use dil::cozumleyici::Tur;
-use dil::hir::HirBagi;
+use dil::hir::{HirBagi, HirIfadeTuru};
 use dil::kaynagi_fazli_derle;
 
 #[test]
@@ -23,7 +23,7 @@ fn hir_ifade_turunu_ve_symbol_id_bagini_ast_disinda_tasir() {
         .hir()
         .ifade_bilgisi(deger)
         .expect("her denetlenmiş ifade HIR bilgisi taşımalı");
-    assert_eq!(bilgi.tur(), Tur::TamSayi);
+    assert_eq!(bilgi.tur(), HirIfadeTuru::Deger(Tur::TamSayi));
     assert_eq!(bilgi.kimlik().sirasi(), 1);
     assert_eq!(bilgi.bag(), HirBagi::Sembol(*ast_kimligi));
     assert_eq!(program.hir().sembol_adi(*ast_kimligi), Some("sayı"));
@@ -82,4 +82,24 @@ sonuç bir ver olsun
         program.hir().islem(*islem_kimligi).map(|i| i.ad.as_str()),
         Some("bir ver")
     );
+}
+
+#[test]
+fn deger_dondurmeyen_cagri_cumlesi_hirda_acik_tur_tasir() {
+    let kaynak = r#"
+işlem selamla
+    "merhaba" yaz
+
+selamla
+"#;
+    let program = kaynagi_fazli_derle(kaynak).expect("HIR üretilmeli");
+    let Cumle::CagriCumlesi { cagri, .. } = &program.cumleler[0] else {
+        panic!("çağrı cümlesi bekleniyordu")
+    };
+    let bilgi = program
+        .hir()
+        .ifade_bilgisi(cagri)
+        .expect("dönüşsüz çağrı da semantic HIR düğümüdür");
+    assert_eq!(bilgi.tur(), HirIfadeTuru::DegerDondurmez);
+    assert!(matches!(bilgi.bag(), HirBagi::Islem(_)));
 }

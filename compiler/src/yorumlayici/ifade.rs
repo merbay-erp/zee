@@ -3,7 +3,7 @@ use super::*;
 pub(super) fn degerlendir_async<'a>(
     ifade: &'a Ifade,
     ortam: &'a HashMap<String, Deger>,
-    program: &'a Program,
+    program: CalistirmaProgrami<'a>,
     io: &'a mut dyn GirdiCikti,
     derinlik: usize,
     satir: usize,
@@ -323,9 +323,7 @@ pub(super) fn degerlendir_async<'a>(
         }
         Ifade::YeniYapi { yapi_adi, .. } => {
             let yapi = program
-                .yapilar
-                .iter()
-                .find(|y| y.ad == *yapi_adi)
+                .yapi(ifade, yapi_adi)
                 .ok_or_else(|| ic_hata(satir))?;
             let alanlar = yapi
                 .alanlar
@@ -505,9 +503,11 @@ pub(super) fn degerlendir_async<'a>(
             Ok(Deger::TamSayi(deger))
         }
         Ifade::Degisken { cozulmus, ham, .. } => {
-            let ad = cozulmus.as_ref().ok_or_else(|| ic_hata(satir))?;
+            let ad = program
+                .sembol_adi(ifade, cozulmus.as_deref())
+                .ok_or_else(|| ic_hata(satir))?;
             ortam
-                .get(ad)
+                .get(&ad)
                 .cloned()
                 .ok_or_else(|| {
                     Tani::yeni("C001", format!("\"{}\" için değer bulunamadı.", ham), satir, 1, 1)
@@ -592,7 +592,7 @@ pub(super) fn degerlendir_async<'a>(
             for arg in argumanlar {
                 degerler.push(degerlendir_async(arg, ortam, program, io, derinlik, satir).await?);
             }
-            islem_cagir(islem_adi, degerler, program, io, derinlik + 1, satir).await?
+            islem_cagir(ifade, islem_adi, degerler, program, io, derinlik + 1, satir).await?
                 .ok_or_else(|| ic_hata(satir))
         }
         Ifade::SayiyiDene(ic) => {

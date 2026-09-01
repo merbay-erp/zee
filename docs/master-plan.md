@@ -557,8 +557,8 @@ sağlamlaştıran bağlayıcı uygulama sırası
 çağrı usability kararı, K-093 gezme usability sonucu, genellenebilir expression
 grammar mimarisi ve core AST→capability/intrinsic ayrımıdır. HIR/SymbolId/faz
 zincirinin SymbolId temeli K-101, açık faz tipleri K-102 ile tamamlandı; K-103
-typed HIR tür/bağ çekirdeğini kurdu. Runtime HIR tüketimi, fuzz/panic audit'i
-ve IO trace/replay bunu izler. P0 maddeleri
+typed HIR tür/bağ çekirdeğini kurdu, K-104 standart runtime'ı bu bağlara
+geçirdi. Source span, fuzz/panic audit'i ve IO trace/replay bunu izler. P0 maddeleri
 kapanmadan yeni dil özelliği varsayılan olarak öne alınmaz; yarım güvenlik/
 correctness dilimi önce atomik olarak tamamlanır.
 
@@ -586,9 +586,9 @@ omurga B-010, K-101/ADR-014 ile tamamlandı: `YapiId`, `IslemId` ve `SymbolId`
 kaynak adı, semantic identity ve fiziksel depolamayı ayırır; AST checker
 sonrası açık bağları taşır. Kaynak, token, parsed AST, bağlanmamış ve
 bağlanmış programı ayrı türlere taşıyan B-018, K-102/ADR-015 ile tamamlandı;
-standart runtime yalnız bağlı giriş kullanır. B-019'un K-103/ADR-016 dilimi
-checker türleri ve ID bağlarını zorunlu HIR'a taşıdı; sıradaki iş runtime'ın
-bu bağları tek semantic karar kaynağı yapmasıdır.
+standart runtime yalnız bağlı giriş kullanır. B-019, K-103/K-104/ADR-016 ile
+checker türleri ve ID bağlarını zorunlu HIR'a taşıdı; runtime ve `dene` bu
+bağları tek semantic karar kaynağı yapar. Sıradaki omurga B-020 source span'dir.
 # 40. Proje felsefesinin korunması
 Bu projenin başarısı yalnız compiler’ın çalışması değildir. Başarı; Türkçe konuşan bir çocuğun yabancı syntax bariyerine takılmadan algoritmik düşünceyle tanışması, aynı dilin yıllar sonra onu terk etmeye zorlamaması ve ekosistemin tek bir şirketin kapalı ürünü haline gelmemesidir.
 Her yeni özellik şu dört sorudan geçmelidir: Türkçe doğal mı? Deterministik mi? Öğrenilebilir mi? Profesyonel ölçekte savunulabilir mi? Dördünden biri hayırsa özellik yeniden tasarlanır.

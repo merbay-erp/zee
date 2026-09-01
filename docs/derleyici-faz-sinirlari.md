@@ -79,3 +79,6 @@ gibi kullanılmasını engeller.
 K-103/ADR-016 checker'ın tür ve semantic bağ çıktısını
 [typed HIR çekirdeğine](typed-hir-modeli.md) taşıdı; `hir.rs` ayrı 180 satır
 bütçesine sahiptir ve bağlı programın HIR'sız kurulması mimari testte durur.
+K-104 HIR/raw uyumluluk ayrımını `yorumlayici/hir_gecisi.rs` sahibine taşıdı;
+140 satır bütçesi ve standard-hat testi runtime kökünün yeniden şişmesini ya
+da bağlı yürütmenin kaynak adına geri düşmesini engeller.

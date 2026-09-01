@@ -466,10 +466,23 @@ pub fn programi_dene(program: &Program) -> Vec<TestSonucu> {
         .collect()
 }
 
+/// Faz bilgisini koruyan programın testlerini typed HIR bağlarıyla koşar.
+pub fn programi_dene_baglanmis(program: &BaglanmisProgram) -> Vec<TestSonucu> {
+    program
+        .testler
+        .iter()
+        .map(|test| {
+            let mut io = yorumlayici::ToplayanIo::yeni(Vec::new());
+            let hata = yorumlayici::test_calistir_baglanmis(program, test, &mut io).err();
+            TestSonucu { ad: test.ad.clone(), hata }
+        })
+        .collect()
+}
+
 /// Kaynağı derleyip testlerini koşar.
 pub fn kaynagi_dene(kaynak: &str) -> Result<Vec<TestSonucu>, Tani> {
     let program = kaynagi_fazli_derle(kaynak)?;
-    Ok(programi_dene(program.program()))
+    Ok(programi_dene_baglanmis(&program))
 }
 
 /// TÜM tanıları toplar (RFC-0010 §3.1): sözcükleme ilk hatada durur (nadir);

@@ -18,7 +18,7 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-013 | [Checker semantik katmanları](013-checker-katmanlari.md) | **kabul** (K-100/B-006) |
 | ADR-014 | [Semantic kimlikler](014-semantic-kimlikler.md) | **kabul** (K-101/B-010) |
 | ADR-015 | [Derleyici faz tipleri](015-derleyici-faz-tipleri.md) | **kabul** (K-102/B-018) |
-| ADR-016 | [Typed HIR çekirdeği](016-typed-hir-cekirdegi.md) | **kabul** (K-103/B-019 ilk dilim) |
+| ADR-016 | [Typed HIR çekirdeği](016-typed-hir-cekirdegi.md) | **kabul** (K-103/K-104/B-019) |
 | ADR-004 | Bellek yönetimi prototip kararı (GC / ARC benchmark) | bekliyor |
 | ADR-005 | Native backend seçimi (Cranelift / LLVM) | bekliyor — Faz 4 |
 | ADR-007 | [Telemetri ve gizlilik: araçlar veri toplamaz](007-telemetri-ve-gizlilik.md) | **kabul** |

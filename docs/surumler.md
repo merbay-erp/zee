@@ -217,8 +217,14 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   `HirIfadeBilgisi` kaydına taşındı; `HirDugumId` program içi semantic düğüm
   kimliğidir. `BaglanmisProgram` artık zorunlu `HirProgram` sahibidir; AST
   tanı ve v0 uyumluluğu için salt-okunur kalır. İki davranış ve bir mimari
-  testle toplam 409 test yeşildir. B-019/V1-P0-14, standart runtime HIR
-  bağlarını tek karar kaynağı yaptığında kapanacaktır.
+  testle toplam 409 test yeşildir. K-104 ardılı runtime geçişini tamamladı.
+- **HIR-bağlı standart runtime** (K-104, ADR-016): `calistir_baglanmis[_io]`
+  ve kaynak test hattı `CalistirmaProgrami::Hir` kullanır. Değişken erişimi/
+  güncellemesi, işlem çağrısı ve yapı oluşturma yalnız `HirBagi` ile çözülür;
+  HIR kolu kaynak adına geri düşmez. Eşzamanlı görev özgün ifade düğümünü
+  ödünç alır. Kaynak adlarını bilerek bozan iki regresyon ve standard-hat
+  mimari testi ve dönüşsüz çağrı HIR kanıtıyla toplam 413 test yeşildir;
+  B-019/V1-P0-14 kapandı.
 
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`

@@ -13,9 +13,8 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 1. Tamamlanan önkoşul: K-095 registry metadata güveni (378 test).
 2. İnsan kanıtı bekleyen kapılar: B-001/K-096 + B-002/K-093.
 3. Tamamlanan compiler omurgası: B-003/K-097, B-004/K-098, B-005/K-099,
-   B-006/K-100, B-010/K-101 ve B-018/K-102; B-019'un K-103 HIR çekirdeği
-   (409 test).
-4. Sıradaki makine işi: B-019 runtime tüketimi; ardından B-020 → B-014–B-017.
+   B-006/K-100, B-010/K-101, B-018/K-102 ve B-019/K-103–K-104 (413 test).
+4. Sıradaki makine işi: B-020; ardından B-014–B-017.
 5. Üçüncü sprint: B-027/B-028 → B-030/B-031 → B-043/B-044.
 6. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
 
@@ -70,8 +69,8 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   özyineleme yığını `IslemId`, sembol tablosu ad→(`SymbolId`, tür) kullanır.
   Checker `Degisken`/`YeniYapi`/`IslemCagrisi` bağlarını AST'ye yazar. ADR-014,
   [rehber](semantic-kimlik-modeli.md), üç davranış ve bir mimari testle
-  V1-P0-12 kapandı. Faz tipleri B-018/K-102 ile tamamlandı; runtime'ın yalnız
-  ID/HIR tüketmesi B-019'dur.
+  V1-P0-12 kapandı. Faz tipleri B-018/K-102, typed HIR ve bağlı runtime tüketimi
+  B-019/K-103–K-104 ile tamamlandı.
 - **B-011 · KISMEN — gözlenebilir concurrency determinizmini V1 garantisi yap.**
   spec/14 tek-thread semantiği tanımlar; gelecekte multicore yürütmenin gözlenen
   sıra/sonucu değiştiremeyeceği açık compatibility sözüne bağlanmalıdır.
@@ -100,14 +99,16 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   programdan geçer; raw `Program` yüzeyi v0 embedding adaptörüdür. ADR-015,
   [faz rehberi](derleyici-faz-modeli.md), iki davranış, bir mimari ve bir
   compile-fail testi V1-P0-13'ü kapattı. Resolution+tür bugün birleşik checker
-  geçişidir; ayrı Typed HIR B-019 olarak açık kalır.
-- **B-019 · KISMEN (K-103 çekirdek) — typed HIR tasarla.** Başarılı checker
+  geçişidir; Typed HIR B-019/K-103–K-104 ile sonradan tamamlandı.
+- **B-019 · KAPALI (K-103/K-104) — typed HIR tasarla.** Başarılı checker
   artık her denetlenmiş ifade için `HirDugumId`, açık `Tur` ve varsa
   `SymbolId`/`IslemId`/`YapiId` bağı üretir; `BaglanmisProgram` zorunlu
   `HirProgram` sahibidir. ADR-016, [HIR rehberi](typed-hir-modeli.md), iki
-  davranış ve bir mimari testle üretim/faz sahipliği kanıtlandı. Kapanış için
-  standart runtime değişken, işlem ve yapı kararlarını kaynak AST adından
-  değil yalnız HIR bağından almalıdır.
+  üretim davranışı, iki kaynak-adı bozma regresyonu ve iki mimari testle faz
+  sahipliği kanıtlandı. Standart çalıştırma ve `dene` hattı
+  `CalistirmaProgrami::Hir` kullanır; değişken, işlem ve yapı kararları kaynak
+  AST adından değil yalnız `HirBagi`ndan gelir. Raw `Program` yolu v0 embedding
+  uyumluluğudur. V1-P0-14 kapandı.
 - **B-020 · SIRADA — her semantic node'da source span garanti et.** `Node<T>`
   ya da eşdeğeri spansiz düğümü yapısal olarak zorlaştırmalıdır.
 - **B-021 · AÇIK — LSP odaklı error recovery planı.** Cümle sınırı ve girinti
@@ -177,6 +178,6 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 ## Bir sonraki somut kapı
 
 İnsan kanıtı hattında B-001, doldurulmuş gerçek usability formları ve önceden
-ilan edilmiş eşikleri bekler. Makine hattında sıradaki iş B-019'un runtime
-tüketim dilimidir; K-103'te üretilen açık tür/ID HIR kayıtları değişken,
-işlem ve yapı kararlarının tek standard-hat kaynağı olmalıdır.
+ilan edilmiş eşikleri bekler. Makine hattında sıradaki iş B-020'dir: K-103/
+K-104 HIR'ındaki her semantic düğüme source span'i yapısal olarak zorunlu
+kılmalıdır.

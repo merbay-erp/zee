@@ -3,7 +3,7 @@ use super::*;
 pub(super) fn blok_calistir_async<'a>(
     cumleler: &'a [Cumle],
     ortam: &'a mut HashMap<String, Deger>,
-    program: &'a Program,
+    program: CalistirmaProgrami<'a>,
     cikti: &'a mut dyn GirdiCikti,
     derinlik: usize,
 ) -> Pin<Box<dyn Future<Output = Result<Akis, Tani>> + 'a>> {
@@ -111,10 +111,13 @@ pub(super) fn blok_calistir_async<'a>(
                 }
             }
             Cumle::Ekle { hedef, deger, satir } => {
-                let ad = match hedef {
-                    Ifade::Degisken { cozulmus: Some(ad), .. } => ad.clone(),
-                    _ => return Err(ic_hata(*satir)),
+                let ham_ad = match hedef {
+                    Ifade::Degisken { cozulmus, .. } => cozulmus.as_deref(),
+                    _ => None,
                 };
+                let ad = program
+                    .sembol_adi(hedef, ham_ad)
+                    .ok_or_else(|| ic_hata(*satir))?;
                 let deger = degerlendir_async(deger, ortam, program, cikti, derinlik, *satir).await?;
                 match ortam.get_mut(&ad) {
                     Some(Deger::Liste(ogeler)) => ogeler.push(deger),
@@ -122,10 +125,13 @@ pub(super) fn blok_calistir_async<'a>(
                 }
             }
             Cumle::Sil { kap, deger, satir } => {
-                let ad = match kap {
-                    Ifade::Degisken { cozulmus: Some(ad), .. } => ad.clone(),
-                    _ => return Err(ic_hata(*satir)),
+                let ham_ad = match kap {
+                    Ifade::Degisken { cozulmus, .. } => cozulmus.as_deref(),
+                    _ => None,
                 };
+                let ad = program
+                    .sembol_adi(kap, ham_ad)
+                    .ok_or_else(|| ic_hata(*satir))?;
                 let aranan = degerlendir_async(deger, ortam, program, cikti, derinlik, *satir).await?;
                 match ortam.get_mut(&ad) {
                     Some(Deger::Liste(ogeler)) => {
@@ -155,7 +161,9 @@ pub(super) fn blok_calistir_async<'a>(
                 // K-093: kaynak listeyse döngü adı değer-sonuç imlecidir;
                 // alan yazma ve yeniden bağlama aynı sıraya GERİ YAZILIR.
                 let kaynak_adi = match kaynak {
-                    Ifade::Degisken { cozulmus: Some(kaynak_adi), .. } => Some(kaynak_adi.clone()),
+                    Ifade::Degisken { cozulmus, .. } => {
+                        program.sembol_adi(kaynak, cozulmus.as_deref())
+                    }
                     _ => None,
                 };
                 let liste_mi = matches!(
@@ -293,7 +301,7 @@ pub(super) fn blok_calistir_async<'a>(
                         .iter()
                         .map(|(ad, ifade, gorev_satiri)| BekleyenGorev {
                             ad: ad.clone(),
-                            ifade: ifade.clone(),
+                            ifade,
                             satir: *gorev_satiri,
                             ortam: baslangic_ortami.clone(),
                         })
@@ -424,10 +432,13 @@ pub(super) fn blok_calistir_async<'a>(
                 }
             }
             Cumle::AlanAta { nesne, alan, deger, satir } => {
-                let ad = match nesne {
-                    Ifade::Degisken { cozulmus: Some(ad), .. } => ad.clone(),
-                    _ => return Err(ic_hata(*satir)),
+                let ham_ad = match nesne {
+                    Ifade::Degisken { cozulmus, .. } => cozulmus.as_deref(),
+                    _ => None,
                 };
+                let ad = program
+                    .sembol_adi(nesne, ham_ad)
+                    .ok_or_else(|| ic_hata(*satir))?;
                 let deger = degerlendir_async(deger, ortam, program, cikti, derinlik, *satir).await?;
                 match ortam.get_mut(&ad) {
                     Some(Deger::Yapi(alanlar)) => {
@@ -503,7 +514,7 @@ pub(super) fn blok_calistir_async<'a>(
                     for arg in argumanlar {
                         degerler.push(degerlendir_async(arg, ortam, program, cikti, derinlik, *satir).await?);
                     }
-                    islem_cagir(islem_adi, degerler, program, cikti, derinlik + 1, *satir).await?;
+                    islem_cagir(cagri, islem_adi, degerler, program, cikti, derinlik + 1, *satir).await?;
                 } else {
                     return Err(ic_hata(*satir));
                 }
@@ -519,10 +530,13 @@ pub(super) fn blok_calistir_async<'a>(
                 })?;
             }
             Cumle::SozlukAta { sozluk, anahtar, deger, satir } => {
-                let ad = match sozluk {
-                    Ifade::Degisken { cozulmus: Some(ad), .. } => ad.clone(),
-                    _ => return Err(ic_hata(*satir)),
+                let ham_ad = match sozluk {
+                    Ifade::Degisken { cozulmus, .. } => cozulmus.as_deref(),
+                    _ => None,
                 };
+                let ad = program
+                    .sembol_adi(sozluk, ham_ad)
+                    .ok_or_else(|| ic_hata(*satir))?;
                 let anahtar = match degerlendir_async(anahtar, ortam, program, cikti, derinlik, *satir).await? {
                     Deger::Metin(m) => m,
                     _ => return Err(ic_hata(*satir)),

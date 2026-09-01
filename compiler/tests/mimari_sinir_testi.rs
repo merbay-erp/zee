@@ -67,6 +67,7 @@ fn handler_modulleri_yeni_domain_icin_sinir_tasir() {
         ("src/hir.rs", 180),
         ("src/yorumlayici/cumle.rs", 600),
         ("src/yorumlayici/ifade.rs", 730),
+        ("src/yorumlayici/hir_gecisi.rs", 140),
     ] {
         satir_butcesini_denetle(goreli, butce);
     }
@@ -153,4 +154,16 @@ fn baglanmis_program_typed_hir_olmadan_uretilemez() {
     ] {
         assert!(hir.contains(kanit), "typed HIR kanıtı eksik: {kanit}");
     }
+}
+
+#[test]
+fn standart_runtime_semantic_kararlari_hir_bagindan_alir() {
+    let runtime = kaynak("src/yorumlayici/hir_gecisi.rs");
+    assert!(runtime.contains("CalistirmaProgrami::Hir(program.hir())"));
+    assert!(runtime.contains("HirBagi::Sembol(kimlik)"));
+    assert!(runtime.contains("HirBagi::Islem(kimlik)"));
+    assert!(runtime.contains("HirBagi::Yapi(kimlik)"));
+
+    let kok = kaynak("src/lib.rs");
+    assert!(kok.contains("programi_dene_baglanmis(&program)"));
 }
