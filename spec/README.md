@@ -32,6 +32,7 @@ Kırıcı değişiklik sessizce yapılamaz: davranış değişikliği RFC'den ge
 | [08 — Kalıcı dosya IO](08-kalici-dosya.md) | atomik yazma, süreçler arası yarış ve dayanıklılık | RFC-0016 |
 | [09 — Son tarih ve iptal](09-son-tarih-ve-iptal.md) | `içinde/yetişmezse`, işbirlikli iptal ve iç içe deadline | RFC-0011 |
 | [10 — Dışa açık işlem sözleşmesi](10-disari-acik-islem-sozlesmesi.md) | public imza, dönüş kanıtı ve v1 kaynak ABI'si | RFC-0006, RFC-0007, RFC-0009 |
+| [11 — Uygulama eylemleri ve web adaptörü](11-uygulama-eylemleri-ve-web-adaptoru.md) | açık eylem imzası, etki çıkarımı, yöntemli rota, savepoint/geri alma | RFC-0015 |
 
 ## Faza bağlı — henüz spec dışı
 

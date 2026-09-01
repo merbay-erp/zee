@@ -6,7 +6,8 @@
 //! deterministik ayrıştırmayı mümkün kılar.
 
 use crate::agac::{
-    AritmetikIslec, Cumle, Ifade, Islec, Islem, KosulKolu, Ozellik, Parametre, Test, Yapi,
+    AritmetikIslec, Cumle, HttpYontemi, Ifade, Islec, Islem, IslemTuru, KosulKolu, Ozellik,
+    Parametre, Test, Yapi,
 };
 use crate::sozcukleyici::{Token, TokenTur};
 use crate::tani::Tani;
@@ -98,7 +99,9 @@ pub fn islem_adlarini_tara(tokenlar: &[Token]) -> Vec<String> {
                 satir_basi = true;
             }
             TokenTur::SatirSonu => satir_basi = true,
-            TokenTur::Kelime(k) if satir_basi && derinlik == 0 && k == "işlem" => {
+            TokenTur::Kelime(k)
+                if satir_basi && derinlik == 0 && (k == "işlem" || k == "eylem") =>
+            {
                 let mut kelimeler = Vec::new();
                 let mut j = i + 1;
                 while let Some(token) = tokenlar.get(j) {
@@ -285,11 +288,14 @@ impl Ayristirici {
     }
 
     fn cumle_ayristir(&mut self) -> Result<Cumle, Tani> {
-        // "işlem ..." ve "yapı ..." satırları ilk kelimesinden tanınır
+        // "işlem ...", "eylem ..." ve "yapı ..." satırları ilk kelimesinden tanınır
         // (tanım başlıkları, yüklem değil).
         if let TokenTur::Kelime(k) = &self.bak().tur {
             if k == "işlem" {
-                return self.islem_ayristir();
+                return self.islem_ayristir(IslemTuru::Islem);
+            }
+            if k == "eylem" {
+                return self.islem_ayristir(IslemTuru::Eylem);
             }
             if k == "yapı" {
                 return self.yapi_ayristir();
@@ -409,26 +415,52 @@ impl Ayristirici {
             }
             Some("geldiğinde") => {
                 let t = &satir_tokenlari;
-                if t.len() == 4 && kelime_mi(&t[1], "adresine") && kelime_mi(&t[2], "istek") {
-                    let yol = tekil_ifade(t[0].clone())?;
+                let yontem = t.first().and_then(|token| match &token.tur {
+                    TokenTur::Kelime(kelime) => HttpYontemi::ayristir(kelime),
+                    _ => None,
+                });
+                let yontemli = yontem.is_some();
+                let bas = usize::from(yontemli);
+                if t.len() == 4 + bas
+                    && kelime_mi(&t[bas + 1], "adresine")
+                    && kelime_mi(&t[bas + 2], "istek")
+                {
+                    let yol = tekil_ifade(t[bas].clone())?;
                     let govde = self.alt_blok(satir_no)?;
-                    Ok(Cumle::IstekGeldiginde { yol, onekli: false, govde, satir: satir_no })
-                } else if t.len() == 5
-                    && kelime_mi(&t[1], "önekli")
-                    && kelime_mi(&t[2], "adrese")
-                    && kelime_mi(&t[3], "istek")
+                    Ok(Cumle::IstekGeldiginde {
+                        yontem,
+                        yol,
+                        onekli: false,
+                        govde,
+                        satir: satir_no,
+                    })
+                } else if t.len() == 5 + bas
+                    && kelime_mi(&t[bas + 1], "önekli")
+                    && kelime_mi(&t[bas + 2], "adrese")
+                    && kelime_mi(&t[bas + 3], "istek")
                 {
                     // "/yazi/" önekli adrese istek geldiğinde (K-055).
-                    let yol = tekil_ifade(t[0].clone())?;
+                    let yol = tekil_ifade(t[bas].clone())?;
                     let govde = self.alt_blok(satir_no)?;
-                    Ok(Cumle::IstekGeldiginde { yol, onekli: true, govde, satir: satir_no })
+                    Ok(Cumle::IstekGeldiginde {
+                        yontem,
+                        yol,
+                        onekli: true,
+                        govde,
+                        satir: satir_no,
+                    })
                 } else {
                     Err(Tani::yeni(
                         "S036",
-                        "Olay kaydı \"<yol> adresine istek geldiğinde\" biçimindedir.".into(),
+                        "Web adaptörü `YÖNTEM \"<yol>\" adresine istek geldiğinde` biçimindedir."
+                            .into(),
                         satir_no,
                         1,
                         1,
+                    )
+                    .onerili(
+                        "Yöntemlerden birini açıkça yaz: GET, HEAD, POST, PUT, PATCH, DELETE."
+                            .into(),
                     ))
                 }
             }
@@ -620,7 +652,7 @@ impl Ayristirici {
 
     /// `işlem <çok kelimeli ad>` + gövde. Gövdenin başındaki "X al" satırları
     /// parametre bildirimidir.
-    fn islem_ayristir(&mut self) -> Result<Cumle, Tani> {
+    fn islem_ayristir(&mut self, tur: IslemTuru) -> Result<Cumle, Tani> {
         let mut baslik = self.satir_oku();
         let satir = baslik.first().map(|t| t.satir).unwrap_or(1);
         if self.derinlik > 0 {
@@ -632,7 +664,7 @@ impl Ayristirici {
                 1,
             ));
         }
-        baslik.remove(0); // "işlem"
+        baslik.remove(0); // "işlem" / "eylem"
         let mut ad_kelimeleri = Vec::new();
         for token in &baslik {
             match &token.tur {
@@ -769,6 +801,7 @@ impl Ayristirici {
         Ok(Cumle::IslemTanimi(Islem {
             ad,
             parametreler,
+            tur,
             disari_acik: false,
             donus_turu_yazimi,
             donus_satiri,

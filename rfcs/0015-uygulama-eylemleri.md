@@ -1,10 +1,11 @@
 # RFC-0015 — Uygulama eylemleri ve web güvenlik sınırı
 
-- **Durum:** taslak — sözdizimi sözü değildir
+- **Durum:** geçici kabul — K-087 çekirdeği gerçeklendi, K-088 güvenlik profili açık
 - **Tarih:** 1 Eylül 2026
-- **İlgili kararlar:** ADR-010, K-081; v1 kapıları P0-02/P0-03/P0-04
-- **Gerçekleme:** yalnız eğitim amaçlı rota/istek/çerez prototipi; production
-  eylem modeli yok
+- **İlgili kararlar:** ADR-010, K-081, K-087; v1 kapıları P0-02/P0-03/P0-04
+- **Gerçekleme:** açık imzalı eylem, yöntemli rota, geçişli etki denetimi,
+  istek limiti/son tarihi ve yerel dosya savepoint'i var; production oturum,
+  CSRF, idempotency ve TLS/proxy profili açık
 
 ## Problem
 
@@ -40,22 +41,18 @@ uygulaması anlamına gelmez. Güvenli varsayımlar gereği iki katman ayrılaca
 9. Web adaptörü ham hata ayrıntısını istemciye sızdırmaz; yapılandırılmış Hata
    güvenli HTTP sonucuna eşlenir, tam neden gözlemlenebilirlik katmanında kalır.
 
-## Aday yüzey — araştırma notu
-
-Aşağıdaki biçim yalnız tasarım yönünü gösterir; usability ve parser deneyi
-olmadan kabul edilmiş syntax değildir:
+## Kabul edilen çekirdek yüzey (K-087)
 
 ```text
 eylem notu kaydet
-    girdi NotGirdisi olarak al
-    yetkiyi NotYazma olarak iste
-    atomik olarak
-        notlara girdinin metnini ekle
-    kaydedileni döndür
+    notu Metin olarak al
+    değer döndürmez
+    "notlar.txt" dosyasına notu ekle
 
 POST "/notlar" adresine istek geldiğinde
-    formu NotGirdisi olarak doğrula
-    isteği notu kaydet eylemine ver
+    not isteğin "not" değeri olsun
+    not ile notu kaydet
+    "/notlar" adresine yönlendir
 ```
 
 Eylem HTTP bilmez. Aynı eylem daha sonra CLI, zamanlanmış iş, kuyruk veya
@@ -63,44 +60,48 @@ test adaptöründen çağrılabilir. Form bir iş kuralı değil, eyleme adaptö
 
 ## Capability ve etki modeli
 
-Derleyici bir eylemin etkilerini en az şu sınıflarda görmelidir:
+Derleyici bir eylemin etkilerini şu kapalı sınıflarda çağrı grafiği boyunca
+görür:
 
 - `salt-okuma`
 - `durum-yazma`
-- `ağ`
-- `kimlik/yetki`
-- `transaction`
+- `web-adaptörü`
+- `geri-alınamaz dış etki`
 
-GET adaptörü yalnız salt-okuma eylemini bağlayabilir. Bu ilk sürümde tam bir
-effect type sistemi olmak zorunda değildir; işlem metadata'sı ve kapalı bir
-etki kümesi yeterlidir. Etki çıkarımı public eylem sınırında açık sözleşmeye
-dönüşür.
+GET/HEAD adaptörü yalnız salt okumaya ulaşabilir. Yazma, normal işlem içine
+saklanarak sınır dolanılamaz. Eylem HTTP yanıtı/çerezi ve geri alınamayan
+ekran/girdi/donanım etkisi taşıyamaz. Ayrıntılı normatif sözleşme spec/11'dedir.
 
 ## Aşamalı gerçekleme
 
 1. **Korkuluk (K-082 — gerçeklendi):** mevcut TCP/web yüzeyi açık
    `--deneysel-web` opt-in'i olmadan gerçek soket açmaz; örnekler production
    olmadığını söyler ve bütün durum değişiklikleri POST kontrolü taşır.
-2. **Protokol sınırı:** yöntemli route, gövde/başlık sınırı, güvenli çerez
-   seçenekleri, istek deadline'ı ve kontrollü reverse-proxy güveni.
-3. **Eylem:** typed girdi doğrulama, authz ve form/API/CLI adaptörlerinden
-   bağımsız çağrı.
-4. **Durum:** tek-dosya atomik değiştirme ve süreç kilidi K-084/RFC-0016 ile
-   gerçeklendi; veri tabanı/çok-kaynak transaction capability'si, idempotency
-   anahtarı ve eylem rollback testleri açık.
+2. **Protokol sınırı (K-087 çekirdeği):** yöntemli route, 64 KiB/100 alan
+   sınırı, 30 saniye istek son tarihi, 404/405/413/504 ayrımı gerçeklendi.
+   Güvenli çerez ve kontrollü reverse-proxy güveni K-088'e kaldı.
+3. **Eylem (K-087):** tam tür sözleşmeli ve form/API/CLI/görev bağlamından
+   bağımsız çağrı; HTTP etkisi derlemede yasak.
+4. **Durum (K-084/K-087):** tek-dosya atomik değiştirme ve süreç kilidinin
+   üstünde, çalışma hatası/başarısız Sonuç için iç içe çok-dosyalı savepoint
+   geri alması gerçeklendi. Süreç çökmesinde çok-dosyalı tek commit, veri
+   tabanı/dağıtık transaction ve idempotency anahtarı açık.
 5. **Üretim profili:** TLS sonlandırma sözleşmesi, secret yönetimi, rate limit,
    güvenlik başlıkları, gözlemlenebilirlik ve saldırı conformance paketi.
 
 ## Kabul kapıları
 
-- GET ile dosya/DB/çerez durum değişimi derlemede reddedilir.
-- Yanlış yöntem 405, fazla gövde 413, doğrulama 400, kimlik 401 ve yetki 403
-  olarak ayırt edilir; uygulama bunları ham metinle tahmin etmez.
-- CSRF, session fixation, zayıf token, çift gönderim ve yarım yazma için
-  olumsuz testler vardır.
-- Eylemin aynı saf iş mantığı web ve CLI adaptöründen çağrılır.
+- **K-087 kapalı:** GET/HEAD ile doğrudan veya dolaylı dosya/çerez/donanım
+  durum değişimi derlemede reddedilir (T045).
+- **K-087 kapalı:** yanlış yöntem 405, fazla gövde/alan 413, bilinmeyen yol
+  404 ve son tarih 504'tür. Doğrulama 400, kimlik 401 ve yetki 403 eşlemesi
+  typed doğrulama/yetki modeliyle K-088'de tamamlanacaktır.
+- Yarım yazma K-087 olumsuzlarıyla kanıtlıdır. CSRF, session fixation, zayıf
+  token ve çift gönderim olumsuzları K-088 kabul paketinde tamamlanacaktır.
+- **K-087 kapalı:** eylemin aynı iş mantığı web ve CLI bağlamından çağrılır;
+  çalışma hatası ve başarısız Sonuç savepoint'i geri alır.
 - Tek-dosya atomik durum V1-P0-04/K-084 ile kapandı; eylemin çok-kaynaklı
   transaction/idempotency kapısı bu RFC'de açık kalır.
 
-Bu kapılar tamamlanana kadar zee “TCP üzerinde eğitim/prototip web yüzeyi”
-sağlar; “production web framework” sözü vermez.
+K-088 güvenlik kapıları tamamlanana kadar zee “TCP üzerinde eğitim/prototip
+web yüzeyi” sağlar; “production web framework” sözü vermez.

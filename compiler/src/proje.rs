@@ -33,7 +33,7 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
     if !program.islemler.is_empty() || !program.yapilar.is_empty() || !program.testler.is_empty() {
         return Err(proje_hatasi(
             "P001",
-            "Proje bildiriminde işlem, yapı veya test tanımlanamaz.",
+            "Proje bildiriminde işlem, eylem, yapı veya test tanımlanamaz.",
             1,
             "proje.dil yalnız proje, sürüm ve giriş metinlerini tanımlar.",
         ));

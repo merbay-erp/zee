@@ -3,7 +3,7 @@
 //! Tür denetiminden geçmiş programı çalıştırır. Çıktı satır listesi olarak
 //! döner; CLI bunu ekrana basar, testler doğrudan karşılaştırır.
 
-use crate::agac::{AritmetikIslec, Cumle, Ifade, Islec, Ozellik, Program};
+use crate::agac::{AritmetikIslec, Cumle, HttpYontemi, Ifade, Islec, IslemTuru, Ozellik, Program};
 use crate::tani::Tani;
 use std::collections::{HashMap, VecDeque};
 
@@ -18,6 +18,36 @@ pub fn istek_parcala(ham: &str) -> (String, String, Vec<(String, String)>) {
 
 /// (ad, değer) çiftleri — istek verileri ve çerezler bu biçimde taşınır.
 pub type AdDegerler = Vec<(String, String)>;
+
+pub const AZAMI_ISTEK_GOVDESI: usize = 64 * 1024;
+pub const AZAMI_ISTEK_ALANI: usize = 100;
+
+fn istek_sinirlarini_denetle(ham: &str) -> Result<(), (u16, &'static str)> {
+    let (ilk_satir, kalan) = ham.split_once('\n').unwrap_or((ham, ""));
+    let (yontem, hedef) = ilk_satir.split_once(' ').unwrap_or(("GET", ilk_satir));
+    let (_, sorgu) = hedef.split_once('?').unwrap_or((hedef, ""));
+    let govde = match kalan.strip_prefix("çerez ") {
+        Some(devam) => devam.split_once('\n').map(|(_, govde)| govde).unwrap_or(""),
+        None => kalan,
+    };
+    if govde.len() > AZAMI_ISTEK_GOVDESI {
+        return Err((413, "istek gövdesi 64 KiB sınırını aşıyor"));
+    }
+    let govde_kullanilir = matches!(
+        yontem.to_ascii_uppercase().as_str(),
+        "POST" | "PUT" | "PATCH" | "DELETE"
+    );
+    let alan_sayisi = sorgu.split('&').filter(|alan| !alan.is_empty()).count()
+        + if govde_kullanilir {
+            govde.split('&').filter(|alan| !alan.is_empty()).count()
+        } else {
+            0
+        };
+    if alan_sayisi > AZAMI_ISTEK_ALANI {
+        return Err((413, "istek 100 alan sınırını aşıyor"));
+    }
+    Ok(())
+}
 
 /// istek_parcala + çerezler (K-052). İkinci satır "çerez a=1; b=2" ise
 /// Cookie başlığıdır; kalan satırlar gövdedir.
@@ -54,7 +84,8 @@ fn istek_govdesiyle(ilk_satir: &str, govde: &str) -> (String, String, Vec<(Strin
     let mut veriler: Vec<(String, String)> = Vec::new();
     veriler.push(("yol".into(), yol.to_string()));
     veriler.push(("yöntem".into(), yontem.clone()));
-    for kaynak in [sorgu, if yontem == "POST" { govde.trim() } else { "" }] {
+    let govde_kullanilir = matches!(yontem.as_str(), "POST" | "PUT" | "PATCH" | "DELETE");
+    for kaynak in [sorgu, if govde_kullanilir { govde.trim() } else { "" }] {
         for cift in kaynak.split('&').filter(|p| !p.is_empty()) {
             let (ad, deger) = cift.split_once('=').unwrap_or((cift, ""));
             let ad = url_coz(ad);
@@ -260,12 +291,28 @@ pub trait GirdiCikti {
     fn istek_al(&mut self) -> Option<String>;
     /// Son isteğe yanıt gönderir.
     fn yanit_gonder(&mut self, yanit: &str);
+    /// Protokol hataları için açık HTTP durumlu yanıt. Eski IO adaptörleri
+    /// gövdeyi yine de gösterebilsin diye güvenli bir varsayılanı vardır.
+    fn durum_yaniti_gonder(&mut self, _durum: u16, yanit: &str) {
+        self.yanit_gonder(yanit);
+    }
     /// 303 yönlendirmesi gönderir (K-051).
     fn yonlendir_gonder(&mut self, adres: &str);
     /// Sonraki yanıta Set-Cookie iliştirir (K-052).
     fn cerez_yaz(&mut self, ad: &str, deger: &str);
     /// Sonraki yanıtla çerezi tarayıcıdan siler (Max-Age=0, K-073).
     fn cerez_sil(&mut self, ad: &str);
+    /// Her `eylem` çağrısı bir transaction/savepoint sınırıdır. Adaptör,
+    /// desteklediği kalıcı kaynakları başarıda tamamlar, hata dönüşünde geri alır.
+    fn eylem_baslat(&mut self) -> Result<(), String> {
+        Err("IO adaptörü eylem transaction'ını desteklemiyor".into())
+    }
+    fn eylem_tamamla(&mut self) -> Result<(), String> {
+        Err("IO adaptörü eylem transaction'ını desteklemiyor".into())
+    }
+    fn eylem_geri_al(&mut self) -> Result<(), String> {
+        Err("IO adaptörü eylem transaction'ını desteklemiyor".into())
+    }
     /// Sensör durumu (IoT simülatörü): "kapı" açık mı?
     fn sensor_acik_mi(&mut self, ad: &str) -> bool;
     /// Işık eyleyicisi (IoT simülatörü).
@@ -341,9 +388,19 @@ impl<T: GirdiCikti> GirdiCikti for GuvenliIo<T> {
         None
     }
     fn yanit_gonder(&mut self, _yanit: &str) {}
+    fn durum_yaniti_gonder(&mut self, _durum: u16, _yanit: &str) {}
     fn yonlendir_gonder(&mut self, _adres: &str) {}
     fn cerez_yaz(&mut self, _ad: &str, _deger: &str) {}
     fn cerez_sil(&mut self, _ad: &str) {}
+    fn eylem_baslat(&mut self) -> Result<(), String> {
+        self.ic.eylem_baslat()
+    }
+    fn eylem_tamamla(&mut self) -> Result<(), String> {
+        self.ic.eylem_tamamla()
+    }
+    fn eylem_geri_al(&mut self) -> Result<(), String> {
+        self.ic.eylem_geri_al()
+    }
     fn sensor_acik_mi(&mut self, ad: &str) -> bool {
         self.ic.sensor_acik_mi(ad)
     }
@@ -375,11 +432,14 @@ pub struct ToplayanIo {
     /// Sunucunun Set-Cookie ile yazdığı çerezler (K-052 testleri için).
     pub yazilan_cerezler: Vec<(String, String)>,
     pub sunucu_yanitlari: Vec<(String, String)>,
+    /// Her sahte HTTP yanıtının durum kodu; istek alındığında 200 ile başlar.
+    pub sunucu_durumlari: Vec<u16>,
     /// Sahte sensörler (varsayılan kapalı) ve an ölçümü kuyruğu.
     pub sensorler: HashMap<String, bool>,
     pub an_degerleri: VecDeque<i64>,
     an_son_degeri: i64,
     pub cikti: Vec<String>,
+    eylem_yedekleri: Vec<HashMap<String, String>>,
 }
 
 impl ToplayanIo {
@@ -394,10 +454,12 @@ impl ToplayanIo {
             istekler: VecDeque::new(),
             yazilan_cerezler: Vec::new(),
             sunucu_yanitlari: Vec::new(),
+            sunucu_durumlari: Vec::new(),
             sensorler: HashMap::new(),
             an_degerleri: VecDeque::new(),
             an_son_degeri: 0,
             cikti: Vec::new(),
+            eylem_yedekleri: Vec::new(),
         }
     }
 }
@@ -451,12 +513,19 @@ impl GirdiCikti for ToplayanIo {
         let ham = self.istekler.pop_front()?;
         let (_, yol, _) = istek_parcala(&ham);
         self.sunucu_yanitlari.push((yol, String::new()));
+        self.sunucu_durumlari.push(200);
         Some(ham)
     }
     fn yanit_gonder(&mut self, yanit: &str) {
         if let Some((_, bos)) = self.sunucu_yanitlari.last_mut() {
             *bos = yanit.to_string();
         }
+    }
+    fn durum_yaniti_gonder(&mut self, durum: u16, yanit: &str) {
+        if let Some(son) = self.sunucu_durumlari.last_mut() {
+            *son = durum;
+        }
+        self.yanit_gonder(yanit);
     }
     fn yonlendir_gonder(&mut self, adres: &str) {
         if let Some((_, bos)) = self.sunucu_yanitlari.last_mut() {
@@ -468,6 +537,23 @@ impl GirdiCikti for ToplayanIo {
     }
     fn cerez_sil(&mut self, ad: &str) {
         self.yazilan_cerezler.push((ad.to_string(), "×silindi".to_string()));
+    }
+    fn eylem_baslat(&mut self) -> Result<(), String> {
+        self.eylem_yedekleri.push(self.dosyalar.clone());
+        Ok(())
+    }
+    fn eylem_tamamla(&mut self) -> Result<(), String> {
+        self.eylem_yedekleri
+            .pop()
+            .map(|_| ())
+            .ok_or_else(|| "açık eylem transaction'ı yok".into())
+    }
+    fn eylem_geri_al(&mut self) -> Result<(), String> {
+        self.dosyalar = self
+            .eylem_yedekleri
+            .pop()
+            .ok_or_else(|| "açık eylem transaction'ı yok".to_string())?;
+        Ok(())
     }
     fn sensor_acik_mi(&mut self, ad: &str) -> bool {
         self.sensorler.get(ad).copied().unwrap_or(false)
@@ -712,7 +798,11 @@ pub fn calistir_io_kodla(program: &Program, io: &mut dyn GirdiCikti) -> Result<i
     // gövdeleri istek başına taze ortamda koşulur.
     if ortam.contains_key("(sunucu)") {
         while let Some(ham) = io.istek_al() {
-            let (_, yol, veriler, cerezler) = istek_parcala_cerezli(&ham);
+            if let Err((durum, mesaj)) = istek_sinirlarini_denetle(&ham) {
+                io.durum_yaniti_gonder(durum, mesaj);
+                continue;
+            }
+            let (gelen_yontem, yol, veriler, cerezler) = istek_parcala_cerezli(&ham);
             let istek_sozlugu = Deger::Sozluk(
                 veriler.into_iter().map(|(a, d)| (a, Deger::Metin(d))).collect(),
             );
@@ -720,18 +810,37 @@ pub fn calistir_io_kodla(program: &Program, io: &mut dyn GirdiCikti) -> Result<i
                 cerezler.into_iter().map(|(a, d)| (a, Deger::Metin(d))).collect(),
             );
             let mut eslesti = false;
+            let mut yol_eslesti = false;
             for cumle in &program.cumleler {
-                if let Cumle::IstekGeldiginde { yol: kayitli, onekli, govde, satir } = cumle {
+                if let Cumle::IstekGeldiginde {
+                    yontem,
+                    yol: kayitli,
+                    onekli,
+                    govde,
+                    satir,
+                } = cumle
+                {
                     let mut bos_ortam: HashMap<String, Deger> = HashMap::new();
                     let kayitli =
                         degerlendir(kayitli, &bos_ortam, program, io, 0, *satir)?.metne();
                     let uydu = if *onekli { yol.starts_with(&kayitli) } else { kayitli == yol };
                     if uydu {
+                        yol_eslesti = true;
+                    }
+                    let beklenen = yontem.unwrap_or(HttpYontemi::Get).yazimi();
+                    if uydu && beklenen == gelen_yontem {
                         bos_ortam.insert("istek".into(), istek_sozlugu.clone());
                         bos_ortam.insert("çerezler".into(), cerez_sozlugu.clone());
+                        // Her istek K-085'in işbirlikli iptal çekirdeğinde 30 saniyelik
+                        // varsayılan bütçe taşır. Daha kısa iç son tarih yine kazanır.
+                        let nobetci = SonTarihNobetcisi::yeni(io.an_ms().saturating_add(30_000));
                         let sonuc = blok_calistir(govde, &mut bos_ortam, program, io, 0);
+                        drop(nobetci);
                         match sonuc {
                             Err(tani) if tani.kod == "Ç000" => return Ok(kodu(&tani)),
+                            Err(tani) if tani.kod == "Ç001" => {
+                                io.durum_yaniti_gonder(504, "istek 30 saniyelik son tarihini aştı");
+                            }
                             Err(tani) => return Err(tani),
                             Ok(_) => {}
                         }
@@ -741,7 +850,11 @@ pub fn calistir_io_kodla(program: &Program, io: &mut dyn GirdiCikti) -> Result<i
                 }
             }
             if !eslesti {
-                io.yanit_gonder(&format!("aranan sayfa yok: {}", yol));
+                if yol_eslesti {
+                    io.durum_yaniti_gonder(405, "bu adres istenen HTTP yöntemini kabul etmiyor");
+                } else {
+                    io.durum_yaniti_gonder(404, &format!("aranan sayfa yok: {}", yol));
+                }
             }
         }
     }
@@ -1321,15 +1434,64 @@ fn islem_cagir(
         .onerili("Özyinelemeli adımın her seferinde temel duruma yaklaştığından emin ol.".into()));
     }
     let islem = program.islemler.get(ad).ok_or_else(|| ic_hata(satir))?;
+    let eylem = islem.tur == IslemTuru::Eylem;
     let mut yerel: HashMap<String, Deger> = HashMap::new();
     for (param, deger) in islem.parametreler.iter().zip(argumanlar) {
         let deger = parametre_degerini_genislet(deger, param.tur_yazimi.as_deref(), satir)?;
         yerel.insert(param.ad.clone(), deger);
     }
-    match blok_calistir(&islem.govde, &mut yerel, program, io, derinlik)? {
-        Akis::Don(deger) => Ok(Some(deger)),
-        Akis::Devam => Ok(None),
+    if eylem {
+        io.eylem_baslat().map_err(|hata| {
+            Tani::yeni(
+                "C021",
+                format!("\"{}\" eylem transaction'ı başlatılamadı: {}.", ad, hata),
+                satir,
+                1,
+                1,
+            )
+        })?;
     }
+    let sonuc = blok_calistir(&islem.govde, &mut yerel, program, io, derinlik);
+    if !eylem {
+        return match sonuc? {
+            Akis::Don(deger) => Ok(Some(deger)),
+            Akis::Devam => Ok(None),
+        };
+    }
+
+    match sonuc {
+        Ok(akis @ Akis::Don(Deger::Sonuc { basarili: false, .. })) => {
+            io.eylem_geri_al()
+                .map_err(|hata| transaction_hatasi(ad, "geri alınamadı", &hata, satir))?;
+            match akis {
+                Akis::Don(deger) => Ok(Some(deger)),
+                Akis::Devam => unreachable!(),
+            }
+        }
+        Ok(akis) => {
+            io.eylem_tamamla()
+                .map_err(|hata| transaction_hatasi(ad, "tamamlanamadı", &hata, satir))?;
+            match akis {
+                Akis::Don(deger) => Ok(Some(deger)),
+                Akis::Devam => Ok(None),
+            }
+        }
+        Err(tani) => {
+            io.eylem_geri_al()
+                .map_err(|hata| transaction_hatasi(ad, "geri alınamadı", &hata, satir))?;
+            Err(tani)
+        }
+    }
+}
+
+fn transaction_hatasi(ad: &str, eylem: &str, hata: &str, satir: usize) -> Tani {
+    Tani::yeni(
+        "C021",
+        format!("\"{}\" eylem transaction'ı {}: {}.", ad, eylem, hata),
+        satir,
+        1,
+        1,
+    )
 }
 
 /// Açık Ondalık sözleşmesine gelen TamSayıyı runtime'da da genişletir; statik

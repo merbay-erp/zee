@@ -404,7 +404,7 @@ cevap "https://ornek.dev/durum" adresinden gelen yanıt olsun
 "Durum: " ile cevabın durum kodu yaz
 
 8080 kapısında sunucu başlat
-"/durum" adresine istek geldiğinde
+GET "/durum" adresine istek geldiğinde
     "çalışıyor" yanıtını gönder
 ```
 
@@ -436,23 +436,32 @@ kırpılır ve yalnız doğru `yetişmezse` kolu çalışır. İç içe son tari
 erken olan kazanır. Gerçek paralel scheduler V1-P1-03 kapısıdır
 (RFC-0011, spec/09).
 
-Web uygulaması kalıpları (K-051): rota gövdesinde form ve sorgu verisi
-örtük `istek` sözlüğündedir; kaydettikten sonra yönlendirilir; kullanıcı
-verisi HTML'e daima `html güvenlisi` ile gömülür:
+Uygulama eylemi ve web adaptörü (K-087): iş kuralı HTTP bilmeyen, açık imzalı
+bir `eylem`dir. Aynı eylem CLI, web, görev ya da test bağlamından çağrılır.
+Rota yöntemi açıkça bağlar; GET/HEAD üzerinden ulaşılabilen yazma derlemede
+reddedilir. Form ve sorgu verisi örtük `istek` sözlüğündedir:
 
 ```
-"/kaydet" adresine istek geldiğinde
-    yöntem isteğin "yöntem" değeri olsun
-    yöntem "POST" a eşitse
-        istekte "not" varsa
-            yeni isteğin "not" değeri olsun
-            "notlar.txt" dosyasına yeni ekle
-            "/" adresine yönlendir
+eylem notu kaydet
+    notu Metin olarak al
+    değer döndürmez
+    "notlar.txt" dosyasına notu ekle
+
+POST "/kaydet" adresine istek geldiğinde
+    istekte "not" varsa
+        yeni isteğin "not" değeri olsun
+        yeni ile notu kaydet
+        "/" adresine yönlendir
 
 # listede: satırın html güvenlisi  ← kullanıcı verisi kaçışlanır
 ```
 
-Önekli rota (K-055): `"/yazi/" önekli adrese istek geldiğinde` — kimliği
+Her eylem çalışma hatasında ya da başarısız `Sonuç` dönüşünde dosya
+savepoint'ini geri alır. Süreç çökmesinde çok-dosyalı tek commit sözü yoktur;
+dosya başına K-084 atomikliği geçerlidir. Ayrıntı:
+[spec/11](../spec/11-uygulama-eylemleri-ve-web-adaptoru.md).
+
+Önekli rota (K-055/K-087): `GET "/yazi/" önekli adrese istek geldiğinde` — kimliği
 metinden çıkar: `kimlik yolun "/yazi/" yerine "" değişmişi olsun`.
 
 Oturum için çerez kapısı (K-052): `çerezler` sözlüğü + `çerezine yaz`:
@@ -467,8 +476,8 @@ Oturum için çerez kapısı (K-052): `çerezler` sözlüğü + `çerezine yaz`:
 
 Çalışan eğitim örnekleri: projeler/panel-not-defteri.dil (temel) ve
 projeler/girisli-panel.dil (parola + oturum akışı). İkisi de açıkça deneysel
-localhost demosudur; kimlik/yetki/CSRF/atomik durum tamamlanmadan production
-örneği sayılmaz (RFC-0015, K-082).
+localhost demosudur; kimlik/yetki/CSRF, güvenli oturum-çerez ve TLS/proxy
+profili tamamlanmadan production örneği sayılmaz (RFC-0015, K-082/K-088).
 
 ## 19. Fiziksel dünya (ESP32)
 

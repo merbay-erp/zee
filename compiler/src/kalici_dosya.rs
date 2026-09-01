@@ -40,6 +40,36 @@ pub fn atomik_satir_yaz(yol: &Path, satir: &str, ekleme: bool) -> io::Result<()>
     atomik_icerik_yaz(yol, &icerik, atomik_degistir)
 }
 
+/// Bir eylemin iyimser geri alması: hedef hâlâ bu eylemin bıraktığı
+/// `beklenen` içerikteyse eski içeriği aynı süreçler-arası kilit altında geri
+/// koyar. Araya başka bir yazar girdiyse onun verisini ezmek yerine hata verir.
+pub fn atomik_karsilastir_ve_geri_al(
+    yol: &Path,
+    beklenen: Option<&[u8]>,
+    onceki: Option<&[u8]>,
+) -> io::Result<()> {
+    let _kilit = DosyaKilidi::al(yol)?;
+    let guncel = match std::fs::read(yol) {
+        Ok(icerik) => Some(icerik),
+        Err(hata) if hata.kind() == io::ErrorKind::NotFound => None,
+        Err(hata) => return Err(hata),
+    };
+    if guncel.as_deref() != beklenen {
+        return Err(io::Error::new(
+            io::ErrorKind::WouldBlock,
+            "dosya eylem sırasında başka bir yazar tarafından değiştirildi; geri alma onun verisini ezmedi",
+        ));
+    }
+    match onceki {
+        Some(icerik) => atomik_icerik_yaz(yol, icerik, atomik_degistir),
+        None => match std::fs::remove_file(yol) {
+            Ok(()) => klasoru_eszamanla(ebeveyn(yol)),
+            Err(hata) if hata.kind() == io::ErrorKind::NotFound => Ok(()),
+            Err(hata) => Err(hata),
+        },
+    }
+}
+
 struct DosyaKilidi {
     dosya: File,
 }
@@ -372,6 +402,24 @@ mod tests {
         atomik_satir_yaz(&yol, "ilk", false).expect("ilk yazma");
         atomik_satir_yaz(&yol, "ikinci", true).expect("ekleme");
         assert_eq!(std::fs::read_to_string(yol).unwrap(), "ilk\nikinci\n");
+    }
+
+    #[test]
+    fn geri_alma_araya_giren_yazari_ezmez() {
+        let gecici = GeciciKlasor::yeni();
+        let yol = gecici.0.join("durum.txt");
+        atomik_yaz(&yol, b"eylem-oncesi").expect("ilk durum");
+        atomik_yaz(&yol, b"eylem-yazdi").expect("eylem yazısı");
+        atomik_yaz(&yol, b"baska-yazar").expect("araya giren yazar");
+
+        let hata = atomik_karsilastir_ve_geri_al(
+            &yol,
+            Some(b"eylem-yazdi"),
+            Some(b"eylem-oncesi"),
+        )
+        .expect_err("çakışma sessizce ezilmemeli");
+        assert_eq!(hata.kind(), io::ErrorKind::WouldBlock);
+        assert_eq!(std::fs::read(&yol).unwrap(), b"baska-yazar");
     }
 
     #[test]

@@ -22,9 +22,9 @@ kutusuna satır satır yaz.) Ya da: `dil çalıştır projeler/<dosya>.dil`.
 | [gizli-dil.dil](gizli-dil.dil) | sözlük = şifre defteri | Çözücüyü de yaz (tersine defter) |
 | [kelime-sayaci.dil](kelime-sayaci.dil) | sayaç sözlüğü, "yoksa sıfırla" | En çok geçen kelimeyi de bul |
 | [gun-sayar.dil](gun-sayar.dil) | Tarih türü, gün aritmetiği | Doğum gününe kaç gün kaldığını hesapla |
-| [mini-site.dil](mini-site.dil) | deneysel localhost sitesi: sunucu + rotalar + HTML | Yeni bir sayfa rotası ekle |
-| [panel-not-defteri.dil](panel-not-defteri.dil) | deneysel form demosu: kaydet + yönlendir | Yetki kontrolü tasarla |
-| [girisli-panel.dil](girisli-panel.dil) | deneysel parola + oturum akışı — production değil | Güvenli token politikasını tartış |
+| [mini-site.dil](mini-site.dil) | deneysel localhost sitesi: yöntemli rotalar + HTML | Yeni bir GET sayfa rotası ekle |
+| [panel-not-defteri.dil](panel-not-defteri.dil) | deneysel form: POST adaptörü + yeniden kullanılabilir eylem | Aynı kaydetme eylemini CLI'dan çağır |
+| [girisli-panel.dil](girisli-panel.dil) | yöntemli rota + transaction'lı eylem + eğitim oturumu — production değil | Güvenli token politikasını tartış |
 | [envanter.dil](envanter.dil) | stok defteri: yapı listesi + JSON yedek | CSV yedeği de al; en pahalıyı bul |
 | [roket.dil](roket.dil) | geri sayan aralık, bekleme | 10'dan başlat; kaçışta iptal ekle |
 

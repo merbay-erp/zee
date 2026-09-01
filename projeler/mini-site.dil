@@ -16,17 +16,17 @@ işlem sayfayı giydir
 
 8090 kapısında sunucu başlat
 
-"/" adresine istek geldiğinde
+GET "/" adresine istek geldiğinde
     içerik "<h1>zee ile yapılmış site</h1><p>Bu sayfayı sunan program Türkçe yazıldı: rotalar, HTML, hepsi <b>mini-site.dil</b> içinde.</p>" olsun
     sayfa içerik için sayfayı giydir olsun
     sayfa yanıtını gönder
 
-"/hakkinda" adresine istek geldiğinde
+GET "/hakkinda" adresine istek geldiğinde
     içerik "<h1>Hakkında</h1><p>zee, Türkçe düşünüp Türkçe yazmak için tasarlandı. Bu site onun <i>sunucu</i> yüzünün kanıtı.</p>" olsun
     sayfa içerik için sayfayı giydir olsun
     sayfa yanıtını gönder
 
-"/obeb" adresine istek geldiğinde
+GET "/obeb" adresine istek geldiğinde
     sonuç 48 ve 36 ile obebini hesapla olsun
     içerik "<h1>Obeb makinesi</h1><p>48 ile 36 sayılarının obebi: <b>" ile sonuç ile "</b> — hesabı gömülü kitaplık yaptı.</p>" olsun
     sayfa içerik için sayfayı giydir olsun

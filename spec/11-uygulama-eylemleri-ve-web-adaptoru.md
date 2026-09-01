@@ -1,0 +1,127 @@
+# 11 — Uygulama eylemleri ve web adaptörü
+
+Bu bölüm K-087 ile gelen normatif v1 sözleşmesidir. Amaç iş kuralını HTTP'den
+ayırmak, aynı kuralı web/CLI/görev/test bağlamında yeniden kullanmak ve güvenli
+HTTP yöntemlerinin durum değiştirmediğini derlemede kanıtlamaktır.
+
+## 1. Eylem tanımı
+
+Bir uygulama iş kuralı `eylem` başlığıyla tanımlanır:
+
+```text
+eylem notu kaydet
+    notu Metin olarak al
+    değer döndürmez
+    "notlar.txt" dosyasına notu ekle
+```
+
+Eylem çağrısı işlem çağrısıyla aynı yüklem-sonlu ritmi kullanır:
+
+```text
+"CLI notu" ile notu kaydet
+```
+
+Eylem bir uygulama sınırı olduğu için bütün girdilerinin türü ve dönüş
+sözleşmesi kaynakta açıkça yazılır. Parametre varsa her biri
+`<ad> <Tür> olarak al` biçimindedir; ardından `<Tür> döndürür` ya da
+`değer döndürmez` gelir. Çağrı-güdümlü imza çıkarımı eylemde yoktur (T043).
+
+## 2. HTTP'den bağımsızlık
+
+Eylem yanıt gönderemez, yönlendiremez, çerez yazıp silemez, sunucu/rota
+tanımlayamaz. Bu etkileri doğrudan ya da çağırdığı başka bir işlem üzerinden
+taşırsa T044 üretilir. Rota HTTP adaptörüdür; doğrulanmış girdiyi eyleme verir
+ve eylem sonucunu protokole çevirir.
+
+Transaction ile geri alınamayan ekran çıktısı, kullanıcı girdisi ve donanım
+eyleyicisi de eylem içinde kullanılamaz (T048). Bunlar CLI, web, görev veya
+donanım adaptöründe kalır. Ağdan salt okuma, zaman, rastgelelik, dosya okuma ve
+transaction destekli dosya yazma eylem içinde kullanılabilir.
+
+## 3. Kapalı etki çıkarımı
+
+Derleyici her işlem/eylem için en az şu etkileri çağrı grafiği boyunca çıkarır:
+
+- salt okuma;
+- uygulama durumu yazma;
+- web adaptörü etkisi;
+- geri alınamayan dış etki.
+
+Çıkarım geçişlidir: salt görünen bir işlem yazıcı bir işlem/eylem çağırıyorsa
+yazıcı sayılır. Özyinelemeli çağrı grafiği sabit noktaya kadar çözülür; kaynak
+sırası sonucu değiştirmez.
+
+Rota dosya ya da donanım durumunu doğrudan değiştiremez. Durum değiştiren normal
+bir `işlem`i çağırarak bu sınırı dolanamaz; değişiklik açık bir `eylem` üzerinden
+yapılır (T046). Çerez, HTTP adaptörünün kendi durumudur ve yalnız güvenli olmayan
+yöntem rotasında doğrudan yönetilebilir.
+
+## 4. Yöntemli rota
+
+Yeni rota başlığı yöntemi açıkça taşır:
+
+```text
+GET "/notlar" adresine istek geldiğinde
+    sayfa yanıtını gönder
+
+POST "/notlar" adresine istek geldiğinde
+    not isteğin "not" değeri olsun
+    not ile notu kaydet
+    "/notlar" adresine yönlendir
+```
+
+Desteklenen yöntemler `GET`, `HEAD`, `POST`, `PUT`, `PATCH`, `DELETE`dir.
+Yöntemsiz tarihsel rota yazımı geriye uyum için yalnız GET'e bağlanır; yeni kod
+yöntemi açıkça yazar. `istek` sözlüğündeki `"yöntem"` alanı gözlem amacıyla
+korunur ancak yönlendirme/yetki kararı değildir.
+
+GET ve HEAD salt okumadır. Doğrudan çerez/dosya/donanım yazması veya çağrı
+grafiğinde ulaşılabilen yazıcı eylem T045 ile derlemede reddedilir. Aynı
+yöntem+yol çifti iki kez tanımlanamaz (T047). HEAD gerçek TCP adaptöründe GET
+ile aynı başlık hesabını yapar ama yanıt gövdesi göndermez.
+
+Yol eşleşip yöntem eşleşmezse 405, yol eşleşmezse 404 döner. PUT/PATCH/DELETE
+form gövdesi POST ile aynı sınırlı alan çözümlemesini kullanır.
+
+## 5. İstek kaynak sınırları ve son tarih
+
+Her istek varsayılan olarak:
+
+- en çok 64 KiB gövde;
+- sorgu ve gövde toplamında en çok 100 alan;
+- K-085 işbirlikli iptal modelinde 30 saniye son tarih
+
+taşır. Gövde/alan sınırı aşımı 413, son tarih aşımı 504'tür. Gerçek TCP adaptörü
+bildirilen `Content-Length` sınırı aşınca gövdeyi uygulamaya vermeden 413 döner.
+Bu limitleri büyüten kaynak sözdizimi v1'de yoktur.
+
+## 6. Eylem transaction'ı ve iç içe savepoint
+
+Her eylem çağrısı bir transaction/savepoint başlatır:
+
+- olağan değer veya başarılı `Sonuç` dönerse tamamlanır;
+- çalışma hatasında geri alınır ve hata yayılır;
+- başarısız `Sonuç` dönerse geri alınır, başarısız değer çağırana verilir;
+- iç içe eylem kendi savepoint'ini taşır. İç eylemin başarısızlığı, dış
+  eylemin daha önceki yazılarını silmez.
+
+IO adaptörü transaction desteğini açıkça vermiyorsa eylem fail-closed biçimde
+C021 ile başlamaz. Hermetik test adaptörü dosya tablosunu, gerçek yerel adaptör
+ise dokunulan her dosyanın eylem başındaki içeriğini yedekler. Geri alma da
+K-084 kilitli atomik replace çekirdeğini kullanır. Hedef, eylemin en son
+bıraktığı içerikten sonra başka bir yazarca değişmişse bu yazarın verisi
+ezilmez; geri alma C021 ile görünür biçimde başarısız olur.
+
+Bu sözleşme yorumlayıcı tarafından gözlenen hata/başarısız sonuç için çok
+dosyalı geri almadır. Süreç ya da makine tam eylemin ortasında çökerse bütün
+dosyaları tek bir kalıcı commit olarak yayınlama sözü vermez; çökme atomikliği
+dosya başına spec/08'deki K-084 sözüdür. Veritabanı/dağıtık kaynak ACID'i ayrı
+capability, uzun ömürlü kilitleme ve günlükleme kararı gerektirir.
+
+## 7. Güvenlik sınırı
+
+K-087 rota/eylem ayrımını, yöntem güvenliğini, kaynak limitini ve yerel
+transaction sözleşmesini kurar. Kimlik doğrulama, yetkilendirme, CSRF,
+idempotency anahtarı, güvenli oturum/çerez ve TLS/proxy güveni K-088 kapsamıdır.
+Bu nedenle gerçek TCP yüzeyi `--deneysel-web` açık seçimini korur; bu bölüm tek
+başına “production web framework” sözü değildir.

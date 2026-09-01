@@ -152,6 +152,9 @@ impl Tur {
 /// bu görünümü kullanır; derleme (çalıştır) ilk tanıda durur.
 pub fn denetle_coklu(program: &mut Program) -> Vec<Tani> {
     let mut tanilar = Vec::new();
+    if let Err(tani) = crate::eylem::denetle(program) {
+        tanilar.push(tani);
+    }
     let mut ortam: HashMap<String, Tur> = HashMap::new();
     for yapi in &program.yapilar {
         for (alan, tur_yazimi) in &yapi.alanlar {
@@ -213,6 +216,7 @@ pub fn denetle_coklu(program: &mut Program) -> Vec<Tani> {
 /// Çıkarımlı işlemler ilk çağrı argümanlarıyla; açık imzalı işlemler ise
 /// tanım sözleşmesiyle çağrı beklemeden denetlenir (K-083).
 pub fn denetle(program: &mut Program) -> Result<(), Tani> {
+    crate::eylem::denetle(program)?;
     let mut ortam: HashMap<String, Tur> = HashMap::new();
     for yapi in &program.yapilar {
         for (alan, tur_yazimi) in &yapi.alanlar {
@@ -901,7 +905,7 @@ fn blok_denetle(
                     ));
                 }
             }
-            Cumle::IstekGeldiginde { yol, onekli: _, govde, satir } => {
+            Cumle::IstekGeldiginde { yol, govde, satir, .. } => {
                 let satir = *satir;
                 let tur = ifade_denetle(yol, ortam, baglam, satir)?;
                 if tur != Tur::Metin {

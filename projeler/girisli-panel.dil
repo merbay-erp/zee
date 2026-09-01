@@ -30,9 +30,32 @@ işlem oturumu geçerli mi
             doğru döndür
     yanlış döndür
 
+eylem oturumu aç
+    Metin döndürür
+    rastgele_sayı 100000 ile 999999 arasında rastgele sayı olsun
+    kimlik "" ile rastgele_sayı olsun
+    "oturumlar.txt" dosyasına kimlik ekle
+    kimliği döndür
+
+eylem notu kaydet
+    notu Metin olarak al
+    değer döndürmez
+    "notlar.txt" dosyasına notu ekle
+
+eylem notu kaldır
+    hedefi Metin olarak al
+    değer döndürmez
+    kalanlar boş liste olsun
+    satırlar "notlar.txt" dosyasının satırları olsun
+    her satır için
+        satır hedefe eşit değilse
+            kalanlara satırı ekle
+    yenisi kalanların "\n" ile birleşmişi olsun
+    "notlar.txt" dosyasına yenisi yaz
+
 8092 kapısında sunucu başlat
 
-"/" adresine istek geldiğinde
+GET "/" adresine istek geldiğinde
     liste "" olsun
     satırlar "notlar.txt" dosyasının satırları olsun
     her satır için
@@ -42,28 +65,24 @@ işlem oturumu geçerli mi
     sayfa gövde için sayfayı giydir olsun
     sayfa yanıtını gönder
 
-"/giris" adresine istek geldiğinde
+GET "/giris" adresine istek geldiğinde
     form "<h1>Giriş</h1><form method=post action=/giris-yap><input type=password name=parola placeholder=parola autofocus> <button>Gir</button></form>" olsun
     sayfa form için sayfayı giydir olsun
     sayfa yanıtını gönder
 
-"/giris-yap" adresine istek geldiğinde
-    yöntem isteğin "yöntem" değeri olsun
-    yöntem "POST" a eşitse
-        istekte "parola" varsa
-            verilen isteğin "parola" değeri olsun
-            verilen "zee2026" ya eşitse
-                rastgele_sayı 100000 ile 999999 arasında rastgele sayı olsun
-                kimlik "" ile rastgele_sayı olsun
-                "oturumlar.txt" dosyasına kimlik ekle
-                "oturum" çerezine kimlik yaz
-                "/yonet" adresine yönlendir
-            değilse
-                "/giris" adresine yönlendir
+POST "/giris-yap" adresine istek geldiğinde
+    istekte "parola" varsa
+        verilen isteğin "parola" değeri olsun
+        verilen "zee2026" ya eşitse
+            kimlik oturumu aç olsun
+            "oturum" çerezine kimlik yaz
+            "/yonet" adresine yönlendir
+        değilse
+            "/giris" adresine yönlendir
     değilse
         "/giris" adresine yönlendir
 
-"/yonet" adresine istek geldiğinde
+GET "/yonet" adresine istek geldiğinde
     izinli yanlış olsun
     çerezlerde "oturum" varsa
         kimlik çerezlerin "oturum" değeri olsun
@@ -82,51 +101,37 @@ işlem oturumu geçerli mi
     izinli değilse
         "/giris" adresine yönlendir
 
-"/kaydet" adresine istek geldiğinde
-    yöntem isteğin "yöntem" değeri olsun
+POST "/kaydet" adresine istek geldiğinde
     izinli yanlış olsun
     çerezlerde "oturum" varsa
         kimlik çerezlerin "oturum" değeri olsun
         izinli kimlik için oturumu geçerli mi olsun
 
     izinli ise
-        yöntem "POST" a eşitse
-            istekte "not" varsa
-                yeni isteğin "not" değeri olsun
-                yeni boşsa
-                    "/yonet" adresine yönlendir
-                değilse
-                    "notlar.txt" dosyasına yeni ekle
-                    "/" adresine yönlendir
-        değilse
-            "/yonet" adresine yönlendir
+        istekte "not" varsa
+            yeni isteğin "not" değeri olsun
+            yeni boşsa
+                "/yonet" adresine yönlendir
+            değilse
+                yeni ile notu kaydet
+                "/" adresine yönlendir
     izinli değilse
         "/giris" adresine yönlendir
 
-"/sil" adresine istek geldiğinde
-    yöntem isteğin "yöntem" değeri olsun
+POST "/sil" adresine istek geldiğinde
     izinli yanlış olsun
     çerezlerde "oturum" varsa
         kimlik çerezlerin "oturum" değeri olsun
         izinli kimlik için oturumu geçerli mi olsun
 
     izinli ise
-        yöntem "POST" a eşitse
-            istekte "not" varsa
-                hedef isteğin "not" değeri olsun
-                kalanlar boş liste olsun
-                satırlar "notlar.txt" dosyasının satırları olsun
-                her satır için
-                    satır hedefe eşit değilse
-                        kalanlara satırı ekle
-                yenisi kalanların "\n" ile birleşmişi olsun
-                "notlar.txt" dosyasına yenisi yaz
+        istekte "not" varsa
+            hedef isteğin "not" değeri olsun
+            hedef ile notu kaldır
         "/yonet" adresine yönlendir
     izinli değilse
         "/giris" adresine yönlendir
 
-"/cikis" adresine istek geldiğinde
-    yöntem isteğin "yöntem" değeri olsun
-    yöntem "POST" a eşitse
-        "oturum" çerezini sil
+POST "/cikis" adresine istek geldiğinde
+    "oturum" çerezini sil
     "/" adresine yönlendir

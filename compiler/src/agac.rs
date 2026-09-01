@@ -36,6 +36,9 @@ pub struct Yapi {
 pub struct Islem {
     pub ad: String,
     pub parametreler: Vec<Parametre>,
+    /// `işlem` saf/yardımcı hesaplamayı, `eylem` ise uygulamanın yeniden
+    /// kullanılabilir ve işlem sınırı taşıyan iş kuralını tanımlar (K-087).
+    pub tur: IslemTuru,
     /// Yükleyicinin kaynak sınırında işaretlediği görünürlük. Sözdizimi
     /// değildir; geçişli paketin işlemi üst paketçe örtük yeniden açılmaz.
     pub disari_acik: bool,
@@ -45,6 +48,53 @@ pub struct Islem {
     pub donus_satiri: Option<usize>,
     pub govde: Vec<Cumle>,
     pub satir: usize,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum IslemTuru {
+    Islem,
+    Eylem,
+}
+
+/// Web adaptörünün kaynakta açıkça bağladığı HTTP yöntemi. `None` taşıyan
+/// eski rotalar geriye uyum için yalnız GET sayılır (K-087).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum HttpYontemi {
+    Get,
+    Head,
+    Post,
+    Put,
+    Patch,
+    Delete,
+}
+
+impl HttpYontemi {
+    pub fn ayristir(yazim: &str) -> Option<Self> {
+        match yazim {
+            "GET" => Some(Self::Get),
+            "HEAD" => Some(Self::Head),
+            "POST" => Some(Self::Post),
+            "PUT" => Some(Self::Put),
+            "PATCH" => Some(Self::Patch),
+            "DELETE" => Some(Self::Delete),
+            _ => None,
+        }
+    }
+
+    pub fn yazimi(self) -> &'static str {
+        match self {
+            Self::Get => "GET",
+            Self::Head => "HEAD",
+            Self::Post => "POST",
+            Self::Put => "PUT",
+            Self::Patch => "PATCH",
+            Self::Delete => "DELETE",
+        }
+    }
+
+    pub fn guvenli(self) -> bool {
+        matches!(self, Self::Get | Self::Head)
+    }
 }
 
 /// İşlem parametresi. Başlangıç yüzeyi `sayıyı al`; açık API sözleşmesi
@@ -354,9 +404,16 @@ pub enum Cumle {
     ProgramiBitir { kod: Option<Ifade>, satir: usize },
     /// `8080 kapısında sunucu başlat` (golden 25).
     SunucuBaslat { kapi: Ifade, satir: usize },
-    /// `"/durum" adresine istek geldiğinde` + gövde — olay kaydı (K-022).
+    /// `GET "/durum" adresine istek geldiğinde` + gövde — yöntemli adaptör.
+    /// Yöntemsiz eski yazım yalnız GET'e bağlanır (K-087).
     /// onekli=true → yol bir ÖNEKtir: "/yazi/" önekli adrese... (K-055).
-    IstekGeldiginde { yol: Ifade, onekli: bool, govde: Vec<Cumle>, satir: usize },
+    IstekGeldiginde {
+        yontem: Option<HttpYontemi>,
+        yol: Ifade,
+        onekli: bool,
+        govde: Vec<Cumle>,
+        satir: usize,
+    },
     /// `"çalışıyor" yanıtını gönder` — istek gövdesi içinde.
     YanitGonder { deger: Ifade, satir: usize },
     /// `"/liste" adresine yönlendir` — 303 yönlendirmesi (K-051).

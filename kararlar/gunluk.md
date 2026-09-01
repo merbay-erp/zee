@@ -925,6 +925,37 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   testlidir. 127 katalog kodu, 289 test;
   V1-P0-01 kapandı.
 
+## K-087 — Rota adaptördür; uygulama kuralı açık imzalı eylemdir
+
+- **Ayrım:** `eylem <ad>` HTTP bilmeyen uygulama iş kuralıdır; bütün girdi
+  türlerini ve dönüşünü açık yazar. Aynı çağrı web, CLI, görev ve test
+  bağlamında kullanılabilir. Yanıt/yönlendirme/çerez T044; geri alınamayan
+  ekran/girdi/donanım etkisi T048 ile eylem sınırından çıkarılır.
+- **Yöntem:** Rota `GET|HEAD|POST|PUT|PATCH|DELETE "<yol>" adresine istek
+  geldiğinde` biçimindedir. Tarihsel yöntemsiz yazım yalnız GET sayılır.
+  GET/HEAD çağrı grafiğindeki dolaylı yazma dahil T045 ile reddedilir. Rota
+  dosya/donanım yazmasını açık eylem yerine doğrudan ya da yazıcı normal işlem
+  üzerinden yapamaz (T046).
+- **Protokol korkulukları:** aynı yöntem+yol T047; yol/yöntem ayrımı 404/405;
+  64 KiB gövde ve toplam 100 alan 413; her istek K-085 üstünde 30 saniye son
+  tarih taşır ve aşım 504'tür. PUT/PATCH/DELETE gövdesi de çözülür; gerçek HEAD
+  gövde göndermez.
+- **Transaction:** Her eylem iç içe savepoint'tir. Olağan/başarılı sonuç
+  tamamlar; çalışma hatası veya başarısız Sonuç geri alır. Test IO'su dosya
+  tablosunu, gerçek IO dokunulan dosyaların eylem başındaki içeriğini saklar;
+  desteği olmayan adaptör C021 ile fail-closed davranır. Geri alma K-084 atomik
+  replace kullanır.
+- **Sınır:** Bu, yorumlayıcı-hatasında çok-dosyalı geri alma sözüdür; süreç
+  çökmesinde bütün dosyaların tek kalıcı commit'i değildir. Kimlik/yetki,
+  CSRF, idempotency, güvenli çerez ve TLS/proxy K-088/V1-P0-03'tedir; gerçek
+  TCP `--deneysel-web` sınırını korur.
+- **Kanıt:** CLI+web ortak eylem, doğrudan/dolaylı GET olumsuzları, POST→eylem
+  zorunluluğu, 404/405/413, çalışma hatasında iki dosya rollback'i ve başarısız
+  iç savepoint, geri alınamayan etki ve araya giren yazarı ezmeme olumsuzları.
+  Gerçek CLI da eski dosyayı geri yükleyip yarım oluşturulanı kaldırır. 134
+  katalog kodu, 304 test;
+  V1-P0-02 kapandı.
+
 ## K-012 — Liste sabiti: `3, 7, 1, 9 listesi`
 
 - **Karar:** Virgülle ayrılmış değerler + `listesi`. Boş: `boş liste`.

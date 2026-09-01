@@ -30,7 +30,7 @@
     },
     "tanim": {
       "name": "keyword.declaration.dil",
-      "match": "(?<![\\wçğıöşüÇĞİÖŞÜ])(işlem|yapı|test|al|döndür|kullan|birimini|paketini|modül|paket)(?![\\wçğıöşüÇĞİÖŞÜ])"
+      "match": "(?<![\\wçğıöşüÇĞİÖŞÜ])(işlem|eylem|yapı|test|al|döndür|kullan|birimini|paketini|modül|paket|GET|HEAD|POST|PUT|PATCH|DELETE)(?![\\wçğıöşüÇĞİÖŞÜ])"
     },
     "kontrol": {
       "name": "keyword.control.dil",
