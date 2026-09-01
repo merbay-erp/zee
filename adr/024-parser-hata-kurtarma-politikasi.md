@@ -66,4 +66,5 @@ durma davranışını korur; kısmi AST yürütülebilir program değildir.
   sırasını korur.
 - Parser kökü 1.200 satır bütçesinde kalır; recovery modülü ayrı 160 satır
   mimari bütçesine bağlanır.
-- Tanı kodlarının sürümler arası fixture kimliği B-022'nin ardıl işidir.
+- Tanı kodlarının sürümler arası kimliği ardıl K-114/ADR-025 fixture kapısıyla
+  tamamlanmıştır.

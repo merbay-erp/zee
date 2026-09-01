@@ -292,6 +292,12 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   çok 20 kayıttır. Altı parser ve bir gerçek LSP regresyonuyla toplam 447 test
   yeşildir. Recovery yolunu da çalıştıran 31 saniyelik lexer/parser smoke'u
   977.014 mutation'ı çökmesiz tamamladı; B-021/V1-P0-23 kapandı.
+- **Tanı kodu sürüm kimliği** (K-114, ADR-025): kaynak↔katalog kapısının
+  yanına 145 etkin ve 3 ayrılmış kaydı kapsayan şema-1 fixture'ı geldi. Her
+  kod aile uyumlu tekil semantik anahtar ve kanonik “Ne oldu” özeti taşır;
+  aynı kodun sessiz anlam değişimi ya da emekli kodun yeniden kullanılması
+  testi kırar. A004, C014 ve S032 açık mezar taşıdır. Bir fixture regresyonuyla
+  toplam 448 test yeşildir; B-022/V1-P0-24 kapandı.
 
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`

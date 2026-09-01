@@ -2,9 +2,10 @@
 
 - **Durum:** kabul (yaşayan standardı belgeler)
 - **Tarih:** 31 Ağustos 2026
-- **İlgili günlük kayıtları:** K-026, K-113; hata kataloğu bekçisi
+- **İlgili günlük kayıtları:** K-026, K-113, K-114; hata kataloğu ve kimlik bekçileri
 - **Gerçekleme:** `compiler/src/tani.rs`, `compiler/src/ayristirici/kurtarma.rs`,
-  `docs/hata-katalogu.md`, `katalog_testi.rs`, `parser_kurtarma_testi.rs`
+  `docs/hata-katalogu.md`, `katalog_testi.rs`, `tani_kimligi_testi.rs`,
+  `parser_kurtarma_testi.rs`
 
 ## Özet
 
@@ -67,6 +68,23 @@ normal parser'ın üretemeyeceği boş/imkânsız düğüm taşıyamaz ve yürü
 program sayılmaz. Parser, birim ve checker tanıları `(satır, sütun, kod,
 mesaj)` sırasıyla deterministiktir; belge başına en çok 20 tanı yayımlanır.
 Bu sayı daha çok hata olmadığı anlamına gelmez, editör tanı seli bütçesidir.
+
+### 2.2 Sürümler arası tanı kimliği (bağlayıcı)
+
+Yayımlanmış `Ö###` kodu aynı semantik olayı anlatmaya devam eder. Bir tanının
+ailesi veya hangi koşulda doğduğu değişiyorsa yeni kod ayrılır. Kaldırılan kod
+silinmez ve başka anlamda yeniden kullanılmaz; katalog ile kimlik fixture'ında
+`ayrılmış` mezar taşı olarak kalır.
+
+`compiler/tests/fixtures/tani-kimlikleri-v1.tsv` her kodu aktif/ayrılmış
+durumu, aile uyumlu tekil semantik anahtarı ve katalogdaki kanonik “Ne oldu”
+özetiyle eşler. Katalog↔fixture testi kod kümesini, durumu ve özeti birebir
+doğrular. Yalnız editoryal özet düzeltmesi fixture'ı aynı değişiklikte açıkça
+günceller; tüketici davranışını değiştiren semantik fark yeni kod ister.
+
+Dinamik mesaj ayrıntısı, öneri, konum ve işaret uzunluğu kimliğin parçası
+değildir. Program içinde yönetilebilir değer olan `Hata.kod`, derleyici
+tanısının `Tani.kod` alanından ayrı bir sözleşmedir.
 
 ## 3. Açık sorular
 

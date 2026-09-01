@@ -29,9 +29,11 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 10. K-113/ADR-024 parser kurtarmasını cümle+dengeli girinti sınırlarına,
     çoklu tanıyı kaynak sırası+20 kayıt bütçesine bağladı; B-021 kapandı
     (447 test).
-11. Sıradaki makine omurgası B-022'dir.
-12. Üçüncü sprint: B-027/B-028 → B-030/B-031 → B-043/B-044.
-13. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
+11. K-114/ADR-025 tanı kodu↔anlam bağını 148 kayıtlı sürüm fixture'ı ve üç
+    yeniden kullanılamaz mezar taşıyla sabitledi; B-022 kapandı (448 test).
+12. Sıradaki makine omurgası B-027 deterministik IO trace/replay'dir.
+13. Üçüncü sprint: B-027/B-028 → B-030/B-031 → B-043/B-044.
+14. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
 
 ## P0 — V1 öncesi dil ve derleyici omurgası
 
@@ -166,8 +168,12 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   belge başına en çok 20 kayıttır. ADR-024,
   [kurtarma rehberi](parser-hata-kurtarma.md), altı parser ve bir LSP
   regresyonuyla V1-P0-23 kapandı; toplam 447 test yeşildir.
-- **B-022 · KISMEN — diagnostic code stability kapısını güçlendir.** Katalog
-  birebir testi vardır; sürümler arası identity değişimini fixture ile koru.
+- **B-022 · KAPALI (K-114) — diagnostic code stability kapısını güçlendir.**
+  Kaynak↔katalog birebirliğine ek olarak katalog↔sürüm fixture'ı 145 etkin ve
+  3 ayrılmış kodun durumunu, aile uyumlu tekil semantik anahtarını ve kanonik
+  anlamını korur. Anlam değişikliği yeni kod ister; emekli kod mezar taşı
+  olarak kalır. ADR-025, [tanı kimliği rehberi](tani-kimligi.md) ve bağımsız
+  fixture regresyonuyla V1-P0-24 kapandı; toplam 448 test yeşildir.
 - **B-050 · AÇIK — kesin source span'i bütün AST ifadelerine yay.** K-108
   konumsuz HIR düğümünü kapattı; bugün değişken dışındaki eski AST varyantları
   satır zarfı taşır. Parser token aralıklarını bütün bileşik/leaf düğümlerde
@@ -257,5 +263,5 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 ## Bir sonraki somut kapı
 
 İnsan kanıtı hattında B-001, doldurulmuş gerçek usability formları ve önceden
-ilan edilmiş eşikleri bekler. Makine hattında B-021/K-113 kapandı; sıradaki iş
-B-022 tanı kimliği fixture kapısıdır.
+ilan edilmiş eşikleri bekler. Makine hattında B-022/K-114 kapandı; sıradaki iş
+B-027 deterministik IO trace/replay biçimidir.
