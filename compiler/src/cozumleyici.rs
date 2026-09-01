@@ -51,6 +51,17 @@ use crate::kimlik::{IslemId, SymbolId, YapiId};
 use crate::tani::Tani;
 use std::collections::HashMap;
 
+fn hir_kaynak_hatasi(satir: usize) -> Tani {
+    Tani::yeni(
+        "T016",
+        "Semantic HIR düğümünün kaynak aralığı kurulamadı — derleyici iç hatası olabilir, bildir."
+            .into(),
+        satir.max(1),
+        1,
+        1,
+    )
+}
+
 /// Çoklu denetim (RFC-0010 §3.1): üst düzey cümle başına hata toplanır;
 /// bir cümlenin hatası sonrakilerin denetimini durdurmaz. LSP/denetle --json
 /// bu görünümü kullanır; derleme (çalıştır) ilk tanıda durur.

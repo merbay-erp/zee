@@ -44,8 +44,8 @@ Checker ad çözümü ile tür denetimini aynı AST-mutasyon geçişinde yapar. 
 anında `BaglanmisProgram` typed HIR değildi. K-103/ADR-016 sonradan her
 denetlenmiş ifadeye açık tür/ID bağı veren HIR çekirdeğini zorunlu sahip yaptı;
 K-104 standart runtime ve `dene` hattını bu bağlara geçirdi. Zorunlu span
-B-020'dir. B-018'in sözü mevcut gerçek fazların yanlış adlandırılmadan
-türlerde görünür olmasıdır.
+K-108/ADR-020 ile sonradan tamamlandı. B-018'in sözü mevcut gerçek fazların
+yanlış adlandırılmadan türlerde görünür olmasıdır.
 
 ## Değişmezler
 

@@ -12,6 +12,9 @@ use crate::kimlik::{IslemId, SymbolId, YapiId};
 
 #[cfg(test)]
 mod testler;
+mod kaynak;
+
+pub use kaynak::HirKaynakAraligi;
 
 /// Bir ifadenin kaynak yazımından bağımsız semantic bağı.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -52,6 +55,7 @@ pub struct HirIfadeBilgisi {
     kimlik: HirDugumId,
     tur: HirIfadeTuru,
     bag: HirBagi,
+    kaynak_araligi: HirKaynakAraligi,
 }
 
 impl HirIfadeBilgisi {
@@ -59,8 +63,9 @@ impl HirIfadeBilgisi {
         kimlik: HirDugumId,
         tur: HirIfadeTuru,
         bag: HirBagi,
+        kaynak_araligi: HirKaynakAraligi,
     ) -> Self {
-        Self { kimlik, tur, bag }
+        Self { kimlik, tur, bag, kaynak_araligi }
     }
 
     pub const fn kimlik(self) -> HirDugumId {
@@ -73,6 +78,10 @@ impl HirIfadeBilgisi {
 
     pub const fn bag(self) -> HirBagi {
         self.bag
+    }
+
+    pub const fn kaynak_araligi(self) -> HirKaynakAraligi {
+        self.kaynak_araligi
     }
 }
 

@@ -22,6 +22,7 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-017 | [Native ağ I/O kaynak sınırları](017-native-ag-kaynak-sinirlari.md) | **kabul** (K-105/B-025) |
 | ADR-018 | [Sınırlı web oturum deposu](018-sinirli-web-oturum-deposu.md) | **kabul** (K-106/B-046) |
 | ADR-019 | [LSP girdi sınırları](019-lsp-girdi-sinirlari.md) | **kabul** (K-107/B-047) |
+| ADR-020 | [Zorunlu HIR kaynak aralığı](020-zorunlu-hir-kaynak-araligi.md) | **kabul** (K-108/B-020) |
 | ADR-004 | Bellek yönetimi prototip kararı (GC / ARC benchmark) | bekliyor |
 | ADR-005 | Native backend seçimi (Cranelift / LLVM) | bekliyor — Faz 4 |
 | ADR-007 | [Telemetri ve gizlilik: araçlar veri toplamaz](007-telemetri-ve-gizlilik.md) | **kabul** |

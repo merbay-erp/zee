@@ -7,6 +7,8 @@ pub(super) fn ifade_denetle(
     satir: usize,
 ) -> Result<Tur, Tani> {
     let adres = crate::hir::ifade_adresi(ifade);
+    let kaynak_araligi = crate::hir::HirKaynakAraligi::ifadeden(ifade, satir)
+        .ok_or_else(|| hir_kaynak_hatasi(satir))?;
     let tur = ifade_denetle_ic(ifade, ortam, baglam, satir)?;
     let bag = match ifade {
         Ifade::Degisken {
@@ -30,6 +32,7 @@ pub(super) fn ifade_denetle(
         adres,
         crate::hir::HirIfadeTuru::Deger(tur),
         bag,
+        kaynak_araligi,
     );
     Ok(tur)
 }
@@ -39,6 +42,7 @@ pub(super) fn hir_ifadesi_kaydet(
     adres: usize,
     tur: crate::hir::HirIfadeTuru,
     bag: crate::hir::HirBagi,
+    kaynak_araligi: crate::hir::HirKaynakAraligi,
 ) {
     let hir_kimligi = baglam
         .hir_ifadeleri
@@ -47,7 +51,10 @@ pub(super) fn hir_ifadesi_kaydet(
         .unwrap_or_else(|| crate::hir::HirDugumId::yeni(baglam.hir_ifadeleri.len()));
     baglam
         .hir_ifadeleri
-        .insert(adres, crate::hir::HirIfadeBilgisi::yeni_turle(hir_kimligi, tur, bag));
+        .insert(
+            adres,
+            crate::hir::HirIfadeBilgisi::yeni_turle(hir_kimligi, tur, bag, kaynak_araligi),
+        );
 }
 
 fn ifade_denetle_ic(

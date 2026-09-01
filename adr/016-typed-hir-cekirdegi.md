@@ -44,8 +44,10 @@ Eşzamanlı görev ifadeleri klonlanmaz; özgün HIR düğümünü ödünç alı
 private AST locator'ının scheduler içinde de aynı semantic kayda gitmesini
 sağlar.
 
-B-020 her semantic düğümde zorunlu source span'i ayrıca kurar. Span eksikliği,
-HIR'ın tür ve bağ gerçeğini AST'ye geri itmek için gerekçe değildir.
+K-108/ADR-020 her semantic düğümde zorunlu source span'i sonradan kurdu.
+Kesin token konumu bulunan ifadeler tam aralık, diğer mevcut AST ifadeleri
+sahte sütun yerine kaynak satırı zarfı taşır. Span eksikliği HIR'ın tür ve bağ
+gerçeğini AST'ye geri itmek için gerekçe değildir.
 
 ## Değişmezler
 
@@ -55,6 +57,7 @@ HIR'ın tür ve bağ gerçeğini AST'ye geri itmek için gerekçe değildir.
 4. `BaglanmisProgram`, HIR sahipliğini atlayıp yalnız AST taşıyamaz.
 5. Eski `Program` adaptörü ancak HIR üretildikten sonra faz bilgisini siler.
 6. Standart kaynak çalıştırma ve test hattı `CalistirmaProgrami::Hir` kullanır.
+7. Her HIR ifade kaydı zorunlu `HirKaynakAraligi` taşır.
 
 ## Sonuçlar
 

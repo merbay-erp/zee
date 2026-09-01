@@ -245,6 +245,12 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   veya eksik surrogate çifti, tek düşük surrogate ve kaçışsız kontrol
   karakteri reddedilir. Üç framing ve dört parser testiyle toplam 426 test
   yeşildir; B-047/V1-P0-17 kapandı.
+- **Zorunlu HIR kaynak aralığı** (K-108, ADR-020): her
+  `HirIfadeBilgisi` kimlik+tür+bağın yanında zorunlu `HirKaynakAraligi`
+  taşır. Değişkenlerde lexer'ın kesin satır/sütun/uzunluğu, diğer mevcut AST
+  ifadelerinde sahte kesinlik üretmeyen kaynak satırı zarfı vardır; sıfır
+  konum `NonZeroUsize` ile kurulamaz. Bir yeni davranış ve genişletilmiş HIR+
+  mimari kanıtlarıyla toplam 427 test yeşildir; B-020/V1-P0-18 kapandı.
 
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`

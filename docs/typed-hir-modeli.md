@@ -4,7 +4,7 @@ Bu belge ADR-016'nın uygulama rehberidir. Faz sırası için
 [derleyici faz modeli](derleyici-faz-modeli.md), kimlik kuralları için
 [semantic kimlik modeli](semantic-kimlik-modeli.md) birlikte okunur.
 
-## K-103/K-104 ile çalışan hat
+## K-103/K-104/K-108 ile çalışan hat
 
 ```text
 Parsed AST
@@ -16,6 +16,7 @@ Bound AST + HirOlusturmaBilgisi
 HirProgram
    ├─ HirDugumId → HirIfadeTuru::Deger(Tur) / DegerDondurmez
    ├─ HirDugumId → SymbolId / IslemId / YapiId
+   ├─ HirDugumId → zorunlu HirKaynakAraligi
    ├─ semantic ID → canonical tanım
    └─ salt-okunur kaynak AST (tanı ve v0 uyumluluğu)
 ```
@@ -25,6 +26,13 @@ ifadenin düğüm kimliğini, checker'ın kanıtladığı değer/dönüşsüz t�
 semantic bağını verir. Değer konumunda olmayan çağrı cümlesi türsüz bırakılmaz;
 `HirIfadeTuru::DegerDondurmez` taşır.
 `sembol_adi`, `islem` ve `yapi` sorguları depolama konumunu ID'den ayrı tutar.
+
+K-108/ADR-020 ile her `HirIfadeBilgisi` ayrıca zorunlu
+`HirKaynakAraligi` taşır. Değişkenlerde lexer'ın koruduğu satır+sütun+uzunluk
+`Kesin`, diğer bugünkü AST ifadelerinde cümlenin bütün kaynak satırı `Satir`
+zarfıdır. İkinci biçim eksik sütunu `1` diye uydurmaz; hassasiyet farkını
+tipte görünür tutar. Bileşenlerin `NonZeroUsize` olması konumsuz/sıfır aralığı
+yapısal olarak engeller.
 
 ## Neden AST hemen silinmedi?
 
@@ -58,5 +66,8 @@ yüzeyi sunmaz. Kalıcı paket/ABI kimliği gerekiyorsa ayrı bir karar gerekir.
 - Yeni semantic bağ `String` olarak HIR'a eklenmez; tür güvenli ID ister.
 - Runtime'ın HIR tüketicisi, bağ eksikliğini kaynak adından tahmin ederek
   onarmaz; iç değişmez hatası üretir.
-- Source span HIR düğümünün zorunlu alanı B-020'de yapılacaktır.
+- Kaynak aralığı `Option` yapılmaz veya sonradan doldurulmaz; B-020/K-108
+  değişmezi her HIR ifade kurucusunda korunur.
+- Yeni AST düğümü kesin token aralığı biliyorsa `Kesin` kaydı üretir; bilgi
+  yokken sahte sütun/uzunluk üretmez. Tam AST hassasiyetinin yayılımı B-050'dir.
 - `hir_modeli_testi.rs` ve mimari sınır testi olmadan HIR sahipliği değişmez.
