@@ -174,6 +174,7 @@ fn govde() -> ExitCode {
         Some("hata") => hata_komutu(&argumanlar),
         Some("belge") => belge_komutu(&argumanlar),
         Some("morfoloji") => morfoloji_komutu(&argumanlar),
+        Some("iz") => io_izi_komutu(&argumanlar),
         Some("parola-özeti") | Some("parola-ozeti") => parola_ozeti_komutu(&argumanlar),
         Some("yeni") => yeni_komutu(&argumanlar),
         Some("sürüm") | Some("surum") => {
@@ -213,8 +214,110 @@ fn kullanim() {
     eprintln!(
         "  dil belge <birim>          bir birimin işlemlerini listeler (örn. dil belge matematik)"
     );
+    eprintln!("  dil iz kaydet <iz> <program> [argümanlar] deterministik IO izi kaydeder");
+    eprintln!("  dil iz oynat <iz> <program>              IO izini dış dünyasız oynatır");
     eprintln!("  dil morfoloji [kelime]    etkin ek profilini veya kelimenin çözümlerini gösterir");
     eprintln!("  dil sürüm                  sürümü gösterir");
+}
+
+fn io_izi_komutu(argumanlar: &[String]) -> ExitCode {
+    let (eylem, iz_yolu, kaynak_yolu) =
+        match (argumanlar.get(1), argumanlar.get(2), argumanlar.get(3)) {
+            (Some(eylem), Some(iz_yolu), Some(kaynak_yolu)) => {
+                (eylem.as_str(), iz_yolu, kaynak_yolu)
+            }
+            _ => {
+                eprintln!(
+                    "Kullanım: dil iz kaydet <iz-dosyası> <dosya|proje> [program argümanları]"
+                );
+                eprintln!("          dil iz oynat <iz-dosyası> <dosya|proje>");
+                return ExitCode::from(2);
+            }
+        };
+    if !matches!(eylem, "kaydet" | "oynat") {
+        eprintln!("İz eylemi `kaydet` veya `oynat` olmalı.");
+        return ExitCode::from(2);
+    }
+    if eylem == "oynat" && argumanlar.len() > 4 {
+        eprintln!("Replay program argümanlarını izden alır; `oynat` sonuna argüman eklenemez.");
+        return ExitCode::from(2);
+    }
+    let girdi = match girdiyi_oku(std::path::Path::new(kaynak_yolu)) {
+        Ok(girdi) => girdi,
+        Err(hata) => {
+            hata.yazdir(false);
+            return hata.cikis_kodu();
+        }
+    };
+    let iz_yolu = std::path::Path::new(iz_yolu);
+
+    if eylem == "kaydet" {
+        if std::fs::canonicalize(iz_yolu)
+            .ok()
+            .as_deref()
+            .is_some_and(|iz| iz == std::path::Path::new(&girdi.koken))
+        {
+            eprintln!("IO izi kaynak program dosyasının üzerine yazılamaz.");
+            return ExitCode::from(2);
+        }
+        eprintln!(
+            "UYARI: IO izi program girdisi, dosya/ağ içeriği ve belirteç taşıyabilir; özel artefakt olarak sakla."
+        );
+        let program_argumanlari = argumanlar[4..].to_vec();
+        let taban = GercekIo::yeni_argumanlarla(&girdi.klasor, WebModu::Kapali, program_argumanlari);
+        let mut io = dil::yorumlayici::IzKaydedenIo::yeni(taban);
+        let cikis = calistir_io_ile(&girdi, &mut io);
+        let olay_sayisi = io.olay_sayisi();
+        let iz = match io.iz_metni() {
+            Ok(iz) => iz,
+            Err(hata) => {
+                eprintln!("IO izi yazılamadı: {}", hata);
+                return ExitCode::FAILURE;
+            }
+        };
+        if let Err(hata) = dil::kalici_dosya::atomik_yaz(iz_yolu, iz.as_bytes()) {
+            eprintln!("IO izi \"{}\" dosyasına yazılamadı: {}", iz_yolu.display(), hata);
+            return ExitCode::FAILURE;
+        }
+        eprintln!("IO izi kaydedildi: {} olay · {}", olay_sayisi, iz_yolu.display());
+        return cikis;
+    }
+
+    let boyut = match std::fs::metadata(iz_yolu) {
+        Ok(metadata) => metadata.len(),
+        Err(hata) => {
+            eprintln!("IO izi \"{}\" okunamadı: {}", iz_yolu.display(), hata);
+            return ExitCode::FAILURE;
+        }
+    };
+    if boyut > dil::yorumlayici::AZAMI_IO_IZ_BAYTI as u64 {
+        eprintln!("IO izi 64 MiB sınırını aşıyor.");
+        return ExitCode::FAILURE;
+    }
+    let iz = match std::fs::read_to_string(iz_yolu) {
+        Ok(iz) => iz,
+        Err(hata) => {
+            eprintln!("IO izi \"{}\" okunamadı: {}", iz_yolu.display(), hata);
+            return ExitCode::FAILURE;
+        }
+    };
+    let mut io = match dil::yorumlayici::IzYenidenOynatici::yeni(&iz) {
+        Ok(io) => io,
+        Err(hata) => {
+            eprintln!("IO izi geçersiz: {}", hata);
+            return ExitCode::FAILURE;
+        }
+    };
+    let cikis = calistir_io_ile(&girdi, &mut io);
+    let cikti = std::mem::take(&mut io.cikti);
+    if let Err(hata) = io.bitir() {
+        eprintln!("IO replay uyuşmazlığı: {}", hata);
+        return ExitCode::FAILURE;
+    }
+    for satir in cikti {
+        println!("{}", satir);
+    }
+    cikis
 }
 
 fn morfoloji_komutu(argumanlar: &[String]) -> ExitCode {
@@ -386,7 +489,8 @@ fn yeni_komutu(argumanlar: &[String]) -> ExitCode {
         "# {}\n\nTürkçe programlama diliyle yazılmış bir proje. `proje.dil` giriş dosyasını, sürümü, morfoloji profilini ve yerel bağımlılıkları tanımlar; `proje.kilit` bağımlılık kararını sabitler.\n\n```bash\ndil çalıştır .\n```\n\n```bash\ndil dene .\n```\n\nDenetim: `dil denetle .` · Bütün projeyi biçimle: `dil biçimle .` · Bağımlılıkları sabitle: `dil kilitle .` · Hata açıklama: `dil hata <kod>`\n",
         ad
     );
-    let git_yoksay = ".zee-yazma-kilidi\n*.zee-gecici-*\n*.zee-anahtar\n";
+    let git_yoksay =
+        ".zee-yazma-kilidi\n*.zee-gecici-*\n*.zee-anahtar\n*.zee-io-izi\n";
     let sonuc = std::fs::create_dir(klasor)
         .and_then(|_| std::fs::write(klasor.join("program.dil"), program))
         .and_then(|_| std::fs::write(klasor.join("proje.dil"), bildirim))
@@ -1213,14 +1317,19 @@ struct EylemDosyaYedegi {
 
 impl GercekIo {
     fn yeni(kok: &std::path::Path, web_modu: WebModu) -> GercekIo {
+        Self::yeni_argumanlarla(kok, web_modu, program_argumanlari())
+    }
+
+    fn yeni_argumanlarla(
+        kok: &std::path::Path,
+        web_modu: WebModu,
+        argumanlar: Vec<String>,
+    ) -> GercekIo {
         let tohum = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
             .map(|s| s.as_nanos() as u64)
             .unwrap_or(0x5EED)
             | 1;
-        // Kaynak dosyası ya da proje klasöründen sonraki parçalar programa gider.
-        // --güvenli kaynak önünde olsa da programa yanlışlıkla sızmaz (K-076).
-        let argumanlar = program_argumanlari();
         GercekIo {
             bekleyen_cerezler: Vec::new(),
             bekleyen_silinen_cerezler: Vec::new(),

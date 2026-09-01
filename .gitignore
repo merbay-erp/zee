@@ -6,3 +6,4 @@ compiler/fuzz/coverage/
 .zee-yazma-kilidi
 *.zee-gecici-*
 *.zee-anahtar
+*.zee-io-izi

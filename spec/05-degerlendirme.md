@@ -1,7 +1,8 @@
 # 05 — Değerlendirme
 
 Normatif kaynak: RFC-0001 §7 (determinizm), ADR-003 (yürütme modeli),
-RFC-0013 (ondalık aritmetik). Tanı kodları: C bölümü.
+RFC-0013 (ondalık aritmetik), RFC-0022/ADR-026 (IO izi). Tanı kodları: C
+bölümü.
 
 ## Yürütme modeli (TANIMLI)
 
@@ -16,6 +17,13 @@ ağ cevapları) = **her platformda aynı çıktı**. Bunu mümkün kılan kural:
 zaman, rastgelelik, dosya, ağ, sensör ve an ölçümü dahil BÜTÜN dış dünya
 IO soyutlamasının arkasındadır; dil çekirdeğinde gizli kaynak yoktur.
 Playground'da tohum görünürdür; testlerde IO dünyası tamamen sahtedir.
+
+Gerçek bir koşunun bu IO dünyası `dil iz kaydet` ile sürümlü, kanonik bir
+protokol olarak kaydedilebilir; `dil iz oynat` aynı çağrı/argüman sırasını dış
+etki uygulamadan yeniden yürütür. İlk fark ve tüketilmeyen olay hatadır. Tam
+byte biçimi, bütçeler ve gizlilik sınırı [spec/21](21-deterministik-io-izi.md)
+içindedir. Rastgele tohum algoritması ile sanal zaman ilerlemesinin taşınabilir
+sürüm semantiği B-028'e kadar açık kalır.
 
 ## Sayısal anlam (TANIMLI)
 

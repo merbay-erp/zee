@@ -42,6 +42,7 @@ Kırıcı değişiklik sessizce yapılamaz: davranış değişikliği RFC'den ge
 | [18 — Tekrar üretilebilir paket yayını](18-paket-yayini.md) | `.zep`, Ed25519 yayın imzası, SPDX SBOM ve SLSA provenance | RFC-0020, ADR-006, K-094 |
 | [19 — Registry metadata güven zinciri](19-registry-metadata-guveni.md) | eşik root/rotasyon, çevrimiçi rol bağları, rollback/expiry ve targets yayıncı politikası | RFC-0020, ADR-006, K-095 |
 | [20 — İfade grameri](20-ifade-grameri.md) | primary→postfix→çağrı→aritmetik→birleştirme→karşılaştırma→boolean katmanları ve tam tüketim | RFC-0021, ADR-002, K-097 |
+| [21 — Deterministik IO izi](21-deterministik-io-izi.md) | sürümlü kanonik olay biçimi, bütçeli kayıt ve dış etkisiz replay | RFC-0022, ADR-026, K-115 |
 
 ## Faza bağlı — henüz spec dışı
 

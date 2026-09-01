@@ -28,6 +28,7 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-023 | [AST/HIR invariant doğrulama politikası](023-ast-hir-invariant-politikasi.md) | **kabul** (K-112/B-017) |
 | ADR-024 | [Parser hata kurtarma politikası](024-parser-hata-kurtarma-politikasi.md) | **kabul** (K-113/B-021) |
 | ADR-025 | [Tanı kimliği kararlılık politikası](025-tani-kimligi-kararlilik-politikasi.md) | **kabul** (K-114/B-022) |
+| ADR-026 | [Deterministik IO izi mimarisi](026-deterministik-io-izi-mimarisi.md) | **kabul** (K-115/B-027) |
 | ADR-004 | Bellek yönetimi prototip kararı (GC / ARC benchmark) | bekliyor |
 | ADR-005 | Native backend seçimi (Cranelift / LLVM) | bekliyor — Faz 4 |
 | ADR-007 | [Telemetri ve gizlilik: araçlar veri toplamaz](007-telemetri-ve-gizlilik.md) | **kabul** |
