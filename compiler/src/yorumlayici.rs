@@ -9,6 +9,53 @@ use std::collections::{HashMap, VecDeque};
 
 /// Girdi/çıktı ve rastgelelik soyutlaması: testler deterministik kuyruk
 /// kullanır, CLI gerçek klavye/ekran ve gerçek rastgelelik.
+/// Ham istek metnini çözer (K-051). Biçim: "YÖNTEM yol?sorgu\ngövde" ya da
+/// yalnız "/yol" (= GET). Dönen: (yöntem, salt yol, istek sözlüğü girdileri).
+pub fn istek_parcala(ham: &str) -> (String, String, Vec<(String, String)>) {
+    let (ilk_satir, govde) = ham.split_once('\n').unwrap_or((ham, ""));
+    let (yontem, hedef) = match ilk_satir.split_once(' ') {
+        Some((y, h)) => (y.to_uppercase(), h.trim()),
+        None => ("GET".to_string(), ilk_satir.trim()),
+    };
+    let (yol, sorgu) = hedef.split_once('?').unwrap_or((hedef, ""));
+    let mut veriler: Vec<(String, String)> = Vec::new();
+    veriler.push(("yol".into(), yol.to_string()));
+    veriler.push(("yöntem".into(), yontem.clone()));
+    for kaynak in [sorgu, if yontem == "POST" { govde.trim() } else { "" }] {
+        for cift in kaynak.split('&').filter(|p| !p.is_empty()) {
+            let (ad, deger) = cift.split_once('=').unwrap_or((cift, ""));
+            let ad = url_coz(ad);
+            let deger = url_coz(deger);
+            match veriler.iter_mut().find(|(v_ad, _)| *v_ad == ad) {
+                Some((_, v)) => *v = deger,
+                None => veriler.push((ad, deger)),
+            }
+        }
+    }
+    (yontem, yol.to_string(), veriler)
+}
+
+/// Yüzde-kodlamayı ve formdaki artıyı çözer (UTF-8).
+fn url_coz(metin: &str) -> String {
+    let mut baytlar: Vec<u8> = Vec::with_capacity(metin.len());
+    let mut karakterler = metin.bytes().peekable();
+    while let Some(b) = karakterler.next() {
+        match b {
+            b'+' => baytlar.push(b' '),
+            b'%' => {
+                let yuksek = karakterler.next().and_then(|k| (k as char).to_digit(16));
+                let dusuk = karakterler.next().and_then(|k| (k as char).to_digit(16));
+                match (yuksek, dusuk) {
+                    (Some(y), Some(d)) => baytlar.push((y * 16 + d) as u8),
+                    _ => baytlar.push(b'%'),
+                }
+            }
+            b => baytlar.push(b),
+        }
+    }
+    String::from_utf8_lossy(&baytlar).into_owned()
+}
+
 pub trait GirdiCikti {
     fn yazdir(&mut self, satir: String);
     /// İstem gösterilir, bir satır cevap beklenir. `None` = girdi tükendi.
@@ -31,6 +78,8 @@ pub trait GirdiCikti {
     fn istek_al(&mut self) -> Option<String>;
     /// Son isteğe yanıt gönderir.
     fn yanit_gonder(&mut self, yanit: &str);
+    /// 303 yönlendirmesi gönderir (K-051).
+    fn yonlendir_gonder(&mut self, adres: &str);
     /// Sensör durumu (IoT simülatörü): "kapı" açık mı?
     fn sensor_acik_mi(&mut self, ad: &str) -> bool;
     /// Işık eyleyicisi (IoT simülatörü).
@@ -102,6 +151,7 @@ impl<T: GirdiCikti> GirdiCikti for GuvenliIo<T> {
         None
     }
     fn yanit_gonder(&mut self, _yanit: &str) {}
+    fn yonlendir_gonder(&mut self, _adres: &str) {}
     fn sensor_acik_mi(&mut self, ad: &str) -> bool {
         self.ic.sensor_acik_mi(ad)
     }
@@ -197,13 +247,19 @@ impl GirdiCikti for ToplayanIo {
         Ok(())
     }
     fn istek_al(&mut self) -> Option<String> {
-        let yol = self.istekler.pop_front()?;
-        self.sunucu_yanitlari.push((yol.clone(), String::new()));
-        Some(yol)
+        let ham = self.istekler.pop_front()?;
+        let (_, yol, _) = istek_parcala(&ham);
+        self.sunucu_yanitlari.push((yol, String::new()));
+        Some(ham)
     }
     fn yanit_gonder(&mut self, yanit: &str) {
         if let Some((_, bos)) = self.sunucu_yanitlari.last_mut() {
             *bos = yanit.to_string();
+        }
+    }
+    fn yonlendir_gonder(&mut self, adres: &str) {
+        if let Some((_, bos)) = self.sunucu_yanitlari.last_mut() {
+            *bos = format!("→ {}", adres);
         }
     }
     fn sensor_acik_mi(&mut self, ad: &str) -> bool {
@@ -436,7 +492,11 @@ pub fn calistir_io(program: &Program, io: &mut dyn GirdiCikti) -> Result<(), Tan
     // Sunucu kurulduysa dinlemeye geç (golden 25): kayıtlı "geldiğinde"
     // gövdeleri istek başına taze ortamda koşulur.
     if ortam.contains_key("(sunucu)") {
-        while let Some(yol) = io.istek_al() {
+        while let Some(ham) = io.istek_al() {
+            let (_, yol, veriler) = istek_parcala(&ham);
+            let istek_sozlugu = Deger::Sozluk(
+                veriler.into_iter().map(|(a, d)| (a, Deger::Metin(d))).collect(),
+            );
             let mut eslesti = false;
             for cumle in &program.cumleler {
                 if let Cumle::IstekGeldiginde { yol: kayitli, govde, satir } = cumle {
@@ -444,6 +504,7 @@ pub fn calistir_io(program: &Program, io: &mut dyn GirdiCikti) -> Result<(), Tan
                     let kayitli =
                         degerlendir(kayitli, &bos_ortam, program, io, 0, *satir)?.metne();
                     if kayitli == yol {
+                        bos_ortam.insert("istek".into(), istek_sozlugu.clone());
                         let sonuc = blok_calistir(govde, &mut bos_ortam, program, io, 0);
                         match sonuc {
                             Err(tani) if tani.kod == "Ç000" => return Ok(()),
@@ -669,6 +730,10 @@ fn blok_calistir(
             Cumle::YanitGonder { deger, satir } => {
                 let deger = degerlendir(deger, ortam, program, cikti, derinlik, *satir)?;
                 cikti.yanit_gonder(&deger.metne());
+            }
+            Cumle::Yonlendir { adres, satir } => {
+                let hedef = degerlendir(adres, ortam, program, cikti, derinlik, *satir)?.metne();
+                cikti.yonlendir_gonder(&hedef);
             }
             Cumle::Eszamanli { gorevler, satir } => {
                 // v0 yürütmesi sıralıdır (RFC-0011 §4: tek iş parçacıklı model);
@@ -1013,6 +1078,20 @@ fn degerlendir(
                         )
                         .onerili("Önce \"listenin adedi\" ile boş olup olmadığını kontrol et.".into())
                     })
+                }
+                (Ozellik::HtmlGuvenli, Deger::Metin(m)) => {
+                    let mut kacisli = String::with_capacity(m.len());
+                    for k in m.chars() {
+                        match k {
+                            '&' => kacisli.push_str("&amp;"),
+                            '<' => kacisli.push_str("&lt;"),
+                            '>' => kacisli.push_str("&gt;"),
+                            '"' => kacisli.push_str("&quot;"),
+                            '\'' => kacisli.push_str("&#39;"),
+                            b => kacisli.push(b),
+                        }
+                    }
+                    Ok(Deger::Metin(kacisli))
                 }
                 (Ozellik::Uzunluk, Deger::Metin(m)) => {
                     Ok(Deger::TamSayi(m.chars().count() as i64))

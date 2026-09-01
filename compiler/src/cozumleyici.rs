@@ -701,13 +701,28 @@ fn blok_denetle(
                         1,
                     ));
                 }
-                // Her istek taze ortamda işlenir (kapsülleme).
+                // Her istek taze ortamda işlenir (kapsülleme); form ve sorgu
+                // verisi örtük "istek" sözlüğünde gelir (K-051).
                 let mut istek_ortami: HashMap<String, Tur> = HashMap::new();
+                istek_ortami.insert("istek".into(), Tur::Sozluk(SozlukDegerTuru::Metin));
                 blok_denetle(govde, &mut istek_ortami, baglam)?;
             }
             Cumle::YanitGonder { deger, satir } => {
                 let satir = *satir;
                 ifade_denetle(deger, ortam, baglam, satir)?;
+            }
+            Cumle::Yonlendir { adres, satir } => {
+                let satir = *satir;
+                let tur = ifade_denetle(adres, ortam, baglam, satir)?;
+                if tur != Tur::Metin {
+                    return Err(Tani::yeni(
+                        "T034",
+                        format!("Yönlendirme adresi Metin olmalı; burada {} var.", tur.adi()),
+                        satir,
+                        1,
+                        1,
+                    ));
+                }
             }
             Cumle::Eszamanli { gorevler, satir } => {
                 let satir = *satir;
@@ -1174,6 +1189,7 @@ fn ifade_denetle(
                 .onerili("Önce listeye öğe ekle.".into())),
                 (Ozellik::Ilk, Tur::Liste(e)) | (Ozellik::Son, Tur::Liste(e)) => Ok(e.ture()),
                 (Ozellik::Uzunluk, Tur::Metin) => Ok(Tur::TamSayi),
+                (Ozellik::HtmlGuvenli, Tur::Metin) => Ok(Tur::Metin),
                 (Ozellik::Kelimeler, Tur::Metin) => Ok(Tur::Liste(VeriTuru::Metin)),
                 (Ozellik::Yil, Tur::Tarih) => Ok(Tur::TamSayi),
                 (Ozellik::TamKisim, Tur::Ondalik) | (Ozellik::Yuvarlanmis, Tur::Ondalik) => {

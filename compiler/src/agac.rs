@@ -199,6 +199,8 @@ pub enum Ozellik {
     TamKisim,
     /// Ondalık: en yakın tam sayıya, yarımlar sıfırdan uzağa ("yuvarlanmışı").
     Yuvarlanmis,
+    /// Metin: HTML'e gömülmeye güvenli kaçışlanmış kopya (K-051).
+    HtmlGuvenli,
 }
 
 #[derive(Debug, Clone)]
@@ -304,6 +306,8 @@ pub enum Cumle {
     IstekGeldiginde { yol: Ifade, govde: Vec<Cumle>, satir: usize },
     /// `"çalışıyor" yanıtını gönder` — istek gövdesi içinde.
     YanitGonder { deger: Ifade, satir: usize },
+    /// `"/liste" adresine yönlendir` — 303 yönlendirmesi (K-051).
+    Yonlendir { adres: Ifade, satir: usize },
     /// `eşzamanlı olarak` bloğu: görev bağlamaları (RFC-0011).
     Eszamanli { gorevler: Vec<(String, Ifade, usize)>, satir: usize },
     /// `hepsini bekle` — görev sonuçları bundan sonra kullanılabilir.

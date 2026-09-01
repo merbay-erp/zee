@@ -412,17 +412,36 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         let dinleyici = self.dinleyici.as_ref()?;
         loop {
             let (mut akis, _) = dinleyici.accept().ok()?;
-            let mut tampon = [0u8; 4096];
-            let okunan = akis.read(&mut tampon).ok()?;
+            let mut tampon = [0u8; 65536];
+            let mut okunan = akis.read(&mut tampon).ok()?;
+            // Content-Length gövdesi ilk okumaya sığmadıysa tamamla (K-051).
+            let baslik_sonu = tampon[..okunan]
+                .windows(4)
+                .position(|p| p == b"\r\n\r\n")
+                .map(|i| i + 4);
+            if let Some(govde_basi) = baslik_sonu {
+                let basliklar = String::from_utf8_lossy(&tampon[..govde_basi]).to_lowercase();
+                let beklenen: usize = basliklar
+                    .lines()
+                    .find_map(|s| s.strip_prefix("content-length:"))
+                    .and_then(|s| s.trim().parse().ok())
+                    .unwrap_or(0);
+                while okunan < tampon.len() && okunan - govde_basi < beklenen {
+                    match akis.read(&mut tampon[okunan..]) {
+                        Ok(0) | Err(_) => break,
+                        Ok(ek) => okunan += ek,
+                    }
+                }
+            }
             let istek = String::from_utf8_lossy(&tampon[..okunan]).to_string();
-            let yol = istek
-                .lines()
-                .next()
-                .and_then(|satir| satir.split_whitespace().nth(1))
-                .map(str::to_string);
-            if let Some(yol) = yol {
+            let mut satirlar = istek.lines();
+            let ilk = satirlar.next().unwrap_or("");
+            let mut parcalar = ilk.split_whitespace();
+            let (yontem, hedef) = (parcalar.next(), parcalar.next());
+            if let (Some(yontem), Some(hedef)) = (yontem, hedef) {
+                let govde = istek.split_once("\r\n\r\n").map(|(_, g)| g).unwrap_or("");
                 self.bekleyen_akis = Some(akis);
-                return Some(yol);
+                return Some(format!("{} {}\n{}", yontem, hedef, govde));
             }
         }
     }
@@ -444,6 +463,16 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                 govde.len()
             );
             let _ = akis.write_all(govde);
+        }
+    }
+    fn yonlendir_gonder(&mut self, adres: &str) {
+        use std::io::Write;
+        if let Some(mut akis) = self.bekleyen_akis.take() {
+            let _ = write!(
+                akis,
+                "HTTP/1.1 303 See Other\r\nLocation: {}\r\nContent-Length: 0\r\nConnection: close\r\n\r\n",
+                adres
+            );
         }
     }
     fn sensor_acik_mi(&mut self, _ad: &str) -> bool {

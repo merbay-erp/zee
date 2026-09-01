@@ -12,6 +12,11 @@ sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 - Playground'a "Kitaplık (obeb)" örneği eklendi.
 - **zee ile web sitesi** (K-050): sunucu HTML'i text/html olarak servis
   eder; projeler/mini-site.dil — rotalar + stil + gömülü kitaplık hesabı.
+- **Web uygulaması dalgası** (K-051): örtük `istek` sözlüğü (sorgu + POST
+  form, UTF-8 yüzde çözümü), `adresine yönlendir` (303, S041),
+  `html güvenlisi` (XSS kaçışlaması). Kanıt: panel-not-defteri projesi —
+  formlu, dosyada saklayan, gizli yollu admin panel (tarayıcıda canlı +
+  hermetik tam-döngü testi). Sınır: çerez/oturum Faz 5'te.
 
 ## v0.3.0 — 1 Eylül 2026
 

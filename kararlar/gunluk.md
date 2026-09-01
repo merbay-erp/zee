@@ -441,6 +441,29 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   meşru). Kapsamlı çözümdeki aday mekanizması bunu bilir ama bildirim
   yapısaldır → tuzaksız ad öner (gövde). Usability kitine not.
 
+## K-051 — Web dalgası: istek sözlüğü, yönlendir, html güvenlisi
+
+- **Mandat (kurucu):** "kusursuz bir web uygulaması yapabilecek seviyeye
+  getirelim" + "bu dili artık tüm projelerimde kullanmak istiyorum".
+- **Karar 1 — örtük `istek`:** rota gövdesinde `istek` adlı
+  Sözlük<Metin,Metin> hazırdır: sorgu (?ad=...) ve POST form gövdesi
+  (urlencoded, UTF-8 yüzde çözümüyle) birleşir; ayrılmış anahtarlar
+  "yol" ve "yöntem". Okuma bilinen kalıp: `isteğin "not" değeri`;
+  varlık: `istekte "not" varsa`. Rota dışında `istek` tanımsızdır.
+- **Karar 2 — `"/x" adresine yönlendir`:** 303 + Location (S041 biçim
+  tanısı). Kaydet-sonrası-yönlendir deseni dile girdi.
+- **Karar 3 — `metnin html güvenlisi`:** & < > " ' kaçışlanır. Kullanıcı
+  verisini HTML'e gömerken ZORUNLU alışkanlık — panel testinde ham <b>
+  sızmadığı doğrulanıyor (XSS koruması testli).
+- **Kanıt:** projeler/panel-not-defteri.dil — dosyada saklayan, gizli yollu,
+  formlu admin panel; tarayıcıda canlı (form → kaydet → yönlendir → liste)
+  ve hermetik tam-döngü testiyle.
+- **Sınır bilinci:** çerez/oturum YOK (Faz 5 güvenlik dalgası) — panel
+  koruması gizli yol düzeyindedir, yerel/ders kullanımı içindir; eşzamanlı
+  istek işleme sıralıdır. Bunlar bilinçli sınırdır, eksik sayılmaz.
+- **Mimari:** istek ayrıştırma tek yerde (istek_parcala) — sahte ve gerçek
+  sunucu aynı yolu koşar; hermetik test gerçeği temsil eder.
+
 ## K-012 — Liste sabiti: `3, 7, 1, 9 listesi`
 
 - **Karar:** Virgülle ayrılmış değerler + `listesi`. Boş: `boş liste`.
