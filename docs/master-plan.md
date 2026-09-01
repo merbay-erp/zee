@@ -576,8 +576,9 @@ yerine kaynak satırı zarfı taşınır. K-109/ADR-021 production'daki 46 doğr
 panic noktasını tanı/sonuca çevirdi ve dört crate kökünde kalıcı Clippy deny
 kapısı kurdu. K-110/ADR-022 sekiz saldırı tohumu, Zee mutation sözlüğü,
 deterministik UTF-8 regresyonları ve korpusu büyüten gecelik libFuzzer hattıyla
-lexer/parser panic-free sınırını kapattı. Şimdi morfoloji property, AST
-invariant ve IO trace/replay gelir. P0 maddeleri kapanmadan yeni dil özelliği varsayılan olarak öne alınmaz;
+lexer/parser panic-free sınırını kapattı. K-111 `zee-tr-1` üret→çöz uzayını
+4.096 köke genişletip bütün-aday A002 ve NFC/NFD sınırını stable+gecelik fuzz
+kanıtına bağladı. Şimdi AST invariant ve IO trace/replay gelir. P0 maddeleri kapanmadan yeni dil özelliği varsayılan olarak öne alınmaz;
 yarım güvenlik/correctness dilimi önce atomik olarak tamamlanır.
 
 K-016'nın makine hazırlığı K-096 ile
@@ -609,8 +610,8 @@ checker türleri ve ID bağlarını zorunlu HIR'a taşıdı; runtime ve `dene` b
 bağları tek semantic karar kaynağı yapar. Güvenlik incelemesiyle K-105 ağ
 kaynak sınırlarını, K-106 process içi oturum kotasını ve K-107 LSP girdi
 sınırını kapattı. K-108 HIR source span değişmezini, K-109 production panic
-audit'ini, K-110 lexer/parser fuzz hattını kapattı; sıradaki omurga B-016–B-017
-sağlamlık denetimleridir.
+audit'ini, K-110 lexer/parser fuzz hattını, K-111 morfoloji property/fuzz
+kapısını kapattı; sıradaki omurga B-017 AST invariant doğrulayıcıdır.
 # 40. Proje felsefesinin korunması
 Bu projenin başarısı yalnız compiler’ın çalışması değildir. Başarı; Türkçe konuşan bir çocuğun yabancı syntax bariyerine takılmadan algoritmik düşünceyle tanışması, aynı dilin yıllar sonra onu terk etmeye zorlamaması ve ekosistemin tek bir şirketin kapalı ürünü haline gelmemesidir.
 Her yeni özellik şu dört sorudan geçmelidir: Türkçe doğal mı? Deterministik mi? Öğrenilebilir mi? Profesyonel ölçekte savunulabilir mi? Dördünden biri hayırsa özellik yeniden tasarlanır.

@@ -2259,10 +2259,19 @@ mod web_profili_testleri {
         let adres = dinleyici.local_addr().unwrap();
         let sunucu = std::thread::spawn(move || {
             let (mut akis, _) = dinleyici.accept().unwrap();
-            let mut istek = [0u8; 1024];
-            let _ = std::io::Read::read(&mut akis, &mut istek).unwrap();
-            akis.write_all(b"HTTP/1.1 200 OK\r\nContent-Length: 7\r\nConnection: close\r\n\r\nmerhaba")
-                .unwrap();
+            // İstemci başlığını bütünüyle tüketmeden kapanmak macOS'ta okunmamış
+            // baytlar yüzünden RST üretip başarılı yanıtı kararsızlaştırabilir.
+            let mut istek = Vec::new();
+            let mut parca = [0u8; 256];
+            while !istek.windows(4).any(|pencere| pencere == b"\r\n\r\n") {
+                let okunan = std::io::Read::read(&mut akis, &mut parca).unwrap();
+                assert!(okunan > 0, "HTTP isteği başlık sonundan önce kapandı");
+                istek.extend_from_slice(&parca[..okunan]);
+            }
+            akis.write_all(
+                b"HTTP/1.1 200 OK\r\nContent-Length: 7\r\nConnection: close\r\n\r\nmerhaba",
+            )
+            .unwrap();
         });
         let mut io = GercekIo::yeni(std::path::Path::new("."), WebModu::Kapali);
         let (durum, govde) = io

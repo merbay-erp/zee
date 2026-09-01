@@ -1575,6 +1575,31 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   token/AST B-017'de; daha büyük kaynakların resource bütçesi ayrı kapıdadır.
   ADR-022 ve fuzz rehberiyle B-015/V1-P0-20 kapandı.
 
+## K-111 — Morfoloji değişmezlerini sürekli mutation'a bağla (1 Eyl)
+
+- **Üret→çöz:** `zee-tr-1` profilindeki bütün tek ekler ve bütün geçerli
+  `iyelik + dış ek` zincirleri 4.096 deterministik üretilmiş, 2–32 kod noktalı
+  Zee kökünde özgün `(kök, ek-zinciri)` çözümünü korur.
+- **Belirsizlik:** Üretilmiş 2.048 yüzeyin yapısal kök adaylarının tamamı aynı
+  kapsama konur. Tek aday aynı köke çözülür; çoklu aday sırasından bağımsız
+  A002 üretir ve asla sessiz seçim yapmaz.
+- **Unicode sınırı:** `ğ/ö/ş/â/İ` birleşik NFC yazımları lexer'dan geçer;
+  aynı görünen ayrıştırılmış NFD biçimleri var olan RFC-0002 kuralıyla S029
+  verir. Morfoloji profiline örtük normalizasyon veya yeni semantik eklenmedi.
+- **Mutation:** Ayrı libFuzzer hedefi her byte girdiden geçerli Zee kökü
+  üretir, seçilmiş tek/iki katmanlı zinciri geri çözer ve bütün adaylarda
+  A001/A002 kararını denetler. Gecelik matrix iki fuzz korpusunu bağımsız
+  büyütür. İlk morfoloji smoke'u 527.966 girdiyi 31 saniyede crash, panic veya
+  property ihlali olmadan yürüttü.
+- **Kanıt ve sınır:** Üç yeni stable regresyonla toplam 435 test yeşildir.
+  Bu geniş arama biçimsel ispat değildir; `zee-tr-1` yüzey tablosu ve üretim
+  semantiği değişmedi. Morfoloji doğrulama + ortak fuzz rehberiyle
+  B-016/V1-P0-21 kapandı.
+- **Doğrulama hijyeni:** Tam kapı sırasında görülen K-105 HTTP istemci testi
+  kararsızlığı production kodunda değil, sahte sunucunun isteği tek `read` ile
+  eksik tüketip macOS'ta RST üretmesindeydi. Stub artık başlık sonuna kadar
+  okur; default-timeout regresyonu tekrarlanabilir kaldı.
+
 ---
 
 ## Sonraki adım
@@ -1583,5 +1608,5 @@ Korpus 10 öğrenci + 5 profesyonel usability oturumuna (Hafta 12 hedefi, erkeni
 Hafta 2'de kağıt üstünde) sesli okutulacak; her kayıt için "doğal mı /
 deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
-Makine hattında B-015/K-110 kapandı. Sırada B-016 morfoloji property/fuzz,
-ardından B-017 AST invariant doğrulayıcı vardır.
+Makine hattında B-016/K-111 kapandı. Sırada B-017 AST invariant doğrulayıcı
+vardır.

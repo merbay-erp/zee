@@ -74,7 +74,8 @@ değiştir/kırp/harfler), **JSON/CSV yazma**, **Türk alfabesiyle sıralama**,
 **silme** ve **çıkış kodu** (`programı 2 ile bitir`), bölümden **kalan**,
 geri sayan aralık, para biçimi `kuruşlusu`, evrensel `metni`, çerez
 üçlemesi (oku/yaz/**sil**), **sürümlü `zee-tr-1` morfolojisi** (tek kaynak ek
-tablosu, zamir n'si, ikizleşme, iki katmanlı çözüm↔üretim), **açık işlem
+tablosu, zamir n'si, ikizleşme, iki katmanlı çözüm↔üretim ve
+[sürekli property/fuzz kanıtı](docs/morfoloji-dogrulama.md)), **açık işlem
 parametre türleri**
 (`sayıyı Ondalık olarak al`) ve public **dönüş sözleşmesi**
 (`Ondalık döndürür` / `değer döndürmez`), **proje bildirimi** (`proje.dil`, klasörden
@@ -85,9 +86,10 @@ Araçlar: `dil çalıştır(--güvenli/--deneysel-web/--web-proxy)/parola-özeti
 + **dillsp** LSP sunucusu — tanılar, hover, tanıma git, **morfolojili
 yeniden adlandırma (F2)** ([editors/](editors/)).
 Determinizm testlerde tam: rastgelelik, saat, dosyalar, HTTP, sunucu istekleri,
-sensörler ve an ölçümü IO soyutlamasından gelir — 432 test hermetik koşar.
-Lexer/parser panic-free sözünü ayrıca kalıcı saldırı korpusu, deterministik
-UTF-8 üretimi ve gecelik [libFuzzer hattı](docs/fuzzing.md) denetler.
+sensörler ve an ölçümü IO soyutlamasından gelir — 435 test hermetik koşar.
+Lexer/parser panic-free ve morfoloji üret→çöz sözlerini ayrıca kalıcı saldırı
+korpusları, deterministik üretim ve gecelik [libFuzzer hattı](docs/fuzzing.md)
+denetler.
 
 **Playground:** `playground/olustur.sh` derleyiciyi WebAssembly'e derler ve
 tek dosyalık `playground/zee-playground.html` üretir — çift tıkla aç, tarayıcıda
@@ -204,6 +206,9 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   kullanımını test dışı Clippy kapısında reddeder.
   K-110/ADR-022 lexer ve iki parser yolunu Unicode/girinti/sayı/virgül
   korpusu, 4.096 deterministik UTF-8 bileşimi ve gecelik libFuzzer ile bağladı.
+  K-111 `zee-tr-1` üret→çöz değişmezini 4.096 geniş kök, bütün adaylarda
+  fail-closed A002, NFC/NFD sınırı ve ayrı gecelik morfoloji fuzz hedefiyle
+  sertleştirdi.
   Uygulama sırası
   [öncelikli backlog](docs/oncelikli-backlog.md) ile sabittir.
   Bağlayıcı liste: [docs/v1-surum-kapilari.md](docs/v1-surum-kapilari.md).

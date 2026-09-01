@@ -1,4 +1,4 @@
-name: lexer-parser-fuzz
+name: compiler-fuzz
 
 on:
   schedule:
@@ -6,9 +6,19 @@ on:
   workflow_dispatch:
 
 jobs:
-  lexer-parser:
+  hedef:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - hedef: lexer_parser
+            korpus: lexer_parser
+            azami_girdi: 65536
+          - hedef: morfoloji
+            korpus: morfoloji
+            azami_girdi: 128
     steps:
       - uses: actions/checkout@v4
       - name: Sabit nightly araç zinciri
@@ -18,22 +28,22 @@ jobs:
       - name: Önceki kapsama korpusunu geri yükle
         uses: actions/cache@v4
         with:
-          path: compiler/fuzz/corpus/lexer_parser
-          key: lexer-parser-fuzz-${{ github.run_id }}
+          path: compiler/fuzz/corpus/${{ matrix.korpus }}
+          key: ${{ matrix.hedef }}-fuzz-${{ github.run_id }}
           restore-keys: |
-            lexer-parser-fuzz-
-      - name: Korpustan başlayarak lexer/parser fuzz
+            ${{ matrix.hedef }}-fuzz-
+      - name: Korpustan başlayarak ${{ matrix.hedef }} fuzz
         working-directory: compiler
         run: >-
-          cargo +nightly-2026-08-31 fuzz run lexer_parser fuzz/corpus/lexer_parser --
+          cargo +nightly-2026-08-31 fuzz run ${{ matrix.hedef }} fuzz/corpus/${{ matrix.korpus }} --
           -dict=fuzz/dictionaries/zee.dict
           -max_total_time=300
-          -max_len=65536
+          -max_len=${{ matrix.azami_girdi }}
           -timeout=5
       - name: Crash girdisini sakla
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: lexer-parser-fuzz-crash-${{ github.run_id }}
-          path: compiler/fuzz/artifacts/lexer_parser
+          name: ${{ matrix.hedef }}-fuzz-crash-${{ github.run_id }}
+          path: compiler/fuzz/artifacts/${{ matrix.hedef }}
           if-no-files-found: ignore

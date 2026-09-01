@@ -1,4 +1,5 @@
 use dil::cozumleyici::{ad_cozumle, Tur};
+use dil::faz::KaynakMetni;
 use dil::morfoloji::{
     cozumleri_bul, ek_uydur, ek_zinciri_uydur, kok_adaylari, profil_dokumu, SoyutEk, EK_TABLOSU,
     MAKSIMUM_EK_KATMANI, MORFOLOJI_PROFILI, MORFOLOJI_SURUMU,
@@ -29,6 +30,33 @@ const DIS_EKLER: &[SoyutEk] = &[
     SoyutEk::Bulunma,
     SoyutEk::Arac,
 ];
+
+fn deterministik_kok(tohum: u64) -> String {
+    const ILK: &[char] = &[
+        'a', 'b', 'c', 'ç', 'd', 'e', 'f', 'g', 'ğ', 'h', 'ı', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
+        'ö', 'p', 'r', 's', 'ş', 't', 'u', 'ü', 'v', 'y', 'z', 'â', 'î', 'û', '_',
+    ];
+    const DEVAM: &[char] = &[
+        'a', 'e', 'ı', 'i', 'o', 'ö', 'u', 'ü', 'b', 'c', 'ç', 'd', 'f', 'g', 'ğ', 'h', 'j', 'k',
+        'l', 'm', 'n', 'p', 'r', 's', 'ş', 't', 'v', 'y', 'z', 'â', 'î', 'û', '_', '0', '1', '2',
+        '7', '9',
+    ];
+
+    let mut durum = tohum.wrapping_add(0x9E37_79B9_7F4A_7C15);
+    let uzunluk = 2 + durum as usize % 31;
+    durum = durum
+        .wrapping_mul(6_364_136_223_846_793_005)
+        .wrapping_add(1);
+    let mut kok = String::with_capacity(uzunluk);
+    kok.push(ILK[durum as usize % ILK.len()]);
+    for _ in 1..uzunluk {
+        durum = durum
+            .wrapping_mul(6_364_136_223_846_793_005)
+            .wrapping_add(1);
+        kok.push(DEVAM[durum as usize % DEVAM.len()]);
+    }
+    kok
+}
 
 #[test]
 fn profil_surumu_ve_ek_tablosu_snapshot_ile_kilitlidir() {
@@ -95,6 +123,92 @@ fn uretilen_her_iyelik_zinciri_iki_katmanla_geri_cozulur() {
                 cozumler
             );
         }
+    }
+}
+
+#[test]
+fn genis_deterministik_kok_uzayinda_uretim_cozumu_korur() {
+    for tohum in 0..4_096 {
+        let kok = deterministik_kok(tohum);
+        for &ek in TEK_EKLER {
+            let ekler = [ek];
+            let yuzey = ek_zinciri_uydur(&kok, &ekler).expect("tek ek geçerli");
+            assert!(
+                cozumleri_bul(&yuzey)
+                    .iter()
+                    .any(|cozum| cozum.kok == kok && cozum.ekler == ekler),
+                "{kok:?} + {ekler:?} = {yuzey:?} geri çözülemedi"
+            );
+        }
+        for &dis in DIS_EKLER {
+            let ekler = [SoyutEk::Iyelik, dis];
+            let yuzey = ek_zinciri_uydur(&kok, &ekler).expect("iki katman geçerli");
+            assert!(
+                cozumleri_bul(&yuzey)
+                    .iter()
+                    .any(|cozum| cozum.kok == kok && cozum.ekler == ekler),
+                "{kok:?} + {ekler:?} = {yuzey:?} geri çözülemedi"
+            );
+        }
+    }
+}
+
+#[test]
+fn uretilen_yuzeylerin_tum_adaylari_belirsizlikte_fail_closed_kalir() {
+    for tohum in 0..2_048 {
+        let kok = deterministik_kok(tohum);
+        let ekler = if tohum & 1 == 0 {
+            vec![TEK_EKLER[tohum as usize % TEK_EKLER.len()]]
+        } else {
+            vec![SoyutEk::Iyelik, DIS_EKLER[tohum as usize % DIS_EKLER.len()]]
+        };
+        let yuzey = ek_zinciri_uydur(&kok, &ekler).expect("zincir geçerli");
+        let adaylar = kok_adaylari(&yuzey);
+        assert!(
+            !adaylar.is_empty(),
+            "{yuzey:?} en az {kok:?} kökünü taşımalı"
+        );
+        let ortam = adaylar
+            .iter()
+            .cloned()
+            .map(|aday| (aday, Tur::TamSayi))
+            .collect::<HashMap<_, _>>();
+        let sonuc = ad_cozumle(&yuzey, &ortam, 1, 1, yuzey.chars().count());
+        if adaylar.len() == 1 {
+            assert_eq!(sonuc.expect("tek aday çözülmeli"), adaylar[0]);
+        } else {
+            assert_eq!(
+                sonuc.expect_err("çoklu aday sessizce seçilemez").kod,
+                "A002",
+                "{yuzey:?} → {adaylar:?}"
+            );
+        }
+    }
+}
+
+#[test]
+fn unicode_normalizasyon_varyantlari_lexer_sinirinda_fail_closed_kalir() {
+    let varyantlar = [
+        ("ağaç", "ag\u{0306}aç"),
+        ("göl", "go\u{0308}l"),
+        ("şeker", "s\u{0327}eker"),
+        ("kâr", "ka\u{0302}r"),
+        ("İsim", "I\u{0307}sim"),
+    ];
+
+    for (birlesik, ayristirilmis) in varyantlar {
+        let birlesik_kaynak = format!("{birlesik} 1 olsun\n");
+        assert!(
+            KaynakMetni::yeni(&birlesik_kaynak).sozcukle().is_ok(),
+            "NFC yüzey kabul edilmeli: {birlesik:?}"
+        );
+
+        let ayristirilmis_kaynak = format!("{ayristirilmis} 1 olsun\n");
+        let tani = match KaynakMetni::yeni(&ayristirilmis_kaynak).sozcukle() {
+            Ok(_) => panic!("NFD yüzey sessizce kabul edilemez: {ayristirilmis:?}"),
+            Err(tani) => tani,
+        };
+        assert_eq!(tani.kod, "S029", "{ayristirilmis:?}: {tani}");
     }
 }
 

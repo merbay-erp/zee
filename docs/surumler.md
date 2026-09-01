@@ -266,6 +266,15 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   deterministik UTF-8 bileşimini ve 64 KiB uçları her ana testte oynatır.
   İlk smoke 1.048.287 girdiyi crashesiz tamamladı; toplam 432 test yeşildir,
   B-015/V1-P0-20 kapandı.
+- **Morfoloji property/fuzz sertleştirmesi** (K-111): `zee-tr-1` üret→çöz
+  değişmezi 4.096 deterministik kökün bütün geçerli tek/iki katmanlarında;
+  sessiz seçim yasağı üretilmiş 2.048 yüzeyin bütün adaylarıyla sınanır.
+  `ğ/ö/ş/â/İ` NFC yazımları geçer, NFD ayrıştırmaları S029 verir. Ayrı
+  libFuzzer hedefi byte girdiden geçerli Zee kökü üretir; gecelik matrix
+  korpusu bağımsız büyütür. İlk smoke 527.966 girdiyi ihlalsiz tamamladı;
+  üç yeni regresyonla toplam 435 test yeşildir, B-016/V1-P0-21 kapandı.
+  K-105 HTTP timeout testindeki tek-read sahte sunucu yarışı da başlığın
+  bütünüyle tüketilmesiyle giderildi; macOS RST kararsızlığı kaldırıldı.
 
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`
