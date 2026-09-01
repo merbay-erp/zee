@@ -38,7 +38,7 @@ türetilmiştir; yeni kod eklenince bu dosya güncellenir — CI'a bağlanması 
 | S024 | Eşleştirme biçimi | Başlık `şekle göre`; kollar `"kare" ise` / `değilse` |
 | S025 | Yapı tanımı biçimi | `yapı Öğrenci` + alanlar `yaş TamSayı` |
 | S026 | Test bloğu biçimi | `test "toplama doğru çalışır"` |
-| S027 | Sonlandırma biçimi | `programı bitir` |
+| S027 | Sonlandırma biçimi | `programı bitir` ya da `programı 1 ile bitir` (çıkış kodu, K-069) |
 | S028 | Türkçe/Latin dışı karakter (homoglyph koruması) | Tanı kod noktasını gösterir (örn. Kiril а = U+0430); yalnız Türkçe/Latin harf kullan |
 | S029 | Birleştirici im (U+0300–U+036F) | Birleşik karakteri kullan: g + ˘ değil ğ (RFC-0002 §2) |
 | S030 | `ve` ile `veya` aynı koşulda karıştı | Öncelik parantezsiz belirsizdir: tek tür bağlaç kullan ya da koşulu ayrı `ise` basamaklarına böl (K-027) |
@@ -133,6 +133,7 @@ türetilmiştir; yeni kod eklenince bu dosya güncellenir — CI'a bağlanması 
 | C017 | Sunucu kurulamadı | Kapı boşta mı? Düşük kapılar (<1024) yönetici ister |
 | C018 | Ağ isteği başarısız | v0 yalnız http:// destekler (TLS yok); adresi ve bağlantıyı kontrol et |
 | C019 | Çağrı derinliği 500'ü aştı | Özyinelemeli adım her seferinde temel duruma yaklaşmalı |
+| C020 | Çıkış kodu 0–255 dışında | `programı 0 ile bitir` … `programı 255 ile bitir` (K-069) |
 
 ## D — Doğrulama
 

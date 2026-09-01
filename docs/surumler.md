@@ -8,7 +8,9 @@ sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 **Tema: tip sistemi olgunlaştı, dil ayrıntıda medenileşti.**
 
 - **Aralık iki yönde** (K-068): `5 ten 1 e kadar` geri sayar (sessiz
-  boş dönüş tuzağı kapandı).
+  boş dönüş tuzağı kapandı). roket.dil projesi.
+- **Çıkış kodu** (K-069, K-024 kapanışı): `programı 1 ile bitir` —
+  süreç kodu kabuğa gider (0–255, C020); CLI otomasyon kapısı.
 
 - **Para biçimi** (K-065): `tutarın kuruşlusu` — daima iki hane.
 - **Sayısal genişleme çağrıda + imza terfisi** (K-067): Liste<TamSayı> →

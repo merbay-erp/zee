@@ -667,10 +667,17 @@ pub fn calistir(program: &Program) -> Result<Vec<String>, Tani> {
 }
 
 pub fn calistir_io(program: &Program, io: &mut dyn GirdiCikti) -> Result<(), Tani> {
+    calistir_io_kodla(program, io).map(|_| ())
+}
+
+/// calistir_io + çıkış kodu (K-069): "programı 1 ile bitir" → Ok(1);
+/// olağan bitiş → Ok(0). CLI süreç çıkış kodunu buradan alır.
+pub fn calistir_io_kodla(program: &Program, io: &mut dyn GirdiCikti) -> Result<i64, Tani> {
+    let kodu = |tani: &Tani| tani.mesaj.parse::<i64>().unwrap_or(0);
     let mut ortam: HashMap<String, Deger> = HashMap::new();
     match blok_calistir(&program.cumleler, &mut ortam, program, io, 0) {
         // "programı bitir" olağan bir sonlanmadır (Ç000 iç nöbetçisi).
-        Err(tani) if tani.kod == "Ç000" => return Ok(()),
+        Err(tani) if tani.kod == "Ç000" => return Ok(kodu(&tani)),
         Err(tani) => return Err(tani),
         Ok(_) => {}
     }
@@ -698,7 +705,7 @@ pub fn calistir_io(program: &Program, io: &mut dyn GirdiCikti) -> Result<(), Tan
                         bos_ortam.insert("çerezler".into(), cerez_sozlugu.clone());
                         let sonuc = blok_calistir(govde, &mut bos_ortam, program, io, 0);
                         match sonuc {
-                            Err(tani) if tani.kod == "Ç000" => return Ok(()),
+                            Err(tani) if tani.kod == "Ç000" => return Ok(kodu(&tani)),
                             Err(tani) => return Err(tani),
                             Ok(_) => {}
                         }
@@ -712,7 +719,7 @@ pub fn calistir_io(program: &Program, io: &mut dyn GirdiCikti) -> Result<(), Tan
             }
         }
     }
-    Ok(())
+    Ok(0)
 }
 
 /// Tek bir testi taze ortamda koşar; ilk doğrulama/çalışma hatasında durur.
@@ -1001,8 +1008,28 @@ fn blok_calistir(
                 };
                 cikti.bekle_ms(sure_ms);
             }
-            Cumle::ProgramiBitir { satir } => {
-                return Err(Tani::yeni("Ç000", "programı bitir".into(), *satir, 1, 1));
+            Cumle::ProgramiBitir { kod, satir } => {
+                // Ç000 mesajı çıkış kodunu taşır (K-069): "0" ya da verilen kod.
+                let kod = match kod {
+                    Some(ifade) => {
+                        let deger = tam_sayi(
+                            degerlendir(ifade, ortam, program, cikti, derinlik, *satir)?,
+                            *satir,
+                        )?;
+                        if !(0..=255).contains(&deger) {
+                            return Err(Tani::yeni(
+                                "C020",
+                                format!("Çıkış kodu 0–255 arasında olmalı; {} verildi.", deger),
+                                *satir,
+                                1,
+                                1,
+                            ));
+                        }
+                        deger
+                    }
+                    None => 0,
+                };
+                return Err(Tani::yeni("Ç000", format!("{}", kod), *satir, 1, 1));
             }
             Cumle::IslemTanimi(islem) => return Err(ic_hata(islem.satir)),
             Cumle::YapiTanimi(yapi) => return Err(ic_hata(yapi.satir)),

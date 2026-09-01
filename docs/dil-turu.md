@@ -469,7 +469,7 @@ argümanlar komut satırından gelenler olsun
 
 argümanlar boşsa
     "Kullanım: selamla <isim> ..." yaz
-    programı bitir
+    programı 2 ile bitir      # çıkış kodu kabuğa gider (K-069)
 
 her argüman için
     "Merhaba " ile argüman yaz

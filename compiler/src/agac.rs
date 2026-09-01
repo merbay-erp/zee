@@ -325,7 +325,7 @@ pub enum Cumle {
     /// Değer beklemeyen işlem çağrısı cümlesi: `"Ayşe" ve 10 ile selamla`.
     CagriCumlesi { cagri: Ifade, satir: usize },
     /// `programı bitir` — programı olağan biçimde sonlandırır (K-024).
-    ProgramiBitir { satir: usize },
+    ProgramiBitir { kod: Option<Ifade>, satir: usize },
     /// `8080 kapısında sunucu başlat` (golden 25).
     SunucuBaslat { kapi: Ifade, satir: usize },
     /// `"/durum" adresine istek geldiğinde` + gövde — olay kaydı (K-022).
