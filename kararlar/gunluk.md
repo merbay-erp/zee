@@ -637,6 +637,15 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   hep-Ondalık yapmak TamSayı kullanıcılarını kırardı). RFC-0014 açık
   sorusuna eklendi sayılır.
 
+## K-069 — Çıkış kodu: `programı 1 ile bitir` (K-024 kapanışı)
+
+- **Karar:** K-024'ün adayı gerçek oldu: `programı <kod> ile bitir` —
+  kod TamSayı (T034) ve 0–255 (C020); süreç çıkış kodu olur. `programı
+  bitir` = kod 0. CLI otomasyonu/betikleri için kapı: `dil çalıştır`
+  artık kabuğa anlamlı kod döndürür. Lib: calistir_io_kodla (calistir_io
+  aynen korunur).
+- **Proje:** roket.dil — geri sayımın (K-068) beş satırlık vitrini.
+
 ## K-012 — Liste sabiti: `3, 7, 1, 9 listesi`
 
 - **Karar:** Virgülle ayrılmış değerler + `listesi`. Boş: `boş liste`.

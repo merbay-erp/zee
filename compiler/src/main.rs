@@ -553,8 +553,9 @@ fn calistir_io_ile(
             return ExitCode::FAILURE;
         }
     };
-    match dil::yorumlayici::calistir_io(&program, io) {
-        Ok(()) => ExitCode::SUCCESS,
+    match dil::yorumlayici::calistir_io_kodla(&program, io) {
+        // K-069: `programı N ile bitir` süreç çıkış kodu olur (0–255).
+        Ok(kod) => ExitCode::from(kod.clamp(0, 255) as u8),
         Err(tani) => {
             eprint!("{}", tani.raporla(kaynak));
             ExitCode::FAILURE

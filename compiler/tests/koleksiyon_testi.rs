@@ -250,3 +250,32 @@ fn aralik_geri_sayar() {
         vec!["3", "2", "1", "ateşle"]
     );
 }
+
+#[test]
+fn cikis_kodu_tasinir() {
+    // K-069: `programı N ile bitir` → calistir_io_kodla N döner.
+    let program = dil::kaynagi_derle("\"a\" yaz\nprogramı 7 ile bitir\n\"b\" yaz\n")
+        .expect("derlenmeli");
+    let mut io = dil::yorumlayici::ToplayanIo::yeni(Vec::new());
+    let kod = dil::yorumlayici::calistir_io_kodla(&program, &mut io).expect("çalışmalı");
+    assert_eq!(kod, 7);
+    assert_eq!(io.cikti, vec!["a"]);
+
+    let program = dil::kaynagi_derle("\"a\" yaz\n").expect("derlenmeli");
+    let mut io = dil::yorumlayici::ToplayanIo::yeni(Vec::new());
+    assert_eq!(dil::yorumlayici::calistir_io_kodla(&program, &mut io).unwrap(), 0);
+
+    let hata = kaynagi_calistir("programı 999 ile bitir\n").expect_err("C020");
+    assert_eq!(hata.kod, "C020");
+    let hata = kaynagi_calistir("programı \"üç\" ile bitir\n").expect_err("T034");
+    assert_eq!(hata.kod, "T034");
+}
+
+#[test]
+fn roket_geri_sayar() {
+    let kaynak = std::fs::read_to_string("../projeler/roket.dil").expect("okunmalı");
+    let cikti = kaynagi_calistir(&kaynak).expect("çalışmalı");
+    assert_eq!(cikti.first().unwrap(), "Fırlatmaya hazırlanın!");
+    assert_eq!(cikti.last().unwrap(), "🚀 ATEŞLE!");
+    assert!(cikti.contains(&"5".to_string()) && cikti.contains(&"1".to_string()));
+}

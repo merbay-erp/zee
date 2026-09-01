@@ -689,7 +689,20 @@ fn blok_denetle(
                 blok_denetle(govde, ortam, baglam)?;
                 kapsam_bitir(ortam, &kapsam);
             }
-            Cumle::ProgramiBitir { .. } => {}
+            Cumle::ProgramiBitir { kod, satir } => {
+                if let Some(kod) = kod {
+                    let tur = ifade_denetle(kod, ortam, baglam, *satir)?;
+                    if tur != Tur::TamSayi {
+                        return Err(Tani::yeni(
+                            "T034",
+                            format!("Çıkış kodu TamSayı olmalı; burada {} var.", tur.adi()),
+                            *satir,
+                            1,
+                            1,
+                        ));
+                    }
+                }
+            }
             Cumle::SunucuBaslat { kapi, satir } => {
                 let satir = *satir;
                 let tur = ifade_denetle(kapi, ortam, baglam, satir)?;

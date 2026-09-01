@@ -508,7 +508,14 @@ impl Ayristirici {
             }
             Some("bitir") => {
                 if satir_tokenlari.len() == 2 && kelime_mi(&satir_tokenlari[0], "programı") {
-                    Ok(Cumle::ProgramiBitir { satir: satir_no })
+                    Ok(Cumle::ProgramiBitir { kod: None, satir: satir_no })
+                } else if satir_tokenlari.len() == 4
+                    && kelime_mi(&satir_tokenlari[0], "programı")
+                    && kelime_mi(&satir_tokenlari[2], "ile")
+                {
+                    // K-069 (K-024 adayı): `programı 1 ile bitir` — çıkış kodu.
+                    let kod = tekil_ifade(satir_tokenlari[1].clone())?;
+                    Ok(Cumle::ProgramiBitir { kod: Some(kod), satir: satir_no })
                 } else {
                     Err(Tani::yeni(
                         "S027",

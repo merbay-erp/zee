@@ -1,0 +1,10 @@
+# Roket — ilk geri sayımın!
+# Öğretilen: geri sayan aralık (K-068), bekleme, coşku.
+
+"Fırlatmaya hazırlanın!" yaz
+
+5 ten 1 e kadar her saniye için
+    saniyeyi yaz
+    yarım saniye bekle
+
+"🚀 ATEŞLE!" yaz

@@ -24,6 +24,7 @@ kutusuna satır satır yaz.) Ya da: `dil çalıştır projeler/<dosya>.dil`
 | [panel-not-defteri.dil](panel-not-defteri.dil) | admin panel: form + kaydet + yönlendir | Silme rotası ekle; anahtarı değiştir |
 | [girisli-panel.dil](girisli-panel.dil) | parola + oturum (çerez) — mantık saf zee | Çıkışta oturumu dosyadan da sil |
 | [envanter.dil](envanter.dil) | stok defteri: yapı listesi + JSON yedek | CSV yedeği de al; en pahalıyı bul |
+| [roket.dil](roket.dil) | geri sayan aralık, bekleme | 10'dan başlat; kaçışta iptal ekle |
 
 Hepsi regression testindedir (`compiler/tests/projeler_testi.rs`) — dil
 değişirse bu projeler kırılamaz; kırılırsa CI söyler.
