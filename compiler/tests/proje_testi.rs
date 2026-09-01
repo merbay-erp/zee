@@ -282,6 +282,14 @@ fn yerel_paketler_kokenli_yuklenir_ve_icerikle_kilitlenir() {
         !ilk_kilit.contains(&gecici.yol().to_string_lossy().into_owned()),
         "kilit makineye özgü mutlak yol taşımamalı"
     );
+    let paketler = Command::new(ikili)
+        .args(["paketler", uygulama.to_str().expect("utf8")])
+        .output()
+        .expect("paket grafiği");
+    assert!(paketler.status.success());
+    let paket_ciktisi = String::from_utf8_lossy(&paketler.stdout);
+    assert!(paket_ciktisi.contains("doğrudan: hesap 2.1.0"));
+    assert!(paket_ciktisi.contains("geçişli: temel 1.0.0"));
 
     let calistir = Command::new(ikili)
         .args(["çalıştır", uygulama.to_str().expect("utf8")])
@@ -449,6 +457,42 @@ fn ekle_komutu_once_dogrular_sonra_bildirimi_ve_kilidi_gunceller() {
         onceki_kilit,
         std::fs::read(uygulama.join("proje.kilit")).expect("aynı kilit")
     );
+
+    // Kaynakta kullanım varken güvenli kaldırma durur ve dosyaları korur.
+    let kullanilirken = Command::new(ikili)
+        .current_dir(gecici.yol())
+        .args(["çıkar", "hesap", "uygulama"])
+        .output()
+        .expect("kullanılanı çıkar");
+    assert!(!kullanilirken.status.success());
+    assert!(String::from_utf8_lossy(&kullanilirken.stderr).contains("P010"));
+    assert_eq!(
+        bildirim,
+        std::fs::read_to_string(uygulama.join("proje.dil")).expect("korunan bildirim")
+    );
+
+    std::fs::write(uygulama.join("ana.dil"), "\"paketsiz\" yaz\n")
+        .expect("paket kullanımını kaldır");
+    let cikar = Command::new(ikili)
+        .current_dir(gecici.yol())
+        .args(["çıkar", "hesap", "uygulama"])
+        .output()
+        .expect("paketi çıkar");
+    assert!(
+        cikar.status.success(),
+        "{}",
+        String::from_utf8_lossy(&cikar.stderr)
+    );
+    let son_bildirim =
+        std::fs::read_to_string(uygulama.join("proje.dil")).expect("paketsiz bildirim");
+    assert!(son_bildirim.contains("yerel_bağımlılıklar boş liste olsun"));
+    assert!(!son_bildirim.contains("../hesap"));
+    let bos_liste = Command::new(ikili)
+        .args(["paketler", uygulama.to_str().expect("utf8")])
+        .output()
+        .expect("boş paket grafiği");
+    assert!(bos_liste.status.success());
+    assert!(String::from_utf8_lossy(&bos_liste.stdout).contains("Bağımlılık yok"));
 }
 
 #[test]

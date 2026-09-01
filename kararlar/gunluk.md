@@ -793,6 +793,23 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
 - **Kanıt:** CLI entegrasyonu yorum koruma, çalışır paket, idempotent tekrar,
   öz-bağımlılık reddi ve hata sonrası manifest/kilit değişmezliğini sınar.
 
+## K-080 — Paket grafiği görünür; kullanılan paket sessizce çıkarılmaz
+
+- **Görünürlük:** `dil paketler [proje]` çözülmüş grafiği doğrudan/geçişli
+  ayrımı, sürüm, taşınabilir yol ve SHA-256 kilit özetiyle listeler.
+- **Kaldırma:** `dil çıkar <paket> [proje]` yalnız doğrudan bağımlılığı hedefler.
+  Ana projenin herhangi bir `.dil` kaynağında `X paketini kullan` kalmışsa
+  açık P010 verir; kullanıcı önce kullanımı ve bağlı çağrıları kaldırır.
+- **Neden güvenli varsayılan:** Kullanılan paketi bildirimin altından çekip
+  sonraki derlemeyi bozmak yerine hata paketin ilk kullanım yerini gösterir.
+  Başarısız işlem bildirim ve kilidi byte-byte korur.
+- **Bütünlük:** Başarıda aday grafik yazmadan önce doğrulanır; bildirim/kilit
+  K-079'un iki dosyalı geri alma yolu ile güncellenir. Doğrudan kenarın
+  kaldırılması, başka paketin ihtiyaç duyduğu geçişli düğümü silmez.
+- **Kanıt:** Entegrasyon testi doğrudan/geçişli listelemeyi, P010 konumunu,
+  başarısız işlem değişmezliğini ve kullanım kaldırıldıktan sonraki başarılı
+  çıkarma/kilit yenilemeyi sınar.
+
 ## K-012 — Liste sabiti: `3, 7, 1, 9 listesi`
 
 - **Karar:** Virgülle ayrılmış değerler + `listesi`. Boş: `boş liste`.

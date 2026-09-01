@@ -28,6 +28,11 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   sıralar. Yeni bağımlılık grafiği yazmadan önce bütünüyle doğrulanır. Başarılı
   işlem bildirimi ve kilidi birlikte günceller; yinelenen gerçek kök ikinci kez
   eklenmez, öz-bağımlılık P007'dir.
+- **Paket grafiği ve güvenli kaldırma** (K-080): `dil paketler [proje]`
+  doğrudan/geçişli paketleri sürüm, göreli yol ve kilit özetiyle listeler.
+  `dil çıkar <paket> [proje]` yalnız doğrudan paketi kaldırır; kaynakta kalan
+  `X paketini kullan` P010 ile işlemi değişiklik yapmadan durdurur. Başarıda
+  bildirim/kilit birlikte güncellenir ve yazma hatasında geri alınır.
 - **Proje çapında biçimleme** (K-077): `dil biçimle <klasör>` bütün `.dil`
   kaynaklarını deterministik yol sırasında biçimler; önce tamamını doğrular,
   tek hata varsa hiçbir dosyaya dokunmaz.

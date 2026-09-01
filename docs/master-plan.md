@@ -212,6 +212,11 @@ SBOM ve uzak sürüm çözümü henüz başlamamıştır.
 `dil ekle <yerel-yol> [proje]` (K-079) aday grafiği diske yazmadan çözer;
 başarılıysa yorumu koruyan resmî biçimde bildirimi ve kilidi günceller,
 yazma hatasında önceki iki dosyayı geri yüklemeyi dener.
+`dil paketler [proje]` (K-080) doğrudan/geçişli grafiği sürüm, taşınabilir yol
+ve SHA-256 özetle açıklar. `dil çıkar <paket> [proje]` yalnız doğrudan
+bağımlılığı kaldırır; ana proje kaynağı paketi hâlâ kullanıyorsa P010 ile hiçbir
+dosyaya dokunmadan durur. Başarı K-079'un iki dosyalı geri alma sözleşmesini
+kullanır.
 # 15. Geliştirici araçları
 dil: resmi CLI.
 dilfmt: tek resmi formatter.

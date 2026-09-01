@@ -123,6 +123,15 @@ sıralanıp tekilleştirilir. Aday manifest ve bütün geçişli grafik **yazmad
 hatasında eski iki dosya geri yüklenir. Aynı kanonik kök farklı yol yazımıyla
 ikinci kez eklenmez.
 
+`dil paketler [proje]` (K-080), çözülmüş ve kilidi doğrulanmış grafiği
+doğrudan/geçişli ayrımıyla; ad, sürüm, ana projeye göre yol ve SHA-256 özetle
+gösterir. `dil çıkar <paket> [proje]` yalnız doğrudan bağımlılığı hedefler.
+Ana projenin herhangi bir `.dil` kaynağında paketi alan bir
+`X paketini kullan` bildirimi kalmışsa P010 ile, bildirim ve kilide dokunmadan
+durur. Başarılı kaldırma K-079'un aday-grafik-doğrulama ve iki dosyalı geri alma
+sözleşmesini kullanır. Kaldırılan doğrudan paket başka bir paketin bağımlılığı
+ise çözülmüş grafikte geçişli olarak kalabilir.
+
 ### 4.2 Uzak paketler ve yayın (Faz 5 — taslak)
 
 - Registry adına göre `dil ekle <ad>`, sürüm aralığı ve adresleme ayrıca
