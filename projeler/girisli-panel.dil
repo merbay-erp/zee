@@ -114,5 +114,5 @@ işlem oturumu geçerli mi
         "/giris" adresine yönlendir
 
 "/cikis" adresine istek geldiğinde
-    "oturum" çerezine "" yaz
+    "oturum" çerezini sil
     "/" adresine yönlendir

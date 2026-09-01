@@ -204,3 +204,18 @@ fn girisli_panel_not_siler() {
     assert!(son.contains("Kalacak"), "{}", son);
     assert!(!son.contains("Silinecek"), "silinen not listede kalmamalı: {}", son);
 }
+
+#[test]
+fn cerez_silme_kaydedilir() {
+    // K-073: çıkış gerçek silme başlığı üretir.
+    let kaynak = "\
+8080 kapısında sunucu başlat
+
+\"/cikis\" adresine istek geldiğinde
+    \"oturum\" çerezini sil
+    \"/\" adresine yönlendir
+";
+    let io = sunucuyla(kaynak, vec!["/cikis"]);
+    assert_eq!(io.yazilan_cerezler, vec![("oturum".into(), "×silindi".into())]);
+    assert_eq!(io.sunucu_yanitlari[0].1, "→ /");
+}

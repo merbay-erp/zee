@@ -424,6 +424,7 @@ Oturum için çerez kapısı (K-052): `çerezler` sözlüğü + `çerezine yaz`:
     kimlik çerezlerin "oturum" değeri olsun
     ...
 "oturum" çerezine kimlik yaz
+"oturum" çerezini sil            # çıkışta (Max-Age=0, K-073)
 ```
 
 Çalışan örnekler: projeler/panel-not-defteri.dil (temel) ve
