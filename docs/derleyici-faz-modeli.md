@@ -33,6 +33,13 @@ dayanmaz.
 `BaglanmisProgram::program()` immutable görünüm verir. `into_program()` faz
 bilgisini bilinçli silen sınırdır; checker öncesi çağrılamaz.
 
+Kurtarmalı `TokenAkisi::ayristir_kurtarmali`, K-113/ADR-024 uyarınca hatalı
+cümlede satır sonuna ve yalnız ona ait dengeli girinti gövdesinin sonuna
+senkronlanır. Sağlam kardeşler kendi bloklarında kalır. Dönen kısmi
+`AyristirilmisAst` yalnız çoklu tanı içindir; tanılar varken bağlanmış veya
+yürütülebilir faz sayılmaz. Ayrıntı
+[parser kurtarma rehberindedir](parser-hata-kurtarma.md).
+
 ## K-103/K-104/K-108 sonrası HIR hattı
 
 `BaglanmisProgram` artık ADR-016'daki `HirProgram`ı zorunlu taşır. Her
@@ -57,6 +64,8 @@ taşıyan C000'dir. Ayrıntı [typed HIR rehberinde](typed-hir-modeli.md) ve
 - `faz_modeli_testi.rs` parsed/bound farkını ve eski API uyumluluğunu sınar.
 - `invariant_testi.rs` parsed AST saflığını, bağlı AST/HIR tamlığını ve
   imkânsız sentetik biçimlerin reddini sınar.
+- `parser_kurtarma_testi.rs` hatalı iç cümleden sonra kardeş/blok sahipliğini,
+  derinlik geri alımını ve tanı bütçesini sınar.
 - `faz.rs` compile-fail örneği yanlış geçişin derlenmediğini kanıtlar.
 - `mimari_sinir_testi.rs` standart hattın faz türlerini gerçekten kullandığını
   ve modül bütçesini korur.

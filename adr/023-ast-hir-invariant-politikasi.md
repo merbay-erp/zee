@@ -41,6 +41,10 @@ kaynak satırı taşıyan `InvariantHatasi`, süreç panic'i yerine `C000` tanı
 dönüşür. Release derlemesinde otomatik tam-ağaç taraması yoktur; public açık
 doğrulama API'si gerektiğinde çağrılabilir.
 
+K-113/ADR-024 kurtarmalı parser'ın kısmi AST'sini de aynı parser-fazı
+değişmezlerine bağladı; recovery hata düğümü uydurmaz, yalnız güvenle
+ayrıştırılmış cümleleri doğru ebeveyn blokta korur.
+
 AST dönüşümleri mevcut kutulu alt düğümü klonlamak yerine taşımak zorundadır.
 K-112 sırasında özellik→alan dönüşümündeki klon kaldırılmış, beklenmeyen
 varyant `T016` ile sonuçlanan tek sahipli yardımcıya alınmıştır.

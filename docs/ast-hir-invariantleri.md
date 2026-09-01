@@ -17,6 +17,10 @@ birleştirme/mantıksal zincir, boş `ListeSabiti`, koşulsuz `Ise`/`Gore` ve
 çağrı taşımayan `CagriCumlesi` gibi normal parser'ın üretemeyeceği biçimleri
 yakalar.
 
+K-113'ün kurtarmalı parser'ı da ürettiği kısmi `AyristirilmisAst` üzerinde bu
+kapıdan geçer. Hatalı satırlar çıkarılabilir; fakat recovery boş/imkânsız
+sentetik düğüm üretemez ve sağlam kardeşi yanlış ebeveyne taşıyamaz.
+
 Checker sonrası kapı programın ana cümlelerini, deterministik sırada işlem
 gövdelerini ve testleri dolaşır. Her ifade için şunları birlikte doğrular:
 

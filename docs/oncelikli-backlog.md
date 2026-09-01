@@ -26,9 +26,12 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
    sınırını ve gecelik mutation hattını büyüttü; B-016 kapandı (435 test).
 9. K-112/ADR-023 parser AST ve bağlı typed-HIR arasındaki yürütülebilir
    invariant kapısını kurdu; B-017 kapandı (440 test).
-10. Sıradaki makine omurgası B-021, ardından B-022'dir.
-11. Üçüncü sprint: B-027/B-028 → B-030/B-031 → B-043/B-044.
-12. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
+10. K-113/ADR-024 parser kurtarmasını cümle+dengeli girinti sınırlarına,
+    çoklu tanıyı kaynak sırası+20 kayıt bütçesine bağladı; B-021 kapandı
+    (447 test).
+11. Sıradaki makine omurgası B-022'dir.
+12. Üçüncü sprint: B-027/B-028 → B-030/B-031 → B-043/B-044.
+13. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
 
 ## P0 — V1 öncesi dil ve derleyici omurgası
 
@@ -155,8 +158,14 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   diğer mevcut AST ifadeleri sahte sütun uydurmayan `Satir { satir }` zarfı
   taşır. ADR-020, kesin değişken + bileşik ifade davranış kanıtı ve mimari
   sahiplik testiyle V1-P0-18 kapandı; toplam 427 test yeşildir.
-- **B-021 · AÇIK — LSP odaklı error recovery planı.** Cümle sınırı ve girinti
-  güvenilir synchronization point olarak birden çok tanıyı desteklemelidir.
+- **B-021 · KAPALI (K-113) — LSP odaklı error recovery planı.** Hatalı cümle
+  satır sonunda, yalnız ona ait alt ağaç dengeli girinti çıkışında
+  senkronlanır. Sağlam kardeş aynı blokta kalır; parser derinliği sonraki üst
+  tanıma sızmaz. Yapı alanı, `göre` kolu, eşzamanlı görev ve devam kolları
+  sonraki geçerli satırı korur. CLI/LSP tanıları kaynak konumunda kararlı ve
+  belge başına en çok 20 kayıttır. ADR-024,
+  [kurtarma rehberi](parser-hata-kurtarma.md), altı parser ve bir LSP
+  regresyonuyla V1-P0-23 kapandı; toplam 447 test yeşildir.
 - **B-022 · KISMEN — diagnostic code stability kapısını güçlendir.** Katalog
   birebir testi vardır; sürümler arası identity değişimini fixture ile koru.
 - **B-050 · AÇIK — kesin source span'i bütün AST ifadelerine yay.** K-108
@@ -248,5 +257,5 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 ## Bir sonraki somut kapı
 
 İnsan kanıtı hattında B-001, doldurulmuş gerçek usability formları ve önceden
-ilan edilmiş eşikleri bekler. Makine hattında B-017/K-112 kapandı; sıradaki iş
-B-021 LSP hata kurtarma planı, ardından B-022 tanı kimliği fixture kapısıdır.
+ilan edilmiş eşikleri bekler. Makine hattında B-021/K-113 kapandı; sıradaki iş
+B-022 tanı kimliği fixture kapısıdır.

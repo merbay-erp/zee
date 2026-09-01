@@ -55,6 +55,9 @@ Tek-tanı ve çoklu-tanı girişleri aynı katmanları aynı sırada kullanır.
 - B-017/K-112, katmanlar arası AST/HIR değişmezlerini debug/test aşamasında
   [ayrı kapıyla](ast-hir-invariantleri.md) doğrular; bu katmanlar semantic
   kuralları üretir, invariant modülü faz çıktısının çapraz tamlığını denetler.
+- B-021/K-113 çoklu-tanı parser recovery'sini cümle/girinti sınırında
+  tamamladı. Checker kısmi AST'de cümle başına sürer; birleşik çıktı kaynak
+  sırasında ve ortak 20 tanı bütçesindedir.
 
 B-007 açık kalır; K-101 semantic ID, K-102 faz tipi, K-103 typed HIR üretimi,
 K-104 runtime tüketimi ve K-112 fazlar arası doğrulama temelini kapatır.

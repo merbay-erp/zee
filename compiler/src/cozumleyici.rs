@@ -105,7 +105,7 @@ pub fn denetle_coklu(program: &mut Program) -> Vec<Tani> {
         {
             tanilar.push(tani);
             baglam.bekleyen_gorevler = onceki_bekleyenler;
-            if tanilar.len() >= 20 {
+            if tanilar.len() >= crate::tani::AZAMI_TANI_SAYISI {
                 break;
             }
         }
@@ -115,7 +115,7 @@ pub fn denetle_coklu(program: &mut Program) -> Vec<Tani> {
         let mut test_ortami = SembolTablosu::yeni(baglam.test_kapsami(test_indeksi));
         if let Err(tani) = blok_denetle(&mut test.govde, &mut test_ortami, &mut baglam) {
             tanilar.push(tani);
-            if tanilar.len() >= 20 {
+            if tanilar.len() >= crate::tani::AZAMI_TANI_SAYISI {
                 break;
             }
         }

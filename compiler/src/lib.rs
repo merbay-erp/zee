@@ -506,8 +506,9 @@ pub fn kaynagi_dene(kaynak: &str) -> Result<Vec<TestSonucu>, Tani> {
     Ok(programi_dene_baglanmis(&program))
 }
 
-/// TÜM tanıları toplar (RFC-0010 §3.1): sözcükleme ilk hatada durur (nadir);
-/// ayrıştırma cümle atlayarak, denetim cümle başına sürerek toplar.
+/// TÜM tanıları toplar (RFC-0010 §2.1): sözcükleme ilk hatada durur (nadir);
+/// ayrıştırma cümle+girinti sınırında, denetim cümle başına sürer. Tanılar
+/// kaynak konumunda sıralanır ve belge başına 20 kayıtla sınırlanır.
 /// Boş liste = temiz. `dil denetle` ve LSP bu görünümü kullanır.
 pub fn kaynagi_tanilari(kaynak: &str, yukleyici: &mut BirimYukleyici) -> Vec<Tani> {
     let mut kokenli = |istek: BirimIstegi<'_>| {
@@ -612,6 +613,10 @@ pub fn kaynagi_tanilari_kokenlerle(
     }
 
     let mut program = Program { cumleler: kalan, islemler, yapilar, testler };
-    tanilar.extend(cozumleyici::denetle_coklu(&mut program));
+    if tanilar.len() < tani::AZAMI_TANI_SAYISI {
+        let kalan = tani::AZAMI_TANI_SAYISI - tanilar.len();
+        tanilar.extend(cozumleyici::denetle_coklu(&mut program).into_iter().take(kalan));
+    }
+    tani::tanilari_sirala_ve_sinirla(&mut tanilar);
     tanilar
 }

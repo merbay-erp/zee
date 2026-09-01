@@ -5,6 +5,9 @@
 
 use std::fmt;
 
+/// Tek kaynak doğrulamasında kullanıcıya/LSP'ye gönderilen üst tanı bütçesi.
+pub(crate) const AZAMI_TANI_SAYISI: usize = 20;
+
 #[derive(Debug, Clone)]
 pub struct Tani {
     /// Hata kodu: S### sözdizimi, A### ad çözümleme, T### tür, P### proje.
@@ -84,4 +87,13 @@ impl fmt::Display for Tani {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "HATA {} (satır {}): {}", self.kod, self.satir, self.mesaj)
     }
+}
+
+/// Fazlardan gelen tanıları kaynak konumunda kararlı sıraya koyar ve bütçeler.
+pub(crate) fn tanilari_sirala_ve_sinirla(tanilar: &mut Vec<Tani>) {
+    tanilar.sort_by(|sol, sag| {
+        (sol.satir, sol.sutun, &sol.kod, &sol.mesaj)
+            .cmp(&(sag.satir, sag.sutun, &sag.kod, &sag.mesaj))
+    });
+    tanilar.truncate(AZAMI_TANI_SAYISI);
 }

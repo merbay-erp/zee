@@ -94,6 +94,22 @@ fn didchange_temiz_metinle_tanilari_sifirlar() {
 }
 
 #[test]
+fn lsp_girinti_sinirinda_kurtarip_bagimsiz_tanilari_sirayla_yayinlar() {
+    let mut sunucu = Sunucu::yeni();
+    let mesaj = r#"{"jsonrpc":"2.0","method":"textDocument/didOpen","params":{"textDocument":{"uri":"file:///tmp/kurtarma.dil","text":"yapı Kutu\n    bozuk alan satırı\n    değer TamSayı\nbozuk dış\n"}}}"#;
+    let cikti = sunucu.mesaj_isle(mesaj);
+    let yayin = &cikti.govdeler[0];
+
+    assert_eq!(yayin.matches("\"code\"").count(), 2, "{yayin}");
+    let yapi = yayin.find("\"code\":\"S025\"").expect("yapı alanı tanısı");
+    let dis = yayin.find("\"code\":\"S004\"").expect("dış cümle tanısı");
+    assert!(yapi < dis, "tanılar kaynak sırasında olmalı: {yayin}");
+    assert!(yayin.contains("\"line\":1"), "{yayin}");
+    assert!(yayin.contains("\"line\":3"), "{yayin}");
+    assert!(!yayin.contains("\"code\":\"C000\""), "{yayin}");
+}
+
+#[test]
 fn completion_kalip_kelimeleri() {
     let mut sunucu = Sunucu::yeni();
     let cikti = sunucu.mesaj_isle(r#"{"jsonrpc":"2.0","id":7,"method":"textDocument/completion","params":{}}"#);

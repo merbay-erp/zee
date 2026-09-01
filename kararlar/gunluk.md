@@ -1626,6 +1626,28 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   unit regresyonu ve mevcut koleksiyon/mimari korpusu. Toplam 440 test
   yeşildir; B-017/V1-P0-22 kapandı.
 
+## K-113 — Parser kurtarmasını cümle ve girinti sınırına bağla (1 Eyl)
+
+- **Sorun:** İç bloktaki ilk parser hatası ebeveyne kaçıyor, ebeveyn AST
+  düğümünü düşürüyor ve sağlam kardeş cümleyi dış kapsama sızdırabiliyordu.
+  Erken dönüş `derinlik` sayacını yüksek bırakınca sonraki geçerli üst düzey
+  tanım yanlış S021 alabiliyordu.
+- **Senkronizasyon:** Kurtarma yatayda `SatirSonu`, dikeyde yalnız hatalı
+  başlığa ait dengeli `Girinti`…`Cikinti` sınırını kullanır. Kör token tahmini
+  yapılmaz; sonraki aynı-girintili kardeş kendi ebeveyninde sürer.
+- **Özel bloklar:** Yapı alanı, eşzamanlı görev, `göre` kolu, `değilse` ve
+  `yetişmezse` ilk bozuk satırdan sonra sağlam satırı korur. Bütün zorunlu
+  çocuklar bozuksa ADR-023'ü ihlal eden boş sentetik AST üretilmez.
+- **Tanı sözleşmesi:** Parser, birim ve checker tanıları `(satır, sütun, kod,
+  mesaj)` ile kararlı kaynak sırasındadır. CLI `denetle` ve LSP belge başına
+  ortak en çok 20 tanı yayımlar; normal derleme/çalıştırma ilk tanıda durur.
+- **Mimari:** Recovery `ayristirici/kurtarma.rs` sahibine ve 160 satır
+  bütçesine ayrıldı. Parser kökü 1.200 satırlık sınırı aşmadı.
+- **Kanıt:** RFC-0010 §2.1, ADR-024, spec/06 ve parser kurtarma rehberi; altı
+  parser + bir gerçek LSP regresyonu. Toplam 447 test yeşildir. Recovery
+  yolunu da çalıştıran 31 saniyelik lexer/parser smoke'u 977.014 mutation'ı
+  çökmesiz tamamladı; B-021/V1-P0-23 kapandı.
+
 ---
 
 ## Sonraki adım
@@ -1634,5 +1656,5 @@ Korpus 10 öğrenci + 5 profesyonel usability oturumuna (Hafta 12 hedefi, erkeni
 Hafta 2'de kağıt üstünde) sesli okutulacak; her kayıt için "doğal mı /
 deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
-Makine hattında B-017/K-112 kapandı. Sırada B-021 LSP hata kurtarma planı,
-ardından B-022 tanı kimliği fixture kapısı vardır.
+Makine hattında B-021/K-113 kapandı. Sırada B-022 tanı kimliği fixture kapısı
+vardır.

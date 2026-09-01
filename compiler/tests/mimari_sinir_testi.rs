@@ -52,6 +52,7 @@ fn handler_modulleri_yeni_domain_icin_sinir_tasir() {
     for (goreli, butce) in [
         ("src/ayristirici/cumle.rs", 500),
         ("src/ayristirici/ifade.rs", 1_150),
+        ("src/ayristirici/kurtarma.rs", 160),
         ("src/cozumleyici/cumle.rs", 1_000),
         ("src/cozumleyici/ifade.rs", 960),
         ("src/cozumleyici/cagri.rs", 380),

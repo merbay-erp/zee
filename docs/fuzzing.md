@@ -8,7 +8,8 @@ dönmesini ve çoklu köklerin sessizce seçilmemesini arar.
 ## Kalıcı katmanlar
 
 - `compiler/fuzz/fuzz_targets/lexer_parser.rs`: libFuzzer hedefi. Lexer başarılı
-  olursa aynı token akışını normal ve hata-kurtarmalı parser'dan geçirir.
+  olursa aynı token akışını normal ve K-113/ADR-024 cümle+girinti
+  senkronizasyonlu hata-kurtarmalı parser'dan geçirir.
 - `compiler/fuzz/corpus/lexer_parser/`: sekiz başlangıç girdisi. Geçerli
   programın yanında Unicode, emoji, combining im, girinti, sayı, virgül, metin
   ve iç içe blok saldırıları taşır.
@@ -67,3 +68,5 @@ kök üretir; bu tanımlayıcı uzunluğu sınırı değildir. Ayrıştırılmı
 biçimleri kaynak lexer'ında S029'dur. Malformed, elle kurulmuş token/AST
 yapıları B-017/K-112'nin tamamladığı
 [AST/HIR invariant doğrulayıcısına](ast-hir-invariantleri.md) aittir.
+Kurtarmalı parser'ın kardeş/kapsam sahipliği ve 20 tanı bütçesi
+[parser kurtarma rehberinde](parser-hata-kurtarma.md) bağlanır.
