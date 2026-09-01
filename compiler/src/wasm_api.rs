@@ -84,15 +84,35 @@ pub fn playgroundda_calistir(kaynak: &str, girdiler: &str, tohum: u64) -> String
         tohum: tohum ^ 0x5EED_2EE5,
     };
 
-    let program = match crate::kaynagi_derle(kaynak) {
+    // Playground'da birimler gömülü kitaplıktan gelir (RFC-0014): yerel
+    // dosya sistemi yok, ama standart birimler tarayıcıda da çalışır.
+    let mut yukleyici = |ad: &str| -> Result<String, String> {
+        crate::gomulu_birim(ad).map(str::to_string).ok_or_else(|| {
+            format!(
+                "playground'da yalnız gömülü birimler kullanılabilir (var olanlar: {})",
+                crate::gomulu_birim_adlari().join(", ")
+            )
+        })
+    };
+    let program = match crate::kaynagi_derle_birimlerle(kaynak, &mut yukleyici) {
         Ok(program) => program,
         Err(tani) => return tani.raporla(kaynak),
     };
     match crate::yorumlayici::calistir_io(&program, &mut io) {
         Ok(()) => {
             let mut cikti = io.ic.cikti.join("\n");
-            if !program.testler.is_empty() {
-                let sonuclar = crate::programi_dene(&program);
+            // Birimden miras testler (önekli) raporlanmaz: playground yalnız
+            // kullanıcının kendi test bloklarını sayar (RFC-0014).
+            let birim_testi = |ad: &str| {
+                crate::gomulu_birim_adlari()
+                    .iter()
+                    .any(|birim| ad.starts_with(&format!("{}: ", birim)))
+            };
+            if program.testler.iter().any(|t| !birim_testi(&t.ad)) {
+                let sonuclar: Vec<_> = crate::programi_dene(&program)
+                    .into_iter()
+                    .filter(|s| !birim_testi(&s.ad))
+                    .collect();
                 let gecen = sonuclar.iter().filter(|s| s.hata.is_none()).count();
                 cikti.push_str(&format!(
                     "\n\n— testler: {} / {} geçti —",

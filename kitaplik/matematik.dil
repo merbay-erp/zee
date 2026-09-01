@@ -1,0 +1,75 @@
+# matematik — gömülü standart birim (RFC-0014, deneysel).
+# Saf tam sayı matematiği; IO yok, sözdizimi yok: kitaplığın tam yeri.
+
+işlem mutlak değerini hesapla
+    sayıyı al
+    sayı 0 dan küçükse
+        eksili 0 ile sayının farkı olsun
+        eksiliyi döndür
+    sayıyı döndür
+
+işlem üssünü hesapla
+    tabanı al
+    kuvveti al
+
+    sonuç 1 olsun
+    kuvvet kez tekrarla
+        sonuç sonuç ile tabanın çarpımı olsun
+    sonucu döndür
+
+işlem tam karekökünü hesapla
+    sayıyı al
+
+    sayı 2 den küçükse
+        sayıyı döndür
+    tahmin sayı olsun
+    bitti yanlış olsun
+    bitti doğru olana kadar tekrarla
+        bölüm sayının tahmine bölümü olsun
+        ara tahmin ile bölümün toplamı olsun
+        yeni aranın 2 ye bölümü olsun
+        yeni tahminden küçükse
+            tahmin yeni olsun
+        değilse
+            bitti doğru olsun
+    tahmini döndür
+
+işlem obebini hesapla
+    birinciyi al
+    ikinciyi al
+
+    kalan birincinin ikinciye bölümünden kalanı olsun
+    kalan 0 a eşitse
+        ikinciyi döndür
+    sonuç ikinci ve kalan ile obebini hesapla olsun
+    sonucu döndür
+
+işlem okekini hesapla
+    birinciyi al
+    ikinciyi al
+
+    obeb birinci ve ikinci ile obebini hesapla olsun
+    çarpım birinci ile ikincinin çarpımı olsun
+    sonuç çarpımın obebe bölümü olsun
+    sonucu döndür
+
+test "mutlak değer iki yönde çalışır"
+    eksili 0 ile 7 nin farkı olsun
+    x eksili için mutlak değerini hesapla olsun
+    x 7 ye eşit olmalı
+
+test "üs alma"
+    x 2 ve 10 ile üssünü hesapla olsun
+    x 1024 e eşit olmalı
+
+test "tam karekök tabana iner"
+    x 17 için tam karekökünü hesapla olsun
+    x 4 e eşit olmalı
+
+test "obeb Öklit ile"
+    x 48 ve 36 ile obebini hesapla olsun
+    x 12 ye eşit olmalı
+
+test "okek obeb üstünden"
+    x 4 ve 6 ile okekini hesapla olsun
+    x 12 ye eşit olmalı

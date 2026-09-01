@@ -241,7 +241,18 @@ fn birim_yukleyici(klasor: &std::path::Path) -> impl FnMut(&str) -> Result<Strin
             return Err("birim adı yol içeremez".into());
         }
         let yol = klasor.join(format!("{}.dil", ad));
-        std::fs::read_to_string(&yol).map_err(|hata| format!("{} ({})", hata, yol.display()))
+        match std::fs::read_to_string(&yol) {
+            Ok(kaynak) => Ok(kaynak),
+            // Yerel dosya yoksa gömülü standart kitaplığa düş (RFC-0014).
+            Err(hata) => dil::gomulu_birim(ad).map(str::to_string).ok_or_else(|| {
+                format!(
+                    "{} ({}); gömülü kitaplıkta da yok (var olanlar: {})",
+                    hata,
+                    yol.display(),
+                    dil::gomulu_birim_adlari().join(", ")
+                )
+            }),
+        }
     }
 }
 
