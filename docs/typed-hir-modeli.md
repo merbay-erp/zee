@@ -34,6 +34,13 @@ zarfıdır. İkinci biçim eksik sütunu `1` diye uydurmaz; hassasiyet farkını
 tipte görünür tutar. Bileşenlerin `NonZeroUsize` olması konumsuz/sıfır aralığı
 yapısal olarak engeller.
 
+K-112/ADR-023 bu yapısal sözleşmeyi yürütülebilir çapraz kontrole bağladı.
+Debug/test faz çıkışında her canlı AST ifadesinin tam bir HIR kaydı, benzersiz
+`HirDugumId`si ve varyantla uyumlu bağı olması; HIR tablosunda canlı AST'ye
+karşılık gelmeyen kayıt bulunmaması zorunludur. Doğrulayıcı, özellik→alan
+dönüşümünde alt düğümün klonlanmasıyla eski AST adresinde kalan gerçek bir
+yetim HIR kaydını buldu; dönüşüm artık kutulu düğümü taşır.
+
 ## Neden AST hemen silinmedi?
 
 Bootstrap yorumlayıcısı büyük bir davranış yüzeyini AST üzerinden yürütür;
@@ -70,4 +77,8 @@ yüzeyi sunmaz. Kalıcı paket/ABI kimliği gerekiyorsa ayrı bir karar gerekir.
   değişmezi her HIR ifade kurucusunda korunur.
 - Yeni AST düğümü kesin token aralığı biliyorsa `Kesin` kaydı üretir; bilgi
   yokken sahte sütun/uzunluk üretmez. Tam AST hassasiyetinin yayılımı B-050'dir.
+- Yeni ifade varyantı [invariant ziyaretçisinde](ast-hir-invariantleri.md)
+  bütün alt ifadeleri, beklenen `HirBagi`nı ve imkânsız biçimlerini tanımlar.
+- Yerinde AST dönüşümü kutulu alt düğümü klonlamaz; HIR eşlemesini koruyacak
+  biçimde taşır.
 - `hir_modeli_testi.rs` ve mimari sınır testi olmadan HIR sahipliği değişmez.

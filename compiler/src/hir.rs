@@ -139,6 +139,10 @@ impl HirProgram {
         self.program.yapilar.get(konum)
     }
 
+    pub(crate) fn ifade_sayisi(&self) -> usize {
+        self.ifadeler.len()
+    }
+
     pub(crate) fn into_program(self) -> Program {
         *self.program
     }

@@ -49,6 +49,11 @@ Kesin token konumu bulunan ifadeler tam aralık, diğer mevcut AST ifadeleri
 sahte sütun yerine kaynak satırı zarfı taşır. Span eksikliği HIR'ın tür ve bağ
 gerçeğini AST'ye geri itmek için gerekçe değildir.
 
+K-112/ADR-023 her canlı AST ifadesi ile HIR kaydının birebirliğini ve semantic
+bağın canonical tablolarla uyumunu debug/test faz çıkışında yürütülebilir
+değişmez yaptı. Özellik→alan dönüşümünde klonlanan alt düğümün bıraktığı yetim
+HIR kaydı bu kapıyla bulunup taşıma temelli dönüşümle düzeltildi.
+
 ## Değişmezler
 
 1. Başarılı checker bilgisi olmadan `HirProgram` kurulamaz.
@@ -58,6 +63,7 @@ gerçeğini AST'ye geri itmek için gerekçe değildir.
 5. Eski `Program` adaptörü ancak HIR üretildikten sonra faz bilgisini siler.
 6. Standart kaynak çalıştırma ve test hattı `CalistirmaProgrami::Hir` kullanır.
 7. Her HIR ifade kaydı zorunlu `HirKaynakAraligi` taşır.
+8. HIR tablosunda canlı AST ifadesine karşılık gelmeyen kayıt bulunamaz.
 
 ## Sonuçlar
 

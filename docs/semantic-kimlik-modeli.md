@@ -46,8 +46,10 @@ zarfı ekledi; semantic düğüm artık kaynak kökeninden ayrı kurulamaz.
   ad yalnız gösterim ve ilk katalog çözümü içindir.
 - Sembol yeniden atamasında ID korunur; yeni sözcüksel tanım yeni ID alır.
 - Yeni AST bağ alanı parser'da `None`, checker başarısında `Some(id)` olur.
-- Malformed/elle kurulmuş AST kimlik değişmezleri B-017 doğrulayıcısının
-  kapsamıdır; production runtime sessiz kimlik uydurmaz.
+- Malformed/elle kurulmuş AST kimlik değişmezleri B-017/K-112'nin
+  [invariant doğrulayıcısında](ast-hir-invariantleri.md) yürütülebilirdir:
+  parser alanları boş, bağlı AST kimliği canonical HIR adıyla eşleşmelidir.
+  Production runtime sessiz kimlik uydurmaz.
 
 ## Kanıt
 
@@ -55,4 +57,5 @@ zarfı ekledi; semantic düğüm artık kaynak kökeninden ayrı kurulamaz.
 çevirerek kimliklerin değişmediğini, çözülmüş değişkenin `SymbolId` taşıdığını
 kanıtlar. `hir_modeli_testi.rs` bu bağların açık türle HIR'a geçtiğini;
 `mimari_sinir_testi.rs`, `Yapi(usize)`, `yapilar[id]` ve HIR'sız bağlı program
-gerilemesini reddeder. Tam test, Clippy ve WASM kapıları yine zorunludur.
+gerilemesini reddeder. `invariant_testi.rs` ile HIR unit testleri eksik veya
+faz dışı kimliği reddeder. Tam test, Clippy ve WASM kapıları yine zorunludur.

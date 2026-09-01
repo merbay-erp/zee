@@ -1549,8 +1549,8 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   iki `usize` bileşen taşır; semantic identity ve depolama ayrımı değişmedi.
 - **Dürüst sınır:** Bu kapı kolay/doğrudan panic makrolarını ve convenience
   unwrap'ları kapatır. Keyfî UTF-8 parser girdisi fuzz kanıtını B-015/K-110
-  tamamladı; malformed AST genel invariant doğrulaması B-017'dedir. Kaynak
-  semantiği değişmedi.
+  tamamladı; malformed AST/HIR genel invariant doğrulamasını
+  B-017/K-112/ADR-023 sonradan tamamladı. Kaynak semantiği değişmedi.
 - **Kanıt:** ADR-021 ve production panic rehberi; sıfır konumlu elle kurulmuş
   AST'nin panic yerine T016 vermesi ile dört crate lint sahipliği. İki yeni
   testle toplam 429; B-014 ve V1-P0-19 kapandı.
@@ -1572,7 +1572,8 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   crash, panic ve timeout olmadan tamamladı.
 - **Dürüst sınır:** Bu mutation kanıtıdır, bütün dizilerin biçimsel ispatı
   değildir. Geçersiz UTF-8 dosya okuma sınırında; malformed elle kurulmuş
-  token/AST B-017'de; daha büyük kaynakların resource bütçesi ayrı kapıdadır.
+  token/AST, B-017/K-112'nin invariant kapısında; daha büyük kaynakların
+  resource bütçesi ayrı kapıdadır.
   ADR-022 ve fuzz rehberiyle B-015/V1-P0-20 kapandı.
 
 ## K-111 — Morfoloji değişmezlerini sürekli mutation'a bağla (1 Eyl)
@@ -1600,6 +1601,31 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   eksik tüketip macOS'ta RST üretmesindeydi. Stub artık başlık sonuna kadar
   okur; default-timeout regresyonu tekrarlanabilir kaldı.
 
+## K-112 — AST/HIR faz değişmezlerini yürütülebilir yap (1 Eyl)
+
+- **Parser saflığı:** `AyristirilmisAst` çözülmüş ad, `SymbolId`, `IslemId`,
+  `YapiId` veya checker'a ait `sonuca_sarmala` işareti taşıyamaz. Tek parçalı
+  zincir, boş sentetik liste ve çağrı olmayan `CagriCumlesi` gibi normal
+  parser'ın üretemeyeceği biçimler fail-closed reddedilir.
+- **Bağlı tamlık:** Programın ana cümleleri, deterministik işlem sırasındaki
+  gövdeler ve testler bütünüyle dolaşılır. Her AST ifadesi tek HIR kaydı,
+  benzersiz `HirDugumId`, açık tür, zorunlu kaynak aralığı ve varyantla uyumlu
+  `HirBagi` taşır. Semantic ID canonical adla eşleşir; değer konumunda
+  `DegerDondurmez` bulunamaz.
+- **Yetim kayıt yasağı:** Ziyaret edilen AST ifade sayısı HIR kayıt sayısıyla
+  eşitlenir. Böylece yalnız eksik bağ değil, artık canlı AST düğümüne ait
+  olmayan HIR kaydı da görünür olur.
+- **Gerçek bulgu:** Özellik erişimi yapı alanına çevrilirken iç `nesne`
+  kutusunun klonlanması, eski AST adresinin HIR kaydını yetim bırakıyordu.
+  Dönüşüm artık alt düğümü taşır; beklenmeyen varyant panic olmadan T016'dır.
+- **Hata ve maliyet:** Normal parser/checker çıkışlarında debug/test kapısı
+  otomatik çalışır ve ihlali faz+yapısal yol+satır taşıyan C000'e çevirir.
+  Release hattında ikinci tam-ağaç taraması otomatik değildir; açık doğrulama
+  API'si kullanılabilir.
+- **Kanıt:** ADR-023 ve AST/HIR invariant rehberi; üç integration, iki HIR
+  unit regresyonu ve mevcut koleksiyon/mimari korpusu. Toplam 440 test
+  yeşildir; B-017/V1-P0-22 kapandı.
+
 ---
 
 ## Sonraki adım
@@ -1608,5 +1634,5 @@ Korpus 10 öğrenci + 5 profesyonel usability oturumuna (Hafta 12 hedefi, erkeni
 Hafta 2'de kağıt üstünde) sesli okutulacak; her kayıt için "doğal mı /
 deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
-Makine hattında B-016/K-111 kapandı. Sırada B-017 AST invariant doğrulayıcı
-vardır.
+Makine hattında B-017/K-112 kapandı. Sırada B-021 LSP hata kurtarma planı,
+ardından B-022 tanı kimliği fixture kapısı vardır.

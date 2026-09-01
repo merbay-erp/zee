@@ -51,7 +51,7 @@ bileşene ayrıldı; yapay kapasite panic'i kaldırıldı.
 4. Elle kurulmuş geçersiz public AST, process panic'i yerine kodlu tanı verir.
 5. Bu ADR bounds/indexing ve fuzz kaynaklı bütün olası Rust panic'lerini tek
    başına kanıtlamaz; lexer/parser fuzz B-015/K-110/ADR-022 ile tamamlandı,
-   AST invariant doğrulayıcı B-017 ile tamamlanacaktır.
+   AST/HIR invariant doğrulayıcı B-017/K-112/ADR-023 ile tamamlandı.
 
 ## Sonuçlar
 

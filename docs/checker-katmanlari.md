@@ -52,8 +52,9 @@ Tek-tanı ve çoklu-tanı girişleri aynı katmanları aynı sırada kullanır.
 - B-018/K-102 kaynak→token→parsed→bağlı program fazlarını türledi. K-103,
   checker sonucunu ayrı Typed HIR tür/bağ kaydına taşıdı; K-104 runtime'ın
   kaynak adıyla semantic karar vermesini bitirdi ve B-019'u kapattı.
-- B-017, katmanlar arası AST/HIR değişmezlerini debug/test aşamasında ayrıca
-  doğrulayacaktır.
+- B-017/K-112, katmanlar arası AST/HIR değişmezlerini debug/test aşamasında
+  [ayrı kapıyla](ast-hir-invariantleri.md) doğrular; bu katmanlar semantic
+  kuralları üretir, invariant modülü faz çıktısının çapraz tamlığını denetler.
 
-B-007/B-017 açık kalır; K-101 semantic ID, K-102 faz tipi, K-103 typed HIR
-üretimi ve K-104 runtime tüketim temelini kapatır.
+B-007 açık kalır; K-101 semantic ID, K-102 faz tipi, K-103 typed HIR üretimi,
+K-104 runtime tüketimi ve K-112 fazlar arası doğrulama temelini kapatır.

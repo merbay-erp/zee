@@ -50,8 +50,11 @@ impl TokenAkisi {
     }
 
     pub fn ayristir(self, islem_adlari: Vec<String>) -> Result<AyristirilmisAst, Tani> {
-        crate::ayristirici::ayristir_tohumla(self.tokenlar, islem_adlari)
-            .map(AyristirilmisAst::yeni)
+        let cumleler = crate::ayristirici::ayristir_tohumla(self.tokenlar, islem_adlari)?;
+        let ast = AyristirilmisAst::yeni(cumleler);
+        #[cfg(debug_assertions)]
+        ast.invariantleri_dogrula().map_err(|hata| hata.tani())?;
+        Ok(ast)
     }
 
     pub fn ayristir_kurtarmali(
@@ -60,7 +63,16 @@ impl TokenAkisi {
     ) -> (AyristirilmisAst, Vec<Tani>) {
         let (cumleler, tanilar) =
             crate::ayristirici::ayristir_kurtarmali(self.tokenlar, islem_adlari);
-        (AyristirilmisAst::yeni(cumleler), tanilar)
+        let ast = AyristirilmisAst::yeni(cumleler);
+        #[cfg(debug_assertions)]
+        let tanilar = {
+            let mut tanilar = tanilar;
+            if let Err(hata) = ast.invariantleri_dogrula() {
+                tanilar.push(hata.tani());
+            }
+            tanilar
+        };
+        (ast, tanilar)
     }
 }
 
@@ -96,14 +108,21 @@ impl BaglanmamisProgram {
 
     pub(crate) fn denetle(mut self) -> Result<BaglanmisProgram, Tani> {
         let bilgi = crate::cozumleyici::denetle_ve_hir_bilgisi(&mut self.program)?;
-        Ok(BaglanmisProgram { hir: HirProgram::yeni(self.program, bilgi) })
+        let program = BaglanmisProgram {
+            hir: HirProgram::yeni(self.program, bilgi),
+        };
+        #[cfg(debug_assertions)]
+        program
+            .invariantleri_dogrula()
+            .map_err(|hata| hata.tani())?;
+        Ok(program)
     }
 }
 
-/// Adları/semantic ID'leri bağlanmış ve tür denetimi tamamlanmış program.
+/// Adları/semantic ID'leri bağlanmış, tür/etki/akış denetimi tamamlanmış program.
 ///
-/// Bu temsil bugün hâlâ AST'dir. Ayrı ve açık tür taşıyan HIR, B-019'un
-/// sorumluluğudur; bu ad o işi tamamlanmış gibi göstermez.
+/// Zorunlu typed HIR sahibidir. Kaynak AST tanı ve v0 uyumluluğu için
+/// salt-okunur korunur; standart runtime semantic kararlarını HIR'dan alır.
 pub struct BaglanmisProgram {
     hir: HirProgram,
 }

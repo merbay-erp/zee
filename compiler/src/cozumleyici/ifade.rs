@@ -171,11 +171,7 @@ fn ifade_denetle_ic(
                     ic_tutarlilik_hatasi("Yapı kimliği dizinde kayıtlı değil", satir)
                 })?;
                 if let Ok(alan) = alan_cozumle(yapi, soz, satir) {
-                    let yeni = Ifade::AlanErisim {
-                        nesne: nesne.clone(),
-                        alan: alan.clone(),
-                    };
-                    *ifade = yeni;
+                    ast_donusum::ozelligi_alana_donustur(ifade, alan, satir)?;
                     return ifade_denetle(ifade, ortam, baglam, satir);
                 }
             }

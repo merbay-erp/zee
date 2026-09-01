@@ -13,6 +13,7 @@
 //! fiziksel modüllerde tekildir.
 
 mod akis;
+mod ast_donusum;
 mod baglam;
 mod cagri;
 mod cumle;
