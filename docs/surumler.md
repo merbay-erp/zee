@@ -23,6 +23,11 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   göreli yol, sürüm, kenar ve SHA-256 `.dil` özetiyle deterministik
   `proje.kilit`e sabitler; eksik/bayat kilit P008'dir. Döngü, yinelenen ad,
   proje dışına çıkan sembolik bağ ve geçişli bağımlılığa gizli erişim testli.
+- **Güvenli paket ekleme** (K-079): `dil ekle <yerel-yol> [proje]` yolu
+  proje köküne göre taşınabilir biçime çevirir; yorumları koruyup listeyi
+  sıralar. Yeni bağımlılık grafiği yazmadan önce bütünüyle doğrulanır. Başarılı
+  işlem bildirimi ve kilidi birlikte günceller; yinelenen gerçek kök ikinci kez
+  eklenmez, öz-bağımlılık P007'dir.
 - **Proje çapında biçimleme** (K-077): `dil biçimle <klasör>` bütün `.dil`
   kaynaklarını deterministik yol sırasında biçimler; önce tamamını doğrular,
   tek hata varsa hiçbir dosyaya dokunmaz.

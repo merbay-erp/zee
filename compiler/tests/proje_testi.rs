@@ -1,6 +1,6 @@
 //! Proje modeli (K-076): proje.dil bildirimi ve klasör-temelli CLI akışı.
 
-use dil::proje::{bildirimi_oku, ProjeBildirimi};
+use dil::proje::{bildirimi_oku, yerel_bagimliliklari_guncelle, ProjeBildirimi};
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
@@ -61,6 +61,24 @@ fn bildirim_yerel_bagimliliklari_tek_gercek_kaynaktan_alir() {
     assert_eq!(
         bildirimi_oku(kotu).expect_err("mutlak bağımlılık yolu").kod,
         "P005"
+    );
+}
+
+#[test]
+fn bagimlilik_guncellemesi_yorumlari_korur_ve_yollari_siralar() {
+    let kaynak = "# özenle korunacak yorum\n\nproje \"uygulama\" olsun\nsürüm \"0.1.0\" olsun\ngiriş \"ana.dil\" olsun\n";
+    let guncel = yerel_bagimliliklari_guncelle(
+        kaynak,
+        &["../zengin".into(), "../ortak".into(), "../zengin".into()],
+    )
+    .expect("güncellenmeli");
+    assert!(guncel.starts_with("# özenle korunacak yorum\n"));
+    assert!(guncel.contains("yerel_bağımlılıklar \"../ortak\", \"../zengin\" listesi olsun\n"));
+    assert_eq!(
+        bildirimi_oku(&guncel)
+            .expect("üretilen bildirim")
+            .yerel_bagimliliklar,
+        vec!["../ortak", "../zengin"]
     );
 }
 
@@ -345,6 +363,92 @@ fn yerel_bagimlilik_dongusu_kilitlenmez() {
     assert!(!cikti.status.success());
     assert!(String::from_utf8_lossy(&cikti.stderr).contains("P007"));
     assert!(!a.join("proje.kilit").exists());
+}
+
+#[test]
+fn ekle_komutu_once_dogrular_sonra_bildirimi_ve_kilidi_gunceller() {
+    let gecici = GeciciKlasor::yeni();
+    let paket = gecici.yol().join("hesap");
+    let uygulama = gecici.yol().join("uygulama");
+    std::fs::create_dir(&paket).expect("paket");
+    std::fs::create_dir(&uygulama).expect("uygulama");
+    std::fs::write(
+        paket.join("proje.dil"),
+        "proje \"hesap\" olsun\nsürüm \"1.3.0\" olsun\ngiriş \"paket.dil\" olsun\n",
+    )
+    .expect("paket bildirim");
+    std::fs::write(paket.join("paket.dil"), "işlem yedi ver\n    7 döndür\n")
+        .expect("paket kaynak");
+    std::fs::write(
+        uygulama.join("proje.dil"),
+        "# bu yorum kaybolmamalı\n\nproje \"uygulama\" olsun\nsürüm \"0.1.0\" olsun\ngiriş \"ana.dil\" olsun\n",
+    )
+    .expect("uygulama bildirim");
+    std::fs::write(
+        uygulama.join("ana.dil"),
+        "hesap paketini kullan\n\nsonuç yedi ver olsun\nsonucu yaz\n",
+    )
+    .expect("uygulama kaynak");
+
+    let ikili = env!("CARGO_BIN_EXE_dil");
+    let ekle = Command::new(ikili)
+        .current_dir(gecici.yol())
+        .args(["ekle", "hesap", "uygulama"])
+        .output()
+        .expect("paket ekle");
+    assert!(
+        ekle.status.success(),
+        "{}",
+        String::from_utf8_lossy(&ekle.stderr)
+    );
+    assert!(String::from_utf8_lossy(&ekle.stdout).contains("hesap 1.3.0"));
+    let bildirim = std::fs::read_to_string(uygulama.join("proje.dil")).expect("bildirim");
+    assert!(bildirim.starts_with("# bu yorum kaybolmamalı\n"));
+    assert!(bildirim.contains("yerel_bağımlılıklar \"../hesap\" listesi olsun"));
+    assert!(uygulama.join("proje.kilit").is_file());
+
+    let calistir = Command::new(ikili)
+        .args(["çalıştır", uygulama.to_str().expect("utf8")])
+        .output()
+        .expect("eklenen paketle çalıştır");
+    assert!(calistir.status.success());
+    assert_eq!(String::from_utf8_lossy(&calistir.stdout), "7\n");
+
+    // Aynı gerçek kök farklı yazımla verilse de ikinci kez eklenmez.
+    let yine = Command::new(ikili)
+        .current_dir(gecici.yol())
+        .args(["ekle", "./hesap", "./uygulama"])
+        .output()
+        .expect("yinelenen ekle");
+    assert!(yine.status.success());
+    assert!(String::from_utf8_lossy(&yine.stdout).contains("zaten ekli"));
+    assert_eq!(
+        bildirim,
+        std::fs::read_to_string(uygulama.join("proje.dil")).expect("aynı bildirim")
+    );
+
+    // Kendisini eklemek döngüdür; doğrulama yazmadan önce yapıldığı için iki
+    // proje dosyası da byte-byte aynı kalır.
+    let onceki_kilit = std::fs::read(uygulama.join("proje.kilit")).expect("önceki kilit");
+    let dongu = Command::new(ikili)
+        .current_dir(gecici.yol())
+        .args(["ekle", "uygulama", "uygulama"])
+        .output()
+        .expect("döngülü ekle");
+    assert!(!dongu.status.success());
+    assert!(
+        String::from_utf8_lossy(&dongu.stderr).contains("P007"),
+        "{}",
+        String::from_utf8_lossy(&dongu.stderr)
+    );
+    assert_eq!(
+        bildirim,
+        std::fs::read_to_string(uygulama.join("proje.dil")).expect("geri alınmış bildirim")
+    );
+    assert_eq!(
+        onceki_kilit,
+        std::fs::read(uygulama.join("proje.kilit")).expect("aynı kilit")
+    );
 }
 
 #[test]

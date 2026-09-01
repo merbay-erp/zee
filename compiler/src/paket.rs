@@ -37,6 +37,19 @@ pub struct ProjeGrafigi {
 
 impl ProjeGrafigi {
     pub fn cozumle(kok: &Path) -> Result<Self, ProjeYuklemeHatasi> {
+        Self::cozumle_ic(kok, None)
+    }
+
+    /// Henüz diske yazılmamış bir ana `proje.dil` adayıyla grafiği çözer.
+    /// `dil ekle` bu sayede bozuk bir grafiği manifesti değiştirmeden reddeder.
+    pub fn cozumle_bildirimle(
+        kok: &Path,
+        bildirim_kaynagi: &str,
+    ) -> Result<Self, ProjeYuklemeHatasi> {
+        Self::cozumle_ic(kok, Some(bildirim_kaynagi))
+    }
+
+    fn cozumle_ic(kok: &Path, bildirim_kaynagi: Option<&str>) -> Result<Self, ProjeYuklemeHatasi> {
         let ana_kok = std::fs::canonicalize(kok).map_err(|hata| {
             yalniz_hata(
                 "P006",
@@ -50,7 +63,7 @@ impl ProjeGrafigi {
             ad_kokleri: HashMap::new(),
             yigin: Vec::new(),
         };
-        kurucu.ziyaret_et(&ana_kok, false, None)?;
+        kurucu.ziyaret_et(&ana_kok, false, None, bildirim_kaynagi)?;
         Ok(Self {
             ana_kok,
             dugumler: kurucu.dugumler,
@@ -252,6 +265,7 @@ impl GrafikKurucu {
         kok: &Path,
         bagimlilik_mi: bool,
         isteyen: Option<(&Path, &str)>,
+        gecici_bildirim: Option<&str>,
     ) -> Result<(), ProjeYuklemeHatasi> {
         if self.yigin.iter().any(|yol| yol == kok) {
             let (yol, kaynak) = isteyen
@@ -271,18 +285,21 @@ impl GrafikKurucu {
         }
 
         let bildirim_yolu = kok.join("proje.dil");
-        let bildirim_kaynagi = std::fs::read_to_string(&bildirim_yolu).map_err(|hata| {
-            proje_hatasi(
-                "P006",
-                &format!(
-                    "Yerel bağımlılığın proje.dil bildirimi okunamadı: {}.",
-                    hata
-                ),
-                "Yolun bir zee proje klasörünü gösterdiğini doğrula.",
-                bildirim_yolu.clone(),
-                String::new(),
-            )
-        })?;
+        let bildirim_kaynagi = match gecici_bildirim {
+            Some(kaynak) => kaynak.to_string(),
+            None => std::fs::read_to_string(&bildirim_yolu).map_err(|hata| {
+                proje_hatasi(
+                    "P006",
+                    &format!(
+                        "Yerel bağımlılığın proje.dil bildirimi okunamadı: {}.",
+                        hata
+                    ),
+                    "Yolun bir zee proje klasörünü gösterdiğini doğrula.",
+                    bildirim_yolu.clone(),
+                    String::new(),
+                )
+            })?,
+        };
         let bildirim = bildirimi_oku(&bildirim_kaynagi).map_err(|tani| ProjeYuklemeHatasi {
             tani: Box::new(tani),
             kaynak: bildirim_kaynagi.clone(),
@@ -333,7 +350,7 @@ impl GrafikKurucu {
                     bildirim_kaynagi.clone(),
                 )
             })?;
-            self.ziyaret_et(&hedef, true, Some((kok, &bildirilen)))?;
+            self.ziyaret_et(&hedef, true, Some((kok, &bildirilen)), None)?;
             let hedef_adi = self.dugumler[&hedef].bildirim.ad.clone();
             if bagimliliklar.insert(hedef_adi.clone(), hedef).is_some() {
                 return Err(proje_hatasi(
@@ -505,6 +522,11 @@ fn goreli_yol(kok: &Path, hedef: &Path) -> String {
     } else {
         parcalar.join("/")
     }
+}
+
+/// İki kanonik klasör arasında manifestte taşınabilir `/` ayraçlı yol üretir.
+pub fn goreli_yerel_yol(kok: &Path, hedef: &Path) -> String {
+    goreli_yol(kok, hedef)
 }
 
 fn kacis(metin: &str) -> String {

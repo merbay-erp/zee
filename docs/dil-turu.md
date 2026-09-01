@@ -473,7 +473,9 @@ sonuç toplam ver olsun
 sonucu yaz
 ```
 
-`dil kilitle .` doğrudan ve geçişli yerel paketleri `proje.kilit` içinde
+Listeyi güvenli biçimde eklemek için `dil ekle ../hesap` kullanılır: komut
+yeni grafiği yazmadan önce çözer, yorumları korur, yolları sıralar ve kilidi
+aynı işlemde yeniler. `dil kilitle .` ise var olan doğrudan ve geçişli yerel paketleri `proje.kilit` içinde
 göreli yol, sürüm ve SHA-256 kaynak özetiyle sabitler. Yalnız doğrudan
 bildirilen paket kullanılabilir; geçişli bağımlılığa gizlice uzanılmaz.
 Paket içindeki birimler kendi kaynak klasöründen çözülür ve paketin üst düzey

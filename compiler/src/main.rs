@@ -34,6 +34,7 @@ fn govde() -> ExitCode {
         Some("denetle") => denetle_yolu(&argumanlar),
         Some("biçimle") | Some("bicimle") => bicimle_komutu(&argumanlar),
         Some("dene") => dosya_ile(&argumanlar, dene_komutu),
+        Some("ekle") => ekle_komutu(&argumanlar),
         Some("kilitle") => kilitle_komutu(&argumanlar),
         Some("hata") => hata_komutu(&argumanlar),
         Some("belge") => belge_komutu(&argumanlar),
@@ -58,6 +59,7 @@ fn kullanim() {
     eprintln!("  dil denetle <dosya|proje>  çalıştırmadan denetler (--json: makine çıktısı)");
     eprintln!("  dil dene <dosya|proje>     test bloklarını koşar");
     eprintln!("  dil biçimle <dosya|proje>  dosyayı ya da bütün projeyi biçimler");
+    eprintln!("  dil ekle <yerel-yol> [proje] yerel paketi doğrulayıp ekler ve kilitler");
     eprintln!("  dil kilitle <proje>         yerel bağımlılıkları proje.kilit'e sabitler");
     eprintln!("  dil hata <kod>             bir hata kodunu açıklar (örn. dil hata T001)");
     eprintln!("  dil belge <birim>          bir birimin işlemlerini listeler (örn. dil belge matematik)");
@@ -266,6 +268,153 @@ fn kilitle_komutu(argumanlar: &[String]) -> ExitCode {
             ExitCode::from(2)
         }
     }
+}
+
+fn ekle_komutu(argumanlar: &[String]) -> ExitCode {
+    let Some(paket_yolu) = argumanlar.get(1) else {
+        eprintln!("Bir yerel paket yolu belirtmelisin. Örnek: dil ekle ../hesap");
+        return ExitCode::from(2);
+    };
+    if argumanlar.len() > 3 {
+        eprintln!("Kullanım: dil ekle <yerel-yol> [proje]");
+        return ExitCode::from(2);
+    }
+    let proje_yolu = std::path::Path::new(argumanlar.get(2).map_or(".", String::as_str));
+    let proje_koku = match std::fs::canonicalize(proje_yolu) {
+        Ok(yol) if yol.is_dir() => yol,
+        Ok(_) => {
+            eprintln!("\"{}\" bir proje klasörü değil.", proje_yolu.display());
+            return ExitCode::from(2);
+        }
+        Err(hata) => {
+            eprintln!("\"{}\" proje klasörü çözülemedi: {}", proje_yolu.display(), hata);
+            return ExitCode::from(2);
+        }
+    };
+    let paket_koku = match std::fs::canonicalize(paket_yolu) {
+        Ok(yol) if yol.is_dir() => yol,
+        Ok(_) => {
+            eprintln!("\"{}\" bir paket klasörü değil.", paket_yolu);
+            return ExitCode::from(2);
+        }
+        Err(hata) => {
+            eprintln!("\"{}\" yerel paketi çözülemedi: {}", paket_yolu, hata);
+            return ExitCode::from(2);
+        }
+    };
+
+    let bildirim_yolu = proje_koku.join("proje.dil");
+    let eski_kaynak = match std::fs::read_to_string(&bildirim_yolu) {
+        Ok(kaynak) => kaynak,
+        Err(hata) => {
+            eprintln!("\"{}\" okunamadı: {}", bildirim_yolu.display(), hata);
+            return ExitCode::from(2);
+        }
+    };
+    let bildirim = match dil::proje::bildirimi_oku(&eski_kaynak) {
+        Ok(bildirim) => bildirim,
+        Err(tani) => {
+            GirdiHatasi::Tani {
+                tani: Box::new(tani),
+                kaynak: eski_kaynak,
+                yol: bildirim_yolu,
+            }
+            .yazdir(false);
+            return ExitCode::FAILURE;
+        }
+    };
+
+    if proje_koku == paket_koku {
+        let tani = dil::tani::Tani::yeni(
+            "P007",
+            "Bir proje kendisini yerel bağımlılık olarak ekleyemez.".into(),
+            1,
+            1,
+            1,
+        )
+        .onerili("Paylaşılacak kodu ayrı bir zee projesine taşı.".into());
+        eprint!("{}", tani.raporla(&eski_kaynak));
+        return ExitCode::FAILURE;
+    }
+
+    let zaten_var = bildirim.yerel_bagimliliklar.iter().any(|yol| {
+        std::fs::canonicalize(proje_koku.join(yol))
+            .map(|kanonik| kanonik == paket_koku)
+            .unwrap_or(false)
+    });
+    if zaten_var {
+        let grafik = match dil::paket::ProjeGrafigi::cozumle(&proje_koku) {
+            Ok(grafik) => grafik,
+            Err(hata) => {
+                GirdiHatasi::from(hata).yazdir(false);
+                return ExitCode::FAILURE;
+            }
+        };
+        return match grafik.kilidi_yaz() {
+            Ok(()) => {
+                println!("Paket zaten ekli; kilit yenilendi: {}", paket_koku.display());
+                ExitCode::SUCCESS
+            }
+            Err(hata) => {
+                eprintln!("{}", hata);
+                ExitCode::from(2)
+            }
+        };
+    }
+
+    let goreli = dil::paket::goreli_yerel_yol(&proje_koku, &paket_koku);
+    let mut yollar = bildirim.yerel_bagimliliklar;
+    yollar.push(goreli.clone());
+    let yeni_kaynak = match dil::proje::yerel_bagimliliklari_guncelle(&eski_kaynak, &yollar) {
+        Ok(kaynak) => kaynak,
+        Err(tani) => {
+            eprint!("{}", tani.raporla(&eski_kaynak));
+            return ExitCode::FAILURE;
+        }
+    };
+
+    // Yeni grafik diske dokunmadan çözülür. Döngü, ad çakışması, bozuk paket
+    // ya da güvensiz giriş varsa mevcut bildirim ve kilit aynen kalır.
+    let grafik = match dil::paket::ProjeGrafigi::cozumle_bildirimle(&proje_koku, &yeni_kaynak) {
+        Ok(grafik) => grafik,
+        Err(hata) => {
+            GirdiHatasi::from(hata).yazdir(false);
+            return ExitCode::FAILURE;
+        }
+    };
+    let eski_kilit = std::fs::read(proje_koku.join(dil::paket::KILIT_DOSYASI)).ok();
+    if let Err(hata) = std::fs::write(&bildirim_yolu, &yeni_kaynak) {
+        eprintln!("\"{}\" yazılamadı: {}", bildirim_yolu.display(), hata);
+        return ExitCode::from(2);
+    }
+    if let Err(hata) = grafik.kilidi_yaz() {
+        let bildirim_geri = std::fs::write(&bildirim_yolu, &eski_kaynak);
+        let kilit_yolu = proje_koku.join(dil::paket::KILIT_DOSYASI);
+        let kilit_geri = match eski_kilit {
+            Some(icerik) => std::fs::write(&kilit_yolu, icerik),
+            None if kilit_yolu.exists() => std::fs::remove_file(&kilit_yolu),
+            None => Ok(()),
+        };
+        eprintln!("Paket kilitlenemedi: {}", hata);
+        if bildirim_geri.is_err() || kilit_geri.is_err() {
+            eprintln!("Uyarı: önceki proje dosyaları bütünüyle geri yüklenemedi.");
+        } else {
+            eprintln!("Proje bildirimi ve önceki kilit geri yüklendi.");
+        }
+        return ExitCode::from(2);
+    }
+
+    let paket_bildirimi = std::fs::read_to_string(paket_koku.join("proje.dil"))
+        .ok()
+        .and_then(|kaynak| dil::proje::bildirimi_oku(&kaynak).ok());
+    match paket_bildirimi {
+        Some(paket) => println!(
+            "Eklendi: {} {} ({}) — proje.kilit güncellendi.",
+            paket.ad, paket.surum, goreli
+        ),
+        None => println!("Eklendi: {} — proje.kilit güncellendi.", goreli),
+    }
+    ExitCode::SUCCESS
 }
 
 fn bir_dosyayi_bicimle(yol: &std::path::Path) -> ExitCode {

@@ -65,11 +65,11 @@ geri sayan aralık, para biçimi `kuruşlusu`, evrensel `metni`, çerez
 iki katmanlı ek zinciri), **proje bildirimi** (`proje.dil`, klasörden
 çalıştır/denetle/dene), **yerel paketler** (`X paketini kullan`) ve 119 Türkçe
 kodlu tanı.
-Araçlar: `dil çalıştır(--güvenli)/denetle(--json)/dene/biçimle/kilitle/hata/belge/yeni`
+Araçlar: `dil çalıştır(--güvenli)/denetle(--json)/dene/biçimle/ekle/kilitle/hata/belge/yeni`
 + **dillsp** LSP sunucusu — tanılar, hover, tanıma git, **morfolojili
 yeniden adlandırma (F2)** ([editors/](editors/)).
 Determinizm testlerde tam: rastgelelik, saat, dosyalar, HTTP, sunucu istekleri,
-sensörler ve an ölçümü IO soyutlamasından gelir — 259 test hermetik koşar.
+sensörler ve an ölçümü IO soyutlamasından gelir — 261 test hermetik koşar.
 
 **Playground:** `playground/olustur.sh` derleyiciyi WebAssembly'e derler ve
 tek dosyalık `playground/zee-playground.html` üretir — çift tıkla aç, tarayıcıda
@@ -133,10 +133,10 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   10 "geçici kabul" RFC'nin tam kabulü — kit hazır: docs/usability-kiti.md.
 - **Lisans (bölüm 26, kurucu):** seçilmeden depo herkese açılmaz; site ve
   topluluk (bölüm 30) bunun arkasında.
-- **Makine tarafı sıradaki:** K-078'in üstüne güvenli `dil ekle <yerel-yol>`
-  bildirimi düzenleme akışı ve paket API belgelemesi; ardından uzak registry,
-  imza/provenance ve SBOM ayrı güvenlik RFC'leriyle. RFC-0014'ün usability
-  sonrası kesinleşmesi ve ADR-004 ölçümleri paralel kapılardır.
+- **Makine tarafı sıradaki:** K-079'un üstüne güvenli `dil çıkar <paket>` ve
+  bağımlılık grafiğini açıklayan `dil paketler` görünümü; ardından uzak
+  registry, imza/provenance ve SBOM ayrı güvenlik RFC'leriyle. RFC-0014'ün
+  usability sonrası kesinleşmesi ve ADR-004 ölçümleri paralel kapılardır.
 
 ## İlk gerçek milestone
 
