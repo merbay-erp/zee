@@ -93,3 +93,15 @@ eksinin 3 e bölümünden kalanı yaz
     let hata = kaynagi_calistir("x 2,5 un 2 ye bölümünden kalanı olsun\n").expect_err("T008");
     assert_eq!(hata.kod, "T008");
 }
+
+#[test]
+fn ikizlesme_geri_cevrimi() {
+    // K-049: üs→üssü, af→affı; sertleşmeyle birleşik: ret→reddi.
+    let kaynak = "\
+üs 2 olsun
+üssü yaz
+ret 9 olsun
+reddi yaz
+";
+    assert_eq!(kaynagi_calistir(kaynak).expect("çalışmalı"), vec!["2", "9"]);
+}

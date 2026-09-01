@@ -102,7 +102,9 @@ için gömülü birimleri de listeler.
 ## 8. Açık sorular
 
 1. Küme türü ve sözdizimi.
-2. Gömülü birimlerin belge üretimi (`dil belge matematik` gibi bir komut?).
+2. ~~Belge üretimi~~ — ASGARİ biçim gerçeklendi (K-049): `dil belge matematik`
+   işlem başlıklarını ve test sayısını basar. Zengin biçim (açıklama satırları,
+   örnekler) AÇIK.
 3. Paket katmanı geldiğinde (Faz 5) gömülü kitaplığın paketlerle ilişkisi
    (gömülü = "sıfırıncı paket deposu" olarak mı kalır?).
 4. Ondalık matematik (karekök vb. Ondalık sürümleri) — hassasiyet

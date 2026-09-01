@@ -1997,7 +1997,15 @@ fn tamlayan_ekli(kelime: &str) -> bool {
 fn yalin_ad(ekli: &str) -> String {
     for ek in ["yı", "yi", "yu", "yü", "ı", "i", "u", "ü"] {
         if let Some(kok) = ekli.strip_suffix(ek) {
-            if kok.chars().count() >= 2 {
+            let harfler: Vec<char> = kok.chars().collect();
+            if harfler.len() >= 2 {
+                // Ünsüz ikizleşmesi geri çevrimi (K-049): "üssü al" → üs,
+                // "affı al" → af. (Belirtme ekiyle ikiz açığa çıkar.)
+                let n = harfler.len();
+                let unlu = |k: char| "aeıioöuüAEIİOÖUÜ".contains(k);
+                if n >= 3 && harfler[n - 1] == harfler[n - 2] && !unlu(harfler[n - 1]) {
+                    return harfler[..n - 1].iter().collect();
+                }
                 return kok.to_string();
             }
         }

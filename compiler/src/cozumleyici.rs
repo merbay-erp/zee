@@ -2218,6 +2218,31 @@ pub(crate) fn kok_adaylari(ham: &str) -> Vec<String> {
                 }
             }
 
+            // Ünsüz ikizleşmesi geri çevrimi (K-049): üssü→üss→üs, affı→aff→af,
+            // zammı→zamm→zam. Sertleşmeyle birleşik: reddi→redd→red→ret,
+            // tıbbı→tıbb→tıb→tıp.
+            let n_ikiz = karakterler.len();
+            if n_ikiz >= 3 {
+                let son = karakterler[n_ikiz - 1];
+                let unlu = |k: char| "aeıioöuüAEIİOÖUÜ".contains(k);
+                if son == karakterler[n_ikiz - 2] && !unlu(son) {
+                    let tekli: String = karakterler[..n_ikiz - 1].iter().collect();
+                    adaylar.push(tekli.clone());
+                    let sertlesmis = match son {
+                        'c' => Some('ç'),
+                        'b' => Some('p'),
+                        'd' => Some('t'),
+                        'ğ' => Some('k'),
+                        _ => None,
+                    };
+                    if let Some(yeni) = sertlesmis {
+                        let mut sert: Vec<char> = tekli.chars().collect();
+                        *sert.last_mut().unwrap() = yeni;
+                        adaylar.push(sert.into_iter().collect());
+                    }
+                }
+            }
+
             // Ünlü düşmesi geri çevrimi: şekle→şekl→şekil, burnu→burn→burun,
             // oğlu→oğl→oğul. Son iki harf ünsüzse araya uyumlu dar ünlü girer.
             let n = karakterler.len();
