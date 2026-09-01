@@ -10,6 +10,20 @@ Regression bütçesi (v0.3 hedefi): bir sürüm, bir önceki arşiv satırına g
 herhangi bir yükte %50'den fazla yavaşlıyorsa sürüm notunda gerekçelenmek
 **ZORUNDA**dır.
 
+## v0.6.0 — 1 Eylül 2026 · Apple M4 Pro, macOS 26.5, Rust 1.93.1
+
+| Yük | Medyan | v0.4.0'a göre |
+|---|---|---|
+| derleme | 13,5 ms | — |
+| özyineleme | 18,0 ms | −%5 |
+| döngü | 5,7 ms | **−%14 (izleme kapandı)** |
+| liste | 0,8 ms | — |
+| ondalık | 1,2 ms | — |
+| metin | 0,5 ms | — |
+
+Okuma: v0.4.0'da izlemeye alınan döngü sapması kayboldu — v0.2 tabanının
+bile altında. K-050..K-070 dalgaları çekirdek maliyeti büyütmedi.
+
 ## v0.4.0 — 1 Eylül 2026 · Apple M4 Pro, macOS 26.5, Rust 1.93.1
 
 | Yük | Medyan | v0.2.0'a göre |

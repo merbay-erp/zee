@@ -659,6 +659,17 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
 - **Doğrulama:** `artır` karışık tipte genişliyor (Ondalık hedef +
   TamSayı miktar ✓) — toplamın tek gövdeyle iki tipe hizmeti bundan.
 
+## K-071 — Doğrulamalar zenginleşti (K-025 adayları gerçek)
+
+- **Karar:** `X P içermeli` (metin içerme doğrulaması), `... olmamalı`
+  (HERHANGİ koşulun olumsuz doğrulaması — olmalı'nın simetriği) ve çıplak
+  `boş`/`dolu` atomu (`liste boş olmamalı`, `sepet boş olduğu sürece`).
+  Hepsi D001 mekanizmasında; usability onay kapısı K-025 ile aynı.
+- **Ölçüm:** v0.6.0 arşiv satırı — v0.4'te izlemeye alınan döngü sapması
+  KAYBOLDU (5,7 ms; v0.2 tabanının altında). İzleme kapandı.
+- **Sayım düzeltmesi:** anti-örnek 11'dir (A11 nokta-ondalık) — README
+  10 diyordu.
+
 ## K-012 — Liste sabiti: `3, 7, 1, 9 listesi`
 
 - **Karar:** Virgülle ayrılmış değerler + `listesi`. Boş: `boş liste`.

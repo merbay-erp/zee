@@ -333,6 +333,8 @@ Testler dilin parçasıdır; `dil dene dosya.dil` koşar, playground da koşar:
 test "kare doğru hesaplanır"
     kare 4 için karesini hesapla olsun
     kare 16 ya eşit olmalı
+    kare 17 ye eşit olmamalı        # olumsuz doğrulama (K-071)
+    çıktı "16" içermeli             # metin içerme doğrulaması
 ```
 
 Testler taze ortamda ve hermetik IO ile koşar: rastgelelik, saat ve

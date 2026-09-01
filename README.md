@@ -56,7 +56,7 @@ değiştir/kırp/harfler), **JSON/CSV yazma**, **Türk alfabesiyle sıralama**,
 Araçlar: `dil çalıştır/denetle(--json, çoklu tanı)/dene/biçimle/hata/yeni` +
 **dillsp** LSP sunucusu ([editors/](editors/)).
 Determinizm testlerde tam: rastgelelik, saat, dosyalar, HTTP, sunucu istekleri,
-sensörler ve an ölçümü IO soyutlamasından gelir — 238 test hermetik koşar.
+sensörler ve an ölçümü IO soyutlamasından gelir — 241 test hermetik koşar.
 
 **Playground:** `playground/olustur.sh` derleyiciyi WebAssembly'e derler ve
 tek dosyalık `playground/zee-playground.html` üretir — çift tıkla aç, tarayıcıda
@@ -94,7 +94,7 @@ korpus üzerinde regression testine girer.
 |---|---|---|
 | Manifesto ve değişmez ilkeler | [MANIFESTO.md](MANIFESTO.md) | ✅ ilk sürüm |
 | 32 golden program | [golden/](golden/) | ✅ tamamı regression testte; sözdizimi RFC'lerle geçici kabulde |
-| 10 anti-örnek | [anti-ornekler/](anti-ornekler/) | ✅ ilk sürüm |
+| 11 anti-örnek | [anti-ornekler/](anti-ornekler/) | ✅ (A11: nokta-ondalık) |
 | Syntax karar günlüğü | [kararlar/gunluk.md](kararlar/gunluk.md) | ✅ işleniyor |
 | RFC süreci | [rfcs/](rfcs/) | ✅ 13 RFC: 2 kabul, 10 geçici kabul, 1 taslak (K-043) |
 | ADR süreci | [adr/](adr/) | ✅ 6 kabul (001-003, 007-009); 004/005/006 faz verisi bekliyor |
