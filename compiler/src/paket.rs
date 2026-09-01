@@ -35,6 +35,15 @@ pub struct ProjeGrafigi {
     dugumler: BTreeMap<PathBuf, ProjeDugumu>,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct PaketBilgisi {
+    pub ad: String,
+    pub surum: String,
+    pub yol: String,
+    pub ozet: String,
+    pub dogrudan: bool,
+}
+
 impl ProjeGrafigi {
     pub fn cozumle(kok: &Path) -> Result<Self, ProjeYuklemeHatasi> {
         Self::cozumle_ic(kok, None)
@@ -98,6 +107,68 @@ impl ProjeGrafigi {
 
     pub fn paket_sayisi(&self) -> usize {
         self.dugumler.len().saturating_sub(1)
+    }
+
+    /// Kullanıcıya gösterilecek kararlı paket görünümü: doğrudan/geçişli
+    /// ayrımı, taşınabilir yol ve tam içerik özeti.
+    pub fn paketler(&self) -> Vec<PaketBilgisi> {
+        let dogrudan_kokler: std::collections::HashSet<&PathBuf> =
+            self.ana_dugum().bagimliliklar.values().collect();
+        let mut paketler = self
+            .dugumler
+            .values()
+            .filter(|dugum| dugum.kok != self.ana_kok)
+            .map(|dugum| PaketBilgisi {
+                ad: dugum.bildirim.ad.clone(),
+                surum: dugum.bildirim.surum.clone(),
+                yol: goreli_yol(&self.ana_kok, &dugum.kok),
+                ozet: dugum.ozet.clone(),
+                dogrudan: dogrudan_kokler.contains(&dugum.kok),
+            })
+            .collect::<Vec<_>>();
+        paketler.sort_by(|a, b| a.ad.cmp(&b.ad).then(a.yol.cmp(&b.yol)));
+        paketler
+    }
+
+    pub fn dogrudan_paket_koku(&self, ad: &str) -> Option<&Path> {
+        self.ana_dugum().bagimliliklar.get(ad).map(PathBuf::as_path)
+    }
+
+    /// Paketin doğrudan kenarı kaldırılmadan önce ana projenin bütün gerçek
+    /// kaynaklarını tarar. Tek kullanım bile varsa sessiz kırılma yerine P010.
+    pub fn kaldirmayi_dogrula(&self, ad: &str) -> Result<(), ProjeYuklemeHatasi> {
+        let ana = self.ana_dugum();
+        for (yol, kaynak) in &ana.kaynaklar {
+            let tokenlar =
+                crate::sozcukleyici::sozcukle(kaynak).map_err(|tani| ProjeYuklemeHatasi {
+                    tani: Box::new(tani),
+                    kaynak: kaynak.clone(),
+                    yol: yol.clone(),
+                })?;
+            if let Some((_, _, satir)) = crate::ayristirici::kullanilan_birimler(&tokenlar)
+                .into_iter()
+                .find(|(kullanilan, tur, _)| kullanilan == ad && *tur == KullanimTuru::Paket)
+            {
+                return Err(ProjeYuklemeHatasi {
+                    tani: Box::new(
+                        Tani::yeni(
+                            "P010",
+                            format!("\"{}\" paketi bu kaynakta hâlâ kullanılıyor.", ad),
+                            satir,
+                            1,
+                            1,
+                        )
+                        .onerili(format!(
+                            "Önce `{} paketini kullan` satırını ve ona bağlı çağrıları kaldır.",
+                            ad
+                        )),
+                    ),
+                    kaynak: kaynak.clone(),
+                    yol: yol.clone(),
+                });
+            }
+        }
+        Ok(())
     }
 
     /// Var olan kilit dosyası her zaman doğrulanır. Eski, bağımlılıksız

@@ -63,9 +63,9 @@ değiştir/kırp/harfler), **JSON/CSV yazma**, **Türk alfabesiyle sıralama**,
 geri sayan aralık, para biçimi `kuruşlusu`, evrensel `metni`, çerez
 üçlemesi (oku/yaz/**sil**), çok katmanlı morfoloji (zamir n'si, ikizleşme,
 iki katmanlı ek zinciri), **proje bildirimi** (`proje.dil`, klasörden
-çalıştır/denetle/dene), **yerel paketler** (`X paketini kullan`) ve 119 Türkçe
+çalıştır/denetle/dene), **yerel paketler** (`X paketini kullan`) ve 120 Türkçe
 kodlu tanı.
-Araçlar: `dil çalıştır(--güvenli)/denetle(--json)/dene/biçimle/ekle/kilitle/hata/belge/yeni`
+Araçlar: `dil çalıştır(--güvenli)/denetle(--json)/dene/biçimle/ekle/çıkar/kilitle/paketler/hata/belge/yeni`
 + **dillsp** LSP sunucusu — tanılar, hover, tanıma git, **morfolojili
 yeniden adlandırma (F2)** ([editors/](editors/)).
 Determinizm testlerde tam: rastgelelik, saat, dosyalar, HTTP, sunucu istekleri,
@@ -111,7 +111,7 @@ korpus üzerinde regression testine girer.
 | Syntax karar günlüğü | [kararlar/gunluk.md](kararlar/gunluk.md) | ✅ işleniyor |
 | RFC süreci | [rfcs/](rfcs/) | ✅ 13 RFC: 2 kabul, 10 geçici kabul, 1 taslak (K-043) |
 | ADR süreci | [adr/](adr/) | ✅ 6 kabul (001-003, 007-009); 004/005/006 faz verisi bekliyor |
-| Hata kataloğu | [docs/hata-katalogu.md](docs/hata-katalogu.md) | ✅ 119 kod, kaynakla tutarlılığı testli |
+| Hata kataloğu | [docs/hata-katalogu.md](docs/hata-katalogu.md) | ✅ 120 kod, kaynakla tutarlılığı testli |
 | Spesifikasyon | [spec/](spec/) | ✅ başladı — normatif çekirdek (RFC'lere bağlar) |
 
 ### Golden korpus hakkında
@@ -133,10 +133,11 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   10 "geçici kabul" RFC'nin tam kabulü — kit hazır: docs/usability-kiti.md.
 - **Lisans (bölüm 26, kurucu):** seçilmeden depo herkese açılmaz; site ve
   topluluk (bölüm 30) bunun arkasında.
-- **Makine tarafı sıradaki:** K-079'un üstüne güvenli `dil çıkar <paket>` ve
-  bağımlılık grafiğini açıklayan `dil paketler` görünümü; ardından uzak
-  registry, imza/provenance ve SBOM ayrı güvenlik RFC'leriyle. RFC-0014'ün
-  usability sonrası kesinleşmesi ve ADR-004 ölçümleri paralel kapılardır.
+- **Makine tarafı sıradaki:** yeni yüzey eklemeden önce kaynak kod ve test
+  kanıtlı v1.0 sürüm kapıları: işlem tür çıkarımının çağrı sırasından
+  bağımsızlığı, web/oturum güvenlik sınırı, kalıcı durumun atomikliği,
+  eşzamanlılık/zaman aşımı sözleşmesi ve normatif belge otoritesi. Uzak
+  registry, imza/provenance ve SBOM bundan sonra ayrı güvenlik RFC'leriyle.
 
 ## İlk gerçek milestone
 

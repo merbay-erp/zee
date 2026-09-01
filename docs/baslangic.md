@@ -62,6 +62,10 @@ hesap paketini kullan
 
 Bağımlılık kaynağı değişirse zee eski kilitle sessizce devam etmez (P008);
 değişikliği inceledikten sonra yeniden `dil kilitle .` çalıştırırsın.
+Grafiği görmek için `dil paketler .` kullanabilirsin. Bir paketi kaldırmadan
+önce kaynaklardaki `X paketini kullan` satırını ve ona bağlı çağrıları kaldır;
+sonra `dil çıkar X .` çalıştır. Paket hâlâ kullanılıyorsa P010 gelir ve bildirim
+ile kilit dosyasına dokunulmaz.
 
 ## 3. Kendi programını yaz
 
@@ -114,7 +118,9 @@ internet gerekmez, katalog `dil`in içindedir.
 | `dil biçimle <dosya\|proje>` | dosyayı veya projedeki bütün `.dil` kaynaklarını resmi biçime getirir |
 | `dil denetle <dosya\|proje>` | çalıştırmadan hata arar (`--json`: makine çıktısı) |
 | `dil ekle <yerel-yol> [proje]` | yerel paketi önce doğrular, bildirime ekler ve kilidi günceller |
+| `dil çıkar <paket> [proje]` | doğrudan paketi, kaynakta kullanılmıyorsa bildirimden ve kilitten kaldırır |
 | `dil kilitle <proje>` | yerel bağımlılık grafiğini sürüm ve SHA-256 içerik özetiyle sabitler |
+| `dil paketler [proje]` | doğrudan ve geçişli paket grafiğini sürüm/yol/özetle gösterir |
 | `dil hata <kod>` | bir hata kodunu açıklar |
 | `dil belge <birim>` | birimin işlemlerini listeler (örn. `dil belge matematik`) |
 | `dil sürüm` | sürümü gösterir |

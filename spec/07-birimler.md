@@ -68,3 +68,9 @@ birimin işlem adlarını çağrı çözümünde görür.
   köküne göre göreli ve `/` ayraçlı saklar. Aday manifest/grafik yazmadan önce
   doğrulanır; yorumlar korunur, yollar sıralanır ve yinelenen gerçek kök
   yeniden eklenmez (K-079).
+- `dil paketler [proje]` kilidi doğrulanmış grafiği doğrudan/geçişli ayrımı,
+  sürüm, göreli yol ve SHA-256 özetle gösterir. `dil çıkar <paket> [proje]`
+  yalnız doğrudan paketi kaldırır. Ana projenin bir `.dil` kaynağında ilgili
+  `X paketini kullan` bildirimi kalmışsa P010 verir ve bildirim/kilit byte-byte
+  değişmez. Başarıda aday grafik önce çözülür; bildirim ile kilit birlikte
+  güncellenir ve kilit yazımı başarısızsa ikisi geri alınır (K-080).

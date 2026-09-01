@@ -481,6 +481,13 @@ bildirilen paket kullanılabilir; geçişli bağımlılığa gizlice uzanılmaz.
 Paket içindeki birimler kendi kaynak klasöründen çözülür ve paketin üst düzey
 cümleleri de birimlerde olduğu gibi kapsüllüdür (K-078).
 
+`dil paketler .` grafiğin doğrudan/geçişli ayrımını, sürümünü, göreli yolunu
+ve kilit özetini görünür kılar. `dil çıkar hesap .` yalnız doğrudan paketi
+kaldırır; ana projenin herhangi bir kaynağında `hesap paketini kullan`
+kalıyorsa P010 verir ve hiçbir dosyayı değiştirmez. Başarılı kaldırmada bildirim
+ile kilit birlikte güncellenir; başka bir paketin bağımlılığı olan paket
+grafikte geçişli olarak kalabilir (K-080).
+
 **Gömülü standart kitaplık** (RFC-0014, deneysel): `matematik` (mutlak, üs,
 tam karekök, obeb, okek), `liste_araclari` (toplam, uçlar, ortalama) ve
 `metin_araclari` (tersi, ünlü sayımı, baş harf) ve `sozluk_araclari`
