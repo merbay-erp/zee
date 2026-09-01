@@ -687,6 +687,14 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   dillsp'ye karşı Node birlikte-çalışma. VS Code istemcisine
   RenameProvider eklendi (F2 çalışır).
 
+## K-073 — Çerez silme: `"oturum" çerezini sil`
+
+- **Karar:** Çerez API'si tamamlandı: silme, tarayıcıya `Max-Age=0`
+  başlığıyla gider (boş değer yazma hilesi yerine doğru HTTP). Girişli
+  panelin çıkışı gerçek silmeye geçti.
+- **Not:** `<sayı> kez tekrarla` sayacının çok-tokenli ifade aldığı
+  doğrulandı (`sayıların adedi kez tekrarla` ✓ — zaten çalışıyormuş).
+
 ## K-012 — Liste sabiti: `3, 7, 1, 9 listesi`
 
 - **Karar:** Virgülle ayrılmış değerler + `listesi`. Boş: `boş liste`.

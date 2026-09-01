@@ -777,6 +777,18 @@ fn blok_denetle(
                     }
                 }
             }
+            Cumle::CerezSil { ad, satir } => {
+                let satir = *satir;
+                if ifade_denetle(ad, ortam, baglam, satir)? != Tur::Metin {
+                    return Err(Tani::yeni(
+                        "T034",
+                        "Çerez adı Metin olmalı.".into(),
+                        satir,
+                        1,
+                        1,
+                    ));
+                }
+            }
             Cumle::CerezYaz { ad, deger, satir } => {
                 let satir = *satir;
                 let ad_turu = ifade_denetle(ad, ortam, baglam, satir)?;

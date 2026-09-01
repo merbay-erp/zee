@@ -339,6 +339,8 @@ pub enum Cumle {
     CerezYaz { ad: Ifade, deger: Ifade, satir: usize },
     /// `sayılardan 5 i sil` / `defterden "elma" yı sil` (K-059) — yoksa sessiz.
     Sil { kap: Ifade, deger: Ifade, satir: usize },
+    /// `"oturum" çerezini sil` — tarayıcıya Max-Age=0 gönderilir (K-073).
+    CerezSil { ad: Ifade, satir: usize },
     /// `eşzamanlı olarak` bloğu: görev bağlamaları (RFC-0011).
     Eszamanli { gorevler: Vec<(String, Ifade, usize)>, satir: usize },
     /// `hepsini bekle` — görev sonuçları bundan sonra kullanılabilir.

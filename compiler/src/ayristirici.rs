@@ -310,6 +310,11 @@ impl Ayristirici {
             Some("sil") => {
                 let mut t = satir_tokenlari;
                 t.pop(); // sil
+                // Çerez silme (K-073): `"oturum" çerezini sil`.
+                if t.len() == 2 && kelime_mi(&t[1], "çerezini") {
+                    let ad = tekil_ifade(t[0].clone())?;
+                    return Ok(Cumle::CerezSil { ad, satir: satir_no });
+                }
                 // Değerle "sil" arasında ayrık belirtme eki olabilir: "5 i sil".
                 if t.len() == 3 {
                     if let TokenTur::Kelime(k) = &t[2].tur {

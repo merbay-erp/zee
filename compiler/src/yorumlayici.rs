@@ -259,6 +259,8 @@ pub trait GirdiCikti {
     fn yonlendir_gonder(&mut self, adres: &str);
     /// Sonraki yanıta Set-Cookie iliştirir (K-052).
     fn cerez_yaz(&mut self, ad: &str, deger: &str);
+    /// Sonraki yanıtla çerezi tarayıcıdan siler (Max-Age=0, K-073).
+    fn cerez_sil(&mut self, ad: &str);
     /// Sensör durumu (IoT simülatörü): "kapı" açık mı?
     fn sensor_acik_mi(&mut self, ad: &str) -> bool;
     /// Işık eyleyicisi (IoT simülatörü).
@@ -332,6 +334,7 @@ impl<T: GirdiCikti> GirdiCikti for GuvenliIo<T> {
     fn yanit_gonder(&mut self, _yanit: &str) {}
     fn yonlendir_gonder(&mut self, _adres: &str) {}
     fn cerez_yaz(&mut self, _ad: &str, _deger: &str) {}
+    fn cerez_sil(&mut self, _ad: &str) {}
     fn sensor_acik_mi(&mut self, ad: &str) -> bool {
         self.ic.sensor_acik_mi(ad)
     }
@@ -447,6 +450,9 @@ impl GirdiCikti for ToplayanIo {
     }
     fn cerez_yaz(&mut self, ad: &str, deger: &str) {
         self.yazilan_cerezler.push((ad.to_string(), deger.to_string()));
+    }
+    fn cerez_sil(&mut self, ad: &str) {
+        self.yazilan_cerezler.push((ad.to_string(), "×silindi".to_string()));
     }
     fn sensor_acik_mi(&mut self, ad: &str) -> bool {
         self.sensorler.get(ad).copied().unwrap_or(false)
@@ -958,6 +964,10 @@ fn blok_calistir(
             Cumle::Yonlendir { adres, satir } => {
                 let hedef = degerlendir(adres, ortam, program, cikti, derinlik, *satir)?.metne();
                 cikti.yonlendir_gonder(&hedef);
+            }
+            Cumle::CerezSil { ad, satir } => {
+                let ad = degerlendir(ad, ortam, program, cikti, derinlik, *satir)?.metne();
+                cikti.cerez_sil(&ad);
             }
             Cumle::CerezYaz { ad, deger, satir } => {
                 let ad = degerlendir(ad, ortam, program, cikti, derinlik, *satir)?.metne();

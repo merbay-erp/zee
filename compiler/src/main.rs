@@ -293,6 +293,7 @@ fn birim_yukleyici(klasor: &std::path::Path) -> impl FnMut(&str) -> Result<Strin
 struct GercekIo {
     /// Sonraki yanıtla gönderilecek Set-Cookie başlıkları (K-052).
     bekleyen_cerezler: Vec<(String, String)>,
+    bekleyen_silinen_cerezler: Vec<String>,
     tohum: u64,
     argumanlar: Vec<String>,
     baslangic: std::time::Instant,
@@ -311,6 +312,7 @@ impl GercekIo {
         let argumanlar = std::env::args().skip(3).collect();
         GercekIo {
             bekleyen_cerezler: Vec::new(),
+            bekleyen_silinen_cerezler: Vec::new(),
             tohum,
             argumanlar,
             baslangic: std::time::Instant::now(),
@@ -464,6 +466,9 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
     fn cerez_yaz(&mut self, ad: &str, deger: &str) {
         self.bekleyen_cerezler.push((ad.to_string(), deger.to_string()));
     }
+    fn cerez_sil(&mut self, ad: &str) {
+        self.bekleyen_silinen_cerezler.push(ad.to_string());
+    }
     fn yanit_gonder(&mut self, yanit: &str) {
         use std::io::Write;
         if let Some(mut akis) = self.bekleyen_akis.take() {
@@ -479,6 +484,10 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             for (ad, deger) in self.bekleyen_cerezler.drain(..) {
                 cerez_basliklari
                     .push_str(&format!("Set-Cookie: {}={}; Path=/; HttpOnly\r\n", ad, deger));
+            }
+            for ad in self.bekleyen_silinen_cerezler.drain(..) {
+                cerez_basliklari
+                    .push_str(&format!("Set-Cookie: {}=; Path=/; Max-Age=0\r\n", ad));
             }
             let _ = write!(
                 akis,
@@ -497,6 +506,10 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             for (ad, deger) in self.bekleyen_cerezler.drain(..) {
                 cerez_basliklari
                     .push_str(&format!("Set-Cookie: {}={}; Path=/; HttpOnly\r\n", ad, deger));
+            }
+            for ad in self.bekleyen_silinen_cerezler.drain(..) {
+                cerez_basliklari
+                    .push_str(&format!("Set-Cookie: {}=; Path=/; Max-Age=0\r\n", ad));
             }
             let _ = write!(
                 akis,
