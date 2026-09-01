@@ -30,7 +30,10 @@ tek başına koşuldur: `hazır ise` (K-044); Mantıksal olmayan ad T005.
 
 ## Sayısal genişleme (TANIMLI)
 
-TamSayı, Ondalık beklenen yerde kendiliğinden Ondalığa genişler. Tersi
+TamSayı, Ondalık beklenen yerde kendiliğinden Ondalığa genişler — işlem
+çağrısı dahil (Liste<TamSayı> → Liste<Ondalık> parametre, K-067); dar
+imza geniş argümanla TERFİ eder (gövde geniş türle yeniden denetlenir;
+sonuç çağrı sırasından bağımsızdır). Tersi
 örtük DEĞİLDİR: Ondalıktan tam sayıya `tam kısmı` (sıfıra doğru) ya da
 `yuvarlanmışı` (yarımlar sıfırdan uzağa) ile bilinçli inilir.
 

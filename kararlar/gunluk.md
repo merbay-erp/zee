@@ -609,6 +609,22 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   "Envanter (kayıtlar)" vitrini eklendi (wasm'da doğrulandı: kuruşlu +
   json çıktısı); öğretmen rehberi 12 oturuma çıktı.
 
+## K-067 — Sayısal genişleme çağrıya (ve sözlüğe) uzandı
+
+- **Karar 1:** Sözlük değerleri Ondalık olabilir (para sözlükleri:
+  `fiyatların "çay" değeri 45,50`).
+- **Karar 2 (çağrı genişlemesi):** TamSayı argüman Ondalık parametreye,
+  Liste<TamSayı> argüman Liste<Ondalık> parametreye uyar.
+- **Karar 3 (imza terfisi):** dar imza, geniş argüman görünce KALDIRILIP
+  gövde geniş türlerle yeniden denetlenir — sonuç, çağrı SIRASINDAN
+  bağımsız en geniş imzadır (determinizm). Özyineleme denetimi sürerken
+  terfi yok. Bulgu kaynağı: birim testi TamSayı listesiyle imzayı
+  kilitleyip Ondalık kullanıcıyı düşürüyordu (monomorfizm × birim testi
+  köşesi) — kökten kapandı.
+- **Ek:** `tam kısmı`/`yuvarlanmışı` TamSayı üzerinde kimliktir (terfi
+  sonrası gövde güvenliği). Kitaplığa `medyanını hesapla` girdi (saf zee,
+  gezme-sayma deseni; dönüş daima Ondalık).
+
 ## K-012 — Liste sabiti: `3, 7, 1, 9 listesi`
 
 - **Karar:** Virgülle ayrılmış değerler + `listesi`. Boş: `boş liste`.

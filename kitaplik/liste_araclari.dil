@@ -49,3 +49,42 @@ test "ortalama ondalık döner"
     notlar 50, 60, 71 listesi olsun
     ortalama notlar için ortalamasını hesapla olsun
     ortalama 60,333333333 a eşit olmalı
+
+# Sıralı kopyanın ortancası; çift adette iki ortancanın ortalaması.
+# Dönüş her zaman Ondalık (tutarlı imza).
+işlem medyanını hesapla
+    sayıları al
+
+    sıralılar sayıların sıralanmışı olsun
+    adet sıralıların adedi olsun
+    yarım adetin 2 ye bölümü olsun
+    hedef yarım ile 1 in toplamı olsun
+    kalan adetin 2 ye bölümünden kalanı olsun
+
+    önceki sıralıların ilki olsun
+    seçilen sıralıların ilki olsun
+    sayaç 0 olsun
+    her sıralı için
+        sayacı 1 artır
+        sayaç yarıma eşitse
+            önceki sıralı olsun
+        sayaç hedefe eşitse
+            seçilen sıralı olsun
+
+    kalan 1 e eşitse
+        tekli seçilen ile 1,0 nın çarpımı olsun
+        tekliyi döndür
+    toplamlar önceki ile seçilenin toplamı olsun
+    ondalıklı toplamlar ile 1,0 nın çarpımı olsun
+    sonuç ondalıklının 2 ye bölümü olsun
+    sonucu döndür
+
+test "tek adette ortanca"
+    fiyatlar 7,0, 1,0, 9,0 listesi olsun
+    orta fiyatlar için medyanını hesapla olsun
+    orta 7,0 a eşit olmalı
+
+test "çift adette iki ortancanın ortalaması (TamSayı listesi genişler)"
+    sayılar 1, 2, 3, 10 listesi olsun
+    orta sayılar için medyanını hesapla olsun
+    orta 2,5 a eşit olmalı
