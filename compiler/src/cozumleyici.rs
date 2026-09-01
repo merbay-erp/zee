@@ -1259,6 +1259,7 @@ fn ifade_denetle(
                     Ozellik::Siralanmis => "sıralanmışı",
                     Ozellik::Ters => "tersi",
                     Ozellik::CsvMetin => "metni",
+                    Ozellik::Kuruslu => "kuruşlusu",
                 };
                 let yapi = &baglam.yapilar[yapi_indeksi];
                 if let Ok(alan) = alan_cozumle(yapi, soz, satir) {
@@ -1292,6 +1293,9 @@ fn ifade_denetle(
                 }
                 (Ozellik::Ters, Tur::Liste(oge)) if oge != VeriTuru::Bilinmeyen => {
                     Ok(Tur::Liste(oge))
+                }
+                (Ozellik::Kuruslu, Tur::Ondalik) | (Ozellik::Kuruslu, Tur::TamSayi) => {
+                    Ok(Tur::Metin)
                 }
                 (Ozellik::CsvMetin, Tur::Liste(VeriTuru::Sozluk))
                 | (Ozellik::CsvMetin, Tur::Liste(VeriTuru::MetinSozluk)) => Ok(Tur::Metin),

@@ -1296,6 +1296,22 @@ fn degerlendir(
                     })
                 }
                 (Ozellik::Kirpilmis, Deger::Metin(m)) => Ok(Deger::Metin(m.trim().to_string())),
+                (Ozellik::Kuruslu, deger @ (Deger::Ondalik { .. } | Deger::TamSayi(_))) => {
+                    // K-065: daima iki hane; yarımlar sıfırdan uzağa (dil kuralı).
+                    let (govde, olcek) = match deger {
+                        Deger::TamSayi(s) => (s as i128, 0u32),
+                        Deger::Ondalik { govde, olcek } => (govde as i128, olcek),
+                        _ => unreachable!(),
+                    };
+                    let kurus = if olcek > 2 {
+                        yuvarla_bol(govde, 10i128.pow(olcek - 2))
+                    } else {
+                        govde * 10i128.pow(2 - olcek)
+                    };
+                    let isaret = if kurus < 0 { "-" } else { "" };
+                    let mutlak = kurus.abs();
+                    Ok(Deger::Metin(format!("{}{},{:02}", isaret, mutlak / 100, mutlak % 100)))
+                }
                 (Ozellik::Siralanmis, Deger::Liste(mut ogeler)) => {
                     ogeler.sort_by(deger_sirasi);
                     Ok(Deger::Liste(ogeler))

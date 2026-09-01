@@ -223,6 +223,8 @@ pub enum Ozellik {
     Ters,
     /// Satır sözlükleri listesinin CSV metni (K-058).
     CsvMetin,
+    /// Para gösterimi (K-065): daima iki ondalık hane — "1824,50".
+    Kuruslu,
 }
 
 #[derive(Debug, Clone)]

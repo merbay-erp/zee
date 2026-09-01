@@ -154,7 +154,7 @@ fn mini_site_html_uretir() {
 #[test]
 fn envanter_stok_defteri() {
     let cikti = kaynagi_calistir(&proje("envanter.dil")).expect("çalışmalı");
-    assert!(cikti.contains(&"Toplam stok değeri: 1824,5 lira".to_string()));
+    assert!(cikti.contains(&"Toplam stok değeri: 1824,50 lira".to_string()));
     assert!(cikti.contains(&"Alfabetik: çay, şeker, un".to_string()), "{:?}", cikti);
 }
 

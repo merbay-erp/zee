@@ -72,7 +72,8 @@ Kalan (mod) da okul diliyle: `17 nin 5 e bölümünden kalanı` → `2`.
 Kalan hiç negatif olmaz (okul kuralı, K-046).
 
 TamSayı gerektiğinde Ondalığa kendiliğinden genişler; tersi bilinçlidir:
-`ondalığın tam kısmı`, `ondalığın yuvarlanmışı`.
+`ondalığın tam kısmı`, `ondalığın yuvarlanmışı`. Para gösterimi:
+`tutarın kuruşlusu` → `"1824,50"` (daima iki hane, K-065).
 
 ## 5. Koşullar
 

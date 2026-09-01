@@ -3,6 +3,13 @@
 Her sürüm: ne eklendi, ne değişti, neyin sözü verildi. Kırıcı değişiklik
 sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 
+## Yolda (v0.6.0'a birikenler)
+
+- **Para biçimi** (K-065): `tutarın kuruşlusu` — daima iki hane.
+- JSON okuma hoşgörüsü (K-063), alan-özellik gölgelemesi (K-064),
+  envanter projesi; işlemden liste dönüşü testle sabitlendi; biçim
+  hijyeni projeler+kitaplığa genişledi.
+
 ## v0.5.0 — 1 Eylül 2026
 
 **Tema: kayıtlar ve koleksiyonlar — dil, veri işlerinin dili oldu.**

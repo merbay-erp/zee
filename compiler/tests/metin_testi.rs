@@ -117,3 +117,20 @@ fn json_okuma_sayi_bool_metin_gelir() {
     dil::yorumlayici::calistir_io(&program, &mut io).expect("çalışmalı");
     assert_eq!(io.cikti, vec!["10", "1,35", "doğru"]);
 }
+
+#[test]
+fn kuruslusu_para_bicimi() {
+    // K-065: daima iki hane; yarımlar sıfırdan uzağa.
+    let kaynak = "\
+tutar 1824,5 olsun
+tutarın kuruşlusu yaz
+oran 3,456 olsun
+oranın kuruşlusu yaz
+tam 5 olsun
+tamın kuruşlusu yaz
+";
+    assert_eq!(
+        kaynagi_calistir(kaynak).expect("çalışmalı"),
+        vec!["1824,50", "3,46", "5,00"]
+    );
+}
