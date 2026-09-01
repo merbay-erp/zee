@@ -195,7 +195,7 @@ fn json_metin_yaz(metin: &str) -> String {
 // ---------- sunucu ----------
 
 /// Tamamlama önerileri: dilin kalıp kelimeleri (kaynağı: ayrıştırıcı yüzeyi).
-const KALIP_KELIMELERI: [&str; 52] = [
+const KALIP_KELIMELERI: [&str; 62] = [
     "yaz", "olsun", "ise", "değilse", "tekrarla", "için", "kez", "her", "kadar",
     "sürece", "olduğu", "olana", "ile", "ve", "veya", "diye", "sor", "yanıt",
     "işlem", "al", "döndür", "yapı", "test", "olmalı", "ekle", "artır", "azalt",
@@ -203,6 +203,8 @@ const KALIP_KELIMELERI: [&str; 52] = [
     "dene", "bitir", "saniye", "dakika", "hatasını",
     "varsa", "yoksa", "başarılıysa", "başarısızsa", "sil", "yönlendir",
     "adresine", "çerezine", "sıralanmışı", "parçaları", "birleşmişi", "değişmişi",
+    "içermeli", "olmamalı", "kuruşlusu", "metni", "harfleri", "kırpılmışı",
+    "arasındaki", "günler", "önekli", "kalanı",
 ];
 
 /// Hover açıklamaları: kalıp kelimesi → tek satır Türkçe açıklama + örnek.

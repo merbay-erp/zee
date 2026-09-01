@@ -18,7 +18,7 @@ Bu bir çeviri katmanı değildir (`if→eğer` makyajı yok); AI semantiğin pa
 - Master plan: [docs/master-plan.md](docs/master-plan.md) (kaynak: [docs/Turkce_Programlama_Dili_Master_Proje_Dokumani.docx](docs/Turkce_Programlama_Dili_Master_Proje_Dokumani.docx))
 - İlkeler: [MANIFESTO.md](MANIFESTO.md)
 
-## Durum: **v0.6.0** (1 Eylül 2026) — Faz 2+ sürüyor
+## Durum: **v0.7.0** (1 Eylül 2026) — Faz 2+ sürüyor
 
 Sürüm geçmişi ve ayrıntılar: [docs/surumler.md](docs/surumler.md).
 
