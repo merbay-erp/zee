@@ -20,6 +20,7 @@ kutusuna satır satır yaz.) Ya da: `dil çalıştır projeler/<dosya>.dil`
 | [gizli-dil.dil](gizli-dil.dil) | sözlük = şifre defteri | Çözücüyü de yaz (tersine defter) |
 | [kelime-sayaci.dil](kelime-sayaci.dil) | sayaç sözlüğü, "yoksa sıfırla" | En çok geçen kelimeyi de bul |
 | [gun-sayar.dil](gun-sayar.dil) | Tarih türü, gün aritmetiği | Doğum gününe kaç gün kaldığını hesapla |
+| [mini-site.dil](mini-site.dil) | GERÇEK web sitesi: sunucu + rotalar + HTML | Yeni bir sayfa rotası ekle |
 
 Hepsi regression testindedir (`compiler/tests/projeler_testi.rs`) — dil
 değişirse bu projeler kırılamaz; kırılırsa CI söyler.

@@ -1,0 +1,32 @@
+# Mini Site — zee ile yazılmış, kendi kendine yeten web sitesi.
+# Öğretilen: sunucu kurma, rotalar, HTML'i işlemle giydirmek.
+# Çalıştır: dil çalıştır mini-site.dil → tarayıcıda http://127.0.0.1:8090
+# (Rota gövdeleri taze ortamda koşar; ortak parçalar İŞLEMLE paylaşılır.)
+
+matematik birimini kullan
+
+işlem sayfayı giydir
+    gövdeyi al
+
+    stil "<style>body{font-family:Georgia,serif;max-width:640px;margin:40px auto;padding:0 16px;color:#1c1c28;background:#fbfaf7}h1{color:#b0413e}a{color:#2e6e4e}</style>" olsun
+    gezinme "<p><a href=/>ana sayfa</a> · <a href=/hakkinda>hakkında</a> · <a href=/obeb>obeb makinesi</a></p>" olsun
+    sayfa "<!doctype html><html lang=tr><meta charset=utf-8>" ile stil ile gezinme ile gövde olsun
+    sayfayı döndür
+
+8090 kapısında sunucu başlat
+
+"/" adresine istek geldiğinde
+    içerik "<h1>zee ile yapılmış site</h1><p>Bu sayfayı sunan program Türkçe yazıldı: rotalar, HTML, hepsi <b>mini-site.dil</b> içinde.</p>" olsun
+    sayfa içerik için sayfayı giydir olsun
+    sayfa yanıtını gönder
+
+"/hakkinda" adresine istek geldiğinde
+    içerik "<h1>Hakkında</h1><p>zee, Türkçe düşünüp Türkçe yazmak için tasarlandı. Bu site onun <i>sunucu</i> yüzünün kanıtı.</p>" olsun
+    sayfa içerik için sayfayı giydir olsun
+    sayfa yanıtını gönder
+
+"/obeb" adresine istek geldiğinde
+    sonuç 48 ve 36 ile obebini hesapla olsun
+    içerik "<h1>Obeb makinesi</h1><p>48 ile 36 sayılarının obebi: <b>" ile sonuç ile "</b> — hesabı gömülü kitaplık yaptı.</p>" olsun
+    sayfa içerik için sayfayı giydir olsun
+    sayfa yanıtını gönder

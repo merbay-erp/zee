@@ -10,6 +10,8 @@ sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
   parametresi geri geldi.
 - **`dil belge <birim>`**: işlem başlıkları + test sayısı (RFC-0014 §8.2).
 - Playground'a "Kitaplık (obeb)" örneği eklendi.
+- **zee ile web sitesi** (K-050): sunucu HTML'i text/html olarak servis
+  eder; projeler/mini-site.dil — rotalar + stil + gömülü kitaplık hesabı.
 
 ## v0.3.0 — 1 Eylül 2026
 

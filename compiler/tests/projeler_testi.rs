@@ -129,3 +129,24 @@ fn gun_sayar_sahte_takvimle() {
     assert!(cikti.contains(&"Yıl: 2026".to_string()));
     assert!(cikti.iter().any(|s| s.starts_with("Yarın: ")), "{:?}", cikti);
 }
+
+#[test]
+fn mini_site_html_uretir() {
+    // Hermetik sunucu: sahte istek kuyruğu, gömülü kitaplık yükleyicisi.
+    let mut yukleyici = |ad: &str| -> Result<String, String> {
+        dil::gomulu_birim(ad).map(str::to_string).ok_or_else(|| "yok".into())
+    };
+    let program = dil::kaynagi_derle_birimlerle(&proje("mini-site.dil"), &mut yukleyici)
+        .expect("derlenmeli");
+    let mut io = dil::yorumlayici::ToplayanIo::yeni(Vec::new());
+    io.istekler = vec!["/".into(), "/obeb".into(), "/kayip".into()].into();
+    dil::yorumlayici::calistir_io(&program, &mut io).expect("çalışmalı");
+
+    assert_eq!(io.sunucu_yanitlari.len(), 3);
+    let (_, ana) = &io.sunucu_yanitlari[0];
+    assert!(ana.starts_with("<!doctype html>"), "{}", &ana[..40]);
+    assert!(ana.contains("<h1>zee ile yapılmış site</h1>"));
+    let (_, obeb) = &io.sunucu_yanitlari[1];
+    assert!(obeb.contains("obebi: <b>12</b>"), "{}", obeb);
+    assert!(io.sunucu_yanitlari[2].1.contains("aranan sayfa yok"));
+}

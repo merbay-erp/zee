@@ -424,6 +424,23 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
 - **Test:** koleksiyon_testi::ikizlesme_geri_cevrimi,
   kitaplik_testi::birim_ozeti_islemleri_listeler / matematik_ussu_dogal_adla.
 
+## K-050 — zee ile web sitesi: HTML servis edilir
+
+- **Soru (kurucu):** "zee ile şu an web sitesi yapabilir miyiz?" — Cevap:
+  EVET, ve kanıtı projeler/mini-site.dil: 3 rotalı, stilli, gömülü
+  kitaplıkla hesap yapan gerçek site; tarayıcıda elle + hermetik testte
+  doğrulandı.
+- **Karar:** GercekIo yanıtı `<` ile başlıyorsa Content-Type text/html
+  gönderir (aksi halde text/plain) — dil yüzeyi değişmedi, IO ayrıntısı.
+- **Desen:** rota gövdeleri taze ortamda koşar (RFC-0011/K-022 gereği);
+  ortak sayfa parçaları İŞLEMLE paylaşılır (`sayfayı giydir`). Bu, "framework
+  istemez miyiz" sorusunun da cevabı: çatı, dilin kendi işlem mekanizmasıyla
+  zee'nin İÇİNDE yazılır.
+- **bulgu (yapısal ayıklama, K-011 ailesi):** parametre bildiriminde
+  yumuşama tersine çevrilemez: "içeriği al" → içeriğ (çünkü "dağı al" → dağ
+  meşru). Kapsamlı çözümdeki aday mekanizması bunu bilir ama bildirim
+  yapısaldır → tuzaksız ad öner (gövde). Usability kitine not.
+
 ## K-012 — Liste sabiti: `3, 7, 1, 9 listesi`
 
 - **Karar:** Virgülle ayrılmış değerler + `listesi`. Boş: `boş liste`.

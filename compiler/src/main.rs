@@ -430,9 +430,17 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         use std::io::Write;
         if let Some(mut akis) = self.bekleyen_akis.take() {
             let govde = yanit.as_bytes();
+            // Gövde işaretlemeyle başlıyorsa tarayıcıya HTML olarak sun
+            // (K-050): zee ile web sayfası servis etmenin önünü açar.
+            let tur = if yanit.trim_start().starts_with('<') {
+                "text/html"
+            } else {
+                "text/plain"
+            };
             let _ = write!(
                 akis,
-                "HTTP/1.1 200 OK\r\nContent-Type: text/plain; charset=utf-8\r\nContent-Length: {}\r\nConnection: close\r\n\r\n",
+                "HTTP/1.1 200 OK\r\nContent-Type: {}; charset=utf-8\r\nContent-Length: {}\r\nConnection: close\r\n\r\n",
+                tur,
                 govde.len()
             );
             let _ = akis.write_all(govde);
