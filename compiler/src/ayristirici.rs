@@ -1876,6 +1876,14 @@ fn yapili_kalip(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifade>
         }));
     }
 
+    // W ın binlikli kuruşlusu — Türk para yazımı (K-075).
+    if n == 3 && son == "kuruşlusu" && kelime(1) == Some("binlikli") {
+        return Ok(Some(Ifade::Ozellik {
+            nesne: Box::new(tekil_ifade(tokenlar[0].clone())?),
+            ozellik: Ozellik::BinlikliKuruslu,
+        }));
+    }
+
     // W ın csv metni — tablo serileştirme (K-058).
     if n == 3 && son == "metni" && kelime(1) == Some("csv") {
         return Ok(Some(Ifade::Ozellik {

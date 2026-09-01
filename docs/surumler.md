@@ -12,6 +12,9 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **Gezmede yazma yansır** (K-074): `her kutu için / kutunun adedi ...`
+  listeye geri yazılır — kopya tuzağı kapandı (TANIMLI).
+- **Türk para yazımı** (K-075): `binlikli kuruşlusu` → "1.234.567,89".
 - **Çerez silme** (K-073): `"oturum" çerezini sil` — Max-Age=0; panel
   çıkışı gerçek silmede.
 

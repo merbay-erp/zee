@@ -695,6 +695,23 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
 - **Not:** `<sayı> kez tekrarla` sayacının çok-tokenli ifade aldığı
   doğrulandı (`sayıların adedi kez tekrarla` ✓ — zaten çalışıyormuş).
 
+## K-074 — Gezmede yazma listeye yansır (kopya tuzağı kapandı)
+
+- **bulgu:** `her kutu için / kutunun adedi 99 olsun` SESSİZCE kayboluyordu
+  (kopya semantiği) — "değiştirdim ama değişmedi" tuzağı.
+- **Karar (TANIMLI):** Gezme kaynağı bir ad olduğunda (dilbilgisi gereği
+  hep öyledir), döngü değişkenine yapılan değişiklik her turun sonunda
+  listedeki öğeye GERİ YAZILIR. Stok güncelleme gibi yerinde-değiştirme
+  akışları doğal yazımıyla çalışır. Sözlük gezmesi anahtar verdiğinden
+  etkilenmez.
+- **not (kalıp sınırı):** AlanAta değeri tek token — çok-tokenli değer ara
+  ada alınır (aday iyileştirme).
+
+## K-075 — Türk para yazımı: `binlikli kuruşlusu`
+
+- **Karar:** `tutarın binlikli kuruşlusu` → "1.234.567,89" — binlik ayraç
+  NOKTA, ondalık VİRGÜL (Türk yazım kuralı). kuruşlusu ailesinin üstüne.
+
 ## K-012 — Liste sabiti: `3, 7, 1, 9 listesi`
 
 - **Karar:** Virgülle ayrılmış değerler + `listesi`. Boş: `boş liste`.

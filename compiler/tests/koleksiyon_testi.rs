@@ -300,3 +300,44 @@ test \"zengin doğrulamalar\"
     let sonuclar = dil::kaynagi_dene(kaynak).expect("derlenmeli");
     assert!(sonuclar[0].hata.is_some());
 }
+
+#[test]
+fn gezmede_oge_degisikligi_listeye_yansir() {
+    // K-074: kaynak bir adsa, döngü değişkenine yazım GERİ YAZILIR.
+    let kaynak = "\
+yapı Kutu
+    adet TamSayı
+
+kutular boş liste olsun
+bir yeni Kutu olsun
+birin adedi 1 olsun
+kutulara biri ekle
+iki yeni Kutu olsun
+ikinin adedi 2 olsun
+kutulara ikiyi ekle
+
+her kutu için
+    eski kutunun adedi olsun
+    yeni eski ile 10 un çarpımı olsun
+    kutunun adedi yeni olsun
+
+her kutu için
+    kutunun adedi yaz
+";
+    assert_eq!(kaynagi_calistir(kaynak).expect("çalışmalı"), vec!["10", "20"]);
+}
+
+#[test]
+fn binlikli_kuruslusu_turk_yazimi() {
+    // K-075: binlik ayraç NOKTA, ondalık VİRGÜL — "1.234.567,89".
+    let kaynak = "\
+tutar 1234567,891 olsun
+tutarın binlikli kuruşlusu yaz
+kucuk 42,5 olsun
+kucuğun binlikli kuruşlusu yaz
+";
+    assert_eq!(
+        kaynagi_calistir(kaynak).expect("çalışmalı"),
+        vec!["1.234.567,89", "42,50"]
+    );
+}

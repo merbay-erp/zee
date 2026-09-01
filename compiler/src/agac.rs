@@ -227,6 +227,8 @@ pub enum Ozellik {
     Kuruslu,
     /// Değerin resmî metin temsili (K-066) — `yaz` ile aynı biçim.
     Metni,
+    /// Binlik ayraçlı para (K-075): "1.824,50" — Türk yazımı.
+    BinlikliKuruslu,
 }
 
 #[derive(Debug, Clone)]

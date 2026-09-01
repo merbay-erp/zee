@@ -60,7 +60,7 @@ Araçlar: `dil çalıştır(--güvenli)/denetle(--json)/dene/biçimle/hata/belge
 + **dillsp** LSP sunucusu — tanılar, hover, tanıma git, **morfolojili
 yeniden adlandırma (F2)** ([editors/](editors/)).
 Determinizm testlerde tam: rastgelelik, saat, dosyalar, HTTP, sunucu istekleri,
-sensörler ve an ölçümü IO soyutlamasından gelir — 245 test hermetik koşar.
+sensörler ve an ölçümü IO soyutlamasından gelir — 247 test hermetik koşar.
 
 **Playground:** `playground/olustur.sh` derleyiciyi WebAssembly'e derler ve
 tek dosyalık `playground/zee-playground.html` üretir — çift tıkla aç, tarayıcıda
