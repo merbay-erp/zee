@@ -8,6 +8,7 @@ olduğunu açık tutmaktır.
 
 ```text
 compiler/src/
+├── kimlik.rs                 YapiId/IslemId/SymbolId newtype'ları
 ├── ayristirici.rs            token/blok/tanım orkestrasyonu
 │   └── ayristirici/
 │       ├── cumle.rs          cümle son-yüklem dağıtımı
@@ -15,7 +16,7 @@ compiler/src/
 ├── cozumleyici.rs            checker geçiş orkestrasyonu ve public API
 │   └── cozumleyici/
 │       ├── akis.rs           daraltma, gezme ve görev akışı
-│       ├── baglam.rs         denetim geçişinin açık durumu
+│       ├── baglam.rs         denetim durumu ve semantic ID dizinleri
 │       ├── cagri.rs          işlem imzası ve çağrı uzlaştırması
 │       ├── cumle.rs          cümle denetimi
 │       ├── donus.rs          kesin sonlanma ve dönüş birleşimi
@@ -42,7 +43,8 @@ API'si bu iç ayrımla büyümez.
 | işlem çağrı uzlaştırması | checker `cagri` | RFC-0006/spec-02/10 ve usability kararı |
 | public işlem sözleşmesi | checker `sozlesme` | paket/birim API ve semver sınırı |
 | tür yazımı/uzlaşması | checker `turler` | ifade handler'ı ve olumsuz test |
-| sembol/alan çözümü | checker `sembol` | morfoloji ve kapsam testleri |
+| sembol/alan çözümü | checker `sembol` | `SymbolId`, morfoloji ve kapsam testleri |
+| yapı/işlem semantic bağı | `kimlik` + checker `baglam` | ADR-014, AST bağ alanları ve indeks-gerileme testi |
 | akış/daraltma | checker `akis` | cümle handler'ı ve flow testleri |
 | dönüş/control-flow | checker `donus` | Seçenek/Sonuç ve tüm-yollar kanıtı |
 | etki/yetkinlik | checker `etki` | ADR-011, intrinsic kaydı ve web kuralları |
@@ -66,3 +68,7 @@ derlemesi ve ilgili RFC/spec conformance'ı her değişiklikte yine zorunludur.
 
 Checker içindeki semantik bağımlılık yönü ve tek sahiplik kuralları ayrıca
 ADR-013 ile [checker katman rehberinde](checker-katmanlari.md) bağlayıcıdır.
+K-101 ile `baglam`, `sembol` ve `cagri` bütçeleri semantic ID kayıtlarını
+taşıyacak kadar gerekçeli biçimde genişletildi; çıplak indeks geri dönüşü ayrı
+mimari testle engellenir. Kimlik kuralları ADR-014 ve
+[semantic kimlik rehberinde](semantic-kimlik-modeli.md) bağlayıcıdır.

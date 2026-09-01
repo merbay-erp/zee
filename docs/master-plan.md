@@ -535,6 +535,7 @@ ADR-010 — Normatif otorite ve değişiklik bütünlüğü
 ADR-011 — Core AST intrinsic/yetkinlik sınırı
 ADR-012 — Derleyici fiziksel faz modülleri
 ADR-013 — Checker semantik katmanları ve tek sahiplik
+ADR-014 — Yapı, işlem ve sembol semantic kimlikleri
 # 39. Ekip ve rol modeli
 Dil mimarı: semantik ve uzun vadeli vizyon.
 Compiler: parser, types, IR, backend.
@@ -553,7 +554,8 @@ sağlamlaştıran bağlayıcı uygulama sırası
 [docs/oncelikli-backlog.md](oncelikli-backlog.md) içindedir. İlk kapılar K-016
 çağrı usability kararı, K-093 gezme usability sonucu, genellenebilir expression
 grammar mimarisi ve core AST→capability/intrinsic ayrımıdır. HIR/SymbolId/faz
-sınırı, fuzz/panic audit'i ve IO trace/replay bunları izler. P0 maddeleri
+zincirinin SymbolId temeli K-101 ile tamamlandı; açık faz/HIR sınırı,
+fuzz/panic audit'i ve IO trace/replay bunu izler. P0 maddeleri
 kapanmadan yeni dil özelliği varsayılan olarak öne alınmaz; yarım güvenlik/
 correctness dilimi önce atomik olarak tamamlanır.
 
@@ -577,8 +579,11 @@ checker cümle/ifade/çağrı, runtime cümle/ifade fazlarına ayrıldı ve kayn
 bütçe testi yeniden birleşmeyi durdurdu. B-006, K-100/ADR-013 ile checker
 kökünü orkestrasyona indirdi; tür, bağlam, sembol, akış, çağrı, sözleşme,
 etki/yetkinlik ve dönüş kurallarını tek sahipli katmanlara ayırdı. Sıradaki
-omurga işi yapı, işlem ve sembol kimliklerini kararlı newtype'lara taşıyan
-B-010 semantic ID modelidir.
+omurga B-010, K-101/ADR-014 ile tamamlandı: `YapiId`, `IslemId` ve `SymbolId`
+kaynak adı, semantic identity ve fiziksel depolamayı ayırır; AST checker
+sonrası açık bağları taşır. Sıradaki iş Source → Tokens → Parsed AST →
+Resolution → Typed HIR → Execution/Lowering fazlarını kodda görünür kılan
+B-018'dir.
 # 40. Proje felsefesinin korunması
 Bu projenin başarısı yalnız compiler’ın çalışması değildir. Başarı; Türkçe konuşan bir çocuğun yabancı syntax bariyerine takılmadan algoritmik düşünceyle tanışması, aynı dilin yıllar sonra onu terk etmeye zorlamaması ve ekosistemin tek bir şirketin kapalı ürünü haline gelmemesidir.
 Her yeni özellik şu dört sorudan geçmelidir: Türkçe doğal mı? Deterministik mi? Öğrenilebilir mi? Profesyonel ölçekte savunulabilir mi? Dördünden biri hayırsa özellik yeniden tasarlanır.

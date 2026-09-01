@@ -69,6 +69,7 @@ pub(super) fn tekil_ifade(token: Token) -> Result<Ifade, Tani> {
         TokenTur::Kelime(k) => Ok(Ifade::Degisken {
             ham: k,
             cozulmus: None,
+            sembol_kimligi: None,
             satir: token.satir,
             sutun: token.sutun,
             uzunluk: token.uzunluk,
@@ -799,7 +800,10 @@ pub(super) fn yapili_kalip(tokenlar: &[Token], islemler: &[String]) -> Result<Op
 
     // yeni <Yapı> — yeni yapı örneği (K-020).
     if n == 2 && kelime(0) == Some("yeni") {
-        return Ok(Some(Ifade::YeniYapi { yapi_adi: son.to_string() }));
+        return Ok(Some(Ifade::YeniYapi {
+            yapi_adi: son.to_string(),
+            yapi_kimligi: None,
+        }));
     }
 
     // <nesne-in> <alan> — iyelik ekiyle alan okuma (K-020). Adlı kalıplardan
@@ -1037,6 +1041,7 @@ pub(super) fn cagri_kalibi(
 
         return Ok(Some(Ifade::IslemCagrisi {
             islem_adi: ad.clone(),
+            islem_kimligi: None,
             argumanlar,
             satir,
         }));
@@ -1059,6 +1064,7 @@ pub(super) fn sifir_argumanli_cagri(tokenlar: &[Token], satir: usize, islemler: 
         {
             return Some(Ifade::IslemCagrisi {
                 islem_adi: ad.clone(),
+                islem_kimligi: None,
                 argumanlar: Vec::new(),
                 satir,
             });

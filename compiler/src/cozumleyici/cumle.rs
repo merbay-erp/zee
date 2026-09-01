@@ -2,7 +2,7 @@ use super::*;
 
 pub(super) fn blok_denetle(
     cumleler: &mut [Cumle],
-    ortam: &mut HashMap<String, Tur>,
+    ortam: &mut SembolTablosu,
     baglam: &mut Baglam,
 ) -> Result<(), Tani> {
     let giriste_bekleyenler = baglam.bekleyen_gorevler.clone();
@@ -230,6 +230,7 @@ pub(super) fn blok_denetle(
                             let kaynak_adi = bulunanlar.into_iter().next().unwrap();
                             *kaynak = Some(Ifade::Degisken {
                                 ham: kaynak_adi.clone(),
+                                sembol_kimligi: ortam.kimlik(&kaynak_adi),
                                 cozulmus: Some(kaynak_adi),
                                 satir,
                                 sutun: 1,
@@ -352,7 +353,7 @@ pub(super) fn blok_denetle(
                 }
                 // Her istek taze ortamda işlenir (kapsülleme); form ve sorgu
                 // verisi örtük "istek" sözlüğünde gelir (K-051).
-                let mut istek_ortami: HashMap<String, Tur> = HashMap::new();
+                let mut istek_ortami = SembolTablosu::yeni(baglam.istek_kapsami(satir));
                 istek_ortami.insert("istek".into(), Tur::Sozluk(SozlukDegerTuru::Metin));
                 istek_ortami.insert("çerezler".into(), Tur::Sozluk(SozlukDegerTuru::Metin));
                 blok_denetle(govde, &mut istek_ortami, baglam)?;
@@ -648,8 +649,8 @@ pub(super) fn blok_denetle(
             Cumle::AlanAta { nesne, alan, deger, satir } => {
                 let satir = *satir;
                 let nesne_turu = ifade_denetle(nesne, ortam, baglam, satir)?;
-                let yapi_indeksi = match nesne_turu {
-                    Tur::Yapi(i) => i,
+                let yapi_kimligi = match nesne_turu {
+                    Tur::Yapi(kimlik) => kimlik,
                     baska => {
                         return Err(Tani::yeni(
                             "T028",
@@ -660,7 +661,10 @@ pub(super) fn blok_denetle(
                         ));
                     }
                 };
-                let yapi = baglam.yapilar[yapi_indeksi].clone();
+                let yapi = baglam
+                    .yapi(yapi_kimligi)
+                    .expect("yapı kimliği dizinde kayıtlı")
+                    .clone();
                 let yalin = alan_cozumle(&yapi, alan, satir)?;
                 let beklenen = yapi
                     .alanlar
@@ -895,7 +899,14 @@ pub(super) fn blok_denetle(
             }
             Cumle::CagriCumlesi { cagri, satir } => {
                 let satir = *satir;
-                if let Ifade::IslemCagrisi { islem_adi, argumanlar, .. } = cagri {
+                if let Ifade::IslemCagrisi {
+                    islem_adi,
+                    islem_kimligi,
+                    argumanlar,
+                    ..
+                } = cagri
+                {
+                    *islem_kimligi = baglam.islem_kimligi(islem_adi);
                     let mut arg_turleri = Vec::new();
                     for arg in argumanlar.iter_mut() {
                         arg_turleri.push(ifade_denetle(arg, ortam, baglam, satir)?);

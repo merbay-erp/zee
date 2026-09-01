@@ -321,7 +321,7 @@ pub(super) fn degerlendir_async<'a>(
             };
             Ok(Deger::Mantiksal(bos != *olumsuz))
         }
-        Ifade::YeniYapi { yapi_adi } => {
+        Ifade::YeniYapi { yapi_adi, .. } => {
             let yapi = program
                 .yapilar
                 .iter()

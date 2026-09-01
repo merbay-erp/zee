@@ -2,7 +2,7 @@ use super::*;
 
 pub(super) fn ifade_denetle(
     ifade: &mut Ifade,
-    ortam: &HashMap<String, Tur>,
+    ortam: &SembolTablosu,
     baglam: &mut Baglam,
     satir: usize,
 ) -> Result<Tur, Tani> {
@@ -85,7 +85,7 @@ pub(super) fn ifade_denetle(
             // K-064: nesne bir yapıysa ve özellik kelimesi bir ALANA çözülüyorsa
             // bu aslında alan erişimidir ("ürünün adedi" → alan "adet").
             // Örtük-çoğul emsalindeki gibi ifade yeniden yazılır.
-            if let Tur::Yapi(yapi_indeksi) = tur {
+            if let Tur::Yapi(yapi_kimligi) = tur {
                 let soz = match ozellik {
                     Ozellik::Adet => "adedi",
                     Ozellik::Ilk => "ilki",
@@ -110,7 +110,7 @@ pub(super) fn ifade_denetle(
                     Ozellik::HataNedeni => "nedeni",
                     Ozellik::HataVerisi => "verisi",
                 };
-                let yapi = &baglam.yapilar[yapi_indeksi];
+                let yapi = baglam.yapi(yapi_kimligi).expect("yapı kimliği dizinde kayıtlı");
                 if let Ok(alan) = alan_cozumle(yapi, soz, satir) {
                     let yeni = Ifade::AlanErisim {
                         nesne: nesne.clone(),
@@ -362,9 +362,15 @@ pub(super) fn ifade_denetle(
                 )),
             }
         }
-        Ifade::YeniYapi { yapi_adi } => {
-            match baglam.yapilar.iter().position(|y| y.ad == *yapi_adi) {
-                Some(i) => Ok(Tur::Yapi(i)),
+        Ifade::YeniYapi {
+            yapi_adi,
+            yapi_kimligi,
+        } => {
+            match baglam.yapi_kimligi(yapi_adi) {
+                Some(kimlik) => {
+                    *yapi_kimligi = Some(kimlik);
+                    Ok(Tur::Yapi(kimlik))
+                }
                 None => Err(Tani::yeni(
                     "A007",
                     format!("\"{}\" adında bir yapı tanımlı değil.", yapi_adi),
@@ -377,8 +383,8 @@ pub(super) fn ifade_denetle(
         }
         Ifade::AlanErisim { nesne, alan } => {
             let nesne_turu = ifade_denetle(nesne, ortam, baglam, satir)?;
-            let yapi_indeksi = match nesne_turu {
-                Tur::Yapi(i) => i,
+            let yapi_kimligi = match nesne_turu {
+                Tur::Yapi(kimlik) => kimlik,
                 baska => {
                     return Err(Tani::yeni(
                         "T028",
@@ -389,7 +395,10 @@ pub(super) fn ifade_denetle(
                     ));
                 }
             };
-            let yapi = baglam.yapilar[yapi_indeksi].clone();
+            let yapi = baglam
+                .yapi(yapi_kimligi)
+                .expect("yapı kimliği dizinde kayıtlı")
+                .clone();
             let yalin = alan_cozumle(&yapi, alan, satir)?;
             let tur = yapi
                 .alanlar
@@ -620,8 +629,15 @@ pub(super) fn ifade_denetle(
             }
             Ok(Tur::TamSayi)
         }
-        Ifade::Degisken { ham, cozulmus, satir, sutun, uzunluk } => {
-            let ad = ad_cozumle(ham, ortam, *satir, *sutun, *uzunluk)?;
+        Ifade::Degisken {
+            ham,
+            cozulmus,
+            sembol_kimligi,
+            satir,
+            sutun,
+            uzunluk,
+        } => {
+            let (ad, kimlik) = sembol_cozumle(ham, ortam, *satir, *sutun, *uzunluk)?;
             // RFC-0011 §1: görev sonucuna "hepsini bekle"den önce erişilemez.
             if baglam.bekleyen_gorevler.contains(&ad) {
                 return Err(Tani::yeni(
@@ -635,8 +651,9 @@ pub(super) fn ifade_denetle(
                     *uzunluk,
                 ));
             }
-            let tur = ortam[&ad];
+            let tur = *ortam.get(&ad).expect("çözülen sembolün tür kaydı var");
             *cozulmus = Some(ad);
+            *sembol_kimligi = Some(kimlik);
             Ok(tur)
         }
         Ifade::Birlestir(parcalar) => {
@@ -846,8 +863,14 @@ pub(super) fn ifade_denetle(
             }
             Ok(Tur::Ondalik)
         }
-        Ifade::IslemCagrisi { islem_adi, argumanlar, satir: cagri_satiri } => {
+        Ifade::IslemCagrisi {
+            islem_adi,
+            islem_kimligi,
+            argumanlar,
+            satir: cagri_satiri,
+        } => {
             let cagri_satiri = *cagri_satiri;
+            *islem_kimligi = baglam.islem_kimligi(islem_adi);
             let mut arg_turleri = Vec::new();
             for arg in argumanlar.iter_mut() {
                 arg_turleri.push(ifade_denetle(arg, ortam, baglam, cagri_satiri)?);

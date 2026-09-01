@@ -3,7 +3,7 @@
 Bu liste bir dilek listesi değildir: `1.0.0` etiketi bu kapılar kapatılmadan
 atılmaz. Amaç yeni özellik sayısını büyütmek değil, çocuktan profesyonele aynı
 dilin verdiği sözleri kanıtlamaktır. Bulgular 1 Eylül 2026'da derleyici
-kaynakları, spec, RFC'ler ve 398 test üzerinden yeniden doğrulanmıştır.
+kaynakları, spec, RFC'ler ve 402 test üzerinden yeniden doğrulanmıştır.
 
 Durumlar: **KAPALI** = kanıtı var · **AÇIK** = v1 engeli · **KARAR** = önce
 normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
@@ -23,6 +23,7 @@ normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
 | V1-P0-09 Alan adaptörleri core AST'yi şişirmez | **KAPALI (K-098)** | HTTP, sensör, CSRF ve parola yüzeyleri ayrı AST varyantları değil, kararlı kimlik ve sıralı argüman taşıyan tek `Intrinsic` düğümüdür. Tür imzası, gereken yetkinlik ve statik etki merkezi kayıttadır; kullanıcı kaynakları değişmemiştir. | ADR-011 + [intrinsic/yetkinlik rehberi](intrinsic-yetkinlik-modeli.md); kayıt tekilliği, dört lowering ve iki tür olumsuzu için yedi bağımsız test, mevcut alan davranış korpusu. Yeni intrinsic kayıt+lowering+tür+etki+runtime+olumlu/olumsuz kanıt olmadan eklenemez. |
 | V1-P0-10 Derleyici handler büyümesi fiziksel faz sınırındadır | **KAPALI (K-099)** | Parser cümle/ifade, checker cümle/ifade/çağrı, runtime cümle/ifade modüllerine ayrıdır; kökler orkestrasyon ve ortak modellere sahiptir. Alt modüller yalnız üst fazına görünür, public API değişmez. | ADR-012 + [faz rehberi](derleyici-faz-sinirlari.md); üç kaynak-mimari testi büyük handler'ların köke dönmesini ve kök/modül satır bütçelerinin sessizce aşılmasını engeller. Tam 393 davranış testi değişmeden toplam 396 test yeşildir. |
 | V1-P0-11 Checker semantik kuralları tek sahipli katmanlardadır | **KAPALI (K-100)** | Checker kökü yalnız geçiş sırası ve public yeniden dışa aktarımı taşır; tür, bağlam, sembol, akış, çağrı, sözleşme, etki/yetkinlik ve dönüş kuralları ayrı modüllerdedir. | ADR-013 + [checker katman rehberi](checker-katmanlari.md); beş kaynak-mimari testi kök bütçesini, katman sahipliğini ve public API'yi korur. Kaynak semantiği değişmeden toplam 398 test yeşildir. |
+| V1-P0-12 Semantic identity depolama konumundan ayrıdır | **KAPALI (K-101)** | Yapı, işlem ve sembol bağları `YapiId`/`IslemId`/`SymbolId` taşır. `Tur::Yapi` vektör indeksi değildir; işlem imzası/özyineleme ID ile anahtarlanır ve çözülmüş AST kaynak adının yanında kimliği korur. | ADR-014 + [semantic kimlik rehberi](semantic-kimlik-modeli.md); yapı depolama ve işlem çağrı sırası tersleme, SymbolId bağı ve indeks-gerileme mimari testi. Toplam 402 test yeşildir. |
 
 ## P1 — profesyonel kapasite kapıları
 
@@ -62,7 +63,8 @@ normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
    kapattı. K-098 alan yüzeylerini generic intrinsic/yetkinlik modeline taşıdı
    ve V1-P0-09'u kapattı. K-099 fiziksel faz sınırlarını kurup V1-P0-10'u
    kapattı. K-100 checker semantik katmanlarını tek sahipli hale getirip
-   V1-P0-11'i kapattı; sıradaki omurga işi B-010 semantic ID modelidir.
+   V1-P0-11'i kapattı. K-101 semantic identity'yi depolama konumundan ayırıp
+   V1-P0-12'yi kapattı; sıradaki omurga işi B-018 açık faz modelidir.
 8. Yeni dil özelliğinden önce bağlayıcı sıra
    [öncelikli backlog](oncelikli-backlog.md) içindeki P0 compiler omurgasıdır.
 

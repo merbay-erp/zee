@@ -12,9 +12,9 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 
 1. Tamamlanan önkoşul: K-095 registry metadata güveni (378 test).
 2. İnsan kanıtı bekleyen kapılar: B-001/K-096 + B-002/K-093.
-3. Tamamlanan compiler omurgası: B-003/K-097, B-004/K-098, B-005/K-099 ve
-   B-006/K-100 (398 test).
-4. Sıradaki makine işi: B-010; ardından B-018/B-019/B-020 → B-014–B-017.
+3. Tamamlanan compiler omurgası: B-003/K-097, B-004/K-098, B-005/K-099,
+   B-006/K-100 ve B-010/K-101 (402 test).
+4. Sıradaki makine işi: B-018; ardından B-019/B-020 → B-014–B-017.
 5. Üçüncü sprint: B-027/B-028 → B-030/B-031 → B-043/B-044.
 6. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
 
@@ -63,8 +63,13 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   bu kural CI'da görünür olmalıdır.
 - **B-009 · AÇIK — morfoloji conformance korpusunu compiler'dan bağımsızlaştır.**
   Yüzey→kök→ek zinciri→belirsizlik/hata→profil makine-okunur fixture olmalıdır.
-- **B-010 · SIRADA — semantic ID modelini kur.** `YapiId`, `IslemId`,
-  `SymbolId` newtype'ları indeksleri semantic identity olmaktan çıkarmalıdır.
+- **B-010 · KAPALI (K-101) — semantic ID modelini kur.** `YapiId`, `IslemId`
+  ve `SymbolId` newtype'ları eklendi. `Tur::Yapi` artık depolama indeksi değil
+  kimlik taşır; yapı erişimi ayrı kimlik→konum dizinindedir. İşlem imzaları ve
+  özyineleme yığını `IslemId`, sembol tablosu ad→(`SymbolId`, tür) kullanır.
+  Checker `Degisken`/`YeniYapi`/`IslemCagrisi` bağlarını AST'ye yazar. ADR-014,
+  [rehber](semantic-kimlik-modeli.md), üç davranış ve bir mimari testle
+  V1-P0-12 kapandı; runtime'ın yalnız ID/HIR tüketmesi B-018/B-019'dur.
 - **B-011 · KISMEN — gözlenebilir concurrency determinizmini V1 garantisi yap.**
   spec/14 tek-thread semantiği tanımlar; gelecekte multicore yürütmenin gözlenen
   sıra/sonucu değiştiremeyeceği açık compatibility sözüne bağlanmalıdır.

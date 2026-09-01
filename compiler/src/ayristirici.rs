@@ -894,6 +894,7 @@ impl Ayristirici {
                     let kaynak = Ifade::Degisken {
                         ham: kok.to_string(),
                         cozulmus: None,
+                        sembol_kimligi: None,
                         satir: t.satir,
                         sutun: t.sutun,
                         uzunluk: t.uzunluk,

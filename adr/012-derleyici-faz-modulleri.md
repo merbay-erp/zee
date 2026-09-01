@@ -57,3 +57,5 @@ Hata kataloğu bekçisi de `compiler/src` altındaki bütün Rust modüllerini
 - Yeni normatif dil spec'i gerekmez; kullanıcı semantiği değişmemiştir.
 - Checker'ın bu fiziksel sınır üstündeki semantik sahipliği ADR-013'e
   devredildi; checker kökü 143 satırlık orkestrasyona indi.
+- K-101/ADR-014 semantic ID kayıtları `baglam`, `sembol` ve `cagri`
+  katmanlarına eklendi; gerekçeli bütçe değişikliği faz rehberinde kayıtlıdır.

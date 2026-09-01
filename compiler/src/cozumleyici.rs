@@ -33,7 +33,9 @@ use self::cagri::cagri_denetle;
 use self::cumle::blok_denetle;
 use self::donus::{blok_kesin_sonlanir, donusleri_birlestir, donusleri_sarmala};
 use self::ifade::ifade_denetle;
-use self::sembol::{alan_cozumle, kapsam_baslat, kapsam_bitir};
+use self::sembol::{
+    alan_cozumle, kapsam_baslat, kapsam_bitir, sembol_cozumle, SembolTablosu,
+};
 pub use self::sembol::ad_cozumle;
 use self::sozlesme::{acik_islemleri_denetle, acik_parametre_turleri, bildirilmis_donus_turu};
 use self::turler::{
@@ -44,10 +46,10 @@ pub use self::turler::{SozlukDegerTuru, Tur, VeriTuru};
 
 use crate::agac::{Cumle, Ifade, Islec, Islem, Ozellik, Program, Yapi};
 use crate::intrinsic;
+use crate::kimlik::{IslemId, SymbolId, YapiId};
 
 use crate::tani::Tani;
 use std::collections::HashMap;
-
 
 /// Çoklu denetim (RFC-0010 §3.1): üst düzey cümle başına hata toplanır;
 /// bir cümlenin hatası sonrakilerin denetimini durdurmaz. LSP/denetle --json
@@ -57,7 +59,7 @@ pub fn denetle_coklu(program: &mut Program) -> Vec<Tani> {
     if let Err(tani) = etki::denetle(program) {
         tanilar.push(tani);
     }
-    let mut ortam: HashMap<String, Tur> = HashMap::new();
+    let mut ortam = SembolTablosu::yeni(0);
     tanilar.extend(yapi_turu_tanilari(&program.yapilar));
     let mut baglam = Baglam::yeni(
         std::mem::take(&mut program.islemler),
@@ -94,8 +96,8 @@ pub fn denetle_coklu(program: &mut Program) -> Vec<Tani> {
         }
         bas = son;
     }
-    for test in program.testler.iter_mut() {
-        let mut test_ortami: HashMap<String, Tur> = HashMap::new();
+    for (test_indeksi, test) in program.testler.iter_mut().enumerate() {
+        let mut test_ortami = SembolTablosu::yeni(baglam.test_kapsami(test_indeksi));
         if let Err(tani) = blok_denetle(&mut test.govde, &mut test_ortami, &mut baglam) {
             tanilar.push(tani);
             if tanilar.len() >= 20 {
@@ -113,7 +115,7 @@ pub fn denetle_coklu(program: &mut Program) -> Vec<Tani> {
 /// tanım sözleşmesiyle çağrı beklemeden denetlenir (K-083).
 pub fn denetle(program: &mut Program) -> Result<(), Tani> {
     etki::denetle(program)?;
-    let mut ortam: HashMap<String, Tur> = HashMap::new();
+    let mut ortam = SembolTablosu::yeni(0);
     if let Some(tani) = yapi_turu_tanilari(&program.yapilar).into_iter().next() {
         return Err(tani);
     }
@@ -128,8 +130,8 @@ pub fn denetle(program: &mut Program) -> Result<(), Tani> {
 
     // Testler ana programdan bağımsız, taze ortamda denetlenir.
     if sonuc.is_ok() {
-        for test in program.testler.iter_mut() {
-            let mut test_ortami: HashMap<String, Tur> = HashMap::new();
+        for (test_indeksi, test) in program.testler.iter_mut().enumerate() {
+            let mut test_ortami = SembolTablosu::yeni(baglam.test_kapsami(test_indeksi));
             sonuc = blok_denetle(&mut test.govde, &mut test_ortami, &mut baglam);
             if sonuc.is_err() {
                 break;

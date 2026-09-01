@@ -2,6 +2,8 @@
 
 use std::collections::HashMap;
 
+use crate::kimlik::{IslemId, SymbolId, YapiId};
+
 /// Derlenmiş program: üst düzey cümleler + ada göre işlem tanımları.
 /// İşlem gövdeleri buraya kaldırılır (hoist); hem denetleyici hem yorumlayıcı
 /// aynı kayıttan okur.
@@ -9,7 +11,7 @@ use std::collections::HashMap;
 pub struct Program {
     pub cumleler: Vec<Cumle>,
     pub islemler: HashMap<String, Islem>,
-    /// Yapı tanımları; Tur::Yapi bu listeye indeksle işaret eder.
+    /// Yapı tanımları; checker depolama konumundan ayrı `YapiId` dizini kurar.
     pub yapilar: Vec<Yapi>,
     /// `test "..."` blokları — `dil çalıştır` bunları atlar, `dil dene` koşar.
     pub testler: Vec<Test>,
@@ -165,6 +167,8 @@ pub enum Ifade {
     Degisken {
         ham: String,
         cozulmus: Option<String>,
+        /// Checker'ın bağladığı semantic identity; parser çıktısında `None`.
+        sembol_kimligi: Option<SymbolId>,
         satir: usize,
         sutun: usize,
         uzunluk: usize,
@@ -263,7 +267,11 @@ pub enum Ifade {
     /// `yanıtın ondalığını almayı dene` → Sonuç<Ondalık>.
     OndaligiDene(Box<Ifade>),
     /// "yeni Öğrenci" — alanları varsayılan değerli yeni yapı örneği (K-020).
-    YeniYapi { yapi_adi: String },
+    YeniYapi {
+        yapi_adi: String,
+        /// Checker'ın yapı dizininden bağladığı kimlik.
+        yapi_kimligi: Option<YapiId>,
+    },
     /// "ayşenin adı" — iyelik ekiyle alan okuma (K-020). `alan` ham yazımdır
     /// ("adı"); çözümleyici yapı tanımındaki yalın ada ("ad") çevirir.
     AlanErisim { nesne: Box<Ifade>, alan: String },
@@ -271,6 +279,8 @@ pub enum Ifade {
     /// çok argüman: "a ve b ile selamla".
     IslemCagrisi {
         islem_adi: String,
+        /// Checker'ın işlem dizininden bağladığı kimlik.
+        islem_kimligi: Option<IslemId>,
         argumanlar: Vec<Ifade>,
         satir: usize,
     },

@@ -6,13 +6,9 @@ pub(super) fn acik_islemleri_denetle(baglam: &mut Baglam) -> Result<(), Tani> {
     let mut adlar = baglam.islemler.keys().cloned().collect::<Vec<_>>();
     adlar.sort();
     for ad in adlar {
-        let (turler, satir) = {
-            let islem = baglam.islemler.get(&ad).expect("ad haritadan geldi");
-            (
-                acik_parametre_turleri(islem, &baglam.yapilar)?,
-                islem.satir,
-            )
-        };
+        let islem = baglam.islemler.get(&ad).expect("ad haritadan geldi").clone();
+        let turler = acik_parametre_turleri(&islem, baglam)?;
+        let satir = islem.satir;
         if let Some(turler) = turler {
             cagri_denetle(&ad, &turler, baglam, satir)?;
         }
@@ -24,7 +20,7 @@ pub(super) fn acik_islemleri_denetle(baglam: &mut Baglam) -> Result<(), Tani> {
 /// K-086 dönüş bildirimi: dış `None` bildirim yok, iç `None` değer döndürmez.
 pub(super) fn bildirilmis_donus_turu(
     islem: &Islem,
-    yapilar: &[Yapi],
+    baglam: &Baglam,
 ) -> Result<Option<Option<Tur>>, Tani> {
     let Some(yazim) = islem.donus_turu_yazimi.as_deref() else {
         return Ok(None);
@@ -32,7 +28,7 @@ pub(super) fn bildirilmis_donus_turu(
     if yazim == "DeğerDöndürmez" {
         return Ok(Some(None));
     }
-    parametre_turu(yazim, yapilar)
+    parametre_turu(yazim, baglam)
         .map(|tur| Some(Some(tur)))
         .ok_or_else(|| {
             Tani::yeni(
@@ -55,7 +51,7 @@ pub(super) fn bildirilmis_donus_turu(
 /// None: bütün parametreler başlangıç yüzeyinde çıkarımlı. Some: açık imza.
 pub(super) fn acik_parametre_turleri(
     islem: &Islem,
-    yapilar: &[Yapi],
+    baglam: &Baglam,
 ) -> Result<Option<Vec<Tur>>, Tani> {
     if islem.parametreler.is_empty() {
         return Ok(Some(Vec::new()));
@@ -111,7 +107,7 @@ pub(super) fn acik_parametre_turleri(
         .iter()
         .map(|parametre| {
             let yazim = parametre.tur_yazimi.as_deref().expect("hepsi açık");
-            parametre_turu(yazim, yapilar).ok_or_else(|| {
+            parametre_turu(yazim, baglam).ok_or_else(|| {
                 Tani::yeni(
                     "T038",
                     format!(
