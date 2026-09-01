@@ -3,7 +3,24 @@
 Her sürüm: ne eklendi, ne değişti, neyin sözü verildi. Kırıcı değişiklik
 sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 
-## Yolda (v0.4.0'a birikenler)
+## v0.4.0 — 1 Eylül 2026
+
+**Tema: dil, kurucunun gerçek projelerine hazırlanıyor — web ve metin.**
+
+- **Metin dalgası** (K-053): `parçaları`, `birleşmişi`, `yerine ...
+  değişmişi`, `kırpılmışı`, `harfleri`, `ile başlıyorsa/bitiyorsa` —
+  harf düzeyine ilk iniş. Gömülü `metin_araclari` birimi (saf zee).
+- **JSON yazma** (K-054): `değerin json metni` — sıra-korumalı,
+  deterministik serileştirme.
+- **Web uygulaması katmanı** (K-050..K-052, K-055): HTML servis, örtük
+  `istek` sözlüğü (sorgu + POST form), `adresine yönlendir` (303),
+  `html güvenlisi` (XSS), örtük `çerezler` + `çerezine yaz` (oturum),
+  önekli rotalar. Kanıtlar: mini-site, panel-not-defteri, girisli-panel
+  (parola+oturum mantığı SAF ZEE) — üçü de tarayıcıda canlı + hermetik.
+- **Sınır (değişmedi):** parola düz metin, HTTPS yok — internete açık
+  üretim Faz 5 güvenlik dalgasını bekler.
+
+### v0.3.0 sonrası küçükler
 
 - **Ünsüz ikizleşmesi morfolojisi** (K-049): `üssü`, `affı`, `zammı`,
   `reddi` (sertleşmeyle) çözülür; matematik biriminin doğal `üssü al`

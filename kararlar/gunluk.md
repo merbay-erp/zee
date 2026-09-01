@@ -485,6 +485,30 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   parametre adını yalın-ünsüzle bitir (anahtar, gövde, kuvvet-yerine-üs
   ikizleşmeden çalışır). Usability kitine eklendi sayılır.
 
+## K-053 — Metin dalgası: gerçek projelerin görünmez temeli
+
+- **Karar:** Altı çekirdek kalıp (harf düzeyi ilk kez): `parçaları`
+  (ayraçla bölme; boş ayraç = harflere), `birleşmişi` (Metin listesi +
+  ayraç), `X yerine Y değişmişi`, `kırpılmışı`, `harfleri`
+  (Liste<Metin>), koşullar `ile başlıyorsa / bitiyorsa`. Tümü Türkçe
+  iyelik ritminde; tür bekçileri T022, boş "eski" C004.
+- **Kitaplık:** harf erişimi doğunca RFC-0014'ün "bilinçli yok" dediği
+  metin yardımcıları geldi: gömülü `metin_araclari` (tersi, ünlü sayımı,
+  baş harf) — mantık saf zee.
+
+## K-054 — JSON yazma: `değerin json metni`
+
+- **Karar:** Sözlük/Liste/Metin/sayılar/Mantıksal → JSON metni (anahtar
+  sırası korunur — determinizm; Ondalık noktayla serileşir). Dosyaya
+  yazmak bedava: `"veri.json" dosyasına sözlüğün json metni yaz`.
+  Yeni cümle YOK — turnusol gereği ifade özelliği yetti.
+
+## K-055 — Önekli rota: `"/yazi/" önekli adrese istek geldiğinde`
+
+- **Karar:** Rota bir önekle eşleşebilir; kalan kimlik metin dalgasıyla
+  kullanıcı tarafında çıkarılır (`yolun "/yazi/" yerine "" değişmişi`) —
+  dile şablon-rota karmaşası girmedi.
+
 ## K-012 — Liste sabiti: `3, 7, 1, 9 listesi`
 
 - **Karar:** Virgülle ayrılmış değerler + `listesi`. Boş: `boş liste`.

@@ -177,6 +177,19 @@ her kelime için        # cümlenin kelimeleri listesinden
 
 Büyük/küçük dönüşümü Türkçe kurallıdır: İ↔i, I↔ı.
 
+Metin cerrahisi (K-053):
+
+```
+parçalar satırın ";" ile parçaları olsun      # bölme (boş ayraç = harflere)
+birleşik parçaların " ve " ile birleşmişi olsun
+yeni cümlenin "kedi" yerine "köpek" değişmişi olsun
+temiz cümlenin kırpılmışı olsun
+harfler adın harfleri olsun                   # Liste<Metin>
+
+dosya ".dil" ile bitiyorsa
+    "zee kaynağı" yaz
+```
+
 ## 10. İşlemler
 
 Tanım `işlem` ile başlar; parametreler gövdenin başında `... al` satırlarıdır;
@@ -313,6 +326,8 @@ tablodaki her satır için
 
 kişi "kisi.json" dosyasından okunan veri olsun
 "Ad: " ile kişinin "ad" değeri yaz
+
+"veri.json" dosyasına kişinin json metni yaz   # yazma (K-054)
 ```
 
 ## 17. Tarih, saat, süre
@@ -370,6 +385,9 @@ verisi HTML'e daima `html güvenlisi` ile gömülür:
 # listede: satırın html güvenlisi  ← kullanıcı verisi kaçışlanır
 ```
 
+Önekli rota (K-055): `"/yazi/" önekli adrese istek geldiğinde` — kimliği
+metinden çıkar: `kimlik yolun "/yazi/" yerine "" değişmişi olsun`.
+
 Oturum için çerez kapısı (K-052): `çerezler` sözlüğü + `çerezine yaz`:
 
 ```
@@ -407,7 +425,8 @@ Tanımlar görünür, birimin üst düzey cümleleri kapsüllüdür; ad çakış
 sessiz gölgelemez, hatadır (A008).
 
 **Gömülü standart kitaplık** (RFC-0014, deneysel): `matematik` (mutlak, üs,
-tam karekök, obeb, okek) ve `liste_araclari` (toplam, uçlar, ortalama)
+tam karekök, obeb, okek), `liste_araclari` (toplam, uçlar, ortalama) ve
+`metin_araclari` (tersi, ünlü sayımı, baş harf)
 derleyicinin içindedir — kurulum gerektirmez, playground'da bile çalışır:
 
 ```

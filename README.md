@@ -18,7 +18,7 @@ Bu bir çeviri katmanı değildir (`if→eğer` makyajı yok); AI semantiğin pa
 - Master plan: [docs/master-plan.md](docs/master-plan.md) (kaynak: [docs/Turkce_Programlama_Dili_Master_Proje_Dokumani.docx](docs/Turkce_Programlama_Dili_Master_Proje_Dokumani.docx))
 - İlkeler: [MANIFESTO.md](MANIFESTO.md)
 
-## Durum: **v0.3.0** (1 Eylül 2026) — Faz 2+ sürüyor
+## Durum: **v0.4.0** (1 Eylül 2026) — Faz 2+ sürüyor
 
 Sürüm geçmişi ve ayrıntılar: [docs/surumler.md](docs/surumler.md).
 
@@ -49,11 +49,14 @@ CSV/JSON okuma, tarih/saat, komut satırı argümanları, **test blokları**
 simülatörü**, **özyineleme** (T035 "temel durum önce", C019 derinlik sınırı),
 **blok kapsamı** (K-034), **akış-duyarlı daraltma** (T036: korumasız
 değer/hata erişimi derleme hatası), metin kaçışları ve negatif sabitler,
+**web uygulama katmanı** (form/istek sözlüğü, çerezli oturum, yönlendirme,
+html güvenlisi, önekli rotalar), **metin cerrahisi** (parçala/birleştir/
+değiştir/kırp/harfler), **JSON yazma**,
 üç mekanizmalı morfoloji ve 90+ Türkçe kodlu tanı.
 Araçlar: `dil çalıştır/denetle(--json, çoklu tanı)/dene/biçimle/hata/yeni` +
 **dillsp** LSP sunucusu ([editors/](editors/)).
 Determinizm testlerde tam: rastgelelik, saat, dosyalar, HTTP, sunucu istekleri,
-sensörler ve an ölçümü IO soyutlamasından gelir — 204 test hermetik koşar.
+sensörler ve an ölçümü IO soyutlamasından gelir — 213 test hermetik koşar.
 
 **Playground:** `playground/olustur.sh` derleyiciyi WebAssembly'e derler ve
 tek dosyalık `playground/zee-playground.html` üretir — çift tıkla aç, tarayıcıda

@@ -69,6 +69,14 @@ pub enum Ifade {
     /// "doğru" / "yanlış" (master plan bölüm 7).
     MantiksalSabiti(bool),
     /// "1 ile 100 arasında rastgele sayı" — iki uç dahil.
+    /// `metnin "," ile parçaları` → Liste<Metin> (K-053).
+    Parcala { metin: Box<Ifade>, ayrac: Box<Ifade> },
+    /// `parçaların "-" ile birleşmişi` → Metin (K-053).
+    ListeBirlestir { liste: Box<Ifade>, ayrac: Box<Ifade> },
+    /// `metnin "a" yerine "b" değişmişi` → Metin (K-053).
+    Degistir { metin: Box<Ifade>, eski: Box<Ifade>, yeni: Box<Ifade> },
+    /// `metin "ab" ile başlıyorsa/bitiyorsa` (K-053); bitis=true → sonda.
+    MetinSinari { metin: Box<Ifade>, parca: Box<Ifade>, bitis: bool },
     Rastgele { alt: Box<Ifade>, ust: Box<Ifade> },
     /// Kaynaktaki ham kelime; ad çözümleme ek ayıklamasıyla `cozulmus`ü doldurur.
     Degisken {
@@ -201,6 +209,12 @@ pub enum Ozellik {
     Yuvarlanmis,
     /// Metin: HTML'e gömülmeye güvenli kaçışlanmış kopya (K-051).
     HtmlGuvenli,
+    /// Metin: baştaki/sondaki boşluklar atılmış kopya (K-053).
+    Kirpilmis,
+    /// Metin: tek karakterlik metinler listesi (K-053) — "harfleri".
+    Harfler,
+    /// Serileştirilebilir değerin JSON metni (K-054).
+    JsonMetin,
 }
 
 #[derive(Debug, Clone)]
@@ -303,7 +317,8 @@ pub enum Cumle {
     /// `8080 kapısında sunucu başlat` (golden 25).
     SunucuBaslat { kapi: Ifade, satir: usize },
     /// `"/durum" adresine istek geldiğinde` + gövde — olay kaydı (K-022).
-    IstekGeldiginde { yol: Ifade, govde: Vec<Cumle>, satir: usize },
+    /// onekli=true → yol bir ÖNEKtir: "/yazi/" önekli adrese... (K-055).
+    IstekGeldiginde { yol: Ifade, onekli: bool, govde: Vec<Cumle>, satir: usize },
     /// `"çalışıyor" yanıtını gönder` — istek gövdesi içinde.
     YanitGonder { deger: Ifade, satir: usize },
     /// `"/liste" adresine yönlendir` — 303 yönlendirmesi (K-051).

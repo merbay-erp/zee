@@ -89,6 +89,48 @@ fn url_coz(metin: &str) -> String {
     String::from_utf8_lossy(&baytlar).into_owned()
 }
 
+/// Değeri JSON metnine serileştirir (K-054): Sözlük, Liste, Metin, sayılar,
+/// Mantıksal. Sözlük anahtar sırası korunur (determinizm).
+fn json_yaz(deger: &Deger) -> String {
+    match deger {
+        Deger::TamSayi(s) => s.to_string(),
+        Deger::Ondalik { .. } => deger.metne().replace(',', "."),
+        Deger::Mantiksal(b) => if *b { "true".into() } else { "false".into() },
+        Deger::Metin(m) => json_metin_kacir(m),
+        Deger::Liste(ogeler) => format!(
+            "[{}]",
+            ogeler.iter().map(json_yaz).collect::<Vec<_>>().join(",")
+        ),
+        Deger::Sozluk(girdiler) => format!(
+            "{{{}}}",
+            girdiler
+                .iter()
+                .map(|(a, d)| format!("{}:{}", json_metin_kacir(a), json_yaz(d)))
+                .collect::<Vec<_>>()
+                .join(",")
+        ),
+        baska => json_metin_kacir(&baska.metne()),
+    }
+}
+
+fn json_metin_kacir(m: &str) -> String {
+    let mut cikti = String::with_capacity(m.len() + 2);
+    cikti.push('"');
+    for k in m.chars() {
+        match k {
+            '"' => cikti.push_str("\\\""),
+            '\\' => cikti.push_str("\\\\"),
+            '\n' => cikti.push_str("\\n"),
+            '\r' => cikti.push_str("\\r"),
+            '\t' => cikti.push_str("\\t"),
+            k if (k as u32) < 0x20 => cikti.push_str(&format!("\\u{:04x}", k as u32)),
+            k => cikti.push(k),
+        }
+    }
+    cikti.push('"');
+    cikti
+}
+
 pub trait GirdiCikti {
     fn yazdir(&mut self, satir: String);
     /// İstem gösterilir, bir satır cevap beklenir. `None` = girdi tükendi.
@@ -544,11 +586,12 @@ pub fn calistir_io(program: &Program, io: &mut dyn GirdiCikti) -> Result<(), Tan
             );
             let mut eslesti = false;
             for cumle in &program.cumleler {
-                if let Cumle::IstekGeldiginde { yol: kayitli, govde, satir } = cumle {
+                if let Cumle::IstekGeldiginde { yol: kayitli, onekli, govde, satir } = cumle {
                     let mut bos_ortam: HashMap<String, Deger> = HashMap::new();
                     let kayitli =
                         degerlendir(kayitli, &bos_ortam, program, io, 0, *satir)?.metne();
-                    if kayitli == yol {
+                    let uydu = if *onekli { yol.starts_with(&kayitli) } else { kayitli == yol };
+                    if uydu {
                         bos_ortam.insert("istek".into(), istek_sozlugu.clone());
                         bos_ortam.insert("çerezler".into(), cerez_sozlugu.clone());
                         let sonuc = blok_calistir(govde, &mut bos_ortam, program, io, 0);
@@ -1130,6 +1173,11 @@ fn degerlendir(
                         .onerili("Önce \"listenin adedi\" ile boş olup olmadığını kontrol et.".into())
                     })
                 }
+                (Ozellik::Kirpilmis, Deger::Metin(m)) => Ok(Deger::Metin(m.trim().to_string())),
+                (Ozellik::Harfler, Deger::Metin(m)) => Ok(Deger::Liste(
+                    m.chars().map(|k| Deger::Metin(k.to_string())).collect(),
+                )),
+                (Ozellik::JsonMetin, deger) => Ok(Deger::Metin(json_yaz(&deger))),
                 (Ozellik::HtmlGuvenli, Deger::Metin(m)) => {
                     let mut kacisli = String::with_capacity(m.len());
                     for k in m.chars() {
@@ -1403,6 +1451,47 @@ fn degerlendir(
                     .map(|satir| Deger::Metin(satir.to_string()))
                     .collect(),
             ))
+        }
+        Ifade::Parcala { metin, ayrac } => {
+            let m = degerlendir(metin, ortam, program, io, derinlik, satir)?.metne();
+            let a = degerlendir(ayrac, ortam, program, io, derinlik, satir)?.metne();
+            let parcalar: Vec<Deger> = if a.is_empty() {
+                m.chars().map(|k| Deger::Metin(k.to_string())).collect()
+            } else {
+                m.split(&a).map(|p| Deger::Metin(p.to_string())).collect()
+            };
+            Ok(Deger::Liste(parcalar))
+        }
+        Ifade::ListeBirlestir { liste, ayrac } => {
+            let l = degerlendir(liste, ortam, program, io, derinlik, satir)?;
+            let a = degerlendir(ayrac, ortam, program, io, derinlik, satir)?.metne();
+            match l {
+                Deger::Liste(ogeler) => Ok(Deger::Metin(
+                    ogeler.iter().map(|o| o.metne()).collect::<Vec<_>>().join(&a),
+                )),
+                _ => Err(ic_hata(satir)),
+            }
+        }
+        Ifade::Degistir { metin, eski, yeni } => {
+            let m = degerlendir(metin, ortam, program, io, derinlik, satir)?.metne();
+            let e = degerlendir(eski, ortam, program, io, derinlik, satir)?.metne();
+            let y = degerlendir(yeni, ortam, program, io, derinlik, satir)?.metne();
+            if e.is_empty() {
+                return Err(Tani::yeni(
+                    "C004",
+                    "Boş metnin yerine koyma yapılamaz.".into(),
+                    satir,
+                    1,
+                    1,
+                )
+                .onerili("\"değişmişi\" için aranan parça boş olamaz.".into()));
+            }
+            Ok(Deger::Metin(m.replace(&e, &y)))
+        }
+        Ifade::MetinSinari { metin, parca, bitis } => {
+            let m = degerlendir(metin, ortam, program, io, derinlik, satir)?.metne();
+            let p = degerlendir(parca, ortam, program, io, derinlik, satir)?.metne();
+            Ok(Deger::Mantiksal(if *bitis { m.ends_with(&p) } else { m.starts_with(&p) }))
         }
         Ifade::Rastgele { alt, ust } => {
             let alt = tam_sayi(degerlendir(alt, ortam, program, io, derinlik, satir)?, satir)?;

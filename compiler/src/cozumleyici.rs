@@ -689,7 +689,7 @@ fn blok_denetle(
                     ));
                 }
             }
-            Cumle::IstekGeldiginde { yol, govde, satir } => {
+            Cumle::IstekGeldiginde { yol, onekli: _, govde, satir } => {
                 let satir = *satir;
                 let tur = ifade_denetle(yol, ortam, baglam, satir)?;
                 if tur != Tur::Metin {
@@ -1205,6 +1205,14 @@ fn ifade_denetle(
                 (Ozellik::Ilk, Tur::Liste(e)) | (Ozellik::Son, Tur::Liste(e)) => Ok(e.ture()),
                 (Ozellik::Uzunluk, Tur::Metin) => Ok(Tur::TamSayi),
                 (Ozellik::HtmlGuvenli, Tur::Metin) => Ok(Tur::Metin),
+                (Ozellik::Kirpilmis, Tur::Metin) => Ok(Tur::Metin),
+                (Ozellik::Harfler, Tur::Metin) => Ok(Tur::Liste(VeriTuru::Metin)),
+                (Ozellik::JsonMetin, Tur::Sozluk(_))
+                | (Ozellik::JsonMetin, Tur::Liste(_))
+                | (Ozellik::JsonMetin, Tur::Metin)
+                | (Ozellik::JsonMetin, Tur::TamSayi)
+                | (Ozellik::JsonMetin, Tur::Ondalik)
+                | (Ozellik::JsonMetin, Tur::Mantiksal) => Ok(Tur::Metin),
                 (Ozellik::Kelimeler, Tur::Metin) => Ok(Tur::Liste(VeriTuru::Metin)),
                 (Ozellik::Yil, Tur::Tarih) => Ok(Tur::TamSayi),
                 (Ozellik::TamKisim, Tur::Ondalik) | (Ozellik::Yuvarlanmis, Tur::Ondalik) => {
@@ -1587,6 +1595,38 @@ fn ifade_denetle(
                 ));
             }
             Ok(Tur::Sozluk(SozlukDegerTuru::Metin))
+        }
+        Ifade::Parcala { metin, ayrac } => {
+            let m = ifade_denetle(metin, ortam, baglam, satir)?;
+            let a = ifade_denetle(ayrac, ortam, baglam, satir)?;
+            if m != Tur::Metin || a != Tur::Metin {
+                return Err(Tani::yeni("T022", "\"parçaları\" iki Metin ister: metnin ayraçla parçaları.".into(), satir, 1, 1));
+            }
+            Ok(Tur::Liste(VeriTuru::Metin))
+        }
+        Ifade::ListeBirlestir { liste, ayrac } => {
+            let l = ifade_denetle(liste, ortam, baglam, satir)?;
+            let a = ifade_denetle(ayrac, ortam, baglam, satir)?;
+            if l != Tur::Liste(VeriTuru::Metin) || a != Tur::Metin {
+                return Err(Tani::yeni("T022", format!("\"birleşmişi\" Metin listesi ile Metin ayraç ister; burada {} ile {} var.", l.adi(), a.adi()), satir, 1, 1));
+            }
+            Ok(Tur::Metin)
+        }
+        Ifade::Degistir { metin, eski, yeni } => {
+            for parca in [metin, eski, yeni] {
+                if ifade_denetle(parca, ortam, baglam, satir)? != Tur::Metin {
+                    return Err(Tani::yeni("T022", "\"değişmişi\" üç Metin ister: metnin eski yerine yeni değişmişi.".into(), satir, 1, 1));
+                }
+            }
+            Ok(Tur::Metin)
+        }
+        Ifade::MetinSinari { metin, parca, .. } => {
+            let m = ifade_denetle(metin, ortam, baglam, satir)?;
+            let p = ifade_denetle(parca, ortam, baglam, satir)?;
+            if m != Tur::Metin || p != Tur::Metin {
+                return Err(Tani::yeni("T022", "başlıyorsa/bitiyorsa iki Metin ister.".into(), satir, 1, 1));
+            }
+            Ok(Tur::Mantiksal)
         }
         Ifade::Rastgele { alt, ust } => {
             for uc in [&mut **alt, &mut **ust] {
