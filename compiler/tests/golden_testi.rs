@@ -368,14 +368,28 @@ fn golden_20_json_verisi() {
 }
 
 #[test]
-fn csv_sayi_olmayan_hucre_turkce_hata() {
-    let kaynak = "tablo \"t.csv\" dosyasından okunan tablo olsun\ntablonun adedi yaz\n";
+fn csv_metin_hucreler_okunur() {
+    // K-062: hücreler Metin — isimli sütunlar artık birinci sınıf.
+    let kaynak = "\
+tablo \"t.csv\" dosyasından okunan tablo olsun
+tablodaki her satır için
+    satırın \"ad\" değeri ile \": \" ile satırın \"not\" değeri yaz
+";
     let program = dil::kaynagi_derle(kaynak).expect("derlenmeli");
     let mut io = dil::yorumlayici::ToplayanIo::yeni(Vec::new());
     io.dosyalar.insert("t.csv".into(), "ad,not\nAyşe,90\n".into());
-    let hata = dil::yorumlayici::calistir_io(&program, &mut io).expect_err("hücre hatası");
+    dil::yorumlayici::calistir_io(&program, &mut io).expect("çalışmalı");
+    assert_eq!(io.cikti, vec!["Ayşe: 90"]);
+}
+
+#[test]
+fn csv_sutun_uyusmazligi_c015() {
+    let kaynak = "tablo \"t.csv\" dosyasından okunan tablo olsun\ntablonun adedi yaz\n";
+    let program = dil::kaynagi_derle(kaynak).expect("derlenmeli");
+    let mut io = dil::yorumlayici::ToplayanIo::yeni(Vec::new());
+    io.dosyalar.insert("t.csv".into(), "ad,not\nAyşe\n".into());
+    let hata = dil::yorumlayici::calistir_io(&program, &mut io).expect_err("sütun hatası");
     assert_eq!(hata.kod, "C015");
-    assert!(hata.mesaj.contains("Ayşe"), "sorunlu hücre gösterilmeli: {}", hata.mesaj);
 }
 
 #[test]

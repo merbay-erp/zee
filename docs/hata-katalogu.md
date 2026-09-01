@@ -128,7 +128,7 @@ türetilmiştir; yeni kod eklenince bu dosya güncellenir — CI'a bağlanması 
 | C011 | Biçimleyici token güvencesi bozuldu | Dosya yazılmadı; derleyici hatasıdır — bildir |
 | C012 | Dosya okunamadı (düz biçim) | Hata yönetilecekse `... okumayı dene` ile Sonuç al |
 | C013 | Dosyaya yazılamadı | Yol/izin kontrolü |
-| C015 | CSV biçim hatası | Sütun sayısı başlıkla eşleşmeli; v0 hücreleri TamSayı |
+| C015 | CSV biçim hatası (boş dosya ya da sütun sayısı uyuşmazlığı) | Başlık satırı + eşit hücreli veri satırları (K-062: hücreler Metin okunur) |
 | C016 | JSON biçim hatası | v0: düz nesne + metin değerler |
 | C017 | Sunucu kurulamadı | Kapı boşta mı? Düşük kapılar (<1024) yönetici ister |
 | C018 | Ağ isteği başarısız | v0 yalnız http:// destekler (TLS yok); adresi ve bağlantıyı kontrol et |
