@@ -20,8 +20,10 @@ ister.
 
 İlk bootstrap gerçekten sıfır bağımlılıkla başladı. K-088'de parola ve OS
 rastgeleliği için güvenlik crate'leri; K-092'de keyfî hassasiyetli Ondalık
-için `num-bigint`/`num-traits` eklendi. Bunlar dil sözdizimini veya gözlenebilir
-platform davranışını dış kütüphaneye devretmez.
+için `num-bigint`/`num-traits`; K-094'te Ed25519 yayın imzası ve kapalı metadata
+şeması için yalnız native hedefte `ed25519-dalek`/`serde`/`serde_json` eklendi.
+Bunlar dil sözdizimini veya gözlenebilir platform davranışını dış kütüphaneye
+devretmez. Kriptografik imza ve JSON kod çözücü ikinci kez elde yazılmaz.
 
 ## Gerekçe
 

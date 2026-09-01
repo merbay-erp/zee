@@ -3,3 +3,4 @@ target/
 .claude/
 .zee-yazma-kilidi
 *.zee-gecici-*
+*.zee-anahtar

@@ -44,7 +44,9 @@ fn katalog_kaynakla_birebir() {
         "src/bicimleyici.rs",
         "src/proje.rs",
         "src/paket.rs",
+        "src/tedarik.rs",
         "src/lib.rs",
+        "src/main.rs",
     ] {
         let icerik = std::fs::read_to_string(format!("{}/{}", kok, dosya)).expect(dosya);
         // Yalnız gerçekten üretilen kodlar: Tani::yeni("...") ilk argümanları.
@@ -61,6 +63,14 @@ fn katalog_kaynakla_birebir() {
                 if let Some(kapali) = tirnakli.split('"').next() {
                     kaynak_kodlari.extend(kodlari_topla(kapali));
                 }
+            }
+        }
+        // Kaynak konumu olmayan CLI/tedarik kapıları kodu doğrudan başta
+        // basabilir (`eprintln!("P012: ...")`). Bunlar da katalog
+        // sözleşmesidir; belge güncellemesi unutulamaz.
+        for parca in icerik.split("eprintln!(\"") {
+            if let Some(ilk) = parca.split('"').next() {
+                kaynak_kodlari.extend(kodlari_topla(ilk));
             }
         }
         // Nöbetçi karşılaştırmaları da (tani.kod == "Ç000") kataloğa girmeli.
@@ -97,6 +107,10 @@ fn katalog_kaynakla_birebir() {
 
     // Akıl sağlığı: en az bilinen çekirdek kodlar mevcut.
     for cekirdek in ["S001", "A001", "T001", "C003", "D001", "P001"] {
-        assert!(kaynak_kodlari.contains(cekirdek), "çekirdek kod kayıp: {}", cekirdek);
+        assert!(
+            kaynak_kodlari.contains(cekirdek),
+            "çekirdek kod kayıp: {}",
+            cekirdek
+        );
     }
 }

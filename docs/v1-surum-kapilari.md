@@ -3,7 +3,7 @@
 Bu liste bir dilek listesi değildir: `1.0.0` etiketi bu kapılar kapatılmadan
 atılmaz. Amaç yeni özellik sayısını büyütmek değil, çocuktan profesyonele aynı
 dilin verdiği sözleri kanıtlamaktır. Bulgular 1 Eylül 2026'da derleyici
-kaynakları, spec, RFC'ler ve 360 test üzerinden yeniden doğrulanmıştır.
+kaynakları, spec, RFC'ler ve 370 test üzerinden yeniden doğrulanmıştır.
 
 Durumlar: **KAPALI** = kanıtı var · **AÇIK** = v1 engeli · **KARAR** = önce
 normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
@@ -29,7 +29,7 @@ normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
 | V1-P1-04 Sonuç hata tarafı yapılandırılmıştır | **KAPALI (K-091)** | `Sonuç<T>` hata tarafı değişmez `Hata`dır: kararlı kod, Türkçe mesaj, `Seçenek<Hata>` neden zinciri ve sıra korumalı Metin sözlüğü verisi taşır. Kod `göre` ile eşlenir; neden güvenli daraltmayla açılır; tam yapı deterministik JSON olur. Eski metin hataları `GENEL` koduyla aynı insan çıktısını korur. | RFC-0008 §3 + spec/15; kod/mesaj/eşleme, iç içe neden, veri+JSON, yeniden yayma, yerleşik kodlar, S044/T052 olumsuzları ve eski kaynak regresyonları. |
 | V1-P1-05 Gezmede yazma kullanıcı zihniyle doğrulanmıştır | **AÇIK — makine tarafı K-093 ile tamam** | RFC-0019/spec-17 derin değer kopyasını ve liste için değer-sonuç imlecini tanımlar: alan yazma ile yeniden bağlama aynı sıraya geri yansır; paylaşılan alias yoktur. Kaynak ekleme/silme/yeniden bağlama/aynı-kaynak iç içe gezme T053'tür. Alan/rebind, alias ve 1–24 uzunluk conformance kanıtı yeşildir. | `docs/usability-kiti.md` G1/G2/G3 kartlarıyla gerçek 10 öğrenci + 5 profesyonel sonucu. Önceden taahhütlü eşik sağlanmadan kapatılmaz. |
 | V1-P1-06 Yerel modül/paket paylaşımı | **KAPALI (K-076–K-080)** | Kökenli birim/paket yükleme, doğrudan sınır, SHA-256 kilit, güvenli ekle/çıkar ve grafik görünümü çalışıyor. | P001–P010/A011 ve proje entegrasyon testleri; deterministik kilit. |
-| V1-P1-07 Dağıtım/registry güven zinciri | **AÇIK** | Uzak registry, imza/provenance, SBOM ve yanked/güvenlik duyurusu henüz taslak. | Ayrı güvenlik RFC/ADR'leri, imzalı metadata, reproducible paket, offline cache/mirror ve saldırı testleri. |
+| V1-P1-07 Dağıtım/registry güven zinciri | **AÇIK — K-094 yayın çekirdeği tamam** | ADR-006/RFC-0020/spec-18 ile deterministik `.zep`, Ed25519 yayın bildirimi, SPDX 3.0.1 SBOM ve SLSA v1 provenance çalışır; byte oynama, sembolik bağ, yerel yol ve path traversal kapıları testlidir. Uzak root/targets/snapshot/timestamp istemcisi, cache, yanked ve duyuru henüz yoktur. | RFC-0020 §6 POUF gerçekleme; eşik/rotasyon, rollback/freeze/mix-and-match, offline cache/mirror, yanked/duyuru saldırı testleri. |
 
 ## Uygulama sırası
 
@@ -47,6 +47,9 @@ normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
 5. K-089 `zee-tr-1` morfolojisini property kanıtıyla dondurdu. K-093 gezmenin
    değer/reference kararını RFC-0019/spec-17, T053 ve property korpusuyla
    makine tarafında tamamladı; yalnız gerçek usability formları bekleniyor.
+6. K-094 yayın çekirdeğini Ed25519 + deterministik `.zep` + SPDX/SLSA zinciriyle
+   kurdu. V1-P1-07 yalnız uzak rol zinciri, doğrulanmış cache ve güvenlik
+   politikaları da saldırı korpusundan geçince kapanacaktır.
 
 Her kapının kapanışı: karar + spec + olumlu/olumsuz test + sürüm notu. Yalnız
 “kod çalışıyor” işareti v1 kanıtı değildir (ADR-010).

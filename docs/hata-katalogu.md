@@ -179,6 +179,7 @@ türetilmiştir; yeni kod eklenince bu dosya güncellenir — CI'a bağlanması 
 | P009 | Paket/proje girişi güvenli ve gerçek bir `.dil` kaynağına çözülemedi | Girişi proje içindeki sembolik bağ olmayan bir kaynağa yönelt |
 | P010 | Kaldırılmak istenen paket en az bir proje kaynağında hâlâ kullanılıyor | Önce `<ad> paketini kullan` satırını ve pakete bağlı çağrıları kaldır |
 | P011 | Projenin sabitlediği morfoloji profili bu derleyicide desteklenmiyor | Derleyiciyi/projeyi uyumlu sürüme getir; v1 için `morfoloji "zee-tr-1" olsun` kullan |
+| P012 | Yayıncı anahtarı veya tekrar üretilebilir paket/imza/SBOM/provenance zinciri üretilemedi | Anahtar izin/biçimini, kaynak paket limitlerini ve yerel bağımlılık/sembolik bağ olmadığını denetle; ayrıntı fail-closed nedeni gösterir |
 
 ## Ç — İç akış
 

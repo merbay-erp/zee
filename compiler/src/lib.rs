@@ -18,6 +18,8 @@ mod eylem;
 pub mod guvenlik;
 pub mod sozcukleyici;
 pub mod tani;
+#[cfg(not(target_arch = "wasm32"))]
+pub mod tedarik;
 pub mod web_guvenligi;
 pub mod yorumlayici;
 

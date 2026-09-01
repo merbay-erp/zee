@@ -84,7 +84,7 @@ Araçlar: `dil çalıştır(--güvenli/--deneysel-web/--web-proxy)/parola-özeti
 + **dillsp** LSP sunucusu — tanılar, hover, tanıma git, **morfolojili
 yeniden adlandırma (F2)** ([editors/](editors/)).
 Determinizm testlerde tam: rastgelelik, saat, dosyalar, HTTP, sunucu istekleri,
-sensörler ve an ölçümü IO soyutlamasından gelir — 360 test hermetik koşar.
+sensörler ve an ölçümü IO soyutlamasından gelir — 370 test hermetik koşar.
 
 **Playground:** `playground/olustur.sh` derleyiciyi WebAssembly'e derler ve
 tek dosyalık `playground/zee-playground.html` üretir — çift tıkla aç, tarayıcıda
@@ -157,8 +157,10 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   Sonuç'un hata tarafı kod/mesaj/neden/veri taşıyan, eski çıktıyı koruyan
   Hata değeridir. Ondalık keyfî hassasiyetlidir; gezme derin değer kopyası,
   değer-sonuç imleci ve T053 kaynak sabitliğiyle tanımlıdır. Gezme usability
-  kapısı gerçek insan formlarını bekler. Uzak registry, imza/provenance ve SBOM
-  ayrı güvenlik RFC'leriyle ilerler.
+  kapısı gerçek insan formlarını bekler. K-094 paket yayın çekirdeği aynı
+  kaynaktan deterministik `.zep`, Ed25519 imzalı yayın, SPDX 3.0.1 SBOM ve
+  SLSA v1 provenance üretir; uzak eşik-kök registry/cache/yanked/duyuru zinciri
+  ADR-006/RFC-0020 üzerinden ilerler ve tamamlanana kadar kapı açık kalır.
   Bağlayıcı liste: [docs/v1-surum-kapilari.md](docs/v1-surum-kapilari.md).
 
 ## İlk gerçek milestone
