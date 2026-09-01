@@ -41,6 +41,20 @@ fn tohum_deterministik() {
 }
 
 #[test]
+fn son_tarih_sanal_beklemeleri_biriktirir() {
+    let kaynak = "\
+5 saniye içinde
+    3 saniye bekle
+    3 saniye bekle
+    \"bu çıktı yasak\" yaz
+yetişmezse
+    \"süresinde iptal\" yaz
+";
+    let cikti = playgroundda_calistir(kaynak, "", 1);
+    assert_eq!(cikti, "süresinde iptal");
+}
+
+#[test]
 fn cabi_katmani_gidis_donus() {
     // C-ABI sözleşmesi: uzunluk-önekli tampon.
     let kaynak = "\"merhaba\" yaz\n".as_bytes();

@@ -884,6 +884,26 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
 - **Kanıt:** 5 kalıcılık birim testi (kısmi okuma karşı-örneği dahil) + iki
   bağımsız CLI süreci regresyonu; toplam 276 test. V1-P0-04 kapandı.
 
+## K-085 — `içinde` geç-kalma raporu değil, sahipli işbirlikli iptaldir
+
+- **Karar:** `N saniye içinde` giriş anı + süreyle mutlak son tarih kurar.
+  Runtime bunu blok, cümle, döngü ve kullanıcı işlemi sınırlarına yayar.
+- **İptal:** Süre dolunca kalan gövde çalışmaz; blokta doğan adlar düşer ve
+  yalnız o deadline'ın `yetişmezse` kolu çalışır. Kol sonrası dış akış sürer.
+  Ç001 kullanıcıya sızmayan, benzersiz sahip kimlikli iç nöbetçidir.
+- **Bekleme:** `bekle` kalan süreden uzun uyumaz. HTTP DNS sonrası bağlantı,
+  yazma ve okuma aşamaları aynı kalan bütçeyi kullanır; geç yanıt değere ya da
+  çıktıya çevrilmez.
+- **İç içelik:** En erken mutlak tarih kazanır. İç tarih dolarsa iç kol ve dış
+  devam; dış tarih dolarsa iptal iç kol tarafından yutulmadan dış kola çıkar.
+- **Sınır:** Model işbirliklidir, önleyici değildir. Tek kesintisiz ifade veya
+  iptal edilemeyen platform syscall'ı bir sonraki kontrol noktasına taşabilir;
+  sonra yeni yan etki başlamaz. Önceden tamamlanan etki rollback edilmez.
+- **Kanıt:** geç ağ yanıtı, kırpılan 10→5 saniye bekleme, iptal sonrası yasak
+  çıktı, iki yönlü iç/dış sahiplik ve playground sanal saat testleri. 123
+  katalog kodu, 279 test; V1-P0-05 kapandı. Gerçek paralel scheduler
+  V1-P1-03'te açık.
+
 ## K-012 — Liste sabiti: `3, 7, 1, 9 listesi`
 
 - **Karar:** Virgülle ayrılmış değerler + `listesi`. Boş: `boş liste`.

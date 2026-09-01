@@ -1,13 +1,13 @@
 # RFC-0011 — Structured Concurrency
 
-- **Durum:** **geçici kabul — yüzey** (31 Ağu 2026: görev bağlamaları,
-  hepsini bekle, T033 ve zaman aşımı gerçeklendi — v0 gözlemsel-eşdeğer sıralı
-  model. Gerçek paralellik Faz 5'te; K-023'ün sorusunu ÇÖZER.)
+- **Durum:** **geçici kabul** (K-085: görev bağlamaları, hepsini bekle, T033
+  ve işbirlikli son tarih iptali gerçeklendi. Görev yürütmesi gözlemsel-eşdeğer
+  sıralı modeldir; gerçek paralellik Faz 5'tedir.)
 - **Tarih:** 31 Ağustos 2026
 - **İlgili günlük kayıtları:** K-023 ("hepsini bekle sonrası sonucu döndür neyi döndürür?")
 - **İlgili golden programlar:** 26 (paralel görevler), 27 (zaman aşımı)
-- **Gerçekleme:** `Eszamanli`/`HepsiniBekle`/`IcindeBlogu` (üç katman);
-  v0 görevleri sıralı, zaman aşımı ölçümü sonradan
+- **Gerçekleme:** `Eszamanli`/`HepsiniBekle`/`IcindeBlogu`; mutlak son
+  tarih yığını, sahipli Ç001 iptal nöbetçisi, kırpılan bekleme ve süreli HTTP
 
 ## Özet
 
@@ -43,8 +43,9 @@ T-kodu); yani programın gözlemleyebildiği hiçbir şey zamanlamaya bağlı de
    (RFC-0008): `profil müşterinin profilini getirmeyi dene`.
 2. Blok gövdesinden erken çıkış (`döndür`) tüm görevleri iptal eder —
    structured concurrency'nin özü: kapsam biter, işler biter.
-3. İptal edilebilirlik: v1'de görevler yalnız BEKLEME noktalarında iptal
-   edilir (ağ/dosya/süre beklemeleri); saf hesap döngüsü iptali §5.3.
+3. İptal edilebilirlik: K-085 ile görevler blok/cümle/döngü sınırlarında ve
+   BEKLEME noktalarında iptal edilir. Ağ kalan bütçeyi alır, `bekle` kalan
+   süreye kırpılır; tek kesintisiz ifade §5.3 sınırındadır.
 
 ## 3. Zaman aşımı (golden 27 yüzeyi)
 
@@ -56,21 +57,26 @@ yetişmezse
     "Zaman aşımı, sonra tekrar dene" yaz
 ```
 
-- **Bugünkü v0 davranışı:** gövde bütünüyle çalışır; başlangıç/bitiş anı
-  sonradan karşılaştırılır. Süre aşılmışsa `yetişmezse` kolu geç-kalma
-  bildirimi olarak çalışır. Erken iptal ve yan-etki rollback'i YOKTUR.
-- **v1 hedefi:** `N saniye içinde` bloğu kendi kapsamındaki işlere son tarih
-  koyar; süre dolarsa işler bekleme noktalarında iptal edilir ve yalnız
-  `yetişmezse` kolu çalışır. Bu hedef V1-P0-05 kapanmadan production sözü
-  değildir.
+- **Bugünkü davranış (K-085):** `N saniye içinde` kendi kapsamına mutlak son
+  tarih koyar. Süre dolunca kalan gövde iptal edilir ve yalnız doğru sahibin
+  `yetişmezse` kolu çalışır. İç içe bloklarda en erken tarih kazanır; iç kol
+  dış iptali yanlışlıkla yakalayamaz.
+- İptal gözlendikten sonra yeni yan etki başlamaz. Daha önce tamamlanmış etki
+  geri alınmaz; deadline transaction değildir (RFC-0015).
 - Süre sabitleri (`5 saniye`, `yarım saniye`, `2 dakika`) Süre türünü ister —
   RFC-0013 ailesine bağlı; v1 alt kümesi tam sayı + `saniye/dakika`.
 
 ## 4. Yürütme modeli
 
-Bugünkü v0 gerçekleme görev ifadelerini kaynak sırasında tamamlar;
+Bugünkü gerçekleme görev ifadelerini kaynak sırasında tamamlar;
 `hepsini bekle` bir statik erişim kapısıdır ve runtime'da no-op'tur. Bu model
 data race üretmez ama görevler bekleme noktalarında dönüşümlü ilerlemez.
+
+Son tarih çalıştırıcısı ise bugünden işbirliklidir: her blok/cümle/döngü
+sınırında denetlenir, kullanıcı işlemlerine yayılır, süre beklemesini kırpar ve
+HTTP soket aşamalarına tek kalan bütçe verir. Tek kesintisiz ifade veya
+platformun iptal edemediği DNS/dosya çağrısı bir sonraki noktaya kadar
+taşabilir; sonrasında gövde devam etmez.
 
 v1 hedefi **tek iş parçacıklı, işbirlikli** çalıştırıcıdır (async değil
 "sıralı-görünümlü eşzamanlılık"): görevler yalnız bekleme noktalarında
@@ -83,7 +89,7 @@ Gerçek paralellik (çok çekirdek) v2+ ve ayrı ADR.
 
 1. `hepsini bekle` dışında `ilkini bekle` (yarış) gerekli mi?
 2. Görev sonucuna beklemeden kısmi erişim (akış/stream) — kapsam dışı, v2.
-3. Saf hesap döngülerinin iptali (önleyici kesme yok — işbirlikli noktalar).
+3. Tek bir uzun saf ifadenin daha ince taneli iptali (önleyici kesme yok).
 4. `eşzamanlı olarak` içinde döngüyle N görev başlatma (dinamik sayıda görev)
    ve sonuçların listeye toplanması sözdizimi.
 

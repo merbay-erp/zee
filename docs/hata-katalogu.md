@@ -165,6 +165,7 @@ türetilmiştir; yeni kod eklenince bu dosya güncellenir — CI'a bağlanması 
 | Kod | Not |
 |---|---|
 | Ç000 | `programı bitir` iç nöbetçisi; çalıştırıcı yakalar, kullanıcı asla görmez |
+| Ç001 | Son tarih iptal nöbetçisi; yalnız sahibi `içinde/yetişmezse` bloğu yakalar, kullanıcıya sızmaz |
 
 > Boşluklar bilinçlidir: A004 ve C014 ayrılmış ama kullanılmamıştır; yeni
 > tanılar sıradaki boş numarayı alır.

@@ -975,8 +975,13 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
     fn argumanlar(&mut self) -> Vec<String> {
         self.argumanlar.clone()
     }
-    fn http_getir(&mut self, url: &str) -> Result<(i64, String), String> {
+    fn http_getir(
+        &mut self,
+        url: &str,
+        zaman_asimi_ms: Option<i64>,
+    ) -> Result<(i64, String), String> {
         use std::io::{Read, Write};
+        use std::net::ToSocketAddrs;
         // v0: yalnız http:// (TLS elle yazılmaz — ADR-001; https Faz 5 kararı).
         let kalan = url.strip_prefix("http://").ok_or_else(|| {
             if url.starts_with("https://") {
@@ -994,13 +999,57 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         } else {
             format!("{}:80", konak)
         };
-        let mut akis = std::net::TcpStream::connect(&adres).map_err(|e| e.to_string())?;
+        let baslangic = std::time::Instant::now();
+        let kalan_sure = |toplam_ms: i64| -> Result<std::time::Duration, String> {
+            let gecen = baslangic.elapsed().as_millis() as i64;
+            let kalan = toplam_ms.saturating_sub(gecen);
+            if kalan <= 0 {
+                Err("son tarih doldu".into())
+            } else {
+                Ok(std::time::Duration::from_millis(kalan as u64))
+            }
+        };
+        let mut akis = match zaman_asimi_ms {
+            Some(kalan) => {
+                let adresler: Vec<_> = adres
+                    .to_socket_addrs()
+                    .map_err(|e| e.to_string())?
+                    .collect();
+                if adresler.is_empty() {
+                    return Err("adres çözülemedi".into());
+                }
+                let mut baglanti = None;
+                let mut son_hata = None;
+                for soket in adresler {
+                    let sure = kalan_sure(kalan)?;
+                    match std::net::TcpStream::connect_timeout(&soket, sure) {
+                        Ok(akis) => {
+                            baglanti = Some(akis);
+                            break;
+                        }
+                        Err(hata) => son_hata = Some(hata.to_string()),
+                    }
+                }
+                baglanti.ok_or_else(|| {
+                    son_hata.unwrap_or_else(|| "sunucuya bağlanılamadı".to_string())
+                })?
+            }
+            None => std::net::TcpStream::connect(&adres).map_err(|e| e.to_string())?,
+        };
+        if let Some(kalan) = zaman_asimi_ms {
+            akis.set_write_timeout(Some(kalan_sure(kalan)?))
+                .map_err(|e| e.to_string())?;
+        }
         write!(
             akis,
             "GET {} HTTP/1.1\r\nHost: {}\r\nConnection: close\r\n\r\n",
             yol, konak
         )
         .map_err(|e| e.to_string())?;
+        if let Some(kalan) = zaman_asimi_ms {
+            akis.set_read_timeout(Some(kalan_sure(kalan)?))
+                .map_err(|e| e.to_string())?;
+        }
         let mut ham = Vec::new();
         akis.read_to_end(&mut ham).map_err(|e| e.to_string())?;
         let metin = String::from_utf8_lossy(&ham);

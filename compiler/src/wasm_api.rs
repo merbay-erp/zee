@@ -49,7 +49,11 @@ impl GirdiCikti for PlaygroundIo {
     fn argumanlar(&mut self) -> Vec<String> {
         Vec::new()
     }
-    fn http_getir(&mut self, _url: &str) -> Result<(i64, String), String> {
+    fn http_getir(
+        &mut self,
+        _url: &str,
+        _zaman_asimi_ms: Option<i64>,
+    ) -> Result<(i64, String), String> {
         Err("playground'da ağ erişimi yok".into())
     }
     fn sunucu_kur(&mut self, _kapi: i64) -> Result<(), String> {
@@ -68,7 +72,12 @@ impl GirdiCikti for PlaygroundIo {
     fn isik_ayarla(&mut self, ad: &str, yansin: bool) {
         self.ic.isik_ayarla(ad, yansin);
     }
-    fn bekle_ms(&mut self, _milisaniye: i64) {}
+    fn bekle_ms(&mut self, milisaniye: i64) {
+        // Tarayıcıyı gerçekten uyutma; ToplayanIo'nun sanal saatini ilerlet.
+        // Böylece ardışık kısa beklemeler de masaüstündekiyle aynı son tarih
+        // anlamını taşır.
+        self.ic.bekle_ms(milisaniye);
+    }
     fn an_ms(&mut self) -> i64 {
         self.ic.an_ms()
     }

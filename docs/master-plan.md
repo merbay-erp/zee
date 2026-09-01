@@ -148,9 +148,10 @@ eşzamanlı olarak
 hepsini bekle
 sonucu döndür
 
-**Stage 0 sınırı:** Bu bölüm hedef mimaridir. Mevcut v0 runtime görevleri
-kaynak sırasında yürütür ve deadline'ı gövde bittikten sonra ölçer; gerçek
-iptal V1-P0-05, scheduler V1-P1-03 kapısıdır. Bağlayıcı durum:
+**Stage 0 sınırı:** K-085 ile deadline mutlak son tarih olarak blok/işlem/döngü
+sınırlarına yayılır; bekleme kalan süreye kırpılır, HTTP kalan bütçeyi alır ve
+iptalden sonraki yan etkiler çalışmaz. Görevler hâlâ kaynak sırasında yürür;
+gerçek paralel scheduler V1-P1-03 kapısıdır. Bağlayıcı durum:
 [v1 sürüm kapıları](v1-surum-kapilari.md).
 # 11. Derleyici ve runtime mimarisi
 Kaynak .dil
