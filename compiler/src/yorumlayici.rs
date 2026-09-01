@@ -978,8 +978,7 @@ impl Deger {
                     format!("{} saniye", ms / 1000)
                 } else {
                     // Küsuratlı: saniye cinsinden ondalık basım (1500 → "1,5 saniye").
-                    let ondalik = Ondalik::govdeden(&ms.to_string(), 3)
-                        .expect("i64 katsayısı geçerli Ondalık olmalı");
+                    let ondalik = Ondalik::katsayidan(ms, 3);
                     format!("{} saniye", ondalik.metne())
                 }
             }
@@ -1312,12 +1311,14 @@ fn bos_uyandirici() -> Waker {
 
 /// Üst düzey yorumlama Pending üretmez; Pending yalnız görev scheduler'ının
 /// sahip olduğu future'larda anlamlıdır.
-fn hazir_calistir<T>(mut gelecek: Pin<Box<dyn Future<Output = T> + '_>>) -> T {
+fn hazir_calistir<T>(
+    mut gelecek: Pin<Box<dyn Future<Output = Result<T, Tani>> + '_>>,
+) -> Result<T, Tani> {
     let uyandirici = bos_uyandirici();
     let mut baglam = Context::from_waker(&uyandirici);
     match gelecek.as_mut().poll(&mut baglam) {
         Poll::Ready(sonuc) => sonuc,
-        Poll::Pending => panic!("görev future'ı scheduler dışında beklemeye geçti"),
+        Poll::Pending => Err(ic_hata(1)),
     }
 }
 
@@ -1444,12 +1445,10 @@ async fn gorevleri_calistir<'a>(
                 GOREV_BEKLEME_SINYALI.with(|yuva| {
                     *yuva.borrow_mut() = Some(Rc::clone(&calismalar[sira].sinyal));
                 });
-                let poll = calismalar[sira]
-                    .gelecek
-                    .as_mut()
-                    .expect("hazır görev future taşır")
-                    .as_mut()
-                    .poll(&mut poll_baglami);
+                let poll = match calismalar[sira].gelecek.as_mut() {
+                    Some(gelecek) => gelecek.as_mut().poll(&mut poll_baglami),
+                    None => return Err(ic_hata(calismalar[sira].satir)),
+                };
                 GOREV_BEKLEME_SINYALI.with(|yuva| {
                     *yuva.borrow_mut() = ana_sinyal.clone();
                 });
@@ -1509,15 +1508,12 @@ async fn gorevleri_calistir<'a>(
             }
 
             if calismalar.iter().all(|g| g.gelecek.is_none()) {
-                return Ok(calismalar
-                    .iter_mut()
-                    .map(|g| {
-                        (
-                            g.ad.clone(),
-                            g.sonuc.take().expect("biten görev sonuç taşır"),
-                        )
-                    })
-                    .collect());
+                let mut sonuclar = Vec::with_capacity(calismalar.len());
+                for gorev in &mut calismalar {
+                    let sonuc = gorev.sonuc.take().ok_or_else(|| ic_hata(gorev.satir))?;
+                    sonuclar.push((gorev.ad.clone(), sonuc));
+                }
+                return Ok(sonuclar);
             }
 
             let en_yakin = calismalar
@@ -1650,13 +1646,10 @@ async fn islem_cagir(
     }
 
     match sonuc {
-        Ok(akis @ Akis::Don(Deger::Sonuc { basarili: false, .. })) => {
+        Ok(Akis::Don(deger @ Deger::Sonuc { basarili: false, .. })) => {
             io.eylem_geri_al()
                 .map_err(|hata| transaction_hatasi(ad, "geri alınamadı", &hata, satir))?;
-            match akis {
-                Akis::Don(deger) => Ok(Some(deger)),
-                Akis::Devam => unreachable!(),
-            }
+            Ok(Some(deger))
         }
         Ok(akis) => {
             io.eylem_tamamla()
@@ -1937,7 +1930,9 @@ fn json_nesnesi_ayristir(icerik: &str, satir: usize) -> Result<Deger, Tani> {
                 karakterler.peek(),
                 Some(k) if !matches!(k, ',' | '}' | ' ' | '\n' | '\r' | '\t')
             ) {
-                ham.push(karakterler.next().unwrap());
+                if let Some(karakter) = karakterler.next() {
+                    ham.push(karakter);
+                }
             }
             match ham.as_str() {
                 "" => {

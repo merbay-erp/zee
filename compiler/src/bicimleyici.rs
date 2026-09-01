@@ -68,11 +68,11 @@ pub fn bicimle(kaynak: &str) -> Result<String, Tani> {
     let mut yigin: Vec<usize> = vec![0];
     for satir in satirlar.iter_mut() {
         if let SatirTuru::Kod(..) = satir.tur {
-            let onceki = *yigin.last().unwrap();
+            let onceki = yigin.last().copied().unwrap_or(0);
             if satir.girinti > onceki {
                 yigin.push(satir.girinti);
             } else if satir.girinti < onceki {
-                while *yigin.last().unwrap() > satir.girinti {
+                while yigin.last().copied().unwrap_or(0) > satir.girinti {
                     yigin.pop();
                 }
             }
@@ -205,14 +205,15 @@ fn satiri_parcala(icerik: &str, satir_no: usize) -> Result<(Vec<String>, Option<
                 == Some(true);
             let sonraki_rakam = karakterler.peek().map(|r| r.is_ascii_digit()) == Some(true);
             if onceki_rakamla_bitiyor && sonraki_rakam {
-                let son = tokenlar.last_mut().expect("önceki token var");
-                son.push(',');
-                while let Some(&r) = karakterler.peek() {
-                    if r.is_ascii_digit() {
-                        son.push(r);
-                        karakterler.next();
-                    } else {
-                        break;
+                if let Some(son) = tokenlar.last_mut() {
+                    son.push(',');
+                    while let Some(&r) = karakterler.peek() {
+                        if r.is_ascii_digit() {
+                            son.push(r);
+                            karakterler.next();
+                        } else {
+                            break;
+                        }
                     }
                 }
             } else {

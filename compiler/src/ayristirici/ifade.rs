@@ -135,8 +135,8 @@ pub(super) fn ile_ifadesi(tokenlar: &[Token], satir: usize, islemler: &[String])
     }
     parcalar.push(bolge_ifadesi(&bolge, satir, islemler)?);
 
-    if parcalar.len() == 1 {
-        Ok(parcalar.pop().unwrap())
+    if let [tek] = parcalar.as_slice() {
+        Ok(tek.clone())
     } else {
         Ok(Ifade::Birlestir(parcalar))
     }

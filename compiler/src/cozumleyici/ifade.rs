@@ -167,7 +167,9 @@ fn ifade_denetle_ic(
                     Ozellik::HataNedeni => "nedeni",
                     Ozellik::HataVerisi => "verisi",
                 };
-                let yapi = baglam.yapi(yapi_kimligi).expect("yapı kimliği dizinde kayıtlı");
+                let yapi = baglam.yapi(yapi_kimligi).ok_or_else(|| {
+                    ic_tutarlilik_hatasi("Yapı kimliği dizinde kayıtlı değil", satir)
+                })?;
                 if let Ok(alan) = alan_cozumle(yapi, soz, satir) {
                     let yeni = Ifade::AlanErisim {
                         nesne: nesne.clone(),
@@ -454,7 +456,9 @@ fn ifade_denetle_ic(
             };
             let yapi = baglam
                 .yapi(yapi_kimligi)
-                .expect("yapı kimliği dizinde kayıtlı")
+                .ok_or_else(|| {
+                    ic_tutarlilik_hatasi("Yapı kimliği dizinde kayıtlı değil", satir)
+                })?
                 .clone();
             let yalin = alan_cozumle(&yapi, alan, satir)?;
             let tur = yapi
@@ -462,7 +466,9 @@ fn ifade_denetle_ic(
                 .iter()
                 .find(|(a, _)| *a == yalin)
                 .and_then(|(_, t)| alan_turu(t))
-                .expect("alan türü doğrulandı");
+                .ok_or_else(|| {
+                    ic_tutarlilik_hatasi("Çözülmüş alanın türü bulunamadı", satir)
+                })?;
             *alan = yalin;
             Ok(tur)
         }
@@ -708,7 +714,9 @@ fn ifade_denetle_ic(
                     *uzunluk,
                 ));
             }
-            let tur = *ortam.get(&ad).expect("çözülen sembolün tür kaydı var");
+            let tur = *ortam.get(&ad).ok_or_else(|| {
+                ic_tutarlilik_hatasi("Çözülmüş sembolün tür kaydı bulunamadı", *satir)
+            })?;
             *cozulmus = Some(ad);
             *sembol_kimligi = Some(kimlik);
             Ok(tur)

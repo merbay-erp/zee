@@ -45,7 +45,9 @@ pub(super) fn denetle(program: &Program) -> Result<(), Tani> {
     let mut adlar = program.islemler.keys().cloned().collect::<Vec<_>>();
     adlar.sort();
     for ad in adlar {
-        let islem = program.islemler.get(&ad).expect("ad haritadan geldi");
+        let Some(islem) = program.islemler.get(&ad) else {
+            continue;
+        };
         if islem.tur == IslemTuru::Eylem && etkiler.get(&ad).is_some_and(|etki| etki.web) {
             return Err(Tani::yeni(
                 "T044",
@@ -233,7 +235,9 @@ fn eylem_imzalarini_denetle(islemler: &HashMap<String, Islem>) -> Result<(), Tan
     let mut adlar = islemler.keys().cloned().collect::<Vec<_>>();
     adlar.sort();
     for ad in adlar {
-        let islem = islemler.get(&ad).expect("ad haritadan geldi");
+        let Some(islem) = islemler.get(&ad) else {
+            continue;
+        };
         if islem.tur != IslemTuru::Eylem {
             continue;
         }

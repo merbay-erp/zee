@@ -51,15 +51,18 @@ use crate::kimlik::{IslemId, SymbolId, YapiId};
 use crate::tani::Tani;
 use std::collections::HashMap;
 
-fn hir_kaynak_hatasi(satir: usize) -> Tani {
+fn ic_tutarlilik_hatasi(mesaj: impl Into<String>, satir: usize) -> Tani {
     Tani::yeni(
         "T016",
-        "Semantic HIR düğümünün kaynak aralığı kurulamadı — derleyici iç hatası olabilir, bildir."
-            .into(),
+        format!("{} — derleyici iç hatası olabilir, bildir.", mesaj.into()),
         satir.max(1),
         1,
         1,
     )
+}
+
+fn hir_kaynak_hatasi(satir: usize) -> Tani {
+    ic_tutarlilik_hatasi("Semantic HIR düğümünün kaynak aralığı kurulamadı", satir)
 }
 
 /// Çoklu denetim (RFC-0010 §3.1): üst düzey cümle başına hata toplanır;
@@ -160,5 +163,5 @@ pub(crate) fn denetle_ve_hir_bilgisi(
     let hir_bilgisi = sonuc.as_ref().ok().map(|_| baglam.hir_bilgisi());
     program.islemler = baglam.islemler;
     sonuc?;
-    Ok(hir_bilgisi.expect("başarılı checker HIR bilgisi üretmeli"))
+    hir_bilgisi.ok_or_else(|| ic_tutarlilik_hatasi("Başarılı checker HIR bilgisi üretmedi", 1))
 }

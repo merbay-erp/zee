@@ -1050,7 +1050,10 @@ impl Ayristirici {
             )
             .onerili("Örnek: şekle göre".into()));
         }
-        let konu = tekil_ifade(tokenlar.pop().unwrap())?;
+        let konu_tokeni = tokenlar.pop().ok_or_else(|| {
+            Tani::yeni("S024", "Eşleştirme konusu eksik.".into(), satir, 1, 1)
+        })?;
+        let konu = tekil_ifade(konu_tokeni)?;
 
         // Gövde: kollar.
         match self.bak().tur {

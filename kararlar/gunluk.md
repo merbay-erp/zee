@@ -1534,6 +1534,26 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   kesin konum kanıtı, bileşik ifadeye satır zarfı davranışı ve mimari sahiplik
   kontrolü. Bir yeni testle toplam 427; B-020 ve V1-P0-18 kapandı.
 
+## K-109 — Production doğrudan panic yüzeyini kapat (1 Eyl)
+
+- **Karar:** `lib`, `dil`, `dillsp` ve `olcum` crate kökleri test dışı
+  derlemede Clippy `unwrap_used`, `expect_used`, `panic`, `unreachable`,
+  `todo` ve `unimplemented` lintlerini `deny` eder. Yeni doğrudan panic yüzeyi
+  CI derlemesini durdurur; test fixture'ları bilinçli olarak kapsam dışıdır.
+- **Audit:** Lexer/parser, formatter/LSP, checker/runtime, paket/arşiv/kalıcı
+  dosya ve CLI/ölçüm yollarındaki 46 production nokta `Result`, T016, C000
+  ya da açık başarısız süreç koduna çevrildi. Scheduler iç tutarsızlığı
+  process panic'i değildir.
+- **Kimlik kapasitesi:** `SymbolId`nin kapsam+sırayı iki 32-bit dilime
+  sıkıştıran assertion'ları kaldırıldı. Program-içi, kalıcı ABI olmayan kimlik
+  iki `usize` bileşen taşır; semantic identity ve depolama ayrımı değişmedi.
+- **Dürüst sınır:** Bu kapı kolay/doğrudan panic makrolarını ve convenience
+  unwrap'ları kapatır. Keyfî UTF-8 parser girdisi fuzz kanıtını B-015, malformed
+  AST genel invariant doğrulamasını B-017 tamamlar. Kaynak semantiği değişmedi.
+- **Kanıt:** ADR-021 ve production panic rehberi; sıfır konumlu elle kurulmuş
+  AST'nin panic yerine T016 vermesi ile dört crate lint sahipliği. İki yeni
+  testle toplam 429; B-014 ve V1-P0-19 kapandı.
+
 ---
 
 ## Sonraki adım
@@ -1542,6 +1562,5 @@ Korpus 10 öğrenci + 5 profesyonel usability oturumuna (Hafta 12 hedefi, erkeni
 Hafta 2'de kağıt üstünde) sesli okutulacak; her kayıt için "doğal mı /
 deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
-Makine hattında B-020/K-108 kapandı. Sırada B-014 production panic/`unwrap`
-audit'i, ardından B-015 lexer/parser fuzz, B-016 morfoloji property/fuzz ve
-B-017 AST invariant doğrulayıcı vardır.
+Makine hattında B-014/K-109 kapandı. Sırada B-015 lexer/parser fuzz, ardından
+B-016 morfoloji property/fuzz ve B-017 AST invariant doğrulayıcı vardır.

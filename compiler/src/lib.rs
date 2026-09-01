@@ -1,3 +1,15 @@
+#![cfg_attr(
+    not(test),
+    deny(
+        clippy::unwrap_used,
+        clippy::expect_used,
+        clippy::panic,
+        clippy::unreachable,
+        clippy::todo,
+        clippy::unimplemented
+    )
+)]
+
 //! Türkçe programlama dili — bootstrap derleyici (Stage 0).
 //!
 //! Boru hattı (master plan bölüm 11'in v0 dilimi):
@@ -327,10 +339,16 @@ fn dosyayi_coz(
             islem.disari_acik = false;
         }
         for ad in &kendi_islem_adlari {
-            islemler
-                .get_mut(ad)
-                .expect("kendi işlemi az önce eklendi")
-                .disari_acik = true;
+            let islem = islemler.get_mut(ad).ok_or_else(|| {
+                Tani::yeni(
+                    "T016",
+                    format!("\"{}\" işlemi birim tablosundan kayboldu — derleyici iç hatası olabilir, bildir.", ad),
+                    1,
+                    1,
+                    1,
+                )
+            })?;
+            islem.disari_acik = true;
         }
         disari_acik_imzalari_denetle(
             &islemler,
@@ -358,7 +376,9 @@ fn disari_acik_imzalari_denetle(
     let mut adlar = islemler.keys().cloned().collect::<Vec<_>>();
     adlar.sort();
     for ad in adlar {
-        let islem = islemler.get(&ad).expect("ad haritadan geldi");
+        let Some(islem) = islemler.get(&ad) else {
+            continue;
+        };
         if !islem.disari_acik {
             continue;
         }

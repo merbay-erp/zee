@@ -88,16 +88,17 @@ impl ProjeGrafigi {
         &self.ana_dugum().giris_yolu
     }
 
-    pub fn ana_giris(&self) -> YuklenenBirim {
+    pub fn ana_giris(&self) -> Result<YuklenenBirim, String> {
         let dugum = self.ana_dugum();
-        YuklenenBirim {
-            kaynak: dugum
-                .kaynaklar
-                .get(&dugum.giris_yolu)
-                .expect("giriş çözümlemede doğrulandı")
-                .clone(),
+        let kaynak = dugum
+            .kaynaklar
+            .get(&dugum.giris_yolu)
+            .cloned()
+            .ok_or_else(|| "Proje giriş kaynağı doğrulanmış grafikte bulunamadı.".to_string())?;
+        Ok(YuklenenBirim {
+            kaynak,
             koken: yol_metni(&dugum.giris_yolu),
-        }
+        })
     }
 
     pub fn bagimlilik_var(&self) -> bool {
@@ -295,8 +296,8 @@ impl ProjeGrafigi {
                 let kaynak = paket
                     .kaynaklar
                     .get(&paket.giris_yolu)
-                    .expect("paket girişi çözümlemede doğrulandı")
-                    .clone();
+                    .cloned()
+                    .ok_or_else(|| "Paket giriş kaynağı doğrulanmış grafikte bulunamadı.".to_string())?;
                 Ok(YuklenenBirim {
                     kaynak,
                     koken: yol_metni(&paket.giris_yolu),
@@ -652,7 +653,9 @@ pub(crate) fn sha256_hex(girdi: &[u8]) -> String {
     for blok in veri.chunks_exact(64) {
         let mut w = [0u32; 64];
         for (i, dortlu) in blok.chunks_exact(4).enumerate() {
-            w[i] = u32::from_be_bytes(dortlu.try_into().expect("dört bayt"));
+            let mut baytlar = [0; 4];
+            baytlar.copy_from_slice(dortlu);
+            w[i] = u32::from_be_bytes(baytlar);
         }
         for i in 16..64 {
             let s0 = w[i - 15].rotate_right(7) ^ w[i - 15].rotate_right(18) ^ (w[i - 15] >> 3);

@@ -227,7 +227,9 @@ pub(super) fn blok_denetle(
                         .collect();
                     match bulunanlar.len() {
                         1 => {
-                            let kaynak_adi = bulunanlar.into_iter().next().unwrap();
+                            let kaynak_adi = bulunanlar.into_iter().next().ok_or_else(|| {
+                                ic_tutarlilik_hatasi("Örtük çoğul adayı kayboldu", satir)
+                            })?;
                             *kaynak = Some(Ifade::Degisken {
                                 ham: kaynak_adi.clone(),
                                 sembol_kimligi: ortam.kimlik(&kaynak_adi),
@@ -289,12 +291,19 @@ pub(super) fn blok_denetle(
                             ));
                         }
                     },
-                    None => unreachable!("örtük çoğul yukarıda dolduruldu"),
+                    None => {
+                        return Err(ic_tutarlilik_hatasi(
+                            "Gezme kaynağı çözümlenmeden kaldı",
+                            satir,
+                        ));
+                    }
                 };
                 let kaynak_adi = kaynak
                     .as_ref()
                     .and_then(nesne_adi)
-                    .expect("gezme kaynağı çözülmüş bir ad olmalı");
+                    .ok_or_else(|| {
+                        ic_tutarlilik_hatasi("Gezme kaynağı çözülmüş bir ad değil", satir)
+                    })?;
                 if kaynak_adi == *ad || baglam.gezilen_koleksiyonlar.contains(&kaynak_adi) {
                     return Err(gezilen_koleksiyonu_degistirme_tanisi(&kaynak_adi, satir));
                 }
@@ -663,7 +672,9 @@ pub(super) fn blok_denetle(
                 };
                 let yapi = baglam
                     .yapi(yapi_kimligi)
-                    .expect("yapı kimliği dizinde kayıtlı")
+                    .ok_or_else(|| {
+                        ic_tutarlilik_hatasi("Yapı kimliği dizinde kayıtlı değil", satir)
+                    })?
                     .clone();
                 let yalin = alan_cozumle(&yapi, alan, satir)?;
                 let beklenen = yapi
@@ -671,7 +682,9 @@ pub(super) fn blok_denetle(
                     .iter()
                     .find(|(a, _)| *a == yalin)
                     .and_then(|(_, t)| alan_turu(t))
-                    .expect("alan türü doğrulandı");
+                    .ok_or_else(|| {
+                        ic_tutarlilik_hatasi("Çözülmüş alanın türü bulunamadı", satir)
+                    })?;
                 let deger_turu = ifade_denetle(deger, ortam, baglam, satir)?;
                 if deger_turu != beklenen {
                     return Err(Tani::yeni(

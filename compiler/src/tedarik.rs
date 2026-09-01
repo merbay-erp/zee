@@ -172,7 +172,7 @@ pub fn paketle_zamanla(
     grafik
         .kilidi_denetle()
         .map_err(|hata| format!("{}: {}", hata.tani.kod, hata.tani.mesaj))?;
-    let giris = grafik.ana_giris();
+    let giris = grafik.ana_giris()?;
     let mut yukleyici = |istek: crate::BirimIstegi<'_>| grafik.yukle(istek);
     crate::kaynagi_derle_kokenlerle(&giris.kaynak, Some(&giris.koken), &mut yukleyici)
         .map_err(|tani| format!("Paket kaynağı {}: {}", tani.kod, tani.mesaj))?;
@@ -493,15 +493,15 @@ impl<'a> ArsivOkuyucu<'a> {
     }
 
     fn u32(&mut self) -> Result<u32, String> {
-        Ok(u32::from_be_bytes(
-            self.al(4)?.try_into().expect("uzunluk denetlendi"),
-        ))
+        let mut baytlar = [0; 4];
+        baytlar.copy_from_slice(self.al(4)?);
+        Ok(u32::from_be_bytes(baytlar))
     }
 
     fn u64(&mut self) -> Result<u64, String> {
-        Ok(u64::from_be_bytes(
-            self.al(8)?.try_into().expect("uzunluk denetlendi"),
-        ))
+        let mut baytlar = [0; 8];
+        baytlar.copy_from_slice(self.al(8)?);
+        Ok(u64::from_be_bytes(baytlar))
     }
 
     fn bitti(&self) -> bool {

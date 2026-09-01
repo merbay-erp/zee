@@ -200,8 +200,9 @@ fn sayi_coz(k: &mut Karakterler) -> Option<Json> {
     }
     while matches!(k.peek(), Some(r) if r.is_ascii_digit() || *r == '.' || *r == 'e' || *r == 'E' || *r == '+' || *r == '-')
     {
-        govde.push(*k.peek().unwrap());
-        k.next();
+        if let Some(r) = k.next() {
+            govde.push(r);
+        }
     }
     govde.parse::<f64>().ok().map(Json::Sayi)
 }

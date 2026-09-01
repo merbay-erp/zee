@@ -251,6 +251,13 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   ifadelerinde sahte kesinlik üretmeyen kaynak satırı zarfı vardır; sıfır
   konum `NonZeroUsize` ile kurulamaz. Bir yeni davranış ve genişletilmiş HIR+
   mimari kanıtlarıyla toplam 427 test yeşildir; B-020/V1-P0-18 kapandı.
+- **Production panic audit'i** (K-109, ADR-021): lexer/parser, formatter/LSP,
+  checker/runtime, paket/arşiv/kalıcı IO ve CLI/ölçüm yollarındaki 46 doğrudan
+  `unwrap`/`expect`/panic noktası sonuç veya kodlu tanıya çevrildi. Dört
+  production crate kökü test dışında `unwrap`, `expect`, `panic!`,
+  `unreachable!`, `todo!` ve `unimplemented!` kullanımını Clippy `deny` ile
+  reddeder. `SymbolId`nin yapay 32-bit kapasite assertion'ı da kalktı. İki
+  yeni regresyonla toplam 429 test yeşildir; B-014/V1-P0-19 kapandı.
 
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`

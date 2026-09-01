@@ -1,3 +1,15 @@
+#![cfg_attr(
+    not(test),
+    deny(
+        clippy::unwrap_used,
+        clippy::expect_used,
+        clippy::panic,
+        clippy::unreachable,
+        clippy::todo,
+        clippy::unimplemented
+    )
+)]
+
 //! dillsp — LSP sunucusu (stdio). Editör yapılandırmaları: editors/README.md.
 
 use dil::lsp::{Sunucu, AZAMI_LSP_BASLIK_BAYTI, AZAMI_LSP_GOVDE_BAYTI};

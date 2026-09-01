@@ -119,7 +119,9 @@ fn adi_coz(
         .collect::<Vec<_>>();
 
     match eslesenler.len() {
-        1 => Ok(eslesenler.into_iter().next().expect("tek eşleşme var")),
+        1 => eslesenler.into_iter().next().ok_or_else(|| {
+            ic_tutarlilik_hatasi("Tek morfoloji eşleşmesi kayboldu", satir)
+        }),
         0 => {
             let oneri = if tanimli.is_empty() {
                 "Bir değeri kullanmadan önce \"<ad> <değer> olsun\" ile tanımla.".to_string()
@@ -167,7 +169,9 @@ pub(super) fn sembol_cozumle(
         sutun,
         uzunluk,
     )?;
-    let kimlik = ortam.kimlik(&ad).expect("çözülen adın sembol kaydı var");
+    let kimlik = ortam.kimlik(&ad).ok_or_else(|| {
+        ic_tutarlilik_hatasi("Çözülmüş adın sembol kaydı bulunamadı", satir)
+    })?;
     Ok((ad, kimlik))
 }
 
