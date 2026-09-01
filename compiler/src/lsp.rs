@@ -195,11 +195,11 @@ fn json_metin_yaz(metin: &str) -> String {
 // ---------- sunucu ----------
 
 /// Tamamlama önerileri: dilin kalıp kelimeleri (kaynağı: ayrıştırıcı yüzeyi).
-const KALIP_KELIMELERI: [&str; 62] = [
+const KALIP_KELIMELERI: [&str; 63] = [
     "yaz", "olsun", "ise", "değilse", "tekrarla", "için", "kez", "her", "kadar",
     "sürece", "olduğu", "olana", "ile", "ve", "veya", "diye", "sor", "yanıt",
     "işlem", "al", "döndür", "yapı", "test", "olmalı", "ekle", "artır", "azalt",
-    "böl", "göre", "kullan", "birimini", "doğru", "yanlış", "yok", "yeni",
+    "böl", "göre", "kullan", "birimini", "paketini", "doğru", "yanlış", "yok", "yeni",
     "dene", "bitir", "saniye", "dakika", "hatasını",
     "varsa", "yoksa", "başarılıysa", "başarısızsa", "sil", "yönlendir",
     "adresine", "çerezine", "sıralanmışı", "parçaları", "birleşmişi", "değişmişi",
@@ -237,7 +237,7 @@ const KELIME_ACIKLAMALARI: [(&str, &str); 33] = [
     ("varsa", "Seçenek sorgusu; bu dalda `değeri` erişimi güvenlidir (T036 daraltması)."),
     ("başarılıysa", "Sonuç sorgusu; bu dalda `değeri` güvenlidir, `değilse` dalında `hatası`."),
     ("yok", "Değerin yokluğu (Seçenek). Koleksiyon boşluğu ayrıdır: `boşsa`."),
-    ("kullan", "Birim bağlar: `hesap_araclari birimini kullan` — dosya = birim (RFC-0009)."),
+    ("kullan", "Kaynak bağlar: `hesap_araclari birimini kullan` aynı klasördeki dosyayı, `grafik paketini kullan` proje bağımlılığını alır (RFC-0009)."),
     ("bitir", "`programı bitir` — programı o noktada sonlandırır."),
     ("bekle", "`yarım saniye bekle` ya da eşzamanlı bloktan sonra `hepsini bekle`."),
     ("listesi", "Liste sabiti: `3, 7, 1, 9 listesi`. Virgülden sonra boşluk liste ayracıdır."),
@@ -365,6 +365,28 @@ impl Sunucu {
 
     fn tanilari_yayinla(&self, uri: &str) -> String {
         let metin = self.belgeler.get(uri).cloned().unwrap_or_default();
+        let belge_yolu = uri_yolu(uri).and_then(|yol| std::fs::canonicalize(yol).ok());
+
+        // Bir proje içindeyse CLI ile aynı kökenli paket grafiğini kullan.
+        // Böylece editörde temiz görünen kaynak komut satırında kırılmaz.
+        let proje_tanilari = belge_yolu.as_ref().and_then(|belge_yolu| {
+            let kok = proje_kokunu_bul(belge_yolu)?;
+            let grafik = match crate::paket::ProjeGrafigi::cozumle(&kok) {
+                Ok(grafik) => grafik,
+                Err(hata) => return Some(vec![*hata.tani]),
+            };
+            if let Err(hata) = grafik.kilidi_denetle() {
+                return Some(vec![*hata.tani]);
+            }
+            let koken = belge_yolu.to_string_lossy().into_owned();
+            let mut yukleyici = |istek: crate::BirimIstegi<'_>| grafik.yukle(istek);
+            Some(crate::kaynagi_tanilari_kokenlerle(
+                &metin,
+                Some(&koken),
+                &mut yukleyici,
+            ))
+        });
+
         let klasor = uri_klasoru(uri);
         let mut yukleyici = move |ad: &str| -> Result<String, String> {
             let klasor = klasor.clone().ok_or("birim yolu çözülemedi")?;
@@ -378,7 +400,8 @@ impl Sunucu {
                     .ok_or_else(|| hata.to_string()),
             }
         };
-        let tanilar = crate::kaynagi_tanilari(&metin, &mut yukleyici);
+        let tanilar = proje_tanilari
+            .unwrap_or_else(|| crate::kaynagi_tanilari(&metin, &mut yukleyici));
         let govde: Vec<String> = tanilar.iter().map(lsp_tanisi).collect();
         format!(
             "{{\"jsonrpc\":\"2.0\",\"method\":\"textDocument/publishDiagnostics\",\
@@ -639,6 +662,10 @@ fn degisim_parametreleri(mesaj: &Json) -> Option<(String, String)> {
 
 /// file:// URI'sinden klasörü çıkarır (yüzde-kaçışları çözerek).
 fn uri_klasoru(uri: &str) -> Option<std::path::PathBuf> {
+    uri_yolu(uri)?.parent().map(|p| p.to_path_buf())
+}
+
+fn uri_yolu(uri: &str) -> Option<std::path::PathBuf> {
     let yol = uri.strip_prefix("file://")?;
     let mut cozulmus = String::new();
     let mut karakterler = yol.chars().peekable();
@@ -651,5 +678,15 @@ fn uri_klasoru(uri: &str) -> Option<std::path::PathBuf> {
             cozulmus.push(k);
         }
     }
-    std::path::Path::new(&cozulmus).parent().map(|p| p.to_path_buf())
+    Some(std::path::PathBuf::from(cozulmus))
+}
+
+fn proje_kokunu_bul(yol: &std::path::Path) -> Option<std::path::PathBuf> {
+    let mut klasor = yol.parent()?;
+    loop {
+        if klasor.join("proje.dil").is_file() {
+            return Some(klasor.to_path_buf());
+        }
+        klasor = klasor.parent()?;
+    }
 }

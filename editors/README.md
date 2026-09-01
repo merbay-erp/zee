@@ -7,7 +7,8 @@ Sunduğu yetenekler: canlı Türkçe tanılar (çoklu, RFC-0010), kalıp kelime
 tamamlama, **hover**, **tanıma git** ve **YENİDEN ADLANDIRMA** (F2 — ekleri Türkçe
 uyumla yeniden giydirir: sayaç→puan ⇒ sayacı→puanı; K-072) (işlem/yapı başlığına ya da `olsun`/`al` satırına —
 ek almış kullanımlar morfolojiyle çözülür: `sayacı` → `sayaç`). Birimleri
-dosyanın klasöründen çözer.
+kullanan kaynağın klasöründen, yerel paketleri `proje.dil`/`proje.kilit`
+grafiğinden çözer.
 
 ### Helix (`~/.config/helix/languages.toml`)
 

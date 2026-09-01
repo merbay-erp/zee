@@ -49,7 +49,7 @@ türetilmiştir; yeni kod eklenince bu dosya güncellenir — CI'a bağlanması 
 | S041 | Yönlendirme biçimi | `"/liste" adresine yönlendir` (K-051) |
 | S042 | Silme biçimi | `sayılardan 5 i sil` · `defterden "elma" yı sil` (K-059) |
 | S040 | Bilinmeyen kaçış dizisi | Metinde yalnız \" (tırnak), \\\\ (ters bölü) ve \\n (yeni satır) geçerli |
-| S034 | Birim kullanımı biçimi | `hesaplar birimini kullan` — aynı klasördeki hesaplar.dil dosyasını alır |
+| S034 | Birim/paket kullanımı biçimi | `hesaplar birimini kullan` — aynı klasördeki dosyayı; `grafik paketini kullan` — proje bağımlılığını alır |
 | S035 | Sunucu açma biçimi | `8080 kapısında sunucu başlat` |
 | S036 | Olay/zaman aşımı bloğu biçimi | `"/durum" adresine istek geldiğinde` · `yetişmezse` tek başına satır |
 | S037 | Yanıt gönderme biçimi | `"çalışıyor" yanıtını gönder` |
@@ -69,6 +69,7 @@ türetilmiştir; yeni kod eklenince bu dosya güncellenir — CI'a bağlanması 
 | A008 | Ad iki kaynaktan geliyor (birim çakışması) | Sessiz gölgeleme yoktur: adlardan birini değiştir ya da tek kaynakta topla (RFC-0009) |
 | A009 | Birimler döngüsel kullanıyor | Ortak tanımları üçüncü bir birime taşı |
 | A010 | Birim yüklenemedi | Aynı klasörde `<ad>.dil` dosyası olmalı (RFC-0009 §4) |
+| A011 | Paket yüklenemedi | Paketi `yerel_bağımlılıklar` listesine ekle, ardından `dil kilitle .` çalıştır |
 
 ## T — Tür denetimi
 
@@ -146,10 +147,15 @@ türetilmiştir; yeni kod eklenince bu dosya güncellenir — CI'a bağlanması 
 
 | Kod | Ne oldu | Çözüm |
 |---|---|---|
-| P001 | `proje.dil` bilinmeyen/tekrarlı alan ya da değer tanımı dışında cümle içeriyor | Yalnız `proje`, `sürüm`, `giriş` Metin alanlarını birer kez tanımla |
+| P001 | `proje.dil` bilinmeyen/tekrarlı alan ya da değer tanımı dışında cümle içeriyor | `proje`, `sürüm`, `giriş` ve isteğe bağlı `yerel_bağımlılıklar` alanlarını kullan |
 | P002 | Zorunlu proje alanı eksik | Eksik `proje`, `sürüm` veya `giriş` satırını ekle |
 | P003 | Proje adı ya da `X.Y.Z` sürümü geçersiz | Boş olmayan ad ve üç sayılı sürüm kullan: `0.1.0` |
 | P004 | Giriş mutlak, proje dışına çıkan veya `.dil` olmayan yol | Proje içinde kalan göreli `.dil` yolu kullan |
+| P005 | Yerel bağımlılık listesi ya da yollarından biri geçersiz | Göreli proje klasörlerini Metin listesiyle yaz: `yerel_bağımlılıklar "../ortak" listesi olsun` |
+| P006 | Yerel bağımlılık klasörü/bildirimi okunamadı | Yolun `proje.dil` taşıyan erişilebilir bir zee projesi olduğunu doğrula |
+| P007 | Bağımlılık döngüsü, yinelenen paket adı veya kaynakta kullanılamayan paket adı | Döngüyü kır; her pakete benzersiz, küçük harfli tek tanımlayıcı ad ver |
+| P008 | `proje.kilit` eksik ya da kaynak/bildirim grafiğiyle uyuşmuyor | Değişikliği incele, sonra `dil kilitle .` çalıştır |
+| P009 | Paket/proje girişi güvenli ve gerçek bir `.dil` kaynağına çözülemedi | Girişi proje içindeki sembolik bağ olmayan bir kaynağa yönelt |
 
 ## Ç — İç akış
 

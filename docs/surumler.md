@@ -16,8 +16,13 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`
   bildirimi hazır üretir. P001–P004 Türkçe proje tanıları. Doğrudan dosya
   kullanımı geriye uyumludur. Göreli dosya IO'su giriş klasörüne sabitlendi;
-  `--güvenli` bayrağının program argümanına sızması da kapandı. Yerel
-  paket/kilit katmanının temeli.
+  `--güvenli` bayrağının program argümanına sızması da kapandı.
+- **Yerel paketler ve kilit** (K-078): `yerel_bağımlılıklar` başka zee
+  projelerini bağlar; `X paketini kullan` yalnız doğrudan bağımlılığı alır.
+  Kaynak kökeni paket içi birimlerde korunur. `dil kilitle` geçişli grafiği
+  göreli yol, sürüm, kenar ve SHA-256 `.dil` özetiyle deterministik
+  `proje.kilit`e sabitler; eksik/bayat kilit P008'dir. Döngü, yinelenen ad,
+  proje dışına çıkan sembolik bağ ve geçişli bağımlılığa gizli erişim testli.
 - **Proje çapında biçimleme** (K-077): `dil biçimle <klasör>` bütün `.dil`
   kaynaklarını deterministik yol sırasında biçimler; önce tamamını doğrular,
   tek hata varsa hiçbir dosyaya dokunmaz.

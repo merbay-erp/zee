@@ -34,6 +34,7 @@ fn govde() -> ExitCode {
         Some("denetle") => denetle_yolu(&argumanlar),
         Some("biçimle") | Some("bicimle") => bicimle_komutu(&argumanlar),
         Some("dene") => dosya_ile(&argumanlar, dene_komutu),
+        Some("kilitle") => kilitle_komutu(&argumanlar),
         Some("hata") => hata_komutu(&argumanlar),
         Some("belge") => belge_komutu(&argumanlar),
         Some("yeni") => yeni_komutu(&argumanlar),
@@ -57,6 +58,7 @@ fn kullanim() {
     eprintln!("  dil denetle <dosya|proje>  çalıştırmadan denetler (--json: makine çıktısı)");
     eprintln!("  dil dene <dosya|proje>     test bloklarını koşar");
     eprintln!("  dil biçimle <dosya|proje>  dosyayı ya da bütün projeyi biçimler");
+    eprintln!("  dil kilitle <proje>         yerel bağımlılıkları proje.kilit'e sabitler");
     eprintln!("  dil hata <kod>             bir hata kodunu açıklar (örn. dil hata T001)");
     eprintln!("  dil belge <birim>          bir birimin işlemlerini listeler (örn. dil belge matematik)");
     eprintln!("  dil sürüm                  sürümü gösterir");
@@ -140,11 +142,11 @@ fn yeni_komutu(argumanlar: &[String]) -> ExitCode {
         ad, ad
     );
     let bildirim = format!(
-        "# zee proje bildirimi — bu dosya da geçerli zee sözdizimidir.\n\nproje \"{}\" olsun\nsürüm \"0.1.0\" olsun\ngiriş \"program.dil\" olsun\n",
+        "# zee proje bildirimi — bu dosya da geçerli zee sözdizimidir.\n\nproje \"{}\" olsun\nsürüm \"0.1.0\" olsun\ngiriş \"program.dil\" olsun\nyerel_bağımlılıklar boş liste olsun\n",
         ad
     );
     let beni_oku = format!(
-        "# {}\n\nTürkçe programlama diliyle yazılmış bir proje. `proje.dil` giriş dosyasını ve sürümü tanımlar.\n\n```bash\ndil çalıştır .\n```\n\n```bash\ndil dene .\n```\n\nDenetim: `dil denetle .` · Bütün projeyi biçimle: `dil biçimle .` · Hata açıklama: `dil hata <kod>`\n",
+        "# {}\n\nTürkçe programlama diliyle yazılmış bir proje. `proje.dil` giriş dosyasını, sürümü ve yerel bağımlılıkları tanımlar; `proje.kilit` bağımlılık kararını sabitler.\n\n```bash\ndil çalıştır .\n```\n\n```bash\ndil dene .\n```\n\nDenetim: `dil denetle .` · Bütün projeyi biçimle: `dil biçimle .` · Bağımlılıkları sabitle: `dil kilitle .` · Hata açıklama: `dil hata <kod>`\n",
         ad
     );
     let sonuc = std::fs::create_dir(klasor)
@@ -152,11 +154,20 @@ fn yeni_komutu(argumanlar: &[String]) -> ExitCode {
         .and_then(|_| std::fs::write(klasor.join("proje.dil"), bildirim))
         .and_then(|_| std::fs::write(klasor.join("BENIOKU.md"), beni_oku));
     match sonuc {
-        Ok(()) => {
-            println!("Oluşturuldu: {}/", ad);
-            println!("Başlamak için: dil çalıştır {}", ad);
-            ExitCode::SUCCESS
-        }
+        Ok(()) => match dil::paket::ProjeGrafigi::cozumle(klasor)
+            .map_err(|hata| hata.tani.mesaj)
+            .and_then(|grafik| grafik.kilidi_yaz())
+        {
+            Ok(()) => {
+                println!("Oluşturuldu: {}/", ad);
+                println!("Başlamak için: dil çalıştır {}", ad);
+                ExitCode::SUCCESS
+            }
+            Err(hata) => {
+                eprintln!("Proje kilidi oluşturulamadı: {}", hata);
+                ExitCode::FAILURE
+            }
+        },
         Err(hata) => {
             eprintln!("Proje oluşturulamadı: {}", hata);
             ExitCode::FAILURE
@@ -180,9 +191,13 @@ fn denetle_yolu(argumanlar: &[String]) -> ExitCode {
             return hata.cikis_kodu();
         }
     };
-    let mut yukleyici = birim_yukleyici(&girdi.klasor);
+    let mut yukleyici = |istek: dil::BirimIstegi<'_>| girdi.birim_yukle(istek);
     // Denetim TÜM tanıları toplar (RFC-0010 §3.1) — çalıştır ilk hatada durur.
-    let tanilar = dil::kaynagi_tanilari(&girdi.kaynak, &mut yukleyici);
+    let tanilar = dil::kaynagi_tanilari_kokenlerle(
+        &girdi.kaynak,
+        Some(&girdi.koken),
+        &mut yukleyici,
+    );
     if tanilar.is_empty() {
         if json {
             println!("{{\"durum\":\"temiz\",\"tanilar\":[]}}");
@@ -218,6 +233,39 @@ fn bicimle_komutu(argumanlar: &[String]) -> ExitCode {
         return projeyi_bicimle(yol);
     }
     bir_dosyayi_bicimle(yol)
+}
+
+fn kilitle_komutu(argumanlar: &[String]) -> ExitCode {
+    let Some(yol) = argumanlar.get(1) else {
+        eprintln!("Bir proje klasörü belirtmelisin. Örnek: dil kilitle .");
+        return ExitCode::from(2);
+    };
+    let yol = std::path::Path::new(yol);
+    if !yol.is_dir() {
+        eprintln!("\"{}\" bir proje klasörü değil.", yol.display());
+        return ExitCode::from(2);
+    }
+    let grafik = match dil::paket::ProjeGrafigi::cozumle(yol) {
+        Ok(grafik) => grafik,
+        Err(hata) => {
+            GirdiHatasi::from(hata).yazdir(false);
+            return ExitCode::FAILURE;
+        }
+    };
+    match grafik.kilidi_yaz() {
+        Ok(()) => {
+            println!(
+                "Kilitlendi: {} ({} yerel paket)",
+                yol.join(dil::paket::KILIT_DOSYASI).display(),
+                grafik.paket_sayisi()
+            );
+            ExitCode::SUCCESS
+        }
+        Err(hata) => {
+            eprintln!("{}", hata);
+            ExitCode::from(2)
+        }
+    }
 }
 
 fn bir_dosyayi_bicimle(yol: &std::path::Path) -> ExitCode {
@@ -323,10 +371,10 @@ fn dil_dosyalarini_topla(
     Ok(())
 }
 
-fn dosya_ile(argumanlar: &[String], komut: fn(&str, &std::path::Path) -> ExitCode) -> ExitCode {
+fn dosya_ile(argumanlar: &[String], komut: fn(&KaynakGirdisi) -> ExitCode) -> ExitCode {
     match argumanlar.get(1) {
         Some(yol) => match girdiyi_oku(std::path::Path::new(yol)) {
-            Ok(girdi) => komut(&girdi.kaynak, &girdi.klasor),
+            Ok(girdi) => komut(&girdi),
             Err(hata) => {
                 hata.yazdir(false);
                 hata.cikis_kodu()
@@ -342,6 +390,54 @@ fn dosya_ile(argumanlar: &[String], komut: fn(&str, &std::path::Path) -> ExitCod
 struct KaynakGirdisi {
     kaynak: String,
     klasor: std::path::PathBuf,
+    koken: String,
+    proje: Option<dil::paket::ProjeGrafigi>,
+}
+
+impl KaynakGirdisi {
+    fn birim_yukle(
+        &self,
+        istek: dil::BirimIstegi<'_>,
+    ) -> Result<dil::YuklenenBirim, String> {
+        if let Some(proje) = &self.proje {
+            return proje.yukle(istek);
+        }
+        if istek.tur == dil::agac::KullanimTuru::Paket {
+            return Err(
+                "paket kullanımı için proje.dil taşıyan bir proje klasörü çalıştırılmalı".into(),
+            );
+        }
+        if istek.ad.contains(['/', '\\', '.']) {
+            return Err("birim adı yol içeremez".into());
+        }
+        let isteyen = istek
+            .isteyen
+            .map(std::path::Path::new)
+            .unwrap_or_else(|| std::path::Path::new(&self.koken));
+        let klasor = isteyen.parent().unwrap_or(&self.klasor);
+        let yol = klasor.join(format!("{}.dil", istek.ad));
+        match std::fs::canonicalize(&yol)
+            .and_then(|kanonik| std::fs::read_to_string(&kanonik).map(|kaynak| (kanonik, kaynak)))
+        {
+            Ok((kanonik, kaynak)) => Ok(dil::YuklenenBirim {
+                kaynak,
+                koken: kanonik.to_string_lossy().into_owned(),
+            }),
+            Err(hata) => dil::gomulu_birim(istek.ad)
+                .map(|kaynak| dil::YuklenenBirim {
+                    kaynak: kaynak.to_string(),
+                    koken: format!("gömülü:{}", istek.ad),
+                })
+                .ok_or_else(|| {
+                    format!(
+                        "{} ({}); gömülü kitaplıkta da yok (var olanlar: {})",
+                        hata,
+                        yol.display(),
+                        dil::gomulu_birim_adlari().join(", ")
+                    )
+                }),
+        }
+    }
 }
 
 enum GirdiHatasi {
@@ -368,9 +464,19 @@ impl GirdiHatasi {
                 println!("{{\"durum\":\"hata\",\"tanilar\":[{}]}}", tani.json());
             }
             GirdiHatasi::Tani { tani, kaynak, yol } => {
-                eprintln!("Proje bildirimi geçersiz: {}", yol.display());
+                eprintln!("Proje çözülemedi: {}", yol.display());
                 eprint!("{}", tani.raporla(kaynak));
             }
+        }
+    }
+}
+
+impl From<dil::paket::ProjeYuklemeHatasi> for GirdiHatasi {
+    fn from(hata: dil::paket::ProjeYuklemeHatasi) -> Self {
+        GirdiHatasi::Tani {
+            tani: hata.tani,
+            kaynak: hata.kaynak,
+            yol: hata.yol,
         }
     }
 }
@@ -379,94 +485,39 @@ impl GirdiHatasi {
 /// Proje giriş yolu bildirimde doğrulandığı için proje kökünün dışına çıkamaz.
 fn girdiyi_oku(yol: &std::path::Path) -> Result<KaynakGirdisi, GirdiHatasi> {
     if yol.is_dir() {
-        let bildirim_yolu = yol.join("proje.dil");
-        let bildirim_kaynagi = std::fs::read_to_string(&bildirim_yolu).map_err(|hata| {
-            GirdiHatasi::Mesaj(format!(
-                "\"{}\" proje bildirimi okunamadı: {}",
-                bildirim_yolu.display(),
-                hata
-            ))
-        })?;
-        let bildirim = dil::proje::bildirimi_oku(&bildirim_kaynagi).map_err(|tani| {
-            GirdiHatasi::Tani {
-                tani: Box::new(tani),
-                kaynak: bildirim_kaynagi.clone(),
-                yol: bildirim_yolu.clone(),
-            }
-        })?;
-        let giris_yolu = yol.join(&bildirim.giris);
-        let kanonik_kok = std::fs::canonicalize(yol).map_err(|hata| {
-            GirdiHatasi::Mesaj(format!("\"{}\" proje kökü çözülemedi: {}", yol.display(), hata))
-        })?;
-        let kanonik_giris = std::fs::canonicalize(&giris_yolu).map_err(|hata| {
-            GirdiHatasi::Mesaj(format!(
-                "\"{}\" proje giriş dosyası okunamadı: {}",
-                giris_yolu.display(),
-                hata
-            ))
-        })?;
-        if !kanonik_giris.starts_with(&kanonik_kok) {
-            return Err(GirdiHatasi::Tani {
-                tani: Box::new(
-                    dil::tani::Tani::yeni(
-                        "P004",
-                        "Proje giriş dosyası sembolik bağ üzerinden proje dışına çıkıyor.".into(),
-                        1,
-                        1,
-                        1,
-                    )
-                    .onerili("Girişi proje kökü içinde gerçek bir .dil dosyasına yönelt.".into()),
-                ),
-                kaynak: bildirim_kaynagi,
-                yol: bildirim_yolu,
-            });
-        }
-        let kaynak = std::fs::read_to_string(&kanonik_giris).map_err(|hata| {
-            GirdiHatasi::Mesaj(format!(
-                "\"{}\" proje giriş dosyası okunamadı: {}",
-                giris_yolu.display(),
-                hata
-            ))
-        })?;
-        let klasor = kanonik_giris
+        let proje = dil::paket::ProjeGrafigi::cozumle(yol).map_err(GirdiHatasi::from)?;
+        proje.kilidi_denetle().map_err(GirdiHatasi::from)?;
+        let giris = proje.ana_giris();
+        let klasor = proje
+            .ana_giris_yolu()
             .parent()
             .filter(|p| !p.as_os_str().is_empty())
-            .unwrap_or(&kanonik_kok)
+            .unwrap_or(yol)
             .to_path_buf();
-        Ok(KaynakGirdisi { kaynak, klasor })
+        Ok(KaynakGirdisi {
+            kaynak: giris.kaynak,
+            klasor,
+            koken: giris.koken,
+            proje: Some(proje),
+        })
     } else {
-        let kaynak = std::fs::read_to_string(yol).map_err(|hata| {
+        let kanonik = std::fs::canonicalize(yol).map_err(|hata| {
             GirdiHatasi::Mesaj(format!("\"{}\" dosyası okunamadı: {}", yol.display(), hata))
         })?;
-        let klasor = yol
+        let kaynak = std::fs::read_to_string(&kanonik).map_err(|hata| {
+            GirdiHatasi::Mesaj(format!("\"{}\" dosyası okunamadı: {}", yol.display(), hata))
+        })?;
+        let klasor = kanonik
             .parent()
             .filter(|p| !p.as_os_str().is_empty())
             .unwrap_or_else(|| std::path::Path::new("."))
             .to_path_buf();
-        Ok(KaynakGirdisi { kaynak, klasor })
-    }
-}
-
-/// Ana dosyanın klasöründen birim yükler: `<klasör>/<ad>.dil` (RFC-0009 §4:
-/// başka arama yolu yoktur). Ad, tanımlayıcı kurallarına uymalıdır.
-fn birim_yukleyici(klasor: &std::path::Path) -> impl FnMut(&str) -> Result<String, String> + '_ {
-    move |ad: &str| {
-        if ad.contains(['/', '\\', '.']) {
-            return Err("birim adı yol içeremez".into());
-        }
-        let yol = klasor.join(format!("{}.dil", ad));
-        match std::fs::read_to_string(&yol) {
-            Ok(kaynak) => Ok(kaynak),
-            // Yerel dosya yoksa gömülü standart kitaplığa düş (RFC-0014).
-            Err(hata) => dil::gomulu_birim(ad).map(str::to_string).ok_or_else(|| {
-                format!(
-                    "{} ({}); gömülü kitaplıkta da yok (var olanlar: {})",
-                    hata,
-                    yol.display(),
-                    dil::gomulu_birim_adlari().join(", ")
-                )
-            }),
-        }
+        Ok(KaynakGirdisi {
+            kaynak,
+            klasor,
+            koken: kanonik.to_string_lossy().into_owned(),
+            proje: None,
+        })
     }
 }
 
@@ -757,29 +808,31 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
     }
 }
 
-fn calistir_komutu(kaynak: &str, klasor: &std::path::Path) -> ExitCode {
-    calistir_io_ile(kaynak, klasor, &mut GercekIo::yeni(klasor))
+fn calistir_komutu(girdi: &KaynakGirdisi) -> ExitCode {
+    calistir_io_ile(girdi, &mut GercekIo::yeni(&girdi.klasor))
 }
 
 /// Çocuk modu (K-047): ağ/sunucu kapalı, dosyalar çalışma klasörüyle sınırlı.
-fn calistir_guvenli_komutu(kaynak: &str, klasor: &std::path::Path) -> ExitCode {
+fn calistir_guvenli_komutu(girdi: &KaynakGirdisi) -> ExitCode {
     calistir_io_ile(
-        kaynak,
-        klasor,
-        &mut dil::yorumlayici::GuvenliIo::yeni(GercekIo::yeni(klasor)),
+        girdi,
+        &mut dil::yorumlayici::GuvenliIo::yeni(GercekIo::yeni(&girdi.klasor)),
     )
 }
 
 fn calistir_io_ile(
-    kaynak: &str,
-    klasor: &std::path::Path,
+    girdi: &KaynakGirdisi,
     io: &mut dyn dil::yorumlayici::GirdiCikti,
 ) -> ExitCode {
-    let mut yukleyici = birim_yukleyici(klasor);
-    let program = match dil::kaynagi_derle_birimlerle(kaynak, &mut yukleyici) {
+    let mut yukleyici = |istek: dil::BirimIstegi<'_>| girdi.birim_yukle(istek);
+    let program = match dil::kaynagi_derle_kokenlerle(
+        &girdi.kaynak,
+        Some(&girdi.koken),
+        &mut yukleyici,
+    ) {
         Ok(program) => program,
         Err(tani) => {
-            eprint!("{}", tani.raporla(kaynak));
+            eprint!("{}", tani.raporla(&girdi.kaynak));
             return ExitCode::FAILURE;
         }
     };
@@ -787,20 +840,24 @@ fn calistir_io_ile(
         // K-069: `programı N ile bitir` süreç çıkış kodu olur (0–255).
         Ok(kod) => ExitCode::from(kod.clamp(0, 255) as u8),
         Err(tani) => {
-            eprint!("{}", tani.raporla(kaynak));
+            eprint!("{}", tani.raporla(&girdi.kaynak));
             ExitCode::FAILURE
         }
     }
 }
 
-fn dene_komutu(kaynak: &str, klasor: &std::path::Path) -> ExitCode {
-    let mut yukleyici = birim_yukleyici(klasor);
-    let sonuclar = match dil::kaynagi_derle_birimlerle(kaynak, &mut yukleyici)
+fn dene_komutu(girdi: &KaynakGirdisi) -> ExitCode {
+    let mut yukleyici = |istek: dil::BirimIstegi<'_>| girdi.birim_yukle(istek);
+    let sonuclar = match dil::kaynagi_derle_kokenlerle(
+        &girdi.kaynak,
+        Some(&girdi.koken),
+        &mut yukleyici,
+    )
         .map(|program| dil::programi_dene(&program))
     {
         Ok(sonuclar) => sonuclar,
         Err(tani) => {
-            eprint!("{}", tani.raporla(kaynak));
+            eprint!("{}", tani.raporla(&girdi.kaynak));
             return ExitCode::FAILURE;
         }
     };
@@ -817,7 +874,7 @@ fn dene_komutu(kaynak: &str, klasor: &std::path::Path) -> ExitCode {
             }
             Some(tani) => {
                 println!("✗ {}", sonuc.ad);
-                eprint!("{}", tani.raporla(kaynak));
+                eprint!("{}", tani.raporla(&girdi.kaynak));
             }
         }
     }

@@ -200,11 +200,15 @@ Reproducible package build ve SBOM.
 Registry API açık spesifikasyon.
 Keyfi post-install script varsayılan olarak yasak veya capability ile sınırlı.
 
-**Gerçekleme notu — 1 Eylül 2026 (K-076):** İlk proje katmanı çalışır:
+**Gerçekleme notu — 1 Eylül 2026 (K-076/K-078):** Proje ve ilk paket katmanı
+çalışır:
 geçerli zee sözdizimli `proje.dil` adı, `X.Y.Z` sürümü ve göreli giriş
 dosyasını tanımlar; `dil çalıştır/denetle/dene <klasör>` ve `dil yeni`
-bu sözleşmeyi kullanır. Yerel bağımlılık + deterministik kilit dosyası bu
-temelin üstündeki sıradaki Faz 3 kapısıdır; registry henüz başlamamıştır.
+bu sözleşmeyi kullanır. `yerel_bağımlılıklar` başka zee projelerini paket
+olarak bağlar; `X paketini kullan` doğrudan bağımlılığı alır. `dil kilitle`
+geçişli grafiği göreli yol, sürüm, kenar ve SHA-256 kaynak özetiyle
+deterministik `proje.kilit` dosyasına sabitler. Registry, imza/provenance,
+SBOM ve uzak sürüm çözümü henüz başlamamıştır.
 # 15. Geliştirici araçları
 dil: resmi CLI.
 dilfmt: tek resmi formatter.
