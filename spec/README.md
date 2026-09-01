@@ -40,12 +40,13 @@ Kırıcı değişiklik sessizce yapılamaz: davranış değişikliği RFC'den ge
 | [16 — Keyfî hassasiyetli Ondalık](16-keyfi-hassasiyetli-ondalik.md) | keyfî katsayı/ölçek, exact işlemler ve 34 haneli sonsuz bölüm bağlamı | RFC-0013, K-092 |
 | [17 — Değer semantiği ve gezme](17-deger-semantigi-ve-gezme.md) | derin değer kopyası, liste değer-sonuç imleci ve T053 kaynak sabitliği | RFC-0019, K-093 |
 | [18 — Tekrar üretilebilir paket yayını](18-paket-yayini.md) | `.zep`, Ed25519 yayın imzası, SPDX SBOM ve SLSA provenance | RFC-0020, ADR-006, K-094 |
+| [19 — Registry metadata güven zinciri](19-registry-metadata-guveni.md) | eşik root/rotasyon, çevrimiçi rol bağları, rollback/expiry ve targets yayıncı politikası | RFC-0020, ADR-006, K-095 |
 
 ## Faza bağlı — henüz spec dışı
 
 Çok çekirdekli paralellik ve yarış/akış/dinamik görev yüzeyleri (RFC-0011),
 ikili FFI/ABI (RFC-0012, Faz 4/5), standart kütüphane kararlılık
-politikası, çok süreçli web durumu/idempotency (RFC-0015/0017), uzak registry
-istemcisi ve TUF POUF (RFC-0020 §6) ile genel deprecation/edition modeli. Morfoloji
+politikası, çok süreçli web durumu/idempotency (RFC-0015/0017), registry
+taşıma/cache/CLI katmanı (RFC-0020 §6) ile genel deprecation/edition modeli. Morfoloji
 profili için kırıcı sürüm sınırı spec/13'te şimdiden tanımlıdır.
 Bu başlıklar karara bağlandıkça buraya bölüm olarak eklenir.

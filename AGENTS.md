@@ -25,3 +25,11 @@ birlikte yoksa iş tamamlanmış sayılmaz ve commit alınmaz.
 `compiler/tests/katalog_testi.rs` kaynak tanılarıyla hata kataloğunu birebir;
 `compiler/tests/dokuman_tazelik_testi.rs` RFC/ADR/spec indekslerini ve yerel
 Markdown bağlantılarını doğrular. Toplu commit öncesi ikisi de çalıştırılır.
+
+## V1 öncesi iş sırası
+
+Bağlayıcı sıra `docs/oncelikli-backlog.md` içindedir. P0 compiler/dil omurgası
+kapanmadan yeni dil özelliği varsayılan olarak öne alınmaz. Başlamış atomik bir
+correctness/güvenlik dilimi önce kod+test+belgesiyle kapatılır; ardından sıradaki
+iş B-001'den başlayarak backlog bağımlılıklarına göre alınır. Tamamlanan her
+madde aynı committe backlog durumunu ve kapanma kanıtını günceller.

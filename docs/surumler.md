@@ -132,6 +132,20 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   Bu yayın öz-imzası tek başına registry güveni değildir; TUF tarzı eşik kök,
   targets/snapshot/timestamp, doğrulanmış cache, yanked ve duyuru tamamlanana
   kadar V1-P1-07 açık kalır. Doküman tazelik testiyle toplam 370 test yeşildir.
+- **Registry metadata güven zinciri** (K-095, ADR-006/RFC-0020/spec-19): ağ
+  dışı SHA-256 ile sabitlenen root, rol başına Ed25519 eşik, hem eski hem yeni
+  root eşiğini isteyen ardışık rotasyon ve kanonik kapalı JSON zarfı çalışır.
+  Tek güncelleme saatiyle timestamp→snapshot→targets sürüm/boyut/SHA-256
+  bağları; kalıcı sürüm+aynı-sürüm-özeti rollback/equivocation koruması ve
+  zincir tamamlanmadan ya da daha yeni sonuçtan sonra bayat sonuçla durumu
+  uygulamayan transaction sınırı kuruldu. Exact
+  hedef yayıncı yetkisi dört yayın dosyasını bağlar; yanked ve etkin kritik
+  duyuru varsayılan reddedilir. Eşik/rotasyon, rollback/expiry, aynı sürümlü
+  farklı içerik, mix-and-match, fast-forward zehirleme, kanonik/limit,
+  bozuk kalıcı durum, RFC3339 takvim, yanlış yayıncı ve politika olumsuzlarıyla
+  toplam 378 test;
+  P013/P014 ile 144 etkin + 1 ayrılmış tanı yeşildir. Taşıma, kalıcı durum
+  dosyası, doğrulanmış cache/offline ve CLI bitmeden V1-P1-07 açık kalır.
 
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`
