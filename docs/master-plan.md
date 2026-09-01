@@ -101,9 +101,11 @@ Paket: “paket”; import için “kullan”.
 Async: “eşzamanlı / bekle” ailesi.
 # 8. Tür sistemi
 Statik tür güvenliği ve yerel tür çıkarımı birlikte kullanılır. Yeni başlayan tür yazmak zorunda kalmaz; public API ve belirsiz durumlarda açık tür kullanılır.
-Stage 0'da bu progressive disclosure K-083 ile başladı: `sayıyı al` çıkarımlı,
-`sayıyı Ondalık olarak al` açık sözleşmedir. Paket/public zorunluluğu ve
-generic model V1-P0-01 kapısında tamamlanacaktır.
+Stage 0'da bu progressive disclosure K-083/K-086 ile kuruldu: `sayıyı al`
+yerel başlangıçta çıkarımlı kalır; birim/paket yüzeyinde
+`sayıyı Ondalık olarak al` + `Ondalık döndürür` (ya da `değer döndürmez`) tam
+sözleşmedir. v1 public modeli bilinçli monomorfiktir; generic soyutlama ayrı
+ADR/RFC işidir.
 TamSayı
 GerçekSayı
 Ondalık

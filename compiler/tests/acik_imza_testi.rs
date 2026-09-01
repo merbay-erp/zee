@@ -56,6 +56,17 @@ işlem ikisini seç
 }
 
 #[test]
+fn acik_donus_cikarimli_parametreyle_karistirilamaz() {
+    let kaynak = "\
+işlem değeri geçir
+    değeri al
+    TamSayı döndürür
+    değeri döndür
+";
+    assert_eq!(kaynagi_derle(kaynak).expect_err("T037 bekleniyor").kod, "T037");
+}
+
+#[test]
 fn bilinmeyen_acik_tur_reddedilir() {
     let kaynak = "\
 işlem değeri geçir
@@ -95,4 +106,61 @@ ad eliz için adını ver olsun
 adı yaz
 ";
     assert_eq!(kaynagi_calistir(kaynak).expect("yapı imzası çalışmalı"), vec!["Eliz"]);
+}
+
+#[test]
+fn acik_donus_turu_govdeyle_uyusur() {
+    let kaynak = "\
+işlem iki katını bul
+    sayıyı TamSayı olarak al
+    TamSayı döndürür
+    sonuç sayı ile 2 nin çarpımı olsun
+    sonucu döndür
+
+x 6 için iki katını bul olsun
+x yaz
+";
+    assert_eq!(kaynagi_calistir(kaynak).expect("tam sözleşme"), vec!["12"]);
+}
+
+#[test]
+fn bilinmeyen_donus_turu_t040tir() {
+    let kaynak = "\
+işlem değeri ver
+    Bilinmez döndürür
+    1 döndür
+";
+    assert_eq!(kaynagi_derle(kaynak).expect_err("T040 bekleniyor").kod, "T040");
+}
+
+#[test]
+fn bildirilen_ve_gercek_donus_turu_uyusmalidir() {
+    let kaynak = "\
+işlem değeri ver
+    Metin döndürür
+    1 döndür
+";
+    assert_eq!(kaynagi_derle(kaynak).expect_err("T041 bekleniyor").kod, "T041");
+}
+
+#[test]
+fn acik_deger_donusu_butun_yollari_kapatir() {
+    let kaynak = "\
+işlem işareti ver
+    sayıyı TamSayı olarak al
+    Metin döndürür
+    sayı 0 dan büyükse
+        \"artı\" döndür
+";
+    assert_eq!(kaynagi_derle(kaynak).expect_err("T042 bekleniyor").kod, "T042");
+}
+
+#[test]
+fn deger_dondurmeyen_sozlesme_deger_donduremez() {
+    let kaynak = "\
+işlem selam ver
+    değer döndürmez
+    \"merhaba\" döndür
+";
+    assert_eq!(kaynagi_derle(kaynak).expect_err("T041 bekleniyor").kod, "T041");
 }

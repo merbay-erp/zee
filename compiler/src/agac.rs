@@ -36,6 +36,13 @@ pub struct Yapi {
 pub struct Islem {
     pub ad: String,
     pub parametreler: Vec<Parametre>,
+    /// Yükleyicinin kaynak sınırında işaretlediği görünürlük. Sözdizimi
+    /// değildir; geçişli paketin işlemi üst paketçe örtük yeniden açılmaz.
+    pub disari_acik: bool,
+    /// K-086 açık dönüş sözleşmesi: `<Tür> döndürür`; değer dönmüyorsa
+    /// `değer döndürmez`. Yerel başlangıç işlemlerinde yazılmayabilir.
+    pub donus_turu_yazimi: Option<String>,
+    pub donus_satiri: Option<usize>,
     pub govde: Vec<Cumle>,
     pub satir: usize,
 }

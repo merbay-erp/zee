@@ -368,6 +368,37 @@ fn parametre_turu(yazim: &str, yapilar: &[Yapi]) -> Option<Tur> {
     basit(yazim)
 }
 
+/// K-086 dönüş bildirimi: dış `None` bildirim yok, iç `None` değer döndürmez.
+fn bildirilmis_donus_turu(
+    islem: &Islem,
+    yapilar: &[Yapi],
+) -> Result<Option<Option<Tur>>, Tani> {
+    let Some(yazim) = islem.donus_turu_yazimi.as_deref() else {
+        return Ok(None);
+    };
+    if yazim == "DeğerDöndürmez" {
+        return Ok(Some(None));
+    }
+    parametre_turu(yazim, yapilar)
+        .map(|tur| Some(Some(tur)))
+        .ok_or_else(|| {
+            Tani::yeni(
+                "T040",
+                format!(
+                    "\"{}\" işleminin dönüş türü tanınmadı: \"{}\".",
+                    islem.ad, yazim
+                ),
+                islem.donus_satiri.unwrap_or(islem.satir),
+                1,
+                1,
+            )
+            .onerili(
+                "Örnekler: `TamSayı döndürür`, `Metin seçeneği döndürür`, `değer döndürmez`."
+                    .into(),
+            )
+        })
+}
+
 /// None: bütün parametreler başlangıç yüzeyinde çıkarımlı. Some: açık imza.
 fn acik_parametre_turleri(
     islem: &Islem,
@@ -382,6 +413,22 @@ fn acik_parametre_turleri(
         .filter(|parametre| parametre.tur_yazimi.is_some())
         .count();
     if acik_sayisi == 0 {
+        if islem.donus_turu_yazimi.is_some() {
+            return Err(Tani::yeni(
+                "T037",
+                format!(
+                    "\"{}\" işleminde açık dönüş ile çıkarımlı parametreler karıştırılamaz.",
+                    islem.ad
+                ),
+                islem.donus_satiri.unwrap_or(islem.satir),
+                1,
+                1,
+            )
+            .onerili(
+                "Dönüş türü yazılıysa bütün parametreleri de `<ad> <Tür> olarak al` biçiminde yaz."
+                    .into(),
+            ));
+        }
         return Ok(None);
     }
     if acik_sayisi != islem.parametreler.len() {
@@ -2434,6 +2481,14 @@ fn cagri_denetle(
             return Err(tani);
         }
     };
+    let bildirilmis_donus = match bildirilmis_donus_turu(&islem, &baglam.yapilar) {
+        Ok(donus) => donus,
+        Err(tani) => {
+            baglam.islemler.insert(ad.to_string(), islem);
+            return Err(tani);
+        }
+    };
+    let donus_bildirim_satiri = islem.donus_satiri.unwrap_or(satir);
     let acik = acik_turler.is_some();
     let denetim_turleri = acik_turler.unwrap_or_else(|| arg_turleri.to_vec());
     if !denetim_turleri
@@ -2481,10 +2536,49 @@ fn cagri_denetle(
     if denetim.is_ok() && kayit.donusler.contains(&Tur::Hata) {
         donusleri_sarmala(&mut islem.govde);
     }
+    let kesin_sonlanir = blok_kesin_sonlanir(&islem.govde);
     baglam.islemler.insert(ad.to_string(), islem);
     denetim?;
 
     let donus = donusleri_birlestir(ad, &kayit.donusler, satir)?;
+
+    if let Some(beklenen) = bildirilmis_donus {
+        if donus != beklenen {
+            let beklenen_adi = beklenen
+                .map(|tur| tur.adi())
+                .unwrap_or_else(|| "değer döndürmez".into());
+            let bulunan_adi = donus
+                .map(|tur| tur.adi())
+                .unwrap_or_else(|| "değer döndürmez".into());
+            return Err(Tani::yeni(
+                "T041",
+                format!(
+                    "\"{}\" işlemi {} döndüreceğini bildiriyor; gövde {} üretiyor.",
+                    ad, beklenen_adi, bulunan_adi
+                ),
+                donus_bildirim_satiri,
+                1,
+                1,
+            )
+            .onerili("Dönüş bildirimini ve bütün `döndür` dallarını aynı türde buluştur.".into()));
+        }
+        if beklenen.is_some() && !kesin_sonlanir {
+            return Err(Tani::yeni(
+                "T042",
+                format!(
+                    "\"{}\" işleminin bazı yolları değer döndürmeden bitebilir.",
+                    ad
+                ),
+                donus_bildirim_satiri,
+                1,
+                1,
+            )
+            .onerili(
+                "Her koşul/eşleştirme yolunda değer döndür veya en sona ortak bir `döndür` ekle."
+                    .into(),
+            ));
+        }
+    }
 
     // Özyinelemeli kullanıma verilen tür, son birleşimle çelişmemeli
     // (örn. temel durum TamSayı verip sonradan "yok döndür" eklemek).
@@ -2519,6 +2613,33 @@ fn cagri_denetle(
         },
     );
     Ok(donus)
+}
+
+/// Açık dönüş sözleşmesinde değer beklenen bir işlemin hiçbir olağan akışta
+/// gövde sonuna düşmediğini muhafazakâr biçimde kanıtlar.
+fn blok_kesin_sonlanir(cumleler: &[Cumle]) -> bool {
+    cumleler.iter().any(cumle_kesin_sonlanir)
+}
+
+fn cumle_kesin_sonlanir(cumle: &Cumle) -> bool {
+    match cumle {
+        Cumle::Dondur { .. } | Cumle::HataDondur { .. } | Cumle::ProgramiBitir { .. } => true,
+        Cumle::Ise { kollar, degilse, .. } => {
+            !kollar.is_empty()
+                && kollar.iter().all(|kol| blok_kesin_sonlanir(&kol.govde))
+                && degilse.as_deref().is_some_and(blok_kesin_sonlanir)
+        }
+        Cumle::Gore { kollar, degilse, .. } => {
+            !kollar.is_empty()
+                && kollar.iter().all(|(_, govde)| blok_kesin_sonlanir(govde))
+                && degilse.as_deref().is_some_and(blok_kesin_sonlanir)
+        }
+        Cumle::IcindeBlogu { govde, yetismezse, .. } => {
+            blok_kesin_sonlanir(govde)
+                && yetismezse.as_deref().is_some_and(blok_kesin_sonlanir)
+        }
+        _ => false,
+    }
 }
 
 /// Dönüş dallarını tek türe birleştirir: {T}→T; {T,Yok}→Seçenek<T>;

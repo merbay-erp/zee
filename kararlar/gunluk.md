@@ -904,6 +904,27 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   katalog kodu, 279 test; V1-P0-05 kapandı. Gerçek paralel scheduler
   V1-P1-03'te açık.
 
+## K-086 — Public işlem imzası kaynakta tam ve çağrıdan bağımsızdır
+
+- **Progressive disclosure:** Ana programdaki başlangıç işlemi `sayıyı al`
+  çıkarımını korur. Birim ya da paket üzerinden dışa çıkan işlem bütün
+  parametrelerini `<ad> <Tür> olarak al`, dönüşünü `<Tür> döndürür` veya
+  `değer döndürmez` biçiminde yazmak zorundadır (T039).
+- **Gövde kanıtı:** Bilinmeyen dönüş T040, bildirim/gövde uyuşmazlığı T041,
+  değer bildiren ama olağan bir yoldan sona düşebilen gövde T042'dir. Açık
+  işlem çağrılmasa bile denetlenir.
+- **Model:** v1 public API bilinçli monomorfik **kaynak ABI**'sidir; ikili
+  ABI/FFI sözü değildir. TamSayı→Ondalık genişlemesi çağrı uyarlamasıdır,
+  imzayı değiştirmez. Generic yüzey v2+ işidir.
+- **Uyumluluk:** Ad/parametre sırası-sayısı-türü/dönüş türü ve public yapı
+  alanı değişikliği ana sürüm; aynı imzalı düzeltme yama, yeni işlem/yapı küçük
+  sürümdür. Kilidin içerik özeti tekrar üretilebilirliği ayrıca korur.
+- **Geçiş:** Dört gömülü standart birim ve golden hesap birimi tam imzaya
+  taşındı. Liste genişlemesi, özyineleme, iki çağrı sırası, eksik birim ve
+  gerçek yerel paket olumsuzu ve geçişli işlemin örtük yeniden açılmaması
+  testlidir. 127 katalog kodu, 289 test;
+  V1-P0-01 kapandı.
+
 ## K-012 — Liste sabiti: `3, 7, 1, 9 listesi`
 
 - **Karar:** Virgülle ayrılmış değerler + `listesi`. Boş: `boş liste`.
@@ -966,10 +987,11 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   - v0 monomorfizmi: işlem gövdesi İLK çağrının argüman türleriyle denetlenir,
     imza sabitlenir; sonraki çağrılar imzaya uymalı (T017). Özyineleme v0'da
     yok (T016). RFC-0006 bu kısıtları da ele almalı.
-- **Tarihsel not (1 Eyl 2026, K-081):** Yukarıdaki üç madde ilk bootstrap
+- **Tarihsel not (1 Eyl 2026, K-081/K-086):** Yukarıdaki üç madde ilk bootstrap
   anını kaydeder; güncel dil davranışı değildir. Başlık ön-tarama,
   özyineleme/T035/C019 ve K-067 sayısal imza terfisi gerçeklenmiştir. Güncel
-  sözleşme spec/02 + spec/04'tedir; public imza modeli V1-P0-01 kapısıdır.
+  sözleşme spec/02 + spec/04'tedir; public imza modeli K-086/spec-10 ile
+  tamamlanmış ve V1-P0-01 kapanmıştır.
 
 ## K-017 — Seçenek türü yüzeyi: `var/yok`
 

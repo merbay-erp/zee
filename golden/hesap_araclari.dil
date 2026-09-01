@@ -1,7 +1,8 @@
 # Golden 31'in kullandığı birim (RFC-0009: dosya = birim).
 
 işlem kdvli fiyatı hesapla
-    fiyatı al
+    fiyatı Ondalık olarak al
+    Ondalık döndürür
     kdv fiyat ile 0,2 nin çarpımı olsun
     sonucu fiyat ile kdvnin toplamı olsun
     sonucu döndür

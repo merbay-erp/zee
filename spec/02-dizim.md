@@ -38,7 +38,8 @@ satırdan sonra da tanımlanabilir; karşılıklı özyineleme geçerlidir.
 İşlem gövdesinin başındaki parametre satırı başlangıç yüzeyinde `<ad> al`,
 açık sözleşmede `<ad> <tür yazımı> olarak al` biçimindedir (K-083):
 `sayıyı Ondalık olarak al`, `fiyatları Ondalık listesi olarak al`. Bir işlemde
-açık ve çıkarımlı satırlar karıştırılamaz (T037).
+açık ve çıkarımlı satırlar karıştırılamaz (T037). Tam sözleşmede bunların
+hemen ardından `<Tür> döndürür` ya da `değer döndürmez` gelir (K-086/spec-10).
 
 ## İşlem çağrısı (geçici kabul — RFC-0006, K-016)
 

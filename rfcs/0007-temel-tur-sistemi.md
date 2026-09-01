@@ -33,9 +33,10 @@ aşamalı geçer. Tehlikeli örtük dönüşüm yoktur.
 
 - Her ifadenin türü yapısından çıkar; değişken türü ilk bağlamada sabitlenir
   ve değişemez (T002 — golden korpusun en öğretici hatası).
-- Açık tür yazımı yapı alanında `yaş TamSayı`; işlem parametresinde K-083 ile
-  `sayıyı Ondalık olarak al`dır. Açık işlem çağrı beklemeden denetlenir;
-  T037 kısmi imzayı, T038 bilinmeyen türü reddeder.
+- Açık tür yazımı yapı alanında `yaş TamSayı`; işlem sözleşmesinde K-083/K-086
+  ile `sayıyı Ondalık olarak al` + `Ondalık döndürür`dür. Açık işlem çağrı
+  beklemeden denetlenir; T037–T042 kısmi/bilinmeyen/uyuşmayan sözleşmeyi ve
+  dönüşsüz kalan akış yolunu reddeder.
 - Boş koleksiyonların öğe türü v0'da TamSayı varsayılır (BosListe/BosSozluk);
   tam çıkarım (kullanıma bakarak) v1 adayı.
 
@@ -54,9 +55,9 @@ aşamalı geçer. Tehlikeli örtük dönüşüm yoktur.
 1. **GerçekSayı/Ondalık:** ÇÖZÜLDÜ — RFC-0013 bitişik virgül kuralı + onluk
    tam aritmetikle gerçeklendi (3,14; 0,1+0,2=0,3). Kayan nokta (bilimsel iş)
    gerekirse ileri düzey paket konusu olarak kaldı.
-2. **Generics ve trait/arayüz:** başlangıç işlemleri çağrı-güdümlü,
-   public işlemler açık parametreli olabilir (K-083); gerçek çokbiçimlilik ve
-   public ABI zorunluluğu V1-P0-01/ADR işidir.
+2. **Generics ve trait/arayüz:** başlangıç işlemleri çağrı-güdümlü kalır;
+   public işlemler tam açık ve v1'de bilinçli monomorfiktir (K-083/K-086,
+   spec/10). Gerçek çokbiçimlilik v2+ ADR/RFC işidir.
 3. **Tür adlarının Türkçe çekimi:** hata mesajlarında "Liste<TamSayı>" teknik
    gösterimi kullanılıyor; çocuk modunda "tam sayı listesi" okunuşu düşünülebilir.
 4. Sözlük anahtarının TamSayı olabilmesi; iç içe koleksiyonlar.

@@ -89,6 +89,7 @@ pub fn birim_ozeti(kaynak: &str) -> String {
             }
             aciklama.reverse();
             let mut parametreler = Vec::new();
+            let mut donus = None;
             for devam in satirlar.iter().skip(i + 1) {
                 let kirpik = devam.trim();
                 if kirpik.is_empty() {
@@ -98,11 +99,19 @@ pub fn birim_ozeti(kaynak: &str) -> String {
                     parametreler.push(kirpik.to_string());
                     continue;
                 }
+                if kirpik == "değer döndürmez" {
+                    donus = Some("değer döndürmez".to_string());
+                } else if let Some(tur) = kirpik.strip_suffix(" döndürür") {
+                    donus = Some(tur.to_string());
+                }
                 break;
             }
             cikti.push_str(&format!("  işlem {}", ad));
             if !parametreler.is_empty() {
                 cikti.push_str(&format!("  ({})", parametreler.join(", ")));
+            }
+            if let Some(donus) = donus {
+                cikti.push_str(&format!(" → {}", donus));
             }
             cikti.push('\n');
             for satir in &aciklama {
@@ -218,11 +227,16 @@ fn dosyayi_coz(
     }
 
     // 2) İçe alınan işlem adlarıyla tohumlanmış ayrıştırma.
-    let tohum: Vec<String> = islemler.keys().cloned().collect();
+    let tohum: Vec<String> = islemler
+        .values()
+        .filter(|islem| islem.disari_acik)
+        .map(|islem| islem.ad.clone())
+        .collect();
     let cumleler = ayristirici::ayristir_tohumla(tokenlar, tohum)?;
 
     // 3) Kendi tanımlarını ayıkla ve birleştir.
     let mut kalan = Vec::new();
+    let mut kendi_islem_adlari = Vec::new();
     for cumle in cumleler {
         match cumle {
             Cumle::Kullan { .. } => {} // 1. adımda çözüldü
@@ -239,6 +253,7 @@ fn dosyayi_coz(
                         1,
                     ));
                 }
+                kendi_islem_adlari.push(islem.ad.clone());
                 islemler.insert(islem.ad.clone(), islem);
             }
             Cumle::TestBlogu(test) => testler.push(test),
@@ -261,6 +276,25 @@ fn dosyayi_coz(
         }
     }
 
+    if !ana_kaynak {
+        // Alınan işlemler bu dosyanın public API'sine örtük yeniden açılmaz.
+        // Gövde/runtime çağrıları için haritada kalır; yalnız bu kaynağın
+        // doğrudan tanımları bir üst kaynağın çağrı yüzeyine çıkar.
+        for islem in islemler.values_mut() {
+            islem.disari_acik = false;
+        }
+        for ad in &kendi_islem_adlari {
+            islemler
+                .get_mut(ad)
+                .expect("kendi işlemi az önce eklendi")
+                .disari_acik = true;
+        }
+        disari_acik_imzalari_denetle(
+            &islemler,
+            kaynak_kokeni.unwrap_or("adı bilinmeyen birim"),
+        )?;
+    }
+
     // Birim olarak yüklenen dosyanın üst düzey cümleleri İÇE ALINMAZ
     // (kapsülleme, RFC-0009 §2): dosya kendi başına çalıştırılabilir kalır,
     // birim olarak yalnız tanımlarını verir.
@@ -269,6 +303,44 @@ fn dosyayi_coz(
     }
 
     Ok((kalan, islemler, yapilar, testler))
+}
+
+/// K-086: Bir dosya birim ya da paket olarak alındığında içindeki bütün
+/// işlemler public yüzeye çıkar. Bu sınırda çağrı-güdümlü çıkarım yasaktır;
+/// parametreler ve dönüş kaynakta okunabilir, monomorfik bir sözleşme taşır.
+fn disari_acik_imzalari_denetle(
+    islemler: &HashMap<String, Islem>,
+    kaynak: &str,
+) -> Result<(), Tani> {
+    let mut adlar = islemler.keys().cloned().collect::<Vec<_>>();
+    adlar.sort();
+    for ad in adlar {
+        let islem = islemler.get(&ad).expect("ad haritadan geldi");
+        if !islem.disari_acik {
+            continue;
+        }
+        let parametreler_acik = islem
+            .parametreler
+            .iter()
+            .all(|parametre| parametre.tur_yazimi.is_some());
+        if !parametreler_acik || islem.donus_turu_yazimi.is_none() {
+            return Err(Tani::yeni(
+                "T039",
+                format!(
+                    "\"{}\" işlemi \"{}\" dışa açık yüzeyinde tam tür sözleşmesi taşımıyor.",
+                    islem.ad, kaynak
+                ),
+                islem.satir,
+                1,
+                1,
+            )
+            .onerili(
+                "Her parametreyi `<ad> <Tür> olarak al` yaz; ardından `<Tür> döndürür` ya da `değer döndürmez` ekle."
+                    .into(),
+            ));
+        }
+    }
+    Ok(())
 }
 
 fn yukleme_hatasi(ad: &str, tur: KullanimTuru, hata: &str, satir: usize) -> Tani {
@@ -418,7 +490,11 @@ pub fn kaynagi_tanilari_kokenlerle(
         }
     }
 
-    let tohum: Vec<String> = islemler.keys().cloned().collect();
+    let tohum: Vec<String> = islemler
+        .values()
+        .filter(|islem| islem.disari_acik)
+        .map(|islem| islem.ad.clone())
+        .collect();
     let (cumleler, ayristirma_tanilari) = ayristirici::ayristir_kurtarmali(tokenlar, tohum);
     tanilar.extend(ayristirma_tanilari);
 

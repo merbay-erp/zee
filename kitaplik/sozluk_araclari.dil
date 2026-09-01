@@ -3,7 +3,8 @@
 
 # En büyük değere sahip anahtar; eşitlikte İLK eklenen kazanır (determinizm).
 işlem en çok geçeni bul
-    sayaçları al
+    sayaçları TamSayı sözlüğü olarak al
+    Metin döndürür
 
     kazanan "" olsun
     rekor 0 olsun

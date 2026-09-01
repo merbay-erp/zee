@@ -724,13 +724,57 @@ impl Ayristirici {
             }
         }
 
+        // K-086 açık dönüş sözleşmesi, parametrelerden hemen sonra gelir:
+        // `<Tür> döndürür` ya da değer üretmeyen işlem için `değer döndürmez`.
+        while matches!(self.bak().tur, TokenTur::SatirSonu) {
+            self.ilerle();
+        }
+        let satir_tokenlari = self.tokenlar[self.konum..]
+            .iter()
+            .take_while(|token| !matches!(token.tur, TokenTur::SatirSonu))
+            .collect::<Vec<_>>();
+        let kelimeler = satir_tokenlari
+            .iter()
+            .map(|token| match &token.tur {
+                TokenTur::Kelime(kelime) => Some(kelime.as_str()),
+                _ => None,
+            })
+            .collect::<Option<Vec<_>>>();
+        let donus = kelimeler.and_then(|kelimeler| {
+            let ilk = satir_tokenlari.first()?;
+            match kelimeler.as_slice() {
+                [deger, dondurmez] if *deger == "değer" && *dondurmez == "döndürmez" => {
+                    Some(("DeğerDöndürmez".to_string(), ilk.satir))
+                }
+                [tur @ .., dondurur] if !tur.is_empty() && *dondurur == "döndürür" => {
+                    Some((tur.join(" "), ilk.satir))
+                }
+                _ => None,
+            }
+        });
+        let (donus_turu_yazimi, donus_satiri) = match donus {
+            Some((yazim, satir)) => {
+                self.satir_oku();
+                (Some(yazim), Some(satir))
+            }
+            None => (None, None),
+        };
+
         let govde = self.blok_ayristir()?;
         self.derinlik -= 1;
         if let TokenTur::Cikinti = self.bak().tur {
             self.ilerle();
         }
 
-        Ok(Cumle::IslemTanimi(Islem { ad, parametreler, govde, satir }))
+        Ok(Cumle::IslemTanimi(Islem {
+            ad,
+            parametreler,
+            disari_acik: false,
+            donus_turu_yazimi,
+            donus_satiri,
+            govde,
+            satir,
+        }))
     }
 
     /// `yapı <Ad>` + alan satırları (`ad Metin`, `yaş TamSayı`).

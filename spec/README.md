@@ -31,10 +31,11 @@ Kırıcı değişiklik sessizce yapılamaz: davranış değişikliği RFC'den ge
 | [07 — Birimler](07-birimler.md) | birim çözümü ve kapsülleme | RFC-0009 §2 |
 | [08 — Kalıcı dosya IO](08-kalici-dosya.md) | atomik yazma, süreçler arası yarış ve dayanıklılık | RFC-0016 |
 | [09 — Son tarih ve iptal](09-son-tarih-ve-iptal.md) | `içinde/yetişmezse`, işbirlikli iptal ve iç içe deadline | RFC-0011 |
+| [10 — Dışa açık işlem sözleşmesi](10-disari-acik-islem-sozlesmesi.md) | public imza, dönüş kanıtı ve v1 kaynak ABI'si | RFC-0006, RFC-0007, RFC-0009 |
 
 ## Faza bağlı — henüz spec dışı
 
-Gerçek paralel görev zamanlayıcısı (RFC-0011, Faz 5), FFI/ABI (RFC-0012,
+Gerçek paralel görev zamanlayıcısı (RFC-0011, Faz 5), ikili FFI/ABI (RFC-0012,
 Faz 4/5), standart kütüphane kararlılık
 politikası, production web/action/oturum/transaction (RFC-0015), uzak
 paket/registry (RFC-0009 §4.2), deprecation/edition modeli.

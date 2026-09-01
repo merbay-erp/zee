@@ -3,15 +3,17 @@
 
 # Sayının işaretsiz büyüklüğü.
 işlem mutlak değerini hesapla
-    sayıyı al
+    sayıyı TamSayı olarak al
+    TamSayı döndürür
     sayı 0 dan küçükse
         eksili 0 ile sayının farkı olsun
         eksiliyi döndür
     sayıyı döndür
 
 işlem üssünü hesapla
-    tabanı al
-    üssü al
+    tabanı TamSayı olarak al
+    üssü TamSayı olarak al
+    TamSayı döndürür
 
     sonuç 1 olsun
     üs kez tekrarla
@@ -19,7 +21,8 @@ işlem üssünü hesapla
     sonucu döndür
 
 işlem tam karekökünü hesapla
-    sayıyı al
+    sayıyı TamSayı olarak al
+    TamSayı döndürür
 
     sayı 2 den küçükse
         sayıyı döndür
@@ -37,8 +40,9 @@ işlem tam karekökünü hesapla
 
 # En büyük ortak bölen — Öklit yöntemi (kalanla).
 işlem obebini hesapla
-    birinciyi al
-    ikinciyi al
+    birinciyi TamSayı olarak al
+    ikinciyi TamSayı olarak al
+    TamSayı döndürür
 
     kalan birincinin ikinciye bölümünden kalanı olsun
     kalan 0 a eşitse
@@ -47,8 +51,9 @@ işlem obebini hesapla
     sonucu döndür
 
 işlem okekini hesapla
-    birinciyi al
-    ikinciyi al
+    birinciyi TamSayı olarak al
+    ikinciyi TamSayı olarak al
+    TamSayı döndürür
 
     obeb birinci ve ikinci ile obebini hesapla olsun
     çarpım birinci ile ikincinin çarpımı olsun

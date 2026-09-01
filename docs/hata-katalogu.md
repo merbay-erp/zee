@@ -113,6 +113,10 @@ türetilmiştir; yeni kod eklenince bu dosya güncellenir — CI'a bağlanması 
 | T036 | Korumasız Seçenek/Sonuç erişimi | `değeri` ancak `varsa`/`başarılıysa`, `hatası` ancak `başarısızsa` dalında (RFC-0008 §4.2) |
 | T037 | Bir işlemde açık ve çıkarımlı parametre türleri karışık | Bütün parametreleri `<ad> <Tür> olarak al` yaz ya da hepsini çıkarımlı bırak |
 | T038 | Açık parametre türü tanınmadı | Örn. `TamSayı`, `Ondalık listesi`, `Metin sözlüğü` ya da tanımlı bir yapı adı kullan |
+| T039 | Birim/paket işleminin public sözleşmesi eksik | Bütün parametre türlerini ve `<Tür> döndürür` / `değer döndürmez` satırını yaz |
+| T040 | Açık dönüş türü tanınmadı | Örn. `TamSayı döndürür`, `Metin seçeneği döndürür` ya da `değer döndürmez` |
+| T041 | Bildirilen dönüş ile gövde uyuşmuyor | Dönüş bildirimi ve bütün `döndür` dalları aynı türü üretmeli |
+| T042 | Değer döndüren işlemin bir yolu gövde sonuna düşebilir | Her koşul/eşleştirme yolunda döndür veya sona ortak dönüş ekle |
 
 ## C — Çalışma zamanı
 

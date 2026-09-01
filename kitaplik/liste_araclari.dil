@@ -3,7 +3,8 @@
 
 # Dönüş daima Ondalık (tutarlı imza — TamSayı listesi genişlemeyle girer).
 işlem toplamını hesapla
-    sayıları al
+    sayıları Ondalık listesi olarak al
+    Ondalık döndürür
 
     toplam 0,0 olsun
     her sayı için
@@ -11,7 +12,8 @@ işlem toplamını hesapla
     toplamı döndür
 
 işlem en büyüğünü bul
-    sayıları al
+    sayıları Ondalık listesi olarak al
+    Ondalık döndürür
 
     aday sayıların ilki olsun
     her sayı için
@@ -20,7 +22,8 @@ işlem en büyüğünü bul
     adayı döndür
 
 işlem en küçüğünü bul
-    sayıları al
+    sayıları Ondalık listesi olarak al
+    Ondalık döndürür
 
     aday sayıların ilki olsun
     her sayı için
@@ -29,7 +32,8 @@ işlem en küçüğünü bul
     adayı döndür
 
 işlem ortalamasını hesapla
-    sayıları al
+    sayıları Ondalık listesi olarak al
+    Ondalık döndürür
 
     toplam sayılar için toplamını hesapla olsun
     adet sayıların adedi olsun
@@ -53,7 +57,8 @@ test "ortalama ondalık döner"
 # Sıralı kopyanın ortancası; çift adette iki ortancanın ortalaması.
 # Dönüş her zaman Ondalık (tutarlı imza).
 işlem medyanını hesapla
-    sayıları al
+    sayıları Ondalık listesi olarak al
+    Ondalık döndürür
 
     sıralılar sayıların sıralanmışı olsun
     adet sıralıların adedi olsun

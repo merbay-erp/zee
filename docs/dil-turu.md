@@ -225,22 +225,25 @@ kare 4 için karesini hesapla olsun
 tabanın tam kısmı için yuvarla
 ```
 
-Başlangıçta tür yazmak gerekmez; bu durumda imza çağrıdan çıkarılır. Paket,
-kütüphane ve uzun ömürlü API için bütün parametreler açık yazılabilir:
+Başlangıçta tür yazmak gerekmez; bu durumda imza çağrıdan çıkarılır. Birim,
+paket ve uzun ömürlü API'de ise tam sözleşme zorunludur:
 
 ```
 işlem yarısını bul
     sayıyı Ondalık olarak al
+    Ondalık döndürür
     sonuç sayının 2 ye bölümü olsun
     sonucu döndür
 ```
 
 Açık imzalı gövde hiç çağrılmasa bile denetlenir; imza sonraki çağrıyla
-değişmez. TamSayı, Ondalık beklenen çağrıda hem statik olarak hem runtime
-değeriyle Ondalığa genişler. `Ondalık listesi`, `Metin sözlüğü`,
-`TamSayı seçeneği`, `Metin sonucu` ve yapı adları da geçerli tür yazımlarıdır.
-Bir işlemin parametreleri ya bütünüyle açık ya bütünüyle çıkarımlıdır
-(T037/T038, K-083). İşlem çağrıdan sonra da tanımlanabilir (adlar ön-taranır).
+değişmez. Değer üretmeyen public işlem `değer döndürmez` yazar. Bildirilen dönüş
+bütün gövde yollarıyla uyuşur ve hiçbir değer yolu sessizce sona düşemez
+(T039–T042, K-086). TamSayı, Ondalık beklenen çağrıda hem statik olarak hem
+runtime değeriyle Ondalığa genişler. `Ondalık listesi`, `Metin sözlüğü`,
+`TamSayı seçeneği`, `Metin sonucu` ve yapı adları geçerli tür yazımlarıdır.
+v1 public modeli bilinçli olarak monomorfiktir. İşlem çağrıdan sonra da
+tanımlanabilir (adlar ön-taranır).
 
 ### Özyineleme
 
@@ -512,7 +515,9 @@ aynı işlemde yeniler. `dil kilitle .` ise var olan doğrudan ve geçişli yere
 göreli yol, sürüm ve SHA-256 kaynak özetiyle sabitler. Yalnız doğrudan
 bildirilen paket kullanılabilir; geçişli bağımlılığa gizlice uzanılmaz.
 Paket içindeki birimler kendi kaynak klasöründen çözülür ve paketin üst düzey
-cümleleri de birimlerde olduğu gibi kapsüllüdür (K-078).
+cümleleri de birimlerde olduğu gibi kapsüllüdür (K-078). Dışa açılan bütün
+işlemler parametre ve dönüş türünü kaynakta taşır; çağrı sırası paket API'sinin
+anlamını değiştiremez (K-086/spec-10).
 
 `dil paketler .` grafiğin doğrudan/geçişli ayrımını, sürümünü, göreli yolunu
 ve kilit özetini görünür kılar. `dil çıkar hesap .` yalnız doğrudan paketi

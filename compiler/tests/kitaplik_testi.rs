@@ -47,7 +47,7 @@ fn liste_araclari_birimi_kullanilir() {
     let cikti = gomulu_kostur(
         "liste_araclari birimini kullan\n\nnotlar 50, 60, 71 listesi olsun\no notlar için ortalamasını hesapla olsun\no yaz\nb notlar için en büyüğünü bul olsun\nb yaz\n",
     );
-    assert_eq!(cikti, vec!["60,333333333", "71"]);
+    assert_eq!(cikti, vec!["60,333333333", "71,0"]);
 }
 
 #[test]
@@ -84,8 +84,20 @@ fn depodaki_kaynak_gomuluyle_ayni() {
 #[test]
 fn birim_ozeti_islemleri_listeler() {
     let ozet = dil::birim_ozeti(dil::gomulu_birim("matematik").unwrap());
-    assert!(ozet.contains("işlem obebini hesapla  (birinciyi al, ikinciyi al)"), "{}", ozet);
-    assert!(ozet.contains("işlem üssünü hesapla  (tabanı al, üssü al)"), "{}", ozet);
+    assert!(
+        ozet.contains(
+            "işlem obebini hesapla  (birinciyi TamSayı olarak al, ikinciyi TamSayı olarak al) → TamSayı"
+        ),
+        "{}",
+        ozet
+    );
+    assert!(
+        ozet.contains(
+            "işlem üssünü hesapla  (tabanı TamSayı olarak al, üssü TamSayı olarak al) → TamSayı"
+        ),
+        "{}",
+        ozet
+    );
     assert!(ozet.contains("testler: 5"), "{}", ozet);
 }
 

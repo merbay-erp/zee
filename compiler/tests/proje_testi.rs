@@ -221,7 +221,7 @@ fn cli_proje_klasorunu_calistirir_denetler_ve_dener() {
     .expect("bildirim");
     std::fs::write(
         gecici.yol().join("yardimci.dil"),
-        "işlem iki katını bul\n    sayıyı al\n    sonucu sayı ile 2 nin çarpımı olsun\n    sonucu döndür\n",
+        "işlem iki katını bul\n    sayıyı TamSayı olarak al\n    TamSayı döndürür\n    sonucu sayı ile 2 nin çarpımı olsun\n    sonucu döndür\n",
     )
     .expect("birim");
     std::fs::write(
@@ -327,18 +327,25 @@ fn yerel_paketler_kokenli_yuklenir_ve_icerikle_kilitlenir() {
         "proje \"temel\" olsun\nsürüm \"1.0.0\" olsun\ngiriş \"temel.dil\" olsun\n",
     )
     .expect("temel bildirim");
-    std::fs::write(temel.join("temel.dil"), "işlem üç ver\n    3 döndür\n").expect("temel kaynak");
+    std::fs::write(
+        temel.join("temel.dil"),
+        "işlem üç ver\n    TamSayı döndürür\n    3 döndür\n",
+    )
+    .expect("temel kaynak");
 
     std::fs::write(
         hesap.join("proje.dil"),
         "proje \"hesap\" olsun\nsürüm \"2.1.0\" olsun\ngiriş \"paket.dil\" olsun\nyerel_bağımlılıklar \"../temel\" listesi olsun\n",
     )
     .expect("hesap bildirim");
-    std::fs::write(hesap.join("yardimci.dil"), "işlem iki ver\n    2 döndür\n")
+    std::fs::write(
+        hesap.join("yardimci.dil"),
+        "işlem iki ver\n    TamSayı döndürür\n    2 döndür\n",
+    )
         .expect("paket içi birim");
     std::fs::write(
         hesap.join("paket.dil"),
-        "yardimci birimini kullan\ntemel paketini kullan\n\n\"paketin üst düzeyi çalışmamalı\" yaz\n\nişlem toplam ver\n    a iki ver olsun\n    b üç ver olsun\n    toplam a ile b nin toplamı olsun\n    toplamı döndür\n",
+        "yardimci birimini kullan\ntemel paketini kullan\n\n\"paketin üst düzeyi çalışmamalı\" yaz\n\nişlem toplam ver\n    TamSayı döndürür\n    a iki ver olsun\n    b üç ver olsun\n    toplam a ile b nin toplamı olsun\n    toplamı döndür\n",
     )
     .expect("hesap giriş");
 
@@ -399,7 +406,10 @@ fn yerel_paketler_kokenli_yuklenir_ve_icerikle_kilitlenir() {
     assert_eq!(String::from_utf8_lossy(&calistir.stdout), "5\n");
 
     // Paket içeriği değişince eski kilit sessizce kabul edilmez.
-    std::fs::write(hesap.join("yardimci.dil"), "işlem iki ver\n    4 döndür\n")
+    std::fs::write(
+        hesap.join("yardimci.dil"),
+        "işlem iki ver\n    TamSayı döndürür\n    4 döndür\n",
+    )
         .expect("paket değişikliği");
     let bayat = Command::new(ikili)
         .args(["denetle", uygulama.to_str().expect("utf8")])
@@ -438,6 +448,50 @@ fn yerel_paketler_kokenli_yuklenir_ve_icerikle_kilitlenir() {
         .expect("geçişli bağımlılık denetimi");
     assert!(!gecisli.status.success());
     assert!(String::from_utf8_lossy(&gecisli.stderr).contains("A011"));
+}
+
+#[test]
+fn paket_islemi_eksik_public_sozlesmeyle_alinamaz() {
+    let gecici = GeciciKlasor::yeni();
+    let paket = gecici.yol().join("hesap");
+    let uygulama = gecici.yol().join("uygulama");
+    std::fs::create_dir(&paket).expect("paket");
+    std::fs::create_dir(&uygulama).expect("uygulama");
+    std::fs::write(
+        paket.join("proje.dil"),
+        "proje \"hesap\" olsun\nsürüm \"1.0.0\" olsun\ngiriş \"paket.dil\" olsun\n",
+    )
+    .expect("paket bildirimi");
+    std::fs::write(
+        paket.join("paket.dil"),
+        "işlem iki katını bul\n    sayıyı al\n    sonuç sayı ile 2 nin çarpımı olsun\n    sonucu döndür\n",
+    )
+    .expect("eksik public imza");
+    std::fs::write(
+        uygulama.join("proje.dil"),
+        "proje \"uygulama\" olsun\nsürüm \"0.1.0\" olsun\ngiriş \"ana.dil\" olsun\nyerel_bağımlılıklar \"../hesap\" listesi olsun\n",
+    )
+    .expect("uygulama bildirimi");
+    std::fs::write(
+        uygulama.join("ana.dil"),
+        "hesap paketini kullan\n\nx 5 için iki katını bul olsun\nx yaz\n",
+    )
+    .expect("uygulama kaynağı");
+
+    let ikili = env!("CARGO_BIN_EXE_dil");
+    let kilitle = Command::new(ikili)
+        .args(["kilitle", uygulama.to_str().expect("utf8")])
+        .output()
+        .expect("kilitle");
+    assert!(kilitle.status.success());
+    let denetle = Command::new(ikili)
+        .args(["denetle", uygulama.to_str().expect("utf8")])
+        .output()
+        .expect("denetle");
+    assert!(!denetle.status.success());
+    let hata = String::from_utf8_lossy(&denetle.stderr);
+    assert!(hata.contains("T039"), "{}", hata);
+    assert!(hata.contains("iki katını bul"), "{}", hata);
 }
 
 #[test]
@@ -481,7 +535,10 @@ fn ekle_komutu_once_dogrular_sonra_bildirimi_ve_kilidi_gunceller() {
         "proje \"hesap\" olsun\nsürüm \"1.3.0\" olsun\ngiriş \"paket.dil\" olsun\n",
     )
     .expect("paket bildirim");
-    std::fs::write(paket.join("paket.dil"), "işlem yedi ver\n    7 döndür\n")
+    std::fs::write(
+        paket.join("paket.dil"),
+        "işlem yedi ver\n    TamSayı döndürür\n    7 döndür\n",
+    )
         .expect("paket kaynak");
     std::fs::write(
         uygulama.join("proje.dil"),
