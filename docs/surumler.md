@@ -323,6 +323,13 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   dosya adlı sabit `.zep` fixture'ı Linux/macOS/Windows CI'da aynı testle,
   80 yol saldırısı ayrı kalıcı korpusla korunur. Üç yeni regresyonla toplam
   463 test yeşildir; B-030/B-031 ve V1-P1-08 kapandı.
+- **Makine-okunur kanıt ve canlı depo sayıları** (K-118, ADR-010): 23 RFC,
+  26 ADR ve 22 spec bölümü durum+test dosyaları+açık kapsam notuyla tek TSV'de
+  birebir izlenir. Yeni/eksik/yinelenen belge veya olmayan test yolu tazelik
+  testini kırar. `depo_sayilari` golden, Rust+doctest, tanı, RFC/ADR ve spec
+  sayılarını gerçek dosyalardan üretir; README işaretli bloğundaki tek byte
+  kayma CI hatasıdır. İki yeni regresyonla toplam 465 test yeşildir;
+  B-043/B-044 kapandı.
 
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`

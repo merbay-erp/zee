@@ -23,8 +23,11 @@ Gerçeklenmeyen özellik belgeyle tamamlanmış gösterilemez; kısmi gerçeklem
 birlikte yoksa iş tamamlanmış sayılmaz ve commit alınmaz.
 
 `compiler/tests/katalog_testi.rs` kaynak tanılarıyla hata kataloğunu birebir;
-`compiler/tests/dokuman_tazelik_testi.rs` RFC/ADR/spec indekslerini ve yerel
-Markdown bağlantılarını doğrular. Toplu commit öncesi ikisi de çalıştırılır.
+`compiler/tests/dokuman_tazelik_testi.rs` RFC/ADR/spec indekslerini, yerel
+Markdown bağlantılarını, `docs/kanit-haritasi-v1.tsv` kapsamını ve README canlı
+sayı bloğunu doğrular. Test/golden/tanı/RFC/ADR/spec sayısı değişince kökten
+elle arama yapılmaz; `cd compiler && cargo run --bin depo_sayilari -- --yaz`
+çalıştırılır. Toplu commit öncesi katalog ve tazelik kapıları çalıştırılır.
 
 ## V1 öncesi iş sırası
 

@@ -1,6 +1,6 @@
 # ADR-010 — Normatif otorite ve değişiklik bütünlüğü
 
-- **Durum:** kabul (1 Eylül 2026)
+- **Durum:** kabul (1 Eylül 2026; K-118 tazelik otomasyonu revizyonu 2 Eylül)
 - **Bağlam:** manifesto 3/12, master plan bölüm 23/25, spec ve RFC'lerde
   biriken davranış farkları, v1.0 sürüm kapıları
 
@@ -75,7 +75,17 @@ Makine en az şu yapısal bayatlıkları CI'da engeller:
 
 - kaynak tanısı ↔ `docs/hata-katalogu.md` birebirliği;
 - her RFC/ADR/spec dosyasının kendi indeksinde bulunması;
-- depo içi Markdown bağlantılarının var olan hedefe gitmesi.
+- her numaralı RFC/ADR/spec'in `docs/kanit-haritasi-v1.tsv` içinde tam bir
+  durum ve var olan yürütülebilir test dosyalarıyla eşleşmesi;
+- depo içi Markdown bağlantılarının var olan hedefe gitmesi;
+- README'deki canlı golden/test/tanı/RFC/ADR/spec sayılarının depo ağacından
+  üretilmiş blokla byte-byte eşleşmesi.
+
+K-118'den itibaren hareketli sayılar elle güncellenmez. İç araç
+`cargo run --bin depo_sayilari -- --yaz` ile işaretli README bloğunu ortak
+atomik yazma çekirdeği üzerinden üretir; normal test paketi `--denetle` kipini
+çalıştırır. Tarihsel karar kayıtlarındaki o güne ait sayılar snapshot olarak
+kalır ve bu canlı bloğun kapsamına girmez.
 
 Anlamsal bayatlık bütünüyle otomatik bulunamaz. Bu nedenle son kullanıcıya
 görünen gerçek, `docs/surumler.md` ve `docs/v1-surum-kapilari.md` içinde açık
@@ -90,5 +100,7 @@ kapıyı sonraki geliştirme oturumları için kalıcı çalışma kuralı yapar
   zorunludur.
 - Doküman drift'i kozmetik borç değil, test/derleme hatasıyla aynı ciddiyette
   sürüm engelleyicisidir.
+- Yeni RFC/ADR/spec dosyası indekslense bile kanıt haritasına eklenmeden; yeni
+  test/tanı/karar sayısı README canlı bloğuna üretilmeden CI geçmez.
 - Her özellikte daha çok dosya birlikte değişebilir; bunun bedeli, yıllar sonra
   dili devralan kişinin niyeti tahmin etmek zorunda kalmamasıdır.
