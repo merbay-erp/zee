@@ -3,8 +3,11 @@
 //! Tür denetiminden geçmiş programı çalıştırır. Çıktı satır listesi olarak
 //! döner; CLI bunu ekrana basar, testler doğrudan karşılaştırır.
 
-use crate::agac::{AritmetikIslec, Cumle, HttpYontemi, Ifade, Islec, IslemTuru, Ozellik, Program};
+use crate::agac::{
+    AritmetikIslec, Cumle, HttpYontemi, Ifade, Islec, IslemTuru, Ozellik, Program, RotaErisimi,
+};
 use crate::tani::Tani;
+use crate::web_guvenligi::{WebGuvenligi, WebReddi, YeniOturum};
 use std::collections::{HashMap, VecDeque};
 
 /// Girdi/çıktı ve rastgelelik soyutlaması: testler deterministik kuyruk
@@ -297,11 +300,35 @@ pub trait GirdiCikti {
         self.yanit_gonder(yanit);
     }
     /// 303 yönlendirmesi gönderir (K-051).
-    fn yonlendir_gonder(&mut self, adres: &str);
+    fn yonlendir_gonder(&mut self, adres: &str) -> Result<(), String>;
     /// Sonraki yanıta Set-Cookie iliştirir (K-052).
-    fn cerez_yaz(&mut self, ad: &str, deger: &str);
+    fn cerez_yaz(&mut self, ad: &str, deger: &str) -> Result<(), String>;
     /// Sonraki yanıtla çerezi tarayıcıdan siler (Max-Age=0, K-073).
-    fn cerez_sil(&mut self, ad: &str);
+    fn cerez_sil(&mut self, ad: &str) -> Result<(), String>;
+    /// Rota önsözünün kimlik/yetki ve unsafe-method CSRF kapısı (K-088).
+    fn rota_guvenligini_denetle(
+        &mut self,
+        _erisim: &RotaErisimi,
+        _csrf: Option<&str>,
+        _csrf_gerekli: bool,
+    ) -> Result<(), WebReddi> {
+        Err(WebReddi {
+            durum: 503,
+            mesaj: "IO adaptörü web güvenlik profilini desteklemiyor",
+        })
+    }
+    fn csrf_belirteci(&mut self) -> Result<String, String> {
+        Err("IO adaptörü CSRF oturumu desteklemiyor".into())
+    }
+    fn oturum_ac(&mut self, _kullanici: &str, _rol: &str) -> Result<(), String> {
+        Err("IO adaptörü güvenli oturum desteklemiyor".into())
+    }
+    fn oturum_kapat(&mut self) -> Result<(), String> {
+        Err("IO adaptörü güvenli oturum desteklemiyor".into())
+    }
+    fn parola_dogrula(&mut self, _parola: &str, _ozet: &str) -> bool {
+        false
+    }
     /// Her `eylem` çağrısı bir transaction/savepoint sınırıdır. Adaptör,
     /// desteklediği kalıcı kaynakları başarıda tamamlar, hata dönüşünde geri alır.
     fn eylem_baslat(&mut self) -> Result<(), String> {
@@ -389,9 +416,49 @@ impl<T: GirdiCikti> GirdiCikti for GuvenliIo<T> {
     }
     fn yanit_gonder(&mut self, _yanit: &str) {}
     fn durum_yaniti_gonder(&mut self, _durum: u16, _yanit: &str) {}
-    fn yonlendir_gonder(&mut self, _adres: &str) {}
-    fn cerez_yaz(&mut self, _ad: &str, _deger: &str) {}
-    fn cerez_sil(&mut self, _ad: &str) {}
+    fn yonlendir_gonder(&mut self, adres: &str) -> Result<(), String> {
+        if crate::web_guvenligi::yerel_yonlendirme_gecerli(adres) {
+            Ok(())
+        } else {
+            Err("yönlendirme yalnız CR/LF içermeyen yerel `/...` adresine yapılabilir".into())
+        }
+    }
+    fn cerez_yaz(&mut self, ad: &str, deger: &str) -> Result<(), String> {
+        if crate::web_guvenligi::cerez_adi_gecerli(ad)
+            && crate::web_guvenligi::cerez_degeri_gecerli(deger)
+        {
+            Ok(())
+        } else {
+            Err("çerez adı/değeri HTTP başlığı için güvenli değil".into())
+        }
+    }
+    fn cerez_sil(&mut self, ad: &str) -> Result<(), String> {
+        if crate::web_guvenligi::cerez_adi_gecerli(ad) {
+            Ok(())
+        } else {
+            Err("çerez adı HTTP başlığı için güvenli değil".into())
+        }
+    }
+    fn rota_guvenligini_denetle(
+        &mut self,
+        erisim: &RotaErisimi,
+        csrf: Option<&str>,
+        csrf_gerekli: bool,
+    ) -> Result<(), WebReddi> {
+        self.ic.rota_guvenligini_denetle(erisim, csrf, csrf_gerekli)
+    }
+    fn csrf_belirteci(&mut self) -> Result<String, String> {
+        self.ic.csrf_belirteci()
+    }
+    fn oturum_ac(&mut self, kullanici: &str, rol: &str) -> Result<(), String> {
+        self.ic.oturum_ac(kullanici, rol)
+    }
+    fn oturum_kapat(&mut self) -> Result<(), String> {
+        self.ic.oturum_kapat()
+    }
+    fn parola_dogrula(&mut self, parola: &str, ozet: &str) -> bool {
+        self.ic.parola_dogrula(parola, ozet)
+    }
     fn eylem_baslat(&mut self) -> Result<(), String> {
         self.ic.eylem_baslat()
     }
@@ -431,6 +498,8 @@ pub struct ToplayanIo {
     pub istekler: VecDeque<String>,
     /// Sunucunun Set-Cookie ile yazdığı çerezler (K-052 testleri için).
     pub yazilan_cerezler: Vec<(String, String)>,
+    /// K-088 güvenli çerez niteliklerinin hermetik kanıtı.
+    pub guvenli_cerezler: Vec<GuvenliCerezKaydi>,
     pub sunucu_yanitlari: Vec<(String, String)>,
     /// Her sahte HTTP yanıtının durum kodu; istek alındığında 200 ile başlar.
     pub sunucu_durumlari: Vec<u16>,
@@ -440,6 +509,19 @@ pub struct ToplayanIo {
     an_son_degeri: i64,
     pub cikti: Vec<String>,
     eylem_yedekleri: Vec<HashMap<String, String>>,
+    web_guvenligi: WebGuvenligi,
+    guvenli_belirtec_sirasi: u64,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct GuvenliCerezKaydi {
+    pub ad: String,
+    pub deger: String,
+    pub secure: bool,
+    pub http_only: bool,
+    pub same_site: &'static str,
+    pub yol: &'static str,
+    pub azami_omur_saniye: i64,
 }
 
 impl ToplayanIo {
@@ -453,6 +535,7 @@ impl ToplayanIo {
             http_yanitlari: HashMap::new(),
             istekler: VecDeque::new(),
             yazilan_cerezler: Vec::new(),
+            guvenli_cerezler: Vec::new(),
             sunucu_yanitlari: Vec::new(),
             sunucu_durumlari: Vec::new(),
             sensorler: HashMap::new(),
@@ -460,7 +543,24 @@ impl ToplayanIo {
             an_son_degeri: 0,
             cikti: Vec::new(),
             eylem_yedekleri: Vec::new(),
+            web_guvenligi: WebGuvenligi::yeni(),
+            guvenli_belirtec_sirasi: 0,
         }
+    }
+
+    fn oturum_cerezini_yaz(&mut self, yeni: YeniOturum) {
+        let ad = "__Host-zee-oturum".to_string();
+        self.yazilan_cerezler
+            .push((ad.clone(), yeni.belirtec.clone()));
+        self.guvenli_cerezler.push(GuvenliCerezKaydi {
+            ad,
+            deger: yeni.belirtec,
+            secure: true,
+            http_only: true,
+            same_site: "Lax",
+            yol: "/",
+            azami_omur_saniye: yeni.azami_omur_saniye,
+        });
     }
 }
 
@@ -512,6 +612,13 @@ impl GirdiCikti for ToplayanIo {
     fn istek_al(&mut self) -> Option<String> {
         let ham = self.istekler.pop_front()?;
         let (_, yol, _) = istek_parcala(&ham);
+        let (_, _, _, cerezler) = istek_parcala_cerezli(&ham);
+        let belirtec = cerezler
+            .iter()
+            .find(|(ad, _)| ad == "__Host-zee-oturum" || ad == "zee-oturum")
+            .map(|(_, deger)| deger.as_str());
+        self.web_guvenligi
+            .istegi_baslat(belirtec, self.an_son_degeri);
         self.sunucu_yanitlari.push((yol, String::new()));
         self.sunucu_durumlari.push(200);
         Some(ham)
@@ -527,16 +634,87 @@ impl GirdiCikti for ToplayanIo {
         }
         self.yanit_gonder(yanit);
     }
-    fn yonlendir_gonder(&mut self, adres: &str) {
+    fn yonlendir_gonder(&mut self, adres: &str) -> Result<(), String> {
+        if !crate::web_guvenligi::yerel_yonlendirme_gecerli(adres) {
+            return Err("yönlendirme yalnız yerel `/...` adresine yapılabilir".into());
+        }
         if let Some((_, bos)) = self.sunucu_yanitlari.last_mut() {
             *bos = format!("→ {}", adres);
         }
+        Ok(())
     }
-    fn cerez_yaz(&mut self, ad: &str, deger: &str) {
-        self.yazilan_cerezler.push((ad.to_string(), deger.to_string()));
+    fn cerez_yaz(&mut self, ad: &str, deger: &str) -> Result<(), String> {
+        if !crate::web_guvenligi::cerez_adi_gecerli(ad)
+            || !crate::web_guvenligi::cerez_degeri_gecerli(deger)
+        {
+            return Err("çerez adı/değeri HTTP başlığı için güvenli değil".into());
+        }
+        self.yazilan_cerezler
+            .push((ad.to_string(), deger.to_string()));
+        Ok(())
     }
-    fn cerez_sil(&mut self, ad: &str) {
-        self.yazilan_cerezler.push((ad.to_string(), "×silindi".to_string()));
+    fn cerez_sil(&mut self, ad: &str) -> Result<(), String> {
+        if !crate::web_guvenligi::cerez_adi_gecerli(ad) {
+            return Err("çerez adı HTTP başlığı için güvenli değil".into());
+        }
+        self.yazilan_cerezler
+            .push((ad.to_string(), "×silindi".to_string()));
+        Ok(())
+    }
+    fn rota_guvenligini_denetle(
+        &mut self,
+        erisim: &RotaErisimi,
+        csrf: Option<&str>,
+        csrf_gerekli: bool,
+    ) -> Result<(), WebReddi> {
+        self.web_guvenligi
+            .denetle(erisim, csrf, csrf_gerekli, self.an_son_degeri)
+    }
+    fn csrf_belirteci(&mut self) -> Result<String, String> {
+        let mut sira = self.guvenli_belirtec_sirasi;
+        let (csrf, yeni) = self.web_guvenligi.csrf_belirteci(self.an_son_degeri, || {
+            sira = sira.saturating_add(1);
+            Ok(format!("{:064x}", sira))
+        })?;
+        self.guvenli_belirtec_sirasi = sira;
+        if let Some(yeni) = yeni {
+            self.oturum_cerezini_yaz(yeni);
+        }
+        Ok(csrf)
+    }
+    fn oturum_ac(&mut self, kullanici: &str, rol: &str) -> Result<(), String> {
+        let mut sira = self.guvenli_belirtec_sirasi;
+        let yeni = self.web_guvenligi.oturum_ac(
+            kullanici.to_string(),
+            rol.to_string(),
+            self.an_son_degeri,
+            || {
+                sira = sira.saturating_add(1);
+                Ok(format!("{:064x}", sira))
+            },
+        )?;
+        self.guvenli_belirtec_sirasi = sira;
+        self.oturum_cerezini_yaz(yeni);
+        Ok(())
+    }
+    fn oturum_kapat(&mut self) -> Result<(), String> {
+        self.web_guvenligi.oturum_kapat();
+        let ad = "__Host-zee-oturum".to_string();
+        self.yazilan_cerezler
+            .push((ad.clone(), "×silindi".to_string()));
+        self.guvenli_cerezler.push(GuvenliCerezKaydi {
+            ad,
+            deger: String::new(),
+            secure: true,
+            http_only: true,
+            same_site: "Lax",
+            yol: "/",
+            azami_omur_saniye: 0,
+        });
+        Ok(())
+    }
+    fn parola_dogrula(&mut self, parola: &str, ozet: &str) -> bool {
+        crate::guvenlik::parola_dogrula(parola, ozet)
     }
     fn eylem_baslat(&mut self) -> Result<(), String> {
         self.eylem_yedekleri.push(self.dosyalar.clone());
@@ -804,7 +982,11 @@ pub fn calistir_io_kodla(program: &Program, io: &mut dyn GirdiCikti) -> Result<i
             }
             let (gelen_yontem, yol, veriler, cerezler) = istek_parcala_cerezli(&ham);
             let istek_sozlugu = Deger::Sozluk(
-                veriler.into_iter().map(|(a, d)| (a, Deger::Metin(d))).collect(),
+                veriler
+                    .iter()
+                    .cloned()
+                    .map(|(a, d)| (a, Deger::Metin(d)))
+                    .collect(),
             );
             let cerez_sozlugu = Deger::Sozluk(
                 cerezler.into_iter().map(|(a, d)| (a, Deger::Metin(d))).collect(),
@@ -829,6 +1011,42 @@ pub fn calistir_io_kodla(program: &Program, io: &mut dyn GirdiCikti) -> Result<i
                     }
                     let beklenen = yontem.unwrap_or(HttpYontemi::Get).yazimi();
                     if uydu && beklenen == gelen_yontem {
+                        let erisim = match govde.first() {
+                            Some(Cumle::RotaPolitikasi { erisim, .. }) => erisim.clone(),
+                            _ => RotaErisimi::HerkeseAcik,
+                        };
+                        let csrf = veriler
+                            .iter()
+                            .find(|(ad, _)| ad == "_csrf")
+                            .map(|(_, deger)| deger.as_str());
+                        if let Err(red) = io.rota_guvenligini_denetle(
+                            &erisim,
+                            csrf,
+                            !yontem.unwrap_or(HttpYontemi::Get).guvenli(),
+                        ) {
+                            io.durum_yaniti_gonder(red.durum, red.mesaj);
+                            eslesti = true;
+                            break;
+                        }
+                        let eksik_alan = govde.iter().find_map(|cumle| match cumle {
+                            Cumle::RotaAlaniGerekli { ad, .. }
+                                if !veriler.iter().any(|(gelen, deger)| {
+                                    gelen == ad && !deger.trim().is_empty()
+                                }) =>
+                            {
+                                Some(ad.as_str())
+                            }
+                            Cumle::RotaPolitikasi { .. } | Cumle::RotaAlaniGerekli { .. } => None,
+                            _ => None,
+                        });
+                        if let Some(ad) = eksik_alan {
+                            io.durum_yaniti_gonder(
+                                400,
+                                &format!("zorunlu istek alanı eksik ya da boş: {}", ad),
+                            );
+                            eslesti = true;
+                            break;
+                        }
                         bos_ortam.insert("istek".into(), istek_sozlugu.clone());
                         bos_ortam.insert("çerezler".into(), cerez_sozlugu.clone());
                         // Her istek K-085'in işbirlikli iptal çekirdeğinde 30 saniyelik
@@ -1196,16 +1414,60 @@ fn blok_calistir(
             }
             Cumle::Yonlendir { adres, satir } => {
                 let hedef = degerlendir(adres, ortam, program, cikti, derinlik, *satir)?.metne();
-                cikti.yonlendir_gonder(&hedef);
+                cikti.yonlendir_gonder(&hedef).map_err(|hata| {
+                    Tani::yeni(
+                        "C022",
+                        format!("Yönlendirme reddedildi: {}.", hata),
+                        *satir,
+                        1,
+                        1,
+                    )
+                })?;
             }
             Cumle::CerezSil { ad, satir } => {
                 let ad = degerlendir(ad, ortam, program, cikti, derinlik, *satir)?.metne();
-                cikti.cerez_sil(&ad);
+                cikti.cerez_sil(&ad).map_err(|hata| {
+                    Tani::yeni("C022", format!("Çerez silinemedi: {}.", hata), *satir, 1, 1)
+                })?;
             }
             Cumle::CerezYaz { ad, deger, satir } => {
                 let ad = degerlendir(ad, ortam, program, cikti, derinlik, *satir)?.metne();
                 let deger = degerlendir(deger, ortam, program, cikti, derinlik, *satir)?.metne();
-                cikti.cerez_yaz(&ad, &deger);
+                cikti.cerez_yaz(&ad, &deger).map_err(|hata| {
+                    Tani::yeni("C022", format!("Çerez yazılamadı: {}.", hata), *satir, 1, 1)
+                })?;
+            }
+            Cumle::RotaPolitikasi { .. } | Cumle::RotaAlaniGerekli { .. } => {
+                // Rota döngüsü gövde çalışmadan önce uygular.
+            }
+            Cumle::OturumAc {
+                kullanici,
+                rol,
+                satir,
+            } => {
+                let kullanici =
+                    degerlendir(kullanici, ortam, program, cikti, derinlik, *satir)?.metne();
+                let rol = degerlendir(rol, ortam, program, cikti, derinlik, *satir)?.metne();
+                cikti.oturum_ac(&kullanici, &rol).map_err(|hata| {
+                    Tani::yeni(
+                        "C022",
+                        format!("Güvenli oturum açılamadı: {}.", hata),
+                        *satir,
+                        1,
+                        1,
+                    )
+                })?;
+            }
+            Cumle::OturumKapat { satir } => {
+                cikti.oturum_kapat().map_err(|hata| {
+                    Tani::yeni(
+                        "C022",
+                        format!("Güvenli oturum kapatılamadı: {}.", hata),
+                        *satir,
+                        1,
+                        1,
+                    )
+                })?;
             }
             Cumle::Eszamanli { gorevler, satir } => {
                 // v0 yürütmesi sıralıdır (RFC-0011 §4: tek iş parçacıklı model);
@@ -1645,6 +1907,20 @@ fn degerlendir(
             ondalik_yap(*govde as i128, *olcek, satir)
         }
         Ifade::MantiksalSabiti(b) => Ok(Deger::Mantiksal(*b)),
+        Ifade::CsrfBelirteci => io.csrf_belirteci().map(Deger::Metin).map_err(|hata| {
+            Tani::yeni(
+                "C022",
+                format!("CSRF belirteci üretilemedi: {}.", hata),
+                satir,
+                1,
+                1,
+            )
+        }),
+        Ifade::ParolaDogrula { parola, ozet } => {
+            let parola = degerlendir(parola, ortam, program, io, derinlik, satir)?.metne();
+            let ozet = degerlendir(ozet, ortam, program, io, derinlik, satir)?.metne();
+            Ok(Deger::Mantiksal(io.parola_dogrula(&parola, &ozet)))
+        }
         Ifade::BosListe => Ok(Deger::Liste(Vec::new())),
         Ifade::ListeSabiti(ogeler) => {
             let mut degerler = Vec::new();

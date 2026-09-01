@@ -62,6 +62,8 @@ fn completion_kalip_kelimeleri() {
     assert!(yanit.contains("\"id\":7"));
     assert!(yanit.contains("\"label\":\"olsun\""));
     assert!(yanit.contains("\"label\":\"değilse\""));
+    assert!(yanit.contains("\"label\":\"doğrulanıyorsa\""));
+    assert!(yanit.contains("\"label\":\"yetkisi\""));
 }
 
 #[test]

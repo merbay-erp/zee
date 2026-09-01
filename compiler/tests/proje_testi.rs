@@ -150,6 +150,53 @@ fn gercek_web_sunucusu_acik_opt_in_ister() {
         "Sunucu dinliyor: http://127.0.0.1:0\nyalnız-programa\n",
         "opt-in bayrağı program argümanlarına sızmamalı"
     );
+
+    let guvenli_web = Command::new(ikili)
+        .args([
+            "çalıştır",
+            "--web-proxy",
+            "https://panel.example",
+            kaynak.to_str().expect("utf8"),
+            "yalnız-programa",
+        ])
+        .output()
+        .expect("güvenli web profili");
+    assert!(guvenli_web.status.success());
+    assert!(String::from_utf8_lossy(&guvenli_web.stderr)
+        .contains("yalnız 127.0.0.1 üzerindeki HTTPS reverse proxy"));
+    assert_eq!(
+        String::from_utf8_lossy(&guvenli_web.stdout),
+        "Sunucu dinliyor: https://panel.example (yerel proxy hedefi http://127.0.0.1:0)\nyalnız-programa\n"
+    );
+}
+
+#[test]
+fn parola_ozeti_komutu_argon2id_phc_uretir() {
+    use std::io::Write;
+    use std::process::Stdio;
+
+    let mut cocuk = Command::new(env!("CARGO_BIN_EXE_dil"))
+        .args(["parola-özeti", "--stdin"])
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .spawn()
+        .expect("parola özeti süreci");
+    cocuk
+        .stdin
+        .take()
+        .expect("stdin")
+        .write_all(b"uzun deneme parolasi\n")
+        .expect("parola yazılmalı");
+    let cikti = cocuk.wait_with_output().expect("süreç sonucu");
+    assert!(cikti.status.success());
+    let ozet = String::from_utf8(cikti.stdout).expect("utf8");
+    let ozet = ozet.trim();
+    assert!(ozet.starts_with("$argon2id$v=19$"));
+    assert!(dil::guvenlik::parola_dogrula(
+        "uzun deneme parolasi",
+        ozet
+    ));
+    assert!(!dil::guvenlik::parola_dogrula("yanlis", ozet));
 }
 
 #[test]

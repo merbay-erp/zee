@@ -947,14 +947,36 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   replace kullanır.
 - **Sınır:** Bu, yorumlayıcı-hatasında çok-dosyalı geri alma sözüdür; süreç
   çökmesinde bütün dosyaların tek kalıcı commit'i değildir. Kimlik/yetki,
-  CSRF, idempotency, güvenli çerez ve TLS/proxy K-088/V1-P0-03'tedir; gerçek
-  TCP `--deneysel-web` sınırını korur.
+  CSRF, güvenli çerez ve TLS/proxy K-088/spec-12'de tamamlandı; idempotency
+  ayrı açık kapıdır.
 - **Kanıt:** CLI+web ortak eylem, doğrudan/dolaylı GET olumsuzları, POST→eylem
   zorunluluğu, 404/405/413, çalışma hatasında iki dosya rollback'i ve başarısız
   iç savepoint, geri alınamayan etki ve araya giren yazarı ezmeme olumsuzları.
   Gerçek CLI da eski dosyayı geri yükleyip yarım oluşturulanı kaldırır. 134
   katalog kodu, 304 test;
   V1-P0-02 kapandı.
+
+## K-088 — Güvenlik uygulama disiplinine değil, dil/runtime kapısına aittir
+
+- **Rota önsözü:** POST/PUT/PATCH/DELETE ilk satırda `herkese açık`,
+  `oturum gerekli` ya da `"rol" yetkisi gerekli` yazar. Public olmak CSRF'yi
+  kapatmaz. Hemen ardındaki `"alan" alanı gerekli` cümleleri gövde çalışmadan
+  400 üretir; politikasız/dağınık önsöz T049/T050'dir.
+- **Kimlik:** Parola yalnız Argon2id PHC ile doğrulanır. 256 bit session ve
+  ayrı CSRF işletim sistemi CSPRNG'sinden gelir; depoda session'ın yalnız
+  SHA-256 özeti bulunur. Giriş anonim/eski kaydı silip ikisini de döndürür;
+  logout/süre dolumu iptal eder. Rol istemciden değil sunucu kaydından gelir.
+- **Tarayıcı:** `csrf belirteci` 10 dakikalık anonim form oturumu açabilir;
+  unsafe yöntem `_csrf` olmadan 403'tür. Production çerezi `__Host-`, Secure,
+  HttpOnly, SameSite=Lax, Path=/ ve sınırlı Max-Age taşır.
+- **TLS sınırı:** Runtime sertifika yönetmez; `--web-proxy https://host`
+  kipinde yalnız 127.0.0.1 dinler, Host/X-Forwarded-Proto ve unsafe Origin'i
+  birebir doğrular. Güvenlik başlıkları ve başlık/gövde-smuggling limitleri
+  adaptörde uygulanır.
+- **Kanıt:** CSPRNG/Argon2id, rotation/revoke/expiry/rol, eksik-sahte-geçerli
+  CSRF, 400/401/403, çerez nitelikleri, CRLF, çift Host ve yanlış proto/Origin
+  olumsuzları. `girisli-panel` elle yazılan token/düz paroladan bu profile taşındı.
+  RFC-0017 + spec/12; 321 test ve 138 katalog koduyla V1-P0-03 kapandı.
 
 ## K-012 — Liste sabiti: `3, 7, 1, 9 listesi`
 

@@ -1,11 +1,11 @@
 # RFC-0015 — Uygulama eylemleri ve web güvenlik sınırı
 
-- **Durum:** geçici kabul — K-087 çekirdeği gerçeklendi, K-088 güvenlik profili açık
+- **Durum:** geçici kabul — K-087 eylem sınırı ve K-088 güvenlik profili gerçeklendi
 - **Tarih:** 1 Eylül 2026
-- **İlgili kararlar:** ADR-010, K-081, K-087; v1 kapıları P0-02/P0-03/P0-04
+- **İlgili kararlar:** ADR-010, K-081, K-087, K-088, RFC-0017; v1 kapıları P0-02/P0-03/P0-04
 - **Gerçekleme:** açık imzalı eylem, yöntemli rota, geçişli etki denetimi,
-  istek limiti/son tarihi ve yerel dosya savepoint'i var; production oturum,
-  CSRF, idempotency ve TLS/proxy profili açık
+  istek limiti/son tarihi, yerel dosya savepoint'i, production oturum/CSRF ve
+  TLS/proxy profili var; idempotency ve dağıtık transaction açık
 
 ## Problem
 
@@ -79,29 +79,32 @@ ekran/girdi/donanım etkisi taşıyamaz. Ayrıntılı normatif sözleşme spec/1
    olmadığını söyler ve bütün durum değişiklikleri POST kontrolü taşır.
 2. **Protokol sınırı (K-087 çekirdeği):** yöntemli route, 64 KiB/100 alan
    sınırı, 30 saniye istek son tarihi, 404/405/413/504 ayrımı gerçeklendi.
-   Güvenli çerez ve kontrollü reverse-proxy güveni K-088'e kaldı.
+   Güvenli çerez ve kontrollü reverse-proxy güveni K-088/RFC-0017 ile kapandı.
 3. **Eylem (K-087):** tam tür sözleşmeli ve form/API/CLI/görev bağlamından
    bağımsız çağrı; HTTP etkisi derlemede yasak.
 4. **Durum (K-084/K-087):** tek-dosya atomik değiştirme ve süreç kilidinin
    üstünde, çalışma hatası/başarısız Sonuç için iç içe çok-dosyalı savepoint
    geri alması gerçeklendi. Süreç çökmesinde çok-dosyalı tek commit, veri
    tabanı/dağıtık transaction ve idempotency anahtarı açık.
-5. **Üretim profili:** TLS sonlandırma sözleşmesi, secret yönetimi, rate limit,
-   güvenlik başlıkları, gözlemlenebilirlik ve saldırı conformance paketi.
+5. **Üretim güvenlik profili (K-088):** Argon2id, CSPRNG sunucu oturumu,
+   rotation/revoke/ömür, rol, synchronizer CSRF, `__Host-` çerez, güvenlik
+   başlıkları ve loopback HTTPS reverse-proxy sözleşmesi gerçeklendi.
+   Secret dağıtımı, rate limit ve gözlemlenebilirlik deployment sorumluluğudur.
 
 ## Kabul kapıları
 
 - **K-087 kapalı:** GET/HEAD ile doğrudan veya dolaylı dosya/çerez/donanım
   durum değişimi derlemede reddedilir (T045).
-- **K-087 kapalı:** yanlış yöntem 405, fazla gövde/alan 413, bilinmeyen yol
-  404 ve son tarih 504'tür. Doğrulama 400, kimlik 401 ve yetki 403 eşlemesi
-  typed doğrulama/yetki modeliyle K-088'de tamamlanacaktır.
-- Yarım yazma K-087 olumsuzlarıyla kanıtlıdır. CSRF, session fixation, zayıf
-  token ve çift gönderim olumsuzları K-088 kabul paketinde tamamlanacaktır.
+- **K-087/K-088 kapalı:** yanlış yöntem 405, fazla gövde/alan 413,
+  bilinmeyen yol 404 ve son tarih 504'tür. Alan doğrulama 400, kimlik 401,
+  yetki/CSRF 403'tür.
+- Yarım yazma K-087 olumsuzlarıyla; CSRF, session fixation, zayıf token,
+  süre/iptal, başlık enjeksiyonu ve sahte proxy K-088 olumsuzlarıyla kanıtlıdır.
 - **K-087 kapalı:** eylemin aynı iş mantığı web ve CLI bağlamından çağrılır;
   çalışma hatası ve başarısız Sonuç savepoint'i geri alır.
 - Tek-dosya atomik durum V1-P0-04/K-084 ile kapandı; eylemin çok-kaynaklı
   transaction/idempotency kapısı bu RFC'de açık kalır.
 
-K-088 güvenlik kapıları tamamlanana kadar zee “TCP üzerinde eğitim/prototip
-web yüzeyi” sağlar; “production web framework” sözü vermez.
+K-088 ile tek süreçli uygulama için production oturum/CSRF/proxy profili
+vardır. Çok süreçli ortak oturum deposu, rate limit, secret dağıtımı ve
+idempotency ayrı deployment/RFC kapılarıdır; dil bunları varmış gibi göstermez.

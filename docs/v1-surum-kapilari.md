@@ -3,7 +3,7 @@
 Bu liste bir dilek listesi değildir: `1.0.0` etiketi bu kapılar kapatılmadan
 atılmaz. Amaç yeni özellik sayısını büyütmek değil, çocuktan profesyonele aynı
 dilin verdiği sözleri kanıtlamaktır. Bulgular 1 Eylül 2026'da derleyici
-kaynakları, spec, RFC'ler ve 304 test üzerinden yeniden doğrulanmıştır.
+kaynakları, spec, RFC'ler ve 321 test üzerinden yeniden doğrulanmıştır.
 
 Durumlar: **KAPALI** = kanıtı var · **AÇIK** = v1 engeli · **KARAR** = önce
 normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
@@ -14,7 +14,7 @@ normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
 |---|---|---|---|
 | V1-P0-01 İşlem imzası çağrı sırasından bağımsızdır | **KAPALI (K-083/K-086)** | Yerel başlangıç `<ad> al` çıkarımını korur. Birim/paket işlemlerinde bütün parametre türleri ve `<Tür> döndürür` / `değer döndürmez` zorunludur (T039); gövde dönüşü ve bütün yollar doğrulanır (T040–T042). | spec/10 v1'i bilinçli monomorfik kaynak ABI'si olarak tanımlar; kırıcı semver sınırları belirgindir. Çağrılmayan gövde, paket olumsuzu, liste genişlemesi, özyineleme ve iki çağrı sırası conformance testlidir. |
 | V1-P0-02 Web route ile uygulama eylemi ayrıdır | **KAPALI (K-087)** | Açık imzalı `eylem` HTTP etkisi taşıyamaz; aynı çağrı web/CLI/görev/test bağlamında kullanılabilir. GET/HEAD'in çağrı grafiğindeki dolaylı yazması T045, rota içi uygulama yazması T046'dır. Yöntemli rota 404/405, 64 KiB+100 alan 413 ve 30 saniye 504 üretir. Her eylem çalışma hatası/başarısız Sonuç için iç içe dosya savepoint'i taşır. | RFC-0015 geçici kabul + spec/11; doğrudan/dolaylı GET olumsuzları, POST→eylem zorunluluğu, CLI+web ortak eylem, 404/405/413 ve çok-dosyalı/nested rollback regresyonları. Süreç çökmesinde çok-dosyalı tek commit sözü verilmez; dosya başına K-084 geçerlidir. |
-| V1-P0-03 Oturum ve çerez üretim güvenliği | **AÇIK** | Gerçek IO çereze yalnız `HttpOnly` ekler; Secure/SameSite/ömür politikası yoktur. `girisli-panel` rastgele sayı + düz parola kullanan eğitim demosudur. | CSPRNG token, hash'li kimlik bilgisi, süre/rotation/revoke, güvenli çerez politikası, CSRF ve HTTPS/proxy sınırı; saldırı regresyonları. |
+| V1-P0-03 Oturum ve çerez üretim güvenliği | **KAPALI (K-088)** | Native runtime 256 bit OS CSPRNG oturum+CSRF üretir, oturum kimliğinin yalnız SHA-256 özetini sunucuda tutar; Argon2id PHC doğrular. Giriş kimlik+CSRF'yi döndürür, 30 dakika sınırlar; logout/süre dolumu iptal eder. Roller sunucudadır; unsafe rota açık politika ve otomatik synchronizer CSRF ister. Production çerezi `__Host-`, Secure, HttpOnly, SameSite=Lax, Path=/ ve Max-Age taşır. | RFC-0017 + spec/12; CSPRNG/Argon2id, rotation/revoke/expiry/rol, eksik-sahte-geçerli CSRF, 400/401/403, çerez nitelikleri, CRLF, Host/proto/Origin olumsuzları. `--web-proxy https://host` yalnız loopback HTTPS proxy zincirini kabul eder. |
 | V1-P0-04 Kalıcı durum atomik ve yarış güvenlidir | **KAPALI (K-084)** | Tek-dosya `yaz/ekle`, aynı klasörde temp+sync+atomik replace yapar; Unix/Windows işletim sistemi kilidi thread ve süreç yazarlarını sıralar. Okuyucu yalnız eski/yeni bütün sürümü görür. | RFC-0016 + spec/08; replace hata enjeksiyonu eski veriyi korur, iki thread ve iki bağımsız CLI süreci satır kaybetmez, Drop'suz ani süreç sonu kilidi bırakır. Çok-kaynaklı uygulama transaction'ı V1-P0-02/RFC-0015 sınırındadır. |
 | V1-P0-05 Deadline gerçekten iptal eder | **KAPALI (K-085)** | `IcindeBlogu` mutlak son tarihi sahipli Ç001 ile blok/işlem/döngü sınırlarına yayar. `bekle` kalan süreye kırpılır; HTTP aşamaları kalan tek bütçeyi alır. İç içe tarihlerde en erken sahip kazanır. | RFC-0011 + spec/09; geç ağ yanıtı çıktıya dönüşmez, uzun bekleme sonrası cümle çalışmaz, iç/dış `yetişmezse` sahipliği sanal saatle sabittir. Tek kesintisiz ifade/platform syscall sınırı normatif işbirlikli modeldir. |
 | V1-P0-06 Normatif otorite tek ve izlenebilirdir | **KAPALI (K-081)** | Spec/RFC drift'i doğrulandı. | ADR-010 belge rollerini ve atomik değişiklik sözleşmesini bağladı; RFC-0006/0011 güncel gerçek ve hedefi ayırdı. |
@@ -37,9 +37,9 @@ normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
    (K-082); son tarih iptali artık K-085 ile ayrı ve tanımlıdır.
 2. K-083/K-086 public işlem sözleşmesini kitaplık, paket ve gelecekteki eylem
    API'lerinin değişmez tabanı olarak koru.
-3. K-087 ile K-084 tek-dosya atomikliğinin üstüne, web'e özel olmayan uygulama
-   eylemi + yorumlayıcı-hatası savepoint modelini koru. Çok-dosyalı çökme
-   atomikliği verilmiş bir söz değildir.
+3. K-087 eylem sınırını ve K-088 oturum/CSRF/proxy profilini koru.
+   Çok-dosyalı çökme atomikliği ve çok süreçli ortak oturum deposu verilmiş
+   söz değildir.
 4. K-085 deadline çekirdeğinin üstüne gerçek scheduler ve yapılandırılmış hata
    değerini tamamla.
 5. Morfoloji, ondalık ve gezme kararlarını usability + property kanıtıyla

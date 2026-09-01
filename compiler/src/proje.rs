@@ -333,6 +333,10 @@ fn cumle_satiri(cumle: &Cumle) -> usize {
         | Cumle::CerezYaz { satir, .. }
         | Cumle::Sil { satir, .. }
         | Cumle::CerezSil { satir, .. }
+        | Cumle::RotaPolitikasi { satir, .. }
+        | Cumle::RotaAlaniGerekli { satir, .. }
+        | Cumle::OturumAc { satir, .. }
+        | Cumle::OturumKapat { satir, .. }
         | Cumle::Eszamanli { satir, .. }
         | Cumle::HepsiniBekle { satir, .. }
         | Cumle::IcindeBlogu { satir, .. }

@@ -448,10 +448,11 @@ eylem notu kaydet
     "notlar.txt" dosyasına notu ekle
 
 POST "/kaydet" adresine istek geldiğinde
-    istekte "not" varsa
-        yeni isteğin "not" değeri olsun
-        yeni ile notu kaydet
-        "/" adresine yönlendir
+    "yönetici" yetkisi gerekli
+    "not" alanı gerekli
+    yeni isteğin "not" değeri olsun
+    yeni ile notu kaydet
+    "/" adresine yönlendir
 
 # listede: satırın html güvenlisi  ← kullanıcı verisi kaçışlanır
 ```
@@ -459,25 +460,34 @@ POST "/kaydet" adresine istek geldiğinde
 Her eylem çalışma hatasında ya da başarısız `Sonuç` dönüşünde dosya
 savepoint'ini geri alır. Süreç çökmesinde çok-dosyalı tek commit sözü yoktur;
 dosya başına K-084 atomikliği geçerlidir. Ayrıntı:
-[spec/11](../spec/11-uygulama-eylemleri-ve-web-adaptoru.md).
+[spec/11](../spec/11-uygulama-eylemleri-ve-web-adaptoru.md) ve
+[spec/12](../spec/12-web-guvenlik-profili.md).
 
 Önekli rota (K-055/K-087): `GET "/yazi/" önekli adrese istek geldiğinde` — kimliği
 metinden çıkar: `kimlik yolun "/yazi/" yerine "" değişmişi olsun`.
 
-Oturum için çerez kapısı (K-052): `çerezler` sözlüğü + `çerezine yaz`:
+Güvenli oturum profili (K-088): form GET'i sunucu oturumuna bağlı CSRF
+belirteci üretir; giriş Argon2id doğrular ve oturum kimliğini döndürür:
 
 ```
-çerezlerde "oturum" varsa
-    kimlik çerezlerin "oturum" değeri olsun
-    ...
-"oturum" çerezine kimlik yaz
-"oturum" çerezini sil            # çıkışta (Max-Age=0, K-073)
+GET "/giris" adresine istek geldiğinde
+    csrf csrf belirteci olsun
+
+POST "/giris-yap" adresine istek geldiğinde
+    herkese açık
+    "parola" alanı gerekli
+    verilen parola_özeti ile doğrulanıyorsa
+        "Zeynep" kullanıcısını "yönetici" rolüyle oturuma al
+
+POST "/cikis" adresine istek geldiğinde
+    oturum gerekli
+    oturumu kapat
 ```
 
-Çalışan eğitim örnekleri: projeler/panel-not-defteri.dil (temel) ve
-projeler/girisli-panel.dil (parola + oturum akışı). İkisi de açıkça deneysel
-localhost demosudur; kimlik/yetki/CSRF, güvenli oturum-çerez ve TLS/proxy
-profili tamamlanmadan production örneği sayılmaz (RFC-0015, K-082/K-088).
+Unsafe yöntemlerde `_csrf` otomatik zorunludur. Production kipinde
+`dil çalıştır --web-proxy https://panel.example ...` kullanılır; runtime
+yalnız loopback'teki HTTPS proxy'ye güvenir. `girisli-panel.dil` tam akışı,
+`panel-not-defteri.dil` ise kimliksiz ama CSRF korumalı temel formu gösterir.
 
 ## 19. Fiziksel dünya (ESP32)
 

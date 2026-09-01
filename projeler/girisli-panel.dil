@@ -1,8 +1,10 @@
-# Girişli Panel — parola + oturum akışını öğreten DENEYSEL localhost demosu.
-# Öğretilen: çerez okuma/yazma, oturumu DOSYADA saklama, korumalı rotalar.
-# Oturum mantığının tamamı zee ile yazılmıştır — dil yalnız çerez kapısını verir.
-# Production için uygun DEĞİLDİR: düz parola, küçük token, CSRF/HTTPS yoktur.
+# Girişli Panel — K-088 güvenli web profilinin uçtan uca örneği.
+# Öğretilen: Argon2id parola doğrulama, sunucu tarafı oturum, rol,
+# session rotation, CSRF ve oturum kapatma. Oturum kimliğini dilin güvenlik
+# adaptörü üretir ve yalnız özetini bellekte tutar.
 # Çalıştır: dil çalıştır --deneysel-web girisli-panel.dil
+# Üretim: HTTPS reverse proxy arkasında
+# dil çalıştır --web-proxy https://panel.example girisli-panel.dil
 # Parola: zee2026 (yalnız demo). Adres → http://127.0.0.1:8092
 
 deneme "notlar.txt" dosyasını okumayı dene olsun
@@ -15,27 +17,6 @@ işlem sayfayı giydir
     stil "<style>body{font-family:Georgia,serif;max-width:640px;margin:40px auto;padding:0 16px;color:#1c1c28;background:#fbfaf7}h1{color:#b0413e}a{color:#2e6e4e}li{margin:6px 0}input{font:inherit;padding:8px}button{font:inherit;padding:8px 18px}</style>" olsun
     sayfa "<!doctype html><html lang=tr><meta charset=utf-8>" ile stil ile gövde olsun
     sayfayı döndür
-
-işlem oturumu geçerli mi
-    anahtarı al
-
-    anahtar boşsa
-        yanlış döndür
-    sonuç "oturumlar.txt" dosyasını okumayı dene olsun
-    sonuç başarısızsa
-        yanlış döndür
-    değilse
-        kayıtlar sonucun değeri olsun
-        kayıtlar anahtar içeriyorsa
-            doğru döndür
-    yanlış döndür
-
-eylem oturumu aç
-    Metin döndürür
-    rastgele_sayı 100000 ile 999999 arasında rastgele sayı olsun
-    kimlik "" ile rastgele_sayı olsun
-    "oturumlar.txt" dosyasına kimlik ekle
-    kimliği döndür
 
 eylem notu kaydet
     notu Metin olarak al
@@ -66,72 +47,52 @@ GET "/" adresine istek geldiğinde
     sayfa yanıtını gönder
 
 GET "/giris" adresine istek geldiğinde
-    form "<h1>Giriş</h1><form method=post action=/giris-yap><input type=password name=parola placeholder=parola autofocus> <button>Gir</button></form>" olsun
+    csrf csrf belirteci olsun
+    form "<h1>Giriş</h1><form method=post action=/giris-yap><input type=hidden name=_csrf value=\"" ile csrf ile "\"><input type=password name=parola placeholder=parola autofocus> <button>Gir</button></form>" olsun
     sayfa form için sayfayı giydir olsun
     sayfa yanıtını gönder
 
 POST "/giris-yap" adresine istek geldiğinde
-    istekte "parola" varsa
-        verilen isteğin "parola" değeri olsun
-        verilen "zee2026" ya eşitse
-            kimlik oturumu aç olsun
-            "oturum" çerezine kimlik yaz
-            "/yonet" adresine yönlendir
-        değilse
-            "/giris" adresine yönlendir
+    herkese açık
+    "parola" alanı gerekli
+    verilen isteğin "parola" değeri olsun
+    verilen "$argon2id$v=19$m=19456,t=2,p=1$1y0i/VrrCbkUGDBIa2N56Q$kilaFFkxE4PKYcBivmYbSvrDT+5bejUsQwQp1zULvxM" ile doğrulanıyorsa
+        "Mustafa" kullanıcısını "yönetici" rolüyle oturuma al
+        "/yonet" adresine yönlendir
     değilse
         "/giris" adresine yönlendir
 
 GET "/yonet" adresine istek geldiğinde
-    izinli yanlış olsun
-    çerezlerde "oturum" varsa
-        kimlik çerezlerin "oturum" değeri olsun
-        izinli kimlik için oturumu geçerli mi olsun
+    "yönetici" yetkisi gerekli
+    csrf csrf belirteci olsun
+    liste "" olsun
+    satırlar "notlar.txt" dosyasının satırları olsun
+    her satır için
+        güvenli satırın html güvenlisi olsun
+        liste liste ile "<li>" ile güvenli ile " <form method=post action=/sil style=\"display:inline\"><input type=hidden name=_csrf value=\"" ile csrf ile "\"><input type=hidden name=not value=\"" ile güvenli ile "\"><button>[sil]</button></form></li>" olsun
 
-    izinli ise
-        liste "" olsun
-        satırlar "notlar.txt" dosyasının satırları olsun
-        her satır için
-            güvenli satırın html güvenlisi olsun
-            liste liste ile "<li>" ile güvenli ile " <form method=post action=/sil style=\"display:inline\"><input type=hidden name=not value=\"" ile güvenli ile "\"><button>[sil]</button></form></li>" olsun
-
-        form "<h1>Yeni not</h1><form method=post action=/kaydet><input name=not placeholder=notunu-yaz autofocus> <button>Kaydet</button></form><ul>" ile liste ile "</ul><p><a href=/>listeye dön</a></p><form method=post action=/cikis><button>çıkış</button></form>" olsun
-        sayfa form için sayfayı giydir olsun
-        sayfa yanıtını gönder
-    izinli değilse
-        "/giris" adresine yönlendir
+    form "<h1>Yeni not</h1><form method=post action=/kaydet><input type=hidden name=_csrf value=\"" ile csrf ile "\"><input name=not placeholder=notunu-yaz autofocus> <button>Kaydet</button></form><ul>" ile liste ile "</ul><p><a href=/>listeye dön</a></p><form method=post action=/cikis><input type=hidden name=_csrf value=\"" ile csrf ile "\"><button>çıkış</button></form>" olsun
+    sayfa form için sayfayı giydir olsun
+    sayfa yanıtını gönder
 
 POST "/kaydet" adresine istek geldiğinde
-    izinli yanlış olsun
-    çerezlerde "oturum" varsa
-        kimlik çerezlerin "oturum" değeri olsun
-        izinli kimlik için oturumu geçerli mi olsun
-
-    izinli ise
-        istekte "not" varsa
-            yeni isteğin "not" değeri olsun
-            yeni boşsa
-                "/yonet" adresine yönlendir
-            değilse
-                yeni ile notu kaydet
-                "/" adresine yönlendir
-    izinli değilse
-        "/giris" adresine yönlendir
+    "yönetici" yetkisi gerekli
+    "not" alanı gerekli
+    yeni isteğin "not" değeri olsun
+    yeni boşsa
+        "/yonet" adresine yönlendir
+    değilse
+        yeni ile notu kaydet
+        "/" adresine yönlendir
 
 POST "/sil" adresine istek geldiğinde
-    izinli yanlış olsun
-    çerezlerde "oturum" varsa
-        kimlik çerezlerin "oturum" değeri olsun
-        izinli kimlik için oturumu geçerli mi olsun
-
-    izinli ise
-        istekte "not" varsa
-            hedef isteğin "not" değeri olsun
-            hedef ile notu kaldır
-        "/yonet" adresine yönlendir
-    izinli değilse
-        "/giris" adresine yönlendir
+    "yönetici" yetkisi gerekli
+    "not" alanı gerekli
+    hedef isteğin "not" değeri olsun
+    hedef ile notu kaldır
+    "/yonet" adresine yönlendir
 
 POST "/cikis" adresine istek geldiğinde
-    "oturum" çerezini sil
+    oturum gerekli
+    oturumu kapat
     "/" adresine yönlendir

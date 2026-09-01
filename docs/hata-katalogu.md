@@ -55,6 +55,7 @@ türetilmiştir; yeni kod eklenince bu dosya güncellenir — CI'a bağlanması 
 | S037 | Yanıt gönderme biçimi | `"çalışıyor" yanıtını gönder` |
 | S038 | Eşzamanlı blok biçimi | `eşzamanlı olarak` + girintide `<ad> <ifade>` görev satırları |
 | S039 | Işık komutu biçimi | `kırmızı ışığı yak` / `mavi ışığı söndür` |
+| S043 | Web güvenlik cümlesi biçimi | Rota önsözünü, oturum açmayı veya kapatmayı tanıda gösterilen tam kalıpla yaz |
 
 ## A — Ad çözümleme
 
@@ -123,6 +124,8 @@ türetilmiştir; yeni kod eklenince bu dosya güncellenir — CI'a bağlanması 
 | T046 | Rota uygulama durumunu doğrudan ya da yazıcı işlemle değiştiriyor | Yazmayı açık imzalı bir eylem içine taşı |
 | T047 | Aynı yöntem ve yol birden çok rotaya bağlı | Her yöntem+yol çiftini yalnız bir kez tanımla |
 | T048 | Eylem geri alınamayan ekran/girdi/donanım etkisi taşıyor | Bu etkiyi çağıran adaptöre taşı; eylemde transaction destekli kaynakları kullan |
+| T049 | Durum değiştiren rota açık erişim politikası taşımıyor | İlk satıra `herkese açık`, `oturum gerekli` ya da `"rol" yetkisi gerekli` yaz |
+| T050 | Rota güvenlik önsözü yanlış yerde veya yinelenmiş | Tek erişim politikasını ilk satıra, zorunlu alanları hemen arkasına koy |
 
 ## C — Çalışma zamanı
 
@@ -149,6 +152,7 @@ türetilmiştir; yeni kod eklenince bu dosya güncellenir — CI'a bağlanması 
 | C019 | Çağrı derinliği 500'ü aştı | Özyinelemeli adım her seferinde temel duruma yaklaşmalı |
 | C020 | Çıkış kodu 0–255 dışında | `programı 0 ile bitir` … `programı 255 ile bitir` (K-069) |
 | C021 | Eylem transaction'ı başlatılamadı, tamamlanamadı ya da geri alınamadı | Kalıcı kaynağın yol/izin durumunu denetle; yarım başarı ayrıntısını kaybetmeden raporla |
+| C022 | Web güvenlik adaptörü işlemi reddetti | Güvenli oturum/CSRF desteğini ve başlığa yazılan çerez ya da yerel yönlendirme değerini denetle |
 
 ## D — Doğrulama
 

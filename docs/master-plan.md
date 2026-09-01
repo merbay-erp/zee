@@ -87,7 +87,9 @@ GET "/durum" adresine istek geldiğinde
 Stage 0'da gerçek soket yalnız `dil çalıştır --deneysel-web ...` açık izniyle
 localhost eğitim/prototipi için kurulur (K-082). K-087 yöntemli rota, uygulama
 eylemi, etki denetimi ve yerel transaction/savepoint sözleşmesini kapattı.
-Production oturum/çerez/CSRF/TLS sınırı K-088/V1-P0-03 kapısıdır.
+K-088 production oturum/çerez/CSRF ve loopback HTTPS reverse-proxy profilini
+kapattı (RFC-0017, spec/12). Çok süreçli ortak oturum deposu, rate limit,
+secret dağıtımı ve idempotency ayrı deployment/RFC kapılarıdır.
 # 7. Temel dil yüzeyi
 Değer tanımı: “isim Ayşe olsun”.
 Fonksiyon: “işlem”.

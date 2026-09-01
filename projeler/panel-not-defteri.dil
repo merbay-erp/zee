@@ -2,7 +2,8 @@
 # Öğretilen: form verisi (örtük "istek" sözlüğü), kaydet-sonrası yönlendirme,
 # html güvenlisi (K-051), dosyada saklama. Yönetim gizli yoldadır:
 # /yonet-gizli123 — anahtarı değiştirmeyi unutma!
-# Production için uygun DEĞİLDİR: kimlik/yetki/CSRF henüz yoktur.
+# CSRF koruması vardır; gizli yol kimlik doğrulama sayılmadığı için bu
+# örnek yine yalnız localhost eğitim/prototipi olarak kullanılır.
 # Çalıştır: dil çalıştır --deneysel-web panel-not-defteri.dil
 # Adres → http://127.0.0.1:8091
 
@@ -35,11 +36,14 @@ GET "/" adresine istek geldiğinde
     sayfa yanıtını gönder
 
 GET "/yonet-gizli123" adresine istek geldiğinde
-    form "<h1>Yeni not</h1><form method=post action=/kaydet-gizli123><input name=not placeholder=notunu-yaz autofocus> <button>Kaydet</button></form><p><a href=/>listeye dön</a></p>" olsun
+    csrf csrf belirteci olsun
+    form "<h1>Yeni not</h1><form method=post action=/kaydet-gizli123><input type=hidden name=_csrf value=\"" ile csrf ile "\"><input name=not placeholder=notunu-yaz autofocus> <button>Kaydet</button></form><p><a href=/>listeye dön</a></p>" olsun
     sayfa form için sayfayı giydir olsun
     sayfa yanıtını gönder
 
 POST "/kaydet-gizli123" adresine istek geldiğinde
+    herkese açık
+    "not" alanı gerekli
     istekte "not" varsa
         yeni isteğin "not" değeri olsun
         yeni boşsa
