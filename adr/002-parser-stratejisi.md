@@ -5,6 +5,8 @@
 - **Revizyon:** 1 Eylül 2026 — K-097/RFC-0021 ile ifade katmanları bağlandı
 - **Revizyon:** 1 Eylül 2026 — K-099/ADR-012 ile cümle ve ifade handler'ları
   fiziksel modüllere ayrıldı
+- **Revizyon:** 2 Eylül 2026 — K-119 ile formatter'ın tam parser-token
+  eşdeğerliği kalıcı kapıya bağlandı
 
 ## Bağlam
 
@@ -50,3 +52,11 @@ ADR-012'nin fiziksel modüllerine ayrıldı; sınırlar bu katmanları izler ve
 davranış conformance testiyle korunur.
 Gelecekte ikinci compiler geldiğinde spec/20 + ortak korpus kaynak olur;
 Rust fonksiyon sırası normatif kaynak sayılmaz.
+
+Resmî formatter yalnız görünüşü değiştirir. Biçimleme öncesi ve sonrasındaki
+`TokenTur` dizisi; `SatirSonu`, `Girinti`, `Cikinti` ve `DosyaSonu` dahil
+birebir aynı değilse C011 ile hiçbir çıktı yazılmaz. Parser semantic AST'yi
+yalnız bu yapısal token dizisinden deterministik kurar; token konumları kaynak
+haritasıdır, anlam seçimi değildir. K-119'un 33 programlık property kapısı,
+her golden kaynağın dağınık-boşluk varyantını biçimler, iki tam parser izini
+kıyaslar ve parser'ın iki tarafı da kabul ettiğini doğrular.

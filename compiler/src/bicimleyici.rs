@@ -5,8 +5,9 @@
 //! 4 boşluk basılır. Yorumlar ve boş satırlar korunur; yorum satırı bir
 //! sonraki kod satırının hizasına çekilir.
 //!
-//! Güvence: biçimlenmiş çıktının token dizisi girdiyle birebir aynı olmalıdır;
-//! değilse biçimleyici sonucu YAZMAZ ve iç hata bildirir (determinizm).
+//! Güvence: biçimlenmiş çıktının, satır sınırları ve girinti yapısı dahil tam
+//! parser token dizisi girdiyle birebir aynı olmalıdır; değilse biçimleyici
+//! sonucu YAZMAZ ve iç hata bildirir (parse-equivalence + determinizm).
 
 use crate::sozcukleyici::{sozcukle, TokenTur};
 use crate::tani::Tani;
@@ -61,7 +62,11 @@ pub fn bicimle(kaynak: &str) -> Result<String, Tani> {
             let (tokenlar, yorum) = satiri_parcala(icerik, satir_no)?;
             SatirTuru::Kod(tokenlar, yorum)
         };
-        satirlar.push(Satir { girinti, tur, duzey: 0 });
+        satirlar.push(Satir {
+            girinti,
+            tur,
+            duzey: 0,
+        });
     }
 
     // Kod satırlarının blok düzeyleri (sözcükleyicidekiyle aynı kural).
@@ -199,9 +204,7 @@ fn satiri_parcala(icerik: &str, satir_no: usize) -> Result<(Vec<String>, Option<
             // "2,5" + ayraç + "7..." biçiminde ayrışmalıdır (sözcükleyiciyle aynı).
             let onceki_rakamla_bitiyor = tokenlar
                 .last()
-                .map(|t| {
-                    t.chars().last().is_some_and(|s| s.is_ascii_digit()) && !t.contains(',')
-                })
+                .map(|t| t.chars().last().is_some_and(|s| s.is_ascii_digit()) && !t.contains(','))
                 == Some(true);
             let sonraki_rakam = karakterler.peek().map(|r| r.is_ascii_digit()) == Some(true);
             if onceki_rakamla_bitiyor && sonraki_rakam {
@@ -237,9 +240,9 @@ fn satiri_parcala(icerik: &str, satir_no: usize) -> Result<(Vec<String>, Option<
 }
 
 fn token_turleri(kaynak: &str) -> Result<Vec<TokenTur>, Tani> {
-    Ok(sozcukle(kaynak)?
-        .into_iter()
-        .map(|t| t.tur)
-        .filter(|t| !matches!(t, TokenTur::SatirSonu))
-        .collect())
+    // SatirSonu parser girdisinin parçasıdır: onu kıyastan çıkarmak, gelecekte
+    // iki cümleyi aynı satıra taşıyan hatalı bir basımın güvenceyi aşmasına
+    // izin verirdi. Konum alanları biçimin doğal olarak değiştirdiği sunum
+    // bilgisidir; parser'ın dallandığı bütün yapısal veri TokenTur'dedir.
+    Ok(sozcukle(kaynak)?.into_iter().map(|t| t.tur).collect())
 }

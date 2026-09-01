@@ -90,8 +90,11 @@ x 1 e eşitse ve y 2 ye eşitse veya z 3 e eşitse
 adet sayıları ver adedi olsun
 ```
 
-Bağlayıcı yürütülebilir kanıt:
-`compiler/tests/ifade_grameri_testi.rs`.
+Bağlayıcı yürütülebilir kanıtlar:
+`compiler/tests/ifade_grameri_testi.rs` ve
+`compiler/tests/bicimleyici_testi.rs`. İkinci kapı, 33 golden programın
+dağınık-boşluk varyantında biçimleme öncesi/sonrası tam parser token izini
+(`SatirSonu` ve girinti yapısı dahil) eşitler ve iki tarafı da ayrıştırır.
 
 ## Yeni ifade yüzeyi kapısı
 

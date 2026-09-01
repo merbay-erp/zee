@@ -19,11 +19,11 @@ rfcs/0017-web-oturum-ve-csrf.md	kanitli	compiler/tests/web_testi.rs,compiler/tes
 rfcs/0018-surumlu-morfoloji-profili.md	kanitli	compiler/tests/morfoloji_testi.rs	Profil snapshot property ve belirsizlik
 rfcs/0019-deger-semantigi-ve-gezme-imleci.md	kanitli	compiler/tests/koleksiyon_testi.rs	Derin kopya ve değer-sonuç imleci
 rfcs/0020-paket-yayini-ve-registry-guveni.md	kismi	compiler/tests/tedarik_testi.rs,compiler/src/tedarik.rs,compiler/src/registry.rs	Yayın ve metadata güveni testli; taşıma cache CLI açık
-rfcs/0021-ifade-grameri-mimarisi.md	kanitli	compiler/tests/ifade_grameri_testi.rs	Katman sırası tam tüketim ve çakışma
+rfcs/0021-ifade-grameri-mimarisi.md	kanitli	compiler/tests/ifade_grameri_testi.rs,compiler/tests/bicimleyici_testi.rs	Katman sırası tam tüketim çakışma ve formatter eşdeğerliği
 rfcs/0022-deterministik-io-izi.md	kanitli	compiler/tests/io_izi_testi.rs,compiler/tests/io_izi_cli_testi.rs	Kanonik trace replay ve CLI
 rfcs/0023-deterministik-io-profili.md	kanitli	compiler/tests/deterministik_io_profili_testi.rs	Tohum rastgele dizi ve sanal saat
 adr/001-bootstrap-dili.md	kanitli	compiler/tests/mimari_sinir_testi.rs,compiler/tests/playground_testi.rs	Rust faz sınırları ve WASM yüzeyi
-adr/002-parser-stratejisi.md	kanitli	compiler/tests/ifade_grameri_testi.rs,compiler/tests/parser_kurtarma_testi.rs	Elle parser katman ve kurtarma mimarisi
+adr/002-parser-stratejisi.md	kanitli	compiler/tests/ifade_grameri_testi.rs,compiler/tests/parser_kurtarma_testi.rs,compiler/tests/bicimleyici_testi.rs	Elle parser katman kurtarma ve formatter eşdeğerliği
 adr/003-ilk-yurutme-modeli.md	kanitli	compiler/tests/playground_testi.rs,compiler/tests/io_izi_testi.rs	Yorumlayıcı ve IO soyutlaması
 adr/006-paket-registry-guven-modeli.md	kismi	compiler/tests/tedarik_testi.rs,compiler/src/registry.rs	Yayın metadata ve saldırı zinciri; taşıma sürüyor
 adr/007-telemetri-ve-gizlilik.md	kismi	compiler/tests/guvenli_testi.rs,compiler/tests/playground_testi.rs	Kapalı ağ ve yerel playground testli; ikili ağ sembol audit'i açık
@@ -67,6 +67,6 @@ spec/16-keyfi-hassasiyetli-ondalik.md	kanitli	compiler/tests/ondalik_testi.rs	Ta
 spec/17-deger-semantigi-ve-gezme.md	kanitli	compiler/tests/koleksiyon_testi.rs	Derin değer kopyası ve gezme imleci
 spec/18-paket-yayini.md	kanitli	compiler/tests/tedarik_testi.rs,compiler/src/tedarik.rs	Kanonik zep SBOM provenance ve imza
 spec/19-registry-metadata-guveni.md	kanitli	compiler/src/registry.rs	Root timestamp snapshot targets zinciri
-spec/20-ifade-grameri.md	kanitli	compiler/tests/ifade_grameri_testi.rs	İfade katmanları ve tam tüketim
+spec/20-ifade-grameri.md	kanitli	compiler/tests/ifade_grameri_testi.rs,compiler/tests/bicimleyici_testi.rs	İfade katmanları tam tüketim ve formatter eşdeğerliği
 spec/21-deterministik-io-izi.md	kanitli	compiler/tests/io_izi_testi.rs,compiler/tests/io_izi_cli_testi.rs	Şema olay sırası redaksiyon ve replay
 spec/22-deterministik-io-profili.md	kanitli	compiler/tests/deterministik_io_profili_testi.rs	zee-io-1 rastgele saat ve fake IO

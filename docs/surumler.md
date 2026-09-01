@@ -330,6 +330,12 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   sayılarını gerçek dosyalardan üretir; README işaretli bloğundaki tek byte
   kayma CI hatasıdır. İki yeni regresyonla toplam 465 test yeşildir;
   B-043/B-044 kapandı.
+- **Formatter parse-equivalence kapısı** (K-119, RFC-0021/ADR-002/spec-20):
+  C011 artık `SatirSonu`, `Girinti`, `Cikinti` ve `DosyaSonu` dahil tam parser
+  token dizisini korur. Sayısal 33 golden programın metin ve yorum içini
+  bozmayan dağınık-boşluk varyantı biçimlenir; önce/sonra token izi eşit ve
+  her iki kaynak parser tarafından kabul edilmiş olmalıdır. İki yeni
+  regresyonla toplam 467 test yeşildir; B-042 kapandı.
 
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`

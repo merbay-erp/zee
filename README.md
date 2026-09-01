@@ -116,7 +116,7 @@ altında dondurulmuştur; `baslangic` ve `dogum` etiketleri GitHub'a da itildi.
 | Türkçe tanımlayıcılar sorunsuz | ✅ |
 | Girinti blokları deterministik | ✅ (sekme/karışık girinti hatası testli) |
 | Temel type errors Türkçe ve kaynak konumlu | ✅ (S/A/T/C kodları + öneri) |
-| Formatter idempotent | ✅ `dil biçimle` — bütün golden dosyalarında idempotentlik testli |
+| Formatter idempotent | ✅ `dil biçimle` — idempotentlik + 33 golden üzerinde tam parser-token eşdeğerliği testli |
 | Windows/macOS/Linux interpreter/CLI | ✅ üç platformda CI yeşil (31 Ağu 2026) |
 | Golden corpus CI'da | ✅ her push'ta 3 platformda koşuyor |
 | Kaynak kodda İngilizce keyword gerekmez | ✅ |
@@ -144,7 +144,7 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **465** |
+| Rust + doctest vakası | **467** |
 | Tanı kimliği | **145 etkin + 3 ayrılmış** |
 | RFC | **23** (2 kabul, 19 geçici kabul, 2 taslak) |
 | ADR | **26** (26 kabul) |
@@ -255,6 +255,9 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   K-118/ADR-010 her RFC/ADR/spec'i test dosyalarına bağlayan
   [kanıt haritasını](docs/depo-butunlugu.md) ve README canlı sayı üreticisini
   tazelik testine bağladı; sayılar artık elle tutulmuyor.
+  K-119 resmî formatter'ın satır ve girinti tokenları dahil parser girdisini
+  değiştirememesini production C011 güvencesine ve 33 golden programın
+  dağınık-boşluk property kapısına bağladı; B-042 kapandı.
   Uygulama sırası
   [öncelikli backlog](docs/oncelikli-backlog.md) ile sabittir.
   Bağlayıcı liste: [docs/v1-surum-kapilari.md](docs/v1-surum-kapilari.md).

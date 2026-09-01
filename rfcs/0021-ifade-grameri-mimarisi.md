@@ -1,8 +1,8 @@
 # RFC-0021 — İfade grameri büyüme mimarisi
 
-- **Durum:** **geçici kabul** (K-097; mevcut yüzey ve büyüme kuralı testli)
+- **Durum:** **geçici kabul** (K-097/K-119; büyüme ve formatter eşdeğerliği testli)
 - **Tarih:** 1 Eylül 2026
-- **İlgili günlük kayıtları:** K-004, K-008, K-010, K-016, K-027, K-038, K-097
+- **İlgili günlük kayıtları:** K-004, K-008, K-010, K-016, K-027, K-038, K-097, K-119
 - **İlgili golden programlar:** 04, 05, 12, 14, 30, 32
 - **Normatif karşılık:** spec/20
 - **Gerçekleme:** `ayristirici.rs` içinde `ile_ifadesi`, `bolge_ifadesi`,
@@ -176,6 +176,11 @@ olarak eklenemez.
 Golden dosyalar değişmedi. Katman sırası, postfix/işlem-adı kuyruğu, tam
 sıfır-argüman, en-uzun-çağrı ve fail-closed birleşim sınırı
 `compiler/tests/ifade_grameri_testi.rs` içinde bağımsız conformance kanıtıdır.
+K-119 ayrıca sayısal 33 golden programın metin/yorum içini koruyan
+dağınık-boşluk varyantını resmî biçime çevirir; biçimleme öncesi ve sonrası
+`SatirSonu` ile girinti tokenları dahil tam parser girdisini ve iki tarafın
+başarılı ayrışmasını doğrular. Böylece §6'daki formatter etkisi yalnız
+idempotence sözü değil, yürütülebilir parse-equivalence kapısıdır.
 
 Tek gözlenebilir düzeltme, `sayısı` gibi görünür bir işlem-adı kuyruğunun
 `metnin sayısı` doğal postfix ifadesini yanlış S019'a çevirememesidir. Bu
