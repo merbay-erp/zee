@@ -12,10 +12,9 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 
 1. Tamamlanan önkoşul: K-095 registry metadata güveni (378 test).
 2. İnsan kanıtı bekleyen kapılar: B-001/K-096 + B-002/K-093.
-3. Tamamlanan compiler omurgası: B-003/K-097, B-004/K-098 ve B-005/K-099
-   (396 test).
-4. Sıradaki makine işi: B-006; ardından
-   B-010/B-018/B-019/B-020 → B-014–B-017.
+3. Tamamlanan compiler omurgası: B-003/K-097, B-004/K-098, B-005/K-099 ve
+   B-006/K-100 (398 test).
+4. Sıradaki makine işi: B-010; ardından B-018/B-019/B-020 → B-014–B-017.
 5. Üçüncü sprint: B-027/B-028 → B-030/B-031 → B-043/B-044.
 6. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
 
@@ -49,8 +48,14 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   indi. ADR-012 ve [faz rehberi](derleyici-faz-sinirlari.md) sahipliği bağlar;
   üç mimari test handler'ların köke dönmesini ve ilanlı satır bütçelerinin
   sessizce aşılmasını engeller. Kullanıcı yüzeyi ve davranış değişmedi.
-- **B-006 · AÇIK — type checker'ı katmanlaştır.** Sembol çözümü, tür çıkarımı,
-  flow, çağrı/sözleşme, etki/capability ve dönüş/control-flow ayrılmalıdır.
+- **B-006 · KAPALI (K-100) — type checker'ı katmanlaştır.** Checker kökü
+  yalnız 143 satırlık geçiş orkestrasyonu ve public yeniden dışa aktarım
+  taşır. Türler, bağlam, sembol, akış, çağrı, public sözleşme,
+  etki/yetkinlik ve dönüş/control-flow tek sahipli modüllere ayrıldı. Eski
+  `eylem.rs` davranışı checker'ın `etki` katmanına alındı; public
+  `Tur`/`VeriTuru`/`SozlukDegerTuru`/`ad_cozumle` API'si korundu. ADR-013,
+  [katman rehberi](checker-katmanlari.md) ve beş mimari test yeniden birleşmeyi
+  durdurur; kaynak semantiği değişmedi ve V1-P0-11 kapandı.
 - **B-007 · AÇIK — yerel çağrı kaynaklı inference'ı sıra bağımsız yap.** Aynı
   çağrıların kaynak sırasını değiştirmek yerel işlem türünü değiştirmemelidir.
 - **B-008 · KISMEN — `zee-tr-1` profilini immutable koru.** RFC-0018/spec-13

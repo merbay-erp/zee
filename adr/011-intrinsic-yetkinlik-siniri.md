@@ -69,8 +69,8 @@ tek yerde kalır.
 - Core AST dört alan varyantından kurtuldu; yeni adaptörler tek genel düğümle
   taşınabilir.
 - Tür/yetkinlik/etki metadatası `compiler/src/intrinsic.rs` içinde tek kaynak
-  oldu. B-006 katmanlaştırması ve B-023 izin modeli artık bu kayıt üstünde
-  ilerleyebilir.
+  oldu. B-006/K-100 checker katmanlaştırması bu kaydı `etki` sahibine bağladı;
+  B-023 izin modeli aynı kayıt üstünde ilerleyebilir.
 - Runtime merkezi kimlik dağıtımı yapar. Handler'ların fiziksel modül
   sınırları B-005/K-099 ve ADR-012 ile davranış değişmeden ayrılmıştır.
 - Kaynak davranışı değişmediği için yeni normatif dil spec'i açılmadı; mevcut

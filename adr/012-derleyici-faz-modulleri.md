@@ -44,8 +44,8 @@ Hata kataloğu bekçisi de `compiler/src` altındaki bütün Rust modüllerini
 3. Runtime'ın değerlendirme sırası, kısa devre, IO ve scheduler izi değişmez.
 4. Modül taşıma public Rust API ya da zee kullanıcı yüzeyi eklemez.
 5. Satır bütçesi kalite ölçütünün tamamı değildir; yalnız yeniden birleşmeyi
-   engelleyen mekanik alt sınırdır. B-006 checker'ın semantik fazlarını ayrıca
-   ayıracaktır.
+   engelleyen mekanik alt sınırdır. Checker'ın semantik fazları B-006/K-100 ve
+   ADR-013 ile ayrıca ayrılmıştır.
 
 ## Sonuçlar
 
@@ -55,3 +55,5 @@ Hata kataloğu bekçisi de `compiler/src` altındaki bütün Rust modüllerini
 - Hata kodu↔katalog birebirlik testi yeni alt dizinleri otomatik kapsar.
 - Mevcut 393 davranış testi değişmeden, toplam 396 testle taşıma doğrulandı.
 - Yeni normatif dil spec'i gerekmez; kullanıcı semantiği değişmemiştir.
+- Checker'ın bu fiziksel sınır üstündeki semantik sahipliği ADR-013'e
+  devredildi; checker kökü 143 satırlık orkestrasyona indi.

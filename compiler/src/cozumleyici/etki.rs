@@ -32,7 +32,7 @@ impl Bilgi {
     }
 }
 
-pub(crate) fn denetle(program: &Program) -> Result<(), Tani> {
+pub(super) fn denetle(program: &Program) -> Result<(), Tani> {
     eylem_imzalarini_denetle(&program.islemler)?;
 
     let dogrudan = program

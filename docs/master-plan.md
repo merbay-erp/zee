@@ -534,6 +534,7 @@ ADR-009 — Dilin adı
 ADR-010 — Normatif otorite ve değişiklik bütünlüğü
 ADR-011 — Core AST intrinsic/yetkinlik sınırı
 ADR-012 — Derleyici fiziksel faz modülleri
+ADR-013 — Checker semantik katmanları ve tek sahiplik
 # 39. Ekip ve rol modeli
 Dil mimarı: semantik ve uzun vadeli vizyon.
 Compiler: parser, types, IR, backend.
@@ -573,9 +574,11 @@ ve parola kaynak yüzeyleri tek `Intrinsic { kimlik, argumanlar }` AST düğüm�
 indirilir; tür imzası, gereken yetkinlik ve statik etki merkezi kayıttadır.
 Kaynak semantiği değişmedi. B-005, K-099/ADR-012 ile parser cümle/ifade,
 checker cümle/ifade/çağrı, runtime cümle/ifade fazlarına ayrıldı ve kaynak-mimari
-bütçe testi yeniden birleşmeyi durdurdu. Sıradaki omurga işi checker'ın sembol,
-tür, akış, çağrı, etki ve dönüş fazlarını semantik olarak katmanlaştırmaktır
-(B-006).
+bütçe testi yeniden birleşmeyi durdurdu. B-006, K-100/ADR-013 ile checker
+kökünü orkestrasyona indirdi; tür, bağlam, sembol, akış, çağrı, sözleşme,
+etki/yetkinlik ve dönüş kurallarını tek sahipli katmanlara ayırdı. Sıradaki
+omurga işi yapı, işlem ve sembol kimliklerini kararlı newtype'lara taşıyan
+B-010 semantic ID modelidir.
 # 40. Proje felsefesinin korunması
 Bu projenin başarısı yalnız compiler’ın çalışması değildir. Başarı; Türkçe konuşan bir çocuğun yabancı syntax bariyerine takılmadan algoritmik düşünceyle tanışması, aynı dilin yıllar sonra onu terk etmeye zorlamaması ve ekosistemin tek bir şirketin kapalı ürünü haline gelmemesidir.
 Her yeni özellik şu dört sorudan geçmelidir: Türkçe doğal mı? Deterministik mi? Öğrenilebilir mi? Profesyonel ölçekte savunulabilir mi? Dördünden biri hayırsa özellik yeniden tasarlanır.

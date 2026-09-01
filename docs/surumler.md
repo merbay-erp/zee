@@ -188,6 +188,14 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   faz bütçelerinin aşılmasını engeller. Hata kataloğu taraması yeni alt
   modülleri özyinelemeli kapsar. 393 davranış testi aynen korunup toplam 396
   test yeşil kaldı; kaynak semantiği değişmeden B-005/V1-P0-10 kapandı.
+- **Checker semantik katmanları** (K-100, ADR-013): 963 satırlık checker kökü
+  143 satırlık geçiş orkestrasyonuna indirildi. Türler, bağlam, sembol, akış,
+  çağrı, public sözleşme, etki/yetkinlik ve dönüş/control-flow ayrı tek-sahipli
+  modüllere taşındı; eski `eylem.rs` aynı davranışla `cozumleyici/etki.rs`
+  oldu. Public `Tur`, `VeriTuru`, `SozlukDegerTuru` ve `ad_cozumle` API'si
+  yeniden dışa aktarımla korundu. İki yeni sahiplik/API testiyle mimari test
+  sayısı beşe, toplam test sayısı 398'e çıktı. Kaynak semantiği değişmeden
+  B-006/V1-P0-11 kapandı; sıradaki omurga B-010 semantic ID modelidir.
 
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`
