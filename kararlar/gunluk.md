@@ -745,6 +745,36 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
 - **Kanıt:** alt klasörde birim + giriş + bildirim birlikte biçimlenir;
   üç dosyanın resmî çıktısı entegrasyon testinde sabittir.
 
+## K-078 — Yerel paket, kaynak kökeni ve deterministik kilit
+
+- **İhtiyaç:** Kurucu zee'yi bütün gerçek projelerinde kullanacak. Kod paylaşımı
+  kopyala-yapıştır ya da kabuğun çalışma klasörüne bağlı dosya araması olamaz;
+  aynı kaynak grafiği her makinede aynı anlama gelmeli.
+- **Bildirim:** `yerel_bağımlılıklar "../hesap" listesi olsun`. Yalnız yol
+  bildirilir; paket adı ve sürümü bağımlı projenin `proje.dil` dosyasından gelir.
+  Böylece iki gerçek kaynağın zamanla ayrışması engellenir.
+- **Dil yüzeyi:** `hesap paketini kullan`. `birimini` aynı kaynak klasörünü,
+  `paketini` yalnız proje sahibinin doğrudan bağımlılığını anlatır. Geçişli
+  paket grafikte bulunur ama açıkça bildirilmeden API sayılmaz (A011).
+- **Köken:** Yükleyici artık yalnız metin döndürmez; yüklenen kaynağın kararlı
+  kimliğini de taşır. Paket içindeki `yardimci birimini kullan`, uygulamanın
+  değil paketin kendi klasöründen çözülür. Eski gömülü/sahte yükleyici API'si
+  geriye uyumluluk için korunur.
+- **Kilit:** `dil kilitle` bütün geçişli grafiği ada göre sıralı yazar: sürüm,
+  ana projeye göre göreli yol, doğrudan kenarlar ve bütün gerçek `.dil`
+  kaynaklarının SHA-256 özeti. Mutlak makine yolu yoktur. Eksik/bayat kilit
+  P008 ile durur; sessiz güncelleme yapılmaz.
+- **Güvenlik/bütünlük:** Bağımlılık döngüsü, aynı adlı ayrı kök, geçersiz paket
+  adı, proje dışına çıkan giriş/birim sembolik bağı ve gizli/hedef klasör
+  geçişi reddedilir. Kilit doğrulanan bellek görüntüsü derlenir; TOCTOU için
+  kaynak ikinci kez okunmaz.
+- **Araçlar:** `dil yeni` boş bağımlılık listesi ve ilk kilidi üretir. CLI ile
+  dillsp aynı proje grafiğini kullanır. P005–P009 ve A011 katalogludur.
+- **Kanıt:** geçişli paket + paket içi birim uçtan uca çalışır; paketin üst
+  düzey cümlesi kapsüllenir; içerik değişince kilit bayatlar; yeniden kilit
+  deterministiktir; geçişli pakete doğrudan erişim ve bildirim döngüsü
+  regression testlerinde reddedilir.
+
 ## K-012 — Liste sabiti: `3, 7, 1, 9 listesi`
 
 - **Karar:** Virgülle ayrılmış değerler + `listesi`. Boş: `boş liste`.

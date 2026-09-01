@@ -42,6 +42,7 @@ fn katalog_kaynakla_birebir() {
         "src/yorumlayici.rs",
         "src/bicimleyici.rs",
         "src/proje.rs",
+        "src/paket.rs",
         "src/lib.rs",
     ] {
         let icerik = std::fs::read_to_string(format!("{}/{}", kok, dosya)).expect(dosya);

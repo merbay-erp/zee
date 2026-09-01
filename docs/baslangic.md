@@ -41,6 +41,26 @@ dil dene ilk-projem
 Proje klasöründeysen daha da kısadır: `dil çalıştır .`, `dil dene .`,
 `dil denetle .`.
 
+Başka bir yerel zee projesini paket olarak kullanmak için onun klasörünü
+`proje.dil` içinde bildir, sonra bağımlılık kararını kilitle:
+
+```text
+yerel_bağımlılıklar "../hesap" listesi olsun
+```
+
+```bash
+dil kilitle .
+```
+
+Kaynakta paket adı, bağımlı projenin kendi `proje` alanından gelir:
+
+```text
+hesap paketini kullan
+```
+
+Bağımlılık kaynağı değişirse zee eski kilitle sessizce devam etmez (P008);
+değişikliği inceledikten sonra yeniden `dil kilitle .` çalıştırırsın.
+
 ## 3. Kendi programını yaz
 
 `merhaba.dil` diye bir dosya aç:
@@ -91,6 +111,7 @@ internet gerekmez, katalog `dil`in içindedir.
 | `dil dene <dosya\|proje>` | `test "..."` bloklarını koşar |
 | `dil biçimle <dosya\|proje>` | dosyayı veya projedeki bütün `.dil` kaynaklarını resmi biçime getirir |
 | `dil denetle <dosya\|proje>` | çalıştırmadan hata arar (`--json`: makine çıktısı) |
+| `dil kilitle <proje>` | yerel bağımlılık grafiğini sürüm ve SHA-256 içerik özetiyle sabitler |
 | `dil hata <kod>` | bir hata kodunu açıklar |
 | `dil belge <birim>` | birimin işlemlerini listeler (örn. `dil belge matematik`) |
 | `dil sürüm` | sürümü gösterir |

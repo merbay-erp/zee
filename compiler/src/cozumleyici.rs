@@ -938,11 +938,15 @@ fn blok_denetle(
                     1,
                 ));
             }
-            Cumle::Kullan { birim, satir } => {
+            Cumle::Kullan { ad, tur, satir } => {
                 // Birimler derleme öncesi çözülüp hoist'te düşürülür.
+                let tur_adi = match tur {
+                    crate::agac::KullanimTuru::Birim => "birim",
+                    crate::agac::KullanimTuru::Paket => "paket",
+                };
                 return Err(Tani::yeni(
                     "S021",
-                    format!("\"{}\" birim kullanımı beklenmeyen yerde.", birim),
+                    format!("\"{}\" {} kullanımı beklenmeyen yerde.", ad, tur_adi),
                     *satir,
                     1,
                     1,

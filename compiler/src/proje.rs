@@ -6,6 +6,7 @@
 //! proje "benim-projem" olsun
 //! sürüm "0.1.0" olsun
 //! giriş "program.dil" olsun
+//! yerel_bağımlılıklar "../ortak" listesi olsun
 //! ```
 
 use crate::agac::{Cumle, Ifade};
@@ -18,6 +19,9 @@ pub struct ProjeBildirimi {
     pub ad: String,
     pub surum: String,
     pub giris: String,
+    /// Her yol, kendi `proje.dil` bildirimi olan yerel bir projedir. Paket adı
+    /// ve sürümü bağımlı projenin bildiriminden gelir; iki yerde tekrarlanmaz.
+    pub yerel_bagimliliklar: Vec<String>,
 }
 
 /// `proje.dil` kaynağını doğrular ve proje sözleşmesine çevirir.
@@ -35,7 +39,7 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
         ));
     }
 
-    let mut alanlar: HashMap<String, (String, usize)> = HashMap::new();
+    let mut alanlar: HashMap<String, (Ifade, usize)> = HashMap::new();
     for cumle in program.cumleler {
         let Cumle::Olsun {
             ad, deger, satir, ..
@@ -48,22 +52,17 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
                 "Örnek: giriş \"program.dil\" olsun",
             ));
         };
-        if !matches!(ad.as_str(), "proje" | "sürüm" | "giriş") {
+        if !matches!(
+            ad.as_str(),
+            "proje" | "sürüm" | "giriş" | "yerel_bağımlılıklar"
+        ) {
             return Err(proje_hatasi(
                 "P001",
                 &format!("\"{}\" proje bildirimi alanı değil.", ad),
                 satir,
-                "Geçerli alanlar: proje, sürüm, giriş.",
+                "Geçerli alanlar: proje, sürüm, giriş, yerel_bağımlılıklar.",
             ));
         }
-        let Ifade::MetinSabiti(deger) = deger else {
-            return Err(proje_hatasi(
-                "P001",
-                &format!("\"{}\" alanı Metin olmalı.", ad),
-                satir,
-                &format!("Örnek: {} \"...\" olsun", ad),
-            ));
-        };
         if alanlar.insert(ad.clone(), (deger, satir)).is_some() {
             return Err(proje_hatasi(
                 "P001",
@@ -74,9 +73,10 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
         }
     }
 
-    let (ad, ad_satiri) = gerekli_alani_al(&mut alanlar, "proje")?;
-    let (surum, surum_satiri) = gerekli_alani_al(&mut alanlar, "sürüm")?;
-    let (giris, giris_satiri) = gerekli_alani_al(&mut alanlar, "giriş")?;
+    let (ad, ad_satiri) = gerekli_metni_al(&mut alanlar, "proje")?;
+    let (surum, surum_satiri) = gerekli_metni_al(&mut alanlar, "sürüm")?;
+    let (giris, giris_satiri) = gerekli_metni_al(&mut alanlar, "giriş")?;
+    let yerel_bagimliliklar = bagimliliklari_al(&mut alanlar)?;
 
     if ad.trim().is_empty() || ad.chars().any(char::is_control) {
         return Err(proje_hatasi(
@@ -103,21 +103,87 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
         ));
     }
 
-    Ok(ProjeBildirimi { ad, surum, giris })
+    Ok(ProjeBildirimi {
+        ad,
+        surum,
+        giris,
+        yerel_bagimliliklar,
+    })
 }
 
-fn gerekli_alani_al(
-    alanlar: &mut HashMap<String, (String, usize)>,
+fn gerekli_metni_al(
+    alanlar: &mut HashMap<String, (Ifade, usize)>,
     ad: &str,
 ) -> Result<(String, usize), Tani> {
-    alanlar.remove(ad).ok_or_else(|| {
+    let (ifade, satir) = alanlar.remove(ad).ok_or_else(|| {
         proje_hatasi(
             "P002",
             &format!("Proje bildiriminde \"{}\" alanı eksik.", ad),
             1,
             &format!("{} \"...\" olsun satırını ekle.", ad),
         )
-    })
+    })?;
+    match ifade {
+        Ifade::MetinSabiti(deger) => Ok((deger, satir)),
+        _ => Err(proje_hatasi(
+            "P001",
+            &format!("\"{}\" alanı Metin olmalı.", ad),
+            satir,
+            &format!("Örnek: {} \"...\" olsun", ad),
+        )),
+    }
+}
+
+fn bagimliliklari_al(
+    alanlar: &mut HashMap<String, (Ifade, usize)>,
+) -> Result<Vec<String>, Tani> {
+    let Some((ifade, satir)) = alanlar.remove("yerel_bağımlılıklar") else {
+        return Ok(Vec::new());
+    };
+    let yollar = match ifade {
+        Ifade::BosListe => Vec::new(),
+        Ifade::ListeSabiti(ogeler) => ogeler
+            .into_iter()
+            .map(|oge| match oge {
+                Ifade::MetinSabiti(yol) => Ok(yol),
+                _ => Err(proje_hatasi(
+                    "P005",
+                    "Yerel bağımlılıkların her biri Metin yol olmalı.",
+                    satir,
+                    "Örnek: yerel_bağımlılıklar \"../ortak\", \"../grafik\" listesi olsun",
+                )),
+            })
+            .collect::<Result<Vec<_>, _>>()?,
+        _ => {
+            return Err(proje_hatasi(
+                "P005",
+                "\"yerel_bağımlılıklar\" bir Metin listesi olmalı.",
+                satir,
+                "Örnek: yerel_bağımlılıklar \"../ortak\" listesi olsun",
+            ));
+        }
+    };
+
+    let mut gorulen = std::collections::HashSet::new();
+    for yol in &yollar {
+        if let Err(neden) = bagimlilik_yolunu_dogrula(yol) {
+            return Err(proje_hatasi(
+                "P005",
+                &format!("Geçersiz yerel bağımlılık yolu \"{}\": {}.", yol, neden),
+                satir,
+                "Göreli bir proje klasörü yaz; örnek: ../ortak",
+            ));
+        }
+        if !gorulen.insert(yol) {
+            return Err(proje_hatasi(
+                "P005",
+                &format!("\"{}\" yerel bağımlılığı birden çok kez yazıldı.", yol),
+                satir,
+                "Her yerel proje yolunu yalnız bir kez yaz.",
+            ));
+        }
+    }
+    Ok(yollar)
 }
 
 fn gecerli_surum(surum: &str) -> bool {
@@ -146,6 +212,32 @@ fn girisi_dogrula(giris: &str) -> Result<(), &'static str> {
     }
     if yol.components().any(|b| !matches!(b, Component::Normal(_))) {
         return Err("yol proje dışına çıkamaz");
+    }
+    Ok(())
+}
+
+fn bagimlilik_yolunu_dogrula(yol: &str) -> Result<(), &'static str> {
+    if yol.is_empty() || yol.chars().any(char::is_control) {
+        return Err("yol boş ya da denetim karakterli");
+    }
+    if yol.contains(['\\', ':']) {
+        return Err("platforma bağlı yol işareti kullanılamaz");
+    }
+    let yol = Path::new(yol);
+    if yol.is_absolute() {
+        return Err("mutlak yol kullanılamaz");
+    }
+    if yol
+        .components()
+        .any(|b| matches!(b, Component::RootDir | Component::Prefix(_)))
+    {
+        return Err("yol göreli olmalı");
+    }
+    if !yol
+        .components()
+        .any(|b| matches!(b, Component::Normal(_) | Component::ParentDir))
+    {
+        return Err("yol bir proje klasörü göstermeli");
     }
     Ok(())
 }

@@ -41,6 +41,15 @@ pub struct Islem {
     pub satir: usize,
 }
 
+/// Derleme öncesi bağlanan kaynağın türü (RFC-0009).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum KullanimTuru {
+    /// Aynı kaynak klasöründeki `<ad>.dil` dosyası.
+    Birim,
+    /// Proje bildirimindeki doğrudan yerel bağımlılık.
+    Paket,
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub enum Islec {
     Buyuk,
@@ -297,9 +306,9 @@ pub enum Cumle {
     IslemTanimi(Islem),
     /// `yapı <Ad>` tanımı — hoist ile Program.yapilar'a taşınır.
     YapiTanimi(Yapi),
-    /// `hesaplar birimini kullan` (RFC-0009) — derleme öncesi çözülür,
-    /// hoist aşamasında düşürülür; çalışma zamanına ulaşmaz.
-    Kullan { birim: String, satir: usize },
+    /// `hesaplar birimini kullan` / `grafik paketini kullan` (RFC-0009) —
+    /// derleme öncesi çözülür, hoist aşamasında düşürülür.
+    Kullan { ad: String, tur: KullanimTuru, satir: usize },
     /// `test "..."` bloğu — hoist ile Program.testler'e taşınır.
     TestBlogu(Test),
     /// `kare 16 ya eşit olmalı` — doğrulama (K-025). Koşul tutmazsa D001.

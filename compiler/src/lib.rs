@@ -7,6 +7,7 @@ pub mod agac;
 pub mod ayristirici;
 pub mod bicimleyici;
 pub mod lsp;
+pub mod paket;
 pub mod proje;
 pub mod wasm_api;
 pub mod cozumleyici;
@@ -14,7 +15,7 @@ pub mod sozcukleyici;
 pub mod tani;
 pub mod yorumlayici;
 
-use agac::{Cumle, Islem, Program, Test, Yapi};
+use agac::{Cumle, Islem, KullanimTuru, Program, Test, Yapi};
 use std::collections::HashMap;
 use tani::Tani;
 
@@ -22,6 +23,24 @@ use tani::Tani;
 /// dosya sisteminden okur; testler sahte tablodan verir — birim çözümü de
 /// determinizm ilkesine uyar.
 pub type BirimYukleyici<'a> = dyn FnMut(&str) -> Result<String, String> + 'a;
+
+/// Kaynak kökenini koruyan yükleme isteği. `isteyen`, kullanımı yapan gerçek
+/// dosyanın yükleyici tarafından verilmiş kimliğidir; böylece iç içe birimler
+/// kendi klasörlerinden çözülür ve paket sınırları kaybolmaz (K-078).
+pub struct BirimIstegi<'a> {
+    pub ad: &'a str,
+    pub tur: KullanimTuru,
+    pub isteyen: Option<&'a str>,
+}
+
+/// Yüklenen kaynakla birlikte bir sonraki çözümün dayanacağı kararlı köken.
+pub struct YuklenenBirim {
+    pub kaynak: String,
+    pub koken: String,
+}
+
+pub type KokenliBirimYukleyici<'a> =
+    dyn for<'b> FnMut(BirimIstegi<'b>) -> Result<YuklenenBirim, String> + 'a;
 
 /// Kaynağı çalıştırılabilir programa derler. Birim kullanmayan kaynaklar için;
 /// `kullan` görülürse A010 verir (yükleyici bağlanmamış).
@@ -100,9 +119,28 @@ pub fn kaynagi_derle_birimlerle(
     kaynak: &str,
     yukleyici: &mut BirimYukleyici,
 ) -> Result<Program, Tani> {
+    let mut kokenli = |istek: BirimIstegi<'_>| {
+        if istek.tur == KullanimTuru::Paket {
+            return Err("paket çözümü için proje bağlamı gerekir".into());
+        }
+        yukleyici(istek.ad).map(|kaynak| YuklenenBirim {
+            kaynak,
+            koken: istek.ad.to_string(),
+        })
+    };
+    kaynagi_derle_kokenlerle(kaynak, None, &mut kokenli)
+}
+
+/// Kaynağı gerçek dosya/paket kökenini koruyarak derler. CLI ve proje araçları
+/// bu yüzeyi kullanır; eski `kaynagi_derle_birimlerle` API'si korunmuştur.
+pub fn kaynagi_derle_kokenlerle(
+    kaynak: &str,
+    koken: Option<&str>,
+    yukleyici: &mut KokenliBirimYukleyici,
+) -> Result<Program, Tani> {
     let mut yigin: Vec<String> = Vec::new();
     let (cumleler, islemler, yapilar, testler) =
-        dosyayi_coz(kaynak, None, yukleyici, &mut yigin)?;
+        dosyayi_coz(kaynak, koken, true, yukleyici, &mut yigin)?;
     let mut program = Program { cumleler, islemler, yapilar, testler };
     cozumleyici::denetle(&mut program)?;
     Ok(program)
@@ -113,8 +151,9 @@ pub fn kaynagi_derle_birimlerle(
 #[allow(clippy::type_complexity)]
 fn dosyayi_coz(
     kaynak: &str,
-    birim_adi: Option<&str>,
-    yukleyici: &mut BirimYukleyici,
+    kaynak_kokeni: Option<&str>,
+    ana_kaynak: bool,
+    yukleyici: &mut KokenliBirimYukleyici,
     yigin: &mut Vec<String>,
 ) -> Result<(Vec<Cumle>, HashMap<String, Islem>, Vec<Yapi>, Vec<Test>), Tani> {
     let tokenlar = sozcukleyici::sozcukle(kaynak)?;
@@ -126,37 +165,32 @@ fn dosyayi_coz(
     let mut yapi_kaynagi: HashMap<String, String> = HashMap::new();
     let mut testler: Vec<Test> = Vec::new();
 
-    for (ad, satir) in ayristirici::kullanilan_birimler(&tokenlar) {
-        if yigin.iter().any(|y| y == &ad) || birim_adi == Some(ad.as_str()) {
+    for (ad, tur, satir) in ayristirici::kullanilan_birimler(&tokenlar) {
+        let yuklenen = yukleyici(BirimIstegi {
+            ad: &ad,
+            tur,
+            isteyen: kaynak_kokeni,
+        })
+        .map_err(|hata| yukleme_hatasi(&ad, tur, &hata, satir))?;
+        if yigin.iter().any(|y| y == &yuklenen.koken)
+            || kaynak_kokeni == Some(yuklenen.koken.as_str())
+        {
             return Err(Tani::yeni(
                 "A009",
                 format!(
-                    "Birimler birbirini döngüsel kullanıyor: {} → {}.",
+                    "Kaynaklar birbirini döngüsel kullanıyor: {} → {}.",
                     yigin.join(" → "),
-                    ad
+                    yuklenen.koken
                 ),
                 satir,
                 1,
                 1,
             )
-            .onerili("Ortak tanımları üçüncü bir birime taşı.".into()));
+            .onerili("Ortak tanımları üçüncü bir birime ya da pakete taşı.".into()));
         }
-        let icerik = yukleyici(&ad).map_err(|hata| {
-            Tani::yeni(
-                "A010",
-                format!("\"{}\" birimi yüklenemedi: {}.", ad, hata),
-                satir,
-                1,
-                1,
-            )
-            .onerili(format!(
-                "Aynı klasörde {}.dil dosyası olmalı (RFC-0009).",
-                ad
-            ))
-        })?;
-        yigin.push(ad.clone());
+        yigin.push(yuklenen.koken.clone());
         let (_, birim_islemleri, birim_yapilari, birim_testleri) =
-            dosyayi_coz(&icerik, Some(&ad), yukleyici, yigin)?;
+            dosyayi_coz(&yuklenen.kaynak, Some(&yuklenen.koken), false, yukleyici, yigin)?;
         yigin.pop();
 
         for (islem_adi, islem) in birim_islemleri {
@@ -229,11 +263,38 @@ fn dosyayi_coz(
     // Birim olarak yüklenen dosyanın üst düzey cümleleri İÇE ALINMAZ
     // (kapsülleme, RFC-0009 §2): dosya kendi başına çalıştırılabilir kalır,
     // birim olarak yalnız tanımlarını verir.
-    if birim_adi.is_some() {
+    if !ana_kaynak {
         kalan.clear();
     }
 
     Ok((kalan, islemler, yapilar, testler))
+}
+
+fn yukleme_hatasi(ad: &str, tur: KullanimTuru, hata: &str, satir: usize) -> Tani {
+    match tur {
+        KullanimTuru::Birim => Tani::yeni(
+            "A010",
+            format!("\"{}\" birimi yüklenemedi: {}.", ad, hata),
+            satir,
+            1,
+            1,
+        )
+        .onerili(format!(
+            "Kullanan kaynakla aynı klasörde {}.dil dosyası olmalı (RFC-0009).",
+            ad
+        )),
+        KullanimTuru::Paket => Tani::yeni(
+            "A011",
+            format!("\"{}\" paketi yüklenemedi: {}.", ad, hata),
+            satir,
+            1,
+            1,
+        )
+        .onerili(format!(
+            "{} projesini yerel_bağımlılıklar listesine ekle ve `dil kilitle .` çalıştır.",
+            ad
+        )),
+    }
 }
 
 fn cakisma(tur: &str, ad: &str, birinci: &str, ikinci: &str, satir: usize) -> Tani {
@@ -299,6 +360,24 @@ pub fn kaynagi_dene(kaynak: &str) -> Result<Vec<TestSonucu>, Tani> {
 /// ayrıştırma cümle atlayarak, denetim cümle başına sürerek toplar.
 /// Boş liste = temiz. `dil denetle` ve LSP bu görünümü kullanır.
 pub fn kaynagi_tanilari(kaynak: &str, yukleyici: &mut BirimYukleyici) -> Vec<Tani> {
+    let mut kokenli = |istek: BirimIstegi<'_>| {
+        if istek.tur == KullanimTuru::Paket {
+            return Err("paket çözümü için proje bağlamı gerekir".into());
+        }
+        yukleyici(istek.ad).map(|kaynak| YuklenenBirim {
+            kaynak,
+            koken: istek.ad.to_string(),
+        })
+    };
+    kaynagi_tanilari_kokenlerle(kaynak, None, &mut kokenli)
+}
+
+/// Çoklu tanı görünümünün kaynak-kökenli karşılığı.
+pub fn kaynagi_tanilari_kokenlerle(
+    kaynak: &str,
+    koken: Option<&str>,
+    yukleyici: &mut KokenliBirimYukleyici,
+) -> Vec<Tani> {
     let tokenlar = match sozcukleyici::sozcukle(kaynak) {
         Ok(tokenlar) => tokenlar,
         Err(tani) => return vec![tani],
@@ -310,11 +389,21 @@ pub fn kaynagi_tanilari(kaynak: &str, yukleyici: &mut BirimYukleyici) -> Vec<Tan
     let mut yapilar: Vec<Yapi> = Vec::new();
     let mut testler: Vec<Test> = Vec::new();
     let mut yigin: Vec<String> = Vec::new();
-    for (ad, satir) in ayristirici::kullanilan_birimler(&tokenlar) {
-        match yukleyici(&ad) {
-            Ok(icerik) => {
-                yigin.push(ad.clone());
-                match dosyayi_coz(&icerik, Some(&ad), yukleyici, &mut yigin) {
+    for (ad, tur, satir) in ayristirici::kullanilan_birimler(&tokenlar) {
+        match yukleyici(BirimIstegi {
+            ad: &ad,
+            tur,
+            isteyen: koken,
+        }) {
+            Ok(yuklenen) => {
+                yigin.push(yuklenen.koken.clone());
+                match dosyayi_coz(
+                    &yuklenen.kaynak,
+                    Some(&yuklenen.koken),
+                    false,
+                    yukleyici,
+                    &mut yigin,
+                ) {
                     Ok((_, birim_islemleri, birim_yapilari, birim_testleri)) => {
                         islemler.extend(birim_islemleri);
                         yapilar.extend(birim_yapilari);
@@ -324,16 +413,7 @@ pub fn kaynagi_tanilari(kaynak: &str, yukleyici: &mut BirimYukleyici) -> Vec<Tan
                 }
                 yigin.pop();
             }
-            Err(hata) => tanilar.push(
-                Tani::yeni(
-                    "A010",
-                    format!("\"{}\" birimi yüklenemedi: {}.", ad, hata),
-                    satir,
-                    1,
-                    1,
-                )
-                .onerili(format!("Aynı klasörde {}.dil dosyası olmalı (RFC-0009).", ad)),
-            ),
+            Err(hata) => tanilar.push(yukleme_hatasi(&ad, tur, &hata, satir)),
         }
     }
 

@@ -121,7 +121,7 @@ pub fn islem_adlarini_tara(tokenlar: &[Token]) -> Vec<String> {
 /// Üst düzeydeki `X birimini kullan` satırlarını (ad, satır) olarak toplar.
 /// Tam ayrıştırmadan ÖNCE çağrılır ki birimler yüklenip işlem adları
 /// tohumlanabilsin; kalıp, ayrıştırıcıdaki Kullan koluyla birebir aynıdır.
-pub fn kullanilan_birimler(tokenlar: &[Token]) -> Vec<(String, usize)> {
+pub fn kullanilan_birimler(tokenlar: &[Token]) -> Vec<(String, crate::agac::KullanimTuru, usize)> {
     let mut sonuc = Vec::new();
     let mut derinlik = 0usize;
     let mut satir_basi = true;
@@ -138,10 +138,15 @@ pub fn kullanilan_birimler(tokenlar: &[Token]) -> Vec<(String, usize)> {
             }
             TokenTur::SatirSonu => satir_basi = true,
             TokenTur::Kelime(ad) if satir_basi && derinlik == 0 => {
-                let birimini = matches!(
-                    tokenlar.get(i + 1).map(|t| &t.tur),
-                    Some(TokenTur::Kelime(k)) if k == "birimini"
-                );
+                let tur = match tokenlar.get(i + 1).map(|t| &t.tur) {
+                    Some(TokenTur::Kelime(k)) if k == "birimini" => {
+                        Some(crate::agac::KullanimTuru::Birim)
+                    }
+                    Some(TokenTur::Kelime(k)) if k == "paketini" => {
+                        Some(crate::agac::KullanimTuru::Paket)
+                    }
+                    _ => None,
+                };
                 let kullan = matches!(
                     tokenlar.get(i + 2).map(|t| &t.tur),
                     Some(TokenTur::Kelime(k)) if k == "kullan"
@@ -150,8 +155,8 @@ pub fn kullanilan_birimler(tokenlar: &[Token]) -> Vec<(String, usize)> {
                     tokenlar.get(i + 3).map(|t| &t.tur),
                     Some(TokenTur::SatirSonu) | None
                 );
-                if birimini && kullan && satir_bitti {
-                    sonuc.push((ad.clone(), tokenlar[i].satir));
+                if let Some(tur) = tur.filter(|_| kullan && satir_bitti) {
+                    sonuc.push((ad.clone(), tur, tokenlar[i].satir));
                 }
                 satir_basi = false;
             }
@@ -521,19 +526,28 @@ impl Ayristirici {
                     satir_tokenlari.first().map(|t| &t.tur),
                     satir_tokenlari.get(1).map(|t| &t.tur),
                 ) {
-                    (Some(TokenTur::Kelime(birim)), Some(TokenTur::Kelime(b)))
-                        if satir_tokenlari.len() == 3 && b == "birimini" =>
+                    (Some(TokenTur::Kelime(ad)), Some(TokenTur::Kelime(tur)))
+                        if satir_tokenlari.len() == 3
+                            && matches!(tur.as_str(), "birimini" | "paketini") =>
                     {
-                        Ok(Cumle::Kullan { birim: birim.clone(), satir: satir_no })
+                        Ok(Cumle::Kullan {
+                            ad: ad.clone(),
+                            tur: if tur == "birimini" {
+                                crate::agac::KullanimTuru::Birim
+                            } else {
+                                crate::agac::KullanimTuru::Paket
+                            },
+                            satir: satir_no,
+                        })
                     }
                     _ => Err(Tani::yeni(
                         "S034",
-                        "Birim kullanımı \"<ad> birimini kullan\" biçiminde yazılır.".into(),
+                        "Kullanım \"<ad> birimini kullan\" ya da \"<ad> paketini kullan\" biçiminde yazılır.".into(),
                         satir_no,
                         1,
                         1,
                     )
-                    .onerili("Örnek: hesaplar birimini kullan — aynı klasördeki hesaplar.dil dosyasını alır.".into())),
+                    .onerili("Örnek: hesaplar birimini kullan — aynı klasördeki dosyayı; grafik paketini kullan — proje bağımlılığını alır.".into())),
                 }
             }
             Some("bitir") => {

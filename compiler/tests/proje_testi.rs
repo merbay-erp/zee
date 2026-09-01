@@ -42,7 +42,25 @@ fn bildirim_gecerli_zee_kaynagidir() {
             ad: "stok-paneli".into(),
             surum: "1.2.3".into(),
             giris: "kaynak/ana.dil".into(),
+            yerel_bagimliliklar: Vec::new(),
         }
+    );
+}
+
+#[test]
+fn bildirim_yerel_bagimliliklari_tek_gercek_kaynaktan_alir() {
+    let kaynak = "proje \"uygulama\" olsun\nsürüm \"0.1.0\" olsun\ngiriş \"ana.dil\" olsun\nyerel_bağımlılıklar \"../grafik\", \"../ortak\" listesi olsun\n";
+    assert_eq!(
+        bildirimi_oku(kaynak)
+            .expect("yerel bağımlılıklar geçmeli")
+            .yerel_bagimliliklar,
+        vec!["../grafik", "../ortak"]
+    );
+
+    let kotu = "proje \"uygulama\" olsun\nsürüm \"0.1.0\" olsun\ngiriş \"ana.dil\" olsun\nyerel_bağımlılıklar \"/mutlak\" listesi olsun\n";
+    assert_eq!(
+        bildirimi_oku(kotu).expect_err("mutlak bağımlılık yolu").kod,
+        "P005"
     );
 }
 
@@ -162,6 +180,11 @@ fn yeni_komutu_proje_bildirimi_uretir() {
         bildirimi_oku(&bildirim).expect("üretilen bildirim").ad,
         "ilk-projem"
     );
+    assert!(bildirim.contains("yerel_bağımlılıklar boş liste olsun"));
+    assert!(
+        proje.join("proje.kilit").is_file(),
+        "iskelet kilitli başlamalı"
+    );
 
     let dene = Command::new(env!("CARGO_BIN_EXE_dil"))
         .arg("dene")
@@ -173,6 +196,155 @@ fn yeni_komutu_proje_bildirimi_uretir() {
         "{}",
         String::from_utf8_lossy(&dene.stderr)
     );
+}
+
+#[test]
+fn yerel_paketler_kokenli_yuklenir_ve_icerikle_kilitlenir() {
+    let gecici = GeciciKlasor::yeni();
+    let temel = gecici.yol().join("temel");
+    let hesap = gecici.yol().join("hesap");
+    let uygulama = gecici.yol().join("uygulama");
+    for klasor in [&temel, &hesap, &uygulama] {
+        std::fs::create_dir(klasor).expect("proje klasörü");
+    }
+
+    std::fs::write(
+        temel.join("proje.dil"),
+        "proje \"temel\" olsun\nsürüm \"1.0.0\" olsun\ngiriş \"temel.dil\" olsun\n",
+    )
+    .expect("temel bildirim");
+    std::fs::write(temel.join("temel.dil"), "işlem üç ver\n    3 döndür\n").expect("temel kaynak");
+
+    std::fs::write(
+        hesap.join("proje.dil"),
+        "proje \"hesap\" olsun\nsürüm \"2.1.0\" olsun\ngiriş \"paket.dil\" olsun\nyerel_bağımlılıklar \"../temel\" listesi olsun\n",
+    )
+    .expect("hesap bildirim");
+    std::fs::write(hesap.join("yardimci.dil"), "işlem iki ver\n    2 döndür\n")
+        .expect("paket içi birim");
+    std::fs::write(
+        hesap.join("paket.dil"),
+        "yardimci birimini kullan\ntemel paketini kullan\n\n\"paketin üst düzeyi çalışmamalı\" yaz\n\nişlem toplam ver\n    a iki ver olsun\n    b üç ver olsun\n    toplam a ile b nin toplamı olsun\n    toplamı döndür\n",
+    )
+    .expect("hesap giriş");
+
+    std::fs::write(
+        uygulama.join("proje.dil"),
+        "proje \"uygulama\" olsun\nsürüm \"0.1.0\" olsun\ngiriş \"ana.dil\" olsun\nyerel_bağımlılıklar \"../hesap\" listesi olsun\n",
+    )
+    .expect("uygulama bildirim");
+    std::fs::write(
+        uygulama.join("ana.dil"),
+        "hesap paketini kullan\n\nsonuç toplam ver olsun\nsonucu yaz\n",
+    )
+    .expect("uygulama giriş");
+
+    let ikili = env!("CARGO_BIN_EXE_dil");
+    let kilitsiz = Command::new(ikili)
+        .args(["çalıştır", uygulama.to_str().expect("utf8")])
+        .output()
+        .expect("kilitsiz çalıştır");
+    assert!(!kilitsiz.status.success());
+    assert!(String::from_utf8_lossy(&kilitsiz.stderr).contains("P008"));
+
+    let kilitle = Command::new(ikili)
+        .args(["kilitle", uygulama.to_str().expect("utf8")])
+        .output()
+        .expect("kilitle");
+    assert!(
+        kilitle.status.success(),
+        "{}",
+        String::from_utf8_lossy(&kilitle.stderr)
+    );
+    let ilk_kilit = std::fs::read_to_string(uygulama.join("proje.kilit")).expect("kilit");
+    assert!(ilk_kilit.contains("paket \"hesap\" \"2.1.0\""));
+    assert!(ilk_kilit.contains("paket \"temel\" \"1.0.0\""));
+    assert!(ilk_kilit.contains("sha256:"));
+    assert!(
+        !ilk_kilit.contains(&gecici.yol().to_string_lossy().into_owned()),
+        "kilit makineye özgü mutlak yol taşımamalı"
+    );
+
+    let calistir = Command::new(ikili)
+        .args(["çalıştır", uygulama.to_str().expect("utf8")])
+        .output()
+        .expect("paketli çalıştır");
+    assert!(
+        calistir.status.success(),
+        "{}",
+        String::from_utf8_lossy(&calistir.stderr)
+    );
+    assert_eq!(String::from_utf8_lossy(&calistir.stdout), "5\n");
+
+    // Paket içeriği değişince eski kilit sessizce kabul edilmez.
+    std::fs::write(hesap.join("yardimci.dil"), "işlem iki ver\n    4 döndür\n")
+        .expect("paket değişikliği");
+    let bayat = Command::new(ikili)
+        .args(["denetle", uygulama.to_str().expect("utf8")])
+        .output()
+        .expect("bayat kilit");
+    assert!(!bayat.status.success());
+    assert!(String::from_utf8_lossy(&bayat.stderr).contains("P008"));
+
+    let yeniden = Command::new(ikili)
+        .args(["kilitle", uygulama.to_str().expect("utf8")])
+        .output()
+        .expect("yeniden kilitle");
+    assert!(yeniden.status.success());
+    let ikinci_kilit = std::fs::read_to_string(uygulama.join("proje.kilit")).expect("yeni kilit");
+    assert_ne!(ilk_kilit, ikinci_kilit, "içerik özeti değişmeli");
+
+    let tekrar = Command::new(ikili)
+        .args(["kilitle", uygulama.to_str().expect("utf8")])
+        .output()
+        .expect("deterministik kilitle");
+    assert!(tekrar.status.success());
+    assert_eq!(
+        ikinci_kilit,
+        std::fs::read_to_string(uygulama.join("proje.kilit")).expect("aynı kilit")
+    );
+
+    // Geçişli paket grafikte bulunsa da yalnız doğrudan bağımlılık alınabilir.
+    std::fs::write(
+        uygulama.join("ana.dil"),
+        "temel paketini kullan\n\nsonuç üç ver olsun\nsonucu yaz\n",
+    )
+    .expect("doğrudan sınır");
+    let gecisli = Command::new(ikili)
+        .args(["denetle", uygulama.to_str().expect("utf8")])
+        .output()
+        .expect("geçişli bağımlılık denetimi");
+    assert!(!gecisli.status.success());
+    assert!(String::from_utf8_lossy(&gecisli.stderr).contains("A011"));
+}
+
+#[test]
+fn yerel_bagimlilik_dongusu_kilitlenmez() {
+    let gecici = GeciciKlasor::yeni();
+    let a = gecici.yol().join("a");
+    let b = gecici.yol().join("b");
+    std::fs::create_dir(&a).expect("a");
+    std::fs::create_dir(&b).expect("b");
+    std::fs::write(
+        a.join("proje.dil"),
+        "proje \"a\" olsun\nsürüm \"0.1.0\" olsun\ngiriş \"ana.dil\" olsun\nyerel_bağımlılıklar \"../b\" listesi olsun\n",
+    )
+    .expect("a bildirim");
+    std::fs::write(a.join("ana.dil"), "\"a\" yaz\n").expect("a kaynak");
+    std::fs::write(
+        b.join("proje.dil"),
+        "proje \"b\" olsun\nsürüm \"0.1.0\" olsun\ngiriş \"ana.dil\" olsun\nyerel_bağımlılıklar \"../a\" listesi olsun\n",
+    )
+    .expect("b bildirim");
+    std::fs::write(b.join("ana.dil"), "\"b\" yaz\n").expect("b kaynak");
+
+    let cikti = Command::new(env!("CARGO_BIN_EXE_dil"))
+        .args(["kilitle", a.to_str().expect("utf8")])
+        .output()
+        .expect("döngü kilitle");
+    assert!(!cikti.status.success());
+    assert!(String::from_utf8_lossy(&cikti.stderr).contains("P007"));
+    assert!(!a.join("proje.kilit").exists());
 }
 
 #[test]

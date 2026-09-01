@@ -458,6 +458,27 @@ hesap_araclari birimini kullan
 Tanımlar görünür, birimin üst düzey cümleleri kapsüllüdür; ad çakışması
 sessiz gölgelemez, hatadır (A008).
 
+Projeler arası paylaşım pakettir. Uygulamanın `proje.dil` bildirimi:
+
+```text
+yerel_bağımlılıklar "../hesap" listesi olsun
+```
+
+Bağımlı projenin adı `hesap` ise uygulama kaynağı:
+
+```text
+hesap paketini kullan
+
+sonuç toplam ver olsun
+sonucu yaz
+```
+
+`dil kilitle .` doğrudan ve geçişli yerel paketleri `proje.kilit` içinde
+göreli yol, sürüm ve SHA-256 kaynak özetiyle sabitler. Yalnız doğrudan
+bildirilen paket kullanılabilir; geçişli bağımlılığa gizlice uzanılmaz.
+Paket içindeki birimler kendi kaynak klasöründen çözülür ve paketin üst düzey
+cümleleri de birimlerde olduğu gibi kapsüllüdür (K-078).
+
 **Gömülü standart kitaplık** (RFC-0014, deneysel): `matematik` (mutlak, üs,
 tam karekök, obeb, okek), `liste_araclari` (toplam, uçlar, ortalama) ve
 `metin_araclari` (tersi, ünlü sayımı, baş harf) ve `sozluk_araclari`
