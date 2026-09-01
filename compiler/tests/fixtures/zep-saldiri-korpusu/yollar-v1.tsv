@@ -1,0 +1,81 @@
+# ad	tür	Unicode kod noktaları	beklenen hata parçası
+ust-dizin	tam	002E 002E 002F 006B 002E 0064 0069 006C	Güvensiz
+mutlak-yol	tam	002F 006B 002E 0064 0069 006C	Güvensiz
+ters-bolu	tam	006B 0061 0079 006E 0061 006B 005C 006B 002E 0064 0069 006C	Güvensiz
+bos-bilesen	tam	006B 0061 0079 006E 0061 006B 002F 002F 006B 002E 0064 0069 006C	Güvensiz
+nokta-bileseni	tam	006B 0061 0079 006E 0061 006B 002F 002E 002F 006B 002E 0064 0069 006C	Güvensiz
+nul	tam	006B 0061 0079 006E 0061 006B 002F 0000 006B 002E 0064 0069 006C	Güvensiz
+satir-sonu	tam	006B 0061 0079 006E 0061 006B 002F 000A 006B 002E 0064 0069 006C	Güvensiz
+nfd-cagri	tam	006B 0061 0079 006E 0061 006B 002F 0063 0327 0061 0067 0306 0072 0131 002E 0064 0069 006C	NFC
+slash-philippine-single	iç	1735	Güvensiz
+slash-caret-insertion	iç	2041	Güvensiz
+slash-division	iç	2215	Güvensiz
+slash-fraction	iç	2044	Güvensiz
+slash-box-diagonal	iç	2571	Güvensiz
+slash-math-rising	iç	27CB	Güvensiz
+slash-big-solidus	iç	29F8	Güvensiz
+slash-greek-instrumental	iç	1D23A	Güvensiz
+slash-cjk-stroke-sp	iç	31D3	Güvensiz
+slash-kana-repeat	iç	3033	Güvensiz
+slash-coptic-small	iç	2CC7	Güvensiz
+slash-coptic-capital	iç	2CC6	Güvensiz
+slash-katakana-no	iç	30CE	Güvensiz
+slash-cjk-ideograph	iç	4E3F	Güvensiz
+slash-kangxi-radical	iç	2F03	Güvensiz
+slash-with-overbar	iç	29F6	Güvensiz
+slash-double-operator	iç	2AFD	Güvensiz
+slash-triple-operator	iç	2AFB	Güvensiz
+slash-fullwidth	iç	FF0F	Güvensiz
+backslash-fullwidth	iç	FF3C	Güvensiz
+backslash-small	iç	FE68	Güvensiz
+backslash-set-minus	iç	2216	Güvensiz
+backslash-math-falling	iç	27CD	Güvensiz
+backslash-reverse-operator	iç	29F5	Güvensiz
+backslash-big-reverse	iç	29F9	Güvensiz
+backslash-greek-vocal	iç	1D20F	Güvensiz
+backslash-greek-instrumental	iç	1D23B	Güvensiz
+backslash-cjk-stroke-d	iç	31D4	Güvensiz
+backslash-cjk-ideograph	iç	4E36	Güvensiz
+backslash-kangxi-radical	iç	2F02	Güvensiz
+backslash-coptic-double	iç	2CF9	Güvensiz
+backslash-ocr-double	iç	244A	Güvensiz
+dot-musical-augmentation	iç	1D16D	Güvensiz
+dot-one-dot-leader	iç	2024	Güvensiz
+dot-syriac-supralinear	iç	0701	Güvensiz
+dot-syriac-sublinear	iç	0702	Güvensiz
+dot-vai-full-stop	iç	A60E	Güvensiz
+dot-kharoshthi	iç	10A50	Güvensiz
+dot-arabic-zero	iç	0660	Güvensiz
+dot-extended-arabic-zero	iç	06F0	Güvensiz
+dot-lisu-tone-mya-ti	iç	A4F8	Güvensiz
+dot-lisu-tone-mya-bo	iç	A4FB	Güvensiz
+dot-two-dot-leader	iç	2025	Güvensiz
+dot-lisu-tone-mya-cya	iç	A4FA	Güvensiz
+dot-horizontal-ellipsis	iç	2026	Güvensiz
+dot-fullwidth	iç	FF0E	Güvensiz
+colon-devanagari-visarga	iç	0903	Güvensiz
+colon-gujarati-visarga	iç	0A83	Güvensiz
+colon-fullwidth	iç	FF1A	Güvensiz
+colon-armenian-full-stop	iç	0589	Güvensiz
+colon-syriac-supralinear	iç	0703	Güvensiz
+colon-syriac-sublinear	iç	0704	Güvensiz
+colon-runic-multiple	iç	16EC	Güvensiz
+colon-vertical-two-dot	iç	FE30	Güvensiz
+colon-mongolian-full-stop	iç	1803	Güvensiz
+colon-manchu-full-stop	iç	1809	Güvensiz
+colon-two-dot-punctuation	iç	205A	Güvensiz
+colon-hebrew-sof-pasuq	iç	05C3	Güvensiz
+colon-raised	iç	02F8	Güvensiz
+colon-modifier	iç	A789	Güvensiz
+colon-ratio	iç	2236	Güvensiz
+colon-triangular	iç	02D0	Güvensiz
+colon-lisu-tone	iç	A4FD	Güvensiz
+colon-tolong-siki	iç	11DD9	Güvensiz
+colon-double-equal	iç	2A74	Güvensiz
+colon-rule-delayed	iç	29F4	Güvensiz
+format-zero-width-space	iç	200B	Güvensiz
+format-left-to-right-mark	iç	200E	Güvensiz
+format-right-to-left-override	iç	202E	Güvensiz
+format-left-to-right-isolate	iç	2066	Güvensiz
+format-pop-directional-isolate	iç	2069	Güvensiz
+format-byte-order-mark	iç	FEFF	Güvensiz

@@ -58,6 +58,16 @@ fn dosyalar(cikti: &dil::tedarik::PaketCiktilari) -> (Vec<u8>, Vec<u8>, Vec<u8>,
     )
 }
 
+fn hex_yaz(baytlar: &[u8]) -> String {
+    const BASAMAK: &[u8; 16] = b"0123456789abcdef";
+    let mut sonuc = String::with_capacity(baytlar.len() * 2);
+    for bayt in baytlar {
+        sonuc.push(BASAMAK[(bayt >> 4) as usize] as char);
+        sonuc.push(BASAMAK[(bayt & 0x0f) as usize] as char);
+    }
+    sonuc
+}
+
 #[test]
 fn kaynak_paketi_sbom_provenance_ve_imza_byte_byte_tekrar_uretilir() {
     let gecici = GeciciKlasor::yeni();
@@ -96,6 +106,30 @@ fn kaynak_paketi_sbom_provenance_ve_imza_byte_byte_tekrar_uretilir() {
     assert!(String::from_utf8(ilk_dosyalar.3)
         .expect("provenance utf8")
         .contains("https://slsa.dev/provenance/v1"));
+}
+
+#[test]
+fn kanonik_zep_fixture_i_butun_tier1_platformlarda_ayni_bayttir() {
+    let gecici = GeciciKlasor::yeni();
+    let proje = gecici.yol().join("proje");
+    let anahtar = gecici.yol().join("yayinci.anahtar");
+    proje_yaz(&proje, false);
+    std::fs::write(
+        proje.join("kaynak/çağrı.dil"),
+        "işlem anıyı taşı\n    Metin döndürür\n    \"Eliz\" döndür\n",
+    )
+    .expect("Unicode fixture kaynağı");
+    anahtar_uret(&anahtar).expect("anahtar");
+
+    let cikti =
+        paketle_zamanla(&proje, &anahtar, &gecici.yol().join("cikti"), 0).expect("fixture paketi");
+    let gercek = std::fs::read(&cikti.paket).expect("fixture .zep");
+    let beklenen = include_str!("fixtures/zep-kanonik-v1.hex").trim();
+    assert_eq!(
+        hex_yaz(&gercek),
+        beklenen,
+        ".zep v1 kanonik fixture değişti; biçim değişikliği RFC/spec ister"
+    );
 }
 
 #[test]

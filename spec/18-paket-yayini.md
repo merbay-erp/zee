@@ -1,6 +1,6 @@
 # 18 — Tekrar Üretilebilir Paket Yayını
 
-Normatif kaynak: RFC-0020 §1–5/8. Mimari sınır: ADR-006. Tanı: P012.
+Normatif kaynak: RFC-0020 §1–5/8. Mimari sınır: ADR-006, ADR-028. Tanı: P012.
 
 Bu bölüm çalışan yerel yayın zincirini tanımlar. Registry rol metadata
 doğrulaması artık [spec/19](19-registry-metadata-guveni.md)'da çalışır;
@@ -44,9 +44,11 @@ zaman girdisinden bağımsızdır.
 
 Arşiv `ZEEZEP\0\x01` sekiz byte sihir, big-endian u32 girdi sayısı ve her
 girdi için big-endian u32 yol uzunluğu + yol + u64 içerik uzunluğu + içerik
-taşır. Yollar `/` ayraçlı UTF-8 göreli yoldur ve byte sırasıyla kesin artar.
-Yalnız gerçek UTF-8 `.dil` dosyaları pakete girer. Zaman/sahip/izin/platform
-metadata'sı girmez.
+taşır. Yollar `/` ayraçlı NFC UTF-8 göreli yoldur ve byte sırasıyla kesin
+artar. Üretici dosya sistemi bileşenlerini Unicode 17.0 UAX #15 NFC'ye
+çevirir; normalizasyondan sonra çakışan iki yolu reddeder. Tüketici arşiv
+yolunu normalize etmez, zaten NFC değilse reddeder. Yalnız gerçek UTF-8 `.dil`
+dosyaları pakete girer. Zaman/sahip/izin/platform metadata'sı girmez.
 
 ZORUNLU limitler:
 
@@ -56,8 +58,13 @@ ZORUNLU limitler:
 - yol en çok 1.024 byte.
 
 Mutlak yol, ters bölü, NUL, boş/`.`/`..` bileşen, yinelenen/sırasız yol,
-sembolik bağ ve son girdiden sonra byte YASAKTIR. Uzunluk toplama taşması hata
-olur; ayırma sınır denetiminden sonra yapılır. Pakette `proje.dil` ZORUNLUDUR.
+sembolik bağ ve son girdiden sonra byte YASAKTIR. Unicode 17.0 UTS #39'da
+`/`, `\\`, `.`, `:` iskeletine giden karakterler; tam genişlikli `/` ve `.`;
+U+200B–U+200F, U+202A–U+202E, U+2060–U+206F ve U+FEFF görünmez biçim
+denetleyicileri de yol içinde YASAKTIR. Bu küme `.zep` v1'e dondurulmuştur;
+Unicode veri yükseltmesi RFC/spec/conformance incelemesi ister. Uzunluk toplama
+taşması hata olur; ayırma sınır denetiminden sonra yapılır. Pakette `proje.dil`
+ZORUNLUDUR.
 
 ## SBOM (ZORUNLU)
 
@@ -113,6 +120,8 @@ kullanımda tam kümeyi yeniden doğrular ve yarım kümeyi yayın saymaz.
 Uyumlu gerçekleme en az şu olumluları kanıtlar:
 
 - aynı girdi/zaman için dört dosyanın byte-byte eşitliği;
+- Türkçe Unicode adlı kaynak ağacının Linux/macOS/Windows'ta tek sabit `.zep`
+  fixture byte'ına eşitliği;
 - üretilmiş tam zincirin doğrulanması;
 - CLI'ın Türkçe komut/çıktısı.
 
@@ -121,4 +130,6 @@ Ve şu olumsuzları kanıtlar:
 - var olan anahtarı ezme;
 - yayın imzası, arşiv, SBOM ve provenance oynama;
 - yerel bağımlılık, sembolik bağ, path traversal, fazladan byte;
+- NFD arşiv yolu, NFC çakışması, Unicode ayraç/nokta/iki nokta benzerleri ve
+  görünmez bidi karakterleri;
 - açık anahtar/kimlik uyumsuzluğu ve limit aşımı.

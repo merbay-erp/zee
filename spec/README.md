@@ -39,7 +39,7 @@ Kırıcı değişiklik sessizce yapılamaz: davranış değişikliği RFC'den ge
 | [15 — Yapılandırılmış Hata değeri](15-yapilandirilmis-hata-degeri.md) | kod, mesaj, neden zinciri, veri, eşleme ve geriye uyum | RFC-0008, K-091 |
 | [16 — Keyfî hassasiyetli Ondalık](16-keyfi-hassasiyetli-ondalik.md) | keyfî katsayı/ölçek, exact işlemler ve 34 haneli sonsuz bölüm bağlamı | RFC-0013, K-092 |
 | [17 — Değer semantiği ve gezme](17-deger-semantigi-ve-gezme.md) | derin değer kopyası, liste değer-sonuç imleci ve T053 kaynak sabitliği | RFC-0019, K-093 |
-| [18 — Tekrar üretilebilir paket yayını](18-paket-yayini.md) | `.zep`, Ed25519 yayın imzası, SPDX SBOM ve SLSA provenance | RFC-0020, ADR-006, K-094 |
+| [18 — Tekrar üretilebilir paket yayını](18-paket-yayini.md) | NFC/Unicode güvenlik profilli kanonik `.zep`, Ed25519 imzası, SPDX SBOM ve SLSA provenance | RFC-0020, ADR-006/028, K-094/K-117 |
 | [19 — Registry metadata güven zinciri](19-registry-metadata-guveni.md) | eşik root/rotasyon, çevrimiçi rol bağları, rollback/expiry ve targets yayıncı politikası | RFC-0020, ADR-006, K-095 |
 | [20 — İfade grameri](20-ifade-grameri.md) | primary→postfix→çağrı→aritmetik→birleştirme→karşılaştırma→boolean katmanları ve tam tüketim | RFC-0021, ADR-002, K-097 |
 | [21 — Deterministik IO izi](21-deterministik-io-izi.md) | sürümlü kanonik olay biçimi, bütçeli kayıt ve dış etkisiz replay | RFC-0022, ADR-026, K-115 |

@@ -13,6 +13,7 @@ use serde_json::{json, Value};
 use std::collections::BTreeMap;
 use std::io::Write;
 use std::path::{Component, Path, PathBuf};
+use unicode_normalization::UnicodeNormalization;
 
 const PAKET_SIHRI: &[u8; 8] = b"ZEEZEP\0\x01";
 const IMZA_ALANI: &[u8] = b"zee-yayin-v1\0";
@@ -390,7 +391,7 @@ fn kaynaklari_topla(kok: &Path) -> Result<Vec<KaynakGirdisi>, String> {
 
     let mut sonuc = Vec::new();
     gez(kok, kok, &mut sonuc)?;
-    sonuc.sort_by(|a, b| a.yol.cmp(&b.yol));
+    kaynak_yollarini_sirala_ve_cakismayi_denetle(&mut sonuc)?;
     if sonuc.len() > AZAMI_DOSYA_SAYISI {
         return Err(format!(
             "Paket {} dosya sınırını aşıyor.",
@@ -401,6 +402,21 @@ fn kaynaklari_topla(kok: &Path) -> Result<Vec<KaynakGirdisi>, String> {
         return Err("Paket kaynaklarında proje.dil yok.".into());
     }
     Ok(sonuc)
+}
+
+fn kaynak_yollarini_sirala_ve_cakismayi_denetle(
+    girdiler: &mut [KaynakGirdisi],
+) -> Result<(), String> {
+    girdiler.sort_by(|a, b| a.yol.cmp(&b.yol));
+    if girdiler
+        .windows(2)
+        .any(|girdiler| girdiler[0].yol == girdiler[1].yol)
+    {
+        return Err(
+            "Paket kaynaklarında NFC normalizasyonundan sonra çakışan dosya yolları var.".into(),
+        );
+    }
+    Ok(())
 }
 
 fn arsivi_yaz(girdiler: &[KaynakGirdisi]) -> Result<Vec<u8>, String> {
@@ -518,6 +534,7 @@ fn duz_guvenli_yol(yol: &Path) -> Result<String, String> {
         let ad = ad
             .to_str()
             .ok_or_else(|| "Paket yolu UTF-8 olmalı.".to_string())?;
+        let ad = ad.nfc().collect::<String>();
         if ad.is_empty() || ad.chars().any(char::is_control) {
             return Err("Paket yolu boş/denetim karakterli bileşen taşıyor.".into());
         }
@@ -529,12 +546,19 @@ fn duz_guvenli_yol(yol: &Path) -> Result<String, String> {
 }
 
 fn guvenli_arsiv_yolu(yol: &str) -> Result<(), String> {
+    if yol.nfc().collect::<String>() != yol {
+        return Err(format!(
+            "Güvensiz paket yolu: {:?}; .zep v1 yolu NFC olmalı.",
+            yol
+        ));
+    }
     if yol.is_empty()
         || yol.starts_with('/')
         || yol.contains('\\')
         || yol.contains(':')
         || yol.contains('\0')
         || yol.chars().any(char::is_control)
+        || yol.chars().any(guvensiz_unicode_yol_imi)
         || yol
             .split('/')
             .any(|parca| parca.is_empty() || matches!(parca, "." | ".."))
@@ -542,6 +566,91 @@ fn guvenli_arsiv_yolu(yol: &str) -> Result<(), String> {
         return Err(format!("Güvensiz paket yolu: {:?}.", yol));
     }
     Ok(())
+}
+
+/// UTS #39 Unicode 17.0 confusable verisinde `/`, `\\`, `.`, `:` iskeletine
+/// dönüşen yol metakarakterleri ile görünmez yön/biçim denetleyicileri.
+/// `.zep` v1 bu kümeyi bilinçli olarak dondurur; yeni Unicode sürümü sessizce
+/// paket kimliğini değiştiremez.
+fn guvensiz_unicode_yol_imi(karakter: char) -> bool {
+    matches!(
+        karakter,
+        // `/` iskeleti ve NFKC'deki tam genişlikli solidus.
+        '\u{1735}'
+            | '\u{2041}'
+            | '\u{2215}'
+            | '\u{2044}'
+            | '\u{2571}'
+            | '\u{27cb}'
+            | '\u{29f8}'
+            | '\u{1d23a}'
+            | '\u{31d3}'
+            | '\u{3033}'
+            | '\u{2cc7}'
+            | '\u{2cc6}'
+            | '\u{30ce}'
+            | '\u{4e3f}'
+            | '\u{2f03}'
+            | '\u{29f6}'
+            | '\u{2afd}'
+            | '\u{2afb}'
+            | '\u{ff0f}'
+            // `\\` iskeleti.
+            | '\u{ff3c}'
+            | '\u{fe68}'
+            | '\u{2216}'
+            | '\u{27cd}'
+            | '\u{29f5}'
+            | '\u{29f9}'
+            | '\u{1d20f}'
+            | '\u{1d23b}'
+            | '\u{31d4}'
+            | '\u{4e36}'
+            | '\u{2f02}'
+            | '\u{2cf9}'
+            | '\u{244a}'
+            // `.` / `..` iskeleti ve tam genişlikli nokta.
+            | '\u{1d16d}'
+            | '\u{2024}'
+            | '\u{0701}'
+            | '\u{0702}'
+            | '\u{a60e}'
+            | '\u{10a50}'
+            | '\u{0660}'
+            | '\u{06f0}'
+            | '\u{a4f8}'
+            | '\u{a4fb}'
+            | '\u{2025}'
+            | '\u{a4fa}'
+            | '\u{2026}'
+            | '\u{ff0e}'
+            // `:` iskeleti; Windows sürücü/ADS yorumuna kapıyı kapatır.
+            | '\u{0903}'
+            | '\u{0a83}'
+            | '\u{ff1a}'
+            | '\u{0589}'
+            | '\u{0703}'
+            | '\u{0704}'
+            | '\u{16ec}'
+            | '\u{fe30}'
+            | '\u{1803}'
+            | '\u{1809}'
+            | '\u{205a}'
+            | '\u{05c3}'
+            | '\u{02f8}'
+            | '\u{a789}'
+            | '\u{2236}'
+            | '\u{02d0}'
+            | '\u{a4fd}'
+            | '\u{11dd9}'
+            | '\u{2a74}'
+            | '\u{29f4}'
+            // Görünmez/bidi biçim denetleyicileri.
+            | '\u{200b}'..='\u{200f}'
+            | '\u{202a}'..='\u{202e}'
+            | '\u{2060}'..='\u{206f}'
+            | '\u{feff}'
+    )
 }
 
 fn sbom_uret(
@@ -819,6 +928,16 @@ fn utc_zamani(saniye: i64) -> String {
 mod testler {
     use super::*;
 
+    fn kod_noktalarini_coz(metin: &str) -> String {
+        metin
+            .split_ascii_whitespace()
+            .map(|kod| {
+                let deger = u32::from_str_radix(kod, 16).expect("korpus kod noktası hex");
+                char::from_u32(deger).expect("korpus Unicode scalar")
+            })
+            .collect()
+    }
+
     #[test]
     fn bozuk_arsiv_yolu_ve_fazladan_byte_reddedilir() {
         let girdi = KaynakGirdisi {
@@ -858,6 +977,69 @@ mod testler {
         ])
         .expect("ham arşiv");
         assert!(arsivi_oku(&yinelenen).unwrap_err().contains("tekil"));
+    }
+
+    #[test]
+    fn kalici_saldiri_korpusu_butun_unicode_yol_saldirilarini_reddeder() {
+        let korpus = include_str!("../tests/fixtures/zep-saldiri-korpusu/yollar-v1.tsv");
+        let mut sayi = 0usize;
+        for satir in korpus.lines().filter(|satir| !satir.starts_with('#')) {
+            if satir.trim().is_empty() {
+                continue;
+            }
+            let alanlar = satir.split('\t').collect::<Vec<_>>();
+            assert_eq!(alanlar.len(), 4, "bozuk korpus satırı: {satir}");
+            let metin = kod_noktalarini_coz(alanlar[2]);
+            let yol = match alanlar[1] {
+                "tam" => metin,
+                "iç" => format!("kaynak/{}dosya.dil", metin),
+                tur => panic!("bilinmeyen korpus türü: {tur}"),
+            };
+            let arsiv = arsivi_yaz(&[KaynakGirdisi {
+                yol,
+                icerik: b"x".to_vec(),
+            }])
+            .expect("ham saldırı arşivi");
+            let hata = arsivi_oku(&arsiv).expect_err("saldırı reddedilmeli");
+            assert!(
+                hata.contains(alanlar[3]),
+                "{} yanlış hata verdi: {}",
+                alanlar[0],
+                hata
+            );
+            sayi += 1;
+        }
+        assert_eq!(sayi, 80, "korpus satırı sessizce kaybolmamalı");
+    }
+
+    #[test]
+    fn dosya_sistemi_yolu_nfcye_kanoniklenir_arsiv_nfd_yolu_reddeder() {
+        let nfd = "kaynak/c\u{0327}ag\u{0306}rı.dil";
+        let nfc_yol = duz_guvenli_yol(Path::new(nfd)).expect("dosya sistemi yolu");
+        assert_eq!(nfc_yol, "kaynak/çağrı.dil");
+
+        let mut cakisanlar = vec![
+            KaynakGirdisi {
+                yol: nfc_yol,
+                icerik: Vec::new(),
+            },
+            KaynakGirdisi {
+                yol: duz_guvenli_yol(Path::new("kaynak/çağrı.dil")).expect("NFC yol"),
+                icerik: Vec::new(),
+            },
+        ];
+        assert!(
+            kaynak_yollarini_sirala_ve_cakismayi_denetle(&mut cakisanlar)
+                .unwrap_err()
+                .contains("çakışan")
+        );
+
+        let arsiv = arsivi_yaz(&[KaynakGirdisi {
+            yol: nfd.into(),
+            icerik: b"x".to_vec(),
+        }])
+        .expect("ham NFD arşivi");
+        assert!(arsivi_oku(&arsiv).unwrap_err().contains("NFC"));
     }
 
     #[test]

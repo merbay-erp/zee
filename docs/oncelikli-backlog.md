@@ -37,9 +37,11 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 13. K-116/RFC-0023/ADR-027 tohum→dizi algoritmasını, tam i64 aralığını,
     sanal saati ve hermetik adaptör gözlemlerini `zee-io-1` profiline bağladı;
     B-028 kapandı (460 test).
-14. Sıradaki makine omurgası B-030/B-031 paket artefaktı conformance ve
-    adversarial arşiv korpusudur.
-15. Üçüncü sprint: B-030/B-031 → B-043/B-044.
+14. K-117/ADR-028 `.zep` yollarını NFC'ye kanonikledi; Tier-1 işletim sistemi
+    fixture'ı ve 80 vakalık kalıcı saldırı korpusuyla B-030/B-031 kapandı
+    (463 test).
+15. Sıradaki makine omurgası B-043 spec↔code kanıt haritası ve B-044 hareketli
+    sayıların tek kaynağıdır.
 16. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
 
 ## P0 — V1 öncesi dil ve derleyici omurgası
@@ -239,12 +241,16 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 - **B-029 · KISMEN — registry protokolünü önce normatifleştir.** RFC-0020,
   spec/18 ve spec/19 wire/imza/expiry'yi koddan önce bağladı; K-095 metadata
   doğrulayıcısı çalışır. Taşıma/cache/CLI hâlâ açıktır.
-- **B-030 · KISMEN — platformlar arası kanonik paket testi.** `.zep` sıralama,
-  metadata'sızlık ve byte tekrarı testli; Unicode dosya normalizasyonu ve gerçek
-  iki platform fixture'ı eklenmelidir.
-- **B-031 · KISMEN — adversarial archive korpusunu büyüt.** Traversal, mutlak
-  yol, symlink, duplicate/fazladan byte ve dev metadata testli; Unicode ayraç
-  benzerleri ve ayrı kalıcı saldırı corpus'u eklenmelidir.
+- **B-030 · KAPALI (K-117) — platformlar arası kanonik paket testi.** Üretici
+  dosya sistemi bileşenlerini NFC'ye çevirir, çakışmayı reddeder; tüketici
+  yalnız kanonik NFC yolu kabul eder. Türkçe Unicode dosya adlı sabit `.zep`
+  fixture'ı aynı testle Linux/macOS/Windows CI'da byte-byte doğrulanır.
+- **B-031 · KAPALI (K-117) — adversarial archive korpusunu büyüt.** Unicode
+  17.0 UTS #39 ayraç/nokta/iki nokta benzerleri ve görünmez bidi denetleyicileri
+  dahil 80 kalıcı yol vakası ayrı TSV korpusundadır. Traversal, symlink,
+  duplicate/sıra, fazladan byte ve limit yapısal testleriyle birlikte ADR-028,
+  [spec/18](../spec/18-paket-yayini.md) ve
+  [conformance rehberi](zep-conformance.md) V1-P1-08'i kapatır.
 - **B-032 · KAPALI — lockfile formatını sürümle.** `proje.kilit` baştan
   `kilit_sürümü 2` taşır; sonraki formatlar migration testi istemelidir.
 
@@ -281,6 +287,6 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 ## Bir sonraki somut kapı
 
 İnsan kanıtı hattında B-001, doldurulmuş gerçek usability formları ve önceden
-ilan edilmiş eşikleri bekler. Makine hattında B-028/K-116 kapandı; sıradaki iş
-B-030 platformlar arası kanonik paket conformance'ı ile B-031 adversarial
-arşiv korpusudur.
+ilan edilmiş eşikleri bekler. Makine hattında B-030/B-031/K-117 kapandı;
+sıradaki iş B-043 spec↔code kanıt haritası ile B-044 hareketli README/test/RFC/
+ADR sayılarının tek kaynaktan üretilmesidir.

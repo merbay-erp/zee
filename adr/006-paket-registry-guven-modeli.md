@@ -1,6 +1,6 @@
 # ADR-006 — Paket registry güven modeli
 
-- **Durum:** kabul (yayın K-094; registry metadata güveni K-095; taşıma/cache sürüyor)
+- **Durum:** kabul (yayın K-094; metadata K-095; kanonik yol K-117; taşıma/cache sürüyor)
 - **Tarih:** 1 Eylül 2026
 - **Normatif ayrıntı:** RFC-0020, spec/18
 
@@ -61,9 +61,13 @@ Bir zee yayın birimi değişmez dört dosyadır:
 4. ilk üçünün tam adı, byte boyutu ve SHA-256 özetini bağlayan Ed25519 imzalı
    `zee-yayin-v1` bildirimi.
 
-Paket yalnız UTF-8 `.dil` kaynaklarını içerir; mutlak/üst dizin yolları,
-sembolik bağ, post-install betiği ve yerel yol bağımlılığı YASAKTIR. Dosya
-sayısı, yol, tek dosya ve toplam paket boyutu doğrulamadan önce sınırlıdır.
+Paket yalnız UTF-8 `.dil` kaynaklarını içerir. Dosya sistemi bileşenleri
+`.zep`e girmeden NFC'ye çevrilir; bu dönüşümden doğan yol çakışması reddedilir.
+Tüketici yalnız zaten NFC olan arşiv yolunu kabul eder. Mutlak/üst dizin
+yolları, UTS #39 ayraç/nokta/iki nokta benzerleri, görünmez bidi biçim
+karakterleri, sembolik bağ, post-install betiği ve yerel yol bağımlılığı
+YASAKTIR. Dosya sayısı, yol, tek dosya ve toplam paket boyutu doğrulamadan önce
+sınırlıdır. Ayrıntılı yol profili ADR-028 ve spec/18'dedir.
 İmzaya giren JSON, zee'nin kapalı şemasından deterministik alan sırasında
 yeniden serileştirilir ve `zee-yayin-v1\0` alan ayrımıyla imzalanır.
 
@@ -101,7 +105,9 @@ destekli saklamalıdır; zee bir düz dosyayı HSM eşdeğeri saymaz.
 ## Aşamalı gerçekleme durumu
 
 K-094'ün ilk dilimi §3'ü gerçekler: anahtar üretimi, `.zep`, SPDX, SLSA,
-imzalı yayın, çapraz doğrulama, limitler ve oynama testleri çalışır. K-095;
+imzalı yayın, çapraz doğrulama, limitler ve oynama testleri çalışır. K-117;
+NFC kanonik yolunu, Unicode 17.0 güvenlik kümesini, üç Tier-1 işletim sistemi
+CI fixture'ını ve 80 vakalık kalıcı saldırı korpusunu ekler. K-095;
 ağ dışı root sabitlemesini, eşik/çift eşikli ardışık rotasyonu,
 timestamp→snapshot→targets bağlarını, tek güncelleme saatini, sürüm+özet
 rollback/equivocation durumunu ve exact yayıncı/yanked/duyuru politikasını
@@ -117,9 +123,10 @@ ağ/cache güvencesi iddiası değildir.
   bozar; doğrulayıcı kaynakla imzalı kimliği de çapraz denetler.
 - Eşik kök ve rol ayrımı işletim yükü getirir; tek çevrimiçi anahtar
   kolaylığından bilinçli olarak vazgeçilir.
-- `ed25519-dalek`, `serde` ve `serde_json` yalnız native tedarik modülünde,
-  `Cargo.lock` ile sabitlenir. Ed25519 ve JSON kanonikleştirmesi elde yazılmaz;
-  ADR-001'in küçük ama uzman kitaplık kullanma kuralı korunur.
+- `ed25519-dalek`, `serde`, `serde_json` ve UAX #15 için
+  `unicode-normalization`, `Cargo.lock` ile sabitlenir. Ed25519, JSON kodlama ve
+  Unicode normalizasyonu elde yazılmaz; ADR-001'in küçük ama uzman kitaplık
+  kullanma kuralı korunur.
 
 ## Dayanaklar
 
@@ -127,3 +134,5 @@ ağ/cache güvencesi iddiası değildir.
 - [RFC 8032 — EdDSA / Ed25519](https://www.rfc-editor.org/info/rfc8032/)
 - [SLSA v1.2 Build Provenance](https://slsa.dev/spec/v1.2/build-provenance)
 - [SPDX Specification 3.0.1](https://spdx.github.io/spdx-spec/v3.0.1/scope/)
+- [Unicode UAX #15 — Normalization Forms](https://www.unicode.org/reports/tr15/)
+- [Unicode UTS #39 — Security Mechanisms](https://www.unicode.org/reports/tr39/)

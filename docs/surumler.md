@@ -315,6 +315,14 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   oynatmaz. FIFO girdi/rastgele fallback'i ve sahte dosya/ağ/sensör çıktıları
   da conformance kapsamındadır. Beş regresyonla toplam 460 test yeşildir;
   B-028/V1-P0-26 kapandı.
+- **Platformlar arası kanonik `.zep` ve saldırı korpusu** (K-117, RFC-0020,
+  ADR-028): paket üreticisi dosya sistemi bileşenlerini Unicode 17.0 NFC'ye
+  çevirir, normalizasyon çakışmasını reddeder; tüketici yalnız zaten kanonik
+  yolu kabul eder. UTS #39 `/`, `\\`, `.`, `:` benzerleri, tam genişlikli
+  ayraçlar ve görünmez bidi denetleyicileri fail-closed'dur. Türkçe Unicode
+  dosya adlı sabit `.zep` fixture'ı Linux/macOS/Windows CI'da aynı testle,
+  80 yol saldırısı ayrı kalıcı korpusla korunur. Üç yeni regresyonla toplam
+  463 test yeşildir; B-030/B-031 ve V1-P1-08 kapandı.
 
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`

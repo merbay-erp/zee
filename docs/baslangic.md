@@ -124,6 +124,8 @@ internet gerekmez, katalog `dil`in içindedir.
 | `dil çıkar <paket> [proje]` | doğrudan paketi, kaynakta kullanılmıyorsa bildirimden ve kilitten kaldırır |
 | `dil kilitle <proje>` | yerel bağımlılık grafiğini sürüm ve SHA-256 içerik özetiyle sabitler |
 | `dil paketler [proje]` | doğrudan ve geçişli paket grafiğini sürüm/yol/özetle gösterir |
+| `dil anahtar üret <dosya>` | ezmeden yeni Ed25519 yayıncı anahtarı üretir |
+| `dil paketle [proje] --anahtar <dosya>` | NFC-kanonik `.zep`, SBOM, provenance ve imzalı yayın üretir |
 | `dil hata <kod>` | bir hata kodunu açıklar |
 | `dil belge <birim>` | birimin işlemlerini listeler (örn. `dil belge matematik`) |
 | `dil morfoloji [kelime]` | etkin ek profilini veya bir kelimenin bütün yapısal çözümlerini gösterir |
@@ -132,6 +134,7 @@ internet gerekmez, katalog `dil`in içindedir.
 ## 6. Daha fazlası
 
 - Dilin bütün yüzeyi tek yazıda: [dil-turu.md](dil-turu.md)
+- Tekrar üretilebilir paket kanıtı: [`.zep` conformance rehberi](zep-conformance.md)
 - Oynayarak öğren: [projeler/](../projeler/) — çocuklar için proje kitaplığı
 - Dilin bütün örnekleri: [golden/](../golden/) — 33 program, kolaydan zora
   numaralı, hepsi çalışır belge niteliğinde.
