@@ -66,6 +66,7 @@ fn handler_modulleri_yeni_domain_icin_sinir_tasir() {
         ("src/kimlik.rs", 80),
         ("src/faz.rs", 160),
         ("src/hir.rs", 180),
+        ("src/hir/gezinme.rs", 140),
         ("src/hir/kaynak.rs", 100),
         ("src/yorumlayici/cumle.rs", 600),
         ("src/yorumlayici/ifade.rs", 730),
@@ -88,7 +89,10 @@ fn checker_katmanlari_tek_sorumlulukla_sahiplenilir() {
         ("src/cozumleyici/etki.rs", "fn denetle"),
         ("src/cozumleyici/donus.rs", "fn donusleri_birlestir"),
     ] {
-        assert!(kaynak(goreli).contains(kanit), "{kanit} sahibi {goreli} olmalı");
+        assert!(
+            kaynak(goreli).contains(kanit),
+            "{kanit} sahibi {goreli} olmalı"
+        );
     }
 }
 
@@ -98,7 +102,10 @@ fn checker_public_api_katmanlasmada_korunur() {
     use std::collections::HashMap;
 
     let ortam = HashMap::from([("sayı".to_string(), Tur::TamSayi)]);
-    assert_eq!(ad_cozumle("sayıyı", &ortam, 1, 1, 6).expect("çözülmeli"), "sayı");
+    assert_eq!(
+        ad_cozumle("sayıyı", &ortam, 1, 1, 6).expect("çözülmeli"),
+        "sayı"
+    );
     assert_eq!(Tur::TamSayi.adi(), "TamSayı");
 }
 
@@ -110,7 +117,10 @@ fn semantic_kimlikler_depolama_indeksine_geri_donmez() {
         "sirali_kimlik!(IslemId)",
         "pub struct SymbolId",
     ] {
-        assert!(kimlikler.contains(kanit), "semantic kimlik newtype olmalı: {kanit}");
+        assert!(
+            kimlikler.contains(kanit),
+            "semantic kimlik newtype olmalı: {kanit}"
+        );
     }
 
     let turler = kaynak("src/cozumleyici/turler.rs");
@@ -134,7 +144,10 @@ fn standart_hat_faz_turlerini_atlayamaz() {
         "struct BaglanmamisProgram",
         "struct BaglanmisProgram",
     ] {
-        assert!(faz.contains(tur), "derleme fazı kodda görünür olmalı: {tur}");
+        assert!(
+            faz.contains(tur),
+            "derleme fazı kodda görünür olmalı: {tur}"
+        );
     }
 
     let kok = kaynak("src/lib.rs");
@@ -162,6 +175,13 @@ fn baglanmis_program_typed_hir_olmadan_uretilemez() {
         kaynak("src/hir/kaynak.rs").contains("enum HirKaynakAraligi"),
         "typed HIR kaynak aralığı ayrı modülde görünür olmalı"
     );
+    let gezinme = kaynak("src/hir/gezinme.rs");
+    for kanit in ["struct HirSembolKullanimi", "fn sembol_kullanimlari"] {
+        assert!(
+            gezinme.contains(kanit),
+            "semantic HIR gezinme kanıtı eksik: {kanit}"
+        );
+    }
 }
 
 #[test]

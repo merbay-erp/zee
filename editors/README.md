@@ -4,10 +4,15 @@
 
 Derle: `cargo build --release` → `compiler/target/release/dillsp`.
 Sunduğu yetenekler: canlı Türkçe tanılar (çoklu, RFC-0010), kalıp kelime
-tamamlama, **hover**, **tanıma git** ve **YENİDEN ADLANDIRMA** (F2 — ekleri Türkçe
-uyumla yeniden giydirir: sayaç→puan ⇒ sayacı→puanı; K-072) (işlem/yapı başlığına ya da `olsun`/`al` satırına —
-ek almış kullanımlar morfolojiyle çözülür: `sayacı` → `sayaç`). Birimleri
-kullanan kaynağın klasöründen, yerel paketleri `proje.dil`/`proje.kilit`
+tamamlama, **hover**, **tanıma git** ve **YENİDEN ADLANDIRMA**. Definition ve
+F2, K-120'den beri başarılı checker'ın `SymbolId`/`IslemId`/`YapiId` HIR
+bağını kullanır: ayrı kapsamdaki aynı yazıma dokunmaz; yerel sembol eklerini
+Türkçe uyumla yeniden giydirir (`sayaç→puan`, `sayacı→puanı`); çok kelimeli
+işlem adını tek parça değiştirir. Hatalı/belirsiz belgede metin tahmini yapmaz.
+Açık belge dışındaki tanım için yarım WorkspaceEdit üretmez; çok-dosyalı
+rename dosya kimlikli span kapısına kadar fail-closed kalır.
+Ayrıntılı sözleşme [semantic gezinme rehberindedir](../docs/lsp-semantic-gezinme.md).
+Birimleri kaynağın klasöründen, yerel paketleri `proje.dil`/`proje.kilit`
 grafiğinden çözer.
 
 K-107 güvenlik sınırı: gelen JSON-RPC çerçevesi en çok 8 KiB başlık ve 8 MiB

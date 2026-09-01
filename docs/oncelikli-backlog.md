@@ -45,8 +45,11 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
     (465 test).
 16. K-119 tam parser token izini 33 golden programın dağınık-boşluk
     varyantında eşitleyip iki tarafı ayrıştırarak B-042'yi kapattı (467 test).
-17. Sıradaki makine omurgası B-041 LSP SymbolId/HIR bağıdır.
-18. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
+17. K-120 definition/rename'i `SymbolId`/`IslemId`/`YapiId` typed-HIR
+    dizinlerine geçirerek B-041'i kapattı (475 test).
+18. Sıradaki makine omurgası B-007 yerel çağrı inference'ının kaynak sırasından
+    bağımsızlaştırılmasıdır.
+19. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
 
 ## P0 — V1 öncesi dil ve derleyici omurgası
 
@@ -276,8 +279,16 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   minimal kalıcı `.dil` success/fail fixture'ına dönüşmelidir.
 - **B-040 · KISMEN — performans baseline arşivi.** `src/bin/olcum.rs` vardır;
   parser/checker/runtime p50/p95 CI artefact ve trend olmalıdır.
-- **B-041 · SIRADA — LSP'yi SymbolId/HIR'a bağla.** Rename/definition özellikle
-  morfolojili adlarda parser metin tahmininden kurtulmalıdır.
+- **B-041 · KAPALI (K-120) — LSP'yi SymbolId/HIR'a bağla.** Definition ve
+  rename yalnız başarılı checker'ın `SymbolId`/`IslemId`/`YapiId` typed-HIR
+  bağından hedef seçer. HIR ilk tanım, yeniden atama ve okuma aralıklarını
+  aynı sembol kimliğinde toplar; iki bloktaki aynı yazım ayrıdır. Morfoloji
+  kimlik seçiminden sonra yalnız seçilen sembolün yüzeylerini giydirir; çok
+  kelimeli işlem adı tek varlıktır. A002/derleme hatasında metin tahmini yoktur.
+  Dış birim tanımı yerel başlık gibi doğrulanmadıkça eksik tek-dosya rename
+  üretilmez. [Semantic gezinme rehberi](lsp-semantic-gezinme.md), bir HIR ve
+  yedi yeni LSP regresyonuyla kapsam, yeniden atama, işlem/yapı ve fail-closed
+  sınırı korunur.
 - **B-042 · KAPALI (K-119) — formatter parse-equivalence property.** C011
   güvencesi artık `SatirSonu`, `Girinti`, `Cikinti` ve `DosyaSonu` dahil tam
   parser token izini byte-konumlarından bağımsız kıyaslar. Sayısal 33 golden
@@ -300,5 +311,5 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 ## Bir sonraki somut kapı
 
 İnsan kanıtı hattında B-001, doldurulmuş gerçek usability formları ve önceden
-ilan edilmiş eşikleri bekler. Makine hattında B-042/K-119 kapandı; sıradaki iş
-B-041 LSP'nin SymbolId/HIR bağıdır.
+ilan edilmiş eşikleri bekler. Makine hattında B-041/K-120 kapandı; sıradaki iş
+B-007 yerel çağrı inference'ının kaynak sırasından bağımsızlaştırılmasıdır.

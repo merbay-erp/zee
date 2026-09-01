@@ -62,7 +62,10 @@ farklı profilleri sessizce karıştıramaz.
 - Yumuşama, nk→ng, ikizleşme ve ünlü düşmesi ayrı ters-dönüş korpusudur.
 - `payı`, `sayacı`, `fiyatıyla`, `zarından` belirsizlik korpusu, adayların
   tamamını ve A002 sonucunu kilitler.
-- LSP iki katmanlı biçimi yeni kökün ünlü/ünsüz yapısına göre yeniden üretir.
+- LSP önce başarılı checker HIR'ındaki `SymbolId` ile tek semantic varlığı
+  seçer; yalnız o kimliğin tek/iki katmanlı biçimlerini yeni kökün
+  ünlü/ünsüz yapısına göre yeniden üretir. A002 veya başka derleme hatasında
+  metin benzerliğiyle tahmin yapmaz (K-120/B-041).
 - Bildirim, kilit ve CLI profil görünürlüğü entegrasyon testlidir.
 - K-111 geniş katmanı 4.096 deterministik kökün bütün geçerli zincirlerini,
   2.048 bütün-aday A002 kararını ve NFC olumlu/NFD→S029 olumsuzlarını stable

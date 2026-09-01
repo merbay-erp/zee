@@ -38,6 +38,12 @@ runtime ve `dene` hattını bu bağlara geçirdi. Kaynak adı kaliteli Türkçe 
 ve v0 uyumluluğu için korunur; bağlı runtime kaynak adıyla semantic karar
 vermez. K-108/B-020 her HIR ifadesine kesin token konumu veya kaynak satırı
 zarfı ekledi; semantic düğüm artık kaynak kökeninden ayrı kurulamaz.
+K-120/B-041 definition ve rename'i aynı zincirin production tüketicisi yaptı:
+HIR ilk tanım/yazım/okuma aralıklarını `SymbolId`, işlem ve yapı kullanımını
+`IslemId`/`YapiId` ile açar. LSP kaynak adını ancak ID seçildikten sonra aralık
+ve morfolojik yüzey için okur. Dış birim tanımının satırı açık belgeyle
+çakışsa bile yerel başlık kanıtı yoksa tek-dosya düzenlemesi reddedilir; ayrıntı
+[semantic gezinme rehberindedir](lsp-semantic-gezinme.md).
 
 ## Yeni kod için kurallar
 
@@ -45,6 +51,8 @@ zarfı ekledi; semantic düğüm artık kaynak kökeninden ayrı kurulamaz.
 - İşlem imzası/call graph kaydı `String` yerine `IslemId` ile anahtarlanır;
   ad yalnız gösterim ve ilk katalog çözümü içindir.
 - Sembol yeniden atamasında ID korunur; yeni sözcüksel tanım yeni ID alır.
+- Semantic araç yeni hedefi metin benzerliğiyle seçmez; başarılı bağlı
+  programın ID dizinini tüketir ve derleme hatasında fail-closed durur.
 - Yeni AST bağ alanı parser'da `None`, checker başarısında `Some(id)` olur.
 - Malformed/elle kurulmuş AST kimlik değişmezleri B-017/K-112'nin
   [invariant doğrulayıcısında](ast-hir-invariantleri.md) yürütülebilirdir:
@@ -55,7 +63,10 @@ zarfı ekledi; semantic düğüm artık kaynak kökeninden ayrı kurulamaz.
 
 `semantic_kimlik_testi.rs` yapı depolama sırasını ve işlem çağrı sırasını ters
 çevirerek kimliklerin değişmediğini, çözülmüş değişkenin `SymbolId` taşıdığını
-kanıtlar. `hir_modeli_testi.rs` bu bağların açık türle HIR'a geçtiğini;
+kanıtlar. `hir_modeli_testi.rs` bu bağların açık türle HIR'a ve tanım/yazım
+dizinine geçtiğini; `lsp_testi.rs` ayrı kapsamların doğru semantic hedefte
+kaldığını, A002'de tahmin yapılmadığını, işlem/yapı kimliklerini ve dış
+tanım için eksik rename üretilmediğini;
 `mimari_sinir_testi.rs`, `Yapi(usize)`, `yapilar[id]` ve HIR'sız bağlı program
 gerilemesini reddeder. `invariant_testi.rs` ile HIR unit testleri eksik veya
 faz dışı kimliği reddeder. Tam test, Clippy ve WASM kapıları yine zorunludur.

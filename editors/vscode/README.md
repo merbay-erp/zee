@@ -6,9 +6,11 @@
   blok kelimelerinden sonra otomatik girinti;
 - **canlı Türkçe tanılar** (yazarken altını çizer, kod + öneriyle),
 - **hover** (kalıp kelimesine açıklama + örnek; ada, tanım satırı),
-- **tanıma git** (işlem/yapı başlığına ya da `olsun` satırına),
-- **yeniden adlandırma (F2)** — ekler Türkçe uyumla yeniden giydirilir
-  (`sayaç`→`puan` ⇒ `sayacı`→`puanı`; K-072),
+- **tanıma git** (`SymbolId`/`IslemId`/`YapiId` HIR bağıyla doğru kapsama),
+- **yeniden adlandırma (F2)** — yalnız seçilen semantic kimlik; ekler Türkçe
+  uyumla yeniden giydirilir, çok kelimeli işlem adı birlikte değişir
+  (`sayaç`→`puan` ⇒ `sayacı`→`puanı`; K-072); başka dosyadaki tanım için
+  eksik tek-dosya düzenlemesi üretmez,
 - **tamamlama** (kalıp kelimeleri).
 
 LSP istemcisi elle yazılmıştır ([extension.js](extension.js)) — npm

@@ -3,6 +3,7 @@
 - **Durum:** kabul
 - **Tarih:** 1 Eylül 2026
 - **İlgili kayıt:** K-101, B-010, V1-P0-12
+- **Revizyon:** 2 Eylül 2026 — K-120/B-041 LSP gezinme ve rename kimliklere bağlandı
 
 ## Bağlam
 
@@ -37,6 +38,14 @@ kimliğini korur; blokta doğan yeni tanım yeni kimlik alır. Parser'ın ürett
 başlangıçta boştur; checker başarılı bağlamada bunları doldurur. Kaynak adı
 tanı ve mevcut runtime uyumluluğu için yanında korunur.
 
+K-120'de HIR, her `SymbolId` için canonical adın yanında ilk tanım aralığını,
+yeniden atama yazımlarını ve ifade kullanımlarını semantic araçlara açar.
+`dillsp` definition/rename seçiminde önce bu kimliği bulur; morfoloji yalnız
+seçilmiş kimliğin yüzeylerini yeni köke giydirir. İşlem ve yapı gezinmesi de
+`IslemId`/`YapiId` bağı üzerinden yapılır. Hatalı veya belirsiz belgede metin
+tahmini yasaktır. Tek-belge LSP yüzeyinde içe alınan tanım, canonical adı ve
+yerel `işlem`/`eylem`/`yapı` başlığı doğrulanmadan düzenlenebilir sayılmaz.
+
 ## Değişmezler
 
 1. `Tur::Yapi` yalnız `YapiId` taşır; checker handler'ı bu değeri vektör
@@ -50,13 +59,17 @@ tanı ve mevcut runtime uyumluluğu için yanında korunur.
 6. Faz türleri B-018/K-102 ile görünürdür. Runtime'ın kaynak adını bırakıp
    yalnız ID/HIR tüketmesi B-019/K-104 ile sonradan tamamlandı; bu ADR'nin
    kendi kapanış kanıtı semantic kimlik temelidir.
+7. LSP tanım ve yeniden adlandırma hedefi kaynak adı benzerliğiyle değil,
+   başarılı checker'ın `SymbolId`/`IslemId`/`YapiId` bağıyla seçilir.
+8. Dosya kimlikli span yoksa dış birim tanımı için eksik WorkspaceEdit
+   üretilmez; yalnız açık belgedeki doğrulanmış yerel başlık düzenlenir.
 
 ## Sonuçlar
 
 - Çıplak `usize`, yapı semantic identity'si olmaktan çıktı.
 - AST checker sonrası yapı, işlem ve sembol bağlarını açıkça taşır.
-- Üç davranış ve bir kaynak-mimari testi sıralama bağımsızlığını, bağlamayı ve
-  indeks gerilemesini korur.
+- Semantic kimlik ve HIR/LSP testleri sıralama bağımsızlığını, bağlamayı,
+  kapsam ayrımını ve indeks/metin-tahmini gerilemesini korur.
 - Rust embedding yüzeyindeki `Tur::Yapi` payload'ı `usize` yerine `YapiId`
   olur; zee kaynak dili ve runtime çıktısı değişmez.
 - Yeni normatif dil spec'i gerekmez; karar derleyici iç temsilidir.

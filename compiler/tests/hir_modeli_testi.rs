@@ -31,6 +31,41 @@ fn hir_ifade_turunu_ve_symbol_id_bagini_ast_disinda_tasir() {
 }
 
 #[test]
+fn hir_sembol_tanimini_ve_butun_yazimlarini_symbolid_ile_tasir() {
+    let program =
+        kaynagi_fazli_derle("puan 1 olsun\npuan 2 olsun\npuanı yaz\n").expect("HIR üretilmeli");
+    let Cumle::Yaz { deger, .. } = &program.cumleler[2] else {
+        panic!("yaz cümlesi bekleniyordu")
+    };
+    let bilgi = program.hir().ifade_bilgisi(deger).expect("HIR sembol bağı");
+    let HirBagi::Sembol(kimlik) = bilgi.bag() else {
+        panic!("SymbolId bekleniyordu")
+    };
+
+    assert_eq!(
+        program
+            .hir()
+            .sembol_tanimi(kimlik)
+            .and_then(HirKaynakAraligi::kesin_konumu),
+        Some((1, 1, 4))
+    );
+    let kullanimlar = program
+        .hir()
+        .sembol_kullanimlari()
+        .into_iter()
+        .filter(|kullanim| kullanim.kimlik() == kimlik)
+        .collect::<Vec<_>>();
+    assert_eq!(kullanimlar.len(), 3, "iki yazım + bir okuma korunmalı");
+    assert_eq!(
+        kullanimlar
+            .iter()
+            .map(|kullanim| kullanim.kaynak_araligi().satiri())
+            .collect::<Vec<_>>(),
+        vec![1, 2, 3]
+    );
+}
+
+#[test]
 fn her_hir_ifadesi_zorunlu_kaynak_araligi_tasir() {
     let program = kaynagi_fazli_derle("sonuç 1 ile 2 nin toplamı olsun\nsonucu yaz\n")
         .expect("HIR üretilmeli");
@@ -41,7 +76,10 @@ fn her_hir_ifadesi_zorunlu_kaynak_araligi_tasir() {
         .hir()
         .ifade_bilgisi(deger)
         .expect("bileşik ifade HIR bilgisi taşımalı");
-    assert!(matches!(bilgi.kaynak_araligi(), HirKaynakAraligi::Satir { .. }));
+    assert!(matches!(
+        bilgi.kaynak_araligi(),
+        HirKaynakAraligi::Satir { .. }
+    ));
     assert_eq!(bilgi.kaynak_araligi().satiri(), 1);
     assert_eq!(bilgi.kaynak_araligi().kesin_konumu(), None);
 }

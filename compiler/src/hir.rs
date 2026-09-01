@@ -10,10 +10,12 @@ use crate::agac::{Ifade, Islem, Program, Yapi};
 use crate::cozumleyici::Tur;
 use crate::kimlik::{IslemId, SymbolId, YapiId};
 
+mod gezinme;
+mod kaynak;
 #[cfg(test)]
 mod testler;
-mod kaynak;
 
+pub use gezinme::HirSembolKullanimi;
 pub use kaynak::HirKaynakAraligi;
 
 /// Bir ifadenin kaynak yazımından bağımsız semantic bağı.
@@ -65,7 +67,12 @@ impl HirIfadeBilgisi {
         bag: HirBagi,
         kaynak_araligi: HirKaynakAraligi,
     ) -> Self {
-        Self { kimlik, tur, bag, kaynak_araligi }
+        Self {
+            kimlik,
+            tur,
+            bag,
+            kaynak_araligi,
+        }
     }
 
     pub const fn kimlik(self) -> HirDugumId {
@@ -89,6 +96,8 @@ impl HirIfadeBilgisi {
 pub(crate) struct HirOlusturmaBilgisi {
     pub(crate) ifadeler: HashMap<usize, HirIfadeBilgisi>,
     pub(crate) sembol_adlari: HashMap<SymbolId, String>,
+    pub(crate) sembol_tanimlari: HashMap<SymbolId, HirKaynakAraligi>,
+    pub(crate) sembol_yazimlari: Vec<HirSembolKullanimi>,
     pub(crate) islem_adlari: HashMap<IslemId, String>,
     pub(crate) yapi_konumlari: HashMap<YapiId, usize>,
 }
@@ -102,6 +111,8 @@ pub struct HirProgram {
     program: Box<Program>,
     ifadeler: HashMap<usize, HirIfadeBilgisi>,
     sembol_adlari: HashMap<SymbolId, String>,
+    sembol_tanimlari: HashMap<SymbolId, HirKaynakAraligi>,
+    sembol_yazimlari: Vec<HirSembolKullanimi>,
     islem_adlari: HashMap<IslemId, String>,
     yapi_konumlari: HashMap<YapiId, usize>,
 }
@@ -112,6 +123,8 @@ impl HirProgram {
             program: Box::new(program),
             ifadeler: bilgi.ifadeler,
             sembol_adlari: bilgi.sembol_adlari,
+            sembol_tanimlari: bilgi.sembol_tanimlari,
+            sembol_yazimlari: bilgi.sembol_yazimlari,
             islem_adlari: bilgi.islem_adlari,
             yapi_konumlari: bilgi.yapi_konumlari,
         }
