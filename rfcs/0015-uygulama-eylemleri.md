@@ -85,8 +85,9 @@ dönüşür.
    seçenekleri, istek deadline'ı ve kontrollü reverse-proxy güveni.
 3. **Eylem:** typed girdi doğrulama, authz ve form/API/CLI adaptörlerinden
    bağımsız çağrı.
-4. **Durum:** atomik dosya değiştirme + veri tabanı transaction capability'si;
-   idempotency anahtarı ve rollback testleri.
+4. **Durum:** tek-dosya atomik değiştirme ve süreç kilidi K-084/RFC-0016 ile
+   gerçeklendi; veri tabanı/çok-kaynak transaction capability'si, idempotency
+   anahtarı ve eylem rollback testleri açık.
 5. **Üretim profili:** TLS sonlandırma sözleşmesi, secret yönetimi, rate limit,
    güvenlik başlıkları, gözlemlenebilirlik ve saldırı conformance paketi.
 
@@ -98,7 +99,8 @@ dönüşür.
 - CSRF, session fixation, zayıf token, çift gönderim ve yarım yazma için
   olumsuz testler vardır.
 - Eylemin aynı saf iş mantığı web ve CLI adaptöründen çağrılır.
-- Atomik durum kapısı V1-P0-04 ile birlikte kapanır.
+- Tek-dosya atomik durum V1-P0-04/K-084 ile kapandı; eylemin çok-kaynaklı
+  transaction/idempotency kapısı bu RFC'de açık kalır.
 
 Bu kapılar tamamlanana kadar zee “TCP üzerinde eğitim/prototip web yüzeyi”
 sağlar; “production web framework” sözü vermez.

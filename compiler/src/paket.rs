@@ -193,7 +193,7 @@ impl ProjeGrafigi {
 
     pub fn kilidi_yaz(&self) -> Result<(), String> {
         let yol = self.ana_kok.join(KILIT_DOSYASI);
-        std::fs::write(&yol, self.kilit_metni())
+        crate::kalici_dosya::atomik_yaz(&yol, self.kilit_metni().as_bytes())
             .map_err(|hata| format!("\"{}\" yazılamadı: {}", yol.display(), hata))
     }
 

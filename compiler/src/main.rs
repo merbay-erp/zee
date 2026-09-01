@@ -169,10 +169,12 @@ fn yeni_komutu(argumanlar: &[String]) -> ExitCode {
         "# {}\n\nTürkçe programlama diliyle yazılmış bir proje. `proje.dil` giriş dosyasını, sürümü ve yerel bağımlılıkları tanımlar; `proje.kilit` bağımlılık kararını sabitler.\n\n```bash\ndil çalıştır .\n```\n\n```bash\ndil dene .\n```\n\nDenetim: `dil denetle .` · Bütün projeyi biçimle: `dil biçimle .` · Bağımlılıkları sabitle: `dil kilitle .` · Hata açıklama: `dil hata <kod>`\n",
         ad
     );
+    let git_yoksay = ".zee-yazma-kilidi\n*.zee-gecici-*\n";
     let sonuc = std::fs::create_dir(klasor)
         .and_then(|_| std::fs::write(klasor.join("program.dil"), program))
         .and_then(|_| std::fs::write(klasor.join("proje.dil"), bildirim))
-        .and_then(|_| std::fs::write(klasor.join("BENIOKU.md"), beni_oku));
+        .and_then(|_| std::fs::write(klasor.join("BENIOKU.md"), beni_oku))
+        .and_then(|_| std::fs::write(klasor.join(".gitignore"), git_yoksay));
     match sonuc {
         Ok(()) => match dil::paket::ProjeGrafigi::cozumle(klasor)
             .map_err(|hata| hata.tani.mesaj)
@@ -583,12 +585,13 @@ fn proje_dosyalarini_guncelle(
 ) -> Result<(), String> {
     let kilit_yolu = proje_koku.join(dil::paket::KILIT_DOSYASI);
     let eski_kilit = std::fs::read(&kilit_yolu).ok();
-    std::fs::write(bildirim_yolu, yeni_kaynak)
+    dil::kalici_dosya::atomik_yaz(bildirim_yolu, yeni_kaynak.as_bytes())
         .map_err(|hata| format!("\"{}\" yazılamadı: {}", bildirim_yolu.display(), hata))?;
     if let Err(hata) = grafik.kilidi_yaz() {
-        let bildirim_geri = std::fs::write(bildirim_yolu, eski_kaynak);
+        let bildirim_geri =
+            dil::kalici_dosya::atomik_yaz(bildirim_yolu, eski_kaynak.as_bytes());
         let kilit_geri = match eski_kilit {
-            Some(icerik) => std::fs::write(&kilit_yolu, icerik),
+            Some(icerik) => dil::kalici_dosya::atomik_yaz(&kilit_yolu, &icerik),
             None if kilit_yolu.exists() => std::fs::remove_file(&kilit_yolu),
             None => Ok(()),
         };
@@ -615,7 +618,7 @@ fn bir_dosyayi_bicimle(yol: &std::path::Path) -> ExitCode {
             println!("Zaten biçimli: {}", yol.display());
             ExitCode::SUCCESS
         }
-        Ok(bicimli) => match std::fs::write(yol, &bicimli) {
+        Ok(bicimli) => match dil::kalici_dosya::atomik_yaz(yol, bicimli.as_bytes()) {
             Ok(()) => {
                 println!("Biçimlendi: {}", yol.display());
                 ExitCode::SUCCESS
@@ -668,7 +671,7 @@ fn projeyi_bicimle(kok: &std::path::Path) -> ExitCode {
     let mut degisen = 0usize;
     for (yol, kaynak, bicimli) in hazir {
         if kaynak != bicimli {
-            if let Err(hata) = std::fs::write(yol, bicimli) {
+            if let Err(hata) = dil::kalici_dosya::atomik_yaz(yol, bicimli.as_bytes()) {
                 eprintln!("\"{}\" dosyasına yazılamadı: {}", yol.display(), hata);
                 return ExitCode::from(2);
             }
@@ -948,16 +951,9 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             .map_err(|hata| format!("\"{}\" dosyası okunamadı: {}", yol, hata))
     }
     fn dosya_yaz(&mut self, yol: &str, satir: &str, ekleme: bool) -> Result<(), String> {
-        use std::io::Write;
         let gercek_yol = self.dosya_yolu(yol);
-        let sonuc = std::fs::OpenOptions::new()
-            .create(true)
-            .append(ekleme)
-            .write(true)
-            .truncate(!ekleme)
-            .open(gercek_yol)
-            .and_then(|mut dosya| writeln!(dosya, "{}", satir));
-        sonuc.map_err(|hata| format!("\"{}\" dosyasına yazılamadı: {}", yol, hata))
+        dil::kalici_dosya::atomik_satir_yaz(&gercek_yol, satir, ekleme)
+            .map_err(|hata| format!("\"{}\" dosyasına yazılamadı: {}", yol, hata))
     }
     fn simdi(&mut self) -> (i64, u32, u32, u32, u32) {
         // v0: UTC. Yerel saat dilimi desteği stdlib Zaman modülüyle gelecek.

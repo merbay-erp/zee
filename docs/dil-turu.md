@@ -377,6 +377,11 @@ kişi "kisi.json" dosyasından okunan veri olsun
 "yedek.csv" dosyasına tablonun csv metni yaz   # CSV yazma (K-058)
 ```
 
+Gerçek dosya sisteminde `yaz` ve `ekle` K-084/RFC-0016 ile atomiktir:
+okuyucu yarım dosya görmez, iki zee sürecinin eklediği satırlar kaybolmaz ve
+commit öncesi hata eski içeriği korur. Runtime aynı klasördeki gizli
+`.zee-yazma-kilidi` dosyasını kendine ayırır.
+
 ## 17. Tarih, saat, süre
 
 ```

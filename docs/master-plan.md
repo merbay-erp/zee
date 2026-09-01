@@ -229,6 +229,11 @@ ve SHA-256 özetle açıklar. `dil çıkar <paket> [proje]` yalnız doğrudan
 bağımlılığı kaldırır; ana proje kaynağı paketi hâlâ kullanıyorsa P010 ile hiçbir
 dosyaya dokunmadan durur. Başarı K-079'un iki dosyalı geri alma sözleşmesini
 kullanır.
+
+**Kalıcılık notu — 1 Eylül 2026 (K-084/RFC-0016):** Runtime'ın tek-dosya
+`yaz/ekle` işlemi, biçimleyici ve paket/kilit yazma yolları atomik replace ve
+süreçler arası işletim sistemi kilidi kullanır. Yarım dosya ve kayıp ekleme
+V1-P0-04 düzeyinde kapatıldı; çok kaynaklı iş transaction'ı RFC-0015'tedir.
 # 15. Geliştirici araçları
 dil: resmi CLI.
 dilfmt: tek resmi formatter.

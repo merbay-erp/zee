@@ -33,6 +33,50 @@ impl Drop for GeciciKlasor {
 }
 
 #[test]
+fn gercek_io_iki_surecte_ekleme_kaybetmez() {
+    let gecici = GeciciKlasor::yeni();
+    let ikili = env!("CARGO_BIN_EXE_dil");
+    let mut kaynaklar = Vec::new();
+    for onek in ["a", "b"] {
+        let yol = gecici.yol().join(format!("yazar-{}.dil", onek));
+        std::fs::write(
+            &yol,
+            format!(
+                "1 den 40 a kadar her sayı için\n    satır \"{}-\" ile sayının metni olsun\n    \"olaylar.txt\" dosyasına satır ekle\n",
+                onek
+            ),
+        )
+        .expect("yazar kaynağı");
+        kaynaklar.push(yol);
+    }
+
+    let mut yazarlar = kaynaklar
+        .iter()
+        .map(|kaynak| {
+            Command::new(ikili)
+                .args(["çalıştır", kaynak.to_str().expect("utf8")])
+                .spawn()
+                .expect("yazar süreç")
+        })
+        .collect::<Vec<_>>();
+    for yazar in &mut yazarlar {
+        assert!(yazar.wait().expect("yazar sonucu").success());
+    }
+
+    let satirlar = std::fs::read_to_string(gecici.yol().join("olaylar.txt"))
+        .expect("olaylar")
+        .lines()
+        .map(str::to_string)
+        .collect::<std::collections::HashSet<_>>();
+    assert_eq!(satirlar.len(), 80);
+    for onek in ["a", "b"] {
+        for sayi in 1..=40 {
+            assert!(satirlar.contains(&format!("{}-{}", onek, sayi)));
+        }
+    }
+}
+
+#[test]
 fn gercek_web_sunucusu_acik_opt_in_ister() {
     let gecici = GeciciKlasor::yeni();
     let kaynak = gecici.yol().join("sunucu.dil");
@@ -252,6 +296,9 @@ fn yeni_komutu_proje_bildirimi_uretir() {
         proje.join("proje.kilit").is_file(),
         "iskelet kilitli başlamalı"
     );
+    let git_yoksay = std::fs::read_to_string(proje.join(".gitignore")).expect("gitignore");
+    assert!(git_yoksay.contains(".zee-yazma-kilidi"));
+    assert!(git_yoksay.contains("*.zee-gecici-*"));
 
     let dene = Command::new(env!("CARGO_BIN_EXE_dil"))
         .arg("dene")

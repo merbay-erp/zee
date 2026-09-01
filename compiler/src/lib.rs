@@ -6,6 +6,7 @@
 pub mod agac;
 pub mod ayristirici;
 pub mod bicimleyici;
+pub mod kalici_dosya;
 pub mod lsp;
 pub mod paket;
 pub mod proje;
