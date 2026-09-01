@@ -10,6 +10,7 @@ use crate::agac::{
     AritmetikIslec, Cumle, HttpYontemi, Ifade, Islec, Islem, IslemTuru, KosulKolu, Ozellik,
     Parametre, RotaErisimi, Test, Yapi,
 };
+use crate::intrinsic::{CSRF_BELIRTECI, HTTP_GETIR, PAROLA_DOGRULA, SENSOR_ACIK_MI};
 use crate::ondalik::Ondalik;
 use crate::sozcukleyici::{Token, TokenTur};
 use crate::tani::Tani;
@@ -1921,9 +1922,14 @@ fn kosul_atomu(tokenlar: &[Token], satir: usize) -> Result<Ifade, Tani> {
     // <sensör> açıksa / kapalıysa — IoT simülatörü (golden 29).
     if n == 2 && (yuklem == "açıksa" || yuklem == "kapalıysa") {
         if let TokenTur::Kelime(ad) = &tokenlar[0].tur {
-            return Ok(Ifade::SensorAcik {
-                ad: ad.clone(),
-                olumsuz: yuklem == "kapalıysa",
+            let sensor = Ifade::Intrinsic {
+                kimlik: SENSOR_ACIK_MI.into(),
+                argumanlar: vec![Ifade::MetinSabiti(ad.clone())],
+            };
+            return Ok(if yuklem == "kapalıysa" {
+                Ifade::Degil(Box::new(sensor))
+            } else {
+                sensor
             });
         }
     }
@@ -1940,9 +1946,12 @@ fn kosul_atomu(tokenlar: &[Token], satir: usize) -> Result<Ifade, Tani> {
 
     // <parola> <Argon2id PHC özeti> ile doğrulanıyorsa.
     if n == 4 && kelimeler[2] == Some("ile") && yuklem == "doğrulanıyorsa" {
-        return Ok(Ifade::ParolaDogrula {
-            parola: Box::new(tekil_ifade(tokenlar[0].clone())?),
-            ozet: Box::new(tekil_ifade(tokenlar[1].clone())?),
+        return Ok(Ifade::Intrinsic {
+            kimlik: PAROLA_DOGRULA.into(),
+            argumanlar: vec![
+                tekil_ifade(tokenlar[0].clone())?,
+                tekil_ifade(tokenlar[1].clone())?,
+            ],
         });
     }
 
@@ -2127,7 +2136,10 @@ fn yapili_kalip(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifade>
     }
 
     if n == 2 && kelime(0) == Some("csrf") && son == "belirteci" {
-        return Ok(Some(Ifade::CsrfBelirteci));
+        return Ok(Some(Ifade::Intrinsic {
+            kimlik: CSRF_BELIRTECI.into(),
+            argumanlar: Vec::new(),
+        }));
     }
 
     // W ın adedi / ilki / sonu / uzunluğu / kelimeleri — özellikler.
@@ -2341,7 +2353,10 @@ fn yapili_kalip(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifade>
 
     // "..." adresinden gelen yanıt → AğYanıtı (golden 24).
     if n == 4 && kelime(1) == Some("adresinden") && kelime(2) == Some("gelen") && son == "yanıt" {
-        return Ok(Some(Ifade::HttpGetir(Box::new(tekil_ifade(tokenlar[0].clone())?))));
+        return Ok(Some(Ifade::Intrinsic {
+            kimlik: HTTP_GETIR.into(),
+            argumanlar: vec![tekil_ifade(tokenlar[0].clone())?],
+        }));
     }
 
     // W ın durum kodu / gövdesi — AğYanıtı özellikleri.

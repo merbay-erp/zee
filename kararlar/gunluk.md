@@ -1328,6 +1328,27 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   çağrı, S030 ve S015 sınırlarını kapsayan sekiz bağımsız test. Toplam 386 test; V1-P0-08 ve
   B-003 kapandı. Dosya/fonksiyon parçalama davranış-korumalı B-005 işidir.
 
+## K-098 — Core AST intrinsic/yetkinlik sınırı (1 Eyl)
+
+- **Karar:** HTTP, sensör, CSRF ve parola artık core AST'de alan başına ifade
+  varyantı değildir. Mevcut Türkçe yüzeyler ad alanlı kararlı kimlik ve sıralı
+  argüman taşıyan tek `Intrinsic` düğümüne indirilir.
+- **Tek kayıt:** Argüman/dönüş türü, gereken ağ/donanım/web oturumu/kriptografi
+  yetkinliği ve statik etki `compiler/src/intrinsic.rs` kaydında birleşir.
+  Checker, etki çözümleyici ve runtime aynı kimliği kullanır; bilinmeyen
+  kimlik sessizce çalışmaz.
+- **Genellik:** `kapı kapalıysa`, ayrı bir sensör varyantı ya da ikinci
+  intrinsic yerine genel `Değil` düğümüdür. Yeni adaptörün AST şemasını
+  büyütmesi gerekmez; yine de yeni kullanıcı yüzeyi RFC/spec ve K-097 ifade
+  kapısından geçmek zorundadır.
+- **Sınır:** Yetkinlik bugün ihtiyacı sınıflandırır, izin vermez. Proje/paket
+  izin politikası B-023; parser/checker/runtime fiziksel handler ayrımı B-005;
+  checker faz ayrımı B-006 işidir.
+- **Kanıt:** ADR-011 ve intrinsic/yetkinlik uygulama rehberi; kayıt tekilliği,
+  dört lowering ve iki tür olumsuzunu kapsayan yedi bağımsız test. Mevcut
+  HTTP/sensör/web/parola davranış korpusu korunarak toplam 393 test yeşil;
+  B-004 ve V1-P0-09 kapandı.
+
 ---
 
 ## Sonraki adım

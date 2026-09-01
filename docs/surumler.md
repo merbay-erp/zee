@@ -168,6 +168,16 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   formatter ve olumlu/olumsuz conformance kanıtı olmadan parser'a dal
   ekleyemez. Sekiz bağımsız testle toplam 386 test yeşil; kullanıcı yüzeyi
   değişmeden V1-P0-08 kapandı. Fiziksel parser parçalama B-005'e ayrıldı.
+- **Core AST intrinsic/yetkinlik sınırı** (K-098, ADR-011): HTTP, sensör,
+  CSRF ve parola için dört alan-özel AST varyantı kaldırıldı. Mevcut Türkçe
+  cümleler parser'da ad alanlı kararlı kimlik ve sıralı argüman taşıyan tek
+  `Intrinsic` düğümüne indirilir. Tür imzası, gereken ağ/donanım/web oturumu/
+  kriptografi yetkinliği ve statik etki merkezi kayıttadır; checker, etki
+  çözümleyici ve runtime aynı kaydı tüketir. `kapı kapalıysa` ikinci intrinsic
+  yerine genel olumsuzlamayı kullanır. Kimlik tekilliği, dört lowering ve iki
+  tür olumsuzuyla yedi yeni test; mevcut HTTP/sensör/web/parola regresyonları
+  dahil toplam 393 test yeşildir. Kaynak semantiği değişmeden B-004 ve
+  V1-P0-09 kapandı; fiziksel handler ayrımı B-005, izin politikası B-023'tür.
 
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`
