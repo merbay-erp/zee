@@ -34,5 +34,6 @@ Kırıcı değişiklik sessizce yapılamaz: davranış değişikliği RFC'den ge
 
 Eşzamanlılık/iptalin tam anlamı (RFC-0011 yüzeyi geçici kabul; gerçek
 paralellik Faz 5), FFI/ABI (RFC-0012, Faz 4/5), standart kütüphane kararlılık
-politikası, uzak paket/registry (RFC-0009 §4.2), deprecation/edition modeli.
+politikası, production web/action/oturum/transaction (RFC-0015), uzak
+paket/registry (RFC-0009 §4.2), deprecation/edition modeli.
 Bu başlıklar karara bağlandıkça buraya bölüm olarak eklenir.

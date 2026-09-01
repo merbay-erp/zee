@@ -1,6 +1,7 @@
-# Mini Site — zee ile yazılmış, kendi kendine yeten web sitesi.
+# Mini Site — zee web yüzeyini öğreten DENEYSEL localhost demosu.
 # Öğretilen: sunucu kurma, rotalar, HTML'i işlemle giydirmek.
-# Çalıştır: dil çalıştır mini-site.dil → tarayıcıda http://127.0.0.1:8090
+# Çalıştır: dil çalıştır --deneysel-web mini-site.dil
+# Tarayıcı: http://127.0.0.1:8090 — production için uygun değildir.
 # (Rota gövdeleri taze ortamda koşar; ortak parçalar İŞLEMLE paylaşılır.)
 
 matematik birimini kullan

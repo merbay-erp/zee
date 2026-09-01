@@ -6,7 +6,9 @@ tek dosyadır, kolaydan zora sıralıdır ve bir çocuğun tek oturuşta bitirip
 
 En kolay yol: `playground/zee-playground.html`'i çift tıkla aç, projeyi
 yapıştır, Çalıştır'a bas. (Girdi isteyen projelerde cevaplarını Girdiler
-kutusuna satır satır yaz.) Ya da: `dil çalıştır projeler/<dosya>.dil`
+kutusuna satır satır yaz.) Ya da: `dil çalıştır projeler/<dosya>.dil`.
+Üç web demosu yalnız localhost için
+`dil çalıştır --deneysel-web projeler/<dosya>.dil` ile açıkça çalıştırılır.
 
 | Proje | Öğrettiği | Fikir: şunu da dene |
 |---|---|---|
@@ -20,9 +22,9 @@ kutusuna satır satır yaz.) Ya da: `dil çalıştır projeler/<dosya>.dil`
 | [gizli-dil.dil](gizli-dil.dil) | sözlük = şifre defteri | Çözücüyü de yaz (tersine defter) |
 | [kelime-sayaci.dil](kelime-sayaci.dil) | sayaç sözlüğü, "yoksa sıfırla" | En çok geçen kelimeyi de bul |
 | [gun-sayar.dil](gun-sayar.dil) | Tarih türü, gün aritmetiği | Doğum gününe kaç gün kaldığını hesapla |
-| [mini-site.dil](mini-site.dil) | GERÇEK web sitesi: sunucu + rotalar + HTML | Yeni bir sayfa rotası ekle |
-| [panel-not-defteri.dil](panel-not-defteri.dil) | admin panel: form + kaydet + yönlendir | Silme rotası ekle; anahtarı değiştir |
-| [girisli-panel.dil](girisli-panel.dil) | parola + oturum (çerez) — mantık saf zee | Çıkışta oturumu dosyadan da sil |
+| [mini-site.dil](mini-site.dil) | deneysel localhost sitesi: sunucu + rotalar + HTML | Yeni bir sayfa rotası ekle |
+| [panel-not-defteri.dil](panel-not-defteri.dil) | deneysel form demosu: kaydet + yönlendir | Yetki kontrolü tasarla |
+| [girisli-panel.dil](girisli-panel.dil) | deneysel parola + oturum akışı — production değil | Güvenli token politikasını tartış |
 | [envanter.dil](envanter.dil) | stok defteri: yapı listesi + JSON yedek | CSV yedeği de al; en pahalıyı bul |
 | [roket.dil](roket.dil) | geri sayan aralık, bekleme | 10'dan başlat; kaçışta iptal ekle |
 

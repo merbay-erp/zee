@@ -832,6 +832,20 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   eylem olarak ayırır. Production sözü verilene dek çalışan TCP/çerez yüzeyi
   deneysel ve açık opt-in olmak zorundadır.
 
+## K-082 — Production sözü yoksa gerçek soket güvenli varsayılanla kapalıdır
+
+- **Korkuluk:** `sunucu başlat` gerçek TCP'yi sıradan `dil çalıştır` altında
+  artık açmaz; C017 açıkça `--deneysel-web` yolunu gösterir. Opt-in verilirse
+  de stderr'de bunun yalnız localhost eğitim/prototipi olduğu yazılır.
+- **Örnek güvenliği:** mini-site, panel-not-defteri ve girisli-panel açıkça
+  deneysel demo olarak adlandırıldı. Giriş, kaydet, sil ve çıkış mutasyonları
+  POST kontrolü taşır; silme bağlantısı GET yerine POST formudur.
+- **Sınır:** Bu production web'i tamamlamaz. Method-aware route, action,
+  CSPRNG session, CSRF, atomik durum ve transaction V1-P0-02..04'te açıktır.
+- **Kanıt:** CLI entegrasyonu opt-in olmadan C017 ve değişken argümana
+  sızmayan bayrağı; web entegrasyonu GET silmenin durumu koruduğunu, POST'un
+  sildiğini sınar. Toplam 262 test.
+
 ## K-012 — Liste sabiti: `3, 7, 1, 9 listesi`
 
 - **Karar:** Virgülle ayrılmış değerler + `listesi`. Boş: `boş liste`.

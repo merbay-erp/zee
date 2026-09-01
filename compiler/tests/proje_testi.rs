@@ -33,6 +33,55 @@ impl Drop for GeciciKlasor {
 }
 
 #[test]
+fn gercek_web_sunucusu_acik_opt_in_ister() {
+    let gecici = GeciciKlasor::yeni();
+    let kaynak = gecici.yol().join("sunucu.dil");
+    std::fs::write(
+        &kaynak,
+        "0 kapısında sunucu başlat\nargümanlar komut satırından gelenler olsun\nher argüman için\n    argümanı yaz\nprogramı bitir\n",
+    )
+    .expect("web kaynağı");
+    let ikili = env!("CARGO_BIN_EXE_dil");
+
+    let korumali = Command::new(ikili)
+        .args(["çalıştır", kaynak.to_str().expect("utf8")])
+        .output()
+        .expect("korumalı çalıştırma");
+    assert!(!korumali.status.success());
+    let korumali_hata = String::from_utf8_lossy(&korumali.stderr);
+    assert!(korumali_hata.contains("C017"), "{}", korumali_hata);
+    assert!(
+        korumali_hata.contains("--deneysel-web"),
+        "{}",
+        korumali_hata
+    );
+
+    let acik = Command::new(ikili)
+        .args([
+            "çalıştır",
+            "--deneysel-web",
+            kaynak.to_str().expect("utf8"),
+            "yalnız-programa",
+        ])
+        .output()
+        .expect("opt-in çalıştırma");
+    assert!(
+        acik.status.success(),
+        "{}",
+        String::from_utf8_lossy(&acik.stderr)
+    );
+    assert!(
+        String::from_utf8_lossy(&acik.stderr).contains("yalnız localhost"),
+        "uyarı görünür olmalı"
+    );
+    assert_eq!(
+        String::from_utf8_lossy(&acik.stdout),
+        "Sunucu dinliyor: http://127.0.0.1:0\nyalnız-programa\n",
+        "opt-in bayrağı program argümanlarına sızmamalı"
+    );
+}
+
+#[test]
 fn bildirim_gecerli_zee_kaynagidir() {
     let kaynak =
         "proje \"stok-paneli\" olsun\nsürüm \"1.2.3\" olsun\ngiriş \"kaynak/ana.dil\" olsun\n";

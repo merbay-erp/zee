@@ -18,6 +18,11 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   [v1.0 sürüm kapıları](v1-surum-kapilari.md) bağlayıcıdır. RFC-0006 ve
   RFC-0011 güncel gerçeklemeyle uzlaştırıldı; RFC-0015 production web/eylem
   sınırını taslağa aldı.
+- **Deneysel web korkuluğu** (K-082): gerçek TCP sunucusu artık sıradan
+  `dil çalıştır` ile açılmaz; yalnız açık `--deneysel-web` opt-in'i ve görünür
+  production uyarısıyla localhost'ta çalışır. Panel örnekleri eğitim demosu
+  olarak yeniden etiketlendi; giriş/kaydet/sil/çıkış durum değişiklikleri POST
+  kontrolüne alındı. GET ile silmeme regression testidir.
 
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`
@@ -100,7 +105,7 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   gez, alan oku; `json metni` nesne listesi üretir. (T027 belgesi düzeltildi:
   Ondalık alan zaten vardı.)
 - **Silme** (K-059): `sayılardan 5 i sil` / `defterden "elma" yı sil` —
-  yoksa sessiz (idempotent). Girişli panele gerçek silme rotası eklendi
+  yoksa sessiz (idempotent). Girişli panel demosuna silme akışı eklendi
   (dosya-satırı silme saf zee: süz + birleştir + yaz).
 
 ## v0.4.0 — 1 Eylül 2026
@@ -112,11 +117,11 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   harf düzeyine ilk iniş. Gömülü `metin_araclari` birimi (saf zee).
 - **JSON yazma** (K-054): `değerin json metni` — sıra-korumalı,
   deterministik serileştirme.
-- **Web uygulaması katmanı** (K-050..K-052, K-055): HTML servis, örtük
+- **Deneysel web uygulaması katmanı** (K-050..K-052, K-055): HTML servis, örtük
   `istek` sözlüğü (sorgu + POST form), `adresine yönlendir` (303),
   `html güvenlisi` (XSS), örtük `çerezler` + `çerezine yaz` (oturum),
   önekli rotalar. Kanıtlar: mini-site, panel-not-defteri, girisli-panel
-  (parola+oturum mantığı SAF ZEE) — üçü de tarayıcıda canlı + hermetik.
+  (parola+oturum mantığı SAF ZEE) — üçü de localhost'ta canlı + hermetik.
 - **Sınır (değişmedi):** parola düz metin, HTTPS yok — internete açık
   üretim Faz 5 güvenlik dalgasını bekler.
 
@@ -127,12 +132,12 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   parametresi geri geldi.
 - **`dil belge <birim>`**: işlem başlıkları + test sayısı (RFC-0014 §8.2).
 - Playground'a "Kitaplık (obeb)" örneği eklendi.
-- **zee ile web sitesi** (K-050): sunucu HTML'i text/html olarak servis
+- **Deneysel zee web sitesi** (K-050): sunucu HTML'i text/html olarak servis
   eder; projeler/mini-site.dil — rotalar + stil + gömülü kitaplık hesabı.
 - **Web uygulaması dalgası** (K-051): örtük `istek` sözlüğü (sorgu + POST
   form, UTF-8 yüzde çözümü), `adresine yönlendir` (303, S041),
   `html güvenlisi` (XSS kaçışlaması). Kanıt: panel-not-defteri projesi —
-  formlu, dosyada saklayan, gizli yollu admin panel (tarayıcıda canlı +
+  formlu, dosyada saklayan, gizli yollu eğitim paneli (localhost'ta canlı +
   hermetik tam-döngü testi). Sınır: HTTPS/hash Faz 5'te.
 - **Oturum kapısı** (K-052): örtük `çerezler` sözlüğü + `çerezine yaz`
   (Set-Cookie, HttpOnly). Oturum mantığı saf zee'de: girisli-panel projesi

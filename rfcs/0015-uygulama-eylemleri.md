@@ -78,9 +78,9 @@ dönüşür.
 
 ## Aşamalı gerçekleme
 
-1. **Korkuluk:** mevcut TCP/web yüzeyi açık `--deneysel-web` opt-in'i olmadan
-   gerçek soket açmaz; örnekler production olmadığını söyler ve bütün durum
-   değişiklikleri POST kontrolü taşır.
+1. **Korkuluk (K-082 — gerçeklendi):** mevcut TCP/web yüzeyi açık
+   `--deneysel-web` opt-in'i olmadan gerçek soket açmaz; örnekler production
+   olmadığını söyler ve bütün durum değişiklikleri POST kontrolü taşır.
 2. **Protokol sınırı:** yöntemli route, gövde/başlık sınırı, güvenli çerez
    seçenekleri, istek deadline'ı ve kontrollü reverse-proxy güveni.
 3. **Eylem:** typed girdi doğrulama, authz ve form/API/CLI adaptörlerinden
