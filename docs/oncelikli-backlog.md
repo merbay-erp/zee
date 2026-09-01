@@ -12,8 +12,9 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 
 1. Tamamlanan önkoşul: K-095 registry metadata güveni (378 test).
 2. İnsan kanıtı bekleyen kapılar: B-001/K-096 + B-002/K-093.
-3. Tamamlanan compiler omurgası: B-003/K-097 ve B-004/K-098 (393 test).
-4. Sıradaki makine işi: B-005; ardından B-006 →
+3. Tamamlanan compiler omurgası: B-003/K-097, B-004/K-098 ve B-005/K-099
+   (396 test).
+4. Sıradaki makine işi: B-006; ardından
    B-010/B-018/B-019/B-020 → B-014–B-017.
 5. Üçüncü sprint: B-027/B-028 → B-030/B-031 → B-043/B-044.
 6. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
@@ -34,17 +35,20 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   protokolü RFC-0021/spec-20/ADR-002'de bağlandı. Sekiz bağımsız conformance
   testi güçlü birleşimleri, işlem-adı kuyruğunun postfix'i gölgelememesini,
   tam sıfır-argüman çağrısını, en uzun çağrıyı ve fail-closed sınırları korur;
-  fiziksel fonksiyon/modül parçalama B-005'in davranış-korumalı işidir.
+  fiziksel fonksiyon/modül parçalama B-005/K-099'da davranış korunarak bitti.
 - **B-004 · KAPALI (K-098) — domain özelliklerini core AST'den ayır.**
   HTTP, sensör, CSRF ve parola yüzeyleri kaynak yazımı değişmeden tek generic
   `Intrinsic { kimlik, argumanlar }` düğümüne indirildi. Tür imzası,
   yetkinlik ve etki ADR-011'deki merkezi kayıtta birleşti; kapalı sensör koşulu
   genel olumsuzlamayı kullanır. Yedi lowering/imza testi ve mevcut davranış
-  korpusuyla V1-P0-09 kapandı. Fiziksel runtime/parser handler ayrımı B-005,
-  proje/paket izin politikası B-023 kapsamındadır.
-- **B-005 · AÇIK — mega fonksiyon büyümesini durdur.** Parser, checker ve
-  runtime handler'larını domain/faz sınırlarına ayır; yeni özellik doğrudan
-  yüzlerce satır ekleyemez.
+  korpusuyla V1-P0-09 kapandı. Fiziksel handler ayrımı B-005/K-099'da
+  tamamlandı; proje/paket izin politikası B-023 kapsamındadır.
+- **B-005 · KAPALI (K-099) — mega fonksiyon büyümesini durdur.** Parser
+  cümle/ifade; checker cümle/ifade/çağrı; runtime cümle/ifade handler'larına
+  ayrıldı. Kök dosyalar sırasıyla 2709→1160, 3067→963 ve 3181→1965 satıra
+  indi. ADR-012 ve [faz rehberi](derleyici-faz-sinirlari.md) sahipliği bağlar;
+  üç mimari test handler'ların köke dönmesini ve ilanlı satır bütçelerinin
+  sessizce aşılmasını engeller. Kullanıcı yüzeyi ve davranış değişmedi.
 - **B-006 · AÇIK — type checker'ı katmanlaştır.** Sembol çözümü, tür çıkarımı,
   flow, çağrı/sözleşme, etki/capability ve dönüş/control-flow ayrılmalıdır.
 - **B-007 · AÇIK — yerel çağrı kaynaklı inference'ı sıra bağımsız yap.** Aynı

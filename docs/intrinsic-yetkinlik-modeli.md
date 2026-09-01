@@ -58,5 +58,5 @@ bildirir. Örneğin çocuk modu ağ çağrısını bugün `GuvenliIo` sınırın
   güvenilir iç ABI'sidir.
 - Paketlerin keyfî intrinsic kimliği üretmesine izin verilmez.
 - Kimliğin kayıtlı olması adaptörün her ortamda açık olduğu anlamına gelmez.
-- Runtime handler'larının modüllere ayrılması B-005, checker fazlarının
-  ayrılması B-006, proje/paket yetkinlik izinleri B-023 kapsamındadır.
+- Runtime handler'larının modül ayrımı B-005/K-099 ile tamamlandı; checker'ın
+  semantik faz ayrımı B-006, proje/paket yetkinlik izinleri B-023 kapsamındadır.

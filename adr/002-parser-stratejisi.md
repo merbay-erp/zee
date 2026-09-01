@@ -3,6 +3,8 @@
 - **Durum:** kabul
 - **Tarih:** 31 Ağustos 2026
 - **Revizyon:** 1 Eylül 2026 — K-097/RFC-0021 ile ifade katmanları bağlandı
+- **Revizyon:** 1 Eylül 2026 — K-099/ADR-012 ile cümle ve ifade handler'ları
+  fiziksel modüllere ayrıldı
 
 ## Bağlam
 
@@ -43,7 +45,8 @@ değer sağlamaz. Böyle bir yüzey gelirse bu ADR yeniden açılır.
 ## Sonuçlar
 
 Niyet EBNF'si ve normatif katman sırası artık RFC-0021/spec-20'dedir; parser
-referans gerçekleme kalır. B-005'te mega fonksiyonlar parçalanırken modül
-sınırları bu katmanları izleyecek, davranış conformance testiyle korunacaktır.
+referans gerçekleme kalır. B-005/K-099'da cümle ve ifade handler'ları
+ADR-012'nin fiziksel modüllerine ayrıldı; sınırlar bu katmanları izler ve
+davranış conformance testiyle korunur.
 Gelecekte ikinci compiler geldiğinde spec/20 + ortak korpus kaynak olur;
 Rust fonksiyon sırası normatif kaynak sayılmaz.

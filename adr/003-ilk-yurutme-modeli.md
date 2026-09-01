@@ -2,6 +2,8 @@
 
 - **Durum:** kabul
 - **Tarih:** 31 Ağustos 2026
+- **Revizyon:** 1 Eylül 2026 — K-099/ADR-012 ile cümle yürütme ve ifade
+  değerlendirme handler'ları fiziksel modüllere ayrıldı
 
 ## Bağlam
 
