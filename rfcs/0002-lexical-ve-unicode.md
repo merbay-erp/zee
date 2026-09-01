@@ -96,3 +96,11 @@ dağıtım). Sonuçları:
 
 Yok — korpus zaten bu kurallarla yazılmıştır; A08 artık S028 ile makine
 tarafından da doğrulanır (`a08_homoglyph_reddedilir` testi).
+
+## Sürekli sağlamlık kanıtı
+
+K-110/ADR-022, geçerli UTF-8 girdiyi lexer ile hem normal hem hata-kurtarmalı
+parser yolunda yürüten [libFuzzer hattını](../docs/fuzzing.md) bağladı. Unicode,
+emoji, combining im, girinti, sayı ve virgül tohumları ana testte de kalıcı
+olarak yeniden oynatılır. Bu dil kuralını değiştirmez; parser'ın tanı ya da AST
+yerine process panic'i üretmemesi sözünü sürekli denetler.

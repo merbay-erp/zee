@@ -20,9 +20,11 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
    B-020 kapandı (427 test).
 6. K-109/ADR-021 production panic audit'inde 46 noktayı temizleyip dört crate
    köküne kalıcı lint kapısı koydu; B-014 kapandı (429 test).
-7. Sıradaki makine omurgası B-015–B-017'dir.
-8. Üçüncü sprint: B-027/B-028 → B-030/B-031 → B-043/B-044.
-9. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
+7. K-110/ADR-022 lexer/parser'a kalıcı saldırı korpusu, deterministik UTF-8
+   üretimi ve gecelik libFuzzer hattı kurdu; B-015 kapandı (432 test).
+8. Sıradaki makine omurgası B-016–B-017'dir.
+9. Üçüncü sprint: B-027/B-028 → B-030/B-031 → B-043/B-044.
+10. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
 
 ## P0 — V1 öncesi dil ve derleyici omurgası
 
@@ -99,8 +101,15 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   kapasite assertion'ı ayrı `usize` bileşenlerle kaldırıldı. ADR-021,
   [uygulama rehberi](production-panic-politikasi.md) ve iki regresyonla
   V1-P0-19 kapandı; toplam 429 test yeşildir.
-- **B-015 · AÇIK — lexer/parser fuzzing.** Her UTF-8 girişte panic-free sözünü
-  Unicode, emoji, combining im, girinti, dev sayı ve virgül saldırılarıyla kanıtla.
+- **B-015 · KAPALI (K-110) — lexer/parser fuzzing.** `&str` libFuzzer hedefi
+  başarılı lexer çıktısını hem normal hem hata-kurtarmalı parser'dan geçirir.
+  Sekiz başlangıç girdisi ve mutation sözlüğü Unicode/homoglyph, emoji,
+  combining im, CRLF, girinti, metin kaçışı, dev sayı, virgül ve blokları
+  kapsar. Her ana testte korpusun yanında 4.096 deterministik UTF-8 bileşimi
+  ve 64 KiB uç girdiler yürür. Sabit nightly+cargo-fuzz gece işi korpusu cache
+  ile büyütür, crash girdisini artifact yapar. İlk yerel smoke 1.048.287
+  girdiyi crash/panic olmadan tamamladı. ADR-022, [fuzz rehberi](fuzzing.md)
+  ve üç regresyonla V1-P0-20 kapandı; toplam 432 test yeşildir.
 - **B-016 · AÇIK — morfoloji property/fuzz testini büyüt.** Üret→çöz,
   belirsizliğin sessiz seçilmemesi ve normalizasyon varyantları.
 - **B-017 · AÇIK — AST invariant doğrulayıcı ekle.** Test/debug aşamasında
@@ -222,6 +231,5 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 ## Bir sonraki somut kapı
 
 İnsan kanıtı hattında B-001, doldurulmuş gerçek usability formları ve önceden
-ilan edilmiş eşikleri bekler. Makine hattında B-014/K-109 kapandı; sıradaki iş
-B-015 lexer/parser fuzz korpusudur. Ardından B-016 morfoloji property/fuzz ve
-B-017 AST invariant doğrulayıcı gelir.
+ilan edilmiş eşikleri bekler. Makine hattında B-015/K-110 kapandı; sıradaki iş
+B-016 morfoloji property/fuzz, ardından B-017 AST invariant doğrulayıcıdır.

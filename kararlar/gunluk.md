@@ -1548,11 +1548,32 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   sıkıştıran assertion'ları kaldırıldı. Program-içi, kalıcı ABI olmayan kimlik
   iki `usize` bileşen taşır; semantic identity ve depolama ayrımı değişmedi.
 - **Dürüst sınır:** Bu kapı kolay/doğrudan panic makrolarını ve convenience
-  unwrap'ları kapatır. Keyfî UTF-8 parser girdisi fuzz kanıtını B-015, malformed
-  AST genel invariant doğrulamasını B-017 tamamlar. Kaynak semantiği değişmedi.
+  unwrap'ları kapatır. Keyfî UTF-8 parser girdisi fuzz kanıtını B-015/K-110
+  tamamladı; malformed AST genel invariant doğrulaması B-017'dedir. Kaynak
+  semantiği değişmedi.
 - **Kanıt:** ADR-021 ve production panic rehberi; sıfır konumlu elle kurulmuş
   AST'nin panic yerine T016 vermesi ile dört crate lint sahipliği. İki yeni
   testle toplam 429; B-014 ve V1-P0-19 kapandı.
+
+## K-110 — Lexer/parser fuzz hattını kalıcılaştır (1 Eyl)
+
+- **Hedef:** `&str` kabul eden libFuzzer hedefi lexer başarılıysa token akışını
+  hem normal hem hata-kurtarmalı parser'da yürütür; tanı geçerli sonuçtur,
+  panic/crash değildir.
+- **Korpus:** Sekiz tohum geçerli program, Unicode/homoglyph, emoji, combining
+  im, CRLF, sekme/girinti, metin kaçışı, dev sayı, virgül ve blok saldırılarını
+  taşır. Zee sözlüğü mutation'ı anlamlı token ve UTF-8 byte dizilerine iter.
+- **Kalıcı kanıt:** Ana testte korpus replay, 4.096 deterministik üretilmiş
+  UTF-8 kaynak ve 64 KiB sayı/ondalık/virgül/girinti uçları vardır. Üç yeni
+  testle toplam 432.
+- **Operasyon:** `nightly-2026-08-31`, `cargo-fuzz 0.13.2`, ayrı kilit dosyası,
+  64 KiB max input ve beş saniye timeout sabittir. Gece işi korpusu cache'ler;
+  crash girdisini artifact yapar. İlk yerel smoke 1.048.287 girdiyi 31 saniyede
+  crash, panic ve timeout olmadan tamamladı.
+- **Dürüst sınır:** Bu mutation kanıtıdır, bütün dizilerin biçimsel ispatı
+  değildir. Geçersiz UTF-8 dosya okuma sınırında; malformed elle kurulmuş
+  token/AST B-017'de; daha büyük kaynakların resource bütçesi ayrı kapıdadır.
+  ADR-022 ve fuzz rehberiyle B-015/V1-P0-20 kapandı.
 
 ---
 
@@ -1562,5 +1583,5 @@ Korpus 10 öğrenci + 5 profesyonel usability oturumuna (Hafta 12 hedefi, erkeni
 Hafta 2'de kağıt üstünde) sesli okutulacak; her kayıt için "doğal mı /
 deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
-Makine hattında B-014/K-109 kapandı. Sırada B-015 lexer/parser fuzz, ardından
-B-016 morfoloji property/fuzz ve B-017 AST invariant doğrulayıcı vardır.
+Makine hattında B-015/K-110 kapandı. Sırada B-016 morfoloji property/fuzz,
+ardından B-017 AST invariant doğrulayıcı vardır.

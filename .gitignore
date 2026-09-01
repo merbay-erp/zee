@@ -1,5 +1,7 @@
 .DS_Store
 target/
+compiler/fuzz/artifacts/
+compiler/fuzz/coverage/
 .claude/
 .zee-yazma-kilidi
 *.zee-gecici-*

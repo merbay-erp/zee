@@ -258,6 +258,14 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   `unreachable!`, `todo!` ve `unimplemented!` kullanımını Clippy `deny` ile
   reddeder. `SymbolId`nin yapay 32-bit kapasite assertion'ı da kalktı. İki
   yeni regresyonla toplam 429 test yeşildir; B-014/V1-P0-19 kapandı.
+- **Lexer/parser sürekli fuzz hattı** (K-110, ADR-022): geçerli UTF-8 kabul
+  eden libFuzzer hedefi lexer çıktısını hem normal hem hata-kurtarmalı parser'a
+  verir. Sekiz Unicode/girinti/sayı/virgül/blok tohumu ile Zee mutation
+  sözlüğü, sabit nightly+cargo-fuzz gece işinde cache'li korpusu büyütür;
+  crash girdisi artifact olarak korunur. Üç stable regresyon korpusu, 4.096
+  deterministik UTF-8 bileşimini ve 64 KiB uçları her ana testte oynatır.
+  İlk smoke 1.048.287 girdiyi crashesiz tamamladı; toplam 432 test yeşildir,
+  B-015/V1-P0-20 kapandı.
 
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`

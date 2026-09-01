@@ -85,7 +85,9 @@ Araçlar: `dil çalıştır(--güvenli/--deneysel-web/--web-proxy)/parola-özeti
 + **dillsp** LSP sunucusu — tanılar, hover, tanıma git, **morfolojili
 yeniden adlandırma (F2)** ([editors/](editors/)).
 Determinizm testlerde tam: rastgelelik, saat, dosyalar, HTTP, sunucu istekleri,
-sensörler ve an ölçümü IO soyutlamasından gelir — 429 test hermetik koşar.
+sensörler ve an ölçümü IO soyutlamasından gelir — 432 test hermetik koşar.
+Lexer/parser panic-free sözünü ayrıca kalıcı saldırı korpusu, deterministik
+UTF-8 üretimi ve gecelik [libFuzzer hattı](docs/fuzzing.md) denetler.
 
 **Playground:** `playground/olustur.sh` derleyiciyi WebAssembly'e derler ve
 tek dosyalık `playground/zee-playground.html` üretir — çift tıkla aç, tarayıcıda
@@ -200,6 +202,8 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   K-109/ADR-021 production'daki 46 doğrudan panic noktasını tanı/sonuca
   çevirdi; `lib`, `dil`, `dillsp` ve `olcum` yeni unwrap/expect/panic
   kullanımını test dışı Clippy kapısında reddeder.
+  K-110/ADR-022 lexer ve iki parser yolunu Unicode/girinti/sayı/virgül
+  korpusu, 4.096 deterministik UTF-8 bileşimi ve gecelik libFuzzer ile bağladı.
   Uygulama sırası
   [öncelikli backlog](docs/oncelikli-backlog.md) ile sabittir.
   Bağlayıcı liste: [docs/v1-surum-kapilari.md](docs/v1-surum-kapilari.md).
