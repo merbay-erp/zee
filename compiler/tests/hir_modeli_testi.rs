@@ -2,7 +2,7 @@
 
 use dil::agac::{Cumle, Ifade};
 use dil::cozumleyici::Tur;
-use dil::hir::{HirBagi, HirIfadeTuru};
+use dil::hir::{HirBagi, HirIfadeTuru, HirKaynakAraligi};
 use dil::kaynagi_fazli_derle;
 
 #[test]
@@ -26,7 +26,24 @@ fn hir_ifade_turunu_ve_symbol_id_bagini_ast_disinda_tasir() {
     assert_eq!(bilgi.tur(), HirIfadeTuru::Deger(Tur::TamSayi));
     assert_eq!(bilgi.kimlik().sirasi(), 1);
     assert_eq!(bilgi.bag(), HirBagi::Sembol(*ast_kimligi));
+    assert_eq!(bilgi.kaynak_araligi().kesin_konumu(), Some((2, 1, 6)));
     assert_eq!(program.hir().sembol_adi(*ast_kimligi), Some("sayı"));
+}
+
+#[test]
+fn her_hir_ifadesi_zorunlu_kaynak_araligi_tasir() {
+    let program = kaynagi_fazli_derle("sonuç 1 ile 2 nin toplamı olsun\nsonucu yaz\n")
+        .expect("HIR üretilmeli");
+    let Cumle::Olsun { deger, .. } = &program.cumleler[0] else {
+        panic!("olsun cümlesi bekleniyordu")
+    };
+    let bilgi = program
+        .hir()
+        .ifade_bilgisi(deger)
+        .expect("bileşik ifade HIR bilgisi taşımalı");
+    assert!(matches!(bilgi.kaynak_araligi(), HirKaynakAraligi::Satir { .. }));
+    assert_eq!(bilgi.kaynak_araligi().satiri(), 1);
+    assert_eq!(bilgi.kaynak_araligi().kesin_konumu(), None);
 }
 
 #[test]

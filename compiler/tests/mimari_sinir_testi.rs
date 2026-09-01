@@ -1,4 +1,4 @@
-//! B-005/B-006/B-010/B-018/B-019 derleyici faz ve semantic sınır regresyonları.
+//! B-005/B-006/B-010/B-018/B-019/B-020 faz ve semantic sınır regresyonları.
 
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -65,6 +65,7 @@ fn handler_modulleri_yeni_domain_icin_sinir_tasir() {
         ("src/kimlik.rs", 80),
         ("src/faz.rs", 160),
         ("src/hir.rs", 180),
+        ("src/hir/kaynak.rs", 100),
         ("src/yorumlayici/cumle.rs", 600),
         ("src/yorumlayici/ifade.rs", 730),
         ("src/yorumlayici/hir_gecisi.rs", 140),
@@ -154,6 +155,10 @@ fn baglanmis_program_typed_hir_olmadan_uretilemez() {
     ] {
         assert!(hir.contains(kanit), "typed HIR kanıtı eksik: {kanit}");
     }
+    assert!(
+        kaynak("src/hir/kaynak.rs").contains("enum HirKaynakAraligi"),
+        "typed HIR kaynak aralığı ayrı modülde görünür olmalı"
+    );
 }
 
 #[test]

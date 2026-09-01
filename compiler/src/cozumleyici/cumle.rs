@@ -926,11 +926,14 @@ pub(super) fn blok_denetle(
                     let hir_turu = donus
                         .map(crate::hir::HirIfadeTuru::Deger)
                         .unwrap_or(crate::hir::HirIfadeTuru::DegerDondurmez);
+                    let kaynak_araligi = crate::hir::HirKaynakAraligi::satir(satir)
+                        .ok_or_else(|| hir_kaynak_hatasi(satir))?;
                     hir_ifadesi_kaydet(
                         baglam,
                         crate::hir::ifade_adresi(cagri),
                         hir_turu,
                         crate::hir::HirBagi::Islem(kimlik),
+                        kaynak_araligi,
                     );
                 } else {
                     return Err(Tani::yeni("S004", "Geçersiz çağrı cümlesi.".into(), satir, 1, 1));

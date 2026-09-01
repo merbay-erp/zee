@@ -16,9 +16,11 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
    B-006/K-100, B-010/K-101, B-018/K-102 ve B-019/K-103–K-104 (413 test).
 4. Güvenlik incelemesi: K-105 ağ deadline/bellek, K-106 process içi oturum
    kotası ve K-107 LSP tek-girdi sınırını kapattı (426 test).
-5. Sıradaki makine omurgası B-020 ve ardından B-014–B-017'dir.
-6. Üçüncü sprint: B-027/B-028 → B-030/B-031 → B-043/B-044.
-7. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
+5. K-108/ADR-020 her semantic HIR düğümünde kaynak aralığını zorunlu yaptı;
+   B-020 kapandı (427 test).
+6. Sıradaki makine omurgası B-014–B-017'dir.
+7. Üçüncü sprint: B-027/B-028 → B-030/B-031 → B-043/B-044.
+8. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
 
 ## P0 — V1 öncesi dil ve derleyici omurgası
 
@@ -111,12 +113,21 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   `CalistirmaProgrami::Hir` kullanır; değişken, işlem ve yapı kararları kaynak
   AST adından değil yalnız `HirBagi`ndan gelir. Raw `Program` yolu v0 embedding
   uyumluluğudur. V1-P0-14 kapandı.
-- **B-020 · SIRADA — her semantic node'da source span garanti et.** `Node<T>`
-  ya da eşdeğeri spansiz düğümü yapısal olarak zorlaştırmalıdır.
+- **B-020 · KAPALI (K-108) — her semantic node'da source span garanti et.**
+  Her `HirIfadeBilgisi` kurucuda zorunlu `HirKaynakAraligi` alır; alan
+  `Option` değildir ve `NonZeroUsize` bileşenleri sıfır/konumsuz kaydı
+  engeller. Lexer konumu korunmuş değişken `Kesin { satir, sutun, uzunluk }`,
+  diğer mevcut AST ifadeleri sahte sütun uydurmayan `Satir { satir }` zarfı
+  taşır. ADR-020, kesin değişken + bileşik ifade davranış kanıtı ve mimari
+  sahiplik testiyle V1-P0-18 kapandı; toplam 427 test yeşildir.
 - **B-021 · AÇIK — LSP odaklı error recovery planı.** Cümle sınırı ve girinti
   güvenilir synchronization point olarak birden çok tanıyı desteklemelidir.
 - **B-022 · KISMEN — diagnostic code stability kapısını güçlendir.** Katalog
   birebir testi vardır; sürümler arası identity değişimini fixture ile koru.
+- **B-050 · AÇIK — kesin source span'i bütün AST ifadelerine yay.** K-108
+  konumsuz HIR düğümünü kapattı; bugün değişken dışındaki eski AST varyantları
+  satır zarfı taşır. Parser token aralıklarını bütün bileşik/leaf düğümlerde
+  koruyup tanı, LSP ve gelecek lowering'e kesin sütun+uzunluk sağlamalıdır.
 
 ## P1 — Runtime ve güvenlik
 
@@ -202,7 +213,6 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 ## Bir sonraki somut kapı
 
 İnsan kanıtı hattında B-001, doldurulmuş gerçek usability formları ve önceden
-ilan edilmiş eşikleri bekler. Makine hattında sıradaki iş B-020'dir:
-K-103/K-104 HIR'ındaki her semantic düğüm source span'i yapısal olarak taşır.
-Ardından B-014 fuzz/property korpusu ve B-015–B-017 güvenlik/uyumluluk
-denetimleri gelir.
+ilan edilmiş eşikleri bekler. Makine hattında B-020/K-108 kapandı; sıradaki iş
+B-014 production panic/`unwrap` audit'idir. Ardından B-015 lexer/parser fuzz,
+B-016 morfoloji property/fuzz ve B-017 AST invariant doğrulayıcı gelir.

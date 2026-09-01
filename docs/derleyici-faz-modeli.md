@@ -33,10 +33,11 @@ dayanmaz.
 `BaglanmisProgram::program()` immutable görünüm verir. `into_program()` faz
 bilgisini bilinçli silen sınırdır; checker öncesi çağrılamaz.
 
-## K-103/K-104 sonrası HIR hattı
+## K-103/K-104/K-108 sonrası HIR hattı
 
 `BaglanmisProgram` artık ADR-016'daki `HirProgram`ı zorunlu taşır. Her
-denetlenmiş ifade `HirDugumId`, açık `HirIfadeTuru` ve varsa semantic ID bağına sahiptir;
+denetlenmiş ifade `HirDugumId`, açık `HirIfadeTuru`, zorunlu
+`HirKaynakAraligi` ve varsa semantic ID bağına sahiptir;
 kaynak AST tanı ve v0 uyumluluğu için salt-okunur korunur. Hedef hat şöyledir:
 
 ```text
@@ -44,8 +45,9 @@ Parsed AST → Resolution sonucu → Typed HIR → Execution/Lowering
 ```
 
 K-104 ile standart runtime ve `dene` değişken/işlem/yapı kararını yalnız bu
-HIR bağından alır; B-019 kapanmıştır. B-020 her semantic düğümde zorunlu
-source span'i kuracaktır. Ayrıntı [typed HIR rehberindedir](typed-hir-modeli.md).
+HIR bağından alır; B-019 kapanmıştır. K-108 her semantic HIR düğümüne kesin
+token aralığı veya dürüst satır zarfı koyup B-020'yi kapattı. Ayrıntı
+[typed HIR rehberindedir](typed-hir-modeli.md).
 
 ## Kanıt ve büyüme kuralı
 

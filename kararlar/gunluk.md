@@ -1442,7 +1442,8 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   `HirDugumId`dir; kutulu program yer değiştirmez ve bağlı program klonlanmaz.
 - **Dürüst sınır:** Runtime henüz bütün semantic kararlarını HIR bağından
   almıyordu. K-104 sonradan bu geçişi tamamlayıp B-019/V1-P0-14'ü kapattı;
-  zorunlu source span B-020'dir. Zee kaynak semantiği ve normatif spec değişmedi.
+  o anda açık kalan zorunlu source span'i K-108 sonradan B-020 kapsamında
+  kapattı. Zee kaynak semantiği ve normatif spec değişmedi.
 - **Kanıt:** ADR-016, typed HIR rehberi; ifade türü+SymbolId, işlem/yapı ID
   dizini ve HIR'sız bağlı programı reddeden üç yeni test. Toplam 409 test.
 
@@ -1514,6 +1515,25 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
 - **Kanıt:** ADR-019, üç çerçeve ve dört JSON olumsuz/sınır testi. Yedi yeni
   testle toplam 426; B-047 ve V1-P0-17 kapandı.
 
+## K-108 — Semantic HIR düğümünde kaynak aralığını zorunlu yap (1 Eyl)
+
+- **Karar:** Her `HirIfadeBilgisi` kimlik, tür ve bağın yanında kurucuda
+  zorunlu `HirKaynakAraligi` alır. Kaynak kökeni `Option` değildir; spansiz
+  semantic HIR ifadesi kurulamaz.
+- **Hassasiyet:** Lexer token konumu AST'de korunmuş değişkenler
+  `Kesin { satir, sutun, uzunluk }` taşır. Diğer mevcut AST ifadeleri eksik
+  bilgiyi `1:1` diye uydurmak yerine açık `Satir { satir }` zarfı taşır.
+  Satır/sütun/uzunluk bileşenleri `NonZeroUsize`dır.
+- **Mimari:** Kaynak aralığı tipi `hir/kaynak.rs` sahibidir; `hir.rs` 180
+  satırlık faz bütçesini aşmaz. Checker normal değer ifadelerini ve dönüşsüz
+  çağrı cümlelerini aynı zorunlu sözleşmeyle kaydeder.
+- **Dürüst sınır:** B-020 yapısal kaynak-kökeni değişmezi kapandı. Bütün AST
+  varyantlarında kesin sütun+uzunluk korumak tanı hassasiyeti işi B-050'dir;
+  bu sınır konumsuz HIR düğümüne izin vermez. Kaynak dil semantiği değişmedi.
+- **Kanıt:** ADR-020, typed-HIR/faz/kimlik rehberleri; mevcut değişken testine
+  kesin konum kanıtı, bileşik ifadeye satır zarfı davranışı ve mimari sahiplik
+  kontrolü. Bir yeni testle toplam 427; B-020 ve V1-P0-18 kapandı.
+
 ---
 
 ## Sonraki adım
@@ -1522,5 +1542,6 @@ Korpus 10 öğrenci + 5 profesyonel usability oturumuna (Hafta 12 hedefi, erkeni
 Hafta 2'de kağıt üstünde) sesli okutulacak; her kayıt için "doğal mı /
 deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
-Makine hattında B-020 source span gelir; ardından B-014 fuzz/property korpusu
-ve B-015–B-017 denetimleri izler.
+Makine hattında B-020/K-108 kapandı. Sırada B-014 production panic/`unwrap`
+audit'i, ardından B-015 lexer/parser fuzz, B-016 morfoloji property/fuzz ve
+B-017 AST invariant doğrulayıcı vardır.
