@@ -190,13 +190,31 @@ pub fn denetle_coklu(program: &mut Program) -> Vec<Tani> {
         program.islemler = baglam.islemler;
         return tanilar;
     }
-    for cumle in program.cumleler.iter_mut() {
-        if let Err(tani) = blok_denetle(std::slice::from_mut(cumle), &mut ortam, &mut baglam) {
+    let mut bas = 0;
+    while bas < program.cumleler.len() {
+        // Çoklu tanı geçişi normalde cümle cümle toparlanır. Görev bildirimi
+        // ile join ise tek sözcüksel kanıttır; ikisini aynı dilimle denetle.
+        let mut son = bas + 1;
+        if matches!(program.cumleler[bas], Cumle::Eszamanli { .. }) {
+            while son < program.cumleler.len() {
+                let join = matches!(program.cumleler[son], Cumle::HepsiniBekle { .. });
+                son += 1;
+                if join {
+                    break;
+                }
+            }
+        }
+        let onceki_bekleyenler = baglam.bekleyen_gorevler.clone();
+        if let Err(tani) =
+            blok_denetle(&mut program.cumleler[bas..son], &mut ortam, &mut baglam)
+        {
             tanilar.push(tani);
+            baglam.bekleyen_gorevler = onceki_bekleyenler;
             if tanilar.len() >= 20 {
                 break;
             }
         }
+        bas = son;
     }
     for test in program.testler.iter_mut() {
         let mut test_ortami: HashMap<String, Tur> = HashMap::new();
@@ -607,7 +625,9 @@ fn blok_denetle(
     ortam: &mut HashMap<String, Tur>,
     baglam: &mut Baglam,
 ) -> Result<(), Tani> {
-    for cumle in cumleler {
+    let giriste_bekleyenler = baglam.bekleyen_gorevler.clone();
+    let mut acik_gorev_satiri = None;
+    for cumle in cumleler.iter_mut() {
         match cumle {
             Cumle::Yaz { deger, satir } => {
                 let satir = *satir;
@@ -615,6 +635,19 @@ fn blok_denetle(
             }
             Cumle::Olsun { ad, deger, satir, sutun, uzunluk } => {
                 let satir = *satir;
+                if baglam.bekleyen_gorevler.contains(ad) {
+                    return Err(Tani::yeni(
+                        "T033",
+                        format!(
+                            "\"{}\" bir eşzamanlı görev sonucudur; `hepsini bekle`den önce yeniden atanamaz.",
+                            ad
+                        ),
+                        satir,
+                        *sutun,
+                        *uzunluk,
+                    )
+                    .onerili("Önce `hepsini bekle`; sonra sonuç adına sıradan bir değer gibi eriş.".into()));
+                }
                 let mut tur = ifade_denetle(deger, ortam, baglam, satir)?;
                 if let Some(eski) = ortam.get(ad.as_str()) {
                     // K-045: boş koleksiyon somut eşiyle iki yönde uzlaşır —
@@ -879,6 +912,12 @@ fn blok_denetle(
                 kapsam_bitir(ortam, &kapsam);
             }
             Cumle::ProgramiBitir { kod, satir } => {
+                bekleyen_gorev_olmadigini_denetle(
+                    baglam,
+                    &giriste_bekleyenler,
+                    *satir,
+                    "Program bitmeden önce görevleri bekle.",
+                )?;
                 if let Some(kod) = kod {
                     let tur = ifade_denetle(kod, ortam, baglam, *satir)?;
                     if tur != Tur::TamSayi {
@@ -1027,8 +1066,21 @@ fn blok_denetle(
             }
             Cumle::Eszamanli { gorevler, satir } => {
                 let satir = *satir;
+                if baglam.bekleyen_gorevler != giriste_bekleyenler {
+                    return Err(gorev_kapsami_tanisi(
+                        satir,
+                        "Yeni bir eşzamanlı grup açmadan önce mevcut görevleri bekle.",
+                    ));
+                }
+                acik_gorev_satiri = Some(satir);
                 for (ad, deger, gorev_satiri) in gorevler.iter_mut() {
                     let tur = ifade_denetle(deger, ortam, baglam, *gorev_satiri)?;
+                    if baglam.bekleyen_gorevler.contains(ad) {
+                        return Err(gorev_kapsami_tanisi(
+                            *gorev_satiri,
+                            &format!("\"{}\" adı aynı görev grubunda iki kez kullanılamaz.", ad),
+                        ));
+                    }
                     if let Some(eski) = ortam.get(ad.as_str()) {
                         if *eski != tur {
                             return Err(Tani::yeni(
@@ -1044,8 +1096,22 @@ fn blok_denetle(
                     baglam.bekleyen_gorevler.insert(ad.clone());
                 }
             }
-            Cumle::HepsiniBekle { .. } => {
-                baglam.bekleyen_gorevler.clear();
+            Cumle::HepsiniBekle { satir } => {
+                let yerel = baglam
+                    .bekleyen_gorevler
+                    .difference(&giriste_bekleyenler)
+                    .cloned()
+                    .collect::<Vec<_>>();
+                if yerel.is_empty() {
+                    return Err(gorev_kapsami_tanisi(
+                        *satir,
+                        "Bu kapsamda beklenebilecek açık bir görev grubu yok.",
+                    ));
+                }
+                baglam
+                    .bekleyen_gorevler
+                    .retain(|ad| giriste_bekleyenler.contains(ad));
+                acik_gorev_satiri = None;
             }
             Cumle::IcindeBlogu { sure, govde, yetismezse, satir } => {
                 let satir = *satir;
@@ -1226,6 +1292,12 @@ fn blok_denetle(
             }
             Cumle::Dondur { deger, satir, .. } => {
                 let satir = *satir;
+                bekleyen_gorev_olmadigini_denetle(
+                    baglam,
+                    &giriste_bekleyenler,
+                    satir,
+                    "Değer döndürmeden önce görevleri bekle.",
+                )?;
                 let tur = ifade_denetle(deger, ortam, baglam, satir)?;
                 match baglam.denetim_yigini.last_mut() {
                     Some(kayit) => kayit.donusler.push(tur),
@@ -1242,6 +1314,12 @@ fn blok_denetle(
             }
             Cumle::HataDondur { mesaj, satir } => {
                 let satir = *satir;
+                bekleyen_gorev_olmadigini_denetle(
+                    baglam,
+                    &giriste_bekleyenler,
+                    satir,
+                    "Hata döndürmeden önce görevleri bekle.",
+                )?;
                 let tur = ifade_denetle(mesaj, ortam, baglam, satir)?;
                 if tur != Tur::Metin {
                     return Err(Tani::yeni(
@@ -1423,7 +1501,38 @@ fn blok_denetle(
             }
         }
     }
+    bekleyen_gorev_olmadigini_denetle(
+        baglam,
+        &giriste_bekleyenler,
+        acik_gorev_satiri.unwrap_or(1),
+        "Eşzamanlı görev grubu kapsamdan çıkmadan önce `hepsini bekle` yaz.",
+    )?;
     Ok(())
+}
+
+fn bekleyen_gorev_olmadigini_denetle(
+    baglam: &Baglam,
+    giriste_bekleyenler: &std::collections::HashSet<String>,
+    satir: usize,
+    mesaj: &str,
+) -> Result<(), Tani> {
+    if baglam
+        .bekleyen_gorevler
+        .difference(giriste_bekleyenler)
+        .next()
+        .is_some()
+    {
+        Err(gorev_kapsami_tanisi(satir, mesaj))
+    } else {
+        Ok(())
+    }
+}
+
+fn gorev_kapsami_tanisi(satir: usize, mesaj: &str) -> Tani {
+    Tani::yeni("T051", mesaj.into(), satir, 1, 1).onerili(
+        "Her `eşzamanlı olarak` grubunu aynı sözcüksel kapsamda tek bir `hepsini bekle` ile kapat."
+            .into(),
+    )
 }
 
 fn ifade_denetle(

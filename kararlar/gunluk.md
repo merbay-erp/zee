@@ -1145,6 +1145,31 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   `küçük olmalı`, `içermeli` (aday), `boş olmamalı` (aday).
 - **Programlar:** 30.
 
+## K-090 — Deterministik görev scheduler'ı ve sözcüksel sahiplik (1 Eyl)
+
+- **Karar:** `eşzamanlı olarak` görev grubu dış ortamın değer snapshot'ını
+  kaydeder; `hepsini bekle` bu grubu tek iş parçacıklı işbirlikli scheduler'da
+  çalıştırır. Hazır görevler ve aynı anda uyananlar kaynak sırasıyla ilerler;
+  görev yalnız `bekle`, tamamlanma veya hata noktasında el değiştirir.
+- **Sahiplik:** Her grup aynı sözcüksel kapsamda tam bir kez birleştirilir.
+  Boş join, açık grupla kapsamdan çıkma/döndürme/bitirme ve üst üste grup T051;
+  join öncesi sonuç erişimi T033 kalır. Bu kuralla sahipsiz görev üretilemez.
+- **Hata/iptal:** İlk yönetilmemiş görev hatası kendi kodunu koruyarak görev
+  adıyla yayılır ve bekleyen kardeş future'larını düşürür. Dış deadline Ç001
+  sahibini bozmadan bütün görev ağacını iptal eder. Tamamlanan sıradan etkiler
+  geri alınmaz; `eylem` transaction'ı savepoint'ler karışmasın diye atomik bir
+  scheduler dilimidir.
+- **Kanıt:** 2 sn + 1 sn görevler 2 sn sanal zamanda `yavaş başladı → hızlı
+  başladı → hızlı bitti → yavaş bitti` izini verir. Kardeş iptalinde bekleme
+  sonrası yan etki yoktur; iç görev ağacının beklemesi dış kardeşe yol verir;
+  dış deadline yalnız doğru `yetişmezse` koluna ulaşır; T033/T051 olumsuzları
+  hermetiktir.
+- **Sınır:** Çok çekirdekli/önleyici paralellik, yarış/ilk sonuç, stream ve
+  dinamik görev sayısı v1 sözü değildir. Senkron platform çağrısı dönene kadar
+  atomik dilimdir; dilin `bekle` cümlesi iç içe işlem zincirinde gerçek
+  scheduler noktasıdır.
+- **Durum:** geçici kabul; RFC-0011 ve normatif spec/14 ile V1-P1-03 kapandı.
+
 ---
 
 ## Sonraki adım

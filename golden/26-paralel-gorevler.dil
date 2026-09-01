@@ -1,8 +1,10 @@
-# 26 — Paralel görevler (RFC-0011 gerçeklemesi)
+# 26 — Eşzamanlı görevler (RFC-0011/spec-14 gerçeklemesi)
 # Revizyon (31 Ağu): master plandaki örnekte "sonucu döndür" tanımsızdı
 # (K-023). RFC-0011 §1 kuralı: eşzamanlı bloktaki her satır bir görev
 # bağlamasıdır; adlar "hepsini bekle"den SONRA sıradan değerdir, önce
 # erişim derleme hatasıdır (T033).
+# K-090: `hepsini bekle` görevleri kaynak sıralı tek-thread scheduler'da
+# ilerletir; bu iki saf görev bekleme noktası taşımadan aynı dilimde tamamlanır.
 
 işlem profili getir
     kimi al

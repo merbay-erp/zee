@@ -990,7 +990,8 @@ impl Ayristirici {
     }
 
     /// `eşzamanlı olarak` bloğu: her satır `<ad> <ifade>` görev bağlamasıdır
-    /// (RFC-0011 §1). v0 yürütmesi sıralıdır (tek iş parçacıklı model).
+    /// (RFC-0011 §1). K-090 çalıştırıcısı görevleri `hepsini bekle`de
+    /// deterministik, tek iş parçacıklı ve işbirlikli olarak ilerletir.
     fn eszamanli_ayristir(&mut self, satir: usize) -> Result<Cumle, Tani> {
         match self.bak().tur {
             TokenTur::Girinti => {

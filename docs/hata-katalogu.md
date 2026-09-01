@@ -126,6 +126,7 @@ türetilmiştir; yeni kod eklenince bu dosya güncellenir — CI'a bağlanması 
 | T048 | Eylem geri alınamayan ekran/girdi/donanım etkisi taşıyor | Bu etkiyi çağıran adaptöre taşı; eylemde transaction destekli kaynakları kullan |
 | T049 | Durum değiştiren rota açık erişim politikası taşımıyor | İlk satıra `herkese açık`, `oturum gerekli` ya da `"rol" yetkisi gerekli` yaz |
 | T050 | Rota güvenlik önsözü yanlış yerde veya yinelenmiş | Tek erişim politikasını ilk satıra, zorunlu alanları hemen arkasına koy |
+| T051 | Eşzamanlı görev grubunun sözcüksel sahipliği kapanmadı ya da boş birleştirme yapıldı | Her `eşzamanlı olarak` grubunu aynı kapsamda tek `hepsini bekle` ile kapat; açık görevlerle dönme/bitirme |
 
 ## C — Çalışma zamanı
 

@@ -55,6 +55,31 @@ yetişmezse
 }
 
 #[test]
+fn scheduler_playgroundda_da_ayni_izi_verir() {
+    let kaynak = "\
+işlem yavaşı yap
+    \"yavaş başladı\" yaz
+    2 saniye bekle
+    \"yavaş bitti\" yaz
+    2 döndür
+işlem hızlandır
+    \"hızlı başladı\" yaz
+    1 saniye bekle
+    \"hızlı bitti\" yaz
+    1 döndür
+eşzamanlı olarak
+    yavaş yavaşı yap
+    hızlı hızlandır
+hepsini bekle
+";
+    let cikti = playgroundda_calistir(kaynak, "", 1);
+    assert_eq!(
+        cikti,
+        "yavaş başladı\nhızlı başladı\nhızlı bitti\nyavaş bitti"
+    );
+}
+
+#[test]
 fn cabi_katmani_gidis_donus() {
     // C-ABI sözleşmesi: uzunluk-önekli tampon.
     let kaynak = "\"merhaba\" yaz\n".as_bytes();

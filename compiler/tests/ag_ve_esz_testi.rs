@@ -1,7 +1,7 @@
 //! Son beş golden: HTTP (24), sunucu (25), eşzamanlılık (26), zaman aşımı (27),
 //! ESP32 simülatörü (29) — hepsi hermetik IO ile deterministik.
 
-use dil::yorumlayici::{calistir_io, ToplayanIo};
+use dil::yorumlayici::{calistir_io, GirdiCikti, ToplayanIo};
 
 fn golden(ad: &str) -> String {
     let yol = format!("{}/../golden/{}", env!("CARGO_MANIFEST_DIR"), ad);
@@ -66,6 +66,300 @@ hepsini bekle
 ";
     let hata = dil::kaynagi_calistir(kaynak).expect_err("T033 bekleniyor");
     assert_eq!(hata.kod, "T033");
+
+    let yeniden_atama = "\
+işlem bir ver
+    1 döndür
+eşzamanlı olarak
+    görev bir ver
+görev 2 olsun
+hepsini bekle
+";
+    assert_eq!(
+        dil::kaynagi_derle(yeniden_atama)
+            .expect_err("bekleyen sonuç yeniden atanamaz")
+            .kod,
+        "T033"
+    );
+}
+
+#[test]
+fn scheduler_bekleme_noktalarinda_kaynak_sirasiyla_ilerler() {
+    let kaynak = "\
+işlem yavaş işi yap
+    \"yavaş başladı\" yaz
+    2 saniye bekle
+    \"yavaş bitti\" yaz
+    20 döndür
+
+işlem hızlı işi yap
+    \"hızlı başladı\" yaz
+    1 saniye bekle
+    \"hızlı bitti\" yaz
+    10 döndür
+
+eşzamanlı olarak
+    yavaş yavaş işi yap
+    hızlı hızlı işi yap
+
+hepsini bekle
+yavaş yaz
+hızlı yaz
+";
+    let program = dil::kaynagi_derle(kaynak).expect("scheduler kaynağı derlenmeli");
+    let mut io = ToplayanIo::yeni(Vec::new());
+    calistir_io(&program, &mut io).expect("görevler tamamlanmalı");
+    assert_eq!(
+        io.cikti,
+        vec![
+            "yavaş başladı",
+            "hızlı başladı",
+            "hızlı bitti",
+            "yavaş bitti",
+            "20",
+            "10",
+        ]
+    );
+    assert_eq!(io.an_ms(), 2_000, "beklemeler toplanmamalı; en uzunu kazanmalı");
+}
+
+#[test]
+fn join_gorevleri_baslatir_ve_esit_uyanis_kaynak_sirasidir() {
+    let kaynak = "\
+işlem a işini yap
+    \"a başladı\" yaz
+    1 saniye bekle
+    \"a bitti\" yaz
+    1 döndür
+işlem b işini yap
+    \"b başladı\" yaz
+    1 saniye bekle
+    \"b bitti\" yaz
+    2 döndür
+eşzamanlı olarak
+    a a işini yap
+    b b işini yap
+\"ana kapsam\" yaz
+hepsini bekle
+";
+    assert_eq!(
+        dil::kaynagi_calistir(kaynak).expect("eşit uyanışlar çalışmalı"),
+        vec!["ana kapsam", "a başladı", "b başladı", "a bitti", "b bitti"]
+    );
+}
+
+#[test]
+fn gorev_hatasi_bekleyen_kardesi_iptal_eder() {
+    let kaynak = "\
+işlem yavaş işi yap
+    \"yavaş başladı\" yaz
+    5 saniye bekle
+    \"yavaş yan etkisi yasak\" yaz
+    1 döndür
+
+işlem bozuk işi yap
+    \"bozuk başladı\" yaz
+    sonuç 10 un 0 a bölümü olsun
+    sonucu döndür
+
+eşzamanlı olarak
+    yavaş yavaş işi yap
+    bozuk bozuk işi yap
+
+hepsini bekle
+\"join sonrası yasak\" yaz
+";
+    let program = dil::kaynagi_derle(kaynak).expect("iptal kaynağı derlenmeli");
+    let mut io = ToplayanIo::yeni(Vec::new());
+    let hata = calistir_io(&program, &mut io).expect_err("bozuk görev yayılmalı");
+    assert_eq!(hata.kod, "C003");
+    assert!(hata.mesaj.contains("\"bozuk\" görevi başarısız oldu"));
+    assert!(hata.mesaj.contains("yavaş"));
+    assert_eq!(io.cikti, vec!["yavaş başladı", "bozuk başladı"]);
+    assert_eq!(io.an_ms(), 0, "iptal edilen bekleme zamanı ilerletmemeli");
+}
+
+#[test]
+fn eylem_gorevde_atomik_dilimdir_ve_hatasinda_geri_alinir() {
+    let kaynak = "\
+eylem bozuk kaydet
+    TamSayı döndürür
+    \"durum.txt\" dosyasına \"yarım\" yaz
+    1 saniye bekle
+    sonuç 10 un 0 a bölümü olsun
+    sonucu döndür
+
+işlem kardeşi çalıştır
+    \"kardeş başlamamalı\" yaz
+    1 döndür
+
+eşzamanlı olarak
+    bozuk bozuk kaydet
+    kardeş kardeşi çalıştır
+hepsini bekle
+";
+    let program = dil::kaynagi_derle(kaynak).expect("eylem görev kaynağı derlenmeli");
+    let mut io = ToplayanIo::yeni(Vec::new());
+    let hata = calistir_io(&program, &mut io).expect_err("eylem hatası yayılmalı");
+    assert_eq!(hata.kod, "C003");
+    assert!(io.dosyalar.is_empty(), "eylem savepoint'i geri alınmalı");
+    assert!(io.cikti.is_empty(), "atomik eylemin arasına kardeş girmemeli");
+    assert_eq!(io.an_ms(), 1_000);
+}
+
+#[test]
+fn gorevde_programi_bitir_koku_koduyla_iptal_eder() {
+    let kaynak = "\
+işlem bitir
+    TamSayı döndürür
+    programı 7 ile bitir
+    1 döndür
+
+işlem kardeşi çalıştır
+    \"kardeş başlamamalı\" yaz
+    1 döndür
+
+eşzamanlı olarak
+    bitiş bitir
+    kardeş kardeşi çalıştır
+hepsini bekle
+";
+    let program = dil::kaynagi_derle(kaynak).expect("görev çıkışı derlenmeli");
+    let mut io = ToplayanIo::yeni(Vec::new());
+    let kod = dil::yorumlayici::calistir_io_kodla(&program, &mut io)
+        .expect("görev kökü olağan bitirmeli");
+    assert_eq!(kod, 7);
+    assert!(io.cikti.is_empty(), "kardeş görev iptal edilmiş olmalı");
+}
+
+#[test]
+fn dis_son_tarih_gorev_agacini_birlikte_iptal_eder() {
+    let kaynak = "\
+işlem uzun işi yap
+    \"başladı\" yaz
+    5 saniye bekle
+    \"deadline sonrası yasak\" yaz
+    1 döndür
+
+1 saniye içinde
+    eşzamanlı olarak
+        uzun uzun işi yap
+    hepsini bekle
+    \"join sonrası yasak\" yaz
+yetişmezse
+    \"grup iptal edildi\" yaz
+";
+    assert_eq!(
+        dil::kaynagi_calistir(kaynak).expect("deadline sahibi iptali yakalamalı"),
+        vec!["başladı", "grup iptal edildi"]
+    );
+}
+
+#[test]
+fn ic_gorev_agacinin_beklemesi_dis_kardese_yol_verir() {
+    let kaynak = "\
+işlem iç işi yap
+    \"iç başladı\" yaz
+    2 saniye bekle
+    \"iç bitti\" yaz
+    2 döndür
+
+işlem dalı çalıştır
+    eşzamanlı olarak
+        iç iç işi yap
+    hepsini bekle
+    \"dal bitti\" yaz
+    içi döndür
+
+işlem kardeşi çalıştır
+    \"kardeş başladı\" yaz
+    1 saniye bekle
+    \"kardeş bitti\" yaz
+    1 döndür
+
+eşzamanlı olarak
+    dal dalı çalıştır
+    kardeş kardeşi çalıştır
+hepsini bekle
+";
+    let program = dil::kaynagi_derle(kaynak).expect("iç görev ağacı derlenmeli");
+    let mut io = ToplayanIo::yeni(Vec::new());
+    calistir_io(&program, &mut io).expect("iç görev ağacı tamamlanmalı");
+    assert_eq!(
+        io.cikti,
+        vec![
+            "iç başladı",
+            "kardeş başladı",
+            "kardeş bitti",
+            "iç bitti",
+            "dal bitti",
+        ]
+    );
+    assert_eq!(io.an_ms(), 2_000);
+}
+
+#[test]
+fn gorev_grubu_ayni_sozcuksel_kapsamda_join_edilmelidir() {
+    let bekle_yok = "\
+işlem bir ver
+    1 döndür
+eşzamanlı olarak
+    görev bir ver
+";
+    assert_eq!(
+        dil::kaynagi_derle(bekle_yok).expect_err("açık görev grubu").kod,
+        "T051"
+    );
+
+    let bos_bekle = "hepsini bekle\n";
+    assert_eq!(
+        dil::kaynagi_derle(bos_bekle).expect_err("boş join").kod,
+        "T051"
+    );
+
+    let erken_donus = "\
+işlem bir ver
+    1 döndür
+işlem erken dön
+    TamSayı döndürür
+    eşzamanlı olarak
+        görev bir ver
+    2 döndür
+    hepsini bekle
+";
+    assert_eq!(
+        dil::kaynagi_derle(erken_donus).expect_err("açık görevle dönüş").kod,
+        "T051"
+    );
+
+    let ust_uste = "\
+işlem bir ver
+    1 döndür
+eşzamanlı olarak
+    ilk bir ver
+eşzamanlı olarak
+    ikinci bir ver
+hepsini bekle
+";
+    assert_eq!(
+        dil::kaynagi_derle(ust_uste).expect_err("üst üste grup").kod,
+        "T051"
+    );
+}
+
+#[test]
+fn coklu_tani_gecisi_gecerli_gorev_grubunu_tek_kapsam_sayar() {
+    let kaynak = "\
+işlem bir ver
+    1 döndür
+eşzamanlı olarak
+    görev bir ver
+hepsini bekle
+görev yaz
+";
+    let mut yukleyici = |_: &str| Err("yok".to_string());
+    let tanilar = dil::kaynagi_tanilari(kaynak, &mut yukleyici);
+    assert!(tanilar.is_empty(), "beklenmeyen tanılar: {:?}", tanilar);
 }
 
 #[test]

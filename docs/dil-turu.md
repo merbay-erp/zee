@@ -444,12 +444,14 @@ yetişmezse
 ```
 
 Görev adlarına `hepsini bekle`den önce erişim derleme hatasıdır (T033).
-Stage 0 runtime görevleri bugün kaynak sırasında tamamlar; `hepsini bekle`
-statik erişim kapısıdır. K-085 ile `... içinde` gerçek bir işbirlikli son
-tarihtir: süre dolunca kalan gövde çalışmaz, uzun `bekle` kalan süreye
-kırpılır ve yalnız doğru `yetişmezse` kolu çalışır. İç içe son tarihlerde en
-erken olan kazanır. Gerçek paralel scheduler V1-P1-03 kapısıdır
-(RFC-0011, spec/09).
+K-090 ile `hepsini bekle` gerçek bir işbirlikli birleştirmedir. Görevler tek
+iş parçacığında kaynak sırasıyla ilerler; `bekle`ye gelen görev uyurken hazır
+kardeşi çalışır. Örneğin 2 ve 1 saniyelik iki görev toplam 2 saniyede biter;
+aynı girdiler aynı çıktı sırasını verir ve data race oluşmaz. İlk yönetilmemiş
+görev hatası bekleyen kardeşleri iptal eder. Her grup aynı sözcüksel kapsamda
+tek `hepsini bekle` ile kapanır; aksi T051'dir. K-085 son tarihi bütün görev
+ağacına yayılır ve yalnız doğru `yetişmezse` sahibi çalışır. Ayrıntı:
+RFC-0011, spec/09 ve spec/14.
 
 Uygulama eylemi ve web adaptörü (K-087): iş kuralı HTTP bilmeyen, açık imzalı
 bir `eylem`dir. Aynı eylem CLI, web, görev ya da test bağlamından çağrılır.

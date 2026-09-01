@@ -44,5 +44,6 @@ Etkin son tarih en erken mutlak andır. Her son tarih benzersiz sahibini taşır
 İptal önleyici değildir. Tek bir kesintisiz yerel ifade ya da işletim
 sisteminin iptal edemediği çağrı, bir sonraki işbirlikli noktaya kadar son
 tarihi aşabilir; ardından gövde kesinlikle devam etmez. DNS çözümleme ve bazı
-dosya sistemi çağrıları bu platform sınırındadır. Gerçek paralel görev
-zamanlayıcısı ayrı V1-P1-03 kapısıdır.
+dosya sistemi çağrıları bu platform sınırındadır. K-090 scheduler'ındaki çocuk
+görevler dış son tarihi miras alır; `bekle` noktası görev ağacını birlikte
+iptal eder (spec/14). Çok çekirdekli önleyici paralellik verilmiş söz değildir.
