@@ -2,18 +2,30 @@
 
 Normatif kaynak: RFC-0010 (kabul), RFC-0008 (geçici kabul).
 Katalog: [hata-katalogu.md](../docs/hata-katalogu.md) — kaynakla iki yönlü
-tutarlılığı testle zorlanır (katalog_testi).
+tutarlılığı ve sürümler arası kod↔anlam kimliği testle zorlanır
+(`katalog_testi`, `tani_kimligi_testi`).
 
 ## Tanı sözleşmesi (TANIMLI — RFC-0010)
 
-Her tanı ŞU dördü taşır: **kod** (S/A/T/C/D + sayı), **Türkçe mesaj**,
+Her tanı ŞU dördü taşır: **kod** (S/A/T/C/D/P/Ç + sayı), **Türkçe mesaj**,
 **kaynak konumu** (satır + işaret), **öneri**. Rapor `Ayrıntı için:
 dil hata KOD` satırıyla biter ve o komut katalogdan açıklama basar.
 İngilizce sızıntı **YASAK**tır; iç hata bile Türkçe raporlanır.
 
 Kod aileleri: **S** sözcükleme/dizim · **A** ad çözümü · **T** tür ·
-**C** çalışma zamanı · **D** test doğrulaması · **Ç** iç akış (kullanıcıya
-görünmez; Ç000 `programı bitir` nöbetçisidir).
+**C** çalışma zamanı · **D** test doğrulaması · **P** proje · **Ç** iç akış
+(kullanıcıya görünmez; Ç000 `programı bitir` nöbetçisidir).
+
+### Sürümler arası kimlik (TANIMLI — RFC-0010 §2.2)
+
+Yayımlanmış tanı kodu aynı semantik olay için kalıcıdır. Aile/olay anlamı
+değişecekse yeni kod ayrılır. Kaldırılan kod katalog ve şema-1 fixture'ında
+`ayrılmış` mezar taşı olarak kalır ve tekrar etkinleştirilemez. Fixture; kodu,
+aile uyumlu semantik anahtarı ve kanonik katalog özetini birebir korur.
+
+Dinamik mesaj, öneri ve kaynak işareti kimliğin parçası değildir. Yönetilebilir
+program değeri `Hata.kod` ile derleyici/çalıştırıcı tanısı `Tani.kod` ayrı
+katmanlardır.
 
 ### Çoklu tanı ve kurtarma (TANIMLI — RFC-0010 §2.1)
 

@@ -1,0 +1,150 @@
+# Zee tanı kimliği fixture'ı — şema 1
+# durum<TAB>kod<TAB>kararlı_kimlik<TAB>kanonik_katalog_özeti
+aktif	S001	soz.beklenmeyen_karakter	Beklenmeyen karakter (sembolik işleç, parantez...)
+aktif	S002	soz.kapanmamis_metin	Metin sabiti kapanmadan satır bitti
+aktif	S003	soz.girintide_sekme	Girintide sekme (tab)
+aktif	S004	soz.taninmayan_cumle	Cümle tanınmadı — satır bilinen bir eylemle bitmiyor
+aktif	S005	soz.gecersiz_girinti_hizasi	Girinti hizası hiçbir açık blokla eşleşmiyor
+aktif	S006	soz.tamsayi_siniri	Sayı TamSayı sınırından büyük
+aktif	S007	soz.eksik_blok_girintisi	Blok bekleyen satırdan sonra girinti yok
+aktif	S008	soz.eksik_olsun_tanimi	`olsun` tanımında ad ya da değer eksik
+aktif	S009	soz.gecersiz_dongu	Döngü biçimi tanınmadı
+aktif	S010	soz.gecersiz_icin_dongusu	`için` döngüsü tanınmadı
+aktif	S011	soz.gecersiz_kosullu_dongu	Koşullu döngü biçimi
+aktif	S012	soz.eksik_artir_azalt	Artır/azalt eksik parça
+aktif	S013	soz.eksik_deger	Değer bekleniyordu
+aktif	S014	soz.eksik_ile_tarafi	`ile`nin önü/arkası boş
+aktif	S015	soz.ayracsiz_degerler	İki değer yan yana, kalıp yok
+aktif	S016	soz.taninmayan_kosul	Koşul tanınmadı
+aktif	S017	soz.gecersiz_soru	Soru biçimi
+aktif	S018	soz.eksik_ekleme	Ekleme cümlesi eksik parça
+aktif	S019	soz.eksik_cagri_ayraci	İşlem çağrısında ayraç yok
+aktif	S020	soz.gecersiz_cagri_argumani	Çağrı argümanı tek değer değil
+aktif	S021	soz.yanlis_yerde_tanim	işlem/yapı/test tanımı yanlış yerde
+aktif	S022	soz.gecersiz_islem_adi	İşlem adı geçersiz
+aktif	S023	soz.eksik_bolme	Bölme cümlesi eksik parça
+aktif	S024	soz.gecersiz_eslestirme	Eşleştirme biçimi
+aktif	S025	soz.gecersiz_yapi_tanimi	Yapı tanımı biçimi
+aktif	S026	soz.gecersiz_test_blogu	Test bloğu biçimi
+aktif	S027	soz.gecersiz_sonlandirma	Sonlandırma biçimi
+aktif	S028	soz.homoglif_karakter	Türkçe/Latin dışı karakter (homoglyph koruması)
+aktif	S029	soz.birlestirici_im	Birleştirici im (U+0300–U+036F)
+aktif	S030	soz.karisik_boolean_baglaci	`ve` ile `veya` aynı koşulda karıştı
+aktif	S031	soz.yetim_degilse	`değilse` tek başına
+ayrilmis	S032	soz.eski_ondalik_dokuz_hane	**ayrılmış** — eski 9 hane Ondalık sınırı
+aktif	S033	soz.belirsiz_virgul_sayi	Boşluk-virgül-rakam dizisi belirsiz
+aktif	S041	soz.gecersiz_yonlendirme	Yönlendirme biçimi
+aktif	S042	soz.gecersiz_silme	Silme biçimi
+aktif	S040	soz.bilinmeyen_kacis	Bilinmeyen kaçış dizisi
+aktif	S034	soz.gecersiz_birim_paket_kullanimi	Birim/paket kullanımı biçimi
+aktif	S035	soz.gecersiz_sunucu_acma	Sunucu açma biçimi
+aktif	S036	soz.gecersiz_olay_zaman_asimi	Olay/zaman aşımı bloğu biçimi
+aktif	S037	soz.gecersiz_yanit	Yanıt gönderme biçimi
+aktif	S038	soz.gecersiz_eszamanli_blok	Eşzamanlı blok biçimi
+aktif	S039	soz.gecersiz_isik_komutu	Işık komutu biçimi
+aktif	S043	soz.gecersiz_web_guvenligi	Web güvenlik cümlesi biçimi
+aktif	S044	soz.gecersiz_yapilandirilmis_hata	Yapılandırılmış hata biçimi/kodu geçersiz
+aktif	A001	ad.tanimsiz_ad	Ad bu kapsamda tanımlı değil
+aktif	A002	ad.belirsiz_morfolojik_kok	Ad birden çok köke çözülüyor (belirsizlik)
+aktif	A003	ad.eksik_gezme_kaynagi	`her X için` gezilecek listeyi bulamadı
+ayrilmis	A004	ad.eski_cozumleme_yuvasi	**ayrılmış** — eski ad çözümleme yuvası
+aktif	A005	ad.yinelenen_islem	Aynı adla ikinci işlem tanımı
+aktif	A006	ad.yinelenen_yapi	Aynı adla ikinci yapı tanımı
+aktif	A007	ad.tanimsiz_yapi	`yeni <Ad>` — yapı tanımlı değil
+aktif	A008	ad.birim_cakismasi	Ad iki kaynaktan geliyor (birim çakışması)
+aktif	A009	ad.birim_dongusu	Birimler döngüsel kullanıyor
+aktif	A010	ad.birim_yuklenemedi	Birim yüklenemedi
+aktif	A011	ad.paket_yuklenemedi	Paket yüklenemedi
+aktif	T001	tur.karsilastirma_uyusmazligi	Karşılaştırma tür uyuşmazlığı
+aktif	T002	tur.degisken_turu_degisti	Değerin türü değiştirilmeye çalışıldı
+aktif	T003	tur.tekrar_adedi	Tekrar adedi TamSayı değil
+aktif	T004	tur.aralik_uclari	Aralık uçları TamSayı değil
+aktif	T005	tur.kosul_bekleniyor	ise/döngü/olmalı koşul istiyor
+aktif	T006	tur.artir_azalt_sayi	Artır/azalt sayı istiyor
+aktif	T007	tur.cift_tek_tamsayi	Çift/tek sorgusu TamSayı ister
+aktif	T008	tur.aritmetik_sayi	Aritmetik sayılar arasında
+aktif	T009	tur.sayisi_metin	`sayısı` kalıbı Metin ister
+aktif	T010	tur.rastgele_uclari	Rastgele uçları TamSayı değil
+aktif	T011	tur.liste_oge_uyusmazligi	Liste öğe türü uyuşmazlığı
+aktif	T012	tur.ekleme_hedefi	Ekleme hedefi liste değil
+aktif	T013	tur.gezilebilir_kaynak	`her ... için` kaynağı liste/sözlük değil
+aktif	T014	tur.uygulanamaz_ozellik	Özellik bu türe uygulanamaz
+aktif	T015	tur.cagri_arguman_adedi	Çağrı argüman sayısı yanlış
+aktif	T016	tur.eksik_semantic_kayit	Checker semantic kaydı bulunamadı
+aktif	T017	tur.cagri_arguman_imzasi	Argüman türleri işlem imzasına uymuyor
+aktif	T018	tur.tutarsiz_donus	Dönüş türleri tutarsız
+aktif	T019	tur.degersiz_islem_ifadesi	Değer döndürmeyen işlem ifade konumunda
+aktif	T020	tur.yetim_dondur	`döndür` işlem dışında
+aktif	T021	tur.sozluk_islemi	Sözlük işlemi tür uyuşmazlığı
+aktif	T022	tur.metin_islemi	Metin işlemi Metin ister
+aktif	T023	tur.varsa_secenek	`varsa` Seçenek ister
+aktif	T024	tur.secenek_sonuc_erisimi	değeri/hatası/başarılıysa yanlış türde
+aktif	T025	tur.dosya_yolu	Dosya yolu Metin değil
+aktif	T026	tur.eslestirme	`göre` eşleştirme türleri
+aktif	T027	tur.taninmayan_yapi_alani_turu	Yapı alanının türü tanınmadı
+aktif	T028	tur.yapi_alani	Yapı alanı yok / yanlış tür
+aktif	T029	tur.tarih_gun_toplami	`gün sonrası` Tarih + TamSayı ister
+aktif	T030	tur.bosluk_sorgusu	`boşsa` liste/sözlük/metin ister
+aktif	T031	tur.boolean_parcasi	ve/veya parçası ya da `değilse` içi koşul değil
+aktif	T032	tur.hata_mesaji	Hata mesajı Metin değil
+aktif	T033	tur.erken_gorev_sonucu	Görev sonucuna erken erişim
+aktif	T034	tur.ag_sure_sunucu	Ağ/süre/sunucu kalıbı tür uyuşmazlığı
+aktif	T035	tur.ozyineleme_temel_durumu	Özyinelemeden önce temel durum yok
+aktif	T036	tur.korumasiz_secenek_sonuc	Korumasız Seçenek/Sonuç erişimi
+aktif	T037	tur.karisik_parametre_sozlesmesi	Bir işlemde açık ve çıkarımlı parametre türleri karışık
+aktif	T038	tur.taninmayan_parametre_turu	Açık parametre türü tanınmadı
+aktif	T039	tur.eksik_birim_paket_sozlesmesi	Birim/paket işleminin public sözleşmesi eksik
+aktif	T040	tur.taninmayan_donus_turu	Açık dönüş türü tanınmadı
+aktif	T041	tur.bildirilen_donus_uyusmazligi	Bildirilen dönüş ile gövde uyuşmuyor
+aktif	T042	tur.eksik_donus_yolu	Değer döndüren işlemin bir yolu gövde sonuna düşebilir
+aktif	T043	tur.eksik_eylem_sozlesmesi	Eylemin açık girdi/dönüş sözleşmesi eksik
+aktif	T044	tur.eylem_http_bagimliligi	Eylem HTTP adaptörüne bağımlı
+aktif	T045	tur.guvenli_yontemde_degisim	GET/HEAD durum değiştirebilir
+aktif	T046	tur.rotada_dogrudan_degisim	Rota uygulama durumunu doğrudan ya da yazıcı işlemle değiştiriyor
+aktif	T047	tur.yinelenen_rota	Aynı yöntem ve yol birden çok rotaya bağlı
+aktif	T048	tur.geri_alinamayan_eylem_etkisi	Eylem geri alınamayan ekran/girdi/donanım etkisi taşıyor
+aktif	T049	tur.eksik_rota_erisim_politikasi	Durum değiştiren rota açık erişim politikası taşımıyor
+aktif	T050	tur.gecersiz_rota_guvenlik_onsozu	Rota güvenlik önsözü yanlış yerde veya yinelenmiş
+aktif	T051	tur.acik_eszamanli_grup	Eşzamanlı görev grubunun sözcüksel sahipliği kapanmadı ya da boş birleştirme yapıldı
+aktif	T052	tur.hata_nedeni_verisi	Hata nedeni/verisi yanlış türde ya da yeniden yayma zenginleştiriliyor
+aktif	T053	tur.gezilen_koleksiyon_degisti	Gezilen kaynak koleksiyonun kendisi değiştiriliyor ya da aynı kaynak iç içe geziliyor
+aktif	C000	calisma.ic_tutarlilik	İç tutarlılık hatası; AST/HIR invariant ihlalinde faz ve yapısal düğüm yolu da gösterilir
+aktif	C001	calisma.eksik_deger	Değer bulunamadı
+aktif	C002	calisma.tamsayi_tasmasi	TamSayı taşması
+aktif	C003	calisma.sifira_bolme	Sıfıra bölme
+aktif	C004	calisma.metin_sayiya_cevrilemedi	Metin sayıya çevrilemedi
+aktif	C005	calisma.eksik_soru_girdisi	Soruya verilecek girdi kalmadı
+aktif	C006	calisma.ters_rastgele_araligi	Rastgele aralığı ters
+aktif	C007	calisma.bos_liste_ucu	Boş listenin ilki/sonu
+aktif	C008	calisma.bos_secenek_degeri	Boş Seçenek'in değeri (çalışma zamanı savunması)
+aktif	C009	calisma.yanlis_sonuc_tarafi	Sonuç'un yanlış tarafı (iç savunma — korumasız erişim derlemede T036 ile yakalanır)
+aktif	C010	calisma.eksik_sozluk_anahtari	Sözlükte anahtar yok
+aktif	C011	calisma.bicimleyici_token_guvencesi	Biçimleyici token güvencesi bozuldu
+aktif	C012	calisma.dosya_okunamadi	Dosya okunamadı (düz biçim)
+aktif	C013	calisma.dosyaya_yazilamadi	Dosyaya yazılamadı
+ayrilmis	C014	calisma.eski_runtime_yuvasi	**ayrılmış** — eski çalışma zamanı yuvası
+aktif	C015	calisma.csv_bicimi	CSV biçim hatası (boş dosya ya da sütun sayısı uyuşmazlığı)
+aktif	C016	calisma.json_bicimi	JSON biçim hatası
+aktif	C017	calisma.sunucu_kurulamadi	Sunucu kurulamadı
+aktif	C018	calisma.ag_istegi_basarisiz	Ağ isteği başarısız
+aktif	C019	calisma.cagri_derinligi	Çağrı derinliği 500'ü aştı
+aktif	C020	calisma.gecersiz_cikis_kodu	Çıkış kodu 0–255 dışında
+aktif	C021	calisma.eylem_transactioni	Eylem transaction'ı başlatılamadı, tamamlanamadı ya da geri alınamadı
+aktif	C022	calisma.web_guvenlik_reddi	Web güvenlik adaptörü işlemi reddetti
+aktif	D001	dogrulama.tutmayan_beklenti	`olmalı` koşulu tutmadı
+aktif	P001	proje.gecersiz_bildirim_cumlesi	`proje.dil` bilinmeyen/tekrarlı alan ya da değer tanımı dışında cümle içeriyor
+aktif	P002	proje.eksik_zorunlu_alan	Zorunlu proje alanı eksik
+aktif	P003	proje.gecersiz_ad_surumu	Proje adı ya da `X.Y.Z` sürümü geçersiz
+aktif	P004	proje.gecersiz_giris_yolu	Giriş mutlak, proje dışına çıkan veya `.dil` olmayan yol
+aktif	P005	proje.gecersiz_yerel_bagimlilik	Yerel bağımlılık listesi ya da yollarından biri geçersiz
+aktif	P006	proje.yerel_bagimlilik_okunamadi	Yerel bağımlılık klasörü/bildirimi okunamadı
+aktif	P007	proje.bagimlilik_grafigi_ihlali	Bağımlılık döngüsü, yinelenen paket adı veya kaynakta kullanılamayan paket adı
+aktif	P008	proje.bayat_kilit	`proje.kilit` eksik ya da kaynak/bildirim grafiğiyle uyuşmuyor
+aktif	P009	proje.guvenli_olmayan_giris	Paket/proje girişi güvenli ve gerçek bir `.dil` kaynağına çözülemedi
+aktif	P010	proje.kullanilan_paketi_kaldirma	Kaldırılmak istenen paket en az bir proje kaynağında hâlâ kullanılıyor
+aktif	P011	proje.desteklenmeyen_morfoloji	Projenin sabitlediği morfoloji profili bu derleyicide desteklenmiyor
+aktif	P012	proje.paket_tedarik_uretimi	Yayıncı anahtarı veya tekrar üretilebilir paket/imza/SBOM/provenance zinciri üretilemedi
+aktif	P013	proje.registry_guven_zinciri	Registry root/metadata imzası, eşik, sürüm, süre, kanonik biçim, üst rol boyut/özet bağı veya kalıcı geçmiş doğrulanamadı
+aktif	P014	proje.registry_hedef_politikasi	Exact hedef bulunamadı; targets yayıncı/paket bağı uyuşmadı; sürüm yanked ya da etkin kritik duyurudan etkilendi
+aktif	Ç000	ic.program_sonlandirma_nobetcisi	`programı bitir` iç nöbetçisi; çalıştırıcı yakalar, kullanıcı asla görmez
+aktif	Ç001	ic.son_tarih_iptal_nobetcisi	Son tarih iptal nöbetçisi; yalnız sahibi `içinde/yetişmezse` bloğu yakalar, kullanıcıya sızmaz

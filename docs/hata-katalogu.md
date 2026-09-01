@@ -2,8 +2,10 @@
 
 Her tanı: **kod + Türkçe açıklama + kaynak konumu + işaret + öneri** biçiminde
 basılır (RFC-0001 §8). Bu katalog, koddaki her tanının ne zaman doğduğunu ve
-nasıl çözüldüğünü listeler. Kaynak: `compiler/src/` (kodlar gerçeklemeden
-türetilmiştir; yeni kod eklenince bu dosya güncellenir — CI'a bağlanması planlı).
+nasıl çözüldüğünü listeler. Kaynak: `compiler/src/`; kod↔katalog birebirliği
+ve kod↔anlam kimliği CI'da ayrı kapılarla doğrulanır. Yayımlanmış bir kod başka
+bir anlam için yeniden kullanılamaz; kaldırılan kod `ayrılmış` mezar taşı olarak
+kalır (ADR-025).
 
 Ön ekler: **S** sözdizimi/sözcükleme · **A** ad çözümleme · **T** tür denetimi ·
 **C** çalışma zamanı · **D** doğrulama (test) · **P** proje · **Ç** iç akış
@@ -65,6 +67,7 @@ türetilmiştir; yeni kod eklenince bu dosya güncellenir — CI'a bağlanması 
 | A001 | Ad bu kapsamda tanımlı değil | Önce `<ad> <değer> olsun`; tanı tanımlı adları listeler |
 | A002 | Ad birden çok köke çözülüyor (belirsizlik) | Adlardan birini değiştir — belirsizlik dilde hatadır |
 | A003 | `her X için` gezilecek listeyi bulamadı | Kapsamda `Xlar`/`Xler` adlı liste olmalı (örtük çoğul, K-013) |
+| A004 | **ayrılmış** — eski ad çözümleme yuvası | Bu kod yeni bir anlam için kullanılamaz |
 | A005 | Aynı adla ikinci işlem tanımı | İşlem adları benzersizdir |
 | A006 | Aynı adla ikinci yapı tanımı | Yapı adları benzersizdir |
 | A007 | `yeni <Ad>` — yapı tanımlı değil | Yapıyı kullanmadan önce tanımla |
@@ -149,6 +152,7 @@ türetilmiştir; yeni kod eklenince bu dosya güncellenir — CI'a bağlanması 
 | C011 | Biçimleyici token güvencesi bozuldu | Dosya yazılmadı; derleyici hatasıdır — bildir |
 | C012 | Dosya okunamadı (düz biçim) | Hata yönetilecekse `... okumayı dene` ile Sonuç al |
 | C013 | Dosyaya yazılamadı | Yol/izin kontrolü |
+| C014 | **ayrılmış** — eski çalışma zamanı yuvası | Bu kod yeni bir anlam için kullanılamaz |
 | C015 | CSV biçim hatası (boş dosya ya da sütun sayısı uyuşmazlığı) | Başlık satırı + eşit hücreli veri satırları (K-062: hücreler Metin okunur) |
 | C016 | JSON biçim hatası | v0: düz nesne + metin değerler |
 | C017 | Sunucu kurulamadı | Kapı boşta mı? Düşük kapılar (<1024) yönetici ister |
@@ -190,5 +194,5 @@ türetilmiştir; yeni kod eklenince bu dosya güncellenir — CI'a bağlanması 
 | Ç000 | `programı bitir` iç nöbetçisi; çalıştırıcı yakalar, kullanıcı asla görmez |
 | Ç001 | Son tarih iptal nöbetçisi; yalnız sahibi `içinde/yetişmezse` bloğu yakalar, kullanıcıya sızmaz |
 
-> Boşluklar bilinçlidir: A004 ve C014 ayrılmış ama kullanılmamıştır; yeni
-> tanılar sıradaki boş numarayı alır.
+> S032, A004 ve C014 bilinçli mezar taşlarıdır; ayrılmış kodlar başka anlamda
+> kullanılamaz. Yeni tanılar ilgili ailedeki sıradaki boş numarayı alır.

@@ -1648,6 +1648,24 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   yolunu da çalıştıran 31 saniyelik lexer/parser smoke'u 977.014 mutation'ı
   çökmesiz tamamladı; B-021/V1-P0-23 kapandı.
 
+## K-114 — Tanı kodunu sürümler arası anlam kimliğine bağla (1 Eyl)
+
+- **Sorun:** Kaynak↔katalog birebirlik testi kod ekleme/silmeyi yakalıyordu,
+  fakat aynı kodun kaynak ve katalogda birlikte başka bir olaya taşınmasını
+  ayırt edemiyordu. A004/C014 yalnız dipnotta kalan sessiz boşluklardı.
+- **Kimlik tabanı:** 145 etkin ve 3 ayrılmış tanı `durum, kod,
+  kararlı_kimlik, kanonik_özet` alanlı şema-1 TSV fixture'ına alındı. Anahtar
+  tekil, küçük ASCII ve S/A/T/C/D/P/Ç ailesiyle uyumludur.
+- **Mezar taşı:** A004, C014 ve S032 katalogda açık `ayrılmış` kayıttır. Emekli
+  kod silinmez, başka anlamla tekrar etkinleştirilmez.
+- **Karar:** Dinamik mesaj/öneri/konum değil, kodun temsil ettiği semantik olay
+  kararlıdır. Anlam değişikliği yeni kod ister; yalnız editoryal özet düzeltmesi
+  fixture farkıyla incelemede görünür olur. Program değeri `Hata.kod` ayrı
+  sözleşmedir.
+- **Kanıt:** ADR-025, RFC-0010 §2.2, spec/06, tanı kimliği bakım rehberi ve
+  katalog↔fixture regresyonu. Kaynak↔katalog kapısıyla birlikte bütün 148 kayıt
+  çift yönden korunur; toplam 448 test yeşildir. B-022/V1-P0-24 kapandı.
+
 ---
 
 ## Sonraki adım
@@ -1656,5 +1674,5 @@ Korpus 10 öğrenci + 5 profesyonel usability oturumuna (Hafta 12 hedefi, erkeni
 Hafta 2'de kağıt üstünde) sesli okutulacak; her kayıt için "doğal mı /
 deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
-Makine hattında B-021/K-113 kapandı. Sırada B-022 tanı kimliği fixture kapısı
-vardır.
+Makine hattında B-022/K-114 kapandı. Sırada B-027 deterministik IO
+trace/replay biçimi vardır.

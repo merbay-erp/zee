@@ -3,7 +3,7 @@
 Bu liste bir dilek listesi değildir: `1.0.0` etiketi bu kapılar kapatılmadan
 atılmaz. Amaç yeni özellik sayısını büyütmek değil, çocuktan profesyonele aynı
 dilin verdiği sözleri kanıtlamaktır. Bulgular 1 Eylül 2026'da derleyici
-kaynakları, spec, RFC'ler ve 447 test üzerinden yeniden doğrulanmıştır.
+kaynakları, spec, RFC'ler ve 448 test üzerinden yeniden doğrulanmıştır.
 
 Durumlar: **KAPALI** = kanıtı var · **AÇIK** = v1 engeli · **KARAR** = önce
 normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
@@ -35,6 +35,7 @@ normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
 | V1-P0-21 Morfoloji üret→çöz ve belirsizlik değişmezleri sürekli denetlenir | **KAPALI (K-111)** | `zee-tr-1` bütün geçerli tek/iki katmanları 4.096 üretilmiş kökte geri çözer. 2.048 yüzey bütün yapısal kökleri kapsama alındığında çoklu aday A002'dir. NFC kabul edilir; ayrıştırılmış NFD kaynak S029'dur. Ayrı gecelik fuzz hedefi byte girdiden geçerli kök üretir. | RFC-0018 + spec/13 + [morfoloji doğrulama rehberi](morfoloji-dogrulama.md); üç stable regresyon ve 527.966 girdilik ilk mutation smoke'u ihlalsizdir. Toplam 435 test yeşildir; bütün dizilerin biçimsel ispatı iddia edilmez. |
 | V1-P0-22 AST ve typed HIR faz sözleşmesi yürütülebilirdir | **KAPALI (K-112)** | Parser AST'si semantic bağ taşımaz. Bağlanmış programdaki her AST ifadesi benzersiz düğüm kimliği, açık tür, kaynak aralığı ve varyantla uyumlu semantic bağ taşıyan tam bir HIR kaydıyla eşleşir; yetim HIR kaydı reddedilir. | ADR-023 + [AST/HIR invariant rehberi](ast-hir-invariantleri.md); geçerli uçtan uca hat, parser semantic sızıntısı, imkânsız AST biçimleri ve eksik SymbolId/YapiId/IslemId regresyonları. Özellik→alan dönüşümündeki gerçek yetim kayıt bulunup düzeltildi; toplam 440 test yeşildir. |
 | V1-P0-23 Parser çoklu tanıda kapsamı ve kardeşleri korur | **KAPALI (K-113)** | Hatalı cümle satır sonunda ve yalnız kendisine ait dengeli girinti gövdesinin sonunda senkronlanır. Sağlam kardeş ebeveyn blokta kalır, parser derinliği sonraki üst tanıma sızmaz. CLI/LSP birleşik tanıları kaynak sırasında ve belge başına en çok 20 kayıttır. | RFC-0010 §2.1 + ADR-024 + [parser kurtarma rehberi](parser-hata-kurtarma.md); iç kardeş, yapı alanı, derinlik, eşzamanlı görev, `göre` kolu, tanı bütçesi ve gerçek LSP sırası için yedi regresyon. Toplam 447 test yeşildir. |
+| V1-P0-24 Tanı kodu sürümler arasında aynı olayı anlatır | **KAPALI (K-114)** | 145 etkin ve 3 ayrılmış kod; aile uyumlu tekil semantik anahtar, aktif/mezar taşı durumu ve kanonik katalog özetiyle şema-1 fixture'ına sabittir. Anlam değişikliği yeni kod ister; ayrılmış kod yeniden etkinleşemez. | RFC-0010 §2.2 + ADR-025 + [tanı kimliği rehberi](tani-kimligi.md); kaynak↔katalog ve katalog↔fixture kapıları bütün 148 kimliği iki bağımsız testte korur. Toplam 448 test yeşildir. |
 
 ## P1 — profesyonel kapasite kapıları
 
@@ -84,8 +85,9 @@ normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
    zorunlu kaynak aralığı ekleyip V1-P0-18'i, K-109/ADR-021 production
    doğrudan panic yüzeyini kapatıp V1-P0-19'u, K-110/ADR-022 lexer/parser fuzz
    hattını kurup V1-P0-20'yi tamamladı. K-111 morfoloji property/fuzz hattıyla
-   V1-P0-21'i, K-112 AST/HIR invariant kapısıyla V1-P0-22'yi ve K-113 parser
-   kurtarma politikasıyla V1-P0-23'ü kapattı.
+   V1-P0-21'i, K-112 AST/HIR invariant kapısıyla V1-P0-22'yi, K-113 parser
+   kurtarma politikasıyla V1-P0-23'ü ve K-114 tanı kimliği fixture'ıyla
+   V1-P0-24'ü kapattı.
 9. Yeni dil özelliğinden önce bağlayıcı sıra
    [öncelikli backlog](oncelikli-backlog.md) içindeki P0 compiler omurgasıdır.
 

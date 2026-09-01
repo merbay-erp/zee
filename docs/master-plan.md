@@ -583,7 +583,9 @@ tamlık, kimlik ve imkânsız-durum değişmezlerini debug/test faz kapısına
 bağladı; özellik→alan dönüşümündeki klon kaynaklı yetim HIR kaydını bulup
 düzeltti. K-113/ADR-024 LSP odaklı parser recovery'yi cümle sonu+dengeli
 girinti senkronizasyonu, kaynak sırası ve 20 tanılık ortak bütçeyle kapattı.
-Şimdi tanı kimliği fixture kapısı ve IO trace/replay gelir. P0 maddeleri kapanmadan yeni dil özelliği varsayılan olarak öne alınmaz;
+K-114/ADR-025 145 etkin ve 3 ayrılmış tanının kod↔anlam bağını sürümlü
+fixture'a sabitledi. Şimdi deterministik IO trace/replay gelir. P0 maddeleri
+kapanmadan yeni dil özelliği varsayılan olarak öne alınmaz;
 yarım güvenlik/correctness dilimi önce atomik olarak tamamlanır.
 
 K-016'nın makine hazırlığı K-096 ile
@@ -617,7 +619,9 @@ kaynak sınırlarını, K-106 process içi oturum kotasını ve K-107 LSP girdi
 sınırını kapattı. K-108 HIR source span değişmezini, K-109 production panic
 audit'ini, K-110 lexer/parser fuzz hattını, K-111 morfoloji property/fuzz
 kapısını, K-112 AST/HIR invariant doğrulayıcıyı ve K-113 parser hata kurtarma
-kapısını kapattı. Sıradaki omurga B-022 tanı kimliği fixture kapısıdır.
+kapısını kapattı. K-114 tanı kodlarının sürümler arası semantic kimliğini ve
+mezar taşlarını fixture'a bağladı. Sıradaki omurga B-027 deterministik IO
+trace/replay biçimidir.
 # 40. Proje felsefesinin korunması
 Bu projenin başarısı yalnız compiler’ın çalışması değildir. Başarı; Türkçe konuşan bir çocuğun yabancı syntax bariyerine takılmadan algoritmik düşünceyle tanışması, aynı dilin yıllar sonra onu terk etmeye zorlamaması ve ekosistemin tek bir şirketin kapalı ürünü haline gelmemesidir.
 Her yeni özellik şu dört sorudan geçmelidir: Türkçe doğal mı? Deterministik mi? Öğrenilebilir mi? Profesyonel ölçekte savunulabilir mi? Dördünden biri hayırsa özellik yeniden tasarlanır.
