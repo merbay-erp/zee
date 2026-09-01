@@ -35,6 +35,11 @@ tek biçimde ayrışır ya hatadır (RFC-0001).
 (S021). İşlem adları dosya başından ön-taranır: işlem, kendisini çağıran
 satırdan sonra da tanımlanabilir; karşılıklı özyineleme geçerlidir.
 
+İşlem gövdesinin başındaki parametre satırı başlangıç yüzeyinde `<ad> al`,
+açık sözleşmede `<ad> <tür yazımı> olarak al` biçimindedir (K-083):
+`sayıyı Ondalık olarak al`, `fiyatları Ondalık listesi olarak al`. Bir işlemde
+açık ve çıkarımlı satırlar karıştırılamaz (T037).
+
 ## İşlem çağrısı (geçici kabul — RFC-0006, K-016)
 
 Çağrı, argümanların ardından `için` / `ile` ayracı ve işlem adıyla kurulur:

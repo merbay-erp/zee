@@ -331,6 +331,12 @@ fn golden_14_not_ortalamasi() {
 }
 
 #[test]
+fn golden_33_acik_islem_imzasi() {
+    let cikti = kaynagi_calistir(&golden("33-acik-islem-imzasi.dil")).expect("33 çalışmalı");
+    assert_eq!(cikti, vec!["2,5", "3,5"]);
+}
+
+#[test]
 fn temel_durumsuz_ozyineleme_reddedilir() {
     // v0.2: özyineleme serbest ama temel durum ÖNCE gelmeli (T035).
     let kaynak = "işlem kendini çağır\n    kendini çağır\n\nkendini çağır\n";

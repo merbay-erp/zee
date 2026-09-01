@@ -33,7 +33,12 @@ işlem ortalamayı hesapla
 - Ad, bir ya da çok kelimedir; yalnız kelimelerden oluşur (S022) ve
   benzersizdir (A005).
 - Parametreler belirtme ekiyle bildirilir (`sayıları al` → parametre `sayılar`);
-  yalnız gövdenin başında ve tam iki kelimelik satır olarak tanınır.
+  yalnız gövdenin başında tanınır. Başlangıç biçimi tam iki kelimedir.
+- K-083 progressive disclosure: public/paket API'sinde
+  `sayıları Ondalık listesi olarak al` açık sözleşmesi kullanılabilir. Bir
+  işlemin bütün parametreleri açık ya da bütünü çıkarımlı olmak zorundadır.
+  Açık gövde çağrı beklemeden denetlenir; dönüş türü gövdeden çıkarılıp
+  sabitlenir ve çağrılar imzayı terfi ettiremez.
 - `döndür` yalnız işlem içinde (T020); dönüş türleri tek olmalı, `yok` ile
   karışım Seçenek üretir (T018 → RFC-0008).
 - İşlem gövdesi taze ortamda çalışır: dış değişken görmez (RFC-0004).
@@ -60,8 +65,8 @@ Kurallar (hepsi gerçeklenmiş ve testli):
    sayı/listelerde TamSayı→Ondalık genişlemesi kabul edilir. Dar imza sonra
    geniş argüman görürse K-067 ile kaldırılır ve gövde geniş türle yeniden
    denetlenir. Diğer tür farkları T017, parametre sayısı T015'tir. Bu model
-   public API için v1 sözleşmesi değildir; açık tür/generic/kısıt çözümü
-   V1-P0-01 kapısında karara bağlanacaktır.
+   public API için v1 sözleşmesi değildir. K-083 açık parametre sözleşmesini
+   ekledi; generic ve paket/public zorunluluğu V1-P0-01'de kalır.
 5. Özyineleme ve karşılıklı özyineleme geçerlidir. Özyinelemeli çağrıdan önce
    en az bir dönüşlü temel durum görülmelidir (T035); çağrı derinliği 500'dür
    (C019).
@@ -101,10 +106,11 @@ A ifade konumunda, B öğretici/adım-adım stilde). C yalnız A/B yetersiz kal�
 
 ## 5. Açık sorular
 
-1. Parametrelerde açık tür: public API ilkesi (manifesto 6) gereği
-   `sayıları al (Liste<TamSayı>)` benzeri isteğe bağlı tür eki — sözdizimi
-   tasarlanmadı. Bu, v1 öncesi V1-P0-01 kapısıdır.
-2. Generic işlem ile açık türün birlikte progressive disclosure modeli.
+1. ~~Parametrelerde açık tür~~ — K-083 ile
+   `sayıları TamSayı listesi olarak al` gerçeklendi. Kalan: paket/public
+   sınırında zorunluluk ve açık ABI uyumluluk politikası.
+2. Generic işlem ile açık türün birlikte progressive disclosure modeli;
+   generic sözdizimi hâlâ AÇIK.
 3. Çok değerli dönüş (K-023'ün "hepsini bekle" sorusuyla birleşik).
 4. ~~Özyineleme ve tanım-sonrası çağrı~~ — GERÇEKLENDİ (v0.2, T035/C019).
 5. ~~Argümanların çok-tokenli ifade olabilmesi~~ — GERÇEKLENDİ (v0.2, K-038).

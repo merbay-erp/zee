@@ -9,8 +9,9 @@
 
 ## Özet
 
-Statik tür güvenliği + yerel tür çıkarımı (manifesto 6). Kullanıcı tür yazmaz;
-tür adları yalnız yapı alanlarında görünür. Tehlikeli örtük dönüşüm yoktur.
+Statik tür güvenliği + yerel tür çıkarımı (manifesto 6). Başlangıçta kullanıcı
+tür yazmaz; yapı alanı ve public/paket işlem parametresinde açık sözleşmeye
+aşamalı geçer. Tehlikeli örtük dönüşüm yoktur.
 
 ## 1. Türler (v0 durumu)
 
@@ -32,7 +33,9 @@ tür adları yalnız yapı alanlarında görünür. Tehlikeli örtük dönüşü
 
 - Her ifadenin türü yapısından çıkar; değişken türü ilk bağlamada sabitlenir
   ve değişemez (T002 — golden korpusun en öğretici hatası).
-- Açık tür yazımı yalnız yapı alanlarında: `yaş TamSayı` (T027 ile doğrulanır).
+- Açık tür yazımı yapı alanında `yaş TamSayı`; işlem parametresinde K-083 ile
+  `sayıyı Ondalık olarak al`dır. Açık işlem çağrı beklemeden denetlenir;
+  T037 kısmi imzayı, T038 bilinmeyen türü reddeder.
 - Boş koleksiyonların öğe türü v0'da TamSayı varsayılır (BosListe/BosSozluk);
   tam çıkarım (kullanıma bakarak) v1 adayı.
 
@@ -51,8 +54,9 @@ tür adları yalnız yapı alanlarında görünür. Tehlikeli örtük dönüşü
 1. **GerçekSayı/Ondalık:** ÇÖZÜLDÜ — RFC-0013 bitişik virgül kuralı + onluk
    tam aritmetikle gerçeklendi (3,14; 0,1+0,2=0,3). Kayan nokta (bilimsel iş)
    gerekirse ileri düzey paket konusu olarak kaldı.
-2. **Generics ve trait/arayüz:** kullanıcı işlemleri v0'da ilk-çağrı
-   monomorfizmiyle idare ediyor (RFC-0006 §2.4); gerçek çokbiçimlilik ADR işi.
+2. **Generics ve trait/arayüz:** başlangıç işlemleri çağrı-güdümlü,
+   public işlemler açık parametreli olabilir (K-083); gerçek çokbiçimlilik ve
+   public ABI zorunluluğu V1-P0-01/ADR işidir.
 3. **Tür adlarının Türkçe çekimi:** hata mesajlarında "Liste<TamSayı>" teknik
    gösterimi kullanılıyor; çocuk modunda "tam sayı listesi" okunuşu düşünülebilir.
 4. Sözlük anahtarının TamSayı olabilmesi; iç içe koleksiyonlar.
@@ -66,5 +70,4 @@ gelene dek kısmi ✓.
 
 ## Korpus etkisi
 
-Yok. Ondalık kararı geldiğinde golden 04'e (bölme) ve yeni golden programlara
-etkisi olacak; o RFC'de ele alınır.
+K-083: golden 33 açık Ondalık imzasını ve runtime genişlemesini sabitler.

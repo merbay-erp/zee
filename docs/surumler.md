@@ -23,6 +23,11 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   production uyarısıyla localhost'ta çalışır. Panel örnekleri eğitim demosu
   olarak yeniden etiketlendi; giriş/kaydet/sil/çıkış durum değişiklikleri POST
   kontrolüne alındı. GET ile silmeme regression testidir.
+- **Açık işlem imzası** (K-083): başlangıç için `sayıyı al` aynen kalır;
+  public/paket API'si `sayıyı Ondalık olarak al` yazabilir. Açık gövde hiç
+  çağrılmasa da denetlenir, imza çağrıyla değişmez. Liste/sözlük/Seçenek/Sonuç
+  ve yapı tür yazımları desteklenir; TamSayı→Ondalık runtime değeri de
+  genişler. T037/T038, golden 33 ve çağrı sırası permütasyonlarıyla 270 test.
 
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`

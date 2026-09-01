@@ -45,7 +45,7 @@ Her proje tek oturumluktur; "şunu da dene" satırı ödevin kendisidir.
 | 11 | [envanter](../projeler/envanter.dil) | kayıt tabloları, para biçimi, JSON yedeği |
 | 12 | [mini-site](../projeler/mini-site.dil) | kendi web siteni sun! |
 
-Sonrası: golden korpus (kolaydan zora numaralı 32 program) ve
+Sonrası: golden korpus (kolaydan zora numaralı 33 program) ve
 [dil turu](dil-turu.md).
 
 ## 3. Hata kültürü — en önemli ders

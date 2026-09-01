@@ -5,7 +5,9 @@
 //! dillerdeki "ilk keyword'e bak" yaklaşımının aynadaki karşılığıdır ve
 //! deterministik ayrıştırmayı mümkün kılar.
 
-use crate::agac::{AritmetikIslec, Cumle, Ifade, Islec, Islem, KosulKolu, Ozellik, Test, Yapi};
+use crate::agac::{
+    AritmetikIslec, Cumle, Ifade, Islec, Islem, KosulKolu, Ozellik, Parametre, Test, Yapi,
+};
 use crate::sozcukleyici::{Token, TokenTur};
 use crate::tani::Tani;
 
@@ -678,21 +680,41 @@ impl Ayristirici {
         }
         self.derinlik += 1;
 
-        // Parametre satırları: tam olarak `<ad> al`.
+        // Parametre satırları: `<ad> al` ya da K-083 açık sözleşmesi
+        // `<ad> <tür yazımı> olarak al`.
         let mut parametreler = Vec::new();
         loop {
-            let param = match (&self.tokenlar.get(self.konum), &self.tokenlar.get(self.konum + 1)) {
-                (Some(a), Some(b)) => match (&a.tur, &b.tur) {
-                    (TokenTur::Kelime(ad), TokenTur::Kelime(al)) if al == "al" => {
-                        match self.tokenlar.get(self.konum + 2).map(|t| &t.tur) {
-                            Some(TokenTur::SatirSonu) => Some(yalin_ad(ad)),
-                            _ => None,
-                        }
+            let satir_tokenlari = self.tokenlar[self.konum..]
+                .iter()
+                .take_while(|token| !matches!(token.tur, TokenTur::SatirSonu))
+                .collect::<Vec<_>>();
+            let kelimeler = satir_tokenlari
+                .iter()
+                .map(|token| match &token.tur {
+                    TokenTur::Kelime(kelime) => Some(kelime.as_str()),
+                    _ => None,
+                })
+                .collect::<Option<Vec<_>>>();
+            let param = kelimeler.and_then(|kelimeler| {
+                let ilk = satir_tokenlari.first()?;
+                match kelimeler.as_slice() {
+                    [ad, al] if *al == "al" => Some(Parametre {
+                        ad: yalin_ad(ad),
+                        tur_yazimi: None,
+                        satir: ilk.satir,
+                    }),
+                    [ad, ortalar @ .., olarak, al]
+                        if !ortalar.is_empty() && *olarak == "olarak" && *al == "al" =>
+                    {
+                        Some(Parametre {
+                            ad: yalin_ad(ad),
+                            tur_yazimi: Some(ortalar.join(" ")),
+                            satir: ilk.satir,
+                        })
                     }
                     _ => None,
-                },
-                _ => None,
-            };
+                }
+            });
             match param {
                 Some(p) => {
                     parametreler.push(p);
