@@ -20,6 +20,8 @@ pub enum VeriTuru {
     Ondalik,
     /// v0'da örtük olarak Sözlük<Metin, TamSayı> demektir (CSV satırları).
     Sozluk,
+    /// Kullanıcı yapısı öğesi (K-060): Program.yapilar'a indeks.
+    Yapi(usize),
     /// Boş koleksiyonun henüz belirlenmemiş öğe türü (K-045): ilk eklemede
     /// somutlaşır. Guard'lı yollar dışında ture() çağrılmaz.
     Bilinmeyen,
@@ -32,6 +34,7 @@ impl VeriTuru {
             VeriTuru::Metin => "Metin",
             VeriTuru::Ondalik => "Ondalık",
             VeriTuru::Bilinmeyen => "belirsiz",
+            VeriTuru::Yapi(_) => "Yapı",
             VeriTuru::Sozluk => "Sözlük",
         }
     }
@@ -41,6 +44,7 @@ impl VeriTuru {
             VeriTuru::Metin => Tur::Metin,
             VeriTuru::Ondalik => Tur::Ondalik,
             VeriTuru::Bilinmeyen => Tur::Yok, // guard'lar erişimi engeller
+            VeriTuru::Yapi(i) => Tur::Yapi(*i),
             VeriTuru::Sozluk => Tur::Sozluk(SozlukDegerTuru::TamSayi),
         }
     }
@@ -346,6 +350,7 @@ fn veri_turu_yap(tur: &Tur) -> Option<VeriTuru> {
         Tur::Metin => Some(VeriTuru::Metin),
         Tur::Ondalik => Some(VeriTuru::Ondalik),
         Tur::Sozluk(SozlukDegerTuru::TamSayi) => Some(VeriTuru::Sozluk),
+        Tur::Yapi(i) => Some(VeriTuru::Yapi(*i)),
         _ => None,
     }
 }

@@ -540,6 +540,20 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   silme SAF ZEE: süz (eşit değilse ekle) + "\n" ile birleştir + dosyaya
   yaz (üzerine). Dil çekirdeği dosya-silme kalıbına muhtaç değil.
 
+## K-060 — Yapı listeleri: kayıt tabloları
+
+- **Karar:** VeriTuru'ya Yapı girdi: `boş liste` + `ekle` yapı öğe türünü
+  somutlar (K-045 çıkarımı aynen), gezmede alan erişimi çalışır, farklı
+  yapı karışımı T011. `json metni` yapıyı ve yapı listesini nesne olarak
+  serileştirir — kayıt tabloları JSON'a tek satırda döner.
+- **Not:** Katalogdaki T027 satırı bayattı: Ondalık alan baştan beri
+  destekliymiş — belge düzeltildi (para alanları serbest).
+- **bulgu (K-011 ailesi, alan çözümü):** alan erişimi araç ekini tanımıyor:
+  `kitabın fiyatıyla artır` → T028 ("fiyatıyla" alan sanılıyor). Geçici yol:
+  ara ada al. Alan çözücüsüne ek ayıklama genişletmesi aday iş.
+- **Test:** koleksiyon_testi (kayıt tablosu + karışım reddi). Ölçüm arşivi
+  v0.4.0 satırı: tüm yükler bütçe içinde (en büyük +%12 döngü — izlemede).
+
 ## K-012 — Liste sabiti: `3, 7, 1, 9 listesi`
 
 - **Karar:** Virgülle ayrılmış değerler + `listesi`. Boş: `boş liste`.
