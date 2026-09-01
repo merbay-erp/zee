@@ -39,6 +39,21 @@ hazır doğru olsun
   tam olarak `0,3`tür — onluk aritmetik, ikilik sürpriz yok.
 - Negatif sabit işaretle bitişiktir: `-3`, `-3,14`.
 
+### Ekli adlar ve `zee-tr-1`
+
+Tanımlayıcı eki doğal Türkçe gibi bitişik alır: `sayaç → sayacı`,
+`kitap → kitabı`, `fiyat → fiyatıyla`. Derleyici tahmin etmez; `zee-tr-1`
+profilindeki bütün kök adaylarını kapsamdaki adlarla karşılaştırır. Tek aday
+çözülür, birden fazlası A002'dir. Örneğin hem `sayac` hem `sayaç` tanımlıysa
+`sayacı` sessizce birini seçmez.
+
+İyelik+hâl zinciri iki katmana kadar tanımlıdır: `zarından`, `fiyatıyla`.
+Editörde adı değiştirdiğinde ekler de yeni köke uyar; `fiyatıyla` adı `elma`
+olursa `elmasıyla` üretilir. Bir kelimenin bütün yapısal çözümlerini görmek
+için `dil morfoloji sayacı`, etkin tabloyu görmek için `dil morfoloji` yaz.
+Yeni projeler profili `proje.dil` içinde sabitler; böylece gelecekteki bir
+derleyici güncellemesi eski kaynağın anlamını sessizce değiştiremez.
+
 ## 3. Sormak
 
 ```
@@ -595,6 +610,7 @@ Ayrıntı için: dil hata T036
 | `dil denetle <dosya\|proje>` | çalıştırmadan bütün hataları listeler (`--json`) |
 | `dil hata <kod>` | hata kodunu açıklar |
 | `dil belge <birim>` | birimin işlemlerini listeler |
+| `dil morfoloji [kelime]` | sürümlü ek tablosunu veya kelimenin bütün kök+ek çözümlerini gösterir |
 
 Editör desteği: `dillsp` — tanılar, hover, tanıma git, **morfolojili
 yeniden adlandırma (F2)** ([editors/](../editors/)). Kurulumsuz deneme: [playground](../playground/).

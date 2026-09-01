@@ -462,7 +462,7 @@ fn konumdaki_kelime(metin: &str, satir: usize, sutun: usize) -> Option<String> {
 /// Kelimenin kendisi + morfolojik kök adayları (çözümleyiciyle aynı kurallar).
 fn adaylar(kelime: &str) -> Vec<String> {
     let mut liste = vec![kelime.to_string()];
-    liste.extend(crate::cozumleyici::kok_adaylari(kelime));
+    liste.extend(crate::morfoloji::kok_adaylari(kelime));
     liste
 }
 
@@ -580,8 +580,8 @@ fn yeniden_adlandir(
                 let yeni = if soz == kok {
                     Some(yeni_ad.clone())
                 } else {
-                    crate::cozumleyici::ek_coz(&soz, &kok)
-                        .map(|ek| crate::cozumleyici::ek_uydur(&yeni_ad, ek))
+                    crate::morfoloji::ek_zinciri_coz(&soz, &kok)
+                        .and_then(|ekler| crate::morfoloji::ek_zinciri_uydur(&yeni_ad, &ekler))
                 };
                 if let Some(yeni) = yeni {
                     duzenlemeler.push(format!(

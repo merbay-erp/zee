@@ -36,7 +36,10 @@ birimin işlem adlarını çağrı çözümünde görür.
 ## Proje bildirimi (TANIMLI — K-076)
 
 - Proje kökünde `proje.dil` bulunur; bildirim de geçerli zee kaynağıdır.
-- Üç zorunlu Metin alanı tanımlar: `proje`, `sürüm`, `giriş`. İsteğe bağlı
+- Üç zorunlu Metin alanı tanımlar: `proje`, `sürüm`, `giriş`. `morfoloji`
+  alanı kaynakların sürümlü ek profilini sabitler; yeni projeler
+  `zee-tr-1` yazar, alanı olmayan eski proje aynı profile varsayılır.
+  Desteklenmeyen açık profil P011'dir (spec/13). İsteğe bağlı
   `yerel_bağımlılıklar`, göreli klasör yollarından oluşan Metin listesidir.
 - Sürüm `X.Y.Z`; giriş proje içindeki göreli bir `.dil` yoludur. Mutlak yol,
   `..`, ters bölü ve platform sürücü öneki yasaktır (P003/P004).
@@ -64,8 +67,9 @@ birimin işlem adlarını çağrı çözümünde görür.
 - Geçişli bağımlılık çözülür ve kilitlenir ama doğrudan bildirilmedikçe
   kaynakta kullanılamaz. Bildirim döngüsü ve aynı adlı ayrı paket hatadır.
 - `dil kilitle <proje>` bütün grafiği ada göre sıralı `proje.kilit` dosyasına
-  yazar: sürüm, ana projeye göre göreli yol, bağımlılık kenarı ve bütün `.dil`
-  kaynaklarının SHA-256 özeti. Mutlak yol yazılmaz.
+  yazar: kilit biçimi sürüm 2'de proje/paket sürümü, morfoloji profili, ana
+  projeye göre göreli yol, bağımlılık kenarı ve bütün `.dil` kaynaklarının
+  SHA-256 özeti. Mutlak yol yazılmaz.
 - Var olan kilit güncel grafikle byte-byte aynı değilse proje komutları P008
   verir. Kilit doğrulandıktan sonra aynı komut kaynakları yeniden okumaz.
 - Kaynak toplama gizli/hedef klasörleri ve sembolik bağları izlemez; paket
@@ -75,7 +79,8 @@ birimin işlem adlarını çağrı çözümünde görür.
   doğrulanır; yorumlar korunur, yollar sıralanır ve yinelenen gerçek kök
   yeniden eklenmez (K-079).
 - `dil paketler [proje]` kilidi doğrulanmış grafiği doğrudan/geçişli ayrımı,
-  sürüm, göreli yol ve SHA-256 özetle gösterir. `dil çıkar <paket> [proje]`
+  sürüm, morfoloji profili, göreli yol ve SHA-256 özetle gösterir.
+  `dil çıkar <paket> [proje]`
   yalnız doğrudan paketi kaldırır. Ana projenin bir `.dil` kaynağında ilgili
   `X paketini kullan` bildirimi kalmışsa P010 verir ve bildirim/kilit byte-byte
   değişmez. Başarıda aday grafik önce çözülür; bildirim ile kilit birlikte

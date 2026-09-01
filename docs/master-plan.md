@@ -38,6 +38,9 @@ Büyük/küçük harf davranışı spesifikasyonda kesin tanımlanır.
 Homoglyph/confusable tanımlayıcılar için compiler uyarısı.
 İyelik ve hal eklerinin desteklenen biçimleri grammar’da açıkça tanımlanır.
 Morfolojik serbestlik heuristic ile değil sürümlemeli grammar ile genişler.
+Stage 0 bu sözü K-089/RFC-0018/spec-13 ile `zee-tr-1` profiline bağladı:
+ek tablosu, iki katman sınırı ve kanonik çözüm↔üretim snapshot/property
+korpusuyla sabittir; proje bildirimi ve kilit dosyası profil kimliğini taşır.
 # 5. Grammar discovery yöntemi
 Grammar masa başında tek seferde dondurulmayacaktır. Önce 30 adet golden-source program yazılacak; syntax bu gerçek kullanım örneklerinden çıkarılacaktır. Her syntax değişikliği bu corpus üzerinde regression testine girecektir.
 Merhaba Dünya
@@ -333,7 +336,10 @@ Module/package resolution.
 FFI/ABI.
 Standard library stability.
 Deprecation ve compatibility politikası.
-Breaking change sessizce yapılamaz. Büyük dil evrimleri için edition benzeri model değerlendirilebilir.
+Breaking change sessizce yapılamaz. Büyük dil evrimleri için edition benzeri
+model değerlendirilebilir. Morfolojik aday kümesini değiştiren ilk kırıcı
+sınır şimdiden tanımlıdır: `zee-tr-1` yerinde değişmez; yeni profil kimliği
+ve ana sürüm/edition kararı gerekir (K-089, RFC-0018).
 # 24. Repository ve bileşen yapısı
 turkce-dil/
   compiler/

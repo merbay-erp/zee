@@ -3,9 +3,11 @@
 - **Durum:** **geçici kabul** (31 Ağu 2026 — yüzey gerçeklendi ve korpusla
   sabitlendi; onay kapısı: usability oturumları. Kalan açık sorular §6'da.)
 - **Tarih:** 31 Ağustos 2026
-- **İlgili günlük kayıtları:** K-001 (yorum), K-011 (ek yazımı), K-014 (kelime çakışmaları)
+- **İlgili günlük kayıtları:** K-001 (yorum), K-011 (ek yazımı), K-014
+  (kelime çakışmaları), K-089/RFC-0018 (sürümlü morfoloji profili)
 - **İlgili golden programlar:** tümü; anti-örnekler A07, A08
-- **Gerçekleme:** `compiler/src/sozcukleyici.rs` (testler: `golden_testi.rs` S-kodları)
+- **Gerçekleme:** `compiler/src/sozcukleyici.rs`; ekli tanımlayıcı anlamı
+  `compiler/src/morfoloji.rs` (`zee-tr-1`, RFC-0018)
 
 ## Özet
 
@@ -33,6 +35,8 @@ Kaynak metnin karakter kuralları ve token dizisi. Girinti kuralları RFC-0003't
 - **Büyük/küçük harf duyarlıdır.** Uzlaşım: tür adları büyük harfle başlar
   (`Öğrenci`, `TamSayı`), değer adları küçük. Yalnız büyük/küçük farkıyla
   ayrışan tanımlayıcılar için uyarı **açık soru** (A07; İ/i–I/ı tuzağı).
+- Tanımlayıcıya bitişen Türkçe eklerin token sınırı burada değişmez; kök ve ek
+  anlamı `zee-tr-1` adlı sürümlü profille RFC-0018/spec-13'te belirlenir.
 
 ## 3. Tokenlar
 

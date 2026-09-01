@@ -166,3 +166,14 @@ fn yeniden_adlandirma_unluyle_bitene_tampon() {
     assert!(yanit.contains("\"newText\":\"elmayı\""), "{}", yanit);
     assert!(yanit.contains("\"newText\":\"elmanın\""), "{}", yanit);
 }
+
+#[test]
+fn yeniden_adlandirma_iki_katmanli_iyelik_zincirini_korur() {
+    let mut sunucu = Sunucu::yeni();
+    sunucu.mesaj_isle(r#"{"jsonrpc":"2.0","method":"textDocument/didOpen","params":{"textDocument":{"uri":"file:///tmp/r5.dil","text":"fiyat 3 olsun\nfiyatıyla artır\nfiyatından düş\n"}}}"#);
+    let cikti = sunucu.mesaj_isle(r#"{"jsonrpc":"2.0","id":25,"method":"textDocument/rename","params":{"textDocument":{"uri":"file:///tmp/r5.dil"},"position":{"line":0,"character":2},"newName":"elma"}}"#);
+    let yanit = &cikti.govdeler[0];
+    assert!(yanit.contains("\"newText\":\"elmasıyla\""), "{}", yanit);
+    assert!(yanit.contains("\"newText\":\"elmasından\""), "{}", yanit);
+    assert_eq!(yanit.matches("newText").count(), 3, "{}", yanit);
+}

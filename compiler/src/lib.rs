@@ -8,6 +8,7 @@ pub mod ayristirici;
 pub mod bicimleyici;
 pub mod kalici_dosya;
 pub mod lsp;
+pub mod morfoloji;
 pub mod paket;
 pub mod proje;
 pub mod wasm_api;

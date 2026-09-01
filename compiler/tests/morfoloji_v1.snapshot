@@ -1,0 +1,10 @@
+profil=zee-tr-1;sürüm=1;azami_katman=2
+belirtme=yı,yi,yu,yü,nı,ni,nu,nü,ı,i,u,ü
+iyelik=sı,si,su,sü,ı,i,u,ü
+tamlayan=nın,nin,nun,nün,ın,in,un,ün
+yönelme=ya,ye,na,ne,a,e
+ayrılma=ndan,nden,dan,den,tan,ten
+bulunma=nda,nde,da,de,ta,te
+araç=yla,yle,la,le
+çoğul+yönelme=lara,lere
+zincir=iyelik+(belirtme|tamlayan|yönelme|ayrılma|bulunma|araç)

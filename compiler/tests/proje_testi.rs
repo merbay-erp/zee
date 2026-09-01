@@ -3,18 +3,22 @@
 use dil::proje::{bildirimi_oku, yerel_bagimliliklari_guncelle, ProjeBildirimi};
 use std::path::{Path, PathBuf};
 use std::process::Command;
+use std::sync::atomic::{AtomicU64, Ordering};
+
+static GECICI_KLASOR_SIRASI: AtomicU64 = AtomicU64::new(0);
 
 struct GeciciKlasor(PathBuf);
 
 impl GeciciKlasor {
     fn yeni() -> Self {
         let benzersiz = format!(
-            "zee-proje-testi-{}-{}",
+            "zee-proje-testi-{}-{}-{}",
             std::process::id(),
             std::time::SystemTime::now()
                 .duration_since(std::time::UNIX_EPOCH)
                 .expect("saat")
-                .as_nanos()
+                .as_nanos(),
+            GECICI_KLASOR_SIRASI.fetch_add(1, Ordering::Relaxed)
         );
         let yol = std::env::temp_dir().join(benzersiz);
         std::fs::create_dir(&yol).expect("geçici klasör");
@@ -208,10 +212,25 @@ fn bildirim_gecerli_zee_kaynagidir() {
         ProjeBildirimi {
             ad: "stok-paneli".into(),
             surum: "1.2.3".into(),
+            morfoloji: "zee-tr-1".into(),
             giris: "kaynak/ana.dil".into(),
             yerel_bagimliliklar: Vec::new(),
         }
     );
+}
+
+#[test]
+fn bildirim_morfoloji_profilini_sabitler_ve_bilinmeyeni_reddeder() {
+    let acik = "proje \"uygulama\" olsun\nsürüm \"1.0.0\" olsun\nmorfoloji \"zee-tr-1\" olsun\ngiriş \"ana.dil\" olsun\n";
+    assert_eq!(
+        bildirimi_oku(acik).expect("profil desteklenmeli").morfoloji,
+        "zee-tr-1"
+    );
+
+    let gelecek = acik.replace("zee-tr-1", "zee-tr-2");
+    let hata = bildirimi_oku(&gelecek).expect_err("bilinmeyen profil fail-closed olmalı");
+    assert_eq!(hata.kod, "P011");
+    assert!(hata.mesaj.contains("zee-tr-2"), "{}", hata.mesaj);
 }
 
 #[test]
@@ -365,6 +384,7 @@ fn yeni_komutu_proje_bildirimi_uretir() {
         bildirimi_oku(&bildirim).expect("üretilen bildirim").ad,
         "ilk-projem"
     );
+    assert!(bildirim.contains("morfoloji \"zee-tr-1\" olsun"));
     assert!(bildirim.contains("yerel_bağımlılıklar boş liste olsun"));
     assert!(
         proje.join("proje.kilit").is_file(),
@@ -384,6 +404,17 @@ fn yeni_komutu_proje_bildirimi_uretir() {
         "{}",
         String::from_utf8_lossy(&dene.stderr)
     );
+}
+
+#[test]
+fn surum_komutu_etkin_morfoloji_profilini_gosterir() {
+    let cikti = Command::new(env!("CARGO_BIN_EXE_dil"))
+        .arg("sürüm")
+        .output()
+        .expect("sürüm");
+    assert!(cikti.status.success());
+    let stdout = String::from_utf8(cikti.stdout).expect("utf8");
+    assert!(stdout.contains("morfoloji zee-tr-1"), "{}", stdout);
 }
 
 #[test]
@@ -452,6 +483,8 @@ fn yerel_paketler_kokenli_yuklenir_ve_icerikle_kilitlenir() {
         String::from_utf8_lossy(&kilitle.stderr)
     );
     let ilk_kilit = std::fs::read_to_string(uygulama.join("proje.kilit")).expect("kilit");
+    assert!(ilk_kilit.contains("kilit_sürümü 2"));
+    assert!(ilk_kilit.contains("ana \"uygulama\" \"0.1.0\" \"zee-tr-1\""));
     assert!(ilk_kilit.contains("paket \"hesap\" \"2.1.0\""));
     assert!(ilk_kilit.contains("paket \"temel\" \"1.0.0\""));
     assert!(ilk_kilit.contains("sha256:"));
@@ -467,6 +500,7 @@ fn yerel_paketler_kokenli_yuklenir_ve_icerikle_kilitlenir() {
     let paket_ciktisi = String::from_utf8_lossy(&paketler.stdout);
     assert!(paket_ciktisi.contains("doğrudan: hesap 2.1.0"));
     assert!(paket_ciktisi.contains("geçişli: temel 1.0.0"));
+    assert!(paket_ciktisi.matches("morfoloji zee-tr-1").count() >= 2);
 
     let calistir = Command::new(ikili)
         .args(["çalıştır", uygulama.to_str().expect("utf8")])

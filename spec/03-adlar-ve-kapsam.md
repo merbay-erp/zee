@@ -1,6 +1,7 @@
 # 03 — Adlar ve kapsam
 
-Normatif kaynak: RFC-0004 (geçici kabul), günlük K-011/K-013/K-034/K-041.
+Normatif kaynak: RFC-0004/RFC-0018 (geçici kabul), günlük
+K-011/K-013/K-034/K-041/K-089. Sürümlü tablonun ayrıntısı spec/13'tedir.
 Tanı kodları: A bölümü.
 
 ## Morfolojik ad çözümü (TANIMLI)
@@ -9,8 +10,8 @@ Bir kelime, kapsamdaki adlarla şu adaylar üzerinden eşleştirilir:
 
 1. **Kelimenin kendisi** (ek yok).
 2. **Ek ayıklama:** desteklenen hâl/iyelik/araç ekleri sondan atılır.
-   Desteklenen ek listesi sürümlemeli grammar'ın parçasıdır (K-011);
-   kaynak-of-truth `compiler/src/cozumleyici.rs: kok_adaylari`. Kapsam:
+   Desteklenen ek listesi `zee-tr-1` profilinin parçasıdır (K-089);
+   kaynak-of-truth `compiler/src/morfoloji.rs: EK_TABLOSU`. Kapsam:
    zamir n'li biçimler (K-041: `zarı+ndan`), İKİ KATMANLI zincir
    (K-061: `fiyat+ı+yla`) ve ünsüz ikizleşmesi geri çevrimi
    (K-049: `üssü→üs`, sertleşmeyle `reddi→ret`).
@@ -27,12 +28,12 @@ Kurallar (TANIMLI):
 - Sözlük YOKTUR: çözüm yalnız kapsam adlarına bakar; bir kelimenin
   "Türkçede kelime olması" gerekmez.
 
-## İleri morfoloji (TANIMLI — K-072)
+## İleri morfoloji (TANIMLI — K-072/K-089)
 
-Çözümlemenin simetriği üreteçtir: `ek_uydur`, soyut eki yeni köke Türkçe
-uyum kurallarıyla giydirir (dörtlü/ikili ünlü uyumu, y/n tamponları,
-ta/te benzeşmesi, çok-hecede p→b/ç→c/t→d/k→ğ, nk→ng her hecede).
-Editörün yeniden adlandırması bunun üstüne kuruludur.
+Çözümlemenin simetriği `ek_uydur`/`ek_zinciri_uydur` üreteçleridir; soyut eki
+yeni köke Türkçe uyumla kanonik giydirir. Tek ve iki katmanlı üretim aynı
+profil tablosundan gelir; `üret → çöz` kök+ek zincirini korur. Editörün
+yeniden adlandırması bunun üstüne kuruludur.
 
 ## Örtük çoğul (TANIMLI — K-013)
 

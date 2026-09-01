@@ -24,7 +24,7 @@ Kırıcı değişiklik sessizce yapılamaz: davranış değişikliği RFC'den ge
 |---|---|---|
 | [01 — Sözcükleme](01-sozcukleme.md) | alfabe, tokenlar, kaçışlar, sayılar | RFC-0002, RFC-0013 |
 | [02 — Dizim](02-dizim.md) | satır/blok yapısı, yüklem-sonlu dağıtım | RFC-0003, RFC-0006 |
-| [03 — Adlar ve kapsam](03-adlar-ve-kapsam.md) | morfolojik çözüm, blok kapsamı | RFC-0004, K-011, K-034, K-041 |
+| [03 — Adlar ve kapsam](03-adlar-ve-kapsam.md) | morfolojik çözüm, blok kapsamı | RFC-0004, RFC-0018, K-089 |
 | [04 — Türler](04-turler.md) | tür envanteri, birleşim, daraltma | RFC-0007, RFC-0008, RFC-0013 |
 | [05 — Değerlendirme](05-degerlendirme.md) | yürütme sırası, taşma, determinizm | RFC-0001 §7, ADR-003 |
 | [06 — Hata modeli](06-hata-modeli.md) | tanı sözleşmesi, Seçenek/Sonuç, test | RFC-0008, RFC-0010 |
@@ -34,11 +34,13 @@ Kırıcı değişiklik sessizce yapılamaz: davranış değişikliği RFC'den ge
 | [10 — Dışa açık işlem sözleşmesi](10-disari-acik-islem-sozlesmesi.md) | public imza, dönüş kanıtı ve v1 kaynak ABI'si | RFC-0006, RFC-0007, RFC-0009 |
 | [11 — Uygulama eylemleri ve web adaptörü](11-uygulama-eylemleri-ve-web-adaptoru.md) | açık eylem imzası, etki çıkarımı, yöntemli rota, savepoint/geri alma | RFC-0015 |
 | [12 — Web güvenlik profili](12-web-guvenlik-profili.md) | erişim politikası, Argon2id, sunucu oturumu/rol, CSRF, güvenli çerez ve HTTPS proxy sınırı | RFC-0017 |
+| [13 — Sürümlü morfoloji profili](13-surumlu-morfoloji-profili.md) | `zee-tr-1`, ek tablosu, çözüm↔üretim, proje/paket sabitlemesi | RFC-0018 |
 
 ## Faza bağlı — henüz spec dışı
 
 Gerçek paralel görev zamanlayıcısı (RFC-0011, Faz 5), ikili FFI/ABI (RFC-0012,
 Faz 4/5), standart kütüphane kararlılık
 politikası, çok süreçli web durumu/idempotency (RFC-0015/0017), uzak
-paket/registry (RFC-0009 §4.2), deprecation/edition modeli.
+paket/registry (RFC-0009 §4.2) ve genel deprecation/edition modeli. Morfoloji
+profili için kırıcı sürüm sınırı spec/13'te şimdiden tanımlıdır.
 Bu başlıklar karara bağlandıkça buraya bölüm olarak eklenir.

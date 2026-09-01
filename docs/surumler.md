@@ -74,6 +74,14 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   doğrular; `__Host-` Secure+HttpOnly+SameSite=Lax çerez, HSTS/CSP ve CRLF/
   request-smuggling korkuluklarını uygular. 321 test ve 138 katalog koduyla
   V1-P0-03 kapandı.
+- **Sürümlü morfoloji profili** (K-089, RFC-0018/spec-13): çözümleyici ve
+  LSP'nin ayrı ek listeleri `zee-tr-1` tek kaynağında birleşti. İyelik ayrı
+  soyut kimlikle iki katmanlı üretilir; düzenli kök×bütün tek/iki katman
+  `üret→çöz` property'leri, ters ses değişimi ve A002 belirsizlik korpusu
+  tablo snapshot'ını korur. Rename artık `fiyatıyla→elmasıyla` zincirini de
+  giydirir. `proje.dil` profili sabitler (P011), `proje.kilit` v2 ana/paket
+  profilini taşır; `dil morfoloji [kelime]` kararı görünür kılar. 333 test ve
+  139 katalog koduyla V1-P1-02 kapandı.
 
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`

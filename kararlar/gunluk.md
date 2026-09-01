@@ -683,10 +683,10 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   çok-hecede p→b, ç→c, t→d, k→ğ yumuşaması, nk→ng her hecede:
   renk→rengi) + çözümleyici `ek_coz` (yüzey ekten soyut ek kimliği;
   yumuşama/ikizleşme/ünlü düşmesi geri çevrimleriyle).
-- **Sınırlar (dürüst):** tek katman ekler (fiyatıyla gibi zincirler
-  değiştirilmez — dokunulmadan bırakılır), metin sabitleri ve # yorumları
-  DOKUNULMAZ (testli), tek-heceli yumuşama istisnaları (top→topu ✓ ama
-  hukuk→hukuku gibi istisnalar üretilmez — önizlemede elle düzeltilir).
+- **Sınırlar (K-072 anı):** Bu aşamada `fiyatıyla` gibi zincirler rename'de
+  dokunulmadan kalıyordu; K-089 `Iyelik + dış ek` modeliyle bu sınırı kapattı.
+  Metin sabitleri ve # yorumları DOKUNULMAZ (testli). Tek-heceli yumuşama
+  istisnaları ile sözlüksel biçimler profilin kanonik üretim sınırındadır.
 - **Testler:** üç senaryo (ek seti, yumuşama+nk, ünlü tamponları) + gerçek
   dillsp'ye karşı Node birlikte-çalışma. VS Code istemcisine
   RenameProvider eklendi (F2 çalışır).
@@ -978,6 +978,31 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   olumsuzları. `girisli-panel` elle yazılan token/düz paroladan bu profile taşındı.
   RFC-0017 + spec/12; 321 test ve 138 katalog koduyla V1-P0-03 kapandı.
 
+## K-089 — Morfoloji derleyici ayrıntısı değil, sürümlü kaynak anlamıdır
+
+- **Profil:** Zee v1 ek semantiği `zee-tr-1` adıyla sabitlendi. Soyut ekler,
+  bütün yüzey biçimleri, iki katman sınırı, ses geri çevrimleri ve kanonik
+  üretim `compiler/src/morfoloji.rs` içinde tek kaynaktır. Çözümleyici ve LSP
+  artık ayrı liste taşımaz.
+- **İyelik ayrımı:** `fiyatıyla` gibi zincirin içindeki `-ı`, tek kullanımdaki
+  belirtme ekiyle aynı yüzeyi paylaşsa da ayrı `Iyelik` kimliğidir. Böylece
+  ünlü kökte `elma+sı+ndan → elmasından` doğal ve dönüşümlü üretilebilir.
+  v1 yalnız `iyelik + hâl/tamlayan/araç` biçiminde iki katmana izin verir.
+- **Değişmez:** Doğrudan eşleşme önce; sonra bütün adaylar. 0=A001, 1=çözüm,
+  2+=A002; tahmin/sözlük yok. Düzenli kökler × bütün tek ekler ve bütün iki
+  katmanlar `üret → çöz` property korpusudur. İkizleşme/ünlü düşmesi ters
+  korpusu ile yapısal belirsizlik korpusu ayrıca sabittir.
+- **Araç zinciri:** LSP iki katmanlı rename'i de yeniden giydirir
+  (`fiyatıyla→elmasıyla`, `fiyatından→elmasından`). `dil morfoloji [kelime]`
+  profil veya adayları, `dil sürüm` etkin profili gösterir.
+- **Edition etkisi:** Yeni proje `morfoloji "zee-tr-1" olsun` yazar; eski
+  bildirim aynı profile varsayılır, bilinmeyen açık profil P011'dir.
+  `proje.kilit` v2 ana/paket profilini taşır. Aday kümesini değiştiren tablo,
+  zincir ya da üretim değişikliği `zee-tr-2` ve ana sürüm/edition kararı
+  olmadan yapılamaz.
+- **Kanıt:** RFC-0018 + spec/13 + profil snapshot'ı, property/ambiguity/LSP/
+  proje/CLI testleri; 333 test ve 139 katalog koduyla V1-P1-02 kapandı.
+
 ## K-012 — Liste sabiti: `3, 7, 1, 9 listesi`
 
 - **Karar:** Virgülle ayrılmış değerler + `listesi`. Boş: `boş liste`.
@@ -1082,7 +1107,8 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   kuralı olarak yazmalı. Ayrıca ünlü düşmesi geri çevrimi morfoloji motoruna
   girdi (şekle→şekil, burnu→burun) — desteklenen ek/çekim listesi artık üç
   mekanizma içeriyor: ek ayıklama, ünsüz yumuşaması geri çevrimi, ünlü düşmesi
-  geri çevrimi (K-011 sürümlemeli grammar kapsamına eklenecek).
+  geri çevrimi. Bu tarihsel açık, K-089'da `zee-tr-1` profil/snapshot
+  sözleşmesiyle kapandı.
 
 ## K-021 — Desen eşleştirme: `X e göre / ... ise`
 
