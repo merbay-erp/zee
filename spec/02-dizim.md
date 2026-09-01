@@ -52,4 +52,7 @@ kare 4 için karesini hesapla olsun
 
 Birden çok argüman `ve` ile ayrılır; her `ve`/`ile` dilimi tam bir ifade
 bölgesidir (K-038). Bu yüzey usability onay kapısını bekler; alternatifi
-RFC-0006'da karşılaştırılmıştır.
+RFC-0006'da karşılaştırılmıştır. V1 kararı, gerçek kullanıcı verisi öncesinde
+önden bağlanan [K-016 karar paketindeki](../docs/k016-cagri-karar-paketi.md)
+tek-genel-sözdizimi ve alt grup eşiklerini geçmeden bu normatif geçici yüzeyi
+değiştirmez veya tam kabul saymaz.

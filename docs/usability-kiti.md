@@ -6,15 +6,23 @@ her şeyi hazır verir. Sonuçların bağlandığı karar: **RFC-0006 onay kapı
 (K-032), **RFC-0019 gezme/değer semantiği onay kapısı** (K-093) ve
 K-010/K-013 doğallık doğrulamaları.
 
-## Oturum düzeni (kişi başı ~25 dakika)
+K-016'nın teknik bağlamları, kör adayları ve önceden taahhütlü karar eşiği
+[K-016 karar paketinde](k016-cagri-karar-paketi.md) bağlayıcıdır. Bu kit yalnız
+oturum uygulamasıdır; sonuç geldikten sonra eşik değiştirilmez.
+
+## Oturum düzeni (kişi başı ~30–35 dakika)
 
 1. **Isınma (2 dk):** "Bilgisayara Türkçe komut veren bir dil deniyoruz.
    Doğru cevap yok; takıldığın her yer bizim hatamız, senin değil."
-2. **Sesli okuma (8 dk):** Aşağıdaki programları KAĞITTAN sesli okut.
+2. **K-016 serbest üretim (3 dk):** Hiç çağrı örneği göstermeden iki görevi
+   yazdır; satırı düzeltme veya Zee kuralı öğretme.
+3. **K-016 kör kartlar (8 dk):** Katılımcıya atanmış sırayla üç kartı uygula.
+4. **Sesli okuma (7 dk):** Aşağıdaki programları KAĞITTAN sesli okut.
    Kural: satırı önce okusun, sonra "sence bu ne yapar?" — cevabı YAZ.
-3. **Tahmin görevleri (8 dk):** Program çıktısını tahmin ettir (aşağıda).
-4. **Yazma görevi (5 dk):** Küçük bir işi dilde yazmayı DENESİN (kağıtla).
-5. **Kapanış (2 dk):** "En garip gelen satır hangisiydi?" — birebir not al.
+5. **K-093 tahmin kartları (7 dk):** İlk tahmin, tek cümlelik öğretim, ikinci
+   tahmin; G3 yalnız profesyonel/isteyen çocuk.
+6. **Genel yazma görevi (5 dk):** Küçük bir işi dilde yazmayı DENESİN.
+7. **Kapanış (2 dk):** "En garip gelen satır hangisiydi?" — birebir not al.
 
 ## Okutulacak programlar (sırayla)
 
@@ -22,21 +30,49 @@ K-010/K-013 doğallık doğrulamaları.
 |---|---|---|
 | 1 | golden/01, 02, 05 | temel akış, ise/değilse (K-005) |
 | 2 | golden/06, 08 | döngüler, örtük çoğul `her sayı için` (K-013) |
-| 3 | **golden/12 + 14** | **K-016: `notlar için ortalamayı hesapla olsun` — ANA SORU** |
+| 3 | **golden/12 + 14** | K-016 kartları tamamlandıktan sonra çağrıyı gerçek programda doğrulama |
 | 4 | golden/23, 32 | göre-eşleştirme, ondalık `3,14` (RFC-0013) |
 | 5 | golden/07 | girdi + koşul zinciri (yalnız profesyonellere: 26 da) |
 
 ## K-016 özel protokolü (kritik)
 
-Golden 12'deki çağrı satırını okuttuktan sonra iki kartı göster, hangisi
-"daha doğal" sor ve NEDENİNİ yazdır:
+Katılımcı golden/12, golden/14 veya başka bir çağrı satırı görmeden şunları
+kağıda yazmayı dener:
+
+1. “`notlar` listesinin ortalamasını hesaplayan işlemi çağır ve sonucu
+   `ortalama` adlı değere bağla.”
+2. “`selamla` işlemini `\"Ayşe\"` ve `10` ile çağır; bu işlem değer döndürmüyor.”
+
+İcat ettiği yazımı birebir kaydet. Sonra anonim kimliğine göre atanmış kart
+sırasını uygula: beş kişi A→B→C, beş kişi B→C→A, beş kişi C→A→B. Kartta
+“mevcut/önerilen” yazmaz:
 
 - **Kart A:** `ortalama notlar için ortalamayı hesapla olsun`
 - **Kart B:** `notlar için ortalamayı hesapla, sonucu ortalama olsun`
+- **Kart C:** `ortalama (notlar için ortalamayı hesapla) olsun`
 
-Sayım kuralı (önceden taahhüt — sonuca göre eğilme): 15 kişiden **10+**
-B derse RFC-0006 revize edilir (B, dönüş değerli çağrılar için eklenir);
-aksi halde geçici kabul (A) kesinleşir.
+Her kart için önce “Bu ne yapar?”, sonra “Bu çağrının sonucunu başka bir
+işleme doğrudan vermek istersen nasıl yazarsın?” sor. Cevaptan sonra yalnız o
+kartın tek cümlelik kuralını oku ve yeni adlarla tekrar sor. Doğallık,
+anlaşılırlık ve “yazarken seçerim” puanlarını ayrı al; “hiçbiri, ben şöyle
+yazardım” her zaman serbesttir.
+
+Uygulayıcının okuyacağı öğretim cümleleri sabittir:
+
+- A: “Sonuç adı başta, çağrı ortada; satır `olsun` ile biter.”
+- B: “Önce çağrı yazılır; `sonucu ... olsun` bölümü dönen değere ad verir.”
+- C: “Sonuç adı başta; çağrı parantezin içinde, satır `olsun` ile biter.”
+
+Öğretim sonrası üç kartta da yeni görev aynıdır: “`fiyatlar` listesinin
+medyanını hesapla ve sonucu `medyan` adına bağla.” Doğru zihinsel model,
+katılımcının hem çağrılan işlemi hem bağlanan sonuç adını doğru göstermesidir;
+yazım kusuru ayrıca kaydedilir ama anlam puanına gizlice eklenmez.
+
+Karar basit A/B çoğunluğuyla verilmez. Toplam ve çocuk/profesyonel alt grup
+eşikleri, yedi teknik bağlam ve B'nin tek başına iç içe ifade vermemesi
+[karar paketinin §5'inde](k016-cagri-karar-paketi.md) önceden taahhütlüdür.
+Kart B güçlü çıkarsa doğrudan ikinci sözdizimi eklenmez; B-003 expression
+grammar turu yapılır. Ham veri olmadan A da kesinleşmiş sayılmaz.
 
 ## K-093 gezme/değer kartları (kritik)
 
@@ -110,10 +146,16 @@ tanımla ve çağır; sıfır bölme durumunu hatasını döndür ile ele al."
 ## Kayıt formu (kişi başı bir kopya)
 
 ```
-Yaş/rol: ____   Tarih: ____
+Anonim kimlik C__/P__: ____   Tarih: ____   Kart sırası: ____
+Onam/izin süreci: ____
+K-016 gösterim öncesi bağlama yazımı (birebir): ____
+K-016 gösterim öncesi cümle çağrısı yazımı (birebir): ____
 Sesli okumada takılan satırlar (birebir): ____
 Yanlış tahmin edilen çıktılar (program + beklenen/dediği): ____
-K-016 kartı: A / B — nedeni: ____
+K-016 A ilk/öğretim sonrası + iç içe kullanım + 3 puan: ____
+K-016 B ilk/öğretim sonrası + iç içe kullanım + 3 puan: ____
+K-016 C ilk/öğretim sonrası + iç içe kullanım + 3 puan: ____
+K-016 son doğal/anlaşılır/yazma tercihi + birebir nedeni: ____
 K-093 G1 ilk/öğretim sonrası: ____ / ____ — nedeni: ____
 K-093 G2 ilk/öğretim sonrası: ____ / ____ — nedeni: ____
 K-093 G3 (gösterildiyse): ____ — nedeni: ____
@@ -124,12 +166,16 @@ Dört soru puanı (1-5): doğal __ / anlaşılır __ / tekrar ister mi __
 
 ## Sonuçların işlenmesi
 
-1. Formları `docs/usability-sonuclari/` klasörüne tarih adıyla koy
-   (`2026-09-XX-oturum-N.md`).
+1. [Anonim katılımcı şablonunu](usability-sonuclari/katilimci-sablonu.md)
+   `docs/usability-sonuclari/YYYY-MM-DD-C01.md` gibi kopyala; isim, okul,
+   e-posta, ses/video veya başka kişisel bilgi commit etme.
 2. Her takılma bir günlük kaydına (K-0xx) dönüşür; kalıp icatları RFC
    alternatifi olarak kaydedilir.
-3. K-016 sayımı RFC-0006'nın Durum satırına; G1/G2/G3 sayımı RFC-0019'a ve
-   V1-P1-05'e işlenir. Ham sayı olmadan hiçbir kapı kapatılmaz.
+3. On beş formdan sonra [özet şablonunu](usability-sonuclari/ozet-sablonu.md)
+   doldur. K-016 sayımı RFC-0006'nın Durum satırına; G1/G2/G3 sayımı
+   RFC-0019'a ve V1-P1-05'e işlenir. Ham sayı olmadan hiçbir kapı kapatılmaz.
 
-> İlk pilot için en doğru ilk katılımcı bellidir: dile adını veren kişi.
-> "Merhaba! Bu zee projesi." satırını ilk o okusun.
+> Dile adını veren kişi ilk sıcak/formative pilot olabilir:
+> “Merhaba! Bu zee projesi.” satırını ilk o okusun. Dört yaşındaki bu pilot,
+> 8–14 yaş karar örneklemine sayılmaz; protokolü değiştirirse yeni sürüm gerçek
+> sayım başlamadan dondurulur.

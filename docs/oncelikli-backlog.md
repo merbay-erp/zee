@@ -11,16 +11,18 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 ## Uygulama sırası
 
 1. Tamamlanan önkoşul: K-095 registry metadata güveni (378 test).
-2. İlk sprint: B-001 → B-002 → B-003 → B-004.
+2. İlk sprint: B-001'in gerçek insan kanıtı + B-002 → B-003 → B-004.
 3. İkinci sprint: B-005/B-006 → B-010/B-018/B-019/B-020 → B-014–B-017.
 4. Üçüncü sprint: B-027/B-028 → B-030/B-031 → B-043/B-044.
 5. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
 
 ## P0 — V1 öncesi dil ve derleyici omurgası
 
-- **B-001 · SIRADA — K-016 işlem çağrısı sözdizimini kesinleştir.**
-  `... için ...` / `... ile ...` seçeneklerini gerçek çocuk ve profesyonel
-  kartlarıyla sınayıp tek yüzeyi RFC-0006, grammar ve golden korpusta dondur.
+- **B-001 · KISMEN (K-096 deney hazır) — K-016 işlem çağrısı sözdizimini
+  kesinleştir.** Serbest üretim, kör A/B/C kartları, dengeli sıra, anonim form
+  ve alt grup+teknik karar eşikleri
+  [karar paketinde](k016-cagri-karar-paketi.md) önden bağlandı. Gerçek 10 çocuk
+  + 5 profesyonel verisi gelmeden tek yüzey seçilmiş veya iş kapanmış sayılmaz.
 - **B-002 · AÇIK — K-093 gezme zihinsel modelini kullanıcıyla doğrula.**
   Değer-sonuç imleci makine tarafında tamamdır; V1-P1-05 için 10 öğrenci +
   5 profesyonel eşiği [usability kitinde](usability-kiti.md) bekler.
@@ -53,8 +55,10 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 
 ## P1 — Compiler sağlamlığı
 
-- **B-013 · AÇIK — stale v0 parser yorumlarını temizle.** Hoisting/ön-tarama
-  gerçeğiyle çelişen “çağrıdan önce tanım” yorumları dahil.
+- **B-013 · KAPALI (K-096 hazırlığı) — stale v0 parser yorumlarını temizle.**
+  `Ayristirici::islem_adlari` artık dosya/birim başlıklarının ön-tarandığını,
+  tanım sırasından bağımsız çağrı ve karşılıklı özyinelemeyi doğru açıklar;
+  tarihsel karar günlüğü eski davranışı açıkça tarihsel diye korur.
 - **B-014 · AÇIK — production `unwrap/expect` audit'i.** Matematiksel invariant,
   malformed AST ve IO/external state sınıflarını ayır; son ikisini tanıya çevir.
 - **B-015 · AÇIK — lexer/parser fuzzing.** Her UTF-8 girişte panic-free sözünü

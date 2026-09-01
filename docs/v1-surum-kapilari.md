@@ -18,6 +18,7 @@ normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
 | V1-P0-04 Kalıcı durum atomik ve yarış güvenlidir | **KAPALI (K-084)** | Tek-dosya `yaz/ekle`, aynı klasörde temp+sync+atomik replace yapar; Unix/Windows işletim sistemi kilidi thread ve süreç yazarlarını sıralar. Okuyucu yalnız eski/yeni bütün sürümü görür. | RFC-0016 + spec/08; replace hata enjeksiyonu eski veriyi korur, iki thread ve iki bağımsız CLI süreci satır kaybetmez, Drop'suz ani süreç sonu kilidi bırakır. Çok-kaynaklı uygulama transaction'ı V1-P0-02/RFC-0015 sınırındadır. |
 | V1-P0-05 Deadline gerçekten iptal eder | **KAPALI (K-085)** | `IcindeBlogu` mutlak son tarihi sahipli Ç001 ile blok/işlem/döngü sınırlarına yayar. `bekle` kalan süreye kırpılır; HTTP aşamaları kalan tek bütçeyi alır. İç içe tarihlerde en erken sahip kazanır. | RFC-0011 + spec/09; geç ağ yanıtı çıktıya dönüşmez, uzun bekleme sonrası cümle çalışmaz, iç/dış `yetişmezse` sahipliği sanal saatle sabittir. Tek kesintisiz ifade/platform syscall sınırı normatif işbirlikli modeldir. |
 | V1-P0-06 Normatif otorite tek ve izlenebilirdir | **KAPALI (K-081)** | Spec/RFC drift'i doğrulandı. | ADR-010 belge rollerini ve atomik değişiklik sözleşmesini bağladı; RFC-0006/0011 güncel gerçek ve hedefi ayırdı. |
+| V1-P0-07 İşlem çağrısı tek genel ve kullanıcıyla doğrulanmış yüzeydir | **KARAR — K-096 deney hazır** | A (`için`/`ile`) çalışan geçici yüzeydir; nihai V1 seçimi değildir. Serbest üretim, kör A/B/C kartları, sıra dengelemesi, yedi teknik bağlam ve alt grup eşikleri önden bağlandı. | [K-016 karar paketi](k016-cagri-karar-paketi.md) uyarınca gerçek 10 çocuk + 5 profesyonel formu; eşik geçen tek grammar; parser/formatter/LSP ile golden+anti-example kanıtı; RFC-0006/spec-02 ve migration'ın aynı atomik değişiklikte güncellenmesi. |
 
 ## P1 — profesyonel kapasite kapıları
 
@@ -52,7 +53,8 @@ normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
    politikalarını saldırı matrisiyle kapattı. V1-P1-07 yalnız limitli taşıma,
    kalıcı durum, doğrulanmış cache/offline ve exact CLI/kilit entegrasyonu da
    saldırı korpusundan geçince kapanacaktır.
-7. Yeni dil özelliğinden önce bağlayıcı sıra
+7. K-096 çağrı deneyi gerçek insan verisini bekler; V1-P0-07 bu kanıt olmadan
+   kapanmaz. Yeni dil özelliğinden önce bağlayıcı sıra
    [öncelikli backlog](oncelikli-backlog.md) içindeki P0 compiler omurgasıdır.
 
 Her kapının kapanışı: karar + spec + olumlu/olumsuz test + sürüm notu. Yalnız

@@ -1058,13 +1058,13 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
 - **Programlar:** 12, 13, 14, 15, 30.
 - **Güncelleme (31 Ağu 2026, v0 gerçeklemesi):** Geçici biçim bootstrap parser'da
   gerçeklendi ve golden 12/13/14 çalışıyor. Uygulamada öğrenilenler:
-  - Çağrı tanıma "satır, tanımlı bir işlem adıyla bitiyor mu?" kuralıyla
-    deterministik oluyor; bu yüzden **işlem çağrıdan önce tanımlanmalı** (v0 kuralı).
+  - **Tarihsel/EMEKLİ:** Çağrı tanıma "satır, tanımlı bir işlem adıyla bitiyor
+    mu?" kuralıyla deterministik oluyor; ~~bu yüzden işlem çağrıdan önce
+    tanımlanmalı~~ (yalnız ilk bootstrap davranışı).
   - En uzun işlem adı önce eşlenir; tanımlı bir işlem adıyla biten ama ayraçsız
     bölge hata verir (S019) — sessiz yanlış yorum yok.
-  - v0 monomorfizmi: işlem gövdesi İLK çağrının argüman türleriyle denetlenir,
-    imza sabitlenir; sonraki çağrılar imzaya uymalı (T017). Özyineleme v0'da
-    yok (T016). RFC-0006 bu kısıtları da ele almalı.
+  - **Tarihsel/EMEKLİ:** ~~İmza yalnız ilk çağrıyla sabitlenir ve özyineleme
+    yoktur.~~ Bunlar ilk bootstrap kısıtlarıydı; güncel ayrım aşağıdadır.
 - **Tarihsel not (1 Eyl 2026, K-081/K-086):** Yukarıdaki üç madde ilk bootstrap
   anını kaydeder; güncel dil davranışı değildir. Başlık ön-tarama,
   özyineleme/T035/C019 ve K-067 sayısal imza terfisi gerçeklenmiştir. Güncel
@@ -1251,6 +1251,55 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   taahhütlü eşikleri taşır. Gerçek 10 öğrenci + 5 profesyonel formu gelene
   kadar V1-P1-05 AÇIK kalır.
 - **Durum:** geçici kabul; usability onayı bekleniyor.
+
+## K-094 — Tekrar üretilebilir ve imzalı paket yayını (1 Eyl)
+
+- **Karar:** `dil paketle`, aynı kaynak+manifest+`SOURCE_DATE_EPOCH` için
+  platform metadata'sından arındırılmış, sıralı ve byte-byte aynı `.zep`, SPDX
+  3.0.1 SBOM, SLSA provenance ve üçünü özetleriyle bağlayan imzalı yayın
+  zarfı üretir. İmza Ed25519 ve alan ayrımlı `zee-yayin-v1` mesajıdır.
+- **Anahtar sınırı:** `dil anahtar üret` var olan dosyayı ezmez; Unix'te 0600
+  izin ister. Yeni proje iskeleti `*.zee-anahtar` dosyasını Git dışında tutar.
+  Yayın öz-imzası registry güveni değildir; güven kökü K-095'in işidir.
+- **Fail-closed:** Paket yolu, sıra/fazladan byte, sembolik bağ, yerel yol
+  bağımlılığı, SBOM/provenance/içerik oynama ve yanlış imza reddedilir.
+- **Kanıt:** ADR-006 + RFC-0020 + spec/18 ve olumlu/olumsuz yayın korpusu;
+  P012 ile 370 test.
+
+## K-095 — Registry metadata güven zinciri (1 Eyl)
+
+- **Karar:** Ağ dışı sabitlenen root, rol başına Ed25519 eşik ve eski+yeni
+  eşiğin ikisini isteyen ardışık root rotasyonu güven temelidir. Çevrimiçi
+  doğrulama sırası timestamp→snapshot→targets'tır; her bağ sürüm, boyut ve
+  SHA-256 ile kapalı, kanonik JSON zarfına bağlıdır.
+- **Durum güveni:** Sürüm+aynı-sürüm-özeti rollback/equivocation engelidir.
+  Zincir bütünüyle doğrulanmadan veya daha yeni sonuç uygulandıktan sonra eski
+  işlem kalıcı durumu değiştiremez. Süre sonu, mix-and-match, fast-forward
+  zehirleme, bozuk yerel durum ve kaynak limitleri fail-closed'dur.
+- **Hedef politikası:** Paket sahibinin yayın anahtarı exact dört yayın
+  dosyasına bağlanır; yanked sürüm ve etkin kritik duyuru varsayılan reddir.
+- **Kanıt ve açık sınır:** RFC-0020 + spec/19; P013/P014 dahil 378 test.
+  Limitli taşıma, atomik kalıcı durum, doğrulanmış cache/offline ve exact
+  manifest/kilit/CLI entegrasyonu bitmeden V1-P1-07 açık kalır.
+
+## K-096 — K-016 çağrı kararı deneyden önce bağlandı (1 Eyl)
+
+- **Karar verilmedi:** A çalışan geçici yüzeydir; gerçek katılımcı sonucu
+  değildir. K-016, ham anonim form ve önden ilan edilmiş eşik olmadan
+  kapatılamaz.
+- **Deney:** Zee çağrısı gösterilmeden serbest üretim; ardından değer yüklü
+  etiketsiz A/B/C kartları. Sıralar `A→B→C`, `B→C→A`, `C→A→B` olarak beşer
+  kişiye dağıtılır. 10 çocuk + 5 profesyonel için toplam ve alt grup eşikleri
+  ayrı tutulur; isim/e-posta/ses/video depoya alınmaz.
+- **Tek yüzey:** V1 değere bağlama, cümle çağrısı, iç içe ifade, dönüş,
+  özyineleme, tanım sırası ve çok-tokenli argümanı tek genel grammar ile
+  karşılar. B güçlü çıkarsa doğrudan ek sözdizimi olmaz; B-003 expression
+  grammar turu açılır. C de grammar+migration kanıtı olmadan seçilemez.
+- **Makine hazırlığı:** Karar paketi, uygulama kiti, anonim katılımcı/özet
+  şablonları hazırdır. Parser'daki “tanım önce” tarihsel yorumu, gerçek
+  başlık ön-taraması ve karşılıklı özyineleme davranışına düzeltildi.
+- **Durum:** B-001 KISMEN; V1-P0-07 KARAR. İnsan kanıtı beklenirken dil
+  yüzeyi ve 378 test tabanı değişmedi.
 
 ---
 

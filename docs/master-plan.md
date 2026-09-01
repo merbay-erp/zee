@@ -551,6 +551,13 @@ grammar mimarisi ve core AST→capability/intrinsic ayrımıdır. HIR/SymbolId/f
 sınırı, fuzz/panic audit'i ve IO trace/replay bunları izler. P0 maddeleri
 kapanmadan yeni dil özelliği varsayılan olarak öne alınmaz; yarım güvenlik/
 correctness dilimi önce atomik olarak tamamlanır.
+
+K-016'nın makine hazırlığı K-096 ile
+[karar paketine](k016-cagri-karar-paketi.md) bağlandı: önce serbest üretim,
+sonra sıra dengeli kör A/B/C kartları; 10 çocuk + 5 profesyonel alt grup
+eşikleri ve yedi teknik bağlam. A çalışan hipotezdir, insan verisi değildir.
+V1 yalnız bir genel çağrı grammar'ı taşır; B'nin güçlü çıkması ikinci yüzey
+eklemek yerine B-003 expression grammar tasarımını tetikler.
 # 40. Proje felsefesinin korunması
 Bu projenin başarısı yalnız compiler’ın çalışması değildir. Başarı; Türkçe konuşan bir çocuğun yabancı syntax bariyerine takılmadan algoritmik düşünceyle tanışması, aynı dilin yıllar sonra onu terk etmeye zorlamaması ve ekosistemin tek bir şirketin kapalı ürünü haline gelmemesidir.
 Her yeni özellik şu dört sorudan geçmelidir: Türkçe doğal mı? Deterministik mi? Öğrenilebilir mi? Profesyonel ölçekte savunulabilir mi? Dördünden biri hayırsa özellik yeniden tasarlanır.
