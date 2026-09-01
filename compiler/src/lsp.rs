@@ -11,6 +11,11 @@ use std::collections::HashMap;
 
 // ---------- mini JSON ----------
 
+pub const AZAMI_LSP_BASLIK_BAYTI: usize = 8 * 1024;
+pub const AZAMI_LSP_GOVDE_BAYTI: usize = 8 * 1024 * 1024;
+pub const AZAMI_LSP_JSON_DERINLIGI: usize = 128;
+pub const AZAMI_LSP_JSON_DUGUMU: usize = 100_000;
+
 #[derive(Debug, Clone, PartialEq)]
 pub enum Json {
     Bos,
@@ -38,8 +43,14 @@ impl Json {
 
 /// JSON metnini çözer; bozuk girdi None döner (sunucu mesajı yok sayar).
 pub fn json_coz(metin: &str) -> Option<Json> {
+    if metin.len() > AZAMI_LSP_GOVDE_BAYTI {
+        return None;
+    }
     let mut karakterler = metin.chars().peekable();
-    let deger = deger_coz(&mut karakterler)?;
+    let mut butce = JsonButcesi {
+        kalan_dugum: AZAMI_LSP_JSON_DUGUMU,
+    };
+    let deger = deger_coz(&mut karakterler, &mut butce, 0)?;
     bosluk_atla(&mut karakterler);
     match karakterler.next() {
         None => Some(deger),
@@ -49,13 +60,28 @@ pub fn json_coz(metin: &str) -> Option<Json> {
 
 type Karakterler<'a> = std::iter::Peekable<std::str::Chars<'a>>;
 
+struct JsonButcesi {
+    kalan_dugum: usize,
+}
+
+impl JsonButcesi {
+    fn dugum_al(&mut self) -> Option<()> {
+        self.kalan_dugum = self.kalan_dugum.checked_sub(1)?;
+        Some(())
+    }
+}
+
 fn bosluk_atla(k: &mut Karakterler) {
     while matches!(k.peek(), Some(' ' | '\n' | '\r' | '\t')) {
         k.next();
     }
 }
 
-fn deger_coz(k: &mut Karakterler) -> Option<Json> {
+fn deger_coz(k: &mut Karakterler, butce: &mut JsonButcesi, derinlik: usize) -> Option<Json> {
+    if derinlik > AZAMI_LSP_JSON_DERINLIGI {
+        return None;
+    }
+    butce.dugum_al()?;
     bosluk_atla(k);
     match k.peek()? {
         '{' => {
@@ -73,7 +99,7 @@ fn deger_coz(k: &mut Karakterler) -> Option<Json> {
                 if k.next() != Some(':') {
                     return None;
                 }
-                let deger = deger_coz(k)?;
+                let deger = deger_coz(k, butce, derinlik + 1)?;
                 alanlar.push((ad, deger));
                 bosluk_atla(k);
                 match k.next() {
@@ -92,7 +118,7 @@ fn deger_coz(k: &mut Karakterler) -> Option<Json> {
                 return Some(Json::Dizi(ogeler));
             }
             loop {
-                ogeler.push(deger_coz(k)?);
+                ogeler.push(deger_coz(k, butce, derinlik + 1)?);
                 bosluk_atla(k);
                 match k.next() {
                     Some(',') => continue,
@@ -141,7 +167,7 @@ fn metin_coz(k: &mut Karakterler) -> Option<String> {
                         kod = kod * 16 + k.next()?.to_digit(16)?;
                     }
                     // Vekil çiftler (surrogate) BMP dışı için:
-                    if (0xD800..0xDC00).contains(&kod) {
+                    if (0xD800..=0xDBFF).contains(&kod) {
                         if k.next()? != '\\' || k.next()? != 'u' {
                             return None;
                         }
@@ -149,12 +175,18 @@ fn metin_coz(k: &mut Karakterler) -> Option<String> {
                         for _ in 0..4 {
                             alt = alt * 16 + k.next()?.to_digit(16)?;
                         }
+                        if !(0xDC00..=0xDFFF).contains(&alt) {
+                            return None;
+                        }
                         kod = 0x10000 + ((kod - 0xD800) << 10) + (alt - 0xDC00);
+                    } else if (0xDC00..=0xDFFF).contains(&kod) {
+                        return None;
                     }
                     metin.push(char::from_u32(kod)?);
                 }
                 _ => return None,
             },
+            b if b <= '\u{001F}' => return None,
             b => metin.push(b),
         }
     }

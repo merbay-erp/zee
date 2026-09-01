@@ -85,7 +85,7 @@ Araçlar: `dil çalıştır(--güvenli/--deneysel-web/--web-proxy)/parola-özeti
 + **dillsp** LSP sunucusu — tanılar, hover, tanıma git, **morfolojili
 yeniden adlandırma (F2)** ([editors/](editors/)).
 Determinizm testlerde tam: rastgelelik, saat, dosyalar, HTTP, sunucu istekleri,
-sensörler ve an ölçümü IO soyutlamasından gelir — 419 test hermetik koşar.
+sensörler ve an ölçümü IO soyutlamasından gelir — 426 test hermetik koşar.
 
 **Playground:** `playground/olustur.sh` derleyiciyi WebAssembly'e derler ve
 tek dosyalık `playground/zee-playground.html` üretir — çift tıkla aç, tarayıcıda
@@ -192,6 +192,8 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   bayt damlatmayla uzamayan 10 saniyelik mutlak istek okuma sınırı ekledi.
   K-106/ADR-018 process içi web deposunu 4096 toplam/1024 anonim oturumla
   sınırladı; anonim LRU tahliyesi ve kaymayan mutlak ömür sözleşmesini bağladı.
+  K-107/ADR-019 `dillsp` girdisini 8 KiB başlık, 8 MiB gövde, 128 JSON
+  derinliği ve 100 bin düğümle sınırlayıp Unicode parser olumsuzlarını kapattı.
   Uygulama sırası
   [öncelikli backlog](docs/oncelikli-backlog.md) ile sabittir.
   Bağlayıcı liste: [docs/v1-surum-kapilari.md](docs/v1-surum-kapilari.md).

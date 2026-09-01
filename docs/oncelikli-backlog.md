@@ -15,9 +15,8 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 3. Tamamlanan compiler omurgası: B-003/K-097, B-004/K-098, B-005/K-099,
    B-006/K-100, B-010/K-101, B-018/K-102 ve B-019/K-103–K-104 (413 test).
 4. Güvenlik incelemesi: K-105 ağ deadline/bellek, K-106 process içi oturum
-   kotası ve mutlak ömrü kapattı (419 test); sırada B-047/K-107 LSP girdi
-   sınırı vardır.
-5. Ardından makine omurgası B-020 ve B-014–B-017 ile sürer.
+   kotası ve K-107 LSP tek-girdi sınırını kapattı (426 test).
+5. Sıradaki makine omurgası B-020 ve ardından B-014–B-017'dir.
 6. Üçüncü sprint: B-027/B-028 → B-030/B-031 → B-043/B-044.
 7. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
 
@@ -142,10 +141,12 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   ve kaymayan mutlak 10/30 dakika ömür taşır. Yalnız kimlikli kayıtlarla dolu
   depo yeni girişi fail-closed reddeder. Per-IP/rate-limit ve atomik çok süreçli
   ortak depo hâlâ açık deployment dilimidir; mevcut profil tek process'tir.
-- **B-047 · SIRADA — LSP çerçeve ve JSON girdisini sertleştir.** Başlık ile
-  `Content-Length`, JSON iç içelik ve toplam düğüm sınırı taşımalı; geçersiz
-  surrogate çifti ile kaçışsız U+0000..U+001F reddedilmeli ve panic korpusu
-  bulunmalıdır.
+- **B-047 · KAPALI (K-107) — LSP çerçeve ve JSON girdisini sertleştir.** Tek
+  çerçeve 8 KiB başlık/8 MiB gövde; JSON 128 iç içelik/100 bin düğüm sınırı
+  taşır. `Content-Length` tahsis öncesi ve tekil doğrulanır. Yanlış/eksik
+  surrogate, tek düşük surrogate ve kaçışsız U+0000..U+001F reddedilir.
+  ADR-019 ve yedi olumsuz/sınır testi V1-P0-17'yi kapattı. Toplam açık belge
+  belleği ve çıktı bütçesi B-025'te kalır.
 - **B-048 · AÇIK — atomik replace metadata sözleşmesini tamamla.** İzin biti
   dışındaki owner/group, ACL, xattr ve platform güvenlik etiketlerinin korunma
   veya açıkça desteklenmeme davranışı platform testleriyle belgelenmelidir.
@@ -201,7 +202,7 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 ## Bir sonraki somut kapı
 
 İnsan kanıtı hattında B-001, doldurulmuş gerçek usability formları ve önceden
-ilan edilmiş eşikleri bekler. Makine hattında sıradaki iş B-047/K-107'dir:
-LSP çerçevesi ve JSON ayrıştırıcısı sınırsız girdi, derinlik ve geçersiz Unicode
-taşıyamamalıdır. K-103/K-104 HIR'ına zorunlu source span ekleyen B-020 bu
-güvenlik diliminden sonra gelir.
+ilan edilmiş eşikleri bekler. Makine hattında sıradaki iş B-020'dir:
+K-103/K-104 HIR'ındaki her semantic düğüm source span'i yapısal olarak taşır.
+Ardından B-014 fuzz/property korpusu ve B-015–B-017 güvenlik/uyumluluk
+denetimleri gelir.

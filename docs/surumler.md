@@ -239,6 +239,12 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   kimlikli doluluk yeni girişi fail-closed reddeder. 10/30 dakikalık ömür
   mutlak ve kaymazdır. Üç yeni kota/tahliye testiyle toplam 419 test yeşildir;
   V1-P0-16 kapandı, çok süreçli ortak depo B-046'da açık kaldı.
+- **Sınırlı LSP girdisi ve sıkı JSON** (K-107, ADR-019): `dillsp` gelen
+  çerçeveyi tahsis öncesi 8 KiB başlık/8 MiB gövdeyle ve tek `Content-Length`
+  ile sınırlar. Mini JSON 128 iç içelik/100 bin düğüm bütçesi taşır; yanlış
+  veya eksik surrogate çifti, tek düşük surrogate ve kaçışsız kontrol
+  karakteri reddedilir. Üç framing ve dört parser testiyle toplam 426 test
+  yeşildir; B-047/V1-P0-17 kapandı.
 
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`

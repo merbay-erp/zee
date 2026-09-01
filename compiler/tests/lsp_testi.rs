@@ -1,6 +1,8 @@
 //! dillsp çekirdeği testleri: JSON ayrıştırıcı + mesaj döngüsü.
 
-use dil::lsp::{json_coz, Json, Sunucu};
+use dil::lsp::{
+    json_coz, Json, Sunucu, AZAMI_LSP_JSON_DERINLIGI, AZAMI_LSP_JSON_DUGUMU,
+};
 
 #[test]
 fn json_ayristirici_temel() {
@@ -22,6 +24,43 @@ fn json_unicode_kacislari() {
     // Türkçe karakter + vekil çift (emoji).
     let json = json_coz(r#""ğ 😀""#).expect("çözülmeli");
     assert_eq!(json, Json::Metin("ğ 😀".into()));
+}
+
+#[test]
+fn json_gecersiz_vekil_ciftlerini_reddeder() {
+    assert!(json_coz(r#""\uD800\u0041""#).is_none());
+    assert!(json_coz(r#""\uD800""#).is_none());
+    assert!(json_coz(r#""\uDC00""#).is_none());
+    assert_eq!(
+        json_coz(r#""\uD83D\uDE00""#),
+        Some(Json::Metin("😀".into()))
+    );
+}
+
+#[test]
+fn json_metin_icinde_kacissiz_kontrol_karakterini_reddeder() {
+    let metin = format!("\"ön{}arka\"", '\u{0001}');
+    assert!(json_coz(&metin).is_none());
+}
+
+#[test]
+fn json_derinlik_butcesini_asmadan_durur() {
+    let adet = AZAMI_LSP_JSON_DERINLIGI + 1;
+    let metin = format!("{}null{}", "[".repeat(adet), "]".repeat(adet));
+    assert!(json_coz(&metin).is_none());
+}
+
+#[test]
+fn json_dugum_butcesini_asmadan_durur() {
+    let mut metin = String::from("[");
+    for sira in 0..AZAMI_LSP_JSON_DUGUMU {
+        if sira > 0 {
+            metin.push(',');
+        }
+        metin.push_str("null");
+    }
+    metin.push(']');
+    assert!(json_coz(&metin).is_none());
 }
 
 #[test]
