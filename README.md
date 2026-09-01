@@ -52,8 +52,9 @@ CSV/JSON okuma, tarih/saat, komut satırı argümanları, **test blokları**
 **Süre** (yarım saniye), **birimler** (`X birimini kullan`), **Sonuç dönüşü**
 (`hatasını döndür`), `ve/veya/değilse` mantığı, **HTTP istemcisi** ve
 **deneysel web sunucusu** (localhost TCP; testlerde sahte), **deneysel
-eşzamanlılık yüzeyi** (v0 runtime sıralı; RFC-0011: bekle-öncesi erişim
-derleme hatası), **geç-kalma bildirimi** (`... içinde/yetişmezse`), **ESP32
+eşzamanlılık yüzeyi** (runtime sıralı; RFC-0011: bekle-öncesi erişim
+derleme hatası), **işbirlikli son tarih iptali** (`... içinde/yetişmezse`),
+**ESP32
 simülatörü**, **özyineleme** (T035 "temel durum önce", C019 derinlik sınırı),
 **blok kapsamı** (K-034), **akış-duyarlı daraltma** (T036: korumasız
 değer/hata erişimi derleme hatası), metin kaçışları ve negatif sabitler,
@@ -66,12 +67,12 @@ geri sayan aralık, para biçimi `kuruşlusu`, evrensel `metni`, çerez
 iki katmanlı ek zinciri), **açık işlem parametre türleri**
 (`sayıyı Ondalık olarak al`), **proje bildirimi** (`proje.dil`, klasörden
 çalıştır/denetle/dene), **yerel paketler** (`X paketini kullan`), süreçler
-arası kilitli **atomik dosya yazma** ve 122 Türkçe kodlu tanı.
+arası kilitli **atomik dosya yazma** ve 123 Türkçe kodlu tanı.
 Araçlar: `dil çalıştır(--güvenli/--deneysel-web)/denetle(--json)/dene/biçimle/ekle/çıkar/kilitle/paketler/hata/belge/yeni`
 + **dillsp** LSP sunucusu — tanılar, hover, tanıma git, **morfolojili
 yeniden adlandırma (F2)** ([editors/](editors/)).
 Determinizm testlerde tam: rastgelelik, saat, dosyalar, HTTP, sunucu istekleri,
-sensörler ve an ölçümü IO soyutlamasından gelir — 276 test hermetik koşar.
+sensörler ve an ölçümü IO soyutlamasından gelir — 279 test hermetik koşar.
 
 **Playground:** `playground/olustur.sh` derleyiciyi WebAssembly'e derler ve
 tek dosyalık `playground/zee-playground.html` üretir — çift tıkla aç, tarayıcıda
@@ -113,7 +114,7 @@ korpus üzerinde regression testine girer.
 | Syntax karar günlüğü | [kararlar/gunluk.md](kararlar/gunluk.md) | ✅ işleniyor |
 | RFC süreci | [rfcs/](rfcs/) | ✅ 16 RFC: 2 kabul, 11 geçici kabul, 3 taslak |
 | ADR süreci | [adr/](adr/) | ✅ 7 kabul (001-003, 007-010); 004/005/006 faz verisi bekliyor |
-| Hata kataloğu | [docs/hata-katalogu.md](docs/hata-katalogu.md) | ✅ 122 kod, kaynakla tutarlılığı testli |
+| Hata kataloğu | [docs/hata-katalogu.md](docs/hata-katalogu.md) | ✅ 123 kod, kaynakla tutarlılığı testli |
 | Spesifikasyon | [spec/](spec/) | ✅ başladı — normatif çekirdek (RFC'lere bağlar) |
 
 ### Golden korpus hakkında

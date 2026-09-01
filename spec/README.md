@@ -30,11 +30,12 @@ Kırıcı değişiklik sessizce yapılamaz: davranış değişikliği RFC'den ge
 | [06 — Hata modeli](06-hata-modeli.md) | tanı sözleşmesi, Seçenek/Sonuç, test | RFC-0008, RFC-0010 |
 | [07 — Birimler](07-birimler.md) | birim çözümü ve kapsülleme | RFC-0009 §2 |
 | [08 — Kalıcı dosya IO](08-kalici-dosya.md) | atomik yazma, süreçler arası yarış ve dayanıklılık | RFC-0016 |
+| [09 — Son tarih ve iptal](09-son-tarih-ve-iptal.md) | `içinde/yetişmezse`, işbirlikli iptal ve iç içe deadline | RFC-0011 |
 
 ## Faza bağlı — henüz spec dışı
 
-Eşzamanlılık/iptalin tam anlamı (RFC-0011 yüzeyi geçici kabul; gerçek
-paralellik Faz 5), FFI/ABI (RFC-0012, Faz 4/5), standart kütüphane kararlılık
+Gerçek paralel görev zamanlayıcısı (RFC-0011, Faz 5), FFI/ABI (RFC-0012,
+Faz 4/5), standart kütüphane kararlılık
 politikası, production web/action/oturum/transaction (RFC-0015), uzak
 paket/registry (RFC-0009 §4.2), deprecation/edition modeli.
 Bu başlıklar karara bağlandıkça buraya bölüm olarak eklenir.

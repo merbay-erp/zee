@@ -82,17 +82,66 @@ fn golden_27_zaman_asimi() {
     calistir_io(&program, &mut io).expect("çalışmalı");
     assert_eq!(io.cikti, vec!["rapor içeriği"]);
 
-    // Geç kalan durum: 0 → 9000ms (> 5 saniye) → yetişmezse kolu da koşulur.
+    // Ağ dönüşünde son tarih aşılmıştır: yanıt değişkene/çıktıya dönüşmeden
+    // iptal edilir; yalnız yetişmezse kolu koşulur.
     let mut io = ToplayanIo::yeni(Vec::new());
-    io.an_degerleri = vec![0, 9000].into();
+    io.an_degerleri = vec![0, 0, 0, 9000].into();
     io.http_yanitlari.insert(
         "https://ornek.dev/rapor".into(),
         (200, "rapor içeriği".into()),
     );
     calistir_io(&program, &mut io).expect("çalışmalı");
+    assert_eq!(io.cikti, vec!["Zaman aşımı, sonra tekrar dene"]);
+}
+
+#[test]
+fn zaman_asimi_beklemeyi_keser_ve_sonraki_yan_etkiyi_engeller() {
+    let kaynak = "\
+5 saniye içinde
+    10 saniye bekle
+    \"bu çıktı yasak\" yaz
+yetişmezse
+    \"iptal edildi\" yaz
+
+\"program devam etti\" yaz
+";
+    let program = dil::kaynagi_derle(kaynak).expect("deadline kaynağı");
+    let mut io = ToplayanIo::yeni(Vec::new());
+    calistir_io(&program, &mut io).expect("iptal yönetilmeli");
+    assert_eq!(io.cikti, vec!["iptal edildi", "program devam etti"]);
+}
+
+#[test]
+fn ic_ve_dis_son_tarihlerin_sahibi_karistirilmaz() {
+    let ic_once = "\
+10 saniye içinde
+    2 saniye içinde
+        5 saniye bekle
+        \"iç gövde yasak\" yaz
+    yetişmezse
+        \"iç iptal\" yaz
+    \"dış devam\" yaz
+yetişmezse
+    \"dış iptal yasak\" yaz
+";
     assert_eq!(
-        io.cikti,
-        vec!["rapor içeriği", "Zaman aşımı, sonra tekrar dene"]
+        dil::kaynagi_calistir(ic_once).expect("iç deadline"),
+        vec!["iç iptal", "dış devam"]
+    );
+
+    let dis_once = "\
+2 saniye içinde
+    10 saniye içinde
+        5 saniye bekle
+        \"iç gövde yasak\" yaz
+    yetişmezse
+        \"iç iptal yasak\" yaz
+yetişmezse
+    \"dış iptal\" yaz
+";
+    assert_eq!(
+        dil::kaynagi_calistir(dis_once).expect("dış deadline"),
+        vec!["dış iptal"]
     );
 }
 

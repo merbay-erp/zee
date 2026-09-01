@@ -1,5 +1,6 @@
 # 27 — Zaman aşımı ve iptal
-# Sınanan: timeout birinci sınıf — "5 saniye içinde ... yetişmezse" (K-023).
+# Sınanan: sahipli işbirlikli iptal — "5 saniye içinde ... yetişmezse"
+# (K-023/K-085); süre dolunca kalan gövde çalışmaz.
 # Süre sabitleri: "5 saniye", "yarım saniye" (29'da).
 
 5 saniye içinde

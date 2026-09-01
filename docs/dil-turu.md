@@ -427,9 +427,11 @@ yetişmezse
 
 Görev adlarına `hepsini bekle`den önce erişim derleme hatasıdır (T033).
 Stage 0 runtime görevleri bugün kaynak sırasında tamamlar; `hepsini bekle`
-statik erişim kapısıdır. `... içinde` gövdeyi erken iptal etmez, bitişte süreyi
-ölçüp `yetişmezse` koluyla geç kalmayı bildirir. Gerçek cooperative scheduler
-ve deadline iptali v1 kapısıdır (RFC-0011, V1-P0-05/V1-P1-03).
+statik erişim kapısıdır. K-085 ile `... içinde` gerçek bir işbirlikli son
+tarihtir: süre dolunca kalan gövde çalışmaz, uzun `bekle` kalan süreye
+kırpılır ve yalnız doğru `yetişmezse` kolu çalışır. İç içe son tarihlerde en
+erken olan kazanır. Gerçek paralel scheduler V1-P1-03 kapısıdır
+(RFC-0011, spec/09).
 
 Web uygulaması kalıpları (K-051): rota gövdesinde form ve sorgu verisi
 örtük `istek` sözlüğündedir; kaydettikten sonra yönlendirilir; kullanıcı

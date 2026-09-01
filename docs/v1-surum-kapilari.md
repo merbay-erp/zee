@@ -3,7 +3,7 @@
 Bu liste bir dilek listesi değildir: `1.0.0` etiketi bu kapılar kapatılmadan
 atılmaz. Amaç yeni özellik sayısını büyütmek değil, çocuktan profesyonele aynı
 dilin verdiği sözleri kanıtlamaktır. Bulgular 1 Eylül 2026'da derleyici
-kaynakları, spec, RFC'ler ve 276 test üzerinden yeniden doğrulanmıştır.
+kaynakları, spec, RFC'ler ve 279 test üzerinden yeniden doğrulanmıştır.
 
 Durumlar: **KAPALI** = kanıtı var · **AÇIK** = v1 engeli · **KARAR** = önce
 normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
@@ -16,7 +16,7 @@ normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
 | V1-P0-02 Web route ile uygulama eylemi ayrıdır | **AÇIK (K-082 korkuluğu var)** | `IstekGeldiginde` rota yolunu eşler; yöntem `istek` sözlüğünde sıradan metindir. Yetki, CSRF, idempotency, gövde sınırı ve transaction sözleşmesi yoktur. Gerçek TCP yalnız `--deneysel-web` opt-in'iyle açılır; örneklerde GET mutasyonu kaldırılmıştır. | RFC-0015'in kabulü; yöntemli route; form/API/CLI/job tarafından çağrılabilen eylem; GET'in durum değiştirmediği dil düzeyi olumsuz testler. |
 | V1-P0-03 Oturum ve çerez üretim güvenliği | **AÇIK** | Gerçek IO çereze yalnız `HttpOnly` ekler; Secure/SameSite/ömür politikası yoktur. `girisli-panel` rastgele sayı + düz parola kullanan eğitim demosudur. | CSPRNG token, hash'li kimlik bilgisi, süre/rotation/revoke, güvenli çerez politikası, CSRF ve HTTPS/proxy sınırı; saldırı regresyonları. |
 | V1-P0-04 Kalıcı durum atomik ve yarış güvenlidir | **KAPALI (K-084)** | Tek-dosya `yaz/ekle`, aynı klasörde temp+sync+atomik replace yapar; Unix/Windows işletim sistemi kilidi thread ve süreç yazarlarını sıralar. Okuyucu yalnız eski/yeni bütün sürümü görür. | RFC-0016 + spec/08; replace hata enjeksiyonu eski veriyi korur, iki thread ve iki bağımsız CLI süreci satır kaybetmez, Drop'suz ani süreç sonu kilidi bırakır. Çok-kaynaklı uygulama transaction'ı V1-P0-02/RFC-0015 sınırındadır. |
-| V1-P0-05 Deadline gerçekten iptal eder | **AÇIK** | `IcindeBlogu` gövdeyi tamamen çalıştırır, sonra `an_ms` farkına bakar; `yetişmezse` bugün geç-kalma koludur. RFC-0011 hedefi iptal sözüdür. | İşbirlikli scheduler, deadline yayılımı, bekleme noktalarında iptal, yan etkinin deadline sonrası sürmediği sanal-saat testleri. |
+| V1-P0-05 Deadline gerçekten iptal eder | **KAPALI (K-085)** | `IcindeBlogu` mutlak son tarihi sahipli Ç001 ile blok/işlem/döngü sınırlarına yayar. `bekle` kalan süreye kırpılır; HTTP aşamaları kalan tek bütçeyi alır. İç içe tarihlerde en erken sahip kazanır. | RFC-0011 + spec/09; geç ağ yanıtı çıktıya dönüşmez, uzun bekleme sonrası cümle çalışmaz, iç/dış `yetişmezse` sahipliği sanal saatle sabittir. Tek kesintisiz ifade/platform syscall sınırı normatif işbirlikli modeldir. |
 | V1-P0-06 Normatif otorite tek ve izlenebilirdir | **KAPALI (K-081)** | Spec/RFC drift'i doğrulandı. | ADR-010 belge rollerini ve atomik değişiklik sözleşmesini bağladı; RFC-0006/0011 güncel gerçek ve hedefi ayırdı. |
 
 ## P1 — profesyonel kapasite kapıları
@@ -33,13 +33,14 @@ normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
 
 ## Uygulama sırası
 
-1. Güvenli olmayan çalışan yüzeylere dürüst opt-in sınırı koy: web ve
-   eşzamanlılık/timeout production özelliği gibi görünmesin.
+1. Güvenli olmayan çalışan web/eşzamanlılık yüzeylerinin opt-in sınırını koru
+   (K-082); son tarih iptali artık K-085 ile ayrı ve tanımlıdır.
 2. Public işlem tür sözleşmesini çöz; çünkü kitaplık, paket ve eylem API'lerinin
    hepsi bunun üstüne oturur.
-3. Uygulama eylemi + atomik durum modelini birlikte tasarla; transaction
-   yalnız web'e özel olmasın.
-4. Gerçek scheduler/deadline ve yapılandırılmış hata değerini tamamla.
+3. K-084 tek-dosya atomikliğinin üstüne uygulama eylemi + çok-kaynaklı
+   transaction modelini kur; yalnız web'e özel olmasın.
+4. K-085 deadline çekirdeğinin üstüne gerçek scheduler ve yapılandırılmış hata
+   değerini tamamla.
 5. Morfoloji, ondalık ve gezme kararlarını usability + property kanıtıyla
    dondur.
 

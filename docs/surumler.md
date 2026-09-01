@@ -34,6 +34,13 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   güncellemesini korur; ani süreç sonu kilidi bırakır. Biçimleyici, paket
   bildirimi ve `proje.kilit` tek-dosya yazmaları da aynı çekirdeğe taşındı.
   Hata enjeksiyonu, eşzamanlı okuyucu ve iki bağımsız CLI yazarıyla 276 test.
+- **Gerçek son tarih iptali** (K-085, RFC-0011/spec-09): `içinde` artık
+  gövdeyi bitirip geç kaldığını sonradan söylemez. Mutlak deadline
+  blok/işlem/döngü sınırlarında denetlenir; `bekle` kalan süreye kırpılır,
+  HTTP bağlantı/yazma/okuma tek bütçeyi kullanır. İç içe bloklarda yalnız
+  deadline sahibi `yetişmezse` kolu çalışır; iptal sonrası yan etki yoktur.
+  Ç001 iç nöbetçisiyle 123 katalog kodu ve toplam 279 test; playground'da
+  ardışık sanal beklemeler de aynı son tarih anlamını taşır.
 
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`

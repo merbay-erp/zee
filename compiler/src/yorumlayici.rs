@@ -247,8 +247,13 @@ pub trait GirdiCikti {
     fn simdi(&mut self) -> (i64, u32, u32, u32, u32);
     /// Komut satırı argümanları (programa aktarılanlar).
     fn argumanlar(&mut self) -> Vec<String>;
-    /// HTTP GET: (durum kodu, gövde). GercekIo v0 yalnız http:// destekler.
-    fn http_getir(&mut self, url: &str) -> Result<(i64, String), String>;
+    /// HTTP GET: (durum kodu, gövde). Son tarih içindeyse kalan süre verilir.
+    /// GercekIo v0 yalnız http:// destekler.
+    fn http_getir(
+        &mut self,
+        url: &str,
+        zaman_asimi_ms: Option<i64>,
+    ) -> Result<(i64, String), String>;
     /// Sunucu dinlemesini kurar (golden 25).
     fn sunucu_kur(&mut self, kapi: i64) -> Result<(), String>;
     /// Sıradaki isteğin yolunu verir; None = sunucu kapanıyor.
@@ -322,7 +327,11 @@ impl<T: GirdiCikti> GirdiCikti for GuvenliIo<T> {
     fn argumanlar(&mut self) -> Vec<String> {
         self.ic.argumanlar()
     }
-    fn http_getir(&mut self, _url: &str) -> Result<(i64, String), String> {
+    fn http_getir(
+        &mut self,
+        _url: &str,
+        _zaman_asimi_ms: Option<i64>,
+    ) -> Result<(i64, String), String> {
         Err("güvenli modda ağ erişimi kapalı".into())
     }
     fn sunucu_kur(&mut self, _kapi: i64) -> Result<(), String> {
@@ -369,6 +378,7 @@ pub struct ToplayanIo {
     /// Sahte sensörler (varsayılan kapalı) ve an ölçümü kuyruğu.
     pub sensorler: HashMap<String, bool>,
     pub an_degerleri: VecDeque<i64>,
+    an_son_degeri: i64,
     pub cikti: Vec<String>,
 }
 
@@ -386,6 +396,7 @@ impl ToplayanIo {
             sunucu_yanitlari: Vec::new(),
             sensorler: HashMap::new(),
             an_degerleri: VecDeque::new(),
+            an_son_degeri: 0,
             cikti: Vec::new(),
         }
     }
@@ -423,7 +434,11 @@ impl GirdiCikti for ToplayanIo {
     fn argumanlar(&mut self) -> Vec<String> {
         self.argumanlar.clone()
     }
-    fn http_getir(&mut self, url: &str) -> Result<(i64, String), String> {
+    fn http_getir(
+        &mut self,
+        url: &str,
+        _zaman_asimi_ms: Option<i64>,
+    ) -> Result<(i64, String), String> {
         self.http_yanitlari
             .get(url)
             .cloned()
@@ -464,9 +479,14 @@ impl GirdiCikti for ToplayanIo {
             if yansin { "yandı" } else { "söndü" }
         ));
     }
-    fn bekle_ms(&mut self, _milisaniye: i64) {}
+    fn bekle_ms(&mut self, milisaniye: i64) {
+        self.an_son_degeri = self.an_son_degeri.saturating_add(milisaniye.max(0));
+    }
     fn an_ms(&mut self) -> i64 {
-        self.an_degerleri.pop_front().unwrap_or(0)
+        if let Some(an) = self.an_degerleri.pop_front() {
+            self.an_son_degeri = self.an_son_degeri.max(an);
+        }
+        self.an_son_degeri
     }
 }
 
@@ -747,6 +767,84 @@ pub enum Akis {
     Don(Deger),
 }
 
+#[derive(Clone, Copy)]
+struct SonTarih {
+    kimlik: u64,
+    an_ms: i64,
+}
+
+thread_local! {
+    static SON_TARIHLER: std::cell::RefCell<Vec<SonTarih>> =
+        const { std::cell::RefCell::new(Vec::new()) };
+}
+
+static SON_TARIH_KIMLIGI: std::sync::atomic::AtomicU64 =
+    std::sync::atomic::AtomicU64::new(1);
+
+struct SonTarihNobetcisi {
+    kimlik: u64,
+}
+
+impl SonTarihNobetcisi {
+    fn yeni(an_ms: i64) -> Self {
+        let kimlik = SON_TARIH_KIMLIGI.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+        SON_TARIHLER.with(|son_tarihler| {
+            son_tarihler.borrow_mut().push(SonTarih { kimlik, an_ms });
+        });
+        Self { kimlik }
+    }
+}
+
+impl Drop for SonTarihNobetcisi {
+    fn drop(&mut self) {
+        SON_TARIHLER.with(|son_tarihler| {
+            let mut son_tarihler = son_tarihler.borrow_mut();
+            if let Some(yer) = son_tarihler.iter().rposition(|son| son.kimlik == self.kimlik) {
+                son_tarihler.remove(yer);
+            }
+        });
+    }
+}
+
+fn etkin_son_tarih() -> Option<SonTarih> {
+    SON_TARIHLER.with(|son_tarihler| {
+        son_tarihler
+            .borrow()
+            .iter()
+            .min_by_key(|son| son.an_ms)
+            .copied()
+    })
+}
+
+fn son_tarih_tanisi(son: SonTarih, satir: usize) -> Tani {
+    // Ç001 yalnız runtime içi iptal nöbetçisidir; onu kendi `içinde` bloğu
+    // yakalar. Kullanıcıya kataloglu bir hata olarak sızmamalıdır.
+    Tani::yeni("Ç001", son.kimlik.to_string(), satir, 1, 1)
+}
+
+fn son_tarih_kalani(
+    io: &mut dyn GirdiCikti,
+    satir: usize,
+) -> Result<Option<(SonTarih, i64)>, Tani> {
+    let Some(son) = etkin_son_tarih() else {
+        return Ok(None);
+    };
+    let kalan = son.an_ms.saturating_sub(io.an_ms());
+    if kalan <= 0 {
+        Err(son_tarih_tanisi(son, satir))
+    } else {
+        Ok(Some((son, kalan)))
+    }
+}
+
+fn son_tarihi_denetle(io: &mut dyn GirdiCikti, satir: usize) -> Result<(), Tani> {
+    son_tarih_kalani(io, satir).map(|_| ())
+}
+
+fn bu_son_tarihin_iptali(tani: &Tani, kimlik: u64) -> bool {
+    tani.kod == "Ç001" && tani.mesaj.parse::<u64>() == Ok(kimlik)
+}
+
 /// Blok kapsamı (RFC-0004): gövdede doğan adlar gövde bitince düşer;
 /// dıştaki ada atama kalıcıdır. Çözümleyicideki kuralın birebir aynısı.
 fn kapsam_baslat(ortam: &HashMap<String, Deger>) -> std::collections::HashSet<String> {
@@ -764,6 +862,7 @@ fn blok_calistir(
     cikti: &mut dyn GirdiCikti,
     derinlik: usize,
 ) -> Result<Akis, Tani> {
+    son_tarihi_denetle(cikti, 1)?;
     for cumle in cumleler {
         match cumle {
             Cumle::Yaz { deger, satir } => {
@@ -1002,6 +1101,7 @@ fn blok_calistir(
                 for (ad, deger, gorev_satiri) in gorevler {
                     let sonuc = degerlendir(deger, ortam, program, cikti, derinlik, *gorev_satiri)?;
                     ortam.insert(ad.clone(), sonuc);
+                    son_tarihi_denetle(cikti, *gorev_satiri)?;
                 }
             }
             Cumle::HepsiniBekle { .. } => {}
@@ -1011,22 +1111,28 @@ fn blok_calistir(
                     _ => return Err(ic_hata(*satir)),
                 };
                 let baslangic = cikti.an_ms();
+                let son_tarih = baslangic.saturating_add(sure_ms);
+                let nobetci = SonTarihNobetcisi::yeni(son_tarih);
+                let kimlik = nobetci.kimlik;
                 let kapsam = kapsam_baslat(ortam);
-                if let Akis::Don(d) = blok_calistir(govde, ortam, program, cikti, derinlik)? {
-                    return Ok(Akis::Don(d));
-                }
+                let sonuc = blok_calistir(govde, ortam, program, cikti, derinlik);
                 kapsam_bitir(ortam, &kapsam);
-                let gecen = cikti.an_ms().saturating_sub(baslangic);
-                // v0 yaklaşımı (RFC-0011 §3): erken iptal yok; süre aşıldıysa
-                // "yetişmezse" kolu geç-kalma bildirimi olarak koşulur.
-                if gecen > sure_ms {
-                    if let Some(blok) = yetismezse {
-                        let kapsam = kapsam_baslat(ortam);
-                        if let Akis::Don(d) = blok_calistir(blok, ortam, program, cikti, derinlik)? {
-                            return Ok(Akis::Don(d));
+                drop(nobetci);
+                match sonuc {
+                    Ok(Akis::Don(d)) => return Ok(Akis::Don(d)),
+                    Ok(Akis::Devam) => {}
+                    Err(tani) if bu_son_tarihin_iptali(&tani, kimlik) => {
+                        if let Some(blok) = yetismezse {
+                            let kapsam = kapsam_baslat(ortam);
+                            if let Akis::Don(d) =
+                                blok_calistir(blok, ortam, program, cikti, derinlik)?
+                            {
+                                return Ok(Akis::Don(d));
+                            }
+                            kapsam_bitir(ortam, &kapsam);
                         }
-                        kapsam_bitir(ortam, &kapsam);
                     }
+                    Err(tani) => return Err(tani),
                 }
             }
             Cumle::IsikAyarla { isik, yansin, .. } => {
@@ -1037,6 +1143,12 @@ fn blok_calistir(
                     Deger::Sure { milisaniye } => milisaniye,
                     _ => return Err(ic_hata(*satir)),
                 };
+                if let Some((son, kalan)) = son_tarih_kalani(cikti, *satir)? {
+                    if sure_ms >= kalan {
+                        cikti.bekle_ms(kalan);
+                        return Err(son_tarih_tanisi(son, *satir));
+                    }
+                }
                 cikti.bekle_ms(sure_ms);
             }
             Cumle::ProgramiBitir { kod, satir } => {
@@ -1117,6 +1229,8 @@ fn blok_calistir(
             }
             Cumle::Dondur { deger, sonuca_sarmala, satir } => {
                 let sonuc = degerlendir(deger, ortam, program, cikti, derinlik, *satir)?;
+                // Erken dönüş, cümle sonundaki ortak denetimi atlamamalıdır.
+                son_tarihi_denetle(cikti, *satir)?;
                 let sonuc = if *sonuca_sarmala {
                     Deger::Sonuc { basarili: true, icerik: Box::new(sonuc) }
                 } else {
@@ -1126,6 +1240,7 @@ fn blok_calistir(
             }
             Cumle::HataDondur { mesaj, satir } => {
                 let mesaj = degerlendir(mesaj, ortam, program, cikti, derinlik, *satir)?;
+                son_tarihi_denetle(cikti, *satir)?;
                 return Ok(Akis::Don(Deger::Sonuc {
                     basarili: false,
                     icerik: Box::new(mesaj),
@@ -1179,6 +1294,7 @@ fn blok_calistir(
                 }
             }
         }
+        son_tarihi_denetle(cikti, 1)?;
     }
     Ok(Akis::Devam)
 }
@@ -1585,10 +1701,29 @@ fn degerlendir(
                 Deger::Metin(m) => m,
                 _ => return Err(ic_hata(satir)),
             };
-            let (durum, govde) = io.http_getir(&url).map_err(|hata| {
-                Tani::yeni("C018", format!("Ağ isteği başarısız: {}.", hata), satir, 1, 1)
-                    .onerili("Ağ hatası yönetilecekse ileride \"getirmeyi dene\" gelecek (RFC-0008 §4.3).".into())
-            })?;
+            let zaman_asimi_ms = son_tarih_kalani(io, satir)?.map(|(_, kalan)| kalan);
+            let (durum, govde) = match io.http_getir(&url, zaman_asimi_ms) {
+                Ok(yanit) => {
+                    son_tarihi_denetle(io, satir)?;
+                    yanit
+                }
+                Err(hata) => {
+                    son_tarihi_denetle(io, satir)?;
+                    return Err(
+                        Tani::yeni(
+                            "C018",
+                            format!("Ağ isteği başarısız: {}.", hata),
+                            satir,
+                            1,
+                            1,
+                        )
+                        .onerili(
+                            "Ağ hatası yönetilecekse ileride \"getirmeyi dene\" gelecek (RFC-0008 §4.3)."
+                                .into(),
+                        ),
+                    );
+                }
+            };
             Ok(Deger::AgYaniti { durum, govde })
         }
         Ifade::DurumKodu(nesne) => match degerlendir(nesne, ortam, program, io, derinlik, satir)? {
