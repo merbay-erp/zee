@@ -80,3 +80,18 @@ fn depodaki_kaynak_gomuluyle_ayni() {
         assert_eq!(diskteki, dil::gomulu_birim(ad).unwrap(), "{} ayrık", ad);
     }
 }
+
+#[test]
+fn birim_ozeti_islemleri_listeler() {
+    let ozet = dil::birim_ozeti(dil::gomulu_birim("matematik").unwrap());
+    assert!(ozet.contains("işlem obebini hesapla  (birinciyi al, ikinciyi al)"), "{}", ozet);
+    assert!(ozet.contains("işlem üssünü hesapla  (tabanı al, üssü al)"), "{}", ozet);
+    assert!(ozet.contains("testler: 5"), "{}", ozet);
+}
+
+#[test]
+fn matematik_ussu_dogal_adla_cagrilir() {
+    // K-049 ikizleşme geri çevrimi: parametre "üssü al" → üs.
+    let cikti = gomulu_kostur("matematik birimini kullan\n\nx 3 ve 4 ile üssünü hesapla olsun\nx yaz\n");
+    assert_eq!(cikti, vec!["81"]);
+}

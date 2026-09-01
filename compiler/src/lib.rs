@@ -48,6 +48,39 @@ pub fn gomulu_birim_adlari() -> &'static [&'static str] {
     &["matematik", "liste_araclari"]
 }
 
+/// Bir birimin insan-okur özeti: işlem başlıkları (parametreleriyle) ve
+/// test sayısı. `dil belge <birim>` bunun üstüne kuruludur (RFC-0014 §8.2).
+pub fn birim_ozeti(kaynak: &str) -> String {
+    let mut cikti = String::new();
+    let mut test_sayisi = 0usize;
+    let satirlar: Vec<&str> = kaynak.lines().collect();
+    for (i, satir) in satirlar.iter().enumerate() {
+        if let Some(ad) = satir.strip_prefix("işlem ") {
+            let mut parametreler = Vec::new();
+            for devam in satirlar.iter().skip(i + 1) {
+                let kirpik = devam.trim();
+                if kirpik.is_empty() {
+                    continue;
+                }
+                if devam.starts_with("    ") && kirpik.ends_with(" al") {
+                    parametreler.push(kirpik.to_string());
+                    continue;
+                }
+                break;
+            }
+            cikti.push_str(&format!("  işlem {}", ad));
+            if !parametreler.is_empty() {
+                cikti.push_str(&format!("  ({})", parametreler.join(", ")));
+            }
+            cikti.push('\n');
+        } else if satir.starts_with("test ") {
+            test_sayisi += 1;
+        }
+    }
+    cikti.push_str(&format!("  testler: {}\n", test_sayisi));
+    cikti
+}
+
 pub fn kaynagi_derle_birimlerle(
     kaynak: &str,
     yukleyici: &mut BirimYukleyici,

@@ -10,10 +10,10 @@ işlem mutlak değerini hesapla
 
 işlem üssünü hesapla
     tabanı al
-    kuvveti al
+    üssü al
 
     sonuç 1 olsun
-    kuvvet kez tekrarla
+    üs kez tekrarla
         sonuç sonuç ile tabanın çarpımı olsun
     sonucu döndür
 

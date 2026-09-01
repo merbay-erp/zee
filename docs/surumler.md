@@ -3,6 +3,14 @@
 Her sürüm: ne eklendi, ne değişti, neyin sözü verildi. Kırıcı değişiklik
 sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 
+## Yolda (v0.4.0'a birikenler)
+
+- **Ünsüz ikizleşmesi morfolojisi** (K-049): `üssü`, `affı`, `zammı`,
+  `reddi` (sertleşmeyle) çözülür; matematik biriminin doğal `üssü al`
+  parametresi geri geldi.
+- **`dil belge <birim>`**: işlem başlıkları + test sayısı (RFC-0014 §8.2).
+- Playground'a "Kitaplık (obeb)" örneği eklendi.
+
 ## v0.3.0 — 1 Eylül 2026
 
 **Tema: dil günlük Türkçeye yaklaştı; standart kitaplığın tohumu atıldı.**

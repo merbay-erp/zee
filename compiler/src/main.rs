@@ -35,6 +35,7 @@ fn govde() -> ExitCode {
         Some("biçimle") | Some("bicimle") => bicimle_komutu(&argumanlar),
         Some("dene") => dosya_ile(&argumanlar, dene_komutu),
         Some("hata") => hata_komutu(&argumanlar),
+        Some("belge") => belge_komutu(&argumanlar),
         Some("yeni") => yeni_komutu(&argumanlar),
         Some("sürüm") | Some("surum") => {
             println!("dil {} — Türkçe programlama dili (bootstrap, Stage 0)", env!("CARGO_PKG_VERSION"));
@@ -57,6 +58,7 @@ fn kullanim() {
     eprintln!("  dil dene <dosya.dil>       test bloklarını koşar");
     eprintln!("  dil biçimle <dosya.dil>    dosyayı resmi biçime getirir");
     eprintln!("  dil hata <kod>             bir hata kodunu açıklar (örn. dil hata T001)");
+    eprintln!("  dil belge <birim>          bir birimin işlemlerini listeler (örn. dil belge matematik)");
     eprintln!("  dil sürüm                  sürümü gösterir");
 }
 
@@ -88,6 +90,36 @@ fn hata_komutu(argumanlar: &[String]) -> ExitCode {
     }
     eprintln!("\"{}\" katalogda bulunamadı. Tam katalog: docs/hata-katalogu.md", kod);
     ExitCode::FAILURE
+}
+
+/// Birim belgesi (RFC-0014 §8.2): işlem başlıkları + test sayısı.
+/// Önce gömülü kitaplığa, yoksa çalışma klasöründeki dosyaya bakar.
+fn belge_komutu(argumanlar: &[String]) -> ExitCode {
+    let Some(ad) = argumanlar.get(1) else {
+        eprintln!(
+            "Bir birim adı belirtmelisin. Gömülü birimler: {}",
+            dil::gomulu_birim_adlari().join(", ")
+        );
+        return ExitCode::from(2);
+    };
+    let (kaynak, koken) = match dil::gomulu_birim(ad) {
+        Some(kaynak) => (kaynak.to_string(), "gömülü kitaplık"),
+        None => match std::fs::read_to_string(format!("{}.dil", ad)) {
+            Ok(kaynak) => (kaynak, "bu klasör"),
+            Err(_) => {
+                eprintln!(
+                    "\"{}\" birimi bulunamadı. Gömülü birimler: {}",
+                    ad,
+                    dil::gomulu_birim_adlari().join(", ")
+                );
+                return ExitCode::FAILURE;
+            }
+        },
+    };
+    println!("birim: {} ({})", ad, koken);
+    print!("{}", dil::birim_ozeti(&kaynak));
+    println!("Kaynağı oku: kitaplik/{}.dil — zee'yle yazılmıştır.", ad);
+    ExitCode::SUCCESS
 }
 
 fn yeni_komutu(argumanlar: &[String]) -> ExitCode {

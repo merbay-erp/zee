@@ -411,6 +411,19 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   morfolojide ikizleşme geri çevrimi yok — K-011 ek listesi adayı. Geçici
   çözüm: parametre adı "kuvvet".
 
+## K-049 — Ünsüz ikizleşmesi geri çevrimi + `dil belge`
+
+- **Karar (morfoloji):** K-048'in bulgusu kapandı: ek ayıklamadan sonra kök
+  ikiz ünsüzle bitiyorsa teklisi de adaydır (üssü→üss→üs, affı→af,
+  zammı→zam); sertleşmeyle birleşir (reddi→red→ret, tıbbı→tıp). Aynı kural
+  parametre bildiriminin yapısal ayıklamasında da geçerli — matematik
+  biriminin doğal API'si geri geldi: `üssü al`.
+- **Karar (araç):** `dil belge <birim>` — işlem başlıkları (parametreleriyle)
+  ve test sayısı; önce gömülü kitaplık, sonra yerel dosya. RFC-0014 §8.2
+  açık sorusu bu asgari biçimle kapandı; zengin belge üretimi ileride.
+- **Test:** koleksiyon_testi::ikizlesme_geri_cevrimi,
+  kitaplik_testi::birim_ozeti_islemleri_listeler / matematik_ussu_dogal_adla.
+
 ## K-012 — Liste sabiti: `3, 7, 1, 9 listesi`
 
 - **Karar:** Virgülle ayrılmış değerler + `listesi`. Boş: `boş liste`.

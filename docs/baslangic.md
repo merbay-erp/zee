@@ -86,6 +86,7 @@ internet gerekmez, katalog `dil`in içindedir.
 | `dil biçimle <dosya>` | kodu resmi biçime getirir (girinti, boşluklar) |
 | `dil denetle <dosya>` | çalıştırmadan hata arar (`--json`: makine çıktısı) |
 | `dil hata <kod>` | bir hata kodunu açıklar |
+| `dil belge <birim>` | birimin işlemlerini listeler (örn. `dil belge matematik`) |
 | `dil sürüm` | sürümü gösterir |
 
 ## 6. Daha fazlası

@@ -427,6 +427,7 @@ Ayrıntı için: dil hata T036
 | `dil biçimle <dosya>` | resmi biçime getirir |
 | `dil denetle <dosya>` | çalıştırmadan bütün hataları listeler (`--json`) |
 | `dil hata <kod>` | hata kodunu açıklar |
+| `dil belge <birim>` | birimin işlemlerini listeler |
 
 Editör desteği: `dillsp` LSP sunucusu ([editors/](../editors/)) +
 VS Code renklendirme. Kurulumsuz deneme: [playground](../playground/).
