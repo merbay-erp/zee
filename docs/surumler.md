@@ -3,6 +3,13 @@
 Her sürüm: ne eklendi, ne değişti, neyin sözü verildi. Kırıcı değişiklik
 sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 
+## v0.7.0 — 1 Eylül 2026
+
+**Tema: editör zekâsı — dil, düzenleyicide de Türkçe düşünüyor.**
+
+(Üstteki K-069..K-072 kalemleri bu sürümündür: çıkış kodu, kitaplık
+olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
+
 ## v0.6.0 — 1 Eylül 2026
 
 **Tema: tip sistemi olgunlaştı, dil ayrıntıda medenileşti.**
