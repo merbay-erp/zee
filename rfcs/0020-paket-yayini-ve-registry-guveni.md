@@ -3,8 +3,8 @@
 - **Durum:** geçici kabul — yayın çekirdeği ve registry metadata doğrulayıcısı
   gerçeklendi; taşıma/cache/CLI tamamlanmadan uzak paket kullanımı yürürlükte değildir
 - **Tarih:** 1 Eylül 2026
-- **İlgili günlük kaydı:** K-094, K-095
-- **Mimari karar:** ADR-006
+- **İlgili günlük kaydı:** K-094, K-095, K-117
+- **Mimari karar:** ADR-006, ADR-028
 - **Normatif çalışan yüzey:** [spec/18](../spec/18-paket-yayini.md),
   [spec/19](../spec/19-registry-metadata-guveni.md)
 
@@ -81,10 +81,13 @@ tekrar:
   byte  UTF-8 kaynak içeriği
 ```
 
-Girdiler yolun Unicode byte sırasına göre kesin artandır; yinelenemez. Yalnız
-gerçek `.dil` dosyaları girer. Zaman, sahip, grup, dosya izni, sıkıştırıcı
-sürümü ve platform ayıracı pakete yazılmaz. Böylece aynı kaynak ağacı aynı
-byte dizisidir.
+Üretici dosya sistemi yolunun her bileşenini Unicode 17.0 UAX #15 NFC'ye
+çevirir, `/` ile birleştirir ve yolları UTF-8 byte sırasına göre kesin artan
+biçimde yazar. NFC sonrası yinelenen yol varsa seçim yapmadan reddeder.
+Tüketici arşiv yolunu dönüştürmez; yol zaten NFC değilse paketi reddeder.
+Yalnız gerçek `.dil` dosyaları girer. Zaman, sahip, grup, dosya izni,
+sıkıştırıcı sürümü ve platform ayıracı pakete yazılmaz. Böylece aynı kaynak
+ağacı aynı byte dizisidir.
 
 ### 3.1 Güvenlik limitleri
 
@@ -94,6 +97,8 @@ byte dizisidir.
 - yol: 1.024 UTF-8 byte;
 - mutlak yol, `.`/`..`, boş bileşen, ters bölü, NUL, denetim karakteri,
   sembolik bağ: YASAK;
+- Unicode 17.0 UTS #39'da `/`, `\\`, `.`, `:` iskeletine giden işaretler,
+  tam genişlikli `/`/`.` ve görünmez bidi/biçim denetleyicileri: YASAK;
 - son girdiden sonra byte: YASAK;
 - yerel yol bağımlılığı: YASAK;
 - post-install/build betiği: biçimde yoktur ve YASAKTIR.
@@ -232,6 +237,10 @@ yayın saymaz.
 - imzalı nesne, `.zep`, SBOM ve provenance tek-byte oynamasının reddi;
 - sembolik bağ ve yerel yol bağımlılığının reddi;
 - path traversal, fazladan byte, sıra/tekillik ve limit olumsuzları;
+- Linux/macOS/Windows'ta aynı Türkçe Unicode kaynak ağacının sabit `.zep`
+  fixture byte'ı;
+- NFD→NFC üretimi, NFC çakışma reddi ve 80 vakalık kalıcı Unicode/yol saldırı
+  korpusunun eksiksiz fail-closed reddi;
 - üretici çıktısının aynı doğrulayıcıdan geçmesi.
 
 K-095 metadata aşaması root eşik/çift eşikli rotasyon, rollback,

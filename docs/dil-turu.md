@@ -625,6 +625,13 @@ kalıyorsa P010 verir ve hiçbir dosyayı değiştirmez. Başarılı kaldırmada
 ile kilit birlikte güncellenir; başka bir paketin bağımlılığı olan paket
 grafikte geçişli olarak kalabilir (K-080).
 
+Yayınlanabilir bir proje `dil anahtar üret` ve `dil paketle` ile deterministik
+`.zep`, SPDX SBOM, SLSA provenance ve Ed25519 imzalı bildirim üretir. Dosya
+sistemi yolları NFC'ye kanoniklenir; normalizasyon çakışması, Unicode ayraç
+benzerleri ve görünmez bidi yolları reddedilir. Üç Tier-1 platformdaki byte
+fixture'ı ve saldırı korpusu [`.zep` conformance rehberinde](zep-conformance.md)
+açıklanır (K-117/ADR-028/spec-18).
+
 **Gömülü standart kitaplık** (RFC-0014, deneysel): `matematik` (mutlak, üs,
 tam karekök, obeb, okek), `liste_araclari` (toplam, uçlar, ortalama) ve
 `metin_araclari` (tersi, ünlü sayımı, baş harf) ve `sozluk_araclari`

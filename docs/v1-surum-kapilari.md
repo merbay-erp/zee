@@ -2,8 +2,8 @@
 
 Bu liste bir dilek listesi değildir: `1.0.0` etiketi bu kapılar kapatılmadan
 atılmaz. Amaç yeni özellik sayısını büyütmek değil, çocuktan profesyonele aynı
-dilin verdiği sözleri kanıtlamaktır. Bulgular 1 Eylül 2026'da derleyici
-kaynakları, spec, RFC'ler ve 460 test üzerinden yeniden doğrulanmıştır.
+dilin verdiği sözleri kanıtlamaktır. Bulgular 2 Eylül 2026'da derleyici
+kaynakları, spec, RFC'ler ve 463 test üzerinden yeniden doğrulanmıştır.
 
 Durumlar: **KAPALI** = kanıtı var · **AÇIK** = v1 engeli · **KARAR** = önce
 normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
@@ -50,6 +50,7 @@ normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
 | V1-P1-05 Gezmede yazma kullanıcı zihniyle doğrulanmıştır | **AÇIK — makine tarafı K-093 ile tamam** | RFC-0019/spec-17 derin değer kopyasını ve liste için değer-sonuç imlecini tanımlar: alan yazma ile yeniden bağlama aynı sıraya geri yansır; paylaşılan alias yoktur. Kaynak ekleme/silme/yeniden bağlama/aynı-kaynak iç içe gezme T053'tür. Alan/rebind, alias ve 1–24 uzunluk conformance kanıtı yeşildir. | `docs/usability-kiti.md` G1/G2/G3 kartlarıyla gerçek 10 öğrenci + 5 profesyonel sonucu. Önceden taahhütlü eşik sağlanmadan kapatılmaz. |
 | V1-P1-06 Yerel modül/paket paylaşımı | **KAPALI (K-076–K-080)** | Kökenli birim/paket yükleme, doğrudan sınır, SHA-256 kilit, güvenli ekle/çıkar ve grafik görünümü çalışıyor. | P001–P010/A011 ve proje entegrasyon testleri; deterministik kilit. |
 | V1-P1-07 Dağıtım/registry güven zinciri | **AÇIK — K-094 yayın + K-095 metadata güveni tamam** | ADR-006/RFC-0020/spec-18/19 ile deterministik yayın ve ağ dışı sabit root→timestamp→snapshot→targets doğrulaması çalışır. Root eşiği/çift eşikli rotasyon, rollback/expiry, aynı sürüm-farklı içerik, mix-and-match, fast-forward durum zehirleme, limit, yanlış yayıncı, yanked ve kritik duyuru saldırıları testlidir. Uzak taşıma, kalıcı durum/cache, offline hit/miss, manifest/kilit ve CLI henüz yoktur. | Limitli HTTPS/statik taşıma; atomik kalıcı sürüm+özet durumu; yalnız doğrulanmış içerik-adresli cache; bozuk cache, offline hit/miss ve kötü ayna testleri; exact bağımlılık CLI/kilit entegrasyonu. |
+| V1-P1-08 Kaynak paket kimliği platformdan ve Unicode gösteriminden bağımsızdır | **KAPALI (K-117)** | Dosya sistemi yolu NFC'ye kanoniklenir, normalizasyon çakışması reddedilir; gelen `.zep` yalnız zaten NFC ve Unicode 17.0 güvenlik kümesine uygun yolu kabul eder. Metadata yoktur ve UTF-8 byte sırası tektir. | RFC-0020 + ADR-028 + spec/18 + [conformance rehberi](zep-conformance.md); Türkçe Unicode adlı sabit `.zep` fixture'ı Linux/macOS/Windows CI'da aynı testtir. 80 kalıcı yol saldırısı ile sıra/tekillik/limit/fazladan byte yapısal olumsuzları fail-closed; toplam 463 test yeşildir. |
 
 ## Uygulama sırası
 
@@ -93,6 +94,8 @@ normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
    kanonik ve dış etkisiz replay protokolüne bağlayıp V1-P0-25'i kapattı.
    K-116/RFC-0023 tohum, sanal saat ve hermetik adaptör davranışını
    `zee-io-1` profiline sabitleyip V1-P0-26'yı kapattı.
+   K-117/ADR-028 NFC yol kanonikliğini, Tier-1 `.zep` fixture'ını ve Unicode
+   saldırı korpusunu bağlayıp V1-P1-08'i kapattı.
 9. Yeni dil özelliğinden önce bağlayıcı sıra
    [öncelikli backlog](oncelikli-backlog.md) içindeki P0 compiler omurgasıdır.
 

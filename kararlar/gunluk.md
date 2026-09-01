@@ -1709,6 +1709,28 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   i64, rastgele kuyruk, sanal saat ve bütünleşik fake-IO/playground için beş
   conformance testi. Toplam 460 test yeşildir; B-028/V1-P0-26 kapandı.
 
+## K-117 — `.zep` yolunu platformdan ve Unicode gösteriminden bağımsız kıl (2 Eyl)
+
+- **Sorun:** `.zep` metadata'sız ve sıralıydı; fakat aynı görünen Türkçe dosya
+  adı bir dosya sisteminden NFC, diğerinden NFD dönerse paket byte'ı
+  değişebilirdi. Klasik traversal testleri de Unicode ayraç benzerleri ve
+  görünmez yön denetleyicilerini kalıcı bir veri korpusunda kapsamıyordu.
+- **Kanonik üretim:** Dosya sistemi yolunun her bileşeni Unicode 17.0 UAX #15
+  NFC'ye çevrilir, sonra `/` ile birleştirilip UTF-8 byte sırasında yazılır.
+  NFC sonrası çakışan iki dosya seçim yapılmadan reddedilir. Tüketici gelen
+  arşiv yolunu dönüştürmez; zaten NFC değilse fail-closed durur.
+- **Güvenlik:** Unicode 17.0 UTS #39'da `/`, `\\`, `.`, `:` iskeletine giden
+  işaretler, tam genişlikli ayraç/nokta ve görünmez bidi/biçim denetleyicileri
+  `.zep` v1 yolunda yasaktır. 80 vaka kod noktası olarak kalıcı TSV'ye
+  bağlandı; UAX #15 için `unicode-normalization 0.1.25` lockfile'da sabitlendi.
+- **Çapraz platform kanıtı:** `kaynak/çağrı.dil` içeren gerçek proje ağacının
+  tam `.zep` hex fixture'ı tek integration testinde Ubuntu/macOS/Windows CI
+  matrisinde çalışır. Fixture, NFD→NFC ve saldırı korpusu için üç yeni
+  regresyonla toplam 463 test yeşildir.
+- **Sözleşme:** RFC-0020, ADR-006/028, spec/18,
+  [`.zep` conformance rehberi](../docs/zep-conformance.md), sürüm notu ve
+  V1-P1-08 aynı değişiklikte güncellendi. B-030/B-031 kapandı.
+
 ---
 
 ## Sonraki adım
@@ -1717,5 +1739,5 @@ Korpus 10 öğrenci + 5 profesyonel usability oturumuna (Hafta 12 hedefi, erkeni
 Hafta 2'de kağıt üstünde) sesli okutulacak; her kayıt için "doğal mı /
 deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
-Makine hattında B-028/K-116 kapandı. Sırada B-030 platformlar arası kanonik
-paket conformance'ı ve B-031 adversarial arşiv korpusu vardır.
+Makine hattında B-030/B-031/K-117 kapandı. Sırada B-043 spec↔code kanıt
+haritası ve B-044 hareketli test/RFC/ADR sayılarının tek kaynağı vardır.

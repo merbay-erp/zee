@@ -1,7 +1,7 @@
 # ADR-001 — Bootstrap implementasyon dili: Rust
 
 - **Durum:** kabul
-- **Tarih:** 31 Ağustos 2026; bağımlılık ilkesi revizyonu 1 Eylül 2026
+- **Tarih:** 31 Ağustos 2026; bağımlılık ilkesi revizyonları 1–2 Eylül 2026
 
 ## Bağlam
 
@@ -22,8 +22,11 @@ ister.
 rastgeleliği için güvenlik crate'leri; K-092'de keyfî hassasiyetli Ondalık
 için `num-bigint`/`num-traits`; K-094'te Ed25519 yayın imzası ve kapalı metadata
 şeması için yalnız native hedefte `ed25519-dalek`/`serde`/`serde_json` eklendi.
-Bunlar dil sözdizimini veya gözlenebilir platform davranışını dış kütüphaneye
-devretmez. Kriptografik imza ve JSON kod çözücü ikinci kez elde yazılmaz.
+K-117'de UAX #15 NFC algoritmasını elde yeniden yazmamak için saf Rust
+`unicode-normalization` eklendi; crate Unicode 17.0 veri sürümünde ve
+native+WASM kapılarında kilitlidir. Bunlar dil sözdizimini veya gözlenebilir
+platform davranışını dış kütüphaneye devretmez. Kriptografik imza, JSON kod
+çözücü ve Unicode normalizasyon tablosu ikinci kez elde yazılmaz.
 
 ## Gerekçe
 
