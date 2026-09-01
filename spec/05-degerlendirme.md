@@ -31,12 +31,15 @@ Playground'da tohum görünürdür; testlerde IO dünyası tamamen sahtedir.
   yuvarlanır. Bu tek yuvarlama noktası ve örnekleri spec/16'da tanımlıdır.
 - Yuvarlama: yarımlar sıfırdan uzağa (`2,5 → 3`, `-2,5 → -3`).
 
-## Gezme ve yazma (TANIMLI — K-074)
+## Değer semantiği, gezme ve yazma (TANIMLI — K-093)
 
-`her X için` gezmesi öğenin KOPYASINI bağlar; ancak kaynak bir ad
-olduğundan (dilbilgisi gereği hep öyledir) her turun sonunda döngü
-değişkeninin son değeri listedeki öğeye GERİ YAZILIR — gövdedeki alan
-değişikliği kalıcıdır. Sözlük gezmesi anahtarları verir; yansıma yoktur.
+Bütün kullanıcı değerleri iç içe bileşenleriyle bağımsız değer kopyalarıdır;
+gizli paylaşılan nesne kimliği yoktur. Liste gezmesi değer-sonuç imlecidir:
+öğe kopyalanır, gövde çalışır, döngü adının son değeri aynı sıraya geri yazılır.
+Alan yazma ve yeniden bağlama bu nedenle kalıcıdır. Gezilen koleksiyonun
+kendisini büyütme/silme/yeniden bağlama ya da aynı kaynağı iç içe gezme
+T053'tür. Sözlük gezmesi snapshot anahtarları verir ve geri yazmaz. Tam
+normatif algoritma ve alias sınırı spec/17'dedir.
 
 ## Çağrı derinliği (TANIMLI — K-040)
 

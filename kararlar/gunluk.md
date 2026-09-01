@@ -1223,6 +1223,35 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   ile V1-P1-01 kapandı.
 - **Durum:** geçici kabul; usability onayı RFC'nin tam kabul kapısıdır.
 
+## K-093 — Değer semantiği ve gezme imleci (1 Eyl)
+
+- **Karar:** zee'nin bütün kullanıcı değerleri derin değer semantiğindedir;
+  atama, argüman, dönüş ve koleksiyona ekleme paylaşılan değiştirilebilir
+  nesne kimliği oluşturmaz. Açık referans/kimlik türü v1 sözü değildir.
+- **Gezme modeli:** Liste `her X için` gezmesi değer-sonuç imlecidir. Her tur
+  giriş snapshot'ındaki öğeyi kopyalar; gövde sonunda `X`in son değerini canlı
+  listenin aynı sırasına geri yazar. Alan yazma ve aynı türde yeniden bağlama
+  aynı kalıcı sonucu verir. `döndür` akışı yayılmadan önce o turun geri yazması
+  tamamlanır.
+- **Kaynak sabitliği:** Gezilen liste/sözlüğü yeniden bağlamak, eklemek,
+  silmek, sözlüğüne yazmak veya aynı kaynağı iç içe gezmek T053'tür. Denetim
+  morfolojik hedef yüzeyinde A002'den önce çalışır; `sayılara` doğrudan doğru
+  tanıyı alır. Değişiklikler ayrı listede toplanıp gezme sonrasında uygulanır.
+- **Sözlük:** Giriş anındaki anahtarları ekleme sırasıyla snapshot alır;
+  döngü adı Metin kopyasıdır ve geri yazılmaz. Kaynak sabitliği listeyle aynıdır.
+- **Gerekçe:** Yalnız alan yazmayı yansıtmak `sayı 0 olsun` değişikliğini
+  sessizce kaybettirir; gerçek paylaşılan referans ise sahiplik/alias/yarış
+  yükünü başlangıç modeline taşır. Değer-sonuç + T053, “öğe geri gider, kap
+  gezerken sabit kalır” diye tek cümlede öğretilebilir ve deterministiktir.
+- **Kanıt:** Alan yazma, yeniden bağlama, derin kopya/bağımsız alias, başka
+  kopyayı gezme içinde güvenle büyütme, beş T053 olumsuzu ve 1–24 uzunluk
+  property korpusu conformance testidir. RFC-0019 ve normatif spec/17 yürürlükte.
+- **Dürüst kapı:** Makine sözleşmesi tamamlandı; insan zihinsel modeli
+  uydurulmadı. `docs/usability-kiti.md` G1/G2/G3 kartları ve önceden
+  taahhütlü eşikleri taşır. Gerçek 10 öğrenci + 5 profesyonel formu gelene
+  kadar V1-P1-05 AÇIK kalır.
+- **Durum:** geçici kabul; usability onayı bekleniyor.
+
 ---
 
 ## Sonraki adım

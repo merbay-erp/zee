@@ -38,6 +38,7 @@ Kırıcı değişiklik sessizce yapılamaz: davranış değişikliği RFC'den ge
 | [14 — Yapılandırılmış eşzamanlılık](14-yapilandirilmis-eszamanlilik.md) | görev grubu, deterministik scheduler, sahiplik, hata/iptal yayılımı | RFC-0011, K-090 |
 | [15 — Yapılandırılmış Hata değeri](15-yapilandirilmis-hata-degeri.md) | kod, mesaj, neden zinciri, veri, eşleme ve geriye uyum | RFC-0008, K-091 |
 | [16 — Keyfî hassasiyetli Ondalık](16-keyfi-hassasiyetli-ondalik.md) | keyfî katsayı/ölçek, exact işlemler ve 34 haneli sonsuz bölüm bağlamı | RFC-0013, K-092 |
+| [17 — Değer semantiği ve gezme](17-deger-semantigi-ve-gezme.md) | derin değer kopyası, liste değer-sonuç imleci ve T053 kaynak sabitliği | RFC-0019, K-093 |
 
 ## Faza bağlı — henüz spec dışı
 

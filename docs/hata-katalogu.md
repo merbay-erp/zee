@@ -129,6 +129,7 @@ türetilmiştir; yeni kod eklenince bu dosya güncellenir — CI'a bağlanması 
 | T050 | Rota güvenlik önsözü yanlış yerde veya yinelenmiş | Tek erişim politikasını ilk satıra, zorunlu alanları hemen arkasına koy |
 | T051 | Eşzamanlı görev grubunun sözcüksel sahipliği kapanmadı ya da boş birleştirme yapıldı | Her `eşzamanlı olarak` grubunu aynı kapsamda tek `hepsini bekle` ile kapat; açık görevlerle dönme/bitirme |
 | T052 | Hata nedeni/verisi yanlış türde ya da yeniden yayma zenginleştiriliyor | Neden `Hata`, veri `Metin sözlüğü` olmalı; zenginleştirmek için yeni kodlu hata ile sar |
+| T053 | Gezilen kaynak koleksiyonun kendisi değiştiriliyor ya da aynı kaynak iç içe geziliyor | Öğeyi döngü adıyla güncelle; ekleme/silmeyi ayrı listede toplayıp gezme bitince uygula |
 
 ## C — Çalışma zamanı
 

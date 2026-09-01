@@ -43,7 +43,8 @@ içerik özetiyle deterministik `proje.kilit` dosyasına sabitler (K-078).
 **v0.1 kabul listesindeki 4 program da çalışıyor.** Desteklenen yüzey: `olsun`,
 `yaz` (ekrana ve `dosyasına`), `ile`, `ise/değilse` zinciri, dört döngü,
 `artır/azalt`, `diye sor`/`yanıt`, rastgele sayı, genitif aritmetik, listeler
-(örtük çoğulla `her ... için`), sözlükler (sıra korumalı), metin işlemleri
+(örtük çoğulla `her ... için`; K-093 değer-sonuç imleci ve T053 güvenli kaynak
+sabitliği), sözlükler (sıra korumalı), metin işlemleri
 (Türkçe İ/ı kurallarıyla `büyük/küçük harflisi`), `Seçenek` (`var/yok`),
 `Sonuç` (`dosyasını okumayı dene`, `başarılıysa`) ve **yapılandırılmış Hata**
 (K-091: kod, mesaj, neden zinciri, veri ve geriye uyumlu gösterim), dosya satırları/yazma,
@@ -77,13 +78,13 @@ parametre türleri**
 (`sayıyı Ondalık olarak al`) ve public **dönüş sözleşmesi**
 (`Ondalık döndürür` / `değer döndürmez`), **proje bildirimi** (`proje.dil`, klasörden
 çalıştır/denetle/dene), **yerel paketler** (`X paketini kullan`), süreçler
-arası kilitli **atomik dosya yazma** ve 141 etkin Türkçe kodlu tanı
+arası kilitli **atomik dosya yazma** ve 142 etkin Türkçe kodlu tanı
 (1 tarihsel kod ayrılmıştır).
 Araçlar: `dil çalıştır(--güvenli/--deneysel-web/--web-proxy)/parola-özeti/denetle(--json)/dene/biçimle/ekle/çıkar/kilitle/paketler/hata/belge/morfoloji/yeni`
 + **dillsp** LSP sunucusu — tanılar, hover, tanıma git, **morfolojili
 yeniden adlandırma (F2)** ([editors/](editors/)).
 Determinizm testlerde tam: rastgelelik, saat, dosyalar, HTTP, sunucu istekleri,
-sensörler ve an ölçümü IO soyutlamasından gelir — 356 test hermetik koşar.
+sensörler ve an ölçümü IO soyutlamasından gelir — 360 test hermetik koşar.
 
 **Playground:** `playground/olustur.sh` derleyiciyi WebAssembly'e derler ve
 tek dosyalık `playground/zee-playground.html` üretir — çift tıkla aç, tarayıcıda
@@ -125,7 +126,7 @@ korpus üzerinde regression testine girer.
 | Syntax karar günlüğü | [kararlar/gunluk.md](kararlar/gunluk.md) | ✅ işleniyor |
 | RFC süreci | [rfcs/](rfcs/) | ✅ 18 RFC: 2 kabul, 14 geçici kabul, 2 taslak |
 | ADR süreci | [adr/](adr/) | ✅ 7 kabul (001-003, 007-010); 004/005/006 faz verisi bekliyor |
-| Hata kataloğu | [docs/hata-katalogu.md](docs/hata-katalogu.md) | ✅ 141 etkin kod + 1 ayrılmış kod, kaynakla tutarlılığı testli |
+| Hata kataloğu | [docs/hata-katalogu.md](docs/hata-katalogu.md) | ✅ 142 etkin kod + 1 ayrılmış kod, kaynakla tutarlılığı testli |
 | Spesifikasyon | [spec/](spec/) | ✅ başladı — normatif çekirdek (RFC'lere bağlar) |
 
 ### Golden korpus hakkında
@@ -144,18 +145,19 @@ korpus üzerinde regression testine girer.
 v0.3 sürüm notlarına bak). Şimdiki kapılar:
 
 - **Usability oturumları (kurucu):** K-016 çağrı sözdiziminin onayı ve
-  14 "geçici kabul" RFC'nin tam kabulü — kit hazır: docs/usability-kiti.md.
+  15 "geçici kabul" RFC'nin tam kabulü — kit hazır: docs/usability-kiti.md.
 - **Lisans (bölüm 26, kurucu):** seçilmeden depo herkese açılmaz; site ve
   topluluk (bölüm 30) bunun arkasında.
-- **Makine tarafı sıradaki:** K-081–K-091 ile v1'in altı P0 kapısı ve üç P1
-  kapısı kapandı:
+- **Makine tarafı:** K-081–K-093 ile v1'in altı P0 kapısı ve beş P1
+  kapısı kapandı; gezme kapısının makine yarısı da tamamlandı:
   normatif otorite, public işlem sözleşmesi, atomik kalıcılık, gerçek son
   tarih iptali, uygulama eylemi ve production oturum/CSRF/proxy profili.
   `zee-tr-1` morfolojisi profil/snapshot/property korpusuyla sabitlendi;
   deterministik scheduler, görev sahipliği ve hata/iptal yayılımı gerçeklendi.
   Sonuç'un hata tarafı kod/mesaj/neden/veri taşıyan, eski çıktıyı koruyan
-  Hata değeridir. Sıradaki kararlar ondalık/gezmedir. Uzak registry,
-  imza/provenance ve SBOM
+  Hata değeridir. Ondalık keyfî hassasiyetlidir; gezme derin değer kopyası,
+  değer-sonuç imleci ve T053 kaynak sabitliğiyle tanımlıdır. Gezme usability
+  kapısı gerçek insan formlarını bekler. Uzak registry, imza/provenance ve SBOM
   ayrı güvenlik RFC'leriyle ilerler.
   Bağlayıcı liste: [docs/v1-surum-kapilari.md](docs/v1-surum-kapilari.md).
 

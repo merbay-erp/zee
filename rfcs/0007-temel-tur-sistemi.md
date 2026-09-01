@@ -50,7 +50,14 @@ aşamalı geçer. Tehlikeli örtük dönüşüm yoktur.
   (determinizm).
 - Karşılaştırma: büyüklük yalnız sayılar; eşitlik aynı tür (T001).
 
-## 4. Açık sorular
+## 4. Değer kimliği ve kopyalama
+
+Bütün türler değer semantiğindedir: atama, argüman geçişi, dönüş ve koleksiyona
+ekleme derin değer kopyası üretir. v1'de kullanıcıya görünür referans kimliği
+ve paylaşılan değiştirilebilir alias yoktur. Liste gezmesinin sınırlı
+değer-sonuç imleci ile T053 kaynak sabitliği RFC-0019/spec-17'dedir.
+
+## 5. Açık sorular
 
 1. **GerçekSayı/Ondalık:** ÇÖZÜLDÜ — RFC-0013/K-092 bitişik virgül kuralı +
    keyfî hassasiyetli onluk aritmetikle gerçeklendi

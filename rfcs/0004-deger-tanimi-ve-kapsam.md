@@ -3,14 +3,15 @@
 - **Durum:** **geçici kabul** (31 Ağu 2026 — kapsam kuralı K-034 ile karara
   bağlandı ve gerçeklendi; onay kapısı: usability oturumları.)
 - **Tarih:** 31 Ağustos 2026
-- **İlgili günlük kayıtları:** K-003 (olsun), K-011 (ek yazımı), K-020 (alan atama önceliği)
+- **İlgili günlük kayıtları:** K-003 (olsun), K-011 (ek yazımı), K-020 (alan atama önceliği), K-093 (değer kopyası)
 - **İlgili golden programlar:** 02, 07, 22
 - **Gerçekleme:** `olsun` kolları `ayristirici.rs`; ortamlar `cozumleyici.rs` / `yorumlayici.rs`
 
 ## Özet
 
 Değer bağlama tek kalıptır: `<ad> <ifade> olsun`. Aynı kalıp yeniden atamadır;
-tür değişimi yasaktır (T002).
+tür değişimi yasaktır (T002). Bağlanan değer iç içe bileşenleriyle bağımsız
+kopyadır; paylaşılan değiştirilebilir alias yoktur (RFC-0019/spec-17).
 
 ## Kurallar
 
