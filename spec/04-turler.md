@@ -21,7 +21,9 @@ RFC-0011/golden 24-27'de).
 ## Boş koleksiyon çıkarımı (TANIMLI — K-045)
 
 `boş liste` / `boş sözlük` belirsiz öğe/değer türüyle doğar; **ilk**
-ekleme/atama türü somutlar ve bağlamı günceller. Belirsizken okuma
+ekleme/atama türü somutlar ve bağlamı günceller. Yapılar da liste öğesi
+olabilir (K-060: kayıt tabloları); CSV satırları Metin değerli sözlüklerdir
+(K-062). Belirsizken okuma
 (`ilki`, gezme, `değeri`) derleme hatasıdır. Boş sabit, somut eşiyle
 yeniden atamada iki yönde uzlaşır — bu T002 sayılmaz. Mantıksal bir ad
 tek başına koşuldur: `hazır ise` (K-044); Mantıksal olmayan ad T005.

@@ -195,18 +195,20 @@ fn json_metin_yaz(metin: &str) -> String {
 // ---------- sunucu ----------
 
 /// Tamamlama önerileri: dilin kalıp kelimeleri (kaynağı: ayrıştırıcı yüzeyi).
-const KALIP_KELIMELERI: [&str; 40] = [
+const KALIP_KELIMELERI: [&str; 52] = [
     "yaz", "olsun", "ise", "değilse", "tekrarla", "için", "kez", "her", "kadar",
     "sürece", "olduğu", "olana", "ile", "ve", "veya", "diye", "sor", "yanıt",
     "işlem", "al", "döndür", "yapı", "test", "olmalı", "ekle", "artır", "azalt",
     "böl", "göre", "kullan", "birimini", "doğru", "yanlış", "yok", "yeni",
     "dene", "bitir", "saniye", "dakika", "hatasını",
+    "varsa", "yoksa", "başarılıysa", "başarısızsa", "sil", "yönlendir",
+    "adresine", "çerezine", "sıralanmışı", "parçaları", "birleşmişi", "değişmişi",
 ];
 
 /// Hover açıklamaları: kalıp kelimesi → tek satır Türkçe açıklama + örnek.
 /// (Kaynak: spec/02-dizim ve dil turu; kelime kalıbın son ya da ayırt edici
 /// parçasıdır.)
-const KELIME_ACIKLAMALARI: [(&str, &str); 30] = [
+const KELIME_ACIKLAMALARI: [(&str, &str); 33] = [
     ("yaz", "Cümleyi bitirir: değeri ekrana (ya da `X dosyasına`) yazar.\n\n`\"Merhaba\" ile isim yaz`"),
     ("olsun", "Ad tanımlar ya da var olan ada atar; tür ilk değerden çıkar ve sonra değişmez.\n\n`yaş 10 olsun`"),
     ("ise", "Koşul dalı açar; koşul yüklem-sonludur (`...se/...sa`).\n\n`yaş 8 veya daha büyükse`"),
@@ -237,6 +239,9 @@ const KELIME_ACIKLAMALARI: [(&str, &str); 30] = [
     ("bitir", "`programı bitir` — programı o noktada sonlandırır."),
     ("bekle", "`yarım saniye bekle` ya da eşzamanlı bloktan sonra `hepsini bekle`."),
     ("listesi", "Liste sabiti: `3, 7, 1, 9 listesi`. Virgülden sonra boşluk liste ayracıdır."),
+    ("sil", "Listeden ilk eşleşen öğeyi ya da sözlükten anahtarı siler; yoksa sessizdir.\n\n`sayılardan 5 i sil`"),
+    ("yönlendir", "Web: tarayıcıyı başka adrese gönderir (303).\n\n`\"/liste\" adresine yönlendir`"),
+    ("çerezine", "Web: yanıtla Set-Cookie gönderir; okumak için rota içinde `çerezler` sözlüğü hazırdır.\n\n`\"oturum\" çerezine kimlik yaz`"),
 ];
 
 #[derive(Default)]
