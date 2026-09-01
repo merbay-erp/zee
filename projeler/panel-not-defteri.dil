@@ -1,0 +1,42 @@
+# Panel Not Defteri — admin panelli gerçek web uygulaması.
+# Öğretilen: form verisi (örtük "istek" sözlüğü), kaydet-sonrası yönlendirme,
+# html güvenlisi (K-051), dosyada saklama. Yönetim gizli yoldadır:
+# /yonet-gizli123 — anahtarı değiştirmeyi unutma!
+# Çalıştır: dil çalıştır panel-not-defteri.dil → http://127.0.0.1:8091
+
+deneme "notlar.txt" dosyasını okumayı dene olsun
+deneme başarısızsa
+    "notlar.txt" dosyasına "İlk notun: bu satırı panelden ekledim demek için /yonet-gizli123 e git" yaz
+
+işlem sayfayı giydir
+    gövdeyi al
+
+    stil "<style>body{font-family:Georgia,serif;max-width:640px;margin:40px auto;padding:0 16px;color:#1c1c28;background:#fbfaf7}h1{color:#b0413e}a{color:#2e6e4e}li{margin:6px 0}input{font:inherit;padding:8px;width:70%}button{font:inherit;padding:8px 18px}</style>" olsun
+    sayfa "<!doctype html><html lang=tr><meta charset=utf-8>" ile stil ile gövde olsun
+    sayfayı döndür
+
+8091 kapısında sunucu başlat
+
+"/" adresine istek geldiğinde
+    liste "" olsun
+    satırlar "notlar.txt" dosyasının satırları olsun
+    her satır için
+        liste liste ile "<li>" ile satırın html güvenlisi ile "</li>" olsun
+
+    gövde "<h1>Not Defteri</h1><ul>" ile liste ile "</ul><p><i>Yönetim gizli yoldadır.</i></p>" olsun
+    sayfa gövde için sayfayı giydir olsun
+    sayfa yanıtını gönder
+
+"/yonet-gizli123" adresine istek geldiğinde
+    form "<h1>Yeni not</h1><form method=post action=/kaydet-gizli123><input name=not placeholder=notunu-yaz autofocus> <button>Kaydet</button></form><p><a href=/>listeye dön</a></p>" olsun
+    sayfa form için sayfayı giydir olsun
+    sayfa yanıtını gönder
+
+"/kaydet-gizli123" adresine istek geldiğinde
+    istekte "not" varsa
+        yeni isteğin "not" değeri olsun
+        yeni boşsa
+            "/yonet-gizli123" adresine yönlendir
+        değilse
+            "notlar.txt" dosyasına yeni ekle
+            "/" adresine yönlendir

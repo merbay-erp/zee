@@ -309,6 +309,23 @@ impl Ayristirici {
             Some("döndür") => self.dondur_ayristir(satir_tokenlari, satir_no),
             Some("böl") => self.bol_ayristir(satir_tokenlari, satir_no),
             Some("göre") => self.gore_ayristir(satir_tokenlari, satir_no),
+            // "/liste" adresine yönlendir (K-051).
+            Some("yönlendir") => {
+                let t = &satir_tokenlari;
+                if t.len() == 3 && kelime_mi(&t[1], "adresine") {
+                    let adres = tekil_ifade(t[0].clone())?;
+                    Ok(Cumle::Yonlendir { adres, satir: satir_no })
+                } else {
+                    Err(Tani::yeni(
+                        "S041",
+                        "Yönlendirme \"<adres> adresine yönlendir\" biçiminde yazılır.".into(),
+                        satir_no,
+                        1,
+                        1,
+                    )
+                    .onerili("Örnek: \"/liste\" adresine yönlendir".into()))
+                }
+            }
             Some("olmalı") => self.olmali_ayristir(satir_tokenlari, satir_no),
             Some("başlat") => {
                 let t = &satir_tokenlari;
@@ -1730,6 +1747,14 @@ fn yapili_kalip(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifade>
         return Ok(Some(Ifade::SozlukDegeri {
             sozluk: Box::new(tekil_ifade(tokenlar[0].clone())?),
             anahtar: Box::new(tekil_ifade(tokenlar[1].clone())?),
+        }));
+    }
+
+    // W ın html güvenlisi — HTML'e gömülmeye güvenli kaçışlanmış kopya (K-051).
+    if n == 3 && son == "güvenlisi" && kelime(1) == Some("html") {
+        return Ok(Some(Ifade::Ozellik {
+            nesne: Box::new(tekil_ifade(tokenlar[0].clone())?),
+            ozellik: Ozellik::HtmlGuvenli,
         }));
     }
 

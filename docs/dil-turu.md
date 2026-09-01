@@ -356,6 +356,22 @@ yetişmezse
 
 Görev adlarına `hepsini bekle`den önce erişim derleme hatasıdır (T033).
 
+Web uygulaması kalıpları (K-051): rota gövdesinde form ve sorgu verisi
+örtük `istek` sözlüğündedir; kaydettikten sonra yönlendirilir; kullanıcı
+verisi HTML'e daima `html güvenlisi` ile gömülür:
+
+```
+"/kaydet" adresine istek geldiğinde
+    istekte "not" varsa
+        yeni isteğin "not" değeri olsun
+        "notlar.txt" dosyasına yeni ekle
+        "/" adresine yönlendir
+
+# listede: satırın html güvenlisi  ← kullanıcı verisi kaçışlanır
+```
+
+Çalışan admin panel örneği: projeler/panel-not-defteri.dil.
+
 ## 19. Fiziksel dünya (ESP32)
 
 ```
