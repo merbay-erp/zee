@@ -64,7 +64,13 @@ işlem oturumu geçerli mi
         izinli kimlik için oturumu geçerli mi olsun
 
     izinli ise
-        form "<h1>Yeni not</h1><form method=post action=/kaydet><input name=not placeholder=notunu-yaz autofocus> <button>Kaydet</button></form><p><a href=/>listeye dön</a> · <a href=/cikis>çıkış</a></p>" olsun
+        liste "" olsun
+        satırlar "notlar.txt" dosyasının satırları olsun
+        her satır için
+            güvenli satırın html güvenlisi olsun
+            liste liste ile "<li>" ile güvenli ile " <a href=\"/sil?not=" ile güvenli ile "\">[sil]</a></li>" olsun
+
+        form "<h1>Yeni not</h1><form method=post action=/kaydet><input name=not placeholder=notunu-yaz autofocus> <button>Kaydet</button></form><ul>" ile liste ile "</ul><p><a href=/>listeye dön</a> · <a href=/cikis>çıkış</a></p>" olsun
         sayfa form için sayfayı giydir olsun
         sayfa yanıtını gönder
     izinli değilse
@@ -84,6 +90,26 @@ işlem oturumu geçerli mi
             değilse
                 "notlar.txt" dosyasına yeni ekle
                 "/" adresine yönlendir
+    izinli değilse
+        "/giris" adresine yönlendir
+
+"/sil" adresine istek geldiğinde
+    izinli yanlış olsun
+    çerezlerde "oturum" varsa
+        kimlik çerezlerin "oturum" değeri olsun
+        izinli kimlik için oturumu geçerli mi olsun
+
+    izinli ise
+        istekte "not" varsa
+            hedef isteğin "not" değeri olsun
+            kalanlar boş liste olsun
+            satırlar "notlar.txt" dosyasının satırları olsun
+            her satır için
+                satır hedefe eşit değilse
+                    kalanlara satırı ekle
+            yenisi kalanların "\n" ile birleşmişi olsun
+            "notlar.txt" dosyasına yenisi yaz
+        "/yonet" adresine yönlendir
     izinli değilse
         "/giris" adresine yönlendir
 

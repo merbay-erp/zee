@@ -530,6 +530,16 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   satır sözlükleri listesi → CSV (başlıklar ilk satırın anahtar sırasından;
   virgül/tırnak/yeni satır RFC 4180 gibi kaçar).
 
+## K-059 — Silme: `sayılardan 5 i sil` / `defterden "elma" yı sil`
+
+- **Karar:** Listeden İLK eşleşen öğe, sözlükten anahtar silinir; **yoksa
+  sessizce hiçbir şey olmaz** (TANIMLI — silme idempotenttir; çocuk
+  "zaten yoktu" durumunda cezalandırılmaz). Biçim bozuksa S042; tür
+  bekçileri T011/T012/T021.
+- **Pratik:** girisli-panel'e gerçek silme rotası eklendi — dosya-satırı
+  silme SAF ZEE: süz (eşit değilse ekle) + "\n" ile birleştir + dosyaya
+  yaz (üzerine). Dil çekirdeği dosya-silme kalıbına muhtaç değil.
+
 ## K-012 — Liste sabiti: `3, 7, 1, 9 listesi`
 
 - **Karar:** Virgülle ayrılmış değerler + `listesi`. Boş: `boş liste`.

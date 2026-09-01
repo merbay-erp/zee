@@ -145,6 +145,8 @@ sıralı adların sıralanmışı olsun    # Metinler TÜRK ALFABESİYLE sırala
 ters sıralının tersi olsun
 sayılarda 5 varsa                   # liste üyeliği
     "beş listede" yaz
+sayılardan 5 i sil                  # silme — yoksa sessiz (K-059)
+defterden "elma" yı sil
 ```
 
 Bir listenin bütün öğeleri aynı türdendir (T011). `boş liste`nin öğe
