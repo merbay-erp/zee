@@ -1,14 +1,16 @@
 # 19 — CSV analizi
 # Sınanan: tablo verisi okuma, satırın sütun değerine erişim
 # ("satırın not değeri" — sözlük erişimiyle aynı kalıp, K-015).
-# v0 kısıtı: hücreler TamSayı olmalı; karışık sütunlar Faz 2 konusu.
-# Revizyon (31 Ağu): bölüm cümlesi K-008 "böl" kalıbına hizalandı.
+# Revizyon (1 Eyl, K-062): hücreler artık METİN okunur — gerçek tablolar
+# isim taşır; sayı gereken sütun `değerin sayısı` ile bilinçli çevrilir.
 
 tablo "notlar.csv" dosyasından okunan tablo olsun
 
 toplam 0 olsun
 tablodaki her satır için
-    toplamı satırın "not" değeriyle artır
+    ham satırın "not" değeri olsun
+    puan hamın sayısı olsun
+    toplamı puanla artır
 
 ortalamayı toplamı tablonun adedine böl
 "Ortalama: " ile ortalama yaz

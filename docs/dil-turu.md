@@ -344,8 +344,9 @@ satırlar "siir.txt" dosyasının satırları olsun
 "günlük.txt" dosyasına "Yarın da güzel olsun" ekle
 
 tablo "notlar.csv" dosyasından okunan tablo olsun
-tablodaki her satır için
-    toplamı satırın "not" değeriyle artır
+tablodaki her satır için                       # hücreler METİN (K-062)
+    puan satırın "not" değerinin sayısı olsun  # sayıya bilinçli çevir
+    toplamı puanla artır
 
 kişi "kisi.json" dosyasından okunan veri olsun
 "Ad: " ile kişinin "ad" değeri yaz

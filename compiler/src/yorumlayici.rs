@@ -1904,20 +1904,9 @@ fn csv_ayristir(icerik: &str, satir: usize) -> Result<Deger, Tani> {
         }
         let mut kayit = Vec::new();
         for (baslik, hucre) in basliklar.iter().zip(hucreler) {
-            let deger: i64 = hucre.parse().map_err(|_| {
-                Tani::yeni(
-                    "C015",
-                    format!(
-                        "CSV {}. veri satırındaki \"{}\" hücresi sayı değil (v0'da hücreler TamSayı).",
-                        indeks + 1,
-                        hucre
-                    ),
-                    satir,
-                    1,
-                    1,
-                )
-            })?;
-            kayit.push((baslik.clone(), Deger::TamSayi(deger)));
+            // K-062: hücreler Metin okunur — gerçek tablolar isim taşır;
+            // sayı gerekirse `değerin sayısı` ile bilinçli çevrilir.
+            kayit.push((baslik.clone(), Deger::Metin(hucre.to_string())));
         }
         tablo.push(Deger::Sozluk(kayit));
     }

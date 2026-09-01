@@ -554,6 +554,25 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
 - **Test:** koleksiyon_testi (kayıt tablosu + karışım reddi). Ölçüm arşivi
   v0.4.0 satırı: tüm yükler bütçe içinde (en büyük +%12 döngü — izlemede).
 
+## K-061 — Morfoloji: iki katmanlı ek zinciri
+
+- **Karar:** kok_adaylari iki geçişli oldu: iyelik + hâl/araç zinciri
+  çözülür — `kitabın fiyatıyla artır` (fiyat+ı+yla) çalışır. Belirsizlik
+  güvenliği değişmedi: adaylar yine kapsam/alan adlarıyla eşleşmek zorunda,
+  çoklu eşleşme A002/T028.
+- **Test:** koleksiyon_testi yapı-listesi senaryosu artık doğal biçimiyle
+  (K-060'taki bulgu kapandı).
+
+## K-062 — CSV hücreleri Metin: gerçek tablolar isim taşır
+
+- **Karar:** `dosyasından okunan tablo` satırları Sözlük<Metin,METİN>
+  (yeni VeriTuru::MetinSozluk). "Hücreler TamSayı" v0 kısıtı kalktı;
+  sayı gereken sütun `değerin sayısı` ile BİLİNÇLİ çevrilir (örtük
+  dönüşüm yasağı ilkesiyle uyum). C015 artık yalnız biçim hataları
+  (boş dosya / sütun uyuşmazlığı).
+- **Korpus revizyonu:** golden 19 yeni anlamla güncellendi (ham → sayısı →
+  artır); çıktı değişmedi. `csv metni` her iki satır türünü yazar.
+
 ## K-012 — Liste sabiti: `3, 7, 1, 9 listesi`
 
 - **Karar:** Virgülle ayrılmış değerler + `listesi`. Boş: `boş liste`.

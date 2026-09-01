@@ -22,6 +22,8 @@ pub enum VeriTuru {
     Sozluk,
     /// Kullanıcı yapısı öğesi (K-060): Program.yapilar'a indeks.
     Yapi(usize),
+    /// Metin değerli satır sözlüğü (K-062): CSV satırları böyle okunur.
+    MetinSozluk,
     /// Boş koleksiyonun henüz belirlenmemiş öğe türü (K-045): ilk eklemede
     /// somutlaşır. Guard'lı yollar dışında ture() çağrılmaz.
     Bilinmeyen,
@@ -36,6 +38,7 @@ impl VeriTuru {
             VeriTuru::Bilinmeyen => "belirsiz",
             VeriTuru::Yapi(_) => "Yapı",
             VeriTuru::Sozluk => "Sözlük",
+            VeriTuru::MetinSozluk => "satır",
         }
     }
     fn ture(&self) -> Tur {
@@ -46,6 +49,7 @@ impl VeriTuru {
             VeriTuru::Bilinmeyen => Tur::Yok, // guard'lar erişimi engeller
             VeriTuru::Yapi(i) => Tur::Yapi(*i),
             VeriTuru::Sozluk => Tur::Sozluk(SozlukDegerTuru::TamSayi),
+            VeriTuru::MetinSozluk => Tur::Sozluk(SozlukDegerTuru::Metin),
         }
     }
 }
@@ -350,6 +354,7 @@ fn veri_turu_yap(tur: &Tur) -> Option<VeriTuru> {
         Tur::Metin => Some(VeriTuru::Metin),
         Tur::Ondalik => Some(VeriTuru::Ondalik),
         Tur::Sozluk(SozlukDegerTuru::TamSayi) => Some(VeriTuru::Sozluk),
+        Tur::Sozluk(SozlukDegerTuru::Metin) => Some(VeriTuru::MetinSozluk),
         Tur::Yapi(i) => Some(VeriTuru::Yapi(*i)),
         _ => None,
     }
@@ -1257,7 +1262,8 @@ fn ifade_denetle(
                 (Ozellik::Ters, Tur::Liste(oge)) if oge != VeriTuru::Bilinmeyen => {
                     Ok(Tur::Liste(oge))
                 }
-                (Ozellik::CsvMetin, Tur::Liste(VeriTuru::Sozluk)) => Ok(Tur::Metin),
+                (Ozellik::CsvMetin, Tur::Liste(VeriTuru::Sozluk))
+                | (Ozellik::CsvMetin, Tur::Liste(VeriTuru::MetinSozluk)) => Ok(Tur::Metin),
                 (Ozellik::Harfler, Tur::Metin) => Ok(Tur::Liste(VeriTuru::Metin)),
                 (Ozellik::JsonMetin, Tur::Sozluk(_))
                 | (Ozellik::JsonMetin, Tur::Liste(_))
@@ -1656,7 +1662,8 @@ fn ifade_denetle(
                     1,
                 ));
             }
-            Ok(Tur::Liste(VeriTuru::Sozluk))
+            // K-062: hücreler Metin okunur; sayı gerekirse `değerin sayısı`.
+            Ok(Tur::Liste(VeriTuru::MetinSozluk))
         }
         Ifade::VeriOku(yol) => {
             let tur = ifade_denetle(yol, ortam, baglam, satir)?;
@@ -2332,6 +2339,23 @@ pub fn ad_cozumle(
 /// Ek ayıklama adayları: yaygın hal/iyelik/araç ekleri + ünsüz yumuşaması geri çevrimi.
 /// (K-011: desteklenen ek listesi sürümlemeli grammar'ın parçasıdır.)
 pub(crate) fn kok_adaylari(ham: &str) -> Vec<String> {
+    // K-061: iki katmanlı ek zinciri (iyelik + hâl/araç): "fiyatıyla" →
+    // fiyatı → fiyat. Birinci katman adayları ikinci turdan da geçer;
+    // belirsizlik güvenliği değişmez (çözüm kapsam/alan eşleşmesine bakar,
+    // çoklu eşleşme A002/T028'dir).
+    let birinci = kok_adaylari_tek_katman(ham);
+    let mut hepsi = birinci.clone();
+    for aday in &birinci {
+        for ikinci in kok_adaylari_tek_katman(aday) {
+            if !hepsi.contains(&ikinci) {
+                hepsi.push(ikinci);
+            }
+        }
+    }
+    hepsi
+}
+
+fn kok_adaylari_tek_katman(ham: &str) -> Vec<String> {
     const EKLER: [&str; 44] = [
         "yı", "yi", "yu", "yü", // belirtme (ünlüyle biten kök)
         "nın", "nin", "nun", "nün", // tamlayan

@@ -10,6 +10,10 @@ sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 - **Tarih farkı** (K-057): `X ile Y arasındaki günler` (işaretli).
 - **Liste üyeliği + CSV yazma** (K-058): `sayılarda 5 varsa`;
   `tablonun csv metni`.
+- **Morfoloji: iki katmanlı ek** (K-061): `kitabın fiyatıyla artır`
+  (iyelik+araç zinciri) çözülür.
+- **CSV hücreleri Metin** (K-062): isimli sütunlar birinci sınıf;
+  sayı `değerin sayısı` ile bilinçli çevrilir. Golden 19 revize.
 - **Yapı listeleri** (K-060): kayıt tabloları — `boş liste`ye yapı ekle,
   gez, alan oku; `json metni` nesne listesi üretir. (T027 belgesi düzeltildi:
   Ondalık alan zaten vardı.)
