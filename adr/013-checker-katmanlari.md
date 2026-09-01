@@ -60,6 +60,6 @@ yeniden dışa aktarılır ve kırılmaz.
 - Eski bağımsız `eylem.rs`, checker'ın `etki` katmanına taşındı; davranışı ve
   tanıları değişmedi.
 - Beş kaynak-mimari test katman sahipliğini, bütçeleri ve public API'yi korur.
-- B-007 sıra bağımsız çıkarım ve B-010 semantic ID artık kendi katmanlarında
-  ilerleyebilir; bu ADR onları çözülmüş saymaz.
+- B-010 semantic ID, K-101/ADR-014 ile bu katmanlar üstünde tamamlandı. B-007
+  sıra bağımsız çıkarım ayrı açık iştir; bu ADR onu çözülmüş saymaz.
 - Kaynak dili değişmediği için yeni normatif spec gerekmez.

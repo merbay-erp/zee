@@ -44,11 +44,14 @@ Tek-tanı ve çoklu-tanı girişleri aynı katmanları aynı sırada kullanır.
 - Bütçesi dolan modül için sayı sessizce yükseltilmez. Sorumluluk gerçekten
   yeniyse adlandırılmış katman açılır; değilse ortak kural çıkarılır.
 
-## Açık sonraki işler
+## Ardıl işler
 
 - B-007, çıkarımlı yerel işlem imzasını çağrı sırasından bağımsız yapacaktır.
-- B-010, yapı/işlem/sembol kimliklerini kararlı newtype'lara taşıyacaktır.
+- B-010/K-101, yapı/işlem/sembol kimliklerini kararlı newtype'lara taşıdı;
+  ayrıntılı sahiplik [semantic kimlik rehberindedir](semantic-kimlik-modeli.md).
+- B-018/B-019, bu bağları açık Resolution/Typed HIR fazına taşıyacak ve
+  runtime'ın kaynak adıyla semantic karar vermesini bitirecektir.
 - B-017, katmanlar arası AST/HIR değişmezlerini debug/test aşamasında ayrıca
   doğrulayacaktır.
 
-Bu işler ADR-013'ün katmanlarını kullanır; tamamlanmış sayılmaz.
+B-007/B-017/B-018/B-019 açık kalır; K-101 yalnız semantic ID temelini kapatır.

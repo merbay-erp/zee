@@ -1383,7 +1383,28 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   dili, tanı sözleşmesi ve normatif spec değişmedi.
 - **Kanıt:** ADR-013, checker katman rehberi ve kök bütçesi/tek sahiplik/public
   API'yi koruyan toplam beş mimari test. İki yeni testle toplam 398 test yeşil;
-  B-006 ve V1-P0-11 kapandı. Sıradaki omurga işi B-010 semantic ID modelidir.
+  B-006 ve V1-P0-11 kapandı. Semantic ID omurgası B-010/K-101 ile sonradan
+  tamamlandı.
+
+## K-101 — Semantic identity ile depolama konumunu ayır (1 Eyl)
+
+- **Karar:** `YapiId`, `IslemId` ve `SymbolId` derleyici içi tür güvenli
+  newtype'lardır. Kaynak adı tanı/okunabilirlik, kimlik semantic bağ,
+  koleksiyon konumu yalnız fiziksel depolama görevi taşır.
+- **Yapı/işlem:** `Tur::Yapi(usize)` kaldırıldı; kimlik→konum dizini yapı
+  erişiminin tek yoludur. Yapı ve işlem katalogları ada göre sıralandığı için
+  yapı vektörü, `HashMap` ve çağrı sırası kimliği değiştirmez. İmza ve
+  özyineleme kayıtları `IslemId` ile anahtarlanır.
+- **Sembol:** Checker ortamı artık ad→(`SymbolId`, tür) tablosudur. Yeniden
+  atama ID'yi korur; yeni sözcüksel tanım yeni ID alır. Başarılı checker,
+  `Degisken`/`YeniYapi`/`IslemCagrisi` AST düğümünde kaynak adının yanına
+  semantik kimliği yazar.
+- **Sınır:** Kimlikler derleme birimi içindir; kalıcı paket/ABI ID'si değildir.
+  Runtime'ın kaynak adından tamamen ayrılıp typed HIR tüketmesi B-018/B-019
+  kapsamındadır. Zee kaynak semantiği ve normatif spec değişmedi.
+- **Kanıt:** ADR-014, semantic kimlik rehberi; yapı depolama sırası ve işlem
+  çağrı sırası tersleme, SymbolId bağı ve indeks-gerileme mimari testi. Dört
+  yeni testle toplam 402 test yeşil; B-010 ve V1-P0-12 kapandı.
 
 ---
 

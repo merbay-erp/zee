@@ -195,7 +195,15 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   oldu. Public `Tur`, `VeriTuru`, `SozlukDegerTuru` ve `ad_cozumle` API'si
   yeniden dışa aktarımla korundu. İki yeni sahiplik/API testiyle mimari test
   sayısı beşe, toplam test sayısı 398'e çıktı. Kaynak semantiği değişmeden
-  B-006/V1-P0-11 kapandı; sıradaki omurga B-010 semantic ID modelidir.
+  B-006/V1-P0-11 kapandı; semantic ID ardılı B-010/K-101 ile tamamlandı.
+- **Semantic kimlik modeli** (K-101, ADR-014): `YapiId`, `IslemId` ve
+  `SymbolId` newtype'ları eklendi. `Tur::Yapi` çıplak `usize` yerine kimlik
+  taşır; fiziksel yapı konumu ayrı dizinden çözülür. İşlem imzaları ve
+  özyineleme kaydı `IslemId`, yerel sembol tablosu ad→(`SymbolId`, tür)
+  kullanır. Checker çözülmüş değişken, yapı oluşturma ve işlem çağrısı AST
+  düğümlerini ID ile bağlar; kaynak adını tanı/runtime geçişi için korur. Üç
+  davranış ve bir mimari testle toplam 402 test yeşildir; kaynak semantiği
+  değişmeden B-010/V1-P0-12 kapandı. Sıradaki omurga B-018 faz modelidir.
 
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`

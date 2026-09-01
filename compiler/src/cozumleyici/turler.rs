@@ -1,6 +1,9 @@
 use crate::agac::Yapi;
 use crate::intrinsic::IntrinsicTuru;
+use crate::kimlik::YapiId;
 use crate::tani::Tani;
+
+use super::baglam::Baglam;
 
 /// Kapsayıcı türlerin (Liste, Seçenek) taşıyabildiği öğe türleri (v0).
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -10,8 +13,8 @@ pub enum VeriTuru {
     Ondalik,
     /// v0'da örtük olarak Sözlük<Metin, TamSayı> demektir (CSV satırları).
     Sozluk,
-    /// Kullanıcı yapısı öğesi (K-060): Program.yapilar'a indeks.
-    Yapi(usize),
+    /// Kullanıcı yapısı öğesi (K-060): checker yapı dizinine semantic bağ.
+    Yapi(YapiId),
     /// Metin değerli satır sözlüğü (K-062): CSV satırları böyle okunur.
     MetinSozluk,
     /// Yapılandırılmış beklenen hata değeri (K-091).
@@ -97,8 +100,8 @@ pub enum Tur {
     Hata,
     /// Yalnız "hatasını döndür"ün iç işareti; birleşimde Sonuç'a erir.
     HataDonusu,
-    /// Kullanıcı yapısı — Program.yapilar'a indeks.
-    Yapi(usize),
+    /// Kullanıcı yapısı — depolama konumundan bağımsız semantic bağ.
+    Yapi(YapiId),
     Tarih,
     Saat,
     /// Milisaniye hassasiyetli süre (RFC-0011/0013).
@@ -166,7 +169,7 @@ pub(super) fn alan_turu(yazim: &str) -> Option<Tur> {
 
 /// K-083 parametre tür yazımını çözer. Sembolik generic yerine kontrollü
 /// Türkçe kullanılır: `Ondalık listesi`, `Metin sözlüğü`, `Öğrenci`.
-pub(super) fn parametre_turu(yazim: &str, yapilar: &[Yapi]) -> Option<Tur> {
+pub(super) fn parametre_turu(yazim: &str, baglam: &Baglam) -> Option<Tur> {
     let basit = |ad: &str| match ad {
         "TamSayı" => Some(Tur::TamSayi),
         "Ondalık" => Some(Tur::Ondalik),
@@ -177,10 +180,7 @@ pub(super) fn parametre_turu(yazim: &str, yapilar: &[Yapi]) -> Option<Tur> {
         "Süre" => Some(Tur::Sure),
         "AğYanıtı" => Some(Tur::AgYaniti),
         "Hata" => Some(Tur::Hata),
-        _ => yapilar
-            .iter()
-            .position(|yapi| yapi.ad == ad)
-            .map(Tur::Yapi),
+        _ => baglam.yapi_kimligi(ad).map(Tur::Yapi),
     };
     if let Some(kok) = yazim.strip_suffix(" listesi") {
         return basit(kok)

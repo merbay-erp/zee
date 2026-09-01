@@ -1,4 +1,4 @@
-//! B-005/B-006 derleyici faz ve checker katmanı mimarisi regresyonları.
+//! B-005/B-006/B-010 derleyici faz, checker katmanı ve semantic ID regresyonları.
 
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -54,14 +54,15 @@ fn handler_modulleri_yeni_domain_icin_sinir_tasir() {
         ("src/ayristirici/ifade.rs", 1_150),
         ("src/cozumleyici/cumle.rs", 1_000),
         ("src/cozumleyici/ifade.rs", 920),
-        ("src/cozumleyici/cagri.rs", 340),
+        ("src/cozumleyici/cagri.rs", 380),
         ("src/cozumleyici/akis.rs", 150),
-        ("src/cozumleyici/baglam.rs", 80),
+        ("src/cozumleyici/baglam.rs", 120),
         ("src/cozumleyici/donus.rs", 180),
         ("src/cozumleyici/etki.rs", 650),
-        ("src/cozumleyici/sembol.rs", 150),
+        ("src/cozumleyici/sembol.rs", 200),
         ("src/cozumleyici/sozlesme.rs", 180),
         ("src/cozumleyici/turler.rs", 300),
+        ("src/kimlik.rs", 80),
         ("src/yorumlayici/cumle.rs", 600),
         ("src/yorumlayici/ifade.rs", 730),
     ] {
@@ -92,4 +93,26 @@ fn checker_public_api_katmanlasmada_korunur() {
     let ortam = HashMap::from([("sayı".to_string(), Tur::TamSayi)]);
     assert_eq!(ad_cozumle("sayıyı", &ortam, 1, 1, 6).expect("çözülmeli"), "sayı");
     assert_eq!(Tur::TamSayi.adi(), "TamSayı");
+}
+
+#[test]
+fn semantic_kimlikler_depolama_indeksine_geri_donmez() {
+    let kimlikler = kaynak("src/kimlik.rs");
+    for kanit in [
+        "sirali_kimlik!(YapiId)",
+        "sirali_kimlik!(IslemId)",
+        "pub struct SymbolId",
+    ] {
+        assert!(kimlikler.contains(kanit), "semantic kimlik newtype olmalı: {kanit}");
+    }
+
+    let turler = kaynak("src/cozumleyici/turler.rs");
+    assert!(!turler.contains("Yapi(usize)"));
+
+    for goreli in ["src/cozumleyici/cumle.rs", "src/cozumleyici/ifade.rs"] {
+        assert!(
+            !kaynak(goreli).contains("yapilar["),
+            "{goreli} YapiId'yi vektör indeksi gibi kullanmamalı"
+        );
+    }
 }

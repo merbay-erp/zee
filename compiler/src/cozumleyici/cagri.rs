@@ -46,7 +46,20 @@ pub(super) fn cagri_denetle(
     baglam: &mut Baglam,
     satir: usize,
 ) -> Result<Option<Tur>, Tani> {
-    if let Some(imza) = baglam.imzalar.get(ad) {
+    let islem_kimligi = baglam.islem_kimligi(ad).ok_or_else(|| {
+        Tani::yeni(
+            "T016",
+            format!(
+                "\"{}\" işleminin semantic kimliği bulunamadı — derleyici iç hatası olabilir, bildir.",
+                ad
+            ),
+            satir,
+            1,
+            1,
+        )
+    })?;
+
+    if let Some(imza) = baglam.imzalar.get(&islem_kimligi) {
         if imza.parametre_turleri.len() != arg_turleri.len() {
             return Err(Tani::yeni(
                 "T015",
@@ -95,9 +108,12 @@ pub(super) fn cagri_denetle(
                             (Tur::Liste(VeriTuru::TamSayi), Tur::Liste(VeriTuru::Ondalik))
                         )
                 });
-            let ozyinelemede = baglam.denetim_yigini.iter().any(|k| k.ad == ad);
+            let ozyinelemede = baglam
+                .denetim_yigini
+                .iter()
+                .any(|kayit| kayit.kimlik == islem_kimligi);
             if yalniz_ters_genisleme && !ozyinelemede && !imza.acik {
-                baglam.imzalar.remove(ad);
+                baglam.imzalar.remove(&islem_kimligi);
                 return cagri_denetle(ad, arg_turleri, baglam, satir);
             }
             return Err(Tani::yeni(
@@ -112,7 +128,11 @@ pub(super) fn cagri_denetle(
     }
 
     // Özyinelemeli (ya da karşılıklı özyinelemeli) çağrı: denetim yığınında.
-    if let Some(indeks) = baglam.denetim_yigini.iter().position(|k| k.ad == ad) {
+    if let Some(indeks) = baglam
+        .denetim_yigini
+        .iter()
+        .position(|kayit| kayit.kimlik == islem_kimligi)
+    {
         if baglam.denetim_yigini[indeks].parametre_turleri != arg_turleri {
             return Err(Tani::yeni(
                 "T017",
@@ -194,14 +214,14 @@ pub(super) fn cagri_denetle(
         ));
     }
 
-    let acik_turler = match acik_parametre_turleri(&islem, &baglam.yapilar) {
+    let acik_turler = match acik_parametre_turleri(&islem, baglam) {
         Ok(turler) => turler,
         Err(tani) => {
             baglam.islemler.insert(ad.to_string(), islem);
             return Err(tani);
         }
     };
-    let bildirilmis_donus = match bildirilmis_donus_turu(&islem, &baglam.yapilar) {
+    let bildirilmis_donus = match bildirilmis_donus_turu(&islem, baglam) {
         Ok(donus) => donus,
         Err(tani) => {
             baglam.islemler.insert(ad.to_string(), islem);
@@ -239,13 +259,13 @@ pub(super) fn cagri_denetle(
         ));
     }
 
-    let mut islem_ortami: HashMap<String, Tur> = HashMap::new();
+    let mut islem_ortami = SembolTablosu::yeni(baglam.islem_kapsami(islem_kimligi));
     for (param, tur) in islem.parametreler.iter().zip(denetim_turleri.iter()) {
         islem_ortami.insert(param.ad.clone(), *tur);
     }
 
     baglam.denetim_yigini.push(ImzaKaydi {
-        ad: ad.to_string(),
+        kimlik: islem_kimligi,
         parametre_turleri: denetim_turleri.clone(),
         donusler: Vec::new(),
         verilen_ozyineleme: None,
@@ -325,7 +345,7 @@ pub(super) fn cagri_denetle(
     }
 
     baglam.imzalar.insert(
-        ad.to_string(),
+        islem_kimligi,
         Imza {
             parametre_turleri: denetim_turleri,
             donus,
