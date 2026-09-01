@@ -596,7 +596,10 @@ yürütülebilir test dosyalarına bağlayan haritayı ve README canlı sayı
 üreticisini tazelik kapısına aldı. K-119 formatter'ın `SatirSonu` ve girinti
 yapısı dahil tam parser-token izini 33 golden programın dağınık-boşluk
 varyantında eşitleyip iki tarafı ayrıştırarak parse-equivalence kapısını
-kurdu. Şimdi LSP'nin SymbolId/HIR bağı gelir. P0 maddeleri
+kurdu. K-120 LSP definition/rename'i `SymbolId`/`IslemId`/`YapiId` typed-HIR
+dizinlerine geçirip hatalı belgede metin tahminini ve dış tanım için eksik
+tek-dosya rename'i kapattı. Şimdi yerel işlem
+inference'ının kaynak sırası bağımsızlığı gelir. P0 maddeleri
 kapanmadan yeni dil özelliği varsayılan olarak öne alınmaz;
 yarım güvenlik/correctness dilimi önce atomik olarak tamamlanır.
 
@@ -637,8 +640,9 @@ byte-kanonik trace/replay ile kapattı. K-116 rastgelelik, saat ve fake-IO
 semantiğini `zee-io-1` profiliyle sürümledi. K-117 NFC-kanonik `.zep` yolunu,
 üç platformlu sabit fixture'ı ve 80 vakalık saldırı korpusunu tamamladı.
 K-118 spec↔code kanıt haritasını ve canlı depo sayıları üreticisini tamamladı.
-K-119 formatter parse-equivalence kanıtıyla B-042'yi tamamladı. Sıradaki
-omurga B-041 LSP semantic bağıdır.
+K-119 formatter parse-equivalence kanıtıyla B-042'yi, K-120 semantic LSP
+bağıyla B-041'i tamamladı. Sıradaki omurga B-007 çağrı inference'ının kaynak
+sırasından bağımsızlığıdır.
 # 40. Proje felsefesinin korunması
 Bu projenin başarısı yalnız compiler’ın çalışması değildir. Başarı; Türkçe konuşan bir çocuğun yabancı syntax bariyerine takılmadan algoritmik düşünceyle tanışması, aynı dilin yıllar sonra onu terk etmeye zorlamaması ve ekosistemin tek bir şirketin kapalı ürünü haline gelmemesidir.
 Her yeni özellik şu dört sorudan geçmelidir: Türkçe doğal mı? Deterministik mi? Öğrenilebilir mi? Profesyonel ölçekte savunulabilir mi? Dördünden biri hayırsa özellik yeniden tasarlanır.

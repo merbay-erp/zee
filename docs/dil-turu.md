@@ -691,8 +691,10 @@ taşıyabilir; hex alanları şifreli değildir. `*.zee-io-izi` Git dışında t
 ama yine de özel veri gibi saklanmalıdır. Kayıt, replay ve sınırların tamamı
 [IO izi rehberindedir](io-izi.md).
 
-Editör desteği: `dillsp` — tanılar, hover, tanıma git, **morfolojili
-yeniden adlandırma (F2)** ([editors/](../editors/)). Gelen tek JSON-RPC
+Editör desteği: `dillsp` — tanılar, hover, semantic kimliğe bağlı tanıma git,
+**kapsam güvenli morfolojili yeniden adlandırma (F2)**
+ve dış tanımda eksik düzenlemeyi reddeden tek-belge güvenlik sınırı
+([editors/](../editors/); [semantic sözleşme](lsp-semantic-gezinme.md)). Gelen tek JSON-RPC
 çerçevesi 8 KiB başlık/8 MiB gövde; JSON 128 iç içelik/100 bin düğüm sınırı
 taşır. Geçersiz Unicode fail-closed reddedilir. Kurulumsuz deneme:
 [playground](../playground/).

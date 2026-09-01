@@ -33,7 +33,10 @@ Kurallar (TANIMLI):
 Çözümlemenin simetriği `ek_uydur`/`ek_zinciri_uydur` üreteçleridir; soyut eki
 yeni köke Türkçe uyumla kanonik giydirir. Tek ve iki katmanlı üretim aynı
 profil tablosundan gelir; `üret → çöz` kök+ek zincirini korur. Editörün
-yeniden adlandırması bunun üstüne kuruludur.
+yeniden adlandırması bunun üstüne kuruludur. K-120'den itibaren editör önce
+checker'ın `SymbolId` bağıyla tek kapsamı seçer; morfoloji yalnız o semantic
+kimliğin yazımlarını yeniden giydirir. A002 veya başka derleme hatasında
+metin benzerliğiyle hedef seçmek YASAKTIR.
 
 ## Örtük çoğul (TANIMLI — K-013)
 

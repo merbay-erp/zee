@@ -1772,6 +1772,30 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   haritası yeni testi üç belgeye bağlar. Kullanıcı sözdizimi ve resmî çıktı
   değişmedi. İki yeni regresyonla toplam 467 test yeşildir; B-042 kapandı.
 
+## K-120 — LSP tanım ve rename hedefini typed HIR kimliğine bağla (2 Eyl)
+
+- **Sorun:** K-072/K-089 morfolojik yüzeyi doğru üretiyordu fakat önce hangi
+  adın seçildiğini belge satırlarında kök adayları arayarak tahmin ediyordu.
+  İki ayrı bloktaki aynı ad ilk tanıma gidebilir veya birlikte değişebilirdi;
+  hatalı belgede kısmi metin eşleşmesi güvenilir bir semantic seçim değildi.
+- **HIR dizini:** Checker ilk tanım ve her yeniden atama LHS aralığını
+  `SymbolId` ile kaydeder; ifade okumaları mevcut HIR bağlarından aynı akışa
+  katılır. `HirProgram` işlem/yapı tanım ve kullanımını da
+  `IslemId`/`YapiId` üzerinden semantic araçlara açar.
+- **LSP kararı:** Definition ve rename önce açık belgeyi birim/paket grafiğiyle
+  bağlı programa derler, imleç aralığından tek ID seçer. Morfoloji bundan sonra
+  yalnız seçilen `SymbolId`nin yüzeylerini yeni köke giydirir. Çok kelimeli
+  işlem adı tek düzenlemedir; yapı tanım ve kurulumları aynı `YapiId`yi izler.
+- **Fail-closed:** Parser/checker hatası veya A002 belirsizliğinde metin
+  fallback'i yoktur; yanıt `null`, neden didOpen/didChange tanısıdır. Metin
+  sabiti, yorum ve başka kapsamdaki aynı yazım düzenleme kümesine giremez.
+- **Sınır ve kanıt:** K-120 tek açık belge WorkspaceEdit'idir; dosya kimlikli
+  çok-dosyalı rename ve bütün AST'nin kesin span'i ayrı kapıdır. Dış
+  birim tanımının satır numarası açık belgedeki kullanımla çakışsa bile yerel
+  tanım başlığı doğrulanmadan definition/rename üretilmez. ADR-014/016,
+  RFC-0018/spec-13, [semantic LSP rehberi](../docs/lsp-semantic-gezinme.md), bir
+  HIR ve yedi LSP regresyonuyla toplam 475 test yeşildir; B-041 kapandı.
+
 ---
 
 ## Sonraki adım
@@ -1780,5 +1804,5 @@ Korpus 10 öğrenci + 5 profesyonel usability oturumuna (Hafta 12 hedefi, erkeni
 Hafta 2'de kağıt üstünde) sesli okutulacak; her kayıt için "doğal mı /
 deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
-Makine hattında B-042/K-119 kapandı. Sırada B-041 LSP'nin SymbolId/HIR bağı
-vardır.
+Makine hattında B-041/K-120 kapandı. Sırada B-007 yerel çağrı inference'ının
+kaynak sırasından bağımsızlaştırılması vardır.

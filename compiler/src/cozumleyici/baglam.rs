@@ -32,11 +32,16 @@ pub(super) struct Baglam {
     /// Checker'ın HIR lowering'e devrettiği ifade türü ve semantic bağları.
     pub(super) hir_ifadeleri: HashMap<usize, crate::hir::HirIfadeBilgisi>,
     hir_sembol_adlari: HashMap<SymbolId, String>,
+    hir_sembol_tanimlari: HashMap<SymbolId, crate::hir::HirKaynakAraligi>,
+    hir_sembol_yazimlari: Vec<crate::hir::HirSembolKullanimi>,
 }
 
 impl Baglam {
     pub(super) fn yeni(islemler: HashMap<String, Islem>, yapilar: Vec<Yapi>) -> Self {
-        let mut yapi_adlari = yapilar.iter().map(|yapi| yapi.ad.clone()).collect::<Vec<_>>();
+        let mut yapi_adlari = yapilar
+            .iter()
+            .map(|yapi| yapi.ad.clone())
+            .collect::<Vec<_>>();
         yapi_adlari.sort();
         let yapi_kimlikleri = yapi_adlari
             .into_iter()
@@ -72,6 +77,8 @@ impl Baglam {
             gezilen_koleksiyonlar: std::collections::HashSet::new(),
             hir_ifadeleri: HashMap::new(),
             hir_sembol_adlari: HashMap::new(),
+            hir_sembol_tanimlari: HashMap::new(),
+            hir_sembol_yazimlari: Vec::new(),
         }
     }
 
@@ -79,6 +86,8 @@ impl Baglam {
         crate::hir::HirOlusturmaBilgisi {
             ifadeler: self.hir_ifadeleri.clone(),
             sembol_adlari: self.hir_sembol_adlari.clone(),
+            sembol_tanimlari: self.hir_sembol_tanimlari.clone(),
+            sembol_yazimlari: self.hir_sembol_yazimlari.clone(),
             islem_adlari: self
                 .islem_kimlikleri
                 .iter()
@@ -90,6 +99,18 @@ impl Baglam {
 
     pub(super) fn hir_sembol_adi_ekle(&mut self, kimlik: SymbolId, ad: String) {
         self.hir_sembol_adlari.entry(kimlik).or_insert(ad);
+    }
+
+    pub(super) fn hir_sembol_yazimi_ekle(
+        &mut self,
+        kimlik: SymbolId,
+        kaynak_araligi: crate::hir::HirKaynakAraligi,
+    ) {
+        self.hir_sembol_tanimlari.entry(kimlik).or_insert(kaynak_araligi);
+        let kullanim = crate::hir::HirSembolKullanimi::yeni(kimlik, kaynak_araligi);
+        if !self.hir_sembol_yazimlari.contains(&kullanim) {
+            self.hir_sembol_yazimlari.push(kullanim);
+        }
     }
 
     pub(super) fn yapi_kimligi(&self, ad: &str) -> Option<YapiId> {

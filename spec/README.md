@@ -24,7 +24,7 @@ Kırıcı değişiklik sessizce yapılamaz: davranış değişikliği RFC'den ge
 |---|---|---|
 | [01 — Sözcükleme](01-sozcukleme.md) | alfabe, tokenlar, kaçışlar, sayılar | RFC-0002, RFC-0013 |
 | [02 — Dizim](02-dizim.md) | satır/blok yapısı, yüklem-sonlu dağıtım | RFC-0003, RFC-0006 |
-| [03 — Adlar ve kapsam](03-adlar-ve-kapsam.md) | morfolojik çözüm, blok kapsamı | RFC-0004, RFC-0018, K-089 |
+| [03 — Adlar ve kapsam](03-adlar-ve-kapsam.md) | morfolojik çözüm, blok kapsamı | RFC-0004, RFC-0018, K-089/K-120 |
 | [04 — Türler](04-turler.md) | tür envanteri, birleşim, daraltma | RFC-0007, RFC-0008, RFC-0013 |
 | [05 — Değerlendirme](05-degerlendirme.md) | yürütme sırası, taşma, determinizm | RFC-0001 §7, ADR-003 |
 | [06 — Hata modeli](06-hata-modeli.md) | tanı sözleşmesi, Seçenek/Sonuç, test | RFC-0008, RFC-0010 |
@@ -34,7 +34,7 @@ Kırıcı değişiklik sessizce yapılamaz: davranış değişikliği RFC'den ge
 | [10 — Dışa açık işlem sözleşmesi](10-disari-acik-islem-sozlesmesi.md) | public imza, dönüş kanıtı ve v1 kaynak ABI'si | RFC-0006, RFC-0007, RFC-0009 |
 | [11 — Uygulama eylemleri ve web adaptörü](11-uygulama-eylemleri-ve-web-adaptoru.md) | açık eylem imzası, etki çıkarımı, yöntemli rota, savepoint/geri alma | RFC-0015 |
 | [12 — Web güvenlik profili](12-web-guvenlik-profili.md) | erişim politikası, Argon2id, sunucu oturumu/rol, CSRF, güvenli çerez ve HTTPS proxy sınırı | RFC-0017 |
-| [13 — Sürümlü morfoloji profili](13-surumlu-morfoloji-profili.md) | `zee-tr-1`, ek tablosu, çözüm↔üretim, proje/paket sabitlemesi | RFC-0018 |
+| [13 — Sürümlü morfoloji profili](13-surumlu-morfoloji-profili.md) | `zee-tr-1`, ek tablosu, çözüm↔üretim, semantic LSP ve proje/paket sabitlemesi | RFC-0018, K-120 |
 | [14 — Yapılandırılmış eşzamanlılık](14-yapilandirilmis-eszamanlilik.md) | görev grubu, deterministik scheduler, sahiplik, hata/iptal yayılımı | RFC-0011, K-090 |
 | [15 — Yapılandırılmış Hata değeri](15-yapilandirilmis-hata-degeri.md) | kod, mesaj, neden zinciri, veri, eşleme ve geriye uyum | RFC-0008, K-091 |
 | [16 — Keyfî hassasiyetli Ondalık](16-keyfi-hassasiyetli-ondalik.md) | keyfî katsayı/ölçek, exact işlemler ve 34 haneli sonsuz bölüm bağlamı | RFC-0013, K-092 |

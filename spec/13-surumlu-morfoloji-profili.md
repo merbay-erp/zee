@@ -62,9 +62,12 @@ zincirler için kök korpusu üzerinde test edilir.
 
 ## Editör ve araçlar (TANIMLI)
 
-- LSP tanıma-git/hover/rename aynı profil modülünü kullanır.
-- Rename, tek çözümlü ek zincirini yeni köke kanonik olarak giydirir. Kaynak
-  kök+zincir çözümü belirsizse tahmin ederek düzenleme üretmez.
+- LSP tanıma-git/hover/rename aynı profil modülünü kullanır. Definition ve
+  rename önce başarılı checker HIR'ındaki `SymbolId`yi seçer; morfoloji
+  semantic kimliği belirlemek için kullanılmaz.
+- Rename, yalnız seçilen `SymbolId`ye ait tek çözümlü ek zincirini yeni köke
+  kanonik olarak giydirir. Kaynak kök+zincir çözümü belirsizse veya belge
+  derlenemiyorsa tahmin ederek düzenleme üretmez.
 - `dil morfoloji` profil snapshot'ını; `dil morfoloji <kelime>` bütün yapısal
   kök+ek çözümlerini gösterir.
 - `dil sürüm` etkin profil kimliğini gösterir.
@@ -93,7 +96,8 @@ sürümü/edition geçiş kararı gerekir.
   ayrıca 4.096 deterministik kök, 2.048 bütün-aday kararı ve NFC/NFD sınırı
 - `compiler/fuzz/fuzz_targets/morfoloji.rs`: byte girdiden geçerli kök üreten
   gecelik üret→çöz ve fail-closed belirsizlik mutation hedefi
-- `compiler/tests/lsp_testi.rs`: tek/iki katmanlı rename
+- `compiler/tests/lsp_testi.rs`: tek/iki katmanlı rename, kapsam ayrımı ve
+  belirsiz belgede fail-closed semantic seçim
 - `compiler/tests/proje_testi.rs`: profil sabitleme, P011, kilit v2 ve sürüm CLI
 
 K-111/B-016 kanıtının çalıştırma, crash küçültme ve dürüst sınır ayrıntıları

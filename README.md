@@ -82,8 +82,8 @@ parametre türleri**
 çalıştır/denetle/dene), **yerel paketler** (`X paketini kullan`), süreçler
 arası kilitli **atomik dosya yazma** ve sürüm kimlikli Türkçe tanı kataloğu.
 Araçlar: `dil çalıştır(--güvenli/--deneysel-web/--web-proxy)/iz(kaydet/oynat)/parola-özeti/denetle(--json)/dene/biçimle/ekle/çıkar/kilitle/paketler/anahtar(üret)/paketle/hata/belge/morfoloji/yeni`
-+ **dillsp** LSP sunucusu — tanılar, hover, tanıma git, **morfolojili
-yeniden adlandırma (F2)** ([editors/](editors/)).
++ **dillsp** LSP sunucusu — tanılar, hover, HIR/semantic kimlikli tanıma git,
+**kapsam güvenli morfolojili yeniden adlandırma (F2)** ([editors/](editors/)).
 Determinizm testlerde tam: rastgelelik, saat, dosyalar, HTTP, sunucu istekleri,
 sensörler ve an ölçümü IO soyutlamasından gelir; bütün testler hermetik koşar.
 Lexer/parser panic-free ve morfoloji üret→çöz sözlerini ayrıca kalıcı saldırı
@@ -144,7 +144,7 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **467** |
+| Rust + doctest vakası | **475** |
 | Tanı kimliği | **145 etkin + 3 ayrılmış** |
 | RFC | **23** (2 kabul, 19 geçici kabul, 2 taslak) |
 | ADR | **26** (26 kabul) |
@@ -258,6 +258,10 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   K-119 resmî formatter'ın satır ve girinti tokenları dahil parser girdisini
   değiştirememesini production C011 güvencesine ve 33 golden programın
   dağınık-boşluk property kapısına bağladı; B-042 kapandı.
+  K-120 LSP definition/rename'i `SymbolId`/`IslemId`/`YapiId` typed-HIR
+  bağlarına geçirdi; ayrı kapsamdaki aynı adlar ayrılır, hatalı belgede metin
+  tahmini yapılmaz ve başka dosyadaki tanım için eksik rename üretilmez. Bakım sözleşmesi
+  [semantic gezinme rehberindedir](docs/lsp-semantic-gezinme.md).
   Uygulama sırası
   [öncelikli backlog](docs/oncelikli-backlog.md) ile sabittir.
   Bağlayıcı liste: [docs/v1-surum-kapilari.md](docs/v1-surum-kapilari.md).

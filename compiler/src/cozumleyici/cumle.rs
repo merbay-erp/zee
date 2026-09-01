@@ -1,10 +1,11 @@
 use super::*;
 
-pub(super) fn blok_denetle(
-    cumleler: &mut [Cumle],
-    ortam: &mut SembolTablosu,
-    baglam: &mut Baglam,
-) -> Result<(), Tani> {
+fn sembol_yazimi_kaydet(baglam: &mut Baglam, kimlik: SymbolId, ad: &str, kaynak_araligi: crate::hir::HirKaynakAraligi) {
+    baglam.hir_sembol_adi_ekle(kimlik, ad.to_string());
+    baglam.hir_sembol_yazimi_ekle(kimlik, kaynak_araligi);
+}
+
+pub(super) fn blok_denetle(cumleler: &mut [Cumle], ortam: &mut SembolTablosu, baglam: &mut Baglam) -> Result<(), Tani> {
     let giriste_bekleyenler = baglam.bekleyen_gorevler.clone();
     let mut acik_gorev_satiri = None;
     for cumle in cumleler.iter_mut() {
@@ -13,7 +14,13 @@ pub(super) fn blok_denetle(
                 let satir = *satir;
                 ifade_denetle(deger, ortam, baglam, satir)?;
             }
-            Cumle::Olsun { ad, deger, satir, sutun, uzunluk } => {
+            Cumle::Olsun {
+                ad,
+                deger,
+                satir,
+                sutun,
+                uzunluk,
+            } => {
                 let satir = *satir;
                 if baglam.gezilen_koleksiyonlar.contains(ad) {
                     return Err(gezilen_koleksiyonu_degistirme_tanisi(ad, satir));
@@ -59,7 +66,10 @@ pub(super) fn blok_denetle(
                         )));
                     }
                 }
-                ortam.insert(ad.clone(), tur);
+                let kimlik = ortam.insert(ad.clone(), tur);
+                let kaynak_araligi =
+                    crate::hir::HirKaynakAraligi::kesin(satir, *sutun, *uzunluk).ok_or_else(|| hir_kaynak_hatasi(satir))?;
+                sembol_yazimi_kaydet(baglam, kimlik, ad, kaynak_araligi);
             }
             Cumle::KezTekrarla { adet, govde, satir } => {
                 let satir = *satir;
@@ -77,7 +87,13 @@ pub(super) fn blok_denetle(
                 blok_denetle(govde, ortam, baglam)?;
                 kapsam_bitir(ortam, &kapsam);
             }
-            Cumle::AralikDongusu { ad, bastan, sona, govde, satir } => {
+            Cumle::AralikDongusu {
+                ad,
+                bastan,
+                sona,
+                govde,
+                satir,
+            } => {
                 let satir = *satir;
                 for uc in [&mut *bastan, &mut *sona] {
                     let tur = ifade_denetle(uc, ortam, baglam, satir)?;
@@ -93,22 +109,17 @@ pub(super) fn blok_denetle(
                 }
                 // Döngü değişkeni gövde kapsamındadır ve gövdeyle ölür (RFC-0004).
                 let kapsam = kapsam_baslat(ortam);
-                ortam.insert(ad.clone(), Tur::TamSayi);
+                let kimlik = ortam.insert(ad.clone(), Tur::TamSayi);
+                let kaynak_araligi = crate::hir::HirKaynakAraligi::satir(satir).ok_or_else(|| hir_kaynak_hatasi(satir))?;
+                sembol_yazimi_kaydet(baglam, kimlik, ad, kaynak_araligi);
                 blok_denetle(govde, ortam, baglam)?;
                 kapsam_bitir(ortam, &kapsam);
             }
-            Cumle::OlduguSurece { kosul, govde, satir }
-            | Cumle::OlanaKadar { kosul, govde, satir } => {
+            Cumle::OlduguSurece { kosul, govde, satir } | Cumle::OlanaKadar { kosul, govde, satir } => {
                 let satir = *satir;
                 let tur = ifade_denetle(kosul, ortam, baglam, satir)?;
                 if tur != Tur::Mantiksal {
-                    return Err(Tani::yeni(
-                        "T005",
-                        "Koşullu döngü bir koşul ister.".into(),
-                        satir,
-                        1,
-                        1,
-                    ));
+                    return Err(Tani::yeni("T005", "Koşullu döngü bir koşul ister.".into(), satir, 1, 1));
                 }
                 let kapsam = kapsam_baslat(ortam);
                 blok_denetle(govde, ortam, baglam)?;
@@ -142,10 +153,10 @@ pub(super) fn blok_denetle(
                     let ters = son_kol_daraltmasi
                         .filter(|_| kollar.len() == 1)
                         .and_then(|(kod, ad)| match kod {
-                            1 => None,             // varsa'nın değilse'si: boş
-                            2 => Some((1, ad)),    // yoksa'nın değilse'si: dolu
-                            3 => Some((4, ad)),    // başarılıysa'nın değilse'si: başarısız
-                            4 => Some((3, ad)),    // başarısızsa'nın değilse'si: başarılı
+                            1 => None,          // varsa'nın değilse'si: boş
+                            2 => Some((1, ad)), // yoksa'nın değilse'si: dolu
+                            3 => Some((4, ad)), // başarılıysa'nın değilse'si: başarısız
+                            4 => Some((3, ad)), // başarısızsa'nın değilse'si: başarılı
                             _ => None,
                         });
                     if let Some((tur_kodu, ad)) = &ters {
@@ -169,14 +180,11 @@ pub(super) fn blok_denetle(
                     Tur::Liste(VeriTuru::Bilinmeyen) => {
                         let deger_tur = ifade_denetle(deger, ortam, baglam, satir)?;
                         let Some(yeni_oge) = veri_turu_yap(&deger_tur) else {
-                            return Err(Tani::yeni(
-                                "T011",
-                                format!("Liste öğesi {} olamaz.", deger_tur.adi()),
-                                satir,
-                                1,
-                                1,
-                            )
-                            .onerili("v0'da liste öğesi TamSayı, Ondalık, Metin ya da satır (Sözlük) olabilir.".into()));
+                            return Err(
+                                Tani::yeni("T011", format!("Liste öğesi {} olamaz.", deger_tur.adi()), satir, 1, 1).onerili(
+                                    "v0'da liste öğesi TamSayı, Ondalık, Metin ya da satır (Sözlük) olabilir.".into(),
+                                ),
+                            );
                         };
                         if let Some(ad) = nesne_adi(hedef) {
                             ortam.insert(ad, Tur::Liste(yeni_oge));
@@ -199,37 +207,34 @@ pub(super) fn blok_denetle(
                 if deger_tur != oge.ture() {
                     return Err(Tani::yeni(
                         "T011",
-                        format!(
-                            "{} listesine {} eklenemez.",
-                            oge.adi(),
-                            deger_tur.adi()
-                        ),
+                        format!("{} listesine {} eklenemez.", oge.adi(), deger_tur.adi()),
                         satir,
                         1,
                         1,
                     ));
                 }
             }
-            Cumle::HerBiri { ad, kaynak, govde, satir } => {
+            Cumle::HerBiri {
+                ad,
+                kaynak,
+                govde,
+                satir,
+            } => {
                 let satir = *satir;
                 if kaynak.is_none() {
                     // Örtük çoğul (K-013): "her sayı için" → kapsamda "sayılar" aranır.
                     let adaylar = [format!("{}lar", ad), format!("{}ler", ad)];
                     let bulunanlar: Vec<String> = adaylar
                         .iter()
-                        .filter(|aday| {
-                            matches!(
-                                ortam.get(aday.as_str()),
-                                Some(Tur::Liste(_)) | Some(Tur::Sozluk(_))
-                            )
-                        })
+                        .filter(|aday| matches!(ortam.get(aday.as_str()), Some(Tur::Liste(_)) | Some(Tur::Sozluk(_))))
                         .cloned()
                         .collect();
                     match bulunanlar.len() {
                         1 => {
-                            let kaynak_adi = bulunanlar.into_iter().next().ok_or_else(|| {
-                                ic_tutarlilik_hatasi("Örtük çoğul adayı kayboldu", satir)
-                            })?;
+                            let kaynak_adi = bulunanlar
+                                .into_iter()
+                                .next()
+                                .ok_or_else(|| ic_tutarlilik_hatasi("Örtük çoğul adayı kayboldu", satir))?;
                             *kaynak = Some(Ifade::Degisken {
                                 ham: kaynak_adi.clone(),
                                 sembol_kimligi: ortam.kimlik(&kaynak_adi),
@@ -266,14 +271,10 @@ pub(super) fn blok_denetle(
                 let oge_turu = match kaynak {
                     Some(k) => match ifade_denetle(k, ortam, baglam, satir)? {
                         Tur::Liste(VeriTuru::Bilinmeyen) => {
-                            return Err(Tani::yeni(
-                                "T013",
-                                "Bu liste henüz boş: öğe türü belli değil.".into(),
-                                satir,
-                                1,
-                                1,
-                            )
-                            .onerili("Gezmeden önce listeye en az bir öğe ekle.".into()));
+                            return Err(
+                                Tani::yeni("T013", "Bu liste henüz boş: öğe türü belli değil.".into(), satir, 1, 1)
+                                    .onerili("Gezmeden önce listeye en az bir öğe ekle.".into()),
+                            );
                         }
                         Tur::Liste(oge) => oge.ture(),
                         // Sözlük üzerinde gezinme anahtarları (Metin) verir.
@@ -281,10 +282,7 @@ pub(super) fn blok_denetle(
                         baska => {
                             return Err(Tani::yeni(
                                 "T013",
-                                format!(
-                                    "\"her ... için\" bir liste ya da sözlük ister; burada {} var.",
-                                    baska.adi()
-                                ),
+                                format!("\"her ... için\" bir liste ya da sözlük ister; burada {} var.", baska.adi()),
                                 satir,
                                 1,
                                 1,
@@ -292,23 +290,20 @@ pub(super) fn blok_denetle(
                         }
                     },
                     None => {
-                        return Err(ic_tutarlilik_hatasi(
-                            "Gezme kaynağı çözümlenmeden kaldı",
-                            satir,
-                        ));
+                        return Err(ic_tutarlilik_hatasi("Gezme kaynağı çözümlenmeden kaldı", satir));
                     }
                 };
                 let kaynak_adi = kaynak
                     .as_ref()
                     .and_then(nesne_adi)
-                    .ok_or_else(|| {
-                        ic_tutarlilik_hatasi("Gezme kaynağı çözülmüş bir ad değil", satir)
-                    })?;
+                    .ok_or_else(|| ic_tutarlilik_hatasi("Gezme kaynağı çözülmüş bir ad değil", satir))?;
                 if kaynak_adi == *ad || baglam.gezilen_koleksiyonlar.contains(&kaynak_adi) {
                     return Err(gezilen_koleksiyonu_degistirme_tanisi(&kaynak_adi, satir));
                 }
                 let kapsam = kapsam_baslat(ortam);
-                ortam.insert(ad.clone(), oge_turu);
+                let kimlik = ortam.insert(ad.clone(), oge_turu);
+                let kaynak_araligi = crate::hir::HirKaynakAraligi::satir(satir).ok_or_else(|| hir_kaynak_hatasi(satir))?;
+                sembol_yazimi_kaydet(baglam, kimlik, ad, kaynak_araligi);
                 baglam.gezilen_koleksiyonlar.insert(kaynak_adi.clone());
                 let sonuc = blok_denetle(govde, ortam, baglam);
                 baglam.gezilen_koleksiyonlar.remove(&kaynak_adi);
@@ -413,13 +408,7 @@ pub(super) fn blok_denetle(
             Cumle::CerezSil { ad, satir } => {
                 let satir = *satir;
                 if ifade_denetle(ad, ortam, baglam, satir)? != Tur::Metin {
-                    return Err(Tani::yeni(
-                        "T034",
-                        "Çerez adı Metin olmalı.".into(),
-                        satir,
-                        1,
-                        1,
-                    ));
+                    return Err(Tani::yeni("T034", "Çerez adı Metin olmalı.".into(), satir, 1, 1));
                 }
             }
             Cumle::CerezYaz { ad, deger, satir } => {
@@ -427,21 +416,11 @@ pub(super) fn blok_denetle(
                 let ad_turu = ifade_denetle(ad, ortam, baglam, satir)?;
                 let deger_turu = ifade_denetle(deger, ortam, baglam, satir)?;
                 if ad_turu != Tur::Metin || deger_turu != Tur::Metin {
-                    return Err(Tani::yeni(
-                        "T034",
-                        "Çerez adı ve değeri Metin olmalı.".into(),
-                        satir,
-                        1,
-                        1,
-                    ));
+                    return Err(Tani::yeni("T034", "Çerez adı ve değeri Metin olmalı.".into(), satir, 1, 1));
                 }
             }
             Cumle::RotaPolitikasi { .. } | Cumle::RotaAlaniGerekli { .. } => {}
-            Cumle::OturumAc {
-                kullanici,
-                rol,
-                satir,
-            } => {
+            Cumle::OturumAc { kullanici, rol, satir } => {
                 let satir = *satir;
                 let kullanici_turu = ifade_denetle(kullanici, ortam, baglam, satir)?;
                 let rol_turu = ifade_denetle(rol, ortam, baglam, satir)?;
@@ -497,7 +476,10 @@ pub(super) fn blok_denetle(
                             ));
                         }
                     }
-                    ortam.insert(ad.clone(), tur);
+                    let kimlik = ortam.insert(ad.clone(), tur);
+                    let kaynak_araligi = crate::hir::HirKaynakAraligi::satir(*gorev_satiri)
+                        .ok_or_else(|| hir_kaynak_hatasi(*gorev_satiri))?;
+                    sembol_yazimi_kaydet(baglam, kimlik, ad, kaynak_araligi);
                     baglam.bekleyen_gorevler.insert(ad.clone());
                 }
             }
@@ -513,12 +495,15 @@ pub(super) fn blok_denetle(
                         "Bu kapsamda beklenebilecek açık bir görev grubu yok.",
                     ));
                 }
-                baglam
-                    .bekleyen_gorevler
-                    .retain(|ad| giriste_bekleyenler.contains(ad));
+                baglam.bekleyen_gorevler.retain(|ad| giriste_bekleyenler.contains(ad));
                 acik_gorev_satiri = None;
             }
-            Cumle::IcindeBlogu { sure, govde, yetismezse, satir } => {
+            Cumle::IcindeBlogu {
+                sure,
+                govde,
+                yetismezse,
+                satir,
+            } => {
                 let satir = *satir;
                 let tur = ifade_denetle(sure, ortam, baglam, satir)?;
                 if tur != Tur::Sure {
@@ -561,13 +546,21 @@ pub(super) fn blok_denetle(
                 // Son cevap örtük "yanıt" adına Metin olarak bağlanır (K-007).
                 ortam.insert("yanıt".to_string(), Tur::Metin);
             }
-            Cumle::Gore { konu, kollar, degilse, satir } => {
+            Cumle::Gore {
+                konu,
+                kollar,
+                degilse,
+                satir,
+            } => {
                 let satir = *satir;
                 let konu_turu = ifade_denetle(konu, ortam, baglam, satir)?;
                 if konu_turu.veri_turu().is_none() {
                     return Err(Tani::yeni(
                         "T026",
-                        format!("\"göre\" eşleştirmesi TamSayı ya da Metin ister; burada {} var.", konu_turu.adi()),
+                        format!(
+                            "\"göre\" eşleştirmesi TamSayı ya da Metin ister; burada {} var.",
+                            konu_turu.adi()
+                        ),
                         satir,
                         1,
                         1,
@@ -645,17 +638,16 @@ pub(super) fn blok_denetle(
                 let satir = *satir;
                 let tur = ifade_denetle(kosul, ortam, baglam, satir)?;
                 if tur != Tur::Mantiksal {
-                    return Err(Tani::yeni(
-                        "T005",
-                        "\"olmalı\" bir koşul ister.".into(),
-                        satir,
-                        1,
-                        1,
-                    )
-                    .onerili("Örnek: kare 16 ya eşit olmalı".into()));
+                    return Err(Tani::yeni("T005", "\"olmalı\" bir koşul ister.".into(), satir, 1, 1)
+                        .onerili("Örnek: kare 16 ya eşit olmalı".into()));
                 }
             }
-            Cumle::AlanAta { nesne, alan, deger, satir } => {
+            Cumle::AlanAta {
+                nesne,
+                alan,
+                deger,
+                satir,
+            } => {
                 let satir = *satir;
                 let nesne_turu = ifade_denetle(nesne, ortam, baglam, satir)?;
                 let yapi_kimligi = match nesne_turu {
@@ -672,9 +664,7 @@ pub(super) fn blok_denetle(
                 };
                 let yapi = baglam
                     .yapi(yapi_kimligi)
-                    .ok_or_else(|| {
-                        ic_tutarlilik_hatasi("Yapı kimliği dizinde kayıtlı değil", satir)
-                    })?
+                    .ok_or_else(|| ic_tutarlilik_hatasi("Yapı kimliği dizinde kayıtlı değil", satir))?
                     .clone();
                 let yalin = alan_cozumle(&yapi, alan, satir)?;
                 let beklenen = yapi
@@ -682,9 +672,7 @@ pub(super) fn blok_denetle(
                     .iter()
                     .find(|(a, _)| *a == yalin)
                     .and_then(|(_, t)| alan_turu(t))
-                    .ok_or_else(|| {
-                        ic_tutarlilik_hatasi("Çözülmüş alanın türü bulunamadı", satir)
-                    })?;
+                    .ok_or_else(|| ic_tutarlilik_hatasi("Çözülmüş alanın türü bulunamadı", satir))?;
                 let deger_turu = ifade_denetle(deger, ortam, baglam, satir)?;
                 if deger_turu != beklenen {
                     return Err(Tani::yeni(
@@ -724,7 +712,13 @@ pub(super) fn blok_denetle(
                     }
                 }
             }
-            Cumle::HataDondur { kod, mesaj, neden, veri, satir } => {
+            Cumle::HataDondur {
+                kod,
+                mesaj,
+                neden,
+                veri,
+                satir,
+            } => {
                 let satir = *satir;
                 bekleyen_gorev_olmadigini_denetle(
                     baglam,
@@ -755,7 +749,9 @@ pub(super) fn blok_denetle(
                         1,
                         1,
                     )
-                    .onerili("Örnek: \"UST_HATA\" kodlu \"İşlem tamamlanamadı\" hatasını eski_hata nedeniyle döndür".into()));
+                    .onerili(
+                        "Örnek: \"UST_HATA\" kodlu \"İşlem tamamlanamadı\" hatasını eski_hata nedeniyle döndür".into(),
+                    ));
                 }
                 if let Some(neden) = neden {
                     let neden_turu = ifade_denetle(neden, ortam, baglam, satir)?;
@@ -771,16 +767,10 @@ pub(super) fn blok_denetle(
                 }
                 if let Some(veri) = veri {
                     let veri_turu = ifade_denetle(veri, ortam, baglam, satir)?;
-                    if !matches!(
-                        veri_turu,
-                        Tur::Sozluk(SozlukDegerTuru::Metin | SozlukDegerTuru::Bilinmeyen)
-                    ) {
+                    if !matches!(veri_turu, Tur::Sozluk(SozlukDegerTuru::Metin | SozlukDegerTuru::Bilinmeyen)) {
                         return Err(Tani::yeni(
                             "T052",
-                            format!(
-                                "Hatanın verisi Metin sözlüğü olmalı; burada {} var.",
-                                veri_turu.adi()
-                            ),
+                            format!("Hatanın verisi Metin sözlüğü olmalı; burada {} var.", veri_turu.adi()),
                             satir,
                             1,
                             1,
@@ -800,7 +790,12 @@ pub(super) fn blok_denetle(
                     }
                 }
             }
-            Cumle::BolVeAta { hedef, pay, payda, satir } => {
+            Cumle::BolVeAta {
+                hedef,
+                pay,
+                payda,
+                satir,
+            } => {
                 let satir = *satir;
                 let mut ondalik_var = false;
                 for taraf in [&mut *pay, &mut *payda] {
@@ -822,16 +817,28 @@ pub(super) fn blok_denetle(
                     if *eski != sonuc_turu {
                         return Err(Tani::yeni(
                             "T002",
-                            format!("\"{}\" {} türünde; {} bölme sonucu verilemez.", hedef, eski.adi(), sonuc_turu.adi()),
+                            format!(
+                                "\"{}\" {} türünde; {} bölme sonucu verilemez.",
+                                hedef,
+                                eski.adi(),
+                                sonuc_turu.adi()
+                            ),
                             satir,
                             1,
                             1,
                         ));
                     }
                 }
-                ortam.insert(hedef.clone(), sonuc_turu);
+                let kimlik = ortam.insert(hedef.clone(), sonuc_turu);
+                let kaynak_araligi = crate::hir::HirKaynakAraligi::satir(satir).ok_or_else(|| hir_kaynak_hatasi(satir))?;
+                sembol_yazimi_kaydet(baglam, kimlik, hedef, kaynak_araligi);
             }
-            Cumle::SozlukAta { sozluk, anahtar, deger, satir } => {
+            Cumle::SozlukAta {
+                sozluk,
+                anahtar,
+                deger,
+                satir,
+            } => {
                 let satir = *satir;
                 gezilen_hedefi_denetle(sozluk, baglam, satir)?;
                 let sozluk_turu = ifade_denetle(sozluk, ortam, baglam, satir)?;
@@ -873,13 +880,7 @@ pub(super) fn blok_denetle(
                 };
                 let anahtar_turu = ifade_denetle(anahtar, ortam, baglam, satir)?;
                 if anahtar_turu != Tur::Metin {
-                    return Err(Tani::yeni(
-                        "T021",
-                        "v0'da sözlük anahtarı Metin olmalı.".into(),
-                        satir,
-                        1,
-                        1,
-                    ));
+                    return Err(Tani::yeni("T021", "v0'da sözlük anahtarı Metin olmalı.".into(), satir, 1, 1));
                 }
                 let deger_turu = ifade_denetle(deger, ortam, baglam, satir)?;
                 if deger_turu != beklenen_deger {
@@ -928,19 +929,13 @@ pub(super) fn blok_denetle(
                     // değer/dönüşsüz sözleşmesini açıkça kaydeder.
                     let donus = cagri_denetle(islem_adi, &arg_turleri, baglam, satir)?;
                     let kimlik = (*islem_kimligi).ok_or_else(|| {
-                        Tani::yeni(
-                            "T016",
-                            "İşlem çağrısının semantic kimliği kurulamadı.".into(),
-                            satir,
-                            1,
-                            1,
-                        )
+                        Tani::yeni("T016", "İşlem çağrısının semantic kimliği kurulamadı.".into(), satir, 1, 1)
                     })?;
                     let hir_turu = donus
                         .map(crate::hir::HirIfadeTuru::Deger)
                         .unwrap_or(crate::hir::HirIfadeTuru::DegerDondurmez);
-                    let kaynak_araligi = crate::hir::HirKaynakAraligi::satir(satir)
-                        .ok_or_else(|| hir_kaynak_hatasi(satir))?;
+                    let kaynak_araligi =
+                        crate::hir::HirKaynakAraligi::satir(satir).ok_or_else(|| hir_kaynak_hatasi(satir))?;
                     hir_ifadesi_kaydet(
                         baglam,
                         crate::hir::ifade_adresi(cagri),

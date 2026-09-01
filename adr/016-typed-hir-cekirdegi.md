@@ -3,6 +3,7 @@
 - **Durum:** kabul
 - **Tarih:** 1 Eylül 2026
 - **İlgili kayıt:** K-103, K-104, B-019, V1-P0-14
+- **Revizyon:** 2 Eylül 2026 — K-120/B-041 semantic LSP tüketimi eklendi
 
 ## Bağlam
 
@@ -54,6 +55,14 @@ bağın canonical tablolarla uyumunu debug/test faz çıkışında yürütülebi
 değişmez yaptı. Özellik→alan dönüşümünde klonlanan alt düğümün bıraktığı yetim
 HIR kaydı bu kapıyla bulunup taşıma temelli dönüşümle düzeltildi.
 
+K-120'de HIR ilk kez runtime dışındaki production tüketiciye bağlandı.
+`HirProgram`; sembol tanımı/yazımı/okumasını `SymbolId`, işlem çağrılarını
+`IslemId`, yapı kurulumlarını `YapiId` ile kaynak sırasına açar. LSP tanıma
+git ve rename bu dizinleri kullanır; kaynak metni yalnız kimliği seçtikten
+sonra LSP aralığı ve morfolojik yüzey üretmek için okur. HIR aralığı henüz
+dosya kimliği taşımadığından dış tanım, açık belgede tam yerel başlık
+olarak doğrulanamazsa definition/rename fail-closed durur.
+
 ## Değişmezler
 
 1. Başarılı checker bilgisi olmadan `HirProgram` kurulamaz.
@@ -64,12 +73,17 @@ HIR kaydı bu kapıyla bulunup taşıma temelli dönüşümle düzeltildi.
 6. Standart kaynak çalıştırma ve test hattı `CalistirmaProgrami::Hir` kullanır.
 7. Her HIR ifade kaydı zorunlu `HirKaynakAraligi` taşır.
 8. HIR tablosunda canlı AST ifadesine karşılık gelmeyen kayıt bulunamaz.
+9. LSP semantic hedefi yalnız başarılı `BaglanmisProgram` HIR'ından seçilir;
+   başarısız derlemede parser-metni fallback'i yoktur.
+10. Dosya kökeni kanıtlanamayan içe alınmış tanım, açık belgenin satırıyla
+    sayısal olarak çakışsa bile yerel tanım kabul edilmez.
 
 ## Sonuçlar
 
 - Checker tür sonucu artık geçici dönüş değeri olmaktan çıkıp sonraki fazın
   kalıcı girdisidir.
 - Semantic bağlar AST alanlarında uyumluluk için dursa da tek gelecek yönü HIR'dır.
-- Beş davranış ve iki mimari test HIR tür/bağ kayıtlarını, zorunlu faz
-  sahipliğini ve runtime'ın kaynak adına geri düşmemesini korur.
+- HIR ve LSP davranış testleri tür/bağ kayıtlarını, sembol tanım/yazım
+  aralıklarını, zorunlu faz sahipliğini ve production tüketicilerin kaynak
+  adına geri düşmemesini korur.
 - Zee kaynak semantiği değişmediğinden yeni normatif spec gerekmez.

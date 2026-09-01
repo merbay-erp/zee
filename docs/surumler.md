@@ -336,6 +336,14 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   bozmayan dağınık-boşluk varyantı biçimlenir; önce/sonra token izi eşit ve
   her iki kaynak parser tarafından kabul edilmiş olmalıdır. İki yeni
   regresyonla toplam 467 test yeşildir; B-042 kapandı.
+- **Semantic LSP gezinme ve rename** (K-120, ADR-014/016): HIR artık her
+  `SymbolId` için ilk tanım, yeniden atama ve okuma aralıklarını; işlem/yapı
+  kullanımlarını `IslemId`/`YapiId` ile araçlara açar. Definition/rename aynı
+  yazımlı ayrı kapsamları ayırır, çok kelimeli işlem adını bütün değiştirir ve
+  morfolojiyi yalnız semantic hedef seçildikten sonra uygular. Hatalı veya
+  A002 belirsiz belgede metin tahmini yapılmaz; dış birim tanımı için eksik
+  tek-dosya rename'i üretilmez. Bir HIR ve yedi LSP regresyonuyla toplam 475
+  test yeşildir; B-041 kapandı.
 
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`

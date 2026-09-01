@@ -5,10 +5,7 @@ fn cagri_turu_uyumlu(parametre: &Tur, arguman: &Tur) -> bool {
         || matches!((parametre, arguman), (Tur::Ondalik, Tur::TamSayi))
         || matches!(
             (parametre, arguman),
-            (
-                Tur::Liste(VeriTuru::Ondalik),
-                Tur::Liste(VeriTuru::TamSayi)
-            )
+            (Tur::Liste(VeriTuru::Ondalik), Tur::Liste(VeriTuru::TamSayi))
         )
         || matches!(
             (parametre, arguman),
@@ -26,10 +23,7 @@ fn cagri_turu_uyumlu(parametre: &Tur, arguman: &Tur) -> bool {
         )
         || matches!(
             (parametre, arguman),
-            (
-                Tur::Sonuc(VeriTuru::Ondalik),
-                Tur::Sonuc(VeriTuru::TamSayi)
-            )
+            (Tur::Sonuc(VeriTuru::Ondalik), Tur::Sonuc(VeriTuru::TamSayi))
         )
 }
 
@@ -91,23 +85,23 @@ pub(super) fn cagri_denetle(
             // (V1-P0-01). Gövde geniş türle geçerli değilse doğal tanısı çıkar.
             // Özyineleme denetimi
             // sürerken terfi yapılmaz (T017 kalır).
-            let yalniz_ters_genisleme = imza
-                .parametre_turleri
-                .iter()
-                .zip(arg_turleri.iter())
-                .all(|(param, arg)| {
-                    param == arg
-                        || matches!((param, arg), (Tur::Ondalik, Tur::TamSayi))
-                        || matches!(
-                            (param, arg),
-                            (Tur::Liste(VeriTuru::Ondalik), Tur::Liste(VeriTuru::TamSayi))
-                        )
-                        || matches!((param, arg), (Tur::TamSayi, Tur::Ondalik))
-                        || matches!(
-                            (param, arg),
-                            (Tur::Liste(VeriTuru::TamSayi), Tur::Liste(VeriTuru::Ondalik))
-                        )
-                });
+            let yalniz_ters_genisleme =
+                imza.parametre_turleri
+                    .iter()
+                    .zip(arg_turleri.iter())
+                    .all(|(param, arg)| {
+                        param == arg
+                            || matches!((param, arg), (Tur::Ondalik, Tur::TamSayi))
+                            || matches!(
+                                (param, arg),
+                                (Tur::Liste(VeriTuru::Ondalik), Tur::Liste(VeriTuru::TamSayi))
+                            )
+                            || matches!((param, arg), (Tur::TamSayi, Tur::Ondalik))
+                            || matches!(
+                                (param, arg),
+                                (Tur::Liste(VeriTuru::TamSayi), Tur::Liste(VeriTuru::Ondalik))
+                            )
+                    });
             let ozyinelemede = baglam
                 .denetim_yigini
                 .iter()
@@ -118,7 +112,10 @@ pub(super) fn cagri_denetle(
             }
             return Err(Tani::yeni(
                 "T017",
-                format!("\"{}\" çağrısındaki argüman türleri işlemin imzasına uymuyor.", ad),
+                format!(
+                    "\"{}\" çağrısındaki argüman türleri işlemin imzasına uymuyor.",
+                    ad
+                ),
                 satir,
                 1,
                 1,
@@ -145,8 +142,7 @@ pub(super) fn cagri_denetle(
                 1,
             ));
         }
-        let tahmin =
-            donusleri_birlestir(ad, &baglam.denetim_yigini[indeks].donusler, satir)?;
+        let tahmin = donusleri_birlestir(ad, &baglam.denetim_yigini[indeks].donusler, satir)?;
         let tahmin = match tahmin {
             Some(tur) => tur,
             None => {
@@ -173,7 +169,10 @@ pub(super) fn cagri_denetle(
             Some(onceki) if onceki != tahmin => {
                 return Err(Tani::yeni(
                     "T018",
-                    format!("\"{}\" özyinelemeli kullanımları farklı türlere çıkıyor.", ad),
+                    format!(
+                        "\"{}\" özyinelemeli kullanımları farklı türlere çıkıyor.",
+                        ad
+                    ),
                     satir,
                     1,
                     1,
@@ -261,7 +260,11 @@ pub(super) fn cagri_denetle(
 
     let mut islem_ortami = SembolTablosu::yeni(baglam.islem_kapsami(islem_kimligi));
     for (param, tur) in islem.parametreler.iter().zip(denetim_turleri.iter()) {
-        islem_ortami.insert(param.ad.clone(), *tur);
+        let kimlik = islem_ortami.insert(param.ad.clone(), *tur);
+        let kaynak_araligi = crate::hir::HirKaynakAraligi::satir(param.satir)
+            .ok_or_else(|| hir_kaynak_hatasi(param.satir))?;
+        baglam.hir_sembol_adi_ekle(kimlik, param.ad.clone());
+        baglam.hir_sembol_yazimi_ekle(kimlik, kaynak_araligi);
     }
 
     baglam.denetim_yigini.push(ImzaKaydi {

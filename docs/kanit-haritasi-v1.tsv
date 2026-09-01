@@ -16,7 +16,7 @@ rfcs/0014-standart-kitaplik.md	kismi	compiler/tests/kitaplik_testi.rs,compiler/t
 rfcs/0015-uygulama-eylemleri.md	kanitli	compiler/tests/web_testi.rs,compiler/tests/proje_testi.rs	Eylem etki ve transaction sınırı
 rfcs/0016-atomik-kalici-dosya.md	kanitli	compiler/src/kalici_dosya.rs,compiler/tests/proje_testi.rs	Atomik replace süreç kilidi ve rollback
 rfcs/0017-web-oturum-ve-csrf.md	kanitli	compiler/tests/web_testi.rs,compiler/tests/guvenli_testi.rs,compiler/src/web_guvenligi.rs	Oturum rol CSRF çerez ve proxy profili
-rfcs/0018-surumlu-morfoloji-profili.md	kanitli	compiler/tests/morfoloji_testi.rs	Profil snapshot property ve belirsizlik
+rfcs/0018-surumlu-morfoloji-profili.md	kanitli	compiler/tests/morfoloji_testi.rs,compiler/tests/lsp_testi.rs	Profil snapshot property belirsizlik ve semantic rename
 rfcs/0019-deger-semantigi-ve-gezme-imleci.md	kanitli	compiler/tests/koleksiyon_testi.rs	Derin kopya ve değer-sonuç imleci
 rfcs/0020-paket-yayini-ve-registry-guveni.md	kismi	compiler/tests/tedarik_testi.rs,compiler/src/tedarik.rs,compiler/src/registry.rs	Yayın ve metadata güveni testli; taşıma cache CLI açık
 rfcs/0021-ifade-grameri-mimarisi.md	kanitli	compiler/tests/ifade_grameri_testi.rs,compiler/tests/bicimleyici_testi.rs	Katman sırası tam tüketim çakışma ve formatter eşdeğerliği
@@ -33,9 +33,9 @@ adr/010-normatif-otorite-ve-degisiklik-butunlugu.md	kanitli	compiler/tests/dokum
 adr/011-intrinsic-yetkinlik-siniri.md	kanitli	compiler/tests/intrinsic_lowering_testi.rs	Intrinsic kayıt lowering ve yetkinlik
 adr/012-derleyici-faz-modulleri.md	kanitli	compiler/tests/mimari_sinir_testi.rs	Fiziksel modül sahipliği ve satır bütçeleri
 adr/013-checker-katmanlari.md	kanitli	compiler/tests/mimari_sinir_testi.rs	Checker tek sorumluluk sınırları
-adr/014-semantic-kimlikler.md	kanitli	compiler/tests/semantic_kimlik_testi.rs	SymbolId YapiId IslemId kararlılığı
+adr/014-semantic-kimlikler.md	kanitli	compiler/tests/semantic_kimlik_testi.rs,compiler/tests/hir_modeli_testi.rs,compiler/tests/lsp_testi.rs	Kimlik kararlılığı HIR tanım dizini ve semantic LSP
 adr/015-derleyici-faz-tipleri.md	kanitli	compiler/tests/faz_modeli_testi.rs	Kaynak token AST ve bağlı program ayrımı
-adr/016-typed-hir-cekirdegi.md	kanitli	compiler/tests/hir_modeli_testi.rs,compiler/tests/invariant_testi.rs	Typed HIR bağları ve tamlık invariantı
+adr/016-typed-hir-cekirdegi.md	kanitli	compiler/tests/hir_modeli_testi.rs,compiler/tests/invariant_testi.rs,compiler/tests/lsp_testi.rs	Typed HIR bağları tamlık ve production LSP tüketimi
 adr/017-native-ag-kaynak-sinirlari.md	kanitli	compiler/tests/ag_ve_esz_testi.rs,compiler/src/main.rs	HTTP deadline ve byte sınırları
 adr/018-sinirli-web-oturum-deposu.md	kanitli	compiler/src/web_guvenligi.rs,compiler/tests/web_testi.rs	Oturum kota LRU ve mutlak ömür
 adr/019-lsp-girdi-sinirlari.md	kanitli	compiler/tests/lsp_testi.rs,compiler/src/bin/dillsp.rs	Çerçeve ve JSON bütçeleri
@@ -50,7 +50,7 @@ adr/027-surumlu-deterministik-io-profili.md	kanitli	compiler/tests/deterministik
 adr/028-kanonik-zep-yol-profili.md	kanitli	compiler/tests/tedarik_testi.rs,compiler/src/tedarik.rs	NFC fixture ve 80 saldırı vakası
 spec/01-sozcukleme.md	kanitli	compiler/tests/kacis_ve_negatif_testi.rs,compiler/tests/metin_testi.rs	Token kaçış Unicode ve sayı kuralları
 spec/02-dizim.md	kanitli	compiler/tests/golden_testi.rs,compiler/tests/ifade_grameri_testi.rs	Cümle blok ve ifade dizimi
-spec/03-adlar-ve-kapsam.md	kanitli	compiler/tests/kapsam_testi.rs,compiler/tests/morfoloji_testi.rs	Ad çözümü kapsam ve morfoloji
+spec/03-adlar-ve-kapsam.md	kanitli	compiler/tests/kapsam_testi.rs,compiler/tests/morfoloji_testi.rs,compiler/tests/lsp_testi.rs	Ad çözümü kapsam morfoloji ve semantic rename
 spec/04-turler.md	kanitli	compiler/tests/koleksiyon_testi.rs,compiler/tests/ondalik_testi.rs	Tür envanteri ve dönüşümler
 spec/05-degerlendirme.md	kanitli	compiler/tests/golden_testi.rs,compiler/tests/playground_testi.rs	Değerlendirme sırası ve determinizm
 spec/06-hata-modeli.md	kanitli	compiler/tests/katalog_testi.rs,compiler/tests/tani_kimligi_testi.rs,compiler/tests/yapilandirilmis_hata_testi.rs	Tanı Seçenek Sonuç ve Hata sözleşmesi
@@ -60,7 +60,7 @@ spec/09-son-tarih-ve-iptal.md	kanitli	compiler/tests/ag_ve_esz_testi.rs,compiler
 spec/10-disari-acik-islem-sozlesmesi.md	kanitli	compiler/tests/acik_imza_testi.rs	Public imza ve dönüş kanıtı
 spec/11-uygulama-eylemleri-ve-web-adaptoru.md	kanitli	compiler/tests/web_testi.rs,compiler/tests/intrinsic_lowering_testi.rs	Eylem rota etki ve savepoint
 spec/12-web-guvenlik-profili.md	kanitli	compiler/tests/web_testi.rs,compiler/tests/guvenli_testi.rs,compiler/src/web_guvenligi.rs	Oturum CSRF rol çerez ve HTTPS proxy
-spec/13-surumlu-morfoloji-profili.md	kanitli	compiler/tests/morfoloji_testi.rs	zee-tr-1 snapshot property ve proje pini
+spec/13-surumlu-morfoloji-profili.md	kanitli	compiler/tests/morfoloji_testi.rs,compiler/tests/lsp_testi.rs	zee-tr-1 snapshot property proje pini ve semantic rename
 spec/14-yapilandirilmis-eszamanlilik.md	kanitli	compiler/tests/ag_ve_esz_testi.rs	Görev grubu scheduler sahiplik ve iptal
 spec/15-yapilandirilmis-hata-degeri.md	kanitli	compiler/tests/yapilandirilmis_hata_testi.rs	Kod mesaj neden veri ve JSON
 spec/16-keyfi-hassasiyetli-ondalik.md	kanitli	compiler/tests/ondalik_testi.rs	Tam işlemler ve yuvarlama bağlamı

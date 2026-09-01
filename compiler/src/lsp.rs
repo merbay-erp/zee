@@ -229,18 +229,93 @@ fn json_metin_yaz(metin: &str) -> String {
 
 /// Tamamlama önerileri: dilin kalıp kelimeleri (kaynağı: ayrıştırıcı yüzeyi).
 const KALIP_KELIMELERI: [&str; 87] = [
-    "yaz", "olsun", "ise", "değilse", "tekrarla", "için", "kez", "her", "kadar",
-    "sürece", "olduğu", "olana", "ile", "ve", "veya", "diye", "sor", "yanıt",
-    "işlem", "eylem", "al", "döndür", "yapı", "test", "olmalı", "ekle", "artır", "azalt",
-    "böl", "göre", "kullan", "birimini", "paketini", "doğru", "yanlış", "yok", "yeni",
-    "dene", "bitir", "saniye", "dakika", "hatasını", "kodlu", "nedeniyle",
-    "verisiyle", "kodu", "mesajı", "nedeni", "verisi",
-    "varsa", "yoksa", "başarılıysa", "başarısızsa", "sil", "yönlendir",
-    "adresine", "çerezine", "sıralanmışı", "parçaları", "birleşmişi", "değişmişi",
-    "içermeli", "olmamalı", "kuruşlusu", "metni", "harfleri", "kırpılmışı",
-    "arasındaki", "günler", "önekli", "kalanı", "GET", "HEAD", "POST", "PUT", "PATCH",
-    "DELETE", "herkese", "açık", "oturum", "gerekli", "yetkisi", "rolüyle",
-    "alanı", "belirteci", "doğrulanıyorsa", "kullanıcısını",
+    "yaz",
+    "olsun",
+    "ise",
+    "değilse",
+    "tekrarla",
+    "için",
+    "kez",
+    "her",
+    "kadar",
+    "sürece",
+    "olduğu",
+    "olana",
+    "ile",
+    "ve",
+    "veya",
+    "diye",
+    "sor",
+    "yanıt",
+    "işlem",
+    "eylem",
+    "al",
+    "döndür",
+    "yapı",
+    "test",
+    "olmalı",
+    "ekle",
+    "artır",
+    "azalt",
+    "böl",
+    "göre",
+    "kullan",
+    "birimini",
+    "paketini",
+    "doğru",
+    "yanlış",
+    "yok",
+    "yeni",
+    "dene",
+    "bitir",
+    "saniye",
+    "dakika",
+    "hatasını",
+    "kodlu",
+    "nedeniyle",
+    "verisiyle",
+    "kodu",
+    "mesajı",
+    "nedeni",
+    "verisi",
+    "varsa",
+    "yoksa",
+    "başarılıysa",
+    "başarısızsa",
+    "sil",
+    "yönlendir",
+    "adresine",
+    "çerezine",
+    "sıralanmışı",
+    "parçaları",
+    "birleşmişi",
+    "değişmişi",
+    "içermeli",
+    "olmamalı",
+    "kuruşlusu",
+    "metni",
+    "harfleri",
+    "kırpılmışı",
+    "arasındaki",
+    "günler",
+    "önekli",
+    "kalanı",
+    "GET",
+    "HEAD",
+    "POST",
+    "PUT",
+    "PATCH",
+    "DELETE",
+    "herkese",
+    "açık",
+    "oturum",
+    "gerekli",
+    "yetkisi",
+    "rolüyle",
+    "alanı",
+    "belirteci",
+    "doğrulanıyorsa",
+    "kullanıcısını",
 ];
 
 /// Hover açıklamaları: kalıp kelimesi → tek satır Türkçe açıklama + örnek.
@@ -311,7 +386,10 @@ impl Sunucu {
 
     /// Tek bir JSON-RPC gövdesini işler.
     pub fn mesaj_isle(&mut self, govde: &str) -> Ciktilar {
-        let mut cikti = Ciktilar { govdeler: Vec::new(), devam: true };
+        let mut cikti = Ciktilar {
+            govdeler: Vec::new(),
+            devam: true,
+        };
         let Some(mesaj) = json_coz(govde) else {
             return cikti;
         };
@@ -375,25 +453,20 @@ impl Sunucu {
                 cikti.govdeler.push(yanit(kimlik, &sonuc));
             }
             "textDocument/rename" => {
-                let sonuc = yeniden_adlandir(&mesaj, &self.belgeler)
-                    .unwrap_or_else(|| "null".into());
+                let sonuc =
+                    yeniden_adlandir(&mesaj, &self.belgeler).unwrap_or_else(|| "null".into());
                 cikti.govdeler.push(yanit(kimlik, &sonuc));
             }
             "textDocument/definition" => {
                 let sonuc = konum_parametreleri(&mesaj)
                     .and_then(|(uri, satir, sutun)| {
                         let metin = self.belgeler.get(&uri)?;
-                        let kelime = konumdaki_kelime(metin, satir, sutun)?;
-                        let (tanim_satiri, bas, uzunluk) = tanimi_bul(metin, &kelime)?;
-                        Some(format!(
-                            "{{\"uri\":{},\"range\":{{\"start\":{{\"line\":{},\"character\":{}}},\
-                             \"end\":{{\"line\":{},\"character\":{}}}}}}}",
-                            json_metin_yaz(&uri),
-                            tanim_satiri,
-                            bas,
-                            tanim_satiri,
-                            bas + uzunluk
-                        ))
+                        match semantik_tanim_sorgula(&uri, metin, satir, sutun) {
+                            Some(Some(aralik)) => Some(tanim_yaniti(&uri, aralik)),
+                            // Bağsız konumda ya da hatalı belgede metin tahmini
+                            // yapılmaz; tanılar didOpen/didChange ile yayımlanır.
+                            Some(None) | None => None,
+                        }
                     })
                     .unwrap_or_else(|| "null".into());
                 cikti.govdeler.push(yanit(kimlik, &sonuc));
@@ -447,8 +520,8 @@ impl Sunucu {
                     .ok_or_else(|| hata.to_string()),
             }
         };
-        let tanilar = proje_tanilari
-            .unwrap_or_else(|| crate::kaynagi_tanilari(&metin, &mut yukleyici));
+        let tanilar =
+            proje_tanilari.unwrap_or_else(|| crate::kaynagi_tanilari(&metin, &mut yukleyici));
         let govde: Vec<String> = tanilar.iter().map(lsp_tanisi).collect();
         format!(
             "{{\"jsonrpc\":\"2.0\",\"method\":\"textDocument/publishDiagnostics\",\
@@ -495,6 +568,323 @@ fn konumdaki_kelime(metin: &str, satir: usize, sutun: usize) -> Option<String> {
         son += 1;
     }
     Some(karakterler[bas..son].iter().collect())
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+struct LspKaynakAraligi {
+    satir: usize,
+    bas: usize,
+    uzunluk: usize,
+}
+
+impl LspKaynakAraligi {
+    fn icerir(self, satir: usize, sutun: usize) -> bool {
+        self.satir == satir && self.bas <= sutun && sutun < self.bas + self.uzunluk
+    }
+}
+
+fn tanim_yaniti(uri: &str, aralik: LspKaynakAraligi) -> String {
+    format!(
+        "{{\"uri\":{},\"range\":{{\"start\":{{\"line\":{},\"character\":{}}},\
+         \"end\":{{\"line\":{},\"character\":{}}}}}}}",
+        json_metin_yaz(uri),
+        aralik.satir,
+        aralik.bas,
+        aralik.satir,
+        aralik.bas + aralik.uzunluk
+    )
+}
+
+/// Kod satırındaki tanımlayıcı aralıkları. Metin sabiti ve yorum içi LSP
+/// semantic yüzeyine hiç girmez.
+fn satir_kelime_araliklari(satir: &str) -> Vec<(LspKaynakAraligi, String)> {
+    let karakterler = satir.chars().collect::<Vec<_>>();
+    let mut sonuc = Vec::new();
+    let mut i = 0usize;
+    let mut tirnakta = false;
+    let mut kacis = false;
+    while i < karakterler.len() {
+        let karakter = karakterler[i];
+        if tirnakta {
+            if kacis {
+                kacis = false;
+            } else if karakter == '\\' {
+                kacis = true;
+            } else if karakter == '"' {
+                tirnakta = false;
+            }
+            i += 1;
+            continue;
+        }
+        if karakter == '"' {
+            tirnakta = true;
+            i += 1;
+            continue;
+        }
+        if karakter == '#' {
+            break;
+        }
+        if karakter.is_alphanumeric() || karakter == '_' {
+            let bas = i;
+            while i < karakterler.len()
+                && (karakterler[i].is_alphanumeric() || karakterler[i] == '_')
+            {
+                i += 1;
+            }
+            sonuc.push((
+                LspKaynakAraligi {
+                    satir: 0,
+                    bas,
+                    uzunluk: i - bas,
+                },
+                karakterler[bas..i].iter().collect(),
+            ));
+            continue;
+        }
+        i += 1;
+    }
+    sonuc
+}
+
+fn aralik_metni(metin: &str, aralik: LspKaynakAraligi) -> Option<String> {
+    let karakterler = metin.lines().nth(aralik.satir)?.chars().collect::<Vec<_>>();
+    let son = aralik.bas.checked_add(aralik.uzunluk)?;
+    karakterler
+        .get(aralik.bas..son)
+        .map(|dilim| dilim.iter().collect())
+}
+
+fn kokle_eslesir(yazim: &str, kok: &str) -> bool {
+    yazim == kok || crate::morfoloji::ek_zinciri_coz(yazim, kok).is_some()
+}
+
+fn hir_araligini_coz(
+    metin: &str,
+    kok: &str,
+    aralik: crate::hir::HirKaynakAraligi,
+) -> Option<LspKaynakAraligi> {
+    if let Some((satir, sutun, uzunluk)) = aralik.kesin_konumu() {
+        let kesin = LspKaynakAraligi {
+            satir: satir.checked_sub(1)?,
+            bas: sutun.checked_sub(1)?,
+            uzunluk,
+        };
+        let yazim = aralik_metni(metin, kesin)?;
+        return kokle_eslesir(&yazim, kok).then_some(kesin);
+    }
+
+    let satir = aralik.satiri().checked_sub(1)?;
+    let satir_metni = metin.lines().nth(satir)?;
+    let kelimeler = satir_kelime_araliklari(satir_metni);
+    let (mut bulunan, _) = kelimeler
+        .iter()
+        .find(|(_, yazim)| yazim == kok)
+        .or_else(|| {
+            kelimeler
+                .iter()
+                .find(|(_, yazim)| kokle_eslesir(yazim, kok))
+        })?;
+    bulunan.satir = satir;
+    Some(bulunan)
+}
+
+fn satirdaki_ifade_araliklari(metin: &str, satir: usize, ifade: &str) -> Vec<LspKaynakAraligi> {
+    let Some(satir_metni) = metin.lines().nth(satir) else {
+        return Vec::new();
+    };
+    let kelimeler = satir_kelime_araliklari(satir_metni);
+    let aranan = ifade.split(' ').collect::<Vec<_>>();
+    if aranan.is_empty() || aranan.iter().any(|kelime| kelime.is_empty()) {
+        return Vec::new();
+    }
+    let mut sonuc = Vec::new();
+    for pencere in kelimeler.windows(aranan.len()) {
+        if pencere
+            .iter()
+            .zip(&aranan)
+            .all(|((_, yazim), aranan)| yazim == aranan)
+        {
+            let ilk = pencere[0].0;
+            let son = pencere[pencere.len() - 1].0;
+            sonuc.push(LspKaynakAraligi {
+                satir,
+                bas: ilk.bas,
+                uzunluk: son.bas + son.uzunluk - ilk.bas,
+            });
+        }
+    }
+    sonuc
+}
+
+fn satirdaki_ifade_araligi(metin: &str, satir: usize, ifade: &str) -> Option<LspKaynakAraligi> {
+    satirdaki_ifade_araliklari(metin, satir, ifade)
+        .into_iter()
+        .next()
+}
+
+fn yerel_islem_tanimi_araligi(metin: &str, satir: usize, ad: &str) -> Option<LspKaynakAraligi> {
+    let kirpik = metin.lines().nth(satir)?.trim_start();
+    let tanimli_ad = kirpik
+        .strip_prefix("işlem ")
+        .or_else(|| kirpik.strip_prefix("eylem "))?;
+    if tanimli_ad.trim_end() != ad {
+        return None;
+    }
+    satirdaki_ifade_araligi(metin, satir, ad)
+}
+
+fn yerel_yapi_tanimi_araligi(metin: &str, satir: usize, ad: &str) -> Option<LspKaynakAraligi> {
+    let kirpik = metin.lines().nth(satir)?.trim_start();
+    let tanimli_ad = kirpik.strip_prefix("yapı ")?;
+    if tanimli_ad.trim_end() != ad {
+        return None;
+    }
+    satirdaki_ifade_araligi(metin, satir, ad)
+}
+
+fn hir_satir_ifadelerini_coz(
+    metin: &str,
+    ifade: &str,
+    kaynak_araligi: crate::hir::HirKaynakAraligi,
+) -> Vec<LspKaynakAraligi> {
+    kaynak_araligi
+        .satiri()
+        .checked_sub(1)
+        .map(|satir| satirdaki_ifade_araliklari(metin, satir, ifade))
+        .unwrap_or_default()
+}
+
+fn semantik_program_derle(uri: &str, metin: &str) -> Option<crate::faz::BaglanmisProgram> {
+    let belge_yolu = uri_yolu(uri).and_then(|yol| std::fs::canonicalize(yol).ok());
+    if let Some((belge_yolu, kok)) = belge_yolu
+        .as_ref()
+        .and_then(|yol| proje_kokunu_bul(yol).map(|kok| (yol, kok)))
+    {
+        let grafik = crate::paket::ProjeGrafigi::cozumle(&kok).ok()?;
+        grafik.kilidi_denetle().ok()?;
+        let koken = belge_yolu.to_string_lossy().into_owned();
+        let mut yukleyici = |istek: crate::BirimIstegi<'_>| grafik.yukle(istek);
+        return crate::kaynagi_fazli_derle_kokenlerle(metin, Some(&koken), &mut yukleyici).ok();
+    }
+
+    let klasor = uri_klasoru(uri);
+    let mut yukleyici = move |ad: &str| -> Result<String, String> {
+        let klasor = klasor.clone().ok_or("birim yolu çözülemedi")?;
+        if ad.contains(['/', '\\', '.']) {
+            return Err("birim adı yol içeremez".into());
+        }
+        match std::fs::read_to_string(klasor.join(format!("{}.dil", ad))) {
+            Ok(kaynak) => Ok(kaynak),
+            Err(hata) => crate::gomulu_birim(ad)
+                .map(str::to_string)
+                .ok_or_else(|| hata.to_string()),
+        }
+    };
+    crate::kaynagi_fazli_derle_birimlerle(metin, &mut yukleyici).ok()
+}
+
+fn semantik_sembol_bul(
+    program: &crate::faz::BaglanmisProgram,
+    metin: &str,
+    satir: usize,
+    sutun: usize,
+) -> Option<crate::kimlik::SymbolId> {
+    let hir = program.hir();
+    hir.sembol_kullanimlari().into_iter().find_map(|kullanim| {
+        let kimlik = kullanim.kimlik();
+        let kok = hir.sembol_adi(kimlik)?;
+        let aralik = hir_araligini_coz(metin, kok, kullanim.kaynak_araligi())?;
+        aralik.icerir(satir, sutun).then_some(kimlik)
+    })
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum SemantikVarlik {
+    Sembol(crate::kimlik::SymbolId),
+    Islem(crate::kimlik::IslemId),
+    Yapi(crate::kimlik::YapiId),
+}
+
+fn semantik_varlik_bul(
+    program: &crate::faz::BaglanmisProgram,
+    metin: &str,
+    satir: usize,
+    sutun: usize,
+) -> Option<SemantikVarlik> {
+    if let Some(kimlik) = semantik_sembol_bul(program, metin, satir, sutun) {
+        return Some(SemantikVarlik::Sembol(kimlik));
+    }
+    let hir = program.hir();
+
+    for kimlik in hir.islem_kimlikleri() {
+        let ad = hir.islem_adi(kimlik)?;
+        let tanim = hir.islem(kimlik)?;
+        if yerel_islem_tanimi_araligi(metin, tanim.satir.checked_sub(1)?, ad)
+            .is_some_and(|aralik| aralik.icerir(satir, sutun))
+        {
+            return Some(SemantikVarlik::Islem(kimlik));
+        }
+    }
+    for (kimlik, kaynak_araligi) in hir.islem_kullanimlari() {
+        let ad = hir.islem_adi(kimlik)?;
+        if hir_satir_ifadelerini_coz(metin, ad, kaynak_araligi)
+            .into_iter()
+            .any(|aralik| aralik.icerir(satir, sutun))
+        {
+            return Some(SemantikVarlik::Islem(kimlik));
+        }
+    }
+
+    for kimlik in hir.yapi_kimlikleri() {
+        let yapi = hir.yapi(kimlik)?;
+        if yerel_yapi_tanimi_araligi(metin, yapi.satir.checked_sub(1)?, &yapi.ad)
+            .is_some_and(|aralik| aralik.icerir(satir, sutun))
+        {
+            return Some(SemantikVarlik::Yapi(kimlik));
+        }
+    }
+    for (kimlik, kaynak_araligi) in hir.yapi_kullanimlari() {
+        let ad = &hir.yapi(kimlik)?.ad;
+        if hir_satir_ifadelerini_coz(metin, ad, kaynak_araligi)
+            .into_iter()
+            .any(|aralik| aralik.icerir(satir, sutun))
+        {
+            return Some(SemantikVarlik::Yapi(kimlik));
+        }
+    }
+    None
+}
+
+/// Dış `None`: belge semantic olarak derlenemedi, tahmin yasak.
+/// İç `None`: belge geçerli fakat konum yerel sembol değildir.
+fn semantik_tanim_sorgula(
+    uri: &str,
+    metin: &str,
+    satir: usize,
+    sutun: usize,
+) -> Option<Option<LspKaynakAraligi>> {
+    let program = semantik_program_derle(uri, metin)?;
+    let Some(varlik) = semantik_varlik_bul(&program, metin, satir, sutun) else {
+        return Some(None);
+    };
+    let hir = program.hir();
+    let aralik = match varlik {
+        SemantikVarlik::Sembol(kimlik) => {
+            let kok = hir.sembol_adi(kimlik)?;
+            hir.sembol_tanimi(kimlik)
+                .and_then(|aralik| hir_araligini_coz(metin, kok, aralik))
+        }
+        SemantikVarlik::Islem(kimlik) => {
+            let ad = hir.islem_adi(kimlik)?;
+            let tanim = hir.islem(kimlik)?;
+            yerel_islem_tanimi_araligi(metin, tanim.satir.checked_sub(1)?, ad)
+        }
+        SemantikVarlik::Yapi(kimlik) => {
+            let yapi = hir.yapi(kimlik)?;
+            yerel_yapi_tanimi_araligi(metin, yapi.satir.checked_sub(1)?, &yapi.ad)
+        }
+    };
+    Some(aralik)
 }
 
 /// Kelimenin kendisi + morfolojik kök adayları (çözümleyiciyle aynı kurallar).
@@ -549,7 +939,9 @@ fn tanimi_bul(metin: &str, kelime: &str) -> Option<(usize, usize, usize)> {
     //    satırın İLK kelimesi aday kökle eşleşmeli.
     for (no, satir) in metin.lines().enumerate() {
         let kirpik = satir.trim_start();
-        let Some(ilk) = kirpik.split(' ').next() else { continue };
+        let Some(ilk) = kirpik.split(' ').next() else {
+            continue;
+        };
         let ilk_adaylar = adaylar_ile_kesisir(ilk, &adaylar);
         if !ilk_adaylar {
             continue;
@@ -569,72 +961,117 @@ fn adaylar_ile_kesisir(ilk: &str, aranan: &[String]) -> bool {
     ilk_kokler.iter().any(|k| aranan.iter().any(|a| a == k))
 }
 
-/// Morfoloji-farkındalıklı yeniden adlandırma (K-072): kökü bul, belgedeki
-/// bütün ekli/eksiz kullanımları yeni köke Türkçe uyumla giydirerek değiştir.
-/// Metin sabitleri ve # yorumları dokunulmaz.
+/// SymbolId/HIR bağlı yeniden adlandırma (K-120): yalnız seçilen semantic
+/// sembolün okuma/yazma aralıklarını değiştirir. Aynı yazımlı başka kapsam,
+/// metin sabiti, yorum ve çözümlenemeyen belge için tahmin yapmaz.
 fn yeniden_adlandir(
     mesaj: &Json,
     belgeler: &std::collections::HashMap<String, String>,
 ) -> Option<String> {
     let (uri, satir, sutun) = konum_parametreleri(mesaj)?;
     let yeni_ad = mesaj.alan("params")?.alan("newName")?.metin()?.to_string();
-    if yeni_ad.is_empty() || !yeni_ad.chars().all(|k| k.is_alphanumeric() || k == '_') {
-        return None;
-    }
     let metin = belgeler.get(&uri)?;
-    let kelime = konumdaki_kelime(metin, satir, sutun)?;
-    // Kök: belgede tanımlı ada çöz (tanım satırından yalın ad).
-    let (tanim_satiri, tanim_sutunu, tanim_uzunlugu) = tanimi_bul(metin, &kelime)?;
-    let kok: String = metin
-        .lines()
-        .nth(tanim_satiri)?
-        .chars()
-        .skip(tanim_sutunu)
-        .take(tanim_uzunlugu)
-        .collect();
+    let program = semantik_program_derle(&uri, metin)?;
+    let varlik = semantik_varlik_bul(&program, metin, satir, sutun)?;
+    let hir = program.hir();
 
-    let mut duzenlemeler = Vec::new();
-    for (satir_no, satir_metni) in metin.lines().enumerate() {
-        let karakterler: Vec<char> = satir_metni.chars().collect();
-        let mut i = 0usize;
-        let mut tirnakta = false;
-        while i < karakterler.len() {
-            let k = karakterler[i];
-            if k == '"' {
-                tirnakta = !tirnakta;
-                i += 1;
-                continue;
+    let tek_ad_gecerli = |ad: &str| {
+        !ad.is_empty()
+            && ad
+                .chars()
+                .all(|karakter| karakter.is_alphanumeric() || karakter == '_')
+    };
+    let islem_adi_gecerli = |ad: &str| {
+        !ad.is_empty()
+            && ad.split(' ').all(tek_ad_gecerli)
+            && ad.split_whitespace().collect::<Vec<_>>().join(" ") == ad
+    };
+
+    let mut degisiklikler = match varlik {
+        SemantikVarlik::Sembol(kimlik) => {
+            if !tek_ad_gecerli(&yeni_ad) {
+                return None;
             }
-            if !tirnakta && k == '#' {
-                break;
-            }
-            let kelime_harfi = |k: char| k.is_alphanumeric() || k == '_';
-            if !tirnakta && kelime_harfi(k) {
-                let bas = i;
-                while i < karakterler.len() && kelime_harfi(karakterler[i]) {
-                    i += 1;
-                }
-                let soz: String = karakterler[bas..i].iter().collect();
-                let yeni = if soz == kok {
-                    Some(yeni_ad.clone())
-                } else {
-                    crate::morfoloji::ek_zinciri_coz(&soz, &kok)
-                        .and_then(|ekler| crate::morfoloji::ek_zinciri_uydur(&yeni_ad, &ekler))
-                };
-                if let Some(yeni) = yeni {
-                    duzenlemeler.push(format!(
-                        "{{\"range\":{{\"start\":{{\"line\":{},\"character\":{}}},\"end\":{{\"line\":{},\"character\":{}}}}},\"newText\":{}}}",
-                        satir_no, bas, satir_no, i, json_metin_yaz(&yeni)
-                    ));
-                }
-                continue;
-            }
-            i += 1;
+            let kok = hir.sembol_adi(kimlik)?;
+            hir.sembol_kullanimlari()
+                .into_iter()
+                .filter(|kullanim| kullanim.kimlik() == kimlik)
+                .filter_map(|kullanim| {
+                    let aralik = hir_araligini_coz(metin, kok, kullanim.kaynak_araligi())?;
+                    let yazim = aralik_metni(metin, aralik)?;
+                    let yeni = if yazim == kok {
+                        yeni_ad.clone()
+                    } else {
+                        let ekler = crate::morfoloji::ek_zinciri_coz(&yazim, kok)?;
+                        crate::morfoloji::ek_zinciri_uydur(&yeni_ad, &ekler)?
+                    };
+                    Some((aralik, yeni))
+                })
+                .collect::<Vec<_>>()
         }
-    }
-    if duzenlemeler.is_empty() {
+        SemantikVarlik::Islem(kimlik) => {
+            if !islem_adi_gecerli(&yeni_ad) {
+                return None;
+            }
+            let ad = hir.islem_adi(kimlik)?;
+            let tanim = hir.islem(kimlik)?;
+            let mut araliklar = vec![yerel_islem_tanimi_araligi(
+                metin,
+                tanim.satir.checked_sub(1)?,
+                ad,
+            )?];
+            araliklar.extend(
+                hir.islem_kullanimlari()
+                    .into_iter()
+                    .filter(|(kullanim_kimligi, _)| *kullanim_kimligi == kimlik)
+                    .flat_map(|(_, aralik)| hir_satir_ifadelerini_coz(metin, ad, aralik)),
+            );
+            araliklar
+                .into_iter()
+                .map(|aralik| (aralik, yeni_ad.clone()))
+                .collect()
+        }
+        SemantikVarlik::Yapi(kimlik) => {
+            if !tek_ad_gecerli(&yeni_ad) {
+                return None;
+            }
+            let yapi = hir.yapi(kimlik)?;
+            let mut araliklar = vec![yerel_yapi_tanimi_araligi(
+                metin,
+                yapi.satir.checked_sub(1)?,
+                &yapi.ad,
+            )?];
+            araliklar.extend(
+                hir.yapi_kullanimlari()
+                    .into_iter()
+                    .filter(|(kullanim_kimligi, _)| *kullanim_kimligi == kimlik)
+                    .flat_map(|(_, aralik)| hir_satir_ifadelerini_coz(metin, &yapi.ad, aralik)),
+            );
+            araliklar
+                .into_iter()
+                .map(|aralik| (aralik, yeni_ad.clone()))
+                .collect()
+        }
+    };
+    degisiklikler.sort_by_key(|(aralik, _)| *aralik);
+    degisiklikler.dedup_by(|(sol, _), (sag, _)| sol == sag);
+    if degisiklikler.is_empty() {
         return None;
     }
+
+    let duzenlemeler = degisiklikler
+        .into_iter()
+        .map(|(aralik, yeni)| {
+            format!(
+                "{{\"range\":{{\"start\":{{\"line\":{},\"character\":{}}},\"end\":{{\"line\":{},\"character\":{}}}}},\"newText\":{}}}",
+                aralik.satir,
+                aralik.bas,
+                aralik.satir,
+                aralik.bas + aralik.uzunluk,
+                json_metin_yaz(&yeni)
+            )
+        })
+        .collect::<Vec<_>>();
     Some(format!(
         "{{\"changes\":{{{}:[{}]}}}}",
         json_metin_yaz(&uri),
@@ -648,7 +1085,10 @@ fn yanit(kimlik: Option<&Json>, sonuc: &str) -> String {
         Some(Json::Metin(m)) => json_metin_yaz(m),
         _ => "null".to_string(),
     };
-    format!("{{\"jsonrpc\":\"2.0\",\"id\":{},\"result\":{}}}", kimlik, sonuc)
+    format!(
+        "{{\"jsonrpc\":\"2.0\",\"id\":{},\"result\":{}}}",
+        kimlik, sonuc
+    )
 }
 
 fn bos_tanilar(uri: &str) -> String {
