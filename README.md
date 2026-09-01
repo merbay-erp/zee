@@ -51,12 +51,13 @@ CSV/JSON okuma, tarih/saat, komut satırı argümanları, **test blokları**
 (`dil dene`), **Ondalık** (3,14 — onluk tam aritmetik: 0,1+0,2=0,3),
 **Süre** (yarım saniye), **birimler** (`X birimini kullan`), **Sonuç dönüşü**
 (`hatasını döndür`), `ve/veya/değilse` mantığı, **HTTP istemcisi** ve
-**web sunucusu** (gerçek TCP; testlerde sahte), **eşzamanlı bloklar**
-(RFC-0011: bekle-öncesi erişim derleme hatası), **zaman aşımı**, **ESP32
+**deneysel web sunucusu** (localhost TCP; testlerde sahte), **deneysel
+eşzamanlılık yüzeyi** (v0 runtime sıralı; RFC-0011: bekle-öncesi erişim
+derleme hatası), **geç-kalma bildirimi** (`... içinde/yetişmezse`), **ESP32
 simülatörü**, **özyineleme** (T035 "temel durum önce", C019 derinlik sınırı),
 **blok kapsamı** (K-034), **akış-duyarlı daraltma** (T036: korumasız
 değer/hata erişimi derleme hatası), metin kaçışları ve negatif sabitler,
-**web uygulama katmanı** (form/istek sözlüğü, çerezli oturum, yönlendirme,
+**deneysel web uygulama katmanı** (form/istek sözlüğü, çerezli eğitim demosu, yönlendirme,
 html güvenlisi, önekli rotalar), **metin cerrahisi** (parçala/birleştir/
 değiştir/kırp/harfler), **JSON/CSV yazma**, **Türk alfabesiyle sıralama**,
 **silme** ve **çıkış kodu** (`programı 2 ile bitir`), bölümden **kalan**,
@@ -109,8 +110,8 @@ korpus üzerinde regression testine girer.
 | 32 golden program | [golden/](golden/) | ✅ tamamı regression testte; sözdizimi RFC'lerle geçici kabulde |
 | 11 anti-örnek | [anti-ornekler/](anti-ornekler/) | ✅ (A11: nokta-ondalık) |
 | Syntax karar günlüğü | [kararlar/gunluk.md](kararlar/gunluk.md) | ✅ işleniyor |
-| RFC süreci | [rfcs/](rfcs/) | ✅ 13 RFC: 2 kabul, 10 geçici kabul, 1 taslak (K-043) |
-| ADR süreci | [adr/](adr/) | ✅ 6 kabul (001-003, 007-009); 004/005/006 faz verisi bekliyor |
+| RFC süreci | [rfcs/](rfcs/) | ✅ 15 RFC: 2 kabul, 10 geçici kabul, 3 taslak |
+| ADR süreci | [adr/](adr/) | ✅ 7 kabul (001-003, 007-010); 004/005/006 faz verisi bekliyor |
 | Hata kataloğu | [docs/hata-katalogu.md](docs/hata-katalogu.md) | ✅ 120 kod, kaynakla tutarlılığı testli |
 | Spesifikasyon | [spec/](spec/) | ✅ başladı — normatif çekirdek (RFC'lere bağlar) |
 
@@ -138,6 +139,7 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   bağımsızlığı, web/oturum güvenlik sınırı, kalıcı durumun atomikliği,
   eşzamanlılık/zaman aşımı sözleşmesi ve normatif belge otoritesi. Uzak
   registry, imza/provenance ve SBOM bundan sonra ayrı güvenlik RFC'leriyle.
+  Bağlayıcı liste: [docs/v1-surum-kapilari.md](docs/v1-surum-kapilari.md).
 
 ## İlk gerçek milestone
 

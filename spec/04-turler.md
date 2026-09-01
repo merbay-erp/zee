@@ -33,14 +33,17 @@ tek başına koşuldur: `hazır ise` (K-044); Mantıksal olmayan ad T005.
 TamSayı, Ondalık beklenen yerde kendiliğinden Ondalığa genişler — işlem
 çağrısı dahil (Liste<TamSayı> → Liste<Ondalık> parametre, K-067); dar
 imza geniş argümanla TERFİ eder (gövde geniş türle yeniden denetlenir;
-sonuç çağrı sırasından bağımsızdır). Tersi
+saklanan imza bu iki sayısal tür içinde geniş biçime ulaşır). Bu v0
+korkuluğu public işlem sözleşmesini çağrı yerlerinden bağımsız yapmaz;
+v1'de açık tür/generic/kısıt çözümü V1-P0-01 kapısıdır. Tersi
 örtük DEĞİLDİR: Ondalıktan tam sayıya `tam kısmı` (sıfıra doğru) ya da
 `yuvarlanmışı` (yarımlar sıfırdan uzağa) ile bilinçli inilir.
 
 ## İşlem imzaları (TANIMLI — v0 monomorfizmi)
 
-İşlemin parametre ve dönüş türleri **ilk çağrıda** sabitlenir; sonraki
-çağrılar imzaya uymak **ZORUNLU**dur (T015 sayı, T017 tür). Özyinelemeli
+İşlemin parametre ve dönüş türleri **ilk çağrıda** çıkarılır; sonraki
+çağrılar imzaya uymak **ZORUNLU**dur (T015 sayı, T017 tür). Yukarıdaki
+TamSayı→Ondalık terfisi tek istisnadır ve gövdeyi yeniden denetler. Özyinelemeli
 çağrının türü "o ana dek görülen dönüşlerden" çıkarılır; bu yüzden temel
 durum özyinelemeli çağrıdan önce en az bir dönüş vermiş olmalıdır (T035).
 

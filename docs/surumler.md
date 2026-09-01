@@ -12,6 +12,13 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **Normatif otorite ve v1 kapıları** (K-081, ADR-010): geçerli dilin kesin
+  davranışını spec anlatır; RFC değişikliği yetkilendirir ama spec+conformance
+  testi aynı değişiklikte güncellenmeden yürürlüğe girmez. Kaynak denetimli
+  [v1.0 sürüm kapıları](v1-surum-kapilari.md) bağlayıcıdır. RFC-0006 ve
+  RFC-0011 güncel gerçeklemeyle uzlaştırıldı; RFC-0015 production web/eylem
+  sınırını taslağa aldı.
+
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`
   bildirimi hazır üretir. P001–P004 Türkçe proje tanıları. Doğrudan dosya

@@ -386,7 +386,7 @@ cevap "https://ornek.dev/durum" adresinden gelen yanıt olsun
     "çalışıyor" yanıtını gönder
 ```
 
-Eşzamanlı görevler ve zaman aşımı:
+Deneysel eşzamanlılık ve süre yüzeyi:
 
 ```
 eşzamanlı olarak
@@ -403,6 +403,10 @@ yetişmezse
 ```
 
 Görev adlarına `hepsini bekle`den önce erişim derleme hatasıdır (T033).
+Stage 0 runtime görevleri bugün kaynak sırasında tamamlar; `hepsini bekle`
+statik erişim kapısıdır. `... içinde` gövdeyi erken iptal etmez, bitişte süreyi
+ölçüp `yetişmezse` koluyla geç kalmayı bildirir. Gerçek cooperative scheduler
+ve deadline iptali v1 kapısıdır (RFC-0011, V1-P0-05/V1-P1-03).
 
 Web uygulaması kalıpları (K-051): rota gövdesinde form ve sorgu verisi
 örtük `istek` sözlüğündedir; kaydettikten sonra yönlendirilir; kullanıcı

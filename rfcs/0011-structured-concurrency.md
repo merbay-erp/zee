@@ -6,7 +6,8 @@
 - **Tarih:** 31 Ağustos 2026
 - **İlgili günlük kayıtları:** K-023 ("hepsini bekle sonrası sonucu döndür neyi döndürür?")
 - **İlgili golden programlar:** 26 (paralel görevler), 27 (zaman aşımı)
-- **Gerçekleme:** yok
+- **Gerçekleme:** `Eszamanli`/`HepsiniBekle`/`IcindeBlogu` (üç katman);
+  v0 görevleri sıralı, zaman aşımı ölçümü sonradan
 
 ## Özet
 
@@ -35,7 +36,7 @@ Golden 26 bu RFC kabulünde buna göre revize edilir.
 Determinizm: bekle'den ÖNCE görev adlarına erişim derleme hatasıdır (yeni
 T-kodu); yani programın gözlemleyebildiği hiçbir şey zamanlamaya bağlı değildir.
 
-## 2. Hata ve iptal
+## 2. Hata ve iptal — v1 hedef sözleşmesi
 
 1. Görevlerden biri hata verirse: kalanlar İPTAL edilir, blok o hatayla biter.
    Hata yönetimi istenirse görev ifadesi `dene`li yazılır → ad Sonuç tutar
@@ -55,12 +56,21 @@ yetişmezse
     "Zaman aşımı, sonra tekrar dene" yaz
 ```
 
-- `N saniye içinde` bloğu kendi kapsamındaki işlere son tarih koyar; süre
-  dolarsa içerideki işler iptal edilir, `yetişmezse` kolu çalışır.
+- **Bugünkü v0 davranışı:** gövde bütünüyle çalışır; başlangıç/bitiş anı
+  sonradan karşılaştırılır. Süre aşılmışsa `yetişmezse` kolu geç-kalma
+  bildirimi olarak çalışır. Erken iptal ve yan-etki rollback'i YOKTUR.
+- **v1 hedefi:** `N saniye içinde` bloğu kendi kapsamındaki işlere son tarih
+  koyar; süre dolarsa işler bekleme noktalarında iptal edilir ve yalnız
+  `yetişmezse` kolu çalışır. Bu hedef V1-P0-05 kapanmadan production sözü
+  değildir.
 - Süre sabitleri (`5 saniye`, `yarım saniye`, `2 dakika`) Süre türünü ister —
   RFC-0013 ailesine bağlı; v1 alt kümesi tam sayı + `saniye/dakika`.
 
-## 4. Yürütme modeli (gerçekleme yönlendirmesi)
+## 4. Yürütme modeli
+
+Bugünkü v0 gerçekleme görev ifadelerini kaynak sırasında tamamlar;
+`hepsini bekle` bir statik erişim kapısıdır ve runtime'da no-op'tur. Bu model
+data race üretmez ama görevler bekleme noktalarında dönüşümlü ilerlemez.
 
 v1 hedefi **tek iş parçacıklı, işbirlikli** çalıştırıcıdır (async değil
 "sıralı-görünümlü eşzamanlılık"): görevler yalnız bekleme noktalarında

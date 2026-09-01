@@ -5,7 +5,7 @@
   KAPISI olarak kalır — oturum bulguları aksini gösterirse bu karar B lehine
   revize edilir (K-032). Karar gerekçesi §3'te
 - **Tarih:** 31 Ağustos 2026
-- **İlgili günlük kayıtları:** K-016 (çağrı sözdizimi), K-014 (kelime çakışmaları), K-007 (yanıt)
+- **İlgili günlük kayıtları:** K-016 (çağrı sözdizimi), K-014 (kelime çakışmaları), K-007 (yanıt), K-067 (sayısal genişleme)
 - **İlgili golden programlar:** 12, 13, 14, 15, 30
 - **Gerçekleme:** `islem_ayristir`/`cagri_kalibi` (`ayristirici.rs`), `cagri_denetle`
   (`cozumleyici.rs`), `islem_cagir` (`yorumlayici.rs`)
@@ -48,15 +48,23 @@ bulunan sayılar için ilk çift sayıyı bul olsun    # çok kelimeli ad
 
 Kurallar (hepsi gerçeklenmiş ve testli):
 
-1. **Tanım çağrıdan önce gelir.** Çağrı tanıma, "satır/bölge tanımlı bir işlem
-   adıyla bitiyor mu?" sorusuyla yapılır; bilinmeyen ada çağrı diye bir durum
-   sözdiziminde yoktur (S004'e düşer, öneri açıklar).
+1. İşlem başlıkları dosya gövdesinden önce **ön-taranır**. Tanım çağrıdan sonra
+   gelebilir; karşılıklı özyineleme geçerlidir. Çağrı tanıma, “satır/bölge
+   ön-taranmış bir işlem adıyla bitiyor mu?” sorusuyla yapılır; bilinmeyen ada
+   çağrı sözdiziminde S004'e düşer.
 2. **En uzun ad önce eşlenir** (determinizm; iç içe ad çakışmalarında).
 3. Argümanlar addan önce gelir ve `için` ya da `ile` ayracıyla biter (S019);
    birden çok argüman `ve` ile ayrılır; her dilim tam bir ifade bölgesidir
    (v0.2, K-038): `tabanın tam kısmı için yuvarla` geçerli.
-4. **v0 monomorfizmi:** gövde İLK çağrının argüman türleriyle denetlenir; imza
-   sabitlenir (T017), parametre sayısı uymazsa T015. Özyineleme v0'da yok (T016).
+4. **v0 çağrı-güdümlü imza:** gövde ilk çağrının argüman türleriyle denetlenir;
+   sayı/listelerde TamSayı→Ondalık genişlemesi kabul edilir. Dar imza sonra
+   geniş argüman görürse K-067 ile kaldırılır ve gövde geniş türle yeniden
+   denetlenir. Diğer tür farkları T017, parametre sayısı T015'tir. Bu model
+   public API için v1 sözleşmesi değildir; açık tür/generic/kısıt çözümü
+   V1-P0-01 kapısında karara bağlanacaktır.
+5. Özyineleme ve karşılıklı özyineleme geçerlidir. Özyinelemeli çağrıdan önce
+   en az bir dönüşlü temel durum görülmelidir (T035); çağrı derinliği 500'dür
+   (C019).
 
 ## 3. Ana soru: çağrı yüzeyi hangisi olmalı?
 
@@ -93,20 +101,21 @@ A ifade konumunda, B öğretici/adım-adım stilde). C yalnız A/B yetersiz kal�
 
 ## 5. Açık sorular
 
-1. Özyineleme: v1'de gelmeli (T016 kalkar); denetim sırası için işlem
-   imzalarının ön-bildirimi ya da iki-geçişli denetim gerekir.
-2. Parametrelerde açık tür: public API ilkesi (manifesto 6) gereği
+1. Parametrelerde açık tür: public API ilkesi (manifesto 6) gereği
    `sayıları al (Liste<TamSayı>)` benzeri isteğe bağlı tür eki — sözdizimi
-   tasarlanmadı.
+   tasarlanmadı. Bu, v1 öncesi V1-P0-01 kapısıdır.
+2. Generic işlem ile açık türün birlikte progressive disclosure modeli.
 3. Çok değerli dönüş (K-023'ün "hepsini bekle" sorusuyla birleşik).
-4. ~~Argümanların çok-tokenli ifade olabilmesi~~ — GERÇEKLENDİ (v0.2, K-038).
+4. ~~Özyineleme ve tanım-sonrası çağrı~~ — GERÇEKLENDİ (v0.2, T035/C019).
+5. ~~Argümanların çok-tokenli ifade olabilmesi~~ — GERÇEKLENDİ (v0.2, K-038).
 
 ## Dört soru süzgeci (mevcut A yüzeyi için)
 
 Doğal — kısmen ✓ (usability verisi şart) · Deterministik ✓ (en-uzun-ad +
-tanım-önce kuralları) · Öğrenilebilir ✓ (tanım tarafı çok güçlü: "işlem
+başlık ön-tarama kuralları) · Öğrenilebilir ✓ (tanım tarafı çok güçlü: "işlem
 ortalamayı hesapla / sayıları al" sesli okunuşta kendini açıklıyor) ·
-Savunulabilir — monomorfizm ve özyineleme kısıtları v1'de kalkmalı.
+Savunulabilir — çağrı yüzeyi usability kapısını, public imza modeli ise
+V1-P0-01'i bekliyor.
 
 ## Korpus etkisi
 
