@@ -69,9 +69,13 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
     token, proje toplamı, çalışma adımı, çıktı, koleksiyon, görev, dosya okuma
     ve LSP toplam bellek/yanıt dilimini merkezîleştirdi. B-025 heap-byte ve
     bağlantı muhasebesi için kısmen açıktır (513 test).
-27. Sıradaki makine işi B-025'in canlı değer grafiği/metin ve bağlantı
-    bütçesini aynı profile bağlayan ikinci dilimidir.
-28. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
+27. K-130 aynı profile 16 MiB bütçeli metin üretimini, yaklaşık 64 MiB
+    muhafazakâr saklanan değer zarfını, görev ortamı klonlarını ve 64
+    süreç-geneli inbound+outbound bağlantı iznini bağladı. B-025 eski domain
+    sabitlerinin tek tipe göçü için kısmen açıktır (517 test).
+28. Sıradaki makine işi registry/tedarik/IO izi/oturum/LSP'nin dağınık kaynak
+    sabitlerini davranış değiştirmeden ortak profile taşıyan üçüncü dilimdir.
+29. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
 
 ## P0 — V1 öncesi dil ve derleyici omurgası
 
@@ -257,15 +261,18 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 - **B-024 · KAPALI İLKE + GERÇEKLEME (K-127) — HTTPS/TLS'yi elle yazma.**
   Native outbound, exact sabitlenmiş `ureq 3.4.0` + rustls backend'indedir;
   Zee kriptografi/TLS gerçeklemeye dönüşmez.
-- **B-025 · KISMEN (K-105/K-129) — ortak `KaynakSinirlari` modeli.** K-129
+- **B-025 · KISMEN (K-105/K-129/K-130) — ortak `KaynakSinirlari` modeli.** K-129
   değişmez tek profilde 8 MiB kaynak, 1 milyon token, 4.096/128 MiB proje
   kaynağı, mevcut C019/500 çağrı derinliği, 10 milyon çalışma adımı, 1 milyon
   koleksiyon öğesi, 1.024 görev, 16 MiB/100 bin çıktı olayı, 16 MiB dosya
   okuma ve LSP 256 belge/128 MiB/8 MiB outbound sınırını bağladı. S045/C023
   aşımı host panic veya sessiz truncate yerine kontrollü tanıdır. K-105'in ağ
-  deadline/body zarfı korunur. Canlı değer grafiğinin yaklaşık toplam heap
-  byte/öğe hesabı, bütün metin büyütme yolları, aynı anda açık bağlantılar ve
-  kalan domain sabitlerinin profile taşınması ikinci dilimde açıktır.
+  deadline/body zarfı korunur. K-130 tek metni 16 MiB'ta bütçeli üretir;
+  ortam/koleksiyon yazımı ile görev klonunu iade edilmeyen yaklaşık 64 MiB
+  saklama zarfına, inbound+outbound ağı 64 süreç-geneli RAII iznine bağlar.
+  C024 değer/metin aşımının ayrı append-only kimliğidir. Registry, tedarik,
+  IO izi, oturum ve LSP'nin eski yerel sabitlerini profile taşıyan son göç
+  dilimi açıktır.
 - **B-026 · AÇIK — cancellation-safety audit'i.** Dosya temp'i, web yanıtı,
   oturum mutation'ı ve diğer yan etkilerin iptal/yarım kalma davranışını testle.
 - **B-027 · KAPALI (K-115) — deterministik IO trace/replay biçimi tasarla.**
@@ -396,14 +403,18 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 ## Bir sonraki somut kapı
 
 İnsan kanıtı hattında B-001, doldurulmuş gerçek usability formları ve önceden
-ilan edilmiş eşikleri bekler. Makine hattında K-129, B-025'in ilk ortak
-`KaynakSinirlari` profilini kurdu. Sıradaki iş canlı değer/metin grafiğinin
-yaklaşık toplam heap bütçesi ile eşzamanlı bağlantı sayısını aynı profile
-bağlayıp kalan domain sabitlerini merkezîleştirmektir.
+ilan edilmiş eşikleri bekler. Makine hattında K-130, B-025'in değer/metin ve
+bağlantı dilimini ortak `KaynakSinirlari` profiline bağladı. Sıradaki iş
+registry/tedarik/IO izi/oturum/LSP'deki eski kaynak sabitlerini davranış
+değiştirmeden tek profile taşıyıp B-025'i kapatmaktır.
 
 ## 2 Eylül 2026 ikinci dış inceleme ayrımı
 
-- **Doğrulandı ve sıraya alındı:** B-025 heap/output/LSP toplamı, B-026
+- **Doğrulandı; K-129/K-130 ile büyük bölümü kapandı:** B-025 kaynak/token,
+  proje toplamı, bounded stdin/dosya okuması, heap/metin/çıktı, koleksiyon,
+  görev, LSP toplamı/outbound ve süreç-geneli bağlantı sayısı. Kalan eski sabit
+  göçü sıradadır.
+- **Doğrulandı ve sıraya alındı:** B-026
   cancellation, B-029 registry taşıma/cache/kalıcı rollback, B-046 rate-limit
   ve çok süreçli oturum, B-051 kesin JSON-RPC, B-052 origin tekilleştirme,
   B-053 byte HTTP+fuzz, B-034 temiz snapshot ve B-054 advisory/reproducibility.

@@ -2006,6 +2006,28 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   bağlantı kotası ve eski domain sabitlerinin tamamının profile taşınması
   B-025'in ikinci dilimidir.
 
+## K-130 — Değer/metin heap'i ve bağlantılar da aynı zarfta (2 Eyl)
+
+- **Sorun:** K-129 öğe ve çıktı sayısını sınırlıyordu; fakat tek bir metin
+  dönüşümü, saklanan iç metinlerle büyüyen değer grafiği, görev ortamı klonları
+  ve aynı süreçteki bağlantılar hâlâ ayrı bir toplam zarf taşımıyordu.
+- **Karar:** Tek metin 16 MiB'tır. Ortam/list/sözlük yazımları, işlem
+  parametreleri, gezme geçicisi ve görev snapshot'ları çalışma/istek başına
+  iade edilmeyen yaklaşık 64 MiB saklama fişi tüketir. Bu muhafazakâr sayaç
+  allocator profiler'ı değildir; fazla sayarak canlı grafiğe üst sınır olur.
+- **Allocation sırası:** Birleştirme/değiştirme, HTML kaçışı, değer metni,
+  keyfî hassasiyetli sayı/para, JSON ve CSV bütçeli büyür; bilinen taşma sonuç
+  tahsisinden önce C024'tür.
+  C023'ün eski anlamı değiştirilmedi, yeni olay append-only C024 aldı.
+- **Ağ:** Outbound istek ve kabul edilmiş inbound soket aynı süreç-geneli 64
+  RAII iznini kullanır. Her başarı/hata/erken red yolu izni Drop ile bırakır;
+  outbound C018 nedeni, inbound 503 üretir.
+- **Kanıt:** Metin büyümesi, saklanan değer zarfı, görev ortamı klonunun
+  preflight reddi ve bağlantı izin iadesi dört yeni regresyondur. Envanter
+  517 test, 150 etkin + 3 ayrılmış tanı, 80 numaralı belgedir.
+- **Açık kapsam:** B-025'in son dilimi eski registry/tedarik/IO izi/oturum/LSP
+  sabitlerini davranış değiştirmeden `KaynakSinirlari` içine taşıyacaktır.
+
 ---
 
 ## Sonraki adım
@@ -2014,6 +2036,6 @@ Korpus 10 öğrenci + 5 profesyonel usability oturumuna (Hafta 12 hedefi, erkeni
 Hafta 2'de kağıt üstünde) sesli okutulacak; her kayıt için "doğal mı /
 deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
-Makine hattında K-129, B-025'in ilk ortak `KaynakSinirlari` profilini kurdu.
-Sırada canlı değer/metin heap muhasebesi, eşzamanlı bağlantı kotası ve kalan
-domain sabitlerini aynı profile taşıyan ikinci dilim vardır.
+Makine hattında K-130, B-025'in değer/metin heap'i ve bağlantı dilimini ortak
+`KaynakSinirlari` profiline bağladı. Sırada kalan eski domain sabitlerini aynı
+profile taşıyıp B-025'i kapatan son göç dilimi vardır.

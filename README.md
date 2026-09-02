@@ -154,8 +154,8 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **513** |
-| Tanı kimliği | **149 etkin + 3 ayrılmış** |
+| Rust + doctest vakası | **517** |
+| Tanı kimliği | **150 etkin + 3 ayrılmış** |
 | RFC | **25** (2 kabul, 21 geçici kabul, 2 taslak) |
 | ADR | **31** (31 kabul) |
 | Normatif spec bölümü | **24** |
@@ -313,7 +313,9 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   K-129/RFC-0025/ADR-033 B-025'in ilk ortak kaynak profilini kurdu: kaynak,
   token, proje toplamı, çalışma adımı, çıktı, koleksiyon, görev, dosya okuma
   ve LSP toplam belleği/yanıtı aynı değişmez `KaynakSinirlari` değerinden
-  sınırlanır; aşım S045/C023 ile kontrollü durur.
+  sınırlanır. K-130 buna 16 MiB bütçeli metin, yaklaşık 64 MiB saklanan değer
+  zarfı ve 64 süreç-geneli ağ bağlantısı ekledi; aşım S045/C023/C024 veya
+  kontrollü ağ reddiyle durur.
   Uygulama sırası
   [öncelikli backlog](docs/oncelikli-backlog.md) ile sabittir.
   Bağlayıcı liste: [docs/v1-surum-kapilari.md](docs/v1-surum-kapilari.md).

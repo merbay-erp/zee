@@ -9,7 +9,7 @@ pub(super) fn degerlendir_async<'a>(
     satir: usize,
 ) -> Pin<Box<dyn Future<Output = Result<Deger, Tani>> + 'a>> {
     Box::pin(async move {
-    match ifade.turu() {
+    let sonuc = match ifade.turu() {
         Ifade::MetinSabiti(m) => Ok(Deger::Metin(m.clone())),
         Ifade::SayiSabiti(s) => Ok(Deger::TamSayi(*s)),
         Ifade::OndalikSabiti { govde, olcek } => Ondalik::govdeden(govde, *olcek)
@@ -44,7 +44,10 @@ pub(super) fn degerlendir_async<'a>(
                         return Err(ic_hata(satir));
                     };
                     Ok(Deger::Mantiksal(
-                        io.parola_dogrula(&parola.metne(), &ozet.metne()),
+                        io.parola_dogrula(
+                            &metne_sinirli(parola, satir)?,
+                            &metne_sinirli(ozet, satir)?,
+                        ),
                     ))
                 }
                 HTTP_GETIR => {
@@ -130,17 +133,27 @@ pub(super) fn degerlendir_async<'a>(
                     })
                 }
                 (Ozellik::Kirpilmis, Deger::Metin(m)) => Ok(Deger::Metin(m.trim().to_string())),
-                (Ozellik::Metni, deger) => Ok(Deger::Metin(deger.metne())),
+                (Ozellik::Metni, deger) => {
+                    metne_sinirli(&deger, satir).map(Deger::Metin)
+                }
                 (
                     Ozellik::BinlikliKuruslu,
                     deger @ (Deger::Ondalik(_) | Deger::TamSayi(_)),
                 ) => {
                     let ondalik = sayisal_ac(&deger).ok_or_else(|| ic_hata(satir))?;
+                    metin_sinirini_denetle(
+                        ondalik.kuruslu_metin_bayti_ust_siniri(true),
+                        satir,
+                    )?;
                     Ok(Deger::Metin(ondalik.kuruslu(true)))
                 }
                 (Ozellik::Kuruslu, deger @ (Deger::Ondalik(_) | Deger::TamSayi(_))) => {
                     // K-065: daima iki hane; yarımlar sıfırdan uzağa (dil kuralı).
                     let ondalik = sayisal_ac(&deger).ok_or_else(|| ic_hata(satir))?;
+                    metin_sinirini_denetle(
+                        ondalik.kuruslu_metin_bayti_ust_siniri(false),
+                        satir,
+                    )?;
                     Ok(Deger::Metin(ondalik.kuruslu(false)))
                 }
                 (Ozellik::Siralanmis, Deger::Liste(mut ogeler)) => {
@@ -152,7 +165,7 @@ pub(super) fn degerlendir_async<'a>(
                     Ok(Deger::Liste(ogeler))
                 }
                 (Ozellik::CsvMetin, Deger::Liste(satirlar)) => {
-                    Ok(Deger::Metin(csv_yaz(&satirlar)))
+                    csv_yaz(&satirlar, satir).map(Deger::Metin)
                 }
                 (Ozellik::Harfler, Deger::Metin(m)) => {
                     koleksiyon_sinirini_denetle(m.chars().count(), satir)?;
@@ -160,18 +173,22 @@ pub(super) fn degerlendir_async<'a>(
                         m.chars().map(|k| Deger::Metin(k.to_string())).collect(),
                     ))
                 }
-                (Ozellik::JsonMetin, deger) => Ok(Deger::Metin(json_yaz(&deger))),
+                (Ozellik::JsonMetin, deger) => {
+                    json_yaz(&deger, satir).map(Deger::Metin)
+                }
                 (Ozellik::HtmlGuvenli, Deger::Metin(m)) => {
                     let mut kacisli = String::with_capacity(m.len());
                     for k in m.chars() {
-                        match k {
-                            '&' => kacisli.push_str("&amp;"),
-                            '<' => kacisli.push_str("&lt;"),
-                            '>' => kacisli.push_str("&gt;"),
-                            '"' => kacisli.push_str("&quot;"),
-                            '\'' => kacisli.push_str("&#39;"),
-                            b => kacisli.push(b),
-                        }
+                        let mut tampon = [0u8; 4];
+                        let parca = match k {
+                            '&' => "&amp;",
+                            '<' => "&lt;",
+                            '>' => "&gt;",
+                            '"' => "&quot;",
+                            '\'' => "&#39;",
+                            b => b.encode_utf8(&mut tampon),
+                        };
+                        metin_parcasi_ekle(&mut kacisli, parca, satir)?;
                     }
                     Ok(Deger::Metin(kacisli))
                 }
@@ -460,8 +477,8 @@ pub(super) fn degerlendir_async<'a>(
             ))
         }
         Ifade::Parcala { metin, ayrac } => {
-            let m = degerlendir_async(metin, ortam, program, io, derinlik, satir).await?.metne();
-            let a = degerlendir_async(ayrac, ortam, program, io, derinlik, satir).await?.metne();
+            let m = metne_sinirli(&degerlendir_async(metin, ortam, program, io, derinlik, satir).await?, satir)?;
+            let a = metne_sinirli(&degerlendir_async(ayrac, ortam, program, io, derinlik, satir).await?, satir)?;
             let parca_sayisi = if a.is_empty() {
                 m.chars().count()
             } else {
@@ -477,18 +494,29 @@ pub(super) fn degerlendir_async<'a>(
         }
         Ifade::ListeBirlestir { liste, ayrac } => {
             let l = degerlendir_async(liste, ortam, program, io, derinlik, satir).await?;
-            let a = degerlendir_async(ayrac, ortam, program, io, derinlik, satir).await?.metne();
+            let a = metne_sinirli(
+                &degerlendir_async(ayrac, ortam, program, io, derinlik, satir).await?,
+                satir,
+            )?;
             match l {
-                Deger::Liste(ogeler) => Ok(Deger::Metin(
-                    ogeler.iter().map(|o| o.metne()).collect::<Vec<_>>().join(&a),
-                )),
+                Deger::Liste(ogeler) => {
+                    let mut metin = String::new();
+                    for (sira, oge) in ogeler.iter().enumerate() {
+                        if sira > 0 {
+                            metin_parcasi_ekle(&mut metin, &a, satir)?;
+                        }
+                        let parca = metne_sinirli(oge, satir)?;
+                        metin_parcasi_ekle(&mut metin, &parca, satir)?;
+                    }
+                    Ok(Deger::Metin(metin))
+                }
                 _ => Err(ic_hata(satir)),
             }
         }
         Ifade::Degistir { metin, eski, yeni } => {
-            let m = degerlendir_async(metin, ortam, program, io, derinlik, satir).await?.metne();
-            let e = degerlendir_async(eski, ortam, program, io, derinlik, satir).await?.metne();
-            let y = degerlendir_async(yeni, ortam, program, io, derinlik, satir).await?.metne();
+            let m = metne_sinirli(&degerlendir_async(metin, ortam, program, io, derinlik, satir).await?, satir)?;
+            let e = metne_sinirli(&degerlendir_async(eski, ortam, program, io, derinlik, satir).await?, satir)?;
+            let y = metne_sinirli(&degerlendir_async(yeni, ortam, program, io, derinlik, satir).await?, satir)?;
             if e.is_empty() {
                 return Err(Tani::yeni(
                     "C004",
@@ -499,11 +527,31 @@ pub(super) fn degerlendir_async<'a>(
                 )
                 .onerili("\"değişmişi\" için aranan parça boş olamaz.".into()));
             }
+            let eslesme = m.match_indices(&e).count();
+            let sonuc_bayti = if y.len() >= e.len() {
+                m.len().checked_add(
+                    eslesme
+                        .checked_mul(y.len() - e.len())
+                        .ok_or_else(|| deger_kaynak_tanisi(
+                            satir,
+                            "Metin değişimi boyut sınırını aştı.",
+                            "Daha küçük bir değiştirme uygula.",
+                        ))?,
+                )
+            } else {
+                m.len().checked_sub(eslesme.saturating_mul(e.len() - y.len()))
+            }
+            .ok_or_else(|| deger_kaynak_tanisi(
+                satir,
+                "Metin değişimi boyut sınırını aştı.",
+                "Daha küçük bir değiştirme uygula.",
+            ))?;
+            metin_sinirini_denetle(sonuc_bayti, satir)?;
             Ok(Deger::Metin(m.replace(&e, &y)))
         }
         Ifade::MetinSinari { metin, parca, bitis } => {
-            let m = degerlendir_async(metin, ortam, program, io, derinlik, satir).await?.metne();
-            let p = degerlendir_async(parca, ortam, program, io, derinlik, satir).await?.metne();
+            let m = metne_sinirli(&degerlendir_async(metin, ortam, program, io, derinlik, satir).await?, satir)?;
+            let p = metne_sinirli(&degerlendir_async(parca, ortam, program, io, derinlik, satir).await?, satir)?;
             Ok(Deger::Mantiksal(if *bitis { m.ends_with(&p) } else { m.starts_with(&p) }))
         }
         Ifade::Rastgele { alt, ust } => {
@@ -535,7 +583,11 @@ pub(super) fn degerlendir_async<'a>(
         Ifade::Birlestir(parcalar) => {
             let mut metin = String::new();
             for parca in parcalar {
-                metin.push_str(&degerlendir_async(parca, ortam, program, io, derinlik, satir).await?.metne());
+                let parca = metne_sinirli(
+                    &degerlendir_async(parca, ortam, program, io, derinlik, satir).await?,
+                    satir,
+                )?;
+                metin_parcasi_ekle(&mut metin, &parca, satir)?;
             }
             Ok(Deger::Metin(metin))
         }
@@ -690,6 +742,9 @@ pub(super) fn degerlendir_async<'a>(
             })
         }
         Ifade::Kaynakli { .. } => Err(ic_hata(satir)),
-    }
+    };
+    let deger = sonuc?;
+    deger_sinirini_denetle(&deger, satir)?;
+    Ok(deger)
     })
 }

@@ -134,6 +134,7 @@ aktif	C020	calisma.gecersiz_cikis_kodu	Çıkış kodu 0–255 dışında
 aktif	C021	calisma.eylem_transactioni	Eylem transaction'ı başlatılamadı, tamamlanamadı ya da geri alınamadı
 aktif	C022	calisma.web_guvenlik_reddi	Web güvenlik adaptörü işlemi reddetti
 aktif	C023	calisma.kaynak_butcesi	Çalışma adımı, çıktı, koleksiyon ya da eşzamanlı görev kaynak bütçesi aşıldı
+aktif	C024	calisma.deger_heap_butcesi	Metin ya da saklanan değer heap bütçesi aşıldı
 aktif	D001	dogrulama.tutmayan_beklenti	`olmalı` koşulu tutmadı
 aktif	P001	proje.gecersiz_bildirim_cumlesi	`proje.dil` bilinmeyen/tekrarlı alan ya da değer tanımı dışında cümle içeriyor
 aktif	P002	proje.eksik_zorunlu_alan	Zorunlu proje alanı eksik

@@ -2,7 +2,7 @@
 
 - **Durum:** kabul
 - **Tarih:** 2 Eylül 2026
-- **İlgili kayıt:** K-129, B-025, RFC-0025, spec/24
+- **İlgili kayıt:** K-129/K-130, B-025, RFC-0025, spec/24
 - **Karar sahipleri:** çekirdek ekip
 
 ## Bağlam
@@ -36,13 +36,17 @@ kaynaklarla aynı sözleşmeye bağlar.
    istemci S045 tanısı veya JSON-RPC kaynak hatası görür.
 7. Kaynak/token aşımı S045; runtime adım/çıktı/koleksiyon/görev aşımı C023
    kimliğini kullanır. Sessiz truncate, sınırsız fallback ve host panic yasaktır.
+8. K-130 tek metni 16 MiB, çalışma/istek başına muhafazakâr saklanan değer
+   tahsisini yaklaşık 64 MiB ve süreç-geneli inbound+outbound ağ bağlantısını
+   64 ile sınırlar. Metin/değer aşımı ayrı append-only C024 kimliğidir.
 
 ## Açık sınır
 
-K-129 mantıksal ve protokol kaynaklarının ilk ortak profilidir. Bütün canlı
-değer grafiğinin yaklaşık byte hesabı, metin üretimindeki toplam heap zarfı,
-aynı anda açık ağ bağlantısı ve bütün eski domain sabitlerinin bu tipe taşınması
-B-025'in sonraki dilimidir. Bu yüzden B-025 henüz kapanmaz.
+Saklama fişi gerçek allocator/RSS telemetrisi değildir: değerlerin yaklaşık
+dinamik grafiğini, ortam yazımlarını ve görev klonlarını güvenli tarafta fazla
+sayar; silme veya yeniden bağlamada bütçeyi geri vermez. Böylece canlı grafiğe
+üst sınır olur, fakat profiler sözü vermez. Registry/tedarik/IO izi/oturum/LSP
+yerel sabitlerinin ortak tipe göçü tamamlanmadığı için B-025 henüz kapanmaz.
 
 ## Kanıt
 
@@ -53,3 +57,7 @@ B-025'in sonraki dilimidir. Bu yüzden B-025 henüz kapanmaz.
 - 256 üstü LSP belgesi depoya eklenmez ve 8 MiB üstü outbound gövde `-32001`
   JSON-RPC hatasına dönüşür;
 - mevcut C019 özyineleme testi aynı merkezî 500 değerini tüketmeye devam eder.
+- 16 MiB üstü birleştirme ve keyfî hassasiyetli sayı/para metni tahsisten önce
+  C024 olur; saklanan değer ve görev ortamı klonları yaklaşık 64 MiB zarfı
+  aşamaz;
+- 64 bağlantı izni doluyken yeni izin reddedilir, bırakılan izin yeniden alınır.

@@ -44,6 +44,7 @@ pub fn getir(
     politika: &YetkinlikPolitikasi,
 ) -> Result<(i64, String), String> {
     politika.ag_istegini_denetle(url)?;
+    let _baglanti_izni = crate::kaynak_sinirlari::baglanti_izni_al()?;
     let toplam_ms = zaman_asimi_ms.unwrap_or(VARSAYILAN_ZAMAN_ASIMI_MS);
     if toplam_ms <= 0 {
         return Err("son tarih doldu".into());

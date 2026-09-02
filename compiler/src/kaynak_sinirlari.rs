@@ -4,6 +4,10 @@
 //! ayrı, açık ve sürümlü bir ürün kararıyla eklenebilir; sessiz sınırsız geri
 //! dönüş yoktur.
 
+mod baglanti;
+
+pub use baglanti::{baglanti_izni_al, BaglantiIzni};
+
 use crate::tani::Tani;
 use std::io::{self, Read};
 use std::path::Path;
@@ -18,6 +22,9 @@ pub struct KaynakSinirlari {
     calistirma_adimi: usize,
     koleksiyon_ogesi: usize,
     eszamanli_gorev: usize,
+    calisma_heap_bayti: usize,
+    metin_bayti: usize,
+    ag_baglantisi: usize,
     cikti_bayti: usize,
     cikti_olayi: usize,
     dosya_okuma_bayti: usize,
@@ -59,6 +66,18 @@ impl KaynakSinirlari {
         self.eszamanli_gorev
     }
 
+    pub const fn calisma_heap_bayti(self) -> usize {
+        self.calisma_heap_bayti
+    }
+
+    pub const fn metin_bayti(self) -> usize {
+        self.metin_bayti
+    }
+
+    pub const fn ag_baglantisi(self) -> usize {
+        self.ag_baglantisi
+    }
+
     pub const fn cikti_bayti(self) -> usize {
         self.cikti_bayti
     }
@@ -95,6 +114,9 @@ pub const VARSAYILAN_KAYNAK_SINIRLARI: KaynakSinirlari = KaynakSinirlari {
     calistirma_adimi: 10_000_000,
     koleksiyon_ogesi: 1_000_000,
     eszamanli_gorev: 1_024,
+    calisma_heap_bayti: 64 * 1024 * 1024,
+    metin_bayti: 16 * 1024 * 1024,
+    ag_baglantisi: 64,
     cikti_bayti: 16 * 1024 * 1024,
     cikti_olayi: 100_000,
     dosya_okuma_bayti: 16 * 1024 * 1024,
@@ -204,6 +226,8 @@ mod testler {
         assert!(sinirlar.calistirma_adimi() > 0);
         assert!(sinirlar.koleksiyon_ogesi() > 0);
         assert!(sinirlar.eszamanli_gorev() > 0);
+        assert!(sinirlar.calisma_heap_bayti() >= sinirlar.metin_bayti());
+        assert!(sinirlar.ag_baglantisi() > 0);
         assert!(sinirlar.cikti_bayti() > 0 && sinirlar.cikti_olayi() > 0);
         assert!(sinirlar.lsp_acik_belge() > 0);
         assert!(sinirlar.lsp_toplam_belge_bayti() >= sinirlar.kaynak_bayti());

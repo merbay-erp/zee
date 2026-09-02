@@ -597,7 +597,7 @@ tamlık, kimlik ve imkânsız-durum değişmezlerini debug/test faz kapısına
 bağladı; özellik→alan dönüşümündeki klon kaynaklı yetim HIR kaydını bulup
 düzeltti. K-113/ADR-024 LSP odaklı parser recovery'yi cümle sonu+dengeli
 girinti senkronizasyonu, kaynak sırası ve 20 tanılık ortak bütçeyle kapattı.
-K-114/ADR-025 ile başlayan ve K-129'da 149 etkin + 3 ayrılmışa çıkan tanıların
+K-114/ADR-025 ile başlayan ve K-130'da 150 etkin + 3 ayrılmışa çıkan tanıların
 kod↔anlam bağı sürümlü
 fixture'a sabitledi. K-115/RFC-0022/ADR-026 bütün runtime IO çağrılarını
 kanonik, sürümlü ve dış etkisiz replay edilebilen bir iz protokolüne bağladı;
@@ -631,8 +631,10 @@ atomik replace'i Tier-1 owner/group, ACL/xattr ve Windows security metadata
 koruması; symlink/desteksiz platform fail-closed kararıyla bağlayıp B-048'i
 kapattı. K-129/RFC-0025/ADR-033 tek değişmez `KaynakSinirlari` profilini
 kaynak/token/proje toplamı, runtime adım/çıktı/koleksiyon/görev, sınırlı dosya
-okuma ve LSP toplam bellek/outbound yüzeyine bağladı. B-025, canlı değer/metin
-heap'i ile bağlantı sayısı için kısmen açık kalır; sıradaki makine işi budur.
+okuma ve LSP toplam bellek/outbound yüzeyine bağladı. K-130 bunu 16 MiB
+bütçeli metin üretimi, yaklaşık 64 MiB saklanan değer zarfı, görev ortamı
+klonları ve 64 süreç-geneli ağ bağlantısına genişletti. B-025 eski domain
+sabitlerinin ortak tipe göçü için kısmen açık kalır; sıradaki makine işi budur.
 P0 maddeleri kapanmadan yeni dil özelliği
 öne alınmaz; yarım güvenlik/correctness dilimi önce atomik olarak tamamlanır.
 
@@ -684,8 +686,8 @@ kapattı. K-126/ADR-030 bütün AST ifadelerini kesin kaynaklandırıp B-050'yi
 kapattı. K-127/RFC-0024/ADR-031 proje/paket capability ve outbound SSRF/HTTPS
 sınırını kapattı. K-128/ADR-032 atomik replace metadata sözleşmesiyle B-048'i
 kapattı. K-129/RFC-0025/ADR-033 B-025'in ilk ortak `KaynakSinirlari` profilini
-kurdu. Sıradaki omurga, aynı işin canlı heap/metin ve eşzamanlı bağlantı
-muhasebesidir.
+kurdu; K-130 değer/metin heap'i, görev klonları ve bağlantı izinlerini ekledi.
+Sıradaki omurga, eski domain kaynak sabitlerinin aynı tipe göçüdür.
 # 40. Proje felsefesinin korunması
 Bu projenin başarısı yalnız compiler’ın çalışması değildir. Başarı; Türkçe konuşan bir çocuğun yabancı syntax bariyerine takılmadan algoritmik düşünceyle tanışması, aynı dilin yıllar sonra onu terk etmeye zorlamaması ve ekosistemin tek bir şirketin kapalı ürünü haline gelmemesidir.
 Her yeni özellik şu dört sorudan geçmelidir: Türkçe doğal mı? Deterministik mi? Öğrenilebilir mi? Profesyonel ölçekte savunulabilir mi? Dördünden biri hayırsa özellik yeniden tasarlanır.
