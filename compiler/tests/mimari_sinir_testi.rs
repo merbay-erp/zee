@@ -445,6 +445,8 @@ fn performans_gozlemi_shared_ci_esigine_donusmez() {
         "--gecmis-cikti target/performans-gecmisi.tsv",
         "--git-sha \"$GITHUB_SHA\"",
         "--milestone shared-ci",
+        "cargo build --locked --release --bin dillsp",
+        "--dillsp target/release/dillsp",
         "cat target/performans.md >> \"$GITHUB_STEP_SUMMARY\"",
         "name: performans-${{ github.sha }}",
     ] {
@@ -461,7 +463,8 @@ fn performans_gozlemi_shared_ci_esigine_donusmez() {
         "hir_olusturma",
         "runtime_baslangici",
         "yurutme_gecikmesi",
-        "lsp_soguk",
+        "lsp_engine_initialize",
+        "lsp_process_cold_start",
         "lsp_ac",
         "lsp_degistir",
         "tepe_bellek",

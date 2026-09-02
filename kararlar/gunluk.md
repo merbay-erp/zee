@@ -2537,6 +2537,27 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   B-060 kapandı. Dil semantiği, grammar, tanılar, RFC ve normatif spec
   değişmedi. Sıradaki makine işi K-153 gerçek process→stdio LSP cold-start'tır.
 
+## K-153 — LSP engine süresi editör cold-start'ı değildir (2 Eyl, uygulama)
+
+- **Bulgu:** `lsp_soguk` yalnız aynı süreçte `Sunucu::yeni`+initialize
+  ölçüyordu. Process yükleme, stdio framing ve yanıt aktarımı dışarıdayken
+  541 ns değerini editör açılış maliyeti gibi adlandırmak yanlıştı.
+- **Ayrım:** Eski seri `lsp_engine_initialize` oldu. Yeni
+  `lsp_process_cold_start`, saati gerçek `dillsp` spawn'ından önce başlatır;
+  çerçeveli initialize isteğini piped stdin'e yazar ve stdout'tan tam `id=1`
+  capabilities yanıtını okuyunca durdurur. Süreç cleanup'ı pencere dışındadır.
+- **Fail-closed:** 8 KiB başlık/8 MiB gövde, UTF-8, Content-Length, kimlik ve
+  capabilities kanıtı zorunludur. Yalnız process'in başlaması başarı değildir.
+  Mevcut LSP workspace yüklemediğinden hayalî workspace metriği eklenmedi.
+- **Kanıt:** Gerçek `olcum`→`dillsp` iki ikili entegrasyon testi, faz matrisi
+  sahipliği ve CI'da açık release dillsp yolu. Yerel 3 örnek dumanında engine
+  yüzlerce ns, gerçek process cold-start yaklaşık 2–4 ms çıktı; bu geçici
+  sayı baseline değildir.
+- **Açık sınır:** Exact temiz uygulama commit'inden 25 örnekli p50/p95 tarihçe
+  kaydı alınmadan K-153/B-061 kapanmaz. Envanter bu uygulama diliminde 611
+  test, 97 numaralı belge ve 48 kabul ADR'dir. Grammar, runtime, tanılar,
+  RFC ve normatif spec değişmedi.
+
 ---
 
 ## Sonraki adım
@@ -2545,7 +2566,7 @@ Korpus 10 öğrenci + 5 profesyonel usability oturumuna (Hafta 12 hedefi, erkeni
 Hafta 2'de kağıt üstünde) sesli okutulacak; her kayıt için "doğal mı /
 deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
-Makine hattında K-152 benchmark tarihçesini exact commit ve tam koşu
-provenance'ına bağladı. Sırada K-153 gerçek process→stdio LSP cold-start vardır.
+Makine hattında K-153 gerçek process→stdio LSP cold-start yolunu kurdu. Sırada
+exact temiz uygulama commit'inden 25 örnekli K-153 kapanış tabanı vardır.
 B-001/B-002 (yeni sırada K-161/K-162), gerçek 10 çocuk/öğrenci + 5 profesyonel
 usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.

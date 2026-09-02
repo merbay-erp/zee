@@ -54,5 +54,6 @@ olarak yararlı olsa da bağımsız tekrarlanabilirlik iddiası için eksikti.
   `GITHUB_SHA` ile ayrı `shared-ci` milestone'u verir.
 - Eski TSV v1 bilinçli olarak reddedilir; sessiz veya eksik göç yoktur.
 - Eşik politikasının shared CI'da gözlem, adanmış koşucuda açık seçenek olması
-  değişmez. K-153 gerçek process→stdio LSP cold-start metriğinin ayrı işidir.
+  değişmez. K-153/ADR-050 gerçek process→stdio LSP cold-start metriğini ayrı
+  yüzey olarak eklemiştir; exact ilk tabanı ayrıca kaydedilecektir.
 - Dil grammar'ı, runtime davranışı, tanılar, RFC ve normatif spec değişmedi.

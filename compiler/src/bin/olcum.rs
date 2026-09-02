@@ -25,8 +25,9 @@ use std::collections::{BTreeMap, BTreeSet, HashMap};
 use std::env;
 use std::fs;
 use std::hint::black_box;
+use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
-use std::process::{Command, ExitCode};
+use std::process::{Command, ExitCode, Stdio};
 use std::time::{Instant, SystemTime, UNIX_EPOCH};
 
 const SEMA: &str = "zee-performans-2";
@@ -45,6 +46,7 @@ struct Ayarlar {
     kayit: String,
     git_sha: String,
     milestone: String,
+    dillsp: PathBuf,
     esik_yuzde: Option<u64>,
 }
 
@@ -130,6 +132,7 @@ fn komut_satirini_oku() -> Result<Ayarlar, String> {
     let mut kayit = None;
     let mut git_sha = None;
     let mut milestone = None;
+    let mut dillsp = None;
     let mut esik_yuzde = None;
     let mut argumanlar = env::args().skip(1);
     while let Some(arguman) = argumanlar.next() {
@@ -157,6 +160,7 @@ fn komut_satirini_oku() -> Result<Ayarlar, String> {
             "--kayit" => kayit = Some(deger_iste(&mut argumanlar, "--kayit")?),
             "--git-sha" => git_sha = Some(deger_iste(&mut argumanlar, "--git-sha")?),
             "--milestone" => milestone = Some(deger_iste(&mut argumanlar, "--milestone")?),
+            "--dillsp" => dillsp = Some(PathBuf::from(deger_iste(&mut argumanlar, "--dillsp")?)),
             "--esik-yuzde" => {
                 let metin = deger_iste(&mut argumanlar, "--esik-yuzde")?;
                 esik_yuzde = Some(
@@ -169,7 +173,7 @@ fn komut_satirini_oku() -> Result<Ayarlar, String> {
                 return Err(
                     "kullanım: olcum [--hizli|--tur N] [--json YOL] [--rapor YOL] \
                      [--gecmis YOL] [--gecmis-cikti YOL] [--kayit AD] \
-                     [--git-sha SHA] [--milestone AD] [--esik-yuzde N]"
+                     [--git-sha SHA] [--milestone AD] [--dillsp YOL] [--esik-yuzde N]"
                         .into(),
                 );
             }
@@ -192,6 +196,7 @@ fn komut_satirini_oku() -> Result<Ayarlar, String> {
         kayit: kayit.unwrap_or_else(|| format!("yerel-{unix_zamani}")),
         git_sha: git_sha.map_or_else(git_revizyonu, Ok)?,
         milestone: milestone.unwrap_or_else(|| "yerel".into()),
+        dillsp: dillsp.map_or_else(varsayilan_dillsp_yolu, Ok)?,
         esik_yuzde,
     })
 }
@@ -226,6 +231,13 @@ fn git_revizyonu() -> Result<String, String> {
         return Err(format!("Git HEAD tam 40 haneli commit SHA değil: {sha}"));
     }
     Ok(sha)
+}
+
+fn varsayilan_dillsp_yolu() -> Result<PathBuf, String> {
+    let mut yol = env::current_exe()
+        .map_err(|hata| format!("çalışan ölçüm ikilisinin yolu bulunamadı: {hata}"))?;
+    yol.set_file_name(format!("dillsp{}", env::consts::EXE_SUFFIX));
+    Ok(yol)
 }
 
 fn platform() -> String {
@@ -414,6 +426,92 @@ fn initialize_mesaji() -> &'static str {
     r#"{"jsonrpc":"2.0","id":1,"method":"initialize","params":{}}"#
 }
 
+fn lsp_cercevesini_oku(girdi: &mut impl Read) -> Result<Vec<u8>, String> {
+    let mut baslik = Vec::new();
+    let mut son_dort = [0u8; 4];
+    while &son_dort != b"\r\n\r\n" {
+        if baslik.len() >= 8 * 1024 {
+            return Err("LSP cold-start yanıt başlığı 8 KiB sınırını aştı".into());
+        }
+        let mut bayt = [0u8; 1];
+        girdi
+            .read_exact(&mut bayt)
+            .map_err(|hata| format!("LSP cold-start yanıt başlığı okunamadı: {hata}"))?;
+        baslik.push(bayt[0]);
+        son_dort.rotate_left(1);
+        son_dort[3] = bayt[0];
+    }
+    let baslik = std::str::from_utf8(&baslik)
+        .map_err(|_| "LSP cold-start yanıt başlığı UTF-8 değil".to_string())?;
+    let uzunluk = baslik
+        .split("\r\n")
+        .find_map(|satir| {
+            let (ad, deger) = satir.split_once(':')?;
+            ad.eq_ignore_ascii_case("Content-Length")
+                .then(|| deger.trim().parse::<usize>().ok())
+                .flatten()
+        })
+        .ok_or_else(|| "LSP cold-start yanıtında Content-Length yok".to_string())?;
+    if uzunluk > 8 * 1024 * 1024 {
+        return Err("LSP cold-start yanıt gövdesi 8 MiB sınırını aştı".into());
+    }
+    let mut govde = vec![0u8; uzunluk];
+    girdi
+        .read_exact(&mut govde)
+        .map_err(|hata| format!("LSP cold-start yanıt gövdesi okunamadı: {hata}"))?;
+    Ok(govde)
+}
+
+fn lsp_process_cold_start_ornegi(dillsp: &Path) -> Result<u64, String> {
+    let baslangic = Instant::now();
+    let mut cocuk = Command::new(dillsp)
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .stderr(Stdio::null())
+        .spawn()
+        .map_err(|hata| format!("{} başlatılamadı: {hata}", dillsp.display()))?;
+    let sonuc = (|| {
+        let mesaj = initialize_mesaji().as_bytes();
+        let mut stdin = cocuk
+            .stdin
+            .take()
+            .ok_or_else(|| "dillsp stdin açılamadı".to_string())?;
+        write!(stdin, "Content-Length: {}\r\n\r\n", mesaj.len())
+            .and_then(|_| stdin.write_all(mesaj))
+            .and_then(|_| stdin.flush())
+            .map_err(|hata| format!("dillsp initialize yazılamadı: {hata}"))?;
+        drop(stdin);
+        let mut stdout = cocuk
+            .stdout
+            .take()
+            .ok_or_else(|| "dillsp stdout açılamadı".to_string())?;
+        let govde = lsp_cercevesini_oku(&mut stdout)?;
+        let gecen = baslangic.elapsed().as_nanos().min(u64::MAX as u128) as u64;
+        let metin = std::str::from_utf8(&govde)
+            .map_err(|_| "dillsp initialize yanıtı UTF-8 değil".to_string())?;
+        if !metin.contains("\"id\":1") || !metin.contains("\"capabilities\"") {
+            return Err(format!(
+                "dillsp initialize capabilities yanıtı vermedi: {metin}"
+            ));
+        }
+        Ok(gecen)
+    })();
+    let _ = cocuk.kill();
+    let _ = cocuk.wait();
+    sonuc
+}
+
+fn lsp_process_cold_start_ornekleri(dillsp: &Path, tur: usize) -> Result<Vec<u64>, String> {
+    let mut ornekler = Vec::with_capacity(tur);
+    for sira in 0..(ISINMA_TURU + tur) {
+        let nanosaniye = lsp_process_cold_start_ornegi(dillsp)?;
+        if sira >= ISINMA_TURU {
+            ornekler.push(nanosaniye);
+        }
+    }
+    Ok(ornekler)
+}
+
 fn ornekle<S, H, C>(tur: usize, mut hazirla: H, mut calistir: C) -> Result<Vec<u64>, String>
 where
     H: FnMut() -> Result<S, String>,
@@ -504,7 +602,7 @@ fn tepe_bellek_kib() -> Option<u64> {
     None
 }
 
-fn olcumleri_al(tur: usize) -> Result<Vec<Olcum>, String> {
+fn olcumleri_al(tur: usize, dillsp: &Path) -> Result<Vec<Olcum>, String> {
     let kaynak = buyuk_kaynak();
     let ham = ham_program(&kaynak)?;
     let bos_program = dil::kaynagi_fazli_derle("")
@@ -596,8 +694,8 @@ fn olcumleri_al(tur: usize) -> Result<Vec<Olcum>, String> {
     )?);
 
     sonuc.push(zaman_olcumu(
-        "lsp_soguk",
-        "sunucu kurma + initialize isteği",
+        "lsp_engine_initialize",
+        "in-process LSP engine kurma + initialize isteği",
         ornekle(
             tur,
             || Ok(()),
@@ -611,6 +709,12 @@ fn olcumleri_al(tur: usize) -> Result<Vec<Olcum>, String> {
                 Ok(())
             },
         )?,
+    )?);
+
+    sonuc.push(zaman_olcumu(
+        "lsp_process_cold_start",
+        "dillsp process spawn + stdio initialize capabilities yanıtı",
+        lsp_process_cold_start_ornekleri(dillsp, tur)?,
     )?);
 
     sonuc.push(zaman_olcumu(
@@ -1090,7 +1194,7 @@ fn olcumleri_calistir() -> Result<(), String> {
         tarihce_provenance_denetle(git_dirty)?;
     }
 
-    let olcumler = olcumleri_al(ayarlar.tur)?;
+    let olcumler = olcumleri_al(ayarlar.tur, &ayarlar.dillsp)?;
     let (gecmis_metni, gecmis) = gecmisi_oku(ayarlar.gecmis.as_deref())?;
     let rapor = Rapor {
         sema: SEMA,

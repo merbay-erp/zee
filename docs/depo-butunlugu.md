@@ -92,8 +92,10 @@ değildir; K-148'in kullanıcı iş yükü gözlemleri aşağıdaki ayrı kanald
 
 ## Performans gözlemi ve tarihçe
 
-K-148/ADR-045 ve K-152/ADR-049'un [ölçüm rehberi](olcumler.md), sabit iş yüklerinde parse,
-checker, typed-HIR, runtime, yürütme, LSP cold/open/change ve Unix tepe RSS
+K-148/ADR-045, K-152/ADR-049 ve K-153/ADR-050'nin
+[ölçüm rehberi](olcumler.md), sabit iş yüklerinde parse, checker, typed-HIR,
+runtime, yürütme, in-process LSP engine initialize, gerçek dillsp process
+cold-start, open/change ve Unix tepe RSS
 yüzeylerini ayırır. Varsayılan release koşusu iki ısınma ve 25 örnekten ham
 dağılım, p50/p95 ile min/max üretir. İzlenen
 [`performans-gecmisi-v2.tsv`](performans-gecmisi-v2.tsv) yalnız incelenmiş
@@ -104,11 +106,13 @@ ayrı TSV'ye yazar.
 
 ```bash
 cd compiler
+cargo build --locked --release --bin dillsp
 cargo run --locked --release --bin olcum -- \
   --tur 25 --gecmis ../docs/performans-gecmisi-v2.tsv \
   --json target/performans.json --rapor target/performans.md \
   --gecmis-cikti target/performans-gecmisi.tsv \
-  --kayit K-NNN-makine --git-sha GIT_SHA --milestone K-NNN
+  --kayit K-NNN-makine --git-sha GIT_SHA --milestone K-NNN \
+  --dillsp target/release/dillsp
 ```
 
 `--gecmis-cikti` kirli çalışma ağacını ve HEAD'den farklı SHA'yı reddeder.

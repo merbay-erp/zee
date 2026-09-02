@@ -5,7 +5,7 @@ K-148-m4pro	df737f643c4ee9c8525ce7e972660230e75f5f45	K-148	false	macos-aarch64	m
 K-148-m4pro	df737f643c4ee9c8525ce7e972660230e75f5f45	K-148	false	macos-aarch64	macOS 26.5	Apple M4 Pro	25769803776	rustc 1.93.1 (01f6ddf75 2026-02-11)	release	25	2	bagimsiz_tur	hir_olusturma	ns	159668458	165212208
 K-148-m4pro	df737f643c4ee9c8525ce7e972660230e75f5f45	K-148	false	macos-aarch64	macOS 26.5	Apple M4 Pro	25769803776	rustc 1.93.1 (01f6ddf75 2026-02-11)	release	25	2	bagimsiz_tur	runtime_baslangici	ns	125	1292
 K-148-m4pro	df737f643c4ee9c8525ce7e972660230e75f5f45	K-148	false	macos-aarch64	macOS 26.5	Apple M4 Pro	25769803776	rustc 1.93.1 (01f6ddf75 2026-02-11)	release	25	2	bagimsiz_tur	yurutme_gecikmesi	ns	22010042	22772042
-K-148-m4pro	df737f643c4ee9c8525ce7e972660230e75f5f45	K-148	false	macos-aarch64	macOS 26.5	Apple M4 Pro	25769803776	rustc 1.93.1 (01f6ddf75 2026-02-11)	release	25	2	bagimsiz_tur	lsp_soguk	ns	541	584
+K-148-m4pro	df737f643c4ee9c8525ce7e972660230e75f5f45	K-148	false	macos-aarch64	macOS 26.5	Apple M4 Pro	25769803776	rustc 1.93.1 (01f6ddf75 2026-02-11)	release	25	2	bagimsiz_tur	lsp_engine_initialize	ns	541	584
 K-148-m4pro	df737f643c4ee9c8525ce7e972660230e75f5f45	K-148	false	macos-aarch64	macOS 26.5	Apple M4 Pro	25769803776	rustc 1.93.1 (01f6ddf75 2026-02-11)	release	25	2	bagimsiz_tur	lsp_ac	ns	159479750	165116208
 K-148-m4pro	df737f643c4ee9c8525ce7e972660230e75f5f45	K-148	false	macos-aarch64	macOS 26.5	Apple M4 Pro	25769803776	rustc 1.93.1 (01f6ddf75 2026-02-11)	release	25	2	bagimsiz_tur	lsp_degistir	ns	161143083	172991167
 K-148-m4pro	df737f643c4ee9c8525ce7e972660230e75f5f45	K-148	false	macos-aarch64	macOS 26.5	Apple M4 Pro	25769803776	rustc 1.93.1 (01f6ddf75 2026-02-11)	release	1	0	surec_tepe_anlik_goruntusu	tepe_bellek	KiB	17888	17888
