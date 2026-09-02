@@ -34,3 +34,10 @@ path = "fuzz_targets/http_istegi.rs"
 test = false
 doc = false
 bench = false
+
+[[bin]]
+name = "wasm_abi"
+path = "fuzz_targets/wasm_abi.rs"
+test = false
+doc = false
+bench = false

@@ -125,8 +125,12 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
     kaynak denetimini, kilitsiz CI fallback yasağını ve iki üretimli SHA-256
     manifestli gerçek offline vendor derlemesini kurarak B-054'ü kapattı
     (570 test).
-39. Sıradaki makine işi K-142 ile B-055 WASM C ABI hasım-caller sınırını
-    kanıtlamaktır; sonraki işler aşağıdaki öncelik sırasını korur.
+39. K-142/ADR-039 playground köprüsünü sürümlü ABI v2'ye taşıdı. Kayıtlı
+    başlangıç pointer'ı+exact boy, strict UTF-8, sorgulanabilir sonuç kaydı,
+    yanlış/çift bırakmada durum koruması, native+gerçek wasm32 host testi ve
+    ayrı libFuzzer hedefiyle B-055 kapandı (575 test).
+40. Sıradaki makine işi K-143 ile B-056 kaynak ve soru girdisinin türüne özgü
+    ön-tahsis bütçesini kurmaktır; sonraki işler öncelik sırasını korur.
 
 ## P0 — V1 öncesi dil ve derleyici omurgası
 
@@ -474,10 +478,14 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   çıkmak ve boş Cargo home'da compiler+fuzz `--offline --locked` derlenmek
   zorundadır. Compiler/fuzz `publish = false` kalır; bu kapı bekleyen Zee ürün
   lisansını kendiliğinden seçmez.
-- **B-055 · AÇIK — WASM C ABI'sini hasım çağırana karşı kanıtla.** Dışarıdan
-  gelen pointer/uzunluk çiftlerinin doğrulanması, UTF-8 ve taşma sınırları,
-  çıktı sahipliği/ömür modeli, tekrar çağrı ve bozuk çağrı sonrası durum
-  ayrı ABI sözleşmesi ile native host regresyonu/fuzz hedefi istemelidir.
+- **B-055 · KAPALI (K-142/ADR-039) — WASM C ABI'sini hasım çağırana karşı
+  kanıtla.** ABI v2 yalnız kayıtlı başlangıç pointer'ı ve exact boyu sahipli
+  kopyaya alır; null/iç/kayıt dışı pointer, taşkın boy, sonuç→girdi ve invalid
+  UTF-8 çekirdekten önce görünür reddir. Sonuç toplamı kayıttan sorgulanır;
+  yanlış/çift bırakma sahipliği düşürmez. Sekiz tampon/64 MiB genel zarf,
+  native saldırı matrisi, gerçek wasm32 Node hostu, dört kalıcı byte seed ve
+  1.745.134 çağrılık ayrı libFuzzer kampanyası yeşildir. Ayrıntı
+  [ABI v2 rehberindedir](wasm-c-abi.md).
 - **B-056 · AÇIK — playground girdisine bağımsız ön-tahsis bütçesi koy.** UI
   ve WASM köprüsü kaynak/metin boyutunu satır veya benzeri koleksiyon
   kurulmadan önce reddetmeli; derleyici ortak kaynak bütçesine güvenmek bu
@@ -514,9 +522,9 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 ## Bir sonraki somut kapı
 
 İnsan kanıtı hattında B-001, doldurulmuş gerçek usability formları ve önceden
-ilan edilmiş eşikleri bekler. Makine hattında K-141 B-054'ün advisory, lisans,
-kaynak, lock/checksum ve gerçek offline vendor kapısını tamamladı. Sıradaki iş
-K-142 ile B-055 WASM C ABI hasım-caller sınırıdır.
+ilan edilmiş eşikleri bekler. Makine hattında K-142 B-055'in sürümlü, kayıtlı
+ve fuzz kanıtlı WASM C ABI sınırını tamamladı. Sıradaki iş K-143 ile B-056
+playground kaynak/soru girdisi ön-tahsis bütçesidir.
 
 ## 2 Eylül 2026 ikinci dış inceleme ayrımı
 
@@ -532,8 +540,9 @@ K-142 ile B-055 WASM C ABI hasım-caller sınırıdır.
   süreç modeli K-137/ADR-034 ile kapandı. B-051 kesin JSON-RPC ayrıştırması
   K-138/ADR-035 ile kapandı. B-052 origin tekilleştirme ve loopback peer sınırı
   K-139/ADR-036 ile kapandı. B-053 byte HTTP+fuzz sınırı K-140/ADR-037 ile,
-  B-054 advisory/lisans/lock/offline-vendor sınırı K-141/ADR-038 ile kapandı.
-  Sırada B-055 WASM C ABI ve B-056 playground ön-tahsis bütçesi vardır.
+  B-054 advisory/lisans/lock/offline-vendor sınırı K-141/ADR-038 ile,
+  B-055 sürümlü kayıtlı WASM C ABI sınırı K-142/ADR-039 ile kapandı. Sırada
+  B-056 playground ön-tahsis bütçesi vardır.
   B-033/B-034 temiz snapshot hattı ayrıca kapalıdır.
 - **Mevcut repoda zaten kapalı:** çağrı derinliği C019/500 ve ayrı regresyonu;
   atomik metadata `unsafe` bloklarının her birindeki `SAFETY` gerekçesi; kök
