@@ -760,8 +760,11 @@ B-054'ü kapattı. K-142/ADR-039 WASM köprüsünü kayıtlı exact pointer/uzun
 strict UTF-8, açık sonuç ömrü, native+gerçek wasm32 host testi ve ayrı hasım
 çağrı fuzzer'ına bağlayarak B-055'i kapattı. K-143/ADR-040 ABI v3 limit
 dışa aktarımlarıyla kaynak/soru girdisini sahipli kopya, satır tablosu ve
-tarayıcı UTF-8 tahsisinden önce sınırlayarak B-056'yı kapattı. Sıradaki omurga
-K-144 ile B-035 kritik işlev boyutu/karmaşıklık trend bütçesidir.
+tarayıcı UTF-8 tahsisinden önce sınırlayarak B-056'yı kapattı. K-144/ADR-041,
+48 kritik üretim işlevini incelenmiş Clippy tabanına, kademeli büyüme payına ve
+bayat olmayan makine raporuna bağlayarak B-035'i kapattı. Sıradaki omurga
+K-145 ile B-037 kontrollü biçim borcu temizliği ve `cargo fmt --check`
+kapısıdır.
 # 40. Proje felsefesinin korunması
 Bu projenin başarısı yalnız compiler’ın çalışması değildir. Başarı; Türkçe konuşan bir çocuğun yabancı syntax bariyerine takılmadan algoritmik düşünceyle tanışması, aynı dilin yıllar sonra onu terk etmeye zorlamaması ve ekosistemin tek bir şirketin kapalı ürünü haline gelmemesidir.
 Her yeni özellik şu dört sorudan geçmelidir: Türkçe doğal mı? Deterministik mi? Öğrenilebilir mi? Profesyonel ölçekte savunulabilir mi? Dördünden biri hayırsa özellik yeniden tasarlanır.

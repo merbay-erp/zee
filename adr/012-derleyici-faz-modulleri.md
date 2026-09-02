@@ -69,3 +69,7 @@ Hata kataloğu bekçisi de `compiler/src` altındaki bütün Rust modüllerini
   `ayristirici/kaynak.rs`, checker'ın eski tanıyı kesin ifadeye bağlama
   kuralını `cozumleyici/kaynak.rs` sahibine ayırdı. 80 ve 40 satırlık
   bütçeler bu çapraz kuralın ifade handler'larına geri dağılmasını engeller.
+- K-144/ADR-041 dosya sınırının içinde büyüyebilen tek işlevi ayrıca izler.
+  Dosya bütçesi fiziksel sahipliği korur; 48 işlevlik incelenmiş Clippy tabanı
+  ve kademeli büyüme payı ise satır/karar yoğunluğu trendini
+  [ayrı raporda](../docs/islev-egilimi.md) görünür tutar.

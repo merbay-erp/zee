@@ -17,6 +17,7 @@ Bu bir çeviri katmanı değildir (`if→eğer` makyajı yok); AI semantiğin pa
 - **Web'i üretime hazırla:** [docs/web-production-profili.md](docs/web-production-profili.md) — güvenilir proxy, ortak durum ve N worker süreci
 - **Derleyici tedarik zinciri:** [docs/tedarik-zinciri.md](docs/tedarik-zinciri.md) — RustSec/lisans/kaynak ve gerçek offline vendor kapısı
 - **Playground host sözleşmesi:** [docs/wasm-c-abi.md](docs/wasm-c-abi.md) — sürümlü, kayıtlı ve fuzz kanıtlı WASM C ABI
+- **Derleyici büyüme eğilimi:** [docs/islev-egilimi.md](docs/islev-egilimi.md) — kritik işlevlerde incelenmiş Clippy tabanı ve CI gözden geçirme payı
 - Dosya uzantısı: **`.dil`** (kalıcı — ADR-009)
 - Master plan: [docs/master-plan.md](docs/master-plan.md) (kaynak: [docs/Turkce_Programlama_Dili_Master_Proje_Dokumani.docx](docs/Turkce_Programlama_Dili_Master_Proje_Dokumani.docx))
 - V1 öncesi sıralı mühendislik backlog'u: [docs/oncelikli-backlog.md](docs/oncelikli-backlog.md)
@@ -173,10 +174,10 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **579** |
+| Rust + doctest vakası | **585** |
 | Tanı kimliği | **152 etkin + 3 ayrılmış** |
 | RFC | **25** (2 kabul, 21 geçici kabul, 2 taslak) |
-| ADR | **38** (38 kabul) |
+| ADR | **39** (39 kabul) |
 | Normatif spec bölümü | **24** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
@@ -277,8 +278,11 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   8 MiB, soru girdisini 1 MiB/4.096 satırda sınırlar. Rust köprüsü sahipli
   kopya/satır tablosundan, tarayıcı UTF-8 byte dizisi ve WASM tahsisinden önce
   reddeder; 1.709.869 çağrılık kaynak+soru fuzz kampanyasıyla B-056 kapandı.
-  Sıradaki makine kapısı K-144/B-035 kritik işlev boyutu ve karmaşıklık trend
-  bütçesidir.
+  K-144/ADR-041 üretim `lib`+`dil` yüzeyindeki 48 kritik işlevi sabit Clippy
+  ölçüsü, incelenmiş taban, kademeli büyüme payı ve bayat olmayan
+  [eğilim raporuyla](docs/islev-egilimi.md) CI'a bağladı; B-035 kapandı.
+  Sıradaki makine kapısı K-145/B-037 kontrollü biçim borcu temizliği ve
+  `cargo fmt --check`tir.
   K-107/ADR-019 `dillsp` girdisini 8 KiB başlık, 8 MiB gövde, 128 JSON
   derinliği ve 100 bin düğümle sınırlayıp Unicode parser olumsuzlarını kapattı.
   K-138/ADR-035 sayı ayrıştırmasını RFC 8259 durum makinesine taşıdı; sayısal

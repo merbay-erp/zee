@@ -54,6 +54,22 @@ Tarihsel K-kayıtlarındaki “o gün toplam N test” cümleleri bilinçli snap
 ve yeniden yazılmaz. README'nin bugünkü canlı sayıları için tek otorite
 işaretli otomatik bloktur.
 
+## Kritik işlev eğilim raporu
+
+K-144/ADR-041'in [işlev eğilim raporu](islev-egilimi.md), sabit Clippy
+ölçümünü incelenmiş TSV tabanıyla karşılaştırır. Rapor elle düzenlenmez:
+
+```bash
+cd compiler
+cargo run --locked --bin islev_egilimi -- --denetle
+cargo run --locked --bin islev_egilimi -- --rapor-yaz
+```
+
+`--denetle`; yeni, kayıp veya büyüme payını aşan kritik işlev kadar raporun
+tek byte bayatlamasını da reddeder. Taban yenilemek rapor yenilemekten ayrı ve
+bilinçli bir mimari incelemedir; düşen değerler kendiliğinden yeni borç alanı
+açmaz.
+
 ## Immutable conformance verisi
 
 `scripts/conformance-korugu.sh`, CI taban Git revizyonunda bulunan bütün

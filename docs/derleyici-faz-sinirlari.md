@@ -98,6 +98,22 @@ denetler. Bütçe dolduğunda sayı yükseltilmez; ortak davranış çıkarılı
 yeni, adı sorumluluğunu anlatan handler modülü açılır. Bütçe değişikliği ancak
 ADR-012 gerekçesi ve bu rehber aynı committe güncellenirse kabul edilir.
 
+K-144/ADR-041 bunun yanına işlev düzeyinde yön bilgisi koyar. Sabit Clippy
+zincirinde en az 80 satır veya bilişsel karmaşıklığı en az 12 olan üretim
+işlevleri incelenmiş TSV tabanına girer. Satır için tabanın %10'u (+8..+24),
+karmaşıklık için %20'si (+2..+5) gözden geçirme payıdır. Yeni/kayıp kritik
+işlev, pay aşımı ya da bayat [eğilim raporu](islev-egilimi.md) CI'ı durdurur.
+Bu bir mutlak “iyi işlev boyu” hükmü değildir: işlev bölünür veya gerekçeli
+yeni taban aynı incelemede kabul edilir. Küçülme tabanı otomatik sıfırlamaz.
+
+```bash
+cd compiler
+cargo run --locked --bin islev_egilimi -- --denetle
+cargo run --locked --bin islev_egilimi -- --rapor-yaz
+# Yalnız bilinçli mimari incelemede:
+cargo run --locked --bin islev_egilimi -- --taban-yaz KAYIT
+```
+
 `katalog_testi.rs` sabit bir kök dosya listesi kullanmaz; `compiler/src`
 altındaki bütün Rust dosyalarını özyinelemeli ve sıralı tarar. Yeni handler'da
 üretilen bir tanı kodu katalog denetiminden kaçamaz.

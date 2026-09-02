@@ -190,7 +190,7 @@ fn her_normatif_belge_makine_okunur_test_kaniti_tasir() {
     );
     assert_eq!(
         gorulen.len(),
-        87,
+        88,
         "şema-1 belge tabanı beklenmedik biçimde değişti"
     );
 }
@@ -218,8 +218,8 @@ fn kaynak_arsivi_build_ve_kisisel_artifaktlari_disarida_tutar() {
     let depo = Path::new(env!("CARGO_MANIFEST_DIR"))
         .parent()
         .expect("depo kökü");
-    let gitignore = std::fs::read_to_string(depo.join(".gitignore"))
-        .expect("kök .gitignore okunmalı");
+    let gitignore =
+        std::fs::read_to_string(depo.join(".gitignore")).expect("kök .gitignore okunmalı");
     for kalip in [
         "target/",
         "compiler/fuzz/artifacts/",

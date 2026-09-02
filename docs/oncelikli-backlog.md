@@ -133,8 +133,11 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
     8 MiB kaynak, 1 MiB/4.096 satır soru bütçesine bağladı. ABI v3 limitleri
     hosta bildirir; Rust kopya/satır tablosundan, tarayıcı UTF-8 byte dizisi ve
     WASM tahsisinden önce reddeder. B-056 kapandı (579 test).
-41. Sıradaki makine işi K-144 ile B-035 kritik işlevlerin boyut/karmaşıklık
-    trendini kör hard limit yerine gözden geçirme eşiğine bağlamaktır.
+41. K-144/ADR-041, 48 kritik üretim işlevini sabit Clippy ölçüsü ve incelenmiş
+    tabana bağladı. Yeni/kayıp işlev, biriken satır/karmaşıklık büyümesi ve
+    bayat Markdown raporu CI'ı durdurur; B-035 kapandı (585 test).
+42. Sıradaki makine işi K-145 ile B-037 mevcut biçim borcunu kontrollü tek
+    seferde temizleyip `cargo fmt --check` kapısını açmaktır.
 
 ## P0 — V1 öncesi dil ve derleyici omurgası
 
@@ -460,8 +463,13 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   Cargo/belge/golden/conformance ve CI dahil bütün izlenen ağacı alır; kökte
   sıralı dosya SHA-256 manifesti ve yanında ZIP SHA-256 özeti üretir. Aynı
   `HEAD` byte-byte aynı arşivdir; build cache hiçbir koşulda pakete giremez.
-- **B-035 · AÇIK — function size/complexity trend bütçesi.** Kör hard limit
-  yerine kritik modüllerde büyüme raporu ve gözden geçirme eşiği koy.
+- **B-035 · KAPALI (K-144/ADR-041) — function size/complexity trend
+  bütçesi.** Sabit Rust/Clippy zinciri üretim `lib`+`dil` işlevlerini ölçer;
+  80 satır/12 bilişsel karmaşıklık izlemeye giriş, tasarım hükmü değildir.
+  İlk 48 kayıt incelenmiş TSV tabanındadır. Tabanın %10 satır (+8..+24) veya
+  %20 karmaşıklık (+2..+5) payını aşmak, yeni/kayıp kritik işlev ve bayat
+  [eğilim raporu](islev-egilimi.md) fail-closed inceleme ister. Düşüş tabanı
+  otomatik sıfırlamaz; `--force-warn` kaynak içi lint susturmasını atlatır.
 - **B-036 · KAPALI — Clippy `-D warnings` kapısı.** CI ve yerel toplu doğrulama
   bunu uygular; release işlerinde korunur.
 - **B-037 · AÇIK — `cargo fmt --check` kapısı.** Mevcut geniş format borcu
@@ -530,9 +538,10 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 ## Bir sonraki somut kapı
 
 İnsan kanıtı hattında B-001, doldurulmuş gerçek usability formları ve önceden
-ilan edilmiş eşikleri bekler. Makine hattında K-143, B-056'nın kaynak/soru
-ön-tahsis bütçesini ABI v3 ve gerçek wasm32 kanıtıyla tamamladı. Sıradaki iş
-K-144 ile B-035 kritik işlev boyutu/karmaşıklık trend bütçesidir.
+ilan edilmiş eşikleri bekler. Makine hattında K-144, B-035'in 48 işlevlik
+incelenmiş tabanını, büyüme paylarını ve bayat rapor CI kapısını tamamladı.
+Sıradaki iş K-145 ile B-037 kontrollü biçim borcu temizliği ve
+`cargo fmt --check` kapısıdır.
 
 ## 2 Eylül 2026 ikinci dış inceleme ayrımı
 
@@ -550,8 +559,9 @@ K-144 ile B-035 kritik işlev boyutu/karmaşıklık trend bütçesidir.
   K-139/ADR-036 ile kapandı. B-053 byte HTTP+fuzz sınırı K-140/ADR-037 ile,
   B-054 advisory/lisans/lock/offline-vendor sınırı K-141/ADR-038 ile,
   B-055 sürümlü kayıtlı WASM C ABI sınırı K-142/ADR-039 ile, B-056 playground
-  ön-tahsis bütçesi K-143/ADR-040 ile kapandı. Sırada B-035 kritik işlev
-  boyutu/karmaşıklık trend bütçesi vardır.
+  ön-tahsis bütçesi K-143/ADR-040 ile, B-035 kritik işlev boyutu/karmaşıklık
+  eğilim kapısı K-144/ADR-041 ile kapandı. Sırada B-037 kontrollü biçim borcu
+  temizliği ve `cargo fmt --check` vardır.
   B-033/B-034 temiz snapshot hattı ayrıca kapalıdır.
 - **Mevcut repoda zaten kapalı:** çağrı derinliği C019/500 ve ayrı regresyonu;
   atomik metadata `unsafe` bloklarının her birindeki `SAFETY` gerekçesi; kök

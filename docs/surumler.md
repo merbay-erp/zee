@@ -12,6 +12,17 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **Kritik işlev büyüme/karmaşıklık eğilimi** (K-144, ADR-041): Sabit
+  Rust/Clippy zinciri üretim `lib` ve `dil` ikilisindeki 48 kritik işlevi
+  incelenmiş TSV tabanına bağlar. 80 satır veya 12 bilişsel karmaşıklık yalnız
+  izlemeye giriş; satırda tabanın %10'u (+8..+24), karmaşıklıkta %20'si
+  (+2..+5) gözden geçirme payıdır. Yeni/kayıp kritik işlev, pay aşımı veya
+  bayat [eğilim raporu](islev-egilimi.md) Ubuntu CI'ı fail-closed durdurur;
+  kaynak içi `allow`, `--force-warn` kapısını geçemez. Beş ölçüm/kimlik/eşik
+  birim testi ve bir mimari kablolama testiyle envanter 585 test ve 39 kabul
+  ADR'ye çıktı; B-035 kapandı. Dil semantiği, kullanıcı tanısı ve normatif
+  spec değişmedi.
+
 - **Temiz kaynak arşivi:** Paylaşım paketi artık çalışma klasöründen değil,
   yalnız commit edilmiş `HEAD` içeriğini alan `git archive` tabanlı
   `scripts/temiz-kaynak-arsivi.sh` kapısından üretilir. Build hedefleri, fuzz
