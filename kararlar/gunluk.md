@@ -2065,6 +2065,25 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
 - **Sonuç:** B-025 ve V1-P0-31 kapandı. Sıradaki makine işi B-026
   cancellation-safety audit'idir.
 
+## K-133 — Yan etki öncesi iptal kapıları (2 Eyl)
+
+- **Sorun:** Blok/cümle girişindeki deadline denetimi ile gerçek IO çağrısı
+  arasında argüman değerlendirme veya scheduler sıra verme zamanı geçebildi.
+  Özellikle görev HTTP'si kalan süreyi sıra vermeden önce hesaplıyor; kardeş
+  saati deadline'a taşısa bile adaptöre eski süreyle girebiliyordu.
+- **Karar:** Çıktı/girdi, dosya, sunucu, yanıt/yönlendirme, çerez/oturum,
+  eyleyici, CSRF, parola doğrulama, rastgelelik ve `eylem` transaction
+  başlangıcı gerçek etkinin hemen önünde `son_tarihi_denetle` kapısından
+  geçer. HTTP kalan süresi scheduler turundan sonra yeniden hesaplanır.
+- **Kanıt:** Sanal saatli iki regresyon, deadline'ın dosya yazma kapısında
+  dolduğunda dosyanın değişmediğini ve HTTP görevi sıra verdikten sonra
+  dolduğunda adaptör çağrısının hiç başlamadığını doğrular. Envanter 523 test,
+  150 etkin + 3 ayrılmış tanı ve 80 numaralı belgedir.
+- **Audit sonucu:** Temp dosya/kilit/deadline/bütçe nöbetçilerinin `Drop`
+  temizliği ve `eylem` rollback'i doğrulandı. B-026 kısmen kapalıdır; web
+  isteğinin oturum mutation'ı ile henüz gönderilmemiş yanıtını birlikte
+  commit/rollback eden yaşam döngüsü K-134'e kaldı.
+
 ---
 
 ## Sonraki adım
@@ -2073,5 +2092,6 @@ Korpus 10 öğrenci + 5 profesyonel usability oturumuna (Hafta 12 hedefi, erkeni
 Hafta 2'de kağıt üstünde) sesli okutulacak; her kayıt için "doğal mı /
 deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
-Makine hattında K-132 LSP outbound JSON'unu üretim sırasında 8 MiB'ta kesip
-B-025/V1-P0-31'i kapattı. Sırada B-026 cancellation-safety audit'i vardır.
+Makine hattında K-133 dış etkileri tam çağrı öncesi deadline kapısına bağlayıp
+B-026'yı kısmen kapattı. Sırada K-134 web istek yaşam döngüsü transaction'ı
+vardır.

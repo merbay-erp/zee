@@ -406,6 +406,53 @@ yetişmezse
 }
 
 #[test]
+fn son_tarih_dosya_yazma_etkisinin_hemen_onunde_yeniden_denetlenir() {
+    let kaynak = "\
+1 saniye içinde
+    \"durum.txt\" dosyasına \"bu yazı yasak\" yaz
+yetişmezse
+    \"dosya iptal edildi\" yaz
+";
+    let program = dil::kaynagi_derle(kaynak).expect("dosya iptal kaynağı");
+    let mut io = ToplayanIo::yeni(Vec::new());
+    // Deadline kurulumu 0, blok girişi 0; etki kapısında tam 1 saniye.
+    io.an_degerleri = vec![0, 0, 1_000].into();
+    calistir_io(&program, &mut io).expect("iptal kendi kolunda yönetilmeli");
+
+    assert!(io.dosyalar.is_empty(), "iptal sonrası dosya etkisi başlamamalı");
+    assert_eq!(io.cikti, vec!["dosya iptal edildi"]);
+}
+
+#[test]
+fn gorev_httpden_once_sira_verince_son_tarihi_eski_sureyle_kullanmaz() {
+    let kaynak = "\
+1 saniye içinde
+    eşzamanlı olarak
+        cevap \"https://ornek.dev/gec\" adresinden gelen yanıt
+        sayı 1
+    hepsini bekle
+yetişmezse
+    \"HTTP iptal edildi\" yaz
+";
+    let program = dil::kaynagi_derle(kaynak).expect("HTTP iptal kaynağı");
+    let mut io = ToplayanIo::yeni(Vec::new());
+    io.http_yanitlari.insert(
+        "https://ornek.dev/gec".into(),
+        (200, "geç yanıt".into()),
+    );
+    // İlk HTTP görevi 0 ms'de sıra verir. İkinci görev poll'undan sonra saat
+    // 1.000 ms olur; HTTP adaptörüne girmeden yeni kontrol iptali görmelidir.
+    io.an_degerleri = vec![0, 0, 0, 0, 0, 1_000].into();
+    calistir_io(&program, &mut io).expect("dış deadline iptali yakalamalı");
+
+    assert!(
+        io.http_istekleri.is_empty(),
+        "süresi dolmuş görev HTTP isteği başlatmamalı"
+    );
+    assert_eq!(io.cikti, vec!["HTTP iptal edildi"]);
+}
+
+#[test]
 fn ic_ve_dis_son_tarihlerin_sahibi_karistirilmaz() {
     let ic_once = "\
 10 saniye içinde

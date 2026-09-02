@@ -461,7 +461,8 @@ mode/uid/gid ve desteklenen ACL/xattr'ı; Windows DACL/security/named stream
 metadata'sı korunur. Sembolik bağ ve sessiz metadata kaybı reddedilir. Runtime
 aynı klasördeki gizli `.zee-yazma-kilidi` dosyasını kendine ayırır.
 
-Kaynak ve çalışma tüketimi K-129/K-130/K-131/K-132/RFC-0025 güvenli profilindedir. Tek kaynak
+Kaynak ve çalışma tüketimi K-129/K-130/K-131/K-132/RFC-0025 güvenli
+profilindedir. Tek kaynak
 8 MiB/1 milyon token; çalışma 10 milyon cümle adımı, 500 çağrı derinliği,
 1 milyon koleksiyon öğesi, 1.024 görev ve 16 MiB/100 bin çıktı olayı sınırı
 taşır. Tek metin 16 MiB, saklanan değer tahsisleri yaklaşık 64 MiB ve
@@ -543,7 +544,9 @@ kardeşi çalışır. Örneğin 2 ve 1 saniyelik iki görev toplam 2 saniyede bi
 aynı girdiler aynı çıktı sırasını verir ve data race oluşmaz. İlk yönetilmemiş
 görev hatası bekleyen kardeşleri iptal eder. Her grup aynı sözcüksel kapsamda
 tek `hepsini bekle` ile kapanır; aksi T051'dir. K-085 son tarihi bütün görev
-ağacına yayılır ve yalnız doğru `yetişmezse` sahibi çalışır. Ayrıntı:
+ağacına yayılır ve yalnız doğru `yetişmezse` sahibi çalışır. K-133 dış
+etkileri tam çağrı öncesi yeniden denetler; HTTP görevi scheduler'a sıra
+verdikten sonra kalan süreyi tazeler ve dolmuş isteği başlatmaz. Ayrıntı:
 RFC-0011, spec/09 ve spec/14. K-124 ile çıktı/ortak IO sırası, sanal süre,
 sonuç bağları ve iptal sonrası etki yokluğu `zee-esz-1` kimliği altında
 [derleyiciden bağımsız conformance korpusuna](eszamanlilik-conformance.md)

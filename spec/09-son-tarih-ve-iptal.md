@@ -1,6 +1,6 @@
 # 09 — Son tarih ve işbirlikli iptal
 
-Normatif kaynak: RFC-0011 §2–§4. Durum: **TANIMLI** (K-085).
+Normatif kaynak: RFC-0011 §2–§4. Durum: **TANIMLI** (K-085/K-133).
 
 ## `içinde / yetişmezse`
 
@@ -29,6 +29,13 @@ aralıklı veri gelişi deadline'ı ileri taşımaz. Kaynakta `içinde` yoksa na
 HTTP istemcisi 30 saniyelik mutlak varsayılan son tarih ve başlıklar dahil
 8 MiB wire yanıt sınırı kullanır. Süre dolmuş veya sınırı aşmış ağ yanıtı
 değere ya da çıktıya dönüşemez.
+
+K-133 ile çıktı/girdi, dosya, sunucu, web yanıtı/yönlendirmesi, çerez/oturum,
+eyleyici, CSRF, parola doğrulama, rastgelelik ve `eylem` transaction başlangıcı
+gibi dış etki veya pahalı işlem sınırları çağrının hemen önünde son tarihi
+yeniden denetler. Görev HTTP isteğinden önce scheduler'a sıra verdiyse kalan
+süre bu sıradan **sonra** yeniden hesaplanır; dolmuş görev adaptöre eski bir
+süre taşıyamaz ve istek başlatamaz.
 
 İptal gözlendikten sonra yeni çıktı, dosya yazma, çerez/yanıt veya eyleyici
 etkisi başlatılamaz. Son tarih dolmadan tamamlanmış dış etkiler geri alınmaz;

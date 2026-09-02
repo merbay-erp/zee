@@ -30,19 +30,23 @@ pub(super) fn degerlendir_async<'a>(
                 );
             }
             match kimlik.as_str() {
-                CSRF_BELIRTECI => io.csrf_belirteci().map(Deger::Metin).map_err(|hata| {
-                    Tani::yeni(
-                        "C022",
-                        format!("CSRF belirteci üretilemedi: {}.", hata),
-                        satir,
-                        1,
-                        1,
-                    )
-                }),
+                CSRF_BELIRTECI => {
+                    son_tarihi_denetle(io, satir)?;
+                    io.csrf_belirteci().map(Deger::Metin).map_err(|hata| {
+                        Tani::yeni(
+                            "C022",
+                            format!("CSRF belirteci üretilemedi: {}.", hata),
+                            satir,
+                            1,
+                            1,
+                        )
+                    })
+                }
                 PAROLA_DOGRULA => {
                     let [parola, ozet] = degerler.as_slice() else {
                         return Err(ic_hata(satir));
                     };
+                    son_tarihi_denetle(io, satir)?;
                     Ok(Deger::Mantiksal(
                         io.parola_dogrula(
                             &metne_sinirli(parola, satir)?,
@@ -54,12 +58,15 @@ pub(super) fn degerlendir_async<'a>(
                     let [Deger::Metin(url)] = degerler.as_slice() else {
                         return Err(ic_hata(satir));
                     };
-                    let zaman_asimi_ms = son_tarih_kalani(io, satir)?.map(|(_, kalan)| kalan);
                     if gorevde_miyiz() {
                         // İstek adaptörüne girmeden kardeşlere bir tur ver. Mevcut IO
                         // trait'i senkrondur; adaptör çağrısının içi atomik kalır.
                         gorev_bekleme_noktasi(0).await;
                     }
+                    // Sıra verme sırasında kardeş görev saati ilerletmiş veya
+                    // üst son tarihi doldurmuş olabilir. Adaptöre eski kalan
+                    // süreyle girmek yerine tam çağrı öncesi yeniden hesapla.
+                    let zaman_asimi_ms = son_tarih_kalani(io, satir)?.map(|(_, kalan)| kalan);
                     let (durum, govde) = match io.http_getir(url, zaman_asimi_ms) {
                         Ok(yanit) => {
                             son_tarihi_denetle(io, satir)?;
@@ -566,6 +573,7 @@ pub(super) fn degerlendir_async<'a>(
                     1,
                 ));
             }
+            son_tarihi_denetle(io, satir)?;
             let deger = io.rastgele(alt, ust).clamp(alt, ust);
             Ok(Deger::TamSayi(deger))
         }
