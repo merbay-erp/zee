@@ -65,7 +65,9 @@ makine tüketicisi kararını kararlı kod üzerinden verir.
 - K-127, bu append-only tabana P015 ve T054'ü ekledi; güncel şema-1 sayısı
   o adımda 147 etkin + 3 ayrılmıştır. K-129 aynı tabana S045 ve C023'ü ekledi;
   o adımda 149 etkin + 3 ayrılmıştır. K-130 değer/metin heap aşımı için C024'ü
-  ekledi; güncel sayı 150 etkin + 3 ayrılmıştır. Eski kayıtların hiçbiri değişmedi.
+  ekledi; o adımda 150 etkin + 3 ayrılmıştır. K-135 registry taşıma/cache/
+  kalıcılık hatası P016'yı append-only ekledi; güncel sayı 151 etkin + 3
+  ayrılmıştır. Eski kayıtların hiçbiri değişmedi.
 - `katalog_testi.rs` kaynak↔katalog varlığını,
   `tani_kimligi_testi.rs` katalog↔sürüm kimliğini ayrı sorumluluklarla korur.
 - Yeni tanı eklemek kasıtlı olarak kaynak, katalog, fixture ve ilgili davranış

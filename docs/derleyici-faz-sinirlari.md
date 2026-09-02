@@ -34,6 +34,10 @@ compiler/src/
 │   └── kalici_dosya/
 │       └── metadata.rs       platform owner/ACL/xattr/security aktarımı
 ├── kaynak_sinirlari.rs       ortak değişmez kaynak/CPU/bellek/çıktı profili
+├── registry.rs               root ve metadata güven doğrulayıcısı
+│   └── registry/istemci.rs   taşıma/cache/kalıcı durum orkestrasyonu
+│       ├── depo.rs           içerik-adresli yol ve sınırlı disk okuma
+│       └── tasima.rs         HTTPS/statik ayna adaptörü
 └── yorumlayici.rs            değer/IO/scheduler ve yürütme orkestrasyonu
     └── yorumlayici/
         ├── cumle.rs          cümle yürütme
@@ -128,10 +132,11 @@ dağılmasını engeller.
 K-127/ADR-031 compile yetkinlik taramasını `cozumleyici/yetkinlik.rs`, runtime
 IO kapısını `yorumlayici/yetkinlik.rs`, ortak policy/origin/IP modelini kök
 `yetkinlik.rs` ve native HTTPS'yi `ag_istemcisi.rs` sahibine ayırdı. İlanlı
-380/250/520/140 satır bütçeleri etki, runtime ve CLI köklerinin bu güvenlik
+380/250/520/180 satır bütçeleri etki, runtime ve CLI köklerinin bu güvenlik
 sorumluluğunu geri yutmasını engeller.
 K-128/ADR-032 atomik replace'in platform metadata aktarımını
-`kalici_dosya/metadata.rs` sahibine ayırdı. `kalici_dosya.rs` 820,
+`kalici_dosya/metadata.rs` sahibine ayırdı. `kalici_dosya.rs` K-135'in atomik
+karşılaştır-ve-yaz ilkeliyle 850,
 metadata adaptörü 260 satır bütçesindedir; owner/group, ACL/xattr ve Windows
 security merge ayrıntıları genel kalıcılık akışına geri yayılamaz.
 K-129/ADR-033 kaynak bütçesi değerlerini `kaynak_sinirlari.rs` içinde tek
@@ -146,6 +151,10 @@ K-134 rota seçimi, güvenlik önsözü, taze ortam ve 30 saniyelik request yür
 akışını `yorumlayici/web_istek.rs` sahibine ayırdı. 180 satır bütçesi web
 yaşam döngüsünün runtime köküne geri gömülmesini engeller; transaction
 commit/rollback'i `GirdiCikti` adaptör sınırında kalır.
+K-135 registry istemcisini 560 satırlık `registry/istemci.rs` sahibinde;
+içerik-adresli disk ilkellerini 100 satırlık `depo.rs`, HTTPS statik taşıyıcıyı
+120 satırlık `tasima.rs` sınırında tutar. Metadata doğrulama `registry.rs`te,
+DNS/IP ve redirect korkulukları ortak `ag_istemcisi.rs`te kalır.
 K-130 değer grafiği hesabını `yorumlayici/kaynak.rs`, bütçeli değer/JSON/CSV
 yazımını `yorumlayici/metin.rs`, süreç-geneli izin sayacını
 `kaynak_sinirlari/baglanti.rs` sahibine ayırdı. Sırasıyla 280/240/60 satır;

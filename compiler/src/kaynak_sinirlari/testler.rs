@@ -28,6 +28,7 @@ fn varsayilan_profil_kritik_limitleri_sifira_birakmaz() {
     assert!(sinirlar.paket().dosya_bayti() <= sinirlar.paket().paket_bayti());
     assert!(sinirlar.paket().yayin_bayti() <= sinirlar.paket().paket_bayti());
     assert!(sinirlar.registry().yayin_bayti() <= sinirlar.registry().targets_bayti() as u64);
+    assert!(sinirlar.registry().kok_rotasyonu() > 0);
     assert!(sinirlar.tani().sayi() > 0);
     assert!(sinirlar.metadata().deger_bayti() <= sinirlar.metadata().toplam_bayti());
     assert!(

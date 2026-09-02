@@ -229,6 +229,7 @@ pub const VARSAYILAN_KAYNAK_SINIRLARI: KaynakSinirlari = KaynakSinirlari {
         sbom_bayti: 8 * 1024 * 1024,
         provenance_bayti: 8 * 1024 * 1024,
         yayin_bayti: 1024 * 1024,
+        kok_rotasyonu: 64,
     },
     tani: TaniSinirlari { sayi: 20 },
     metadata: MetadataSinirlari {

@@ -684,6 +684,15 @@ benzerleri ve görünmez bidi yolları reddedilir. Üç Tier-1 platformdaki byte
 fixture'ı ve saldırı korpusu [`.zep` conformance rehberinde](zep-conformance.md)
 açıklanır (K-117/ADR-028/spec-18).
 
+K-135 registry istemci çekirdeği bu yayınları yalnız HTTPS originli, redirectsiz
+ve DNS sonrası public-IP denetimli statik aynadan alır. Root rotasyonu ile
+timestamp/snapshot/targets ve dört yayın dosyası tamamen doğrulanmadan hiçbir
+nesne kullanılabilir cache'e girmez. Cache salt-okunur SHA-256 adreslidir;
+kalıcı sürüm+özet durumu atomik karşılaştır-ve-değiştir ile rollback'e kapalıdır.
+Çevrimdışı açılış her nesneyi yeniden doğrular ve eksik/bozuk cache'i P016 ile
+reddeder. Bu çekirdeğin `proje.dil`, kilit ve kullanıcı CLI yüzeyi K-136'da
+tamamlanacaktır.
+
 **Gömülü standart kitaplık** (RFC-0014, deneysel): `matematik` (mutlak, üs,
 tam karekök, obeb, okek), `liste_araclari` (toplam, uçlar, ortalama) ve
 `metin_araclari` (tersi, ünlü sayımı, baş harf) ve `sozluk_araclari`

@@ -255,8 +255,8 @@ SBOM ve uzak sürüm çözümü bu aşamada henüz başlamamıştı. K-094'te de
 ilk dağıtım çekirdeğine dönüştü. K-095 ağ dışı root sabitlemesi, eşik/çift
 eşikli rotasyon, timestamp→snapshot→targets bağları, rollback/expiry ve exact
 yayıncı/yanked/duyuru politikasını çalışan metadata doğrulayıcısına dönüştürdü.
-Limitli uzak taşıma, kalıcı metadata/cache, offline hit/miss, exact manifest/
-kilit ve CLI henüz tamamlanmamıştır; V1-P1-07 açık kalır.
+K-135 limitli HTTPS/statik taşıma, kalıcı metadata/cache ve offline hit/miss'i
+tamamladı. Exact manifest/kilit ve CLI bağı K-136'ya kaldı; V1-P1-07 açıktır.
 `dil ekle <yerel-yol> [proje]` (K-079) aday grafiği diske yazmadan çözer;
 başarılıysa yorumu koruyan resmî biçimde bildirimi ve kilidi günceller,
 yazma hatasında önceki iki dosyayı geri yüklemeyi dener.
@@ -597,7 +597,7 @@ tamlık, kimlik ve imkânsız-durum değişmezlerini debug/test faz kapısına
 bağladı; özellik→alan dönüşümündeki klon kaynaklı yetim HIR kaydını bulup
 düzeltti. K-113/ADR-024 LSP odaklı parser recovery'yi cümle sonu+dengeli
 girinti senkronizasyonu, kaynak sırası ve 20 tanılık ortak bütçeyle kapattı.
-K-114/ADR-025 ile başlayan ve K-130'da 150 etkin + 3 ayrılmışa çıkan tanıların
+K-114/ADR-025 ile başlayan ve K-135'te P016 ile 151 etkin + 3 ayrılmışa çıkan tanıların
 kod↔anlam bağı sürümlü
 fixture'a sabitledi. K-115/RFC-0022/ADR-026 bütün runtime IO çağrılarını
 kanonik, sürümlü ve dış etkisiz replay edilebilen bir iz protokolüne bağladı;
@@ -698,8 +698,9 @@ kurdu; K-130 değer/metin heap'i, görev klonları ve bağlantı izinlerini ekle
 K-131 eski domain kaynak sabitlerinin sayısal sahipliğini aynı tipe taşıdı.
 K-132 LSP outbound JSON'unu bounded üretip B-025'i kapattı. K-133/K-134 etki
 öncesi deadline ve web request transaction katmanlarıyla B-026'yı kapattı.
-Sıradaki omurga B-029 registry taşıma, doğrulanmış cache ve kalıcı rollback
-zinciridir.
+K-135 B-029'un HTTPS taşıma, doğrulanmış içerik-adresli cache, CAS korumalı
+kalıcı rollback ve offline dilimini kapattı. Sıradaki omurga K-136 exact
+manifest/kilit/CLI entegrasyonudur.
 # 40. Proje felsefesinin korunması
 Bu projenin başarısı yalnız compiler’ın çalışması değildir. Başarı; Türkçe konuşan bir çocuğun yabancı syntax bariyerine takılmadan algoritmik düşünceyle tanışması, aynı dilin yıllar sonra onu terk etmeye zorlamaması ve ekosistemin tek bir şirketin kapalı ürünü haline gelmemesidir.
 Her yeni özellik şu dört sorudan geçmelidir: Türkçe doğal mı? Deterministik mi? Öğrenilebilir mi? Profesyonel ölçekte savunulabilir mi? Dördünden biri hayırsa özellik yeniden tasarlanır.

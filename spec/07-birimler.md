@@ -1,7 +1,8 @@
 # 07 — Birimler ve projeler
 
-Normatif kaynak: RFC-0009 §2–4.1 (geçici kabul). Uzak registry/yayın (§4.2)
-spec dışıdır — Faz 5.
+Normatif kaynak: RFC-0009 §2–4.1 (geçici kabul). Uzak yayın/registry güven ve
+taşıma çekirdeği spec/18–19'dadır; exact proje bildirimi/kilit/CLI bağı henüz
+bu kaynak yüzeyine eklenmemiştir.
 
 ## Model (TANIMLI)
 

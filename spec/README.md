@@ -52,6 +52,7 @@ Kırıcı değişiklik sessizce yapılamaz: davranış değişikliği RFC'den ge
 Çok çekirdekli paralellik ve yarış/akış/dinamik görev yüzeyleri (RFC-0011),
 ikili FFI/ABI (RFC-0012, Faz 4/5), standart kütüphane kararlılık
 politikası, çok süreçli web durumu/idempotency (RFC-0015/0017), registry
-taşıma/cache/CLI katmanı (RFC-0020 §6) ile genel deprecation/edition modeli. Morfoloji
+exact proje bildirimi/kilit/CLI katmanı (RFC-0020 §6) ile genel
+deprecation/edition modeli. Morfoloji
 profili için kırıcı sürüm sınırı spec/13'te şimdiden tanımlıdır.
 Bu başlıklar karara bağlandıkça buraya bölüm olarak eklenir.

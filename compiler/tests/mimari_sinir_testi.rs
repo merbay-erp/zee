@@ -84,14 +84,17 @@ fn handler_modulleri_yeni_domain_icin_sinir_tasir() {
         ("src/yorumlayici/web_istek.rs", 180),
         ("src/yorumlayici/yetkinlik.rs", 250),
         ("src/yetkinlik.rs", 520),
-        ("src/ag_istemcisi.rs", 140),
+        ("src/ag_istemcisi.rs", 180),
         ("src/kaynak_sinirlari/baglanti.rs", 60),
         ("src/kaynak_sinirlari/okuma.rs", 120),
         ("src/kaynak_sinirlari/profiller.rs", 300),
         ("src/lsp/cikti.rs", 120),
-        ("src/kalici_dosya.rs", 820),
+        ("src/kalici_dosya.rs", 850),
         ("src/kalici_dosya/metadata.rs", 260),
         ("src/kaynak_sinirlari.rs", 260),
+        ("src/registry/istemci.rs", 560),
+        ("src/registry/istemci/depo.rs", 100),
+        ("src/registry/istemci/tasima.rs", 120),
     ] {
         satir_butcesini_denetle(goreli, butce);
     }
@@ -108,6 +111,7 @@ fn domain_kaynak_limitleri_tek_profilden_beslenir() {
         "src/lsp.rs",
         "src/tedarik.rs",
         "src/registry.rs",
+        "src/registry/istemci.rs",
         "src/tani.rs",
         "src/kalici_dosya.rs",
         "src/kalici_dosya/metadata.rs",

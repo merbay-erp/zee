@@ -151,5 +151,6 @@ aktif	P012	proje.paket_tedarik_uretimi	Yayıncı anahtarı veya tekrar üretileb
 aktif	P013	proje.registry_guven_zinciri	Registry root/metadata imzası, eşik, sürüm, süre, kanonik biçim, üst rol boyut/özet bağı veya kalıcı geçmiş doğrulanamadı
 aktif	P014	proje.registry_hedef_politikasi	Exact hedef bulunamadı; targets yayıncı/paket bağı uyuşmadı; sürüm yanked ya da etkin kritik duyurudan etkilendi
 aktif	P015	proje.yetkinlik_politikasi	Yetkinlik listesi/hedefi geçersiz ya da paket üst projenin iznini aşıyor
+aktif	P016	proje.registry_tasima_cache	Registry HTTPS taşıması, içerik-adresli cache veya atomik kalıcı durum işlemi başarısız
 aktif	Ç000	ic.program_sonlandirma_nobetcisi	`programı bitir` iç nöbetçisi; çalıştırıcı yakalar, kullanıcı asla görmez
 aktif	Ç001	ic.son_tarih_iptal_nobetcisi	Son tarih iptal nöbetçisi; yalnız sahibi `içinde/yetişmezse` bloğu yakalar, kullanıcıya sızmaz

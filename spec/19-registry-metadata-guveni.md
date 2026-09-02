@@ -105,6 +105,43 @@ kilide gerekçesiyle yazılmadan bağımlılık kabulüne dönüşemez.
 Bağlayan üst metadata boyutu, ayrıştırmadan/ayırmadan önce denetlenir. Bütün
 özetler küçük harfli 32-byte SHA-256 hex'tir.
 
+## Taşıma, kalıcı durum ve cache (TANIMLI — K-135)
+
+Gerçek istemci yalnız yol/sorgu taşımayan bir `https://` origin kabul eder;
+redirect ve ortam proxy'si kapalıdır, DNS sonrası public-IP denetimi ortak ağ
+profilindedir. Statik yerleşim şöyledir:
+
+```text
+metadata/timestamp.json
+metadata/<sürüm>.snapshot.json
+metadata/<sürüm>.targets.json
+metadata/<sürüm>.root.json
+hedefler/sha256/<64 küçük hex>
+```
+
+Timestamp ve üst rolün bağladığı sürüm okunarak sonraki sürümlü yol seçilir;
+yoldan gelen sürüm veya ayna güven kararı değildir. Tek güncellemede en çok 64
+ardışık root rotasyonu izlenir. Her GET çağıranın merkezî metadata/hedef byte
+sınırını taşır; 200 ve root aramasındaki 404 dışında durum başarı sayılmaz.
+
+Cache `nesneler/sha256/<özet>` altında bütün metadata ve hedefleri aynı içerik
+adresiyle, salt-okunur saklar. İndirilen hiçbir hedef tam root→timestamp→
+snapshot→targets ve yayıncı zinciri geçmeden bu adrese yazılmaz. Var olan nesne
+her okumada boyut+SHA-256 ile yeniden doğrulanır; bozuk nesne ağ varken bile
+sessizce iyileştirilmez veya kullanılmaz.
+
+`durum-v1.json`, `zee-registry-cache-v1` kapalı/kanonik şemasında ağ dışı ilk
+root özeti, etkin root nesne özeti, son başarılı doğrulama zamanı ve bütün rol
+sürüm+özetlerini taşır. Önce değişmez nesneler atomik yazılır, en son durum
+dosyası karşılaştır-ve-değiştir ile yayımlanır. Böylece çökme kullanılmayan
+nesne bırakabilir ama yarım durumu görünür yapamaz; yarışan eski istemci yeni
+durumu ezemez. Başarısız zincir kalıcı durumu değiştirmez.
+
+Çevrimdışı kip duvar saati/ağ kullanmaz; yalnız son çevrimiçi kabul zamanında
+geçerli olduğu kaydedilmiş tam metadata zincirini ve exact hedef nesnelerini
+yeniden doğrular. Durum, metadata veya dört hedeften biri yok/bozuksa P016
+cache miss/bozulma hatasıdır. Bu kip yeni metadata güncelliği iddia etmez.
+
 ## Conformance
 
 Uyumlu gerçekleme en az şunları kanıtlar:
@@ -118,5 +155,6 @@ Uyumlu gerçekleme en az şunları kanıtlar:
 - yanked/kritik duyuru varsayılanı ve yanlış yayıncı reddi;
 - RFC 3339 UTC takvim sınırları.
 
-Kalıcı durum dosyası, uzak taşıma/mirror, doğrulanmış cache, offline hit/miss ve
-CLI tamamlanmadan V1-P1-07 **AÇIK** kalır.
+K-135 kalıcı durum, uzak HTTPS/statik taşıma, doğrulanmış cache ve offline
+hit/miss'i kanıtlar. Exact proje bildirimi/kilit ve CLI entegrasyonu
+tamamlanmadan V1-P1-07 **AÇIK** kalır.

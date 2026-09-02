@@ -1,9 +1,14 @@
 //! Uzak zee registry metadata güven zinciri.
 //!
-//! Bu modül taşıma yapmaz. Ağdan ya da diskten gelen sınırlı byte dizilerini
-//! çevrimdışı kök güveninden başlayarak doğrular; tüm zincir geçmeden sürüm
-//! durumu güncellenmez. İndirme ve içerik-adresli cache bu doğrulayıcının
-//! tüketicisidir.
+//! Doğrulayıcı ağdan ya da diskten gelen sınırlı byte dizilerini çevrimdışı
+//! kök güveninden başlayarak denetler; istemci katmanıysa HTTPS/statik taşıma,
+//! içerik-adresli cache ve kalıcı monoton durumu bu çekirdeğe bağlar.
+
+mod istemci;
+
+pub use istemci::{
+    HttpsRegistryTasiyici, RegistryIstemcisi, RegistryPaketCiktisi, RegistryTasiyici,
+};
 
 use crate::paket::sha256_hex;
 use crate::tedarik::{yayini_dogrula, ImzaliYayin, YayinDosyasi};
@@ -14,8 +19,9 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::fmt;
 
 const IMZA_ALANI: &[u8] = b"zee-registry-v1\0";
-const AZAMI_KOK_BOYUTU: usize =
-    crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.registry().kok_bayti();
+const AZAMI_KOK_BOYUTU: usize = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+    .registry()
+    .kok_bayti();
 const AZAMI_TIMESTAMP_BOYUTU: usize = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
     .registry()
     .timestamp_bayti();
@@ -37,15 +43,18 @@ const AZAMI_HEDEF_SAYISI: usize = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SIN
 const AZAMI_DUYURU_SAYISI: usize = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
     .registry()
     .duyuru_sayisi();
-const AZAMI_ARSIV_BOYUTU: u64 =
-    crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.registry().arsiv_bayti();
-const AZAMI_SBOM_BOYUTU: u64 =
-    crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.registry().sbom_bayti();
+const AZAMI_ARSIV_BOYUTU: u64 = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+    .registry()
+    .arsiv_bayti();
+const AZAMI_SBOM_BOYUTU: u64 = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+    .registry()
+    .sbom_bayti();
 const AZAMI_PROVENANCE_BOYUTU: u64 = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
     .registry()
     .provenance_bayti();
-const AZAMI_YAYIN_BOYUTU: u64 =
-    crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.registry().yayin_bayti();
+const AZAMI_YAYIN_BOYUTU: u64 = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+    .registry()
+    .yayin_bayti();
 const ROLLER: [&str; 4] = ["root", "snapshot", "targets", "timestamp"];
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -65,6 +74,13 @@ impl RegistryHatasi {
     fn hedef(mesaj: impl Into<String>) -> Self {
         Self {
             kod: "P014",
+            mesaj: mesaj.into(),
+        }
+    }
+
+    fn tasima(mesaj: impl Into<String>) -> Self {
+        Self {
+            kod: "P016",
             mesaj: mesaj.into(),
         }
     }

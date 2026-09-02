@@ -3,8 +3,9 @@
 - **Durum:** **geçici kabul — birim (§2), proje (§3), yerel paket + kilit
   (§4.1), tam public kaynak ABI'si** (K-029/K-076/K-078/K-086; onay kapısı:
   usability). K-094 yayın çekirdeği RFC-0020/spec-18'de; K-095 registry
-  metadata güveni spec/19'da çalışır. Taşıma/cache/CLI §4.2/ADR-006/RFC-0020
-  §6 kapsamında sürmektedir.
+  metadata güveni spec/19'da çalışır. K-135 taşıma/cache/kalıcı durum/offline
+  katmanını ekledi; exact bildirim/kilit/CLI §4.2/ADR-006/RFC-0020 §6 kapsamında
+  sürmektedir.
 - **Tarih:** 31 Ağustos 2026
 - **İlgili günlük kayıtları:** master plan bölüm 7 ("modül mü birim mi; kullanıcı testiyle karar"), bölüm 14
 - **Gerçekleme:** `lib.rs` (kökenli yükleyici + T039 public sınırı),
@@ -154,9 +155,10 @@ ise çözülmüş grafikte geçişli olarak kalabilir.
 - K-095 ağ dışı sabit/eşik root, çift eşikli rotasyon,
   timestamp→snapshot→targets, rollback/expiry ve exact yayıncı/yanked/duyuru
   byte doğrulamasını spec/19'da çalıştırır.
-- Registry adına göre uzak `dil ekle <ad@X.Y.Z>`, limitli taşıma, kalıcı
-  metadata/cache ve offline kullanım henüz çalışan yüzey değildir. Var olan
-  `dil ekle` yalnız açık yerel yolu kabul eder.
+- Registry istemci çekirdeği K-135 ile HTTPS statik aynadan limitli taşıma,
+  kalıcı metadata/cache ve offline hit/miss'i güven zincirine bağlar. Ancak
+  `dil ekle <ad@X.Y.Z>` henüz bu çekirdeğe bağlanmamıştır; var olan `dil ekle`
+  yalnız açık yerel yolu kabul eder.
 - Sürüm aralığı bilinçli olarak kararlaştırılmamıştır; ilk uzak istemci exact
   `X.Y.Z` dışında seçim yapmayacaktır.
 - Paket adları küçük harf Türkçe tanımlayıcıdır; typosquatting/confusable

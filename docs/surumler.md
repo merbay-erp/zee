@@ -468,6 +468,16 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   runtime/socket hatası veya yanıtsız rota hepsini geri alır. Dört yeni
   hermetik+gerçek TCP regresyonuyla envanter 527 teste çıktı; B-026 kapandı.
 
+- **Registry taşıma, kalıcı durum ve doğrulanmış cache**
+  (K-135, RFC-0020/ADR-006/spec-19): Yalnız HTTPS originli, redirect/proxy'siz
+  ve DNS sonrası public-IP denetimli statik ayna; 64 ardışık root rotasyonu;
+  sürümlü timestamp/snapshot/targets yolları ve hedef başına byte limiti
+  çalışır. Tam metadata+yayınevi zinciri geçmeden cache/durum yayımlanmaz.
+  Nesneler salt-okunur SHA-256 adreslidir; sürüm+özet durumu atomik CAS ile
+  yarışan rollback'e kapalıdır. Offline kip son kabul zincirini duvar saati ve
+  ağ olmadan yeniden doğrular; miss/bozulma P016'dır. Altı yeni regresyonla
+  envanter 533 teste çıktı. B-029 exact manifest/kilit/CLI için kısmen açıktır.
+
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`
   bildirimi hazır üretir. P001–P004 Türkçe proje tanıları. Doğrudan dosya

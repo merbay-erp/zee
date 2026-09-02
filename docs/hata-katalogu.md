@@ -191,6 +191,7 @@ kalır (ADR-025).
 | P013 | Registry root/metadata imzası, eşik, sürüm, süre, kanonik biçim, üst rol boyut/özet bağı veya kalıcı geçmiş doğrulanamadı | Registry kök sabitlemesini ve rol metadata zincirini yenile; doğrulanmayan aynayı/cache durumunu kullanma |
 | P014 | Exact hedef bulunamadı; targets yayıncı/paket bağı uyuşmadı; sürüm yanked ya da etkin kritik duyurudan etkilendi | Doğru exact sürüm/yayıncıyı seç; yanked/duyuru baypasını yalnız açık gerekçe ve kilit kaydıyla uygula |
 | P015 | Yetkinlik listesi/hedefi geçersiz ya da paket üst projenin iznini aşıyor | Yetkinliği ve tam origin'i ana `proje.dil` içinde açıkça onayla; public ağda HTTPS kullan |
+| P016 | Registry HTTPS taşıması, içerik-adresli cache veya atomik kalıcı durum işlemi başarısız | Origin/root pin/cache yolunu denetle; bozuk nesneyi kullanma ve güvenilir aynadan yeniden doğrula |
 
 ## Ç — İç akış
 

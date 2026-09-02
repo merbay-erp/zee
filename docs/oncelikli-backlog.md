@@ -91,8 +91,12 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
     mutation'larıyla ilk HTTP yanıtı başarıda birlikte commit edilir; timeout,
     runtime hatası, yanıtsız rota veya socket yazma hatasında birlikte geri
     alınır. Gerçek TCP ve hermetik regresyonlarla B-026 kapandı (527 test).
-32. Sıradaki makine işi B-029 registry taşıma, doğrulanmış cache ve kalıcı
-    rollback zinciridir; sonraki işler aşağıdaki öncelik sırasını korur.
+32. K-135 B-029'un taşıma/cache/kalıcılık dilimini kapattı. HTTPS-only statik
+    ayna, redirect/proxy ve private-IP korkulukları; ardışık root taşıması;
+    CAS korumalı atomik monoton durum; tam metadata+yayın doğrulamasından sonra
+    salt-okunur SHA-256 nesne deposu ve çevrimdışı hit/miss çalışır (533 test).
+33. Sıradaki makine işi K-136 exact proje bildirimi, kilit ve CLI
+    entegrasyonudur; sonraki işler aşağıdaki öncelik sırasını korur.
 
 ## P0 — V1 öncesi dil ve derleyici omurgası
 
@@ -365,7 +369,10 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 
 - **B-029 · KISMEN — registry protokolünü önce normatifleştir.** RFC-0020,
   spec/18 ve spec/19 wire/imza/expiry'yi koddan önce bağladı; K-095 metadata
-  doğrulayıcısı çalışır. Taşıma/cache/CLI hâlâ açıktır.
+  doğrulayıcısı çalışır. K-135 limitli HTTPS/statik taşıma, ardışık root,
+  atomik kalıcı sürüm+özet durumu, doğrulama-sonrası salt-okunur SHA-256 cache,
+  bozuk cache reddi ve çevrimdışı hit/miss'i gerçekledi. Exact bağımlılığın
+  `proje.dil`/`proje.kilit`/CLI entegrasyonu K-136'ya açıktır.
 - **B-030 · KAPALI (K-117) — platformlar arası kanonik paket testi.** Üretici
   dosya sistemi bileşenlerini NFC'ye çevirir, çakışmayı reddeder; tüketici
   yalnız kanonik NFC yolu kabul eder. Türkçe Unicode dosya adlı sabit `.zep`
@@ -436,9 +443,9 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 ## Bir sonraki somut kapı
 
 İnsan kanıtı hattında B-001, doldurulmuş gerçek usability formları ve önceden
-ilan edilmiş eşikleri bekler. Makine hattında K-133/K-134 etki öncesi deadline
-kapılarıyla web istek transaction'ını tamamlayıp B-026'yı kapattı. Sıradaki iş
-B-029 registry taşıma, doğrulanmış cache ve kalıcı rollback zinciridir.
+ilan edilmiş eşikleri bekler. Makine hattında K-135 B-029'un HTTPS taşıma,
+doğrulanmış cache, kalıcı rollback ve offline katmanını tamamladı. Sıradaki iş
+K-136 exact bağımlılığı proje bildirimi, kilit ve CLI'a bağlamaktır.
 
 ## 2 Eylül 2026 ikinci dış inceleme ayrımı
 
@@ -448,8 +455,9 @@ B-029 registry taşıma, doğrulanmış cache ve kalıcı rollback zinciridir.
   bitti; LSP'nin 8 MiB reddi JSON kurulurken uygulanır.
 - **Doğrulandı ve K-133/K-134 ile kapandı:** B-026 cancellation; etki öncesi
   deadline, görev HTTP tazeliği ve web session/cookie/yanıt transaction'ı.
-- **Sıradaki:** B-029 registry taşıma/cache/kalıcı rollback, B-046 rate-limit
-  ve çok süreçli oturum, B-051 kesin JSON-RPC, B-052 origin tekilleştirme,
+- **İlerliyor:** B-029'un taşıma/cache/kalıcı rollback/offline dilimi K-135
+  ile kapandı; sırada K-136 exact manifest/kilit/CLI vardır. Sonrasında B-046
+  rate-limit ve çok süreçli oturum, B-051 kesin JSON-RPC, B-052 origin tekilleştirme,
   B-053 byte HTTP+fuzz, B-034 temiz snapshot ve B-054 advisory/reproducibility.
 - **Mevcut repoda zaten kapalı:** çağrı derinliği C019/500 ve ayrı regresyonu;
   atomik metadata `unsafe` bloklarının her birindeki `SAFETY` gerekçesi; kök

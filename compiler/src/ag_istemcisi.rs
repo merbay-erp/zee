@@ -6,12 +6,15 @@ use std::time::Duration;
 use ureq::unversioned::resolver::{DefaultResolver, ResolvedSocketAddrs, Resolver};
 use ureq::unversioned::transport::{DefaultConnector, NextTimeout};
 
-pub const VARSAYILAN_ZAMAN_ASIMI_MS: i64 =
-    crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.ag().zaman_asimi_ms();
-pub const AZAMI_YANIT_BAYTI: usize =
-    crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.ag().yanit_bayti();
-pub const AZAMI_BASLIK_BAYTI: usize =
-    crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.ag().baslik_bayti();
+pub const VARSAYILAN_ZAMAN_ASIMI_MS: i64 = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+    .ag()
+    .zaman_asimi_ms();
+pub const AZAMI_YANIT_BAYTI: usize = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+    .ag()
+    .yanit_bayti();
+pub const AZAMI_BASLIK_BAYTI: usize = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+    .ag()
+    .baslik_bayti();
 
 #[derive(Debug)]
 struct PolitikaliCozucu {
@@ -46,7 +49,27 @@ pub fn getir(
     zaman_asimi_ms: Option<i64>,
     politika: &YetkinlikPolitikasi,
 ) -> Result<(i64, String), String> {
+    let (durum, govde) = getir_bayt(
+        url,
+        zaman_asimi_ms,
+        politika,
+        AZAMI_YANIT_BAYTI - AZAMI_BASLIK_BAYTI,
+    )?;
+    Ok((durum, String::from_utf8_lossy(&govde).into_owned()))
+}
+
+/// Registry ve benzeri ikili protokoller için kayıpsız, çağıranın ortak
+/// profilden seçtiği üst sınıra bağlı HTTP(S) GET yüzeyi.
+pub fn getir_bayt(
+    url: &str,
+    zaman_asimi_ms: Option<i64>,
+    politika: &YetkinlikPolitikasi,
+    azami_govde_bayti: usize,
+) -> Result<(i64, Vec<u8>), String> {
     politika.ag_istegini_denetle(url)?;
+    if azami_govde_bayti == 0 {
+        return Err("HTTP yanıt gövdesi sınırı sıfır olamaz".into());
+    }
     let _baglanti_izni = crate::kaynak_sinirlari::baglanti_izni_al()?;
     let toplam_ms = zaman_asimi_ms.unwrap_or(VARSAYILAN_ZAMAN_ASIMI_MS);
     if toplam_ms <= 0 {
@@ -74,20 +97,22 @@ pub fn getir(
         .call()
         .map_err(|hata| format!("HTTP isteği başarısız: {}", hata))?;
     let durum = i64::from(yanit.status().as_u16());
-    let govde = govdeyi_sinirli_oku(yanit.body_mut())?;
-    Ok((durum, String::from_utf8_lossy(&govde).into_owned()))
+    let govde = govdeyi_sinirli_oku(yanit.body_mut(), azami_govde_bayti)?;
+    Ok((durum, govde))
 }
 
-fn govdeyi_sinirli_oku(govde: &mut ureq::Body) -> Result<Vec<u8>, String> {
+fn govdeyi_sinirli_oku(
+    govde: &mut ureq::Body,
+    azami_govde_bayti: usize,
+) -> Result<Vec<u8>, String> {
     govde
         .with_config()
-        .limit((AZAMI_YANIT_BAYTI - AZAMI_BASLIK_BAYTI) as u64)
+        .limit(azami_govde_bayti as u64)
         .read_to_vec()
         .map_err(|hata| {
             format!(
-                "HTTP yanıtı {} MiB toplam sınırında okunamadı: {}",
-                AZAMI_YANIT_BAYTI / 1024 / 1024,
-                hata
+                "HTTP yanıt gövdesi {} byte sınırında okunamadı: {}",
+                azami_govde_bayti, hata
             )
         })
 }
@@ -102,9 +127,11 @@ mod testler {
     #[test]
     fn yanit_govdesi_bellek_sinirini_asamaz() {
         let mut govde = ureq::Body::builder().data(vec![0; AZAMI_YANIT_BAYTI]);
-        assert!(govdeyi_sinirli_oku(&mut govde)
-            .unwrap_err()
-            .contains("8 MiB"));
+        assert!(
+            govdeyi_sinirli_oku(&mut govde, AZAMI_YANIT_BAYTI - AZAMI_BASLIK_BAYTI)
+                .unwrap_err()
+                .contains("byte sınırında")
+        );
     }
 
     #[test]
