@@ -4,6 +4,32 @@ Bu rehber K-141/ADR-038'in işletim sözleşmesidir. Zee paket registry'sinin
 imzalı `.zep` zinciri RFC-0020/spec-18/19'dadır; burada yalnız Rust ile yazılmış
 bootstrap compiler ve fuzz araçlarının üçüncü taraf bağımlılıkları ele alınır.
 
+K-151/ADR-048 bu sınıra GitHub Actions yürütme kodunu da ekler. Cargo paketi
+kilitli olsa bile hareketli bir action tag'i değişmeyen commit'te farklı kod
+çalıştırabileceği için action pinleri ayrı immutable kayıt taşır.
+
+## GitHub Actions pin sözleşmesi
+
+Bütün `.github/workflows/*.yml|yaml` `uses:` değerleri, depo içi `./` action
+hariç tam 40 küçük-hex commit SHA kullanır. İncelenen sürüm etiketi, SHA ve
+resmî kaynak deposu
+[`github-actions-pinleri-v1.tsv`](github-actions-pinleri-v1.tsv) içinde
+workflow kullanımıyla birebirdir. `@v4`, `@stable`, `@main` ve kısa SHA
+kapıdan geçmez.
+
+`.github/dependabot.yml`, `github-actions` ekosistemini her pazartesi izler.
+Dependabot PR'ı otomatik birleştirilmez. İnceleyen kişi:
+
+1. action'ın resmî release/tag ref'inin önerilen commit'i gösterdiğini;
+2. sürüm notu ve izin/değişen davranışını;
+3. workflow'daki SHA ile pin TSV'sinin birlikte güncellendiğini;
+4. `tedarik_kapisi_testi`, tam faz matrisi ve ilgili platform işlerini
+
+doğrular. Checkout kalıcı GitHub kimliği bırakmaz (`persist-credentials:
+false`); workflow token'ı yalnız `contents: read` yetkisindedir. Runner
+image'ının `*-latest` hareketliliği bu pinin verdiği söz değildir ve K-169
+cross-platform release tatbikatında ayrıca ele alınır.
+
 ## Sürekli kapı
 
 `.github/workflows/tedarik.yml` her push, pull request ve günlük takvimde sabit
@@ -36,6 +62,8 @@ yayımlanamaz.
   veya değişmek zorundaysa iş hata verir; kilitsiz fallback yoktur.
 - Bağımlılık güncellemesi elle ve ayrı incelemeyle yapılır; iki lock'taki fark,
   advisory/lisans/source sonucu ve release notu birlikte gözden geçirilir.
+- Action güncellemesi de bağımlılık PR'ıdır; immutable SHA, insan-okur sürüm
+  yorumu ve pin kaydı birlikte incelenmeden birleştirilmez.
 
 ## Gerçek offline vendor kanıtı
 

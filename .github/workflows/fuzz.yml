@@ -5,6 +5,9 @@ on:
     - cron: "17 1 * * *"
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   hedef:
     runs-on: ubuntu-latest
@@ -26,13 +29,15 @@ jobs:
             korpus: wasm_abi
             azami_girdi: 4097
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
       - name: Sabit nightly araç zinciri
         run: rustup toolchain install nightly-2026-08-31 --profile minimal
       - name: Sabit cargo-fuzz
         run: cargo +nightly-2026-08-31 install cargo-fuzz --version 0.13.2 --locked
       - name: Önceki kapsama korpusunu geri yükle
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: compiler/fuzz/corpus/${{ matrix.korpus }}
           key: ${{ matrix.hedef }}-fuzz-${{ github.run_id }}
@@ -48,7 +53,7 @@ jobs:
           -timeout=5
       - name: Crash girdisini sakla
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: ${{ matrix.hedef }}-fuzz-crash-${{ github.run_id }}
           path: compiler/fuzz/artifacts/${{ matrix.hedef }}

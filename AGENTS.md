@@ -57,6 +57,12 @@ geçer. Yeni sahipler-arası SCC eklenemez. Zorunlu geçici istisna
 ISO son tarih ve kaldırma K-işi olmadan kabul edilmez; kaybolan ya da süresi
 dolan izin aynı committe temizlenir.
 
+GitHub workflow `uses:` satırları yerel action dışında yalnız 40 haneli
+immutable commit SHA kullanır. Yeni/yükseltilen action aynı committe
+`docs/github-actions-pinleri-v1.tsv` içindeki sürüm, SHA ve resmî kaynak
+kaydını günceller; Dependabot PR'ı otomatik merge edilmez. Toplu committen
+önce `tedarik_kapisi_testi` bu birebirliği denetler.
+
 Her compiler bug düzeltmesi ayrıca `regression/<faz>/` altında tek arızaya
 indirgenmiş bir `.dil` kaynağı ve `regression/v1.tsv` içinde K-kimliği, faz,
 kip, beklenen tanı+kesin span, exit ve çıktı kaydı bırakır. Bu kayıt olmadan

@@ -162,8 +162,12 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
     kırıldı. Tek kalan paket/registry/tedarik SCC'si K-160 kaldırma işi ve
     1 Ekim 2026 son tarihli gerekçeli geçici izindir; açıklamasız çevrim
     sıfırdır. B-058 kapandı.
-48. Sıradaki makine işi K-151 ile bütün GitHub Actions kullanımlarını immutable
-    commit SHA'ya pinlemek ve kontrollü SHA güncelleme politikasını kurmaktır.
+48. K-151/ADR-048 bütün GitHub Actions kullanımlarını immutable commit SHA'ya,
+    sürümlü exact pin kaydına ve haftalık fakat otomatik birleşmeyen Dependabot
+    güncelleme akışına bağladı. Workflow token'ları salt-okunur, checkout
+    kimliği kalıcı değildir; B-059 kapandı.
+49. Sıradaki makine işi K-152 ile her benchmark satırını gerçek Git SHA,
+    milestone ve tam yeniden üretim metadata'sına bağlamaktır.
 
 ## P0 — V1 öncesi dil ve derleyici omurgası
 
@@ -574,6 +578,14 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   SCC'den ikisi kaldırıldı. Paket/registry/tedarik SCC'si yalnız exact üyeli,
   ayrıntılı gerekçeli, K-160 sahipli ve 1 Ekim 2026 son tarihli C001 iznidir.
   Yeni SCC, bayat allowlist ve süre aşımı fail-closed'dur.
+- **B-059 · KAPALI (K-151/ADR-048) — GitHub Actions supply-chain pinleme.**
+  Üç workflow'taki bütün üçüncü taraf `uses:` değerleri resmî ref'lerden
+  doğrulanmış 40 haneli commit SHA'dır. `github-actions-pinleri-v1.tsv`
+  action/sürüm/SHA/kaynak kaydını kullanımla birebir tutar; yeni workflow da
+  sabit dosya listesi yerine dizin taramasıyla aynı kapıya girer. Haftalık
+  Dependabot güncelleme PR'ı açar ama otomatik merge edilmez. Checkout
+  credentials kalıcı değildir ve workflow token'ları `contents: read` ile
+  sınırlıdır.
 - **B-041 · KAPALI (K-120) — LSP'yi SymbolId/HIR'a bağla.** Definition ve
   rename yalnız başarılı checker'ın `SymbolId`/`IslemId`/`YapiId` typed-HIR
   bağından hedef seçer. HIR ilk tanım, yeniden atama ve okuma aralıklarını
@@ -606,9 +618,9 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 ## Bir sonraki somut kapı
 
 İnsan kanıtı hattında B-001 ve B-002, doldurulmuş gerçek usability formları
-ile önceden ilan edilmiş eşikleri bekler. Makine hattında K-150 açıklamasız
-SCC'leri sıfırlayıp B-058'i kapattı. Sıradaki iş K-151 GitHub Actions
-supply-chain SHA pinleme kapısıdır; insan verisi gelmeden yeni syntax seçilmez
+ile önceden ilan edilmiş eşikleri bekler. Makine hattında K-151 bütün GitHub
+Actions kodunu immutable SHA'ya bağlayıp B-059'u kapattı. Sıradaki iş K-152
+benchmark provenance düzeltmesidir; insan verisi gelmeden yeni syntax seçilmez
 veya B-001/B-002 tamamlanmış gösterilmez.
 
 ## 2 Eylül 2026 üçüncü dış inceleme — savunulabilir V1 yol haritası
@@ -620,8 +632,8 @@ tamamlanmış sayılmaz; burada istenen ek kanıt ayrıca üretilir.
 | Kayıt | Durum | Bağlayıcı çıktı |
 |---|---|---|
 | K-150 | **KAPALI** | SCC kapısı, iki kırılmış çevrim, K-160'a süreli tek izin |
-| K-151 | **SIRADA** | Bütün workflow action'ları immutable SHA + kontrollü yenileme |
-| K-152 | **AÇIK** | Gerçek Git SHA/milestone ve tam benchmark provenance şeması |
+| K-151 | **KAPALI** | Bütün workflow action'ları immutable SHA + kontrollü yenileme |
+| K-152 | **SIRADA** | Gerçek Git SHA/milestone ve tam benchmark provenance şeması |
 | K-153 | **AÇIK** | Engine initialize'dan ayrı gerçek process→stdio LSP cold start |
 | K-154 | **AÇIK** | 2k/5k/10k/20k full-change eğrisi, invalidation sınırı ve eşikler |
 | K-155 | **AÇIK** | K-147 korpusuna `fixed_by`, mümkünse `introduced_by`, garanti sürümü |

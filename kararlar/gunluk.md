@@ -2491,6 +2491,27 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   kanıt durumlarıyla işlendi. Makine hattında sıradaki iş K-151 GitHub Actions
   immutable SHA pinleme; insan hattı K-161/K-162 gerçek oturumlarıdır.
 
+## K-151 — CI action kodu da dependency'dir (2 Eyl)
+
+- **Bulgu:** Cargo lock/checksum ve offline vendor sabitken `ci.yml` ile
+  `fuzz.yml`, checkout/cache/upload ve Rust toolchain action'larını `@v4` ya
+  da `@stable` hareketli ref'lerinden çalıştırıyordu. Aynı Zee commit'i tag
+  taşınırsa farklı üçüncü taraf kodu yürütebilirdi.
+- **Doğrulama:** Resmî Git uzak ref'leri 2 Eylül 2026'da sorgulandı:
+  checkout v4.4.0 `11d5960…`, cache v4.3.0 `0057852…`, upload-artifact
+  v4.6.2 `ea165f8…`, rust-toolchain stable `4360b52…` commitlerine bağlıydı.
+- **Karar:** Bütün workflow `uses:` değerleri tam 40 küçük-hex commit SHA'dır.
+  `github-actions-pinleri-v1.tsv` action/sürüm/SHA/resmî kaynak kaydını exact
+  tutar. Kapı workflow dizinini keşfeder; hareketli/kısa/kayıt dışı ref'i,
+  workflow'lar arası farklı pini ve kullanılmayan kaydı reddeder.
+- **Yenileme ve yetki:** Dependabot GitHub Actions ekosistemini haftalık PR'la
+  izler; otomatik merge yoktur. Pin kaydı ve sürüm yorumu aynı incelemede
+  güncellenir. Checkout `persist-credentials: false`, token yalnız
+  `contents: read` taşır.
+- **Kanıt:** ADR-048, tedarik rehberi ve bir supply-chain regresyonu. Envanter
+  610 test, 95 numaralı belge ve 46 kabul ADR'dir; B-059/V1-P0-34 kapandı.
+  Runner image hareketi K-169'un ayrı cross-platform release kanıtıdır.
+
 ---
 
 ## Sonraki adım
@@ -2499,7 +2520,7 @@ Korpus 10 öğrenci + 5 profesyonel usability oturumuna (Hafta 12 hedefi, erkeni
 Hafta 2'de kağıt üstünde) sesli okutulacak; her kayıt için "doğal mı /
 deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
-Makine hattında K-150 açıklamasız SCC'yi sıfırlayıp süreli tek C001 borcunu
-K-160'a bağladı. Sırada K-151 GitHub Actions immutable SHA pinleme vardır.
+Makine hattında K-151 bütün GitHub Actions yürütme kodunu immutable SHA ve
+kontrollü güncelleme kaydına bağladı. Sırada K-152 benchmark provenance vardır.
 B-001/B-002 (yeni sırada K-161/K-162), gerçek 10 çocuk/öğrenci + 5 profesyonel
 usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.

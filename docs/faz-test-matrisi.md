@@ -26,7 +26,7 @@
 | HTTP parser | `compiler/tests/http_istegi_testi.rs`<br>`compiler/fuzz/corpus/http_istegi` | `compiler/fuzz/fuzz_targets/http_istegi.rs`<br>`compiler/fuzz/corpus/http_istegi` | — | `web_guvenlik`<br>`cli`<br>`uctan_uca` |
 | Package | `compiler/tests/tedarik_testi.rs`<br>`compiler/tests/fixtures/zep-kanonik-v1.hex`<br>`compiler/tests/fixtures/zep-saldiri-korpusu` | — | `docs/zep-conformance.md`<br>`compiler/tests/fixtures/zep-kanonik-v1.hex` | `registry`<br>`tedarik_zinciri`<br>`cli`<br>`proje`<br>`uctan_uca` |
 | Registry | `compiler/src/registry/istemci/testler.rs`<br>`compiler/tests/fixtures/zep-saldiri-korpusu` | — | — | `paket`<br>`tedarik_zinciri`<br>`cli`<br>`proje` |
-| Supply-chain | `compiler/tests/tedarik_kapisi_testi.rs`<br>`compiler/deny.toml`<br>`compiler/Cargo.lock`<br>`compiler/fuzz/Cargo.lock` | — | — | `paket`<br>`registry`<br>`proje`<br>`muhe_kapilari` |
+| Supply-chain | `compiler/tests/tedarik_kapisi_testi.rs`<br>`compiler/deny.toml`<br>`compiler/Cargo.lock`<br>`compiler/fuzz/Cargo.lock`<br>`docs/github-actions-pinleri-v1.tsv` | — | — | `paket`<br>`registry`<br>`proje`<br>`muhe_kapilari` |
 | LSP | `compiler/tests/lsp_testi.rs` | — | — | `cli`<br>`uctan_uca` |
 | WASM | `compiler/tests/playground_testi.rs`<br>`compiler/fuzz/corpus/wasm_abi` | `compiler/fuzz/fuzz_targets/wasm_abi.rs`<br>`compiler/fuzz/corpus/wasm_abi` | — | `uctan_uca` |
 | CLI | `compiler/tests/io_izi_cli_testi.rs`<br>`golden/28-cli-araci.dil` | — | — | `proje`<br>`uctan_uca` |
@@ -56,7 +56,7 @@ yeniden koşulması gereken sonraki yüzeylerini gösterir.
 | HTTP parser | `test:http_istegi_testi` | Request-line, CRLF, header ve govde framing byte siniri. |
 | Package | `test:kitaplik_testi`<br>`test:tedarik_testi`<br>`lib:paket::uzak::politika::testler::`<br>`lib:tedarik::testler::` | Kutuphane, ZEP arsivi, imza, SBOM ve provenance davranisi. |
 | Registry | `lib:registry::istemci::testler::`<br>`lib:registry::testler::`<br>`bin:dil:dil_registry::testler::` | Metadata zinciri, rollback, cache, exact pin ve CLI secenekleri. |
-| Supply-chain | `test:tedarik_kapisi_testi` | RustSec, lisans, kilit ve offline vendor politikasinin yurutulebilir kapisi. |
+| Supply-chain | `test:tedarik_kapisi_testi` | RustSec, lisans, kilit, action pini ve offline vendor politikasinin yurutulebilir kapisi. |
 | LSP | `test:lsp_testi`<br>`lib:lsp::cikti::testler::`<br>`lib:lsp::kaynak_siniri_testleri::`<br>`bin:dillsp:testler::` | JSON-RPC, framing, tani, hover, completion, definition ve rename. |
 | WASM | `test:playground_testi` | Playground, ABI sahipligi, limitler ve gercek wasm hostu oncesi native regresyonlar. |
 | CLI | `test:io_izi_cli_testi` | Komut satiri IO kaydi ve yeniden oynatma siniri. |
