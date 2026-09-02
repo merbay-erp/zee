@@ -516,7 +516,11 @@ aynı girdiler aynı çıktı sırasını verir ve data race oluşmaz. İlk yön
 görev hatası bekleyen kardeşleri iptal eder. Her grup aynı sözcüksel kapsamda
 tek `hepsini bekle` ile kapanır; aksi T051'dir. K-085 son tarihi bütün görev
 ağacına yayılır ve yalnız doğru `yetişmezse` sahibi çalışır. Ayrıntı:
-RFC-0011, spec/09 ve spec/14.
+RFC-0011, spec/09 ve spec/14. K-124 ile çıktı/ortak IO sırası, sanal süre,
+sonuç bağları ve iptal sonrası etki yokluğu `zee-esz-1` kimliği altında
+[derleyiciden bağımsız conformance korpusuna](eszamanlilik-conformance.md)
+bağlandı. Gelecekte çok çekirdek kullanımı yalnız bu gözlemleri değiştirmeyen
+bir iç optimizasyon olabilir.
 
 Uygulama eylemi ve web adaptörü (K-087): iş kuralı HTTP bilmeyen, açık imzalı
 bir `eylem`dir. Aynı eylem CLI, web, görev ya da test bağlamından çağrılır.

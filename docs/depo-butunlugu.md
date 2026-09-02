@@ -51,3 +51,12 @@ değiştirilmez; geliştiren kişi yalnız üreticiyi çalıştırır.
 Tarihsel K-kayıtlarındaki “o gün toplam N test” cümleleri bilinçli snapshot'tır
 ve yeniden yazılmaz. README'nin bugünkü canlı sayıları için tek otorite
 işaretli otomatik bloktur.
+
+## Immutable conformance verisi
+
+`scripts/conformance-korugu.sh`, CI taban Git revizyonunda bulunan bütün
+`conformance/**/*.json` veri/şemalarıyla yayımlanmış morfoloji semantic
+kayıtlarını korur. Var olan artefaktın değiştirilmesi, silinmesi veya yeniden
+adlandırılması reddedilir; yeni anlam yeni profil/şema kimliğiyle ayrı dosya
+olarak eklenir. Morfoloji ve `zee-esz-1` scheduler korpusları aynı genel kapıyı
+paylaşır.

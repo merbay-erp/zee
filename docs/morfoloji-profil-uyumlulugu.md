@@ -30,9 +30,10 @@ Kayıt `compiler/tests/fixtures/morfoloji-zee-tr-1.sha256` dosyasındadır.
 1. `morfoloji_testi.rs`, çalışan üretim+çözüm davranışının kaydını fixture ile
    byte düzeyinde eşitler. Tablo veya kapsanan semantic davranış değişirse
    normal `cargo test` kırılır.
-2. `scripts/morfoloji-profili-korugu.sh`, CI taban revizyonunda zaten bulunan
-   bütün `morfoloji-zee-tr-N.sha256` kayıtlarını, bağımsız `zee-tr-N.json`
-   conformance verilerini ve `sema-vN.schema.json` şemalarını immutable sayar.
+2. `scripts/conformance-korugu.sh`, CI taban revizyonunda zaten bulunan bütün
+   `morfoloji-zee-tr-N.sha256` kayıtlarını ve kök `conformance/` altındaki JSON
+   veri/şemalarını immutable sayar. Eski `morfoloji-profili-korugu.sh` adı bu
+   genel koruğa yönlenen uyumluluk sarmalayıcısıdır.
    Fixture'ı yeni özete göre güncellemek de CI'ı kırar; silmek veya yeniden
    adlandırmak aynı biçimde yasaktır. CI tam Git geçmişiyle pull request
    tabanını ya da push öncesi commit'i denetler.
@@ -60,7 +61,7 @@ cd compiler
 cargo test --locked --test morfoloji_testi
 cargo run --quiet -- morfoloji --uyumluluk
 cd ..
-scripts/morfoloji-profili-korugu.sh <taban-revizyonu>
+scripts/conformance-korugu.sh <taban-revizyonu>
 ```
 
 ## Bilinçli sınır

@@ -136,7 +136,7 @@ internet gerekmez, katalog `dil`in içindedir.
 
 - Dilin bütün yüzeyi tek yazıda: [dil-turu.md](dil-turu.md)
 - Tekrar üretilebilir paket kanıtı: [`.zep` conformance rehberi](zep-conformance.md)
-- Başka bir compiler için: [morfoloji conformance korpusu](../conformance/README.md)
+- Başka bir compiler için: [morfoloji ve eşzamanlılık conformance korpusları](../conformance/README.md)
 - Oynayarak öğren: [projeler/](../projeler/) — çocuklar için proje kitaplığı
 - Dilin bütün örnekleri: [golden/](../golden/) — 33 program, kolaydan zora
   numaralı, hepsi çalışır belge niteliğinde.

@@ -58,7 +58,9 @@ CSV/JSON okuma, tarih/saat, komut satırı argümanları, **test blokları**
 (`hatasını döndür`), `ve/veya/değilse` mantığı, **HTTP istemcisi** ve
 **deneysel web sunucusu** (localhost TCP; testlerde sahte), **yapılandırılmış
 eşzamanlılık** (K-090: deterministik tek-thread scheduler, gerçek
-`hepsini bekle`, T033/T051 sahiplik ve kardeş iptali), **işbirlikli son tarih
+`hepsini bekle`, T033/T051 sahiplik ve kardeş iptali; K-124
+[`zee-esz-1` gözlenebilir conformance profili](docs/eszamanlilik-conformance.md)),
+**işbirlikli son tarih
 iptali** (`... içinde/yetişmezse`, görev ağacına yayılır),
 **ESP32
 simülatörü**, **özyineleme** (T035 "temel durum önce", C019 derinlik sınırı),
@@ -146,7 +148,7 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **483** |
+| Rust + doctest vakası | **484** |
 | Tanı kimliği | **145 etkin + 3 ayrılmış** |
 | RFC | **23** (2 kabul, 19 geçici kabul, 2 taslak) |
 | ADR | **26** (26 kabul) |
@@ -278,6 +280,11 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   derleyici gerçeklemeleri aynı sıralı adayları ve üretimleri bu veriyle
   sınayabilir; bakım ve tüketici protokolü
   [morfoloji conformance rehberindedir](docs/morfoloji-conformance.md).
+  K-124 scheduler'ın çıktı/ortak IO sırası, sanal süre, sonuç bağlama ve iptal
+  etkilerini `zee-esz-1` JSON Schema + 10 kaynak programla derleyiciden
+  bağımsız kilitledi. Çok çekirdekli bir gelecek runtime bu gözlemleri aynen
+  korumadıkça uyumlu sayılamaz; bakım sınırı
+  [eşzamanlılık conformance rehberindedir](docs/eszamanlilik-conformance.md).
   Uygulama sırası
   [öncelikli backlog](docs/oncelikli-backlog.md) ile sabittir.
   Bağlayıcı liste: [docs/v1-surum-kapilari.md](docs/v1-surum-kapilari.md).

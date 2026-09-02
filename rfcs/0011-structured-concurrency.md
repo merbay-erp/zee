@@ -1,9 +1,9 @@
 # RFC-0011 — Structured Concurrency
 
 - **Durum:** **geçici kabul** (K-085 son tarih çekirdeği; K-090 deterministik
-  görev scheduler'ı, sözcüksel sahiplik ve kardeş iptali gerçeklendi.)
+  görev scheduler'ı; K-124 bağımsız gözlenebilir conformance profili.)
 - **Tarih:** 31 Ağustos 2026; K-090 revizyonu 1 Eylül 2026
-- **İlgili günlük kayıtları:** K-023, K-085, K-090
+- **İlgili günlük kayıtları:** K-023, K-085, K-090, K-124
 - **İlgili golden programlar:** 26 (eşzamanlı görevler), 27 (zaman aşımı)
 - **Normatif gerçekleme:** spec/09 ve spec/14
 
@@ -70,6 +70,12 @@ tek atomik scheduler dilimidir.
 sözü, bekleme sürelerinin örtüştüğü gerçek işbirlikli ilerlemedir; işletim
 sistemi thread'i ya da paylaşılan bellek yarışı sözü değildir.
 
+`zee-esz-1` uyumluluk profili scheduler'ın iç future/poll/thread yapısını
+değil, çıktı ve ortak IO sırasını, sanal geçen süreyi, sonuç bağlarını,
+sonlanma kodunu ve iptal sonrası etki yokluğunu dondurur. Gelecekteki bir
+runtime çok çekirdek kullanabilir; ancak platform yarışı bu gözlemlerden
+birini değiştirirse `zee-esz-1` ile uyumlu değildir.
+
 ## 4. Hata ve iptal
 
 1. İlk yönetilmemiş görev hatası aynı tanı koduyla birleştirmeden dışarı
@@ -129,8 +135,12 @@ scheduler) · Öğrenilebilir ✓ (kapsam = yaşam süresi) · Savunulabilir ✓
 ## Korpus ve conformance etkisi
 
 Golden 26 görev sonuçlarının birleştirmeden sonra değer olduğunu korur; golden
-27 son tarih sahibini kanıtlar. `ag_ve_esz_testi` ayrıca farklı beklemelerde
-çıktı izini ve en-uzun-süre saatini, kardeş iptalini, dış deadline yayılımını,
-iç görev ağacının dış kardeşe sıra vermesini, T033'ü ve T051 kapsam
-olumsuzlarını sabitler. Davranış değişikliği bu testler, spec/14 ve sürüm notu
-birlikte güncellenmeden yapılamaz.
+27 son tarih sahibini kanıtlar. Kök
+`conformance/eszamanlilik/zee-esz-1.json`, JSON Schema altında 11 maddelik
+uyumluluk sözünü 10 çalıştırılabilir kaynak+beklenen gözlem vakasına bağlar;
+ikinci derleyici Rust iç adlarına ihtiyaç duymaz. `ag_ve_esz_testi` ayrıca
+farklı beklemelerde çıktı izini ve en-uzun-süre saatini, kardeş iptalini, dış
+deadline yayılımını, iç görev ağacının dış kardeşe sıra vermesini, T033'ü ve
+T051 kapsam olumsuzlarını sabitler. Davranış değişikliği bu testler, spec/14 ve
+sürüm notu birlikte güncellenmeden yapılamaz. Yayımlanmış `zee-esz-1` verisi
+yerinde güncellenemez; değişiklik yeni profil kimliği ister.

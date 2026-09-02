@@ -53,8 +53,10 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
     koruğuyla immutable yaptı; B-008 kapandı (482 test).
 20. K-123 kök `conformance/` alanındaki JSON Schema, 27 çözüm/karar ve 21
     üretim vakasıyla B-009'u kapattı (483 test).
-21. Sıradaki makine omurgası B-011 gözlenebilir concurrency uyumluluk sözüdür.
-22. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
+21. K-124 `zee-esz-1` JSON Schema ve 10 kaynak+gözlem vakasıyla B-011'i
+    kapattı (484 test).
+22. Sıradaki makine omurgası B-012 açık Ondalık↔binary float FFI sınırıdır.
+23. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
 
 ## P0 — V1 öncesi dil ve derleyici omurgası
 
@@ -122,9 +124,14 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   [rehber](semantic-kimlik-modeli.md), üç davranış ve bir mimari testle
   V1-P0-12 kapandı. Faz tipleri B-018/K-102, typed HIR ve bağlı runtime tüketimi
   B-019/K-103–K-104 ile tamamlandı.
-- **B-011 · KISMEN — gözlenebilir concurrency determinizmini V1 garantisi yap.**
-  spec/14 tek-thread semantiği tanımlar; gelecekte multicore yürütmenin gözlenen
-  sıra/sonucu değiştiremeyeceği açık compatibility sözüne bağlanmalıdır.
+- **B-011 · KAPALI (K-124) — gözlenebilir concurrency determinizmini V1
+  garantisi yap.** `zee-esz-1` profili kaynak sıralı poll/uyanış, ortam
+  snapshot'ı, örtüşen sanal süre, sonuç bağlama, iç görev ağacı, ortak IO,
+  hata/son tarih/çıkış iptali ve atomik eylemi 10 derleyiciden bağımsız
+  kaynak+gözlem vakasına bağlar. Gelecekte çok çekirdekli runtime yalnız çıktı,
+  süre, dosya etkisi ve sonlanma kodunu birebir koruyan iç optimizasyon olabilir.
+  JSON Schema+korpus genel Git-tarih conformance koruğunda immutable'dır;
+  ayrıntı [eşzamanlılık conformance rehberindedir](eszamanlilik-conformance.md).
 - **B-012 · KISMEN — Ondalık↔binary float dönüşümünü yalnız açık ve kayıplı yap.**
   Bugün implicit dönüşüm yoktur; RFC-0012'deki eski `GerçekSayı↔double`
   kalıntıları FFI gerçeklenmeden temizlenmelidir.
@@ -329,6 +336,6 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 ## Bir sonraki somut kapı
 
 İnsan kanıtı hattında B-001, doldurulmuş gerçek usability formları ve önceden
-ilan edilmiş eşikleri bekler. Makine hattında B-009/K-123 kapandı; sıradaki iş
-B-011 gözlenebilir concurrency determinizmini açık V1 uyumluluk sözüne
-bağlamaktır.
+ilan edilmiş eşikleri bekler. Makine hattında B-011/K-124 kapandı; sıradaki iş
+B-012 Ondalık ile binary float arasında yalnız açık ve kayıplı FFI dönüşüm
+sınırını temizlemektir.

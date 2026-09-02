@@ -367,6 +367,15 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   kapsar. Çalışan Rust motoru aynı veriyi tüketen regresyonda doğrulanır;
   JSON Schema ile korpus da Git-geçmişli immutable koruğa dahildir. Bir yeni
   regresyonla toplam 483 test yeşildir; B-009 kapandı.
+- **Gözlenebilir eşzamanlılık uyumluluk profili** (K-124, RFC-0011/spec-14):
+  `zee-esz-1`, scheduler'ın iç future/thread yapısını değil çıktı ve ortak IO
+  sırasını, sanal süreyi, sonuç bağlarını, sonlanma kodunu ve iptal sonrası etki
+  yokluğunu sürümler. JSON Schema altındaki 10 doğrudan Zee programı; ortam
+  snapshot'ı, tembel başlangıç, eşit/farklı uyanış, çoklu tur, ortak dosya,
+  iç görev ağacı, hata/son tarih/çıkış iptali ve atomik eylem rollback'ini
+  taşır. Gelecekte çok çekirdek kullanımı yalnız aynı gözlemleri veren iç
+  optimizasyon olabilir. Genel Git-tarih conformance koruğu yayımlanmış veriyi
+  kilitler. Bir yeni regresyonla toplam 484 test yeşildir; B-011 kapandı.
 
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`

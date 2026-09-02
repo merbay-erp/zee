@@ -9,7 +9,7 @@ rfcs/0007-temel-tur-sistemi.md	kanitli	compiler/tests/koleksiyon_testi.rs,compil
 rfcs/0008-secenek-ve-sonuc.md	kanitli	compiler/tests/daraltma_testi.rs,compiler/tests/sonuc_donusu_testi.rs,compiler/tests/yapilandirilmis_hata_testi.rs	Daraltma Sonuç dönüşü ve Hata değeri
 rfcs/0009-modul-ve-paket.md	kismi	compiler/tests/birim_testi.rs,compiler/tests/proje_testi.rs	Birim yerel paket ve kilit testli; uzak bağımlılık açık
 rfcs/0010-hata-ve-tanilama.md	kanitli	compiler/tests/katalog_testi.rs,compiler/tests/tani_kimligi_testi.rs,compiler/tests/parser_kurtarma_testi.rs	Katalog kimlik ve çoklu tanı sözleşmesi
-rfcs/0011-structured-concurrency.md	kanitli	compiler/tests/ag_ve_esz_testi.rs,compiler/tests/dene_ve_sure_testi.rs	Scheduler sahiplik iptal ve deadline
+rfcs/0011-structured-concurrency.md	kanitli	compiler/tests/ag_ve_esz_testi.rs,compiler/tests/eszamanlilik_conformance_testi.rs,compiler/tests/dene_ve_sure_testi.rs	Bağımsız scheduler profili sahiplik iptal ve deadline
 rfcs/0012-ffi-ve-tehlikeli-sinir.md	taslak	-	Faz 4/5 gerçeklenmediği için test kanıtı yok
 rfcs/0013-ondalik-sayilar.md	kanitli	compiler/tests/ondalik_testi.rs	Keyfî hassasiyet ve yuvarlama
 rfcs/0014-standart-kitaplik.md	kismi	compiler/tests/kitaplik_testi.rs,compiler/tests/projeler_testi.rs	Çalışan gömülü prototip testli; RFC taslak
@@ -61,7 +61,7 @@ spec/10-disari-acik-islem-sozlesmesi.md	kanitli	compiler/tests/acik_imza_testi.r
 spec/11-uygulama-eylemleri-ve-web-adaptoru.md	kanitli	compiler/tests/web_testi.rs,compiler/tests/intrinsic_lowering_testi.rs	Eylem rota etki ve savepoint
 spec/12-web-guvenlik-profili.md	kanitli	compiler/tests/web_testi.rs,compiler/tests/guvenli_testi.rs,compiler/src/web_guvenligi.rs	Oturum CSRF rol çerez ve HTTPS proxy
 spec/13-surumlu-morfoloji-profili.md	kanitli	compiler/tests/morfoloji_testi.rs,compiler/tests/morfoloji_conformance_testi.rs,compiler/tests/lsp_testi.rs	zee-tr-1 immutable parmak izi bağımsız conformance snapshot property proje pini ve semantic rename
-spec/14-yapilandirilmis-eszamanlilik.md	kanitli	compiler/tests/ag_ve_esz_testi.rs	Görev grubu scheduler sahiplik ve iptal
+spec/14-yapilandirilmis-eszamanlilik.md	kanitli	compiler/tests/ag_ve_esz_testi.rs,compiler/tests/eszamanlilik_conformance_testi.rs	Görev grubu zee-esz-1 gözlem sırası sahiplik ve iptal
 spec/15-yapilandirilmis-hata-degeri.md	kanitli	compiler/tests/yapilandirilmis_hata_testi.rs	Kod mesaj neden veri ve JSON
 spec/16-keyfi-hassasiyetli-ondalik.md	kanitli	compiler/tests/ondalik_testi.rs	Tam işlemler ve yuvarlama bağlamı
 spec/17-deger-semantigi-ve-gezme.md	kanitli	compiler/tests/koleksiyon_testi.rs	Derin değer kopyası ve gezme imleci

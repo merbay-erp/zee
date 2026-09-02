@@ -16,7 +16,7 @@ Dil değişikliği RFC ister (master plan bölüm 25). Şablon: [0000-sablon.md]
 | RFC-0008 | [Seçenek ve Sonuç](0008-secenek-ve-sonuc.md) | **geçici kabul** (daraltma + yapılandırılmış Hata) | K-017, K-018, K-030, K-091 |
 | RFC-0009 | [Modül ve Paket Modeli](0009-modul-ve-paket.md) | **geçici kabul** (birim + proje + yerel paket/kilit + public kaynak ABI); registry metadata güveni çalışır, uzak bağımlılık entegrasyonu açık | K-029, K-076, K-078, K-086, K-095 |
 | RFC-0010 | [Hata ve Tanılama Standardı](0010-hata-ve-tanilama.md) | **kabul** (K-113 recovery, K-114 kimlik fixture'ı) | K-026, K-113, K-114 |
-| RFC-0011 | [Structured Concurrency](0011-structured-concurrency.md) | **geçici kabul** (K-085 deadline; K-090 deterministik scheduler+sahiplik) | K-023, K-085, K-090 |
+| RFC-0011 | [Structured Concurrency](0011-structured-concurrency.md) | **geçici kabul** (K-085 deadline; K-090 scheduler+sahiplik; K-124 bağımsız conformance) | K-023, K-085, K-090, K-124 |
 | RFC-0012 | [FFI ve Tehlikeli Sınır](0012-ffi-ve-tehlikeli-sinir.md) | **taslak** | A10 |
 | RFC-0013 | [Ondalık Sayılar](0013-ondalik-sayilar.md) | **geçici kabul** (K-092 keyfî hassasiyet) | K-028, K-092 |
 | RFC-0014 | [Standart Kitaplık](0014-standart-kitaplik.md) | **taslak — çalışan prototip ekli** | K-046, K-048, RFC-0002 §6.3 |
@@ -30,7 +30,7 @@ Dil değişikliği RFC ister (master plan bölüm 25). Şablon: [0000-sablon.md]
 | RFC-0022 | [Deterministik IO Trace/Replay](0022-deterministik-io-izi.md) | **geçici kabul** (K-115 şema-1 + CLI; `zee-io-1` ilişkisi K-116) | K-115, K-116, B-027, V1-P0-25 |
 | RFC-0023 | [Sürümlü Deterministik IO Profili](0023-deterministik-io-profili.md) | **geçici kabul** (`zee-io-1`, K-116) | K-116, B-028, V1-P0-26 |
 
-**Durum özeti (2 Eylül 2026, K-123):** 23 RFC — 2 kabul (0001, 0010),
+**Durum özeti (2 Eylül 2026, K-124):** 23 RFC — 2 kabul (0001, 0010),
 19 geçici kabul (RFC-0020'nin yayın ve metadata doğrulama katmanı normatiftir;
 taşıma/cache/CLI tamamlanmadan uzak paket kullanımı sözü verilmez), 2 taslak: 0012 (FFI — Faz
 4/5) ve 0014 (standart kitaplık — çalışan prototiple).
