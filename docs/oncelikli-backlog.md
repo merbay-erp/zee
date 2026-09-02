@@ -55,8 +55,10 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
     üretim vakasıyla B-009'u kapattı (483 test).
 21. K-124 `zee-esz-1` JSON Schema ve 10 kaynak+gözlem vakasıyla B-011'i
     kapattı (484 test).
-22. Sıradaki makine omurgası B-012 açık Ondalık↔binary float FFI sınırıdır.
-23. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
+22. K-125/ADR-029 örtük Ondalık↔binary float FFI eşlemesini yasaklayıp
+    B-012'yi kapattı (485 test).
+23. Sıradaki makine omurgası B-050 bütün AST ifadelerinde kesin source span'dir.
+24. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
 
 ## P0 — V1 öncesi dil ve derleyici omurgası
 
@@ -132,9 +134,13 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   süre, dosya etkisi ve sonlanma kodunu birebir koruyan iç optimizasyon olabilir.
   JSON Schema+korpus genel Git-tarih conformance koruğunda immutable'dır;
   ayrıntı [eşzamanlılık conformance rehberindedir](eszamanlilik-conformance.md).
-- **B-012 · KISMEN — Ondalık↔binary float dönüşümünü yalnız açık ve kayıplı yap.**
-  Bugün implicit dönüşüm yoktur; RFC-0012'deki eski `GerçekSayı↔double`
-  kalıntıları FFI gerçeklenmeden temizlenmelidir.
+- **B-012 · KAPALI (K-125/ADR-029) — Ondalık↔binary float dönüşümünü yalnız
+  açık ve kayıplı yap.** Eski `GerçekSayı↔double` taslak eşlemesi kaldırıldı.
+  `Tur`/`Deger` binary float taşımaz; Stage 0 FFI yüzeyi sunmaz. Gelecekteki
+  `float`/`double` köprüsü deklarasyon+çağrıda görünür `kayıplı` işareti,
+  `Sonuç` ve açık IEEE 754 yuvarlama/özel-değer sözleşmesi olmadan eklenemez.
+  Mimari regresyon exact Ondalık değerini ve RFC/ADR tazeliğini korur;
+  V1-P0-28 kapandı (485 test).
 
 ## P1 — Compiler sağlamlığı
 
@@ -320,8 +326,8 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   programın metin/yorumları koruyan deterministik dağınık-boşluk varyantı
   biçimlenir; önce/sonra izi eşit ve iki parser geçişi de başarılı olmak
   zorundadır. İdempotence ve proje/kitaplık resmî biçim kapıları korunur.
-- **B-043 · KAPALI (K-118) — spec↔code kanıt haritası.** 23 RFC, 26 ADR ve
-  22 spec bölümü `docs/kanit-haritasi-v1.tsv` içinde `kanitli/kismi/taslak`
+- **B-043 · KAPALI (K-118) — spec↔code kanıt haritası.** Bugünkü 23 RFC, 27
+  ADR ve 22 spec bölümü `docs/kanit-haritasi-v1.tsv` içinde `kanitli/kismi/taslak`
   durumu, yürütülebilir test yolları ve açık kapsam notuyla birebir izlenir.
   Tazelik testi eksik/yinelenen belgeyi, olmayan ya da test taşımayan kanıt
   dosyasını ve testsiz tamamlanmış satırı reddeder.
@@ -336,6 +342,6 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 ## Bir sonraki somut kapı
 
 İnsan kanıtı hattında B-001, doldurulmuş gerçek usability formları ve önceden
-ilan edilmiş eşikleri bekler. Makine hattında B-011/K-124 kapandı; sıradaki iş
-B-012 Ondalık ile binary float arasında yalnız açık ve kayıplı FFI dönüşüm
-sınırını temizlemektir.
+ilan edilmiş eşikleri bekler. Makine hattında B-012/K-125 kapandı; sıradaki iş
+B-050 parser token aralıklarını bütün bileşik/yaprak AST ifadelerinde koruyup
+HIR, tanı ve LSP'ye kesin sütun+uzunluk sağlamaktır.

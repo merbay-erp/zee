@@ -1,6 +1,7 @@
 # 16 — Keyfî hassasiyetli Ondalık
 
-Normatif kaynak: RFC-0013 (K-092 revizyonu). Durum: **TANIMLI**.
+Normatif kaynak: RFC-0013 (K-092 revizyonu), ADR-029/K-125. Durum:
+**TANIMLI**.
 
 ## Tek kullanıcı türü
 
@@ -72,9 +73,24 @@ hassasiyet ayarı yoktur.
 - Temsil ölçeği u32 metadata taşır. Gerçek programda kaynak/bellek sınırı çok
   önce gelir; metadata taşması C002 ailesidir ve sessiz yuvarlama yapmaz.
 
+## FFI ve binary float sınırı
+
+Ondalık için C `float`/`double`, binary32 veya binary64'e örtük ABI eşlemesi
+YASAKTIR. Binary kayan nokta ikinci bir Zee kullanıcı türü değildir. Mevcut
+Stage 0 FFI yüzeyi sunmaz ve bu değerleri `Tur`/`Deger` envanterinde taşımaz.
+
+Gelecekteki FFI köprüsü ancak deklarasyon ve çağrıda görünür **kayıplı**
+işaretiyle, temsil hatalarını `Sonuç` olarak taşıyarak açılabilir. IEEE 754
+yuvarlama yönü, signed zero, subnormal, taşma, NaN/sonsuzluk ve
+binary64→Ondalık kanonikleştirmesi RFC-0012'de tanımlanmadan gerçekleme
+uyumlu değildir. TamSayı→Ondalık kayıpsız dil içi genişlemesi bu yasaktan
+etkilenmez.
+
 ## K-092 conformance kanıtı
 
 Regresyonlar; 39 kesir haneli sabit, 30+ haneli katsayı, tam `1/8`, 34
 anlamlı haneli `10/3`, 34 basamak ölçekli küçük değer, negatif uzun metin
 dönüşümü, değer karşılaştırması, JSON, para biçimi ve i64 daraltma taşmasını
-kilitler. V1-P1-01 bu sözleşmeyle kapalıdır.
+kilitler. `ffi_sinir_testi.rs` ayrıca binary float'ın tür/değer envanterine
+sızmamasını ve eski FFI taslak eşlemesinin geri gelmemesini korur. V1-P1-01
+ile V1-P0-28 bu sözleşmeyle kapalıdır.

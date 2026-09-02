@@ -1,8 +1,10 @@
 # RFC-0012 — FFI ve Tehlikeli Sınır
 
-- **Durum:** taslak (tasarım — gerçekleme Faz 4/5)
+- **Durum:** taslak (tasarım — gerçekleme Faz 4/5; K-125/ADR-029 sayısal
+  sınırı bağladı)
 - **Tarih:** 31 Ağustos 2026
-- **İlgili günlük kayıtları:** master plan bölüm 19; anti-örnek A10
+- **İlgili günlük kayıtları:** K-125, ADR-029, B-012; master plan bölüm 19;
+  anti-örnek A10
 - **Gerçekleme:** yok
 
 ## Özet
@@ -42,12 +44,34 @@ Kurallar (öneri):
   koddaki görünür "burada dikkat" işaretidir (bölüm 18: unsafe açık sınır).
 - Dış adlar (`"add"`) metin sabitidir — RFC-0002 tanımlayıcı kuralları dış
   ada uygulanMAZ (İngilizce ad kaynakta yalnız tırnak içinde yaşar).
-- Tür köprüsü v1: TamSayı↔int64, GerçekSayı↔double (RFC-0013'e bağlı),
-  Metin↔UTF-8 salt-okunur görünüm. Sahiplik GEÇMEZ: dilin değerleri C'ye
-  ödünç verilir; C'den dönen bellek sahipliği paket yazarının sorumluluğunda
-  ve `tehlikeli` içinde kalır.
+- Tür köprüsü taslağının kayıpsız çekirdeği: TamSayı↔C `int64_t` ve
+  Metin↔uzunluğu açık UTF-8 salt-okunur görünüm. Sahiplik GEÇMEZ: dilin
+  değerleri C'ye ödünç verilir; C'den dönen bellek sahipliği paket yazarının
+  sorumluluğunda ve `tehlikeli` içinde kalır.
+- `Ondalık` için C `float`, `double`, binary32 veya binary64'e örtük eşleme
+  YASAKTIR. Zee'nin değer/tür envanterinde ikinci bir `GerçekSayı` ya da
+  binary kayan nokta türü yoktur.
 - Çökme sınırı: dış çağrıdaki çökme dilin güvence alanı dışındadır; tanı
   üretilemez — bu yüzden 1. katman kullanıcısına asla doğrudan FFI verilmez.
+
+## 2.1 Ondalık ve binary kayan nokta
+
+Binary kayan nokta desteği ilk FFI gerçeklenmesinin zorunlu parçası değildir.
+İleride eklenirse aşağıdaki kararlar bağlayıcıdır (ADR-029):
+
+1. Dış bildirim ve çağrı, dönüşümü görünür **kayıplı** sınır olarak işaretler;
+   sözdiziminin kesin biçimi ayrıca golden/usability kararı ister.
+2. Dönüşüm sıradan bir örtük genişleme değildir ve `Sonuç` sözleşmesi taşır.
+   Taşma ile sonlu olmayan binary değerler sessizce Ondalık/sonsuzluk olamaz.
+3. IEEE 754 yuvarlama yönü, signed zero, subnormal, NaN/sonsuzluk ve
+   binary64→Ondalık kanonik biçimi bu RFC'de normatifleştirilmeden gerçekleme
+   kabul edilmez.
+4. Tek bir değerin binary64'te tam temsil edilebilmesi işlemin sınıfını
+   kayıpsız yapmaz. Açık `kayıplı` işareti API sözleşmesinde kalır.
+
+Bu karar TamSayı→Ondalık kayıpsız dil içi genişlemesini etkilemez. `Ondalık`,
+RFC-0013/spec-16'daki keyfî hassasiyetli onluk anlamını FFI sınırına kadar
+korur.
 
 ## 3. Güvenlik bağları (bölüm 18)
 
@@ -63,6 +87,8 @@ Kurallar (öneri):
 3. WASM hedefinde FFI'nın karşılığı (host fonksiyon ithali) — playground
    sandbox'ıyla ilişkisi (bölüm 15: client-side WASM).
 4. Rust/C++ üreteç-adaptörleri (bölüm 19) — ayrı araç RFC'si.
+5. `kayıplı` dönüşümün tam Türkçe deklarasyon/çağrı yüzeyi ve IEEE 754
+   ayrıntıları — ADR-029 sınırı içinde ayrı RFC revizyonu.
 
 ## Dört soru süzgeci
 
@@ -72,4 +98,9 @@ Savunulabilir ✓ (C ABI evrensel köprü; işaretli paket + onay zinciri).
 
 ## Korpus etkisi
 
-Yok (korpus 1. katmandadır). Paket yazarı belgelerine örnek eklenir.
+FFI gerçeklenmediği için çalıştırılabilir dış çağrı korpusu henüz yoktur.
+`ffi_sinir_testi.rs`; çekirdek `Tur`/`Deger` envanterine binary float
+sızmadığını, eski taslak yüzeyinin derlenmediğini, Ondalık aritmetiğinin exact
+kaldığını ve bu RFC'deki açık `kayıplı`/`Sonuç` kapısının bayatlamadığını
+korur. Gerçek FFI ilk kez açılırken olumlu/olumsuz platform conformance korpusu
+aynı değişiklikte zorunludur.

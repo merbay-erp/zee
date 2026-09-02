@@ -1,9 +1,10 @@
 # RFC-0013 — Ondalık Sayılar
 
-- **Durum:** **geçici kabul** (K-092 revizyonu — keyfî katsayı/ölçek ve
-  deterministik sonsuz bölüm bağlamı gerçeklendi; onay kapısı usability)
+- **Durum:** **geçici kabul** (K-092 keyfî katsayı/ölçek ve deterministik
+  bölüm; K-125/ADR-029 örtük binary float yasağı; onay kapısı usability)
 - **Tarih:** 31 Ağustos 2026; K-092 revizyonu 1 Eylül 2026
-- **İlgili günlük kayıtları:** K-028, K-092; RFC-0002 §6.3, RFC-0007 §4.1
+- **İlgili günlük kayıtları:** K-028, K-092, K-125; ADR-029, RFC-0002 §6.3,
+  RFC-0007 §4.1, RFC-0012 §2.1
 - **Gerçekleme:** sözcükleyici (bitişik virgül, S033), tür sistemi
   (`Tur::Ondalik` + genişleme), `BigInt` katsayılı onluk çekirdek,
   biçimleyici; testler `ondalik_testi.rs` + çekirdek birim testleri
@@ -71,6 +72,10 @@ ayracını değiştirmek (`;`) — noktalama ekleme, daha kötü.
   (`3,14 ile 2 nin çarpımı` çalışır — "tehlikeli implicit yok" ilkesini
   bozmaz çünkü kayıp imkânsız). Ters yön açık kalıp ister:
   `x in tam kısmı` (kırpma) ve `x in yuvarlanmışı` (en yakına).
+- **FFI sınırı:** Ondalık, C `float`/`double` ya da binary32/binary64'e örtük
+  eşlenemez. Binary kayan nokta genel Zee türü değildir. Gelecekteki FFI
+  köprüsü görünür `kayıplı` işareti, `Sonuç` dönüşü ve ayrı IEEE 754 semantiği
+  olmadan açılamaz (ADR-029/RFC-0012).
 - **Karşılaştırma:** değer üzerinden (`0,5 1 den küçükse` doğru); ölçek farkı
   eşitliği etkilemez (`1,50` = `1,5`).
 - **Taşma sınırı:** Ondalık exact işlemleri sabit makine kelimesi taşması
@@ -99,6 +104,8 @@ ayracını değiştirmek (`;`) — noktalama ekleme, daha kötü.
 3. Binlik ayracı (1.000.000 yazımı Türkçede nokta!) — v1'de YOK; sayılar
    ayraçsız yazılır. İleride `1 milyon` sözel kalıbı düşünülebilir.
 4. `yüzde 20` kalıbı (`0,2`ye açılım) — eğitimde çok değerli, v1.1 adayı.
+5. Kayıplı binary64 FFI köprüsünün kesin yüzeyi ve yuvarlama/özel değer
+   politikası RFC-0012'de açık kalır; örtük eşleme seçeneği kapalıdır.
 
 ## Dört soru süzgeci
 

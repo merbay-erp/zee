@@ -124,7 +124,6 @@ Liste gezmesi değer-sonuç imleciyle alan yazmayı ve yeniden bağlamayı aynı
 sıraya geri taşır. Gezilen kaynağın biçimi T053 ile sabittir
 (RFC-0019/spec-17); insan zihinsel modeli usability kartlarını bekler.
 TamSayı
-GerçekSayı
 Ondalık
 Metin
 Mantıksal
@@ -319,6 +318,10 @@ Harici İngilizce API’ler Türkçe wrapper ile sunulabilir.
 ABI sürümleme politikası.
 Native paketlerde OS/architecture metadata.
 Ownership, lifetime ve crash sınırları açıkça belgelenir.
+K-125/ADR-029 ile Ondalık'ın C `float`/`double` ya da binary32/binary64'e
+örtük eşlenmesi yasaktır. Gelecekteki köprü görünür `kayıplı` işareti,
+`Sonuç` ve açık IEEE 754 semantiği ister; FFI Faz 4/5'e kadar dil yüzeyi
+değildir.
 # 20. Platform hedefleri
 Tier 1: Windows x86-64, macOS ARM64/x86-64, Linux x86-64/ARM64.
 Tier 2: WebAssembly.
@@ -613,10 +616,11 @@ davranışını semantic SHA-256 kayıt ve Git-geçmişli CI koruğuyla immutabl
 yaptı. K-123 bunu kök `conformance/` alanında sürümlü JSON Schema, 27
 çözüm/karar ve 21 üretim vakasıyla derleyiciden bağımsız bir tüketici
 sözleşmesine dönüştürüp B-009'u kapattı. K-124 aynı alanı `zee-esz-1` ve 10
-kaynak+gözlem vakasıyla scheduler'a genişletip B-011'i kapattı. Şimdi B-012
-açık Ondalık↔binary float FFI sınırı gelir. P0 maddeleri kapanmadan yeni dil
-özelliği öne alınmaz;
-yarım güvenlik/correctness dilimi önce atomik olarak tamamlanır.
+kaynak+gözlem vakasıyla scheduler'a genişletip B-011'i kapattı.
+K-125/ADR-029 açık Ondalık↔binary float FFI sınırını örtük eşleme yasağı ve
+zorunlu `kayıplı`+`Sonuç` kapısı olarak kapattı. Şimdi B-050 bütün AST
+ifadelerinde kesin source span gelir. P0 maddeleri kapanmadan yeni dil özelliği
+öne alınmaz; yarım güvenlik/correctness dilimi önce atomik olarak tamamlanır.
 
 K-016'nın makine hazırlığı K-096 ile
 [karar paketine](k016-cagri-karar-paketi.md) bağlandı: önce serbest üretim,
@@ -660,8 +664,9 @@ bağıyla B-041'i, K-121 iki fazlı yerel çağrı çıkarımıyla B-007'yi
 tamamladı. K-122 immutable `zee-tr-1` kapısıyla B-008'i tamamladı. K-123 kök
 JSON Schema ve veri korpusuyla compiler'dan bağımsız morfoloji conformance
 sözünü bağlayıp B-009'u kapattı. K-124 `zee-esz-1` gözlem profiliyle
-scheduler'ın bağımsız uyumluluk sözünü bağlayıp B-011'i kapattı. Sıradaki
-omurga B-012 açık Ondalık↔binary float FFI sınırıdır.
+scheduler'ın bağımsız uyumluluk sözünü bağlayıp B-011'i kapattı.
+K-125/ADR-029 örtük Ondalık↔binary float köprüsünü yasaklayıp B-012'yi
+kapattı. Sıradaki omurga B-050 bütün AST ifadelerinde kesin source span'dir.
 # 40. Proje felsefesinin korunması
 Bu projenin başarısı yalnız compiler’ın çalışması değildir. Başarı; Türkçe konuşan bir çocuğun yabancı syntax bariyerine takılmadan algoritmik düşünceyle tanışması, aynı dilin yıllar sonra onu terk etmeye zorlamaması ve ekosistemin tek bir şirketin kapalı ürünü haline gelmemesidir.
 Her yeni özellik şu dört sorudan geçmelidir: Türkçe doğal mı? Deterministik mi? Öğrenilebilir mi? Profesyonel ölçekte savunulabilir mi? Dördünden biri hayırsa özellik yeniden tasarlanır.
