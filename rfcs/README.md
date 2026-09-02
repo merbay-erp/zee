@@ -11,7 +11,7 @@ Dil değişikliği RFC ister (master plan bölüm 25). Şablon: [0000-sablon.md]
 | RFC-0003 | [Girinti ve Blok Modeli](0003-girinti-ve-blok.md) | **geçici kabul** | A06 |
 | RFC-0004 | [Değer Tanımı ve Kapsam](0004-deger-tanimi-ve-kapsam.md) | **geçici kabul** (K-034) | K-003, K-011, K-020 |
 | RFC-0005 | [Koşullar ve Mantıksal İfadeler](0005-kosullar-ve-mantiksal.md) | **geçici kabul** (K-097 katman sırası) | K-005, K-010, K-027, K-097, A03 |
-| RFC-0006 | [İşlemler ve Parametreler](0006-islemler-ve-parametreler.md) | **geçici kabul** (K-086 tam public imza; K-096 karşılaştırmalı çağrı usability kapısı) | K-016, K-032, K-083, K-086, K-096 |
+| RFC-0006 | [İşlemler ve Parametreler](0006-islemler-ve-parametreler.md) | **geçici kabul** (K-086 tam public imza; K-121 sıra-bağımsız yerel çıkarım; K-096 usability kapısı) | K-016, K-032, K-083, K-086, K-096, K-121 |
 | RFC-0007 | [Temel Tür Sistemi](0007-temel-tur-sistemi.md) | **geçici kabul** | K-009, K-014 |
 | RFC-0008 | [Seçenek ve Sonuç](0008-secenek-ve-sonuc.md) | **geçici kabul** (daraltma + yapılandırılmış Hata) | K-017, K-018, K-030, K-091 |
 | RFC-0009 | [Modül ve Paket Modeli](0009-modul-ve-paket.md) | **geçici kabul** (birim + proje + yerel paket/kilit + public kaynak ABI); registry metadata güveni çalışır, uzak bağımlılık entegrasyonu açık | K-029, K-076, K-078, K-086, K-095 |
@@ -30,7 +30,7 @@ Dil değişikliği RFC ister (master plan bölüm 25). Şablon: [0000-sablon.md]
 | RFC-0022 | [Deterministik IO Trace/Replay](0022-deterministik-io-izi.md) | **geçici kabul** (K-115 şema-1 + CLI; `zee-io-1` ilişkisi K-116) | K-115, K-116, B-027, V1-P0-25 |
 | RFC-0023 | [Sürümlü Deterministik IO Profili](0023-deterministik-io-profili.md) | **geçici kabul** (`zee-io-1`, K-116) | K-116, B-028, V1-P0-26 |
 
-**Durum özeti (2 Eylül 2026, K-120):** 23 RFC — 2 kabul (0001, 0010),
+**Durum özeti (2 Eylül 2026, K-121):** 23 RFC — 2 kabul (0001, 0010),
 19 geçici kabul (RFC-0020'nin yayın ve metadata doğrulama katmanı normatiftir;
 taşıma/cache/CLI tamamlanmadan uzak paket kullanımı sözü verilmez), 2 taslak: 0012 (FFI — Faz
 4/5) ve 0014 (standart kitaplık — çalışan prototiple).

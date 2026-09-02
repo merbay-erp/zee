@@ -9,6 +9,7 @@ pub(super) fn blok_denetle(cumleler: &mut [Cumle], ortam: &mut SembolTablosu, ba
     let giriste_bekleyenler = baglam.bekleyen_gorevler.clone();
     let mut acik_gorev_satiri = None;
     for cumle in cumleler.iter_mut() {
+        let sonuc = (|| -> Result<(), Tani> {
         match cumle {
             Cumle::Yaz { deger, satir } => {
                 let satir = *satir;
@@ -979,6 +980,13 @@ pub(super) fn blok_denetle(cumleler: &mut [Cumle], ortam: &mut SembolTablosu, ba
                     )
                     .onerili("Hedefi ondalık başlat (örn. 0,0 olsun) ya da miktarı tam sayı yap.".into()));
                 }
+            }
+        }
+        Ok(())
+        })();
+        if let Err(tani) = sonuc {
+            if !baglam.cikarim_kesfi {
+                return Err(tani);
             }
         }
     }

@@ -46,7 +46,10 @@ Tek-tanı ve çoklu-tanı girişleri aynı katmanları aynı sırada kullanır.
 
 ## Ardıl işler
 
-- B-007, çıkarımlı yerel işlem imzasını çağrı sırasından bağımsız yapacaktır.
+- B-007/K-121, kopya AST'deki erişilebilir çağrı kısıtlarını `cikarim`
+  katmanında birleştirir. Keşif modu iç bloktaki geçici tür hatasında da
+  sonraki kısıtları toplamayı sürdürür; asıl AST/HIR yalnız nihai imzayla
+  denetlenir.
 - B-010/K-101, yapı/işlem/sembol kimliklerini kararlı newtype'lara taşıdı;
   ayrıntılı sahiplik [semantic kimlik rehberindedir](semantic-kimlik-modeli.md).
 - B-018/K-102 kaynak→token→parsed→bağlı program fazlarını türledi. K-103,
@@ -59,5 +62,5 @@ Tek-tanı ve çoklu-tanı girişleri aynı katmanları aynı sırada kullanır.
   tamamladı. Checker kısmi AST'de cümle başına sürer; birleşik çıktı kaynak
   sırasında ve ortak 20 tanı bütçesindedir.
 
-B-007 açık kalır; K-101 semantic ID, K-102 faz tipi, K-103 typed HIR üretimi,
-K-104 runtime tüketimi ve K-112 fazlar arası doğrulama temelini kapatır.
+B-007 K-121 ile kapandı; K-101 semantic ID, K-102 faz tipi, K-103 typed HIR
+üretimi, K-104 runtime tüketimi ve K-112 fazlar arası doğrulama temelini korur.

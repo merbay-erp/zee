@@ -344,6 +344,13 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   A002 belirsiz belgede metin tahmini yapılmaz; dış birim tanımı için eksik
   tek-dosya rename'i üretilmez. Bir HIR ve yedi LSP regresyonuyla toplam 475
   test yeşildir; B-041 kapandı.
+- **Sıra-bağımsız yerel çağrı çıkarımı** (K-121, RFC-0006/ADR-013): Yerel
+  `<ad> al` işlemlerinin erişilebilir ana program ve test çağrıları önce kopya
+  AST'de toplanır; parametre konumu başına kısıtlar değişmeli birleşimle nihai
+  imzaya çevrilir. Asıl gövde, tanılar ve typed HIR yalnız bu imzayla üretilir.
+  Dar↔geniş skaler, liste, çok parametre, iç içe çağrı grafiği, iç blok
+  kurtarması ve iki yönlü T017 regresyonlarıyla toplam 481 test yeşildir;
+  B-007 kapandı.
 
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`

@@ -49,8 +49,9 @@ bulunmayabilir.
 
 Tür denetimi kararı çağrı yazımından ayrıdır. Public birim/paket işlemi açık
 parametre+dönüş sözleşmesiyle çağrı sırasından bağımsızdır. Yerel çıkarımlı
-işlemlerin çağrı sırası etkisi B-007'nin ayrı işidir; K-016 sonucu onu sessizce
-çözülmüş saymaz.
+işlemler de K-121/B-007 ile bütün erişilebilir çağrı kısıtları birleştirilerek
+sıra-bağımsızdır. Bu teknik kapanış, K-016'nın insan-usability kararını
+karşılamış saymaz.
 
 ## 3. Kör gösterilecek adaylar
 
