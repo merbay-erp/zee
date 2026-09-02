@@ -37,7 +37,8 @@ ifadenin türünü ve semantic bağını ayrı HIR kaydına taşıdı. K-104 sta
 runtime ve `dene` hattını bu bağlara geçirdi. Kaynak adı kaliteli Türkçe tanı
 ve v0 uyumluluğu için korunur; bağlı runtime kaynak adıyla semantic karar
 vermez. K-108/B-020 her HIR ifadesine kesin token konumu veya kaynak satırı
-zarfı ekledi; semantic düğüm artık kaynak kökeninden ayrı kurulamaz.
+zarfı ekledi; K-126/B-050 bütün parser AST ifadelerini kesinleştirip HIR ile
+birebir eşledi. Semantic düğüm artık kaynak kökeninden ayrı kurulamaz.
 K-120/B-041 definition ve rename'i aynı zincirin production tüketicisi yaptı:
 HIR ilk tanım/yazım/okuma aralıklarını `SymbolId`, işlem ve yapı kullanımını
 `IslemId`/`YapiId` ile açar. LSP kaynak adını ancak ID seçildikten sonra aralık

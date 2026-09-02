@@ -149,10 +149,10 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **485** |
+| Rust + doctest vakası | **490** |
 | Tanı kimliği | **145 etkin + 3 ayrılmış** |
 | RFC | **23** (2 kabul, 19 geçici kabul, 2 taslak) |
-| ADR | **27** (27 kabul) |
+| ADR | **28** (28 kabul) |
 | Normatif spec bölümü | **22** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
@@ -225,7 +225,9 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   derinliği ve 100 bin düğümle sınırlayıp Unicode parser olumsuzlarını kapattı.
   K-108/ADR-020 her semantic typed-HIR ifadesine zorunlu kaynak aralığı
   ekledi; kesin token konumu olmayan eski AST düğümleri uydurma sütun yerine
-  kaynak satırı zarfı taşır.
+  kaynak satırı zarfı taşır. K-126/ADR-030 bu geçişi tamamladı: artık her
+  parser AST yaprağı ve bileşiği ayrı kesin `AstKaynakAraligi` taşır, checker
+  aynı aralığı HIR'a aktarır ve spansiz/uyuşmayan kayıt invariantta reddedilir.
   K-109/ADR-021 production'daki 46 doğrudan panic noktasını tanı/sonuca
   çevirdi; `lib`, `dil`, `dillsp` ve `olcum` yeni unwrap/expect/panic
   kullanımını test dışı Clippy kapısında reddeder.
@@ -290,6 +292,10 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   kaldırdı. Ondalık'ın binary32/binary64'e örtük dönüşümü yasaktır; gelecekteki
   köprü açık `kayıplı` işareti, `Sonuç` ve normatif IEEE 754 ayrıntıları
   olmadan gerçeklenemez. FFI'nın kendisi Faz 4/5 taslağı olarak kalır.
+  K-126/ADR-030 B-050'yi kapattı: bileşik ve yaprak ifadeler kesin
+  satır+sütun+uzunluk taşır; eski `1:1` checker işaretleri gerçek AST
+  ifadesine yükselir, örtük çoğul kaynak döngü adının tokenına bağlanır ve LSP
+  işlem/yapı adını yalnız semantic ifadenin kesin aralığında seçer.
   Uygulama sırası
   [öncelikli backlog](docs/oncelikli-backlog.md) ile sabittir.
   Bağlayıcı liste: [docs/v1-surum-kapilari.md](docs/v1-surum-kapilari.md).

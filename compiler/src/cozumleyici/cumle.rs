@@ -1,10 +1,8 @@
 use super::*;
-
 fn sembol_yazimi_kaydet(baglam: &mut Baglam, kimlik: SymbolId, ad: &str, kaynak_araligi: crate::hir::HirKaynakAraligi) {
     baglam.hir_sembol_adi_ekle(kimlik, ad.to_string());
     baglam.hir_sembol_yazimi_ekle(kimlik, kaynak_araligi);
 }
-
 pub(super) fn blok_denetle(cumleler: &mut [Cumle], ortam: &mut SembolTablosu, baglam: &mut Baglam) -> Result<(), Tani> {
     let giriste_bekleyenler = baglam.bekleyen_gorevler.clone();
     let mut acik_gorev_satiri = None;
@@ -217,6 +215,8 @@ pub(super) fn blok_denetle(cumleler: &mut [Cumle], ortam: &mut SembolTablosu, ba
             }
             Cumle::HerBiri {
                 ad,
+                ad_sutun,
+                ad_uzunluk,
                 kaynak,
                 govde,
                 satir,
@@ -236,14 +236,14 @@ pub(super) fn blok_denetle(cumleler: &mut [Cumle], ortam: &mut SembolTablosu, ba
                                 .into_iter()
                                 .next()
                                 .ok_or_else(|| ic_tutarlilik_hatasi("Örtük çoğul adayı kayboldu", satir))?;
-                            *kaynak = Some(Ifade::Degisken {
-                                ham: kaynak_adi.clone(),
-                                sembol_kimligi: ortam.kimlik(&kaynak_adi),
-                                cozulmus: Some(kaynak_adi),
+                            let kimlik = ortam.kimlik(&kaynak_adi);
+                            *kaynak = Some(ast_donusum::ortuk_cogul_kaynagi(
+                                kaynak_adi,
+                                kimlik,
                                 satir,
-                                sutun: 1,
-                                uzunluk: 1,
-                            });
+                                *ad_sutun,
+                                *ad_uzunluk,
+                            )?);
                         }
                         0 => {
                             return Err(Tani::yeni(
@@ -919,7 +919,7 @@ pub(super) fn blok_denetle(cumleler: &mut [Cumle], ortam: &mut SembolTablosu, ba
                     islem_kimligi,
                     argumanlar,
                     ..
-                } = cagri
+                } = cagri.turu_mut()
                 {
                     *islem_kimligi = baglam.islem_kimligi(islem_adi);
                     let mut arg_turleri = Vec::new();
@@ -935,8 +935,8 @@ pub(super) fn blok_denetle(cumleler: &mut [Cumle], ortam: &mut SembolTablosu, ba
                     let hir_turu = donus
                         .map(crate::hir::HirIfadeTuru::Deger)
                         .unwrap_or(crate::hir::HirIfadeTuru::DegerDondurmez);
-                    let kaynak_araligi =
-                        crate::hir::HirKaynakAraligi::satir(satir).ok_or_else(|| hir_kaynak_hatasi(satir))?;
+                    let kaynak_araligi = crate::hir::HirKaynakAraligi::ifadeden(cagri, satir)
+                        .ok_or_else(|| hir_kaynak_hatasi(satir))?;
                     hir_ifadesi_kaydet(
                         baglam,
                         crate::hir::ifade_adresi(cagri),

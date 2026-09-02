@@ -2,7 +2,7 @@ use super::*;
 
 /// Koşuldan daraltma çıkarır: 1=dolu Seçenek, 2=boş, 3=başarılı, 4=başarısız.
 pub(super) fn daraltma_cikar(kosul: &Ifade) -> Option<(u8, String)> {
-    match kosul {
+    match kosul.turu() {
         Ifade::SecenekVar { nesne, olumsuz } => {
             nesne_adi(nesne).map(|ad| (if *olumsuz { 2 } else { 1 }, ad))
         }
@@ -15,7 +15,7 @@ pub(super) fn daraltma_cikar(kosul: &Ifade) -> Option<(u8, String)> {
 
 
 pub(super) fn nesne_adi(nesne: &Ifade) -> Option<String> {
-    match nesne {
+    match nesne.turu() {
         Ifade::Degisken { cozulmus: Some(ad), .. } => Some(ad.clone()),
         _ => None,
     }
@@ -39,7 +39,7 @@ pub(super) fn gezilen_koleksiyonu_degistirme_tanisi(ad: &str, satir: usize) -> T
 }
 
 pub(super) fn gezilen_hedefi_denetle(ifade: &Ifade, baglam: &Baglam, satir: usize) -> Result<(), Tani> {
-    let aday = match ifade {
+    let aday = match ifade.turu() {
         Ifade::Degisken {
             cozulmus: Some(ad), ..
         } => baglam.gezilen_koleksiyonlar.get(ad).cloned(),

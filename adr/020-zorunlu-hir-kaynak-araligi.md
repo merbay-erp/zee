@@ -51,8 +51,9 @@ Belirsiz konuma sahte kesinlik verilmez.
   bütçesi korunur.
 - Değişken için kesin konumu ve bileşik ifade için satır zarfını doğrulayan
   HIR kanıtı vardır; mimari test kaynak-aralığı tipinin varlığını korur.
-- Bütün AST varyantlarına kesin token aralığı yaymak ayrı tanı hassasiyeti işi
-  B-050'dir; bu iş HIR'da konumsuz düğüm oluşturma izni vermez.
+- Bu kararda ayrı bırakılan bütün AST varyantlarına kesin token aralığı yayma
+  işi B-050, K-126/ADR-030 ile sonradan kapatıldı; başarılı parser→checker
+  hattındaki HIR ifadeleri artık `Satir` zarfına düşmez.
 - K-112/ADR-023 bağlı her AST ifadesinin bu zorunlu aralığı taşıyan tam bir
   HIR kaydıyla eşleşmesini ayrıca yürütülebilir invariant yapar.
 - Zee kaynak semantiği değişmediğinden yeni normatif dil spec'i gerekmez.

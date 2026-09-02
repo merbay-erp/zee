@@ -747,11 +747,31 @@ fn hir_satir_ifadelerini_coz(
     ifade: &str,
     kaynak_araligi: crate::hir::HirKaynakAraligi,
 ) -> Vec<LspKaynakAraligi> {
-    kaynak_araligi
-        .satiri()
-        .checked_sub(1)
-        .map(|satir| satirdaki_ifade_araliklari(metin, satir, ifade))
-        .unwrap_or_default()
+    let Some(satir) = kaynak_araligi.satiri().checked_sub(1) else {
+        return Vec::new();
+    };
+    let mut adaylar = satirdaki_ifade_araliklari(metin, satir, ifade);
+    if let Some((_kesin_satir, sutun, uzunluk)) = kaynak_araligi.kesin_konumu() {
+        let Some(bas) = sutun.checked_sub(1) else {
+            return Vec::new();
+        };
+        let Some(son) = bas.checked_add(uzunluk) else {
+            return Vec::new();
+        };
+        adaylar.retain(|aday| {
+            aday.satir == satir
+                && aday.bas >= bas
+                && aday
+                    .bas
+                    .checked_add(aday.uzunluk)
+                    .is_some_and(|aday_sonu| aday_sonu <= son)
+        });
+        // İşlem adı çağrı ifadesinin, yapı adı da `yeni` ifadesinin
+        // kuyruğundadır. Aynı yazım argüman bölgesinde de geçse semantic bağ
+        // yalnız kesin zarf içindeki son eşleşmeye aittir.
+        return adaylar.into_iter().last().into_iter().collect();
+    }
+    adaylar
 }
 
 fn semantik_program_derle(uri: &str, metin: &str) -> Option<crate::faz::BaglanmisProgram> {

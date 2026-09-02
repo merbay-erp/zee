@@ -155,7 +155,7 @@ pub(super) fn denetle(program: &Program) -> Result<(), Tani> {
             }
         }
 
-        if let Ifade::MetinSabiti(yol) = yol {
+        if let Ifade::MetinSabiti(yol) = yol.turu() {
             let anahtar = (yontem, *onekli, yol.clone());
             if !rotalar.insert(anahtar) {
                 return Err(Tani::yeni(
@@ -498,7 +498,7 @@ fn cumle_bilgisi(cumle: &Cumle, bilgi: &mut Bilgi) {
 }
 
 fn ifade_bilgisi(ifade: &Ifade, bilgi: &mut Bilgi) {
-    match ifade {
+    match ifade.turu() {
         Ifade::IslemCagrisi {
             islem_adi,
             argumanlar,
@@ -611,6 +611,7 @@ fn ifade_bilgisi(ifade: &Ifade, bilgi: &mut Bilgi) {
         | Ifade::SuAninSaati
         | Ifade::KomutArgumanlari
         | Ifade::SureSabiti { .. }
-        | Ifade::YeniYapi { .. } => {}
+        | Ifade::YeniYapi { .. }
+        | Ifade::Kaynakli { .. } => {}
     }
 }

@@ -1799,7 +1799,7 @@ async fn guncelle(
     satir: usize,
     yon: i64,
 ) -> Result<(), Tani> {
-    let ham_ad = match hedef {
+    let ham_ad = match hedef.turu() {
         Ifade::Degisken { cozulmus, .. } => cozulmus.as_deref(),
         _ => None,
     };

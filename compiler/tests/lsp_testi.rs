@@ -337,6 +337,19 @@ fn yeniden_adlandirma_islemid_ile_tam_islem_adini_degistirir() {
 }
 
 #[test]
+fn islem_adi_argumanla_ayni_yazilsa_da_kesin_cagri_kuyrugu_secilir() {
+    let mut sunucu = Sunucu::yeni();
+    sunucu.mesaj_isle(r#"{"jsonrpc":"2.0","method":"textDocument/didOpen","params":{"textDocument":{"uri":"file:///tmp/kesin-cagri.dil","text":"işlem ver\n    değeri al\n    değeri döndür\n\nver 1 olsun\nsonuç ver için ver olsun\n"}}}"#);
+    let cikti = sunucu.mesaj_isle(r#"{"jsonrpc":"2.0","id":351,"method":"textDocument/rename","params":{"textDocument":{"uri":"file:///tmp/kesin-cagri.dil"},"position":{"line":5,"character":16},"newName":"sun"}}"#);
+    let yanit = &cikti.govdeler[0];
+    assert_eq!(yanit.matches("newText").count(), 2, "tanım ve çağrı kuyruğu: {yanit}");
+    assert_eq!(yanit.matches("\"newText\":\"sun\"").count(), 2, "{yanit}");
+    assert!(yanit.contains("\"line\":0"), "işlem tanımı düzenlenmeli: {yanit}");
+    assert!(yanit.contains("\"line\":5"), "çağrı kuyruğu düzenlenmeli: {yanit}");
+    assert!(!yanit.contains("\"line\":4"), "aynı adlı değişken korunmalı: {yanit}");
+}
+
+#[test]
 fn yapi_definition_ve_rename_yapiid_ile_baglanir() {
     let mut sunucu = Sunucu::yeni();
     sunucu.mesaj_isle(r#"{"jsonrpc":"2.0","method":"textDocument/didOpen","params":{"textDocument":{"uri":"file:///tmp/yapi-rename.dil","text":"yapı Kutu\n    değer TamSayı\n\nkutu yeni Kutu olsun\n"}}}"#);

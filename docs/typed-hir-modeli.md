@@ -4,7 +4,7 @@ Bu belge ADR-016'nın uygulama rehberidir. Faz sırası için
 [derleyici faz modeli](derleyici-faz-modeli.md), kimlik kuralları için
 [semantic kimlik modeli](semantic-kimlik-modeli.md) birlikte okunur.
 
-## K-103/K-104/K-108 ile çalışan hat
+## K-103/K-104/K-108/K-126 ile çalışan hat
 
 ```text
 Parsed AST
@@ -37,11 +37,12 @@ tek tutarlı HIR üretilir. Böylece aynı çağrı kümesinin kaynak sırası
 `HirIfadeTuru`nu değiştiremez.
 
 K-108/ADR-020 ile her `HirIfadeBilgisi` ayrıca zorunlu
-`HirKaynakAraligi` taşır. Değişkenlerde lexer'ın koruduğu satır+sütun+uzunluk
-`Kesin`, diğer bugünkü AST ifadelerinde cümlenin bütün kaynak satırı `Satir`
-zarfıdır. İkinci biçim eksik sütunu `1` diye uydurmaz; hassasiyet farkını
-tipte görünür tutar. Bileşenlerin `NonZeroUsize` olması konumsuz/sıfır aralığı
-yapısal olarak engeller.
+`HirKaynakAraligi` taşır. K-126/ADR-030 bunu bütün parser AST ifadelerinde
+kesinleştirdi: her yaprak kendi lexer tokenını, her bileşik ifade tükettiği
+ilk token başlangıcından son token bitimine kadar bölgeyi ayrı bir
+`AstKaynakAraligi` zarfında taşır. Checker aynı `(satır, sütun, uzunluk)`
+üçlüsünü HIR'a kopyalar; invariant iki katmanın birebir eşliğini doğrular.
+`NonZeroUsize` bileşenleri sıfır/konumsuz kaydı yapısal olarak engeller.
 
 K-112/ADR-023 bu yapısal sözleşmeyi yürütülebilir çapraz kontrole bağladı.
 Debug/test faz çıkışında her canlı AST ifadesinin tam bir HIR kaydı, benzersiz
@@ -64,6 +65,8 @@ yüzeyi oluşturur. Bunun yerine geçiş iki kanıtlı dilimdir:
    işlem/yapı ID bağlarını production'da tüketmeye başladı.
 4. K-121: yerel çağrı keşfi HIR öncesine ayrıldı; yalnız nihai imzalı checker
    geçişinin tür ve bağ kayıtları kalıcı HIR gerçeği oldu.
+5. K-126: parser AST'sindeki bütün ifade düğümleri kesin kaynaklandı; checker
+   tanıları ve LSP bu aralığı üretim hattında tüketmeye başladı.
 
 B-019 iki dilimle kapandı. Raw `Program` alan v0 API'nin ad-temelli davranışı
 uyumluluk sınırıdır, yeni iç kod için örnek değildir.
@@ -92,8 +95,9 @@ yüzeyi sunmaz. Kalıcı paket/ABI kimliği gerekiyorsa ayrı bir karar gerekir.
   onarmaz; definition/rename için `null` döner ve mevcut tanıyı korur.
 - Kaynak aralığı `Option` yapılmaz veya sonradan doldurulmaz; B-020/K-108
   değişmezi her HIR ifade kurucusunda korunur.
-- Yeni AST düğümü kesin token aralığı biliyorsa `Kesin` kaydı üretir; bilgi
-  yokken sahte sütun/uzunluk üretmez. Tam AST hassasiyetinin yayılımı B-050'dir.
+- Yeni parser AST düğümü `ayristirici/kaynak.rs` kapısından tam tükettiği token
+  bölgesiyle `Ifade::Kaynakli` zarfına alınmadan üretilemez. Alt ifadeler
+  ebeveyn aralığını paylaşmaz; kendi kesin aralığını taşır.
 - Yeni ifade varyantı [invariant ziyaretçisinde](ast-hir-invariantleri.md)
   bütün alt ifadeleri, beklenen `HirBagi`nı ve imkânsız biçimlerini tanımlar.
 - Yerinde AST dönüşümü kutulu alt düğümü klonlamaz; HIR eşlemesini koruyacak

@@ -14,7 +14,7 @@ fn hir_ifade_turunu_ve_symbol_id_bagini_ast_disinda_tasir() {
     let Ifade::Degisken {
         sembol_kimligi: Some(ast_kimligi),
         ..
-    } = deger
+    } = deger.turu()
     else {
         panic!("çözülmüş değişken bekleniyordu")
     };
@@ -66,7 +66,7 @@ fn hir_sembol_tanimini_ve_butun_yazimlarini_symbolid_ile_tasir() {
 }
 
 #[test]
-fn her_hir_ifadesi_zorunlu_kaynak_araligi_tasir() {
+fn her_hir_ifadesi_astden_gelen_kesin_kaynak_araligi_tasir() {
     let program = kaynagi_fazli_derle("sonuç 1 ile 2 nin toplamı olsun\nsonucu yaz\n")
         .expect("HIR üretilmeli");
     let Cumle::Olsun { deger, .. } = &program.cumleler[0] else {
@@ -76,12 +76,52 @@ fn her_hir_ifadesi_zorunlu_kaynak_araligi_tasir() {
         .hir()
         .ifade_bilgisi(deger)
         .expect("bileşik ifade HIR bilgisi taşımalı");
-    assert!(matches!(
-        bilgi.kaynak_araligi(),
-        HirKaynakAraligi::Satir { .. }
-    ));
-    assert_eq!(bilgi.kaynak_araligi().satiri(), 1);
-    assert_eq!(bilgi.kaynak_araligi().kesin_konumu(), None);
+    assert_eq!(bilgi.kaynak_araligi().kesin_konumu(), Some((1, 7, 19)));
+}
+
+#[test]
+fn checker_tanisi_satir_zarfi_yerine_ast_ifadesini_isaretler() {
+    let hata = dil::kaynagi_derle("sonuç \"x\" ile 1 nin toplamı olsun\n")
+        .expect_err("Metin ile sayı toplanmamalı");
+    assert_eq!(hata.kod, "T008");
+    assert_eq!(hata.satir, 1);
+    assert_eq!(hata.sutun, 7);
+    assert!(hata.uzunluk > 1, "bileşik ifade bütünü işaretlenmeli: {hata:?}");
+}
+
+#[test]
+fn ast_bilesik_ve_yaprak_ifadelerin_ayri_kesin_araliklarini_korur() {
+    let program = dil::kaynagi_derle("sonuç 1 ile 2 nin toplamı olsun\n").expect("derlenmeli");
+    let Cumle::Olsun { deger, .. } = &program.cumleler[0] else {
+        panic!("değer tanımı bekleniyordu")
+    };
+    assert_eq!(deger.kaynak_araligi().map(|a| a.uclu()), Some((1, 7, 19)));
+    let Ifade::Aritmetik { sol, sag, .. } = deger.turu() else {
+        panic!("aritmetik ifade bekleniyordu")
+    };
+    assert_eq!(sol.kaynak_araligi().map(|a| a.uclu()), Some((1, 7, 1)));
+    assert_eq!(sag.kaynak_araligi().map(|a| a.uclu()), Some((1, 13, 1)));
+}
+
+#[test]
+fn ortuk_cogul_ifadesi_uydurma_bir_bir_yerine_dongu_adina_baglanir() {
+    let kaynak = "sayılar 1, 2 listesi olsun\nher sayı için\n    sayıyı yaz\n";
+    let program = kaynagi_fazli_derle(kaynak).expect("örtük çoğul bağlanmalı");
+    let Cumle::HerBiri {
+        kaynak: Some(kaynak),
+        ..
+    } = &program.cumleler[1]
+    else {
+        panic!("koleksiyon döngüsü bekleniyordu")
+    };
+    assert_eq!(kaynak.kaynak_araligi().map(|a| a.uclu()), Some((2, 5, 4)));
+    assert_eq!(
+        program
+            .hir()
+            .ifade_bilgisi(kaynak)
+            .and_then(|bilgi| bilgi.kaynak_araligi().kesin_konumu()),
+        Some((2, 5, 4))
+    );
 }
 
 #[test]
@@ -98,25 +138,25 @@ sonuç bir ver olsun
 "#;
     let program = kaynagi_fazli_derle(kaynak).expect("HIR üretilmeli");
 
-    let Cumle::Olsun {
-        deger:
-            yapi @ Ifade::YeniYapi {
-                yapi_kimligi: Some(yapi_kimligi),
-                ..
-            },
-        ..
-    } = &program.cumleler[0]
+    let Cumle::Olsun { deger: yapi, .. } = &program.cumleler[0]
     else {
         panic!("yapı örneği bekleniyordu")
     };
-    let Cumle::Olsun {
-        deger:
-            cagri @ Ifade::IslemCagrisi {
-                islem_kimligi: Some(islem_kimligi),
-                ..
-            },
+    let Ifade::YeniYapi {
+        yapi_kimligi: Some(yapi_kimligi),
         ..
-    } = &program.cumleler[1]
+    } = yapi.turu()
+    else {
+        panic!("yapı örneği bekleniyordu")
+    };
+    let Cumle::Olsun { deger: cagri, .. } = &program.cumleler[1]
+    else {
+        panic!("işlem çağrısı bekleniyordu")
+    };
+    let Ifade::IslemCagrisi {
+        islem_kimligi: Some(islem_kimligi),
+        ..
+    } = cagri.turu()
     else {
         panic!("işlem çağrısı bekleniyordu")
     };

@@ -36,16 +36,9 @@ impl HirKaynakAraligi {
         })
     }
 
-    pub(crate) fn ifadeden(ifade: &Ifade, satir: usize) -> Option<Self> {
-        match ifade {
-            Ifade::Degisken {
-                satir,
-                sutun,
-                uzunluk,
-                ..
-            } => Self::kesin(*satir, *sutun, *uzunluk),
-            _ => Self::satir(satir),
-        }
+    pub(crate) fn ifadeden(ifade: &Ifade, _satir: usize) -> Option<Self> {
+        let aralik = ifade.kaynak_araligi()?;
+        Self::kesin(aralik.satir(), aralik.sutun(), aralik.uzunluk())
     }
 
     pub const fn satiri(self) -> usize {

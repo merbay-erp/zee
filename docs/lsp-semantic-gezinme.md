@@ -1,6 +1,6 @@
 # LSP semantic gezinme ve yeniden adlandırma
 
-Bu belge K-120/B-041'in bakım sözleşmesidir. `dillsp` içindeki
+Bu belge K-120/B-041 ve K-126/B-050'nin bakım sözleşmesidir. `dillsp` içindeki
 `textDocument/definition` ve `textDocument/rename`, geçerli bir Zee belgesinde
 metin benzerliğiyle sembol tahmini yapmaz; checker'ın ürettiği typed HIR
 bağlarını tüketir.
@@ -26,6 +26,10 @@ Yerel semboller için HIR şunları birlikte taşır:
 İşlem ve yapı tanımları ile kullanımları sırasıyla `IslemId` ve `YapiId`
 üzerinden eşleşir. Çok kelimeli işlem adı tek varlıktır; rename yalnız seçilen
 kelimeyi değil tanım ve çağrılardaki tam işlem adını değiştirir.
+K-126 ile işlem/yapı kullanımının lexical araması bütün satıra yayılmaz;
+semantic AST ifadesinin kesin aralığında kalır ve çağrı/`yeni` kuyruğundaki
+son canonical eşleşmeyi seçer. Böylece argüman, işlem adıyla aynı yazılsa bile
+yanlış token düzenlenmez.
 
 ## Morfoloji sırası
 
@@ -56,9 +60,8 @@ WorkspaceEdit ile değiştirmek yerine işlem güvenle reddedilir. Çok dosyalı
 yeniden adlandırma, kaynak aralığının dosya kimliği taşıdığı ayrı bir LSP
 workspace kapısıdır. Dış tanımın satır numarası açık belgedeki kullanımla
 çakışsa bile `işlem`/`eylem`/`yapı` yerel başlığı ve tam canonical ad
-doğrulanmadan tanım aralığı kabul edilmez. B-050 bütün eski AST zarflarını kesin sütun aralığına
-taşıyana kadar parametre/döngü tanımları, kimlik seçildikten sonra yalnız kendi
-HIR satırındaki lexical aralığa indirilir.
+doğrulanmadan tanım aralığı kabul edilmez. Parametre/döngü tanımları da kimlik
+seçildikten sonra yalnız kendi kesin HIR aralığına indirilir.
 
 ## Kanıt
 
@@ -67,5 +70,6 @@ HIR satırındaki lexical aralığa indirilir.
 - `compiler/tests/lsp_testi.rs`: ayrı kapsamlı aynı adlarda doğru tanım,
   yalnız seçilen kapsamın rename'i, yeniden atamalar, tek/iki katmanlı Türkçe
   ekler, A002'de fail-closed davranış, tam `IslemId` adı, `YapiId` gezintisi
-  ve çakışan satır numarasında dış-birim rename reddi;
+  çakışan satır numarasında dış-birim rename reddi ve aynı yazımlı
+  argüman/işlem kuyruğunda yalnız semantic çağrı adının seçilmesi;
 - tam test, Clippy, native release, fuzz derleme ve WASM kapıları.

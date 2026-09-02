@@ -1,6 +1,7 @@
 //! Soyut sözdizimi ağacı (AST).
 
 use std::collections::HashMap;
+use std::num::NonZeroUsize;
 
 use crate::kimlik::{IslemId, SymbolId, YapiId};
 
@@ -145,8 +146,62 @@ pub enum AritmetikIslec {
     Kalan,
 }
 
+/// Kaynak metinde tek satıra ait, sıfır olamayan kesin karakter aralığı.
+///
+/// AST ifadeleri bu değeri lexer tokenlarından alır. Sütun ve uzunluk Unicode
+/// karakteri cinsindedir; byte konumu değildir. Böylece Türkçe adlarda tanı ve
+/// LSP tüketicileri aynı kaynak ölçüsünü kullanır.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
+pub struct AstKaynakAraligi {
+    satir: NonZeroUsize,
+    sutun: NonZeroUsize,
+    uzunluk: NonZeroUsize,
+}
+
+impl AstKaynakAraligi {
+    pub const fn yeni(satir: usize, sutun: usize, uzunluk: usize) -> Option<Self> {
+        Some(Self {
+            satir: match NonZeroUsize::new(satir) {
+                Some(deger) => deger,
+                None => return None,
+            },
+            sutun: match NonZeroUsize::new(sutun) {
+                Some(deger) => deger,
+                None => return None,
+            },
+            uzunluk: match NonZeroUsize::new(uzunluk) {
+                Some(deger) => deger,
+                None => return None,
+            },
+        })
+    }
+
+    pub const fn satir(self) -> usize {
+        self.satir.get()
+    }
+
+    pub const fn sutun(self) -> usize {
+        self.sutun.get()
+    }
+
+    pub const fn uzunluk(self) -> usize {
+        self.uzunluk.get()
+    }
+
+    pub const fn uclu(self) -> (usize, usize, usize) {
+        (self.satir(), self.sutun(), self.uzunluk())
+    }
+}
+
 #[derive(Debug, Clone)]
 pub enum Ifade {
+    /// Parser'ın her semantic ifade düğümüne zorunlu olarak eklediği kesin
+    /// kaynak zarfı. İç düğüm yalnız ifade türünü taşır; alt ifadelerin kendi
+    /// bağımsız zarfları vardır.
+    Kaynakli {
+        ifade: Box<Ifade>,
+        kaynak_araligi: AstKaynakAraligi,
+    },
     MetinSabiti(String),
     SayiSabiti(i64),
     /// Ondalık sabit (RFC-0013): onluk tam değer, govde/10^olcek.
@@ -286,6 +341,45 @@ pub enum Ifade {
     },
 }
 
+impl Ifade {
+    pub fn kaynakli(ifade: Self, kaynak_araligi: AstKaynakAraligi) -> Self {
+        Self::Kaynakli {
+            ifade: Box::new(ifade),
+            kaynak_araligi,
+        }
+    }
+
+    /// Kaynak zarfını atlayarak semantic ifade türünü verir.
+    pub fn turu(&self) -> &Self {
+        match self {
+            Self::Kaynakli { ifade, .. } => ifade.turu(),
+            _ => self,
+        }
+    }
+
+    /// Checker'ın semantic kimlik alanlarını yerinde bağlaması için zarfı
+    /// koruyarak değiştirilebilir ifade türünü verir.
+    pub(crate) fn turu_mut(&mut self) -> &mut Self {
+        match self {
+            Self::Kaynakli { ifade, .. } => ifade.turu_mut(),
+            _ => self,
+        }
+    }
+
+    /// Bu AST düğümünün doğrudan kesin kaynak zarfı. Raw v0 embedding
+    /// ifadeleri `None` dönebilir; parser çıktısında invariant bunu yasaklar.
+    pub const fn kaynak_araligi(&self) -> Option<AstKaynakAraligi> {
+        match self {
+            Self::Kaynakli { kaynak_araligi, .. } => Some(*kaynak_araligi),
+            _ => None,
+        }
+    }
+
+    pub(crate) const fn dogrudan_kaynakli_mi(&self) -> bool {
+        matches!(self, Self::Kaynakli { .. })
+    }
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub enum Ozellik {
     /// Liste: öğe sayısı.
@@ -383,6 +477,9 @@ pub enum Cumle {
     /// kuralı (K-013) uygulanır: çözümleyici "sayılar"ı bulup doldurur.
     HerBiri {
         ad: String,
+        /// Döngü adının lexer konumu; örtük çoğul kaynağı aynı yazıma bağlar.
+        ad_sutun: usize,
+        ad_uzunluk: usize,
         kaynak: Option<Ifade>,
         govde: Vec<Cumle>,
         satir: usize,

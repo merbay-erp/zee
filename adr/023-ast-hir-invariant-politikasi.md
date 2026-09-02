@@ -45,6 +45,11 @@ K-113/ADR-024 kurtarmalı parser'ın kısmi AST'sini de aynı parser-fazı
 değişmezlerine bağladı; recovery hata düğümü uydurmaz, yalnız güvenle
 ayrıştırılmış cümleleri doğru ebeveyn blokta korur.
 
+K-126/ADR-030 parser-fazı sözleşmesini kaynak kökenine genişletti. Her canlı
+AST ifadesi doğrudan tek kesin kaynak zarfı taşır; eksik veya iç içe zarf
+reddedilir. Bağlanmış fazda AST ve HIR'ın `(satır, sütun, uzunluk)` değerleri
+birebir eşit değilse çıktı geçersizdir.
+
 AST dönüşümleri mevcut kutulu alt düğümü klonlamak yerine taşımak zorundadır.
 K-112 sırasında özellik→alan dönüşümündeki klon kaldırılmış, beklenmeyen
 varyant `T016` ile sonuçlanan tek sahipli yardımcıya alınmıştır.
@@ -61,6 +66,8 @@ varyant `T016` ile sonuçlanan tek sahipli yardımcıya alınmıştır.
 7. Yeni AST/HIR varyantı doğrulayıcı ziyaretçisi ve olumlu/olumsuz kanıtı
    güncellenmeden tamamlanmış sayılmaz.
 8. İç değişmez ihlali production panic'i değildir; kodlu tanı/sonuçtur.
+9. Parser AST'sindeki her ifade doğrudan tek, sıfır olmayan kesin kaynak
+   zarfı taşır; bağlanmış HIR aralığı aynı değerdir.
 
 ## Sonuçlar
 
@@ -71,3 +78,5 @@ varyant `T016` ile sonuçlanan tek sahipli yardımcıya alınmıştır.
 - Kaynak dil semantiği değişmediğinden yeni normatif dil spec'i gerekmez.
 - Doğrulayıcı bellek güvenliğinin biçimsel ispatı değildir; fakat fazlar arası
   iç sözleşmeyi tek, yürütülebilir ve hata yolu belirli bir kapıya bağlar.
+- K-126'nın spansiz AST ve AST↔HIR aralık uyuşmazlığı regresyonları, kaynak
+  kökeninin yeni varyantlarda sessizce kaybolmasını önler.

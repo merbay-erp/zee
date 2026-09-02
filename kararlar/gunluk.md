@@ -1529,7 +1529,8 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   çağrı cümlelerini aynı zorunlu sözleşmeyle kaydeder.
 - **Dürüst sınır:** B-020 yapısal kaynak-kökeni değişmezi kapandı. Bütün AST
   varyantlarında kesin sütun+uzunluk korumak tanı hassasiyeti işi B-050'dir;
-  bu sınır konumsuz HIR düğümüne izin vermez. Kaynak dil semantiği değişmedi.
+  bu tarihsel açık K-126/ADR-030 ile sonradan kapandı. Kaynak dil semantiği
+  değişmedi.
 - **Kanıt:** ADR-020, typed-HIR/faz/kimlik rehberleri; mevcut değişken testine
   kesin konum kanıtı, bileşik ifadeye satır zarfı davranışı ve mimari sahiplik
   kontrolü. Bir yeni testle toplam 427; B-020 ve V1-P0-18 kapandı.
@@ -1867,8 +1868,8 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   [conformance rehberi](../docs/morfoloji-conformance.md) ve kök korpus aynı
   tüketici protokolünü taşır. JSON Schema biçimi tanımlar; Rust'ın typed veri
   yükleyicisi ve açık değişmez kontrolleri mevcut korpusu yürütür. Bir yeni
-  regresyonla toplam 483 test yeşildir; B-009 kapandı. Sıradaki makine omurgası
-  B-011 gözlenebilir concurrency uyumluluk sözüdür.
+  regresyonla toplam 483 test yeşildir; B-009 kapandı. Bu kaydın ardından
+  B-011, K-124 ile kapatıldı.
 
 ## K-124 — Scheduler'ın gözlenebilir sonucunu `zee-esz-1` profiline bağla (2 Eyl)
 
@@ -1892,8 +1893,8 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   bütün JSON veri/şemalarını ve morfoloji semantic kayıtlarını korur; eski
   morfoloji betiği uyumluluk sarmalayıcısıdır. RFC-0011, spec/14,
   [conformance rehberi](../docs/eszamanlilik-conformance.md) ve bir yeni
-  regresyonla toplam 484 test yeşildir; B-011 kapandı. Sıradaki makine omurgası
-  B-012 açık Ondalık↔binary float FFI sınırıdır.
+  regresyonla toplam 484 test yeşildir; B-011 kapandı. Bu kaydın ardından
+  B-012, K-125/ADR-029 ile kapatıldı.
 
 ## K-125 — Ondalık ile binary float arasındaki örtük FFI köprüsünü yasakla (2 Eyl)
 
@@ -1911,8 +1912,32 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   olmadığını, eski taslak FFI kaynağının derlenmediğini, `0,1+0,2=0,3`
   exactlığını ve RFC/ADR metin kapısını birlikte korur. RFC-0012 taslak kalır;
   RFC-0013/spec-16 sınırı normatif taşır. Bir yeni regresyonla toplam 485 test
-  yeşildir; B-012/V1-P0-28 kapandı. Sıradaki makine omurgası B-050 bütün AST
-  ifadelerinde kesin source span'dir.
+  yeşildir; B-012/V1-P0-28 kapandı. Bu kaydın ardından gelen B-050,
+  K-126/ADR-030 ile kapatıldı.
+
+## K-126 — Bütün AST ifadelerini kesin kaynaklandır (2 Eyl)
+
+- **Sorun:** K-108 HIR'da kaynak kökenini zorunlu kılmıştı fakat değişken
+  dışındaki eski AST varyantları yalnız satır zarfına düşüyordu. Bileşik
+  ifadenin sütun/uzunluğu tanı ve LSP için güvenilir değildi.
+- **Karar:** ADR-030 ile parser'ın her yaprak ve bileşik ifadesi ayrı
+  `Ifade::Kaynakli` + sıfır olamayan `AstKaynakAraligi` taşır. Aralıklar
+  Unicode karakteri cinsindedir; çocuk ifade ebeveyn zarfını paylaşmaz.
+- **Sentetik sınır:** `her sayı için` örtük `sayılar` ifadesi uydurma `1:1`
+  yerine onu doğuran `sayı` tokenına bağlanır. Raw v0 embedding spansiz AST
+  kurabilir ama parser invariantı bunu kabul etmez; checker panic yerine
+  kodlu iç tanı verir.
+- **Tüketim:** Checker AST aralığını HIR'a birebir aktarır; invariant eksik,
+  iç içe veya uyuşmayan zarfı reddeder. Eski `1:1` checker tanısı ilgili kesin
+  düğüme yükselir. LSP işlem/yapı kullanımını bütün satırda değil semantic
+  ifade aralığında arar ve çağrı/`yeni` kuyruğundaki son canonical adı seçer.
+- **Mimari:** Token→AST kaynaklandırma `ayristirici/kaynak.rs`, tanı
+  yükseltme `cozumleyici/kaynak.rs` sahibidir; mevcut handler satır bütçeleri
+  büyütülmedi.
+- **Kanıt:** Bileşik+yaprak AST/HIR aralıkları, spansiz AST reddi, kesin tür
+  tanısı, örtük çoğul kökeni ve aynı yazımlı argüman/işlem kuyruğu beş yeni
+  regresyonda korunur. Toplam 490 test yeşildir; B-050 ve V1-P0-18'in kesinlik
+  dilimi kapandı.
 
 ---
 
@@ -1922,5 +1947,5 @@ Korpus 10 öğrenci + 5 profesyonel usability oturumuna (Hafta 12 hedefi, erkeni
 Hafta 2'de kağıt üstünde) sesli okutulacak; her kayıt için "doğal mı /
 deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
-Makine hattında B-012/K-125 kapandı. Sırada B-050 bütün AST ifadelerinde kesin
-source span vardır.
+Makine hattında B-050/K-126 kapandı. Sırada B-023 capability modeli ile
+outbound hedef/SSRF politikasını B-049'la birlikte fail-closed yapmak vardır.

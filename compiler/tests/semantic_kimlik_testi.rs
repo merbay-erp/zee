@@ -17,7 +17,7 @@ fn yapi_kimlikleri(kaynak: &str) -> HashMap<String, YapiId> {
             let Ifade::YeniYapi {
                 yapi_adi,
                 yapi_kimligi: Some(kimlik),
-            } = deger
+            } = deger.turu()
             else {
                 return None;
             };
@@ -39,7 +39,7 @@ fn islem_kimlikleri(kaynak: &str) -> HashMap<String, IslemId> {
                 islem_adi,
                 islem_kimligi: Some(kimlik),
                 ..
-            } = deger
+            } = deger.turu()
             else {
                 return None;
             };
@@ -98,15 +98,15 @@ işlem iki ver
 #[test]
 fn cozulmus_degisken_symbol_id_tasir() {
     let program = kaynagi_derle("sayı 1 olsun\nsayıyı yaz\n").expect("sembol bağlanmalı");
-    let Cumle::Yaz {
-        deger:
-            Ifade::Degisken {
-                cozulmus: Some(ad),
-                sembol_kimligi: Some(kimlik),
-                ..
-            },
+    let Cumle::Yaz { deger, .. } = &program.cumleler[1]
+    else {
+        panic!("çözülmüş değişken bekleniyordu")
+    };
+    let Ifade::Degisken {
+        cozulmus: Some(ad),
+        sembol_kimligi: Some(kimlik),
         ..
-    } = &program.cumleler[1]
+    } = deger.turu()
     else {
         panic!("çözülmüş değişken bekleniyordu")
     };

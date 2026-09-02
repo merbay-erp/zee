@@ -9,8 +9,9 @@ pub(super) fn ifade_denetle(
     let adres = crate::hir::ifade_adresi(ifade);
     let kaynak_araligi = crate::hir::HirKaynakAraligi::ifadeden(ifade, satir)
         .ok_or_else(|| hir_kaynak_hatasi(satir))?;
-    let tur = ifade_denetle_ic(ifade, ortam, baglam, satir)?;
-    let bag = match ifade {
+    let tur = ifade_denetle_ic(ifade, ortam, baglam, satir)
+        .map_err(|tani| kaynak::taniyi_ifadeye_bagla(tani, kaynak_araligi))?;
+    let bag = match ifade.turu() {
         Ifade::Degisken {
             sembol_kimligi: Some(kimlik),
             cozulmus: Some(ad),
@@ -63,7 +64,7 @@ fn ifade_denetle_ic(
     baglam: &mut Baglam,
     satir: usize,
 ) -> Result<Tur, Tani> {
-    match ifade {
+    match ifade.turu_mut() {
         Ifade::MetinSabiti(_) => Ok(Tur::Metin),
         Ifade::SayiSabiti(_) => Ok(Tur::TamSayi),
         Ifade::OndalikSabiti { .. } => Ok(Tur::Ondalik),
@@ -951,5 +952,9 @@ fn ifade_denetle_ic(
                 .onerili("İşlemin içinde \"... döndür\" ile bir sonuç döndür.".into())),
             }
         }
+        Ifade::Kaynakli { .. } => Err(ic_tutarlilik_hatasi(
+            "AST ifadesindeki kaynak zarfı çözülemedi",
+            satir,
+        )),
     }
 }

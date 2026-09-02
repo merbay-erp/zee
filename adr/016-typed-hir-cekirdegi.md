@@ -51,6 +51,12 @@ Kesin token konumu bulunan ifadeler tam aralık, diğer mevcut AST ifadeleri
 sahte sütun yerine kaynak satırı zarfı taşır. Span eksikliği HIR'ın tür ve bağ
 gerçeğini AST'ye geri itmek için gerekçe değildir.
 
+K-126/ADR-030 bu geçişi tamamladı: başarılı parser çıktısındaki her yaprak ve
+bileşik AST ifadesi ayrı kesin kaynak zarfı taşır; HIR aralığı bu değeri
+birebir devralır. Başarılı parser→checker hattındaki ifade kayıtları artık
+satır zarfına düşmez; AST dışı uyumluluk/tanım kayıtları için HIR'ın kaba
+varyantı korunur.
+
 K-112/ADR-023 her canlı AST ifadesi ile HIR kaydının birebirliğini ve semantic
 bağın canonical tablolarla uyumunu debug/test faz çıkışında yürütülebilir
 değişmez yaptı. Özellik→alan dönüşümünde klonlanan alt düğümün bıraktığı yetim
@@ -85,6 +91,8 @@ Geçici ilk çağrı sonucu veya kaynak sırası kalıcı HIR türüne sızamaz.
     sayısal olarak çakışsa bile yerel tanım kabul edilmez.
 11. Yerel işlem çıkarımının keşif geçişi HIR üretmez; HIR türleri bütün çağrı
     kısıtları birleştirildikten sonraki nihai checker sonucudur.
+12. Parser kökenli her HIR ifade aralığı karşılık gelen AST ifadesinin kesin
+    aralığıyla birebir aynıdır.
 
 ## Sonuçlar
 

@@ -189,15 +189,19 @@ impl Ayristirici {
                 let mut t = satir_tokenlari;
                 t.pop(); // olmamalı
                 let ic = kosul_ifadesi(&t, satir_no)?;
-                Ok(Cumle::Olmali { kosul: Ifade::Degil(Box::new(ic)), satir: satir_no })
+                let kosul = konumlu_ifade(Ifade::Degil(Box::new(ic)), &t)?;
+                Ok(Cumle::Olmali { kosul, satir: satir_no })
             }
             Some("içermeli") => {
                 let t = &satir_tokenlari;
                 if t.len() == 3 {
-                    let kosul = Ifade::Icerir {
-                        metin: Box::new(tekil_ifade(t[0].clone())?),
-                        aranan: Box::new(tekil_ifade(t[1].clone())?),
-                    };
+                    let kosul = konumlu_ifade(
+                        Ifade::Icerir {
+                            metin: Box::new(tekil_ifade(t[0].clone())?),
+                            aranan: Box::new(tekil_ifade(t[1].clone())?),
+                        },
+                        t,
+                    )?;
                     Ok(Cumle::Olmali { kosul, satir: satir_no })
                 } else {
                     Err(Tani::yeni(

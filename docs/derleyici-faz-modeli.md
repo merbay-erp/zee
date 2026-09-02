@@ -10,7 +10,7 @@ için [checker katmanları](checker-katmanlari.md) birlikte okunur.
 |---|---|---|
 | `KaynakMetni` | UTF-8 zee kaynak metni | `sozcukle()` |
 | `TokenAkisi` | konumlu lexer tokenları | `ayristir(...)` veya kurtarmalı parser |
-| `AyristirilmisAst` | hoist/çözüm görmemiş `Cumle` ağacı | birim/paket çözümü + hoist |
+| `AyristirilmisAst` | hoist/çözüm görmemiş, her ifadesi kesin kaynak zarflı `Cumle` ağacı | birim/paket çözümü + hoist |
 | `BaglanmamisProgram` | cümle, işlem, yapı ve test koleksiyonu | checker `denetle()` geçişi |
 | `BaglanmisProgram` | checker kanıtlı AST + zorunlu typed HIR | HIR tüketen interpreter veya bilinçli eski-API adaptörü |
 
@@ -46,7 +46,7 @@ senkronlanır. Sağlam kardeşler kendi bloklarında kalır. Dönen kısmi
 yürütülebilir faz sayılmaz. Ayrıntı
 [parser kurtarma rehberindedir](parser-hata-kurtarma.md).
 
-## K-103/K-104/K-108 sonrası HIR hattı
+## K-103/K-104/K-108/K-126 sonrası HIR hattı
 
 `BaglanmisProgram` artık ADR-016'daki `HirProgram`ı zorunlu taşır. Her
 denetlenmiş ifade `HirDugumId`, açık `HirIfadeTuru`, zorunlu
@@ -59,17 +59,20 @@ Parsed AST → Resolution sonucu → Typed HIR → Execution/Lowering
 
 K-104 ile standart runtime ve `dene` değişken/işlem/yapı kararını yalnız bu
 HIR bağından alır; B-019 kapanmıştır. K-108 her semantic HIR düğümüne kesin
-token aralığı veya dürüst satır zarfı koyup B-020'yi kapattı. K-112 parser
-çıkışında semantic alanların boş, checker çıkışında AST↔HIR eşlemesinin tam ve
-tekil olduğunu debug/test aşamasında otomatik doğrular. İhlal faz+yapısal yol
-taşıyan C000'dir. Ayrıntı [typed HIR rehberinde](typed-hir-modeli.md) ve
+token aralığı veya dürüst satır zarfı koyup B-020'yi kapattı. K-126 bütün
+parser AST yaprak ve bileşiklerini ayrı kesin `AstKaynakAraligi` zarflarına
+aldı; başarılı checker bunları kayıpsız HIR `Kesin` aralığına dönüştürür.
+K-112/K-126 parser çıkışında semantic alanların boş ve kaynak zarfının tam,
+checker çıkışında AST↔HIR eşlemesinin aralık dahil tekil olduğunu debug/test
+aşamasında otomatik doğrular. İhlal faz+yapısal yol taşıyan C000'dir. Ayrıntı
+[typed HIR rehberinde](typed-hir-modeli.md) ve
 [invariant rehberindedir](ast-hir-invariantleri.md).
 
 ## Kanıt ve büyüme kuralı
 
 - `faz_modeli_testi.rs` parsed/bound farkını ve eski API uyumluluğunu sınar.
-- `invariant_testi.rs` parsed AST saflığını, bağlı AST/HIR tamlığını ve
-  imkânsız sentetik biçimlerin reddini sınar.
+- `invariant_testi.rs` parsed AST saflığını, zorunlu kesin kaynak zarfını,
+  bağlı AST/HIR tamlığını ve imkânsız sentetik biçimlerin reddini sınar.
 - `parser_kurtarma_testi.rs` hatalı iç cümleden sonra kardeş/blok sahipliğini,
   derinlik geri alımını ve tanı bütçesini sınar.
 - `faz.rs` compile-fail örneği yanlış geçişin derlenmediğini kanıtlar.

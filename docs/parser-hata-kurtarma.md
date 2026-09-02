@@ -23,6 +23,11 @@ sonraki kardeşler korunur; fiziksel blok derinliği çıkışta geri alınır. 
 başlık bir gövde açtıysa gövde bütünüyle atlanır, çünkü hangi alt cümlenin
 başlığa ait olduğu ancak dengeli girinti sınırıyla güvenle bilinir.
 
+Kurtarma ile korunan her geçerli cümledeki yaprak ve bileşik ifadeler de
+ADR-030'un kesin kaynak zarfı kapısından geçer. Recovery spansiz/sentetik hata
+ifadesi üretmez; bir ifade güvenle kaynaklandırılamıyorsa o düğüm kısmi AST'ye
+alınmaz.
+
 ## Özel bloklar
 
 - Yapı alanında bozuk satır S025 olur; sonraki geçerli alan aynı yapıda kalır.
@@ -50,9 +55,11 @@ yalnız tanı toplamak içindir; checker başarısı ve typed HIR olmadan çalı
 3. `derinlik` artırıldıysa hiçbir hata yolu onu yüksek bırakamaz.
 4. Kısmi düğüm ADR-023 parser invariantlarından geçemiyorsa düğüm üretme;
    ana tanıyı döndür.
-5. Hata öncesi ebeveyn, hata sonrası kardeş ve sonraki üst düzey tanım için
+5. Korunan ifade düğümlerinin ADR-030 kesin kaynak zarfını yitirmediğini
+   doğrula.
+6. Hata öncesi ebeveyn, hata sonrası kardeş ve sonraki üst düzey tanım için
    recovery regresyonu ekle.
-6. LSP JSON'unda tanı sayısını, kodunu, sırasını ve 0 tabanlı aralığını sınar.
+7. LSP JSON'unda tanı sayısını, kodunu, sırasını ve 0 tabanlı aralığını sınar.
 
 ## Kanıt
 

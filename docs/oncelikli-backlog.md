@@ -57,8 +57,10 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
     kapattı (484 test).
 22. K-125/ADR-029 örtük Ondalık↔binary float FFI eşlemesini yasaklayıp
     B-012'yi kapattı (485 test).
-23. Sıradaki makine omurgası B-050 bütün AST ifadelerinde kesin source span'dir.
-24. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
+23. K-126/ADR-030 bütün yaprak ve bileşik AST ifadelerine kesin kaynak zarfı
+    yayıp HIR, tanı ve LSP tüketimini bağladı; B-050 kapandı (490 test).
+24. Sıradaki makine işi B-023 capability ve outbound hedef politikasıdır.
+25. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
 
 ## P0 — V1 öncesi dil ve derleyici omurgası
 
@@ -206,7 +208,8 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   engeller. Lexer konumu korunmuş değişken `Kesin { satir, sutun, uzunluk }`,
   diğer mevcut AST ifadeleri sahte sütun uydurmayan `Satir { satir }` zarfı
   taşır. ADR-020, kesin değişken + bileşik ifade davranış kanıtı ve mimari
-  sahiplik testiyle V1-P0-18 kapandı; toplam 427 test yeşildir.
+  sahiplik testiyle V1-P0-18'in kaynak-kökeni dilimini kapattı; bu tarihsel
+  satır-zarfı geçişi K-126/B-050 ile bütün ifadelerde kesinleştirildi.
 - **B-021 · KAPALI (K-113) — LSP odaklı error recovery planı.** Hatalı cümle
   satır sonunda, yalnız ona ait alt ağaç dengeli girinti çıkışında
   senkronlanır. Sağlam kardeş aynı blokta kalır; parser derinliği sonraki üst
@@ -221,10 +224,15 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   anlamını korur. Anlam değişikliği yeni kod ister; emekli kod mezar taşı
   olarak kalır. ADR-025, [tanı kimliği rehberi](tani-kimligi.md) ve bağımsız
   fixture regresyonuyla V1-P0-24 kapandı; toplam 448 test yeşildir.
-- **B-050 · AÇIK — kesin source span'i bütün AST ifadelerine yay.** K-108
-  konumsuz HIR düğümünü kapattı; bugün değişken dışındaki eski AST varyantları
-  satır zarfı taşır. Parser token aralıklarını bütün bileşik/leaf düğümlerde
-  koruyup tanı, LSP ve gelecek lowering'e kesin sütun+uzunluk sağlamalıdır.
+- **B-050 · KAPALI (K-126/ADR-030) — kesin source span'i bütün AST
+  ifadelerine yay.** Parser'ın her yaprak ve bileşik ifadesi sıfır olamayan
+  `AstKaynakAraligi` taşıyan tek bir `Ifade::Kaynakli` zarfındadır; çocuklar
+  kendi token bölgelerini ayrıca korur. Checker aralığı HIR'a birebir aktarır,
+  invariant eksik/iç içe zarfı ve AST↔HIR uyuşmazlığını reddeder. Eski `1:1`
+  ifade tanıları gerçek düğüme yükselir; LSP işlem/yapı adını yalnız kesin
+  semantic ifade içinde seçer. Örtük çoğul kaynak bile döngü adı tokenına
+  bağlanır. Bileşik+yaprak, tanı, spansiz AST, örtük kaynak ve aynı yazımlı
+  çağrı argümanı regresyonlarıyla toplam 490 test yeşildir.
 
 ## P1 — Runtime ve güvenlik
 
@@ -326,7 +334,7 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   programın metin/yorumları koruyan deterministik dağınık-boşluk varyantı
   biçimlenir; önce/sonra izi eşit ve iki parser geçişi de başarılı olmak
   zorundadır. İdempotence ve proje/kitaplık resmî biçim kapıları korunur.
-- **B-043 · KAPALI (K-118) — spec↔code kanıt haritası.** Bugünkü 23 RFC, 27
+- **B-043 · KAPALI (K-118) — spec↔code kanıt haritası.** Bugünkü 23 RFC, 28
   ADR ve 22 spec bölümü `docs/kanit-haritasi-v1.tsv` içinde `kanitli/kismi/taslak`
   durumu, yürütülebilir test yolları ve açık kapsam notuyla birebir izlenir.
   Tazelik testi eksik/yinelenen belgeyi, olmayan ya da test taşımayan kanıt
@@ -342,6 +350,7 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 ## Bir sonraki somut kapı
 
 İnsan kanıtı hattında B-001, doldurulmuş gerçek usability formları ve önceden
-ilan edilmiş eşikleri bekler. Makine hattında B-012/K-125 kapandı; sıradaki iş
-B-050 parser token aralıklarını bütün bileşik/yaprak AST ifadelerinde koruyup
-HIR, tanı ve LSP'ye kesin sütun+uzunluk sağlamaktır.
+ilan edilmiş eşikleri bekler. Makine hattında B-050/K-126 kapandı; sıradaki iş
+B-023 ile ağ, dosya sistemi ve sensör yetkinliklerini merkezi capability
+politikasına bağlamak, outbound hedef/SSRF sınırını B-049 ile birlikte
+fail-closed yapmaktır.

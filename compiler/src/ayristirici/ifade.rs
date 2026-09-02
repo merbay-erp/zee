@@ -59,29 +59,33 @@ pub(super) fn bekle_kelime<I: Iterator<Item = Token>>(t: &mut std::iter::Peekabl
 
 /// Tek token'dan ifade üretir (sabit ya da değişken).
 pub(super) fn tekil_ifade(token: Token) -> Result<Ifade, Tani> {
-    match token.tur {
-        TokenTur::Metin(m) => Ok(Ifade::MetinSabiti(m)),
-        TokenTur::TamSayi(s) => Ok(Ifade::SayiSabiti(s)),
-        TokenTur::Ondalik { govde, olcek } => Ok(Ifade::OndalikSabiti { govde, olcek }),
-        TokenTur::Kelime(k) if k == "doğru" => Ok(Ifade::MantiksalSabiti(true)),
-        TokenTur::Kelime(k) if k == "yanlış" => Ok(Ifade::MantiksalSabiti(false)),
-        TokenTur::Kelime(k) if k == "yok" => Ok(Ifade::YokSabiti),
-        TokenTur::Kelime(k) => Ok(Ifade::Degisken {
+    let konum = token.clone();
+    let ifade = match token.tur {
+        TokenTur::Metin(m) => Ifade::MetinSabiti(m),
+        TokenTur::TamSayi(s) => Ifade::SayiSabiti(s),
+        TokenTur::Ondalik { govde, olcek } => Ifade::OndalikSabiti { govde, olcek },
+        TokenTur::Kelime(k) if k == "doğru" => Ifade::MantiksalSabiti(true),
+        TokenTur::Kelime(k) if k == "yanlış" => Ifade::MantiksalSabiti(false),
+        TokenTur::Kelime(k) if k == "yok" => Ifade::YokSabiti,
+        TokenTur::Kelime(k) => Ifade::Degisken {
             ham: k,
             cozulmus: None,
             sembol_kimligi: None,
             satir: token.satir,
             sutun: token.sutun,
             uzunluk: token.uzunluk,
-        }),
-        _ => Err(Tani::yeni(
-            "S013",
-            "Burada bir değer bekleniyor.".into(),
-            token.satir,
-            token.sutun,
-            token.uzunluk,
-        )),
-    }
+        },
+        _ => {
+            return Err(Tani::yeni(
+                "S013",
+                "Burada bir değer bekleniyor.".into(),
+                token.satir,
+                token.sutun,
+                token.uzunluk,
+            ));
+        }
+    };
+    konumlu_ifade(ifade, std::slice::from_ref(&konum))
 }
 
 /// Tamlayan (genitif) ayrık ekleri: "10 un", "3 ün".
@@ -95,6 +99,10 @@ const TAMLAYAN_EKLER: [&str; 8] = ["nın", "nin", "nun", "nün", "ın", "in", "u
 /// kendi cümle bağlamında bunun üstündedir. Yeni ifade özelliği gelişigüzel
 /// bir üst-düzey dal olarak değil, RFC-0021'deki tek katmana eklenir.
 pub(super) fn ile_ifadesi(tokenlar: &[Token], satir: usize, islemler: &[String]) -> Result<Ifade, Tani> {
+    konumlu_ifade(ile_ifadesi_ic(tokenlar, satir, islemler)?, tokenlar)
+}
+
+fn ile_ifadesi_ic(tokenlar: &[Token], satir: usize, islemler: &[String]) -> Result<Ifade, Tani> {
     if tokenlar.is_empty() {
         return Err(Tani::yeni("S013", "Burada bir değer bekleniyor.".into(), satir, 1, 1));
     }
@@ -144,6 +152,10 @@ pub(super) fn ile_ifadesi(tokenlar: &[Token], satir: usize, islemler: &[String])
 
 /// Tek "ile" parçası: tek token ya da yapılı kalıp.
 pub(super) fn bolge_ifadesi(tokenlar: &[Token], _satir: usize, islemler: &[String]) -> Result<Ifade, Tani> {
+    konumlu_ifade(bolge_ifadesi_ic(tokenlar, _satir, islemler)?, tokenlar)
+}
+
+fn bolge_ifadesi_ic(tokenlar: &[Token], _satir: usize, islemler: &[String]) -> Result<Ifade, Tani> {
     if tokenlar.len() == 1 {
         return tekil_ifade(tokenlar[0].clone());
     }
@@ -172,6 +184,10 @@ pub(super) fn bolge_ifadesi(tokenlar: &[Token], _satir: usize, islemler: &[Strin
 /// "veya daha" ikilisi karşılaştırma kalıbına aittir ("90 veya daha büyükse"),
 /// zincir ayracı sayılmaz.
 pub(super) fn kosul_ifadesi(tokenlar: &[Token], satir: usize) -> Result<Ifade, Tani> {
+    konumlu_ifade(kosul_ifadesi_ic(tokenlar, satir)?, tokenlar)
+}
+
+fn kosul_ifadesi_ic(tokenlar: &[Token], satir: usize) -> Result<Ifade, Tani> {
     let mut baglac: Option<bool> = None; // true = ve, false = veya
     let mut bolgeler: Vec<&[Token]> = Vec::new();
     let mut baslangic = 0usize;
@@ -251,6 +267,10 @@ pub(super) fn kosul_ifadesi(tokenlar: &[Token], satir: usize) -> Result<Ifade, T
 ///   ... değilse             → olumsuzlama: "x 5 e eşit değilse", "bildi doğru değilse"
 /// "olduğu sürece" içinde yüklem çıplak gelir: "büyük", "küçük", "eşit".
 pub(super) fn kosul_atomu(tokenlar: &[Token], satir: usize) -> Result<Ifade, Tani> {
+    konumlu_ifade(kosul_atomu_ic(tokenlar, satir)?, tokenlar)
+}
+
+fn kosul_atomu_ic(tokenlar: &[Token], satir: usize) -> Result<Ifade, Tani> {
     let hata = || {
         Tani::yeni("S016", "Koşul tanınmadı.".into(), satir, 1, 1).onerili(
             "Örnekler: yaş 8 veya daha büyükse · puan 50 den küçükse · sayı 5 e eşitse · sayı çiftse"
@@ -308,10 +328,17 @@ pub(super) fn kosul_atomu(tokenlar: &[Token], satir: usize) -> Result<Ifade, Tan
     // <sensör> açıksa / kapalıysa — IoT simülatörü (golden 29).
     if n == 2 && (yuklem == "açıksa" || yuklem == "kapalıysa") {
         if let TokenTur::Kelime(ad) = &tokenlar[0].tur {
-            let sensor = Ifade::Intrinsic {
-                kimlik: SENSOR_ACIK_MI.into(),
-                argumanlar: vec![Ifade::MetinSabiti(ad.clone())],
-            };
+            let sensor_adi = konumlu_ifade(
+                Ifade::MetinSabiti(ad.clone()),
+                std::slice::from_ref(&tokenlar[0]),
+            )?;
+            let sensor = konumlu_ifade(
+                Ifade::Intrinsic {
+                    kimlik: SENSOR_ACIK_MI.into(),
+                    argumanlar: vec![sensor_adi],
+                },
+                tokenlar,
+            )?;
             return Ok(if yuklem == "kapalıysa" {
                 Ifade::Degil(Box::new(sensor))
             } else {
@@ -483,6 +510,12 @@ pub(super) fn kosul_atomu(tokenlar: &[Token], satir: usize) -> Result<Ifade, Tan
 ///                                        sabitlerde ayrık — 4 ya da 5 token)
 ///   W ın sayısı                         ("yanıtın sayısı" — 2 token)
 pub(super) fn yapili_kalip(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifade>, Tani> {
+    yapili_kalip_ic(tokenlar, islemler)?
+        .map(|ifade| konumlu_ifade(ifade, tokenlar))
+        .transpose()
+}
+
+fn yapili_kalip_ic(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifade>, Tani> {
     let n = tokenlar.len();
     let kelime = |i: usize| -> Option<&str> {
         match &tokenlar[i].tur {
@@ -972,6 +1005,16 @@ pub(super) fn yalin_ad(ekli: &str) -> String {
 /// sözdizimi): `<argümanlar> için/ile <işlem adı>`; argümanlar "ve" ile ayrılır.
 /// En uzun ad önce denenir (determinizm).
 pub(super) fn cagri_kalibi(
+    tokenlar: &[Token],
+    satir: usize,
+    islemler: &[String],
+) -> Result<Option<Ifade>, Tani> {
+    cagri_kalibi_ic(tokenlar, satir, islemler)?
+        .map(|ifade| konumlu_ifade(ifade, tokenlar))
+        .transpose()
+}
+
+fn cagri_kalibi_ic(
     tokenlar: &[Token],
     satir: usize,
     islemler: &[String],
