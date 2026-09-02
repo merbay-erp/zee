@@ -176,10 +176,10 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **609** |
+| Rust + doctest vakası | **610** |
 | Tanı kimliği | **152 etkin + 3 ayrılmış** |
 | RFC | **25** (2 kabul, 21 geçici kabul, 2 taslak) |
-| ADR | **45** (45 kabul) |
+| ADR | **46** (46 kabul) |
 | Normatif spec bölümü | **24** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
@@ -308,6 +308,10 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   sahipleriyle kırıldı. Kalan paket/registry/tedarik SCC'si yalnız K-160'a ve
   1 Ekim 2026'ya kadar gerekçeli geçici kayıttır; yeni, bayat veya süresi
   dolmuş çevrim CI'da reddedilir. Açıklamasız production çevrimi sıfırdır.
+  K-151/ADR-048 bütün GitHub Actions `uses:` referanslarını incelenmiş 40
+  haneli commit SHA'lara sabitledi. Sürümlü pin kaydı workflow'larla birebir,
+  haftalık Dependabot yalnız inceleme PR'ı açar; hareketli `@v4`, `@stable`
+  ve kayıt dışı action tedarik kapısından geçemez. B-059 kapandı.
   K-107/ADR-019 `dillsp` girdisini 8 KiB başlık, 8 MiB gövde, 128 JSON
   derinliği ve 100 bin düğümle sınırlayıp Unicode parser olumsuzlarını kapattı.
   K-138/ADR-035 sayı ayrıştırmasını RFC 8259 durum makinesine taşıdı; sayısal

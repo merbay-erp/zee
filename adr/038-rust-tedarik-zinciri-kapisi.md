@@ -63,3 +63,9 @@ bağımlılık lisans kabul kümesiyle karıştırılamaz ve otomatik seçilemez
   güncellemesini aynı committe ister.
 - K-141 dört statik regresyon, gerçek iki-grafik `cargo deny` koşusu ve iki
   vendor üretimi + boş-cache offline derlemeyle B-054'ü kapatır.
+
+## K-151 tamamlayıcı karar
+
+ADR-048 Cargo bağımlılık zincirinden ayrı olarak bütün GitHub Actions
+`uses:` referanslarını immutable commit SHA'ya ve makine-okunur pin kaydına
+bağladı. Haftalık Dependabot yalnız güncelleme PR'ı açar; otomatik merge yoktur.

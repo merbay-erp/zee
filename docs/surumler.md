@@ -12,6 +12,15 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **GitHub Actions immutable SHA pinleri** (K-151, ADR-048): `checkout`,
+  `cache`, `upload-artifact` ve `rust-toolchain` kullanımlarının tamamı resmî
+  ref'lerden doğrulanmış 40 haneli commit SHA'lara sabitlendi. Pin TSV'si
+  workflow kullanımıyla birebir; hareketli/kısa/kayıt dışı ref fail-closed'dur.
+  Haftalık Dependabot yalnız inceleme PR'ı açar, otomatik merge yoktur.
+  Checkout credential saklamaz, token yetkisi `contents: read` ile sınırlıdır.
+  Bir supply-chain regresyonuyla envanter 610 test, 95 numaralı belge ve 46
+  kabul ADR'ye çıktı; B-059 kapandı. Dil davranışı ve normatif spec değişmedi.
+
 - **Açıklamasız dependency cycle sıfır** (K-150, ADR-047): Production exact
   graph'ı sahipler-arası SCC için fail-closed denetlenir. Tanı↔kaynak
   bütçesi çevrimi bağımsız `tani_politikasi`; checker↔HIR çevrimi private

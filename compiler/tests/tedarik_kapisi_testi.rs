@@ -1,3 +1,4 @@
+use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 
 fn depo() -> PathBuf {
@@ -9,6 +10,46 @@ fn depo() -> PathBuf {
 
 fn oku(goreli: &str) -> String {
     std::fs::read_to_string(depo().join(goreli)).expect("depo dosyası okunmalı")
+}
+
+fn github_action_pinleri() -> BTreeMap<String, String> {
+    let kayit = oku("docs/github-actions-pinleri-v1.tsv");
+    assert_eq!(kayit.lines().next(), Some("# zee-github-actions-pinleri-1"));
+    assert!(kayit.ends_with('\n') && !kayit.contains('\r'));
+    let mut pinler = BTreeMap::new();
+    for satir in kayit
+        .lines()
+        .filter(|satir| !satir.is_empty() && !satir.starts_with('#'))
+    {
+        let alanlar = satir.split('\t').collect::<Vec<_>>();
+        let [action, surum, commit, kaynak] = alanlar.as_slice() else {
+            panic!("action pin satırı dört alan taşımalı: {satir}");
+        };
+        assert!(!surum.is_empty(), "{action}: sürüm etiketi boş olamaz");
+        assert_eq!(
+            commit.len(),
+            40,
+            "{action}: commit SHA-1 uzunluğunda olmalı"
+        );
+        assert!(
+            commit
+                .bytes()
+                .all(|bayt| bayt.is_ascii_hexdigit() && !bayt.is_ascii_uppercase()),
+            "{action}: commit küçük hex olmalı"
+        );
+        assert_eq!(
+            *kaynak,
+            format!("https://github.com/{action}"),
+            "{action}: kaynak resmî action deposu olmalı"
+        );
+        assert!(
+            pinler
+                .insert((*action).to_string(), (*commit).to_string())
+                .is_none(),
+            "yinelenen action kaydı: {action}"
+        );
+    }
+    pinler
 }
 
 #[test]
@@ -92,6 +133,90 @@ fn ci_sabit_aracla_guncel_advisory_ve_offline_vendor_kapisi_kosar() {
         for satir in ana_ci.lines().filter(|satir| satir.contains(komut)) {
             assert!(satir.contains("--locked"), "kilitsiz CI komutu: {satir}");
         }
+    }
+}
+
+#[test]
+fn github_actionlari_incelenmis_immutable_commitlere_sabitlidir() {
+    let pinler = github_action_pinleri();
+    let workflow_dizini = depo().join(".github/workflows");
+    let mut dosyalar = std::fs::read_dir(workflow_dizini)
+        .expect("workflow dizini okunmalı")
+        .map(|girdi| girdi.expect("workflow girdisi okunmalı").path())
+        .filter(|yol| {
+            matches!(
+                yol.extension().and_then(|uzanti| uzanti.to_str()),
+                Some("yml" | "yaml")
+            )
+        })
+        .collect::<Vec<_>>();
+    dosyalar.sort();
+    assert!(!dosyalar.is_empty(), "en az bir workflow olmalı");
+
+    let mut gorulen = BTreeMap::<String, String>::new();
+    for yol in dosyalar {
+        let icerik = std::fs::read_to_string(&yol).expect("workflow okunmalı");
+        for satir in icerik.lines() {
+            let kirpilmis = satir.trim_start().trim_start_matches("- ");
+            let Some(kullanim) = kirpilmis.strip_prefix("uses:") else {
+                continue;
+            };
+            let kullanim = kullanim
+                .split_whitespace()
+                .next()
+                .expect("uses değeri olmalı")
+                .trim_matches(['\'', '"']);
+            if kullanim.starts_with("./") {
+                continue;
+            }
+            let (action, commit) = kullanim
+                .split_once('@')
+                .unwrap_or_else(|| panic!("{}: action ref'i eksik: {satir}", yol.display()));
+            assert_eq!(
+                commit.len(),
+                40,
+                "{}: hareketli action ref'i yasak: {kullanim}",
+                yol.display()
+            );
+            assert!(
+                commit
+                    .bytes()
+                    .all(|bayt| bayt.is_ascii_hexdigit() && !bayt.is_ascii_uppercase()),
+                "{}: action commit'i küçük hex olmalı: {kullanim}",
+                yol.display()
+            );
+            assert_eq!(
+                pinler.get(action).map(String::as_str),
+                Some(commit),
+                "{}: {action} incelenmiş pin kaydından farklı",
+                yol.display()
+            );
+            if let Some(eski) = gorulen.insert(action.to_string(), commit.to_string()) {
+                assert_eq!(eski, commit, "{action} workflow'larda farklı pinlenmiş");
+            }
+        }
+        let checkout = icerik.matches("actions/checkout@").count();
+        if checkout > 0 {
+            assert!(
+                icerik.matches("persist-credentials: false").count() >= checkout,
+                "{}: checkout kalıcı GitHub kimliği bırakmamalı",
+                yol.display()
+            );
+        }
+    }
+    assert_eq!(
+        gorulen, pinler,
+        "pin kaydı workflow kullanımıyla birebir olmalı"
+    );
+
+    let dependabot = oku(".github/dependabot.yml");
+    for soz in [
+        "package-ecosystem: \"github-actions\"",
+        "directory: \"/\"",
+        "interval: \"weekly\"",
+        "timezone: \"Europe/Istanbul\"",
+    ] {
+        assert!(dependabot.contains(soz), "Dependabot ayarı eksik: {soz}");
     }
 }
 

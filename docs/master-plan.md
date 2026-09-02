@@ -782,8 +782,10 @@ paket SHA-256 ve tedarik→runtime takvim ters bağımlılıkları `guvenlik` ve
 tanı↔kaynak bütçesi ve checker↔HIR SCC'lerini iki bağımsız model sahibiyle
 kırdı. Kalan paket/registry/tedarik SCC'si K-160 ve tarih sonlu izinle
 görünürdür; açıklamasız çevrim sıfır, B-058/V1-P0-33 kapalıdır. Üçüncü dış
-incelemenin bağlayıcı makine sırası K-151 supply-chain action SHA pinleme ile
-devam eder. B-001 çağrı sözdizimi ile B-002 gezme zihinsel modeli gerçek insan
+incelemenin K-151/ADR-048 adımı bütün workflow action'larını immutable SHA,
+birebir pin kaydı ve kontrollü Dependabot PR'ına bağladı; B-059 kapandı.
+Bağlayıcı makine sırası K-152 benchmark provenance düzeltmesiyle devam eder.
+B-001 çağrı sözdizimi ile B-002 gezme zihinsel modeli gerçek insan
 kanıtı gelmeden kapatılmaz veya yeni syntax kararıyla atlanmaz.
 # 40. Proje felsefesinin korunması
 Bu projenin başarısı yalnız compiler’ın çalışması değildir. Başarı; Türkçe konuşan bir çocuğun yabancı syntax bariyerine takılmadan algoritmik düşünceyle tanışması, aynı dilin yıllar sonra onu terk etmeye zorlamaması ve ekosistemin tek bir şirketin kapalı ürünü haline gelmemesidir.
