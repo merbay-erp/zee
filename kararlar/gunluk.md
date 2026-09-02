@@ -2166,6 +2166,38 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   reddedilir. Envanter 539 test,
   152 etkin + 3 ayrılmış tanıdır. B-029 ve V1-P1-07 kapandı.
 
+## K-137 — Production web durumu süreçler arasında ortaktır (2 Eyl)
+
+- **Sorun:** K-106 oturum kotasını, K-134 istek transaction'ını doğru
+  kurmuştu; fakat production oturumu process belleğindeydi. Worker geçişi ve
+  restart login'i kaybediyor, logout/revoke yayılmıyor, endpoint/CSRF ve
+  CPU-pahalı Argon2id için ortak oran sınırı bulunmuyordu. Ayrıca loopback
+  proxy arkasında socket eşinin `127.0.0.1` olması gerçek istemci kimliği
+  değildi.
+- **Karar:** `WebGuvenligi`, saklama ayrıntısını `Depo` sınırından tüketir.
+  Deneysel kip süreç içi adaptörü korur; `--web-proxy` proje kökündeki
+  `.zee/web-durumu-v1.json` kalıcı adaptörünü kullanır. Oturum mutation'ı ve
+  oran sayacı süreçler arası kilit + eski-byte karşılaştırması + atomik replace
+  CAS döngüsüdür. Bozuk şema, symlink, kaynak aşımı ve güvenle yönetilemeyen
+  kapasite fail-closed 503'tür.
+- **Kimlik ve oran:** Proxy istemcinin bütün proxy başlıklarını silip tek-hop
+  `Forwarded: for=<IP>;proto=https;host=<host>` kurar. Runtime IP'yi
+  `IpAddr` ile kanonikler; XFF kimlik değildir. İstemci+yöntem+sorgusuz path
+  100/60 sn, CSRF 60/60 sn, Argon2id doğrulaması 5/300 sn ortak sabit
+  penceredir. Altıncı parola denemesi Argon2id çalışmadan 429 olur; etkin sayaç
+  tahliyesiyle eşik delinemaz.
+- **Worker modeli:** Stage 0 process başına bilinçli tek worker'dır.
+  Production concurrency'si aynı depoyu paylaşan N ayrı `dil` süreci ve
+  `--web-worker-port` ile farklı loopback portlardan kurulur. Aynı process
+  içinde thread-pool sözü verilmez; çok-hostlu harici backend ileriki
+  adaptördür.
+- **Kanıt:** İki gerçek CLI süreci A login→B authenticated GET, A restart,
+  B logout→A revoke ve iki sürece dağıtılmış altıncı yanlış parola denemesinin
+  429 olmasını uçtan uca doğrular. Bağımsız depo testleri restart/expiry,
+  koşullu rollback, bozuk JSON/symlink, Unix 0700/0600 izinleri ve on threadde
+  yüz artışın atomik eşiğini korur. Envanter 547 test, 152 etkin + 3 ayrılmış
+  tanı ve 81 numaralı belgedir. B-046 kapandı.
+
 ---
 
 ## Sonraki adım
@@ -2174,6 +2206,6 @@ Korpus 10 öğrenci + 5 profesyonel usability oturumuna (Hafta 12 hedefi, erkeni
 Hafta 2'de kağıt üstünde) sesli okutulacak; her kayıt için "doğal mı /
 deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
-Makine hattında K-136 exact registry bağımlılığını manifest, kilit v3,
-doğrulanmış kaynak kurulumu ve CLI'a bağlayarak B-029/V1-P1-07'yi kapattı.
-Sırada K-137 ile B-046 web rate-limit ve çok süreçli oturum sınırı vardır.
+Makine hattında K-137 ortak kalıcı web oturum/rate-limit deposunu, kanonik
+proxy kimliğini ve tek-worker/N süreç modelini bağlayarak B-046'yı kapattı.
+Sırada K-138 ile B-051 kesin JSON-RPC ayrıştırma sınırı vardır.

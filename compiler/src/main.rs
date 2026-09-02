@@ -29,7 +29,10 @@ const HTTP_ISTEK_OKUMA_SURESI: std::time::Duration = std::time::Duration::from_s
 enum WebModu {
     Kapali,
     Deneysel,
-    GuvenliProxy(GuvenliOrigin),
+    GuvenliProxy {
+        origin: GuvenliOrigin,
+        worker_kapi: Option<u16>,
+    },
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -64,6 +67,30 @@ impl GuvenliOrigin {
 }
 
 fn web_modunu_ayikla(argumanlar: &mut Vec<String>) -> Result<WebModu, String> {
+    let worker_yerleri = argumanlar
+        .iter()
+        .enumerate()
+        .filter(|(_, a)| *a == "--web-worker-port")
+        .map(|(i, _)| i)
+        .collect::<Vec<_>>();
+    if worker_yerleri.len() > 1 {
+        return Err("--web-worker-port birden çok kez verilemez".into());
+    }
+    let worker_kapi = if let Some(yer) = worker_yerleri.first().copied() {
+        let deger = argumanlar
+            .get(yer + 1)
+            .ok_or_else(|| "--web-worker-port ardından 1..65535 kapısı ister".to_string())?
+            .parse::<u16>()
+            .map_err(|_| "--web-worker-port 1..65535 arasında olmalı".to_string())?;
+        if deger == 0 {
+            return Err("--web-worker-port 1..65535 arasında olmalı".into());
+        }
+        argumanlar.remove(yer + 1);
+        argumanlar.remove(yer);
+        Some(deger)
+    } else {
+        None
+    };
     let deneysel_yerleri = argumanlar
         .iter()
         .enumerate()
@@ -91,7 +118,13 @@ fn web_modunu_ayikla(argumanlar: &mut Vec<String>) -> Result<WebModu, String> {
             .clone();
         argumanlar.remove(yer + 1);
         argumanlar.remove(yer);
-        return GuvenliOrigin::ayristir(&origin).map(WebModu::GuvenliProxy);
+        return GuvenliOrigin::ayristir(&origin).map(|origin| WebModu::GuvenliProxy {
+            origin,
+            worker_kapi,
+        });
+    }
+    if worker_kapi.is_some() {
+        return Err("--web-worker-port yalnız --web-proxy ile kullanılabilir".into());
     }
     if let Some(yer) = deneysel {
         argumanlar.remove(yer);
@@ -161,8 +194,11 @@ fn govde() -> ExitCode {
                 match web_modu {
                     WebModu::Kapali => dosya_ile(&argumanlar, calistir_komutu),
                     WebModu::Deneysel => dosya_ile(&argumanlar, calistir_deneysel_web_komutu),
-                    WebModu::GuvenliProxy(origin) => dosya_ile(&argumanlar, |girdi| {
-                        calistir_guvenli_web_komutu(girdi, origin)
+                    WebModu::GuvenliProxy {
+                        origin,
+                        worker_kapi,
+                    } => dosya_ile(&argumanlar, |girdi| {
+                        calistir_guvenli_web_komutu(girdi, origin, worker_kapi)
                     }),
                 }
             }
@@ -205,7 +241,7 @@ fn kullanim() {
     eprintln!("  dil çalıştır <dosya|proje> programı çalıştırır");
     eprintln!("  dil çalıştır --güvenli ... çocuk modu: ağ kapalı, dosyalar klasörle sınırlı");
     eprintln!("  dil çalıştır --deneysel-web ... localhost web prototipine açıkça izin verir");
-    eprintln!("  dil çalıştır --web-proxy https://host ... güvenli yerel TLS-proxy profili");
+    eprintln!("  dil çalıştır --web-proxy https://host [--web-worker-port N] ... güvenli yerel TLS-proxy profili");
     eprintln!("  dil parola-özeti           parolayı gizli okuyup Argon2id PHC özeti üretir");
     eprintln!("  dil denetle <dosya|proje>  çalıştırmadan denetler (--json: makine çıktısı)");
     eprintln!("  dil dene <dosya|proje>     test bloklarını koşar");
@@ -1301,7 +1337,6 @@ struct BekleyenCerez {
 }
 
 struct WebIstekYedegi {
-    web_guvenligi: dil::web_guvenligi::WebGuvenligi,
     bekleyen_cerezler: Vec<BekleyenCerez>,
     bekleyen_silinen_cerezler: Vec<String>,
 }
@@ -1332,6 +1367,13 @@ impl GercekIo {
             .map(|s| s.as_nanos() as u64)
             .unwrap_or(0x5EED)
             | 1;
+        let web_guvenligi = if matches!(&web_modu, WebModu::GuvenliProxy { .. }) {
+            dil::web_guvenligi::WebGuvenligi::kalici(
+                dosya_siniri_koku.join(".zee/web-durumu-v1.json"),
+            )
+        } else {
+            dil::web_guvenligi::WebGuvenligi::yeni()
+        };
         GercekIo {
             bekleyen_cerezler: Vec::new(),
             bekleyen_silinen_cerezler: Vec::new(),
@@ -1345,7 +1387,7 @@ impl GercekIo {
             bekleyen_baglanti_izni: None,
             bekleyen_head: false,
             eylem_yedekleri: Vec::new(),
-            web_guvenligi: dil::web_guvenligi::WebGuvenligi::yeni(),
+            web_guvenligi,
             web_istek_yedegi: None,
             bekleyen_web_yaniti: None,
             politika,
@@ -1388,7 +1430,14 @@ impl GercekIo {
 
     fn guvenli_proxy_origin(&self) -> Option<&GuvenliOrigin> {
         match &self.web_modu {
-            WebModu::GuvenliProxy(origin) => Some(origin),
+            WebModu::GuvenliProxy { origin, .. } => Some(origin),
+            WebModu::Kapali | WebModu::Deneysel => None,
+        }
+    }
+
+    fn web_worker_kapisi(&self) -> Option<u16> {
+        match &self.web_modu {
+            WebModu::GuvenliProxy { worker_kapi, .. } => *worker_kapi,
             WebModu::Kapali | WebModu::Deneysel => None,
         }
     }
@@ -1525,16 +1574,56 @@ fn guvenli_proxy_istegini_denetle(
     istek: &str,
     origin: &GuvenliOrigin,
     yontem: &str,
-) -> Result<(), (u16, &'static str)> {
+) -> Result<String, (u16, &'static str)> {
     let host = tek_http_basligi(istek, "Host").ok_or((400, "tek bir Host başlığı gerekli"))?;
     if !host.eq_ignore_ascii_case(&origin.host) {
         return Err((400, "Host güvenli web origin'iyle eşleşmiyor"));
     }
-    let proto = tek_http_basligi(istek, "X-Forwarded-Proto")
-        .ok_or((426, "istek güvenilir HTTPS proxy'sinden gelmedi"))?;
-    if !proto.eq_ignore_ascii_case("https") {
+    let forwarded_degerleri = http_baslik_degerleri(istek, "Forwarded");
+    let forwarded = match forwarded_degerleri.as_slice() {
+        [] => return Err((426, "güvenilir Forwarded başlığı gerekli")),
+        [deger] => *deger,
+        _ => return Err((400, "Forwarded başlığı yinelenemez")),
+    };
+    if forwarded.contains(',') {
+        return Err((400, "Forwarded yalnız tek güvenilir proxy halkası taşımalı"));
+    }
+    let mut istemci = None;
+    let mut proto = None;
+    let mut forwarded_host = None;
+    for alan in forwarded.split(';') {
+        let (ad, deger) = alan
+            .trim()
+            .split_once('=')
+            .ok_or((400, "Forwarded parametresi geçersiz"))?;
+        let hedef = if ad.eq_ignore_ascii_case("for") {
+            &mut istemci
+        } else if ad.eq_ignore_ascii_case("proto") {
+            &mut proto
+        } else if ad.eq_ignore_ascii_case("host") {
+            &mut forwarded_host
+        } else {
+            continue;
+        };
+        if hedef.replace(deger.trim()).is_some() {
+            return Err((400, "Forwarded parametresi yinelenemez"));
+        }
+    }
+    if !proto.is_some_and(|deger| deger.eq_ignore_ascii_case("https")) {
         return Err((426, "güvenli web profili HTTPS gerektiriyor"));
     }
+    if !forwarded_host.is_some_and(|host| host.eq_ignore_ascii_case(&origin.host)) {
+        return Err((400, "Forwarded host güvenli web origin'iyle eşleşmiyor"));
+    }
+    let istemci = istemci.ok_or((400, "Forwarded for istemci kimliği gerekli"))?;
+    let istemci = istemci.trim_matches('"');
+    let istemci = istemci
+        .strip_prefix('[')
+        .and_then(|deger| deger.strip_suffix(']'))
+        .unwrap_or(istemci);
+    let istemci = istemci
+        .parse::<std::net::IpAddr>()
+        .map_err(|_| (400, "Forwarded for kanonik IP adresi olmalı"))?;
     let guvenli_yontem = matches!(
         yontem.to_ascii_uppercase().as_str(),
         "GET" | "HEAD" | "OPTIONS"
@@ -1546,7 +1635,7 @@ fn guvenli_proxy_istegini_denetle(
             return Err((403, "Origin güvenli web origin'iyle eşleşmiyor"));
         }
     }
-    Ok(())
+    Ok(istemci.to_string())
 }
 
 fn ham_http_hatasi_gonder(
@@ -1583,6 +1672,7 @@ fn http_durum_aciklamasi(durum: u16) -> &'static str {
         405 => "Method Not Allowed",
         413 => "Payload Too Large",
         426 => "Upgrade Required",
+        429 => "Too Many Requests",
         431 => "Request Header Fields Too Large",
         500 => "Internal Server Error",
         503 => "Service Unavailable",
@@ -1605,6 +1695,13 @@ fn son_tarihli_soket_oku(
     akis.read(tampon)
 }
 
+fn web_duvar_saati_ms() -> i64 {
+    std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map(|sure| sure.as_millis().min(i64::MAX as u128) as i64)
+        .unwrap_or(0)
+}
+
 fn program_argumanlari() -> Vec<String> {
     let mut kaynak_goruldu = false;
     let mut proxy_originini_atla = false;
@@ -1615,7 +1712,10 @@ fn program_argumanlari() -> Vec<String> {
                 proxy_originini_atla = false;
                 return None;
             }
-            if arguman == "--web-proxy" || arguman == "--güvenli-web-proxy" {
+            if arguman == "--web-proxy"
+                || arguman == "--güvenli-web-proxy"
+                || arguman == "--web-worker-port"
+            {
                 proxy_originini_atla = true;
                 None
             } else if arguman == "--güvenli"
@@ -1720,13 +1820,14 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         if self.web_modu == WebModu::Kapali {
             return Err("web yüzeyi kapalı; prototip için `--deneysel-web`, üretim için `--web-proxy https://host` kullan".into());
         }
-        let dinleyici =
-            std::net::TcpListener::bind(("127.0.0.1", kapi as u16)).map_err(|e| e.to_string())?;
+        let gercek_kapi = self.web_worker_kapisi().map(i64::from).unwrap_or(kapi);
+        let dinleyici = std::net::TcpListener::bind(("127.0.0.1", gercek_kapi as u16))
+            .map_err(|e| e.to_string())?;
         match &self.web_modu {
             WebModu::Deneysel => println!("Sunucu dinliyor: http://127.0.0.1:{}", kapi),
-            WebModu::GuvenliProxy(origin) => println!(
+            WebModu::GuvenliProxy { origin, .. } => println!(
                 "Sunucu dinliyor: {} (yerel proxy hedefi http://127.0.0.1:{})",
-                origin.tam, kapi
+                origin.tam, gercek_kapi
             ),
             WebModu::Kapali => {
                 return Err("web yüzeyi kapalıyken sunucu kurulamaz".into());
@@ -1738,7 +1839,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
     fn istek_al(&mut self) -> Option<String> {
         let dinleyici = self.dinleyici.as_ref()?;
         'istekler: loop {
-            let (mut akis, _) = dinleyici.accept().ok()?;
+            let (mut akis, es) = dinleyici.accept().ok()?;
             let https = self.guvenli_proxy_origin().is_some();
             let baglanti_izni = match dil::kaynak_sinirlari::baglanti_izni_al() {
                 Ok(izin) => izin,
@@ -1927,20 +2028,23 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                     );
                     continue;
                 }
-                if let Some(origin) = self.guvenli_proxy_origin() {
-                    if let Err((durum, mesaj)) =
-                        guvenli_proxy_istegini_denetle(&istek, origin, yontem)
-                    {
-                        ham_http_hatasi_gonder(
-                            &mut akis,
-                            durum,
-                            mesaj,
-                            yontem.eq_ignore_ascii_case("HEAD"),
-                            true,
-                        );
-                        continue;
+                let istemci_kimligi = if let Some(origin) = self.guvenli_proxy_origin() {
+                    match guvenli_proxy_istegini_denetle(&istek, origin, yontem) {
+                        Ok(kimlik) => kimlik,
+                        Err((durum, mesaj)) => {
+                            ham_http_hatasi_gonder(
+                                &mut akis,
+                                durum,
+                                mesaj,
+                                yontem.eq_ignore_ascii_case("HEAD"),
+                                true,
+                            );
+                            continue;
+                        }
                     }
-                }
+                } else {
+                    es.ip().to_string()
+                };
                 let govde = istek.split_once("\r\n\r\n").map(|(_, g)| g).unwrap_or("");
                 // Cookie başlığı "çerez ..." satırı olarak taşınır (K-052).
                 let cerez_degerleri = http_baslik_degerleri(&istek, "Cookie");
@@ -1961,14 +2065,63 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                     .find_map(|(ad, deger)| {
                         (ad == self.oturum_cerez_adi()).then_some(deger.trim())
                     });
-                let an = self.baslangic.elapsed().as_millis() as i64;
+                let an = web_duvar_saati_ms();
                 self.web_istek_yedegi = Some(WebIstekYedegi {
-                    web_guvenligi: self.web_guvenligi.clone(),
                     bekleyen_cerezler: self.bekleyen_cerezler.clone(),
                     bekleyen_silinen_cerezler: self.bekleyen_silinen_cerezler.clone(),
                 });
                 self.bekleyen_web_yaniti = None;
-                self.web_guvenligi.istegi_baslat(oturum, an);
+                if let Err(hata) = self.web_guvenligi.istegi_baslat_kimlikle(
+                    oturum,
+                    &istemci_kimligi,
+                    an,
+                ) {
+                    ham_http_hatasi_gonder(
+                        &mut akis,
+                        503,
+                        &format!("web güvenlik deposuna erişilemedi: {hata}"),
+                        yontem.eq_ignore_ascii_case("HEAD"),
+                        https,
+                    );
+                    self.web_istek_yedegi = None;
+                    continue;
+                }
+                let kapsam = format!(
+                    "{} {}",
+                    yontem.to_ascii_uppercase(),
+                    hedef.split('?').next().unwrap_or(hedef)
+                );
+                match self.web_guvenligi.rate_limit_artir(
+                    dil::web_guvenligi::RateLimitTuru::Ucnokta,
+                    &kapsam,
+                    an,
+                ) {
+                    Ok(karar) if karar.izinli => {}
+                    Ok(_) => {
+                        ham_http_hatasi_gonder(
+                            &mut akis,
+                            429,
+                            "uç nokta oran sınırı aşıldı",
+                            yontem.eq_ignore_ascii_case("HEAD"),
+                            https,
+                        );
+                        self.web_guvenligi.istegi_geri_al();
+                        self.web_istek_yedegi = None;
+                        continue;
+                    }
+                    Err(hata) => {
+                        ham_http_hatasi_gonder(
+                            &mut akis,
+                            503,
+                            &format!("oran sınırı deposuna erişilemedi: {hata}"),
+                            yontem.eq_ignore_ascii_case("HEAD"),
+                            https,
+                        );
+                        self.web_guvenligi.istegi_geri_al();
+                        self.web_istek_yedegi = None;
+                        continue;
+                    }
+                }
                 self.bekleyen_akis = Some(akis);
                 self.bekleyen_baglanti_izni = Some(baglanti_izni);
                 self.bekleyen_head = yontem.eq_ignore_ascii_case("HEAD");
@@ -1987,7 +2140,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             return Ok(());
         };
         let Some(taslak) = self.bekleyen_web_yaniti.take() else {
-            self.web_guvenligi = yedek.web_guvenligi;
+            self.web_guvenligi.istegi_geri_al();
             self.bekleyen_cerezler = yedek.bekleyen_cerezler;
             self.bekleyen_silinen_cerezler = yedek.bekleyen_silinen_cerezler;
             self.bekleyen_akis = None;
@@ -1995,17 +2148,34 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             self.bekleyen_head = false;
             return Ok(());
         };
+        let commit = match self.web_guvenligi.istegi_tamamla(web_duvar_saati_ms()) {
+            Ok(commit) => commit,
+            Err(hata) => {
+                eprintln!("Web güvenlik durumu commit edilemedi: {hata}");
+                self.web_guvenligi.istegi_geri_al();
+                self.bekleyen_cerezler = yedek.bekleyen_cerezler;
+                self.bekleyen_silinen_cerezler = yedek.bekleyen_silinen_cerezler;
+                return self.web_yanit_taslagini_yaz(WebYanitTaslagi::Durum(
+                    503,
+                    "web güvenlik durumu güvenle kaydedilemedi".into(),
+                ));
+            }
+        };
         if let Err(hata) = self.web_yanit_taslagini_yaz(taslak) {
-            self.web_guvenligi = yedek.web_guvenligi;
             self.bekleyen_cerezler = yedek.bekleyen_cerezler;
             self.bekleyen_silinen_cerezler = yedek.bekleyen_silinen_cerezler;
-            return Err(hata);
+            return match self.web_guvenligi.commiti_geri_al(commit) {
+                Ok(()) => Err(hata),
+                Err(geri_alma) => Err(format!(
+                    "{hata}; web oturum transaction'ı geri alınamadı: {geri_alma}"
+                )),
+            };
         }
         Ok(())
     }
     fn istek_islemini_geri_al(&mut self) {
         if let Some(yedek) = self.web_istek_yedegi.take() {
-            self.web_guvenligi = yedek.web_guvenligi;
+            self.web_guvenligi.istegi_geri_al();
             self.bekleyen_cerezler = yedek.bekleyen_cerezler;
             self.bekleyen_silinen_cerezler = yedek.bekleyen_silinen_cerezler;
         }
@@ -2103,13 +2273,28 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         csrf: Option<&str>,
         csrf_gerekli: bool,
     ) -> Result<(), dil::web_guvenligi::WebReddi> {
-        let an = self.baslangic.elapsed().as_millis() as i64;
+        let an = web_duvar_saati_ms();
+        if csrf_gerekli {
+            let karar = self
+                .web_guvenligi
+                .rate_limit_artir(dil::web_guvenligi::RateLimitTuru::Csrf, "csrf", an)
+                .map_err(|_| dil::web_guvenligi::WebReddi {
+                    durum: 503,
+                    mesaj: "CSRF oran sınırı deposuna erişilemedi",
+                })?;
+            if !karar.izinli {
+                return Err(dil::web_guvenligi::WebReddi {
+                    durum: 429,
+                    mesaj: "çok fazla CSRF doğrulama isteği",
+                });
+            }
+        }
         self.web_guvenligi.denetle(erisim, csrf, csrf_gerekli, an)
     }
     fn csrf_belirteci(&mut self) -> Result<String, String> {
         self.politika
             .gerektir(dil::yetkinlik::Yetkinlik::WebOturumu)?;
-        let an = self.baslangic.elapsed().as_millis() as i64;
+        let an = web_duvar_saati_ms();
         let (csrf, yeni) = self
             .web_guvenligi
             .csrf_belirteci(an, dil::guvenlik::guvenli_belirtec_uret)?;
@@ -2121,7 +2306,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
     fn oturum_ac(&mut self, kullanici: &str, rol: &str) -> Result<(), String> {
         self.politika
             .gerektir(dil::yetkinlik::Yetkinlik::WebOturumu)?;
-        let an = self.baslangic.elapsed().as_millis() as i64;
+        let an = web_duvar_saati_ms();
         let yeni = self.web_guvenligi.oturum_ac(
             kullanici.to_string(),
             rol.to_string(),
@@ -2140,9 +2325,31 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         Ok(())
     }
     fn parola_dogrula(&mut self, parola: &str, ozet: &str) -> bool {
-        self.politika
+        if !self
+            .politika
             .izin_verir(dil::yetkinlik::Yetkinlik::Kriptografi)
-            && dil::guvenlik::parola_dogrula(parola, ozet)
+        {
+            return false;
+        }
+        if self.web_istek_yedegi.is_none() {
+            return dil::guvenlik::parola_dogrula(parola, ozet);
+        }
+        let karar = self.web_guvenligi.rate_limit_artir(
+            dil::web_guvenligi::RateLimitTuru::Giris,
+            "parola",
+            web_duvar_saati_ms(),
+        );
+        match karar {
+            Ok(karar) if karar.izinli => dil::guvenlik::parola_dogrula(parola, ozet),
+            Ok(_) => {
+                self.durum_yaniti_gonder(429, "çok fazla giriş denemesi");
+                false
+            }
+            Err(_) => {
+                self.durum_yaniti_gonder(503, "giriş oran sınırı deposuna erişilemedi");
+                false
+            }
+        }
     }
     fn sensor_acik_mi(&mut self, _ad: &str) -> bool {
         // Donanım bağlı değil: simülatörde sensörler kapalı okunur (bölüm 17).
@@ -2176,12 +2383,23 @@ fn calistir_deneysel_web_komutu(girdi: &KaynakGirdisi) -> ExitCode {
     calistir_gercek_io_ile(girdi, WebModu::Deneysel, girdi.politikasi())
 }
 
-fn calistir_guvenli_web_komutu(girdi: &KaynakGirdisi, origin: GuvenliOrigin) -> ExitCode {
+fn calistir_guvenli_web_komutu(
+    girdi: &KaynakGirdisi,
+    origin: GuvenliOrigin,
+    worker_kapi: Option<u16>,
+) -> ExitCode {
     eprintln!(
         "Güvenli web profili: yalnız 127.0.0.1 üzerindeki HTTPS reverse proxy güvenilir; origin {}.",
         origin.tam
     );
-    calistir_gercek_io_ile(girdi, WebModu::GuvenliProxy(origin), girdi.politikasi())
+    calistir_gercek_io_ile(
+        girdi,
+        WebModu::GuvenliProxy {
+            origin,
+            worker_kapi,
+        },
+        girdi.politikasi(),
+    )
 }
 
 /// Çocuk modu (K-047): ağ/sunucu kapalı, dosyalar çalışma klasörüyle sınırlı.
@@ -2302,7 +2520,7 @@ mod web_profili_testleri {
         ];
         assert!(matches!(
             web_modunu_ayikla(&mut argumanlar),
-            Ok(WebModu::GuvenliProxy(_))
+            Ok(WebModu::GuvenliProxy { .. })
         ));
         assert_eq!(argumanlar, vec!["çalıştır", "uygulama.dil"]);
 
@@ -2313,19 +2531,39 @@ mod web_profili_testleri {
             "uygulama.dil".into(),
         ];
         assert!(web_modunu_ayikla(&mut tekrar).is_err());
+
+        let mut worker = vec![
+            "çalıştır".into(),
+            "--web-worker-port".into(),
+            "18092".into(),
+            "--web-proxy".into(),
+            "https://panel.example".into(),
+            "uygulama.dil".into(),
+        ];
+        assert!(matches!(
+            web_modunu_ayikla(&mut worker),
+            Ok(WebModu::GuvenliProxy {
+                worker_kapi: Some(18092),
+                ..
+            })
+        ));
+        assert_eq!(worker, vec!["çalıştır", "uygulama.dil"]);
     }
 
     #[test]
     fn proxy_host_proto_ve_unsafe_origini_birlikte_dogrular() {
         let origin = GuvenliOrigin::ayristir("https://panel.example").unwrap();
-        let get = "GET / HTTP/1.1\r\nHost: panel.example\r\nX-Forwarded-Proto: https\r\n\r\n";
-        assert!(guvenli_proxy_istegini_denetle(get, &origin, "GET").is_ok());
+        let get = "GET / HTTP/1.1\r\nHost: panel.example\r\nForwarded: for=203.0.113.7;proto=https;host=panel.example\r\n\r\n";
+        assert_eq!(
+            guvenli_proxy_istegini_denetle(get, &origin, "GET").unwrap(),
+            "203.0.113.7"
+        );
 
-        let post = "POST /kaydet HTTP/1.1\r\nHost: panel.example\r\nX-Forwarded-Proto: https\r\nOrigin: https://panel.example\r\n\r\n";
+        let post = "POST /kaydet HTTP/1.1\r\nHost: panel.example\r\nForwarded: for=2001:db8::7;proto=https;host=panel.example\r\nOrigin: https://panel.example\r\n\r\n";
         assert!(guvenli_proxy_istegini_denetle(post, &origin, "POST").is_ok());
 
         let originsiz =
-            "POST /kaydet HTTP/1.1\r\nHost: panel.example\r\nX-Forwarded-Proto: https\r\n\r\n";
+            "POST /kaydet HTTP/1.1\r\nHost: panel.example\r\nForwarded: for=203.0.113.7;proto=https;host=panel.example\r\n\r\n";
         assert_eq!(
             guvenli_proxy_istegini_denetle(originsiz, &origin, "POST")
                 .unwrap_err()
@@ -2333,16 +2571,37 @@ mod web_profili_testleri {
             403
         );
         let sahte_proto =
-            "GET / HTTP/1.1\r\nHost: panel.example\r\nX-Forwarded-Proto: http\r\n\r\n";
+            "GET / HTTP/1.1\r\nHost: panel.example\r\nForwarded: for=203.0.113.7;proto=http;host=panel.example\r\n\r\n";
         assert_eq!(
             guvenli_proxy_istegini_denetle(sahte_proto, &origin, "GET")
                 .unwrap_err()
                 .0,
             426
         );
-        let cift_host = "GET / HTTP/1.1\r\nHost: panel.example\r\nHost: saldirgan.example\r\nX-Forwarded-Proto: https\r\n\r\n";
+        let cift_host = "GET / HTTP/1.1\r\nHost: panel.example\r\nHost: saldirgan.example\r\nForwarded: for=203.0.113.7;proto=https;host=panel.example\r\n\r\n";
         assert_eq!(
             guvenli_proxy_istegini_denetle(cift_host, &origin, "GET")
+                .unwrap_err()
+                .0,
+            400
+        );
+        let sahte_zincir = "GET / HTTP/1.1\r\nHost: panel.example\r\nForwarded: for=198.51.100.1;proto=https;host=panel.example, for=127.0.0.1\r\n\r\n";
+        assert_eq!(
+            guvenli_proxy_istegini_denetle(sahte_zincir, &origin, "GET")
+                .unwrap_err()
+                .0,
+            400
+        );
+        let xff_tek_basina = "GET / HTTP/1.1\r\nHost: panel.example\r\nX-Forwarded-For: 203.0.113.7\r\nX-Forwarded-Proto: https\r\n\r\n";
+        assert_eq!(
+            guvenli_proxy_istegini_denetle(xff_tek_basina, &origin, "GET")
+                .unwrap_err()
+                .0,
+            426
+        );
+        let cift_forwarded = "GET / HTTP/1.1\r\nHost: panel.example\r\nForwarded: for=203.0.113.7;proto=https;host=panel.example\r\nForwarded: for=198.51.100.2;proto=https;host=panel.example\r\n\r\n";
+        assert_eq!(
+            guvenli_proxy_istegini_denetle(cift_forwarded, &origin, "GET")
                 .unwrap_err()
                 .0,
             400
@@ -2391,7 +2650,6 @@ mod web_profili_testleri {
         );
         io.bekleyen_akis = Some(sunucu);
         io.web_istek_yedegi = Some(WebIstekYedegi {
-            web_guvenligi: io.web_guvenligi.clone(),
             bekleyen_cerezler: Vec::new(),
             bekleyen_silinen_cerezler: Vec::new(),
         });
@@ -2405,7 +2663,7 @@ mod web_profili_testleri {
             std::io::ErrorKind::TimedOut | std::io::ErrorKind::WouldBlock
         ));
         io.istek_islemini_geri_al();
-        assert_eq!(io.web_guvenligi.oturum_sayisi(), 0);
+        assert_eq!(io.web_guvenligi.oturum_sayisi().unwrap(), 0);
         assert!(io.bekleyen_cerezler.is_empty());
         io.durum_yaniti_gonder(504, "zaman aşımı");
 
@@ -2434,7 +2692,6 @@ mod web_profili_testleri {
         );
         io.bekleyen_akis = Some(sunucu);
         io.web_istek_yedegi = Some(WebIstekYedegi {
-            web_guvenligi: io.web_guvenligi.clone(),
             bekleyen_cerezler: Vec::new(),
             bekleyen_silinen_cerezler: Vec::new(),
         });
@@ -2442,8 +2699,51 @@ mod web_profili_testleri {
         io.yanit_gonder("başarı");
 
         assert!(io.istek_islemini_tamamla().is_err());
-        assert_eq!(io.web_guvenligi.oturum_sayisi(), 0);
+        assert_eq!(io.web_guvenligi.oturum_sayisi().unwrap(), 0);
         assert!(io.bekleyen_cerezler.is_empty());
+
+        let gecici = std::env::temp_dir().join(format!(
+            "zee-web-commit-{}-{}",
+            std::process::id(),
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap()
+                .as_nanos()
+        ));
+        std::fs::create_dir(&gecici).unwrap();
+        let origin = GuvenliOrigin::ayristir("https://panel.example").unwrap();
+        let mut io = GercekIo::yeni_argumanlarla(
+            &gecici,
+            &gecici,
+            WebModu::GuvenliProxy {
+                origin,
+                worker_kapi: None,
+            },
+            Vec::new(),
+            dil::yetkinlik::YetkinlikPolitikasi::gelistirici(),
+        );
+        io.web_guvenligi
+            .istegi_baslat_kimlikle(None, "192.0.2.1", web_duvar_saati_ms())
+            .unwrap();
+        let dinleyici = std::net::TcpListener::bind(("127.0.0.1", 0)).unwrap();
+        let adres = dinleyici.local_addr().unwrap();
+        let mut istemci = std::net::TcpStream::connect(adres).unwrap();
+        let (sunucu, _) = dinleyici.accept().unwrap();
+        io.bekleyen_akis = Some(sunucu);
+        io.web_istek_yedegi = Some(WebIstekYedegi {
+            bekleyen_cerezler: Vec::new(),
+            bekleyen_silinen_cerezler: Vec::new(),
+        });
+        io.oturum_ac("Mustafa", "yönetici").unwrap();
+        io.yanit_gonder("commit edilmemeli");
+        std::fs::write(gecici.join(".zee/web-durumu-v1.json"), b"{bozuk").unwrap();
+        io.istek_islemini_tamamla()
+            .expect("depo commit hatası kontrollü 503 olmalı");
+        let mut yanit = String::new();
+        istemci.read_to_string(&mut yanit).unwrap();
+        assert!(yanit.starts_with("HTTP/1.1 503 Service Unavailable"));
+        assert!(!yanit.contains("commit edilmemeli"));
+        std::fs::remove_dir_all(&gecici).unwrap();
     }
 
     #[test]

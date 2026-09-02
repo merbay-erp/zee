@@ -1,9 +1,10 @@
 # RFC-0017 — Web oturumu, yetki, CSRF ve güvenilir proxy profili
 
-- **Durum:** geçici kabul — K-088 güvenlik profili ve K-134 istek transaction'ı
-  saldırı/cancellation regresyonlarına bağlandı
+- **Durum:** geçici kabul — K-088 güvenlik profili, K-134 istek transaction'ı
+  ve K-137 ortak durum/rate-limit sınırı saldırı regresyonlarına bağlandı
 - **Tarih:** 1 Eylül 2026
-- **İlgili kararlar:** K-082, K-087, K-088, K-134, ADR-010; V1-P0-03
+- **İlgili kararlar:** K-082, K-087, K-088, K-134, K-137, ADR-010,
+  ADR-018, ADR-034; B-046, V1-P0-03
 - **Normatif metin:** spec/12
 
 ## Problem
@@ -36,6 +37,19 @@ kapısı olmalıdır.
 9. Bir istekteki oturum/çerez mutation'ı ilk yanıtla birlikte tamponlanır.
    Yalnız rota başarıyla bitip socket yanıtı eksiksiz yazılırsa commit edilir;
    deadline, runtime/yazma hatası veya yanıtsız rota hepsini geri alır.
+10. `--web-proxy` production profili oturum, revoke, expiry ve oran
+    sayaçlarını proje kökündeki kalıcı ortak depoda atomik tutar. Deneysel web
+    süreç içi adaptörü kullanabilir.
+11. Kanonik istemci kimliği yalnız güvenilir loopback proxy'nin yeniden
+    kurduğu tek-hop `Forwarded` başlığındaki IP'dir. İstemciden taşınmış proxy
+    başlıkları ve `X-Forwarded-For` kimlik kaynağı değildir.
+12. Production profili istemci+yöntem+sorgusuz path için 60 saniyede 100,
+    CSRF için 60 saniyede 60 ve Argon2id parola doğrulaması için 300 saniyede
+    5 denemelik ortak atomik pencere uygular. Aşım 429'dur; depo/kapasite
+    güvenle yönetilemiyorsa 503'tür.
+13. V1 sunucusu process başına tek worker'dır. Eşzamanlı kapasite, aynı
+    depoyu paylaşan N ayrı süreç ve her süreç için `--web-worker-port` ile
+    kurulur; process içi thread-pool sözü verilmez.
 
 ## Dil yüzeyi
 
@@ -82,9 +96,18 @@ tekrarlı Host'u ve yanlış proto/Origin'i olumsuz testlerle sabitler.
 K-134 kanıtı ayrıca timeout/runtime hatasında erken yanıtın, giriş çerezinin ve
 sunucu oturumunun sızmadığını; gerçek TCP'de commit öncesi bayt çıkmadığını ve
 socket yazma hatasının oturumu commit etmediğini doğrular.
+K-137 kanıtı iki bağımsız CLI sürecinde login'in diğer worker'da görülmesini,
+restart sonrası oturumun korunmasını, worker'lar arası logout/revoke'u ve
+iki worker'a dağıtılan yanlış parola denemelerinin altıncıda Argon2id öncesi
+429 olmasını doğrular. Ayrı persistent depo testleri bozuk şema/symlink'i,
+Unix izinlerini, expiry'yi, koşullu rollback'i ve on eşzamanlı istemcide atomik
+oran eşiğini korur.
 
 ## Bilinçli sınır
 
-Rate limit, secret dağıtımı, ortak harici oturum deposu, proxy kurulumu ve
-sertifika yenileme deployment sorumluluğudur. Idempotency anahtarı RFC-0015'in
-ayrı açık kapısıdır; V1-P0-03'te oturum/kimlik sözüymüş gibi gösterilmez.
+Secret dağıtımı, proxy kurulumu ve sertifika yenileme deployment
+sorumluluğudur. V1 ortak depo garantisi aynı makineyi veya güvenilir kilit ve
+atomik replace semantiği taşıyan ortak dosya sistemini paylaşan süreçlerle
+sınırlıdır; çok-hostlu harici backend ayrıca tasarlanacaktır. Idempotency
+anahtarı RFC-0015'in ayrı açık kapısıdır; V1-P0-03'te oturum/kimlik sözüymüş
+gibi gösterilmez.

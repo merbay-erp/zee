@@ -444,7 +444,6 @@ pub struct ToplayanIo {
 }
 
 struct ToplayanWebIstekYedegi {
-    web_guvenligi: WebGuvenligi,
     yazilan_cerez_sayisi: usize,
     guvenli_cerez_sayisi: usize,
 }
@@ -594,13 +593,18 @@ impl GirdiCikti for ToplayanIo {
             .find(|(ad, _)| ad == "__Host-zee-oturum" || ad == "zee-oturum")
             .map(|(_, deger)| deger.as_str());
         self.web_istek_yedegi = Some(ToplayanWebIstekYedegi {
-            web_guvenligi: self.web_guvenligi.clone(),
             yazilan_cerez_sayisi: self.yazilan_cerezler.len(),
             guvenli_cerez_sayisi: self.guvenli_cerezler.len(),
         });
         self.bekleyen_sunucu_yaniti = None;
-        self.web_guvenligi
-            .istegi_baslat(belirtec, self.an_son_degeri);
+        if self
+            .web_guvenligi
+            .istegi_baslat_kimlikle(belirtec, "hermetik", self.an_son_degeri)
+            .is_err()
+        {
+            self.web_istek_yedegi = None;
+            return None;
+        }
         self.sunucu_yanitlari.push((yol, String::new()));
         self.sunucu_durumlari.push(200);
         Some(ham)
@@ -610,9 +614,10 @@ impl GirdiCikti for ToplayanIo {
             return Ok(());
         };
         if let Some(taslak) = self.bekleyen_sunucu_yaniti.take() {
+            self.web_guvenligi.istegi_tamamla(self.an_son_degeri)?;
             self.sunucu_yanitini_uygula(taslak);
         } else {
-            self.web_guvenligi = yedek.web_guvenligi;
+            self.web_guvenligi.istegi_geri_al();
             self.yazilan_cerezler.truncate(yedek.yazilan_cerez_sayisi);
             self.guvenli_cerezler.truncate(yedek.guvenli_cerez_sayisi);
         }
@@ -620,7 +625,7 @@ impl GirdiCikti for ToplayanIo {
     }
     fn istek_islemini_geri_al(&mut self) {
         if let Some(yedek) = self.web_istek_yedegi.take() {
-            self.web_guvenligi = yedek.web_guvenligi;
+            self.web_guvenligi.istegi_geri_al();
             self.yazilan_cerezler.truncate(yedek.yazilan_cerez_sayisi);
             self.guvenli_cerezler.truncate(yedek.guvenli_cerez_sayisi);
         }
@@ -686,6 +691,25 @@ impl GirdiCikti for ToplayanIo {
         csrf: Option<&str>,
         csrf_gerekli: bool,
     ) -> Result<(), WebReddi> {
+        if csrf_gerekli {
+            let karar = self
+                .web_guvenligi
+                .rate_limit_artir(
+                    crate::web_guvenligi::RateLimitTuru::Csrf,
+                    "csrf",
+                    self.an_son_degeri,
+                )
+                .map_err(|_| WebReddi {
+                    durum: 503,
+                    mesaj: "CSRF oran sınırı deposuna erişilemedi",
+                })?;
+            if !karar.izinli {
+                return Err(WebReddi {
+                    durum: 429,
+                    mesaj: "çok fazla CSRF doğrulama isteği",
+                });
+            }
+        }
         self.web_guvenligi
             .denetle(erisim, csrf, csrf_gerekli, self.an_son_degeri)
     }
@@ -733,7 +757,25 @@ impl GirdiCikti for ToplayanIo {
         Ok(())
     }
     fn parola_dogrula(&mut self, parola: &str, ozet: &str) -> bool {
-        crate::guvenlik::parola_dogrula(parola, ozet)
+        if self.web_istek_yedegi.is_none() {
+            return crate::guvenlik::parola_dogrula(parola, ozet);
+        }
+        let karar = self.web_guvenligi.rate_limit_artir(
+            crate::web_guvenligi::RateLimitTuru::Giris,
+            "parola",
+            self.an_son_degeri,
+        );
+        match karar {
+            Ok(karar) if karar.izinli => crate::guvenlik::parola_dogrula(parola, ozet),
+            Ok(_) => {
+                self.durum_yaniti_gonder(429, "çok fazla giriş denemesi");
+                false
+            }
+            Err(_) => {
+                self.durum_yaniti_gonder(503, "giriş oran sınırı deposuna erişilemedi");
+                false
+            }
+        }
     }
     fn eylem_baslat(&mut self) -> Result<(), String> {
         self.eylem_yedekleri.push(self.dosyalar.clone());

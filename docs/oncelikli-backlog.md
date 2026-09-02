@@ -102,8 +102,13 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
     exact doğrulanan ve salt-okunur kurulur. P017 ve uçtan uca gerçek imzalı
     registry ve duyuru-kümesi politika regresyonuyla V1-P1-07/B-029 kapandı
     (539 test).
-34. Sıradaki makine işi K-137 ile B-046 web rate-limit ve çok süreçli oturum
-    sınırını kapatmaktır; sonraki işler aşağıdaki öncelik sırasını korur.
+34. K-137/ADR-034 `Depo` sınırını, production'da kalıcı ortak oturum ve oran
+    deposunu, tek-hop kanonik `Forwarded` kimliğini ve process başına tek
+    worker/N süreç modelini kurdu. İki gerçek CLI sürecinde login, restart,
+    çapraz logout ve ortak altıncı-deneme 429 kanıtıyla B-046 kapandı
+    (547 test).
+35. Sıradaki makine işi K-138 ile B-051 JSON-RPC ayrıştırmasını
+    protokol-kesin yapmaktır; sonraki işler aşağıdaki öncelik sırasını korur.
 
 ## P0 — V1 öncesi dil ve derleyici omurgası
 
@@ -334,11 +339,17 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   [spec/22](../spec/22-deterministik-io-profili.md),
   [profil rehberi](deterministik-io-profili.md) ve beş conformance testiyle
   V1-P0-26 kapandı; toplam 460 test yeşildir.
-- **B-046 · KISMEN (K-106) — web oturum deposunu sınırlı ve ölçeklenebilir
-  yap.** Process içi depo 4096 toplam/1024 anonim kotası, anonim LRU tahliyesi
-  ve kaymayan mutlak 10/30 dakika ömür taşır. Yalnız kimlikli kayıtlarla dolu
-  depo yeni girişi fail-closed reddeder. Per-IP/rate-limit ve atomik çok süreçli
-  ortak depo hâlâ açık deployment dilimidir; mevcut profil tek process'tir.
+- **B-046 · KAPALI (K-106/K-137, ADR-018/034) — web oturum deposunu sınırlı
+  ve ölçeklenebilir yap.** 4096 toplam/1024 anonim kota ile kaymayan mutlak
+  10/30 dakika ömür iki adaptörde korunur. `--web-proxy`, proje kökündeki
+  CAS-korumalı kalıcı ortak depoda login/revoke/expiry ile endpoint,
+  CSRF ve Argon2id oran pencerelerini atomik tutar. Yalnız canlı oran
+  kayıtlarıyla doluluk fail-closed'dur. Güvenilir proxy tek-hop `Forwarded`
+  içindeki kanonik IP'yi kurar; XFF kimlik değildir. İki gerçek CLI süreci,
+  restart, çapraz logout ve dağıtılmış altıncı parola denemesinin Argon2id
+  öncesi 429 olmasıyla sözleşme kanıtlıdır. V1 concurrency modeli aynı depoyu
+  paylaşan N ayrı tek-worker süreçtir; çok-hostlu harici backend ileriki
+  deployment işidir.
 - **B-047 · KAPALI (K-107) — LSP çerçeve ve JSON girdisini sertleştir.** Tek
   çerçeve 8 KiB başlık/8 MiB gövde; JSON 128 iç içelik/100 bin düğüm sınırı
   taşır. `Content-Length` tahsis öncesi ve tekil doğrulanır. Yanlış/eksik
@@ -426,6 +437,14 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 - **B-054 · AÇIK — dependency advisory/lisans/tekrar üretim kapısı.** CI'da
   sabit sürümlü `cargo audit` veya `cargo deny`, RustSec advisory, lisans/ban
   politikası ve V1 için lock+checksum/offline/vendor prosedürü tanımlanmalıdır.
+- **B-055 · AÇIK — WASM C ABI'sini hasım çağırana karşı kanıtla.** Dışarıdan
+  gelen pointer/uzunluk çiftlerinin doğrulanması, UTF-8 ve taşma sınırları,
+  çıktı sahipliği/ömür modeli, tekrar çağrı ve bozuk çağrı sonrası durum
+  ayrı ABI sözleşmesi ile native host regresyonu/fuzz hedefi istemelidir.
+- **B-056 · AÇIK — playground girdisine bağımsız ön-tahsis bütçesi koy.** UI
+  ve WASM köprüsü kaynak/metin boyutunu satır veya benzeri koleksiyon
+  kurulmadan önce reddetmeli; derleyici ortak kaynak bütçesine güvenmek bu
+  sınırın yerini almamalıdır.
 - **B-041 · KAPALI (K-120) — LSP'yi SymbolId/HIR'a bağla.** Definition ve
   rename yalnız başarılı checker'ın `SymbolId`/`IslemId`/`YapiId` typed-HIR
   bağından hedef seçer. HIR ilk tanım, yeniden atama ve okuma aralıklarını
@@ -442,7 +461,7 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   programın metin/yorumları koruyan deterministik dağınık-boşluk varyantı
   biçimlenir; önce/sonra izi eşit ve iki parser geçişi de başarılı olmak
   zorundadır. İdempotence ve proje/kitaplık resmî biçim kapıları korunur.
-- **B-043 · KAPALI (K-118) — spec↔code kanıt haritası.** Bugünkü 25 RFC, 31
+- **B-043 · KAPALI (K-118) — spec↔code kanıt haritası.** Bugünkü 25 RFC, 32
   ADR ve 24 spec bölümü `docs/kanit-haritasi-v1.tsv` içinde `kanitli/kismi/taslak`
   durumu, yürütülebilir test yolları ve açık kapsam notuyla birebir izlenir.
   Tazelik testi eksik/yinelenen belgeyi, olmayan ya da test taşımayan kanıt
@@ -458,9 +477,9 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 ## Bir sonraki somut kapı
 
 İnsan kanıtı hattında B-001, doldurulmuş gerçek usability formları ve önceden
-ilan edilmiş eşikleri bekler. Makine hattında K-136 B-029/V1-P1-07'nin exact
-manifest, kilit v3, doğrulanmış kaynak kurulumu ve CLI bağını tamamladı.
-Sıradaki iş K-137 ile B-046 web rate-limit ve çok süreçli oturum kararıdır.
+ilan edilmiş eşikleri bekler. Makine hattında K-137 B-046'nın ortak kalıcı
+oturum/rate-limit, güvenilir proxy kimliği ve worker modelini tamamladı.
+Sıradaki iş K-138 ile B-051 kesin JSON-RPC ayrıştırmasıdır.
 
 ## 2 Eylül 2026 ikinci dış inceleme ayrımı
 
@@ -472,9 +491,11 @@ Sıradaki iş K-137 ile B-046 web rate-limit ve çok süreçli oturum kararıdı
   deadline, görev HTTP tazeliği ve web session/cookie/yanıt transaction'ı.
 - **Kapatıldı:** B-029'un taşıma/cache/kalıcı rollback/offline dilimi K-135,
   exact manifest/kilit v3/CLI ve kaynak kurulumu K-136 ile tamamlandı.
-  Sırada B-046 rate-limit ve çok süreçli oturum; ardından B-051 kesin JSON-RPC,
-  B-052 origin tekilleştirme,
-  B-053 byte HTTP+fuzz, B-034 temiz snapshot ve B-054 advisory/reproducibility.
+  B-046 ortak kalıcı oturum/rate-limit, kanonik proxy kimliği ve N tek-worker
+  süreç modeli K-137/ADR-034 ile kapandı. Sırada B-051 kesin JSON-RPC,
+  ardından B-052 origin tekilleştirme, B-053 byte HTTP+fuzz,
+  B-054 advisory/reproducibility, B-055 WASM C ABI ve B-056 playground
+  ön-tahsis bütçesi vardır. B-033/B-034 temiz snapshot hattı ayrıca kapalıdır.
 - **Mevcut repoda zaten kapalı:** çağrı derinliği C019/500 ve ayrı regresyonu;
   atomik metadata `unsafe` bloklarının her birindeki `SAFETY` gerekçesi; kök
   `.gitignore`; üç platformlu `.github/workflows/ci.yml`; tekil P2 başlığı.

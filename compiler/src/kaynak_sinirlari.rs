@@ -7,14 +7,16 @@
 mod baglanti;
 mod okuma;
 mod profiller;
+mod web;
 
 pub use baglanti::{baglanti_izni_al, BaglantiIzni};
 pub(crate) use okuma::{kaynak_boyutunu_denetle, token_sayisini_denetle};
 pub use okuma::{kaynak_dosyasi_oku, veri_dosyasi_baytlarini_oku, veri_dosyasi_oku};
 pub use profiller::{
     AgSinirlari, HttpSinirlari, IoIziSinirlari, KaliciDosyaSinirlari, LspSinirlari,
-    MetadataSinirlari, PaketSinirlari, RegistrySinirlari, TaniSinirlari, WebSinirlari,
+    MetadataSinirlari, PaketSinirlari, RegistrySinirlari, TaniSinirlari,
 };
+pub use web::WebSinirlari;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct KaynakSinirlari {
@@ -194,6 +196,13 @@ pub const VARSAYILAN_KAYNAK_SINIRLARI: KaynakSinirlari = KaynakSinirlari {
         anonim_oturum_omru_saniye: 10 * 60,
         oturum_sayisi: 4_096,
         anonim_oturum_sayisi: 1_024,
+        oran_anahtari_sayisi: 32_768,
+        ucnokta_orani: 100,
+        csrf_orani: 60,
+        giris_orani: 5,
+        ucnokta_penceresi_saniye: 60,
+        csrf_penceresi_saniye: 60,
+        giris_penceresi_saniye: 5 * 60,
     },
     io_izi: IoIziSinirlari {
         bayt: 64 * 1024 * 1024,

@@ -94,8 +94,10 @@ Stage 0'da gerçek soket yalnız `dil çalıştır --deneysel-web ...` açık iz
 localhost eğitim/prototipi için kurulur (K-082). K-087 yöntemli rota, uygulama
 eylemi, etki denetimi ve yerel transaction/savepoint sözleşmesini kapattı.
 K-088 production oturum/çerez/CSRF ve loopback HTTPS reverse-proxy profilini
-kapattı (RFC-0017, spec/12). Çok süreçli ortak oturum deposu, rate limit,
-secret dağıtımı ve idempotency ayrı deployment/RFC kapılarıdır.
+kapattı (RFC-0017, spec/12). K-137/ADR-034 kalıcı ortak oturum/rate-limit
+deposunu, güvenilir proxy istemci kimliğini ve tek-worker/N süreç modelini
+ekledi. Secret dağıtımı, çok-hostlu backend ve idempotency ayrı deployment/RFC
+kapılarıdır.
 # 7. Temel dil yüzeyi
 Değer tanımı: “isim Ayşe olsun”.
 Fonksiyon: “işlem”.
@@ -703,7 +705,9 @@ K-132 LSP outbound JSON'unu bounded üretip B-025'i kapattı. K-133/K-134 etki
 K-135 B-029'un HTTPS taşıma, doğrulanmış içerik-adresli cache, CAS korumalı
 kalıcı rollback ve offline dilimini kapattı. K-136 exact manifest, kilit v3,
 salt-okunur kaynak kurulumu ve CLI entegrasyonuyla B-029/V1-P1-07'yi kapattı.
-Sıradaki omurga K-137 ile B-046 web rate-limit ve çok süreçli oturum sınırıdır.
+K-137 kalıcı ortak web oturumu/revoke/expiry ve atomik rate-limit deposunu,
+tek-hop `Forwarded` kimliğini ve N ayrı tek-worker süreç modelini kurarak
+B-046'yı kapattı. Sıradaki omurga K-138 ile B-051 kesin JSON-RPC sınırıdır.
 # 40. Proje felsefesinin korunması
 Bu projenin başarısı yalnız compiler’ın çalışması değildir. Başarı; Türkçe konuşan bir çocuğun yabancı syntax bariyerine takılmadan algoritmik düşünceyle tanışması, aynı dilin yıllar sonra onu terk etmeye zorlamaması ve ekosistemin tek bir şirketin kapalı ürünü haline gelmemesidir.
 Her yeni özellik şu dört sorudan geçmelidir: Türkçe doğal mı? Deterministik mi? Öğrenilebilir mi? Profesyonel ölçekte savunulabilir mi? Dördünden biri hayırsa özellik yeniden tasarlanır.

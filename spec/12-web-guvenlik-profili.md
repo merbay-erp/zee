@@ -1,9 +1,9 @@
 # 12 — Web güvenlik profili
 
-Bu bölüm K-088/K-134 ile gelen normatif oturum, yetki, CSRF ve HTTPS reverse-proxy
-sözleşmesidir. Uygulama eyleminin HTTP'den ayrılması spec/11'de tanımlıdır;
-bu bölüm tarayıcı isteğinin o eyleme hangi kapılardan geçerek ulaştığını
-tanımlar.
+Bu bölüm K-088/K-134/K-137 ile gelen normatif oturum, yetki, CSRF, ortak oran
+sınırı ve HTTPS reverse-proxy sözleşmesidir. Uygulama eyleminin HTTP'den
+ayrılması spec/11'de tanımlıdır; bu bölüm tarayıcı isteğinin o eyleme hangi
+kapılardan geçerek ulaştığını tanımlar.
 
 ## 1. Rota önsözü
 
@@ -65,9 +65,13 @@ sonlandırır. Eski belirteç yeniden kullanılamaz. Süresi dolan kayıt istek
 başında silinir. Geçerli erişim tahliye sırasını günceller ama son geçerlilik
 anını ileri taşımaz; ömür sliding değildir.
 
-Process içi depo en çok 4096 toplam oturum tutar. Yalnız kimliği doğrulanmış
+Oturum deposu en çok 4096 toplam oturum tutar. Yalnız kimliği doğrulanmış
 kayıtlarla doluysa yeni giriş, var olan bir kullanıcıyı düşürmek yerine
-fail-closed hata olur.
+fail-closed hata olur. Deneysel web bunu süreç içi adaptörle; `--web-proxy`
+production profili proje kökündeki `.zee/web-durumu-v1.json` kalıcı ortak
+adaptörüyle uygular. Kalıcı kayıt tokenın kendisini değil yalnız SHA-256
+özetini tutar. Bilinmeyen biçim sürümü, bozuk/aşırı büyük içerik, symlink,
+güvensiz dosya türü veya IO hatası 503'tür.
 
 ## 3. CSRF
 
@@ -111,20 +115,27 @@ adı/değeri ve yerel olmayan yönlendirme C022 ile reddedilir.
 Production profili şu komutla açılır:
 
 ```text
-dil çalıştır --web-proxy https://panel.example uygulama.dil
+dil çalıştır --web-proxy https://panel.example --web-worker-port 18091 uygulama.dil
 ```
 
 Runtime yalnız `127.0.0.1` üzerinde düz HTTP dinler. TLS'yi aynı makinedeki
 güvenilir reverse proxy sonlandırır. Runtime her istekte:
 
 - tek `Host` başlığının yapılandırılan host ile eşleşmesini;
-- tek `X-Forwarded-Proto` değerinin `https` olmasını;
+- tam bir `Forwarded: for=<IP>;proto=https;host=<host>` başlığının tek header
+  ve tek hop olmasını;
+- `for` değerinin `IpAddr` ile kanoniklenen yalın IPv4/IPv6 adresi olmasını;
+- `proto=https` ve `host` değerinin yapılandırılan origin ile eşleşmesini;
 - durum değiştiren yöntemde tek `Origin` değerinin yapılandırılan origin
   ile birebir eşleşmesini ZORUNLU tutar.
 
-Eksik/tekrarlı Host 400, HTTPS olmayan proxy zinciri 426, eksik veya yanlış
-unsafe Origin 403'tür. Dinleyicinin loopback dışına açılması bu güven
-sözleşmesini bozar ve YASAKTIR.
+Proxy istemciden gelen `Forwarded`, `X-Forwarded-For` ve benzeri başlıkları
+silip doğruladığı bağlantıdan tek kanonik `Forwarded` başlığını kendisi
+kurmalıdır. Runtime `X-Forwarded-For`ı istemci kimliği saymaz. Eksik/tekrarlı
+Host, tekrarlı `Forwarded`, virgüllü zincir, yinelenen parametre, IP olmayan
+`for` ve host uyuşmazlığı 400; eksik `Forwarded` veya HTTPS olmayan proxy
+zinciri 426; eksik ya da yanlış unsafe Origin 403'tür. Dinleyicinin loopback
+dışına açılması bu güven sözleşmesini bozar ve YASAKTIR.
 
 Yanıtlar `no-store`, `nosniff`, `DENY`, `no-referrer`, kısıtlı CSP taşır;
 HTTPS profilinde HSTS de eklenir. 16 KiB başlık, 64 KiB gövde, tek
@@ -134,21 +145,45 @@ korkuluklarıdır. Başlık ile gövdenin tamamı bağlantı kabulünden başlay
 socket zaman aşımı taşır. Spec/11'in 100 alan ve 30 saniye uygulama sınırı
 ayrıca geçerlidir.
 
+Doğrulanmış kanonik istemci kimliğiyle ortak kalıcı depoda şu sabit pencereler
+ZORUNLUDUR:
+
+| Kapı | Pencere | Eşik | Aşım |
+|---|---:|---:|---|
+| istemci + yöntem + sorgusuz path | 60 saniye | 100 | 429 |
+| CSRF doğrulaması | 60 saniye | 60 | 429 |
+| Argon2id parola doğrulaması | 300 saniye | 5 | Argon2id çalışmadan 429 |
+
+Sayaç artışı ile pencere sonu tek atomik transaction'dır. En çok 32768 canlı
+oran anahtarı tutulur. Süresi dolan anahtarlar temizlenir; tablo yalnız canlı
+kayıtlarla doluysa etkin bir sayacı tahliye ederek eşiği delmek yerine istek
+fail-closed 503 olur.
+
 Oturum/çerez mutation'ı gönderilmemiş ilk yanıtla aynı request transaction'ına
-aittir. Runtime hata veya 30 saniyelik deadline'da erken başarı yanıtını atar,
-oturum deposunu istek başına döndürür ve 504'ü temiz olarak gönderir. Yanıtsız
-rota session kaydı bırakamaz. Gerçek socket yazımı başarısızsa yeni oturum
-commit edilmez; yarım HTTP gövdesi bağlantı kapanışıyla geçersiz kalır.
+aittir. Mutation socket yanıtından önce ortak depoya atomik commit edilir.
+Runtime hata veya 30 saniyelik deadline'da erken başarı yanıtını atar,
+oturum mutation'ını bırakır ve 504'ü temiz olarak gönderir. Yanıtsız rota
+session kaydı bırakamaz. Gerçek socket yazımı başarısızsa yalnız bu isteğin
+eklediği/sildiği ve hâlâ beklenen değeri taşıyan kayıtlar atomik geri alınır;
+başka sürecin ilgisiz değişikliği ezilmez. Yarım HTTP gövdesi bağlantı
+kapanışıyla geçersiz kalır.
 
 ## 6. Platform sınırı
 
 Native CLI CSPRNG ve Argon2id capability'sini taşır. WASM playground
 production oturumu veya parola özeti üretmez; parola doğrulaması başarısız
-olur. TLS sertifikası, secret dağıtımı ve kaba-kuvvet/rate-limit deployment
-katmanının sorumluluğudur. Process-local oturum deposu nedeniyle mevcut profil
-tek bir zee runtime process'i içindir. Birden çok runtime process'i, aynı
-rotation/revoke/expiry semantiğini atomik sağlayan paylaşımlı depo adaptörü
-gelene kadar bu production profilinin dışındadır; sticky session ortak revoke
-sözünün yerine geçmez.
+olur. TLS sertifikası ve secret dağıtımı deployment katmanının
+sorumluluğudur.
 
-Normatif gerekçe: RFC-0017. Rota/eylem ayrımı: RFC-0015 ve spec/11.
+V1 HTTP server modeli process başına tek worker/thread'dir: bir bağlantıyı
+okur, bir Zee isteğini yürütür ve yanıtı bitirmeden yenisini kabul etmez.
+Production concurrency'si aynı proje kökünü ve `.zee/web-durumu-v1.json`
+dosyasını paylaşan N ayrı süreçle kurulur; her süreç kaynak portunu
+`--web-worker-port N` ile farklı loopback porta geçirir. Thread-pool veya aynı
+process içinde paralel Zee request yürütümü vaat edilmez. Kalıcı adaptör aynı
+makine veya güvenilir kilit+atomik replace semantiği sunan ortak dosya
+sistemiyle sınırlıdır; çok-hostlu harici backend henüz yoktur. Sticky session
+ortak revoke ve oran sınırının yerine geçmez. Operasyon ayrıntıları
+`docs/web-production-profili.md` içindedir.
+
+Normatif gerekçe: RFC-0017 ve ADR-034. Rota/eylem ayrımı: RFC-0015 ve spec/11.

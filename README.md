@@ -14,6 +14,7 @@ Bu bir çeviri katmanı değildir (`if→eğer` makyajı yok); AI semantiğin pa
 - **Hemen başla:** [docs/baslangic.md](docs/baslangic.md) — 5 dakikada kurulum, ilk proje, araç kutusu
 - **Dili gez:** [docs/dil-turu.md](docs/dil-turu.md) — bütün yüzey, çalışan örneklerle
 - **Oynayarak öğren:** [projeler/](projeler/) — çocuk proje kitaplığı (hepsi regression testte)
+- **Web'i üretime hazırla:** [docs/web-production-profili.md](docs/web-production-profili.md) — güvenilir proxy, ortak durum ve N worker süreci
 - Dosya uzantısı: **`.dil`** (kalıcı — ADR-009)
 - Master plan: [docs/master-plan.md](docs/master-plan.md) (kaynak: [docs/Turkce_Programlama_Dili_Master_Proje_Dokumani.docx](docs/Turkce_Programlama_Dili_Master_Proje_Dokumani.docx))
 - V1 öncesi sıralı mühendislik backlog'u: [docs/oncelikli-backlog.md](docs/oncelikli-backlog.md)
@@ -77,7 +78,9 @@ dosya kökü, public HTTPS, exact origin, DNS sonrası özel-IP/geçiş öneki S
 ve kapalı redirect),
 **güvenli web profili** (Argon2id, 256 bit CSPRNG sunucu oturumu/rol,
 rotation/revoke/ömür, otomatik CSRF, `__Host-` çerez, HTTPS proxy Origin
-kapısı), form/istek sözlüğü, yönlendirme, html güvenlisi ve
+kapısı; K-137 kalıcı ortak oturum/rate-limit deposu, kanonik `Forwarded`
+istemci kimliği ve N ayrı tek-worker süreç modeli), form/istek sözlüğü,
+yönlendirme, html güvenlisi ve
 önekli rotalar, **metin cerrahisi** (parçala/birleştir/
 değiştir/kırp/harfler), **JSON/CSV yazma**, **Türk alfabesiyle sıralama**,
 **silme** ve **çıkış kodu** (`programı 2 ile bitir`), bölümden **kalan**,
@@ -161,10 +164,10 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **540** |
+| Rust + doctest vakası | **547** |
 | Tanı kimliği | **152 etkin + 3 ayrılmış** |
 | RFC | **25** (2 kabul, 21 geçici kabul, 2 taslak) |
-| ADR | **31** (31 kabul) |
+| ADR | **32** (32 kabul) |
 | Normatif spec bölümü | **24** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
@@ -238,6 +241,12 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   bayt damlatmayla uzamayan 10 saniyelik mutlak istek okuma sınırı ekledi.
   K-106/ADR-018 process içi web deposunu 4096 toplam/1024 anonim oturumla
   sınırladı; anonim LRU tahliyesi ve kaymayan mutlak ömür sözleşmesini bağladı.
+  K-137/ADR-034 production profilini proje kökündeki CAS-korumalı kalıcı ortak
+  depoya taşıdı; login/revoke/expiry ile endpoint, CSRF ve Argon2id oran
+  pencereleri restart ve worker geçişinde ortaktır. Güvenilir proxy tek-hop
+  `Forwarded` içindeki kanonik IP'yi kurar. Process başına tek worker gerçeği,
+  farklı loopback portlu N ayrı süreç ve reverse proxy modeliyle açıkça
+  sözleşmeye bağlandı.
   K-107/ADR-019 `dillsp` girdisini 8 KiB başlık, 8 MiB gövde, 128 JSON
   derinliği ve 100 bin düğümle sınırlayıp Unicode parser olumsuzlarını kapattı.
   K-108/ADR-020 her semantic typed-HIR ifadesine zorunlu kaynak aralığı

@@ -20,6 +20,19 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   zamanı, arşiv içi dosya SHA-256 manifesti ve ZIP yan özeti aynı `HEAD` için
   byte-byte tekrar üretim ve bağımsız bütünlük denetimi sağlar.
 
+- **Ortak production web durumu ve worker modeli**
+  (K-137, RFC-0017/ADR-034/spec-12): `--web-proxy` oturum, revoke, expiry ve
+  endpoint/CSRF/Argon2id oran pencerelerini proje kökündeki
+  `.zee/web-durumu-v1.json` kalıcı deposunda süreçler arası atomik tutar.
+  Proxy kimliği yalnız proxy'nin yeniden kurduğu tek-hop `Forwarded`
+  başlığındaki kanonik IP'dir; XFF kimlik değildir. V1 process başına tek
+  worker'dır; `--web-worker-port` ile aynı kaynağı çalıştıran N ayrı süreç
+  reverse proxy arkasında aynı depoyu paylaşır. İki gerçek CLI sürecinde
+  login, worker geçişi, restart, çapraz logout ve iki sürece dağıtılmış altıncı
+  yanlış parola denemesinin Argon2id öncesi 429 olması kanıtlıdır. Bozuk
+  depo/symlink/kapasite hatası fail-closed 503'tür. Envanter 547 test ve 32
+  kabul ADR'ye çıktı; B-046 kapandı.
+
 - **Normatif otorite ve v1 kapıları** (K-081, ADR-010): geçerli dilin kesin
   davranışını spec anlatır; RFC değişikliği yetkilendirir ama spec+conformance
   testi aynı değişiklikte güncellenmeden yürürlüğe girmez. Kaynak denetimli
@@ -246,7 +259,8 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   deterministik tahliye edilir. Kimlikli oturum rastgele düşürülmez; yalnız
   kimlikli doluluk yeni girişi fail-closed reddeder. 10/30 dakikalık ömür
   mutlak ve kaymazdır. Üç yeni kota/tahliye testiyle toplam 419 test yeşildir;
-  V1-P0-16 kapandı, çok süreçli ortak depo B-046'da açık kaldı.
+  V1-P0-16 kapandı. Bu tarihsel çok süreç açığı daha sonra K-137/ADR-034 ile
+  kapandı; process-local adaptör yalnız deneysel/öğretici kipte kaldı.
 - **Sınırlı LSP girdisi ve sıkı JSON** (K-107, ADR-019): `dillsp` gelen
   çerçeveyi tahsis öncesi 8 KiB başlık/8 MiB gövdeyle ve tek `Content-Length`
   ile sınırlar. Mini JSON 128 iç içelik/100 bin düğüm bütçesi taşır; yanlış
