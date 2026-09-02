@@ -121,8 +121,12 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
     UTF-8 gövde profiline bağladı. TE, obs-fold, NUL, kayıplı dönüşüm ve fazla/
     eksik framing kalıcı korpus ile ayrı libFuzzer hedefinde reddedilir; B-053
     kapandı (566 test).
-38. Sıradaki makine işi K-141 ile B-054 bağımlılık advisory/lisans/tekrar
-    üretim kapısını kurmaktır; sonraki işler aşağıdaki öncelik sırasını korur.
+38. K-141/ADR-038 sabit `cargo-deny` ile compiler+fuzz RustSec/lisans/ban/
+    kaynak denetimini, kilitsiz CI fallback yasağını ve iki üretimli SHA-256
+    manifestli gerçek offline vendor derlemesini kurarak B-054'ü kapattı
+    (570 test).
+39. Sıradaki makine işi K-142 ile B-055 WASM C ABI hasım-caller sınırını
+    kanıtlamaktır; sonraki işler aşağıdaki öncelik sırasını korur.
 
 ## P0 — V1 öncesi dil ve derleyici omurgası
 
@@ -460,9 +464,16 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   minimal kalıcı `.dil` success/fail fixture'ına dönüşmelidir.
 - **B-040 · KISMEN — performans baseline arşivi.** `src/bin/olcum.rs` vardır;
   parser/checker/runtime p50/p95 CI artefact ve trend olmalıdır.
-- **B-054 · AÇIK — dependency advisory/lisans/tekrar üretim kapısı.** CI'da
-  sabit sürümlü `cargo audit` veya `cargo deny`, RustSec advisory, lisans/ban
-  politikası ve V1 için lock+checksum/offline/vendor prosedürü tanımlanmalıdır.
+- **B-054 · KAPALI (K-141/ADR-038) — dependency advisory/lisans/tekrar üretim
+  kapısı.** Sabit `cargo-deny 0.20.2`, güncel RustSec'i compiler ve fuzz
+  grafiğinde push/PR+günlük tarar; izinli SPDX kümesi, bilinmeyen registry/Git,
+  wildcard ve duplicate politikası `-D warnings` ile fail-closed'dur. İki exact
+  duplicate istisnası teknik gerekçe taşır, advisory ignore boştur. Bütün CI
+  Cargo komutları `--locked` kullanır; iki lock yalnız crates.io+SHA-256 taşır.
+  İki bağımsız `--versioned-dirs` vendor ağacı sıralı yol+dosya özetiyle aynı
+  çıkmak ve boş Cargo home'da compiler+fuzz `--offline --locked` derlenmek
+  zorundadır. Compiler/fuzz `publish = false` kalır; bu kapı bekleyen Zee ürün
+  lisansını kendiliğinden seçmez.
 - **B-055 · AÇIK — WASM C ABI'sini hasım çağırana karşı kanıtla.** Dışarıdan
   gelen pointer/uzunluk çiftlerinin doğrulanması, UTF-8 ve taşma sınırları,
   çıktı sahipliği/ömür modeli, tekrar çağrı ve bozuk çağrı sonrası durum
@@ -503,9 +514,9 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 ## Bir sonraki somut kapı
 
 İnsan kanıtı hattında B-001, doldurulmuş gerçek usability formları ve önceden
-ilan edilmiş eşikleri bekler. Makine hattında K-140 B-053'ün byte tabanlı ve
-fuzz kanıtlı HTTP istek sınırını tamamladı. Sıradaki iş K-141 ile B-054
-bağımlılık advisory/lisans/tekrar üretim kapısıdır.
+ilan edilmiş eşikleri bekler. Makine hattında K-141 B-054'ün advisory, lisans,
+kaynak, lock/checksum ve gerçek offline vendor kapısını tamamladı. Sıradaki iş
+K-142 ile B-055 WASM C ABI hasım-caller sınırıdır.
 
 ## 2 Eylül 2026 ikinci dış inceleme ayrımı
 
@@ -520,10 +531,10 @@ bağımlılık advisory/lisans/tekrar üretim kapısıdır.
   B-046 ortak kalıcı oturum/rate-limit, kanonik proxy kimliği ve N tek-worker
   süreç modeli K-137/ADR-034 ile kapandı. B-051 kesin JSON-RPC ayrıştırması
   K-138/ADR-035 ile kapandı. B-052 origin tekilleştirme ve loopback peer sınırı
-  K-139/ADR-036 ile kapandı. B-053 byte HTTP+fuzz sınırı K-140/ADR-037 ile
-  kapandı. Sırada B-054 advisory/reproducibility, B-055 WASM C ABI ve B-056
-  playground ön-tahsis bütçesi vardır. B-033/B-034 temiz snapshot hattı ayrıca
-  kapalıdır.
+  K-139/ADR-036 ile kapandı. B-053 byte HTTP+fuzz sınırı K-140/ADR-037 ile,
+  B-054 advisory/lisans/lock/offline-vendor sınırı K-141/ADR-038 ile kapandı.
+  Sırada B-055 WASM C ABI ve B-056 playground ön-tahsis bütçesi vardır.
+  B-033/B-034 temiz snapshot hattı ayrıca kapalıdır.
 - **Mevcut repoda zaten kapalı:** çağrı derinliği C019/500 ve ayrı regresyonu;
   atomik metadata `unsafe` bloklarının her birindeki `SAFETY` gerekçesi; kök
   `.gitignore`; üç platformlu `.github/workflows/ci.yml`; tekil P2 başlığı.

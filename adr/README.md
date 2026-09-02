@@ -40,6 +40,7 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-035 | [Protokol-kesin LSP JSON-RPC sınırı](035-protokol-kesin-lsp-json-rpc.md) | **kabul** (K-138/B-051) |
 | ADR-036 | [Kanonik web proxy origin sınırı](036-kanonik-web-proxy-origin-siniri.md) | **kabul** (K-139/B-052) |
 | ADR-037 | [Byte tabanlı HTTP/1.x istek sınırı](037-byte-tabanli-http-istek-siniri.md) | **kabul** (K-140/B-053) |
+| ADR-038 | [Rust tedarik zinciri ve offline vendor kapısı](038-rust-tedarik-zinciri-kapisi.md) | **kabul** (K-141/B-054) |
 | ADR-004 | Bellek yönetimi prototip kararı (GC / ARC benchmark) | bekliyor |
 | ADR-005 | Native backend seçimi (Cranelift / LLVM) | bekliyor — Faz 4 |
 | ADR-007 | [Telemetri ve gizlilik: araçlar veri toplamaz](007-telemetri-ve-gizlilik.md) | **kabul** |

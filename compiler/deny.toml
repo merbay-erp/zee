@@ -1,0 +1,46 @@
+# K-141/ADR-038: Rust bağımlılık grafiği fail-closed tedarik politikası.
+[graph]
+targets = [
+    "x86_64-unknown-linux-gnu",
+    "aarch64-apple-darwin",
+    "x86_64-pc-windows-msvc",
+    "wasm32-unknown-unknown",
+]
+all-features = true
+
+[advisories]
+ignore = []
+
+[licenses]
+allow = [
+    "Apache-2.0",
+    "BSD-3-Clause",
+    "CDLA-Permissive-2.0",
+    "ISC",
+    "MIT",
+    "NCSA",
+    "Unicode-3.0",
+    "Unlicense",
+    "Zlib",
+]
+confidence-threshold = 0.93
+unused-allowed-license = "allow"
+
+[licenses.private]
+ignore = true
+
+[bans]
+multiple-versions = "deny"
+wildcards = "deny"
+highlight = "all"
+allow-wildcard-paths = false
+skip = [
+    { crate = "getrandom@0.2.17", reason = "ring/rustls zinciri henüz getrandom 0.4 ile birleşmiyor" },
+    { crate = "syn@2.0.119", reason = "curve25519-dalek-derive syn 2, serde_derive syn 3 kullanıyor" },
+]
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]
+allow-git = []

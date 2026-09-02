@@ -12,6 +12,7 @@ libfuzzer-sys = "=0.4.13"
 
 [dependencies.dil]
 path = ".."
+version = "=0.7.0"
 
 [[bin]]
 name = "lexer_parser"
