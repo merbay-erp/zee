@@ -309,8 +309,10 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   satır tam-metin `didChange` eğrisini ve p95 250/500/1000 ms ilk-aşım
   raporunu ekledi. Mevcut LSP her değişimde tam belgeyi saklayıp klonlar ve
   lexer/parser/resolver/checker/typed-HIR hattını baştan kurar; incremental
-  cache yoktur. Exact temiz 25 örnekli taban beklediği için K-154/B-062
-  kısmi, bu dilimde optimizasyon yapılmadı.
+  cache yoktur. Exact temiz `59580cd…` uygulama commit'indeki 25 örnekte
+  2k/5k/10k/20k p95 167,281 ms / 1.081,746 ms / 4.669,372 ms /
+  20.159,636 ms'dir; 250/500/1000 ms eşiklerinin üçü de 5k'da aşılır.
+  K-154/B-062 kapandı; bu dilimde optimizasyon yapılmadı.
   K-149/ADR-046 bütün production Rust ağacını 35 sorumluluk sahibine, exact
   doğrudan kenar tabanına ve izinli katman yönüne bağladı. Yeni/kayıp modül,
   yeni/kaldırılmış kenar ve ters katman geçişi fail-closed'dur; SHA-256 ile

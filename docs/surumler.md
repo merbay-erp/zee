@@ -18,8 +18,11 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   ilk aşımını raporlar; shared CI bu uzun gözlemi artefakta ekler. Mevcut yol
   tüm belgeyi değiştirip klonlar ve lexer/parser/resolver/checker/typed-HIR
   hattını bütünüyle yeniden kurar; incremental cache yoktur ve henüz
-  optimizasyon yapılmadı. Exact temiz 25 örnekli taban beklediğinden B-062
-  kısmi. Grammar, runtime, tanı, RFC ve normatif spec değişmedi.
+  optimizasyon yapılmadı. Exact temiz `59580cd…` uygulama commit'indeki 25
+  örnekte 2k/5k/10k/20k p95 sırasıyla 167,281 ms / 1.081,746 ms /
+  4.669,372 ms / 20.159,636 ms; 250/500/1000 ms eşiklerinin üçü de ilk kez
+  5k'da aşılır. B-062 kapandı. Grammar, runtime, tanı, RFC ve normatif spec
+  değişmedi.
 
 - **Gerçek LSP process cold-start ölçümü** (K-153, ADR-050): Eski
   `lsp_soguk` gerçekte aynı süreç engine initialize'ıydı ve

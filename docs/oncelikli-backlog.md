@@ -179,8 +179,10 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 51. K-154/ADR-051'in uygulama dilimi 2k/5k/10k/20k satır tam-metin
     `didChange` eğrisini, p95 250/500/1000 ms ilk-aşım raporunu ve bugünkü tam
     belge→lexer/parser→resolver/checker→typed-HIR invalidation sınırını
-    görünür yaptı. Optimizasyon yapılmadı; exact temiz 25 örnekli taban
-    beklediği için B-062 kısmi.
+    görünür yaptı. Exact temiz `59580cd…` uygulama commit'indeki 25 örnek
+    2k/5k/10k/20k p95'i sırasıyla 167,281 ms / 1.081,746 ms / 4.669,372 ms /
+    20.159,636 ms ölçtü; üç eşik de ilk kez 5k'da aşılır. Optimizasyon
+    yapılmadı; B-062 kapandı ve sırada K-155 var.
 
 ## P0 — V1 öncesi dil ve derleyici omurgası
 
@@ -613,14 +615,15 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   mevcut LSP workspace yüklemediği için hayalî workspace metriği yoktur.
   Exact temiz `a2693d6…` uygulama commit'indeki 25 örnek process p50
   1,557 ms/p95 1,997 ms; engine p50 542 ns/p95 625 ns tabanını verdi.
-- **B-062 · KISMEN (K-154/ADR-051) — LSP incremental analysis hazırlığı.**
+- **B-062 · KAPALI (K-154/ADR-051) — LSP incremental analysis hazırlığı.**
   Koşucu 2k/5k/10k/20k tam-metin `didChange` p50/p95 eğrisini açık
   `--lsp-olcek` ile üretir; CI bunu JSON/Markdown/TSV artefaktına katar ve
   rapor önceden sabit 250/500/1000 ms çizgilerinin ilk p95 aşımını bulur.
   Mevcut invalidation sınırı tam belge saklama+klonlama ve tam lexer/parser/
   resolver/checker/typed-HIR yeniden kurulumudur; incremental cache yoktur.
-  Optimizasyon kapsam dışıdır. Exact temiz 25 örnekli release tabanı
-  kaydedilmeden kapanmaz.
+  Optimizasyon kapsam dışıdır. Exact temiz `59580cd…` uygulama commit'inde
+  25 örnekli p95 eğrisi 167,281 ms / 1.081,746 ms / 4.669,372 ms /
+  20.159,636 ms'dir; 250/500/1000 ms eşiklerinin üçü de ilk kez 5k'da aşılır.
 - **B-041 · KAPALI (K-120) — LSP'yi SymbolId/HIR'a bağla.** Definition ve
   rename yalnız başarılı checker'ın `SymbolId`/`IslemId`/`YapiId` typed-HIR
   bağından hedef seçer. HIR ilk tanım, yeniden atama ve okuma aralıklarını
@@ -637,7 +640,7 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   programın metin/yorumları koruyan deterministik dağınık-boşluk varyantı
   biçimlenir; önce/sonra izi eşit ve iki parser geçişi de başarılı olmak
   zorundadır. İdempotence ve proje/kitaplık resmî biçim kapıları korunur.
-- **B-043 · KAPALI (K-118) — spec↔code kanıt haritası.** Bugünkü 25 RFC, 42
+- **B-043 · KAPALI (K-118) — spec↔code kanıt haritası.** Bugünkü 25 RFC, 49
   ADR ve 24 spec bölümü `docs/kanit-haritasi-v1.tsv` içinde `kanitli/kismi/taslak`
   durumu, yürütülebilir test yolları ve açık kapsam notuyla birebir izlenir.
   Tazelik testi eksik/yinelenen belgeyi, olmayan ya da test taşımayan kanıt
@@ -654,9 +657,10 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 
 İnsan kanıtı hattında B-001 ve B-002, doldurulmuş gerçek usability formları
 ile önceden ilan edilmiş eşikleri bekler. Makine hattında K-153 gerçek
-process→stdio LSP cold-start yolunu exact 25 örnekli tabanla kapattı. Sıradaki
-iş K-154 LSP full-text değişim ölçek eğrisi ve invalidation sınırıdır; insan verisi
-gelmeden yeni syntax seçilmez
+process→stdio LSP cold-start yolunu exact 25 örnekli tabanla kapattı.
+K-154 tam-metin değişim ölçek eğrisini ve invalidation sınırını da exact
+tabanla kapattı; sıradaki makine işi K-155 semantic regresyon provenance'ıdır.
+İnsan verisi gelmeden yeni syntax seçilmez
 veya B-001/B-002 tamamlanmış gösterilmez.
 
 ## 2 Eylül 2026 üçüncü dış inceleme — savunulabilir V1 yol haritası
@@ -671,7 +675,7 @@ tamamlanmış sayılmaz; burada istenen ek kanıt ayrıca üretilir.
 | K-151 | **KAPALI** | Bütün workflow action'ları immutable SHA + kontrollü yenileme |
 | K-152 | **KAPALI** | Gerçek Git SHA/milestone ve tam benchmark provenance şeması |
 | K-153 | **KAPALI** | Engine/process ayrımı, gerçek ikili testi ve exact 25 örnek taban |
-| K-154 | **SIRADA** | 2k/5k/10k/20k full-change eğrisi, invalidation sınırı ve eşikler |
+| K-154 | **KAPALI** | 2k/5k/10k/20k full-change eğrisi, invalidation sınırı ve üç ilk-aşım eşiği |
 | K-155 | **AÇIK** | K-147 korpusuna `fixed_by`, mümkünse `introduced_by`, garanti sürümü |
 | K-156 | **AÇIK** | Nightly fuzz corpus artefaktı ve review'lü coverage seed kalıcılığı |
 | K-157 | **AÇIK** | Dört hedefte 30–60 dk RC kampanyası; uygun sanitizer/Miri kanıtı |

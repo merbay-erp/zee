@@ -796,7 +796,9 @@ makine sırasında K-154/ADR-051, 2k/5k/10k/20k tam-metin `didChange` eğrisini
 ve p95 250/500/1000 ms ilk-aşım raporunu ekledi. Bugünkü invalidation sınırı
 tam belge→tam lexer/parser→resolver/checker→typed-HIR yeniden kurulumudur;
 incremental cache ve bu dilimde optimizasyon yoktur. Exact temiz 25 örnekli
-taban beklediğinden B-062 henüz kısmi, sonra K-155 gelir.
+`59580cd…` uygulama tabanında 2k/5k/10k/20k p95 sırasıyla 167,281 ms /
+1.081,746 ms / 4.669,372 ms / 20.159,636 ms'dir; 250/500/1000 ms çizgilerinin
+üçü de ilk kez 5k'da aşılır. B-062/K-154 kapandı, sırada K-155 vardır.
 B-001 çağrı sözdizimi ile B-002 gezme zihinsel modeli gerçek insan
 kanıtı gelmeden kapatılmaz veya yeni syntax kararıyla atlanmaz.
 # 40. Proje felsefesinin korunması

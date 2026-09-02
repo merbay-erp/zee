@@ -72,7 +72,7 @@ adr/047-production-bagimlilik-cevrimi-kapisi.md	kanitli	compiler/tests/bagimlili
 adr/048-github-actions-immutable-sha-pinleme.md	kanitli	compiler/tests/tedarik_kapisi_testi.rs	K-151 butun workflow action referanslari exact incelenmis commit kaydi ve haftalik kontrollu Dependabot yenilemesi
 adr/049-benchmark-provenance-sinir.md	kanitli	compiler/src/bin/olcum.rs,compiler/tests/mimari_sinir_testi.rs	K-152 tam Git SHA ayri milestone temiz agac OS CPU RAM Rust release ve gercek RSS ornekleme semantigi
 adr/050-gercek-lsp-cold-start-olcumu.md	kanitli	compiler/src/bin/olcum.rs,compiler/tests/olcum_lsp_process_testi.rs,compiler/tests/mimari_sinir_testi.rs	K-153 engine initialize ile process spawn stdio framing ve capabilities ready maliyetini ayirir
-adr/051-lsp-tam-metin-invalidation-olcegi.md	kismi	compiler/src/bin/olcum.rs,compiler/tests/mimari_sinir_testi.rs	K-154 2k 5k 10k 20k didChange egrisi ve full parse check HIR invalidation siniri; exact taban bekliyor
+adr/051-lsp-tam-metin-invalidation-olcegi.md	kanitli	compiler/src/bin/olcum.rs,compiler/tests/mimari_sinir_testi.rs	K-154 exact 25 ornekli 2k 5k 10k 20k didChange egrisi ve full parse check HIR invalidation siniri
 spec/01-sozcukleme.md	kanitli	compiler/tests/kacis_ve_negatif_testi.rs,compiler/tests/metin_testi.rs	Token kaçış Unicode ve sayı kuralları
 spec/02-dizim.md	kanitli	compiler/tests/golden_testi.rs,compiler/tests/ifade_grameri_testi.rs	Cümle blok ve ifade dizimi
 spec/03-adlar-ve-kapsam.md	kanitli	compiler/tests/kapsam_testi.rs,compiler/tests/morfoloji_testi.rs,compiler/tests/lsp_testi.rs	Ad çözümü kapsam morfoloji ve semantic rename

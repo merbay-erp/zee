@@ -1415,10 +1415,10 @@ mod testler {
     }
 
     #[test]
-    fn izlenen_k148_ve_k153_gecmisi_exact_kaynaklari_tasir() {
+    fn izlenen_k148_k153_ve_k154_gecmisi_exact_kaynaklari_tasir() {
         let yol = Path::new(env!("CARGO_MANIFEST_DIR")).join("../docs/performans-gecmisi-v2.tsv");
         let (_, satirlar) = gecmisi_oku(Some(&yol)).expect("izlenen geçmiş geçerli olmalı");
-        assert_eq!(satirlar.len(), 19);
+        assert_eq!(satirlar.len(), 32);
         assert_eq!(
             satirlar
                 .iter()
@@ -1449,6 +1449,33 @@ mod testler {
             .expect("K-153 process cold-start kaydı olmalı");
         assert_eq!((process.ornek_sayisi, process.isinma_sayisi), (25, 2));
         assert_eq!((process.p50, process.p95), (1_556_958, 1_996_667));
+        let k154 = satirlar
+            .iter()
+            .filter(|satir| {
+                satir.kayit == "K-154-m4pro"
+                    && satir.git_sha == "59580cd0c0b2d66a1ff1f28e7e285bfa0858abab"
+                    && satir.milestone == "K-154"
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(k154.len(), 13);
+        let olcek = |kimlik| {
+            k154.iter()
+                .find(|satir| satir.kimlik == kimlik)
+                .map(|satir| (satir.p50, satir.p95))
+        };
+        assert_eq!(olcek("lsp_degistir_2k"), Some((160_293_292, 167_280_708)));
+        assert_eq!(
+            olcek("lsp_degistir_5k"),
+            Some((1_062_714_916, 1_081_745_917))
+        );
+        assert_eq!(
+            olcek("lsp_degistir_10k"),
+            Some((4_647_041_916, 4_669_371_959))
+        );
+        assert_eq!(
+            olcek("lsp_degistir_20k"),
+            Some((20_079_599_917, 20_159_635_833))
+        );
     }
 
     #[test]
