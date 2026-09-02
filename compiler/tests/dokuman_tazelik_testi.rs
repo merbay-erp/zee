@@ -212,3 +212,31 @@ fn readme_canli_depo_sayilari_ureticisiyle_gunceldir() {
         String::from_utf8_lossy(&cikti.stderr)
     );
 }
+
+#[test]
+fn kaynak_arsivi_build_ve_kisisel_artifaktlari_disarida_tutar() {
+    let depo = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .parent()
+        .expect("depo kökü");
+    let gitignore = std::fs::read_to_string(depo.join(".gitignore"))
+        .expect("kök .gitignore okunmalı");
+    for kalip in [
+        "target/",
+        "compiler/fuzz/artifacts/",
+        "__MACOSX/",
+        "*.profraw",
+        "*.profdata",
+        "*.zip",
+    ] {
+        assert!(
+            gitignore.lines().any(|satir| satir == kalip),
+            "kaynak arşivi hijyeni için .gitignore kalıbı eksik: {kalip}"
+        );
+    }
+
+    let script = std::fs::read_to_string(depo.join("scripts/temiz-kaynak-arsivi.sh"))
+        .expect("temiz arşiv scripti okunmalı");
+    assert!(script.contains("git archive --format=zip"));
+    assert!(script.contains("unzip -Z1"));
+    assert!(script.contains("__MACOSX|target|artifacts"));
+}

@@ -59,6 +59,11 @@ Gece işinde korpus cache ile sonraki koşuya taşınır. Başarısız koşunun 
 girdisi GitHub artifact'ı olur; yalnız logda kalan ve tekrar üretilemeyen bulgu
 kapatılmış sayılmaz.
 
+Derlenmiş `compiler/fuzz/target/`, crash `artifacts/` ve coverage çıktıları
+kaynak arşivine girmez. Kalıcı korpus ile fuzz kaynakları korunur; paylaşılacak
+proje kopyası çalışma klasörünü sıkıştırmak yerine
+[temiz kaynak arşivi](temiz-kaynak-arsivi.md) komutuyla üretilir.
+
 ## Sınırlar
 
 Lexer/parser hedefi `&str` aldığı için geçersiz UTF-8 byte dizileri burada değil

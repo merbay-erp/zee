@@ -1,7 +1,12 @@
 .DS_Store
 target/
+__MACOSX/
+*.profraw
+*.profdata
+*.zip
 compiler/fuzz/artifacts/
 compiler/fuzz/coverage/
+dist/
 .claude/
 .zee-yazma-kilidi
 *.zee-gecici-*

@@ -12,6 +12,12 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **Temiz kaynak arşivi:** Paylaşım paketi artık çalışma klasöründen değil,
+  yalnız commit edilmiş `HEAD` içeriğini alan `git archive` tabanlı
+  `scripts/temiz-kaynak-arsivi.sh` kapısından üretilir. Build hedefleri, fuzz
+  ikilileri, profiler çıktıları, Finder metadatası ve yerel ZIP'ler kök ignore
+  politikasında açıkça dışarıdadır; kalıcı fuzz korpusu korunur.
+
 - **Normatif otorite ve v1 kapıları** (K-081, ADR-010): geçerli dilin kesin
   davranışını spec anlatır; RFC değişikliği yetkilendirir ama spec+conformance
   testi aynı değişiklikte güncellenmeden yürürlüğe girmez. Kaynak denetimli

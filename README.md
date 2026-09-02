@@ -121,6 +121,9 @@ dahil her yerde kurulumsuz çalışır. **Çocuk modu:** `dil çalıştır --gü
 Uzak depo: **github.com/merbay-erp/zee** (özel; lisans seçilmeden — bölüm 26 —
 herkese açılmayacak, K-032). Tarih arşivi: ilk README'ler [docs/tarih/](docs/tarih/)
 altında dondurulmuştur; `baslangic` ve `dogum` etiketleri GitHub'a da itildi.
+Paylaşılabilir kaynak paketi çalışma klasörünün ZIP'i değildir; yalnız izlenen
+`HEAD` içeriğini alan [temiz kaynak arşivi](docs/temiz-kaynak-arsivi.md)
+komutuyla üretilir.
 
 ### v0.1 kabul kriterleri durumu (master plan bölüm 33)
 
@@ -158,7 +161,7 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **539** |
+| Rust + doctest vakası | **540** |
 | Tanı kimliği | **152 etkin + 3 ayrılmış** |
 | RFC | **25** (2 kabul, 21 geçici kabul, 2 taslak) |
 | ADR | **31** (31 kabul) |
