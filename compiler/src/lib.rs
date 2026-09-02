@@ -38,8 +38,10 @@ pub mod paket;
 pub mod proje;
 #[cfg(not(target_arch = "wasm32"))]
 pub mod registry;
+mod semantic_model;
 pub mod sozcukleyici;
 pub mod tani;
+mod tani_politikasi;
 #[cfg(not(target_arch = "wasm32"))]
 pub mod tedarik;
 pub mod wasm_api;

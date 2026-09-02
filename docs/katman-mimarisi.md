@@ -28,7 +28,7 @@ görünürdür. Katmanlar arası ters kenar ise tabana yazılsa bile reddedilir.
 ## Makine-okunur sahiplik
 
 [`katman-mimarisi-v1.tsv`](../compiler/tests/fixtures/katman-mimarisi-v1.tsv)
-35 production sahibinin katmanını, bütün doğrudan iç bağımlılıklarını ve tek
+37 production sahibinin katmanını, bütün doğrudan iç bağımlılıklarını ve tek
 cümlelik sorumluluğunu taşır. Kapsam şunların tamamıdır:
 
 - `lib.rs`, bütün kök kitaplık modülleri ve alt modülleri;
@@ -57,6 +57,23 @@ Kapı üç ayrı drift'i durdurur:
 3. exact taban güncellense bile kaynak→hedef katmanı izinli yönde değilse
    ters katman bağımlılığı.
 
+## Çevrim kapısı
+
+K-150/ADR-047 exact graph üzerinde SCC hesabını ayrıca zorunlu yapar. Katman
+yönünün izin vermesi çevrimi kabul ettirmez. Yeni sahipler-arası SCC reddedilir;
+artık graph'ta bulunmayan allowlist kaydı da bayat izin olarak kapıyı kırar.
+
+İlk incelemedeki `tani ↔ kaynak_sinirlari` çevrimi bağımlılıksız
+`tani_politikasi` bütçesiyle; `cozumleyici ↔ hir` çevrimi ortak private
+`semantic_model` tür sahibiyle kırıldı. `cozumleyici::Tur` public yolu yeniden
+dışa aktarımla uyumludur, HIR artık checker sahibini tüketmez.
+
+Kalan `paket,registry,tedarik` SCC'si
+[`izinli-katman-cevrimleri-v1.tsv`](../compiler/tests/fixtures/izinli-katman-cevrimleri-v1.tsv)
+içinde exact üyeler, gerekçe, K-160 kaldırma işi ve 1 Ekim 2026 son tarihiyle
+geçici C001 kaydıdır. Üye değişimi, yeni çevrim, gerekçesiz kayıt veya dolan
+tarih CI'ı durdurur; açıklamasız çevrim sayısı sıfırdır.
+
 ## K-149'da temizlenen iki ters kenar
 
 - FIPS 180-4 `sha256_hex`, paket modülünden temel `guvenlik` sahibine taşındı.
@@ -77,6 +94,7 @@ WASM'a; `lsp` lexer/parser/checker/runtime'a doğrudan bağımlı değildir.
 ```bash
 cd compiler
 cargo test --locked --test katman_mimarisi_testi
+cargo test --locked --test bagimlilik_cevrimi_testi
 cargo run --locked --bin faz_test_matrisi -- --denetle \
   --rapor target/faz-test-matrisi.md
 ```

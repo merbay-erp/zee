@@ -49,6 +49,7 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-044 | [Sürümlü semantic regresyon korpusu](044-surumlu-semantic-regresyon-korpusu.md) | **kabul** (K-147/B-039) |
 | ADR-045 | [Performans gözlemi ve tarihsel eğilim artefaktı](045-performans-gozlem-ve-egilim-artefakti.md) | **kabul** (K-148/B-040) |
 | ADR-046 | [Production katman sahipliği ve bağımlılık yönü](046-production-katman-bagimlilik-yonu.md) | **kabul** (K-149/B-057) |
+| ADR-047 | [Production bağımlılık çevrimi kapısı](047-production-bagimlilik-cevrimi-kapisi.md) | **kabul** (K-150/B-058) |
 | ADR-004 | Bellek yönetimi prototip kararı (GC / ARC benchmark) | bekliyor |
 | ADR-005 | Native backend seçimi (Cranelift / LLVM) | bekliyor — Faz 4 |
 | ADR-007 | [Telemetri ve gizlilik: araçlar veri toplamaz](007-telemetri-ve-gizlilik.md) | **kabul** |

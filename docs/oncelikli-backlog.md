@@ -1,7 +1,8 @@
 # zee — V1 öncesi öncelikli mühendislik backlog'u
 
-Bu belge 1 Eylül 2026 tarihli ayrıntılı dış incelemenin depo içindeki kalıcı,
-sıralı iş karşılığıdır. Yeni dil özelliği P0 omurga işleri kapanmadan öne
+Bu belge 1 Eylül 2026 ayrıntılı incelemesi ile 2 Eylül'deki ikinci ve üçüncü
+dış incelemelerin depo içindeki kalıcı, sıralı iş karşılığıdır. Yeni dil
+özelliği P0 omurga işleri kapanmadan öne
 alınmaz. Bir madde yalnız kodla değil; gerekiyorsa RFC/ADR, normatif spec,
 olumlu/olumsuz test, sürüm notu ve v1 kapısı birlikte güncellendiğinde kapanır
 (ADR-010 ve kök [AGENTS.md](../AGENTS.md)).
@@ -156,9 +157,13 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
     eklenen/kaldırılan kenar ve ters katman geçişi fail-closed'dur. Morfoloji→
     paket SHA-256 ve tedarik→runtime takvim terslikleri temel sahiplere
     taşındı; B-057 kapandı (607 test).
-47. Bağımlılık-hazır makine backlog'u kapalıdır. B-001 çağrı sözdizimi ve
-    B-002 gezme zihinsel modeli, önceden bağlanmış 10 çocuk/öğrenci + 5
-    profesyonel usability verisini bekler; veri gelmeden yeni syntax seçilmez.
+47. K-150/ADR-047 exact production graph'ına SCC kapısı koydu. Tanı↔kaynak
+    bütçesi ve checker↔HIR çevrimleri bağımsız temel/model sahipleriyle
+    kırıldı. Tek kalan paket/registry/tedarik SCC'si K-160 kaldırma işi ve
+    1 Ekim 2026 son tarihli gerekçeli geçici izindir; açıklamasız çevrim
+    sıfırdır. B-058 kapandı.
+48. Sıradaki makine işi K-151 ile bütün GitHub Actions kullanımlarını immutable
+    commit SHA'ya pinlemek ve kontrollü SHA güncelleme politikasını kurmaktır.
 
 ## P0 — V1 öncesi dil ve derleyici omurgası
 
@@ -562,6 +567,13 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   katman geçişi fail-closed'dur. Morfoloji SHA-256 için pakete, tedarik tarih
   dönüşümü için runtime'a artık bağımlanmaz; ortak ilkeller `guvenlik` ve
   `zaman` temel sahiplerindedir. Ayrıntı [katman rehberindedir](katman-mimarisi.md).
+- **B-058 · KAPALI (K-150/ADR-047) — production dependency cycle kapısı.**
+  Exact graph sahipler-arası SCC için denetlenir. `tani_politikasi`, tanı ile
+  merkezî kaynak profili arasındaki bütçeyi bağımlılıksız taşır;
+  `semantic_model`, checker ile HIR'ın ortak tür sahibidir. Böylece ilk üç
+  SCC'den ikisi kaldırıldı. Paket/registry/tedarik SCC'si yalnız exact üyeli,
+  ayrıntılı gerekçeli, K-160 sahipli ve 1 Ekim 2026 son tarihli C001 iznidir.
+  Yeni SCC, bayat allowlist ve süre aşımı fail-closed'dur.
 - **B-041 · KAPALI (K-120) — LSP'yi SymbolId/HIR'a bağla.** Definition ve
   rename yalnız başarılı checker'ın `SymbolId`/`IslemId`/`YapiId` typed-HIR
   bağından hedef seçer. HIR ilk tanım, yeniden atama ve okuma aralıklarını
@@ -594,12 +606,47 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 ## Bir sonraki somut kapı
 
 İnsan kanıtı hattında B-001 ve B-002, doldurulmuş gerçek usability formları
-ile önceden ilan edilmiş eşikleri bekler. Makine hattında K-149 production
-modül sahipliği, exact kenar tabanı ve katman yönünü bağlayıp B-057'yi kapattı.
-Bağımlılık-hazır açık makine maddesi yoktur; insan verisi gelmeden yeni syntax
-seçilmez veya bu iki kapı tamamlanmış gösterilmez.
+ile önceden ilan edilmiş eşikleri bekler. Makine hattında K-150 açıklamasız
+SCC'leri sıfırlayıp B-058'i kapattı. Sıradaki iş K-151 GitHub Actions
+supply-chain SHA pinleme kapısıdır; insan verisi gelmeden yeni syntax seçilmez
+veya B-001/B-002 tamamlanmış gösterilmez.
 
-## 2 Eylül 2026 ikinci dış inceleme ayrımı
+## 2 Eylül 2026 üçüncü dış inceleme — savunulabilir V1 yol haritası
+
+Bu sıra “kusursuzluk” iddiası değil; bilinen mimari borç bırakmayan,
+ölçülebilir kapılardan geçen V1 hedefidir. Önceki işlerle örtüşen maddeler
+tamamlanmış sayılmaz; burada istenen ek kanıt ayrıca üretilir.
+
+| Kayıt | Durum | Bağlayıcı çıktı |
+|---|---|---|
+| K-150 | **KAPALI** | SCC kapısı, iki kırılmış çevrim, K-160'a süreli tek izin |
+| K-151 | **SIRADA** | Bütün workflow action'ları immutable SHA + kontrollü yenileme |
+| K-152 | **AÇIK** | Gerçek Git SHA/milestone ve tam benchmark provenance şeması |
+| K-153 | **AÇIK** | Engine initialize'dan ayrı gerçek process→stdio LSP cold start |
+| K-154 | **AÇIK** | 2k/5k/10k/20k full-change eğrisi, invalidation sınırı ve eşikler |
+| K-155 | **AÇIK** | K-147 korpusuna `fixed_by`, mümkünse `introduced_by`, garanti sürümü |
+| K-156 | **AÇIK** | Nightly fuzz corpus artefaktı ve review'lü coverage seed kalıcılığı |
+| K-157 | **AÇIK** | Dört hedefte 30–60 dk RC kampanyası; uygun sanitizer/Miri kanıtı |
+| K-158 | **AÇIK** | Faz matrisinde opsiyonel çoklu `covers` ve doğru blast radius |
+| K-159 | **AÇIK** | Desteklenen facade, internal API ve SemVer politikası |
+| K-160 | **AÇIK — C001 son tarihi 2026-10-01** | Paket modeli/çözüm/registry/doğrulama sahipliği ve SCC kaldırma |
+| K-161 | **İNSAN KANITI** | B-001/K-016 için 10 öğrenci/çocuk + 5 profesyonel kör oturum |
+| K-162 | **İNSAN KANITI** | B-002/K-093 morphology/scope/call/error zihinsel model oturumu |
+| K-163 | **AÇIK** | 500–1500 satır ilk gerçek Zee uygulaması ve ergonomi günlüğü |
+| K-164 | **AÇIK** | Farklı workload'da ikinci gerçek proje |
+| K-165 | **AÇIK** | Aynı uygulamanın Zee–Go/Rust veri temelli dogfood karşılaştırması |
+| K-166 | **AÇIK** | En sık 50 hata için span/öneri/noise düzeltme başarısı |
+| K-167 | **AÇIK** | Grammar freeze, breaking/deprecation, tanı ve paket uyumluluğu |
+| K-168 | **AÇIK** | İki temiz ortamda eş hash, SBOM, imza ve provenance |
+| K-169 | **AÇIK** | Linux/macOS/Windows kurulum-kaldırma ve release runbook tatbikatı |
+| K-170 | **AÇIK** | Birleşik security release gate; kritik/yüksek açık sıfır |
+| K-171 | **AÇIK** | Spec/RFC/ADR/implementation/test madde düzeyi drift raporu |
+| K-172 | **AÇIK** | Yalnız dogfood boşluklarından büyüyen başarı+başarısızlık corpus'u |
+| K-173 | **AÇIK** | Uzun compiler/LSP workspace soak ve kaynak sızıntısı kanıtı |
+| K-174 | **AÇIK** | 2–4 hafta yeni syntax kapalı V1 freeze |
+| K-175 | **AÇIK** | İnsan+iki proje+üç platform+signed reproducible V1 RC |
+
+## Önceki kanıt: 2 Eylül 2026 ikinci dış inceleme ayrımı
 
 - **Doğrulandı ve K-129/K-130/K-131/K-132 ile kapandı:** B-025 kaynak/token,
   proje toplamı, bounded stdin/dosya okuması, heap/metin/çıktı, koleksiyon,
@@ -620,8 +667,9 @@ seçilmez veya bu iki kapı tamamlanmış gösterilmez.
   tam sahipli faz test matrisi K-146/ADR-043 ile, 17 vakalı kalıcı semantic
   regression korpusu K-147/ADR-044 ile, p50/p95 performans tarihçesi ve trend
   artefaktları K-148/ADR-045 ile, production modül/kenar/katman yönü
-  K-149/ADR-046 ile kapandı. Bağımlılık-hazır makine backlog'u bitti; B-001 ve
-  B-002 gerçek usability verisini bekler.
+  K-149/ADR-046 ile kapandı. İkinci incelemenin makine backlog'u burada bitti;
+  üçüncü inceleme K-150–K-175 sırasını ekledi. B-001 ve B-002 gerçek usability
+  verisini bekler.
   B-033/B-034 temiz snapshot hattı ayrıca kapalıdır.
 - **Mevcut repoda zaten kapalı:** çağrı derinliği C019/500 ve ayrı regresyonu;
   atomik metadata `unsafe` bloklarının her birindeki `SAFETY` gerekçesi; kök

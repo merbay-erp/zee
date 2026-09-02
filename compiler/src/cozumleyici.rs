@@ -44,7 +44,7 @@ use self::turler::{
     alan_turu, bos_koleksiyon_uzlasi, intrinsic_turunu_cevir, parametre_turu, veri_turu_yap,
     yapi_turu_tanilari,
 };
-pub use self::turler::{SozlukDegerTuru, Tur, VeriTuru};
+pub use crate::semantic_model::{SozlukDegerTuru, Tur, VeriTuru};
 
 use crate::agac::{Cumle, Ifade, Islec, Islem, Ozellik, Program, Yapi};
 use crate::intrinsic;

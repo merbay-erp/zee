@@ -7,8 +7,8 @@
 use std::collections::HashMap;
 
 use crate::agac::{Ifade, Islem, Program, Yapi};
-use crate::cozumleyici::Tur;
 use crate::kimlik::{IslemId, SymbolId, YapiId};
+use crate::semantic_model::Tur;
 
 mod gezinme;
 mod kaynak;

@@ -67,9 +67,11 @@ fn handler_modulleri_yeni_domain_icin_sinir_tasir() {
         ("src/cozumleyici/yetkinlik.rs", 380),
         ("src/cozumleyici/sembol.rs", 200),
         ("src/cozumleyici/sozlesme.rs", 180),
-        ("src/cozumleyici/turler.rs", 300),
+        ("src/cozumleyici/turler.rs", 160),
         ("src/guvenlik.rs", 220),
         ("src/kimlik.rs", 80),
+        ("src/semantic_model.rs", 180),
+        ("src/tani_politikasi.rs", 20),
         ("src/faz.rs", 160),
         ("src/hir.rs", 180),
         ("src/hir/gezinme.rs", 140),
@@ -263,7 +265,6 @@ fn domain_kaynak_limitleri_tek_profilden_beslenir() {
         "src/tedarik.rs",
         "src/registry.rs",
         "src/registry/istemci.rs",
-        "src/tani.rs",
         "src/kalici_dosya.rs",
         "src/kalici_dosya/metadata.rs",
     ] {
@@ -272,13 +273,17 @@ fn domain_kaynak_limitleri_tek_profilden_beslenir() {
             "{goreli} kaynak limitini ortak profilden okumalı"
         );
     }
+    let tani = kaynak("src/tani.rs");
+    let profil = kaynak("src/kaynak_sinirlari.rs");
+    assert!(tani.contains("tani_politikasi::AZAMI_TANI_SAYISI"));
+    assert!(profil.contains("tani_politikasi::AZAMI_TANI_SAYISI"));
 }
 
 #[test]
 fn checker_katmanlari_tek_sorumlulukla_sahiplenilir() {
     for (goreli, kanit) in [
         ("src/cozumleyici/sembol.rs", "pub fn ad_cozumle"),
-        ("src/cozumleyici/turler.rs", "pub enum Tur"),
+        ("src/semantic_model.rs", "pub enum Tur"),
         ("src/cozumleyici/akis.rs", "fn daraltma_cikar"),
         ("src/cozumleyici/cagri.rs", "fn cagri_denetle"),
         ("src/cozumleyici/cikarim.rs", "fn cikarim_onbilgisi"),
@@ -320,7 +325,7 @@ fn semantic_kimlikler_depolama_indeksine_geri_donmez() {
         );
     }
 
-    let turler = kaynak("src/cozumleyici/turler.rs");
+    let turler = kaynak("src/semantic_model.rs");
     assert!(!turler.contains("Yapi(usize)"));
 
     for goreli in ["src/cozumleyici/cumle.rs", "src/cozumleyici/ifade.rs"] {

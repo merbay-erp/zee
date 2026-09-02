@@ -1,0 +1,3 @@
+# zee-izinli-katman-cevrimleri-1
+# kimlik	uyeler	son_tarih	kaldirma_isi	gerekce
+C001	paket,registry,tedarik	2026-10-01	K-160	Paket cozumu registry dogrulamasi ve yayin artefakti bugun ayni proje katmaninda karsilikli tip kullaniyor; K-160 sorumluluk ayrimi bu gecici SCCyi kaldiracak.

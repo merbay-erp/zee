@@ -176,10 +176,10 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **607** |
+| Rust + doctest vakası | **609** |
 | Tanı kimliği | **152 etkin + 3 ayrılmış** |
 | RFC | **25** (2 kabul, 21 geçici kabul, 2 taslak) |
-| ADR | **44** (44 kabul) |
+| ADR | **45** (45 kabul) |
 | Normatif spec bölümü | **24** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
@@ -303,6 +303,11 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   yeni/kaldırılmış kenar ve ters katman geçişi fail-closed'dur; SHA-256 ile
   takvim ilkellerinin iki gerçek ters bağımlılığı aşağı taşındı. Ayrıntı
   [katman mimarisi rehberindedir](docs/katman-mimarisi.md); B-057 kapandı.
+  K-150/ADR-047 exact graph'a SCC kapısı ekledi: tanı↔kaynak bütçesi ile
+  checker↔HIR çevrimleri bağımsız `tani_politikasi` ve `semantic_model`
+  sahipleriyle kırıldı. Kalan paket/registry/tedarik SCC'si yalnız K-160'a ve
+  1 Ekim 2026'ya kadar gerekçeli geçici kayıttır; yeni, bayat veya süresi
+  dolmuş çevrim CI'da reddedilir. Açıklamasız production çevrimi sıfırdır.
   K-107/ADR-019 `dillsp` girdisini 8 KiB başlık, 8 MiB gövde, 128 JSON
   derinliği ve 100 bin düğümle sınırlayıp Unicode parser olumsuzlarını kapattı.
   K-138/ADR-035 sayı ayrıştırmasını RFC 8259 durum makinesine taşıdı; sayısal

@@ -64,3 +64,10 @@ için paket modülüne, tedarik RFC 3339 zamanı için yorumlayıcıya bağıml�
 - K-149 sonrası makine backlog'unda bağımlılık-hazır açık compiler maddesi
   kalmaz. B-001 ve B-002'nin kapanışı önceden ilan edilmiş gerçek çocuk ve
   profesyonel usability verisini beklemeye devam eder.
+
+## K-150 tamamlayıcı karar
+
+ADR-047 aynı exact graph'ın SCC'lerini de fail-closed yaptı. Sahip sayısı
+`semantic_model` ve `tani_politikasi` ile 37'ye çıktı; iki çevrim kırıldı,
+paket/registry/tedarik çevrimi K-160 ve 1 Ekim 2026 son tarihli geçici izinle
+görünür borç olarak sınırlandı. Güncel gerçek için katman rehberi bağlayıcıdır.

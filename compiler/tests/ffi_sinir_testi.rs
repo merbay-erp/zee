@@ -9,7 +9,7 @@ fn enum_govdesi<'a>(kaynak: &'a str, baslik: &str) -> &'a str {
 
 #[test]
 fn ondalik_binary_floata_ortuk_eslenemez() {
-    let turler = include_str!("../src/cozumleyici/turler.rs");
+    let turler = include_str!("../src/semantic_model.rs");
     let runtime = include_str!("../src/yorumlayici.rs");
     for (ad, govde) in [
         ("Tur", enum_govdesi(turler, "pub enum Tur {")),
