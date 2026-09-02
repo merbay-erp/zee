@@ -1,4 +1,4 @@
-//! K-147/B-039: Düzeltilmiş semantic bug'lar sürümlü, minimal Zee kaynaklarıdır.
+//! K-147/K-155: Düzeltilmiş semantic bug'lar kaynak ve sürüm provenance'lıdır.
 
 use dil::faz::KaynakMetni;
 use dil::tani::Tani;
@@ -7,7 +7,7 @@ use dil::yorumlayici::{calistir_baglanmis_io_kodla, ToplayanIo};
 use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
 
-const SEMA: &str = "# zee-semantic-regresyon-1";
+const SEMA: &str = "# zee-semantic-regresyon-2";
 const FAZLAR: &[&str] = &[
     "parser",
     "checker",
@@ -30,6 +30,9 @@ const KIPLER: &[&str] = &[
 struct Vaka {
     ad: String,
     bug: String,
+    fixed_by: String,
+    introduced_by: Option<String>,
+    guaranteed_since: String,
     faz: String,
     kip: String,
     tani: Option<String>,
@@ -74,7 +77,7 @@ fn span_coz(metin: &str, satir: usize) -> Option<(usize, usize, usize)> {
 }
 
 fn vakalari_oku() -> Vec<Vaka> {
-    let yol = depo().join("regression/v1.tsv");
+    let yol = depo().join("regression/v2.tsv");
     let metin = std::fs::read_to_string(&yol).expect("regresyon manifesti okunmalı");
     assert!(metin.ends_with('\n'), "manifest LF ile bitmeli");
     assert!(!metin.contains('\r'), "manifest CR taşımamalı");
@@ -89,15 +92,20 @@ fn vakalari_oku() -> Vec<Vaka> {
             let alanlar = satir.split('\t').collect::<Vec<_>>();
             assert_eq!(
                 alanlar.len(),
-                9,
-                "manifest satırı {sira}: dokuz alan gerekir"
+                12,
+                "manifest satırı {sira}: on iki alan gerekir"
             );
-            let [ad, bug, faz, kip, tani, span, cikis, cikti, dosya] = alanlar.as_slice() else {
+            let [ad, bug, fixed_by, introduced_by, guaranteed_since, faz, kip, tani, span, cikis, cikti, dosya] =
+                alanlar.as_slice()
+            else {
                 unreachable!("alan sayısı doğrulandı")
             };
             Vaka {
                 ad: (*ad).to_string(),
                 bug: (*bug).to_string(),
+                fixed_by: (*fixed_by).to_string(),
+                introduced_by: (*introduced_by != "-").then(|| (*introduced_by).to_string()),
+                guaranteed_since: (*guaranteed_since).to_string(),
                 faz: (*faz).to_string(),
                 kip: (*kip).to_string(),
                 tani: (*tani != "-").then(|| (*tani).to_string()),
@@ -114,6 +122,29 @@ fn vakalari_oku() -> Vec<Vaka> {
             }
         })
         .collect()
+}
+
+fn tam_git_sha(deger: &str) -> bool {
+    deger.len() == 40
+        && deger
+            .bytes()
+            .all(|bayt| bayt.is_ascii_hexdigit() && !bayt.is_ascii_uppercase())
+}
+
+fn git_commit_var(revizyon: &str) -> bool {
+    std::process::Command::new("git")
+        .args(["cat-file", "-e", &format!("{revizyon}^{{commit}}")])
+        .current_dir(depo())
+        .status()
+        .is_ok_and(|durum| durum.success())
+}
+
+fn git_atasidir(ata: &str, torun: &str) -> bool {
+    std::process::Command::new("git")
+        .args(["merge-base", "--is-ancestor", ata, torun])
+        .current_dir(depo())
+        .status()
+        .is_ok_and(|durum| durum.success())
 }
 
 fn dil_dosyalarini_topla(klasor: &Path, sonuc: &mut BTreeSet<String>) {
@@ -259,6 +290,43 @@ fn semantic_regresyon_manifesti_tam_tekil_ve_minimaldir() {
             "{}: {} karar günlüğünde kayıtlı değil",
             vaka.ad,
             vaka.bug
+        );
+        assert!(
+            tam_git_sha(&vaka.fixed_by),
+            "{}: fixed_by tam SHA olmalı",
+            vaka.ad
+        );
+        assert!(
+            git_commit_var(&vaka.fixed_by),
+            "{}: fixed_by commit değil",
+            vaka.ad
+        );
+        assert!(
+            git_atasidir(&vaka.fixed_by, "HEAD"),
+            "{}: fixed_by HEAD atası değil",
+            vaka.ad
+        );
+        if let Some(introduced_by) = &vaka.introduced_by {
+            assert!(
+                tam_git_sha(introduced_by),
+                "{}: introduced_by tam SHA veya - olmalı",
+                vaka.ad
+            );
+            assert!(
+                git_commit_var(introduced_by),
+                "{}: introduced_by commit değil",
+                vaka.ad
+            );
+            assert!(
+                git_atasidir(introduced_by, &vaka.fixed_by),
+                "{}: introduced_by fixed_by atası değil",
+                vaka.ad
+            );
+        }
+        assert_eq!(
+            vaka.guaranteed_since, "0.8.0-dev",
+            "{}: garanti sürümü güncel geliştirme serisi olmalı",
+            vaka.ad
         );
         assert!(
             FAZLAR.contains(&vaka.faz.as_str()),

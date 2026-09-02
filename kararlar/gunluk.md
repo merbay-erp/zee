@@ -2560,6 +2560,37 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   test, 97 numaralı belge ve 48 kabul ADR'dir. Grammar, runtime, tanılar,
   RFC ve normatif spec değişmedi.
 
+## K-154 — LSP tam-metin değişikliği ölçeklenmiyor (3 Eyl)
+
+- **Sınır:** `didChange` bugün bütün belge `String`ini değiştirip klonlar ve
+  tam lexer/parser/resolver/checker/typed-HIR hattını yeniden kurar; belge
+  sürümleri arasında incremental cache yoktur.
+- **Ölçüm:** Açık `--lsp-olcek` 2k/5k/10k/20k tam-metin değişikliklerini iki
+  ısınma+25 örnekle ölçer. Önceden sabitlenen p95 çizgileri 250/500/1000
+  ms'dir; shared CI bunları hard gate değil gözlem artefaktı yapar.
+- **Kanıt:** Exact temiz `59580cd0c0b2d66a1ff1f28e7e285bfa0858abab`
+  uygulama commit'inde Apple M4 Pro release p95 sonuçları 167,281 ms /
+  1.081,746 ms / 4.669,372 ms / 20.159,636 ms'dir. Üç çizgi de ilk kez 5k
+  satırda aşılır ve büyüme süper-doğrusaldır.
+- **Kapanış:** ADR-051, sürümlü tarihçe, rapor eşik testi ve CI kablosuyla
+  K-154/B-062 kapandı. Optimizasyon bilinçli olarak sonraki tasarıma bırakıldı.
+
+## K-155 — “Düzeldi” sözü exact kaynağa bağlanmalı (3 Eyl)
+
+- **Eksik:** K-147 korpusu bug kimliği ve sonucu taşıyor ama düzeltme commit'i,
+  introduced commit ve garanti sürümünü makine-okunur söylemiyordu.
+- **Şema:** `regression/v2.tsv` her vakaya tam `fixed_by`, biliniyorsa tam
+  `introduced_by` ve `guaranteed_since=0.8.0-dev` ekledi. 17 fixed commit Git
+  tarihinden doğrulandı; minimal reproducer düzeltme anında bulunmadığı için
+  introduced commit'ler tahmin edilmedi ve açık `-` bırakıldı.
+- **Kapı:** Test SHA biçimini, commit varlığını ve ata yönünü denetler. Git
+  koruğu v1→v2 göçünü okur; yayımlanmış kimlik/fixed/garanti yeniden yazılamaz.
+  `introduced_by` yalnız `-`→kanıtlı ata SHA yönünde zenginleşebilir.
+  `compiler/src` altında fix/bug/düzeltme bildiren commit exact `fixed_by`
+  sahibi yeni fixture olmadan CI'dan geçemez.
+- **Kapanış:** ADR-052 ve güncel bakım protokolüyle K-155/B-063 kapandı.
+  Grammar, runtime, tanı anlamı, RFC ve normatif spec değişmedi.
+
 ---
 
 ## Sonraki adım
@@ -2568,12 +2599,8 @@ Korpus 10 öğrenci + 5 profesyonel usability oturumuna (Hafta 12 hedefi, erkeni
 Hafta 2'de kağıt üstünde) sesli okutulacak; her kayıt için "doğal mı /
 deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
-Makine hattında K-153 gerçek process→stdio LSP cold-start yolunu exact 25
-örnekli tabanla kapattı. K-154/ADR-051, 2k/5k/10k/20k tam-metin değişim
-eğrisini ve p95 250/500/1000 ms ilk-aşım raporunu uyguladı; bugünkü tam belge,
-tam parse/check/HIR invalidation gerçeğini kaydetti. Exact temiz `59580cd…`
-uygulama commit'indeki 25 örnek 2k/5k/10k/20k p95'i 167,281 ms / 1.081,746
-ms / 4.669,372 ms / 20.159,636 ms ölçtü; üç eşik de 5k'da aşılır. B-062
-kapandı; ardından K-155 regresyon provenance gelir.
+Makine hattında K-154 tam-metin ölçek eğrisini exact tabanla, K-155 semantic
+regresyon provenance zincirini v2 manifest ve fixture'sız bug-fix koruğuyla
+kapattı. Sırada K-156 fuzz corpus kalıcılığı vardır.
 B-001/B-002 (yeni sırada K-161/K-162), gerçek 10 çocuk/öğrenci + 5 profesyonel
 usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.

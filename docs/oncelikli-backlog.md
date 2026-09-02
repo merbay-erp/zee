@@ -182,7 +182,13 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
     görünür yaptı. Exact temiz `59580cd…` uygulama commit'indeki 25 örnek
     2k/5k/10k/20k p95'i sırasıyla 167,281 ms / 1.081,746 ms / 4.669,372 ms /
     20.159,636 ms ölçtü; üç eşik de ilk kez 5k'da aşılır. Optimizasyon
-    yapılmadı; B-062 kapandı ve sırada K-155 var.
+    yapılmadı; B-062 kapandı.
+52. K-155/ADR-052, 17 semantic regresyonu exact `fixed_by`, kanıtlıysa
+    `introduced_by` ve `guaranteed_since=0.8.0-dev` alanlı v2 manifeste
+    taşıdı. Tarihsel introduced commit'ler reproducer olmadan tahmin edilmedi.
+    Git koruğu yayımlanmış provenance'ı ve compiler bug-fix commit'inin yeni
+    fixture sahibi olmasını geçici gerçek Git deposundaki uçtan uca regresyonla
+    fail-closed denetler; B-063 kapandı, sırada K-156.
 
 ## P0 — V1 öncesi dil ve derleyici omurgası
 
@@ -624,6 +630,16 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   Optimizasyon kapsam dışıdır. Exact temiz `59580cd…` uygulama commit'inde
   25 örnekli p95 eğrisi 167,281 ms / 1.081,746 ms / 4.669,372 ms /
   20.159,636 ms'dir; 250/500/1000 ms eşiklerinin üçü de ilk kez 5k'da aşılır.
+- **B-063 · KAPALI (K-155/ADR-052) — Semantic regression provenance.** Her
+  `regression/v2.tsv` vakası gerçek tam `fixed_by`, varsa tam
+  `introduced_by`, `0.8.0-dev` garanti serisi, K-kimliği, faz ve gözlenebilir
+  sonucu birlikte taşır. İlk 17 tarihsel vakanın introduced commit'i düzeltme
+  anında minimal reproducer bulunmadığından tahmin edilmez ve `-` kalır;
+  sonradan yalnız kanıtlı ata SHA'ya tek yönlü zenginleştirilebilir. Koruk v1
+  tabanını okuyarak v2 göçünü korur; yayımlanmış kimlik/fixed/garanti yeniden
+  yazılamaz. `compiler/src` altında fix/bug/düzeltme bildiren commit exact
+  `fixed_by` sahibi yeni fixture olmadan CI'dan geçemez; geçici Git deposu
+  regresyonu reddetme/kabul/yeniden-yazım yollarının üçünü de yürütür.
 - **B-041 · KAPALI (K-120) — LSP'yi SymbolId/HIR'a bağla.** Definition ve
   rename yalnız başarılı checker'ın `SymbolId`/`IslemId`/`YapiId` typed-HIR
   bağından hedef seçer. HIR ilk tanım, yeniden atama ve okuma aralıklarını
@@ -640,7 +656,7 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   programın metin/yorumları koruyan deterministik dağınık-boşluk varyantı
   biçimlenir; önce/sonra izi eşit ve iki parser geçişi de başarılı olmak
   zorundadır. İdempotence ve proje/kitaplık resmî biçim kapıları korunur.
-- **B-043 · KAPALI (K-118) — spec↔code kanıt haritası.** Bugünkü 25 RFC, 49
+- **B-043 · KAPALI (K-118) — spec↔code kanıt haritası.** Bugünkü 25 RFC, 50
   ADR ve 24 spec bölümü `docs/kanit-haritasi-v1.tsv` içinde `kanitli/kismi/taslak`
   durumu, yürütülebilir test yolları ve açık kapsam notuyla birebir izlenir.
   Tazelik testi eksik/yinelenen belgeyi, olmayan ya da test taşımayan kanıt
@@ -658,8 +674,9 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 İnsan kanıtı hattında B-001 ve B-002, doldurulmuş gerçek usability formları
 ile önceden ilan edilmiş eşikleri bekler. Makine hattında K-153 gerçek
 process→stdio LSP cold-start yolunu exact 25 örnekli tabanla kapattı.
-K-154 tam-metin değişim ölçek eğrisini ve invalidation sınırını da exact
-tabanla kapattı; sıradaki makine işi K-155 semantic regresyon provenance'ıdır.
+K-154 tam-metin değişim ölçek eğrisini ve invalidation sınırını exact tabanla,
+K-155 semantic regresyon provenance zincirini v2 manifest ve bug-fix koruğuyla
+kapattı; sıradaki makine işi K-156 fuzz corpus kalıcılığıdır.
 İnsan verisi gelmeden yeni syntax seçilmez
 veya B-001/B-002 tamamlanmış gösterilmez.
 
@@ -676,7 +693,7 @@ tamamlanmış sayılmaz; burada istenen ek kanıt ayrıca üretilir.
 | K-152 | **KAPALI** | Gerçek Git SHA/milestone ve tam benchmark provenance şeması |
 | K-153 | **KAPALI** | Engine/process ayrımı, gerçek ikili testi ve exact 25 örnek taban |
 | K-154 | **KAPALI** | 2k/5k/10k/20k full-change eğrisi, invalidation sınırı ve üç ilk-aşım eşiği |
-| K-155 | **AÇIK** | K-147 korpusuna `fixed_by`, mümkünse `introduced_by`, garanti sürümü |
+| K-155 | **KAPALI** | V2 manifestte exact `fixed_by`, kanıtlı `introduced_by`, garanti sürümü ve bug-fix koruğu |
 | K-156 | **AÇIK** | Nightly fuzz corpus artefaktı ve review'lü coverage seed kalıcılığı |
 | K-157 | **AÇIK** | Dört hedefte 30–60 dk RC kampanyası; uygun sanitizer/Miri kanıtı |
 | K-158 | **AÇIK** | Faz matrisinde opsiyonel çoklu `covers` ve doğru blast radius |

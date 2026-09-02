@@ -798,7 +798,10 @@ tam belge→tam lexer/parser→resolver/checker→typed-HIR yeniden kurulumudur;
 incremental cache ve bu dilimde optimizasyon yoktur. Exact temiz 25 örnekli
 `59580cd…` uygulama tabanında 2k/5k/10k/20k p95 sırasıyla 167,281 ms /
 1.081,746 ms / 4.669,372 ms / 20.159,636 ms'dir; 250/500/1000 ms çizgilerinin
-üçü de ilk kez 5k'da aşılır. B-062/K-154 kapandı, sırada K-155 vardır.
+üçü de ilk kez 5k'da aşılır. B-062/K-154 kapandı. K-155/ADR-052 semantic
+regresyon manifestini exact `fixed_by`, kanıtlıysa `introduced_by` ve garanti
+sürümüyle v2'ye taşıdı; v1→v2 soy ağacını ve fixture'sız compiler bug fix'ini
+fail-closed korur. B-063 kapandı, sırada K-156 fuzz corpus kalıcılığı vardır.
 B-001 çağrı sözdizimi ile B-002 gezme zihinsel modeli gerçek insan
 kanıtı gelmeden kapatılmaz veya yeni syntax kararıyla atlanmaz.
 # 40. Proje felsefesinin korunması

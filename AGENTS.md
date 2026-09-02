@@ -67,8 +67,10 @@ kaydını günceller; Dependabot PR'ı otomatik merge edilmez. Toplu committen
 önce `tedarik_kapisi_testi` bu birebirliği denetler.
 
 Her compiler bug düzeltmesi ayrıca `regression/<faz>/` altında tek arızaya
-indirgenmiş bir `.dil` kaynağı ve `regression/v1.tsv` içinde K-kimliği, faz,
-kip, beklenen tanı+kesin span, exit ve çıktı kaydı bırakır. Bu kayıt olmadan
+indirgenmiş bir `.dil` kaynağı ve `regression/v2.tsv` içinde K-kimliği,
+`fixed_by`, mümkünse `introduced_by`, `guaranteed_since`, faz, kip, beklenen
+tanı+kesin span, exit ve çıktı kaydı bırakır. Düzeltme commit'i önce alınır;
+manifestin `fixed_by` alanı bu exact tam SHA'yı izleyen committe kaydeder. Bu kayıt olmadan
 bug düzeltmesi tamamlanmış ya da commitlenebilir sayılmaz. Korpus sözleşmesi
 `docs/semantic-regresyon-korpusu.md` ve ADR-044'tedir. Var olan vaka kimliği,
 K-kimliği veya yolu silinmez/yeniden kullanılmaz; CI bunu Git tabanına karşı

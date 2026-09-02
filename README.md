@@ -176,10 +176,10 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **612** |
+| Rust + doctest vakası | **613** |
 | Tanı kimliği | **152 etkin + 3 ayrılmış** |
 | RFC | **25** (2 kabul, 21 geçici kabul, 2 taslak) |
-| ADR | **49** (49 kabul) |
+| ADR | **50** (50 kabul) |
 | Normatif spec bölümü | **24** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
@@ -292,7 +292,10 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   tamamladı: `regression/` altındaki 17 minimal `.dil` vaka bug kimliği,
   birincil faz, kesin tanı spanı, exit ve stdout beklentisiyle birebir
   sahiplenir; [bakım protokolü](docs/semantic-regresyon-korpusu.md) yeni her
-  compiler bug düzeltmesinde aynı kaydı zorunlu kılar. B-039 kapandı.
+  compiler bug düzeltmesinde aynı kaydı zorunlu kılar. K-155/ADR-052'nin v2
+  manifesti her vakaya exact `fixed_by`, kanıtlıysa `introduced_by` ve
+  `guaranteed_since=0.8.0-dev` ekledi; CI artık fixture'sız compiler bug-fix
+  commit'ini ve provenance yeniden yazımını da reddeder. B-039/B-063 kapandı.
   K-148/ADR-045 eski terminal medyanını dokuz ayrı parse/checker/HIR/runtime/
   yürütme/LSP/bellek yüzeyinde 25 turluk ham örnek+p50/p95 gözlemine çevirdi.
   K-152/ADR-049 tarihçedeki her satırı tam Git SHA, ayrı milestone, temiz
