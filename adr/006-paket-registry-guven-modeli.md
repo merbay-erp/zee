@@ -1,6 +1,7 @@
 # ADR-006 — Paket registry güven modeli
 
-- **Durum:** kabul (yayın K-094; metadata K-095; kanonik yol K-117; taşıma/cache sürüyor)
+- **Durum:** kabul (yayın K-094; metadata K-095; kanonik yol K-117;
+  taşıma/cache/kalıcı durum/offline K-135; exact proje/CLI bağı sürüyor)
 - **Tarih:** 1 Eylül 2026
 - **Normatif ayrıntı:** RFC-0020, spec/18
 
@@ -111,10 +112,11 @@ CI fixture'ını ve 80 vakalık kalıcı saldırı korpusunu ekler. K-095;
 ağ dışı root sabitlemesini, eşik/çift eşikli ardışık rotasyonu,
 timestamp→snapshot→targets bağlarını, tek güncelleme saatini, sürüm+özet
 rollback/equivocation durumunu ve exact yayıncı/yanked/duyuru politikasını
-çalışan byte doğrulayıcısına dönüştürür. Kalıcı durum dosyası, uzak taşıma,
-doğrulanmış cache, offline hit/miss, manifest/kilit ve CLI tamamlanana kadar
-V1-P1-07 **AÇIK** kalır. Belgede kararın kabul edilmiş olması gerçeklenmemiş
-ağ/cache güvencesi iddiası değildir.
+çalışan byte doğrulayıcısına dönüştürür. K-135 HTTPS-only statik taşıma,
+ardışık root güncellemesi, tam zincir sonrası salt-okunur içerik-adresli cache,
+CAS korumalı atomik monoton durum ve çevrimdışı yeniden doğrulamayı ekler.
+Manifest/kilit ve CLI tamamlanana kadar V1-P1-07 **AÇIK** kalır. Belgede
+kararın kabul edilmiş olması henüz gerçeklenmemiş exact proje bağını kapsamaz.
 
 ## Sonuçlar
 

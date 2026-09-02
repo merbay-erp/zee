@@ -155,8 +155,8 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **527** |
-| Tanı kimliği | **150 etkin + 3 ayrılmış** |
+| Rust + doctest vakası | **533** |
+| Tanı kimliği | **151 etkin + 3 ayrılmış** |
 | RFC | **25** (2 kabul, 21 geçici kabul, 2 taslak) |
 | ADR | **31** (31 kabul) |
 | Normatif spec bölümü | **24** |
@@ -198,8 +198,11 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   kaynaktan deterministik `.zep`, Ed25519 imzalı yayın, SPDX 3.0.1 SBOM ve
   SLSA v1 provenance üretir. K-095 ağ dışı sabit root, eşik ve çift eşikli
   rotasyon, timestamp/snapshot/targets, rollback/expiry/mix-and-match, yanlış
-  yayıncı, yanked ve kritik duyuru metadata doğrulamasını kurar; taşıma,
-  kalıcı cache/offline ve CLI tamamlanana kadar kapı açık kalır. K-117 kaynak
+  yayıncı, yanked ve kritik duyuru metadata doğrulamasını kurar. K-135 yalnız
+  HTTPS origin kullanan redirect'siz statik taşıma, 64 ardışık root rotasyonu,
+  atomik monoton durum ve yalnız tam zincirden sonra yayımlanan salt-okunur
+  içerik-adresli cache/offline hit-miss katmanını ekler; exact proje bildirimi,
+  kilit ve CLI tamamlanana kadar kapı açık kalır. K-117 kaynak
   paketinin NFC yolunu, üç platformlu byte fixture'ını ve Unicode saldırı
   korpusunu kapatır.
   K-096, çalışan A çağrı yüzeyini nihai seçim saymadan tek-genel-sözdizimi

@@ -32,6 +32,29 @@ pub fn atomik_yaz(yol: &Path, icerik: &[u8]) -> io::Result<()> {
     atomik_icerik_yaz(yol, icerik, atomik_degistir)
 }
 
+/// Hedef hâlâ çağıranın okuduğu byte'lardaysa yeni içeriği atomik yayımlar.
+/// Registry gibi oku-doğrula-yaz akışlarında iki sürecin daha eski durumu
+/// daha yenisinin üstüne yazmasını engeller.
+pub fn atomik_karsilastir_ve_yaz(
+    yol: &Path,
+    beklenen: Option<&[u8]>,
+    yeni: &[u8],
+) -> io::Result<()> {
+    let _kilit = DosyaKilidi::al(yol)?;
+    let guncel = match crate::kaynak_sinirlari::veri_dosyasi_baytlarini_oku(yol) {
+        Ok(icerik) => Some(icerik),
+        Err(hata) if hata.kind() == io::ErrorKind::NotFound => None,
+        Err(hata) => return Err(hata),
+    };
+    if guncel.as_deref() != beklenen {
+        return Err(io::Error::new(
+            io::ErrorKind::WouldBlock,
+            "kalıcı durum doğrulama sırasında başka bir süreççe değiştirildi",
+        ));
+    }
+    atomik_icerik_yaz(yol, yeni, atomik_degistir)
+}
+
 /// zee'nin dosyaya yaz/ekle semantiği: satır sonu ekler; ekleme de kilit
 /// altında oku-değiştir-atomik replace olduğundan iki süreç veri kaybetmez.
 pub fn atomik_satir_yaz(yol: &Path, satir: &str, ekleme: bool) -> io::Result<()> {
@@ -577,6 +600,19 @@ mod tests {
             .expect_err("çakışma sessizce ezilmemeli");
         assert_eq!(hata.kind(), io::ErrorKind::WouldBlock);
         assert_eq!(std::fs::read(&yol).unwrap(), b"baska-yazar");
+    }
+
+    #[test]
+    fn karsilastir_ve_yaz_bayat_registry_durumunu_ezmez() {
+        let gecici = GeciciKlasor::yeni();
+        let yol = gecici.0.join("registry-durumu.json");
+        atomik_karsilastir_ve_yaz(&yol, None, b"surum-1").expect("ilk durum");
+        atomik_karsilastir_ve_yaz(&yol, Some(b"surum-1"), b"surum-2").expect("ileri durum");
+
+        let hata = atomik_karsilastir_ve_yaz(&yol, Some(b"surum-1"), b"bayat")
+            .expect_err("bayat yazar reddedilmeli");
+        assert_eq!(hata.kind(), io::ErrorKind::WouldBlock);
+        assert_eq!(std::fs::read(&yol).unwrap(), b"surum-2");
     }
 
     #[test]

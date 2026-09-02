@@ -2105,6 +2105,35 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   kanıtıdır. Envanter 527 test, 150 etkin + 3 ayrılmış tanı ve 80 numaralı
   belgedir. B-026 kapandı.
 
+## K-135 — Registry taşıma, cache ve kalıcı rollback zinciri (2 Eyl)
+
+- **Sorun:** K-095 imza/metadata kararını byte dizileri üzerinde doğru
+  veriyordu; fakat ağı, doğrulanmadan önce kullanılabilir cache'e yazmayı,
+  süreç yeniden başladığında monoton geçmişi ve offline hit/miss'i yöneten
+  çalışan bir istemci yoktu. Böylece B-029'un gerçek dünya sınırı açıktı.
+- **Karar:** `registry/istemci.rs` tek güncelleme transaction'ını sahiplenir.
+  `tasima.rs` yalnız yol taşımayan HTTPS origin, güvenli ASCII statik yol,
+  redirect/proxy kapatma ve ortak DNS/IP korkuluklarını uygular. Timestamp
+  bağından sürümlü snapshot, snapshot bağından sürümlü targets alınır; en çok
+  64 ardışık çift-eşik root rotasyonu izlenir. Hedef URL'si adla değil SHA-256
+  ile adreslenir.
+- **Kalıcılık:** Tam root→metadata→targets→yayıncı zinciri geçmeden hiçbir
+  nesne kullanılabilir cache'e girmez. Doğrulanan metadata ve dört hedef
+  `nesneler/sha256/<özet>` altında salt-okunur tutulur. İlk root kimliği,
+  etkin root, kabul zamanı ve rol sürüm+özetleri kanonik `durum-v1.json`da;
+  immutable nesnelerden sonra atomik karşılaştır-ve-yaz ile yayımlanır.
+  Yarışan bayat süreç yeni durumu ezemez; başarısız zincir durumu değiştirmez.
+- **Offline ve hata:** Çevrimdışı kip ağ/duvar saati kullanmadan yalnız son
+  kabul zamanında geçerli tam zinciri ve exact hedefi yeniden doğrular. Eksik,
+  boyutu/özeti değişmiş ya da farklı root pinine ait cache P016'dır; ağ açıkken
+  de bozuk nesne sessizce iyileştirilmez. P013/P014 güven/politika ayrımı
+  korunur.
+- **Kanıt:** Altı regresyon; doğrulama öncesi sıfır cache/durum, online→offline
+  hit, bozuk nesne reddi, offline miss, süreçler arası rollback durumunun
+  byte-byte korunması ve HTTPS/statik yol kapısını doğrular. Envanter 533 test,
+  151 etkin + 3 ayrılmış tanı ve 80 numaralı belgedir. B-029 exact proje
+  bildirimi/kilit/CLI entegrasyonu için kısmen açıktır.
+
 ---
 
 ## Sonraki adım
@@ -2113,6 +2142,6 @@ Korpus 10 öğrenci + 5 profesyonel usability oturumuna (Hafta 12 hedefi, erkeni
 Hafta 2'de kağıt üstünde) sesli okutulacak; her kayıt için "doğal mı /
 deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
-Makine hattında K-133/K-134 etki öncesi deadline ile web request
-transaction'ını tamamlayıp B-026'yı kapattı. Sırada B-029 registry taşıma,
-doğrulanmış cache ve kalıcı rollback zinciri vardır.
+Makine hattında K-135 B-029'un taşıma, doğrulanmış cache, kalıcı rollback ve
+offline katmanını tamamladı. Sırada K-136 exact bağımlılığın proje bildirimi,
+kilit ve CLI entegrasyonu vardır.

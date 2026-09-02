@@ -204,6 +204,7 @@ pub struct RegistrySinirlari {
     pub(super) sbom_bayti: u64,
     pub(super) provenance_bayti: u64,
     pub(super) yayin_bayti: u64,
+    pub(super) kok_rotasyonu: usize,
 }
 
 impl RegistrySinirlari {
@@ -253,6 +254,10 @@ impl RegistrySinirlari {
 
     pub const fn yayin_bayti(self) -> u64 {
         self.yayin_bayti
+    }
+
+    pub const fn kok_rotasyonu(self) -> usize {
+        self.kok_rotasyonu
     }
 }
 

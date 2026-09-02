@@ -1,9 +1,9 @@
 # RFC-0020 — Paket Yayını ve Registry Güven Zinciri
 
-- **Durum:** geçici kabul — yayın çekirdeği ve registry metadata doğrulayıcısı
-  gerçeklendi; taşıma/cache/CLI tamamlanmadan uzak paket kullanımı yürürlükte değildir
+- **Durum:** geçici kabul — yayın, metadata doğrulayıcısı ve K-135
+  taşıma/cache/kalıcı durum/offline katmanı gerçeklendi; exact proje/CLI bağı açık
 - **Tarih:** 1 Eylül 2026
-- **İlgili günlük kaydı:** K-094, K-095, K-117
+- **İlgili günlük kaydı:** K-094, K-095, K-117, K-135
 - **Mimari karar:** ADR-006, ADR-028
 - **Normatif çalışan yüzey:** [spec/18](../spec/18-paket-yayini.md),
   [spec/19](../spec/19-registry-metadata-guveni.md)
@@ -222,7 +222,9 @@ duyuru yeni kilidi varsayılan engeller; baypas gerekçesi kilitte görünürdü
 
 Yayın/anahtar üretim yüzeyinin kararlı kodu P012'dir. Registry metadata/kök
 güven zinciri P013, exact hedef/yayıncı/yanked/duyuru politikası P014'tür.
-Kalıcı cache/taşıma tanıları gerçeklemeyle ayrılaştırılacaktır. `dil paketle`,
+HTTPS taşıma, cache miss/bozulma ve kalıcı durum hatası P016'dır. Durum dosyası
+atomik karşılaştır-ve-değiştir olduğundan yarışan bayat süreç yeni durumu
+ezemez. `dil paketle`,
 kendi çıktısını tüketici doğrulayıcıyla doğrulamadan hiçbir çıktı yazmaz. Her çıktı atomik tek-dosya
 yazımı kullanır; dört dosyanın süreç çökmesine dayanıklı tek transaction olduğu
 sözü verilmez. İçerik-adresli adlar ve her kullanımda doğrulama yarım kümeyi
@@ -246,7 +248,10 @@ yayın saymaz.
 K-095 metadata aşaması root eşik/çift eşikli rotasyon, rollback,
 freeze/expiry, aynı sürümlü farklı içerik, mix-and-match, geçersiz
 fast-forward durum zehirleme, endless-metadata sınırı, yanlış yayıncı, yanked
-ve kritik duyuru testlerini kanıtlar. Registry bütünü tamam sayılmadan ayrıca
-kalıcı durum çökme atomikliği, bozuk cache, çevrimdışı hit/miss, kötü ayna,
-taşıma boyut aşımı ve exact kilit entegrasyonu zorunludur. V1-P1-07 bu kalan
-liste tamamlanana kadar açık kalır.
+ve kritik duyuru testlerini kanıtlar. K-135 yalnız HTTPS origin, redirect/proxy
+reddi, DNS sonrası public-IP kapısı, 64 ardışık root sınırı, sürümlü statik
+metadata yolları, CAS korumalı atomik monoton durum ve yalnız tam zincirden
+sonra yazılan salt-okunur SHA-256 cache'i gerçekler. Bozuk cache, çevrimdışı
+hit/miss, taşıma boyutu ve başarısız zincirin durum/cache yayımlamaması testlidir.
+Exact `proje.dil`/`proje.kilit` ve CLI entegrasyonu tamamlanana kadar V1-P1-07
+açık kalır.
