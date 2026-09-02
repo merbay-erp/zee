@@ -8,17 +8,17 @@ bin_depo_sayilari	muhendislik	kalici_dosya	Canli depo envanteri
 bin_faz_test_matrisi	muhendislik	-	Faz test sahipligi ve raporu
 bin_islev_egilimi	muhendislik	kalici_dosya	Kritik islev egilim kapisi
 bin_olcum	muhendislik	agac,cozumleyici,faz,lsp,yorumlayici	Performans gozlem artefakti
-cozumleyici	semantik	agac,hir,intrinsic,kimlik,morfoloji,tani,yetkinlik	Ad tur etki ve HIR kaniti
+cozumleyici	semantik	agac,hir,intrinsic,kimlik,morfoloji,semantic_model,tani,yetkinlik	Ad tur etki ve HIR kaniti
 dil_cli	adapter	ag_istemcisi,agac,bicimleyici,cozumleyici,faz,guvenlik,http_istegi,kalici_dosya,kaynak_sinirlari,morfoloji,paket,proje,tani,tedarik,web_guvenligi,yetkinlik,yorumlayici,zaman	Komut satiri ve web host adaptoru
 dillsp	adapter	lsp	LSP stdio framing adaptoru
 faz	semantik	agac,ayristirici,cozumleyici,hir,sozcukleyici,tani	Derleyici faz tipleri ve gecisleri
 guvenlik	temel	-	Kriptografik ve sabit zamanli ilkeller
-hir	semantik	agac,cozumleyici,kimlik	Bagli ve turlenmis ara temsil
+hir	semantik	agac,kimlik,semantic_model	Bagli ve turlenmis ara temsil
 http_istegi	altyapi	-	Byte tabanli HTTP istek framingi
 intrinsic	altyapi	yetkinlik	Yerlesik islem ve yetkinlik metadata si
 invariant	semantik	agac,faz,hir,tani	AST HIR yapisal dogrulama
 kalici_dosya	altyapi	kaynak_sinirlari	Atomik kalici dosya ilkelleri
-kaynak_sinirlari	temel	tani	Merkezi kaynak butcesi
+kaynak_sinirlari	temel	tani,tani_politikasi	Merkezi kaynak butcesi uygulamasi
 kimlik	temel	-	Semantic kimlik newtype lari
 lib	adapter	agac,ayristirici,cozumleyici,faz,tani,yorumlayici	Dis derleme ve yurutme cephesi
 lsp	adapter	faz,hir,kaynak_sinirlari,kimlik,morfoloji,paket,proje,tani	Editor protokolu ve semantic sorgular
@@ -27,8 +27,10 @@ ondalik	temel	-	Keyfi hassasiyetli onluk cekirdegi
 paket	proje	agac,ayristirici,guvenlik,kalici_dosya,kaynak_sinirlari,proje,registry,sozcukleyici,tani,tedarik	Paket grafigi ve kilit cozumu
 proje	proje	agac,bicimleyici,faz,morfoloji,tani,yetkinlik	Proje bildirimi ve yukleme modeli
 registry	proje	ag_istemcisi,guvenlik,kalici_dosya,kaynak_sinirlari,morfoloji,tedarik,yetkinlik	Registry metadata ve cache zinciri
+semantic_model	model	kimlik	Checker ve HIR ortak semantic tur modeli
 sozcukleyici	sozdizimi	kaynak_sinirlari,tani	Kaynak metni tokenlastirma
-tani	temel	kaynak_sinirlari	Kararli kullanici tanilari
+tani	temel	tani_politikasi	Kararli kullanici tanilari
+tani_politikasi	temel	-	Tanilar ile kaynak profili arasindaki bagimliliksiz butce
 tedarik	proje	faz,guvenlik,kalici_dosya,kaynak_sinirlari,paket,proje,zaman	ZEP SBOM provenance ve imza
 wasm_api	adapter	faz,kaynak_sinirlari,proje,yorumlayici	Playground C ABI adaptoru
 web_guvenligi	web	agac,guvenlik,kalici_dosya,kaynak_sinirlari	Oturum CSRF ve oran siniri

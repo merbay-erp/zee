@@ -51,6 +51,12 @@ yenilenmez: sorumluluk sahibi ve temel→adaptör yönü önce değerlendirilir.
 Yeni/kayıp üst sahip, eklenen/kaldırılan exact kenar ve ters katman geçişi
 committen önce kapıyı geçmelidir.
 
+Production bağımlılık graph'ı ayrıca `bagimlilik_cevrimi_testi` kapısından
+geçer. Yeni sahipler-arası SCC eklenemez. Zorunlu geçici istisna
+`izinli-katman-cevrimleri-v1.tsv` içinde exact üyeler, ayrıntılı gerekçe,
+ISO son tarih ve kaldırma K-işi olmadan kabul edilmez; kaybolan ya da süresi
+dolan izin aynı committe temizlenir.
+
 Her compiler bug düzeltmesi ayrıca `regression/<faz>/` altında tek arızaya
 indirgenmiş bir `.dil` kaynağı ve `regression/v1.tsv` içinde K-kimliği, faz,
 kip, beklenen tanı+kesin span, exit ve çıktı kaydı bırakır. Bu kayıt olmadan

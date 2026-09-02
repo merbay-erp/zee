@@ -147,6 +147,14 @@ LSP/WASM'a ve LSP parser/checker/runtime'a doğrudan bağımlanamaz.
 Temel sahiplerin yeniden genel çekmeceye dönüşmemesi için `guvenlik.rs` 220,
 `zaman.rs` 80 satır fiziksel bütçe taşır.
 
+K-150/ADR-047 aynı graph'ta SCC hesabını zorunlu yaptı. `Tur` ve kapsayıcı
+türleri private `semantic_model` sahibiyle checker/HIR'dan bağımsızdır;
+tanı üst sınırı `tani_politikasi` üzerinden tanı ve merkezî profilce ortak
+tüketilir. Böylece `cozumleyici ↔ hir` ve `tani ↔ kaynak_sinirlari`
+çevrimleri kaldırıldı. Paket/registry/tedarik SCC'si süreli K-160 borcudur;
+yeni açıklamasız çevrim CI'dan geçemez. Yeni ortak sahipler sırasıyla 180 ve
+20 satır fiziksel bütçeyle korunur.
+
 `katalog_testi.rs` sabit bir kök dosya listesi kullanmaz; `compiler/src`
 altındaki bütün Rust dosyalarını özyinelemeli ve sıralı tarar. Yeni handler'da
 üretilen bir tanı kodu katalog denetiminden kaçamaz.

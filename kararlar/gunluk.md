@@ -2466,6 +2466,31 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   tanılar, RFC ve normatif spec değişmedi. Bağımlılık-hazır makine backlog'u
   bitti; B-001/B-002 gerçek usability verisini bekler.
 
+## K-150 — Açıklamasız dependency cycle kalamaz (2 Eyl)
+
+- **Bulgu:** ADR-046 exact graph'ında üç SCC vardı:
+  `tani ↔ kaynak_sinirlari`, `cozumleyici ↔ hir` ve
+  `paket → registry → tedarik → paket`. Katman yönü aynı katman içindeki bu
+  çevrimleri tek başına reddetmiyordu.
+- **İki gerçek temizlik:** Tanı üst bütçesi bağımlılıksız
+  `tani_politikasi` sahibine taşındı; tanı ve merkezî profil aynı değeri
+  tüketirken tanı artık kaynak uygulamasına bağımlı değildir. `Tur`,
+  `VeriTuru` ve `SozlukDegerTuru` private `semantic_model` sahibine taşındı;
+  HIR checker'a değil ortak modele bağımlanır. `cozumleyici::Tur` public yolu
+  yeniden dışa aktarımla korunur.
+- **Kapı:** Exact graph Kosaraju SCC hesabından geçer. Yeni sahipler-arası SCC,
+  artık bulunmayan allowlist kaydı, exact üye farkı veya dolmuş tarih kapıyı
+  kırar. Geçici izin sıralı üyeler, en az 40 karakter gerekçe, ISO son tarih
+  ve `K-nnn` kaldırma işi taşımak zorundadır.
+- **Kalan görünür borç:** Paket/registry/tedarik SCC'si C001 ile yalnız K-160
+  sahiplik ayrımına ve 1 Ekim 2026'ya kadar izinlidir. Açıklamasız çevrim
+  sayısı sıfırdır. Envanter 609 test, 94 numaralı belge ve 45 kabul ADR'dir;
+  B-058/V1-P0-33 kapandı. Grammar, runtime semantiği, tanı davranışı ve
+  normatif spec değişmedi.
+- **Yeni yol haritası:** Üçüncü dış incelemenin K-150–K-175 sırası backlog'a
+  kanıt durumlarıyla işlendi. Makine hattında sıradaki iş K-151 GitHub Actions
+  immutable SHA pinleme; insan hattı K-161/K-162 gerçek oturumlarıdır.
+
 ---
 
 ## Sonraki adım
@@ -2474,7 +2499,7 @@ Korpus 10 öğrenci + 5 profesyonel usability oturumuna (Hafta 12 hedefi, erkeni
 Hafta 2'de kağıt üstünde) sesli okutulacak; her kayıt için "doğal mı /
 deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
-Makine hattında K-149 production sahip/kenar/katman yönünü bağlayıp B-057'yi
-kapattı. Bağımlılık-hazır makine backlog'u kalmadı. B-001 çağrı sözdizimi ve
-B-002 gezme modeli, gerçek 10 çocuk/öğrenci + 5 profesyonel usability verisini
-bekler; bu kanıt gelmeden yeni syntax seçilmez.
+Makine hattında K-150 açıklamasız SCC'yi sıfırlayıp süreli tek C001 borcunu
+K-160'a bağladı. Sırada K-151 GitHub Actions immutable SHA pinleme vardır.
+B-001/B-002 (yeni sırada K-161/K-162), gerçek 10 çocuk/öğrenci + 5 profesyonel
+usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.

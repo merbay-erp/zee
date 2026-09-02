@@ -12,6 +12,16 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **Açıklamasız dependency cycle sıfır** (K-150, ADR-047): Production exact
+  graph'ı sahipler-arası SCC için fail-closed denetlenir. Tanı↔kaynak
+  bütçesi çevrimi bağımsız `tani_politikasi`; checker↔HIR çevrimi private
+  `semantic_model` sahibiyle kırıldı. `cozumleyici::Tur` yolu uyumludur.
+  Kalan paket/registry/tedarik SCC'si exact üyeli, gerekçeli, K-160 sahipli ve
+  1 Ekim 2026 son tarihli tek geçici izindir. Yeni/bayat/süresi dolmuş izin
+  reddedilir; iki SCC testiyle envanter 609 test, 94 numaralı belge ve 45
+  kabul ADR'ye çıktı. B-058/V1-P0-33 kapandı; grammar, runtime semantiği,
+  tanılar ve normatif spec değişmedi.
+
 - **Production katman yönü fail-closed** (K-149, ADR-046): Bütün production
   Rust ağacı 35 üst sahip ve on katmana ayrıldı. Sürümlü TSV her sahibin exact
   doğrudan bağımlılıklarını ve sorumluluğunu taşır; yeni/kayıp modül,

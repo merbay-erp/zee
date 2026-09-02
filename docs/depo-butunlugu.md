@@ -117,19 +117,25 @@ politikası mimari sınır testiyle korunur.
 
 K-149/ADR-046'nın [katman rehberi](katman-mimarisi.md) ve
 [`katman-mimarisi-v1.tsv`](../compiler/tests/fixtures/katman-mimarisi-v1.tsv)
-bütün production Rust dosyalarını 35 üst sahibe bağlar. Exact doğrudan
+bütün production Rust dosyalarını 37 üst sahibe bağlar. Exact doğrudan
 bağımlılık tabanı eklenen kadar artık kullanılmayan kenarı da görünür inceleme
 ister; katman yönü ters kenarı tabana yazmakla geçilebilir olmaz.
 
 ```bash
 cd compiler
 cargo test --locked --test katman_mimarisi_testi
+cargo test --locked --test bagimlilik_cevrimi_testi
 ```
 
 Tarayıcı test-only kodu, yorum ve metinleri graph'a katmaz; hedefe özgü
 production yollarını birleşik korur. Yeni kök modül/ikili sahiplenilmezse,
 mevcut modüle yeni kenar eklenirse veya sozdizimi/semantik/runtime/adaptör yönü
 tersine çevrilirse `Engineering gates` fazı kapanır.
+
+K-150/ADR-047 bunun üstünde SCC hesabı yapar. Açıklamasız yeni SCC,
+graph'tan kaybolduğu halde duran izin ve son tarihi geçen geçici izin
+`bagimlilik_cevrimi_testi` ile reddedilir. İzin fixture'ı exact üyeler,
+gerekçe, son tarih ve kaldırma işi taşır.
 
 ## Semantic regresyon korpusu
 

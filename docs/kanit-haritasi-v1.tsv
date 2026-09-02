@@ -68,6 +68,7 @@ adr/043-faza-ozgu-test-matrisi.md	kanitli	compiler/src/bin/faz_test_matrisi.rs	K
 adr/044-surumlu-semantic-regresyon-korpusu.md	kanitli	compiler/tests/semantic_regresyon_korpusu_testi.rs	K-147 bug kimliği faz tanı span exit çıktı ve minimal fixture birebirlik kapısı
 adr/045-performans-gozlem-ve-egilim-artefakti.md	kanitli	compiler/src/bin/olcum.rs,compiler/tests/mimari_sinir_testi.rs	K-148 dokuz p50 p95 ölçümü sürümlü tarihçe shared CI artefaktı ve yalnız adanmış koşucu eşiği
 adr/046-production-katman-bagimlilik-yonu.md	kanitli	compiler/tests/katman_mimarisi_testi.rs	K-149 production sahipligi exact kenar tabani katman yonu ve iki ters bagimlilik temizligi
+adr/047-production-bagimlilik-cevrimi-kapisi.md	kanitli	compiler/tests/bagimlilik_cevrimi_testi.rs	K-150 exact SCC hesabi iki cevrim temizligi ve gerekce son tarih kaldirma isi zorunlu gecici izin
 spec/01-sozcukleme.md	kanitli	compiler/tests/kacis_ve_negatif_testi.rs,compiler/tests/metin_testi.rs	Token kaçış Unicode ve sayı kuralları
 spec/02-dizim.md	kanitli	compiler/tests/golden_testi.rs,compiler/tests/ifade_grameri_testi.rs	Cümle blok ve ifade dizimi
 spec/03-adlar-ve-kapsam.md	kanitli	compiler/tests/kapsam_testi.rs,compiler/tests/morfoloji_testi.rs,compiler/tests/lsp_testi.rs	Ad çözümü kapsam morfoloji ve semantic rename

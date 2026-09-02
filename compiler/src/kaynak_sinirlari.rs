@@ -250,7 +250,9 @@ pub const VARSAYILAN_KAYNAK_SINIRLARI: KaynakSinirlari = KaynakSinirlari {
         yayin_bayti: 1024 * 1024,
         kok_rotasyonu: 64,
     },
-    tani: TaniSinirlari { sayi: 20 },
+    tani: TaniSinirlari {
+        sayi: crate::tani_politikasi::AZAMI_TANI_SAYISI,
+    },
     metadata: MetadataSinirlari {
         ad_listesi_bayti: 64 * 1024,
         deger_bayti: 64 * 1024,
