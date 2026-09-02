@@ -2,7 +2,7 @@
 
 - **Durum:** kabul
 - **Tarih:** 2 Eylül 2026
-- **İlgili kayıt:** K-129/K-130, B-025, RFC-0025, spec/24
+- **İlgili kayıt:** K-129/K-130/K-131, B-025, RFC-0025, spec/24
 - **Karar sahipleri:** çekirdek ekip
 
 ## Bağlam
@@ -39,14 +39,19 @@ kaynaklarla aynı sözleşmeye bağlar.
 8. K-130 tek metni 16 MiB, çalışma/istek başına muhafazakâr saklanan değer
    tahsisini yaklaşık 64 MiB ve süreç-geneli inbound+outbound ağ bağlantısını
    64 ile sınırlar. Metin/değer aşımı ayrı append-only C024 kimliğidir.
+9. K-131 davranış değerlerini değiştirmeden HTTP/ağ, web oturumu, IO izi,
+   LSP, paket/registry, tanı ve kalıcı dosya limitlerini domain görünümlerine
+   ayırır. Eski sabit adları gerekirse API uyumu için yalnız bu görünümlere
+   bağlı alias olabilir; ikinci sayısal sahip YASAKTIR.
 
 ## Açık sınır
 
 Saklama fişi gerçek allocator/RSS telemetrisi değildir: değerlerin yaklaşık
 dinamik grafiğini, ortam yazımlarını ve görev klonlarını güvenli tarafta fazla
 sayar; silme veya yeniden bağlamada bütçeyi geri vermez. Böylece canlı grafiğe
-üst sınır olur, fakat profiler sözü vermez. Registry/tedarik/IO izi/oturum/LSP
-yerel sabitlerinin ortak tipe göçü tamamlanmadığı için B-025 henüz kapanmaz.
+üst sınır olur, fakat profiler sözü vermez. Domain sabit göçü tamamdır. LSP
+outbound JSON'u bugün 8 MiB üstünde reddedilir, fakat tam yanıt kurulduktan
+sonra ölçülür; üretim sırasındaki tahsis de sınırlandırılmadan B-025 kapanmaz.
 
 ## Kanıt
 
@@ -61,3 +66,5 @@ yerel sabitlerinin ortak tipe göçü tamamlanmadığı için B-025 henüz kapan
   C024 olur; saklanan değer ve görev ortamı klonları yaklaşık 64 MiB zarfı
   aşamaz;
 - 64 bağlantı izni doluyken yeni izin reddedilir, bırakılan izin yeniden alınır.
+- Mimari sahiplik testi on bir tüketici modülün sayısal limiti ortak profilden
+  okuduğunu ve domain modüllerinin ilanlı satır bütçesinde kaldığını doğrular.

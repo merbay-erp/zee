@@ -6,9 +6,12 @@ use std::time::Duration;
 use ureq::unversioned::resolver::{DefaultResolver, ResolvedSocketAddrs, Resolver};
 use ureq::unversioned::transport::{DefaultConnector, NextTimeout};
 
-pub const VARSAYILAN_ZAMAN_ASIMI_MS: i64 = 30_000;
-pub const AZAMI_YANIT_BAYTI: usize = 8 * 1024 * 1024;
-pub const AZAMI_BASLIK_BAYTI: usize = 64 * 1024;
+pub const VARSAYILAN_ZAMAN_ASIMI_MS: i64 =
+    crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.ag().zaman_asimi_ms();
+pub const AZAMI_YANIT_BAYTI: usize =
+    crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.ag().yanit_bayti();
+pub const AZAMI_BASLIK_BAYTI: usize =
+    crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.ag().baslik_bayti();
 
 #[derive(Debug)]
 struct PolitikaliCozucu {
@@ -80,7 +83,13 @@ fn govdeyi_sinirli_oku(govde: &mut ureq::Body) -> Result<Vec<u8>, String> {
         .with_config()
         .limit((AZAMI_YANIT_BAYTI - AZAMI_BASLIK_BAYTI) as u64)
         .read_to_vec()
-        .map_err(|hata| format!("HTTP yanıtı 8 MiB toplam sınırında okunamadı: {}", hata))
+        .map_err(|hata| {
+            format!(
+                "HTTP yanıtı {} MiB toplam sınırında okunamadı: {}",
+                AZAMI_YANIT_BAYTI / 1024 / 1024,
+                hata
+            )
+        })
 }
 
 #[cfg(test)]

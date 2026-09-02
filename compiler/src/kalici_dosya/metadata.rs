@@ -123,9 +123,15 @@ mod linux_xattr {
     use std::io;
     use std::os::fd::AsRawFd;
 
-    const AZAMI_AD_LISTESI: usize = 64 * 1024;
-    const AZAMI_DEGER: usize = 64 * 1024;
-    const AZAMI_TOPLAM: usize = 1024 * 1024;
+    const AZAMI_AD_LISTESI: usize = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+        .metadata()
+        .ad_listesi_bayti();
+    const AZAMI_DEGER: usize = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+        .metadata()
+        .deger_bayti();
+    const AZAMI_TOPLAM: usize = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+        .metadata()
+        .toplam_bayti();
 
     pub(super) fn kopyala(eski: &File, yeni: &File) -> io::Result<()> {
         let adlar = adlari_oku(eski)?;
@@ -224,9 +230,14 @@ mod linux_xattr {
     }
 
     fn sinir_hatasi() -> io::Error {
+        let sinirlar = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.metadata();
         io::Error::new(
             io::ErrorKind::InvalidData,
-            "dosya xattr metadata'sı 64 KiB ad/değer veya 1 MiB toplam sınırını aşıyor",
+            format!(
+                "dosya xattr metadata'sı {} KiB ad/değer veya {} MiB toplam sınırını aşıyor",
+                sinirlar.deger_bayti() / 1024,
+                sinirlar.toplam_bayti() / 1024 / 1024
+            ),
         )
     }
 }

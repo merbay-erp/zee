@@ -1,12 +1,15 @@
 # 24 — Kaynak güvenlik profili
 
-Normatif kaynak: RFC-0025, ADR-033. Durum: **TANIMLI — K-129/K-130**.
+Normatif kaynak: RFC-0025, ADR-033. Durum: **TANIMLI — K-129/K-130/K-131**.
 
 ## Profil sahipliği
 
 Resmî derleyici, runtime, CLI ve LSP aynı değişmez `KaynakSinirlari` profilini
 kullanmak ZORUNDADIR. Program, paket veya ortam bu sınırları sessizce
 yükseltemez. Sınırsız fallback ve başarılı görünen truncate YASAKTIR.
+HTTP/ağ, web oturumu, IO izi, LSP, paket/registry, tanı ve kalıcı dosya
+katmanları sayısal varsayılanlarını bu profilin domain görünümlerinden okumak
+ZORUNDADIR; yerel sabit yalnız ortak değere bağlı geriye uyum alias'ı olabilir.
 
 ## Derleme
 
@@ -44,5 +47,6 @@ outbound JSON mesajı 8 MiB'ı aşamaz. Fazla belge sunucu durumuna eklenmez;
 
 ## Henüz tamamlanmayan kapsam
 
-K-129 öncesinden kalan registry, tedarik, IO izi, oturum ve LSP yerel
-sabitlerinin ortak tipe davranış değiştirmeden göçü B-025 açık kapsamıdır.
+LSP outbound toplamı 8 MiB üstünde reddedilse de JSON bugün önce kurulup sonra
+ölçülür. K-132 üretim sırasında aynı bütçeyi uygulamadan B-025 kapanmaz.
+Duvar-saati/cancellation sözleşmesi B-026'nın ayrı kapsamıdır.

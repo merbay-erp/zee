@@ -11,9 +11,12 @@ use crate::web_guvenligi::WebReddi;
 use std::collections::VecDeque;
 
 const BASLIK: &str = "zee-io-izi\t1\n";
-pub const AZAMI_IO_IZ_BAYTI: usize = 64 * 1024 * 1024;
-pub const AZAMI_IO_IZ_OLAYI: usize = 100_000;
-const AZAMI_ALAN_SAYISI: usize = 4_096;
+pub const AZAMI_IO_IZ_BAYTI: usize =
+    crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.io_izi().bayt();
+pub const AZAMI_IO_IZ_OLAYI: usize =
+    crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.io_izi().olay();
+const AZAMI_ALAN_SAYISI: usize =
+    crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.io_izi().alan();
 const IZ_WEB_REDDI: &str = "IO izi web reddi yeniden oluşturulamadı";
 
 #[derive(Debug, Clone, PartialEq, Eq)]

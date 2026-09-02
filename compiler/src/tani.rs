@@ -6,7 +6,8 @@
 use std::fmt;
 
 /// Tek kaynak doğrulamasında kullanıcıya/LSP'ye gönderilen üst tanı bütçesi.
-pub(crate) const AZAMI_TANI_SAYISI: usize = 20;
+pub(crate) const AZAMI_TANI_SAYISI: usize =
+    crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.tani().sayi();
 
 #[derive(Debug, Clone)]
 pub struct Tani {

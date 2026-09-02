@@ -51,8 +51,11 @@ pub fn istek_parcala(ham: &str) -> (String, String, Vec<(String, String)>) {
 /// (ad, değer) çiftleri — istek verileri ve çerezler bu biçimde taşınır.
 pub type AdDegerler = Vec<(String, String)>;
 
-pub const AZAMI_ISTEK_GOVDESI: usize = 64 * 1024;
-pub const AZAMI_ISTEK_ALANI: usize = 100;
+pub const AZAMI_ISTEK_GOVDESI: usize = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+    .http()
+    .istek_govde_bayti();
+pub const AZAMI_ISTEK_ALANI: usize =
+    crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.http().istek_alani();
 
 fn istek_sinirlarini_denetle(ham: &str) -> Result<(), (u16, &'static str)> {
     let (ilk_satir, kalan) = ham.split_once('\n').unwrap_or((ham, ""));
@@ -911,15 +914,26 @@ fn calistir_program_kodla(
                             *satir,
                         )?;
                         bos_ortam.insert("çerezler".into(), cerez_sozlugu.clone());
-                        // Her istek K-085'in işbirlikli iptal çekirdeğinde 30 saniyelik
+                        // Her istek K-085'in işbirlikli iptal çekirdeğinde ortak
                         // varsayılan bütçe taşır. Daha kısa iç son tarih yine kazanır.
-                        let nobetci = SonTarihNobetcisi::yeni(io.an_ms().saturating_add(30_000));
+                        let istek_zaman_asimi = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+                            .http()
+                            .calistirma_zaman_asimi_ms();
+                        let nobetci = SonTarihNobetcisi::yeni(
+                            io.an_ms().saturating_add(istek_zaman_asimi),
+                        );
                         let sonuc = blok_calistir(govde, &mut bos_ortam, program, io, 0);
                         drop(nobetci);
                         match sonuc {
                             Err(tani) if tani.kod == "Ç000" => return Ok(kodu(&tani)),
                             Err(tani) if tani.kod == "Ç001" => {
-                                io.durum_yaniti_gonder(504, "istek 30 saniyelik son tarihini aştı");
+                                io.durum_yaniti_gonder(
+                                    504,
+                                    &format!(
+                                        "istek {} saniyelik son tarihini aştı",
+                                        istek_zaman_asimi / 1000
+                                    ),
+                                );
                             }
                             Err(tani) => return Err(tani),
                             Ok(_) => {}

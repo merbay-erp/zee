@@ -7,10 +7,17 @@ use crate::agac::RotaErisimi;
 use crate::guvenlik::sabit_zamanli_esit;
 use std::collections::HashMap;
 
-pub const OTURUM_OMRU_SANIYE: i64 = 30 * 60;
-pub const ANONIM_OTURUM_OMRU_SANIYE: i64 = 10 * 60;
-pub const AZAMI_OTURUM_SAYISI: usize = 4096;
-pub const AZAMI_ANONIM_OTURUM_SAYISI: usize = 1024;
+pub const OTURUM_OMRU_SANIYE: i64 = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+    .web()
+    .oturum_omru_saniye();
+pub const ANONIM_OTURUM_OMRU_SANIYE: i64 = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+    .web()
+    .anonim_oturum_omru_saniye();
+pub const AZAMI_OTURUM_SAYISI: usize =
+    crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.web().oturum_sayisi();
+pub const AZAMI_ANONIM_OTURUM_SAYISI: usize = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+    .web()
+    .anonim_oturum_sayisi();
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct WebReddi {

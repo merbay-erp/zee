@@ -18,10 +18,14 @@ use unicode_normalization::UnicodeNormalization;
 const PAKET_SIHRI: &[u8; 8] = b"ZEEZEP\0\x01";
 const IMZA_ALANI: &[u8] = b"zee-yayin-v1\0";
 const ANAHTAR_BASLIGI: &str = "zee-ed25519-private-v1";
-const AZAMI_PAKET_BOYUTU: usize = 64 * 1024 * 1024;
-const AZAMI_DOSYA_BOYUTU: usize = 16 * 1024 * 1024;
-const AZAMI_DOSYA_SAYISI: usize = 10_000;
-const AZAMI_YOL_BOYUTU: usize = 1_024;
+const AZAMI_PAKET_BOYUTU: usize =
+    crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.paket().paket_bayti();
+const AZAMI_DOSYA_BOYUTU: usize =
+    crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.paket().dosya_bayti();
+const AZAMI_DOSYA_SAYISI: usize =
+    crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.paket().dosya_sayisi();
+const AZAMI_YOL_BOYUTU: usize =
+    crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.paket().yol_bayti();
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct PaketCiktilari {
@@ -255,8 +259,14 @@ pub fn yayini_dogrula(
     sbom: &[u8],
     provenance: &[u8],
 ) -> Result<ImzaliYayin, String> {
-    if yayin.len() > 1024 * 1024 {
-        return Err("Yayın bildirimi 1 MiB sınırını aşıyor.".into());
+    let yayin_siniri = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+        .paket()
+        .yayin_bayti();
+    if yayin.len() > yayin_siniri {
+        return Err(format!(
+            "Yayın bildirimi {} MiB sınırını aşıyor.",
+            yayin_siniri / 1024 / 1024
+        ));
     }
     let zarf: YayinZarfi = serde_json::from_slice(yayin)
         .map_err(|hata| format!("Yayın bildirimi geçerli/kapalı şema JSON değil: {}.", hata))?;
