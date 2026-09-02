@@ -118,8 +118,9 @@ sözleşme de debug/test hattında yürütülebilir
 **Playground:** `playground/olustur.sh` derleyiciyi WebAssembly'e derler ve
 tek dosyalık `playground/zee-playground.html` üretir — çift tıkla aç, tarayıcıda
 yaz-çalıştır; kurulum ve internet gerekmez. Host sınırı K-142/ADR-039 ile exact
-pointer/uzunluk, strict UTF-8 ve açık tampon ömrü taşıyan
-[WASM C ABI v2](docs/wasm-c-abi.md)'dir. Aynı tohum + aynı girdi = her zaman
+pointer/uzunluk, strict UTF-8 ve açık tampon ömrü; K-143/ADR-040 ile 8 MiB
+kaynak ve 1 MiB/4.096 satır soru ön-tahsis bütçesi taşıyan
+[WASM C ABI v3](docs/wasm-c-abi.md)'tür. Aynı tohum + aynı girdi = her zaman
 aynı çıktı (`zee-io-1` [deterministik IO profili](docs/deterministik-io-profili.md),
 K-039/K-116).
 
@@ -172,10 +173,10 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **575** |
+| Rust + doctest vakası | **579** |
 | Tanı kimliği | **152 etkin + 3 ayrılmış** |
 | RFC | **25** (2 kabul, 21 geçici kabul, 2 taslak) |
-| ADR | **37** (37 kabul) |
+| ADR | **38** (38 kabul) |
 | Normatif spec bölümü | **24** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
@@ -272,8 +273,12 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   pointer'ı+exact boy çekirdeğe kopyalanır; invalid UTF-8 görünür hatadır,
   sonuç boyu kayıttan sorgulanır, yanlış/çift bırakma durumu bozamaz. Native,
   gerçek wasm32 Node hostu ve 1.745.134 çağrılık libFuzzer kampanyası B-055'i
-  kapattı. Sıradaki makine kapısı K-143/B-056 kaynak ve soru girdisinin
-  türüne özgü ön-tahsis bütçesidir.
+  kapattı. K-143/ADR-040 ABI v3'ün limit dışa aktarımlarıyla kaynak metnini
+  8 MiB, soru girdisini 1 MiB/4.096 satırda sınırlar. Rust köprüsü sahipli
+  kopya/satır tablosundan, tarayıcı UTF-8 byte dizisi ve WASM tahsisinden önce
+  reddeder; 1.709.869 çağrılık kaynak+soru fuzz kampanyasıyla B-056 kapandı.
+  Sıradaki makine kapısı K-144/B-035 kritik işlev boyutu ve karmaşıklık trend
+  bütçesidir.
   K-107/ADR-019 `dillsp` girdisini 8 KiB başlık, 8 MiB gövde, 128 JSON
   derinliği ve 100 bin düğümle sınırlayıp Unicode parser olumsuzlarını kapattı.
   K-138/ADR-035 sayı ayrıştırmasını RFC 8259 durum makinesine taşıdı; sayısal

@@ -2298,7 +2298,8 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
 - **Sahiplik:** Sonuç toplamı kayıttan sorgulanır ve dört bayt önekle exact
   eşleşir. `bellek_birak` yalnız canlı başlangıç+exact boyda `1`; yanlış,
   yabancı ve çift çağrıda durumu değiştirmeden `0` döndürür. Sekiz tampon ve
-  64 MiB canlı kayıt zarfı vardır. Türüne özgü giriş ön-bütçesi B-056'dır.
+  64 MiB canlı kayıt zarfı vardır. Türüne özgü giriş ön-bütçesi bu kararın
+  ardından K-143/ADR-040 ile tamamlanan B-056'dır.
 - **Host:** Şablon açılışta ABI sürümünü, tahsis ve linear-memory aralığını,
   sonuç kaydı+önek eşliğini ve fatal UTF-8'i doğrular; üç tamponu `finally`
   içinde bırakır. Genel C FFI veya kötü niyetli aynı-page JavaScript sandbox'ı
@@ -2309,6 +2310,26 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   tamamladı. Envanter 575 test, 152 etkin + 3 ayrılmış tanı ve 86 numaralı
   belgedir. B-055/V1-P1-10 kapandı.
 
+## K-143 — Playground girdisi sahipli tahsisten önce bütçelidir (2 Eyl)
+
+- **Sorun:** Soru girdisi ayrı bir ürün bütçesi olmadan önce bütünüyle
+  `Vec<String>` satırlarına çoğaltılıyor; tarayıcı UTF-8 byte dizisini JS
+  heap'inde kurup WASM belleğine ikinci kez kopyalıyordu. Genel ABI tampon
+  zarfı kaynak ile soru maliyetini ayırmıyordu.
+- **Karar:** Merkezî `PlaygroundSinirlari`; 8 MiB kaynak, 1 MiB soru metni ve
+  4.096 soru satırıdır. Native köprü byte/satır bütçesini satır tablosundan;
+  ABI v3 byte bütçesini kayıtlı tamponu sahipli kopyaya almadan önce uygular.
+  Sınır kabul, bir fazlası görünür `PLAYGROUND SINIR HATASI`dır.
+- **Host:** Üç limit ABI v3'ten okunur. Kanonik HTML UTF-8 boyunu ara byte
+  dizisi tahsis etmeden ve satırları `split` etmeden hesaplar; exact WASM
+  tamponuna `TextEncoder.encodeInto` ile doğrudan yazar. Eski ABI v2 hostu
+  bilinçli olarak uyumsuzdur.
+- **Kanıt:** Kaynak/soru sınır+bir ve exact satır native regresyonları,
+  allocation-order mimari testi, gerçek wasm32 Node matrisi ve kaynak+soru
+  kipli beş kalıcı seed fuzzer'ı vardır. İlk kampanya 61 saniyede 1.709.869
+  çağrıyı ihlalsiz tamamladı. Envanter 579 test, 152 etkin + 3 ayrılmış tanı
+  ve 87 numaralı belgedir. B-056/V1-P1-11 kapandı.
+
 ---
 
 ## Sonraki adım
@@ -2317,7 +2338,7 @@ Korpus 10 öğrenci + 5 profesyonel usability oturumuna (Hafta 12 hedefi, erkeni
 Hafta 2'de kağıt üstünde) sesli okutulacak; her kayıt için "doğal mı /
 deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
-Makine hattında K-142 playground WASM C ABI'sini kayıtlı exact pointer/boy,
-strict UTF-8, açık sonuç ömrü ve hasım host fuzz kanıtına bağlayarak B-055'i
-kapattı. Sırada K-143 ile B-056 playground kaynak/soru girdisi ön-tahsis
+Makine hattında K-143 playground kaynağını ve soru girdisini ABI v3 üzerinden
+sahipli kopya, satır tablosu ve tarayıcı UTF-8 tahsisinden önce sınırlayarak
+B-056'yı kapattı. Sırada K-144 ile B-035 kritik işlev boyutu/karmaşıklık trend
 bütçesi vardır.

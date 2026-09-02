@@ -45,8 +45,8 @@ compiler/src/
 │   └── registry/istemci.rs   taşıma/cache/kalıcı durum orkestrasyonu
 │       ├── depo.rs           içerik-adresli yol ve sınırlı disk okuma
 │       └── tasima.rs         HTTPS/statik ayna adaptörü
-├── wasm_api.rs               playground derleme/yürütme çekirdeği
-│   └── wasm_api/abi.rs       sürümlü kayıtlı pointer/uzunluk ve sahiplik sınırı
+├── wasm_api.rs               playground derleme/yürütme ve girdi bütçesi
+│   └── wasm_api/abi.rs       sürümlü pointer/sahiplik ve kopya-öncesi limit sınırı
 └── yorumlayici.rs            değer/IO/scheduler ve yürütme orkestrasyonu
     └── yorumlayici/
         ├── cumle.rs          cümle yürütme
@@ -86,7 +86,7 @@ API'si bu iç ayrımla büyümez.
 | exact registry proje çözümü | `paket/uzak` | RFC-0020, ADR-006, spec/07/19 ve kilit v3 |
 | doğrulanmış `.zep` kurulumu | `tedarik/kurulum` | arşiv exact ağaç doğrulaması, atomik rename ve P016 |
 | registry CLI/ağ açma sınırı | `cli/registry` | `ekle/kilitle/paketler`, çevrimdışı varsayımlar ve P017 |
-| playground WASM host sınırı | `wasm_api/abi` | ADR-039, exact pointer/uzunluk, UTF-8 ve tampon ömrü |
+| playground WASM host sınırı | `wasm_api/abi` | ADR-039/040, exact pointer/uzunluk, UTF-8, tampon ömrü ve girdi bütçesi |
 | morfoloji profil uyumluluğu | `morfoloji/uyumluluk` | RFC-0018, spec/13, immutable SHA-256 fixture ve Git-tarih koruğu |
 | alan adaptörü | intrinsic kaydı | ADR-011 rehberi, yetkinlik/etki/runtime |
 
@@ -159,6 +159,9 @@ K-142/ADR-039 C ABI tahsis kaydı, exact pointer/uzunluk, strict UTF-8 ve sonuç
 sahipliğini 260 satır bütçeli `wasm_api/abi.rs` sahibine ayırdı. Playground
 çekirdeği host pointer'ı görmez; mimari test `from_raw_parts`, `unsafe extern`
 ve kayıtsız bırakma yolunun geri dönmesini engeller.
+K-143/ADR-040 aynı ABI sahibine merkezî kaynak/soru limit dışa aktarımlarını ve
+kopya-öncesi byte reddini ekledi. Satır sayımı ile sahipli `Vec<String>` kurma
+sırası `wasm_api.rs`te kalır; tarayıcı hostu ikinci limit sahibi olamaz.
 K-128/ADR-032 atomik replace'in platform metadata aktarımını
 `kalici_dosya/metadata.rs` sahibine ayırdı. `kalici_dosya.rs` K-135'in atomik
 karşılaştır-ve-yaz ilkeliyle 850,
@@ -167,8 +170,10 @@ security merge ayrıntıları genel kalıcılık akışına geri yayılamaz.
 K-129/ADR-033 kaynak bütçesi değerlerini `kaynak_sinirlari.rs` içinde tek
 sahipli yaptı. K-131 bounded reader'ı `kaynak_sinirlari/okuma.rs`, domain
 görünümlerini `kaynak_sinirlari/profiller.rs` sahibine ayırdı. Kök/profil/okuma
-sırasıyla 260/300/120 satır bütçesindedir; lexer/runtime/LSP/CLI yalnız bu
-değeri tüketir, yeni dağınık limit sabiti ekleyemez.
+sırasıyla 280/300/120 satır bütçesindedir; lexer/runtime/LSP/CLI/playground
+yalnız bu değeri tüketir, yeni dağınık limit sabiti ekleyemez. Kök bütçesinin
+20 satırlık K-143 artışı yeni `PlaygroundSinirlari` domain alanı ve tek
+kurucusunu kapsar; ürün davranışı modül köküne gömülmez.
 K-132 LSP JSON üretimini `lsp/cikti.rs` sahibine ayırdı. Bu modül 120 satır,
 LSP kökü 1.500 satır bütçesindedir; yanıt kaçışı ve boyut muhasebesi yeniden
 semantic handler'lara dağılamaz.

@@ -1,7 +1,7 @@
 # 24 — Kaynak güvenlik profili
 
-Normatif kaynak: RFC-0025, ADR-033, ADR-035, ADR-037. Durum:
-**TANIMLI — K-129/K-130/K-131/K-132/K-138/K-140**.
+Normatif kaynak: RFC-0025, ADR-033, ADR-035, ADR-037, ADR-040. Durum:
+**TANIMLI — K-129/K-130/K-131/K-132/K-138/K-140/K-143**.
 
 ## Profil sahipliği
 
@@ -68,7 +68,21 @@ yazılmaz. Sayısal `id` dönüştürülmeden geri yazılır. Bir çerçevede JS
 batch kabul edilmez. Ayrıntılı bakım sınırı
 [LSP JSON-RPC profilindedir](../docs/lsp-json-rpc-profili.md).
 
+## Playground
+
+Playground tek kaynak metnini en çok 8 MiB, soru yanıtı metnini en çok 1 MiB
+ve 4.096 satır kabul eder. Byte sayısı UTF-8 kodlaması üzerindendir. Kaynak ve
+soru byte sınırı sahipli kopyadan; soru satır sınırı `Vec<String>` kurulmadan
+önce denetlenmek ZORUNDADIR. Sınırdaki değer kabul, bir fazlası görünür
+`PLAYGROUND SINIR HATASI` sonucudur; sessiz kesme YASAKTIR.
+
+Kanonik tarayıcı hostu limitleri ABI v3 dışa aktarımlarından okumalı, UTF-8
+boyunu byte dizisini kurmadan hesaplamalı ve metni exact WASM tamponuna
+`encodeInto` eşdeğeri tek geçişle yazmalıdır. Genel ABI tampon kotası bu daha
+dar tür bütçesinin yerine GEÇEMEZ.
+
 ## Ayrı kapsam
 
-B-025/K-132 kaynak bütçesi ve B-051/K-138 protokol-kesin JSON-RPC kapsamı
-tamamdır. Duvar-saati/cancellation sözleşmesi B-026'nın ayrı kapsamıdır.
+B-025/K-132 kaynak bütçesi, B-051/K-138 protokol-kesin JSON-RPC ve
+B-056/K-143 playground ön-tahsis kapsamı tamamdır. Duvar-saati/cancellation
+sözleşmesi B-026'nın ayrı kapsamıdır.

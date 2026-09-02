@@ -7,7 +7,7 @@ use std::sync::{Mutex, MutexGuard, OnceLock};
 use super::playgroundda_calistir;
 use crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI;
 
-pub const DIL_ABI_SURUMU: u32 = 2;
+pub const DIL_ABI_SURUMU: u32 = 3;
 pub const DIL_ABI_BASARILI: u32 = 1;
 const DIL_ABI_REDDI: u32 = 0;
 const UZUNLUK_ONEKI: usize = 4;
@@ -76,7 +76,14 @@ fn tamponu_kaydet(mut baytlar: Box<[u8]>, tur: TamponTuru) -> *mut u8 {
     ptr
 }
 
-fn giris_baytlarini_kopyala(ptr: *const u8, uzunluk: usize) -> Result<Vec<u8>, &'static str> {
+fn giris_baytlarini_kopyala(
+    ptr: *const u8,
+    uzunluk: usize,
+    azami_uzunluk: usize,
+) -> Result<Vec<u8>, &'static str> {
+    if uzunluk > azami_uzunluk {
+        return Err("playground tür bütçesini aşıyor");
+    }
     if uzunluk == 0 {
         return if ptr.is_null() {
             Ok(Vec::new())
@@ -124,6 +131,24 @@ fn abi_hatasi(neden: &str) -> *mut u8 {
 #[no_mangle]
 pub extern "C" fn dil_abi_surumu() -> u32 {
     DIL_ABI_SURUMU
+}
+
+/// Playground kaynak metninin UTF-8 byte üst sınırını döndürür.
+#[no_mangle]
+pub extern "C" fn dil_playground_kaynak_bayti() -> usize {
+    VARSAYILAN_KAYNAK_SINIRLARI.playground().kaynak_bayti()
+}
+
+/// Playground soru girdisinin UTF-8 byte üst sınırını döndürür.
+#[no_mangle]
+pub extern "C" fn dil_playground_girdi_bayti() -> usize {
+    VARSAYILAN_KAYNAK_SINIRLARI.playground().girdi_bayti()
+}
+
+/// Playground soru girdisinin satır üst sınırını döndürür.
+#[no_mangle]
+pub extern "C" fn dil_playground_girdi_satiri() -> usize {
+    VARSAYILAN_KAYNAK_SINIRLARI.playground().girdi_satiri()
 }
 
 /// `uzunluk` baytlık, sıfırla başlatılmış ve kayıtlı girdi tamponu ayırır.
@@ -188,14 +213,17 @@ pub extern "C" fn dil_calistir(
     girdi_uzunluk: usize,
     tohum: u64,
 ) -> *mut u8 {
-    let kaynak_baytlari = match giris_baytlarini_kopyala(kaynak_ptr, kaynak_uzunluk) {
-        Ok(baytlar) => baytlar,
-        Err(neden) => return abi_hatasi(&format!("kaynak: {neden}")),
-    };
-    let girdi_baytlari = match giris_baytlarini_kopyala(girdi_ptr, girdi_uzunluk) {
-        Ok(baytlar) => baytlar,
-        Err(neden) => return abi_hatasi(&format!("girdi: {neden}")),
-    };
+    let sinirlar = VARSAYILAN_KAYNAK_SINIRLARI.playground();
+    let kaynak_baytlari =
+        match giris_baytlarini_kopyala(kaynak_ptr, kaynak_uzunluk, sinirlar.kaynak_bayti()) {
+            Ok(baytlar) => baytlar,
+            Err(neden) => return abi_hatasi(&format!("kaynak: {neden}")),
+        };
+    let girdi_baytlari =
+        match giris_baytlarini_kopyala(girdi_ptr, girdi_uzunluk, sinirlar.girdi_bayti()) {
+            Ok(baytlar) => baytlar,
+            Err(neden) => return abi_hatasi(&format!("girdi: {neden}")),
+        };
     let kaynak = match String::from_utf8(kaynak_baytlari) {
         Ok(kaynak) => kaynak,
         Err(_) => return abi_hatasi("kaynak geçerli UTF-8 değil"),

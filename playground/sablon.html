@@ -78,27 +78,89 @@ const ORNEKLER = {
 const WASM_B64 = "__WASM_B64__";
 
 let wasm = null;
+let playgroundSinirlari = null;
 
 async function wasmYukle() {
   const ikili = Uint8Array.from(atob(WASM_B64), k => k.charCodeAt(0));
   const { instance } = await WebAssembly.instantiate(ikili.buffer, {});
   wasm = instance.exports;
-  if (!wasm.memory || wasm.dil_abi_surumu() !== 2) {
+  const gerekliDisAktarimlar = [
+    "memory", "dil_abi_surumu", "dil_bellek_ayir", "dil_bellek_birak",
+    "dil_calistir", "dil_sonuc_tamponu_uzunlugu",
+    "dil_playground_kaynak_bayti", "dil_playground_girdi_bayti",
+    "dil_playground_girdi_satiri"
+  ];
+  if (gerekliDisAktarimlar.some(ad => !wasm[ad]) || wasm.dil_abi_surumu() !== 3) {
     wasm = null;
     throw new Error("Playground ile derleyici WASM ABI sürümü uyuşmuyor.");
   }
+  playgroundSinirlari = {
+    kaynakBayti: wasm.dil_playground_kaynak_bayti() >>> 0,
+    girdiBayti: wasm.dil_playground_girdi_bayti() >>> 0,
+    girdiSatiri: wasm.dil_playground_girdi_satiri() >>> 0
+  };
+  if (!playgroundSinirlari.kaynakBayti || !playgroundSinirlari.girdiBayti ||
+      !playgroundSinirlari.girdiSatiri) {
+    wasm = null;
+    playgroundSinirlari = null;
+    throw new Error("Playground girdi bütçesi geçersiz.");
+  }
 }
 
-function metniBellege(metin) {
-  const bayt = new TextEncoder().encode(metin);
-  if (bayt.length === 0) return [0, 0];
-  const ptr = wasm.dil_bellek_ayir(bayt.length) >>> 0;
-  if (ptr === 0 || ptr + bayt.length > wasm.memory.buffer.byteLength) {
-    if (ptr !== 0) wasm.dil_bellek_birak(ptr, bayt.length);
+function utf8BaytUzunlugu(metin, ad, azamiBayt) {
+  let toplam = 0;
+  for (let sira = 0; sira < metin.length; sira++) {
+    const kod = metin.charCodeAt(sira);
+    if (kod <= 0x7f) toplam += 1;
+    else if (kod <= 0x7ff) toplam += 2;
+    else if (kod >= 0xd800 && kod <= 0xdbff && sira + 1 < metin.length &&
+             metin.charCodeAt(sira + 1) >= 0xdc00 &&
+             metin.charCodeAt(sira + 1) <= 0xdfff) {
+      toplam += 4;
+      sira++;
+    } else toplam += 3;
+    if (toplam > azamiBayt) {
+      throw new Error(`${ad} ${azamiBayt} UTF-8 bayt sınırını aşıyor.`);
+    }
+  }
+  return toplam;
+}
+
+function satirSayisi(metin) {
+  if (metin.length === 0) return 0;
+  let satir = metin.endsWith("\n") ? 0 : 1;
+  for (let sira = 0; sira < metin.length; sira++) {
+    if (metin.charCodeAt(sira) === 10) satir++;
+  }
+  return satir;
+}
+
+function metniBellege(metin, ad, azamiBayt, azamiSatir = null) {
+  const uzunluk = utf8BaytUzunlugu(metin, ad, azamiBayt);
+  if (azamiSatir !== null && satirSayisi(metin) > azamiSatir) {
+    throw new Error(`${ad} ${azamiSatir} satır sınırını aşıyor.`);
+  }
+  if (uzunluk === 0) return [0, 0];
+  const ptr = wasm.dil_bellek_ayir(uzunluk) >>> 0;
+  if (ptr === 0 || ptr + uzunluk > wasm.memory.buffer.byteLength) {
+    if (ptr !== 0) wasm.dil_bellek_birak(ptr, uzunluk);
     throw new Error("WASM girdi tamponu ayrılamadı.");
   }
-  new Uint8Array(wasm.memory.buffer, ptr, bayt.length).set(bayt);
-  return [ptr, bayt.length];
+  try {
+    const sonuc = new TextEncoder().encodeInto(
+      metin,
+      new Uint8Array(wasm.memory.buffer, ptr, uzunluk)
+    );
+    if (sonuc.read !== metin.length || sonuc.written !== uzunluk) {
+      throw new Error("UTF-8 kodlama boyu hesaplanan bütçeyle uyuşmuyor.");
+    }
+    return [ptr, uzunluk];
+  } catch (hata) {
+    if (wasm.dil_bellek_birak(ptr, uzunluk) !== 1) {
+      throw new Error("WASM girdi tamponu sahipliği doğrulanamadı.");
+    }
+    throw hata;
+  }
 }
 
 function calistir() {
@@ -109,8 +171,13 @@ function calistir() {
   const tohum = BigInt(Math.max(1, Number(document.getElementById("tohum").value) || 1));
   let kPtr = 0, kLen = 0, gPtr = 0, gLen = 0, sonucPtr = 0, sonucToplami = 0;
   try {
-    [kPtr, kLen] = metniBellege(kaynak);
-    [gPtr, gLen] = metniBellege(girdiler);
+    [kPtr, kLen] = metniBellege(
+      kaynak, "Kaynak", playgroundSinirlari.kaynakBayti
+    );
+    [gPtr, gLen] = metniBellege(
+      girdiler, "Soru girdisi", playgroundSinirlari.girdiBayti,
+      playgroundSinirlari.girdiSatiri
+    );
     sonucPtr = wasm.dil_calistir(kPtr, kLen, gPtr, gLen, tohum) >>> 0;
     if (sonucPtr === 0) throw new Error("WASM sonuç tamponu ayrılamadı.");
 
@@ -128,7 +195,8 @@ function calistir() {
     ciktiAlani.textContent = metin.length ? metin : "(çıktı yok)";
     ciktiAlani.classList.toggle(
       "hata",
-      metin.includes("HATA ") || metin.startsWith("WASM ABI HATASI:")
+      metin.includes("HATA ") || metin.startsWith("WASM ABI HATASI:") ||
+      metin.startsWith("PLAYGROUND SINIR HATASI:")
     );
   } catch (hata) {
     ciktiAlani.textContent = `Playground hatası: ${hata.message || hata}`;

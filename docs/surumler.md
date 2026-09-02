@@ -79,6 +79,18 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   kadar yanlışlıkla crates.io yayınına izin vermez; bağımlılık lisans listesi
   Zee'nin lisansı değildir.
 
+- **Playground ön-tahsis girdi bütçesi** (K-143, ADR-040): Merkezî kaynak
+  profili playground kaynağını 8 MiB, soru girdisini 1 MiB ve 4.096 satırla
+  sınırlar. Native köprü byte/satır boyunu sahipli `Vec<String>` öncesinde;
+  ABI v3 byte boyunu kayıtlı tamponu kopyalamadan reddeder. Tarayıcı limitleri
+  WASM'den okur, UTF-8 boyunu ara byte dizisi kurmadan hesaplar ve
+  `TextEncoder.encodeInto` ile doğrudan exact tampona yazar. Sınır/bir-fazlası
+  native ve gerçek wasm32 Node testleri, kaynak+soru kipli beş kalıcı seed
+  fuzzer'ı, 61 saniyede 1.709.869 çağrılık kampanya ve allocation-order mimari
+  kapısıyla envanter 579 test ve 38 kabul ADR'ye çıktı; B-056/V1-P1-11
+  kapandı. ABI v2 hostu v3 modülle bilinçli uyumsuzdur; depodaki tek dosyalık
+  playground yeniden üretilmiştir.
+
 - **Sürümlü ve hasım hosta dayanıklı WASM C ABI** (K-142, ADR-039): Eski
   kayıt dışı `slice/Vec::from_raw_parts` köprüsü kaldırıldı. ABI v2 yalnız
   modülün ayırdığı başlangıç pointer'ı ile exact boyu sahipli kopyaya alır;
@@ -89,8 +101,8 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   UTF-8'i doğrulayıp bütün tamponları `finally` içinde bırakır. Beş yeni
   regresyon, dört byte seed, gecelik ayrı fuzz işi, gerçek wasm32 Node host
   round-trip'i ve 1.745.134 çağrılık ilk kampanyayla envanter 575 test ve 37
-  kabul ADR'ye çıktı; B-055/V1-P1-10 kapandı. Türüne özgü playground girdi
-  ön-tahsis bütçesi B-056/K-143 olarak ayrı kaldı.
+  kabul ADR'ye çıktı; B-055/V1-P1-10 kapandı. Bu v2 sahiplik tabanı K-143'ün
+  ABI v3 ön-tahsis bütçesiyle genişletildi.
 
 - **Normatif otorite ve v1 kapıları** (K-081, ADR-010): geçerli dilin kesin
   davranışını spec anlatır; RFC değişikliği yetkilendirir ama spec+conformance

@@ -1,6 +1,7 @@
-# WASM C ABI v2 host sözleşmesi
+# WASM C ABI v3 host sözleşmesi
 
-Bu belge K-142/ADR-039 ile gelen elle yazılmış playground köprüsünün işletim
+Bu belge K-142/ADR-039 ile güvenli sahiplik kazanan, K-143/ADR-040 ile türüne
+özgü ön-tahsis bütçesine bağlanan elle yazılmış playground köprüsünün işletim
 sözleşmesidir. Dilin gelecekteki genel C FFI tasarımı değildir; bootstrap
 compiler'ın tarayıcıdaki tek güvenli giriş/çıkış yüzeyidir.
 
@@ -8,7 +9,10 @@ compiler'ın tarayıcıdaki tek güvenli giriş/çıkış yüzeyidir.
 
 | İşlev | Sonuç | Sözleşme |
 |---|---|---|
-| `dil_abi_surumu()` | `u32` | Exact değer `2`; host farklı değerde durur. |
+| `dil_abi_surumu()` | `u32` | Exact değer `3`; host farklı değerde durur. |
+| `dil_playground_kaynak_bayti()` | byte sayısı | Kaynak için merkezî UTF-8 byte üst sınırı. |
+| `dil_playground_girdi_bayti()` | byte sayısı | Soru girdisi için merkezî UTF-8 byte üst sınırı. |
+| `dil_playground_girdi_satiri()` | satır sayısı | Soru girdisi sahipli satır üst sınırı. |
 | `dil_bellek_ayir(n)` | pointer | `n > 0` kayıtlı girdi tamponu; reddedilirse null. |
 | `dil_calistir(kp, kn, gp, gn, tohum)` | pointer | Kayıtlı girdileri kopyalar; uzunluk-önekli sahipli sonuç veya tahsis edilemezse null. |
 | `dil_sonuc_tamponu_uzunlugu(p)` | byte sayısı | Yalnız canlı sonuç kaydının başlık dahil exact boyu; diğer her şeyde `0`. |
@@ -20,10 +24,12 @@ memory ofsetine çevirir.
 
 ## Zorunlu çağrı sırası
 
-1. Modülü yükle; `memory` export'unu ve `dil_abi_surumu() === 2` sonucunu
-   doğrula.
-2. Her boş olmayan UTF-8 metin için exact byte boyunda `dil_bellek_ayir`
-   çağır. Null ise dur; ancak sonra linear memory'ye yaz.
+1. Modülü yükle; zorunlu export'ları ve `dil_abi_surumu() === 3` sonucunu
+   doğrula. Üç playground limitini modülden oku; sıfır değerde dur.
+2. UTF-8 byte boyunu ara byte dizisi tahsis etmeden hesapla; kaynak/soru byte
+   ve soru satır sınırını denetle. Her boş olmayan metin için exact boyda
+   `dil_bellek_ayir` çağır; null ise dur. Metni doğrudan linear memory'ye
+   `TextEncoder.encodeInto` ile yaz ve okunan/yazılan boyu doğrula.
 3. Boş metni `(0, 0)`, dolu metni kayıtlı `(başlangıç pointer'ı, exact boy)`
    olarak `dil_calistir`e ver. Kaynak ve soru girdisi ayrı kayıttır.
 4. Sonuç null değilse kayıtlı toplamı sorgula. Toplam en az dört ve linear
@@ -53,6 +59,11 @@ sızdıramaz.
 Hata tamponu da sorgulanıp exact bırakılır. Sonuç tahsisi dahi yapılamıyorsa
 tek istisna null sonuçtur.
 
+Kaynak 8 MiB'ı veya soru girdisi 1 MiB'ı aşarsa ABI kayıtlı tamponu sahipli
+kopyaya almadan reddeder. Geçerli UTF-8 soru girdisi 4.096 satırı aşarsa
+çekirdek `Vec<String>` kurmadan `PLAYGROUND SINIR HATASI` üretir. Sınırdaki
+değer kabul edilir; veri sessizce kesilmez.
+
 ## Sahiplik ve sınırlar
 
 Tampon pointer'ı yalnız başarılı tahsis ile başarılı exact bırakma arasındaki
@@ -62,8 +73,9 @@ boyu sorgusundan geçmez.
 
 Tek kayıt en çok 16 MiB + dört byte, canlı kayıt sayısı sekiz ve kayıtlı toplam
 64 MiB'tır. Tahsis `try_reserve_exact` ile denenir; kapasite taşması null olur.
-Bu zarf allocator güvenliğini korur. Kaynak ile soru girdisini kendi türünde ve
-satır listesi kurulmadan önce daha dar sınırlamak B-056/K-143 işidir.
+Bu genel zarf allocator güvenliğini korur. ABI v3'teki 8 MiB kaynak ile
+1 MiB/4.096 satır soru bütçesi daha dar ürün sınırıdır ve genel zarfın yerine
+geçmez.
 
 WASM linear memory hosta açıktır. Bu sözleşme aynı sayfadaki kötü niyetli
 JavaScript'i sandbox'lamaz; WebAssembly çağrısı sürerken hostun tamponu eşzamanlı
@@ -86,6 +98,9 @@ cargo +nightly-2026-08-31 fuzz run wasm_abi fuzz/corpus/wasm_abi -- \
 İlk K-142 kampanyası 1.745.134 çağrı dizisini 61 saniyede crash, panic veya
 invariant ihlali olmadan tamamladı. Native testler gerçek kayıtlı round-trip'in
 yanında null/kayıt dışı/iç pointer, `usize::MAX`, yanlış boy, invalid UTF-8,
-yanlış+çift bırakma ve 64 bozuk/geçerli ardışık çağrıyı adlarıyla korur. Gerçek
-`wasm32-unknown-unknown` ikilisi ayrıca Node hostundan aynı v2 akışıyla
-çalıştırılır.
+yanlış+çift bırakma, kaynak/soru bütçesi ve 64 bozuk/geçerli ardışık çağrıyı
+adlarıyla korur. Fuzzer hem kaynak hem soru kipini sürer. Gerçek
+`wasm32-unknown-unknown` ikilisi ayrıca Node hostundan aynı v3 akışı ve
+sınır+bir taşma matrisiyle çalıştırılır.
+Kaynak+soru kipini birlikte süren ilk K-143 kampanyası 1.709.869 çağrıyı 61
+saniyede crash, panic veya sahiplik ihlali olmadan tamamlamıştır.

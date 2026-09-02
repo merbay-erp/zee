@@ -134,6 +134,27 @@ impl LspSinirlari {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct PlaygroundSinirlari {
+    pub(super) kaynak_bayti: usize,
+    pub(super) girdi_bayti: usize,
+    pub(super) girdi_satiri: usize,
+}
+
+impl PlaygroundSinirlari {
+    pub const fn kaynak_bayti(self) -> usize {
+        self.kaynak_bayti
+    }
+
+    pub const fn girdi_bayti(self) -> usize {
+        self.girdi_bayti
+    }
+
+    pub const fn girdi_satiri(self) -> usize {
+        self.girdi_satiri
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct PaketSinirlari {
     pub(super) paket_bayti: usize,
     pub(super) dosya_bayti: usize,
