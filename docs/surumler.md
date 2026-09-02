@@ -358,6 +358,15 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   silinir veya yeniden adlandırılırsa Git-geçmişli CI koruğu kırılır.
   `dil morfoloji --uyumluluk` kaydı görünür kılar. Bir yeni regresyonla toplam
   482 test yeşildir; B-008 kapandı.
+- **Derleyiciden bağımsız morfoloji conformance korpusu** (K-123,
+  RFC-0018/spec-13): Kök `conformance/` alanındaki sürümlü JSON Schema ve
+  `zee-tr-1` veri dosyası, Rust tür ya da fonksiyon adlarına bağlanmadan bütün
+  ek tablosunu ve izinli iki katmanlı zincirleri yayımlar. 27 çözüm/karar
+  vakası doğrudan eşleşme, A001/A002, sıralı bütün adaylar ve ses değişimlerini;
+  21 üretim vakası bütün tek/iki katmanlı zincirlerle geçersiz zincirleri
+  kapsar. Çalışan Rust motoru aynı veriyi tüketen regresyonda doğrulanır;
+  JSON Schema ile korpus da Git-geçmişli immutable koruğa dahildir. Bir yeni
+  regresyonla toplam 483 test yeşildir; B-009 kapandı.
 
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`

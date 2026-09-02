@@ -59,6 +59,9 @@ derleyici güncellemesi eski kaynağın anlamını sessizce değiştiremez.
 `dil morfoloji --uyumluluk`, `zee-tr-1`in yayımlanmış semantic SHA-256
 kaydını gösterir. Bu kayıt değiştirilemez; farklı davranış `zee-tr-2` gibi
 yeni profil adı ister (K-122/spec-13).
+İkinci bir compiler için profil tablosu, sıralı bütün kök+ek çözümleri,
+A001/A002 kararları ve kanonik üretim örnekleri Rust'tan bağımsız
+[JSON conformance korpusundadır](morfoloji-conformance.md) (K-123).
 
 ## 3. Sormak
 

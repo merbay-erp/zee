@@ -104,4 +104,7 @@ profil kimliği olmadan yapılamaz.
 K-122/RFC-0018 `zee-tr-1` semantic parmak izi üretimini
 `morfoloji/uyumluluk.rs` sahibine ayırdı. 140 satır bütçesi kanonik akışı
 profil kökünden uzak tutar; immutable fixture ile Git-tarih koruğu aynı profil
-kimliği altında davranış değişikliğini kapatır.
+kimliği altında davranış değişikliğini kapatır. K-123 bu koruğu kök
+`conformance/morfoloji/zee-tr-N.json` ve `sema-vN.schema.json` artefaktlarına
+genişletti; Rust testi yalnız yayımlanmış, derleyiciden bağımsız sözleşmenin
+çalışan motorla uyuşmasını denetler.

@@ -1,6 +1,7 @@
 # Morfoloji doğrulama rehberi
 
-Bu belge K-111/B-016 ve K-122/B-008'in `zee-tr-1` için kalıcı kanıt haritasıdır. Morfoloji
+Bu belge K-111/B-016, K-122/B-008 ve K-123/B-009'un `zee-tr-1` için kalıcı
+kanıt haritasıdır. Morfoloji
 kurallarını değiştirmez; RFC-0018 ve spec/13'teki üret→çöz, belirsizlik ve
 Unicode sınırlarını daha geniş girdilerde sürekli sınar.
 
@@ -34,6 +35,8 @@ Unicode sınırlarını daha geniş girdilerde sürekli sınar.
 
 Yayımlanmış fixture'ın tarihsel değişmezlik kapısı ve yeni `zee-tr-N` açma
 protokolü [profil uyumluluk rehberindedir](morfoloji-profil-uyumlulugu.md).
+Compiler'dan bağımsız JSON Schema, 27 çözüm/karar ve 21 üretim vakası
+[conformance rehberinde](morfoloji-conformance.md) tanımlıdır.
 
 ## Mutation katmanı
 
