@@ -35,9 +35,11 @@ cd compiler && cargo build && ./target/debug/dil çalıştır ..
 Kök klasörün `proje.dil` bildirimi vardır: `dil çalıştır <klasör>`,
 `dil denetle <klasör>` ve `dil dene <klasör>` giriş dosyasını buradan bulur.
 Bildirim de sıradan zee sözdizimidir (K-076); ayrı bir yapılandırma dili yoktur.
-Projeler `yerel_bağımlılıklar` ile başka zee projelerini doğrudan paket olarak
-alabilir; `dil kilitle .` bütün geçişli grafiği göreli yol, sürüm ve SHA-256
-içerik özetiyle deterministik `proje.kilit` dosyasına sabitler (K-078).
+Projeler `yerel_bağımlılıklar` ile başka zee projelerini, `uzak_bağımlılıklar`
+ile exact `ad@X.Y.Z` registry paketlerini alabilir. Uzak kaynak HTTPS origin ve
+ağ dışı root sürüm+SHA-256 kimliğine sabitlenir. `dil kilitle .` bütün geçişli
+grafiği deterministik `proje.kilit` v3 dosyasına bağlar (K-078/K-136); normal
+derleme sessiz ağ açmadan doğrulanmış proje-local cache'den çalışır.
 
 Çalışan golden programlar (regression testte): **NUMARALI KORPUSUN TAMAMI**
 (orijinal seri + birimler, ondalık market ve açık işlem imzası) —
@@ -89,7 +91,8 @@ parametre türleri**
 (`sayıyı Ondalık olarak al`) ve public **dönüş sözleşmesi**
 (`Ondalık döndürür` / `değer döndürmez`), **proje bildirimi** (`proje.dil`,
 `yetkinlikler` + `ağ_hedefleri`, klasörden
-çalıştır/denetle/dene), **yerel paketler** (`X paketini kullan`), süreçler
+çalıştır/denetle/dene), **yerel ve exact registry paketleri**
+(`X paketini kullan`; K-136), süreçler
 arası kilitli ve owner/group/ACL/xattr güvenli **atomik dosya yazma** (K-128,
 ADR-032) ve sürüm kimlikli Türkçe tanı kataloğu.
 Araçlar: `dil çalıştır(--güvenli/--deneysel-web/--web-proxy)/iz(kaydet/oynat)/parola-özeti/denetle(--json)/dene/biçimle/ekle/çıkar/kilitle/paketler/anahtar(üret)/paketle/hata/belge/morfoloji/yeni`
@@ -155,8 +158,8 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **533** |
-| Tanı kimliği | **151 etkin + 3 ayrılmış** |
+| Rust + doctest vakası | **539** |
+| Tanı kimliği | **152 etkin + 3 ayrılmış** |
 | RFC | **25** (2 kabul, 21 geçici kabul, 2 taslak) |
 | ADR | **31** (31 kabul) |
 | Normatif spec bölümü | **24** |
@@ -201,8 +204,10 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   yayıncı, yanked ve kritik duyuru metadata doğrulamasını kurar. K-135 yalnız
   HTTPS origin kullanan redirect'siz statik taşıma, 64 ardışık root rotasyonu,
   atomik monoton durum ve yalnız tam zincirden sonra yayımlanan salt-okunur
-  içerik-adresli cache/offline hit-miss katmanını ekler; exact proje bildirimi,
-  kilit ve CLI tamamlanana kadar kapı açık kalır. K-117 kaynak
+  içerik-adresli cache/offline hit-miss katmanını ekler. K-136 exact
+  `proje.dil` bildirimi, `proje.kilit` v3 kimliği, atomik ve salt-okunur kaynak
+  kurulumu ile açık ağ kullanan `ekle/kilitle/paketler --yenile` CLI zincirini
+  tamamlayarak V1-P1-07'yi kapatır. K-117 kaynak
   paketinin NFC yolunu, üç platformlu byte fixture'ını ve Unicode saldırı
   korpusunu kapatır.
   K-096, çalışan A çağrı yüzeyini nihai seçim saymadan tek-genel-sözdizimi

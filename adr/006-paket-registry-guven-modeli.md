@@ -1,7 +1,7 @@
 # ADR-006 — Paket registry güven modeli
 
-- **Durum:** kabul (yayın K-094; metadata K-095; kanonik yol K-117;
-  taşıma/cache/kalıcı durum/offline K-135; exact proje/CLI bağı sürüyor)
+- **Durum:** kabul ve gerçeklenmiş (yayın K-094; metadata K-095; kanonik yol
+  K-117; taşıma/cache/kalıcı durum/offline K-135; exact proje/kilit/CLI K-136)
 - **Tarih:** 1 Eylül 2026
 - **Normatif ayrıntı:** RFC-0020, spec/18
 
@@ -98,7 +98,8 @@ destekli saklamalıdır; zee bir düz dosyayı HSM eşdeğeri saymaz.
 - İmzalı güvenlik duyurusu paket, etkilenen tam sürümler, önem, sabit kimlik ve
   düzeltilen sürümü taşır. Kritik/etkin duyuru varsayılan olarak yeni kilidi
   engeller; mevcut kilitte denetim görünür hata üretir. Politika baypası kilide
-  kaydedilir.
+  kaydedilir. Kritik kabul güncel sıralı etkin duyuru kimliği kümesine bağlıdır;
+  küme değişirse eski gerekçe yetmez.
 - Namespace ilk sahiplik ve benzer Unicode/typosquatting denetimi registry
   sunucusunun ek politikasıdır; istemcide S028 ile aynı normalleştirme ilkesi
   korunur.
@@ -115,8 +116,10 @@ rollback/equivocation durumunu ve exact yayıncı/yanked/duyuru politikasını
 çalışan byte doğrulayıcısına dönüştürür. K-135 HTTPS-only statik taşıma,
 ardışık root güncellemesi, tam zincir sonrası salt-okunur içerik-adresli cache,
 CAS korumalı atomik monoton durum ve çevrimdışı yeniden doğrulamayı ekler.
-Manifest/kilit ve CLI tamamlanana kadar V1-P1-07 **AÇIK** kalır. Belgede
-kararın kabul edilmiş olması henüz gerçeklenmemiş exact proje bağını kapsamaz.
+K-136 exact `proje.dil` bildirimi, `proje.kilit` v3, proje-local atomik ve
+salt-okunur kaynak kurulumu, gerekçeli yanked/kritik politika kayıtları ve açık
+ağ kullanan CLI bağını ekler. Normal derleme ve LSP yalnız doğrulanmış cache'i
+kullanır. Böylece V1-P1-07 **KAPALIDIR**.
 
 ## Sonuçlar
 

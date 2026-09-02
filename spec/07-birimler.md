@@ -1,8 +1,8 @@
 # 07 — Birimler ve projeler
 
-Normatif kaynak: RFC-0009 §2–4.1 (geçici kabul). Uzak yayın/registry güven ve
-taşıma çekirdeği spec/18–19'dadır; exact proje bildirimi/kilit/CLI bağı henüz
-bu kaynak yüzeyine eklenmemiştir.
+Normatif kaynak: RFC-0009 §2–4.2 (geçici kabul). Uzak yayın/registry güven ve
+taşıma zinciri spec/18–19'dadır; K-136 exact proje bildirimi, kilit ve CLI
+bağını bu kaynak yüzeyine eklemiştir.
 
 ## Model (TANIMLI)
 
@@ -44,6 +44,9 @@ birimin işlem adlarını çağrı çözümünde görür.
   `zee-tr-1` yazar, alanı olmayan eski proje aynı profile varsayılır.
   Desteklenmeyen açık profil P011'dir (spec/13). İsteğe bağlı
   `yerel_bağımlılıklar`, göreli klasör yollarından oluşan Metin listesidir.
+  Exact uzak paket kullanılıyorsa `registry`, `registry_kök_sürümü`,
+  `registry_kök_özeti` ve `uzak_bağımlılıklar` birlikte bulunur; ayrıntılı
+  güven sözleşmesi spec/19'dadır (P017).
 - Sürüm `X.Y.Z`; giriş proje içindeki göreli bir `.dil` yoludur. Mutlak yol,
   `..`, ters bölü ve platform sürücü öneki yasaktır (P003/P004).
 - `dil çalıştır`, `dil denetle` ve `dil dene` bir klasör aldığında giriş
@@ -70,7 +73,7 @@ birimin işlem adlarını çağrı çözümünde görür.
 - Geçişli bağımlılık çözülür ve kilitlenir ama doğrudan bildirilmedikçe
   kaynakta kullanılamaz. Bildirim döngüsü ve aynı adlı ayrı paket hatadır.
 - `dil kilitle <proje>` bütün grafiği ada göre sıralı `proje.kilit` dosyasına
-  yazar: kilit biçimi sürüm 2'de proje/paket sürümü, morfoloji profili, ana
+  yazar: kilit biçimi sürüm 3'te proje/paket sürümü, morfoloji profili, ana
   projeye göre göreli yol, bağımlılık kenarı ve bütün `.dil` kaynaklarının
   SHA-256 özeti. Mutlak yol yazılmaz.
 - Var olan kilit güncel grafikle byte-byte aynı değilse proje komutları P008
@@ -88,3 +91,30 @@ birimin işlem adlarını çağrı çözümünde görür.
   `X paketini kullan` bildirimi kalmışsa P010 verir ve bildirim/kilit byte-byte
   değişmez. Başarıda aday grafik önce çözülür; bildirim ile kilit birlikte
   güncellenir ve kilit yazımı başarısızsa ikisi geri alınır (K-080).
+
+## Exact registry paketi ve kilit (TANIMLI — K-136)
+
+- Uzak bağımlılık yalnız exact `ad@X.Y.Z` biçimindedir; aralık, etiket,
+  ön-sürüm seçicisi veya registry öncelik araması yoktur. Bütün uzak
+  bağımlılıklar aynı bildirimin HTTPS originini ve ağ dışı sabitlenen pozitif
+  root sürümü + `sha256:` özetini kullanır (P017).
+- `dil ekle ad@X.Y.Z [proje]` ilk kullanımda `--registry` ve `--kök
+  <sürüm>@sha256:<özet>` ister. Aday yayın tam metadata/yayıncı zincirinden
+  geçmeden bildirim veya kilit yazılmaz. `--çevrimdışı` yalnız önceden
+  doğrulanmış cache'i kullanır.
+- `dil kilitle` uzak bağımlılık varsa açıkça çevrimiçi yeniler;
+  `--çevrimdışı` ağsızdır. `dil paketler` varsayılan ağsızdır; yalnız
+  `--yenile` ağı açar. `çalıştır`, `denetle`, `dene` ve LSP sessiz ağ açmaz.
+- Doğrulanmış nesneler proje kökündeki `.zee/registry/<root-özeti>` altında,
+  açılmış kaynaklar `.zee/paketler/sha256/<arşiv-özeti>` altında tutulur.
+  `.zep` görünmez kardeş geçicide açılır, tam ağaç yeniden doğrulanır, atomik
+  adlandırılır ve kaynaklar salt-okunur yapılır. Sembolik bağ/fazladan dosya
+  ya da dizin/özet uyuşmazlığı P016'dır.
+- `proje.kilit` v3; ilk root sürüm+özeti, etkin root/timestamp/snapshot/targets
+  sürüm+özetleri, yayıncı kimliği, `.zep`/SBOM/provenance/yayın özetleri,
+  yanked durumu ve kritik duyuru kimliklerini taşır. `--yanked-kabul` ve
+  `--kritik-kabul` ancak boş olmayan insan gerekçesiyle çalışır; gerekçe kilide
+  yazılır ve sonraki ağsız çözümde korunur. Kritik kabul anahtarı sıralı etkin
+  duyuru kümesini de taşır; yeni bir kritik duyuru eski gerekçeyi devralamaz.
+- Yerel ve uzak paketler tek ad/köken grafiğine girer. Aynı P007/P008/P009/
+  P010/P015 kapsülleme, kilit ve yetkinlik kuralları ikisine de uygulanır.

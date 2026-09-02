@@ -209,7 +209,7 @@ pub enum Ifade {
     /// "doğru" / "yanlış" (master plan bölüm 7).
     MantiksalSabiti(bool),
     /// "1 ile 100 arasında rastgele sayı" — iki uç dahil.
-    /// `metnin "," ile parçaları` → Liste<Metin> (K-053).
+    /// `metnin "," ile parçaları` → `Liste<Metin>` (K-053).
     Parcala { metin: Box<Ifade>, ayrac: Box<Ifade> },
     /// `parçaların "-" ile birleşmişi` → Metin (K-053).
     ListeBirlestir { liste: Box<Ifade>, ayrac: Box<Ifade> },
@@ -277,7 +277,7 @@ pub enum Ifade {
     SonucBasarili { nesne: Box<Ifade>, olumsuz: bool },
     /// `"..." dosyasını okumayı dene` → Sonuç (K-018).
     DosyaOkumayiDene(Box<Ifade>),
-    /// `"..." dosyasının satırları` → Liste<Metin>. Düz biçim: hata anında
+    /// `"..." dosyasının satırları` → `Liste<Metin>`. Düz biçim: hata anında
     /// Türkçe çalışma hatası verir (Sonuç isteyen "dene" kullanır — K-018).
     DosyaSatirlari(Box<Ifade>),
     /// `"..." dosyasından okunan tablo` → Liste<Sözlük> (CSV; başlık satırı
@@ -293,7 +293,7 @@ pub enum Ifade {
     GunSonrasi { tarih: Box<Ifade>, miktar: Box<Ifade> },
     /// `başlangıç ile bitiş arasındaki günler` → TamSayı, işaretli (K-057).
     GunFarki { birinci: Box<Ifade>, ikinci: Box<Ifade> },
-    /// `komut satırından gelenler` → Liste<Metin>.
+    /// `komut satırından gelenler` → `Liste<Metin>`.
     KomutArgumanlari,
     /// Süre sabiti: `5 saniye`, `yarım saniye`, `1,5 dakika` → milisaniye.
     SureSabiti { milisaniye: i64 },

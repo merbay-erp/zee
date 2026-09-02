@@ -23,6 +23,12 @@ pub struct RegistryPaketCiktisi {
     pub sabit_kok_sha256: String,
     pub metadata_surumleri: MetadataSurumleri,
     pub yayinci_anahtar_kimligi: String,
+    pub arsiv_sha256: String,
+    pub sbom_sha256: String,
+    pub provenance_sha256: String,
+    pub yayin_sha256: String,
+    pub yanked: bool,
+    pub kritik_duyurular: Vec<String>,
     pub arsiv: PathBuf,
     pub sbom: PathBuf,
     pub provenance: PathBuf,
@@ -72,6 +78,34 @@ impl RegistryIstemcisi {
             sabit_kok,
             sabit_kok_sha256: sabit_kok_sha256.into(),
         }
+    }
+
+    /// Çevrimdışı açılışta ilk root byte'ı gerekmez; kalıcı durum etkin root
+    /// nesnesini pin kimliğiyle açar. Cache yoksa istek P016 ile kapanır.
+    pub fn mevcut_cache(
+        cache_koku: impl Into<PathBuf>,
+        sabit_kok_sha256: impl Into<String>,
+    ) -> Self {
+        Self::yeni(cache_koku, Vec::new(), sabit_kok_sha256)
+    }
+
+    /// Manifestte ağ dışından sabitlenen sürümlü ilk root byte'ını HTTPS
+    /// aynadan limitli getirir. Güven kararı çağıranın verdiği SHA-256 pinini
+    /// `yeni` açılışında doğrulayınca oluşur.
+    pub fn sabit_koku_getir<T: RegistryTasiyici>(
+        tasiyici: &mut T,
+        surum: u64,
+    ) -> Result<Vec<u8>, RegistryHatasi> {
+        if surum == 0 {
+            return Err(RegistryHatasi::tasima(
+                "Sabit registry root sürümü pozitif olmalı.",
+            ));
+        }
+        zorunlu_getir(
+            tasiyici,
+            &format!("metadata/{}.root.json", surum),
+            AZAMI_KOK_BOYUTU,
+        )
     }
 
     pub fn paketi_guncelle<T: RegistryTasiyici>(
@@ -144,7 +178,8 @@ impl RegistryIstemcisi {
             metadata: acilis.dogrulayici.durum(),
         };
         self.durumu_yaz(&yeni_durum, acilis.durum_baytlari.as_deref())?;
-        Ok(cikti(&hedef, &yeni_durum, yollar, false))
+        let kritik_duyurular = dogrulanmis.etkin_kritik_duyurular(&hedef);
+        Ok(cikti(&hedef, &yeni_durum, yollar, false, kritik_duyurular))
     }
 
     /// Ağ ve duvar saati kullanmadan yalnız daha önce tam doğrulanıp kalıcı
@@ -196,7 +231,8 @@ impl RegistryIstemcisi {
             &yayin_baytlari.provenance,
         )?;
         let yollar = hedef_yollari(&self.cache_koku, &hedef)?;
-        Ok(cikti(&hedef, durum, yollar, true))
+        let kritik_duyurular = dogrulanmis.etkin_kritik_duyurular(&hedef);
+        Ok(cikti(&hedef, durum, yollar, true, kritik_duyurular))
     }
 
     fn ac(&self, zaman: i64, cevrimdisi: bool) -> Result<Acilis, RegistryHatasi> {
@@ -505,6 +541,7 @@ fn cikti(
     durum: &KaliciRegistryDurumu,
     yollar: [PathBuf; 4],
     cevrimdisi: bool,
+    kritik_duyurular: Vec<String>,
 ) -> RegistryPaketCiktisi {
     let [arsiv, sbom, provenance, yayin] = yollar;
     RegistryPaketCiktisi {
@@ -513,6 +550,12 @@ fn cikti(
         sabit_kok_sha256: durum.sabit_kok_sha256.clone(),
         metadata_surumleri: durum.metadata.clone(),
         yayinci_anahtar_kimligi: hedef.yayinci_anahtar_kimligi.clone(),
+        arsiv_sha256: hedef.arsiv.sha256.clone(),
+        sbom_sha256: hedef.sbom.sha256.clone(),
+        provenance_sha256: hedef.provenance.sha256.clone(),
+        yayin_sha256: hedef.yayin.sha256.clone(),
+        yanked: hedef.yanked,
+        kritik_duyurular,
         arsiv,
         sbom,
         provenance,

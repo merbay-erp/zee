@@ -68,9 +68,9 @@ fn fixture_kayitlari() -> BTreeMap<&'static str, Kayit<'static>> {
             "{kod}: {kimlik} yanlış tanı ailesinde"
         );
         assert!(
-            kimlik
-                .chars()
-                .all(|karakter| karakter.is_ascii_lowercase() || karakter.is_ascii_digit() || matches!(karakter, '.' | '_')),
+            kimlik.chars().all(|karakter| karakter.is_ascii_lowercase()
+                || karakter.is_ascii_digit()
+                || matches!(karakter, '.' | '_')),
             "{kod}: kararlı kimlik yalnız küçük ASCII, rakam, nokta ve alt çizgi taşımalı: {kimlik}"
         );
         assert!(!ozet.is_empty(), "{kod}: kanonik özet boş olamaz");
@@ -135,7 +135,7 @@ fn tani_kodlari_surumler_arasi_kimligini_korur() {
 
     assert_eq!(
         fixture.len(),
-        154,
+        155,
         "şema-1 tabanı beklenmedik biçimde değişti"
     );
     assert_eq!(

@@ -3,9 +3,8 @@
 Normatif kaynak: RFC-0020 §1–5/8. Mimari sınır: ADR-006, ADR-028. Tanı: P012.
 
 Bu bölüm çalışan yerel yayın zincirini tanımlar. Registry rol metadata
-doğrulaması ile K-135 taşıma/cache/offline katmanı artık
-[spec/19](19-registry-metadata-guveni.md)'da çalışır. Exact proje/CLI bağı bu
-bölümün parçası değildir.
+doğrulaması, K-135 taşıma/cache/offline katmanı ve K-136 exact proje/CLI bağı
+[spec/19](19-registry-metadata-guveni.md)'da çalışır.
 
 ## Komutlar (TANIMLI)
 

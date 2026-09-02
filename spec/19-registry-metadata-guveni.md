@@ -1,11 +1,11 @@
 # 19 — Registry Metadata Güven Zinciri
 
-Normatif kaynak: RFC-0020 §6–9. Mimari sınır: ADR-006. Tanılar: P013, P014.
+Normatif kaynak: RFC-0020 §6–9. Mimari sınır: ADR-006. Tanılar: P013, P014,
+P016, P017.
 
-Bu bölüm çalışan `root → timestamp → snapshot → targets` byte doğrulayıcısını
-tanımlar. HTTPS/statik dosya taşıması, kalıcı cache, CLI ve uzak bağımlılığı
-`proje.dil`/`proje.kilit` ile birleştirme henüz bu çalışan yüzeyin parçası
-değildir.
+Bu bölüm çalışan `root → timestamp → snapshot → targets` byte doğrulayıcısını,
+HTTPS/statik taşıma ve kalıcı cache'i, exact uzak bağımlılığın
+`proje.dil`/`proje.kilit`/CLI bağına kadar tanımlar.
 
 ## Zarf ve imza girdisi (TANIMLI)
 
@@ -142,6 +142,58 @@ geçerli olduğu kaydedilmiş tam metadata zincirini ve exact hedef nesnelerini
 yeniden doğrular. Durum, metadata veya dört hedeften biri yok/bozuksa P016
 cache miss/bozulma hatasıdır. Bu kip yeni metadata güncelliği iddia etmez.
 
+## Proje, kilit ve CLI bağı (TANIMLI — K-136)
+
+Exact uzak bağımlılık bildirimi dört alanı birlikte taşır:
+
+```text
+registry "https://registry.example" olsun
+registry_kök_sürümü "1" olsun
+registry_kök_özeti "sha256:<64 küçük hex>" olsun
+uzak_bağımlılıklar "örnek@1.2.3" listesi olsun
+```
+
+Origin yol/sorgu taşımayan HTTPS olmak, root sürümü pozitif olmak ve root özeti
+ağ dışından edinilmiş kanonik `sha256:` biçiminde olmak ZORUNDADIR. Uzak
+bağımlılık yalnız exact `ad@X.Y.Z` kabul eder; eksik/bölünmüş yapılandırma ve
+yinelenen ad P017'dir.
+
+Her proje kendi cache sınırını taşır:
+
+```text
+.zee/registry/<ilk-root-özeti>/...
+.zee/paketler/sha256/<zep-özeti>/...
+```
+
+İkinci yol ancak ilk cache'deki tam doğrulanmış `.zep` için oluşturulur. Arşiv
+görünmez kardeş geçici dizine açılır; sembolik bağ, fazladan/eksik dosya veya
+dizin, boyut ve içerik özeti denetlenir; dizin atomik adlandırılır ve dosyaları
+salt-okunur yapılır. Var olan kurulum her kullanımda aynı exact ağaçla yeniden
+doğrulanır. Yarış kaybeden süreç yalnız doğrulanmış kazananı kabul eder.
+
+`proje.kilit` v3 uzak kayıt başına şunları sabitler: paket ad+sürüm+morfoloji
+ve kaynak ağaç özeti; ağ dışı ilk root sürüm+özeti; etkin root,
+timestamp, snapshot ve targets sürüm+özetleri; yayıncı anahtar kimliği;
+`.zep`, SBOM, provenance ve yayın bildirimi özetleri; yanked durumu ve sıralı
+kritik duyuru kimlikleri. Yanked/kritik baypası ancak boş olmayan, en çok 1024
+byte ve denetim karaktersiz gerekçeyle mümkündür; `yanked_kabul` ve
+`kritik_kabul` kayıtları root+paket exact kimliğine bağlı olarak kilide yazılır.
+Kritik kabul anahtarı ayrıca sıralı etkin duyuru kimliği kümesini taşır. Aynı
+paket sürümüne sonradan eklenen veya değişen kritik duyuru, eski kabul
+gerekçesini kullanamaz ve yeni açık gerekçe olmadan P014'tür.
+
+Ağ erişimi açık komut sınırıdır:
+
+- `dil ekle ad@X.Y.Z` ve `dil kilitle` varsayılan çevrimiçi;
+- ikisi de `--çevrimdışı` ile yalnız doğrulanmış cache'i kullanır;
+- `dil paketler` varsayılan çevrimdışı, yalnız `--yenile` çevrimiçidir;
+- normal çalıştırma, denetleme, test, LSP ve paket listeleme sessiz ağ açmaz.
+
+Manifest ve kilit iki dosyalı güncellemede aday grafik önce tamamen çözülür.
+Yazma başarısızsa eski manifest/kilit geri alınır. Uzak paket de yerel paketle
+aynı köken, doğrudanlık, ad çakışması, yetkinlik ve public kaynak ABI kurallarına
+tabidir.
+
 ## Conformance
 
 Uyumlu gerçekleme en az şunları kanıtlar:
@@ -156,5 +208,6 @@ Uyumlu gerçekleme en az şunları kanıtlar:
 - RFC 3339 UTC takvim sınırları.
 
 K-135 kalıcı durum, uzak HTTPS/statik taşıma, doğrulanmış cache ve offline
-hit/miss'i kanıtlar. Exact proje bildirimi/kilit ve CLI entegrasyonu
-tamamlanmadan V1-P1-07 **AÇIK** kalır.
+hit/miss'i kanıtlar. K-136 exact bildirim, kilit v3, salt-okunur kaynak
+kurulumu, açık ağ kullanan CLI ve ağsız normal derleme zincirini kanıtlayarak
+V1-P1-07'yi **KAPATIR**.

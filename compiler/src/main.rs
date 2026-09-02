@@ -16,6 +16,9 @@
 
 use std::process::ExitCode;
 
+#[path = "cli/registry.rs"]
+mod dil_registry;
+
 const HTTP_ISTEK_OKUMA_SURESI: std::time::Duration = std::time::Duration::from_secs(
     dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
         .http()
@@ -104,10 +107,7 @@ fn main() -> ExitCode {
     // 32 MB yığınlı bir iş parçacığında koşar (K-040).
     let is_parcacigi = match std::thread::Builder::new()
         .name("dil".into())
-        .stack_size(
-            dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
-                .calistirma_yigin_bayti(),
-        )
+        .stack_size(dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.calistirma_yigin_bayti())
         .spawn(govde)
     {
         Ok(is_parcacigi) => is_parcacigi,
@@ -172,10 +172,10 @@ fn govde() -> ExitCode {
         Some("dene") => dosya_ile(&argumanlar, dene_komutu),
         Some("çıkar") | Some("cikar") => cikar_komutu(&argumanlar),
         Some("ekle") => ekle_komutu(&argumanlar),
-        Some("kilitle") => kilitle_komutu(&argumanlar),
+        Some("kilitle") => dil_registry::kilitle_komutu(&argumanlar),
         Some("anahtar") => anahtar_komutu(&argumanlar),
         Some("paketle") => paketle_komutu(&argumanlar),
-        Some("paketler") => paketler_komutu(&argumanlar),
+        Some("paketler") => dil_registry::paketler_komutu(&argumanlar),
         Some("hata") => hata_komutu(&argumanlar),
         Some("belge") => belge_komutu(&argumanlar),
         Some("morfoloji") => morfoloji_komutu(&argumanlar),
@@ -210,12 +210,13 @@ fn kullanim() {
     eprintln!("  dil denetle <dosya|proje>  çalıştırmadan denetler (--json: makine çıktısı)");
     eprintln!("  dil dene <dosya|proje>     test bloklarını koşar");
     eprintln!("  dil biçimle <dosya|proje>  dosyayı ya da bütün projeyi biçimler");
-    eprintln!("  dil ekle <yerel-yol> [proje] yerel paketi doğrulayıp ekler ve kilitler");
+    eprintln!("  dil ekle <yerel-yol|ad@X.Y.Z> [proje] paketi doğrulayıp ekler ve kilitler");
+    eprintln!("      ilk uzak paket: --registry https://... --kök 1@sha256:<özet>");
     eprintln!("  dil çıkar <paket> [proje]    kullanılmayan doğrudan paketi kaldırır");
-    eprintln!("  dil kilitle <proje>         yerel bağımlılıkları proje.kilit'e sabitler");
+    eprintln!("  dil kilitle [proje] [--çevrimdışı] bütün bağımlılıkları sabitler");
     eprintln!("  dil anahtar üret <dosya>    0600 izinli Ed25519 yayıncı anahtarı üretir");
     eprintln!("  dil paketle [proje] --anahtar <dosya> [--çıktı <klasör>]");
-    eprintln!("  dil paketler [proje]        doğrudan/geçişli bağımlılık grafiğini gösterir");
+    eprintln!("  dil paketler [proje] [--yenile] doğrudan/geçişli grafiği gösterir");
     eprintln!("  dil hata <kod>             bir hata kodunu açıklar (örn. dil hata T001)");
     eprintln!(
         "  dil belge <birim>          bir birimin işlemlerini listeler (örn. dil belge matematik)"
@@ -284,10 +285,18 @@ fn io_izi_komutu(argumanlar: &[String]) -> ExitCode {
             }
         };
         if let Err(hata) = dil::kalici_dosya::atomik_yaz(iz_yolu, iz.as_bytes()) {
-            eprintln!("IO izi \"{}\" dosyasına yazılamadı: {}", iz_yolu.display(), hata);
+            eprintln!(
+                "IO izi \"{}\" dosyasına yazılamadı: {}",
+                iz_yolu.display(),
+                hata
+            );
             return ExitCode::FAILURE;
         }
-        eprintln!("IO izi kaydedildi: {} olay · {}", olay_sayisi, iz_yolu.display());
+        eprintln!(
+            "IO izi kaydedildi: {} olay · {}",
+            olay_sayisi,
+            iz_yolu.display()
+        );
         return cikis;
     }
 
@@ -345,7 +354,11 @@ fn morfoloji_komutu(argumanlar: &[String]) -> ExitCode {
         return ExitCode::SUCCESS;
     }
     let cozumler = dil::morfoloji::cozumleri_bul(kelime);
-    println!("{} — morfoloji {}", kelime, dil::morfoloji::MORFOLOJI_PROFILI);
+    println!(
+        "{} — morfoloji {}",
+        kelime,
+        dil::morfoloji::MORFOLOJI_PROFILI
+    );
     if cozumler.is_empty() {
         println!("Ekli kök çözümü yok.");
     } else {
@@ -388,8 +401,7 @@ fn parola_ozeti_komutu(argumanlar: &[String]) -> ExitCode {
         Some("--stdin") if argumanlar.len() == 2 => {
             use std::io::Read;
             let mut girdi = String::new();
-            let azami = dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
-                .dosya_okuma_bayti();
+            let azami = dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.dosya_okuma_bayti();
             if let Err(hata) = std::io::stdin()
                 .take(azami.saturating_add(1) as u64)
                 .read_to_string(&mut girdi)
@@ -398,7 +410,10 @@ fn parola_ozeti_komutu(argumanlar: &[String]) -> ExitCode {
                 return ExitCode::FAILURE;
             }
             if girdi.len() > azami {
-                eprintln!("Parola stdin girdisi {} MiB sınırını aşıyor.", azami / 1024 / 1024);
+                eprintln!(
+                    "Parola stdin girdisi {} MiB sınırını aşıyor.",
+                    azami / 1024 / 1024
+                );
                 return ExitCode::from(2);
             }
             girdi.trim_end_matches(['\r', '\n']).to_string()
@@ -469,9 +484,10 @@ fn belge_komutu(argumanlar: &[String]) -> ExitCode {
     };
     let (kaynak, koken) = match dil::gomulu_birim(ad) {
         Some(kaynak) => (kaynak.to_string(), "gömülü kitaplık"),
-        None => match dil::kaynak_sinirlari::kaynak_dosyasi_oku(
-            std::path::Path::new(&format!("{}.dil", ad)),
-        ) {
+        None => match dil::kaynak_sinirlari::kaynak_dosyasi_oku(std::path::Path::new(&format!(
+            "{}.dil",
+            ad
+        ))) {
             Ok(kaynak) => (kaynak, "bu klasör"),
             Err(_) => {
                 eprintln!(
@@ -515,8 +531,7 @@ fn yeni_komutu(argumanlar: &[String]) -> ExitCode {
         "# {}\n\nTürkçe programlama diliyle yazılmış bir proje. `proje.dil` giriş dosyasını, sürümü, morfoloji profilini, dış dünya yetkinliklerini ve yerel bağımlılıkları tanımlar; `proje.kilit` bağımlılık kararını sabitler. Ağ erişimi gerekiyorsa hem `ağ` yetkinliğini hem tam şema+host+port `ağ_hedefleri` listesini açıkça bildir.\n\n```bash\ndil çalıştır .\n```\n\n```bash\ndil dene .\n```\n\nDenetim: `dil denetle .` · Bütün projeyi biçimle: `dil biçimle .` · Bağımlılıkları sabitle: `dil kilitle .` · Hata açıklama: `dil hata <kod>`\n",
         ad
     );
-    let git_yoksay =
-        ".zee-yazma-kilidi\n*.zee-gecici-*\n*.zee-anahtar\n*.zee-io-izi\n";
+    let git_yoksay = ".zee/\n.zee-yazma-kilidi\n*.zee-gecici-*\n*.zee-anahtar\n*.zee-io-izi\n";
     let sonuc = std::fs::create_dir(klasor)
         .and_then(|_| std::fs::write(klasor.join("program.dil"), program))
         .and_then(|_| std::fs::write(klasor.join("proje.dil"), bildirim))
@@ -613,39 +628,6 @@ fn bicimle_komutu(argumanlar: &[String]) -> ExitCode {
     bir_dosyayi_bicimle(yol)
 }
 
-fn kilitle_komutu(argumanlar: &[String]) -> ExitCode {
-    let Some(yol) = argumanlar.get(1) else {
-        eprintln!("Bir proje klasörü belirtmelisin. Örnek: dil kilitle .");
-        return ExitCode::from(2);
-    };
-    let yol = std::path::Path::new(yol);
-    if !yol.is_dir() {
-        eprintln!("\"{}\" bir proje klasörü değil.", yol.display());
-        return ExitCode::from(2);
-    }
-    let grafik = match dil::paket::ProjeGrafigi::cozumle(yol) {
-        Ok(grafik) => grafik,
-        Err(hata) => {
-            GirdiHatasi::from(hata).yazdir(false);
-            return ExitCode::FAILURE;
-        }
-    };
-    match grafik.kilidi_yaz() {
-        Ok(()) => {
-            println!(
-                "Kilitlendi: {} ({} yerel paket)",
-                yol.join(dil::paket::KILIT_DOSYASI).display(),
-                grafik.paket_sayisi()
-            );
-            ExitCode::SUCCESS
-        }
-        Err(hata) => {
-            eprintln!("{}", hata);
-            ExitCode::from(2)
-        }
-    }
-}
-
 fn anahtar_komutu(argumanlar: &[String]) -> ExitCode {
     if argumanlar.len() != 3 || !matches!(argumanlar[1].as_str(), "üret" | "uret") {
         eprintln!("Kullanım: dil anahtar üret <dosya>");
@@ -701,9 +683,7 @@ fn paketle_komutu(argumanlar: &[String]) -> ExitCode {
             }
             yol => {
                 if proje.replace(yol).is_some() {
-                    eprintln!(
-                        "Kullanım: dil paketle [proje] --anahtar <dosya> [--çıktı <klasör>]"
-                    );
+                    eprintln!("Kullanım: dil paketle [proje] --anahtar <dosya> [--çıktı <klasör>]");
                     return ExitCode::from(2);
                 }
                 i += 1;
@@ -738,9 +718,12 @@ fn paketle_komutu(argumanlar: &[String]) -> ExitCode {
 
 fn ekle_komutu(argumanlar: &[String]) -> ExitCode {
     let Some(paket_yolu) = argumanlar.get(1) else {
-        eprintln!("Bir yerel paket yolu belirtmelisin. Örnek: dil ekle ../hesap");
+        eprintln!("Bir yerel yol veya exact paket belirtmelisin. Örnek: dil ekle hesap@1.2.3");
         return ExitCode::from(2);
     };
+    if paket_yolu.contains('@') && !std::path::Path::new(paket_yolu).exists() {
+        return dil_registry::uzak_ekle_komutu(argumanlar);
+    }
     if argumanlar.len() > 3 {
         eprintln!("Kullanım: dil ekle <yerel-yol> [proje]");
         return ExitCode::from(2);
@@ -866,9 +849,7 @@ fn ekle_komutu(argumanlar: &[String]) -> ExitCode {
         return ExitCode::from(2);
     }
 
-    let paket_bildirimi = dil::kaynak_sinirlari::kaynak_dosyasi_oku(
-        &paket_koku.join("proje.dil"),
-    )
+    let paket_bildirimi = dil::kaynak_sinirlari::kaynak_dosyasi_oku(&paket_koku.join("proje.dil"))
         .ok()
         .and_then(|kaynak| dil::proje::bildirimi_oku(&kaynak).ok());
     match paket_bildirimi {
@@ -881,53 +862,6 @@ fn ekle_komutu(argumanlar: &[String]) -> ExitCode {
     ExitCode::SUCCESS
 }
 
-fn paketler_komutu(argumanlar: &[String]) -> ExitCode {
-    if argumanlar.len() > 2 {
-        eprintln!("Kullanım: dil paketler [proje]");
-        return ExitCode::from(2);
-    }
-    let yol = std::path::Path::new(argumanlar.get(1).map_or(".", String::as_str));
-    let grafik = match dil::paket::ProjeGrafigi::cozumle(yol) {
-        Ok(grafik) => grafik,
-        Err(hata) => {
-            GirdiHatasi::from(hata).yazdir(false);
-            return ExitCode::FAILURE;
-        }
-    };
-    if let Err(hata) = grafik.kilidi_denetle() {
-        GirdiHatasi::from(hata).yazdir(false);
-        return ExitCode::FAILURE;
-    }
-    let bildirim = grafik.ana_bildirim();
-    let paketler = grafik.paketler();
-    println!(
-        "proje: {} {} — {} yerel paket",
-        bildirim.ad,
-        bildirim.surum,
-        paketler.len()
-    );
-    if paketler.is_empty() {
-        println!("Bağımlılık yok.");
-        return ExitCode::SUCCESS;
-    }
-    for paket in paketler {
-        println!(
-            "{}: {} {} · morfoloji {} · {} · sha256:{}",
-            if paket.dogrudan {
-                "doğrudan"
-            } else {
-                "geçişli"
-            },
-            paket.ad,
-            paket.surum,
-            paket.morfoloji,
-            paket.yol,
-            paket.ozet
-        );
-    }
-    ExitCode::SUCCESS
-}
-
 fn cikar_komutu(argumanlar: &[String]) -> ExitCode {
     let Some(paket_adi) = argumanlar.get(1) else {
         eprintln!("Kaldırılacak paket adını belirtmelisin. Örnek: dil çıkar hesap");
@@ -936,6 +870,9 @@ fn cikar_komutu(argumanlar: &[String]) -> ExitCode {
     if argumanlar.len() > 3 {
         eprintln!("Kullanım: dil çıkar <paket> [proje]");
         return ExitCode::from(2);
+    }
+    if let Some(kod) = dil_registry::uzak_cikar_komutu(argumanlar) {
+        return kod;
     }
     let proje_yolu = std::path::Path::new(argumanlar.get(2).map_or(".", String::as_str));
     let proje_koku = match std::fs::canonicalize(proje_yolu) {
@@ -1029,32 +966,13 @@ fn cikar_komutu(argumanlar: &[String]) -> ExitCode {
 }
 
 fn proje_dosyalarini_guncelle(
-    proje_koku: &std::path::Path,
-    bildirim_yolu: &std::path::Path,
+    _proje_koku: &std::path::Path,
+    _bildirim_yolu: &std::path::Path,
     eski_kaynak: &str,
     yeni_kaynak: &str,
     grafik: &dil::paket::ProjeGrafigi,
 ) -> Result<(), String> {
-    let kilit_yolu = proje_koku.join(dil::paket::KILIT_DOSYASI);
-    let eski_kilit = std::fs::read(&kilit_yolu).ok();
-    dil::kalici_dosya::atomik_yaz(bildirim_yolu, yeni_kaynak.as_bytes())
-        .map_err(|hata| format!("\"{}\" yazılamadı: {}", bildirim_yolu.display(), hata))?;
-    if let Err(hata) = grafik.kilidi_yaz() {
-        let bildirim_geri =
-            dil::kalici_dosya::atomik_yaz(bildirim_yolu, eski_kaynak.as_bytes());
-        let kilit_geri = match eski_kilit {
-            Some(icerik) => dil::kalici_dosya::atomik_yaz(&kilit_yolu, &icerik),
-            None if kilit_yolu.exists() => std::fs::remove_file(&kilit_yolu),
-            None => Ok(()),
-        };
-        let geri_bildirimi = if bildirim_geri.is_err() || kilit_geri.is_err() {
-            " Uyarı: önceki proje dosyaları bütünüyle geri yüklenemedi."
-        } else {
-            " Proje bildirimi ve önceki kilit geri yüklendi."
-        };
-        return Err(format!("Paket kilitlenemedi: {}{}", hata, geri_bildirimi));
-    }
-    Ok(())
+    grafik.bildirim_ve_kilidi_yaz(eski_kaynak, yeni_kaynak)
 }
 
 fn bir_dosyayi_bicimle(yol: &std::path::Path) -> ExitCode {
@@ -1241,10 +1159,8 @@ impl KaynakGirdisi {
         let klasor = isteyen.parent().unwrap_or(&self.klasor);
         let yol = klasor.join(format!("{}.dil", istek.ad));
         match std::fs::canonicalize(&yol).and_then(|kanonik| {
-            dil::kaynak_sinirlari::kaynak_dosyasi_oku(&kanonik)
-                .map(|kaynak| (kanonik, kaynak))
-        })
-        {
+            dil::kaynak_sinirlari::kaynak_dosyasi_oku(&kanonik).map(|kaynak| (kanonik, kaynak))
+        }) {
             Ok((kanonik, kaynak)) => Ok(dil::YuklenenBirim {
                 kaynak,
                 koken: kanonik.to_string_lossy().into_owned(),
@@ -1369,8 +1285,7 @@ struct GercekIo {
     bekleyen_baglanti_izni: Option<dil::kaynak_sinirlari::BaglantiIzni>,
     bekleyen_head: bool,
     /// İç içe eylemler için dosya savepoint'leri: yol → çağrı başındaki içerik.
-    eylem_yedekleri:
-        Vec<std::collections::HashMap<std::path::PathBuf, EylemDosyaYedegi>>,
+    eylem_yedekleri: Vec<std::collections::HashMap<std::path::PathBuf, EylemDosyaYedegi>>,
     web_guvenligi: dil::web_guvenligi::WebGuvenligi,
     web_istek_yedegi: Option<WebIstekYedegi>,
     bekleyen_web_yaniti: Option<WebYanitTaslagi>,
@@ -1464,7 +1379,9 @@ impl GercekIo {
         let kanonik = std::fs::canonicalize(denetlenecek)
             .map_err(|hata| format!("dosya yolu güvenle çözülemedi: {}", hata))?;
         if !kanonik.starts_with(&self.dosya_siniri_koku) {
-            return Err("proje dosya sınırı sembolik bağ üzerinden kök dışına çıkışı reddetti".into());
+            return Err(
+                "proje dosya sınırı sembolik bağ üzerinden kök dışına çıkışı reddetti".into(),
+            );
         }
         Ok(aday)
     }
@@ -1751,12 +1668,12 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                 Err(hata) => return Err(format!("transaction yedeği alınamadı: {}", hata)),
             };
             for yedek in &mut self.eylem_yedekleri {
-                yedek.entry(gercek_yol.clone()).or_insert_with(|| {
-                    EylemDosyaYedegi {
+                yedek
+                    .entry(gercek_yol.clone())
+                    .or_insert_with(|| EylemDosyaYedegi {
                         onceki: onceki.clone(),
                         beklenen: onceki.clone(),
-                    }
-                });
+                    });
             }
         }
         dil::kalici_dosya::atomik_satir_yaz(&gercek_yol, satir, ekleme)
@@ -1845,9 +1762,8 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             }
             let http_siniri = dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.http();
             let baslik_siniri = http_siniri.istek_baslik_bayti();
-            let mut tampon = Vec::with_capacity(
-                baslik_siniri.saturating_add(http_siniri.istek_govde_bayti()),
-            );
+            let mut tampon =
+                Vec::with_capacity(baslik_siniri.saturating_add(http_siniri.istek_govde_bayti()));
             let govde_basi = loop {
                 if let Some(yer) = tampon.windows(4).position(|p| p == b"\r\n\r\n") {
                     break yer + 4;
@@ -1953,11 +1869,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             while tampon.len() < toplam {
                 let onceki = tampon.len();
                 tampon.resize(toplam, 0);
-                match son_tarihli_soket_oku(
-                    &mut akis,
-                    &mut tampon[onceki..toplam],
-                    son_tarih,
-                ) {
+                match son_tarihli_soket_oku(&mut akis, &mut tampon[onceki..toplam], son_tarih) {
                     Ok(0) => {
                         ham_http_hatasi_gonder(
                             &mut akis,
@@ -2165,8 +2077,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
     fn durum_yaniti_gonder(&mut self, durum: u16, yanit: &str) {
         if self.web_istek_yedegi.is_some() {
             if self.bekleyen_web_yaniti.is_none() {
-                self.bekleyen_web_yaniti =
-                    Some(WebYanitTaslagi::Durum(durum, yanit.to_string()));
+                self.bekleyen_web_yaniti = Some(WebYanitTaslagi::Durum(durum, yanit.to_string()));
             }
             return;
         }
@@ -2180,8 +2091,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         }
         if self.web_istek_yedegi.is_some() {
             if self.bekleyen_web_yaniti.is_none() {
-                self.bekleyen_web_yaniti =
-                    Some(WebYanitTaslagi::Yonlendirme(adres.to_string()));
+                self.bekleyen_web_yaniti = Some(WebYanitTaslagi::Yonlendirme(adres.to_string()));
             }
             return Ok(());
         }
@@ -2239,10 +2149,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         false
     }
     fn isik_ayarla(&mut self, ad: &str, yansin: bool) {
-        if self
-            .politika
-            .izin_verir(dil::yetkinlik::Yetkinlik::Donanim)
-        {
+        if self.politika.izin_verir(dil::yetkinlik::Yetkinlik::Donanim) {
             println!("[ışık] {} {}", ad, if yansin { "yandı" } else { "söndü" });
         }
     }
@@ -2326,20 +2233,15 @@ fn calistir_io_ile(
 
 fn dene_komutu(girdi: &KaynakGirdisi) -> ExitCode {
     let mut yukleyici = |istek: dil::BirimIstegi<'_>| girdi.birim_yukle(istek);
-    let program = match dil::kaynagi_derle_kokenlerle(
-        &girdi.kaynak,
-        Some(&girdi.koken),
-        &mut yukleyici,
-    ) {
-        Ok(program) => program,
-        Err(tani) => {
-            eprint!("{}", tani.raporla(&girdi.kaynak));
-            return ExitCode::FAILURE;
-        }
-    };
-    if let Err(tani) =
-        dil::cozumleyici::yetkinlikleri_denetle(&program, &girdi.politikasi())
-    {
+    let program =
+        match dil::kaynagi_derle_kokenlerle(&girdi.kaynak, Some(&girdi.koken), &mut yukleyici) {
+            Ok(program) => program,
+            Err(tani) => {
+                eprint!("{}", tani.raporla(&girdi.kaynak));
+                return ExitCode::FAILURE;
+            }
+        };
+    if let Err(tani) = dil::cozumleyici::yetkinlikleri_denetle(&program, &girdi.politikasi()) {
         eprint!("{}", tani.raporla(&girdi.kaynak));
         return ExitCode::FAILURE;
     }

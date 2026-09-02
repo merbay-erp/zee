@@ -256,7 +256,9 @@ ilk dağıtım çekirdeğine dönüştü. K-095 ağ dışı root sabitlemesi, e�
 eşikli rotasyon, timestamp→snapshot→targets bağları, rollback/expiry ve exact
 yayıncı/yanked/duyuru politikasını çalışan metadata doğrulayıcısına dönüştürdü.
 K-135 limitli HTTPS/statik taşıma, kalıcı metadata/cache ve offline hit/miss'i
-tamamladı. Exact manifest/kilit ve CLI bağı K-136'ya kaldı; V1-P1-07 açıktır.
+tamamladı. K-136 exact `ad@X.Y.Z` bildirimi, `proje.kilit` v3, proje-local
+atomik kaynak kurulumu ve açık ağ kullanan CLI bağını tamamladı; V1-P1-07
+kapandı. Normal derleme/LSP doğrulanmış cache'den sessiz ağ açmadan çalışır.
 `dil ekle <yerel-yol> [proje]` (K-079) aday grafiği diske yazmadan çözer;
 başarılıysa yorumu koruyan resmî biçimde bildirimi ve kilidi günceller,
 yazma hatasında önceki iki dosyayı geri yüklemeyi dener.
@@ -597,7 +599,7 @@ tamlık, kimlik ve imkânsız-durum değişmezlerini debug/test faz kapısına
 bağladı; özellik→alan dönüşümündeki klon kaynaklı yetim HIR kaydını bulup
 düzeltti. K-113/ADR-024 LSP odaklı parser recovery'yi cümle sonu+dengeli
 girinti senkronizasyonu, kaynak sırası ve 20 tanılık ortak bütçeyle kapattı.
-K-114/ADR-025 ile başlayan ve K-135'te P016 ile 151 etkin + 3 ayrılmışa çıkan tanıların
+K-114/ADR-025 ile başlayan ve K-136'da P017 ile 152 etkin + 3 ayrılmışa çıkan tanıların
 kod↔anlam bağı sürümlü
 fixture'a sabitledi. K-115/RFC-0022/ADR-026 bütün runtime IO çağrılarını
 kanonik, sürümlü ve dış etkisiz replay edilebilen bir iz protokolüne bağladı;
@@ -699,8 +701,9 @@ K-131 eski domain kaynak sabitlerinin sayısal sahipliğini aynı tipe taşıdı
 K-132 LSP outbound JSON'unu bounded üretip B-025'i kapattı. K-133/K-134 etki
 öncesi deadline ve web request transaction katmanlarıyla B-026'yı kapattı.
 K-135 B-029'un HTTPS taşıma, doğrulanmış içerik-adresli cache, CAS korumalı
-kalıcı rollback ve offline dilimini kapattı. Sıradaki omurga K-136 exact
-manifest/kilit/CLI entegrasyonudur.
+kalıcı rollback ve offline dilimini kapattı. K-136 exact manifest, kilit v3,
+salt-okunur kaynak kurulumu ve CLI entegrasyonuyla B-029/V1-P1-07'yi kapattı.
+Sıradaki omurga K-137 ile B-046 web rate-limit ve çok süreçli oturum sınırıdır.
 # 40. Proje felsefesinin korunması
 Bu projenin başarısı yalnız compiler’ın çalışması değildir. Başarı; Türkçe konuşan bir çocuğun yabancı syntax bariyerine takılmadan algoritmik düşünceyle tanışması, aynı dilin yıllar sonra onu terk etmeye zorlamaması ve ekosistemin tek bir şirketin kapalı ürünü haline gelmemesidir.
 Her yeni özellik şu dört sorudan geçmelidir: Türkçe doğal mı? Deterministik mi? Öğrenilebilir mi? Profesyonel ölçekte savunulabilir mi? Dördünden biri hayırsa özellik yeniden tasarlanır.

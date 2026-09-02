@@ -234,8 +234,38 @@ fn yayin_fixture(gecici: &GeciciKlasor) -> YayinFixture {
 }
 
 fn tasiyici(anahtarlar: &Anahtarlar, yayin: &YayinFixture, surum: u64) -> SahteTasiyici {
+    tasiyici_duyurularla(anahtarlar, yayin, surum, &[])
+}
+
+fn tasiyici_duyurularla(
+    anahtarlar: &Anahtarlar,
+    yayin: &YayinFixture,
+    surum: u64,
+    kritik_kimlikleri: &[&str],
+) -> SahteTasiyici {
     let mut hedefler = BTreeMap::new();
-    hedefler.insert("miras@1.2.3".into(), yayin.hedef.clone());
+    let mut hedef = yayin.hedef.clone();
+    hedef.duyurular = kritik_kimlikleri
+        .iter()
+        .map(|kimlik| (*kimlik).to_string())
+        .collect();
+    hedefler.insert("miras@1.2.3".into(), hedef);
+    let duyurular = kritik_kimlikleri
+        .iter()
+        .map(|kimlik| {
+            (
+                (*kimlik).to_string(),
+                DuyuruMetadata {
+                    kimlik: (*kimlik).to_string(),
+                    paket: "miras".into(),
+                    etkilenen_surumler: vec!["1.2.3".into()],
+                    onem: "kritik".into(),
+                    duzeltilen_surum: None,
+                    etkin: true,
+                },
+            )
+        })
+        .collect();
     let targets = zarf(
         "targets",
         TargetsMetadata {
@@ -243,7 +273,7 @@ fn tasiyici(anahtarlar: &Anahtarlar, yayin: &YayinFixture, surum: u64) -> SahteT
             surum,
             sona_erme: "2100-01-01T00:00:00Z".into(),
             hedefler,
-            duyurular: BTreeMap::new(),
+            duyurular,
         },
         &anahtarlar.targets,
     );
@@ -348,10 +378,12 @@ fn dogrulanmis_cache_offline_acilir_ve_bozuk_nesne_fail_closed_kalir() {
     assert_eq!(cevrimici.metadata_surumleri.targets, 3);
     assert!(!cevrimici.cevrimdisi);
     assert!(cevrimici.arsiv.is_file());
-    assert!(std::fs::metadata(&cevrimici.arsiv)
-        .expect("cache metadata")
-        .permissions()
-        .readonly());
+    assert!(
+        std::fs::metadata(&cevrimici.arsiv)
+            .expect("cache metadata")
+            .permissions()
+            .readonly()
+    );
 
     let offline = istemci
         .paketi_cevrimdisi_al("miras", "1.2.3", HedefPolitikasi::default())
@@ -424,13 +456,17 @@ fn tasinan_cift_esikli_root_kalici_duruma_ve_offline_dogrulamaya_gecer() {
         )
         .expect("root rotasyonlu güncelleme");
     assert_eq!(sonuc.metadata_surumleri.root, 2);
-    assert!(tasiyici
-        .istekler
-        .iter()
-        .any(|yol| yol == "metadata/2.root.json"));
-    assert!(istemci
-        .paketi_cevrimdisi_al("miras", "1.2.3", HedefPolitikasi::default())
-        .is_ok());
+    assert!(
+        tasiyici
+            .istekler
+            .iter()
+            .any(|yol| yol == "metadata/2.root.json")
+    );
+    assert!(
+        istemci
+            .paketi_cevrimdisi_al("miras", "1.2.3", HedefPolitikasi::default())
+            .is_ok()
+    );
 }
 
 #[test]
@@ -440,6 +476,137 @@ fn gercek_tasiyici_yalniz_https_origin_ve_guvenli_statik_yol_kabul_eder() {
     assert!(HttpsRegistryTasiyici::yeni("https://registry.example").is_ok());
     assert!(goreli_yolu_dogrula("metadata/1.targets.json").is_ok());
     assert!(goreli_yolu_dogrula("../root.json").is_err());
+}
+
+#[test]
+fn exact_registry_paketi_proje_grafigi_kilit_ve_offline_derlemeye_baglanir() {
+    let gecici = GeciciKlasor::yeni();
+    let anahtarlar = anahtarlar();
+    let root = root(&anahtarlar);
+    let root_ozeti = format!("sha256:{}", sha256_hex(&root));
+    let yayin = yayin_fixture(&gecici);
+    let uygulama = gecici.yol().join("uygulama");
+    std::fs::create_dir(&uygulama).expect("uygulama");
+    std::fs::write(
+        uygulama.join("proje.dil"),
+        format!(
+            concat!(
+                "proje \"uygulama\" olsun\n",
+                "sürüm \"0.1.0\" olsun\n",
+                "giriş \"ana.dil\" olsun\n",
+                "registry \"https://registry.example\" olsun\n",
+                "registry_kök_sürümü \"1\" olsun\n",
+                "registry_kök_özeti \"{}\" olsun\n",
+                "uzak_bağımlılıklar \"miras@1.2.3\" listesi olsun\n"
+            ),
+            root_ozeti
+        ),
+    )
+    .expect("uygulama bildirimi");
+    std::fs::write(
+        uygulama.join("ana.dil"),
+        "miras paketini kullan\nyedi ver yaz\n",
+    )
+    .expect("uygulama kaynağı");
+
+    let cache = uygulama
+        .join(".zee")
+        .join("registry")
+        .join(root_ozeti.strip_prefix("sha256:").expect("önek"));
+    let istemci = RegistryIstemcisi::yeni(&cache, root, &root_ozeti);
+    let mut tasiyici = tasiyici(&anahtarlar, &yayin, 9);
+    istemci
+        .paketi_guncelle_zamanla(
+            &mut tasiyici,
+            "miras",
+            "1.2.3",
+            HedefPolitikasi::default(),
+            1,
+        )
+        .expect("cache önceden doğrulanmalı");
+
+    let grafik = crate::paket::ProjeGrafigi::cozumle(&uygulama)
+        .expect("normal proje çözümü ağsız cache kullanmalı");
+    let giris = grafik.ana_giris().expect("ana giriş");
+    let mut yukleyici = |istek: crate::BirimIstegi<'_>| grafik.yukle(istek);
+    crate::kaynagi_derle_kokenlerle(&giris.kaynak, Some(&giris.koken), &mut yukleyici)
+        .expect("registry paketi kaynak yükleyicisinden derlenmeli");
+    let kilit = grafik.kilit_metni();
+    assert!(kilit.contains("kilit_sürümü 3"));
+    assert!(kilit.contains("uzak \"miras\" \"1.2.3\""));
+    assert!(kilit.contains(&root_ozeti));
+    assert!(kilit.contains(&yayin.hedef.yayinci_anahtar_kimligi));
+    assert!(kilit.contains(&yayin.hedef.arsiv.sha256));
+    grafik.kilidi_yaz().expect("kilit");
+    grafik.kilidi_denetle().expect("kilit doğrulama");
+    let paket = grafik.paketler().pop().expect("registry paketi");
+    assert_eq!(paket.ad, "miras");
+    assert_eq!(
+        paket.registry_kok_sha256.as_deref(),
+        Some(root_ozeti.as_str())
+    );
+
+    let kurulum = uygulama
+        .join(".zee/paketler/sha256")
+        .join(&yayin.hedef.arsiv.sha256)
+        .join("paket.dil");
+    dosyayi_yazilabilir_yap(&kurulum);
+    std::fs::write(&kurulum, "bozuk\n").expect("kurulum bozma");
+    let hata = match crate::paket::ProjeGrafigi::cozumle(&uygulama) {
+        Ok(_) => panic!("bozuk kurulum fail-closed kalmalı"),
+        Err(hata) => hata,
+    };
+    assert_eq!(hata.tani.kod, "P016");
+
+    std::fs::write(
+        &kurulum,
+        "işlem yedi ver\n    TamSayı döndürür\n    7 döndür\n",
+    )
+    .expect("kurulumu geri yükle");
+    let mut bir_duyuru = tasiyici_duyurularla(&anahtarlar, &yayin, 10, &["ZEE-2026-1"]);
+    istemci
+        .paketi_guncelle_zamanla(
+            &mut bir_duyuru,
+            "miras",
+            "1.2.3",
+            HedefPolitikasi {
+                yanked_kabul: false,
+                kritik_duyuru_kabul: true,
+            },
+            2,
+        )
+        .expect("tek kritik duyurulu cache");
+    let kabul = crate::paket::RegistryCozumPolitikasi::yeni(
+        true,
+        None,
+        Some("geçiş tamamlanana dek".into()),
+    )
+    .expect("gerekçeli politika");
+    crate::paket::ProjeGrafigi::cozumle_registry_ile(&uygulama, &kabul)
+        .expect("açık kabul")
+        .kilidi_yaz()
+        .expect("gerekçeli kilit");
+
+    let mut yeni_duyuru =
+        tasiyici_duyurularla(&anahtarlar, &yayin, 11, &["ZEE-2026-1", "ZEE-2026-2"]);
+    istemci
+        .paketi_guncelle_zamanla(
+            &mut yeni_duyuru,
+            "miras",
+            "1.2.3",
+            HedefPolitikasi {
+                yanked_kabul: false,
+                kritik_duyuru_kabul: true,
+            },
+            3,
+        )
+        .expect("iki kritik duyurulu cache");
+    let hata = match crate::paket::ProjeGrafigi::cozumle(&uygulama) {
+        Ok(_) => panic!("yeni kritik duyuru eski gerekçeyi kullanmamalı"),
+        Err(hata) => hata,
+    };
+    assert_eq!(hata.tani.kod, "P014");
+    assert!(hata.tani.mesaj.contains("yeni açık gerekçe"));
 }
 
 fn hex_yaz(baytlar: &[u8]) -> String {

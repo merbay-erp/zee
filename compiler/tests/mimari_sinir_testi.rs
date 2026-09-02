@@ -92,9 +92,14 @@ fn handler_modulleri_yeni_domain_icin_sinir_tasir() {
         ("src/kalici_dosya.rs", 850),
         ("src/kalici_dosya/metadata.rs", 260),
         ("src/kaynak_sinirlari.rs", 260),
-        ("src/registry/istemci.rs", 560),
+        ("src/registry/istemci.rs", 600),
         ("src/registry/istemci/depo.rs", 100),
         ("src/registry/istemci/tasima.rs", 120),
+        ("src/paket/uzak.rs", 480),
+        ("src/paket/uzak/politika.rs", 180),
+        ("src/paket/uzak_wasm.rs", 140),
+        ("src/tedarik/kurulum.rs", 220),
+        ("src/cli/registry.rs", 500),
     ] {
         satir_butcesini_denetle(goreli, butce);
     }
@@ -144,7 +149,7 @@ fn checker_katmanlari_tek_sorumlulukla_sahiplenilir() {
 
 #[test]
 fn checker_public_api_katmanlasmada_korunur() {
-    use dil::cozumleyici::{ad_cozumle, Tur};
+    use dil::cozumleyici::{Tur, ad_cozumle};
     use std::collections::HashMap;
 
     let ortam = HashMap::from([("sayı".to_string(), Tur::TamSayi)]);

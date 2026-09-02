@@ -6,26 +6,34 @@
 //! güven kararı bu modülün doğrulamasından sonra verilir.
 
 use crate::paket::sha256_hex;
-use crate::proje::{bildirimi_oku, ProjeBildirimi};
+use crate::proje::{ProjeBildirimi, bildirimi_oku};
 use ed25519_dalek::{Signature, Signer, SigningKey, VerifyingKey};
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 use std::collections::BTreeMap;
 use std::io::Write;
 use std::path::{Component, Path, PathBuf};
 use unicode_normalization::UnicodeNormalization;
 
+mod kurulum;
+
+pub use kurulum::paket_arsivini_kur;
+
 const PAKET_SIHRI: &[u8; 8] = b"ZEEZEP\0\x01";
 const IMZA_ALANI: &[u8] = b"zee-yayin-v1\0";
 const ANAHTAR_BASLIGI: &str = "zee-ed25519-private-v1";
-const AZAMI_PAKET_BOYUTU: usize =
-    crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.paket().paket_bayti();
-const AZAMI_DOSYA_BOYUTU: usize =
-    crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.paket().dosya_bayti();
-const AZAMI_DOSYA_SAYISI: usize =
-    crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.paket().dosya_sayisi();
-const AZAMI_YOL_BOYUTU: usize =
-    crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.paket().yol_bayti();
+const AZAMI_PAKET_BOYUTU: usize = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+    .paket()
+    .paket_bayti();
+const AZAMI_DOSYA_BOYUTU: usize = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+    .paket()
+    .dosya_bayti();
+const AZAMI_DOSYA_SAYISI: usize = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+    .paket()
+    .dosya_sayisi();
+const AZAMI_YOL_BOYUTU: usize = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+    .paket()
+    .yol_bayti();
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct PaketCiktilari {
@@ -165,11 +173,8 @@ pub fn paketle_zamanla(
         .map_err(|hata| format!("proje.dil okunamadı: {}.", hata))?;
     let bildirim =
         bildirimi_oku(&bildirim_kaynagi).map_err(|tani| format!("{}: {}", tani.kod, tani.mesaj))?;
-    if !bildirim.yerel_bagimliliklar.is_empty() {
-        return Err(
-            "Yerel yol bağımlılığı yayınlanamaz; yayın paketi taşınabilir ve bağımsız olmalı."
-                .into(),
-        );
+    if !bildirim.yerel_bagimliliklar.is_empty() || !bildirim.uzak_bagimliliklar.is_empty() {
+        return Err("Yerel yol bağımlılığı veya uzak registry bağımlılığı henüz yayınlanamaz; kaynak paketi v1 bağımsız olmalı.".into());
     }
 
     let grafik = crate::paket::ProjeGrafigi::cozumle(&kok)
@@ -309,8 +314,8 @@ pub fn yayini_dogrula(
     {
         return Err("İmzalı yayın kimliği paket içindeki proje.dil ile uyuşmuyor.".into());
     }
-    if !bildirim.yerel_bagimliliklar.is_empty() {
-        return Err("Yayın paketi yerel yol bağımlılığı taşıyor.".into());
+    if !bildirim.yerel_bagimliliklar.is_empty() || !bildirim.uzak_bagimliliklar.is_empty() {
+        return Err("Yayın paketi yerel yol ya da uzak registry bağımlılığı taşıyor.".into());
     }
     sbom_dogrula(sbom, &zarf.imzali, &zarf.imzali.arsiv.sha256)?;
     provenance_dogrula(provenance, &zarf.imzali, &zarf.imzali.arsiv.sha256)?;
@@ -966,9 +971,11 @@ mod testler {
     fn arsiv_sayi_yol_ve_tekillik_sinirlarini_ayirmadan_denetler() {
         let mut cok_dosya = PAKET_SIHRI.to_vec();
         cok_dosya.extend_from_slice(&((AZAMI_DOSYA_SAYISI + 1) as u32).to_be_bytes());
-        assert!(arsivi_oku(&cok_dosya)
-            .unwrap_err()
-            .contains("dosya sınırını"));
+        assert!(
+            arsivi_oku(&cok_dosya)
+                .unwrap_err()
+                .contains("dosya sınırını")
+        );
 
         let mut uzun_yol = PAKET_SIHRI.to_vec();
         uzun_yol.extend_from_slice(&1u32.to_be_bytes());

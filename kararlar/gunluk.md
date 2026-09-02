@@ -2134,6 +2134,38 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   151 etkin + 3 ayrılmış tanı ve 80 numaralı belgedir. B-029 exact proje
   bildirimi/kilit/CLI entegrasyonu için kısmen açıktır.
 
+## K-136 — Exact registry paketi proje sözleşmesine bağlandı (2 Eyl)
+
+- **Sorun:** K-135 güvenilmeyen ağdan doğrulanmış byte'ı kalıcı cache'e kadar
+  getiriyordu; fakat hangi registry/root kimliğinin projeye ait olduğu,
+  `ad@X.Y.Z` seçiminin kilide nasıl taşınacağı ve kullanıcı komutlarının ne
+  zaman ağ açabileceği henüz yürütülebilir proje sözleşmesi değildi.
+- **Karar:** `proje.dil`; yol/sorgusuz HTTPS origin, pozitif ağ dışı root
+  sürümü, `sha256:` root özeti ve exact `uzak_bağımlılıklar` alanlarını birlikte
+  taşır. Eksik/bölünmüş/geçersiz yapı P017'dir. Yerel ve uzak paketler aynı
+  kökenli grafikte ad, doğrudanlık, public ABI ve yetkinlik sınırına tabidir.
+- **Kilit ve politika:** `proje.kilit` v3 ilk/etkin root ile bütün metadata
+  sürüm+özetlerini, yayıncıyı, `.zep`/SBOM/provenance/yayın özetlerini,
+  yanked durumunu ve kritik duyuruları sabitler. `--yanked-kabul` ve
+  `--kritik-kabul` boş olmayan insan gerekçesi ister; karar exact root+paket
+  kimliğine bağlı kilit kaydı olarak korunur.
+- **Ağ ve kurulum:** `dil ekle ad@X.Y.Z` ile `dil kilitle` açıkça çevrimiçi,
+  `--çevrimdışı` ağsızdır. `dil paketler` varsayılan ağsız, yalnız `--yenile`
+  çevrimiçidir. Çalıştırma/denetleme/test/LSP sessiz ağ açmaz. Doğrulanmış
+  `.zep`, proje-local `.zee/paketler/sha256/<özet>` altında görünmez geçicide
+  açılır, exact ağaçla yeniden doğrulanır, atomik adlandırılır ve salt-okunur
+  yapılır.
+- **Atomiklik:** Uzak ekleme/çıkarma aday grafiği yazmadan önce bütünüyle
+  çözer. Manifest ve kilit iki dosyalı geri alma sözleşmesiyle güncellenir;
+  yarım aday görünür olmaz.
+- **Kanıt:** Exact manifest/P017 olumluları ve yorum koruyan güncelleme, iki
+  CLI seçenek testi, kritik kabul anahtarının güncel sıralı duyuru kümesine
+  bağlanması ve gerçek imzalı `.zep`+root/timestamp/snapshot/targets zincirinin
+  online hazırlanıp offline grafikte gerçek derlenmesi altı yeni regresyondur.
+  Yeni kritik duyuru eski gerekçeyi kullanamaz; bozulmuş kurulu kaynak P016 ile
+  reddedilir. Envanter 539 test,
+  152 etkin + 3 ayrılmış tanıdır. B-029 ve V1-P1-07 kapandı.
+
 ---
 
 ## Sonraki adım
@@ -2142,6 +2174,6 @@ Korpus 10 öğrenci + 5 profesyonel usability oturumuna (Hafta 12 hedefi, erkeni
 Hafta 2'de kağıt üstünde) sesli okutulacak; her kayıt için "doğal mı /
 deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
-Makine hattında K-135 B-029'un taşıma, doğrulanmış cache, kalıcı rollback ve
-offline katmanını tamamladı. Sırada K-136 exact bağımlılığın proje bildirimi,
-kilit ve CLI entegrasyonu vardır.
+Makine hattında K-136 exact registry bağımlılığını manifest, kilit v3,
+doğrulanmış kaynak kurulumu ve CLI'a bağlayarak B-029/V1-P1-07'yi kapattı.
+Sırada K-137 ile B-046 web rate-limit ve çok süreçli oturum sınırı vardır.

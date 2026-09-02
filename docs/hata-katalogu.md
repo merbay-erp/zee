@@ -176,7 +176,7 @@ kalır (ADR-025).
 
 | Kod | Ne oldu | Çözüm |
 |---|---|---|
-| P001 | `proje.dil` bilinmeyen/tekrarlı alan ya da değer tanımı dışında cümle içeriyor | `proje`, `sürüm`, `morfoloji`, `giriş`, `yetkinlikler`, `ağ_hedefleri` ve `yerel_bağımlılıklar` alanlarını kullan |
+| P001 | `proje.dil` bilinmeyen/tekrarlı alan ya da değer tanımı dışında cümle içeriyor | `proje`, `sürüm`, `morfoloji`, `giriş`, `yetkinlikler`, `ağ_hedefleri`, `yerel_bağımlılıklar`, registry root alanları ve `uzak_bağımlılıklar` alanlarını kullan |
 | P002 | Zorunlu proje alanı eksik | Eksik `proje`, `sürüm` veya `giriş` satırını ekle |
 | P003 | Proje adı ya da `X.Y.Z` sürümü geçersiz | Boş olmayan ad ve üç sayılı sürüm kullan: `0.1.0` |
 | P004 | Giriş mutlak, proje dışına çıkan veya `.dil` olmayan yol | Proje içinde kalan göreli `.dil` yolu kullan |
@@ -192,6 +192,7 @@ kalır (ADR-025).
 | P014 | Exact hedef bulunamadı; targets yayıncı/paket bağı uyuşmadı; sürüm yanked ya da etkin kritik duyurudan etkilendi | Doğru exact sürüm/yayıncıyı seç; yanked/duyuru baypasını yalnız açık gerekçe ve kilit kaydıyla uygula |
 | P015 | Yetkinlik listesi/hedefi geçersiz ya da paket üst projenin iznini aşıyor | Yetkinliği ve tam origin'i ana `proje.dil` içinde açıkça onayla; public ağda HTTPS kullan |
 | P016 | Registry HTTPS taşıması, içerik-adresli cache veya atomik kalıcı durum işlemi başarısız | Origin/root pin/cache yolunu denetle; bozuk nesneyi kullanma ve güvenilir aynadan yeniden doğrula |
+| P017 | Uzak bağımlılık exact `ad@X.Y.Z` değil ya da HTTPS registry/root sabitlemesi eksik/geçersiz | Exact sürüm, HTTPS origin, pozitif root sürümü ve ağ dışı `sha256:` root özetini birlikte bildir |
 
 ## Ç — İç akış
 

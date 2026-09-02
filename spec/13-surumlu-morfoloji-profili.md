@@ -82,7 +82,8 @@ morfoloji "zee-tr-1" olsun
 
 Alanı olmayan eski bildirim `zee-tr-1` kabul edilir. Yazılmış ama bu
 derleyicide desteklenmeyen profil P011'dir; sessiz fallback YASAKTIR.
-`proje.kilit` sürüm 2, ana proje ve her paket satırında profil kimliğini taşır.
+`proje.kilit` sürüm 3, ana proje ve her yerel/uzak paket satırında profil
+kimliğini taşır. Sürüm 2 tarihsel yerel-paket biçimidir.
 
 Yüzey tablosu, zincirler, ses dönüşümü, kanonik üretim veya çözüm önceliği
 değişirse `zee-tr-1` yerinde değiştirilemez. Yeni profil kimliği ve ana dil

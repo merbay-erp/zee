@@ -34,6 +34,13 @@ compiler/src/
 │   └── kalici_dosya/
 │       └── metadata.rs       platform owner/ACL/xattr/security aktarımı
 ├── kaynak_sinirlari.rs       ortak değişmez kaynak/CPU/bellek/çıktı profili
+├── paket.rs                  yerel+uzak tek proje grafiği ve kilit orkestrasyonu
+│   ├── paket/uzak.rs         exact registry çözümü ve kilit kimliği
+│   │   └── uzak/politika.rs  yanked/kritik gerekçe olay kimliği
+│   └── paket/uzak_wasm.rs    ağsız WASM fail-closed adaptörü
+├── tedarik.rs                yayın üretimi/doğrulama orkestrasyonu
+│   └── tedarik/kurulum.rs    doğrulanmış `.zep` atomik kaynak kurulumu
+├── cli/registry.rs           açık ağ kullanan exact paket komutları
 ├── registry.rs               root ve metadata güven doğrulayıcısı
 │   └── registry/istemci.rs   taşıma/cache/kalıcı durum orkestrasyonu
 │       ├── depo.rs           içerik-adresli yol ve sınırlı disk okuma
@@ -74,6 +81,9 @@ API'si bu iç ayrımla büyümez.
 | tohum/rastgele profil semantiği | runtime `io_profili` | RFC-0023, ADR-027, spec/22 ve dizi snapshot'ı |
 | runtime dış dünya kapısı | runtime `yetkinlik` + kök `yetkinlik.rs` | RFC-0024, ADR-031, spec/23 |
 | atomik dosya metadata'sı | `kalici_dosya/metadata` | RFC-0016, ADR-032, spec/08 ve Tier-1 testleri |
+| exact registry proje çözümü | `paket/uzak` | RFC-0020, ADR-006, spec/07/19 ve kilit v3 |
+| doğrulanmış `.zep` kurulumu | `tedarik/kurulum` | arşiv exact ağaç doğrulaması, atomik rename ve P016 |
+| registry CLI/ağ açma sınırı | `cli/registry` | `ekle/kilitle/paketler`, çevrimdışı varsayımlar ve P017 |
 | morfoloji profil uyumluluğu | `morfoloji/uyumluluk` | RFC-0018, spec/13, immutable SHA-256 fixture ve Git-tarih koruğu |
 | alan adaptörü | intrinsic kaydı | ADR-011 rehberi, yetkinlik/etki/runtime |
 
@@ -151,10 +161,20 @@ K-134 rota seçimi, güvenlik önsözü, taze ortam ve 30 saniyelik request yür
 akışını `yorumlayici/web_istek.rs` sahibine ayırdı. 180 satır bütçesi web
 yaşam döngüsünün runtime köküne geri gömülmesini engeller; transaction
 commit/rollback'i `GirdiCikti` adaptör sınırında kalır.
-K-135 registry istemcisini 560 satırlık `registry/istemci.rs` sahibinde;
+K-135 registry istemcisini, K-136'nın exact çıktı kimliği ekleriyle 600 satırlık
+`registry/istemci.rs` sahibinde;
 içerik-adresli disk ilkellerini 100 satırlık `depo.rs`, HTTPS statik taşıyıcıyı
 120 satırlık `tasima.rs` sınırında tutar. Metadata doğrulama `registry.rs`te,
 DNS/IP ve redirect korkulukları ortak `ag_istemcisi.rs`te kalır.
+K-136 exact proje/cache çözümünü 480 satırlık `paket/uzak.rs`, güvenlik
+baypasını güncel yanked/kritik olay kimliğine bağlayan kilit okuyucusunu 180
+satırlık `paket/uzak/politika.rs`, doğrulanmış
+arşiv açmayı 220 satırlık `tedarik/kurulum.rs` ve açık ağ kullanan komut
+yüzeyini 500 satırlık `cli/registry.rs` sahibine ayırır. Normal graph/derleme
+bu CLI modülünü çağırmaz; sessiz ağ açmama değişmezi fiziksel sınırdır.
+WASM'de native registry/tedarik modülü derlenmez; 140 satır bütçeli
+`paket/uzak_wasm.rs` yerel grafiği korur ve uzak bildirimde P016 ile fail-closed
+kalır.
 K-130 değer grafiği hesabını `yorumlayici/kaynak.rs`, bütçeli değer/JSON/CSV
 yazımını `yorumlayici/metin.rs`, süreç-geneli izin sayacını
 `kaynak_sinirlari/baglanti.rs` sahibine ayırdı. Sırasıyla 280/240/60 satır;
