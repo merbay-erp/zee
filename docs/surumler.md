@@ -384,6 +384,14 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   754 yuvarlama/özel-değer semantiği ister. FFI Faz 4/5 taslağı olarak kalır.
   Enum envanteri, eski yüzey reddi, exact `0,1+0,2=0,3` ve belge tazeliği için
   bir yeni regresyonla toplam 485 test yeşildir; B-012/V1-P0-28 kapandı.
+- **Bütün AST ifadelerinde kesin kaynak aralığı** (K-126, ADR-030): Parser'ın
+  her yaprak ve bileşik ifadesi sıfır olamayan `AstKaynakAraligi` taşıyan tek
+  bir kaynak zarfındadır; alt düğümler kendi token bölgelerini ayrıca korur.
+  Checker aralığı HIR'a birebir taşır ve eski `1:1` ifade tanısını gerçek
+  düğüme yükseltir. Invariant spansiz/iç içe zarfı ve AST↔HIR uyuşmazlığını
+  reddeder. Örtük çoğul kaynak döngü adının tokenına bağlanır; LSP aynı adlı
+  argümanla işlem kuyruğunu kesin semantic aralıkta ayırır. Beş yeni
+  regresyonla toplam 490 test yeşildir; B-050/V1-P0-18 tamamlandı.
 
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`

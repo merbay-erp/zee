@@ -584,7 +584,9 @@ sınırlayıp anonim LRU ve kaymayan mutlak ömrü bağladı. K-107/ADR-019 LSP
 çerçevesine 8 KiB/8 MiB, JSON'a 128 derinlik/100 bin düğüm bütçesi ve sıkı
 Unicode doğrulaması koydu. K-108/ADR-020 her semantic HIR ifadesinde kaynak
 aralığını yapısal zorunluluk yaptı; kesin token konumu yoksa uydurma sütun
-yerine kaynak satırı zarfı taşınır. K-109/ADR-021 production'daki 46 doğrudan
+yerine kaynak satırı zarfı taşınır. K-126/ADR-030 bütün parser AST yaprak ve
+bileşiklerini kesin `AstKaynakAraligi` zarflarına aldı; checker bu aralığı
+HIR'a birebir aktarır, tanı ve LSP üretimde tüketir. K-109/ADR-021 production'daki 46 doğrudan
 panic noktasını tanı/sonuca çevirdi ve dört crate kökünde kalıcı Clippy deny
 kapısı kurdu. K-110/ADR-022 sekiz saldırı tohumu, Zee mutation sözlüğü,
 deterministik UTF-8 regresyonları ve korpusu büyüten gecelik libFuzzer hattıyla
@@ -618,8 +620,10 @@ yaptı. K-123 bunu kök `conformance/` alanında sürümlü JSON Schema, 27
 sözleşmesine dönüştürüp B-009'u kapattı. K-124 aynı alanı `zee-esz-1` ve 10
 kaynak+gözlem vakasıyla scheduler'a genişletip B-011'i kapattı.
 K-125/ADR-029 açık Ondalık↔binary float FFI sınırını örtük eşleme yasağı ve
-zorunlu `kayıplı`+`Sonuç` kapısı olarak kapattı. Şimdi B-050 bütün AST
-ifadelerinde kesin source span gelir. P0 maddeleri kapanmadan yeni dil özelliği
+zorunlu `kayıplı`+`Sonuç` kapısı olarak kapattı. K-126/ADR-030 bütün AST
+ifadelerinde kesin source span'i HIR, tanı ve LSP'ye bağlayıp B-050'yi
+kapattı. Sıradaki makine işi B-023 capability ve outbound hedef politikasıdır.
+P0 maddeleri kapanmadan yeni dil özelliği
 öne alınmaz; yarım güvenlik/correctness dilimi önce atomik olarak tamamlanır.
 
 K-016'nın makine hazırlığı K-096 ile
@@ -666,7 +670,8 @@ JSON Schema ve veri korpusuyla compiler'dan bağımsız morfoloji conformance
 sözünü bağlayıp B-009'u kapattı. K-124 `zee-esz-1` gözlem profiliyle
 scheduler'ın bağımsız uyumluluk sözünü bağlayıp B-011'i kapattı.
 K-125/ADR-029 örtük Ondalık↔binary float köprüsünü yasaklayıp B-012'yi
-kapattı. Sıradaki omurga B-050 bütün AST ifadelerinde kesin source span'dir.
+kapattı. K-126/ADR-030 bütün AST ifadelerini kesin kaynaklandırıp B-050'yi
+kapattı. Sıradaki omurga B-023 capability/outbound hedef politikasıdır.
 # 40. Proje felsefesinin korunması
 Bu projenin başarısı yalnız compiler’ın çalışması değildir. Başarı; Türkçe konuşan bir çocuğun yabancı syntax bariyerine takılmadan algoritmik düşünceyle tanışması, aynı dilin yıllar sonra onu terk etmeye zorlamaması ve ekosistemin tek bir şirketin kapalı ürünü haline gelmemesidir.
 Her yeni özellik şu dört sorudan geçmelidir: Türkçe doğal mı? Deterministik mi? Öğrenilebilir mi? Profesyonel ölçekte savunulabilir mi? Dördünden biri hayırsa özellik yeniden tasarlanır.

@@ -7,6 +7,8 @@
   fiziksel modüllere ayrıldı
 - **Revizyon:** 2 Eylül 2026 — K-119 ile formatter'ın tam parser-token
   eşdeğerliği kalıcı kapıya bağlandı
+- **Revizyon:** 2 Eylül 2026 — K-126/ADR-030 ile her AST ifadesinin kesin
+  token aralığı zorunlu kılındı
 
 ## Bağlam
 
@@ -52,6 +54,12 @@ ADR-012'nin fiziksel modüllerine ayrıldı; sınırlar bu katmanları izler ve
 davranış conformance testiyle korunur.
 Gelecekte ikinci compiler geldiğinde spec/20 + ortak korpus kaynak olur;
 Rust fonksiyon sırası normatif kaynak sayılmaz.
+
+K-126/ADR-030'da parser'ın ifade üretimi `ayristirici/kaynak.rs` kapısına
+bağlandı. Her yaprak ve bileşik ifade tükettiği token bölgesinden ayrı,
+Unicode karakteri tabanlı kesin kaynak zarfı alır; boş, ters, taşan veya çok
+satırlı bölge sessizce satır tahminine düşmez. Yeni ifade kalıbı, bu zarfı ve
+alt ifadelerin bağımsız aralıklarını korumadan tamamlanmış sayılmaz.
 
 Resmî formatter yalnız görünüşü değiştirir. Biçimleme öncesi ve sonrasındaki
 `TokenTur` dizisi; `SatirSonu`, `Girinti`, `Cikinti` ve `DosyaSonu` dahil

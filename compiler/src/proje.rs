@@ -139,8 +139,8 @@ fn istege_bagli_metni_al(
     let Some((ifade, satir)) = alanlar.remove(ad) else {
         return Ok((varsayilan.to_string(), 1));
     };
-    match ifade {
-        Ifade::MetinSabiti(deger) => Ok((deger, satir)),
+    match ifade.turu() {
+        Ifade::MetinSabiti(deger) => Ok((deger.clone(), satir)),
         _ => Err(proje_hatasi(
             "P001",
             &format!("\"{}\" alanı Metin olmalı.", ad),
@@ -219,8 +219,8 @@ fn gerekli_metni_al(
             &format!("{} \"...\" olsun satırını ekle.", ad),
         )
     })?;
-    match ifade {
-        Ifade::MetinSabiti(deger) => Ok((deger, satir)),
+    match ifade.turu() {
+        Ifade::MetinSabiti(deger) => Ok((deger.clone(), satir)),
         _ => Err(proje_hatasi(
             "P001",
             &format!("\"{}\" alanı Metin olmalı.", ad),
@@ -236,12 +236,12 @@ fn bagimliliklari_al(
     let Some((ifade, satir)) = alanlar.remove("yerel_bağımlılıklar") else {
         return Ok(Vec::new());
     };
-    let yollar = match ifade {
+    let yollar = match ifade.turu() {
         Ifade::BosListe => Vec::new(),
         Ifade::ListeSabiti(ogeler) => ogeler
-            .into_iter()
-            .map(|oge| match oge {
-                Ifade::MetinSabiti(yol) => Ok(yol),
+            .iter()
+            .map(|oge| match oge.turu() {
+                Ifade::MetinSabiti(yol) => Ok(yol.clone()),
                 _ => Err(proje_hatasi(
                     "P005",
                     "Yerel bağımlılıkların her biri Metin yol olmalı.",

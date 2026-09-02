@@ -21,8 +21,8 @@ Derleyici şu fiziksel sınırlara ayrılır:
 
 | Katman | Kök sorumluluğu | Handler modülleri |
 |---|---|---|
-| parser | token akışı, blok ve tanım orkestrasyonu | `ayristirici/cumle.rs`, `ayristirici/ifade.rs` |
-| checker | tür modeli, bağlam ve denetim orkestrasyonu | `cozumleyici/cumle.rs`, `cozumleyici/ifade.rs`, `cozumleyici/cagri.rs` |
+| parser | token akışı, blok ve tanım orkestrasyonu | `ayristirici/cumle.rs`, `ayristirici/ifade.rs`, `ayristirici/kaynak.rs` |
+| checker | tür modeli, bağlam ve denetim orkestrasyonu | `cozumleyici/cumle.rs`, `cozumleyici/ifade.rs`, `cozumleyici/cagri.rs`, `cozumleyici/kaynak.rs` |
 | runtime | IO, scheduler, değer modeli ve orkestrasyon | `yorumlayici/cumle.rs`, `yorumlayici/ifade.rs`, `yorumlayici/hir_gecisi.rs`, `yorumlayici/io_izi.rs`, `yorumlayici/io_profili.rs` |
 
 Modüller `pub(super)` ile yalnız kendi üst fazına açılır; crate'in public
@@ -65,3 +65,7 @@ Hata kataloğu bekçisi de `compiler/src` altındaki bütün Rust modüllerini
 - K-116 `zee-io-1` tohum ve aralık algoritmasını
   `yorumlayici/io_profili.rs` sahibine ayırdı; 80 satırlık bütçe ve kırıcı
   profil değişikliği kuralı faz rehberinde kayıtlıdır.
+- K-126/ADR-030 parser'ın token bölgesi→AST kaynak zarfı kuralını
+  `ayristirici/kaynak.rs`, checker'ın eski tanıyı kesin ifadeye bağlama
+  kuralını `cozumleyici/kaynak.rs` sahibine ayırdı. 80 ve 40 satırlık
+  bütçeler bu çapraz kuralın ifade handler'larına geri dağılmasını engeller.

@@ -32,6 +32,7 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-027 | [Sürümlü deterministik IO profili](027-surumlu-deterministik-io-profili.md) | **kabul** (K-116/B-028) |
 | ADR-028 | [Kanonik `.zep` yol ve Unicode güvenlik profili](028-kanonik-zep-yol-profili.md) | **kabul** (K-117/B-030/B-031) |
 | ADR-029 | [Ondalık ile binary float arasında örtük köprü yoktur](029-ondalik-binary-float-siniri.md) | **kabul** (K-125/B-012) |
+| ADR-030 | [Bütün AST ifadelerinde kesin kaynak aralığı](030-kesin-ast-kaynak-araliklari.md) | **kabul** (K-126/B-050) |
 | ADR-004 | Bellek yönetimi prototip kararı (GC / ARC benchmark) | bekliyor |
 | ADR-005 | Native backend seçimi (Cranelift / LLVM) | bekliyor — Faz 4 |
 | ADR-007 | [Telemetri ve gizlilik: araçlar veri toplamaz](007-telemetri-ve-gizlilik.md) | **kabul** |

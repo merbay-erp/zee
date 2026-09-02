@@ -21,6 +21,7 @@ mod cumle;
 mod donus;
 mod etki;
 mod ifade;
+mod kaynak;
 mod sembol;
 mod sozlesme;
 mod turler;

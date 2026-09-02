@@ -14,6 +14,7 @@ compiler/src/
 │   └── ayristirici/
 │       ├── cumle.rs          cümle son-yüklem dağıtımı
 │       ├── ifade.rs          RFC-0021 ifade katmanları ve çağrı lowering'i
+│       ├── kaynak.rs         token bölgesi→kesin AST kaynak zarfı
 │       └── kurtarma.rs       cümle/girinti senkronizasyonu ve tanı bütçesi
 ├── cozumleyici.rs            checker geçiş orkestrasyonu ve public API
 │   └── cozumleyici/
@@ -24,6 +25,7 @@ compiler/src/
 │       ├── donus.rs          kesin sonlanma ve dönüş birleşimi
 │       ├── etki.rs           web/uygulama etkisi ve yetkinlik geçişi
 │       ├── ifade.rs          ifade tür denetimi
+│       ├── kaynak.rs         ifade tanısını kesin AST/HIR aralığına bağlama
 │       ├── sembol.rs         ad, alan ve sözcüksel kapsam çözümü
 │       ├── sozlesme.rs       public parametre/dönüş sözleşmesi
 │       └── turler.rs         tür modeli, tür yazımı ve uzlaşma
@@ -46,9 +48,11 @@ API'si bu iç ayrımla büyümez.
 | yeni cümle son-yüklemi | parser `cumle` | checker/runtime `cumle`, RFC/spec |
 | yeni ifade/postfix | parser `ifade` | RFC-0021 çakışma matrisi, checker/runtime `ifade` |
 | parser hata kurtarma | parser `kurtarma` | RFC-0010, kısmi AST invariantı ve LSP tanı sırası |
+| AST ifade kaynak aralığı | parser `kaynak` | ADR-030, HIR aralık eşliği, tanı ve LSP tüketimi |
 | işlem çağrı uzlaştırması | checker `cagri` | RFC-0006/spec-02/10 ve usability kararı |
 | public işlem sözleşmesi | checker `sozlesme` | paket/birim API ve semver sınırı |
 | tür yazımı/uzlaşması | checker `turler` | ifade handler'ı ve olumsuz test |
+| ifade tanı konumu | checker `kaynak` | AST/HIR kesin aralığı ve tanı regresyonu |
 | sembol/alan çözümü | checker `sembol` | `SymbolId`, morfoloji ve kapsam testleri |
 | yapı/işlem semantic bağı | `kimlik` + checker `baglam` | ADR-014, AST bağ alanları ve indeks-gerileme testi |
 | akış/daraltma | checker `akis` | cümle handler'ı ve flow testleri |
@@ -108,3 +112,7 @@ kimliği altında davranış değişikliğini kapatır. K-123 bu koruğu kök
 `conformance/morfoloji/zee-tr-N.json` ve `sema-vN.schema.json` artefaktlarına
 genişletti; Rust testi yalnız yayımlanmış, derleyiciden bağımsız sözleşmenin
 çalışan motorla uyuşmasını denetler.
+K-126/ADR-030 ifade kaynaklandırmasını `ayristirici/kaynak.rs`, checker tanı
+yükseltmesini `cozumleyici/kaynak.rs` sahibine ayırdı. 80 ve 40 satırlık
+bütçeler kesin kaynak politikasının büyük ifade handler'larına geri
+dağılmasını engeller.

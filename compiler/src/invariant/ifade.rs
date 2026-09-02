@@ -8,10 +8,25 @@ impl Denetleyici<'_> {
         satir: usize,
         deger_dondurmez_olabilir: bool,
     ) -> Result<(), InvariantHatasi> {
+        let kaynak_araligi = ifade.kaynak_araligi().ok_or_else(|| {
+            self.hata(
+                yol,
+                "AST ifadesinin kesin kaynak aralığı yok",
+                satir,
+            )
+        })?;
+        // Zincir cümlelerin (değilse/ise ve göre kolları) sahibi ilk başlık
+        // satırını taşır; her ifade için gerçek kaynak satırı kendi zarfıdır.
+        let satir = kaynak_araligi.satir();
+        if let Ifade::Kaynakli { ifade: ic, .. } = ifade {
+            if ic.dogrudan_kaynakli_mi() {
+                return Err(self.hata(yol, "AST ifadesi iç içe kaynak zarfı taşıyor", satir));
+            }
+        }
         let beklenen_bag = self.ifadenin_faz_bagini_dogrula(ifade, yol, satir)?;
         self.hir_ifadesini_dogrula(ifade, yol, satir, beklenen_bag, deger_dondurmez_olabilir)?;
 
-        match ifade {
+        match ifade.turu() {
             Ifade::Parcala { metin, ayrac }
             | Ifade::ListeBirlestir {
                 liste: metin,
@@ -137,6 +152,9 @@ impl Denetleyici<'_> {
             | Ifade::KomutArgumanlari
             | Ifade::SureSabiti { .. }
             | Ifade::YeniYapi { .. } => {}
+            Ifade::Kaynakli { .. } => {
+                return Err(self.hata(yol, "AST ifadesi çözülemeyen kaynak zarfı taşıyor", satir));
+            }
         }
         Ok(())
     }
@@ -159,7 +177,7 @@ impl Denetleyici<'_> {
         yol: &str,
         satir: usize,
     ) -> Result<HirBagi, InvariantHatasi> {
-        match ifade {
+        match ifade.turu() {
             Ifade::Degisken {
                 ham,
                 cozulmus,
@@ -279,6 +297,9 @@ impl Denetleyici<'_> {
                         Ok(HirBagi::Islem(kimlik))
                     }
                 }
+            }
+            Ifade::Kaynakli { .. } => {
+                Err(self.hata(yol, "AST ifadesi çözülemeyen kaynak zarfı taşıyor", satir))
             }
             _ => Ok(HirBagi::Yok),
         }

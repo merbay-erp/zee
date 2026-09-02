@@ -39,17 +39,17 @@ fn intrinsic_kaydi_kimlik_yetkinlik_ve_etkiyi_tekillestirir() {
 fn http_yuzeyi_generic_intrinsice_indirilir() {
     let program = kaynagi_derle("cevap \"https://ornek.dev/veri\" adresinden gelen yanıt olsun\n")
         .expect("derlenmeli");
-    let Ifade::Intrinsic { kimlik, argumanlar } = atama_degeri(&program.cumleler[0]) else {
+    let Ifade::Intrinsic { kimlik, argumanlar } = atama_degeri(&program.cumleler[0]).turu() else {
         panic!("intrinsic bekleniyordu")
     };
     assert_eq!(kimlik, HTTP_GETIR);
-    assert!(matches!(argumanlar.as_slice(), [Ifade::MetinSabiti(_)]));
+    assert!(matches!(argumanlar.as_slice(), [ifade] if matches!(ifade.turu(), Ifade::MetinSabiti(_))));
 }
 
 #[test]
 fn csrf_yuzeyi_argumansiz_generic_intrinsice_indirilir() {
     let program = kaynagi_derle("belirteç csrf belirteci olsun\n").expect("derlenmeli");
-    let Ifade::Intrinsic { kimlik, argumanlar } = atama_degeri(&program.cumleler[0]) else {
+    let Ifade::Intrinsic { kimlik, argumanlar } = atama_degeri(&program.cumleler[0]).turu() else {
         panic!("intrinsic bekleniyordu")
     };
     assert_eq!(kimlik, CSRF_BELIRTECI);
@@ -68,7 +68,7 @@ verilen özet ile doğrulanıyorsa
     let Cumle::Ise { kollar, .. } = &program.cumleler[2] else {
         panic!("koşul bekleniyordu")
     };
-    let Ifade::Intrinsic { kimlik, argumanlar } = &kollar[0].kosul else {
+    let Ifade::Intrinsic { kimlik, argumanlar } = kollar[0].kosul.turu() else {
         panic!("intrinsic bekleniyordu")
     };
     assert_eq!(kimlik, PAROLA_DOGRULA);
@@ -87,19 +87,19 @@ kapı kapalıysa
     let Cumle::Ise { kollar: acik, .. } = &program.cumleler[0] else {
         panic!("ilk koşul bekleniyordu")
     };
-    let Ifade::Intrinsic { kimlik, argumanlar } = &acik[0].kosul else {
+    let Ifade::Intrinsic { kimlik, argumanlar } = acik[0].kosul.turu() else {
         panic!("sensor intrinsic bekleniyordu")
     };
     assert_eq!(kimlik, SENSOR_ACIK_MI);
-    assert!(matches!(argumanlar.as_slice(), [Ifade::MetinSabiti(ad)] if ad == "kapı"));
+    assert!(matches!(argumanlar.as_slice(), [ifade] if matches!(ifade.turu(), Ifade::MetinSabiti(ad) if ad == "kapı")));
 
     let Cumle::Ise { kollar: kapali, .. } = &program.cumleler[1] else {
         panic!("ikinci koşul bekleniyordu")
     };
-    let Ifade::Degil(ic) = &kapali[0].kosul else {
+    let Ifade::Degil(ic) = kapali[0].kosul.turu() else {
         panic!("genel olumsuzlama bekleniyordu")
     };
-    assert!(matches!(&**ic, Ifade::Intrinsic { kimlik, .. } if kimlik == SENSOR_ACIK_MI));
+    assert!(matches!(ic.turu(), Ifade::Intrinsic { kimlik, .. } if kimlik == SENSOR_ACIK_MI));
 }
 
 #[test]

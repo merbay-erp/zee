@@ -8,9 +8,11 @@
 
 mod cumle;
 mod ifade;
+mod kaynak;
 mod kurtarma;
 
 use self::ifade::*;
+use self::kaynak::konumlu_ifade;
 
 use crate::agac::{
     AritmetikIslec, Cumle, HttpYontemi, Ifade, Islec, Islem, IslemTuru, KosulKolu, Ozellik,
@@ -852,24 +854,37 @@ impl Ayristirici {
                     .find_map(|ek| kaynakli.strip_suffix(ek));
                 if let (Some(kok), TokenTur::Kelime(ad)) = (kok, &tokenlar[2].tur) {
                     let t = &tokenlar[0];
-                    let kaynak = Ifade::Degisken {
-                        ham: kok.to_string(),
-                        cozulmus: None,
-                        sembol_kimligi: None,
-                        satir: t.satir,
-                        sutun: t.sutun,
-                        uzunluk: t.uzunluk,
-                    };
+                    let kaynak = konumlu_ifade(
+                        Ifade::Degisken {
+                            ham: kok.to_string(),
+                            cozulmus: None,
+                            sembol_kimligi: None,
+                            satir: t.satir,
+                            sutun: t.sutun,
+                            uzunluk: t.uzunluk,
+                        },
+                        std::slice::from_ref(t),
+                    )?;
                     let ad = ad.clone();
+                    let ad_sutun = tokenlar[2].sutun;
+                    let ad_uzunluk = tokenlar[2].uzunluk;
                     let govde = self.alt_blok(satir)?;
-                    return Ok(Cumle::HerBiri { ad, kaynak: Some(kaynak), govde, satir });
+                    return Ok(Cumle::HerBiri {
+                        ad,
+                        ad_sutun,
+                        ad_uzunluk,
+                        kaynak: Some(kaynak),
+                        govde,
+                        satir,
+                    });
                 }
             }
         }
 
         // her <ad> için — koleksiyon döngüsü (örtük çoğul, K-013)
         if tokenlar.len() == 3 && kelime_mi(&tokenlar[0], "her") {
-            let ad = match &tokenlar[1].tur {
+            let ad_token = &tokenlar[1];
+            let ad = match &ad_token.tur {
                 TokenTur::Kelime(k) => k.clone(),
                 _ => {
                     return Err(Tani::yeni(
@@ -881,8 +896,17 @@ impl Ayristirici {
                     ))
                 }
             };
+            let ad_sutun = ad_token.sutun;
+            let ad_uzunluk = ad_token.uzunluk;
             let govde = self.alt_blok(satir)?;
-            return Ok(Cumle::HerBiri { ad, kaynak: None, govde, satir });
+            return Ok(Cumle::HerBiri {
+                ad,
+                ad_sutun,
+                ad_uzunluk,
+                kaynak: None,
+                govde,
+                satir,
+            });
         }
 
         // Beklenen biçim: <a> den <b> e kadar her <ad> için

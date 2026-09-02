@@ -685,6 +685,11 @@ HATA T036
 Ayrıntı için: dil hata T036
 ```
 
+K-126/ADR-030 ile parser'ın ürettiği bütün yaprak ve bileşik ifadeler kesin
+satır+sütun+uzunluk taşır. Tür/checker tanısı eski `1:1` zarfına düşmek yerine
+gerçek ifadeyi işaretler; Türkçe karakterlerde sütun byte değil karakter
+cinsindedir.
+
 `dil hata <kod>` her kodu açıklar; katalog: [hata-katalogu.md](hata-katalogu.md).
 
 ## 23. Araç kutusu

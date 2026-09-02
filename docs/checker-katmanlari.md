@@ -15,6 +15,7 @@ Program AST
         ├─ sembol   ad, alan, kapsam
         ├─ akis     daraltma, gezme, görev sahipliği
         ├─ cagri    imza çıkarımı ve çağrı uyumu
+        ├─ kaynak   ifade tanısını kesin AST/HIR aralığına bağlama
         └─ donus    kesin sonlanma ve dönüş türü birleşimi
 ```
 
@@ -32,6 +33,7 @@ Tek-tanı ve çoklu-tanı girişleri aynı katmanları aynı sırada kullanır.
 | public API imzası | `sozlesme` | paket/birim testleri ve semver sınırı |
 | web/uygulama/intrinsic etkisi | `etki` | ADR-011, T044–T050 |
 | dönüş yolu ve birleşimi | `donus` | Seçenek/Sonuç, T018/T041/T042 |
+| ifade tanı konumu | `kaynak` | ADR-030, AST/HIR aralık eşliği |
 | AST varyantı denetimi | `cumle` / `ifade` | ilgili hizmet katmanı ve tanı |
 
 ## Katman kuralları
@@ -61,6 +63,9 @@ Tek-tanı ve çoklu-tanı girişleri aynı katmanları aynı sırada kullanır.
 - B-021/K-113 çoklu-tanı parser recovery'sini cümle/girinti sınırında
   tamamladı. Checker kısmi AST'de cümle başına sürer; birleşik çıktı kaynak
   sırasında ve ortak 20 tanı bütçesindedir.
+- B-050/K-126 AST ifadelerinin kesin kaynağını HIR'a birebir taşır;
+  `kaynak` katmanı yalnız eski kaba ifade tanısını ilgili kesin aralığa
+  yükseltir, tür veya semantic kimlik seçmez.
 
 B-007 K-121 ile kapandı; K-101 semantic ID, K-102 faz tipi, K-103 typed HIR
 üretimi, K-104 runtime tüketimi ve K-112 fazlar arası doğrulama temelini korur.

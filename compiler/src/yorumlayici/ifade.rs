@@ -9,7 +9,7 @@ pub(super) fn degerlendir_async<'a>(
     satir: usize,
 ) -> Pin<Box<dyn Future<Output = Result<Deger, Tani>> + 'a>> {
     Box::pin(async move {
-    match ifade {
+    match ifade.turu() {
         Ifade::MetinSabiti(m) => Ok(Deger::Metin(m.clone())),
         Ifade::SayiSabiti(s) => Ok(Deger::TamSayi(*s)),
         Ifade::OndalikSabiti { govde, olcek } => Ondalik::govdeden(govde, *olcek)
@@ -670,6 +670,7 @@ pub(super) fn degerlendir_async<'a>(
                 .onerili("Sayı yalnız rakamlardan oluşmalı. Örnek: 42".into())
             })
         }
+        Ifade::Kaynakli { .. } => Err(ic_hata(satir)),
     }
     })
 }

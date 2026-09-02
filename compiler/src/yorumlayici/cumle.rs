@@ -111,7 +111,7 @@ pub(super) fn blok_calistir_async<'a>(
                 }
             }
             Cumle::Ekle { hedef, deger, satir } => {
-                let ham_ad = match hedef {
+                let ham_ad = match hedef.turu() {
                     Ifade::Degisken { cozulmus, .. } => cozulmus.as_deref(),
                     _ => None,
                 };
@@ -125,7 +125,7 @@ pub(super) fn blok_calistir_async<'a>(
                 }
             }
             Cumle::Sil { kap, deger, satir } => {
-                let ham_ad = match kap {
+                let ham_ad = match kap.turu() {
                     Ifade::Degisken { cozulmus, .. } => cozulmus.as_deref(),
                     _ => None,
                 };
@@ -147,7 +147,13 @@ pub(super) fn blok_calistir_async<'a>(
                     _ => return Err(ic_hata(*satir)),
                 }
             }
-            Cumle::HerBiri { ad, kaynak, govde, satir } => {
+            Cumle::HerBiri {
+                ad,
+                kaynak,
+                govde,
+                satir,
+                ..
+            } => {
                 let kaynak = kaynak.as_ref().ok_or_else(|| ic_hata(*satir))?;
                 let ogeler = match degerlendir_async(kaynak, ortam, program, cikti, derinlik, *satir).await? {
                     Deger::Liste(ogeler) => ogeler,
@@ -160,7 +166,7 @@ pub(super) fn blok_calistir_async<'a>(
                 };
                 // K-093: kaynak listeyse döngü adı değer-sonuç imlecidir;
                 // alan yazma ve yeniden bağlama aynı sıraya GERİ YAZILIR.
-                let kaynak_adi = match kaynak {
+                let kaynak_adi = match kaynak.turu() {
                     Ifade::Degisken { cozulmus, .. } => {
                         program.sembol_adi(kaynak, cozulmus.as_deref())
                     }
@@ -401,7 +407,7 @@ pub(super) fn blok_calistir_async<'a>(
             Cumle::Olmali { kosul, satir } => {
                 // Karşılaştırmalarda iki tarafın değeri tanıya yazılır —
                 // "beklenen/bulunan" göstermek öğretici hata ilkesinin gereği.
-                let (tuttu, detay) = match kosul {
+                let (tuttu, detay) = match kosul.turu() {
                     Ifade::Karsilastirma { sol, sag, .. } => {
                         let sol_deger = degerlendir_async(sol, ortam, program, cikti, derinlik, *satir).await?;
                         let sag_deger = degerlendir_async(sag, ortam, program, cikti, derinlik, *satir).await?;
@@ -432,7 +438,7 @@ pub(super) fn blok_calistir_async<'a>(
                 }
             }
             Cumle::AlanAta { nesne, alan, deger, satir } => {
-                let ham_ad = match nesne {
+                let ham_ad = match nesne.turu() {
                     Ifade::Degisken { cozulmus, .. } => cozulmus.as_deref(),
                     _ => None,
                 };
@@ -509,7 +515,7 @@ pub(super) fn blok_calistir_async<'a>(
                 ortam.insert(hedef.clone(), sonuc);
             }
             Cumle::CagriCumlesi { cagri, satir } => {
-                if let Ifade::IslemCagrisi { islem_adi, argumanlar, .. } = cagri {
+                if let Ifade::IslemCagrisi { islem_adi, argumanlar, .. } = cagri.turu() {
                     let mut degerler = Vec::new();
                     for arg in argumanlar {
                         degerler.push(degerlendir_async(arg, ortam, program, cikti, derinlik, *satir).await?);
@@ -530,7 +536,7 @@ pub(super) fn blok_calistir_async<'a>(
                 })?;
             }
             Cumle::SozlukAta { sozluk, anahtar, deger, satir } => {
-                let ham_ad = match sozluk {
+                let ham_ad = match sozluk.turu() {
                     Ifade::Degisken { cozulmus, .. } => cozulmus.as_deref(),
                     _ => None,
                 };

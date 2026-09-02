@@ -243,7 +243,7 @@ impl Denetleyici<'_> {
                 self.ifadeyi_dogrula(payda, &format!("{yol}.payda"), *satir, false)?;
             }
             Cumle::CagriCumlesi { cagri, satir } => {
-                if !matches!(cagri, Ifade::IslemCagrisi { .. }) {
+                if !matches!(cagri.turu(), Ifade::IslemCagrisi { .. }) {
                     return Err(self.hata(yol, "çağrı cümlesi işlem çağrısı taşımıyor", *satir));
                 }
                 self.ifadeyi_dogrula(cagri, &format!("{yol}.çağrı"), *satir, true)?;
