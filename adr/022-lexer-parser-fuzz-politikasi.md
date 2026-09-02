@@ -2,7 +2,8 @@
 
 - **Durum:** kabul
 - **Tarih:** 1 Eylül 2026
-- **İlgili kayıt:** K-110, B-015, V1-P0-20
+- **Revizyon:** 2 Eylül 2026 — K-140/ADR-037 ham byte HTTP hedefini ekledi.
+- **İlgili kayıt:** K-110, K-140, B-015, B-053, V1-P0-20
 - **İlgili yüzey:** `compiler/fuzz/`, `compiler/tests/fuzz_korpusu_testi.rs`
 
 ## Bağlam
@@ -30,6 +31,10 @@ başına kanıtlamaz. Örnek testler de mutation kaynaklı bileşimleri aramaz.
    ile büyür; crash girdisi artifact olarak saklanır.
 6. Her doğrulanmış crash önce küçültülür, sonra kalıcı korpusa ve mümkünse adı
    konmuş bir regresyon testine eklenmeden düzeltilmiş sayılmaz.
+7. K-140'ta bu politika native web sınırına genişler. `http_istegi` hedefi
+   `&[u8]` alır; request-line/header CRLF, target biçimi, TE/CL framing,
+   NUL/UTF-8 ve exact gövde kararını mutasyona açar. HTTP korpusu geçerli ve
+   fail-closed girdileri ana testte de yeniden oynatır.
 
 ## Sonuçlar
 

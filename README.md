@@ -80,7 +80,8 @@ ve kapalı redirect),
 rotation/revoke/ömür, otomatik CSRF, `__Host-` çerez, HTTPS proxy Origin
 kapısı; K-137 kalıcı ortak oturum/rate-limit deposu, kanonik `Forwarded`
 istemci kimliği ve N ayrı tek-worker süreç modeli; K-139 ortak kanonik
-DNS/IPv6/port origin tipi ve loopback bind+peer değişmezi), form/istek sözlüğü,
+DNS/IPv6/port origin tipi ve loopback bind+peer değişmezi; K-140 byte tabanlı
+CRLF/target/TE-CL/UTF-8 HTTP framing kapısı), form/istek sözlüğü,
 yönlendirme, html güvenlisi ve
 önekli rotalar, **metin cerrahisi** (parçala/birleştir/
 değiştir/kırp/harfler), **JSON/CSV yazma**, **Türk alfabesiyle sıralama**,
@@ -167,10 +168,10 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **558** |
+| Rust + doctest vakası | **566** |
 | Tanı kimliği | **152 etkin + 3 ayrılmış** |
 | RFC | **25** (2 kabul, 21 geçici kabul, 2 taslak) |
-| ADR | **34** (34 kabul) |
+| ADR | **35** (35 kabul) |
 | Normatif spec bölümü | **24** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
@@ -254,13 +255,17 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   `--web-proxy`, `Host`, `Forwarded host` ve unsafe `Origin` artık aynı
   `AgHedefi` DNS/IPv6/port kimliğini kullanır. Listener sabit loopback'e bind
   eder ve kabul edilen peer'i ayrıca loopback olarak doğrular; B-052 kapandı.
+  K-140/ADR-037 request-line, header ve gövdeyi metne geçmeden önce tek byte
+  parser'da doğrular. Bare-LF/CR, obs-fold, NUL, absolute/authority/asterisk
+  target, TE, duplicate/bozuk CL, exact olmayan veya UTF-8 dışı gövde
+  fail-closed'dur; ayrı libFuzzer hedefi ve kalıcı korpus B-053'ü kapattı.
   K-107/ADR-019 `dillsp` girdisini 8 KiB başlık, 8 MiB gövde, 128 JSON
   derinliği ve 100 bin düğümle sınırlayıp Unicode parser olumsuzlarını kapattı.
   K-138/ADR-035 sayı ayrıştırmasını RFC 8259 durum makinesine taşıdı; sayısal
   kimliği float'a çevirmeden korudu, duplicate anahtarı reddetti ve parse,
   request, method, params hata kodlarıyla notification sessizliğini bağladı;
-  B-051 kapandı. Sıradaki makine kapısı K-140/B-053 byte tabanlı, fuzz kanıtlı
-  HTTP istek ayrıştırıcısıdır.
+  B-051 kapandı. Sıradaki makine kapısı K-141/B-054 bağımlılık
+  advisory/lisans/tekrar üretim denetimidir.
   K-108/ADR-020 her semantic typed-HIR ifadesine zorunlu kaynak aralığı
   ekledi; kesin token konumu olmayan eski AST düğümleri uydurma sütun yerine
   kaynak satırı zarfı taşır. K-126/ADR-030 bu geçişi tamamladı: artık her

@@ -1,12 +1,12 @@
 # RFC-0017 — Web oturumu, yetki, CSRF ve güvenilir proxy profili
 
 - **Durum:** geçici kabul — K-088 güvenlik profili, K-134 istek transaction'ı,
-  K-137 ortak durum/rate-limit ve K-139 kanonik origin/loopback peer sınırı
-  saldırı regresyonlarına bağlandı
+  K-137 ortak durum/rate-limit, K-139 kanonik origin/loopback peer ve K-140
+  byte HTTP framing sınırı saldırı regresyonlarına bağlandı
 - **Tarih:** 1 Eylül 2026
-- **Revizyon:** 2 Eylül 2026 — K-139/ADR-036
-- **İlgili kararlar:** K-082, K-087, K-088, K-134, K-137, K-139, ADR-010,
-  ADR-018, ADR-034, ADR-036; B-046, B-052, V1-P0-03
+- **Revizyon:** 2 Eylül 2026 — K-139/ADR-036 ve K-140/ADR-037
+- **İlgili kararlar:** K-082, K-087, K-088, K-134, K-137, K-139, K-140,
+  ADR-010, ADR-018, ADR-034, ADR-036, ADR-037; B-046, B-052, B-053, V1-P0-03
 - **Normatif metin:** spec/12
 
 ## Problem
@@ -56,6 +56,10 @@ kapısı olmalıdır.
     allowlist ile aynı kanonik `AgHedefi` DNS/IPv6/port parser'ını kullanır.
     Listener sabit `127.0.0.1`e bind eder ve kabul edilen socket peer'ini de
     loopback olarak doğrular.
+15. HTTP request-line, header ve gövde, metne çevrilmeden önce tek byte
+    parser'da doğrulanır. Yalnız CRLF+origin-form+HTTP/1.0/1.1 ve exact tek
+    `Content-Length` kabul edilir; TE, obs-fold, NUL, UTF-8 dışı ve fazla/eksik
+    framing fail-closed reddedilir.
 
 ## Dil yüzeyi
 
@@ -111,6 +115,9 @@ oran eşiğini korur.
 K-139 kanıtı DNS harf farkı, varsayılan/farklı port, standart metinsel IPv6,
 geçersiz şema/yol/kullanıcı/etiket/ayraç/port ve loopback/dış peer ayrımını;
 mimari test ise ikinci origin parser'ının geri dönememesini doğrular.
+K-140 kanıtı CRLF, request-target, alan adı/değeri, TE/CL, exact gövde ve
+UTF-8 olumsuzlarını sabit regresyonla; ham byte uzayını ayrı libFuzzer
+hedefiyle tarar.
 
 ## Bilinçli sınır
 

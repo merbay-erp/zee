@@ -32,8 +32,8 @@ Kırıcı değişiklik sessizce yapılamaz: davranış değişikliği RFC'den ge
 | [08 — Kalıcı dosya IO](08-kalici-dosya.md) | atomik yazma, süreçler arası yarış, platform metadata'sı ve dayanıklılık | RFC-0016, ADR-032, K-128 |
 | [09 — Son tarih ve iptal](09-son-tarih-ve-iptal.md) | `içinde/yetişmezse`, işbirlikli iptal ve iç içe deadline | RFC-0011 |
 | [10 — Dışa açık işlem sözleşmesi](10-disari-acik-islem-sozlesmesi.md) | public imza, yerel çıkarım, dönüş kanıtı ve v1 kaynak ABI'si | RFC-0006, RFC-0007, RFC-0009, K-121 |
-| [11 — Uygulama eylemleri ve web adaptörü](11-uygulama-eylemleri-ve-web-adaptoru.md) | açık eylem imzası, etki çıkarımı, yöntemli rota, savepoint/geri alma | RFC-0015 |
-| [12 — Web güvenlik profili](12-web-guvenlik-profili.md) | erişim politikası, Argon2id, ortak oturum/rate-limit deposu, CSRF, güvenli çerez ve kanonik HTTPS proxy sınırı | RFC-0017, ADR-034/036, K-137/K-139 |
+| [11 — Uygulama eylemleri ve web adaptörü](11-uygulama-eylemleri-ve-web-adaptoru.md) | açık eylem imzası, etki çıkarımı, yöntemli rota, byte HTTP framing ve savepoint/geri alma | RFC-0015, ADR-037, K-140 |
+| [12 — Web güvenlik profili](12-web-guvenlik-profili.md) | erişim politikası, Argon2id, ortak oturum/rate-limit deposu, CSRF, güvenli çerez ve kanonik HTTPS/byte HTTP sınırı | RFC-0017, ADR-034/036/037, K-137/K-139/K-140 |
 | [13 — Sürümlü morfoloji profili](13-surumlu-morfoloji-profili.md) | `zee-tr-1`, immutable parmak izi, bağımsız conformance, çözüm↔üretim ve proje/paket sabitlemesi | RFC-0018, K-120/K-122/K-123 |
 | [14 — Yapılandırılmış eşzamanlılık](14-yapilandirilmis-eszamanlilik.md) | `zee-esz-1`, kaynak sıralı gözlemler, görev grubu, sahiplik ve hata/iptal yayılımı | RFC-0011, K-090/K-124 |
 | [15 — Yapılandırılmış Hata değeri](15-yapilandirilmis-hata-degeri.md) | kod, mesaj, neden zinciri, veri, eşleme ve geriye uyum | RFC-0008, K-091 |
@@ -45,7 +45,7 @@ Kırıcı değişiklik sessizce yapılamaz: davranış değişikliği RFC'den ge
 | [21 — Deterministik IO izi](21-deterministik-io-izi.md) | sürümlü kanonik olay biçimi, bütçeli kayıt ve dış etkisiz replay | RFC-0022, ADR-026, K-115 |
 | [22 — Deterministik IO profili](22-deterministik-io-profili.md) | `zee-io-1` tohum, rastgele dizi, sanal saat ve hermetik adaptör sözleşmesi | RFC-0023, ADR-027, K-116 |
 | [23 — Yetkinlik ve outbound ağ güvenliği](23-yetkinlik-ve-outbound-guvenligi.md) | proje/paket izinleri, compile/runtime kapısı, ortak inbound/outbound origin, DNS/HTTPS ve dosya kökü | RFC-0024, ADR-031/036, K-127/K-139 |
-| [24 — Kaynak güvenlik profili](24-kaynak-guvenlik-profili.md) | kaynak/token, runtime adım/çıktı/değer heap'i, domain limit sahipliği, bağlantı, dosya ve protokol-kesin LSP sınırları | RFC-0025, ADR-033/035, K-129/K-130/K-131/K-132/K-138 |
+| [24 — Kaynak güvenlik profili](24-kaynak-guvenlik-profili.md) | kaynak/token, runtime adım/çıktı/değer heap'i, bağlantı, dosya, byte HTTP ve protokol-kesin LSP sınırları | RFC-0025, ADR-033/035/037, K-129/K-130/K-131/K-132/K-138/K-140 |
 
 ## Faza bağlı — henüz spec dışı
 

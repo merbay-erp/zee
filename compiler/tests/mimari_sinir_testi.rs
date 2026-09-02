@@ -85,6 +85,7 @@ fn handler_modulleri_yeni_domain_icin_sinir_tasir() {
         ("src/yorumlayici/yetkinlik.rs", 250),
         ("src/yetkinlik.rs", 520),
         ("src/yetkinlik/origin.rs", 100),
+        ("src/http_istegi.rs", 260),
         ("src/ag_istemcisi.rs", 180),
         ("src/web_guvenligi.rs", 1_050),
         ("src/web_guvenligi/depo.rs", 160),
@@ -130,6 +131,19 @@ fn web_proxy_origin_tek_ag_hedefi_parserini_kullanir() {
     assert!(cli.contains("AgHedefi::https_otoritesinden"));
     assert!(cli.contains("TcpListener::bind((WEB_BIND_IP"));
     assert!(cli.contains("guvenilir_proxy_esi_mi"));
+}
+
+#[test]
+fn http_istek_framingi_byte_parserinda_tek_sahiplidir() {
+    let cli = kaynak("src/main.rs");
+    let parser = kaynak("src/http_istegi.rs");
+    let fuzz = kaynak("fuzz/fuzz_targets/http_istegi.rs");
+    assert!(cli.contains("HttpIstekBasligi::ayristir"));
+    assert!(cli.contains("baslik_sonunu_bul"));
+    assert!(!cli.contains("String::from_utf8_lossy(&tampon"));
+    assert!(parser.contains("HTTP satırları yalnız CRLF ile bitmeli"));
+    assert!(parser.contains("birden çok Content-Length başlığı reddedildi"));
+    assert!(fuzz.contains("HttpIstegi::ayristir"));
 }
 
 #[test]

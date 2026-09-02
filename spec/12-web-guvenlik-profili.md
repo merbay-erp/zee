@@ -150,9 +150,10 @@ Dinleyicinin loopback dışına açılması bu güven sözleşmesini bozar ve
 YASAKTIR.
 
 Yanıtlar `no-store`, `nosniff`, `DENY`, `no-referrer`, kısıtlı CSP taşır;
-HTTPS profilinde HSTS de eklenir. 16 KiB başlık, 64 KiB gövde, tek
-`Content-Length` ve `Transfer-Encoding` reddi request-smuggling/yığın
-korkuluklarıdır. Başlık ile gövdenin tamamı bağlantı kabulünden başlayan
+HTTPS profilinde HSTS de eklenir. 16 KiB başlık, 64 KiB gövde, byte tabanlı
+yalnız-CRLF parser, tek `Content-Length`, origin-form hedef ve
+`Transfer-Encoding` reddi request-smuggling/yığın korkuluklarıdır. Başlık ile
+gövdenin tamamı bağlantı kabulünden başlayan
 10 saniyelik mutlak okuma bütçesini aşarsa 408 döner; yanıt yazımı da 10 saniye
 socket zaman aşımı taşır. Spec/11'in 100 alan ve 30 saniye uygulama sınırı
 ayrıca geçerlidir.
@@ -198,5 +199,5 @@ sistemiyle sınırlıdır; çok-hostlu harici backend henüz yoktur. Sticky sess
 ortak revoke ve oran sınırının yerine geçmez. Operasyon ayrıntıları
 `docs/web-production-profili.md` içindedir.
 
-Normatif gerekçe: RFC-0017, ADR-034 ve ADR-036. Rota/eylem ayrımı: RFC-0015
-ve spec/11. Ortak origin tipi: ADR-031 ve spec/23.
+Normatif gerekçe: RFC-0017, ADR-034, ADR-036 ve ADR-037. Rota/eylem ayrımı:
+RFC-0015 ve spec/11. Ortak origin tipi: ADR-031 ve spec/23.

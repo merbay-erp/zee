@@ -1,2 +1,5 @@
 # .dil kaynakları her platformda LF iner (deterministik bayt — bölüm 27).
 *.dil text eol=lf
+
+# HTTP fuzz korpusu wire satır sonlarını (CRLF/bare-LF) byte-byte korur.
+compiler/fuzz/corpus/http_istegi/*.http binary

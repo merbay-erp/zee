@@ -99,6 +99,15 @@ Okuma süresi her parçada kalan mutlak bütçeye ayarlanır; bayt damlatmak sü
 yenilemez. Yanıt yazma socket'i de 10 saniye ile sınırlıdır. Bu limitleri
 büyüten kaynak sözdizimi v1'de yoktur.
 
+K-140/ADR-037 uyarınca gerçek TCP isteği metne çevrilmeden önce byte tabanlı
+parser'dan geçmek ZORUNDADIR. Yalnız CRLF satır sonu, RFC token yöntemi, `/`
+ile başlayan origin-form hedef ve `HTTP/1.0`/`HTTP/1.1` kabul edilir. Bare-LF,
+bare-CR, obs-fold, NUL, denetim karakteri, UTF-8 dışı başlık/gövde,
+absolute/authority/asterisk-form ve fragment 400'dür. `Transfer-Encoding`
+YASAKTIR; tek `Content-Length` yalnız ASCII rakam taşır ve gövde exact aynı
+uzunlukta olmalıdır. Pipelining desteklenmez; aynı okumada gövde sonrasındaki
+ek bayt reddedilir ve yanıt `Connection: close` taşır.
+
 Rota seçildikten sonra istek tek yaşam döngüsü taşır. İlk yanıt/yönlendirme,
 Set-Cookie değişiklikleri ve sunucu tarafı oturum mutation'ları gövde başarıyla
 bitene kadar görünmezdir. Başarıda yanıt socket'e eksiksiz yazıldıktan sonra

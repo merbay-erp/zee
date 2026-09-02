@@ -15,7 +15,7 @@ rfcs/0013-ondalik-sayilar.md	kanitli	compiler/tests/ondalik_testi.rs,compiler/te
 rfcs/0014-standart-kitaplik.md	kismi	compiler/tests/kitaplik_testi.rs,compiler/tests/projeler_testi.rs	Çalışan gömülü prototip testli; RFC taslak
 rfcs/0015-uygulama-eylemleri.md	kanitli	compiler/tests/web_testi.rs,compiler/tests/proje_testi.rs	Eylem etki ve transaction sınırı
 rfcs/0016-atomik-kalici-dosya.md	kanitli	compiler/src/kalici_dosya.rs,compiler/tests/proje_testi.rs	Atomik replace süreç kilidi metadata koruması ve rollback
-rfcs/0017-web-oturum-ve-csrf.md	kanitli	compiler/tests/web_testi.rs,compiler/tests/web_cok_surec_testi.rs,compiler/tests/guvenli_testi.rs,compiler/src/web_guvenligi.rs,compiler/src/main.rs	Oturum rol CSRF çerez proxy K-134 request transaction K-137 ortak depo/rate-limit ve K-139 kanonik origin profili
+rfcs/0017-web-oturum-ve-csrf.md	kanitli	compiler/tests/web_testi.rs,compiler/tests/web_cok_surec_testi.rs,compiler/tests/http_istegi_testi.rs,compiler/tests/guvenli_testi.rs,compiler/src/web_guvenligi.rs,compiler/src/main.rs	Oturum rol CSRF çerez proxy ortak depo/rate-limit K-139 origin ve K-140 byte HTTP profili
 rfcs/0018-surumlu-morfoloji-profili.md	kanitli	compiler/tests/morfoloji_testi.rs,compiler/tests/morfoloji_conformance_testi.rs,compiler/tests/lsp_testi.rs	Profil snapshot immutable parmak izi bağımsız conformance property belirsizlik ve semantic rename
 rfcs/0019-deger-semantigi-ve-gezme-imleci.md	kanitli	compiler/tests/koleksiyon_testi.rs	Derin kopya ve değer-sonuç imleci
 rfcs/0020-paket-yayini-ve-registry-guveni.md	kanitli	compiler/tests/tedarik_testi.rs,compiler/tests/proje_testi.rs,compiler/src/registry/istemci/testler.rs	Yayın metadata taşıma kalıcı cache exact manifest kilit CLI ve offline derleme testli
@@ -43,7 +43,7 @@ adr/018-sinirli-web-oturum-deposu.md	kanitli	compiler/src/web_guvenligi.rs,compi
 adr/019-lsp-girdi-sinirlari.md	kanitli	compiler/tests/lsp_testi.rs,compiler/src/bin/dillsp.rs	Çerçeve JSON bütçeleri ve tam gövde UTF-8 hata yanıtı
 adr/020-zorunlu-hir-kaynak-araligi.md	kanitli	compiler/tests/hir_modeli_testi.rs,compiler/tests/invariant_testi.rs	HIR source span zorunluluğu
 adr/021-production-panic-politikasi.md	kanitli	compiler/tests/panic_guvenligi_testi.rs	Panic lint ve geçersiz AST sonucu
-adr/022-lexer-parser-fuzz-politikasi.md	kanitli	compiler/tests/fuzz_korpusu_testi.rs	Kalıcı seed mutation ve fuzz hedefleri
+adr/022-lexer-parser-fuzz-politikasi.md	kanitli	compiler/tests/fuzz_korpusu_testi.rs,compiler/tests/http_istegi_testi.rs	Kalıcı dil ve K-140 ham-byte HTTP seed mutation fuzz hedefleri
 adr/023-ast-hir-invariant-politikasi.md	kanitli	compiler/tests/invariant_testi.rs	AST HIR tamlık kimlik ve imkânsız durumlar
 adr/024-parser-hata-kurtarma-politikasi.md	kanitli	compiler/tests/parser_kurtarma_testi.rs	Senkronizasyon kapsam ve tanı bütçesi
 adr/025-tani-kimligi-kararlilik-politikasi.md	kanitli	compiler/tests/tani_kimligi_testi.rs	Kod anlam fixture'ı ve mezar taşları
@@ -58,6 +58,7 @@ adr/033-merkezi-kaynak-butcesi.md	kanitli	compiler/tests/kaynak_sinirlari_testi.
 adr/034-web-ortak-depo-ve-worker-modeli.md	kanitli	compiler/tests/web_cok_surec_testi.rs,compiler/tests/web_testi.rs,compiler/tests/mimari_sinir_testi.rs,compiler/src/web_guvenligi.rs,compiler/src/main.rs	K-137 ortak durum ve K-139 kanonik origin loopback bind-peer tek-worker modeli
 adr/035-protokol-kesin-lsp-json-rpc.md	kanitli	compiler/tests/lsp_testi.rs,compiler/tests/mimari_sinir_testi.rs,compiler/src/bin/dillsp.rs	K-138 RFC 8259 sayı duplicate alan standart JSON-RPC hata ve kayıpsız kimlik sınırı
 adr/036-kanonik-web-proxy-origin-siniri.md	kanitli	compiler/tests/mimari_sinir_testi.rs,compiler/src/main.rs,compiler/src/yetkinlik.rs	K-139 tek AgHedefi DNS IPv6 port kimliği ve loopback bind-peer güven sınırı
+adr/037-byte-tabanli-http-istek-siniri.md	kanitli	compiler/tests/http_istegi_testi.rs,compiler/tests/mimari_sinir_testi.rs	K-140 CRLF target TE-CL exact UTF-8 framing ve ayrı ham-byte fuzz sınırı
 spec/01-sozcukleme.md	kanitli	compiler/tests/kacis_ve_negatif_testi.rs,compiler/tests/metin_testi.rs	Token kaçış Unicode ve sayı kuralları
 spec/02-dizim.md	kanitli	compiler/tests/golden_testi.rs,compiler/tests/ifade_grameri_testi.rs	Cümle blok ve ifade dizimi
 spec/03-adlar-ve-kapsam.md	kanitli	compiler/tests/kapsam_testi.rs,compiler/tests/morfoloji_testi.rs,compiler/tests/lsp_testi.rs	Ad çözümü kapsam morfoloji ve semantic rename
@@ -68,8 +69,8 @@ spec/07-birimler.md	kanitli	compiler/tests/birim_testi.rs,compiler/tests/proje_t
 spec/08-kalici-dosya.md	kanitli	compiler/src/kalici_dosya.rs,compiler/tests/proje_testi.rs	Atomik kalıcı yazma ve platform metadata koruması
 spec/09-son-tarih-ve-iptal.md	kanitli	compiler/tests/ag_ve_esz_testi.rs,compiler/tests/dene_ve_sure_testi.rs,compiler/tests/web_testi.rs	Deadline iptal K-133 etki başlamama ve K-134 web rollback davranışı
 spec/10-disari-acik-islem-sozlesmesi.md	kanitli	compiler/tests/acik_imza_testi.rs,compiler/tests/cagri_cikarimi_testi.rs	Public imza yerel sıra-bağımsız çıkarım ve dönüş kanıtı
-spec/11-uygulama-eylemleri-ve-web-adaptoru.md	kanitli	compiler/tests/web_testi.rs,compiler/tests/intrinsic_lowering_testi.rs	Eylem rota etki savepoint ve request transaction
-spec/12-web-guvenlik-profili.md	kanitli	compiler/tests/web_testi.rs,compiler/tests/web_cok_surec_testi.rs,compiler/tests/guvenli_testi.rs,compiler/tests/mimari_sinir_testi.rs,compiler/src/web_guvenligi.rs,compiler/src/main.rs	Oturum CSRF rol çerez ortak oran gerçek TCP transaction ve K-139 kanonik proxy origin-peer sınırı
+spec/11-uygulama-eylemleri-ve-web-adaptoru.md	kanitli	compiler/tests/web_testi.rs,compiler/tests/http_istegi_testi.rs,compiler/tests/intrinsic_lowering_testi.rs	Eylem rota etki savepoint transaction ve K-140 byte HTTP adaptörü
+spec/12-web-guvenlik-profili.md	kanitli	compiler/tests/web_testi.rs,compiler/tests/web_cok_surec_testi.rs,compiler/tests/http_istegi_testi.rs,compiler/tests/guvenli_testi.rs,compiler/tests/mimari_sinir_testi.rs,compiler/src/web_guvenligi.rs,compiler/src/main.rs	Oturum CSRF ortak oran transaction K-139 origin-peer ve K-140 byte HTTP sınırı
 spec/13-surumlu-morfoloji-profili.md	kanitli	compiler/tests/morfoloji_testi.rs,compiler/tests/morfoloji_conformance_testi.rs,compiler/tests/lsp_testi.rs	zee-tr-1 immutable parmak izi bağımsız conformance snapshot property proje pini ve semantic rename
 spec/14-yapilandirilmis-eszamanlilik.md	kanitli	compiler/tests/ag_ve_esz_testi.rs,compiler/tests/eszamanlilik_conformance_testi.rs,compiler/tests/web_testi.rs	Görev grubu zee-esz-1 sahiplik iptal taze HTTP deadline'ı ve web request rollback'i
 spec/15-yapilandirilmis-hata-degeri.md	kanitli	compiler/tests/yapilandirilmis_hata_testi.rs	Kod mesaj neden veri ve JSON
@@ -81,4 +82,4 @@ spec/20-ifade-grameri.md	kanitli	compiler/tests/ifade_grameri_testi.rs,compiler/
 spec/21-deterministik-io-izi.md	kanitli	compiler/tests/io_izi_testi.rs,compiler/tests/io_izi_cli_testi.rs	Şema olay sırası redaksiyon ve replay
 spec/22-deterministik-io-profili.md	kanitli	compiler/tests/deterministik_io_profili_testi.rs	zee-io-1 rastgele saat ve fake IO
 spec/23-yetkinlik-ve-outbound-guvenligi.md	kanitli	compiler/tests/yetkinlik_testi.rs,compiler/tests/proje_testi.rs,compiler/tests/mimari_sinir_testi.rs,compiler/src/yetkinlik.rs	Yetkinlik origin IP paket dosya ve K-139 inbound-outbound tek parser sınırı
-spec/24-kaynak-guvenlik-profili.md	kanitli	compiler/tests/kaynak_sinirlari_testi.rs,compiler/tests/mimari_sinir_testi.rs,compiler/tests/lsp_testi.rs,compiler/src/lsp/cikti.rs	K-129/K-130 kaynak zarfı K-131 sahiplik K-132 bounded çıktı ve K-138 kesin JSON-RPC testli
+spec/24-kaynak-guvenlik-profili.md	kanitli	compiler/tests/kaynak_sinirlari_testi.rs,compiler/tests/mimari_sinir_testi.rs,compiler/tests/http_istegi_testi.rs,compiler/tests/lsp_testi.rs,compiler/src/lsp/cikti.rs	Merkezi kaynak zarfı K-138 kesin JSON-RPC ve K-140 tahsis-sıralı byte HTTP testli

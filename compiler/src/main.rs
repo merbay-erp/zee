@@ -14,6 +14,7 @@
 //!
 //! Komutlar Türkçedir: çalıştır, denetle, sürüm.
 
+use dil::http_istegi::{baslik_sonunu_bul, govde_metni, HttpIstekBasligi};
 use dil::yetkinlik::AgHedefi;
 use std::process::ExitCode;
 
@@ -1525,19 +1526,8 @@ fn guvenlik_basliklari(https: bool) -> String {
     sonuc
 }
 
-fn http_baslik_degerleri<'a>(istek: &'a str, ad: &str) -> Vec<&'a str> {
-    istek
-        .split("\r\n")
-        .skip(1)
-        .take_while(|satir| !satir.is_empty())
-        .filter_map(|satir| satir.split_once(':'))
-        .filter(|(gelen, _)| gelen.eq_ignore_ascii_case(ad))
-        .map(|(_, deger)| deger.trim())
-        .collect()
-}
-
-fn tek_http_basligi<'a>(istek: &'a str, ad: &str) -> Option<&'a str> {
-    let degerler = http_baslik_degerleri(istek, ad);
+fn tek_http_basligi<'a>(istek: &'a HttpIstekBasligi<'a>, ad: &str) -> Option<&'a str> {
+    let degerler = istek.baslik_degerleri(ad);
     (degerler.len() == 1).then(|| degerler[0])
 }
 
@@ -1546,7 +1536,7 @@ fn guvenilir_proxy_esi_mi(es: std::net::SocketAddr) -> bool {
 }
 
 fn guvenli_proxy_istegini_denetle(
-    istek: &str,
+    istek: &HttpIstekBasligi<'_>,
     origin: &AgHedefi,
     yontem: &str,
 ) -> Result<String, (u16, &'static str)> {
@@ -1554,7 +1544,7 @@ fn guvenli_proxy_istegini_denetle(
     if AgHedefi::https_otoritesinden(host).as_ref() != Ok(origin) {
         return Err((400, "Host güvenli web origin'iyle eşleşmiyor"));
     }
-    let forwarded_degerleri = http_baslik_degerleri(istek, "Forwarded");
+    let forwarded_degerleri = istek.baslik_degerleri("Forwarded");
     let forwarded = match forwarded_degerleri.as_slice() {
         [] => return Err((426, "güvenilir Forwarded başlığı gerekli")),
         [deger] => *deger,
@@ -1854,11 +1844,15 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             }
             let http_siniri = dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.http();
             let baslik_siniri = http_siniri.istek_baslik_bayti();
-            let mut tampon =
-                Vec::with_capacity(baslik_siniri.saturating_add(http_siniri.istek_govde_bayti()));
+            let mut tampon = Vec::with_capacity(baslik_siniri);
             let govde_basi = loop {
-                if let Some(yer) = tampon.windows(4).position(|p| p == b"\r\n\r\n") {
-                    break yer + 4;
+                match baslik_sonunu_bul(&tampon) {
+                    Ok(Some(yer)) => break yer,
+                    Ok(None) => {}
+                    Err(hata) => {
+                        ham_http_hatasi_gonder(&mut akis, 400, &hata.to_string(), false, https);
+                        continue 'istekler;
+                    }
                 }
                 if tampon.len() >= baslik_siniri {
                     ham_http_hatasi_gonder(
@@ -1899,52 +1893,15 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                     Err(_) => continue 'istekler,
                 }
             };
-            let Ok(baslik_metni) = std::str::from_utf8(&tampon[..govde_basi]) else {
-                ham_http_hatasi_gonder(&mut akis, 400, "HTTP başlıkları UTF-8 değil", false, https);
-                continue;
+            let baslik = match HttpIstekBasligi::ayristir(&tampon[..govde_basi]) {
+                Ok(baslik) => baslik,
+                Err(hata) => {
+                    ham_http_hatasi_gonder(&mut akis, 400, &hata.to_string(), false, https);
+                    continue;
+                }
             };
-            if !http_baslik_degerleri(baslik_metni, "Transfer-Encoding").is_empty() {
-                ham_http_hatasi_gonder(
-                    &mut akis,
-                    400,
-                    "Transfer-Encoding desteklenmiyor",
-                    false,
-                    https,
-                );
-                continue;
-            }
-            let uzunluklar = http_baslik_degerleri(baslik_metni, "Content-Length");
-            if uzunluklar.len() > 1 {
-                ham_http_hatasi_gonder(
-                    &mut akis,
-                    400,
-                    "birden çok Content-Length başlığı reddedildi",
-                    false,
-                    https,
-                );
-                continue;
-            }
-            let beklenen = match uzunluklar.first() {
-                Some(deger) => match deger.parse::<usize>() {
-                    Ok(uzunluk) => uzunluk,
-                    Err(_) => {
-                        ham_http_hatasi_gonder(
-                            &mut akis,
-                            400,
-                            "Content-Length geçersiz",
-                            false,
-                            https,
-                        );
-                        continue;
-                    }
-                },
-                None => 0,
-            };
-            if beklenen > dil::yorumlayici::AZAMI_ISTEK_GOVDESI {
-                let head = baslik_metni
-                    .split_whitespace()
-                    .next()
-                    .is_some_and(|yontem| yontem.eq_ignore_ascii_case("HEAD"));
+            let beklenen = baslik.govde_uzunlugu();
+            if beklenen > http_siniri.istek_govde_bayti() {
                 ham_http_hatasi_gonder(
                     &mut akis,
                     413,
@@ -1952,16 +1909,32 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                         "istek gövdesi {} KiB sınırını aşıyor",
                         http_siniri.istek_govde_bayti() / 1024
                     ),
-                    head,
+                    baslik.yontem().eq_ignore_ascii_case("HEAD"),
                     https,
                 );
                 continue;
             }
-            let toplam = govde_basi + beklenen;
-            while tampon.len() < toplam {
-                let onceki = tampon.len();
-                tampon.resize(toplam, 0);
-                match son_tarihli_soket_oku(&mut akis, &mut tampon[onceki..toplam], son_tarih) {
+            let ilk_govde = &tampon[govde_basi..];
+            if ilk_govde.len() > beklenen {
+                ham_http_hatasi_gonder(
+                    &mut akis,
+                    400,
+                    "Content-Length sonrasında fazladan istek baytı var",
+                    baslik.yontem().eq_ignore_ascii_case("HEAD"),
+                    https,
+                );
+                continue;
+            }
+            let mut govde_baytlari = Vec::with_capacity(beklenen);
+            govde_baytlari.extend_from_slice(ilk_govde);
+            while govde_baytlari.len() < beklenen {
+                let onceki = govde_baytlari.len();
+                govde_baytlari.resize(beklenen, 0);
+                match son_tarihli_soket_oku(
+                    &mut akis,
+                    &mut govde_baytlari[onceki..beklenen],
+                    son_tarih,
+                ) {
                     Ok(0) => {
                         ham_http_hatasi_gonder(
                             &mut akis,
@@ -1972,7 +1945,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                         );
                         continue 'istekler;
                     }
-                    Ok(okunan) => tampon.truncate(onceki + okunan),
+                    Ok(okunan) => govde_baytlari.truncate(onceki + okunan),
                     Err(hata)
                         if matches!(
                             hata.kind(),
@@ -2003,127 +1976,120 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                     }
                 }
             }
-            let istek = String::from_utf8_lossy(&tampon[..toplam]).to_string();
-            let mut satirlar = istek.lines();
-            let ilk = satirlar.next().unwrap_or("");
-            let mut parcalar = ilk.split_whitespace();
-            let (yontem, hedef, surum) = (parcalar.next(), parcalar.next(), parcalar.next());
-            if let (Some(yontem), Some(hedef), Some(surum)) = (yontem, hedef, surum) {
-                if parcalar.next().is_some() || !matches!(surum, "HTTP/1.0" | "HTTP/1.1") {
+            let govde = match govde_metni(&govde_baytlari) {
+                Ok(govde) => govde,
+                Err(hata) => {
                     ham_http_hatasi_gonder(
                         &mut akis,
                         400,
-                        "HTTP istek satırı geçersiz",
-                        false,
+                        &hata.to_string(),
+                        baslik.yontem().eq_ignore_ascii_case("HEAD"),
                         https,
                     );
                     continue;
                 }
-                let istemci_kimligi = if let Some(origin) = self.guvenli_proxy_origin() {
-                    match guvenli_proxy_istegini_denetle(&istek, origin, yontem) {
-                        Ok(kimlik) => kimlik,
-                        Err((durum, mesaj)) => {
-                            ham_http_hatasi_gonder(
-                                &mut akis,
-                                durum,
-                                mesaj,
-                                yontem.eq_ignore_ascii_case("HEAD"),
-                                true,
-                            );
-                            continue;
-                        }
+            };
+            let yontem = baslik.yontem();
+            let hedef = baslik.hedef();
+            let istemci_kimligi = if let Some(origin) = self.guvenli_proxy_origin() {
+                match guvenli_proxy_istegini_denetle(&baslik, origin, yontem) {
+                    Ok(kimlik) => kimlik,
+                    Err((durum, mesaj)) => {
+                        ham_http_hatasi_gonder(
+                            &mut akis,
+                            durum,
+                            mesaj,
+                            yontem.eq_ignore_ascii_case("HEAD"),
+                            true,
+                        );
+                        continue;
                     }
-                } else {
-                    es.ip().to_string()
-                };
-                let govde = istek.split_once("\r\n\r\n").map(|(_, g)| g).unwrap_or("");
-                // Cookie başlığı "çerez ..." satırı olarak taşınır (K-052).
-                let cerez_degerleri = http_baslik_degerleri(&istek, "Cookie");
-                if cerez_degerleri.len() > 1 {
-                    ham_http_hatasi_gonder(
-                        &mut akis,
-                        400,
-                        "birden çok Cookie başlığı reddedildi",
-                        yontem.eq_ignore_ascii_case("HEAD"),
-                        https,
-                    );
-                    continue;
                 }
-                let cerez = cerez_degerleri.first().copied().unwrap_or_default();
-                let oturum = cerez
-                    .split(';')
-                    .filter_map(|parca| parca.trim().split_once('='))
-                    .find_map(|(ad, deger)| {
-                        (ad == self.oturum_cerez_adi()).then_some(deger.trim())
-                    });
-                let an = web_duvar_saati_ms();
-                self.web_istek_yedegi = Some(WebIstekYedegi {
-                    bekleyen_cerezler: self.bekleyen_cerezler.clone(),
-                    bekleyen_silinen_cerezler: self.bekleyen_silinen_cerezler.clone(),
-                });
-                self.bekleyen_web_yaniti = None;
-                if let Err(hata) = self.web_guvenligi.istegi_baslat_kimlikle(
-                    oturum,
-                    &istemci_kimligi,
-                    an,
-                ) {
+            } else {
+                es.ip().to_string()
+            };
+            // Cookie başlığı "çerez ..." satırı olarak taşınır (K-052).
+            let cerez_degerleri = baslik.baslik_degerleri("Cookie");
+            if cerez_degerleri.len() > 1 {
+                ham_http_hatasi_gonder(
+                    &mut akis,
+                    400,
+                    "birden çok Cookie başlığı reddedildi",
+                    yontem.eq_ignore_ascii_case("HEAD"),
+                    https,
+                );
+                continue;
+            }
+            let cerez = cerez_degerleri.first().copied().unwrap_or_default();
+            let oturum = cerez
+                .split(';')
+                .filter_map(|parca| parca.trim().split_once('='))
+                .find_map(|(ad, deger)| (ad == self.oturum_cerez_adi()).then_some(deger.trim()));
+            let an = web_duvar_saati_ms();
+            self.web_istek_yedegi = Some(WebIstekYedegi {
+                bekleyen_cerezler: self.bekleyen_cerezler.clone(),
+                bekleyen_silinen_cerezler: self.bekleyen_silinen_cerezler.clone(),
+            });
+            self.bekleyen_web_yaniti = None;
+            if let Err(hata) =
+                self.web_guvenligi
+                    .istegi_baslat_kimlikle(oturum, &istemci_kimligi, an)
+            {
+                ham_http_hatasi_gonder(
+                    &mut akis,
+                    503,
+                    &format!("web güvenlik deposuna erişilemedi: {hata}"),
+                    yontem.eq_ignore_ascii_case("HEAD"),
+                    https,
+                );
+                self.web_istek_yedegi = None;
+                continue;
+            }
+            let kapsam = format!(
+                "{} {}",
+                yontem.to_ascii_uppercase(),
+                hedef.split('?').next().unwrap_or(hedef)
+            );
+            match self.web_guvenligi.rate_limit_artir(
+                dil::web_guvenligi::RateLimitTuru::Ucnokta,
+                &kapsam,
+                an,
+            ) {
+                Ok(karar) if karar.izinli => {}
+                Ok(_) => {
                     ham_http_hatasi_gonder(
                         &mut akis,
-                        503,
-                        &format!("web güvenlik deposuna erişilemedi: {hata}"),
+                        429,
+                        "uç nokta oran sınırı aşıldı",
                         yontem.eq_ignore_ascii_case("HEAD"),
                         https,
                     );
+                    self.web_guvenligi.istegi_geri_al();
                     self.web_istek_yedegi = None;
                     continue;
                 }
-                let kapsam = format!(
-                    "{} {}",
-                    yontem.to_ascii_uppercase(),
-                    hedef.split('?').next().unwrap_or(hedef)
-                );
-                match self.web_guvenligi.rate_limit_artir(
-                    dil::web_guvenligi::RateLimitTuru::Ucnokta,
-                    &kapsam,
-                    an,
-                ) {
-                    Ok(karar) if karar.izinli => {}
-                    Ok(_) => {
-                        ham_http_hatasi_gonder(
-                            &mut akis,
-                            429,
-                            "uç nokta oran sınırı aşıldı",
-                            yontem.eq_ignore_ascii_case("HEAD"),
-                            https,
-                        );
-                        self.web_guvenligi.istegi_geri_al();
-                        self.web_istek_yedegi = None;
-                        continue;
-                    }
-                    Err(hata) => {
-                        ham_http_hatasi_gonder(
-                            &mut akis,
-                            503,
-                            &format!("oran sınırı deposuna erişilemedi: {hata}"),
-                            yontem.eq_ignore_ascii_case("HEAD"),
-                            https,
-                        );
-                        self.web_guvenligi.istegi_geri_al();
-                        self.web_istek_yedegi = None;
-                        continue;
-                    }
+                Err(hata) => {
+                    ham_http_hatasi_gonder(
+                        &mut akis,
+                        503,
+                        &format!("oran sınırı deposuna erişilemedi: {hata}"),
+                        yontem.eq_ignore_ascii_case("HEAD"),
+                        https,
+                    );
+                    self.web_guvenligi.istegi_geri_al();
+                    self.web_istek_yedegi = None;
+                    continue;
                 }
-                self.bekleyen_akis = Some(akis);
-                self.bekleyen_baglanti_izni = Some(baglanti_izni);
-                self.bekleyen_head = yontem.eq_ignore_ascii_case("HEAD");
-                let cerez_satiri = if cerez.is_empty() {
-                    String::new()
-                } else {
-                    format!("çerez {}\n", cerez)
-                };
-                return Some(format!("{} {}\n{}{}", yontem, hedef, cerez_satiri, govde));
             }
-            ham_http_hatasi_gonder(&mut akis, 400, "HTTP istek satırı eksik", false, https);
+            self.bekleyen_akis = Some(akis);
+            self.bekleyen_baglanti_izni = Some(baglanti_izni);
+            self.bekleyen_head = yontem.eq_ignore_ascii_case("HEAD");
+            let cerez_satiri = if cerez.is_empty() {
+                String::new()
+            } else {
+                format!("çerez {}\n", cerez)
+            };
+            return Some(format!("{} {}\n{}{}", yontem, hedef, cerez_satiri, govde));
         }
     }
     fn istek_islemini_tamamla(&mut self) -> Result<(), String> {
@@ -2492,13 +2458,21 @@ mod web_profili_testleri {
     use dil::yorumlayici::GirdiCikti;
     use std::io::{Read, Write};
 
+    fn proxy_istegini_denetle(
+        ham: &str,
+        origin: &AgHedefi,
+        yontem: &str,
+    ) -> Result<String, (u16, &'static str)> {
+        let baslik = HttpIstekBasligi::ayristir(ham.as_bytes()).unwrap();
+        guvenli_proxy_istegini_denetle(&baslik, origin, yontem)
+    }
+
     #[test]
     fn guvenli_origin_ortak_ag_hedefiyle_kanoniklenir() {
         let origin = AgHedefi::https_origininden("https://PANEL.Example:8443").expect("origin");
         assert_eq!(origin.otoritesi(), "panel.example:8443");
         assert_eq!(origin.yazimi(), "https://panel.example:8443");
-        let ipv6 =
-            AgHedefi::https_origininden("https://[2001:db8::1]:8443").expect("IPv6 origin");
+        let ipv6 = AgHedefi::https_origininden("https://[2001:db8::1]:8443").expect("IPv6 origin");
         assert_eq!(ipv6.otoritesi(), "[2001:db8::1]:8443");
         for gecersiz in [
             "http://panel.example",
@@ -2510,10 +2484,7 @@ mod web_profili_testleri {
             "https://panel.example:0",
             "https://panel.example:65536",
         ] {
-            assert!(
-                AgHedefi::https_origininden(gecersiz).is_err(),
-                "{gecersiz}"
-            );
+            assert!(AgHedefi::https_origininden(gecersiz).is_err(), "{gecersiz}");
         }
     }
 
@@ -2562,17 +2533,17 @@ mod web_profili_testleri {
         let origin = AgHedefi::https_origininden("https://panel.example").unwrap();
         let get = "GET / HTTP/1.1\r\nHost: panel.example\r\nForwarded: for=203.0.113.7;proto=https;host=panel.example\r\n\r\n";
         assert_eq!(
-            guvenli_proxy_istegini_denetle(get, &origin, "GET").unwrap(),
+            proxy_istegini_denetle(get, &origin, "GET").unwrap(),
             "203.0.113.7"
         );
 
         let post = "POST /kaydet HTTP/1.1\r\nHost: panel.example\r\nForwarded: for=2001:db8::7;proto=https;host=panel.example\r\nOrigin: https://panel.example\r\n\r\n";
-        assert!(guvenli_proxy_istegini_denetle(post, &origin, "POST").is_ok());
+        assert!(proxy_istegini_denetle(post, &origin, "POST").is_ok());
 
         let originsiz =
             "POST /kaydet HTTP/1.1\r\nHost: panel.example\r\nForwarded: for=203.0.113.7;proto=https;host=panel.example\r\n\r\n";
         assert_eq!(
-            guvenli_proxy_istegini_denetle(originsiz, &origin, "POST")
+            proxy_istegini_denetle(originsiz, &origin, "POST")
                 .unwrap_err()
                 .0,
             403
@@ -2580,47 +2551,45 @@ mod web_profili_testleri {
         let sahte_proto =
             "GET / HTTP/1.1\r\nHost: panel.example\r\nForwarded: for=203.0.113.7;proto=http;host=panel.example\r\n\r\n";
         assert_eq!(
-            guvenli_proxy_istegini_denetle(sahte_proto, &origin, "GET")
+            proxy_istegini_denetle(sahte_proto, &origin, "GET")
                 .unwrap_err()
                 .0,
             426
         );
         let cift_host = "GET / HTTP/1.1\r\nHost: panel.example\r\nHost: saldirgan.example\r\nForwarded: for=203.0.113.7;proto=https;host=panel.example\r\n\r\n";
         assert_eq!(
-            guvenli_proxy_istegini_denetle(cift_host, &origin, "GET")
+            proxy_istegini_denetle(cift_host, &origin, "GET")
                 .unwrap_err()
                 .0,
             400
         );
         let sahte_zincir = "GET / HTTP/1.1\r\nHost: panel.example\r\nForwarded: for=198.51.100.1;proto=https;host=panel.example, for=127.0.0.1\r\n\r\n";
         assert_eq!(
-            guvenli_proxy_istegini_denetle(sahte_zincir, &origin, "GET")
+            proxy_istegini_denetle(sahte_zincir, &origin, "GET")
                 .unwrap_err()
                 .0,
             400
         );
         let xff_tek_basina = "GET / HTTP/1.1\r\nHost: panel.example\r\nX-Forwarded-For: 203.0.113.7\r\nX-Forwarded-Proto: https\r\n\r\n";
         assert_eq!(
-            guvenli_proxy_istegini_denetle(xff_tek_basina, &origin, "GET")
+            proxy_istegini_denetle(xff_tek_basina, &origin, "GET")
                 .unwrap_err()
                 .0,
             426
         );
         let cift_forwarded = "GET / HTTP/1.1\r\nHost: panel.example\r\nForwarded: for=203.0.113.7;proto=https;host=panel.example\r\nForwarded: for=198.51.100.2;proto=https;host=panel.example\r\n\r\n";
         assert_eq!(
-            guvenli_proxy_istegini_denetle(cift_forwarded, &origin, "GET")
+            proxy_istegini_denetle(cift_forwarded, &origin, "GET")
                 .unwrap_err()
                 .0,
             400
         );
 
         let kanonik_esdeger = "POST /kaydet HTTP/1.1\r\nHost: PANEL.EXAMPLE:443\r\nForwarded: for=203.0.113.7;proto=HTTPS;host=panel.example:443\r\nOrigin: https://PANEL.EXAMPLE:443/\r\n\r\n";
-        assert!(
-            guvenli_proxy_istegini_denetle(kanonik_esdeger, &origin, "POST").is_ok()
-        );
+        assert!(proxy_istegini_denetle(kanonik_esdeger, &origin, "POST").is_ok());
         let yanlis_kapi = "GET / HTTP/1.1\r\nHost: panel.example:8443\r\nForwarded: for=203.0.113.7;proto=https;host=panel.example:8443\r\n\r\n";
         assert_eq!(
-            guvenli_proxy_istegini_denetle(yanlis_kapi, &origin, "GET")
+            proxy_istegini_denetle(yanlis_kapi, &origin, "GET")
                 .unwrap_err()
                 .0,
             400
@@ -2628,7 +2597,7 @@ mod web_profili_testleri {
 
         let ipv6 = AgHedefi::https_origininden("https://[2001:db8::1]:8443").unwrap();
         let ipv6_istegi = "POST /kaydet HTTP/1.1\r\nHost: [2001:0DB8:0:0::1]:8443\r\nForwarded: for=203.0.113.7;proto=https;host=\"[2001:0db8:0:0::1]:8443\"\r\nOrigin: https://[2001:0DB8:0:0::1]:8443\r\n\r\n";
-        assert!(guvenli_proxy_istegini_denetle(ipv6_istegi, &ipv6, "POST").is_ok());
+        assert!(proxy_istegini_denetle(ipv6_istegi, &ipv6, "POST").is_ok());
     }
 
     #[test]

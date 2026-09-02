@@ -91,3 +91,10 @@ ayrıca bağlantı kabulünden başlayan 10 saniyelik mutlak request okuma ve 30
 saniyelik Zee request çalışma deadline'ı taşır. Benchmark sonuçları process
 başına tek worker gerçeğiyle yorumlanmalı; `-c 100` tek bir process'te 100
 paralel uygulama yürütümü vaat etmez.
+
+K-140'tan itibaren backend request-line, başlık ve gövdeyi ham byte parser'da
+doğrular. Proxy backend'e yalnız CRLF satırlı, origin-form hedefli, tek
+`Content-Length` taşıyan ve `Transfer-Encoding` taşımayan HTTP/1.0/1.1 isteği
+göndermelidir. Chunked aktarım, obs-fold, pipelining, UTF-8 dışı/NUL gövde ve
+duplicate CL desteklenmez. Her yanıt `Connection: close` ile bağlantıyı
+sonlandırır.
