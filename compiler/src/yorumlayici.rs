@@ -403,6 +403,8 @@ pub struct ToplayanIo {
     pub argumanlar: Vec<String>,
     /// Sahte HTTP: url → (durum, gövde).
     pub http_yanitlari: HashMap<String, (i64, String)>,
+    /// Gerçekten başlatılan sahte HTTP çağrıları ve çağrı anındaki kalan süre.
+    pub http_istekleri: Vec<(String, Option<i64>)>,
     /// Sahte sunucu: istek kuyruğu ve (istek → yanıt) kayıtları.
     pub istekler: VecDeque<String>,
     /// Sunucunun Set-Cookie ile yazdığı çerezler (K-052 testleri için).
@@ -442,6 +444,7 @@ impl ToplayanIo {
             zaman: (2026, 8, 31, 14, 30),
             argumanlar: Vec::new(),
             http_yanitlari: HashMap::new(),
+            http_istekleri: Vec::new(),
             istekler: VecDeque::new(),
             yazilan_cerezler: Vec::new(),
             guvenli_cerezler: Vec::new(),
@@ -514,8 +517,10 @@ impl GirdiCikti for ToplayanIo {
     fn http_getir(
         &mut self,
         url: &str,
-        _zaman_asimi_ms: Option<i64>,
+        zaman_asimi_ms: Option<i64>,
     ) -> Result<(i64, String), String> {
+        self.http_istekleri
+            .push((url.to_string(), zaman_asimi_ms));
         self.http_yanitlari
             .get(url)
             .cloned()
@@ -1497,6 +1502,7 @@ async fn islem_cagir(
         yerel.insert(param.ad.clone(), deger);
     }
     if eylem {
+        son_tarihi_denetle(io, satir)?;
         io.eylem_baslat().map_err(|hata| {
             Tani::yeni(
                 "C021",

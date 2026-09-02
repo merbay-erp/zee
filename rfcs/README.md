@@ -16,7 +16,7 @@ Dil değişikliği RFC ister (master plan bölüm 25). Şablon: [0000-sablon.md]
 | RFC-0008 | [Seçenek ve Sonuç](0008-secenek-ve-sonuc.md) | **geçici kabul** (daraltma + yapılandırılmış Hata) | K-017, K-018, K-030, K-091 |
 | RFC-0009 | [Modül ve Paket Modeli](0009-modul-ve-paket.md) | **geçici kabul** (birim + proje + yerel paket/kilit + public kaynak ABI); registry metadata güveni çalışır, uzak bağımlılık entegrasyonu açık | K-029, K-076, K-078, K-086, K-095 |
 | RFC-0010 | [Hata ve Tanılama Standardı](0010-hata-ve-tanilama.md) | **kabul** (K-113 recovery, K-114 kimlik fixture'ı) | K-026, K-113, K-114 |
-| RFC-0011 | [Structured Concurrency](0011-structured-concurrency.md) | **geçici kabul** (K-085 deadline; K-090 scheduler+sahiplik; K-124 bağımsız conformance) | K-023, K-085, K-090, K-124 |
+| RFC-0011 | [Structured Concurrency](0011-structured-concurrency.md) | **geçici kabul** (K-085 deadline; K-090 scheduler+sahiplik; K-124 bağımsız conformance; K-133 etki kapıları) | K-023, K-085, K-090, K-124, K-133 |
 | RFC-0012 | [FFI ve Tehlikeli Sınır](0012-ffi-ve-tehlikeli-sinir.md) | **taslak** (K-125 örtük binary float yasağı bağlı; FFI gerçeklenmedi) | A10, K-125, ADR-029, B-012 |
 | RFC-0013 | [Ondalık Sayılar](0013-ondalik-sayilar.md) | **geçici kabul** (K-092 keyfî hassasiyet; K-125 binary sınırı) | K-028, K-092, K-125, ADR-029 |
 | RFC-0014 | [Standart Kitaplık](0014-standart-kitaplik.md) | **taslak — çalışan prototip ekli** | K-046, K-048, RFC-0002 §6.3 |
@@ -32,7 +32,7 @@ Dil değişikliği RFC ister (master plan bölüm 25). Şablon: [0000-sablon.md]
 | RFC-0024 | [Merkezî Yetkinlik ve Outbound Ağ Güvenliği](0024-merkezi-yetkinlik-ve-outbound-guvenligi.md) | **geçici kabul** (K-127) | K-127, B-023/B-024/B-049, V1-P0-29 |
 | RFC-0025 | [Merkezî Kaynak Bütçesi](0025-merkezi-kaynak-butcesi.md) | **geçici kabul** (K-129/K-130/K-131/K-132; B-025 kapalı) | K-105, K-107, K-129/K-130/K-131/K-132, B-025, V1-P0-31 |
 
-**Durum özeti (2 Eylül 2026, K-132):** 25 RFC — 2 kabul (0001, 0010),
+**Durum özeti (2 Eylül 2026, K-133):** 25 RFC — 2 kabul (0001, 0010),
 21 geçici kabul (RFC-0020'nin yayın ve metadata doğrulama katmanı normatiftir;
 taşıma/cache/CLI tamamlanmadan uzak paket kullanımı sözü verilmez), 2 taslak: 0012 (FFI — Faz
 4/5) ve 0014 (standart kitaplık — çalışan prototiple).

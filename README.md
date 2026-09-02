@@ -61,8 +61,9 @@ köprüsü yoktur),
 eşzamanlılık** (K-090: deterministik tek-thread scheduler, gerçek
 `hepsini bekle`, T033/T051 sahiplik ve kardeş iptali; K-124
 [`zee-esz-1` gözlenebilir conformance profili](docs/eszamanlilik-conformance.md)),
-**işbirlikli son tarih
-iptali** (`... içinde/yetişmezse`, görev ağacına yayılır),
+  **işbirlikli son tarih
+iptali** (`... içinde/yetişmezse`, görev ağacına yayılır; K-133 dış etkileri
+tam çağrı öncesi yeniden denetler),
 **ESP32
 simülatörü**, **özyineleme** (T035 "temel durum önce", C019 derinlik sınırı),
 **blok kapsamı** (K-034), **akış-duyarlı daraltma** (T036: korumasız
@@ -154,7 +155,7 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **521** |
+| Rust + doctest vakası | **523** |
 | Tanı kimliği | **150 etkin + 3 ayrılmış** |
 | RFC | **25** (2 kabul, 21 geçici kabul, 2 taslak) |
 | ADR | **31** (31 kabul) |
@@ -321,6 +322,10 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   K-132 LSP initialize, diagnostics, completion, hover, definition, rename ve
   hata gövdelerini 8 MiB sınırlı akış yazıcısına taşıdı; rename/diagnostics
   artık bütçesiz ara JSON listeleri kurmaz. Böylece B-025/V1-P0-31 kapandı.
+  K-133 çıktı, dosya, HTTP, web/oturum, eyleyici ve rastgelelik sınırlarına
+  tam etki öncesi deadline kapısı ekledi; görev HTTP öncesi sıra verdikten
+  sonra süreyi yeniden hesaplar ve dolmuş isteği hiç başlatmaz. B-026'nın web
+  istek transaction'ı dilimi açık kalır.
   Uygulama sırası
   [öncelikli backlog](docs/oncelikli-backlog.md) ile sabittir.
   Bağlayıcı liste: [docs/v1-surum-kapilari.md](docs/v1-surum-kapilari.md).

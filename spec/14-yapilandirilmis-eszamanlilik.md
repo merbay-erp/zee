@@ -1,6 +1,6 @@
 # 14 — Yapılandırılmış eşzamanlılık
 
-Normatif kaynak: RFC-0011 (geçici kabul), K-090/K-124. Durum: **TANIMLI**.
+Normatif kaynak: RFC-0011 (geçici kabul), K-090/K-124/K-133. Durum: **TANIMLI**.
 
 ## 1. Görev grubu ve birleştirme
 
@@ -78,7 +78,10 @@ korur; uzun eylem kardeş görevi ancak eylem bittikten sonra ilerletebilir.
 çağrı zincirinden dışarı taşınır. HTTP isteği senkron adaptöre girmeden önce
 kardeşlere bir tur verir; adaptör çağrısının içi ise diğer senkron platform
 çağrıları (bazı DNS/dosya işlemleri gibi) kadar atomik ve önleyici olmayan bir
-dilimdir. Dönüşte son tarih yeniden denetlenir. Çok çekirdek kullanımı dil
+dilimdir. Kalan deadline bu turdan sonra, adaptöre tam girişte yeniden
+hesaplanır; süre dolmuşsa HTTP etkisi başlamaz. Dönüşte de son tarih yeniden
+denetlenir. Diğer dış etkiler kendi adaptör çağrılarının hemen önünde aynı
+kapıdan geçer. Çok çekirdek kullanımı dil
 özelliği değil, yalnız `zee-esz-1` gözlemlerini koruyan bir iç optimizasyon
 olabilir. Yarış/`ilkini bekle`, akış ve dinamik görev sayısı bu sürümün sözü
 değildir.
@@ -92,6 +95,7 @@ değildir.
 - dış son tarihin bütün görev ağacını doğru sahibine taşıması;
 - iç görev ağacının beklerken dış kardeşe yürütme sırası vermesi;
 - görev içindeki atomik `eylem` hatasının rollback edip kardeşi araya almaması;
+- scheduler turunda dolan deadline'ın HTTP veya dosya etkisini başlatmaması;
 - beklemeden kapsamdan çıkış ve boş birleştirme için T051;
 - birleştirme öncesi sonuç erişimi için T033.
 

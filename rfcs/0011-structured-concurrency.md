@@ -1,9 +1,10 @@
 # RFC-0011 — Structured Concurrency
 
 - **Durum:** **geçici kabul** (K-085 son tarih çekirdeği; K-090 deterministik
-  görev scheduler'ı; K-124 bağımsız gözlenebilir conformance profili.)
+  görev scheduler'ı; K-124 bağımsız gözlenebilir conformance profili; K-133
+  yan etki öncesi deadline kapıları.)
 - **Tarih:** 31 Ağustos 2026; K-090 revizyonu 1 Eylül 2026
-- **İlgili günlük kayıtları:** K-023, K-085, K-090, K-124
+- **İlgili günlük kayıtları:** K-023, K-085, K-090, K-124, K-133
 - **İlgili golden programlar:** 26 (eşzamanlı görevler), 27 (zaman aşımı)
 - **Normatif gerçekleme:** spec/09 ve spec/14
 
@@ -114,7 +115,10 @@ bozulmadan doğru `içinde/yetişmezse` sahibine ulaşır ve kardeşler iptal ed
 noktasıdır. HTTP isteği senkron adaptöre girmeden kardeşlere bir tur verir;
 adaptörün içi ve platformun diğer senkron/iptal edilemeyen çağrıları (bazı
 DNS/dosya işlemleri gibi) dönene kadar atomik dilimdir. Dönüşte son tarih
-denetlenir ve süre aşılmışsa sonraki cümle çalışmaz. Bu sınır spec/09 ile
+denetlenir ve süre aşılmışsa sonraki cümle çalışmaz. K-133 kalan süreyi
+scheduler turundan sonra yeniden hesaplar; deadline dolmuşsa adaptör çağrısı
+başlamaz. Çıktı, dosya, web/oturum, eyleyici ve diğer dış etkiler de çağrının
+hemen önünde aynı kapıdan geçer. Bu sınır spec/09 ile
 aynıdır. Async host IO ayrı adaptör/API çalışmasıdır; dilin sahiplik modelini
 değiştirmez.
 
@@ -140,7 +144,8 @@ Golden 26 görev sonuçlarının birleştirmeden sonra değer olduğunu korur; g
 uyumluluk sözünü 10 çalıştırılabilir kaynak+beklenen gözlem vakasına bağlar;
 ikinci derleyici Rust iç adlarına ihtiyaç duymaz. `ag_ve_esz_testi` ayrıca
 farklı beklemelerde çıktı izini ve en-uzun-süre saatini, kardeş iptalini, dış
-deadline yayılımını, iç görev ağacının dış kardeşe sıra vermesini, T033'ü ve
-T051 kapsam olumsuzlarını sabitler. Davranış değişikliği bu testler, spec/14 ve
+deadline yayılımını, iç görev ağacının dış kardeşe sıra vermesini, sıra verme
+sırasında dolan deadline'ın HTTP/dosya etkisini başlatmamasını, T033'ü ve T051
+kapsam olumsuzlarını sabitler. Davranış değişikliği bu testler, spec/14 ve
 sürüm notu birlikte güncellenmeden yapılamaz. Yayımlanmış `zee-esz-1` verisi
 yerinde güncellenemez; değişiklik yeni profil kimliği ister.

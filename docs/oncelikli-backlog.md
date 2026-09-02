@@ -83,8 +83,12 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
     akar; taşma kimlikli istekte `-32001`, bildirimde sınırlı `logMessage`
     üretir. Geçerli JSON ve mimari bütçe regresyonlarıyla B-025/V1-P0-31
     kapandı (521 test).
-30. Sıradaki makine işi B-026 cancellation-safety audit'idir; sonraki işler
-    aşağıdaki öncelik ve bağımlılık sırasını korur.
+30. K-133 B-026'nın ilk audit dilimini kapattı: çıktı, girdi, dosya, web,
+    oturum, eyleyici ve rastgelelik etkilerinin hemen önünde son tarihi yeniden
+    denetler. Görev HTTP öncesi sıra verdikten sonra kalan süreyi yeniden
+    hesaplar; dolmuş istek adaptöre hiç girmez (523 test).
+31. Sıradaki makine işi K-134 ile web istek yaşam döngüsünü transaction'a
+    bağlamaktır; sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
 
 ## P0 — V1 öncesi dil ve derleyici omurgası
 
@@ -287,8 +291,15 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   bütçeli yazıcıdan üretir; JSON kaçışı, zarf, diagnostics ve rename
   düzenlemeleri her append öncesi ölçülür. Dev ara `Vec<String>`/`join` yoktur;
   aşım kimlikli istekte `-32001`, bildirimde bounded `logMessage` olur.
-- **B-026 · AÇIK — cancellation-safety audit'i.** Dosya temp'i, web yanıtı,
-  oturum mutation'ı ve diğer yan etkilerin iptal/yarım kalma davranışını testle.
+- **B-026 · KISMEN (K-133) — cancellation-safety audit'i.** Temp dosya,
+  kilit, son tarih ve çalışma bütçesi nöbetçileri `Drop` ile sahipli temizlenir;
+  eylem transaction'ı hata halinde rollback eder. K-133 çıktı/girdi, dosya,
+  sunucu, yanıt/yönlendirme/çerez/oturum, eyleyici, CSRF, parola, rastgelelik
+  ve eylem başlangıcına tam yan etki öncesi deadline kapısı koydu. Görev HTTP
+  öncesi scheduler'a sıra verdikten sonra eski kalan süreyi kullanmaz; dolmuş
+  dosya/HTTP etkisinin hiç başlamadığı sanal saat regresyonları vardır. Açık
+  kalan dilim, bir web isteğinin oturum mutation'ı ile henüz gönderilmemiş
+  yanıtını birlikte commit/rollback eden istek yaşam döngüsüdür.
 - **B-027 · KAPALI (K-115) — deterministik IO trace/replay biçimi tasarla.**
   Bütün `GirdiCikti` çağrıları işlem, argüman, sonuç ve kesintisiz sırayla
   şema-1 kanonik izine girer. 64 MiB/100.000 olay/4.096 alan sınırı ve kapalı
@@ -417,8 +428,9 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 ## Bir sonraki somut kapı
 
 İnsan kanıtı hattında B-001, doldurulmuş gerçek usability formları ve önceden
-ilan edilmiş eşikleri bekler. Makine hattında K-132 sınırlı LSP JSON üretimiyle
-B-025/V1-P0-31'i kapattı. Sıradaki iş B-026 cancellation-safety audit'idir.
+ilan edilmiş eşikleri bekler. Makine hattında K-133 yan etkilerin deadline
+kapısını sıkılaştırdı ve B-026'yı kısmen kapattı. Sıradaki iş K-134 web istek
+yaşam döngüsü transaction'ıdır.
 
 ## 2 Eylül 2026 ikinci dış inceleme ayrımı
 
@@ -426,8 +438,9 @@ B-025/V1-P0-31'i kapattı. Sıradaki iş B-026 cancellation-safety audit'idir.
   proje toplamı, bounded stdin/dosya okuması, heap/metin/çıktı, koleksiyon,
   görev, LSP toplamı/outbound ve süreç-geneli bağlantı sayısı. Eski sabit göçü
   bitti; LSP'nin 8 MiB reddi JSON kurulurken uygulanır.
-- **Doğrulandı ve sıraya alındı:** B-026
-  cancellation, B-029 registry taşıma/cache/kalıcı rollback, B-046 rate-limit
+- **Doğrulandı ve çalışılıyor:** B-026 cancellation K-133 ile etki öncesi
+  deadline denetimine ilerledi; web istek transaction'ı K-134'e kaldı.
+  Ardından B-029 registry taşıma/cache/kalıcı rollback, B-046 rate-limit
   ve çok süreçli oturum, B-051 kesin JSON-RPC, B-052 origin tekilleştirme,
   B-053 byte HTTP+fuzz, B-034 temiz snapshot ve B-054 advisory/reproducibility.
 - **Mevcut repoda zaten kapalı:** çağrı derinliği C019/500 ve ayrı regresyonu;

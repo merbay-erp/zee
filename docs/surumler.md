@@ -452,6 +452,14 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   gövde yayımlanmaz. Üç yeni regresyonla envanter 521 teste çıktı ve
   B-025/V1-P0-31 kapandı.
 
+- **Yan etki öncesi deadline kapıları** (K-133, RFC-0011/spec-09/spec-14):
+  Çıktı/girdi, dosya, sunucu, web yanıtı/yönlendirmesi, çerez/oturum,
+  eyleyici, CSRF, parola, rastgelelik ve `eylem` başlangıcı gerçek çağrının
+  hemen önünde deadline'ı yeniden denetler. Görev HTTP'si scheduler'a sıra
+  verdikten sonra kalan süreyi tazeler; süre dolmuşsa adaptör hiç çağrılmaz.
+  İki sanal saat regresyonuyla envanter 523 teste çıktı. B-026 kısmen
+  kapandı; web istek yanıtı+oturum transaction'ı K-134'e kaldı.
+
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`
   bildirimi hazır üretir. P001–P004 Türkçe proje tanıları. Doğrudan dosya
