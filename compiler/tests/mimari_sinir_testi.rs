@@ -447,6 +447,7 @@ fn performans_gozlemi_shared_ci_esigine_donusmez() {
         "--milestone shared-ci",
         "cargo build --locked --release --bin dillsp",
         "--dillsp target/release/dillsp",
+        "--lsp-olcek",
         "cat target/performans.md >> \"$GITHUB_STEP_SUMMARY\"",
         "name: performans-${{ github.sha }}",
     ] {
@@ -466,7 +467,10 @@ fn performans_gozlemi_shared_ci_esigine_donusmez() {
         "lsp_engine_initialize",
         "lsp_process_cold_start",
         "lsp_ac",
-        "lsp_degistir",
+        "lsp_degistir_2k",
+        "lsp_degistir_5k",
+        "lsp_degistir_10k",
+        "lsp_degistir_20k",
         "tepe_bellek",
     ] {
         assert!(arac.contains(kimlik), "ölçüm yüzeyi eksik: {kimlik}");

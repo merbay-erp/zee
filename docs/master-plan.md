@@ -792,7 +792,11 @@ kapandı. K-153/ADR-050 in-process engine initialize ile gerçek dillsp process
 spawn→stdio→capabilities maliyetini ayırdı; Tier-1 ikili testi ve CI ölçümü
 hazırdır. Exact temiz `a2693d6…` uygulama commit'indeki 25 örnek process için
 p50 1,557 ms/p95 1,997 ms tabanını verdi; B-061/K-153 kapandı. Bağlayıcı
-makine sırası K-154 LSP tam-metin değişim ölçek eğrisiyle devam eder.
+makine sırasında K-154/ADR-051, 2k/5k/10k/20k tam-metin `didChange` eğrisini
+ve p95 250/500/1000 ms ilk-aşım raporunu ekledi. Bugünkü invalidation sınırı
+tam belge→tam lexer/parser→resolver/checker→typed-HIR yeniden kurulumudur;
+incremental cache ve bu dilimde optimizasyon yoktur. Exact temiz 25 örnekli
+taban beklediğinden B-062 henüz kısmi, sonra K-155 gelir.
 B-001 çağrı sözdizimi ile B-002 gezme zihinsel modeli gerçek insan
 kanıtı gelmeden kapatılmaz veya yeni syntax kararıyla atlanmaz.
 # 40. Proje felsefesinin korunması

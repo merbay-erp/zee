@@ -12,6 +12,15 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **LSP tam-metin değişiklik ölçeği** (K-154, ADR-051): Ölçüm koşucusu artık
+  açık `--lsp-olcek` kipinde 2.000/5.000/10.000/20.000 satır `didChange`
+  p50/p95 eğrisini ve önceden belirlenmiş 250/500/1000 ms p95 çizgilerinin
+  ilk aşımını raporlar; shared CI bu uzun gözlemi artefakta ekler. Mevcut yol
+  tüm belgeyi değiştirip klonlar ve lexer/parser/resolver/checker/typed-HIR
+  hattını bütünüyle yeniden kurar; incremental cache yoktur ve henüz
+  optimizasyon yapılmadı. Exact temiz 25 örnekli taban beklediğinden B-062
+  kısmi. Grammar, runtime, tanı, RFC ve normatif spec değişmedi.
+
 - **Gerçek LSP process cold-start ölçümü** (K-153, ADR-050): Eski
   `lsp_soguk` gerçekte aynı süreç engine initialize'ıydı ve
   `lsp_engine_initialize` olarak düzeltildi. Yeni `lsp_process_cold_start`

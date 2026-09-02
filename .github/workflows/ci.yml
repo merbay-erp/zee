@@ -103,7 +103,8 @@ jobs:
             --kayit "ci-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" \
             --git-sha "$GITHUB_SHA" \
             --milestone shared-ci \
-            --dillsp target/release/dillsp
+            --dillsp target/release/dillsp \
+            --lsp-olcek
           cat target/performans.md >> "$GITHUB_STEP_SUMMARY"
       - name: Performans gözlemi artefaktını yükle
         if: matrix.os == 'ubuntu-latest'

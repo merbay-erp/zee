@@ -176,10 +176,10 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **611** |
+| Rust + doctest vakası | **612** |
 | Tanı kimliği | **152 etkin + 3 ayrılmış** |
 | RFC | **25** (2 kabul, 21 geçici kabul, 2 taslak) |
-| ADR | **48** (48 kabul) |
+| ADR | **49** (49 kabul) |
 | Normatif spec bölümü | **24** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
@@ -305,6 +305,12 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   yanıtını `lsp_process_cold_start` olarak ayırdı. Tier-1 entegrasyon ve CI
   yolu hazırdır; exact `a2693d6…` commit'indeki 25 örnek process p50 1,557 ms,
   p95 1,997 ms tabanını verdi. K-153/B-061 kapandı.
+  K-154/ADR-051, aynı gözlem hattına açık `--lsp-olcek` ile 2k/5k/10k/20k
+  satır tam-metin `didChange` eğrisini ve p95 250/500/1000 ms ilk-aşım
+  raporunu ekledi. Mevcut LSP her değişimde tam belgeyi saklayıp klonlar ve
+  lexer/parser/resolver/checker/typed-HIR hattını baştan kurar; incremental
+  cache yoktur. Exact temiz 25 örnekli taban beklediği için K-154/B-062
+  kısmi, bu dilimde optimizasyon yapılmadı.
   K-149/ADR-046 bütün production Rust ağacını 35 sorumluluk sahibine, exact
   doğrudan kenar tabanına ve izinli katman yönüne bağladı. Yeni/kayıp modül,
   yeni/kaldırılmış kenar ve ters katman geçişi fail-closed'dur; SHA-256 ile

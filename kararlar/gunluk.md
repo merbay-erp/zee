@@ -2569,6 +2569,9 @@ Hafta 2'de kağıt üstünde) sesli okutulacak; her kayıt için "doğal mı /
 deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
 Makine hattında K-153 gerçek process→stdio LSP cold-start yolunu exact 25
-örnekli tabanla kapattı. Sırada K-154 LSP full-text değişim ölçek eğrisi vardır.
+örnekli tabanla kapattı. K-154/ADR-051, 2k/5k/10k/20k tam-metin değişim
+eğrisini ve p95 250/500/1000 ms ilk-aşım raporunu uyguladı; bugünkü tam belge,
+tam parse/check/HIR invalidation gerçeğini kaydetti. Exact temiz 25 örnekli
+taban gelene kadar B-062 kısmi; ardından K-155 regresyon provenance gelir.
 B-001/B-002 (yeni sırada K-161/K-162), gerçek 10 çocuk/öğrenci + 5 profesyonel
 usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.

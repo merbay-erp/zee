@@ -35,6 +35,8 @@ const GECMIS_SEMASI: &str = "# zee-performans-gecmisi-2";
 const VARSAYILAN_TUR: usize = 25;
 const HIZLI_TUR: usize = 3;
 const ISINMA_TURU: usize = 2;
+const LSP_OLCEKLERI: [usize; 4] = [2_000, 5_000, 10_000, 20_000];
+const LSP_ESIKLERI_MS: [u64; 3] = [250, 500, 1_000];
 
 #[derive(Debug)]
 struct Ayarlar {
@@ -47,6 +49,7 @@ struct Ayarlar {
     git_sha: String,
     milestone: String,
     dillsp: PathBuf,
+    lsp_olcek: bool,
     esik_yuzde: Option<u64>,
 }
 
@@ -133,6 +136,7 @@ fn komut_satirini_oku() -> Result<Ayarlar, String> {
     let mut git_sha = None;
     let mut milestone = None;
     let mut dillsp = None;
+    let mut lsp_olcek = false;
     let mut esik_yuzde = None;
     let mut argumanlar = env::args().skip(1);
     while let Some(arguman) = argumanlar.next() {
@@ -161,6 +165,7 @@ fn komut_satirini_oku() -> Result<Ayarlar, String> {
             "--git-sha" => git_sha = Some(deger_iste(&mut argumanlar, "--git-sha")?),
             "--milestone" => milestone = Some(deger_iste(&mut argumanlar, "--milestone")?),
             "--dillsp" => dillsp = Some(PathBuf::from(deger_iste(&mut argumanlar, "--dillsp")?)),
+            "--lsp-olcek" => lsp_olcek = true,
             "--esik-yuzde" => {
                 let metin = deger_iste(&mut argumanlar, "--esik-yuzde")?;
                 esik_yuzde = Some(
@@ -173,7 +178,8 @@ fn komut_satirini_oku() -> Result<Ayarlar, String> {
                 return Err(
                     "kullanım: olcum [--hizli|--tur N] [--json YOL] [--rapor YOL] \
                      [--gecmis YOL] [--gecmis-cikti YOL] [--kayit AD] \
-                     [--git-sha SHA] [--milestone AD] [--dillsp YOL] [--esik-yuzde N]"
+                     [--git-sha SHA] [--milestone AD] [--dillsp YOL] [--lsp-olcek] \
+                     [--esik-yuzde N]"
                         .into(),
                 );
             }
@@ -197,6 +203,7 @@ fn komut_satirini_oku() -> Result<Ayarlar, String> {
         git_sha: git_sha.map_or_else(git_revizyonu, Ok)?,
         milestone: milestone.unwrap_or_else(|| "yerel".into()),
         dillsp: dillsp.map_or_else(varsayilan_dillsp_yolu, Ok)?,
+        lsp_olcek,
         esik_yuzde,
     })
 }
@@ -364,14 +371,55 @@ fn tarihce_provenance_denetle(git_dirty: bool) -> Result<(), String> {
     Ok(())
 }
 
-fn buyuk_kaynak() -> String {
+fn satirli_kaynak(satir_sayisi: usize) -> String {
     let mut kaynak = String::new();
-    for sira in 0..500 {
+    for sira in 0..satir_sayisi / 4 {
         kaynak.push_str(&format!(
             "değer{sira} {sira} olsun\nkatı{sira} değer{sira} ile 3 ün çarpımı olsun\nkatı{sira} 0 dan büyükse\n    toplam{sira} katı{sira} ile 1 in toplamı olsun\n"
         ));
     }
     kaynak
+}
+
+fn lsp_degisim_olcumu(satir_sayisi: usize, tur: usize) -> Result<Olcum, String> {
+    let kaynak = satirli_kaynak(satir_sayisi);
+    let ac = ac_mesaji(&kaynak);
+    let degistir = degistir_mesaji(&kaynak);
+    let kimlik = match satir_sayisi {
+        2_000 => "lsp_degistir_2k",
+        5_000 => "lsp_degistir_5k",
+        10_000 => "lsp_degistir_10k",
+        20_000 => "lsp_degistir_20k",
+        _ => return Err(format!("desteklenmeyen LSP ölçek boyutu: {satir_sayisi}")),
+    };
+    let aciklama = match satir_sayisi {
+        2_000 => "açık 2000 satır belgede tam metin didChange",
+        5_000 => "açık 5000 satır belgede tam metin didChange",
+        10_000 => "açık 10000 satır belgede tam metin didChange",
+        20_000 => "açık 20000 satır belgede tam metin didChange",
+        _ => return Err(format!("desteklenmeyen LSP ölçek boyutu: {satir_sayisi}")),
+    };
+    zaman_olcumu(
+        kimlik,
+        aciklama,
+        ornekle(
+            tur,
+            || {
+                let mut sunucu = Sunucu::yeni();
+                black_box(sunucu.mesaj_isle(initialize_mesaji()));
+                black_box(sunucu.mesaj_isle(&ac));
+                Ok(sunucu)
+            },
+            |mut sunucu| {
+                let cikti = sunucu.mesaj_isle(black_box(&degistir));
+                if cikti.govdeler.is_empty() {
+                    return Err("LSP didChange tanı bildirimi üretmedi".into());
+                }
+                black_box(cikti);
+                Ok(())
+            },
+        )?,
+    )
 }
 
 fn yurutme_kaynagi() -> &'static str {
@@ -602,15 +650,14 @@ fn tepe_bellek_kib() -> Option<u64> {
     None
 }
 
-fn olcumleri_al(tur: usize, dillsp: &Path) -> Result<Vec<Olcum>, String> {
-    let kaynak = buyuk_kaynak();
+fn olcumleri_al(tur: usize, dillsp: &Path, lsp_olcek: bool) -> Result<Vec<Olcum>, String> {
+    let kaynak = satirli_kaynak(2_000);
     let ham = ham_program(&kaynak)?;
     let bos_program = dil::kaynagi_fazli_derle("")
         .map_err(|tani| format!("boş runtime programı derlenemedi: {tani}"))?;
     let yurutme_programi = dil::kaynagi_fazli_derle(yurutme_kaynagi())
         .map_err(|tani| format!("runtime iş yükü derlenemedi: {tani}"))?;
     let ac = ac_mesaji(&kaynak);
-    let degistir = degistir_mesaji(&kaynak);
     let mut sonuc = Vec::new();
 
     sonuc.push(zaman_olcumu(
@@ -738,27 +785,14 @@ fn olcumleri_al(tur: usize, dillsp: &Path) -> Result<Vec<Olcum>, String> {
         )?,
     )?);
 
-    sonuc.push(zaman_olcumu(
-        "lsp_degistir",
-        "açık 2000 satır belgede tam metin didChange",
-        ornekle(
-            tur,
-            || {
-                let mut sunucu = Sunucu::yeni();
-                black_box(sunucu.mesaj_isle(initialize_mesaji()));
-                black_box(sunucu.mesaj_isle(&ac));
-                Ok(sunucu)
-            },
-            |mut sunucu| {
-                let cikti = sunucu.mesaj_isle(black_box(&degistir));
-                if cikti.govdeler.is_empty() {
-                    return Err("LSP didChange tanı bildirimi üretmedi".into());
-                }
-                black_box(cikti);
-                Ok(())
-            },
-        )?,
-    )?);
+    let olcekler = if lsp_olcek {
+        LSP_OLCEKLERI.as_slice()
+    } else {
+        &LSP_OLCEKLERI[..1]
+    };
+    for satir_sayisi in olcekler {
+        sonuc.push(lsp_degisim_olcumu(*satir_sayisi, tur)?);
+    }
 
     if let Some(kib) = tepe_bellek_kib() {
         sonuc.push(olcum(
@@ -970,6 +1004,47 @@ fn yuzde_farki(eski: u64, yeni: u64) -> String {
     format!("{fark:+.1}%")
 }
 
+fn lsp_olcek_markdowni(olcumler: &[Olcum]) -> String {
+    let olcek = LSP_OLCEKLERI
+        .iter()
+        .filter_map(|satir| {
+            let kimlik = format!("lsp_degistir_{}k", satir / 1_000);
+            olcumler
+                .iter()
+                .find(|olcum| olcum.kimlik == kimlik)
+                .map(|olcum| (*satir, olcum))
+        })
+        .collect::<Vec<_>>();
+    if olcek.len() != LSP_OLCEKLERI.len() {
+        return String::new();
+    }
+
+    let mut metin = String::from(
+        "\n## LSP tam-metin değişiklik ölçeği\n\n\
+         Bu gözlem bir optimizasyon ya da hard CI kapısı değildir. Eşikler ölçümden önce \
+         250/500/1000 ms olarak sabitlenmiştir ve karar p95 üzerinden verilir.\n\n\
+         | Satır | p50 | p95 |\n|---:|---:|---:|\n",
+    );
+    for (satir, olcum) in &olcek {
+        metin.push_str(&format!(
+            "| {} | {} | {} |\n",
+            satir,
+            sureyi_yaz(olcum.p50, olcum.birim),
+            sureyi_yaz(olcum.p95, olcum.birim)
+        ));
+    }
+    metin.push_str("\n| p95 eşiği | İlk aşım |\n|---:|---|\n");
+    for esik_ms in LSP_ESIKLERI_MS {
+        let ilk_asim = olcek
+            .iter()
+            .find(|(_, olcum)| olcum.p95 > esik_ms * 1_000_000)
+            .map(|(satir, _)| format!("{} satır", satir))
+            .unwrap_or_else(|| "20.000 satıra kadar aşılmadı".into());
+        metin.push_str(&format!("| {esik_ms} ms | {ilk_asim} |\n"));
+    }
+    metin
+}
+
 fn markdown_raporu(rapor: &Rapor<'_>, gecmis: &[GecmisSatiri], ihlaller: &[String]) -> String {
     let onceki = son_eslesenler(gecmis, rapor);
     let taban = onceki.values().next().map_or_else(
@@ -1055,6 +1130,7 @@ fn markdown_raporu(rapor: &Rapor<'_>, gecmis: &[GecmisSatiri], ihlaller: &[Strin
             egilim
         ));
     }
+    metin.push_str(&lsp_olcek_markdowni(rapor.olcumler));
     if !ihlaller.is_empty() {
         metin.push_str("\n## Eşik ihlalleri\n\n");
         for ihlal in ihlaller {
@@ -1194,7 +1270,7 @@ fn olcumleri_calistir() -> Result<(), String> {
         tarihce_provenance_denetle(git_dirty)?;
     }
 
-    let olcumler = olcumleri_al(ayarlar.tur, &ayarlar.dillsp)?;
+    let olcumler = olcumleri_al(ayarlar.tur, &ayarlar.dillsp, ayarlar.lsp_olcek)?;
     let (gecmis_metni, gecmis) = gecmisi_oku(ayarlar.gecmis.as_deref())?;
     let rapor = Rapor {
         sema: SEMA,
@@ -1450,5 +1526,37 @@ mod testler {
             .expect("üretilen v2 satırı yeniden okunmalı");
         assert_eq!(geri.len(), 1);
         assert_eq!(geri[0].git_sha, SHA);
+    }
+
+    #[test]
+    fn lsp_olcek_raporu_esikleri_p95_uzerinden_bulur() {
+        let p95ler = [200_000_000, 300_000_000, 700_000_000, 1_200_000_000];
+        let olcumler = ["2k", "5k", "10k", "20k"]
+            .iter()
+            .zip(p95ler)
+            .map(|(boyut, p95)| Olcum {
+                kimlik: match *boyut {
+                    "2k" => "lsp_degistir_2k",
+                    "5k" => "lsp_degistir_5k",
+                    "10k" => "lsp_degistir_10k",
+                    _ => "lsp_degistir_20k",
+                },
+                aciklama: "test",
+                birim: "ns",
+                ornekleme: "bagimsiz_tur",
+                ornek_sayisi: 1,
+                isinma_turu: 0,
+                ornekler: vec![p95],
+                en_az: p95,
+                p50: p95,
+                p95,
+                en_cok: p95,
+            })
+            .collect::<Vec<_>>();
+        let metin = lsp_olcek_markdowni(&olcumler);
+        assert!(metin.contains("| 250 ms | 5000 satır |"));
+        assert!(metin.contains("| 500 ms | 10000 satır |"));
+        assert!(metin.contains("| 1000 ms | 20000 satır |"));
+        assert!(lsp_olcek_markdowni(&olcumler[..3]).is_empty());
     }
 }
