@@ -626,8 +626,10 @@ ifadelerinde kesin source span'i HIR, tanı ve LSP'ye bağlayıp B-050'yi
 kapattı. K-127/RFC-0024/ADR-031 sekiz dış dünya yetkinliğini proje/paket,
 compile ve runtime boyunca tek fail-closed politikaya bağladı; native outbound
 rustls HTTPS, exact origin, DNS sonrası IP/özel-kullanım-geçiş öneki, sıfır
-redirect/proxy ve kaynak bütçeleri taşır. B-023/B-049 kapandı; sıradaki makine işi B-048 metadata
-sözleşmesidir.
+redirect/proxy ve kaynak bütçeleri taşır. B-023/B-049 kapandı. K-128/ADR-032
+atomik replace'i Tier-1 owner/group, ACL/xattr ve Windows security metadata
+koruması; symlink/desteksiz platform fail-closed kararıyla bağlayıp B-048'i
+kapattı. Sıradaki makine işi B-025 ortak kaynak bütçesi modelidir.
 P0 maddeleri kapanmadan yeni dil özelliği
 öne alınmaz; yarım güvenlik/correctness dilimi önce atomik olarak tamamlanır.
 
@@ -677,7 +679,8 @@ scheduler'ın bağımsız uyumluluk sözünü bağlayıp B-011'i kapattı.
 K-125/ADR-029 örtük Ondalık↔binary float köprüsünü yasaklayıp B-012'yi
 kapattı. K-126/ADR-030 bütün AST ifadelerini kesin kaynaklandırıp B-050'yi
 kapattı. K-127/RFC-0024/ADR-031 proje/paket capability ve outbound SSRF/HTTPS
-sınırını kapattı. Sıradaki omurga B-048 atomik replace metadata sözleşmesidir.
+sınırını kapattı. K-128/ADR-032 atomik replace metadata sözleşmesiyle B-048'i
+kapattı. Sıradaki omurga B-025 ortak `KaynakSinirlari` modelidir.
 # 40. Proje felsefesinin korunması
 Bu projenin başarısı yalnız compiler’ın çalışması değildir. Başarı; Türkçe konuşan bir çocuğun yabancı syntax bariyerine takılmadan algoritmik düşünceyle tanışması, aynı dilin yıllar sonra onu terk etmeye zorlamaması ve ekosistemin tek bir şirketin kapalı ürünü haline gelmemesidir.
 Her yeni özellik şu dört sorudan geçmelidir: Türkçe doğal mı? Deterministik mi? Öğrenilebilir mi? Profesyonel ölçekte savunulabilir mi? Dördünden biri hayırsa özellik yeniden tasarlanır.

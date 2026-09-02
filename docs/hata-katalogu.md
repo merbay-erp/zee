@@ -152,7 +152,7 @@ kalır (ADR-025).
 | C010 | Sözlükte anahtar yok | Önce `sözlükte <anahtar> varsa` |
 | C011 | Biçimleyici token güvencesi bozuldu | Dosya yazılmadı; derleyici hatasıdır — bildir |
 | C012 | Dosya okunamadı (düz biçim) | Hata yönetilecekse `... okumayı dene` ile Sonuç al |
-| C013 | Dosyaya yazılamadı | Yol/izin kontrolü |
+| C013 | Dosyaya yazılamadı | Yol/izin ile owner/group/ACL/xattr koruma desteğini kontrol et; eski dosya korunur |
 | C014 | **ayrılmış** — eski çalışma zamanı yuvası | Bu kod yeni bir anlam için kullanılamaz |
 | C015 | CSV biçim hatası (boş dosya ya da sütun sayısı uyuşmazlığı) | Başlık satırı + eşit hücreli veri satırları (K-062: hücreler Metin okunur) |
 | C016 | JSON biçim hatası | v0: düz nesne + metin değerler |

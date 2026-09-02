@@ -12,6 +12,8 @@ use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::{Duration, Instant};
 
+mod metadata;
+
 const KILIT_BEKLEME: Duration = Duration::from_secs(5);
 const KILIT_YENIDEN_DENE: Duration = Duration::from_millis(5);
 static GECICI_SAYACI: AtomicU64 = AtomicU64::new(0);
@@ -153,14 +155,14 @@ fn atomik_icerik_yaz<F>(hedef: &Path, icerik: &[u8], degistir: F) -> io::Result<
 where
     F: FnOnce(&Path, &Path) -> io::Result<()>,
 {
+    let eski_metadata = metadata::MetadataKaynagi::yakala(hedef)?;
     let (mut dosya, mut gecici) = gecici_dosya_ac(hedef)?;
     dosya.write_all(icerik)?;
-    let gecici_yol = gecici.yol.as_deref().ok_or_else(|| {
-        io::Error::new(io::ErrorKind::NotFound, "zee geçici dosya yolu kayboldu")
-    })?;
-    if let Ok(eski) = std::fs::metadata(hedef) {
-        std::fs::set_permissions(gecici_yol, eski.permissions())?;
-    }
+    let gecici_yol = gecici
+        .yol
+        .as_deref()
+        .ok_or_else(|| io::Error::new(io::ErrorKind::NotFound, "zee geçici dosya yolu kayboldu"))?;
+    eski_metadata.geciciye_uygula(&dosya)?;
     dosya.sync_all()?;
     drop(dosya);
 
@@ -230,7 +232,7 @@ mod platform {
     use std::io;
     use std::os::windows::ffi::OsStrExt;
     use std::os::windows::io::AsRawHandle;
-    use std::path::Path;
+    use std::path::{Path, PathBuf};
 
     type Handle = *mut c_void;
 
@@ -247,7 +249,10 @@ mod platform {
     const LOCKFILE_EXCLUSIVE_LOCK: u32 = 0x00000002;
     const MOVEFILE_REPLACE_EXISTING: u32 = 0x00000001;
     const MOVEFILE_WRITE_THROUGH: u32 = 0x00000008;
+    const ERROR_FILE_NOT_FOUND: i32 = 2;
+    const ERROR_PATH_NOT_FOUND: i32 = 3;
     const ERROR_LOCK_VIOLATION: i32 = 33;
+    const ERROR_UNABLE_TO_MOVE_REPLACEMENT_2: i32 = 1177;
 
     #[link(name = "kernel32")]
     extern "system" {
@@ -267,6 +272,14 @@ mod platform {
             ortusen: *mut Overlapped,
         ) -> i32;
         fn MoveFileExW(eski: *const u16, yeni: *const u16, bayraklar: u32) -> i32;
+        fn ReplaceFileW(
+            degistirilen: *const u16,
+            yeni: *const u16,
+            yedek: *const u16,
+            bayraklar: u32,
+            dislanan: *mut c_void,
+            ayrilmis: *mut c_void,
+        ) -> i32;
     }
 
     fn ortusen() -> Overlapped {
@@ -323,7 +336,62 @@ mod platform {
     pub fn atomik_degistir(gecici: &Path, hedef: &Path) -> io::Result<()> {
         let eski = genis_yol(gecici)?;
         let yeni = genis_yol(hedef)?;
+        let mut yedek_adi = gecici.as_os_str().to_os_string();
+        yedek_adi.push(".zee-yedek");
+        let yedek = PathBuf::from(yedek_adi);
+        if yedek.exists() {
+            return Err(io::Error::new(
+                io::ErrorKind::AlreadyExists,
+                "benzersiz Windows metadata kurtarma yedeği oluşturulamadı",
+            ));
+        }
+        let yedek_genis = genis_yol(&yedek)?;
+        // ReplaceFileW var olan hedefin DACL, security attributes, şifreleme,
+        // sıkıştırma ve named stream metadata'sını taşır. Merge hatalarını
+        // yoksayan hiçbir bayrak verilmez; yedek nadir kısmi-hata durumunda
+        // eski inode'u geri getirebilmek içindir.
         // SAFETY: Diziler NUL ile sonlandırılmış ve çağrı boyunca yaşamda.
+        let sonuc = unsafe {
+            ReplaceFileW(
+                yeni.as_ptr(),
+                eski.as_ptr(),
+                yedek_genis.as_ptr(),
+                0,
+                std::ptr::null_mut(),
+                std::ptr::null_mut(),
+            )
+        };
+        if sonuc != 0 {
+            return std::fs::remove_file(yedek);
+        }
+        let hata = io::Error::last_os_error();
+        if hata.raw_os_error() == Some(ERROR_UNABLE_TO_MOVE_REPLACEMENT_2) && yedek.exists() {
+            // SAFETY: NUL sonlu yollar geçerli; hedef eski yedekten atomik
+            // write-through taşımayla geri kurulur.
+            let geri_alindi = unsafe {
+                MoveFileExW(
+                    yedek_genis.as_ptr(),
+                    yeni.as_ptr(),
+                    MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH,
+                )
+            };
+            if geri_alindi == 0 {
+                return Err(io::Error::other(format!(
+                    "Windows replace başarısız oldu ({hata}); eski dosya `{}` yedeğinde kaldı: {}",
+                    yedek.display(),
+                    io::Error::last_os_error()
+                )));
+            }
+        }
+        if !matches!(
+            hata.raw_os_error(),
+            Some(ERROR_FILE_NOT_FOUND) | Some(ERROR_PATH_NOT_FOUND)
+        ) {
+            return Err(hata);
+        }
+        let _ = std::fs::remove_file(&yedek);
+        // Hedef henüz yoksa metadata taşıma gerekmez; ilk yerleştirme yine
+        // aynı hacimde atomik ve write-through MoveFileExW ile yapılır.
         let sonuc = unsafe {
             MoveFileExW(
                 eski.as_ptr(),
@@ -403,6 +471,92 @@ mod tests {
         assert_eq!(std::fs::read_to_string(yol).unwrap(), "ilk\nikinci\n");
     }
 
+    #[cfg(unix)]
+    #[test]
+    fn replace_mod_sahip_ve_grubu_korur() {
+        use std::os::unix::fs::{MetadataExt, PermissionsExt};
+
+        let gecici = GeciciKlasor::yeni();
+        let yol = gecici.0.join("izinli.txt");
+        std::fs::write(&yol, "eski").unwrap();
+        std::fs::set_permissions(&yol, std::fs::Permissions::from_mode(0o640)).unwrap();
+        let once = std::fs::metadata(&yol).unwrap();
+
+        atomik_yaz(&yol, b"yeni").expect("metadata korunarak replace");
+        let sonra = std::fs::metadata(&yol).unwrap();
+        assert_eq!(sonra.mode() & 0o7777, once.mode() & 0o7777);
+        assert_eq!((sonra.uid(), sonra.gid()), (once.uid(), once.gid()));
+    }
+
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    #[test]
+    fn replace_genisletilmis_ozniteligi_korur() {
+        let gecici = GeciciKlasor::yeni();
+        let yol = gecici.0.join("xattr.txt");
+        std::fs::write(&yol, "eski").unwrap();
+        test_xattr_yaz(&yol, "user.zee.miras", b"Eliz").unwrap();
+
+        atomik_yaz(&yol, b"yeni").expect("xattr korunarak replace");
+        assert_eq!(test_xattr_oku(&yol, "user.zee.miras").unwrap(), b"Eliz");
+    }
+
+    #[cfg(target_os = "macos")]
+    #[test]
+    fn replace_macos_acl_kuralini_korur() {
+        let gecici = GeciciKlasor::yeni();
+        let yol = gecici.0.join("acl.txt");
+        std::fs::write(&yol, "eski").unwrap();
+        let kullanici = std::env::var("USER").expect("macOS kullanıcı adı");
+        let kural = format!("{} allow read", kullanici);
+        assert!(std::process::Command::new("chmod")
+            .arg("+a")
+            .arg(&kural)
+            .arg(&yol)
+            .status()
+            .expect("chmod")
+            .success());
+
+        atomik_yaz(&yol, b"yeni").expect("ACL korunarak replace");
+        let cikti = std::process::Command::new("ls")
+            .arg("-le")
+            .arg(&yol)
+            .output()
+            .expect("ls -le");
+        assert!(String::from_utf8_lossy(&cikti.stdout)
+            .contains(&format!("user:{} allow read", kullanici)));
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn sembolik_bag_hedefi_sessizce_normal_dosyaya_donusmez() {
+        let gecici = GeciciKlasor::yeni();
+        let asil = gecici.0.join("asil.txt");
+        let bag = gecici.0.join("bag.txt");
+        std::fs::write(&asil, "eski").unwrap();
+        std::os::unix::fs::symlink(&asil, &bag).unwrap();
+
+        let hata = atomik_yaz(&bag, b"yeni").expect_err("symlink reddedilmeli");
+        assert_eq!(hata.kind(), io::ErrorKind::InvalidInput);
+        assert!(std::fs::symlink_metadata(&bag)
+            .unwrap()
+            .file_type()
+            .is_symlink());
+        assert_eq!(std::fs::read_to_string(asil).unwrap(), "eski");
+    }
+
+    #[cfg(windows)]
+    #[test]
+    fn replace_windows_named_stream_metadata_sini_korur() {
+        let gecici = GeciciKlasor::yeni();
+        let yol = gecici.0.join("stream.txt");
+        let stream = PathBuf::from(format!("{}:zee-miras", yol.display()));
+        std::fs::write(&yol, "eski").unwrap();
+        std::fs::write(&stream, "Eliz").unwrap();
+
+        atomik_yaz(&yol, b"yeni").expect("ReplaceFileW metadata merge");
+        assert_eq!(std::fs::read_to_string(stream).unwrap(), "Eliz");
+    }
+
     #[test]
     fn geri_alma_araya_giren_yazari_ezmez() {
         let gecici = GeciciKlasor::yeni();
@@ -411,12 +565,8 @@ mod tests {
         atomik_yaz(&yol, b"eylem-yazdi").expect("eylem yazısı");
         atomik_yaz(&yol, b"baska-yazar").expect("araya giren yazar");
 
-        let hata = atomik_karsilastir_ve_geri_al(
-            &yol,
-            Some(b"eylem-yazdi"),
-            Some(b"eylem-oncesi"),
-        )
-        .expect_err("çakışma sessizce ezilmemeli");
+        let hata = atomik_karsilastir_ve_geri_al(&yol, Some(b"eylem-yazdi"), Some(b"eylem-oncesi"))
+            .expect_err("çakışma sessizce ezilmemeli");
         assert_eq!(hata.kind(), io::ErrorKind::WouldBlock);
         assert_eq!(std::fs::read(&yol).unwrap(), b"baska-yazar");
     }
@@ -535,5 +685,98 @@ mod tests {
             std::fs::read_to_string(yol).unwrap(),
             "çöküşten sonra sağlam\n"
         );
+    }
+
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    fn test_xattr_yaz(yol: &Path, ad: &str, deger: &[u8]) -> io::Result<()> {
+        use std::ffi::CString;
+        use std::os::fd::AsRawFd;
+
+        let dosya = OpenOptions::new().read(true).write(true).open(yol)?;
+        let ad = CString::new(ad).expect("sabit xattr adı");
+        #[cfg(target_os = "linux")]
+        // SAFETY: File/CString/tampon çağrı boyunca geçerlidir.
+        let sonuc = unsafe {
+            libc::fsetxattr(
+                dosya.as_raw_fd(),
+                ad.as_ptr(),
+                deger.as_ptr().cast(),
+                deger.len(),
+                0,
+            )
+        };
+        #[cfg(target_os = "macos")]
+        // SAFETY: File/CString/tampon çağrı boyunca geçerlidir.
+        let sonuc = unsafe {
+            libc::fsetxattr(
+                dosya.as_raw_fd(),
+                ad.as_ptr(),
+                deger.as_ptr().cast(),
+                deger.len(),
+                0,
+                0,
+            )
+        };
+        if sonuc == 0 {
+            Ok(())
+        } else {
+            Err(io::Error::last_os_error())
+        }
+    }
+
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    fn test_xattr_oku(yol: &Path, ad: &str) -> io::Result<Vec<u8>> {
+        use std::ffi::CString;
+        use std::os::fd::AsRawFd;
+
+        let dosya = File::open(yol)?;
+        let ad = CString::new(ad).expect("sabit xattr adı");
+        #[cfg(target_os = "linux")]
+        // SAFETY: İlk çağrı yalnız boyutu sorgular.
+        let boyut =
+            unsafe { libc::fgetxattr(dosya.as_raw_fd(), ad.as_ptr(), std::ptr::null_mut(), 0) };
+        #[cfg(target_os = "macos")]
+        // SAFETY: İlk çağrı yalnız boyutu sorgular.
+        let boyut = unsafe {
+            libc::fgetxattr(
+                dosya.as_raw_fd(),
+                ad.as_ptr(),
+                std::ptr::null_mut(),
+                0,
+                0,
+                0,
+            )
+        };
+        if boyut < 0 {
+            return Err(io::Error::last_os_error());
+        }
+        let mut deger = vec![0; usize::try_from(boyut).unwrap()];
+        #[cfg(target_os = "linux")]
+        // SAFETY: Tampon sorgulanan boyuttadır.
+        let okunan = unsafe {
+            libc::fgetxattr(
+                dosya.as_raw_fd(),
+                ad.as_ptr(),
+                deger.as_mut_ptr().cast(),
+                deger.len(),
+            )
+        };
+        #[cfg(target_os = "macos")]
+        // SAFETY: Tampon sorgulanan boyuttadır.
+        let okunan = unsafe {
+            libc::fgetxattr(
+                dosya.as_raw_fd(),
+                ad.as_ptr(),
+                deger.as_mut_ptr().cast(),
+                deger.len(),
+                0,
+                0,
+            )
+        };
+        if okunan < 0 {
+            return Err(io::Error::last_os_error());
+        }
+        deger.truncate(usize::try_from(okunan).unwrap());
+        Ok(deger)
     }
 }

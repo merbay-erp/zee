@@ -57,4 +57,4 @@ B-023 ve B-049 kapanır; B-024 ilkesi gerçek istemciyle uygulanır. B-025'in
 native ağ dilimi yeni backend'de de korunur. Yeni yetkinlik; enum yazımı,
 manifest doğrulaması, compile çıkarımı, runtime kapısı, olumlu/olumsuz test ve
 RFC/spec güncellemesi olmadan eklenemez. Registry taşıma/cache işi B-029'da,
-dosya metadata sözleşmesi B-048'de ayrı kalır.
+dosya metadata sözleşmesi B-048/K-128/ADR-032'de ayrı kapatılmıştır.

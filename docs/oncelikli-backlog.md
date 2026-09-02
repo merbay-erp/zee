@@ -62,8 +62,11 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 24. K-127/RFC-0024/ADR-031 proje+paket yetkinliklerini compile/runtime
     kapısına, native istemciyi rustls HTTPS + origin/DNS/IP/redirect
     korkuluklarına bağladı; B-023/B-049 kapandı (501 test).
-25. Sıradaki makine işi B-048 atomik replace metadata sözleşmesidir.
-26. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
+25. K-128/ADR-032 atomik replace'i Linux/macOS mode+uid+gid+ACL/xattr ve
+    Windows DACL/security/named-stream korumasına bağladı; taşınamayan metadata
+    fail-closed kaldı ve B-048 kapandı (506 test).
+26. Sıradaki makine işi B-025 ortak `KaynakSinirlari` bütçe modelidir.
+27. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
 
 ## P0 — V1 öncesi dil ve derleyici omurgası
 
@@ -282,9 +285,13 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   surrogate, tek düşük surrogate ve kaçışsız U+0000..U+001F reddedilir.
   ADR-019 ve yedi olumsuz/sınır testi V1-P0-17'yi kapattı. Toplam açık belge
   belleği ve çıktı bütçesi B-025'te kalır.
-- **B-048 · AÇIK — atomik replace metadata sözleşmesini tamamla.** İzin biti
-  dışındaki owner/group, ACL, xattr ve platform güvenlik etiketlerinin korunma
-  veya açıkça desteklenmeme davranışı platform testleriyle belgelenmelidir.
+- **B-048 · KAPALI (K-128) — atomik replace metadata sözleşmesini tamamla.**
+  Normal dosyanın Linux/macOS mode+uid+gid'si korunur. Linux görünür xattr'ı
+  (ACL/security label dâhil) kaynak bütçeli descriptor kopyasıyla, macOS
+  ACL+xattr'ı `fcopyfile` ile taşır. Windows hata-yoksaymasız `ReplaceFileW`
+  ve kurtarma yedeğiyle DACL/security resource/named stream'i korur. Symlink,
+  taşınamayan metadata ve Tier-1 dışı Unix replace'i fail-closed'dur.
+  RFC-0016/ADR-032/spec-08 ve platform-koşullu beş regresyon davranışı bağlar.
 - **B-049 · KAPALI (K-127) — outbound ağ güven profilini kapat.** Exact
   şema+host+port allowlist'i, DNS sonrası bütün-IP kontrolü, varsayılan public
   HTTPS, ayrıca onaylı private/loopback+düz HTTP, her profilde kapalı metadata/
@@ -361,6 +368,6 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 ## Bir sonraki somut kapı
 
 İnsan kanıtı hattında B-001, doldurulmuş gerçek usability formları ve önceden
-ilan edilmiş eşikleri bekler. Makine hattında B-023/B-049 K-127 ile kapandı;
-sıradaki iş B-048 atomik replace'in owner/group, ACL, xattr ve platform
-güvenlik etiketi sözleşmesini dürüst platform testleriyle tamamlamaktır.
+ilan edilmiş eşikleri bekler. Makine hattında B-048 K-128 ile kapandı;
+sıradaki iş B-025'in timeout, girdi, allocation, koleksiyon, görev, bağlantı
+ve çıktı bütçelerini ortak `KaynakSinirlari` modelinde birleştirmektir.

@@ -30,6 +30,9 @@ compiler/src/
 │       ├── sozlesme.rs       public parametre/dönüş sözleşmesi
 │       ├── turler.rs         tür modeli, tür yazımı ve uzlaşma
 │       └── yetkinlik.rs      compile dış dünya/politika kapısı
+├── kalici_dosya.rs           kilit/temp/sync/replace orkestrasyonu
+│   └── kalici_dosya/
+│       └── metadata.rs       platform owner/ACL/xattr/security aktarımı
 └── yorumlayici.rs            değer/IO/scheduler ve yürütme orkestrasyonu
     └── yorumlayici/
         ├── cumle.rs          cümle yürütme
@@ -65,6 +68,7 @@ API'si bu iç ayrımla büyümez.
 | IO kayıt/replay protokolü | runtime `io_izi` | RFC-0022, ADR-026, spec/21 ve şema snapshot'ı |
 | tohum/rastgele profil semantiği | runtime `io_profili` | RFC-0023, ADR-027, spec/22 ve dizi snapshot'ı |
 | runtime dış dünya kapısı | runtime `yetkinlik` + kök `yetkinlik.rs` | RFC-0024, ADR-031, spec/23 |
+| atomik dosya metadata'sı | `kalici_dosya/metadata` | RFC-0016, ADR-032, spec/08 ve Tier-1 testleri |
 | morfoloji profil uyumluluğu | `morfoloji/uyumluluk` | RFC-0018, spec/13, immutable SHA-256 fixture ve Git-tarih koruğu |
 | alan adaptörü | intrinsic kaydı | ADR-011 rehberi, yetkinlik/etki/runtime |
 
@@ -125,3 +129,7 @@ IO kapısını `yorumlayici/yetkinlik.rs`, ortak policy/origin/IP modelini kök
 `yetkinlik.rs` ve native HTTPS'yi `ag_istemcisi.rs` sahibine ayırdı. İlanlı
 380/250/520/140 satır bütçeleri etki, runtime ve CLI köklerinin bu güvenlik
 sorumluluğunu geri yutmasını engeller.
+K-128/ADR-032 atomik replace'in platform metadata aktarımını
+`kalici_dosya/metadata.rs` sahibine ayırdı. `kalici_dosya.rs` 820,
+metadata adaptörü 260 satır bütçesindedir; owner/group, ACL/xattr ve Windows
+security merge ayrıntıları genel kalıcılık akışına geri yayılamaz.
