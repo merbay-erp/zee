@@ -1,7 +1,7 @@
 //! Registry'nin HTTPS/statik taşıma, doğrulanmış cache ve kalıcı durum katmanı.
 
 use super::*;
-use crate::paket::sha256_hex;
+use crate::guvenlik::sha256_hex;
 use serde::{Deserialize, Serialize};
 use std::path::{Path, PathBuf};
 

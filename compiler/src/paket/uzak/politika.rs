@@ -1,6 +1,7 @@
 //! Yanked ve kritik duyuru kabul gerekçelerini exact güvenlik olayına bağlar.
 
-use crate::paket::{proje_hatasi, sha256_hex, ProjeYuklemeHatasi, KILIT_DOSYASI};
+use crate::guvenlik::sha256_hex;
+use crate::paket::{proje_hatasi, ProjeYuklemeHatasi, KILIT_DOSYASI};
 use crate::proje::{RegistryBildirimi, UzakBagimlilik};
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::Path;

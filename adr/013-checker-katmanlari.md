@@ -64,6 +64,8 @@ yeniden dışa aktarılır ve kırılmaz.
 - Eski bağımsız `eylem.rs`, checker'ın `etki` katmanına taşındı; davranışı ve
   tanıları değişmedi.
 - Beş kaynak-mimari test katman sahipliğini, bütçeleri ve public API'yi korur.
+- K-149/ADR-046 genel production graph'ında `cozumleyici` katmanını runtime ve
+  adaptörlere doğrudan bağımlılıktan ayrıca korur.
 - B-010 semantic ID, K-101/ADR-014 ile bu katmanlar üstünde tamamlandı.
   B-007, K-121'de ayrı `cikarim` katmanı ve mimari bütçesiyle kapandı.
 - K-121'in sıra-bağımsız yerel çıkarım semantiği RFC-0006 ile spec/04 ve

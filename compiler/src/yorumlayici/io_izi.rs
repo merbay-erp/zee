@@ -6,7 +6,7 @@
 
 use super::GirdiCikti;
 use crate::agac::RotaErisimi;
-use crate::paket::sha256_hex;
+use crate::guvenlik::sha256_hex;
 use crate::web_guvenligi::WebReddi;
 use std::collections::VecDeque;
 

@@ -68,6 +68,7 @@ fn handler_modulleri_yeni_domain_icin_sinir_tasir() {
         ("src/cozumleyici/sembol.rs", 200),
         ("src/cozumleyici/sozlesme.rs", 180),
         ("src/cozumleyici/turler.rs", 300),
+        ("src/guvenlik.rs", 220),
         ("src/kimlik.rs", 80),
         ("src/faz.rs", 160),
         ("src/hir.rs", 180),
@@ -108,6 +109,7 @@ fn handler_modulleri_yeni_domain_icin_sinir_tasir() {
         ("src/paket/uzak_wasm.rs", 140),
         ("src/tedarik/kurulum.rs", 220),
         ("src/cli/registry.rs", 500),
+        ("src/zaman.rs", 80),
     ] {
         satir_butcesini_denetle(goreli, butce);
     }

@@ -43,6 +43,14 @@ hard eşik yalnız sabitlenmiş adanmış benchmark koşucusunda açıkça
 etkinleştirilebilir. Yeni taban, makine/araç zinciri ve 25 turluk p50/p95
 dağılımı incelenmeden izlenen tarihçeye yazılmaz.
 
+Production Rust modülü veya iç bağımlılığı değişen iş
+`compiler/tests/fixtures/katman-mimarisi-v1.tsv`, ADR-046 ve
+`docs/katman-mimarisi.md` etkisini aynı committe inceler. Fixture yalnız
+`cargo test --locked --test katman_mimarisi_testi` farkını susturmak için
+yenilenmez: sorumluluk sahibi ve temel→adaptör yönü önce değerlendirilir.
+Yeni/kayıp üst sahip, eklenen/kaldırılan exact kenar ve ters katman geçişi
+committen önce kapıyı geçmelidir.
+
 Her compiler bug düzeltmesi ayrıca `regression/<faz>/` altında tek arızaya
 indirgenmiş bir `.dil` kaynağı ve `regression/v1.tsv` içinde K-kimliği, faz,
 kip, beklenen tanı+kesin span, exit ve çıktı kaydı bırakır. Bu kayıt olmadan

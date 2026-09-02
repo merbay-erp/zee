@@ -151,8 +151,14 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
     25 turluk ham örnek, p50/p95, JSON, Markdown ve sürümlü TSV tarihçesine
     bağladı. Shared CI yalnız summary+90 günlük artefakt üretir; hard eşik
     ancak sabit adanmış runner'da açıkça etkinleşir. B-040 kapandı (603 test).
-46. Sıradaki makine işi K-149 ile modül sorumluluğu ve bağımlılık yönü
-    ihlallerini fail-closed mimari kapıya bağlamaktır.
+46. K-149/ADR-046 bütün production Rust ağacını 35 üst sahibe, exact doğrudan
+    kenar tabanına ve izinli katman yönüne bağladı. Yeni/kayıp modül,
+    eklenen/kaldırılan kenar ve ters katman geçişi fail-closed'dur. Morfoloji→
+    paket SHA-256 ve tedarik→runtime takvim terslikleri temel sahiplere
+    taşındı; B-057 kapandı (607 test).
+47. Bağımlılık-hazır makine backlog'u kapalıdır. B-001 çağrı sözdizimi ve
+    B-002 gezme zihinsel modeli, önceden bağlanmış 10 çocuk/öğrenci + 5
+    profesyonel usability verisini bekler; veri gelmeden yeni syntax seçilmez.
 
 ## P0 — V1 öncesi dil ve derleyici omurgası
 
@@ -547,6 +553,15 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   `encodeInto` ile exact tampona yazar. Sınır/bir-fazlası native+gerçek wasm32
   Node regresyonu ve kaynak+soru kipli beş seed'li fuzzer ile korunur; ilk
   kampanya 61 saniyede 1.709.869 çağrıyı ihlalsiz tamamladı.
+- **B-057 · KAPALI (K-149/ADR-046) — production katman yönünü makinece
+  koru.** 35 üst sahip; temel, model, altyapı, sözdizimi, semantik, proje,
+  web, runtime, adaptör ve mühendislik katmanlarına atanır. Sürümlü TSV exact
+  doğrudan bağımlılıkları ve tek cümlelik sorumluluğu taşır. Kaynak tarayıcı
+  yorum/metin/test kodunu ayırır; hedefe özgü production yollarını birleşik
+  korur. Yeni/kayıp sahip, eklenen veya artık kullanılmayan kenar ve izin dışı
+  katman geçişi fail-closed'dur. Morfoloji SHA-256 için pakete, tedarik tarih
+  dönüşümü için runtime'a artık bağımlanmaz; ortak ilkeller `guvenlik` ve
+  `zaman` temel sahiplerindedir. Ayrıntı [katman rehberindedir](katman-mimarisi.md).
 - **B-041 · KAPALI (K-120) — LSP'yi SymbolId/HIR'a bağla.** Definition ve
   rename yalnız başarılı checker'ın `SymbolId`/`IslemId`/`YapiId` typed-HIR
   bağından hedef seçer. HIR ilk tanım, yeniden atama ve okuma aralıklarını
@@ -578,10 +593,11 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 
 ## Bir sonraki somut kapı
 
-İnsan kanıtı hattında B-001, doldurulmuş gerçek usability formları ve önceden
-ilan edilmiş eşikleri bekler. Makine hattında K-148 dokuz performans yüzeyini
-p50/p95 tarihçesi ve CI artefaktına bağlayıp B-040'ı kapattı. Sıradaki iş
-K-149 ile dependency/layer architecture enforcement kapısıdır.
+İnsan kanıtı hattında B-001 ve B-002, doldurulmuş gerçek usability formları
+ile önceden ilan edilmiş eşikleri bekler. Makine hattında K-149 production
+modül sahipliği, exact kenar tabanı ve katman yönünü bağlayıp B-057'yi kapattı.
+Bağımlılık-hazır açık makine maddesi yoktur; insan verisi gelmeden yeni syntax
+seçilmez veya bu iki kapı tamamlanmış gösterilmez.
 
 ## 2 Eylül 2026 ikinci dış inceleme ayrımı
 
@@ -603,8 +619,9 @@ K-149 ile dependency/layer architecture enforcement kapısıdır.
   eğilim kapısı K-144/ADR-041 ile, kanonik Rust biçim kapısı K-145/ADR-042 ile,
   tam sahipli faz test matrisi K-146/ADR-043 ile, 17 vakalı kalıcı semantic
   regression korpusu K-147/ADR-044 ile, p50/p95 performans tarihçesi ve trend
-  artefaktları K-148/ADR-045 ile kapandı. Sırada K-149 modül sorumluluğu ve
-  bağımlılık yönü mimari kapısı vardır.
+  artefaktları K-148/ADR-045 ile, production modül/kenar/katman yönü
+  K-149/ADR-046 ile kapandı. Bağımlılık-hazır makine backlog'u bitti; B-001 ve
+  B-002 gerçek usability verisini bekler.
   B-033/B-034 temiz snapshot hattı ayrıca kapalıdır.
 - **Mevcut repoda zaten kapalı:** çağrı derinliği C019/500 ve ayrı regresyonu;
   atomik metadata `unsafe` bloklarının her birindeki `SAFETY` gerekçesi; kök

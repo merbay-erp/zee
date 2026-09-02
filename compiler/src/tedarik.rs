@@ -5,7 +5,7 @@
 //! imzalı yayın bildirimi. Registry ve aynalar bu dosyaları yalnız taşır;
 //! güven kararı bu modülün doğrulamasından sonra verilir.
 
-use crate::paket::sha256_hex;
+use crate::guvenlik::sha256_hex;
 use crate::proje::{bildirimi_oku, ProjeBildirimi};
 use ed25519_dalek::{Signature, Signer, SigningKey, VerifyingKey};
 use serde::{Deserialize, Serialize};
@@ -927,7 +927,7 @@ fn hex_coz<const N: usize>(metin: &str, ad: &str) -> Result<[u8; N], String> {
 fn utc_zamani(saniye: i64) -> String {
     let gunler = saniye.div_euclid(86_400);
     let gun_ici = saniye.rem_euclid(86_400);
-    let (yil, ay, gun) = crate::yorumlayici::gunlerden_tarih_utc(gunler);
+    let (yil, ay, gun) = crate::zaman::gunlerden_tarih_utc(gunler);
     format!(
         "{:04}-{:02}-{:02}T{:02}:{:02}:{:02}Z",
         yil,

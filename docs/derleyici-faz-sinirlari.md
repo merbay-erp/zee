@@ -9,7 +9,9 @@ olduğunu açık tutmaktır.
 ```text
 compiler/src/
 ├── faz.rs                    source→token→parsed→bound program tipleri
+├── guvenlik.rs               CSPRNG/Argon2/sabit-zaman/SHA-256 temel ilkelleri
 ├── kimlik.rs                 YapiId/IslemId/SymbolId newtype'ları
+├── zaman.rs                  katmandan bağımsız Gregoryen gün↔tarih dönüşümü
 ├── ayristirici.rs            token/blok/tanım orkestrasyonu
 │   └── ayristirici/
 │       ├── cumle.rs          cümle son-yüklem dağıtımı
@@ -133,6 +135,17 @@ morphology/concurrency/security değişikliklerinin aşağı akışı, 17 tarihs
 bug'ın minimal kaynağındaki tanı+span+exit+stdout gözlemlerini yeniden koşar.
 Git-tabanlı soy ağacı koruğu eski vaka kimliği ve yolunun sessizce silinmesini
 engeller.
+
+K-149/ADR-046 dosya bütçelerinin üstüne
+[production katman graph'ını](katman-mimarisi.md) ekledi. Bütün production Rust ağacı 35
+üst sahibin birine aittir; exact doğrudan kenar tabanı ile katman yönü ayrı
+denetlenir. Yeni/kayıp modül, yeni/kaldırılmış kenar veya ters katman geçişi
+fail-closed'dur. Bu inceleme morfoloji→paket SHA-256 ve tedarik→runtime takvim
+bağımlılıklarını sırasıyla temel `guvenlik` ve `zaman` sahiplerine taşıdı.
+Parser semantic/runtime'a, checker runtime/adaptöre, runtime parser/checker/
+LSP/WASM'a ve LSP parser/checker/runtime'a doğrudan bağımlanamaz.
+Temel sahiplerin yeniden genel çekmeceye dönüşmemesi için `guvenlik.rs` 220,
+`zaman.rs` 80 satır fiziksel bütçe taşır.
 
 `katalog_testi.rs` sabit bir kök dosya listesi kullanmaz; `compiler/src`
 altındaki bütün Rust dosyalarını özyinelemeli ve sıralı tarar. Yeni handler'da

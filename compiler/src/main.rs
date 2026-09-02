@@ -1765,7 +1765,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             .unwrap_or(0);
         let gunler = saniye.div_euclid(86400);
         let gun_ici = saniye.rem_euclid(86400);
-        let (yil, ay, gun) = dil::yorumlayici::gunlerden_tarih_utc(gunler);
+        let (yil, ay, gun) = dil::zaman::gunlerden_tarih_utc(gunler);
         (
             yil,
             ay,

@@ -46,6 +46,7 @@ pub mod wasm_api;
 pub mod web_guvenligi;
 pub mod yetkinlik;
 pub mod yorumlayici;
+pub mod zaman;
 
 use agac::{Cumle, Islem, KullanimTuru, Program, Test, Yapi};
 use faz::{BaglanmamisProgram, BaglanmisProgram, KaynakMetni};

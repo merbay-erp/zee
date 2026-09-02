@@ -43,7 +43,7 @@ pub fn profil_uyumluluk_kaydi() -> String {
         "profil={}\nşema={}\nsha256={}\n",
         MORFOLOJI_PROFILI,
         SEMANTIK_SEMA,
-        crate::paket::sha256_hex(semantik.as_bytes())
+        crate::guvenlik::sha256_hex(semantik.as_bytes())
     )
 }
 

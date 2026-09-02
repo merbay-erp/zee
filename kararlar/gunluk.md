@@ -2441,6 +2441,31 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   değişmedi. Sıradaki makine işi K-149 bağımlılık yönü/katman mimarisi
   denetimidir.
 
+## K-149 — Küçük dosya yetmez; bağımlılık yönü de korunur (2 Eyl)
+
+- **Sorun:** Fiziksel modül ve işlev bütçeleri, küçük bir parser dosyasının
+  semantic/runtime'a veya LSP'nin compiler iç geçişlerine doğrudan
+  bağlanmasını göremiyordu. İlk graph, morfoloji→paket SHA-256 ve
+  tedarik→runtime takvim olmak üzere iki gerçek ters sorumluluk gösterdi.
+- **Temizlik:** Bağımlılıksız FIPS 180-4 SHA-256 temel `guvenlik` sahibine;
+  Gregoryen gün↔tarih algoritması yeni temel `zaman` sahibine taşındı. Paket,
+  registry, tedarik, web, IO izi ve morfoloji ortak özeti; runtime, CLI ve
+  tedarik ortak zamanı tüketir. Eski runtime tarih yolu yeniden dışa
+  aktarımla korunur.
+- **Karar:** 35 production üst sahibi on katmana atanır.
+  `katman-mimarisi-v1.tsv` her sahibin exact, sıralı doğrudan kenarını ve
+  sorumluluğunu taşır. Yeni/kayıp sahip, eklenen/kaldırılan kenar veya izin
+  dışı katman geçişi fixture güncellense dahi fail-closed'dur.
+- **Tarama sınırı:** Yorum, iç içe blok yorumu, normal/byte/raw metin,
+  karakter ve test-only öğe production graph'a katılmaz; hedefe özgü ürün
+  yolları birleşik sayılır. `crate`/`dil` kök takma adıyla tarama gizlenemez.
+- **Kanıt ve sınır:** ADR-046, katman/faz/depo rehberleri; sahip+kenar
+  birebirliği, lexical ayrım/kök alias reddi ve yön matrisi için üç yeni test,
+  taşınan zaman ilkeli için bir regresyon. Kaynak envanteri 607 test, 93
+  numaralı belge ve 44 kabul ADR'dir; B-057/V1-P0-32 kapandı. Dil semantiği,
+  tanılar, RFC ve normatif spec değişmedi. Bağımlılık-hazır makine backlog'u
+  bitti; B-001/B-002 gerçek usability verisini bekler.
+
 ---
 
 ## Sonraki adım
@@ -2449,6 +2474,7 @@ Korpus 10 öğrenci + 5 profesyonel usability oturumuna (Hafta 12 hedefi, erkeni
 Hafta 2'de kağıt üstünde) sesli okutulacak; her kayıt için "doğal mı /
 deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
-Makine hattında K-148 dokuz sabit performans yüzeyini p50/p95 tarihçesi,
-JSON/Markdown ve shared-CI artefaktına bağlayıp B-040'ı kapattı. Sırada K-149
-ile bağımlılık yönü ve katman mimarisi denetimi vardır.
+Makine hattında K-149 production sahip/kenar/katman yönünü bağlayıp B-057'yi
+kapattı. Bağımlılık-hazır makine backlog'u kalmadı. B-001 çağrı sözdizimi ve
+B-002 gezme modeli, gerçek 10 çocuk/öğrenci + 5 profesyonel usability verisini
+bekler; bu kanıt gelmeden yeni syntax seçilmez.
