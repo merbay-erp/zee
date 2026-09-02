@@ -958,6 +958,7 @@ fn calistir_program_kodla(
     program: CalistirmaProgrami<'_>,
     io: &mut dyn GirdiCikti,
 ) -> Result<i64, Tani> {
+    let _butce = CalistirmaButcesiNobetcisi::yeni();
     let kodu = |tani: &Tani| tani.mesaj.parse::<i64>().unwrap_or(0);
     let mut ortam: HashMap<String, Deger> = HashMap::new();
     match blok_calistir(&program.program().cumleler, &mut ortam, program, io, 0) {
@@ -971,6 +972,8 @@ fn calistir_program_kodla(
     // gövdeleri istek başına taze ortamda koşulur.
     if ortam.contains_key("(sunucu)") {
         while let Some(ham) = io.istek_al() {
+            // Uzun yaşayan sunucuda her istek bağımsız kaynak zarfı alır.
+            calistirma_butcesini_yenile();
             if let Err((durum, mesaj)) = istek_sinirlarini_denetle(&ham) {
                 io.durum_yaniti_gonder(durum, mesaj);
                 continue;
@@ -1080,6 +1083,7 @@ pub fn test_calistir(
     test: &crate::agac::Test,
     io: &mut dyn GirdiCikti,
 ) -> Result<(), Tani> {
+    let _butce = CalistirmaButcesiNobetcisi::yeni();
     let mut ortam: HashMap<String, Deger> = HashMap::new();
     match blok_calistir(
         &test.govde,
@@ -1112,6 +1116,117 @@ thread_local! {
     /// bu kanala süreyi bırakıp Pending döner; scheduler zamanı ilerletir.
     static GOREV_BEKLEME_SINYALI: RefCell<Option<Rc<Cell<Option<i64>>>>> =
         const { RefCell::new(None) };
+    static CALISTIRMA_BUTCESI: RefCell<Option<CalistirmaButcesi>> =
+        const { RefCell::new(None) };
+}
+
+#[derive(Clone, Copy)]
+struct CalistirmaButcesi {
+    kalan_adim: usize,
+    cikti_bayti: usize,
+    cikti_olayi: usize,
+}
+
+impl CalistirmaButcesi {
+    fn yeni() -> Self {
+        let sinirlar = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI;
+        Self {
+            kalan_adim: sinirlar.calistirma_adimi(),
+            cikti_bayti: 0,
+            cikti_olayi: 0,
+        }
+    }
+}
+
+struct CalistirmaButcesiNobetcisi {
+    onceki: Option<CalistirmaButcesi>,
+}
+
+impl CalistirmaButcesiNobetcisi {
+    fn yeni() -> Self {
+        let onceki = CALISTIRMA_BUTCESI.with(|yuva| yuva.borrow_mut().replace(CalistirmaButcesi::yeni()));
+        Self { onceki }
+    }
+}
+
+impl Drop for CalistirmaButcesiNobetcisi {
+    fn drop(&mut self) {
+        CALISTIRMA_BUTCESI.with(|yuva| *yuva.borrow_mut() = self.onceki.take());
+    }
+}
+
+fn calistirma_butcesini_yenile() {
+    CALISTIRMA_BUTCESI.with(|yuva| *yuva.borrow_mut() = Some(CalistirmaButcesi::yeni()));
+}
+
+pub(super) fn calistirma_adimi_tuket(satir: usize) -> Result<(), Tani> {
+    CALISTIRMA_BUTCESI.with(|yuva| {
+        let mut yuva = yuva.borrow_mut();
+        let Some(butce) = yuva.as_mut() else {
+            return Ok(());
+        };
+        butce.kalan_adim = butce.kalan_adim.checked_sub(1).ok_or_else(|| {
+            kaynak_siniri_tanisi(
+                satir,
+                "Program güvenli profil çalışma adımı sınırını aştı.",
+                "Döngünün sonlanma koşulunu düzelt veya işi daha küçük parçalara böl.",
+            )
+        })?;
+        Ok(())
+    })
+}
+
+pub(super) fn cikti_butcesini_tuket(metin: &str, satir: usize) -> Result<(), Tani> {
+    CALISTIRMA_BUTCESI.with(|yuva| {
+        let mut yuva = yuva.borrow_mut();
+        let Some(butce) = yuva.as_mut() else {
+            return Ok(());
+        };
+        let sinirlar = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI;
+        let yeni_bayt = butce
+            .cikti_bayti
+            .checked_add(metin.len().saturating_add(1))
+            .ok_or_else(|| kaynak_siniri_tanisi(satir, "Program çıktısı sayı sınırını aştı.", "Daha küçük çıktı üret."))?;
+        let yeni_olay = butce.cikti_olayi.saturating_add(1);
+        if yeni_bayt > sinirlar.cikti_bayti() || yeni_olay > sinirlar.cikti_olayi() {
+            return Err(kaynak_siniri_tanisi(
+                satir,
+                "Program güvenli profil çıktı bütçesini aştı.",
+                "Döngü çıktısını azalt; büyük veriyi ekrana basmak yerine parçalara ayır.",
+            ));
+        }
+        butce.cikti_bayti = yeni_bayt;
+        butce.cikti_olayi = yeni_olay;
+        Ok(())
+    })
+}
+
+pub(super) fn koleksiyon_sinirini_denetle(sayi: usize, satir: usize) -> Result<(), Tani> {
+    let azami = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.koleksiyon_ogesi();
+    if sayi <= azami {
+        return Ok(());
+    }
+    Err(kaynak_siniri_tanisi(
+        satir,
+        &format!("Koleksiyon {} öğe; güvenli profil {} öğe sınırını aşıyor.", sayi, azami),
+        "Listeyi veya sözlüğü daha küçük parçalara böl.",
+    ))
+}
+
+pub(super) fn gorev_sinirini_denetle(sayi: usize, satir: usize) -> Result<(), Tani> {
+    let azami = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.eszamanli_gorev();
+    if sayi <= azami {
+        return Ok(());
+    }
+    Err(kaynak_siniri_tanisi(
+        satir,
+        &format!("Eşzamanlı grup {} görev; güvenli profil {} görev sınırını aşıyor.", sayi, azami),
+        "Görevleri sonlu gruplara ayır ve her gruptan sonra `hepsini bekle` kullan.",
+    ))
+}
+
+fn kaynak_siniri_tanisi(satir: usize, mesaj: &str, oneri: &str) -> Tani {
+    Tani::yeni("C023", mesaj.into(), satir, 1, 1).onerili(oneri.into())
 }
 
 static SON_TARIH_KIMLIGI: std::sync::atomic::AtomicU64 =
@@ -1480,10 +1595,12 @@ async fn islem_cagir(
 ) -> Result<Option<Deger>, Tani> {
     // Özyineleme korkuluğu (v0.2): Rust yığını taşmadan Türkçe tanı ver.
     // Sınır, tarayıcı motorlarının ~1 MB'lik çağrı yığınına bile payla sığmalı (K-040).
-    if derinlik > 500 {
+    let azami_derinlik =
+        crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.cagri_derinligi();
+    if derinlik > azami_derinlik {
         return Err(Tani::yeni(
             "C019",
-            format!("\"{}\" çağrı derinliği 500'ü aştı: temel durum hiç yakalanmıyor olabilir.", kaynak_adi),
+            format!("\"{}\" çağrı derinliği {} sınırını aştı: temel durum hiç yakalanmıyor olabilir.", kaynak_adi, azami_derinlik),
             satir,
             1,
             1,

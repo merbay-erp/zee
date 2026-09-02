@@ -378,9 +378,18 @@ fn parola_ozeti_komutu(argumanlar: &[String]) -> ExitCode {
         Some("--stdin") if argumanlar.len() == 2 => {
             use std::io::Read;
             let mut girdi = String::new();
-            if let Err(hata) = std::io::stdin().read_to_string(&mut girdi) {
+            let azami = dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+                .dosya_okuma_bayti();
+            if let Err(hata) = std::io::stdin()
+                .take(azami.saturating_add(1) as u64)
+                .read_to_string(&mut girdi)
+            {
                 eprintln!("Parola stdin'den okunamadı: {}", hata);
                 return ExitCode::FAILURE;
+            }
+            if girdi.len() > azami {
+                eprintln!("Parola stdin girdisi {} MiB sınırını aşıyor.", azami / 1024 / 1024);
+                return ExitCode::from(2);
             }
             girdi.trim_end_matches(['\r', '\n']).to_string()
         }
@@ -450,7 +459,9 @@ fn belge_komutu(argumanlar: &[String]) -> ExitCode {
     };
     let (kaynak, koken) = match dil::gomulu_birim(ad) {
         Some(kaynak) => (kaynak.to_string(), "gömülü kitaplık"),
-        None => match std::fs::read_to_string(format!("{}.dil", ad)) {
+        None => match dil::kaynak_sinirlari::kaynak_dosyasi_oku(
+            std::path::Path::new(&format!("{}.dil", ad)),
+        ) {
             Ok(kaynak) => (kaynak, "bu klasör"),
             Err(_) => {
                 eprintln!(
@@ -753,7 +764,7 @@ fn ekle_komutu(argumanlar: &[String]) -> ExitCode {
     };
 
     let bildirim_yolu = proje_koku.join("proje.dil");
-    let eski_kaynak = match std::fs::read_to_string(&bildirim_yolu) {
+    let eski_kaynak = match dil::kaynak_sinirlari::kaynak_dosyasi_oku(&bildirim_yolu) {
         Ok(kaynak) => kaynak,
         Err(hata) => {
             eprintln!("\"{}\" okunamadı: {}", bildirim_yolu.display(), hata);
@@ -845,7 +856,9 @@ fn ekle_komutu(argumanlar: &[String]) -> ExitCode {
         return ExitCode::from(2);
     }
 
-    let paket_bildirimi = std::fs::read_to_string(paket_koku.join("proje.dil"))
+    let paket_bildirimi = dil::kaynak_sinirlari::kaynak_dosyasi_oku(
+        &paket_koku.join("proje.dil"),
+    )
         .ok()
         .and_then(|kaynak| dil::proje::bildirimi_oku(&kaynak).ok());
     match paket_bildirimi {
@@ -931,7 +944,7 @@ fn cikar_komutu(argumanlar: &[String]) -> ExitCode {
         }
     };
     let bildirim_yolu = proje_koku.join("proje.dil");
-    let eski_kaynak = match std::fs::read_to_string(&bildirim_yolu) {
+    let eski_kaynak = match dil::kaynak_sinirlari::kaynak_dosyasi_oku(&bildirim_yolu) {
         Ok(kaynak) => kaynak,
         Err(hata) => {
             eprintln!("\"{}\" okunamadı: {}", bildirim_yolu.display(), hata);
@@ -1035,7 +1048,7 @@ fn proje_dosyalarini_guncelle(
 }
 
 fn bir_dosyayi_bicimle(yol: &std::path::Path) -> ExitCode {
-    let kaynak = match std::fs::read_to_string(yol) {
+    let kaynak = match dil::kaynak_sinirlari::kaynak_dosyasi_oku(yol) {
         Ok(kaynak) => kaynak,
         Err(hata) => {
             eprintln!("\"{}\" dosyası okunamadı: {}", yol.display(), hata);
@@ -1080,7 +1093,7 @@ fn projeyi_bicimle(kok: &std::path::Path) -> ExitCode {
 
     let mut hazir = Vec::new();
     for yol in &yollar {
-        let kaynak = match std::fs::read_to_string(yol) {
+        let kaynak = match dil::kaynak_sinirlari::kaynak_dosyasi_oku(yol) {
             Ok(kaynak) => kaynak,
             Err(hata) => {
                 eprintln!("\"{}\" dosyası okunamadı: {}", yol.display(), hata);
@@ -1217,8 +1230,10 @@ impl KaynakGirdisi {
             .unwrap_or_else(|| std::path::Path::new(&self.koken));
         let klasor = isteyen.parent().unwrap_or(&self.klasor);
         let yol = klasor.join(format!("{}.dil", istek.ad));
-        match std::fs::canonicalize(&yol)
-            .and_then(|kanonik| std::fs::read_to_string(&kanonik).map(|kaynak| (kanonik, kaynak)))
+        match std::fs::canonicalize(&yol).and_then(|kanonik| {
+            dil::kaynak_sinirlari::kaynak_dosyasi_oku(&kanonik)
+                .map(|kaynak| (kanonik, kaynak))
+        })
         {
             Ok((kanonik, kaynak)) => Ok(dil::YuklenenBirim {
                 kaynak,
@@ -1309,7 +1324,7 @@ fn girdiyi_oku(yol: &std::path::Path) -> Result<KaynakGirdisi, GirdiHatasi> {
         let kanonik = std::fs::canonicalize(yol).map_err(|hata| {
             GirdiHatasi::Mesaj(format!("\"{}\" dosyası okunamadı: {}", yol.display(), hata))
         })?;
-        let kaynak = std::fs::read_to_string(&kanonik).map_err(|hata| {
+        let kaynak = dil::kaynak_sinirlari::kaynak_dosyasi_oku(&kanonik).map_err(|hata| {
             GirdiHatasi::Mesaj(format!("\"{}\" dosyası okunamadı: {}", yol.display(), hata))
         })?;
         let klasor = kanonik
@@ -1633,7 +1648,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
     fn dosya_oku(&mut self, yol: &str) -> Result<String, String> {
         self.politika
             .gerektir(dil::yetkinlik::Yetkinlik::DosyaOkuma)?;
-        std::fs::read_to_string(self.dosya_yolu(yol, false)?)
+        dil::kaynak_sinirlari::veri_dosyasi_oku(&self.dosya_yolu(yol, false)?)
             .map_err(|hata| format!("\"{}\" dosyası okunamadı: {}", yol, hata))
     }
     fn dosya_yaz(&mut self, yol: &str, satir: &str, ekleme: bool) -> Result<(), String> {
@@ -1645,7 +1660,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             .iter()
             .any(|yedek| !yedek.contains_key(&gercek_yol))
         {
-            let onceki = match std::fs::read(&gercek_yol) {
+            let onceki = match dil::kaynak_sinirlari::veri_dosyasi_baytlarini_oku(&gercek_yol) {
                 Ok(icerik) => Some(icerik),
                 Err(hata) if hata.kind() == std::io::ErrorKind::NotFound => None,
                 Err(hata) => return Err(format!("transaction yedeği alınamadı: {}", hata)),
@@ -1661,7 +1676,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         }
         dil::kalici_dosya::atomik_satir_yaz(&gercek_yol, satir, ekleme)
             .map_err(|hata| format!("\"{}\" dosyasına yazılamadı: {}", yol, hata))?;
-        let sonraki = std::fs::read(&gercek_yol)
+        let sonraki = dil::kaynak_sinirlari::veri_dosyasi_baytlarini_oku(&gercek_yol)
             .map_err(|hata| format!("transaction yazımı doğrulanamadı: {}", hata))?;
         for yedek in &mut self.eylem_yedekleri {
             if let Some(kayit) = yedek.get_mut(&gercek_yol) {

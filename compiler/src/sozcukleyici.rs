@@ -51,6 +51,7 @@ fn harf_gecerli(k: char) -> bool {
 
 /// Kaynağı tokenlara ayırır. İlk hatada durur (v0 davranışı).
 pub fn sozcukle(kaynak: &str) -> Result<Vec<Token>, Tani> {
+    crate::kaynak_sinirlari::kaynak_boyutunu_denetle(kaynak)?;
     let mut tokenlar = Vec::new();
     let mut girinti_yigini: Vec<usize> = vec![0];
 
@@ -88,11 +89,17 @@ pub fn sozcukle(kaynak: &str) -> Result<Vec<Token>, Tani> {
         let onceki = girinti_yigini.last().copied().unwrap_or(0);
         if girinti > onceki {
             girinti_yigini.push(girinti);
-            tokenlar.push(Token::yeni(TokenTur::Girinti, satir_no, 1, girinti));
+            token_ekle(
+                &mut tokenlar,
+                Token::yeni(TokenTur::Girinti, satir_no, 1, girinti),
+            )?;
         } else if girinti < onceki {
             while girinti_yigini.last().copied().unwrap_or(0) > girinti {
                 girinti_yigini.pop();
-                tokenlar.push(Token::yeni(TokenTur::Cikinti, satir_no, 1, 1));
+                token_ekle(
+                    &mut tokenlar,
+                    Token::yeni(TokenTur::Cikinti, satir_no, 1, 1),
+                )?;
             }
             if girinti_yigini.last().copied().unwrap_or(0) != girinti {
                 return Err(Tani::yeni(
@@ -179,7 +186,10 @@ pub fn sozcukle(kaynak: &str) -> Result<Vec<Token>, Tani> {
                     .onerili("Metnin sonuna kapatan \" işaretini ekle.".into()));
                 }
                 let uzunluk = icerik.chars().count() + 2;
-                tokenlar.push(Token::yeni(TokenTur::Metin(icerik), satir_no, baslangic_sutun, uzunluk));
+                token_ekle(
+                    &mut tokenlar,
+                    Token::yeni(TokenTur::Metin(icerik), satir_no, baslangic_sutun, uzunluk),
+                )?;
             } else if k.is_ascii_digit()
                 || (k == '-'
                     && kalanlar.clone().nth(1).map(|r| r.is_ascii_digit()) == Some(true))
@@ -240,12 +250,12 @@ pub fn sozcukle(kaynak: &str) -> Result<Vec<Token>, Tani> {
                     } else {
                         govde_rakamlari.to_string()
                     };
-                    tokenlar.push(Token::yeni(
+                    token_ekle(&mut tokenlar, Token::yeni(
                         TokenTur::Ondalik { govde, olcek },
                         satir_no,
                         baslangic_sutun,
                         sayi_metni.len() + 1 + kesir_metni.len(),
-                    ));
+                    ))?;
                 } else {
                     let deger: i64 = sayi_metni.parse().map_err(|_| {
                         Tani::yeni(
@@ -256,12 +266,12 @@ pub fn sozcukle(kaynak: &str) -> Result<Vec<Token>, Tani> {
                             sayi_metni.len(),
                         )
                     })?;
-                    tokenlar.push(Token::yeni(
+                    token_ekle(&mut tokenlar, Token::yeni(
                         TokenTur::TamSayi(deger),
                         satir_no,
                         baslangic_sutun,
                         sayi_metni.len(),
-                    ));
+                    ))?;
                 }
             } else if k.is_alphabetic() || k == '_' {
                 let baslangic_sutun = sutun;
@@ -297,7 +307,10 @@ pub fn sozcukle(kaynak: &str) -> Result<Vec<Token>, Tani> {
                     }
                 }
                 let uzunluk = kelime.chars().count();
-                tokenlar.push(Token::yeni(TokenTur::Kelime(kelime), satir_no, baslangic_sutun, uzunluk));
+                token_ekle(
+                    &mut tokenlar,
+                    Token::yeni(TokenTur::Kelime(kelime), satir_no, baslangic_sutun, uzunluk),
+                )?;
             } else if ('\u{0300}'..='\u{036F}').contains(&k) {
                 // Birleştirici imler: v0 kuralı kaynak metnin önceden birleştirilmiş
                 // (NFC) karakterlerle yazılmasıdır (RFC-0002).
@@ -332,7 +345,10 @@ pub fn sozcukle(kaynak: &str) -> Result<Vec<Token>, Tani> {
                             .into(),
                     ));
                 }
-                tokenlar.push(Token::yeni(TokenTur::Virgul, satir_no, sutun, 1));
+                token_ekle(
+                    &mut tokenlar,
+                    Token::yeni(TokenTur::Virgul, satir_no, sutun, 1),
+                )?;
                 sutun += 1;
             } else {
                 let oneri = if k == '.' {
@@ -353,15 +369,30 @@ pub fn sozcukle(kaynak: &str) -> Result<Vec<Token>, Tani> {
             bosluktan_sonra = bosluk_mu;
         }
 
-        tokenlar.push(Token::yeni(TokenTur::SatirSonu, satir_no, sutun, 1));
+        token_ekle(
+            &mut tokenlar,
+            Token::yeni(TokenTur::SatirSonu, satir_no, sutun, 1),
+        )?;
     }
 
     // Dosya sonunda açık blokları kapat.
     let son_satir = kaynak.lines().count().max(1);
     while girinti_yigini.len() > 1 {
         girinti_yigini.pop();
-        tokenlar.push(Token::yeni(TokenTur::Cikinti, son_satir, 1, 1));
+        token_ekle(
+            &mut tokenlar,
+            Token::yeni(TokenTur::Cikinti, son_satir, 1, 1),
+        )?;
     }
-    tokenlar.push(Token::yeni(TokenTur::DosyaSonu, son_satir, 1, 1));
+    token_ekle(
+        &mut tokenlar,
+        Token::yeni(TokenTur::DosyaSonu, son_satir, 1, 1),
+    )?;
     Ok(tokenlar)
+}
+
+fn token_ekle(tokenlar: &mut Vec<Token>, token: Token) -> Result<(), Tani> {
+    crate::kaynak_sinirlari::token_sayisini_denetle(tokenlar.len().saturating_add(1), token.satir)?;
+    tokenlar.push(token);
+    Ok(())
 }

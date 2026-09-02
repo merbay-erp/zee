@@ -21,6 +21,7 @@ pub mod ag_istemcisi;
 pub mod ayristirici;
 pub mod bicimleyici;
 pub mod kalici_dosya;
+pub mod kaynak_sinirlari;
 pub mod lsp;
 pub mod morfoloji;
 mod ondalik;

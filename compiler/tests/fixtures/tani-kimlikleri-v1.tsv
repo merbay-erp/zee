@@ -44,6 +44,7 @@ aktif	S038	soz.gecersiz_eszamanli_blok	Eşzamanlı blok biçimi
 aktif	S039	soz.gecersiz_isik_komutu	Işık komutu biçimi
 aktif	S043	soz.gecersiz_web_guvenligi	Web güvenlik cümlesi biçimi
 aktif	S044	soz.gecersiz_yapilandirilmis_hata	Yapılandırılmış hata biçimi/kodu geçersiz
+aktif	S045	soz.kaynak_butcesi	Kaynak metni ya da token akışı güvenli profil sınırını aştı
 aktif	A001	ad.tanimsiz_ad	Ad bu kapsamda tanımlı değil
 aktif	A002	ad.belirsiz_morfolojik_kok	Ad birden çok köke çözülüyor (belirsizlik)
 aktif	A003	ad.eksik_gezme_kaynagi	`her X için` gezilecek listeyi bulamadı
@@ -132,6 +133,7 @@ aktif	C019	calisma.cagri_derinligi	Çağrı derinliği 500'ü aştı
 aktif	C020	calisma.gecersiz_cikis_kodu	Çıkış kodu 0–255 dışında
 aktif	C021	calisma.eylem_transactioni	Eylem transaction'ı başlatılamadı, tamamlanamadı ya da geri alınamadı
 aktif	C022	calisma.web_guvenlik_reddi	Web güvenlik adaptörü işlemi reddetti
+aktif	C023	calisma.kaynak_butcesi	Çalışma adımı, çıktı, koleksiyon ya da eşzamanlı görev kaynak bütçesi aşıldı
 aktif	D001	dogrulama.tutmayan_beklenti	`olmalı` koşulu tutmadı
 aktif	P001	proje.gecersiz_bildirim_cumlesi	`proje.dil` bilinmeyen/tekrarlı alan ya da değer tanımı dışında cümle içeriyor
 aktif	P002	proje.eksik_zorunlu_alan	Zorunlu proje alanı eksik

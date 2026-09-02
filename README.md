@@ -154,11 +154,11 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **506** |
-| Tanı kimliği | **147 etkin + 3 ayrılmış** |
-| RFC | **24** (2 kabul, 20 geçici kabul, 2 taslak) |
-| ADR | **30** (30 kabul) |
-| Normatif spec bölümü | **23** |
+| Rust + doctest vakası | **513** |
+| Tanı kimliği | **149 etkin + 3 ayrılmış** |
+| RFC | **25** (2 kabul, 21 geçici kabul, 2 taslak) |
+| ADR | **31** (31 kabul) |
+| Normatif spec bölümü | **24** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
 ### Golden korpus hakkında
@@ -310,6 +310,10 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   K-128/ADR-032 B-048'i kapattı: atomik replace Linux/macOS'ta mode+uid+gid
   ve desteklenen ACL/xattr'ı, Windows'ta DACL/security resource/named stream'i
   korur; metadata taşınamıyorsa eski hedefe dokunmadan fail-closed durur.
+  K-129/RFC-0025/ADR-033 B-025'in ilk ortak kaynak profilini kurdu: kaynak,
+  token, proje toplamı, çalışma adımı, çıktı, koleksiyon, görev, dosya okuma
+  ve LSP toplam belleği/yanıtı aynı değişmez `KaynakSinirlari` değerinden
+  sınırlanır; aşım S045/C023 ile kontrollü durur.
   Uygulama sırası
   [öncelikli backlog](docs/oncelikli-backlog.md) ile sabittir.
   Bağlayıcı liste: [docs/v1-surum-kapilari.md](docs/v1-surum-kapilari.md).

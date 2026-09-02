@@ -59,6 +59,7 @@ kalır (ADR-025).
 | S039 | Işık komutu biçimi | `kırmızı ışığı yak` / `mavi ışığı söndür` |
 | S043 | Web güvenlik cümlesi biçimi | Rota önsözünü, oturum açmayı veya kapatmayı tanıda gösterilen tam kalıpla yaz |
 | S044 | Yapılandırılmış hata biçimi/kodu geçersiz | `"DOSYA_YOK" kodlu "Dosya bulunamadı" hatasını döndür`; neden önce, veri sonra yazılır |
+| S045 | Kaynak metni ya da token akışı güvenli profil sınırını aştı | Kaynağı sorumluluğu açık daha küçük birimlere böl |
 
 ## A — Ad çözümleme
 
@@ -162,6 +163,7 @@ kalır (ADR-025).
 | C020 | Çıkış kodu 0–255 dışında | `programı 0 ile bitir` … `programı 255 ile bitir` (K-069) |
 | C021 | Eylem transaction'ı başlatılamadı, tamamlanamadı ya da geri alınamadı | Kalıcı kaynağın yol/izin durumunu denetle; yarım başarı ayrıntısını kaybetmeden raporla |
 | C022 | Web güvenlik adaptörü işlemi reddetti | Güvenli oturum/CSRF desteğini ve başlığa yazılan çerez ya da yerel yönlendirme değerini denetle |
+| C023 | Çalışma adımı, çıktı, koleksiyon ya da eşzamanlı görev kaynak bütçesi aşıldı | Sonsuz döngüyü düzelt; işi, çıktıyı veya koleksiyonu daha küçük sonlu parçalara böl |
 
 ## D — Doğrulama
 

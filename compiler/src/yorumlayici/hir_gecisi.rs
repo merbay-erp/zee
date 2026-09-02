@@ -68,6 +68,7 @@ pub fn test_calistir_baglanmis(
     test: &crate::agac::Test,
     io: &mut dyn GirdiCikti,
 ) -> Result<(), Tani> {
+    let _butce = CalistirmaButcesiNobetcisi::yeni();
     let mut ortam: HashMap<String, Deger> = HashMap::new();
     match blok_calistir(
         &test.govde,

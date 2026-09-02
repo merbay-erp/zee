@@ -33,6 +33,7 @@ compiler/src/
 ├── kalici_dosya.rs           kilit/temp/sync/replace orkestrasyonu
 │   └── kalici_dosya/
 │       └── metadata.rs       platform owner/ACL/xattr/security aktarımı
+├── kaynak_sinirlari.rs       ortak değişmez kaynak/CPU/bellek/çıktı profili
 └── yorumlayici.rs            değer/IO/scheduler ve yürütme orkestrasyonu
     └── yorumlayici/
         ├── cumle.rs          cümle yürütme
@@ -133,3 +134,7 @@ K-128/ADR-032 atomik replace'in platform metadata aktarımını
 `kalici_dosya/metadata.rs` sahibine ayırdı. `kalici_dosya.rs` 820,
 metadata adaptörü 260 satır bütçesindedir; owner/group, ACL/xattr ve Windows
 security merge ayrıntıları genel kalıcılık akışına geri yayılamaz.
+K-129/ADR-033 kaynak bütçesi değerlerini `kaynak_sinirlari.rs` içinde tek
+sahipli yaptı. 260 satır bütçesi profile testleri ve bounded-reader yardımcısını
+kapsar; lexer/runtime/LSP/CLI yalnız bu değeri tüketir, yeni dağınık limit
+sabiti ekleyemez.

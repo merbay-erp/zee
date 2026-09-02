@@ -16,7 +16,10 @@ işlem faktöriyelini hesapla
 
 #[test]
 fn faktoriyel_calisir() {
-    let kaynak = format!("{}\nx 5 için faktöriyelini hesapla olsun\nx yaz\n", FAKTORIYEL);
+    let kaynak = format!(
+        "{}\nx 5 için faktöriyelini hesapla olsun\nx yaz\n",
+        FAKTORIYEL
+    );
     let cikti = kaynagi_calistir(&kaynak).expect("faktöriyel çalışmalı");
     assert_eq!(cikti, vec!["120"]);
 }
@@ -89,7 +92,7 @@ x 5 için düş olsun
     // Debug derlemede yorumlayıcı çerçeveleri platforma göre şişebilir;
     // sınıra dokunan tek test kendi yığınını getirir (K-040 — CLI da öyle).
     let hata = std::thread::Builder::new()
-        .stack_size(64 * 1024 * 1024)
+        .stack_size(128 * 1024 * 1024)
         .spawn(move || kaynagi_calistir(kaynak).expect_err("sonsuz iniş C019 vermeli"))
         .expect("iş parçacığı açılamadı")
         .join()
