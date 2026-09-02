@@ -104,8 +104,23 @@ hazır olana kadar çalışır. Rapor, ölçümden önce seçilmiş 250 ms, 500 
 1 saniye çizgilerinin p95'te ilk aşıldığı boyutu ayrıca yazar. Bu çizgiler
 şimdilik kapasite gözlemidir; shared CI hard performans kapısı değildir.
 
-Uygulama ve CI kablosu hazırdır. Exact temiz 25 örnekli release tabanı
-alınmadan sayısal ilk-aşım sonucu yayımlanmaz ve K-154/B-062 kapalı sayılmaz.
+Exact temiz `59580cd0c0b2d66a1ff1f28e7e285bfa0858abab` uygulama
+commit'inde Apple M4 Pro, macOS 26.6.2 (25G83), 24 GiB RAM, Rust 1.93.1 ve
+release profilde iki ısınma ardından 25 örnek alındı:
+
+| Satır | p50 | p95 |
+|---:|---:|---:|
+| 2.000 | 160,293 ms | 167,281 ms |
+| 5.000 | 1.062,715 ms | 1.081,746 ms |
+| 10.000 | 4.647,042 ms | 4.669,372 ms |
+| 20.000 | 20.079,600 ms | 20.159,636 ms |
+
+250 ms, 500 ms ve 1 saniye p95 çizgilerinin üçü de ilk kez **5.000 satırda**
+aşılır. 2k→5k satır artışı 2,5 katken p95 maliyet 6,47 kat; 5k→10k iki
+katken maliyet 4,32 kat; 10k→20k iki katken maliyet 4,32 kattır. Bu gözlem
+mevcut tam-ön-uç yolunun belirgin süper-doğrusal davrandığını gösterir;
+nedensel algoritma hükmü veya henüz optimizasyon değildir. K-154/B-062
+kapanmıştır; K-155 semantic regresyon provenance'ı sıradadır.
 
 ## K-148 başlangıç tabanı — 2 Eylül 2026 · Apple M4 Pro, macOS arm64, Rust 1.93.1
 

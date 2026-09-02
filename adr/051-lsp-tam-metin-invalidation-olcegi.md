@@ -1,6 +1,6 @@
 # ADR-051 — LSP tam-metin invalidation ölçeği
 
-- **Durum:** kabul (K-154 ölçüm tabanı bekliyor)
+- **Durum:** kabul
 - **Tarih:** 3 Eylül 2026
 - **İlgili kayıt:** K-154, B-062
 
@@ -52,7 +52,10 @@ eğrisi ve karar eşikleri sabitlenmelidir.
 
 - CI ve yerel tam koşu, editör değişiklik maliyetinin büyüme eğrisini aynı
   makine-okunur provenance sözleşmesiyle yayımlar.
-- 250/500/1000 ms çizgilerinin ilk aşımı tahminle değil exact temiz 25 örnekli
-  release tabanıyla kapanacaktır; o kayıt gelene kadar K-154 kısmi kalır.
+- Exact temiz `59580cd0c0b2d66a1ff1f28e7e285bfa0858abab` uygulama
+  commit'inde Apple M4 Pro üzerinde alınan 25 örnekli release tabanı şöyledir:
+  2k p95 167,281 ms; 5k p95 1.081,746 ms; 10k p95 4.669,372 ms; 20k p95
+  20.159,636 ms. 250, 500 ve 1.000 ms çizgilerinin üçü de ilk kez 5k'da
+  aşılır. K-154/B-062 bu veriyle kapanır.
 - Bu dilim grammar, runtime semantiği, kullanıcı tanıları, RFC ve normatif
   spec'i değiştirmez. Yalnız gözlem aracı, mimari gerçek ve CI kanıtı değişir.
