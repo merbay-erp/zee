@@ -155,7 +155,7 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **523** |
+| Rust + doctest vakası | **527** |
 | Tanı kimliği | **150 etkin + 3 ayrılmış** |
 | RFC | **25** (2 kabul, 21 geçici kabul, 2 taslak) |
 | ADR | **31** (31 kabul) |
@@ -324,8 +324,10 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   artık bütçesiz ara JSON listeleri kurmaz. Böylece B-025/V1-P0-31 kapandı.
   K-133 çıktı, dosya, HTTP, web/oturum, eyleyici ve rastgelelik sınırlarına
   tam etki öncesi deadline kapısı ekledi; görev HTTP öncesi sıra verdikten
-  sonra süreyi yeniden hesaplar ve dolmuş isteği hiç başlatmaz. B-026'nın web
-  istek transaction'ı dilimi açık kalır.
+  sonra süreyi yeniden hesaplar ve dolmuş isteği hiç başlatmaz. K-134 ilk web
+  yanıtıyla session/cookie mutation'ını aynı istek transaction'ında tamponlar;
+  timeout/runtime/socket hatası veya yanıtsız rota hepsini geri alır. B-026
+  kapandı.
   Uygulama sırası
   [öncelikli backlog](docs/oncelikli-backlog.md) ile sabittir.
   Bağlayıcı liste: [docs/v1-surum-kapilari.md](docs/v1-surum-kapilari.md).

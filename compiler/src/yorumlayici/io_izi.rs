@@ -668,6 +668,16 @@ impl<T: GirdiCikti> GirdiCikti for IzKaydedenIo<T> {
         sonuc
     }
 
+    // İstek transaction'ı host adaptörünün sahiplik ayrıntısıdır; zee-io-1
+    // gözlem olayına dönüşmez, yalnız iç adaptöre iletilir.
+    fn istek_islemini_tamamla(&mut self) -> Result<(), String> {
+        self.ic.istek_islemini_tamamla()
+    }
+
+    fn istek_islemini_geri_al(&mut self) {
+        self.ic.istek_islemini_geri_al();
+    }
+
     fn yanit_gonder(&mut self, yanit: &str) {
         self.ic.yanit_gonder(yanit);
         self.kaydet("yanit_gonder", vec![yanit.into()], Vec::new());

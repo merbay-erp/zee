@@ -41,6 +41,7 @@ struct Oturum {
     olusturma_sirasi: u64,
 }
 
+#[derive(Clone)]
 pub struct WebGuvenligi {
     oturumlar: HashMap<String, Oturum>,
     gelen_belirtec: Option<String>,

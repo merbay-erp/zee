@@ -576,7 +576,10 @@ POST "/kaydet" adresine istek geldiğinde
 
 Her eylem çalışma hatasında ya da başarısız `Sonuç` dönüşünde dosya
 savepoint'ini geri alır. Süreç çökmesinde çok-dosyalı tek commit sözü yoktur;
-dosya başına K-084 atomikliği geçerlidir. Ayrıntı:
+dosya başına K-084 atomikliği geçerlidir. K-134'te rota yanıtı, çerezleri ve
+sunucu oturum mutation'ı istek başarıyla bitene kadar tamponludur. Timeout,
+runtime/socket hatası veya yanıtsız rota bunları birlikte geri alır; başarı
+yanıtın socket'e yazılmasıyla commit olur. Ayrıntı:
 [spec/11](../spec/11-uygulama-eylemleri-ve-web-adaptoru.md) ve
 [spec/12](../spec/12-web-guvenlik-profili.md).
 

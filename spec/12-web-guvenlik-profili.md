@@ -1,6 +1,6 @@
 # 12 — Web güvenlik profili
 
-Bu bölüm K-088 ile gelen normatif oturum, yetki, CSRF ve HTTPS reverse-proxy
+Bu bölüm K-088/K-134 ile gelen normatif oturum, yetki, CSRF ve HTTPS reverse-proxy
 sözleşmesidir. Uygulama eyleminin HTTP'den ayrılması spec/11'de tanımlıdır;
 bu bölüm tarayıcı isteğinin o eyleme hangi kapılardan geçerek ulaştığını
 tanımlar.
@@ -133,6 +133,12 @@ korkuluklarıdır. Başlık ile gövdenin tamamı bağlantı kabulünden başlay
 10 saniyelik mutlak okuma bütçesini aşarsa 408 döner; yanıt yazımı da 10 saniye
 socket zaman aşımı taşır. Spec/11'in 100 alan ve 30 saniye uygulama sınırı
 ayrıca geçerlidir.
+
+Oturum/çerez mutation'ı gönderilmemiş ilk yanıtla aynı request transaction'ına
+aittir. Runtime hata veya 30 saniyelik deadline'da erken başarı yanıtını atar,
+oturum deposunu istek başına döndürür ve 504'ü temiz olarak gönderir. Yanıtsız
+rota session kaydı bırakamaz. Gerçek socket yazımı başarısızsa yeni oturum
+commit edilmez; yarım HTTP gövdesi bağlantı kapanışıyla geçersiz kalır.
 
 ## 6. Platform sınırı
 

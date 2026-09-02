@@ -142,6 +142,10 @@ değeri tüketir, yeni dağınık limit sabiti ekleyemez.
 K-132 LSP JSON üretimini `lsp/cikti.rs` sahibine ayırdı. Bu modül 120 satır,
 LSP kökü 1.500 satır bütçesindedir; yanıt kaçışı ve boyut muhasebesi yeniden
 semantic handler'lara dağılamaz.
+K-134 rota seçimi, güvenlik önsözü, taze ortam ve 30 saniyelik request yürütme
+akışını `yorumlayici/web_istek.rs` sahibine ayırdı. 180 satır bütçesi web
+yaşam döngüsünün runtime köküne geri gömülmesini engeller; transaction
+commit/rollback'i `GirdiCikti` adaptör sınırında kalır.
 K-130 değer grafiği hesabını `yorumlayici/kaynak.rs`, bütçeli değer/JSON/CSV
 yazımını `yorumlayici/metin.rs`, süreç-geneli izin sayacını
 `kaynak_sinirlari/baglanti.rs` sahibine ayırdı. Sırasıyla 280/240/60 satır;

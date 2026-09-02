@@ -2,9 +2,9 @@
 
 - **Durum:** **geçici kabul** (K-085 son tarih çekirdeği; K-090 deterministik
   görev scheduler'ı; K-124 bağımsız gözlenebilir conformance profili; K-133
-  yan etki öncesi deadline kapıları.)
+  yan etki öncesi deadline kapıları; K-134 web istek rollback'i.)
 - **Tarih:** 31 Ağustos 2026; K-090 revizyonu 1 Eylül 2026
-- **İlgili günlük kayıtları:** K-023, K-085, K-090, K-124, K-133
+- **İlgili günlük kayıtları:** K-023, K-085, K-090, K-124, K-133, K-134
 - **İlgili golden programlar:** 26 (eşzamanlı görevler), 27 (zaman aşımı)
 - **Normatif gerçekleme:** spec/09 ve spec/14
 
@@ -118,7 +118,9 @@ DNS/dosya işlemleri gibi) dönene kadar atomik dilimdir. Dönüşte son tarih
 denetlenir ve süre aşılmışsa sonraki cümle çalışmaz. K-133 kalan süreyi
 scheduler turundan sonra yeniden hesaplar; deadline dolmuşsa adaptör çağrısı
 başlamaz. Çıktı, dosya, web/oturum, eyleyici ve diğer dış etkiler de çağrının
-hemen önünde aynı kapıdan geçer. Bu sınır spec/09 ile
+hemen önünde aynı kapıdan geçer. Web rota gövdesi deadline/hata ile biterse
+K-134 tamponlu yanıtı ve session/cookie mutation'ını birlikte geri alır; 504
+eski oturum durumu üstünden gönderilir. Bu sınır spec/09 ile
 aynıdır. Async host IO ayrı adaptör/API çalışmasıdır; dilin sahiplik modelini
 değiştirmez.
 

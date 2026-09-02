@@ -137,6 +137,14 @@ impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
             .flatten()
     }
 
+    fn istek_islemini_tamamla(&mut self) -> Result<(), String> {
+        self.ic.istek_islemini_tamamla()
+    }
+
+    fn istek_islemini_geri_al(&mut self) {
+        self.ic.istek_islemini_geri_al();
+    }
+
     fn yanit_gonder(&mut self, yanit: &str) {
         if self.politika.izin_verir(Yetkinlik::AgSunucusu) {
             self.ic.yanit_gonder(yanit);

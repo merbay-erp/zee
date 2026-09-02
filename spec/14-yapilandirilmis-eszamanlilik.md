@@ -1,6 +1,6 @@
 # 14 — Yapılandırılmış eşzamanlılık
 
-Normatif kaynak: RFC-0011 (geçici kabul), K-090/K-124/K-133. Durum: **TANIMLI**.
+Normatif kaynak: RFC-0011 (geçici kabul), K-090/K-124/K-133/K-134. Durum: **TANIMLI**.
 
 ## 1. Görev grubu ve birleştirme
 
@@ -71,6 +71,9 @@ korur; uzun eylem kardeş görevi ancak eylem bittikten sonra ilerletebilir.
   taşır; kardeşleri iptal eder ve program N koduyla olağan biçimde biter.
 - Ana kapsam birleştirmeden önce başka bir hatayla biterse henüz
   çalıştırılmamış çocuk kayıtları iptal edilerek düşer; dışarıda iş kalmaz.
+- Görev ağacı bir web rota gövdesindeyse hata/deadline, K-134 request
+  transaction'ındaki ilk yanıtı ve session/cookie mutation'ını birlikte geri
+  alır; tamamlanmış sıradan eylem etkileri yine yukarıdaki kurala tabidir.
 
 ## 4. İşbirlikli sınır
 

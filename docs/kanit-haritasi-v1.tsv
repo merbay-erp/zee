@@ -9,13 +9,13 @@ rfcs/0007-temel-tur-sistemi.md	kanitli	compiler/tests/koleksiyon_testi.rs,compil
 rfcs/0008-secenek-ve-sonuc.md	kanitli	compiler/tests/daraltma_testi.rs,compiler/tests/sonuc_donusu_testi.rs,compiler/tests/yapilandirilmis_hata_testi.rs	Daraltma Sonuç dönüşü ve Hata değeri
 rfcs/0009-modul-ve-paket.md	kismi	compiler/tests/birim_testi.rs,compiler/tests/proje_testi.rs	Birim yerel paket ve kilit testli; uzak bağımlılık açık
 rfcs/0010-hata-ve-tanilama.md	kanitli	compiler/tests/katalog_testi.rs,compiler/tests/tani_kimligi_testi.rs,compiler/tests/parser_kurtarma_testi.rs	Katalog kimlik ve çoklu tanı sözleşmesi
-rfcs/0011-structured-concurrency.md	kanitli	compiler/tests/ag_ve_esz_testi.rs,compiler/tests/eszamanlilik_conformance_testi.rs,compiler/tests/dene_ve_sure_testi.rs	Bağımsız scheduler profili sahiplik iptal deadline ve K-133 etki öncesi kapıları
+rfcs/0011-structured-concurrency.md	kanitli	compiler/tests/ag_ve_esz_testi.rs,compiler/tests/eszamanlilik_conformance_testi.rs,compiler/tests/dene_ve_sure_testi.rs,compiler/tests/web_testi.rs	Bağımsız scheduler profili sahiplik iptal deadline K-133 etki kapıları ve K-134 web rollback'i
 rfcs/0012-ffi-ve-tehlikeli-sinir.md	taslak	-	Faz 4/5 gerçeklenmediği için test kanıtı yok
 rfcs/0013-ondalik-sayilar.md	kanitli	compiler/tests/ondalik_testi.rs,compiler/tests/ffi_sinir_testi.rs	Keyfî hassasiyet yuvarlama ve örtük binary float yasağı
 rfcs/0014-standart-kitaplik.md	kismi	compiler/tests/kitaplik_testi.rs,compiler/tests/projeler_testi.rs	Çalışan gömülü prototip testli; RFC taslak
 rfcs/0015-uygulama-eylemleri.md	kanitli	compiler/tests/web_testi.rs,compiler/tests/proje_testi.rs	Eylem etki ve transaction sınırı
 rfcs/0016-atomik-kalici-dosya.md	kanitli	compiler/src/kalici_dosya.rs,compiler/tests/proje_testi.rs	Atomik replace süreç kilidi metadata koruması ve rollback
-rfcs/0017-web-oturum-ve-csrf.md	kanitli	compiler/tests/web_testi.rs,compiler/tests/guvenli_testi.rs,compiler/src/web_guvenligi.rs	Oturum rol CSRF çerez ve proxy profili
+rfcs/0017-web-oturum-ve-csrf.md	kanitli	compiler/tests/web_testi.rs,compiler/tests/guvenli_testi.rs,compiler/src/web_guvenligi.rs,compiler/src/main.rs	Oturum rol CSRF çerez proxy ve K-134 request transaction profili
 rfcs/0018-surumlu-morfoloji-profili.md	kanitli	compiler/tests/morfoloji_testi.rs,compiler/tests/morfoloji_conformance_testi.rs,compiler/tests/lsp_testi.rs	Profil snapshot immutable parmak izi bağımsız conformance property belirsizlik ve semantic rename
 rfcs/0019-deger-semantigi-ve-gezme-imleci.md	kanitli	compiler/tests/koleksiyon_testi.rs	Derin kopya ve değer-sonuç imleci
 rfcs/0020-paket-yayini-ve-registry-guveni.md	kismi	compiler/tests/tedarik_testi.rs,compiler/src/tedarik.rs,compiler/src/registry.rs	Yayın ve metadata güveni testli; taşıma cache CLI açık
@@ -63,12 +63,12 @@ spec/05-degerlendirme.md	kanitli	compiler/tests/golden_testi.rs,compiler/tests/p
 spec/06-hata-modeli.md	kanitli	compiler/tests/katalog_testi.rs,compiler/tests/tani_kimligi_testi.rs,compiler/tests/yapilandirilmis_hata_testi.rs	Tanı Seçenek Sonuç ve Hata sözleşmesi
 spec/07-birimler.md	kanitli	compiler/tests/birim_testi.rs,compiler/tests/proje_testi.rs	Birim çözümü ve paket görünürlüğü
 spec/08-kalici-dosya.md	kanitli	compiler/src/kalici_dosya.rs,compiler/tests/proje_testi.rs	Atomik kalıcı yazma ve platform metadata koruması
-spec/09-son-tarih-ve-iptal.md	kanitli	compiler/tests/ag_ve_esz_testi.rs,compiler/tests/dene_ve_sure_testi.rs	Deadline iptal zaman ve K-133 etki başlamama davranışı
+spec/09-son-tarih-ve-iptal.md	kanitli	compiler/tests/ag_ve_esz_testi.rs,compiler/tests/dene_ve_sure_testi.rs,compiler/tests/web_testi.rs	Deadline iptal K-133 etki başlamama ve K-134 web rollback davranışı
 spec/10-disari-acik-islem-sozlesmesi.md	kanitli	compiler/tests/acik_imza_testi.rs,compiler/tests/cagri_cikarimi_testi.rs	Public imza yerel sıra-bağımsız çıkarım ve dönüş kanıtı
-spec/11-uygulama-eylemleri-ve-web-adaptoru.md	kanitli	compiler/tests/web_testi.rs,compiler/tests/intrinsic_lowering_testi.rs	Eylem rota etki ve savepoint
-spec/12-web-guvenlik-profili.md	kanitli	compiler/tests/web_testi.rs,compiler/tests/guvenli_testi.rs,compiler/src/web_guvenligi.rs	Oturum CSRF rol çerez ve HTTPS proxy
+spec/11-uygulama-eylemleri-ve-web-adaptoru.md	kanitli	compiler/tests/web_testi.rs,compiler/tests/intrinsic_lowering_testi.rs	Eylem rota etki savepoint ve request transaction
+spec/12-web-guvenlik-profili.md	kanitli	compiler/tests/web_testi.rs,compiler/tests/guvenli_testi.rs,compiler/src/web_guvenligi.rs,compiler/src/main.rs	Oturum CSRF rol çerez HTTPS proxy ve gerçek TCP commit rollback
 spec/13-surumlu-morfoloji-profili.md	kanitli	compiler/tests/morfoloji_testi.rs,compiler/tests/morfoloji_conformance_testi.rs,compiler/tests/lsp_testi.rs	zee-tr-1 immutable parmak izi bağımsız conformance snapshot property proje pini ve semantic rename
-spec/14-yapilandirilmis-eszamanlilik.md	kanitli	compiler/tests/ag_ve_esz_testi.rs,compiler/tests/eszamanlilik_conformance_testi.rs	Görev grubu zee-esz-1 gözlem sırası sahiplik iptal ve taze HTTP deadline'ı
+spec/14-yapilandirilmis-eszamanlilik.md	kanitli	compiler/tests/ag_ve_esz_testi.rs,compiler/tests/eszamanlilik_conformance_testi.rs,compiler/tests/web_testi.rs	Görev grubu zee-esz-1 sahiplik iptal taze HTTP deadline'ı ve web request rollback'i
 spec/15-yapilandirilmis-hata-degeri.md	kanitli	compiler/tests/yapilandirilmis_hata_testi.rs	Kod mesaj neden veri ve JSON
 spec/16-keyfi-hassasiyetli-ondalik.md	kanitli	compiler/tests/ondalik_testi.rs,compiler/tests/ffi_sinir_testi.rs	Tam işlemler yuvarlama bağlamı ve binary float sınırı
 spec/17-deger-semantigi-ve-gezme.md	kanitli	compiler/tests/koleksiyon_testi.rs	Derin değer kopyası ve gezme imleci

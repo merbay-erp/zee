@@ -16,7 +16,7 @@ sıra ya da argüman farkında durur.
 
 ## 1. Kapsam (bağlayıcı)
 
-Şema-1 `GirdiCikti` sözleşmesinin bütün yöntemlerini kapsar:
+Şema-1 `GirdiCikti` sözleşmesinin 27 gözlenebilir IO işlemini kapsar:
 
 - ekran/istem, program argümanları;
 - rastgelelik, takvim zamanı, tekdüze an ve bekleme;
@@ -25,6 +25,11 @@ sıra ya da argüman farkında durur.
 - rota güvenliği, CSRF, oturum ve parola doğrulama sonucu;
 - eylem transaction başlatma/tamamlama/geri alma;
 - sensör okuma ve ışık eyleyicisi.
+
+K-134'ün `istek_islemini_tamamla/geri_al` kancaları, bu işlemlerin dış dünyaya
+hangi request transaction'ında yayımlanacağını belirleyen host-only sahiplik
+kontrolüdür. Yeni bir kullanıcı IO çağrısı, argümanı veya sonucu değildir;
+şema-1 olay sözlüğüne girmez ve recorder yalnız iç adaptöre iletir.
 
 Birim yükleme derleme fazındadır ve bu yürütme izi kapsamında değildir.
 Kaynak program iz içine gömülmez; replay'e ayrıca verilir. Kaynakta IO izini

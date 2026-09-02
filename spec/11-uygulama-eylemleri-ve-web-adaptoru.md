@@ -1,6 +1,6 @@
 # 11 — Uygulama eylemleri ve web adaptörü
 
-Bu bölüm K-087 ile gelen normatif v1 sözleşmesidir. Amaç iş kuralını HTTP'den
+Bu bölüm K-087/K-134 ile gelen normatif v1 sözleşmesidir. Amaç iş kuralını HTTP'den
 ayırmak, aynı kuralı web/CLI/görev/test bağlamında yeniden kullanmak ve güvenli
 HTTP yöntemlerinin durum değiştirmediğini derlemede kanıtlamaktır.
 
@@ -98,6 +98,14 @@ bildirilen `Content-Length` sınırı aşınca gövdeyi uygulamaya vermeden 413 
 Okuma süresi her parçada kalan mutlak bütçeye ayarlanır; bayt damlatmak süreyi
 yenilemez. Yanıt yazma socket'i de 10 saniye ile sınırlıdır. Bu limitleri
 büyüten kaynak sözdizimi v1'de yoktur.
+
+Rota seçildikten sonra istek tek yaşam döngüsü taşır. İlk yanıt/yönlendirme,
+Set-Cookie değişiklikleri ve sunucu tarafı oturum mutation'ları gövde başarıyla
+bitene kadar görünmezdir. Başarıda yanıt socket'e eksiksiz yazıldıktan sonra
+birlikte commit edilir. Deadline, çalışma hatası, yanıtsız rota veya socket
+yazma hatasında session/cookie/yanıt birlikte geri alınır. TCP'nin yazılmış
+kısmı fiziksel olarak geri alınamaz; bağlantı kapatılır ve eksik
+`Content-Length` başarı sayılmaz.
 
 ## 6. Eylem transaction'ı ve iç içe savepoint
 

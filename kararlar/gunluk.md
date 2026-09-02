@@ -2084,6 +2084,27 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   isteğinin oturum mutation'ı ile henüz gönderilmemiş yanıtını birlikte
   commit/rollback eden yaşam döngüsü K-134'e kaldı.
 
+## K-134 — Web isteği tek transaction yaşam döngüsüdür (2 Eyl)
+
+- **Sorun:** Gerçek adaptör `yanıtını gönder` anında TCP'ye yazıyor, giriş/
+  çıkış ve CSRF ise oturum deposunu hemen değiştiriyordu. Rota daha sonra
+  timeout veya runtime hatası alırsa erken 200 yayımlanmış, yeni oturum kaydı
+  çerez ulaşıp ulaşmadığından bağımsız kalmış olabiliyordu.
+- **Karar:** `GirdiCikti` host-only request tamamla/geri-al kancaları kazandı.
+  `yorumlayici/web_istek.rs` rota seçimi, güvenlik önsözü, taze ortam ve
+  deadline yürütmesinin tek sahibidir. İlk yanıt/yönlendirme tamponlanır;
+  session ve çerez mutation'ı yalnız rota başarıyla bitip gerçek socket yazımı
+  eksiksiz tamamlanınca birlikte commit edilir. Deadline/runtime/socket hatası
+  veya yanıtsız rota istek başı snapshot'ına döner.
+- **Trace sınırı:** İki yaşam döngüsü kancası yeni kullanıcı IO'su değildir;
+  `zee-io-1` şema-1'in 27 gözlenebilir işlemini değiştirmeden recorder iç
+  adaptöre iletir.
+- **Kanıt:** Hermetik timeout ve runtime hata regresyonları erken yanıt,
+  giriş çerezi ve tahmin edilen yeni oturumun sızmadığını doğrular. Gerçek TCP
+  testleri commit öncesi sıfır bayt ve socket yazma hatasında sıfır oturum
+  kanıtıdır. Envanter 527 test, 150 etkin + 3 ayrılmış tanı ve 80 numaralı
+  belgedir. B-026 kapandı.
+
 ---
 
 ## Sonraki adım
@@ -2092,6 +2113,6 @@ Korpus 10 öğrenci + 5 profesyonel usability oturumuna (Hafta 12 hedefi, erkeni
 Hafta 2'de kağıt üstünde) sesli okutulacak; her kayıt için "doğal mı /
 deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
-Makine hattında K-133 dış etkileri tam çağrı öncesi deadline kapısına bağlayıp
-B-026'yı kısmen kapattı. Sırada K-134 web istek yaşam döngüsü transaction'ı
-vardır.
+Makine hattında K-133/K-134 etki öncesi deadline ile web request
+transaction'ını tamamlayıp B-026'yı kapattı. Sırada B-029 registry taşıma,
+doğrulanmış cache ve kalıcı rollback zinciri vardır.

@@ -1372,14 +1372,29 @@ struct GercekIo {
     eylem_yedekleri:
         Vec<std::collections::HashMap<std::path::PathBuf, EylemDosyaYedegi>>,
     web_guvenligi: dil::web_guvenligi::WebGuvenligi,
+    web_istek_yedegi: Option<WebIstekYedegi>,
+    bekleyen_web_yaniti: Option<WebYanitTaslagi>,
     politika: dil::yetkinlik::YetkinlikPolitikasi,
     dosya_siniri_koku: std::path::PathBuf,
 }
 
+#[derive(Clone)]
 struct BekleyenCerez {
     ad: String,
     deger: String,
     azami_omur_saniye: Option<i64>,
+}
+
+struct WebIstekYedegi {
+    web_guvenligi: dil::web_guvenligi::WebGuvenligi,
+    bekleyen_cerezler: Vec<BekleyenCerez>,
+    bekleyen_silinen_cerezler: Vec<String>,
+}
+
+enum WebYanitTaslagi {
+    Govde(String),
+    Durum(u16, String),
+    Yonlendirme(String),
 }
 
 #[derive(Clone)]
@@ -1416,6 +1431,8 @@ impl GercekIo {
             bekleyen_head: false,
             eylem_yedekleri: Vec::new(),
             web_guvenligi: dil::web_guvenligi::WebGuvenligi::yeni(),
+            web_istek_yedegi: None,
+            bekleyen_web_yaniti: None,
             politika,
             dosya_siniri_koku: std::fs::canonicalize(dosya_siniri_koku)
                 .unwrap_or_else(|_| dosya_siniri_koku.to_path_buf()),
@@ -1502,6 +1519,62 @@ impl GercekIo {
             ));
         }
         sonuc
+    }
+
+    fn web_yanit_taslagini_yaz(&mut self, taslak: WebYanitTaslagi) -> Result<(), String> {
+        use std::io::Write;
+
+        let mut akis = self
+            .bekleyen_akis
+            .take()
+            .ok_or_else(|| "yanıt bekleyen web bağlantısı yok".to_string())?;
+        let _baglanti_izni = self.bekleyen_baglanti_izni.take();
+        let head = std::mem::take(&mut self.bekleyen_head);
+        let guvenlik_basliklari = self.guvenlik_basliklari();
+        let (baslik, govde) = match taslak {
+            WebYanitTaslagi::Govde(govde) => {
+                let tur = if govde.trim_start().starts_with('<') {
+                    "text/html"
+                } else {
+                    "text/plain"
+                };
+                let cerezler = self.cerez_basliklarini_al();
+                let baslik = format!(
+                    "HTTP/1.1 200 OK\r\nContent-Type: {}; charset=utf-8\r\nContent-Length: {}\r\n{}{}Connection: close\r\n\r\n",
+                    tur,
+                    govde.len(),
+                    cerezler,
+                    guvenlik_basliklari
+                );
+                (baslik, govde)
+            }
+            WebYanitTaslagi::Durum(durum, govde) => {
+                self.bekleyen_cerezler.clear();
+                self.bekleyen_silinen_cerezler.clear();
+                let baslik = format!(
+                    "HTTP/1.1 {} {}\r\nContent-Type: text/plain; charset=utf-8\r\nContent-Length: {}\r\n{}Connection: close\r\n\r\n",
+                    durum,
+                    http_durum_aciklamasi(durum),
+                    govde.len(),
+                    guvenlik_basliklari
+                );
+                (baslik, govde)
+            }
+            WebYanitTaslagi::Yonlendirme(adres) => {
+                let cerezler = self.cerez_basliklarini_al();
+                let baslik = format!(
+                    "HTTP/1.1 303 See Other\r\nLocation: {}\r\nContent-Length: 0\r\n{}{}Connection: close\r\n\r\n",
+                    adres, cerezler, guvenlik_basliklari
+                );
+                (baslik, String::new())
+            }
+        };
+        let mut yanit = baslik.into_bytes();
+        if !head {
+            yanit.extend_from_slice(govde.as_bytes());
+        }
+        akis.write_all(&yanit)
+            .map_err(|hata| format!("HTTP yanıtı yazılamadı: {}", hata))
     }
 }
 
@@ -1977,6 +2050,12 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                         (ad == self.oturum_cerez_adi()).then_some(deger.trim())
                     });
                 let an = self.baslangic.elapsed().as_millis() as i64;
+                self.web_istek_yedegi = Some(WebIstekYedegi {
+                    web_guvenligi: self.web_guvenligi.clone(),
+                    bekleyen_cerezler: self.bekleyen_cerezler.clone(),
+                    bekleyen_silinen_cerezler: self.bekleyen_silinen_cerezler.clone(),
+                });
+                self.bekleyen_web_yaniti = None;
                 self.web_guvenligi.istegi_baslat(oturum, an);
                 self.bekleyen_akis = Some(akis);
                 self.bekleyen_baglanti_izni = Some(baglanti_izni);
@@ -1990,6 +2069,35 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             }
             ham_http_hatasi_gonder(&mut akis, 400, "HTTP istek satırı eksik", false, https);
         }
+    }
+    fn istek_islemini_tamamla(&mut self) -> Result<(), String> {
+        let Some(yedek) = self.web_istek_yedegi.take() else {
+            return Ok(());
+        };
+        let Some(taslak) = self.bekleyen_web_yaniti.take() else {
+            self.web_guvenligi = yedek.web_guvenligi;
+            self.bekleyen_cerezler = yedek.bekleyen_cerezler;
+            self.bekleyen_silinen_cerezler = yedek.bekleyen_silinen_cerezler;
+            self.bekleyen_akis = None;
+            self.bekleyen_baglanti_izni = None;
+            self.bekleyen_head = false;
+            return Ok(());
+        };
+        if let Err(hata) = self.web_yanit_taslagini_yaz(taslak) {
+            self.web_guvenligi = yedek.web_guvenligi;
+            self.bekleyen_cerezler = yedek.bekleyen_cerezler;
+            self.bekleyen_silinen_cerezler = yedek.bekleyen_silinen_cerezler;
+            return Err(hata);
+        }
+        Ok(())
+    }
+    fn istek_islemini_geri_al(&mut self) {
+        if let Some(yedek) = self.web_istek_yedegi.take() {
+            self.web_guvenligi = yedek.web_guvenligi;
+            self.bekleyen_cerezler = yedek.bekleyen_cerezler;
+            self.bekleyen_silinen_cerezler = yedek.bekleyen_silinen_cerezler;
+        }
+        self.bekleyen_web_yaniti = None;
     }
     fn cerez_yaz(&mut self, ad: &str, deger: &str) -> Result<(), String> {
         if !dil::web_guvenligi::cerez_adi_gecerli(ad)
@@ -2046,55 +2154,23 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         Ok(())
     }
     fn yanit_gonder(&mut self, yanit: &str) {
-        use std::io::Write;
-        if let Some(mut akis) = self.bekleyen_akis.take() {
-            let _baglanti_izni = self.bekleyen_baglanti_izni.take();
-            let head = std::mem::take(&mut self.bekleyen_head);
-            let govde = yanit.as_bytes();
-            // Gövde işaretlemeyle başlıyorsa tarayıcıya HTML olarak sun
-            // (K-050): zee ile web sayfası servis etmenin önünü açar.
-            let tur = if yanit.trim_start().starts_with('<') {
-                "text/html"
-            } else {
-                "text/plain"
-            };
-            let cerez_basliklari = self.cerez_basliklarini_al();
-            let guvenlik_basliklari = self.guvenlik_basliklari();
-            let _ = write!(
-                akis,
-                "HTTP/1.1 200 OK\r\nContent-Type: {}; charset=utf-8\r\nContent-Length: {}\r\n{}{}Connection: close\r\n\r\n",
-                tur,
-                govde.len(),
-                cerez_basliklari,
-                guvenlik_basliklari
-            );
-            if !head {
-                let _ = akis.write_all(govde);
+        if self.web_istek_yedegi.is_some() {
+            if self.bekleyen_web_yaniti.is_none() {
+                self.bekleyen_web_yaniti = Some(WebYanitTaslagi::Govde(yanit.to_string()));
             }
+            return;
         }
+        let _ = self.web_yanit_taslagini_yaz(WebYanitTaslagi::Govde(yanit.to_string()));
     }
     fn durum_yaniti_gonder(&mut self, durum: u16, yanit: &str) {
-        use std::io::Write;
-        let aciklama = http_durum_aciklamasi(durum);
-        self.bekleyen_cerezler.clear();
-        self.bekleyen_silinen_cerezler.clear();
-        if let Some(mut akis) = self.bekleyen_akis.take() {
-            let _baglanti_izni = self.bekleyen_baglanti_izni.take();
-            let head = std::mem::take(&mut self.bekleyen_head);
-            let govde = yanit.as_bytes();
-            let guvenlik_basliklari = self.guvenlik_basliklari();
-            let _ = write!(
-                akis,
-                "HTTP/1.1 {} {}\r\nContent-Type: text/plain; charset=utf-8\r\nContent-Length: {}\r\n{}Connection: close\r\n\r\n",
-                durum,
-                aciklama,
-                govde.len(),
-                guvenlik_basliklari
-            );
-            if !head {
-                let _ = akis.write_all(govde);
+        if self.web_istek_yedegi.is_some() {
+            if self.bekleyen_web_yaniti.is_none() {
+                self.bekleyen_web_yaniti =
+                    Some(WebYanitTaslagi::Durum(durum, yanit.to_string()));
             }
+            return;
         }
+        let _ = self.web_yanit_taslagini_yaz(WebYanitTaslagi::Durum(durum, yanit.to_string()));
     }
     fn yonlendir_gonder(&mut self, adres: &str) -> Result<(), String> {
         if !dil::web_guvenligi::yerel_yonlendirme_gecerli(adres) {
@@ -2102,21 +2178,14 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                 "yönlendirme yalnız CR/LF içermeyen yerel `/...` adresine yapılabilir".into(),
             );
         }
-        use std::io::Write;
-        if let Some(mut akis) = self.bekleyen_akis.take() {
-            let _baglanti_izni = self.bekleyen_baglanti_izni.take();
-            self.bekleyen_head = false;
-            let cerez_basliklari = self.cerez_basliklarini_al();
-            let guvenlik_basliklari = self.guvenlik_basliklari();
-            let _ = write!(
-                akis,
-                "HTTP/1.1 303 See Other\r\nLocation: {}\r\nContent-Length: 0\r\n{}{}Connection: close\r\n\r\n",
-                adres,
-                cerez_basliklari,
-                guvenlik_basliklari
-            );
+        if self.web_istek_yedegi.is_some() {
+            if self.bekleyen_web_yaniti.is_none() {
+                self.bekleyen_web_yaniti =
+                    Some(WebYanitTaslagi::Yonlendirme(adres.to_string()));
+            }
+            return Ok(());
         }
-        Ok(())
+        self.web_yanit_taslagini_yaz(WebYanitTaslagi::Yonlendirme(adres.to_string()))
     }
     fn rota_guvenligini_denetle(
         &mut self,
@@ -2310,7 +2379,7 @@ fn dene_komutu(girdi: &KaynakGirdisi) -> ExitCode {
 mod web_profili_testleri {
     use super::*;
     use dil::yorumlayici::GirdiCikti;
-    use std::io::Write;
+    use std::io::{Read, Write};
 
     #[test]
     fn guvenli_origin_yalniz_https_sema_ve_host_kabul_eder() {
@@ -2400,6 +2469,79 @@ mod web_profili_testleri {
         let mut bayt = [0u8; 1];
         let hata = son_tarihli_soket_oku(&mut istemci, &mut bayt, gecmis).unwrap_err();
         assert_eq!(hata.kind(), std::io::ErrorKind::TimedOut);
+    }
+
+    #[test]
+    fn gercek_web_yaniti_commit_oncesi_yayimlanmaz_rollback_oturumu_siler() {
+        let dinleyici = std::net::TcpListener::bind(("127.0.0.1", 0)).unwrap();
+        let adres = dinleyici.local_addr().unwrap();
+        let mut istemci = std::net::TcpStream::connect(adres).unwrap();
+        let (sunucu, _) = dinleyici.accept().unwrap();
+        istemci
+            .set_read_timeout(Some(std::time::Duration::from_millis(20)))
+            .unwrap();
+        let mut io = GercekIo::yeni_argumanlarla(
+            std::path::Path::new("."),
+            std::path::Path::new("."),
+            WebModu::Deneysel,
+            Vec::new(),
+            dil::yetkinlik::YetkinlikPolitikasi::gelistirici(),
+        );
+        io.bekleyen_akis = Some(sunucu);
+        io.web_istek_yedegi = Some(WebIstekYedegi {
+            web_guvenligi: io.web_guvenligi.clone(),
+            bekleyen_cerezler: Vec::new(),
+            bekleyen_silinen_cerezler: Vec::new(),
+        });
+        io.oturum_ac("Mustafa", "yönetici").unwrap();
+        io.yanit_gonder("erken başarı");
+
+        let mut bayt = [0u8; 1];
+        let hata = istemci.read(&mut bayt).unwrap_err();
+        assert!(matches!(
+            hata.kind(),
+            std::io::ErrorKind::TimedOut | std::io::ErrorKind::WouldBlock
+        ));
+        io.istek_islemini_geri_al();
+        assert_eq!(io.web_guvenligi.oturum_sayisi(), 0);
+        assert!(io.bekleyen_cerezler.is_empty());
+        io.durum_yaniti_gonder(504, "zaman aşımı");
+
+        istemci.set_read_timeout(None).unwrap();
+        let mut yanit = String::new();
+        istemci.read_to_string(&mut yanit).unwrap();
+        assert!(yanit.starts_with("HTTP/1.1 504 Gateway Timeout"));
+        assert!(yanit.ends_with("zaman aşımı"));
+        assert!(!yanit.contains("erken başarı"));
+    }
+
+    #[test]
+    fn web_yaniti_yazilamazsa_oturum_commit_edilmez() {
+        let dinleyici = std::net::TcpListener::bind(("127.0.0.1", 0)).unwrap();
+        let adres = dinleyici.local_addr().unwrap();
+        let istemci = std::net::TcpStream::connect(adres).unwrap();
+        let (sunucu, _) = dinleyici.accept().unwrap();
+        sunucu.shutdown(std::net::Shutdown::Both).unwrap();
+        drop(istemci);
+        let mut io = GercekIo::yeni_argumanlarla(
+            std::path::Path::new("."),
+            std::path::Path::new("."),
+            WebModu::Deneysel,
+            Vec::new(),
+            dil::yetkinlik::YetkinlikPolitikasi::gelistirici(),
+        );
+        io.bekleyen_akis = Some(sunucu);
+        io.web_istek_yedegi = Some(WebIstekYedegi {
+            web_guvenligi: io.web_guvenligi.clone(),
+            bekleyen_cerezler: Vec::new(),
+            bekleyen_silinen_cerezler: Vec::new(),
+        });
+        io.oturum_ac("Mustafa", "yönetici").unwrap();
+        io.yanit_gonder("başarı");
+
+        assert!(io.istek_islemini_tamamla().is_err());
+        assert_eq!(io.web_guvenligi.oturum_sayisi(), 0);
+        assert!(io.bekleyen_cerezler.is_empty());
     }
 
     #[test]

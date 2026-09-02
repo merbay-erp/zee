@@ -37,6 +37,9 @@ uyuşan bir koşu başarılı görüntüsü vermez.
 - Saat/rastgele algoritmasını yeniden çalıştırmaz; kayıtlı sonuçları kullanır.
   Etkin algoritma ve sanal saat [deterministik IO profilinde](deterministik-io-profili.md)
   `zee-io-1` adıyla ayrıca sürümlüdür.
+- K-134 web request commit/rollback kancalarını ayrı olay yapmaz; bunlar
+  kaydedilmiş yanıt/oturum çağrılarını hostta görünür kılan iç sahiplik
+  sınırıdır ve replay sırasında dış etki uygulamaz.
 
 ## Gizlilik
 

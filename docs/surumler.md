@@ -460,6 +460,14 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   İki sanal saat regresyonuyla envanter 523 teste çıktı. B-026 kısmen
   kapandı; web istek yanıtı+oturum transaction'ı K-134'e kaldı.
 
+- **Transaction'lı web istek yaşam döngüsü**
+  (K-134, RFC-0011/RFC-0017/spec-09/spec-11/spec-12): Rota seçimi ve yürütmesi
+  180 satır bütçeli `yorumlayici/web_istek.rs` sahibine ayrıldı. İlk HTTP
+  yanıtı/yönlendirmesi session ve çerez mutation'ıyla birlikte tamponlanır;
+  yalnız başarılı gövde ve eksiksiz socket yazımında commit olur. Timeout,
+  runtime/socket hatası veya yanıtsız rota hepsini geri alır. Dört yeni
+  hermetik+gerçek TCP regresyonuyla envanter 527 teste çıktı; B-026 kapandı.
+
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`
   bildirimi hazır üretir. P001–P004 Türkçe proje tanıları. Doğrudan dosya

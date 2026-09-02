@@ -1,8 +1,9 @@
 # RFC-0017 — Web oturumu, yetki, CSRF ve güvenilir proxy profili
 
-- **Durum:** geçici kabul — K-088 gerçeklendi ve saldırı regresyonlarına bağlandı
+- **Durum:** geçici kabul — K-088 güvenlik profili ve K-134 istek transaction'ı
+  saldırı/cancellation regresyonlarına bağlandı
 - **Tarih:** 1 Eylül 2026
-- **İlgili kararlar:** K-082, K-087, K-088, ADR-010; V1-P0-03
+- **İlgili kararlar:** K-082, K-087, K-088, K-134, ADR-010; V1-P0-03
 - **Normatif metin:** spec/12
 
 ## Problem
@@ -32,6 +33,9 @@ kapısı olmalıdır.
    reverse proxy'ye bağlanır ve Host/proto/Origin üçlüsünü doğrular.
 8. Production çerezi `__Host-`, Secure, HttpOnly, SameSite=Lax, Path=/ ve
    sınırlı Max-Age taşır.
+9. Bir istekteki oturum/çerez mutation'ı ilk yanıtla birlikte tamponlanır.
+   Yalnız rota başarıyla bitip socket yanıtı eksiksiz yazılırsa commit edilir;
+   deadline, runtime/yazma hatası veya yanıtsız rota hepsini geri alır.
 
 ## Dil yüzeyi
 
@@ -75,6 +79,9 @@ Conformance paketi CSPRNG farklılığını, Argon2id doğru/yanlış parolayı,
 session rotation/revoke/süre dolumunu, rol ayrımını, eksik/sahte/geçerli
 CSRF'yi, zorunlu alanı, güvenli çerez niteliklerini, CRLF enjeksiyonunu,
 tekrarlı Host'u ve yanlış proto/Origin'i olumsuz testlerle sabitler.
+K-134 kanıtı ayrıca timeout/runtime hatasında erken yanıtın, giriş çerezinin ve
+sunucu oturumunun sızmadığını; gerçek TCP'de commit öncesi bayt çıkmadığını ve
+socket yazma hatasının oturumu commit etmediğini doğrular.
 
 ## Bilinçli sınır
 

@@ -13,6 +13,8 @@ fn sunucuyla(kaynak: &str, istekler: Vec<&str>) -> ToplayanIo {
         assert!(io.istek_al().is_some());
         let csrf = io.csrf_belirteci().expect("CSRF oturumu");
         let (_, oturum) = io.yazilan_cerezler[0].clone();
+        io.yanit_gonder("");
+        io.istek_islemini_tamamla().unwrap();
         io.sunucu_yanitlari.clear();
         io.sunucu_durumlari.clear();
         io.yazilan_cerezler.clear();
@@ -98,6 +100,8 @@ fn toplayan_io_anonim_oturumu_sonraki_istege_tasir() {
     assert!(io.istek_al().is_some());
     let csrf = io.csrf_belirteci().expect("CSRF");
     let (_, oturum) = io.yazilan_cerezler[0].clone();
+    io.yanit_gonder("");
+    io.istek_islemini_tamamla().unwrap();
     io.istekler.push_back(format!(
         "POST /kaydet\nçerez __Host-zee-oturum={}\n_csrf={}",
         oturum, csrf
@@ -106,6 +110,7 @@ fn toplayan_io_anonim_oturumu_sonraki_istege_tasir() {
     assert!(io
         .rota_guvenligini_denetle(&RotaErisimi::HerkeseAcik, Some(&csrf), true)
         .is_ok());
+    io.istek_islemini_tamamla().unwrap();
 }
 
 #[test]
@@ -161,6 +166,8 @@ POST \"/kaydet\" adresine istek geldiğinde
     io.istek_al();
     let csrf = io.csrf_belirteci().expect("csrf");
     let (_, oturum) = io.yazilan_cerezler[0].clone();
+    io.yanit_gonder("");
+    io.istek_islemini_tamamla().unwrap();
     io.sunucu_yanitlari.clear();
     io.sunucu_durumlari.clear();
     io.istekler = vec![
@@ -626,6 +633,84 @@ GET \"/yavaş\" adresine istek geldiğinde
     let io = sunucuyla(kaynak, vec!["GET /yavaş"]);
     assert_eq!(io.sunucu_durumlari, vec![504]);
     assert_eq!(io.sunucu_yanitlari[0].1, "istek 30 saniyelik son tarihini aştı");
+}
+
+#[test]
+fn zaman_asimi_tamponlu_yaniti_cerezi_ve_oturum_mutasyonunu_birlikte_geri_alir() {
+    let kaynak = "\
+8080 kapısında sunucu başlat
+
+POST \"/gec\" adresine istek geldiğinde
+    herkese açık
+    \"Mustafa\" kullanıcısını \"yönetici\" rolüyle oturuma al
+    \"erken başarı\" yanıtını gönder
+    31 saniye bekle
+
+GET \"/korumali\" adresine istek geldiğinde
+    oturum gerekli
+    \"oturum sızdı\" yanıtını gönder
+";
+    let sızmış_kimlik = format!("{:064x}", 3);
+    let ikinci = format!(
+        "GET /korumali\nçerez __Host-zee-oturum={}",
+        sızmış_kimlik
+    );
+    let io = sunucuyla(kaynak, vec!["POST /gec", &ikinci]);
+
+    assert_eq!(io.sunucu_durumlari, vec![504, 401]);
+    assert_eq!(
+        io.sunucu_yanitlari[0].1,
+        "istek 30 saniyelik son tarihini aştı",
+        "tamponlanmış erken başarı timeout'ta yayımlanmamalı"
+    );
+    assert!(
+        io.yazilan_cerezler.is_empty(),
+        "geri alınan girişin çerezi sonraki yanıta sızmamalı"
+    );
+}
+
+#[test]
+fn rota_hatasi_tamponlu_yaniti_cerezi_ve_oturum_mutasyonunu_geri_alir() {
+    let kaynak = "\
+8080 kapısında sunucu başlat
+
+POST \"/bozuk\" adresine istek geldiğinde
+    herkese açık
+    \"Mustafa\" kullanıcısını \"yönetici\" rolüyle oturuma al
+    \"erken başarı\" yanıtını gönder
+    sonuç 1 in 0 a bölümü olsun
+
+GET \"/korumali\" adresine istek geldiğinde
+    oturum gerekli
+    \"oturum sızdı\" yanıtını gönder
+";
+    let program = dil::kaynagi_derle(kaynak).expect("derlenmeli");
+    let mut io = ToplayanIo::yeni(Vec::new());
+    io.istekler.push_back("GET /__test-csrf".into());
+    assert!(io.istek_al().is_some());
+    let csrf = io.csrf_belirteci().expect("CSRF oturumu");
+    let (_, anonim) = io.yazilan_cerezler[0].clone();
+    io.yanit_gonder("");
+    io.istek_islemini_tamamla().unwrap();
+    io.sunucu_yanitlari.clear();
+    io.sunucu_durumlari.clear();
+    io.yazilan_cerezler.clear();
+    io.guvenli_cerezler.clear();
+
+    io.istekler
+        .push_back(csrfli_istek_ile("POST /bozuk", &anonim, &csrf));
+    let hata = calistir_io(&program, &mut io).expect_err("rota hatası yayılmalı");
+    assert_eq!(hata.kod, "C003");
+    assert!(io.yazilan_cerezler.is_empty());
+    assert!(io.sunucu_yanitlari[0].1.is_empty());
+
+    let sızmış_kimlik = format!("{:064x}", 3);
+    io.istekler.push_back(format!(
+        "GET /korumali\nçerez __Host-zee-oturum={}",
+        sızmış_kimlik
+    ));
+    calistir_io(&program, &mut io).expect("sunucu yeniden çalışmalı");
+    assert_eq!(io.sunucu_durumlari[1], 401);
 }
 
 #[test]
