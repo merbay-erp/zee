@@ -60,7 +60,19 @@ pub fn calistir_baglanmis_io(
     program: &crate::faz::BaglanmisProgram,
     io: &mut dyn GirdiCikti,
 ) -> Result<(), Tani> {
-    calistir_program_kodla(CalistirmaProgrami::Hir(program.hir()), io).map(|_| ())
+    calistir_baglanmis_io_kodla(program, io).map(|_| ())
+}
+
+/// Typed HIR üzerinden çalıştırır ve `programı N ile bitir` sonucunu korur.
+///
+/// Gömücüler normal bitişte `0`, görünür bitirişte `N` alır; runtime hataları
+/// yine kodlu [`Tani`] olarak döner. Böylece çıkış kodunu gözleyen yüzeyin faz
+/// bilgisini silip ham AST yorumlayıcısına dönmesi gerekmez.
+pub fn calistir_baglanmis_io_kodla(
+    program: &crate::faz::BaglanmisProgram,
+    io: &mut dyn GirdiCikti,
+) -> Result<i64, Tani> {
+    calistir_program_kodla(CalistirmaProgrami::Hir(program.hir()), io)
 }
 
 pub fn test_calistir_baglanmis(

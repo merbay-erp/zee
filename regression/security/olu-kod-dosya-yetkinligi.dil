@@ -1,0 +1,6 @@
+işlem gizli oku
+    Metin döndürür
+    satırlar "özel.txt" dosyasının satırları olsun
+    satırların ilki döndür
+
+"ana program" yaz

@@ -25,6 +25,12 @@ jobs:
         env:
           ZEE_CONFORMANCE_TABANI: ${{ github.event.pull_request.base.sha || github.event.before }}
         run: bash scripts/conformance-korugu.sh "$ZEE_CONFORMANCE_TABANI"
+      - name: Semantic regresyon vaka soy ağacı kalıcı
+        if: matrix.os == 'ubuntu-latest'
+        shell: bash
+        env:
+          ZEE_REGRESYON_TABANI: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: bash scripts/semantic-regresyon-korugu.sh "$ZEE_REGRESYON_TABANI"
       # rust-toolchain.toml sürümü sabitler; action yalnız rustup'ı hazırlar.
       - uses: dtolnay/rust-toolchain@stable
         with:

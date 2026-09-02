@@ -2386,12 +2386,37 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   job summary ile indirilebilir Markdown artefaktına yazar.
 - **Sınır:** Süre bir correctness/performance eşiği değildir; tarihsel p50/p95
   işi B-040'ta kalır. Mevcut test kaynaklarının faz ilişkisi görünürdür fakat
-  her düzeltilmiş bug için minimal `.dil` corpus zorunluluğu B-039/K-147'nin
-  sıradaki ayrı kapısıdır.
+  her düzeltilmiş bug için minimal `.dil` corpus zorunluluğu ardından
+  B-039/K-147/ADR-044 ile ayrı kapı olarak tamamlandı.
 - **Kanıt:** Altı koşucu birim testi selector/tek sahiplik/zorunlu faz/özet/
   Markdown kurallarını, ayrı mimari regresyon Tier-1 CI kablolamasını korur.
   Kaynak envanteri 592 test, 90 numaralı belge ve 41 kabul ADR'dir; B-038
   kapandı. Dil semantiği, tanı kataloğu, RFC ve spec değişmedi.
+
+## K-147 — Düzeltilen bug küçük ve kalıcı bir Zee kaynağı bırakır (2 Eyl)
+
+- **Sorun:** Faz matrisi bütün testleri sahipliyordu fakat geçmiş bir bug'ın
+  K-kimliğini, en küçük kullanıcı kaynağını ve kesin tanı/span/exit/çıktı
+  beklentisini tek veri kaydında taşımıyordu. Büyük Rust/golden testleri aynı
+  davranışı örtseler de arızanın tarihi genel yeşil toplamda kaybolabiliyordu.
+- **Karar:** `regression/v1.tsv` ile parser, checker, typed HIR, runtime,
+  morphology, concurrency ve security klasörlerindeki 17 minimal `.dil` vaka
+  birebir sahiplenir. Dokuz alan vaka+K-kimliği, faz, kip, tanı, kesin span,
+  exit, sıralı stdout ve yolu taşır. Sahipsiz/yinelenen dosya, bozuk metadata,
+  CR/tab/son-LF ihlali veya 4 KiB/32 dolu satır aşımı fail-closed'dur.
+- **Gerçek faz:** Koşucu lexer/parser, kurtarmalı çoklu tanı, full compile,
+  bağlı HIR invariantı, typed-HIR runtime ve kapalı yetkinlik yüzeylerini
+  doğrudan çalıştırır. `calistir_baglanmis_io_kodla`, HIR programının
+  `programı N ile bitir` sonucunu ham AST adaptörüne dönmeden korur.
+- **Sürekli kural:** Yeni compiler bug düzeltmesi aynı committe fixture ve
+  metadata satırı bırakır. Git-tabanlı CI koruğu geçmiş vaka+bug+yol üçlüsünü
+  silmeyi veya yeniden kullanmayı reddeder. Korpus K-146 matrisinde ayrı 22.
+  fazdır; ilgili üretim fazları onu aşağı akış etkisi olarak gösterir.
+- **Kanıt ve sınır:** ADR-044 ve semantic korpus rehberi; ağaç/manifest şema
+  testi ile 17 vakanın tanı+span+exit+stdout testi. Dil sözdizimi, tanı anlamı,
+  RFC ve normatif spec değişmedi. Kaynak envanteri 595 test, 91 numaralı belge
+  ve 42 kabul ADR'dir; B-039 kapandı. Sıradaki makine işi K-148 ile B-040
+  performans tarihçesi ve trend artefaktlarıdır.
 
 ---
 
@@ -2401,7 +2426,7 @@ Korpus 10 öğrenci + 5 profesyonel usability oturumuna (Hafta 12 hedefi, erkeni
 Hafta 2'de kağıt üstünde) sesli okutulacak; her kayıt için "doğal mı /
 deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
-Makine hattında K-146 gerçek Cargo/libtest envanterini 21 birincil faza tam
-sahipletip Tier-1 count/pass/fail/ignored/süre ve regression/fuzz/conformance
-raporlarıyla B-038'i kapattı. Sırada K-147 ile B-039 kalıcı semantic
-regression korpusu vardır.
+Makine hattında K-147, K-146 matrisine ayrı semantic regression fazı ekleyip
+17 geçmiş bug'ı kesin gözlemli minimal `.dil` kaynağına bağladı; B-039
+kapandı. Sırada K-148 ile B-040 performans tarihçesi ve trend artefaktları
+vardır.

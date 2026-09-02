@@ -90,6 +90,18 @@ süresini verir. `cfg` nedeniyle aktif toplam platforma göre değişebilir;
 README'deki kaynak vakası toplamı ile karıştırılmaz. Süre performans eşiği
 değildir; tarihsel performans kanıtı B-040'ın ayrı sözüdür.
 
+## Semantic regresyon korpusu
+
+K-147/ADR-044'ün [semantic regresyon korpusu](semantic-regresyon-korpusu.md),
+geçmiş compiler bug'larını `regression/v1.tsv` ile küçük `.dil` kaynaklarına
+bağlar. Vaka kimliği, K-kaydı, faz, kip, kesin tanı spanı, exit ve çıktı tek
+satırdır. Ağaç ile manifest birebir değilse ya da fixture minimality sınırını
+aşarsa test başarısız olur. Faz matrisi bu testi ayrı `Semantic regression`
+fazında sayar; böylece genel yeşil toplam geçmiş arıza kimliğini gizlemez.
+`semantic-regresyon-korugu.sh` ayrıca CI tabanındaki vaka+bug+yol üçlüsünün
+silinmesini veya yeniden kullanılmasını reddeder; yeni bug yalnız yeni satır
+ve fixture ekler.
+
 ## Immutable conformance verisi
 
 `scripts/conformance-korugu.sh`, CI taban Git revizyonunda bulunan bütün

@@ -15,7 +15,9 @@ mod yetkinlik;
 
 use self::cumle::blok_calistir_async;
 use self::hir_gecisi::CalistirmaProgrami;
-pub use self::hir_gecisi::{calistir_baglanmis, calistir_baglanmis_io, test_calistir_baglanmis};
+pub use self::hir_gecisi::{
+    calistir_baglanmis, calistir_baglanmis_io, calistir_baglanmis_io_kodla, test_calistir_baglanmis,
+};
 use self::ifade::degerlendir_async;
 pub use self::io_izi::{IzKaydedenIo, IzYenidenOynatici, AZAMI_IO_IZ_BAYTI, AZAMI_IO_IZ_OLAYI};
 pub use self::io_profili::{SurumluRastgele, DETERMINISTIK_IO_PROFILI};

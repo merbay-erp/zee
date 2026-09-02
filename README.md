@@ -167,6 +167,7 @@ korpus üzerinde regression testine girer.
 | Spesifikasyon | [spec/](spec/) | ✅ başladı — normatif çekirdek (RFC'lere bağlar) |
 | Kanıt haritası | [docs/depo-butunlugu.md](docs/depo-butunlugu.md) | ✅ bütün RFC/ADR/spec → test yolları ve canlı sayılar CI'da |
 | Faz test matrisi | [docs/faz-test-matrisi.md](docs/faz-test-matrisi.md) | ✅ gerçek Cargo/libtest envanteri, Tier-1 pass/fail/süre artefaktı |
+| Semantic regresyon | [docs/semantic-regresyon-korpusu.md](docs/semantic-regresyon-korpusu.md) | ✅ 17 geçmiş bug → minimal `.dil` + faz/tanı/span/exit/çıktı |
 
 <!-- ZEE-DEPO-SAYILARI:BEGIN -->
 <!-- `cd compiler && cargo run --bin depo_sayilari -- --yaz` üretir. Elle değiştirme. -->
@@ -175,10 +176,10 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **592** |
+| Rust + doctest vakası | **595** |
 | Tanı kimliği | **152 etkin + 3 ayrılmış** |
 | RFC | **25** (2 kabul, 21 geçici kabul, 2 taslak) |
-| ADR | **41** (41 kabul) |
+| ADR | **42** (42 kabul) |
 | Normatif spec bölümü | **24** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
@@ -287,8 +288,12 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   CI kapısıyla B-037 kapandı. K-146/ADR-043 bütün gerçek Cargo/libtest
   vakalarını 21 birincil faza sahipletip her Tier-1 işletim sisteminde
   test/pass/fail/ignored/süre, regression, fuzz ve conformance ilişkisini
-  raporlayarak B-038'i kapattı. Sıradaki makine kapısı K-147/B-039 kalıcı
-  semantic regression korpusudur.
+  raporlayarak B-038'i kapattı. K-147/ADR-044 bunu ayrı bir 22. rapor fazıyla
+  tamamladı: `regression/` altındaki 17 minimal `.dil` vaka bug kimliği,
+  birincil faz, kesin tanı spanı, exit ve stdout beklentisiyle birebir
+  sahiplenir; [bakım protokolü](docs/semantic-regresyon-korpusu.md) yeni her
+  compiler bug düzeltmesinde aynı kaydı zorunlu kılar. B-039 kapandı; sıradaki
+  makine kapısı K-148/B-040 performans tarihçesi ve trend artefaktlarıdır.
   K-107/ADR-019 `dillsp` girdisini 8 KiB başlık, 8 MiB gövde, 128 JSON
   derinliği ve 100 bin düğümle sınırlayıp Unicode parser olumsuzlarını kapattı.
   K-138/ADR-035 sayı ayrıştırmasını RFC 8259 durum makinesine taşıdı; sayısal

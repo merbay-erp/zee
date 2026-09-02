@@ -1,0 +1,15 @@
+işlem a işini yap
+    "a başladı" yaz
+    1 saniye bekle
+    "a bitti" yaz
+    1 döndür
+işlem b işini yap
+    "b başladı" yaz
+    1 saniye bekle
+    "b bitti" yaz
+    2 döndür
+eşzamanlı olarak
+    a a işini yap
+    b b işini yap
+"ana" yaz
+hepsini bekle

@@ -49,6 +49,7 @@ bir test veya yanıltıcı tek toplam, incelemenin blast-radius bilgisini gizler
 
 - Tek yeşil sayı yerine hangi fazın kaç testi ne sürede geçtiği görülür.
 - Mevcut kalıcı fixture, fuzz ve bağımsız conformance bağları aynı raporda
-  görünür; gerçek semantic regression corpus eksikliği B-039 olarak açıktır.
+  görünür. B-039/K-147 daha sonra ADR-044 ile sürümlü semantic regression
+  korpusunu ayrı 22. rapor fazı olarak eklemiştir.
 - CI bütün testleri yine çalıştırır fakat sıralama birincil faz sahipliğine
   göre yapılır. Dil semantiği, tanılar ve normatif spec değişmez.
