@@ -11,10 +11,14 @@ use std::collections::HashMap;
 
 // ---------- mini JSON ----------
 
-pub const AZAMI_LSP_BASLIK_BAYTI: usize = 8 * 1024;
-pub const AZAMI_LSP_GOVDE_BAYTI: usize = 8 * 1024 * 1024;
-pub const AZAMI_LSP_JSON_DERINLIGI: usize = 128;
-pub const AZAMI_LSP_JSON_DUGUMU: usize = 100_000;
+pub const AZAMI_LSP_BASLIK_BAYTI: usize =
+    crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.lsp().baslik_bayti();
+pub const AZAMI_LSP_GOVDE_BAYTI: usize =
+    crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.lsp().govde_bayti();
+pub const AZAMI_LSP_JSON_DERINLIGI: usize =
+    crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.lsp().json_derinligi();
+pub const AZAMI_LSP_JSON_DUGUMU: usize =
+    crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.lsp().json_dugumu();
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Json {

@@ -436,6 +436,15 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   yeni regresyonla envanter 517 test, 150 etkin + 3 ayrılmış tanı ve 80
   numaralı belgedir. B-025 yalnız eski domain sabitlerinin göçü için açıktır.
 
+- **Kaynak limitlerinde tek sayısal sahip** (K-131, RFC-0025/ADR-033
+  revizyonu): HTTP/ağ, web oturumu, IO izi, LSP, paket/registry, tanı,
+  atomik metadata ve dosya kilit sürelerinin mevcut değerleri davranış
+  değiştirmeden `KaynakSinirlari` domain görünümlerine taşındı. Geriye uyumlu
+  yerel sabit adları yalnız ortak profile bağlı alias'tır. Bounded reader ve
+  profil tanımları ayrı mimari bütçeli modüllere ayrıldı; merkezi sahiplik
+  regresyonuyla envanter 518 teste çıktı. B-025, LSP outbound JSON'unu tam
+  yanıt kurulmadan 8 MiB'ta kesen allocation-order dilimi için kısmen açıktır.
+
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`
   bildirimi hazır üretir. P001–P004 Türkçe proje tanıları. Doğrudan dosya

@@ -16,7 +16,11 @@
 
 use std::process::ExitCode;
 
-const HTTP_ISTEK_OKUMA_SURESI: std::time::Duration = std::time::Duration::from_secs(10);
+const HTTP_ISTEK_OKUMA_SURESI: std::time::Duration = std::time::Duration::from_secs(
+    dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+        .http()
+        .istek_okuma_saniyesi(),
+);
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 enum WebModu {
@@ -100,7 +104,10 @@ fn main() -> ExitCode {
     // 32 MB yığınlı bir iş parçacığında koşar (K-040).
     let is_parcacigi = match std::thread::Builder::new()
         .name("dil".into())
-        .stack_size(32 * 1024 * 1024)
+        .stack_size(
+            dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+                .calistirma_yigin_bayti(),
+        )
         .spawn(govde)
     {
         Ok(is_parcacigi) => is_parcacigi,
@@ -292,7 +299,10 @@ fn io_izi_komutu(argumanlar: &[String]) -> ExitCode {
         }
     };
     if boyut > dil::yorumlayici::AZAMI_IO_IZ_BAYTI as u64 {
-        eprintln!("IO izi 64 MiB sınırını aşıyor.");
+        eprintln!(
+            "IO izi {} MiB sınırını aşıyor.",
+            dil::yorumlayici::AZAMI_IO_IZ_BAYTI / 1024 / 1024
+        );
         return ExitCode::FAILURE;
     }
     let iz = match std::fs::read_to_string(iz_yolu) {
@@ -1760,23 +1770,30 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             {
                 continue;
             }
-            let mut tampon = Vec::with_capacity(80 * 1024);
+            let http_siniri = dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.http();
+            let baslik_siniri = http_siniri.istek_baslik_bayti();
+            let mut tampon = Vec::with_capacity(
+                baslik_siniri.saturating_add(http_siniri.istek_govde_bayti()),
+            );
             let govde_basi = loop {
                 if let Some(yer) = tampon.windows(4).position(|p| p == b"\r\n\r\n") {
                     break yer + 4;
                 }
-                if tampon.len() >= 16 * 1024 {
+                if tampon.len() >= baslik_siniri {
                     ham_http_hatasi_gonder(
                         &mut akis,
                         431,
-                        "istek başlıkları 16 KiB sınırını aşıyor",
+                        &format!(
+                            "istek başlıkları {} KiB sınırını aşıyor",
+                            baslik_siniri / 1024
+                        ),
                         false,
                         https,
                     );
                     continue 'istekler;
                 }
                 let mut parca = [0u8; 4096];
-                let sinir = (16 * 1024 - tampon.len()).min(parca.len());
+                let sinir = (baslik_siniri - tampon.len()).min(parca.len());
                 match son_tarihli_soket_oku(&mut akis, &mut parca[..sinir], son_tarih) {
                     Ok(0) => continue 'istekler,
                     Ok(okunan) => tampon.extend_from_slice(&parca[..okunan]),
@@ -1789,7 +1806,10 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                         ham_http_hatasi_gonder(
                             &mut akis,
                             408,
-                            "istek 10 saniyede tamamlanmadı",
+                            &format!(
+                                "istek {} saniyede tamamlanmadı",
+                                HTTP_ISTEK_OKUMA_SURESI.as_secs()
+                            ),
                             false,
                             https,
                         );
@@ -1847,7 +1867,10 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                 ham_http_hatasi_gonder(
                     &mut akis,
                     413,
-                    "istek gövdesi 64 KiB sınırını aşıyor",
+                    &format!(
+                        "istek gövdesi {} KiB sınırını aşıyor",
+                        http_siniri.istek_govde_bayti() / 1024
+                    ),
                     head,
                     https,
                 );
@@ -1882,7 +1905,10 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                         ham_http_hatasi_gonder(
                             &mut akis,
                             408,
-                            "istek 10 saniyede tamamlanmadı",
+                            &format!(
+                                "istek {} saniyede tamamlanmadı",
+                                HTTP_ISTEK_OKUMA_SURESI.as_secs()
+                            ),
                             false,
                             https,
                         );

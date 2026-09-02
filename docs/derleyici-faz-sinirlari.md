@@ -135,9 +135,10 @@ K-128/ADR-032 atomik replace'in platform metadata aktarımını
 metadata adaptörü 260 satır bütçesindedir; owner/group, ACL/xattr ve Windows
 security merge ayrıntıları genel kalıcılık akışına geri yayılamaz.
 K-129/ADR-033 kaynak bütçesi değerlerini `kaynak_sinirlari.rs` içinde tek
-sahipli yaptı. 260 satır bütçesi profile testleri ve bounded-reader yardımcısını
-kapsar; lexer/runtime/LSP/CLI yalnız bu değeri tüketir, yeni dağınık limit
-sabiti ekleyemez.
+sahipli yaptı. K-131 bounded reader'ı `kaynak_sinirlari/okuma.rs`, domain
+görünümlerini `kaynak_sinirlari/profiller.rs` sahibine ayırdı. Kök/profil/okuma
+sırasıyla 260/300/120 satır bütçesindedir; lexer/runtime/LSP/CLI yalnız bu
+değeri tüketir, yeni dağınık limit sabiti ekleyemez.
 K-130 değer grafiği hesabını `yorumlayici/kaynak.rs`, bütçeli değer/JSON/CSV
 yazımını `yorumlayici/metin.rs`, süreç-geneli izin sayacını
 `kaynak_sinirlari/baglanti.rs` sahibine ayırdı. Sırasıyla 280/240/60 satır;

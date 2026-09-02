@@ -73,9 +73,14 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
     muhafazakâr saklanan değer zarfını, görev ortamı klonlarını ve 64
     süreç-geneli inbound+outbound bağlantı iznini bağladı. B-025 eski domain
     sabitlerinin tek tipe göçü için kısmen açıktır (517 test).
-28. Sıradaki makine işi registry/tedarik/IO izi/oturum/LSP'nin dağınık kaynak
-    sabitlerini davranış değiştirmeden ortak profile taşıyan üçüncü dilimdir.
-29. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
+28. K-131 HTTP/ağ, web oturumu, IO izi, LSP, paket/registry, tanı, atomik
+    metadata ve kilit sürelerinin eski yerel sayılarını davranış değiştirmeden
+    ortak profilin domain görünümlerine taşıdı. Mimari sahiplik testiyle B-025
+    yalnız LSP outbound yanıtının sonuç büyümeden bütçelenmesi için kısmen
+    açıktır (518 test).
+29. Sıradaki makine işi LSP JSON yanıtını tahsis sırasında 8 MiB'ta kesen K-132
+    dilimidir; bu allocation-order kanıtı B-025/V1-P0-31'i kapatacaktır.
+30. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
 
 ## P0 — V1 öncesi dil ve derleyici omurgası
 
@@ -261,7 +266,8 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 - **B-024 · KAPALI İLKE + GERÇEKLEME (K-127) — HTTPS/TLS'yi elle yazma.**
   Native outbound, exact sabitlenmiş `ureq 3.4.0` + rustls backend'indedir;
   Zee kriptografi/TLS gerçeklemeye dönüşmez.
-- **B-025 · KISMEN (K-105/K-129/K-130) — ortak `KaynakSinirlari` modeli.** K-129
+- **B-025 · KISMEN (K-105/K-129/K-130/K-131) — ortak `KaynakSinirlari`
+  modeli.** K-129
   değişmez tek profilde 8 MiB kaynak, 1 milyon token, 4.096/128 MiB proje
   kaynağı, mevcut C019/500 çağrı derinliği, 10 milyon çalışma adımı, 1 milyon
   koleksiyon öğesi, 1.024 görev, 16 MiB/100 bin çıktı olayı, 16 MiB dosya
@@ -270,9 +276,12 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   deadline/body zarfı korunur. K-130 tek metni 16 MiB'ta bütçeli üretir;
   ortam/koleksiyon yazımı ile görev klonunu iade edilmeyen yaklaşık 64 MiB
   saklama zarfına, inbound+outbound ağı 64 süreç-geneli RAII iznine bağlar.
-  C024 değer/metin aşımının ayrı append-only kimliğidir. Registry, tedarik,
-  IO izi, oturum ve LSP'nin eski yerel sabitlerini profile taşıyan son göç
-  dilimi açıktır.
+  C024 değer/metin aşımının ayrı append-only kimliğidir. K-131 HTTP/ağ, web
+  oturumu, IO izi, LSP, paket/registry, tanı, atomik metadata ve kilit
+  sürelerindeki bütün eski sayısal sahipleri davranış değiştirmeden domain
+  görünümlerine taşıdı. LSP yanıtı bugün 8 MiB'ta reddedilir fakat büyük JSON
+  kurulduktan sonra ölçülür; K-132 bütçeyi üretim sırasında uygulamadan B-025
+  kapanmaz.
 - **B-026 · AÇIK — cancellation-safety audit'i.** Dosya temp'i, web yanıtı,
   oturum mutation'ı ve diğer yan etkilerin iptal/yarım kalma davranışını testle.
 - **B-027 · KAPALI (K-115) — deterministik IO trace/replay biçimi tasarla.**
@@ -403,17 +412,16 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 ## Bir sonraki somut kapı
 
 İnsan kanıtı hattında B-001, doldurulmuş gerçek usability formları ve önceden
-ilan edilmiş eşikleri bekler. Makine hattında K-130, B-025'in değer/metin ve
-bağlantı dilimini ortak `KaynakSinirlari` profiline bağladı. Sıradaki iş
-registry/tedarik/IO izi/oturum/LSP'deki eski kaynak sabitlerini davranış
-değiştirmeden tek profile taşıyıp B-025'i kapatmaktır.
+ilan edilmiş eşikleri bekler. Makine hattında K-131 bütün eski domain kaynak
+sayılarını ortak `KaynakSinirlari` görünümlerine taşıdı. Sıradaki iş K-132 ile
+LSP JSON yanıtını sonuç kurulurken 8 MiB'ta kesmek ve B-025'i kapatmaktır.
 
 ## 2 Eylül 2026 ikinci dış inceleme ayrımı
 
-- **Doğrulandı; K-129/K-130 ile büyük bölümü kapandı:** B-025 kaynak/token,
+- **Doğrulandı; K-129/K-130/K-131 ile tek allocation-order işi kaldı:** B-025 kaynak/token,
   proje toplamı, bounded stdin/dosya okuması, heap/metin/çıktı, koleksiyon,
-  görev, LSP toplamı/outbound ve süreç-geneli bağlantı sayısı. Kalan eski sabit
-  göçü sıradadır.
+  görev, LSP toplamı/outbound ve süreç-geneli bağlantı sayısı. Eski sabit göçü
+  bitti; LSP'nin 8 MiB reddi yanıt kurulmadan uygulanmalıdır.
 - **Doğrulandı ve sıraya alındı:** B-026
   cancellation, B-029 registry taşıma/cache/kalıcı rollback, B-046 rate-limit
   ve çok süreçli oturum, B-051 kesin JSON-RPC, B-052 origin tekilleştirme,

@@ -2,7 +2,7 @@
 
 - **Durum:** kabul
 - **Tarih:** 1 Eylül 2026
-- **İlgili kayıt:** K-105/K-127, B-025, V1-P0-15/V1-P0-29
+- **İlgili kayıt:** K-105/K-127/K-130/K-131, B-025, V1-P0-15/V1-P0-29
 
 ## Bağlam
 
@@ -54,7 +54,9 @@ kurulmaz.
 - Yavaş gönderici yerel sunucuyu süresiz tek bağlantıda tutamaz.
 - Büyük yanıt, bellek tahsisini 8 MiB üzerinde büyütemeden görünür hata olur.
 - Ortak `KaynakSinirlari` K-129'da, 64 süreç-geneli eşzamanlı bağlantı bütçesi
-  K-130'da bağlandı. Kalan eski domain sabitlerinin göçü B-025'te açık kalır.
+  K-130'da bağlandı. K-131 ağ timeout/header/body ile yerel HTTP
+  süre/header/body değerlerinin sayısal sahipliğini aynı domain görünümlerine
+  taşıdı.
   SSRF/hedef politikası ADR-031/spec-23'te; oturum ve LSP bütçeleri kendi
   ADR'lerinde kapanmıştır.
 - Loopback, redirect, origin, DNS/IP ve varsayılan deadline testleri yeni

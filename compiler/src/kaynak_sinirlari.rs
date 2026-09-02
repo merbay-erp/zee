@@ -5,12 +5,16 @@
 //! dönüş yoktur.
 
 mod baglanti;
+mod okuma;
+mod profiller;
 
 pub use baglanti::{baglanti_izni_al, BaglantiIzni};
-
-use crate::tani::Tani;
-use std::io::{self, Read};
-use std::path::Path;
+pub(crate) use okuma::{kaynak_boyutunu_denetle, token_sayisini_denetle};
+pub use okuma::{kaynak_dosyasi_oku, veri_dosyasi_baytlarini_oku, veri_dosyasi_oku};
+pub use profiller::{
+    AgSinirlari, HttpSinirlari, IoIziSinirlari, KaliciDosyaSinirlari, LspSinirlari,
+    MetadataSinirlari, PaketSinirlari, RegistrySinirlari, TaniSinirlari, WebSinirlari,
+};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct KaynakSinirlari {
@@ -19,6 +23,7 @@ pub struct KaynakSinirlari {
     kaynak_dosyasi: usize,
     token_sayisi: usize,
     cagri_derinligi: usize,
+    calistirma_yigin_bayti: usize,
     calistirma_adimi: usize,
     koleksiyon_ogesi: usize,
     eszamanli_gorev: usize,
@@ -28,9 +33,16 @@ pub struct KaynakSinirlari {
     cikti_bayti: usize,
     cikti_olayi: usize,
     dosya_okuma_bayti: usize,
-    lsp_acik_belge: usize,
-    lsp_toplam_belge_bayti: usize,
-    lsp_yanit_bayti: usize,
+    ag: AgSinirlari,
+    http: HttpSinirlari,
+    web: WebSinirlari,
+    io_izi: IoIziSinirlari,
+    lsp: LspSinirlari,
+    paket: PaketSinirlari,
+    registry: RegistrySinirlari,
+    tani: TaniSinirlari,
+    metadata: MetadataSinirlari,
+    kalici_dosya: KaliciDosyaSinirlari,
 }
 
 impl KaynakSinirlari {
@@ -56,6 +68,10 @@ impl KaynakSinirlari {
 
     pub const fn calistirma_adimi(self) -> usize {
         self.calistirma_adimi
+    }
+
+    pub const fn calistirma_yigin_bayti(self) -> usize {
+        self.calistirma_yigin_bayti
     }
 
     pub const fn koleksiyon_ogesi(self) -> usize {
@@ -91,15 +107,55 @@ impl KaynakSinirlari {
     }
 
     pub const fn lsp_acik_belge(self) -> usize {
-        self.lsp_acik_belge
+        self.lsp.acik_belge()
     }
 
     pub const fn lsp_toplam_belge_bayti(self) -> usize {
-        self.lsp_toplam_belge_bayti
+        self.lsp.toplam_belge_bayti()
     }
 
     pub const fn lsp_yanit_bayti(self) -> usize {
-        self.lsp_yanit_bayti
+        self.lsp.yanit_bayti()
+    }
+
+    pub const fn ag(self) -> AgSinirlari {
+        self.ag
+    }
+
+    pub const fn http(self) -> HttpSinirlari {
+        self.http
+    }
+
+    pub const fn web(self) -> WebSinirlari {
+        self.web
+    }
+
+    pub const fn io_izi(self) -> IoIziSinirlari {
+        self.io_izi
+    }
+
+    pub const fn lsp(self) -> LspSinirlari {
+        self.lsp
+    }
+
+    pub const fn paket(self) -> PaketSinirlari {
+        self.paket
+    }
+
+    pub const fn registry(self) -> RegistrySinirlari {
+        self.registry
+    }
+
+    pub const fn tani(self) -> TaniSinirlari {
+        self.tani
+    }
+
+    pub const fn metadata(self) -> MetadataSinirlari {
+        self.metadata
+    }
+
+    pub const fn kalici_dosya(self) -> KaliciDosyaSinirlari {
+        self.kalici_dosya
     }
 }
 
@@ -111,6 +167,7 @@ pub const VARSAYILAN_KAYNAK_SINIRLARI: KaynakSinirlari = KaynakSinirlari {
     kaynak_dosyasi: 4_096,
     token_sayisi: 1_000_000,
     cagri_derinligi: 500,
+    calistirma_yigin_bayti: 32 * 1024 * 1024,
     calistirma_adimi: 10_000_000,
     koleksiyon_ogesi: 1_000_000,
     eszamanli_gorev: 1_024,
@@ -120,124 +177,70 @@ pub const VARSAYILAN_KAYNAK_SINIRLARI: KaynakSinirlari = KaynakSinirlari {
     cikti_bayti: 16 * 1024 * 1024,
     cikti_olayi: 100_000,
     dosya_okuma_bayti: 16 * 1024 * 1024,
-    lsp_acik_belge: 256,
-    lsp_toplam_belge_bayti: 128 * 1024 * 1024,
-    lsp_yanit_bayti: 8 * 1024 * 1024,
+    ag: AgSinirlari {
+        zaman_asimi_ms: 30_000,
+        yanit_bayti: 8 * 1024 * 1024,
+        baslik_bayti: 64 * 1024,
+    },
+    http: HttpSinirlari {
+        istek_okuma_saniyesi: 10,
+        calistirma_zaman_asimi_ms: 30_000,
+        istek_baslik_bayti: 16 * 1024,
+        istek_govde_bayti: 64 * 1024,
+        istek_alani: 100,
+    },
+    web: WebSinirlari {
+        oturum_omru_saniye: 30 * 60,
+        anonim_oturum_omru_saniye: 10 * 60,
+        oturum_sayisi: 4_096,
+        anonim_oturum_sayisi: 1_024,
+    },
+    io_izi: IoIziSinirlari {
+        bayt: 64 * 1024 * 1024,
+        olay: 100_000,
+        alan: 4_096,
+    },
+    lsp: LspSinirlari {
+        baslik_bayti: 8 * 1024,
+        govde_bayti: 8 * 1024 * 1024,
+        json_derinligi: 128,
+        json_dugumu: 100_000,
+        acik_belge: 256,
+        toplam_belge_bayti: 128 * 1024 * 1024,
+        yanit_bayti: 8 * 1024 * 1024,
+    },
+    paket: PaketSinirlari {
+        paket_bayti: 64 * 1024 * 1024,
+        dosya_bayti: 16 * 1024 * 1024,
+        dosya_sayisi: 10_000,
+        yol_bayti: 1_024,
+        yayin_bayti: 1024 * 1024,
+    },
+    registry: RegistrySinirlari {
+        kok_bayti: 1024 * 1024,
+        timestamp_bayti: 64 * 1024,
+        snapshot_bayti: 1024 * 1024,
+        targets_bayti: 8 * 1024 * 1024,
+        anahtar_sayisi: 256,
+        imza_sayisi: 256,
+        hedef_sayisi: 100_000,
+        duyuru_sayisi: 100_000,
+        arsiv_bayti: 64 * 1024 * 1024,
+        sbom_bayti: 8 * 1024 * 1024,
+        provenance_bayti: 8 * 1024 * 1024,
+        yayin_bayti: 1024 * 1024,
+    },
+    tani: TaniSinirlari { sayi: 20 },
+    metadata: MetadataSinirlari {
+        ad_listesi_bayti: 64 * 1024,
+        deger_bayti: 64 * 1024,
+        toplam_bayti: 1024 * 1024,
+    },
+    kalici_dosya: KaliciDosyaSinirlari {
+        kilit_bekleme_ms: 5_000,
+        kilit_yeniden_dene_ms: 5,
+    },
 };
 
-pub(crate) fn kaynak_boyutunu_denetle(kaynak: &str) -> Result<(), Tani> {
-    let azami = VARSAYILAN_KAYNAK_SINIRLARI.kaynak_bayti();
-    if kaynak.len() <= azami {
-        return Ok(());
-    }
-    Err(Tani::yeni(
-        "S045",
-        format!(
-            "Kaynak {} bayt; güvenli profil {} MiB sınırını aşıyor.",
-            kaynak.len(),
-            azami / 1024 / 1024
-        ),
-        1,
-        1,
-        1,
-    )
-    .onerili("Kaynağı sorumluluğu açık daha küçük birimlere böl.".into()))
-}
-
-pub(crate) fn token_sayisini_denetle(sayi: usize, satir: usize) -> Result<(), Tani> {
-    let azami = VARSAYILAN_KAYNAK_SINIRLARI.token_sayisi();
-    if sayi <= azami {
-        return Ok(());
-    }
-    Err(Tani::yeni(
-        "S045",
-        format!(
-            "Kaynak {} token; güvenli profil {} token sınırını aşıyor.",
-            sayi, azami
-        ),
-        satir,
-        1,
-        1,
-    )
-    .onerili("Üretilmiş ya da çok büyük kaynağı daha küçük birimlere böl.".into()))
-}
-
-pub fn kaynak_dosyasi_oku(yol: &Path) -> io::Result<String> {
-    sinirli_metin_oku(yol, VARSAYILAN_KAYNAK_SINIRLARI.kaynak_bayti())
-}
-
-pub fn veri_dosyasi_oku(yol: &Path) -> io::Result<String> {
-    sinirli_metin_oku(yol, VARSAYILAN_KAYNAK_SINIRLARI.dosya_okuma_bayti())
-}
-
-pub fn veri_dosyasi_baytlarini_oku(yol: &Path) -> io::Result<Vec<u8>> {
-    sinirli_bayt_oku(yol, VARSAYILAN_KAYNAK_SINIRLARI.dosya_okuma_bayti())
-}
-
-fn sinirli_metin_oku(yol: &Path, azami: usize) -> io::Result<String> {
-    let baytlar = sinirli_bayt_oku(yol, azami)?;
-    String::from_utf8(baytlar).map_err(|_| {
-        io::Error::new(
-            io::ErrorKind::InvalidData,
-            format!("`{}` geçerli UTF-8 metin değil", yol.display()),
-        )
-    })
-}
-
-fn sinirli_bayt_oku(yol: &Path, azami: usize) -> io::Result<Vec<u8>> {
-    let dosya = std::fs::File::open(yol)?;
-    let bildirilen = dosya.metadata()?.len();
-    if bildirilen > azami as u64 {
-        return Err(sinir_hatasi(yol, azami));
-    }
-    let mut baytlar = Vec::with_capacity(usize::try_from(bildirilen).unwrap_or(azami).min(azami));
-    dosya
-        .take(azami.saturating_add(1) as u64)
-        .read_to_end(&mut baytlar)?;
-    if baytlar.len() > azami {
-        return Err(sinir_hatasi(yol, azami));
-    }
-    Ok(baytlar)
-}
-
-fn sinir_hatasi(yol: &Path, azami: usize) -> io::Error {
-    io::Error::new(
-        io::ErrorKind::InvalidData,
-        format!(
-            "`{}` {} MiB okuma sınırını aşıyor",
-            yol.display(),
-            azami / 1024 / 1024
-        ),
-    )
-}
-
 #[cfg(test)]
-mod testler {
-    use super::*;
-
-    #[test]
-    fn varsayilan_profil_kritik_limitleri_sifira_birakmaz() {
-        let sinirlar = VARSAYILAN_KAYNAK_SINIRLARI;
-        assert!(sinirlar.kaynak_bayti() > 0);
-        assert!(sinirlar.toplam_kaynak_bayti() >= sinirlar.kaynak_bayti());
-        assert!(sinirlar.kaynak_dosyasi() > 0);
-        assert!(sinirlar.token_sayisi() > 0);
-        assert!(sinirlar.cagri_derinligi() > 0);
-        assert!(sinirlar.calistirma_adimi() > 0);
-        assert!(sinirlar.koleksiyon_ogesi() > 0);
-        assert!(sinirlar.eszamanli_gorev() > 0);
-        assert!(sinirlar.calisma_heap_bayti() >= sinirlar.metin_bayti());
-        assert!(sinirlar.ag_baglantisi() > 0);
-        assert!(sinirlar.cikti_bayti() > 0 && sinirlar.cikti_olayi() > 0);
-        assert!(sinirlar.lsp_acik_belge() > 0);
-        assert!(sinirlar.lsp_toplam_belge_bayti() >= sinirlar.kaynak_bayti());
-        assert!(sinirlar.lsp_yanit_bayti() > 0);
-    }
-
-    #[test]
-    fn buyuk_bellek_kaynagi_s045_ile_reddedilir() {
-        let kaynak = " ".repeat(VARSAYILAN_KAYNAK_SINIRLARI.kaynak_bayti() + 1);
-        let hata = kaynak_boyutunu_denetle(&kaynak).expect_err("sınır aşımı");
-        assert_eq!(hata.kod, "S045");
-    }
-}
+mod testler;

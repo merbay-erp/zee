@@ -1,9 +1,9 @@
 # RFC-0025 — Merkezî Kaynak Bütçesi
 
 - **Durum:** **geçici kabul** (K-129 ortak profil, K-130 değer/bağlantı
-  zarfı; dağınık eski sabit göçü açık)
+  zarfı, K-131 domain görünümü; LSP outbound allocation-order açık)
 - **Tarih:** 2 Eylül 2026
-- **İlgili kayıtlar:** K-105, K-107, K-129/K-130, B-025,
+- **İlgili kayıtlar:** K-105, K-107, K-129/K-130/K-131, B-025,
   ADR-017/019/033, V1-P0-31
 - **Gerçekleme:** `kaynak_sinirlari.rs`; lexer, proje yükleyici, runtime,
   kalıcı dosya, CLI ve LSP tüketicileri
@@ -22,7 +22,7 @@ nesnesidir. Limit yükseltme bir ortam değişkeni, kaynak cümlesi veya paket a
 bağımlılığıyla yapılamaz. Gelecekte daha geniş bir profil gerekiyorsa adı,
 sürümü, tehdit modeli ve üst sınırı ayrı RFC ile görünür olur.
 
-## 3. K-129/K-130 tablosu
+## 3. K-129/K-130/K-131 tablosu
 
 | Kaynak | Sınır | Red |
 |---|---:|---|
@@ -60,6 +60,11 @@ değildir; yeniden kullanımda fazla sayarak üst sınırı güvenli tarafta tut
 Inbound kabul ve outbound DNS/bağlantı girişleri süreç-geneli RAII izni alır;
 bütün dönüş/hata yolları izni bırakır.
 
+K-131 sayısal varsayılanları değiştirmeden HTTP/ağ, web oturumu, IO izi, LSP,
+paket/registry, tanı ve kalıcı dosya domain görünümlerinde toplar. Tüketici
+modüller geriye uyumlu sabit adlarını koruyabilir; sayısal değerin tek sahibi
+`VARSAYILAN_KAYNAK_SINIRLARI` olmak ZORUNDADIR.
+
 ## 5. Determinizm ve tanılar
 
 Aynı profil ve aynı giriş, aynı sınırda aynı tanı kimliğini üretir. Sınırda
@@ -68,6 +73,7 @@ kesemez, işi eksik başarılı gösteremez veya host panic'e düşemez.
 
 ## 6. Açık işler
 
-Registry, tedarik, IO izi, oturum ve LSP'nin K-129'dan önceki yerel sabitlerinin
-tamamını davranış değiştirmeden `KaynakSinirlari` görünümüne taşıma işi B-025'te
-sürer. Cancellation invariant'ları B-026'nın ayrı sözleşmesidir.
+K-131 eski domain sabitlerinin göçünü tamamladı. LSP outbound toplamı bugün
+8 MiB üstünde protokol hatasına döner; ancak JSON önce bütçesiz kurulup sonra
+ölçülür. Üretim sırasında bounded yazıcı/preflight kullanımı K-132/B-025'in son
+işidir. Cancellation ve duvar-saati invariant'ları B-026'nın ayrı sözleşmesidir.

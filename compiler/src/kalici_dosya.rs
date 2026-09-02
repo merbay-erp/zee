@@ -14,8 +14,16 @@ use std::time::{Duration, Instant};
 
 mod metadata;
 
-const KILIT_BEKLEME: Duration = Duration::from_secs(5);
-const KILIT_YENIDEN_DENE: Duration = Duration::from_millis(5);
+const KILIT_BEKLEME: Duration = Duration::from_millis(
+    crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+        .kalici_dosya()
+        .kilit_bekleme_ms(),
+);
+const KILIT_YENIDEN_DENE: Duration = Duration::from_millis(
+    crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+        .kalici_dosya()
+        .kilit_yeniden_dene_ms(),
+);
 static GECICI_SAYACI: AtomicU64 = AtomicU64::new(0);
 
 /// İçeriğin tamamını atomik olarak hedefe yerleştirir.

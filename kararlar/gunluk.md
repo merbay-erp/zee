@@ -2028,6 +2028,23 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
 - **Açık kapsam:** B-025'in son dilimi eski registry/tedarik/IO izi/oturum/LSP
   sabitlerini davranış değiştirmeden `KaynakSinirlari` içine taşıyacaktır.
 
+## K-131 — Kaynak limitlerinin tek sayısal sahibi (2 Eyl)
+
+- **Sorun:** K-129/K-130 ortak profili kurmuş olsa da HTTP/ağ, oturum, IO izi,
+  LSP, paket/registry, tanı ve kalıcı dosya modülleri aynı değerleri yerel
+  sayılarla sahiplenmeye devam ediyordu; değişiklikte sessiz drift mümkündü.
+- **Karar:** `KaynakSinirlari` domain görünümleri bütün sayısal varsayılanların
+  tek sahibidir. Mevcut public/private sabit adları yalnız bu profile bağlı
+  geriye uyum alias'ıdır; çalışma davranışı ve sınır değerleri değişmedi.
+  Bounded reader `kaynak_sinirlari/okuma.rs`, domain tipleri
+  `kaynak_sinirlari/profiller.rs` sahibine ayrıldı.
+- **Kanıt:** Mimari regresyon on bir tüketici modülün ortak profili kullandığını;
+  kök/profil/okuma dosyalarının 260/300/120 satır bütçesinde kaldığını denetler.
+  Envanter 518 test, 150 etkin + 3 ayrılmış tanı ve 80 numaralı belgedir.
+- **Canlı inceleme bulgusu:** LSP outbound 8 MiB üstünde `-32001` üretir,
+  fakat yanıt önce bütçesiz `String` olarak kurulup sonra ölçülür. Bu nedenle
+  B-025 dürüstçe kapanmadı; K-132 üretim-sırası bütçesini bağlayacaktır.
+
 ---
 
 ## Sonraki adım
@@ -2036,6 +2053,6 @@ Korpus 10 öğrenci + 5 profesyonel usability oturumuna (Hafta 12 hedefi, erkeni
 Hafta 2'de kağıt üstünde) sesli okutulacak; her kayıt için "doğal mı /
 deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
-Makine hattında K-130, B-025'in değer/metin heap'i ve bağlantı dilimini ortak
-`KaynakSinirlari` profiline bağladı. Sırada kalan eski domain sabitlerini aynı
-profile taşıyıp B-025'i kapatan son göç dilimi vardır.
+Makine hattında K-131 eski domain limitlerinin sayısal sahipliğini ortak
+`KaynakSinirlari` profiline taşıdı. Sırada K-132 ile LSP outbound JSON'unu
+üretim sırasında 8 MiB'ta kesip B-025'i kapatmak vardır.

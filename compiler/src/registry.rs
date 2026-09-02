@@ -14,18 +14,38 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::fmt;
 
 const IMZA_ALANI: &[u8] = b"zee-registry-v1\0";
-const AZAMI_KOK_BOYUTU: usize = 1024 * 1024;
-const AZAMI_TIMESTAMP_BOYUTU: usize = 64 * 1024;
-const AZAMI_SNAPSHOT_BOYUTU: usize = 1024 * 1024;
-const AZAMI_TARGETS_BOYUTU: usize = 8 * 1024 * 1024;
-const AZAMI_ANAHTAR_SAYISI: usize = 256;
-const AZAMI_IMZA_SAYISI: usize = 256;
-const AZAMI_HEDEF_SAYISI: usize = 100_000;
-const AZAMI_DUYURU_SAYISI: usize = 100_000;
-const AZAMI_ARSIV_BOYUTU: u64 = 64 * 1024 * 1024;
-const AZAMI_SBOM_BOYUTU: u64 = 8 * 1024 * 1024;
-const AZAMI_PROVENANCE_BOYUTU: u64 = 8 * 1024 * 1024;
-const AZAMI_YAYIN_BOYUTU: u64 = 1024 * 1024;
+const AZAMI_KOK_BOYUTU: usize =
+    crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.registry().kok_bayti();
+const AZAMI_TIMESTAMP_BOYUTU: usize = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+    .registry()
+    .timestamp_bayti();
+const AZAMI_SNAPSHOT_BOYUTU: usize = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+    .registry()
+    .snapshot_bayti();
+const AZAMI_TARGETS_BOYUTU: usize = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+    .registry()
+    .targets_bayti();
+const AZAMI_ANAHTAR_SAYISI: usize = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+    .registry()
+    .anahtar_sayisi();
+const AZAMI_IMZA_SAYISI: usize = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+    .registry()
+    .imza_sayisi();
+const AZAMI_HEDEF_SAYISI: usize = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+    .registry()
+    .hedef_sayisi();
+const AZAMI_DUYURU_SAYISI: usize = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+    .registry()
+    .duyuru_sayisi();
+const AZAMI_ARSIV_BOYUTU: u64 =
+    crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.registry().arsiv_bayti();
+const AZAMI_SBOM_BOYUTU: u64 =
+    crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.registry().sbom_bayti();
+const AZAMI_PROVENANCE_BOYUTU: u64 = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+    .registry()
+    .provenance_bayti();
+const AZAMI_YAYIN_BOYUTU: u64 =
+    crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.registry().yayin_bayti();
 const ROLLER: [&str; 4] = ["root", "snapshot", "targets", "timestamp"];
 
 #[derive(Debug, Clone, PartialEq, Eq)]
