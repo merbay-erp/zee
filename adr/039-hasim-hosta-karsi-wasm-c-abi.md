@@ -36,7 +36,8 @@ bir yüzey yoktu.
    durumu değiştirmeden `0` döndürür. `(null, 0)` başarılı no-op'tur.
 7. Tek tampon en çok merkezî metin bütçesi + dört bayt, aynı anda en çok sekiz
    tampon ve 64 MiB kayıtlı byte olabilir. Bu genel ABI tahsis zarfıdır;
-   kaynak/girdi türüne özgü daha erken bütçe B-056'nın ayrı kararıdır.
+   kaynak/girdi türüne özgü daha erken bütçe bu karardan ayrı B-056'dır;
+   K-143/ADR-040 ile sonradan tamamlanmıştır.
 8. Çağrı senkrondur. Paylaşımlı WASM belleği açılmaz; host çağrı sürerken
    tamponu değiştirmez. JavaScript'in bütün linear memory'yi yazabilmesi
    nedeniyle ABI aynı sayfadaki kötü niyetli JavaScript'e karşı bir gizlilik

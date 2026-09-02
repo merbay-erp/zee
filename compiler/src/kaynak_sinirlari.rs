@@ -14,7 +14,7 @@ pub(crate) use okuma::{kaynak_boyutunu_denetle, token_sayisini_denetle};
 pub use okuma::{kaynak_dosyasi_oku, veri_dosyasi_baytlarini_oku, veri_dosyasi_oku};
 pub use profiller::{
     AgSinirlari, HttpSinirlari, IoIziSinirlari, KaliciDosyaSinirlari, LspSinirlari,
-    MetadataSinirlari, PaketSinirlari, RegistrySinirlari, TaniSinirlari,
+    MetadataSinirlari, PaketSinirlari, PlaygroundSinirlari, RegistrySinirlari, TaniSinirlari,
 };
 pub use web::WebSinirlari;
 
@@ -40,6 +40,7 @@ pub struct KaynakSinirlari {
     web: WebSinirlari,
     io_izi: IoIziSinirlari,
     lsp: LspSinirlari,
+    playground: PlaygroundSinirlari,
     paket: PaketSinirlari,
     registry: RegistrySinirlari,
     tani: TaniSinirlari,
@@ -140,6 +141,10 @@ impl KaynakSinirlari {
         self.lsp
     }
 
+    pub const fn playground(self) -> PlaygroundSinirlari {
+        self.playground
+    }
+
     pub const fn paket(self) -> PaketSinirlari {
         self.paket
     }
@@ -217,6 +222,11 @@ pub const VARSAYILAN_KAYNAK_SINIRLARI: KaynakSinirlari = KaynakSinirlari {
         acik_belge: 256,
         toplam_belge_bayti: 128 * 1024 * 1024,
         yanit_bayti: 8 * 1024 * 1024,
+    },
+    playground: PlaygroundSinirlari {
+        kaynak_bayti: 8 * 1024 * 1024,
+        girdi_bayti: 1024 * 1024,
+        girdi_satiri: 4_096,
     },
     paket: PaketSinirlari {
         paket_bayti: 64 * 1024 * 1024,

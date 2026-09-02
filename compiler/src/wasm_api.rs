@@ -12,7 +12,8 @@ use crate::yorumlayici::{GirdiCikti, SurumluRastgele, ToplayanIo};
 mod abi;
 
 pub use abi::{
-    dil_abi_surumu, dil_bellek_ayir, dil_bellek_birak, dil_calistir, dil_sonuc_tamponu_uzunlugu,
+    dil_abi_surumu, dil_bellek_ayir, dil_bellek_birak, dil_calistir, dil_playground_girdi_bayti,
+    dil_playground_girdi_satiri, dil_playground_kaynak_bayti, dil_sonuc_tamponu_uzunlugu,
     DIL_ABI_BASARILI, DIL_ABI_SURUMU,
 };
 
@@ -88,11 +89,15 @@ impl GirdiCikti for PlaygroundIo {
 /// Kaynağı verilen girdi satırları ve tohumla koşturur; çıktı metnini üretir.
 /// (Saf çekirdek — hem wasm dışa aktarımı hem doğal testler bunu kullanır.)
 pub fn playgroundda_calistir(kaynak: &str, girdiler: &str, tohum: u64) -> String {
-    let girdi_listesi: Vec<String> = if girdiler.is_empty() {
-        Vec::new()
-    } else {
-        girdiler.lines().map(str::to_string).collect()
+    let girdi_satiri = match playground_girdilerini_denetle(kaynak, girdiler) {
+        Ok(satir) => satir,
+        Err(hata) => return hata,
     };
+    let mut girdi_listesi = Vec::new();
+    if girdi_listesi.try_reserve_exact(girdi_satiri).is_err() {
+        return "PLAYGROUND SINIR HATASI: soru girdisi satır tablosu ayrılamadı.".into();
+    }
+    girdi_listesi.extend(girdiler.lines().map(str::to_string));
     let mut io = PlaygroundIo {
         ic: ToplayanIo::yeni(girdi_listesi),
         rastgele: SurumluRastgele::yeni(tohum),
@@ -148,4 +153,31 @@ pub fn playgroundda_calistir(kaynak: &str, girdiler: &str, tohum: u64) -> String
             cikti
         }
     }
+}
+
+fn playground_girdilerini_denetle(kaynak: &str, girdiler: &str) -> Result<usize, String> {
+    let sinirlar = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.playground();
+    if kaynak.len() > sinirlar.kaynak_bayti() {
+        return Err(format!(
+            "PLAYGROUND SINIR HATASI: kaynak {} bayt; sınır {} bayt.",
+            kaynak.len(),
+            sinirlar.kaynak_bayti()
+        ));
+    }
+    if girdiler.len() > sinirlar.girdi_bayti() {
+        return Err(format!(
+            "PLAYGROUND SINIR HATASI: soru girdisi {} bayt; sınır {} bayt.",
+            girdiler.len(),
+            sinirlar.girdi_bayti()
+        ));
+    }
+    let girdi_satiri = girdiler.lines().count();
+    if girdi_satiri > sinirlar.girdi_satiri() {
+        return Err(format!(
+            "PLAYGROUND SINIR HATASI: soru girdisi {} satır; sınır {} satır.",
+            girdi_satiri,
+            sinirlar.girdi_satiri()
+        ));
+    }
+    Ok(girdi_satiri)
 }

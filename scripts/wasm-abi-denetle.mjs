@@ -15,10 +15,19 @@ for (const ad of [
   "dil_bellek_birak",
   "dil_calistir",
   "dil_sonuc_tamponu_uzunlugu",
+  "dil_playground_kaynak_bayti",
+  "dil_playground_girdi_bayti",
+  "dil_playground_girdi_satiri",
 ]) {
   assert.ok(wasm[ad], `WASM export'u eksik: ${ad}`);
 }
-assert.equal(wasm.dil_abi_surumu(), 2);
+assert.equal(wasm.dil_abi_surumu(), 3);
+const kaynakSiniri = wasm.dil_playground_kaynak_bayti() >>> 0;
+const girdiSiniri = wasm.dil_playground_girdi_bayti() >>> 0;
+const girdiSatiriSiniri = wasm.dil_playground_girdi_satiri() >>> 0;
+assert.equal(kaynakSiniri, 8 * 1024 * 1024);
+assert.equal(girdiSiniri, 1024 * 1024);
+assert.equal(girdiSatiriSiniri, 4096);
 
 const kodlayici = new TextEncoder();
 const cozucu = new TextDecoder("utf-8", { fatal: true });
@@ -69,6 +78,32 @@ assert.equal(wasm.dil_bellek_birak(utf8Ptr, utf8Uzunlugu), 1);
 
 assert.equal(wasm.dil_bellek_ayir(0), 0);
 assert.equal(wasm.dil_bellek_ayir(-1), 0);
+
+const buyukKaynak = wasm.dil_bellek_ayir(kaynakSiniri + 1) >>> 0;
+assert.notEqual(buyukKaynak, 0);
+assert.match(
+  sonucuOkuVeBirak(wasm.dil_calistir(buyukKaynak, kaynakSiniri + 1, 0, 0, 7n)),
+  /^WASM ABI HATASI: kaynak: playground tür bütçesini aşıyor$/,
+);
+assert.equal(wasm.dil_bellek_birak(buyukKaynak, kaynakSiniri + 1), 1);
+
+const cokGirdi = wasm.dil_bellek_ayir(girdiSiniri + 1) >>> 0;
+assert.notEqual(cokGirdi, 0);
+assert.match(
+  sonucuOkuVeBirak(wasm.dil_calistir(0, 0, cokGirdi, girdiSiniri + 1, 7n)),
+  /^WASM ABI HATASI: girdi: playground tür bütçesini aşıyor$/,
+);
+assert.equal(wasm.dil_bellek_birak(cokGirdi, girdiSiniri + 1), 1);
+
+const cokSatir = wasm.dil_bellek_ayir(girdiSatiriSiniri + 1) >>> 0;
+assert.notEqual(cokSatir, 0);
+new Uint8Array(wasm.memory.buffer, cokSatir, girdiSatiriSiniri + 1).fill(10);
+assert.match(
+  sonucuOkuVeBirak(wasm.dil_calistir(0, 0, cokSatir, girdiSatiriSiniri + 1, 7n)),
+  /^PLAYGROUND SINIR HATASI: soru girdisi 4097 satır;/,
+);
+assert.equal(wasm.dil_bellek_birak(cokSatir, girdiSatiriSiniri + 1), 1);
+
 const canliTamponlar = Array.from({ length: 8 }, () => {
   const ptr = wasm.dil_bellek_ayir(1) >>> 0;
   assert.notEqual(ptr, 0);
@@ -79,4 +114,4 @@ for (const ptr of canliTamponlar) {
   assert.equal(wasm.dil_bellek_birak(ptr, 1), 1);
 }
 
-console.log("WASM ABI v2 doğrulandı: round-trip, pointer/boy, UTF-8 ve sahiplik.");
+console.log("WASM ABI v3 doğrulandı: pointer/boy, UTF-8, sahiplik ve girdi bütçeleri.");

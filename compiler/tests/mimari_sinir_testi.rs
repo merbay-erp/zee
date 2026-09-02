@@ -1,4 +1,4 @@
-//! B-005/B-006/B-008/B-010/B-018/B-019/B-020/B-025/B-048/B-050/B-055 mimari sınır regresyonları.
+//! B-005/B-006/B-008/B-010/B-018/B-019/B-020/B-025/B-048/B-050/B-055/B-056 mimari sınır regresyonları.
 
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -99,7 +99,7 @@ fn handler_modulleri_yeni_domain_icin_sinir_tasir() {
         ("src/lsp/json.rs", 300),
         ("src/kalici_dosya.rs", 850),
         ("src/kalici_dosya/metadata.rs", 260),
-        ("src/kaynak_sinirlari.rs", 260),
+        ("src/kaynak_sinirlari.rs", 280),
         ("src/registry/istemci.rs", 600),
         ("src/registry/istemci/depo.rs", 100),
         ("src/registry/istemci/tasima.rs", 120),
@@ -178,14 +178,45 @@ fn wasm_abi_kayitli_tampon_sahipligini_atlayamaz() {
     assert!(gece.contains("hedef: wasm_abi"));
     assert!(gece.contains("azami_girdi: 4097"));
     assert!(ci.contains("node ../scripts/wasm-abi-denetle.mjs"));
-    assert!(host.contains("wasm.dil_abi_surumu() !== 2"));
+    assert!(host.contains("wasm.dil_abi_surumu() !== 3"));
     assert!(host.contains("wasm.dil_sonuc_tamponu_uzunlugu(sonucPtr)"));
     assert!(host.contains("new TextDecoder(\"utf-8\", { fatal: true })"));
     assert!(host.contains("} finally {"));
     assert!(node_hostu.contains("WebAssembly.instantiate"));
     assert!(node_hostu.contains("wasm.dil_bellek_ayir(-1)"));
     assert!(node_hostu.contains("wasm.dil_bellek_birak(ptr, toplam)"));
-    assert_eq!(korpus, ["bos", "gecerli.dil", "unicode.dil", "uzunluk"]);
+    assert_eq!(
+        korpus,
+        ["bos", "gecerli.dil", "soru", "unicode.dil", "uzunluk"]
+    );
+}
+
+#[test]
+fn playground_girdisi_koleksiyondan_once_tek_profilden_sinirlanir() {
+    let profil = kaynak("src/kaynak_sinirlari/profiller.rs");
+    let sinirlar = kaynak("src/kaynak_sinirlari.rs");
+    let playground = kaynak("src/wasm_api.rs");
+    let abi = kaynak("src/wasm_api/abi.rs");
+    let host = kaynak("../playground/sablon.html");
+    let node_hostu = kaynak("../scripts/wasm-abi-denetle.mjs");
+    assert!(profil.contains("struct PlaygroundSinirlari"));
+    assert!(sinirlar.contains("girdi_bayti: 1024 * 1024"));
+    assert!(sinirlar.contains("girdi_satiri: 4_096"));
+    assert!(
+        playground.find("playground_girdilerini_denetle").unwrap()
+            < playground.find("girdiler.lines().map").unwrap()
+    );
+    assert!(playground.contains("girdiler.lines().count()"));
+    assert!(abi.contains("uzunluk > azami_uzunluk"));
+    assert!(abi.contains("dil_playground_kaynak_bayti"));
+    assert!(abi.contains("dil_playground_girdi_bayti"));
+    assert!(abi.contains("dil_playground_girdi_satiri"));
+    assert!(host.contains("function utf8BaytUzunlugu"));
+    assert!(host.contains("new TextEncoder().encodeInto"));
+    assert!(!host.contains("new TextEncoder().encode(metin)"));
+    assert!(node_hostu.contains("kaynakSiniri + 1"));
+    assert!(node_hostu.contains("girdiSiniri + 1"));
+    assert!(node_hostu.contains("girdiSatiriSiniri + 1"));
 }
 
 #[test]
@@ -196,6 +227,8 @@ fn domain_kaynak_limitleri_tek_profilden_beslenir() {
         "src/web_guvenligi.rs",
         "src/yorumlayici.rs",
         "src/yorumlayici/io_izi.rs",
+        "src/wasm_api.rs",
+        "src/wasm_api/abi.rs",
         "src/lsp.rs",
         "src/tedarik.rs",
         "src/registry.rs",

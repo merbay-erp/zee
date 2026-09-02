@@ -8,7 +8,9 @@ use libfuzzer_sys::fuzz_target;
 const AZAMI_FUZZ_GIRDISI: usize = 4 * 1024;
 
 fuzz_target!(|veri: &[u8]| {
-    let kip = veri.first().copied().unwrap_or(0) % 6;
+    let denetim = veri.first().copied().unwrap_or(0);
+    let kip = denetim % 6;
+    let girdi_mi = denetim & 0x40 != 0;
     let baytlar = &veri[veri.len().min(1)..veri.len().min(1 + AZAMI_FUZZ_GIRDISI)];
     let (asil_ptr, asil_uzunluk) = if baytlar.is_empty() {
         (std::ptr::null_mut(), 0)
@@ -31,7 +33,11 @@ fuzz_target!(|veri: &[u8]| {
         _ => (asil_ptr.cast_const(), 0),
     };
 
-    let sonuc = dil_calistir(cagri_ptr, cagri_uzunluk, std::ptr::null(), 0, 7);
+    let sonuc = if girdi_mi {
+        dil_calistir(std::ptr::null(), 0, cagri_ptr, cagri_uzunluk, 7)
+    } else {
+        dil_calistir(cagri_ptr, cagri_uzunluk, std::ptr::null(), 0, 7)
+    };
     if !sonuc.is_null() {
         let toplam = dil_sonuc_tamponu_uzunlugu(sonuc);
         assert!(toplam >= 4);

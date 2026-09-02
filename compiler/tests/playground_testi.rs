@@ -57,6 +57,48 @@ fn girdiler_satir_satir() {
 }
 
 #[test]
+fn playground_kaynagi_derlemeden_once_kendi_butcesinde_reddeder() {
+    let sinir = dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+        .playground()
+        .kaynak_bayti();
+    let sinirda = " ".repeat(sinir);
+    assert_eq!(playgroundda_calistir(&sinirda, "", 1), "");
+    let kaynak = format!("{sinirda} ");
+    assert_eq!(
+        playgroundda_calistir(&kaynak, "", 1),
+        format!(
+            "PLAYGROUND SINIR HATASI: kaynak {} bayt; sınır {} bayt.",
+            sinir + 1,
+            sinir
+        )
+    );
+}
+
+#[test]
+fn playground_soru_girdisini_satir_toplamadan_once_sinirlar() {
+    let sinirlar = dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.playground();
+    let sinirda_bayt = "a".repeat(sinirlar.girdi_bayti());
+    assert_eq!(
+        playgroundda_calistir("\"sınırda\" yaz\n", &sinirda_bayt, 1),
+        "sınırda"
+    );
+    let cok_bayt = "a".repeat(sinirlar.girdi_bayti() + 1);
+    assert!(playgroundda_calistir("\"çalışmamalı\" yaz\n", &cok_bayt, 1)
+        .starts_with("PLAYGROUND SINIR HATASI: soru girdisi 1048577 bayt;"));
+
+    let sinirda = "\n".repeat(sinirlar.girdi_satiri());
+    assert_eq!(
+        playgroundda_calistir("\"sınırda\" yaz\n", &sinirda, 1),
+        "sınırda"
+    );
+    let cok_satir = "\n".repeat(sinirlar.girdi_satiri() + 1);
+    assert!(
+        playgroundda_calistir("\"çalışmamalı\" yaz\n", &cok_satir, 1)
+            .starts_with("PLAYGROUND SINIR HATASI: soru girdisi 4097 satır;")
+    );
+}
+
+#[test]
 fn hata_raporu_turkce() {
     let cikti = playgroundda_calistir("bilinmeyeni yaz\n", "", 1);
     assert!(cikti.contains("HATA A001"), "{}", cikti);
@@ -135,6 +177,42 @@ fn cabi_katmani_gidis_donus() {
         dil::wasm_api::dil_bellek_birak(kaynak_ptr, kaynak_uzunluk),
         dil::wasm_api::DIL_ABI_BASARILI
     );
+}
+
+#[test]
+fn cabi_playground_limitlerini_hosta_bildirir_ve_kopyalamadan_reddeder() {
+    let _kilit = abi_test_kilidi();
+    let sinirlar = dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.playground();
+    assert_eq!(
+        dil::wasm_api::dil_playground_kaynak_bayti(),
+        sinirlar.kaynak_bayti()
+    );
+    assert_eq!(
+        dil::wasm_api::dil_playground_girdi_bayti(),
+        sinirlar.girdi_bayti()
+    );
+    assert_eq!(
+        dil::wasm_api::dil_playground_girdi_satiri(),
+        sinirlar.girdi_satiri()
+    );
+
+    for (kaynak_mi, uzunluk) in [
+        (true, sinirlar.kaynak_bayti() + 1),
+        (false, sinirlar.girdi_bayti() + 1),
+    ] {
+        let ptr = dil::wasm_api::dil_bellek_ayir(uzunluk);
+        assert!(!ptr.is_null());
+        let sonuc = if kaynak_mi {
+            dil::wasm_api::dil_calistir(ptr, uzunluk, std::ptr::null(), 0, 1)
+        } else {
+            dil::wasm_api::dil_calistir(std::ptr::null(), 0, ptr, uzunluk, 1)
+        };
+        assert!(abi_sonucunu_oku_ve_birak(sonuc).contains("playground tür bütçesini aşıyor"));
+        assert_eq!(
+            dil::wasm_api::dil_bellek_birak(ptr, uzunluk),
+            dil::wasm_api::DIL_ABI_BASARILI
+        );
+    }
 }
 
 #[test]

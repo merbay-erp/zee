@@ -129,8 +129,12 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
     başlangıç pointer'ı+exact boy, strict UTF-8, sorgulanabilir sonuç kaydı,
     yanlış/çift bırakmada durum koruması, native+gerçek wasm32 host testi ve
     ayrı libFuzzer hedefiyle B-055 kapandı (575 test).
-40. Sıradaki makine işi K-143 ile B-056 kaynak ve soru girdisinin türüne özgü
-    ön-tahsis bütçesini kurmaktır; sonraki işler öncelik sırasını korur.
+40. K-143/ADR-040 playground kaynak ve soru girdisini merkezî fakat ayrı
+    8 MiB kaynak, 1 MiB/4.096 satır soru bütçesine bağladı. ABI v3 limitleri
+    hosta bildirir; Rust kopya/satır tablosundan, tarayıcı UTF-8 byte dizisi ve
+    WASM tahsisinden önce reddeder. B-056 kapandı (579 test).
+41. Sıradaki makine işi K-144 ile B-035 kritik işlevlerin boyut/karmaşıklık
+    trendini kör hard limit yerine gözden geçirme eşiğine bağlamaktır.
 
 ## P0 — V1 öncesi dil ve derleyici omurgası
 
@@ -483,13 +487,17 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   kopyaya alır; null/iç/kayıt dışı pointer, taşkın boy, sonuç→girdi ve invalid
   UTF-8 çekirdekten önce görünür reddir. Sonuç toplamı kayıttan sorgulanır;
   yanlış/çift bırakma sahipliği düşürmez. Sekiz tampon/64 MiB genel zarf,
-  native saldırı matrisi, gerçek wasm32 Node hostu, dört kalıcı byte seed ve
+  native saldırı matrisi, gerçek wasm32 Node hostu, dört K-142 byte seed ve
   1.745.134 çağrılık ayrı libFuzzer kampanyası yeşildir. Ayrıntı
-  [ABI v2 rehberindedir](wasm-c-abi.md).
-- **B-056 · AÇIK — playground girdisine bağımsız ön-tahsis bütçesi koy.** UI
-  ve WASM köprüsü kaynak/metin boyutunu satır veya benzeri koleksiyon
-  kurulmadan önce reddetmeli; derleyici ortak kaynak bütçesine güvenmek bu
-  sınırın yerini almamalıdır.
+  [güncel ABI rehberindedir](wasm-c-abi.md).
+- **B-056 · KAPALI (K-143/ADR-040) — playground girdisine bağımsız ön-tahsis
+  bütçesi koy.** Merkezî profil kaynak için 8 MiB, soru girdisi için
+  1 MiB/4.096 satır belirler. Native köprü byte/satır sınırını `Vec<String>`
+  öncesinde; ABI v3 byte sınırını kayıtlı tamponu kopyalamadan uygular.
+  Tarayıcı limitleri WASM'den okur, UTF-8 boyunu tahsissiz hesaplar ve
+  `encodeInto` ile exact tampona yazar. Sınır/bir-fazlası native+gerçek wasm32
+  Node regresyonu ve kaynak+soru kipli beş seed'li fuzzer ile korunur; ilk
+  kampanya 61 saniyede 1.709.869 çağrıyı ihlalsiz tamamladı.
 - **B-041 · KAPALI (K-120) — LSP'yi SymbolId/HIR'a bağla.** Definition ve
   rename yalnız başarılı checker'ın `SymbolId`/`IslemId`/`YapiId` typed-HIR
   bağından hedef seçer. HIR ilk tanım, yeniden atama ve okuma aralıklarını
@@ -522,9 +530,9 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 ## Bir sonraki somut kapı
 
 İnsan kanıtı hattında B-001, doldurulmuş gerçek usability formları ve önceden
-ilan edilmiş eşikleri bekler. Makine hattında K-142 B-055'in sürümlü, kayıtlı
-ve fuzz kanıtlı WASM C ABI sınırını tamamladı. Sıradaki iş K-143 ile B-056
-playground kaynak/soru girdisi ön-tahsis bütçesidir.
+ilan edilmiş eşikleri bekler. Makine hattında K-143, B-056'nın kaynak/soru
+ön-tahsis bütçesini ABI v3 ve gerçek wasm32 kanıtıyla tamamladı. Sıradaki iş
+K-144 ile B-035 kritik işlev boyutu/karmaşıklık trend bütçesidir.
 
 ## 2 Eylül 2026 ikinci dış inceleme ayrımı
 
@@ -541,8 +549,9 @@ playground kaynak/soru girdisi ön-tahsis bütçesidir.
   K-138/ADR-035 ile kapandı. B-052 origin tekilleştirme ve loopback peer sınırı
   K-139/ADR-036 ile kapandı. B-053 byte HTTP+fuzz sınırı K-140/ADR-037 ile,
   B-054 advisory/lisans/lock/offline-vendor sınırı K-141/ADR-038 ile,
-  B-055 sürümlü kayıtlı WASM C ABI sınırı K-142/ADR-039 ile kapandı. Sırada
-  B-056 playground ön-tahsis bütçesi vardır.
+  B-055 sürümlü kayıtlı WASM C ABI sınırı K-142/ADR-039 ile, B-056 playground
+  ön-tahsis bütçesi K-143/ADR-040 ile kapandı. Sırada B-035 kritik işlev
+  boyutu/karmaşıklık trend bütçesi vardır.
   B-033/B-034 temiz snapshot hattı ayrıca kapalıdır.
 - **Mevcut repoda zaten kapalı:** çağrı derinliği C019/500 ve ayrı regresyonu;
   atomik metadata `unsafe` bloklarının her birindeki `SAFETY` gerekçesi; kök

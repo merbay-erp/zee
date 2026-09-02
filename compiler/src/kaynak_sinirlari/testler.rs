@@ -31,6 +31,9 @@ fn varsayilan_profil_kritik_limitleri_sifira_birakmaz() {
     assert!(sinirlar.web().giris_penceresi_saniye() > 0);
     assert!(sinirlar.io_izi().alan() <= sinirlar.io_izi().olay());
     assert!(sinirlar.lsp().yanit_bayti() <= sinirlar.lsp().govde_bayti());
+    assert!(sinirlar.playground().kaynak_bayti() <= sinirlar.kaynak_bayti());
+    assert!(sinirlar.playground().girdi_bayti() < sinirlar.metin_bayti());
+    assert!(sinirlar.playground().girdi_satiri() <= sinirlar.koleksiyon_ogesi());
     assert!(sinirlar.paket().dosya_bayti() <= sinirlar.paket().paket_bayti());
     assert!(sinirlar.paket().yayin_bayti() <= sinirlar.paket().paket_bayti());
     assert!(sinirlar.registry().yayin_bayti() <= sinirlar.registry().targets_bayti() as u64);

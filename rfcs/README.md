@@ -30,9 +30,9 @@ Dil değişikliği RFC ister (master plan bölüm 25). Şablon: [0000-sablon.md]
 | RFC-0022 | [Deterministik IO Trace/Replay](0022-deterministik-io-izi.md) | **geçici kabul** (K-115 şema-1 + CLI; `zee-io-1` ilişkisi K-116) | K-115, K-116, B-027, V1-P0-25 |
 | RFC-0023 | [Sürümlü Deterministik IO Profili](0023-deterministik-io-profili.md) | **geçici kabul** (`zee-io-1`, K-116) | K-116, B-028, V1-P0-26 |
 | RFC-0024 | [Merkezî Yetkinlik ve Outbound Ağ Güvenliği](0024-merkezi-yetkinlik-ve-outbound-guvenligi.md) | **geçici kabul** (K-127) | K-127, B-023/B-024/B-049, V1-P0-29 |
-| RFC-0025 | [Merkezî Kaynak Bütçesi](0025-merkezi-kaynak-butcesi.md) | **geçici kabul** (K-129/K-130/K-131/K-132; B-025 kapalı) | K-105, K-107, K-129/K-130/K-131/K-132, B-025, V1-P0-31 |
+| RFC-0025 | [Merkezî Kaynak Bütçesi](0025-merkezi-kaynak-butcesi.md) | **geçici kabul** (K-129/K-130/K-131/K-132/K-143; B-025/B-056 kapalı) | K-105, K-107, K-129/K-130/K-131/K-132/K-143, B-025/B-056, V1-P0-31/V1-P1-11 |
 
-**Durum özeti (2 Eylül 2026, K-137):** 25 RFC — 2 kabul (0001, 0010),
+**Durum özeti (2 Eylül 2026, K-143):** 25 RFC — 2 kabul (0001, 0010),
 21 geçici kabul (RFC-0020'nin yayın, metadata doğrulama, taşıma/cache/offline ve
 exact proje/kilit/CLI katmanları çalışır), 2 taslak: 0012 (FFI — Faz
 4/5) ve 0014 (standart kitaplık — çalışan prototiple).
