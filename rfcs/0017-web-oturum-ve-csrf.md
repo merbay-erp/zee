@@ -1,10 +1,12 @@
 # RFC-0017 — Web oturumu, yetki, CSRF ve güvenilir proxy profili
 
-- **Durum:** geçici kabul — K-088 güvenlik profili, K-134 istek transaction'ı
-  ve K-137 ortak durum/rate-limit sınırı saldırı regresyonlarına bağlandı
+- **Durum:** geçici kabul — K-088 güvenlik profili, K-134 istek transaction'ı,
+  K-137 ortak durum/rate-limit ve K-139 kanonik origin/loopback peer sınırı
+  saldırı regresyonlarına bağlandı
 - **Tarih:** 1 Eylül 2026
-- **İlgili kararlar:** K-082, K-087, K-088, K-134, K-137, ADR-010,
-  ADR-018, ADR-034; B-046, V1-P0-03
+- **Revizyon:** 2 Eylül 2026 — K-139/ADR-036
+- **İlgili kararlar:** K-082, K-087, K-088, K-134, K-137, K-139, ADR-010,
+  ADR-018, ADR-034, ADR-036; B-046, B-052, V1-P0-03
 - **Normatif metin:** spec/12
 
 ## Problem
@@ -50,6 +52,10 @@ kapısı olmalıdır.
 13. V1 sunucusu process başına tek worker'dır. Eşzamanlı kapasite, aynı
     depoyu paylaşan N ayrı süreç ve her süreç için `--web-worker-port` ile
     kurulur; process içi thread-pool sözü verilmez.
+14. `--web-proxy`, Host, tek-hop `Forwarded host` ve unsafe Origin, outbound
+    allowlist ile aynı kanonik `AgHedefi` DNS/IPv6/port parser'ını kullanır.
+    Listener sabit `127.0.0.1`e bind eder ve kabul edilen socket peer'ini de
+    loopback olarak doğrular.
 
 ## Dil yüzeyi
 
@@ -102,6 +108,9 @@ iki worker'a dağıtılan yanlış parola denemelerinin altıncıda Argon2id ön
 429 olmasını doğrular. Ayrı persistent depo testleri bozuk şema/symlink'i,
 Unix izinlerini, expiry'yi, koşullu rollback'i ve on eşzamanlı istemcide atomik
 oran eşiğini korur.
+K-139 kanıtı DNS harf farkı, varsayılan/farklı port, standart metinsel IPv6,
+geçersiz şema/yol/kullanıcı/etiket/ayraç/port ve loopback/dış peer ayrımını;
+mimari test ise ikinci origin parser'ının geri dönememesini doğrular.
 
 ## Bilinçli sınır
 

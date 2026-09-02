@@ -111,8 +111,13 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
     durum makinesi sayıyı float'a çevirmeden kayıpsız lexeme taşır; duplicate
     alan reddi, `-32700/-32600/-32601/-32602`, UTF-8 hata devamı ve bildirim
     sessizliği ayrı regresyonlarla B-051'i kapattı (556 test).
-36. Sıradaki makine işi K-139 ile B-052 web proxy origin'ini tek kanonik tipe
-    geçirmektir; sonraki işler aşağıdaki öncelik sırasını korur.
+36. K-139/ADR-036 CLI'a özel `GuvenliOrigin` tipini kaldırdı. `--web-proxy`,
+    `Host`, `Forwarded host` ve unsafe `Origin`, outbound allowlist ile aynı
+    `AgHedefi` DNS/IPv6/port parser'ını kullanır. Production listener sabit
+    loopback bind'i ve kabul edilen loopback peer'i birlikte doğrular; B-052
+    kapandı (558 test).
+37. Sıradaki makine işi K-140 ile B-053 HTTP istek ayrıştırıcısını byte tabanlı
+    ve fuzz kanıtlı yapmaktır; sonraki işler aşağıdaki öncelik sırasını korur.
 
 ## P0 — V1 öncesi dil ve derleyici omurgası
 
@@ -383,10 +388,14 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   `-32602`dir. Kimliksiz bildirime response yoktur; sayısal kimlik kayıpsız
   döner. RFC sayı differential korpusu, escaped duplicate, standart hata ve
   ardışık framing ve mimari sahiplik testleri toplam envanteri 556'ya çıkardı.
-- **B-052 · AÇIK — web proxy origin'ini tek kanonik tipe geçir.** CLI
-  `GuvenliOrigin` ayrıştırması `AgHedefi` kadar sıkı DNS/IPv6/port semantiği
-  taşımalı; iki parser drift edemez. Güvenilir proxy profili yalnız loopback
-  bind invariant'ıyla açılabilmelidir.
+- **B-052 · KAPALI (K-139/ADR-036) — web proxy origin'ini tek kanonik tipe
+  geçir.** CLI'a özel `GuvenliOrigin` kaldırıldı; `--web-proxy`, `Host`,
+  `Forwarded host` ve unsafe `Origin` outbound allowlist ile aynı `AgHedefi`
+  parser'ından geçer. Büyük/küçük DNS adı, varsayılan `:443`, köşeli ayraçlı
+  IPv6 ve 1–65535 port tek fail-closed kurala bağlıdır. Listener sabit
+  `127.0.0.1`e bind eder ve socket peer'inin loopback olduğunu ayrıca
+  doğrular. Olumlu/olumsuz origin ve mimari sahiplik regresyonları envanteri
+  558 teste çıkardı.
 - **B-053 · AÇIK — HTTP istek ayrıştırıcısını byte tabanlı ve fuzz kanıtlı
   yap.** Request-line/header CRLF, bare-LF, obs-fold, NUL, absolute-form,
   geçersiz UTF-8, TE/CL ve duplicate CL yüzeyi byte parser'da fail-closed
@@ -486,9 +495,9 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 ## Bir sonraki somut kapı
 
 İnsan kanıtı hattında B-001, doldurulmuş gerçek usability formları ve önceden
-ilan edilmiş eşikleri bekler. Makine hattında K-138 B-051'in kesin JSON-RPC
-ayrıştırma ve hata sınırını tamamladı. Sıradaki iş K-139 ile B-052 web proxy
-origin'ini tek kanonik tipe geçirmektir.
+ilan edilmiş eşikleri bekler. Makine hattında K-139 B-052'nin tek kanonik
+web proxy origin'i ile loopback bind+peer sınırını tamamladı. Sıradaki iş
+K-140 ile B-053 byte tabanlı ve fuzz kanıtlı HTTP istek ayrıştırıcısıdır.
 
 ## 2 Eylül 2026 ikinci dış inceleme ayrımı
 
@@ -502,7 +511,8 @@ origin'ini tek kanonik tipe geçirmektir.
   exact manifest/kilit v3/CLI ve kaynak kurulumu K-136 ile tamamlandı.
   B-046 ortak kalıcı oturum/rate-limit, kanonik proxy kimliği ve N tek-worker
   süreç modeli K-137/ADR-034 ile kapandı. B-051 kesin JSON-RPC ayrıştırması
-  K-138/ADR-035 ile kapandı. Sırada B-052 origin tekilleştirme, B-053 byte HTTP+fuzz,
+  K-138/ADR-035 ile kapandı. B-052 origin tekilleştirme ve loopback peer sınırı
+  K-139/ADR-036 ile kapandı. Sırada B-053 byte HTTP+fuzz,
   B-054 advisory/reproducibility, B-055 WASM C ABI ve B-056 playground
   ön-tahsis bütçesi vardır. B-033/B-034 temiz snapshot hattı ayrıca kapalıdır.
 - **Mevcut repoda zaten kapalı:** çağrı derinliği C019/500 ve ayrı regresyonu;

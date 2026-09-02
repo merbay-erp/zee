@@ -140,6 +140,7 @@ internet gerekmez, katalog `dil`in içindedir.
 | `dil çalıştır <dosya\|proje>` | dosyayı ya da `proje.dil` taşıyan klasörü çalıştırır; sonraki argümanlar programa gider |
 | `dil çalıştır --güvenli <dosya\|proje>` | çocuk modu: ağ kapalı, dosyalar programın klasörüyle sınırlı |
 | `dil çalıştır --deneysel-web <dosya\|proje>` | yalnız localhost eğitim/prototipi için gerçek TCP web yüzeyine açıkça izin verir |
+| `dil çalıştır --web-proxy https://host [--web-worker-port N] <dosya\|proje>` | production web: kanonik HTTPS origin, loopback reverse proxy ve ortak kalıcı durum profili |
 | `dil dene <dosya\|proje>` | `test "..."` bloklarını koşar |
 | `dil biçimle <dosya\|proje>` | dosyayı veya projedeki bütün `.dil` kaynaklarını resmi biçime getirir |
 | `dil denetle <dosya\|proje>` | çalıştırmadan hata arar (`--json`: makine çıktısı) |

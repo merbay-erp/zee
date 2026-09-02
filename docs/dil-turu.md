@@ -613,8 +613,11 @@ K-106'nın 4096 toplam/1024 anonim kayıt kotası ve mutlak 10/30 dakika ömrü
 korunur. K-137'de production oturumu, revoke/expiry ve endpoint/CSRF/Argon2id
 oran sayaçları proje kökündeki kalıcı ortak depoya taşındı. V1 kapasitesi,
 aynı depoyu paylaşan farklı loopback portlu N ayrı tek-worker süreçle büyür;
-çok-hostlu harici backend henüz vaat değildir. Kurulum ve güven sözleşmesi
-[web production profilinde](web-production-profili.md) açıklanır.
+çok-hostlu harici backend henüz vaat değildir. K-139'da CLI origin'i,
+`Host`, `Forwarded host` ve unsafe `Origin` ortak `AgHedefi` kimliğine bağlandı;
+runtime hem sabit loopback bind'i hem kabul edilen loopback peer'i doğrular.
+Kurulum ve güven sözleşmesi [web production
+profilinde](web-production-profili.md) açıklanır.
 
 ## 19. Fiziksel dünya (ESP32)
 

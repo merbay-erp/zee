@@ -14,6 +14,7 @@
 //!
 //! Komutlar Türkçedir: çalıştır, denetle, sürüm.
 
+use dil::yetkinlik::AgHedefi;
 use std::process::ExitCode;
 
 #[path = "cli/registry.rs"]
@@ -24,46 +25,16 @@ const HTTP_ISTEK_OKUMA_SURESI: std::time::Duration = std::time::Duration::from_s
         .http()
         .istek_okuma_saniyesi(),
 );
+const WEB_BIND_IP: std::net::Ipv4Addr = std::net::Ipv4Addr::LOCALHOST;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 enum WebModu {
     Kapali,
     Deneysel,
     GuvenliProxy {
-        origin: GuvenliOrigin,
+        origin: AgHedefi,
         worker_kapi: Option<u16>,
     },
-}
-
-#[derive(Clone, Debug, PartialEq, Eq)]
-struct GuvenliOrigin {
-    tam: String,
-    host: String,
-}
-
-impl GuvenliOrigin {
-    fn ayristir(yazim: &str) -> Result<Self, String> {
-        let kalan = yazim
-            .strip_prefix("https://")
-            .ok_or_else(|| "güvenli web origin'i https:// ile başlamalı".to_string())?;
-        let (host, yol) = kalan.split_once('/').unwrap_or((kalan, ""));
-        if host.is_empty()
-            || !yol.is_empty()
-            || !host.is_ascii()
-            || !host
-                .bytes()
-                .all(|b| b.is_ascii_alphanumeric() || matches!(b, b'.' | b'-' | b':' | b'[' | b']'))
-        {
-            return Err(
-                "origin yalnız şema ve host taşımalı; örnek: https://uygulama.example".into(),
-            );
-        }
-        let host = host.to_ascii_lowercase();
-        Ok(Self {
-            tam: format!("https://{}", host),
-            host,
-        })
-    }
 }
 
 fn web_modunu_ayikla(argumanlar: &mut Vec<String>) -> Result<WebModu, String> {
@@ -118,7 +89,7 @@ fn web_modunu_ayikla(argumanlar: &mut Vec<String>) -> Result<WebModu, String> {
             .clone();
         argumanlar.remove(yer + 1);
         argumanlar.remove(yer);
-        return GuvenliOrigin::ayristir(&origin).map(|origin| WebModu::GuvenliProxy {
+        return AgHedefi::https_origininden(&origin).map(|origin| WebModu::GuvenliProxy {
             origin,
             worker_kapi,
         });
@@ -1428,7 +1399,7 @@ impl GercekIo {
         Ok(aday)
     }
 
-    fn guvenli_proxy_origin(&self) -> Option<&GuvenliOrigin> {
+    fn guvenli_proxy_origin(&self) -> Option<&AgHedefi> {
         match &self.web_modu {
             WebModu::GuvenliProxy { origin, .. } => Some(origin),
             WebModu::Kapali | WebModu::Deneysel => None,
@@ -1570,13 +1541,17 @@ fn tek_http_basligi<'a>(istek: &'a str, ad: &str) -> Option<&'a str> {
     (degerler.len() == 1).then(|| degerler[0])
 }
 
+fn guvenilir_proxy_esi_mi(es: std::net::SocketAddr) -> bool {
+    es.ip().is_loopback()
+}
+
 fn guvenli_proxy_istegini_denetle(
     istek: &str,
-    origin: &GuvenliOrigin,
+    origin: &AgHedefi,
     yontem: &str,
 ) -> Result<String, (u16, &'static str)> {
     let host = tek_http_basligi(istek, "Host").ok_or((400, "tek bir Host başlığı gerekli"))?;
-    if !host.eq_ignore_ascii_case(&origin.host) {
+    if AgHedefi::https_otoritesinden(host).as_ref() != Ok(origin) {
         return Err((400, "Host güvenli web origin'iyle eşleşmiyor"));
     }
     let forwarded_degerleri = http_baslik_degerleri(istek, "Forwarded");
@@ -1612,7 +1587,12 @@ fn guvenli_proxy_istegini_denetle(
     if !proto.is_some_and(|deger| deger.eq_ignore_ascii_case("https")) {
         return Err((426, "güvenli web profili HTTPS gerektiriyor"));
     }
-    if !forwarded_host.is_some_and(|host| host.eq_ignore_ascii_case(&origin.host)) {
+    let forwarded_host = forwarded_host.map(|host| host.trim_matches('"'));
+    if forwarded_host
+        .and_then(|host| AgHedefi::https_otoritesinden(host).ok())
+        .as_ref()
+        != Some(origin)
+    {
         return Err((400, "Forwarded host güvenli web origin'iyle eşleşmiyor"));
     }
     let istemci = istemci.ok_or((400, "Forwarded for istemci kimliği gerekli"))?;
@@ -1631,7 +1611,7 @@ fn guvenli_proxy_istegini_denetle(
     if !guvenli_yontem {
         let gelen = tek_http_basligi(istek, "Origin")
             .ok_or((403, "durum değiştiren istek Origin başlığı istiyor"))?;
-        if gelen != origin.tam {
+        if AgHedefi::https_origininden(gelen).as_ref() != Ok(origin) {
             return Err((403, "Origin güvenli web origin'iyle eşleşmiyor"));
         }
     }
@@ -1821,13 +1801,14 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             return Err("web yüzeyi kapalı; prototip için `--deneysel-web`, üretim için `--web-proxy https://host` kullan".into());
         }
         let gercek_kapi = self.web_worker_kapisi().map(i64::from).unwrap_or(kapi);
-        let dinleyici = std::net::TcpListener::bind(("127.0.0.1", gercek_kapi as u16))
+        let dinleyici = std::net::TcpListener::bind((WEB_BIND_IP, gercek_kapi as u16))
             .map_err(|e| e.to_string())?;
         match &self.web_modu {
             WebModu::Deneysel => println!("Sunucu dinliyor: http://127.0.0.1:{}", kapi),
             WebModu::GuvenliProxy { origin, .. } => println!(
                 "Sunucu dinliyor: {} (yerel proxy hedefi http://127.0.0.1:{})",
-                origin.tam, gercek_kapi
+                origin.yazimi(),
+                gercek_kapi
             ),
             WebModu::Kapali => {
                 return Err("web yüzeyi kapalıyken sunucu kurulamaz".into());
@@ -1841,6 +1822,16 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         'istekler: loop {
             let (mut akis, es) = dinleyici.accept().ok()?;
             let https = self.guvenli_proxy_origin().is_some();
+            if https && !guvenilir_proxy_esi_mi(es) {
+                ham_http_hatasi_gonder(
+                    &mut akis,
+                    403,
+                    "güvenilir proxy bağlantısı loopback üzerinden gelmeli",
+                    false,
+                    true,
+                );
+                continue;
+            }
             let baglanti_izni = match dil::kaynak_sinirlari::baglanti_izni_al() {
                 Ok(izin) => izin,
                 Err(_) => {
@@ -2385,12 +2376,12 @@ fn calistir_deneysel_web_komutu(girdi: &KaynakGirdisi) -> ExitCode {
 
 fn calistir_guvenli_web_komutu(
     girdi: &KaynakGirdisi,
-    origin: GuvenliOrigin,
+    origin: AgHedefi,
     worker_kapi: Option<u16>,
 ) -> ExitCode {
     eprintln!(
         "Güvenli web profili: yalnız 127.0.0.1 üzerindeki HTTPS reverse proxy güvenilir; origin {}.",
-        origin.tam
+        origin.yazimi()
     );
     calistir_gercek_io_ile(
         girdi,
@@ -2502,12 +2493,28 @@ mod web_profili_testleri {
     use std::io::{Read, Write};
 
     #[test]
-    fn guvenli_origin_yalniz_https_sema_ve_host_kabul_eder() {
-        let origin = GuvenliOrigin::ayristir("https://panel.example:8443").expect("origin");
-        assert_eq!(origin.host, "panel.example:8443");
-        assert!(GuvenliOrigin::ayristir("http://panel.example").is_err());
-        assert!(GuvenliOrigin::ayristir("https://panel.example/yol").is_err());
-        assert!(GuvenliOrigin::ayristir("https://kisi@panel.example").is_err());
+    fn guvenli_origin_ortak_ag_hedefiyle_kanoniklenir() {
+        let origin = AgHedefi::https_origininden("https://PANEL.Example:8443").expect("origin");
+        assert_eq!(origin.otoritesi(), "panel.example:8443");
+        assert_eq!(origin.yazimi(), "https://panel.example:8443");
+        let ipv6 =
+            AgHedefi::https_origininden("https://[2001:db8::1]:8443").expect("IPv6 origin");
+        assert_eq!(ipv6.otoritesi(), "[2001:db8::1]:8443");
+        for gecersiz in [
+            "http://panel.example",
+            "https://panel.example/yol",
+            "https://kisi@panel.example",
+            "https://panel_example",
+            "https://[2001:db8::1",
+            "https://panel.example:+443",
+            "https://panel.example:0",
+            "https://panel.example:65536",
+        ] {
+            assert!(
+                AgHedefi::https_origininden(gecersiz).is_err(),
+                "{gecersiz}"
+            );
+        }
     }
 
     #[test]
@@ -2552,7 +2559,7 @@ mod web_profili_testleri {
 
     #[test]
     fn proxy_host_proto_ve_unsafe_origini_birlikte_dogrular() {
-        let origin = GuvenliOrigin::ayristir("https://panel.example").unwrap();
+        let origin = AgHedefi::https_origininden("https://panel.example").unwrap();
         let get = "GET / HTTP/1.1\r\nHost: panel.example\r\nForwarded: for=203.0.113.7;proto=https;host=panel.example\r\n\r\n";
         assert_eq!(
             guvenli_proxy_istegini_denetle(get, &origin, "GET").unwrap(),
@@ -2606,6 +2613,33 @@ mod web_profili_testleri {
                 .0,
             400
         );
+
+        let kanonik_esdeger = "POST /kaydet HTTP/1.1\r\nHost: PANEL.EXAMPLE:443\r\nForwarded: for=203.0.113.7;proto=HTTPS;host=panel.example:443\r\nOrigin: https://PANEL.EXAMPLE:443/\r\n\r\n";
+        assert!(
+            guvenli_proxy_istegini_denetle(kanonik_esdeger, &origin, "POST").is_ok()
+        );
+        let yanlis_kapi = "GET / HTTP/1.1\r\nHost: panel.example:8443\r\nForwarded: for=203.0.113.7;proto=https;host=panel.example:8443\r\n\r\n";
+        assert_eq!(
+            guvenli_proxy_istegini_denetle(yanlis_kapi, &origin, "GET")
+                .unwrap_err()
+                .0,
+            400
+        );
+
+        let ipv6 = AgHedefi::https_origininden("https://[2001:db8::1]:8443").unwrap();
+        let ipv6_istegi = "POST /kaydet HTTP/1.1\r\nHost: [2001:0DB8:0:0::1]:8443\r\nForwarded: for=203.0.113.7;proto=https;host=\"[2001:0db8:0:0::1]:8443\"\r\nOrigin: https://[2001:0DB8:0:0::1]:8443\r\n\r\n";
+        assert!(guvenli_proxy_istegini_denetle(ipv6_istegi, &ipv6, "POST").is_ok());
+    }
+
+    #[test]
+    fn guvenilir_proxy_yalniz_loopback_bind_ve_es_kabul_eder() {
+        assert!(WEB_BIND_IP.is_loopback());
+        for es in ["127.0.0.1:443", "[::1]:443"] {
+            assert!(guvenilir_proxy_esi_mi(es.parse().unwrap()), "{es}");
+        }
+        for es in ["192.0.2.1:443", "[2001:db8::1]:443"] {
+            assert!(!guvenilir_proxy_esi_mi(es.parse().unwrap()), "{es}");
+        }
     }
 
     #[test]
@@ -2711,7 +2745,7 @@ mod web_profili_testleri {
                 .as_nanos()
         ));
         std::fs::create_dir(&gecici).unwrap();
-        let origin = GuvenliOrigin::ayristir("https://panel.example").unwrap();
+        let origin = AgHedefi::https_origininden("https://panel.example").unwrap();
         let mut io = GercekIo::yeni_argumanlarla(
             &gecici,
             &gecici,

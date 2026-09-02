@@ -2,7 +2,9 @@
 
 - **Durum:** kabul
 - **Tarih:** 2 Eylül 2026
-- **İlgili kayıt:** K-137, B-046, RFC-0017, ADR-018, V1-P0-03
+- **Revizyon:** 2 Eylül 2026 — K-139/ADR-036 kanonik origin ve açık
+  loopback bind+peer değişmezini ekledi.
+- **İlgili kayıt:** K-137, K-139, B-046, B-052, RFC-0017, ADR-018, V1-P0-03
 
 ## Bağlam
 
@@ -55,7 +57,10 @@ yeni kimliği tahliye ederek eşiği delmek yerine fail-closed reddeder.
 `--web-proxy` yalnız loopback proxy'ye güvenir. Proxy, istemciden gelen bütün
 proxy başlıklarını silip tam bir `Forwarded: for=<IP>;proto=https;host=<host>`
 başlığı kurar. Runtime tek header/tek halka ister, IP'yi `IpAddr` ile kanonikler
-ve `X-Forwarded-For`ı kimlik kaynağı saymaz.
+ve `X-Forwarded-For`ı kimlik kaynağı saymaz. K-139'da listener açıkça
+`127.0.0.1`e bind edilir ve kabul edilen peer ayrıca loopback olarak doğrulanır.
+CLI origin'i, `Host`, `Forwarded host` ve unsafe `Origin`, outbound allowlist
+ile aynı `AgHedefi` parser'ından geçip kanonik kimlikle karşılaştırılır.
 
 V1 server modeli bilinçli olarak **tek worker/thread per process**tir.
 Concurrency, reverse proxy arkasında aynı proje kökünü/deposunu paylaşan N
@@ -81,7 +86,8 @@ eşzamanlı Zee request yürütümü V1 sözü değildir.
   edebilir; kapasite N process ve reverse-proxy buffering/timeout ayarıyla
   büyütülür.
 - Operatör, loopback dışı bind'e izin veremez; `Forwarded` başlığını dış
-  istemciden aynen geçiremez.
+  istemciden aynen geçiremez. Loopback dışı socket peer'i doğru görünen
+  başlıklarla dahi güvenilir proxy sayılmaz.
 - Gerçek iki CLI süreci; login, çapraz authenticated GET, restart, çapraz
   logout ve ortak 429 akışını uçtan uca doğrular. On paralel depo kullanıcısı
   100 artışta eşik üstü tek isteğin kaçmadığını ayrıca kanıtlar.

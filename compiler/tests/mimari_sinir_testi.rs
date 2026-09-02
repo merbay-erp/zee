@@ -84,6 +84,7 @@ fn handler_modulleri_yeni_domain_icin_sinir_tasir() {
         ("src/yorumlayici/web_istek.rs", 180),
         ("src/yorumlayici/yetkinlik.rs", 250),
         ("src/yetkinlik.rs", 520),
+        ("src/yetkinlik/origin.rs", 100),
         ("src/ag_istemcisi.rs", 180),
         ("src/web_guvenligi.rs", 1_050),
         ("src/web_guvenligi/depo.rs", 160),
@@ -119,6 +120,16 @@ fn lsp_json_ayristirma_ve_cikti_sahipleri_ayridir() {
     assert!(json.contains("struct JsonSayisi"));
     assert!(json.contains("fn sayi("));
     assert!(cikti.contains("struct SinirliJson"));
+}
+
+#[test]
+fn web_proxy_origin_tek_ag_hedefi_parserini_kullanir() {
+    let cli = kaynak("src/main.rs");
+    assert!(!cli.contains("struct GuvenliOrigin"));
+    assert!(cli.contains("AgHedefi::https_origininden"));
+    assert!(cli.contains("AgHedefi::https_otoritesinden"));
+    assert!(cli.contains("TcpListener::bind((WEB_BIND_IP"));
+    assert!(cli.contains("guvenilir_proxy_esi_mi"));
 }
 
 #[test]

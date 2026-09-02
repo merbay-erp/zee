@@ -2220,6 +2220,26 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   eklendi. Gerçek ardışık çerçeve ve mimari sahiplik testiyle envanter 556
   test, 152 etkin + 3 ayrılmış tanı ve 82 numaralı belgedir. B-051 kapandı.
 
+## K-139 — Web proxy origin'i tek kanonik güvenlik tipidir (2 Eyl)
+
+- **Sorun:** Outbound allowlist `AgHedefi` ile sıkı DNS/IPv6/port semantiği
+  taşırken `--web-proxy` daha gevşek, CLI'a özel `GuvenliOrigin` parser'ını
+  kullanıyordu. Ham Host/Origin karşılaştırmaları varsayılan port ve kanonik
+  kimliği tekilleştirmiyor; loopback güveni kabul edilen peer üzerinde ayrıca
+  doğrulanmıyordu.
+- **Karar:** CLI'a özel origin tipi kaldırıldı. `--web-proxy`, `Host`, tek-hop
+  `Forwarded host` ve unsafe `Origin` aynı `AgHedefi` parser'ından geçer;
+  yalnız HTTPS, geçerli ASCII DNS veya köşeli IPv6 ve 1–65535 port kabul edilir.
+  DNS harfi ve varsayılan `:443` kanoniklenir. Listener sabit `127.0.0.1`e bind
+  eder; production isteğinin socket peer'i ayrıca loopback değilse 403 döner.
+- **Mimari:** Tek parser 100 satır bütçeli `yetkinlik/origin.rs` sahibindedir.
+  Mimari test ikinci `GuvenliOrigin` tipinin, ortak kurucuların ve açık
+  loopback bind+peer kapısının drift etmesini engeller.
+- **Kanıt:** DNS harf farkı, açık varsayılan port, farklı port, IPv6, HTTP,
+  kullanıcı bilgisi, yol, bozuk etiket/ayraç/port ile loopback ve dış peer
+  olumluları/olumsuzları eklendi. Envanter 558 test, 152 etkin + 3 ayrılmış
+  tanı ve 83 numaralı belgedir. B-052 kapandı.
+
 ---
 
 ## Sonraki adım
@@ -2228,6 +2248,6 @@ Korpus 10 öğrenci + 5 profesyonel usability oturumuna (Hafta 12 hedefi, erkeni
 Hafta 2'de kağıt üstünde) sesli okutulacak; her kayıt için "doğal mı /
 deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
-Makine hattında K-138 RFC 8259 sayı, duplicate alan, kayıpsız kimlik ve
-standart JSON-RPC hata ayrımını bağlayarak B-051'i kapattı. Sırada K-139 ile
-B-052 web proxy origin'ini tek kanonik tipe geçirme işi vardır.
+Makine hattında K-139 web proxy origin'ini ortak `AgHedefi` kimliğine ve
+loopback bind+peer değişmezine bağlayarak B-052'yi kapattı. Sırada K-140 ile
+B-053 byte tabanlı ve fuzz kanıtlı HTTP istek ayrıştırıcısı vardır.
