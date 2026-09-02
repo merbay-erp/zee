@@ -9,6 +9,9 @@
 use crate::tani::Tani;
 use std::collections::HashMap;
 
+mod cikti;
+use cikti::{CiktiSonucu, SinirliJson};
+
 // ---------- mini JSON ----------
 
 pub const AZAMI_LSP_BASLIK_BAYTI: usize =
@@ -211,24 +214,6 @@ fn sayi_coz(k: &mut Karakterler) -> Option<Json> {
     govde.parse::<f64>().ok().map(Json::Sayi)
 }
 
-fn json_metin_yaz(metin: &str) -> String {
-    let mut cikti = String::with_capacity(metin.len() + 2);
-    cikti.push('"');
-    for karakter in metin.chars() {
-        match karakter {
-            '"' => cikti.push_str("\\\""),
-            '\\' => cikti.push_str("\\\\"),
-            '\n' => cikti.push_str("\\n"),
-            '\r' => cikti.push_str("\\r"),
-            '\t' => cikti.push_str("\\t"),
-            k if (k as u32) < 0x20 => cikti.push_str(&format!("\\u{:04x}", k as u32)),
-            k => cikti.push(k),
-        }
-    }
-    cikti.push('"');
-    cikti
-}
-
 // ---------- sunucu ----------
 
 /// Tamamlama önerileri: dilin kalıp kelimeleri (kaynağı: ayrıştırıcı yüzeyi).
@@ -403,30 +388,45 @@ impl Sunucu {
 
         match yontem {
             "initialize" => {
-                let sonuc = format!(
-                    "{{\"capabilities\":{{\"textDocumentSync\":1,\
-                     \"completionProvider\":{{}},\
-                     \"hoverProvider\":true,\
-                     \"definitionProvider\":true,\
-                     \"renameProvider\":true}},\
-                     \"serverInfo\":{{\"name\":\"dillsp\",\"version\":{}}}}}",
-                    json_metin_yaz(env!("CARGO_PKG_VERSION"))
-                );
-                cikti.govdeler.push(yanit(kimlik, &sonuc));
+                let yanit = yanit_uret(kimlik, |yazici| {
+                    yazici.ham(
+                        "{\"capabilities\":{\"textDocumentSync\":1,\
+                         \"completionProvider\":{},\
+                         \"hoverProvider\":true,\
+                         \"definitionProvider\":true,\
+                         \"renameProvider\":true},\
+                         \"serverInfo\":{\"name\":\"dillsp\",\"version\":"
+                    )?;
+                    yazici.metin(env!("CARGO_PKG_VERSION"))?;
+                    yazici.ham("}}")
+                });
+                cikti_ekle(&mut cikti, kimlik, yanit);
             }
             "textDocument/didOpen" => {
                 if let Some((uri, metin)) = ac_parametreleri(&mesaj) {
                     match self.belgeyi_guncelle(uri.clone(), metin) {
-                        Ok(()) => cikti.govdeler.push(self.tanilari_yayinla(&uri)),
-                        Err(hata) => cikti.govdeler.push(kaynak_siniri_bildirimi(&uri, &hata)),
+                        Ok(()) => {
+                            let bildirim = self.tanilari_yayinla(&uri);
+                            cikti_ekle(&mut cikti, kimlik, bildirim);
+                        }
+                        Err(hata) => {
+                            let bildirim = kaynak_siniri_bildirimi(&uri, &hata);
+                            cikti_ekle(&mut cikti, kimlik, bildirim);
+                        }
                     }
                 }
             }
             "textDocument/didChange" => {
                 if let Some((uri, metin)) = degisim_parametreleri(&mesaj) {
                     match self.belgeyi_guncelle(uri.clone(), metin) {
-                        Ok(()) => cikti.govdeler.push(self.tanilari_yayinla(&uri)),
-                        Err(hata) => cikti.govdeler.push(kaynak_siniri_bildirimi(&uri, &hata)),
+                        Ok(()) => {
+                            let bildirim = self.tanilari_yayinla(&uri);
+                            cikti_ekle(&mut cikti, kimlik, bildirim);
+                        }
+                        Err(hata) => {
+                            let bildirim = kaynak_siniri_bildirimi(&uri, &hata);
+                            cikti_ekle(&mut cikti, kimlik, bildirim);
+                        }
                     }
                 }
             }
@@ -436,63 +436,82 @@ impl Sunucu {
                         self.toplam_belge_bayti =
                             self.toplam_belge_bayti.saturating_sub(eski.len());
                     }
-                    cikti.govdeler.push(bos_tanilar(&uri));
+                    let bildirim = bos_tanilar(&uri);
+                    cikti_ekle(&mut cikti, kimlik, bildirim);
                 }
             }
             "textDocument/completion" => {
-                let ogeler: Vec<String> = KALIP_KELIMELERI
-                    .iter()
-                    .map(|k| format!("{{\"label\":{},\"kind\":14}}", json_metin_yaz(k)))
-                    .collect();
-                cikti
-                    .govdeler
-                    .push(yanit(kimlik, &format!("[{}]", ogeler.join(","))));
+                let yanit = yanit_uret(kimlik, |yazici| {
+                    yazici.ham("[")?;
+                    for (sira, kelime) in KALIP_KELIMELERI.iter().enumerate() {
+                        if sira > 0 {
+                            yazici.ham(",")?;
+                        }
+                        yazici.ham("{\"label\":")?;
+                        yazici.metin(kelime)?;
+                        yazici.ham(",\"kind\":14}")?;
+                    }
+                    yazici.ham("]")
+                });
+                cikti_ekle(&mut cikti, kimlik, yanit);
             }
             "textDocument/hover" => {
-                let sonuc = konum_parametreleri(&mesaj)
+                let aciklama = konum_parametreleri(&mesaj)
                     .and_then(|(uri, satir, sutun)| {
                         let metin = self.belgeler.get(&uri)?;
                         let kelime = konumdaki_kelime(metin, satir, sutun)?;
                         aciklama_uret(metin, &kelime)
-                    })
-                    .map(|aciklama| {
-                        format!(
-                            "{{\"contents\":{{\"kind\":\"markdown\",\"value\":{}}}}}",
-                            json_metin_yaz(&aciklama)
-                        )
-                    })
-                    .unwrap_or_else(|| "null".into());
-                cikti.govdeler.push(yanit(kimlik, &sonuc));
+                    });
+                let yanit = yanit_uret(kimlik, |yazici| match aciklama.as_deref() {
+                    Some(aciklama) => {
+                        yazici.ham("{\"contents\":{\"kind\":\"markdown\",\"value\":")?;
+                        yazici.metin(aciklama)?;
+                        yazici.ham("}}")
+                    }
+                    None => yazici.ham("null"),
+                });
+                cikti_ekle(&mut cikti, kimlik, yanit);
             }
             "textDocument/rename" => {
-                let sonuc =
-                    yeniden_adlandir(&mesaj, &self.belgeler).unwrap_or_else(|| "null".into());
-                cikti.govdeler.push(yanit(kimlik, &sonuc));
+                let yanit = yanit_uret(kimlik, |yazici| {
+                    if yeniden_adlandir(&mesaj, &self.belgeler, yazici)? {
+                        Ok(())
+                    } else {
+                        yazici.ham("null")
+                    }
+                });
+                cikti_ekle(&mut cikti, kimlik, yanit);
             }
             "textDocument/definition" => {
-                let sonuc = konum_parametreleri(&mesaj)
+                let tanim = konum_parametreleri(&mesaj)
                     .and_then(|(uri, satir, sutun)| {
                         let metin = self.belgeler.get(&uri)?;
                         match semantik_tanim_sorgula(&uri, metin, satir, sutun) {
-                            Some(Some(aralik)) => Some(tanim_yaniti(&uri, aralik)),
+                            Some(Some(aralik)) => Some((uri, aralik)),
                             // Bağsız konumda ya da hatalı belgede metin tahmini
                             // yapılmaz; tanılar didOpen/didChange ile yayımlanır.
                             Some(None) | None => None,
                         }
-                    })
-                    .unwrap_or_else(|| "null".into());
-                cikti.govdeler.push(yanit(kimlik, &sonuc));
+                    });
+                let yanit = yanit_uret(kimlik, |yazici| match &tanim {
+                    Some((uri, aralik)) => tanim_yaniti_yaz(yazici, uri, *aralik),
+                    None => yazici.ham("null"),
+                });
+                cikti_ekle(&mut cikti, kimlik, yanit);
             }
-            "shutdown" => cikti.govdeler.push(yanit(kimlik, "null")),
+            "shutdown" => {
+                let yanit = yanit_uret(kimlik, |yazici| yazici.ham("null"));
+                cikti_ekle(&mut cikti, kimlik, yanit);
+            }
             "exit" => cikti.devam = false,
             _ => {
                 // Kimlikli bilinmeyen istekler boş sonuçla yanıtlanır ki istemci beklemede kalmasın.
                 if kimlik.is_some() {
-                    cikti.govdeler.push(yanit(kimlik, "null"));
+                    let yanit = yanit_uret(kimlik, |yazici| yazici.ham("null"));
+                    cikti_ekle(&mut cikti, kimlik, yanit);
                 }
             }
         }
-        ciktilari_sinirla(kimlik, &mut cikti);
         cikti
     }
 
@@ -528,7 +547,7 @@ impl Sunucu {
         Ok(())
     }
 
-    fn tanilari_yayinla(&self, uri: &str) -> String {
+    fn tanilari_yayinla(&self, uri: &str) -> CiktiSonucu<String> {
         let metin = self.belgeler.get(uri).cloned().unwrap_or_default();
         let belge_yolu = uri_yolu(uri).and_then(|yol| std::fs::canonicalize(yol).ok());
 
@@ -569,13 +588,7 @@ impl Sunucu {
         };
         let tanilar =
             proje_tanilari.unwrap_or_else(|| crate::kaynagi_tanilari(&metin, &mut yukleyici));
-        let govde: Vec<String> = tanilar.iter().map(lsp_tanisi).collect();
-        format!(
-            "{{\"jsonrpc\":\"2.0\",\"method\":\"textDocument/publishDiagnostics\",\
-             \"params\":{{\"uri\":{},\"diagnostics\":[{}]}}}}",
-            json_metin_yaz(uri),
-            govde.join(",")
-        )
+        tanilari_yaz(uri, &tanilar)
     }
 }
 
@@ -630,16 +643,21 @@ impl LspKaynakAraligi {
     }
 }
 
-fn tanim_yaniti(uri: &str, aralik: LspKaynakAraligi) -> String {
-    format!(
-        "{{\"uri\":{},\"range\":{{\"start\":{{\"line\":{},\"character\":{}}},\
+fn tanim_yaniti_yaz(
+    yazici: &mut SinirliJson,
+    uri: &str,
+    aralik: LspKaynakAraligi,
+) -> CiktiSonucu<()> {
+    yazici.ham("{\"uri\":")?;
+    yazici.metin(uri)?;
+    yazici.bicimle(format_args!(
+        ",\"range\":{{\"start\":{{\"line\":{},\"character\":{}}},\
          \"end\":{{\"line\":{},\"character\":{}}}}}}}",
-        json_metin_yaz(uri),
         aralik.satir,
         aralik.bas,
         aralik.satir,
         aralik.bas + aralik.uzunluk
-    )
+    ))
 }
 
 /// Kod satırındaki tanımlayıcı aralıkları. Metin sabiti ve yorum içi LSP
@@ -1033,10 +1051,17 @@ fn adaylar_ile_kesisir(ilk: &str, aranan: &[String]) -> bool {
 /// SymbolId/HIR bağlı yeniden adlandırma (K-120): yalnız seçilen semantic
 /// sembolün okuma/yazma aralıklarını değiştirir. Aynı yazımlı başka kapsam,
 /// metin sabiti, yorum ve çözümlenemeyen belge için tahmin yapmaz.
-fn yeniden_adlandir(
+struct YenidenAdlandirmaPlani {
+    uri: String,
+    yeni_ad: String,
+    sembol_koku: Option<String>,
+    araliklar: Vec<LspKaynakAraligi>,
+}
+
+fn yeniden_adlandirma_plani(
     mesaj: &Json,
     belgeler: &std::collections::HashMap<String, String>,
-) -> Option<String> {
+) -> Option<YenidenAdlandirmaPlani> {
     let (uri, satir, sutun) = konum_parametreleri(mesaj)?;
     let yeni_ad = mesaj.alan("params")?.alan("newName")?.metin()?.to_string();
     let metin = belgeler.get(&uri)?;
@@ -1056,27 +1081,22 @@ fn yeniden_adlandir(
             && ad.split_whitespace().collect::<Vec<_>>().join(" ") == ad
     };
 
-    let mut degisiklikler = match varlik {
+    let (mut araliklar, sembol_koku) = match varlik {
         SemantikVarlik::Sembol(kimlik) => {
             if !tek_ad_gecerli(&yeni_ad) {
                 return None;
             }
             let kok = hir.sembol_adi(kimlik)?;
-            hir.sembol_kullanimlari()
-                .into_iter()
-                .filter(|kullanim| kullanim.kimlik() == kimlik)
-                .filter_map(|kullanim| {
-                    let aralik = hir_araligini_coz(metin, kok, kullanim.kaynak_araligi())?;
-                    let yazim = aralik_metni(metin, aralik)?;
-                    let yeni = if yazim == kok {
-                        yeni_ad.clone()
-                    } else {
-                        let ekler = crate::morfoloji::ek_zinciri_coz(&yazim, kok)?;
-                        crate::morfoloji::ek_zinciri_uydur(&yeni_ad, &ekler)?
-                    };
-                    Some((aralik, yeni))
-                })
-                .collect::<Vec<_>>()
+            (
+                hir.sembol_kullanimlari()
+                    .into_iter()
+                    .filter(|kullanim| kullanim.kimlik() == kimlik)
+                    .filter_map(|kullanim| {
+                        hir_araligini_coz(metin, kok, kullanim.kaynak_araligi())
+                    })
+                    .collect::<Vec<_>>(),
+                Some(kok.to_string()),
+            )
         }
         SemantikVarlik::Islem(kimlik) => {
             if !islem_adi_gecerli(&yeni_ad) {
@@ -1095,10 +1115,7 @@ fn yeniden_adlandir(
                     .filter(|(kullanim_kimligi, _)| *kullanim_kimligi == kimlik)
                     .flat_map(|(_, aralik)| hir_satir_ifadelerini_coz(metin, ad, aralik)),
             );
-            araliklar
-                .into_iter()
-                .map(|aralik| (aralik, yeni_ad.clone()))
-                .collect()
+            (araliklar, None)
         }
         SemantikVarlik::Yapi(kimlik) => {
             if !tek_ad_gecerli(&yeni_ad) {
@@ -1116,104 +1133,206 @@ fn yeniden_adlandir(
                     .filter(|(kullanim_kimligi, _)| *kullanim_kimligi == kimlik)
                     .flat_map(|(_, aralik)| hir_satir_ifadelerini_coz(metin, &yapi.ad, aralik)),
             );
-            araliklar
-                .into_iter()
-                .map(|aralik| (aralik, yeni_ad.clone()))
-                .collect()
+            (araliklar, None)
         }
     };
-    degisiklikler.sort_by_key(|(aralik, _)| *aralik);
-    degisiklikler.dedup_by(|(sol, _), (sag, _)| sol == sag);
-    if degisiklikler.is_empty() {
+    araliklar.sort_unstable();
+    araliklar.dedup();
+    if araliklar.is_empty() {
         return None;
     }
-
-    let duzenlemeler = degisiklikler
-        .into_iter()
-        .map(|(aralik, yeni)| {
-            format!(
-                "{{\"range\":{{\"start\":{{\"line\":{},\"character\":{}}},\"end\":{{\"line\":{},\"character\":{}}}}},\"newText\":{}}}",
-                aralik.satir,
-                aralik.bas,
-                aralik.satir,
-                aralik.bas + aralik.uzunluk,
-                json_metin_yaz(&yeni)
-            )
-        })
-        .collect::<Vec<_>>();
-    Some(format!(
-        "{{\"changes\":{{{}:[{}]}}}}",
-        json_metin_yaz(&uri),
-        duzenlemeler.join(",")
-    ))
+    Some(YenidenAdlandirmaPlani {
+        uri,
+        yeni_ad,
+        sembol_koku,
+        araliklar,
+    })
 }
 
-fn yanit(kimlik: Option<&Json>, sonuc: &str) -> String {
-    let kimlik = match kimlik {
-        Some(Json::Sayi(s)) => format!("{}", *s as i64),
-        Some(Json::Metin(m)) => json_metin_yaz(m),
-        _ => "null".to_string(),
+fn yeniden_adlandirma_metni<'a>(
+    metin: &str,
+    aralik: LspKaynakAraligi,
+    sembol_koku: Option<&str>,
+    yeni_ad: &'a str,
+) -> Option<std::borrow::Cow<'a, str>> {
+    let Some(kok) = sembol_koku else {
+        return Some(std::borrow::Cow::Borrowed(yeni_ad));
     };
-    format!(
-        "{{\"jsonrpc\":\"2.0\",\"id\":{},\"result\":{}}}",
-        kimlik, sonuc
-    )
-}
-
-fn ciktilari_sinirla(kimlik: Option<&Json>, ciktilar: &mut Ciktilar) {
-    let azami = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.lsp_yanit_bayti();
-    let toplam = ciktilar
-        .govdeler
-        .iter()
-        .try_fold(0usize, |toplam, govde| toplam.checked_add(govde.len()));
-    if toplam.is_some_and(|toplam| toplam <= azami) {
-        return;
+    let yazim = aralik_metni(metin, aralik)?;
+    if yazim == kok {
+        return Some(std::borrow::Cow::Borrowed(yeni_ad));
     }
-    let mesaj = format!("LSP yanıtı güvenli profil {} MiB sınırını aşıyor.", azami / 1024 / 1024);
-    ciktilar.govdeler.clear();
-    ciktilar.govdeler.push(match kimlik {
-        Some(kimlik) => rpc_hatasi(Some(kimlik), -32001, &mesaj),
-        None => format!(
-            "{{\"jsonrpc\":\"2.0\",\"method\":\"window/logMessage\",\"params\":{{\"type\":1,\"message\":{}}}}}",
-            json_metin_yaz(&mesaj)
-        ),
-    });
+    let ekler = crate::morfoloji::ek_zinciri_coz(&yazim, kok)?;
+    crate::morfoloji::ek_zinciri_uydur(yeni_ad, &ekler).map(std::borrow::Cow::Owned)
 }
 
-fn rpc_hatasi(kimlik: Option<&Json>, kod: i64, mesaj: &str) -> String {
-    let kimlik = match kimlik {
-        Some(Json::Sayi(s)) => format!("{}", *s as i64),
-        Some(Json::Metin(m)) => json_metin_yaz(m),
-        _ => "null".to_string(),
+fn yeniden_adlandirma_duzenlemesi_yaz(
+    yazici: &mut SinirliJson,
+    aralik: LspKaynakAraligi,
+    yeni: &str,
+) -> CiktiSonucu<()> {
+    yazici.bicimle(format_args!(
+        "{{\"range\":{{\"start\":{{\"line\":{},\"character\":{}}},\
+         \"end\":{{\"line\":{},\"character\":{}}}}},\"newText\":",
+        aralik.satir,
+        aralik.bas,
+        aralik.satir,
+        aralik.bas + aralik.uzunluk
+    ))?;
+    yazici.metin(yeni)?;
+    yazici.ham("}")
+}
+
+fn yeniden_adlandir(
+    mesaj: &Json,
+    belgeler: &std::collections::HashMap<String, String>,
+    yazici: &mut SinirliJson,
+) -> CiktiSonucu<bool> {
+    let Some(plan) = yeniden_adlandirma_plani(mesaj, belgeler) else {
+        return Ok(false);
     };
-    format!(
-        "{{\"jsonrpc\":\"2.0\",\"id\":{},\"error\":{{\"code\":{},\"message\":{}}}}}",
-        kimlik,
-        kod,
-        json_metin_yaz(mesaj)
-    )
+    let Some(metin) = belgeler.get(&plan.uri) else {
+        return Ok(false);
+    };
+    let ilk_gecerli = plan.araliklar.iter().position(|aralik| {
+        yeniden_adlandirma_metni(
+            metin,
+            *aralik,
+            plan.sembol_koku.as_deref(),
+            &plan.yeni_ad,
+        )
+        .is_some()
+    });
+    let Some(ilk_gecerli) = ilk_gecerli else {
+        return Ok(false);
+    };
+
+    yazici.ham("{\"changes\":{")?;
+    yazici.metin(&plan.uri)?;
+    yazici.ham(":[")?;
+    let mut yazilan = 0usize;
+    for aralik in &plan.araliklar[ilk_gecerli..] {
+        let Some(yeni) = yeniden_adlandirma_metni(
+            metin,
+            *aralik,
+            plan.sembol_koku.as_deref(),
+            &plan.yeni_ad,
+        ) else {
+            continue;
+        };
+        if yazilan > 0 {
+            yazici.ham(",")?;
+        }
+        yeniden_adlandirma_duzenlemesi_yaz(yazici, *aralik, &yeni)?;
+        yazilan += 1;
+    }
+    yazici.ham("]}}")?;
+    Ok(true)
 }
 
-fn kaynak_siniri_bildirimi(uri: &str, mesaj: &str) -> String {
+fn kimlik_yaz(yazici: &mut SinirliJson, kimlik: Option<&Json>) -> CiktiSonucu<()> {
+    match kimlik {
+        Some(Json::Sayi(sayi)) => yazici.bicimle(format_args!("{}", *sayi as i64)),
+        Some(Json::Metin(metin)) => yazici.metin(metin),
+        _ => yazici.ham("null"),
+    }
+}
+
+fn yanit_uret(
+    kimlik: Option<&Json>,
+    sonuc_yaz: impl FnOnce(&mut SinirliJson) -> CiktiSonucu<()>,
+) -> CiktiSonucu<String> {
+    let mut yazici = SinirliJson::yeni();
+    yazici.ham("{\"jsonrpc\":\"2.0\",\"id\":")?;
+    kimlik_yaz(&mut yazici, kimlik)?;
+    yazici.ham(",\"result\":")?;
+    sonuc_yaz(&mut yazici)?;
+    yazici.ham("}")?;
+    Ok(yazici.bitir())
+}
+
+fn rpc_hatasi(kimlik: Option<&Json>, kod: i64, mesaj: &str) -> CiktiSonucu<String> {
+    let mut yazici = SinirliJson::yeni();
+    yazici.ham("{\"jsonrpc\":\"2.0\",\"id\":")?;
+    kimlik_yaz(&mut yazici, kimlik)?;
+    yazici.bicimle(format_args!(",\"error\":{{\"code\":{},\"message\":", kod))?;
+    yazici.metin(mesaj)?;
+    yazici.ham("}}")?;
+    Ok(yazici.bitir())
+}
+
+fn tasma_bildirimi(kimlik: Option<&Json>) -> String {
+    let azami = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.lsp_yanit_bayti();
+    let mesaj = format!(
+        "LSP yanıtı güvenli profil {} MiB sınırını aşıyor.",
+        azami / 1024 / 1024
+    );
+    let bildirim = match kimlik {
+        Some(kimlik) => rpc_hatasi(Some(kimlik), -32001, &mesaj)
+            .or_else(|_| rpc_hatasi(None, -32001, &mesaj)),
+        None => {
+            let mut yazici = SinirliJson::yeni();
+            let sonuc = (|| {
+                yazici.ham(
+                    "{\"jsonrpc\":\"2.0\",\"method\":\"window/logMessage\",\
+                     \"params\":{\"type\":1,\"message\":"
+                )?;
+                yazici.metin(&mesaj)?;
+                yazici.ham("}}")
+            })();
+            sonuc.map(|()| yazici.bitir())
+        }
+    };
+    bildirim.unwrap_or_else(|_| {
+        "{\"jsonrpc\":\"2.0\",\"id\":null,\"error\":{\"code\":-32001,\
+         \"message\":\"LSP yanıtı kaynak sınırını aşıyor.\"}}"
+            .to_string()
+    })
+}
+
+fn cikti_ekle(
+    ciktilar: &mut Ciktilar,
+    kimlik: Option<&Json>,
+    sonuc: CiktiSonucu<String>,
+) {
+    match sonuc {
+        Ok(govde) => ciktilar.govdeler.push(govde),
+        Err(_) => {
+            ciktilar.govdeler.clear();
+            ciktilar.govdeler.push(tasma_bildirimi(kimlik));
+        }
+    }
+}
+
+fn kaynak_siniri_bildirimi(uri: &str, mesaj: &str) -> CiktiSonucu<String> {
     let tani = Tani::yeni("S045", mesaj.into(), 1, 1, 1)
         .onerili("Kullanılmayan belgeleri kapat veya kaynağı daha küçük birimlere böl.".into());
-    format!(
-        "{{\"jsonrpc\":\"2.0\",\"method\":\"textDocument/publishDiagnostics\",\
-         \"params\":{{\"uri\":{},\"diagnostics\":[{}]}}}}",
-        json_metin_yaz(uri),
-        lsp_tanisi(&tani)
-    )
+    tanilari_yaz(uri, &[tani])
 }
 
-fn bos_tanilar(uri: &str) -> String {
-    format!(
-        "{{\"jsonrpc\":\"2.0\",\"method\":\"textDocument/publishDiagnostics\",\
-         \"params\":{{\"uri\":{},\"diagnostics\":[]}}}}",
-        json_metin_yaz(uri)
-    )
+fn bos_tanilar(uri: &str) -> CiktiSonucu<String> {
+    tanilari_yaz(uri, &[])
 }
 
-fn lsp_tanisi(tani: &Tani) -> String {
+fn tanilari_yaz(uri: &str, tanilar: &[Tani]) -> CiktiSonucu<String> {
+    let mut yazici = SinirliJson::yeni();
+    yazici.ham(
+        "{\"jsonrpc\":\"2.0\",\"method\":\"textDocument/publishDiagnostics\",\
+         \"params\":{\"uri\":"
+    )?;
+    yazici.metin(uri)?;
+    yazici.ham(",\"diagnostics\":[")?;
+    for (sira, tani) in tanilar.iter().enumerate() {
+        if sira > 0 {
+            yazici.ham(",")?;
+        }
+        lsp_tanisi_yaz(&mut yazici, tani)?;
+    }
+    yazici.ham("]}}")?;
+    Ok(yazici.bitir())
+}
+
+fn lsp_tanisi_yaz(yazici: &mut SinirliJson, tani: &Tani) -> CiktiSonucu<()> {
     // Tani 1 tabanlı karakter konumu; LSP 0 tabanlı (UTF-16 — Türkçe harfler
     // BMP'de tek birim olduğundan karakter sayımıyla örtüşür).
     let satir = tani.satir.saturating_sub(1);
@@ -1223,17 +1342,19 @@ fn lsp_tanisi(tani: &Tani) -> String {
         Some(oneri) => format!("{}\nÖneri: {}", tani.mesaj, oneri),
         None => tani.mesaj.clone(),
     };
-    format!(
+    yazici.bicimle(format_args!(
         "{{\"range\":{{\"start\":{{\"line\":{},\"character\":{}}},\
          \"end\":{{\"line\":{},\"character\":{}}}}},\"severity\":1,\
-         \"code\":{},\"source\":\"dil\",\"message\":{}}}",
+         \"code\":",
         satir,
         bas,
         satir,
-        son,
-        json_metin_yaz(&tani.kod),
-        json_metin_yaz(&mesaj)
-    )
+        son
+    ))?;
+    yazici.metin(&tani.kod)?;
+    yazici.ham(",\"source\":\"dil\",\"message\":")?;
+    yazici.metin(&mesaj)?;
+    yazici.ham("}")
 }
 
 fn belge_uri(mesaj: &Json) -> Option<String> {
@@ -1316,15 +1437,19 @@ mod kaynak_siniri_testleri {
     }
 
     #[test]
-    fn buyuk_lsp_yaniti_json_rpc_hatasina_donusur() {
-        let azami = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.lsp_yanit_bayti();
+    fn uretim_sirasinda_tasan_lsp_yaniti_json_rpc_hatasina_donusur() {
         let mut ciktilar = Ciktilar {
-            govdeler: vec!["x".repeat(azami + 1)],
+            govdeler: Vec::new(),
             devam: true,
         };
-        ciktilari_sinirla(Some(&Json::Sayi(7.0)), &mut ciktilar);
+        cikti_ekle(
+            &mut ciktilar,
+            Some(&Json::Sayi(7.0)),
+            Err(cikti::CiktiTasmasi),
+        );
         assert_eq!(ciktilar.govdeler.len(), 1);
         assert!(ciktilar.govdeler[0].contains("\"code\":-32001"));
         assert!(ciktilar.govdeler[0].contains("\"id\":7"));
+        assert!(json_coz(&ciktilar.govdeler[0]).is_some());
     }
 }

@@ -44,6 +44,7 @@ fn kok_dosyalar_mega_handlerlari_yeniden_yutmaz() {
 fn kok_faz_dosyalari_yeniden_sismez() {
     satir_butcesini_denetle("src/ayristirici.rs", 1_200);
     satir_butcesini_denetle("src/cozumleyici.rs", 250);
+    satir_butcesini_denetle("src/lsp.rs", 1_500);
     satir_butcesini_denetle("src/yorumlayici.rs", 2_000);
 }
 
@@ -86,6 +87,7 @@ fn handler_modulleri_yeni_domain_icin_sinir_tasir() {
         ("src/kaynak_sinirlari/baglanti.rs", 60),
         ("src/kaynak_sinirlari/okuma.rs", 120),
         ("src/kaynak_sinirlari/profiller.rs", 300),
+        ("src/lsp/cikti.rs", 120),
         ("src/kalici_dosya.rs", 820),
         ("src/kalici_dosya/metadata.rs", 260),
         ("src/kaynak_sinirlari.rs", 260),

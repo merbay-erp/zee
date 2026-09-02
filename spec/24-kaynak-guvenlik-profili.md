@@ -1,6 +1,6 @@
 # 24 — Kaynak güvenlik profili
 
-Normatif kaynak: RFC-0025, ADR-033. Durum: **TANIMLI — K-129/K-130/K-131**.
+Normatif kaynak: RFC-0025, ADR-033. Durum: **TANIMLI — K-129/K-130/K-131/K-132**.
 
 ## Profil sahipliği
 
@@ -43,10 +43,12 @@ outbound'da C018 nedeni, inbound'da HTTP 503'tür.
 LSP sunucusu en çok 256 açık belge ve toplam 128 MiB belge metni saklar. Tek
 outbound JSON mesajı 8 MiB'ı aşamaz. Fazla belge sunucu durumuna eklenmez;
 önceki belge sürümü korunur. Aşım S045 bildirimi veya kimlikli istekte JSON-RPC
-`-32001` kaynak hatası olarak görünür.
+`-32001` kaynak hatası olarak görünür. Yanıt zarfı, kimlik, kaçışlı metin,
+diagnostics ve rename düzenlemeleri aynı bütçeli yazıcıya parça parça
+yazılmalıdır; önce sınırsız JSON kurup sonra boyut ölçmek YASAKTIR. Kısmi gövde
+yayımlanamaz.
 
-## Henüz tamamlanmayan kapsam
+## Ayrı kapsam
 
-LSP outbound toplamı 8 MiB üstünde reddedilse de JSON bugün önce kurulup sonra
-ölçülür. K-132 üretim sırasında aynı bütçeyi uygulamadan B-025 kapanmaz.
-Duvar-saati/cancellation sözleşmesi B-026'nın ayrı kapsamıdır.
+B-025/K-132 kaynak bütçesi kapsamı tamamdır. Duvar-saati/cancellation
+sözleşmesi B-026'nın ayrı kapsamıdır.

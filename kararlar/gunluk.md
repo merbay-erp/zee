@@ -2045,6 +2045,26 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   fakat yanıt önce bütçesiz `String` olarak kurulup sonra ölçülür. Bu nedenle
   B-025 dürüstçe kapanmadı; K-132 üretim-sırası bütçesini bağlayacaktır.
 
+## K-132 — LSP JSON'unu üretim sırasında bütçele (2 Eyl)
+
+- **Sorun:** LSP outbound gövdesi 8 MiB üstünde `-32001` üretse de yanıt,
+  rename düzenleme listesi ve diagnostics önce bütçesiz `String`/`Vec<String>`
+  olarak kuruluyor; limit ancak pahalı tahsisten sonra ölçülüyordu.
+- **Karar:** `lsp/cikti.rs` tek `SinirliJson` sahibidir. Ham, biçimli ve JSON
+  kaçışlı her parça append öncesi merkezî 8 MiB bütçesini tüketir. Initialize,
+  diagnostics, completion, hover, definition, rename, shutdown ve hata yolları
+  aynı yazıcıdan geçer. Rename yalnız semantic aralık planını toplar; yeni
+  metin ve düzenleme JSON'u birer birer yazılır.
+- **Hata davranışı:** Kısmi gövde yayımlanmaz. Kimlikli taşma `-32001`,
+  bildirim taşması bounded `window/logMessage` olur; dev kimlik hata zarfına
+  sığmazsa `id:null` ile fail-closed geri dönülür.
+- **Kanıt:** Sınırdaki append kabul/bir bayt fazlası red, JSON kaçış
+  genişlemesi, taşmanın RPC hatasına dönüşmesi ve bütün outbound yolların
+  yeniden ayrıştırılabilen/bütçe içi JSON üretmesi üç yeni regresyondur.
+  Envanter 521 test, 150 etkin + 3 ayrılmış tanı ve 80 numaralı belgedir.
+- **Sonuç:** B-025 ve V1-P0-31 kapandı. Sıradaki makine işi B-026
+  cancellation-safety audit'idir.
+
 ---
 
 ## Sonraki adım
@@ -2053,6 +2073,5 @@ Korpus 10 öğrenci + 5 profesyonel usability oturumuna (Hafta 12 hedefi, erkeni
 Hafta 2'de kağıt üstünde) sesli okutulacak; her kayıt için "doğal mı /
 deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
-Makine hattında K-131 eski domain limitlerinin sayısal sahipliğini ortak
-`KaynakSinirlari` profiline taşıdı. Sırada K-132 ile LSP outbound JSON'unu
-üretim sırasında 8 MiB'ta kesip B-025'i kapatmak vardır.
+Makine hattında K-132 LSP outbound JSON'unu üretim sırasında 8 MiB'ta kesip
+B-025/V1-P0-31'i kapattı. Sırada B-026 cancellation-safety audit'i vardır.

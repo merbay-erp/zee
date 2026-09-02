@@ -635,8 +635,9 @@ okuma ve LSP toplam bellek/outbound yüzeyine bağladı. K-130 bunu 16 MiB
 bütçeli metin üretimi, yaklaşık 64 MiB saklanan değer zarfı, görev ortamı
 klonları ve 64 süreç-geneli ağ bağlantısına genişletti. K-131 HTTP/ağ,
 oturum, IO izi, LSP, paket/registry, tanı ve kalıcı dosya sabitlerinin sayısal
-sahipliğini aynı profilin domain görünümlerinde topladı. B-025, LSP outbound
-JSON'unu tam yanıt kurulmadan bütçeleyecek K-132 için kısmen açık kalır.
+sahipliğini aynı profilin domain görünümlerinde topladı. K-132 LSP outbound
+JSON'unu append sırasında 8 MiB ile sınırlayıp rename/diagnostics ara gövde
+tahsislerini kaldırdı; B-025/V1-P0-31 kapandı.
 P0 maddeleri kapanmadan yeni dil özelliği
 öne alınmaz; yarım güvenlik/correctness dilimi önce atomik olarak tamamlanır.
 
@@ -690,7 +691,8 @@ sınırını kapattı. K-128/ADR-032 atomik replace metadata sözleşmesiyle B-0
 kapattı. K-129/RFC-0025/ADR-033 B-025'in ilk ortak `KaynakSinirlari` profilini
 kurdu; K-130 değer/metin heap'i, görev klonları ve bağlantı izinlerini ekledi.
 K-131 eski domain kaynak sabitlerinin sayısal sahipliğini aynı tipe taşıdı.
-Sıradaki omurga K-132 LSP bounded JSON üretimidir.
+K-132 LSP outbound JSON'unu bounded üretip B-025'i kapattı. Sıradaki omurga
+B-026 cancellation-safety audit'idir.
 # 40. Proje felsefesinin korunması
 Bu projenin başarısı yalnız compiler’ın çalışması değildir. Başarı; Türkçe konuşan bir çocuğun yabancı syntax bariyerine takılmadan algoritmik düşünceyle tanışması, aynı dilin yıllar sonra onu terk etmeye zorlamaması ve ekosistemin tek bir şirketin kapalı ürünü haline gelmemesidir.
 Her yeni özellik şu dört sorudan geçmelidir: Türkçe doğal mı? Deterministik mi? Öğrenilebilir mi? Profesyonel ölçekte savunulabilir mi? Dördünden biri hayırsa özellik yeniden tasarlanır.

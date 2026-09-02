@@ -45,7 +45,8 @@ Resmî güvenli profil tek kaynağı 8 MiB ile sınırlar; sonsuz çalışma/ç�
 sınırsız koleksiyon, metin/değer ve görev büyümesi host sürecini düşürmek yerine
 S045, C023 veya C024 tanısıyla kontrollü durur. Ağ bağlantıları da süreç
 genelinde sınırlıdır. K-131 ile araç ve servis katmanlarının sayısal limitleri
-de aynı değişmez profilden gelir. Ayrıntı:
+de aynı değişmez profilden gelir; K-132 LSP yanıtını JSON üretimi sırasında
+8 MiB ile sınırlar. Ayrıntı:
 [kaynak güvenlik profili](../spec/24-kaynak-guvenlik-profili.md).
 Bu nedenle dosya adını ezberlemeden projeyi çalıştırabilirsin:
 

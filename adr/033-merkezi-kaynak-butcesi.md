@@ -2,7 +2,7 @@
 
 - **Durum:** kabul
 - **Tarih:** 2 Eylül 2026
-- **İlgili kayıt:** K-129/K-130/K-131, B-025, RFC-0025, spec/24
+- **İlgili kayıt:** K-129/K-130/K-131/K-132, B-025, RFC-0025, spec/24
 - **Karar sahipleri:** çekirdek ekip
 
 ## Bağlam
@@ -43,6 +43,9 @@ kaynaklarla aynı sözleşmeye bağlar.
    LSP, paket/registry, tanı ve kalıcı dosya limitlerini domain görünümlerine
    ayırır. Eski sabit adları gerekirse API uyumu için yalnız bu görünümlere
    bağlı alias olabilir; ikinci sayısal sahip YASAKTIR.
+10. K-132 bütün LSP outbound JSON yollarını tek 8 MiB sınırlı yazıcıdan
+    üretir. Her ham/biçimli/kaçışlı parça eklenmeden önce ölçülür; kısmi gövde,
+    bütçesiz `join` ve tamamlandıktan sonra ölçülen dev yanıt YASAKTIR.
 
 ## Açık sınır
 
@@ -50,8 +53,8 @@ Saklama fişi gerçek allocator/RSS telemetrisi değildir: değerlerin yaklaşı
 dinamik grafiğini, ortam yazımlarını ve görev klonlarını güvenli tarafta fazla
 sayar; silme veya yeniden bağlamada bütçeyi geri vermez. Böylece canlı grafiğe
 üst sınır olur, fakat profiler sözü vermez. Domain sabit göçü tamamdır. LSP
-outbound JSON'u bugün 8 MiB üstünde reddedilir, fakat tam yanıt kurulduktan
-sonra ölçülür; üretim sırasındaki tahsis de sınırlandırılmadan B-025 kapanmaz.
+outbound JSON'u da üretim sırasında bütçelidir; bu sınırla B-025 kapanmıştır.
+Duvar-saati ve iptal anındaki yan etki invariant'ları B-026'da ayrıca izlenir.
 
 ## Kanıt
 
@@ -68,3 +71,6 @@ sonra ölçülür; üretim sırasındaki tahsis de sınırlandırılmadan B-025 
 - 64 bağlantı izni doluyken yeni izin reddedilir, bırakılan izin yeniden alınır.
 - Mimari sahiplik testi on bir tüketici modülün sayısal limiti ortak profilden
   okuduğunu ve domain modüllerinin ilanlı satır bütçesinde kaldığını doğrular.
+- LSP sınırlı yazıcı sınırdaki parçayı kabul edip bir bayt fazlasını append
+  etmeden reddeder; kaçış genişlemesi, `-32001` dönüşümü ve bütün outbound
+  yolların yeniden ayrıştırılabilen JSON üretmesi regresyonla doğrulanır.

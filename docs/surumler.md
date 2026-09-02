@@ -444,6 +444,13 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   profil tanımları ayrı mimari bütçeli modüllere ayrıldı; merkezi sahiplik
   regresyonuyla envanter 518 teste çıktı. B-025, LSP outbound JSON'unu tam
   yanıt kurulmadan 8 MiB'ta kesen allocation-order dilimi için kısmen açıktır.
+- **Tahsis sırasında bütçeli LSP JSON'u** (K-132, RFC-0025/ADR-033/spec-24):
+  Initialize, diagnostics, completion, hover, definition, rename ve hata
+  gövdeleri tek `SinirliJson` yazıcısına taşındı. Her append merkezî 8 MiB
+  sınırından önce denetlenir; rename/diagnostics bütçesiz `Vec<String>` ve
+  `join` kurmaz. Taşma `-32001` veya bounded `window/logMessage` olur; kısmi
+  gövde yayımlanmaz. Üç yeni regresyonla envanter 521 teste çıktı ve
+  B-025/V1-P0-31 kapandı.
 
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`

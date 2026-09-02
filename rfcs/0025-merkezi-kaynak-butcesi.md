@@ -1,9 +1,9 @@
 # RFC-0025 — Merkezî Kaynak Bütçesi
 
 - **Durum:** **geçici kabul** (K-129 ortak profil, K-130 değer/bağlantı
-  zarfı, K-131 domain görünümü; LSP outbound allocation-order açık)
+  zarfı, K-131 domain görünümü, K-132 sınırlı LSP JSON üretimi gerçeklendi)
 - **Tarih:** 2 Eylül 2026
-- **İlgili kayıtlar:** K-105, K-107, K-129/K-130/K-131, B-025,
+- **İlgili kayıtlar:** K-105, K-107, K-129/K-130/K-131/K-132, B-025,
   ADR-017/019/033, V1-P0-31
 - **Gerçekleme:** `kaynak_sinirlari.rs`; lexer, proje yükleyici, runtime,
   kalıcı dosya, CLI ve LSP tüketicileri
@@ -22,7 +22,7 @@ nesnesidir. Limit yükseltme bir ortam değişkeni, kaynak cümlesi veya paket a
 bağımlılığıyla yapılamaz. Gelecekte daha geniş bir profil gerekiyorsa adı,
 sürümü, tehdit modeli ve üst sınırı ayrı RFC ile görünür olur.
 
-## 3. K-129/K-130/K-131 tablosu
+## 3. K-129/K-130/K-131/K-132 tablosu
 
 | Kaynak | Sınır | Red |
 |---|---:|---|
@@ -65,15 +65,21 @@ paket/registry, tanı ve kalıcı dosya domain görünümlerinde toplar. Tüketi
 modüller geriye uyumlu sabit adlarını koruyabilir; sayısal değerin tek sahibi
 `VARSAYILAN_KAYNAK_SINIRLARI` olmak ZORUNDADIR.
 
+K-132 LSP yanıtını tam `String` kurulduktan sonra ölçmez. JSON zarfı, kimlik,
+kaçışlı metin, diagnostics ve rename düzenlemeleri aynı `SinirliJson` içinde
+her append öncesi 8 MiB bütçesinden düşer. Rename yalnız aralık planını tutar;
+yeni metinler birer birer üretilir. Taşma kısmi gövde yayımlamadan kimlikli
+istekte `-32001`, bildirimde sınırlı `window/logMessage` üretir.
+
 ## 5. Determinizm ve tanılar
 
 Aynı profil ve aynı giriş, aynı sınırda aynı tanı kimliğini üretir. Sınırda
 olan değer kabul, bir fazlası red olur. Uygulama kaynak kıtlığında sessiz veri
 kesemez, işi eksik başarılı gösteremez veya host panic'e düşemez.
 
-## 6. Açık işler
+## 6. Tamamlanma ve ayrı takip
 
-K-131 eski domain sabitlerinin göçünü tamamladı. LSP outbound toplamı bugün
-8 MiB üstünde protokol hatasına döner; ancak JSON önce bütçesiz kurulup sonra
-ölçülür. Üretim sırasında bounded yazıcı/preflight kullanımı K-132/B-025'in son
-işidir. Cancellation ve duvar-saati invariant'ları B-026'nın ayrı sözleşmesidir.
+K-132 ile kaynak bütçesinin son allocation-order boşluğu kapandı; B-025 ve
+V1-P0-31 kapalıdır. RFC tam kabul yerine proje genelindeki usability kabul
+politikasına uyarak geçici kabulde kalır. Cancellation ve duvar-saati
+invariant'ları bu bütçe sözleşmesinin değil B-026'nın ayrı kapsamıdır.
