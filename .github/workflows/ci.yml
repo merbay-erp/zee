@@ -82,12 +82,32 @@ jobs:
       - name: Milestone dosyası çalışıyor
         working-directory: compiler
         run: cargo run --locked -- çalıştır ../merhaba.dil
-      # Ölçüm koşucusu derlenir ve koşar (bölüm 22; süre eşiği YOK — CI
-      # makineleri gürültülü, sayılar yalnız yerel release arşivine girer).
-      - name: Ölçüm koşucusu çalışır
+      # Shared runner gürültülüdür: p50/p95 gözlemi yayımlanır, hard eşik yoktur.
+      # Eşik yalnız sabitlenmiş adanmış koşucuda açık --esik-yuzde ile istenir.
+      - name: Performans p50/p95 gözlemi yayımlanır
         if: matrix.os == 'ubuntu-latest'
         working-directory: compiler
-        run: cargo run --locked --release --bin olcum -- --hizli
+        shell: bash
+        run: |
+          cargo run --locked --release --bin olcum -- \
+            --tur 25 \
+            --gecmis ../docs/performans-gecmisi-v1.tsv \
+            --json target/performans.json \
+            --rapor target/performans.md \
+            --gecmis-cikti target/performans-gecmisi.tsv \
+            --kayit "ci-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" \
+            --revizyon "$GITHUB_SHA"
+          cat target/performans.md >> "$GITHUB_STEP_SUMMARY"
+      - name: Performans gözlemi artefaktını yükle
+        if: matrix.os == 'ubuntu-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: performans-${{ github.sha }}
+          path: |
+            compiler/target/performans.json
+            compiler/target/performans.md
+            compiler/target/performans-gecmisi.tsv
+          retention-days: 90
       # Playground çekirdeği wasm hedefinde derlenmeye devam etmeli (K-039/K-040).
       - name: Playground (wasm) derlenir
         if: matrix.os == 'ubuntu-latest'

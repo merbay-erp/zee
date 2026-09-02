@@ -147,8 +147,12 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
     concurrency ve security altındaki 17 minimal `.dil` vakayı K-kimliği,
     faz, kip, kesin tanı spanı, exit ve stdout beklentisiyle manifestledi.
     Ağaç birebirliği/minimality ve ayrı faz raporuyla B-039 kapandı.
-45. Sıradaki makine işi K-148 ile B-040 performans tarihçesi ve trend
-    artefaktlarıdır.
+45. K-148/ADR-045 dokuz parse/checker/HIR/runtime/yürütme/LSP/bellek yüzeyini
+    25 turluk ham örnek, p50/p95, JSON, Markdown ve sürümlü TSV tarihçesine
+    bağladı. Shared CI yalnız summary+90 günlük artefakt üretir; hard eşik
+    ancak sabit adanmış runner'da açıkça etkinleşir. B-040 kapandı (603 test).
+46. Sıradaki makine işi K-149 ile modül sorumluluğu ve bağımlılık yönü
+    ihlallerini fail-closed mimari kapıya bağlamaktır.
 
 ## P0 — V1 öncesi dil ve derleyici omurgası
 
@@ -507,8 +511,16 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   API ile success/fail gözlemleri aynı koşucuda doğrulanır. Yeni compiler bug
   düzeltmesi fixture+satır olmadan tamamlanamaz; ayrıntı
   [korpus rehberindedir](semantic-regresyon-korpusu.md).
-- **B-040 · KISMEN — performans baseline arşivi.** `src/bin/olcum.rs` vardır;
-  parser/checker/runtime p50/p95 CI artefact ve trend olmalıdır.
+- **B-040 · KAPALI (K-148/ADR-045) — performans baseline arşivi.** Release
+  koşucusu iki ısınma+25 turla parse, resolver/checker+HIR kanıtı, tam
+  kaynak→typed-HIR, runtime başlangıcı, 100 bin tur yürütme, LSP
+  cold/open/change ve Unix tepe RSS için ham örnek, min/max ve nearest-rank
+  p50/p95 üretir. `zee-performans-1` JSON'u, insan Markdown'ı ve
+  `zee-performans-gecmisi-1` TSV'si makine bağlamını korur; bozuk/yinelenen
+  tarihçe fail-closed'dur. Linux CI summary+90 günlük artefakt üretir fakat
+  gürültülü shared runner'da hard gate yoktur. `--esik-yuzde` yalnız
+  sabitlenmiş adanmış benchmark koşucusunda bilinçli seçenektir. Ayrıntı
+  [ölçüm rehberindedir](olcumler.md).
 - **B-054 · KAPALI (K-141/ADR-038) — dependency advisory/lisans/tekrar üretim
   kapısı.** Sabit `cargo-deny 0.20.2`, güncel RustSec'i compiler ve fuzz
   grafiğinde push/PR+günlük tarar; izinli SPDX kümesi, bilinmeyen registry/Git,
@@ -567,9 +579,9 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 ## Bir sonraki somut kapı
 
 İnsan kanıtı hattında B-001, doldurulmuş gerçek usability formları ve önceden
-ilan edilmiş eşikleri bekler. Makine hattında K-147, 17 geçmiş bug'ı sürümlü
-semantic regression korpusuna bağlayıp B-039'u kapattı. Sıradaki iş K-148 ile
-B-040 performans tarihçesi ve trend artefaktlarıdır.
+ilan edilmiş eşikleri bekler. Makine hattında K-148 dokuz performans yüzeyini
+p50/p95 tarihçesi ve CI artefaktına bağlayıp B-040'ı kapattı. Sıradaki iş
+K-149 ile dependency/layer architecture enforcement kapısıdır.
 
 ## 2 Eylül 2026 ikinci dış inceleme ayrımı
 
@@ -590,8 +602,9 @@ B-040 performans tarihçesi ve trend artefaktlarıdır.
   ön-tahsis bütçesi K-143/ADR-040 ile, B-035 kritik işlev boyutu/karmaşıklık
   eğilim kapısı K-144/ADR-041 ile, kanonik Rust biçim kapısı K-145/ADR-042 ile,
   tam sahipli faz test matrisi K-146/ADR-043 ile, 17 vakalı kalıcı semantic
-  regression korpusu K-147/ADR-044 ile kapandı. Sırada B-040 performans
-  tarihçesi ve trend artefaktları vardır.
+  regression korpusu K-147/ADR-044 ile, p50/p95 performans tarihçesi ve trend
+  artefaktları K-148/ADR-045 ile kapandı. Sırada K-149 modül sorumluluğu ve
+  bağımlılık yönü mimari kapısı vardır.
   B-033/B-034 temiz snapshot hattı ayrıca kapalıdır.
 - **Mevcut repoda zaten kapalı:** çağrı derinliği C019/500 ve ayrı regresyonu;
   atomik metadata `unsafe` bloklarının her birindeki `SAFETY` gerekçesi; kök

@@ -1,14 +1,87 @@
 # Performans ölçüm arşivi
 
-Master plan bölüm 22: performans sürekli ölçülür, sonuçlar sürümler arası
-arşivlenir. Koşucu: `cargo run --release --bin olcum` (5 tur, medyan;
-`--hizli` CI dumanı). İş yükleri koşucunun içinde sabittir — sürümler arası
-karşılaştırma ancak aynı iş yüküyle anlamlıdır; yük değişirse burada not düşülür.
+K-148/ADR-045 ile performans tek terminal medyanı olmaktan çıktı. Release
+koşucusu varsayılan 25 turdan ham örnek, min/max ve nearest-rank p50/p95
+üretir; makine bağlamını `zee-performans-1` JSON'una, insan raporuna ve
+incelenebilir `zee-performans-gecmisi-1` TSV'sine bağlar. İş yükleri koşucu
+içinde sabittir; kapsam değişirse yeni sonuç eski sayıyla sessizce eşdeğer
+sayılmaz ve bu belgede gerekçelenir.
 
-Kural: arşive yalnız **release** ölçümleri girer ve makine bağlamı yazılır.
-Regression bütçesi (v0.3 hedefi): bir sürüm, bir önceki arşiv satırına göre
-herhangi bir yükte %50'den fazla yavaşlıyorsa sürüm notunda gerekçelenmek
-**ZORUNDA**dır.
+## Güncel sözleşme
+
+| Kimlik | Gözlenen sınır |
+|---|---|
+| `parse_gecikmesi` | 2.000 satırın lexer + parser geçişi |
+| `typecheck_gecikmesi` | Hazır AST'de resolver/checker ve HIR kanıt toplama |
+| `hir_olusturma` | 2.000 satır kaynak→bağlı typed-HIR tam ön ucu |
+| `runtime_baslangici` | Önceden derlenmiş boş HIR'ın runtime dispatch'i |
+| `yurutme_gecikmesi` | Önceden derlenmiş 100 bin turluk sayaç |
+| `lsp_soguk` | Sunucu kurulumu + initialize |
+| `lsp_ac` | Initialize edilmiş sunucuda 2.000 satır `didOpen` |
+| `lsp_degistir` | Açık belgede tam metin `didChange` |
+| `tepe_bellek` | Unix sürecinin tepe resident set'i (KiB) |
+
+`typecheck_gecikmesi`, checker'ın bugün typed-HIR kanıtını da ürettiğini
+bilerek adlandırılır; saf tür çıkarım süresi iddiası değildir. Tepe bellek
+süreç düzeyi ve kümülatiftir; alt-faz tahsis profili değildir.
+
+Yerel hızlı duman:
+
+```bash
+cd compiler
+cargo run --locked --release --bin olcum -- --hizli
+```
+
+İncelenecek tam kayıt ve karşılaştırma artefaktı:
+
+```bash
+cd compiler
+cargo run --locked --release --bin olcum -- \
+  --tur 25 \
+  --gecmis ../docs/performans-gecmisi-v1.tsv \
+  --json target/performans.json \
+  --rapor target/performans.md \
+  --gecmis-cikti target/performans-gecmisi.tsv \
+  --kayit K-NNN-makine --revizyon GIT_SHA
+```
+
+Yeni TSV doğrudan izlenen dosyanın üstüne yazılmaz. Makine/araç zinciri,
+iş yükü ve dağılım incelendikten sonra yeni kayıt kod ve belgelerle aynı
+committe eklenir. Şema; CRLF, boş alan, bilinmeyen birim, sıfır tur, p50>p95,
+yinelenen ölçüm ve aynı kayıt içindeki metadata ayrışmasını reddeder.
+
+Shared CI her Linux koşusunda JSON, Markdown ve birleşik TSV'yi job summary
+ile 90 günlük artefakta koyar; **hard performans kapısı değildir**. Sabit
+makineli adanmış bir koşucu kurulursa p95 sınırı bilinçli olarak örneğin
+`--esik-yuzde 20` ile açılabilir. Aynı platformda karşılaştırılabilir geçmiş
+yoksa eşikli koşu başarı sayılmaz.
+
+## K-148 başlangıç tabanı — 2 Eylül 2026 · Apple M4 Pro, macOS arm64, Rust 1.93.1
+
+Kanonik sayılar [makine-okunur tarihçededir](performans-gecmisi-v1.tsv).
+İki ısınma ardından 25 release turu alınmıştır.
+
+| Yüzey | p50 | p95 |
+|---|---:|---:|
+| lexer + parser | 1,776 ms | 2,152 ms |
+| resolver/checker + HIR kanıtı | 157,654 ms | 168,605 ms |
+| tam kaynak→typed-HIR | 159,668 ms | 165,212 ms |
+| boş runtime başlangıcı | 125 ns | 1,292 µs |
+| 100 bin tur yürütme | 22,010 ms | 22,772 ms |
+| LSP cold/initialize | 541 ns | 584 ns |
+| LSP `didOpen` | 159,480 ms | 165,116 ms |
+| LSP `didChange` | 161,143 ms | 172,991 ms |
+| süreç tepe RSS | 17.888 KiB | 17.888 KiB |
+
+Bu ilk kayıt regresyon hükmü değil, sonraki aynı-platform gözlemlerinin
+tabanıdır. Eşik kararı shared CI'dan değil, sabitlenmiş adanmış runner
+dağılımından verilir.
+
+## K-148 öncesi elle tutulmuş legacy kayıtlar
+
+Aşağıdaki tablolar eski altı iş yükünün yalnız medyanını taşır. İş yükleri ve
+istatistik şeması K-148 ile değiştiği için güncel dokuz yüzeyle doğrudan trend
+hesabına katılmaz; tarihsel mühendislik notu olarak korunur.
 
 ## v0.8.0 birikimi / K-092 — 1 Eylül 2026 · Apple M4 Pro, macOS 26.5, Rust 1.93.1
 

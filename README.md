@@ -176,10 +176,10 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **595** |
+| Rust + doctest vakası | **603** |
 | Tanı kimliği | **152 etkin + 3 ayrılmış** |
 | RFC | **25** (2 kabul, 21 geçici kabul, 2 taslak) |
-| ADR | **42** (42 kabul) |
+| ADR | **43** (43 kabul) |
 | Normatif spec bölümü | **24** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
@@ -292,8 +292,13 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   tamamladı: `regression/` altındaki 17 minimal `.dil` vaka bug kimliği,
   birincil faz, kesin tanı spanı, exit ve stdout beklentisiyle birebir
   sahiplenir; [bakım protokolü](docs/semantic-regresyon-korpusu.md) yeni her
-  compiler bug düzeltmesinde aynı kaydı zorunlu kılar. B-039 kapandı; sıradaki
-  makine kapısı K-148/B-040 performans tarihçesi ve trend artefaktlarıdır.
+  compiler bug düzeltmesinde aynı kaydı zorunlu kılar. B-039 kapandı.
+  K-148/ADR-045 eski terminal medyanını dokuz ayrı parse/checker/HIR/runtime/
+  yürütme/LSP/bellek yüzeyinde 25 turluk ham örnek+p50/p95 gözlemine çevirdi.
+  [Sürümlü tarihçe](docs/performans-gecmisi-v1.tsv), JSON ve Markdown her
+  Linux CI koşusunda summary+90 günlük artefakttır; shared CI hard gate
+  değildir, eşik yalnız adanmış runner'da açıkça etkinleşir. B-040 kapandı;
+  sıradaki makine kapısı K-149 bağımlılık yönü/katman mimarisi denetimidir.
   K-107/ADR-019 `dillsp` girdisini 8 KiB başlık, 8 MiB gövde, 128 JSON
   derinliği ve 100 bin düğümle sınırlayıp Unicode parser olumsuzlarını kapattı.
   K-138/ADR-035 sayı ayrıştırmasını RFC 8259 durum makinesine taşıdı; sayısal

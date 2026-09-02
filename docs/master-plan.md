@@ -771,7 +771,12 @@ regression, fuzz ve conformance bağlarını ayrı raporlayarak B-038'i kapattı
 K-147/ADR-044 yedi semantic fazdaki 17 tarihsel bug kaynağını K-kimliği,
 kesin tanı spanı, program exit'i ve stdout ile birebir manifestledi; faz
 matrisine ayrı 22. `Semantic regression` dilimini ekleyerek B-039'u kapattı.
-Sıradaki omurga K-148 ile B-040 performans tarihçesi ve trend artefaktlarıdır.
+K-148/ADR-045 dokuz parse/checker/HIR/runtime/yürütme/LSP/bellek yüzeyini
+iki ısınma+25 turluk ham dağılım, p50/p95, JSON/Markdown ve sürümlü TSV
+tarihçesine bağladı. Shared CI sonucu yalnız summary+90 günlük artefakttır;
+hard eşik ancak sabit adanmış runner'da açıkça etkinleşir. B-040 kapandı.
+Sıradaki omurga K-149 ile modül sorumluluğu ve bağımlılık yönünü fail-closed
+koruyan katman mimarisi denetimidir.
 # 40. Proje felsefesinin korunması
 Bu projenin başarısı yalnız compiler’ın çalışması değildir. Başarı; Türkçe konuşan bir çocuğun yabancı syntax bariyerine takılmadan algoritmik düşünceyle tanışması, aynı dilin yıllar sonra onu terk etmeye zorlamaması ve ekosistemin tek bir şirketin kapalı ürünü haline gelmemesidir.
 Her yeni özellik şu dört sorudan geçmelidir: Türkçe doğal mı? Deterministik mi? Öğrenilebilir mi? Profesyonel ölçekte savunulabilir mi? Dördünden biri hayırsa özellik yeniden tasarlanır.

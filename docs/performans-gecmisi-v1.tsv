@@ -1,0 +1,11 @@
+# zee-performans-gecmisi-1
+# kayit	revizyon	platform	cpu	rustc	tur	olcum	birim	p50	p95
+K-148-m4pro	K-148	macos-aarch64	Apple M4 Pro	rustc 1.93.1 (01f6ddf75 2026-02-11)	25	parse_gecikmesi	ns	1776125	2151875
+K-148-m4pro	K-148	macos-aarch64	Apple M4 Pro	rustc 1.93.1 (01f6ddf75 2026-02-11)	25	typecheck_gecikmesi	ns	157654458	168604542
+K-148-m4pro	K-148	macos-aarch64	Apple M4 Pro	rustc 1.93.1 (01f6ddf75 2026-02-11)	25	hir_olusturma	ns	159668458	165212208
+K-148-m4pro	K-148	macos-aarch64	Apple M4 Pro	rustc 1.93.1 (01f6ddf75 2026-02-11)	25	runtime_baslangici	ns	125	1292
+K-148-m4pro	K-148	macos-aarch64	Apple M4 Pro	rustc 1.93.1 (01f6ddf75 2026-02-11)	25	yurutme_gecikmesi	ns	22010042	22772042
+K-148-m4pro	K-148	macos-aarch64	Apple M4 Pro	rustc 1.93.1 (01f6ddf75 2026-02-11)	25	lsp_soguk	ns	541	584
+K-148-m4pro	K-148	macos-aarch64	Apple M4 Pro	rustc 1.93.1 (01f6ddf75 2026-02-11)	25	lsp_ac	ns	159479750	165116208
+K-148-m4pro	K-148	macos-aarch64	Apple M4 Pro	rustc 1.93.1 (01f6ddf75 2026-02-11)	25	lsp_degistir	ns	161143083	172991167
+K-148-m4pro	K-148	macos-aarch64	Apple M4 Pro	rustc 1.93.1 (01f6ddf75 2026-02-11)	25	tepe_bellek	KiB	17888	17888

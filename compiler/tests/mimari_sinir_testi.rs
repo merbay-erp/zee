@@ -1,4 +1,4 @@
-//! B-005/B-006/B-008/B-010/B-018/B-019/B-020/B-025/B-038/B-048/B-050/B-055/B-056 mimari sınır regresyonları.
+//! B-005/B-006/B-008/B-010/B-018/B-019/B-020/B-025/B-038/B-040/B-048/B-050/B-055/B-056 mimari sınır regresyonları.
 
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -423,4 +423,44 @@ fn semantic_regresyon_korpusu_gecmisten_sessizce_silinemez() {
             "regresyon koruğu kanıtı eksik: {kanit}"
         );
     }
+}
+
+#[test]
+fn performans_gozlemi_shared_ci_esigine_donusmez() {
+    let ci = kaynak("../.github/workflows/ci.yml");
+    let arac = kaynak("src/bin/olcum.rs");
+    let gecmis = kaynak("../docs/performans-gecmisi-v1.tsv");
+
+    for kanit in [
+        "--tur 25",
+        "--json target/performans.json",
+        "--rapor target/performans.md",
+        "--gecmis-cikti target/performans-gecmisi.tsv",
+        "cat target/performans.md >> \"$GITHUB_STEP_SUMMARY\"",
+        "name: performans-${{ github.sha }}",
+    ] {
+        assert!(ci.contains(kanit), "performans CI kanıtı eksik: {kanit}");
+    }
+    assert!(
+        !ci.lines()
+            .any(|satir| satir.trim_start().starts_with("--esik-yuzde")),
+        "shared CI gürültülü performans hard gate'i taşımamalı"
+    );
+    for kimlik in [
+        "parse_gecikmesi",
+        "typecheck_gecikmesi",
+        "hir_olusturma",
+        "runtime_baslangici",
+        "yurutme_gecikmesi",
+        "lsp_soguk",
+        "lsp_ac",
+        "lsp_degistir",
+        "tepe_bellek",
+    ] {
+        assert!(arac.contains(kimlik), "ölçüm yüzeyi eksik: {kimlik}");
+    }
+    assert!(arac.contains("p50"));
+    assert!(arac.contains("p95"));
+    assert!(arac.contains("esik_yuzde"));
+    assert!(gecmis.starts_with("# zee-performans-gecmisi-1\n"));
 }

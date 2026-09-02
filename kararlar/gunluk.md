@@ -2418,6 +2418,29 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   ve 42 kabul ADR'dir; B-039 kapandı. Sıradaki makine işi K-148 ile B-040
   performans tarihçesi ve trend artefaktlarıdır.
 
+## K-148 — Performans tek medyan değil, karşılaştırılabilir dağılımdır (2 Eyl)
+
+- **Sorun:** Eski `olcum` altı kaba iş yükünün yalnız medyanını terminale
+  yazıyordu. Parse/checker/HIR ayrımı, p95 kuyruğu, ham örnekler, LSP yaşam
+  döngüsü ve tepe bellek görünmüyor; sonuçlar elle belgeye aktarılıyordu.
+- **Karar:** Release koşucusu iki ısınma ardından varsayılan 25 turla dokuz
+  sabit yüzeyi ölçer. `zee-performans-1` JSON'u ham örnek+min/max+p50/p95'i;
+  `zee-performans-gecmisi-1` TSV'si incelenmiş tarihsel tabanı taşır. Şema,
+  alan, birim, tur, yüzdelik, metadata ve kayıt/ölçüm tekilliği fail-closed'dur.
+- **CI politikası:** Linux shared runner her koşuda JSON, Markdown ve birleşik
+  TSV'yi job summary+90 günlük artefakta yazar. Gürültülü shared CI hard gate
+  değildir. `--esik-yuzde` yalnız makinesi ve yükü sabit adanmış benchmark
+  koşucusunda açıkça istendiğinde p95 ihlalini başarısız sürece dönüştürür.
+- **İlk taban:** Apple M4 Pro/macOS arm64/Rust 1.93.1 üzerinde 25 turluk dokuz
+  satır sürümlü tarihçeye girdi. Eski K-092 ve öncesi medyanlar farklı iş yükü
+  ve şema olduklarından legacy not olarak korunur, yeni trende karıştırılmaz.
+- **Kanıt ve sınır:** ADR-045, ölçüm/depo rehberleri, yedi koşucu birim testi,
+  bir mimari CI/yüzey regresyonu ve gerçek JSON/Markdown/TSV üretimi. Kaynak
+  envanteri 603 test, 92 numaralı belge ve 43 kabul ADR'dir; B-040/V1-P1-12
+  kapandı. Dil sözdizimi, runtime anlamı, tanı kataloğu, RFC ve normatif spec
+  değişmedi. Sıradaki makine işi K-149 bağımlılık yönü/katman mimarisi
+  denetimidir.
+
 ---
 
 ## Sonraki adım
@@ -2426,7 +2449,6 @@ Korpus 10 öğrenci + 5 profesyonel usability oturumuna (Hafta 12 hedefi, erkeni
 Hafta 2'de kağıt üstünde) sesli okutulacak; her kayıt için "doğal mı /
 deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
-Makine hattında K-147, K-146 matrisine ayrı semantic regression fazı ekleyip
-17 geçmiş bug'ı kesin gözlemli minimal `.dil` kaynağına bağladı; B-039
-kapandı. Sırada K-148 ile B-040 performans tarihçesi ve trend artefaktları
-vardır.
+Makine hattında K-148 dokuz sabit performans yüzeyini p50/p95 tarihçesi,
+JSON/Markdown ve shared-CI artefaktına bağlayıp B-040'ı kapattı. Sırada K-149
+ile bağımlılık yönü ve katman mimarisi denetimi vardır.

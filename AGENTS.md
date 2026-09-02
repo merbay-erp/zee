@@ -36,6 +36,13 @@ geçer. Her gerçek Cargo/libtest vakası tam bir birincil faz sahibi olmalı;
 fuzz/conformance/regresyon ve aşağı akış ilişkisi aynı değişiklikte güncel
 kalmalıdır.
 
+Performans davranışı veya sabit iş yükü değişikliği
+`docs/performans-gecmisi-v1.tsv`, `docs/olcumler.md` ve ADR-045 etkisini aynı
+committe inceler. Shared CI ölçümü gözlemseldir ve `--esik-yuzde` taşıyamaz;
+hard eşik yalnız sabitlenmiş adanmış benchmark koşucusunda açıkça
+etkinleştirilebilir. Yeni taban, makine/araç zinciri ve 25 turluk p50/p95
+dağılımı incelenmeden izlenen tarihçeye yazılmaz.
+
 Her compiler bug düzeltmesi ayrıca `regression/<faz>/` altında tek arızaya
 indirgenmiş bir `.dil` kaynağı ve `regression/v1.tsv` içinde K-kimliği, faz,
 kip, beklenen tanı+kesin span, exit ve çıktı kaydı bırakır. Bu kayıt olmadan
