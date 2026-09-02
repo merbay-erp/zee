@@ -26,3 +26,10 @@ path = "fuzz_targets/morfoloji.rs"
 test = false
 doc = false
 bench = false
+
+[[bin]]
+name = "http_istegi"
+path = "fuzz_targets/http_istegi.rs"
+test = false
+doc = false
+bench = false

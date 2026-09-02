@@ -574,6 +574,7 @@ ADR-033 — Merkezî ve değişmez kaynak bütçesi
 ADR-034 — Kalıcı ortak web deposu ve tek-worker süreç modeli
 ADR-035 — Protokol-kesin LSP JSON-RPC sınırı
 ADR-036 — Kanonik web proxy origin sınırı
+ADR-037 — Byte tabanlı HTTP/1.x istek sınırı
 # 39. Ekip ve rol modeli
 Dil mimarı: semantik ve uzun vadeli vizyon.
 Compiler: parser, types, IR, backend.
@@ -728,8 +729,11 @@ B-046'yı kapattı. K-138/ADR-035 RFC 8259 sayı/duplicate alan doğrulamasını
 kayıpsız JSON-RPC kimliğini ve standart parse/request/method/params hata
 ayrımını kurarak B-051'i kapattı. K-139/ADR-036 CLI'a özel origin parser'ını
 kaldırıp web proxy'yi ortak `AgHedefi` DNS/IPv6/port kimliğine ve açık
-loopback bind+peer değişmezine bağlayarak B-052'yi kapattı. Sıradaki omurga
-K-140 ile B-053 byte tabanlı ve fuzz kanıtlı HTTP istek ayrıştırıcısıdır.
+loopback bind+peer değişmezine bağlayarak B-052'yi kapattı. K-140/ADR-037
+request-line/header/gövde framing'ini yalnız CRLF, origin-form, tek kurallı CL
+ve exact UTF-8 kabul eden byte parser'a taşıdı; ayrı ham-byte fuzz hedefiyle
+B-053'ü kapattı. Sıradaki omurga K-141 ile B-054 bağımlılık
+advisory/lisans/tekrar üretim kapısıdır.
 # 40. Proje felsefesinin korunması
 Bu projenin başarısı yalnız compiler’ın çalışması değildir. Başarı; Türkçe konuşan bir çocuğun yabancı syntax bariyerine takılmadan algoritmik düşünceyle tanışması, aynı dilin yıllar sonra onu terk etmeye zorlamaması ve ekosistemin tek bir şirketin kapalı ürünü haline gelmemesidir.
 Her yeni özellik şu dört sorudan geçmelidir: Türkçe doğal mı? Deterministik mi? Öğrenilebilir mi? Profesyonel ölçekte savunulabilir mi? Dördünden biri hayırsa özellik yeniden tasarlanır.

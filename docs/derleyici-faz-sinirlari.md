@@ -148,6 +148,10 @@ K-139/ADR-036 ortak origin ayrıştırmasını 100 satır bütçeli
 `yetkinlik/origin.rs` sahibine ayırdı. Outbound allowlist ile inbound web proxy
 aynı `AgHedefi` kurucularını tüketir; CLI kökü ikinci bir origin tipi ya da
 DNS/IPv6/port parser'ı taşıyamaz.
+K-140/ADR-037 request-line, header, CRLF, TE/CL ve UTF-8 framing kararını 260
+satır bütçeli `http_istegi.rs` sahibine ayırdı. CLI kökü yalnız socket
+deadline/boyut okumasını ve doğrulanmış isteğin runtime adaptasyonunu taşır;
+kayıplı `from_utf8_lossy` veya ikinci header parser'ı geri dönemez.
 K-128/ADR-032 atomik replace'in platform metadata aktarımını
 `kalici_dosya/metadata.rs` sahibine ayırdı. `kalici_dosya.rs` K-135'in atomik
 karşılaştır-ve-yaz ilkeliyle 850,

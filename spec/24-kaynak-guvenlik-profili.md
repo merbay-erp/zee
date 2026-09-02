@@ -1,7 +1,7 @@
 # 24 — Kaynak güvenlik profili
 
-Normatif kaynak: RFC-0025, ADR-033, ADR-035. Durum:
-**TANIMLI — K-129/K-130/K-131/K-132/K-138**.
+Normatif kaynak: RFC-0025, ADR-033, ADR-035, ADR-037. Durum:
+**TANIMLI — K-129/K-130/K-131/K-132/K-138/K-140**.
 
 ## Profil sahipliği
 
@@ -38,6 +38,15 @@ Uzun yaşayan web sunucusunda her istek bağımsız adım/çıktı bütçesi al�
 Süreç genelinde kabul edilmiş inbound ve başlatılmış outbound ağ bağlantılarının
 toplamı 64'ü AŞAMAZ. İzin bütün başarı/hata yollarında bırakılmalıdır; aşım
 outbound'da C018 nedeni, inbound'da HTTP 503'tür.
+
+## HTTP isteği
+
+Native web başlığı en çok 16 KiB, gövdesi 64 KiB'dır. Başlık sonu ham baytta
+ve yalnız CRLF ile bulunur; geçerli `Content-Length` gövde tahsisinden önce
+denetlenir. TE, duplicate CL, obs-fold, NUL ve UTF-8 dışı veri için kayıplı
+dönüşüm YASAKTIR. Gövde exact ilan edilen uzunluktadır. Ayrıştırıcı 260 satır
+bütçeli `http_istegi.rs` sahibidir ve ham byte fuzz hedefi taşır. Ayrıntılı
+wire profili spec/11 ve ADR-037'dedir.
 
 ## LSP
 

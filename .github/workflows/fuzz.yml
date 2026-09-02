@@ -19,6 +19,9 @@ jobs:
           - hedef: morfoloji
             korpus: morfoloji
             azami_girdi: 128
+          - hedef: http_istegi
+            korpus: http_istegi
+            azami_girdi: 81920
     steps:
       - uses: actions/checkout@v4
       - name: Sabit nightly araç zinciri

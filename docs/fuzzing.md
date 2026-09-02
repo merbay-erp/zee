@@ -1,9 +1,11 @@
 # Compiler fuzz rehberi
 
-Bu rehber K-110/ADR-022 ve K-111'in ortak işletim sözleşmesidir. Lexer/parser
-hedefi geçerli her UTF-8 kaynağın token/AST ya da Türkçe tanı üretmesini;
-morfoloji hedefi geçerli her üretilmiş kök+ek zincirinin aynı soyut çözüme
-dönmesini ve çoklu köklerin sessizce seçilmemesini arar.
+Bu rehber K-110/ADR-022, K-111 ve K-140/ADR-037'nin ortak işletim
+sözleşmesidir. Lexer/parser hedefi geçerli her UTF-8 kaynağın token/AST ya da
+Türkçe tanı üretmesini; morfoloji hedefi geçerli her üretilmiş kök+ek zincirinin
+aynı soyut çözüme dönmesini ve çoklu köklerin sessizce seçilmemesini;
+`http_istegi` hedefi ise her byte dizisinin exact bir HTTP/1.x isteği ya da
+fail-closed hata olmasını arar.
 
 ## Kalıcı katmanlar
 
@@ -18,6 +20,15 @@ dönmesini ve çoklu köklerin sessizce seçilmemesini arar.
   değişmezini ve bütün adaylarla A001/A002 kararını denetler.
 - `compiler/fuzz/corpus/morfoloji/`: düz, Türkçe, yumuşama ve uzun tanımlayıcı
   sınıflarını başlatan dört tohumdur.
+- `compiler/fuzz/fuzz_targets/http_istegi.rs`: ham `&[u8]` request-line,
+  başlık ve gövdeyi byte parser'dan geçirir; kayıplı UTF-8 üretmez.
+- `compiler/fuzz/corpus/http_istegi/`: geçerli GET/POST ile bare-LF,
+  absolute-form ve duplicate Content-Length başlangıçlarını taşır. `.gitattributes`
+  bu wire fixture'larını metin normalizasyonundan çıkarır; CRLF ve bare-LF
+  ayrımı her platformda byte-byte korunur.
+- `compiler/tests/http_istegi_testi.rs`: kalıcı HTTP korpusunu ve adlandırılmış
+  CRLF/obs-fold/NUL/target/TE-CL/UTF-8 framing saldırılarını her ana testte
+  yeniden oynatır.
 - `compiler/fuzz/dictionaries/zee.dict`: Türkçe kalıpları ve kritik byte
   dizilerini mutation sözlüğüne verir.
 - `compiler/tests/fuzz_korpusu_testi.rs`: stable ve bütün Tier-1 işletim
@@ -39,6 +50,8 @@ cargo +nightly-2026-08-31 fuzz run lexer_parser fuzz/corpus/lexer_parser -- \
   -dict=fuzz/dictionaries/zee.dict -max_len=65536 -timeout=5
 cargo +nightly-2026-08-31 fuzz run morfoloji fuzz/corpus/morfoloji -- \
   -dict=fuzz/dictionaries/zee.dict -max_len=128 -timeout=5
+cargo +nightly-2026-08-31 fuzz run http_istegi fuzz/corpus/http_istegi -- \
+  -dict=fuzz/dictionaries/zee.dict -max_len=81920 -timeout=5
 ```
 
 Kısa doğrulama için sona `-max_total_time=30`, uzun yerel çalışma için uygun
@@ -75,3 +88,6 @@ yapıları B-017/K-112'nin tamamladığı
 [AST/HIR invariant doğrulayıcısına](ast-hir-invariantleri.md) aittir.
 Kurtarmalı parser'ın kardeş/kapsam sahipliği ve 20 tanı bütçesi
 [parser kurtarma rehberinde](parser-hata-kurtarma.md) bağlanır.
+HTTP hedefi `&[u8]` aldığı için geçersiz UTF-8'i özellikle tarar. 81920 byte
+fuzz sınırı production'daki 16 KiB başlık + 64 KiB gövde zarfıdır; daha büyük
+socket girdisi parser tahsisinden önce 431/413 ile kesilir.

@@ -1,0 +1,5 @@
+POST /kaydet HTTP/1.1
+Host: panel.example
+Content-Length: 9
+
+not=iyi

@@ -116,8 +116,13 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
     `AgHedefi` DNS/IPv6/port parser'ını kullanır. Production listener sabit
     loopback bind'i ve kabul edilen loopback peer'i birlikte doğrular; B-052
     kapandı (558 test).
-37. Sıradaki makine işi K-140 ile B-053 HTTP istek ayrıştırıcısını byte tabanlı
-    ve fuzz kanıtlı yapmaktır; sonraki işler aşağıdaki öncelik sırasını korur.
+37. K-140/ADR-037 HTTP request-line, header ve gövdeyi tek byte parser'ında
+    yalnız CRLF, origin-form, HTTP/1.0/1.1, tek kurallı Content-Length ve exact
+    UTF-8 gövde profiline bağladı. TE, obs-fold, NUL, kayıplı dönüşüm ve fazla/
+    eksik framing kalıcı korpus ile ayrı libFuzzer hedefinde reddedilir; B-053
+    kapandı (566 test).
+38. Sıradaki makine işi K-141 ile B-054 bağımlılık advisory/lisans/tekrar
+    üretim kapısını kurmaktır; sonraki işler aşağıdaki öncelik sırasını korur.
 
 ## P0 — V1 öncesi dil ve derleyici omurgası
 
@@ -396,10 +401,13 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   `127.0.0.1`e bind eder ve socket peer'inin loopback olduğunu ayrıca
   doğrular. Olumlu/olumsuz origin ve mimari sahiplik regresyonları envanteri
   558 teste çıkardı.
-- **B-053 · AÇIK — HTTP istek ayrıştırıcısını byte tabanlı ve fuzz kanıtlı
-  yap.** Request-line/header CRLF, bare-LF, obs-fold, NUL, absolute-form,
-  geçersiz UTF-8, TE/CL ve duplicate CL yüzeyi byte parser'da fail-closed
-  olmalı; ayrı libFuzzer hedefi crash girdisini regression'a yükseltmelidir.
+- **B-053 · KAPALI (K-140/ADR-037) — HTTP istek ayrıştırıcısını byte tabanlı
+  ve fuzz kanıtlı yap.** `http_istegi.rs` request-line/header CRLF, bare-LF/CR,
+  obs-fold, NUL, absolute/authority/asterisk-form, fragment, geçersiz UTF-8,
+  TE, duplicate/kuralsız CL ve exact olmayan gövdeyi fail-closed ayırır. Gövde
+  limiti doğrulanmış CL sonrasında tahsis edilir; kayıplı UTF-8 kaldırılmıştır.
+  Yedi protokol, bir mimari sahiplik testi, beş kalıcı seed ve ayrı ham-byte
+  libFuzzer hedefi envanteri 566 teste çıkardı.
 
 ## P1 — Paketleme ve supply chain
 
@@ -495,9 +503,9 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 ## Bir sonraki somut kapı
 
 İnsan kanıtı hattında B-001, doldurulmuş gerçek usability formları ve önceden
-ilan edilmiş eşikleri bekler. Makine hattında K-139 B-052'nin tek kanonik
-web proxy origin'i ile loopback bind+peer sınırını tamamladı. Sıradaki iş
-K-140 ile B-053 byte tabanlı ve fuzz kanıtlı HTTP istek ayrıştırıcısıdır.
+ilan edilmiş eşikleri bekler. Makine hattında K-140 B-053'ün byte tabanlı ve
+fuzz kanıtlı HTTP istek sınırını tamamladı. Sıradaki iş K-141 ile B-054
+bağımlılık advisory/lisans/tekrar üretim kapısıdır.
 
 ## 2 Eylül 2026 ikinci dış inceleme ayrımı
 
@@ -512,9 +520,10 @@ K-140 ile B-053 byte tabanlı ve fuzz kanıtlı HTTP istek ayrıştırıcısıd�
   B-046 ortak kalıcı oturum/rate-limit, kanonik proxy kimliği ve N tek-worker
   süreç modeli K-137/ADR-034 ile kapandı. B-051 kesin JSON-RPC ayrıştırması
   K-138/ADR-035 ile kapandı. B-052 origin tekilleştirme ve loopback peer sınırı
-  K-139/ADR-036 ile kapandı. Sırada B-053 byte HTTP+fuzz,
-  B-054 advisory/reproducibility, B-055 WASM C ABI ve B-056 playground
-  ön-tahsis bütçesi vardır. B-033/B-034 temiz snapshot hattı ayrıca kapalıdır.
+  K-139/ADR-036 ile kapandı. B-053 byte HTTP+fuzz sınırı K-140/ADR-037 ile
+  kapandı. Sırada B-054 advisory/reproducibility, B-055 WASM C ABI ve B-056
+  playground ön-tahsis bütçesi vardır. B-033/B-034 temiz snapshot hattı ayrıca
+  kapalıdır.
 - **Mevcut repoda zaten kapalı:** çağrı derinliği C019/500 ve ayrı regresyonu;
   atomik metadata `unsafe` bloklarının her birindeki `SAFETY` gerekçesi; kök
   `.gitignore`; üç platformlu `.github/workflows/ci.yml`; tekil P2 başlığı.

@@ -56,6 +56,16 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   doğrular. Origin olumluları/olumsuzları ve mimari drift koruğuyla envanter
   558 test ve 34 kabul ADR'ye çıktı; B-052 kapandı.
 
+- **Byte tabanlı HTTP/1.x istek sınırı** (K-140, ADR-037/spec-11/12/24):
+  Socket başlığı metne çevrilmeden CRLF, request-line, header adı/değeri ve
+  framing olarak doğrulanır. Yalnız origin-form ve HTTP/1.0/1.1 kabul edilir;
+  bare-LF/CR, obs-fold, NUL, absolute/authority/asterisk-form, fragment,
+  Transfer-Encoding, duplicate/kuralsız Content-Length, fazla/eksik veya
+  UTF-8 dışı gövde fail-closed'dur. Gövde tahsisi ancak CL 64 KiB sınırından
+  geçince yapılır; kayıplı UTF-8 kaldırılmıştır. Yedi protokol ve mimari
+  regresyon, beş kalıcı fuzz seed'i ve ayrı ham-byte libFuzzer hedefiyle
+  envanter 566 test ve 35 kabul ADR'ye çıktı; B-053 kapandı.
+
 - **Normatif otorite ve v1 kapıları** (K-081, ADR-010): geçerli dilin kesin
   davranışını spec anlatır; RFC değişikliği yetkilendirir ama spec+conformance
   testi aynı değişiklikte güncellenmeden yürürlüğe girmez. Kaynak denetimli

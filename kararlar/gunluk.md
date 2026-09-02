@@ -2240,6 +2240,26 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   olumluları/olumsuzları eklendi. Envanter 558 test, 152 etkin + 3 ayrılmış
   tanı ve 83 numaralı belgedir. B-052 kapandı.
 
+## K-140 — HTTP isteği metinden önce byte framing kapısından geçer (2 Eyl)
+
+- **Sorun:** Socket başlığını bulduktan sonra gevşek `str` satır/parça
+  işlemleriyle çözmek bare-LF, obs-fold, target biçimi ve alan gramerini tek
+  sözleşmede kapatmıyordu. Gövde `from_utf8_lossy` ile wire baytından farklı
+  metne dönüşebiliyor; TE/CL kontrollerinin ayrı olması parser drift'i ve
+  request-smuggling belirsizliği bırakıyordu.
+- **Karar:** `http_istegi.rs` ham baytta yalnız CRLF, RFC token yöntem,
+  origin-form hedef, HTTP/1.0/1.1, ASCII başlık ve tek rakamsal Content-Length
+  kabul eder. TE, obs-fold, NUL, absolute/authority/asterisk-form, fragment,
+  duplicate/bozuk CL ve exact olmayan ya da UTF-8 dışı gövde 400'dür. Başlık
+  16 KiB'ta; gövde doğrulanmış CL sonrasında 64 KiB'ta kesilir. Pipelining ve
+  chunked body V1 sözü değildir.
+- **Mimari:** Parser 260 satır bütçeli library modülüdür; CLI socket deadline
+  ve doğrulanmış isteğin Zee adaptasyonunu taşır. `String::from_utf8_lossy`
+  geri dönemez.
+- **Kanıt:** Yedi protokol testi, bir mimari sahiplik testi, beş kalıcı HTTP
+  fuzz seed'i ve ayrı ham `&[u8]` libFuzzer hedefi eklendi. Envanter 566 test,
+  152 etkin + 3 ayrılmış tanı ve 84 numaralı belgedir. B-053 kapandı.
+
 ---
 
 ## Sonraki adım
@@ -2248,6 +2268,6 @@ Korpus 10 öğrenci + 5 profesyonel usability oturumuna (Hafta 12 hedefi, erkeni
 Hafta 2'de kağıt üstünde) sesli okutulacak; her kayıt için "doğal mı /
 deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
-Makine hattında K-139 web proxy origin'ini ortak `AgHedefi` kimliğine ve
-loopback bind+peer değişmezine bağlayarak B-052'yi kapattı. Sırada K-140 ile
-B-053 byte tabanlı ve fuzz kanıtlı HTTP istek ayrıştırıcısı vardır.
+Makine hattında K-140 HTTP framing'ini byte parser ve ayrı libFuzzer hedefiyle
+sabitleyerek B-053'ü kapattı. Sırada K-141 ile B-054 bağımlılık
+advisory/lisans/tekrar üretim kapısı vardır.
