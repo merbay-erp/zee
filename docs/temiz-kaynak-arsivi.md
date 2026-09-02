@@ -8,12 +8,19 @@ içeriğini paketleyen şu komuttur:
 scripts/temiz-kaynak-arsivi.sh
 ```
 
-Varsayılan çıktı `dist/zee-kaynak-<git-kimliği>.zip` olur. İstenirse depo
+Varsayılan çıktı `dist/zee-kaynak-<git-kimliği>.zip` olur. Aynı `HEAD` aynı
+ZIP byte'larını üretir; çalışma ağacının kirli olması içeriği değiştirmez.
+İstenirse depo
 içinde başka bir çıktı yolu ilk argüman olarak verilebilir. Script `git
 archive` kullandığı için çalışma ağacındaki gizli dosyalar, kişisel arşivler,
 `target/`, fuzz ikilileri ve başka izlenmeyen dosyalar pakete giremez. Üretim
 sonrasında arşiv girdilerini ayrıca tarar; `.git`, `target`, `artifacts`,
 `__MACOSX`, `*.profraw` veya `*.profdata` bulursa başarısız olur.
+
+Arşivin kökündeki `KAYNAK-SHA256.txt`, her izlenen dosyanın kaynak byte'ı için
+sıralı SHA-256 kaydıdır. Arşivin yanındaki `.zip.sha256` dosyası da ZIP'in
+tamamını doğrular. Böylece inceleyen kişi hem taşıma bütünlüğünü hem açılmış
+kaynağın dosya bazında bütünlüğünü bağımsız denetleyebilir.
 
 ## Saklanan ve atılan içerik
 
