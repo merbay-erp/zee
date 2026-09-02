@@ -18,7 +18,6 @@ pub(super) fn acik_islemleri_denetle(baglam: &mut Baglam) -> Result<(), Tani> {
     Ok(())
 }
 
-
 /// K-086 dönüş bildirimi: dış `None` bildirim yok, iç `None` değer döndürmez.
 pub(super) fn bildirilmis_donus_turu(
     islem: &Islem,

@@ -30,7 +30,10 @@ pub fn ayristir(tokenlar: Vec<Token>) -> Result<Vec<Cumle>, Tani> {
 /// Birimlerden gelen işlem adlarıyla tohumlanmış ayrıştırma (RFC-0009):
 /// çağrı tanıma "tanımlı işlem adıyla bitiyor mu?" kuralına dayandığı için
 /// içe alınan adların ayrıştırma başlamadan bilinmesi gerekir.
-pub fn ayristir_tohumla(tokenlar: Vec<Token>, islem_adlari: Vec<String>) -> Result<Vec<Cumle>, Tani> {
+pub fn ayristir_tohumla(
+    tokenlar: Vec<Token>,
+    islem_adlari: Vec<String>,
+) -> Result<Vec<Cumle>, Tani> {
     let (cumleler, mut tanilar) = ayristir_kurtarmali(tokenlar, islem_adlari);
     if tanilar.is_empty() {
         Ok(cumleler)
@@ -259,14 +262,10 @@ impl Ayristirici {
             }
         }
         if ad_kelimeleri.is_empty() {
-            return Err(Tani::yeni(
-                "S022",
-                "İşlemin bir adı olmalı.".into(),
-                satir,
-                1,
-                1,
-            )
-            .onerili("Örnek: işlem ortalamayı hesapla".into()));
+            return Err(
+                Tani::yeni("S022", "İşlemin bir adı olmalı.".into(), satir, 1, 1)
+                    .onerili("Örnek: işlem ortalamayı hesapla".into()),
+            );
         }
         let ad = ad_kelimeleri.join(" ");
         if !self.islem_adlari.contains(&ad) {
@@ -441,21 +440,26 @@ impl Ayristirici {
                 _ => {
                     let alan_satiri = self.satir_oku();
                     let alan_no = alan_satiri.first().map(|t| t.satir).unwrap_or(satir);
-                    match (alan_satiri.first().map(|t| &t.tur), alan_satiri.get(1).map(|t| &t.tur)) {
+                    match (
+                        alan_satiri.first().map(|t| &t.tur),
+                        alan_satiri.get(1).map(|t| &t.tur),
+                    ) {
                         (Some(TokenTur::Kelime(alan)), Some(TokenTur::Kelime(tur)))
                             if alan_satiri.len() == 2 =>
                         {
                             alanlar.push((alan.clone(), tur.clone()));
                         }
                         _ => {
-                            self.tani_kaydet(Tani::yeni(
-                                "S025",
-                                "Yapı alanı \"<ad> <Tür>\" biçiminde yazılır.".into(),
-                                alan_no,
-                                1,
-                                1,
-                            )
-                            .onerili("Örnek: yaş TamSayı".into()));
+                            self.tani_kaydet(
+                                Tani::yeni(
+                                    "S025",
+                                    "Yapı alanı \"<ad> <Tür>\" biçiminde yazılır.".into(),
+                                    alan_no,
+                                    1,
+                                    1,
+                                )
+                                .onerili("Örnek: yaş TamSayı".into()),
+                            );
                             self.bekleyen_govdeyi_atla();
                             if self.tani_limiti_doldu() {
                                 break;
@@ -509,12 +513,12 @@ impl Ayristirici {
                                 .map(|deger| (ad.clone(), deger, gorev_no))
                         }
                         _ => Err(Tani::yeni(
-                                "S038",
-                                "Görev satırı \"<ad> <ifade>\" biçimindedir.".into(),
-                                gorev_no,
-                                1,
-                                1,
-                            )),
+                            "S038",
+                            "Görev satırı \"<ad> <ifade>\" biçimindedir.".into(),
+                            gorev_no,
+                            1,
+                            1,
+                        )),
                     };
                     match sonuc {
                         Ok(gorev) => gorevler.push(gorev),
@@ -610,14 +614,18 @@ impl Ayristirici {
                             1,
                             1,
                         )
-                        .onerili("Örnek: \"DOSYA_YOK\" kodlu \"Dosya bulunamadı\" hatasını döndür".into()));
+                        .onerili(
+                            "Örnek: \"DOSYA_YOK\" kodlu \"Dosya bulunamadı\" hatasını döndür"
+                                .into(),
+                        ));
                     }
                     let kod = match &bas[0].tur {
                         TokenTur::Metin(kod) if gecerli_hata_kodu(kod) => kod.clone(),
                         TokenTur::Metin(_) => {
                             return Err(Tani::yeni(
                                 "S044",
-                                "Hata kodu A-Z ile başlamalı; yalnız A-Z, 0-9 ve _ içermeli.".into(),
+                                "Hata kodu A-Z ile başlamalı; yalnız A-Z, 0-9 ve _ içermeli."
+                                    .into(),
                                 satir,
                                 bas[0].sutun,
                                 bas[0].uzunluk,
@@ -655,9 +663,10 @@ impl Ayristirici {
                     1,
                 ));
             }
-            if ekler.last().is_some_and(|t| {
-                !kelime_mi(t, "nedeniyle") && !kelime_mi(t, "verisiyle")
-            }) || (neden_konumu.is_none() && veri_konumu.is_none() && !ekler.is_empty())
+            if ekler
+                .last()
+                .is_some_and(|t| !kelime_mi(t, "nedeniyle") && !kelime_mi(t, "verisiyle"))
+                || (neden_konumu.is_none() && veri_konumu.is_none() && !ekler.is_empty())
             {
                 return Err(Tani::yeni(
                     "S044",
@@ -668,11 +677,7 @@ impl Ayristirici {
                 ));
             }
             let neden = match neden_konumu {
-                Some(konum) => Some(ile_ifadesi(
-                    &ekler[..konum],
-                    satir,
-                    &self.islem_adlari,
-                )?),
+                Some(konum) => Some(ile_ifadesi(&ekler[..konum], satir, &self.islem_adlari)?),
                 None => None,
             };
             let veri = match veri_konumu {
@@ -686,11 +691,21 @@ impl Ayristirici {
                 }
                 None => None,
             };
-            return Ok(Cumle::HataDondur { kod, mesaj, neden, veri, satir });
+            return Ok(Cumle::HataDondur {
+                kod,
+                mesaj,
+                neden,
+                veri,
+                satir,
+            });
         }
 
         let deger = ile_ifadesi(&tokenlar, satir, &self.islem_adlari)?;
-        Ok(Cumle::Dondur { deger, sonuca_sarmala: false, satir })
+        Ok(Cumle::Dondur {
+            deger,
+            sonuca_sarmala: false,
+            satir,
+        })
     }
 
     /// `sonucu toplamı sayıların adedine böl`
@@ -721,7 +736,12 @@ impl Ayristirici {
         };
         let pay = tekil_ifade(tokenlar.remove(0))?;
         let payda = bolge_ifadesi(&tokenlar, satir, &self.islem_adlari)?;
-        Ok(Cumle::BolVeAta { hedef, pay, payda, satir })
+        Ok(Cumle::BolVeAta {
+            hedef,
+            pay,
+            payda,
+            satir,
+        })
     }
 
     // ---- cümle türleri ----
@@ -740,7 +760,12 @@ impl Ayristirici {
         if tokenlar.len() >= 3 && kelime_mi(&tokenlar[1], "dosyasına") {
             let yol = tekil_ifade(tokenlar[0].clone())?;
             let icerik = ile_ifadesi(&tokenlar[2..], satir, &self.islem_adlari)?;
-            return Ok(Cumle::DosyayaYaz { yol, icerik, ekleme: false, satir });
+            return Ok(Cumle::DosyayaYaz {
+                yol,
+                icerik,
+                ekleme: false,
+                satir,
+            });
         }
 
         let deger = ile_ifadesi(&tokenlar, satir, &self.islem_adlari)?;
@@ -760,7 +785,12 @@ impl Ayristirici {
             let sozluk = tekil_ifade(tokenlar[0].clone())?;
             let anahtar = tekil_ifade(tokenlar[1].clone())?;
             let deger = ile_ifadesi(&tokenlar[3..], satir, &self.islem_adlari)?;
-            return Ok(Cumle::SozlukAta { sozluk, anahtar, deger, satir });
+            return Ok(Cumle::SozlukAta {
+                sozluk,
+                anahtar,
+                deger,
+                satir,
+            });
         }
 
         // Alan yazma: `ayşenin adı "Ayşe" olsun` (K-020). Kural: tam üç token,
@@ -776,7 +806,12 @@ impl Ayristirici {
                     let nesne = tekil_ifade(tokenlar[0].clone())?;
                     let alan = alan.clone();
                     let deger = tekil_ifade(tokenlar[2].clone())?;
-                    return Ok(Cumle::AlanAta { nesne, alan, deger, satir });
+                    return Ok(Cumle::AlanAta {
+                        nesne,
+                        alan,
+                        deger,
+                        satir,
+                    });
                 }
             }
         }
@@ -806,7 +841,13 @@ impl Ayristirici {
             }
         };
         let deger = ile_ifadesi(&tokenlar, satir, &self.islem_adlari)?;
-        Ok(Cumle::Olsun { ad, deger, satir, sutun, uzunluk })
+        Ok(Cumle::Olsun {
+            ad,
+            deger,
+            satir,
+            sutun,
+            uzunluk,
+        })
     }
 
     fn tekrarla_ayristir(&mut self, mut tokenlar: Vec<Token>, satir: usize) -> Result<Cumle, Tani> {
@@ -814,14 +855,15 @@ impl Ayristirici {
 
         // <koşul> olana kadar tekrarla
         let n = tokenlar.len();
-        if n >= 3
-            && kelime_mi(&tokenlar[n - 1], "kadar")
-            && kelime_mi(&tokenlar[n - 2], "olana")
-        {
+        if n >= 3 && kelime_mi(&tokenlar[n - 1], "kadar") && kelime_mi(&tokenlar[n - 2], "olana") {
             tokenlar.truncate(n - 2);
             let kosul = kosul_ifadesi(&tokenlar, satir)?;
             let govde = self.alt_blok(satir)?;
-            return Ok(Cumle::OlanaKadar { kosul, govde, satir });
+            return Ok(Cumle::OlanaKadar {
+                kosul,
+                govde,
+                satir,
+            });
         }
 
         // <ifade> kez tekrarla
@@ -911,14 +953,8 @@ impl Ayristirici {
 
         // Beklenen biçim: <a> den <b> e kadar her <ad> için
         let hata = || {
-            Tani::yeni(
-                "S010",
-                "Döngü tanınmadı.".into(),
-                satir,
-                1,
-                1,
-            )
-            .onerili("Örnekler: her sayı için · 1 den 100 e kadar her sayı için".into())
+            Tani::yeni("S010", "Döngü tanınmadı.".into(), satir, 1, 1)
+                .onerili("Örnekler: her sayı için · 1 den 100 e kadar her sayı için".into())
         };
         let mut t = tokenlar.into_iter().peekable();
 
@@ -938,7 +974,13 @@ impl Ayristirici {
         }
 
         let govde = self.alt_blok(satir)?;
-        Ok(Cumle::AralikDongusu { ad, bastan, sona, govde, satir })
+        Ok(Cumle::AralikDongusu {
+            ad,
+            bastan,
+            sona,
+            govde,
+            satir,
+        })
     }
 
     fn surece_ayristir(&mut self, mut tokenlar: Vec<Token>, satir: usize) -> Result<Cumle, Tani> {
@@ -960,7 +1002,11 @@ impl Ayristirici {
         }
         let kosul = kosul_ifadesi(&tokenlar, satir)?;
         let govde = self.alt_blok(satir)?;
-        Ok(Cumle::OlduguSurece { kosul, govde, satir })
+        Ok(Cumle::OlduguSurece {
+            kosul,
+            govde,
+            satir,
+        })
     }
 
     fn artir_azalt_ayristir(
@@ -984,9 +1030,17 @@ impl Ayristirici {
         let ifade = tekil_ifade(hedef_token)?;
         let miktar = ile_ifadesi(&tokenlar, satir, &self.islem_adlari)?;
         if artir {
-            Ok(Cumle::Artir { ifade, miktar, satir })
+            Ok(Cumle::Artir {
+                ifade,
+                miktar,
+                satir,
+            })
         } else {
-            Ok(Cumle::Azalt { ifade, miktar, satir })
+            Ok(Cumle::Azalt {
+                ifade,
+                miktar,
+                satir,
+            })
         }
     }
 
@@ -997,7 +1051,12 @@ impl Ayristirici {
         if tokenlar.len() >= 3 && kelime_mi(&tokenlar[1], "dosyasına") {
             let yol = tekil_ifade(tokenlar[0].clone())?;
             let icerik = ile_ifadesi(&tokenlar[2..], satir, &self.islem_adlari)?;
-            return Ok(Cumle::DosyayaYaz { yol, icerik, ekleme: true, satir });
+            return Ok(Cumle::DosyayaYaz {
+                yol,
+                icerik,
+                ekleme: true,
+                satir,
+            });
         }
 
         if tokenlar.len() < 2 {
@@ -1012,14 +1071,18 @@ impl Ayristirici {
         }
         let hedef = tekil_ifade(tokenlar.remove(0))?;
         let deger = ile_ifadesi(&tokenlar, satir, &self.islem_adlari)?;
-        Ok(Cumle::Ekle { hedef, deger, satir })
+        Ok(Cumle::Ekle {
+            hedef,
+            deger,
+            satir,
+        })
     }
 
     /// `<konu> a göre` — desen eşleştirme başlığı (K-021). Gövde kolları
     /// `<değer> ise` başlıklı bloklardır; varsayılan kol `değilse`.
     fn gore_ayristir(&mut self, mut tokenlar: Vec<Token>, satir: usize) -> Result<Cumle, Tani> {
         tokenlar.pop(); // "göre"
-        // Yönelme eki konuya bitişik ("şekle") ya da sabit sonrası ayrık olabilir.
+                        // Yönelme eki konuya bitişik ("şekle") ya da sabit sonrası ayrık olabilir.
         if let Some(t) = tokenlar.last() {
             if matches!(&t.tur, TokenTur::Kelime(k) if AYRIK_EKLER.contains(&k.as_str())) {
                 tokenlar.pop();
@@ -1035,9 +1098,9 @@ impl Ayristirici {
             )
             .onerili("Örnek: şekle göre".into()));
         }
-        let konu_tokeni = tokenlar.pop().ok_or_else(|| {
-            Tani::yeni("S024", "Eşleştirme konusu eksik.".into(), satir, 1, 1)
-        })?;
+        let konu_tokeni = tokenlar
+            .pop()
+            .ok_or_else(|| Tani::yeni("S024", "Eşleştirme konusu eksik.".into(), satir, 1, 1))?;
         let konu = tekil_ifade(konu_tokeni)?;
 
         // Gövde: kollar.
@@ -1088,18 +1151,18 @@ impl Ayristirici {
                         }
                         continue;
                     }
-                    kol_tanilari.push(Tani::yeni(
-                        "S024",
-                        "Eşleştirme kolu \"<değer> ise\" ya da \"değilse\" olmalı.".into(),
-                        kol_no,
-                        1,
-                        1,
-                    )
-                    .onerili("Örnek:\n    \"kare\" ise\n        \"4 köşesi var\" yaz".into()));
+                    kol_tanilari.push(
+                        Tani::yeni(
+                            "S024",
+                            "Eşleştirme kolu \"<değer> ise\" ya da \"değilse\" olmalı.".into(),
+                            kol_no,
+                            1,
+                            1,
+                        )
+                        .onerili("Örnek:\n    \"kare\" ise\n        \"4 köşesi var\" yaz".into()),
+                    );
                     self.bekleyen_govdeyi_atla();
-                    if self.tanilar.len() + kol_tanilari.len()
-                        >= crate::tani::AZAMI_TANI_SAYISI
-                    {
+                    if self.tanilar.len() + kol_tanilari.len() >= crate::tani::AZAMI_TANI_SAYISI {
                         break;
                     }
                 }
@@ -1125,7 +1188,12 @@ impl Ayristirici {
             return Err(ilk);
         }
         self.tanilari_kaydet(kol_tanilari);
-        Ok(Cumle::Gore { konu, kollar, degilse, satir })
+        Ok(Cumle::Gore {
+            konu,
+            kollar,
+            degilse,
+            satir,
+        })
     }
 
     fn sor_ayristir(&mut self, mut tokenlar: Vec<Token>, satir: usize) -> Result<Cumle, Tani> {
@@ -1142,7 +1210,9 @@ impl Ayristirici {
                     1,
                     1,
                 )
-                .onerili("Örnek: \"Adın ne?\" diye sor — cevap \"yanıt\" adıyla kullanılır.".into()))
+                .onerili(
+                    "Örnek: \"Adın ne?\" diye sor — cevap \"yanıt\" adıyla kullanılır.".into(),
+                ))
             }
         }
         let istem = ile_ifadesi(&tokenlar, satir, &self.islem_adlari)?;
@@ -1169,12 +1239,10 @@ impl Ayristirici {
                         }
                         break;
                     } else {
-                        match kosul_ifadesi(&satir_tokenlari, devam_satiri)
-                            .and_then(|kosul| {
-                                self.alt_blok(devam_satiri)
-                                    .map(|govde| KosulKolu { kosul, govde })
-                            })
-                        {
+                        match kosul_ifadesi(&satir_tokenlari, devam_satiri).and_then(|kosul| {
+                            self.alt_blok(devam_satiri)
+                                .map(|govde| KosulKolu { kosul, govde })
+                        }) {
                             Ok(kol) => kollar.push(kol),
                             Err(tani) => {
                                 self.tani_kaydet(tani);
@@ -1187,6 +1255,10 @@ impl Ayristirici {
             }
         }
 
-        Ok(Cumle::Ise { kollar, degilse, satir })
+        Ok(Cumle::Ise {
+            kollar,
+            degilse,
+            satir,
+        })
     }
 }

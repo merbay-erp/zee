@@ -10,10 +10,22 @@ işlem yarısını bul
     sonuç sayının 2 ye bölümü olsun
     sonucu döndür
 ";
-    let dar_once = format!("{}\na 5 için yarısını bul olsun\nb 5,0 için yarısını bul olsun\na yaz\nb yaz\n", govde);
-    let genis_once = format!("{}\nb 5,0 için yarısını bul olsun\na 5 için yarısını bul olsun\na yaz\nb yaz\n", govde);
-    assert_eq!(kaynagi_calistir(&dar_once).expect("dar-geniş çalışmalı"), vec!["2,5", "2,5"]);
-    assert_eq!(kaynagi_calistir(&genis_once).expect("geniş-dar çalışmalı"), vec!["2,5", "2,5"]);
+    let dar_once = format!(
+        "{}\na 5 için yarısını bul olsun\nb 5,0 için yarısını bul olsun\na yaz\nb yaz\n",
+        govde
+    );
+    let genis_once = format!(
+        "{}\nb 5,0 için yarısını bul olsun\na 5 için yarısını bul olsun\na yaz\nb yaz\n",
+        govde
+    );
+    assert_eq!(
+        kaynagi_calistir(&dar_once).expect("dar-geniş çalışmalı"),
+        vec!["2,5", "2,5"]
+    );
+    assert_eq!(
+        kaynagi_calistir(&genis_once).expect("geniş-dar çalışmalı"),
+        vec!["2,5", "2,5"]
+    );
 }
 
 #[test]
@@ -29,7 +41,10 @@ sayılar 5, 9 listesi olsun
 sonuç sayılar için ilk yarıyı bul olsun
 sonucu yaz
 ";
-    assert_eq!(kaynagi_calistir(kaynak).expect("liste genişlemeli"), vec!["2,5"]);
+    assert_eq!(
+        kaynagi_calistir(kaynak).expect("liste genişlemeli"),
+        vec!["2,5"]
+    );
 }
 
 #[test]
@@ -41,7 +56,10 @@ işlem bozuk hesabı yap
 
 \"ana program\" yaz
 ";
-    assert_eq!(kaynagi_derle(kaynak).expect_err("gizli gövde hatası").kod, "T006");
+    assert_eq!(
+        kaynagi_derle(kaynak).expect_err("gizli gövde hatası").kod,
+        "T006"
+    );
 }
 
 #[test]
@@ -52,7 +70,10 @@ işlem ikisini seç
     ikinciyi al
     birinciyi döndür
 ";
-    assert_eq!(kaynagi_derle(kaynak).expect_err("T037 bekleniyor").kod, "T037");
+    assert_eq!(
+        kaynagi_derle(kaynak).expect_err("T037 bekleniyor").kod,
+        "T037"
+    );
 }
 
 #[test]
@@ -63,7 +84,10 @@ işlem değeri geçir
     TamSayı döndürür
     değeri döndür
 ";
-    assert_eq!(kaynagi_derle(kaynak).expect_err("T037 bekleniyor").kod, "T037");
+    assert_eq!(
+        kaynagi_derle(kaynak).expect_err("T037 bekleniyor").kod,
+        "T037"
+    );
 }
 
 #[test]
@@ -73,7 +97,10 @@ işlem değeri geçir
     değeri Bilinmez olarak al
     değeri döndür
 ";
-    assert_eq!(kaynagi_derle(kaynak).expect_err("T038 bekleniyor").kod, "T038");
+    assert_eq!(
+        kaynagi_derle(kaynak).expect_err("T038 bekleniyor").kod,
+        "T038"
+    );
 }
 
 #[test]
@@ -86,7 +113,10 @@ işlem iki katını bul
 
 değer \"beş\" için iki katını bul olsun
 ";
-    assert_eq!(kaynagi_derle(kaynak).expect_err("T017 bekleniyor").kod, "T017");
+    assert_eq!(
+        kaynagi_derle(kaynak).expect_err("T017 bekleniyor").kod,
+        "T017"
+    );
 }
 
 #[test]
@@ -105,7 +135,10 @@ elizin adı \"Eliz\" olsun
 ad eliz için adını ver olsun
 adı yaz
 ";
-    assert_eq!(kaynagi_calistir(kaynak).expect("yapı imzası çalışmalı"), vec!["Eliz"]);
+    assert_eq!(
+        kaynagi_calistir(kaynak).expect("yapı imzası çalışmalı"),
+        vec!["Eliz"]
+    );
 }
 
 #[test]
@@ -130,7 +163,10 @@ işlem değeri ver
     Bilinmez döndürür
     1 döndür
 ";
-    assert_eq!(kaynagi_derle(kaynak).expect_err("T040 bekleniyor").kod, "T040");
+    assert_eq!(
+        kaynagi_derle(kaynak).expect_err("T040 bekleniyor").kod,
+        "T040"
+    );
 }
 
 #[test]
@@ -140,7 +176,10 @@ işlem değeri ver
     Metin döndürür
     1 döndür
 ";
-    assert_eq!(kaynagi_derle(kaynak).expect_err("T041 bekleniyor").kod, "T041");
+    assert_eq!(
+        kaynagi_derle(kaynak).expect_err("T041 bekleniyor").kod,
+        "T041"
+    );
 }
 
 #[test]
@@ -152,7 +191,10 @@ işlem işareti ver
     sayı 0 dan büyükse
         \"artı\" döndür
 ";
-    assert_eq!(kaynagi_derle(kaynak).expect_err("T042 bekleniyor").kod, "T042");
+    assert_eq!(
+        kaynagi_derle(kaynak).expect_err("T042 bekleniyor").kod,
+        "T042"
+    );
 }
 
 #[test]
@@ -162,5 +204,8 @@ işlem selam ver
     değer döndürmez
     \"merhaba\" döndür
 ";
-    assert_eq!(kaynagi_derle(kaynak).expect_err("T041 bekleniyor").kod, "T041");
+    assert_eq!(
+        kaynagi_derle(kaynak).expect_err("T041 bekleniyor").kod,
+        "T041"
+    );
 }

@@ -98,8 +98,7 @@ işlem iki ver
 #[test]
 fn cozulmus_degisken_symbol_id_tasir() {
     let program = kaynagi_derle("sayı 1 olsun\nsayıyı yaz\n").expect("sembol bağlanmalı");
-    let Cumle::Yaz { deger, .. } = &program.cumleler[1]
-    else {
+    let Cumle::Yaz { deger, .. } = &program.cumleler[1] else {
         panic!("çözülmüş değişken bekleniyordu")
     };
     let Ifade::Degisken {

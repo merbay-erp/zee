@@ -136,8 +136,11 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 41. K-144/ADR-041, 48 kritik üretim işlevini sabit Clippy ölçüsü ve incelenmiş
     tabana bağladı. Yeni/kayıp işlev, biriken satır/karmaşıklık büyümesi ve
     bayat Markdown raporu CI'ı durdurur; B-035 kapandı (585 test).
-42. Sıradaki makine işi K-145 ile B-037 mevcut biçim borcunu kontrollü tek
-    seferde temizleyip `cargo fmt --check` kapısını açmaktır.
+42. K-145/ADR-042, 53 dosyadaki 349 fark bloklu biçim borcunu sabit
+    `rustfmt` ile tek mekanik dilimde temizledi; üç platformlu
+    `cargo fmt --all -- --check` kapısını açtı ve B-037'yi kapattı.
+43. Sıradaki makine işi K-146 ile B-038 faza özgü test matrisini ayrı ve
+    anlaşılır CI raporlarına bölmektir.
 
 ## P0 — V1 öncesi dil ve derleyici omurgası
 
@@ -472,8 +475,12 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   otomatik sıfırlamaz; `--force-warn` kaynak içi lint susturmasını atlatır.
 - **B-036 · KAPALI — Clippy `-D warnings` kapısı.** CI ve yerel toplu doğrulama
   bunu uygular; release işlerinde korunur.
-- **B-037 · AÇIK — `cargo fmt --check` kapısı.** Mevcut geniş format borcu
-  kontrollü tek seferlik committe temizlenmeden hard gate açılamaz.
+- **B-037 · KAPALI (K-145/ADR-042) — `cargo fmt --check` kapısı.** 53 Rust
+  dosyasındaki 349 eski fark bloğu tek davranışsız toplu biçim diliminde
+  temizlendi. Sabit Rust 1.93.1 `rustfmt` bileşeni ve üç platformlu
+  `cargo fmt --all -- --check` CI kapısı yeni borcu reddeder. Faz satır
+  bütçeleri ve K-144 eğilim tabanı yalnız kanonik biçim ölçüsüne bir kez
+  yeniden kalibre edildi; semantik karar değişmedi.
 - **B-038 · AÇIK — faza özgü test matrisi.** Lexer/parser, tür, morfoloji,
   runtime, concurrency, güvenlik, package ve LSP ayrı raporlanmalıdır.
 - **B-039 · AÇIK — semantic regression corpus.** Düzeltilen her compiler bug'ı
@@ -540,8 +547,7 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 İnsan kanıtı hattında B-001, doldurulmuş gerçek usability formları ve önceden
 ilan edilmiş eşikleri bekler. Makine hattında K-144, B-035'in 48 işlevlik
 incelenmiş tabanını, büyüme paylarını ve bayat rapor CI kapısını tamamladı.
-Sıradaki iş K-145 ile B-037 kontrollü biçim borcu temizliği ve
-`cargo fmt --check` kapısıdır.
+Sıradaki iş K-146 ile B-038 faza özgü test matrisidir.
 
 ## 2 Eylül 2026 ikinci dış inceleme ayrımı
 
@@ -560,8 +566,8 @@ Sıradaki iş K-145 ile B-037 kontrollü biçim borcu temizliği ve
   B-054 advisory/lisans/lock/offline-vendor sınırı K-141/ADR-038 ile,
   B-055 sürümlü kayıtlı WASM C ABI sınırı K-142/ADR-039 ile, B-056 playground
   ön-tahsis bütçesi K-143/ADR-040 ile, B-035 kritik işlev boyutu/karmaşıklık
-  eğilim kapısı K-144/ADR-041 ile kapandı. Sırada B-037 kontrollü biçim borcu
-  temizliği ve `cargo fmt --check` vardır.
+  eğilim kapısı K-144/ADR-041 ile, kanonik Rust biçim kapısı K-145/ADR-042 ile
+  kapandı. Sırada B-038 faza özgü test matrisi vardır.
   B-033/B-034 temiz snapshot hattı ayrıca kapalıdır.
 - **Mevcut repoda zaten kapalı:** çağrı derinliği C019/500 ve ayrı regresyonu;
   atomik metadata `unsafe` bloklarının her birindeki `SAFETY` gerekçesi; kök

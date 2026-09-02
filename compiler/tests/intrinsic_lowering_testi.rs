@@ -43,7 +43,9 @@ fn http_yuzeyi_generic_intrinsice_indirilir() {
         panic!("intrinsic bekleniyordu")
     };
     assert_eq!(kimlik, HTTP_GETIR);
-    assert!(matches!(argumanlar.as_slice(), [ifade] if matches!(ifade.turu(), Ifade::MetinSabiti(_))));
+    assert!(
+        matches!(argumanlar.as_slice(), [ifade] if matches!(ifade.turu(), Ifade::MetinSabiti(_)))
+    );
 }
 
 #[test]
@@ -91,7 +93,9 @@ kapı kapalıysa
         panic!("sensor intrinsic bekleniyordu")
     };
     assert_eq!(kimlik, SENSOR_ACIK_MI);
-    assert!(matches!(argumanlar.as_slice(), [ifade] if matches!(ifade.turu(), Ifade::MetinSabiti(ad) if ad == "kapı")));
+    assert!(
+        matches!(argumanlar.as_slice(), [ifade] if matches!(ifade.turu(), Ifade::MetinSabiti(ad) if ad == "kapı"))
+    );
 
     let Cumle::Ise { kollar: kapali, .. } = &program.cumleler[1] else {
         panic!("ikinci koşul bekleniyordu")

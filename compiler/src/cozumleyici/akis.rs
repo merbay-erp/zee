@@ -13,10 +13,11 @@ pub(super) fn daraltma_cikar(kosul: &Ifade) -> Option<(u8, String)> {
     }
 }
 
-
 pub(super) fn nesne_adi(nesne: &Ifade) -> Option<String> {
     match nesne.turu() {
-        Ifade::Degisken { cozulmus: Some(ad), .. } => Some(ad.clone()),
+        Ifade::Degisken {
+            cozulmus: Some(ad), ..
+        } => Some(ad.clone()),
         _ => None,
     }
 }
@@ -38,7 +39,11 @@ pub(super) fn gezilen_koleksiyonu_degistirme_tanisi(ad: &str, satir: usize) -> T
     )
 }
 
-pub(super) fn gezilen_hedefi_denetle(ifade: &Ifade, baglam: &Baglam, satir: usize) -> Result<(), Tani> {
+pub(super) fn gezilen_hedefi_denetle(
+    ifade: &Ifade,
+    baglam: &Baglam,
+    satir: usize,
+) -> Result<(), Tani> {
     let aday = match ifade.turu() {
         Ifade::Degisken {
             cozulmus: Some(ad), ..
@@ -91,7 +96,6 @@ pub(super) fn daraltma_cikar_geri(baglam: &mut Baglam, tur_kodu: u8, ad: &str) {
         _ => {}
     }
 }
-
 
 pub(super) fn bekleyen_gorev_olmadigini_denetle(
     baglam: &Baglam,

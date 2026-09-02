@@ -2351,6 +2351,23 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   Envanter 585 test, 152 etkin + 3 ayrılmış tanı ve 88 numaralı belgedir.
   B-035 kapandı; dil semantiği, tanı kataloğu, RFC ve normatif spec değişmedi.
 
+## K-145 — Rust kaynak biçimi tek ve CI'da zorunludur (2 Eyl)
+
+- **Sorun:** `cargo fmt --all -- --check`, 53 dosyada 349 fark bloğu ve 9.017
+  satırlık diff çıktısı veriyordu. Parça parça temizlik bu borcu yeni özellik
+  commitlerine karıştıracak, hard gate'i belirsiz süre erteleyecekti.
+- **Karar:** Sabit Rust 1.93.1 `rustfmt` çıktısı bütün ağaçta tek mekanik
+  dilimde uygulandı. Araç bileşeni toolchain ve üç platformlu CI'da açıkça
+  kurulur; `cargo fmt --all -- --check` artık her push/PR'da zorunludur.
+- **Bütçe etkisi:** Kanonik çok satırlı yazım sekiz fiziksel faz bütçesini
+  büyüttü; değerler ADR-012'de eski→yeni olarak kaydedildi. Semantik ek yoktur.
+  K-144 tabanı formatın ürettiği satır ölçüsüne `K-145/ADR-041 kanonik rustfmt
+  tabanı` kaydıyla yeniden alındı ve 49 kritik işlevi kapsar.
+- **Kanıt:** Biçim kapısı sıfır fark verir; 585 test, Clippy, release, rustdoc,
+  wasm32/Node ve tedarik zinciri aynı davranışı korur. Envanter 89 numaralı
+  belge ve 40 kabul ADR'dir. B-037 kapandı; dil semantiği, tanı kataloğu, RFC
+  ve normatif spec değişmedi.
+
 ---
 
 ## Sonraki adım
@@ -2359,7 +2376,6 @@ Korpus 10 öğrenci + 5 profesyonel usability oturumuna (Hafta 12 hedefi, erkeni
 Hafta 2'de kağıt üstünde) sesli okutulacak; her kayıt için "doğal mı /
 deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
-Makine hattında K-144 kritik üretim işlevlerini incelenmiş Clippy tabanı,
-kademeli büyüme payı ve bayat olmayan eğilim raporuyla bağlayarak B-035'i
-kapattı. Sırada K-145 ile B-037 kontrollü biçim borcu temizliği ve
-`cargo fmt --check` kapısı vardır.
+Makine hattında K-145 bütün Rust ağacını kanonik biçime taşıyıp üç platformlu
+`cargo fmt --all -- --check` kapısıyla B-037'yi kapattı. Sırada K-146 ile
+B-038 faza özgü test matrisi vardır.

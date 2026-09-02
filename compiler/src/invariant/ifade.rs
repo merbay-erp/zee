@@ -8,13 +8,9 @@ impl Denetleyici<'_> {
         satir: usize,
         deger_dondurmez_olabilir: bool,
     ) -> Result<(), InvariantHatasi> {
-        let kaynak_araligi = ifade.kaynak_araligi().ok_or_else(|| {
-            self.hata(
-                yol,
-                "AST ifadesinin kesin kaynak aralığı yok",
-                satir,
-            )
-        })?;
+        let kaynak_araligi = ifade
+            .kaynak_araligi()
+            .ok_or_else(|| self.hata(yol, "AST ifadesinin kesin kaynak aralığı yok", satir))?;
         // Zincir cümlelerin (değilse/ise ve göre kolları) sahibi ilk başlık
         // satırını taşır; her ifade için gerçek kaynak satırı kendi zarfıdır.
         let satir = kaynak_araligi.satir();

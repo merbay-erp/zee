@@ -184,21 +184,26 @@ fn golden_16_sonuc_ve_hata() {
     // Dosya varsa: değer okunur.
     let program = dil::kaynagi_derle(&golden("16-sonuc-ve-hata.dil")).expect("16 derlenmeli");
     let mut io = dil::yorumlayici::ToplayanIo::yeni(Vec::new());
-    io.dosyalar.insert("veriler.txt".into(), "merhaba veri".into());
+    io.dosyalar
+        .insert("veriler.txt".into(), "merhaba veri".into());
     dil::yorumlayici::calistir_io(&program, &mut io).expect("16 çalışmalı");
     assert_eq!(io.cikti, vec!["merhaba veri"]);
 
     // Dosya yoksa: hata dalı çalışır, program ÇÖKMEZ.
     let mut io = dil::yorumlayici::ToplayanIo::yeni(Vec::new());
     dil::yorumlayici::calistir_io(&program, &mut io).expect("hata dalı da çalışmalı");
-    assert_eq!(io.cikti, vec!["Okunamadı: \"veriler.txt\" dosyası bulunamadı"]);
+    assert_eq!(
+        io.cikti,
+        vec!["Okunamadı: \"veriler.txt\" dosyası bulunamadı"]
+    );
 }
 
 #[test]
 fn golden_17_dosya_okuma() {
     let program = dil::kaynagi_derle(&golden("17-dosya-okuma.dil")).expect("17 derlenmeli");
     let mut io = dil::yorumlayici::ToplayanIo::yeni(Vec::new());
-    io.dosyalar.insert("siir.txt".into(), "bir\niki\nüç\n".into());
+    io.dosyalar
+        .insert("siir.txt".into(), "bir\niki\nüç\n".into());
     dil::yorumlayici::calistir_io(&program, &mut io).expect("17 çalışmalı");
     assert_eq!(io.cikti, vec!["bir", "iki", "üç", "Toplam 3 satır"]);
 }
@@ -295,7 +300,11 @@ fn yapida_olmayan_alan_turkce_hata() {
     let kaynak = "yapı Kedi\n    ad Metin\n\nkedi yeni Kedi olsun\nkedinin kuyruğu 5 olsun\n";
     let hata = kaynagi_calistir(kaynak).expect_err("olmayan alan hata olmalı");
     assert_eq!(hata.kod, "T028");
-    assert!(hata.mesaj.contains("ad"), "hata alan listesini saymalı: {}", hata.mesaj);
+    assert!(
+        hata.mesaj.contains("ad"),
+        "hata alan listesini saymalı: {}",
+        hata.mesaj
+    );
 }
 
 #[test]
@@ -383,7 +392,8 @@ tablodaki her satır için
 ";
     let program = dil::kaynagi_derle(kaynak).expect("derlenmeli");
     let mut io = dil::yorumlayici::ToplayanIo::yeni(Vec::new());
-    io.dosyalar.insert("t.csv".into(), "ad,not\nAyşe,90\n".into());
+    io.dosyalar
+        .insert("t.csv".into(), "ad,not\nAyşe,90\n".into());
     dil::yorumlayici::calistir_io(&program, &mut io).expect("çalışmalı");
     assert_eq!(io.cikti, vec!["Ayşe: 90"]);
 }
@@ -403,7 +413,12 @@ fn golden_30_testler() {
     let sonuclar = dil::kaynagi_dene(&golden("30-testler.dil")).expect("30 derlenmeli");
     assert_eq!(sonuclar.len(), 2);
     for sonuc in &sonuclar {
-        assert!(sonuc.hata.is_none(), "test geçmeli: {} — {:?}", sonuc.ad, sonuc.hata);
+        assert!(
+            sonuc.hata.is_none(),
+            "test geçmeli: {} — {:?}",
+            sonuc.ad,
+            sonuc.hata
+        );
     }
 }
 
@@ -424,7 +439,11 @@ fn kalan_test_beklenen_bulunan_gosterir() {
 fn calistir_testleri_atlar() {
     let kaynak = "\"program\" yaz\n\ntest \"ayrı dünya\"\n    1 1 e eşit olmalı\n";
     let cikti = kaynagi_calistir(kaynak).expect("çalışmalı");
-    assert_eq!(cikti, vec!["program"], "test blokları çalıştırmada koşulmamalı");
+    assert_eq!(
+        cikti,
+        vec!["program"],
+        "test blokları çalıştırmada koşulmamalı"
+    );
 }
 
 #[test]
@@ -452,7 +471,11 @@ sonu yaz
 fn coklu_tani_temiz_dosyada_bos() {
     let mut yukleyici = |_: &str| Err("yok".to_string());
     let tanilar = dil::kaynagi_tanilari("\"selam\" yaz\n", &mut yukleyici);
-    assert!(tanilar.is_empty(), "{:?}", tanilar.first().map(|t| &t.mesaj));
+    assert!(
+        tanilar.is_empty(),
+        "{:?}",
+        tanilar.first().map(|t| &t.mesaj)
+    );
 }
 
 // ---- compile-fail: anti-örnekler ve tanı kalitesi ----
@@ -462,7 +485,11 @@ fn tur_hatasi_turkce_ve_kodlu() {
     let kaynak = "toplam \"Mustafa\" olsun\ntoplam 10 dan büyükse\n    \"olmaz\" yaz\n";
     let hata = kaynagi_calistir(kaynak).expect_err("tür hatası bekleniyor");
     assert_eq!(hata.kod, "T001");
-    assert!(hata.mesaj.contains("Metin"), "mesaj Türkçe tür adı içermeli: {}", hata.mesaj);
+    assert!(
+        hata.mesaj.contains("Metin"),
+        "mesaj Türkçe tür adı içermeli: {}",
+        hata.mesaj
+    );
 }
 
 #[test]
@@ -528,7 +555,11 @@ fn a08_homoglyph_reddedilir() {
     let kaynak = "s\u{0430}yı 5 olsun\nsayıyı yaz\n";
     let hata = kaynagi_calistir(kaynak).expect_err("homoglyph reddedilmeli");
     assert_eq!(hata.kod, "S028");
-    assert!(hata.mesaj.contains("U+0430"), "kod noktası gösterilmeli: {}", hata.mesaj);
+    assert!(
+        hata.mesaj.contains("U+0430"),
+        "kod noktası gösterilmeli: {}",
+        hata.mesaj
+    );
 }
 
 #[test]
@@ -561,7 +592,11 @@ fn tani_json_cikti_ve_kacis() {
     let hata = kaynagi_calistir("bilinmeyeni yaz\n").expect_err("A001 bekleniyor");
     let json = hata.json();
     assert!(json.starts_with("{\"kod\":\"A001\""), "kod alanı: {}", json);
-    assert!(json.contains("\\\"bilinmeyeni\\\""), "tırnaklar kaçışlanmalı: {}", json);
+    assert!(
+        json.contains("\\\"bilinmeyeni\\\""),
+        "tırnaklar kaçışlanmalı: {}",
+        json
+    );
     assert!(json.contains("\"satir\":1"), "konum alanları: {}", json);
     assert!(json.ends_with("}"), "geçerli nesne: {}", json);
 }

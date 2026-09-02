@@ -15,7 +15,10 @@ fn yukleyici<'a>(
     }
 }
 
-fn calistir(kaynak: &str, dosyalar: HashMap<&'static str, &'static str>) -> Result<Vec<String>, dil::tani::Tani> {
+fn calistir(
+    kaynak: &str,
+    dosyalar: HashMap<&'static str, &'static str>,
+) -> Result<Vec<String>, dil::tani::Tani> {
     let program = kaynagi_derle_birimlerle(kaynak, &mut yukleyici(&dosyalar))?;
     let mut io = dil::yorumlayici::ToplayanIo::yeni(Vec::new());
     dil::yorumlayici::calistir_io(&program, &mut io)?;
@@ -80,10 +83,7 @@ işlem faktöriyelini hesapla
 
 #[test]
 fn birimden_yapi_kullanma() {
-    let dosyalar = HashMap::from([(
-        "kayitlar",
-        "yapı Öğrenci\n    ad Metin\n    yaş TamSayı\n",
-    )]);
+    let dosyalar = HashMap::from([("kayitlar", "yapı Öğrenci\n    ad Metin\n    yaş TamSayı\n")]);
     let kaynak = "kayitlar birimini kullan\n\nayşe yeni Öğrenci olsun\nayşenin yaşı 10 olsun\nayşenin yaşı yaz\n";
     assert_eq!(calistir(kaynak, dosyalar).expect("çalışmalı"), vec!["10"]);
 }
@@ -141,8 +141,14 @@ fn birimin_ust_duzey_cumleleri_calismaz() {
 #[test]
 fn dongusel_kullanim_reddedilir() {
     let dosyalar = HashMap::from([
-        ("a", "b birimini kullan\n\nişlem a ver\n    TamSayı döndürür\n    1 döndür\n"),
-        ("b", "a birimini kullan\n\nişlem b ver\n    TamSayı döndürür\n    2 döndür\n"),
+        (
+            "a",
+            "b birimini kullan\n\nişlem a ver\n    TamSayı döndürür\n    1 döndür\n",
+        ),
+        (
+            "b",
+            "a birimini kullan\n\nişlem b ver\n    TamSayı döndürür\n    2 döndür\n",
+        ),
     ]);
     let kaynak = "a birimini kullan\n\n\"olmaz\" yaz\n";
     let hata = calistir(kaynak, dosyalar).expect_err("döngü reddedilmeli");
@@ -158,7 +164,11 @@ fn ad_cakismasi_sessiz_golgelenmez() {
     let kaynak = "hesaplar birimini kullan\n\nişlem topla\n    2 döndür\n\nx topla olsun\nx yaz\n";
     let hata = calistir(kaynak, dosyalar).expect_err("çakışma hata olmalı");
     assert_eq!(hata.kod, "A008");
-    assert!(hata.mesaj.contains("hesaplar"), "kaynaklar sayılmalı: {}", hata.mesaj);
+    assert!(
+        hata.mesaj.contains("hesaplar"),
+        "kaynaklar sayılmalı: {}",
+        hata.mesaj
+    );
 }
 
 #[test]
@@ -180,7 +190,11 @@ fn birim_testleri_dene_kapsaminda() {
     let program = kaynagi_derle_birimlerle(kaynak, &mut yukleyici(&dosyalar)).expect("derlenmeli");
     let sonuclar = dil::programi_dene(&program);
     let adlar: Vec<&str> = sonuclar.iter().map(|s| s.ad.as_str()).collect();
-    assert!(adlar.contains(&"hesaplar: çarpım doğru"), "birim testi öneklenmeli: {:?}", adlar);
+    assert!(
+        adlar.contains(&"hesaplar: çarpım doğru"),
+        "birim testi öneklenmeli: {:?}",
+        adlar
+    );
     assert!(adlar.contains(&"ana test"));
     assert!(sonuclar.iter().all(|s| s.hata.is_none()), "hepsi geçmeli");
 }

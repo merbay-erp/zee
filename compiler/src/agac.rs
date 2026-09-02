@@ -205,19 +205,39 @@ pub enum Ifade {
     MetinSabiti(String),
     SayiSabiti(i64),
     /// Ondalık sabit (RFC-0013): onluk tam değer, govde/10^olcek.
-    OndalikSabiti { govde: String, olcek: u32 },
+    OndalikSabiti {
+        govde: String,
+        olcek: u32,
+    },
     /// "doğru" / "yanlış" (master plan bölüm 7).
     MantiksalSabiti(bool),
     /// "1 ile 100 arasında rastgele sayı" — iki uç dahil.
     /// `metnin "," ile parçaları` → `Liste<Metin>` (K-053).
-    Parcala { metin: Box<Ifade>, ayrac: Box<Ifade> },
+    Parcala {
+        metin: Box<Ifade>,
+        ayrac: Box<Ifade>,
+    },
     /// `parçaların "-" ile birleşmişi` → Metin (K-053).
-    ListeBirlestir { liste: Box<Ifade>, ayrac: Box<Ifade> },
+    ListeBirlestir {
+        liste: Box<Ifade>,
+        ayrac: Box<Ifade>,
+    },
     /// `metnin "a" yerine "b" değişmişi` → Metin (K-053).
-    Degistir { metin: Box<Ifade>, eski: Box<Ifade>, yeni: Box<Ifade> },
+    Degistir {
+        metin: Box<Ifade>,
+        eski: Box<Ifade>,
+        yeni: Box<Ifade>,
+    },
     /// `metin "ab" ile başlıyorsa/bitiyorsa` (K-053); bitis=true → sonda.
-    MetinSinari { metin: Box<Ifade>, parca: Box<Ifade>, bitis: bool },
-    Rastgele { alt: Box<Ifade>, ust: Box<Ifade> },
+    MetinSinari {
+        metin: Box<Ifade>,
+        parca: Box<Ifade>,
+        bitis: bool,
+    },
+    Rastgele {
+        alt: Box<Ifade>,
+        ust: Box<Ifade>,
+    },
     /// Kaynaktaki ham kelime; ad çözümleme ek ayıklamasıyla `cozulmus`ü doldurur.
     Degisken {
         ham: String,
@@ -238,7 +258,10 @@ pub enum Ifade {
     /// "A ve B ve C" / "A veya B" — mantıksal zincir (K-027). `hepsi` true ise
     /// VE (kısa devre: ilk yanlışta durur), false ise VEYA (ilk doğruda durur).
     /// ve/veya karışımı parantezsiz belirsiz olduğundan ayrıştırıcıda hatadır.
-    MantiksalZincir { hepsi: bool, parcalar: Vec<Ifade> },
+    MantiksalZincir {
+        hepsi: bool,
+        parcalar: Vec<Ifade>,
+    },
     /// "... değilse" olumsuzlaması: `x 5 e eşit değilse`, `bildi doğru değilse`.
     Degil(Box<Ifade>),
     /// "sayı çiftse" (doğruysa çift).
@@ -250,11 +273,17 @@ pub enum Ifade {
     /// "boş liste".
     BosListe,
     /// Liste/metin özellikleri: "sayıların adedi", "cümlenin uzunluğu"...
-    Ozellik { nesne: Box<Ifade>, ozellik: Ozellik },
+    Ozellik {
+        nesne: Box<Ifade>,
+        ozellik: Ozellik,
+    },
     /// "boş sözlük" — v0: Sözlük<Metin, TamSayı>.
     BosSozluk,
     /// "yaşların (anahtar) değeri" — sözlükten okuma (K-015).
-    SozlukDegeri { sozluk: Box<Ifade>, anahtar: Box<Ifade> },
+    SozlukDegeri {
+        sozluk: Box<Ifade>,
+        anahtar: Box<Ifade>,
+    },
     /// "yaşlarda (anahtar) varsa/yoksa" (K-015).
     SozlukteVar {
         sozluk: Box<Ifade>,
@@ -262,19 +291,31 @@ pub enum Ifade {
         olumsuz: bool,
     },
     /// "cümlenin büyük/küçük harflisi" — Türkçe kurallarla (İ/i, I/ı).
-    MetinDonusum { nesne: Box<Ifade>, buyuk: bool },
+    MetinDonusum {
+        nesne: Box<Ifade>,
+        buyuk: bool,
+    },
     /// "cümle (aranan) içeriyorsa".
-    Icerir { metin: Box<Ifade>, aranan: Box<Ifade> },
+    Icerir {
+        metin: Box<Ifade>,
+        aranan: Box<Ifade>,
+    },
     /// "yok" sabiti — Seçenek türünün boş hali (K-017).
     YokSabiti,
     /// "X varsa/yoksa" — Seçenek dolu mu (K-017).
-    SecenekVar { nesne: Box<Ifade>, olumsuz: bool },
+    SecenekVar {
+        nesne: Box<Ifade>,
+        olumsuz: bool,
+    },
     /// "X in değeri" — Seçenek/Sonuç içindeki değer; boşken çalışma hatası.
     IcDeger(Box<Ifade>),
     /// "sonucun hatası" — Sonuç'un yapılandırılmış Hata değeri (K-091).
     SonucHatasi(Box<Ifade>),
     /// "X başarılıysa/başarısızsa" (K-018).
-    SonucBasarili { nesne: Box<Ifade>, olumsuz: bool },
+    SonucBasarili {
+        nesne: Box<Ifade>,
+        olumsuz: bool,
+    },
     /// `"..." dosyasını okumayı dene` → Sonuç (K-018).
     DosyaOkumayiDene(Box<Ifade>),
     /// `"..." dosyasının satırları` → `Liste<Metin>`. Düz biçim: hata anında
@@ -290,23 +331,37 @@ pub enum Ifade {
     /// `şu anın saati` → Saat.
     SuAninSaati,
     /// `bugünün 1 gün sonrası` → Tarih.
-    GunSonrasi { tarih: Box<Ifade>, miktar: Box<Ifade> },
+    GunSonrasi {
+        tarih: Box<Ifade>,
+        miktar: Box<Ifade>,
+    },
     /// `başlangıç ile bitiş arasındaki günler` → TamSayı, işaretli (K-057).
-    GunFarki { birinci: Box<Ifade>, ikinci: Box<Ifade> },
+    GunFarki {
+        birinci: Box<Ifade>,
+        ikinci: Box<Ifade>,
+    },
     /// `komut satırından gelenler` → `Liste<Metin>`.
     KomutArgumanlari,
     /// Süre sabiti: `5 saniye`, `yarım saniye`, `1,5 dakika` → milisaniye.
-    SureSabiti { milisaniye: i64 },
+    SureSabiti {
+        milisaniye: i64,
+    },
     /// Kaynak yüzeyinin kararlı bir iç işleme indirilmiş biçimi (ADR-011).
     /// Alan bilgisi çekirdek AST varyantına değil merkezi intrinsic kaydına
     /// aittir; böylece yeni adaptörler AST şemasını büyütmez.
-    Intrinsic { kimlik: String, argumanlar: Vec<Ifade> },
+    Intrinsic {
+        kimlik: String,
+        argumanlar: Vec<Ifade>,
+    },
     /// `cevabın durum kodu` → TamSayı.
     DurumKodu(Box<Ifade>),
     /// `cevabın gövdesi` → Metin.
     Govde(Box<Ifade>),
     /// `argümanlar boşsa` — liste/metin boş mu.
-    BosMu { nesne: Box<Ifade>, olumsuz: bool },
+    BosMu {
+        nesne: Box<Ifade>,
+        olumsuz: bool,
+    },
     /// Genitif aritmetik (K-008): "a ile b nin toplamı", "x in y ye bölümü".
     Aritmetik {
         islec: AritmetikIslec,
@@ -329,7 +384,10 @@ pub enum Ifade {
     },
     /// "ayşenin adı" — iyelik ekiyle alan okuma (K-020). `alan` ham yazımdır
     /// ("adı"); çözümleyici yapı tanımındaki yalın ada ("ad") çevirir.
-    AlanErisim { nesne: Box<Ifade>, alan: String },
+    AlanErisim {
+        nesne: Box<Ifade>,
+        alan: String,
+    },
     /// İşlem çağrısı (K-016, geçici sözdizimi): "notlar için ortalamayı hesapla",
     /// çok argüman: "a ve b ile selamla".
     IslemCagrisi {
@@ -445,7 +503,11 @@ pub enum Cumle {
         uzunluk: usize,
     },
     /// `<n> kez tekrarla` + blok
-    KezTekrarla { adet: Ifade, govde: Vec<Cumle>, satir: usize },
+    KezTekrarla {
+        adet: Ifade,
+        govde: Vec<Cumle>,
+        satir: usize,
+    },
     /// `<a> den <b> e kadar her <ad> için` + blok (K-006)
     AralikDongusu {
         ad: String,
@@ -455,10 +517,18 @@ pub enum Cumle {
         satir: usize,
     },
     /// `<koşul> olduğu sürece` + blok
-    OlduguSurece { kosul: Ifade, govde: Vec<Cumle>, satir: usize },
+    OlduguSurece {
+        kosul: Ifade,
+        govde: Vec<Cumle>,
+        satir: usize,
+    },
     /// `<koşul> olana kadar tekrarla` + blok (K-006). Koşul her turdan ÖNCE
     /// sınanır; doğruysa döngü biter.
-    OlanaKadar { kosul: Ifade, govde: Vec<Cumle>, satir: usize },
+    OlanaKadar {
+        kosul: Ifade,
+        govde: Vec<Cumle>,
+        satir: usize,
+    },
     /// `... ise / değilse ... ise / değilse` zinciri (K-005)
     Ise {
         kollar: Vec<KosulKolu>,
@@ -466,13 +536,25 @@ pub enum Cumle {
         satir: usize,
     },
     /// `<ad-ekli> <ifade> artır`
-    Artir { ifade: Ifade, miktar: Ifade, satir: usize },
+    Artir {
+        ifade: Ifade,
+        miktar: Ifade,
+        satir: usize,
+    },
     /// `<ad-ekli> <ifade> azalt`
-    Azalt { ifade: Ifade, miktar: Ifade, satir: usize },
+    Azalt {
+        ifade: Ifade,
+        miktar: Ifade,
+        satir: usize,
+    },
     /// `"..." diye sor` — son cevap örtük "yanıt" adına bağlanır (K-007).
     Sor { istem: Ifade, satir: usize },
     /// `sayılara 5 ekle` — listeye öğe ekler.
-    Ekle { hedef: Ifade, deger: Ifade, satir: usize },
+    Ekle {
+        hedef: Ifade,
+        deger: Ifade,
+        satir: usize,
+    },
     /// `her sayı için` — koleksiyon döngüsü. `kaynak` None ise örtük çoğul
     /// kuralı (K-013) uygulanır: çözümleyici "sayılar"ı bulup doldurur.
     HerBiri {
@@ -497,7 +579,11 @@ pub enum Cumle {
     YapiTanimi(Yapi),
     /// `hesaplar birimini kullan` / `grafik paketini kullan` (RFC-0009) —
     /// derleme öncesi çözülür, hoist aşamasında düşürülür.
-    Kullan { ad: String, tur: KullanimTuru, satir: usize },
+    Kullan {
+        ad: String,
+        tur: KullanimTuru,
+        satir: usize,
+    },
     /// `test "..."` bloğu — hoist ile Program.testler'e taşınır.
     TestBlogu(Test),
     /// `kare 16 ya eşit olmalı` — doğrulama (K-025). Koşul tutmazsa D001.
@@ -512,7 +598,11 @@ pub enum Cumle {
     /// `sonucu döndür` — yalnız işlem içinde geçerli. `sonuca_sarmala`
     /// çözümleyicide işaretlenir: işlemin birleşik dönüş türü Sonuç ise
     /// başarı dalları çalışma zamanında Sonuç'a sarılır (RFC-0008 §4.1).
-    Dondur { deger: Ifade, sonuca_sarmala: bool, satir: usize },
+    Dondur {
+        deger: Ifade,
+        sonuca_sarmala: bool,
+        satir: usize,
+    },
     /// `"sıfıra bölünmez" hatasını döndür` geriye uyumlu biçimidir.
     /// `"PAYDA_SIFIR" kodlu "..." hatasını <neden> nedeniyle <veri> verisiyle
     /// döndür` yapılandırılmış biçimidir (K-091).
@@ -551,9 +641,17 @@ pub enum Cumle {
     /// `"/liste" adresine yönlendir` — 303 yönlendirmesi (K-051).
     Yonlendir { adres: Ifade, satir: usize },
     /// `"oturum" çerezine kimlik yaz` — yanıtla Set-Cookie gönderilir (K-052).
-    CerezYaz { ad: Ifade, deger: Ifade, satir: usize },
+    CerezYaz {
+        ad: Ifade,
+        deger: Ifade,
+        satir: usize,
+    },
     /// `sayılardan 5 i sil` / `defterden "elma" yı sil` (K-059) — yoksa sessiz.
-    Sil { kap: Ifade, deger: Ifade, satir: usize },
+    Sil {
+        kap: Ifade,
+        deger: Ifade,
+        satir: usize,
+    },
     /// `"oturum" çerezini sil` — tarayıcıya Max-Age=0 gönderilir (K-073).
     CerezSil { ad: Ifade, satir: usize },
     /// `herkese açık` / `oturum gerekli` / `"rol" yetkisi gerekli`.
@@ -569,7 +667,10 @@ pub enum Cumle {
     /// `oturumu kapat` — sunucu kaydını iptal eder ve çerezi sonlandırır.
     OturumKapat { satir: usize },
     /// `eşzamanlı olarak` bloğu: görev bağlamaları (RFC-0011).
-    Eszamanli { gorevler: Vec<(String, Ifade, usize)>, satir: usize },
+    Eszamanli {
+        gorevler: Vec<(String, Ifade, usize)>,
+        satir: usize,
+    },
     /// `hepsini bekle` — görev sonuçları bundan sonra kullanılabilir.
     HepsiniBekle { satir: usize },
     /// `<süre> içinde` + gövde + `yetişmezse` (golden 27, RFC-0011 §3).
@@ -580,7 +681,11 @@ pub enum Cumle {
         satir: usize,
     },
     /// `kırmızı ışığı yak/söndür` (golden 29, simülatör).
-    IsikAyarla { isik: String, yansin: bool, satir: usize },
+    IsikAyarla {
+        isik: String,
+        yansin: bool,
+        satir: usize,
+    },
     /// `yarım saniye bekle`.
     Bekle { sure: Ifade, satir: usize },
     /// `yaşların "Ayşe" değeri 10 olsun` — sözlüğe yazma (K-015).

@@ -1,8 +1,8 @@
 //! Exact registry bağımlılıklarını doğrulanmış cache'den kaynak köklerine
 //! çevirir. Normal derleme yalnız çevrimdışı; ağ ancak açık CLI güncellemesidir.
 
-use super::{ProjeYuklemeHatasi, proje_hatasi};
-use crate::proje::{RegistryBildirimi, UzakBagimlilik, bildirimi_oku};
+use super::{proje_hatasi, ProjeYuklemeHatasi};
+use crate::proje::{bildirimi_oku, RegistryBildirimi, UzakBagimlilik};
 use crate::registry::{
     HedefPolitikasi, HttpsRegistryTasiyici, MetadataSurumleri, RegistryIstemcisi,
     RegistryPaketCiktisi,

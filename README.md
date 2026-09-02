@@ -177,7 +177,7 @@ korpus üzerinde regression testine girer.
 | Rust + doctest vakası | **585** |
 | Tanı kimliği | **152 etkin + 3 ayrılmış** |
 | RFC | **25** (2 kabul, 21 geçici kabul, 2 taslak) |
-| ADR | **39** (39 kabul) |
+| ADR | **40** (40 kabul) |
 | Normatif spec bölümü | **24** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
@@ -281,8 +281,10 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   K-144/ADR-041 üretim `lib`+`dil` yüzeyindeki 48 kritik işlevi sabit Clippy
   ölçüsü, incelenmiş taban, kademeli büyüme payı ve bayat olmayan
   [eğilim raporuyla](docs/islev-egilimi.md) CI'a bağladı; B-035 kapandı.
-  Sıradaki makine kapısı K-145/B-037 kontrollü biçim borcu temizliği ve
-  `cargo fmt --check`tir.
+  K-145/ADR-042, 53 Rust dosyasındaki eski biçim borcunu sabit `rustfmt` ile
+  tek mekanik dilimde temizledi; üç platformlu `cargo fmt --all -- --check`
+  CI kapısıyla B-037 kapandı. Sıradaki makine kapısı K-146/B-038 faza özgü
+  test matrisidir.
   K-107/ADR-019 `dillsp` girdisini 8 KiB başlık, 8 MiB gövde, 128 JSON
   derinliği ve 100 bin düğümle sınırlayıp Unicode parser olumsuzlarını kapattı.
   K-138/ADR-035 sayı ayrıştırmasını RFC 8259 durum makinesine taşıdı; sayısal

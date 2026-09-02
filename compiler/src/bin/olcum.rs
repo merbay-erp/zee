@@ -101,9 +101,18 @@ fn main() {
 fn olcumleri_calistir() -> Result<(), String> {
     let hizli = std::env::args().any(|a| a == "--hizli");
     let tur = if hizli { 1 } else { 5 };
-    let profil = if cfg!(debug_assertions) { "debug" } else { "release" };
+    let profil = if cfg!(debug_assertions) {
+        "debug"
+    } else {
+        "release"
+    };
 
-    println!("dil {} ölçümleri — {} profili, {} tur (medyan)", env!("CARGO_PKG_VERSION"), profil, tur);
+    println!(
+        "dil {} ölçümleri — {} profili, {} tur (medyan)",
+        env!("CARGO_PKG_VERSION"),
+        profil,
+        tur
+    );
     println!("{:<12} {:>10}  açıklama", "yük", "süre");
     println!("{}", "-".repeat(64));
 
@@ -111,7 +120,12 @@ fn olcumleri_calistir() -> Result<(), String> {
         // Isınma turu ölçüme girmez.
         olc(&yuk, 1)?;
         let mut sureler = olc(&yuk, tur)?;
-        println!("{:<12} {:>8.1} ms  {}", yuk.ad, medyan(&mut sureler), yuk.aciklama);
+        println!(
+            "{:<12} {:>8.1} ms  {}",
+            yuk.ad,
+            medyan(&mut sureler),
+            yuk.aciklama
+        );
     }
 
     if cfg!(debug_assertions) {

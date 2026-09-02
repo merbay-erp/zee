@@ -44,8 +44,10 @@ sonuç başarısızsa
 #[test]
 fn yerel_yol_icteki_ioya_gecer() {
     // Sahte dünyada dosya var: sargı yerel yolu geçirmeli.
-    let program = dil::kaynagi_derle("satırlar \"siir.txt\" dosyasının satırları olsun\nsatırların ilki yaz\n")
-        .expect("derlenmeli");
+    let program = dil::kaynagi_derle(
+        "satırlar \"siir.txt\" dosyasının satırları olsun\nsatırların ilki yaz\n",
+    )
+    .expect("derlenmeli");
     let mut ic = ToplayanIo::yeni(Vec::new());
     ic.dosya_yaz("siir.txt", "ilk dize", false).unwrap();
     let mut io = GuvenliIo::yeni(ic);

@@ -15,7 +15,13 @@ değilse
     \"Bu bir sayı değil: \" ile denemenin hatası yaz
 ";
     let cikti = kaynagi_calistir_girdiyle(kaynak, vec!["elma".into()]).expect("çalışmalı");
-    assert_eq!(cikti, vec!["Tahminin?", "Bu bir sayı değil: \"elma\" sayıya çevrilemedi"]);
+    assert_eq!(
+        cikti,
+        vec![
+            "Tahminin?",
+            "Bu bir sayı değil: \"elma\" sayıya çevrilemedi"
+        ]
+    );
 
     let cikti = kaynagi_calistir_girdiyle(kaynak, vec!["42".into()]).expect("çalışmalı");
     assert_eq!(cikti, vec!["Tahminin?", "Sayın: 42"]);
@@ -68,10 +74,9 @@ f yaz
         ]
     );
 
-    let hata = kaynagi_calistir(
-        "x 999999999999999999999999999999999999999999999999,0 saat olsun\n",
-    )
-    .expect_err("S006 bekleniyor");
+    let hata =
+        kaynagi_calistir("x 999999999999999999999999999999999999999999999999,0 saat olsun\n")
+            .expect_err("S006 bekleniyor");
     assert_eq!(hata.kod, "S006");
 }
 

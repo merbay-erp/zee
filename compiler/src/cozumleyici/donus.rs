@@ -11,7 +11,9 @@ pub(super) fn donusleri_sarmala(cumleler: &mut [Cumle]) {
             | Cumle::OlduguSurece { govde, .. }
             | Cumle::OlanaKadar { govde, .. }
             | Cumle::HerBiri { govde, .. } => donusleri_sarmala(govde),
-            Cumle::Ise { kollar, degilse, .. } => {
+            Cumle::Ise {
+                kollar, degilse, ..
+            } => {
                 for kol in kollar {
                     donusleri_sarmala(&mut kol.govde);
                 }
@@ -19,7 +21,9 @@ pub(super) fn donusleri_sarmala(cumleler: &mut [Cumle]) {
                     donusleri_sarmala(blok);
                 }
             }
-            Cumle::Gore { kollar, degilse, .. } => {
+            Cumle::Gore {
+                kollar, degilse, ..
+            } => {
                 for (_, govde) in kollar {
                     donusleri_sarmala(govde);
                 }
@@ -32,7 +36,6 @@ pub(super) fn donusleri_sarmala(cumleler: &mut [Cumle]) {
     }
 }
 
-
 /// Açık dönüş sözleşmesinde değer beklenen bir işlemin hiçbir olağan akışta
 /// gövde sonuna düşmediğini muhafazakâr biçimde kanıtlar.
 pub(super) fn blok_kesin_sonlanir(cumleler: &[Cumle]) -> bool {
@@ -42,27 +45,34 @@ pub(super) fn blok_kesin_sonlanir(cumleler: &[Cumle]) -> bool {
 pub(super) fn cumle_kesin_sonlanir(cumle: &Cumle) -> bool {
     match cumle {
         Cumle::Dondur { .. } | Cumle::HataDondur { .. } | Cumle::ProgramiBitir { .. } => true,
-        Cumle::Ise { kollar, degilse, .. } => {
+        Cumle::Ise {
+            kollar, degilse, ..
+        } => {
             !kollar.is_empty()
                 && kollar.iter().all(|kol| blok_kesin_sonlanir(&kol.govde))
                 && degilse.as_deref().is_some_and(blok_kesin_sonlanir)
         }
-        Cumle::Gore { kollar, degilse, .. } => {
+        Cumle::Gore {
+            kollar, degilse, ..
+        } => {
             !kollar.is_empty()
                 && kollar.iter().all(|(_, govde)| blok_kesin_sonlanir(govde))
                 && degilse.as_deref().is_some_and(blok_kesin_sonlanir)
         }
-        Cumle::IcindeBlogu { govde, yetismezse, .. } => {
-            blok_kesin_sonlanir(govde)
-                && yetismezse.as_deref().is_some_and(blok_kesin_sonlanir)
-        }
+        Cumle::IcindeBlogu {
+            govde, yetismezse, ..
+        } => blok_kesin_sonlanir(govde) && yetismezse.as_deref().is_some_and(blok_kesin_sonlanir),
         _ => false,
     }
 }
 
 /// Dönüş dallarını tek türe birleştirir: {T}→T; {T,Yok}→Seçenek<T>;
 /// {T,HataDonusu}→Sonuç<T>; boş→None; tutarsızlık→T018.
-pub(super) fn donusleri_birlestir(ad: &str, donusler: &[Tur], satir: usize) -> Result<Option<Tur>, Tani> {
+pub(super) fn donusleri_birlestir(
+    ad: &str,
+    donusler: &[Tur],
+    satir: usize,
+) -> Result<Option<Tur>, Tani> {
     let mut ayrik: Vec<Tur> = Vec::new();
     for t in donusler {
         if !ayrik.contains(t) {
@@ -79,7 +89,10 @@ pub(super) fn donusleri_birlestir(ad: &str, donusler: &[Tur], satir: usize) -> R
         return match degerler.as_slice() {
             [] => Err(Tani::yeni(
                 "T018",
-                format!("\"{}\" yalnız hata döndürüyor; en az bir dalda değer döndür.", ad),
+                format!(
+                    "\"{}\" yalnız hata döndürüyor; en az bir dalda değer döndür.",
+                    ad
+                ),
                 satir,
                 1,
                 1,
@@ -140,7 +153,10 @@ pub(super) fn donusleri_birlestir(ad: &str, donusler: &[Tur], satir: usize) -> R
         }
         _ => Err(Tani::yeni(
             "T018",
-            format!("\"{}\" farklı türlerde değerler döndürüyor; tek tür seç.", ad),
+            format!(
+                "\"{}\" farklı türlerde değerler döndürüyor; tek tür seç.",
+                ad
+            ),
             satir,
             1,
             1,

@@ -6,10 +6,10 @@
 //! güven kararı bu modülün doğrulamasından sonra verilir.
 
 use crate::paket::sha256_hex;
-use crate::proje::{ProjeBildirimi, bildirimi_oku};
+use crate::proje::{bildirimi_oku, ProjeBildirimi};
 use ed25519_dalek::{Signature, Signer, SigningKey, VerifyingKey};
 use serde::{Deserialize, Serialize};
-use serde_json::{Value, json};
+use serde_json::{json, Value};
 use std::collections::BTreeMap;
 use std::io::Write;
 use std::path::{Component, Path, PathBuf};
@@ -971,11 +971,9 @@ mod testler {
     fn arsiv_sayi_yol_ve_tekillik_sinirlarini_ayirmadan_denetler() {
         let mut cok_dosya = PAKET_SIHRI.to_vec();
         cok_dosya.extend_from_slice(&((AZAMI_DOSYA_SAYISI + 1) as u32).to_be_bytes());
-        assert!(
-            arsivi_oku(&cok_dosya)
-                .unwrap_err()
-                .contains("dosya sınırını")
-        );
+        assert!(arsivi_oku(&cok_dosya)
+            .unwrap_err()
+            .contains("dosya sınırını"));
 
         let mut uzun_yol = PAKET_SIHRI.to_vec();
         uzun_yol.extend_from_slice(&1u32.to_be_bytes());

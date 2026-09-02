@@ -20,12 +20,14 @@ pub(super) fn ifade_denetle(
             baglam.hir_sembol_adi_ekle(*kimlik, ad.clone());
             crate::hir::HirBagi::Sembol(*kimlik)
         }
-        Ifade::IslemCagrisi { islem_kimligi: Some(kimlik), .. } => {
-            crate::hir::HirBagi::Islem(*kimlik)
-        }
-        Ifade::YeniYapi { yapi_kimligi: Some(kimlik), .. } => {
-            crate::hir::HirBagi::Yapi(*kimlik)
-        }
+        Ifade::IslemCagrisi {
+            islem_kimligi: Some(kimlik),
+            ..
+        } => crate::hir::HirBagi::Islem(*kimlik),
+        Ifade::YeniYapi {
+            yapi_kimligi: Some(kimlik),
+            ..
+        } => crate::hir::HirBagi::Yapi(*kimlik),
         _ => crate::hir::HirBagi::Yok,
     };
     hir_ifadesi_kaydet(
@@ -50,12 +52,10 @@ pub(super) fn hir_ifadesi_kaydet(
         .get(&adres)
         .map(|bilgi| bilgi.kimlik())
         .unwrap_or_else(|| crate::hir::HirDugumId::yeni(baglam.hir_ifadeleri.len()));
-    baglam
-        .hir_ifadeleri
-        .insert(
-            adres,
-            crate::hir::HirIfadeBilgisi::yeni_turle(hir_kimligi, tur, bag, kaynak_araligi),
-        );
+    baglam.hir_ifadeleri.insert(
+        adres,
+        crate::hir::HirIfadeBilgisi::yeni_turle(hir_kimligi, tur, bag, kaynak_araligi),
+    );
 }
 
 fn ifade_denetle_ic(
@@ -105,7 +105,10 @@ fn ifade_denetle_ic(
                 let veri = tur.veri_turu().ok_or_else(|| {
                     Tani::yeni(
                         "T011",
-                        format!("Liste öğesi TamSayı ya da Metin olmalı; burada {} var.", tur.adi()),
+                        format!(
+                            "Liste öğesi TamSayı ya da Metin olmalı; burada {} var.",
+                            tur.adi()
+                        ),
                         satir,
                         1,
                         1,
@@ -258,7 +261,10 @@ fn ifade_denetle_ic(
                 baska => {
                     return Err(Tani::yeni(
                         "T021",
-                        format!("\"değeri\" ile okuma bir sözlük ister; burada {} var.", baska.adi()),
+                        format!(
+                            "\"değeri\" ile okuma bir sözlük ister; burada {} var.",
+                            baska.adi()
+                        ),
                         satir,
                         1,
                         1,
@@ -269,7 +275,10 @@ fn ifade_denetle_ic(
             if anahtar_turu != Tur::Metin {
                 return Err(Tani::yeni(
                     "T021",
-                    format!("v0'da sözlük anahtarı Metin olmalı; burada {} var.", anahtar_turu.adi()),
+                    format!(
+                        "v0'da sözlük anahtarı Metin olmalı; burada {} var.",
+                        anahtar_turu.adi()
+                    ),
                     satir,
                     1,
                     1,
@@ -277,7 +286,9 @@ fn ifade_denetle_ic(
             }
             Ok(deger_turu.ture())
         }
-        Ifade::SozlukteVar { sozluk, anahtar, .. } => {
+        Ifade::SozlukteVar {
+            sozluk, anahtar, ..
+        } => {
             let sozluk_turu = ifade_denetle(sozluk, ortam, baglam, satir)?;
             // K-058: aynı yüzey listede üyelik de sorar: "sayılarda 5 varsa".
             if let Tur::Liste(oge) = sozluk_turu {
@@ -305,7 +316,10 @@ fn ifade_denetle_ic(
             if !matches!(sozluk_turu, Tur::Sozluk(_)) {
                 return Err(Tani::yeni(
                     "T021",
-                    format!("\"varsa\" sorgusu burada bir sözlük ister; {} var.", sozluk_turu.adi()),
+                    format!(
+                        "\"varsa\" sorgusu burada bir sözlük ister; {} var.",
+                        sozluk_turu.adi()
+                    ),
                     satir,
                     1,
                     1,
@@ -328,7 +342,10 @@ fn ifade_denetle_ic(
             if tur != Tur::Metin {
                 return Err(Tani::yeni(
                     "T022",
-                    format!("büyük/küçük harfli dönüşümü Metin ister; burada {} var.", tur.adi()),
+                    format!(
+                        "büyük/küçük harfli dönüşümü Metin ister; burada {} var.",
+                        tur.adi()
+                    ),
                     satir,
                     1,
                     1,
@@ -342,7 +359,10 @@ fn ifade_denetle_ic(
                 if tur != Tur::Metin {
                     return Err(Tani::yeni(
                         "T022",
-                        format!("\"içeriyorsa\" metinler arasında sorgulanır; burada {} var.", tur.adi()),
+                        format!(
+                            "\"içeriyorsa\" metinler arasında sorgulanır; burada {} var.",
+                            tur.adi()
+                        ),
                         satir,
                         1,
                         1,
@@ -361,7 +381,10 @@ fn ifade_denetle_ic(
             if tur != Tur::AgYaniti {
                 return Err(Tani::yeni(
                     "T034",
-                    format!("\"durum kodu\" bir ağ yanıtı ister; burada {} var.", tur.adi()),
+                    format!(
+                        "\"durum kodu\" bir ağ yanıtı ister; burada {} var.",
+                        tur.adi()
+                    ),
                     satir,
                     1,
                     1,
@@ -387,7 +410,10 @@ fn ifade_denetle_ic(
             if tarih_turu != Tur::Tarih {
                 return Err(Tani::yeni(
                     "T029",
-                    format!("\"gün sonrası\" bir Tarih ister; burada {} var.", tarih_turu.adi()),
+                    format!(
+                        "\"gün sonrası\" bir Tarih ister; burada {} var.",
+                        tarih_turu.adi()
+                    ),
                     satir,
                     1,
                     1,
@@ -397,7 +423,10 @@ fn ifade_denetle_ic(
             if miktar_turu != Tur::TamSayi {
                 return Err(Tani::yeni(
                     "T029",
-                    format!("Gün sayısı TamSayı olmalı; burada {} var.", miktar_turu.adi()),
+                    format!(
+                        "Gün sayısı TamSayı olmalı; burada {} var.",
+                        miktar_turu.adi()
+                    ),
                     satir,
                     1,
                     1,
@@ -411,7 +440,10 @@ fn ifade_denetle_ic(
                 Tur::Liste(_) | Tur::Sozluk(_) | Tur::Metin => Ok(Tur::Mantiksal),
                 baska => Err(Tani::yeni(
                     "T030",
-                    format!("\"boşsa\" liste, sözlük ya da metin ister; burada {} var.", baska.adi()),
+                    format!(
+                        "\"boşsa\" liste, sözlük ya da metin ister; burada {} var.",
+                        baska.adi()
+                    ),
                     satir,
                     1,
                     1,
@@ -421,22 +453,20 @@ fn ifade_denetle_ic(
         Ifade::YeniYapi {
             yapi_adi,
             yapi_kimligi,
-        } => {
-            match baglam.yapi_kimligi(yapi_adi) {
-                Some(kimlik) => {
-                    *yapi_kimligi = Some(kimlik);
-                    Ok(Tur::Yapi(kimlik))
-                }
-                None => Err(Tani::yeni(
-                    "A007",
-                    format!("\"{}\" adında bir yapı tanımlı değil.", yapi_adi),
-                    satir,
-                    1,
-                    1,
-                )
-                .onerili("Önce \"yapı <Ad>\" ile tanımla; yapı, kullanımından önce gelmeli.".into())),
+        } => match baglam.yapi_kimligi(yapi_adi) {
+            Some(kimlik) => {
+                *yapi_kimligi = Some(kimlik);
+                Ok(Tur::Yapi(kimlik))
             }
-        }
+            None => Err(Tani::yeni(
+                "A007",
+                format!("\"{}\" adında bir yapı tanımlı değil.", yapi_adi),
+                satir,
+                1,
+                1,
+            )
+            .onerili("Önce \"yapı <Ad>\" ile tanımla; yapı, kullanımından önce gelmeli.".into())),
+        },
         Ifade::AlanErisim { nesne, alan } => {
             let nesne_turu = ifade_denetle(nesne, ortam, baglam, satir)?;
             let yapi_kimligi = match nesne_turu {
@@ -453,9 +483,7 @@ fn ifade_denetle_ic(
             };
             let yapi = baglam
                 .yapi(yapi_kimligi)
-                .ok_or_else(|| {
-                    ic_tutarlilik_hatasi("Yapı kimliği dizinde kayıtlı değil", satir)
-                })?
+                .ok_or_else(|| ic_tutarlilik_hatasi("Yapı kimliği dizinde kayıtlı değil", satir))?
                 .clone();
             let yalin = alan_cozumle(&yapi, alan, satir)?;
             let tur = yapi
@@ -463,9 +491,7 @@ fn ifade_denetle_ic(
                 .iter()
                 .find(|(a, _)| *a == yalin)
                 .and_then(|(_, t)| alan_turu(t))
-                .ok_or_else(|| {
-                    ic_tutarlilik_hatasi("Çözülmüş alanın türü bulunamadı", satir)
-                })?;
+                .ok_or_else(|| ic_tutarlilik_hatasi("Çözülmüş alanın türü bulunamadı", satir))?;
             *alan = yalin;
             Ok(tur)
         }
@@ -525,7 +551,10 @@ fn ifade_denetle_ic(
                 }
                 baska => Err(Tani::yeni(
                     "T024",
-                    format!("\"değeri\" bir Seçenek ya da Sonuç ister; burada {} var.", baska.adi()),
+                    format!(
+                        "\"değeri\" bir Seçenek ya da Sonuç ister; burada {} var.",
+                        baska.adi()
+                    ),
                     satir,
                     1,
                     1,
@@ -634,7 +663,11 @@ fn ifade_denetle_ic(
             if b != Tur::Tarih || i != Tur::Tarih {
                 return Err(Tani::yeni(
                     "T029",
-                    format!("\"arasındaki günler\" iki Tarih ister; burada {} ile {} var.", b.adi(), i.adi()),
+                    format!(
+                        "\"arasındaki günler\" iki Tarih ister; burada {} ile {} var.",
+                        b.adi(),
+                        i.adi()
+                    ),
                     satir,
                     1,
                     1,
@@ -646,7 +679,13 @@ fn ifade_denetle_ic(
             let m = ifade_denetle(metin, ortam, baglam, satir)?;
             let a = ifade_denetle(ayrac, ortam, baglam, satir)?;
             if m != Tur::Metin || a != Tur::Metin {
-                return Err(Tani::yeni("T022", "\"parçaları\" iki Metin ister: metnin ayraçla parçaları.".into(), satir, 1, 1));
+                return Err(Tani::yeni(
+                    "T022",
+                    "\"parçaları\" iki Metin ister: metnin ayraçla parçaları.".into(),
+                    satir,
+                    1,
+                    1,
+                ));
             }
             Ok(Tur::Liste(VeriTuru::Metin))
         }
@@ -654,14 +693,30 @@ fn ifade_denetle_ic(
             let l = ifade_denetle(liste, ortam, baglam, satir)?;
             let a = ifade_denetle(ayrac, ortam, baglam, satir)?;
             if l != Tur::Liste(VeriTuru::Metin) || a != Tur::Metin {
-                return Err(Tani::yeni("T022", format!("\"birleşmişi\" Metin listesi ile Metin ayraç ister; burada {} ile {} var.", l.adi(), a.adi()), satir, 1, 1));
+                return Err(Tani::yeni(
+                    "T022",
+                    format!(
+                        "\"birleşmişi\" Metin listesi ile Metin ayraç ister; burada {} ile {} var.",
+                        l.adi(),
+                        a.adi()
+                    ),
+                    satir,
+                    1,
+                    1,
+                ));
             }
             Ok(Tur::Metin)
         }
         Ifade::Degistir { metin, eski, yeni } => {
             for parca in [metin, eski, yeni] {
                 if ifade_denetle(parca, ortam, baglam, satir)? != Tur::Metin {
-                    return Err(Tani::yeni("T022", "\"değişmişi\" üç Metin ister: metnin eski yerine yeni değişmişi.".into(), satir, 1, 1));
+                    return Err(Tani::yeni(
+                        "T022",
+                        "\"değişmişi\" üç Metin ister: metnin eski yerine yeni değişmişi.".into(),
+                        satir,
+                        1,
+                        1,
+                    ));
                 }
             }
             Ok(Tur::Metin)
@@ -670,7 +725,13 @@ fn ifade_denetle_ic(
             let m = ifade_denetle(metin, ortam, baglam, satir)?;
             let p = ifade_denetle(parca, ortam, baglam, satir)?;
             if m != Tur::Metin || p != Tur::Metin {
-                return Err(Tani::yeni("T022", "başlıyorsa/bitiyorsa iki Metin ister.".into(), satir, 1, 1));
+                return Err(Tani::yeni(
+                    "T022",
+                    "başlıyorsa/bitiyorsa iki Metin ister.".into(),
+                    satir,
+                    1,
+                    1,
+                ));
             }
             Ok(Tur::Mantiksal)
         }
@@ -680,7 +741,10 @@ fn ifade_denetle_ic(
                 if tur != Tur::TamSayi {
                     return Err(Tani::yeni(
                         "T010",
-                        format!("Rastgele sayının uçları TamSayı olmalı; burada {} var.", tur.adi()),
+                        format!(
+                            "Rastgele sayının uçları TamSayı olmalı; burada {} var.",
+                            tur.adi()
+                        ),
                         satir,
                         1,
                         1,
@@ -765,7 +829,10 @@ fn ifade_denetle_ic(
                 if tur != Tur::Mantiksal {
                     return Err(Tani::yeni(
                         "T031",
-                        format!("ve/veya zincirinin her parçası koşul olmalı; burada {} var.", tur.adi()),
+                        format!(
+                            "ve/veya zincirinin her parçası koşul olmalı; burada {} var.",
+                            tur.adi()
+                        ),
                         satir,
                         1,
                         1,
@@ -779,7 +846,10 @@ fn ifade_denetle_ic(
             if tur != Tur::Mantiksal {
                 return Err(Tani::yeni(
                     "T031",
-                    format!("\"değilse\" bir koşulu olumsuzlar; burada {} var.", tur.adi()),
+                    format!(
+                        "\"değilse\" bir koşulu olumsuzlar; burada {} var.",
+                        tur.adi()
+                    ),
                     satir,
                     1,
                     1,
@@ -841,8 +911,9 @@ fn ifade_denetle_ic(
                         ));
                     }
                     return match islec {
-                        crate::agac::AritmetikIslec::Topla
-                        | crate::agac::AritmetikIslec::Cikar => Ok(Tur::Sure),
+                        crate::agac::AritmetikIslec::Topla | crate::agac::AritmetikIslec::Cikar => {
+                            Ok(Tur::Sure)
+                        }
                         _ => Err(Tani::yeni(
                             "T008",
                             "Süre çarpılamaz ve bölünemez (v0).".into(),
@@ -859,7 +930,10 @@ fn ifade_denetle_ic(
                 if !tur.sayisal() {
                     return Err(Tani::yeni(
                         "T008",
-                        format!("Aritmetik işlem sayılar arasında yapılır; burada {} var.", tur.adi()),
+                        format!(
+                            "Aritmetik işlem sayılar arasında yapılır; burada {} var.",
+                            tur.adi()
+                        ),
                         satir,
                         1,
                         1,
@@ -871,7 +945,11 @@ fn ifade_denetle_ic(
                 ondalik_var |= tur == Tur::Ondalik;
             }
             // TamSayı → Ondalık genişlemesi kayıpsızdır (RFC-0013 §2).
-            Ok(if ondalik_var { Tur::Ondalik } else { Tur::TamSayi })
+            Ok(if ondalik_var {
+                Tur::Ondalik
+            } else {
+                Tur::TamSayi
+            })
         }
         Ifade::Sayisi(ic) => {
             let tur = ifade_denetle(ic, ortam, baglam, satir)?;
@@ -891,7 +969,10 @@ fn ifade_denetle_ic(
             if tur != Tur::Metin {
                 return Err(Tani::yeni(
                     "T009",
-                    format!("\"almayı dene\" kalıbı Metin ister; burada {} var.", tur.adi()),
+                    format!(
+                        "\"almayı dene\" kalıbı Metin ister; burada {} var.",
+                        tur.adi()
+                    ),
                     satir,
                     1,
                     1,
@@ -904,7 +985,10 @@ fn ifade_denetle_ic(
             if tur != Tur::Metin {
                 return Err(Tani::yeni(
                     "T009",
-                    format!("\"almayı dene\" kalıbı Metin ister; burada {} var.", tur.adi()),
+                    format!(
+                        "\"almayı dene\" kalıbı Metin ister; burada {} var.",
+                        tur.adi()
+                    ),
                     satir,
                     1,
                     1,

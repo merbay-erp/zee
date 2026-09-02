@@ -86,7 +86,10 @@ fn checker_tanisi_satir_zarfi_yerine_ast_ifadesini_isaretler() {
     assert_eq!(hata.kod, "T008");
     assert_eq!(hata.satir, 1);
     assert_eq!(hata.sutun, 7);
-    assert!(hata.uzunluk > 1, "bileşik ifade bütünü işaretlenmeli: {hata:?}");
+    assert!(
+        hata.uzunluk > 1,
+        "bileşik ifade bütünü işaretlenmeli: {hata:?}"
+    );
 }
 
 #[test]
@@ -138,8 +141,7 @@ sonuç bir ver olsun
 "#;
     let program = kaynagi_fazli_derle(kaynak).expect("HIR üretilmeli");
 
-    let Cumle::Olsun { deger: yapi, .. } = &program.cumleler[0]
-    else {
+    let Cumle::Olsun { deger: yapi, .. } = &program.cumleler[0] else {
         panic!("yapı örneği bekleniyordu")
     };
     let Ifade::YeniYapi {
@@ -149,8 +151,7 @@ sonuç bir ver olsun
     else {
         panic!("yapı örneği bekleniyordu")
     };
-    let Cumle::Olsun { deger: cagri, .. } = &program.cumleler[1]
-    else {
+    let Cumle::Olsun { deger: cagri, .. } = &program.cumleler[1] else {
         panic!("işlem çağrısı bekleniyordu")
     };
     let Ifade::IslemCagrisi {

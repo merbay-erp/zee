@@ -12,8 +12,7 @@ fn kaynak_token_ast_ve_baglanmis_program_ayri_turlerdir() {
 
     let ast = tokenlar.ayristir(Vec::new()).expect("ayrıştırılmalı");
     assert_eq!(ast.cumleler().len(), 2);
-    let Cumle::Yaz { deger, .. } = &ast.cumleler()[1]
-    else {
+    let Cumle::Yaz { deger, .. } = &ast.cumleler()[1] else {
         panic!("parsed AST henüz semantic kimlik taşımamalı")
     };
     assert!(matches!(
@@ -25,8 +24,7 @@ fn kaynak_token_ast_ve_baglanmis_program_ayri_turlerdir() {
     ));
 
     let baglanmis = kaynagi_fazli_derle(kaynak).expect("checker bağı kurulmalı");
-    let Cumle::Yaz { deger, .. } = &baglanmis.cumleler[1]
-    else {
+    let Cumle::Yaz { deger, .. } = &baglanmis.cumleler[1] else {
         panic!("bound AST semantic kimlik taşımalı")
     };
     assert!(matches!(

@@ -12,6 +12,14 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **Kanonik Rust biçim kapısı** (K-145, ADR-042): 53 dosyada kalan 349
+  `rustfmt` fark bloğu tek, davranışsız toplu dilimde temizlendi. Rust 1.93.1
+  araç zinciri `rustfmt` bileşenini açıkça sabitler; üç platformlu CI artık
+  `cargo fmt --all -- --check` ile yeni biçim borcunu reddeder. Fiziksel faz
+  bütçeleri kanonik satır ölçüsüne, K-144 eğilim tabanı 49 kritik işleve bir
+  kez yeniden alındı. Dil semantiği, tanılar, RFC ve normatif spec değişmedi;
+  B-037 kapandı.
+
 - **Kritik işlev büyüme/karmaşıklık eğilimi** (K-144, ADR-041): Sabit
   Rust/Clippy zinciri üretim `lib` ve `dil` ikilisindeki 48 kritik işlevi
   incelenmiş TSV tabanına bağlar. 80 satır veya 12 bilişsel karmaşıklık yalnız

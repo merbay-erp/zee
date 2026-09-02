@@ -107,7 +107,9 @@ impl Baglam {
         kimlik: SymbolId,
         kaynak_araligi: crate::hir::HirKaynakAraligi,
     ) {
-        self.hir_sembol_tanimlari.entry(kimlik).or_insert(kaynak_araligi);
+        self.hir_sembol_tanimlari
+            .entry(kimlik)
+            .or_insert(kaynak_araligi);
         let kullanim = crate::hir::HirSembolKullanimi::yeni(kimlik, kaynak_araligi);
         if !self.hir_sembol_yazimlari.contains(&kullanim) {
             self.hir_sembol_yazimlari.push(kullanim);

@@ -2,7 +2,7 @@
 //! kilit dosyası. Normal derleme ağ açmadan doğrulanmış cache kullanır.
 
 use crate::agac::KullanimTuru;
-use crate::proje::{ProjeBildirimi, bildirimi_oku};
+use crate::proje::{bildirimi_oku, ProjeBildirimi};
 use crate::tani::Tani;
 use crate::{BirimIstegi, YuklenenBirim};
 use std::collections::{BTreeMap, HashMap};
@@ -15,7 +15,7 @@ mod uzak;
 mod uzak;
 
 pub use uzak::RegistryCozumPolitikasi;
-use uzak::{UzakPaketCozumleri, UzakPaketKilidi, UzakPaketKimligi, paketleri_hazirla};
+use uzak::{paketleri_hazirla, UzakPaketCozumleri, UzakPaketKilidi, UzakPaketKimligi};
 
 pub const KILIT_DOSYASI: &str = "proje.kilit";
 

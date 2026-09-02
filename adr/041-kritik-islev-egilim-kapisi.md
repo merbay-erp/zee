@@ -57,3 +57,6 @@ artışlarla birikmesini veya eşik altına saklanmasını da göstermez.
 - Bu bakım kapısı dil semantiğini, kullanıcı tanılarını veya normatif spec'i
   değiştirmez. Clippy metriğinin anlamı araç zinciri yükseltmesinde değişebilir;
   dolayısıyla Rust sürümü yükseltilirken taban ayrıca gözden geçirilmelidir.
+- K-145/ADR-042 bütün kaynakları sabit `rustfmt` çıktısına taşıdığı için satır
+  ölçüsü semantik değişiklik olmadan yeniden tabanlandı. İnceleme kaydı
+  `K-145/ADR-041 kanonik rustfmt tabanı`, güncel kapsam 49 işlevdir.

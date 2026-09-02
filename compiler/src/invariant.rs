@@ -181,9 +181,9 @@ impl<'a> Denetleyici<'a> {
         let bilgi = hir
             .ifade_bilgisi(ifade)
             .ok_or_else(|| self.hata(yol, "ifadenin HIR tür/bağ kaydı yok", satir))?;
-        let ast_araligi = ifade.kaynak_araligi().ok_or_else(|| {
-            self.hata(yol, "AST ifadesinin kesin kaynak aralığı yok", satir)
-        })?;
+        let ast_araligi = ifade
+            .kaynak_araligi()
+            .ok_or_else(|| self.hata(yol, "AST ifadesinin kesin kaynak aralığı yok", satir))?;
         if bilgi.kaynak_araligi().kesin_konumu() != Some(ast_araligi.uclu()) {
             return Err(self.hata(
                 yol,

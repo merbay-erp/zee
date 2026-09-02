@@ -12,17 +12,16 @@ fn golden(ad: &str) -> String {
 fn golden_24_http_istemcisi() {
     let program = dil::kaynagi_derle(&golden("24-http-istemcisi.dil")).expect("24 derlenmeli");
     let mut io = ToplayanIo::yeni(Vec::new());
-    io.http_yanitlari.insert(
-        "https://ornek.dev/durum".into(),
-        (200, "çalışıyor".into()),
-    );
+    io.http_yanitlari
+        .insert("https://ornek.dev/durum".into(), (200, "çalışıyor".into()));
     calistir_io(&program, &mut io).expect("24 çalışmalı");
     assert_eq!(io.cikti, vec!["Durum: 200", "çalışıyor"]);
 }
 
 #[test]
 fn http_baglanti_hatasi_turkce() {
-    let kaynak = "cevap \"https://yok.example\" adresinden gelen yanıt olsun\ncevabın gövdesini yaz\n";
+    let kaynak =
+        "cevap \"https://yok.example\" adresinden gelen yanıt olsun\ncevabın gövdesini yaz\n";
     let program = dil::kaynagi_derle(kaynak).expect("derlenmeli");
     let mut io = ToplayanIo::yeni(Vec::new());
     let hata = calistir_io(&program, &mut io).expect_err("bağlantı hatası");
@@ -120,7 +119,11 @@ hızlı yaz
             "10",
         ]
     );
-    assert_eq!(io.an_ms(), 2_000, "beklemeler toplanmamalı; en uzunu kazanmalı");
+    assert_eq!(
+        io.an_ms(),
+        2_000,
+        "beklemeler toplanmamalı; en uzunu kazanmalı"
+    );
 }
 
 #[test]
@@ -203,7 +206,10 @@ hepsini bekle
     let hata = calistir_io(&program, &mut io).expect_err("eylem hatası yayılmalı");
     assert_eq!(hata.kod, "C003");
     assert!(io.dosyalar.is_empty(), "eylem savepoint'i geri alınmalı");
-    assert!(io.cikti.is_empty(), "atomik eylemin arasına kardeş girmemeli");
+    assert!(
+        io.cikti.is_empty(),
+        "atomik eylemin arasına kardeş girmemeli"
+    );
     assert_eq!(io.an_ms(), 1_000);
 }
 
@@ -307,7 +313,9 @@ eşzamanlı olarak
     görev bir ver
 ";
     assert_eq!(
-        dil::kaynagi_derle(bekle_yok).expect_err("açık görev grubu").kod,
+        dil::kaynagi_derle(bekle_yok)
+            .expect_err("açık görev grubu")
+            .kod,
         "T051"
     );
 
@@ -328,7 +336,9 @@ işlem erken dön
     hepsini bekle
 ";
     assert_eq!(
-        dil::kaynagi_derle(erken_donus).expect_err("açık görevle dönüş").kod,
+        dil::kaynagi_derle(erken_donus)
+            .expect_err("açık görevle dönüş")
+            .kod,
         "T051"
     );
 
@@ -419,7 +429,10 @@ yetişmezse
     io.an_degerleri = vec![0, 0, 1_000].into();
     calistir_io(&program, &mut io).expect("iptal kendi kolunda yönetilmeli");
 
-    assert!(io.dosyalar.is_empty(), "iptal sonrası dosya etkisi başlamamalı");
+    assert!(
+        io.dosyalar.is_empty(),
+        "iptal sonrası dosya etkisi başlamamalı"
+    );
     assert_eq!(io.cikti, vec!["dosya iptal edildi"]);
 }
 
@@ -436,10 +449,8 @@ yetişmezse
 ";
     let program = dil::kaynagi_derle(kaynak).expect("HTTP iptal kaynağı");
     let mut io = ToplayanIo::yeni(Vec::new());
-    io.http_yanitlari.insert(
-        "https://ornek.dev/gec".into(),
-        (200, "geç yanıt".into()),
-    );
+    io.http_yanitlari
+        .insert("https://ornek.dev/gec".into(), (200, "geç yanıt".into()));
     // İlk HTTP görevi 0 ms'de sıra verir. İkinci görev poll'undan sonra saat
     // 1.000 ms olur; HTTP adaptörüne girmeden yeni kontrol iptali görmelidir.
     io.an_degerleri = vec![0, 0, 0, 0, 0, 1_000].into();
@@ -519,7 +530,9 @@ fn golden_31_birimler() {
 
     // Birimin kendi testi de dene kapsamında.
     let sonuclar = dil::programi_dene(&program);
-    assert!(sonuclar.iter().any(|s| s.ad == "hesap_araclari: kdv doğru eklenir"));
+    assert!(sonuclar
+        .iter()
+        .any(|s| s.ad == "hesap_araclari: kdv doğru eklenir"));
     assert!(sonuclar.iter().all(|s| s.hata.is_none()));
 }
 
