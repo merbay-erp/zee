@@ -1,6 +1,6 @@
 # Morfoloji doğrulama rehberi
 
-Bu belge K-111/B-016'nın `zee-tr-1` için kalıcı kanıt haritasıdır. Morfoloji
+Bu belge K-111/B-016 ve K-122/B-008'in `zee-tr-1` için kalıcı kanıt haritasıdır. Morfoloji
 kurallarını değiştirmez; RFC-0018 ve spec/13'teki üret→çöz, belirsizlik ve
 Unicode sınırlarını daha geniş girdilerde sürekli sınar.
 
@@ -14,6 +14,9 @@ Unicode sınırlarını daha geniş girdilerde sürekli sınar.
    NFD yazım birleştirici im taşıdığı için S029 ile reddedilir; sessiz
    normalizasyon veya iki farklı kaynak yazımını tek ada eşleme yapılmaz.
 4. Profil tablosu, yüzey sırası ve azami iki katman snapshot ile sabittir.
+5. Tablo, 53.248 kanonik üretim+çözüm vektörü ve 11 ham sınır yüzeyi
+   `morfoloji-zee-tr-1.sha256` kaydıyla sabittir; kayıt Git geçmişine
+   girdikten sonra güncellenemez.
 
 ## Stable regresyon katmanı
 
@@ -26,6 +29,11 @@ Unicode sınırlarını daha geniş girdilerde sürekli sınar.
 - `ğ/ö/ş/â/İ` için NFC olumlu ve NFD→S029 olumsuzları;
 - yapısal sonek çakışmaları ve bilinen `payı/sayacı/fiyatıyla/zarından`
   belirsizlikleri.
+- çalışan profil kaydının immutable `zee-tr-1` SHA-256 fixture'ıyla byte
+  eşitliği ve `dil morfoloji --uyumluluk` görünürlüğü.
+
+Yayımlanmış fixture'ın tarihsel değişmezlik kapısı ve yeni `zee-tr-N` açma
+protokolü [profil uyumluluk rehberindedir](morfoloji-profil-uyumlulugu.md).
 
 ## Mutation katmanı
 

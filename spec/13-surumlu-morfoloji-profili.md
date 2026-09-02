@@ -1,6 +1,6 @@
 # 13 — Sürümlü morfoloji profili
 
-Normatif kaynak: RFC-0018 (geçici kabul), K-089. Bu bölüm spec/03'teki ad
+Normatif kaynak: RFC-0018 (geçici kabul), K-089/K-122. Bu bölüm spec/03'teki ad
 çözümünün makinece sabitlenen profilini tanımlar.
 
 ## Profil kimliği (TANIMLI)
@@ -88,9 +88,25 @@ Yüzey tablosu, zincirler, ses dönüşümü, kanonik üretim veya çözüm önc
 değişirse `zee-tr-1` yerinde değiştirilemez. Yeni profil kimliği ve ana dil
 sürümü/edition geçiş kararı gerekir.
 
+`zee-tr-1`in yayımlanmış uyumluluk kaydı **ZORUNLU** olarak şudur:
+
+```text
+profil=zee-tr-1
+şema=zee-morfoloji-uyumluluk-v1
+sha256=e6034e7359e5d5d1bf5f3f06b6a7767616b2b6daf8ab916226b48d522f99f220
+```
+
+Kayıt; profil dökümünü, 11 sabit sınır yüzeyinin bütün çözümlerini ve 4.096
+deterministik kökün yedi tek+altı iki katmanlı zincirindeki 53.248 kanonik
+üretim ile bütün çözüm kümelerini özetler. Aynı profil kimliği altında başka
+kayıt **YASAK**tır. Yayımlanmış fixture silinemez/değiştirilemez; yeni semantic
+davranış yeni `zee-tr-N` kimliği, yeni fixture ve sürüm/edition geçişi ister.
+
 ## Conformance kanıtı
 
 - `compiler/tests/morfoloji_v1.snapshot`
+- `compiler/tests/fixtures/morfoloji-zee-tr-1.sha256`: immutable semantic
+  parmak izi; Git tabanına girdikten sonra CI'da değiştirilemez
 - `compiler/tests/morfoloji_testi.rs`: tablo, tek/iki katman property,
   kanonik üretim golden'ları, ters ses değişimi, belirsizlik korpusu, CLI;
   ayrıca 4.096 deterministik kök, 2.048 bütün-aday kararı ve NFC/NFD sınırı
@@ -99,6 +115,9 @@ sürümü/edition geçiş kararı gerekir.
 - `compiler/tests/lsp_testi.rs`: tek/iki katmanlı rename, kapsam ayrımı ve
   belirsiz belgede fail-closed semantic seçim
 - `compiler/tests/proje_testi.rs`: profil sabitleme, P011, kilit v2 ve sürüm CLI
+
+K-122/B-008'in iki kapılı bakım akışı
+[profil uyumluluk rehberindedir](../docs/morfoloji-profil-uyumlulugu.md).
 
 K-111/B-016 kanıtının çalıştırma, crash küçültme ve dürüst sınır ayrıntıları
 [morfoloji doğrulama rehberindedir](../docs/morfoloji-dogrulama.md).

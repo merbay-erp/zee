@@ -217,7 +217,7 @@ fn kullanim() {
     );
     eprintln!("  dil iz kaydet <iz> <program> [argümanlar] deterministik IO izi kaydeder");
     eprintln!("  dil iz oynat <iz> <program>              IO izini dış dünyasız oynatır");
-    eprintln!("  dil morfoloji [kelime]    etkin ek profilini veya kelimenin çözümlerini gösterir");
+    eprintln!("  dil morfoloji [kelime|--uyumluluk] profil, çözüm veya immutable kaydı gösterir");
     eprintln!("  dil sürüm                  sürümü gösterir");
 }
 
@@ -323,13 +323,17 @@ fn io_izi_komutu(argumanlar: &[String]) -> ExitCode {
 
 fn morfoloji_komutu(argumanlar: &[String]) -> ExitCode {
     if argumanlar.len() > 2 {
-        eprintln!("Kullanım: dil morfoloji [kelime]");
+        eprintln!("Kullanım: dil morfoloji [kelime|--uyumluluk]");
         return ExitCode::from(2);
     }
     let Some(kelime) = argumanlar.get(1) else {
         print!("{}", dil::morfoloji::profil_dokumu());
         return ExitCode::SUCCESS;
     };
+    if kelime == "--uyumluluk" {
+        print!("{}", dil::morfoloji::profil_uyumluluk_kaydi());
+        return ExitCode::SUCCESS;
+    }
     let cozumler = dil::morfoloji::cozumleri_bul(kelime);
     println!("{} — morfoloji {}", kelime, dil::morfoloji::MORFOLOJI_PROFILI);
     if cozumler.is_empty() {

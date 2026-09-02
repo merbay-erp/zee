@@ -1,8 +1,8 @@
 use dil::cozumleyici::{ad_cozumle, Tur};
 use dil::faz::KaynakMetni;
 use dil::morfoloji::{
-    cozumleri_bul, ek_uydur, ek_zinciri_uydur, kok_adaylari, profil_dokumu, SoyutEk, EK_TABLOSU,
-    MAKSIMUM_EK_KATMANI, MORFOLOJI_PROFILI, MORFOLOJI_SURUMU,
+    cozumleri_bul, ek_uydur, ek_zinciri_uydur, kok_adaylari, profil_dokumu, profil_uyumluluk_kaydi,
+    SoyutEk, EK_TABLOSU, MAKSIMUM_EK_KATMANI, MORFOLOJI_PROFILI, MORFOLOJI_SURUMU,
 };
 use std::collections::{HashMap, HashSet};
 use std::process::Command;
@@ -56,6 +56,14 @@ fn deterministik_kok(tohum: u64) -> String {
         kok.push(DEVAM[durum as usize % DEVAM.len()]);
     }
     kok
+}
+
+#[test]
+fn zee_tr_1_semantik_parmak_izi_immutable_fixture_ile_ayni_kalir() {
+    assert_eq!(
+        profil_uyumluluk_kaydi(),
+        include_str!("fixtures/morfoloji-zee-tr-1.sha256")
+    );
 }
 
 #[test]
@@ -392,4 +400,14 @@ fn cli_profili_ve_belirsiz_cozumleri_gorunur_kilar() {
     let stdout = String::from_utf8(cozum.stdout).expect("utf8");
     assert!(stdout.contains("- sayac + belirtme"), "{}", stdout);
     assert!(stdout.contains("- sayaç + belirtme"), "{}", stdout);
+
+    let uyumluluk = Command::new(env!("CARGO_BIN_EXE_dil"))
+        .args(["morfoloji", "--uyumluluk"])
+        .output()
+        .expect("morfoloji uyumluluk kaydı");
+    assert!(uyumluluk.status.success());
+    assert_eq!(
+        String::from_utf8(uyumluluk.stdout).expect("utf8"),
+        include_str!("fixtures/morfoloji-zee-tr-1.sha256")
+    );
 }

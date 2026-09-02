@@ -56,6 +56,9 @@ olursa `elmasıyla` üretilir. Bir kelimenin bütün yapısal çözümlerini gö
 için `dil morfoloji sayacı`, etkin tabloyu görmek için `dil morfoloji` yaz.
 Yeni projeler profili `proje.dil` içinde sabitler; böylece gelecekteki bir
 derleyici güncellemesi eski kaynağın anlamını sessizce değiştiremez.
+`dil morfoloji --uyumluluk`, `zee-tr-1`in yayımlanmış semantic SHA-256
+kaydını gösterir. Bu kayıt değiştirilemez; farklı davranış `zee-tr-2` gibi
+yeni profil adı ister (K-122/spec-13).
 
 ## 3. Sormak
 
@@ -689,7 +692,7 @@ Ayrıntı için: dil hata T036
 | `dil denetle <dosya\|proje>` | çalıştırmadan bütün hataları listeler (`--json`) |
 | `dil hata <kod>` | hata kodunu açıklar |
 | `dil belge <birim>` | birimin işlemlerini listeler |
-| `dil morfoloji [kelime]` | sürümlü ek tablosunu veya kelimenin bütün kök+ek çözümlerini gösterir |
+| `dil morfoloji [kelime\|--uyumluluk]` | sürümlü ek tablosunu, bütün kök+ek çözümlerini veya immutable semantic kaydı gösterir |
 
 IO izi kullanıcı girdisi, dosya/ağ gövdesi, argüman, çerez veya token
 taşıyabilir; hex alanları şifreli değildir. `*.zee-io-izi` Git dışında tutulur

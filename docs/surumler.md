@@ -351,6 +351,13 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   Dar↔geniş skaler, liste, çok parametre, iç içe çağrı grafiği, iç blok
   kurtarması ve iki yönlü T017 regresyonlarıyla toplam 481 test yeşildir;
   B-007 kapandı.
+- **Immutable `zee-tr-1` uyumluluk kapısı** (K-122, RFC-0018/spec-13): Profil
+  dökümü, 11 ham sınır yüzeyinin sıralı çözümleri ve 4.096 kökün yedi tek+altı
+  iki katmanlı zincirindeki 53.248 üretim/çözüm vektörü kanonik SHA-256 kaydına
+  bağlandı. Çalışan davranış değişirse test; yayımlanmış fixture değiştirilir,
+  silinir veya yeniden adlandırılırsa Git-geçmişli CI koruğu kırılır.
+  `dil morfoloji --uyumluluk` kaydı görünür kılar. Bir yeni regresyonla toplam
+  482 test yeşildir; B-008 kapandı.
 
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`

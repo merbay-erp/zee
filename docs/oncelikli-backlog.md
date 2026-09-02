@@ -49,8 +49,10 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
     dizinlerine geçirerek B-041'i kapattı (475 test).
 18. K-121 iki fazlı yerel çağrı kısıtı birleşimiyle B-007'yi kapattı
     (481 test).
-19. Sıradaki makine omurgası B-008 `zee-tr-1` immutable profil kapısıdır.
-20. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
+19. K-122 `zee-tr-1` davranışını SHA-256 semantic kayıt + Git-geçmişli CI
+    koruğuyla immutable yaptı; B-008 kapandı (482 test).
+20. Sıradaki makine omurgası B-009 bağımsız morfoloji conformance korpusudur.
+21. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
 
 ## P0 — V1 öncesi dil ve derleyici omurgası
 
@@ -98,9 +100,12 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   sırası, iç blok kurtarması ve birleşmeyen T017 çifti altı regresyonda
   sabittir. Ayrıntı
   [çağrı çıkarımı rehberindedir](cagri-cikarimi.md).
-- **B-008 · KISMEN — `zee-tr-1` profilini immutable koru.** RFC-0018/spec-13
-  kırıcı değişikliği `zee-tr-2`ye yönlendirir; bağımsız uyumluluk denetimiyle
-  bu kural CI'da görünür olmalıdır.
+- **B-008 · KAPALI (K-122) — `zee-tr-1` profilini immutable koru.** Profil
+  dökümü, 11 ham sınır yüzeyi ve 4.096 kökün 53.248 üretim+çözüm vektörü
+  kanonik SHA-256 kaydına iner. Davranış değişirse test, yayımlanmış fixture
+  güncellenir/silinirse Git tabanlı CI koruğu kırılır. Yeni davranış yalnız
+  yeni `zee-tr-N` kimliği ve yeni fixture ile eklenebilir. Bakım protokolü
+  [profil uyumluluk rehberindedir](morfoloji-profil-uyumlulugu.md).
 - **B-009 · AÇIK — morfoloji conformance korpusunu compiler'dan bağımsızlaştır.**
   Yüzey→kök→ek zinciri→belirsizlik/hata→profil makine-okunur fixture olmalıdır.
 - **B-010 · KAPALI (K-101) — semantic ID modelini kur.** `YapiId`, `IslemId`
@@ -318,5 +323,5 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 ## Bir sonraki somut kapı
 
 İnsan kanıtı hattında B-001, doldurulmuş gerçek usability formları ve önceden
-ilan edilmiş eşikleri bekler. Makine hattında B-007/K-121 kapandı; sıradaki iş
-B-008 `zee-tr-1` profilinin immutable uyumluluk kapısıdır.
+ilan edilmiş eşikleri bekler. Makine hattında B-008/K-122 kapandı; sıradaki iş
+B-009 compiler'dan bağımsız morfoloji conformance korpusudur.

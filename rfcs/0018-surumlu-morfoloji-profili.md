@@ -1,8 +1,10 @@
 # RFC-0018 — Sürümlü Morfoloji Profili
 
-- **Durum:** geçici kabul — K-089 gerçeklendi, K-111 sürekli property/fuzz kanıtına bağladı
+- **Durum:** geçici kabul — K-089 gerçeklendi; K-111 property/fuzz, K-122
+  immutable uyumluluk kapısını bağladı
 - **Tarih:** 1 Eylül 2026
-- **İlgili kararlar:** K-011, K-041, K-049, K-061, K-072, K-089, K-111; V1-P1-02, V1-P0-21
+- **İlgili kararlar:** K-011, K-041, K-049, K-061, K-072, K-089, K-111,
+  K-122; B-008, V1-P1-02, V1-P0-21
 - **Normatif karşılık:** spec/03 ve spec/13
 - **Gerçekleme:** `compiler/src/morfoloji.rs`; `morfoloji_testi.rs`, `lsp_testi.rs`, `proje_testi.rs`
 
@@ -51,9 +53,18 @@ derleyicide bilinçli geçiş dönemiyle desteklenmeden varsayılan yapılamaz.
 Profil varsayılanının değişmesi ana dil sürümü/edition sınırıdır; paket grafiği
 farklı profilleri sessizce karıştıramaz.
 
+`zee-tr-1`in tablo ve kapsanan üretim/çözüm davranışı, şema
+`zee-morfoloji-uyumluluk-v1` kanonik akışının SHA-256 kaydıdır. Yayımlanmış
+`morfoloji-zee-tr-1.sha256` fixture'ı güncellenemez veya silinemez. Davranış
+değişikliği testi, fixture güncellemesi ise Git-geçmişli CI koruğunu kırar;
+tek geçerli yol yeni `zee-tr-N` kimliği ve yeni fixture eklemektir.
+
 ## Yürütülebilir kanıt
 
 - Profilin bütün tablosu snapshot'tır; sessiz tablo değişikliği testi kırar.
+- K-122, 4.096 kökün 53.248 üretim+çözüm vektörü ile 11 ham sınır yüzeyini
+  tek SHA-256 kaydında dondurur. `dil morfoloji --uyumluluk` kaydı gösterir;
+  geçmişte yayımlanmış profil fixture'larını değiştirmek CI'da yasaktır.
 - Düzenli kök korpusu × bütün tek ekler için `üret → çöz` property testi vardır.
 - Aynı kök korpusu × bütün geçerli iyelik zincirleri iki katmanlı property
   testinden geçer.

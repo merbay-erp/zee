@@ -17,6 +17,14 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Yayımlanmış morfoloji profilleri immutable
+        if: matrix.os == 'ubuntu-latest'
+        shell: bash
+        env:
+          ZEE_MORFOLOJI_TABANI: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: bash scripts/morfoloji-profili-korugu.sh "$ZEE_MORFOLOJI_TABANI"
       # rust-toolchain.toml sürümü sabitler; action yalnız rustup'ı hazırlar.
       - uses: dtolnay/rust-toolchain@stable
         with:
