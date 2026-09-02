@@ -45,7 +45,8 @@ Mini JSON ayrıştırıcısı ayrıca:
 - K-129 açık belge sayısını 256, toplam belge belleğini 128 MiB ve LSP dışa
   giden yanıtını 8 MiB ile ortak `KaynakSinirlari` altında kapattı.
 - K-131 çerçeve, JSON, açık belge ve outbound limitlerinin sayısal sahipliğini
-  tek LSP görünümünde topladı. Yanıtın tahsis sırasında bütçeli üretilmesi
-  K-132/B-025'te; duvar-saati/cancellation davranışı B-026'da açık tutulur.
+  tek LSP görünümünde topladı. K-132 yanıtın bütün yollarını tahsis sırasında
+  aynı 8 MiB bütçeli yazıcıya bağlayıp B-025'i kapattı;
+  duvar-saati/cancellation davranışı B-026'da açık tutulur.
 - Üç çerçeve ve dört JSON testi tahsis öncesi boyutu, tekrar/eksik uzunluğu,
   derinlik/düğüm bütçesini ve Unicode olumsuzlarını korur.

@@ -154,7 +154,7 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **518** |
+| Rust + doctest vakası | **521** |
 | Tanı kimliği | **150 etkin + 3 ayrılmış** |
 | RFC | **25** (2 kabul, 21 geçici kabul, 2 taslak) |
 | ADR | **31** (31 kabul) |
@@ -318,7 +318,9 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   kontrollü ağ reddiyle durur. K-131 HTTP/ağ, web oturumu, IO izi, LSP,
   paket/registry, tanı, atomik metadata ve kilit sürelerinin eski yerel
   sayılarını davranış değiştirmeden aynı profilin domain görünümlerine taşıdı.
-  LSP yanıtını sonuç büyümeden bütçelemek B-025'in son allocation-order işidir.
+  K-132 LSP initialize, diagnostics, completion, hover, definition, rename ve
+  hata gövdelerini 8 MiB sınırlı akış yazıcısına taşıdı; rename/diagnostics
+  artık bütçesiz ara JSON listeleri kurmaz. Böylece B-025/V1-P0-31 kapandı.
   Uygulama sırası
   [öncelikli backlog](docs/oncelikli-backlog.md) ile sabittir.
   Bağlayıcı liste: [docs/v1-surum-kapilari.md](docs/v1-surum-kapilari.md).

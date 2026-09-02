@@ -23,7 +23,7 @@ rfcs/0021-ifade-grameri-mimarisi.md	kanitli	compiler/tests/ifade_grameri_testi.r
 rfcs/0022-deterministik-io-izi.md	kanitli	compiler/tests/io_izi_testi.rs,compiler/tests/io_izi_cli_testi.rs	Kanonik trace replay ve CLI
 rfcs/0023-deterministik-io-profili.md	kanitli	compiler/tests/deterministik_io_profili_testi.rs	Tohum rastgele dizi ve sanal saat
 rfcs/0024-merkezi-yetkinlik-ve-outbound-guvenligi.md	kanitli	compiler/tests/yetkinlik_testi.rs,compiler/tests/proje_testi.rs,compiler/src/yetkinlik.rs,compiler/src/ag_istemcisi.rs	Merkezi izin paket alt kümesi origin DNS HTTPS ve dosya kökü
-rfcs/0025-merkezi-kaynak-butcesi.md	kismi	compiler/tests/kaynak_sinirlari_testi.rs,compiler/tests/mimari_sinir_testi.rs,compiler/src/lsp.rs	Kaynak değer ve bağlantı sınırları ile K-131 domain sahipliği testli; LSP allocation-order açık
+rfcs/0025-merkezi-kaynak-butcesi.md	kanitli	compiler/tests/kaynak_sinirlari_testi.rs,compiler/tests/mimari_sinir_testi.rs,compiler/tests/lsp_testi.rs,compiler/src/lsp/cikti.rs	Kaynak değer bağlantı ve domain sahipliği ile K-132 LSP allocation-order sınırı testli
 adr/001-bootstrap-dili.md	kanitli	compiler/tests/mimari_sinir_testi.rs,compiler/tests/playground_testi.rs	Rust faz sınırları ve WASM yüzeyi
 adr/002-parser-stratejisi.md	kanitli	compiler/tests/ifade_grameri_testi.rs,compiler/tests/parser_kurtarma_testi.rs,compiler/tests/bicimleyici_testi.rs	Elle parser katman kurtarma ve formatter eşdeğerliği
 adr/003-ilk-yurutme-modeli.md	kanitli	compiler/tests/playground_testi.rs,compiler/tests/io_izi_testi.rs	Yorumlayıcı ve IO soyutlaması
@@ -78,4 +78,4 @@ spec/20-ifade-grameri.md	kanitli	compiler/tests/ifade_grameri_testi.rs,compiler/
 spec/21-deterministik-io-izi.md	kanitli	compiler/tests/io_izi_testi.rs,compiler/tests/io_izi_cli_testi.rs	Şema olay sırası redaksiyon ve replay
 spec/22-deterministik-io-profili.md	kanitli	compiler/tests/deterministik_io_profili_testi.rs	zee-io-1 rastgele saat ve fake IO
 spec/23-yetkinlik-ve-outbound-guvenligi.md	kanitli	compiler/tests/yetkinlik_testi.rs,compiler/tests/proje_testi.rs,compiler/src/yetkinlik.rs	Yetkinlik origin IP paket ve dosya sınırı
-spec/24-kaynak-guvenlik-profili.md	kismi	compiler/tests/kaynak_sinirlari_testi.rs,compiler/tests/mimari_sinir_testi.rs,compiler/src/lsp.rs	K-129/K-130 kaynak değer ve bağlantı zarfı; K-131 domain sahipliği testli; LSP allocation-order açık
+spec/24-kaynak-guvenlik-profili.md	kanitli	compiler/tests/kaynak_sinirlari_testi.rs,compiler/tests/mimari_sinir_testi.rs,compiler/tests/lsp_testi.rs,compiler/src/lsp/cikti.rs	K-129/K-130 kaynak değer bağlantı zarfı K-131 sahiplik ve K-132 bounded LSP üretimi testli

@@ -75,6 +75,31 @@ fn initialize_yaniti() {
 }
 
 #[test]
+fn butun_uretim_yollari_gecerli_ve_butceli_json_verir() {
+    let mut sunucu = Sunucu::yeni();
+    let istekler = [
+        r#"{"jsonrpc":"2.0","id":1,"method":"initialize","params":{}}"#,
+        r#"{"jsonrpc":"2.0","method":"textDocument/didOpen","params":{"textDocument":{"uri":"file:///tmp/butce.dil","text":"sayaç 1 olsun\nsayacı yaz\n"}}}"#,
+        r#"{"jsonrpc":"2.0","id":2,"method":"textDocument/completion","params":{}}"#,
+        r#"{"jsonrpc":"2.0","id":3,"method":"textDocument/hover","params":{"textDocument":{"uri":"file:///tmp/butce.dil"},"position":{"line":1,"character":2}}}"#,
+        r#"{"jsonrpc":"2.0","id":4,"method":"textDocument/definition","params":{"textDocument":{"uri":"file:///tmp/butce.dil"},"position":{"line":1,"character":2}}}"#,
+        r#"{"jsonrpc":"2.0","id":5,"method":"textDocument/rename","params":{"textDocument":{"uri":"file:///tmp/butce.dil"},"position":{"line":0,"character":2},"newName":"puan"}}"#,
+        r#"{"jsonrpc":"2.0","method":"textDocument/didClose","params":{"textDocument":{"uri":"file:///tmp/butce.dil"}}}"#,
+        r#"{"jsonrpc":"2.0","id":6,"method":"shutdown"}"#,
+    ];
+
+    for istek in istekler {
+        for govde in sunucu.mesaj_isle(istek).govdeler {
+            assert!(json_coz(&govde).is_some(), "geçersiz LSP JSON'u: {govde}");
+            assert!(
+                govde.len()
+                    <= dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.lsp_yanit_bayti()
+            );
+        }
+    }
+}
+
+#[test]
 fn didopen_tanilari_yayinlar() {
     let mut sunucu = Sunucu::yeni();
     let mesaj = r#"{"jsonrpc":"2.0","method":"textDocument/didOpen","params":{"textDocument":{"uri":"file:///tmp/deneme.dil","languageId":"dil","version":1,"text":"bilinmeyeni yaz\n"}}}"#;

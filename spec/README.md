@@ -45,7 +45,7 @@ Kırıcı değişiklik sessizce yapılamaz: davranış değişikliği RFC'den ge
 | [21 — Deterministik IO izi](21-deterministik-io-izi.md) | sürümlü kanonik olay biçimi, bütçeli kayıt ve dış etkisiz replay | RFC-0022, ADR-026, K-115 |
 | [22 — Deterministik IO profili](22-deterministik-io-profili.md) | `zee-io-1` tohum, rastgele dizi, sanal saat ve hermetik adaptör sözleşmesi | RFC-0023, ADR-027, K-116 |
 | [23 — Yetkinlik ve outbound ağ güvenliği](23-yetkinlik-ve-outbound-guvenligi.md) | proje/paket izinleri, compile/runtime kapısı, origin/DNS/HTTPS ve dosya kökü | RFC-0024, ADR-031, K-127 |
-| [24 — Kaynak güvenlik profili](24-kaynak-guvenlik-profili.md) | kaynak/token, runtime adım/çıktı/değer heap'i, domain limit sahipliği, bağlantı, dosya ve LSP sınırları | RFC-0025, ADR-033, K-129/K-130/K-131 |
+| [24 — Kaynak güvenlik profili](24-kaynak-guvenlik-profili.md) | kaynak/token, runtime adım/çıktı/değer heap'i, domain limit sahipliği, bağlantı, dosya ve LSP sınırları | RFC-0025, ADR-033, K-129/K-130/K-131/K-132 |
 
 ## Faza bağlı — henüz spec dışı
 

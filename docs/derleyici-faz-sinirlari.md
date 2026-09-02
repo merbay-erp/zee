@@ -139,6 +139,9 @@ sahipli yaptı. K-131 bounded reader'ı `kaynak_sinirlari/okuma.rs`, domain
 görünümlerini `kaynak_sinirlari/profiller.rs` sahibine ayırdı. Kök/profil/okuma
 sırasıyla 260/300/120 satır bütçesindedir; lexer/runtime/LSP/CLI yalnız bu
 değeri tüketir, yeni dağınık limit sabiti ekleyemez.
+K-132 LSP JSON üretimini `lsp/cikti.rs` sahibine ayırdı. Bu modül 120 satır,
+LSP kökü 1.500 satır bütçesindedir; yanıt kaçışı ve boyut muhasebesi yeniden
+semantic handler'lara dağılamaz.
 K-130 değer grafiği hesabını `yorumlayici/kaynak.rs`, bütçeli değer/JSON/CSV
 yazımını `yorumlayici/metin.rs`, süreç-geneli izin sayacını
 `kaynak_sinirlari/baglanti.rs` sahibine ayırdı. Sırasıyla 280/240/60 satır;
