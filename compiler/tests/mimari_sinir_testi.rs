@@ -114,6 +114,33 @@ fn handler_modulleri_yeni_domain_icin_sinir_tasir() {
 }
 
 #[test]
+fn kritik_islevler_kor_bir_hard_limit_yerine_incelenmis_egilim_tasir() {
+    let arac = kaynak("src/bin/islev_egilimi.rs");
+    let ci = kaynak("../.github/workflows/ci.yml");
+    let taban = kaynak("tests/fixtures/islev-egilimi-v1.tsv");
+    let rapor = kaynak("../docs/islev-egilimi.md");
+
+    assert!(arac.contains("clippy::too_many_lines"));
+    assert!(arac.contains("clippy::cognitive_complexity"));
+    assert!(arac.contains("--force-warn"));
+    assert!(arac.contains("satir_artis_pay"));
+    assert!(arac.contains("karmasiklik_artis_pay"));
+    assert!(arac.contains("işlev eğilim raporu bayat"));
+    assert!(ci.contains("cargo run --locked --bin islev_egilimi -- --denetle"));
+    assert!(taban.starts_with("# zee-islev-egilimi-v1\n# inceleme: K-144/ADR-041"));
+    assert!(
+        taban
+            .lines()
+            .filter(|satir| !satir.starts_with('#'))
+            .count()
+            >= 40,
+        "ilk incelenmiş taban kritik üretim işlevlerini kapsamalı"
+    );
+    assert!(rapor.contains("Mutlak bir\n\"iyi işlev N satırdır\" kuralı koymaz"));
+    assert!(rapor.contains("Düşüşler\ntabanı kendiliğinden aşağı çekmez"));
+}
+
+#[test]
 fn lsp_json_ayristirma_ve_cikti_sahipleri_ayridir() {
     let kok = kaynak("src/lsp.rs");
     let json = kaynak("src/lsp/json.rs");

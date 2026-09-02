@@ -46,6 +46,10 @@ jobs:
       - name: Clippy temiz
         working-directory: compiler
         run: cargo clippy --locked --all-targets -- -D warnings
+      - name: Kritik işlev büyüme ve karmaşıklık eğilimi temiz
+        if: matrix.os == 'ubuntu-latest'
+        working-directory: compiler
+        run: cargo run --locked --bin islev_egilimi -- --denetle
       - name: Fuzz hedefleri stable araç zincirinde derlenir
         if: matrix.os == 'ubuntu-latest'
         working-directory: compiler
@@ -64,7 +68,7 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         working-directory: compiler
         run: cargo rustc --locked --release --target wasm32-unknown-unknown --lib --crate-type cdylib -- -C link-arg=-zstack-size=16777216
-      - name: Playground ABI v2 gerçek wasm hostunda çalışır
+      - name: Playground ABI v3 gerçek wasm hostunda çalışır
         if: matrix.os == 'ubuntu-latest'
         working-directory: compiler
         run: node ../scripts/wasm-abi-denetle.mjs target/wasm32-unknown-unknown/release/dil.wasm

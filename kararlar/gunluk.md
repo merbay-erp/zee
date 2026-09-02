@@ -2330,6 +2330,27 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   çağrıyı ihlalsiz tamamladı. Envanter 579 test, 152 etkin + 3 ayrılmış tanı
   ve 87 numaralı belgedir. B-056/V1-P1-11 kapandı.
 
+## K-144 — Kritik işlev büyümesi incelenmiş eğilimle korunur (2 Eyl)
+
+- **Sorun:** Dosya düzeyi faz bütçeleri yeniden birleşmeyi engellese de tek
+  işlevin aynı dosya içinde satır ve karar yoğunluğu biriktirmesini göstermiyor;
+  bütün işlevlere tek mutlak sınır koymak ise rol farklarını yok sayıp mekanik
+  bölmeyi iyi tasarım sanabilirdi.
+- **Karar:** Sabit Rust/Clippy zinciri üretim `lib`+`dil` işlevlerinde satır ve
+  bilişsel karmaşıklığı `--force-warn` ile ölçer. 80 satır/12 karmaşıklık
+  izlemeye girişidir. İlk incelemede 48 işlev `K-144/ADR-041` tabanına alındı.
+  Satır artış payı tabanın %10'u (+8..+24), karmaşıklık payı %20'sidir
+  (+2..+5); bunlar otomatik tasarım hükmü değil, inceleme tetikleyicisidir.
+- **Trend/tazelik:** Yeni veya kayıp kritik işlev ve pay aşımı CI'ı durdurur.
+  Küçülme tabanı otomatik aşağı çekmez. Deterministik Markdown raporunun
+  kaynak ölçümünden tek byte sapması da hatadır; gerekçeli taban yenileme ile
+  sıradan rapor yenileme ayrı komutlardır.
+- **Kanıt:** Clippy JSON ölçümü, kararlı `yol::ad#sıra` kimliği, yinelenen
+  yöntem, closure/araç dışlama, oran alt/üst sınırı, eşik ve yeni/kayıp
+  senaryoları beş birim testiyle; CI kablolaması ayrı mimari testle korunur.
+  Envanter 585 test, 152 etkin + 3 ayrılmış tanı ve 88 numaralı belgedir.
+  B-035 kapandı; dil semantiği, tanı kataloğu, RFC ve normatif spec değişmedi.
+
 ---
 
 ## Sonraki adım
@@ -2338,7 +2359,7 @@ Korpus 10 öğrenci + 5 profesyonel usability oturumuna (Hafta 12 hedefi, erkeni
 Hafta 2'de kağıt üstünde) sesli okutulacak; her kayıt için "doğal mı /
 deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
-Makine hattında K-143 playground kaynağını ve soru girdisini ABI v3 üzerinden
-sahipli kopya, satır tablosu ve tarayıcı UTF-8 tahsisinden önce sınırlayarak
-B-056'yı kapattı. Sırada K-144 ile B-035 kritik işlev boyutu/karmaşıklık trend
-bütçesi vardır.
+Makine hattında K-144 kritik üretim işlevlerini incelenmiş Clippy tabanı,
+kademeli büyüme payı ve bayat olmayan eğilim raporuyla bağlayarak B-035'i
+kapattı. Sırada K-145 ile B-037 kontrollü biçim borcu temizliği ve
+`cargo fmt --check` kapısı vardır.
