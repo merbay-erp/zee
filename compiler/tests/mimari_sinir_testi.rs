@@ -1,4 +1,4 @@
-//! B-005/B-006/B-008/B-010/B-018/B-019/B-020/B-025/B-048/B-050/B-055/B-056 mimari sınır regresyonları.
+//! B-005/B-006/B-008/B-010/B-018/B-019/B-020/B-025/B-038/B-048/B-050/B-055/B-056 mimari sınır regresyonları.
 
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -389,4 +389,18 @@ fn standart_runtime_semantic_kararlari_hir_bagindan_alir() {
 
     let kok = kaynak("src/lib.rs");
     assert!(kok.contains("programi_dene_baglanmis(&program)"));
+}
+
+#[test]
+fn faz_test_matrisi_tier1_ci_raporundan_kopamaz() {
+    let ci = kaynak("../.github/workflows/ci.yml");
+    for kanit in [
+        "os: [ubuntu-latest, macos-latest, windows-latest]",
+        "cargo run --locked --bin faz_test_matrisi -- --denetle --rapor target/faz-test-matrisi.md",
+        "cat target/faz-test-matrisi.md >> \"$GITHUB_STEP_SUMMARY\"",
+        "uses: actions/upload-artifact@v4",
+        "name: faz-test-matrisi-${{ matrix.os }}",
+    ] {
+        assert!(ci.contains(kanit), "faz matrisi CI kanıtı eksik: {kanit}");
+    }
 }

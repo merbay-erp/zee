@@ -121,6 +121,12 @@ kökü 1.300, parser cümle/ifade 540/1.220, checker cümle/ifade/bağlam
 Bu tek seferlik artış yeni davranış değildir. İşlev eğilim tabanı da 49
 kanonik kayda taşındı; sonraki büyümeler normal iki kapıya tabidir.
 
+K-146/ADR-043 bu fiziksel sahipliği [faza özgü test matrisi](faz-test-matrisi.md)
+ile doğrulama yüzeyine taşır. Cargo'nun gerçekten derlediği her test tam bir
+birincil faza aittir; aşağı akış alanı parser gibi erken bir faz değişikliğinin
+HIR, LSP, WASM ve uçtan uca yüzeylere etkisini ayrıca görünür kılar. Bu bağ
+çoklu sahiplik değildir ve faz toplamlarını şişirmez.
+
 `katalog_testi.rs` sabit bir kök dosya listesi kullanmaz; `compiler/src`
 altındaki bütün Rust dosyalarını özyinelemeli ve sıralı tarar. Yeni handler'da
 üretilen bir tanı kodu katalog denetiminden kaçamaz.

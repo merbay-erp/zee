@@ -30,6 +30,11 @@ elle arama yapılmaz; `cd compiler && cargo run --bin depo_sayilari -- --yaz`
 çalıştırılır. Toplu commit öncesi katalog ve tazelik kapıları çalıştırılır.
 Rust kaynakları ayrıca `cd compiler && cargo fmt --all -- --check` kapısından
 geçer; kanonik biçim borcu kod değişikliğinden ayrı bırakılmaz.
+Test ekleyen ya da taşıyan iş, `cd compiler && cargo run --locked --bin
+faz_test_matrisi -- --denetle --rapor target/faz-test-matrisi.md` kapısından
+geçer. Her gerçek Cargo/libtest vakası tam bir birincil faz sahibi olmalı;
+fuzz/conformance/regresyon ve aşağı akış ilişkisi aynı değişiklikte güncel
+kalmalıdır.
 
 ## V1 öncesi iş sırası
 

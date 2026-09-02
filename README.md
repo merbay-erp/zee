@@ -166,6 +166,7 @@ korpus üzerinde regression testine girer.
 | Hata kataloğu | [docs/hata-katalogu.md](docs/hata-katalogu.md) | ✅ kaynak ve sürüm kimliği testli |
 | Spesifikasyon | [spec/](spec/) | ✅ başladı — normatif çekirdek (RFC'lere bağlar) |
 | Kanıt haritası | [docs/depo-butunlugu.md](docs/depo-butunlugu.md) | ✅ bütün RFC/ADR/spec → test yolları ve canlı sayılar CI'da |
+| Faz test matrisi | [docs/faz-test-matrisi.md](docs/faz-test-matrisi.md) | ✅ gerçek Cargo/libtest envanteri, Tier-1 pass/fail/süre artefaktı |
 
 <!-- ZEE-DEPO-SAYILARI:BEGIN -->
 <!-- `cd compiler && cargo run --bin depo_sayilari -- --yaz` üretir. Elle değiştirme. -->
@@ -174,10 +175,10 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **585** |
+| Rust + doctest vakası | **592** |
 | Tanı kimliği | **152 etkin + 3 ayrılmış** |
 | RFC | **25** (2 kabul, 21 geçici kabul, 2 taslak) |
-| ADR | **40** (40 kabul) |
+| ADR | **41** (41 kabul) |
 | Normatif spec bölümü | **24** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
@@ -283,8 +284,11 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   [eğilim raporuyla](docs/islev-egilimi.md) CI'a bağladı; B-035 kapandı.
   K-145/ADR-042, 53 Rust dosyasındaki eski biçim borcunu sabit `rustfmt` ile
   tek mekanik dilimde temizledi; üç platformlu `cargo fmt --all -- --check`
-  CI kapısıyla B-037 kapandı. Sıradaki makine kapısı K-146/B-038 faza özgü
-  test matrisidir.
+  CI kapısıyla B-037 kapandı. K-146/ADR-043 bütün gerçek Cargo/libtest
+  vakalarını 21 birincil faza sahipletip her Tier-1 işletim sisteminde
+  test/pass/fail/ignored/süre, regression, fuzz ve conformance ilişkisini
+  raporlayarak B-038'i kapattı. Sıradaki makine kapısı K-147/B-039 kalıcı
+  semantic regression korpusudur.
   K-107/ADR-019 `dillsp` girdisini 8 KiB başlık, 8 MiB gövde, 128 JSON
   derinliği ve 100 bin düğümle sınırlayıp Unicode parser olumsuzlarını kapattı.
   K-138/ADR-035 sayı ayrıştırmasını RFC 8259 durum makinesine taşıdı; sayısal

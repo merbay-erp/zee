@@ -70,6 +70,26 @@ tek byte bayatlamasını da reddeder. Taban yenilemek rapor yenilemekten ayrı v
 bilinçli bir mimari incelemedir; düşen değerler kendiliğinden yeni borç alanı
 açmaz.
 
+## Faza özgü test envanteri
+
+K-146/ADR-043'ün [faz matrisi](faz-test-matrisi.md), kaynakta görünen test
+özniteliklerini yaklaşık saymaz. Cargo JSON çıktısındaki gerçek lib/bin/test
+çalıştırılabilirlerini ve libtest'in vaka listesini her Tier-1 platformunda
+yeniden çıkarır:
+
+```bash
+cd compiler
+cargo run --locked --bin faz_test_matrisi -- --denetle \
+  --rapor target/faz-test-matrisi.md
+```
+
+Her vaka tam bir birincil faza aittir. Yeni/sahipsiz/yinelenen test, boşalan
+seçici, kayıp regression/fuzz/conformance kaynağı veya bayat kanonik belge
+kapıyı kapatır. Dinamik rapor faz başına count, pass/fail/ignored ve duvar
+süresini verir. `cfg` nedeniyle aktif toplam platforma göre değişebilir;
+README'deki kaynak vakası toplamı ile karıştırılmaz. Süre performans eşiği
+değildir; tarihsel performans kanıtı B-040'ın ayrı sözüdür.
+
 ## Immutable conformance verisi
 
 `scripts/conformance-korugu.sh`, CI taban Git revizyonunda bulunan bütün

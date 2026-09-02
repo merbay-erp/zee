@@ -2368,6 +2368,31 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   belge ve 40 kabul ADR'dir. B-037 kapandı; dil semantiği, tanı kataloğu, RFC
   ve normatif spec değişmedi.
 
+## K-146 — Her testin birincil fazı ve görünür blast-radius'u vardır (2 Eyl)
+
+- **Sorun:** 585 yeşil vaka toplam güveni gösteriyor fakat parser değişikliğinin
+  AST, semantic, LSP ve uçtan uca etkisini ayrı göstermiyordu. Kaynakta
+  `#[test]` saymak, `cfg` koşullu ve Cargo'nun gerçekten ürettiği test
+  hedeflerini platformda kesin temsil etmiyordu.
+- **Karar:** `faz-test-matrisi-v1.tsv` lexer, parser, AST, resolver, type
+  checker, typed HIR, morphology, runtime, IO, concurrency, web/security,
+  HTTP, package, registry, supply-chain, LSP, WASM, CLI, project system,
+  end-to-end ve mühendislik kapılarını tek tek sahiplenir. Bir gerçek test
+  tam bir faza aittir; sonraki etki çoklu sayım yerine aşağı akış bağıdır.
+- **Kapı:** Koşucu Cargo JSON'undan test executable'larını, libtest'ten gerçek
+  vaka kimliklerini alır. Sahipsiz/yinelenen test, boş seçici, kayıp ilişki
+  yolu ve bayat kanonik belge hatadır. Tier-1 işlerinin her biri count,
+  pass/fail/ignored, duvar süresi, regression, fuzz ve conformance bağını
+  job summary ile indirilebilir Markdown artefaktına yazar.
+- **Sınır:** Süre bir correctness/performance eşiği değildir; tarihsel p50/p95
+  işi B-040'ta kalır. Mevcut test kaynaklarının faz ilişkisi görünürdür fakat
+  her düzeltilmiş bug için minimal `.dil` corpus zorunluluğu B-039/K-147'nin
+  sıradaki ayrı kapısıdır.
+- **Kanıt:** Altı koşucu birim testi selector/tek sahiplik/zorunlu faz/özet/
+  Markdown kurallarını, ayrı mimari regresyon Tier-1 CI kablolamasını korur.
+  Kaynak envanteri 592 test, 90 numaralı belge ve 41 kabul ADR'dir; B-038
+  kapandı. Dil semantiği, tanı kataloğu, RFC ve spec değişmedi.
+
 ---
 
 ## Sonraki adım
@@ -2376,6 +2401,7 @@ Korpus 10 öğrenci + 5 profesyonel usability oturumuna (Hafta 12 hedefi, erkeni
 Hafta 2'de kağıt üstünde) sesli okutulacak; her kayıt için "doğal mı /
 deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
-Makine hattında K-145 bütün Rust ağacını kanonik biçime taşıyıp üç platformlu
-`cargo fmt --all -- --check` kapısıyla B-037'yi kapattı. Sırada K-146 ile
-B-038 faza özgü test matrisi vardır.
+Makine hattında K-146 gerçek Cargo/libtest envanterini 21 birincil faza tam
+sahipletip Tier-1 count/pass/fail/ignored/süre ve regression/fuzz/conformance
+raporlarıyla B-038'i kapattı. Sırada K-147 ile B-039 kalıcı semantic
+regression korpusu vardır.

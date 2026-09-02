@@ -139,8 +139,11 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 42. K-145/ADR-042, 53 dosyadaki 349 fark bloklu biçim borcunu sabit
     `rustfmt` ile tek mekanik dilimde temizledi; üç platformlu
     `cargo fmt --all -- --check` kapısını açtı ve B-037'yi kapattı.
-43. Sıradaki makine işi K-146 ile B-038 faza özgü test matrisini ayrı ve
-    anlaşılır CI raporlarına bölmektir.
+43. K-146/ADR-043 bütün gerçek Cargo/libtest vakalarını 21 birincil faza
+    sahipledi. Sahipsiz/yinelenen test ve bayat matris fail-closed; her Tier-1
+    işi test/pass/fail/ignored/süre ile regression, fuzz ve conformance bağını
+    ayrı summary+artefakt olarak raporlar. B-038 kapandı.
+44. Sıradaki makine işi K-147 ile B-039 kalıcı semantic regression korpusudur.
 
 ## P0 — V1 öncesi dil ve derleyici omurgası
 
@@ -481,8 +484,15 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   `cargo fmt --all -- --check` CI kapısı yeni borcu reddeder. Faz satır
   bütçeleri ve K-144 eğilim tabanı yalnız kanonik biçim ölçüsüne bir kez
   yeniden kalibre edildi; semantik karar değişmedi.
-- **B-038 · AÇIK — faza özgü test matrisi.** Lexer/parser, tür, morfoloji,
-  runtime, concurrency, güvenlik, package ve LSP ayrı raporlanmalıdır.
+- **B-038 · KAPALI (K-146/ADR-043) — faza özgü test matrisi.** Gerçek Cargo
+  JSON artefaktları ve libtest envanteri lexer, parser, AST, resolver, tür,
+  typed HIR, morfoloji, runtime, IO, concurrency, web/security, HTTP, package,
+  registry, supply-chain, LSP, WASM, CLI, project, end-to-end ve mühendislik
+  kapılarına tam birincil sahiplik verir. Sahipsiz/yinelenen test, boş seçici,
+  kayıp ilişki yolu ve bayat [kanonik matris](faz-test-matrisi.md)
+  CI'ı kapatır. Her Tier-1 platformu kendi `cfg` envanterini ayrı çalıştırır;
+  pass/fail/ignored, duvar süresi, regression, fuzz ve conformance bağını job
+  summary ile indirilebilir artefakta yazar. Süre performans eşiği değildir.
 - **B-039 · AÇIK — semantic regression corpus.** Düzeltilen her compiler bug'ı
   minimal kalıcı `.dil` success/fail fixture'ına dönüşmelidir.
 - **B-040 · KISMEN — performans baseline arşivi.** `src/bin/olcum.rs` vardır;
@@ -545,9 +555,9 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 ## Bir sonraki somut kapı
 
 İnsan kanıtı hattında B-001, doldurulmuş gerçek usability formları ve önceden
-ilan edilmiş eşikleri bekler. Makine hattında K-144, B-035'in 48 işlevlik
-incelenmiş tabanını, büyüme paylarını ve bayat rapor CI kapısını tamamladı.
-Sıradaki iş K-146 ile B-038 faza özgü test matrisidir.
+ilan edilmiş eşikleri bekler. Makine hattında K-146, bütün test envanterini
+21 faza tam sahipletip B-038'i kapattı. Sıradaki iş K-147 ile B-039 kalıcı
+semantic regression korpusudur.
 
 ## 2 Eylül 2026 ikinci dış inceleme ayrımı
 
@@ -566,8 +576,9 @@ Sıradaki iş K-146 ile B-038 faza özgü test matrisidir.
   B-054 advisory/lisans/lock/offline-vendor sınırı K-141/ADR-038 ile,
   B-055 sürümlü kayıtlı WASM C ABI sınırı K-142/ADR-039 ile, B-056 playground
   ön-tahsis bütçesi K-143/ADR-040 ile, B-035 kritik işlev boyutu/karmaşıklık
-  eğilim kapısı K-144/ADR-041 ile, kanonik Rust biçim kapısı K-145/ADR-042 ile
-  kapandı. Sırada B-038 faza özgü test matrisi vardır.
+  eğilim kapısı K-144/ADR-041 ile, kanonik Rust biçim kapısı K-145/ADR-042 ile,
+  tam sahipli faz test matrisi K-146/ADR-043 ile kapandı. Sırada B-039 kalıcı
+  semantic regression korpusu vardır.
   B-033/B-034 temiz snapshot hattı ayrıca kapalıdır.
 - **Mevcut repoda zaten kapalı:** çağrı derinliği C019/500 ve ayrı regresyonu;
   atomik metadata `unsafe` bloklarının her birindeki `SAFETY` gerekçesi; kök
