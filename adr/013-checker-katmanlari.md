@@ -2,7 +2,8 @@
 
 - **Durum:** kabul
 - **Tarih:** 1 Eylül 2026
-- **İlgili kayıt:** K-100, B-006, V1-P0-11
+- **İlgili kayıt:** K-100, K-121, B-006, B-007, V1-P0-01/11
+- **Revizyon:** 2 Eylül 2026 — K-121 sıra-bağımsız çağrı kısıtı katmanı
 
 ## Bağlam
 
@@ -24,6 +25,7 @@ Checker aşağıdaki tek-sahipli katmanlara ayrılır:
 | `sembol` | ad/alan çözümü ve sözcüksel kapsam yaşamı |
 | `akis` | Seçenek/Sonuç daraltması, gezme ve görev akış değişmezleri |
 | `cagri` | işlem çağrısı, çıkarımlı imza ve özyineleme uzlaştırması |
+| `cikarim` | yerel çağrı kısıtı keşfi ve sıra-bağımsız tür birleşimi |
 | `sozlesme` | public parametre/dönüş sözleşmesi doğrulaması |
 | `etki` | uygulama/web etkisi ve intrinsic yetkinlik metadatası geçişi |
 | `donus` | kesin sonlanma, dönüş dalları ve Seçenek/Sonuç birleşimi |
@@ -35,8 +37,9 @@ aktarımını taşır. Denetim sırası:
 ```text
 etki/yetkinlik
   → tür yazımları
+  → kopya AST'de yerel çağrı kısıtı keşfi
   → açık işlem sözleşmeleri
-  → cümle/ifade + sembol/akış/çağrı
+  → nihai imzayla cümle/ifade + sembol/akış/çağrı + HIR
   → dönüş/control-flow kanıtı
 ```
 
@@ -48,7 +51,8 @@ yeniden dışa aktarılır ve kırılmaz.
 
 1. Aynı kaynak aynı tanı kodu, mesaj, konum ve öneriyi üretir.
 2. Etki/yetkinlik denetimi tür geçişinden önce fail-closed kalır.
-3. Public sözleşme çağrı beklemeden; çıkarımlı yerel işlem çağrıda denetlenir.
+3. Public sözleşme çağrı beklemeden; çıkarımlı yerel işlem bütün
+   erişilebilir çağrı kısıtları birleştirildikten sonra denetlenir.
 4. Akış daraltması cümle katmanının açık bağlamıdır; tür enum'una gizlenmez.
 5. Dönüş birleşimi çağrı katmanından bağımsız tek control-flow sahibidir.
 6. Katman dosya bütçesini aşarsa köke geri taşınmaz; yeni sorumluluk sınırı
@@ -60,6 +64,7 @@ yeniden dışa aktarılır ve kırılmaz.
 - Eski bağımsız `eylem.rs`, checker'ın `etki` katmanına taşındı; davranışı ve
   tanıları değişmedi.
 - Beş kaynak-mimari test katman sahipliğini, bütçeleri ve public API'yi korur.
-- B-010 semantic ID, K-101/ADR-014 ile bu katmanlar üstünde tamamlandı. B-007
-  sıra bağımsız çıkarım ayrı açık iştir; bu ADR onu çözülmüş saymaz.
-- Kaynak dili değişmediği için yeni normatif spec gerekmez.
+- B-010 semantic ID, K-101/ADR-014 ile bu katmanlar üstünde tamamlandı.
+  B-007, K-121'de ayrı `cikarim` katmanı ve mimari bütçesiyle kapandı.
+- K-121'in sıra-bağımsız yerel çıkarım semantiği RFC-0006 ile spec/04 ve
+  spec/10'da normatifleşti; diğer katman ayrımları kaynak yüzeyini değiştirmez.

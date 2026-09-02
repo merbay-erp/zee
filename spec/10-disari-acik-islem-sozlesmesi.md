@@ -1,7 +1,7 @@
 # 10 — Dışa açık işlem sözleşmesi
 
 Normatif kaynak: RFC-0006 §1/§5, RFC-0007 §2 ve RFC-0009 §2–§4.1.
-Durum: **TANIMLI** (K-086).
+Durum: **TANIMLI** (K-086/K-121).
 
 ## Progressive disclosure sınırı
 
@@ -14,7 +14,8 @@ işlem iki katını bul
     sonucu döndür
 ```
 
-Bu biçimde parametre ve dönüş türü gövdeden/ilk çağrıdan çıkarılır. Aynı işlem
+Bu biçimde parametre türleri bütün erişilebilir yerel çağrılardan birleştirilir;
+gövde ve dönüş türü nihai imzayla denetlenir. Aynı işlem
 birim ya da paket üzerinden başka kaynağa açıldığında ise tam sözleşme
 **ZORUNLU**dur (T039):
 
@@ -48,6 +49,10 @@ v1 public işlemleri bilinçli olarak **monomorfiktir**. Her parametre ve dönü
 tek somut tür taşır; kullanıcı tanımlı generic/trait ABI'si v1 sözü değildir.
 TamSayı'nın açık Ondalık (ve kapsayıcı eşleri) parametresine kayıpsız
 genişlemesi bir çağrı uyarlamasıdır; imzayı değiştirmez.
+
+Yerel başlangıç işlemi public ABI değildir fakat deterministiktir: eşit
+kısıt aynen kalır, TamSayı+Ondalık sayısal/kapsayıcı çifti Ondalığa birleşir,
+başka tür çifti T017'dir. Kaynak çağrı sırası bu sonucu değiştiremez.
 
 v1'in kararlı sınırı kaynak ABI'sidir; ikili ABI/FFI kararlılığı verilmez.
 Bir paket sürümünde şu değişiklikler kırıcıdır ve ana sürümü artırır:

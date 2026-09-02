@@ -17,10 +17,16 @@ için [checker katmanları](checker-katmanlari.md) birlikte okunur.
 ```text
 source ──lexer──> tokens ──parser──> parsed AST ──hoist──> unbound program
                                                            │
-                                              resolver + type/effect/flow
+                                      constraint discovery + final checker
                                                            ▼
                                                     bound program ──> runtime
 ```
+
+K-121'de yerel çağrı çıkarımı, `BaglanmamisProgram` içindeki AST'nin bir
+kopyasında çalışan ve yalnız işlem imzası önbilgisi üreten checker-içi keşif
+adımıdır; yeni bir public faz türü değildir. Tanı, semantic bağ ve typed HIR
+üretmez. Asıl checker aynı bağlanmamış programı nihai imzalarla doğrular ve
+tek geçerli `BaglanmisProgram`ı üretir.
 
 ## Kullanım
 
@@ -72,5 +78,7 @@ taşıyan C000'dir. Ayrıntı [typed HIR rehberinde](typed-hir-modeli.md) ve
 - Yeni compiler aşaması çıplak tuple/type alias ile gizlenmez; veri türü,
   geçiş sahibi, hata biçimi ve hangi önceki fazı tükettiği aynı ADR/rehber
   değişikliğinde yazılır.
+- Checker-içi keşif kopyası bağlanmış faz sayılmaz ve dışarı sızmaz; HIR
+  sahipliği yalnız nihai doğrulama geçişindedir.
 - Yeni AST/HIR varyantı, `invariant` ziyaretçisinde alt düğümleri ve beklenen
   semantic bağı tanımlanmadan tamamlanmış sayılmaz.

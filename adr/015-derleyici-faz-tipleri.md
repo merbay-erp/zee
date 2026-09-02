@@ -2,7 +2,8 @@
 
 - **Durum:** kabul
 - **Tarih:** 1 Eylül 2026
-- **İlgili kayıt:** K-102, B-018, V1-P0-13
+- **İlgili kayıt:** K-102, K-121, B-018, V1-P0-13
+- **Revizyon:** 2 Eylül 2026 — K-121 checker-içi keşif/final doğrulama sınırı
 
 ## Bağlam
 
@@ -51,6 +52,11 @@ K-113/ADR-024 kurtarmalı çoklu-tanı yolunda kısmi AST'nin cümle ve dengeli
 girinti sınırlarında kurulmasını bağladı. Bu değer `AyristirilmisAst` olarak
 kalır; hata varken `BaglanmisProgram` veya yürütme girişine yükseltilmez.
 
+K-121 yerel işlem çağrı kısıtlarını önce kopya AST'de keşfeder. Bu geçici
+checker-içi adım yeni bir public faz değildir, tanı/HIR üretmez ve
+`BaglanmisProgram` kuramaz. Yalnız nihai imzalarla çalışan asıl checker geçişi
+bağlanmış program üretme yetkisini korur.
+
 ## Değişmezler
 
 1. Parsed AST doğrudan `calistir_baglanmis[_io]` girişine verilemez.
@@ -60,6 +66,8 @@ kalır; hata varken `BaglanmisProgram` veya yürütme girişine yükseltilmez.
    etiketlemez.
 5. Eski API adaptörü kaynak semantiğini veya runtime sırasını değiştirmez.
 6. Typed HIR adı, B-019 gerçek temsil kurulmadan kullanılamaz.
+7. Checker-içi çıkarım keşfi bağlanmış faz diye etiketlenemez; yalnız nihai
+   doğrulama `BaglanmisProgram` üretebilir.
 
 ## Sonuçlar
 

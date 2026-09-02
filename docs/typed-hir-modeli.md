@@ -30,6 +30,12 @@ K-120 ile LSP'nin tükettiği tanım ve kullanım dizinleri
 `compiler/src/hir/gezinme.rs` yaprak modülünün sorumluluğudur; HIR kökü veri
 sahipliğini, bu modül semantic gezinme sorgularını taşır.
 
+K-121 ile yerel çağrı çıkarımı HIR üretiminden önce ayrı bir keşif geçişidir.
+Kopya AST'deki geçici/dar sonuç HIR'a yazılmaz; erişilebilir çağrı kısıtları
+birleştirildikten sonra asıl AST yalnız nihai işlem imzalarıyla denetlenir ve
+tek tutarlı HIR üretilir. Böylece aynı çağrı kümesinin kaynak sırası
+`HirIfadeTuru`nu değiştiremez.
+
 K-108/ADR-020 ile her `HirIfadeBilgisi` ayrıca zorunlu
 `HirKaynakAraligi` taşır. Değişkenlerde lexer'ın koruduğu satır+sütun+uzunluk
 `Kesin`, diğer bugünkü AST ifadelerinde cümlenin bütün kaynak satırı `Satir`
@@ -56,6 +62,8 @@ yüzeyi oluşturur. Bunun yerine geçiş iki kanıtlı dilimdir:
    HIR bağlarından almaya başladı; kaynak adı yalnız tanı/gösterim verisidir.
 3. K-120: LSP definition/rename, sembol tanım+yazım+okuma dizinini ve
    işlem/yapı ID bağlarını production'da tüketmeye başladı.
+4. K-121: yerel çağrı keşfi HIR öncesine ayrıldı; yalnız nihai imzalı checker
+   geçişinin tür ve bağ kayıtları kalıcı HIR gerçeği oldu.
 
 B-019 iki dilimle kapandı. Raw `Program` alan v0 API'nin ad-temelli davranışı
 uyumluluk sınırıdır, yeni iç kod için örnek değildir.
@@ -75,6 +83,8 @@ yüzeyi sunmaz. Kalıcı paket/ABI kimliği gerekiyorsa ayrı bir karar gerekir.
 ## Büyüme kuralları
 
 - Yeni ifade checker'da başarılı tür döndürüyorsa HIR kaydı otomatik oluşur.
+- Geçici çıkarım/keşif geçişi HIR üretmez; yalnız nihai doğrulama geçişi
+  `HirOlusturmaBilgisi` sahibi olabilir.
 - Yeni semantic bağ `String` olarak HIR'a eklenmez; tür güvenli ID ister.
 - Runtime'ın HIR tüketicisi, bağ eksikliğini kaynak adından tahmin ederek
   onarmaz; iç değişmez hatası üretir.

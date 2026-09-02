@@ -36,8 +36,8 @@ tek başına koşuldur: `hazır ise` (K-044); Mantıksal olmayan ad T005.
 
 TamSayı, Ondalık beklenen yerde kendiliğinden Ondalığa genişler — işlem
 çağrısı dahil (Liste<TamSayı> → Liste<Ondalık> parametre, K-067); dar
-imza geniş argümanla TERFİ eder (gövde geniş türle yeniden denetlenir;
-saklanan imza bu iki sayısal tür içinde geniş biçime ulaşır). Bu v0
+ve geniş yerel çağrı kısıtları gövde/HIR denetiminden önce sıra-bağımsız
+birleşir; skaler ve sayısal kapsayıcılarda nihai imza Ondalık tarafıdır. Bu v0
 korkuluğu yalnız yerel başlangıç işlemlerinde geçerlidir. Birim/paket
 işlemleri K-086 ile tam ve monomorfik açık imza taşır; çağrı onları terfi
 ettiremez. Tersi
@@ -46,8 +46,9 @@ ettiremez. Tersi
 
 ## İşlem imzaları (TANIMLI — K-083/K-086 progressive disclosure)
 
-- `<ad> al` başlangıç biçiminde parametre/dönüş türleri ilk çağrıdan çıkarılır;
-  sonraki çağrılar imzaya uymak ZORUNDADIR (T015/T017). Sayısal terfi mümkündür.
+- `<ad> al` başlangıç biçiminde parametre türleri bütün erişilebilir çağrı
+  kısıtlarından önce birleştirilir; gövde ve dönüş türü nihai imzayla
+  denetlenir (K-121). Parametre sayısı/türü T015/T017'ye uymak ZORUNDADIR.
 - `<ad> <Tür> olarak al` açık biçiminde bütün parametreler tanımın
   sözleşmesidir. İşlem hiç çağrılmadan gövdesi bu türlerle denetlenir; dönüş
   türü gövdeden o anda çıkarılır ve imza çağrıyla terfi etmez.

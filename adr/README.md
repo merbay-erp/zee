@@ -15,10 +15,10 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-010 | [Normatif otorite ve değişiklik bütünlüğü](010-normatif-otorite-ve-degisiklik-butunlugu.md) | **kabul** (K-118 kanıt/sayı tazelik kapısı) |
 | ADR-011 | [Core AST intrinsic/yetkinlik sınırı](011-intrinsic-yetkinlik-siniri.md) | **kabul** (K-098/B-004) |
 | ADR-012 | [Derleyici fiziksel faz modülleri](012-derleyici-faz-modulleri.md) | **kabul** (K-099/B-005) |
-| ADR-013 | [Checker semantik katmanları](013-checker-katmanlari.md) | **kabul** (K-100/B-006) |
+| ADR-013 | [Checker semantik katmanları](013-checker-katmanlari.md) | **kabul** (K-100 katmanlar, K-121 çağrı çıkarımı) |
 | ADR-014 | [Semantic kimlikler](014-semantic-kimlikler.md) | **kabul** (K-101 temel, K-120 LSP tüketimi) |
-| ADR-015 | [Derleyici faz tipleri](015-derleyici-faz-tipleri.md) | **kabul** (K-102/B-018) |
-| ADR-016 | [Typed HIR çekirdeği](016-typed-hir-cekirdegi.md) | **kabul** (K-103/K-104 runtime, K-120 LSP) |
+| ADR-015 | [Derleyici faz tipleri](015-derleyici-faz-tipleri.md) | **kabul** (K-102/B-018, K-121 checker-içi keşif sınırı) |
+| ADR-016 | [Typed HIR çekirdeği](016-typed-hir-cekirdegi.md) | **kabul** (K-103/K-104 runtime, K-120 LSP, K-121 nihai çıkarım) |
 | ADR-017 | [Native ağ I/O kaynak sınırları](017-native-ag-kaynak-sinirlari.md) | **kabul** (K-105/B-025) |
 | ADR-018 | [Sınırlı web oturum deposu](018-sinirli-web-oturum-deposu.md) | **kabul** (K-106/B-046) |
 | ADR-019 | [LSP girdi sınırları](019-lsp-girdi-sinirlari.md) | **kabul** (K-107/B-047) |

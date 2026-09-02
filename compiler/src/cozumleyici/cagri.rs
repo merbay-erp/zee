@@ -27,8 +27,8 @@ fn cagri_turu_uyumlu(parametre: &Tur, arguman: &Tur) -> bool {
         )
 }
 
-/// İşlem çağrısını denetler. İlk çağrıda gövde argüman türleriyle denetlenir;
-/// sayısal imza K-067 ile genişleyebilir, diğer çağrılar imzaya uymalıdır.
+/// İşlem çağrısını denetler. Yerel çıkarımlı gövde, keşif geçişinin
+/// bütün çağrılardan birleştirdiği nihai argüman türleriyle denetlenir.
 ///
 /// ÖZYİNELEME (v0.2): denetimi süren bir işlem kendini (ya da karşılıklı
 /// olarak birbirini) çağırabilir. Özyinelemeli çağrının türü, o ana dek
@@ -52,6 +52,17 @@ pub(super) fn cagri_denetle(
             1,
         )
     })?;
+
+    // K-121/B-007: keşif geçişinin bütün çağrılardan birleştirdiği
+    // parametreler, asıl AST/HIR geçişinde gövde ilk kez denetlenirken kullanılır.
+    let onceden_cikarilan_turler = baglam
+        .imzalar
+        .get(&islem_kimligi)
+        .filter(|imza| !imza.govde_dogrulandi)
+        .map(|imza| imza.parametre_turleri.clone());
+    if onceden_cikarilan_turler.is_some() {
+        baglam.imzalar.remove(&islem_kimligi);
+    }
 
     if let Some(imza) = baglam.imzalar.get(&islem_kimligi) {
         if imza.parametre_turleri.len() != arg_turleri.len() {
@@ -77,38 +88,23 @@ pub(super) fn cagri_denetle(
             .zip(arg_turleri.iter())
             .all(|(param, arg)| cagri_turu_uyumlu(param, arg));
         if !uyumlu {
-            // K-067 imza terfisi: uyumsuzluk YALNIZ ters-genişlemeyse
-            // (param TamSayı[-listesi], arg Ondalık[-listesi]) imza kaldırılır
-            // ve gövde geniş türlerle ilk-çağrı gibi yeniden denetlenir —
-            // saklanan imza bu iki tür içinde en geniş biçime ulaşır. Bu,
-            // public sözleşmeyi bütün çağrı yerlerinden bağımsız yapmaz
-            // (V1-P0-01). Gövde geniş türle geçerli değilse doğal tanısı çıkar.
-            // Özyineleme denetimi
-            // sürerken terfi yapılmaz (T017 kalır).
-            let yalniz_ters_genisleme =
-                imza.parametre_turleri
-                    .iter()
-                    .zip(arg_turleri.iter())
-                    .all(|(param, arg)| {
-                        param == arg
-                            || matches!((param, arg), (Tur::Ondalik, Tur::TamSayi))
-                            || matches!(
-                                (param, arg),
-                                (Tur::Liste(VeriTuru::Ondalik), Tur::Liste(VeriTuru::TamSayi))
-                            )
-                            || matches!((param, arg), (Tur::TamSayi, Tur::Ondalik))
-                            || matches!(
-                                (param, arg),
-                                (Tur::Liste(VeriTuru::TamSayi), Tur::Liste(VeriTuru::Ondalik))
-                            )
-                    });
+            // Keşif geçişinde birleşim sıra-bağımsızdır: sayısal skaler
+            // ve kapsayıcıların dar/geniş çiftleri tek en geniş tipe ulaşır.
+            let birlesik_turler = imza
+                .parametre_turleri
+                .iter()
+                .zip(arg_turleri.iter())
+                .map(|(param, arg)| cagri_turlerini_birlestir(param, arg))
+                .collect::<Option<Vec<_>>>();
             let ozyinelemede = baglam
                 .denetim_yigini
                 .iter()
                 .any(|kayit| kayit.kimlik == islem_kimligi);
-            if yalniz_ters_genisleme && !ozyinelemede && !imza.acik {
+            if let Some(birlesik_turler) = birlesik_turler
+                .filter(|turler| *turler != imza.parametre_turleri && !ozyinelemede && !imza.acik)
+            {
                 baglam.imzalar.remove(&islem_kimligi);
-                return cagri_denetle(ad, arg_turleri, baglam, satir);
+                return cagri_denetle(ad, &birlesik_turler, baglam, satir);
             }
             return Err(Tani::yeni(
                 "T017",
@@ -229,7 +225,8 @@ pub(super) fn cagri_denetle(
     };
     let donus_bildirim_satiri = islem.donus_satiri.unwrap_or(satir);
     let acik = acik_turler.is_some();
-    let denetim_turleri = acik_turler.unwrap_or_else(|| arg_turleri.to_vec());
+    let denetim_turleri = acik_turler
+        .unwrap_or_else(|| onceden_cikarilan_turler.unwrap_or_else(|| arg_turleri.to_vec()));
     if !denetim_turleri
         .iter()
         .zip(arg_turleri.iter())
@@ -357,6 +354,7 @@ pub(super) fn cagri_denetle(
         Imza {
             parametre_turleri: denetim_turleri,
             donus,
+            govde_dogrulandi: true,
             acik,
         },
     );

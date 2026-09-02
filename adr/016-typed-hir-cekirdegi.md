@@ -2,8 +2,9 @@
 
 - **Durum:** kabul
 - **Tarih:** 1 Eylül 2026
-- **İlgili kayıt:** K-103, K-104, B-019, V1-P0-14
-- **Revizyon:** 2 Eylül 2026 — K-120/B-041 semantic LSP tüketimi eklendi
+- **İlgili kayıt:** K-103, K-104, K-121, B-007, B-019, V1-P0-14
+- **Revizyon:** 2 Eylül 2026 — K-120 semantic LSP ve K-121 nihai çıkarım
+  tüketimi eklendi
 
 ## Bağlam
 
@@ -63,6 +64,11 @@ sonra LSP aralığı ve morfolojik yüzey üretmek için okur. HIR aralığı he
 dosya kimliği taşımadığından dış tanım, açık belgede tam yerel başlık
 olarak doğrulanamazsa definition/rename fail-closed durur.
 
+K-121'de yerel işlem imzası keşfi, HIR üretmeyen kopya-AST geçişine ayrıldı.
+Bütün erişilebilir çağrı kısıtları nihai imzada birleştikten sonra asıl checker
+gövdeyi yeniden doğrular; `HirOlusturmaBilgisi` yalnız bu geçişten çıkar.
+Geçici ilk çağrı sonucu veya kaynak sırası kalıcı HIR türüne sızamaz.
+
 ## Değişmezler
 
 1. Başarılı checker bilgisi olmadan `HirProgram` kurulamaz.
@@ -77,6 +83,8 @@ olarak doğrulanamazsa definition/rename fail-closed durur.
    başarısız derlemede parser-metni fallback'i yoktur.
 10. Dosya kökeni kanıtlanamayan içe alınmış tanım, açık belgenin satırıyla
     sayısal olarak çakışsa bile yerel tanım kabul edilmez.
+11. Yerel işlem çıkarımının keşif geçişi HIR üretmez; HIR türleri bütün çağrı
+    kısıtları birleştirildikten sonraki nihai checker sonucudur.
 
 ## Sonuçlar
 
@@ -86,4 +94,5 @@ olarak doğrulanamazsa definition/rename fail-closed durur.
 - HIR ve LSP davranış testleri tür/bağ kayıtlarını, sembol tanım/yazım
   aralıklarını, zorunlu faz sahipliğini ve production tüketicilerin kaynak
   adına geri düşmemesini korur.
-- Zee kaynak semantiği değişmediğinden yeni normatif spec gerekmez.
+- K-121'in sıra-bağımsız yerel çıkarım semantiği spec/04 ve spec/10'da
+  normatifleşmiştir; HIR bunun yalnız nihai sonucunu taşır.

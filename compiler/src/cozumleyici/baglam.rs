@@ -5,6 +5,7 @@ use super::*;
 pub(super) struct Imza {
     pub(super) parametre_turleri: Vec<Tur>,
     pub(super) donus: Option<Tur>,
+    pub(super) govde_dogrulandi: bool,
     /// K-083 açık parametre sözleşmesi çağrılarla terfi ettirilemez.
     pub(super) acik: bool,
 }
@@ -29,6 +30,7 @@ pub(super) struct Baglam {
     /// K-093: gezme boyunca biçimi sabit kalan kaynak listeler/sözlükler.
     /// Aynı kaynağı yeniden bağlama, ekleme, silme ve iç içe gezme T053'tür.
     pub(super) gezilen_koleksiyonlar: std::collections::HashSet<String>,
+    pub(super) cikarim_kesfi: bool, // yalnız geçici kısıt toplama; tanı/HIR otoritesi değildir
     /// Checker'ın HIR lowering'e devrettiği ifade türü ve semantic bağları.
     pub(super) hir_ifadeleri: HashMap<usize, crate::hir::HirIfadeBilgisi>,
     hir_sembol_adlari: HashMap<SymbolId, String>,
@@ -75,6 +77,7 @@ impl Baglam {
             basarili_sonuclar: std::collections::HashSet::new(),
             basarisiz_sonuclar: std::collections::HashSet::new(),
             gezilen_koleksiyonlar: std::collections::HashSet::new(),
+            cikarim_kesfi: false,
             hir_ifadeleri: HashMap::new(),
             hir_sembol_adlari: HashMap::new(),
             hir_sembol_tanimlari: HashMap::new(),
@@ -96,11 +99,9 @@ impl Baglam {
             yapi_konumlari: self.yapi_konumlari.clone(),
         }
     }
-
     pub(super) fn hir_sembol_adi_ekle(&mut self, kimlik: SymbolId, ad: String) {
         self.hir_sembol_adlari.entry(kimlik).or_insert(ad);
     }
-
     pub(super) fn hir_sembol_yazimi_ekle(
         &mut self,
         kimlik: SymbolId,

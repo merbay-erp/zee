@@ -618,6 +618,11 @@ cümleleri de birimlerde olduğu gibi kapsüllüdür (K-078). Dışa açılan b�
 işlemler parametre ve dönüş türünü kaynakta taşır; çağrı sırası paket API'sinin
 anlamını değiştiremez (K-086/spec-10).
 
+Ana kaynağın başlangıç düzeyi `<ad> al` işlemlerinde de K-121 ile bütün
+erişilebilir çağrı kısıtları gövde ve HIR üretiminden önce birleştirilir.
+TamSayı+Ondalık Ondalığa genişler; skaler, sayısal kapsayıcı ve çok parametreli
+çağrılarda kaynak sırası yerel işlem imzasını değiştiremez (spec/04).
+
 `dil paketler .` grafiğin doğrudan/geçişli ayrımını, sürümünü, göreli yolunu
 ve kilit özetini görünür kılar. `dil çıkar hesap .` yalnız doğrudan paketi
 kaldırır; ana projenin herhangi bir kaynağında `hesap paketini kullan`

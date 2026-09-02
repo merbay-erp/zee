@@ -16,6 +16,7 @@ mod akis;
 mod ast_donusum;
 mod baglam;
 mod cagri;
+mod cikarim;
 mod cumle;
 mod donus;
 mod etki;
@@ -26,18 +27,16 @@ mod turler;
 
 use self::akis::{
     bekleyen_gorev_olmadigini_denetle, daraltma_cikar, daraltma_cikar_geri, daraltma_ekle,
-    gezilen_hedefi_denetle, gezilen_koleksiyonu_degistirme_tanisi, gorev_kapsami_tanisi,
-    nesne_adi,
+    gezilen_hedefi_denetle, gezilen_koleksiyonu_degistirme_tanisi, gorev_kapsami_tanisi, nesne_adi,
 };
 use self::baglam::{Baglam, Imza, ImzaKaydi};
 use self::cagri::cagri_denetle;
+use self::cikarim::{cagri_turlerini_birlestir, cikarim_onbilgisi};
 use self::cumle::blok_denetle;
 use self::donus::{blok_kesin_sonlanir, donusleri_birlestir, donusleri_sarmala};
 use self::ifade::{hir_ifadesi_kaydet, ifade_denetle};
-use self::sembol::{
-    alan_cozumle, kapsam_baslat, kapsam_bitir, sembol_cozumle, SembolTablosu,
-};
 pub use self::sembol::ad_cozumle;
+use self::sembol::{alan_cozumle, kapsam_baslat, kapsam_bitir, sembol_cozumle, SembolTablosu};
 use self::sozlesme::{acik_islemleri_denetle, acik_parametre_turleri, bildirilmis_donus_turu};
 use self::turler::{
     alan_turu, bos_koleksiyon_uzlasi, intrinsic_turunu_cevir, parametre_turu, veri_turu_yap,
@@ -70,6 +69,10 @@ fn hir_kaynak_hatasi(satir: usize) -> Tani {
 /// bir cümlenin hatası sonrakilerin denetimini durdurmaz. LSP/denetle --json
 /// bu görünümü kullanır; derleme (çalıştır) ilk tanıda durur.
 pub fn denetle_coklu(program: &mut Program) -> Vec<Tani> {
+    // Geçerli programda asıl tanı/HIR geçişi de bütün çağrılardan
+    // birleştirilmiş parametreleri görür. Bozuk belgede keşif hatası ayrıca
+    // yayımlanmaz; mevcut çoklu tanı geçişi kaynak sırasında devam eder.
+    let cikarim_onbilgisi = cikarim_onbilgisi(program).unwrap_or_default();
     let mut tanilar = Vec::new();
     if let Err(tani) = etki::denetle(program) {
         tanilar.push(tani);
@@ -80,6 +83,7 @@ pub fn denetle_coklu(program: &mut Program) -> Vec<Tani> {
         std::mem::take(&mut program.islemler),
         program.yapilar.clone(),
     );
+    baglam.imzalar = cikarim_onbilgisi;
     if let Err(tani) = acik_islemleri_denetle(&mut baglam) {
         tanilar.push(tani);
         program.islemler = baglam.islemler;
@@ -100,9 +104,7 @@ pub fn denetle_coklu(program: &mut Program) -> Vec<Tani> {
             }
         }
         let onceki_bekleyenler = baglam.bekleyen_gorevler.clone();
-        if let Err(tani) =
-            blok_denetle(&mut program.cumleler[bas..son], &mut ortam, &mut baglam)
-        {
+        if let Err(tani) = blok_denetle(&mut program.cumleler[bas..son], &mut ortam, &mut baglam) {
             tanilar.push(tani);
             baglam.bekleyen_gorevler = onceki_bekleyenler;
             if tanilar.len() >= crate::tani::AZAMI_TANI_SAYISI {
@@ -126,8 +128,8 @@ pub fn denetle_coklu(program: &mut Program) -> Vec<Tani> {
 
 /// Programı yerinde çözümler ve tür denetiminden geçirir.
 ///
-/// Çıkarımlı işlemler ilk çağrı argümanlarıyla; açık imzalı işlemler ise
-/// tanım sözleşmesiyle çağrı beklemeden denetlenir (K-083).
+/// Çıkarımlı işlemler bütün erişilebilir çağrı kısıtlarının birleşimiyle;
+/// açık imzalı işlemler tanım sözleşmesiyle denetlenir (K-083/K-121).
 pub fn denetle(program: &mut Program) -> Result<(), Tani> {
     denetle_ve_hir_bilgisi(program).map(|_| ())
 }
@@ -136,6 +138,14 @@ pub fn denetle(program: &mut Program) -> Result<(), Tani> {
 pub(crate) fn denetle_ve_hir_bilgisi(
     program: &mut Program,
 ) -> Result<crate::hir::HirOlusturmaBilgisi, Tani> {
+    let cikarim_onbilgisi = cikarim_onbilgisi(program)?;
+    denetle_tek_gecis(program, cikarim_onbilgisi).map(|(hir, _)| hir)
+}
+
+fn denetle_tek_gecis(
+    program: &mut Program,
+    cikarim_onbilgisi: HashMap<IslemId, Imza>,
+) -> Result<(crate::hir::HirOlusturmaBilgisi, HashMap<IslemId, Imza>), Tani> {
     etki::denetle(program)?;
     let mut ortam = SembolTablosu::yeni(0);
     if let Some(tani) = yapi_turu_tanilari(&program.yapilar).into_iter().next() {
@@ -145,6 +155,7 @@ pub(crate) fn denetle_ve_hir_bilgisi(
         std::mem::take(&mut program.islemler),
         program.yapilar.clone(),
     );
+    baglam.imzalar = cikarim_onbilgisi;
     let mut sonuc = acik_islemleri_denetle(&mut baglam);
     if sonuc.is_ok() {
         sonuc = blok_denetle(&mut program.cumleler, &mut ortam, &mut baglam);
@@ -162,7 +173,10 @@ pub(crate) fn denetle_ve_hir_bilgisi(
     }
 
     let hir_bilgisi = sonuc.as_ref().ok().map(|_| baglam.hir_bilgisi());
+    let imzalar = std::mem::take(&mut baglam.imzalar);
     program.islemler = baglam.islemler;
     sonuc?;
-    hir_bilgisi.ok_or_else(|| ic_tutarlilik_hatasi("Başarılı checker HIR bilgisi üretmedi", 1))
+    hir_bilgisi
+        .map(|hir| (hir, imzalar))
+        .ok_or_else(|| ic_tutarlilik_hatasi("Başarılı checker HIR bilgisi üretmedi", 1))
 }

@@ -1796,6 +1796,28 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   RFC-0018/spec-13, [semantic LSP rehberi](../docs/lsp-semantic-gezinme.md), bir
   HIR ve yedi LSP regresyonuyla toplam 475 test yeşildir; B-041 kapandı.
 
+## K-121 — Yerel çağrı çıkarımını kaynak sırasından bağımsızlaştır (2 Eyl)
+
+- **Sorun:** Yerel `<ad> al` işlem imzası ilk çağrıda kuruluyor, o çağrının
+  sonucu da hemen HIR'a yazılıyordu. Sonraki Ondalık kısıt imzayı genişletse
+  bile daha önce türlenen sonuç dar kalabiliyor; aynı çağrıların yerini
+  değiştirmek programın kabulünü ve HIR türünü değiştirebiliyordu.
+- **Karar:** Checker önce programın kopyasında erişilebilir ana/test çağrılarını
+  keşfeder ve `IslemId` ile parametre konumu başına kısıtları birleştirir.
+  Asıl AST daha sonra bu nihai imzalarla bir kez denetlenir; kullanıcı tanısı,
+  semantic bağ ve typed HIR yalnız bu son geçişten çıkar.
+- **Birleşim:** Eşit tür sabit kalır; TamSayı+Ondalık Ondalık olur. Aynı kural
+  Liste, Sözlük, Seçenek ve Sonuç kapsayıcılarının sayısal iç türüne uygulanır.
+  Birleşmeyen çift asıl geçişte T017, parametre sayısı farkı T015'tir. İşlem
+  parametreleri birbirinden bağımsız birleşir; açık public imza değişmez.
+- **Mimari sahiplik:** Kopya-AST keşfi ve kafes birleşimi
+  `cozumleyici/cikarim.rs` yaprağına taşındı; `cagri.rs` nihai imzayla gövde ve
+  çağrı doğrulamasını sürdürür. ADR-013, RFC-0006, spec/04 ve spec/10 ile
+  [çağrı çıkarımı rehberi](../docs/cagri-cikarimi.md) aynı sözleşmeyi taşır.
+- **Kanıt:** Dar→geniş ve geniş→dar skaler, liste, iki parametre, iç içe çağrı
+  grafiği, iç blokta hata sonrası kısıt toplama ve iki sırada da T017 üreten
+  altı regresyon eklendi. Toplam 481 test yeşildir; B-007 ve V1-P0-01 kapandı.
+
 ---
 
 ## Sonraki adım
@@ -1804,5 +1826,5 @@ Korpus 10 öğrenci + 5 profesyonel usability oturumuna (Hafta 12 hedefi, erkeni
 Hafta 2'de kağıt üstünde) sesli okutulacak; her kayıt için "doğal mı /
 deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
-Makine hattında B-041/K-120 kapandı. Sırada B-007 yerel çağrı inference'ının
-kaynak sırasından bağımsızlaştırılması vardır.
+Makine hattında B-007/K-121 kapandı. Sırada B-008 `zee-tr-1` profilinin
+immutable sürüm kapısına bağlanması vardır.

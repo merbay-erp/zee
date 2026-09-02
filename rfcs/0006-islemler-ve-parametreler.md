@@ -5,7 +5,7 @@
   kullanıcı verisi öncesinde A/B/C kör karşılaştırması, tek-genel-sözdizimi
   koşulu ve karar eşikleri donduruldu. Karar gerekçesi §3'te
 - **Tarih:** 31 Ağustos 2026
-- **İlgili günlük kayıtları:** K-016/K-096 (çağrı sözdizimi ve karar deneyi), K-014 (kelime çakışmaları), K-007 (yanıt), K-067 (sayısal genişleme), K-083/K-086 (açık imza)
+- **İlgili günlük kayıtları:** K-016/K-096 (çağrı sözdizimi ve karar deneyi), K-014 (kelime çakışmaları), K-007 (yanıt), K-067 (sayısal genişleme), K-083/K-086 (açık imza), K-121 (yerel kısıt birleşimi)
 - **İlgili golden programlar:** 12, 13, 14, 15, 30
 - **Gerçekleme:** `islem_ayristir`/`cagri_kalibi` (`ayristirici.rs`),
   `cagri_denetle` + açık dönüş/akış kanıtı (`cozumleyici.rs`), public sınır
@@ -63,10 +63,15 @@ Kurallar (hepsi gerçeklenmiş ve testli):
 3. Argümanlar addan önce gelir ve `için` ya da `ile` ayracıyla biter (S019);
    birden çok argüman `ve` ile ayrılır; her dilim tam bir ifade bölgesidir
    (v0.2, K-038): `tabanın tam kısmı için yuvarla` geçerli.
-4. **v0 çağrı-güdümlü imza:** gövde ilk çağrının argüman türleriyle denetlenir;
-   sayı/listelerde TamSayı→Ondalık genişlemesi kabul edilir. Dar imza sonra
-   geniş argüman görürse K-067 ile kaldırılır ve gövde geniş türle yeniden
-   denetlenir. Diğer tür farkları T017, parametre sayısı T015'tir. Bu model
+4. **Yerel çağrı-güdümlü imza:** K-121'den beri checker önce erişilebilir
+   ana/test çağrılarını kopya AST'de gezer ve her parametre konumunun kısıtını
+   birleştirir. Eşit tür aynen kalır; TamSayı+Ondalık skaler, liste,
+   sözlük, Seçenek ve Sonuç kapsayıcılarında Ondalık tarafa genişler.
+   Keşif, iç bloktaki geçici dar sonuç hatasından sonra da erişilebilir
+   kısıtları toplamayı sürdürür. Gövde ve gerçek HIR yalnız bu nihai imzayla
+   denetlenir; çağrı satırlarının yerini değiştirmek sonucu değiştirmez.
+   Birleşmeyen tür farkları T017,
+   parametre sayısı T015'tir. Bu model
    public API için v1 sözleşmesi değildir. K-083 açık parametreyi, K-086 açık
    dönüşü ve paket/public zorunluluğunu ekledi. v1 public model bilinçli olarak
    monomorfiktir; generic sözdizimi v2+ sorusudur.
@@ -130,7 +135,7 @@ Doğal — kısmen ✓ (usability verisi şart) · Deterministik ✓ (en-uzun-ad
 başlık ön-tarama kuralları) · Öğrenilebilir ✓ (tanım tarafı çok güçlü: "işlem
 ortalamayı hesapla / sayıları al" sesli okunuşta kendini açıklıyor) ·
 Savunulabilir — çağrı yüzeyi usability kapısını bekliyor; public imza modeli
-K-086/spec-10 ile çağrı sırasından bağımsızdır.
+K-086/spec-10, yerel çıkarım K-121 ile çağrı sırasından bağımsızdır.
 
 ## Korpus etkisi
 

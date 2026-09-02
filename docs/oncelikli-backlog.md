@@ -47,9 +47,10 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
     varyantında eşitleyip iki tarafı ayrıştırarak B-042'yi kapattı (467 test).
 17. K-120 definition/rename'i `SymbolId`/`IslemId`/`YapiId` typed-HIR
     dizinlerine geçirerek B-041'i kapattı (475 test).
-18. Sıradaki makine omurgası B-007 yerel çağrı inference'ının kaynak sırasından
-    bağımsızlaştırılmasıdır.
-19. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
+18. K-121 iki fazlı yerel çağrı kısıtı birleşimiyle B-007'yi kapattı
+    (481 test).
+19. Sıradaki makine omurgası B-008 `zee-tr-1` immutable profil kapısıdır.
+20. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
 
 ## P0 — V1 öncesi dil ve derleyici omurgası
 
@@ -89,8 +90,14 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   `Tur`/`VeriTuru`/`SozlukDegerTuru`/`ad_cozumle` API'si korundu. ADR-013,
   [katman rehberi](checker-katmanlari.md) ve beş mimari test yeniden birleşmeyi
   durdurur; kaynak semantiği değişmedi ve V1-P0-11 kapandı.
-- **B-007 · AÇIK — yerel çağrı kaynaklı inference'ı sıra bağımsız yap.** Aynı
-  çağrıların kaynak sırasını değiştirmek yerel işlem türünü değiştirmemelidir.
+- **B-007 · KAPALI (K-121) — yerel çağrı kaynaklı inference'ı sıra bağımsız yap.**
+  Checker kopya AST'de erişilebilir ana/test çağrılarını keşfeder; her
+  `IslemId` ve parametre konumu için eşit/sayısal-kapsayıcı kısıtları
+  birleştirir. Asıl AST, tanı ve typed HIR yalnız nihai imzayla bir kez
+  üretilir. Skaler, liste, çok parametre ve iç içe çağrı grafiğinin iki
+  sırası, iç blok kurtarması ve birleşmeyen T017 çifti altı regresyonda
+  sabittir. Ayrıntı
+  [çağrı çıkarımı rehberindedir](cagri-cikarimi.md).
 - **B-008 · KISMEN — `zee-tr-1` profilini immutable koru.** RFC-0018/spec-13
   kırıcı değişikliği `zee-tr-2`ye yönlendirir; bağımsız uyumluluk denetimiyle
   bu kural CI'da görünür olmalıdır.
@@ -311,5 +318,5 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 ## Bir sonraki somut kapı
 
 İnsan kanıtı hattında B-001, doldurulmuş gerçek usability formları ve önceden
-ilan edilmiş eşikleri bekler. Makine hattında B-041/K-120 kapandı; sıradaki iş
-B-007 yerel çağrı inference'ının kaynak sırasından bağımsızlaştırılmasıdır.
+ilan edilmiş eşikleri bekler. Makine hattında B-007/K-121 kapandı; sıradaki iş
+B-008 `zee-tr-1` profilinin immutable uyumluluk kapısıdır.
