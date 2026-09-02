@@ -1,6 +1,6 @@
 # 13 — Sürümlü morfoloji profili
 
-Normatif kaynak: RFC-0018 (geçici kabul), K-089/K-122. Bu bölüm spec/03'teki ad
+Normatif kaynak: RFC-0018 (geçici kabul), K-089/K-122/K-123. Bu bölüm spec/03'teki ad
 çözümünün makinece sabitlenen profilini tanımlar.
 
 ## Profil kimliği (TANIMLI)
@@ -107,6 +107,8 @@ davranış yeni `zee-tr-N` kimliği, yeni fixture ve sürüm/edition geçişi is
 - `compiler/tests/morfoloji_v1.snapshot`
 - `compiler/tests/fixtures/morfoloji-zee-tr-1.sha256`: immutable semantic
   parmak izi; Git tabanına girdikten sonra CI'da değiştirilemez
+- `conformance/morfoloji/sema-v1.schema.json` ve `zee-tr-1.json`: Rust'tan
+  bağımsız profil, 27 çözüm/karar ve 21 kanonik/geçersiz üretim vakası
 - `compiler/tests/morfoloji_testi.rs`: tablo, tek/iki katman property,
   kanonik üretim golden'ları, ters ses değişimi, belirsizlik korpusu, CLI;
   ayrıca 4.096 deterministik kök, 2.048 bütün-aday kararı ve NFC/NFD sınırı
@@ -118,6 +120,8 @@ davranış yeni `zee-tr-N` kimliği, yeni fixture ve sürüm/edition geçişi is
 
 K-122/B-008'in iki kapılı bakım akışı
 [profil uyumluluk rehberindedir](../docs/morfoloji-profil-uyumlulugu.md).
+K-123/B-009'un veri şeması ve ikinci compiler tüketici protokolü
+[morfoloji conformance rehberindedir](../docs/morfoloji-conformance.md).
 
 K-111/B-016 kanıtının çalıştırma, crash küçültme ve dürüst sınır ayrıntıları
 [morfoloji doğrulama rehberindedir](../docs/morfoloji-dogrulama.md).

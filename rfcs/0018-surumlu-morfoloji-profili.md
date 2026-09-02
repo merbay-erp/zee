@@ -1,12 +1,13 @@
 # RFC-0018 — Sürümlü Morfoloji Profili
 
 - **Durum:** geçici kabul — K-089 gerçeklendi; K-111 property/fuzz, K-122
-  immutable uyumluluk kapısını bağladı
+  immutable uyumluluk, K-123 bağımsız conformance kapısını bağladı
 - **Tarih:** 1 Eylül 2026
 - **İlgili kararlar:** K-011, K-041, K-049, K-061, K-072, K-089, K-111,
-  K-122; B-008, V1-P1-02, V1-P0-21
+  K-122, K-123; B-008/B-009, V1-P1-02, V1-P0-21
 - **Normatif karşılık:** spec/03 ve spec/13
-- **Gerçekleme:** `compiler/src/morfoloji.rs`; `morfoloji_testi.rs`, `lsp_testi.rs`, `proje_testi.rs`
+- **Gerçekleme:** `compiler/src/morfoloji.rs`; `morfoloji_testi.rs`,
+  `morfoloji_conformance_testi.rs`, `lsp_testi.rs`, `proje_testi.rs`
 
 ## Sorun
 
@@ -37,6 +38,10 @@ kaynakta A001'i çözüme veya tek çözümü A002'ye çevirebilirdi.
 7. `proje.kilit` sürüm 2, ana proje ve her paket için morfoloji profilini
    kaydeder. `dil sürüm` etkin profili, `dil morfoloji [kelime]` profil
    tablosunu veya bütün yapısal çözümleri gösterir.
+8. Her yayımlanmış profil, compiler kaynak ağacından bağımsız sürümlü JSON
+   conformance verisi taşır. Veri; profil tablosunu, yüzeyin sıralı bütün
+   kök+ek çözümlerini, kapsam içindeki kök/A001/A002 kararını ve kanonik
+   üretimi içerir. Şema Rust iç adlarına bağlı değildir.
 
 ## Sürümleme ve uyumluluk
 
@@ -65,6 +70,9 @@ tek geçerli yol yeni `zee-tr-N` kimliği ve yeni fixture eklemektir.
 - K-122, 4.096 kökün 53.248 üretim+çözüm vektörü ile 11 ham sınır yüzeyini
   tek SHA-256 kaydında dondurur. `dil morfoloji --uyumluluk` kaydı gösterir;
   geçmişte yayımlanmış profil fixture'larını değiştirmek CI'da yasaktır.
+- K-123, depo kökündeki JSON Schema + `zee-tr-1.json` korpusunda 27
+  çözüm/karar ve 21 üretim vakasını ikinci compiler'lara açar; Rust bootstrap
+  aynı veriyi yalnız tüketen veri-güdümlü conformance testiyle doğrular.
 - Düzenli kök korpusu × bütün tek ekler için `üret → çöz` property testi vardır.
 - Aynı kök korpusu × bütün geçerli iyelik zincirleri iki katmanlı property
   testinden geçer.

@@ -16,8 +16,8 @@ if ! git cat-file -e "${taban}^{commit}" 2>/dev/null; then
 fi
 
 korunanlar="$(
-    git ls-tree -r --name-only "$taban" -- compiler/tests/fixtures/ |
-        grep -E '^compiler/tests/fixtures/morfoloji-zee-tr-[0-9]+\.sha256$' || true
+    git ls-tree -r --name-only "$taban" -- compiler/tests/fixtures/ conformance/morfoloji/ |
+        grep -E '^(compiler/tests/fixtures/morfoloji-zee-tr-[0-9]+\.sha256|conformance/morfoloji/(zee-tr-[0-9]+\.json|sema-v[0-9]+\.schema\.json))$' || true
 )"
 while IFS= read -r dosya; do
     [[ -z "$dosya" ]] && continue

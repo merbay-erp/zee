@@ -605,8 +605,10 @@ dizinlerine geçirip hatalı belgede metin tahminini ve dış tanım için eksik
 tek-dosya rename'i kapattı. K-121 yerel işlem parametre kısıtlarını gövde/HIR
 üretiminden önce birleştirip çağrı sırası etkisini kapattı. K-122 `zee-tr-1`
 davranışını semantic SHA-256 kayıt ve Git-geçmişli CI koruğuyla immutable
-yaptı. Şimdi B-009 bağımsız morfoloji conformance korpusu gelir. P0 maddeleri
-kapanmadan yeni dil özelliği varsayılan olarak öne alınmaz;
+yaptı. K-123 bunu kök `conformance/` alanında sürümlü JSON Schema, 27
+çözüm/karar ve 21 üretim vakasıyla derleyiciden bağımsız bir tüketici
+sözleşmesine dönüştürüp B-009'u kapattı. Şimdi B-011 gözlenebilir concurrency
+uyumluluk sözü gelir. P0 maddeleri kapanmadan yeni dil özelliği öne alınmaz;
 yarım güvenlik/correctness dilimi önce atomik olarak tamamlanır.
 
 K-016'nın makine hazırlığı K-096 ile
@@ -648,8 +650,10 @@ semantiğini `zee-io-1` profiliyle sürümledi. K-117 NFC-kanonik `.zep` yolunu,
 K-118 spec↔code kanıt haritasını ve canlı depo sayıları üreticisini tamamladı.
 K-119 formatter parse-equivalence kanıtıyla B-042'yi, K-120 semantic LSP
 bağıyla B-041'i, K-121 iki fazlı yerel çağrı çıkarımıyla B-007'yi
-tamamladı. K-122 immutable `zee-tr-1` kapısıyla B-008'i tamamladı. Sıradaki
-omurga B-009 compiler'dan bağımsız morfoloji conformance korpusudur.
+tamamladı. K-122 immutable `zee-tr-1` kapısıyla B-008'i tamamladı. K-123 kök
+JSON Schema ve veri korpusuyla compiler'dan bağımsız morfoloji conformance
+sözünü bağlayıp B-009'u kapattı. Sıradaki omurga B-011 gözlenebilir concurrency
+uyumluluk sözüdür.
 # 40. Proje felsefesinin korunması
 Bu projenin başarısı yalnız compiler’ın çalışması değildir. Başarı; Türkçe konuşan bir çocuğun yabancı syntax bariyerine takılmadan algoritmik düşünceyle tanışması, aynı dilin yıllar sonra onu terk etmeye zorlamaması ve ekosistemin tek bir şirketin kapalı ürünü haline gelmemesidir.
 Her yeni özellik şu dört sorudan geçmelidir: Türkçe doğal mı? Deterministik mi? Öğrenilebilir mi? Profesyonel ölçekte savunulabilir mi? Dördünden biri hayırsa özellik yeniden tasarlanır.

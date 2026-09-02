@@ -1,0 +1,129 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://zee.dev/conformance/morfoloji/sema-v1.schema.json",
+  "title": "Zee morfoloji conformance v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["sema", "normatif", "profil", "cozum_vakalari", "uretim_vakalari"],
+  "properties": {
+    "sema": { "const": "zee-morfoloji-conformance-v1" },
+    "normatif": { "type": "string", "minLength": 1 },
+    "profil": { "$ref": "#/$defs/profil" },
+    "cozum_vakalari": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/cozumVakasi" }
+    },
+    "uretim_vakalari": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/uretimVakasi" }
+    }
+  },
+  "$defs": {
+    "ekAdi": {
+      "enum": ["belirtme", "iyelik", "tamlayan", "yönelme", "ayrılma", "bulunma", "araç", "çoğul+yönelme"]
+    },
+    "ekKaydi": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kimlik", "yuzeyler"],
+      "properties": {
+        "kimlik": { "$ref": "#/$defs/ekAdi" },
+        "yuzeyler": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "profil": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kimlik", "sayisal_surum", "azami_ek_katmani", "uyumluluk_sha256", "ekler", "gecerli_iki_katman"],
+      "properties": {
+        "kimlik": { "type": "string", "pattern": "^zee-tr-[0-9]+$" },
+        "sayisal_surum": { "type": "integer", "minimum": 1 },
+        "azami_ek_katmani": { "type": "integer", "minimum": 1 },
+        "uyumluluk_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "ekler": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/ekKaydi" }
+        },
+        "gecerli_iki_katman": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "prefixItems": [
+              { "$ref": "#/$defs/ekAdi" },
+              { "$ref": "#/$defs/ekAdi" }
+            ],
+            "minItems": 2,
+            "maxItems": 2
+          }
+        }
+      }
+    },
+    "yapisalCozum": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kok", "ekler"],
+      "properties": {
+        "kok": { "type": "string", "minLength": 1 },
+        "ekler": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/ekAdi" }
+        }
+      }
+    },
+    "karar": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tur", "deger"],
+      "properties": {
+        "tur": { "enum": ["kok", "hata"] },
+        "deger": { "type": "string", "minLength": 1 }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "tur": { "const": "hata" } } },
+          "then": { "properties": { "deger": { "pattern": "^[A-Z][0-9]{3}$" } } }
+        }
+      ]
+    },
+    "cozumVakasi": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kimlik", "yuzey", "kapsam", "yapisal", "karar"],
+      "properties": {
+        "kimlik": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+        "yuzey": { "type": "string", "minLength": 1 },
+        "kapsam": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "yapisal": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/yapisalCozum" }
+        },
+        "karar": { "$ref": "#/$defs/karar" }
+      }
+    },
+    "uretimVakasi": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kimlik", "kok", "ekler", "yuzey"],
+      "properties": {
+        "kimlik": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+        "kok": { "type": "string", "minLength": 1 },
+        "ekler": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/ekAdi" }
+        },
+        "yuzey": { "type": ["string", "null"] }
+      }
+    }
+  }
+}

@@ -76,7 +76,8 @@ geri sayan aralık, para biçimi `kuruşlusu`, evrensel `metni`, çerez
 üçlemesi (oku/yaz/**sil**), **sürümlü `zee-tr-1` morfolojisi** (tek kaynak ek
 tablosu, zamir n'si, ikizleşme, iki katmanlı çözüm↔üretim ve
 [sürekli property/fuzz kanıtı](docs/morfoloji-dogrulama.md),
-[immutable profil kaydı](docs/morfoloji-profil-uyumlulugu.md)), **açık işlem
+[immutable profil kaydı](docs/morfoloji-profil-uyumlulugu.md) ve
+[bağımsız conformance korpusu](docs/morfoloji-conformance.md)), **açık işlem
 parametre türleri**
 (`sayıyı Ondalık olarak al`) ve public **dönüş sözleşmesi**
 (`Ondalık döndürür` / `değer döndürmez`), **proje bildirimi** (`proje.dil`, klasörden
@@ -145,7 +146,7 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **482** |
+| Rust + doctest vakası | **483** |
 | Tanı kimliği | **145 etkin + 3 ayrılmış** |
 | RFC | **23** (2 kabul, 19 geçici kabul, 2 taslak) |
 | ADR | **26** (26 kabul) |
@@ -272,6 +273,11 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   bağladı; kod davranışı değişirse test, eski fixture değişirse Git-geçmişli
   CI koruğu kırılır. Yeni anlam yalnız yeni profil kimliğiyle açılır. Bakım
   sözleşmesi [profil uyumluluk rehberindedir](docs/morfoloji-profil-uyumlulugu.md).
+  K-123 aynı profili kök `conformance/` alanında sürümlü JSON Schema, 27
+  çözüm/karar ve 21 üretim vakasıyla Rust'tan bağımsız yayımladı. Gelecekteki
+  derleyici gerçeklemeleri aynı sıralı adayları ve üretimleri bu veriyle
+  sınayabilir; bakım ve tüketici protokolü
+  [morfoloji conformance rehberindedir](docs/morfoloji-conformance.md).
   Uygulama sırası
   [öncelikli backlog](docs/oncelikli-backlog.md) ile sabittir.
   Bağlayıcı liste: [docs/v1-surum-kapilari.md](docs/v1-surum-kapilari.md).

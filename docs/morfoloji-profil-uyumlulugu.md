@@ -31,10 +31,11 @@ Kayıt `compiler/tests/fixtures/morfoloji-zee-tr-1.sha256` dosyasındadır.
    byte düzeyinde eşitler. Tablo veya kapsanan semantic davranış değişirse
    normal `cargo test` kırılır.
 2. `scripts/morfoloji-profili-korugu.sh`, CI taban revizyonunda zaten bulunan
-   bütün `morfoloji-zee-tr-N.sha256` dosyalarını immutable sayar. Fixture'ı
-   yeni özete göre güncellemek de CI'ı kırar; silmek veya yeniden adlandırmak
-   aynı biçimde yasaktır. CI tam Git geçmişiyle pull request tabanını ya da
-   push öncesi commit'i denetler.
+   bütün `morfoloji-zee-tr-N.sha256` kayıtlarını, bağımsız `zee-tr-N.json`
+   conformance verilerini ve `sema-vN.schema.json` şemalarını immutable sayar.
+   Fixture'ı yeni özete göre güncellemek de CI'ı kırar; silmek veya yeniden
+   adlandırmak aynı biçimde yasaktır. CI tam Git geçmişiyle pull request
+   tabanını ya da push öncesi commit'i denetler.
 
 K-122'nin fixture'ı ilk kez eklediği tabanda önceki kayıt bulunmadığı için
 yalnız bu bootstrap eklemesi tarih koruğundan muaftır. Dosya bir kez tabana
@@ -66,5 +67,6 @@ scripts/morfoloji-profili-korugu.sh <taban-revizyonu>
 
 Parmak izi geniş ve deterministik bir davranış korpusudur; bütün olası Unicode
 dizilerinin biçimsel ispatı değildir. K-111 property/fuzz katmanı bu nedenle
-ayrıca kalır. İkinci bir compiler'ın Rust koduna bakmadan tüketebileceği tam
-`yüzey → kök → ek → karar` fixture'ı B-009'un sıradaki ayrı kapısıdır.
+ayrıca kalır. K-123/B-009, ikinci bir compiler'ın Rust koduna bakmadan
+tüketebileceği sürümlü `yüzey → kök → ek → karar` korpusunu ayrı
+[conformance sözleşmesine](morfoloji-conformance.md) bağladı.

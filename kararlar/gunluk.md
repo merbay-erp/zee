@@ -1844,6 +1844,32 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   kapandı. Bütün olası Unicode dizilerinin biçimsel ispatı iddia edilmez;
   K-111 fuzz/property kalır, bağımsız veri korpusu B-009'dur.
 
+## K-123 — Morfoloji conformance korpusunu derleyiciden bağımsızlaştır (2 Eyl)
+
+- **Sorun:** `zee-tr-1` davranışı güçlü Rust property testleri, tablo snapshot'ı
+  ve K-122 semantic kaydıyla korunuyordu; fakat başka dilde yazılacak bir
+  derleyicinin aynı sözü Rust modül adlarını ya da test kodunu taklit etmeden
+  tüketebileceği sürümlü veri protokolü yoktu.
+- **Karar:** Kök `conformance/morfoloji/` alanı implementation'dan bağımsız
+  normatif tüketici yüzeyidir. `sema-v1.schema.json` biçimi; `zee-tr-1.json`
+  profil kimliği, katman sınırı, K-122 kaydı, ek tablosu, izinli zincirler ve
+  beklenen sonuçları taşır. Alanlarda Rust tür/fonksiyon adı bulunmaz.
+- **Kapsam:** 27 çözüm/karar vakası tek ve iki katmanlı ekleri, p/nk
+  yumuşaması, ikizleşme, sertleşme, ünlü düşmesi, doğrudan exact önceliği,
+  A001/A002 ve sıralı bütün yapısal adayları kapsar. 21 üretim vakası yedi tek
+  eki, altı iki katmanlı zinciri, ses olaylarını ve üç geçersiz zinciri kapsar.
+- **Yürütülebilir bağ:** Veri odaklı Rust regresyonu şema kimliğiyle profil
+  metadata'sını, bütün tabloları, aday sırasını, kararları ve üretimleri çalışan
+  motorla eşitler. JSON Schema ve profil korpusu K-122'nin Git-geçmişli
+  immutable koruğuna dahildir; yayımlanmış profilde sessiz fixture güncellemesi
+  yapılamaz.
+- **Kanıt ve sınır:** RFC-0018/spec-13,
+  [conformance rehberi](../docs/morfoloji-conformance.md) ve kök korpus aynı
+  tüketici protokolünü taşır. JSON Schema biçimi tanımlar; Rust'ın typed veri
+  yükleyicisi ve açık değişmez kontrolleri mevcut korpusu yürütür. Bir yeni
+  regresyonla toplam 483 test yeşildir; B-009 kapandı. Sıradaki makine omurgası
+  B-011 gözlenebilir concurrency uyumluluk sözüdür.
+
 ---
 
 ## Sonraki adım
@@ -1852,5 +1878,5 @@ Korpus 10 öğrenci + 5 profesyonel usability oturumuna (Hafta 12 hedefi, erkeni
 Hafta 2'de kağıt üstünde) sesli okutulacak; her kayıt için "doğal mı /
 deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
-Makine hattında B-008/K-122 kapandı. Sırada B-009 compiler'dan bağımsız
-morfoloji conformance korpusu vardır.
+Makine hattında B-009/K-123 kapandı. Sırada B-011 gözlenebilir concurrency
+uyumluluk sözü vardır.
