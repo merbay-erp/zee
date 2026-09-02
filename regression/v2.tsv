@@ -1,0 +1,19 @@
+# zee-semantic-regresyon-2
+# vaka	bug	fixed_by	introduced_by	guaranteed_since	faz	kip	tani	span	exit	cikti	dosya
+karisik-boolean-baglaci	K-097	d1d6abd84cac3c8f49e4f6e15a0898525cf310d5	-	0.8.0-dev	parser	parser	S030	2:31:4	1	-	regression/parser/karisik-boolean-baglaci.dil
+postfix-islem-golgesi	K-097	d1d6abd84cac3c8f49e4f6e15a0898525cf310d5	-	0.8.0-dev	parser	run	-	-	0	6	regression/parser/postfix-islem-golgesi.dil
+ic-blok-kurtarmasi	K-113	0fbb1ecc180580af2f0abac6abc736ca6ae307f7	-	0.8.0-dev	parser	diagnostics	S004	2:5:10	1	-	regression/parser/ic-blok-kurtarmasi.dil
+cagri-cikarimi-sira-bagimsiz	K-121	23d6a35385bc52363e511ed679276d041da5915a	-	0.8.0-dev	checker	run	-	-	0	1,5	regression/checker/cagri-cikarimi-sira-bagimsiz.dil
+cagri-turu-cakismasi	K-121	23d6a35385bc52363e511ed679276d041da5915a	-	0.8.0-dev	checker	compile	T017	6:3:23	1	-	regression/checker/cagri-turu-cakismasi.dil
+blok-kapsami-sizintisi	K-101	0f1c5b991ae72556d76c5773f74e08ea366aeaed	-	0.8.0-dev	checker	compile	A001	4:1:2	1	-	regression/checker/blok-kapsami-sizintisi.dil
+ozellik-alan-donusumu	K-112	dbeb0b1f5145a06e407fc1dd7cbbe72fb5e42e18	-	0.8.0-dev	hir	run	-	-	0	7	regression/hir/ozellik-alan-donusumu.dil
+kesin-kaynak-zarfi	K-126	4fb15a545069f0039f536e52a6d211c7a3427106	-	0.8.0-dev	hir	hir	-	-	0	-	regression/hir/kesin-kaynak-zarfi.dil
+keyfi-hassasiyet	K-092	9757c83212fe658e4004e6f8274498a32c686c17	-	0.8.0-dev	runtime	run	-	-	0	1,123456789012345678901234567890123456789	regression/runtime/keyfi-hassasiyet.dil
+cikis-kodu	K-069	e19c65673d1b072180f8b8b5182687d98339d71f	-	0.8.0-dev	runtime	run	-	-	7	başladı	regression/runtime/cikis-kodu.dil
+sifira-bolme	K-092	9757c83212fe658e4004e6f8274498a32c686c17	-	0.8.0-dev	runtime	run	C003	1:1:1	1	-	regression/runtime/sifira-bolme.dil
+belirsiz-kok	K-111	d1ea6ba5daec1457b7a8b0c5fbd21ef6ec34ecb2	-	0.8.0-dev	morphology	compile	A002	3:1:6	1	-	regression/morphology/belirsiz-kok.dil
+iyelik-alan-zinciri	K-111	d1ea6ba5daec1457b7a8b0c5fbd21ef6ec34ecb2	-	0.8.0-dev	morphology	run	-	-	0	4	regression/morphology/iyelik-alan-zinciri.dil
+esit-uyanis-sirasi	K-124	7228694a5c06fce4bd34538bfcdd1bc0174115d7	-	0.8.0-dev	concurrency	run	-	-	0	ana\na başladı\nb başladı\na bitti\nb bitti	regression/concurrency/esit-uyanis-sirasi.dil
+son-tarih-iptali	K-133	f56fef0e9246847cb0f7001d989e9212881f4de3	-	0.8.0-dev	concurrency	run	-	-	0	başladı\ngrubu iptal	regression/concurrency/son-tarih-iptali.dil
+kapali-ag-yetkinligi	K-127	c213c0502e96fca010c9199b26aa71ca3e0b0419	-	0.8.0-dev	security	capability	T054	2:7:49	1	-	regression/security/kapali-ag-yetkinligi.dil
+olu-kod-dosya-yetkinligi	K-127	c213c0502e96fca010c9199b26aa71ca3e0b0419	-	0.8.0-dev	security	capability	T054	3:14:31	1	-	regression/security/olu-kod-dosya-yetkinligi.dil

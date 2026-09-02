@@ -19,7 +19,8 @@ içinde kaybolur.
 1. Kök `regression/` ağacı parser, checker, typed HIR, runtime, morphology,
    concurrency ve security fazlarına göre ayrılır. Her vaka tek, küçük `.dil`
    dosyasıdır; dosya adı kararlı vaka kimliğiyle aynıdır.
-2. `regression/v1.tsv`; vaka ve `K-NNN` bug kimliğini, birincil fazı, yürütme
+2. `regression/v1.tsv` (K-155/ADR-052 ile `v2.tsv`ye yükseltildi); vaka ve
+   `K-NNN` bug kimliğini, birincil fazı, yürütme
    kipini, beklenen tanı kodu ile kesin `satır:sütun:uzunluk` aralığını,
    süreç/program çıkışını, sıralı çıktıyı ve dosya yolunu tek satırda taşır.
    K-kimliğinin karar günlüğünde gerçek bir kaydı bulunmak zorundadır.

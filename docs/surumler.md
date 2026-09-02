@@ -12,6 +12,15 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **Semantic regresyon provenance zinciri** (K-155, ADR-052): 17 tarihsel
+  vaka `regression/v2.tsv` içinde gerçek tam `fixed_by`, kanıtlıysa
+  `introduced_by` ve `guaranteed_since=0.8.0-dev` taşır. Eski introduced
+  commit'ler reproducer olmadan tahmin edilmedi; açık `-` yalnız kanıtlı ata
+  SHA'ya tek yönlü zenginleştirilebilir. Manifest testi commit varlığı ve ata
+  yönünü, Git koruğu v1→v2 soy ağacını ve fix/bug/düzeltme başlıklı her
+  compiler kaynak commit'inin yeni fixture sahibi olmasını denetler. B-063
+  kapandı; grammar, runtime, tanı anlamı, RFC ve normatif spec değişmedi.
+
 - **LSP tam-metin değişiklik ölçeği** (K-154, ADR-051): Ölçüm koşucusu artık
   açık `--lsp-olcek` kipinde 2.000/5.000/10.000/20.000 satır `didChange`
   p50/p95 eğrisini ve önceden belirlenmiş 250/500/1000 ms p95 çizgilerinin

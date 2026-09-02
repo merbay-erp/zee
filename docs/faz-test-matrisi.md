@@ -31,7 +31,7 @@
 | WASM | `compiler/tests/playground_testi.rs`<br>`compiler/fuzz/corpus/wasm_abi` | `compiler/fuzz/fuzz_targets/wasm_abi.rs`<br>`compiler/fuzz/corpus/wasm_abi` | — | `uctan_uca` |
 | CLI | `compiler/tests/io_izi_cli_testi.rs`<br>`golden/28-cli-araci.dil` | — | — | `proje`<br>`uctan_uca` |
 | Project system | `compiler/tests/proje_testi.rs`<br>`projeler` | — | — | `paket`<br>`registry`<br>`cli`<br>`uctan_uca` |
-| Semantic regression | `regression/v1.tsv`<br>`regression` | — | — | `uctan_uca` |
+| Semantic regression | `regression/v2.tsv`<br>`regression`<br>`scripts/semantic-regresyon-korugu.sh` | — | — | `uctan_uca` |
 | End-to-end | `golden` | — | — | — |
 | Engineering gates | `compiler/tests/fixtures/islev-egilimi-v1.tsv`<br>`compiler/tests/fixtures/izinli-katman-cevrimleri-v1.tsv`<br>`compiler/tests/fixtures/katman-mimarisi-v1.tsv`<br>`compiler/tests/fixtures/tani-kimlikleri-v1.tsv`<br>`docs/kanit-haritasi-v1.tsv`<br>`docs/performans-gecmisi-v2.tsv`<br>`docs/olcumler.md` | — | — | — |
 
@@ -61,7 +61,7 @@ yeniden koşulması gereken sonraki yüzeylerini gösterir.
 | WASM | `test:playground_testi` | Playground, ABI sahipligi, limitler ve gercek wasm hostu oncesi native regresyonlar. |
 | CLI | `test:io_izi_cli_testi` | Komut satiri IO kaydi ve yeniden oynatma siniri. |
 | Project system | `test:proje_testi`<br>`test:projeler_testi` | Bildirim, kilit, bagimlilik, yetkinlik ve tam proje ornekleri. |
-| Semantic regression | `test:semantic_regresyon_korpusu_testi` | Duzeltilmis bug kimligi, birincil faz, kesin tani span, exit ve gozlenebilir cikti korpusu. |
+| Semantic regression | `test:semantic_regresyon_korpusu_testi`<br>`test:semantic_regresyon_korugu_testi` | Duzeltilmis bug kimligi, fixed/introduced commit, garanti surumu, faz, kesin tani span, exit ve cikti korpusu. |
 | End-to-end | `test:golden_testi` | 33 golden program ile kullanici yuzeyinden tam derleme ve yurutme hatti. |
 | Engineering gates | `test:bagimlilik_cevrimi_testi`<br>`test:dokuman_tazelik_testi`<br>`test:katalog_testi`<br>`test:katman_mimarisi_testi`<br>`test:mimari_sinir_testi`<br>`test:panic_guvenligi_testi`<br>`test:tani_kimligi_testi`<br>`bin:islev_egilimi:testler::`<br>`bin:faz_test_matrisi:testler::`<br>`bin:olcum:testler::` | Belge tani mimari panic bicim katman cevrim ve exact provenance/esik performans gozetim kapilarinin kendi regresyonlari. |
 
