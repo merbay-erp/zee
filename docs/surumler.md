@@ -376,6 +376,14 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   taşır. Gelecekte çok çekirdek kullanımı yalnız aynı gözlemleri veren iç
   optimizasyon olabilir. Genel Git-tarih conformance koruğu yayımlanmış veriyi
   kilitler. Bir yeni regresyonla toplam 484 test yeşildir; B-011 kapandı.
+- **Ondalık/binary float FFI sınırı** (K-125, ADR-029): RFC-0012'deki artık
+  var olmayan `GerçekSayı↔double` eşlemesi kaldırıldı. Ondalık'ın C
+  `float`/`double` ya da binary32/binary64'e örtük dönüşümü yasaktır;
+  `Tur`/`Deger` envanteri yalnız onluk değeri taşır. Gelecekteki köprü hem
+  deklarasyon hem çağrıda görünür `kayıplı` işareti, `Sonuç` ve normatif IEEE
+  754 yuvarlama/özel-değer semantiği ister. FFI Faz 4/5 taslağı olarak kalır.
+  Enum envanteri, eski yüzey reddi, exact `0,1+0,2=0,3` ve belge tazeliği için
+  bir yeni regresyonla toplam 485 test yeşildir; B-012/V1-P0-28 kapandı.
 
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`

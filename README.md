@@ -53,7 +53,8 @@ sabitliği), sözlükler (sıra korumalı), metin işlemleri
 `yeni`, iyelik ekiyle alan erişimi), **desen eşleştirme** (`göre / ise`),
 CSV/JSON okuma, tarih/saat, komut satırı argümanları, **test blokları**
 (`dil dene`), **keyfî hassasiyetli Ondalık** (3,14 — tam onluk aritmetik:
-0,1+0,2=0,3; yalnız sonsuz bölüm 34 anlamlı hane),
+0,1+0,2=0,3; yalnız sonsuz bölüm 34 anlamlı hane; binary float'a örtük FFI
+köprüsü yoktur),
 **Süre** (yarım saniye), **birimler** (`X birimini kullan`), **Sonuç dönüşü**
 (`hatasını döndür`), `ve/veya/değilse` mantığı, **HTTP istemcisi** ve
 **deneysel web sunucusu** (localhost TCP; testlerde sahte), **yapılandırılmış
@@ -148,10 +149,10 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **484** |
+| Rust + doctest vakası | **485** |
 | Tanı kimliği | **145 etkin + 3 ayrılmış** |
 | RFC | **23** (2 kabul, 19 geçici kabul, 2 taslak) |
-| ADR | **26** (26 kabul) |
+| ADR | **27** (27 kabul) |
 | Normatif spec bölümü | **22** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
@@ -285,6 +286,10 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   bağımsız kilitledi. Çok çekirdekli bir gelecek runtime bu gözlemleri aynen
   korumadıkça uyumlu sayılamaz; bakım sınırı
   [eşzamanlılık conformance rehberindedir](docs/eszamanlilik-conformance.md).
+  K-125/ADR-029 artık var olmayan `GerçekSayı↔double` FFI taslak eşlemesini
+  kaldırdı. Ondalık'ın binary32/binary64'e örtük dönüşümü yasaktır; gelecekteki
+  köprü açık `kayıplı` işareti, `Sonuç` ve normatif IEEE 754 ayrıntıları
+  olmadan gerçeklenemez. FFI'nın kendisi Faz 4/5 taslağı olarak kalır.
   Uygulama sırası
   [öncelikli backlog](docs/oncelikli-backlog.md) ile sabittir.
   Bağlayıcı liste: [docs/v1-surum-kapilari.md](docs/v1-surum-kapilari.md).

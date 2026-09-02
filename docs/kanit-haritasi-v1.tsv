@@ -11,7 +11,7 @@ rfcs/0009-modul-ve-paket.md	kismi	compiler/tests/birim_testi.rs,compiler/tests/p
 rfcs/0010-hata-ve-tanilama.md	kanitli	compiler/tests/katalog_testi.rs,compiler/tests/tani_kimligi_testi.rs,compiler/tests/parser_kurtarma_testi.rs	Katalog kimlik ve çoklu tanı sözleşmesi
 rfcs/0011-structured-concurrency.md	kanitli	compiler/tests/ag_ve_esz_testi.rs,compiler/tests/eszamanlilik_conformance_testi.rs,compiler/tests/dene_ve_sure_testi.rs	Bağımsız scheduler profili sahiplik iptal ve deadline
 rfcs/0012-ffi-ve-tehlikeli-sinir.md	taslak	-	Faz 4/5 gerçeklenmediği için test kanıtı yok
-rfcs/0013-ondalik-sayilar.md	kanitli	compiler/tests/ondalik_testi.rs	Keyfî hassasiyet ve yuvarlama
+rfcs/0013-ondalik-sayilar.md	kanitli	compiler/tests/ondalik_testi.rs,compiler/tests/ffi_sinir_testi.rs	Keyfî hassasiyet yuvarlama ve örtük binary float yasağı
 rfcs/0014-standart-kitaplik.md	kismi	compiler/tests/kitaplik_testi.rs,compiler/tests/projeler_testi.rs	Çalışan gömülü prototip testli; RFC taslak
 rfcs/0015-uygulama-eylemleri.md	kanitli	compiler/tests/web_testi.rs,compiler/tests/proje_testi.rs	Eylem etki ve transaction sınırı
 rfcs/0016-atomik-kalici-dosya.md	kanitli	compiler/src/kalici_dosya.rs,compiler/tests/proje_testi.rs	Atomik replace süreç kilidi ve rollback
@@ -48,6 +48,7 @@ adr/025-tani-kimligi-kararlilik-politikasi.md	kanitli	compiler/tests/tani_kimlig
 adr/026-deterministik-io-izi-mimarisi.md	kanitli	compiler/tests/io_izi_testi.rs,compiler/tests/io_izi_cli_testi.rs	Bütün IO protokolü trace replay
 adr/027-surumlu-deterministik-io-profili.md	kanitli	compiler/tests/deterministik_io_profili_testi.rs	Tek PRNG ve hermetik profil
 adr/028-kanonik-zep-yol-profili.md	kanitli	compiler/tests/tedarik_testi.rs,compiler/src/tedarik.rs	NFC fixture ve 80 saldırı vakası
+adr/029-ondalik-binary-float-siniri.md	kanitli	compiler/tests/ffi_sinir_testi.rs	Ondalık değer envanteri ve örtük binary float yasağı
 spec/01-sozcukleme.md	kanitli	compiler/tests/kacis_ve_negatif_testi.rs,compiler/tests/metin_testi.rs	Token kaçış Unicode ve sayı kuralları
 spec/02-dizim.md	kanitli	compiler/tests/golden_testi.rs,compiler/tests/ifade_grameri_testi.rs	Cümle blok ve ifade dizimi
 spec/03-adlar-ve-kapsam.md	kanitli	compiler/tests/kapsam_testi.rs,compiler/tests/morfoloji_testi.rs,compiler/tests/lsp_testi.rs	Ad çözümü kapsam morfoloji ve semantic rename
@@ -63,7 +64,7 @@ spec/12-web-guvenlik-profili.md	kanitli	compiler/tests/web_testi.rs,compiler/tes
 spec/13-surumlu-morfoloji-profili.md	kanitli	compiler/tests/morfoloji_testi.rs,compiler/tests/morfoloji_conformance_testi.rs,compiler/tests/lsp_testi.rs	zee-tr-1 immutable parmak izi bağımsız conformance snapshot property proje pini ve semantic rename
 spec/14-yapilandirilmis-eszamanlilik.md	kanitli	compiler/tests/ag_ve_esz_testi.rs,compiler/tests/eszamanlilik_conformance_testi.rs	Görev grubu zee-esz-1 gözlem sırası sahiplik ve iptal
 spec/15-yapilandirilmis-hata-degeri.md	kanitli	compiler/tests/yapilandirilmis_hata_testi.rs	Kod mesaj neden veri ve JSON
-spec/16-keyfi-hassasiyetli-ondalik.md	kanitli	compiler/tests/ondalik_testi.rs	Tam işlemler ve yuvarlama bağlamı
+spec/16-keyfi-hassasiyetli-ondalik.md	kanitli	compiler/tests/ondalik_testi.rs,compiler/tests/ffi_sinir_testi.rs	Tam işlemler yuvarlama bağlamı ve binary float sınırı
 spec/17-deger-semantigi-ve-gezme.md	kanitli	compiler/tests/koleksiyon_testi.rs	Derin değer kopyası ve gezme imleci
 spec/18-paket-yayini.md	kanitli	compiler/tests/tedarik_testi.rs,compiler/src/tedarik.rs	Kanonik zep SBOM provenance ve imza
 spec/19-registry-metadata-guveni.md	kanitli	compiler/src/registry.rs	Root timestamp snapshot targets zinciri

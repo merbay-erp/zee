@@ -39,7 +39,9 @@ hazır doğru olsun
   tam olarak `0,3`tür — onluk aritmetik, ikilik sürpriz yok. Ondalıkta
   dokuz-hane/makine-sayısı sınırı yoktur; çok büyük para ve çok küçük ölçüm
   değerleri aynı türde kayıpsız taşınır. Yalnız sonsuz açılımlı bölme
-  deterministik 34 anlamlı haneye yuvarlanır (K-092/spec-16).
+  deterministik 34 anlamlı haneye yuvarlanır (K-092/spec-16). Ondalık C
+  `float`/`double`a örtük çevrilmez; gelecekteki FFI köprüsü görünür `kayıplı`
+  işareti ve `Sonuç` ister (K-125/ADR-029).
 - Negatif sabit işaretle bitişiktir: `-3`, `-3,14`.
 
 ### Ekli adlar ve `zee-tr-1`

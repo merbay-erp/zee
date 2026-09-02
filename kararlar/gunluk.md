@@ -1895,6 +1895,25 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   regresyonla toplam 484 test yeşildir; B-011 kapandı. Sıradaki makine omurgası
   B-012 açık Ondalık↔binary float FFI sınırıdır.
 
+## K-125 — Ondalık ile binary float arasındaki örtük FFI köprüsünü yasakla (2 Eyl)
+
+- **Sorun:** RFC-0012'nin eski taslağı dilde artık bulunmayan `GerçekSayı`yı
+  C `double` ile doğrudan eşliyordu. Bu kalıntı, keyfî hassasiyetli Ondalık'ın
+  görünmeden binary yuvarlamaya düşebileceği yanlış bir gelecek tasarımıydı.
+- **Karar:** ADR-029 ile Ondalık↔`float`/`double`/binary32/binary64 örtük
+  eşlemesi yasaktır. Binary kayan nokta genel Zee türü değil, yalnız gelecekteki
+  işaretli FFI adaptörünün sınır temsili olabilir. Stage 0 FFI sunmaz.
+- **Gelecek kapısı:** Köprü eklenirse deklarasyon ve çağrıda görünür `kayıplı`
+  işareti, `Sonuç` dönüşü ve IEEE 754 yuvarlama, signed zero, subnormal, taşma,
+  NaN/sonsuzluk ile binary64→Ondalık kanonikleştirme sözleşmesi ister. Kesin
+  Türkçe yüzey golden/usability kararı olmadan parser'a girmez.
+- **Kanıt:** `ffi_sinir_testi.rs`, `Tur`/`Deger` enumlarında binary varyant
+  olmadığını, eski taslak FFI kaynağının derlenmediğini, `0,1+0,2=0,3`
+  exactlığını ve RFC/ADR metin kapısını birlikte korur. RFC-0012 taslak kalır;
+  RFC-0013/spec-16 sınırı normatif taşır. Bir yeni regresyonla toplam 485 test
+  yeşildir; B-012/V1-P0-28 kapandı. Sıradaki makine omurgası B-050 bütün AST
+  ifadelerinde kesin source span'dir.
+
 ---
 
 ## Sonraki adım
@@ -1903,5 +1922,5 @@ Korpus 10 öğrenci + 5 profesyonel usability oturumuna (Hafta 12 hedefi, erkeni
 Hafta 2'de kağıt üstünde) sesli okutulacak; her kayıt için "doğal mı /
 deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
-Makine hattında B-011/K-124 kapandı. Sırada B-012 açık Ondalık↔binary float
-FFI sınırı vardır.
+Makine hattında B-012/K-125 kapandı. Sırada B-050 bütün AST ifadelerinde kesin
+source span vardır.

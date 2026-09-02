@@ -62,7 +62,8 @@ değer-sonuç imleci ile T053 kaynak sabitliği RFC-0019/spec-17'dedir.
 1. **GerçekSayı/Ondalık:** ÇÖZÜLDÜ — RFC-0013/K-092 bitişik virgül kuralı +
    keyfî hassasiyetli onluk aritmetikle gerçeklendi
    (`3,14`; `0,1+0,2=0,3`). Kullanıcıya ikinci, ikilik kayan noktalı sayı
-   türü açılmaz; bilimsel gösterim ayrı bir sözdizimi kararıdır.
+   türü açılmaz; K-125/ADR-029 FFI'da da örtük binary32/binary64 eşlemesini
+   yasaklar. Bilimsel gösterim ayrı bir sözdizimi kararıdır.
 2. **Generics ve trait/arayüz:** başlangıç işlemleri çağrı-güdümlü kalır;
    public işlemler tam açık ve v1'de bilinçli monomorfiktir (K-083/K-086,
    spec/10). Gerçek çokbiçimlilik v2+ ADR/RFC işidir.

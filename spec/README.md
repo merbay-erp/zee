@@ -37,7 +37,7 @@ Kırıcı değişiklik sessizce yapılamaz: davranış değişikliği RFC'den ge
 | [13 — Sürümlü morfoloji profili](13-surumlu-morfoloji-profili.md) | `zee-tr-1`, immutable parmak izi, bağımsız conformance, çözüm↔üretim ve proje/paket sabitlemesi | RFC-0018, K-120/K-122/K-123 |
 | [14 — Yapılandırılmış eşzamanlılık](14-yapilandirilmis-eszamanlilik.md) | `zee-esz-1`, kaynak sıralı gözlemler, görev grubu, sahiplik ve hata/iptal yayılımı | RFC-0011, K-090/K-124 |
 | [15 — Yapılandırılmış Hata değeri](15-yapilandirilmis-hata-degeri.md) | kod, mesaj, neden zinciri, veri, eşleme ve geriye uyum | RFC-0008, K-091 |
-| [16 — Keyfî hassasiyetli Ondalık](16-keyfi-hassasiyetli-ondalik.md) | keyfî katsayı/ölçek, exact işlemler ve 34 haneli sonsuz bölüm bağlamı | RFC-0013, K-092 |
+| [16 — Keyfî hassasiyetli Ondalık](16-keyfi-hassasiyetli-ondalik.md) | keyfî katsayı/ölçek, exact işlemler, 34 haneli bölüm ve örtük binary float yasağı | RFC-0013, ADR-029, K-092/K-125 |
 | [17 — Değer semantiği ve gezme](17-deger-semantigi-ve-gezme.md) | derin değer kopyası, liste değer-sonuç imleci ve T053 kaynak sabitliği | RFC-0019, K-093 |
 | [18 — Tekrar üretilebilir paket yayını](18-paket-yayini.md) | NFC/Unicode güvenlik profilli kanonik `.zep`, Ed25519 imzası, SPDX SBOM ve SLSA provenance | RFC-0020, ADR-006/028, K-094/K-117 |
 | [19 — Registry metadata güven zinciri](19-registry-metadata-guveni.md) | eşik root/rotasyon, çevrimiçi rol bağları, rollback/expiry ve targets yayıncı politikası | RFC-0020, ADR-006, K-095 |

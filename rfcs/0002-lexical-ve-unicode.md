@@ -77,8 +77,9 @@ dağıtım). Sonuçları:
 1. ~~Metin kaçış dizileri~~ — GERÇEKLENDİ (v0.2, K-036): `\"` `\\` `\n`, S040.
 2. ~~Negatif sayı sabiti~~ — GERÇEKLENDİ (v0.2, K-036): işaret rakama bitişikse
    sabittir; ondalıkta işaret gövdeye bir kez uygulanır.
-3. Ondalık/GerçekSayı sözdizimi (Türkçe ondalık virgülü mü, nokta mı? —
-   virgül liste ayracıyla çakışır; ciddi tasarım işi).
+3. ~~Ondalık/GerçekSayı sözdizimi~~ — ÇÖZÜLDÜ (K-028/K-092, RFC-0013):
+   bitişik Türkçe virgül Ondalık, virgül+boşluk liste ayracıdır; ikinci bir
+   ikilik kayan nokta kullanıcı türü yoktur.
 4. Büyük/küçük yalnız-fark uyarısı (A07) ve confusable denetiminin tanımlayıcı
    ötesine (metin sabitlerine) genişletilmesi.
 5. Tam NFC: v0 "birleşik biçim zorunlu" kuralı yeterli mi, tablolu
