@@ -2424,8 +2424,9 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   yazıyordu. Parse/checker/HIR ayrımı, p95 kuyruğu, ham örnekler, LSP yaşam
   döngüsü ve tepe bellek görünmüyor; sonuçlar elle belgeye aktarılıyordu.
 - **Karar:** Release koşucusu iki ısınma ardından varsayılan 25 turla dokuz
-  sabit yüzeyi ölçer. `zee-performans-1` JSON'u ham örnek+min/max+p50/p95'i;
-  `zee-performans-gecmisi-1` TSV'si incelenmiş tarihsel tabanı taşır. Şema,
+  sabit yüzeyi ölçer. İlk v1 JSON ham örnek+min/max+p50/p95'i, ilk v1 TSV
+  incelenmiş tarihsel tabanı taşıdı; K-152/ADR-049 bunları tam provenance'lı
+  v2 şemasıyla değiştirdi. Şema,
   alan, birim, tur, yüzdelik, metadata ve kayıt/ölçüm tekilliği fail-closed'dur.
 - **CI politikası:** Linux shared runner her koşuda JSON, Markdown ve birleşik
   TSV'yi job summary+90 günlük artefakta yazar. Gürültülü shared CI hard gate
@@ -2512,6 +2513,30 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   610 test, 95 numaralı belge ve 46 kabul ADR'dir; B-059/V1-P0-34 kapandı.
   Runner image hareketi K-169'un ayrı cross-platform release kanıtıdır.
 
+## K-152 — Benchmark satırı checkout edilebilir olmalı (2 Eyl)
+
+- **Bulgu:** K-148 tarihçesi `revizyon=K-148` diyordu; bu değer gerçek Git
+  commit'i değildi ve milestone ile kaynak kimliğini karıştırıyordu. OS/RAM/
+  build profili satırda yoktu. Bütün ölçümlerde `tur=25` görünmesine rağmen
+  RSS gerçekte koşu sonunda tek `ru_maxrss` okumasıydı.
+- **Şema:** JSON `zee-performans-2`, tarihçe
+  `zee-performans-gecmisi-2` oldu. Her satır tam `git_sha`, ayrı `milestone`,
+  `git_dirty=false`, platform+OS, CPU, fiziksel RAM, Rust, release profili ve
+  ölçüm başına gerçek sample/warmup/sampling semantiğini zorunlu taşır.
+- **Fail-closed sınır:** Kısa/sahte SHA, kirli Git ağacı, HEAD'den farklı SHA,
+  eksik ortam, debug profil, sıfır örnek, tutarsız kayıt metadata'sı ve RSS'i
+  çoklu tur gibi gösteren satır reddedilir. Kirli yerel duman raporu açıkça
+  görünürdür fakat kalıcı TSV üretemez.
+- **Göç:** K-148'in dokuz sayısı değiştirilmedi; tam
+  `df737f643c4ee9c8525ce7e972660230e75f5f45` kaynak commit'ine, ayrı K-148
+  milestone'una ve 24 GiB M4 Pro/macOS/Rust/release ortamına bağlandı. Sekiz
+  süre metriği 25 örnek+2 ısınma; RSS 1 örnek+0 ısınmalı tek süreç-tepe
+  görüntüsüdür.
+- **Kanıt:** ADR-049, güncel ölçüm rehberi, yedi koşucu birim testi ve genişleyen
+  mimari regresyon. Envanter 610 test, 96 numaralı belge ve 47 kabul ADR'dir;
+  B-060 kapandı. Dil semantiği, grammar, tanılar, RFC ve normatif spec
+  değişmedi. Sıradaki makine işi K-153 gerçek process→stdio LSP cold-start'tır.
+
 ---
 
 ## Sonraki adım
@@ -2520,7 +2545,7 @@ Korpus 10 öğrenci + 5 profesyonel usability oturumuna (Hafta 12 hedefi, erkeni
 Hafta 2'de kağıt üstünde) sesli okutulacak; her kayıt için "doğal mı /
 deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
-Makine hattında K-151 bütün GitHub Actions yürütme kodunu immutable SHA ve
-kontrollü güncelleme kaydına bağladı. Sırada K-152 benchmark provenance vardır.
+Makine hattında K-152 benchmark tarihçesini exact commit ve tam koşu
+provenance'ına bağladı. Sırada K-153 gerçek process→stdio LSP cold-start vardır.
 B-001/B-002 (yeni sırada K-161/K-162), gerçek 10 çocuk/öğrenci + 5 profesyonel
 usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.

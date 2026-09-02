@@ -12,6 +12,15 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **Tekrarlanabilir benchmark provenance** (K-152, ADR-049): JSON ve tarihçe
+  v2'ye yükseldi. Her kalıcı satır tam 40 haneli Git SHA, ayrı milestone,
+  temiz çalışma ağacı, platform+OS, CPU, fiziksel RAM, Rust, release profili
+  ve gerçek `sample_count`/`warmup_count`/örnekleme semantiğini taşır. Tarihçe
+  HEAD'den farklı SHA veya kirli ağaçta üretilemez. K-148 sayıları değişmeden
+  exact `df737f…` kaynak commit'ine göçtü; RSS satırı 1 örnek/0 ısınmalı tek
+  süreç-tepe görüntüsüdür. Envanter 610 test, 96 numaralı belge ve 47 kabul
+  ADR'dir; B-060 kapandı. Grammar, runtime, tanılar ve normatif spec değişmedi.
+
 - **GitHub Actions immutable SHA pinleri** (K-151, ADR-048): `checkout`,
   `cache`, `upload-artifact` ve `rust-toolchain` kullanımlarının tamamı resmî
   ref'lerden doğrulanmış 40 haneli commit SHA'lara sabitlendi. Pin TSV'si
@@ -44,13 +53,15 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   kabul ADR'ye çıktı; B-057/V1-P0-32 kapandı. Dil sözdizimi, runtime
   semantiği, tanılar, RFC ve normatif spec değişmedi.
 
-- **p50/p95 performans tarihçesi ve CI artefaktı** (K-148, ADR-045): Eski altı
+- **p50/p95 performans tarihçesi ve CI artefaktı** (K-148, ADR-045; K-152/
+  ADR-049 provenance revizyonu): Eski altı
   iş yükü/tek medyan çıktısı; parse, resolver/checker+HIR kanıtı, tam
   kaynak→typed-HIR, runtime başlangıcı, 100 bin tur yürütme, LSP
   cold/open/change ve Unix tepe RSS olarak dokuz ayrı gözleme bölündü. İki
   ısınma+25 release turu ham örnek, min/max ve nearest-rank p50/p95 üretir.
-  `zee-performans-1` JSON'u, Markdown raporu ve sürümlü TSV tarihçesi
-  makine/profil bağlamını taşır; bozuk/yinelenen tarihçe fail-closed'dur.
+  V2 JSON'u, Markdown raporu ve sürümlü TSV tarihçesi exact Git SHA,
+  milestone, temiz ağaç, OS/CPU/RAM/Rust/release ve gerçek örnekleme bağlamını
+  taşır; bozuk/yinelenen tarihçe fail-closed'dur.
   Linux CI sonucu summary ve 90 günlük indirilebilir artefakttır, gürültülü
   shared runner'da hard gate değildir. Eşik yalnız sabitlenmiş adanmış
   benchmark koşucusunda açık `--esik-yuzde` seçeneğiyle etkinleşir. Yedi

@@ -29,8 +29,8 @@ use std::path::{Path, PathBuf};
 use std::process::{Command, ExitCode};
 use std::time::{Instant, SystemTime, UNIX_EPOCH};
 
-const SEMA: &str = "zee-performans-1";
-const GECMIS_SEMASI: &str = "# zee-performans-gecmisi-1";
+const SEMA: &str = "zee-performans-2";
+const GECMIS_SEMASI: &str = "# zee-performans-gecmisi-2";
 const VARSAYILAN_TUR: usize = 25;
 const HIZLI_TUR: usize = 3;
 const ISINMA_TURU: usize = 2;
@@ -43,7 +43,8 @@ struct Ayarlar {
     gecmis: Option<PathBuf>,
     gecmis_cikti: Option<PathBuf>,
     kayit: String,
-    revizyon: String,
+    git_sha: String,
+    milestone: String,
     esik_yuzde: Option<u64>,
 }
 
@@ -52,6 +53,13 @@ struct Olcum {
     kimlik: &'static str,
     aciklama: &'static str,
     birim: &'static str,
+    #[serde(rename = "sampling_semantics")]
+    ornekleme: &'static str,
+    #[serde(rename = "sample_count")]
+    ornek_sayisi: usize,
+    #[serde(rename = "warmup_count")]
+    isinma_turu: usize,
+    #[serde(rename = "raw_samples")]
     ornekler: Vec<u64>,
     en_az: u64,
     p50: u64,
@@ -63,13 +71,21 @@ struct Olcum {
 struct Rapor<'a> {
     sema: &'static str,
     kayit: &'a str,
-    revizyon: &'a str,
+    git_sha: &'a str,
+    milestone: &'a str,
+    git_dirty: bool,
     unix_zamani: u64,
     platform: &'a str,
+    os: &'a str,
     cpu: &'a str,
+    #[serde(rename = "ram_bytes")]
+    ram_bayt: u64,
     rustc: &'a str,
+    #[serde(rename = "build_profile")]
     profil: &'static str,
+    #[serde(rename = "sample_count")]
     tur: usize,
+    #[serde(rename = "warmup_count")]
     isinma_turu: usize,
     esik_uygulandi: bool,
     olcumler: &'a [Olcum],
@@ -78,11 +94,18 @@ struct Rapor<'a> {
 #[derive(Clone, Debug)]
 struct GecmisSatiri {
     kayit: String,
-    revizyon: String,
+    git_sha: String,
+    milestone: String,
+    git_dirty: bool,
     platform: String,
+    os: String,
     cpu: String,
+    ram_bayt: u64,
     rustc: String,
-    tur: usize,
+    profil: String,
+    ornek_sayisi: usize,
+    isinma_sayisi: usize,
+    ornekleme: String,
     kimlik: String,
     birim: String,
     p50: u64,
@@ -105,7 +128,8 @@ fn komut_satirini_oku() -> Result<Ayarlar, String> {
     let mut gecmis = None;
     let mut gecmis_cikti = None;
     let mut kayit = None;
-    let mut revizyon = None;
+    let mut git_sha = None;
+    let mut milestone = None;
     let mut esik_yuzde = None;
     let mut argumanlar = env::args().skip(1);
     while let Some(arguman) = argumanlar.next() {
@@ -131,7 +155,8 @@ fn komut_satirini_oku() -> Result<Ayarlar, String> {
                 )?));
             }
             "--kayit" => kayit = Some(deger_iste(&mut argumanlar, "--kayit")?),
-            "--revizyon" => revizyon = Some(deger_iste(&mut argumanlar, "--revizyon")?),
+            "--git-sha" => git_sha = Some(deger_iste(&mut argumanlar, "--git-sha")?),
+            "--milestone" => milestone = Some(deger_iste(&mut argumanlar, "--milestone")?),
             "--esik-yuzde" => {
                 let metin = deger_iste(&mut argumanlar, "--esik-yuzde")?;
                 esik_yuzde = Some(
@@ -144,7 +169,7 @@ fn komut_satirini_oku() -> Result<Ayarlar, String> {
                 return Err(
                     "kullanım: olcum [--hizli|--tur N] [--json YOL] [--rapor YOL] \
                      [--gecmis YOL] [--gecmis-cikti YOL] [--kayit AD] \
-                     [--revizyon ID] [--esik-yuzde N]"
+                     [--git-sha SHA] [--milestone AD] [--esik-yuzde N]"
                         .into(),
                 );
             }
@@ -155,7 +180,7 @@ fn komut_satirini_oku() -> Result<Ayarlar, String> {
         return Err("--tur sıfır olamaz".into());
     }
     if esik_yuzde.is_some() && gecmis.is_none() {
-        return Err("--esik-yuzde aynı platformdan --gecmis ister".into());
+        return Err("--esik-yuzde aynı exact ortamdan --gecmis ister".into());
     }
     let unix_zamani = unix_zamani()?;
     Ok(Ayarlar {
@@ -165,7 +190,8 @@ fn komut_satirini_oku() -> Result<Ayarlar, String> {
         gecmis,
         gecmis_cikti,
         kayit: kayit.unwrap_or_else(|| format!("yerel-{unix_zamani}")),
-        revizyon: revizyon.unwrap_or_else(git_revizyonu),
+        git_sha: git_sha.map_or_else(git_revizyonu, Ok)?,
+        milestone: milestone.unwrap_or_else(|| "yerel".into()),
         esik_yuzde,
     })
 }
@@ -186,9 +212,20 @@ fn komutun_tek_satiri(program: &str, argumanlar: &[&str]) -> Option<String> {
     Some(satir.trim().to_string())
 }
 
-fn git_revizyonu() -> String {
-    komutun_tek_satiri("git", &["rev-parse", "--short=12", "HEAD"])
-        .unwrap_or_else(|| "bilinmiyor".into())
+fn gecerli_git_sha(deger: &str) -> bool {
+    deger.len() == 40
+        && deger
+            .bytes()
+            .all(|bayt| bayt.is_ascii_hexdigit() && !bayt.is_ascii_uppercase())
+}
+
+fn git_revizyonu() -> Result<String, String> {
+    let sha = komutun_tek_satiri("git", &["rev-parse", "HEAD"])
+        .ok_or_else(|| "Git HEAD çözülemedi".to_string())?;
+    if !gecerli_git_sha(&sha) {
+        return Err(format!("Git HEAD tam 40 haneli commit SHA değil: {sha}"));
+    }
+    Ok(sha)
 }
 
 fn platform() -> String {
@@ -232,8 +269,87 @@ fn cpu_adi() -> String {
     "bilinmiyor".into()
 }
 
+fn os_surumu() -> String {
+    #[cfg(target_os = "linux")]
+    {
+        if let Ok(metin) = fs::read_to_string("/etc/os-release") {
+            if let Some(ad) = metin.lines().find_map(|satir| {
+                satir
+                    .strip_prefix("PRETTY_NAME=")
+                    .map(|deger| deger.trim_matches('"'))
+            }) {
+                let cekirdek = komutun_tek_satiri("uname", &["-sr"])
+                    .unwrap_or_else(|| "çekirdek bilinmiyor".into());
+                return temiz_tek_satir(format!("{ad}; {cekirdek}"));
+            }
+        }
+    }
+    #[cfg(target_os = "macos")]
+    {
+        if let Some(surum) = komutun_tek_satiri("sw_vers", &["-productVersion"]) {
+            let derleme = komutun_tek_satiri("sw_vers", &["-buildVersion"])
+                .unwrap_or_else(|| "bilinmiyor".into());
+            return temiz_tek_satir(format!("macOS {surum} ({derleme})"));
+        }
+    }
+    #[cfg(target_os = "windows")]
+    if let Some(surum) = komutun_tek_satiri("cmd", &["/C", "ver"]) {
+        return temiz_tek_satir(surum);
+    }
+    "bilinmiyor".into()
+}
+
+fn toplam_ram_bayt() -> Option<u64> {
+    #[cfg(target_os = "linux")]
+    {
+        let metin = fs::read_to_string("/proc/meminfo").ok()?;
+        let kib = metin.lines().find_map(|satir| {
+            let deger = satir.strip_prefix("MemTotal:")?.trim();
+            deger.strip_suffix(" kB")?.trim().parse::<u64>().ok()
+        })?;
+        return kib.checked_mul(1024);
+    }
+    #[cfg(target_os = "macos")]
+    {
+        return komutun_tek_satiri("sysctl", &["-n", "hw.memsize"])?
+            .parse()
+            .ok();
+    }
+    #[cfg(target_os = "windows")]
+    {
+        return komutun_tek_satiri(
+            "powershell",
+            &[
+                "-NoProfile",
+                "-Command",
+                "(Get-CimInstance Win32_ComputerSystem).TotalPhysicalMemory",
+            ],
+        )?
+        .parse()
+        .ok();
+    }
+    #[allow(unreachable_code)]
+    None
+}
+
 fn rustc_surumu() -> String {
     komutun_tek_satiri("rustc", &["--version"]).unwrap_or_else(|| "bilinmiyor".into())
+}
+
+fn git_calisma_agaci_kirli() -> Result<bool, String> {
+    let durum = komutun_tek_satiri(
+        "git",
+        &["status", "--porcelain=v1", "--untracked-files=normal"],
+    )
+    .ok_or_else(|| "Git çalışma ağacı durumu okunamadı".to_string())?;
+    Ok(!durum.is_empty())
+}
+
+fn tarihce_provenance_denetle(git_dirty: bool) -> Result<(), String> {
+    if git_dirty {
+        return Err("tarihçe kirli çalışma ağacından üretilemez".into());
+    }
+    Ok(())
 }
 
 fn buyuk_kaynak() -> String {
@@ -325,6 +441,8 @@ fn olcum(
     kimlik: &'static str,
     aciklama: &'static str,
     birim: &'static str,
+    ornekleme: &'static str,
+    isinma_turu: usize,
     ornekler: Vec<u64>,
 ) -> Result<Olcum, String> {
     if ornekler.is_empty() {
@@ -332,16 +450,35 @@ fn olcum(
     }
     let mut sirali = ornekler.clone();
     sirali.sort_unstable();
+    let ornek_sayisi = ornekler.len();
     Ok(Olcum {
         kimlik,
         aciklama,
         birim,
+        ornekleme,
+        ornek_sayisi,
+        isinma_turu,
         en_az: sirali[0],
         p50: yuzdelik(&sirali, 50),
         p95: yuzdelik(&sirali, 95),
         en_cok: sirali[sirali.len() - 1],
         ornekler,
     })
+}
+
+fn zaman_olcumu(
+    kimlik: &'static str,
+    aciklama: &'static str,
+    ornekler: Vec<u64>,
+) -> Result<Olcum, String> {
+    olcum(
+        kimlik,
+        aciklama,
+        "ns",
+        "bagimsiz_tur",
+        ISINMA_TURU,
+        ornekler,
+    )
 }
 
 #[cfg(unix)]
@@ -378,10 +515,9 @@ fn olcumleri_al(tur: usize) -> Result<Vec<Olcum>, String> {
     let degistir = degistir_mesaji(&kaynak);
     let mut sonuc = Vec::new();
 
-    sonuc.push(olcum(
+    sonuc.push(zaman_olcumu(
         "parse_gecikmesi",
         "2000 satırda lexer + parser",
-        "ns",
         ornekle(
             tur,
             || Ok(()),
@@ -396,10 +532,9 @@ fn olcumleri_al(tur: usize) -> Result<Vec<Olcum>, String> {
         )?,
     )?);
 
-    sonuc.push(olcum(
+    sonuc.push(zaman_olcumu(
         "typecheck_gecikmesi",
         "hazır AST'de resolver + checker ve HIR kanıt toplama",
-        "ns",
         ornekle(
             tur,
             || Ok(ham.clone()),
@@ -412,10 +547,9 @@ fn olcumleri_al(tur: usize) -> Result<Vec<Olcum>, String> {
         )?,
     )?);
 
-    sonuc.push(olcum(
+    sonuc.push(zaman_olcumu(
         "hir_olusturma",
         "2000 satır kaynak -> bağlı typed HIR tam ön uç",
-        "ns",
         ornekle(
             tur,
             || Ok(()),
@@ -428,10 +562,9 @@ fn olcumleri_al(tur: usize) -> Result<Vec<Olcum>, String> {
         )?,
     )?);
 
-    sonuc.push(olcum(
+    sonuc.push(zaman_olcumu(
         "runtime_baslangici",
         "önceden derlenmiş boş typed HIR runtime dispatch",
-        "ns",
         ornekle(
             tur,
             || Ok(()),
@@ -444,10 +577,9 @@ fn olcumleri_al(tur: usize) -> Result<Vec<Olcum>, String> {
         )?,
     )?);
 
-    sonuc.push(olcum(
+    sonuc.push(zaman_olcumu(
         "yurutme_gecikmesi",
         "önceden derlenmiş 100 bin turluk sayaç",
-        "ns",
         ornekle(
             tur,
             || Ok(()),
@@ -463,10 +595,9 @@ fn olcumleri_al(tur: usize) -> Result<Vec<Olcum>, String> {
         )?,
     )?);
 
-    sonuc.push(olcum(
+    sonuc.push(zaman_olcumu(
         "lsp_soguk",
         "sunucu kurma + initialize isteği",
-        "ns",
         ornekle(
             tur,
             || Ok(()),
@@ -482,10 +613,9 @@ fn olcumleri_al(tur: usize) -> Result<Vec<Olcum>, String> {
         )?,
     )?);
 
-    sonuc.push(olcum(
+    sonuc.push(zaman_olcumu(
         "lsp_ac",
         "initialize edilmiş sunucuda 2000 satır didOpen",
-        "ns",
         ornekle(
             tur,
             || {
@@ -504,10 +634,9 @@ fn olcumleri_al(tur: usize) -> Result<Vec<Olcum>, String> {
         )?,
     )?);
 
-    sonuc.push(olcum(
+    sonuc.push(zaman_olcumu(
         "lsp_degistir",
         "açık 2000 satır belgede tam metin didChange",
-        "ns",
         ornekle(
             tur,
             || {
@@ -532,6 +661,8 @@ fn olcumleri_al(tur: usize) -> Result<Vec<Olcum>, String> {
             "tepe_bellek",
             "koşucu süreç tepe resident set'i",
             "KiB",
+            "surec_tepe_anlik_goruntusu",
+            0,
             vec![kib],
         )?);
     }
@@ -540,7 +671,9 @@ fn olcumleri_al(tur: usize) -> Result<Vec<Olcum>, String> {
 
 fn gecmisi_oku(yol: Option<&Path>) -> Result<(String, Vec<GecmisSatiri>), String> {
     let Some(yol) = yol else {
-        return Ok((format!("{GECMIS_SEMASI}\n# kayit\trevizyon\tplatform\tcpu\trustc\ttur\tolcum\tbirim\tp50\tp95\n"), Vec::new()));
+        return Ok((format!(
+            "{GECMIS_SEMASI}\n# kayit\tgit_sha\tmilestone\tgit_dirty\tplatform\tos\tcpu\tram_bytes\trustc\tbuild_profile\tsample_count\twarmup_count\tsampling_semantics\tolcum\tbirim\tp50\tp95\n"
+        ), Vec::new()));
     };
     let metin = fs::read_to_string(yol)
         .map_err(|hata| format!("{} geçmişi okunamadı: {hata}", yol.display()))?;
@@ -566,16 +699,37 @@ fn gecmis_metinini_ayristir(metin: &str, yol: &Path) -> Result<Vec<GecmisSatiri>
             continue;
         }
         let alanlar = satir.split('\t').collect::<Vec<_>>();
-        let [kayit, revizyon, platform, cpu, rustc, tur, kimlik, birim, p50, p95] =
+        let [kayit, git_sha, milestone, git_dirty, platform, os, cpu, ram_bayt, rustc, profil, ornek_sayisi, isinma_sayisi, ornekleme, kimlik, birim, p50, p95] =
             alanlar.as_slice()
         else {
-            return Err(format!("geçmiş satırı {} on alan taşımalı", sira + 1));
+            return Err(format!("geçmiş satırı {} on yedi alan taşımalı", sira + 1));
         };
-        if [kayit, revizyon, platform, cpu, rustc, kimlik, birim]
-            .iter()
-            .any(|alan| alan.is_empty())
+        if [
+            kayit, git_sha, milestone, git_dirty, platform, os, cpu, rustc, profil, ornekleme,
+            kimlik, birim,
+        ]
+        .iter()
+        .any(|alan| alan.is_empty())
         {
             return Err(format!("geçmiş satırı {} boş alan taşıyor", sira + 1));
+        }
+        if !gecerli_git_sha(git_sha) {
+            return Err(format!(
+                "geçmiş satırı {} gerçek tam Git SHA taşımıyor",
+                sira + 1
+            ));
+        }
+        if *git_dirty != "false" {
+            return Err(format!(
+                "geçmiş satırı {} temiz Git ağacı taşımıyor",
+                sira + 1
+            ));
+        }
+        if *profil != "release" {
+            return Err(format!(
+                "geçmiş satırı {} release profili taşımıyor",
+                sira + 1
+            ));
         }
         if !matches!(*birim, "ns" | "KiB") {
             return Err(format!(
@@ -590,11 +744,15 @@ fn gecmis_metinini_ayristir(metin: &str, yol: &Path) -> Result<Vec<GecmisSatiri>
             ));
         }
         let metadata = (
-            (*revizyon).to_string(),
+            (*git_sha).to_string(),
+            (*milestone).to_string(),
+            (*git_dirty).to_string(),
             (*platform).to_string(),
+            (*os).to_string(),
             (*cpu).to_string(),
+            (*ram_bayt).to_string(),
             (*rustc).to_string(),
-            (*tur).to_string(),
+            (*profil).to_string(),
         );
         if let Some(onceki) = kayit_metadatasi.insert((*kayit).to_string(), metadata.clone()) {
             if onceki != metadata {
@@ -604,12 +762,21 @@ fn gecmis_metinini_ayristir(metin: &str, yol: &Path) -> Result<Vec<GecmisSatiri>
                 ));
             }
         }
-        let tur = tur
+        let ram_bayt = ram_bayt
             .parse()
-            .map_err(|_| format!("geçmiş satırı {} tur sayısı bozuk", sira + 1))?;
-        if tur == 0 {
-            return Err(format!("geçmiş satırı {} sıfır tur taşıyor", sira + 1));
+            .map_err(|_| format!("geçmiş satırı {} RAM değeri bozuk", sira + 1))?;
+        if ram_bayt == 0 {
+            return Err(format!("geçmiş satırı {} sıfır RAM taşıyor", sira + 1));
         }
+        let ornek_sayisi = ornek_sayisi
+            .parse()
+            .map_err(|_| format!("geçmiş satırı {} örnek sayısı bozuk", sira + 1))?;
+        if ornek_sayisi == 0 {
+            return Err(format!("geçmiş satırı {} sıfır örnek taşıyor", sira + 1));
+        }
+        let isinma_sayisi = isinma_sayisi
+            .parse()
+            .map_err(|_| format!("geçmiş satırı {} ısınma sayısı bozuk", sira + 1))?;
         let p50 = p50
             .parse()
             .map_err(|_| format!("geçmiş satırı {} p50 bozuk", sira + 1))?;
@@ -622,13 +789,35 @@ fn gecmis_metinini_ayristir(metin: &str, yol: &Path) -> Result<Vec<GecmisSatiri>
                 sira + 1
             ));
         }
+        match *ornekleme {
+            "bagimsiz_tur" if isinma_sayisi > 0 => {}
+            "surec_tepe_anlik_goruntusu"
+                if *kimlik == "tepe_bellek"
+                    && *birim == "KiB"
+                    && ornek_sayisi == 1
+                    && isinma_sayisi == 0
+                    && p50 == p95 => {}
+            _ => {
+                return Err(format!(
+                    "geçmiş satırı {} örnekleme semantiğiyle tutarsız",
+                    sira + 1
+                ));
+            }
+        }
         satirlar.push(GecmisSatiri {
             kayit: (*kayit).into(),
-            revizyon: (*revizyon).into(),
+            git_sha: (*git_sha).into(),
+            milestone: (*milestone).into(),
+            git_dirty: false,
             platform: (*platform).into(),
+            os: (*os).into(),
             cpu: (*cpu).into(),
+            ram_bayt,
             rustc: (*rustc).into(),
-            tur,
+            profil: (*profil).into(),
+            ornek_sayisi,
+            isinma_sayisi,
+            ornekleme: (*ornekleme).into(),
             kimlik: (*kimlik).into(),
             birim: (*birim).into(),
             p50,
@@ -640,10 +829,17 @@ fn gecmis_metinini_ayristir(metin: &str, yol: &Path) -> Result<Vec<GecmisSatiri>
 
 fn son_eslesenler<'a>(
     gecmis: &'a [GecmisSatiri],
-    platform: &str,
+    rapor: &Rapor<'_>,
 ) -> BTreeMap<&'a str, &'a GecmisSatiri> {
     let mut son = BTreeMap::new();
-    for satir in gecmis.iter().filter(|satir| satir.platform == platform) {
+    for satir in gecmis.iter().filter(|satir| {
+        satir.platform == rapor.platform
+            && satir.os == rapor.os
+            && satir.cpu == rapor.cpu
+            && satir.ram_bayt == rapor.ram_bayt
+            && satir.rustc == rapor.rustc
+            && satir.profil == rapor.profil
+    }) {
         son.insert(satir.kimlik.as_str(), satir);
     }
     son
@@ -671,13 +867,24 @@ fn yuzde_farki(eski: u64, yeni: u64) -> String {
 }
 
 fn markdown_raporu(rapor: &Rapor<'_>, gecmis: &[GecmisSatiri], ihlaller: &[String]) -> String {
-    let onceki = son_eslesenler(gecmis, rapor.platform);
+    let onceki = son_eslesenler(gecmis, rapor);
     let taban = onceki.values().next().map_or_else(
         || "yok; bu platform için ilk gözlem".to_string(),
         |satir| {
             format!(
-                "`{}` / `{}`; CPU `{}`; Rust `{}`; {} tur",
-                satir.kayit, satir.revizyon, satir.cpu, satir.rustc, satir.tur
+                "`{}` / `{}` / `{}`; Git {}; OS `{}`; CPU `{}`; RAM `{}` bayt; Rust `{}`; profil `{}`; {} örnek + {} ısınma; `{}`",
+                satir.kayit,
+                satir.git_sha,
+                satir.milestone,
+                if satir.git_dirty { "kirli" } else { "temiz" },
+                satir.os,
+                satir.cpu,
+                satir.ram_bayt,
+                satir.rustc,
+                satir.profil,
+                satir.ornek_sayisi,
+                satir.isinma_sayisi,
+                satir.ornekleme
             )
         },
     );
@@ -685,20 +892,28 @@ fn markdown_raporu(rapor: &Rapor<'_>, gecmis: &[GecmisSatiri], ihlaller: &[Strin
         "# Zee performans gözlemi\n\n\
          - Şema: `{}`\n\
          - Kayıt: `{}`\n\
-         - Revizyon: `{}`\n\
+         - Git SHA: `{}`\n\
+         - Milestone: `{}`\n\
+         - Git çalışma ağacı: **{}**\n\
          - Platform: `{}`\n\
+         - OS: `{}`\n\
          - CPU: `{}`\n\
+         - RAM: **{} bayt**\n\
          - Rust: `{}`\n\
          - Profil: **{}**, ölçüm turu: **{}**, ısınma: **{}**\n\
-         - Aynı platform karşılaştırma tabanı: {}\n\
+         - Exact ortam karşılaştırma tabanı: {}\n\
          - Politika: {}\n\n\
          | Ölçüm | p50 | p95 | En az | En çok | Önceki p50 | Önceki p95 | Eğilim |\n\
          |---|---:|---:|---:|---:|---:|---:|---:|\n",
         rapor.sema,
         rapor.kayit,
-        rapor.revizyon,
+        rapor.git_sha,
+        rapor.milestone,
+        if rapor.git_dirty { "kirli" } else { "temiz" },
         rapor.platform,
+        rapor.os,
         rapor.cpu,
+        rapor.ram_bayt,
         rapor.rustc,
         rapor.profil,
         rapor.tur,
@@ -744,7 +959,7 @@ fn markdown_raporu(rapor: &Rapor<'_>, gecmis: &[GecmisSatiri], ihlaller: &[Strin
     }
     metin.push_str(
         "\nShared CI sayıları makine seçimi ve komşu iş yüklerinden etkilenir; \
-         doğruluk başarısı veya sürüm engeli değildir. Eşik yalnız aynı platformda \
+         doğruluk başarısı veya sürüm engeli değildir. Eşik yalnız aynı exact ortamda \
          sabitlenmiş adanmış benchmark koşucusunda açıkça istenir.\n",
     );
     metin
@@ -753,8 +968,10 @@ fn markdown_raporu(rapor: &Rapor<'_>, gecmis: &[GecmisSatiri], ihlaller: &[Strin
 fn gecmis_satirlarini_yaz(onceki_metin: &str, rapor: &Rapor<'_>) -> Result<String, String> {
     for deger in [
         rapor.kayit,
-        rapor.revizyon,
+        rapor.git_sha,
+        rapor.milestone,
         rapor.platform,
+        rapor.os,
         rapor.cpu,
         rapor.rustc,
     ] {
@@ -762,16 +979,29 @@ fn gecmis_satirlarini_yaz(onceki_metin: &str, rapor: &Rapor<'_>) -> Result<Strin
             return Err("geçmiş metadata'sı sekme veya satır sonu taşıyamaz".into());
         }
     }
+    if !gecerli_git_sha(rapor.git_sha) {
+        return Err("geçmiş metadata'sı tam 40 haneli Git SHA ister".into());
+    }
+    if rapor.git_dirty || rapor.ram_bayt == 0 || rapor.profil != "release" {
+        return Err("geçmiş metadata'sı temiz Git ağacı, RAM ve release profili ister".into());
+    }
     let mut metin = onceki_metin.to_string();
     for olcum in rapor.olcumler {
         metin.push_str(&format!(
-            "{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n",
+            "{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n",
             rapor.kayit,
-            rapor.revizyon,
+            rapor.git_sha,
+            rapor.milestone,
+            rapor.git_dirty,
             rapor.platform,
+            rapor.os,
             rapor.cpu,
+            rapor.ram_bayt,
             rapor.rustc,
-            rapor.tur,
+            rapor.profil,
+            olcum.ornek_sayisi,
+            olcum.isinma_turu,
+            olcum.ornekleme,
             olcum.kimlik,
             olcum.birim,
             olcum.p50,
@@ -782,18 +1012,17 @@ fn gecmis_satirlarini_yaz(onceki_metin: &str, rapor: &Rapor<'_>) -> Result<Strin
 }
 
 fn esik_ihlalleri(
-    olcumler: &[Olcum],
+    rapor: &Rapor<'_>,
     gecmis: &[GecmisSatiri],
-    platform: &str,
     esik_yuzde: Option<u64>,
 ) -> Result<Vec<String>, String> {
     let Some(esik) = esik_yuzde else {
         return Ok(Vec::new());
     };
-    let onceki = son_eslesenler(gecmis, platform);
+    let onceki = son_eslesenler(gecmis, rapor);
     let mut ihlaller = Vec::new();
     let mut karsilastirilan = 0usize;
-    for olcum in olcumler {
+    for olcum in rapor.olcumler {
         let Some(eski) = onceki
             .get(olcum.kimlik)
             .filter(|satir| satir.birim == olcum.birim)
@@ -814,7 +1043,8 @@ fn esik_ihlalleri(
     }
     if karsilastirilan == 0 {
         return Err(format!(
-            "--esik-yuzde için {platform} geçmişinde karşılaştırılabilir ölçüm yok"
+            "--esik-yuzde için {} exact ortam geçmişinde karşılaştırılabilir ölçüm yok",
+            rapor.platform
         ));
     }
     Ok(ihlaller)
@@ -830,8 +1060,18 @@ fn dosyaya_yaz(yol: &Path, metin: &str) -> Result<(), String> {
 
 fn olcumleri_calistir() -> Result<(), String> {
     let ayarlar = komut_satirini_oku()?;
+    let head = git_revizyonu()?;
+    if ayarlar.git_sha != head {
+        return Err(format!(
+            "--git-sha ölçülen HEAD ile aynı olmalı: {} != {head}",
+            ayarlar.git_sha
+        ));
+    }
+    let git_dirty = git_calisma_agaci_kirli()?;
     let platform = platform();
+    let os = os_surumu();
     let cpu = cpu_adi();
+    let ram_bayt = toplam_ram_bayt().ok_or_else(|| "toplam RAM belirlenemedi".to_string())?;
     let rustc = rustc_surumu();
     let profil = if cfg!(debug_assertions) {
         "debug"
@@ -841,17 +1081,28 @@ fn olcumleri_calistir() -> Result<(), String> {
     if profil != "release" && (ayarlar.json.is_some() || ayarlar.gecmis_cikti.is_some()) {
         return Err("arşiv/artefakt yalnız --release profiliyle üretilebilir".into());
     }
+    if ayarlar.milestone.is_empty()
+        || [os.as_str(), cpu.as_str(), rustc.as_str()].contains(&"bilinmiyor")
+    {
+        return Err("ölçüm milestone, OS, CPU ve Rust provenance alanlarını ister".into());
+    }
+    if ayarlar.gecmis_cikti.is_some() {
+        tarihce_provenance_denetle(git_dirty)?;
+    }
 
     let olcumler = olcumleri_al(ayarlar.tur)?;
     let (gecmis_metni, gecmis) = gecmisi_oku(ayarlar.gecmis.as_deref())?;
-    let ihlaller = esik_ihlalleri(&olcumler, &gecmis, &platform, ayarlar.esik_yuzde)?;
     let rapor = Rapor {
         sema: SEMA,
         kayit: &ayarlar.kayit,
-        revizyon: &ayarlar.revizyon,
+        git_sha: &ayarlar.git_sha,
+        milestone: &ayarlar.milestone,
+        git_dirty,
         unix_zamani: unix_zamani()?,
         platform: &platform,
+        os: &os,
         cpu: &cpu,
+        ram_bayt,
         rustc: &rustc,
         profil,
         tur: ayarlar.tur,
@@ -859,6 +1110,7 @@ fn olcumleri_calistir() -> Result<(), String> {
         esik_uygulandi: ayarlar.esik_yuzde.is_some(),
         olcumler: &olcumler,
     };
+    let ihlaller = esik_ihlalleri(&rapor, &gecmis, ayarlar.esik_yuzde)?;
     let markdown = markdown_raporu(&rapor, &gecmis, &ihlaller);
     print!("{markdown}");
 
@@ -894,18 +1146,48 @@ fn main() -> ExitCode {
 mod testler {
     use super::*;
 
+    const SHA: &str = "df737f643c4ee9c8525ce7e972660230e75f5f45";
+
     fn gecmis_satiri(kayit: &str, p95: u64) -> GecmisSatiri {
         GecmisSatiri {
             kayit: kayit.into(),
-            revizyon: "a".into(),
+            git_sha: SHA.into(),
+            milestone: "K-148".into(),
+            git_dirty: false,
             platform: "linux-x86_64".into(),
+            os: "Linux test".into(),
             cpu: "cpu".into(),
+            ram_bayt: 1024,
             rustc: "rust".into(),
-            tur: 20,
+            profil: "release".into(),
+            ornek_sayisi: 20,
+            isinma_sayisi: 2,
+            ornekleme: "bagimsiz_tur".into(),
             kimlik: "parse".into(),
             birim: "ns".into(),
             p50: 10,
             p95,
+        }
+    }
+
+    fn test_raporu(olcumler: &[Olcum]) -> Rapor<'_> {
+        Rapor {
+            sema: SEMA,
+            kayit: "test",
+            git_sha: SHA,
+            milestone: "K-148",
+            git_dirty: false,
+            unix_zamani: 0,
+            platform: "linux-x86_64",
+            os: "Linux test",
+            cpu: "cpu",
+            ram_bayt: 1024,
+            rustc: "rust",
+            profil: "release",
+            tur: 20,
+            isinma_turu: 2,
+            esik_uygulandi: false,
+            olcumler,
         }
     }
 
@@ -919,53 +1201,88 @@ mod testler {
     #[test]
     fn gecmis_son_ayni_platform_kaydini_secer() {
         let gecmis = vec![gecmis_satiri("bir", 20), gecmis_satiri("iki", 21)];
-        assert_eq!(son_eslesenler(&gecmis, "linux-x86_64")["parse"].p95, 21);
-    }
-
-    #[test]
-    fn gecmis_semasi_yinelenen_ve_tutarsiz_satiri_reddeder() {
-        let baslik = "# zee-performans-gecmisi-1\n# baslik\n";
-        let satir = "k\ta\tlinux-x86_64\tcpu\trust\t20\tparse\tns\t10\t20\n";
-        let yinelenen = format!("{baslik}{satir}{satir}");
-        assert!(gecmis_metinini_ayristir(&yinelenen, Path::new("test.tsv")).is_err());
-
-        let ters = format!("{baslik}k\ta\tlinux-x86_64\tcpu\trust\t20\tparse\tns\t21\t20\n");
-        assert!(gecmis_metinini_ayristir(&ters, Path::new("test.tsv")).is_err());
-    }
-
-    #[test]
-    fn izlenen_k148_gecmisi_sema_ve_dokuz_olcumu_tasir() {
-        let yol = Path::new(env!("CARGO_MANIFEST_DIR")).join("../docs/performans-gecmisi-v1.tsv");
-        let (_, satirlar) = gecmisi_oku(Some(&yol)).expect("izlenen geçmiş geçerli olmalı");
-        assert_eq!(satirlar.len(), 9);
-        assert!(satirlar.iter().all(|satir| satir.kayit == "K-148-m4pro"));
-    }
-
-    #[test]
-    fn shared_ci_esiksizdir_adanmis_kosu_acikca_ihlal_uretir() {
-        let olcumler = vec![olcum("parse", "parse", "ns", vec![20]).expect("ölçüm")];
-        let gecmis = vec![gecmis_satiri("taban", 10)];
-        assert!(esik_ihlalleri(&olcumler, &gecmis, "linux-x86_64", None)
-            .expect("eşiksiz")
-            .is_empty());
+        let olcumler = Vec::new();
         assert_eq!(
-            esik_ihlalleri(&olcumler, &gecmis, "linux-x86_64", Some(50))
-                .expect("eşikli")
-                .len(),
-            1
+            son_eslesenler(&gecmis, &test_raporu(&olcumler))["parse"].p95,
+            21
         );
     }
 
     #[test]
+    fn gecmis_semasi_yinelenen_ve_tutarsiz_satiri_reddeder() {
+        let baslik = "# zee-performans-gecmisi-2\n# baslik\n";
+        let satir = format!(
+            "k\t{SHA}\tK-148\tfalse\tlinux-x86_64\tLinux test\tcpu\t1024\trust\trelease\t20\t2\tbagimsiz_tur\tparse\tns\t10\t20\n"
+        );
+        let yinelenen = format!("{baslik}{satir}{satir}");
+        assert!(gecmis_metinini_ayristir(&yinelenen, Path::new("test.tsv")).is_err());
+
+        let ters = format!(
+            "{baslik}k\t{SHA}\tK-148\tfalse\tlinux-x86_64\tLinux test\tcpu\t1024\trust\trelease\t20\t2\tbagimsiz_tur\tparse\tns\t21\t20\n"
+        );
+        assert!(gecmis_metinini_ayristir(&ters, Path::new("test.tsv")).is_err());
+
+        let sahte_sha = satir.replacen(SHA, "K-148", 1);
+        assert!(
+            gecmis_metinini_ayristir(&format!("{baslik}{sahte_sha}"), Path::new("test.tsv"))
+                .is_err()
+        );
+
+        let yanlis_rss = format!(
+            "{baslik}rss\t{SHA}\tK-148\tfalse\tlinux-x86_64\tLinux test\tcpu\t1024\trust\trelease\t25\t2\tsurec_tepe_anlik_goruntusu\ttepe_bellek\tKiB\t10\t20\n"
+        );
+        assert!(gecmis_metinini_ayristir(&yanlis_rss, Path::new("test.tsv")).is_err());
+    }
+
+    #[test]
+    fn izlenen_k148_gecmisi_sema_ve_dokuz_olcumu_tasir() {
+        let yol = Path::new(env!("CARGO_MANIFEST_DIR")).join("../docs/performans-gecmisi-v2.tsv");
+        let (_, satirlar) = gecmisi_oku(Some(&yol)).expect("izlenen geçmiş geçerli olmalı");
+        assert_eq!(satirlar.len(), 9);
+        assert!(satirlar.iter().all(|satir| satir.kayit == "K-148-m4pro"));
+        assert!(satirlar.iter().all(|satir| satir.git_sha == SHA));
+        assert!(satirlar.iter().all(|satir| satir.milestone == "K-148"));
+        let rss = satirlar
+            .iter()
+            .find(|satir| satir.kimlik == "tepe_bellek")
+            .expect("RSS kaydı olmalı");
+        assert_eq!(rss.ornekleme, "surec_tepe_anlik_goruntusu");
+        assert_eq!((rss.ornek_sayisi, rss.isinma_sayisi), (1, 0));
+    }
+
+    #[test]
+    fn shared_ci_esiksizdir_adanmis_kosu_acikca_ihlal_uretir() {
+        let olcumler = vec![zaman_olcumu("parse", "parse", vec![20]).expect("ölçüm")];
+        let gecmis = vec![gecmis_satiri("taban", 10)];
+        let rapor = test_raporu(&olcumler);
+        assert!(esik_ihlalleri(&rapor, &gecmis, None)
+            .expect("eşiksiz")
+            .is_empty());
+        assert_eq!(
+            esik_ihlalleri(&rapor, &gecmis, Some(50))
+                .expect("eşikli")
+                .len(),
+            1
+        );
+        let mut baska_os = gecmis;
+        baska_os[0].os = "başka Linux".into();
+        assert!(esik_ihlalleri(&rapor, &baska_os, Some(50)).is_err());
+    }
+
+    #[test]
     fn gecmis_satiri_metadata_satir_sizmasini_reddeder() {
-        let olcumler = vec![olcum("parse", "parse", "ns", vec![10]).expect("ölçüm")];
+        let olcumler = vec![zaman_olcumu("parse", "parse", vec![10]).expect("ölçüm")];
         let rapor = Rapor {
             sema: SEMA,
             kayit: "bozuk\nkayıt",
-            revizyon: "a",
+            git_sha: SHA,
+            milestone: "K-148",
+            git_dirty: false,
             unix_zamani: 0,
             platform: "linux-x86_64",
+            os: "Linux test",
             cpu: "cpu",
+            ram_bayt: 1024,
             rustc: "rust",
             profil: "release",
             tur: 1,
@@ -973,19 +1290,25 @@ mod testler {
             esik_uygulandi: false,
             olcumler: &olcumler,
         };
-        assert!(gecmis_satirlarini_yaz("# zee-performans-gecmisi-1\n# baslik\n", &rapor).is_err());
+        assert!(gecmis_satirlarini_yaz("# zee-performans-gecmisi-2\n# baslik\n", &rapor).is_err());
+        assert!(tarihce_provenance_denetle(true).is_err());
+        assert!(tarihce_provenance_denetle(false).is_ok());
     }
 
     #[test]
     fn rapor_p50_p95_ve_shared_ci_politikasini_aciklar() {
-        let olcumler = vec![olcum("parse", "parse", "ns", vec![10, 20]).expect("ölçüm")];
+        let olcumler = vec![zaman_olcumu("parse", "parse", vec![10, 20]).expect("ölçüm")];
         let rapor = Rapor {
             sema: SEMA,
             kayit: "kayıt",
-            revizyon: "a",
+            git_sha: SHA,
+            milestone: "K-148",
+            git_dirty: false,
             unix_zamani: 0,
             platform: "linux-x86_64",
+            os: "Linux test",
             cpu: "cpu",
+            ram_bayt: 1024,
             rustc: "rust",
             profil: "release",
             tur: 2,
@@ -996,5 +1319,11 @@ mod testler {
         let metin = markdown_raporu(&rapor, &[], &[]);
         assert!(metin.contains("| Ölçüm | p50 | p95"));
         assert!(metin.contains("shared CI hard gate değildir"));
+        let (baslik, _) = gecmisi_oku(None).expect("boş v2 tarihçe başlığı");
+        let yazilan = gecmis_satirlarini_yaz(&baslik, &rapor).expect("v2 satırı yazılmalı");
+        let geri = gecmis_metinini_ayristir(&yazilan, Path::new("test.tsv"))
+            .expect("üretilen v2 satırı yeniden okunmalı");
+        assert_eq!(geri.len(), 1);
+        assert_eq!(geri[0].git_sha, SHA);
     }
 }

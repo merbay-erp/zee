@@ -784,7 +784,12 @@ kırdı. Kalan paket/registry/tedarik SCC'si K-160 ve tarih sonlu izinle
 görünürdür; açıklamasız çevrim sıfır, B-058/V1-P0-33 kapalıdır. Üçüncü dış
 incelemenin K-151/ADR-048 adımı bütün workflow action'larını immutable SHA,
 birebir pin kaydı ve kontrollü Dependabot PR'ına bağladı; B-059 kapandı.
-Bağlayıcı makine sırası K-152 benchmark provenance düzeltmesiyle devam eder.
+K-152/ADR-049 performans tarihçesini tam Git SHA, ayrı milestone, temiz Git
+ağacı, OS/CPU/RAM/Rust/release profili ve ölçüm başına gerçek örnekleme
+semantiğine yükseltti. RSS'in 25 tur değil tek süreç-tepe görüntüsü olduğu
+makine-okunur; eski K-148 sayıları exact üretici commit'ine bağlandı ve B-060
+kapandı. Bağlayıcı makine sırası K-153 gerçek process→stdio LSP cold-start
+ölçümüyle devam eder.
 B-001 çağrı sözdizimi ile B-002 gezme zihinsel modeli gerçek insan
 kanıtı gelmeden kapatılmaz veya yeni syntax kararıyla atlanmaz.
 # 40. Proje felsefesinin korunması

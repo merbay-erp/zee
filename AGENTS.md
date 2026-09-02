@@ -30,6 +30,9 @@ elle arama yapılmaz; `cd compiler && cargo run --bin depo_sayilari -- --yaz`
 çalıştırılır. Toplu commit öncesi katalog ve tazelik kapıları çalıştırılır.
 Rust kaynakları ayrıca `cd compiler && cargo fmt --all -- --check` kapısından
 geçer; kanonik biçim borcu kod değişikliğinden ayrı bırakılmaz.
+Kalıcı benchmark tarihçesi yalnız temiz exact commit checkout'unda üretilir;
+tam Git SHA, ayrı milestone, OS/CPU/RAM/Rust/release profili ve gerçek
+örnek/ısınma semantiği olmadan `docs/performans-gecmisi-v2.tsv` değiştirilemez.
 Test ekleyen ya da taşıyan iş, `cd compiler && cargo run --locked --bin
 faz_test_matrisi -- --denetle --rapor target/faz-test-matrisi.md` kapısından
 geçer. Her gerçek Cargo/libtest vakası tam bir birincil faz sahibi olmalı;
@@ -37,11 +40,11 @@ fuzz/conformance/regresyon ve aşağı akış ilişkisi aynı değişiklikte gü
 kalmalıdır.
 
 Performans davranışı veya sabit iş yükü değişikliği
-`docs/performans-gecmisi-v1.tsv`, `docs/olcumler.md` ve ADR-045 etkisini aynı
+`docs/performans-gecmisi-v2.tsv`, `docs/olcumler.md` ve ADR-045/049 etkisini aynı
 committe inceler. Shared CI ölçümü gözlemseldir ve `--esik-yuzde` taşıyamaz;
 hard eşik yalnız sabitlenmiş adanmış benchmark koşucusunda açıkça
-etkinleştirilebilir. Yeni taban, makine/araç zinciri ve 25 turluk p50/p95
-dağılımı incelenmeden izlenen tarihçeye yazılmaz.
+etkinleştirilebilir. Yeni taban, exact kaynak commit'i, makine/araç zinciri ve
+gerçek sample/warmup dağılımı incelenmeden izlenen tarihçeye yazılmaz.
 
 Production Rust modülü veya iç bağımlılığı değişen iş
 `compiler/tests/fixtures/katman-mimarisi-v1.tsv`, ADR-046 ve

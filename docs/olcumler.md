@@ -1,9 +1,10 @@
 # Performans ölçüm arşivi
 
-K-148/ADR-045 ile performans tek terminal medyanı olmaktan çıktı. Release
+K-148/ADR-045 ile performans tek terminal medyanı olmaktan çıktı; K-152/
+ADR-049 her satırı gerçek kaynak commit'ine ve tam koşu ortamına bağladı. Release
 koşucusu varsayılan 25 turdan ham örnek, min/max ve nearest-rank p50/p95
-üretir; makine bağlamını `zee-performans-1` JSON'una, insan raporuna ve
-incelenebilir `zee-performans-gecmisi-1` TSV'sine bağlar. İş yükleri koşucu
+üretir; makine bağlamını `zee-performans-2` JSON'una, insan raporuna ve
+incelenebilir `zee-performans-gecmisi-2` TSV'sine bağlar. İş yükleri koşucu
 içinde sabittir; kapsam değişirse yeni sonuç eski sayıyla sessizce eşdeğer
 sayılmaz ve bu belgede gerekçelenir.
 
@@ -23,7 +24,25 @@ sayılmaz ve bu belgede gerekçelenir.
 
 `typecheck_gecikmesi`, checker'ın bugün typed-HIR kanıtını da ürettiğini
 bilerek adlandırılır; saf tür çıkarım süresi iddiası değildir. Tepe bellek
-süreç düzeyi ve kümülatiftir; alt-faz tahsis profili değildir.
+süreç düzeyi ve kümülatiftir; alt-faz tahsis profili değildir. Zaman ölçümleri
+iki ısınmadan sonra birbirinden bağımsız 25 örnektir. `tepe_bellek` ise bu
+turların sonunda aynı koşucu sürecinden alınan **tek** `ru_maxrss` anlık
+görüntüsüdür: `sample_count=1`, `warmup_count=0`,
+`sampling_semantics=surec_tepe_anlik_goruntusu` taşır. p50=p95 olması 25 ayrı
+RSS örneği alındığı anlamına gelmez.
+
+## Provenance sözleşmesi
+
+Her tarihçe satırı şu alanları eksiksiz taşır: benzersiz kayıt kimliği, tam 40
+haneli `git_sha`, ayrı `milestone`, `git_dirty=false`, platform+OS sürümü,
+CPU, fiziksel RAM baytı, Rust sürümü, `build_profile=release`, gerçek
+`sample_count`, `warmup_count` ve `sampling_semantics`. Kısa SHA, K-numarasını
+SHA yerine kullanma, bilinmeyen/boş ortam, sıfır RAM/örnek, debug profil veya
+kirli çalışma ağacı fail-closed reddedilir. `--gecmis-cikti` ayrıca verilen
+SHA'nın ölçülen `HEAD` ile aynı olmasını zorunlu tutar. Böylece tarihçedeki her
+satır tekrar checkout edilebilir bir kaynak ağacı ve açıklanmış koşuya gider;
+kirli yerel duman raporu JSON/Markdown'da açıkça `git_dirty=true` görünür ama
+kalıcı tarihçeye giremez.
 
 Yerel hızlı duman:
 
@@ -38,17 +57,19 @@ cargo run --locked --release --bin olcum -- --hizli
 cd compiler
 cargo run --locked --release --bin olcum -- \
   --tur 25 \
-  --gecmis ../docs/performans-gecmisi-v1.tsv \
+  --gecmis ../docs/performans-gecmisi-v2.tsv \
   --json target/performans.json \
   --rapor target/performans.md \
   --gecmis-cikti target/performans-gecmisi.tsv \
-  --kayit K-NNN-makine --revizyon GIT_SHA
+  --kayit K-NNN-makine --git-sha GIT_SHA --milestone K-NNN
 ```
 
-Yeni TSV doğrudan izlenen dosyanın üstüne yazılmaz. Makine/araç zinciri,
+Yeni TSV doğrudan izlenen dosyanın üstüne yazılmaz. Ölçüm temiz ve exact
+commit checkout'unda çalıştırılır. Makine/araç zinciri,
 iş yükü ve dağılım incelendikten sonra yeni kayıt kod ve belgelerle aynı
-committe eklenir. Şema; CRLF, boş alan, bilinmeyen birim, sıfır tur, p50>p95,
-yinelenen ölçüm ve aynı kayıt içindeki metadata ayrışmasını reddeder.
+committe eklenir. Şema; CRLF, eksik provenance, bilinmeyen birim/örnekleme,
+sıfır örnek, p50>p95, RSS çoklu-örnek yanılsaması, yinelenen ölçüm ve aynı
+kayıt içindeki metadata ayrışmasını reddeder.
 
 Shared CI her Linux koşusunda JSON, Markdown ve birleşik TSV'yi job summary
 ile 90 günlük artefakta koyar; **hard performans kapısı değildir**. Sabit
@@ -58,8 +79,10 @@ yoksa eşikli koşu başarı sayılmaz.
 
 ## K-148 başlangıç tabanı — 2 Eylül 2026 · Apple M4 Pro, macOS arm64, Rust 1.93.1
 
-Kanonik sayılar [makine-okunur tarihçededir](performans-gecmisi-v1.tsv).
-İki ısınma ardından 25 release turu alınmıştır.
+Kanonik sayılar [makine-okunur tarihçededir](performans-gecmisi-v2.tsv).
+Kaynak ağacı `df737f643c4ee9c8525ce7e972660230e75f5f45` (milestone K-148),
+24 GiB RAM ve release profildir. Süreler iki ısınma ardından 25 örnektir; RSS
+yukarıdaki tek süreç-tepe görüntüsü semantiğini taşır.
 
 | Yüzey | p50 | p95 |
 |---|---:|---:|
@@ -73,7 +96,7 @@ Kanonik sayılar [makine-okunur tarihçededir](performans-gecmisi-v1.tsv).
 | LSP `didChange` | 161,143 ms | 172,991 ms |
 | süreç tepe RSS | 17.888 KiB | 17.888 KiB |
 
-Bu ilk kayıt regresyon hükmü değil, sonraki aynı-platform gözlemlerinin
+Bu ilk kayıt regresyon hükmü değil, sonraki exact-ortam gözlemlerinin
 tabanıdır. Eşik kararı shared CI'dan değil, sabitlenmiş adanmış runner
 dağılımından verilir.
 

@@ -47,10 +47,11 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-042 | [Kanonik Rust biçim kapısı](042-kanonik-rust-bicim-kapisi.md) | **kabul** (K-145/B-037) |
 | ADR-043 | [Faza özgü ve tam sahipli test matrisi](043-faza-ozgu-test-matrisi.md) | **kabul** (K-146/B-038) |
 | ADR-044 | [Sürümlü semantic regresyon korpusu](044-surumlu-semantic-regresyon-korpusu.md) | **kabul** (K-147/B-039) |
-| ADR-045 | [Performans gözlemi ve tarihsel eğilim artefaktı](045-performans-gozlem-ve-egilim-artefakti.md) | **kabul** (K-148/B-040) |
+| ADR-045 | [Performans gözlemi ve tarihsel eğilim artefaktı](045-performans-gozlem-ve-egilim-artefakti.md) | **kabul** (K-148/B-040; K-152 provenance revizyonu ADR-049) |
 | ADR-046 | [Production katman sahipliği ve bağımlılık yönü](046-production-katman-bagimlilik-yonu.md) | **kabul** (K-149/B-057) |
 | ADR-047 | [Production bağımlılık çevrimi kapısı](047-production-bagimlilik-cevrimi-kapisi.md) | **kabul** (K-150/B-058) |
 | ADR-048 | [GitHub Actions immutable SHA pinleme](048-github-actions-immutable-sha-pinleme.md) | **kabul** (K-151/B-059) |
+| ADR-049 | [Benchmark provenance ve örnekleme sınırı](049-benchmark-provenance-sinir.md) | **kabul** (K-152/B-060) |
 | ADR-004 | Bellek yönetimi prototip kararı (GC / ARC benchmark) | bekliyor |
 | ADR-005 | Native backend seçimi (Cranelift / LLVM) | bekliyor — Faz 4 |
 | ADR-007 | [Telemetri ve gizlilik: araçlar veri toplamaz](007-telemetri-ve-gizlilik.md) | **kabul** |

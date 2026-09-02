@@ -166,8 +166,13 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
     sürümlü exact pin kaydına ve haftalık fakat otomatik birleşmeyen Dependabot
     güncelleme akışına bağladı. Workflow token'ları salt-okunur, checkout
     kimliği kalıcı değildir; B-059 kapandı.
-49. Sıradaki makine işi K-152 ile her benchmark satırını gerçek Git SHA,
-    milestone ve tam yeniden üretim metadata'sına bağlamaktır.
+49. K-152/ADR-049 her benchmark satırını gerçek tam Git SHA, ayrı milestone,
+    temiz çalışma ağacı, OS/CPU/RAM/Rust/release ve ölçüm başına gerçek
+    örnek/ısınma semantiğine bağladı. RSS'in tek süreç-tepe görüntüsü olduğu
+    artık makine-okunurdur; B-060 kapandı.
+50. Sıradaki makine işi K-153 ile engine initialize ölçümünü doğru adlandırıp
+    process spawn→stdio→initialize response gerçek LSP cold-start metriğini
+    ayrı üretmektir.
 
 ## P0 — V1 öncesi dil ve derleyici omurgası
 
@@ -526,13 +531,14 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   API ile success/fail gözlemleri aynı koşucuda doğrulanır. Yeni compiler bug
   düzeltmesi fixture+satır olmadan tamamlanamaz; ayrıntı
   [korpus rehberindedir](semantic-regresyon-korpusu.md).
-- **B-040 · KAPALI (K-148/ADR-045) — performans baseline arşivi.** Release
+- **B-040 · KAPALI (K-148/ADR-045; K-152/ADR-049 revizyonu) — performans baseline arşivi.** Release
   koşucusu iki ısınma+25 turla parse, resolver/checker+HIR kanıtı, tam
   kaynak→typed-HIR, runtime başlangıcı, 100 bin tur yürütme, LSP
   cold/open/change ve Unix tepe RSS için ham örnek, min/max ve nearest-rank
-  p50/p95 üretir. `zee-performans-1` JSON'u, insan Markdown'ı ve
-  `zee-performans-gecmisi-1` TSV'si makine bağlamını korur; bozuk/yinelenen
-  tarihçe fail-closed'dur. Linux CI summary+90 günlük artefakt üretir fakat
+  p50/p95 üretir. V2 JSON/TSV; exact Git SHA, ayrı milestone, temiz ağaç,
+  OS/CPU/RAM/Rust/release ve ölçüm başına gerçek sample/warmup semantiğini
+  korur; bozuk/yinelenen tarihçe fail-closed'dur. RSS tek süreç-tepe
+  görüntüsüdür. Linux CI summary+90 günlük artefakt üretir fakat
   gürültülü shared runner'da hard gate yoktur. `--esik-yuzde` yalnız
   sabitlenmiş adanmış benchmark koşucusunda bilinçli seçenektir. Ayrıntı
   [ölçüm rehberindedir](olcumler.md).
@@ -586,6 +592,13 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   Dependabot güncelleme PR'ı açar ama otomatik merge edilmez. Checkout
   credentials kalıcı değildir ve workflow token'ları `contents: read` ile
   sınırlıdır.
+- **B-060 · KAPALI (K-152/ADR-049) — Benchmark provenance.** Tarihçe v2 her
+  satırda exact 40 haneli Git SHA, ayrı milestone, temiz Git ağacı,
+  platform+OS, CPU, fiziksel RAM, Rust, release profili ve gerçek
+  sample/warmup/örnekleme alanlarını zorunlu tutar. `--gecmis-cikti` HEAD'den
+  farklı SHA veya kirli ağaçta fail-closed'dur. Sekiz süre metriği bağımsız
+  turları; RSS yalnız bir örnek, sıfır ısınma ve süreç-tepe anlık görüntüsünü
+  bildirir. İlk K-148 sayıları değiştirilmeden exact üretici commit'ine göçtü.
 - **B-041 · KAPALI (K-120) — LSP'yi SymbolId/HIR'a bağla.** Definition ve
   rename yalnız başarılı checker'ın `SymbolId`/`IslemId`/`YapiId` typed-HIR
   bağından hedef seçer. HIR ilk tanım, yeniden atama ve okuma aralıklarını
@@ -618,9 +631,10 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 ## Bir sonraki somut kapı
 
 İnsan kanıtı hattında B-001 ve B-002, doldurulmuş gerçek usability formları
-ile önceden ilan edilmiş eşikleri bekler. Makine hattında K-151 bütün GitHub
-Actions kodunu immutable SHA'ya bağlayıp B-059'u kapattı. Sıradaki iş K-152
-benchmark provenance düzeltmesidir; insan verisi gelmeden yeni syntax seçilmez
+ile önceden ilan edilmiş eşikleri bekler. Makine hattında K-152 benchmark
+tarihçesini tam ve doğrulanabilir provenance'a bağlayıp B-060'ı kapattı.
+Sıradaki iş K-153 gerçek process→stdio LSP cold-start ölçümüdür; insan verisi
+gelmeden yeni syntax seçilmez
 veya B-001/B-002 tamamlanmış gösterilmez.
 
 ## 2 Eylül 2026 üçüncü dış inceleme — savunulabilir V1 yol haritası
@@ -633,8 +647,8 @@ tamamlanmış sayılmaz; burada istenen ek kanıt ayrıca üretilir.
 |---|---|---|
 | K-150 | **KAPALI** | SCC kapısı, iki kırılmış çevrim, K-160'a süreli tek izin |
 | K-151 | **KAPALI** | Bütün workflow action'ları immutable SHA + kontrollü yenileme |
-| K-152 | **SIRADA** | Gerçek Git SHA/milestone ve tam benchmark provenance şeması |
-| K-153 | **AÇIK** | Engine initialize'dan ayrı gerçek process→stdio LSP cold start |
+| K-152 | **KAPALI** | Gerçek Git SHA/milestone ve tam benchmark provenance şeması |
+| K-153 | **SIRADA** | Engine initialize'dan ayrı gerçek process→stdio LSP cold start |
 | K-154 | **AÇIK** | 2k/5k/10k/20k full-change eğrisi, invalidation sınırı ve eşikler |
 | K-155 | **AÇIK** | K-147 korpusuna `fixed_by`, mümkünse `introduced_by`, garanti sürümü |
 | K-156 | **AÇIK** | Nightly fuzz corpus artefaktı ve review'lü coverage seed kalıcılığı |
