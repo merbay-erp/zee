@@ -1,4 +1,4 @@
-//! B-005/B-006/B-008/B-010/B-018/B-019/B-020/B-048/B-050 mimari sınır regresyonları.
+//! B-005/B-006/B-008/B-010/B-018/B-019/B-020/B-025/B-048/B-050 mimari sınır regresyonları.
 
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -83,6 +83,7 @@ fn handler_modulleri_yeni_domain_icin_sinir_tasir() {
         ("src/ag_istemcisi.rs", 140),
         ("src/kalici_dosya.rs", 820),
         ("src/kalici_dosya/metadata.rs", 260),
+        ("src/kaynak_sinirlari.rs", 260),
     ] {
         satir_butcesini_denetle(goreli, butce);
     }

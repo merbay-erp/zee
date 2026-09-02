@@ -306,7 +306,9 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   (Windows ana iş parçacığı, motorların çağrı yığını) ölçü alınır.
 - **Ek:** Debug derlemede çerçeveler platforma göre şişer (ubuntu'da 500
   seviye bile 8 MB test yığınını aşabildi) — sınıra dokunan tek test
-  (derinlik_korkulugu) CLI gibi kendi 64 MB yığınını getirir.
+  (`derinlik_korkulugu`) CLI gibi kendi yığınını getirir. K-129'un kaynak
+  muhasebesiyle büyüyen debug gelecekleri için test yığını 128 MiB'a çıkarıldı;
+  sürümlü C019/500 davranışı ve üretim profili değişmedi.
 
 ## K-041 — Zamir n'si: iyelikli köke hâl eki
 
@@ -1984,6 +1986,26 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   regresyon tanımlıdır. Eski 10 atomiklik/yarış/hata testi yeşildir. Envanter
   506 test, 77 numaralı belge; B-048/V1-P0-30 kapandı.
 
+## K-129 — Kaynak sınırı tek değişmez güvenlik profilidir (2 Eyl)
+
+- **Sorun:** Ağ, LSP, registry ve IO izi kendi limitlerini taşısa da kaynak,
+  token, toplam proje, runtime adımı, normal çıktı, koleksiyon, görev, veri
+  dosyası ve LSP toplam belleği tek sahibin altında değildi.
+- **Karar:** RFC-0025/ADR-033/spec-24 ile `KaynakSinirlari` kullanıcıdan
+  değiştirilemeyen resmî profil oldu. Tek kaynak 8 MiB/1 milyon token; proje
+  4.096 dosya/128 MiB; runtime 10 milyon adım, C019 ile 500 çağrı, 1 milyon
+  koleksiyon öğesi, 1.024 görev ve 16 MiB/100 bin çıktı olayı taşır. Veri
+  dosyası 16 MiB bounded reader'dan geçer.
+- **LSP:** 256 açık belge, 128 MiB toplam metin ve 8 MiB outbound mesaj.
+  Reddedilen güncelleme önceki belgeyi değiştirmez; aşım S045 veya JSON-RPC
+  `-32001` olur.
+- **Kanıt:** Bellek kaynağı, çıktı taşması, görev grubu, sparse büyük dosya,
+  açık belge ve outbound mesaj sınırları yedi yeni regresyondur. Toplam 513
+  test, 149 etkin + 3 ayrılmış tanı ve 80 numaralı belge tazedir.
+- **Açık kapsam:** Canlı değer/metin grafiğinin toplam heap muhasebesi,
+  bağlantı kotası ve eski domain sabitlerinin tamamının profile taşınması
+  B-025'in ikinci dilimidir.
+
 ---
 
 ## Sonraki adım
@@ -1992,6 +2014,6 @@ Korpus 10 öğrenci + 5 profesyonel usability oturumuna (Hafta 12 hedefi, erkeni
 Hafta 2'de kağıt üstünde) sesli okutulacak; her kayıt için "doğal mı /
 deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
-Makine hattında B-048/K-128 kapandı. Sırada B-025 ortak `KaynakSinirlari`
-modeliyle dağınık timeout, girdi, allocation, koleksiyon, görev, bağlantı ve
-çıktı bütçelerini tek politika altında toplamak vardır.
+Makine hattında K-129, B-025'in ilk ortak `KaynakSinirlari` profilini kurdu.
+Sırada canlı değer/metin heap muhasebesi, eşzamanlı bağlantı kotası ve kalan
+domain sabitlerini aynı profile taşıyan ikinci dilim vardır.

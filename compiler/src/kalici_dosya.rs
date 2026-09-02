@@ -29,7 +29,7 @@ pub fn atomik_yaz(yol: &Path, icerik: &[u8]) -> io::Result<()> {
 pub fn atomik_satir_yaz(yol: &Path, satir: &str, ekleme: bool) -> io::Result<()> {
     let _kilit = DosyaKilidi::al(yol)?;
     let mut icerik = if ekleme {
-        match std::fs::read(yol) {
+        match crate::kaynak_sinirlari::veri_dosyasi_baytlarini_oku(yol) {
             Ok(icerik) => icerik,
             Err(hata) if hata.kind() == io::ErrorKind::NotFound => Vec::new(),
             Err(hata) => return Err(hata),
@@ -51,7 +51,7 @@ pub fn atomik_karsilastir_ve_geri_al(
     onceki: Option<&[u8]>,
 ) -> io::Result<()> {
     let _kilit = DosyaKilidi::al(yol)?;
-    let guncel = match std::fs::read(yol) {
+    let guncel = match crate::kaynak_sinirlari::veri_dosyasi_baytlarini_oku(yol) {
         Ok(icerik) => Some(icerik),
         Err(hata) if hata.kind() == io::ErrorKind::NotFound => None,
         Err(hata) => return Err(hata),

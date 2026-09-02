@@ -92,6 +92,7 @@ pub(super) fn degerlendir_async<'a>(
         }
         Ifade::BosListe => Ok(Deger::Liste(Vec::new())),
         Ifade::ListeSabiti(ogeler) => {
+            koleksiyon_sinirini_denetle(ogeler.len(), satir)?;
             let mut degerler = Vec::new();
             for oge in ogeler {
                 degerler.push(degerlendir_async(oge, ortam, program, io, derinlik, satir).await?);
@@ -153,9 +154,12 @@ pub(super) fn degerlendir_async<'a>(
                 (Ozellik::CsvMetin, Deger::Liste(satirlar)) => {
                     Ok(Deger::Metin(csv_yaz(&satirlar)))
                 }
-                (Ozellik::Harfler, Deger::Metin(m)) => Ok(Deger::Liste(
-                    m.chars().map(|k| Deger::Metin(k.to_string())).collect(),
-                )),
+                (Ozellik::Harfler, Deger::Metin(m)) => {
+                    koleksiyon_sinirini_denetle(m.chars().count(), satir)?;
+                    Ok(Deger::Liste(
+                        m.chars().map(|k| Deger::Metin(k.to_string())).collect(),
+                    ))
+                }
                 (Ozellik::JsonMetin, deger) => Ok(Deger::Metin(json_yaz(&deger))),
                 (Ozellik::HtmlGuvenli, Deger::Metin(m)) => {
                     let mut kacisli = String::with_capacity(m.len());
@@ -174,11 +178,15 @@ pub(super) fn degerlendir_async<'a>(
                 (Ozellik::Uzunluk, Deger::Metin(m)) => {
                     Ok(Deger::TamSayi(m.chars().count() as i64))
                 }
-                (Ozellik::Kelimeler, Deger::Metin(m)) => Ok(Deger::Liste(
-                    m.split_whitespace()
-                        .map(|k| Deger::Metin(k.to_string()))
-                        .collect(),
-                )),
+                (Ozellik::Kelimeler, Deger::Metin(m)) => {
+                    let sayi = m.split_whitespace().count();
+                    koleksiyon_sinirini_denetle(sayi, satir)?;
+                    Ok(Deger::Liste(
+                        m.split_whitespace()
+                            .map(|k| Deger::Metin(k.to_string()))
+                            .collect(),
+                    ))
+                }
                 (Ozellik::Yil, Deger::Tarih { yil, .. }) => Ok(Deger::TamSayi(yil)),
                 (Ozellik::HataKodu, Deger::Hata(hata)) => Ok(Deger::Metin(hata.kod)),
                 (Ozellik::HataMesaji, Deger::Hata(hata)) => Ok(Deger::Metin(hata.mesaj)),
@@ -287,9 +295,13 @@ pub(super) fn degerlendir_async<'a>(
             Deger::AgYaniti { govde, .. } => Ok(Deger::Metin(govde)),
             _ => Err(ic_hata(satir)),
         },
-        Ifade::KomutArgumanlari => Ok(Deger::Liste(
-            io.argumanlar().into_iter().map(Deger::Metin).collect(),
-        )),
+        Ifade::KomutArgumanlari => {
+            let argumanlar = io.argumanlar();
+            koleksiyon_sinirini_denetle(argumanlar.len(), satir)?;
+            Ok(Deger::Liste(
+                argumanlar.into_iter().map(Deger::Metin).collect(),
+            ))
+        }
         Ifade::GunFarki { birinci, ikinci } => {
             let bir = degerlendir_async(birinci, ortam, program, io, derinlik, satir).await?;
             let iki = degerlendir_async(ikinci, ortam, program, io, derinlik, satir).await?;
@@ -439,6 +451,7 @@ pub(super) fn degerlendir_async<'a>(
                     "Hatası yönetilecekse \"... dosyasını okumayı dene\" ile Sonuç al.".into(),
                 )
             })?;
+            koleksiyon_sinirini_denetle(icerik.lines().count(), satir)?;
             Ok(Deger::Liste(
                 icerik
                     .lines()
@@ -449,6 +462,12 @@ pub(super) fn degerlendir_async<'a>(
         Ifade::Parcala { metin, ayrac } => {
             let m = degerlendir_async(metin, ortam, program, io, derinlik, satir).await?.metne();
             let a = degerlendir_async(ayrac, ortam, program, io, derinlik, satir).await?.metne();
+            let parca_sayisi = if a.is_empty() {
+                m.chars().count()
+            } else {
+                m.split(&a).count()
+            };
+            koleksiyon_sinirini_denetle(parca_sayisi, satir)?;
             let parcalar: Vec<Deger> = if a.is_empty() {
                 m.chars().map(|k| Deger::Metin(k.to_string())).collect()
             } else {

@@ -30,9 +30,10 @@ Dil değişikliği RFC ister (master plan bölüm 25). Şablon: [0000-sablon.md]
 | RFC-0022 | [Deterministik IO Trace/Replay](0022-deterministik-io-izi.md) | **geçici kabul** (K-115 şema-1 + CLI; `zee-io-1` ilişkisi K-116) | K-115, K-116, B-027, V1-P0-25 |
 | RFC-0023 | [Sürümlü Deterministik IO Profili](0023-deterministik-io-profili.md) | **geçici kabul** (`zee-io-1`, K-116) | K-116, B-028, V1-P0-26 |
 | RFC-0024 | [Merkezî Yetkinlik ve Outbound Ağ Güvenliği](0024-merkezi-yetkinlik-ve-outbound-guvenligi.md) | **geçici kabul** (K-127) | K-127, B-023/B-024/B-049, V1-P0-29 |
+| RFC-0025 | [Merkezî Kaynak Bütçesi](0025-merkezi-kaynak-butcesi.md) | **geçici kabul** (K-129 ilk profil; heap/bağlantı açık) | K-105, K-107, K-129, B-025, V1-P0-31 |
 
-**Durum özeti (2 Eylül 2026, K-127):** 24 RFC — 2 kabul (0001, 0010),
-20 geçici kabul (RFC-0020'nin yayın ve metadata doğrulama katmanı normatiftir;
+**Durum özeti (2 Eylül 2026, K-129):** 25 RFC — 2 kabul (0001, 0010),
+21 geçici kabul (RFC-0020'nin yayın ve metadata doğrulama katmanı normatiftir;
 taşıma/cache/CLI tamamlanmadan uzak paket kullanımı sözü verilmez), 2 taslak: 0012 (FFI — Faz
 4/5) ve 0014 (standart kitaplık — çalışan prototiple).
 Kural: bir RFC ancak yüzeyi gerçeklenmiş VE regression testine bağlanmışsa

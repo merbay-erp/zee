@@ -41,6 +41,9 @@ Public internet HTTPS ister; yerel/private ağ veya düz HTTP ayrıca
 Dosya yazmaları atomik replace kullanır; var olan normal dosyanın desteklenen
 owner/group/ACL/xattr güvenlik bilgisi K-128/ADR-032 uyarınca korunamazsa yazma
 eski dosyaya dokunmadan durur.
+Resmî güvenli profil tek kaynağı 8 MiB ile sınırlar; sonsuz çalışma/çıktı,
+sınırsız koleksiyon ve görev büyümesi host sürecini düşürmek yerine S045 veya
+C023 tanısıyla kontrollü durur. Ayrıntı: [kaynak güvenlik profili](../spec/24-kaynak-guvenlik-profili.md).
 Bu nedenle dosya adını ezberlemeden projeyi çalıştırabilirsin:
 
 ```bash

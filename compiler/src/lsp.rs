@@ -371,6 +371,7 @@ const KELIME_ACIKLAMALARI: [(&str, &str); 44] = [
 #[derive(Default)]
 pub struct Sunucu {
     belgeler: HashMap<String, String>,
+    toplam_belge_bayti: usize,
 }
 
 /// mesaj_isle çıktısı: gönderilecek gövdeler + sunucu devam edecek mi.
@@ -411,19 +412,26 @@ impl Sunucu {
             }
             "textDocument/didOpen" => {
                 if let Some((uri, metin)) = ac_parametreleri(&mesaj) {
-                    self.belgeler.insert(uri.clone(), metin);
-                    cikti.govdeler.push(self.tanilari_yayinla(&uri));
+                    match self.belgeyi_guncelle(uri.clone(), metin) {
+                        Ok(()) => cikti.govdeler.push(self.tanilari_yayinla(&uri)),
+                        Err(hata) => cikti.govdeler.push(kaynak_siniri_bildirimi(&uri, &hata)),
+                    }
                 }
             }
             "textDocument/didChange" => {
                 if let Some((uri, metin)) = degisim_parametreleri(&mesaj) {
-                    self.belgeler.insert(uri.clone(), metin);
-                    cikti.govdeler.push(self.tanilari_yayinla(&uri));
+                    match self.belgeyi_guncelle(uri.clone(), metin) {
+                        Ok(()) => cikti.govdeler.push(self.tanilari_yayinla(&uri)),
+                        Err(hata) => cikti.govdeler.push(kaynak_siniri_bildirimi(&uri, &hata)),
+                    }
                 }
             }
             "textDocument/didClose" => {
                 if let Some(uri) = belge_uri(&mesaj) {
-                    self.belgeler.remove(&uri);
+                    if let Some(eski) = self.belgeler.remove(&uri) {
+                        self.toplam_belge_bayti =
+                            self.toplam_belge_bayti.saturating_sub(eski.len());
+                    }
                     cikti.govdeler.push(bos_tanilar(&uri));
                 }
             }
@@ -480,7 +488,40 @@ impl Sunucu {
                 }
             }
         }
+        ciktilari_sinirla(kimlik, &mut cikti);
         cikti
+    }
+
+    fn belgeyi_guncelle(&mut self, uri: String, metin: String) -> Result<(), String> {
+        let sinirlar = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI;
+        if metin.len() > sinirlar.kaynak_bayti() {
+            return Err(format!(
+                "Belge güvenli profil {} MiB kaynak sınırını aşıyor.",
+                sinirlar.kaynak_bayti() / 1024 / 1024
+            ));
+        }
+        let yeni_belge = !self.belgeler.contains_key(&uri);
+        if yeni_belge && self.belgeler.len() >= sinirlar.lsp_acik_belge() {
+            return Err(format!(
+                "LSP güvenli profil {} açık belge sınırını aşıyor.",
+                sinirlar.lsp_acik_belge()
+            ));
+        }
+        let eski_bayt = self.belgeler.get(&uri).map_or(0, String::len);
+        let yeni_toplam = self
+            .toplam_belge_bayti
+            .saturating_sub(eski_bayt)
+            .checked_add(metin.len())
+            .ok_or_else(|| "LSP belge belleği sayı sınırını aştı.".to_string())?;
+        if yeni_toplam > sinirlar.lsp_toplam_belge_bayti() {
+            return Err(format!(
+                "LSP belgeleri toplam {} MiB bellek sınırını aşıyor.",
+                sinirlar.lsp_toplam_belge_bayti() / 1024 / 1024
+            ));
+        }
+        self.belgeler.insert(uri, metin);
+        self.toplam_belge_bayti = yeni_toplam;
+        Ok(())
     }
 
     fn tanilari_yayinla(&self, uri: &str) -> String {
@@ -513,7 +554,9 @@ impl Sunucu {
             if ad.contains(['/', '\\', '.']) {
                 return Err("birim adı yol içeremez".into());
             }
-            match std::fs::read_to_string(klasor.join(format!("{}.dil", ad))) {
+            match crate::kaynak_sinirlari::kaynak_dosyasi_oku(
+                &klasor.join(format!("{}.dil", ad)),
+            ) {
                 Ok(kaynak) => Ok(kaynak),
                 Err(hata) => crate::gomulu_birim(ad)
                     .map(str::to_string)
@@ -793,7 +836,9 @@ fn semantik_program_derle(uri: &str, metin: &str) -> Option<crate::faz::Baglanmi
         if ad.contains(['/', '\\', '.']) {
             return Err("birim adı yol içeremez".into());
         }
-        match std::fs::read_to_string(klasor.join(format!("{}.dil", ad))) {
+        match crate::kaynak_sinirlari::kaynak_dosyasi_oku(
+            &klasor.join(format!("{}.dil", ad)),
+        ) {
             Ok(kaynak) => Ok(kaynak),
             Err(hata) => crate::gomulu_birim(ad)
                 .map(str::to_string)
@@ -1111,6 +1156,51 @@ fn yanit(kimlik: Option<&Json>, sonuc: &str) -> String {
     )
 }
 
+fn ciktilari_sinirla(kimlik: Option<&Json>, ciktilar: &mut Ciktilar) {
+    let azami = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.lsp_yanit_bayti();
+    let toplam = ciktilar
+        .govdeler
+        .iter()
+        .try_fold(0usize, |toplam, govde| toplam.checked_add(govde.len()));
+    if toplam.is_some_and(|toplam| toplam <= azami) {
+        return;
+    }
+    let mesaj = format!("LSP yanıtı güvenli profil {} MiB sınırını aşıyor.", azami / 1024 / 1024);
+    ciktilar.govdeler.clear();
+    ciktilar.govdeler.push(match kimlik {
+        Some(kimlik) => rpc_hatasi(Some(kimlik), -32001, &mesaj),
+        None => format!(
+            "{{\"jsonrpc\":\"2.0\",\"method\":\"window/logMessage\",\"params\":{{\"type\":1,\"message\":{}}}}}",
+            json_metin_yaz(&mesaj)
+        ),
+    });
+}
+
+fn rpc_hatasi(kimlik: Option<&Json>, kod: i64, mesaj: &str) -> String {
+    let kimlik = match kimlik {
+        Some(Json::Sayi(s)) => format!("{}", *s as i64),
+        Some(Json::Metin(m)) => json_metin_yaz(m),
+        _ => "null".to_string(),
+    };
+    format!(
+        "{{\"jsonrpc\":\"2.0\",\"id\":{},\"error\":{{\"code\":{},\"message\":{}}}}}",
+        kimlik,
+        kod,
+        json_metin_yaz(mesaj)
+    )
+}
+
+fn kaynak_siniri_bildirimi(uri: &str, mesaj: &str) -> String {
+    let tani = Tani::yeni("S045", mesaj.into(), 1, 1, 1)
+        .onerili("Kullanılmayan belgeleri kapat veya kaynağı daha küçük birimlere böl.".into());
+    format!(
+        "{{\"jsonrpc\":\"2.0\",\"method\":\"textDocument/publishDiagnostics\",\
+         \"params\":{{\"uri\":{},\"diagnostics\":[{}]}}}}",
+        json_metin_yaz(uri),
+        lsp_tanisi(&tani)
+    )
+}
+
 fn bos_tanilar(uri: &str) -> String {
     format!(
         "{{\"jsonrpc\":\"2.0\",\"method\":\"textDocument/publishDiagnostics\",\
@@ -1198,5 +1288,39 @@ fn proje_kokunu_bul(yol: &std::path::Path) -> Option<std::path::PathBuf> {
             return Some(klasor.to_path_buf());
         }
         klasor = klasor.parent()?;
+    }
+}
+
+#[cfg(test)]
+mod kaynak_siniri_testleri {
+    use super::*;
+
+    #[test]
+    fn acik_belge_sayisi_sinirli_ve_reddedilen_belge_saklanmaz() {
+        let mut sunucu = Sunucu::yeni();
+        let azami = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.lsp_acik_belge();
+        for sira in 0..azami {
+            sunucu
+                .belgeyi_guncelle(format!("file:///{}.dil", sira), String::new())
+                .expect("sınır içi belge");
+        }
+        let hata = sunucu
+            .belgeyi_guncelle("file:///fazla.dil".into(), String::new())
+            .expect_err("fazla belge reddedilmeli");
+        assert!(hata.contains("açık belge"));
+        assert_eq!(sunucu.belgeler.len(), azami);
+    }
+
+    #[test]
+    fn buyuk_lsp_yaniti_json_rpc_hatasina_donusur() {
+        let azami = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.lsp_yanit_bayti();
+        let mut ciktilar = Ciktilar {
+            govdeler: vec!["x".repeat(azami + 1)],
+            devam: true,
+        };
+        ciktilari_sinirla(Some(&Json::Sayi(7.0)), &mut ciktilar);
+        assert_eq!(ciktilar.govdeler.len(), 1);
+        assert!(ciktilar.govdeler[0].contains("\"code\":-32001"));
+        assert!(ciktilar.govdeler[0].contains("\"id\":7"));
     }
 }

@@ -65,8 +65,13 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 25. K-128/ADR-032 atomik replace'i Linux/macOS mode+uid+gid+ACL/xattr ve
     Windows DACL/security/named-stream korumasına bağladı; taşınamayan metadata
     fail-closed kaldı ve B-048 kapandı (506 test).
-26. Sıradaki makine işi B-025 ortak `KaynakSinirlari` bütçe modelidir.
-27. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
+26. K-129/RFC-0025/ADR-033 ortak `KaynakSinirlari` profilini kurdu; kaynak,
+    token, proje toplamı, çalışma adımı, çıktı, koleksiyon, görev, dosya okuma
+    ve LSP toplam bellek/yanıt dilimini merkezîleştirdi. B-025 heap-byte ve
+    bağlantı muhasebesi için kısmen açıktır (513 test).
+27. Sıradaki makine işi B-025'in canlı değer grafiği/metin ve bağlantı
+    bütçesini aynı profile bağlayan ikinci dilimidir.
+28. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
 
 ## P0 — V1 öncesi dil ve derleyici omurgası
 
@@ -252,11 +257,15 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 - **B-024 · KAPALI İLKE + GERÇEKLEME (K-127) — HTTPS/TLS'yi elle yazma.**
   Native outbound, exact sabitlenmiş `ureq 3.4.0` + rustls backend'indedir;
   Zee kriptografi/TLS gerçeklemeye dönüşmez.
-- **B-025 · KISMEN (K-105) — ortak `KaynakSinirlari` modeli.** K-105 native
-  HTTP istemcisini varsayılan 30 saniye + 8 MiB wire yanıtla, yerel sunucu
-  okumasını 10 saniyelik mutlak bütçeyle sınırladı. Recursion, ortak input/body,
-  allocation, koleksiyon, görev, eşzamanlı bağlantı ve output bütçelerini tek
-  modelde merkezileştirme hâlâ açıktır.
+- **B-025 · KISMEN (K-105/K-129) — ortak `KaynakSinirlari` modeli.** K-129
+  değişmez tek profilde 8 MiB kaynak, 1 milyon token, 4.096/128 MiB proje
+  kaynağı, mevcut C019/500 çağrı derinliği, 10 milyon çalışma adımı, 1 milyon
+  koleksiyon öğesi, 1.024 görev, 16 MiB/100 bin çıktı olayı, 16 MiB dosya
+  okuma ve LSP 256 belge/128 MiB/8 MiB outbound sınırını bağladı. S045/C023
+  aşımı host panic veya sessiz truncate yerine kontrollü tanıdır. K-105'in ağ
+  deadline/body zarfı korunur. Canlı değer grafiğinin yaklaşık toplam heap
+  byte/öğe hesabı, bütün metin büyütme yolları, aynı anda açık bağlantılar ve
+  kalan domain sabitlerinin profile taşınması ikinci dilimde açıktır.
 - **B-026 · AÇIK — cancellation-safety audit'i.** Dosya temp'i, web yanıtı,
   oturum mutation'ı ve diğer yan etkilerin iptal/yarım kalma davranışını testle.
 - **B-027 · KAPALI (K-115) — deterministik IO trace/replay biçimi tasarla.**
@@ -284,7 +293,7 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   taşır. `Content-Length` tahsis öncesi ve tekil doğrulanır. Yanlış/eksik
   surrogate, tek düşük surrogate ve kaçışsız U+0000..U+001F reddedilir.
   ADR-019 ve yedi olumsuz/sınır testi V1-P0-17'yi kapattı. Toplam açık belge
-  belleği ve çıktı bütçesi B-025'te kalır.
+  belleği ve outbound çıktı bütçesi K-129/B-025 ile ayrıca sınırlıdır.
 - **B-048 · KAPALI (K-128) — atomik replace metadata sözleşmesini tamamla.**
   Normal dosyanın Linux/macOS mode+uid+gid'si korunur. Linux görünür xattr'ı
   (ACL/security label dâhil) kaynak bütçeli descriptor kopyasıyla, macOS
@@ -299,6 +308,18 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   redirect/proxy, 30 saniye ve 64 KiB+8 MiB zarfı tek istemcide uygulanır.
   RFC-0024/ADR-031/spec-23 ve loopback/redirect/SSRF/body-limit regresyonları
   davranışı bağlar.
+- **B-051 · AÇIK — LSP JSON-RPC ayrıştırmasını protokol-kesin yap.** RFC 8259
+  sayı durum makinesi, duplicate object-key reddi, parse error `-32700`,
+  invalid request `-32600` ve finite olmayan sayının serializer'a çıkmaması
+  ayrı differential/regresyon kanıtı ister.
+- **B-052 · AÇIK — web proxy origin'ini tek kanonik tipe geçir.** CLI
+  `GuvenliOrigin` ayrıştırması `AgHedefi` kadar sıkı DNS/IPv6/port semantiği
+  taşımalı; iki parser drift edemez. Güvenilir proxy profili yalnız loopback
+  bind invariant'ıyla açılabilmelidir.
+- **B-053 · AÇIK — HTTP istek ayrıştırıcısını byte tabanlı ve fuzz kanıtlı
+  yap.** Request-line/header CRLF, bare-LF, obs-fold, NUL, absolute-form,
+  geçersiz UTF-8, TE/CL ve duplicate CL yüzeyi byte parser'da fail-closed
+  olmalı; ayrı libFuzzer hedefi crash girdisini regression'a yükseltmelidir.
 
 ## P1 — Paketleme ve supply chain
 
@@ -320,10 +341,14 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 
 ## P2 — Tooling ve bakım
 
-- **B-033 · KISMEN — archive hijyeni.** `.DS_Store` Git dışında; kaynak/yayın
-  arşivleri `__MACOSX`, target ve geçici dosyaları yapısal olarak dışlamalıdır.
+- **B-033 · KISMEN — archive hijyeni.** Gerçek repoda `.gitignore`, `.DS_Store`
+  ve target dışlaması vardır; fakat dış incelemeye giden ZIP'te `__MACOSX`,
+  `._*`, `.DS_Store` ve `compiler/fuzz/target` bulundu. Kaynak/yayın arşivi Git
+  durumuna güvenmeden bunları yapısal olarak dışlamalıdır.
 - **B-034 · AÇIK — tekrar üretilebilir compiler source snapshot komutu.** Yalnız
-  gerekli kaynak/test/Cargo/belgeleri alan, özetli geliştirme arşivi üret.
+  gerekli kaynak/test/Cargo/belge/golden/conformance ve `.github/workflows`
+  alan, SHA-256 manifestli geliştirme arşivi üret. CI tanımı arşivden eksik
+  kalmamalı; build cache hiçbir koşulda pakete girmemelidir.
 - **B-035 · AÇIK — function size/complexity trend bütçesi.** Kör hard limit
   yerine kritik modüllerde büyüme raporu ve gözden geçirme eşiği koy.
 - **B-036 · KAPALI — Clippy `-D warnings` kapısı.** CI ve yerel toplu doğrulama
@@ -336,6 +361,9 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   minimal kalıcı `.dil` success/fail fixture'ına dönüşmelidir.
 - **B-040 · KISMEN — performans baseline arşivi.** `src/bin/olcum.rs` vardır;
   parser/checker/runtime p50/p95 CI artefact ve trend olmalıdır.
+- **B-054 · AÇIK — dependency advisory/lisans/tekrar üretim kapısı.** CI'da
+  sabit sürümlü `cargo audit` veya `cargo deny`, RustSec advisory, lisans/ban
+  politikası ve V1 için lock+checksum/offline/vendor prosedürü tanımlanmalıdır.
 - **B-041 · KAPALI (K-120) — LSP'yi SymbolId/HIR'a bağla.** Definition ve
   rename yalnız başarılı checker'ın `SymbolId`/`IslemId`/`YapiId` typed-HIR
   bağından hedef seçer. HIR ilk tanım, yeniden atama ve okuma aralıklarını
@@ -352,8 +380,8 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   programın metin/yorumları koruyan deterministik dağınık-boşluk varyantı
   biçimlenir; önce/sonra izi eşit ve iki parser geçişi de başarılı olmak
   zorundadır. İdempotence ve proje/kitaplık resmî biçim kapıları korunur.
-- **B-043 · KAPALI (K-118) — spec↔code kanıt haritası.** Bugünkü 24 RFC, 29
-  ADR ve 23 spec bölümü `docs/kanit-haritasi-v1.tsv` içinde `kanitli/kismi/taslak`
+- **B-043 · KAPALI (K-118) — spec↔code kanıt haritası.** Bugünkü 25 RFC, 31
+  ADR ve 24 spec bölümü `docs/kanit-haritasi-v1.tsv` içinde `kanitli/kismi/taslak`
   durumu, yürütülebilir test yolları ve açık kapsam notuyla birebir izlenir.
   Tazelik testi eksik/yinelenen belgeyi, olmayan ya da test taşımayan kanıt
   dosyasını ve testsiz tamamlanmış satırı reddeder.
@@ -368,6 +396,21 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 ## Bir sonraki somut kapı
 
 İnsan kanıtı hattında B-001, doldurulmuş gerçek usability formları ve önceden
-ilan edilmiş eşikleri bekler. Makine hattında B-048 K-128 ile kapandı;
-sıradaki iş B-025'in timeout, girdi, allocation, koleksiyon, görev, bağlantı
-ve çıktı bütçelerini ortak `KaynakSinirlari` modelinde birleştirmektir.
+ilan edilmiş eşikleri bekler. Makine hattında K-129, B-025'in ilk ortak
+`KaynakSinirlari` profilini kurdu. Sıradaki iş canlı değer/metin grafiğinin
+yaklaşık toplam heap bütçesi ile eşzamanlı bağlantı sayısını aynı profile
+bağlayıp kalan domain sabitlerini merkezîleştirmektir.
+
+## 2 Eylül 2026 ikinci dış inceleme ayrımı
+
+- **Doğrulandı ve sıraya alındı:** B-025 heap/output/LSP toplamı, B-026
+  cancellation, B-029 registry taşıma/cache/kalıcı rollback, B-046 rate-limit
+  ve çok süreçli oturum, B-051 kesin JSON-RPC, B-052 origin tekilleştirme,
+  B-053 byte HTTP+fuzz, B-034 temiz snapshot ve B-054 advisory/reproducibility.
+- **Mevcut repoda zaten kapalı:** çağrı derinliği C019/500 ve ayrı regresyonu;
+  atomik metadata `unsafe` bloklarının her birindeki `SAFETY` gerekçesi; kök
+  `.gitignore`; üç platformlu `.github/workflows/ci.yml`; tekil P2 başlığı.
+- **Arşiv kaynaklı bulgu:** CI dosyasının yokluğu, `target`, `__MACOSX` ve
+  `.DS_Store` sızıntısı gerçek Git ağacından değil, incelemeye gönderilen ZIP
+  üretiminden kaynaklanır. Bu nedenle bulgu silinmedi; B-033/B-034 altında
+  üretim hattı problemi olarak tutuldu.

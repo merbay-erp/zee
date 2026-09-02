@@ -185,7 +185,7 @@ impl ProjeGrafigi {
     pub fn kilidi_denetle(&self) -> Result<(), ProjeYuklemeHatasi> {
         let yol = self.ana_kok.join(KILIT_DOSYASI);
         let beklenen = self.kilit_metni();
-        match std::fs::read_to_string(&yol) {
+        match crate::kaynak_sinirlari::kaynak_dosyasi_oku(&yol) {
             Ok(bulunan) if bulunan == beklenen => Ok(()),
             Ok(_) => Err(self.kilit_hatasi(
                 "Proje kilidi bildirimlerle veya bağımlılık kaynaklarıyla uyuşmuyor.",
@@ -394,7 +394,7 @@ impl GrafikKurucu {
         let bildirim_yolu = kok.join("proje.dil");
         let bildirim_kaynagi = match gecici_bildirim {
             Some(kaynak) => kaynak.to_string(),
-            None => std::fs::read_to_string(&bildirim_yolu).map_err(|hata| {
+            None => crate::kaynak_sinirlari::kaynak_dosyasi_oku(&bildirim_yolu).map_err(|hata| {
                 proje_hatasi(
                     "P006",
                     &format!(
@@ -517,7 +517,11 @@ impl GrafikKurucu {
 }
 
 fn kaynaklari_oku(kok: &Path) -> Result<BTreeMap<PathBuf, String>, String> {
-    fn gez(klasor: &Path, sonuc: &mut BTreeMap<PathBuf, String>) -> Result<(), String> {
+    fn gez(
+        klasor: &Path,
+        sonuc: &mut BTreeMap<PathBuf, String>,
+        toplam_bayt: &mut usize,
+    ) -> Result<(), String> {
         let mut girdiler: Vec<std::fs::DirEntry> = std::fs::read_dir(klasor)
             .map_err(|hata| format!("\"{}\" listelenemedi: {}", klasor.display(), hata))?
             .collect::<Result<_, _>>()
@@ -535,13 +539,29 @@ fn kaynaklari_oku(kok: &Path) -> Result<BTreeMap<PathBuf, String>, String> {
                 if ad.starts_with('.') || matches!(ad.as_ref(), "target" | "hedef") {
                     continue;
                 }
-                gez(&yol, sonuc)?;
+                gez(&yol, sonuc, toplam_bayt)?;
             } else if tur.is_file()
                 && yol.extension().and_then(|uzanti| uzanti.to_str()) == Some("dil")
             {
                 let kanonik = std::fs::canonicalize(&yol).map_err(|hata| hata.to_string())?;
-                let kaynak = std::fs::read_to_string(&kanonik)
+                let kaynak = crate::kaynak_sinirlari::kaynak_dosyasi_oku(&kanonik)
                     .map_err(|hata| format!("\"{}\" okunamadı: {}", yol.display(), hata))?;
+                let sinirlar = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI;
+                if sonuc.len() >= sinirlar.kaynak_dosyasi() {
+                    return Err(format!(
+                        "Proje {} kaynak dosyası sınırını aşıyor.",
+                        sinirlar.kaynak_dosyasi()
+                    ));
+                }
+                *toplam_bayt = toplam_bayt
+                    .checked_add(kaynak.len())
+                    .ok_or_else(|| "Proje kaynak boyutu sayı sınırını aştı.".to_string())?;
+                if *toplam_bayt > sinirlar.toplam_kaynak_bayti() {
+                    return Err(format!(
+                        "Proje kaynakları toplam {} MiB sınırını aşıyor.",
+                        sinirlar.toplam_kaynak_bayti() / 1024 / 1024
+                    ));
+                }
                 sonuc.insert(kanonik, kaynak);
             }
         }
@@ -549,7 +569,8 @@ fn kaynaklari_oku(kok: &Path) -> Result<BTreeMap<PathBuf, String>, String> {
     }
 
     let mut sonuc = BTreeMap::new();
-    gez(kok, &mut sonuc)?;
+    let mut toplam_bayt = 0usize;
+    gez(kok, &mut sonuc, &mut toplam_bayt)?;
     Ok(sonuc)
 }
 

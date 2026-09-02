@@ -35,6 +35,7 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-030 | [Bütün AST ifadelerinde kesin kaynak aralığı](030-kesin-ast-kaynak-araliklari.md) | **kabul** (K-126/B-050) |
 | ADR-031 | [Merkezî yetkinlik politikası ve native outbound istemci](031-merkezi-yetkinlik-ve-outbound-istemci.md) | **kabul** (K-127/B-023/B-049) |
 | ADR-032 | [Atomik replace metadata koruma politikası](032-atomik-replace-metadata-politikasi.md) | **kabul** (K-128/B-048) |
+| ADR-033 | [Merkezî ve değişmez kaynak bütçesi](033-merkezi-kaynak-butcesi.md) | **kabul** (K-129/B-025 ilk dilim) |
 | ADR-004 | Bellek yönetimi prototip kararı (GC / ARC benchmark) | bekliyor |
 | ADR-005 | Native backend seçimi (Cranelift / LLVM) | bekliyor — Faz 4 |
 | ADR-007 | [Telemetri ve gizlilik: araçlar veri toplamaz](007-telemetri-ve-gizlilik.md) | **kabul** |

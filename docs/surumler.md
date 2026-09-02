@@ -417,6 +417,16 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   regresyonuyla envanter 506 test ve 77 numaralı belgeye çıktı; B-048 ve
   V1-P0-30 kapandı.
 
+- **Merkezî kaynak güvenlik profili** (K-129, RFC-0025, ADR-033, spec-24):
+  Tek değişmez `KaynakSinirlari`; 8 MiB kaynak/1 milyon token, 4.096 dosya ve
+  128 MiB proje toplamı, mevcut C019/500 çağrı derinliği, 10 milyon adım,
+  1 milyon koleksiyon öğesi, 1.024 görev, 16 MiB/100 bin çıktı ve 16 MiB
+  bounded dosya okumasını bağlar. LSP 256 açık belge/128 MiB toplam metin ve
+  8 MiB outbound zarf taşır; red eski belgeyi değiştirmez. S045/C023 ile iki
+  yeni kararlı tanı ve yedi regresyon eklendi; envanter 513 test, 149 etkin +
+  3 ayrılmış tanı ve 80 numaralı belgeye çıktı. B-025 toplam heap/metin ve
+  bağlantı muhasebesi için kısmen açık kalır.
+
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`
   bildirimi hazır üretir. P001–P004 Türkçe proje tanıları. Doğrudan dosya
