@@ -10,6 +10,7 @@ mod io_izi;
 mod io_profili;
 mod kaynak;
 mod metin;
+mod web_istek;
 mod yetkinlik;
 
 use self::cumle::blok_calistir_async;
@@ -17,6 +18,7 @@ use self::hir_gecisi::CalistirmaProgrami;
 use self::ifade::degerlendir_async;
 use self::kaynak::*;
 use self::metin::{csv_yaz, dogrulama_detayi, json_yaz, metne_sinirli};
+use self::web_istek::web_istegini_calistir;
 pub use self::hir_gecisi::{calistir_baglanmis, calistir_baglanmis_io, test_calistir_baglanmis};
 pub use self::io_izi::{
     IzKaydedenIo, IzYenidenOynatici, AZAMI_IO_IZ_BAYTI, AZAMI_IO_IZ_OLAYI,
@@ -229,7 +231,16 @@ pub trait GirdiCikti {
     /// Sunucu dinlemesini kurar (golden 25).
     fn sunucu_kur(&mut self, kapi: i64) -> Result<(), String>;
     /// Sıradaki isteğin yolunu verir; None = sunucu kapanıyor.
+    /// Başarılı dönüş adaptörde yeni bir istek transaction'ı açar.
     fn istek_al(&mut self) -> Option<String>;
+    /// İstek gövdesi başarıyla bitti: oturum/çerez değişiklikleriyle tamponlu
+    /// yanıtı birlikte görünür kılar.
+    fn istek_islemini_tamamla(&mut self) -> Result<(), String> {
+        Ok(())
+    }
+    /// İstek gövdesi iptal/hata ile bitti: oturum/çerez değişiklikleriyle
+    /// tamponlu yanıtı birlikte bırakır. Soket adaptörün hata yanıtına açıktır.
+    fn istek_islemini_geri_al(&mut self) {}
     /// Son isteğe yanıt gönderir.
     fn yanit_gonder(&mut self, yanit: &str);
     /// Protokol hataları için açık HTTP durumlu yanıt. Eski IO adaptörleri
@@ -331,6 +342,12 @@ impl GirdiCikti for PaylasilanIo<'_> {
     fn istek_al(&mut self) -> Option<String> {
         self.ic.borrow_mut().istek_al()
     }
+    fn istek_islemini_tamamla(&mut self) -> Result<(), String> {
+        self.ic.borrow_mut().istek_islemini_tamamla()
+    }
+    fn istek_islemini_geri_al(&mut self) {
+        self.ic.borrow_mut().istek_islemini_geri_al();
+    }
     fn yanit_gonder(&mut self, yanit: &str) {
         self.ic.borrow_mut().yanit_gonder(yanit);
     }
@@ -422,6 +439,20 @@ pub struct ToplayanIo {
     eylem_yedekleri: Vec<HashMap<String, String>>,
     web_guvenligi: WebGuvenligi,
     guvenli_belirtec_sirasi: u64,
+    web_istek_yedegi: Option<ToplayanWebIstekYedegi>,
+    bekleyen_sunucu_yaniti: Option<SunucuYanitTaslagi>,
+}
+
+struct ToplayanWebIstekYedegi {
+    web_guvenligi: WebGuvenligi,
+    yazilan_cerez_sayisi: usize,
+    guvenli_cerez_sayisi: usize,
+}
+
+enum SunucuYanitTaslagi {
+    Govde(String),
+    Durum(u16, String),
+    Yonlendirme(String),
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -457,6 +488,8 @@ impl ToplayanIo {
             eylem_yedekleri: Vec::new(),
             web_guvenligi: WebGuvenligi::yeni(),
             guvenli_belirtec_sirasi: 0,
+            web_istek_yedegi: None,
+            bekleyen_sunucu_yaniti: None,
         }
     }
 
@@ -473,6 +506,29 @@ impl ToplayanIo {
             yol: "/",
             azami_omur_saniye: yeni.azami_omur_saniye,
         });
+    }
+
+    fn sunucu_yanitini_uygula(&mut self, taslak: SunucuYanitTaslagi) {
+        match taslak {
+            SunucuYanitTaslagi::Govde(govde) => {
+                if let Some((_, yanit)) = self.sunucu_yanitlari.last_mut() {
+                    *yanit = govde;
+                }
+            }
+            SunucuYanitTaslagi::Durum(durum, govde) => {
+                if let Some(son) = self.sunucu_durumlari.last_mut() {
+                    *son = durum;
+                }
+                if let Some((_, yanit)) = self.sunucu_yanitlari.last_mut() {
+                    *yanit = govde;
+                }
+            }
+            SunucuYanitTaslagi::Yonlendirme(adres) => {
+                if let Some((_, yanit)) = self.sunucu_yanitlari.last_mut() {
+                    *yanit = format!("→ {}", adres);
+                }
+            }
+        }
     }
 }
 
@@ -537,29 +593,72 @@ impl GirdiCikti for ToplayanIo {
             .iter()
             .find(|(ad, _)| ad == "__Host-zee-oturum" || ad == "zee-oturum")
             .map(|(_, deger)| deger.as_str());
+        self.web_istek_yedegi = Some(ToplayanWebIstekYedegi {
+            web_guvenligi: self.web_guvenligi.clone(),
+            yazilan_cerez_sayisi: self.yazilan_cerezler.len(),
+            guvenli_cerez_sayisi: self.guvenli_cerezler.len(),
+        });
+        self.bekleyen_sunucu_yaniti = None;
         self.web_guvenligi
             .istegi_baslat(belirtec, self.an_son_degeri);
         self.sunucu_yanitlari.push((yol, String::new()));
         self.sunucu_durumlari.push(200);
         Some(ham)
     }
+    fn istek_islemini_tamamla(&mut self) -> Result<(), String> {
+        let Some(yedek) = self.web_istek_yedegi.take() else {
+            return Ok(());
+        };
+        if let Some(taslak) = self.bekleyen_sunucu_yaniti.take() {
+            self.sunucu_yanitini_uygula(taslak);
+        } else {
+            self.web_guvenligi = yedek.web_guvenligi;
+            self.yazilan_cerezler.truncate(yedek.yazilan_cerez_sayisi);
+            self.guvenli_cerezler.truncate(yedek.guvenli_cerez_sayisi);
+        }
+        Ok(())
+    }
+    fn istek_islemini_geri_al(&mut self) {
+        if let Some(yedek) = self.web_istek_yedegi.take() {
+            self.web_guvenligi = yedek.web_guvenligi;
+            self.yazilan_cerezler.truncate(yedek.yazilan_cerez_sayisi);
+            self.guvenli_cerezler.truncate(yedek.guvenli_cerez_sayisi);
+        }
+        self.bekleyen_sunucu_yaniti = None;
+    }
     fn yanit_gonder(&mut self, yanit: &str) {
-        if let Some((_, bos)) = self.sunucu_yanitlari.last_mut() {
-            *bos = yanit.to_string();
+        let taslak = SunucuYanitTaslagi::Govde(yanit.to_string());
+        if self.web_istek_yedegi.is_some() {
+            if self.bekleyen_sunucu_yaniti.is_none() {
+                self.bekleyen_sunucu_yaniti = Some(taslak);
+            }
+        } else {
+            self.sunucu_yanitini_uygula(taslak);
         }
     }
     fn durum_yaniti_gonder(&mut self, durum: u16, yanit: &str) {
-        if let Some(son) = self.sunucu_durumlari.last_mut() {
-            *son = durum;
+        let taslak = SunucuYanitTaslagi::Durum(durum, yanit.to_string());
+        if let Some(yedek) = &self.web_istek_yedegi {
+            self.yazilan_cerezler.truncate(yedek.yazilan_cerez_sayisi);
+            self.guvenli_cerezler.truncate(yedek.guvenli_cerez_sayisi);
+            if self.bekleyen_sunucu_yaniti.is_none() {
+                self.bekleyen_sunucu_yaniti = Some(taslak);
+            }
+        } else {
+            self.sunucu_yanitini_uygula(taslak);
         }
-        self.yanit_gonder(yanit);
     }
     fn yonlendir_gonder(&mut self, adres: &str) -> Result<(), String> {
         if !crate::web_guvenligi::yerel_yonlendirme_gecerli(adres) {
             return Err("yönlendirme yalnız yerel `/...` adresine yapılabilir".into());
         }
-        if let Some((_, bos)) = self.sunucu_yanitlari.last_mut() {
-            *bos = format!("→ {}", adres);
+        let taslak = SunucuYanitTaslagi::Yonlendirme(adres.to_string());
+        if self.web_istek_yedegi.is_some() {
+            if self.bekleyen_sunucu_yaniti.is_none() {
+                self.bekleyen_sunucu_yaniti = Some(taslak);
+            }
+        } else {
+            self.sunucu_yanitini_uygula(taslak);
         }
         Ok(())
     }
@@ -818,6 +917,17 @@ fn calistir_program_kodla(
 ) -> Result<i64, Tani> {
     let _butce = CalistirmaButcesiNobetcisi::yeni();
     let kodu = |tani: &Tani| tani.mesaj.parse::<i64>().unwrap_or(0);
+    let istegi_tamamla = |io: &mut dyn GirdiCikti| {
+        io.istek_islemini_tamamla().map_err(|hata| {
+            Tani::yeni(
+                "C022",
+                format!("Web isteği tamamlanamadı: {}.", hata),
+                1,
+                1,
+                1,
+            )
+        })
+    };
     let mut ortam: HashMap<String, Deger> = HashMap::new();
     match blok_calistir(&program.program().cumleler, &mut ortam, program, io, 0) {
         // "programı bitir" olağan bir sonlanmadır (Ç000 iç nöbetçisi).
@@ -830,129 +940,28 @@ fn calistir_program_kodla(
     // gövdeleri istek başına taze ortamda koşulur.
     if ortam.contains_key("(sunucu)") {
         while let Some(ham) = io.istek_al() {
-            // Uzun yaşayan sunucuda her istek bağımsız kaynak zarfı alır.
-            calistirma_butcesini_yenile();
-            gorev_ortami_butcesini_tuket(&ortam, 0, 1)?;
-            if let Err((durum, mesaj)) = istek_sinirlarini_denetle(&ham) {
-                io.durum_yaniti_gonder(durum, mesaj);
-                continue;
-            }
-            let (gelen_yontem, yol, veriler, cerezler) = istek_parcala_cerezli(&ham);
-            let istek_sozlugu = Deger::Sozluk(
-                veriler
-                    .iter()
-                    .cloned()
-                    .map(|(a, d)| (a, Deger::Metin(d)))
-                    .collect(),
-            );
-            let cerez_sozlugu = Deger::Sozluk(
-                cerezler.into_iter().map(|(a, d)| (a, Deger::Metin(d))).collect(),
-            );
-            let mut eslesti = false;
-            let mut yol_eslesti = false;
-            for cumle in &program.program().cumleler {
-                if let Cumle::IstekGeldiginde {
-                    yontem,
-                    yol: kayitli,
-                    onekli,
-                    govde,
-                    satir,
-                } = cumle
-                {
-                    let mut bos_ortam: HashMap<String, Deger> = HashMap::new();
-                    let kayitli_degeri =
-                        degerlendir(kayitli, &bos_ortam, program, io, 0, *satir)?;
-                    let kayitli = metne_sinirli(&kayitli_degeri, *satir)?;
-                    let uydu = if *onekli { yol.starts_with(&kayitli) } else { kayitli == yol };
-                    if uydu {
-                        yol_eslesti = true;
-                    }
-                    let beklenen = yontem.unwrap_or(HttpYontemi::Get).yazimi();
-                    if uydu && beklenen == gelen_yontem {
-                        let erisim = match govde.first() {
-                            Some(Cumle::RotaPolitikasi { erisim, .. }) => erisim.clone(),
-                            _ => RotaErisimi::HerkeseAcik,
-                        };
-                        let csrf = veriler
-                            .iter()
-                            .find(|(ad, _)| ad == "_csrf")
-                            .map(|(_, deger)| deger.as_str());
-                        if let Err(red) = io.rota_guvenligini_denetle(
-                            &erisim,
-                            csrf,
-                            !yontem.unwrap_or(HttpYontemi::Get).guvenli(),
-                        ) {
-                            io.durum_yaniti_gonder(red.durum, red.mesaj);
-                            eslesti = true;
-                            break;
-                        }
-                        let eksik_alan = govde.iter().find_map(|cumle| match cumle {
-                            Cumle::RotaAlaniGerekli { ad, .. }
-                                if !veriler.iter().any(|(gelen, deger)| {
-                                    gelen == ad && !deger.trim().is_empty()
-                                }) =>
-                            {
-                                Some(ad.as_str())
-                            }
-                            Cumle::RotaPolitikasi { .. } | Cumle::RotaAlaniGerekli { .. } => None,
-                            _ => None,
-                        });
-                        if let Some(ad) = eksik_alan {
-                            io.durum_yaniti_gonder(
-                                400,
-                                &format!("zorunlu istek alanı eksik ya da boş: {}", ad),
-                            );
-                            eslesti = true;
-                            break;
-                        }
-                        ortama_yazma_butcesini_tuket(
-                            &bos_ortam,
-                            "istek",
-                            &istek_sozlugu,
-                            *satir,
-                        )?;
-                        bos_ortam.insert("istek".into(), istek_sozlugu.clone());
-                        ortama_yazma_butcesini_tuket(
-                            &bos_ortam,
-                            "çerezler",
-                            &cerez_sozlugu,
-                            *satir,
-                        )?;
-                        bos_ortam.insert("çerezler".into(), cerez_sozlugu.clone());
-                        // Her istek K-085'in işbirlikli iptal çekirdeğinde ortak
-                        // varsayılan bütçe taşır. Daha kısa iç son tarih yine kazanır.
-                        let istek_zaman_asimi = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
-                            .http()
-                            .calistirma_zaman_asimi_ms();
-                        let nobetci = SonTarihNobetcisi::yeni(
-                            io.an_ms().saturating_add(istek_zaman_asimi),
-                        );
-                        let sonuc = blok_calistir(govde, &mut bos_ortam, program, io, 0);
-                        drop(nobetci);
-                        match sonuc {
-                            Err(tani) if tani.kod == "Ç000" => return Ok(kodu(&tani)),
-                            Err(tani) if tani.kod == "Ç001" => {
-                                io.durum_yaniti_gonder(
-                                    504,
-                                    &format!(
-                                        "istek {} saniyelik son tarihini aştı",
-                                        istek_zaman_asimi / 1000
-                                    ),
-                                );
-                            }
-                            Err(tani) => return Err(tani),
-                            Ok(_) => {}
-                        }
-                        eslesti = true;
-                        break;
-                    }
+            match web_istegini_calistir(program, &ortam, io, &ham) {
+                Ok(Some(cikis_kodu)) => {
+                    istegi_tamamla(io)?;
+                    return Ok(cikis_kodu);
                 }
-            }
-            if !eslesti {
-                if yol_eslesti {
-                    io.durum_yaniti_gonder(405, "bu adres istenen HTTP yöntemini kabul etmiyor");
-                } else {
-                    io.durum_yaniti_gonder(404, &format!("aranan sayfa yok: {}", yol));
+                Ok(None) => istegi_tamamla(io)?,
+                Err(tani) if tani.kod == "Ç001" => {
+                    io.istek_islemini_geri_al();
+                    let zaman_asimi = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+                        .http()
+                        .calistirma_zaman_asimi_ms();
+                    io.durum_yaniti_gonder(
+                        504,
+                        &format!(
+                            "istek {} saniyelik son tarihini aştı",
+                            zaman_asimi / 1000
+                        ),
+                    );
+                }
+                Err(tani) => {
+                    io.istek_islemini_geri_al();
+                    return Err(tani);
                 }
             }
         }

@@ -1,6 +1,6 @@
 # 09 — Son tarih ve işbirlikli iptal
 
-Normatif kaynak: RFC-0011 §2–§4. Durum: **TANIMLI** (K-085/K-133).
+Normatif kaynak: RFC-0011 §2–§4. Durum: **TANIMLI** (K-085/K-133/K-134).
 
 ## `içinde / yetişmezse`
 
@@ -36,6 +36,12 @@ gibi dış etki veya pahalı işlem sınırları çağrının hemen önünde son
 yeniden denetler. Görev HTTP isteğinden önce scheduler'a sıra verdiyse kalan
 süre bu sıradan **sonra** yeniden hesaplanır; dolmuş görev adaptöre eski bir
 süre taşıyamaz ve istek başlatamaz.
+
+K-134'te bir web rota gövdesinin ilk yanıtı, oturum ve çerez mutation'larıyla
+aynı istek transaction'ında bekler. Gövde deadline/runtime hatasıyla biterse
+başarı yanıtı yayımlanmaz; session/cookie durumu istek başındaki sürüme döner
+ve timeout ayrı 504 yanıtı olur. Başarı, yanıtın socket'e eksiksiz yazılmasıyla
+commit edilir; yazma hatası da oturum değişikliğini kalıcılaştırmaz.
 
 İptal gözlendikten sonra yeni çıktı, dosya yazma, çerez/yanıt veya eyleyici
 etkisi başlatılamaz. Son tarih dolmadan tamamlanmış dış etkiler geri alınmaz;

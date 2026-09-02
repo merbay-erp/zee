@@ -5,9 +5,11 @@ Normatif kaynak: RFC-0022, ADR-026. Gerçekleme:
 
 ## Kayıt (TANIMLI)
 
-`IzKaydedenIo`, `GirdiCikti` üzerinden tamamlanan her çağrıyı tek küresel
-sırayla kaydeder. Olay; işlem adı, sıralı argüman alanları ve sıralı sonuç
-alanları taşır. Host çağrısı tamamlanmadan olay tamamlanmış sayılmaz.
+`IzKaydedenIo`, `GirdiCikti` üzerinden tamamlanan her gözlenebilir IO çağrısını
+tek küresel sırayla kaydeder. Olay; işlem adı, sıralı argüman alanları ve
+sıralı sonuç alanları taşır. Host çağrısı tamamlanmadan olay tamamlanmış
+sayılmaz. K-134 request commit/rollback kancaları bağımsız IO değildir; kayıt
+sarmalayıcısı bunları olay eklemeden iç adaptöre geçirir.
 
 `dil iz kaydet <iz> <program> [argümanlar]` gerçek koşuyu çalıştırır ve şema-1
 izini atomik yazar. İz üretimi açık opt-in'dir.
