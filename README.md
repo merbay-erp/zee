@@ -100,7 +100,9 @@ arası kilitli ve owner/group/ACL/xattr güvenli **atomik dosya yazma** (K-128,
 ADR-032) ve sürüm kimlikli Türkçe tanı kataloğu.
 Araçlar: `dil çalıştır(--güvenli/--deneysel-web/--web-proxy)/iz(kaydet/oynat)/parola-özeti/denetle(--json)/dene/biçimle/ekle/çıkar/kilitle/paketler/anahtar(üret)/paketle/hata/belge/morfoloji/yeni`
 + **dillsp** LSP sunucusu — tanılar, hover, HIR/semantic kimlikli tanıma git,
-**kapsam güvenli morfolojili yeniden adlandırma (F2)** ([editors/](editors/)).
+**kapsam güvenli morfolojili yeniden adlandırma (F2)** ([editors/](editors/));
+K-138/ADR-035 ile RFC 8259 sayı/duplicate alan denetimli, kayıpsız kimlikli
+[protokol-kesin JSON-RPC sınırı](docs/lsp-json-rpc-profili.md).
 Determinizm testlerde tam: rastgelelik, saat, dosyalar, HTTP, sunucu istekleri,
 sensörler ve an ölçümü IO soyutlamasından gelir; bütün testler hermetik koşar.
 Lexer/parser panic-free ve morfoloji üret→çöz sözlerini ayrıca kalıcı saldırı
@@ -164,10 +166,10 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **547** |
+| Rust + doctest vakası | **556** |
 | Tanı kimliği | **152 etkin + 3 ayrılmış** |
 | RFC | **25** (2 kabul, 21 geçici kabul, 2 taslak) |
-| ADR | **32** (32 kabul) |
+| ADR | **33** (33 kabul) |
 | Normatif spec bölümü | **24** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
@@ -249,6 +251,10 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   sözleşmeye bağlandı.
   K-107/ADR-019 `dillsp` girdisini 8 KiB başlık, 8 MiB gövde, 128 JSON
   derinliği ve 100 bin düğümle sınırlayıp Unicode parser olumsuzlarını kapattı.
+  K-138/ADR-035 sayı ayrıştırmasını RFC 8259 durum makinesine taşıdı; sayısal
+  kimliği float'a çevirmeden korudu, duplicate anahtarı reddetti ve parse,
+  request, method, params hata kodlarıyla notification sessizliğini bağladı;
+  B-051 kapandı, sıradaki makine kapısı K-139/B-052'dir.
   K-108/ADR-020 her semantic typed-HIR ifadesine zorunlu kaynak aralığı
   ekledi; kesin token konumu olmayan eski AST düğümleri uydurma sütun yerine
   kaynak satırı zarfı taşır. K-126/ADR-030 bu geçişi tamamladı: artık her

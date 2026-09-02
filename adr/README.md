@@ -37,6 +37,7 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-032 | [Atomik replace metadata koruma politikası](032-atomik-replace-metadata-politikasi.md) | **kabul** (K-128/B-048) |
 | ADR-033 | [Merkezî ve değişmez kaynak bütçesi](033-merkezi-kaynak-butcesi.md) | **kabul** (K-129/K-130/K-131/K-132; B-025 kapalı) |
 | ADR-034 | [Kalıcı ortak web deposu ve tek-worker süreç modeli](034-web-ortak-depo-ve-worker-modeli.md) | **kabul** (K-137/B-046) |
+| ADR-035 | [Protokol-kesin LSP JSON-RPC sınırı](035-protokol-kesin-lsp-json-rpc.md) | **kabul** (K-138/B-051) |
 | ADR-004 | Bellek yönetimi prototip kararı (GC / ARC benchmark) | bekliyor |
 | ADR-005 | Native backend seçimi (Cranelift / LLVM) | bekliyor — Faz 4 |
 | ADR-007 | [Telemetri ve gizlilik: araçlar veri toplamaz](007-telemetri-ve-gizlilik.md) | **kabul** |

@@ -14,10 +14,79 @@ fn json_ayristirici_temel() {
             Json::Metin("me\"tin".into())
         ]))
     );
-    assert_eq!(
-        json.alan("c").and_then(|c| c.alan("iç")),
-        Some(&Json::Sayi(-2.5))
-    );
+    let Json::Sayi(sayi) = json
+        .alan("c")
+        .and_then(|c| c.alan("iç"))
+        .expect("sayı alanı")
+    else {
+        panic!("sayı bekleniyordu");
+    };
+    assert_eq!(sayi.ham(), "-2.5");
+}
+
+#[test]
+fn json_sayisi_rfc_8259_durum_makinesinden_gecer() {
+    let gecerli = [
+        "0",
+        "-0",
+        "7",
+        "-42",
+        "0.25",
+        "10.0",
+        "1e9",
+        "1E+9",
+        "1e-9",
+        "123456789012345678901234567890",
+        "1e400",
+    ];
+    for metin in gecerli {
+        let Json::Sayi(sayi) = json_coz(metin).expect("geçerli RFC 8259 sayısı") else {
+            panic!("sayı bekleniyordu: {metin}");
+        };
+        assert_eq!(sayi.ham(), metin, "lexeme kayıpsız korunmalı");
+    }
+
+    for metin in [
+        "+1",
+        "01",
+        "-01",
+        ".1",
+        "1.",
+        "1e",
+        "1e+",
+        "--1",
+        "1+2",
+        "NaN",
+        "Infinity",
+        "-Infinity",
+    ] {
+        assert!(json_coz(metin).is_none(), "reddedilmeli: {metin}");
+    }
+}
+
+#[test]
+fn json_sayi_korpusu_serde_json_ile_ayni_karari_verir() {
+    for metin in [
+        "0", "-0", "12", "-12", "0.5", "12.50", "1e4", "1E+4", "1e-4", "+1", "01", "-01", ".1",
+        "1.", "1e", "1e+", "--1", "1+2", "NaN", "Infinity",
+    ] {
+        assert_eq!(
+            json_coz(metin).is_some(),
+            serde_json::from_str::<serde_json::Value>(metin).is_ok(),
+            "differential sayı kararı: {metin}"
+        );
+    }
+}
+
+#[test]
+fn json_yinelenen_ve_kacisla_esdeger_nesne_anahtarini_reddeder() {
+    for metin in [
+        r#"{"id":1,"id":2}"#,
+        r#"{"method":1,"\u006dethod":2}"#,
+        r#"{"dış":{"ad":1,"ad":2}}"#,
+    ] {
+        assert!(json_coz(metin).is_none(), "reddedilmeli: {metin}");
+    }
 }
 
 #[test]
@@ -75,6 +144,69 @@ fn initialize_yaniti() {
 }
 
 #[test]
+fn json_rpc_parse_error_ile_invalid_request_ayrilir() {
+    let mut sunucu = Sunucu::yeni();
+    for bozuk in ["{", r#"{"jsonrpc":"2.0",,"method":"initialize"}"#] {
+        let cikti = sunucu.mesaj_isle(bozuk);
+        assert_eq!(cikti.govdeler.len(), 1);
+        assert!(cikti.govdeler[0].contains("\"code\":-32700"));
+        assert!(cikti.govdeler[0].contains("\"id\":null"));
+    }
+
+    for gecersiz in [
+        r#"{}"#,
+        r#"[]"#,
+        r#"{"jsonrpc":"1.0","id":1,"method":"initialize"}"#,
+        r#"{"jsonrpc":"2.0","id":1,"method":7}"#,
+        r#"{"jsonrpc":"2.0","id":true,"method":"initialize"}"#,
+        r#"{"jsonrpc":"2.0","id":1,"method":"initialize","params":null}"#,
+    ] {
+        let cikti = sunucu.mesaj_isle(gecersiz);
+        assert_eq!(cikti.govdeler.len(), 1, "{gecersiz}");
+        assert!(cikti.govdeler[0].contains("\"code\":-32600"), "{gecersiz}");
+        assert!(cikti.govdeler[0].contains("\"id\":null"), "{gecersiz}");
+    }
+}
+
+#[test]
+fn json_rpc_kimligi_kayipsiz_doner_ve_bilinmeyen_yontem_ayrilir() {
+    let mut sunucu = Sunucu::yeni();
+    for kimlik in ["1.25", "1e400", "123456789012345678901234567890"] {
+        let istek = format!(r#"{{"jsonrpc":"2.0","id":{kimlik},"method":"zee/bilinmeyen"}}"#);
+        let cikti = sunucu.mesaj_isle(&istek);
+        assert_eq!(cikti.govdeler.len(), 1);
+        assert!(cikti.govdeler[0].contains(&format!("\"id\":{kimlik}")));
+        assert!(cikti.govdeler[0].contains("\"code\":-32601"));
+        assert!(json_coz(&cikti.govdeler[0]).is_some());
+    }
+
+    let bildirim = sunucu.mesaj_isle(r#"{"jsonrpc":"2.0","method":"zee/bilinmeyen"}"#);
+    assert!(bildirim.govdeler.is_empty());
+}
+
+#[test]
+fn json_rpc_bildirimine_yanit_vermez_ve_gecersiz_parametreyi_ayirir() {
+    let mut sunucu = Sunucu::yeni();
+    let bildirim = sunucu.mesaj_isle(r#"{"jsonrpc":"2.0","method":"initialize","params":{}}"#);
+    assert!(bildirim.govdeler.is_empty());
+
+    let cikti =
+        sunucu.mesaj_isle(r#"{"jsonrpc":"2.0","id":9,"method":"textDocument/hover","params":{}}"#);
+    assert_eq!(cikti.govdeler.len(), 1);
+    assert!(cikti.govdeler[0].contains("\"id\":9"));
+    assert!(cikti.govdeler[0].contains("\"code\":-32602"));
+}
+
+#[test]
+fn utf8_olmayan_govde_parse_error_uretir_ve_sunucuyu_durdurmaz() {
+    let mut sunucu = Sunucu::yeni();
+    let cikti = sunucu.mesaj_baytlari_isle(&[0xff, 0xfe]);
+    assert!(cikti.devam);
+    assert_eq!(cikti.govdeler.len(), 1);
+    assert!(cikti.govdeler[0].contains("\"code\":-32700"));
+}
+
+#[test]
 fn butun_uretim_yollari_gecerli_ve_butceli_json_verir() {
     let mut sunucu = Sunucu::yeni();
     let istekler = [
@@ -92,8 +224,7 @@ fn butun_uretim_yollari_gecerli_ve_butceli_json_verir() {
         for govde in sunucu.mesaj_isle(istek).govdeler {
             assert!(json_coz(&govde).is_some(), "geçersiz LSP JSON'u: {govde}");
             assert!(
-                govde.len()
-                    <= dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.lsp_yanit_bayti()
+                govde.len() <= dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.lsp_yanit_bayti()
             );
         }
     }
@@ -367,11 +498,24 @@ fn islem_adi_argumanla_ayni_yazilsa_da_kesin_cagri_kuyrugu_secilir() {
     sunucu.mesaj_isle(r#"{"jsonrpc":"2.0","method":"textDocument/didOpen","params":{"textDocument":{"uri":"file:///tmp/kesin-cagri.dil","text":"işlem ver\n    değeri al\n    değeri döndür\n\nver 1 olsun\nsonuç ver için ver olsun\n"}}}"#);
     let cikti = sunucu.mesaj_isle(r#"{"jsonrpc":"2.0","id":351,"method":"textDocument/rename","params":{"textDocument":{"uri":"file:///tmp/kesin-cagri.dil"},"position":{"line":5,"character":16},"newName":"sun"}}"#);
     let yanit = &cikti.govdeler[0];
-    assert_eq!(yanit.matches("newText").count(), 2, "tanım ve çağrı kuyruğu: {yanit}");
+    assert_eq!(
+        yanit.matches("newText").count(),
+        2,
+        "tanım ve çağrı kuyruğu: {yanit}"
+    );
     assert_eq!(yanit.matches("\"newText\":\"sun\"").count(), 2, "{yanit}");
-    assert!(yanit.contains("\"line\":0"), "işlem tanımı düzenlenmeli: {yanit}");
-    assert!(yanit.contains("\"line\":5"), "çağrı kuyruğu düzenlenmeli: {yanit}");
-    assert!(!yanit.contains("\"line\":4"), "aynı adlı değişken korunmalı: {yanit}");
+    assert!(
+        yanit.contains("\"line\":0"),
+        "işlem tanımı düzenlenmeli: {yanit}"
+    );
+    assert!(
+        yanit.contains("\"line\":5"),
+        "çağrı kuyruğu düzenlenmeli: {yanit}"
+    );
+    assert!(
+        !yanit.contains("\"line\":4"),
+        "aynı adlı değişken korunmalı: {yanit}"
+    );
 }
 
 #[test]

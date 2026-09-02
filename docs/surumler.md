@@ -33,6 +33,19 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   depo/symlink/kapasite hatası fail-closed 503'tür. Envanter 547 test ve 32
   kabul ADR'ye çıktı; B-046 kapandı.
 
+- **Protokol-kesin LSP JSON-RPC** (K-138, ADR-035/spec-24): Elle yazılmış
+  JSON parser'ı RFC 8259 sayı durum makinesini kullanır; doğrulanmış sayı
+  lexeme'ini `f64`'e çevirmeden kayıpsız saklar. Baştaki sıfır, eksik
+  kesir/üs, `NaN/Infinity` ve çözülmüş adı yinelenen nesne alanı reddedilir.
+  UTF-8/sözdizimi `-32700`, bozuk tek-nesne zarf `-32600`, bilinmeyen yöntem
+  `-32601`, bozuk yöntem parametresi `-32602` üretir; kimliksiz bildirim
+  response almaz. Geçerli çok büyük/kesirli `id` aynı lexeme ile döner ve tam
+  okunmuş UTF-8 dışı gövde sunucuyu düşürmez. Ayrıştırıcı 300 satır bütçeli
+  `lsp/json.rs` sahibine ayrıldı. Sayı differential, escaped duplicate,
+  standart hata/notification, ardışık framing ve mimari regresyonlarıyla
+  envanter 556 test ve
+  33 kabul ADR'ye çıktı; B-051 kapandı.
+
 - **Normatif otorite ve v1 kapıları** (K-081, ADR-010): geçerli dilin kesin
   davranışını spec anlatır; RFC değişikliği yetkilendirir ama spec+conformance
   testi aynı değişiklikte güncellenmeden yürürlüğe girmez. Kaynak denetimli

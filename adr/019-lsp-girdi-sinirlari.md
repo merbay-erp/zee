@@ -2,6 +2,7 @@
 
 - **Durum:** kabul
 - **Tarih:** 1 Eylül 2026
+- **Revizyon:** 2 Eylül 2026 — K-138/ADR-035 protokol-kesin JSON-RPC katmanı
 - **İlgili kayıt:** K-107, B-047, V1-P0-17
 
 ## Bağlam
@@ -23,7 +24,8 @@ sınırsız büyütmemelidir.
 - başlığı CRLF ayıracı dahil en çok 8 KiB ile sınırlar;
 - büyük/küçük harften bağımsız tam bir ve yalnız bir `Content-Length` ister;
 - gövdeyi ayırmadan önce 8 MiB sınırını uygular;
-- başlık ve gövdeyi sıkı UTF-8 olarak doğrular;
+- başlığı sıkı UTF-8 olarak doğrular; tam okunmuş gövdenin UTF-8/JSON hatasını
+  K-138'de `-32700` yanıtına dönüştürür;
 - çerçeve hatasında akışla yeniden eşleşme uydurmak yerine Türkçe hata yazıp
   fail-closed kapanır.
 
@@ -48,5 +50,10 @@ Mini JSON ayrıştırıcısı ayrıca:
   tek LSP görünümünde topladı. K-132 yanıtın bütün yollarını tahsis sırasında
   aynı 8 MiB bütçeli yazıcıya bağlayıp B-025'i kapattı;
   duvar-saati/cancellation davranışı B-026'da açık tutulur.
-- Üç çerçeve ve dört JSON testi tahsis öncesi boyutu, tekrar/eksik uzunluğu,
-  derinlik/düğüm bütçesini ve Unicode olumsuzlarını korur.
+- K-138/ADR-035 sayıları kayıpsız RFC 8259 lexeme'ine, duplicate alan reddine
+  ve `-32700/-32600` ayrımına bağladı. Tam çerçevedeki UTF-8 hatası sunucuyu
+  düşürmez; çerçeve yapısı güvenle yeniden eşleştirilemiyorsa bu ADR'nin
+  fail-closed kapanma kararı korunur.
+- Üç çerçeve ve genişletilmiş JSON/LSP korpusu tahsis öncesi boyutu,
+  tekrar/eksik uzunluğu, derinlik/düğüm bütçesini, Unicode, sayı, duplicate ve
+  standart hata olumsuzlarını korur.

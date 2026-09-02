@@ -1,6 +1,7 @@
 # 24 — Kaynak güvenlik profili
 
-Normatif kaynak: RFC-0025, ADR-033. Durum: **TANIMLI — K-129/K-130/K-131/K-132**.
+Normatif kaynak: RFC-0025, ADR-033, ADR-035. Durum:
+**TANIMLI — K-129/K-130/K-131/K-132/K-138**.
 
 ## Profil sahipliği
 
@@ -48,7 +49,17 @@ diagnostics ve rename düzenlemeleri aynı bütçeli yazıcıya parça parça
 yazılmalıdır; önce sınırsız JSON kurup sonra boyut ölçmek YASAKTIR. Kısmi gövde
 yayımlanamaz.
 
+Inbound JSON, 128 derinlik ve 100.000 düğüm zarfında RFC 8259 sayı durum
+makinesi kullanır; sayıyı binary float'a çevirmeden doğrulanmış lexeme olarak
+saklar. `NaN`/`Infinity`, kuralsız sayı ve çözülmüş adı yinelenen nesne alanı
+reddedilir. Sözdizim/UTF-8 hatası `-32700`, geçerli JSON içindeki bozuk
+tek-nesne JSON-RPC zarfı `-32600` üretir. Bilinmeyen kimlikli yöntem `-32601`,
+geçersiz yöntem parametresi `-32602` alır; kimliksiz notification'a response
+yazılmaz. Sayısal `id` dönüştürülmeden geri yazılır. Bir çerçevede JSON-RPC
+batch kabul edilmez. Ayrıntılı bakım sınırı
+[LSP JSON-RPC profilindedir](../docs/lsp-json-rpc-profili.md).
+
 ## Ayrı kapsam
 
-B-025/K-132 kaynak bütçesi kapsamı tamamdır. Duvar-saati/cancellation
-sözleşmesi B-026'nın ayrı kapsamıdır.
+B-025/K-132 kaynak bütçesi ve B-051/K-138 protokol-kesin JSON-RPC kapsamı
+tamamdır. Duvar-saati/cancellation sözleşmesi B-026'nın ayrı kapsamıdır.

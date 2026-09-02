@@ -18,8 +18,12 @@ grafiğinden çözer.
 K-107 güvenlik sınırı: gelen JSON-RPC çerçevesi en çok 8 KiB başlık ve 8 MiB
 gövde taşır; tam bir `Content-Length` zorunludur. JSON en çok 128 iç içelik ve
 100.000 değer düğümü kabul eder; geçersiz Unicode vekili ya da kaçışsız kontrol
-karakteri reddedilir. Bozuk çerçevede `dillsp` akışı tahmin etmeyip kapanır;
-editör process'i yeniden başlatabilir.
+karakteri reddedilir. K-138 sayıları kayıpsız RFC 8259 lexeme'i olarak taşır,
+duplicate nesne alanını reddeder ve `-32700/-32600/-32601/-32602` ayrımını
+uygular; kimliksiz bildirime response yazmaz. Tam okunmuş UTF-8 dışı gövde
+parse error alır ve sonraki çerçeve işlenir. Bozuk çerçevede `dillsp` akışı
+tahmin etmeyip kapanır; editör process'i yeniden başlatabilir. Ayrıntı:
+[LSP JSON-RPC bakım profili](../docs/lsp-json-rpc-profili.md).
 
 ### Helix (`~/.config/helix/languages.toml`)
 

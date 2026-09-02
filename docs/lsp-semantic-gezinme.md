@@ -3,7 +3,8 @@
 Bu belge K-120/B-041 ve K-126/B-050'nin bakım sözleşmesidir. `dillsp` içindeki
 `textDocument/definition` ve `textDocument/rename`, geçerli bir Zee belgesinde
 metin benzerliğiyle sembol tahmini yapmaz; checker'ın ürettiği typed HIR
-bağlarını tüketir.
+bağlarını tüketir. JSON-RPC zarfı, sayı ve hata davranışının ayrı sözleşmesi
+[LSP JSON-RPC bakım profilindedir](lsp-json-rpc-profili.md).
 
 ## Semantic hat
 

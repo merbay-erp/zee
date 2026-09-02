@@ -107,8 +107,12 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
     worker/N süreç modelini kurdu. İki gerçek CLI sürecinde login, restart,
     çapraz logout ve ortak altıncı-deneme 429 kanıtıyla B-046 kapandı
     (547 test).
-35. Sıradaki makine işi K-138 ile B-051 JSON-RPC ayrıştırmasını
-    protokol-kesin yapmaktır; sonraki işler aşağıdaki öncelik sırasını korur.
+35. K-138/ADR-035 JSON-RPC sınırını protokol-kesin yaptı. RFC 8259 sayı
+    durum makinesi sayıyı float'a çevirmeden kayıpsız lexeme taşır; duplicate
+    alan reddi, `-32700/-32600/-32601/-32602`, UTF-8 hata devamı ve bildirim
+    sessizliği ayrı regresyonlarla B-051'i kapattı (556 test).
+36. Sıradaki makine işi K-139 ile B-052 web proxy origin'ini tek kanonik tipe
+    geçirmektir; sonraki işler aşağıdaki öncelik sırasını korur.
 
 ## P0 — V1 öncesi dil ve derleyici omurgası
 
@@ -370,10 +374,15 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   redirect/proxy, 30 saniye ve 64 KiB+8 MiB zarfı tek istemcide uygulanır.
   RFC-0024/ADR-031/spec-23 ve loopback/redirect/SSRF/body-limit regresyonları
   davranışı bağlar.
-- **B-051 · AÇIK — LSP JSON-RPC ayrıştırmasını protokol-kesin yap.** RFC 8259
-  sayı durum makinesi, duplicate object-key reddi, parse error `-32700`,
-  invalid request `-32600` ve finite olmayan sayının serializer'a çıkmaması
-  ayrı differential/regresyon kanıtı ister.
+- **B-051 · KAPALI (K-138/ADR-035) — LSP JSON-RPC ayrıştırmasını
+  protokol-kesin yap.** RFC 8259 sayı durum makinesi geçerli lexeme'i binary
+  float'a çevirmeden saklar; baştaki sıfır/eksik kesir-üs ve `NaN/Infinity`
+  reddedilir. Çözülmüş Unicode adı duplicate olan alan parse aşamasında
+  kapanır. UTF-8/sözdizimi `-32700`, geçerli JSON içindeki bozuk tek-nesne
+  zarf `-32600`, bilinmeyen yöntem `-32601`, bozuk yöntem parametresi
+  `-32602`dir. Kimliksiz bildirime response yoktur; sayısal kimlik kayıpsız
+  döner. RFC sayı differential korpusu, escaped duplicate, standart hata ve
+  ardışık framing ve mimari sahiplik testleri toplam envanteri 556'ya çıkardı.
 - **B-052 · AÇIK — web proxy origin'ini tek kanonik tipe geçir.** CLI
   `GuvenliOrigin` ayrıştırması `AgHedefi` kadar sıkı DNS/IPv6/port semantiği
   taşımalı; iki parser drift edemez. Güvenilir proxy profili yalnız loopback
@@ -461,7 +470,7 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   programın metin/yorumları koruyan deterministik dağınık-boşluk varyantı
   biçimlenir; önce/sonra izi eşit ve iki parser geçişi de başarılı olmak
   zorundadır. İdempotence ve proje/kitaplık resmî biçim kapıları korunur.
-- **B-043 · KAPALI (K-118) — spec↔code kanıt haritası.** Bugünkü 25 RFC, 32
+- **B-043 · KAPALI (K-118) — spec↔code kanıt haritası.** Bugünkü 25 RFC, 33
   ADR ve 24 spec bölümü `docs/kanit-haritasi-v1.tsv` içinde `kanitli/kismi/taslak`
   durumu, yürütülebilir test yolları ve açık kapsam notuyla birebir izlenir.
   Tazelik testi eksik/yinelenen belgeyi, olmayan ya da test taşımayan kanıt
@@ -477,9 +486,9 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 ## Bir sonraki somut kapı
 
 İnsan kanıtı hattında B-001, doldurulmuş gerçek usability formları ve önceden
-ilan edilmiş eşikleri bekler. Makine hattında K-137 B-046'nın ortak kalıcı
-oturum/rate-limit, güvenilir proxy kimliği ve worker modelini tamamladı.
-Sıradaki iş K-138 ile B-051 kesin JSON-RPC ayrıştırmasıdır.
+ilan edilmiş eşikleri bekler. Makine hattında K-138 B-051'in kesin JSON-RPC
+ayrıştırma ve hata sınırını tamamladı. Sıradaki iş K-139 ile B-052 web proxy
+origin'ini tek kanonik tipe geçirmektir.
 
 ## 2 Eylül 2026 ikinci dış inceleme ayrımı
 
@@ -492,8 +501,8 @@ Sıradaki iş K-138 ile B-051 kesin JSON-RPC ayrıştırmasıdır.
 - **Kapatıldı:** B-029'un taşıma/cache/kalıcı rollback/offline dilimi K-135,
   exact manifest/kilit v3/CLI ve kaynak kurulumu K-136 ile tamamlandı.
   B-046 ortak kalıcı oturum/rate-limit, kanonik proxy kimliği ve N tek-worker
-  süreç modeli K-137/ADR-034 ile kapandı. Sırada B-051 kesin JSON-RPC,
-  ardından B-052 origin tekilleştirme, B-053 byte HTTP+fuzz,
+  süreç modeli K-137/ADR-034 ile kapandı. B-051 kesin JSON-RPC ayrıştırması
+  K-138/ADR-035 ile kapandı. Sırada B-052 origin tekilleştirme, B-053 byte HTTP+fuzz,
   B-054 advisory/reproducibility, B-055 WASM C ABI ve B-056 playground
   ön-tahsis bütçesi vardır. B-033/B-034 temiz snapshot hattı ayrıca kapalıdır.
 - **Mevcut repoda zaten kapalı:** çağrı derinliği C019/500 ve ayrı regresyonu;
