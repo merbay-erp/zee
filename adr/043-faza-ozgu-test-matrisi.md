@@ -43,7 +43,8 @@ bir test veya yanıltıcı tek toplam, incelemenin blast-radius bilgisini gizler
 - **Yalnız Linux'ta matris koşmak:** platforma özgü testin sahipsizliğini diğer
   Tier-1 hedeflerde gizler.
 - **CI süresini hard performans kapısı yapmak:** shared runner gürültüsünü
-  correctness hatasına dönüştürür; trend/eşik B-040'ın ayrı işidir.
+  correctness hatasına dönüştürür. B-040 daha sonra K-148/ADR-045 ile ayrı
+  sabit iş yükü gözlemi olarak kapandı; shared runner yine hard gate değildir.
 
 ## Sonuçlar
 

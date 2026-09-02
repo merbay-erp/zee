@@ -88,7 +88,30 @@ seçici, kayıp regression/fuzz/conformance kaynağı veya bayat kanonik belge
 kapıyı kapatır. Dinamik rapor faz başına count, pass/fail/ignored ve duvar
 süresini verir. `cfg` nedeniyle aktif toplam platforma göre değişebilir;
 README'deki kaynak vakası toplamı ile karıştırılmaz. Süre performans eşiği
-değildir; tarihsel performans kanıtı B-040'ın ayrı sözüdür.
+değildir; K-148'in kullanıcı iş yükü gözlemleri aşağıdaki ayrı kanaldadır.
+
+## Performans gözlemi ve tarihçe
+
+K-148/ADR-045'in [ölçüm rehberi](olcumler.md), sabit iş yüklerinde parse,
+checker, typed-HIR, runtime, yürütme, LSP cold/open/change ve Unix tepe RSS
+yüzeylerini ayırır. Varsayılan release koşusu iki ısınma ve 25 örnekten ham
+dağılım, p50/p95 ile min/max üretir. İzlenen
+[`performans-gecmisi-v1.tsv`](performans-gecmisi-v1.tsv) yalnız incelenmiş
+tabanları taşır; araç yeni sonucu ayrı TSV'ye yazar.
+
+```bash
+cd compiler
+cargo run --locked --release --bin olcum -- \
+  --tur 25 --gecmis ../docs/performans-gecmisi-v1.tsv \
+  --json target/performans.json --rapor target/performans.md \
+  --gecmis-cikti target/performans-gecmisi.tsv
+```
+
+Shared CI bu üç dosyayı job summary ve indirilebilir artefakt yapar; runner
+gürültüsü nedeniyle hard gate uygulamaz. `--esik-yuzde` yalnız sabitlenmiş
+adanmış benchmark makinesinde açıkça verilebilir. Geçmiş şema, metadata ve
+p50/p95 tutarlılığı `olcum` birim testleriyle; CI kablolaması ve eşiksizlik
+politikası mimari sınır testiyle korunur.
 
 ## Semantic regresyon korpusu
 

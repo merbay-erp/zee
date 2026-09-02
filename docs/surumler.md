@@ -12,6 +12,20 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **p50/p95 performans tarihçesi ve CI artefaktı** (K-148, ADR-045): Eski altı
+  iş yükü/tek medyan çıktısı; parse, resolver/checker+HIR kanıtı, tam
+  kaynak→typed-HIR, runtime başlangıcı, 100 bin tur yürütme, LSP
+  cold/open/change ve Unix tepe RSS olarak dokuz ayrı gözleme bölündü. İki
+  ısınma+25 release turu ham örnek, min/max ve nearest-rank p50/p95 üretir.
+  `zee-performans-1` JSON'u, Markdown raporu ve sürümlü TSV tarihçesi
+  makine/profil bağlamını taşır; bozuk/yinelenen tarihçe fail-closed'dur.
+  Linux CI sonucu summary ve 90 günlük indirilebilir artefakttır, gürültülü
+  shared runner'da hard gate değildir. Eşik yalnız sabitlenmiş adanmış
+  benchmark koşucusunda açık `--esik-yuzde` seçeneğiyle etkinleşir. Yedi
+  koşucu birim testi ve bir mimari kablolama testiyle kaynak envanteri 603
+  test, 92 numaralı belge ve 43 kabul ADR'ye çıktı; B-040/V1-P1-12 kapandı.
+  Dil sözdizimi, çalışma semantiği, tanılar, RFC ve normatif spec değişmedi.
+
 - **Sürümlü semantic regresyon korpusu** (K-147, ADR-044): Parser, checker,
   typed HIR, runtime, morphology, concurrency ve security için 17 tarihsel
   bug, `regression/` altında minimal `.dil` kaynaklarına indirildi. Sürümlü
