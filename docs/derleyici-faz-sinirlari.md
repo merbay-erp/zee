@@ -127,6 +127,13 @@ birincil faza aittir; aşağı akış alanı parser gibi erken bir faz değişik
 HIR, LSP, WASM ve uçtan uca yüzeylere etkisini ayrıca görünür kılar. Bu bağ
 çoklu sahiplik değildir ve faz toplamlarını şişirmez.
 
+K-147/ADR-044, [semantic regresyon korpusunu](semantic-regresyon-korpusu.md)
+bu matrise ayrı 22. doğrulama dilimi olarak ekledi. Parser/checker/HIR/runtime/
+morphology/concurrency/security değişikliklerinin aşağı akışı, 17 tarihsel
+bug'ın minimal kaynağındaki tanı+span+exit+stdout gözlemlerini yeniden koşar.
+Git-tabanlı soy ağacı koruğu eski vaka kimliği ve yolunun sessizce silinmesini
+engeller.
+
 `katalog_testi.rs` sabit bir kök dosya listesi kullanmaz; `compiler/src`
 altındaki bütün Rust dosyalarını özyinelemeli ve sıralı tarar. Yeni handler'da
 üretilen bir tanı kodu katalog denetiminden kaçamaz.

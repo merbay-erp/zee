@@ -1,0 +1,12 @@
+işlem uzun işi yap
+    "başladı" yaz
+    5 saniye bekle
+    "ulaşılmaz" yaz
+    1 döndür
+
+1 saniye içinde
+    eşzamanlı olarak
+        uzun uzun işi yap
+    hepsini bekle
+yetişmezse
+    "grubu iptal" yaz

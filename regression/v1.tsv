@@ -1,0 +1,19 @@
+# zee-semantic-regresyon-1
+# vaka	bug	faz	kip	tani	span	exit	cikti	dosya
+karisik-boolean-baglaci	K-097	parser	parser	S030	2:31:4	1	-	regression/parser/karisik-boolean-baglaci.dil
+postfix-islem-golgesi	K-097	parser	run	-	-	0	6	regression/parser/postfix-islem-golgesi.dil
+ic-blok-kurtarmasi	K-113	parser	diagnostics	S004	2:5:10	1	-	regression/parser/ic-blok-kurtarmasi.dil
+cagri-cikarimi-sira-bagimsiz	K-121	checker	run	-	-	0	1,5	regression/checker/cagri-cikarimi-sira-bagimsiz.dil
+cagri-turu-cakismasi	K-121	checker	compile	T017	6:3:23	1	-	regression/checker/cagri-turu-cakismasi.dil
+blok-kapsami-sizintisi	K-101	checker	compile	A001	4:1:2	1	-	regression/checker/blok-kapsami-sizintisi.dil
+ozellik-alan-donusumu	K-112	hir	run	-	-	0	7	regression/hir/ozellik-alan-donusumu.dil
+kesin-kaynak-zarfi	K-126	hir	hir	-	-	0	-	regression/hir/kesin-kaynak-zarfi.dil
+keyfi-hassasiyet	K-092	runtime	run	-	-	0	1,123456789012345678901234567890123456789	regression/runtime/keyfi-hassasiyet.dil
+cikis-kodu	K-069	runtime	run	-	-	7	başladı	regression/runtime/cikis-kodu.dil
+sifira-bolme	K-092	runtime	run	C003	1:1:1	1	-	regression/runtime/sifira-bolme.dil
+belirsiz-kok	K-111	morphology	compile	A002	3:1:6	1	-	regression/morphology/belirsiz-kok.dil
+iyelik-alan-zinciri	K-111	morphology	run	-	-	0	4	regression/morphology/iyelik-alan-zinciri.dil
+esit-uyanis-sirasi	K-124	concurrency	run	-	-	0	ana\na başladı\nb başladı\na bitti\nb bitti	regression/concurrency/esit-uyanis-sirasi.dil
+son-tarih-iptali	K-133	concurrency	run	-	-	0	başladı\ngrubu iptal	regression/concurrency/son-tarih-iptali.dil
+kapali-ag-yetkinligi	K-127	security	capability	T054	2:7:49	1	-	regression/security/kapali-ag-yetkinligi.dil
+olu-kod-dosya-yetkinligi	K-127	security	capability	T054	3:14:31	1	-	regression/security/olu-kod-dosya-yetkinligi.dil

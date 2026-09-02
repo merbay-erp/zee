@@ -143,7 +143,12 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
     sahipledi. Sahipsiz/yinelenen test ve bayat matris fail-closed; her Tier-1
     işi test/pass/fail/ignored/süre ile regression, fuzz ve conformance bağını
     ayrı summary+artefakt olarak raporlar. B-038 kapandı.
-44. Sıradaki makine işi K-147 ile B-039 kalıcı semantic regression korpusudur.
+44. K-147/ADR-044 parser, checker, typed HIR, runtime, morphology,
+    concurrency ve security altındaki 17 minimal `.dil` vakayı K-kimliği,
+    faz, kip, kesin tanı spanı, exit ve stdout beklentisiyle manifestledi.
+    Ağaç birebirliği/minimality ve ayrı faz raporuyla B-039 kapandı.
+45. Sıradaki makine işi K-148 ile B-040 performans tarihçesi ve trend
+    artefaktlarıdır.
 
 ## P0 — V1 öncesi dil ve derleyici omurgası
 
@@ -493,8 +498,15 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   CI'ı kapatır. Her Tier-1 platformu kendi `cfg` envanterini ayrı çalıştırır;
   pass/fail/ignored, duvar süresi, regression, fuzz ve conformance bağını job
   summary ile indirilebilir artefakta yazar. Süre performans eşiği değildir.
-- **B-039 · AÇIK — semantic regression corpus.** Düzeltilen her compiler bug'ı
-  minimal kalıcı `.dil` success/fail fixture'ına dönüşmelidir.
+- **B-039 · KAPALI (K-147/ADR-044) — semantic regression corpus.** Parser,
+  checker, typed HIR, runtime, morphology, concurrency ve security için 17
+  tarihsel bug minimal `.dil` fixture'ıdır. Sürümlü TSV her vakayı K-kimliği,
+  birincil faz, kip, kesin tanı spanı, exit ve sıralı stdout ile sahipler;
+  ağaçta sahipsiz/yinelenen dosya, bozuk metadata veya 4 KiB/32 dolu satır
+  minimality aşımı fail-closed'dur. Typed-HIR runtime çıkış kodunu kaybetmeyen
+  API ile success/fail gözlemleri aynı koşucuda doğrulanır. Yeni compiler bug
+  düzeltmesi fixture+satır olmadan tamamlanamaz; ayrıntı
+  [korpus rehberindedir](semantic-regresyon-korpusu.md).
 - **B-040 · KISMEN — performans baseline arşivi.** `src/bin/olcum.rs` vardır;
   parser/checker/runtime p50/p95 CI artefact ve trend olmalıdır.
 - **B-054 · KAPALI (K-141/ADR-038) — dependency advisory/lisans/tekrar üretim
@@ -539,7 +551,7 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   programın metin/yorumları koruyan deterministik dağınık-boşluk varyantı
   biçimlenir; önce/sonra izi eşit ve iki parser geçişi de başarılı olmak
   zorundadır. İdempotence ve proje/kitaplık resmî biçim kapıları korunur.
-- **B-043 · KAPALI (K-118) — spec↔code kanıt haritası.** Bugünkü 25 RFC, 33
+- **B-043 · KAPALI (K-118) — spec↔code kanıt haritası.** Bugünkü 25 RFC, 42
   ADR ve 24 spec bölümü `docs/kanit-haritasi-v1.tsv` içinde `kanitli/kismi/taslak`
   durumu, yürütülebilir test yolları ve açık kapsam notuyla birebir izlenir.
   Tazelik testi eksik/yinelenen belgeyi, olmayan ya da test taşımayan kanıt
@@ -555,9 +567,9 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 ## Bir sonraki somut kapı
 
 İnsan kanıtı hattında B-001, doldurulmuş gerçek usability formları ve önceden
-ilan edilmiş eşikleri bekler. Makine hattında K-146, bütün test envanterini
-21 faza tam sahipletip B-038'i kapattı. Sıradaki iş K-147 ile B-039 kalıcı
-semantic regression korpusudur.
+ilan edilmiş eşikleri bekler. Makine hattında K-147, 17 geçmiş bug'ı sürümlü
+semantic regression korpusuna bağlayıp B-039'u kapattı. Sıradaki iş K-148 ile
+B-040 performans tarihçesi ve trend artefaktlarıdır.
 
 ## 2 Eylül 2026 ikinci dış inceleme ayrımı
 
@@ -577,8 +589,9 @@ semantic regression korpusudur.
   B-055 sürümlü kayıtlı WASM C ABI sınırı K-142/ADR-039 ile, B-056 playground
   ön-tahsis bütçesi K-143/ADR-040 ile, B-035 kritik işlev boyutu/karmaşıklık
   eğilim kapısı K-144/ADR-041 ile, kanonik Rust biçim kapısı K-145/ADR-042 ile,
-  tam sahipli faz test matrisi K-146/ADR-043 ile kapandı. Sırada B-039 kalıcı
-  semantic regression korpusu vardır.
+  tam sahipli faz test matrisi K-146/ADR-043 ile, 17 vakalı kalıcı semantic
+  regression korpusu K-147/ADR-044 ile kapandı. Sırada B-040 performans
+  tarihçesi ve trend artefaktları vardır.
   B-033/B-034 temiz snapshot hattı ayrıca kapalıdır.
 - **Mevcut repoda zaten kapalı:** çağrı derinliği C019/500 ve ayrı regresyonu;
   atomik metadata `unsafe` bloklarının her birindeki `SAFETY` gerekçesi; kök

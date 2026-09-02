@@ -11,7 +11,7 @@ use std::time::{Duration, Instant};
 const MATRIS_YOLU: &str = "compiler/tests/fixtures/faz-test-matrisi-v1.tsv";
 const DOKUMAN_YOLU: &str = "docs/faz-test-matrisi.md";
 const LISTELEME_ESZAMANLILIGI: usize = 8;
-const ZORUNLU_FAZLAR: [&str; 21] = [
+const ZORUNLU_FAZLAR: [&str; 22] = [
     "lexer",
     "parser",
     "ast",
@@ -31,6 +31,7 @@ const ZORUNLU_FAZLAR: [&str; 21] = [
     "wasm",
     "cli",
     "proje",
+    "semantic_regresyon",
     "uctan_uca",
     "muhe_kapilari",
 ];

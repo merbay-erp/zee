@@ -36,6 +36,14 @@ geçer. Her gerçek Cargo/libtest vakası tam bir birincil faz sahibi olmalı;
 fuzz/conformance/regresyon ve aşağı akış ilişkisi aynı değişiklikte güncel
 kalmalıdır.
 
+Her compiler bug düzeltmesi ayrıca `regression/<faz>/` altında tek arızaya
+indirgenmiş bir `.dil` kaynağı ve `regression/v1.tsv` içinde K-kimliği, faz,
+kip, beklenen tanı+kesin span, exit ve çıktı kaydı bırakır. Bu kayıt olmadan
+bug düzeltmesi tamamlanmış ya da commitlenebilir sayılmaz. Korpus sözleşmesi
+`docs/semantic-regresyon-korpusu.md` ve ADR-044'tedir. Var olan vaka kimliği,
+K-kimliği veya yolu silinmez/yeniden kullanılmaz; CI bunu Git tabanına karşı
+`scripts/semantic-regresyon-korugu.sh` ile denetler.
+
 ## V1 öncesi iş sırası
 
 Bağlayıcı sıra `docs/oncelikli-backlog.md` içindedir. P0 compiler/dil omurgası

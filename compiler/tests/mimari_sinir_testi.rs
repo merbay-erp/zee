@@ -404,3 +404,23 @@ fn faz_test_matrisi_tier1_ci_raporundan_kopamaz() {
         assert!(ci.contains(kanit), "faz matrisi CI kanıtı eksik: {kanit}");
     }
 }
+
+#[test]
+fn semantic_regresyon_korpusu_gecmisten_sessizce_silinemez() {
+    let ci = kaynak("../.github/workflows/ci.yml");
+    assert!(
+        ci.contains("bash scripts/semantic-regresyon-korugu.sh \"$ZEE_REGRESYON_TABANI\""),
+        "semantic regresyon soy ağacı CI'dan kopmamalı"
+    );
+    let koruk = kaynak("../scripts/semantic-regresyon-korugu.sh");
+    for kanit in [
+        "KALICI SEMANTIC REGRESYON VAKASI SİLİNDİ",
+        "SEMANTIC REGRESYON KİMLİĞİ YENİDEN KULLANILDI",
+        "git show \"${taban}:regression/v1.tsv\"",
+    ] {
+        assert!(
+            koruk.contains(kanit),
+            "regresyon koruğu kanıtı eksik: {kanit}"
+        );
+    }
+}

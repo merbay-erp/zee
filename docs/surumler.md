@@ -12,6 +12,18 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **Sürümlü semantic regresyon korpusu** (K-147, ADR-044): Parser, checker,
+  typed HIR, runtime, morphology, concurrency ve security için 17 tarihsel
+  bug, `regression/` altında minimal `.dil` kaynaklarına indirildi. Sürümlü
+  manifest her vakayı K-kimliği, birincil faz, çalışma kipi, kesin tanı spanı,
+  program exit'i ve sıralı stdout ile bağlar. Ağaç birebirliği, 4 KiB/32 satır
+  minimality sınırı ve gerçek faz gözlemleri tek veri-güdümlü testtedir;
+  Git-tabanlı CI koruğu eski vaka+bug+yol üçlüsünün silinmesini engeller.
+  K-146 raporuna ayrı 22. `Semantic regression` fazı eklendi. Typed-HIR
+  runtime API'si çıkış kodunu kaybetmeden gözlenebilir oldu. B-039 kapandı;
+  kaynak envanteri 595 test, 91 numaralı belge ve 42 kabul ADR'ye çıktı. Dil
+  sözdizimi, tanı anlamları, RFC ve normatif spec değişmedi.
+
 - **Faza özgü test matrisi** (K-146, ADR-043): Cargo'nun gerçekten derlediği
   lib/bin/integration/doctest envanteri 21 birincil faza tam sahipletildi.
   Sahipsiz veya yinelenen test, boş seçici, kayıp regression/fuzz/conformance

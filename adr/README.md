@@ -46,6 +46,7 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-041 | [Kritik işlev boyutu ve karmaşıklık eğilim kapısı](041-kritik-islev-egilim-kapisi.md) | **kabul** (K-144/B-035) |
 | ADR-042 | [Kanonik Rust biçim kapısı](042-kanonik-rust-bicim-kapisi.md) | **kabul** (K-145/B-037) |
 | ADR-043 | [Faza özgü ve tam sahipli test matrisi](043-faza-ozgu-test-matrisi.md) | **kabul** (K-146/B-038) |
+| ADR-044 | [Sürümlü semantic regresyon korpusu](044-surumlu-semantic-regresyon-korpusu.md) | **kabul** (K-147/B-039) |
 | ADR-004 | Bellek yönetimi prototip kararı (GC / ARC benchmark) | bekliyor |
 | ADR-005 | Native backend seçimi (Cranelift / LLVM) | bekliyor — Faz 4 |
 | ADR-007 | [Telemetri ve gizlilik: araçlar veri toplamaz](007-telemetri-ve-gizlilik.md) | **kabul** |
