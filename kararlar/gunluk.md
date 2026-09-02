@@ -2284,6 +2284,31 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   statik regresyonla envanter 570 test, 152 etkin + 3 ayrılmış tanı ve 85
   numaralı belgedir. B-054/V1-P1-09 kapandı.
 
+## K-142 — Playground WASM C ABI'si hasım hosta karşı kayıtlıdır (2 Eyl)
+
+- **Sorun:** Eski C ABI host pointer/uzunluğunu `slice::from_raw_parts` ile
+  doğrudan güvenli Rust dilimi sayıyor, invalid UTF-8'i sessiz boş girdiye
+  çeviriyor ve yanlış/çift `Vec::from_raw_parts` bırakmasında allocator
+  durumunu bozabiliyordu. Host sonuç başlığını okumadan toplam tahsisi
+  doğrulayamıyordu.
+- **Karar:** `dil ABI v2`; yalnız kayıtlı başlangıç pointer'ı+exact boy ve girdi
+  türünü kabul eder, byte'ları çekirdekten önce sahipli kopyaya alır. Boş girdi
+  yalnız `(null, 0)`, metin strict UTF-8'dir. ABI reddi sahipli
+  `WASM ABI HATASI` sonucu; nihai tahsis yoksa null olur.
+- **Sahiplik:** Sonuç toplamı kayıttan sorgulanır ve dört bayt önekle exact
+  eşleşir. `bellek_birak` yalnız canlı başlangıç+exact boyda `1`; yanlış,
+  yabancı ve çift çağrıda durumu değiştirmeden `0` döndürür. Sekiz tampon ve
+  64 MiB canlı kayıt zarfı vardır. Türüne özgü giriş ön-bütçesi B-056'dır.
+- **Host:** Şablon açılışta ABI sürümünü, tahsis ve linear-memory aralığını,
+  sonuç kaydı+önek eşliğini ve fatal UTF-8'i doğrular; üç tamponu `finally`
+  içinde bırakır. Genel C FFI veya kötü niyetli aynı-page JavaScript sandbox'ı
+  sözü verilmez.
+- **Kanıt:** Beş native regresyon; gerçek wasm32 ikilisinin Node round-trip,
+  taşkın boy ve çift bırakma akışı; dört kalıcı byte seed ve gecelik hedef
+  eklendi. İlk `wasm_abi` kampanyası 61 saniyede 1.745.134 çağrıyı ihlalsiz
+  tamamladı. Envanter 575 test, 152 etkin + 3 ayrılmış tanı ve 86 numaralı
+  belgedir. B-055/V1-P1-10 kapandı.
+
 ---
 
 ## Sonraki adım
@@ -2292,6 +2317,7 @@ Korpus 10 öğrenci + 5 profesyonel usability oturumuna (Hafta 12 hedefi, erkeni
 Hafta 2'de kağıt üstünde) sesli okutulacak; her kayıt için "doğal mı /
 deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
-Makine hattında K-141 bootstrap bağımlılıklarını advisory/lisans/ban/source,
-kilit/checksum ve gerçek offline vendor kapısına bağlayarak B-054'ü kapattı.
-Sırada K-142 ile B-055 WASM C ABI hasım-caller sınırı vardır.
+Makine hattında K-142 playground WASM C ABI'sini kayıtlı exact pointer/boy,
+strict UTF-8, açık sonuç ömrü ve hasım host fuzz kanıtına bağlayarak B-055'i
+kapattı. Sırada K-143 ile B-056 playground kaynak/soru girdisi ön-tahsis
+bütçesi vardır.

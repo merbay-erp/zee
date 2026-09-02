@@ -6,7 +6,7 @@ KOK="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$KOK/compiler"
 # cdylib yalnız wasm hedefinde (K-040: Cargo.toml'da bildirmek Windows'ta
 # PDB çakışması uyarısı üretiyordu). Yığın 16 MB: C019 sınırı (1000) bol sığar.
-cargo rustc --release --target wasm32-unknown-unknown --lib --crate-type cdylib \
+cargo rustc --locked --release --target wasm32-unknown-unknown --lib --crate-type cdylib \
     -- -C link-arg=-zstack-size=16777216
 SURUM="$(grep '^version' Cargo.toml | head -1 | cut -d'"' -f2)"
 WASM="$KOK/compiler/target/wasm32-unknown-unknown/release/dil.wasm"

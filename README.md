@@ -16,6 +16,7 @@ Bu bir çeviri katmanı değildir (`if→eğer` makyajı yok); AI semantiğin pa
 - **Oynayarak öğren:** [projeler/](projeler/) — çocuk proje kitaplığı (hepsi regression testte)
 - **Web'i üretime hazırla:** [docs/web-production-profili.md](docs/web-production-profili.md) — güvenilir proxy, ortak durum ve N worker süreci
 - **Derleyici tedarik zinciri:** [docs/tedarik-zinciri.md](docs/tedarik-zinciri.md) — RustSec/lisans/kaynak ve gerçek offline vendor kapısı
+- **Playground host sözleşmesi:** [docs/wasm-c-abi.md](docs/wasm-c-abi.md) — sürümlü, kayıtlı ve fuzz kanıtlı WASM C ABI
 - Dosya uzantısı: **`.dil`** (kalıcı — ADR-009)
 - Master plan: [docs/master-plan.md](docs/master-plan.md) (kaynak: [docs/Turkce_Programlama_Dili_Master_Proje_Dokumani.docx](docs/Turkce_Programlama_Dili_Master_Proje_Dokumani.docx))
 - V1 öncesi sıralı mühendislik backlog'u: [docs/oncelikli-backlog.md](docs/oncelikli-backlog.md)
@@ -116,7 +117,9 @@ sözleşme de debug/test hattında yürütülebilir
 
 **Playground:** `playground/olustur.sh` derleyiciyi WebAssembly'e derler ve
 tek dosyalık `playground/zee-playground.html` üretir — çift tıkla aç, tarayıcıda
-yaz-çalıştır; kurulum ve internet gerekmez. Aynı tohum + aynı girdi = her zaman
+yaz-çalıştır; kurulum ve internet gerekmez. Host sınırı K-142/ADR-039 ile exact
+pointer/uzunluk, strict UTF-8 ve açık tampon ömrü taşıyan
+[WASM C ABI v2](docs/wasm-c-abi.md)'dir. Aynı tohum + aynı girdi = her zaman
 aynı çıktı (`zee-io-1` [deterministik IO profili](docs/deterministik-io-profili.md),
 K-039/K-116).
 
@@ -169,10 +172,10 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **570** |
+| Rust + doctest vakası | **575** |
 | Tanı kimliği | **152 etkin + 3 ayrılmış** |
 | RFC | **25** (2 kabul, 21 geçici kabul, 2 taslak) |
-| ADR | **36** (36 kabul) |
+| ADR | **37** (37 kabul) |
 | Normatif spec bölümü | **24** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
@@ -265,13 +268,18 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   komutları kilitlidir; iki ayrı vendor üretiminin SHA-256 manifesti eşitlenir
   ve boş Cargo home ile compiler+fuzz gerçekten offline derlenir. B-054
   kapandı; bu bağımlılık allowlist'i Zee'nin bekleyen ürün lisansını seçmez.
+  K-142/ADR-039 playground köprüsünü ABI v2'ye taşıdı. Yalnız kayıtlı başlangıç
+  pointer'ı+exact boy çekirdeğe kopyalanır; invalid UTF-8 görünür hatadır,
+  sonuç boyu kayıttan sorgulanır, yanlış/çift bırakma durumu bozamaz. Native,
+  gerçek wasm32 Node hostu ve 1.745.134 çağrılık libFuzzer kampanyası B-055'i
+  kapattı. Sıradaki makine kapısı K-143/B-056 kaynak ve soru girdisinin
+  türüne özgü ön-tahsis bütçesidir.
   K-107/ADR-019 `dillsp` girdisini 8 KiB başlık, 8 MiB gövde, 128 JSON
   derinliği ve 100 bin düğümle sınırlayıp Unicode parser olumsuzlarını kapattı.
   K-138/ADR-035 sayı ayrıştırmasını RFC 8259 durum makinesine taşıdı; sayısal
   kimliği float'a çevirmeden korudu, duplicate anahtarı reddetti ve parse,
   request, method, params hata kodlarıyla notification sessizliğini bağladı;
-  B-051 kapandı. Sıradaki makine kapısı K-142/B-055 WASM C ABI'sini hasım
-  çağıran pointer/uzunluk ve çıktı ömrü sınırında kanıtlamaktır.
+  B-051 kapandı.
   K-108/ADR-020 her semantic typed-HIR ifadesine zorunlu kaynak aralığı
   ekledi; kesin token konumu olmayan eski AST düğümleri uydurma sütun yerine
   kaynak satırı zarfı taşır. K-126/ADR-030 bu geçişi tamamladı: artık her

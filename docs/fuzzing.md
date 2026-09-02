@@ -1,11 +1,12 @@
 # Compiler fuzz rehberi
 
-Bu rehber K-110/ADR-022, K-111 ve K-140/ADR-037'nin ortak işletim
+Bu rehber K-110/ADR-022, K-111, K-140/ADR-037 ve K-142/ADR-039'un ortak işletim
 sözleşmesidir. Lexer/parser hedefi geçerli her UTF-8 kaynağın token/AST ya da
 Türkçe tanı üretmesini; morfoloji hedefi geçerli her üretilmiş kök+ek zincirinin
 aynı soyut çözüme dönmesini ve çoklu köklerin sessizce seçilmemesini;
 `http_istegi` hedefi ise her byte dizisinin exact bir HTTP/1.x isteği ya da
-fail-closed hata olmasını arar.
+fail-closed hata olmasını arar. `wasm_abi` hedefi kayıtlı/kayıt dışı pointer,
+uzunluk, UTF-8 ve tampon bırakma dizilerini hasım native host olarak zorlar.
 
 ## Kalıcı katmanlar
 
@@ -29,6 +30,16 @@ fail-closed hata olmasını arar.
 - `compiler/tests/http_istegi_testi.rs`: kalıcı HTTP korpusunu ve adlandırılmış
   CRLF/obs-fold/NUL/target/TE-CL/UTF-8 framing saldırılarını her ana testte
   yeniden oynatır.
+- `compiler/fuzz/fuzz_targets/wasm_abi.rs`: kayıtlı girdinin yanında null,
+  iç/kayıt dışı pointer, yanlış/taşkın uzunluk, keyfî UTF-8 ve yanlış+çift
+  bırakma sıralarını yürütür; her canlı sonuç kaydının uzunluk önekini ve UTF-8
+  gövdesini doğrular.
+- `compiler/fuzz/corpus/wasm_abi/`: ilk kontrol baytıyla geçerli kaynak,
+  Unicode, bozuk uzunluk ve boş çağrı yollarını başlatan dört byte tohumudur.
+  `.gitattributes` bu kontrol baytlarını metin normalizasyonundan çıkarır.
+- `compiler/tests/playground_testi.rs`: aynı ABI'yi native hostta adlandırılmış
+  pointer/uzunluk, UTF-8, yanlış/çift bırakma ve bozuk çağrı sonrası tekrar
+  kullanım regresyonlarıyla yürütür.
 - `compiler/fuzz/dictionaries/zee.dict`: Türkçe kalıpları ve kritik byte
   dizilerini mutation sözlüğüne verir.
 - `compiler/tests/fuzz_korpusu_testi.rs`: stable ve bütün Tier-1 işletim
@@ -52,6 +63,8 @@ cargo +nightly-2026-08-31 fuzz run morfoloji fuzz/corpus/morfoloji -- \
   -dict=fuzz/dictionaries/zee.dict -max_len=128 -timeout=5
 cargo +nightly-2026-08-31 fuzz run http_istegi fuzz/corpus/http_istegi -- \
   -dict=fuzz/dictionaries/zee.dict -max_len=81920 -timeout=5
+cargo +nightly-2026-08-31 fuzz run wasm_abi fuzz/corpus/wasm_abi -- \
+  -dict=fuzz/dictionaries/zee.dict -max_len=4097 -timeout=5
 ```
 
 Kısa doğrulama için sona `-max_total_time=30`, uzun yerel çalışma için uygun
@@ -91,3 +104,8 @@ Kurtarmalı parser'ın kardeş/kapsam sahipliği ve 20 tanı bütçesi
 HTTP hedefi `&[u8]` aldığı için geçersiz UTF-8'i özellikle tarar. 81920 byte
 fuzz sınırı production'daki 16 KiB başlık + 64 KiB gövde zarfıdır; daha büyük
 socket girdisi parser tahsisinden önce 431/413 ile kesilir.
+WASM ABI hedefinin ilk baytı çağrı kipidir; kalan en çok 4 KiB kaynak byte'ıdır.
+Bu fuzz kampanya sınırıdır, ürünün kaynak boyu sözü değildir. ABI katmanı tek
+tamponu 16 MiB + dört bayt, sekiz canlı tamponu toplam 64 MiB ile sınırlar;
+kaynak ve soru girdisinin daha dar, türüne özgü ön-tahsis bütçesi B-056'nın
+ayrı kapısıdır.

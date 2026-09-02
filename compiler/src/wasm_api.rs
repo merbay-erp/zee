@@ -1,17 +1,20 @@
 //! Playground köprüsü (Faz 6): derleyiciyi tarayıcıya taşıyan C-ABI yüzeyi.
 //!
-//! wasm-bindgen KULLANILMAZ (ADR-001 küçük bağımlılık yüzeyi): bellek elle yönetilir.
-//! Sözleşme:
-//! - `dil_bellek_ayir(n)` → n baytlık tampon işaretçisi (JS kaynağı buraya yazar)
-//! - `dil_calistir(kaynak, k_len, girdi, g_len, tohum)` → sonuç tamponu:
-//!   ilk 4 bayt little-endian uzunluk, ardından UTF-8 çıktı metni.
-//!   Girdi metni satır satır "diye sor" cevaplarıdır; tohum rastgeleliği besler.
-//! - Dönen tampon `dil_bellek_birak(ptr, 4+len)` ile bırakılır.
+//! wasm-bindgen KULLANILMAZ (ADR-001 küçük bağımlılık yüzeyi): bellek, sürümlü
+//! ve kayıtlı bir C ABI katmanında yönetilir. Ayrıntılı host sözleşmesi
+//! `docs/wasm-c-abi.md` içindedir.
 //!
 //! Bu modül doğal (native) derlemede de derlenir ve testlenir — determinizm
 //! garantisi playground'da da aynıdır.
 
 use crate::yorumlayici::{GirdiCikti, SurumluRastgele, ToplayanIo};
+
+mod abi;
+
+pub use abi::{
+    dil_abi_surumu, dil_bellek_ayir, dil_bellek_birak, dil_calistir, dil_sonuc_tamponu_uzunlugu,
+    DIL_ABI_BASARILI, DIL_ABI_SURUMU,
+};
 
 /// Tarayıcı IO'su: ToplayanIo'nun determinizmi + tohumlu rastgelelik.
 /// Dosya sistemi RAM'dedir (sayfa yenilenince uçar — playground sözleşmesi).
@@ -145,54 +148,4 @@ pub fn playgroundda_calistir(kaynak: &str, girdiler: &str, tohum: u64) -> String
             cikti
         }
     }
-}
-
-// ---------- C-ABI dışa aktarımları (wasm) ----------
-
-/// # Safety
-/// JS tarafı sözleşmeye uyar: işaretçiler bu modülün ayırdığı tamponlardır.
-#[no_mangle]
-pub extern "C" fn dil_bellek_ayir(uzunluk: usize) -> *mut u8 {
-    let mut tampon = Vec::<u8>::with_capacity(uzunluk.max(1));
-    let ptr = tampon.as_mut_ptr();
-    std::mem::forget(tampon);
-    ptr
-}
-
-/// # Safety
-/// `ptr`, `dil_bellek_ayir(uzunluk)` ile alınmış olmalıdır.
-#[no_mangle]
-pub unsafe extern "C" fn dil_bellek_birak(ptr: *mut u8, uzunluk: usize) {
-    if !ptr.is_null() {
-        drop(Vec::from_raw_parts(ptr, 0, uzunluk.max(1)));
-    }
-}
-
-/// # Safety
-/// İşaretçiler geçerli, uzunlukları doğru UTF-8 tamponlara işaret etmelidir.
-#[no_mangle]
-pub unsafe extern "C" fn dil_calistir(
-    kaynak_ptr: *const u8,
-    kaynak_uzunluk: usize,
-    girdi_ptr: *const u8,
-    girdi_uzunluk: usize,
-    tohum: u64,
-) -> *mut u8 {
-    let kaynak = std::str::from_utf8(std::slice::from_raw_parts(kaynak_ptr, kaynak_uzunluk))
-        .unwrap_or("");
-    let girdiler = if girdi_uzunluk == 0 {
-        ""
-    } else {
-        std::str::from_utf8(std::slice::from_raw_parts(girdi_ptr, girdi_uzunluk)).unwrap_or("")
-    };
-
-    let cikti = playgroundda_calistir(kaynak, girdiler, tohum);
-    let govde = cikti.as_bytes();
-
-    let mut tampon = Vec::<u8>::with_capacity(4 + govde.len());
-    tampon.extend_from_slice(&(govde.len() as u32).to_le_bytes());
-    tampon.extend_from_slice(govde);
-    let ptr = tampon.as_mut_ptr();
-    std::mem::forget(tampon);
-    ptr
 }

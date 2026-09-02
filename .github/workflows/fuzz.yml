@@ -22,6 +22,9 @@ jobs:
           - hedef: http_istegi
             korpus: http_istegi
             azami_girdi: 81920
+          - hedef: wasm_abi
+            korpus: wasm_abi
+            azami_girdi: 4097
     steps:
       - uses: actions/checkout@v4
       - name: Sabit nightly araç zinciri

@@ -79,6 +79,19 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   kadar yanlışlıkla crates.io yayınına izin vermez; bağımlılık lisans listesi
   Zee'nin lisansı değildir.
 
+- **Sürümlü ve hasım hosta dayanıklı WASM C ABI** (K-142, ADR-039): Eski
+  kayıt dışı `slice/Vec::from_raw_parts` köprüsü kaldırıldı. ABI v2 yalnız
+  modülün ayırdığı başlangıç pointer'ı ile exact boyu sahipli kopyaya alır;
+  null/iç/yabancı pointer, taşkın boy, sonuç tamponunu girdi sayma ve geçersiz
+  UTF-8 çekirdekten önce görünür hata olur. Sonuç toplamı ayrı kayıttan
+  sorgulanır; yanlış veya çift bırakma allocator durumunu değiştirmez.
+  Playground şablonu sürümü, linear-memory zarfını, uzunluk önekini ve strict
+  UTF-8'i doğrulayıp bütün tamponları `finally` içinde bırakır. Beş yeni
+  regresyon, dört byte seed, gecelik ayrı fuzz işi, gerçek wasm32 Node host
+  round-trip'i ve 1.745.134 çağrılık ilk kampanyayla envanter 575 test ve 37
+  kabul ADR'ye çıktı; B-055/V1-P1-10 kapandı. Türüne özgü playground girdi
+  ön-tahsis bütçesi B-056/K-143 olarak ayrı kaldı.
+
 - **Normatif otorite ve v1 kapıları** (K-081, ADR-010): geçerli dilin kesin
   davranışını spec anlatır; RFC değişikliği yetkilendirir ama spec+conformance
   testi aynı değişiklikte güncellenmeden yürürlüğe girmez. Kaynak denetimli

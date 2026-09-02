@@ -83,11 +83,20 @@ async function wasmYukle() {
   const ikili = Uint8Array.from(atob(WASM_B64), k => k.charCodeAt(0));
   const { instance } = await WebAssembly.instantiate(ikili.buffer, {});
   wasm = instance.exports;
+  if (!wasm.memory || wasm.dil_abi_surumu() !== 2) {
+    wasm = null;
+    throw new Error("Playground ile derleyici WASM ABI sürümü uyuşmuyor.");
+  }
 }
 
 function metniBellege(metin) {
   const bayt = new TextEncoder().encode(metin);
-  const ptr = wasm.dil_bellek_ayir(bayt.length || 1);
+  if (bayt.length === 0) return [0, 0];
+  const ptr = wasm.dil_bellek_ayir(bayt.length) >>> 0;
+  if (ptr === 0 || ptr + bayt.length > wasm.memory.buffer.byteLength) {
+    if (ptr !== 0) wasm.dil_bellek_birak(ptr, bayt.length);
+    throw new Error("WASM girdi tamponu ayrılamadı.");
+  }
   new Uint8Array(wasm.memory.buffer, ptr, bayt.length).set(bayt);
   return [ptr, bayt.length];
 }
@@ -98,21 +107,42 @@ function calistir() {
   const kaynak = document.getElementById("kaynak").value;
   const girdiler = document.getElementById("girdiler").value;
   const tohum = BigInt(Math.max(1, Number(document.getElementById("tohum").value) || 1));
+  let kPtr = 0, kLen = 0, gPtr = 0, gLen = 0, sonucPtr = 0, sonucToplami = 0;
+  try {
+    [kPtr, kLen] = metniBellege(kaynak);
+    [gPtr, gLen] = metniBellege(girdiler);
+    sonucPtr = wasm.dil_calistir(kPtr, kLen, gPtr, gLen, tohum) >>> 0;
+    if (sonucPtr === 0) throw new Error("WASM sonuç tamponu ayrılamadı.");
 
-  const [kPtr, kLen] = metniBellege(kaynak);
-  const [gPtr, gLen] = metniBellege(girdiler);
-  const sonucPtr = wasm.dil_calistir(kPtr, kLen, gPtr, gLen, tohum);
-
-  const bellek = new Uint8Array(wasm.memory.buffer);
-  const uzunluk = new DataView(wasm.memory.buffer).getUint32(sonucPtr, true);
-  const metin = new TextDecoder().decode(bellek.subarray(sonucPtr + 4, sonucPtr + 4 + uzunluk));
-
-  wasm.dil_bellek_birak(kPtr, kLen || 1);
-  wasm.dil_bellek_birak(gPtr, gLen || 1);
-  wasm.dil_bellek_birak(sonucPtr, 4 + uzunluk);
-
-  ciktiAlani.textContent = metin.length ? metin : "(çıktı yok)";
-  ciktiAlani.classList.toggle("hata", metin.includes("HATA "));
+    sonucToplami = wasm.dil_sonuc_tamponu_uzunlugu(sonucPtr) >>> 0;
+    const bellekBoyu = wasm.memory.buffer.byteLength;
+    if (sonucToplami < 4 || sonucPtr + sonucToplami > bellekBoyu) {
+      throw new Error("WASM geçersiz bir sonuç tamponu döndürdü.");
+    }
+    const uzunluk = new DataView(wasm.memory.buffer).getUint32(sonucPtr, true);
+    if (uzunluk !== sonucToplami - 4) {
+      throw new Error("WASM sonuç başlığı tampon kaydıyla uyuşmuyor.");
+    }
+    const govde = new Uint8Array(wasm.memory.buffer, sonucPtr + 4, uzunluk);
+    const metin = new TextDecoder("utf-8", { fatal: true }).decode(govde);
+    ciktiAlani.textContent = metin.length ? metin : "(çıktı yok)";
+    ciktiAlani.classList.toggle(
+      "hata",
+      metin.includes("HATA ") || metin.startsWith("WASM ABI HATASI:")
+    );
+  } catch (hata) {
+    ciktiAlani.textContent = `Playground hatası: ${hata.message || hata}`;
+    ciktiAlani.classList.add("hata");
+  } finally {
+    const kaynakBirakildi = kPtr === 0 || wasm.dil_bellek_birak(kPtr, kLen) === 1;
+    const girdiBirakildi = gPtr === 0 || wasm.dil_bellek_birak(gPtr, gLen) === 1;
+    const sonucBirakildi = sonucPtr === 0 || (sonucToplami !== 0 &&
+      wasm.dil_bellek_birak(sonucPtr, sonucToplami) === 1);
+    if (!kaynakBirakildi || !girdiBirakildi || !sonucBirakildi) {
+      ciktiAlani.textContent = "Playground hatası: WASM tampon sahipliği doğrulanamadı.";
+      ciktiAlani.classList.add("hata");
+    }
+  }
 }
 
 const ornekSecici = document.getElementById("ornek");
@@ -131,9 +161,15 @@ document.getElementById("calistir").addEventListener("click", calistir);
 document.addEventListener("keydown", (olay) => {
   if ((olay.ctrlKey || olay.metaKey) && olay.key === "Enter") calistir();
 });
-wasmYukle().then(() => {
-  document.getElementById("cikti").textContent = "Derleyici hazır. Çalıştır'a bas!";
-});
+wasmYukle()
+  .then(() => {
+    document.getElementById("cikti").textContent = "Derleyici hazır. Çalıştır'a bas!";
+  })
+  .catch(hata => {
+    const ciktiAlani = document.getElementById("cikti");
+    ciktiAlani.textContent = `Playground yüklenemedi: ${hata.message || hata}`;
+    ciktiAlani.classList.add("hata");
+  });
 </script>
 </body>
 </html>

@@ -325,6 +325,10 @@ Harici İngilizce API’ler Türkçe wrapper ile sunulabilir.
 ABI sürümleme politikası.
 Native paketlerde OS/architecture metadata.
 Ownership, lifetime ve crash sınırları açıkça belgelenir.
+K-142/ADR-039 tarayıcı bootstrap köprüsünü genel FFI'dan ayıran `dil ABI v2`
+olarak sürümler. Host yalnız kayıtlı başlangıç pointer'ı+exact boy verir;
+strict UTF-8, sorgulanabilir sonuç sahipliği ve yanlış/çift bırakma davranışı
+native, gerçek wasm32 hostu ve ayrı libFuzzer hedefiyle kanıtlanır.
 K-125/ADR-029 ile Ondalık'ın C `float`/`double` ya da binary32/binary64'e
 örtük eşlenmesi yasaktır. Gelecekteki köprü görünür `kayıplı` işareti,
 `Sonuç` ve açık IEEE 754 semantiği ister; FFI Faz 4/5'e kadar dil yüzeyi
@@ -348,6 +352,8 @@ Reproducible-build checks.
 Package/registry supply-chain tests.
 Bootstrap dependency graph için günlük advisory ve boş-cache offline vendor
 kanıtı K-141/ADR-038 ile çalışır.
+Playground C ABI'si kayıt dışı pointer/uzunluk ve yaşam döngüsü sıralarıyla
+K-142/ADR-039 `wasm_abi` hedefinde gecelik fuzz edilir.
 LSP protocol tests.
 Cross-platform integration.
 Performance regression benchmarks.
@@ -583,6 +589,7 @@ ADR-035 — Protokol-kesin LSP JSON-RPC sınırı
 ADR-036 — Kanonik web proxy origin sınırı
 ADR-037 — Byte tabanlı HTTP/1.x istek sınırı
 ADR-038 — Rust tedarik zinciri ve offline vendor kapısı
+ADR-039 — Hasım hosta karşı sürümlü WASM C ABI
 # 39. Ekip ve rol modeli
 Dil mimarı: semantik ve uzun vadeli vizyon.
 Compiler: parser, types, IR, backend.
@@ -743,8 +750,10 @@ ve exact UTF-8 kabul eden byte parser'a taşıdı; ayrı ham-byte fuzz hedefiyle
 B-053'ü kapattı. K-141/ADR-038 compiler ve fuzz bağımlılıklarını sabit
 `cargo-deny` RustSec/lisans/ban/kaynak politikasına, kilitli CI'a ve iki
 üretimli SHA-256 manifestli boş-cache offline vendor derlemesine bağlayarak
-B-054'ü kapattı. Sıradaki omurga K-142 ile B-055 WASM C ABI hasım-caller
-sınırıdır.
+B-054'ü kapattı. K-142/ADR-039 WASM köprüsünü kayıtlı exact pointer/uzunluk,
+strict UTF-8, açık sonuç ömrü, native+gerçek wasm32 host testi ve ayrı hasım
+çağrı fuzzer'ına bağlayarak B-055'i kapattı. Sıradaki omurga K-143 ile B-056
+playground girdisi ön-tahsis bütçesidir.
 # 40. Proje felsefesinin korunması
 Bu projenin başarısı yalnız compiler’ın çalışması değildir. Başarı; Türkçe konuşan bir çocuğun yabancı syntax bariyerine takılmadan algoritmik düşünceyle tanışması, aynı dilin yıllar sonra onu terk etmeye zorlamaması ve ekosistemin tek bir şirketin kapalı ürünü haline gelmemesidir.
 Her yeni özellik şu dört sorudan geçmelidir: Türkçe doğal mı? Deterministik mi? Öğrenilebilir mi? Profesyonel ölçekte savunulabilir mi? Dördünden biri hayırsa özellik yeniden tasarlanır.

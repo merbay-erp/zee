@@ -3,3 +3,6 @@
 
 # HTTP fuzz korpusu wire satır sonlarını (CRLF/bare-LF) byte-byte korur.
 compiler/fuzz/corpus/http_istegi/*.http binary
+
+# WASM ABI korpusunun ilk kontrol baytı metin niteliğinde değildir.
+compiler/fuzz/corpus/wasm_abi/* binary

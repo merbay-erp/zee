@@ -45,6 +45,8 @@ compiler/src/
 │   └── registry/istemci.rs   taşıma/cache/kalıcı durum orkestrasyonu
 │       ├── depo.rs           içerik-adresli yol ve sınırlı disk okuma
 │       └── tasima.rs         HTTPS/statik ayna adaptörü
+├── wasm_api.rs               playground derleme/yürütme çekirdeği
+│   └── wasm_api/abi.rs       sürümlü kayıtlı pointer/uzunluk ve sahiplik sınırı
 └── yorumlayici.rs            değer/IO/scheduler ve yürütme orkestrasyonu
     └── yorumlayici/
         ├── cumle.rs          cümle yürütme
@@ -84,6 +86,7 @@ API'si bu iç ayrımla büyümez.
 | exact registry proje çözümü | `paket/uzak` | RFC-0020, ADR-006, spec/07/19 ve kilit v3 |
 | doğrulanmış `.zep` kurulumu | `tedarik/kurulum` | arşiv exact ağaç doğrulaması, atomik rename ve P016 |
 | registry CLI/ağ açma sınırı | `cli/registry` | `ekle/kilitle/paketler`, çevrimdışı varsayımlar ve P017 |
+| playground WASM host sınırı | `wasm_api/abi` | ADR-039, exact pointer/uzunluk, UTF-8 ve tampon ömrü |
 | morfoloji profil uyumluluğu | `morfoloji/uyumluluk` | RFC-0018, spec/13, immutable SHA-256 fixture ve Git-tarih koruğu |
 | alan adaptörü | intrinsic kaydı | ADR-011 rehberi, yetkinlik/etki/runtime |
 
@@ -152,6 +155,10 @@ K-140/ADR-037 request-line, header, CRLF, TE/CL ve UTF-8 framing kararını 260
 satır bütçeli `http_istegi.rs` sahibine ayırdı. CLI kökü yalnız socket
 deadline/boyut okumasını ve doğrulanmış isteğin runtime adaptasyonunu taşır;
 kayıplı `from_utf8_lossy` veya ikinci header parser'ı geri dönemez.
+K-142/ADR-039 C ABI tahsis kaydı, exact pointer/uzunluk, strict UTF-8 ve sonuç
+sahipliğini 260 satır bütçeli `wasm_api/abi.rs` sahibine ayırdı. Playground
+çekirdeği host pointer'ı görmez; mimari test `from_raw_parts`, `unsafe extern`
+ve kayıtsız bırakma yolunun geri dönmesini engeller.
 K-128/ADR-032 atomik replace'in platform metadata aktarımını
 `kalici_dosya/metadata.rs` sahibine ayırdı. `kalici_dosya.rs` K-135'in atomik
 karşılaştır-ve-yaz ilkeliyle 850,

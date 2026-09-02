@@ -1,4 +1,4 @@
-//! B-005/B-006/B-008/B-010/B-018/B-019/B-020/B-025/B-048/B-050 mimari sınır regresyonları.
+//! B-005/B-006/B-008/B-010/B-018/B-019/B-020/B-025/B-048/B-050/B-055 mimari sınır regresyonları.
 
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -86,6 +86,7 @@ fn handler_modulleri_yeni_domain_icin_sinir_tasir() {
         ("src/yetkinlik.rs", 520),
         ("src/yetkinlik/origin.rs", 100),
         ("src/http_istegi.rs", 260),
+        ("src/wasm_api/abi.rs", 260),
         ("src/ag_istemcisi.rs", 180),
         ("src/web_guvenligi.rs", 1_050),
         ("src/web_guvenligi/depo.rs", 160),
@@ -144,6 +145,47 @@ fn http_istek_framingi_byte_parserinda_tek_sahiplidir() {
     assert!(parser.contains("HTTP satırları yalnız CRLF ile bitmeli"));
     assert!(parser.contains("birden çok Content-Length başlığı reddedildi"));
     assert!(fuzz.contains("HttpIstegi::ayristir"));
+}
+
+#[test]
+fn wasm_abi_kayitli_tampon_sahipligini_atlayamaz() {
+    let kok = kaynak("src/wasm_api.rs");
+    let abi = kaynak("src/wasm_api/abi.rs");
+    let fuzz = kaynak("fuzz/fuzz_targets/wasm_abi.rs");
+    let gece = kaynak("../.github/workflows/fuzz.yml");
+    let ci = kaynak("../.github/workflows/ci.yml");
+    let host = kaynak("../playground/sablon.html");
+    let node_hostu = kaynak("../scripts/wasm-abi-denetle.mjs");
+    let mut korpus: Vec<_> = fs::read_dir(kaynak_yolu("fuzz/corpus/wasm_abi"))
+        .expect("WASM ABI fuzz korpusu okunmalı")
+        .map(|girdi| {
+            girdi
+                .expect("korpus girdisi okunmalı")
+                .file_name()
+                .to_string_lossy()
+                .into_owned()
+        })
+        .collect();
+    korpus.sort();
+    assert!(!kok.contains("from_raw_parts"));
+    assert!(!abi.contains("Vec::from_raw_parts"));
+    assert!(!abi.contains("unsafe extern"));
+    assert!(abi.contains("TamponKayitlari"));
+    assert!(abi.contains("pointer ve uzunluk ayrılmış tamponla birebir eşleşmiyor"));
+    assert!(abi.contains("dil_sonuc_tamponu_uzunlugu"));
+    assert!(fuzz.contains("usize::MAX"));
+    assert!(fuzz.contains("dil_bellek_birak(sonuc, toplam)"));
+    assert!(gece.contains("hedef: wasm_abi"));
+    assert!(gece.contains("azami_girdi: 4097"));
+    assert!(ci.contains("node ../scripts/wasm-abi-denetle.mjs"));
+    assert!(host.contains("wasm.dil_abi_surumu() !== 2"));
+    assert!(host.contains("wasm.dil_sonuc_tamponu_uzunlugu(sonucPtr)"));
+    assert!(host.contains("new TextDecoder(\"utf-8\", { fatal: true })"));
+    assert!(host.contains("} finally {"));
+    assert!(node_hostu.contains("WebAssembly.instantiate"));
+    assert!(node_hostu.contains("wasm.dil_bellek_ayir(-1)"));
+    assert!(node_hostu.contains("wasm.dil_bellek_birak(ptr, toplam)"));
+    assert_eq!(korpus, ["bos", "gecerli.dil", "unicode.dil", "uzunluk"]);
 }
 
 #[test]
