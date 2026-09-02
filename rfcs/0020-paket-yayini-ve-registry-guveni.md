@@ -1,9 +1,9 @@
 # RFC-0020 — Paket Yayını ve Registry Güven Zinciri
 
-- **Durum:** geçici kabul — yayın, metadata doğrulayıcısı ve K-135
-  taşıma/cache/kalıcı durum/offline katmanı gerçeklendi; exact proje/CLI bağı açık
+- **Durum:** geçici kabul — yayın, metadata doğrulayıcısı, K-135
+  taşıma/cache/kalıcı durum/offline ve K-136 exact proje/kilit/CLI bağı gerçeklendi
 - **Tarih:** 1 Eylül 2026
-- **İlgili günlük kaydı:** K-094, K-095, K-117, K-135
+- **İlgili günlük kaydı:** K-094, K-095, K-117, K-135, K-136
 - **Mimari karar:** ADR-006, ADR-028
 - **Normatif çalışan yüzey:** [spec/18](../spec/18-paket-yayini.md),
   [spec/19](../spec/19-registry-metadata-guveni.md)
@@ -24,8 +24,9 @@ Bu RFC iki aşamayı bilinçli ayırır:
 - **B1 — metadata güveni (çalışıyor):** ağ dışı sabit root, eşik ve çift eşikli
   rotasyon, dört rol, rollback/expiry/mix-and-match, exact targets yetkisi,
   yanked ve güvenlik duyurusu politikası.
-- **B2 — uzak kullanım (gerçekleme sürüyor):** limitli taşıma, kalıcı metadata
-  durumu, doğrulanmış cache, offline hit/miss, manifest/kilit ve CLI.
+- **B2 — uzak kullanım (çalışıyor):** limitli taşıma, kalıcı metadata durumu,
+  doğrulanmış cache, offline hit/miss, exact manifest/kilit v3, atomik kaynak
+  kurulumu ve açık ağ kullanan CLI.
 
 ## 1. Komut yüzeyi
 
@@ -33,6 +34,10 @@ Bu RFC iki aşamayı bilinçli ayırır:
 dil anahtar üret yayinci.zee-anahtar
 dil paketle . --anahtar yayinci.zee-anahtar
 dil paketle . --anahtar yayinci.zee-anahtar --çıktı hedef/paket
+dil ekle örnek@1.2.3 . --registry https://registry.example \
+  --kök 1@sha256:<64-küçük-hex>
+dil kilitle . [--çevrimdışı]
+dil paketler . [--yenile]
 ```
 
 Varsayılan çıktı `<proje>/hedef/paket`tir. Dört dosya:
@@ -195,6 +200,14 @@ sürümlü bir timestamp kalıcı fast-forward zehirlenmesi yaratmaz. Mirror yal
 base URL'dir; kök kimliği ve hedef kararına katılmaz. Derleme/çalıştırma ağ
 kullanmaz; kilitli doğrulanmış cache olmadan P-serisi tedarik tanısı verir.
 
+Manifest HTTPS origin, pozitif ilk root sürümü, ağ dışı `sha256:` root özeti ve
+exact `uzak_bağımlılıklar` listesini birlikte taşır. `proje.kilit` v3 ilk ve
+etkin root/rol kimliğini, yayıncıyı, dört hedef özetini, yanked/kritik durumunu
+ve varsa insan gerekçeli kabul kaydını sabitler. Metadata nesneleri
+`.zee/registry/<root-özeti>`, exact açılmış kaynaklar
+`.zee/paketler/sha256/<zep-özeti>` altında proje-local ve salt-okunurdur.
+Normal derleme/LSP sessiz ağ açmaz; `paketler` de yalnız `--yenile` ile ağ açar.
+
 ### 6.3 Exact sürüm
 
 İlk uzak yüzey `ad@X.Y.Z` dışında sürüm ifadesi kabul etmez. SemVer aralığı,
@@ -217,6 +230,8 @@ reddedilir; mevcut exact kilit ancak görünür politika kaydıyla yeniden
 üretilebilir. Güvenlik duyurusu imzalı targets zincirindedir; sabit kimlik,
 paket, etkilenen exact sürümler, önem ve düzeltilen sürüm taşır. Kritik etkin
 duyuru yeni kilidi varsayılan engeller; baypas gerekçesi kilitte görünürdür.
+Kritik baypas anahtarı root+exact paket yanında güncel sıralı etkin duyuru
+kümesini de taşır; yeni duyuru eski gerekçeyle sessiz kabul edilemez.
 
 ## 8. Hata ve atomiklik
 
@@ -253,5 +268,6 @@ reddi, DNS sonrası public-IP kapısı, 64 ardışık root sınırı, sürümlü
 metadata yolları, CAS korumalı atomik monoton durum ve yalnız tam zincirden
 sonra yazılan salt-okunur SHA-256 cache'i gerçekler. Bozuk cache, çevrimdışı
 hit/miss, taşıma boyutu ve başarısız zincirin durum/cache yayımlamaması testlidir.
-Exact `proje.dil`/`proje.kilit` ve CLI entegrasyonu tamamlanana kadar V1-P1-07
-açık kalır.
+K-136 exact `proje.dil`, `proje.kilit` v3, atomik/salt-okunur kaynak kurulumu,
+çevrimiçi/çevrimdışı CLI ve normal ağsız derleme entegrasyonunu gerçek uçtan
+uca testle kanıtlar. V1-P1-07 **KAPALIDIR**.

@@ -35,7 +35,7 @@ kaynakta A001'i çözüme veya tek çözümü A002'ye çevirebilirdi.
 6. `proje.dil`, `morfoloji "zee-tr-1" olsun` ile profili sabitleyebilir.
    Eski bildirimin yazmaması `zee-tr-1` demektir. Bilinmeyen profil P011 ile
    fail-closed reddedilir. Yeni proje iskeleti alanı açık yazar.
-7. `proje.kilit` sürüm 2, ana proje ve her paket için morfoloji profilini
+7. `proje.kilit` sürüm 3, ana proje ve her yerel/uzak paket için morfoloji profilini
    kaydeder. `dil sürüm` etkin profili, `dil morfoloji [kelime]` profil
    tablosunu veya bütün yapısal çözümleri gösterir.
 8. Her yayımlanmış profil, compiler kaynak ağacından bağımsız sürümlü JSON

@@ -4,8 +4,8 @@
   (§4.1), tam public kaynak ABI'si** (K-029/K-076/K-078/K-086; onay kapısı:
   usability). K-094 yayın çekirdeği RFC-0020/spec-18'de; K-095 registry
   metadata güveni spec/19'da çalışır. K-135 taşıma/cache/kalıcı durum/offline
-  katmanını ekledi; exact bildirim/kilit/CLI §4.2/ADR-006/RFC-0020 §6 kapsamında
-  sürmektedir.
+  katmanını, K-136 exact bildirim/kilit v3/CLI ve proje-local kaynak kurulumunu
+  tamamladı.
 - **Tarih:** 31 Ağustos 2026
 - **İlgili günlük kayıtları:** master plan bölüm 7 ("modül mü birim mi; kullanıcı testiyle karar"), bölüm 14
 - **Gerçekleme:** `lib.rs` (kökenli yükleyici + T039 public sınırı),
@@ -61,10 +61,15 @@ giriş "program.dil" olsun
 yetkinlikler boş liste olsun
 ağ_hedefleri boş liste olsun
 yerel_bağımlılıklar boş liste olsun
+registry "https://registry.example" olsun
+registry_kök_sürümü "1" olsun
+registry_kök_özeti "sha256:<64 küçük hex>" olsun
+uzak_bağımlılıklar boş liste olsun
 ```
 
-- İlk üç alan zorunlu ve tektir; `yetkinlikler`, `ağ_hedefleri` ve
-  `yerel_bağımlılıklar` isteğe bağlıdır. İlk ikisi K-127/RFC-0024/spec-23
+- İlk üç alan zorunlu ve tektir; `yetkinlikler`, `ağ_hedefleri`,
+  `yerel_bağımlılıklar` ve uzak registry alanları isteğe bağlıdır. İlk ikisi
+  K-127/RFC-0024/spec-23
   dış dünya politikasını, sonuncusu göreli proje klasörlerini tanımlar
   (P001/P002/P005/P015).
 - Sürüm üç sayılıdır (`X.Y.Z`); giriş proje içinde kalan göreli `.dil`
@@ -147,7 +152,7 @@ durur. Başarılı kaldırma K-079'un aday-grafik-doğrulama ve iki dosyalı ger
 sözleşmesini kullanır. Kaldırılan doğrudan paket başka bir paketin bağımlılığı
 ise çözülmüş grafikte geçişli olarak kalabilir.
 
-### 4.2 Uzak paketler ve yayın (Faz 5 — K-094/K-095 güven çekirdekleri)
+### 4.2 Uzak paketler ve yayın (K-094/K-095/K-135/K-136 — gerçeklendi)
 
 - `dil anahtar üret` ve `dil paketle`, deterministik `.zep`, SPDX 3.0.1 SBOM,
   SLSA v1 provenance ve Ed25519 `zee-yayin-v1` üretir. Kesin biçim ve saldırı
@@ -156,11 +161,18 @@ ise çözülmüş grafikte geçişli olarak kalabilir.
   timestamp→snapshot→targets, rollback/expiry ve exact yayıncı/yanked/duyuru
   byte doğrulamasını spec/19'da çalıştırır.
 - Registry istemci çekirdeği K-135 ile HTTPS statik aynadan limitli taşıma,
-  kalıcı metadata/cache ve offline hit/miss'i güven zincirine bağlar. Ancak
-  `dil ekle <ad@X.Y.Z>` henüz bu çekirdeğe bağlanmamıştır; var olan `dil ekle`
-  yalnız açık yerel yolu kabul eder.
+  kalıcı metadata/cache ve offline hit/miss'i güven zincirine bağlar.
+- K-136 `dil ekle ad@X.Y.Z`, `dil kilitle [--çevrimdışı]` ve ağsız varsayılan
+  `dil paketler [--yenile]` yüzeyini aynı çekirdeğe bağlar. İlk ekleme HTTPS
+  origin ile ağ dışı root sürüm+özetini açıkça ister. Normal derleme/LSP ağ
+  açmaz; `.zee/registry` ve `.zee/paketler/sha256` proje-local cache'ini
+  doğrular.
+- `proje.kilit` v3 ilk/etkin root kimliğini, rol sürüm+özetlerini, yayıncıyı,
+  dört yayın özetini, yanked/kritik durumunu ve varsa insan gerekçeli politika
+  baypasını sabitler. Doğrulanmış `.zep` atomik açılır ve exact salt-okunur
+  kaynak ağacı olarak yeniden doğrulanır.
 - Sürüm aralığı bilinçli olarak kararlaştırılmamıştır; ilk uzak istemci exact
-  `X.Y.Z` dışında seçim yapmayacaktır.
+  `X.Y.Z` dışında seçim yapmaz.
 - Paket adları küçük harf Türkçe tanımlayıcıdır; typosquatting/confusable
   denetimi RFC-0002'nin S028 altyapısını registry tarafında yeniden kullanır.
 

@@ -28,7 +28,7 @@ Kırıcı değişiklik sessizce yapılamaz: davranış değişikliği RFC'den ge
 | [04 — Türler](04-turler.md) | tür envanteri, birleşim, daraltma ve sıra-bağımsız yerel çağrı çıkarımı | RFC-0006/0007/0008/0013, K-121 |
 | [05 — Değerlendirme](05-degerlendirme.md) | yürütme sırası, taşma, determinizm | RFC-0001 §7, ADR-003 |
 | [06 — Hata modeli](06-hata-modeli.md) | tanı sözleşmesi, Seçenek/Sonuç, test | RFC-0008, RFC-0010 |
-| [07 — Birimler](07-birimler.md) | birim çözümü ve kapsülleme | RFC-0009 §2 |
+| [07 — Birimler](07-birimler.md) | birim, proje, yerel/exact registry paket çözümü ve kilit v3 | RFC-0009 §2–4, K-136 |
 | [08 — Kalıcı dosya IO](08-kalici-dosya.md) | atomik yazma, süreçler arası yarış, platform metadata'sı ve dayanıklılık | RFC-0016, ADR-032, K-128 |
 | [09 — Son tarih ve iptal](09-son-tarih-ve-iptal.md) | `içinde/yetişmezse`, işbirlikli iptal ve iç içe deadline | RFC-0011 |
 | [10 — Dışa açık işlem sözleşmesi](10-disari-acik-islem-sozlesmesi.md) | public imza, yerel çıkarım, dönüş kanıtı ve v1 kaynak ABI'si | RFC-0006, RFC-0007, RFC-0009, K-121 |
@@ -40,7 +40,7 @@ Kırıcı değişiklik sessizce yapılamaz: davranış değişikliği RFC'den ge
 | [16 — Keyfî hassasiyetli Ondalık](16-keyfi-hassasiyetli-ondalik.md) | keyfî katsayı/ölçek, exact işlemler, 34 haneli bölüm ve örtük binary float yasağı | RFC-0013, ADR-029, K-092/K-125 |
 | [17 — Değer semantiği ve gezme](17-deger-semantigi-ve-gezme.md) | derin değer kopyası, liste değer-sonuç imleci ve T053 kaynak sabitliği | RFC-0019, K-093 |
 | [18 — Tekrar üretilebilir paket yayını](18-paket-yayini.md) | NFC/Unicode güvenlik profilli kanonik `.zep`, Ed25519 imzası, SPDX SBOM ve SLSA provenance | RFC-0020, ADR-006/028, K-094/K-117 |
-| [19 — Registry metadata güven zinciri](19-registry-metadata-guveni.md) | eşik root/rotasyon, çevrimiçi rol bağları, rollback/expiry ve targets yayıncı politikası | RFC-0020, ADR-006, K-095 |
+| [19 — Registry metadata güven zinciri](19-registry-metadata-guveni.md) | eşik root/rotasyon, rol bağları, rollback/expiry, doğrulanmış cache ve exact proje/kilit/CLI | RFC-0020, ADR-006, K-095/K-135/K-136 |
 | [20 — İfade grameri](20-ifade-grameri.md) | primary→postfix→çağrı→aritmetik→birleştirme→karşılaştırma→boolean katmanları, tam tüketim ve formatter eşdeğerliği | RFC-0021, ADR-002, K-097/K-119 |
 | [21 — Deterministik IO izi](21-deterministik-io-izi.md) | sürümlü kanonik olay biçimi, bütçeli kayıt ve dış etkisiz replay | RFC-0022, ADR-026, K-115 |
 | [22 — Deterministik IO profili](22-deterministik-io-profili.md) | `zee-io-1` tohum, rastgele dizi, sanal saat ve hermetik adaptör sözleşmesi | RFC-0023, ADR-027, K-116 |
@@ -51,8 +51,7 @@ Kırıcı değişiklik sessizce yapılamaz: davranış değişikliği RFC'den ge
 
 Çok çekirdekli paralellik ve yarış/akış/dinamik görev yüzeyleri (RFC-0011),
 ikili FFI/ABI (RFC-0012, Faz 4/5), standart kütüphane kararlılık
-politikası, çok süreçli web durumu/idempotency (RFC-0015/0017), registry
-exact proje bildirimi/kilit/CLI katmanı (RFC-0020 §6) ile genel
+politikası, çok süreçli web durumu/idempotency (RFC-0015/0017) ile genel
 deprecation/edition modeli. Morfoloji
 profili için kırıcı sürüm sınırı spec/13'te şimdiden tanımlıdır.
 Bu başlıklar karara bağlandıkça buraya bölüm olarak eklenir.

@@ -95,8 +95,15 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
     ayna, redirect/proxy ve private-IP korkulukları; ardışık root taşıması;
     CAS korumalı atomik monoton durum; tam metadata+yayın doğrulamasından sonra
     salt-okunur SHA-256 nesne deposu ve çevrimdışı hit/miss çalışır (533 test).
-33. Sıradaki makine işi K-136 exact proje bildirimi, kilit ve CLI
-    entegrasyonudur; sonraki işler aşağıdaki öncelik sırasını korur.
+33. K-136 exact `ad@X.Y.Z` bağımlılığı HTTPS origin + ağ dışı root pinli
+    `proje.dil` alanlarına, `proje.kilit` v3 kimliğine ve açık ağ kullanan
+    `ekle/kilitle/paketler --yenile` CLI zincirine bağladı. Normal derleme/LSP
+    proje-local doğrulanmış cache'den ağsız çalışır; `.zep` kaynakları atomik,
+    exact doğrulanan ve salt-okunur kurulur. P017 ve uçtan uca gerçek imzalı
+    registry ve duyuru-kümesi politika regresyonuyla V1-P1-07/B-029 kapandı
+    (539 test).
+34. Sıradaki makine işi K-137 ile B-046 web rate-limit ve çok süreçli oturum
+    sınırını kapatmaktır; sonraki işler aşağıdaki öncelik sırasını korur.
 
 ## P0 — V1 öncesi dil ve derleyici omurgası
 
@@ -367,12 +374,17 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 
 ## P1 — Paketleme ve supply chain
 
-- **B-029 · KISMEN — registry protokolünü önce normatifleştir.** RFC-0020,
+- **B-029 · KAPALI (K-136) — registry protokolünü önce normatifleştir.** RFC-0020,
   spec/18 ve spec/19 wire/imza/expiry'yi koddan önce bağladı; K-095 metadata
   doğrulayıcısı çalışır. K-135 limitli HTTPS/statik taşıma, ardışık root,
   atomik kalıcı sürüm+özet durumu, doğrulama-sonrası salt-okunur SHA-256 cache,
-  bozuk cache reddi ve çevrimdışı hit/miss'i gerçekledi. Exact bağımlılığın
-  `proje.dil`/`proje.kilit`/CLI entegrasyonu K-136'ya açıktır.
+  bozuk cache reddi ve çevrimdışı hit/miss'i gerçekledi. K-136 exact bağımlılığı
+  `proje.dil`, `proje.kilit` v3, gerekçeli yanked/kritik politika kayıtları,
+  proje-local atomik kaynak kurulumu ve çevrimiçi/çevrimdışı CLI'a bağladı.
+  Kritik kabul güncel duyuru kümesine bağlıdır; yeni duyuru eski gerekçeyi
+  devralamaz.
+  Normal derleme ve LSP sessiz ağ açmaz; gerçek imzalı uçtan uca regresyon
+  cache bozulmasını da P016 ile fail-closed doğrular.
 - **B-030 · KAPALI (K-117) — platformlar arası kanonik paket testi.** Üretici
   dosya sistemi bileşenlerini NFC'ye çevirir, çakışmayı reddeder; tüketici
   yalnız kanonik NFC yolu kabul eder. Türkçe Unicode dosya adlı sabit `.zep`
@@ -383,8 +395,9 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   duplicate/sıra, fazladan byte ve limit yapısal testleriyle birlikte ADR-028,
   [spec/18](../spec/18-paket-yayini.md) ve
   [conformance rehberi](zep-conformance.md) V1-P1-08'i kapatır.
-- **B-032 · KAPALI — lockfile formatını sürümle.** `proje.kilit` baştan
-  `kilit_sürümü 2` taşır; sonraki formatlar migration testi istemelidir.
+- **B-032 · KAPALI — lockfile formatını sürümle.** `proje.kilit` K-136 ile
+  `kilit_sürümü 3` taşır; sürüm 2 yalnız eski yerel grafiğin tarihsel biçimidir.
+  Sonraki formatlar açık migration/yeniden üretim testi istemelidir.
 
 ## P2 — Tooling ve bakım
 
@@ -443,9 +456,9 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 ## Bir sonraki somut kapı
 
 İnsan kanıtı hattında B-001, doldurulmuş gerçek usability formları ve önceden
-ilan edilmiş eşikleri bekler. Makine hattında K-135 B-029'un HTTPS taşıma,
-doğrulanmış cache, kalıcı rollback ve offline katmanını tamamladı. Sıradaki iş
-K-136 exact bağımlılığı proje bildirimi, kilit ve CLI'a bağlamaktır.
+ilan edilmiş eşikleri bekler. Makine hattında K-136 B-029/V1-P1-07'nin exact
+manifest, kilit v3, doğrulanmış kaynak kurulumu ve CLI bağını tamamladı.
+Sıradaki iş K-137 ile B-046 web rate-limit ve çok süreçli oturum kararıdır.
 
 ## 2 Eylül 2026 ikinci dış inceleme ayrımı
 
@@ -455,9 +468,10 @@ K-136 exact bağımlılığı proje bildirimi, kilit ve CLI'a bağlamaktır.
   bitti; LSP'nin 8 MiB reddi JSON kurulurken uygulanır.
 - **Doğrulandı ve K-133/K-134 ile kapandı:** B-026 cancellation; etki öncesi
   deadline, görev HTTP tazeliği ve web session/cookie/yanıt transaction'ı.
-- **İlerliyor:** B-029'un taşıma/cache/kalıcı rollback/offline dilimi K-135
-  ile kapandı; sırada K-136 exact manifest/kilit/CLI vardır. Sonrasında B-046
-  rate-limit ve çok süreçli oturum, B-051 kesin JSON-RPC, B-052 origin tekilleştirme,
+- **Kapatıldı:** B-029'un taşıma/cache/kalıcı rollback/offline dilimi K-135,
+  exact manifest/kilit v3/CLI ve kaynak kurulumu K-136 ile tamamlandı.
+  Sırada B-046 rate-limit ve çok süreçli oturum; ardından B-051 kesin JSON-RPC,
+  B-052 origin tekilleştirme,
   B-053 byte HTTP+fuzz, B-034 temiz snapshot ve B-054 advisory/reproducibility.
 - **Mevcut repoda zaten kapalı:** çağrı derinliği C019/500 ve ayrı regresyonu;
   atomik metadata `unsafe` bloklarının her birindeki `SAFETY` gerekçesi; kök

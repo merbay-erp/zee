@@ -10,6 +10,10 @@
 //! yetkinlikler boş liste olsun
 //! ağ_hedefleri boş liste olsun
 //! yerel_bağımlılıklar "../ortak" listesi olsun
+//! registry "https://paketler.example" olsun
+//! registry_kök_sürümü "1" olsun
+//! registry_kök_özeti "sha256:<64 küçük hex>" olsun
+//! uzak_bağımlılıklar "grafik@1.2.3" listesi olsun
 //! ```
 
 use crate::agac::{Cumle, Ifade};
@@ -32,6 +36,59 @@ pub struct ProjeBildirimi {
     /// Her yol, kendi `proje.dil` bildirimi olan yerel bir projedir. Paket adı
     /// ve sürümü bağımlı projenin bildiriminden gelir; iki yerde tekrarlanmaz.
     pub yerel_bagimliliklar: Vec<String>,
+    /// Uzak bağımlılıkların tek, açık HTTPS aynası ve ağ dışı root kimliği.
+    pub registry: Option<RegistryBildirimi>,
+    /// V1 yalnız exact `ad@X.Y.Z` kabul eder; sürüm çözümü yapmaz.
+    pub uzak_bagimliliklar: Vec<UzakBagimlilik>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct RegistryBildirimi {
+    pub origin: String,
+    pub kok_surumu: u64,
+    pub kok_sha256: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct UzakBagimlilik {
+    pub ad: String,
+    pub surum: String,
+}
+
+impl RegistryBildirimi {
+    pub fn yeni(origin: &str, kok_surumu: u64, kok_sha256: &str) -> Result<Self, String> {
+        let hedef = AgHedefi::bildirimden(origin)
+            .map_err(|neden| format!("Geçersiz registry origin'i: {}.", neden))?;
+        if hedef.semasi() != crate::yetkinlik::AgSemasi::Https {
+            return Err("Registry origin'i yalnız https:// olabilir.".into());
+        }
+        if kok_surumu == 0 {
+            return Err("Registry root sürümü pozitif olmalı.".into());
+        }
+        if !gecerli_sha256(kok_sha256) {
+            return Err("Registry root özeti sha256:<64 küçük hex> biçiminde olmalı.".into());
+        }
+        Ok(Self {
+            origin: hedef.yazimi(),
+            kok_surumu,
+            kok_sha256: kok_sha256.to_string(),
+        })
+    }
+}
+
+impl UzakBagimlilik {
+    pub fn ayristir(yazim: &str) -> Result<Self, String> {
+        let (ad, surum) = yazim
+            .rsplit_once('@')
+            .ok_or_else(|| "Uzak bağımlılık ad@X.Y.Z biçiminde olmalı.".to_string())?;
+        if !gecerli_paket_adi(ad) || !gecerli_surum(surum) {
+            return Err("Paket adı küçük harfli tek tanımlayıcı, sürüm exact X.Y.Z olmalı.".into());
+        }
+        Ok(Self {
+            ad: ad.to_string(),
+            surum: surum.to_string(),
+        })
+    }
 }
 
 /// `proje.dil` kaynağını doğrular ve proje sözleşmesine çevirir.
@@ -71,12 +128,16 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
                 | "yetkinlikler"
                 | "ağ_hedefleri"
                 | "yerel_bağımlılıklar"
+                | "registry"
+                | "registry_kök_sürümü"
+                | "registry_kök_özeti"
+                | "uzak_bağımlılıklar"
         ) {
             return Err(proje_hatasi(
                 "P001",
                 &format!("\"{}\" proje bildirimi alanı değil.", ad),
                 satir,
-                "Geçerli alanlar: proje, sürüm, morfoloji, giriş, yetkinlikler, ağ_hedefleri, yerel_bağımlılıklar.",
+                "Geçerli alanlar: proje, sürüm, morfoloji, giriş, yetkinlikler, ağ_hedefleri, yerel_bağımlılıklar, registry, registry_kök_sürümü, registry_kök_özeti, uzak_bağımlılıklar.",
             ));
         }
         if alanlar.insert(ad.clone(), (deger, satir)).is_some() {
@@ -98,6 +159,8 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
     )?;
     let (giris, giris_satiri) = gerekli_metni_al(&mut alanlar, "giriş")?;
     let yerel_bagimliliklar = bagimliliklari_al(&mut alanlar)?;
+    let uzak_bagimliliklar = uzak_bagimliliklari_al(&mut alanlar)?;
+    let registry = registry_bildirimini_al(&mut alanlar, !uzak_bagimliliklar.is_empty())?;
     let (yetkinlik_yazimlari, yetkinlik_satiri) =
         metin_listesini_al(&mut alanlar, "yetkinlikler", "P015")?;
     let (ag_hedef_yazimlari, ag_hedef_satiri) =
@@ -209,7 +272,10 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
     if morfoloji != crate::morfoloji::MORFOLOJI_PROFILI {
         return Err(proje_hatasi(
             "P011",
-            &format!("\"{}\" morfoloji profili bu derleyicide desteklenmiyor.", morfoloji),
+            &format!(
+                "\"{}\" morfoloji profili bu derleyicide desteklenmiyor.",
+                morfoloji
+            ),
             morfoloji_satiri,
             &format!(
                 "Bu sürüm için `morfoloji \"{}\" olsun` yaz.",
@@ -234,6 +300,8 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
         yetkinlikler,
         ag_hedefleri,
         yerel_bagimliliklar,
+        registry,
+        uzak_bagimliliklar,
     })
 }
 
@@ -265,10 +333,7 @@ fn istege_bagli_metni_al(
 /// Yerel bağımlılık alanını resmî biçimde günceller. Önce eski bildirim,
 /// sonra üretilen bildirim doğrulanır; hata varsa çağıran hiçbir şey yazmaz.
 /// Yorumlar ve diğer alanlar korunur, yollar sıralanıp tekilleştirilir.
-pub fn yerel_bagimliliklari_guncelle(
-    kaynak: &str,
-    yollar: &[String],
-) -> Result<String, Tani> {
+pub fn yerel_bagimliliklari_guncelle(kaynak: &str, yollar: &[String]) -> Result<String, Tani> {
     bildirimi_oku(kaynak)?;
     let mut yollar = yollar.to_vec();
     yollar.sort();
@@ -319,6 +384,111 @@ pub fn yerel_bagimliliklari_guncelle(
     crate::bicimleyici::bicimle(&aday)
 }
 
+/// Exact uzak bağımlılıklarla registry root sabitlemesini tek aday bildirimde
+/// günceller. Çağıran bu kaynakla bütün grafiği doğrulamadan diske yazmaz.
+pub fn uzak_bagimliliklari_guncelle(
+    kaynak: &str,
+    registry: Option<&RegistryBildirimi>,
+    bagimliliklar: &[UzakBagimlilik],
+) -> Result<String, Tani> {
+    bildirimi_oku(kaynak)?;
+    let mut bagimliliklar = bagimliliklar.to_vec();
+    bagimliliklar.sort();
+    bagimliliklar.dedup();
+    if !bagimliliklar.is_empty() && registry.is_none() {
+        return Err(proje_hatasi(
+            "P017",
+            "Uzak bağımlılık registry root sabitlemesi olmadan güncellenemez.",
+            1,
+            "HTTPS registry origin'i, root sürümünü ve SHA-256 özetini birlikte bildir.",
+        ));
+    }
+
+    let uzak_ifadesi = if bagimliliklar.is_empty() {
+        "boş liste".to_string()
+    } else {
+        format!(
+            "{} listesi",
+            bagimliliklar
+                .iter()
+                .map(|bag| format!("\"{}@{}\"", metni_kacir(&bag.ad), bag.surum))
+                .collect::<Vec<_>>()
+                .join(", ")
+        )
+    };
+    let mut yeniler = HashMap::new();
+    yeniler.insert(
+        "uzak_bağımlılıklar",
+        Some(format!("uzak_bağımlılıklar {} olsun", uzak_ifadesi)),
+    );
+    match registry {
+        Some(registry) => {
+            yeniler.insert(
+                "registry",
+                Some(format!(
+                    "registry \"{}\" olsun",
+                    metni_kacir(&registry.origin)
+                )),
+            );
+            yeniler.insert(
+                "registry_kök_sürümü",
+                Some(format!(
+                    "registry_kök_sürümü \"{}\" olsun",
+                    registry.kok_surumu
+                )),
+            );
+            yeniler.insert(
+                "registry_kök_özeti",
+                Some(format!(
+                    "registry_kök_özeti \"{}\" olsun",
+                    registry.kok_sha256
+                )),
+            );
+        }
+        None => {
+            yeniler.insert("registry", None);
+            yeniler.insert("registry_kök_sürümü", None);
+            yeniler.insert("registry_kök_özeti", None);
+        }
+    }
+
+    let mut satirlar = Vec::new();
+    let mut gorulen = BTreeSet::new();
+    for satir in kaynak.lines() {
+        let kirpilmis = satir.trim_start();
+        let alan = kirpilmis.split_whitespace().next().unwrap_or("");
+        if !kirpilmis.starts_with('#') {
+            if let Some(yeni) = yeniler.get(alan) {
+                if gorulen.insert(alan.to_string()) {
+                    if let Some(yeni) = yeni {
+                        satirlar.push(yeni.clone());
+                    }
+                }
+                continue;
+            }
+        }
+        satirlar.push(satir.to_string());
+    }
+    for alan in [
+        "registry",
+        "registry_kök_sürümü",
+        "registry_kök_özeti",
+        "uzak_bağımlılıklar",
+    ] {
+        if !gorulen.contains(alan) {
+            if let Some(Some(yeni)) = yeniler.get(alan) {
+                if satirlar.last().is_some_and(|satir| !satir.is_empty()) {
+                    satirlar.push(String::new());
+                }
+                satirlar.push(yeni.clone());
+            }
+        }
+    }
+    let aday = format!("{}\n", satirlar.join("\n"));
+    bildirimi_oku(&aday)?;
+    crate::bicimleyici::bicimle(&aday)
+}
+
 fn gerekli_metni_al(
     alanlar: &mut HashMap<String, (Ifade, usize)>,
     ad: &str,
@@ -342,9 +512,7 @@ fn gerekli_metni_al(
     }
 }
 
-fn bagimliliklari_al(
-    alanlar: &mut HashMap<String, (Ifade, usize)>,
-) -> Result<Vec<String>, Tani> {
+fn bagimliliklari_al(alanlar: &mut HashMap<String, (Ifade, usize)>) -> Result<Vec<String>, Tani> {
     let Some((ifade, satir)) = alanlar.remove("yerel_bağımlılıklar") else {
         return Ok(Vec::new());
     };
@@ -394,6 +562,131 @@ fn bagimliliklari_al(
     Ok(yollar)
 }
 
+fn uzak_bagimliliklari_al(
+    alanlar: &mut HashMap<String, (Ifade, usize)>,
+) -> Result<Vec<UzakBagimlilik>, Tani> {
+    let (yazimlar, satir) = metin_listesini_al(alanlar, "uzak_bağımlılıklar", "P017")?;
+    let mut sonuc = Vec::new();
+    let mut adlar = BTreeSet::new();
+    for yazim in yazimlar {
+        let bagimlilik = UzakBagimlilik::ayristir(&yazim).map_err(|neden| {
+            proje_hatasi(
+                "P017",
+                &format!("Geçersiz exact uzak bağımlılık \"{}\": {}", yazim, neden),
+                satir,
+                "Uzak paketi ad@X.Y.Z biçiminde yaz; örnek: grafik@1.2.3",
+            )
+        })?;
+        if !adlar.insert(bagimlilik.ad.clone()) {
+            return Err(proje_hatasi(
+                "P017",
+                &format!(
+                    "\"{}\" uzak paketi birden çok kez bildirildi.",
+                    bagimlilik.ad
+                ),
+                satir,
+                "Her paket adını yalnız bir exact sürümle bildir.",
+            ));
+        }
+        sonuc.push(bagimlilik);
+    }
+    Ok(sonuc)
+}
+
+fn registry_bildirimini_al(
+    alanlar: &mut HashMap<String, (Ifade, usize)>,
+    zorunlu: bool,
+) -> Result<Option<RegistryBildirimi>, Tani> {
+    let origin = opsiyonel_metni_al(alanlar, "registry", "P017")?;
+    let kok_surumu = opsiyonel_metni_al(alanlar, "registry_kök_sürümü", "P017")?;
+    let kok_ozeti = opsiyonel_metni_al(alanlar, "registry_kök_özeti", "P017")?;
+    if origin.is_none() && kok_surumu.is_none() && kok_ozeti.is_none() {
+        if zorunlu {
+            return Err(proje_hatasi(
+                "P017",
+                "Uzak bağımlılıklar registry origin'i ve root sabitlemesi istiyor.",
+                1,
+                "registry, registry_kök_sürümü ve registry_kök_özeti alanlarını birlikte ekle.",
+            ));
+        }
+        return Ok(None);
+    }
+    let (origin, satir) = origin.ok_or_else(|| {
+        proje_hatasi(
+            "P017",
+            "Registry yapılandırmasında `registry` alanı eksik.",
+            1,
+            "Üç registry alanını birlikte bildir.",
+        )
+    })?;
+    let (kok_surumu, kok_satiri) = kok_surumu.ok_or_else(|| {
+        proje_hatasi(
+            "P017",
+            "Registry yapılandırmasında `registry_kök_sürümü` eksik.",
+            satir,
+            "Pozitif ağ dışı root sürümünü Metin olarak yaz.",
+        )
+    })?;
+    let (kok_sha256, ozet_satiri) = kok_ozeti.ok_or_else(|| {
+        proje_hatasi(
+            "P017",
+            "Registry yapılandırmasında `registry_kök_özeti` eksik.",
+            satir,
+            "Ağ dışından doğruladığın sha256:<64 küçük hex> özetini yaz.",
+        )
+    })?;
+
+    let kok_surumu = kok_surumu
+        .parse::<u64>()
+        .ok()
+        .filter(|s| *s > 0 && s.to_string() == kok_surumu);
+    let Some(kok_surumu) = kok_surumu else {
+        return Err(proje_hatasi(
+            "P017",
+            "Registry root sürümü pozitif ondalık sayı olmalı.",
+            kok_satiri,
+            "Örnek: registry_kök_sürümü \"1\" olsun",
+        ));
+    };
+    RegistryBildirimi::yeni(&origin, kok_surumu, &kok_sha256)
+        .map(Some)
+        .map_err(|neden| {
+            proje_hatasi(
+                "P017",
+                &neden,
+                if neden.contains("özet") {
+                    ozet_satiri
+                } else {
+                    satir
+                },
+                if neden.contains("özet") {
+                    "Root metadata byte'larının ağ dışından doğrulanan SHA-256 özetini yaz."
+                } else {
+                    "Yol taşımayan tam bir https:// origin ve pozitif root sürümü yaz."
+                },
+            )
+        })
+}
+
+fn opsiyonel_metni_al(
+    alanlar: &mut HashMap<String, (Ifade, usize)>,
+    ad: &str,
+    kod: &str,
+) -> Result<Option<(String, usize)>, Tani> {
+    let Some((ifade, satir)) = alanlar.remove(ad) else {
+        return Ok(None);
+    };
+    match ifade.turu() {
+        Ifade::MetinSabiti(deger) => Ok(Some((deger.clone(), satir))),
+        _ => Err(proje_hatasi(
+            kod,
+            &format!("\"{}\" alanı Metin olmalı.", ad),
+            satir,
+            &format!("Örnek: {} \"...\" olsun", ad),
+        )),
+    }
+}
+
 fn metin_listesini_al(
     alanlar: &mut HashMap<String, (Ifade, usize)>,
     ad: &str,
@@ -428,14 +721,34 @@ fn metin_listesini_al(
     Ok((yazimlar, satir))
 }
 
-fn gecerli_surum(surum: &str) -> bool {
+pub(crate) fn gecerli_surum(surum: &str) -> bool {
     let parcalar: Vec<&str> = surum.split('.').collect();
     parcalar.len() == 3
         && parcalar.iter().all(|p| {
             !p.is_empty()
                 && p.chars().all(|k| k.is_ascii_digit())
                 && (p == &"0" || !p.starts_with('0'))
+                && p.parse::<u64>().is_ok()
         })
+}
+
+pub(crate) fn gecerli_paket_adi(ad: &str) -> bool {
+    if ad.len() > 128 {
+        return false;
+    }
+    let mut harfler = ad.chars();
+    matches!(harfler.next(), Some(k) if k == '_' || k.is_alphabetic())
+        && harfler.all(|k| k == '_' || k.is_alphabetic() || k.is_ascii_digit())
+        && ad.chars().all(|k| !k.is_uppercase())
+}
+
+fn gecerli_sha256(ozet: &str) -> bool {
+    ozet.strip_prefix("sha256:").is_some_and(|ham| {
+        ham.len() == 64
+            && ham
+                .bytes()
+                .all(|bayt| bayt.is_ascii_digit() || (b'a'..=b'f').contains(&bayt))
+    })
 }
 
 fn girisi_dogrula(giris: &str) -> Result<(), &'static str> {

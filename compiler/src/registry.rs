@@ -11,7 +11,7 @@ pub use istemci::{
 };
 
 use crate::paket::sha256_hex;
-use crate::tedarik::{yayini_dogrula, ImzaliYayin, YayinDosyasi};
+use crate::tedarik::{ImzaliYayin, YayinDosyasi, yayini_dogrula};
 use ed25519_dalek::{Signature, VerifyingKey};
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
@@ -255,6 +255,20 @@ impl DogrulanmisRegistry {
             }
         }
         Ok(hedef)
+    }
+
+    fn etkin_kritik_duyurular(&self, hedef: &HedefMetadata) -> Vec<String> {
+        hedef
+            .duyurular
+            .iter()
+            .filter(|kimlik| {
+                self.targets
+                    .duyurular
+                    .get(*kimlik)
+                    .is_some_and(|duyuru| duyuru.etkin && duyuru.onem == "kritik")
+            })
+            .cloned()
+            .collect()
     }
 }
 
@@ -1341,10 +1355,12 @@ mod testler {
         let anahtarlar = anahtarlar();
         let eksik = zarf("root", kok(1, &anahtarlar), &[&anahtarlar.root1]);
         let sabit = format!("sha256:{}", sha256_hex(&eksik));
-        assert!(RegistryDogrulayici::sabitlenmis_kok(&eksik, &sabit, 0)
-            .unwrap_err()
-            .mesaj
-            .contains("eşiğini"));
+        assert!(
+            RegistryDogrulayici::sabitlenmis_kok(&eksik, &sabit, 0)
+                .unwrap_err()
+                .mesaj
+                .contains("eşiğini")
+        );
 
         let tam = zarf(
             "root",
@@ -1407,31 +1423,37 @@ mod testler {
 
         let (eski_timestamp, eski_snapshot, eski_targets) =
             zincir(&anahtarlar, 3, 5, 6, "2030-01-01T00:00:00Z");
-        assert!(dogrulayici
-            .zinciri_dogrula(&eski_timestamp, &eski_snapshot, &eski_targets, 1)
-            .unwrap_err()
-            .mesaj
-            .contains("rollback"));
+        assert!(
+            dogrulayici
+                .zinciri_dogrula(&eski_timestamp, &eski_snapshot, &eski_targets, 1)
+                .unwrap_err()
+                .mesaj
+                .contains("rollback")
+        );
 
         let (es_deger_timestamp, es_deger_snapshot, es_deger_targets) =
             zincir(&anahtarlar, 4, 5, 6, "2031-01-01T00:00:00Z");
-        assert!(dogrulayici
-            .zinciri_dogrula(
-                &es_deger_timestamp,
-                &es_deger_snapshot,
-                &es_deger_targets,
-                1,
-            )
-            .unwrap_err()
-            .mesaj
-            .contains("aynı sürüm"));
+        assert!(
+            dogrulayici
+                .zinciri_dogrula(
+                    &es_deger_timestamp,
+                    &es_deger_snapshot,
+                    &es_deger_targets,
+                    1,
+                )
+                .unwrap_err()
+                .mesaj
+                .contains("aynı sürüm")
+        );
 
         let (ileri_timestamp, mut bozuk_snapshot, ileri_targets) =
             zincir(&anahtarlar, 999, 999, 999, "2030-01-01T00:00:00Z");
         *bozuk_snapshot.last_mut().expect("byte") ^= 1;
-        assert!(dogrulayici
-            .zinciri_dogrula(&ileri_timestamp, &bozuk_snapshot, &ileri_targets, 1)
-            .is_err());
+        assert!(
+            dogrulayici
+                .zinciri_dogrula(&ileri_timestamp, &bozuk_snapshot, &ileri_targets, 1)
+                .is_err()
+        );
         assert_eq!(dogrulayici.durum().timestamp, 4);
     }
 
@@ -1440,28 +1462,34 @@ mod testler {
         let anahtarlar = anahtarlar();
         let dogrulayici = dogrulayici(&anahtarlar);
         let (timestamp, snapshot, targets) = zincir(&anahtarlar, 1, 1, 1, "1970-01-01T00:00:01Z");
-        assert!(dogrulayici
-            .zinciri_dogrula(&timestamp, &snapshot, &targets, 1)
-            .unwrap_err()
-            .mesaj
-            .contains("süresi"));
+        assert!(
+            dogrulayici
+                .zinciri_dogrula(&timestamp, &snapshot, &targets, 1)
+                .unwrap_err()
+                .mesaj
+                .contains("süresi")
+        );
 
         let (timestamp, snapshot, _) = zincir(&anahtarlar, 2, 2, 2, "2030-01-01T00:00:00Z");
         let (_, _, eski_targets) = zincir(&anahtarlar, 1, 1, 1, "2030-01-01T00:00:00Z");
-        assert!(dogrulayici
-            .zinciri_dogrula(&timestamp, &snapshot, &eski_targets, 1)
-            .unwrap_err()
-            .mesaj
-            .contains("boyut/SHA-256"));
+        assert!(
+            dogrulayici
+                .zinciri_dogrula(&timestamp, &snapshot, &eski_targets, 1)
+                .unwrap_err()
+                .mesaj
+                .contains("boyut/SHA-256")
+        );
 
         let (mut timestamp, snapshot, targets) =
             zincir(&anahtarlar, 3, 3, 3, "2030-01-01T00:00:00Z");
         timestamp.insert(0, b' ');
-        assert!(dogrulayici
-            .zinciri_dogrula(&timestamp, &snapshot, &targets, 1)
-            .unwrap_err()
-            .mesaj
-            .contains("kanonik"));
+        assert!(
+            dogrulayici
+                .zinciri_dogrula(&timestamp, &snapshot, &targets, 1)
+                .unwrap_err()
+                .mesaj
+                .contains("kanonik")
+        );
     }
 
     #[test]
@@ -1469,11 +1497,13 @@ mod testler {
         let anahtarlar = anahtarlar();
         let dogrulayici = dogrulayici(&anahtarlar);
         let buyuk = vec![b' '; AZAMI_TIMESTAMP_BOYUTU + 1];
-        assert!(dogrulayici
-            .zinciri_dogrula(&buyuk, &[], &[], 1)
-            .unwrap_err()
-            .mesaj
-            .contains("sınırını"));
+        assert!(
+            dogrulayici
+                .zinciri_dogrula(&buyuk, &[], &[], 1)
+                .unwrap_err()
+                .mesaj
+                .contains("sınırını")
+        );
     }
 
     #[test]
@@ -1516,21 +1546,25 @@ mod testler {
                 etkin: true,
             },
         );
-        assert!(sonuc
-            .hedef_sec("miras", "1.2.3", HedefPolitikasi::default())
-            .unwrap_err()
-            .mesaj
-            .contains("kritik"));
-        assert!(sonuc
-            .hedef_sec(
-                "miras",
-                "1.2.3",
-                HedefPolitikasi {
-                    yanked_kabul: false,
-                    kritik_duyuru_kabul: true,
-                },
-            )
-            .is_ok());
+        assert!(
+            sonuc
+                .hedef_sec("miras", "1.2.3", HedefPolitikasi::default())
+                .unwrap_err()
+                .mesaj
+                .contains("kritik")
+        );
+        assert!(
+            sonuc
+                .hedef_sec(
+                    "miras",
+                    "1.2.3",
+                    HedefPolitikasi {
+                        yanked_kabul: false,
+                        kritik_duyuru_kabul: true,
+                    },
+                )
+                .is_ok()
+        );
     }
 
     #[test]

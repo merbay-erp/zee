@@ -691,7 +691,21 @@ nesne kullanılabilir cache'e girmez. Cache salt-okunur SHA-256 adreslidir;
 kalıcı sürüm+özet durumu atomik karşılaştır-ve-değiştir ile rollback'e kapalıdır.
 Çevrimdışı açılış her nesneyi yeniden doğrular ve eksik/bozuk cache'i P016 ile
 reddeder. Bu çekirdeğin `proje.dil`, kilit ve kullanıcı CLI yüzeyi K-136'da
-tamamlanacaktır.
+tamamlandı. Bildirim `registry`, ağ dışı sabit `registry_kök_sürümü` +
+`registry_kök_özeti` ve exact `uzak_bağımlılıklar` alanlarını birlikte taşır.
+İlk ekleme örneği:
+
+```text
+dil ekle örnek@1.2.3 . --registry https://registry.example \
+  --kök 1@sha256:<64-küçük-hex>
+```
+
+`proje.kilit` v3 root/metadata/yayıncı/dört yayın özetini ve gerekçeli
+yanked/kritik kabulünü sabitler. `dil kilitle --çevrimdışı` yalnız cache'i,
+`dil paketler` varsayılan ağsız görünümü, `dil paketler --yenile` açık ağı
+kullanır. Normal çalıştırma, denetleme, test ve LSP sessiz ağ açmaz. Doğrulanmış
+`.zep` kaynakları `.zee/paketler/sha256/<özet>` altında atomik, exact ağaç
+doğrulamalı ve salt-okunur kurulur (K-136/spec-07/19).
 
 **Gömülü standart kitaplık** (RFC-0014, deneysel): `matematik` (mutlak, üs,
 tam karekök, obeb, okek), `liste_araclari` (toplam, uçlar, ortalama) ve

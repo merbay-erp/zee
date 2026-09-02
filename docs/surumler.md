@@ -478,6 +478,19 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   ağ olmadan yeniden doğrular; miss/bozulma P016'dır. Altı yeni regresyonla
   envanter 533 teste çıktı. B-029 exact manifest/kilit/CLI için kısmen açıktır.
 
+- **Exact registry manifesti, kilit v3 ve CLI**
+  (K-136, RFC-0009/RFC-0020/ADR-006/spec-07/spec-19): `proje.dil` HTTPS
+  registry originini, ağ dışı root sürüm+SHA-256 pinini ve yalnız exact
+  `ad@X.Y.Z` bağımlılıkları taşır. `dil ekle`, `dil kilitle
+  [--çevrimdışı]` ve ağsız varsayılan `dil paketler [--yenile]` aynı
+  doğrulanmış proje-local cache'i kullanır; normal derleme/LSP sessiz ağ
+  açmaz. `proje.kilit` v3 root/rol/yayıncı/dört hedef/yanked/kritik kimliğini
+  ve insan gerekçeli baypası sabitler. `.zep` kaynakları görünmez geçicide
+  exact doğrulanıp atomik ve salt-okunur kurulur. Kritik kabul anahtarı güncel
+  sıralı duyuru kümesini de taşır; yeni duyuru eski gerekçeyi kullanamaz.
+  P017 ile altı regresyon eklenerek envanter 539 test, 152 etkin + 3 ayrılmış tanıya çıktı;
+  B-029/V1-P1-07 kapandı.
+
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`
   bildirimi hazır üretir. P001–P004 Türkçe proje tanıları. Doğrudan dosya

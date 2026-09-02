@@ -1,6 +1,9 @@
 //! Proje modeli (K-076): proje.dil bildirimi ve klasör-temelli CLI akışı.
 
-use dil::proje::{bildirimi_oku, yerel_bagimliliklari_guncelle, ProjeBildirimi};
+use dil::proje::{
+    ProjeBildirimi, RegistryBildirimi, UzakBagimlilik, bildirimi_oku, uzak_bagimliliklari_guncelle,
+    yerel_bagimliliklari_guncelle,
+};
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::sync::atomic::{AtomicU64, Ordering};
@@ -166,8 +169,10 @@ fn gercek_web_sunucusu_acik_opt_in_ister() {
         .output()
         .expect("güvenli web profili");
     assert!(guvenli_web.status.success());
-    assert!(String::from_utf8_lossy(&guvenli_web.stderr)
-        .contains("yalnız 127.0.0.1 üzerindeki HTTPS reverse proxy"));
+    assert!(
+        String::from_utf8_lossy(&guvenli_web.stderr)
+            .contains("yalnız 127.0.0.1 üzerindeki HTTPS reverse proxy")
+    );
     assert_eq!(
         String::from_utf8_lossy(&guvenli_web.stdout),
         "Sunucu dinliyor: https://panel.example (yerel proxy hedefi http://127.0.0.1:0)\nyalnız-programa\n"
@@ -196,10 +201,7 @@ fn parola_ozeti_komutu_argon2id_phc_uretir() {
     let ozet = String::from_utf8(cikti.stdout).expect("utf8");
     let ozet = ozet.trim();
     assert!(ozet.starts_with("$argon2id$v=19$"));
-    assert!(dil::guvenlik::parola_dogrula(
-        "uzun deneme parolasi",
-        ozet
-    ));
+    assert!(dil::guvenlik::parola_dogrula("uzun deneme parolasi", ozet));
     assert!(!dil::guvenlik::parola_dogrula("yanlis", ozet));
 }
 
@@ -217,6 +219,8 @@ fn bildirim_gecerli_zee_kaynagidir() {
             yetkinlikler: std::collections::BTreeSet::new(),
             ag_hedefleri: std::collections::BTreeSet::new(),
             yerel_bagimliliklar: Vec::new(),
+            registry: None,
+            uzak_bagimliliklar: Vec::new(),
         }
     );
 }
@@ -239,10 +243,16 @@ fn bildirim_morfoloji_profilini_sabitler_ve_bilinmeyeni_reddeder() {
 fn bildirim_yetkinlikleri_ve_tam_ag_originlerini_dogrular() {
     let kaynak = "proje \"uygulama\" olsun\nsürüm \"1.0.0\" olsun\ngiriş \"ana.dil\" olsun\nyetkinlikler \"ağ\", \"yerel-ağ\" listesi olsun\nağ_hedefleri \"https://api.example\", \"http://127.0.0.1:8080\" listesi olsun\n";
     let bildirim = bildirimi_oku(kaynak).expect("açık yetkinlikler geçmeli");
-    assert!(bildirim.yetkinlikler.contains(&dil::yetkinlik::Yetkinlik::Ag));
-    assert!(bildirim
-        .yetkinlikler
-        .contains(&dil::yetkinlik::Yetkinlik::YerelAg));
+    assert!(
+        bildirim
+            .yetkinlikler
+            .contains(&dil::yetkinlik::Yetkinlik::Ag)
+    );
+    assert!(
+        bildirim
+            .yetkinlikler
+            .contains(&dil::yetkinlik::Yetkinlik::YerelAg)
+    );
     assert_eq!(bildirim.ag_hedefleri.len(), 2);
 
     for kotu in [
@@ -296,6 +306,76 @@ fn bagimlilik_guncellemesi_yorumlari_korur_ve_yollari_siralar() {
             .yerel_bagimliliklar,
         vec!["../ortak", "../zengin"]
     );
+}
+
+#[test]
+fn uzak_bagimlilik_exact_registry_root_kimligine_baglanir() {
+    let ozet = format!("sha256:{}", "a".repeat(64));
+    let kaynak = format!(
+        concat!(
+            "proje \"uygulama\" olsun\n",
+            "sürüm \"1.0.0\" olsun\n",
+            "giriş \"ana.dil\" olsun\n",
+            "registry \"https://registry.example\" olsun\n",
+            "registry_kök_sürümü \"1\" olsun\n",
+            "registry_kök_özeti \"{}\" olsun\n",
+            "uzak_bağımlılıklar \"miras@1.2.3\" listesi olsun\n"
+        ),
+        ozet
+    );
+    let bildirim = bildirimi_oku(&kaynak).expect("exact registry bildirimi");
+    assert_eq!(
+        bildirim.registry,
+        Some(RegistryBildirimi {
+            origin: "https://registry.example".into(),
+            kok_surumu: 1,
+            kok_sha256: ozet,
+        })
+    );
+    assert_eq!(
+        bildirim.uzak_bagimliliklar,
+        vec![UzakBagimlilik {
+            ad: "miras".into(),
+            surum: "1.2.3".into(),
+        }]
+    );
+
+    for bozuk in [
+        kaynak.replace("https://", "http://"),
+        kaynak.replace("miras@1.2.3", "miras@^1"),
+        kaynak.replace("registry_kök_özeti", "# registry_kök_özeti"),
+    ] {
+        assert_eq!(
+            bildirimi_oku(&bozuk).expect_err("P017 beklenir").kod,
+            "P017"
+        );
+    }
+}
+
+#[test]
+fn uzak_bagimlilik_guncellemesi_yorumu_korur_siralar_ve_surumu_degistirir() {
+    let kaynak =
+        "# miras\nproje \"uygulama\" olsun\nsürüm \"1.0.0\" olsun\ngiriş \"ana.dil\" olsun\n";
+    let registry = RegistryBildirimi::yeni(
+        "https://registry.example",
+        7,
+        &format!("sha256:{}", "b".repeat(64)),
+    )
+    .expect("registry");
+    let guncel = uzak_bagimliliklari_guncelle(
+        kaynak,
+        Some(&registry),
+        &[
+            UzakBagimlilik::ayristir("zaman@2.0.0").expect("zaman"),
+            UzakBagimlilik::ayristir("miras@1.4.0").expect("miras"),
+        ],
+    )
+    .expect("güncellenmeli");
+    assert!(guncel.starts_with("# miras\n"));
+    assert!(guncel.contains("registry_kök_sürümü \"7\" olsun"));
+    assert!(guncel.contains("uzak_bağımlılıklar \"miras@1.4.0\", \"zaman@2.0.0\" listesi olsun"));
+    let bildirim = bildirimi_oku(&guncel).expect("yeniden okunmalı");
+    assert_eq!(bildirim.uzak_bagimliliklar.len(), 2);
 }
 
 #[test]
@@ -485,6 +565,7 @@ fn yeni_komutu_proje_bildirimi_uretir() {
         "iskelet kilitli başlamalı"
     );
     let git_yoksay = std::fs::read_to_string(proje.join(".gitignore")).expect("gitignore");
+    assert!(git_yoksay.contains(".zee/"));
     assert!(git_yoksay.contains(".zee-yazma-kilidi"));
     assert!(git_yoksay.contains("*.zee-gecici-*"));
     assert!(git_yoksay.contains("*.zee-anahtar"));
@@ -544,7 +625,7 @@ fn yerel_paketler_kokenli_yuklenir_ve_icerikle_kilitlenir() {
         hesap.join("yardimci.dil"),
         "işlem iki ver\n    TamSayı döndürür\n    2 döndür\n",
     )
-        .expect("paket içi birim");
+    .expect("paket içi birim");
     std::fs::write(
         hesap.join("paket.dil"),
         "yardimci birimini kullan\ntemel paketini kullan\n\n\"paketin üst düzeyi çalışmamalı\" yaz\n\nişlem toplam ver\n    TamSayı döndürür\n    a iki ver olsun\n    b üç ver olsun\n    toplam a ile b nin toplamı olsun\n    toplamı döndür\n",
@@ -580,7 +661,7 @@ fn yerel_paketler_kokenli_yuklenir_ve_icerikle_kilitlenir() {
         String::from_utf8_lossy(&kilitle.stderr)
     );
     let ilk_kilit = std::fs::read_to_string(uygulama.join("proje.kilit")).expect("kilit");
-    assert!(ilk_kilit.contains("kilit_sürümü 2"));
+    assert!(ilk_kilit.contains("kilit_sürümü 3"));
     assert!(ilk_kilit.contains("ana \"uygulama\" \"0.1.0\" \"zee-tr-1\""));
     assert!(ilk_kilit.contains("paket \"hesap\" \"2.1.0\""));
     assert!(ilk_kilit.contains("paket \"temel\" \"1.0.0\""));
@@ -615,7 +696,7 @@ fn yerel_paketler_kokenli_yuklenir_ve_icerikle_kilitlenir() {
         hesap.join("yardimci.dil"),
         "işlem iki ver\n    TamSayı döndürür\n    4 döndür\n",
     )
-        .expect("paket değişikliği");
+    .expect("paket değişikliği");
     let bayat = Command::new(ikili)
         .args(["denetle", uygulama.to_str().expect("utf8")])
         .output()
@@ -744,7 +825,7 @@ fn ekle_komutu_once_dogrular_sonra_bildirimi_ve_kilidi_gunceller() {
         paket.join("paket.dil"),
         "işlem yedi ver\n    TamSayı döndürür\n    7 döndür\n",
     )
-        .expect("paket kaynak");
+    .expect("paket kaynak");
     std::fs::write(
         uygulama.join("proje.dil"),
         "# bu yorum kaybolmamalı\n\nproje \"uygulama\" olsun\nsürüm \"0.1.0\" olsun\ngiriş \"ana.dil\" olsun\n",

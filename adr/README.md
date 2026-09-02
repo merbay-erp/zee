@@ -10,7 +10,7 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-001 | [Bootstrap dili: Rust + küçük/kilitli bağımlılık yüzeyi](001-bootstrap-dili.md) | **kabul** (K-088/K-092/K-117 revizyonu) |
 | ADR-002 | [Parser: elle yazılmış, yüklem-sonlu dağıtım](002-parser-stratejisi.md) | **kabul** (K-097 katmanlar, K-119 formatter eşdeğerliği) |
 | ADR-003 | [İlk yürütme: ağaç-yürüyen yorumlayıcı + IO soyutlaması](003-ilk-yurutme-modeli.md) | **kabul** |
-| ADR-006 | [Paket registry güven modeli](006-paket-registry-guven-modeli.md) | **kabul** (K-094 yayın; K-095 metadata; K-117 kanonik yol; K-135 taşıma/cache/offline; exact proje/CLI sürüyor) |
+| ADR-006 | [Paket registry güven modeli](006-paket-registry-guven-modeli.md) | **kabul/gerçeklenmiş** (K-094 yayın; K-095 metadata; K-117 kanonik yol; K-135 taşıma/cache/offline; K-136 exact proje/kilit/CLI) |
 | ADR-009 | [Dilin adı: zee](009-dil-adi.md) | **kabul** (kurucu yetki devriyle) |
 | ADR-010 | [Normatif otorite ve değişiklik bütünlüğü](010-normatif-otorite-ve-degisiklik-butunlugu.md) | **kabul** (K-118 kanıt/sayı tazelik kapısı) |
 | ADR-011 | [Core AST intrinsic/yetkinlik sınırı](011-intrinsic-yetkinlik-siniri.md) | **kabul** (K-098/B-004) |

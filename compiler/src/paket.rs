@@ -1,12 +1,21 @@
-//! Yerel proje bağımlılıkları, kaynak kökeni ve deterministik kilit dosyası.
-//! Registry/ağ yoktur: K-078 yalnız açıkça bildirilmiş yerel projeleri çözer.
+//! Yerel ve exact registry proje bağımlılıkları, kaynak kökeni ve deterministik
+//! kilit dosyası. Normal derleme ağ açmadan doğrulanmış cache kullanır.
 
 use crate::agac::KullanimTuru;
-use crate::proje::{bildirimi_oku, ProjeBildirimi};
+use crate::proje::{ProjeBildirimi, bildirimi_oku};
 use crate::tani::Tani;
 use crate::{BirimIstegi, YuklenenBirim};
 use std::collections::{BTreeMap, HashMap};
 use std::path::{Component, Path, PathBuf};
+
+#[cfg(not(target_arch = "wasm32"))]
+mod uzak;
+#[cfg(target_arch = "wasm32")]
+#[path = "paket/uzak_wasm.rs"]
+mod uzak;
+
+pub use uzak::RegistryCozumPolitikasi;
+use uzak::{UzakPaketCozumleri, UzakPaketKilidi, UzakPaketKimligi, paketleri_hazirla};
 
 pub const KILIT_DOSYASI: &str = "proje.kilit";
 
@@ -26,6 +35,7 @@ struct ProjeDugumu {
     kaynaklar: BTreeMap<PathBuf, String>,
     bagimliliklar: BTreeMap<String, PathBuf>,
     ozet: String,
+    uzak_kilit: Option<UzakPaketKilidi>,
 }
 
 /// Tek komut boyunca değişmeyen proje grafiği. Kaynaklar kilit denetiminden
@@ -43,11 +53,22 @@ pub struct PaketBilgisi {
     pub yol: String,
     pub ozet: String,
     pub dogrudan: bool,
+    pub registry_kok_sha256: Option<String>,
+    pub arsiv_sha256: Option<String>,
 }
 
 impl ProjeGrafigi {
     pub fn cozumle(kok: &Path) -> Result<Self, ProjeYuklemeHatasi> {
-        Self::cozumle_ic(kok, None)
+        Self::cozumle_ic(kok, None, &RegistryCozumPolitikasi::default())
+    }
+
+    /// Yalnız açık paket CLI komutlarının kullandığı çevrimiçi çözüm. Yerel
+    /// projelerde ağ açılmaz; exact uzak bağımlılıklar doğrulanıp cache'lenir.
+    pub fn cozumle_registry_ile(
+        kok: &Path,
+        politika: &RegistryCozumPolitikasi,
+    ) -> Result<Self, ProjeYuklemeHatasi> {
+        Self::cozumle_ic(kok, None, politika)
     }
 
     /// Henüz diske yazılmamış bir ana `proje.dil` adayıyla grafiği çözer.
@@ -56,10 +77,26 @@ impl ProjeGrafigi {
         kok: &Path,
         bildirim_kaynagi: &str,
     ) -> Result<Self, ProjeYuklemeHatasi> {
-        Self::cozumle_ic(kok, Some(bildirim_kaynagi))
+        Self::cozumle_ic(
+            kok,
+            Some(bildirim_kaynagi),
+            &RegistryCozumPolitikasi::default(),
+        )
     }
 
-    fn cozumle_ic(kok: &Path, bildirim_kaynagi: Option<&str>) -> Result<Self, ProjeYuklemeHatasi> {
+    pub fn cozumle_bildirimle_registry(
+        kok: &Path,
+        bildirim_kaynagi: &str,
+        politika: &RegistryCozumPolitikasi,
+    ) -> Result<Self, ProjeYuklemeHatasi> {
+        Self::cozumle_ic(kok, Some(bildirim_kaynagi), politika)
+    }
+
+    fn cozumle_ic(
+        kok: &Path,
+        bildirim_kaynagi: Option<&str>,
+        politika: &RegistryCozumPolitikasi,
+    ) -> Result<Self, ProjeYuklemeHatasi> {
         let ana_kok = std::fs::canonicalize(kok).map_err(|hata| {
             yalniz_hata(
                 "P006",
@@ -68,12 +105,14 @@ impl ProjeGrafigi {
                 kok.to_path_buf(),
             )
         })?;
+        let uzak_cozumler = paketleri_hazirla(&ana_kok, bildirim_kaynagi, politika)?;
         let mut kurucu = GrafikKurucu {
             dugumler: BTreeMap::new(),
             ad_kokleri: HashMap::new(),
             yigin: Vec::new(),
+            uzak_cozumler,
         };
-        kurucu.ziyaret_et(&ana_kok, false, None, bildirim_kaynagi)?;
+        kurucu.ziyaret_et(&ana_kok, false, None, bildirim_kaynagi, None)?;
         let grafik = Self {
             ana_kok,
             dugumler: kurucu.dugumler,
@@ -133,6 +172,14 @@ impl ProjeGrafigi {
                 yol: goreli_yol(&self.ana_kok, &dugum.kok),
                 ozet: dugum.ozet.clone(),
                 dogrudan: dogrudan_kokler.contains(&dugum.kok),
+                registry_kok_sha256: dugum
+                    .uzak_kilit
+                    .as_ref()
+                    .map(|kilit| kilit.registry_kok_sha256.clone()),
+                arsiv_sha256: dugum
+                    .uzak_kilit
+                    .as_ref()
+                    .map(|kilit| kilit.arsiv_sha256.clone()),
             })
             .collect::<Vec<_>>();
         paketler.sort_by(|a, b| a.ad.cmp(&b.ad).then(a.yol.cmp(&b.yol)));
@@ -206,10 +253,44 @@ impl ProjeGrafigi {
             .map_err(|hata| format!("\"{}\" yazılamadı: {}", yol.display(), hata))
     }
 
+    /// Doğrulanmış aday bildirim ile bu grafiğin kilidini birlikte günceller;
+    /// kilit yazılamazsa iki dosyayı da önceki byte'larına geri döndürür.
+    pub fn bildirim_ve_kilidi_yaz(
+        &self,
+        eski_bildirim: &str,
+        yeni_bildirim: &str,
+    ) -> Result<(), String> {
+        let bildirim_yolu = self.ana_kok.join("proje.dil");
+        let kilit_yolu = self.ana_kok.join(KILIT_DOSYASI);
+        let eski_kilit = match crate::kaynak_sinirlari::veri_dosyasi_baytlarini_oku(&kilit_yolu) {
+            Ok(icerik) => Some(icerik),
+            Err(hata) if hata.kind() == std::io::ErrorKind::NotFound => None,
+            Err(hata) => return Err(format!("Önceki proje.kilit okunamadı: {}.", hata)),
+        };
+        crate::kalici_dosya::atomik_yaz(&bildirim_yolu, yeni_bildirim.as_bytes())
+            .map_err(|hata| format!("\"{}\" yazılamadı: {}", bildirim_yolu.display(), hata))?;
+        if let Err(hata) = self.kilidi_yaz() {
+            let bildirim_geri =
+                crate::kalici_dosya::atomik_yaz(&bildirim_yolu, eski_bildirim.as_bytes());
+            let kilit_geri = match eski_kilit {
+                Some(icerik) => crate::kalici_dosya::atomik_yaz(&kilit_yolu, &icerik),
+                None if kilit_yolu.exists() => std::fs::remove_file(&kilit_yolu),
+                None => Ok(()),
+            };
+            let geri_bildirimi = if bildirim_geri.is_err() || kilit_geri.is_err() {
+                " Uyarı: önceki proje dosyaları bütünüyle geri yüklenemedi."
+            } else {
+                " Proje bildirimi ve önceki kilit geri yüklendi."
+            };
+            return Err(format!("Paket kilitlenemedi: {}{}", hata, geri_bildirimi));
+        }
+        Ok(())
+    }
+
     pub fn kilit_metni(&self) -> String {
         let ana = self.ana_dugum();
         let mut metin = String::from(
-            "# zee bağımlılık kilidi — `dil kilitle` üretir; elle düzenleme.\nkilit_sürümü 2\n",
+            "# zee bağımlılık kilidi — `dil kilitle` üretir; elle düzenleme.\nkilit_sürümü 3\n",
         );
         metin.push_str(&format!(
             "ana \"{}\" \"{}\" \"{}\"\n",
@@ -225,14 +306,60 @@ impl ProjeGrafigi {
             .collect();
         paketler.sort_by(|a, b| a.bildirim.ad.cmp(&b.bildirim.ad).then(a.kok.cmp(&b.kok)));
         for paket in paketler {
-            metin.push_str(&format!(
-                "paket \"{}\" \"{}\" \"{}\" \"{}\" \"sha256:{}\"\n",
-                kacis(&paket.bildirim.ad),
-                kacis(&paket.bildirim.surum),
-                kacis(&paket.bildirim.morfoloji),
-                kacis(&goreli_yol(&self.ana_kok, &paket.kok)),
-                paket.ozet
-            ));
+            match &paket.uzak_kilit {
+                None => metin.push_str(&format!(
+                    "paket \"{}\" \"{}\" \"{}\" \"{}\" \"sha256:{}\"\n",
+                    kacis(&paket.bildirim.ad),
+                    kacis(&paket.bildirim.surum),
+                    kacis(&paket.bildirim.morfoloji),
+                    kacis(&goreli_yol(&self.ana_kok, &paket.kok)),
+                    paket.ozet
+                )),
+                Some(kilit) => {
+                    metin.push_str(&format!(
+                        concat!(
+                            "uzak \"{}\" \"{}\" \"{}\" \"sha256:{}\" ",
+                            "\"{}\" \"{}\" \"{}\" ",
+                            "\"{}\" \"{}\" \"{}\" \"{}\" \"{}\" \"{}\" ",
+                            "\"{}\" \"{}\" \"{}\" \"{}\" \"{}\" \"{}\" \"{}\"\n"
+                        ),
+                        kacis(&paket.bildirim.ad),
+                        kacis(&paket.bildirim.surum),
+                        kacis(&paket.bildirim.morfoloji),
+                        paket.ozet,
+                        kilit.registry_kok_surumu,
+                        kilit.registry_kok_sha256,
+                        kilit.metadata.root,
+                        kilit.metadata.timestamp,
+                        kilit.metadata.timestamp_sha256,
+                        kilit.metadata.snapshot,
+                        kilit.metadata.snapshot_sha256,
+                        kilit.metadata.targets,
+                        kilit.metadata.targets_sha256,
+                        kilit.yayinci_anahtar_kimligi,
+                        kilit.arsiv_sha256,
+                        kilit.sbom_sha256,
+                        kilit.provenance_sha256,
+                        kilit.yayin_sha256,
+                        if kilit.yanked { "evet" } else { "hayır" },
+                        kilit.kritik_duyurular.join(",")
+                    ));
+                    if let Some(gerekce) = &kilit.yanked_kabul_gerekcesi {
+                        metin.push_str(&format!(
+                            "yanked_kabul \"{}\" \"{}\"\n",
+                            kacis(&kilit.yanked_politika_anahtari),
+                            kacis(gerekce)
+                        ));
+                    }
+                    if let Some(gerekce) = &kilit.kritik_duyuru_kabul_gerekcesi {
+                        metin.push_str(&format!(
+                            "kritik_kabul \"{}\" \"{}\"\n",
+                            kacis(&kilit.kritik_politika_anahtari),
+                            kacis(gerekce)
+                        ));
+                    }
+                }
+            }
         }
 
         let mut kenarlar = Vec::new();
@@ -266,7 +393,7 @@ impl ProjeGrafigi {
 
         match istek.tur {
             KullanimTuru::Birim => {
-                if !gecerli_paket_adi(istek.ad) {
+                if !crate::proje::gecerli_paket_adi(istek.ad) {
                     return Err("birim adı tek bir Türkçe/Latin tanımlayıcı olmalı".into());
                 }
                 let aday = isteyen
@@ -303,7 +430,9 @@ impl ProjeGrafigi {
                     .kaynaklar
                     .get(&paket.giris_yolu)
                     .cloned()
-                    .ok_or_else(|| "Paket giriş kaynağı doğrulanmış grafikte bulunamadı.".to_string())?;
+                    .ok_or_else(|| {
+                        "Paket giriş kaynağı doğrulanmış grafikte bulunamadı.".to_string()
+                    })?;
                 Ok(YuklenenBirim {
                     kaynak,
                     koken: yol_metni(&paket.giris_yolu),
@@ -323,8 +452,8 @@ impl ProjeGrafigi {
             .values()
             .filter(|dugum| dugum.kok != self.ana_kok)
         {
-            if let Err(neden) = ana_politika
-                .alt_politikayi_denetle(&dugum.bildirim.yetkinlik_politikasi())
+            if let Err(neden) =
+                ana_politika.alt_politikayi_denetle(&dugum.bildirim.yetkinlik_politikasi())
             {
                 return Err(proje_hatasi(
                     "P015",
@@ -364,6 +493,7 @@ struct GrafikKurucu {
     dugumler: BTreeMap<PathBuf, ProjeDugumu>,
     ad_kokleri: HashMap<String, PathBuf>,
     yigin: Vec<PathBuf>,
+    uzak_cozumler: UzakPaketCozumleri,
 }
 
 impl GrafikKurucu {
@@ -373,6 +503,7 @@ impl GrafikKurucu {
         bagimlilik_mi: bool,
         isteyen: Option<(&Path, &str)>,
         gecici_bildirim: Option<&str>,
+        uzak_kilit: Option<UzakPaketKilidi>,
     ) -> Result<(), ProjeYuklemeHatasi> {
         if self.yigin.iter().any(|yol| yol == kok) {
             let (yol, kaynak) = isteyen
@@ -394,25 +525,27 @@ impl GrafikKurucu {
         let bildirim_yolu = kok.join("proje.dil");
         let bildirim_kaynagi = match gecici_bildirim {
             Some(kaynak) => kaynak.to_string(),
-            None => crate::kaynak_sinirlari::kaynak_dosyasi_oku(&bildirim_yolu).map_err(|hata| {
-                proje_hatasi(
-                    "P006",
-                    &format!(
-                        "Yerel bağımlılığın proje.dil bildirimi okunamadı: {}.",
-                        hata
-                    ),
-                    "Yolun bir zee proje klasörünü gösterdiğini doğrula.",
-                    bildirim_yolu.clone(),
-                    String::new(),
-                )
-            })?,
+            None => {
+                crate::kaynak_sinirlari::kaynak_dosyasi_oku(&bildirim_yolu).map_err(|hata| {
+                    proje_hatasi(
+                        "P006",
+                        &format!(
+                            "Yerel bağımlılığın proje.dil bildirimi okunamadı: {}.",
+                            hata
+                        ),
+                        "Yolun bir zee proje klasörünü gösterdiğini doğrula.",
+                        bildirim_yolu.clone(),
+                        String::new(),
+                    )
+                })?
+            }
         };
         let bildirim = bildirimi_oku(&bildirim_kaynagi).map_err(|tani| ProjeYuklemeHatasi {
             tani: Box::new(tani),
             kaynak: bildirim_kaynagi.clone(),
             yol: bildirim_yolu.clone(),
         })?;
-        if bagimlilik_mi && !gecerli_paket_adi(&bildirim.ad) {
+        if bagimlilik_mi && !crate::proje::gecerli_paket_adi(&bildirim.ad) {
             return Err(proje_hatasi(
                 "P007",
                 &format!(
@@ -457,13 +590,60 @@ impl GrafikKurucu {
                     bildirim_kaynagi.clone(),
                 )
             })?;
-            self.ziyaret_et(&hedef, true, Some((kok, &bildirilen)), None)?;
+            self.ziyaret_et(&hedef, true, Some((kok, &bildirilen)), None, None)?;
             let hedef_adi = self.dugumler[&hedef].bildirim.ad.clone();
             if bagimliliklar.insert(hedef_adi.clone(), hedef).is_some() {
                 return Err(proje_hatasi(
                     "P007",
                     &format!("\"{}\" doğrudan bağımlılığı iki kez çözüldü.", hedef_adi),
                     "Aynı adlı bağımlılıklardan birini kaldır.",
+                    bildirim_yolu.clone(),
+                    bildirim_kaynagi.clone(),
+                ));
+            }
+        }
+        let registry = bildirim.registry.as_ref();
+        let mut uzak_bagimliliklar = bildirim.uzak_bagimliliklar.clone();
+        uzak_bagimliliklar.sort();
+        for uzak in uzak_bagimliliklar {
+            let Some(registry) = registry else {
+                return Err(proje_hatasi(
+                    "P017",
+                    "Uzak bağımlılık registry sabitlemesi olmadan çözülemez.",
+                    "Registry origin'i, root sürümü ve SHA-256 özetini birlikte bildir.",
+                    bildirim_yolu.clone(),
+                    bildirim_kaynagi.clone(),
+                ));
+            };
+            let kimlik = UzakPaketKimligi::yeni(registry, &uzak);
+            let cozum = self.uzak_cozumler.get(&kimlik).cloned().ok_or_else(|| {
+                proje_hatasi(
+                    "P016",
+                    &format!(
+                        "{}@{} doğrulanmış registry cache'inde yok.",
+                        uzak.ad, uzak.surum
+                    ),
+                    "Açık bir paket komutuyla cache'i güncelle veya --çevrimdışı için önce indir.",
+                    bildirim_yolu.clone(),
+                    bildirim_kaynagi.clone(),
+                )
+            })?;
+            let hedef = std::fs::canonicalize(&cozum.kok).map_err(|hata| {
+                proje_hatasi(
+                    "P016",
+                    &format!("Registry paket kurulumu çözülemedi: {}.", hata),
+                    "İçerik-adresli kurulumu doğrulanmış cache'den yeniden oluştur.",
+                    bildirim_yolu.clone(),
+                    bildirim_kaynagi.clone(),
+                )
+            })?;
+            self.ziyaret_et(&hedef, true, Some((kok, &uzak.ad)), None, Some(cozum.kilit))?;
+            let hedef_adi = self.dugumler[&hedef].bildirim.ad.clone();
+            if bagimliliklar.insert(hedef_adi.clone(), hedef).is_some() {
+                return Err(proje_hatasi(
+                    "P007",
+                    &format!("\"{}\" doğrudan bağımlılığı iki kez çözüldü.", hedef_adi),
+                    "Yerel ve uzak listelerde aynı paket adını birlikte kullanma.",
                     bildirim_yolu.clone(),
                     bildirim_kaynagi.clone(),
                 ));
@@ -510,6 +690,7 @@ impl GrafikKurucu {
                 kaynaklar,
                 bagimliliklar,
                 ozet,
+                uzak_kilit,
             },
         );
         Ok(())
@@ -585,13 +766,6 @@ fn kaynak_ozeti(kok: &Path, kaynaklar: &BTreeMap<PathBuf, String>) -> String {
         veri.extend_from_slice(kaynak.as_bytes());
     }
     sha256_hex(&veri)
-}
-
-fn gecerli_paket_adi(ad: &str) -> bool {
-    let mut harfler = ad.chars();
-    matches!(harfler.next(), Some(k) if k == '_' || k.is_alphabetic())
-        && harfler.all(|k| k == '_' || k.is_alphabetic() || k.is_ascii_digit())
-        && ad.chars().all(|k| !k.is_uppercase())
 }
 
 fn proje_hatasi(
