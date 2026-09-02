@@ -1,0 +1,135 @@
+{
+  "sema": "zee-eszamanlilik-conformance-v1",
+  "normatif": "RFC-0011/spec-14",
+  "profil": {
+    "kimlik": "zee-esz-1",
+    "sayisal_surum": 1,
+    "yurutme_modeli": "tek-is-parcacigi-isbirlikli",
+    "zaman_profili": "zee-io-1",
+    "uyumluluk_sozu": [
+      "bildirimde-ortam-snapshot",
+      "ilk-poll-birlestirmede",
+      "hazir-gorev-kaynak-sirasi",
+      "esit-uyanis-kaynak-sirasi",
+      "beklemeler-ortusur",
+      "sonuclar-kaynak-sirasinda-baglanir",
+      "ic-agac-dis-kardese-yol-verir",
+      "ilk-hata-kardesleri-iptal-eder",
+      "son-tarih-butun-agaca-yayilir",
+      "eylem-atomik-scheduler-dilimidir",
+      "program-cikisi-kardesleri-iptal-eder"
+    ]
+  },
+  "vakalar": [
+    {
+      "kimlik": "snapshot-ve-tembel-baslangic",
+      "amac": "Görev ortamı bildirim anında kopyalanır; ilk poll hepsini bekle noktasındadır.",
+      "kaynak": "x 1 olsun\neşzamanlı olarak\n    kopya x\nx 2 olsun\n\"ana \" ile x yaz\nhepsini bekle\n\"görev \" ile kopya yaz\n",
+      "beklenen": {
+        "sonlanma": { "tur": "başarı", "kod": 0 },
+        "cikti": ["ana 2", "görev 1"],
+        "sanal_sure_ms": 0,
+        "dosyalar": []
+      }
+    },
+    {
+      "kimlik": "esit-uyanis-kaynak-sirasi",
+      "amac": "Ana kapsam join öncesi çalışır; ilk poll ve eşit uyanışlar kaynak sırasındadır.",
+      "kaynak": "işlem a işini yap\n    \"a başladı\" yaz\n    1 saniye bekle\n    \"a bitti\" yaz\n    1 döndür\nişlem b işini yap\n    \"b başladı\" yaz\n    1 saniye bekle\n    \"b bitti\" yaz\n    2 döndür\neşzamanlı olarak\n    a a işini yap\n    b b işini yap\n\"ana kapsam\" yaz\nhepsini bekle\n",
+      "beklenen": {
+        "sonlanma": { "tur": "başarı", "kod": 0 },
+        "cikti": ["ana kapsam", "a başladı", "b başladı", "a bitti", "b bitti"],
+        "sanal_sure_ms": 1000,
+        "dosyalar": []
+      }
+    },
+    {
+      "kimlik": "farkli-uyanis-ve-sonuc-baglama",
+      "amac": "Beklemeler örtüşür; erken uyanan ilerler, sonuç adları kaynak sırasını korur.",
+      "kaynak": "işlem yavaş işi yap\n    \"yavaş başladı\" yaz\n    2 saniye bekle\n    \"yavaş bitti\" yaz\n    20 döndür\nişlem hızlı işi yap\n    \"hızlı başladı\" yaz\n    1 saniye bekle\n    \"hızlı bitti\" yaz\n    10 döndür\neşzamanlı olarak\n    yavaş yavaş işi yap\n    hızlı hızlı işi yap\nhepsini bekle\nyavaş yaz\nhızlı yaz\n",
+      "beklenen": {
+        "sonlanma": { "tur": "başarı", "kod": 0 },
+        "cikti": ["yavaş başladı", "hızlı başladı", "hızlı bitti", "yavaş bitti", "20", "10"],
+        "sanal_sure_ms": 2000,
+        "dosyalar": []
+      }
+    },
+    {
+      "kimlik": "coklu-tur-kaynak-sirasi",
+      "amac": "Birden çok eşit bekleme turunda her tur aynı kaynak sırasını yeniden kurar.",
+      "kaynak": "işlem a işini yap\n    \"a0\" yaz\n    1 saniye bekle\n    \"a1\" yaz\n    1 saniye bekle\n    \"a2\" yaz\n    1 döndür\nişlem b işini yap\n    \"b0\" yaz\n    1 saniye bekle\n    \"b1\" yaz\n    1 saniye bekle\n    \"b2\" yaz\n    2 döndür\neşzamanlı olarak\n    a a işini yap\n    b b işini yap\nhepsini bekle\n",
+      "beklenen": {
+        "sonlanma": { "tur": "başarı", "kod": 0 },
+        "cikti": ["a0", "b0", "a1", "b1", "a2", "b2"],
+        "sanal_sure_ms": 2000,
+        "dosyalar": []
+      }
+    },
+    {
+      "kimlik": "ortak-io-etki-sirasi",
+      "amac": "Aynı anda uyanan görevlerin ortak dosya etkileri kaynak sırasında görünür.",
+      "kaynak": "işlem birinciyi kaydet\n    1 saniye bekle\n    \"günlük.txt\" dosyasına \"bir\" ekle\n    1 döndür\nişlem ikinciyi kaydet\n    1 saniye bekle\n    \"günlük.txt\" dosyasına \"iki\" ekle\n    2 döndür\neşzamanlı olarak\n    birinci birinciyi kaydet\n    ikinci ikinciyi kaydet\nhepsini bekle\n",
+      "beklenen": {
+        "sonlanma": { "tur": "başarı", "kod": 0 },
+        "cikti": [],
+        "sanal_sure_ms": 1000,
+        "dosyalar": [{ "yol": "günlük.txt", "icerik": "bir\niki\n" }]
+      }
+    },
+    {
+      "kimlik": "ic-agac-dis-kardes",
+      "amac": "İç görev ağacının beklemesi dış gruptaki kardeşe scheduler sırası verir.",
+      "kaynak": "işlem iç işi yap\n    \"iç başladı\" yaz\n    2 saniye bekle\n    \"iç bitti\" yaz\n    2 döndür\nişlem dalı çalıştır\n    eşzamanlı olarak\n        iç iç işi yap\n    hepsini bekle\n    \"dal bitti\" yaz\n    içi döndür\nişlem kardeşi çalıştır\n    \"kardeş başladı\" yaz\n    1 saniye bekle\n    \"kardeş bitti\" yaz\n    1 döndür\neşzamanlı olarak\n    dal dalı çalıştır\n    kardeş kardeşi çalıştır\nhepsini bekle\n",
+      "beklenen": {
+        "sonlanma": { "tur": "başarı", "kod": 0 },
+        "cikti": ["iç başladı", "kardeş başladı", "kardeş bitti", "iç bitti", "dal bitti"],
+        "sanal_sure_ms": 2000,
+        "dosyalar": []
+      }
+    },
+    {
+      "kimlik": "ilk-hata-kardes-iptali",
+      "amac": "İlk yönetilmemiş hata kendi koduyla yayılır ve bekleyen kardeşin sonraki etkisini iptal eder.",
+      "kaynak": "işlem yavaş işi yap\n    \"yavaş başladı\" yaz\n    5 saniye bekle\n    \"yavaş yan etkisi yasak\" yaz\n    1 döndür\nişlem bozuk işi yap\n    \"bozuk başladı\" yaz\n    sonuç 10 un 0 a bölümü olsun\n    sonucu döndür\neşzamanlı olarak\n    yavaş yavaş işi yap\n    bozuk bozuk işi yap\nhepsini bekle\n\"join sonrası yasak\" yaz\n",
+      "beklenen": {
+        "sonlanma": { "tur": "hata", "kod": "C003" },
+        "cikti": ["yavaş başladı", "bozuk başladı"],
+        "sanal_sure_ms": 0,
+        "dosyalar": []
+      }
+    },
+    {
+      "kimlik": "dis-son-tarih-butun-agac",
+      "amac": "Dış mutlak son tarih görev ağacını iptal eder ve yalnız kendi yetişmezse kolunu çalıştırır.",
+      "kaynak": "işlem uzun işi yap\n    \"başladı\" yaz\n    5 saniye bekle\n    \"deadline sonrası yasak\" yaz\n    1 döndür\n1 saniye içinde\n    eşzamanlı olarak\n        uzun uzun işi yap\n    hepsini bekle\n    \"join sonrası yasak\" yaz\nyetişmezse\n    \"grup iptal edildi\" yaz\n",
+      "beklenen": {
+        "sonlanma": { "tur": "başarı", "kod": 0 },
+        "cikti": ["başladı", "grup iptal edildi"],
+        "sanal_sure_ms": 1000,
+        "dosyalar": []
+      }
+    },
+    {
+      "kimlik": "eylem-atomik-ve-rollback",
+      "amac": "Eylem savepoint'i tek scheduler dilimidir; hata yazmayı geri alır ve kardeşi başlatmaz.",
+      "kaynak": "eylem bozuk kaydet\n    TamSayı döndürür\n    \"durum.txt\" dosyasına \"yarım\" yaz\n    1 saniye bekle\n    sonuç 10 un 0 a bölümü olsun\n    sonucu döndür\nişlem kardeşi çalıştır\n    \"kardeş başlamamalı\" yaz\n    1 döndür\neşzamanlı olarak\n    bozuk bozuk kaydet\n    kardeş kardeşi çalıştır\nhepsini bekle\n",
+      "beklenen": {
+        "sonlanma": { "tur": "hata", "kod": "C003" },
+        "cikti": [],
+        "sanal_sure_ms": 1000,
+        "dosyalar": []
+      }
+    },
+    {
+      "kimlik": "program-cikisi-kardes-iptali",
+      "amac": "Görevde program çıkışı kodu korur ve henüz başlamamış kardeşi iptal eder.",
+      "kaynak": "işlem bitir\n    TamSayı döndürür\n    programı 7 ile bitir\n    1 döndür\nişlem kardeşi çalıştır\n    \"kardeş başlamamalı\" yaz\n    1 döndür\neşzamanlı olarak\n    bitiş bitir\n    kardeş kardeşi çalıştır\nhepsini bekle\n",
+      "beklenen": {
+        "sonlanma": { "tur": "çıkış", "kod": 7 },
+        "cikti": [],
+        "sanal_sure_ms": 0,
+        "dosyalar": []
+      }
+    }
+  ]
+}

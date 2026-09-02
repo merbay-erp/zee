@@ -42,7 +42,8 @@ Stage 0 bu sözü K-089/RFC-0018/spec-13 ile `zee-tr-1` profiline bağladı:
 ek tablosu, iki katman sınırı ve kanonik çözüm↔üretim snapshot/property
 korpusuyla sabittir; K-122 semantic SHA-256 kaydı ve Git-tarih koruğuyla aynı
 kimlik altında değişikliği kapatır. Proje bildirimi ve kilit dosyası profil
-kimliğini taşır.
+kimliğini taşır. K-123 profil tablosu ile çözüm/üretim kararlarını kök JSON
+Schema ve Rust'tan bağımsız conformance verisi olarak yayımlar.
 # 5. Grammar discovery yöntemi
 Grammar masa başında tek seferde dondurulmayacaktır. Önce 30 adet golden-source program yazılacak; syntax bu gerçek kullanım örneklerinden çıkarılacaktır. Her syntax değişikliği bu corpus üzerinde regression testine girecektir.
 Merhaba Dünya
@@ -176,7 +177,11 @@ scheduler'da `bekle` noktalarında dönüşümlü ilerler; `hepsini bekle` sonu�
 birleştirir. Sözcüksel sahiplik T051 ile sahipsiz görevi engeller, ilk hata
 kardeşleri iptal eder. K-085 mutlak son tarihi bütün görev ağacına yayılır;
 bekleme kalan süreye kırpılır ve iptalden sonraki yan etkiler çalışmaz.
-Çok çekirdekli paralellik v1 sözü değildir. Bağlayıcı anlam: spec/14 ve
+K-124 `zee-esz-1` profiliyle çıktı/ortak IO sırasını, sanal süreyi, sonuç
+bağlarını ve iptal gözlemlerini ikinci derleyici için bağımsız korpusa bağlar.
+Çok çekirdek kullanımı v1 dil özelliği değildir; ancak aynı gözlemleri koruyan
+bir iç optimizasyon olabilir. Bağlayıcı anlam: spec/14,
+[conformance rehberi](eszamanlilik-conformance.md) ve
 [v1 sürüm kapıları](v1-surum-kapilari.md).
 # 11. Derleyici ve runtime mimarisi
 Kaynak .dil
@@ -607,8 +612,10 @@ tek-dosya rename'i kapattı. K-121 yerel işlem parametre kısıtlarını gövde
 davranışını semantic SHA-256 kayıt ve Git-geçmişli CI koruğuyla immutable
 yaptı. K-123 bunu kök `conformance/` alanında sürümlü JSON Schema, 27
 çözüm/karar ve 21 üretim vakasıyla derleyiciden bağımsız bir tüketici
-sözleşmesine dönüştürüp B-009'u kapattı. Şimdi B-011 gözlenebilir concurrency
-uyumluluk sözü gelir. P0 maddeleri kapanmadan yeni dil özelliği öne alınmaz;
+sözleşmesine dönüştürüp B-009'u kapattı. K-124 aynı alanı `zee-esz-1` ve 10
+kaynak+gözlem vakasıyla scheduler'a genişletip B-011'i kapattı. Şimdi B-012
+açık Ondalık↔binary float FFI sınırı gelir. P0 maddeleri kapanmadan yeni dil
+özelliği öne alınmaz;
 yarım güvenlik/correctness dilimi önce atomik olarak tamamlanır.
 
 K-016'nın makine hazırlığı K-096 ile
@@ -652,8 +659,9 @@ K-119 formatter parse-equivalence kanıtıyla B-042'yi, K-120 semantic LSP
 bağıyla B-041'i, K-121 iki fazlı yerel çağrı çıkarımıyla B-007'yi
 tamamladı. K-122 immutable `zee-tr-1` kapısıyla B-008'i tamamladı. K-123 kök
 JSON Schema ve veri korpusuyla compiler'dan bağımsız morfoloji conformance
-sözünü bağlayıp B-009'u kapattı. Sıradaki omurga B-011 gözlenebilir concurrency
-uyumluluk sözüdür.
+sözünü bağlayıp B-009'u kapattı. K-124 `zee-esz-1` gözlem profiliyle
+scheduler'ın bağımsız uyumluluk sözünü bağlayıp B-011'i kapattı. Sıradaki
+omurga B-012 açık Ondalık↔binary float FFI sınırıdır.
 # 40. Proje felsefesinin korunması
 Bu projenin başarısı yalnız compiler’ın çalışması değildir. Başarı; Türkçe konuşan bir çocuğun yabancı syntax bariyerine takılmadan algoritmik düşünceyle tanışması, aynı dilin yıllar sonra onu terk etmeye zorlamaması ve ekosistemin tek bir şirketin kapalı ürünü haline gelmemesidir.
 Her yeni özellik şu dört sorudan geçmelidir: Türkçe doğal mı? Deterministik mi? Öğrenilebilir mi? Profesyonel ölçekte savunulabilir mi? Dördünden biri hayırsa özellik yeniden tasarlanır.

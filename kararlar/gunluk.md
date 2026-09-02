@@ -1870,6 +1870,31 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   regresyonla toplam 483 test yeşildir; B-009 kapandı. Sıradaki makine omurgası
   B-011 gözlenebilir concurrency uyumluluk sözüdür.
 
+## K-124 — Scheduler'ın gözlenebilir sonucunu `zee-esz-1` profiline bağla (2 Eyl)
+
+- **Sorun:** K-090/spec-14 tek iş parçacıklı referans scheduler'ı ve ayrıntılı
+  Rust regresyonları deterministikti; fakat gelecekteki ikinci derleyici ya da
+  çok çekirdekli runtime için hangi gözlemlerin uyumluluk sözü, hangilerinin iç
+  gerçekleme ayrıntısı olduğu makine-okunur ve immutable değildi.
+- **Karar:** `zee-esz-1`; bildirimde ortam snapshot'ını, ilk poll'un join'de
+  başlamasını, hazır/eşit uyanışta kaynak sırasını, örtüşen beklemeyi, kaynak
+  sıralı sonuç bağını, iç ağaç ilerlemesini, hata/son tarih/çıkış iptalini ve
+  atomik eylem dilimini 11 maddelik gözlenebilir söz olarak yayımlar.
+- **Uyumluluk sınırı:** Çıktı ve ortak IO sırası, sanal geçen süre, dosya son
+  durumu ve sonlanma türü/kodu dildir. Future/poll türü, thread sayısı ve host
+  scheduler'ı değildir. Çok çekirdek ancak bu gözlemleri birebir koruyan iç
+  optimizasyon olabilir; yarış programa sızarsa profil uyumsuzdur.
+- **Korpus:** Kök `conformance/eszamanlilik/` JSON Schema ve 10 doğrudan Zee
+  kaynak+beklenen gözlem vakası taşır. Snapshot/tembel başlangıç, eşit/farklı
+  uyanış, çoklu tur, ortak dosya etkisi, iç görev ağacı, hata/son tarih/çıkış
+  iptali ve atomik rollback aynı veri-güdümlü testten geçer.
+- **Değişmezlik ve kanıt:** Genel `conformance-korugu.sh`, geçmişte yayımlanmış
+  bütün JSON veri/şemalarını ve morfoloji semantic kayıtlarını korur; eski
+  morfoloji betiği uyumluluk sarmalayıcısıdır. RFC-0011, spec/14,
+  [conformance rehberi](../docs/eszamanlilik-conformance.md) ve bir yeni
+  regresyonla toplam 484 test yeşildir; B-011 kapandı. Sıradaki makine omurgası
+  B-012 açık Ondalık↔binary float FFI sınırıdır.
+
 ---
 
 ## Sonraki adım
@@ -1878,5 +1903,5 @@ Korpus 10 öğrenci + 5 profesyonel usability oturumuna (Hafta 12 hedefi, erkeni
 Hafta 2'de kağıt üstünde) sesli okutulacak; her kayıt için "doğal mı /
 deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
-Makine hattında B-009/K-123 kapandı. Sırada B-011 gözlenebilir concurrency
-uyumluluk sözü vardır.
+Makine hattında B-011/K-124 kapandı. Sırada B-012 açık Ondalık↔binary float
+FFI sınırı vardır.

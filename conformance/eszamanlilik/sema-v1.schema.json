@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://zee.dev/conformance/eszamanlilik/sema-v1.schema.json",
+  "title": "Zee yapılandırılmış eşzamanlılık conformance v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["sema", "normatif", "profil", "vakalar"],
+  "properties": {
+    "sema": { "const": "zee-eszamanlilik-conformance-v1" },
+    "normatif": { "const": "RFC-0011/spec-14" },
+    "profil": { "$ref": "#/$defs/profil" },
+    "vakalar": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/vaka" }
+    }
+  },
+  "$defs": {
+    "profil": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kimlik", "sayisal_surum", "yurutme_modeli", "zaman_profili", "uyumluluk_sozu"],
+      "properties": {
+        "kimlik": { "const": "zee-esz-1" },
+        "sayisal_surum": { "const": 1 },
+        "yurutme_modeli": { "const": "tek-is-parcacigi-isbirlikli" },
+        "zaman_profili": { "const": "zee-io-1" },
+        "uyumluluk_sozu": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^[a-z0-9-]+$" }
+        }
+      }
+    },
+    "dosya": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["yol", "icerik"],
+      "properties": {
+        "yol": { "type": "string", "minLength": 1 },
+        "icerik": { "type": "string" }
+      }
+    },
+    "sonlanma": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["tur", "kod"],
+          "properties": {
+            "tur": { "const": "başarı" },
+            "kod": { "const": 0 }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["tur", "kod"],
+          "properties": {
+            "tur": { "const": "çıkış" },
+            "kod": { "type": "integer" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["tur", "kod"],
+          "properties": {
+            "tur": { "const": "hata" },
+            "kod": { "type": "string", "pattern": "^[A-ZÇ][0-9]{3}$" }
+          }
+        }
+      ]
+    },
+    "beklenen": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sonlanma", "cikti", "sanal_sure_ms", "dosyalar"],
+      "properties": {
+        "sonlanma": { "$ref": "#/$defs/sonlanma" },
+        "cikti": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "sanal_sure_ms": { "type": "integer", "minimum": 0 },
+        "dosyalar": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/dosya" }
+        }
+      }
+    },
+    "vaka": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kimlik", "amac", "kaynak", "beklenen"],
+      "properties": {
+        "kimlik": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+        "amac": { "type": "string", "minLength": 1 },
+        "kaynak": { "type": "string", "minLength": 1 },
+        "beklenen": { "$ref": "#/$defs/beklenen" }
+      }
+    }
+  }
+}

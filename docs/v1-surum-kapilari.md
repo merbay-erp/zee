@@ -3,7 +3,7 @@
 Bu liste bir dilek listesi değildir: `1.0.0` etiketi bu kapılar kapatılmadan
 atılmaz. Amaç yeni özellik sayısını büyütmek değil, çocuktan profesyonele aynı
 dilin verdiği sözleri kanıtlamaktır. Bulgular 2 Eylül 2026'da derleyici
-kaynakları, spec, RFC'ler ve otomatik envanterdeki 483 test üzerinden yeniden
+kaynakları, spec, RFC'ler ve otomatik envanterdeki 484 test üzerinden yeniden
 doğrulanmıştır.
 
 Durumlar: **KAPALI** = kanıtı var · **AÇIK** = v1 engeli · **KARAR** = önce
@@ -47,7 +47,7 @@ normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
 |---|---|---|---|
 | V1-P1-01 Ondalık hassasiyeti dil semantiği mi profil sınırı mı? | **KAPALI (K-092)** | Ondalık tek keyfî hassasiyetli onluk türdür: katsayı ve ölçek makine kelimesiyle sınırlı değildir. Toplama/çıkarma/çarpma ve sonlu bölüm tam; yalnız sonsuz açılımlı bölüm 34 anlamlı haneye, yarımlar sıfırdan uzağa yuvarlanır. TamSayı i64 kimliğini korur; Ondalığa genişleme kayıpsızdır. | RFC-0013 revizyonu + spec/16; 9+ ve 30+ haneli sabitler, büyük katsayı, çok küçük değer, sonlu/sonsuz bölüm, negatif metin dönüşümü, JSON/para biçimi, karşılaştırma ve i64'e açık daraltma taşması regresyonları. S032 emekliye ayrıldı. |
 | V1-P1-02 Morfoloji deterministik ve sürümlenebilirdir | **KAPALI (K-089/K-122/K-123)** | `zee-tr-1` profili soyut ekleri, yüzeyleri, iki katman sınırını ve kanonik üretimi tek modülde sabitler. Doğrudan eşleşme önce; sonra 0=A001, 1=çözüm, 2+=A002, heuristik yoktur. Profil SHA-256 semantic kayıtla immutable ve ikinci compiler için Rust'tan bağımsız veridir. | RFC-0018 + spec/13 + [profil uyumluluk](morfoloji-profil-uyumlulugu.md)/[conformance](morfoloji-conformance.md) rehberleri; 53.248 parmak-izi vektörü ve kök JSON Schema altındaki 27 çözüm/karar+21 üretim vakası. `proje.dil`/kilit profili pinler. Davranış, eski kayıt, schema veya conformance değişikliği test/CI koruğunu kırar; yalnız yeni sürümlü dosya yolu açıktır. Toplam 483 test yeşildir. |
-| V1-P1-03 Structured concurrency adı runtime gerçeğini aşmaz | **KAPALI (K-090)** | `Eszamanli` görevleri dış ortam snapshot'ıyla kaydeder; `HepsiniBekle` kaynak sıralı tek-thread scheduler'da `bekle` noktalarında gerçekten dönüşümlü ilerletir. İç görev ağacının beklemesi dış kardeşe kadar yayılır. Aynı anda tek görev çalışır; data race yoktur. | RFC-0011 + spec/14; 2 sn+1 sn görevlerin 2 sn'de biten sabit izi, iç ağaç↔dış kardeş ilerlemesi, aynı-anda kaynak sırası, T033/T051 sahiplik, ilk hata→kardeş iptali, dış deadline→bütün ağaç ve görevde atomik eylem rollback kanıtları. Çok çekirdekli paralellik v1 sözü değildir. |
+| V1-P1-03 Structured concurrency adı runtime gerçeğini aşmaz | **KAPALI (K-090/K-124)** | `Eszamanli` görevleri dış ortam snapshot'ıyla kaydeder; `HepsiniBekle` kaynak sıralı tek-thread scheduler'da `bekle` noktalarında dönüşümlü ilerletir. `zee-esz-1`; çıktı/ortak IO sırası, sanal süre, sonuç bağları, sonlanma kodu ve iptal sonrası etki yokluğunu gözlenebilir uyumluluk yüzeyi yapar. | RFC-0011 + spec/14 + [eşzamanlılık conformance rehberi](eszamanlilik-conformance.md); 11 maddelik profil sözü ve 10 bağımsız kaynak+gözlem vakası snapshot, eşit/farklı uyanış, iç ağaç, ortak IO, hata/son tarih/çıkış iptali ve atomik eylemi kapsar. Çok çekirdek yalnız aynı gözlemleri veren iç optimizasyon olabilir. Genel Git-tarih koruğu eski profil verisini kilitler; toplam 484 test yeşildir. |
 | V1-P1-04 Sonuç hata tarafı yapılandırılmıştır | **KAPALI (K-091)** | `Sonuç<T>` hata tarafı değişmez `Hata`dır: kararlı kod, Türkçe mesaj, `Seçenek<Hata>` neden zinciri ve sıra korumalı Metin sözlüğü verisi taşır. Kod `göre` ile eşlenir; neden güvenli daraltmayla açılır; tam yapı deterministik JSON olur. Eski metin hataları `GENEL` koduyla aynı insan çıktısını korur. | RFC-0008 §3 + spec/15; kod/mesaj/eşleme, iç içe neden, veri+JSON, yeniden yayma, yerleşik kodlar, S044/T052 olumsuzları ve eski kaynak regresyonları. |
 | V1-P1-05 Gezmede yazma kullanıcı zihniyle doğrulanmıştır | **AÇIK — makine tarafı K-093 ile tamam** | RFC-0019/spec-17 derin değer kopyasını ve liste için değer-sonuç imlecini tanımlar: alan yazma ile yeniden bağlama aynı sıraya geri yansır; paylaşılan alias yoktur. Kaynak ekleme/silme/yeniden bağlama/aynı-kaynak iç içe gezme T053'tür. Alan/rebind, alias ve 1–24 uzunluk conformance kanıtı yeşildir. | `docs/usability-kiti.md` G1/G2/G3 kartlarıyla gerçek 10 öğrenci + 5 profesyonel sonucu. Önceden taahhütlü eşik sağlanmadan kapatılmaz. |
 | V1-P1-06 Yerel modül/paket paylaşımı | **KAPALI (K-076–K-080)** | Kökenli birim/paket yükleme, doğrudan sınır, SHA-256 kilit, güvenli ekle/çıkar ve grafik görünümü çalışıyor. | P001–P010/A011 ve proje entegrasyon testleri; deterministik kilit. |
@@ -64,7 +64,8 @@ normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
    Çok-dosyalı çökme atomikliği ve çok süreçli ortak oturum deposu verilmiş
    söz değildir.
 4. K-090, K-085 deadline çekirdeğinin üstüne deterministik scheduler,
-   sözcüksel sahiplik ve kardeş iptalini koydu. K-091 Sonuç'un hata tarafını
+   sözcüksel sahiplik ve kardeş iptalini koydu; K-124 gözlenebilir sonucu
+   `zee-esz-1` bağımsız profiline kilitledi. K-091 Sonuç'un hata tarafını
    kodlu, zincirli ve geriye uyumlu Hata değerine dönüştürdü. K-092 Ondalık
    kapasitesini keyfî katsayı + açık 34 haneli sonsuz bölüm kuralıyla kapattı.
 5. K-089 `zee-tr-1` morfolojisini property kanıtıyla dondurdu; K-122 semantic

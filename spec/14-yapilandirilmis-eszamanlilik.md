@@ -1,6 +1,6 @@
 # 14 — Yapılandırılmış eşzamanlılık
 
-Normatif kaynak: RFC-0011 (geçici kabul), K-090. Durum: **TANIMLI**.
+Normatif kaynak: RFC-0011 (geçici kabul), K-090/K-124. Durum: **TANIMLI**.
 
 ## 1. Görev grubu ve birleştirme
 
@@ -42,6 +42,12 @@ yalnız bir görev çalıştığından paylaşılan bellekte data race sınıfı
 Görevlerin yerel ortamları birbirinden ayrıdır; dış dünya etkileri ortak IO
 adaptörüne yukarıdaki kesin sırayla gider.
 
+Bu gözlenebilir sözün profil kimliği `zee-esz-1`dir. Çıktı/ortak IO sırası,
+sanal geçen süre, sonuç bağları, sonlanma kodu ve iptalden sonra etki yokluğu
+uyumluluk yüzeyidir. Thread/future/poll mekanizması değildir. Çok çekirdekli
+bir gerçekleme bu gözlemlerin tamamını aynı tutarsa uyumludur; platform
+scheduler'ının yarışını programa sızdırırsa uyumsuzdur.
+
 Tekdüze saatin 0 başlangıcı, geriye gitmeme, negatif bekleme ve takvim
 saatinden ayrılma kuralları spec/22'deki `zee-io-1` profilidir. Scheduler bu
 tek ortak saati en yakın uyanışa taşır; ayrı görev saatleri uydurmaz.
@@ -72,8 +78,10 @@ korur; uzun eylem kardeş görevi ancak eylem bittikten sonra ilerletebilir.
 çağrı zincirinden dışarı taşınır. HTTP isteği senkron adaptöre girmeden önce
 kardeşlere bir tur verir; adaptör çağrısının içi ise diğer senkron platform
 çağrıları (bazı DNS/dosya işlemleri gibi) kadar atomik ve önleyici olmayan bir
-dilimdir. Dönüşte son tarih yeniden denetlenir. Çok çekirdekli paralellik,
-yarış/`ilkini bekle`, akış ve dinamik görev sayısı bu sürümün sözü değildir.
+dilimdir. Dönüşte son tarih yeniden denetlenir. Çok çekirdek kullanımı dil
+özelliği değil, yalnız `zee-esz-1` gözlemlerini koruyan bir iç optimizasyon
+olabilir. Yarış/`ilkini bekle`, akış ve dinamik görev sayısı bu sürümün sözü
+değildir.
 
 ## 5. Conformance kanıtı
 
@@ -86,3 +94,11 @@ yarış/`ilkini bekle`, akış ve dinamik görev sayısı bu sürümün sözü d
 - görev içindeki atomik `eylem` hatasının rollback edip kardeşi araya almaması;
 - beklemeden kapsamdan çıkış ve boş birleştirme için T051;
 - birleştirme öncesi sonuç erişimi için T033.
+
+Derleyiciden bağımsız bağlayıcı veri
+`conformance/eszamanlilik/sema-v1.schema.json` ve `zee-esz-1.json` içindedir.
+On vaka; snapshot/tembel başlangıç, eşit ve farklı uyanış, çoklu tur, ortak IO,
+iç görev ağacı, hata/son tarih/çıkış iptali ve atomik eylem rollback'ini kaynak
+metniyle birlikte taşır. Bir gerçekleme bu kaynakların sonlanma kodunu, çıktı
+dizisini, sanal süresini ve dosya etkisini birebir üretmelidir. Yayımlanmış
+profil verisi immutable'dır; gözlenebilir değişiklik yeni `zee-esz-N` ister.
