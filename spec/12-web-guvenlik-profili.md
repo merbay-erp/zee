@@ -1,7 +1,7 @@
 # 12 — Web güvenlik profili
 
-Bu bölüm K-088/K-134/K-137 ile gelen normatif oturum, yetki, CSRF, ortak oran
-sınırı ve HTTPS reverse-proxy sözleşmesidir. Uygulama eyleminin HTTP'den
+Bu bölüm K-088/K-134/K-137/K-139 ile gelen normatif oturum, yetki, CSRF, ortak
+oran sınırı ve HTTPS reverse-proxy sözleşmesidir. Uygulama eyleminin HTTP'den
 ayrılması spec/11'de tanımlıdır; bu bölüm tarayıcı isteğinin o eyleme hangi
 kapılardan geçerek ulaştığını tanımlar.
 
@@ -119,23 +119,35 @@ dil çalıştır --web-proxy https://panel.example --web-worker-port 18091 uygul
 ```
 
 Runtime yalnız `127.0.0.1` üzerinde düz HTTP dinler. TLS'yi aynı makinedeki
-güvenilir reverse proxy sonlandırır. Runtime her istekte:
+güvenilir reverse proxy sonlandırır. Kabul edilen socket peer'i ayrıca
+loopback olmak ZORUNDADIR; aksi durumda başlıklar güvenilir sayılmadan 403
+döner. Runtime her istekte:
 
-- tek `Host` başlığının yapılandırılan host ile eşleşmesini;
+- tek `Host` başlığının yapılandırılan origin otoritesiyle eşleşmesini;
 - tam bir `Forwarded: for=<IP>;proto=https;host=<host>` başlığının tek header
   ve tek hop olmasını;
 - `for` değerinin `IpAddr` ile kanoniklenen yalın IPv4/IPv6 adresi olmasını;
 - `proto=https` ve `host` değerinin yapılandırılan origin ile eşleşmesini;
 - durum değiştiren yöntemde tek `Origin` değerinin yapılandırılan origin
-  ile birebir eşleşmesini ZORUNLU tutar.
+  ile kanonik eşleşmesini ZORUNLU tutar.
+
+`--web-proxy`, `Host`, `Forwarded host` ve `Origin` tek `AgHedefi` origin
+ayrıştırıcısını kullanır. Production origin'i HTTPS olmalı; yol, sorgu, parça
+ve kullanıcı bilgisi taşımamalı; host geçerli ASCII DNS adı veya köşeli
+ayraçlı IPv6, port 1–65535 olmalıdır. Şema yazımı `https://` olmak zorundadır;
+DNS adı küçük harfe çevrilir ve açık `:443` varsayılan HTTPS portuyla aynı
+kimliktir. IP adresi standart metinsel yazımına çevrilir. Tek kapanış `/`
+yalnız origin yazımında kabul edilip kanonik çıktıda kaldırılır. Farklı portlar
+aynı origin değildir.
 
 Proxy istemciden gelen `Forwarded`, `X-Forwarded-For` ve benzeri başlıkları
 silip doğruladığı bağlantıdan tek kanonik `Forwarded` başlığını kendisi
 kurmalıdır. Runtime `X-Forwarded-For`ı istemci kimliği saymaz. Eksik/tekrarlı
 Host, tekrarlı `Forwarded`, virgüllü zincir, yinelenen parametre, IP olmayan
 `for` ve host uyuşmazlığı 400; eksik `Forwarded` veya HTTPS olmayan proxy
-zinciri 426; eksik ya da yanlış unsafe Origin 403'tür. Dinleyicinin loopback
-dışına açılması bu güven sözleşmesini bozar ve YASAKTIR.
+zinciri 426; eksik ya da yanlış unsafe Origin ve loopback dışı peer 403'tür.
+Dinleyicinin loopback dışına açılması bu güven sözleşmesini bozar ve
+YASAKTIR.
 
 Yanıtlar `no-store`, `nosniff`, `DENY`, `no-referrer`, kısıtlı CSP taşır;
 HTTPS profilinde HSTS de eklenir. 16 KiB başlık, 64 KiB gövde, tek
@@ -186,4 +198,5 @@ sistemiyle sınırlıdır; çok-hostlu harici backend henüz yoktur. Sticky sess
 ortak revoke ve oran sınırının yerine geçmez. Operasyon ayrıntıları
 `docs/web-production-profili.md` içindedir.
 
-Normatif gerekçe: RFC-0017 ve ADR-034. Rota/eylem ayrımı: RFC-0015 ve spec/11.
+Normatif gerekçe: RFC-0017, ADR-034 ve ADR-036. Rota/eylem ayrımı: RFC-0015
+ve spec/11. Ortak origin tipi: ADR-031 ve spec/23.

@@ -2,7 +2,9 @@
 
 - **Durum:** kabul
 - **Tarih:** 2 Eylül 2026
-- **İlgili kayıt:** K-127, B-023, B-024, B-049, V1-P0-29
+- **Revizyon:** 2 Eylül 2026 — K-139/ADR-036 inbound web proxy origin'i de
+  aynı kanonik `AgHedefi` sahibine bağlandı.
+- **İlgili kayıt:** K-127, K-139, B-023, B-024, B-049, B-052, V1-P0-29
 
 ## Bağlam
 
@@ -40,6 +42,10 @@ adının bağlantıda private/metadata IP'ye dönmesine karşı tek değişmez s
 7. Dosya kökü lexical ve erişim-anı canonical/symlink denetimi taşır. OS
    descriptor sandbox'ı ve paket başına süreç izolasyonu verilmiş söz değildir;
    bu sınır dokümanda açık tutulur.
+8. K-139 ile `AgHedefi` yalnız outbound allowlist'in değil, production web
+   proxy yapılandırması ile `Host`/`Forwarded host`/`Origin` doğrulamasının da
+   tek kanonik origin değeridir. Ayrıştırıcı `yetkinlik/origin.rs` sahibinde
+   kalır; CLI ikinci bir güvenlik parser'ı taşımaz.
 
 ## Reddedilen seçenekler
 
@@ -57,4 +63,5 @@ B-023 ve B-049 kapanır; B-024 ilkesi gerçek istemciyle uygulanır. B-025'in
 native ağ dilimi yeni backend'de de korunur. Yeni yetkinlik; enum yazımı,
 manifest doğrulaması, compile çıkarımı, runtime kapısı, olumlu/olumsuz test ve
 RFC/spec güncellemesi olmadan eklenemez. Registry taşıma/cache işi B-029'da,
-dosya metadata sözleşmesi B-048/K-128/ADR-032'de ayrı kapatılmıştır.
+dosya metadata sözleşmesi B-048/K-128/ADR-032'de ayrı kapatılmıştır. Inbound
+proxy origin'i ve loopback peer güven sınırı B-052/K-139/ADR-036'da kapanır.

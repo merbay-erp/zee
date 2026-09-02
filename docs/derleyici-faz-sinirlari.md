@@ -144,6 +144,10 @@ IO kapısını `yorumlayici/yetkinlik.rs`, ortak policy/origin/IP modelini kök
 `yetkinlik.rs` ve native HTTPS'yi `ag_istemcisi.rs` sahibine ayırdı. İlanlı
 380/250/520/180 satır bütçeleri etki, runtime ve CLI köklerinin bu güvenlik
 sorumluluğunu geri yutmasını engeller.
+K-139/ADR-036 ortak origin ayrıştırmasını 100 satır bütçeli
+`yetkinlik/origin.rs` sahibine ayırdı. Outbound allowlist ile inbound web proxy
+aynı `AgHedefi` kurucularını tüketir; CLI kökü ikinci bir origin tipi ya da
+DNS/IPv6/port parser'ı taşıyamaz.
 K-128/ADR-032 atomik replace'in platform metadata aktarımını
 `kalici_dosya/metadata.rs` sahibine ayırdı. `kalici_dosya.rs` K-135'in atomik
 karşılaştır-ve-yaz ilkeliyle 850,

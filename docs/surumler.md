@@ -46,6 +46,16 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   envanter 556 test ve
   33 kabul ADR'ye çıktı; B-051 kapandı.
 
+- **Tek kanonik web proxy origin'i** (K-139, ADR-036/spec-12): CLI'a özel
+  `GuvenliOrigin` parser'ı kaldırıldı. `--web-proxy`, `Host`, tek-hop
+  `Forwarded host` ve unsafe `Origin`, outbound allowlist ile aynı
+  `AgHedefi` DNS/IPv6/port kimliğine ayrıştırılır. Varsayılan HTTPS `:443` ve
+  DNS harf farkı kanoniklenir; geçersiz etiket/IPv6/port, yol, sorgu,
+  kullanıcı bilgisi ve HTTP fail-closed reddedilir. Production listener sabit
+  `127.0.0.1`e bind eder ve kabul edilen socket peer'ini ayrıca loopback olarak
+  doğrular. Origin olumluları/olumsuzları ve mimari drift koruğuyla envanter
+  558 test ve 34 kabul ADR'ye çıktı; B-052 kapandı.
+
 - **Normatif otorite ve v1 kapıları** (K-081, ADR-010): geçerli dilin kesin
   davranışını spec anlatır; RFC değişikliği yetkilendirir ama spec+conformance
   testi aynı değişiklikte güncellenmeden yürürlüğe girmez. Kaynak denetimli

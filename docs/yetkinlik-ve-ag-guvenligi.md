@@ -57,6 +57,13 @@ ağ_hedefleri boş liste olsun
 Bildirimsiz tek dosya, eski geliştirici akışını kırmamak için daha geniştir;
 yine de public olmayan ağ ve düz HTTP açılmaz.
 
+`AgHedefi` ve `yetkinlik/origin.rs`, şema+DNS/IPv4/IPv6+port kimliğinin tek
+sahibidir. K-139'dan itibaren `--web-proxy` production origin'i ile inbound
+`Host`, `Forwarded host` ve unsafe `Origin` doğrulaması da bu parser'ı yeniden
+kullanır. Böylece outbound allowlist ile web proxy aynı origin yazımına farklı
+anlam veremez. Web profili yalnız HTTPS ve loopback proxy bağlantısını kabul
+eder; ayrıntı [web production profili](web-production-profili.md) içindedir.
+
 Bu katman, aynı makinedeki kötü niyetli başka bir sürece karşı container
 değildir ve paket başına ayrı tenant sağlamaz. Güvenilmeyen kodu güçlü bir OS
 sandbox/container içinde çalıştırmak hâlâ host uygulamanın sorumluluğudur.

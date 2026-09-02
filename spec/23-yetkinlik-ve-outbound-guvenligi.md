@@ -42,6 +42,12 @@ Redirect izlenmez; ortam proxy'si kullanılmaz. Native istemci global ve DNS
 8 MiB toplam zarf içinde body uygular. HTTPS sertifika/TLS doğrulaması rustls
 backend'indedir. Bu sınırların ihlali runtime'da C018'e dönüşür.
 
+K-139/ADR-036 ile aynı `AgHedefi` origin ayrıştırıcısı production web
+proxy'nin `--web-proxy`, `Host`, `Forwarded host` ve unsafe `Origin`
+sınırlarında da ZORUNLUDUR. Outbound ve inbound güven yüzeyleri ikinci bir
+DNS/IPv6/port parser'ı taşıyamaz; web'e özgü HTTPS ve loopback değişmezleri
+spec/12'de tanımlıdır.
+
 ## Compile ve runtime uygulaması (TANIMLI)
 
 Ana program, bütün testler ve çağrılmayan işlemler dahil her gövdenin dış dünya

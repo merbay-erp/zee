@@ -560,7 +560,20 @@ ADR-019 — LSP çerçeve ve JSON girdi sınırları
 ADR-020 — HIR düğümlerinde zorunlu kaynak aralığı
 ADR-021 — Production panic yüzeyi ve fail-closed hata politikası
 ADR-022 — Lexer/parser fuzz korpusu ve sürekli mutation politikası
+ADR-023 — AST/HIR invariant doğrulama politikası
+ADR-024 — Parser hata kurtarma politikası
+ADR-025 — Tanı kimliği kararlılık politikası
+ADR-026 — Deterministik IO izi mimarisi
+ADR-027 — Sürümlü deterministik IO profili
+ADR-028 — Kanonik `.zep` yol ve Unicode güvenlik profili
+ADR-029 — Ondalık ile binary float arasında örtük köprü yoktur
+ADR-030 — Bütün AST ifadelerinde kesin kaynak aralığı
+ADR-031 — Merkezî yetkinlik politikası ve native outbound istemci
+ADR-032 — Atomik replace metadata koruma politikası
+ADR-033 — Merkezî ve değişmez kaynak bütçesi
+ADR-034 — Kalıcı ortak web deposu ve tek-worker süreç modeli
 ADR-035 — Protokol-kesin LSP JSON-RPC sınırı
+ADR-036 — Kanonik web proxy origin sınırı
 # 39. Ekip ve rol modeli
 Dil mimarı: semantik ve uzun vadeli vizyon.
 Compiler: parser, types, IR, backend.
@@ -713,8 +726,10 @@ K-137 kalıcı ortak web oturumu/revoke/expiry ve atomik rate-limit deposunu,
 tek-hop `Forwarded` kimliğini ve N ayrı tek-worker süreç modelini kurarak
 B-046'yı kapattı. K-138/ADR-035 RFC 8259 sayı/duplicate alan doğrulamasını,
 kayıpsız JSON-RPC kimliğini ve standart parse/request/method/params hata
-ayrımını kurarak B-051'i kapattı. Sıradaki omurga K-139 ile B-052 kanonik web
-proxy origin sınırıdır.
+ayrımını kurarak B-051'i kapattı. K-139/ADR-036 CLI'a özel origin parser'ını
+kaldırıp web proxy'yi ortak `AgHedefi` DNS/IPv6/port kimliğine ve açık
+loopback bind+peer değişmezine bağlayarak B-052'yi kapattı. Sıradaki omurga
+K-140 ile B-053 byte tabanlı ve fuzz kanıtlı HTTP istek ayrıştırıcısıdır.
 # 40. Proje felsefesinin korunması
 Bu projenin başarısı yalnız compiler’ın çalışması değildir. Başarı; Türkçe konuşan bir çocuğun yabancı syntax bariyerine takılmadan algoritmik düşünceyle tanışması, aynı dilin yıllar sonra onu terk etmeye zorlamaması ve ekosistemin tek bir şirketin kapalı ürünü haline gelmemesidir.
 Her yeni özellik şu dört sorudan geçmelidir: Türkçe doğal mı? Deterministik mi? Öğrenilebilir mi? Profesyonel ölçekte savunulabilir mi? Dördünden biri hayırsa özellik yeniden tasarlanır.

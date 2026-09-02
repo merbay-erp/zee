@@ -15,7 +15,8 @@ dil çalıştır --web-proxy https://panel.example --web-worker-port 18092 uygul
 Kaynak içindeki `sunucu başlat` kapısı production kipinde worker portuyla
 geçersiz kılınır; rota ve uygulama kaynağı iki süreçte aynıdır. Proxy yalnız
 `127.0.0.1:18091` ve `127.0.0.1:18092` hedeflerine yük dağıtır. Runtime
-loopback dışına açılmaz.
+loopback dışına açılmaz; listener `127.0.0.1`e bind eder ve kabul edilen socket
+peer'inin loopback olduğunu ayrıca doğrular.
 
 ## Ortak durum
 
@@ -51,6 +52,26 @@ Reverse proxy:
 Runtime birden çok `Forwarded` başlığını, virgüllü proxy zincirini, IP olmayan
 `for` değerini, yanlış proto/hostu ve yalnız `X-Forwarded-For` taşıyan isteği
 reddeder. Rate-limit anahtarı ancak bu doğrulamadan sonra oluşan kanonik IP'dir.
+Loopback dışı peer, doğru görünen başlıklar taşısa bile 403 ile reddedilir.
+
+## Kanonik origin
+
+`--web-proxy`, `Host`, `Forwarded host` ve unsafe `Origin` aynı
+`AgHedefi` parser'ından geçer. Ayrı bir CLI origin parser'ı yoktur. Geçerli
+örnekler:
+
+```text
+https://panel.example
+https://panel.example:8443
+https://[2001:db8::1]:8443
+```
+
+DNS adı büyük/küçük harfe duyarsızdır; `https://PANEL.EXAMPLE:443/` kanonik
+olarak `https://panel.example` olur. IPv4/IPv6 standart metinsel yazımına
+çevrilir. Farklı port farklı origin'dir. HTTP,
+kullanıcı bilgisi, yol/sorgu/parça, geçersiz DNS etiketi, ayraçsız IPv6 ve
+0 ya da 65535'i aşan port fail-closed reddedilir. Proxy `Forwarded host`
+değerini yapılandırılmış kanonik otoriteyle kurmalıdır.
 
 ## Sabit oran ve süreler
 

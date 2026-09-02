@@ -3,6 +3,9 @@
 use std::collections::BTreeSet;
 use std::net::{IpAddr, Ipv4Addr, Ipv6Addr};
 
+mod origin;
+use origin::ayristir;
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub enum Yetkinlik {
     DosyaOkuma,
@@ -98,6 +101,23 @@ impl AgHedefi {
         Ok(hedef)
     }
 
+    /// HTTPS origin bekleyen CLI/protokol sınırları için ortak kurucu.
+    pub fn https_origininden(yazim: &str) -> Result<Self, String> {
+        let hedef = Self::bildirimden(yazim)?;
+        if hedef.semasi() != AgSemasi::Https {
+            return Err("güvenli origin https:// şeması taşımalı".into());
+        }
+        Ok(hedef)
+    }
+
+    /// Host ve Forwarded host alanını aynı origin parser'ıyla doğrular.
+    pub fn https_otoritesinden(yazim: &str) -> Result<Self, String> {
+        if yazim.is_empty() || yazim.contains(['/', '?', '#', '\\']) {
+            return Err("HTTPS otoritesi yalnız host ve isteğe bağlı port taşımalı".into());
+        }
+        Self::https_origininden(&format!("https://{yazim}"))
+    }
+
     pub const fn semasi(&self) -> AgSemasi {
         self.sema
     }
@@ -111,15 +131,19 @@ impl AgHedefi {
     }
 
     pub fn yazimi(&self) -> String {
+        format!("{}://{}", self.sema.yazimi(), self.otoritesi())
+    }
+
+    pub fn otoritesi(&self) -> String {
         let konak = if self.konak.contains(':') {
             format!("[{}]", self.konak)
         } else {
             self.konak.clone()
         };
         if self.kapi == self.sema.varsayilan_kapi() {
-            format!("{}://{}", self.sema.yazimi(), konak)
+            konak
         } else {
-            format!("{}://{}:{}", self.sema.yazimi(), konak, self.kapi)
+            format!("{}:{}", konak, self.kapi)
         }
     }
 }
@@ -271,80 +295,6 @@ impl YetkinlikPolitikasi {
     }
 }
 
-fn ayristir(yazim: &str) -> Result<(AgHedefi, &str), String> {
-    if yazim.is_empty() || yazim.chars().any(char::is_control) || yazim.contains(['\\', '#']) {
-        return Err("ağ adresi boş, denetim karakterli, ters bölülü veya parçalı olamaz".into());
-    }
-    let (sema, kalan) = yazim
-        .split_once("://")
-        .ok_or_else(|| "ağ adresi https:// veya açıkça izinli http:// ile başlamalı".to_string())?;
-    let sema = match sema {
-        "https" => AgSemasi::Https,
-        "http" => AgSemasi::Http,
-        _ => return Err("yalnız https:// ve açık izinli http:// şemaları desteklenir".into()),
-    };
-    let kuyruk_yeri = kalan.find(['/', '?']).unwrap_or(kalan.len());
-    let (yetki, kuyruk) = kalan.split_at(kuyruk_yeri);
-    if yetki.is_empty() || yetki.contains('@') {
-        return Err("ağ adresi boş host veya kullanıcı bilgisi taşıyamaz".into());
-    }
-    let (konak, kapi) = konak_ve_kapi(yetki, sema.varsayilan_kapi())?;
-    Ok((AgHedefi { sema, konak, kapi }, kuyruk))
-}
-
-fn konak_ve_kapi(yetki: &str, varsayilan: u16) -> Result<(String, u16), String> {
-    let (konak, kapi) = if let Some(kalan) = yetki.strip_prefix('[') {
-        let (konak, son) = kalan
-            .split_once(']')
-            .ok_or_else(|| "IPv6 host kapanış köşeli ayracını taşımıyor".to_string())?;
-        let kapi = if son.is_empty() {
-            varsayilan
-        } else {
-            son.strip_prefix(':')
-                .ok_or_else(|| "IPv6 host sonrasında yalnız port yazılabilir".to_string())?
-                .parse::<u16>()
-                .map_err(|_| "ağ portu 1–65535 aralığında olmalı".to_string())?
-        };
-        konak
-            .parse::<Ipv6Addr>()
-            .map_err(|_| "köşeli ayraç içinde geçerli IPv6 adresi olmalı".to_string())?;
-        (konak, kapi)
-    } else {
-        let (konak, kapi) = match yetki.rsplit_once(':') {
-            Some((konak, kapi)) if !konak.contains(':') => (
-                konak,
-                kapi.parse::<u16>()
-                    .map_err(|_| "ağ portu 1–65535 aralığında olmalı".to_string())?,
-            ),
-            Some(_) => return Err("IPv6 adresi köşeli ayraç içinde yazılmalı".into()),
-            None => (yetki, varsayilan),
-        };
-        (konak, kapi)
-    };
-    if kapi == 0 || !gecerli_konak(konak) {
-        return Err("ağ hostu ASCII DNS adı veya kanonik IP, portu 1–65535 olmalı".into());
-    }
-    Ok((konak.to_ascii_lowercase(), kapi))
-}
-
-fn gecerli_konak(konak: &str) -> bool {
-    if konak.parse::<IpAddr>().is_ok() {
-        return true;
-    }
-    !konak.is_empty()
-        && konak.len() <= 253
-        && !konak.ends_with('.')
-        && konak.split('.').all(|etiket| {
-            !etiket.is_empty()
-                && etiket.len() <= 63
-                && !etiket.starts_with('-')
-                && !etiket.ends_with('-')
-                && etiket
-                    .bytes()
-                    .all(|bayt| bayt.is_ascii_alphanumeric() || bayt == b'-')
-        })
-}
-
 fn metadata_ip_mi(ip: IpAddr) -> bool {
     match ip {
         IpAddr::V4(ip) => ip.octets()[0..2] == [169, 254],
@@ -428,11 +378,27 @@ mod testler {
     fn ag_hedefi_origini_kanonikler_ve_yolu_ayirir() {
         let hedef = AgHedefi::bildirimden("https://API.Example:443/").expect("origin");
         assert_eq!(hedef.yazimi(), "https://api.example");
+        assert_eq!(hedef.otoritesi(), "api.example");
+        assert_eq!(
+            AgHedefi::https_origininden("https://[2001:0DB8:0:0::1]:443")
+                .unwrap()
+                .yazimi(),
+            "https://[2001:db8::1]"
+        );
+        assert_eq!(
+            AgHedefi::https_origininden("https://API.Example:443/").unwrap(),
+            hedef
+        );
+        assert_eq!(
+            AgHedefi::https_otoritesinden("API.Example:443").unwrap(),
+            hedef
+        );
         assert_eq!(
             AgHedefi::istekten("https://api.example/v1?q=1").unwrap(),
             hedef
         );
         assert!(AgHedefi::bildirimden("https://api.example/v1").is_err());
+        assert!(AgHedefi::https_origininden("http://api.example").is_err());
     }
 
     #[test]
@@ -442,6 +408,7 @@ mod testler {
             "https://api.example/#parca",
             "https://api.example\\hedef",
             "ftp://api.example",
+            "https://api.example:+443",
             "https://api.example:0",
             "https://[::1",
         ] {
