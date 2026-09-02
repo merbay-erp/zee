@@ -10,209 +10,22 @@ use crate::tani::Tani;
 use std::collections::HashMap;
 
 mod cikti;
+mod json;
 use cikti::{CiktiSonucu, SinirliJson};
+pub use json::{json_coz, Json, JsonSayisi};
 
-// ---------- mini JSON ----------
-
-pub const AZAMI_LSP_BASLIK_BAYTI: usize =
-    crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.lsp().baslik_bayti();
-pub const AZAMI_LSP_GOVDE_BAYTI: usize =
-    crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.lsp().govde_bayti();
-pub const AZAMI_LSP_JSON_DERINLIGI: usize =
-    crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.lsp().json_derinligi();
-pub const AZAMI_LSP_JSON_DUGUMU: usize =
-    crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.lsp().json_dugumu();
-
-#[derive(Debug, Clone, PartialEq)]
-pub enum Json {
-    Bos,
-    Mantik(bool),
-    Sayi(f64),
-    Metin(String),
-    Dizi(Vec<Json>),
-    Nesne(Vec<(String, Json)>),
-}
-
-impl Json {
-    pub fn alan(&self, ad: &str) -> Option<&Json> {
-        match self {
-            Json::Nesne(alanlar) => alanlar.iter().find(|(a, _)| a == ad).map(|(_, d)| d),
-            _ => None,
-        }
-    }
-    pub fn metin(&self) -> Option<&str> {
-        match self {
-            Json::Metin(m) => Some(m),
-            _ => None,
-        }
-    }
-}
-
-/// JSON metnini çözer; bozuk girdi None döner (sunucu mesajı yok sayar).
-pub fn json_coz(metin: &str) -> Option<Json> {
-    if metin.len() > AZAMI_LSP_GOVDE_BAYTI {
-        return None;
-    }
-    let mut karakterler = metin.chars().peekable();
-    let mut butce = JsonButcesi {
-        kalan_dugum: AZAMI_LSP_JSON_DUGUMU,
-    };
-    let deger = deger_coz(&mut karakterler, &mut butce, 0)?;
-    bosluk_atla(&mut karakterler);
-    match karakterler.next() {
-        None => Some(deger),
-        Some(_) => None,
-    }
-}
-
-type Karakterler<'a> = std::iter::Peekable<std::str::Chars<'a>>;
-
-struct JsonButcesi {
-    kalan_dugum: usize,
-}
-
-impl JsonButcesi {
-    fn dugum_al(&mut self) -> Option<()> {
-        self.kalan_dugum = self.kalan_dugum.checked_sub(1)?;
-        Some(())
-    }
-}
-
-fn bosluk_atla(k: &mut Karakterler) {
-    while matches!(k.peek(), Some(' ' | '\n' | '\r' | '\t')) {
-        k.next();
-    }
-}
-
-fn deger_coz(k: &mut Karakterler, butce: &mut JsonButcesi, derinlik: usize) -> Option<Json> {
-    if derinlik > AZAMI_LSP_JSON_DERINLIGI {
-        return None;
-    }
-    butce.dugum_al()?;
-    bosluk_atla(k);
-    match k.peek()? {
-        '{' => {
-            k.next();
-            let mut alanlar = Vec::new();
-            bosluk_atla(k);
-            if k.peek() == Some(&'}') {
-                k.next();
-                return Some(Json::Nesne(alanlar));
-            }
-            loop {
-                bosluk_atla(k);
-                let ad = metin_coz(k)?;
-                bosluk_atla(k);
-                if k.next() != Some(':') {
-                    return None;
-                }
-                let deger = deger_coz(k, butce, derinlik + 1)?;
-                alanlar.push((ad, deger));
-                bosluk_atla(k);
-                match k.next() {
-                    Some(',') => continue,
-                    Some('}') => return Some(Json::Nesne(alanlar)),
-                    _ => return None,
-                }
-            }
-        }
-        '[' => {
-            k.next();
-            let mut ogeler = Vec::new();
-            bosluk_atla(k);
-            if k.peek() == Some(&']') {
-                k.next();
-                return Some(Json::Dizi(ogeler));
-            }
-            loop {
-                ogeler.push(deger_coz(k, butce, derinlik + 1)?);
-                bosluk_atla(k);
-                match k.next() {
-                    Some(',') => continue,
-                    Some(']') => return Some(Json::Dizi(ogeler)),
-                    _ => return None,
-                }
-            }
-        }
-        '"' => Some(Json::Metin(metin_coz(k)?)),
-        't' => sabit_coz(k, "true", Json::Mantik(true)),
-        'f' => sabit_coz(k, "false", Json::Mantik(false)),
-        'n' => sabit_coz(k, "null", Json::Bos),
-        _ => sayi_coz(k),
-    }
-}
-
-fn sabit_coz(k: &mut Karakterler, beklenen: &str, deger: Json) -> Option<Json> {
-    for b in beklenen.chars() {
-        if k.next() != Some(b) {
-            return None;
-        }
-    }
-    Some(deger)
-}
-
-fn metin_coz(k: &mut Karakterler) -> Option<String> {
-    if k.next() != Some('"') {
-        return None;
-    }
-    let mut metin = String::new();
-    loop {
-        match k.next()? {
-            '"' => return Some(metin),
-            '\\' => match k.next()? {
-                '"' => metin.push('"'),
-                '\\' => metin.push('\\'),
-                '/' => metin.push('/'),
-                'n' => metin.push('\n'),
-                'r' => metin.push('\r'),
-                't' => metin.push('\t'),
-                'b' => metin.push('\u{0008}'),
-                'f' => metin.push('\u{000C}'),
-                'u' => {
-                    let mut kod = 0u32;
-                    for _ in 0..4 {
-                        kod = kod * 16 + k.next()?.to_digit(16)?;
-                    }
-                    // Vekil çiftler (surrogate) BMP dışı için:
-                    if (0xD800..=0xDBFF).contains(&kod) {
-                        if k.next()? != '\\' || k.next()? != 'u' {
-                            return None;
-                        }
-                        let mut alt = 0u32;
-                        for _ in 0..4 {
-                            alt = alt * 16 + k.next()?.to_digit(16)?;
-                        }
-                        if !(0xDC00..=0xDFFF).contains(&alt) {
-                            return None;
-                        }
-                        kod = 0x10000 + ((kod - 0xD800) << 10) + (alt - 0xDC00);
-                    } else if (0xDC00..=0xDFFF).contains(&kod) {
-                        return None;
-                    }
-                    metin.push(char::from_u32(kod)?);
-                }
-                _ => return None,
-            },
-            b if b <= '\u{001F}' => return None,
-            b => metin.push(b),
-        }
-    }
-}
-
-fn sayi_coz(k: &mut Karakterler) -> Option<Json> {
-    let mut govde = String::new();
-    if k.peek() == Some(&'-') {
-        govde.push('-');
-        k.next();
-    }
-    while matches!(k.peek(), Some(r) if r.is_ascii_digit() || *r == '.' || *r == 'e' || *r == 'E' || *r == '+' || *r == '-')
-    {
-        if let Some(r) = k.next() {
-            govde.push(r);
-        }
-    }
-    govde.parse::<f64>().ok().map(Json::Sayi)
-}
+pub const AZAMI_LSP_BASLIK_BAYTI: usize = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+    .lsp()
+    .baslik_bayti();
+pub const AZAMI_LSP_GOVDE_BAYTI: usize = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+    .lsp()
+    .govde_bayti();
+pub const AZAMI_LSP_JSON_DERINLIGI: usize = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+    .lsp()
+    .json_derinligi();
+pub const AZAMI_LSP_JSON_DUGUMU: usize = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+    .lsp()
+    .json_dugumu();
 
 // ---------- sunucu ----------
 
@@ -369,6 +182,33 @@ pub struct Ciktilar {
     pub devam: bool,
 }
 
+struct RpcIstegi<'a> {
+    yontem: &'a str,
+    kimlik: Option<&'a Json>,
+}
+
+fn rpc_istegini_dogrula(mesaj: &Json) -> Option<RpcIstegi<'_>> {
+    if !matches!(mesaj, Json::Nesne(_))
+        || mesaj.alan("jsonrpc").and_then(Json::metin) != Some("2.0")
+    {
+        return None;
+    }
+    let yontem = mesaj.alan("method")?.metin()?;
+    if let Some(parametreler) = mesaj.alan("params") {
+        if !matches!(parametreler, Json::Nesne(_) | Json::Dizi(_)) {
+            return None;
+        }
+    }
+    let kimlik = mesaj.alan("id");
+    if !matches!(
+        kimlik,
+        None | Some(Json::Bos | Json::Sayi(_) | Json::Metin(_))
+    ) {
+        return None;
+    }
+    Some(RpcIstegi { yontem, kimlik })
+}
+
 impl Sunucu {
     pub fn yeni() -> Sunucu {
         Sunucu::default()
@@ -381,13 +221,26 @@ impl Sunucu {
             devam: true,
         };
         let Some(mesaj) = json_coz(govde) else {
+            cikti_ekle(&mut cikti, None, rpc_hatasi(None, -32700, "Parse error"));
             return cikti;
         };
-        let yontem = mesaj.alan("method").and_then(Json::metin).unwrap_or("");
-        let kimlik = mesaj.alan("id");
+        let Some(istek) = rpc_istegini_dogrula(&mesaj) else {
+            cikti_ekle(
+                &mut cikti,
+                None,
+                rpc_hatasi(None, -32600, "Invalid Request"),
+            );
+            return cikti;
+        };
+        let yontem = istek.yontem;
+        let kimlik = istek.kimlik;
 
         match yontem {
             "initialize" => {
+                if !matches!(mesaj.alan("params"), Some(Json::Nesne(_))) {
+                    rpc_parametre_hatasi(&mut cikti, kimlik);
+                    return cikti;
+                }
                 let yanit = yanit_uret(kimlik, |yazici| {
                     yazici.ham(
                         "{\"capabilities\":{\"textDocumentSync\":1,\
@@ -395,12 +248,12 @@ impl Sunucu {
                          \"hoverProvider\":true,\
                          \"definitionProvider\":true,\
                          \"renameProvider\":true},\
-                         \"serverInfo\":{\"name\":\"dillsp\",\"version\":"
+                         \"serverInfo\":{\"name\":\"dillsp\",\"version\":",
                     )?;
                     yazici.metin(env!("CARGO_PKG_VERSION"))?;
                     yazici.ham("}}")
                 });
-                cikti_ekle(&mut cikti, kimlik, yanit);
+                rpc_yaniti_ekle(&mut cikti, kimlik, yanit);
             }
             "textDocument/didOpen" => {
                 if let Some((uri, metin)) = ac_parametreleri(&mesaj) {
@@ -414,6 +267,13 @@ impl Sunucu {
                             cikti_ekle(&mut cikti, kimlik, bildirim);
                         }
                     }
+                    rpc_yaniti_ekle(
+                        &mut cikti,
+                        kimlik,
+                        yanit_uret(kimlik, |yazici| yazici.ham("null")),
+                    );
+                } else {
+                    rpc_parametre_hatasi(&mut cikti, kimlik);
                 }
             }
             "textDocument/didChange" => {
@@ -428,6 +288,13 @@ impl Sunucu {
                             cikti_ekle(&mut cikti, kimlik, bildirim);
                         }
                     }
+                    rpc_yaniti_ekle(
+                        &mut cikti,
+                        kimlik,
+                        yanit_uret(kimlik, |yazici| yazici.ham("null")),
+                    );
+                } else {
+                    rpc_parametre_hatasi(&mut cikti, kimlik);
                 }
             }
             "textDocument/didClose" => {
@@ -438,9 +305,20 @@ impl Sunucu {
                     }
                     let bildirim = bos_tanilar(&uri);
                     cikti_ekle(&mut cikti, kimlik, bildirim);
+                    rpc_yaniti_ekle(
+                        &mut cikti,
+                        kimlik,
+                        yanit_uret(kimlik, |yazici| yazici.ham("null")),
+                    );
+                } else {
+                    rpc_parametre_hatasi(&mut cikti, kimlik);
                 }
             }
             "textDocument/completion" => {
+                if !matches!(mesaj.alan("params"), Some(Json::Nesne(_))) {
+                    rpc_parametre_hatasi(&mut cikti, kimlik);
+                    return cikti;
+                }
                 let yanit = yanit_uret(kimlik, |yazici| {
                     yazici.ham("[")?;
                     for (sira, kelime) in KALIP_KELIMELERI.iter().enumerate() {
@@ -453,15 +331,17 @@ impl Sunucu {
                     }
                     yazici.ham("]")
                 });
-                cikti_ekle(&mut cikti, kimlik, yanit);
+                rpc_yaniti_ekle(&mut cikti, kimlik, yanit);
             }
             "textDocument/hover" => {
-                let aciklama = konum_parametreleri(&mesaj)
-                    .and_then(|(uri, satir, sutun)| {
-                        let metin = self.belgeler.get(&uri)?;
-                        let kelime = konumdaki_kelime(metin, satir, sutun)?;
-                        aciklama_uret(metin, &kelime)
-                    });
+                let Some((uri, satir, sutun)) = konum_parametreleri(&mesaj) else {
+                    rpc_parametre_hatasi(&mut cikti, kimlik);
+                    return cikti;
+                };
+                let aciklama = self.belgeler.get(&uri).and_then(|metin| {
+                    let kelime = konumdaki_kelime(metin, satir, sutun)?;
+                    aciklama_uret(metin, &kelime)
+                });
                 let yanit = yanit_uret(kimlik, |yazici| match aciklama.as_deref() {
                     Some(aciklama) => {
                         yazici.ham("{\"contents\":{\"kind\":\"markdown\",\"value\":")?;
@@ -470,9 +350,19 @@ impl Sunucu {
                     }
                     None => yazici.ham("null"),
                 });
-                cikti_ekle(&mut cikti, kimlik, yanit);
+                rpc_yaniti_ekle(&mut cikti, kimlik, yanit);
             }
             "textDocument/rename" => {
+                if konum_parametreleri(&mesaj).is_none()
+                    || mesaj
+                        .alan("params")
+                        .and_then(|p| p.alan("newName"))
+                        .and_then(Json::metin)
+                        .is_none()
+                {
+                    rpc_parametre_hatasi(&mut cikti, kimlik);
+                    return cikti;
+                }
                 let yanit = yanit_uret(kimlik, |yazici| {
                     if yeniden_adlandir(&mesaj, &self.belgeler, yazici)? {
                         Ok(())
@@ -480,39 +370,67 @@ impl Sunucu {
                         yazici.ham("null")
                     }
                 });
-                cikti_ekle(&mut cikti, kimlik, yanit);
+                rpc_yaniti_ekle(&mut cikti, kimlik, yanit);
             }
             "textDocument/definition" => {
-                let tanim = konum_parametreleri(&mesaj)
-                    .and_then(|(uri, satir, sutun)| {
-                        let metin = self.belgeler.get(&uri)?;
-                        match semantik_tanim_sorgula(&uri, metin, satir, sutun) {
-                            Some(Some(aralik)) => Some((uri, aralik)),
-                            // Bağsız konumda ya da hatalı belgede metin tahmini
-                            // yapılmaz; tanılar didOpen/didChange ile yayımlanır.
-                            Some(None) | None => None,
-                        }
-                    });
+                let Some((uri, satir, sutun)) = konum_parametreleri(&mesaj) else {
+                    rpc_parametre_hatasi(&mut cikti, kimlik);
+                    return cikti;
+                };
+                let tanim = self.belgeler.get(&uri).and_then(|metin| {
+                    match semantik_tanim_sorgula(&uri, metin, satir, sutun) {
+                        Some(Some(aralik)) => Some((uri, aralik)),
+                        // Bağsız konumda ya da hatalı belgede metin tahmini
+                        // yapılmaz; tanılar didOpen/didChange ile yayımlanır.
+                        Some(None) | None => None,
+                    }
+                });
                 let yanit = yanit_uret(kimlik, |yazici| match &tanim {
                     Some((uri, aralik)) => tanim_yaniti_yaz(yazici, uri, *aralik),
                     None => yazici.ham("null"),
                 });
-                cikti_ekle(&mut cikti, kimlik, yanit);
+                rpc_yaniti_ekle(&mut cikti, kimlik, yanit);
             }
             "shutdown" => {
                 let yanit = yanit_uret(kimlik, |yazici| yazici.ham("null"));
-                cikti_ekle(&mut cikti, kimlik, yanit);
+                rpc_yaniti_ekle(&mut cikti, kimlik, yanit);
+            }
+            "exit" if kimlik.is_some() => {
+                cikti_ekle(
+                    &mut cikti,
+                    None,
+                    rpc_hatasi(None, -32600, "Invalid Request"),
+                );
             }
             "exit" => cikti.devam = false,
             _ => {
-                // Kimlikli bilinmeyen istekler boş sonuçla yanıtlanır ki istemci beklemede kalmasın.
+                // JSON-RPC bildirimine yanıt verilmez; istek standart hatayı alır.
                 if kimlik.is_some() {
-                    let yanit = yanit_uret(kimlik, |yazici| yazici.ham("null"));
-                    cikti_ekle(&mut cikti, kimlik, yanit);
+                    cikti_ekle(
+                        &mut cikti,
+                        kimlik,
+                        rpc_hatasi(kimlik, -32601, "Method not found"),
+                    );
                 }
             }
         }
         cikti
+    }
+
+    /// UTF-8 olmayan bir LSP gövdesi de geçerli JSON değildir; çerçeveyi
+    /// okuyan ikili bağlantıyı düşürmek yerine JSON-RPC parse error üretir.
+    pub fn mesaj_baytlari_isle(&mut self, govde: &[u8]) -> Ciktilar {
+        match std::str::from_utf8(govde) {
+            Ok(govde) => self.mesaj_isle(govde),
+            Err(_) => {
+                let mut cikti = Ciktilar {
+                    govdeler: Vec::new(),
+                    devam: true,
+                };
+                cikti_ekle(&mut cikti, None, rpc_hatasi(None, -32700, "Parse error"));
+                cikti
+            }
+        }
     }
 
     fn belgeyi_guncelle(&mut self, uri: String, metin: String) -> Result<(), String> {
@@ -577,9 +495,7 @@ impl Sunucu {
             if ad.contains(['/', '\\', '.']) {
                 return Err("birim adı yol içeremez".into());
             }
-            match crate::kaynak_sinirlari::kaynak_dosyasi_oku(
-                &klasor.join(format!("{}.dil", ad)),
-            ) {
+            match crate::kaynak_sinirlari::kaynak_dosyasi_oku(&klasor.join(format!("{}.dil", ad))) {
                 Ok(kaynak) => Ok(kaynak),
                 Err(hata) => crate::gomulu_birim(ad)
                     .map(str::to_string)
@@ -603,7 +519,7 @@ fn konum_parametreleri(mesaj: &Json) -> Option<(String, usize, usize)> {
     let konum = parametreler.alan("position")?;
     let sayi = |alan: &str| -> Option<usize> {
         match konum.alan(alan)? {
-            Json::Sayi(s) => Some(*s as usize),
+            Json::Sayi(sayi) => sayi.dogal_sayi(),
             _ => None,
         }
     };
@@ -858,9 +774,7 @@ fn semantik_program_derle(uri: &str, metin: &str) -> Option<crate::faz::Baglanmi
         if ad.contains(['/', '\\', '.']) {
             return Err("birim adı yol içeremez".into());
         }
-        match crate::kaynak_sinirlari::kaynak_dosyasi_oku(
-            &klasor.join(format!("{}.dil", ad)),
-        ) {
+        match crate::kaynak_sinirlari::kaynak_dosyasi_oku(&klasor.join(format!("{}.dil", ad))) {
             Ok(kaynak) => Ok(kaynak),
             Err(hata) => crate::gomulu_birim(ad)
                 .map(str::to_string)
@@ -1091,9 +1005,7 @@ fn yeniden_adlandirma_plani(
                 hir.sembol_kullanimlari()
                     .into_iter()
                     .filter(|kullanim| kullanim.kimlik() == kimlik)
-                    .filter_map(|kullanim| {
-                        hir_araligini_coz(metin, kok, kullanim.kaynak_araligi())
-                    })
+                    .filter_map(|kullanim| hir_araligini_coz(metin, kok, kullanim.kaynak_araligi()))
                     .collect::<Vec<_>>(),
                 Some(kok.to_string()),
             )
@@ -1195,13 +1107,8 @@ fn yeniden_adlandir(
         return Ok(false);
     };
     let ilk_gecerli = plan.araliklar.iter().position(|aralik| {
-        yeniden_adlandirma_metni(
-            metin,
-            *aralik,
-            plan.sembol_koku.as_deref(),
-            &plan.yeni_ad,
-        )
-        .is_some()
+        yeniden_adlandirma_metni(metin, *aralik, plan.sembol_koku.as_deref(), &plan.yeni_ad)
+            .is_some()
     });
     let Some(ilk_gecerli) = ilk_gecerli else {
         return Ok(false);
@@ -1212,12 +1119,9 @@ fn yeniden_adlandir(
     yazici.ham(":[")?;
     let mut yazilan = 0usize;
     for aralik in &plan.araliklar[ilk_gecerli..] {
-        let Some(yeni) = yeniden_adlandirma_metni(
-            metin,
-            *aralik,
-            plan.sembol_koku.as_deref(),
-            &plan.yeni_ad,
-        ) else {
+        let Some(yeni) =
+            yeniden_adlandirma_metni(metin, *aralik, plan.sembol_koku.as_deref(), &plan.yeni_ad)
+        else {
             continue;
         };
         if yazilan > 0 {
@@ -1232,7 +1136,7 @@ fn yeniden_adlandir(
 
 fn kimlik_yaz(yazici: &mut SinirliJson, kimlik: Option<&Json>) -> CiktiSonucu<()> {
     match kimlik {
-        Some(Json::Sayi(sayi)) => yazici.bicimle(format_args!("{}", *sayi as i64)),
+        Some(Json::Sayi(sayi)) => yazici.ham(sayi.ham()),
         Some(Json::Metin(metin)) => yazici.metin(metin),
         _ => yazici.ham("null"),
     }
@@ -1268,14 +1172,15 @@ fn tasma_bildirimi(kimlik: Option<&Json>) -> String {
         azami / 1024 / 1024
     );
     let bildirim = match kimlik {
-        Some(kimlik) => rpc_hatasi(Some(kimlik), -32001, &mesaj)
-            .or_else(|_| rpc_hatasi(None, -32001, &mesaj)),
+        Some(kimlik) => {
+            rpc_hatasi(Some(kimlik), -32001, &mesaj).or_else(|_| rpc_hatasi(None, -32001, &mesaj))
+        }
         None => {
             let mut yazici = SinirliJson::yeni();
             let sonuc = (|| {
                 yazici.ham(
                     "{\"jsonrpc\":\"2.0\",\"method\":\"window/logMessage\",\
-                     \"params\":{\"type\":1,\"message\":"
+                     \"params\":{\"type\":1,\"message\":",
                 )?;
                 yazici.metin(&mesaj)?;
                 yazici.ham("}}")
@@ -1290,17 +1195,29 @@ fn tasma_bildirimi(kimlik: Option<&Json>) -> String {
     })
 }
 
-fn cikti_ekle(
-    ciktilar: &mut Ciktilar,
-    kimlik: Option<&Json>,
-    sonuc: CiktiSonucu<String>,
-) {
+fn cikti_ekle(ciktilar: &mut Ciktilar, kimlik: Option<&Json>, sonuc: CiktiSonucu<String>) {
     match sonuc {
         Ok(govde) => ciktilar.govdeler.push(govde),
         Err(_) => {
             ciktilar.govdeler.clear();
             ciktilar.govdeler.push(tasma_bildirimi(kimlik));
         }
+    }
+}
+
+fn rpc_yaniti_ekle(ciktilar: &mut Ciktilar, kimlik: Option<&Json>, sonuc: CiktiSonucu<String>) {
+    if kimlik.is_some() {
+        cikti_ekle(ciktilar, kimlik, sonuc);
+    }
+}
+
+fn rpc_parametre_hatasi(ciktilar: &mut Ciktilar, kimlik: Option<&Json>) {
+    if kimlik.is_some() {
+        cikti_ekle(
+            ciktilar,
+            kimlik,
+            rpc_hatasi(kimlik, -32602, "Invalid params"),
+        );
     }
 }
 
@@ -1318,7 +1235,7 @@ fn tanilari_yaz(uri: &str, tanilar: &[Tani]) -> CiktiSonucu<String> {
     let mut yazici = SinirliJson::yeni();
     yazici.ham(
         "{\"jsonrpc\":\"2.0\",\"method\":\"textDocument/publishDiagnostics\",\
-         \"params\":{\"uri\":"
+         \"params\":{\"uri\":",
     )?;
     yazici.metin(uri)?;
     yazici.ham(",\"diagnostics\":[")?;
@@ -1346,10 +1263,7 @@ fn lsp_tanisi_yaz(yazici: &mut SinirliJson, tani: &Tani) -> CiktiSonucu<()> {
         "{{\"range\":{{\"start\":{{\"line\":{},\"character\":{}}},\
          \"end\":{{\"line\":{},\"character\":{}}}}},\"severity\":1,\
          \"code\":",
-        satir,
-        bas,
-        satir,
-        son
+        satir, bas, satir, son
     ))?;
     yazici.metin(&tani.kod)?;
     yazici.ham(",\"source\":\"dil\",\"message\":")?;
@@ -1444,7 +1358,7 @@ mod kaynak_siniri_testleri {
         };
         cikti_ekle(
             &mut ciktilar,
-            Some(&Json::Sayi(7.0)),
+            json_coz("7").as_ref(),
             Err(cikti::CiktiTasmasi),
         );
         assert_eq!(ciktilar.govdeler.len(), 1);

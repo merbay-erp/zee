@@ -779,7 +779,11 @@ Editör desteği: `dillsp` — tanılar, hover, semantic kimliğe bağlı tanım
 ve dış tanımda eksik düzenlemeyi reddeden tek-belge güvenlik sınırı
 ([editors/](../editors/); [semantic sözleşme](lsp-semantic-gezinme.md)). Gelen tek JSON-RPC
 çerçevesi 8 KiB başlık/8 MiB gövde; JSON 128 iç içelik/100 bin düğüm sınırı
-taşır. Geçersiz Unicode fail-closed reddedilir. Kurulumsuz deneme:
+taşır. Geçersiz Unicode, kuralsız RFC 8259 sayısı ve duplicate alan fail-closed
+reddedilir. Sayısal kimlik binary float'a dönüşmeden kayıpsız döner; parse
+error `-32700`, bozuk request `-32600`, bilinmeyen method `-32601` ve bozuk
+params `-32602` olarak ayrılır. Bakım ayrıntısı:
+[LSP JSON-RPC profili](lsp-json-rpc-profili.md). Kurulumsuz deneme:
 [playground](../playground/).
 
 ---

@@ -40,7 +40,7 @@ adr/015-derleyici-faz-tipleri.md	kanitli	compiler/tests/faz_modeli_testi.rs,comp
 adr/016-typed-hir-cekirdegi.md	kanitli	compiler/tests/hir_modeli_testi.rs,compiler/tests/invariant_testi.rs,compiler/tests/lsp_testi.rs,compiler/tests/cagri_cikarimi_testi.rs	Typed HIR bağları tamlık production LSP tüketimi ve nihai çıkarım
 adr/017-native-ag-kaynak-sinirlari.md	kanitli	compiler/tests/ag_ve_esz_testi.rs,compiler/src/main.rs	HTTP deadline ve byte sınırları
 adr/018-sinirli-web-oturum-deposu.md	kanitli	compiler/src/web_guvenligi.rs,compiler/tests/web_testi.rs,compiler/tests/web_cok_surec_testi.rs	Oturum kota LRU mutlak ömür ve K-137 production ortaklığı
-adr/019-lsp-girdi-sinirlari.md	kanitli	compiler/tests/lsp_testi.rs,compiler/src/bin/dillsp.rs	Çerçeve ve JSON bütçeleri
+adr/019-lsp-girdi-sinirlari.md	kanitli	compiler/tests/lsp_testi.rs,compiler/src/bin/dillsp.rs	Çerçeve JSON bütçeleri ve tam gövde UTF-8 hata yanıtı
 adr/020-zorunlu-hir-kaynak-araligi.md	kanitli	compiler/tests/hir_modeli_testi.rs,compiler/tests/invariant_testi.rs	HIR source span zorunluluğu
 adr/021-production-panic-politikasi.md	kanitli	compiler/tests/panic_guvenligi_testi.rs	Panic lint ve geçersiz AST sonucu
 adr/022-lexer-parser-fuzz-politikasi.md	kanitli	compiler/tests/fuzz_korpusu_testi.rs	Kalıcı seed mutation ve fuzz hedefleri
@@ -56,6 +56,7 @@ adr/031-merkezi-yetkinlik-ve-outbound-istemci.md	kanitli	compiler/tests/yetkinli
 adr/032-atomik-replace-metadata-politikasi.md	kanitli	compiler/src/kalici_dosya.rs	Tier-1 owner grup ACL xattr ve Windows metadata merge politikası
 adr/033-merkezi-kaynak-butcesi.md	kanitli	compiler/tests/kaynak_sinirlari_testi.rs,compiler/tests/mimari_sinir_testi.rs,compiler/src/lsp.rs	Tek immutable profil, domain sahipliği ve tahsis/IO öncesi fail-closed sınırlar
 adr/034-web-ortak-depo-ve-worker-modeli.md	kanitli	compiler/tests/web_cok_surec_testi.rs,compiler/tests/web_testi.rs,compiler/src/web_guvenligi.rs	K-137 kalıcı ortak oturum/rate-limit kanonik proxy kimliği ve tek-worker süreç modeli
+adr/035-protokol-kesin-lsp-json-rpc.md	kanitli	compiler/tests/lsp_testi.rs,compiler/tests/mimari_sinir_testi.rs,compiler/src/bin/dillsp.rs	K-138 RFC 8259 sayı duplicate alan standart JSON-RPC hata ve kayıpsız kimlik sınırı
 spec/01-sozcukleme.md	kanitli	compiler/tests/kacis_ve_negatif_testi.rs,compiler/tests/metin_testi.rs	Token kaçış Unicode ve sayı kuralları
 spec/02-dizim.md	kanitli	compiler/tests/golden_testi.rs,compiler/tests/ifade_grameri_testi.rs	Cümle blok ve ifade dizimi
 spec/03-adlar-ve-kapsam.md	kanitli	compiler/tests/kapsam_testi.rs,compiler/tests/morfoloji_testi.rs,compiler/tests/lsp_testi.rs	Ad çözümü kapsam morfoloji ve semantic rename
@@ -79,4 +80,4 @@ spec/20-ifade-grameri.md	kanitli	compiler/tests/ifade_grameri_testi.rs,compiler/
 spec/21-deterministik-io-izi.md	kanitli	compiler/tests/io_izi_testi.rs,compiler/tests/io_izi_cli_testi.rs	Şema olay sırası redaksiyon ve replay
 spec/22-deterministik-io-profili.md	kanitli	compiler/tests/deterministik_io_profili_testi.rs	zee-io-1 rastgele saat ve fake IO
 spec/23-yetkinlik-ve-outbound-guvenligi.md	kanitli	compiler/tests/yetkinlik_testi.rs,compiler/tests/proje_testi.rs,compiler/src/yetkinlik.rs	Yetkinlik origin IP paket ve dosya sınırı
-spec/24-kaynak-guvenlik-profili.md	kanitli	compiler/tests/kaynak_sinirlari_testi.rs,compiler/tests/mimari_sinir_testi.rs,compiler/tests/lsp_testi.rs,compiler/src/lsp/cikti.rs	K-129/K-130 kaynak değer bağlantı zarfı K-131 sahiplik ve K-132 bounded LSP üretimi testli
+spec/24-kaynak-guvenlik-profili.md	kanitli	compiler/tests/kaynak_sinirlari_testi.rs,compiler/tests/mimari_sinir_testi.rs,compiler/tests/lsp_testi.rs,compiler/src/lsp/cikti.rs	K-129/K-130 kaynak zarfı K-131 sahiplik K-132 bounded çıktı ve K-138 kesin JSON-RPC testli

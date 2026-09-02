@@ -93,6 +93,7 @@ fn handler_modulleri_yeni_domain_icin_sinir_tasir() {
         ("src/kaynak_sinirlari/profiller.rs", 300),
         ("src/kaynak_sinirlari/web.rs", 80),
         ("src/lsp/cikti.rs", 120),
+        ("src/lsp/json.rs", 300),
         ("src/kalici_dosya.rs", 850),
         ("src/kalici_dosya/metadata.rs", 260),
         ("src/kaynak_sinirlari.rs", 260),
@@ -107,6 +108,17 @@ fn handler_modulleri_yeni_domain_icin_sinir_tasir() {
     ] {
         satir_butcesini_denetle(goreli, butce);
     }
+}
+
+#[test]
+fn lsp_json_ayristirma_ve_cikti_sahipleri_ayridir() {
+    let kok = kaynak("src/lsp.rs");
+    let json = kaynak("src/lsp/json.rs");
+    let cikti = kaynak("src/lsp/cikti.rs");
+    assert!(!kok.contains("fn sayi("));
+    assert!(json.contains("struct JsonSayisi"));
+    assert!(json.contains("fn sayi("));
+    assert!(cikti.contains("struct SinirliJson"));
 }
 
 #[test]
@@ -153,7 +165,7 @@ fn checker_katmanlari_tek_sorumlulukla_sahiplenilir() {
 
 #[test]
 fn checker_public_api_katmanlasmada_korunur() {
-    use dil::cozumleyici::{Tur, ad_cozumle};
+    use dil::cozumleyici::{ad_cozumle, Tur};
     use std::collections::HashMap;
 
     let ortam = HashMap::from([("sayı".to_string(), Tur::TamSayi)]);

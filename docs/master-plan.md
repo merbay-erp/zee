@@ -560,6 +560,7 @@ ADR-019 — LSP çerçeve ve JSON girdi sınırları
 ADR-020 — HIR düğümlerinde zorunlu kaynak aralığı
 ADR-021 — Production panic yüzeyi ve fail-closed hata politikası
 ADR-022 — Lexer/parser fuzz korpusu ve sürekli mutation politikası
+ADR-035 — Protokol-kesin LSP JSON-RPC sınırı
 # 39. Ekip ve rol modeli
 Dil mimarı: semantik ve uzun vadeli vizyon.
 Compiler: parser, types, IR, backend.
@@ -586,7 +587,10 @@ ve 8 MiB yanıt, yerel sunucuya 10 saniye mutlak istek okuma sınırı koydu.
 K-106/ADR-018 process içi oturum deposunu 4096 toplam/1024 anonim kayıtla
 sınırlayıp anonim LRU ve kaymayan mutlak ömrü bağladı. K-107/ADR-019 LSP
 çerçevesine 8 KiB/8 MiB, JSON'a 128 derinlik/100 bin düğüm bütçesi ve sıkı
-Unicode doğrulaması koydu. K-108/ADR-020 her semantic HIR ifadesinde kaynak
+Unicode doğrulaması koydu. K-138/ADR-035 bu JSON sınırını RFC 8259 sayı durum
+makinesi, kayıpsız sayısal kimlik, duplicate alan reddi, standart
+`-32700/-32600/-32601/-32602` ayrımı ve notification sessizliğiyle
+protokol-kesin yaptı. K-108/ADR-020 her semantic HIR ifadesinde kaynak
 aralığını yapısal zorunluluk yaptı; kesin token konumu yoksa uydurma sütun
 yerine kaynak satırı zarfı taşınır. K-126/ADR-030 bütün parser AST yaprak ve
 bileşiklerini kesin `AstKaynakAraligi` zarflarına aldı; checker bu aralığı
@@ -707,7 +711,10 @@ kalıcı rollback ve offline dilimini kapattı. K-136 exact manifest, kilit v3,
 salt-okunur kaynak kurulumu ve CLI entegrasyonuyla B-029/V1-P1-07'yi kapattı.
 K-137 kalıcı ortak web oturumu/revoke/expiry ve atomik rate-limit deposunu,
 tek-hop `Forwarded` kimliğini ve N ayrı tek-worker süreç modelini kurarak
-B-046'yı kapattı. Sıradaki omurga K-138 ile B-051 kesin JSON-RPC sınırıdır.
+B-046'yı kapattı. K-138/ADR-035 RFC 8259 sayı/duplicate alan doğrulamasını,
+kayıpsız JSON-RPC kimliğini ve standart parse/request/method/params hata
+ayrımını kurarak B-051'i kapattı. Sıradaki omurga K-139 ile B-052 kanonik web
+proxy origin sınırıdır.
 # 40. Proje felsefesinin korunması
 Bu projenin başarısı yalnız compiler’ın çalışması değildir. Başarı; Türkçe konuşan bir çocuğun yabancı syntax bariyerine takılmadan algoritmik düşünceyle tanışması, aynı dilin yıllar sonra onu terk etmeye zorlamaması ve ekosistemin tek bir şirketin kapalı ürünü haline gelmemesidir.
 Her yeni özellik şu dört sorudan geçmelidir: Türkçe doğal mı? Deterministik mi? Öğrenilebilir mi? Profesyonel ölçekte savunulabilir mi? Dördünden biri hayırsa özellik yeniden tasarlanır.

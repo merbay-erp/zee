@@ -157,6 +157,11 @@ değeri tüketir, yeni dağınık limit sabiti ekleyemez.
 K-132 LSP JSON üretimini `lsp/cikti.rs` sahibine ayırdı. Bu modül 120 satır,
 LSP kökü 1.500 satır bütçesindedir; yanıt kaçışı ve boyut muhasebesi yeniden
 semantic handler'lara dağılamaz.
+K-138/ADR-035 RFC 8259 ayrıştırma, kayıpsız `JsonSayisi` ve duplicate alan
+reddini `lsp/json.rs` sahibine ayırdı. Modül 300 satır bütçesindedir; LSP kökü
+sayı durum makinesini, Unicode kaçışını veya nesne tekillik politikasını geri
+yutamaz. `mimari_sinir_testi` JSON ayrıştırıcı ile bütçeli çıktı sahibinin
+ayrı kalmasını da doğrular.
 K-134 rota seçimi, güvenlik önsözü, taze ortam ve 30 saniyelik request yürütme
 akışını `yorumlayici/web_istek.rs` sahibine ayırdı. 180 satır bütçesi web
 yaşam döngüsünün runtime köküne geri gömülmesini engeller; transaction

@@ -46,7 +46,9 @@ sınırsız koleksiyon, metin/değer ve görev büyümesi host sürecini düşü
 S045, C023 veya C024 tanısıyla kontrollü durur. Ağ bağlantıları da süreç
 genelinde sınırlıdır. K-131 ile araç ve servis katmanlarının sayısal limitleri
 de aynı değişmez profilden gelir; K-132 LSP yanıtını JSON üretimi sırasında
-8 MiB ile sınırlar. Ayrıntı:
+8 MiB ile sınırlar. K-138 LSP girdisinde RFC 8259 sayı/duplicate alanını ve
+standart JSON-RPC hata ayrımını kesinleştirir; sayı kimliği kayıpsızdır.
+Ayrıntı:
 [kaynak güvenlik profili](../spec/24-kaynak-guvenlik-profili.md).
 Bu nedenle dosya adını ezberlemeden projeyi çalıştırabilirsin:
 

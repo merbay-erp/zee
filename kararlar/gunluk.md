@@ -2198,6 +2198,28 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   yüz artışın atomik eşiğini korur. Envanter 547 test, 152 etkin + 3 ayrılmış
   tanı ve 81 numaralı belgedir. B-046 kapandı.
 
+## K-138 — LSP JSON-RPC sınırı protokol-kesindir (2 Eyl)
+
+- **Sorun:** K-107 kaynak zarfını kapatmıştı fakat mini JSON parser sayıyı
+  genel karakter toplama + `f64` ile çözüyor, duplicate alanı kabul ediyor ve
+  bozuk JSON'u sessizce yutuyordu. JSON-RPC `id` yazılırken kesir/büyük sayı
+  `i64`'e çevrilerek değişebiliyordu; sözdizim hatasıyla bozuk request zarfı
+  aynı davranışı alıyordu.
+- **Karar:** `lsp/json.rs` RFC 8259 sayısını durum makinesiyle doğrular ve
+  kayıpsız özel lexeme olarak taşır. `NaN/Infinity`, kuralsız sayı ve Unicode
+  kaçışından sonra aynı ada çıkan duplicate alan fail-closed reddedilir.
+  Tek-nesne LSP profilinde UTF-8/sözdizimi `-32700`, bozuk JSON-RPC zarfı
+  `-32600`, bilinmeyen method `-32601`, bozuk params `-32602`dir. Notification
+  response üretmez; tam okunmuş UTF-8 dışı gövdeden sonra sunucu devam eder.
+- **Mimari:** Ayrıştırıcı 300 satır, outbound yazıcı 120 satır bütçeli ayrı
+  sahiplerdir. LSP kökü semantic dispatch'i taşır; sayı/Unicode/duplicate
+  politikası köke geri alınamaz.
+- **Kanıt:** RFC sayı olumlu/olumsuz ve `serde_json` differential korpusu,
+  escaped duplicate alan, dört standart hata kodu, bildirim sessizliği,
+  kayıpsız kesirli/çok büyük kimlik ve UTF-8 sonrası devam regresyonları
+  eklendi. Gerçek ardışık çerçeve ve mimari sahiplik testiyle envanter 556
+  test, 152 etkin + 3 ayrılmış tanı ve 82 numaralı belgedir. B-051 kapandı.
+
 ---
 
 ## Sonraki adım
@@ -2206,6 +2228,6 @@ Korpus 10 öğrenci + 5 profesyonel usability oturumuna (Hafta 12 hedefi, erkeni
 Hafta 2'de kağıt üstünde) sesli okutulacak; her kayıt için "doğal mı /
 deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
-Makine hattında K-137 ortak kalıcı web oturum/rate-limit deposunu, kanonik
-proxy kimliğini ve tek-worker/N süreç modelini bağlayarak B-046'yı kapattı.
-Sırada K-138 ile B-051 kesin JSON-RPC ayrıştırma sınırı vardır.
+Makine hattında K-138 RFC 8259 sayı, duplicate alan, kayıpsız kimlik ve
+standart JSON-RPC hata ayrımını bağlayarak B-051'i kapattı. Sırada K-139 ile
+B-052 web proxy origin'ini tek kanonik tipe geçirme işi vardır.
