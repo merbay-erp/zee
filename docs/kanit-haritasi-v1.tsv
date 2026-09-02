@@ -22,6 +22,7 @@ rfcs/0020-paket-yayini-ve-registry-guveni.md	kismi	compiler/tests/tedarik_testi.
 rfcs/0021-ifade-grameri-mimarisi.md	kanitli	compiler/tests/ifade_grameri_testi.rs,compiler/tests/bicimleyici_testi.rs	Katman sırası tam tüketim çakışma ve formatter eşdeğerliği
 rfcs/0022-deterministik-io-izi.md	kanitli	compiler/tests/io_izi_testi.rs,compiler/tests/io_izi_cli_testi.rs	Kanonik trace replay ve CLI
 rfcs/0023-deterministik-io-profili.md	kanitli	compiler/tests/deterministik_io_profili_testi.rs	Tohum rastgele dizi ve sanal saat
+rfcs/0024-merkezi-yetkinlik-ve-outbound-guvenligi.md	kanitli	compiler/tests/yetkinlik_testi.rs,compiler/tests/proje_testi.rs,compiler/src/yetkinlik.rs,compiler/src/ag_istemcisi.rs	Merkezi izin paket alt kümesi origin DNS HTTPS ve dosya kökü
 adr/001-bootstrap-dili.md	kanitli	compiler/tests/mimari_sinir_testi.rs,compiler/tests/playground_testi.rs	Rust faz sınırları ve WASM yüzeyi
 adr/002-parser-stratejisi.md	kanitli	compiler/tests/ifade_grameri_testi.rs,compiler/tests/parser_kurtarma_testi.rs,compiler/tests/bicimleyici_testi.rs	Elle parser katman kurtarma ve formatter eşdeğerliği
 adr/003-ilk-yurutme-modeli.md	kanitli	compiler/tests/playground_testi.rs,compiler/tests/io_izi_testi.rs	Yorumlayıcı ve IO soyutlaması
@@ -50,6 +51,7 @@ adr/027-surumlu-deterministik-io-profili.md	kanitli	compiler/tests/deterministik
 adr/028-kanonik-zep-yol-profili.md	kanitli	compiler/tests/tedarik_testi.rs,compiler/src/tedarik.rs	NFC fixture ve 80 saldırı vakası
 adr/029-ondalik-binary-float-siniri.md	kanitli	compiler/tests/ffi_sinir_testi.rs	Ondalık değer envanteri ve örtük binary float yasağı
 adr/030-kesin-ast-kaynak-araliklari.md	kanitli	compiler/tests/hir_modeli_testi.rs,compiler/tests/invariant_testi.rs,compiler/tests/lsp_testi.rs,compiler/tests/mimari_sinir_testi.rs	Bütün AST ifadelerinde kesin aralık HIR eşliği tanı ve LSP tüketimi
+adr/031-merkezi-yetkinlik-ve-outbound-istemci.md	kanitli	compiler/tests/yetkinlik_testi.rs,compiler/tests/proje_testi.rs,compiler/src/ag_istemcisi.rs	Compile runtime izin ve DNS sonrası outbound kapısı
 spec/01-sozcukleme.md	kanitli	compiler/tests/kacis_ve_negatif_testi.rs,compiler/tests/metin_testi.rs	Token kaçış Unicode ve sayı kuralları
 spec/02-dizim.md	kanitli	compiler/tests/golden_testi.rs,compiler/tests/ifade_grameri_testi.rs	Cümle blok ve ifade dizimi
 spec/03-adlar-ve-kapsam.md	kanitli	compiler/tests/kapsam_testi.rs,compiler/tests/morfoloji_testi.rs,compiler/tests/lsp_testi.rs	Ad çözümü kapsam morfoloji ve semantic rename
@@ -72,3 +74,4 @@ spec/19-registry-metadata-guveni.md	kanitli	compiler/src/registry.rs	Root timest
 spec/20-ifade-grameri.md	kanitli	compiler/tests/ifade_grameri_testi.rs,compiler/tests/bicimleyici_testi.rs	İfade katmanları tam tüketim ve formatter eşdeğerliği
 spec/21-deterministik-io-izi.md	kanitli	compiler/tests/io_izi_testi.rs,compiler/tests/io_izi_cli_testi.rs	Şema olay sırası redaksiyon ve replay
 spec/22-deterministik-io-profili.md	kanitli	compiler/tests/deterministik_io_profili_testi.rs	zee-io-1 rastgele saat ve fake IO
+spec/23-yetkinlik-ve-outbound-guvenligi.md	kanitli	compiler/tests/yetkinlik_testi.rs,compiler/tests/proje_testi.rs,compiler/src/yetkinlik.rs	Yetkinlik origin IP paket ve dosya sınırı

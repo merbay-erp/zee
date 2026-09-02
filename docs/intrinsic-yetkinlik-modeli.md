@@ -29,9 +29,11 @@ taşımaz.
 | `web.csrf_belirteci` | `() → Metin` | `WebOturumu` | `WebAdaptoru` |
 | `guvenlik.parola_dogrula` | `(Metin, Metin) → Mantıksal` | `Kriptografi` | `Saf` |
 
-Yetkinlik bir izin değildir. Çalıştırma profilinin hangi yetkinliklere izin
-verdiği B-023'te kararlaştırılacaktır; bu katman yalnız ihtiyacı dürüstçe
-bildirir. Örneğin çocuk modu ağ çağrısını bugün `GuvenliIo` sınırında reddeder.
+Intrinsic kaydındaki yetkinlik ihtiyaçtır; izin K-127/RFC-0024'ün merkezî
+`YetkinlikPolitikasi` modelinden gelir. Checker bütün gövdelerde ihtiyacı
+çıkarıp proje izniyle karşılaştırır, `PolitikaliIo` ve native adaptör aynı
+kararı runtime'da yeniden uygular. Çocuk modu bu modelin ağ/sunucu/donanımı
+kapalı profilidir; paket ana proje iznini genişletemez.
 
 ## Yeni intrinsic ekleme protokolü
 
@@ -43,8 +45,9 @@ bildirir. Örneğin çocuk modu ağ çağrısını bugün `GuvenliIo` sınırın
 3. Parser yalnız kaynak cümlesini genel AST düğümüne indirir. Genel `Değil`,
    aritmetik veya erişim düğümüyle anlatılabilen davranış için ikinci bir
    intrinsic üretilmez.
-4. Checker ve etki çözümleyici kayıt metadatasını tüketir. Aynı imza/etki
-   başka bir eşleşme dalında ikinci kez tanımlanmaz.
+4. Checker'ın `etki` katmanı statik etkiyi, ayrı `yetkinlik` katmanı gereken
+   izni tüketir. Aynı imza/etki/izin başka bir eşleşme dalında ikinci kez
+   tanımlanmaz.
 5. Runtime kararlı kimliği uygun IO/adaptör sınırına dağıtır; bilinmeyen kimlik
    fail-closed kalır.
 6. En az bir lowering, bir tür olumsuzu ve davranış regresyonu eklenir. Kimlik
@@ -59,5 +62,6 @@ bildirir. Örneğin çocuk modu ağ çağrısını bugün `GuvenliIo` sınırın
 - Paketlerin keyfî intrinsic kimliği üretmesine izin verilmez.
 - Kimliğin kayıtlı olması adaptörün her ortamda açık olduğu anlamına gelmez.
 - Runtime handler'larının modül ayrımı B-005/K-099 ile, checker'ın semantik
-  faz ayrımı B-006/K-100 ile tamamlandı; proje/paket yetkinlik izinleri B-023
-  kapsamındadır.
+  faz ayrımı B-006/K-100 ile tamamlandı. Proje/paket izinleri, exact outbound
+  origin ve DNS/IP kapısı B-023/B-049/K-127 ile
+  [ayrı rehberde](yetkinlik-ve-ag-guvenligi.md) bağlandı.

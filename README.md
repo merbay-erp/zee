@@ -69,6 +69,9 @@ simülatörü**, **özyineleme** (T035 "temel durum önce", C019 derinlik sını
 değer/hata erişimi derleme hatası), metin kaçışları ve negatif sabitler,
 **uygulama eylemleri ve yöntemli web adaptörü** (`eylem`, GET/HEAD salt-okuma
 kanıtı, POST/PUT/PATCH/DELETE, 404/405/413/504, iç içe dosya savepoint'i),
+**merkezî dış dünya yetkinlikleri** (K-127: proje/paket→compile→runtime,
+dosya kökü, public HTTPS, exact origin, DNS sonrası özel-IP/geçiş öneki SSRF
+ve kapalı redirect),
 **güvenli web profili** (Argon2id, 256 bit CSPRNG sunucu oturumu/rol,
 rotation/revoke/ömür, otomatik CSRF, `__Host-` çerez, HTTPS proxy Origin
 kapısı), form/istek sözlüğü, yönlendirme, html güvenlisi ve
@@ -83,7 +86,8 @@ tablosu, zamir n'si, ikizleşme, iki katmanlı çözüm↔üretim ve
 [bağımsız conformance korpusu](docs/morfoloji-conformance.md)), **açık işlem
 parametre türleri**
 (`sayıyı Ondalık olarak al`) ve public **dönüş sözleşmesi**
-(`Ondalık döndürür` / `değer döndürmez`), **proje bildirimi** (`proje.dil`, klasörden
+(`Ondalık döndürür` / `değer döndürmez`), **proje bildirimi** (`proje.dil`,
+`yetkinlikler` + `ağ_hedefleri`, klasörden
 çalıştır/denetle/dene), **yerel paketler** (`X paketini kullan`), süreçler
 arası kilitli **atomik dosya yazma** ve sürüm kimlikli Türkçe tanı kataloğu.
 Araçlar: `dil çalıştır(--güvenli/--deneysel-web/--web-proxy)/iz(kaydet/oynat)/parola-özeti/denetle(--json)/dene/biçimle/ekle/çıkar/kilitle/paketler/anahtar(üret)/paketle/hata/belge/morfoloji/yeni`
@@ -149,11 +153,11 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **490** |
-| Tanı kimliği | **145 etkin + 3 ayrılmış** |
-| RFC | **23** (2 kabul, 19 geçici kabul, 2 taslak) |
-| ADR | **28** (28 kabul) |
-| Normatif spec bölümü | **22** |
+| Rust + doctest vakası | **501** |
+| Tanı kimliği | **147 etkin + 3 ayrılmış** |
+| RFC | **24** (2 kabul, 20 geçici kabul, 2 taslak) |
+| ADR | **29** (29 kabul) |
+| Normatif spec bölümü | **23** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
 ### Golden korpus hakkında
@@ -296,6 +300,12 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   satır+sütun+uzunluk taşır; eski `1:1` checker işaretleri gerçek AST
   ifadesine yükselir, örtük çoğul kaynak döngü adının tokenına bağlanır ve LSP
   işlem/yapı adını yalnız semantic ifadenin kesin aralığında seçer.
+  K-127/RFC-0024/ADR-031 B-023/B-049'u kapattı: manifestteki sekiz kararlı
+  yetkinlik paketlerin üst sınırı ve compile/runtime kapısıdır. Native
+  outbound exact `ureq 3.4.0` + rustls ile HTTPS, tam origin, DNS sonrası
+  IP/özel-kullanım-geçiş öneki, sıfır redirect/proxy ve sabit zaman/bellek
+  zarfı taşır; ayrıntılı
+  kullanım [yetkinlik ve ağ güvenliği rehberindedir](docs/yetkinlik-ve-ag-guvenligi.md).
   Uygulama sırası
   [öncelikli backlog](docs/oncelikli-backlog.md) ile sabittir.
   Bağlayıcı liste: [docs/v1-surum-kapilari.md](docs/v1-surum-kapilari.md).

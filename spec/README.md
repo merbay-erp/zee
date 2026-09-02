@@ -44,6 +44,7 @@ Kırıcı değişiklik sessizce yapılamaz: davranış değişikliği RFC'den ge
 | [20 — İfade grameri](20-ifade-grameri.md) | primary→postfix→çağrı→aritmetik→birleştirme→karşılaştırma→boolean katmanları, tam tüketim ve formatter eşdeğerliği | RFC-0021, ADR-002, K-097/K-119 |
 | [21 — Deterministik IO izi](21-deterministik-io-izi.md) | sürümlü kanonik olay biçimi, bütçeli kayıt ve dış etkisiz replay | RFC-0022, ADR-026, K-115 |
 | [22 — Deterministik IO profili](22-deterministik-io-profili.md) | `zee-io-1` tohum, rastgele dizi, sanal saat ve hermetik adaptör sözleşmesi | RFC-0023, ADR-027, K-116 |
+| [23 — Yetkinlik ve outbound ağ güvenliği](23-yetkinlik-ve-outbound-guvenligi.md) | proje/paket izinleri, compile/runtime kapısı, origin/DNS/HTTPS ve dosya kökü | RFC-0024, ADR-031, K-127 |
 
 ## Faza bağlı — henüz spec dışı
 

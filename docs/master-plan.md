@@ -597,7 +597,8 @@ tamlık, kimlik ve imkânsız-durum değişmezlerini debug/test faz kapısına
 bağladı; özellik→alan dönüşümündeki klon kaynaklı yetim HIR kaydını bulup
 düzeltti. K-113/ADR-024 LSP odaklı parser recovery'yi cümle sonu+dengeli
 girinti senkronizasyonu, kaynak sırası ve 20 tanılık ortak bütçeyle kapattı.
-K-114/ADR-025 145 etkin ve 3 ayrılmış tanının kod↔anlam bağını sürümlü
+K-114/ADR-025 ile başlayan ve K-127'de 147 etkin + 3 ayrılmışa çıkan tanıların
+kod↔anlam bağı sürümlü
 fixture'a sabitledi. K-115/RFC-0022/ADR-026 bütün runtime IO çağrılarını
 kanonik, sürümlü ve dış etkisiz replay edilebilen bir iz protokolüne bağladı;
 `dil iz kaydet/oynat` kullanıcı kapısı ve gizlilik sınırları birlikte geldi.
@@ -622,7 +623,11 @@ kaynak+gözlem vakasıyla scheduler'a genişletip B-011'i kapattı.
 K-125/ADR-029 açık Ondalık↔binary float FFI sınırını örtük eşleme yasağı ve
 zorunlu `kayıplı`+`Sonuç` kapısı olarak kapattı. K-126/ADR-030 bütün AST
 ifadelerinde kesin source span'i HIR, tanı ve LSP'ye bağlayıp B-050'yi
-kapattı. Sıradaki makine işi B-023 capability ve outbound hedef politikasıdır.
+kapattı. K-127/RFC-0024/ADR-031 sekiz dış dünya yetkinliğini proje/paket,
+compile ve runtime boyunca tek fail-closed politikaya bağladı; native outbound
+rustls HTTPS, exact origin, DNS sonrası IP/özel-kullanım-geçiş öneki, sıfır
+redirect/proxy ve kaynak bütçeleri taşır. B-023/B-049 kapandı; sıradaki makine işi B-048 metadata
+sözleşmesidir.
 P0 maddeleri kapanmadan yeni dil özelliği
 öne alınmaz; yarım güvenlik/correctness dilimi önce atomik olarak tamamlanır.
 
@@ -671,7 +676,8 @@ sözünü bağlayıp B-009'u kapattı. K-124 `zee-esz-1` gözlem profiliyle
 scheduler'ın bağımsız uyumluluk sözünü bağlayıp B-011'i kapattı.
 K-125/ADR-029 örtük Ondalık↔binary float köprüsünü yasaklayıp B-012'yi
 kapattı. K-126/ADR-030 bütün AST ifadelerini kesin kaynaklandırıp B-050'yi
-kapattı. Sıradaki omurga B-023 capability/outbound hedef politikasıdır.
+kapattı. K-127/RFC-0024/ADR-031 proje/paket capability ve outbound SSRF/HTTPS
+sınırını kapattı. Sıradaki omurga B-048 atomik replace metadata sözleşmesidir.
 # 40. Proje felsefesinin korunması
 Bu projenin başarısı yalnız compiler’ın çalışması değildir. Başarı; Türkçe konuşan bir çocuğun yabancı syntax bariyerine takılmadan algoritmik düşünceyle tanışması, aynı dilin yıllar sonra onu terk etmeye zorlamaması ve ekosistemin tek bir şirketin kapalı ürünü haline gelmemesidir.
 Her yeni özellik şu dört sorudan geçmelidir: Türkçe doğal mı? Deterministik mi? Öğrenilebilir mi? Profesyonel ölçekte savunulabilir mi? Dördünden biri hayırsa özellik yeniden tasarlanır.

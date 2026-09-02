@@ -7,12 +7,15 @@
 //! sürüm "0.1.0" olsun
 //! morfoloji "zee-tr-1" olsun
 //! giriş "program.dil" olsun
+//! yetkinlikler boş liste olsun
+//! ağ_hedefleri boş liste olsun
 //! yerel_bağımlılıklar "../ortak" listesi olsun
 //! ```
 
 use crate::agac::{Cumle, Ifade};
 use crate::tani::Tani;
-use std::collections::HashMap;
+use crate::yetkinlik::{AgHedefi, Yetkinlik, YetkinlikPolitikasi};
+use std::collections::{BTreeSet, HashMap};
 use std::path::{Component, Path};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -22,6 +25,10 @@ pub struct ProjeBildirimi {
     /// Kaynak adlarının hangi sürümlü Türkçe ek tablosuyla çözüleceği.
     pub morfoloji: String,
     pub giris: String,
+    /// Dış dünya erişimleri kaynakta değil proje sahibinin bildiriminde açılır.
+    pub yetkinlikler: BTreeSet<Yetkinlik>,
+    /// Outbound ağ için tam şema+host+port allowlist'i.
+    pub ag_hedefleri: BTreeSet<AgHedefi>,
     /// Her yol, kendi `proje.dil` bildirimi olan yerel bir projedir. Paket adı
     /// ve sürümü bağımlı projenin bildiriminden gelir; iki yerde tekrarlanmaz.
     pub yerel_bagimliliklar: Vec<String>,
@@ -57,13 +64,19 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
         };
         if !matches!(
             ad.as_str(),
-            "proje" | "sürüm" | "morfoloji" | "giriş" | "yerel_bağımlılıklar"
+            "proje"
+                | "sürüm"
+                | "morfoloji"
+                | "giriş"
+                | "yetkinlikler"
+                | "ağ_hedefleri"
+                | "yerel_bağımlılıklar"
         ) {
             return Err(proje_hatasi(
                 "P001",
                 &format!("\"{}\" proje bildirimi alanı değil.", ad),
                 satir,
-                "Geçerli alanlar: proje, sürüm, morfoloji, giriş, yerel_bağımlılıklar.",
+                "Geçerli alanlar: proje, sürüm, morfoloji, giriş, yetkinlikler, ağ_hedefleri, yerel_bağımlılıklar.",
             ));
         }
         if alanlar.insert(ad.clone(), (deger, satir)).is_some() {
@@ -85,6 +98,97 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
     )?;
     let (giris, giris_satiri) = gerekli_metni_al(&mut alanlar, "giriş")?;
     let yerel_bagimliliklar = bagimliliklari_al(&mut alanlar)?;
+    let (yetkinlik_yazimlari, yetkinlik_satiri) =
+        metin_listesini_al(&mut alanlar, "yetkinlikler", "P015")?;
+    let (ag_hedef_yazimlari, ag_hedef_satiri) =
+        metin_listesini_al(&mut alanlar, "ağ_hedefleri", "P015")?;
+    let mut yetkinlikler = BTreeSet::new();
+    for yazim in yetkinlik_yazimlari {
+        let Some(yetkinlik) = Yetkinlik::ayristir(&yazim) else {
+            return Err(proje_hatasi(
+                "P015",
+                &format!("\"{}\" bilinen bir proje yetkinliği değil.", yazim),
+                yetkinlik_satiri,
+                &format!(
+                    "Geçerli yetkinlikler: {}.",
+                    Yetkinlik::TUMU
+                        .into_iter()
+                        .map(Yetkinlik::yazimi)
+                        .collect::<Vec<_>>()
+                        .join(", ")
+                ),
+            ));
+        };
+        if !yetkinlikler.insert(yetkinlik) {
+            return Err(proje_hatasi(
+                "P015",
+                &format!("\"{}\" yetkinliği birden çok kez yazıldı.", yazim),
+                yetkinlik_satiri,
+                "Her yetkinliği yalnız bir kez bildir.",
+            ));
+        }
+    }
+    let mut ag_hedefleri = BTreeSet::new();
+    for yazim in ag_hedef_yazimlari {
+        let hedef = AgHedefi::bildirimden(&yazim).map_err(|neden| {
+            proje_hatasi(
+                "P015",
+                &format!("Geçersiz ağ hedefi \"{}\": {}.", yazim, neden),
+                ag_hedef_satiri,
+                "Tam origin yaz; örnek: https://api.example.com veya http://127.0.0.1:8080",
+            )
+        })?;
+        if !ag_hedefleri.insert(hedef) {
+            return Err(proje_hatasi(
+                "P015",
+                &format!("\"{}\" ağ hedefi birden çok kez yazıldı.", yazim),
+                ag_hedef_satiri,
+                "Her şema+host+port hedefini yalnız bir kez bildir.",
+            ));
+        }
+    }
+    if yetkinlikler.contains(&Yetkinlik::YerelAg) && !yetkinlikler.contains(&Yetkinlik::Ag) {
+        return Err(proje_hatasi(
+            "P015",
+            "`yerel-ağ` yetkinliği tek başına kullanılamaz.",
+            yetkinlik_satiri,
+            "Yetkinliklere `ağ`ı da ekle ve hedefleri açıkça bildir.",
+        ));
+    }
+    if yetkinlikler.contains(&Yetkinlik::WebOturumu)
+        && !yetkinlikler.contains(&Yetkinlik::AgSunucusu)
+    {
+        return Err(proje_hatasi(
+            "P015",
+            "`web-oturumu` yetkinliği tek başına kullanılamaz.",
+            yetkinlik_satiri,
+            "Yetkinliklere `ağ-sunucusu`nu da ekle.",
+        ));
+    }
+    if yetkinlikler.contains(&Yetkinlik::Ag) == ag_hedefleri.is_empty() {
+        return Err(proje_hatasi(
+            "P015",
+            "`ağ` yetkinliği ile `ağ_hedefleri` birlikte ve boş olmayan biçimde bildirilmelidir.",
+            if yetkinlikler.contains(&Yetkinlik::Ag) {
+                ag_hedef_satiri
+            } else {
+                yetkinlik_satiri
+            },
+            "Ağ gerekmiyorsa ikisini de boş bırak; gerekiyorsa `ağ` ve en az bir tam origin yaz.",
+        ));
+    }
+    if ag_hedefleri
+        .iter()
+        .any(|hedef| hedef.semasi() == crate::yetkinlik::AgSemasi::Http)
+        && !yetkinlikler.contains(&Yetkinlik::YerelAg)
+    {
+        return Err(proje_hatasi(
+            "P015",
+            "Düz http:// hedefi yalnız açık `yerel-ağ` yetkinliğiyle kullanılabilir.",
+            ag_hedef_satiri,
+            "Public ağ için https:// kullan; yerel geliştirme gerekiyorsa `yerel-ağ`ı ayrıca bildir.",
+        ));
+    }
 
     if ad.trim().is_empty() || ad.chars().any(char::is_control) {
         return Err(proje_hatasi(
@@ -127,8 +231,16 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
         surum,
         morfoloji,
         giris,
+        yetkinlikler,
+        ag_hedefleri,
         yerel_bagimliliklar,
     })
+}
+
+impl ProjeBildirimi {
+    pub fn yetkinlik_politikasi(&self) -> YetkinlikPolitikasi {
+        YetkinlikPolitikasi::proje(self.yetkinlikler.clone(), self.ag_hedefleri.clone())
+    }
 }
 
 fn istege_bagli_metni_al(
@@ -280,6 +392,40 @@ fn bagimliliklari_al(
         }
     }
     Ok(yollar)
+}
+
+fn metin_listesini_al(
+    alanlar: &mut HashMap<String, (Ifade, usize)>,
+    ad: &str,
+    kod: &str,
+) -> Result<(Vec<String>, usize), Tani> {
+    let Some((ifade, satir)) = alanlar.remove(ad) else {
+        return Ok((Vec::new(), 1));
+    };
+    let yazimlar = match ifade.turu() {
+        Ifade::BosListe => Vec::new(),
+        Ifade::ListeSabiti(ogeler) => ogeler
+            .iter()
+            .map(|oge| match oge.turu() {
+                Ifade::MetinSabiti(yazim) => Ok(yazim.clone()),
+                _ => Err(proje_hatasi(
+                    kod,
+                    &format!("\"{}\" alanındaki her öğe Metin olmalı.", ad),
+                    satir,
+                    &format!("Örnek: {} \"değer\" listesi olsun", ad),
+                )),
+            })
+            .collect::<Result<Vec<_>, _>>()?,
+        _ => {
+            return Err(proje_hatasi(
+                kod,
+                &format!("\"{}\" bir Metin listesi olmalı.", ad),
+                satir,
+                &format!("Örnek: {} boş liste olsun", ad),
+            ));
+        }
+    };
+    Ok((yazimlar, satir))
 }
 
 fn gecerli_surum(surum: &str) -> bool {

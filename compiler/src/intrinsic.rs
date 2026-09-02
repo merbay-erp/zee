@@ -8,17 +8,7 @@ pub const SENSOR_ACIK_MI: &str = "donanim.sensor_acik_mi";
 pub const CSRF_BELIRTECI: &str = "web.csrf_belirteci";
 pub const PAROLA_DOGRULA: &str = "guvenlik.parola_dogrula";
 
-/// Bir intrinsic'in çalışmak için ihtiyaç duyduğu dış dünya sınırı.
-///
-/// Bu sınıflandırma bugün denetleyici ve etki çözümlemesinin ortak sözlüğüdür;
-/// kullanıcı/paket bazlı izin denetimi B-023'te bunun üstüne kurulacaktır.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum Yetkinlik {
-    Ag,
-    Donanim,
-    WebOturumu,
-    Kriptografi,
-}
+pub use crate::yetkinlik::Yetkinlik;
 
 /// Intrinsic imzalarında kullanılabilen çekirdek türlerin kapalı kümesi.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

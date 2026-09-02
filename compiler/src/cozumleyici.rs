@@ -25,6 +25,7 @@ mod kaynak;
 mod sembol;
 mod sozlesme;
 mod turler;
+mod yetkinlik;
 
 use self::akis::{
     bekleyen_gorev_olmadigini_denetle, daraltma_cikar, daraltma_cikar_geri, daraltma_ekle,
@@ -133,6 +134,16 @@ pub fn denetle_coklu(program: &mut Program) -> Vec<Tani> {
 /// açık imzalı işlemler tanım sözleşmesiyle denetlenir (K-083/K-121).
 pub fn denetle(program: &mut Program) -> Result<(), Tani> {
     denetle_ve_hir_bilgisi(program).map(|_| ())
+}
+
+/// Derlenmiş programın dış dünya gereksinimlerini çalışma politikasına karşı
+/// yürütmeden önce denetler. Bildirimsiz embedding API'si bu kapıyı kendi host
+/// politikasıyla çağırabilir; resmî CLI her çalıştırmada zorunlu uygular.
+pub fn yetkinlikleri_denetle(
+    program: &Program,
+    politika: &crate::yetkinlik::YetkinlikPolitikasi,
+) -> Result<(), Tani> {
+    yetkinlik::denetle(program, politika)
 }
 
 /// Programı denetler ve başarılı geçişin typed HIR lowering bilgisini verir.

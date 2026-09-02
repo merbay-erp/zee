@@ -133,6 +133,7 @@ kalır (ADR-025).
 | T051 | Eşzamanlı görev grubunun sözcüksel sahipliği kapanmadı ya da boş birleştirme yapıldı | Her `eşzamanlı olarak` grubunu aynı kapsamda tek `hepsini bekle` ile kapat; açık görevlerle dönme/bitirme |
 | T052 | Hata nedeni/verisi yanlış türde ya da yeniden yayma zenginleştiriliyor | Neden `Hata`, veri `Metin sözlüğü` olmalı; zenginleştirmek için yeni kodlu hata ile sar |
 | T053 | Gezilen kaynak koleksiyonun kendisi değiştiriliyor ya da aynı kaynak iç içe geziliyor | Öğeyi döngü adıyla güncelle; ekleme/silmeyi ayrı listede toplayıp gezme bitince uygula |
+| T054 | Program çalışma politikasında açılmayan yetkinliği ya da outbound origin'i kullanıyor | Yetkiyi ve gerekiyorsa tam şema+host+port hedefini `proje.dil` içinde bilinçli olarak bildir |
 
 ## C — Çalışma zamanı
 
@@ -156,7 +157,7 @@ kalır (ADR-025).
 | C015 | CSV biçim hatası (boş dosya ya da sütun sayısı uyuşmazlığı) | Başlık satırı + eşit hücreli veri satırları (K-062: hücreler Metin okunur) |
 | C016 | JSON biçim hatası | v0: düz nesne + metin değerler |
 | C017 | Sunucu kurulamadı | Kapı boşta mı? Düşük kapılar (<1024) yönetici ister |
-| C018 | Ağ isteği başarısız | v0 yalnız http:// destekler (TLS yok); adresi ve bağlantıyı kontrol et |
+| C018 | Ağ isteği başarısız | HTTPS adresini, proje yetkinliğini, tam origin allowlist'ini, DNS sonucunu ve zaman aşımını denetle; düz HTTP yalnız açık `yerel-ağ` içindir |
 | C019 | Çağrı derinliği 500'ü aştı | Özyinelemeli adım her seferinde temel duruma yaklaşmalı |
 | C020 | Çıkış kodu 0–255 dışında | `programı 0 ile bitir` … `programı 255 ile bitir` (K-069) |
 | C021 | Eylem transaction'ı başlatılamadı, tamamlanamadı ya da geri alınamadı | Kalıcı kaynağın yol/izin durumunu denetle; yarım başarı ayrıntısını kaybetmeden raporla |
@@ -172,7 +173,7 @@ kalır (ADR-025).
 
 | Kod | Ne oldu | Çözüm |
 |---|---|---|
-| P001 | `proje.dil` bilinmeyen/tekrarlı alan ya da değer tanımı dışında cümle içeriyor | `proje`, `sürüm`, `morfoloji`, `giriş` ve isteğe bağlı `yerel_bağımlılıklar` alanlarını kullan |
+| P001 | `proje.dil` bilinmeyen/tekrarlı alan ya da değer tanımı dışında cümle içeriyor | `proje`, `sürüm`, `morfoloji`, `giriş`, `yetkinlikler`, `ağ_hedefleri` ve `yerel_bağımlılıklar` alanlarını kullan |
 | P002 | Zorunlu proje alanı eksik | Eksik `proje`, `sürüm` veya `giriş` satırını ekle |
 | P003 | Proje adı ya da `X.Y.Z` sürümü geçersiz | Boş olmayan ad ve üç sayılı sürüm kullan: `0.1.0` |
 | P004 | Giriş mutlak, proje dışına çıkan veya `.dil` olmayan yol | Proje içinde kalan göreli `.dil` yolu kullan |
@@ -186,6 +187,7 @@ kalır (ADR-025).
 | P012 | Yayıncı anahtarı veya tekrar üretilebilir paket/imza/SBOM/provenance zinciri üretilemedi | Anahtar izin/biçimini, kaynak paket limitlerini ve yerel bağımlılık/sembolik bağ olmadığını denetle; ayrıntı fail-closed nedeni gösterir |
 | P013 | Registry root/metadata imzası, eşik, sürüm, süre, kanonik biçim, üst rol boyut/özet bağı veya kalıcı geçmiş doğrulanamadı | Registry kök sabitlemesini ve rol metadata zincirini yenile; doğrulanmayan aynayı/cache durumunu kullanma |
 | P014 | Exact hedef bulunamadı; targets yayıncı/paket bağı uyuşmadı; sürüm yanked ya da etkin kritik duyurudan etkilendi | Doğru exact sürüm/yayıncıyı seç; yanked/duyuru baypasını yalnız açık gerekçe ve kilit kaydıyla uygula |
+| P015 | Yetkinlik listesi/hedefi geçersiz ya da paket üst projenin iznini aşıyor | Yetkinliği ve tam origin'i ana `proje.dil` içinde açıkça onayla; public ağda HTTPS kullan |
 
 ## Ç — İç akış
 

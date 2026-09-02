@@ -478,6 +478,16 @@ rastgelelik oyun/simülasyon içindir; güvenlik belirteçleri OS CSPRNG'si kull
 
 ## 18. Ağ ve eşzamanlılık
 
+Proje dış dünyaya kapalı başlar. Public HTTPS için `proje.dil`:
+
+```text
+yetkinlikler "ağ" listesi olsun
+ağ_hedefleri "https://api.example.com" listesi olsun
+```
+
+Yerel örnekte düz HTTP ve loopback için listede hem `ağ` hem `yerel-ağ`,
+hedefte tam `http://127.0.0.1:8081` origin'i bulunmalıdır.
+
 ```
 cevap "http://127.0.0.1:8081/durum" adresinden gelen yanıt olsun
 "Durum: " ile cevabın durum kodu yaz
@@ -490,9 +500,12 @@ GET "/durum" adresine istek geldiğinde
 Gerçek TCP dinleyicisi production sözleşmesi değildir ve güvenli varsayılanla
 kapalıdır. Yalnız localhost eğitim/prototipi için açıkça
 `dil çalıştır --deneysel-web program.dil` denir; CLI görünür uyarı verir.
-Native bootstrap istemcisi bugün yalnız `http://` destekler; deadline yazılmasa
-bile 30 saniyede durur ve başlıklar dahil 8 MiB'dan büyük yanıtı reddeder.
-TLS istemci backend'i henüz verilmiş söz değildir; Zee TLS'yi elle yazmayacaktır.
+Native istemci K-127 ile rustls tabanlı HTTPS kullanır; Zee TLS'yi elle yazmaz.
+Exact şema+host+port allowlist'ini ve DNS sonrası bütün IP'leri denetler;
+redirect/proxy kapalı, private/loopback ayrıca izinli, metadata/link-local
+daima yasaktır. Deadline yazılmasa bile 30 saniyede durur; 64 KiB başlık ve
+8 MiB toplam yanıt zarfını aşamaz. Ayrıntı:
+[yetkinlik ve ağ güvenliği](yetkinlik-ve-ag-guvenligi.md).
 
 Deneysel eşzamanlılık ve süre yüzeyi:
 
@@ -582,6 +595,9 @@ dolunca en uzun süredir kullanılmayan anonim kayıt tahliye edilir. Anonim
 profil tek runtime process'i içindir; çok süreçli production ortak depo ister.
 
 ## 19. Fiziksel dünya (ESP32)
+
+Gerçek projede bu yüzey `yetkinlikler "donanım" listesi olsun` bildirimi
+ister; çocuk profili donanımı kapalı tutar.
 
 ```
 kapı açıksa
