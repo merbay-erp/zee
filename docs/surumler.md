@@ -12,6 +12,17 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **Faza özgü test matrisi** (K-146, ADR-043): Cargo'nun gerçekten derlediği
+  lib/bin/integration/doctest envanteri 21 birincil faza tam sahipletildi.
+  Sahipsiz veya yinelenen test, boş seçici, kayıp regression/fuzz/conformance
+  yolu ve bayat matris fail-closed'dur. Linux, macOS ve Windows her biri kendi
+  `cfg` envanterini faz faz çalıştırıp count, pass/fail/ignored ve duvar
+  süresini job summary ile indirilebilir Markdown artefaktına yazar. Süre
+  correctness/performance eşiği değildir; performans trendi B-040'ta kalır.
+  Altı koşucu birim testi ve CI kablolama regresyonuyla kaynak envanteri 592
+  test ve 41 kabul ADR'ye çıktı; B-038 kapandı. Dil semantiği, tanılar, RFC ve
+  normatif spec değişmedi.
+
 - **Kanonik Rust biçim kapısı** (K-145, ADR-042): 53 dosyada kalan 349
   `rustfmt` fark bloğu tek, davranışsız toplu dilimde temizlendi. Rust 1.93.1
   araç zinciri `rustfmt` bileşenini açıkça sabitler; üç platformlu CI artık

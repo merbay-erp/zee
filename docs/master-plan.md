@@ -765,7 +765,10 @@ tarayıcı UTF-8 tahsisinden önce sınırlayarak B-056'yı kapattı. K-144/ADR-
 bayat olmayan makine raporuna bağlayarak B-035'i kapattı. K-145/ADR-042,
 53 dosyadaki eski biçim borcunu tek mekanik dilimde temizleyip sabit
 `rustfmt` bileşenli üç platformlu `cargo fmt --all -- --check` kapısıyla
-B-037'yi kapattı. Sıradaki omurga K-146 ile B-038 faza özgü test matrisidir.
+B-037'yi kapattı. K-146/ADR-043 gerçek Cargo/libtest envanterini 21 birincil
+faza tam sahipletip her Tier-1 platformunda pass/fail/ignored, süre,
+regression, fuzz ve conformance bağlarını ayrı raporlayarak B-038'i kapattı.
+Sıradaki omurga K-147 ile B-039 kalıcı semantic regression korpusudur.
 # 40. Proje felsefesinin korunması
 Bu projenin başarısı yalnız compiler’ın çalışması değildir. Başarı; Türkçe konuşan bir çocuğun yabancı syntax bariyerine takılmadan algoritmik düşünceyle tanışması, aynı dilin yıllar sonra onu terk etmeye zorlamaması ve ekosistemin tek bir şirketin kapalı ürünü haline gelmemesidir.
 Her yeni özellik şu dört sorudan geçmelidir: Türkçe doğal mı? Deterministik mi? Öğrenilebilir mi? Profesyonel ölçekte savunulabilir mi? Dördünden biri hayırsa özellik yeniden tasarlanır.

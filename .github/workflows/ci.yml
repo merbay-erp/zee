@@ -31,9 +31,25 @@ jobs:
           toolchain: 1.93.1
           components: clippy,rustfmt
           targets: wasm32-unknown-unknown
-      - name: Testler (golden korpus + biçimleyici)
+      - name: Faza özgü test matrisi
         working-directory: compiler
-        run: cargo test --locked
+        shell: bash
+        run: cargo run --locked --bin faz_test_matrisi -- --denetle --rapor target/faz-test-matrisi.md
+      - name: Faz matrisini iş özetine ekle
+        if: always()
+        working-directory: compiler
+        shell: bash
+        run: |
+          if [[ -f target/faz-test-matrisi.md ]]; then
+            cat target/faz-test-matrisi.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Faz matrisi artefaktını sakla
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: faz-test-matrisi-${{ matrix.os }}
+          path: compiler/target/faz-test-matrisi.md
+          if-no-files-found: warn
       - name: Uyarı yok
         working-directory: compiler
         shell: bash
