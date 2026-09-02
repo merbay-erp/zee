@@ -38,6 +38,9 @@ ağ_hedefleri "https://api.example.com" listesi olsun
 Public internet HTTPS ister; yerel/private ağ veya düz HTTP ayrıca
 `yerel-ağ` yetkinliği ister. Ayrıntı:
 [yetkinlik ve ağ güvenliği](yetkinlik-ve-ag-guvenligi.md).
+Dosya yazmaları atomik replace kullanır; var olan normal dosyanın desteklenen
+owner/group/ACL/xattr güvenlik bilgisi K-128/ADR-032 uyarınca korunamazsa yazma
+eski dosyaya dokunmadan durur.
 Bu nedenle dosya adını ezberlemeden projeyi çalıştırabilirsin:
 
 ```bash

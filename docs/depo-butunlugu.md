@@ -47,6 +47,8 @@ Araç depo ağacından şunları hesaplar:
 `--denetle` tek byte farkında başarısız olur ve normal test paketi bu kipi
 çalıştırır. Böylece yeni test, tanı veya karar belgesi sayıları elle arayıp
 değiştirilmez; geliştiren kişi yalnız üreticiyi çalıştırır.
+Bu yazma K-128/ADR-032 metadata sözleşmesini de tüketir; README'nin var olan
+owner/group/ACL/xattr bilgisi sayı tazelenirken sessizce düşürülemez.
 
 Tarihsel K-kayıtlarındaki “o gün toplam N test” cümleleri bilinçli snapshot'tır
 ve yeniden yazılmaz. README'nin bugünkü canlı sayıları için tek otorite

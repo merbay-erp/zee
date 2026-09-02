@@ -14,7 +14,7 @@ rfcs/0012-ffi-ve-tehlikeli-sinir.md	taslak	-	Faz 4/5 gerçeklenmediği için tes
 rfcs/0013-ondalik-sayilar.md	kanitli	compiler/tests/ondalik_testi.rs,compiler/tests/ffi_sinir_testi.rs	Keyfî hassasiyet yuvarlama ve örtük binary float yasağı
 rfcs/0014-standart-kitaplik.md	kismi	compiler/tests/kitaplik_testi.rs,compiler/tests/projeler_testi.rs	Çalışan gömülü prototip testli; RFC taslak
 rfcs/0015-uygulama-eylemleri.md	kanitli	compiler/tests/web_testi.rs,compiler/tests/proje_testi.rs	Eylem etki ve transaction sınırı
-rfcs/0016-atomik-kalici-dosya.md	kanitli	compiler/src/kalici_dosya.rs,compiler/tests/proje_testi.rs	Atomik replace süreç kilidi ve rollback
+rfcs/0016-atomik-kalici-dosya.md	kanitli	compiler/src/kalici_dosya.rs,compiler/tests/proje_testi.rs	Atomik replace süreç kilidi metadata koruması ve rollback
 rfcs/0017-web-oturum-ve-csrf.md	kanitli	compiler/tests/web_testi.rs,compiler/tests/guvenli_testi.rs,compiler/src/web_guvenligi.rs	Oturum rol CSRF çerez ve proxy profili
 rfcs/0018-surumlu-morfoloji-profili.md	kanitli	compiler/tests/morfoloji_testi.rs,compiler/tests/morfoloji_conformance_testi.rs,compiler/tests/lsp_testi.rs	Profil snapshot immutable parmak izi bağımsız conformance property belirsizlik ve semantic rename
 rfcs/0019-deger-semantigi-ve-gezme-imleci.md	kanitli	compiler/tests/koleksiyon_testi.rs	Derin kopya ve değer-sonuç imleci
@@ -52,6 +52,7 @@ adr/028-kanonik-zep-yol-profili.md	kanitli	compiler/tests/tedarik_testi.rs,compi
 adr/029-ondalik-binary-float-siniri.md	kanitli	compiler/tests/ffi_sinir_testi.rs	Ondalık değer envanteri ve örtük binary float yasağı
 adr/030-kesin-ast-kaynak-araliklari.md	kanitli	compiler/tests/hir_modeli_testi.rs,compiler/tests/invariant_testi.rs,compiler/tests/lsp_testi.rs,compiler/tests/mimari_sinir_testi.rs	Bütün AST ifadelerinde kesin aralık HIR eşliği tanı ve LSP tüketimi
 adr/031-merkezi-yetkinlik-ve-outbound-istemci.md	kanitli	compiler/tests/yetkinlik_testi.rs,compiler/tests/proje_testi.rs,compiler/src/ag_istemcisi.rs	Compile runtime izin ve DNS sonrası outbound kapısı
+adr/032-atomik-replace-metadata-politikasi.md	kanitli	compiler/src/kalici_dosya.rs	Tier-1 owner grup ACL xattr ve Windows metadata merge politikası
 spec/01-sozcukleme.md	kanitli	compiler/tests/kacis_ve_negatif_testi.rs,compiler/tests/metin_testi.rs	Token kaçış Unicode ve sayı kuralları
 spec/02-dizim.md	kanitli	compiler/tests/golden_testi.rs,compiler/tests/ifade_grameri_testi.rs	Cümle blok ve ifade dizimi
 spec/03-adlar-ve-kapsam.md	kanitli	compiler/tests/kapsam_testi.rs,compiler/tests/morfoloji_testi.rs,compiler/tests/lsp_testi.rs	Ad çözümü kapsam morfoloji ve semantic rename
@@ -59,7 +60,7 @@ spec/04-turler.md	kanitli	compiler/tests/koleksiyon_testi.rs,compiler/tests/onda
 spec/05-degerlendirme.md	kanitli	compiler/tests/golden_testi.rs,compiler/tests/playground_testi.rs	Değerlendirme sırası ve determinizm
 spec/06-hata-modeli.md	kanitli	compiler/tests/katalog_testi.rs,compiler/tests/tani_kimligi_testi.rs,compiler/tests/yapilandirilmis_hata_testi.rs	Tanı Seçenek Sonuç ve Hata sözleşmesi
 spec/07-birimler.md	kanitli	compiler/tests/birim_testi.rs,compiler/tests/proje_testi.rs	Birim çözümü ve paket görünürlüğü
-spec/08-kalici-dosya.md	kanitli	compiler/src/kalici_dosya.rs,compiler/tests/proje_testi.rs	Atomik kalıcı yazma
+spec/08-kalici-dosya.md	kanitli	compiler/src/kalici_dosya.rs,compiler/tests/proje_testi.rs	Atomik kalıcı yazma ve platform metadata koruması
 spec/09-son-tarih-ve-iptal.md	kanitli	compiler/tests/ag_ve_esz_testi.rs,compiler/tests/dene_ve_sure_testi.rs	Deadline iptal ve zaman davranışı
 spec/10-disari-acik-islem-sozlesmesi.md	kanitli	compiler/tests/acik_imza_testi.rs,compiler/tests/cagri_cikarimi_testi.rs	Public imza yerel sıra-bağımsız çıkarım ve dönüş kanıtı
 spec/11-uygulama-eylemleri-ve-web-adaptoru.md	kanitli	compiler/tests/web_testi.rs,compiler/tests/intrinsic_lowering_testi.rs	Eylem rota etki ve savepoint

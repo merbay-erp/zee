@@ -1965,6 +1965,25 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   147 etkin + 3 ayrılmış tanı; RFC/ADR/spec indeksleriyle 76 numaralı belge
   tazedir. B-023/B-049 ve V1-P0-29 kapandı.
 
+## K-128 — Atomik replace metadata'yı da emanet kabul eder (2 Eyl)
+
+- **Sorun:** K-084 yeni inode'a yalnız içerik ve izin bitlerini taşıyordu;
+  Unix owner/group, ACL/xattr/security label ve Windows DACL/named stream
+  sessizce kaybolabilirdi.
+- **Karar:** ADR-032 ile hedef normal dosya değilse replace reddedilir.
+  Linux/macOS mode+uid+gid zorunlu korunur. Linux görünür xattr/ACL/security
+  alanını 64 KiB ad/değer + 1 MiB toplam bütçeyle; macOS ACL+xattr'ı
+  `fcopyfile` ile descriptor'dan descriptor'a taşır. Taşınamayan alan commit
+  öncesi hatadır; Tier-1 dışı Unix mevcut dosya replace'i `Unsupported` olur.
+- **Windows:** `ReplaceFileW` metadata/ACL merge hata-yoksayma bayrağı olmadan
+  ve aynı klasör kurtarma yedeğiyle kullanılır. Nadir kısmi taşıma hatası eski
+  hedefi write-through `MoveFileExW` ile geri kurar; ilk yaratma eski atomik
+  yoldadır.
+- **Kanıt:** macOS mode+uid+gid, binary xattr ve gerçek ACL; Linux xattr,
+  Windows NTFS named stream ve Unix symlink için platform-koşullu beş yeni
+  regresyon tanımlıdır. Eski 10 atomiklik/yarış/hata testi yeşildir. Envanter
+  506 test, 77 numaralı belge; B-048/V1-P0-30 kapandı.
+
 ---
 
 ## Sonraki adım
@@ -1973,5 +1992,6 @@ Korpus 10 öğrenci + 5 profesyonel usability oturumuna (Hafta 12 hedefi, erkeni
 Hafta 2'de kağıt üstünde) sesli okutulacak; her kayıt için "doğal mı /
 deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
-Makine hattında B-023/B-049/K-127 kapandı. Sırada B-048 atomik replace
-metadata sözleşmesini platform kanıtlarıyla dürüstçe tamamlamak vardır.
+Makine hattında B-048/K-128 kapandı. Sırada B-025 ortak `KaynakSinirlari`
+modeliyle dağınık timeout, girdi, allocation, koleksiyon, görev, bağlantı ve
+çıktı bütçelerini tek politika altında toplamak vardır.

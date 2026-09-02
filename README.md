@@ -89,7 +89,8 @@ parametre türleri**
 (`Ondalık döndürür` / `değer döndürmez`), **proje bildirimi** (`proje.dil`,
 `yetkinlikler` + `ağ_hedefleri`, klasörden
 çalıştır/denetle/dene), **yerel paketler** (`X paketini kullan`), süreçler
-arası kilitli **atomik dosya yazma** ve sürüm kimlikli Türkçe tanı kataloğu.
+arası kilitli ve owner/group/ACL/xattr güvenli **atomik dosya yazma** (K-128,
+ADR-032) ve sürüm kimlikli Türkçe tanı kataloğu.
 Araçlar: `dil çalıştır(--güvenli/--deneysel-web/--web-proxy)/iz(kaydet/oynat)/parola-özeti/denetle(--json)/dene/biçimle/ekle/çıkar/kilitle/paketler/anahtar(üret)/paketle/hata/belge/morfoloji/yeni`
 + **dillsp** LSP sunucusu — tanılar, hover, HIR/semantic kimlikli tanıma git,
 **kapsam güvenli morfolojili yeniden adlandırma (F2)** ([editors/](editors/)).
@@ -153,10 +154,10 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **501** |
+| Rust + doctest vakası | **506** |
 | Tanı kimliği | **147 etkin + 3 ayrılmış** |
 | RFC | **24** (2 kabul, 20 geçici kabul, 2 taslak) |
-| ADR | **29** (29 kabul) |
+| ADR | **30** (30 kabul) |
 | Normatif spec bölümü | **23** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
@@ -306,6 +307,9 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   IP/özel-kullanım-geçiş öneki, sıfır redirect/proxy ve sabit zaman/bellek
   zarfı taşır; ayrıntılı
   kullanım [yetkinlik ve ağ güvenliği rehberindedir](docs/yetkinlik-ve-ag-guvenligi.md).
+  K-128/ADR-032 B-048'i kapattı: atomik replace Linux/macOS'ta mode+uid+gid
+  ve desteklenen ACL/xattr'ı, Windows'ta DACL/security resource/named stream'i
+  korur; metadata taşınamıyorsa eski hedefe dokunmadan fail-closed durur.
   Uygulama sırası
   [öncelikli backlog](docs/oncelikli-backlog.md) ile sabittir.
   Bağlayıcı liste: [docs/v1-surum-kapilari.md](docs/v1-surum-kapilari.md).

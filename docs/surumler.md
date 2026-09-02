@@ -406,6 +406,17 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   8 MiB zarfı korunur. On bir yeni net regresyonla toplam 501 test, 147 etkin +
   3 ayrılmış tanı ve 76 numaralı belge yeşildir; B-023/B-049/V1-P0-29 kapandı.
 
+- **Atomik replace metadata koruması** (K-128, ADR-032, RFC-0016/spec-08):
+  Var olan hedef artık yalnız normal dosyaysa değiştirilir; symlink sessizce
+  normal dosyaya dönüştürülmez. Linux/macOS mode+uid+gid'yi korur. Linux
+  görünür xattr namespace'lerini 64 KiB ad/değer ve 1 MiB toplam bütçeyle;
+  macOS ACL+xattr/resource fork'u `fcopyfile` ile taşır. Windows mevcut hedefi
+  DACL/security resource/named stream birleştiren, hata yoksaymayan
+  `ReplaceFileW` ve aynı klasör kurtarma yedeğiyle değiştirir. Desteksiz veya
+  taşınamayan metadata committen önce fail-closed olur. Beş yeni platform
+  regresyonuyla envanter 506 test ve 77 numaralı belgeye çıktı; B-048 ve
+  V1-P0-30 kapandı.
+
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`
   bildirimi hazır üretir. P001–P004 Türkçe proje tanıları. Doğrudan dosya
