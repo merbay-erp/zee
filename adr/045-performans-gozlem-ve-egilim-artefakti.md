@@ -60,5 +60,5 @@ gibi sunmak da yanlış güven üretir.
   correctness çalışmasının duvar saatidir; bu kayıt sabit kullanıcı iş
   yüklerinin gözlemidir.
 - Dil sözdizimi, çalışma semantiği, tanı kataloğu, RFC ve normatif spec
-  değişmez. B-040 kapanır; bağımlılık yönü/katman mimarisi denetimi K-149'un
-  ayrı işidir.
+  değişmez. B-040 kapanır. Ardından K-149/ADR-046 bağımlılık yönü/katman
+  mimarisi denetimini ayrı kapı olarak tamamlamıştır.

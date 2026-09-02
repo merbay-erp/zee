@@ -33,7 +33,7 @@
 | Project system | `compiler/tests/proje_testi.rs`<br>`projeler` | — | — | `paket`<br>`registry`<br>`cli`<br>`uctan_uca` |
 | Semantic regression | `regression/v1.tsv`<br>`regression` | — | — | `uctan_uca` |
 | End-to-end | `golden` | — | — | — |
-| Engineering gates | `compiler/tests/fixtures/islev-egilimi-v1.tsv`<br>`compiler/tests/fixtures/tani-kimlikleri-v1.tsv`<br>`docs/kanit-haritasi-v1.tsv`<br>`docs/performans-gecmisi-v1.tsv`<br>`docs/olcumler.md` | — | — | — |
+| Engineering gates | `compiler/tests/fixtures/islev-egilimi-v1.tsv`<br>`compiler/tests/fixtures/katman-mimarisi-v1.tsv`<br>`compiler/tests/fixtures/tani-kimlikleri-v1.tsv`<br>`docs/kanit-haritasi-v1.tsv`<br>`docs/performans-gecmisi-v1.tsv`<br>`docs/olcumler.md` | — | — | — |
 
 ## Birincil sahiplik
 
@@ -49,12 +49,12 @@ yeniden koşulması gereken sonraki yüzeylerini gösterir.
 | Type checker | `test:acik_imza_testi`<br>`test:cagri_cikarimi_testi`<br>`test:daraltma_testi`<br>`test:ffi_sinir_testi`<br>`test:intrinsic_lowering_testi`<br>`test:koleksiyon_testi`<br>`test:sonuc_donusu_testi` | Imza, cikarim, daraltma, koleksiyon, intrinsic ve sonuc turleri. |
 | Typed HIR | `test:hir_modeli_testi`<br>`lib:hir::testler::` | SymbolId, tur ve kesin kaynak araligi tasiyan baglanmis temsil. |
 | Morphology | `test:morfoloji_conformance_testi`<br>`test:morfoloji_testi` | zee-tr-1 uretim, cozum, belirsizlik ve Unicode profili. |
-| Runtime | `test:dene_ve_sure_testi`<br>`test:metin_testi`<br>`test:ondalik_testi`<br>`test:ozyineleme_testi`<br>`test:siralama_testi`<br>`test:yapilandirilmis_hata_testi`<br>`lib:ondalik::testler::` | Deger, islem, hata, sure, ondalik ve yurutme semantigi. |
+| Runtime | `test:dene_ve_sure_testi`<br>`test:metin_testi`<br>`test:ondalik_testi`<br>`test:ozyineleme_testi`<br>`test:siralama_testi`<br>`test:yapilandirilmis_hata_testi`<br>`lib:ondalik::testler::`<br>`lib:zaman::testler::` | Deger, islem, hata, sure, ondalik ve yurutme semantigi. |
 | IO | `test:deterministik_io_profili_testi`<br>`test:io_izi_testi`<br>`lib:ag_istemcisi::testler::`<br>`lib:kalici_dosya::tests::` | Deterministik profil, replay, ag yaniti ve atomik kalici dosya siniri. |
 | Concurrency | `test:ag_ve_esz_testi`<br>`test:eszamanlilik_conformance_testi` | Scheduler, gorev agaci, iptal ve kararli gozlem sirasi. |
 | Web/security | `test:guvenli_testi`<br>`test:kaynak_sinirlari_testi`<br>`test:web_cok_surec_testi`<br>`test:web_testi`<br>`test:yetkinlik_testi`<br>`lib:guvenlik::tests::`<br>`lib:kaynak_sinirlari::testler::`<br>`lib:web_guvenligi::tests::`<br>`lib:yetkinlik::testler::`<br>`bin:dil:web_profili_testleri::` | Yetkinlik, kaynak butcesi, oturum, CSRF, proxy ve transaction guvenligi. |
 | HTTP parser | `test:http_istegi_testi` | Request-line, CRLF, header ve govde framing byte siniri. |
-| Package | `test:kitaplik_testi`<br>`test:tedarik_testi`<br>`lib:paket::testler::`<br>`lib:paket::uzak::politika::testler::`<br>`lib:tedarik::testler::` | Kutuphane, ZEP arsivi, imza, SBOM ve provenance davranisi. |
+| Package | `test:kitaplik_testi`<br>`test:tedarik_testi`<br>`lib:paket::uzak::politika::testler::`<br>`lib:tedarik::testler::` | Kutuphane, ZEP arsivi, imza, SBOM ve provenance davranisi. |
 | Registry | `lib:registry::istemci::testler::`<br>`lib:registry::testler::`<br>`bin:dil:dil_registry::testler::` | Metadata zinciri, rollback, cache, exact pin ve CLI secenekleri. |
 | Supply-chain | `test:tedarik_kapisi_testi` | RustSec, lisans, kilit ve offline vendor politikasinin yurutulebilir kapisi. |
 | LSP | `test:lsp_testi`<br>`lib:lsp::cikti::testler::`<br>`lib:lsp::kaynak_siniri_testleri::`<br>`bin:dillsp:testler::` | JSON-RPC, framing, tani, hover, completion, definition ve rename. |
@@ -63,7 +63,7 @@ yeniden koşulması gereken sonraki yüzeylerini gösterir.
 | Project system | `test:proje_testi`<br>`test:projeler_testi` | Bildirim, kilit, bagimlilik, yetkinlik ve tam proje ornekleri. |
 | Semantic regression | `test:semantic_regresyon_korpusu_testi` | Duzeltilmis bug kimligi, birincil faz, kesin tani span, exit ve gozlenebilir cikti korpusu. |
 | End-to-end | `test:golden_testi` | 33 golden program ile kullanici yuzeyinden tam derleme ve yurutme hatti. |
-| Engineering gates | `test:dokuman_tazelik_testi`<br>`test:katalog_testi`<br>`test:mimari_sinir_testi`<br>`test:panic_guvenligi_testi`<br>`test:tani_kimligi_testi`<br>`bin:islev_egilimi:testler::`<br>`bin:faz_test_matrisi:testler::`<br>`bin:olcum:testler::` | Belge, tani, mimari, panic, bicim ve performans gozetim kapilarinin kendi regresyonlari. |
+| Engineering gates | `test:dokuman_tazelik_testi`<br>`test:katalog_testi`<br>`test:katman_mimarisi_testi`<br>`test:mimari_sinir_testi`<br>`test:panic_guvenligi_testi`<br>`test:tani_kimligi_testi`<br>`bin:islev_egilimi:testler::`<br>`bin:faz_test_matrisi:testler::`<br>`bin:olcum:testler::` | Belge, tani, mimari, panic, bicim katman ve performans gozetim kapilarinin kendi regresyonlari. |
 
 ## Çalıştırma sözleşmesi
 

@@ -176,10 +176,10 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **603** |
+| Rust + doctest vakası | **607** |
 | Tanı kimliği | **152 etkin + 3 ayrılmış** |
 | RFC | **25** (2 kabul, 21 geçici kabul, 2 taslak) |
-| ADR | **43** (43 kabul) |
+| ADR | **44** (44 kabul) |
 | Normatif spec bölümü | **24** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
@@ -297,8 +297,12 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   yürütme/LSP/bellek yüzeyinde 25 turluk ham örnek+p50/p95 gözlemine çevirdi.
   [Sürümlü tarihçe](docs/performans-gecmisi-v1.tsv), JSON ve Markdown her
   Linux CI koşusunda summary+90 günlük artefakttır; shared CI hard gate
-  değildir, eşik yalnız adanmış runner'da açıkça etkinleşir. B-040 kapandı;
-  sıradaki makine kapısı K-149 bağımlılık yönü/katman mimarisi denetimidir.
+  değildir, eşik yalnız adanmış runner'da açıkça etkinleşir. B-040 kapandı.
+  K-149/ADR-046 bütün production Rust ağacını 35 sorumluluk sahibine, exact
+  doğrudan kenar tabanına ve izinli katman yönüne bağladı. Yeni/kayıp modül,
+  yeni/kaldırılmış kenar ve ters katman geçişi fail-closed'dur; SHA-256 ile
+  takvim ilkellerinin iki gerçek ters bağımlılığı aşağı taşındı. Ayrıntı
+  [katman mimarisi rehberindedir](docs/katman-mimarisi.md); B-057 kapandı.
   K-107/ADR-019 `dillsp` girdisini 8 KiB başlık, 8 MiB gövde, 128 JSON
   derinliği ve 100 bin düğümle sınırlayıp Unicode parser olumsuzlarını kapattı.
   K-138/ADR-035 sayı ayrıştırmasını RFC 8259 durum makinesine taşıdı; sayısal

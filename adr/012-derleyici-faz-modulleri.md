@@ -52,6 +52,9 @@ Hata kataloğu bekçisi de `compiler/src` altındaki bütün Rust modüllerini
 - Kök parser 1160, checker 963, runtime 1965 satıra indi.
 - Cümle, ifade ve çağrı değişikliklerinin sahipliği incelemede görünür oldu.
 - Üç mimari sınır testi gelecekteki büyümeyi ayrı modüle zorlar.
+- K-149/ADR-046, dosya bütçesinden bağımsız olarak bütün production üst
+  sahiplerini exact doğrudan kenar tabanı ve izinli katman yönüyle korur;
+  ayrıntı [katman rehberindedir](../docs/katman-mimarisi.md).
 - Hata kodu↔katalog birebirlik testi yeni alt dizinleri otomatik kapsar.
 - Mevcut 393 davranış testi değişmeden, toplam 396 testle taşıma doğrulandı.
 - Yeni normatif dil spec'i gerekmez; kullanıcı semantiği değişmemiştir.

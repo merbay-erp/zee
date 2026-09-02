@@ -431,7 +431,7 @@ impl WebGuvenligi {
             kapsam.len(),
             kapsam
         );
-        let anahtar = crate::paket::sha256_hex(ham.as_bytes());
+        let anahtar = crate::guvenlik::sha256_hex(ham.as_bytes());
         let pencere_ms = pencere_saniye.saturating_mul(1_000);
         let azami_anahtar = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
             .web()
@@ -521,7 +521,7 @@ fn en_eski_anonimi_sil(durum: &mut DepoDurumu) -> bool {
 }
 
 fn anahtar(belirtec: &str) -> String {
-    crate::paket::sha256_hex(belirtec.as_bytes())
+    crate::guvenlik::sha256_hex(belirtec.as_bytes())
 }
 
 pub fn cerez_adi_gecerli(ad: &str) -> bool {

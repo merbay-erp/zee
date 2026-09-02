@@ -12,6 +12,19 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **Production katman yönü fail-closed** (K-149, ADR-046): Bütün production
+  Rust ağacı 35 üst sahip ve on katmana ayrıldı. Sürümlü TSV her sahibin exact
+  doğrudan bağımlılıklarını ve sorumluluğunu taşır; yeni/kayıp modül,
+  eklenen/kaldırılan kenar ve izin dışı temel→adaptör yönü testte durur.
+  Tarayıcı yorum/metin/test-only kodu ayırır, hedefe özgü production yollarını
+  birleşik korur ve `crate`/`dil` kök takma adıyla graph gizlemeyi reddeder.
+  İnceleme sırasında morfoloji→paket SHA-256 ve tedarik→runtime Gregoryen
+  takvim terslikleri ortak `guvenlik`/`zaman` temel sahiplerine taşındı; eski
+  runtime tarih API'si yeniden dışa aktarımla uyumludur. Üç katman testi ve
+  bir takvim regresyonuyla kaynak envanteri 607 test, 93 numaralı belge ve 44
+  kabul ADR'ye çıktı; B-057/V1-P0-32 kapandı. Dil sözdizimi, runtime
+  semantiği, tanılar, RFC ve normatif spec değişmedi.
+
 - **p50/p95 performans tarihçesi ve CI artefaktı** (K-148, ADR-045): Eski altı
   iş yükü/tek medyan çıktısı; parse, resolver/checker+HIR kanıtı, tam
   kaynak→typed-HIR, runtime başlangıcı, 100 bin tur yürütme, LSP

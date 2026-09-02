@@ -775,8 +775,13 @@ K-148/ADR-045 dokuz parse/checker/HIR/runtime/yürütme/LSP/bellek yüzeyini
 iki ısınma+25 turluk ham dağılım, p50/p95, JSON/Markdown ve sürümlü TSV
 tarihçesine bağladı. Shared CI sonucu yalnız summary+90 günlük artefakttır;
 hard eşik ancak sabit adanmış runner'da açıkça etkinleşir. B-040 kapandı.
-Sıradaki omurga K-149 ile modül sorumluluğu ve bağımlılık yönünü fail-closed
-koruyan katman mimarisi denetimidir.
+K-149/ADR-046 bütün production Rust ağacını 35 sorumluluk sahibine, exact
+doğrudan kenar tabanına ve temel→adaptör katman yönüne bağladı. Morfoloji→
+paket SHA-256 ve tedarik→runtime takvim ters bağımlılıkları `guvenlik` ve
+`zaman` temel sahiplerine taşındı; B-057/V1-P0-32 kapandı. Bağımlılık-hazır
+makine backlog'u kalmadı. B-001 çağrı sözdizimi ile B-002 gezme zihinsel
+modeli, önceden ilan edilmiş gerçek çocuk/öğrenci ve profesyonel usability
+kanıtı gelmeden kapatılmaz veya yeni syntax kararıyla atlanmaz.
 # 40. Proje felsefesinin korunması
 Bu projenin başarısı yalnız compiler’ın çalışması değildir. Başarı; Türkçe konuşan bir çocuğun yabancı syntax bariyerine takılmadan algoritmik düşünceyle tanışması, aynı dilin yıllar sonra onu terk etmeye zorlamaması ve ekosistemin tek bir şirketin kapalı ürünü haline gelmemesidir.
 Her yeni özellik şu dört sorudan geçmelidir: Türkçe doğal mı? Deterministik mi? Öğrenilebilir mi? Profesyonel ölçekte savunulabilir mi? Dördünden biri hayırsa özellik yeniden tasarlanır.

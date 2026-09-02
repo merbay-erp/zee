@@ -113,6 +113,24 @@ adanmış benchmark makinesinde açıkça verilebilir. Geçmiş şema, metadata 
 p50/p95 tutarlılığı `olcum` birim testleriyle; CI kablolaması ve eşiksizlik
 politikası mimari sınır testiyle korunur.
 
+## Production katman graph'ı
+
+K-149/ADR-046'nın [katman rehberi](katman-mimarisi.md) ve
+[`katman-mimarisi-v1.tsv`](../compiler/tests/fixtures/katman-mimarisi-v1.tsv)
+bütün production Rust dosyalarını 35 üst sahibe bağlar. Exact doğrudan
+bağımlılık tabanı eklenen kadar artık kullanılmayan kenarı da görünür inceleme
+ister; katman yönü ters kenarı tabana yazmakla geçilebilir olmaz.
+
+```bash
+cd compiler
+cargo test --locked --test katman_mimarisi_testi
+```
+
+Tarayıcı test-only kodu, yorum ve metinleri graph'a katmaz; hedefe özgü
+production yollarını birleşik korur. Yeni kök modül/ikili sahiplenilmezse,
+mevcut modüle yeni kenar eklenirse veya sozdizimi/semantik/runtime/adaptör yönü
+tersine çevrilirse `Engineering gates` fazı kapanır.
+
 ## Semantic regresyon korpusu
 
 K-147/ADR-044'ün [semantic regresyon korpusu](semantic-regresyon-korpusu.md),
