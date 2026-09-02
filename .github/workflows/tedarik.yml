@@ -1,0 +1,30 @@
+name: tedarik
+
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: "43 2 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  rust-bagimliliklari:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - name: Sabit Rust araç zinciri
+        run: rustup toolchain install 1.93.1 --profile minimal
+      - name: Sabit cargo-deny
+        run: cargo install cargo-deny --version 0.20.2 --locked
+      - name: RustSec, lisans, ban ve kaynak politikası
+        working-directory: compiler
+        run: |
+          cargo deny --locked check -D warnings
+          cargo deny --manifest-path fuzz/Cargo.toml --config deny.toml \
+            --locked check -D warnings
+      - name: Tekrar üretilebilir offline vendor kanıtı
+        run: bash scripts/offline-vendor-denetle.sh

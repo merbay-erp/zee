@@ -312,6 +312,9 @@ Unicode confusable kontrolü.
 Unsafe/FFI açık ve görünür sınırdır.
 Compiler fuzzing ve parser property/differential testleri.
 SBOM, checksum ve security advisory.
+K-141/ADR-038 bootstrap Rust grafiğini sabit cargo-deny ile güncel RustSec,
+lisans, ban ve kaynak kökeni kapısına; iki lock'u SHA-256 doğrulamalı gerçek
+offline vendor derlemesine bağlar.
 Playground CPU/RAM/süre/IO limitleri.
 Paket kurulumunda keyfi post-install varsayılan olarak yasak.
 Secret değerlerin loglanmasını engelleyen tür/capability yaklaşımı ileri araştırma konusu.
@@ -343,6 +346,8 @@ Runtime memory/resource tests.
 Resmi conformance suite.
 Reproducible-build checks.
 Package/registry supply-chain tests.
+Bootstrap dependency graph için günlük advisory ve boş-cache offline vendor
+kanıtı K-141/ADR-038 ile çalışır.
 LSP protocol tests.
 Cross-platform integration.
 Performance regression benchmarks.
@@ -434,6 +439,8 @@ Binary dağıtımları checksum ve signature ile.
 Nightly/beta/stable kanalları.
 Rollback ve yanked release prosedürü.
 Compiler bootstrap zinciri ayrıca doğrulanır.
+K-141'den itibaren hiçbir CI Cargo komutu kilitsiz fallback yapamaz; compiler
+ve fuzz lock'ları aynı vendor manifestini ve offline derlemeyi üretmelidir.
 # 28. Gizlilik ve telemetri
 Compiler ve araçlar varsayılan olarak kullanıcı kaynak kodunu veya kişisel veriyi toplamaz. Telemetri varsa opt-in, açık şemalı ve kapatılabilir olur.
 Crash raporlarında kaynak kodu varsayılan olarak gönderilmez.
@@ -575,6 +582,7 @@ ADR-034 — Kalıcı ortak web deposu ve tek-worker süreç modeli
 ADR-035 — Protokol-kesin LSP JSON-RPC sınırı
 ADR-036 — Kanonik web proxy origin sınırı
 ADR-037 — Byte tabanlı HTTP/1.x istek sınırı
+ADR-038 — Rust tedarik zinciri ve offline vendor kapısı
 # 39. Ekip ve rol modeli
 Dil mimarı: semantik ve uzun vadeli vizyon.
 Compiler: parser, types, IR, backend.
@@ -732,8 +740,11 @@ kaldırıp web proxy'yi ortak `AgHedefi` DNS/IPv6/port kimliğine ve açık
 loopback bind+peer değişmezine bağlayarak B-052'yi kapattı. K-140/ADR-037
 request-line/header/gövde framing'ini yalnız CRLF, origin-form, tek kurallı CL
 ve exact UTF-8 kabul eden byte parser'a taşıdı; ayrı ham-byte fuzz hedefiyle
-B-053'ü kapattı. Sıradaki omurga K-141 ile B-054 bağımlılık
-advisory/lisans/tekrar üretim kapısıdır.
+B-053'ü kapattı. K-141/ADR-038 compiler ve fuzz bağımlılıklarını sabit
+`cargo-deny` RustSec/lisans/ban/kaynak politikasına, kilitli CI'a ve iki
+üretimli SHA-256 manifestli boş-cache offline vendor derlemesine bağlayarak
+B-054'ü kapattı. Sıradaki omurga K-142 ile B-055 WASM C ABI hasım-caller
+sınırıdır.
 # 40. Proje felsefesinin korunması
 Bu projenin başarısı yalnız compiler’ın çalışması değildir. Başarı; Türkçe konuşan bir çocuğun yabancı syntax bariyerine takılmadan algoritmik düşünceyle tanışması, aynı dilin yıllar sonra onu terk etmeye zorlamaması ve ekosistemin tek bir şirketin kapalı ürünü haline gelmemesidir.
 Her yeni özellik şu dört sorudan geçmelidir: Türkçe doğal mı? Deterministik mi? Öğrenilebilir mi? Profesyonel ölçekte savunulabilir mi? Dördünden biri hayırsa özellik yeniden tasarlanır.

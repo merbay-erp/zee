@@ -2260,6 +2260,30 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   fuzz seed'i ve ayrı ham `&[u8]` libFuzzer hedefi eklendi. Envanter 566 test,
   152 etkin + 3 ayrılmış tanı ve 84 numaralı belgedir. B-053 kapandı.
 
+## K-141 — Bootstrap bağımlılık zinciri kilitli ve offline kanıtlıdır (2 Eyl)
+
+- **Sorun:** İki Cargo lock'u checksum taşısa da CI ana testte kilit hatasında
+  kilitsiz çözümlemeye düşebiliyordu. Güncel advisory, lisans, wildcard,
+  duplicate ve kaynak kökenini birlikte fail-closed denetleyen kapı yoktu;
+  offline derleme geliştiricinin dolu Cargo cache'iyle karışabiliyordu.
+- **Karar:** Compiler ve fuzz `publish = false` kalır. Sabit
+  `cargo-deny 0.20.2`, dört hedefte iki grafiği push/PR ve günlük takvimde
+  RustSec, izinli SPDX, ban ve yalnız crates.io kaynağı için `-D warnings` ile
+  tarar. Advisory ignore boştur. `getrandom 0.2.17` ve `syn 2.0.119` yalnız
+  exact+sürüm ve teknik gerekçeli geçiş istisnasıdır.
+- **Tekrar üretim:** Bütün normal CI Cargo komutları `--locked` oldu. İki lock
+  yalnız crates.io registry girdisi+64 küçük-hex SHA-256 kabul eder.
+  `offline-vendor-denetle.sh` compiler+fuzz ağacını iki kez vendor'layıp sıralı
+  yol+dosya manifestlerini eşitler; boş Cargo home ve ayrı target ile iki
+  grafiği `--offline --locked` derler ve lock özetlerini yeniden doğrular.
+- **Sınır:** Bağımlılık allowlist'i Zee'nin lisansını seçmez. Proje lisansı
+  hukuk/topluluk kararı verilene kadar yayımlanamaz kalır; vendor ağacı Git'e
+  alınmaz, release-time offline artefaktıdır.
+- **Kanıt:** İki gerçek cargo-deny grafiği yeşil; offline kapı 85 paketi iki
+  üretimde aynı SHA-256 manifestle ve boş cache derlemesiyle doğruladı. Dört
+  statik regresyonla envanter 570 test, 152 etkin + 3 ayrılmış tanı ve 85
+  numaralı belgedir. B-054/V1-P1-09 kapandı.
+
 ---
 
 ## Sonraki adım
@@ -2268,6 +2292,6 @@ Korpus 10 öğrenci + 5 profesyonel usability oturumuna (Hafta 12 hedefi, erkeni
 Hafta 2'de kağıt üstünde) sesli okutulacak; her kayıt için "doğal mı /
 deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
-Makine hattında K-140 HTTP framing'ini byte parser ve ayrı libFuzzer hedefiyle
-sabitleyerek B-053'ü kapattı. Sırada K-141 ile B-054 bağımlılık
-advisory/lisans/tekrar üretim kapısı vardır.
+Makine hattında K-141 bootstrap bağımlılıklarını advisory/lisans/ban/source,
+kilit/checksum ve gerçek offline vendor kapısına bağlayarak B-054'ü kapattı.
+Sırada K-142 ile B-055 WASM C ABI hasım-caller sınırı vardır.

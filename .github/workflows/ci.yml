@@ -33,34 +33,34 @@ jobs:
           targets: wasm32-unknown-unknown
       - name: Testler (golden korpus + biçimleyici)
         working-directory: compiler
-        run: cargo test --locked || cargo test
+        run: cargo test --locked
       - name: Uyarı yok
         working-directory: compiler
         shell: bash
         run: |
-          cikti="$(cargo build 2>&1)"
+          cikti="$(cargo build --locked 2>&1)"
           printf '%s\n' "$cikti"
           case "$cikti" in
             *warning*|*Warning*) echo "UYARI BULUNDU — temiz derleme ilkesi (RFC-0001 §11)"; exit 1 ;;
           esac
       - name: Clippy temiz
         working-directory: compiler
-        run: cargo clippy --all-targets -- -D warnings
+        run: cargo clippy --locked --all-targets -- -D warnings
       - name: Fuzz hedefleri stable araç zincirinde derlenir
         if: matrix.os == 'ubuntu-latest'
         working-directory: compiler
         run: cargo check --manifest-path fuzz/Cargo.toml --locked --bins
       - name: Milestone dosyası çalışıyor
         working-directory: compiler
-        run: cargo run -- çalıştır ../merhaba.dil
+        run: cargo run --locked -- çalıştır ../merhaba.dil
       # Ölçüm koşucusu derlenir ve koşar (bölüm 22; süre eşiği YOK — CI
       # makineleri gürültülü, sayılar yalnız yerel release arşivine girer).
       - name: Ölçüm koşucusu çalışır
         if: matrix.os == 'ubuntu-latest'
         working-directory: compiler
-        run: cargo run --release --bin olcum -- --hizli
+        run: cargo run --locked --release --bin olcum -- --hizli
       # Playground çekirdeği wasm hedefinde derlenmeye devam etmeli (K-039/K-040).
       - name: Playground (wasm) derlenir
         if: matrix.os == 'ubuntu-latest'
         working-directory: compiler
-        run: cargo rustc --release --target wasm32-unknown-unknown --lib --crate-type cdylib -- -C link-arg=-zstack-size=16777216
+        run: cargo rustc --locked --release --target wasm32-unknown-unknown --lib --crate-type cdylib -- -C link-arg=-zstack-size=16777216

@@ -15,6 +15,7 @@ Bu bir çeviri katmanı değildir (`if→eğer` makyajı yok); AI semantiğin pa
 - **Dili gez:** [docs/dil-turu.md](docs/dil-turu.md) — bütün yüzey, çalışan örneklerle
 - **Oynayarak öğren:** [projeler/](projeler/) — çocuk proje kitaplığı (hepsi regression testte)
 - **Web'i üretime hazırla:** [docs/web-production-profili.md](docs/web-production-profili.md) — güvenilir proxy, ortak durum ve N worker süreci
+- **Derleyici tedarik zinciri:** [docs/tedarik-zinciri.md](docs/tedarik-zinciri.md) — RustSec/lisans/kaynak ve gerçek offline vendor kapısı
 - Dosya uzantısı: **`.dil`** (kalıcı — ADR-009)
 - Master plan: [docs/master-plan.md](docs/master-plan.md) (kaynak: [docs/Turkce_Programlama_Dili_Master_Proje_Dokumani.docx](docs/Turkce_Programlama_Dili_Master_Proje_Dokumani.docx))
 - V1 öncesi sıralı mühendislik backlog'u: [docs/oncelikli-backlog.md](docs/oncelikli-backlog.md)
@@ -168,10 +169,10 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **566** |
+| Rust + doctest vakası | **570** |
 | Tanı kimliği | **152 etkin + 3 ayrılmış** |
 | RFC | **25** (2 kabul, 21 geçici kabul, 2 taslak) |
-| ADR | **35** (35 kabul) |
+| ADR | **36** (36 kabul) |
 | Normatif spec bölümü | **24** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
@@ -259,13 +260,18 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   parser'da doğrular. Bare-LF/CR, obs-fold, NUL, absolute/authority/asterisk
   target, TE, duplicate/bozuk CL, exact olmayan veya UTF-8 dışı gövde
   fail-closed'dur; ayrı libFuzzer hedefi ve kalıcı korpus B-053'ü kapattı.
+  K-141/ADR-038 iki Cargo grafiğini sabit `cargo-deny` ile RustSec, lisans,
+  duplicate/wildcard ve kaynak politikasından geçirir. Bütün CI Cargo
+  komutları kilitlidir; iki ayrı vendor üretiminin SHA-256 manifesti eşitlenir
+  ve boş Cargo home ile compiler+fuzz gerçekten offline derlenir. B-054
+  kapandı; bu bağımlılık allowlist'i Zee'nin bekleyen ürün lisansını seçmez.
   K-107/ADR-019 `dillsp` girdisini 8 KiB başlık, 8 MiB gövde, 128 JSON
   derinliği ve 100 bin düğümle sınırlayıp Unicode parser olumsuzlarını kapattı.
   K-138/ADR-035 sayı ayrıştırmasını RFC 8259 durum makinesine taşıdı; sayısal
   kimliği float'a çevirmeden korudu, duplicate anahtarı reddetti ve parse,
   request, method, params hata kodlarıyla notification sessizliğini bağladı;
-  B-051 kapandı. Sıradaki makine kapısı K-141/B-054 bağımlılık
-  advisory/lisans/tekrar üretim denetimidir.
+  B-051 kapandı. Sıradaki makine kapısı K-142/B-055 WASM C ABI'sini hasım
+  çağıran pointer/uzunluk ve çıktı ömrü sınırında kanıtlamaktır.
   K-108/ADR-020 her semantic typed-HIR ifadesine zorunlu kaynak aralığı
   ekledi; kesin token konumu olmayan eski AST düğümleri uydurma sütun yerine
   kaynak satırı zarfı taşır. K-126/ADR-030 bu geçişi tamamladı: artık her

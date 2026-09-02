@@ -4,6 +4,7 @@ version = "0.7.0"
 edition = "2021"
 default-run = "dil"
 description = "Türkçe programlama dili — bootstrap derleyici (Stage 0)"
+publish = false
 
 [[bin]]
 name = "dil"

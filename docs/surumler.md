@@ -66,6 +66,19 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   regresyon, beş kalıcı fuzz seed'i ve ayrı ham-byte libFuzzer hedefiyle
   envanter 566 test ve 35 kabul ADR'ye çıktı; B-053 kapandı.
 
+- **Rust tedarik zinciri ve gerçek offline vendor kapısı**
+  (K-141, ADR-038): Compiler ve fuzz bağımlılık grafikleri sabit
+  `cargo-deny 0.20.2` ile push/PR ve günlük takvimde güncel RustSec, izinli
+  SPDX, duplicate/wildcard ve yalnız crates.io kaynak politikasından geçer.
+  Advisory ignore boştur; iki exact major-geçiş istisnası teknik gerekçelidir.
+  CI'daki kilitsiz fallback kaldırıldı ve bütün Cargo komutları `--locked`
+  oldu. İki lock'un ortak vendor ağacı iki kez üretilip sıralı yol+dosya
+  SHA-256 manifestiyle eşitlenir; sonra boş Cargo home'da compiler ve fuzz
+  gerçekten offline derlenir. Dört statik regresyonla envanter 570 test ve 36
+  kabul ADR'ye çıktı; B-054 kapandı. `publish = false`, ürün lisansı seçilene
+  kadar yanlışlıkla crates.io yayınına izin vermez; bağımlılık lisans listesi
+  Zee'nin lisansı değildir.
+
 - **Normatif otorite ve v1 kapıları** (K-081, ADR-010): geçerli dilin kesin
   davranışını spec anlatır; RFC değişikliği yetkilendirir ama spec+conformance
   testi aynı değişiklikte güncellenmeden yürürlüğe girmez. Kaynak denetimli
