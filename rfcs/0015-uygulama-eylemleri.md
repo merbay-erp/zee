@@ -105,6 +105,7 @@ ekran/girdi/donanım etkisi taşıyamaz. Ayrıntılı normatif sözleşme spec/1
 - Tek-dosya atomik durum V1-P0-04/K-084 ile kapandı; eylemin çok-kaynaklı
   transaction/idempotency kapısı bu RFC'de açık kalır.
 
-K-088 ile tek süreçli uygulama için production oturum/CSRF/proxy profili
-vardır. Çok süreçli ortak oturum deposu, rate limit, secret dağıtımı ve
-idempotency ayrı deployment/RFC kapılarıdır; dil bunları varmış gibi göstermez.
+K-088 ile başlayan production oturum/CSRF/proxy profili K-137/ADR-034'te
+süreçler arası ortak kalıcı durum, oran sınırı ve tek-worker/N süreç modeline
+genişledi. Secret dağıtımı, çok-hostlu harici backend ve idempotency ayrı
+deployment/RFC kapılarıdır; dil bunları varmış gibi göstermez.

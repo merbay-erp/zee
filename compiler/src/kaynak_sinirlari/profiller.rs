@@ -56,32 +56,6 @@ impl HttpSinirlari {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct WebSinirlari {
-    pub(super) oturum_omru_saniye: i64,
-    pub(super) anonim_oturum_omru_saniye: i64,
-    pub(super) oturum_sayisi: usize,
-    pub(super) anonim_oturum_sayisi: usize,
-}
-
-impl WebSinirlari {
-    pub const fn oturum_omru_saniye(self) -> i64 {
-        self.oturum_omru_saniye
-    }
-
-    pub const fn anonim_oturum_omru_saniye(self) -> i64 {
-        self.anonim_oturum_omru_saniye
-    }
-
-    pub const fn oturum_sayisi(self) -> usize {
-        self.oturum_sayisi
-    }
-
-    pub const fn anonim_oturum_sayisi(self) -> usize {
-        self.anonim_oturum_sayisi
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct KaliciDosyaSinirlari {
     pub(super) kilit_bekleme_ms: u64,
     pub(super) kilit_yeniden_dene_ms: u64,

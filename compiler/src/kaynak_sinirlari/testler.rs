@@ -23,6 +23,12 @@ fn varsayilan_profil_kritik_limitleri_sifira_birakmaz() {
     assert!(sinirlar.http().calistirma_zaman_asimi_ms() > 0);
     assert!(sinirlar.web().anonim_oturum_sayisi() <= sinirlar.web().oturum_sayisi());
     assert!(sinirlar.web().anonim_oturum_omru_saniye() <= sinirlar.web().oturum_omru_saniye());
+    assert!(sinirlar.web().oran_anahtari_sayisi() > sinirlar.web().oturum_sayisi());
+    assert!(sinirlar.web().ucnokta_orani() > sinirlar.web().giris_orani());
+    assert!(sinirlar.web().csrf_orani() >= sinirlar.web().giris_orani());
+    assert!(sinirlar.web().ucnokta_penceresi_saniye() > 0);
+    assert!(sinirlar.web().csrf_penceresi_saniye() > 0);
+    assert!(sinirlar.web().giris_penceresi_saniye() > 0);
     assert!(sinirlar.io_izi().alan() <= sinirlar.io_izi().olay());
     assert!(sinirlar.lsp().yanit_bayti() <= sinirlar.lsp().govde_bayti());
     assert!(sinirlar.paket().dosya_bayti() <= sinirlar.paket().paket_bayti());

@@ -22,7 +22,7 @@ Dil değişikliği RFC ister (master plan bölüm 25). Şablon: [0000-sablon.md]
 | RFC-0014 | [Standart Kitaplık](0014-standart-kitaplik.md) | **taslak — çalışan prototip ekli** | K-046, K-048, RFC-0002 §6.3 |
 | RFC-0015 | [Uygulama Eylemleri ve Web Güvenlik Sınırı](0015-uygulama-eylemleri.md) | **geçici kabul — K-087 eylem, K-088 profil** | K-081, K-087, K-088, ADR-010 |
 | RFC-0016 | [Atomik Kalıcı Dosya Sözleşmesi](0016-atomik-kalici-dosya.md) | **geçici kabul** (K-128 metadata koruması; güç-kesintisi/disk-dolu kapısı açık) | K-019, K-084, K-128, B-048, V1-P0-04/30 |
-| RFC-0017 | [Web Oturumu, Yetki, CSRF ve Güvenilir Proxy](0017-web-oturum-ve-csrf.md) | **geçici kabul** (K-134 request transaction) | K-082, K-088, K-134, V1-P0-03 |
+| RFC-0017 | [Web Oturumu, Yetki, CSRF ve Güvenilir Proxy](0017-web-oturum-ve-csrf.md) | **geçici kabul** (K-134 request transaction; K-137 ortak depo/rate-limit) | K-082, K-088, K-134, K-137, V1-P0-03 |
 | RFC-0018 | [Sürümlü Morfoloji Profili](0018-surumlu-morfoloji-profili.md) | **geçici kabul** (K-120 semantic LSP, K-122 immutable kayıt, K-123 bağımsız conformance) | K-011, K-072, K-089, K-111, K-120, K-122, K-123, V1-P1-02 |
 | RFC-0019 | [Değer Semantiği ve Gezme İmleci](0019-deger-semantigi-ve-gezme-imleci.md) | **geçici kabul** (makine kanıtı; usability bekliyor) | K-034, K-060, K-074, K-093, V1-P1-05 |
 | RFC-0020 | [Paket Yayını ve Registry Güven Zinciri](0020-paket-yayini-ve-registry-guveni.md) | **geçici kabul** (K-094 yayın; K-095 metadata; K-117 kanonik yol; K-135 taşıma/cache/offline; K-136 exact proje/kilit/CLI) | K-094, K-095, K-117, K-135, K-136, V1-P1-07/08, ADR-006/028 |
@@ -32,7 +32,7 @@ Dil değişikliği RFC ister (master plan bölüm 25). Şablon: [0000-sablon.md]
 | RFC-0024 | [Merkezî Yetkinlik ve Outbound Ağ Güvenliği](0024-merkezi-yetkinlik-ve-outbound-guvenligi.md) | **geçici kabul** (K-127) | K-127, B-023/B-024/B-049, V1-P0-29 |
 | RFC-0025 | [Merkezî Kaynak Bütçesi](0025-merkezi-kaynak-butcesi.md) | **geçici kabul** (K-129/K-130/K-131/K-132; B-025 kapalı) | K-105, K-107, K-129/K-130/K-131/K-132, B-025, V1-P0-31 |
 
-**Durum özeti (2 Eylül 2026, K-136):** 25 RFC — 2 kabul (0001, 0010),
+**Durum özeti (2 Eylül 2026, K-137):** 25 RFC — 2 kabul (0001, 0010),
 21 geçici kabul (RFC-0020'nin yayın, metadata doğrulama, taşıma/cache/offline ve
 exact proje/kilit/CLI katmanları çalışır), 2 taslak: 0012 (FFI — Faz
 4/5) ve 0014 (standart kitaplık — çalışan prototiple).

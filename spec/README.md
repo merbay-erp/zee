@@ -33,7 +33,7 @@ Kırıcı değişiklik sessizce yapılamaz: davranış değişikliği RFC'den ge
 | [09 — Son tarih ve iptal](09-son-tarih-ve-iptal.md) | `içinde/yetişmezse`, işbirlikli iptal ve iç içe deadline | RFC-0011 |
 | [10 — Dışa açık işlem sözleşmesi](10-disari-acik-islem-sozlesmesi.md) | public imza, yerel çıkarım, dönüş kanıtı ve v1 kaynak ABI'si | RFC-0006, RFC-0007, RFC-0009, K-121 |
 | [11 — Uygulama eylemleri ve web adaptörü](11-uygulama-eylemleri-ve-web-adaptoru.md) | açık eylem imzası, etki çıkarımı, yöntemli rota, savepoint/geri alma | RFC-0015 |
-| [12 — Web güvenlik profili](12-web-guvenlik-profili.md) | erişim politikası, Argon2id, sunucu oturumu/rol, CSRF, güvenli çerez ve HTTPS proxy sınırı | RFC-0017 |
+| [12 — Web güvenlik profili](12-web-guvenlik-profili.md) | erişim politikası, Argon2id, ortak oturum/rate-limit deposu, CSRF, güvenli çerez ve HTTPS proxy sınırı | RFC-0017, ADR-034, K-137 |
 | [13 — Sürümlü morfoloji profili](13-surumlu-morfoloji-profili.md) | `zee-tr-1`, immutable parmak izi, bağımsız conformance, çözüm↔üretim ve proje/paket sabitlemesi | RFC-0018, K-120/K-122/K-123 |
 | [14 — Yapılandırılmış eşzamanlılık](14-yapilandirilmis-eszamanlilik.md) | `zee-esz-1`, kaynak sıralı gözlemler, görev grubu, sahiplik ve hata/iptal yayılımı | RFC-0011, K-090/K-124 |
 | [15 — Yapılandırılmış Hata değeri](15-yapilandirilmis-hata-degeri.md) | kod, mesaj, neden zinciri, veri, eşleme ve geriye uyum | RFC-0008, K-091 |
@@ -51,7 +51,7 @@ Kırıcı değişiklik sessizce yapılamaz: davranış değişikliği RFC'den ge
 
 Çok çekirdekli paralellik ve yarış/akış/dinamik görev yüzeyleri (RFC-0011),
 ikili FFI/ABI (RFC-0012, Faz 4/5), standart kütüphane kararlılık
-politikası, çok süreçli web durumu/idempotency (RFC-0015/0017) ile genel
+politikası, çok-hostlu web durumu/idempotency (RFC-0015/0017) ile genel
 deprecation/edition modeli. Morfoloji
 profili için kırıcı sürüm sınırı spec/13'te şimdiden tanımlıdır.
 Bu başlıklar karara bağlandıkça buraya bölüm olarak eklenir.

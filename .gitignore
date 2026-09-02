@@ -8,6 +8,7 @@ compiler/fuzz/artifacts/
 compiler/fuzz/coverage/
 dist/
 .claude/
+.zee/
 .zee-yazma-kilidi
 *.zee-gecici-*
 *.zee-anahtar

@@ -605,13 +605,16 @@ POST "/cikis" adresine istek geldiğinde
 ```
 
 Unsafe yöntemlerde `_csrf` otomatik zorunludur. Production kipinde
-`dil çalıştır --web-proxy https://panel.example ...` kullanılır; runtime
-yalnız loopback'teki HTTPS proxy'ye güvenir. `girisli-panel.dil` tam akışı,
+`dil çalıştır --web-proxy https://panel.example --web-worker-port 18091 ...`
+kullanılır; runtime yalnız loopback'teki HTTPS proxy'ye ve onun kurduğu tek-hop
+`Forwarded` kimliğine güvenir. `girisli-panel.dil` tam akışı,
 `panel-not-defteri.dil` ise kimliksiz ama CSRF korumalı temel formu gösterir.
-K-106 ile process içi depo 4096 toplam/1024 anonim kayıtla sınırlıdır; kota
-dolunca en uzun süredir kullanılmayan anonim kayıt tahliye edilir. Anonim
-10 dakika ve kimlikli 30 dakika ömür mutlaktır, erişim süreyi kaydırmaz. Bu
-profil tek runtime process'i içindir; çok süreçli production ortak depo ister.
+K-106'nın 4096 toplam/1024 anonim kayıt kotası ve mutlak 10/30 dakika ömrü
+korunur. K-137'de production oturumu, revoke/expiry ve endpoint/CSRF/Argon2id
+oran sayaçları proje kökündeki kalıcı ortak depoya taşındı. V1 kapasitesi,
+aynı depoyu paylaşan farklı loopback portlu N ayrı tek-worker süreçle büyür;
+çok-hostlu harici backend henüz vaat değildir. Kurulum ve güven sözleşmesi
+[web production profilinde](web-production-profili.md) açıklanır.
 
 ## 19. Fiziksel dünya (ESP32)
 

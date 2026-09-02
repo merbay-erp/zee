@@ -2,7 +2,7 @@
 
 - **Durum:** kabul
 - **Tarih:** 1 Eylül 2026
-- **İlgili kayıt:** K-106, B-046, V1-P0-16
+- **İlgili kayıt:** K-106, K-137, B-046, V1-P0-16, ADR-034
 
 ## Bağlam
 
@@ -31,21 +31,22 @@ olur; var olan kullanıcı rastgele düşürülmez.
 10 dakikalık anonim ve 30 dakikalık kimlikli ömür **mutlaktır**. Geçerli
 erişim yalnız tahliye sırasını günceller, son geçerlilik anını kaydırmaz.
 
-## Deployment sınırı
+## Tarihsel deployment sınırı
 
-Bu depo process-local'dır. Mevcut `--web-proxy` güvenlik profili tek bir zee
-runtime process'i içindir. Birden çok runtime process'i ortak oturum ve anlık
-revoke sözü veremez; production ölçekleme, aynı özet/expiry/rotation
-semantiğini atomik sağlayan paylaşımlı depo adaptörü gelene kadar bu profilin
-dışındadır. Sticky session bu güvenlik sözünün yerine geçmez.
+K-106 anında bu adaptör process-local'dı ve `--web-proxy` profili tek bir zee
+runtime process'iyle sınırlıydı. K-137/ADR-034 bu production sınırını kaldırdı:
+process-local adaptör deneysel/öğretici kipte kaldı; production artık aynı
+proje kökündeki kalıcı ortak depoyu ve N ayrı tek-worker süreci kullanır.
+Sticky session hâlâ ortak revoke veya ortak rate-limit sözünün yerine geçmez.
 
 ## Sonuçlar
 
 - Anonim CSRF istekleri process belleğini sınırsız büyütemez.
 - Tahliye tekrarlanabilir, aktif kimlikli oturumu kurban seçmez.
 - Mutlak ömür kullanıcının sürekli trafiğiyle sonsuza uzamaz.
-- Per-IP/rate-limit, dağıtık ortak depo, depolama backend'i ve kota
-  yapılandırması B-046'nın açık deployment dilimidir.
+- Per-IP/rate-limit ve süreçler arası kalıcı ortak depo K-137/ADR-034 ile
+  gerçeklendi; çok-hostlu harici backend ve kota yapılandırması ileri
+  deployment dilimidir.
 - Üç yeni test anonim LRU tahliyesini, anonimin kimlikli kayda yer açmasını ve
   yalnız kimlikli kayıtlarla dolu deponun fail-closed davranışını korur;
   expiry testi erişimin ömrü kaydırmadığını ayrıca kanıtlar.

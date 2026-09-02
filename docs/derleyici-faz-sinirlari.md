@@ -161,6 +161,13 @@ K-134 rota seçimi, güvenlik önsözü, taze ortam ve 30 saniyelik request yür
 akışını `yorumlayici/web_istek.rs` sahibine ayırdı. 180 satır bütçesi web
 yaşam döngüsünün runtime köküne geri gömülmesini engeller; transaction
 commit/rollback'i `GirdiCikti` adaptör sınırında kalır.
+K-137 oturum ve oran kararlarını 1.050 satırlık `web_guvenligi.rs` sahibinde,
+depo sözleşmesi/process-local adaptörünü 160 satırlık `web_guvenligi/depo.rs`,
+kalıcı süreçler arası CAS adaptörünü 180 satırlık
+`web_guvenligi/depo/kalici.rs` ve web kaynak profili görünümünü 80 satırlık
+`kaynak_sinirlari/web.rs` sınırında tutar. HTTP sunucusu depo iç yapısını
+bilmez; production depolama ayrıntısı güvenlik karar motoruna, oran alanları
+genel profil görünümüne geri gömülemez.
 K-135 registry istemcisini, K-136'nın exact çıktı kimliği ekleriyle 600 satırlık
 `registry/istemci.rs` sahibinde;
 içerik-adresli disk ilkellerini 100 satırlık `depo.rs`, HTTPS statik taşıyıcıyı
