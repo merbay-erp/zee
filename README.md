@@ -179,7 +179,7 @@ korpus üzerinde regression testine girer.
 | Rust + doctest vakası | **610** |
 | Tanı kimliği | **152 etkin + 3 ayrılmış** |
 | RFC | **25** (2 kabul, 21 geçici kabul, 2 taslak) |
-| ADR | **46** (46 kabul) |
+| ADR | **47** (47 kabul) |
 | Normatif spec bölümü | **24** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
@@ -295,7 +295,9 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   compiler bug düzeltmesinde aynı kaydı zorunlu kılar. B-039 kapandı.
   K-148/ADR-045 eski terminal medyanını dokuz ayrı parse/checker/HIR/runtime/
   yürütme/LSP/bellek yüzeyinde 25 turluk ham örnek+p50/p95 gözlemine çevirdi.
-  [Sürümlü tarihçe](docs/performans-gecmisi-v1.tsv), JSON ve Markdown her
+  K-152/ADR-049 tarihçedeki her satırı tam Git SHA, ayrı milestone, temiz
+  çalışma ağacı ve OS/CPU/RAM/Rust/release+örnekleme provenance'ına bağladı;
+  RSS açıkça tek süreç-tepe görüntüsüdür. [Sürümlü tarihçe](docs/performans-gecmisi-v2.tsv), JSON ve Markdown her
   Linux CI koşusunda summary+90 günlük artefakttır; shared CI hard gate
   değildir, eşik yalnız adanmış runner'da açıkça etkinleşir. B-040 kapandı.
   K-149/ADR-046 bütün production Rust ağacını 35 sorumluluk sahibine, exact

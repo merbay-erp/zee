@@ -92,21 +92,26 @@ değildir; K-148'in kullanıcı iş yükü gözlemleri aşağıdaki ayrı kanald
 
 ## Performans gözlemi ve tarihçe
 
-K-148/ADR-045'in [ölçüm rehberi](olcumler.md), sabit iş yüklerinde parse,
+K-148/ADR-045 ve K-152/ADR-049'un [ölçüm rehberi](olcumler.md), sabit iş yüklerinde parse,
 checker, typed-HIR, runtime, yürütme, LSP cold/open/change ve Unix tepe RSS
 yüzeylerini ayırır. Varsayılan release koşusu iki ısınma ve 25 örnekten ham
 dağılım, p50/p95 ile min/max üretir. İzlenen
-[`performans-gecmisi-v1.tsv`](performans-gecmisi-v1.tsv) yalnız incelenmiş
-tabanları taşır; araç yeni sonucu ayrı TSV'ye yazar.
+[`performans-gecmisi-v2.tsv`](performans-gecmisi-v2.tsv) yalnız incelenmiş
+tabanları taşır; her satır exact Git SHA, ayrı milestone, temiz çalışma ağacı,
+OS/CPU/RAM/Rust/release ve gerçek örnekleme sayılarıyla provenance sahibidir.
+RSS 25 tur değil, koşu sonundaki tek süreç-tepe görüntüsüdür. Araç yeni sonucu
+ayrı TSV'ye yazar.
 
 ```bash
 cd compiler
 cargo run --locked --release --bin olcum -- \
-  --tur 25 --gecmis ../docs/performans-gecmisi-v1.tsv \
+  --tur 25 --gecmis ../docs/performans-gecmisi-v2.tsv \
   --json target/performans.json --rapor target/performans.md \
-  --gecmis-cikti target/performans-gecmisi.tsv
+  --gecmis-cikti target/performans-gecmisi.tsv \
+  --kayit K-NNN-makine --git-sha GIT_SHA --milestone K-NNN
 ```
 
+`--gecmis-cikti` kirli çalışma ağacını ve HEAD'den farklı SHA'yı reddeder.
 Shared CI bu üç dosyayı job summary ve indirilebilir artefakt yapar; runner
 gürültüsü nedeniyle hard gate uygulamaz. `--esik-yuzde` yalnız sabitlenmiş
 adanmış benchmark makinesinde açıkça verilebilir. Geçmiş şema, metadata ve

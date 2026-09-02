@@ -436,13 +436,15 @@ fn semantic_regresyon_korpusu_gecmisten_sessizce_silinemez() {
 fn performans_gozlemi_shared_ci_esigine_donusmez() {
     let ci = kaynak("../.github/workflows/ci.yml");
     let arac = kaynak("src/bin/olcum.rs");
-    let gecmis = kaynak("../docs/performans-gecmisi-v1.tsv");
+    let gecmis = kaynak("../docs/performans-gecmisi-v2.tsv");
 
     for kanit in [
         "--tur 25",
         "--json target/performans.json",
         "--rapor target/performans.md",
         "--gecmis-cikti target/performans-gecmisi.tsv",
+        "--git-sha \"$GITHUB_SHA\"",
+        "--milestone shared-ci",
         "cat target/performans.md >> \"$GITHUB_STEP_SUMMARY\"",
         "name: performans-${{ github.sha }}",
     ] {
@@ -469,5 +471,20 @@ fn performans_gozlemi_shared_ci_esigine_donusmez() {
     assert!(arac.contains("p50"));
     assert!(arac.contains("p95"));
     assert!(arac.contains("esik_yuzde"));
-    assert!(gecmis.starts_with("# zee-performans-gecmisi-1\n"));
+    for provenance in [
+        "git_dirty",
+        "ram_bytes",
+        "build_profile",
+        "sample_count",
+        "warmup_count",
+        "sampling_semantics",
+        "tarihçe kirli çalışma ağacından üretilemez",
+    ] {
+        assert!(
+            arac.contains(provenance) || gecmis.contains(provenance),
+            "benchmark provenance kanıtı eksik: {provenance}"
+        );
+    }
+    assert!(gecmis.starts_with("# zee-performans-gecmisi-2\n"));
+    assert!(gecmis.contains("df737f643c4ee9c8525ce7e972660230e75f5f45\tK-148\tfalse"));
 }

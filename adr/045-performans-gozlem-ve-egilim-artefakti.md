@@ -2,7 +2,7 @@
 
 - **Durum:** kabul
 - **Tarih:** 2 Eylül 2026
-- **İlgili kayıt:** K-148, B-040
+- **İlgili kayıt:** K-148, B-040; K-152 provenance revizyonu ADR-049
 
 ## Bağlam
 
@@ -25,17 +25,18 @@ gibi sunmak da yanlış güven üretir.
    `didOpen`, `didChange` ve Unix'te süreç tepe RSS'i. Ölçüm adı ile kapsamı
    aynı JSON/Markdown kaydında açıkça yazılır; typecheck sonucu saf tür
    çıkarımıymış gibi adlandırılmaz.
-3. `zee-performans-1` JSON artefaktı makine bağlamını, profil/tur bilgisini ve
-   ham örnekleri taşır. `zee-performans-gecmisi-1` TSV'si incelenmiş p50/p95
-   tabanlarını sürümler arası saklar. Bozuk şema, CRLF, boş alan, bilinmeyen
-   birim, sıfır tur, p50>p95, aynı kayıtta tutarsız metadata veya yinelenen
-   kayıt/ölçüm çifti fail-closed'dur.
+3. K-152/ADR-049 ile `zee-performans-2` JSON ve
+   `zee-performans-gecmisi-2` TSV'si tam Git SHA, ayrı milestone, temiz/kirli
+   çalışma ağacı, OS/CPU/RAM/Rust/release profili ve ölçüm başına gerçek
+   örnek/ısınma/örnekleme semantiğini taşır. Bozuk veya eksik provenance
+   fail-closed'dur; ayrıntılı v2 sınırı ADR-049'un otoritesindedir.
 4. Her Linux CI koşusu JSON, Markdown ve yeni satırları içeren TSV'yi job
    summary ile 90 günlük indirilebilir artefakta yazar. İzlenen tarihçe CI'da
    doğrudan değiştirilmez; yeni taban ancak aynı makinede alınan sonuç
    incelendikten sonra kod+belge commitine girer.
-5. Paylaşımlı CI'da hard performans eşiği yoktur. Aynı platform tarihçesi
-   yalnız eğilim verir. `--esik-yuzde`, ancak makinesi ve yükü sabitlenmiş
+5. Paylaşımlı CI'da hard performans eşiği yoktur. K-152 sonrası yalnız exact
+   platform+OS+CPU+RAM+Rust+profil eşleşmesi karşılaştırma tabanı olabilir.
+   `--esik-yuzde`, ancak makinesi ve yükü sabitlenmiş
    adanmış benchmark koşucusunda bilinçli olarak verildiğinde p95 eşiğini
    süreç hatasına çevirir; karşılaştırılabilir taban yoksa fail-closed'dur.
 
@@ -54,7 +55,7 @@ gibi sunmak da yanlış güven üretir.
 ## Sonuçlar
 
 - K-148 başlangıç tabanı Apple M4 Pro/macOS arm64/Rust 1.93.1 üzerinde 25
-  turla dokuz ölçümü kaydeder. Sonraki aynı-platform koşuları p50/p95 ve yüzde
+  turla dokuz ölçümü kaydeder. Sonraki exact-ortam koşuları p50/p95 ve yüzde
   eğilimini doğrudan raporlar.
 - Performans artık test faz sürelerinden ayrı bir artefakttır: test süresi
   correctness çalışmasının duvar saatidir; bu kayıt sabit kullanıcı iş
@@ -62,3 +63,5 @@ gibi sunmak da yanlış güven üretir.
 - Dil sözdizimi, çalışma semantiği, tanı kataloğu, RFC ve normatif spec
   değişmez. B-040 kapanır. Ardından K-149/ADR-046 bağımlılık yönü/katman
   mimarisi denetimini ayrı kapı olarak tamamlamıştır.
+- K-152 sayısal K-148 tabanını değiştirmeden exact kaynak commit'ine bağladı;
+  RSS satırının tek süreç-tepe görüntüsü olduğu ADR-049 ile görünürdür.
