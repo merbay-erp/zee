@@ -16,7 +16,9 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   yalnız commit edilmiş `HEAD` içeriğini alan `git archive` tabanlı
   `scripts/temiz-kaynak-arsivi.sh` kapısından üretilir. Build hedefleri, fuzz
   ikilileri, profiler çıktıları, Finder metadatası ve yerel ZIP'ler kök ignore
-  politikasında açıkça dışarıdadır; kalıcı fuzz korpusu korunur.
+  politikasında açıkça dışarıdadır; kalıcı fuzz korpusu korunur. Sabit commit
+  zamanı, arşiv içi dosya SHA-256 manifesti ve ZIP yan özeti aynı `HEAD` için
+  byte-byte tekrar üretim ve bağımsız bütünlük denetimi sağlar.
 
 - **Normatif otorite ve v1 kapıları** (K-081, ADR-010): geçerli dilin kesin
   davranışını spec anlatır; RFC değişikliği yetkilendirir ama spec+conformance

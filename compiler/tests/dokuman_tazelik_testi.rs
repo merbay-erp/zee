@@ -239,4 +239,6 @@ fn kaynak_arsivi_build_ve_kisisel_artifaktlari_disarida_tutar() {
     assert!(script.contains("git archive --format=zip"));
     assert!(script.contains("unzip -Z1"));
     assert!(script.contains("__MACOSX|target|artifacts"));
+    assert!(script.contains("KAYNAK-SHA256.txt"));
+    assert!(script.contains("git ls-tree -r --name-only HEAD"));
 }

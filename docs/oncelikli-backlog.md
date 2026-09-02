@@ -401,14 +401,16 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 
 ## P2 — Tooling ve bakım
 
-- **B-033 · KISMEN — archive hijyeni.** Gerçek repoda `.gitignore`, `.DS_Store`
-  ve target dışlaması vardır; fakat dış incelemeye giden ZIP'te `__MACOSX`,
-  `._*`, `.DS_Store` ve `compiler/fuzz/target` bulundu. Kaynak/yayın arşivi Git
-  durumuna güvenmeden bunları yapısal olarak dışlamalıdır.
-- **B-034 · AÇIK — tekrar üretilebilir compiler source snapshot komutu.** Yalnız
-  gerekli kaynak/test/Cargo/belge/golden/conformance ve `.github/workflows`
-  alan, SHA-256 manifestli geliştirme arşivi üret. CI tanımı arşivden eksik
-  kalmamalı; build cache hiçbir koşulda pakete girmemelidir.
+- **B-033 · KAPALI (temiz arşiv bakımı) — archive hijyeni.** Kök ignore
+  politikası `target`, fuzz artifact/coverage, `__MACOSX`, profiler verisi ve
+  yerel ZIP'leri açıkça dışlar. `scripts/temiz-kaynak-arsivi.sh` çalışma
+  klasörünü değil yalnız izlenen `HEAD` ağacını paketler ve yasaklı girdiyi
+  çıktı üzerinde yeniden tarar.
+- **B-034 · KAPALI (temiz arşiv bakımı) — tekrar üretilebilir compiler source
+  snapshot komutu.** Sabit commit zamanı kullanan `git archive`, kaynak/test/
+  Cargo/belge/golden/conformance ve CI dahil bütün izlenen ağacı alır; kökte
+  sıralı dosya SHA-256 manifesti ve yanında ZIP SHA-256 özeti üretir. Aynı
+  `HEAD` byte-byte aynı arşivdir; build cache hiçbir koşulda pakete giremez.
 - **B-035 · AÇIK — function size/complexity trend bütçesi.** Kör hard limit
   yerine kritik modüllerde büyüme raporu ve gözden geçirme eşiği koy.
 - **B-036 · KAPALI — Clippy `-D warnings` kapısı.** CI ve yerel toplu doğrulama
