@@ -1,7 +1,7 @@
 //! Doğrulanmış `.zep` arşivini görünmez geçicide açıp immutable kaynak kökü
 //! olarak atomik yayımlayan kurulum katmanı.
 
-use super::{AZAMI_PAKET_BOYUTU, arsivi_oku};
+use super::{arsivi_oku, AZAMI_PAKET_BOYUTU};
 use std::collections::BTreeMap;
 use std::io::Read;
 use std::path::{Path, PathBuf};

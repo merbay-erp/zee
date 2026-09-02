@@ -31,7 +31,10 @@ fn yoksa_nin_degilse_dali_da_guvenli() {
 
 #[test]
 fn korumasiz_erisim_t036() {
-    let kaynak = format!("{}\nbulunan 4 için çift bul olsun\nbulunanın değeri yaz\n", BULUCU);
+    let kaynak = format!(
+        "{}\nbulunan 4 için çift bul olsun\nbulunanın değeri yaz\n",
+        BULUCU
+    );
     let hata = kaynagi_calistir(&kaynak).expect_err("T036");
     assert_eq!(hata.kod, "T036");
 }

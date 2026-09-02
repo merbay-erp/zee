@@ -2,7 +2,7 @@
 //! çalıştır/denetle/dene bu modülü çağırmaz ve yalnız offline grafiği açar.
 
 use dil::paket::{ProjeGrafigi, RegistryCozumPolitikasi};
-use dil::proje::{RegistryBildirimi, UzakBagimlilik, bildirimi_oku, uzak_bagimliliklari_guncelle};
+use dil::proje::{bildirimi_oku, uzak_bagimliliklari_guncelle, RegistryBildirimi, UzakBagimlilik};
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 

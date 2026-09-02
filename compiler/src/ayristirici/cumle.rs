@@ -135,10 +135,13 @@ impl Ayristirici {
             Some("sil") => {
                 let mut t = satir_tokenlari;
                 t.pop(); // sil
-                // Çerez silme (K-073): `"oturum" çerezini sil`.
+                         // Çerez silme (K-073): `"oturum" çerezini sil`.
                 if t.len() == 2 && kelime_mi(&t[1], "çerezini") {
                     let ad = tekil_ifade(t[0].clone())?;
-                    return Ok(Cumle::CerezSil { ad, satir: satir_no });
+                    return Ok(Cumle::CerezSil {
+                        ad,
+                        satir: satir_no,
+                    });
                 }
                 // Değerle "sil" arasında ayrık belirtme eki olabilir: "5 i sil".
                 if t.len() == 3 {
@@ -151,7 +154,11 @@ impl Ayristirici {
                 if t.len() == 2 {
                     let kap = tekil_ifade(t[0].clone())?;
                     let deger = tekil_ifade(t[1].clone())?;
-                    Ok(Cumle::Sil { kap, deger, satir: satir_no })
+                    Ok(Cumle::Sil {
+                        kap,
+                        deger,
+                        satir: satir_no,
+                    })
                 } else {
                     Err(Tani::yeni(
                         "S042",
@@ -171,7 +178,10 @@ impl Ayristirici {
                 let t = &satir_tokenlari;
                 if t.len() == 3 && kelime_mi(&t[1], "adresine") {
                     let adres = tekil_ifade(t[0].clone())?;
-                    Ok(Cumle::Yonlendir { adres, satir: satir_no })
+                    Ok(Cumle::Yonlendir {
+                        adres,
+                        satir: satir_no,
+                    })
                 } else {
                     Err(Tani::yeni(
                         "S041",
@@ -190,7 +200,10 @@ impl Ayristirici {
                 t.pop(); // olmamalı
                 let ic = kosul_ifadesi(&t, satir_no)?;
                 let kosul = konumlu_ifade(Ifade::Degil(Box::new(ic)), &t)?;
-                Ok(Cumle::Olmali { kosul, satir: satir_no })
+                Ok(Cumle::Olmali {
+                    kosul,
+                    satir: satir_no,
+                })
             }
             Some("içermeli") => {
                 let t = &satir_tokenlari;
@@ -202,7 +215,10 @@ impl Ayristirici {
                         },
                         t,
                     )?;
-                    Ok(Cumle::Olmali { kosul, satir: satir_no })
+                    Ok(Cumle::Olmali {
+                        kosul,
+                        satir: satir_no,
+                    })
                 } else {
                     Err(Tani::yeni(
                         "S026",
@@ -217,7 +233,10 @@ impl Ayristirici {
                 let t = &satir_tokenlari;
                 if t.len() == 4 && kelime_mi(&t[1], "kapısında") && kelime_mi(&t[2], "sunucu") {
                     let kapi = tekil_ifade(t[0].clone())?;
-                    Ok(Cumle::SunucuBaslat { kapi, satir: satir_no })
+                    Ok(Cumle::SunucuBaslat {
+                        kapi,
+                        satir: satir_no,
+                    })
                 } else {
                     Err(Tani::yeni(
                         "S035",
@@ -286,7 +305,10 @@ impl Ayristirici {
                 if matches!(t.last(), Some(son) if kelime_mi(son, "yanıtını")) {
                     t.pop();
                     let deger = ile_ifadesi(&t, satir_no, &self.islem_adlari)?;
-                    Ok(Cumle::YanitGonder { deger, satir: satir_no })
+                    Ok(Cumle::YanitGonder {
+                        deger,
+                        satir: satir_no,
+                    })
                 } else {
                     Err(Tani::yeni(
                         "S037",
@@ -317,7 +339,10 @@ impl Ayristirici {
                     Ok(Cumle::HepsiniBekle { satir: satir_no })
                 } else {
                     let sure = ile_ifadesi(&t, satir_no, &self.islem_adlari)?;
-                    Ok(Cumle::Bekle { sure, satir: satir_no })
+                    Ok(Cumle::Bekle {
+                        sure,
+                        satir: satir_no,
+                    })
                 }
             }
             Some("içinde") => {
@@ -345,7 +370,12 @@ impl Ayristirici {
                         }
                     }
                 }
-                Ok(Cumle::IcindeBlogu { sure, govde, yetismezse, satir: satir_no })
+                Ok(Cumle::IcindeBlogu {
+                    sure,
+                    govde,
+                    yetismezse,
+                    satir: satir_no,
+                })
             }
             Some("yak") | Some("söndür") => {
                 let yansin = son_kelime.as_deref() == Some("yak");
@@ -407,14 +437,20 @@ impl Ayristirici {
             }
             Some("bitir") => {
                 if satir_tokenlari.len() == 2 && kelime_mi(&satir_tokenlari[0], "programı") {
-                    Ok(Cumle::ProgramiBitir { kod: None, satir: satir_no })
+                    Ok(Cumle::ProgramiBitir {
+                        kod: None,
+                        satir: satir_no,
+                    })
                 } else if satir_tokenlari.len() == 4
                     && kelime_mi(&satir_tokenlari[0], "programı")
                     && kelime_mi(&satir_tokenlari[2], "ile")
                 {
                     // K-069 (K-024 adayı): `programı 1 ile bitir` — çıkış kodu.
                     let kod = tekil_ifade(satir_tokenlari[1].clone())?;
-                    Ok(Cumle::ProgramiBitir { kod: Some(kod), satir: satir_no })
+                    Ok(Cumle::ProgramiBitir {
+                        kod: Some(kod),
+                        satir: satir_no,
+                    })
                 } else {
                     Err(Tani::yeni(
                         "S027",
@@ -436,7 +472,10 @@ impl Ayristirici {
                         1,
                         1,
                     )
-                    .onerili("\"değilse\" bir \"... ise\" bloğunun hemen ardından, aynı hizada gelir.".into()))
+                    .onerili(
+                        "\"değilse\" bir \"... ise\" bloğunun hemen ardından, aynı hizada gelir."
+                            .into(),
+                    ))
                 } else {
                     self.ise_ayristir(satir_tokenlari, satir_no)
                 }
@@ -446,10 +485,11 @@ impl Ayristirici {
             Some(k) if kosul_kelimesi(k) => self.ise_ayristir(satir_tokenlari, satir_no),
             _ => {
                 // Tanımlı bir işlem adına biten satır → çağrı cümlesi.
-                if let Some(cagri) =
-                    cagri_kalibi(&satir_tokenlari, satir_no, &self.islem_adlari)?
-                {
-                    return Ok(Cumle::CagriCumlesi { cagri, satir: satir_no });
+                if let Some(cagri) = cagri_kalibi(&satir_tokenlari, satir_no, &self.islem_adlari)? {
+                    return Ok(Cumle::CagriCumlesi {
+                        cagri,
+                        satir: satir_no,
+                    });
                 }
                 let ilk = satir_tokenlari.first().cloned();
                 let (sutun, uzunluk) = ilk.map(|t| (t.sutun, t.uzunluk)).unwrap_or((1, 1));

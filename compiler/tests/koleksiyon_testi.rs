@@ -12,7 +12,10 @@ adlara \"Eliz\" ekle
 her ad için
     adı yaz
 ";
-    assert_eq!(kaynagi_calistir(kaynak).expect("çalışmalı"), vec!["Zeynep", "Eliz"]);
+    assert_eq!(
+        kaynagi_calistir(kaynak).expect("çalışmalı"),
+        vec!["Zeynep", "Eliz"]
+    );
 }
 
 #[test]
@@ -54,7 +57,8 @@ fn belirsiz_koleksiyon_okumalari_derleme_hatasi() {
 #[test]
 fn bos_ve_somut_liste_uzlasir() {
     // Boşla başla → somutla yeniden ata (ve tersi): T002 DEĞİL.
-    let kaynak = "kutu boş liste olsun\nkutu 3, 5 listesi olsun\nkutu boş liste olsun\nkutunun adedi yaz\n";
+    let kaynak =
+        "kutu boş liste olsun\nkutu 3, 5 listesi olsun\nkutu boş liste olsun\nkutunun adedi yaz\n";
     assert_eq!(kaynagi_calistir(kaynak).expect("uzlaşmalı"), vec!["0"]);
 }
 
@@ -121,7 +125,10 @@ defterden \"elma\" yı sil
 defterdeki her ad için
     adı yaz
 ";
-    assert_eq!(kaynagi_calistir(kaynak).expect("çalışmalı"), vec!["3", "muz"]);
+    assert_eq!(
+        kaynagi_calistir(kaynak).expect("çalışmalı"),
+        vec!["3", "muz"]
+    );
 }
 
 #[test]
@@ -254,8 +261,8 @@ fn aralik_geri_sayar() {
 #[test]
 fn cikis_kodu_tasinir() {
     // K-069: `programı N ile bitir` → calistir_io_kodla N döner.
-    let program = dil::kaynagi_derle("\"a\" yaz\nprogramı 7 ile bitir\n\"b\" yaz\n")
-        .expect("derlenmeli");
+    let program =
+        dil::kaynagi_derle("\"a\" yaz\nprogramı 7 ile bitir\n\"b\" yaz\n").expect("derlenmeli");
     let mut io = dil::yorumlayici::ToplayanIo::yeni(Vec::new());
     let kod = dil::yorumlayici::calistir_io_kodla(&program, &mut io).expect("çalışmalı");
     assert_eq!(kod, 7);
@@ -263,7 +270,10 @@ fn cikis_kodu_tasinir() {
 
     let program = dil::kaynagi_derle("\"a\" yaz\n").expect("derlenmeli");
     let mut io = dil::yorumlayici::ToplayanIo::yeni(Vec::new());
-    assert_eq!(dil::yorumlayici::calistir_io_kodla(&program, &mut io).unwrap(), 0);
+    assert_eq!(
+        dil::yorumlayici::calistir_io_kodla(&program, &mut io).unwrap(),
+        0
+    );
 
     let hata = kaynagi_calistir("programı 999 ile bitir\n").expect_err("C020");
     assert_eq!(hata.kod, "C020");
@@ -324,7 +334,10 @@ her kutu için
 her kutu için
     kutunun adedi yaz
 ";
-    assert_eq!(kaynagi_calistir(kaynak).expect("çalışmalı"), vec!["10", "20"]);
+    assert_eq!(
+        kaynagi_calistir(kaynak).expect("çalışmalı"),
+        vec!["10", "20"]
+    );
 }
 
 #[test]
@@ -384,12 +397,11 @@ fn gezilen_koleksiyonun_bicimi_sabittir() {
         let hata = kaynagi_calistir(kaynak).expect_err("T053 vermeli");
         assert_eq!(hata.kod, "T053", "senaryo {}", sira + 1);
         assert!(hata.mesaj.contains("gezilirken"));
-        assert!(
-            hata.oneri
-                .as_deref()
-                .unwrap_or_default()
-                .contains("ayrı bir listede")
-        );
+        assert!(hata
+            .oneri
+            .as_deref()
+            .unwrap_or_default()
+            .contains("ayrı bir listede"));
     }
 }
 

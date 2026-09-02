@@ -484,11 +484,9 @@ POST \"/notlar\" adresine istek geldiğinde
 ";
     let io = sunucuyla(kaynak, vec!["POST /notlar\nnot=Web+notu"]);
     assert_eq!(
-        io.dosyalar["notlar.txt"],
-        "CLI notu\nWeb notu\n",
+        io.dosyalar["notlar.txt"], "CLI notu\nWeb notu\n",
         "durum={:?}, yanıt={:?}",
-        io.sunucu_durumlari,
-        io.sunucu_yanitlari
+        io.sunucu_durumlari, io.sunucu_yanitlari
     );
     assert_eq!(io.sunucu_yanitlari[0].1, "kaydedildi");
 }
@@ -632,7 +630,10 @@ GET \"/yavaş\" adresine istek geldiğinde
 ";
     let io = sunucuyla(kaynak, vec!["GET /yavaş"]);
     assert_eq!(io.sunucu_durumlari, vec![504]);
-    assert_eq!(io.sunucu_yanitlari[0].1, "istek 30 saniyelik son tarihini aştı");
+    assert_eq!(
+        io.sunucu_yanitlari[0].1,
+        "istek 30 saniyelik son tarihini aştı"
+    );
 }
 
 #[test]
@@ -651,16 +652,12 @@ GET \"/korumali\" adresine istek geldiğinde
     \"oturum sızdı\" yanıtını gönder
 ";
     let sızmış_kimlik = format!("{:064x}", 3);
-    let ikinci = format!(
-        "GET /korumali\nçerez __Host-zee-oturum={}",
-        sızmış_kimlik
-    );
+    let ikinci = format!("GET /korumali\nçerez __Host-zee-oturum={}", sızmış_kimlik);
     let io = sunucuyla(kaynak, vec!["POST /gec", &ikinci]);
 
     assert_eq!(io.sunucu_durumlari, vec![504, 401]);
     assert_eq!(
-        io.sunucu_yanitlari[0].1,
-        "istek 30 saniyelik son tarihini aştı",
+        io.sunucu_yanitlari[0].1, "istek 30 saniyelik son tarihini aştı",
         "tamponlanmış erken başarı timeout'ta yayımlanmamalı"
     );
     assert!(

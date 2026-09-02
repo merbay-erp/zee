@@ -114,6 +114,13 @@ cargo run --locked --bin islev_egilimi -- --rapor-yaz
 cargo run --locked --bin islev_egilimi -- --taban-yaz KAYIT
 ```
 
+K-145/ADR-042'de bütün Rust ağacı ilk kez aynı sabit `rustfmt` çıktısına
+alındı. Biçimleyicinin çok satıra açtığı yapıların kanonik ölçüsü için parser
+kökü 1.300, parser cümle/ifade 540/1.220, checker cümle/ifade/bağlam
+1.200/1.080/180 ve runtime cümle/ifade 860/900 satıra yeniden kalibre edildi.
+Bu tek seferlik artış yeni davranış değildir. İşlev eğilim tabanı da 49
+kanonik kayda taşındı; sonraki büyümeler normal iki kapıya tabidir.
+
 `katalog_testi.rs` sabit bir kök dosya listesi kullanmaz; `compiler/src`
 altındaki bütün Rust dosyalarını özyinelemeli ve sıralı tarar. Yeni handler'da
 üretilen bir tanı kodu katalog denetiminden kaçamaz.

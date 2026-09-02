@@ -190,7 +190,7 @@ fn her_normatif_belge_makine_okunur_test_kaniti_tasir() {
     );
     assert_eq!(
         gorulen.len(),
-        88,
+        89,
         "şema-1 belge tabanı beklenmedik biçimde değişti"
     );
 }

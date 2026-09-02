@@ -15,19 +15,11 @@
 //! Boru hattı (master plan bölüm 11'in v0 dilimi):
 //! kaynak → sözcükleyici → ayrıştırıcı → ad çözümleme + tür denetimi → yorumlayıcı.
 
-pub mod agac;
 #[cfg(not(target_arch = "wasm32"))]
 pub mod ag_istemcisi;
+pub mod agac;
 pub mod ayristirici;
 pub mod bicimleyici;
-pub mod kalici_dosya;
-pub mod kaynak_sinirlari;
-pub mod lsp;
-pub mod morfoloji;
-mod ondalik;
-pub mod paket;
-pub mod proje;
-pub mod wasm_api;
 pub mod cozumleyici;
 pub mod faz;
 pub mod guvenlik;
@@ -36,13 +28,21 @@ pub mod hir;
 pub mod http_istegi;
 pub mod intrinsic;
 pub mod invariant;
+pub mod kalici_dosya;
+pub mod kaynak_sinirlari;
 pub mod kimlik;
+pub mod lsp;
+pub mod morfoloji;
+mod ondalik;
+pub mod paket;
+pub mod proje;
+#[cfg(not(target_arch = "wasm32"))]
+pub mod registry;
 pub mod sozcukleyici;
 pub mod tani;
 #[cfg(not(target_arch = "wasm32"))]
-pub mod registry;
-#[cfg(not(target_arch = "wasm32"))]
 pub mod tedarik;
+pub mod wasm_api;
 pub mod web_guvenligi;
 pub mod yetkinlik;
 pub mod yorumlayici;
@@ -106,7 +106,12 @@ pub fn gomulu_birim(ad: &str) -> Option<&'static str> {
 
 /// Gömülü birim adları (A010 tanısında listelenir).
 pub fn gomulu_birim_adlari() -> &'static [&'static str] {
-    &["matematik", "liste_araclari", "metin_araclari", "sozluk_araclari"]
+    &[
+        "matematik",
+        "liste_araclari",
+        "metin_araclari",
+        "sozluk_araclari",
+    ]
 }
 
 /// Bir birimin insan-okur özeti: işlem/eylem başlıkları (parametreleriyle) ve
@@ -197,8 +202,7 @@ pub fn kaynagi_derle_kokenlerle(
     koken: Option<&str>,
     yukleyici: &mut KokenliBirimYukleyici,
 ) -> Result<Program, Tani> {
-    kaynagi_fazli_derle_kokenlerle(kaynak, koken, yukleyici)
-        .map(BaglanmisProgram::into_program)
+    kaynagi_fazli_derle_kokenlerle(kaynak, koken, yukleyici).map(BaglanmisProgram::into_program)
 }
 
 pub fn kaynagi_fazli_derle_kokenlerle(
@@ -261,8 +265,13 @@ fn dosyayi_coz(
             .onerili("Ortak tanımları üçüncü bir birime ya da pakete taşı.".into()));
         }
         yigin.push(yuklenen.koken.clone());
-        let (_, birim_islemleri, birim_yapilari, birim_testleri) =
-            dosyayi_coz(&yuklenen.kaynak, Some(&yuklenen.koken), false, yukleyici, yigin)?;
+        let (_, birim_islemleri, birim_yapilari, birim_testleri) = dosyayi_coz(
+            &yuklenen.kaynak,
+            Some(&yuklenen.koken),
+            false,
+            yukleyici,
+            yigin,
+        )?;
         yigin.pop();
 
         for (islem_adi, islem) in birim_islemleri {
@@ -357,10 +366,7 @@ fn dosyayi_coz(
             })?;
             islem.disari_acik = true;
         }
-        disari_acik_imzalari_denetle(
-            &islemler,
-            kaynak_kokeni.unwrap_or("adı bilinmeyen birim"),
-        )?;
+        disari_acik_imzalari_denetle(&islemler, kaynak_kokeni.unwrap_or("adı bilinmeyen birim"))?;
     }
 
     // Birim olarak yüklenen dosyanın üst düzey cümleleri İÇE ALINMAZ
@@ -488,7 +494,10 @@ pub fn programi_dene(program: &Program) -> Vec<TestSonucu> {
         .map(|test| {
             let mut io = yorumlayici::ToplayanIo::yeni(Vec::new());
             let hata = yorumlayici::test_calistir(program, test, &mut io).err();
-            TestSonucu { ad: test.ad.clone(), hata }
+            TestSonucu {
+                ad: test.ad.clone(),
+                hata,
+            }
         })
         .collect()
 }
@@ -501,7 +510,10 @@ pub fn programi_dene_baglanmis(program: &BaglanmisProgram) -> Vec<TestSonucu> {
         .map(|test| {
             let mut io = yorumlayici::ToplayanIo::yeni(Vec::new());
             let hata = yorumlayici::test_calistir_baglanmis(program, test, &mut io).err();
-            TestSonucu { ad: test.ad.clone(), hata }
+            TestSonucu {
+                ad: test.ad.clone(),
+                hata,
+            }
         })
         .collect()
 }
@@ -618,10 +630,19 @@ pub fn kaynagi_tanilari_kokenlerle(
         }
     }
 
-    let mut program = Program { cumleler: kalan, islemler, yapilar, testler };
+    let mut program = Program {
+        cumleler: kalan,
+        islemler,
+        yapilar,
+        testler,
+    };
     if tanilar.len() < tani::AZAMI_TANI_SAYISI {
         let kalan = tani::AZAMI_TANI_SAYISI - tanilar.len();
-        tanilar.extend(cozumleyici::denetle_coklu(&mut program).into_iter().take(kalan));
+        tanilar.extend(
+            cozumleyici::denetle_coklu(&mut program)
+                .into_iter()
+                .take(kalan),
+        );
     }
     tani::tanilari_sirala_ve_sinirla(&mut tanilar);
     tanilar

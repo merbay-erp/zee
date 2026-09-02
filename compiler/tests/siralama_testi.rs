@@ -39,7 +39,10 @@ sıralı fiyatların sıralanmışı olsun
 sıralının ilki yaz
 sıralının sonu yaz
 ";
-    assert_eq!(kaynagi_calistir(kaynak).expect("çalışmalı"), vec!["2,05", "10,0"]);
+    assert_eq!(
+        kaynagi_calistir(kaynak).expect("çalışmalı"),
+        vec!["2,05", "10,0"]
+    );
 }
 
 #[test]
@@ -51,10 +54,14 @@ adlarda \"eliz\" varsa
 adlarda \"ali\" yoksa
     \"ali yok\" yaz
 ";
-    assert_eq!(kaynagi_calistir(kaynak).expect("çalışmalı"), vec!["bulundu", "ali yok"]);
+    assert_eq!(
+        kaynagi_calistir(kaynak).expect("çalışmalı"),
+        vec!["bulundu", "ali yok"]
+    );
 
-    let hata = kaynagi_calistir("sayılar 1, 2 listesi olsun\nsayılarda \"a\" varsa\n    \"x\" yaz\n")
-        .expect_err("tür bekçisi");
+    let hata =
+        kaynagi_calistir("sayılar 1, 2 listesi olsun\nsayılarda \"a\" varsa\n    \"x\" yaz\n")
+            .expect_err("tür bekçisi");
     assert_eq!(hata.kod, "T021");
 }
 
@@ -68,7 +75,10 @@ ileri yaz
 geri hedef ile bugün arasındaki günler olsun
 geri yaz
 ";
-    assert_eq!(kaynagi_calistir(kaynak).expect("çalışmalı"), vec!["45", "-45"]);
+    assert_eq!(
+        kaynagi_calistir(kaynak).expect("çalışmalı"),
+        vec!["45", "-45"]
+    );
 }
 
 #[test]
@@ -80,7 +90,8 @@ tablonun csv metni yaz
 ";
     let program = dil::kaynagi_derle(kaynak).expect("derlenmeli");
     let mut io = ToplayanIo::yeni(Vec::new());
-    io.dosya_yaz("notlar.csv", "vize,final\n70,90\n60,85", false).unwrap();
+    io.dosya_yaz("notlar.csv", "vize,final\n70,90\n60,85", false)
+        .unwrap();
     calistir_io(&program, &mut io).expect("çalışmalı");
     assert_eq!(io.cikti.join("\n"), "vize,final\n70,90\n60,85\n");
 }

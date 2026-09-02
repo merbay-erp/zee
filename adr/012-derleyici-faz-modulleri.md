@@ -73,3 +73,8 @@ Hata kataloğu bekçisi de `compiler/src` altındaki bütün Rust modüllerini
   Dosya bütçesi fiziksel sahipliği korur; 48 işlevlik incelenmiş Clippy tabanı
   ve kademeli büyüme payı ise satır/karar yoğunluğu trendini
   [ayrı raporda](../docs/islev-egilimi.md) görünür tutar.
+- K-145/ADR-042 kanonik `rustfmt` çıktısının satır açılımları için parser kökü
+  1.200→1.300; parser cümle/ifade 500→540 ve 1.150→1.220; checker
+  cümle/ifade/bağlam 1.000→1.200, 960→1.080 ve 150→180; runtime cümle/ifade
+  620→860 ve 760→900 olarak bir kez yeniden kalibre edildi. Davranış alanı
+  eklenmedi; sonraki değişiklikler yine gerekçe ister.

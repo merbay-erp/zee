@@ -17,7 +17,10 @@ pub enum TokenTur {
     /// Tam sayı sabiti.
     TamSayi(i64),
     /// Ondalık sabit (RFC-0013): `3,14` → govde="314", olcek=2. Onluk tam değer.
-    Ondalik { govde: String, olcek: u32 },
+    Ondalik {
+        govde: String,
+        olcek: u32,
+    },
     /// Tanımlayıcı ya da kalıp kelimesi (yaz, olsun, ise, ile...).
     Kelime(String),
     Virgul,
@@ -37,16 +40,19 @@ pub struct Token {
 
 impl Token {
     fn yeni(tur: TokenTur, satir: usize, sutun: usize, uzunluk: usize) -> Token {
-        Token { tur, satir, sutun, uzunluk }
+        Token {
+            tur,
+            satir,
+            sutun,
+            uzunluk,
+        }
     }
 }
 
 /// Tanımlayıcılarda geçerli karakterler: ASCII harf/rakam, alt çizgi,
 /// Türkçe harfler ve Türkçe yazımda kullanılan şapkalı ünlüler (kâr, îma).
 fn harf_gecerli(k: char) -> bool {
-    k.is_ascii_alphanumeric()
-        || k == '_'
-        || "çÇğĞıİöÖşŞüÜâÂîÎûÛ".contains(k)
+    k.is_ascii_alphanumeric() || k == '_' || "çÇğĞıİöÖşŞüÜâÂîÎûÛ".contains(k)
 }
 
 /// Kaynağı tokenlara ayırır. İlk hatada durur (v0 davranışı).
@@ -109,7 +115,10 @@ pub fn sozcukle(kaynak: &str) -> Result<Vec<Token>, Tani> {
                     1,
                     girinti.max(1),
                 )
-                .onerili("Blok içindeki satırları aynı hizada tut; bir blok 4 boşluk içeri girer.".into()));
+                .onerili(
+                    "Blok içindeki satırları aynı hizada tut; bir blok 4 boşluk içeri girer."
+                        .into(),
+                ));
             }
         }
 
@@ -191,8 +200,7 @@ pub fn sozcukle(kaynak: &str) -> Result<Vec<Token>, Tani> {
                     Token::yeni(TokenTur::Metin(icerik), satir_no, baslangic_sutun, uzunluk),
                 )?;
             } else if k.is_ascii_digit()
-                || (k == '-'
-                    && kalanlar.clone().nth(1).map(|r| r.is_ascii_digit()) == Some(true))
+                || (k == '-' && kalanlar.clone().nth(1).map(|r| r.is_ascii_digit()) == Some(true))
             {
                 let baslangic_sutun = sutun;
                 let mut sayi_metni = String::new();
@@ -250,12 +258,15 @@ pub fn sozcukle(kaynak: &str) -> Result<Vec<Token>, Tani> {
                     } else {
                         govde_rakamlari.to_string()
                     };
-                    token_ekle(&mut tokenlar, Token::yeni(
-                        TokenTur::Ondalik { govde, olcek },
-                        satir_no,
-                        baslangic_sutun,
-                        sayi_metni.len() + 1 + kesir_metni.len(),
-                    ))?;
+                    token_ekle(
+                        &mut tokenlar,
+                        Token::yeni(
+                            TokenTur::Ondalik { govde, olcek },
+                            satir_no,
+                            baslangic_sutun,
+                            sayi_metni.len() + 1 + kesir_metni.len(),
+                        ),
+                    )?;
                 } else {
                     let deger: i64 = sayi_metni.parse().map_err(|_| {
                         Tani::yeni(
@@ -266,12 +277,15 @@ pub fn sozcukle(kaynak: &str) -> Result<Vec<Token>, Tani> {
                             sayi_metni.len(),
                         )
                     })?;
-                    token_ekle(&mut tokenlar, Token::yeni(
-                        TokenTur::TamSayi(deger),
-                        satir_no,
-                        baslangic_sutun,
-                        sayi_metni.len(),
-                    ))?;
+                    token_ekle(
+                        &mut tokenlar,
+                        Token::yeni(
+                            TokenTur::TamSayi(deger),
+                            satir_no,
+                            baslangic_sutun,
+                            sayi_metni.len(),
+                        ),
+                    )?;
                 }
             } else if k.is_alphabetic() || k == '_' {
                 let baslangic_sutun = sutun;
@@ -330,9 +344,7 @@ pub fn sozcukle(kaynak: &str) -> Result<Vec<Token>, Tani> {
                 kalanlar.next();
                 // "3 ,14" gibi boşluk-virgül-rakam dizisi: ondalık mı liste mi
                 // belirsiz görünür; öğretici tanıyla reddedilir (RFC-0013 §1).
-                if bosluktan_sonra
-                    && kalanlar.peek().map(|r| r.is_ascii_digit()) == Some(true)
-                {
+                if bosluktan_sonra && kalanlar.peek().map(|r| r.is_ascii_digit()) == Some(true) {
                     return Err(Tani::yeni(
                         "S033",
                         "Virgülden önce boşluk, sonra rakam: ondalık mı liste mi belirsiz.".into(),

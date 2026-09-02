@@ -20,7 +20,8 @@ fn ondalik_sabit_ve_basim() {
 
 #[test]
 fn bitisik_virgul_liste_ayraci_karismaz() {
-    let kaynak = "fiyatlar 2,5, 7,25, 10,0 listesi olsun\nfiyatların adedi yaz\nfiyatların ilki yaz\n";
+    let kaynak =
+        "fiyatlar 2,5, 7,25, 10,0 listesi olsun\nfiyatların adedi yaz\nfiyatların ilki yaz\n";
     let cikti = kaynagi_calistir(kaynak).expect("çalışmalı");
     assert_eq!(cikti, vec!["3", "2,5"]);
 }
@@ -115,7 +116,10 @@ fn tam_hedefe_ondalik_artis_reddedilir() {
     let kaynak = "sayaç 1 olsun\nsayacı 0,5 artır\n";
     let hata = kaynagi_calistir(kaynak).expect_err("T006 bekleniyor");
     assert_eq!(hata.kod, "T006");
-    assert!(hata.oneri.as_deref().unwrap_or("").contains("0,0"), "öneri yol göstermeli");
+    assert!(
+        hata.oneri.as_deref().unwrap_or("").contains("0,0"),
+        "öneri yol göstermeli"
+    );
 }
 
 #[test]
@@ -204,8 +208,7 @@ fn uzun_negatif_girdi_ondaliga_kayipsiz_cevrilir() {
 
 #[test]
 fn buyuk_ondaligi_tam_sayiya_daraltma_tasma_verir() {
-    let kaynak =
-        "değer 999999999999999999999999999999,5 olsun\ndeğerin tam kısmı yaz\n";
+    let kaynak = "değer 999999999999999999999999999999,5 olsun\ndeğerin tam kısmı yaz\n";
     let hata = kaynagi_calistir(kaynak).expect_err("C002 bekleniyor");
     assert_eq!(hata.kod, "C002");
 }
@@ -216,7 +219,10 @@ fn bicimleyici_ondaligi_bolmez() {
     let bicimli = dil::bicimleyici::bicimle(girdi).expect("biçimlenmeli");
     // 2,5 ve 7,25 tek token kalır; liste virgülünden sonra boşluk gelir.
     assert_eq!(bicimli, "fiyatlar 2,5, 7,25 listesi olsun\n");
-    assert_eq!(dil::bicimleyici::bicimle(&bicimli).expect("idempotent"), bicimli);
+    assert_eq!(
+        dil::bicimleyici::bicimle(&bicimli).expect("idempotent"),
+        bicimli
+    );
 }
 
 #[test]

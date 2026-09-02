@@ -30,7 +30,12 @@ fn elle_kurulmus_gecersiz_ast_panik_yerine_tani_uretir() {
 #[test]
 fn production_crate_kokleri_panic_lint_kapisini_tasir() {
     let kok = std::path::Path::new(env!("CARGO_MANIFEST_DIR"));
-    for goreli in ["src/lib.rs", "src/main.rs", "src/bin/dillsp.rs", "src/bin/olcum.rs"] {
+    for goreli in [
+        "src/lib.rs",
+        "src/main.rs",
+        "src/bin/dillsp.rs",
+        "src/bin/olcum.rs",
+    ] {
         let kaynak = std::fs::read_to_string(kok.join(goreli)).expect("crate kökü okunmalı");
         for lint in [
             "clippy::unwrap_used",
@@ -40,7 +45,10 @@ fn production_crate_kokleri_panic_lint_kapisini_tasir() {
             "clippy::todo",
             "clippy::unimplemented",
         ] {
-            assert!(kaynak.contains(lint), "{goreli} production kapısında {lint} eksik");
+            assert!(
+                kaynak.contains(lint),
+                "{goreli} production kapısında {lint} eksik"
+            );
         }
     }
 }

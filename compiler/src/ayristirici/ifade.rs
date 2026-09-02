@@ -50,7 +50,10 @@ pub(super) fn eslesen_ek<I: Iterator<Item = Token>>(t: &mut std::iter::Peekable<
     }
 }
 
-pub(super) fn bekle_kelime<I: Iterator<Item = Token>>(t: &mut std::iter::Peekable<I>, beklenen: &str) -> Option<()> {
+pub(super) fn bekle_kelime<I: Iterator<Item = Token>>(
+    t: &mut std::iter::Peekable<I>,
+    beklenen: &str,
+) -> Option<()> {
     match t.next().map(|x| x.tur) {
         Some(TokenTur::Kelime(k)) if k == beklenen => Some(()),
         _ => None,
@@ -98,13 +101,23 @@ const TAMLAYAN_EKLER: [&str; 8] = ["nın", "nin", "nun", "nün", "ın", "in", "u
 /// tüketmezse `ile` birleştirmesine düşer. Karşılaştırma ve boolean zincir
 /// kendi cümle bağlamında bunun üstündedir. Yeni ifade özelliği gelişigüzel
 /// bir üst-düzey dal olarak değil, RFC-0021'deki tek katmana eklenir.
-pub(super) fn ile_ifadesi(tokenlar: &[Token], satir: usize, islemler: &[String]) -> Result<Ifade, Tani> {
+pub(super) fn ile_ifadesi(
+    tokenlar: &[Token],
+    satir: usize,
+    islemler: &[String],
+) -> Result<Ifade, Tani> {
     konumlu_ifade(ile_ifadesi_ic(tokenlar, satir, islemler)?, tokenlar)
 }
 
 fn ile_ifadesi_ic(tokenlar: &[Token], satir: usize, islemler: &[String]) -> Result<Ifade, Tani> {
     if tokenlar.is_empty() {
-        return Err(Tani::yeni("S013", "Burada bir değer bekleniyor.".into(), satir, 1, 1));
+        return Err(Tani::yeni(
+            "S013",
+            "Burada bir değer bekleniyor.".into(),
+            satir,
+            1,
+            1,
+        ));
     }
 
     if let Some(ifade) = yapili_kalip(tokenlar, islemler)? {
@@ -151,7 +164,11 @@ fn ile_ifadesi_ic(tokenlar: &[Token], satir: usize, islemler: &[String]) -> Resu
 }
 
 /// Tek "ile" parçası: tek token ya da yapılı kalıp.
-pub(super) fn bolge_ifadesi(tokenlar: &[Token], _satir: usize, islemler: &[String]) -> Result<Ifade, Tani> {
+pub(super) fn bolge_ifadesi(
+    tokenlar: &[Token],
+    _satir: usize,
+    islemler: &[String],
+) -> Result<Ifade, Tani> {
     konumlu_ifade(bolge_ifadesi_ic(tokenlar, _satir, islemler)?, tokenlar)
 }
 
@@ -221,8 +238,7 @@ fn kosul_ifadesi_ic(tokenlar: &[Token], satir: usize) -> Result<Ifade, Tani> {
                         tokenlar[i].uzunluk,
                     )
                     .onerili(
-                        "Koşulu ayrı \"ise\" basamaklarına böl ya da tek tür bağlaç kullan."
-                            .into(),
+                        "Koşulu ayrı \"ise\" basamaklarına böl ya da tek tür bağlaç kullan.".into(),
                     ));
                 }
                 _ => baglac = Some(bu),
@@ -403,9 +419,7 @@ fn kosul_atomu_ic(tokenlar: &[Token], satir: usize) -> Result<Ifade, Tani> {
 
     // M (aranan) içeriyorsa.
     // X P ile başlıyorsa / bitiyorsa (K-053).
-    if n == 4
-        && kelimeler[2] == Some("ile")
-        && (yuklem == "başlıyorsa" || yuklem == "bitiyorsa")
+    if n == 4 && kelimeler[2] == Some("ile") && (yuklem == "başlıyorsa" || yuklem == "bitiyorsa")
     {
         return Ok(Ifade::MetinSinari {
             metin: Box::new(tekil_ifade(tokenlar[0].clone())?),
@@ -538,10 +552,14 @@ fn yapili_kalip_ic(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifa
 
     // W ın sayısı / ondalığı — ek, ada bitişiktir ("yanıtın"); çözümleyici ayıklar.
     if n == 2 && son == "sayısı" {
-        return Ok(Some(Ifade::Sayisi(Box::new(tekil_ifade(tokenlar[0].clone())?))));
+        return Ok(Some(Ifade::Sayisi(Box::new(tekil_ifade(
+            tokenlar[0].clone(),
+        )?))));
     }
     if n == 2 && son == "ondalığı" {
-        return Ok(Some(Ifade::Ondaligi(Box::new(tekil_ifade(tokenlar[0].clone())?))));
+        return Ok(Some(Ifade::Ondaligi(Box::new(tekil_ifade(
+            tokenlar[0].clone(),
+        )?))));
     }
 
     // boş liste / boş sözlük
@@ -612,10 +630,14 @@ fn yapili_kalip_ic(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifa
     // W ın değeri — Seçenek/Sonuç içindeki değer; W ın hatası — Sonuç hatası.
     let deger_kelimesi = matches!(son, "değeri" | "değerini" | "değerine" | "değeriyle");
     if n == 2 && deger_kelimesi {
-        return Ok(Some(Ifade::IcDeger(Box::new(tekil_ifade(tokenlar[0].clone())?))));
+        return Ok(Some(Ifade::IcDeger(Box::new(tekil_ifade(
+            tokenlar[0].clone(),
+        )?))));
     }
     if n == 2 && (son == "hatası" || son == "hatasını") {
-        return Ok(Some(Ifade::SonucHatasi(Box::new(tekil_ifade(tokenlar[0].clone())?))));
+        return Ok(Some(Ifade::SonucHatasi(Box::new(tekil_ifade(
+            tokenlar[0].clone(),
+        )?))));
     }
 
     // X in tam kısmı — ondalığın virgül öncesi (RFC-0013).
@@ -635,11 +657,7 @@ fn yapili_kalip_ic(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifa
     }
 
     // X ile Y arasındaki günler — işaretli tarih farkı (K-057).
-    if n == 5
-        && son == "günler"
-        && kelime(1) == Some("ile")
-        && kelime(3) == Some("arasındaki")
-    {
+    if n == 5 && son == "günler" && kelime(1) == Some("ile") && kelime(3) == Some("arasındaki") {
         return Ok(Some(Ifade::GunFarki {
             birinci: Box::new(tekil_ifade(tokenlar[0].clone())?),
             ikinci: Box::new(tekil_ifade(tokenlar[2].clone())?),
@@ -716,18 +734,19 @@ fn yapili_kalip_ic(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifa
     // W ın sayısını/ondalığını almayı dene → Sonuç (RFC-0008 §4.3: mastar + dene).
     if n == 4 && kelime(2) == Some("almayı") && son == "dene" {
         if kelime(1) == Some("sayısını") {
-            return Ok(Some(Ifade::SayiyiDene(Box::new(tekil_ifade(tokenlar[0].clone())?))));
+            return Ok(Some(Ifade::SayiyiDene(Box::new(tekil_ifade(
+                tokenlar[0].clone(),
+            )?))));
         }
         if kelime(1) == Some("ondalığını") {
-            return Ok(Some(Ifade::OndaligiDene(Box::new(tekil_ifade(tokenlar[0].clone())?))));
+            return Ok(Some(Ifade::OndaligiDene(Box::new(tekil_ifade(
+                tokenlar[0].clone(),
+            )?))));
         }
     }
 
     // "..." dosyasını okumayı dene → Sonuç.
-    if n == 4
-        && kelime(1) == Some("dosyasını")
-        && kelime(2) == Some("okumayı")
-        && son == "dene"
+    if n == 4 && kelime(1) == Some("dosyasını") && kelime(2) == Some("okumayı") && son == "dene"
     {
         return Ok(Some(Ifade::DosyaOkumayiDene(Box::new(tekil_ifade(
             tokenlar[0].clone(),
@@ -744,10 +763,14 @@ fn yapili_kalip_ic(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifa
     // "..." dosyasından okunan tablo/veri → CSV tablosu / JSON nesnesi.
     if n == 4 && kelime(1) == Some("dosyasından") && kelime(2) == Some("okunan") {
         if son == "tablo" {
-            return Ok(Some(Ifade::TabloOku(Box::new(tekil_ifade(tokenlar[0].clone())?))));
+            return Ok(Some(Ifade::TabloOku(Box::new(tekil_ifade(
+                tokenlar[0].clone(),
+            )?))));
         }
         if son == "veri" {
-            return Ok(Some(Ifade::VeriOku(Box::new(tekil_ifade(tokenlar[0].clone())?))));
+            return Ok(Some(Ifade::VeriOku(Box::new(tekil_ifade(
+                tokenlar[0].clone(),
+            )?))));
         }
     }
 
@@ -758,7 +781,8 @@ fn yapili_kalip_ic(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifa
     if n == 3 && kelime(0) == Some("şu") && kelime(1) == Some("anın") && son == "saati" {
         return Ok(Some(Ifade::SuAninSaati));
     }
-    if n == 3 && kelime(0) == Some("komut") && kelime(1) == Some("satırından") && son == "gelenler" {
+    if n == 3 && kelime(0) == Some("komut") && kelime(1) == Some("satırından") && son == "gelenler"
+    {
         return Ok(Some(Ifade::KomutArgumanlari));
     }
 
@@ -780,10 +804,14 @@ fn yapili_kalip_ic(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifa
 
     // W ın durum kodu / gövdesi — AğYanıtı özellikleri.
     if n == 3 && kelime(1) == Some("durum") && (son == "kodu" || son == "kodunu") {
-        return Ok(Some(Ifade::DurumKodu(Box::new(tekil_ifade(tokenlar[0].clone())?))));
+        return Ok(Some(Ifade::DurumKodu(Box::new(tekil_ifade(
+            tokenlar[0].clone(),
+        )?))));
     }
     if n == 2 && (son == "gövdesi" || son == "gövdesini") {
-        return Ok(Some(Ifade::Govde(Box::new(tekil_ifade(tokenlar[0].clone())?))));
+        return Ok(Some(Ifade::Govde(Box::new(tekil_ifade(
+            tokenlar[0].clone(),
+        )?))));
     }
 
     // Süre sabiti: <sayı|ondalık|yarım> saniye/dakika/saat (RFC-0011/0013).
@@ -797,22 +825,20 @@ fn yapili_kalip_ic(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifa
         if let Some(katsayi) = katsayi {
             let milisaniye: Option<i128> = match &tokenlar[0].tur {
                 TokenTur::TamSayi(s) if *s >= 0 => Some(*s as i128 * katsayi),
-                TokenTur::Ondalik { govde, olcek } => {
-                    match Ondalik::govdeden(govde, *olcek) {
-                        Some(ondalik) if !ondalik.negatif_mi() => Some(
-                            ondalik.katsayiyla_yuvarla_i128(katsayi).ok_or_else(|| {
-                                Tani::yeni(
-                                    "S006",
-                                    "Süre değeri sınırı aşıyor.".into(),
-                                    tokenlar[0].satir,
-                                    tokenlar[0].sutun,
-                                    tokenlar[0].uzunluk,
-                                )
-                            })?,
-                        ),
-                        _ => None,
+                TokenTur::Ondalik { govde, olcek } => match Ondalik::govdeden(govde, *olcek) {
+                    Some(ondalik) if !ondalik.negatif_mi() => {
+                        Some(ondalik.katsayiyla_yuvarla_i128(katsayi).ok_or_else(|| {
+                            Tani::yeni(
+                                "S006",
+                                "Süre değeri sınırı aşıyor.".into(),
+                                tokenlar[0].satir,
+                                tokenlar[0].sutun,
+                                tokenlar[0].uzunluk,
+                            )
+                        })?)
                     }
-                }
+                    _ => None,
+                },
                 TokenTur::Kelime(k) if k == "yarım" => Some(katsayi / 2),
                 _ => None,
             };
@@ -884,7 +910,10 @@ fn yapili_kalip_ic(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifa
     {
         let alt = tekil_ifade(tokenlar[0].clone())?;
         let ust = tekil_ifade(tokenlar[2].clone())?;
-        return Ok(Some(Ifade::Rastgele { alt: Box::new(alt), ust: Box::new(ust) }));
+        return Ok(Some(Ifade::Rastgele {
+            alt: Box::new(alt),
+            ust: Box::new(ust),
+        }));
     }
 
     // Çağrı katmanı primary ve erişim/postfix'ten sonra, aritmetikten önce
@@ -909,7 +938,9 @@ fn yapili_kalip_ic(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifa
             (n - 3, n - 2)
         } else if n >= 5
             && kelime(n - 4) == Some("ile")
-            && kelime(n - 2).map(|e| TAMLAYAN_EKLER.contains(&e)).unwrap_or(false)
+            && kelime(n - 2)
+                .map(|e| TAMLAYAN_EKLER.contains(&e))
+                .unwrap_or(false)
         {
             (n - 4, n - 3)
         } else {
@@ -926,11 +957,13 @@ fn yapili_kalip_ic(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifa
     }
 
     // X in Y ye bölümü — ve kalanı: "X in Y ye bölümünden kalanı" (K-046).
-    let kalan_kalibi = son == "kalanı"
-        && n >= 4
-        && kelime(n - 2) == Some("bölümünden");
+    let kalan_kalibi = son == "kalanı" && n >= 4 && kelime(n - 2) == Some("bölümünden");
     if son == "bölümü" || kalan_kalibi {
-        let govde = if kalan_kalibi { &tokenlar[..n - 2] } else { &tokenlar[..n - 1] };
+        let govde = if kalan_kalibi {
+            &tokenlar[..n - 2]
+        } else {
+            &tokenlar[..n - 1]
+        };
         let mut i = 0;
         if i >= govde.len() {
             return Ok(None);
@@ -964,7 +997,11 @@ fn yapili_kalip_ic(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifa
         let sol = tekil_ifade(sol_token)?;
         let sag = tekil_ifade(sag_token)?;
         return Ok(Some(Ifade::Aritmetik {
-            islec: if kalan_kalibi { AritmetikIslec::Kalan } else { AritmetikIslec::Bol },
+            islec: if kalan_kalibi {
+                AritmetikIslec::Kalan
+            } else {
+                AritmetikIslec::Bol
+            },
             sol: Box::new(sol),
             sag: Box::new(sag),
         }));
@@ -1095,7 +1132,11 @@ fn cagri_kalibi_ic(
 
 /// Bütün bölge görünür işlem adıysa eski sıfır-argüman çağrısını korur.
 /// Suffix tabanlı parametreli çağrı, primary/postfix katmanından sonra denenir.
-pub(super) fn sifir_argumanli_cagri(tokenlar: &[Token], satir: usize, islemler: &[String]) -> Option<Ifade> {
+pub(super) fn sifir_argumanli_cagri(
+    tokenlar: &[Token],
+    satir: usize,
+    islemler: &[String],
+) -> Option<Ifade> {
     let n = tokenlar.len();
     for ad in sirali_islem_adlari(islemler) {
         let kelimeler: Vec<&str> = ad.split(' ').collect();

@@ -249,8 +249,7 @@ pub(super) fn yapi_turu_tanilari(yapilar: &[Yapi]) -> Vec<Tani> {
                         1,
                     )
                     .onerili(
-                        "Kullanılabilir alan türleri: TamSayı, Ondalık, Metin, Mantıksal."
-                            .into(),
+                        "Kullanılabilir alan türleri: TamSayı, Ondalık, Metin, Mantıksal.".into(),
                     ),
                 );
             }

@@ -762,9 +762,10 @@ strict UTF-8, açık sonuç ömrü, native+gerçek wasm32 host testi ve ayrı ha
 dışa aktarımlarıyla kaynak/soru girdisini sahipli kopya, satır tablosu ve
 tarayıcı UTF-8 tahsisinden önce sınırlayarak B-056'yı kapattı. K-144/ADR-041,
 48 kritik üretim işlevini incelenmiş Clippy tabanına, kademeli büyüme payına ve
-bayat olmayan makine raporuna bağlayarak B-035'i kapattı. Sıradaki omurga
-K-145 ile B-037 kontrollü biçim borcu temizliği ve `cargo fmt --check`
-kapısıdır.
+bayat olmayan makine raporuna bağlayarak B-035'i kapattı. K-145/ADR-042,
+53 dosyadaki eski biçim borcunu tek mekanik dilimde temizleyip sabit
+`rustfmt` bileşenli üç platformlu `cargo fmt --all -- --check` kapısıyla
+B-037'yi kapattı. Sıradaki omurga K-146 ile B-038 faza özgü test matrisidir.
 # 40. Proje felsefesinin korunması
 Bu projenin başarısı yalnız compiler’ın çalışması değildir. Başarı; Türkçe konuşan bir çocuğun yabancı syntax bariyerine takılmadan algoritmik düşünceyle tanışması, aynı dilin yıllar sonra onu terk etmeye zorlamaması ve ekosistemin tek bir şirketin kapalı ürünü haline gelmemesidir.
 Her yeni özellik şu dört sorudan geçmelidir: Türkçe doğal mı? Deterministik mi? Öğrenilebilir mi? Profesyonel ölçekte savunulabilir mi? Dördünden biri hayırsa özellik yeniden tasarlanır.

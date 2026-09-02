@@ -14,8 +14,7 @@ fn gomulu_yukleyici() -> impl FnMut(&str) -> Result<String, String> {
 
 fn gomulu_kostur(kaynak: &str) -> Vec<String> {
     let mut yukleyici = gomulu_yukleyici();
-    let program =
-        dil::kaynagi_derle_birimlerle(kaynak, &mut yukleyici).expect("derlenmeli");
+    let program = dil::kaynagi_derle_birimlerle(kaynak, &mut yukleyici).expect("derlenmeli");
     let mut io = ToplayanIo::yeni(Vec::new());
     calistir_io(&program, &mut io).expect("çalışmalı");
     io.cikti
@@ -27,7 +26,11 @@ fn gomulu_birimlerin_kendi_testleri_gecer() {
         let kaynak = dil::gomulu_birim(ad).expect("gömülü olmalı");
         let sonuclar = dil::kaynagi_dene(kaynak)
             .unwrap_or_else(|hata| panic!("{} derlenemedi: {:?}", ad, hata));
-        assert!(!sonuclar.is_empty(), "{} birimi testsiz olamaz (RFC-0014 §5)", ad);
+        assert!(
+            !sonuclar.is_empty(),
+            "{} birimi testsiz olamaz (RFC-0014 §5)",
+            ad
+        );
         for sonuc in &sonuclar {
             assert!(sonuc.hata.is_none(), "{}: {} düştü", ad, sonuc.ad);
         }
@@ -47,10 +50,7 @@ fn liste_araclari_birimi_kullanilir() {
     let cikti = gomulu_kostur(
         "liste_araclari birimini kullan\n\nnotlar 50, 60, 71 listesi olsun\no notlar için ortalamasını hesapla olsun\no yaz\nb notlar için en büyüğünü bul olsun\nb yaz\n",
     );
-    assert_eq!(
-        cikti,
-        vec!["60,33333333333333333333333333333333", "71,0"]
-    );
+    assert_eq!(cikti, vec!["60,33333333333333333333333333333333", "71,0"]);
 }
 
 #[test]
@@ -66,8 +66,8 @@ fn playgroundda_gomulu_birim_calisir() {
 #[test]
 fn bilinmeyen_birim_gomulu_listeyle_reddedilir() {
     let mut yukleyici = gomulu_yukleyici();
-    let hata = dil::kaynagi_derle_birimlerle("uzay birimini kullan\n", &mut yukleyici)
-        .expect_err("A010");
+    let hata =
+        dil::kaynagi_derle_birimlerle("uzay birimini kullan\n", &mut yukleyici).expect_err("A010");
     assert_eq!(hata.kod, "A010");
 }
 
@@ -107,7 +107,8 @@ fn birim_ozeti_islemleri_listeler() {
 #[test]
 fn matematik_ussu_dogal_adla_cagrilir() {
     // K-049 ikizleşme geri çevrimi: parametre "üssü al" → üs.
-    let cikti = gomulu_kostur("matematik birimini kullan\n\nx 3 ve 4 ile üssünü hesapla olsun\nx yaz\n");
+    let cikti =
+        gomulu_kostur("matematik birimini kullan\n\nx 3 ve 4 ile üssünü hesapla olsun\nx yaz\n");
     assert_eq!(cikti, vec!["81"]);
 }
 

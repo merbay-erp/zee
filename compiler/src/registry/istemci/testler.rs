@@ -378,12 +378,10 @@ fn dogrulanmis_cache_offline_acilir_ve_bozuk_nesne_fail_closed_kalir() {
     assert_eq!(cevrimici.metadata_surumleri.targets, 3);
     assert!(!cevrimici.cevrimdisi);
     assert!(cevrimici.arsiv.is_file());
-    assert!(
-        std::fs::metadata(&cevrimici.arsiv)
-            .expect("cache metadata")
-            .permissions()
-            .readonly()
-    );
+    assert!(std::fs::metadata(&cevrimici.arsiv)
+        .expect("cache metadata")
+        .permissions()
+        .readonly());
 
     let offline = istemci
         .paketi_cevrimdisi_al("miras", "1.2.3", HedefPolitikasi::default())
@@ -456,17 +454,13 @@ fn tasinan_cift_esikli_root_kalici_duruma_ve_offline_dogrulamaya_gecer() {
         )
         .expect("root rotasyonlu güncelleme");
     assert_eq!(sonuc.metadata_surumleri.root, 2);
-    assert!(
-        tasiyici
-            .istekler
-            .iter()
-            .any(|yol| yol == "metadata/2.root.json")
-    );
-    assert!(
-        istemci
-            .paketi_cevrimdisi_al("miras", "1.2.3", HedefPolitikasi::default())
-            .is_ok()
-    );
+    assert!(tasiyici
+        .istekler
+        .iter()
+        .any(|yol| yol == "metadata/2.root.json"));
+    assert!(istemci
+        .paketi_cevrimdisi_al("miras", "1.2.3", HedefPolitikasi::default())
+        .is_ok());
 }
 
 #[test]

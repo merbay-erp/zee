@@ -26,8 +26,7 @@ fn hikaye_cevaplari_dokur() {
         "Kapadokya".to_string(),
         "9".to_string(),
     ];
-    let cikti =
-        kaynagi_calistir_girdiyle(&proje("hikaye.dil"), girdiler).expect("çalışmalı");
+    let cikti = kaynagi_calistir_girdiyle(&proje("hikaye.dil"), girdiler).expect("çalışmalı");
     assert!(cikti.contains(&"Zeynep adında bir kahraman varmış.".to_string()));
     assert!(cikti.contains(&"Yol tam 9 gün sürmüş.".to_string()));
     assert!(cikti.contains(&"Uzun bir yolculukmuş doğrusu!".to_string()));
@@ -41,8 +40,7 @@ fn quiz_puani_dogru_sayar() {
     assert!(cikti.contains(&"Çok iyi!".to_string()));
 
     let hepsi_dogru = vec!["Ankara".to_string(), "56".to_string(), "7".to_string()];
-    let cikti =
-        kaynagi_calistir_girdiyle(&proje("quiz.dil"), hepsi_dogru).expect("çalışmalı");
+    let cikti = kaynagi_calistir_girdiyle(&proje("quiz.dil"), hepsi_dogru).expect("çalışmalı");
     assert!(cikti.contains(&"Puanın: 3 / 3".to_string()));
     assert!(cikti.contains(&"Mükemmel! Hepsini bildin!".to_string()));
 }
@@ -52,7 +50,10 @@ fn zar_oyunu_tutarli_biter() {
     // Rastgelelik hermetik IO'dan gelir: aynı ortamda aynı oyun. Yapısal
     // doğrulama: 3 el + özet; final üç sonuçtan biri; skor toplamı ≤ 3.
     let cikti = kaynagi_calistir(&proje("zar-oyunu.dil")).expect("çalışmalı");
-    let eller = cikti.iter().filter(|s| s.starts_with("Senin zarın: ")).count();
+    let eller = cikti
+        .iter()
+        .filter(|s| s.starts_with("Senin zarın: "))
+        .count();
     assert_eq!(eller, 3);
     let final_satiri = cikti.last().expect("çıktı boş olmamalı");
     assert!(
@@ -107,8 +108,7 @@ fn kumbara_hedefe_ulasir() {
 #[test]
 fn gizli_dil_kelime_cevirir() {
     let girdiler = vec!["okul çok güzel bugün".to_string()];
-    let cikti =
-        kaynagi_calistir_girdiyle(&proje("gizli-dil.dil"), girdiler).expect("çalışmalı");
+    let cikti = kaynagi_calistir_girdiyle(&proje("gizli-dil.dil"), girdiler).expect("çalışmalı");
     assert!(cikti.contains(&"Gizli hali: balina fıstık yıldızlı bugün ".to_string()));
 }
 
@@ -127,17 +127,23 @@ fn gun_sayar_sahte_takvimle() {
     let cikti = kaynagi_calistir(&proje("gun-sayar.dil")).expect("çalışmalı");
     assert!(cikti[0].starts_with("Bugün: "), "{}", cikti[0]);
     assert!(cikti.contains(&"Yıl: 2026".to_string()));
-    assert!(cikti.iter().any(|s| s.starts_with("Yarın: ")), "{:?}", cikti);
+    assert!(
+        cikti.iter().any(|s| s.starts_with("Yarın: ")),
+        "{:?}",
+        cikti
+    );
 }
 
 #[test]
 fn mini_site_html_uretir() {
     // Hermetik sunucu: sahte istek kuyruğu, gömülü kitaplık yükleyicisi.
     let mut yukleyici = |ad: &str| -> Result<String, String> {
-        dil::gomulu_birim(ad).map(str::to_string).ok_or_else(|| "yok".into())
+        dil::gomulu_birim(ad)
+            .map(str::to_string)
+            .ok_or_else(|| "yok".into())
     };
-    let program = dil::kaynagi_derle_birimlerle(&proje("mini-site.dil"), &mut yukleyici)
-        .expect("derlenmeli");
+    let program =
+        dil::kaynagi_derle_birimlerle(&proje("mini-site.dil"), &mut yukleyici).expect("derlenmeli");
     let mut io = dil::yorumlayici::ToplayanIo::yeni(Vec::new());
     io.istekler = vec!["/".into(), "/obeb".into(), "/kayip".into()].into();
     dil::yorumlayici::calistir_io(&program, &mut io).expect("çalışmalı");
@@ -155,7 +161,11 @@ fn mini_site_html_uretir() {
 fn envanter_stok_defteri() {
     let cikti = kaynagi_calistir(&proje("envanter.dil")).expect("çalışmalı");
     assert!(cikti.contains(&"Toplam stok değeri: 1824,50 lira".to_string()));
-    assert!(cikti.contains(&"Alfabetik: çay, şeker, un".to_string()), "{:?}", cikti);
+    assert!(
+        cikti.contains(&"Alfabetik: çay, şeker, un".to_string()),
+        "{:?}",
+        cikti
+    );
 }
 
 #[test]
@@ -164,7 +174,14 @@ fn envanter_json_yedegi_yazilir() {
     let program = dil::kaynagi_derle(&kaynak).expect("derlenmeli");
     let mut io = dil::yorumlayici::ToplayanIo::yeni(Vec::new());
     dil::yorumlayici::calistir_io(&program, &mut io).expect("çalışmalı");
-    let yedek = io.dosyalar.get("envanter.json").expect("yedek dosyası olmalı");
-    assert!(yedek.starts_with("[{\"ad\":\"çay\""), "{}", &yedek[..40.min(yedek.len())]);
+    let yedek = io
+        .dosyalar
+        .get("envanter.json")
+        .expect("yedek dosyası olmalı");
+    assert!(
+        yedek.starts_with("[{\"ad\":\"çay\""),
+        "{}",
+        &yedek[..40.min(yedek.len())]
+    );
     assert!(yedek.contains("\"fiyat\":52.0"));
 }

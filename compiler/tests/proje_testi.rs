@@ -1,8 +1,8 @@
 //! Proje modeli (K-076): proje.dil bildirimi ve klasör-temelli CLI akışı.
 
 use dil::proje::{
-    ProjeBildirimi, RegistryBildirimi, UzakBagimlilik, bildirimi_oku, uzak_bagimliliklari_guncelle,
-    yerel_bagimliliklari_guncelle,
+    bildirimi_oku, uzak_bagimliliklari_guncelle, yerel_bagimliliklari_guncelle, ProjeBildirimi,
+    RegistryBildirimi, UzakBagimlilik,
 };
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -169,10 +169,8 @@ fn gercek_web_sunucusu_acik_opt_in_ister() {
         .output()
         .expect("güvenli web profili");
     assert!(guvenli_web.status.success());
-    assert!(
-        String::from_utf8_lossy(&guvenli_web.stderr)
-            .contains("yalnız 127.0.0.1 üzerindeki HTTPS reverse proxy")
-    );
+    assert!(String::from_utf8_lossy(&guvenli_web.stderr)
+        .contains("yalnız 127.0.0.1 üzerindeki HTTPS reverse proxy"));
     assert_eq!(
         String::from_utf8_lossy(&guvenli_web.stdout),
         "Sunucu dinliyor: https://panel.example (yerel proxy hedefi http://127.0.0.1:0)\nyalnız-programa\n"
@@ -243,16 +241,12 @@ fn bildirim_morfoloji_profilini_sabitler_ve_bilinmeyeni_reddeder() {
 fn bildirim_yetkinlikleri_ve_tam_ag_originlerini_dogrular() {
     let kaynak = "proje \"uygulama\" olsun\nsürüm \"1.0.0\" olsun\ngiriş \"ana.dil\" olsun\nyetkinlikler \"ağ\", \"yerel-ağ\" listesi olsun\nağ_hedefleri \"https://api.example\", \"http://127.0.0.1:8080\" listesi olsun\n";
     let bildirim = bildirimi_oku(kaynak).expect("açık yetkinlikler geçmeli");
-    assert!(
-        bildirim
-            .yetkinlikler
-            .contains(&dil::yetkinlik::Yetkinlik::Ag)
-    );
-    assert!(
-        bildirim
-            .yetkinlikler
-            .contains(&dil::yetkinlik::Yetkinlik::YerelAg)
-    );
+    assert!(bildirim
+        .yetkinlikler
+        .contains(&dil::yetkinlik::Yetkinlik::Ag));
+    assert!(bildirim
+        .yetkinlikler
+        .contains(&dil::yetkinlik::Yetkinlik::YerelAg));
     assert_eq!(bildirim.ag_hedefleri.len(), 2);
 
     for kotu in [

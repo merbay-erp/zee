@@ -57,10 +57,7 @@ impl TokenAkisi {
         Ok(ast)
     }
 
-    pub fn ayristir_kurtarmali(
-        self,
-        islem_adlari: Vec<String>,
-    ) -> (AyristirilmisAst, Vec<Tani>) {
+    pub fn ayristir_kurtarmali(self, islem_adlari: Vec<String>) -> (AyristirilmisAst, Vec<Tani>) {
         let (cumleler, tanilar) =
             crate::ayristirici::ayristir_kurtarmali(self.tokenlar, islem_adlari);
         let ast = AyristirilmisAst::yeni(cumleler);

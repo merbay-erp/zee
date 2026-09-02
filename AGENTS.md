@@ -28,6 +28,8 @@ Markdown bağlantılarını, `docs/kanit-haritasi-v1.tsv` kapsamını ve README 
 sayı bloğunu doğrular. Test/golden/tanı/RFC/ADR/spec sayısı değişince kökten
 elle arama yapılmaz; `cd compiler && cargo run --bin depo_sayilari -- --yaz`
 çalıştırılır. Toplu commit öncesi katalog ve tazelik kapıları çalıştırılır.
+Rust kaynakları ayrıca `cd compiler && cargo fmt --all -- --check` kapısından
+geçer; kanonik biçim borcu kod değişikliğinden ayrı bırakılmaz.
 
 ## V1 öncesi iş sırası
 

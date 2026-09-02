@@ -6,8 +6,9 @@
 use std::fmt;
 
 /// Tek kaynak doğrulamasında kullanıcıya/LSP'ye gönderilen üst tanı bütçesi.
-pub(crate) const AZAMI_TANI_SAYISI: usize =
-    crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.tani().sayi();
+pub(crate) const AZAMI_TANI_SAYISI: usize = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+    .tani()
+    .sayi();
 
 #[derive(Debug, Clone)]
 pub struct Tani {
@@ -25,7 +26,14 @@ pub struct Tani {
 
 impl Tani {
     pub fn yeni(kod: &str, mesaj: String, satir: usize, sutun: usize, uzunluk: usize) -> Tani {
-        Tani { kod: kod.into(), mesaj, satir, sutun, uzunluk: uzunluk.max(1), oneri: None }
+        Tani {
+            kod: kod.into(),
+            mesaj,
+            satir,
+            sutun,
+            uzunluk: uzunluk.max(1),
+            oneri: None,
+        }
     }
 
     pub fn onerili(mut self, oneri: String) -> Tani {
@@ -86,7 +94,11 @@ fn json_kacis(metin: &str) -> String {
 
 impl fmt::Display for Tani {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "HATA {} (satır {}): {}", self.kod, self.satir, self.mesaj)
+        write!(
+            f,
+            "HATA {} (satır {}): {}",
+            self.kod, self.satir, self.mesaj
+        )
     }
 }
 

@@ -33,7 +33,10 @@ temiz cümlenin kırpılmışı olsun
 yeni temizin \"kedi\" yerine \"köpek\" değişmişi olsun
 yeni yaz
 ";
-    assert_eq!(kaynagi_calistir(kaynak).expect("çalışmalı"), vec!["köpek evde"]);
+    assert_eq!(
+        kaynagi_calistir(kaynak).expect("çalışmalı"),
+        vec!["köpek evde"]
+    );
 }
 
 #[test]
@@ -97,10 +100,12 @@ oranın json metni yaz
 
 #[test]
 fn metin_dalgasinin_tur_bekcileri() {
-    let hata = kaynagi_calistir("veri 5 olsun\nyeni verinin \",\" ile parçaları olsun\n").expect_err("T022");
+    let hata = kaynagi_calistir("veri 5 olsun\nyeni verinin \",\" ile parçaları olsun\n")
+        .expect_err("T022");
     assert_eq!(hata.kod, "T022");
-    let hata = kaynagi_calistir("sayılar 1, 2 listesi olsun\ny sayıların \",\" ile birleşmişi olsun\n")
-        .expect_err("Metin listesi değil");
+    let hata =
+        kaynagi_calistir("sayılar 1, 2 listesi olsun\ny sayıların \",\" ile birleşmişi olsun\n")
+            .expect_err("Metin listesi değil");
     assert_eq!(hata.kod, "T022");
 }
 
@@ -113,7 +118,12 @@ fn json_okuma_sayi_bool_metin_gelir() {
     .expect("derlenmeli");
     let mut io = dil::yorumlayici::ToplayanIo::yeni(Vec::new());
     use dil::yorumlayici::GirdiCikti;
-    io.dosya_yaz("k.json", "{\"yaş\": 10, \"boy\": 1.35, \"üye\": true}", false).unwrap();
+    io.dosya_yaz(
+        "k.json",
+        "{\"yaş\": 10, \"boy\": 1.35, \"üye\": true}",
+        false,
+    )
+    .unwrap();
     dil::yorumlayici::calistir_io(&program, &mut io).expect("çalışmalı");
     assert_eq!(io.cikti, vec!["10", "1,35", "doğru"]);
 }

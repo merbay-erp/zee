@@ -15,15 +15,13 @@ mod yetkinlik;
 
 use self::cumle::blok_calistir_async;
 use self::hir_gecisi::CalistirmaProgrami;
+pub use self::hir_gecisi::{calistir_baglanmis, calistir_baglanmis_io, test_calistir_baglanmis};
 use self::ifade::degerlendir_async;
+pub use self::io_izi::{IzKaydedenIo, IzYenidenOynatici, AZAMI_IO_IZ_BAYTI, AZAMI_IO_IZ_OLAYI};
+pub use self::io_profili::{SurumluRastgele, DETERMINISTIK_IO_PROFILI};
 use self::kaynak::*;
 use self::metin::{csv_yaz, dogrulama_detayi, json_yaz, metne_sinirli};
 use self::web_istek::web_istegini_calistir;
-pub use self::hir_gecisi::{calistir_baglanmis, calistir_baglanmis_io, test_calistir_baglanmis};
-pub use self::io_izi::{
-    IzKaydedenIo, IzYenidenOynatici, AZAMI_IO_IZ_BAYTI, AZAMI_IO_IZ_OLAYI,
-};
-pub use self::io_profili::{SurumluRastgele, DETERMINISTIK_IO_PROFILI};
 pub use self::yetkinlik::{GuvenliIo, PolitikaliIo};
 
 use crate::agac::{
@@ -56,8 +54,9 @@ pub type AdDegerler = Vec<(String, String)>;
 pub const AZAMI_ISTEK_GOVDESI: usize = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
     .http()
     .istek_govde_bayti();
-pub const AZAMI_ISTEK_ALANI: usize =
-    crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.http().istek_alani();
+pub const AZAMI_ISTEK_ALANI: usize = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+    .http()
+    .istek_alani();
 
 fn istek_sinirlarini_denetle(ham: &str) -> Result<(), (u16, &'static str)> {
     let (ilk_satir, kalan) = ham.split_once('\n').unwrap_or((ham, ""));
@@ -182,12 +181,10 @@ fn turkce_karsilastir(a: &str, b: &str) -> std::cmp::Ordering {
 fn deger_sirasi(a: &Deger, b: &Deger) -> std::cmp::Ordering {
     match (a, b) {
         (Deger::TamSayi(x), Deger::TamSayi(y)) => x.cmp(y),
-        (Deger::Ondalik(_), _) | (_, Deger::Ondalik(_)) => {
-            match (sayisal_ac(a), sayisal_ac(b)) {
-                (Some(sol), Some(sag)) => sol.karsilastir(&sag),
-                _ => std::cmp::Ordering::Equal,
-            }
-        }
+        (Deger::Ondalik(_), _) | (_, Deger::Ondalik(_)) => match (sayisal_ac(a), sayisal_ac(b)) {
+            (Some(sol), Some(sag)) => sol.karsilastir(&sag),
+            _ => std::cmp::Ordering::Equal,
+        },
         (Deger::Metin(x), Deger::Metin(y)) => turkce_karsilastir(x, y),
         _ => std::cmp::Ordering::Equal,
     }
@@ -574,8 +571,7 @@ impl GirdiCikti for ToplayanIo {
         url: &str,
         zaman_asimi_ms: Option<i64>,
     ) -> Result<(i64, String), String> {
-        self.http_istekleri
-            .push((url.to_string(), zaman_asimi_ms));
+        self.http_istekleri.push((url.to_string(), zaman_asimi_ms));
         self.http_yanitlari
             .get(url)
             .cloned()
@@ -837,22 +833,37 @@ pub enum Deger {
     /// Seçenek'in boş hali; dolu hali değerin kendisidir.
     Yok,
     /// Sonuç: başarılıysa değer, değilse yapılandırılmış Hata taşır.
-    Sonuc { basarili: bool, icerik: Box<Deger> },
+    Sonuc {
+        basarili: bool,
+        icerik: Box<Deger>,
+    },
     /// Kod, insana dönük mesaj, isteğe bağlı neden zinciri ve bağlam verisi.
     Hata(Box<HataDegeri>),
     /// Yapı örneği: yalın alan adı → değer (tanım sırasıyla).
     Yapi(Vec<(String, Deger)>),
-    Tarih { yil: i64, ay: u32, gun: u32 },
-    Saat { saat: u32, dakika: u32 },
+    Tarih {
+        yil: i64,
+        ay: u32,
+        gun: u32,
+    },
+    Saat {
+        saat: u32,
+        dakika: u32,
+    },
     /// Milisaniye cinsinden süre.
-    Sure { milisaniye: i64 },
+    Sure {
+        milisaniye: i64,
+    },
     /// HTTP yanıtı: durum kodu + gövde.
-    AgYaniti { durum: i64, govde: String },
+    AgYaniti {
+        durum: i64,
+        govde: String,
+    },
 }
 
 const AY_ADLARI: [&str; 12] = [
-    "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
-    "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık",
+    "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim",
+    "Kasım", "Aralık",
 ];
 
 impl Deger {
@@ -864,7 +875,6 @@ impl Deger {
             veri: Vec::new(),
         }))
     }
-
 }
 
 /// CLI'nin sistem saatini çevirmesi için dışa açık sarmalayıcı.
@@ -877,12 +887,17 @@ fn gunlerden_tarih(z: i64) -> (i64, u32, u32) {
     let z = z + 719468;
     let devir = if z >= 0 { z } else { z - 146096 } / 146097;
     let devir_gunu = (z - devir * 146097) as u64;
-    let yil_gunu = (devir_gunu - devir_gunu / 1460 + devir_gunu / 36524 - devir_gunu / 146096) / 365;
+    let yil_gunu =
+        (devir_gunu - devir_gunu / 1460 + devir_gunu / 36524 - devir_gunu / 146096) / 365;
     let yil = yil_gunu as i64 + devir * 400;
     let yilin_gunu = devir_gunu - (365 * yil_gunu + yil_gunu / 4 - yil_gunu / 100);
     let ay_kaba = (5 * yilin_gunu + 2) / 153;
     let gun = (yilin_gunu - (153 * ay_kaba + 2) / 5 + 1) as u32;
-    let ay = if ay_kaba < 10 { ay_kaba + 3 } else { ay_kaba - 9 } as u32;
+    let ay = if ay_kaba < 10 {
+        ay_kaba + 3
+    } else {
+        ay_kaba - 9
+    } as u32;
     (if ay <= 2 { yil + 1 } else { yil }, ay, gun)
 }
 
@@ -890,8 +905,7 @@ fn tarihten_gunler(yil: i64, ay: u32, gun: u32) -> i64 {
     let yil = if ay <= 2 { yil - 1 } else { yil };
     let devir = if yil >= 0 { yil } else { yil - 399 } / 400;
     let devir_yili = (yil - devir * 400) as u64;
-    let yilin_gunu =
-        (153 * (if ay > 2 { ay - 3 } else { ay + 9 }) as u64 + 2) / 5 + gun as u64 - 1;
+    let yilin_gunu = (153 * (if ay > 2 { ay - 3 } else { ay + 9 }) as u64 + 2) / 5 + gun as u64 - 1;
     let devir_gunu = devir_yili * 365 + devir_yili / 4 - devir_yili / 100 + yilin_gunu;
     devir * 146097 + devir_gunu as i64 - 719468
 }
@@ -901,7 +915,13 @@ fn ondalik_degeri(ondalik: Ondalik) -> Deger {
 }
 
 fn tasma(satir: usize) -> Tani {
-    Tani::yeni("C002", "İşlem sonucu sayı sınırını aştı.".into(), satir, 1, 1)
+    Tani::yeni(
+        "C002",
+        "İşlem sonucu sayı sınırını aştı.".into(),
+        satir,
+        1,
+        1,
+    )
 }
 
 /// Sayısal değeri kayıpsız ortak Ondalık çekirdeğine açar.
@@ -995,10 +1015,7 @@ fn calistir_program_kodla(
                         .calistirma_zaman_asimi_ms();
                     io.durum_yaniti_gonder(
                         504,
-                        &format!(
-                            "istek {} saniyelik son tarihini aştı",
-                            zaman_asimi / 1000
-                        ),
+                        &format!("istek {} saniyelik son tarihini aştı", zaman_asimi / 1000),
                     );
                 }
                 Err(tani) => {
@@ -1080,7 +1097,8 @@ struct CalistirmaButcesiNobetcisi {
 
 impl CalistirmaButcesiNobetcisi {
     fn yeni() -> Self {
-        let onceki = CALISTIRMA_BUTCESI.with(|yuva| yuva.borrow_mut().replace(CalistirmaButcesi::yeni()));
+        let onceki =
+            CALISTIRMA_BUTCESI.with(|yuva| yuva.borrow_mut().replace(CalistirmaButcesi::yeni()));
         Self { onceki }
     }
 }
@@ -1122,7 +1140,13 @@ pub(super) fn cikti_butcesini_tuket(metin: &str, satir: usize) -> Result<(), Tan
         let yeni_bayt = butce
             .cikti_bayti
             .checked_add(metin.len().saturating_add(1))
-            .ok_or_else(|| kaynak_siniri_tanisi(satir, "Program çıktısı sayı sınırını aştı.", "Daha küçük çıktı üret."))?;
+            .ok_or_else(|| {
+                kaynak_siniri_tanisi(
+                    satir,
+                    "Program çıktısı sayı sınırını aştı.",
+                    "Daha küçük çıktı üret.",
+                )
+            })?;
         let yeni_olay = butce.cikti_olayi.saturating_add(1);
         if yeni_bayt > sinirlar.cikti_bayti() || yeni_olay > sinirlar.cikti_olayi() {
             return Err(kaynak_siniri_tanisi(
@@ -1144,7 +1168,10 @@ pub(super) fn koleksiyon_sinirini_denetle(sayi: usize, satir: usize) -> Result<(
     }
     Err(kaynak_siniri_tanisi(
         satir,
-        &format!("Koleksiyon {} öğe; güvenli profil {} öğe sınırını aşıyor.", sayi, azami),
+        &format!(
+            "Koleksiyon {} öğe; güvenli profil {} öğe sınırını aşıyor.",
+            sayi, azami
+        ),
         "Listeyi veya sözlüğü daha küçük parçalara böl.",
     ))
 }
@@ -1156,7 +1183,10 @@ pub(super) fn gorev_sinirini_denetle(sayi: usize, satir: usize) -> Result<(), Ta
     }
     Err(kaynak_siniri_tanisi(
         satir,
-        &format!("Eşzamanlı grup {} görev; güvenli profil {} görev sınırını aşıyor.", sayi, azami),
+        &format!(
+            "Eşzamanlı grup {} görev; güvenli profil {} görev sınırını aşıyor.",
+            sayi, azami
+        ),
         "Görevleri sonlu gruplara ayır ve her gruptan sonra `hepsini bekle` kullan.",
     ))
 }
@@ -1165,8 +1195,7 @@ fn kaynak_siniri_tanisi(satir: usize, mesaj: &str, oneri: &str) -> Tani {
     Tani::yeni("C023", mesaj.into(), satir, 1, 1).onerili(oneri.into())
 }
 
-static SON_TARIH_KIMLIGI: std::sync::atomic::AtomicU64 =
-    std::sync::atomic::AtomicU64::new(1);
+static SON_TARIH_KIMLIGI: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(1);
 
 struct SonTarihNobetcisi {
     kimlik: u64,
@@ -1186,7 +1215,10 @@ impl Drop for SonTarihNobetcisi {
     fn drop(&mut self) {
         SON_TARIHLER.with(|son_tarihler| {
             let mut son_tarihler = son_tarihler.borrow_mut();
-            if let Some(yer) = son_tarihler.iter().rposition(|son| son.kimlik == self.kimlik) {
+            if let Some(yer) = son_tarihler
+                .iter()
+                .rposition(|son| son.kimlik == self.kimlik)
+            {
                 son_tarihler.remove(yer);
             }
         });
@@ -1291,7 +1323,11 @@ fn gorevde_miyiz() -> bool {
 }
 
 async fn gorev_bekleme_noktasi(milisaniye: i64) {
-    GorevBeklemeNoktasi { milisaniye, sinyal_verildi: false }.await;
+    GorevBeklemeNoktasi {
+        milisaniye,
+        sinyal_verildi: false,
+    }
+    .await;
 }
 
 struct BekleyenGorev<'a> {
@@ -1329,20 +1365,14 @@ async fn gorevleri_calistir<'a>(
     let mut calismalar = gorevler
         .into_iter()
         .map(|gorev| {
-            let mut gorev_io = PaylasilanIo { ic: Rc::clone(&ortak) };
+            let mut gorev_io = PaylasilanIo {
+                ic: Rc::clone(&ortak),
+            };
             let ifade = gorev.ifade;
             let ortam = gorev.ortam;
             let satir = gorev.satir;
             let gelecek = Box::pin(async move {
-                degerlendir_async(
-                    ifade,
-                    &ortam,
-                    program,
-                    &mut gorev_io,
-                    derinlik,
-                    satir,
-                )
-                .await
+                degerlendir_async(ifade, &ortam, program, &mut gorev_io, derinlik, satir).await
             });
             GorevCalismasi {
                 ad: gorev.ad,
@@ -1516,7 +1546,9 @@ fn blok_calistir(
     cikti: &mut dyn GirdiCikti,
     derinlik: usize,
 ) -> Result<Akis, Tani> {
-    hazir_calistir(blok_calistir_async(cumleler, ortam, program, cikti, derinlik))
+    hazir_calistir(blok_calistir_async(
+        cumleler, ortam, program, cikti, derinlik,
+    ))
 }
 
 /// İşlemi taze bir ortamda çalıştırır; "döndür" değeri varsa onu verir.
@@ -1531,19 +1563,23 @@ async fn islem_cagir(
 ) -> Result<Option<Deger>, Tani> {
     // Özyineleme korkuluğu (v0.2): Rust yığını taşmadan Türkçe tanı ver.
     // Sınır, tarayıcı motorlarının ~1 MB'lik çağrı yığınına bile payla sığmalı (K-040).
-    let azami_derinlik =
-        crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.cagri_derinligi();
+    let azami_derinlik = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.cagri_derinligi();
     if derinlik > azami_derinlik {
         return Err(Tani::yeni(
             "C019",
-            format!("\"{}\" çağrı derinliği {} sınırını aştı: temel durum hiç yakalanmıyor olabilir.", kaynak_adi, azami_derinlik),
+            format!(
+                "\"{}\" çağrı derinliği {} sınırını aştı: temel durum hiç yakalanmıyor olabilir.",
+                kaynak_adi, azami_derinlik
+            ),
             satir,
             1,
             1,
         )
         .onerili("Özyinelemeli adımın her seferinde temel duruma yaklaştığından emin ol.".into()));
     }
-    let islem = program.islem(cagri, kaynak_adi).ok_or_else(|| ic_hata(satir))?;
+    let islem = program
+        .islem(cagri, kaynak_adi)
+        .ok_or_else(|| ic_hata(satir))?;
     let ad = islem.ad.as_str();
     let eylem = islem.tur == IslemTuru::Eylem;
     let mut yerel: HashMap<String, Deger> = HashMap::new();
@@ -1583,7 +1619,11 @@ async fn islem_cagir(
     }
 
     match sonuc {
-        Ok(Akis::Don(deger @ Deger::Sonuc { basarili: false, .. })) => {
+        Ok(Akis::Don(
+            deger @ Deger::Sonuc {
+                basarili: false, ..
+            },
+        )) => {
             io.eylem_geri_al()
                 .map_err(|hata| transaction_hatasi(ad, "geri alınamadı", &hata, satir))?;
             Ok(Some(deger))
@@ -1616,10 +1656,7 @@ fn transaction_hatasi(ad: &str, eylem: &str, hata: &str, satir: usize) -> Tani {
 
 /// Açık Ondalık sözleşmesine gelen TamSayıyı runtime'da da genişletir; statik
 /// tür ile gerçek değer ayrışmaz. Kapsayıcılarda aynı kural özyinelemelidir.
-fn parametre_degerini_genislet(
-    deger: Deger,
-    tur_yazimi: Option<&str>,
-) -> Deger {
+fn parametre_degerini_genislet(deger: Deger, tur_yazimi: Option<&str>) -> Deger {
     let Some(yazim) = tur_yazimi else {
         return deger;
     };
@@ -1634,24 +1671,15 @@ fn parametre_degerini_genislet(
         ("Ondalık sözlüğü", Deger::Sozluk(girdiler)) => Deger::Sozluk(
             girdiler
                 .into_iter()
-                .map(|(ad, deger)| {
-                    (ad, parametre_degerini_genislet(deger, Some("Ondalık")))
-                })
+                .map(|(ad, deger)| (ad, parametre_degerini_genislet(deger, Some("Ondalık"))))
                 .collect(),
         ),
         ("Ondalık seçeneği", Deger::Yok) => Deger::Yok,
-        ("Ondalık seçeneği", deger) => {
-            parametre_degerini_genislet(deger, Some("Ondalık"))
-        }
-        ("Ondalık sonucu", Deger::Sonuc { basarili, icerik }) if basarili => {
-            Deger::Sonuc {
-                basarili,
-                icerik: Box::new(parametre_degerini_genislet(
-                    *icerik,
-                    Some("Ondalık"),
-                )),
-            }
-        }
+        ("Ondalık seçeneği", deger) => parametre_degerini_genislet(deger, Some("Ondalık")),
+        ("Ondalık sonucu", Deger::Sonuc { basarili, icerik }) if basarili => Deger::Sonuc {
+            basarili,
+            icerik: Box::new(parametre_degerini_genislet(*icerik, Some("Ondalık"))),
+        },
         (_, deger) => deger,
     }
 }
@@ -1680,8 +1708,10 @@ fn sayisal_islem(
     // işleme girdiğinde devreye girer.
     if let (Deger::TamSayi(a), Deger::TamSayi(b)) = (sol, sag) {
         if matches!(islec, AritmetikIslec::Bol | AritmetikIslec::Kalan) && *b == 0 {
-            return Err(Tani::yeni("C003", "Sıfıra bölme yapılamaz.".into(), satir, 1, 1)
-                .onerili("Bölmeden önce bölenin sıfır olup olmadığını kontrol et.".into()));
+            return Err(
+                Tani::yeni("C003", "Sıfıra bölme yapılamaz.".into(), satir, 1, 1)
+                    .onerili("Bölmeden önce bölenin sıfır olup olmadığını kontrol et.".into()),
+            );
         }
         let sonuc = match islec {
             AritmetikIslec::Topla => a.checked_add(*b),
@@ -1698,8 +1728,10 @@ fn sayisal_islem(
     let a = sayisal_ac(sol).ok_or_else(|| ic_hata(satir))?;
     let b = sayisal_ac(sag).ok_or_else(|| ic_hata(satir))?;
     if matches!(islec, AritmetikIslec::Bol | AritmetikIslec::Kalan) && b.sifir_mi() {
-        return Err(Tani::yeni("C003", "Sıfıra bölme yapılamaz.".into(), satir, 1, 1)
-            .onerili("Bölmeden önce bölenin sıfır olup olmadığını kontrol et.".into()));
+        return Err(
+            Tani::yeni("C003", "Sıfıra bölme yapılamaz.".into(), satir, 1, 1)
+                .onerili("Bölmeden önce bölenin sıfır olup olmadığını kontrol et.".into()),
+        );
     }
 
     let sonuc = match islec {
@@ -1733,7 +1765,11 @@ async fn guncelle(
         .ok_or_else(|| ic_hata(satir))?;
     let miktar = degerlendir_async(miktar, ortam, program, io, derinlik, satir).await?;
     let eski = ortam.get(&ad).cloned().ok_or_else(|| ic_hata(satir))?;
-    let islec = if yon > 0 { AritmetikIslec::Topla } else { AritmetikIslec::Cikar };
+    let islec = if yon > 0 {
+        AritmetikIslec::Topla
+    } else {
+        AritmetikIslec::Cikar
+    };
     let yeni = sayisal_islem(&islec, &eski, &miktar, satir)?;
     ortama_yazma_butcesini_tuket(ortam, &ad, &yeni, satir)?;
     ortam.insert(ad, yeni);
@@ -1748,9 +1784,10 @@ fn degerlendir(
     derinlik: usize,
     satir: usize,
 ) -> Result<Deger, Tani> {
-    hazir_calistir(degerlendir_async(ifade, ortam, program, io, derinlik, satir))
+    hazir_calistir(degerlendir_async(
+        ifade, ortam, program, io, derinlik, satir,
+    ))
 }
-
 
 fn tam_sayi(deger: Deger, satir: usize) -> Result<i64, Tani> {
     match deger {
@@ -1815,9 +1852,7 @@ fn json_nesnesi_ayristir(icerik: &str, satir: usize) -> Result<Deger, Tani> {
             k.next();
         }
     }
-    fn metin_oku(
-        k: &mut std::iter::Peekable<std::str::Chars>,
-    ) -> Result<String, String> {
+    fn metin_oku(k: &mut std::iter::Peekable<std::str::Chars>) -> Result<String, String> {
         if k.next() != Some('"') {
             return Err("tırnak bekleniyordu".into());
         }
@@ -1840,7 +1875,9 @@ fn json_nesnesi_ayristir(icerik: &str, satir: usize) -> Result<Deger, Tani> {
 
     bosluk_atla(&mut karakterler);
     if karakterler.next() != Some('{') {
-        return Err(hata("JSON verisi \"{\" ile başlamalı (v0: düz nesne).".into()));
+        return Err(hata(
+            "JSON verisi \"{\" ile başlamalı (v0: düz nesne).".into(),
+        ));
     }
     let mut girdiler = Vec::new();
     loop {
@@ -1853,7 +1890,10 @@ fn json_nesnesi_ayristir(icerik: &str, satir: usize) -> Result<Deger, Tani> {
             .map_err(|m| hata(format!("JSON anahtarı okunamadı: {}.", m)))?;
         bosluk_atla(&mut karakterler);
         if karakterler.next() != Some(':') {
-            return Err(hata(format!("\"{}\" anahtarından sonra \":\" bekleniyor.", anahtar)));
+            return Err(hata(format!(
+                "\"{}\" anahtarından sonra \":\" bekleniyor.",
+                anahtar
+            )));
         }
         bosluk_atla(&mut karakterler);
         // K-063: sayı/true/false/null değerleri de METİN olarak gelir (CSV
@@ -1882,7 +1922,10 @@ fn json_nesnesi_ayristir(icerik: &str, satir: usize) -> Result<Deger, Tani> {
                 "true" => "doğru".to_string(),
                 "false" => "yanlış".to_string(),
                 "null" => String::new(),
-                sayi if sayi.chars().all(|k| k.is_ascii_digit() || k == '-' || k == '.') => {
+                sayi if sayi
+                    .chars()
+                    .all(|k| k.is_ascii_digit() || k == '-' || k == '.') =>
+                {
                     sayi.replace('.', ",")
                 }
                 _ => {

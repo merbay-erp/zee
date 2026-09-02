@@ -327,7 +327,9 @@ fn cumle_bilgisi(cumle: &Cumle, bilgi: &mut Bilgi) {
         Cumle::Olmali { kosul: deger, .. } | Cumle::Dondur { deger, .. } => {
             ifade_bilgisi(deger, bilgi)
         }
-        Cumle::HataDondur { mesaj, neden, veri, .. } => {
+        Cumle::HataDondur {
+            mesaj, neden, veri, ..
+        } => {
             ifade_bilgisi(mesaj, bilgi);
             if let Some(neden) = neden {
                 ifade_bilgisi(neden, bilgi);
