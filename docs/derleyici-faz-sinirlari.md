@@ -57,6 +57,7 @@ API'si bu iç ayrımla büyümez.
 | yürütme semantiği | runtime `cumle` veya `ifade` | ADR-003, değerlendirme sırası testi |
 | IO kayıt/replay protokolü | runtime `io_izi` | RFC-0022, ADR-026, spec/21 ve şema snapshot'ı |
 | tohum/rastgele profil semantiği | runtime `io_profili` | RFC-0023, ADR-027, spec/22 ve dizi snapshot'ı |
+| morfoloji profil uyumluluğu | `morfoloji/uyumluluk` | RFC-0018, spec/13, immutable SHA-256 fixture ve Git-tarih koruğu |
 | alan adaptörü | intrinsic kaydı | ADR-011 rehberi, yetkinlik/etki/runtime |
 
 ## Büyüme bütçesi
@@ -100,3 +101,7 @@ K-116/RFC-0023 CLI ve playground rastgeleliğini `yorumlayici/io_profili.rs`
 sahibinde birleştirdi. 80 satır bütçesi `zee-io-1` algoritmasını runtime
 kökünden ayırır; dizi snapshot'ını kıran değişiklik ADR-027/spec-22 ve yeni
 profil kimliği olmadan yapılamaz.
+K-122/RFC-0018 `zee-tr-1` semantic parmak izi üretimini
+`morfoloji/uyumluluk.rs` sahibine ayırdı. 140 satır bütçesi kanonik akışı
+profil kökünden uzak tutar; immutable fixture ile Git-tarih koruğu aynı profil
+kimliği altında davranış değişikliğini kapatır.

@@ -3,7 +3,7 @@
 Bu liste bir dilek listesi değildir: `1.0.0` etiketi bu kapılar kapatılmadan
 atılmaz. Amaç yeni özellik sayısını büyütmek değil, çocuktan profesyonele aynı
 dilin verdiği sözleri kanıtlamaktır. Bulgular 2 Eylül 2026'da derleyici
-kaynakları, spec, RFC'ler ve otomatik envanterdeki 481 test üzerinden yeniden
+kaynakları, spec, RFC'ler ve otomatik envanterdeki 482 test üzerinden yeniden
 doğrulanmıştır.
 
 Durumlar: **KAPALI** = kanıtı var · **AÇIK** = v1 engeli · **KARAR** = önce
@@ -46,7 +46,7 @@ normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
 | Kapı | Durum | Kaynakta görülen gerçek | Kapanma kanıtı |
 |---|---|---|---|
 | V1-P1-01 Ondalık hassasiyeti dil semantiği mi profil sınırı mı? | **KAPALI (K-092)** | Ondalık tek keyfî hassasiyetli onluk türdür: katsayı ve ölçek makine kelimesiyle sınırlı değildir. Toplama/çıkarma/çarpma ve sonlu bölüm tam; yalnız sonsuz açılımlı bölüm 34 anlamlı haneye, yarımlar sıfırdan uzağa yuvarlanır. TamSayı i64 kimliğini korur; Ondalığa genişleme kayıpsızdır. | RFC-0013 revizyonu + spec/16; 9+ ve 30+ haneli sabitler, büyük katsayı, çok küçük değer, sonlu/sonsuz bölüm, negatif metin dönüşümü, JSON/para biçimi, karşılaştırma ve i64'e açık daraltma taşması regresyonları. S032 emekliye ayrıldı. |
-| V1-P1-02 Morfoloji deterministik ve sürümlenebilirdir | **KAPALI (K-089)** | `zee-tr-1` profili soyut ekleri, yüzeyleri, iki katman sınırını ve kanonik üretimi tek modülde sabitler. Doğrudan eşleşme önce; sonra 0=A001, 1=çözüm, 2+=A002, heuristik yoktur. İyelik ayrı kimlikle iki katmanlı üretilir; LSP aynı profili kullanır. | RFC-0018 + spec/13; tablo snapshot'ı, düzenli kök×bütün tek/iki katman `üret→çöz` property'leri, ters ses değişimi ve A002 belirsizlik korpusu. `proje.dil` profili pinler (P011); `proje.kilit` v2 paket profillerini taşır. Kırıcı tablo değişikliği yeni profil+ana sürüm/edition ister. |
+| V1-P1-02 Morfoloji deterministik ve sürümlenebilirdir | **KAPALI (K-089/K-122)** | `zee-tr-1` profili soyut ekleri, yüzeyleri, iki katman sınırını ve kanonik üretimi tek modülde sabitler. Doğrudan eşleşme önce; sonra 0=A001, 1=çözüm, 2+=A002, heuristik yoktur. İyelik ayrı kimlikle iki katmanlı üretilir; LSP aynı profili kullanır. Profil davranışı SHA-256 semantic kayıtla immutable'dır. | RFC-0018 + spec/13 + [profil uyumluluk rehberi](morfoloji-profil-uyumlulugu.md); tablo snapshot'ı, 53.248 üretim+çözüm vektörü, 11 ham sınır yüzeyi, property/fuzz ve A002 korpusu. `proje.dil` profili pinler (P011); `proje.kilit` v2 paket profillerini taşır. Davranış değişikliği testi, eski fixture değişikliği Git-geçmişli CI koruğunu kırar; yalnız yeni profil+fixture yolu açıktır. Toplam 482 test yeşildir. |
 | V1-P1-03 Structured concurrency adı runtime gerçeğini aşmaz | **KAPALI (K-090)** | `Eszamanli` görevleri dış ortam snapshot'ıyla kaydeder; `HepsiniBekle` kaynak sıralı tek-thread scheduler'da `bekle` noktalarında gerçekten dönüşümlü ilerletir. İç görev ağacının beklemesi dış kardeşe kadar yayılır. Aynı anda tek görev çalışır; data race yoktur. | RFC-0011 + spec/14; 2 sn+1 sn görevlerin 2 sn'de biten sabit izi, iç ağaç↔dış kardeş ilerlemesi, aynı-anda kaynak sırası, T033/T051 sahiplik, ilk hata→kardeş iptali, dış deadline→bütün ağaç ve görevde atomik eylem rollback kanıtları. Çok çekirdekli paralellik v1 sözü değildir. |
 | V1-P1-04 Sonuç hata tarafı yapılandırılmıştır | **KAPALI (K-091)** | `Sonuç<T>` hata tarafı değişmez `Hata`dır: kararlı kod, Türkçe mesaj, `Seçenek<Hata>` neden zinciri ve sıra korumalı Metin sözlüğü verisi taşır. Kod `göre` ile eşlenir; neden güvenli daraltmayla açılır; tam yapı deterministik JSON olur. Eski metin hataları `GENEL` koduyla aynı insan çıktısını korur. | RFC-0008 §3 + spec/15; kod/mesaj/eşleme, iç içe neden, veri+JSON, yeniden yayma, yerleşik kodlar, S044/T052 olumsuzları ve eski kaynak regresyonları. |
 | V1-P1-05 Gezmede yazma kullanıcı zihniyle doğrulanmıştır | **AÇIK — makine tarafı K-093 ile tamam** | RFC-0019/spec-17 derin değer kopyasını ve liste için değer-sonuç imlecini tanımlar: alan yazma ile yeniden bağlama aynı sıraya geri yansır; paylaşılan alias yoktur. Kaynak ekleme/silme/yeniden bağlama/aynı-kaynak iç içe gezme T053'tür. Alan/rebind, alias ve 1–24 uzunluk conformance kanıtı yeşildir. | `docs/usability-kiti.md` G1/G2/G3 kartlarıyla gerçek 10 öğrenci + 5 profesyonel sonucu. Önceden taahhütlü eşik sağlanmadan kapatılmaz. |
@@ -67,7 +67,8 @@ normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
    sözcüksel sahiplik ve kardeş iptalini koydu. K-091 Sonuç'un hata tarafını
    kodlu, zincirli ve geriye uyumlu Hata değerine dönüştürdü. K-092 Ondalık
    kapasitesini keyfî katsayı + açık 34 haneli sonsuz bölüm kuralıyla kapattı.
-5. K-089 `zee-tr-1` morfolojisini property kanıtıyla dondurdu. K-093 gezmenin
+5. K-089 `zee-tr-1` morfolojisini property kanıtıyla dondurdu; K-122 semantic
+   parmak izi ve tarih koruğuyla aynı kimlik altında değişikliği kapattı. K-093 gezmenin
    değer/reference kararını RFC-0019/spec-17, T053 ve property korpusuyla
    makine tarafında tamamladı; yalnız gerçek usability formları bekleniyor.
 6. K-094 yayın çekirdeğini Ed25519 + deterministik `.zep` + SPDX/SLSA zinciriyle

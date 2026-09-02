@@ -75,7 +75,8 @@ değiştir/kırp/harfler), **JSON/CSV yazma**, **Türk alfabesiyle sıralama**,
 geri sayan aralık, para biçimi `kuruşlusu`, evrensel `metni`, çerez
 üçlemesi (oku/yaz/**sil**), **sürümlü `zee-tr-1` morfolojisi** (tek kaynak ek
 tablosu, zamir n'si, ikizleşme, iki katmanlı çözüm↔üretim ve
-[sürekli property/fuzz kanıtı](docs/morfoloji-dogrulama.md)), **açık işlem
+[sürekli property/fuzz kanıtı](docs/morfoloji-dogrulama.md),
+[immutable profil kaydı](docs/morfoloji-profil-uyumlulugu.md)), **açık işlem
 parametre türleri**
 (`sayıyı Ondalık olarak al`) ve public **dönüş sözleşmesi**
 (`Ondalık döndürür` / `değer döndürmez`), **proje bildirimi** (`proje.dil`, klasörden
@@ -144,7 +145,7 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **481** |
+| Rust + doctest vakası | **482** |
 | Tanı kimliği | **145 etkin + 3 ayrılmış** |
 | RFC | **23** (2 kabul, 19 geçici kabul, 2 taslak) |
 | ADR | **26** (26 kabul) |
@@ -177,7 +178,8 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   kapısı kapandı; gezme kapısının makine yarısı da tamamlandı:
   normatif otorite, public işlem sözleşmesi, atomik kalıcılık, gerçek son
   tarih iptali, uygulama eylemi ve production oturum/CSRF/proxy profili.
-  `zee-tr-1` morfolojisi profil/snapshot/property korpusuyla sabitlendi;
+  `zee-tr-1` morfolojisi profil/snapshot/property korpusu ve immutable semantic
+  SHA-256 kaydıyla sabitlendi;
   deterministik scheduler, görev sahipliği ve hata/iptal yayılımı gerçeklendi.
   Sonuç'un hata tarafı kod/mesaj/neden/veri taşıyan, eski çıktıyı koruyan
   Hata değeridir. Ondalık keyfî hassasiyetlidir; gezme derin değer kopyası,
@@ -266,6 +268,10 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   gövde ve HIR üretiminden önce birleştirdi; dar/geniş çağrıların kaynak
   sırası artık program türünü değiştiremez. Bakım sözleşmesi
   [çağrı çıkarımı rehberindedir](docs/cagri-cikarimi.md).
+  K-122 `zee-tr-1` davranışını 53.248 üretim/çözüm vektörlü semantic kayda
+  bağladı; kod davranışı değişirse test, eski fixture değişirse Git-geçmişli
+  CI koruğu kırılır. Yeni anlam yalnız yeni profil kimliğiyle açılır. Bakım
+  sözleşmesi [profil uyumluluk rehberindedir](docs/morfoloji-profil-uyumlulugu.md).
   Uygulama sırası
   [öncelikli backlog](docs/oncelikli-backlog.md) ile sabittir.
   Bağlayıcı liste: [docs/v1-surum-kapilari.md](docs/v1-surum-kapilari.md).

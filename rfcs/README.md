@@ -23,14 +23,14 @@ Dil değişikliği RFC ister (master plan bölüm 25). Şablon: [0000-sablon.md]
 | RFC-0015 | [Uygulama Eylemleri ve Web Güvenlik Sınırı](0015-uygulama-eylemleri.md) | **geçici kabul — K-087 eylem, K-088 profil** | K-081, K-087, K-088, ADR-010 |
 | RFC-0016 | [Atomik Kalıcı Dosya Sözleşmesi](0016-atomik-kalici-dosya.md) | **geçici kabul** | K-019, K-084, V1-P0-04 |
 | RFC-0017 | [Web Oturumu, Yetki, CSRF ve Güvenilir Proxy](0017-web-oturum-ve-csrf.md) | **geçici kabul** | K-082, K-088, V1-P0-03 |
-| RFC-0018 | [Sürümlü Morfoloji Profili](0018-surumlu-morfoloji-profili.md) | **geçici kabul** (K-120 semantic LSP seçimi) | K-011, K-072, K-089, K-111, K-120, V1-P1-02 |
+| RFC-0018 | [Sürümlü Morfoloji Profili](0018-surumlu-morfoloji-profili.md) | **geçici kabul** (K-120 semantic LSP, K-122 immutable uyumluluk kapısı) | K-011, K-072, K-089, K-111, K-120, K-122, V1-P1-02 |
 | RFC-0019 | [Değer Semantiği ve Gezme İmleci](0019-deger-semantigi-ve-gezme-imleci.md) | **geçici kabul** (makine kanıtı; usability bekliyor) | K-034, K-060, K-074, K-093, V1-P1-05 |
 | RFC-0020 | [Paket Yayını ve Registry Güven Zinciri](0020-paket-yayini-ve-registry-guveni.md) | **geçici kabul** (K-094 yayın; K-095 metadata; K-117 kanonik yol; taşıma/cache/CLI açık) | K-094, K-095, K-117, V1-P1-07/08, ADR-006/028 |
 | RFC-0021 | [İfade Grameri Büyüme Mimarisi](0021-ifade-grameri-mimarisi.md) | **geçici kabul** (K-097 katmanlar, K-119 formatter eşdeğerliği) | K-004, K-008, K-010, K-016, K-027, K-038, K-097, K-119 |
 | RFC-0022 | [Deterministik IO Trace/Replay](0022-deterministik-io-izi.md) | **geçici kabul** (K-115 şema-1 + CLI; `zee-io-1` ilişkisi K-116) | K-115, K-116, B-027, V1-P0-25 |
 | RFC-0023 | [Sürümlü Deterministik IO Profili](0023-deterministik-io-profili.md) | **geçici kabul** (`zee-io-1`, K-116) | K-116, B-028, V1-P0-26 |
 
-**Durum özeti (2 Eylül 2026, K-121):** 23 RFC — 2 kabul (0001, 0010),
+**Durum özeti (2 Eylül 2026, K-122):** 23 RFC — 2 kabul (0001, 0010),
 19 geçici kabul (RFC-0020'nin yayın ve metadata doğrulama katmanı normatiftir;
 taşıma/cache/CLI tamamlanmadan uzak paket kullanımı sözü verilmez), 2 taslak: 0012 (FFI — Faz
 4/5) ve 0014 (standart kitaplık — çalışan prototiple).

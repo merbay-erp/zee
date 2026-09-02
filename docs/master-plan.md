@@ -40,7 +40,9 @@ Homoglyph/confusable tanımlayıcılar için compiler uyarısı.
 Morfolojik serbestlik heuristic ile değil sürümlemeli grammar ile genişler.
 Stage 0 bu sözü K-089/RFC-0018/spec-13 ile `zee-tr-1` profiline bağladı:
 ek tablosu, iki katman sınırı ve kanonik çözüm↔üretim snapshot/property
-korpusuyla sabittir; proje bildirimi ve kilit dosyası profil kimliğini taşır.
+korpusuyla sabittir; K-122 semantic SHA-256 kaydı ve Git-tarih koruğuyla aynı
+kimlik altında değişikliği kapatır. Proje bildirimi ve kilit dosyası profil
+kimliğini taşır.
 # 5. Grammar discovery yöntemi
 Grammar masa başında tek seferde dondurulmayacaktır. Önce 30 adet golden-source program yazılacak; syntax bu gerçek kullanım örneklerinden çıkarılacaktır. Her syntax değişikliği bu corpus üzerinde regression testine girecektir.
 Merhaba Dünya
@@ -360,7 +362,9 @@ Deprecation ve compatibility politikası.
 Breaking change sessizce yapılamaz. Büyük dil evrimleri için edition benzeri
 model değerlendirilebilir. Morfolojik aday kümesini değiştiren ilk kırıcı
 sınır şimdiden tanımlıdır: `zee-tr-1` yerinde değişmez; yeni profil kimliği
-ve ana sürüm/edition kararı gerekir (K-089, RFC-0018).
+ve ana sürüm/edition kararı gerekir. K-122 çalışan semantic kayıt ile
+yayımlanmış fixture'ın değiştirilmesini ayrı test+CI kapılarında reddeder
+(K-089/K-122, RFC-0018).
 # 24. Repository ve bileşen yapısı
 turkce-dil/
   compiler/
@@ -599,8 +603,9 @@ varyantında eşitleyip iki tarafı ayrıştırarak parse-equivalence kapısın�
 kurdu. K-120 LSP definition/rename'i `SymbolId`/`IslemId`/`YapiId` typed-HIR
 dizinlerine geçirip hatalı belgede metin tahminini ve dış tanım için eksik
 tek-dosya rename'i kapattı. K-121 yerel işlem parametre kısıtlarını gövde/HIR
-üretiminden önce birleştirip çağrı sırası etkisini kapattı. Şimdi B-008
-`zee-tr-1` immutable profil kapısı gelir. P0 maddeleri
+üretiminden önce birleştirip çağrı sırası etkisini kapattı. K-122 `zee-tr-1`
+davranışını semantic SHA-256 kayıt ve Git-geçmişli CI koruğuyla immutable
+yaptı. Şimdi B-009 bağımsız morfoloji conformance korpusu gelir. P0 maddeleri
 kapanmadan yeni dil özelliği varsayılan olarak öne alınmaz;
 yarım güvenlik/correctness dilimi önce atomik olarak tamamlanır.
 
@@ -643,7 +648,8 @@ semantiğini `zee-io-1` profiliyle sürümledi. K-117 NFC-kanonik `.zep` yolunu,
 K-118 spec↔code kanıt haritasını ve canlı depo sayıları üreticisini tamamladı.
 K-119 formatter parse-equivalence kanıtıyla B-042'yi, K-120 semantic LSP
 bağıyla B-041'i, K-121 iki fazlı yerel çağrı çıkarımıyla B-007'yi
-tamamladı. Sıradaki omurga B-008 `zee-tr-1` immutable profil kapısıdır.
+tamamladı. K-122 immutable `zee-tr-1` kapısıyla B-008'i tamamladı. Sıradaki
+omurga B-009 compiler'dan bağımsız morfoloji conformance korpusudur.
 # 40. Proje felsefesinin korunması
 Bu projenin başarısı yalnız compiler’ın çalışması değildir. Başarı; Türkçe konuşan bir çocuğun yabancı syntax bariyerine takılmadan algoritmik düşünceyle tanışması, aynı dilin yıllar sonra onu terk etmeye zorlamaması ve ekosistemin tek bir şirketin kapalı ürünü haline gelmemesidir.
 Her yeni özellik şu dört sorudan geçmelidir: Türkçe doğal mı? Deterministik mi? Öğrenilebilir mi? Profesyonel ölçekte savunulabilir mi? Dördünden biri hayırsa özellik yeniden tasarlanır.

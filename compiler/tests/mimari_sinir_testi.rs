@@ -1,4 +1,4 @@
-//! B-005/B-006/B-010/B-018/B-019/B-020 faz ve semantic sınır regresyonları.
+//! B-005/B-006/B-008/B-010/B-018/B-019/B-020 faz ve semantic sınır regresyonları.
 
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -69,6 +69,7 @@ fn handler_modulleri_yeni_domain_icin_sinir_tasir() {
         ("src/hir.rs", 180),
         ("src/hir/gezinme.rs", 140),
         ("src/hir/kaynak.rs", 100),
+        ("src/morfoloji/uyumluluk.rs", 140),
         ("src/yorumlayici/cumle.rs", 600),
         ("src/yorumlayici/ifade.rs", 730),
         ("src/yorumlayici/hir_gecisi.rs", 140),

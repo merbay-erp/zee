@@ -4,6 +4,10 @@
 //! tablosudur. Profil değişikliği kaynak anlamını değiştirebildiği için yeni
 //! bir profil adı ve ana sürüm sınırı olmadan mevcut tablo değiştirilemez.
 
+mod uyumluluk;
+
+pub use uyumluluk::profil_uyumluluk_kaydi;
+
 /// Zee v1 kaynaklarının sabitlediği morfoloji profili.
 pub const MORFOLOJI_PROFILI: &str = "zee-tr-1";
 

@@ -1818,6 +1818,32 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   grafiği, iç blokta hata sonrası kısıt toplama ve iki sırada da T017 üreten
   altı regresyon eklendi. Toplam 481 test yeşildir; B-007 ve V1-P0-01 kapandı.
 
+## K-122 — `zee-tr-1` profilini immutable uyumluluk kaydına bağla (2 Eyl)
+
+- **Sorun:** Profil tablosu snapshot ve geniş property korpusuyla sabitti;
+  ancak davranışla birlikte snapshot'ı güncellemek teknik olarak mümkündü.
+  `zee-tr-1` adı aynı kalırken çözüm/üretim anlamının değişmesini CI tarihine
+  karşı reddeden bağımsız bir kapı yoktu.
+- **Semantic kayıt:** Şema `zee-morfoloji-uyumluluk-v1`; profil dökümü, 11 ham
+  ses-değişimi/belirsizlik yüzeyi ve 4.096 deterministik kökün yedi tek+altı
+  iyelikli zincirindeki 53.248 kanonik üretim ile sıralı bütün çözüm kümeleri
+  tek akışta SHA-256'ya indirilir. `zee-tr-1` kaydı
+  `e6034e7359e5d5d1bf5f3f06b6a7767616b2b6daf8ab916226b48d522f99f220`dur.
+- **İki kapı:** `morfoloji_testi.rs` çalışan kaydı immutable fixture ile byte
+  eşitler. CI ise taban Git revizyonunda zaten bulunan bütün
+  `morfoloji-zee-tr-N.sha256` dosyalarının değiştirilmesini, silinmesini veya
+  yeniden adlandırılmasını reddeder. Bu nedenle kodla fixture'ı birlikte
+  güncellemek çıkış yolu değildir.
+- **Geçiş yolu:** `zee-tr-1` fixture'ı asla güncellenmez. Semantic değişiklik
+  yeni `zee-tr-N` gerçekleme+fixture'ı, eski profil desteği ve proje/kilit ile
+  ana sürüm/edition geçiş kararı ister. `dil morfoloji --uyumluluk` çalışan
+  kaydı gösterir.
+- **Kanıt ve sınır:** RFC-0018/spec-13 ile
+  [profil uyumluluk rehberi](../docs/morfoloji-profil-uyumlulugu.md) aynı
+  protokolü taşır. Bir yeni regresyonla toplam 482 test yeşildir; B-008
+  kapandı. Bütün olası Unicode dizilerinin biçimsel ispatı iddia edilmez;
+  K-111 fuzz/property kalır, bağımsız veri korpusu B-009'dur.
+
 ---
 
 ## Sonraki adım
@@ -1826,5 +1852,5 @@ Korpus 10 öğrenci + 5 profesyonel usability oturumuna (Hafta 12 hedefi, erkeni
 Hafta 2'de kağıt üstünde) sesli okutulacak; her kayıt için "doğal mı /
 deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
-Makine hattında B-007/K-121 kapandı. Sırada B-008 `zee-tr-1` profilinin
-immutable sürüm kapısına bağlanması vardır.
+Makine hattında B-008/K-122 kapandı. Sırada B-009 compiler'dan bağımsız
+morfoloji conformance korpusu vardır.
