@@ -490,4 +490,5 @@ fn performans_gozlemi_shared_ci_esigine_donusmez() {
     }
     assert!(gecmis.starts_with("# zee-performans-gecmisi-2\n"));
     assert!(gecmis.contains("df737f643c4ee9c8525ce7e972660230e75f5f45\tK-148\tfalse"));
+    assert!(gecmis.contains("a2693d6ec98d52b8e2e882b43ecaae682fcce48a\tK-153\tfalse"));
 }

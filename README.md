@@ -303,8 +303,8 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   K-153/ADR-050, eski nanosaniyelik LSP ölçümünü `lsp_engine_initialize`
   diye doğru adlandırdı ve gerçek `dillsp` process spawn→stdio→capabilities
   yanıtını `lsp_process_cold_start` olarak ayırdı. Tier-1 entegrasyon ve CI
-  yolu hazır; exact 25 örneklik temiz-commit tabanı alınana kadar K-153
-  kısmen açıktır.
+  yolu hazırdır; exact `a2693d6…` commit'indeki 25 örnek process p50 1,557 ms,
+  p95 1,997 ms tabanını verdi. K-153/B-061 kapandı.
   K-149/ADR-046 bütün production Rust ağacını 35 sorumluluk sahibine, exact
   doğrudan kenar tabanına ve izinli katman yönüne bağladı. Yeni/kayıp modül,
   yeni/kaldırılmış kenar ve ters katman geçişi fail-closed'dur; SHA-256 ile

@@ -12,14 +12,15 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
-- **Gerçek LSP process cold-start ölçümü — kısmi** (K-153, ADR-050): Eski
+- **Gerçek LSP process cold-start ölçümü** (K-153, ADR-050): Eski
   `lsp_soguk` gerçekte aynı süreç engine initialize'ıydı ve
   `lsp_engine_initialize` olarak düzeltildi. Yeni `lsp_process_cold_start`
   işletim sistemi process spawn'ından başlar; piped stdio üzerinden çerçeveli
   initialize isteği ve tam capabilities yanıtına kadar ölçer. Gerçek
   `olcum`→`dillsp` entegrasyon testi Tier-1 faz matrisindedir, CI release
-  ikilisini açık yolla verir. Exact temiz commit'ten 25 örnekli taban henüz
-  tarihçeye girmediği için B-061 kapanmış gösterilmez.
+  ikilisini açık yolla verir. Exact temiz `a2693d6…` uygulama commit'indeki 25
+  örnek process p50 1,557 ms/p95 1,997 ms; engine p50 542 ns/p95 625 ns
+  tabanını verdi. B-061/V1-P1-13 kapandı.
 
 - **Tekrarlanabilir benchmark provenance** (K-152, ADR-049): JSON ve tarihçe
   v2'ye yükseldi. Her kalıcı satır tam 40 haneli Git SHA, ayrı milestone,

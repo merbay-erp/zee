@@ -1339,19 +1339,40 @@ mod testler {
     }
 
     #[test]
-    fn izlenen_k148_gecmisi_sema_ve_dokuz_olcumu_tasir() {
+    fn izlenen_k148_ve_k153_gecmisi_exact_kaynaklari_tasir() {
         let yol = Path::new(env!("CARGO_MANIFEST_DIR")).join("../docs/performans-gecmisi-v2.tsv");
         let (_, satirlar) = gecmisi_oku(Some(&yol)).expect("izlenen geçmiş geçerli olmalı");
-        assert_eq!(satirlar.len(), 9);
-        assert!(satirlar.iter().all(|satir| satir.kayit == "K-148-m4pro"));
-        assert!(satirlar.iter().all(|satir| satir.git_sha == SHA));
-        assert!(satirlar.iter().all(|satir| satir.milestone == "K-148"));
+        assert_eq!(satirlar.len(), 19);
+        assert_eq!(
+            satirlar
+                .iter()
+                .filter(|satir| satir.kayit == "K-148-m4pro" && satir.git_sha == SHA)
+                .count(),
+            9
+        );
+        assert_eq!(
+            satirlar
+                .iter()
+                .filter(|satir| {
+                    satir.kayit == "K-153-m4pro"
+                        && satir.git_sha == "a2693d6ec98d52b8e2e882b43ecaae682fcce48a"
+                        && satir.milestone == "K-153"
+                })
+                .count(),
+            10
+        );
         let rss = satirlar
             .iter()
             .find(|satir| satir.kimlik == "tepe_bellek")
             .expect("RSS kaydı olmalı");
         assert_eq!(rss.ornekleme, "surec_tepe_anlik_goruntusu");
         assert_eq!((rss.ornek_sayisi, rss.isinma_sayisi), (1, 0));
+        let process = satirlar
+            .iter()
+            .find(|satir| satir.kayit == "K-153-m4pro" && satir.kimlik == "lsp_process_cold_start")
+            .expect("K-153 process cold-start kaydı olmalı");
+        assert_eq!((process.ornek_sayisi, process.isinma_sayisi), (25, 2));
+        assert_eq!((process.p50, process.p95), (1_556_958, 1_996_667));
     }
 
     #[test]

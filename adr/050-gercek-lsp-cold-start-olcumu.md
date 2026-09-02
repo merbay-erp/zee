@@ -1,6 +1,6 @@
 # ADR-050 — Gerçek LSP process cold-start ölçümü
 
-- **Durum:** kabul; exact baseline kaydı bekleniyor
+- **Durum:** kabul
 - **Tarih:** 2 Eylül 2026
 - **İlgili kayıt:** K-153, B-061
 
@@ -48,7 +48,8 @@ cold-start izlenimi vererek doğru veriye yanlış anlam yüklüyordu.
   cold-start maliyeti ayrı trendlerdir.
 - Gerçek iki ikili entegrasyon testi olcum→dillsp→stdio→capabilities yolunu her
   Tier-1 platformun faz matrisinde çalıştırır.
-- Shared CI gözlemsel kalır. Exact temiz commit'te alınan ilk 25 örneklik
-  taban ayrı provenance commit'iyle bu kararın baseline bekleyen kısmını
-  kapatacaktır.
+- Shared CI gözlemsel kalır. Exact temiz
+  `a2693d6ec98d52b8e2e882b43ecaae682fcce48a` uygulama commit'inde iki ısınma
+  ardından alınan 25 örnek; process cold-start için p50 1,557 ms, p95 1,997 ms
+  tabanını verdi. Aynı koşuda engine initialize p50 542 ns, p95 625 ns'dir.
 - Grammar, runtime semantiği, tanılar, RFC ve normatif spec değişmedi.

@@ -116,9 +116,19 @@ wait ölçüm penceresinin dışındadır. Mevcut LSP initialize sırasında wor
 taramaz; dolayısıyla bugün ayrı workspace-load metriği yoktur. Bu davranış
 eklendiğinde process cold-start'a gizlenmeden ayrı ölçülecektir.
 
-Gerçek yol ve Tier-1 entegrasyon testi hazırdır. İlk 25 örneklik exact temiz
-commit tabanı, K-153 uygulama commit'i checkout edilerek sonraki provenance
-commit'inde bu bölüme eklenecektir; o ana kadar K-153 **kısmen açık** tutulur.
+Gerçek yol ve Tier-1 entegrasyon testi hazırdır. İlk taban exact temiz
+`a2693d6ec98d52b8e2e882b43ecaae682fcce48a` uygulama commit'inde Apple M4
+Pro, 24 GiB RAM, macOS 26.6.2 (25G83), Rust 1.93.1 ve release profilde iki
+ısınma ardından 25 örnekle alındı:
+
+| LSP başlangıç yüzeyi | p50 | p95 |
+|---|---:|---:|
+| in-process engine initialize | 542 ns | 625 ns |
+| gerçek process spawn→stdio→capabilities | 1,557 ms | 1,997 ms |
+
+Bu fark hata değil, iki farklı sınırın kanıtıdır: process metriği kullanıcı
+perspektifindeki işletim sistemi ve protokol maliyetini de içerir. K-153/
+B-061 bu exact tarihçe kaydıyla kapalıdır.
 
 ## K-148 öncesi elle tutulmuş legacy kayıtlar
 

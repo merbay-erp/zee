@@ -790,8 +790,9 @@ semantiğine yükseltti. RSS'in 25 tur değil tek süreç-tepe görüntüsü old
 makine-okunur; eski K-148 sayıları exact üretici commit'ine bağlandı ve B-060
 kapandı. K-153/ADR-050 in-process engine initialize ile gerçek dillsp process
 spawn→stdio→capabilities maliyetini ayırdı; Tier-1 ikili testi ve CI ölçümü
-hazırdır. Exact temiz uygulama commit'inden 25 örnekli taban alınana kadar
-B-061/K-153 kısmen açık, bağlayıcı sıradaki iş bu kapanış kaydıdır.
+hazırdır. Exact temiz `a2693d6…` uygulama commit'indeki 25 örnek process için
+p50 1,557 ms/p95 1,997 ms tabanını verdi; B-061/K-153 kapandı. Bağlayıcı
+makine sırası K-154 LSP tam-metin değişim ölçek eğrisiyle devam eder.
 B-001 çağrı sözdizimi ile B-002 gezme zihinsel modeli gerçek insan
 kanıtı gelmeden kapatılmaz veya yeni syntax kararıyla atlanmaz.
 # 40. Proje felsefesinin korunması
