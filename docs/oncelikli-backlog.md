@@ -176,8 +176,11 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
     `lsp_process_cold_start` olarak ölçüyor. Tier-1 gerçek ikili testi ve CI
     kablosu hazırdır. Exact temiz `a2693d6…` uygulama commit'indeki 25 örnek
     process p50 1,557 ms/p95 1,997 ms tabanını verdi; B-061/K-153 kapandı.
-51. Sıradaki makine işi K-154 ile 2k/5k/10k/20k satır tam-metin `didChange`
-    eğrisini ve parse/check/HIR invalidation sınırlarını ölçmektir.
+51. K-154/ADR-051'in uygulama dilimi 2k/5k/10k/20k satır tam-metin
+    `didChange` eğrisini, p95 250/500/1000 ms ilk-aşım raporunu ve bugünkü tam
+    belge→lexer/parser→resolver/checker→typed-HIR invalidation sınırını
+    görünür yaptı. Optimizasyon yapılmadı; exact temiz 25 örnekli taban
+    beklediği için B-062 kısmi.
 
 ## P0 — V1 öncesi dil ve derleyici omurgası
 
@@ -610,6 +613,14 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   mevcut LSP workspace yüklemediği için hayalî workspace metriği yoktur.
   Exact temiz `a2693d6…` uygulama commit'indeki 25 örnek process p50
   1,557 ms/p95 1,997 ms; engine p50 542 ns/p95 625 ns tabanını verdi.
+- **B-062 · KISMEN (K-154/ADR-051) — LSP incremental analysis hazırlığı.**
+  Koşucu 2k/5k/10k/20k tam-metin `didChange` p50/p95 eğrisini açık
+  `--lsp-olcek` ile üretir; CI bunu JSON/Markdown/TSV artefaktına katar ve
+  rapor önceden sabit 250/500/1000 ms çizgilerinin ilk p95 aşımını bulur.
+  Mevcut invalidation sınırı tam belge saklama+klonlama ve tam lexer/parser/
+  resolver/checker/typed-HIR yeniden kurulumudur; incremental cache yoktur.
+  Optimizasyon kapsam dışıdır. Exact temiz 25 örnekli release tabanı
+  kaydedilmeden kapanmaz.
 - **B-041 · KAPALI (K-120) — LSP'yi SymbolId/HIR'a bağla.** Definition ve
   rename yalnız başarılı checker'ın `SymbolId`/`IslemId`/`YapiId` typed-HIR
   bağından hedef seçer. HIR ilk tanım, yeniden atama ve okuma aralıklarını

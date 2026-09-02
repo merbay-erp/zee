@@ -57,13 +57,13 @@ yeniden koşulması gereken sonraki yüzeylerini gösterir.
 | Package | `test:kitaplik_testi`<br>`test:tedarik_testi`<br>`lib:paket::uzak::politika::testler::`<br>`lib:tedarik::testler::` | Kutuphane, ZEP arsivi, imza, SBOM ve provenance davranisi. |
 | Registry | `lib:registry::istemci::testler::`<br>`lib:registry::testler::`<br>`bin:dil:dil_registry::testler::` | Metadata zinciri, rollback, cache, exact pin ve CLI secenekleri. |
 | Supply-chain | `test:tedarik_kapisi_testi` | RustSec, lisans, kilit, action pini ve offline vendor politikasinin yurutulebilir kapisi. |
-| LSP | `test:lsp_testi`<br>`test:olcum_lsp_process_testi`<br>`lib:lsp::cikti::testler::`<br>`lib:lsp::kaynak_siniri_testleri::`<br>`bin:dillsp:testler::` | JSON-RPC framing tani hover completion definition rename ve gercek process stdio cold-start olcumu. |
+| LSP | `test:lsp_testi`<br>`test:olcum_lsp_process_testi`<br>`lib:lsp::cikti::testler::`<br>`lib:lsp::kaynak_siniri_testleri::`<br>`bin:dillsp:testler::` | JSON-RPC framing tani hover completion definition rename process cold-start ve tam-metin degisim olcegi. |
 | WASM | `test:playground_testi` | Playground, ABI sahipligi, limitler ve gercek wasm hostu oncesi native regresyonlar. |
 | CLI | `test:io_izi_cli_testi` | Komut satiri IO kaydi ve yeniden oynatma siniri. |
 | Project system | `test:proje_testi`<br>`test:projeler_testi` | Bildirim, kilit, bagimlilik, yetkinlik ve tam proje ornekleri. |
 | Semantic regression | `test:semantic_regresyon_korpusu_testi` | Duzeltilmis bug kimligi, birincil faz, kesin tani span, exit ve gozlenebilir cikti korpusu. |
 | End-to-end | `test:golden_testi` | 33 golden program ile kullanici yuzeyinden tam derleme ve yurutme hatti. |
-| Engineering gates | `test:bagimlilik_cevrimi_testi`<br>`test:dokuman_tazelik_testi`<br>`test:katalog_testi`<br>`test:katman_mimarisi_testi`<br>`test:mimari_sinir_testi`<br>`test:panic_guvenligi_testi`<br>`test:tani_kimligi_testi`<br>`bin:islev_egilimi:testler::`<br>`bin:faz_test_matrisi:testler::`<br>`bin:olcum:testler::` | Belge tani mimari panic bicim katman cevrim ve K-152 exact provenance performans gozetim kapilarinin kendi regresyonlari. |
+| Engineering gates | `test:bagimlilik_cevrimi_testi`<br>`test:dokuman_tazelik_testi`<br>`test:katalog_testi`<br>`test:katman_mimarisi_testi`<br>`test:mimari_sinir_testi`<br>`test:panic_guvenligi_testi`<br>`test:tani_kimligi_testi`<br>`bin:islev_egilimi:testler::`<br>`bin:faz_test_matrisi:testler::`<br>`bin:olcum:testler::` | Belge tani mimari panic bicim katman cevrim ve exact provenance/esik performans gozetim kapilarinin kendi regresyonlari. |
 
 ## Çalıştırma sözleşmesi
 

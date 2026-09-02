@@ -53,6 +53,7 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-048 | [GitHub Actions immutable SHA pinleme](048-github-actions-immutable-sha-pinleme.md) | **kabul** (K-151/B-059) |
 | ADR-049 | [Benchmark provenance ve örnekleme sınırı](049-benchmark-provenance-sinir.md) | **kabul** (K-152/B-060) |
 | ADR-050 | [Gerçek LSP process cold-start ölçümü](050-gercek-lsp-cold-start-olcumu.md) | **kabul** (K-153/B-061) |
+| ADR-051 | [LSP tam-metin invalidation ölçeği](051-lsp-tam-metin-invalidation-olcegi.md) | **kabul** (K-154/B-062 kısmi; exact taban bekliyor) |
 | ADR-004 | Bellek yönetimi prototip kararı (GC / ARC benchmark) | bekliyor |
 | ADR-005 | Native backend seçimi (Cranelift / LLVM) | bekliyor — Faz 4 |
 | ADR-007 | [Telemetri ve gizlilik: araçlar veri toplamaz](007-telemetri-ve-gizlilik.md) | **kabul** |

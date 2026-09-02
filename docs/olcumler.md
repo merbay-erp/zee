@@ -3,7 +3,8 @@
 K-148/ADR-045 ile performans tek terminal medyanı olmaktan çıktı; K-152/
 ADR-049 her satırı gerçek kaynak commit'ine ve tam koşu ortamına bağladı.
 K-153/ADR-050, in-process engine süresiyle gerçek dillsp process cold-start'ını
-ayırdı. Release
+ayırdı. K-154/ADR-051 tam-metin değişiklik maliyetini 2k/5k/10k/20k satır
+eğrisine ve önceden sabitlenmiş p95 eşik raporuna bağladı. Release
 koşucusu varsayılan 25 turdan ham örnek, min/max ve nearest-rank p50/p95
 üretir; makine bağlamını `zee-performans-2` JSON'una, insan raporuna ve
 incelenebilir `zee-performans-gecmisi-2` TSV'sine bağlar. İş yükleri koşucu
@@ -22,7 +23,10 @@ sayılmaz ve bu belgede gerekçelenir.
 | `lsp_engine_initialize` | Aynı süreçte `Sunucu::yeni` + initialize işleme |
 | `lsp_process_cold_start` | Process spawn → stdio framing → tam initialize capabilities yanıtı |
 | `lsp_ac` | Initialize edilmiş sunucuda 2.000 satır `didOpen` |
-| `lsp_degistir` | Açık belgede tam metin `didChange` |
+| `lsp_degistir_2k` | Açık 2.000 satır belgede tam metin `didChange` |
+| `lsp_degistir_5k` | Açık 5.000 satır belgede tam metin `didChange` (`--lsp-olcek`) |
+| `lsp_degistir_10k` | Açık 10.000 satır belgede tam metin `didChange` (`--lsp-olcek`) |
+| `lsp_degistir_20k` | Açık 20.000 satır belgede tam metin `didChange` (`--lsp-olcek`) |
 | `tepe_bellek` | Unix sürecinin tepe resident set'i (KiB) |
 
 `typecheck_gecikmesi`, checker'ın bugün typed-HIR kanıtını da ürettiğini
@@ -62,6 +66,7 @@ cd compiler
 cargo build --locked --release --bin dillsp
 cargo run --locked --release --bin olcum -- \
   --tur 25 \
+  --lsp-olcek \
   --gecmis ../docs/performans-gecmisi-v2.tsv \
   --json target/performans.json \
   --rapor target/performans.md \
@@ -82,6 +87,25 @@ ile 90 günlük artefakta koyar; **hard performans kapısı değildir**. Sabit
 makineli adanmış bir koşucu kurulursa p95 sınırı bilinçli olarak örneğin
 `--esik-yuzde 20` ile açılabilir. Aynı platformda karşılaştırılabilir geçmiş
 yoksa eşikli koşu başarı sayılmaz.
+
+## K-154 tam-metin değişiklik sınırı
+
+Bugünkü `didChange` yolu incremental değildir. LSP, gelen tam metinle saklanan
+belge `String`ini değiştirir; tanı yayını metni klonlar ve kaynağın tamamını
+yeniden lexer → parser → birim/isim çözümleme → checker → typed-HIR kanıtı
+hattından geçirir. Belge sürümleri arasında parse ağacı, semantic sonuç veya
+HIR cache'i yaşamaz. Dolayısıyla ölçülen sınır yalnız JSON işleme ya da parser
+değil, kullanıcının tanı sonucuna kadar beklediği tam ön uçtur.
+
+`--lsp-olcek`, aynı dört satırlık sabit üretim bloğunu 2.000/5.000/10.000/
+20.000 satıra genişletir. Her bağımsız örnek hazırlanırken initialize+didOpen
+ölçüm dışında yapılır; saat tam-metin `didChange` çağrısından tanı bildirimi
+hazır olana kadar çalışır. Rapor, ölçümden önce seçilmiş 250 ms, 500 ms ve
+1 saniye çizgilerinin p95'te ilk aşıldığı boyutu ayrıca yazar. Bu çizgiler
+şimdilik kapasite gözlemidir; shared CI hard performans kapısı değildir.
+
+Uygulama ve CI kablosu hazırdır. Exact temiz 25 örnekli release tabanı
+alınmadan sayısal ilk-aşım sonucu yayımlanmaz ve K-154/B-062 kapalı sayılmaz.
 
 ## K-148 başlangıç tabanı — 2 Eylül 2026 · Apple M4 Pro, macOS arm64, Rust 1.93.1
 
