@@ -1,9 +1,10 @@
 # RFC-0025 — Merkezî Kaynak Bütçesi
 
-- **Durum:** **geçici kabul** (K-129 ilk ortak profil; B-025 heap/bağlantı
-  dilimi açık)
+- **Durum:** **geçici kabul** (K-129 ortak profil, K-130 değer/bağlantı
+  zarfı; dağınık eski sabit göçü açık)
 - **Tarih:** 2 Eylül 2026
-- **İlgili kayıtlar:** K-105, K-107, K-129, B-025, ADR-017/019/033, V1-P0-31
+- **İlgili kayıtlar:** K-105, K-107, K-129/K-130, B-025,
+  ADR-017/019/033, V1-P0-31
 - **Gerçekleme:** `kaynak_sinirlari.rs`; lexer, proje yükleyici, runtime,
   kalıcı dosya, CLI ve LSP tüketicileri
 
@@ -21,7 +22,7 @@ nesnesidir. Limit yükseltme bir ortam değişkeni, kaynak cümlesi veya paket a
 bağımlılığıyla yapılamaz. Gelecekte daha geniş bir profil gerekiyorsa adı,
 sürümü, tehdit modeli ve üst sınırı ayrı RFC ile görünür olur.
 
-## 3. K-129 tablosu
+## 3. K-129/K-130 tablosu
 
 | Kaynak | Sınır | Red |
 |---|---:|---|
@@ -33,7 +34,10 @@ sürümü, tehdit modeli ve üst sınırı ayrı RFC ile görünür olur.
 | Çalışma cümlesi adımı | 10.000.000 | C023 |
 | Tek liste/sözlük | 1.000.000 öğe | C023 |
 | Tek eşzamanlı grup | 1.024 görev | C023 |
+| Tek üretilen metin | 16 MiB | C024 |
+| Çalışma/istek saklanan değer tahsisi | yaklaşık 64 MiB | C024 |
 | Çalışma/istek çıktısı | 16 MiB ve 100.000 olay | C023 |
+| Süreç genelinde inbound+outbound ağ bağlantısı | 64 | C018 veya HTTP 503 |
 | Dil veri dosyası okuması | 16 MiB | C012/C013 bağlamında görünür hata |
 | LSP açık belge | 256 | S045 bildirimi |
 | LSP toplam belge metni | 128 MiB | S045 bildirimi |
@@ -47,6 +51,15 @@ sınırsız tahsise dönüşmez. Lexer tokenı eklemeden, runtime koleksiyon ö�
 veya görev future'ını kurmadan, çıktı ise IO adaptörüne verilmeden önce bütçe
 denetlenir. Reddedilen LSP güncellemesi önceki belgeyi ve toplam sayacı korur.
 
+K-130'da metin birleştirme/değiştirme, HTML kaçışı, değer metni, keyfî
+hassasiyetli sayı/para, JSON ve CSV sonucu bütçeli yazıcıyla büyür; bilinen
+büyüme tahsisten önce reddedilir.
+Ortam/list/sözlük yazımları ve görev ortamı klonları iade edilmeyen,
+muhafazakâr saklama fişleri tüketir. Bu fiş gerçek resident-memory ölçümü
+değildir; yeniden kullanımda fazla sayarak üst sınırı güvenli tarafta tutar.
+Inbound kabul ve outbound DNS/bağlantı girişleri süreç-geneli RAII izni alır;
+bütün dönüş/hata yolları izni bırakır.
+
 ## 5. Determinizm ve tanılar
 
 Aynı profil ve aynı giriş, aynı sınırda aynı tanı kimliğini üretir. Sınırda
@@ -55,7 +68,6 @@ kesemez, işi eksik başarılı gösteremez veya host panic'e düşemez.
 
 ## 6. Açık işler
 
-Canlı değer grafiğinin yaklaşık toplam byte/öğe muhasebesi, bütün metin üretim
-operasyonları, toplam bağlantı sayısı ve eski domain limitlerinin tamamının
-`KaynakSinirlari` içine taşınması B-025'te sürer. Cancellation invariant'ları
-B-026'nın ayrı sözleşmesidir.
+Registry, tedarik, IO izi, oturum ve LSP'nin K-129'dan önceki yerel sabitlerinin
+tamamını davranış değiştirmeden `KaynakSinirlari` görünümüne taşıma işi B-025'te
+sürer. Cancellation invariant'ları B-026'nın ayrı sözleşmesidir.

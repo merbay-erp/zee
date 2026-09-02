@@ -461,10 +461,12 @@ mode/uid/gid ve desteklenen ACL/xattr'ı; Windows DACL/security/named stream
 metadata'sı korunur. Sembolik bağ ve sessiz metadata kaybı reddedilir. Runtime
 aynı klasördeki gizli `.zee-yazma-kilidi` dosyasını kendine ayırır.
 
-Kaynak ve çalışma tüketimi K-129/RFC-0025 güvenli profilindedir. Tek kaynak
+Kaynak ve çalışma tüketimi K-129/K-130/RFC-0025 güvenli profilindedir. Tek kaynak
 8 MiB/1 milyon token; çalışma 10 milyon cümle adımı, 500 çağrı derinliği,
 1 milyon koleksiyon öğesi, 1.024 görev ve 16 MiB/100 bin çıktı olayı sınırı
-taşır. Aşım sessiz kesilmez; S045, C019 veya C023 tanısı verir.
+taşır. Tek metin 16 MiB, saklanan değer tahsisleri yaklaşık 64 MiB ve
+süreç-geneli ağ bağlantıları 64 ile sınırlıdır. Aşım sessiz kesilmez; S045,
+C019, C023 veya C024 tanısı ya da ağ katmanında kontrollü red verir.
 
 ## 17. Tarih, saat, süre
 

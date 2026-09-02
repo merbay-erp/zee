@@ -427,6 +427,15 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   3 ayrılmış tanı ve 80 numaralı belgeye çıktı. B-025 toplam heap/metin ve
   bağlantı muhasebesi için kısmen açık kalır.
 
+- **Bütçeli değer/metin ve bağlantı zarfı** (K-130, RFC-0025/ADR-033
+  revizyonu): Tek metin, keyfî hassasiyetli sayı/para basımı dahil, 16 MiB'ta
+  tahsis öncesi bütçelenir; ortam/koleksiyon yazımları ile görev ortamı
+  klonları çalışma/istek başına iade edilmeyen yaklaşık
+  64 MiB saklama zarfı tüketir. Süreç genelindeki inbound+outbound bağlantılar
+  64 RAII izniyle sınırlıdır. Metin/değer aşımı append-only C024'tür. Dört
+  yeni regresyonla envanter 517 test, 150 etkin + 3 ayrılmış tanı ve 80
+  numaralı belgedir. B-025 yalnız eski domain sabitlerinin göçü için açıktır.
+
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`
   bildirimi hazır üretir. P001–P004 Türkçe proje tanıları. Doğrudan dosya

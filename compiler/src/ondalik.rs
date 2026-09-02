@@ -91,6 +91,52 @@ impl Ondalik {
         self.govde == BigInt::ZERO
     }
 
+    /// Değer grafiği kaynak hesabı için katsayının yaklaşık dinamik boyutu.
+    pub fn yaklasik_heap_bayti(&self) -> usize {
+        usize::try_from(self.govde.bits().saturating_add(7) / 8).unwrap_or(usize::MAX)
+    }
+
+    /// `metne`/`json_metni` çağrısından önce allocation bütçesi denetimi için
+    /// sonucu kapsayan ucuz bir üst sınır verir.
+    pub fn metin_bayti_ust_siniri(&self) -> usize {
+        let rakam = self
+            .katsayi_onluk_hanesi_ust_siniri()
+            .max((self.olcek as usize).saturating_add(1));
+        rakam
+            .saturating_add(usize::from(self.negatif_mi()))
+            .saturating_add(1)
+    }
+
+    /// Kuruşlu basımın işaret, ayraç ve olası binlik noktaları dahil üst sınırı.
+    pub fn kuruslu_metin_bayti_ust_siniri(&self, binlikli: bool) -> usize {
+        let kurus_hanesi = if self.olcek > 2 {
+            self.katsayi_onluk_hanesi_ust_siniri().saturating_add(1)
+        } else {
+            self.katsayi_onluk_hanesi_ust_siniri()
+                .saturating_add((2 - self.olcek) as usize)
+        }
+        .max(3);
+        let tam_hanesi = kurus_hanesi.saturating_sub(2).max(1);
+        let binlik = if binlikli {
+            tam_hanesi.saturating_sub(1) / 3
+        } else {
+            0
+        };
+        usize::from(self.negatif_mi())
+            .saturating_add(tam_hanesi)
+            .saturating_add(binlik)
+            .saturating_add(3)
+    }
+
+    fn katsayi_onluk_hanesi_ust_siniri(&self) -> usize {
+        let bit = usize::try_from(self.govde.bits()).unwrap_or(usize::MAX);
+        bit.saturating_mul(30_103)
+            .saturating_add(99_999)
+            .checked_div(100_000)
+            .unwrap_or(usize::MAX)
+            .max(1)
+    }
+
     pub fn metne(&self) -> String {
         let isaret = if self.negatif_mi() { "-" } else { "" };
         let mut rakamlar = self.govde.abs().to_str_radix(10);
@@ -318,10 +364,13 @@ mod testler {
     fn keyfi_katsayi_tam_islemleri_korur() {
         let a = Ondalik::metinden("123456789012345678901234567890,12").unwrap();
         let b = Ondalik::metinden("0,88").unwrap();
+        assert!(a.metne().len() <= a.metin_bayti_ust_siniri());
+        assert!(a.kuruslu(true).len() <= a.kuruslu_metin_bayti_ust_siniri(true));
         assert_eq!(a.topla(&b).metne(), "123456789012345678901234567891,0");
         assert_eq!(
             a.carp(&Ondalik::tam(100)).unwrap().metne(),
             "12345678901234567890123456789012,0"
         );
+        assert!(Ondalik::katsayidan(1, 20_000_000).metin_bayti_ust_siniri() > 20_000_000);
     }
 }

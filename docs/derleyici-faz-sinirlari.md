@@ -138,3 +138,7 @@ K-129/ADR-033 kaynak bütçesi değerlerini `kaynak_sinirlari.rs` içinde tek
 sahipli yaptı. 260 satır bütçesi profile testleri ve bounded-reader yardımcısını
 kapsar; lexer/runtime/LSP/CLI yalnız bu değeri tüketir, yeni dağınık limit
 sabiti ekleyemez.
+K-130 değer grafiği hesabını `yorumlayici/kaynak.rs`, bütçeli değer/JSON/CSV
+yazımını `yorumlayici/metin.rs`, süreç-geneli izin sayacını
+`kaynak_sinirlari/baglanti.rs` sahibine ayırdı. Sırasıyla 280/240/60 satır;
+runtime cümle/ifade handler'ları yalnız 620/760 satır bütçesi taşır.

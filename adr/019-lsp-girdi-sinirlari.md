@@ -42,7 +42,9 @@ Mini JSON ayrıştırıcısı ayrıca:
 - Derin veya çok düğümlü JSON doğal yığın/bellek tükenmesine ulaşmadan durur.
 - Geçersiz surrogate girdisi debug/release farkı olmadan `None` sonucudur;
   panic veya taşma yolu yoktur.
-- Açık belge sayısı/toplam belge belleği, çıktı büyütme katsayısı ve LSP
-  isteklerinin zaman bütçesi ortak `KaynakSinirlari` altında açık kalır.
+- K-129 açık belge sayısını 256, toplam belge belleğini 128 MiB ve LSP dışa
+  giden yanıtını 8 MiB ile ortak `KaynakSinirlari` altında kapattı.
+- LSP yanıtının tahsis öncesi bütçeli üretilmesi ile istek zaman bütçesi,
+  B-025'in kalan sabit göçü içinde açık tutulur.
 - Üç çerçeve ve dört JSON testi tahsis öncesi boyutu, tekrar/eksik uzunluğu,
   derinlik/düğüm bütçesini ve Unicode olumsuzlarını korur.

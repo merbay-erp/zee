@@ -1356,6 +1356,7 @@ struct GercekIo {
     web_modu: WebModu,
     dinleyici: Option<std::net::TcpListener>,
     bekleyen_akis: Option<std::net::TcpStream>,
+    bekleyen_baglanti_izni: Option<dil::kaynak_sinirlari::BaglantiIzni>,
     bekleyen_head: bool,
     /// İç içe eylemler için dosya savepoint'leri: yol → çağrı başındaki içerik.
     eylem_yedekleri:
@@ -1401,6 +1402,7 @@ impl GercekIo {
             web_modu,
             dinleyici: None,
             bekleyen_akis: None,
+            bekleyen_baglanti_izni: None,
             bekleyen_head: false,
             eylem_yedekleri: Vec::new(),
             web_guvenligi: dil::web_guvenligi::WebGuvenligi::yeni(),
@@ -1738,6 +1740,19 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         'istekler: loop {
             let (mut akis, _) = dinleyici.accept().ok()?;
             let https = self.guvenli_proxy_origin().is_some();
+            let baglanti_izni = match dil::kaynak_sinirlari::baglanti_izni_al() {
+                Ok(izin) => izin,
+                Err(_) => {
+                    ham_http_hatasi_gonder(
+                        &mut akis,
+                        503,
+                        "sunucu eşzamanlı bağlantı sınırına ulaştı",
+                        false,
+                        https,
+                    );
+                    continue;
+                }
+            };
             let son_tarih = std::time::Instant::now() + HTTP_ISTEK_OKUMA_SURESI;
             if akis
                 .set_write_timeout(Some(HTTP_ISTEK_OKUMA_SURESI))
@@ -1938,6 +1953,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                 let an = self.baslangic.elapsed().as_millis() as i64;
                 self.web_guvenligi.istegi_baslat(oturum, an);
                 self.bekleyen_akis = Some(akis);
+                self.bekleyen_baglanti_izni = Some(baglanti_izni);
                 self.bekleyen_head = yontem.eq_ignore_ascii_case("HEAD");
                 let cerez_satiri = if cerez.is_empty() {
                     String::new()
@@ -2006,6 +2022,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
     fn yanit_gonder(&mut self, yanit: &str) {
         use std::io::Write;
         if let Some(mut akis) = self.bekleyen_akis.take() {
+            let _baglanti_izni = self.bekleyen_baglanti_izni.take();
             let head = std::mem::take(&mut self.bekleyen_head);
             let govde = yanit.as_bytes();
             // Gövde işaretlemeyle başlıyorsa tarayıcıya HTML olarak sun
@@ -2036,6 +2053,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         self.bekleyen_cerezler.clear();
         self.bekleyen_silinen_cerezler.clear();
         if let Some(mut akis) = self.bekleyen_akis.take() {
+            let _baglanti_izni = self.bekleyen_baglanti_izni.take();
             let head = std::mem::take(&mut self.bekleyen_head);
             let govde = yanit.as_bytes();
             let guvenlik_basliklari = self.guvenlik_basliklari();
@@ -2060,6 +2078,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         }
         use std::io::Write;
         if let Some(mut akis) = self.bekleyen_akis.take() {
+            let _baglanti_izni = self.bekleyen_baglanti_izni.take();
             self.bekleyen_head = false;
             let cerez_basliklari = self.cerez_basliklarini_al();
             let guvenlik_basliklari = self.guvenlik_basliklari();

@@ -1,6 +1,6 @@
 # 24 — Kaynak güvenlik profili
 
-Normatif kaynak: RFC-0025, ADR-033. Durum: **TANIMLI — K-129 ilk dilim**.
+Normatif kaynak: RFC-0025, ADR-033. Durum: **TANIMLI — K-129/K-130**.
 
 ## Profil sahipliği
 
@@ -19,12 +19,21 @@ yükseltemez. Sınırsız fallback ve başarılı görünen truncate YASAKTIR.
 - Çağrı derinliği 500'ü aşarsa C019 üretilir.
 - Tek çalışma veya web isteği 10.000.000 cümle adımını AŞAMAZ.
 - Tek liste/sözlük 1.000.000 öğeyi; tek eşzamanlı grup 1.024 görevi AŞAMAZ.
+- Tek üretilen metin 16 MiB'ı AŞAMAZ. Metin birleştirme/değiştirme, HTML,
+  değer metni, keyfî hassasiyetli sayı/para, JSON ve CSV üretimi sonucu
+  kurmadan bütçeli büyümelidir.
+- Çalışma veya web isteği, ortam/koleksiyon yazımları ve görev ortamı klonları
+  için yaklaşık 64 MiB, iade edilmeyen saklanan değer tahsis zarfı taşır.
+  Muhafazakâr fazla sayım TANIMLIDIR; aşım C024'tür.
 - `yaz`, soru istemi ve web yanıtı toplam 16 MiB veya 100.000 çıktı olayını
   aşarsa aşan olay IO'ya verilmeden C023 üretilir.
 - Dil programının metin dosyası okuması 16 MiB'ı AŞAMAZ. Atomik append ve
   transaction ön-okuması aynı bounded reader'ı kullanmalıdır.
 
 Uzun yaşayan web sunucusunda her istek bağımsız adım/çıktı bütçesi alır.
+Süreç genelinde kabul edilmiş inbound ve başlatılmış outbound ağ bağlantılarının
+toplamı 64'ü AŞAMAZ. İzin bütün başarı/hata yollarında bırakılmalıdır; aşım
+outbound'da C018 nedeni, inbound'da HTTP 503'tür.
 
 ## LSP
 
@@ -35,6 +44,5 @@ outbound JSON mesajı 8 MiB'ı aşamaz. Fazla belge sunucu durumuna eklenmez;
 
 ## Henüz tamamlanmayan kapsam
 
-K-129 tek değer/listenin bütün iç metinleriyle yaklaşık heap byte toplamını ve
-aynı anda açık bağlantı sayısını henüz ölçmez. Bu alanlar B-025 açık kapsamıdır;
-spec bu kaynakların sınırsız olduğuna dair güvence vermez.
+K-129 öncesinden kalan registry, tedarik, IO izi, oturum ve LSP yerel
+sabitlerinin ortak tipe davranış değiştirmeden göçü B-025 açık kapsamıdır.

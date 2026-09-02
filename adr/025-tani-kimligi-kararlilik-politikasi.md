@@ -64,7 +64,8 @@ makine tüketicisi kararını kararlı kod üzerinden verir.
 - Şema-1 tabanı 145 etkin ve 3 ayrılmış olmak üzere 148 kimlik taşır.
 - K-127, bu append-only tabana P015 ve T054'ü ekledi; güncel şema-1 sayısı
   o adımda 147 etkin + 3 ayrılmıştır. K-129 aynı tabana S045 ve C023'ü ekledi;
-  güncel sayı 149 etkin + 3 ayrılmıştır. Eski kayıtların hiçbiri değişmedi.
+  o adımda 149 etkin + 3 ayrılmıştır. K-130 değer/metin heap aşımı için C024'ü
+  ekledi; güncel sayı 150 etkin + 3 ayrılmıştır. Eski kayıtların hiçbiri değişmedi.
 - `katalog_testi.rs` kaynak↔katalog varlığını,
   `tani_kimligi_testi.rs` katalog↔sürüm kimliğini ayrı sorumluluklarla korur.
 - Yeni tanı eklemek kasıtlı olarak kaynak, katalog, fixture ve ilgili davranış

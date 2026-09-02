@@ -53,7 +53,8 @@ kurulmaz.
 - Deadline yazmayan başlangıç programı da sonsuz ağ beklemesi yapamaz.
 - Yavaş gönderici yerel sunucuyu süresiz tek bağlantıda tutamaz.
 - Büyük yanıt, bellek tahsisini 8 MiB üzerinde büyütemeden görünür hata olur.
-- Ortak `KaynakSinirlari` ve eşzamanlı bağlantı bütçesi B-025'te açık kalır.
+- Ortak `KaynakSinirlari` K-129'da, 64 süreç-geneli eşzamanlı bağlantı bütçesi
+  K-130'da bağlandı. Kalan eski domain sabitlerinin göçü B-025'te açık kalır.
   SSRF/hedef politikası ADR-031/spec-23'te; oturum ve LSP bütçeleri kendi
   ADR'lerinde kapanmıştır.
 - Loopback, redirect, origin, DNS/IP ve varsayılan deadline testleri yeni

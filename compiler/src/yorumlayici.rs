@@ -8,11 +8,15 @@ mod hir_gecisi;
 mod ifade;
 mod io_izi;
 mod io_profili;
+mod kaynak;
+mod metin;
 mod yetkinlik;
 
 use self::cumle::blok_calistir_async;
 use self::hir_gecisi::CalistirmaProgrami;
 use self::ifade::degerlendir_async;
+use self::kaynak::*;
+use self::metin::{csv_yaz, dogrulama_detayi, json_yaz, metne_sinirli};
 pub use self::hir_gecisi::{calistir_baglanmis, calistir_baglanmis_io, test_calistir_baglanmis};
 pub use self::io_izi::{
     IzKaydedenIo, IzYenidenOynatici, AZAMI_IO_IZ_BAYTI, AZAMI_IO_IZ_OLAYI,
@@ -196,107 +200,6 @@ fn degerler_esit(a: &Deger, b: &Deger) -> bool {
         },
         _ => false,
     }
-}
-
-/// Satır sözlükleri listesini CSV metnine çevirir (K-058): başlıklar ilk
-/// satırın anahtar sırasından; virgül/tırnak/yeni satır RFC 4180 gibi kaçar.
-fn csv_yaz(satirlar: &[Deger]) -> String {
-    let mut cikti = String::new();
-    let Some(Deger::Sozluk(ilk)) = satirlar.first() else {
-        return cikti;
-    };
-    let basliklar: Vec<&String> = ilk.iter().map(|(a, _)| a).collect();
-    let hucre = |m: &str| -> String {
-        if m.contains(',') || m.contains('"') || m.contains('\n') {
-            format!("\"{}\"", m.replace('"', "\"\""))
-        } else {
-            m.to_string()
-        }
-    };
-    cikti.push_str(&basliklar.iter().map(|b| hucre(b)).collect::<Vec<_>>().join(","));
-    cikti.push('\n');
-    for satir in satirlar {
-        if let Deger::Sozluk(girdiler) = satir {
-            let hucreler: Vec<String> = basliklar
-                .iter()
-                .map(|b| {
-                    girdiler
-                        .iter()
-                        .find(|(a, _)| a == *b)
-                        .map(|(_, d)| hucre(&d.metne()))
-                        .unwrap_or_default()
-                })
-                .collect();
-            cikti.push_str(&hucreler.join(","));
-            cikti.push('\n');
-        }
-    }
-    cikti
-}
-
-/// Değeri JSON metnine serileştirir (K-054): Sözlük, Liste, Metin, sayılar,
-/// Mantıksal. Sözlük anahtar sırası korunur (determinizm).
-fn json_yaz(deger: &Deger) -> String {
-    match deger {
-        Deger::TamSayi(s) => s.to_string(),
-        Deger::Ondalik(ondalik) => ondalik.json_metni(),
-        Deger::Mantiksal(b) => if *b { "true".into() } else { "false".into() },
-        Deger::Metin(m) => json_metin_kacir(m),
-        Deger::Liste(ogeler) => format!(
-            "[{}]",
-            ogeler.iter().map(json_yaz).collect::<Vec<_>>().join(",")
-        ),
-        Deger::Yapi(alanlar) => format!(
-            "{{{}}}",
-            alanlar
-                .iter()
-                .map(|(a, d)| format!("{}:{}", json_metin_kacir(a), json_yaz(d)))
-                .collect::<Vec<_>>()
-                .join(",")
-        ),
-        Deger::Sozluk(girdiler) => format!(
-            "{{{}}}",
-            girdiler
-                .iter()
-                .map(|(a, d)| format!("{}:{}", json_metin_kacir(a), json_yaz(d)))
-                .collect::<Vec<_>>()
-                .join(",")
-        ),
-        Deger::Hata(hata) => {
-            let neden = hata
-                .neden
-                .as_deref()
-                .map(|neden| json_yaz(&Deger::Hata(Box::new(neden.clone()))))
-                .unwrap_or_else(|| "null".into());
-            let veri = json_yaz(&Deger::Sozluk(hata.veri.clone()));
-            format!(
-                "{{\"kod\":{},\"mesaj\":{},\"neden\":{},\"veri\":{}}}",
-                json_metin_kacir(&hata.kod),
-                json_metin_kacir(&hata.mesaj),
-                neden,
-                veri
-            )
-        }
-        baska => json_metin_kacir(&baska.metne()),
-    }
-}
-
-fn json_metin_kacir(m: &str) -> String {
-    let mut cikti = String::with_capacity(m.len() + 2);
-    cikti.push('"');
-    for k in m.chars() {
-        match k {
-            '"' => cikti.push_str("\\\""),
-            '\\' => cikti.push_str("\\\\"),
-            '\n' => cikti.push_str("\\n"),
-            '\r' => cikti.push_str("\\r"),
-            '\t' => cikti.push_str("\\t"),
-            k if (k as u32) < 0x20 => cikti.push_str(&format!("\\u{:04x}", k as u32)),
-            k => cikti.push(k),
-        }
-    }
-    cikti.push('"');
-    cikti
 }
 
 pub trait GirdiCikti {
@@ -813,59 +716,6 @@ impl Deger {
         }))
     }
 
-    fn metne(&self) -> String {
-        match self {
-            Deger::TamSayi(s) => s.to_string(),
-            Deger::Ondalik(ondalik) => ondalik.metne(),
-            Deger::Metin(m) => m.clone(),
-            Deger::Mantiksal(b) => if *b { "doğru" } else { "yanlış" }.to_string(),
-            Deger::Liste(ogeler) => ogeler
-                .iter()
-                .map(|o| o.metne())
-                .collect::<Vec<_>>()
-                .join(", "),
-            Deger::Sozluk(girdiler) => girdiler
-                .iter()
-                .map(|(anahtar, deger)| format!("{}: {}", anahtar, deger.metne()))
-                .collect::<Vec<_>>()
-                .join(", "),
-            Deger::Yok => "yok".to_string(),
-            Deger::Yapi(alanlar) => alanlar
-                .iter()
-                .map(|(alan, deger)| format!("{}: {}", alan, deger.metne()))
-                .collect::<Vec<_>>()
-                .join(", "),
-            Deger::Sonuc { basarili, icerik } => {
-                if *basarili {
-                    icerik.metne()
-                } else {
-                    format!("hata: {}", icerik.metne())
-                }
-            }
-            // Geriye uyum: `sonucun hatası yaz` eskisi gibi yalnız anlaşılır
-            // mesajı gösterir; kod/veri açık özelliklerle alınır (K-091).
-            Deger::Hata(hata) => hata.mesaj.clone(),
-            Deger::Tarih { yil, ay, gun } => {
-                format!("{} {} {}", gun, AY_ADLARI[(*ay as usize).saturating_sub(1) % 12], yil)
-            }
-            Deger::Saat { saat, dakika } => format!("{:02}:{:02}", saat, dakika),
-            Deger::AgYaniti { durum, govde } => format!("[{}] {}", durum, govde),
-            Deger::Sure { milisaniye } => {
-                let ms = *milisaniye;
-                if ms % 3_600_000 == 0 {
-                    format!("{} saat", ms / 3_600_000)
-                } else if ms % 60_000 == 0 {
-                    format!("{} dakika", ms / 60_000)
-                } else if ms % 1000 == 0 {
-                    format!("{} saniye", ms / 1000)
-                } else {
-                    // Küsuratlı: saniye cinsinden ondalık basım (1500 → "1,5 saniye").
-                    let ondalik = Ondalik::katsayidan(ms, 3);
-                    format!("{} saniye", ondalik.metne())
-                }
-            }
-        }
-    }
 }
 
 /// CLI'nin sistem saatini çevirmesi için dışa açık sarmalayıcı.
@@ -974,6 +824,7 @@ fn calistir_program_kodla(
         while let Some(ham) = io.istek_al() {
             // Uzun yaşayan sunucuda her istek bağımsız kaynak zarfı alır.
             calistirma_butcesini_yenile();
+            gorev_ortami_butcesini_tuket(&ortam, 0, 1)?;
             if let Err((durum, mesaj)) = istek_sinirlarini_denetle(&ham) {
                 io.durum_yaniti_gonder(durum, mesaj);
                 continue;
@@ -1001,8 +852,9 @@ fn calistir_program_kodla(
                 } = cumle
                 {
                     let mut bos_ortam: HashMap<String, Deger> = HashMap::new();
-                    let kayitli =
-                        degerlendir(kayitli, &bos_ortam, program, io, 0, *satir)?.metne();
+                    let kayitli_degeri =
+                        degerlendir(kayitli, &bos_ortam, program, io, 0, *satir)?;
+                    let kayitli = metne_sinirli(&kayitli_degeri, *satir)?;
                     let uydu = if *onekli { yol.starts_with(&kayitli) } else { kayitli == yol };
                     if uydu {
                         yol_eslesti = true;
@@ -1045,7 +897,19 @@ fn calistir_program_kodla(
                             eslesti = true;
                             break;
                         }
+                        ortama_yazma_butcesini_tuket(
+                            &bos_ortam,
+                            "istek",
+                            &istek_sozlugu,
+                            *satir,
+                        )?;
                         bos_ortam.insert("istek".into(), istek_sozlugu.clone());
+                        ortama_yazma_butcesini_tuket(
+                            &bos_ortam,
+                            "çerezler",
+                            &cerez_sozlugu,
+                            *satir,
+                        )?;
                         bos_ortam.insert("çerezler".into(), cerez_sozlugu.clone());
                         // Her istek K-085'in işbirlikli iptal çekirdeğinde 30 saniyelik
                         // varsayılan bütçe taşır. Daha kısa iç son tarih yine kazanır.
@@ -1123,6 +987,7 @@ thread_local! {
 #[derive(Clone, Copy)]
 struct CalistirmaButcesi {
     kalan_adim: usize,
+    kalan_heap_bayti: usize,
     cikti_bayti: usize,
     cikti_olayi: usize,
 }
@@ -1132,6 +997,7 @@ impl CalistirmaButcesi {
         let sinirlar = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI;
         Self {
             kalan_adim: sinirlar.calistirma_adimi(),
+            kalan_heap_bayti: sinirlar.calisma_heap_bayti(),
             cikti_bayti: 0,
             cikti_olayi: 0,
         }
@@ -1613,6 +1479,7 @@ async fn islem_cagir(
     let mut yerel: HashMap<String, Deger> = HashMap::new();
     for (param, deger) in islem.parametreler.iter().zip(argumanlar) {
         let deger = parametre_degerini_genislet(deger, param.tur_yazimi.as_deref());
+        ortama_yazma_butcesini_tuket(&yerel, &param.ad, &deger, satir)?;
         yerel.insert(param.ad.clone(), deger);
     }
     if eylem {
@@ -1797,6 +1664,7 @@ async fn guncelle(
     let eski = ortam.get(&ad).cloned().ok_or_else(|| ic_hata(satir))?;
     let islec = if yon > 0 { AritmetikIslec::Topla } else { AritmetikIslec::Cikar };
     let yeni = sayisal_islem(&islec, &eski, &miktar, satir)?;
+    ortama_yazma_butcesini_tuket(ortam, &ad, &yeni, satir)?;
     ortam.insert(ad, yeni);
     Ok(())
 }
