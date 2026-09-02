@@ -214,6 +214,8 @@ fn bildirim_gecerli_zee_kaynagidir() {
             surum: "1.2.3".into(),
             morfoloji: "zee-tr-1".into(),
             giris: "kaynak/ana.dil".into(),
+            yetkinlikler: std::collections::BTreeSet::new(),
+            ag_hedefleri: std::collections::BTreeSet::new(),
             yerel_bagimliliklar: Vec::new(),
         }
     );
@@ -231,6 +233,34 @@ fn bildirim_morfoloji_profilini_sabitler_ve_bilinmeyeni_reddeder() {
     let hata = bildirimi_oku(&gelecek).expect_err("bilinmeyen profil fail-closed olmalı");
     assert_eq!(hata.kod, "P011");
     assert!(hata.mesaj.contains("zee-tr-2"), "{}", hata.mesaj);
+}
+
+#[test]
+fn bildirim_yetkinlikleri_ve_tam_ag_originlerini_dogrular() {
+    let kaynak = "proje \"uygulama\" olsun\nsürüm \"1.0.0\" olsun\ngiriş \"ana.dil\" olsun\nyetkinlikler \"ağ\", \"yerel-ağ\" listesi olsun\nağ_hedefleri \"https://api.example\", \"http://127.0.0.1:8080\" listesi olsun\n";
+    let bildirim = bildirimi_oku(kaynak).expect("açık yetkinlikler geçmeli");
+    assert!(bildirim.yetkinlikler.contains(&dil::yetkinlik::Yetkinlik::Ag));
+    assert!(bildirim
+        .yetkinlikler
+        .contains(&dil::yetkinlik::Yetkinlik::YerelAg));
+    assert_eq!(bildirim.ag_hedefleri.len(), 2);
+
+    for kotu in [
+        kaynak.replace("\"ağ\", \"yerel-ağ\"", "\"yerel-ağ\""),
+        kaynak.replace(
+            "ağ_hedefleri \"https://api.example\", \"http://127.0.0.1:8080\" listesi",
+            "ağ_hedefleri boş liste",
+        ),
+        kaynak.replace("\"ağ\", \"yerel-ağ\"", "\"ağ\""),
+        kaynak.replace("https://api.example", "https://api.example/yol"),
+    ] {
+        assert_eq!(
+            bildirimi_oku(&kotu)
+                .expect_err("bozuk yetkinlik bildirimi")
+                .kod,
+            "P015"
+        );
+    }
 }
 
 #[test]
@@ -305,11 +335,73 @@ fn surum_uc_sayili_ve_giris_guvenli_olmali() {
 }
 
 #[test]
+fn paket_ana_projenin_vermedigi_yetkinligi_genisletemez() {
+    let gecici = GeciciKlasor::yeni();
+    let paket = gecici.yol().join("okuyucu");
+    let uygulama = gecici.yol().join("uygulama");
+    std::fs::create_dir(&paket).unwrap();
+    std::fs::create_dir(&uygulama).unwrap();
+    std::fs::write(
+        paket.join("proje.dil"),
+        "proje \"okuyucu\" olsun\nsürüm \"1.0.0\" olsun\ngiriş \"paket.dil\" olsun\nyetkinlikler \"dosya-okuma\" listesi olsun\n",
+    )
+    .unwrap();
+    std::fs::write(paket.join("paket.dil"), "\"paket\" yaz\n").unwrap();
+    let uygulama_bildirimi = "proje \"uygulama\" olsun\nsürüm \"1.0.0\" olsun\ngiriş \"ana.dil\" olsun\nyerel_bağımlılıklar \"../okuyucu\" listesi olsun\n";
+    std::fs::write(uygulama.join("proje.dil"), uygulama_bildirimi).unwrap();
+    std::fs::write(uygulama.join("ana.dil"), "okuyucu paketini kullan\n").unwrap();
+
+    let hata = dil::paket::ProjeGrafigi::cozumle(&uygulama)
+        .err()
+        .expect("paket yetkinlik yükseltememeli");
+    assert_eq!(hata.tani.kod, "P015");
+    assert!(hata.tani.mesaj.contains("dosya-okuma"));
+
+    std::fs::write(
+        uygulama.join("proje.dil"),
+        uygulama_bildirimi.replace(
+            "giriş \"ana.dil\" olsun\n",
+            "giriş \"ana.dil\" olsun\nyetkinlikler \"dosya-okuma\" listesi olsun\n",
+        ),
+    )
+    .unwrap();
+    dil::paket::ProjeGrafigi::cozumle(&uygulama).expect("üst proje açıkça onayladı");
+}
+
+#[cfg(unix)]
+#[test]
+fn proje_dosya_siniri_sembolik_bag_kacisini_reddeder() {
+    let gecici = GeciciKlasor::yeni();
+    let uygulama = gecici.yol().join("uygulama");
+    std::fs::create_dir(&uygulama).unwrap();
+    std::fs::write(gecici.yol().join("gizli.txt"), "proje dışı\n").unwrap();
+    std::os::unix::fs::symlink("../gizli.txt", uygulama.join("kacis.txt")).unwrap();
+    std::fs::write(
+        uygulama.join("proje.dil"),
+        "proje \"uygulama\" olsun\nsürüm \"1.0.0\" olsun\ngiriş \"ana.dil\" olsun\nyetkinlikler \"dosya-okuma\" listesi olsun\n",
+    )
+    .unwrap();
+    std::fs::write(
+        uygulama.join("ana.dil"),
+        "satırlar \"kacis.txt\" dosyasının satırları olsun\nsatırların ilki yaz\n",
+    )
+    .unwrap();
+
+    let cikti = Command::new(env!("CARGO_BIN_EXE_dil"))
+        .args(["çalıştır", uygulama.to_str().unwrap()])
+        .output()
+        .unwrap();
+    assert!(!cikti.status.success());
+    let hata = String::from_utf8_lossy(&cikti.stderr);
+    assert!(hata.contains("sembolik bağ"), "{hata}");
+}
+
+#[test]
 fn cli_proje_klasorunu_calistirir_denetler_ve_dener() {
     let gecici = GeciciKlasor::yeni();
     std::fs::write(
         gecici.yol().join("proje.dil"),
-        "proje \"hesap\" olsun\nsürüm \"0.1.0\" olsun\ngiriş \"ana.dil\" olsun\n",
+        "proje \"hesap\" olsun\nsürüm \"0.1.0\" olsun\ngiriş \"ana.dil\" olsun\nyetkinlikler \"dosya-yazma\" listesi olsun\n",
     )
     .expect("bildirim");
     std::fs::write(
@@ -385,6 +477,8 @@ fn yeni_komutu_proje_bildirimi_uretir() {
         "ilk-projem"
     );
     assert!(bildirim.contains("morfoloji \"zee-tr-1\" olsun"));
+    assert!(bildirim.contains("yetkinlikler boş liste olsun"));
+    assert!(bildirim.contains("ağ_hedefleri boş liste olsun"));
     assert!(bildirim.contains("yerel_bağımlılıklar boş liste olsun"));
     assert!(
         proje.join("proje.kilit").is_file(),

@@ -23,19 +23,21 @@ compiler/src/
 │       ├── cagri.rs          işlem imzası ve çağrı uzlaştırması
 │       ├── cumle.rs          cümle denetimi
 │       ├── donus.rs          kesin sonlanma ve dönüş birleşimi
-│       ├── etki.rs           web/uygulama etkisi ve yetkinlik geçişi
+│       ├── etki.rs           web/uygulama etkisi ve eylem değişmezleri
 │       ├── ifade.rs          ifade tür denetimi
 │       ├── kaynak.rs         ifade tanısını kesin AST/HIR aralığına bağlama
 │       ├── sembol.rs         ad, alan ve sözcüksel kapsam çözümü
 │       ├── sozlesme.rs       public parametre/dönüş sözleşmesi
-│       └── turler.rs         tür modeli, tür yazımı ve uzlaşma
+│       ├── turler.rs         tür modeli, tür yazımı ve uzlaşma
+│       └── yetkinlik.rs      compile dış dünya/politika kapısı
 └── yorumlayici.rs            değer/IO/scheduler ve yürütme orkestrasyonu
     └── yorumlayici/
         ├── cumle.rs          cümle yürütme
         ├── ifade.rs          ifade değerlendirme
         ├── hir_gecisi.rs     bağlı typed-HIR / raw uyumluluk geçişi
         ├── io_izi.rs         sürümlü bütün-IO kayıt ve dış etkisiz replay
-        └── io_profili.rs     `zee-io-1` tohum ve aralık algoritması
+        ├── io_profili.rs     `zee-io-1` tohum ve aralık algoritması
+        └── yetkinlik.rs      genel runtime IO policy sarmalayıcısı
 ```
 
 Alt modüller yalnız üst fazına `pub(super)` görünür. Dil kütüphanesinin public
@@ -57,10 +59,12 @@ API'si bu iç ayrımla büyümez.
 | yapı/işlem semantic bağı | `kimlik` + checker `baglam` | ADR-014, AST bağ alanları ve indeks-gerileme testi |
 | akış/daraltma | checker `akis` | cümle handler'ı ve flow testleri |
 | dönüş/control-flow | checker `donus` | Seçenek/Sonuç ve tüm-yollar kanıtı |
-| etki/yetkinlik | checker `etki` | ADR-011, intrinsic kaydı ve web kuralları |
+| web/uygulama etkisi | checker `etki` | ADR-011 ve eylem/web kuralları |
+| dış dünya yetkinliği | checker `yetkinlik` | RFC-0024/spec-23, proje policy ve T054 |
 | yürütme semantiği | runtime `cumle` veya `ifade` | ADR-003, değerlendirme sırası testi |
 | IO kayıt/replay protokolü | runtime `io_izi` | RFC-0022, ADR-026, spec/21 ve şema snapshot'ı |
 | tohum/rastgele profil semantiği | runtime `io_profili` | RFC-0023, ADR-027, spec/22 ve dizi snapshot'ı |
+| runtime dış dünya kapısı | runtime `yetkinlik` + kök `yetkinlik.rs` | RFC-0024, ADR-031, spec/23 |
 | morfoloji profil uyumluluğu | `morfoloji/uyumluluk` | RFC-0018, spec/13, immutable SHA-256 fixture ve Git-tarih koruğu |
 | alan adaptörü | intrinsic kaydı | ADR-011 rehberi, yetkinlik/etki/runtime |
 
@@ -116,3 +120,8 @@ K-126/ADR-030 ifade kaynaklandırmasını `ayristirici/kaynak.rs`, checker tanı
 yükseltmesini `cozumleyici/kaynak.rs` sahibine ayırdı. 80 ve 40 satırlık
 bütçeler kesin kaynak politikasının büyük ifade handler'larına geri
 dağılmasını engeller.
+K-127/ADR-031 compile yetkinlik taramasını `cozumleyici/yetkinlik.rs`, runtime
+IO kapısını `yorumlayici/yetkinlik.rs`, ortak policy/origin/IP modelini kök
+`yetkinlik.rs` ve native HTTPS'yi `ag_istemcisi.rs` sahibine ayırdı. İlanlı
+380/250/520/140 satır bütçeleri etki, runtime ve CLI köklerinin bu güvenlik
+sorumluluğunu geri yutmasını engeller.

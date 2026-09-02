@@ -63,6 +63,7 @@ fn handler_modulleri_yeni_domain_icin_sinir_tasir() {
         ("src/cozumleyici/baglam.rs", 150),
         ("src/cozumleyici/donus.rs", 180),
         ("src/cozumleyici/etki.rs", 650),
+        ("src/cozumleyici/yetkinlik.rs", 380),
         ("src/cozumleyici/sembol.rs", 200),
         ("src/cozumleyici/sozlesme.rs", 180),
         ("src/cozumleyici/turler.rs", 300),
@@ -77,6 +78,9 @@ fn handler_modulleri_yeni_domain_icin_sinir_tasir() {
         ("src/yorumlayici/hir_gecisi.rs", 140),
         ("src/yorumlayici/io_izi.rs", 1_250),
         ("src/yorumlayici/io_profili.rs", 80),
+        ("src/yorumlayici/yetkinlik.rs", 250),
+        ("src/yetkinlik.rs", 520),
+        ("src/ag_istemcisi.rs", 140),
     ] {
         satir_butcesini_denetle(goreli, butce);
     }

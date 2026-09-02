@@ -74,14 +74,20 @@ impl ProjeGrafigi {
             yigin: Vec::new(),
         };
         kurucu.ziyaret_et(&ana_kok, false, None, bildirim_kaynagi)?;
-        Ok(Self {
+        let grafik = Self {
             ana_kok,
             dugumler: kurucu.dugumler,
-        })
+        };
+        grafik.paket_yetkinliklerini_denetle()?;
+        Ok(grafik)
     }
 
     pub fn ana_bildirim(&self) -> &ProjeBildirimi {
         &self.ana_dugum().bildirim
+    }
+
+    pub fn ana_kok(&self) -> &Path {
+        &self.ana_kok
     }
 
     pub fn ana_giris_yolu(&self) -> &Path {
@@ -308,6 +314,31 @@ impl ProjeGrafigi {
 
     fn ana_dugum(&self) -> &ProjeDugumu {
         &self.dugumler[&self.ana_kok]
+    }
+
+    fn paket_yetkinliklerini_denetle(&self) -> Result<(), ProjeYuklemeHatasi> {
+        let ana_politika = self.ana_dugum().bildirim.yetkinlik_politikasi();
+        for dugum in self
+            .dugumler
+            .values()
+            .filter(|dugum| dugum.kok != self.ana_kok)
+        {
+            if let Err(neden) = ana_politika
+                .alt_politikayi_denetle(&dugum.bildirim.yetkinlik_politikasi())
+            {
+                return Err(proje_hatasi(
+                    "P015",
+                    &format!(
+                        "\"{}\" paketi üst projenin vermediği bir yetkinlik istiyor: {}.",
+                        dugum.bildirim.ad, neden
+                    ),
+                    "Paketi kullanmadan önce yetkinliği ve ağ hedefini ana proje.dil bildiriminde açıkça onayla.",
+                    dugum.bildirim_yolu.clone(),
+                    dugum.bildirim_kaynagi.clone(),
+                ));
+            }
+        }
+        Ok(())
     }
 
     fn sahip_dugum(&self, kaynak: &Path) -> Option<&ProjeDugumu> {

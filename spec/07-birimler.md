@@ -36,6 +36,8 @@ birimin işlem adlarını çağrı çözümünde görür.
 ## Proje bildirimi (TANIMLI — K-076)
 
 - Proje kökünde `proje.dil` bulunur; bildirim de geçerli zee kaynağıdır.
+  Dış dünya `yetkinlikler`i ve exact `ağ_hedefleri` burada açılır; paket bu
+  kümeyi aşamaz (spec/23, P015).
 - Üç zorunlu Metin alanı tanımlar: `proje`, `sürüm`, `giriş`. `morfoloji`
   alanı kaynakların sürümlü ek profilini sabitler; yeni projeler
   `zee-tr-1` yazar, alanı olmayan eski proje aynı profile varsayılır.

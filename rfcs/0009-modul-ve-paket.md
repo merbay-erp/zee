@@ -57,11 +57,15 @@ Her gerçek proje kökünde tek `proje.dil` taşır. Ayrı bir TOML/JSON biçimi
 proje "uzay-oyunum" olsun
 sürüm "0.1.0" olsun
 giriş "program.dil" olsun
+yetkinlikler boş liste olsun
+ağ_hedefleri boş liste olsun
 yerel_bağımlılıklar boş liste olsun
 ```
 
-- İlk üç alan zorunlu ve tektir; isteğe bağlı `yerel_bağımlılıklar` göreli
-  proje klasörlerinden oluşan Metin listesidir (P001/P002/P005).
+- İlk üç alan zorunlu ve tektir; `yetkinlikler`, `ağ_hedefleri` ve
+  `yerel_bağımlılıklar` isteğe bağlıdır. İlk ikisi K-127/RFC-0024/spec-23
+  dış dünya politikasını, sonuncusu göreli proje klasörlerini tanımlar
+  (P001/P002/P005/P015).
 - Sürüm üç sayılıdır (`X.Y.Z`); giriş proje içinde kalan göreli `.dil`
   yoludur (P003/P004).
 - `dil çalıştır/denetle/dene <klasör>` bildirimin girişini kullanır.
@@ -108,6 +112,9 @@ Kurallar:
    A008/A009).
 5. Ağ, gizli global paket klasörü, post-install betiği ve ortam değişkenli
    arama yolu yoktur. Yerel grafik tamamen çevrimdışı ve belirgindir.
+6. Paket kendi yetkinlik ve outbound origin ihtiyacını bildirir. Bu küme ana
+   uygulamanın bildirimini aşarsa grafik P015 ile derlemeden önce reddedilir;
+   nihai yetki sahibi uygulamadır (RFC-0024/spec-23).
 
 `dil kilitle <proje>` deterministik `proje.kilit` üretir. Dosya şunları içerir:
 

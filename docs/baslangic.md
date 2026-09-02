@@ -26,7 +26,18 @@ dil yeni ilk-projem
 ```
 
 Yeni klasörde `proje.dil` bulunur; giriş dosyası, proje sürümü ve
-`morfoloji "zee-tr-1" olsun` profil sabitlemesi burada tanımlıdır.
+`morfoloji "zee-tr-1" olsun` profil sabitlemesi burada tanımlıdır. Dış dünya
+erişimleri varsayılan kapalı `yetkinlikler` ve `ağ_hedefleri` alanlarından
+bilinçli olarak açılır:
+
+```text
+yetkinlikler "dosya-okuma", "ağ" listesi olsun
+ağ_hedefleri "https://api.example.com" listesi olsun
+```
+
+Public internet HTTPS ister; yerel/private ağ veya düz HTTP ayrıca
+`yerel-ağ` yetkinliği ister. Ayrıntı:
+[yetkinlik ve ağ güvenliği](yetkinlik-ve-ag-guvenligi.md).
 Bu nedenle dosya adını ezberlemeden projeyi çalıştırabilirsin:
 
 ```bash

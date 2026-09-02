@@ -178,8 +178,8 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   yerine genel olumsuzlamayı kullanır. Kimlik tekilliği, dört lowering ve iki
   tür olumsuzuyla yedi yeni test; mevcut HTTP/sensör/web/parola regresyonları
   dahil toplam 393 test yeşildir. Kaynak semantiği değişmeden B-004 ve
-  V1-P0-09 kapandı; fiziksel handler ayrımı B-005/K-099'da tamamlandı, izin
-  politikası B-023'tür.
+  V1-P0-09 kapandı; fiziksel handler ayrımı B-005/K-099'da, izin politikası
+  B-023/K-127'de tamamlandı.
 - **Derleyici fiziksel faz sınırları** (K-099, ADR-012): 2709 satırlık parser
   cümle/ifade, 3067 satırlık checker cümle/ifade/çağrı ve 3181 satırlık
   runtime cümle/ifade handler modüllerine ayrıldı. Kökler 1160/963/1965 satıra
@@ -392,6 +392,19 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   reddeder. Örtük çoğul kaynak döngü adının tokenına bağlanır; LSP aynı adlı
   argümanla işlem kuyruğunu kesin semantic aralıkta ayırır. Beş yeni
   regresyonla toplam 490 test yeşildir; B-050/V1-P0-18 tamamlandı.
+- **Merkezî yetkinlik ve güvenli outbound** (K-127, RFC-0024/ADR-031/spec-23):
+  `proje.dil` sekiz kararlı dış dünya yetkinliğini ve exact şema+host+port
+  hedeflerini bildirir. Paket bu kümeyi aşamaz (P015); checker ana/test ve
+  çağrılmayan işlem gövdelerini tarar, eksik izin veya sabit hedefi kesin
+  aralıkta T054 yapar. Genel `PolitikaliIo` ile gerçek adaptör aynı kararı
+  runtime'da yeniden uygular; proje dosyası `..`/mutlak/canonical symlink
+  kaçışına kapalıdır. Elle yazılmış düz HTTP istemcisi exact `ureq 3.4.0` +
+  rustls HTTPS'e taşındı: public ağ HTTPS, private/loopback ve düz HTTP ayrıca
+  `yerel-ağ` onaylı; metadata/link-local ve IANA public olmayan özel-kullanım/
+  geçiş önekleri her zaman kapalıdır. DNS sonrası bütün adresler denetlenir;
+  redirect/proxy kapalı, 30 saniye ve 64 KiB+
+  8 MiB zarfı korunur. On bir yeni net regresyonla toplam 501 test, 147 etkin +
+  3 ayrılmış tanı ve 76 numaralı belge yeşildir; B-023/B-049/V1-P0-29 kapandı.
 
 - **Proje modeli** (K-076): geçerli zee sözdizimli `proje.dil` (`proje`,
   `sürüm`, `giriş`); `dil çalıştır/denetle/dene <klasör>`; `dil yeni`

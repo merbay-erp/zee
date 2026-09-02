@@ -8,6 +8,7 @@ mod hir_gecisi;
 mod ifade;
 mod io_izi;
 mod io_profili;
+mod yetkinlik;
 
 use self::cumle::blok_calistir_async;
 use self::hir_gecisi::CalistirmaProgrami;
@@ -17,6 +18,7 @@ pub use self::io_izi::{
     IzKaydedenIo, IzYenidenOynatici, AZAMI_IO_IZ_BAYTI, AZAMI_IO_IZ_OLAYI,
 };
 pub use self::io_profili::{SurumluRastgele, DETERMINISTIK_IO_PROFILI};
+pub use self::yetkinlik::{GuvenliIo, PolitikaliIo};
 
 use crate::agac::{
     AritmetikIslec, Cumle, HttpYontemi, Ifade, Islec, IslemTuru, Ozellik, Program, RotaErisimi,
@@ -480,138 +482,6 @@ impl GirdiCikti for PaylasilanIo<'_> {
     }
     fn an_ms(&mut self) -> i64 {
         self.ic.borrow_mut().an_ms()
-    }
-}
-
-/// Çocuk modu sargısı (K-047, master plan bölüm 16): sarılan IO ne olursa
-/// olsun ağ ve sunucu kapalıdır; dosya erişimi çalışma klasörüyle sınırlıdır
-/// (mutlak yol ve ".." yasak). Diğer her şey içteki IO'ya aynen gider.
-pub struct GuvenliIo<T: GirdiCikti> {
-    pub ic: T,
-}
-
-impl<T: GirdiCikti> GuvenliIo<T> {
-    pub fn yeni(ic: T) -> GuvenliIo<T> {
-        GuvenliIo { ic }
-    }
-
-    fn yol_izinli(yol: &str) -> Result<(), String> {
-        let mutlak = yol.starts_with('/')
-            || yol.starts_with('\\')
-            || yol.chars().nth(1) == Some(':');
-        let ust_dizin = yol.split(['/', '\\']).any(|parca| parca == "..");
-        if mutlak || ust_dizin {
-            return Err(format!(
-                "güvenli modda yalnız çalışma klasöründeki dosyalara erişilir; \"{}\" dışarıyı gösteriyor",
-                yol
-            ));
-        }
-        Ok(())
-    }
-}
-
-impl<T: GirdiCikti> GirdiCikti for GuvenliIo<T> {
-    fn yazdir(&mut self, satir: String) {
-        self.ic.yazdir(satir);
-    }
-    fn sor(&mut self, istem: &str) -> Option<String> {
-        self.ic.sor(istem)
-    }
-    fn rastgele(&mut self, alt: i64, ust: i64) -> i64 {
-        self.ic.rastgele(alt, ust)
-    }
-    fn dosya_oku(&mut self, yol: &str) -> Result<String, String> {
-        Self::yol_izinli(yol)?;
-        self.ic.dosya_oku(yol)
-    }
-    fn dosya_yaz(&mut self, yol: &str, satir: &str, ekleme: bool) -> Result<(), String> {
-        Self::yol_izinli(yol)?;
-        self.ic.dosya_yaz(yol, satir, ekleme)
-    }
-    fn simdi(&mut self) -> (i64, u32, u32, u32, u32) {
-        self.ic.simdi()
-    }
-    fn argumanlar(&mut self) -> Vec<String> {
-        self.ic.argumanlar()
-    }
-    fn http_getir(
-        &mut self,
-        _url: &str,
-        _zaman_asimi_ms: Option<i64>,
-    ) -> Result<(i64, String), String> {
-        Err("güvenli modda ağ erişimi kapalı".into())
-    }
-    fn sunucu_kur(&mut self, _kapi: i64) -> Result<(), String> {
-        Err("güvenli modda sunucu açılamaz".into())
-    }
-    fn istek_al(&mut self) -> Option<String> {
-        None
-    }
-    fn yanit_gonder(&mut self, _yanit: &str) {}
-    fn durum_yaniti_gonder(&mut self, _durum: u16, _yanit: &str) {}
-    fn yonlendir_gonder(&mut self, adres: &str) -> Result<(), String> {
-        if crate::web_guvenligi::yerel_yonlendirme_gecerli(adres) {
-            Ok(())
-        } else {
-            Err("yönlendirme yalnız CR/LF içermeyen yerel `/...` adresine yapılabilir".into())
-        }
-    }
-    fn cerez_yaz(&mut self, ad: &str, deger: &str) -> Result<(), String> {
-        if crate::web_guvenligi::cerez_adi_gecerli(ad)
-            && crate::web_guvenligi::cerez_degeri_gecerli(deger)
-        {
-            Ok(())
-        } else {
-            Err("çerez adı/değeri HTTP başlığı için güvenli değil".into())
-        }
-    }
-    fn cerez_sil(&mut self, ad: &str) -> Result<(), String> {
-        if crate::web_guvenligi::cerez_adi_gecerli(ad) {
-            Ok(())
-        } else {
-            Err("çerez adı HTTP başlığı için güvenli değil".into())
-        }
-    }
-    fn rota_guvenligini_denetle(
-        &mut self,
-        erisim: &RotaErisimi,
-        csrf: Option<&str>,
-        csrf_gerekli: bool,
-    ) -> Result<(), WebReddi> {
-        self.ic.rota_guvenligini_denetle(erisim, csrf, csrf_gerekli)
-    }
-    fn csrf_belirteci(&mut self) -> Result<String, String> {
-        self.ic.csrf_belirteci()
-    }
-    fn oturum_ac(&mut self, kullanici: &str, rol: &str) -> Result<(), String> {
-        self.ic.oturum_ac(kullanici, rol)
-    }
-    fn oturum_kapat(&mut self) -> Result<(), String> {
-        self.ic.oturum_kapat()
-    }
-    fn parola_dogrula(&mut self, parola: &str, ozet: &str) -> bool {
-        self.ic.parola_dogrula(parola, ozet)
-    }
-    fn eylem_baslat(&mut self) -> Result<(), String> {
-        self.ic.eylem_baslat()
-    }
-    fn eylem_tamamla(&mut self) -> Result<(), String> {
-        self.ic.eylem_tamamla()
-    }
-    fn eylem_geri_al(&mut self) -> Result<(), String> {
-        self.ic.eylem_geri_al()
-    }
-    fn sensor_acik_mi(&mut self, ad: &str) -> bool {
-        self.ic.sensor_acik_mi(ad)
-    }
-    fn isik_ayarla(&mut self, ad: &str, yansin: bool) {
-        self.ic.isik_ayarla(ad, yansin);
-    }
-    fn bekle_ms(&mut self, milisaniye: i64) {
-        self.ic.bekle_ms(milisaniye);
-    }
-    fn an_ms(&mut self) -> i64 {
-        self.ic.an_ms()
     }
 }
 

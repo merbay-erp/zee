@@ -58,7 +58,7 @@ tek yerde kalır.
 2. Kimlikler ad alanlı ve tekildir; yeniden adlandırma derleyici içi ABI
    değişikliği sayılır.
 3. AST yetkinlik politikası taşımaz. Kayıt gereksinimi bildirir; proje/çalışma
-   profili izni B-023'ün ayrı güvenlik kararıdır.
+   profili izni K-127/RFC-0024/ADR-031'in ayrı güvenlik kararıdır.
 4. Yeni intrinsic; kayıt + parser lowering + tür + etki + runtime + olumlu ve
    olumsuz conformance kanıtı olmadan eklenemez.
 5. Yeni bir kullanıcı cümlesi yine ilgili RFC/spec değişikliğini ister. Bu ADR
@@ -70,7 +70,7 @@ tek yerde kalır.
   taşınabilir.
 - Tür/yetkinlik/etki metadatası `compiler/src/intrinsic.rs` içinde tek kaynak
   oldu. B-006/K-100 checker katmanlaştırması bu kaydı `etki` sahibine bağladı;
-  B-023 izin modeli aynı kayıt üstünde ilerleyebilir.
+  K-127'nin compile/runtime izin modeli aynı kaydı tek kaynak olarak tüketir.
 - Runtime merkezi kimlik dağıtımı yapar. Handler'ların fiziksel modül
   sınırları B-005/K-099 ve ADR-012 ile davranış değişmeden ayrılmıştır.
 - Kaynak davranışı değişmediği için yeni normatif dil spec'i açılmadı; mevcut

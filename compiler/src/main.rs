@@ -16,8 +16,6 @@
 
 use std::process::ExitCode;
 
-const VARSAYILAN_HTTP_ZAMAN_ASIMI_MS: i64 = 30_000;
-const AZAMI_HTTP_YANITI: usize = 8 * 1024 * 1024;
 const HTTP_ISTEK_OKUMA_SURESI: std::time::Duration = std::time::Duration::from_secs(10);
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -265,9 +263,11 @@ fn io_izi_komutu(argumanlar: &[String]) -> ExitCode {
             "UYARI: IO izi program girdisi, dosya/ağ içeriği ve belirteç taşıyabilir; özel artefakt olarak sakla."
         );
         let program_argumanlari = argumanlar[4..].to_vec();
-        let taban = GercekIo::yeni_argumanlarla(&girdi.klasor, WebModu::Kapali, program_argumanlari);
-        let mut io = dil::yorumlayici::IzKaydedenIo::yeni(taban);
-        let cikis = calistir_io_ile(&girdi, &mut io);
+        let politika = girdi.politikasi();
+        let taban = girdi.gercek_io(WebModu::Kapali, program_argumanlari, politika.clone());
+        let korumali = dil::yorumlayici::PolitikaliIo::politikali(taban, politika.clone());
+        let mut io = dil::yorumlayici::IzKaydedenIo::yeni(korumali);
+        let cikis = calistir_io_ile(&girdi, &politika, &mut io);
         let olay_sayisi = io.olay_sayisi();
         let iz = match io.iz_metni() {
             Ok(iz) => iz,
@@ -309,7 +309,7 @@ fn io_izi_komutu(argumanlar: &[String]) -> ExitCode {
             return ExitCode::FAILURE;
         }
     };
-    let cikis = calistir_io_ile(&girdi, &mut io);
+    let cikis = calistir_io_ile(&girdi, &girdi.politikasi(), &mut io);
     let cikti = std::mem::take(&mut io.cikti);
     if let Err(hata) = io.bitir() {
         eprintln!("IO replay uyuşmazlığı: {}", hata);
@@ -486,12 +486,12 @@ fn yeni_komutu(argumanlar: &[String]) -> ExitCode {
         ad, ad
     );
     let bildirim = format!(
-        "# zee proje bildirimi — bu dosya da geçerli zee sözdizimidir.\n\nproje \"{}\" olsun\nsürüm \"0.1.0\" olsun\nmorfoloji \"{}\" olsun\ngiriş \"program.dil\" olsun\nyerel_bağımlılıklar boş liste olsun\n",
+        "# zee proje bildirimi — bu dosya da geçerli zee sözdizimidir.\n\nproje \"{}\" olsun\nsürüm \"0.1.0\" olsun\nmorfoloji \"{}\" olsun\ngiriş \"program.dil\" olsun\nyetkinlikler boş liste olsun\nağ_hedefleri boş liste olsun\nyerel_bağımlılıklar boş liste olsun\n",
         ad,
         dil::morfoloji::MORFOLOJI_PROFILI,
     );
     let beni_oku = format!(
-        "# {}\n\nTürkçe programlama diliyle yazılmış bir proje. `proje.dil` giriş dosyasını, sürümü, morfoloji profilini ve yerel bağımlılıkları tanımlar; `proje.kilit` bağımlılık kararını sabitler.\n\n```bash\ndil çalıştır .\n```\n\n```bash\ndil dene .\n```\n\nDenetim: `dil denetle .` · Bütün projeyi biçimle: `dil biçimle .` · Bağımlılıkları sabitle: `dil kilitle .` · Hata açıklama: `dil hata <kod>`\n",
+        "# {}\n\nTürkçe programlama diliyle yazılmış bir proje. `proje.dil` giriş dosyasını, sürümü, morfoloji profilini, dış dünya yetkinliklerini ve yerel bağımlılıkları tanımlar; `proje.kilit` bağımlılık kararını sabitler. Ağ erişimi gerekiyorsa hem `ağ` yetkinliğini hem tam şema+host+port `ağ_hedefleri` listesini açıkça bildir.\n\n```bash\ndil çalıştır .\n```\n\n```bash\ndil dene .\n```\n\nDenetim: `dil denetle .` · Bütün projeyi biçimle: `dil biçimle .` · Bağımlılıkları sabitle: `dil kilitle .` · Hata açıklama: `dil hata <kod>`\n",
         ad
     );
     let git_yoksay =
@@ -541,8 +541,20 @@ fn denetle_yolu(argumanlar: &[String]) -> ExitCode {
     };
     let mut yukleyici = |istek: dil::BirimIstegi<'_>| girdi.birim_yukle(istek);
     // Denetim TÜM tanıları toplar (RFC-0010 §3.1) — çalıştır ilk hatada durur.
-    let tanilar =
+    let mut tanilar =
         dil::kaynagi_tanilari_kokenlerle(&girdi.kaynak, Some(&girdi.koken), &mut yukleyici);
+    if tanilar.is_empty() {
+        let mut yukleyici = |istek: dil::BirimIstegi<'_>| girdi.birim_yukle(istek);
+        if let Ok(program) =
+            dil::kaynagi_derle_kokenlerle(&girdi.kaynak, Some(&girdi.koken), &mut yukleyici)
+        {
+            if let Err(tani) =
+                dil::cozumleyici::yetkinlikleri_denetle(&program, &girdi.politikasi())
+            {
+                tanilar.push(tani);
+            }
+        }
+    }
     if tanilar.is_empty() {
         if json {
             println!("{{\"durum\":\"temiz\",\"tanilar\":[]}}");
@@ -1158,6 +1170,35 @@ struct KaynakGirdisi {
 }
 
 impl KaynakGirdisi {
+    fn politikasi(&self) -> dil::yetkinlik::YetkinlikPolitikasi {
+        self.proje
+            .as_ref()
+            .map(|proje| proje.ana_bildirim().yetkinlik_politikasi())
+            .unwrap_or_else(dil::yetkinlik::YetkinlikPolitikasi::gelistirici)
+    }
+
+    fn dosya_siniri_koku(&self) -> &std::path::Path {
+        self.proje
+            .as_ref()
+            .map(dil::paket::ProjeGrafigi::ana_kok)
+            .unwrap_or(&self.klasor)
+    }
+
+    fn gercek_io(
+        &self,
+        web_modu: WebModu,
+        argumanlar: Vec<String>,
+        politika: dil::yetkinlik::YetkinlikPolitikasi,
+    ) -> GercekIo {
+        GercekIo::yeni_argumanlarla(
+            &self.klasor,
+            self.dosya_siniri_koku(),
+            web_modu,
+            argumanlar,
+            politika,
+        )
+    }
+
     fn birim_yukle(&self, istek: dil::BirimIstegi<'_>) -> Result<dil::YuklenenBirim, String> {
         if let Some(proje) = &self.proje {
             return proje.yukle(istek);
@@ -1305,6 +1346,8 @@ struct GercekIo {
     eylem_yedekleri:
         Vec<std::collections::HashMap<std::path::PathBuf, EylemDosyaYedegi>>,
     web_guvenligi: dil::web_guvenligi::WebGuvenligi,
+    politika: dil::yetkinlik::YetkinlikPolitikasi,
+    dosya_siniri_koku: std::path::PathBuf,
 }
 
 struct BekleyenCerez {
@@ -1321,14 +1364,12 @@ struct EylemDosyaYedegi {
 }
 
 impl GercekIo {
-    fn yeni(kok: &std::path::Path, web_modu: WebModu) -> GercekIo {
-        Self::yeni_argumanlarla(kok, web_modu, program_argumanlari())
-    }
-
     fn yeni_argumanlarla(
         kok: &std::path::Path,
+        dosya_siniri_koku: &std::path::Path,
         web_modu: WebModu,
         argumanlar: Vec<String>,
+        politika: dil::yetkinlik::YetkinlikPolitikasi,
     ) -> GercekIo {
         let tohum = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
@@ -1348,16 +1389,40 @@ impl GercekIo {
             bekleyen_head: false,
             eylem_yedekleri: Vec::new(),
             web_guvenligi: dil::web_guvenligi::WebGuvenligi::yeni(),
+            politika,
+            dosya_siniri_koku: std::fs::canonicalize(dosya_siniri_koku)
+                .unwrap_or_else(|_| dosya_siniri_koku.to_path_buf()),
         }
     }
 
-    fn dosya_yolu(&self, yol: &str) -> std::path::PathBuf {
+    fn dosya_yolu(&self, yol: &str, yazma: bool) -> Result<std::path::PathBuf, String> {
         let istenen = std::path::Path::new(yol);
-        if istenen.is_absolute() {
+        let aday = if istenen.is_absolute() {
             istenen.to_path_buf()
         } else {
             self.kok.join(istenen)
+        };
+        if self.politika.dosya_siniri() == dil::yetkinlik::DosyaSiniri::HerYer {
+            return Ok(aday);
         }
+        if istenen.is_absolute()
+            || istenen
+                .components()
+                .any(|bilesen| matches!(bilesen, std::path::Component::ParentDir))
+        {
+            return Err("proje dosya sınırı mutlak veya üst dizine çıkan yolu reddetti".into());
+        }
+        let denetlenecek = if yazma && !aday.exists() {
+            aday.parent().unwrap_or(&self.kok)
+        } else {
+            aday.as_path()
+        };
+        let kanonik = std::fs::canonicalize(denetlenecek)
+            .map_err(|hata| format!("dosya yolu güvenle çözülemedi: {}", hata))?;
+        if !kanonik.starts_with(&self.dosya_siniri_koku) {
+            return Err("proje dosya sınırı sembolik bağ üzerinden kök dışına çıkışı reddetti".into());
+        }
+        Ok(aday)
     }
 
     fn guvenli_proxy_origin(&self) -> Option<&GuvenliOrigin> {
@@ -1523,47 +1588,6 @@ fn son_tarihli_soket_oku(
     akis.read(tampon)
 }
 
-fn http_yanitini_sinirli_oku(
-    akis: &mut std::net::TcpStream,
-    son_tarih: std::time::Instant,
-    azami_bayt: usize,
-) -> Result<Vec<u8>, String> {
-    let mut ham = Vec::with_capacity(azami_bayt.min(8 * 1024));
-    let mut parca = [0u8; 8 * 1024];
-    loop {
-        let kalan = azami_bayt.saturating_add(1).saturating_sub(ham.len());
-        if kalan == 0 {
-            return Err(format!(
-                "HTTP yanıtı {} MiB sınırını aşıyor",
-                azami_bayt / (1024 * 1024)
-            ));
-        }
-        let sinir = kalan.min(parca.len());
-        match son_tarihli_soket_oku(akis, &mut parca[..sinir], son_tarih) {
-            Ok(0) => break,
-            Ok(okunan) => {
-                ham.extend_from_slice(&parca[..okunan]);
-                if ham.len() > azami_bayt {
-                    return Err(format!(
-                        "HTTP yanıtı {} MiB sınırını aşıyor",
-                        azami_bayt / (1024 * 1024)
-                    ));
-                }
-            }
-            Err(hata)
-                if matches!(
-                    hata.kind(),
-                    std::io::ErrorKind::TimedOut | std::io::ErrorKind::WouldBlock
-                ) =>
-            {
-                return Err("HTTP isteği zaman aşımına uğradı".into());
-            }
-            Err(hata) => return Err(hata.to_string()),
-        }
-    }
-    Ok(ham)
-}
-
 fn program_argumanlari() -> Vec<String> {
     let mut kaynak_goruldu = false;
     let mut proxy_originini_atla = false;
@@ -1607,11 +1631,15 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         }
     }
     fn dosya_oku(&mut self, yol: &str) -> Result<String, String> {
-        std::fs::read_to_string(self.dosya_yolu(yol))
+        self.politika
+            .gerektir(dil::yetkinlik::Yetkinlik::DosyaOkuma)?;
+        std::fs::read_to_string(self.dosya_yolu(yol, false)?)
             .map_err(|hata| format!("\"{}\" dosyası okunamadı: {}", yol, hata))
     }
     fn dosya_yaz(&mut self, yol: &str, satir: &str, ekleme: bool) -> Result<(), String> {
-        let gercek_yol = self.dosya_yolu(yol);
+        self.politika
+            .gerektir(dil::yetkinlik::Yetkinlik::DosyaYazma)?;
+        let gercek_yol = self.dosya_yolu(yol, true)?;
         if self
             .eylem_yedekleri
             .iter()
@@ -1667,81 +1695,11 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         url: &str,
         zaman_asimi_ms: Option<i64>,
     ) -> Result<(i64, String), String> {
-        use std::io::Write;
-        use std::net::ToSocketAddrs;
-        // v0: yalnız http:// (TLS elle yazılmaz — ADR-001; https Faz 5 kararı).
-        let kalan = url.strip_prefix("http://").ok_or_else(|| {
-            if url.starts_with("https://") {
-                "v0 https (TLS) desteklemez; http:// kullan".to_string()
-            } else {
-                "adres http:// ile başlamalı".to_string()
-            }
-        })?;
-        let (konak, yol) = match kalan.split_once('/') {
-            Some((konak, yol)) => (konak.to_string(), format!("/{}", yol)),
-            None => (kalan.to_string(), "/".to_string()),
-        };
-        let adres = if konak.contains(':') {
-            konak.clone()
-        } else {
-            format!("{}:80", konak)
-        };
-        let toplam_ms = zaman_asimi_ms.unwrap_or(VARSAYILAN_HTTP_ZAMAN_ASIMI_MS);
-        if toplam_ms <= 0 {
-            return Err("son tarih doldu".into());
-        }
-        let son_tarih = std::time::Instant::now()
-            .checked_add(std::time::Duration::from_millis(toplam_ms as u64))
-            .ok_or_else(|| "HTTP zaman aşımı aralığı geçersiz".to_string())?;
-        let kalan_sure = || -> Result<std::time::Duration, String> {
-            son_tarih
-                .checked_duration_since(std::time::Instant::now())
-                .filter(|sure| !sure.is_zero())
-                .ok_or_else(|| "son tarih doldu".into())
-        };
-        let adresler: Vec<_> = adres
-            .to_socket_addrs()
-            .map_err(|e| e.to_string())?
-            .collect();
-        if adresler.is_empty() {
-            return Err("adres çözülemedi".into());
-        }
-        let mut baglanti = None;
-        let mut son_hata = None;
-        for soket in adresler {
-            match std::net::TcpStream::connect_timeout(&soket, kalan_sure()?) {
-                Ok(akis) => {
-                    baglanti = Some(akis);
-                    break;
-                }
-                Err(hata) => son_hata = Some(hata.to_string()),
-            }
-        }
-        let mut akis = baglanti
-            .ok_or_else(|| son_hata.unwrap_or_else(|| "sunucuya bağlanılamadı".to_string()))?;
-        akis.set_write_timeout(Some(kalan_sure()?))
-            .map_err(|e| e.to_string())?;
-        write!(
-            akis,
-            "GET {} HTTP/1.1\r\nHost: {}\r\nConnection: close\r\n\r\n",
-            yol, konak
-        )
-        .map_err(|e| e.to_string())?;
-        let ham = http_yanitini_sinirli_oku(&mut akis, son_tarih, AZAMI_HTTP_YANITI)?;
-        let metin = String::from_utf8_lossy(&ham);
-        let durum: i64 = metin
-            .lines()
-            .next()
-            .and_then(|satir| satir.split_whitespace().nth(1))
-            .and_then(|kod| kod.parse().ok())
-            .ok_or("HTTP yanıtı çözülemedi")?;
-        let govde = metin
-            .split_once("\r\n\r\n")
-            .map(|(_, g)| g.to_string())
-            .unwrap_or_default();
-        Ok((durum, govde))
+        dil::ag_istemcisi::getir(url, zaman_asimi_ms, &self.politika)
     }
     fn sunucu_kur(&mut self, kapi: i64) -> Result<(), String> {
+        self.politika
+            .gerektir(dil::yetkinlik::Yetkinlik::AgSunucusu)?;
         if self.web_modu == WebModu::Kapali {
             return Err("web yüzeyi kapalı; prototip için `--deneysel-web`, üretim için `--web-proxy https://host` kullan".into());
         }
@@ -2110,6 +2068,8 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         self.web_guvenligi.denetle(erisim, csrf, csrf_gerekli, an)
     }
     fn csrf_belirteci(&mut self) -> Result<String, String> {
+        self.politika
+            .gerektir(dil::yetkinlik::Yetkinlik::WebOturumu)?;
         let an = self.baslangic.elapsed().as_millis() as i64;
         let (csrf, yeni) = self
             .web_guvenligi
@@ -2120,6 +2080,8 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         Ok(csrf)
     }
     fn oturum_ac(&mut self, kullanici: &str, rol: &str) -> Result<(), String> {
+        self.politika
+            .gerektir(dil::yetkinlik::Yetkinlik::WebOturumu)?;
         let an = self.baslangic.elapsed().as_millis() as i64;
         let yeni = self.web_guvenligi.oturum_ac(
             kullanici.to_string(),
@@ -2131,20 +2093,29 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         Ok(())
     }
     fn oturum_kapat(&mut self) -> Result<(), String> {
+        self.politika
+            .gerektir(dil::yetkinlik::Yetkinlik::WebOturumu)?;
         self.web_guvenligi.oturum_kapat();
         self.bekleyen_silinen_cerezler
             .push(self.oturum_cerez_adi().to_string());
         Ok(())
     }
     fn parola_dogrula(&mut self, parola: &str, ozet: &str) -> bool {
-        dil::guvenlik::parola_dogrula(parola, ozet)
+        self.politika
+            .izin_verir(dil::yetkinlik::Yetkinlik::Kriptografi)
+            && dil::guvenlik::parola_dogrula(parola, ozet)
     }
     fn sensor_acik_mi(&mut self, _ad: &str) -> bool {
         // Donanım bağlı değil: simülatörde sensörler kapalı okunur (bölüm 17).
         false
     }
     fn isik_ayarla(&mut self, ad: &str, yansin: bool) {
-        println!("[ışık] {} {}", ad, if yansin { "yandı" } else { "söndü" });
+        if self
+            .politika
+            .izin_verir(dil::yetkinlik::Yetkinlik::Donanim)
+        {
+            println!("[ışık] {} {}", ad, if yansin { "yandı" } else { "söndü" });
+        }
     }
     fn bekle_ms(&mut self, milisaniye: i64) {
         std::thread::sleep(std::time::Duration::from_millis(milisaniye.max(0) as u64));
@@ -2158,7 +2129,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
 }
 
 fn calistir_komutu(girdi: &KaynakGirdisi) -> ExitCode {
-    calistir_io_ile(girdi, &mut GercekIo::yeni(&girdi.klasor, WebModu::Kapali))
+    calistir_gercek_io_ile(girdi, WebModu::Kapali, girdi.politikasi())
 }
 
 /// K-082: localhost web prototipi üretim korkuluğunu yalnız açık opt-in'le geçer.
@@ -2166,7 +2137,7 @@ fn calistir_deneysel_web_komutu(girdi: &KaynakGirdisi) -> ExitCode {
     eprintln!(
         "UYARI: deneysel web yüzeyi yalnız localhost eğitim/prototipi içindir; üretim güvenlik sözleşmesi değildir."
     );
-    calistir_io_ile(girdi, &mut GercekIo::yeni(&girdi.klasor, WebModu::Deneysel))
+    calistir_gercek_io_ile(girdi, WebModu::Deneysel, girdi.politikasi())
 }
 
 fn calistir_guvenli_web_komutu(girdi: &KaynakGirdisi, origin: GuvenliOrigin) -> ExitCode {
@@ -2174,21 +2145,33 @@ fn calistir_guvenli_web_komutu(girdi: &KaynakGirdisi, origin: GuvenliOrigin) -> 
         "Güvenli web profili: yalnız 127.0.0.1 üzerindeki HTTPS reverse proxy güvenilir; origin {}.",
         origin.tam
     );
-    calistir_io_ile(
-        girdi,
-        &mut GercekIo::yeni(&girdi.klasor, WebModu::GuvenliProxy(origin)),
-    )
+    calistir_gercek_io_ile(girdi, WebModu::GuvenliProxy(origin), girdi.politikasi())
 }
 
 /// Çocuk modu (K-047): ağ/sunucu kapalı, dosyalar çalışma klasörüyle sınırlı.
 fn calistir_guvenli_komutu(girdi: &KaynakGirdisi) -> ExitCode {
-    calistir_io_ile(
+    calistir_gercek_io_ile(
         girdi,
-        &mut dil::yorumlayici::GuvenliIo::yeni(GercekIo::yeni(&girdi.klasor, WebModu::Kapali)),
+        WebModu::Kapali,
+        dil::yetkinlik::YetkinlikPolitikasi::cocuk(),
     )
 }
 
-fn calistir_io_ile(girdi: &KaynakGirdisi, io: &mut dyn dil::yorumlayici::GirdiCikti) -> ExitCode {
+fn calistir_gercek_io_ile(
+    girdi: &KaynakGirdisi,
+    web_modu: WebModu,
+    politika: dil::yetkinlik::YetkinlikPolitikasi,
+) -> ExitCode {
+    let taban = girdi.gercek_io(web_modu, program_argumanlari(), politika.clone());
+    let mut io = dil::yorumlayici::PolitikaliIo::politikali(taban, politika.clone());
+    calistir_io_ile(girdi, &politika, &mut io)
+}
+
+fn calistir_io_ile(
+    girdi: &KaynakGirdisi,
+    politika: &dil::yetkinlik::YetkinlikPolitikasi,
+    io: &mut dyn dil::yorumlayici::GirdiCikti,
+) -> ExitCode {
     let mut yukleyici = |istek: dil::BirimIstegi<'_>| girdi.birim_yukle(istek);
     let program =
         match dil::kaynagi_derle_kokenlerle(&girdi.kaynak, Some(&girdi.koken), &mut yukleyici) {
@@ -2198,6 +2181,10 @@ fn calistir_io_ile(girdi: &KaynakGirdisi, io: &mut dyn dil::yorumlayici::GirdiCi
                 return ExitCode::FAILURE;
             }
         };
+    if let Err(tani) = dil::cozumleyici::yetkinlikleri_denetle(&program, politika) {
+        eprint!("{}", tani.raporla(&girdi.kaynak));
+        return ExitCode::FAILURE;
+    }
     match dil::yorumlayici::calistir_io_kodla(&program, io) {
         // K-069: `programı N ile bitir` süreç çıkış kodu olur (0–255).
         Ok(kod) => ExitCode::from(kod.clamp(0, 255) as u8),
@@ -2210,16 +2197,24 @@ fn calistir_io_ile(girdi: &KaynakGirdisi, io: &mut dyn dil::yorumlayici::GirdiCi
 
 fn dene_komutu(girdi: &KaynakGirdisi) -> ExitCode {
     let mut yukleyici = |istek: dil::BirimIstegi<'_>| girdi.birim_yukle(istek);
-    let sonuclar =
-        match dil::kaynagi_derle_kokenlerle(&girdi.kaynak, Some(&girdi.koken), &mut yukleyici)
-            .map(|program| dil::programi_dene(&program))
-        {
-            Ok(sonuclar) => sonuclar,
-            Err(tani) => {
-                eprint!("{}", tani.raporla(&girdi.kaynak));
-                return ExitCode::FAILURE;
-            }
-        };
+    let program = match dil::kaynagi_derle_kokenlerle(
+        &girdi.kaynak,
+        Some(&girdi.koken),
+        &mut yukleyici,
+    ) {
+        Ok(program) => program,
+        Err(tani) => {
+            eprint!("{}", tani.raporla(&girdi.kaynak));
+            return ExitCode::FAILURE;
+        }
+    };
+    if let Err(tani) =
+        dil::cozumleyici::yetkinlikleri_denetle(&program, &girdi.politikasi())
+    {
+        eprint!("{}", tani.raporla(&girdi.kaynak));
+        return ExitCode::FAILURE;
+    }
+    let sonuclar = dil::programi_dene(&program);
     if sonuclar.is_empty() {
         println!("Bu dosyada test yok. Test eklemek için: test \"açıklama\"");
         return ExitCode::SUCCESS;
@@ -2348,20 +2343,7 @@ mod web_profili_testleri {
     }
 
     #[test]
-    fn http_yaniti_bayt_sinirini_asamaz() {
-        let dinleyici = std::net::TcpListener::bind(("127.0.0.1", 0)).unwrap();
-        let adres = dinleyici.local_addr().unwrap();
-        let mut istemci = std::net::TcpStream::connect(adres).unwrap();
-        let (mut sunucu, _) = dinleyici.accept().unwrap();
-        sunucu.write_all(&[b'x'; 65]).unwrap();
-        drop(sunucu);
-        let son_tarih = std::time::Instant::now() + std::time::Duration::from_secs(1);
-        let hata = http_yanitini_sinirli_oku(&mut istemci, son_tarih, 64).unwrap_err();
-        assert!(hata.contains("sınırını aşıyor"));
-    }
-
-    #[test]
-    fn http_istemcisi_deadline_yokken_de_varsayilan_sureyi_kullanir() {
+    fn http_istemcisi_acik_yerel_ag_izniyle_varsayilan_sureyi_kullanir() {
         let dinleyici = std::net::TcpListener::bind(("127.0.0.1", 0)).unwrap();
         let adres = dinleyici.local_addr().unwrap();
         let sunucu = std::thread::spawn(move || {
@@ -2380,9 +2362,27 @@ mod web_profili_testleri {
             )
             .unwrap();
         });
-        let mut io = GercekIo::yeni(std::path::Path::new("."), WebModu::Kapali);
+        let url = format!("http://{}/", adres);
+        let politika = dil::yetkinlik::YetkinlikPolitikasi::proje(
+            [
+                dil::yetkinlik::Yetkinlik::Ag,
+                dil::yetkinlik::Yetkinlik::YerelAg,
+            ]
+            .into_iter()
+            .collect(),
+            [dil::yetkinlik::AgHedefi::bildirimden(&url).unwrap()]
+                .into_iter()
+                .collect(),
+        );
+        let mut io = GercekIo::yeni_argumanlarla(
+            std::path::Path::new("."),
+            std::path::Path::new("."),
+            WebModu::Kapali,
+            Vec::new(),
+            politika,
+        );
         let (durum, govde) = io
-            .http_getir(&format!("http://{}/", adres), None)
+            .http_getir(&url, None)
             .expect("varsayılan deadline ile yanıt");
         assert_eq!(durum, 200);
         assert_eq!(govde, "merhaba");

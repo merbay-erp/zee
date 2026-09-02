@@ -59,8 +59,11 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
     B-012'yi kapattı (485 test).
 23. K-126/ADR-030 bütün yaprak ve bileşik AST ifadelerine kesin kaynak zarfı
     yayıp HIR, tanı ve LSP tüketimini bağladı; B-050 kapandı (490 test).
-24. Sıradaki makine işi B-023 capability ve outbound hedef politikasıdır.
-25. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
+24. K-127/RFC-0024/ADR-031 proje+paket yetkinliklerini compile/runtime
+    kapısına, native istemciyi rustls HTTPS + origin/DNS/IP/redirect
+    korkuluklarına bağladı; B-023/B-049 kapandı (501 test).
+25. Sıradaki makine işi B-048 atomik replace metadata sözleşmesidir.
+26. Sonraki işler aşağıdaki öncelik ve bağımlılık sırasını korur.
 
 ## P0 — V1 öncesi dil ve derleyici omurgası
 
@@ -85,7 +88,7 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   yetkinlik ve etki ADR-011'deki merkezi kayıtta birleşti; kapalı sensör koşulu
   genel olumsuzlamayı kullanır. Yedi lowering/imza testi ve mevcut davranış
   korpusuyla V1-P0-09 kapandı. Fiziksel handler ayrımı B-005/K-099'da
-  tamamlandı; proje/paket izin politikası B-023 kapsamındadır.
+  tamamlandı; proje/paket izin politikası B-023/K-127 ile kapandı.
 - **B-005 · KAPALI (K-099) — mega fonksiyon büyümesini durdur.** Parser
   cümle/ifade; checker cümle/ifade/çağrı; runtime cümle/ifade handler'larına
   ayrıldı. Kök dosyalar sırasıyla 2709→1160, 3067→963 ve 3181→1965 satıra
@@ -236,11 +239,16 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 
 ## P1 — Runtime ve güvenlik
 
-- **B-023 · SIRADA — web/sensör/HTTP'yi capability modeline bağla.** Ağ,
-  sandbox dosya sistemi ve sensör yetkisi merkezi compile/runtime politikası
-  olsun; outbound hedef/SSRF politikası B-049 ile aynı sınırda kapanır.
-- **B-024 · KAPALI İLKE — HTTPS/TLS'yi elle yazma.** Gerektiğinde kilitli,
-  battle-tested backend kullan; Zee kriptografi/TLS gerçeklemeye dönüşmez.
+- **B-023 · KAPALI (K-127) — web/sensör/HTTP'yi capability modeline bağla.**
+  Sekiz kararlı yetkinlik proje bildiriminden compile taramasına, genel
+  `PolitikaliIo` runtime kapısına ve gerçek native adaptöre tek modelle akar.
+  Testler ve çağrılmayan işlemler gizlenemez; paket ana projenin izin/hedef
+  kümesini aşarsa P015, kaynak kullanımı izni aşarsa kesin aralıkta T054'tür.
+  Proje dosyası kök/canonical symlink sınırı taşır. RFC-0024/spec-23 ve
+  [rehber](yetkinlik-ve-ag-guvenligi.md) ile kapandı.
+- **B-024 · KAPALI İLKE + GERÇEKLEME (K-127) — HTTPS/TLS'yi elle yazma.**
+  Native outbound, exact sabitlenmiş `ureq 3.4.0` + rustls backend'indedir;
+  Zee kriptografi/TLS gerçeklemeye dönüşmez.
 - **B-025 · KISMEN (K-105) — ortak `KaynakSinirlari` modeli.** K-105 native
   HTTP istemcisini varsayılan 30 saniye + 8 MiB wire yanıtla, yerel sunucu
   okumasını 10 saniyelik mutlak bütçeyle sınırladı. Recursion, ortak input/body,
@@ -277,10 +285,13 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 - **B-048 · AÇIK — atomik replace metadata sözleşmesini tamamla.** İzin biti
   dışındaki owner/group, ACL, xattr ve platform güvenlik etiketlerinin korunma
   veya açıkça desteklenmeme davranışı platform testleriyle belgelenmelidir.
-- **B-049 · AÇIK — outbound ağ güven profilini kapat.** Battle-tested HTTPS
-  backend, redirect/yanıt sınırları ve host/IP/port capability politikası
-  birlikte tasarlanmalı; Zee TLS'yi elle yazmamalı ve güvenilmeyen kod varsayılan
-  olarak iç ağ/metadata hedeflerine erişememelidir.
+- **B-049 · KAPALI (K-127) — outbound ağ güven profilini kapat.** Exact
+  şema+host+port allowlist'i, DNS sonrası bütün-IP kontrolü, varsayılan public
+  HTTPS, ayrıca onaylı private/loopback+düz HTTP, her profilde kapalı metadata/
+  link-local ve IANA public olmayan özel-kullanım/geçiş önekleri, sıfır
+  redirect/proxy, 30 saniye ve 64 KiB+8 MiB zarfı tek istemcide uygulanır.
+  RFC-0024/ADR-031/spec-23 ve loopback/redirect/SSRF/body-limit regresyonları
+  davranışı bağlar.
 
 ## P1 — Paketleme ve supply chain
 
@@ -334,8 +345,8 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   programın metin/yorumları koruyan deterministik dağınık-boşluk varyantı
   biçimlenir; önce/sonra izi eşit ve iki parser geçişi de başarılı olmak
   zorundadır. İdempotence ve proje/kitaplık resmî biçim kapıları korunur.
-- **B-043 · KAPALI (K-118) — spec↔code kanıt haritası.** Bugünkü 23 RFC, 28
-  ADR ve 22 spec bölümü `docs/kanit-haritasi-v1.tsv` içinde `kanitli/kismi/taslak`
+- **B-043 · KAPALI (K-118) — spec↔code kanıt haritası.** Bugünkü 24 RFC, 29
+  ADR ve 23 spec bölümü `docs/kanit-haritasi-v1.tsv` içinde `kanitli/kismi/taslak`
   durumu, yürütülebilir test yolları ve açık kapsam notuyla birebir izlenir.
   Tazelik testi eksik/yinelenen belgeyi, olmayan ya da test taşımayan kanıt
   dosyasını ve testsiz tamamlanmış satırı reddeder.
@@ -350,7 +361,6 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 ## Bir sonraki somut kapı
 
 İnsan kanıtı hattında B-001, doldurulmuş gerçek usability formları ve önceden
-ilan edilmiş eşikleri bekler. Makine hattında B-050/K-126 kapandı; sıradaki iş
-B-023 ile ağ, dosya sistemi ve sensör yetkinliklerini merkezi capability
-politikasına bağlamak, outbound hedef/SSRF sınırını B-049 ile birlikte
-fail-closed yapmaktır.
+ilan edilmiş eşikleri bekler. Makine hattında B-023/B-049 K-127 ile kapandı;
+sıradaki iş B-048 atomik replace'in owner/group, ACL, xattr ve platform
+güvenlik etiketi sözleşmesini dürüst platform testleriyle tamamlamaktır.

@@ -1341,9 +1341,9 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   intrinsic yerine genel `Değil` düğümüdür. Yeni adaptörün AST şemasını
   büyütmesi gerekmez; yine de yeni kullanıcı yüzeyi RFC/spec ve K-097 ifade
   kapısından geçmek zorundadır.
-- **Sınır:** Yetkinlik bugün ihtiyacı sınıflandırır, izin vermez. Proje/paket
-  izin politikası B-023; parser/checker/runtime fiziksel handler ayrımı B-005;
-  checker faz ayrımı B-006/K-100 ile sonradan tamamlandı.
+- **Sınır:** Bu kayıtta yetkinlik ihtiyacı sınıflandırıyor, izin vermiyordu.
+  Proje/paket izin politikası B-023/K-127; parser/checker/runtime fiziksel
+  handler ayrımı B-005; checker faz ayrımı B-006/K-100 ile sonradan tamamlandı.
 - **Kanıt:** ADR-011 ve intrinsic/yetkinlik uygulama rehberi; kayıt tekilliği,
   dört lowering ve iki tür olumsuzunu kapsayan yedi bağımsız test. Mevcut
   HTTP/sensör/web/parola davranış korpusu korunarak toplam 393 test yeşil;
@@ -1939,6 +1939,32 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   regresyonda korunur. Toplam 490 test yeşildir; B-050 ve V1-P0-18'in kesinlik
   dilimi kapandı.
 
+## K-127 — Dış dünya yetkisini proje sahibine ve iki uygulama kapısına bağla (2 Eyl)
+
+- **Sorun:** Intrinsic kaydı ağ/donanım/web/kripto ihtiyacını biliyordu ama
+  proje hangi yetkiyi verdiğini bildirmiyor; dosya ve çocuk modu ayrı runtime
+  davranışları taşıyordu. Elle yazılmış native istemci HTTPS, exact origin,
+  DNS sonrası private/metadata IP ve redirect yetki sınırına sahip değildi.
+- **Karar:** RFC-0024/ADR-031/spec-23 ile sekiz kararlı yetkinlik ve exact
+  `ağ_hedefleri` manifest alanı oldu. Checker ana program, test ve çağrılmayan
+  işlem gövdelerini ayrı `yetkinlik` katmanında tarar; ihlal kesin kaynaklı
+  T054'tür. Paket ana politika alt kümesi değilse grafik P015'tir.
+- **Runtime:** `PolitikaliIo`, eski `GuvenliIo` çocuk API'sini koruyan genel
+  ikinci kapıdır; native adaptör aynı policy'yi ayrıca uygular. Proje dosyası
+  göreli/canonical kök ve symlink sınırındadır. Uygulama izni süreç üst
+  sınırıdır; paket başına OS sandbox/tenant izolasyonu iddia edilmez.
+- **Outbound:** Exact `ureq 3.4.0` yalnız rustls özelliğiyle kullanılır. Public
+  internet HTTPS; private/loopback+düz HTTP ayrıca `yerel-ağ` ister;
+  metadata/link-local ve IANA public olmayan özel-kullanım/geçiş önekleri
+  daima kapalıdır. DNS cevabındaki her soket adresi bağlantı öncesi denetlenir;
+  redirect ve ortam proxy'si kapalı, varsayılan 30 saniye ile 64 KiB header/
+  8 MiB zarf korunur. Zee TLS yazmaz.
+- **Kanıt:** Manifest bağımlılıkları, paket yükseltmesi, ölü kod, kesin T054,
+  origin/port, bozuk URL, public/private/metadata DNS, symlink kaçışı, explicit
+  loopback, geçiş öneki, redirect ve body limiti olumsuzlarıyla toplam 501 test yeşildir. P015/T054 ile
+  147 etkin + 3 ayrılmış tanı; RFC/ADR/spec indeksleriyle 76 numaralı belge
+  tazedir. B-023/B-049 ve V1-P0-29 kapandı.
+
 ---
 
 ## Sonraki adım
@@ -1947,5 +1973,5 @@ Korpus 10 öğrenci + 5 profesyonel usability oturumuna (Hafta 12 hedefi, erkeni
 Hafta 2'de kağıt üstünde) sesli okutulacak; her kayıt için "doğal mı /
 deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
-Makine hattında B-050/K-126 kapandı. Sırada B-023 capability modeli ile
-outbound hedef/SSRF politikasını B-049'la birlikte fail-closed yapmak vardır.
+Makine hattında B-023/B-049/K-127 kapandı. Sırada B-048 atomik replace
+metadata sözleşmesini platform kanıtlarıyla dürüstçe tamamlamak vardır.

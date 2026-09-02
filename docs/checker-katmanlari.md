@@ -8,7 +8,8 @@ olduğunu ve hangi komşu katmanlarla konuşabileceğini tanımlar.
 ```text
 Program AST
    │
-   ├─ etki       web/uygulama etkisi + intrinsic yetkinlik ihtiyacı
+   ├─ etki       web/uygulama etkisi ve eylem/rota değişmezleri
+   ├─ yetkinlik  dış dünya ihtiyacı + çalışma politikası
    ├─ turler     tür yazımları ve yapı alanları
    ├─ sozlesme   public parametre/dönüş sözleşmeleri
    └─ cumle / ifade
@@ -32,6 +33,7 @@ Tek-tanı ve çoklu-tanı girişleri aynı katmanları aynı sırada kullanır.
 | işlem argüman uyumu | `cagri` | `sozlesme`, RFC-0006/spec-10 |
 | public API imzası | `sozlesme` | paket/birim testleri ve semver sınırı |
 | web/uygulama/intrinsic etkisi | `etki` | ADR-011, T044–T050 |
+| dış dünya izni ve sabit outbound hedef | `yetkinlik` | RFC-0024, T054, runtime politikası |
 | dönüş yolu ve birleşimi | `donus` | Seçenek/Sonuç, T018/T041/T042 |
 | ifade tanı konumu | `kaynak` | ADR-030, AST/HIR aralık eşliği |
 | AST varyantı denetimi | `cumle` / `ifade` | ilgili hizmet katmanı ve tanı |
@@ -66,6 +68,9 @@ Tek-tanı ve çoklu-tanı girişleri aynı katmanları aynı sırada kullanır.
 - B-050/K-126 AST ifadelerinin kesin kaynağını HIR'a birebir taşır;
   `kaynak` katmanı yalnız eski kaba ifade tanısını ilgili kesin aralığa
   yükseltir, tür veya semantic kimlik seçmez.
+- B-023/B-049/K-127, dış dünya izni taramasını `etki`den ayrı `yetkinlik`
+  katmanına koydu. Ana/test/çağrılmayan işlem gövdeleri aynı geçişte taranır;
+  policy ve sabit origin ihlali kesin kaynaklı T054'tür.
 
 B-007 K-121 ile kapandı; K-101 semantic ID, K-102 faz tipi, K-103 typed HIR
 üretimi, K-104 runtime tüketimi ve K-112 fazlar arası doğrulama temelini korur.

@@ -62,6 +62,8 @@ makine tüketicisi kararını kararlı kod üzerinden verir.
 - B-022 ve V1-P0-24 kapanır.
 - A004, C014 ve S032 açık mezar taşıdır.
 - Şema-1 tabanı 145 etkin ve 3 ayrılmış olmak üzere 148 kimlik taşır.
+- K-127, bu append-only tabana P015 ve T054'ü ekledi; güncel şema-1 sayısı
+  147 etkin + 3 ayrılmıştır. Eski 148 kaydın hiçbiri değişmedi.
 - `katalog_testi.rs` kaynak↔katalog varlığını,
   `tani_kimligi_testi.rs` katalog↔sürüm kimliğini ayrı sorumluluklarla korur.
 - Yeni tanı eklemek kasıtlı olarak kaynak, katalog, fixture ve ilgili davranış

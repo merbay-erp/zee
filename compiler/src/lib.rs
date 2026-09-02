@@ -16,6 +16,8 @@
 //! kaynak → sözcükleyici → ayrıştırıcı → ad çözümleme + tür denetimi → yorumlayıcı.
 
 pub mod agac;
+#[cfg(not(target_arch = "wasm32"))]
+pub mod ag_istemcisi;
 pub mod ayristirici;
 pub mod bicimleyici;
 pub mod kalici_dosya;
@@ -39,6 +41,7 @@ pub mod registry;
 #[cfg(not(target_arch = "wasm32"))]
 pub mod tedarik;
 pub mod web_guvenligi;
+pub mod yetkinlik;
 pub mod yorumlayici;
 
 use agac::{Cumle, Islem, KullanimTuru, Program, Test, Yapi};
