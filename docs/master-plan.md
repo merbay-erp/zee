@@ -788,8 +788,10 @@ K-152/ADR-049 performans tarihçesini tam Git SHA, ayrı milestone, temiz Git
 ağacı, OS/CPU/RAM/Rust/release profili ve ölçüm başına gerçek örnekleme
 semantiğine yükseltti. RSS'in 25 tur değil tek süreç-tepe görüntüsü olduğu
 makine-okunur; eski K-148 sayıları exact üretici commit'ine bağlandı ve B-060
-kapandı. Bağlayıcı makine sırası K-153 gerçek process→stdio LSP cold-start
-ölçümüyle devam eder.
+kapandı. K-153/ADR-050 in-process engine initialize ile gerçek dillsp process
+spawn→stdio→capabilities maliyetini ayırdı; Tier-1 ikili testi ve CI ölçümü
+hazırdır. Exact temiz uygulama commit'inden 25 örnekli taban alınana kadar
+B-061/K-153 kısmen açık, bağlayıcı sıradaki iş bu kapanış kaydıdır.
 B-001 çağrı sözdizimi ile B-002 gezme zihinsel modeli gerçek insan
 kanıtı gelmeden kapatılmaz veya yeni syntax kararıyla atlanmaz.
 # 40. Proje felsefesinin korunması

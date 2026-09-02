@@ -176,10 +176,10 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **610** |
+| Rust + doctest vakası | **611** |
 | Tanı kimliği | **152 etkin + 3 ayrılmış** |
 | RFC | **25** (2 kabul, 21 geçici kabul, 2 taslak) |
-| ADR | **47** (47 kabul) |
+| ADR | **48** (48 kabul) |
 | Normatif spec bölümü | **24** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
@@ -300,6 +300,11 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   RSS açıkça tek süreç-tepe görüntüsüdür. [Sürümlü tarihçe](docs/performans-gecmisi-v2.tsv), JSON ve Markdown her
   Linux CI koşusunda summary+90 günlük artefakttır; shared CI hard gate
   değildir, eşik yalnız adanmış runner'da açıkça etkinleşir. B-040 kapandı.
+  K-153/ADR-050, eski nanosaniyelik LSP ölçümünü `lsp_engine_initialize`
+  diye doğru adlandırdı ve gerçek `dillsp` process spawn→stdio→capabilities
+  yanıtını `lsp_process_cold_start` olarak ayırdı. Tier-1 entegrasyon ve CI
+  yolu hazır; exact 25 örneklik temiz-commit tabanı alınana kadar K-153
+  kısmen açıktır.
   K-149/ADR-046 bütün production Rust ağacını 35 sorumluluk sahibine, exact
   doğrudan kenar tabanına ve izinli katman yönüne bağladı. Yeni/kayıp modül,
   yeni/kaldırılmış kenar ve ters katman geçişi fail-closed'dur; SHA-256 ile

@@ -21,8 +21,9 @@ gibi sunmak da yanlış güven üretir.
    `--hizli` yalnız yerel duman koşusudur; arşiv tabanı değildir.
 2. Dokuz ayrı yüzey gözlenir: lexer+parser, hazır AST üzerinde
    resolver/checker+HIR kanıt toplama, tam kaynak→typed-HIR ön ucu, boş
-   runtime başlangıcı, önceden derlenmiş yürütme, LSP cold/initialize,
-   `didOpen`, `didChange` ve Unix'te süreç tepe RSS'i. Ölçüm adı ile kapsamı
+   runtime başlangıcı, önceden derlenmiş yürütme, LSP engine initialize,
+   `didOpen`, `didChange` ve Unix'te süreç tepe RSS'i. K-153/ADR-050 gerçek
+   dillsp process cold-start'ını onuncu ayrı yüzey olarak ekler. Ölçüm adı ile kapsamı
    aynı JSON/Markdown kaydında açıkça yazılır; typecheck sonucu saf tür
    çıkarımıymış gibi adlandırılmaz.
 3. K-152/ADR-049 ile `zee-performans-2` JSON ve

@@ -1,7 +1,9 @@
 # Performans ölçüm arşivi
 
 K-148/ADR-045 ile performans tek terminal medyanı olmaktan çıktı; K-152/
-ADR-049 her satırı gerçek kaynak commit'ine ve tam koşu ortamına bağladı. Release
+ADR-049 her satırı gerçek kaynak commit'ine ve tam koşu ortamına bağladı.
+K-153/ADR-050, in-process engine süresiyle gerçek dillsp process cold-start'ını
+ayırdı. Release
 koşucusu varsayılan 25 turdan ham örnek, min/max ve nearest-rank p50/p95
 üretir; makine bağlamını `zee-performans-2` JSON'una, insan raporuna ve
 incelenebilir `zee-performans-gecmisi-2` TSV'sine bağlar. İş yükleri koşucu
@@ -17,7 +19,8 @@ sayılmaz ve bu belgede gerekçelenir.
 | `hir_olusturma` | 2.000 satır kaynak→bağlı typed-HIR tam ön ucu |
 | `runtime_baslangici` | Önceden derlenmiş boş HIR'ın runtime dispatch'i |
 | `yurutme_gecikmesi` | Önceden derlenmiş 100 bin turluk sayaç |
-| `lsp_soguk` | Sunucu kurulumu + initialize |
+| `lsp_engine_initialize` | Aynı süreçte `Sunucu::yeni` + initialize işleme |
+| `lsp_process_cold_start` | Process spawn → stdio framing → tam initialize capabilities yanıtı |
 | `lsp_ac` | Initialize edilmiş sunucuda 2.000 satır `didOpen` |
 | `lsp_degistir` | Açık belgede tam metin `didChange` |
 | `tepe_bellek` | Unix sürecinin tepe resident set'i (KiB) |
@@ -48,6 +51,7 @@ Yerel hızlı duman:
 
 ```bash
 cd compiler
+cargo build --locked --release --bin dillsp
 cargo run --locked --release --bin olcum -- --hizli
 ```
 
@@ -55,13 +59,15 @@ cargo run --locked --release --bin olcum -- --hizli
 
 ```bash
 cd compiler
+cargo build --locked --release --bin dillsp
 cargo run --locked --release --bin olcum -- \
   --tur 25 \
   --gecmis ../docs/performans-gecmisi-v2.tsv \
   --json target/performans.json \
   --rapor target/performans.md \
   --gecmis-cikti target/performans-gecmisi.tsv \
-  --kayit K-NNN-makine --git-sha GIT_SHA --milestone K-NNN
+  --kayit K-NNN-makine --git-sha GIT_SHA --milestone K-NNN \
+  --dillsp target/release/dillsp
 ```
 
 Yeni TSV doğrudan izlenen dosyanın üstüne yazılmaz. Ölçüm temiz ve exact
@@ -91,7 +97,7 @@ yukarıdaki tek süreç-tepe görüntüsü semantiğini taşır.
 | tam kaynak→typed-HIR | 159,668 ms | 165,212 ms |
 | boş runtime başlangıcı | 125 ns | 1,292 µs |
 | 100 bin tur yürütme | 22,010 ms | 22,772 ms |
-| LSP cold/initialize | 541 ns | 584 ns |
+| LSP engine initialize (eski `lsp_soguk`) | 541 ns | 584 ns |
 | LSP `didOpen` | 159,480 ms | 165,116 ms |
 | LSP `didChange` | 161,143 ms | 172,991 ms |
 | süreç tepe RSS | 17.888 KiB | 17.888 KiB |
@@ -100,10 +106,24 @@ Bu ilk kayıt regresyon hükmü değil, sonraki exact-ortam gözlemlerinin
 tabanıdır. Eşik kararı shared CI'dan değil, sabitlenmiş adanmış runner
 dağılımından verilir.
 
+## K-153 gerçek cold-start sınırı
+
+Eski nanosaniye ölçekli kayıt process cold-start değildir; kimliği bu nedenle
+`lsp_engine_initialize` olarak düzeltildi. Yeni `lsp_process_cold_start`, saati
+gerçek `dillsp` process spawn'ından önce başlatır ve istemci stdout'tan tam
+çerçeveli `id=1` capabilities yanıtını okuyunca durdurur. Süreç sonlandırma/
+wait ölçüm penceresinin dışındadır. Mevcut LSP initialize sırasında workspace
+taramaz; dolayısıyla bugün ayrı workspace-load metriği yoktur. Bu davranış
+eklendiğinde process cold-start'a gizlenmeden ayrı ölçülecektir.
+
+Gerçek yol ve Tier-1 entegrasyon testi hazırdır. İlk 25 örneklik exact temiz
+commit tabanı, K-153 uygulama commit'i checkout edilerek sonraki provenance
+commit'inde bu bölüme eklenecektir; o ana kadar K-153 **kısmen açık** tutulur.
+
 ## K-148 öncesi elle tutulmuş legacy kayıtlar
 
 Aşağıdaki tablolar eski altı iş yükünün yalnız medyanını taşır. İş yükleri ve
-istatistik şeması K-148 ile değiştiği için güncel dokuz yüzeyle doğrudan trend
+istatistik şeması K-148 ile değiştiği için güncel yüzeylerle doğrudan trend
 hesabına katılmaz; tarihsel mühendislik notu olarak korunur.
 
 ## v0.8.0 birikimi / K-092 — 1 Eylül 2026 · Apple M4 Pro, macOS 26.5, Rust 1.93.1

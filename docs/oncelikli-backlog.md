@@ -170,9 +170,12 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
     temiz çalışma ağacı, OS/CPU/RAM/Rust/release ve ölçüm başına gerçek
     örnek/ısınma semantiğine bağladı. RSS'in tek süreç-tepe görüntüsü olduğu
     artık makine-okunurdur; B-060 kapandı.
-50. Sıradaki makine işi K-153 ile engine initialize ölçümünü doğru adlandırıp
-    process spawn→stdio→initialize response gerçek LSP cold-start metriğini
-    ayrı üretmektir.
+50. K-153/ADR-050'nin uygulama dilimi eski engine ölçümünü
+    `lsp_engine_initialize` diye doğru adlandırdı; gerçek dillsp process
+    spawn→stdio framing→tam capabilities yanıtını ayrı
+    `lsp_process_cold_start` olarak ölçüyor. Tier-1 gerçek ikili testi ve CI
+    kablosu hazırdır. Exact temiz uygulama commit'inde 25 örneklik taban
+    alınana kadar B-061/K-153 **KISMEN** kalır.
 
 ## P0 — V1 öncesi dil ve derleyici omurgası
 
@@ -599,6 +602,12 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   farklı SHA veya kirli ağaçta fail-closed'dur. Sekiz süre metriği bağımsız
   turları; RSS yalnız bir örnek, sıfır ısınma ve süreç-tepe anlık görüntüsünü
   bildirir. İlk K-148 sayıları değiştirilmeden exact üretici commit'ine göçtü.
+- **B-061 · KISMEN (K-153/ADR-050) — Gerçek LSP cold-start.** In-process
+  engine initialize ile process spawn+stdio+capabilities yanıtı ayrı kimliktir.
+  Gerçek `olcum`→`dillsp` entegrasyon testi ve release CI ölçümü hazırdır;
+  mevcut LSP workspace yüklemediği için hayalî workspace metriği yoktur.
+  Kapanış kanıtı exact temiz uygulama commit'inde alınmış 25 örnek p50/p95
+  tarihçesidir.
 - **B-041 · KAPALI (K-120) — LSP'yi SymbolId/HIR'a bağla.** Definition ve
   rename yalnız başarılı checker'ın `SymbolId`/`IslemId`/`YapiId` typed-HIR
   bağından hedef seçer. HIR ilk tanım, yeniden atama ve okuma aralıklarını
@@ -631,9 +640,9 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 ## Bir sonraki somut kapı
 
 İnsan kanıtı hattında B-001 ve B-002, doldurulmuş gerçek usability formları
-ile önceden ilan edilmiş eşikleri bekler. Makine hattında K-152 benchmark
-tarihçesini tam ve doğrulanabilir provenance'a bağlayıp B-060'ı kapattı.
-Sıradaki iş K-153 gerçek process→stdio LSP cold-start ölçümüdür; insan verisi
+ile önceden ilan edilmiş eşikleri bekler. Makine hattında K-153 gerçek
+process→stdio LSP cold-start yolunu kurdu; exact temiz commit tabanı bekleniyor.
+Sıradaki iş bu 25 örnekli K-153 kapanış kaydıdır; insan verisi
 gelmeden yeni syntax seçilmez
 veya B-001/B-002 tamamlanmış gösterilmez.
 
@@ -648,7 +657,7 @@ tamamlanmış sayılmaz; burada istenen ek kanıt ayrıca üretilir.
 | K-150 | **KAPALI** | SCC kapısı, iki kırılmış çevrim, K-160'a süreli tek izin |
 | K-151 | **KAPALI** | Bütün workflow action'ları immutable SHA + kontrollü yenileme |
 | K-152 | **KAPALI** | Gerçek Git SHA/milestone ve tam benchmark provenance şeması |
-| K-153 | **SIRADA** | Engine initialize'dan ayrı gerçek process→stdio LSP cold start |
+| K-153 | **KISMEN** | Engine/process ayrımı ve gerçek ikili testi hazır; exact 25 örnek taban bekliyor |
 | K-154 | **AÇIK** | 2k/5k/10k/20k full-change eğrisi, invalidation sınırı ve eşikler |
 | K-155 | **AÇIK** | K-147 korpusuna `fixed_by`, mümkünse `introduced_by`, garanti sürümü |
 | K-156 | **AÇIK** | Nightly fuzz corpus artefaktı ve review'lü coverage seed kalıcılığı |
