@@ -6,3 +6,4 @@
 9e1418bd8fce6a991259de59a189b5ec34e47fd8	maintenance	-	Sürümlü Rust facade ve internal görünürlük sınıfı gömme sözleşmesini belgeler; Zee grammar, runtime ve kullanıcı programı davranışı değişmez.
 5a33cc48d0ae8d9368ac8efb99b8e7cee372984a	maintenance	-	Paket modeli, doğrulama, registry, çözüm ve yayın sahipliği ayrıldı; Zee grammar, runtime ve kullanıcı programı davranışı değişmedi.
 cc2df180256b60c9ccee1e189aed8255a3415f8c	maintenance	-	Adlandırılmış istek dönüş tipleri ve açık filter/map zinciri yalnız Clippy uyumudur; Zee program davranışı değişmedi.
+f9f5b46014d19a46998f617c5f7f3eb4b97e9182	semantic-change	spec/25-postgresql-veri-erisimi.md	K-163 gerçek ürün ihtiyacı PostgreSQL okuma, değişiklik, transaction ve migration davranışını normatif sözleşmeyle ekler.
