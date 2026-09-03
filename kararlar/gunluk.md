@@ -2667,6 +2667,16 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
 - **Kapanış:** ADR-057/B-068/K-158 kapandı. Sırada K-159 public/internal
   facade ve SemVer sözleşmesi vardır.
 
+## K-159 — Desteklenen API internal modüllerden ayrılmalı (3 Eyl)
+
+- **Karar:** Rust gömme sözleşmesi `dil::api::v1` exact allowlist'idir. Kök
+  legacy yollar bootstrap uyumluluğu için erişilebilir fakat `doc(hidden)`
+  internal sınıfındadır ve SemVer sözü değildir.
+- **Kapı:** Facade derleme/çalıştırma/tanı/biçim smoke'u, exact ihracat kümesi
+  ve `api` dışındaki her kök public modülün internal işareti test edilir.
+- **Politika:** v1 kırılmaz; uyumsuz söz v2 ile yan yana doğar, göç/deprecation
+  sürüm notuna yazılır. B-069/K-159/ADR-058 kapandı; sırada K-160 vardır.
+
 ---
 
 ## Sonraki adım
@@ -2682,7 +2692,7 @@ güvenlik açığını exact web fixture'ıyla ve K-156 cache dışı provenance
 korpusu artefaktıyla kapattı. K-157 dört hedefte 30'ar dakikalık explicit
 AddressSanitizer kampanyasını toplam 136.789.564 yürütme ve sıfır bulguyla;
 seçili Miri çekirdeğini 3/3 sonuçla kapattı. K-158 seçici düzeyi çoklu kapsamı
-ve gerçek blast-radius raporunu kapattı. Sırada K-159 public/internal facade
-sınırı vardır.
+ve gerçek blast-radius raporunu kapattı. K-159 sürümlü facade ile SemVer
+sınırını kapattı. Sırada K-160 ownership ayrımı vardır.
 B-001/B-002 (yeni sırada K-161/K-162), gerçek 10 çocuk/öğrenci + 5 profesyonel
 usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.

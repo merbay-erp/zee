@@ -813,7 +813,10 @@ toplam 136.789.564 yürütme, sıfır crash/timeout/bulgu ve 3/3 seçili Miri te
 üretti. K-158/ADR-057 tekil birincil sahipliği korurken kritik test
 seçicilerinin gerçekten yürüttüğü ek fazları bildirip çapraz kanıtı mimari
 aşağı akıştan ayırdı. B-063/B-064/B-065/B-066/B-067/B-068 kapandı; sırada
-K-159 public facade sınırı vardır.
+K-159/ADR-058 desteklenen Rust gömme sözünü exact `dil::api::v1` facade'ına
+taşıdı; kök legacy modüller açıkça internal sınıflandı ve yeni ihracat allowlist
+kapısına bağlandı. B-069 kapandı; sırada K-160 paket/registry/tedarik ownership
+ayrımı ve kalan süreli SCC'nin kaldırılması vardır.
 B-001 çağrı sözdizimi ile B-002 gezme zihinsel modeli gerçek insan
 kanıtı gelmeden kapatılmaz veya yeni syntax kararıyla atlanmaz.
 # 40. Proje felsefesinin korunması

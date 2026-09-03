@@ -15,39 +15,68 @@
 //! Boru hattı (master plan bölüm 11'in v0 dilimi):
 //! kaynak → sözcükleyici → ayrıştırıcı → ad çözümleme + tür denetimi → yorumlayıcı.
 
+pub mod api;
+
+#[doc(hidden)]
 #[cfg(not(target_arch = "wasm32"))]
 pub mod ag_istemcisi;
+#[doc(hidden)]
 pub mod agac;
+#[doc(hidden)]
 pub mod ayristirici;
+#[doc(hidden)]
 pub mod bicimleyici;
+#[doc(hidden)]
 pub mod cozumleyici;
+#[doc(hidden)]
 pub mod faz;
+#[doc(hidden)]
 pub mod guvenlik;
+#[doc(hidden)]
 pub mod hir;
+#[doc(hidden)]
 #[cfg(not(target_arch = "wasm32"))]
 pub mod http_istegi;
+#[doc(hidden)]
 pub mod intrinsic;
+#[doc(hidden)]
 pub mod invariant;
+#[doc(hidden)]
 pub mod kalici_dosya;
+#[doc(hidden)]
 pub mod kaynak_sinirlari;
+#[doc(hidden)]
 pub mod kimlik;
+#[doc(hidden)]
 pub mod lsp;
+#[doc(hidden)]
 pub mod morfoloji;
 mod ondalik;
+#[doc(hidden)]
 pub mod paket;
+#[doc(hidden)]
 pub mod proje;
+#[doc(hidden)]
 #[cfg(not(target_arch = "wasm32"))]
 pub mod registry;
 mod semantic_model;
+#[doc(hidden)]
 pub mod sozcukleyici;
+#[doc(hidden)]
 pub mod tani;
 mod tani_politikasi;
+#[doc(hidden)]
 #[cfg(not(target_arch = "wasm32"))]
 pub mod tedarik;
+#[doc(hidden)]
 pub mod wasm_api;
+#[doc(hidden)]
 pub mod web_guvenligi;
+#[doc(hidden)]
 pub mod yetkinlik;
+#[doc(hidden)]
 pub mod yorumlayici;
+#[doc(hidden)]
 pub mod zaman;
 
 use agac::{Cumle, Islem, KullanimTuru, Program, Test, Yapi};

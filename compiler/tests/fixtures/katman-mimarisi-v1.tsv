@@ -1,6 +1,7 @@
 # zee-katman-mimarisi-1
 # modul	katman	dogrudan_bagimliliklar	sorumluluk
 ag_istemcisi	altyapi	kaynak_sinirlari,yetkinlik	Sinirli native HTTP tasimasi
+api	adapter	agac,bicimleyici,faz,lib,proje,tani,yorumlayici	Desteklenen surumlu Rust gomme facade'i
 agac	model	kimlik	Kaynak AST veri modeli
 ayristirici	sozdizimi	agac,intrinsic,ondalik,sozcukleyici,tani	Token akisini ASTye donusturme
 bicimleyici	sozdizimi	sozcukleyici,tani	Kanonik kaynak bicimi

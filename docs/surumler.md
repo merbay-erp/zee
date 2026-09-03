@@ -12,6 +12,12 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **Sürümlü Rust public facade'ı** (K-159, ADR-058): Desteklenen gömme
+  sözleşmesi `dil::api::v1` altında exact allowlist'tir. Kök legacy modüller
+  internal sınıflanır; smoke ve sızıntı kapısı yeni export'u bilinçli inceleme
+  olmadan reddeder. Breaking/minor/patch ve yan yana v2 göç politikası yazılıdır.
+  B-069 kapandı; sırada K-160 ownership ayrımı vardır.
+
 - **Gerçek test blast radius'u** (K-158, ADR-057): Faz matrisi v2, tekil
   birincil sahipliği korurken kritik test seçicilerine isteğe bağlı çoklu
   `ek_kapsam` bağlar. Geçersiz metadata fail-closed reddedilir; kanonik belge
