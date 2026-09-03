@@ -36,6 +36,18 @@ ağ_hedefleri boş liste olsun
 
 `ağ-sunucusu` inbound sunucu, `ağ` outbound istemcidir; biri diğerini açmaz.
 
+Yerel PostgreSQL dogfood profili:
+
+```zee
+yetkinlikler "veritabanı" listesi olsun
+veritabanı_hedefi "postgresql://127.0.0.1:5432/uygulama" olsun
+veritabanı_bağlantı_değişkeni "UYGULAMA_DATABASE_URL" olsun
+veritabanı_göçleri "göçler" olsun
+```
+
+Bağlantı URL'si kaynakta tutulmaz. İlk profil yalnız loopback ve
+`sslmode=disable` kabul eder; production TLS desteği anlamına gelmez.
+
 ## Neyi korur?
 
 - T054 programın istemediğin bir dış dünya yetkisini kullanacağını çalışmadan

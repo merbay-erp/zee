@@ -181,11 +181,11 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **623** |
-| Tanı kimliği | **152 etkin + 3 ayrılmış** |
-| RFC | **25** (2 kabul, 21 geçici kabul, 2 taslak) |
-| ADR | **57** (57 kabul) |
-| Normatif spec bölümü | **24** |
+| Rust + doctest vakası | **630** |
+| Tanı kimliği | **154 etkin + 3 ayrılmış** |
+| RFC | **26** (2 kabul, 22 geçici kabul, 2 taslak) |
+| ADR | **58** (58 kabul) |
+| Normatif spec bölümü | **25** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
 ### Golden korpus hakkında
@@ -349,6 +349,13 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   taslak/yayında sayfa yaşam döngüsünü çalıştırdı. 7/7 test ile gerçek TCP
   içerik+ayar+sayfa provası geçer. K-163'ün 500–1500 satır ve DB/medya gibi
   geniş ürün yüzeyi kapısı açıktır.
+  K-163'ün dördüncü dilimi bu ilk gerçek runtime eksiğini ürün kanıtıyla
+  açtı: RFC-0026/ADR-060/spec-25 altında secretsiz exact loopback bildirim,
+  ayrı TEXT parametre bind'i, C025 içinde SQLSTATE/constraint, eylem
+  transaction/savepoint'i ve SHA-256 geçmişli dil göçür komutu çalışır.
+  PostgreSQL 16.11 gerçek provada apply→skip→değişmiş-hash reddi, injection
+  benzeri slug'ın aynen saklanması, 23505 dalı ve outer rollback geçti.
+  Production TLS/pool/multi-process hâlâ açıkça kapsam dışıdır.
   K-151/ADR-048 bütün GitHub Actions `uses:` referanslarını incelenmiş 40
   haneli commit SHA'lara sabitledi. Sürümlü pin kaydı workflow'larla birebir,
   haftalık Dependabot yalnız inceleme PR'ı açar; hareketli `@v4`, `@stable`

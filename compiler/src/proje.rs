@@ -14,6 +14,9 @@
 //! registry_kök_sürümü "1" olsun
 //! registry_kök_özeti "sha256:<64 küçük hex>" olsun
 //! uzak_bağımlılıklar "grafik@1.2.3" listesi olsun
+//! veritabanı_hedefi "postgresql://127.0.0.1:5432/uygulama" olsun
+//! veritabanı_bağlantı_değişkeni "UYGULAMA_DATABASE_URL" olsun
+//! veritabanı_göçleri "göçler" olsun
 //! ```
 
 use crate::agac::{Cumle, Ifade};
@@ -40,7 +43,12 @@ pub struct ProjeBildirimi {
     pub registry: Option<RegistryBildirimi>,
     /// V1 yalnız exact `ad@X.Y.Z` kabul eder; sürüm çözümü yapmaz.
     pub uzak_bagimliliklar: Vec<UzakBagimlilik>,
+    /// K-163 ilk dogfood profili: sır içermeyen loopback hedef kimliği,
+    /// bağlantı URL'sini taşıyan ortam değişkeni ve repo içi migration kökü.
+    pub veritabani: Option<VeritabaniBildirimi>,
 }
+
+pub use crate::veritabani_modeli::{VeritabaniBildirimi, VeritabaniHedefi};
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct RegistryBildirimi {
@@ -132,12 +140,15 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
                 | "registry_kök_sürümü"
                 | "registry_kök_özeti"
                 | "uzak_bağımlılıklar"
+                | "veritabanı_hedefi"
+                | "veritabanı_bağlantı_değişkeni"
+                | "veritabanı_göçleri"
         ) {
             return Err(proje_hatasi(
                 "P001",
                 &format!("\"{}\" proje bildirimi alanı değil.", ad),
                 satir,
-                "Geçerli alanlar: proje, sürüm, morfoloji, giriş, yetkinlikler, ağ_hedefleri, yerel_bağımlılıklar, registry, registry_kök_sürümü, registry_kök_özeti, uzak_bağımlılıklar.",
+                "Geçerli alanlar: proje, sürüm, morfoloji, giriş, yetkinlikler, ağ_hedefleri, yerel_bağımlılıklar, registry, registry_kök_sürümü, registry_kök_özeti, uzak_bağımlılıklar, veritabanı_hedefi, veritabanı_bağlantı_değişkeni, veritabanı_göçleri.",
             ));
         }
         if alanlar.insert(ad.clone(), (deger, satir)).is_some() {
@@ -165,6 +176,7 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
         metin_listesini_al(&mut alanlar, "yetkinlikler", "P015")?;
     let (ag_hedef_yazimlari, ag_hedef_satiri) =
         metin_listesini_al(&mut alanlar, "ağ_hedefleri", "P015")?;
+    let veritabani = veritabani_bildirimini_al(&mut alanlar, &yetkinlik_yazimlari)?;
     let mut yetkinlikler = BTreeSet::new();
     for yazim in yetkinlik_yazimlari {
         let Some(yetkinlik) = Yetkinlik::ayristir(&yazim) else {
@@ -302,6 +314,7 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
         yerel_bagimliliklar,
         registry,
         uzak_bagimliliklar,
+        veritabani,
     })
 }
 
@@ -309,6 +322,117 @@ impl ProjeBildirimi {
     pub fn yetkinlik_politikasi(&self) -> YetkinlikPolitikasi {
         YetkinlikPolitikasi::proje(self.yetkinlikler.clone(), self.ag_hedefleri.clone())
     }
+}
+
+fn veritabani_bildirimini_al(
+    alanlar: &mut HashMap<String, (Ifade, usize)>,
+    yetkinlikler: &[String],
+) -> Result<Option<VeritabaniBildirimi>, Tani> {
+    let hedef = istege_bagli_sabit_metni_al(alanlar, "veritabanı_hedefi")?;
+    let degisken = istege_bagli_sabit_metni_al(alanlar, "veritabanı_bağlantı_değişkeni")?;
+    let gocler = istege_bagli_sabit_metni_al(alanlar, "veritabanı_göçleri")?;
+    let yetkili = yetkinlikler.iter().any(|y| y == "veritabanı");
+    if !yetkili && hedef.is_none() && degisken.is_none() && gocler.is_none() {
+        return Ok(None);
+    }
+    let Some((hedef, satir)) = hedef else {
+        return Err(proje_hatasi(
+            "P015",
+            "`veritabanı` yetkinliği secretsiz hedef kimliği istiyor.",
+            1,
+            "Örnek: veritabanı_hedefi \"postgresql://127.0.0.1:5432/uygulama\" olsun",
+        ));
+    };
+    if !yetkili {
+        return Err(proje_hatasi(
+            "P015",
+            "Veritabanı ayarı var ama `veritabanı` yetkinliği açık değil.",
+            satir,
+            "Yetkinliklere \"veritabanı\" ekle veya üç veritabanı alanını kaldır.",
+        ));
+    }
+    let hedef = VeritabaniHedefi::ayristir(&hedef).map_err(|neden| {
+        proje_hatasi(
+            "P015",
+            &format!("Geçersiz veritabanı hedefi: {}.", neden),
+            satir,
+            "İlk profil yalnız secretsiz postgresql://localhost:5432/veritabani hedefidir.",
+        )
+    })?;
+    let Some((baglanti_degiskeni, degisken_satiri)) = degisken else {
+        return Err(proje_hatasi(
+            "P015",
+            "Veritabanı bağlantı ortam değişkeni eksik.",
+            satir,
+            "Örnek: veritabanı_bağlantı_değişkeni \"UYGULAMA_DATABASE_URL\" olsun",
+        ));
+    };
+    let mut karakterler = baglanti_degiskeni.chars();
+    if !karakterler
+        .next()
+        .is_some_and(|c| c.is_ascii_uppercase() || c == '_')
+        || !karakterler.all(|c| c.is_ascii_uppercase() || c.is_ascii_digit() || c == '_')
+    {
+        return Err(proje_hatasi(
+            "P015",
+            "Veritabanı bağlantı ortam değişkeni A-Z, 0-9 ve _ biçiminde olmalı.",
+            degisken_satiri,
+            "Sır değerini değil yalnız ortam değişkeninin adını yaz; örnek: UYGULAMA_DATABASE_URL.",
+        ));
+    }
+    let Some((gocler, goc_satiri)) = gocler else {
+        return Err(proje_hatasi(
+            "P015",
+            "Veritabanı migration klasörü eksik.",
+            satir,
+            "Örnek: veritabanı_göçleri \"göçler\" olsun",
+        ));
+    };
+    if let Err(neden) = proje_icinde_goreli_yol(&gocler) {
+        return Err(proje_hatasi(
+            "P015",
+            &format!("Geçersiz migration klasörü: {}.", neden),
+            goc_satiri,
+            "Migration klasörü proje kökünde kalan göreli bir yol olmalı.",
+        ));
+    }
+    Ok(Some(VeritabaniBildirimi {
+        hedef,
+        baglanti_degiskeni,
+        gocler,
+    }))
+}
+
+fn istege_bagli_sabit_metni_al(
+    alanlar: &mut HashMap<String, (Ifade, usize)>,
+    ad: &str,
+) -> Result<Option<(String, usize)>, Tani> {
+    let Some((ifade, satir)) = alanlar.remove(ad) else {
+        return Ok(None);
+    };
+    match ifade.turu() {
+        Ifade::MetinSabiti(deger) => Ok(Some((deger.clone(), satir))),
+        _ => Err(proje_hatasi(
+            "P001",
+            &format!("\"{}\" alanı sabit Metin olmalı.", ad),
+            satir,
+            &format!("Örnek: {} \"...\" olsun", ad),
+        )),
+    }
+}
+
+fn proje_icinde_goreli_yol(yol: &str) -> Result<(), &'static str> {
+    let yol = Path::new(yol);
+    if yol.as_os_str().is_empty() || yol.is_absolute() {
+        return Err("yol boş ya da mutlak olamaz");
+    }
+    if yol
+        .components()
+        .any(|bilesen| !matches!(bilesen, Component::Normal(_)))
+    {
+        return Err("yol . veya .. bileşeni taşıyamaz");
+    }
+    Ok(())
 }
 
 fn istege_bagli_metni_al(

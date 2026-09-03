@@ -142,8 +142,9 @@ ezilmez; geri alma C021 ile görünür biçimde başarısız olur.
 Bu sözleşme yorumlayıcı tarafından gözlenen hata/başarısız sonuç için çok
 dosyalı geri almadır. Süreç ya da makine tam eylemin ortasında çökerse bütün
 dosyaları tek bir kalıcı commit olarak yayınlama sözü vermez; çökme atomikliği
-dosya başına spec/08'deki K-084 sözüdür. Veritabanı/dağıtık kaynak ACID'i ayrı
-capability, uzun ömürlü kilitleme ve günlükleme kararı gerektirir.
+dosya başına spec/08'deki K-084 sözüdür. K-163 PostgreSQL adaptörü aynı eylem
+sınırını `BEGIN`/savepoint ile uygular; tek eylemde dosya ve DB yazısı dağıtık
+atomiklik vaat etmemek için yasaktır. Ayrıntı spec/25'tedir.
 
 ## 7. Güvenlik sınırı
 

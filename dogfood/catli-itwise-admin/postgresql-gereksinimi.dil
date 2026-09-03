@@ -1,0 +1,19 @@
+# K-163 gerçek ürün ihtiyacının CORE FREEZE kanıt aynası.
+# Çalışan kaynak itwise-admin deposundadır; bu dosya yalnız PostgreSQL
+# ihtiyacının dil yüzeyini küçük ve review edilebilir biçimde sabitler.
+
+işlem sayfaları getir
+    Metin sözlüğü listesi sonucu döndürür
+
+    parametreler boş liste olsun
+    sonuç "SELECT slug::text AS slug, baslik::text AS baslik FROM sayfalar ORDER BY slug" sorgusunu parametreler ile okumayı dene olsun
+    sonuç döndür
+
+eylem sayfayı oluştur
+    yolu Metin olarak al
+    adı Metin olarak al
+    TamSayı sonucu döndürür
+
+    parametreler yolu, adı listesi olsun
+    sonuç "INSERT INTO sayfalar (slug, baslik) VALUES ($1, $2)" sorgusunu parametreler ile değiştirmeyi dene olsun
+    sonuç döndür

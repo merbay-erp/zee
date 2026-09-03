@@ -14,6 +14,8 @@ pub enum VeriTuru {
     Yapi(YapiId),
     /// Metin değerli satır sözlüğü (K-062): CSV satırları böyle okunur.
     MetinSozluk,
+    /// PostgreSQL okumasının metin değerli satır listesi.
+    MetinSozlukListesi,
     /// Yapılandırılmış beklenen hata değeri (K-091).
     Hata,
     /// Boş koleksiyonun henüz belirlenmemiş öğe türü (K-045): ilk eklemede
@@ -72,6 +74,7 @@ impl VeriTuru {
             VeriTuru::Yapi(_) => "Yapı",
             VeriTuru::Sozluk => "Sözlük",
             VeriTuru::MetinSozluk => "satır",
+            VeriTuru::MetinSozlukListesi => "Metin sözlüğü listesi",
             VeriTuru::Hata => "Hata",
         }
     }
@@ -85,6 +88,7 @@ impl VeriTuru {
             VeriTuru::Yapi(i) => Tur::Yapi(*i),
             VeriTuru::Sozluk => Tur::Sozluk(SozlukDegerTuru::TamSayi),
             VeriTuru::MetinSozluk => Tur::Sozluk(SozlukDegerTuru::Metin),
+            VeriTuru::MetinSozlukListesi => Tur::Liste(VeriTuru::MetinSozluk),
             VeriTuru::Hata => Tur::Hata,
         }
     }

@@ -11,7 +11,7 @@ bin_faz_test_matrisi	muhendislik	-	Faz test sahipligi ve raporu
 bin_islev_egilimi	muhendislik	kalici_dosya	Kritik islev egilim kapisi
 bin_olcum	muhendislik	agac,cozumleyici,faz,lsp,yorumlayici	Performans gozlem artefakti
 cozumleyici	semantik	agac,hir,intrinsic,kimlik,morfoloji,semantic_model,tani,yetkinlik	Ad tur etki ve HIR kaniti
-dil_cli	adapter	ag_istemcisi,agac,artefakt_dogrulama,bicimleyici,cozumleyici,faz,guvenlik,http_istegi,kalici_dosya,kaynak_sinirlari,morfoloji,paket,proje,tani,web_guvenligi,yayin,yetkinlik,yorumlayici,zaman	Komut satiri ve web host adaptoru
+dil_cli	adapter	ag_istemcisi,agac,artefakt_dogrulama,bicimleyici,cozumleyici,faz,guvenlik,http_istegi,kalici_dosya,kaynak_sinirlari,morfoloji,paket,postgresql,proje,tani,web_guvenligi,yayin,yetkinlik,yorumlayici,zaman	Komut satiri ve web host adaptoru
 dillsp	adapter	lsp	LSP stdio framing adaptoru
 faz	semantik	agac,ayristirici,cozumleyici,hir,sozcukleyici,tani	Derleyici faz tipleri ve gecisleri
 guvenlik	temel	-	Kriptografik ve sabit zamanli ilkeller
@@ -28,7 +28,8 @@ morfoloji	sozdizimi	guvenlik	Surumlu Turkce ek profili
 ondalik	temel	-	Keyfi hassasiyetli onluk cekirdegi
 paket	proje	agac,artefakt_dogrulama,ayristirici,guvenlik,kalici_dosya,kaynak_sinirlari,paket_modeli,proje,registry,sozcukleyici,tani	Paket grafigi ve kilit cozumu
 paket_modeli	model	-	Paket yayin ve registry icin davranissiz ortak veri sozlesmesi
-proje	proje	agac,bicimleyici,faz,morfoloji,tani,yetkinlik	Proje bildirimi ve yukleme modeli
+postgresql	altyapi	guvenlik,kaynak_sinirlari,veritabani_modeli	Sinirli PostgreSQL tasimasi ve migration uygulayicisi
+proje	proje	agac,bicimleyici,faz,morfoloji,tani,veritabani_modeli,yetkinlik	Proje bildirimi ve yukleme modeli
 registry	proje	ag_istemcisi,artefakt_dogrulama,guvenlik,kalici_dosya,kaynak_sinirlari,morfoloji,paket_modeli,yetkinlik	Registry metadata ve cache zinciri
 semantic_model	model	kimlik	Checker ve HIR ortak semantic tur modeli
 sozcukleyici	sozdizimi	kaynak_sinirlari,tani	Kaynak metni tokenlastirma
@@ -39,5 +40,6 @@ wasm_api	adapter	faz,kaynak_sinirlari,proje,yorumlayici	Playground C ABI adaptor
 web_guvenligi	web	agac,guvenlik,kalici_dosya,kaynak_sinirlari	Oturum CSRF ve oran siniri
 yayin	adapter	artefakt_dogrulama,faz,paket,paket_modeli,proje	Dogrulanmis proje grafiginden yayin artefakti orkestrasyonu
 yetkinlik	altyapi	-	Yetkinlik ve origin politikasi
-yorumlayici	runtime	agac,faz,guvenlik,hir,intrinsic,kaynak_sinirlari,ondalik,tani,web_guvenligi,yetkinlik,zaman	Typed HIR yurutme ve IO
+veritabani_modeli	model	-	Proje runtime ve adaptorler arasinda davranissiz hedef bildirim ve hata sozlesmesi
+yorumlayici	runtime	agac,faz,guvenlik,hir,intrinsic,kaynak_sinirlari,ondalik,tani,veritabani_modeli,web_guvenligi,yetkinlik,zaman	Typed HIR yurutme ve IO
 zaman	temel	-	Gregoryen takvim donusumleri

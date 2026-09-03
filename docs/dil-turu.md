@@ -771,6 +771,7 @@ cinsindedir.
 | `dil dene <dosya\|proje>` | testleri koşar |
 | `dil biçimle <dosya\|proje>` | tek kaynağı veya bütün projeyi resmi biçime getirir |
 | `dil denetle <dosya\|proje>` | çalıştırmadan bütün hataları listeler (`--json`) |
+| `dil göçür [proje]` | bildirilmiş yerel PostgreSQL migration'larını uygular |
 | `dil hata <kod>` | hata kodunu açıklar |
 | `dil belge <birim>` | birimin işlemlerini listeler |
 | `dil morfoloji [kelime\|--uyumluluk]` | sürümlü ek tablosunu, bütün kök+ek çözümlerini veya immutable semantic kaydı gösterir |

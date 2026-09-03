@@ -844,6 +844,13 @@ kaybolduğunu buldu; mevcut dilde kanonik başlık yazımıyla kapatılıp herme
 teste alındı. Dosya depoları geçici ürün adaptörüdür; PostgreSQL, migration,
 medya ve template sürtünmeleri ölçülmeden compiler ihtiyacı sayılmaz. K-163'ü
 500–1500 satırlık gerçek uygulama ve süreli ergonomi günlüğü kapanışa taşır.
+K-163 dördüncü dilimde ilk kanıtlı core genişlemesini açtı. RFC-0026/ADR-060/
+spec-25 ile PostgreSQL secretsiz exact loopback bildirimi, parameterized TEXT
+bind, structured C025/23505, eylem transaction/savepoint'i ve değişmez
+migration geçmişi tamamlandı. Çatlı kaynağı dosya slug ön-kontrolünden gerçek
+PRIMARY KEY'e geçti; PostgreSQL 16.11'de apply→skip→hash reddi, injection
+benzeri değer, UNIQUE dalı ve outer rollback gerçek koşuda geçti. Production
+TLS, pool ve multi-process yarışı ayrı açık dogfood kanıtıdır.
 B-001 çağrı sözdizimi ile B-002 gezme zihinsel modeli gerçek insan
 kanıtı gelmeden kapatılmaz veya yeni syntax kararıyla atlanmaz.
 # 40. Proje felsefesinin korunması

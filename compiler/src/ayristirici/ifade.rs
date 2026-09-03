@@ -802,6 +802,28 @@ fn yapili_kalip_ic(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifa
         }));
     }
 
+    // SQL sorgusunu PARAMETRELER ile okumayı/değiştirmeyi dene.
+    // Değerler SQL metnine eklenmez; native adaptör extended-query bind'i yapar.
+    if n == 6
+        && kelime(1) == Some("sorgusunu")
+        && kelime(3) == Some("ile")
+        && son == "dene"
+        && matches!(kelime(4), Some("okumayı" | "değiştirmeyi"))
+    {
+        let kimlik = if kelime(4) == Some("okumayı") {
+            POSTGRESQL_OKU
+        } else {
+            POSTGRESQL_DEGISTIR
+        };
+        return Ok(Some(Ifade::Intrinsic {
+            kimlik: kimlik.into(),
+            argumanlar: vec![
+                tekil_ifade(tokenlar[0].clone())?,
+                tekil_ifade(tokenlar[2].clone())?,
+            ],
+        }));
+    }
+
     // W ın durum kodu / gövdesi — AğYanıtı özellikleri.
     if n == 3 && kelime(1) == Some("durum") && (son == "kodu" || son == "kodunu") {
         return Ok(Some(Ifade::DurumKodu(Box::new(tekil_ifade(

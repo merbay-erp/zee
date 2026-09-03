@@ -7,6 +7,8 @@ pub const HTTP_GETIR: &str = "ag.http_getir";
 pub const SENSOR_ACIK_MI: &str = "donanim.sensor_acik_mi";
 pub const CSRF_BELIRTECI: &str = "web.csrf_belirteci";
 pub const PAROLA_DOGRULA: &str = "guvenlik.parola_dogrula";
+pub const POSTGRESQL_OKU: &str = "veritabani.postgresql_oku";
+pub const POSTGRESQL_DEGISTIR: &str = "veritabani.postgresql_degistir";
 
 pub use crate::yetkinlik::Yetkinlik;
 
@@ -16,6 +18,9 @@ pub enum IntrinsicTuru {
     Metin,
     Mantiksal,
     AgYaniti,
+    MetinListesi,
+    MetinSozlukListesiSonucu,
+    TamSayiSonucu,
 }
 
 /// Statik etki özeti. `WebAdaptoru`, uygulama eylemlerinin HTTP katmanına
@@ -24,6 +29,7 @@ pub enum IntrinsicTuru {
 pub enum IntrinsicEtkisi {
     Saf,
     DisOkuma,
+    DisYazma,
     WebAdaptoru,
 }
 
@@ -41,6 +47,8 @@ pub struct IntrinsicTanimi {
 const METIN: &[IntrinsicTuru] = &[IntrinsicTuru::Metin];
 const IKI_METIN: &[IntrinsicTuru] = &[IntrinsicTuru::Metin, IntrinsicTuru::Metin];
 const YOK: &[IntrinsicTuru] = &[];
+const METIN_VE_METIN_LISTESI: &[IntrinsicTuru] =
+    &[IntrinsicTuru::Metin, IntrinsicTuru::MetinListesi];
 
 pub const TANIMLAR: &[IntrinsicTanimi] = &[
     IntrinsicTanimi {
@@ -74,6 +82,22 @@ pub const TANIMLAR: &[IntrinsicTanimi] = &[
         donus_turu: IntrinsicTuru::Mantiksal,
         etki: IntrinsicEtkisi::Saf,
         tur_hatasi: "Parola ve Argon2id özeti Metin olmalı.",
+    },
+    IntrinsicTanimi {
+        kimlik: POSTGRESQL_OKU,
+        yetkinlik: Yetkinlik::Veritabani,
+        arguman_turleri: METIN_VE_METIN_LISTESI,
+        donus_turu: IntrinsicTuru::MetinSozlukListesiSonucu,
+        etki: IntrinsicEtkisi::DisOkuma,
+        tur_hatasi: "PostgreSQL sorgusu Metin, parametreleri Metin listesi olmalı.",
+    },
+    IntrinsicTanimi {
+        kimlik: POSTGRESQL_DEGISTIR,
+        yetkinlik: Yetkinlik::Veritabani,
+        arguman_turleri: METIN_VE_METIN_LISTESI,
+        donus_turu: IntrinsicTuru::TamSayiSonucu,
+        etki: IntrinsicEtkisi::DisYazma,
+        tur_hatasi: "PostgreSQL değişikliği Metin sorgu ve Metin parametre listesi ister.",
     },
 ];
 

@@ -8,7 +8,7 @@ Normatif kaynak: RFC-0025, ADR-033, ADR-035, ADR-037, ADR-040. Durum:
 Resmî derleyici, runtime, CLI ve LSP aynı değişmez `KaynakSinirlari` profilini
 kullanmak ZORUNDADIR. Program, paket veya ortam bu sınırları sessizce
 yükseltemez. Sınırsız fallback ve başarılı görünen truncate YASAKTIR.
-HTTP/ağ, web oturumu, IO izi, LSP, paket/registry, tanı ve kalıcı dosya
+HTTP/ağ, web oturumu, IO izi, LSP, paket/registry, tanı, kalıcı dosya ve PostgreSQL
 katmanları sayısal varsayılanlarını bu profilin domain görünümlerinden okumak
 ZORUNDADIR; yerel sabit yalnız ortak değere bağlı geriye uyum alias'ı olabilir.
 
@@ -80,6 +80,13 @@ Kanonik tarayıcı hostu limitleri ABI v3 dışa aktarımlarından okumalı, UTF
 boyunu byte dizisini kurmadan hesaplamalı ve metni exact WASM tamponuna
 `encodeInto` eşdeğeri tek geçişle yazmalıdır. Genel ABI tampon kotası bu daha
 dar tür bütçesinin yerine GEÇEMEZ.
+
+## PostgreSQL
+
+Sorgu 64 KiB, parametre listesi 100 öğe, tek parametre 64 KiB, okuma sonucu
+10.000 satır/100 sütun/16 MiB sınırındadır. Tek migration 1 MiB, migration
+toplamı 8 MiB'ı aşamaz. Adaptör bu değerleri `veritabani()` görünümünden okumak
+ZORUNDADIR; yerel ve kullanıcı tarafından yükseltilebilir sabit YASAKTIR.
 
 ## Ayrı kapsam
 

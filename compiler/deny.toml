@@ -35,6 +35,7 @@ wildcards = "deny"
 highlight = "all"
 allow-wildcard-paths = false
 skip = [
+    { crate = "base64@0.22.1", reason = "postgres-protocol 0.6.x henüz ureq 3 zincirindeki base64 0.23 ile birleşmiyor" },
     { crate = "getrandom@0.2.17", reason = "ring/rustls zinciri henüz getrandom 0.4 ile birleşmiyor" },
     { crate = "syn@2.0.119", reason = "curve25519-dalek-derive syn 2, serde_derive syn 3 kullanıyor" },
 ]

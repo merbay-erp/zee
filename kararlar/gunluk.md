@@ -2809,3 +2809,26 @@ insan kanıtı ve K-163 ilk gerçek Zee ürünü vardır.
   compiler değişikliği için yönetişim önkoşulu artık hazırdır.
 B-001/B-002 (yeni sırada K-161/K-162), gerçek 10 çocuk/öğrenci + 5 profesyonel
 usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.
+
+### K-163 dördüncü dilim — PostgreSQL saha sınırı — 3 Eylül 2026
+
+- **Ürün kanıtı:** Dosya tabanlı slug ön-kontrolü gerçek PRIMARY KEY'e taşındı.
+  Çatlı uygulaması 492 Zee satırı, 12 satır manifest ve 6 satır migration ile
+  510 satırlık dikey kanıttır; denetim temiz ve DB'siz testler 6/6'dır.
+- **Dil/runtime kararı:** RFC-0026/ADR-060/spec-25 secretsiz exact loopback
+  hedefi, ortam değişkeninden bağlantı, extended-query TEXT bind, C025
+  SQLSTATE/constraint verisi, eylem transaction/savepoint'i ve dil göçür
+  migration geçmişini tanımlar. Runtime modeli, PostgreSQL adaptörü ve CLI
+  orkestrasyonu ayrı sahipliktedir.
+- **Gerçek koşu:** PostgreSQL 16.11'de migration 1 apply→1 skip; uygulanmış
+  byte değişince C026/exit 1. x'or-true-- slug'ı aynen saklandı; ikinci yazım
+  23505 dalına girdi ve tek kayıt kaldı. İki INSERT'li başarısız Sonuç outer
+  transaction'ı geri aldı; lifecycle yayın ve silmeyle sıfır kayda döndü.
+- **Dürüst sınır:** Bu localhost sslmode=disable ve tek-worker kanıtıdır.
+  Production TLS/pool, iki eşzamanlı uygulama bağlantısı, multi-process ve
+  medya henüz kanıtlanmadı. K-163 bu nedenle devam eder.
+- **Hedef ayrımı:** Gerçek WASM derleme kapısı yeniden çalıştırıldığında
+  yayın/artefakt imzalama modüllerinin native bağımlılıklarının playground
+  grafiğine sızdığı görüldü. Bu modüller native-only yapıldı; davranışsız paket
+  modeli WASM'da serde türetimi olmadan kaldı. PostgreSQL adaptörü de aynı
+  native sınırının dışına çıkmıyor.

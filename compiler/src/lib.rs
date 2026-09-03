@@ -23,6 +23,7 @@ pub mod ag_istemcisi;
 #[doc(hidden)]
 pub mod agac;
 #[doc(hidden)]
+#[cfg(not(target_arch = "wasm32"))]
 pub mod artefakt_dogrulama;
 #[doc(hidden)]
 pub mod ayristirici;
@@ -59,6 +60,9 @@ pub mod paket;
 #[doc(hidden)]
 pub mod paket_modeli;
 #[doc(hidden)]
+#[cfg(not(target_arch = "wasm32"))]
+pub mod postgresql;
+#[doc(hidden)]
 pub mod proje;
 #[doc(hidden)]
 #[cfg(not(target_arch = "wasm32"))]
@@ -73,10 +77,13 @@ mod tani_politikasi;
 #[cfg(not(target_arch = "wasm32"))]
 pub mod tedarik;
 #[doc(hidden)]
+pub mod veritabani_modeli;
+#[doc(hidden)]
 pub mod wasm_api;
 #[doc(hidden)]
 pub mod web_guvenligi;
 #[doc(hidden)]
+#[cfg(not(target_arch = "wasm32"))]
 pub mod yayin;
 #[doc(hidden)]
 pub mod yetkinlik;

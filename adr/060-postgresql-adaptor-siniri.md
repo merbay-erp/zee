@@ -1,0 +1,35 @@
+# ADR-060 — PostgreSQL adaptör sahipliği ve güven sınırı
+
+- **Durum:** kabul
+- **Tarih:** 3 Eylül 2026
+- **İlgili kayıt:** K-163, B-073, RFC-0026
+
+## Karar
+
+`veritabani_modeli` yalnız davranışsız hedef/bildirim/hata veri sözleşmesidir.
+Proje ayrıştırıcısı ve runtime bu modeli tüketir; `postgresql` adaptörü
+runtime'a ve proje davranış katmanına bağımlı olmaz. CLI bildirimi adaptöre bağlar. Böylece transport,
+semantic yürütme ve ürün bildirimi ayrı sahiplikte kalır.
+
+SQL ile değerler extended-query protokolünde ayrı taşınır ve bütün değerler
+açık `TEXT` parametresidir. Okuma yalnız non-null `TEXT/VARCHAR/BPCHAR/NAME`
+sütun kabul eder; ürün sorgusu diğer tipleri `::text`, NULL'ı `COALESCE` ile
+açıklaştırır. Sorgu, parametre, satır, sütun, sonuç ve migration boyutları
+merkezî `KaynakSinirlari.veritabani()` profilinden gelir.
+
+PostgreSQL değişikliği yalnız eylem transaction'ı içinde yapılır. Dosya ve DB
+yazısını tek eylemde birleştirmek yasaktır. Migration'lar advisory lock ve tek
+transaction altında SHA-256 geçmişine bağlanır; migration içinde transaction
+komutu fail-closed reddedilir.
+
+Bağlantı URL'si kaynakta bulunamaz. İlk adaptör yalnız exact loopback hedefi ve
+`sslmode=disable` kabul eder. Bu kısıt production güvenlik çözümü değil,
+production sözü vermeyen dar bir dogfood sınırıdır.
+
+`postgres-protocol 0.6.x` geçişli olarak `base64 0.22` kullanırken mevcut HTTP
+istemcisi `base64 0.23` kullanır. `cargo deny` bu tek, gerekçeli sürüm
+çoğulluğunu geçici olarak kabul eder; başka çoğulluklar yine reddedilir. İki
+zincir ortak sürüme geçtiğinde istisna kaldırılır.
+
+PostgreSQL okuma/değiştirme, sonuç ve structured hata dahil sürümlü IO izine
+girer; replay dış veritabanına bağlanmaz.

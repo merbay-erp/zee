@@ -7,6 +7,7 @@
 mod baglanti;
 mod okuma;
 mod profiller;
+mod veritabani;
 mod web;
 
 pub use baglanti::{baglanti_izni_al, BaglantiIzni};
@@ -16,6 +17,7 @@ pub use profiller::{
     AgSinirlari, HttpSinirlari, IoIziSinirlari, KaliciDosyaSinirlari, LspSinirlari,
     MetadataSinirlari, PaketSinirlari, PlaygroundSinirlari, RegistrySinirlari, TaniSinirlari,
 };
+pub use veritabani::VeritabaniSinirlari;
 pub use web::WebSinirlari;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -46,6 +48,7 @@ pub struct KaynakSinirlari {
     tani: TaniSinirlari,
     metadata: MetadataSinirlari,
     kalici_dosya: KaliciDosyaSinirlari,
+    veritabani: VeritabaniSinirlari,
 }
 
 impl KaynakSinirlari {
@@ -164,6 +167,10 @@ impl KaynakSinirlari {
     pub const fn kalici_dosya(self) -> KaliciDosyaSinirlari {
         self.kalici_dosya
     }
+
+    pub const fn veritabani(self) -> VeritabaniSinirlari {
+        self.veritabani
+    }
 }
 
 /// Resmî güvenli profil. Limit değişiklikleri kullanıcı programlarının
@@ -262,6 +269,7 @@ pub const VARSAYILAN_KAYNAK_SINIRLARI: KaynakSinirlari = KaynakSinirlari {
         kilit_bekleme_ms: 5_000,
         kilit_yeniden_dene_ms: 5,
     },
+    veritabani: veritabani::VARSAYILAN,
 };
 
 #[cfg(test)]

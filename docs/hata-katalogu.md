@@ -165,6 +165,8 @@ kalır (ADR-025).
 | C022 | Web güvenlik adaptörü işlemi reddetti | Güvenli oturum/CSRF desteğini ve başlığa yazılan çerez ya da yerel yönlendirme değerini denetle |
 | C023 | Çalışma adımı, çıktı, koleksiyon ya da eşzamanlı görev kaynak bütçesi aşıldı | Sonsuz döngüyü düzelt; işi, çıktıyı veya koleksiyonu daha küçük sonlu parçalara böl |
 | C024 | Metin ya da saklanan değer heap bütçesi aşıldı | Büyük metin ve değer grafiklerini daha küçük çalışma adımlarına böl |
+| C025 | PostgreSQL sorgusu veya değişikliği başarısız | Hatanın `sqlstate`, `kısıt` ve `tablo` verisini incele; sorgu ve parametreyi düzelt |
+| C026 | PostgreSQL migration veya bağlantı işlemi başarısız | Proje hedefini, bağlantı ortam değişkenini ve değişmez migration geçmişini doğrula |
 
 ## D — Doğrulama
 

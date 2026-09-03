@@ -89,6 +89,12 @@ pub(super) fn degerlendir_async<'a>(
                         };
                         Ok(Deger::AgYaniti { durum, govde })
                     }
+                    POSTGRESQL_OKU => {
+                        veritabani::intrinsic_degerlendir(&degerler, io, satir, false)
+                    }
+                    POSTGRESQL_DEGISTIR => {
+                        veritabani::intrinsic_degerlendir(&degerler, io, satir, true)
+                    }
                     SENSOR_ACIK_MI => {
                         let [Deger::Metin(ad)] = degerler.as_slice() else {
                             return Err(ic_hata(satir));

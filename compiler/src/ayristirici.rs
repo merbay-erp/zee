@@ -18,7 +18,9 @@ use crate::agac::{
     AritmetikIslec, Cumle, HttpYontemi, Ifade, Islec, Islem, IslemTuru, KosulKolu, Ozellik,
     Parametre, RotaErisimi, Test, Yapi,
 };
-use crate::intrinsic::{CSRF_BELIRTECI, HTTP_GETIR, PAROLA_DOGRULA, SENSOR_ACIK_MI};
+use crate::intrinsic::{
+    CSRF_BELIRTECI, HTTP_GETIR, PAROLA_DOGRULA, POSTGRESQL_DEGISTIR, POSTGRESQL_OKU, SENSOR_ACIK_MI,
+};
 use crate::ondalik::Ondalik;
 use crate::sozcukleyici::{Token, TokenTur};
 use crate::tani::Tani;

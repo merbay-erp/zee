@@ -84,7 +84,10 @@ fn ifade_denetle_ic(
             }
             for (arguman, beklenen) in argumanlar.iter_mut().zip(tanim.arguman_turleri) {
                 let bulunan = ifade_denetle(arguman, ortam, baglam, satir)?;
-                if bulunan != intrinsic_turunu_cevir(*beklenen) {
+                let beklenen_tur = intrinsic_turunu_cevir(*beklenen);
+                let bos_metin_listesi = *beklenen == intrinsic::IntrinsicTuru::MetinListesi
+                    && bulunan == Tur::Liste(VeriTuru::Bilinmeyen);
+                if bulunan != beklenen_tur && !bos_metin_listesi {
                     let mesaj = if kimlik == intrinsic::HTTP_GETIR {
                         format!("Adres Metin olmalı; burada {} var.", bulunan.adi())
                     } else {

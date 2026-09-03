@@ -20,7 +20,7 @@ izini atomik yazar. İz üretimi açık opt-in'dir.
 ve argümanlarıyla birebir eşleşmek ZORUNDADIR. Eşleşirse kayıtlı sonuç döner;
 farkta koşu fail-closed başarısız olur. Başarılı koşu izin tamamını tüketir.
 
-Replay dosya/ağ/web/transaction/donanım etkisini yeniden uygulamaz; bu etkilerin
+Replay dosya/ağ/web/PostgreSQL/transaction/donanım etkisini yeniden uygulamaz; bu etkilerin
 aynı protokolle istendiğini doğrular. `dil iz oynat` kullanıcı çıktısını ancak
 bütün iz eşleştiğinde gösterir.
 
@@ -41,7 +41,7 @@ sürümü gerektirir.
 
 ## Gizlilik (TANIMLI)
 
-İz; kullanıcı girdisi, dosya/ağ içeriği, argüman, çerez ve token taşıyabilir;
+İz; kullanıcı girdisi, dosya/ağ/veritabanı içeriği, argüman, çerez ve token taşıyabilir;
 özel artefakttır ve varsayılan olarak Git dışında kalır. Parola ile PHC özeti
 ham/geri çevrilebilir alan olamaz; yalnız ayrı SHA-256 parmak izleri kaydedilir.
 

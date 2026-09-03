@@ -5,7 +5,8 @@
 
 use dil::agac::{Cumle, Ifade};
 use dil::intrinsic::{
-    self, IntrinsicEtkisi, Yetkinlik, CSRF_BELIRTECI, HTTP_GETIR, PAROLA_DOGRULA, SENSOR_ACIK_MI,
+    self, IntrinsicEtkisi, Yetkinlik, CSRF_BELIRTECI, HTTP_GETIR, PAROLA_DOGRULA,
+    POSTGRESQL_DEGISTIR, POSTGRESQL_OKU, SENSOR_ACIK_MI,
 };
 use dil::kaynagi_derle;
 use std::collections::HashSet;
@@ -24,7 +25,7 @@ fn intrinsic_kaydi_kimlik_yetkinlik_ve_etkiyi_tekillestirir() {
         .map(|tanim| tanim.kimlik)
         .collect::<HashSet<_>>();
     assert_eq!(kimlikler.len(), intrinsic::TANIMLAR.len());
-    assert_eq!(kimlikler.len(), 4);
+    assert_eq!(kimlikler.len(), 6);
 
     let http = intrinsic::tanim(HTTP_GETIR).expect("HTTP kaydı");
     assert_eq!(http.yetkinlik, Yetkinlik::Ag);
@@ -33,6 +34,34 @@ fn intrinsic_kaydi_kimlik_yetkinlik_ve_etkiyi_tekillestirir() {
     let csrf = intrinsic::tanim(CSRF_BELIRTECI).expect("CSRF kaydı");
     assert_eq!(csrf.yetkinlik, Yetkinlik::WebOturumu);
     assert_eq!(csrf.etki, IntrinsicEtkisi::WebAdaptoru);
+
+    let postgresql = intrinsic::tanim(POSTGRESQL_DEGISTIR).expect("PostgreSQL kaydı");
+    assert_eq!(postgresql.yetkinlik, Yetkinlik::Veritabani);
+    assert_eq!(postgresql.etki, IntrinsicEtkisi::DisYazma);
+}
+
+#[test]
+fn postgresql_yuzeyi_sorgu_ve_parametreleri_ayri_intrinsice_indirir() {
+    let kaynak = r#"
+parametreler "x' OR true --" listesi olsun
+satırlar "SELECT ad::text AS ad FROM sayfalar WHERE slug = $1" sorgusunu parametreler ile okumayı dene olsun
+etkilenen "UPDATE sayfalar SET ad = $1 WHERE slug = $2" sorgusunu parametreler ile değiştirmeyi dene olsun
+"#;
+    let program = kaynagi_derle(kaynak).expect("PostgreSQL ifadeleri derlenmeli");
+    for (sira, kimlik) in [POSTGRESQL_OKU, POSTGRESQL_DEGISTIR]
+        .into_iter()
+        .enumerate()
+    {
+        let Ifade::Intrinsic {
+            kimlik: bulunan,
+            argumanlar,
+        } = atama_degeri(&program.cumleler[sira + 1]).turu()
+        else {
+            panic!("PostgreSQL intrinsic bekleniyordu")
+        };
+        assert_eq!(bulunan, kimlik);
+        assert_eq!(argumanlar.len(), 2);
+    }
 }
 
 #[test]

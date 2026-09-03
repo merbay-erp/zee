@@ -181,6 +181,7 @@ fn govde() -> ExitCode {
         Some("çıkar") | Some("cikar") => cikar_komutu(&argumanlar),
         Some("ekle") => ekle_komutu(&argumanlar),
         Some("kilitle") => dil_registry::kilitle_komutu(&argumanlar),
+        Some("göçür") | Some("gocur") => gocur_komutu(&argumanlar),
         Some("anahtar") => anahtar_komutu(&argumanlar),
         Some("paketle") => paketle_komutu(&argumanlar),
         Some("paketler") => dil_registry::paketler_komutu(&argumanlar),
@@ -222,6 +223,7 @@ fn kullanim() {
     eprintln!("      ilk uzak paket: --registry https://... --kök 1@sha256:<özet>");
     eprintln!("  dil çıkar <paket> [proje]    kullanılmayan doğrudan paketi kaldırır");
     eprintln!("  dil kilitle [proje] [--çevrimdışı] bütün bağımlılıkları sabitler");
+    eprintln!("  dil göçür [proje]          PostgreSQL migration'larını güvenle uygular");
     eprintln!("  dil anahtar üret <dosya>    0600 izinli Ed25519 yayıncı anahtarı üretir");
     eprintln!("  dil paketle [proje] --anahtar <dosya> [--çıktı <klasör>]");
     eprintln!("  dil paketler [proje] [--yenile] doğrudan/geçişli grafiği gösterir");
@@ -233,6 +235,45 @@ fn kullanim() {
     eprintln!("  dil iz oynat <iz> <program>              IO izini dış dünyasız oynatır");
     eprintln!("  dil morfoloji [kelime|--uyumluluk] profil, çözüm veya immutable kaydı gösterir");
     eprintln!("  dil sürüm                  sürümü gösterir");
+}
+
+fn gocur_komutu(argumanlar: &[String]) -> ExitCode {
+    if argumanlar.len() > 2 {
+        eprintln!("Kullanım: dil göçür [proje]");
+        return ExitCode::from(2);
+    }
+    let yol = std::path::Path::new(argumanlar.get(1).map_or(".", String::as_str));
+    let proje = match dil::paket::ProjeGrafigi::cozumle(yol) {
+        Ok(proje) => proje,
+        Err(hata) => {
+            GirdiHatasi::from(hata).yazdir(false);
+            return ExitCode::FAILURE;
+        }
+    };
+    if let Err(hata) = proje.kilidi_denetle() {
+        GirdiHatasi::from(hata).yazdir(false);
+        return ExitCode::FAILURE;
+    }
+    let Some(bildirim) = &proje.ana_bildirim().veritabani else {
+        eprintln!("P015: Proje PostgreSQL bildirimini taşımıyor.");
+        return ExitCode::from(2);
+    };
+    match dil::postgresql::gocleri_uygula(bildirim, proje.ana_kok()) {
+        Ok(rapor) => {
+            println!(
+                "Migration tamamlandı: {} uygulandı, {} zaten günceldi.",
+                rapor.uygulanan, rapor.atlanan
+            );
+            ExitCode::SUCCESS
+        }
+        Err(hata) => {
+            eprintln!("C026: Migration başarısız: {}", hata.mesaj);
+            for (ad, deger) in hata.veri {
+                eprintln!("  {}: {}", ad, deger);
+            }
+            ExitCode::FAILURE
+        }
+    }
 }
 
 fn io_izi_komutu(argumanlar: &[String]) -> ExitCode {
@@ -1145,6 +1186,9 @@ impl KaynakGirdisi {
             web_modu,
             argumanlar,
             politika,
+            self.proje
+                .as_ref()
+                .and_then(|proje| proje.ana_bildirim().veritabani.clone()),
         )
     }
 
@@ -1299,6 +1343,9 @@ struct GercekIo {
     bekleyen_web_yaniti: Option<WebYanitTaslagi>,
     politika: dil::yetkinlik::YetkinlikPolitikasi,
     dosya_siniri_koku: std::path::PathBuf,
+    veritabani_bildirimi: Option<dil::proje::VeritabaniBildirimi>,
+    postgresql: Option<dil::postgresql::PostgresqlOturumu>,
+    postgresql_yazma_eylemleri: Vec<bool>,
 }
 
 #[derive(Clone)]
@@ -1333,6 +1380,7 @@ impl GercekIo {
         web_modu: WebModu,
         argumanlar: Vec<String>,
         politika: dil::yetkinlik::YetkinlikPolitikasi,
+        veritabani_bildirimi: Option<dil::proje::VeritabaniBildirimi>,
     ) -> GercekIo {
         let tohum = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
@@ -1365,7 +1413,33 @@ impl GercekIo {
             politika,
             dosya_siniri_koku: std::fs::canonicalize(dosya_siniri_koku)
                 .unwrap_or_else(|_| dosya_siniri_koku.to_path_buf()),
+            veritabani_bildirimi,
+            postgresql: None,
+            postgresql_yazma_eylemleri: Vec::new(),
         }
+    }
+
+    fn postgresql_oturumunu_al(
+        &mut self,
+    ) -> Result<&mut dil::postgresql::PostgresqlOturumu, dil::yorumlayici::VeritabaniHatasi> {
+        if self.postgresql.is_none() {
+            let bildirim = self.veritabani_bildirimi.as_ref().ok_or_else(|| {
+                dil::yorumlayici::VeritabaniHatasi {
+                    mesaj: "Proje PostgreSQL bağlantı bildirimini taşımıyor".into(),
+                    veri: Vec::new(),
+                }
+            })?;
+            self.postgresql = Some(dil::postgresql::PostgresqlOturumu::baglan(
+                bildirim,
+                self.eylem_yedekleri.len(),
+            )?);
+        }
+        self.postgresql
+            .as_mut()
+            .ok_or_else(|| dil::yorumlayici::VeritabaniHatasi {
+                mesaj: "PostgreSQL oturumu kurulamadı".into(),
+                veri: Vec::new(),
+            })
     }
 
     fn dosya_yolu(&self, yol: &str, yazma: bool) -> Result<std::path::PathBuf, String> {
@@ -1726,6 +1800,16 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
     fn dosya_yaz(&mut self, yol: &str, satir: &str, ekleme: bool) -> Result<(), String> {
         self.politika
             .gerektir(dil::yetkinlik::Yetkinlik::DosyaYazma)?;
+        if self
+            .postgresql_yazma_eylemleri
+            .iter()
+            .any(|kullandi| *kullandi)
+        {
+            return Err(
+                "aynı eylem dosya ve PostgreSQL yazımını birlikte kullanamaz; dağıtık atomiklik sözü verilmez"
+                    .into(),
+            );
+        }
         let gercek_yol = self.dosya_yolu(yol, true)?;
         if self
             .eylem_yedekleri
@@ -1783,6 +1867,36 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         zaman_asimi_ms: Option<i64>,
     ) -> Result<(i64, String), String> {
         dil::ag_istemcisi::getir(url, zaman_asimi_ms, &self.politika)
+    }
+    fn postgresql_oku(
+        &mut self,
+        sorgu: &str,
+        parametreler: &[String],
+    ) -> Result<Vec<Vec<(String, String)>>, dil::yorumlayici::VeritabaniHatasi> {
+        self.postgresql_oturumunu_al()?.oku(sorgu, parametreler)
+    }
+    fn postgresql_degistir(
+        &mut self,
+        sorgu: &str,
+        parametreler: &[String],
+    ) -> Result<i64, dil::yorumlayici::VeritabaniHatasi> {
+        if self.postgresql_yazma_eylemleri.is_empty() {
+            return Err(dil::yorumlayici::VeritabaniHatasi {
+                mesaj: "PostgreSQL değişikliği açık bir eylem transaction'ı istiyor".into(),
+                veri: Vec::new(),
+            });
+        }
+        if self.eylem_yedekleri.iter().any(|yedek| !yedek.is_empty()) {
+            return Err(dil::yorumlayici::VeritabaniHatasi {
+                mesaj: "aynı eylem dosya ve PostgreSQL yazımını birlikte kullanamaz; dağıtık atomiklik sözü verilmez".into(),
+                veri: Vec::new(),
+            });
+        }
+        self.postgresql_yazma_eylemleri
+            .iter_mut()
+            .for_each(|kullandi| *kullandi = true);
+        self.postgresql_oturumunu_al()?
+            .degistir(sorgu, parametreler)
     }
     fn sunucu_kur(&mut self, kapi: i64) -> Result<(), String> {
         self.politika
@@ -2159,16 +2273,32 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         Ok(())
     }
     fn eylem_baslat(&mut self) -> Result<(), String> {
+        if let Some(postgresql) = &mut self.postgresql {
+            postgresql.eylem_baslat().map_err(|hata| hata.mesaj)?;
+        }
         self.eylem_yedekleri.push(std::collections::HashMap::new());
+        self.postgresql_yazma_eylemleri.push(false);
         Ok(())
     }
     fn eylem_tamamla(&mut self) -> Result<(), String> {
+        if let Some(postgresql) = &mut self.postgresql {
+            postgresql.eylem_tamamla().map_err(|hata| hata.mesaj)?;
+        }
+        self.postgresql_yazma_eylemleri
+            .pop()
+            .ok_or_else(|| "açık eylem transaction'ı yok".to_string())?;
         self.eylem_yedekleri
             .pop()
             .map(|_| ())
             .ok_or_else(|| "açık eylem transaction'ı yok".into())
     }
     fn eylem_geri_al(&mut self) -> Result<(), String> {
+        if let Some(postgresql) = &mut self.postgresql {
+            postgresql.eylem_geri_al().map_err(|hata| hata.mesaj)?;
+        }
+        self.postgresql_yazma_eylemleri
+            .pop()
+            .ok_or_else(|| "açık eylem transaction'ı yok".to_string())?;
         let yedek = self
             .eylem_yedekleri
             .pop()
@@ -2650,6 +2780,7 @@ mod web_profili_testleri {
             WebModu::Deneysel,
             Vec::new(),
             dil::yetkinlik::YetkinlikPolitikasi::gelistirici(),
+            None,
         );
         io.bekleyen_akis = Some(sunucu);
         io.web_istek_yedegi = Some(WebIstekYedegi {
@@ -2692,6 +2823,7 @@ mod web_profili_testleri {
             WebModu::Deneysel,
             Vec::new(),
             dil::yetkinlik::YetkinlikPolitikasi::gelistirici(),
+            None,
         );
         io.bekleyen_akis = Some(sunucu);
         io.web_istek_yedegi = Some(WebIstekYedegi {
@@ -2724,6 +2856,7 @@ mod web_profili_testleri {
             },
             Vec::new(),
             dil::yetkinlik::YetkinlikPolitikasi::gelistirici(),
+            None,
         );
         io.web_guvenligi
             .istegi_baslat_kimlikle(None, "192.0.2.1", web_duvar_saati_ms())
@@ -2787,6 +2920,7 @@ mod web_profili_testleri {
             WebModu::Kapali,
             Vec::new(),
             politika,
+            None,
         );
         let (durum, govde) = io
             .http_getir(&url, None)

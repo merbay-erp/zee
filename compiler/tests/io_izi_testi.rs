@@ -1,6 +1,8 @@
 //! K-115 deterministik IO trace/replay davranış kanıtları.
 
-use dil::yorumlayici::{calistir_io, GirdiCikti, IzKaydedenIo, IzYenidenOynatici, ToplayanIo};
+use dil::yorumlayici::{
+    calistir_io, GirdiCikti, IzKaydedenIo, IzYenidenOynatici, ToplayanIo, VeritabaniHatasi,
+};
 
 #[test]
 fn program_gercek_io_izinden_dis_dunyasiz_aynen_oynatilir() {
@@ -110,4 +112,45 @@ fn parola_ve_ozet_ham_ya_da_hexlenmis_halde_ize_sizmaz() {
     let mut oynatici = IzYenidenOynatici::yeni(&iz).expect("iz okunmalı");
     assert!(!oynatici.parola_dogrula("parola", "ozet"));
     oynatici.bitir().expect("parmak izleri eşleşmeli");
+}
+
+#[test]
+fn postgresql_okuma_yazma_ve_yapilandirilmis_hata_izden_aynen_oynatilir() {
+    let mut taban = ToplayanIo::yeni(Vec::new());
+    taban.postgresql.okuma_sonuclari.push_back(Ok(vec![vec![
+        ("slug".into(), "anasayfa".into()),
+        ("baslik".into(), "Zee".into()),
+    ]]));
+    taban
+        .postgresql
+        .degistirme_sonuclari
+        .push_back(Err(VeritabaniHatasi {
+            mesaj: "benzersiz alan çakıştı".into(),
+            veri: vec![("sqlstate".into(), "23505".into())],
+        }));
+    let mut kaydeden = IzKaydedenIo::yeni(taban);
+    let okuma = kaydeden
+        .postgresql_oku("SELECT slug::text", &["anasayfa".into()])
+        .expect("okuma kaydedilmeli");
+    let hata = kaydeden
+        .postgresql_degistir("INSERT INTO sayfa VALUES ($1)", &["anasayfa".into()])
+        .expect_err("hata kaydedilmeli");
+    assert_eq!(okuma[0][0].1, "anasayfa");
+    assert_eq!(hata.veri[0].1, "23505");
+    let iz = kaydeden.iz_metni().expect("iz yazılmalı");
+
+    let mut oynatici = IzYenidenOynatici::yeni(&iz).expect("iz okunmalı");
+    assert_eq!(
+        oynatici
+            .postgresql_oku("SELECT slug::text", &["anasayfa".into()])
+            .expect("okuma oynatılmalı"),
+        okuma
+    );
+    assert_eq!(
+        oynatici
+            .postgresql_degistir("INSERT INTO sayfa VALUES ($1)", &["anasayfa".into()])
+            .expect_err("hata oynatılmalı"),
+        hata
+    );
+    oynatici.bitir().expect("bütün iz tüketilmeli");
 }
