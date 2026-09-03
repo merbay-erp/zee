@@ -2,3 +2,4 @@
 # enforcement_parent	d82bbc47e648056e7ef3d5070fe974b9ed0f55c0
 # commit	sinif	urun	is	reproducer	etkilenen_proje	minimalite	karar
 7f2f7e904fce37b97e1fb442536cc56dc0de2649	maintenance	-	-	-	-	Yalnız sabit toolchain Clippy uyarıları giderildi; grammar ve runtime davranışı değişmedi.	-
+b8f8d8a6d9b608975177407e403f92403ce06eb9	dogfood-change	legacy-panel	K-163	compiler/tests/postgresql_testi.rs	dogfood/legacy-panel/postgresql-gereksinimi.dil	Yalnız gerçek legacy panel sayfa yaşam döngüsünün gerektirdiği parametreli sorgu, eylem transaction'ı ve migration yüzeyi eklendi; production TLS/pool kapsam dışı bırakıldı.	adr/060-postgresql-adaptor-siniri.md
