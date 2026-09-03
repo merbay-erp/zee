@@ -4,6 +4,8 @@
 etkisini açıkça bildirir. Kapının makine-okunur kaynağı
 [`compiler-degisiklik-beyanlari-v1.tsv`](compiler-degisiklik-beyanlari-v1.tsv),
 mimari kararı [ADR-053](../adr/053-compiler-semantic-degisiklik-beyani.md)'tür.
+K-160A sonrasında bu beyan tek başına feature izni değildir; ikinci kapı
+[core freeze beyanıdır](core-freeze-beyani.md).
 
 ## Satır sözleşmesi
 
@@ -39,3 +41,6 @@ cargo run --locked --bin faz_test_matrisi -- --denetle \
 gerekçe review edilir. Yanlış sınıflandırma, kod incelemesinde semantic bug
 sayılır. Koruk; eksik/yinelenen satırı, bozuk kanıtı ve kaynak commit'i olmayan
 sahipsiz beyanı otomatik reddeder.
+
+Core freeze kapısı semantic sınıfı freeze sınıfıyla çapraz denetler:
+`semantic-change`, dogfood/security/correctness kanıtı olmadan geçemez.

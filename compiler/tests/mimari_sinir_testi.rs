@@ -440,6 +440,30 @@ fn semantic_regresyon_korpusu_gecmisten_sessizce_silinemez() {
 }
 
 #[test]
+fn core_freeze_gercek_dogfood_kaniti_olmadan_acilamaz() {
+    let ci = kaynak("../.github/workflows/ci.yml");
+    assert!(
+        ci.contains("bash scripts/core-freeze-korugu.sh \"$ZEE_CORE_FREEZE_TABANI\""),
+        "core freeze koruğu CI'dan kopmamalı"
+    );
+    let koruk = kaynak("../scripts/core-freeze-korugu.sh");
+    for kanit in [
+        "docs/core-freeze-beyanlari-v1.tsv",
+        "CORE FREEZE COMPILER COMMIT'İ TEKİL BEYAN TAŞIMIYOR",
+        "CORE FREEZE MAINTENANCE BEYANI UYUŞMUYOR",
+        "CORE FREEZE DOGFOOD BEYANI UYUŞMUYOR",
+        "CORE FREEZE $alan KANITI GEÇERSİZ",
+        "dosya_iste \"$commit\" \"REPRODUCER\"",
+        "dosya_iste \"$commit\" \"ETKİLENEN PROJE\"",
+        "CORE FREEZE ADR/SPEC KANITI GEÇERSİZ",
+        "CORE FREEZE BEYANI YENİDEN YAZILDI",
+        "git rev-list --reverse \"${enforcement_parent}..HEAD\" -- compiler/src",
+    ] {
+        assert!(koruk.contains(kanit), "core freeze kanıtı eksik: {kanit}");
+    }
+}
+
+#[test]
 fn performans_gozlemi_shared_ci_esigine_donusmez() {
     let ci = kaynak("../.github/workflows/ci.yml");
     let arac = kaynak("src/bin/olcum.rs");

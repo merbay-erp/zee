@@ -31,7 +31,7 @@
 | WASM | `compiler/tests/playground_testi.rs`<br>`compiler/fuzz/corpus/wasm_abi` | `compiler/fuzz/fuzz_targets/wasm_abi.rs`<br>`compiler/fuzz/corpus/wasm_abi` | — | `uctan_uca` |
 | CLI | `compiler/tests/io_izi_cli_testi.rs`<br>`golden/28-cli-araci.dil` | — | — | `proje`<br>`uctan_uca` |
 | Project system | `compiler/tests/proje_testi.rs`<br>`projeler` | — | — | `paket`<br>`registry`<br>`cli`<br>`uctan_uca` |
-| Semantic regression | `regression/v2.tsv`<br>`regression`<br>`scripts/semantic-regresyon-korugu.sh`<br>`docs/compiler-degisiklik-beyanlari-v1.tsv` | — | — | `uctan_uca` |
+| Semantic regression | `regression/v2.tsv`<br>`regression`<br>`scripts/semantic-regresyon-korugu.sh`<br>`scripts/core-freeze-korugu.sh`<br>`docs/compiler-degisiklik-beyanlari-v1.tsv`<br>`docs/core-freeze-beyanlari-v1.tsv` | — | — | `uctan_uca` |
 | End-to-end | `golden` | — | — | — |
 | Engineering gates | `compiler/tests/fixtures/islev-egilimi-v1.tsv`<br>`compiler/tests/fixtures/izinli-katman-cevrimleri-v1.tsv`<br>`compiler/tests/fixtures/katman-mimarisi-v1.tsv`<br>`compiler/tests/fixtures/tani-kimlikleri-v1.tsv`<br>`docs/kanit-haritasi-v1.tsv`<br>`docs/performans-gecmisi-v2.tsv`<br>`docs/olcumler.md` | — | — | — |
 
@@ -61,7 +61,7 @@ ek kapsam, test grubunun gerçekten yokladığı diğer fazları bildirir.
 | WASM | `test:playground_testi` | `test:playground_testi → lexer, parser, cozumleyici, tur, hir, runtime` | Playground, ABI sahipligi, limitler ve gercek wasm hostu oncesi native regresyonlar. |
 | CLI | `test:io_izi_cli_testi` | — | Komut satiri IO kaydi ve yeniden oynatma siniri. |
 | Project system | `test:proje_testi`<br>`test:projeler_testi` | `test:proje_testi → paket, registry, cli`<br>`test:projeler_testi → lexer, parser, cozumleyici, tur, hir, runtime, cli` | Bildirim, kilit, bagimlilik, yetkinlik ve tam proje ornekleri. |
-| Semantic regression | `test:semantic_regresyon_korpusu_testi`<br>`test:semantic_regresyon_korugu_testi` | `test:semantic_regresyon_korpusu_testi → parser, cozumleyici, tur, hir, morfoloji, runtime, eszamanlilik, web_guvenlik` | Duzeltilmis bug provenance'i ve her compiler kaynak commit'i icin mesajdan bagimsiz semantic beyan kapisi. |
+| Semantic regression | `test:core_freeze_korugu_testi`<br>`test:semantic_regresyon_korpusu_testi`<br>`test:semantic_regresyon_korugu_testi` | `test:semantic_regresyon_korpusu_testi → parser, cozumleyici, tur, hir, morfoloji, runtime, eszamanlilik, web_guvenlik` | Duzeltilmis bug provenance'i semantic beyan ve gercek dogfood kaniti isteyen executable core-freeze kapisi. |
 | End-to-end | `test:golden_testi` | `test:golden_testi → lexer, parser, ast, cozumleyici, tur, hir, runtime, cli` | 33 golden program ile kullanici yuzeyinden tam derleme ve yurutme hatti. |
 | Engineering gates | `test:bagimlilik_cevrimi_testi`<br>`test:dokuman_tazelik_testi`<br>`test:katalog_testi`<br>`test:katman_mimarisi_testi`<br>`test:mimari_sinir_testi`<br>`test:panic_guvenligi_testi`<br>`test:public_api_testi`<br>`test:tani_kimligi_testi`<br>`bin:islev_egilimi:testler::`<br>`bin:faz_test_matrisi:testler::`<br>`bin:olcum:testler::` | `test:public_api_testi → lexer, parser, cozumleyici, tur, hir, runtime` | Belge tani mimari panic bicim katman cevrim public API ve exact provenance/esik performans gozetim kapilarinin kendi regresyonlari. |
 
@@ -91,7 +91,7 @@ seçiciler doğrudan kanıt taşır. Aşağı akış sütunu mimari yayılımı 
 | WASM | `test:playground_testi` | `lexer / test:fuzz_korpusu_testi`<br>`web_guvenlik / test:kaynak_sinirlari_testi` | `uctan_uca` |
 | CLI | `test:io_izi_cli_testi` | `proje / test:proje_testi`<br>`proje / test:projeler_testi`<br>`uctan_uca / test:golden_testi` | `proje`<br>`uctan_uca` |
 | Project system | `test:proje_testi`<br>`test:projeler_testi` | — | `paket`<br>`registry`<br>`cli`<br>`uctan_uca` |
-| Semantic regression | `test:semantic_regresyon_korpusu_testi`<br>`test:semantic_regresyon_korugu_testi` | — | `uctan_uca` |
+| Semantic regression | `test:core_freeze_korugu_testi`<br>`test:semantic_regresyon_korpusu_testi`<br>`test:semantic_regresyon_korugu_testi` | — | `uctan_uca` |
 | End-to-end | `test:golden_testi` | — | — |
 | Engineering gates | `test:bagimlilik_cevrimi_testi`<br>`test:dokuman_tazelik_testi`<br>`test:katalog_testi`<br>`test:katman_mimarisi_testi`<br>`test:mimari_sinir_testi`<br>`test:panic_guvenligi_testi`<br>`test:public_api_testi`<br>`test:tani_kimligi_testi`<br>`bin:islev_egilimi:testler::`<br>`bin:faz_test_matrisi:testler::`<br>`bin:olcum:testler::` | — | — |
 

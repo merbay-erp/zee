@@ -822,6 +822,11 @@ ve imzadan, registry'yi verification'dan ve yayın orkestrasyonunu güven
 mekanizmasından ayırdı. B-069/B-070 kapandı ve CORE FREEZE başladı. Yeni
 compiler özelliği gerçek dogfood ihtiyacı kanıtlanmadıkça reddedilir; sırada
 K-161/K-162 insan kanıtı ve K-163 ilk gerçek Zee ürünü vardır.
+K-160A bu sözü `core-freeze-beyanlari-v1.tsv` ve CI koruğuyla executable yaptı:
+semantic feature yalnız dogfood/security/correctness sınıfında; dogfood ise
+ürün, K-işi, reproducer, etkilenen proje, minimalite ve normatif kararın
+tamamıyla geçer. B-071/V1-P0-35 kapandı. Eski `tedarik` cephesinin V1 ömrü
+K-167 compatibility policy içinde kararlaştırılacak; dogfood'u geciktirmez.
 B-001 çağrı sözdizimi ile B-002 gezme zihinsel modeli gerçek insan
 kanıtı gelmeden kapatılmaz veya yeni syntax kararıyla atlanmaz.
 # 40. Proje felsefesinin korunması

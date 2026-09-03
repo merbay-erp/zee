@@ -714,6 +714,15 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   `yayin` orkestrasyonu fiziksel sahiplerdir. Registry artefaktı doğrulamaya
   devreder; resolver taşıma/imza ayrıntısını bilmez. Production SCC ve izin
   sayısı sıfırdır; ADR-059 bağlayıcıdır ve CORE FREEZE etkindir.
+- **B-071 · KAPALI (K-160A) — executable CORE FREEZE.** Her yeni compiler
+  kaynak commit'i semantic beyanına ek olarak freeze sınıfı taşır. Feature
+  yalnız dogfood/security/correctness kanıtıyla; `dogfood-change` ise ürün,
+  K-işi, reproducer, etkilenen proje, minimalite ve ADR/spec/RFC'nin tamamıyla
+  geçer. Geçici Git testi maintenance kaçışını ve beyan yeniden yazımını
+  reddeder; CI koruğu çalıştırır.
+- **B-072 · AÇIK (K-167) — eski `tedarik` cephesinin ömrü.** Facade'ın depo
+  içi production tüketicisi sıfırdır. V1 compatibility policy sırasında silme
+  ya da süreli deprecation kararı verilecek; dogfood öncesi compiler işi açmaz.
 
 ## Bir sonraki somut kapı
 
@@ -728,7 +737,8 @@ K-156 cache dışı fuzz korpus kalıcılığını, K-157 dört hedefte toplam
 kapattı. K-158 seçici düzeyi çoklu kapsam ve gerçek blast-radius raporunu
 kapattı. K-159 sürümlü facade ve SemVer sınırını, K-160 paket sahipliği
 ayrımını ve son SCC'yi kapattı. CORE FREEZE sonrasında sıradaki kanıt hattı
-K-161/K-162 gerçek insan testleri ile K-163 ilk gerçek Zee ürünüdür.
+K-160A executable freeze kapısını da kapattı. Sırada K-161/K-162 gerçek insan
+testleri ile K-163 ilk gerçek Zee ürünü vardır.
 İnsan verisi gelmeden yeni syntax seçilmez
 veya B-001/B-002 tamamlanmış gösterilmez.
 
@@ -753,6 +763,7 @@ tamamlanmış sayılmaz; burada istenen ek kanıt ayrıca üretilir.
 | K-158 | **KAPALI** | Exact seçicide opsiyonel çoklu `ek_kapsam`; birincil/çapraz/aşağı-akış blast radius |
 | K-159 | **KAPALI** | Exact `dil::api::v1` allowlist, internal kök sınıfı ve SemVer politikası |
 | K-160 | **KAPALI — CORE FREEZE** | Saf paket modeli, resolver, registry, verification ve yayın sahipliği; production SCC/izin sıfır |
+| K-160A | **KAPALI — EXECUTABLE FREEZE** | Exact commit sınıfı; dogfood feature için ürün+iş+reproducer+proje+minimalite+karar |
 | K-161 | **İNSAN KANITI** | B-001/K-016 için 10 öğrenci/çocuk + 5 profesyonel kör oturum |
 | K-162 | **İNSAN KANITI** | B-002/K-093 morphology/scope/call/error zihinsel model oturumu |
 | K-163 | **AÇIK** | 500–1500 satır ilk gerçek Zee uygulaması ve ergonomi günlüğü |
