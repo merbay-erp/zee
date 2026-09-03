@@ -50,9 +50,10 @@ otomatik tekrar etmez. CLI tanısı değişmez. İlk saha reproducer'ı kayıtl�
 Final PostgreSQL 16.11, worker-survival, restart sonrası uzlaştırma ve temizlik
 kanıtı aynı ürünün `29d30c8` commit'indedir.
 
-Bağlantı URL'si kaynakta bulunamaz. İlk adaptör yalnız exact loopback hedefi ve
-`sslmode=disable` kabul eder. Bu kısıt production güvenlik çözümü değil,
-production sözü vermeyen dar bir dogfood sınırıdır.
+Bağlantı URL'si kaynakta bulunamaz. F031 öncesi adaptör yalnız exact loopback
+hedefi ve `sslmode=disable` kabul ediyordu. DNS hedefi, pinned-CA TLS ve bounded
+pool sahipliği ADR-062 ile ayrı davranış katmanına alınmıştır; saf
+`veritabani_modeli` bu transport kararlarını çağırmaz.
 
 `postgres-protocol 0.6.x` geçişli olarak `base64 0.22` kullanırken mevcut HTTP
 istemcisi `base64 0.23` kullanır. `cargo deny` bu tek, gerekçeli sürüm
@@ -69,6 +70,7 @@ başarılı oldu; write olumsuzunda tekrar ve satır oluşmadı. Exact saha kan�
 survival'ı; F028 ise COMMIT öncesi kesinti ve uygulanmış COMMIT sonrası kayıp
 yanıtı aynı C027 ile ayırmadan raporlamayı kapatır. Proxy deneyinde iki DB
 durumu sırasıyla 0 ve 1 satırdır; ikisinde de retry yoktur. Production
-TLS/pool/multi-process bu kararla çözülmüş sayılmaz. Binary medya, fiziksel
+TLS/pool ADR-062 ile kapanır; multi-process toplam bütçe deployment
+sorumluluğudur. Binary medya, fiziksel
 silme ve orphan tarama F030/RFC-0027/ADR-061 ile ayrı sahiplikte kanıtlandı;
 PostgreSQL katmanı dağıtık transaction sözü kazanmadı.

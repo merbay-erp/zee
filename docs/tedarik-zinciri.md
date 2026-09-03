@@ -69,6 +69,11 @@ K-163 PostgreSQL adaptörü root crate'in bağımlılık kapanışını genişle
 fuzz path dependency'sinin ayrı lock'u da aynı geçişli PostgreSQL grafiğine
 yenilendi. `cargo deny --locked` fuzz kapısı bu eşleşme olmadan fail-closed
 durur; root lock güncelken fuzz lock'unun bayat kalması kabul edilmez.
+F031'in `native-tls`, `postgres-native-tls`, `r2d2` ve `r2d2_postgres`
+eklemesinden sonra iki lock yeniden çözüldü; iki gerçek vendor üretiminde 163
+paket aynı
+`6adafc91e5c1283cd030c21a36e9ab35e3f71ca95275ccaee32b6b590e79456e`
+manifest özetini verdi ve boş Cargo home ile compiler+fuzz offline derlendi.
 
 ## Gerçek offline vendor kanıtı
 
