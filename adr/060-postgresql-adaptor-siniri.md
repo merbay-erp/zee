@@ -22,6 +22,13 @@ yazısını tek eylemde birleştirmek yasaktır. Migration'lar advisory lock ve 
 transaction altında SHA-256 geçmişine bağlanır; migration içinde transaction
 komutu fail-closed reddedilir.
 
+Bağlantı recovery sahipliği adaptördedir fakat yalnız transaction dışı
+idempotent okuma için geçerlidir. Kapalı sürücü client'ı atılır, tek kez yeni
+client açılır ve aynı SELECT tekrar edilir. Transaction içi okuma, SQL reddi,
+ikinci başarısızlık, yazı ve COMMIT fail-closed kalır. COMMIT bağlantı kaybı
+“sonuç belirsiz”dir; adaptör otomatik tekrar yapamaz. Bu sınır
+`postgresql-recovery-v1.tsv` karar matrisiyle korunur.
+
 Bağlantı URL'si kaynakta bulunamaz. İlk adaptör yalnız exact loopback hedefi ve
 `sslmode=disable` kabul eder. Bu kısıt production güvenlik çözümü değil,
 production sözü vermeyen dar bir dogfood sınırıdır.
@@ -33,3 +40,9 @@ zincir ortak sürüme geçtiğinde istisna kaldırılır.
 
 PostgreSQL okuma/değiştirme, sonuç ve structured hata dahil sürümlü IO izine
 girer; replay dış veritabanına bağlanmaz.
+
+K-163 ürün commit'i `43d04fc` stale-client arızasını buldu. Ardından gerçek
+PostgreSQL 16.11 backend sonlandırma koşusunda tek read reconnect aynı süreçte
+başarılı oldu; write olumsuzunda tekrar ve satır oluşmadı. Uygulamanın write
+bağlantı kaybında C021 ile sonlanması ile gerçek COMMIT-kaybı enjeksiyonu açık
+availability/kanıt sınırıdır; bu karar onları çözülmüş göstermez.

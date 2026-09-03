@@ -36,6 +36,15 @@ Değişiklik application/state write etkisidir; GET/HEAD rotasında ve eylem
 dışında reddedilir. İç içe eylem savepoint'tir. Aynı eylemde kalıcı dosya ile
 PostgreSQL yazısı YASAKTIR.
 
+Transaction dışında başlayan bir okuma, ilk sorgu bağlantı düzeyinde başarısız
+olur ve sürücü client'ı kapalı olarak işaretlerse adaptör eski client'ı atıp
+en fazla bir kez yeniden bağlanmalı ve aynı parametreli SELECT'i yeniden
+çalıştırmalıdır. SQL reddi, açık transaction içindeki okuma, lock/stream/cursor
+işi, ikinci başarısızlık, değişiklik ve COMMIT otomatik yeniden DENENEMEZ.
+COMMIT sırasında bağlantı kaybı işlemin gerçekleşip gerçekleşmediğini
+belirsiz bırakır; C025 mesajı bu belirsizliği ve tekrar yapılmadığını açıkça
+bildirmelidir.
+
 ## Migration
 
 `dil göçür [proje]`, yalnız `NNNN_aciklama.sql` düzenli dosyalarını sürüm
@@ -58,8 +67,15 @@ Okuma, değişiklik, değerler ve structured hata `zee-io-izi\t1` içine kanonik
 sırada yazılır. Replay aynı SQL/parametreleri exact eşleştirir ve dış
 veritabanına bağlanamaz.
 
+Yeniden bağlanma karar matrisi
+`compiler/tests/fixtures/postgresql-recovery-v1.tsv` ile sürümlüdür. K-163
+gerçek PostgreSQL 16.11 kanıtında canlı backend sonlandırıldıktan sonraki ilk
+transaction-dışı okuma, süreç yeniden başlamadan yeni backend'e bağlanmış ve
+aynı sentinel satırını görünür kılmıştır. Yazı olumsuzunda backend kaybından
+sonra otomatik tekrar veya satır oluşmamıştır; uygulama sürecinin C021 ile
+sonlanması ise ürün availability sınırı olarak açıktır.
+
 ## Açık sınır
 
 Uzak host, TLS doğrulama, connection pool, async driver, PostgreSQL dışı
 veritabanı, genel ORM/schema DSL ve production migration işletimi AÇIKTIR.
-

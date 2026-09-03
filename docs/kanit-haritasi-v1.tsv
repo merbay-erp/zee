@@ -24,7 +24,7 @@ rfcs/0022-deterministik-io-izi.md	kanitli	compiler/tests/io_izi_testi.rs,compile
 rfcs/0023-deterministik-io-profili.md	kanitli	compiler/tests/deterministik_io_profili_testi.rs	Tohum rastgele dizi ve sanal saat
 rfcs/0024-merkezi-yetkinlik-ve-outbound-guvenligi.md	kanitli	compiler/tests/yetkinlik_testi.rs,compiler/tests/proje_testi.rs,compiler/src/yetkinlik.rs,compiler/src/ag_istemcisi.rs	Merkezi izin paket alt kümesi origin DNS HTTPS ve dosya kökü
 rfcs/0025-merkezi-kaynak-butcesi.md	kanitli	compiler/tests/kaynak_sinirlari_testi.rs,compiler/tests/mimari_sinir_testi.rs,compiler/tests/lsp_testi.rs,compiler/src/lsp/cikti.rs	Kaynak değer bağlantı ve domain sahipliği ile K-132 LSP allocation-order sınırı testli
-rfcs/0026-postgresql-veri-erisimi.md	kanitli	compiler/tests/postgresql_testi.rs,compiler/tests/intrinsic_lowering_testi.rs,compiler/tests/proje_testi.rs,compiler/tests/io_izi_testi.rs	K-163 yerel PostgreSQL parametre transaction hata ve migration dogfood yuzeyi
+rfcs/0026-postgresql-veri-erisimi.md	kanitli	compiler/tests/postgresql_testi.rs,compiler/tests/intrinsic_lowering_testi.rs,compiler/tests/proje_testi.rs,compiler/tests/io_izi_testi.rs	K-163 yerel PostgreSQL parametre transaction hata migration ve guvenli read recovery dogfood yuzeyi
 adr/001-bootstrap-dili.md	kanitli	compiler/tests/mimari_sinir_testi.rs,compiler/tests/playground_testi.rs	Rust faz sınırları ve WASM yüzeyi
 adr/002-parser-stratejisi.md	kanitli	compiler/tests/ifade_grameri_testi.rs,compiler/tests/parser_kurtarma_testi.rs,compiler/tests/bicimleyici_testi.rs	Elle parser katman kurtarma ve formatter eşdeğerliği
 adr/003-ilk-yurutme-modeli.md	kanitli	compiler/tests/playground_testi.rs,compiler/tests/io_izi_testi.rs	Yorumlayıcı ve IO soyutlaması
@@ -82,7 +82,7 @@ adr/056-uzun-fuzz-rc-kapisi.md	kanitli	compiler/tests/fuzz_korpusu_testi.rs	K-15
 adr/057-coklu-test-kapsami.md	kanitli	compiler/src/bin/faz_test_matrisi.rs	K-158 exact seciciye bagli opsiyonel coklu kapsam dogrulamasi ve gercek blast-radius raporu
 adr/058-public-api-facade.md	kanitli	compiler/tests/public_api_testi.rs	K-159 api v1 exact allowlist internal modul sinifi ve calisan facade smoke kapisi
 adr/059-paket-sahipligi-ve-core-freeze.md	kanitli	compiler/tests/bagimlilik_cevrimi_testi.rs,compiler/tests/katman_mimarisi_testi.rs,compiler/tests/core_freeze_korugu_testi.rs	K-160 saf paket sahipligi sifir SCC ve K-160A gercek dogfood provenance'i isteyen executable core freeze
-adr/060-postgresql-adaptor-siniri.md	kanitli	compiler/tests/postgresql_testi.rs,compiler/tests/io_izi_testi.rs,compiler/tests/proje_testi.rs	K-163 davranissiz DB modeli parametre bind transaction migration ve IO izi siniri
+adr/060-postgresql-adaptor-siniri.md	kanitli	compiler/tests/postgresql_testi.rs,compiler/tests/io_izi_testi.rs,compiler/tests/proje_testi.rs	K-163 davranissiz DB modeli parametre bind transaction migration read retry ve commit belirsizligi siniri
 spec/01-sozcukleme.md	kanitli	compiler/tests/kacis_ve_negatif_testi.rs,compiler/tests/metin_testi.rs	Token kaçış Unicode ve sayı kuralları
 spec/02-dizim.md	kanitli	compiler/tests/golden_testi.rs,compiler/tests/ifade_grameri_testi.rs	Cümle blok ve ifade dizimi
 spec/03-adlar-ve-kapsam.md	kanitli	compiler/tests/kapsam_testi.rs,compiler/tests/morfoloji_testi.rs,compiler/tests/lsp_testi.rs	Ad çözümü kapsam morfoloji ve semantic rename
@@ -107,4 +107,4 @@ spec/21-deterministik-io-izi.md	kanitli	compiler/tests/io_izi_testi.rs,compiler/
 spec/22-deterministik-io-profili.md	kanitli	compiler/tests/deterministik_io_profili_testi.rs	zee-io-1 rastgele saat ve fake IO
 spec/23-yetkinlik-ve-outbound-guvenligi.md	kanitli	compiler/tests/yetkinlik_testi.rs,compiler/tests/proje_testi.rs,compiler/tests/mimari_sinir_testi.rs,compiler/src/yetkinlik.rs	Yetkinlik origin IP paket dosya ve K-139 inbound-outbound tek parser sınırı
 spec/24-kaynak-guvenlik-profili.md	kanitli	compiler/tests/kaynak_sinirlari_testi.rs,compiler/tests/mimari_sinir_testi.rs,compiler/tests/http_istegi_testi.rs,compiler/tests/lsp_testi.rs,compiler/tests/playground_testi.rs,compiler/src/lsp/cikti.rs	Merkezi kaynak zarfı K-138 kesin JSON-RPC K-140 byte HTTP ve K-143 playground ön-tahsis bütçesi testli
-spec/25-postgresql-veri-erisimi.md	kanitli	compiler/tests/postgresql_testi.rs,compiler/tests/intrinsic_lowering_testi.rs,compiler/tests/proje_testi.rs,compiler/tests/io_izi_testi.rs	K-163 exact loopback bildirim parametreli sorgu structured hata eylem transaction ve migration gecmisi
+spec/25-postgresql-veri-erisimi.md	kanitli	compiler/tests/postgresql_testi.rs,compiler/tests/intrinsic_lowering_testi.rs,compiler/tests/proje_testi.rs,compiler/tests/io_izi_testi.rs	K-163 exact loopback bildirim parametreli sorgu structured hata eylem transaction migration ve read recovery sozlesmesi
