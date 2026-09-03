@@ -857,7 +857,8 @@ restart olmadan iyileşir; kurulmuş client backend sonlandırması sonrası yen
 bağlanmıyordu. Ardındaki correctness değişikliği yalnız transaction dışı salt
 okumaya kapalı-client invalidation, tek reconnect ve tek SELECT tekrarı verdi.
 Gerçek PostgreSQL 16.11 provasında öldürülen backend'den sonraki ilk istek yeni
-backend'e bağlandı ve sentinel'ı süreç restartı olmadan gördü. Write olumsuzu
+backend'e bağlandı ve sentinel'ı süreç restartı olmadan gördü; süreler, PID'ler
+ve temizlik `78cce11` ürün commit'indedir. Write olumsuzu
 otomatik tekrar ve satır üretmedi fakat C021 ile uygulamayı sonlandırdı;
 COMMIT-kaybı gerçek enjeksiyonla henüz kanıtlanmadı ve normatif olarak “sonuç
 belirsiz” kaldı. Doğru HTTP 503, gerçek pool, write-path availability ve

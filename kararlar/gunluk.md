@@ -2864,7 +2864,8 @@ usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.
 - Gerçek PostgreSQL 16.11 provasında canlı backend sonlandırıldı. Sonraki ilk
   GET yeni backend PID'sine süreç restartı olmadan bağlandı ve sentinel kaydı
   gördü; sonraki dört okuma da başarılıydı. Aynı koşulda write POST'u otomatik
-  tekrar etmedi ve veritabanında satır bırakmadı.
+  tekrar etmedi ve veritabanında satır bırakmadı. Exact saha kaydı ürün
+  deposunda `78cce11` commit'iyle sabitlendi.
 - Dürüst açık sınır: write kaybı C021 ile uygulama sürecini sonlandırdı; henüz
   kontrollü 503'e dönüşmüyor. COMMIT cevabının kaybolduğu dar pencere gerçek
   enjeksiyonla üretilmedi; yalnız no-retry politikası ve belirsiz sonuç mesajı
