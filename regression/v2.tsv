@@ -17,3 +17,4 @@ esit-uyanis-sirasi	K-124	f05bc5fae0ca142c8fb7c188af63b1e206e9c43b	-	0.8.0-dev	co
 son-tarih-iptali	K-133	4c6c0ba4c61fabc1cc18e97d5e7c46c73487b78f	-	0.8.0-dev	concurrency	run	-	-	0	başladı\ngrubu iptal	regression/concurrency/son-tarih-iptali.dil
 kapali-ag-yetkinligi	K-127	6e18e3c7519d93aaef2cbd98478d1e59460f7ba3	-	0.8.0-dev	security	capability	T054	2:7:49	1	-	regression/security/kapali-ag-yetkinligi.dil
 olu-kod-dosya-yetkinligi	K-127	6e18e3c7519d93aaef2cbd98478d1e59460f7ba3	-	0.8.0-dev	security	capability	T054	3:14:31	1	-	regression/security/olu-kod-dosya-yetkinligi.dil
+bozuk-form-kodlamasi	K-176	d20d85738d6958849e642f508ae594586d9289fc	-	0.8.0-dev	security	web	-	-	0	400 istek formunda geçersiz yüzde kodlaması	regression/security/bozuk-form-kodlamasi.dil

@@ -23,8 +23,9 @@ CSRF ve iş kuralı katmanları aynı girdiye ilişkin farklı anlam kurabilirdi
    HTTP 400'dür.
 4. Red, rota gövdesi ve CSRF/alan iş mantığı çalıştırılmadan görünür durum
    yanıtına dönüşür. İstek transaction'ı normal yanıt kapanışında tamamlanır.
-5. Davranışın kalıcı kanıtı `web` kipli semantic regression fixture'ıdır; ilk
-   uygulama commit'inin exact SHA'sı ikinci provenance commit'inde yazılır.
+5. Davranışın kalıcı kanıtı `web` kipli semantic regression fixture'ıdır;
+   `fixed_by=32247c79321b5b350b18b15198a245776b22fc84` exact uygulama
+   commit'ini gösterir ve aynı SHA semantic bugfix beyanında bulunur.
 
 ## Reddedilen seçenekler
 

@@ -12,12 +12,13 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
-- **Strict form URL kodlaması — provenance kapanışı bekliyor** (K-176,
+- **Strict form URL kodlaması** (K-176,
   ADR-054): Sorgu ve form alanlarının adı/değeri artık tam iki hexadecimal
   haneli `%xx` ve çözüm sonrasında exact UTF-8 ister. Eksik/kuralsız kaçış ile
   geçersiz UTF-8 rota çalışmadan deterministik 400 üretir; kayıplı dönüşüm
-  kaldırıldı. Hedefli web testi hazırdır; exact uygulama SHA'lı kalıcı semantic
-  fixture ve değişiklik beyanı ikinci commit'te B-065'i kapatacaktır.
+  kaldırıldı. Hedefli web testi ve `web` kipli kalıcı semantic fixture,
+  `32247c7…` exact uygulama SHA'sını değişiklik beyanıyla eşleştirir; B-065
+  kapandı.
 
 - **Semantic regresyon provenance zinciri** (K-155, ADR-052): 17 tarihsel
   vaka `regression/v2.tsv` içinde gerçek tam `fixed_by`, kanıtlıysa

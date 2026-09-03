@@ -2618,9 +2618,10 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
 - **Kanıt:** Altı bozuk kaçış/UTF-8 girdisi ve rota gövdesinin çalışmadığını
   gösteren hedefli web testi hazırdır. Semantic korpusun `web` kipi exact
   isteği fixture yorumundan çalıştırabilir.
-- **Durum:** Uygulama ve normatif sözleşme hazırdır; exact kaynak SHA'sı ancak
-  commit sonrasında bilineceği için regression provenance+beyan ikinci atomik
-  commit'i bekler. B-065 bu ara durumda kısmi tutulur.
+- **Kapanış:** `web` kipli `bozuk-form-kodlamasi` fixture'ı
+  `fixed_by=32247c79321b5b350b18b15198a245776b22fc84` uygulama commit'ini
+  gösterir ve aynı SHA compiler semantic bugfix beyanında bulunur. ADR-054 ve
+  B-065 kapalıdır; duplicate alan politikası ayrı dilimdir.
 
 ---
 
@@ -2632,7 +2633,8 @@ deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
 Makine hattında K-154 tam-metin ölçek eğrisini exact tabanla, K-155 semantic
 regresyon provenance zincirini v2 manifestle ve K-155A bütün compiler kaynak
-commit'lerini mesajdan bağımsız beyan kapısıyla kapattı. Sırada strict form
-decode güvenlik düzeltmesi, ardından K-156 fuzz corpus kalıcılığı vardır.
+commit'lerini mesajdan bağımsız beyan kapısıyla, K-176 ise strict form decode
+güvenlik açığını exact web fixture'ıyla kapattı. Sırada K-156 fuzz corpus
+kalıcılığı vardır.
 B-001/B-002 (yeni sırada K-161/K-162), gerçek 10 çocuk/öğrenci + 5 profesyonel
 usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.
