@@ -869,7 +869,8 @@ proxy COMMIT öncesi kesintide 0, uygulanmış COMMIT'in ReadyForQuery yanıtı
 yutulduğunda 1 satır üretirken iki durumda da aynı 503, sıfır retry ve worker
 survival gözlendi. Yeni bağlantıdaki iş anahtarı sorgusu ve UNIQUE, bilinçli
 aynı-anahtar girişimini tek kayıtta tuttu. Gerçek pool ile medya+DB uzlaştırma
-K-163'ün açık production kanıtıdır. 492 LOC tabanı;
+K-163'ün açık production kanıtıdır; exact F028 ürün kaydı `8a12848`
+commit'indedir. 492 LOC tabanı;
 modül/test/dokunulan dosya, bugfix süresi, sürtünme, workaround ve LSP p95 için
 aynı yöntemli 1000+ LOC skor kartına bağlandı.
 B-001 çağrı sözdizimi ile B-002 gezme zihinsel modeli gerçek insan

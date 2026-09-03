@@ -371,7 +371,8 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   edilmedi. Exact ürün kanıtı `00a659a` commit'indedir. F028 wire proxy'si
   COMMIT öncesi kesintide 0, uygulanmış COMMIT yanıtı kaybında 1 satırla aynı
   C027/503'ü doğruladı; otomatik retry yok, worker yaşıyor ve UNIQUE iş
-  anahtarı uzlaştırmayı güvenli tutuyor. Yeniden üretim adımları
+  anahtarı uzlaştırmayı güvenli tutuyor. Exact ürün kanıtı `8a12848`
+  commit'indedir. Yeniden üretim adımları
   [COMMIT belirsizliği runbook'undadır](docs/postgresql-commit-belirsizligi.md).
   Gerçek pool hâlâ açıktır. 492 LOC
   bakım tabanı 1000+ satır karşılaştırması için exact yöntemle kaydedildi.

@@ -42,3 +42,4 @@ bağlantıları sıfır olmalıdır.
 `503 / 3,914 ms / 1 satır` vermiştir. Her iki worker sağlık isteğine 200
 döndürmüştür. B'de uzlaştırma GET'i kaydı görmüş, aynı slug'lı bilinçli girişim
 `Location: /sayfalar?hata=slug` üretmiş ve satır sayısı 1 kalmıştır.
+Exact ürün günlüğü `8a12848` commit'indedir.
