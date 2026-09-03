@@ -68,11 +68,18 @@ artık graph'ta bulunmayan allowlist kaydı da bayat izin olarak kapıyı kırar
 `semantic_model` tür sahibiyle kırıldı. `cozumleyici::Tur` public yolu yeniden
 dışa aktarımla uyumludur, HIR artık checker sahibini tüketmez.
 
-Kalan `paket,registry,tedarik` SCC'si
+K-160/ADR-059 son kalan paket çevrimini gerçek sahiplik ayrımıyla kaldırdı:
+`paket_modeli` davranışsız veri sözleşmesi, `paket` çözüm kararı, `registry`
+taşıma/protokol, `artefakt_dogrulama` güven ve kurulum, `yayin` üst seviye
+orkestrasyon sahibidir. Model production davranışına bağımlı değildir;
+verification paket/registry/yayın sahibini çağırmaz; registry artefaktı
+verification'a devreder; resolver taşıma ve imza ayrıntısını bilmez. Eski
+`tedarik` yolu yalnız verification için geçici uyumluluk cephesidir.
+
+Güncel production graph'ta SCC sayısı ve
 [`izinli-katman-cevrimleri-v1.tsv`](../compiler/tests/fixtures/izinli-katman-cevrimleri-v1.tsv)
-içinde exact üyeler, gerekçe, K-160 kaldırma işi ve 1 Ekim 2026 son tarihiyle
-geçici C001 kaydıdır. Üye değişimi, yeni çevrim, gerekçesiz kayıt veya dolan
-tarih CI'ı durdurur; açıklamasız çevrim sayısı sıfırdır.
+izin sayısı sıfırdır. Yeni çevrim veya yeni izin CI'ı durdurur; C001
+silinmiştir.
 
 ## K-149'da temizlenen iki ters kenar
 

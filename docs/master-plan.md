@@ -780,8 +780,10 @@ doğrudan kenar tabanına ve temel→adaptör katman yönüne bağladı. Morfolo
 paket SHA-256 ve tedarik→runtime takvim ters bağımlılıkları `guvenlik` ve
 `zaman` temel sahiplerine taşındı; B-057/V1-P0-32 kapandı. K-150/ADR-047
 tanı↔kaynak bütçesi ve checker↔HIR SCC'lerini iki bağımsız model sahibiyle
-kırdı. Kalan paket/registry/tedarik SCC'si K-160 ve tarih sonlu izinle
-görünürdür; açıklamasız çevrim sıfır, B-058/V1-P0-33 kapalıdır. Üçüncü dış
+kırdı. Son paket/registry/tedarik SCC'si önce tarih sonlu izinle görünür borç
+yapıldı; K-160/ADR-059 saf paket modeli, resolver, registry taşıması,
+verification ve yayın orkestrasyonu sahiplerine ayırarak bu borcu kapattı.
+Production SCC ve izin sayısı sıfırdır; B-058/B-070 ve V1-P0-33 kapalıdır. Üçüncü dış
 incelemenin K-151/ADR-048 adımı bütün workflow action'larını immutable SHA,
 birebir pin kaydı ve kontrollü Dependabot PR'ına bağladı; B-059 kapandı.
 K-152/ADR-049 performans tarihçesini tam Git SHA, ayrı milestone, temiz Git
@@ -815,8 +817,11 @@ seçicilerinin gerçekten yürüttüğü ek fazları bildirip çapraz kanıtı m
 aşağı akıştan ayırdı. B-063/B-064/B-065/B-066/B-067/B-068 kapandı; sırada
 K-159/ADR-058 desteklenen Rust gömme sözünü exact `dil::api::v1` facade'ına
 taşıdı; kök legacy modüller açıkça internal sınıflandı ve yeni ihracat allowlist
-kapısına bağlandı. B-069 kapandı; sırada K-160 paket/registry/tedarik ownership
-ayrımı ve kalan süreli SCC'nin kaldırılması vardır.
+kapısına bağlandı. K-160/ADR-059 paket modelini davranıştan, resolver'ı taşıma
+ve imzadan, registry'yi verification'dan ve yayın orkestrasyonunu güven
+mekanizmasından ayırdı. B-069/B-070 kapandı ve CORE FREEZE başladı. Yeni
+compiler özelliği gerçek dogfood ihtiyacı kanıtlanmadıkça reddedilir; sırada
+K-161/K-162 insan kanıtı ve K-163 ilk gerçek Zee ürünü vardır.
 B-001 çağrı sözdizimi ile B-002 gezme zihinsel modeli gerçek insan
 kanıtı gelmeden kapatılmaz veya yeni syntax kararıyla atlanmaz.
 # 40. Proje felsefesinin korunması

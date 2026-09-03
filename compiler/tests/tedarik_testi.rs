@@ -1,4 +1,5 @@
-use dil::tedarik::{anahtar_uret, paketle_zamanla, yayini_dogrula};
+use dil::artefakt_dogrulama::{anahtar_uret, yayini_dogrula};
+use dil::yayin::paketle_zamanla;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::sync::atomic::{AtomicU64, Ordering};
@@ -49,7 +50,7 @@ fn proje_yaz(kok: &Path, yerel_bagimlilik: bool) {
     .expect("kaynak");
 }
 
-fn dosyalar(cikti: &dil::tedarik::PaketCiktilari) -> (Vec<u8>, Vec<u8>, Vec<u8>, Vec<u8>) {
+fn dosyalar(cikti: &dil::paket_modeli::PaketCiktilari) -> (Vec<u8>, Vec<u8>, Vec<u8>, Vec<u8>) {
     (
         std::fs::read(&cikti.yayin).expect("yayın"),
         std::fs::read(&cikti.paket).expect("paket"),

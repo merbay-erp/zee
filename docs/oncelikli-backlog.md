@@ -709,6 +709,11 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   gömme sözleşmesi exact `dil::api::v1` facade'ıdır. Kök legacy modüller
   `doc(hidden)` internal sınıfındadır; smoke, exact export allowlist'i ve yeni
   kök modül sızıntısı test kapısıdır. ADR-058 ve public API politikası bağlayıcıdır.
+- **B-070 · KAPALI (K-160) — paket sahipliği ve sıfır SCC.** Davranışsız
+  `paket_modeli`, resolver, registry taşıması, `artefakt_dogrulama` güveni ve
+  `yayin` orkestrasyonu fiziksel sahiplerdir. Registry artefaktı doğrulamaya
+  devreder; resolver taşıma/imza ayrıntısını bilmez. Production SCC ve izin
+  sayısı sıfırdır; ADR-059 bağlayıcıdır ve CORE FREEZE etkindir.
 
 ## Bir sonraki somut kapı
 
@@ -721,8 +726,9 @@ mesajdan bağımsız fail-closed beyan kapısını kurdu; K-176 strict form deco
 K-156 cache dışı fuzz korpus kalıcılığını, K-157 dört hedefte toplam
 136.789.564 yürütmeli uzun AddressSanitizer kampanyasını ve 3/3 Miri kanıtını
 kapattı. K-158 seçici düzeyi çoklu kapsam ve gerçek blast-radius raporunu
-kapattı. K-159 sürümlü facade ve SemVer sınırını kapattı. Sıradaki makine işi
-K-160 paket/registry/tedarik ownership ayrımıdır.
+kapattı. K-159 sürümlü facade ve SemVer sınırını, K-160 paket sahipliği
+ayrımını ve son SCC'yi kapattı. CORE FREEZE sonrasında sıradaki kanıt hattı
+K-161/K-162 gerçek insan testleri ile K-163 ilk gerçek Zee ürünüdür.
 İnsan verisi gelmeden yeni syntax seçilmez
 veya B-001/B-002 tamamlanmış gösterilmez.
 
@@ -734,7 +740,7 @@ tamamlanmış sayılmaz; burada istenen ek kanıt ayrıca üretilir.
 
 | Kayıt | Durum | Bağlayıcı çıktı |
 |---|---|---|
-| K-150 | **KAPALI** | SCC kapısı, iki kırılmış çevrim, K-160'a süreli tek izin |
+| K-150 | **KAPALI** | SCC kapısı ve ilk iki kırılmış çevrim; son geçici izin K-160'ta kaldırıldı |
 | K-151 | **KAPALI** | Bütün workflow action'ları immutable SHA + kontrollü yenileme |
 | K-152 | **KAPALI** | Gerçek Git SHA/milestone ve tam benchmark provenance şeması |
 | K-153 | **KAPALI** | Engine/process ayrımı, gerçek ikili testi ve exact 25 örnek taban |
@@ -746,7 +752,7 @@ tamamlanmış sayılmaz; burada istenen ek kanıt ayrıca üretilir.
 | K-157 | **KAPALI** | Dört hedefte 30 dk, toplam 136.789.564 yürütme; sıfır crash/timeout/ASan ve 3/3 Miri |
 | K-158 | **KAPALI** | Exact seçicide opsiyonel çoklu `ek_kapsam`; birincil/çapraz/aşağı-akış blast radius |
 | K-159 | **KAPALI** | Exact `dil::api::v1` allowlist, internal kök sınıfı ve SemVer politikası |
-| K-160 | **AÇIK — C001 son tarihi 2026-10-01** | Paket modeli/çözüm/registry/doğrulama sahipliği ve SCC kaldırma |
+| K-160 | **KAPALI — CORE FREEZE** | Saf paket modeli, resolver, registry, verification ve yayın sahipliği; production SCC/izin sıfır |
 | K-161 | **İNSAN KANITI** | B-001/K-016 için 10 öğrenci/çocuk + 5 profesyonel kör oturum |
 | K-162 | **İNSAN KANITI** | B-002/K-093 morphology/scope/call/error zihinsel model oturumu |
 | K-163 | **AÇIK** | 500–1500 satır ilk gerçek Zee uygulaması ve ergonomi günlüğü |

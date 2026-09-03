@@ -61,6 +61,7 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-056 | [Uzun fuzz release-candidate kapısı](056-uzun-fuzz-rc-kapisi.md) | **kabul** (K-157/B-067) |
 | ADR-057 | [Seçici düzeyinde çoklu test kapsamı](057-coklu-test-kapsami.md) | **kabul** (K-158/B-068) |
 | ADR-058 | [Sürümlü public API facade'ı](058-public-api-facade.md) | **kabul** (K-159/B-069) |
+| ADR-059 | [Paket sahipliği ve core freeze](059-paket-sahipligi-ve-core-freeze.md) | **kabul** (K-160/B-070) |
 | ADR-004 | Bellek yönetimi prototip kararı (GC / ARC benchmark) | bekliyor |
 | ADR-005 | Native backend seçimi (Cranelift / LLVM) | bekliyor — Faz 4 |
 | ADR-007 | [Telemetri ve gizlilik: araçlar veri toplamaz](007-telemetri-ve-gizlilik.md) | **kabul** |

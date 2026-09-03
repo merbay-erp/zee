@@ -262,7 +262,7 @@ fn domain_kaynak_limitleri_tek_profilden_beslenir() {
         "src/wasm_api.rs",
         "src/wasm_api/abi.rs",
         "src/lsp.rs",
-        "src/tedarik.rs",
+        "src/artefakt_dogrulama.rs",
         "src/registry.rs",
         "src/registry/istemci.rs",
         "src/kalici_dosya.rs",

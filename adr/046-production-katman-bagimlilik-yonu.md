@@ -68,6 +68,7 @@ için paket modülüne, tedarik RFC 3339 zamanı için yorumlayıcıya bağıml�
 ## K-150 tamamlayıcı karar
 
 ADR-047 aynı exact graph'ın SCC'lerini de fail-closed yaptı. Sahip sayısı
-`semantic_model` ve `tani_politikasi` ile 37'ye çıktı; iki çevrim kırıldı,
-paket/registry/tedarik çevrimi K-160 ve 1 Ekim 2026 son tarihli geçici izinle
-görünür borç olarak sınırlandı. Güncel gerçek için katman rehberi bağlayıcıdır.
+`semantic_model` ve `tani_politikasi` ile 37'ye çıktı; iki çevrim kırıldı ve
+paket/registry/tedarik çevrimi süreli izinle görünür borç olarak sınırlandı.
+K-160/ADR-059 bu son borcu fiziksel sahiplik ayrımıyla kapattı; güncel graph'ta
+SCC ve izin sayısı sıfırdır. Güncel gerçek için katman rehberi bağlayıcıdır.

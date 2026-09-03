@@ -12,11 +12,19 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **Paket sahipliği ve CORE FREEZE** (K-160, ADR-059): Davranışsız
+  `paket_modeli`, bağımlılık resolver'ı, registry protokol/taşıması,
+  `artefakt_dogrulama` güveni ve `yayin` orkestrasyonu fiziksel olarak ayrıldı.
+  Registry artefaktı doğrulamaya devreder; resolver taşıma ve imza ayrıntısını
+  bilmez. Son C001 kaldırıldı; production SCC ve izin sayısı sıfırdır. B-070
+  kapandı. Yeni compiler özelliği gerçek dogfood ihtiyacı kanıtlanmadıkça
+  varsayılan olarak reddedilir.
+
 - **Sürümlü Rust public facade'ı** (K-159, ADR-058): Desteklenen gömme
   sözleşmesi `dil::api::v1` altında exact allowlist'tir. Kök legacy modüller
   internal sınıflanır; smoke ve sızıntı kapısı yeni export'u bilinçli inceleme
   olmadan reddeder. Breaking/minor/patch ve yan yana v2 göç politikası yazılıdır.
-  B-069 kapandı; sırada K-160 ownership ayrımı vardır.
+  B-069 kapandı.
 
 - **Gerçek test blast radius'u** (K-158, ADR-057): Faz matrisi v2, tekil
   birincil sahipliği korurken kritik test seçicilerine isteğe bağlı çoklu
@@ -96,15 +104,14 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   Bir supply-chain regresyonuyla envanter 610 test, 95 numaralı belge ve 46
   kabul ADR'ye çıktı; B-059 kapandı. Dil davranışı ve normatif spec değişmedi.
 
-- **Açıklamasız dependency cycle sıfır** (K-150, ADR-047): Production exact
+- **Dependency cycle kapısı** (K-150/K-160, ADR-047/059): Production exact
   graph'ı sahipler-arası SCC için fail-closed denetlenir. Tanı↔kaynak
   bütçesi çevrimi bağımsız `tani_politikasi`; checker↔HIR çevrimi private
   `semantic_model` sahibiyle kırıldı. `cozumleyici::Tur` yolu uyumludur.
-  Kalan paket/registry/tedarik SCC'si exact üyeli, gerekçeli, K-160 sahipli ve
-  1 Ekim 2026 son tarihli tek geçici izindir. Yeni/bayat/süresi dolmuş izin
-  reddedilir; iki SCC testiyle envanter 609 test, 94 numaralı belge ve 45
-  kabul ADR'ye çıktı. B-058/V1-P0-33 kapandı; grammar, runtime semantiği,
-  tanılar ve normatif spec değişmedi.
+  K-160 son paket/registry/tedarik SCC'sini saf model, resolver, taşıma,
+  verification ve yayın sahiplerine ayırdı; geçici C001 silindi. Yeni çevrim
+  reddedilir; production SCC ve izin sayısı sıfırdır. B-058/B-070/V1-P0-33
+  kapandı; grammar, runtime semantiği, tanılar ve normatif spec değişmedi.
 
 - **Production katman yönü fail-closed** (K-149, ADR-046): Bütün production
   Rust ağacı 35 üst sahip ve on katmana ayrıldı. Sürümlü TSV her sahibin exact

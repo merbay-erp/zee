@@ -105,6 +105,13 @@ değişiklikte bilinçli açılır; internal kök modül işaretlenmeden public 
 
 ## V1 öncesi iş sırası
 
+K-160/ADR-059 sonrasında core freeze etkindir: **Yeni compiler özelliği
+varsayılan olarak reddedilir; gerçek dogfood ihtiyacı kanıtlanmadıkça core
+genişletilmez.** Dogfood bugfix ile security/correctness işi yapılabilir. API
+kırılması gerçek ürün kanıtı; grammar değişikliği çok yüksek eşik ister. Ürün
+ihtiyacı → minimal değişiklik → regression → ADR/spec zinciri aynı değişiklikte
+kurulmadan merge edilmez.
+
 Bağlayıcı sıra `docs/oncelikli-backlog.md` içindedir. P0 compiler/dil omurgası
 kapanmadan yeni dil özelliği varsayılan olarak öne alınmaz. Başlamış atomik bir
 correctness/güvenlik dilimi önce kod+test+belgesiyle kapatılır; ardından sıradaki

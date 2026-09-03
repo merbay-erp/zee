@@ -151,9 +151,11 @@ K-150/ADR-047 aynı graph'ta SCC hesabını zorunlu yaptı. `Tur` ve kapsayıcı
 türleri private `semantic_model` sahibiyle checker/HIR'dan bağımsızdır;
 tanı üst sınırı `tani_politikasi` üzerinden tanı ve merkezî profilce ortak
 tüketilir. Böylece `cozumleyici ↔ hir` ve `tani ↔ kaynak_sinirlari`
-çevrimleri kaldırıldı. Paket/registry/tedarik SCC'si süreli K-160 borcudur;
-yeni açıklamasız çevrim CI'dan geçemez. Yeni ortak sahipler sırasıyla 180 ve
-20 satır fiziksel bütçeyle korunur.
+çevrimleri kaldırıldı. K-160/ADR-059 son paket/registry/tedarik SCC'sini saf
+`paket_modeli`, resolver, registry protokolü, `artefakt_dogrulama` ve `yayin`
+sahiplerine ayırdı. Production SCC ve izin sayısı sıfırdır; yeni çevrim
+CI'dan geçemez. Ortak semantic ve tanı sahipleri sırasıyla 180 ve 20 satır
+fiziksel bütçeyle korunur.
 
 `katalog_testi.rs` sabit bir kök dosya listesi kullanmaz; `compiler/src`
 altındaki bütün Rust dosyalarını özyinelemeli ve sıralı tarar. Yeni handler'da

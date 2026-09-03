@@ -3,6 +3,7 @@
 - **Durum:** kabul
 - **Tarih:** 2 Eylül 2026
 - **İlgili kayıt:** K-150, B-058
+- **Revizyon:** 3 Eylül 2026 — K-160/ADR-059 C001'i ve son SCC'yi kaldırdı.
 
 ## Bağlam
 
@@ -25,8 +26,8 @@ component (SCC) oluşturabiliyordu. İlk SCC incelemesi üç çevrim buldu:
 4. Zorunlu geçici istisna; exact ve sıralı üye kümesi, en az 40 karakter
    gerekçe, ISO son tarih ve `K-nnn` kaldırma işi taşır. Son tarih geçtiğinde
    graph değişmese de kapı kırılır.
-5. Paket/registry/tedarik SCC'si yalnız K-160 sahiplik ayrımına kadar,
-   1 Ekim 2026 son tarihli C001 kaydıyla geçicidir. Allowlist katman yönünü
+5. Paket/registry/tedarik SCC'si K-160 sahiplik ayrımıyla kaldırılmıştır.
+   C001 kaydı artık yoktur. Allowlist katman yönünü
    veya başka bir SCC'yi meşrulaştırmaz.
 
 ## Reddedilen seçenekler
@@ -41,9 +42,7 @@ component (SCC) oluşturabiliyordu. İlk SCC incelemesi üç çevrim buldu:
 
 ## Sonuçlar
 
-- Üç SCC'den ikisi davranış ve public checker API'si değişmeden kaldırıldı.
-- Açıklamasız production çevrimi sıfırdır; tek kalan SCC exact, gerekçeli,
-  sahipli ve süreli teknik borçtur.
-- K-160 son tarihten önce paket modeli, çözümleme, registry protokolü ve
-  artefakt doğrulama sahipliğini ayırmak zorundadır.
+- Üç SCC'nin tamamı kaldırılmıştır; production SCC ve izin sayısı sıfırdır.
+- K-160 paket modeli, çözümleme, registry protokolü, verification ve yayın
+  orkestrasyonu sahipliğini ayrı bağımlılık yönlerine taşımıştır.
 - Dil grammar'ı, runtime semantiği, tanılar ve normatif spec değişmedi.
