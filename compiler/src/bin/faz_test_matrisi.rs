@@ -637,13 +637,11 @@ fn capraz_kapsayan_seciciler(fazlar: &[Faz], hedef_faz: &str) -> Vec<String> {
     fazlar
         .iter()
         .flat_map(|birincil| {
-            birincil.ek_kapsam.iter().filter_map(move |kapsam| {
-                kapsam
-                    .fazlar
-                    .iter()
-                    .any(|faz| faz == hedef_faz)
-                    .then(|| format!("{} / {}", birincil.kimlik, seciciyi_yaz(&kapsam.secici)))
-            })
+            birincil
+                .ek_kapsam
+                .iter()
+                .filter(move |kapsam| kapsam.fazlar.iter().any(|faz| faz == hedef_faz))
+                .map(|kapsam| format!("{} / {}", birincil.kimlik, seciciyi_yaz(&kapsam.secici)))
         })
         .collect()
 }

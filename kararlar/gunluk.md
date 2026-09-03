@@ -2705,6 +2705,10 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
 - **Kapı:** Geçici Git depo testi beyansız feature'ı, maintenance kaçışını,
   eksik provenance'ı ve geçmiş beyan yeniden yazımını reddeder. CI aynı koruğu
   Git tabanına karşı çalıştırır. B-071/V1-P0-35/K-160A kapandı.
+- **CI temizliği:** Kapanışta sabit toolchain Clippy kapısını kıran iki karmaşık
+  istek dönüş tipi adlandırıldı; faz matrisindeki bool→filter-map zinciri açık
+  `filter`+`map` oldu. Bu maintenance dil/runtime davranışını değiştirmez ve
+  yeni freeze manifestinin ilk gerçek commit beyanıyla korunur.
 
 ---
 
