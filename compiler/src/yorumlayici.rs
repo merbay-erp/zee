@@ -479,6 +479,8 @@ pub struct ToplayanIo {
     pub an_degerleri: VecDeque<i64>,
     pub eylem_baslat_sonuclari: VecDeque<Result<(), EylemHatasi>>,
     pub eylem_tamamla_sonuclari: VecDeque<Result<(), EylemHatasi>>,
+    /// Testlerin istek-yerel dosya yazma arızasını deterministik üretmesi için.
+    pub dosya_yaz_sonuclari: VecDeque<Result<(), String>>,
     an_son_degeri: i64,
     pub cikti: Vec<String>,
     eylem_yedekleri: Vec<HashMap<String, String>>,
@@ -530,6 +532,7 @@ impl ToplayanIo {
             an_degerleri: VecDeque::new(),
             eylem_baslat_sonuclari: VecDeque::new(),
             eylem_tamamla_sonuclari: VecDeque::new(),
+            dosya_yaz_sonuclari: VecDeque::new(),
             an_son_degeri: 0,
             cikti: Vec::new(),
             eylem_yedekleri: Vec::new(),
@@ -603,6 +606,9 @@ impl GirdiCikti for ToplayanIo {
             .ok_or_else(|| format!("\"{}\" dosyası bulunamadı", yol))
     }
     fn dosya_yaz(&mut self, yol: &str, satir: &str, ekleme: bool) -> Result<(), String> {
+        if let Some(sonuc) = self.dosya_yaz_sonuclari.pop_front() {
+            sonuc?;
+        }
         let girdi = self.dosyalar.entry(yol.to_string()).or_default();
         if !ekleme {
             girdi.clear();
