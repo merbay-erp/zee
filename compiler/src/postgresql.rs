@@ -19,7 +19,15 @@ pub struct GocRaporu {
 
 pub struct PostgresqlOturumu {
     istemci: Client,
+    bildirim: VeritabaniBildirimi,
     eylem_derinligi: usize,
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum SorguSinifi {
+    Okuma,
+    Yazma,
+    Commit,
 }
 
 impl PostgresqlOturumu {
@@ -30,6 +38,7 @@ impl PostgresqlOturumu {
         let istemci = istemciyi_ac(bildirim)?;
         let mut sonuc = Self {
             istemci,
+            bildirim: bildirim.clone(),
             eylem_derinligi: 0,
         };
         for _ in 0..eylem_derinligi {
@@ -45,10 +54,25 @@ impl PostgresqlOturumu {
     ) -> Result<Vec<Vec<(String, String)>>, VeritabaniHatasi> {
         girdiyi_denetle(sorgu, parametreler)?;
         let baglar = metin_baglari(parametreler);
-        let satirlar = self
-            .istemci
-            .query_typed(sorgu, &baglar)
-            .map_err(|h| postgres_hatasi("PostgreSQL sorgusu başarısız", h))?;
+        let satirlar = match self.istemci.query_typed(sorgu, &baglar) {
+            Ok(satirlar) => satirlar,
+            Err(_ilk_hata)
+                if yeniden_baglanabilir(
+                    SorguSinifi::Okuma,
+                    self.eylem_derinligi,
+                    self.istemci.is_closed(),
+                    0,
+                ) =>
+            {
+                self.istemci = istemciyi_ac(&self.bildirim)?;
+                self.istemci.query_typed(sorgu, &baglar).map_err(|h| {
+                    postgres_hatasi("PostgreSQL sorgusu yeniden denendi ama başarısız", h)
+                })?
+            }
+            Err(hata_degeri) => {
+                return Err(postgres_hatasi("PostgreSQL sorgusu başarısız", hata_degeri));
+            }
+        };
         let sinirlar = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.veritabani();
         if satirlar.len() > sinirlar.satir() {
             return Err(hata("PostgreSQL sonucu 10.000 satır sınırını aşıyor"));
@@ -101,6 +125,12 @@ impl PostgresqlOturumu {
         sorgu: &str,
         parametreler: &[String],
     ) -> Result<i64, VeritabaniHatasi> {
+        debug_assert!(!yeniden_baglanabilir(
+            SorguSinifi::Yazma,
+            self.eylem_derinligi,
+            self.istemci.is_closed(),
+            0,
+        ));
         if self.eylem_derinligi == 0 {
             return Err(hata(
                 "PostgreSQL değişikliği yalnız eylem transaction'ı içinde yapılabilir",
@@ -147,6 +177,12 @@ impl PostgresqlOturumu {
     }
 
     pub fn eylem_tamamla(&mut self) -> Result<(), VeritabaniHatasi> {
+        debug_assert!(!yeniden_baglanabilir(
+            SorguSinifi::Commit,
+            self.eylem_derinligi,
+            self.istemci.is_closed(),
+            0,
+        ));
         let Some(yeni_derinlik) = self.eylem_derinligi.checked_sub(1) else {
             return Err(hata("Açık PostgreSQL transaction'ı yok"));
         };
@@ -155,9 +191,16 @@ impl PostgresqlOturumu {
         } else {
             format!("RELEASE SAVEPOINT zee_{}", yeni_derinlik)
         };
-        self.istemci
-            .batch_execute(&sorgu)
-            .map_err(|h| postgres_hatasi("PostgreSQL transaction'ı tamamlanamadı", h))?;
+        self.istemci.batch_execute(&sorgu).map_err(|h| {
+            if yeni_derinlik == 0 {
+                postgres_hatasi(
+                    "PostgreSQL COMMIT sonucu belirsiz; otomatik yeniden deneme yapılmadı",
+                    h,
+                )
+            } else {
+                postgres_hatasi("PostgreSQL savepoint'i tamamlanamadı", h)
+            }
+        })?;
         self.eylem_derinligi = yeni_derinlik;
         Ok(())
     }
@@ -180,6 +223,18 @@ impl PostgresqlOturumu {
         self.eylem_derinligi = yeni_derinlik;
         Ok(())
     }
+}
+
+fn yeniden_baglanabilir(
+    sinif: SorguSinifi,
+    eylem_derinligi: usize,
+    istemci_kapali: bool,
+    yeniden_deneme_sayisi: usize,
+) -> bool {
+    sinif == SorguSinifi::Okuma
+        && eylem_derinligi == 0
+        && istemci_kapali
+        && yeniden_deneme_sayisi == 0
 }
 
 pub fn gocleri_uygula(
@@ -464,5 +519,37 @@ mod testler {
         let tls = Config::from_str("postgresql://kullanici@127.0.0.1:5432/uygulama")
             .expect("ayar geçerli");
         assert!(baglanti_hedefini_denetle(&tls, &hedef).is_err());
+    }
+
+    #[test]
+    fn yalniz_transaction_disindaki_okuma_bir_kez_yeniden_baglanabilir() {
+        let mut vaka_sayisi = 0usize;
+        for (sira, satir) in include_str!("../tests/fixtures/postgresql-recovery-v1.tsv")
+            .lines()
+            .enumerate()
+        {
+            if satir.starts_with('#') || satir.is_empty() {
+                continue;
+            }
+            vaka_sayisi += 1;
+            let alanlar = satir.split('\t').collect::<Vec<_>>();
+            assert_eq!(alanlar.len(), 5, "{} numaralı fixture satırı", sira + 1);
+            let sinif = match alanlar[0] {
+                "read" => SorguSinifi::Okuma,
+                "write" => SorguSinifi::Yazma,
+                "commit" => SorguSinifi::Commit,
+                bilinmeyen => panic!("bilinmeyen sorgu sınıfı: {bilinmeyen}"),
+            };
+            let gercek = yeniden_baglanabilir(
+                sinif,
+                alanlar[1].parse().expect("eylem derinliği sayı olmalı"),
+                alanlar[2].parse().expect("istemci durumu bool olmalı"),
+                alanlar[3]
+                    .parse()
+                    .expect("yeniden deneme sayısı sayı olmalı"),
+            );
+            assert_eq!(gercek, alanlar[4] == "retry", "fixture satırı: {satir}");
+        }
+        assert_eq!(vaka_sayisi, 6, "recovery karar matrisi eksilmemeli");
     }
 }

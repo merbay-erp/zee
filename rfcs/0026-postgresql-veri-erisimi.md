@@ -41,10 +41,27 @@ ortam değişkeni adı ve proje içi migration klasörü taşır. URL hedefle ex
 eşleşmeli ve `sslmode=disable` olmalıdır. Bu yalnız yerel K-163 kanıt profilidir;
 production TLS/uzak host ayrı dogfood ve güvenlik kararı ister.
 
+## Bağlantı kaybı ve tekrar sınırı
+
+Gerçek K-163 backend-sonlandırma provası, daha önce kurulmuş senkron client'ın
+stale kaldığını gösterdi. Bu nedenle yalnız transaction dışındaki salt-okuma
+yolu, sürücü client'ı kapalı işaretlediğinde eski client'ı düşürür; tek yeniden
+bağlantıdan sonra aynı parametreli SELECT'i bir kez daha çalıştırır. SQL hatası,
+transaction içi okuma, ikinci başarısızlık, yazı ve COMMIT aynı mekanizmayı
+kullanmaz.
+
+Özellikle COMMIT cevabı kaybolduğunda veritabanı işlemi uygulamış olabilir.
+Otomatik tekrar çift yan etki doğurabileceğinden sonuç “belirsiz” olarak C025'e
+taşınır ve kullanıcı yeniden denemeye yönlendirilmez. Pool, cursor/stream ve
+kilitli okuma bu ilk senkron profilin parçası değildir.
+
 ## Kabul kanıtı
 
 Parser/tür/etki, parametre ayrılığı, structured hata, IO trace/replay, hedef
 doğrulama ve migration reddi testlenir. K-163 ürününde gerçek PostgreSQL ile
 apply→skip, injection-benzeri parametre, rollback ve 23505 zinciri ayrıca
-kaydedilmeden production yeterliliği iddia edilmez.
-
+kaydedilmeden production yeterliliği iddia edilmez. Sürümlü recovery fixture'ı
+read/write/commit tekrar politikasını korur; gerçek ürün provası stale read'in
+process restart olmadan iyileştiğini ve write kaybında tekrar yapılmadığını
+gösterir. COMMIT-sonucu-belirsiz dalı politika ve mesaj düzeyinde kanıtlıdır;
+zamanlaması güvenilir biçimde enjekte edilmiş gerçek COMMIT kaybı henüz yoktur.

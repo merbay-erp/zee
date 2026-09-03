@@ -2851,3 +2851,21 @@ usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.
   başarılı yaşam döngüsü için partial failure, yetim/dangling kayıt ve
   idempotent uzlaştırma matrisi sonuçtan önce sabitlendi. Core değişikliği henüz
   açılmadı.
+
+### K-163 altıncı dilim — güvenli read recovery — 3 Eylül 2026
+
+- `43d04fc` ile bulunan stale PostgreSQL client açığı, CORE FREEZE altında
+  correctness değişikliği olarak ele alındı. Yalnız transaction dışı salt okuma,
+  ilk sorgu hatasında sürücünün client'ı kapalı işaretlemesi koşuluyla eski
+  client'ı atar; tek reconnect ve aynı parametreli SELECT'i tek tekrar uygular.
+- `postgresql-recovery-v1.tsv` altı satırlı karar matrisi; transaction içi
+  okuma, açık client SQL reddi, ikinci başarısızlık, write ve COMMIT'i retry
+  dışı tutar. COMMIT bağlantı kaybı C025'te açıkça “sonuç belirsiz”dir.
+- Gerçek PostgreSQL 16.11 provasında canlı backend sonlandırıldı. Sonraki ilk
+  GET yeni backend PID'sine süreç restartı olmadan bağlandı ve sentinel kaydı
+  gördü; sonraki dört okuma da başarılıydı. Aynı koşulda write POST'u otomatik
+  tekrar etmedi ve veritabanında satır bırakmadı.
+- Dürüst açık sınır: write kaybı C021 ile uygulama sürecini sonlandırdı; henüz
+  kontrollü 503'e dönüşmüyor. COMMIT cevabının kaybolduğu dar pencere gerçek
+  enjeksiyonla üretilmedi; yalnız no-retry politikası ve belirsiz sonuç mesajı
+  testlidir. Production pool/TLS, doğru HTTP statüsü ve availability açıktır.

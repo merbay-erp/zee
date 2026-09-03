@@ -30,10 +30,14 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 - **İlk PostgreSQL dayanıklılık kırılma noktası** (K-163): `43d04fc` ürün
   commit'inde PostgreSQL backend'i gerçek koşuda sonlandırıldı. Hiç kurulamayan
   bağlantı kapasite geri gelince süreç içinde iyileşirken öldürülmüş canlı
-  client yeniden bağlanmadı. Ürünün başarısız DB sonucunu boş liste gibi
-  göstermesi mevcut Zee ile görünür hata kartına çevrildi; doğru HTTP 503,
-  stale-client recovery ve gerçek pool hâlâ açık kanıttır. 492 LOC maintenance
-  tabanı 1000+ satır karşılaştırması için exact yöntemle kaydedildi.
+  client yeniden bağlanmıyordu. Ardındaki correctness değişikliği transaction
+  dışı salt okumada kapalı client'ı atıp tek reconnect + tek SELECT tekrarı
+  yapar; aynı PostgreSQL 16.11 provası process restart olmadan başarıya döndü.
+  Transaction içi okuma, SQL reddi, write ve COMMIT tekrar edilmez; COMMIT
+  bağlantı kaybı “sonuç belirsiz” olarak raporlanır. Write olumsuzu satır
+  üretmedi fakat C021 ile süreci sonlandırdı. Doğru HTTP 503, write-path
+  availability, gerçek pool ve COMMIT-kaybı enjeksiyonu hâlâ açık kanıttır.
+  492 LOC maintenance tabanı 1000+ satır karşılaştırması için kaydedildi.
 
 - **Dogfood kanıt referans bütünlüğü** (B-073): Append-only ürün kaydı tekil
   slug, repo içi kanıt kökü, exact harici ürün commit'i ve durum taşır. CORE

@@ -854,11 +854,16 @@ TLS, pool ve multi-process yarışı ayrı açık dogfood kanıtıdır.
 Beşinci dilimin `43d04fc` ürün commit'i 509 Zee satırında ilk dayanıklılık
 kırığını ölçtü. Bağlantı daha önce hiç kurulamamışsa kapasite geri geldiğinde
 restart olmadan iyileşir; kurulmuş client backend sonlandırması sonrası yeniden
-bağlanmaz. Beş ardışık istek bunu görünür arıza kartıyla raporlar fakat HTTP
-200 taşır. Doğru 503, stale-client recovery, gerçek pool ve medya+DB uzlaştırma
-K-163'ün açık production kanıtıdır. 492 LOC tabanı; modül/test/dokunulan dosya,
-bugfix süresi, sürtünme, workaround ve LSP p95 için aynı yöntemli 1000+ LOC
-skor kartına bağlandı.
+bağlanmıyordu. Ardındaki correctness değişikliği yalnız transaction dışı salt
+okumaya kapalı-client invalidation, tek reconnect ve tek SELECT tekrarı verdi.
+Gerçek PostgreSQL 16.11 provasında öldürülen backend'den sonraki ilk istek yeni
+backend'e bağlandı ve sentinel'ı süreç restartı olmadan gördü. Write olumsuzu
+otomatik tekrar ve satır üretmedi fakat C021 ile uygulamayı sonlandırdı;
+COMMIT-kaybı gerçek enjeksiyonla henüz kanıtlanmadı ve normatif olarak “sonuç
+belirsiz” kaldı. Doğru HTTP 503, gerçek pool, write-path availability ve
+medya+DB uzlaştırma K-163'ün açık production kanıtıdır. 492 LOC tabanı;
+modül/test/dokunulan dosya, bugfix süresi, sürtünme, workaround ve LSP p95 için
+aynı yöntemli 1000+ LOC skor kartına bağlandı.
 B-001 çağrı sözdizimi ile B-002 gezme zihinsel modeli gerçek insan
 kanıtı gelmeden kapatılmaz veya yeni syntax kararıyla atlanmaz.
 # 40. Proje felsefesinin korunması

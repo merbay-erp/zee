@@ -1,0 +1,8 @@
+# zee-postgresql-recovery-1
+# sinif	eylem_derinligi	istemci_kapali	yeniden_deneme_sayisi	karar
+read	0	true	0	retry
+read	1	true	0	fail
+read	0	false	0	fail
+read	0	true	1	fail
+write	0	true	0	fail
+commit	0	true	0	fail

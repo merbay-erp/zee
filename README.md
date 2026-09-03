@@ -181,7 +181,7 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **630** |
+| Rust + doctest vakası | **631** |
 | Tanı kimliği | **154 etkin + 3 ayrılmış** |
 | RFC | **26** (2 kabul, 22 geçici kabul, 2 taslak) |
 | ADR | **58** (58 kabul) |
@@ -358,10 +358,15 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   Production TLS/pool/multi-process hâlâ açıkça kapsam dışıdır.
   Beşinci dilimin `43d04fc` ürün kanıtı ilk dayanıklılık kırığını buldu:
   başlangıç bağlantısı kapasite dönünce iyileşiyor, öldürülmüş canlı client ise
-  süreç içinde yeniden bağlanmıyor. Ürünün DB hatasını boş liste gibi göstermesi
-  mevcut Zee ile görünür arıza kartına çevrildi; doğru HTTP 503 ve stale-client
-  recovery açık kaldı. 492 LOC bakım tabanı 1000+ satır karşılaştırması için
-  exact yöntemle kaydedildi.
+  süreç içinde yeniden bağlanmıyordu. K-163 correctness dilimi transaction dışı
+  salt okumada kapalı client'ı atıp tek reconnect + tek SELECT tekrarı ekledi;
+  aynı gerçek PostgreSQL 16.11 backend-sonlandırma provası process restart
+  olmadan iyileşti. Transaction içi okuma, SQL reddi, write ve COMMIT otomatik
+  tekrar edilmez; COMMIT kaybı “sonuç belirsiz”dir. Write olumsuzunda satır
+  oluşmadı fakat uygulama C021 ile sonlandı. Ürünün DB hatasını boş liste gibi
+  göstermesi görünür arıza kartına çevrildi; doğru HTTP 503, gerçek pool ve
+  write-path availability açık kaldı. 492 LOC bakım tabanı 1000+ satır
+  karşılaştırması için exact yöntemle kaydedildi.
   K-151/ADR-048 bütün GitHub Actions `uses:` referanslarını incelenmiş 40
   haneli commit SHA'lara sabitledi. Sürümlü pin kaydı workflow'larla birebir,
   haftalık Dependabot yalnız inceleme PR'ı açar; hareketli `@v4`, `@stable`
