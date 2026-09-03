@@ -193,7 +193,7 @@ impl PostgresqlOturumu {
         };
         self.istemci.batch_execute(&sorgu).map_err(|h| {
             if yeni_derinlik == 0 {
-                postgres_hatasi(
+                commit_sonucu_belirsiz_hatasi(
                     "PostgreSQL COMMIT sonucu belirsiz; otomatik yeniden deneme yapılmadı",
                     h,
                 )
@@ -470,6 +470,14 @@ fn postgres_hatasi(on: &str, hata_degeri: postgres::Error) -> VeritabaniHatasi {
         on.to_string()
     };
     verili_hata(mesaj, veri)
+}
+
+fn commit_sonucu_belirsiz_hatasi(on: &str, hata_degeri: postgres::Error) -> VeritabaniHatasi {
+    let mut sonuc = postgres_hatasi(on, hata_degeri);
+    sonuc
+        .veri
+        .push(("hata_sinifi".into(), "db.commit_unknown".into()));
+    sonuc
 }
 
 fn hata(mesaj: impl Into<String>) -> VeritabaniHatasi {

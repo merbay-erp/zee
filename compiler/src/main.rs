@@ -2294,70 +2294,85 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         self.bekleyen_silinen_cerezler.push(ad.to_string());
         Ok(())
     }
-    fn eylem_baslat(&mut self) -> Result<(), String> {
+    fn eylem_baslat(&mut self) -> Result<(), dil::yorumlayici::EylemHatasi> {
         if let Some(mut postgresql) = self.postgresql.take() {
             match postgresql.eylem_baslat() {
                 Ok(()) => self.postgresql = Some(postgresql),
-                Err(hata) => return Err(hata.mesaj),
+                Err(hata) => return Err(dil::yorumlayici::EylemHatasi::genel(hata.mesaj)),
             }
         }
         self.eylem_yedekleri.push(std::collections::HashMap::new());
         self.postgresql_yazma_eylemleri.push(false);
         Ok(())
     }
-    fn eylem_tamamla(&mut self) -> Result<(), String> {
+    fn eylem_tamamla(&mut self) -> Result<(), dil::yorumlayici::EylemHatasi> {
         let postgresql_sonucu = if let Some(mut postgresql) = self.postgresql.take() {
             match postgresql.eylem_tamamla() {
                 Ok(()) => {
                     self.postgresql = Some(postgresql);
                     Ok(())
                 }
-                Err(hata) => Err(hata.mesaj),
+                Err(hata) if hata.commit_sonucu_belirsiz_mi() => Err(
+                    dil::yorumlayici::EylemHatasi::commit_sonucu_belirsiz(hata.mesaj),
+                ),
+                Err(hata) => Err(dil::yorumlayici::EylemHatasi::genel(hata.mesaj)),
             }
         } else {
             Ok(())
         };
         self.postgresql_yazma_eylemleri
             .pop()
-            .ok_or_else(|| "açık eylem transaction'ı yok".to_string())?;
+            .ok_or_else(|| dil::yorumlayici::EylemHatasi::genel("açık eylem transaction'ı yok"))?;
         let yedek = self
             .eylem_yedekleri
             .pop()
-            .ok_or_else(|| "açık eylem transaction'ı yok".to_string())?;
+            .ok_or_else(|| dil::yorumlayici::EylemHatasi::genel("açık eylem transaction'ı yok"))?;
         match postgresql_sonucu {
             Ok(()) => Ok(()),
             Err(hata) => match self.eylem_dosya_yedegini_geri_al(yedek) {
                 Ok(()) => Err(hata),
-                Err(geri_alma) => Err(format!("{hata}; dosya eylemi geri alınamadı: {geri_alma}")),
+                Err(geri_alma) => {
+                    let mesaj = format!("{}; dosya eylemi geri alınamadı: {geri_alma}", hata.mesaj);
+                    Err(match hata.sinif {
+                        dil::yorumlayici::EylemHataSinifi::Genel => {
+                            dil::yorumlayici::EylemHatasi::genel(mesaj)
+                        }
+                        dil::yorumlayici::EylemHataSinifi::CommitSonucuBelirsiz => {
+                            dil::yorumlayici::EylemHatasi::commit_sonucu_belirsiz(mesaj)
+                        }
+                    })
+                }
             },
         }
     }
-    fn eylem_geri_al(&mut self) -> Result<(), String> {
+    fn eylem_geri_al(&mut self) -> Result<(), dil::yorumlayici::EylemHatasi> {
         let postgresql_sonucu = if let Some(mut postgresql) = self.postgresql.take() {
             match postgresql.eylem_geri_al() {
                 Ok(()) => {
                     self.postgresql = Some(postgresql);
                     Ok(())
                 }
-                Err(hata) => Err(hata.mesaj),
+                Err(hata) => Err(dil::yorumlayici::EylemHatasi::genel(hata.mesaj)),
             }
         } else {
             Ok(())
         };
         self.postgresql_yazma_eylemleri
             .pop()
-            .ok_or_else(|| "açık eylem transaction'ı yok".to_string())?;
+            .ok_or_else(|| dil::yorumlayici::EylemHatasi::genel("açık eylem transaction'ı yok"))?;
         let yedek = self
             .eylem_yedekleri
             .pop()
-            .ok_or_else(|| "açık eylem transaction'ı yok".to_string())?;
+            .ok_or_else(|| dil::yorumlayici::EylemHatasi::genel("açık eylem transaction'ı yok"))?;
         let dosya_sonucu = self.eylem_dosya_yedegini_geri_al(yedek);
         match (postgresql_sonucu, dosya_sonucu) {
             (Ok(()), Ok(())) => Ok(()),
-            (Err(hata), Ok(())) | (Ok(()), Err(hata)) => Err(hata),
-            (Err(hata), Err(geri_alma)) => {
-                Err(format!("{hata}; dosya eylemi geri alınamadı: {geri_alma}"))
-            }
+            (Err(hata), Ok(())) => Err(hata),
+            (Ok(()), Err(hata)) => Err(dil::yorumlayici::EylemHatasi::genel(hata)),
+            (Err(hata), Err(geri_alma)) => Err(dil::yorumlayici::EylemHatasi::genel(format!(
+                "{}; dosya eylemi geri alınamadı: {geri_alma}",
+                hata.mesaj
+            ))),
         }
     }
     fn yanit_gonder(&mut self, yanit: &str) {

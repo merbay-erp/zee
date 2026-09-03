@@ -42,14 +42,23 @@ en fazla bir kez yeniden bağlanmalı ve aynı parametreli SELECT'i yeniden
 çalıştırmalıdır. SQL reddi, açık transaction içindeki okuma, lock/stream/cursor
 işi, ikinci başarısızlık, değişiklik ve COMMIT otomatik yeniden DENENEMEZ.
 COMMIT sırasında bağlantı kaybı işlemin gerçekleşip gerçekleşmediğini
-belirsiz bırakır; C025 mesajı bu belirsizliği ve tekrar yapılmadığını açıkça
-bildirmelidir.
+belirsiz bırakır. PostgreSQL adaptörü structured hata verisinde
+`hata_sinifi=db.commit_unknown` taşır; transaction sınırı bunu kararlı C027'ye
+çevirir. Mesaj belirsizliği, otomatik tekrar yapılmadığını ve uzlaştırma
+gerektiğini açıkça bildirmelidir.
 
 Eylem sınırındaki PostgreSQL bağlantı hatası client'ı geçersiz kılmalı;
 transaction/savepoint durumu sonraki isteğe taşınmamalıdır. Web adaptörü C021'i
 503'e çevirip worker'ı ayakta tutar. Aynı write kendiliğinden tekrar edilmez;
 sonraki bağımsız read veya write yeni bağlantıyla başlayabilir. CLI/web dışı
 çağrıda C021 normal çalışma tanısı olarak yayılmayı sürdürür.
+
+COMMIT sonucu belirsiz olan dar sınıf C021 DEĞİLDİR: web'de C027 anlamlı 503,
+CLI'da C027 tanısıdır. İstemci “commit olmadı” varsayamaz. Uygulama kararlı bir
+iş anahtarıyla sonucu okumalı; kayıt varsa başarılı sonucu benimsemeli, yoksa
+ürün politikasına göre yeni bir girişim başlatmalıdır. UNIQUE iş anahtarı aynı
+yan etkinin iki kez oluşmasını engelleyebilir; bu genel otomatik retry izni
+değildir.
 
 ## Migration
 
@@ -78,8 +87,10 @@ Yeniden bağlanma karar matrisi
 gerçek PostgreSQL 16.11 kanıtında canlı backend sonlandırıldıktan sonraki ilk
 transaction-dışı okuma, süreç yeniden başlamadan yeni backend'e bağlanmış ve
 aynı sentinel satırını görünür kılmıştır. Yazı olumsuzunda backend kaybından
-sonra otomatik tekrar veya satır oluşmamıştır; uygulama sürecinin C021 ile
-sonlanması ise ürün availability sınırı olarak açıktır.
+sonra otomatik tekrar veya satır oluşmamış; F027 worker survival'ı kapatmıştır.
+F028 wire-level proxy'si COMMIT'i iletmeden kesilen durumda 0, COMMIT
+ReadyForQuery yanıtı yutulan durumda 1 satır üretmiş; iki durumda da aynı
+C027/503 görünmüş, worker yaşamış ve otomatik retry olmamıştır.
 
 ## Açık sınır
 

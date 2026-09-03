@@ -4,6 +4,7 @@
 //! döner; CLI bunu ekrana basar, testler doğrudan karşılaştırır.
 
 mod cumle;
+mod eylem_hatasi;
 mod hir_gecisi;
 mod ifade;
 mod io_izi;
@@ -19,6 +20,8 @@ mod yetkinlik;
 mod yetkinlik_hatasi;
 
 use self::cumle::blok_calistir_async;
+use self::eylem_hatasi::tani as transaction_hatasi;
+pub use self::eylem_hatasi::{EylemHataSinifi, EylemHatasi};
 use self::hir_gecisi::CalistirmaProgrami;
 pub use self::hir_gecisi::{
     calistir_baglanmis, calistir_baglanmis_io, calistir_baglanmis_io_kodla, test_calistir_baglanmis,
@@ -302,13 +305,13 @@ pub trait GirdiCikti {
     }
     /// Her `eylem` çağrısı bir transaction/savepoint sınırıdır. Adaptör,
     /// desteklediği kalıcı kaynakları başarıda tamamlar, hata dönüşünde geri alır.
-    fn eylem_baslat(&mut self) -> Result<(), String> {
+    fn eylem_baslat(&mut self) -> Result<(), EylemHatasi> {
         Err("IO adaptörü eylem transaction'ını desteklemiyor".into())
     }
-    fn eylem_tamamla(&mut self) -> Result<(), String> {
+    fn eylem_tamamla(&mut self) -> Result<(), EylemHatasi> {
         Err("IO adaptörü eylem transaction'ını desteklemiyor".into())
     }
-    fn eylem_geri_al(&mut self) -> Result<(), String> {
+    fn eylem_geri_al(&mut self) -> Result<(), EylemHatasi> {
         Err("IO adaptörü eylem transaction'ını desteklemiyor".into())
     }
     /// Sensör durumu (IoT simülatörü): "kapı" açık mı?
@@ -423,13 +426,13 @@ impl GirdiCikti for PaylasilanIo<'_> {
     fn parola_dogrula(&mut self, parola: &str, ozet: &str) -> bool {
         self.ic.borrow_mut().parola_dogrula(parola, ozet)
     }
-    fn eylem_baslat(&mut self) -> Result<(), String> {
+    fn eylem_baslat(&mut self) -> Result<(), EylemHatasi> {
         self.ic.borrow_mut().eylem_baslat()
     }
-    fn eylem_tamamla(&mut self) -> Result<(), String> {
+    fn eylem_tamamla(&mut self) -> Result<(), EylemHatasi> {
         self.ic.borrow_mut().eylem_tamamla()
     }
-    fn eylem_geri_al(&mut self) -> Result<(), String> {
+    fn eylem_geri_al(&mut self) -> Result<(), EylemHatasi> {
         self.ic.borrow_mut().eylem_geri_al()
     }
     fn sensor_acik_mi(&mut self, ad: &str) -> bool {
@@ -474,7 +477,8 @@ pub struct ToplayanIo {
     /// Sahte sensörler (varsayılan kapalı) ve an ölçümü kuyruğu.
     pub sensorler: HashMap<String, bool>,
     pub an_degerleri: VecDeque<i64>,
-    pub eylem_baslat_sonuclari: VecDeque<Result<(), String>>,
+    pub eylem_baslat_sonuclari: VecDeque<Result<(), EylemHatasi>>,
+    pub eylem_tamamla_sonuclari: VecDeque<Result<(), EylemHatasi>>,
     an_son_degeri: i64,
     pub cikti: Vec<String>,
     eylem_yedekleri: Vec<HashMap<String, String>>,
@@ -525,6 +529,7 @@ impl ToplayanIo {
             sensorler: HashMap::new(),
             an_degerleri: VecDeque::new(),
             eylem_baslat_sonuclari: VecDeque::new(),
+            eylem_tamamla_sonuclari: VecDeque::new(),
             an_son_degeri: 0,
             cikti: Vec::new(),
             eylem_yedekleri: Vec::new(),
@@ -838,24 +843,31 @@ impl GirdiCikti for ToplayanIo {
             }
         }
     }
-    fn eylem_baslat(&mut self) -> Result<(), String> {
+    fn eylem_baslat(&mut self) -> Result<(), EylemHatasi> {
         if let Some(sonuc) = self.eylem_baslat_sonuclari.pop_front() {
             sonuc?;
         }
         self.eylem_yedekleri.push(self.dosyalar.clone());
         Ok(())
     }
-    fn eylem_tamamla(&mut self) -> Result<(), String> {
+    fn eylem_tamamla(&mut self) -> Result<(), EylemHatasi> {
+        if let Some(Err(hata)) = self.eylem_tamamla_sonuclari.pop_front() {
+            self.dosyalar = self
+                .eylem_yedekleri
+                .pop()
+                .ok_or_else(|| EylemHatasi::genel("açık eylem transaction'ı yok"))?;
+            return Err(hata);
+        }
         self.eylem_yedekleri
             .pop()
             .map(|_| ())
-            .ok_or_else(|| "açık eylem transaction'ı yok".into())
+            .ok_or_else(|| EylemHatasi::genel("açık eylem transaction'ı yok"))
     }
-    fn eylem_geri_al(&mut self) -> Result<(), String> {
+    fn eylem_geri_al(&mut self) -> Result<(), EylemHatasi> {
         self.dosyalar = self
             .eylem_yedekleri
             .pop()
-            .ok_or_else(|| "açık eylem transaction'ı yok".to_string())?;
+            .ok_or_else(|| EylemHatasi::genel("açık eylem transaction'ı yok"))?;
         Ok(())
     }
     fn sensor_acik_mi(&mut self, ad: &str) -> bool {
@@ -1053,13 +1065,13 @@ fn calistir_program_kodla(
                         &format!("istek {} saniyelik son tarihini aştı", zaman_asimi / 1000),
                     );
                 }
-                Err(tani) if tani.kod == "C021" => {
-                    io.istek_islemini_geri_al();
-                    io.durum_yaniti_gonder(503, "işlem tamamlanamadı; otomatik tekrar yok");
-                }
                 Err(tani) => {
                     io.istek_islemini_geri_al();
-                    return Err(tani);
+                    if let Some(mesaj) = eylem_hatasi::web_mesaji(&tani.kod) {
+                        io.durum_yaniti_gonder(503, mesaj);
+                    } else {
+                        return Err(tani);
+                    }
                 }
             }
         }
@@ -1629,15 +1641,8 @@ async fn islem_cagir(
     }
     if eylem {
         son_tarihi_denetle(io, satir)?;
-        io.eylem_baslat().map_err(|hata| {
-            Tani::yeni(
-                "C021",
-                format!("\"{}\" eylem transaction'ı başlatılamadı: {}.", ad, hata),
-                satir,
-                1,
-                1,
-            )
-        })?;
+        io.eylem_baslat()
+            .map_err(|hata| transaction_hatasi(ad, "başlatılamadı", &hata, satir))?;
     }
     // Eylem transaction'ı tek bir scheduler dilimidir. Böylece iki görevin
     // savepoint'leri iç içe geçmez; başarı/geri alma her zaman doğru sahibindir.
@@ -1681,16 +1686,6 @@ async fn islem_cagir(
             Err(tani)
         }
     }
-}
-
-fn transaction_hatasi(ad: &str, eylem: &str, hata: &str, satir: usize) -> Tani {
-    Tani::yeni(
-        "C021",
-        format!("\"{}\" eylem transaction'ı {}: {}.", ad, eylem, hata),
-        satir,
-        1,
-        1,
-    )
 }
 
 /// Açık Ondalık sözleşmesine gelen TamSayıyı runtime'da da genişletir; statik

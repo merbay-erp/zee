@@ -181,8 +181,8 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **632** |
-| Tanı kimliği | **154 etkin + 3 ayrılmış** |
+| Rust + doctest vakası | **635** |
+| Tanı kimliği | **155 etkin + 3 ayrılmış** |
 | RFC | **26** (2 kabul, 22 geçici kabul, 2 taslak) |
 | ADR | **58** (58 kabul) |
 | Normatif spec bölümü | **25** |
@@ -368,9 +368,13 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   göstermesi görünür arıza kartına çevrildi. F027 doğruluk dilimi transaction
   sınırı hatasını 503'e çevirdi, client/savepoint durumunu geçersiz kıldı ve
   worker'ı sonraki bağımsız read/write için ayakta tuttu; başarısız write tekrar
-  edilmedi. Exact ürün kanıtı `00a659a` commit'indedir. Gerçek pool ve
-  wire-level COMMIT ambiguity açık kaldı. 492 LOC bakım tabanı 1000+ satır
-  karşılaştırması için exact yöntemle kaydedildi.
+  edilmedi. Exact ürün kanıtı `00a659a` commit'indedir. F028 wire proxy'si
+  COMMIT öncesi kesintide 0, uygulanmış COMMIT yanıtı kaybında 1 satırla aynı
+  C027/503'ü doğruladı; otomatik retry yok, worker yaşıyor ve UNIQUE iş
+  anahtarı uzlaştırmayı güvenli tutuyor. Yeniden üretim adımları
+  [COMMIT belirsizliği runbook'undadır](docs/postgresql-commit-belirsizligi.md).
+  Gerçek pool hâlâ açıktır. 492 LOC
+  bakım tabanı 1000+ satır karşılaştırması için exact yöntemle kaydedildi.
   K-151/ADR-048 bütün GitHub Actions `uses:` referanslarını incelenmiş 40
   haneli commit SHA'lara sabitledi. Sürümlü pin kaydı workflow'larla birebir,
   haftalık Dependabot yalnız inceleme PR'ı açar; hareketli `@v4`, `@stable`

@@ -1,8 +1,9 @@
 //! Sürümlü, kanonik ve sıralı IO trace/replay katmanı (K-115, ADR-026).
-//!
-//! İz açıkça istenen, özel veri sayılan bir tanı/tekrar üretim artefaktıdır. Parola doğrulama
-//! argümanları ham değil SHA-256 parmak iziyle kaydedilir.
+//! İz özel veridir; parola doğrulama argümanları yalnız SHA-256 parmak iziyle kaydedilir.
 
+mod eylem;
+
+use self::eylem::{semayi_denetle as eylem_semasi, sonuc_yaz as eylem_sonuc_yaz};
 use super::io_izi_veritabani::{
     degistirme_coz as veritabani_degistirme_coz, degistirme_yaz as veritabani_degistirme_yaz,
     okuma_coz as veritabani_okuma_coz, okuma_yaz as veritabani_okuma_yaz,
@@ -10,7 +11,7 @@ use super::io_izi_veritabani::{
 use super::io_izi_web::{
     rota_arguman_semasi, rota_argumanlari, sonuc_coz as web_sonuc_coz, sonuc_yaz as web_sonuc_yaz,
 };
-use super::{GirdiCikti, VeritabaniHatasi};
+use super::{EylemHatasi, GirdiCikti, VeritabaniHatasi};
 use crate::agac::RotaErisimi;
 use crate::guvenlik::sha256_hex;
 use crate::web_guvenligi::WebReddi;
@@ -407,9 +408,8 @@ fn olay_semasini_denetle(olay: &IzOlay) -> Result<(), String> {
                 Err("rota güvenliği argüman/sonuç şeması geçersiz".into())
             }
         }
-        "oturum_kapat" | "eylem_baslat" | "eylem_tamamla" | "eylem_geri_al" => {
-            birim_semasi(olay, 0)
-        }
+        "oturum_kapat" => birim_semasi(olay, 0),
+        "eylem_baslat" | "eylem_tamamla" | "eylem_geri_al" => eylem_semasi(olay),
         "parola_dogrula" => {
             alan_sayisi(olay, 2, 1)?;
             let ozetler = olay.argumanlar.iter().all(|alan| {
@@ -750,21 +750,21 @@ impl<T: GirdiCikti> GirdiCikti for IzKaydedenIo<T> {
         sonuc
     }
 
-    fn eylem_baslat(&mut self) -> Result<(), String> {
+    fn eylem_baslat(&mut self) -> Result<(), EylemHatasi> {
         let sonuc = self.ic.eylem_baslat();
-        self.kaydet("eylem_baslat", Vec::new(), birim_sonuc_yaz(&sonuc));
+        self.kaydet("eylem_baslat", Vec::new(), eylem_sonuc_yaz(&sonuc));
         sonuc
     }
 
-    fn eylem_tamamla(&mut self) -> Result<(), String> {
+    fn eylem_tamamla(&mut self) -> Result<(), EylemHatasi> {
         let sonuc = self.ic.eylem_tamamla();
-        self.kaydet("eylem_tamamla", Vec::new(), birim_sonuc_yaz(&sonuc));
+        self.kaydet("eylem_tamamla", Vec::new(), eylem_sonuc_yaz(&sonuc));
         sonuc
     }
 
-    fn eylem_geri_al(&mut self) -> Result<(), String> {
+    fn eylem_geri_al(&mut self) -> Result<(), EylemHatasi> {
         let sonuc = self.ic.eylem_geri_al();
-        self.kaydet("eylem_geri_al", Vec::new(), birim_sonuc_yaz(&sonuc));
+        self.kaydet("eylem_geri_al", Vec::new(), eylem_sonuc_yaz(&sonuc));
         sonuc
     }
 
@@ -1207,19 +1207,19 @@ impl GirdiCikti for IzYenidenOynatici {
         self.bool_sonuc("parola_dogrula", sonuc)
     }
 
-    fn eylem_baslat(&mut self) -> Result<(), String> {
+    fn eylem_baslat(&mut self) -> Result<(), EylemHatasi> {
         let sonuc = self.siradaki("eylem_baslat", Vec::new());
-        self.birim_sonuc("eylem_baslat", sonuc)
+        self.eylem_sonuc("eylem_baslat", sonuc)
     }
 
-    fn eylem_tamamla(&mut self) -> Result<(), String> {
+    fn eylem_tamamla(&mut self) -> Result<(), EylemHatasi> {
         let sonuc = self.siradaki("eylem_tamamla", Vec::new());
-        self.birim_sonuc("eylem_tamamla", sonuc)
+        self.eylem_sonuc("eylem_tamamla", sonuc)
     }
 
-    fn eylem_geri_al(&mut self) -> Result<(), String> {
+    fn eylem_geri_al(&mut self) -> Result<(), EylemHatasi> {
         let sonuc = self.siradaki("eylem_geri_al", Vec::new());
-        self.birim_sonuc("eylem_geri_al", sonuc)
+        self.eylem_sonuc("eylem_geri_al", sonuc)
     }
 
     fn sensor_acik_mi(&mut self, ad: &str) -> bool {

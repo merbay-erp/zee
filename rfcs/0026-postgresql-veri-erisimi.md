@@ -51,9 +51,10 @@ transaction içi okuma, ikinci başarısızlık, yazı ve COMMIT aynı mekanizma
 kullanmaz.
 
 Özellikle COMMIT cevabı kaybolduğunda veritabanı işlemi uygulamış olabilir.
-Otomatik tekrar çift yan etki doğurabileceğinden sonuç “belirsiz” olarak C025'e
-taşınır ve kullanıcı yeniden denemeye yönlendirilmez. Pool, cursor/stream ve
-kilitli okuma bu ilk senkron profilin parçası değildir.
+Otomatik tekrar çift yan etki doğurabileceğinden adaptör
+`hata_sinifi=db.commit_unknown` üretir; transaction sınırı bunu C027'ye taşır
+ve kullanıcı yeniden denemeye yönlendirilmez. Pool, cursor/stream ve kilitli
+okuma bu ilk senkron profilin parçası değildir.
 
 Transaction sınırındaki bağlantı hatası mevcut client'ı ve o bağlantıya ait
 savepoint durumunu geçersiz kılar. Web adaptörü C021'i istek düzeyinde 503'e
@@ -69,5 +70,9 @@ apply→skip, injection-benzeri parametre, rollback ve 23505 zinciri ayrıca
 kaydedilmeden production yeterliliği iddia edilmez. Sürümlü recovery fixture'ı
 read/write/commit tekrar politikasını korur; gerçek ürün provası stale read'in
 process restart olmadan iyileştiğini ve write kaybında tekrar yapılmadığını
-gösterir. COMMIT-sonucu-belirsiz dalı politika ve mesaj düzeyinde kanıtlıdır;
-zamanlaması güvenilir biçimde enjekte edilmiş gerçek COMMIT kaybı henüz yoktur.
+gösterir. COMMIT-sonucu-belirsiz dalı wire-level proxy ile iki uçta kanıtlanır:
+COMMIT iletilmeden bağlantı kesildiğinde kayıt yoktur; COMMIT PostgreSQL'de
+tamamlanıp ReadyForQuery yanıtı yutulduğunda kayıt vardır. İki durumda da HTTP
+503/C027, sıfır otomatik retry ve yaşayan worker gözlenir. Sonraki bağlantıda
+iş anahtarı okunur; aynı UNIQUE anahtarlı bilinçli girişim ikinci kayıt
+oluşturamaz.

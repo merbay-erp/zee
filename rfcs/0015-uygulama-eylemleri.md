@@ -110,6 +110,10 @@ ekran/girdi/donanım etkisi taşıyamaz. Ayrıntılı normatif sözleşme spec/1
 - **K-163/F027:** Web isteğindeki C021 transaction-boundary arızası istek
   taslağını geri alıp 503 üretir; worker sonraki isteği işler. Başarısız write
   veya eylem gövdesi otomatik tekrar edilmez. CLI davranışı C021 olarak kalır.
+- **K-163/F028:** En dış COMMIT cevabı kaybolursa tipli
+  `CommitSonucuBelirsiz` sınırı C027 üretir. Web aynı anlamı uzlaştırma isteyen
+  503'e çevirir; process yaşar ve write otomatik tekrarlanmaz. IO izi sınıfı
+  korur, eski iki alanlı genel hata kayıtlarını okumayı sürdürür.
 - Tek-dosya atomik durum V1-P0-04/K-084 ile kapandı; eylemin çok-kaynaklı
   transaction/idempotency kapısı bu RFC'de açık kalır.
 

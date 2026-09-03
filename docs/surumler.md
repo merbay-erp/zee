@@ -36,8 +36,8 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   Exact PID/süre/temizlik ve negatif write kanıtı `78cce11` ürün commit'indedir.
   Transaction içi okuma, SQL reddi, write ve COMMIT tekrar edilmez; COMMIT
   bağlantı kaybı “sonuç belirsiz” olarak raporlanır. Write olumsuzu satır
-  üretmedi fakat C021 ile süreci sonlandırdı. Doğru HTTP 503, write-path
-  availability, gerçek pool ve COMMIT-kaybı enjeksiyonu hâlâ açık kanıttır.
+  üretmedi fakat C021 ile süreci sonlandırdı. F027 write-path availability'yi,
+  F028 iki uçlu COMMIT-kaybı enjeksiyonunu kapattı; gerçek pool açık kanıttır.
   492 LOC maintenance tabanı 1000+ satır karşılaştırması için kaydedildi.
 
 - **Write bağlantı kaybında worker survival** (K-163/F027): Web isteğindeki
@@ -46,7 +46,17 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   Gerçek backend-kill provasında başarısız write otomatik tekrar edilmedi, satır
   sayısı 0 kaldı; sonraki GET yeni backend PID'sine bağlandı ve sonraki bağımsız
   write 303 ile tek satır üretti. Exact saha kaydı `00a659a` ürün commit'indedir.
-  Wire-level COMMIT ambiguity enjeksiyonu açık.
+  Wire-level COMMIT ambiguity enjeksiyonu F028 ile kapandı.
+
+- **COMMIT sonucu belirsiz sınıfı ve gerçek iki-uç provası** (K-163/F028):
+  PostgreSQL `db.commit_unknown` verisi, yorumlayıcıdaki tipli transaction
+  hatası ve kullanıcıya açık C027 aynı anlamı uçtan uca taşır. Web adaptörü
+  “otomatik tekrar yok; uzlaştırma gerekli” 503'ü verir, worker yaşar; CLI
+  C027'yi korur. Wire proxy COMMIT'i DB'ye iletmeden kestiğinde 0, COMMIT
+  uygulanıp ReadyForQuery yanıtı yutulduğunda 1 satır gözledi; iki durumda da
+  aynı 503 çıktı ve retry olmadı. Sonraki bağlantıda iş anahtarıyla uzlaştırma
+  ve UNIQUE altında aynı anahtarlı bilinçli tekrar kayıt sayısını 1'de tuttu.
+  Production TLS/pool ve genel idempotency servisi hâlâ açık kapsamdadır.
 
 - **Dogfood kanıt referans bütünlüğü** (B-073): Append-only ürün kaydı tekil
   slug, repo içi kanıt kökü, exact harici ürün commit'i ve durum taşır. CORE

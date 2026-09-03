@@ -29,6 +29,11 @@ ikinci başarısızlık, yazı ve COMMIT fail-closed kalır. COMMIT bağlantı k
 “sonuç belirsiz”dir; adaptör otomatik tekrar yapamaz. Bu sınır
 `postgresql-recovery-v1.tsv` karar matrisiyle korunur.
 
+K-163/F028 ile belirsizlik string eşleşmesi değildir. PostgreSQL adaptörü
+`db.commit_unknown` structured sınıfını, yorumlayıcı `CommitSonucuBelirsiz`
+transaction sınıfını ve kullanıcı yüzeyi C027'yi taşır. Sürümlü IO izi sınıfı
+exact korur; v1'in eski genel hata satırları geriye dönük okunur.
+
 Gerçek IO sahibi transaction başlangıç/tamamlama/geri alma hatasında client'ı
 yeniden kullanmaz. Yerel eylem bookkeeping'i temizlenir; web yorumlayıcısı
 C021'i 503 isteğine dönüştürüp worker döngüsünü sürdürür. Bu yalnız süreç
@@ -50,6 +55,8 @@ girer; replay dış veritabanına bağlanmaz.
 K-163 ürün commit'i `43d04fc` stale-client arızasını buldu. Ardından gerçek
 PostgreSQL 16.11 backend sonlandırma koşusunda tek read reconnect aynı süreçte
 başarılı oldu; write olumsuzunda tekrar ve satır oluşmadı. Exact saha kanıtı
-ürün deposundaki `78cce11` commit'indedir. Uygulamanın write
-bağlantı kaybında C021 ile sonlanması ile gerçek COMMIT-kaybı enjeksiyonu açık
-availability/kanıt sınırıdır; bu karar onları çözülmüş göstermez.
+ürün deposundaki `78cce11` commit'indedir. F027 write bağlantı kaybında worker
+survival'ı; F028 ise COMMIT öncesi kesinti ve uygulanmış COMMIT sonrası kayıp
+yanıtı aynı C027 ile ayırmadan raporlamayı kapatır. Proxy deneyinde iki DB
+durumu sırasıyla 0 ve 1 satırdır; ikisinde de retry yoktur. Production
+TLS/pool/multi-process bu kararla çözülmüş sayılmaz.

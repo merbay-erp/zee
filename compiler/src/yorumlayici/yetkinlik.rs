@@ -1,5 +1,5 @@
 //! `GirdiCikti` çağrılarını merkezî yetkinlik politikasında fail-closed tutar.
-use super::{GirdiCikti, VeritabaniHatasi};
+use super::{EylemHatasi, GirdiCikti, VeritabaniHatasi};
 use crate::agac::RotaErisimi;
 use crate::web_guvenligi::WebReddi;
 use crate::yetkinlik::{DosyaSiniri, Yetkinlik, YetkinlikPolitikasi};
@@ -218,15 +218,15 @@ impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
         self.politika.izin_verir(Yetkinlik::Kriptografi) && self.ic.parola_dogrula(parola, ozet)
     }
 
-    fn eylem_baslat(&mut self) -> Result<(), String> {
+    fn eylem_baslat(&mut self) -> Result<(), EylemHatasi> {
         self.ic.eylem_baslat()
     }
 
-    fn eylem_tamamla(&mut self) -> Result<(), String> {
+    fn eylem_tamamla(&mut self) -> Result<(), EylemHatasi> {
         self.ic.eylem_tamamla()
     }
 
-    fn eylem_geri_al(&mut self) -> Result<(), String> {
+    fn eylem_geri_al(&mut self) -> Result<(), EylemHatasi> {
         self.ic.eylem_geri_al()
     }
 
