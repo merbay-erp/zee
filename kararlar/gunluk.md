@@ -2767,5 +2767,25 @@ insan kanıtı ve K-163 ilk gerçek Zee ürünü vardır.
   kaydetti. Değerin ara ada bağlanmasıyla mevcut dilde çözüldü; tek vaka ile
   compiler değişikliği açılmadı. Birim ayrımı ve ayar kaydı için mevcut Zee
   yüzeyi yeterli bulundu.
+
+### K-163 üçüncü dilim — sayfa yaşam döngüsü — 3 Eylül 2026
+
+- Ürün commit'i `cef5ae3`, kaynağı 495 satır ve üç sorumluluk birimine çıkardı.
+  Slug doğrulama/benzersizlik, taslak→yayında geçişi, düzenleme, filtreleme,
+  yayın görünürlüğü ve silme mevcut Zee ile tamamlandı.
+- Gerçek TCP provasında oluşturma, yinelenen slug reddi, güncelleme ve silme
+  303 döndü; taslak görünmedi, yayımlanan yeni slug'da göründü, filtre eşleşti
+  ve silinen kayıt kayboldu. Makine kapıları 7/7 test, temiz denetim ve kanonik
+  biçimdir.
+- İlk prova son kayıt silindiğinde boş listenin CSV başlığını kaybettiğini,
+  sonraki okumanın C015 verdiğini buldu. K163-F012 mevcut dilde boş durumda
+  kanonik başlık yazarak kapandı ve hermetik lifecycle testine bağlandı.
+- Düz JSON okuma yalnız tek sözlük olduğu için çok kayıtlı sayfa deposu CSV'ye
+  taşındı. Önekli eşleşmiş rotada uygulamadan özel 404 gönderememe ve dosya
+  tabanlı slug kontrolünün eşzamanlı unique constraint olmaması açık ürün
+  sınırıdır; PostgreSQL değerlendirmesine taşındı.
+- Zincirli dönüşüm/özellik koşulu aynı ailede üç gerçek kullanıma ulaştı.
+  Önceden belirlenen 5–10 tekrar eşiği dolmadığı için compiler değişikliği
+  açılmadı; B-073 hâlâ ilk dogfood core değişikliğinin ön koşuludur.
 B-001/B-002 (yeni sırada K-161/K-162), gerçek 10 çocuk/öğrenci + 5 profesyonel
 usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.
