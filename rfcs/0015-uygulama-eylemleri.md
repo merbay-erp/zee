@@ -100,8 +100,9 @@ ekran/girdi/donanım etkisi taşıyamaz. Ayrıntılı normatif sözleşme spec/1
 - **K-087/K-088 kapalı:** yanlış yöntem 405, fazla gövde/alan 413,
   bilinmeyen yol 404 ve son tarih 504'tür. Alan doğrulama 400, kimlik 401,
   yetki/CSRF 403'tür.
-- **K-176 uygulaması hazır, provenance kapanışı bekliyor:** eksik/kuralsız
-  `%xx` ve yüzde çözümü sonrası geçersiz UTF-8 rota çalışmadan 400'dür.
+- **K-176 kapalı:** eksik/kuralsız `%xx` ve yüzde çözümü sonrası geçersiz
+  UTF-8 rota çalışmadan 400'dür; exact uygulama commit'i semantic regression
+  fixture'ı ve değişiklik beyanıyla kaynaklanmıştır.
 - Yarım yazma K-087 olumsuzlarıyla; CSRF, session fixation, zayıf token,
   süre/iptal, başlık enjeksiyonu ve sahte proxy K-088 olumsuzlarıyla kanıtlıdır.
 - **K-087 kapalı:** eylemin aynı iş mantığı web ve CLI bağlamından çağrılır;

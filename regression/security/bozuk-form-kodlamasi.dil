@@ -1,0 +1,4 @@
+# web-istegi: GET /form?ad=%GG
+8080 kapısında sunucu başlat
+GET "/form" adresine istek geldiğinde
+    "rota çalıştı" yanıtını gönder

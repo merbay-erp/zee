@@ -192,8 +192,8 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
     red/kabul/yeniden-yazım yollarını uçtan uca kanıtlar; B-063/B-064 kapandı.
 53. K-176/ADR-054 sorgu ve form alanlarında eksik/kuralsız `%xx` ile çözüm
     sonrası geçersiz UTF-8'i rota çalışmadan 400'e çeviren strict uygulamayı
-    ekledi. Exact uygulama SHA'sının regression manifesti ve compiler semantic
-    beyanına bağlanması ikinci atomik commit'i bekler; B-065 şimdilik kısmi.
+    ekledi. `web` kipli kalıcı fixture exact `32247c7…` uygulama SHA'sına ve
+    compiler semantic bugfix beyanına bağlıdır; B-065 kapandı.
 
 ## P0 — V1 öncesi dil ve derleyici omurgası
 
@@ -649,11 +649,11 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   taşır. Bugfix exact fixture, semantic değişiklik normatif belge, maintenance
   en az 40 karakterlik açık gerekçe ister. Geçici gerçek Git deposu, düzeltme
   kelimesi taşımayan commit'in dahi beyansız geçemediğini kanıtlar.
-- **B-065 · KISMEN (K-176/ADR-054) — Strict form URL kodlaması.** Eksik veya
+- **B-065 · KAPALI (K-176/ADR-054) — Strict form URL kodlaması.** Eksik veya
   hexadecimal olmayan `%xx` ve çözüm sonrası geçersiz UTF-8 artık rota öncesi
-  400'dür; kayıplı dönüşüm kaldırılmıştır. Hedefli web regresyonu hazırdır.
-  Kapanış, kaynak commit'inin exact SHA'sını `regression/v2.tsv` içindeki web
-  fixture'ına ve compiler değişiklik beyanına bağlayan ikinci commit'i bekler.
+  400'dür; kayıplı dönüşüm kaldırılmıştır. Hedefli web testi ile `web` kipli
+  kalıcı fixture çalışır; `fixed_by=32247c7…` aynı exact SHA'yı compiler
+  değişiklik beyanında taşır.
 - **B-041 · KAPALI (K-120) — LSP'yi SymbolId/HIR'a bağla.** Definition ve
   rename yalnız başarılı checker'ın `SymbolId`/`IslemId`/`YapiId` typed-HIR
   bağından hedef seçer. HIR ilk tanım, yeniden atama ve okuma aralıklarını
@@ -710,7 +710,7 @@ tamamlanmış sayılmaz; burada istenen ek kanıt ayrıca üretilir.
 | K-154 | **KAPALI** | 2k/5k/10k/20k full-change eğrisi, invalidation sınırı ve üç ilk-aşım eşiği |
 | K-155 | **KAPALI** | V2 manifestte exact `fixed_by`, kanıtlı `introduced_by` ve garanti sürümü |
 | K-155A | **KAPALI** | Her compiler kaynak commit'inde mesajdan bağımsız semantic beyan; bugfixte exact fixture |
-| K-176 | **KISMEN** | Strict `%xx`/UTF-8 form reddi hazır; exact regression provenance commit'i bekleniyor |
+| K-176 | **KAPALI** | Strict `%xx`/UTF-8 form reddi, rota-öncesi 400 ve exact SHA'lı web regression fixture'ı |
 | K-156 | **AÇIK** | Nightly fuzz corpus artefaktı ve review'lü coverage seed kalıcılığı |
 | K-157 | **AÇIK** | Dört hedefte 30–60 dk RC kampanyası; uygun sanitizer/Miri kanıtı |
 | K-158 | **AÇIK** | Faz matrisinde opsiyonel çoklu `covers` ve doğru blast radius |

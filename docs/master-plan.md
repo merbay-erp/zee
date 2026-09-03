@@ -803,12 +803,10 @@ regresyon manifestini exact `fixed_by`, kanıtlıysa `introduced_by` ve garanti
 sürümüyle v2'ye taşıdı; v1→v2 soy ağacını ve fixture'sız compiler bug fix'ini
 fail-closed korur. K-155A/ADR-053 başlık regex'ini kaldırarak sabit başlangıçtan
 sonraki bütün compiler kaynak commit'lerini explicit semantic sınıf, kanıt ve
-gerekçeye bağladı; bugfix exact fixture ister. B-063/B-064 kapandı, sırada
-strict form decode güvenlik düzeltmesi, ardından K-156 fuzz corpus kalıcılığı
-vardır.
-K-176/ADR-054 strict form uygulamasını ve web regression kipini ekledi; exact
-uygulama SHA'sının semantic manifest+beyan kaydı gelene kadar B-065 kısmi ve
-bu iş sıradaki atomik kapanıştır.
+gerekçeye bağladı; bugfix exact fixture ister. K-176/ADR-054 de strict form
+çözümünü exact `32247c7…` uygulama commit'ine bağlı web fixture'ı ve semantic
+beyanla kapattı. B-063/B-064/B-065 kapandı; sırada K-156 fuzz corpus
+kalıcılığı vardır.
 B-001 çağrı sözdizimi ile B-002 gezme zihinsel modeli gerçek insan
 kanıtı gelmeden kapatılmaz veya yeni syntax kararıyla atlanmaz.
 # 40. Proje felsefesinin korunması
