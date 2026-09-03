@@ -700,6 +700,11 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   Seçili ondalık/zaman Miri testleri 3/3 geçti. Haftalık/elle CI 60 dakika,
   90 günlük log+sonuç+korpus provenance artefaktı ve append-only tarihçe ister.
   ADR-056 ve [RC fuzz rehberi](fuzz-rc.md) bağlayıcıdır.
+- **B-068 · KAPALI (K-158) — gerçek blast radius.** Matris v2, tam bir
+  birincil faz sahipliğini korurken exact test seçicisine isteğe bağlı çoklu
+  `ek_kapsam` bağlar. Geçersiz bağlar fail-closed reddedilir; rapor birincil
+  test, çapraz gerçek kanıt ve mimari aşağı akışı ayrı gösterir. ADR-057
+  bağlayıcıdır.
 
 ## Bir sonraki somut kapı
 
@@ -709,9 +714,10 @@ process→stdio LSP cold-start yolunu exact 25 örnekli tabanla kapattı.
 K-154 tam-metin değişim ölçek eğrisini ve invalidation sınırını exact tabanla,
 K-155 semantic regresyon provenance zincirini v2 manifeste taşıdı; K-155A
 mesajdan bağımsız fail-closed beyan kapısını kurdu; K-176 strict form decode'u,
-K-156 cache dışı fuzz korpus kalıcılığını, K-157 ise dört hedefte toplam
+K-156 cache dışı fuzz korpus kalıcılığını, K-157 dört hedefte toplam
 136.789.564 yürütmeli uzun AddressSanitizer kampanyasını ve 3/3 Miri kanıtını
-kapattı. Sıradaki makine işi K-158 faz matrisi çoklu kapsama metadatasıdır.
+kapattı. K-158 seçici düzeyi çoklu kapsam ve gerçek blast-radius raporunu
+kapattı. Sıradaki makine işi K-159 public/internal facade sınırıdır.
 İnsan verisi gelmeden yeni syntax seçilmez
 veya B-001/B-002 tamamlanmış gösterilmez.
 
@@ -733,7 +739,7 @@ tamamlanmış sayılmaz; burada istenen ek kanıt ayrıca üretilir.
 | K-176 | **KAPALI** | Strict `%xx`/UTF-8 form reddi, rota-öncesi 400 ve exact SHA'lı web regression fixture'ı |
 | K-156 | **KAPALI** | Her hedefte SHA-256/run/commit provenance'lı 90 günlük korpus artefaktı ve review'lü seed terfisi |
 | K-157 | **KAPALI** | Dört hedefte 30 dk, toplam 136.789.564 yürütme; sıfır crash/timeout/ASan ve 3/3 Miri |
-| K-158 | **AÇIK** | Faz matrisinde opsiyonel çoklu `covers` ve doğru blast radius |
+| K-158 | **KAPALI** | Exact seçicide opsiyonel çoklu `ek_kapsam`; birincil/çapraz/aşağı-akış blast radius |
 | K-159 | **AÇIK** | Desteklenen facade, internal API ve SemVer politikası |
 | K-160 | **AÇIK — C001 son tarihi 2026-10-01** | Paket modeli/çözüm/registry/doğrulama sahipliği ve SCC kaldırma |
 | K-161 | **İNSAN KANITI** | B-001/K-016 için 10 öğrenci/çocuk + 5 profesyonel kör oturum |

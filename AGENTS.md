@@ -36,8 +36,9 @@ tam Git SHA, ayrı milestone, OS/CPU/RAM/Rust/release profili ve gerçek
 Test ekleyen ya da taşıyan iş, `cd compiler && cargo run --locked --bin
 faz_test_matrisi -- --denetle --rapor target/faz-test-matrisi.md` kapısından
 geçer. Her gerçek Cargo/libtest vakası tam bir birincil faz sahibi olmalı;
-fuzz/conformance/regresyon ve aşağı akış ilişkisi aynı değişiklikte güncel
-kalmalıdır.
+fuzz/conformance/regresyon, aşağı akış ve seçici düzeyi `ek_kapsam` ilişkisi
+aynı değişiklikte güncel kalmalıdır. Ek kapsam dosya adından tahmin edilmez;
+yalnız test grubunun gerçekten yürüttüğü diğer fazlar yazılır.
 
 Performans davranışı veya sabit iş yükü değişikliği
 `docs/performans-gecmisi-v2.tsv`, `docs/olcumler.md` ve ADR-045/049 etkisini aynı

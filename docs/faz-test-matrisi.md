@@ -4,7 +4,7 @@
 > üretilir. Faz sahipliği ve saldırı yüzeyi ilişkileri elle değiştirilmez;
 > gerçek test sayıları her platformun dinamik CI raporunda çıkar.
 
-- Şema: `zee-faz-test-matrisi-1`
+- Şema: `zee-faz-test-matrisi-2`
 - Faz: **22**
 - Sayım: Her CI işletim sisteminde derlenen gerçek test envanteri
 
@@ -37,38 +37,69 @@
 
 ## Birincil sahiplik
 
-Bir test tam bir birincil faza aittir; aşağı akış sütunu değişikliğin
-yeniden koşulması gereken sonraki yüzeylerini gösterir.
+Bir test tam bir birincil faza aittir. Seçici düzeyindeki isteğe bağlı
+ek kapsam, test grubunun gerçekten yokladığı diğer fazları bildirir.
 
-| Faz | Cargo/libtest seçicileri | Kapsam |
-|---|---|---|
-| Lexer | `test:fuzz_korpusu_testi`<br>`test:kacis_ve_negatif_testi` | Token, Unicode, kacis, sayi ve girinti siniri. |
-| Parser | `test:bicimleyici_testi`<br>`test:ifade_grameri_testi`<br>`test:parser_kurtarma_testi` | Ifade onceligi, tam tuketim, kurtarma ve bicim esdegerligi. |
-| AST | `test:faz_modeli_testi`<br>`test:invariant_testi`<br>`doc:dil` | Faz tipleri, kaynak araliklari ve semantic alansizlik degismezleri. |
-| Resolver | `test:birim_testi`<br>`test:kapsam_testi`<br>`test:semantic_kimlik_testi` | Kapsam, birim ve kararli semantic kimlik baglari. |
-| Type checker | `test:acik_imza_testi`<br>`test:cagri_cikarimi_testi`<br>`test:daraltma_testi`<br>`test:ffi_sinir_testi`<br>`test:intrinsic_lowering_testi`<br>`test:koleksiyon_testi`<br>`test:sonuc_donusu_testi` | Imza, cikarim, daraltma, koleksiyon, intrinsic ve sonuc turleri. |
-| Typed HIR | `test:hir_modeli_testi`<br>`lib:hir::testler::` | SymbolId, tur ve kesin kaynak araligi tasiyan baglanmis temsil. |
-| Morphology | `test:morfoloji_conformance_testi`<br>`test:morfoloji_testi` | zee-tr-1 uretim, cozum, belirsizlik ve Unicode profili. |
-| Runtime | `test:dene_ve_sure_testi`<br>`test:metin_testi`<br>`test:ondalik_testi`<br>`test:ozyineleme_testi`<br>`test:siralama_testi`<br>`test:yapilandirilmis_hata_testi`<br>`lib:ondalik::testler::`<br>`lib:zaman::testler::` | Deger, islem, hata, sure, ondalik ve yurutme semantigi. |
-| IO | `test:deterministik_io_profili_testi`<br>`test:io_izi_testi`<br>`lib:ag_istemcisi::testler::`<br>`lib:kalici_dosya::tests::` | Deterministik profil, replay, ag yaniti ve atomik kalici dosya siniri. |
-| Concurrency | `test:ag_ve_esz_testi`<br>`test:eszamanlilik_conformance_testi` | Scheduler, gorev agaci, iptal ve kararli gozlem sirasi. |
-| Web/security | `test:guvenli_testi`<br>`test:kaynak_sinirlari_testi`<br>`test:web_cok_surec_testi`<br>`test:web_testi`<br>`test:yetkinlik_testi`<br>`lib:guvenlik::tests::`<br>`lib:kaynak_sinirlari::testler::`<br>`lib:web_guvenligi::tests::`<br>`lib:yetkinlik::testler::`<br>`bin:dil:web_profili_testleri::` | Yetkinlik, kaynak butcesi, oturum, CSRF, proxy ve transaction guvenligi. |
-| HTTP parser | `test:http_istegi_testi` | Request-line, CRLF, header ve govde framing byte siniri. |
-| Package | `test:kitaplik_testi`<br>`test:tedarik_testi`<br>`lib:paket::uzak::politika::testler::`<br>`lib:tedarik::testler::` | Kutuphane, ZEP arsivi, imza, SBOM ve provenance davranisi. |
-| Registry | `lib:registry::istemci::testler::`<br>`lib:registry::testler::`<br>`bin:dil:dil_registry::testler::` | Metadata zinciri, rollback, cache, exact pin ve CLI secenekleri. |
-| Supply-chain | `test:tedarik_kapisi_testi` | RustSec, lisans, kilit, action pini ve offline vendor politikasinin yurutulebilir kapisi. |
-| LSP | `test:lsp_testi`<br>`test:olcum_lsp_process_testi`<br>`lib:lsp::cikti::testler::`<br>`lib:lsp::kaynak_siniri_testleri::`<br>`bin:dillsp:testler::` | JSON-RPC framing tani hover completion definition rename process cold-start ve tam-metin degisim olcegi. |
-| WASM | `test:playground_testi` | Playground, ABI sahipligi, limitler ve gercek wasm hostu oncesi native regresyonlar. |
-| CLI | `test:io_izi_cli_testi` | Komut satiri IO kaydi ve yeniden oynatma siniri. |
-| Project system | `test:proje_testi`<br>`test:projeler_testi` | Bildirim, kilit, bagimlilik, yetkinlik ve tam proje ornekleri. |
-| Semantic regression | `test:semantic_regresyon_korpusu_testi`<br>`test:semantic_regresyon_korugu_testi` | Duzeltilmis bug provenance'i ve her compiler kaynak commit'i icin mesajdan bagimsiz semantic beyan kapisi. |
-| End-to-end | `test:golden_testi` | 33 golden program ile kullanici yuzeyinden tam derleme ve yurutme hatti. |
-| Engineering gates | `test:bagimlilik_cevrimi_testi`<br>`test:dokuman_tazelik_testi`<br>`test:katalog_testi`<br>`test:katman_mimarisi_testi`<br>`test:mimari_sinir_testi`<br>`test:panic_guvenligi_testi`<br>`test:tani_kimligi_testi`<br>`bin:islev_egilimi:testler::`<br>`bin:faz_test_matrisi:testler::`<br>`bin:olcum:testler::` | Belge tani mimari panic bicim katman cevrim ve exact provenance/esik performans gozetim kapilarinin kendi regresyonlari. |
+| Faz | Cargo/libtest seçicileri | Ek kapsam | Kapsam |
+|---|---|---|---|
+| Lexer | `test:fuzz_korpusu_testi`<br>`test:kacis_ve_negatif_testi` | `test:fuzz_korpusu_testi → parser, morfoloji, http, wasm` | Token, Unicode, kacis, sayi ve girinti siniri. |
+| Parser | `test:bicimleyici_testi`<br>`test:ifade_grameri_testi`<br>`test:parser_kurtarma_testi` | `test:bicimleyici_testi → lexer, ast`<br>`test:ifade_grameri_testi → lexer, ast`<br>`test:parser_kurtarma_testi → lexer, ast` | Ifade onceligi, tam tuketim, kurtarma ve bicim esdegerligi. |
+| AST | `test:faz_modeli_testi`<br>`test:invariant_testi`<br>`doc:dil` | — | Faz tipleri, kaynak araliklari ve semantic alansizlik degismezleri. |
+| Resolver | `test:birim_testi`<br>`test:kapsam_testi`<br>`test:semantic_kimlik_testi` | — | Kapsam, birim ve kararli semantic kimlik baglari. |
+| Type checker | `test:acik_imza_testi`<br>`test:cagri_cikarimi_testi`<br>`test:daraltma_testi`<br>`test:ffi_sinir_testi`<br>`test:intrinsic_lowering_testi`<br>`test:koleksiyon_testi`<br>`test:sonuc_donusu_testi` | — | Imza, cikarim, daraltma, koleksiyon, intrinsic ve sonuc turleri. |
+| Typed HIR | `test:hir_modeli_testi`<br>`lib:hir::testler::` | — | SymbolId, tur ve kesin kaynak araligi tasiyan baglanmis temsil. |
+| Morphology | `test:morfoloji_conformance_testi`<br>`test:morfoloji_testi` | `test:morfoloji_conformance_testi → lexer, cozumleyici`<br>`test:morfoloji_testi → lexer, cozumleyici, lsp` | zee-tr-1 uretim, cozum, belirsizlik ve Unicode profili. |
+| Runtime | `test:dene_ve_sure_testi`<br>`test:metin_testi`<br>`test:ondalik_testi`<br>`test:ozyineleme_testi`<br>`test:siralama_testi`<br>`test:yapilandirilmis_hata_testi`<br>`lib:ondalik::testler::`<br>`lib:zaman::testler::` | — | Deger, islem, hata, sure, ondalik ve yurutme semantigi. |
+| IO | `test:deterministik_io_profili_testi`<br>`test:io_izi_testi`<br>`lib:ag_istemcisi::testler::`<br>`lib:kalici_dosya::tests::` | — | Deterministik profil, replay, ag yaniti ve atomik kalici dosya siniri. |
+| Concurrency | `test:ag_ve_esz_testi`<br>`test:eszamanlilik_conformance_testi` | — | Scheduler, gorev agaci, iptal ve kararli gozlem sirasi. |
+| Web/security | `test:guvenli_testi`<br>`test:kaynak_sinirlari_testi`<br>`test:web_cok_surec_testi`<br>`test:web_testi`<br>`test:yetkinlik_testi`<br>`lib:guvenlik::tests::`<br>`lib:kaynak_sinirlari::testler::`<br>`lib:web_guvenligi::tests::`<br>`lib:yetkinlik::testler::`<br>`bin:dil:web_profili_testleri::` | `test:web_testi → runtime, http, io, eszamanlilik`<br>`test:kaynak_sinirlari_testi → http, lsp, wasm` | Yetkinlik, kaynak butcesi, oturum, CSRF, proxy ve transaction guvenligi. |
+| HTTP parser | `test:http_istegi_testi` | — | Request-line, CRLF, header ve govde framing byte siniri. |
+| Package | `test:kitaplik_testi`<br>`test:tedarik_testi`<br>`lib:paket::uzak::politika::testler::`<br>`lib:tedarik::testler::` | — | Kutuphane, ZEP arsivi, imza, SBOM ve provenance davranisi. |
+| Registry | `lib:registry::istemci::testler::`<br>`lib:registry::testler::`<br>`bin:dil:dil_registry::testler::` | — | Metadata zinciri, rollback, cache, exact pin ve CLI secenekleri. |
+| Supply-chain | `test:tedarik_kapisi_testi` | — | RustSec, lisans, kilit, action pini ve offline vendor politikasinin yurutulebilir kapisi. |
+| LSP | `test:lsp_testi`<br>`test:olcum_lsp_process_testi`<br>`lib:lsp::cikti::testler::`<br>`lib:lsp::kaynak_siniri_testleri::`<br>`bin:dillsp:testler::` | `test:lsp_testi → lexer, parser, cozumleyici, tur, hir` | JSON-RPC framing tani hover completion definition rename process cold-start ve tam-metin degisim olcegi. |
+| WASM | `test:playground_testi` | `test:playground_testi → lexer, parser, cozumleyici, tur, hir, runtime` | Playground, ABI sahipligi, limitler ve gercek wasm hostu oncesi native regresyonlar. |
+| CLI | `test:io_izi_cli_testi` | — | Komut satiri IO kaydi ve yeniden oynatma siniri. |
+| Project system | `test:proje_testi`<br>`test:projeler_testi` | `test:proje_testi → paket, registry, cli`<br>`test:projeler_testi → lexer, parser, cozumleyici, tur, hir, runtime, cli` | Bildirim, kilit, bagimlilik, yetkinlik ve tam proje ornekleri. |
+| Semantic regression | `test:semantic_regresyon_korpusu_testi`<br>`test:semantic_regresyon_korugu_testi` | `test:semantic_regresyon_korpusu_testi → parser, cozumleyici, tur, hir, morfoloji, runtime, eszamanlilik, web_guvenlik` | Duzeltilmis bug provenance'i ve her compiler kaynak commit'i icin mesajdan bagimsiz semantic beyan kapisi. |
+| End-to-end | `test:golden_testi` | `test:golden_testi → lexer, parser, ast, cozumleyici, tur, hir, runtime, cli` | 33 golden program ile kullanici yuzeyinden tam derleme ve yurutme hatti. |
+| Engineering gates | `test:bagimlilik_cevrimi_testi`<br>`test:dokuman_tazelik_testi`<br>`test:katalog_testi`<br>`test:katman_mimarisi_testi`<br>`test:mimari_sinir_testi`<br>`test:panic_guvenligi_testi`<br>`test:tani_kimligi_testi`<br>`bin:islev_egilimi:testler::`<br>`bin:faz_test_matrisi:testler::`<br>`bin:olcum:testler::` | — | Belge tani mimari panic bicim katman cevrim ve exact provenance/esik performans gozetim kapilarinin kendi regresyonlari. |
+
+## Gerçek blast radius
+
+Bir faz değiştiğinde kendi birincil gruplarına ek olarak aşağıdaki çapraz
+seçiciler doğrudan kanıt taşır. Aşağı akış sütunu mimari yayılımı gösterir.
+
+| Değişen faz | Birincil test grupları | Çapraz kapsayan test grupları | Aşağı akış |
+|---|---|---|---|
+| Lexer | `test:fuzz_korpusu_testi`<br>`test:kacis_ve_negatif_testi` | `parser / test:bicimleyici_testi`<br>`parser / test:ifade_grameri_testi`<br>`parser / test:parser_kurtarma_testi`<br>`morfoloji / test:morfoloji_conformance_testi`<br>`morfoloji / test:morfoloji_testi`<br>`lsp / test:lsp_testi`<br>`wasm / test:playground_testi`<br>`proje / test:projeler_testi`<br>`uctan_uca / test:golden_testi` | `parser`<br>`ast`<br>`cozumleyici`<br>`tur`<br>`hir`<br>`runtime`<br>`lsp`<br>`wasm`<br>`cli`<br>`proje`<br>`uctan_uca` |
+| Parser | `test:bicimleyici_testi`<br>`test:ifade_grameri_testi`<br>`test:parser_kurtarma_testi` | `lexer / test:fuzz_korpusu_testi`<br>`lsp / test:lsp_testi`<br>`wasm / test:playground_testi`<br>`proje / test:projeler_testi`<br>`semantic_regresyon / test:semantic_regresyon_korpusu_testi`<br>`uctan_uca / test:golden_testi` | `ast`<br>`cozumleyici`<br>`tur`<br>`hir`<br>`runtime`<br>`lsp`<br>`wasm`<br>`cli`<br>`proje`<br>`semantic_regresyon`<br>`uctan_uca` |
+| AST | `test:faz_modeli_testi`<br>`test:invariant_testi`<br>`doc:dil` | `parser / test:bicimleyici_testi`<br>`parser / test:ifade_grameri_testi`<br>`parser / test:parser_kurtarma_testi`<br>`uctan_uca / test:golden_testi` | `cozumleyici`<br>`tur`<br>`hir`<br>`lsp`<br>`wasm`<br>`uctan_uca` |
+| Resolver | `test:birim_testi`<br>`test:kapsam_testi`<br>`test:semantic_kimlik_testi` | `morfoloji / test:morfoloji_conformance_testi`<br>`morfoloji / test:morfoloji_testi`<br>`lsp / test:lsp_testi`<br>`wasm / test:playground_testi`<br>`proje / test:projeler_testi`<br>`semantic_regresyon / test:semantic_regresyon_korpusu_testi`<br>`uctan_uca / test:golden_testi` | `tur`<br>`hir`<br>`runtime`<br>`lsp`<br>`proje`<br>`uctan_uca` |
+| Type checker | `test:acik_imza_testi`<br>`test:cagri_cikarimi_testi`<br>`test:daraltma_testi`<br>`test:ffi_sinir_testi`<br>`test:intrinsic_lowering_testi`<br>`test:koleksiyon_testi`<br>`test:sonuc_donusu_testi` | `lsp / test:lsp_testi`<br>`wasm / test:playground_testi`<br>`proje / test:projeler_testi`<br>`semantic_regresyon / test:semantic_regresyon_korpusu_testi`<br>`uctan_uca / test:golden_testi` | `hir`<br>`runtime`<br>`lsp`<br>`wasm`<br>`cli`<br>`proje`<br>`semantic_regresyon`<br>`uctan_uca` |
+| Typed HIR | `test:hir_modeli_testi`<br>`lib:hir::testler::` | `lsp / test:lsp_testi`<br>`wasm / test:playground_testi`<br>`proje / test:projeler_testi`<br>`semantic_regresyon / test:semantic_regresyon_korpusu_testi`<br>`uctan_uca / test:golden_testi` | `runtime`<br>`lsp`<br>`wasm`<br>`semantic_regresyon`<br>`uctan_uca` |
+| Morphology | `test:morfoloji_conformance_testi`<br>`test:morfoloji_testi` | `lexer / test:fuzz_korpusu_testi`<br>`semantic_regresyon / test:semantic_regresyon_korpusu_testi` | `lexer`<br>`cozumleyici`<br>`lsp`<br>`cli`<br>`proje`<br>`semantic_regresyon`<br>`uctan_uca` |
+| Runtime | `test:dene_ve_sure_testi`<br>`test:metin_testi`<br>`test:ondalik_testi`<br>`test:ozyineleme_testi`<br>`test:siralama_testi`<br>`test:yapilandirilmis_hata_testi`<br>`lib:ondalik::testler::`<br>`lib:zaman::testler::` | `web_guvenlik / test:web_testi`<br>`wasm / test:playground_testi`<br>`proje / test:projeler_testi`<br>`semantic_regresyon / test:semantic_regresyon_korpusu_testi`<br>`uctan_uca / test:golden_testi` | `io`<br>`eszamanlilik`<br>`web_guvenlik`<br>`wasm`<br>`cli`<br>`semantic_regresyon`<br>`uctan_uca` |
+| IO | `test:deterministik_io_profili_testi`<br>`test:io_izi_testi`<br>`lib:ag_istemcisi::testler::`<br>`lib:kalici_dosya::tests::` | `web_guvenlik / test:web_testi` | `eszamanlilik`<br>`web_guvenlik`<br>`cli`<br>`proje`<br>`uctan_uca` |
+| Concurrency | `test:ag_ve_esz_testi`<br>`test:eszamanlilik_conformance_testi` | `web_guvenlik / test:web_testi`<br>`semantic_regresyon / test:semantic_regresyon_korpusu_testi` | `runtime`<br>`io`<br>`web_guvenlik`<br>`wasm`<br>`semantic_regresyon`<br>`uctan_uca` |
+| Web/security | `test:guvenli_testi`<br>`test:kaynak_sinirlari_testi`<br>`test:web_cok_surec_testi`<br>`test:web_testi`<br>`test:yetkinlik_testi`<br>`lib:guvenlik::tests::`<br>`lib:kaynak_sinirlari::testler::`<br>`lib:web_guvenligi::tests::`<br>`lib:yetkinlik::testler::`<br>`bin:dil:web_profili_testleri::` | `semantic_regresyon / test:semantic_regresyon_korpusu_testi` | `http`<br>`io`<br>`eszamanlilik`<br>`cli`<br>`proje`<br>`semantic_regresyon`<br>`uctan_uca` |
+| HTTP parser | `test:http_istegi_testi` | `lexer / test:fuzz_korpusu_testi`<br>`web_guvenlik / test:web_testi`<br>`web_guvenlik / test:kaynak_sinirlari_testi` | `web_guvenlik`<br>`cli`<br>`uctan_uca` |
+| Package | `test:kitaplik_testi`<br>`test:tedarik_testi`<br>`lib:paket::uzak::politika::testler::`<br>`lib:tedarik::testler::` | `proje / test:proje_testi` | `registry`<br>`tedarik_zinciri`<br>`cli`<br>`proje`<br>`uctan_uca` |
+| Registry | `lib:registry::istemci::testler::`<br>`lib:registry::testler::`<br>`bin:dil:dil_registry::testler::` | `proje / test:proje_testi` | `paket`<br>`tedarik_zinciri`<br>`cli`<br>`proje` |
+| Supply-chain | `test:tedarik_kapisi_testi` | — | `paket`<br>`registry`<br>`proje`<br>`muhe_kapilari` |
+| LSP | `test:lsp_testi`<br>`test:olcum_lsp_process_testi`<br>`lib:lsp::cikti::testler::`<br>`lib:lsp::kaynak_siniri_testleri::`<br>`bin:dillsp:testler::` | `morfoloji / test:morfoloji_testi`<br>`web_guvenlik / test:kaynak_sinirlari_testi` | `cli`<br>`uctan_uca` |
+| WASM | `test:playground_testi` | `lexer / test:fuzz_korpusu_testi`<br>`web_guvenlik / test:kaynak_sinirlari_testi` | `uctan_uca` |
+| CLI | `test:io_izi_cli_testi` | `proje / test:proje_testi`<br>`proje / test:projeler_testi`<br>`uctan_uca / test:golden_testi` | `proje`<br>`uctan_uca` |
+| Project system | `test:proje_testi`<br>`test:projeler_testi` | — | `paket`<br>`registry`<br>`cli`<br>`uctan_uca` |
+| Semantic regression | `test:semantic_regresyon_korpusu_testi`<br>`test:semantic_regresyon_korugu_testi` | — | `uctan_uca` |
+| End-to-end | `test:golden_testi` | — | — |
+| Engineering gates | `test:bagimlilik_cevrimi_testi`<br>`test:dokuman_tazelik_testi`<br>`test:katalog_testi`<br>`test:katman_mimarisi_testi`<br>`test:mimari_sinir_testi`<br>`test:panic_guvenligi_testi`<br>`test:tani_kimligi_testi`<br>`bin:islev_egilimi:testler::`<br>`bin:faz_test_matrisi:testler::`<br>`bin:olcum:testler::` | — | — |
 
 ## Çalıştırma sözleşmesi
 
 `cargo run --locked --bin faz_test_matrisi -- --denetle --rapor target/faz-test-matrisi.md` önce bütün test hedeflerini JSON Cargo çıktısından
-derler. Her gerçek test kimliğinin tam bir faz sahibi olduğunu ve bu belgenin
+derler. Her gerçek test kimliğinin tam bir faz sahibi olduğunu, ek kapsamın
+yalnız bilinen fazlara ve kendi birincil seçicisine bağlandığını ve bu belgenin
 güncel kaldığını doğrular; ardından fazları ayrı çalıştırıp test sayısı,
 pass/fail/ignored ve duvar süresini dinamik Markdown raporuna yazar. `cfg`
 koşullu testler nedeniyle sayı işletim sistemine göre değişebilir; sahiplik

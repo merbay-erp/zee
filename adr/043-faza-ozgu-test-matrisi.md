@@ -2,7 +2,8 @@
 
 - **Durum:** kabul
 - **Tarih:** 2 Eylül 2026
-- **İlgili kayıt:** K-146, B-038
+- **Revizyon:** 3 Eylül 2026 — K-158/ADR-057 seçici düzeyi çoklu kapsamı ekledi.
+- **İlgili kayıt:** K-146, K-158, B-038, B-068
 
 ## Bağlam
 
@@ -33,6 +34,9 @@ bir test veya yanıltıcı tek toplam, incelemenin blast-radius bilgisini gizler
 5. İzlenen `docs/faz-test-matrisi.md` sayısal platform sonucunu değil,
    platformlar arası kararlı sahiplik ve saldırı yüzeyi sözleşmesini taşır.
    `--dokuman-yaz` kanonik belgeyi üretir, `--denetle` byte tazeliğini sınar.
+6. K-158'de birincil sahiplik korunurken kritik seçici grupları gerçekten
+   yürüttükleri diğer fazları isteğe bağlı `ek_kapsam` ile bildirir. Bu bağlar
+   fail-closed doğrulanır ve blast-radius tablosunda aşağı akıştan ayrı görünür.
 
 ## Reddedilen seçenekler
 

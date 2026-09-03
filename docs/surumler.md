@@ -12,12 +12,17 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **Gerçek test blast radius'u** (K-158, ADR-057): Faz matrisi v2, tekil
+  birincil sahipliği korurken kritik test seçicilerine isteğe bağlı çoklu
+  `ek_kapsam` bağlar. Geçersiz metadata fail-closed reddedilir; kanonik belge
+  ve dinamik CI raporu birincil grupları, çapraz gerçek kanıtı ve mimari aşağı
+  akışı ayrı gösterir. B-068 kapandı; sırada K-159 public facade vardır.
+
 - **Uzun fuzz RC kapısı** (K-157, ADR-056): Dört bağımsız hedef haftalık ve
   elle tetiklenen işte 60'ar dakika explicit AddressSanitizer altında koşar;
   log, sonuç, crash ve provenance'lı korpus 90 gün saklanır. İlk exact taban
   dört hedefte 30'ar dakika, toplam 136.789.564 yürütme, sıfır crash/timeout/
-  sanitizer bulgusu ve 3/3 seçili Miri testiyle geçti. B-067 kapandı; sırada
-  K-158 faz matrisi çoklu kapsama metadatası vardır.
+  sanitizer bulgusu ve 3/3 seçili Miri testiyle geçti. B-067 kapandı.
 
 - **Cache dışı fuzz korpus kalıcılığı** (K-156, ADR-055): Dört gecelik hedefin
   koşu sonu coverage korpusu artık başarılı/başarısız her koşuda 90 günlük

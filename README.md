@@ -180,10 +180,10 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **616** |
+| Rust + doctest vakası | **617** |
 | Tanı kimliği | **152 etkin + 3 ayrılmış** |
 | RFC | **25** (2 kabul, 21 geçici kabul, 2 taslak) |
-| ADR | **54** (54 kabul) |
+| ADR | **55** (55 kabul) |
 | Normatif spec bölümü | **24** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
@@ -292,8 +292,10 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   CI kapısıyla B-037 kapandı. K-146/ADR-043 bütün gerçek Cargo/libtest
   vakalarını 21 birincil faza sahipletip her Tier-1 işletim sisteminde
   test/pass/fail/ignored/süre, regression, fuzz ve conformance ilişkisini
-  raporlayarak B-038'i kapattı. K-147/ADR-044 bunu ayrı bir 22. rapor fazıyla
-  tamamladı: `regression/` altındaki 17 minimal `.dil` vaka bug kimliği,
+  raporlayarak B-038'i kapattı. K-158/ADR-057 birincil sahipliği koruyup kritik
+  test gruplarının gerçekten yürüttüğü ek fazları exact seçici metadatasıyla
+  görünür kıldı; blast radius dosya adından tahmin edilmez. K-147/ADR-044 bunu
+  ayrı bir 22. rapor fazıyla tamamladı: `regression/` altındaki 17 minimal `.dil` vaka bug kimliği,
   birincil faz, kesin tanı spanı, exit ve stdout beklentisiyle birebir
   sahiplenir; [bakım protokolü](docs/semantic-regresyon-korpusu.md) yeni her
   compiler bug düzeltmesinde aynı kaydı zorunlu kılar. K-155/ADR-052'nin v2

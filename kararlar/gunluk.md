@@ -2653,6 +2653,20 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
 - **Kapanış:** ADR-056, RC rehberi, append-only exact çevre tarihçesi ve
   workflow regresyonuyla B-067/K-157 kapandı. Sıradaki makine işi K-158'dir.
 
+## K-158 — Test adı değil gerçek çapraz kapsam görünmeli (3 Eyl)
+
+- **Sorun:** Tekil birincil sahiplik test toplamlarını doğru tutuyor fakat LSP,
+  playground, proje, golden ve semantic regression gruplarının yürüttüğü diğer
+  fazları görünmez bırakıyordu. Aşağı akış grafiği gerçek test kanıtı değildir.
+- **Karar:** `zee-faz-test-matrisi-2`, exact birincil seçiciye isteğe bağlı
+  `secici>faz,faz` ek kapsamı bağlar. Bilinmeyen/kendi fazı, sahipsiz seçici,
+  boş ve yinelenen bağ fail-closed reddedilir; sahiplik yine tam tektir.
+- **Kanıt:** Birim testleri geçerli çapraz bağı kabul eder, bozuk bağları
+  reddeder. Kanonik belge ve dinamik rapor her faz için birincil test
+  gruplarını, çapraz kapsayan seçicileri ve mimari aşağı akışı ayrı gösterir.
+- **Kapanış:** ADR-057/B-068/K-158 kapandı. Sırada K-159 public/internal
+  facade ve SemVer sözleşmesi vardır.
+
 ---
 
 ## Sonraki adım
@@ -2667,7 +2681,8 @@ commit'lerini mesajdan bağımsız beyan kapısıyla, K-176 strict form decode
 güvenlik açığını exact web fixture'ıyla ve K-156 cache dışı provenance'lı fuzz
 korpusu artefaktıyla kapattı. K-157 dört hedefte 30'ar dakikalık explicit
 AddressSanitizer kampanyasını toplam 136.789.564 yürütme ve sıfır bulguyla;
-seçili Miri çekirdeğini 3/3 sonuçla kapattı. Sırada K-158 faz matrisi çoklu
-kapsama metadatası vardır.
+seçili Miri çekirdeğini 3/3 sonuçla kapattı. K-158 seçici düzeyi çoklu kapsamı
+ve gerçek blast-radius raporunu kapattı. Sırada K-159 public/internal facade
+sınırı vardır.
 B-001/B-002 (yeni sırada K-161/K-162), gerçek 10 çocuk/öğrenci + 5 profesyonel
 usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.
