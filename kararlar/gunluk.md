@@ -2607,6 +2607,21 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
 - **Kapanış:** ADR-053/B-064 ile denetimdeki bypass kapanmıştır. Grammar,
   runtime, tanı anlamı, RFC ve normatif spec değişmemiştir.
 
+## K-176 — Bozuk form kodlaması veri olarak kabul edilemez (3 Eyl)
+
+- **Sorun:** Eksik/hexadecimal olmayan `%xx` literal `%`e düşüyor; yüzde
+  çözümünden çıkan geçersiz UTF-8 replacement karakteriyle sessizce
+  değişiyordu. Uygulama istemcinin göndermediği bir metni görebiliyordu.
+- **Karar:** Sorgu/form ad ve değerlerinde `+` boşluk, `%` tam iki hexadecimal
+  hane ve sonuç exact UTF-8'dir. İhlal rota/CSRF iş mantığından önce 400'dür;
+  kayıplı dönüşüm yoktur.
+- **Kanıt:** Altı bozuk kaçış/UTF-8 girdisi ve rota gövdesinin çalışmadığını
+  gösteren hedefli web testi hazırdır. Semantic korpusun `web` kipi exact
+  isteği fixture yorumundan çalıştırabilir.
+- **Durum:** Uygulama ve normatif sözleşme hazırdır; exact kaynak SHA'sı ancak
+  commit sonrasında bilineceği için regression provenance+beyan ikinci atomik
+  commit'i bekler. B-065 bu ara durumda kısmi tutulur.
+
 ---
 
 ## Sonraki adım

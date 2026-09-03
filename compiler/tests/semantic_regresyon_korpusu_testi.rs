@@ -24,6 +24,7 @@ const KIPLER: &[&str] = &[
     "hir",
     "run",
     "capability",
+    "web",
 ];
 
 #[derive(Debug)]
@@ -182,7 +183,7 @@ fn faz_kipi_kabul_eder(faz: &str, kip: &str) -> bool {
         "checker" | "morphology" => matches!(kip, "compile" | "run"),
         "hir" => matches!(kip, "hir" | "run"),
         "runtime" | "concurrency" => kip == "run",
-        "security" => kip == "capability",
+        "security" => matches!(kip, "capability" | "web"),
         _ => false,
     }
 }
@@ -246,6 +247,28 @@ fn vakayi_calistir(vaka: &Vaka, kaynak: &str) -> Gozlem {
                     tani: None,
                     cikis,
                     cikti: io.cikti,
+                },
+                Err(tani) => hata_gozle(tani, io.cikti),
+            }
+        }
+        "web" => {
+            let istek = kaynak
+                .lines()
+                .next()
+                .and_then(|satir| satir.strip_prefix("# web-istegi: "))
+                .unwrap_or_else(|| panic!("{}: web fixture istek başlığı taşımıyor", vaka.ad));
+            let mut io = ToplayanIo::yeni(Vec::new());
+            io.istekler.push_back(istek.to_string());
+            match calistir_baglanmis_io_kodla(&program, &mut io) {
+                Ok(cikis) => Gozlem {
+                    tani: None,
+                    cikis,
+                    cikti: io
+                        .sunucu_durumlari
+                        .iter()
+                        .zip(&io.sunucu_yanitlari)
+                        .map(|(durum, (_, yanit))| format!("{durum} {yanit}"))
+                        .collect(),
                 },
                 Err(tani) => hata_gozle(tani, io.cikti),
             }

@@ -20,7 +20,7 @@ Dil değişikliği RFC ister (master plan bölüm 25). Şablon: [0000-sablon.md]
 | RFC-0012 | [FFI ve Tehlikeli Sınır](0012-ffi-ve-tehlikeli-sinir.md) | **taslak** (K-125 örtük binary float yasağı bağlı; FFI gerçeklenmedi) | A10, K-125, ADR-029, B-012 |
 | RFC-0013 | [Ondalık Sayılar](0013-ondalik-sayilar.md) | **geçici kabul** (K-092 keyfî hassasiyet; K-125 binary sınırı) | K-028, K-092, K-125, ADR-029 |
 | RFC-0014 | [Standart Kitaplık](0014-standart-kitaplik.md) | **taslak — çalışan prototip ekli** | K-046, K-048, RFC-0002 §6.3 |
-| RFC-0015 | [Uygulama Eylemleri ve Web Güvenlik Sınırı](0015-uygulama-eylemleri.md) | **geçici kabul — K-087 eylem, K-088 profil** | K-081, K-087, K-088, ADR-010 |
+| RFC-0015 | [Uygulama Eylemleri ve Web Güvenlik Sınırı](0015-uygulama-eylemleri.md) | **geçici kabul — K-087 eylem, K-088 profil, K-176 strict form** | K-081, K-087, K-088, K-176, ADR-010/054 |
 | RFC-0016 | [Atomik Kalıcı Dosya Sözleşmesi](0016-atomik-kalici-dosya.md) | **geçici kabul** (K-128 metadata koruması; güç-kesintisi/disk-dolu kapısı açık) | K-019, K-084, K-128, B-048, V1-P0-04/30 |
 | RFC-0017 | [Web Oturumu, Yetki, CSRF ve Güvenilir Proxy](0017-web-oturum-ve-csrf.md) | **geçici kabul** (K-134 request transaction; K-137 ortak depo/rate-limit) | K-082, K-088, K-134, K-137, V1-P0-03 |
 | RFC-0018 | [Sürümlü Morfoloji Profili](0018-surumlu-morfoloji-profili.md) | **geçici kabul** (K-120 semantic LSP, K-122 immutable kayıt, K-123 bağımsız conformance) | K-011, K-072, K-089, K-111, K-120, K-122, K-123, V1-P1-02 |

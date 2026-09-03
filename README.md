@@ -84,7 +84,8 @@ rotation/revoke/ömür, otomatik CSRF, `__Host-` çerez, HTTPS proxy Origin
 kapısı; K-137 kalıcı ortak oturum/rate-limit deposu, kanonik `Forwarded`
 istemci kimliği ve N ayrı tek-worker süreç modeli; K-139 ortak kanonik
 DNS/IPv6/port origin tipi ve loopback bind+peer değişmezi; K-140 byte tabanlı
-CRLF/target/TE-CL/UTF-8 HTTP framing kapısı), form/istek sözlüğü,
+CRLF/target/TE-CL/UTF-8 HTTP framing kapısı; K-176 strict `%xx` ve exact UTF-8
+form çözümü), form/istek sözlüğü,
 yönlendirme, html güvenlisi ve
 önekli rotalar, **metin cerrahisi** (parçala/birleştir/
 değiştir/kırp/harfler), **JSON/CSV yazma**, **Türk alfabesiyle sıralama**,
@@ -176,10 +177,10 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **613** |
+| Rust + doctest vakası | **614** |
 | Tanı kimliği | **152 etkin + 3 ayrılmış** |
 | RFC | **25** (2 kabul, 21 geçici kabul, 2 taslak) |
-| ADR | **51** (51 kabul) |
+| ADR | **52** (52 kabul) |
 | Normatif spec bölümü | **24** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 

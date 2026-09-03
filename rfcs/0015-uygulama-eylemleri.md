@@ -80,6 +80,8 @@ ekran/girdi/donanım etkisi taşıyamaz. Ayrıntılı normatif sözleşme spec/1
 2. **Protokol sınırı (K-087 çekirdeği):** yöntemli route, 64 KiB/100 alan
    sınırı, 30 saniye istek son tarihi, 404/405/413/504 ayrımı gerçeklendi.
    Güvenli çerez ve kontrollü reverse-proxy güveni K-088/RFC-0017 ile kapandı.
+   K-176 sorgu/form yüzde kodlamasını tam iki hexadecimal hane ve exact UTF-8
+   zorunluluğuyla fail-closed 400 sınırına taşır.
 3. **Eylem (K-087):** tam tür sözleşmeli ve form/API/CLI/görev bağlamından
    bağımsız çağrı; HTTP etkisi derlemede yasak.
 4. **Durum (K-084/K-087):** tek-dosya atomik değiştirme ve süreç kilidinin
@@ -98,6 +100,8 @@ ekran/girdi/donanım etkisi taşıyamaz. Ayrıntılı normatif sözleşme spec/1
 - **K-087/K-088 kapalı:** yanlış yöntem 405, fazla gövde/alan 413,
   bilinmeyen yol 404 ve son tarih 504'tür. Alan doğrulama 400, kimlik 401,
   yetki/CSRF 403'tür.
+- **K-176 uygulaması hazır, provenance kapanışı bekliyor:** eksik/kuralsız
+  `%xx` ve yüzde çözümü sonrası geçersiz UTF-8 rota çalışmadan 400'dür.
 - Yarım yazma K-087 olumsuzlarıyla; CSRF, session fixation, zayıf token,
   süre/iptal, başlık enjeksiyonu ve sahte proxy K-088 olumsuzlarıyla kanıtlıdır.
 - **K-087 kapalı:** eylemin aynı iş mantığı web ve CLI bağlamından çağrılır;

@@ -18,7 +18,13 @@ pub(super) fn web_istegini_calistir(
         return Ok(None);
     }
 
-    let (gelen_yontem, yol, veriler, cerezler) = istek_parcala_cerezli(ham);
+    let (gelen_yontem, yol, veriler, cerezler) = match istek_parcala_cerezli(ham) {
+        Ok(istek) => istek,
+        Err((durum, mesaj)) => {
+            io.durum_yaniti_gonder(durum, mesaj);
+            return Ok(None);
+        }
+    };
     let istek_sozlugu = Deger::Sozluk(
         veriler
             .iter()
