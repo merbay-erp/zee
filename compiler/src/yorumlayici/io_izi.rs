@@ -1,10 +1,16 @@
 //! Sürümlü, kanonik ve sıralı IO trace/replay katmanı (K-115, ADR-026).
 //!
-//! İz açıkça istenen bir tanı/tekrar üretim artefaktıdır. Program girdisi,
-//! dosya ve ağ içeriği taşıyabileceği için özel veri sayılır. Parola doğrulama
+//! İz açıkça istenen, özel veri sayılan bir tanı/tekrar üretim artefaktıdır. Parola doğrulama
 //! argümanları ham değil SHA-256 parmak iziyle kaydedilir.
 
-use super::GirdiCikti;
+use super::io_izi_veritabani::{
+    degistirme_coz as veritabani_degistirme_coz, degistirme_yaz as veritabani_degistirme_yaz,
+    okuma_coz as veritabani_okuma_coz, okuma_yaz as veritabani_okuma_yaz,
+};
+use super::io_izi_web::{
+    rota_arguman_semasi, rota_argumanlari, sonuc_coz as web_sonuc_coz, sonuc_yaz as web_sonuc_yaz,
+};
+use super::{GirdiCikti, VeritabaniHatasi};
 use crate::agac::RotaErisimi;
 use crate::guvenlik::sha256_hex;
 use crate::web_guvenligi::WebReddi;
@@ -38,6 +44,8 @@ fn gecerli_islem(islem: &str) -> bool {
             | "rastgele"
             | "dosya_oku"
             | "dosya_yaz"
+            | "postgresql_oku"
+            | "postgresql_degistir"
             | "simdi"
             | "argumanlar"
             | "http_getir"
@@ -262,44 +270,6 @@ fn metin_sonuc_coz(alanlar: &[String]) -> Result<Result<String, String>, String>
     }
 }
 
-fn rota_argumanlari(erisim: &RotaErisimi, csrf: Option<&str>, csrf_gerekli: bool) -> Vec<String> {
-    let mut alanlar = match erisim {
-        RotaErisimi::HerkeseAcik => vec!["herkese_acik".into()],
-        RotaErisimi::Oturumlu => vec!["oturumlu".into()],
-        RotaErisimi::Rol(rol) => vec!["rol".into(), rol.clone()],
-    };
-    alanlar.extend(secenek_yaz(csrf));
-    alanlar.push(bool_yaz(csrf_gerekli));
-    alanlar
-}
-
-fn web_sonuc_yaz(sonuc: &Result<(), WebReddi>) -> Vec<String> {
-    match sonuc {
-        Ok(()) => vec!["ok".into()],
-        Err(hata) => vec!["ret".into(), hata.durum.to_string(), hata.mesaj.into()],
-    }
-}
-
-fn web_reddi_mesaji(mesaj: &str) -> Option<&'static str> {
-    match mesaj {
-        "IO adaptörü web güvenlik profilini desteklemiyor" => {
-            Some("IO adaptörü web güvenlik profilini desteklemiyor")
-        }
-        "CSRF doğrulaması için geçerli form oturumu yok" => {
-            Some("CSRF doğrulaması için geçerli form oturumu yok")
-        }
-        "CSRF belirteci eksik" => Some("CSRF belirteci eksik"),
-        "CSRF belirteci geçersiz" => Some("CSRF belirteci geçersiz"),
-        "bu rota kimliği doğrulanmış oturum istiyor" => {
-            Some("bu rota kimliği doğrulanmış oturum istiyor")
-        }
-        "oturum bu rota için gerekli role sahip değil" => {
-            Some("oturum bu rota için gerekli role sahip değil")
-        }
-        _ => None,
-    }
-}
-
 fn kanonik_tamsayi<T>(metin: &str) -> bool
 where
     T: std::str::FromStr + ToString,
@@ -341,20 +311,6 @@ fn metin_sonuc_semasi(olay: &IzOlay, arguman: usize) -> Result<(), String> {
     Ok(())
 }
 
-fn rota_arguman_semasi(alanlar: &[String]) -> bool {
-    let secenek_basi = match alanlar.first().map(String::as_str) {
-        Some("herkese_acik" | "oturumlu") => 1,
-        Some("rol") if alanlar.get(1).is_some() => 2,
-        _ => return false,
-    };
-    let Some(gerekli) = alanlar.last() else {
-        return false;
-    };
-    bool_coz(gerekli).is_ok()
-        && secenek_basi < alanlar.len()
-        && secenek_coz(&alanlar[secenek_basi..alanlar.len() - 1]).is_ok()
-}
-
 fn olay_semasini_denetle(olay: &IzOlay) -> Result<(), String> {
     match olay.islem.as_str() {
         "yazdir" | "yanit_gonder" => alan_sayisi(olay, 1, 0),
@@ -386,6 +342,16 @@ fn olay_semasini_denetle(olay: &IzOlay) -> Result<(), String> {
         "dosya_yaz" => {
             birim_semasi(olay, 3)?;
             bool_coz(&olay.argumanlar[2]).map(|_| ())
+        }
+        "postgresql_oku" | "postgresql_degistir" => {
+            if olay.argumanlar.is_empty() {
+                return Err("PostgreSQL izi sorgu argümanı taşımalı".into());
+            }
+            if olay.islem == "postgresql_oku" {
+                veritabani_okuma_coz(&olay.sonuc).map(|_| ())
+            } else {
+                veritabani_degistirme_coz(&olay.sonuc).map(|_| ())
+            }
         }
         "simdi" => {
             alan_sayisi(olay, 0, 5)?;
@@ -435,18 +401,7 @@ fn olay_semasini_denetle(olay: &IzOlay) -> Result<(), String> {
         "yonlendir_gonder" | "cerez_sil" => birim_semasi(olay, 1),
         "cerez_yaz" | "oturum_ac" => birim_semasi(olay, 2),
         "rota_guvenligini_denetle" => {
-            let sonuc_gecerli = match olay.sonuc.as_slice() {
-                [etiket] if etiket == "ok" => true,
-                [etiket, durum, mesaj]
-                    if etiket == "ret"
-                        && kanonik_tamsayi::<u16>(durum)
-                        && web_reddi_mesaji(mesaj).is_some() =>
-                {
-                    true
-                }
-                _ => false,
-            };
-            if rota_arguman_semasi(&olay.argumanlar) && sonuc_gecerli {
+            if rota_arguman_semasi(&olay.argumanlar) && web_sonuc_coz(&olay.sonuc).is_ok() {
                 Ok(())
             } else {
                 Err("rota güvenliği argüman/sonuç şeması geçersiz".into())
@@ -497,8 +452,7 @@ fn olay_semasini_denetle(olay: &IzOlay) -> Result<(), String> {
     }
 }
 
-/// Gerçek ya da hermetik bir IO adaptörünü çağırırken bütün olayları sıralı
-/// şema-1 izine kaydeder.
+/// Bir IO adaptörünü çağırırken bütün olayları sıralı şema-1 izine kaydeder.
 pub struct IzKaydedenIo<T: GirdiCikti> {
     pub ic: T,
     olaylar: Vec<IzOlay>,
@@ -611,6 +565,34 @@ impl<T: GirdiCikti> GirdiCikti for IzKaydedenIo<T> {
             "dosya_yaz",
             vec![yol.into(), satir.into(), bool_yaz(ekleme)],
             birim_sonuc_yaz(&sonuc),
+        );
+        sonuc
+    }
+
+    fn postgresql_oku(
+        &mut self,
+        sorgu: &str,
+        parametreler: &[String],
+    ) -> Result<Vec<Vec<(String, String)>>, VeritabaniHatasi> {
+        let sonuc = self.ic.postgresql_oku(sorgu, parametreler);
+        let mut argumanlar = vec![sorgu.into()];
+        argumanlar.extend(parametreler.iter().cloned());
+        self.kaydet("postgresql_oku", argumanlar, veritabani_okuma_yaz(&sonuc));
+        sonuc
+    }
+
+    fn postgresql_degistir(
+        &mut self,
+        sorgu: &str,
+        parametreler: &[String],
+    ) -> Result<i64, VeritabaniHatasi> {
+        let sonuc = self.ic.postgresql_degistir(sorgu, parametreler);
+        let mut argumanlar = vec![sorgu.into()];
+        argumanlar.extend(parametreler.iter().cloned());
+        self.kaydet(
+            "postgresql_degistir",
+            argumanlar,
+            veritabani_degistirme_yaz(&sonuc),
         );
         sonuc
     }
@@ -809,8 +791,7 @@ impl<T: GirdiCikti> GirdiCikti for IzKaydedenIo<T> {
     }
 }
 
-/// Şema-1 izini başka hiçbir dış IO'ya başvurmadan yeniden oynatır. Her çağrı
-/// sıradaki olayın işlem ve argümanlarıyla birebir eşleşmelidir.
+/// Şema-1 izini dış IO olmadan, işlem ve argümanları eşleştirerek yeniden oynatır.
 pub struct IzYenidenOynatici {
     olaylar: VecDeque<IzOlay>,
     hata: Option<String>,
@@ -1008,6 +989,68 @@ impl GirdiCikti for IzYenidenOynatici {
         self.birim_sonuc("dosya_yaz", sonuc)
     }
 
+    fn postgresql_oku(
+        &mut self,
+        sorgu: &str,
+        parametreler: &[String],
+    ) -> Result<Vec<Vec<(String, String)>>, VeritabaniHatasi> {
+        let mut argumanlar = vec![sorgu.into()];
+        argumanlar.extend(parametreler.iter().cloned());
+        let Some(alanlar) = self.siradaki("postgresql_oku", argumanlar) else {
+            return Err(VeritabaniHatasi {
+                mesaj: self
+                    .hata
+                    .clone()
+                    .unwrap_or_else(|| "IO izi uyuşmazlığı".into()),
+                veri: Vec::new(),
+            });
+        };
+        match veritabani_okuma_coz(&alanlar) {
+            Ok(sonuc) => sonuc,
+            Err(hata) => {
+                self.bozuk_sonuc("postgresql_oku", hata);
+                Err(VeritabaniHatasi {
+                    mesaj: self
+                        .hata
+                        .clone()
+                        .unwrap_or_else(|| "IO izi sonucu bozuk".into()),
+                    veri: Vec::new(),
+                })
+            }
+        }
+    }
+
+    fn postgresql_degistir(
+        &mut self,
+        sorgu: &str,
+        parametreler: &[String],
+    ) -> Result<i64, VeritabaniHatasi> {
+        let mut argumanlar = vec![sorgu.into()];
+        argumanlar.extend(parametreler.iter().cloned());
+        let Some(alanlar) = self.siradaki("postgresql_degistir", argumanlar) else {
+            return Err(VeritabaniHatasi {
+                mesaj: self
+                    .hata
+                    .clone()
+                    .unwrap_or_else(|| "IO izi uyuşmazlığı".into()),
+                veri: Vec::new(),
+            });
+        };
+        match veritabani_degistirme_coz(&alanlar) {
+            Ok(sonuc) => sonuc,
+            Err(hata) => {
+                self.bozuk_sonuc("postgresql_degistir", hata);
+                Err(VeritabaniHatasi {
+                    mesaj: self
+                        .hata
+                        .clone()
+                        .unwrap_or_else(|| "IO izi sonucu bozuk".into()),
+                    veri: Vec::new(),
+                })
+            }
+        }
+    }
+
     fn simdi(&mut self) -> (i64, u32, u32, u32, u32) {
         let sonuc = self.siradaki("simdi", Vec::new());
         let Some(alanlar) = sonuc else {
@@ -1129,30 +1172,10 @@ impl GirdiCikti for IzYenidenOynatici {
                 mesaj: IZ_WEB_REDDI,
             });
         };
-        match alanlar.as_slice() {
-            [etiket] if etiket == "ok" => Ok(()),
-            [etiket, durum, mesaj] if etiket == "ret" => {
-                let Ok(durum) = durum.parse() else {
-                    self.bozuk_sonuc("rota_guvenligini_denetle", "ret durumu sayı değil".into());
-                    return Err(WebReddi {
-                        durum: 500,
-                        mesaj: IZ_WEB_REDDI,
-                    });
-                };
-                let Some(mesaj) = web_reddi_mesaji(mesaj) else {
-                    self.bozuk_sonuc(
-                        "rota_guvenligini_denetle",
-                        "bilinmeyen web reddi mesajı".into(),
-                    );
-                    return Err(WebReddi {
-                        durum: 500,
-                        mesaj: IZ_WEB_REDDI,
-                    });
-                };
-                Err(WebReddi { durum, mesaj })
-            }
-            _ => {
-                self.bozuk_sonuc("rota_guvenligini_denetle", "geçersiz web sonucu".into());
+        match web_sonuc_coz(&alanlar) {
+            Ok(sonuc) => sonuc,
+            Err(hata) => {
+                self.bozuk_sonuc("rota_guvenligini_denetle", hata);
                 Err(WebReddi {
                     durum: 500,
                     mesaj: IZ_WEB_REDDI,

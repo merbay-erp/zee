@@ -7,11 +7,16 @@ mod cumle;
 mod hir_gecisi;
 mod ifade;
 mod io_izi;
+mod io_izi_veritabani;
+mod io_izi_web;
 mod io_profili;
 mod kaynak;
 mod metin;
+mod siralama;
+mod veritabani;
 mod web_istek;
 mod yetkinlik;
+mod yetkinlik_hatasi;
 
 use self::cumle::blok_calistir_async;
 use self::hir_gecisi::CalistirmaProgrami;
@@ -23,13 +28,18 @@ pub use self::io_izi::{IzKaydedenIo, IzYenidenOynatici, AZAMI_IO_IZ_BAYTI, AZAMI
 pub use self::io_profili::{SurumluRastgele, DETERMINISTIK_IO_PROFILI};
 use self::kaynak::*;
 use self::metin::{csv_yaz, dogrulama_detayi, json_yaz, metne_sinirli};
+use self::siralama::deger_sirasi;
+pub use self::veritabani::ToplayanVeritabani;
 use self::web_istek::web_istegini_calistir;
 pub use self::yetkinlik::{GuvenliIo, PolitikaliIo};
 
 use crate::agac::{
     AritmetikIslec, Cumle, HttpYontemi, Ifade, Islec, IslemTuru, Ozellik, Program, RotaErisimi,
 };
-use crate::intrinsic::{self, CSRF_BELIRTECI, HTTP_GETIR, PAROLA_DOGRULA, SENSOR_ACIK_MI};
+use crate::intrinsic::{
+    self, CSRF_BELIRTECI, HTTP_GETIR, PAROLA_DOGRULA, POSTGRESQL_DEGISTIR, POSTGRESQL_OKU,
+    SENSOR_ACIK_MI,
+};
 use crate::ondalik::Ondalik;
 use crate::tani::Tani;
 use crate::web_guvenligi::{WebGuvenligi, WebReddi, YeniOturum};
@@ -53,6 +63,9 @@ pub type IstekParcalari = (String, String, AdDegerler);
 
 /// Web isteği ayrıştırmasının HTTP durum kodu ve kararlı kısa açıklaması.
 pub type IstekParcalamaHatasi = (u16, &'static str);
+
+/// PostgreSQL adaptörünün dilde yapılandırılmış `Hata`ya çevrilen sonucu.
+pub use crate::veritabani_modeli::VeritabaniHatasi;
 
 /// Ham istek metnini çözer (K-051). Biçim: "YÖNTEM yol?sorgu\ngövde" ya da
 /// yalnız "/yol" (= GET). Bozuk form kodlaması 400 sınıfı hatadır.
@@ -184,40 +197,6 @@ fn url_coz(metin: &str) -> Result<String, (u16, &'static str)> {
     String::from_utf8(baytlar).map_err(|_| (400, "istek formu geçerli UTF-8 olmalı"))
 }
 
-/// Türk alfabesi sırası (K-056): a b c ç d e f g ğ h ı i j k l m n o ö p r s ş t u ü v y z.
-fn turkce_harf_sirasi(k: char) -> (u8, u32) {
-    const ALFABE: &str = "abcçdefgğhıijklmnoöprsştuüvyz";
-    let kucuk = match k {
-        'İ' => 'i',
-        'I' => 'ı',
-        _ => k.to_lowercase().next().unwrap_or(k),
-    };
-    match ALFABE.chars().position(|a| a == kucuk) {
-        Some(sira) => (0, sira as u32),
-        None => (1, k as u32),
-    }
-}
-
-/// İki metni Türk alfabesine göre karşılaştırır (K-056, TANIMLI).
-fn turkce_karsilastir(a: &str, b: &str) -> std::cmp::Ordering {
-    a.chars()
-        .map(turkce_harf_sirasi)
-        .cmp(b.chars().map(turkce_harf_sirasi))
-}
-
-/// Sıralama anahtarı: sayılar sayısal, metinler Türk alfabesiyle.
-fn deger_sirasi(a: &Deger, b: &Deger) -> std::cmp::Ordering {
-    match (a, b) {
-        (Deger::TamSayi(x), Deger::TamSayi(y)) => x.cmp(y),
-        (Deger::Ondalik(_), _) | (_, Deger::Ondalik(_)) => match (sayisal_ac(a), sayisal_ac(b)) {
-            (Some(sol), Some(sag)) => sol.karsilastir(&sag),
-            _ => std::cmp::Ordering::Equal,
-        },
-        (Deger::Metin(x), Deger::Metin(y)) => turkce_karsilastir(x, y),
-        _ => std::cmp::Ordering::Equal,
-    }
-}
-
 /// Üyelik eşitliği (K-058): sayı/metin/mantıksal değerler.
 fn degerler_esit(a: &Deger, b: &Deger) -> bool {
     match (a, b) {
@@ -253,6 +232,24 @@ pub trait GirdiCikti {
         url: &str,
         zaman_asimi_ms: Option<i64>,
     ) -> Result<(i64, String), String>;
+    /// Tek ifadeli, extended-query protokolünde ayrı TEXT parametreleriyle
+    /// yürütülen PostgreSQL okuması. Sonuç sütunları v1'de non-null metindir.
+    fn postgresql_oku(
+        &mut self,
+        _sorgu: &str,
+        _parametreler: &[String],
+    ) -> Result<Vec<Vec<(String, String)>>, VeritabaniHatasi> {
+        Err(veritabani::desteklenmeyen())
+    }
+    /// PostgreSQL değişikliği; etkilenen satır sayısını verir ve yalnız eylem
+    /// transaction'ı içinde kullanılabilir.
+    fn postgresql_degistir(
+        &mut self,
+        _sorgu: &str,
+        _parametreler: &[String],
+    ) -> Result<i64, VeritabaniHatasi> {
+        Err(veritabani::desteklenmeyen())
+    }
     /// Sunucu dinlemesini kurar (golden 25).
     fn sunucu_kur(&mut self, kapi: i64) -> Result<(), String>;
     /// Sıradaki isteğin yolunu verir; None = sunucu kapanıyor.
@@ -361,6 +358,22 @@ impl GirdiCikti for PaylasilanIo<'_> {
     ) -> Result<(i64, String), String> {
         self.ic.borrow_mut().http_getir(url, zaman_asimi_ms)
     }
+    fn postgresql_oku(
+        &mut self,
+        sorgu: &str,
+        parametreler: &[String],
+    ) -> Result<Vec<Vec<(String, String)>>, VeritabaniHatasi> {
+        self.ic.borrow_mut().postgresql_oku(sorgu, parametreler)
+    }
+    fn postgresql_degistir(
+        &mut self,
+        sorgu: &str,
+        parametreler: &[String],
+    ) -> Result<i64, VeritabaniHatasi> {
+        self.ic
+            .borrow_mut()
+            .postgresql_degistir(sorgu, parametreler)
+    }
     fn sunucu_kur(&mut self, kapi: i64) -> Result<(), String> {
         self.ic.borrow_mut().sunucu_kur(kapi)
     }
@@ -447,6 +460,8 @@ pub struct ToplayanIo {
     pub http_yanitlari: HashMap<String, (i64, String)>,
     /// Gerçekten başlatılan sahte HTTP çağrıları ve çağrı anındaki kalan süre.
     pub http_istekleri: Vec<(String, Option<i64>)>,
+    /// Hermetik PostgreSQL cevap kuyrukları ve gerçekten bind edilen istekler.
+    pub postgresql: ToplayanVeritabani,
     /// Sahte sunucu: istek kuyruğu ve (istek → yanıt) kayıtları.
     pub istekler: VecDeque<String>,
     /// Sunucunun Set-Cookie ile yazdığı çerezler (K-052 testleri için).
@@ -500,6 +515,7 @@ impl ToplayanIo {
             argumanlar: Vec::new(),
             http_yanitlari: HashMap::new(),
             http_istekleri: Vec::new(),
+            postgresql: ToplayanVeritabani::default(),
             istekler: VecDeque::new(),
             yazilan_cerezler: Vec::new(),
             guvenli_cerezler: Vec::new(),
@@ -604,6 +620,20 @@ impl GirdiCikti for ToplayanIo {
             .get(url)
             .cloned()
             .ok_or_else(|| format!("\"{}\" adresine bağlanılamadı", url))
+    }
+    fn postgresql_oku(
+        &mut self,
+        sorgu: &str,
+        parametreler: &[String],
+    ) -> Result<Vec<Vec<(String, String)>>, VeritabaniHatasi> {
+        self.postgresql.oku(sorgu, parametreler)
+    }
+    fn postgresql_degistir(
+        &mut self,
+        sorgu: &str,
+        parametreler: &[String],
+    ) -> Result<i64, VeritabaniHatasi> {
+        self.postgresql.degistir(sorgu, parametreler)
     }
     fn sunucu_kur(&mut self, _kapi: i64) -> Result<(), String> {
         Ok(())

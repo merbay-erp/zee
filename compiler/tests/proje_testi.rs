@@ -219,8 +219,38 @@ fn bildirim_gecerli_zee_kaynagidir() {
             yerel_bagimliliklar: Vec::new(),
             registry: None,
             uzak_bagimliliklar: Vec::new(),
+            veritabani: None,
         }
     );
+}
+
+#[test]
+fn postgresql_bildirimi_sirri_kaynaga_almadan_loopback_hedefini_kilitler() {
+    let kaynak = "proje \"uygulama\" olsun\nsürüm \"1.0.0\" olsun\ngiriş \"ana.dil\" olsun\nyetkinlikler \"veritabanı\" listesi olsun\nağ_hedefleri boş liste olsun\nveritabanı_hedefi \"postgresql://127.0.0.1:5432/uygulama\" olsun\nveritabanı_bağlantı_değişkeni \"UYGULAMA_DATABASE_URL\" olsun\nveritabanı_göçleri \"göçler\" olsun\n";
+    let bildirim = bildirimi_oku(kaynak).expect("PostgreSQL bildirimi geçmeli");
+    let veritabani = bildirim.veritabani.expect("veritabanı ayarı");
+    assert_eq!(veritabani.hedef.konak, "127.0.0.1");
+    assert_eq!(veritabani.hedef.kapi, 5432);
+    assert_eq!(veritabani.hedef.veritabani, "uygulama");
+    assert_eq!(veritabani.baglanti_degiskeni, "UYGULAMA_DATABASE_URL");
+    assert_eq!(veritabani.gocler, "göçler");
+
+    for (eski, yeni) in [
+        (
+            "postgresql://127.0.0.1:5432/uygulama",
+            "postgresql://kullanici:parola@127.0.0.1:5432/uygulama",
+        ),
+        (
+            "postgresql://127.0.0.1:5432/uygulama",
+            "postgresql://db.example:5432/uygulama",
+        ),
+        ("UYGULAMA_DATABASE_URL", "postgresql://sır"),
+        ("\"göçler\"", "\"../göçler\""),
+    ] {
+        let bozuk = kaynak.replacen(eski, yeni, 1);
+        let hata = bildirimi_oku(&bozuk).expect_err("güvensiz DB bildirimi");
+        assert_eq!(hata.kod, "P015", "{eski} → {yeni}: {}", hata.mesaj);
+    }
 }
 
 #[test]

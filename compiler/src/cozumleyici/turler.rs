@@ -10,6 +10,9 @@ pub(super) fn intrinsic_turunu_cevir(tur: IntrinsicTuru) -> Tur {
         IntrinsicTuru::Metin => Tur::Metin,
         IntrinsicTuru::Mantiksal => Tur::Mantiksal,
         IntrinsicTuru::AgYaniti => Tur::AgYaniti,
+        IntrinsicTuru::MetinListesi => Tur::Liste(VeriTuru::Metin),
+        IntrinsicTuru::MetinSozlukListesiSonucu => Tur::Sonuc(VeriTuru::MetinSozlukListesi),
+        IntrinsicTuru::TamSayiSonucu => Tur::Sonuc(VeriTuru::TamSayi),
     }
 }
 
@@ -39,6 +42,15 @@ pub(super) fn parametre_turu(yazim: &str, baglam: &Baglam) -> Option<Tur> {
         "Hata" => Some(Tur::Hata),
         _ => baglam.yapi_kimligi(ad).map(Tur::Yapi),
     };
+    if let Some(kok) = yazim.strip_suffix(" sonucu") {
+        return parametre_turu(kok, baglam)
+            .as_ref()
+            .and_then(veri_turu_yap)
+            .map(Tur::Sonuc);
+    }
+    if yazim == "Metin sözlüğü listesi" {
+        return Some(Tur::Liste(VeriTuru::MetinSozluk));
+    }
     if let Some(kok) = yazim.strip_suffix(" listesi") {
         return basit(kok)
             .and_then(|tur| veri_turu_yap(&tur))
@@ -57,11 +69,6 @@ pub(super) fn parametre_turu(yazim: &str, baglam: &Baglam) -> Option<Tur> {
             .and_then(|tur| veri_turu_yap(&tur))
             .map(Tur::Secenek);
     }
-    if let Some(kok) = yazim.strip_suffix(" sonucu") {
-        return basit(kok)
-            .and_then(|tur| veri_turu_yap(&tur))
-            .map(Tur::Sonuc);
-    }
     basit(yazim)
 }
 
@@ -72,6 +79,7 @@ pub(super) fn veri_turu_yap(tur: &Tur) -> Option<VeriTuru> {
         Tur::Ondalik => Some(VeriTuru::Ondalik),
         Tur::Sozluk(SozlukDegerTuru::TamSayi) => Some(VeriTuru::Sozluk),
         Tur::Sozluk(SozlukDegerTuru::Metin) => Some(VeriTuru::MetinSozluk),
+        Tur::Liste(VeriTuru::MetinSozluk) => Some(VeriTuru::MetinSozlukListesi),
         Tur::Yapi(i) => Some(VeriTuru::Yapi(*i)),
         _ => None,
     }

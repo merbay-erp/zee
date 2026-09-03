@@ -40,6 +40,12 @@ fn varsayilan_profil_kritik_limitleri_sifira_birakmaz() {
     assert!(sinirlar.registry().kok_rotasyonu() > 0);
     assert!(sinirlar.tani().sayi() > 0);
     assert!(sinirlar.metadata().deger_bayti() <= sinirlar.metadata().toplam_bayti());
+    assert!(sinirlar.veritabani().sorgu_bayti() > 0);
+    assert!(sinirlar.veritabani().parametre() > 0);
+    assert!(sinirlar.veritabani().parametre_bayti() <= sinirlar.metin_bayti());
+    assert!(sinirlar.veritabani().satir() > 0 && sinirlar.veritabani().sutun() > 0);
+    assert!(sinirlar.veritabani().sonuc_bayti() <= sinirlar.calisma_heap_bayti());
+    assert!(sinirlar.veritabani().goc_dosyasi_bayti() <= sinirlar.veritabani().goc_toplami_bayti());
     assert!(
         sinirlar.kalici_dosya().kilit_yeniden_dene_ms()
             < sinirlar.kalici_dosya().kilit_bekleme_ms()

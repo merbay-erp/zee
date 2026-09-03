@@ -16,10 +16,11 @@ pub enum Yetkinlik {
     Donanim,
     WebOturumu,
     Kriptografi,
+    Veritabani,
 }
 
 impl Yetkinlik {
-    pub const TUMU: [Self; 8] = [
+    pub const TUMU: [Self; 9] = [
         Self::DosyaOkuma,
         Self::DosyaYazma,
         Self::Ag,
@@ -28,6 +29,7 @@ impl Yetkinlik {
         Self::Donanim,
         Self::WebOturumu,
         Self::Kriptografi,
+        Self::Veritabani,
     ];
 
     pub const fn yazimi(self) -> &'static str {
@@ -40,6 +42,7 @@ impl Yetkinlik {
             Self::Donanim => "donanım",
             Self::WebOturumu => "web-oturumu",
             Self::Kriptografi => "kriptografi",
+            Self::Veritabani => "veritabanı",
         }
     }
 
@@ -176,7 +179,7 @@ impl YetkinlikPolitikasi {
     pub fn gelistirici() -> Self {
         let izinler = Yetkinlik::TUMU
             .into_iter()
-            .filter(|yetkinlik| *yetkinlik != Yetkinlik::YerelAg)
+            .filter(|yetkinlik| !matches!(yetkinlik, Yetkinlik::YerelAg | Yetkinlik::Veritabani))
             .collect();
         Self {
             izinler,

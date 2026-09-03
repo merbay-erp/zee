@@ -1,5 +1,6 @@
 //! Paket, yayın ve registry katmanlarının paylaştığı davranışsız veri modeli.
 
+#[cfg(not(target_arch = "wasm32"))]
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 
@@ -25,16 +26,18 @@ pub struct PaketCiktilari {
     pub yayinci_anahtar_kimligi: String,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
+#[derive(Debug, Clone, PartialEq, Eq)]
+#[cfg_attr(not(target_arch = "wasm32"), derive(Serialize, Deserialize))]
+#[cfg_attr(not(target_arch = "wasm32"), serde(deny_unknown_fields))]
 pub struct YayinDosyasi {
     pub ad: String,
     pub boyut: u64,
     pub sha256: String,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
+#[derive(Debug, Clone, PartialEq, Eq)]
+#[cfg_attr(not(target_arch = "wasm32"), derive(Serialize, Deserialize))]
+#[cfg_attr(not(target_arch = "wasm32"), serde(deny_unknown_fields))]
 pub struct ImzaliYayin {
     pub sema: String,
     pub paket: String,

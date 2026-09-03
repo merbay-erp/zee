@@ -554,12 +554,17 @@ fn ifade_bilgisi(ifade: &Ifade, bilgi: &mut Bilgi) {
             for arguman in argumanlar {
                 ifade_bilgisi(arguman, bilgi);
             }
-            // Uygulama durumu değil, güvenlik adaptörünün kısa ömürlü ve
-            // anlam taşımayan synchronizer oturumudur. GET'te üretilebilir.
-            if intrinsic::tanim(kimlik)
-                .is_some_and(|tanim| tanim.etki == IntrinsicEtkisi::WebAdaptoru)
-            {
-                bilgi.web = true;
+            if let Some(tanim) = intrinsic::tanim(kimlik) {
+                match tanim.etki {
+                    IntrinsicEtkisi::DisYazma => {
+                        bilgi.uygulama_yazma = true;
+                        bilgi.durum_yazma = true;
+                    }
+                    // Uygulama durumu değil, güvenlik adaptörünün kısa ömürlü ve
+                    // anlam taşımayan synchronizer oturumudur. GET'te üretilebilir.
+                    IntrinsicEtkisi::WebAdaptoru => bilgi.web = true,
+                    IntrinsicEtkisi::Saf | IntrinsicEtkisi::DisOkuma => {}
+                }
             }
         }
         Ifade::Birlestir(parcalar)

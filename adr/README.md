@@ -62,6 +62,7 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-057 | [Seçici düzeyinde çoklu test kapsamı](057-coklu-test-kapsami.md) | **kabul** (K-158/B-068) |
 | ADR-058 | [Sürümlü public API facade'ı](058-public-api-facade.md) | **kabul** (K-159/B-069) |
 | ADR-059 | [Paket sahipliği ve core freeze](059-paket-sahipligi-ve-core-freeze.md) | **kabul** (K-160/K-160A, B-070/B-071) |
+| ADR-060 | [PostgreSQL adaptör sahipliği ve güven sınırı](060-postgresql-adaptor-siniri.md) | **kabul** (K-163/B-073) |
 | ADR-004 | Bellek yönetimi prototip kararı (GC / ARC benchmark) | bekliyor |
 | ADR-005 | Native backend seçimi (Cranelift / LLVM) | bekliyor — Faz 4 |
 | ADR-007 | [Telemetri ve gizlilik: araçlar veri toplamaz](007-telemetri-ve-gizlilik.md) | **kabul** |

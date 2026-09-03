@@ -12,6 +12,20 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **WASM/native bağımlılık sınırı:** Playground WASM hedefi native
+  yayın/artefakt imzalama modüllerini artık derleme grafiğine almaz. Paket
+  grafiğinin davranışsız modeli WASM'da serde gerektirmeden korunur; gerçek
+  `wasm32-unknown-unknown` kapısı native-only bağımlılıklardan ayrıdır.
+
+- **Yerel PostgreSQL dogfood yüzeyi** (K-163, RFC-0026/ADR-060/spec-25):
+  Proje sırrı kaynakta tutmadan exact loopback hedef ve ortam değişkeni adı
+  bildirir. Okuma/değiştirme extended-query TEXT parametrelerini SQL'den ayrı
+  bind eder; C025 Hata değeri SQLSTATE/constraint/tabloyu korur. Değişiklikler
+  eylem transaction/savepoint'ine, dil göçür ise advisory lock ve değişmez
+  SHA-256 migration geçmişine bağlıdır. Gerçek PostgreSQL 16.11 ürün provası
+  apply→skip→hash reddi, injection-benzeri değer, 23505 ve rollback'i geçti.
+  Bu yalnız localhost sslmode=disable profilidir; production TLS/pool sözü yoktur.
+
 - **Dogfood kanıt referans bütünlüğü** (B-073): Append-only ürün kaydı tekil
   slug, repo içi kanıt kökü, exact harici ürün commit'i ve durum taşır. CORE
   FREEZE koruğu artık dogfood değişikliğinin kayıtlı etkin ürüne, gerçek K-işine,
@@ -26,8 +40,9 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   7/7 hermetik testten ve gerçek TCP içerik+ayar+sayfa provasından geçti. İlk
   ürün sürtünmeleri ayrıca kaydedildi: P011 doğru çözüme götürdü; morfoloji ve
   zincirleme ergonomisi izleniyor; son kayıt silmede kaybolan boş CSV başlığı
-  mevcut dille kapatılıp teste alındı. K-163 henüz tamamlanmadı; PostgreSQL,
-  migration/medya ve süreli ergonomi kanıtı bekleniyor.
+  mevcut dille kapatılıp teste alındı. Dördüncü dilimde yerel PostgreSQL ve
+  migration kanıtı da üretildi; K-163 production TLS/pool, medya ve süreli
+  ergonomi kanıtı tamamlanmadığı için henüz kapanmadı.
 
 - **Executable CORE FREEZE** (K-160A, ADR-059): Yazılı politika artık her
   `compiler/src` commit'ini exact freeze sınıfına zorlayan CI kapısıdır.

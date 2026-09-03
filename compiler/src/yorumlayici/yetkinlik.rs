@@ -1,6 +1,5 @@
 //! `GirdiCikti` çağrılarını merkezî yetkinlik politikasında fail-closed tutar.
-
-use super::GirdiCikti;
+use super::{GirdiCikti, VeritabaniHatasi};
 use crate::agac::RotaErisimi;
 use crate::web_guvenligi::WebReddi;
 use crate::yetkinlik::{DosyaSiniri, Yetkinlik, YetkinlikPolitikasi};
@@ -69,18 +68,15 @@ impl<T: GirdiCikti> PolitikaliIo<T> {
         self.gerektir(Yetkinlik::WebOturumu)
     }
 
+    fn veritabani_gerektir(&self) -> Result<(), VeritabaniHatasi> {
+        self.gerektir(Yetkinlik::Veritabani)
+            .map_err(super::yetkinlik_hatasi::veritabani)
+    }
+
     fn gerektir(&self, yetkinlik: Yetkinlik) -> Result<(), String> {
-        self.politika.gerektir(yetkinlik).map_err(|hata| {
-            if self.cocuk_modu {
-                match yetkinlik {
-                    Yetkinlik::Ag => "güvenli modda ağ erişimi kapalı".into(),
-                    Yetkinlik::AgSunucusu => "güvenli modda sunucu açılamaz".into(),
-                    _ => format!("güvenli modda {}", hata),
-                }
-            } else {
-                hata
-            }
-        })
+        self.politika
+            .gerektir(yetkinlik)
+            .map_err(|hata| super::yetkinlik_hatasi::mesaj(hata, self.cocuk_modu, yetkinlik))
     }
 }
 
@@ -123,6 +119,24 @@ impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
         self.gerektir(Yetkinlik::Ag)?;
         self.politika.ag_istegini_denetle(url)?;
         self.ic.http_getir(url, zaman_asimi_ms)
+    }
+
+    fn postgresql_oku(
+        &mut self,
+        sorgu: &str,
+        parametreler: &[String],
+    ) -> Result<Vec<Vec<(String, String)>>, VeritabaniHatasi> {
+        self.veritabani_gerektir()?;
+        self.ic.postgresql_oku(sorgu, parametreler)
+    }
+
+    fn postgresql_degistir(
+        &mut self,
+        sorgu: &str,
+        parametreler: &[String],
+    ) -> Result<i64, VeritabaniHatasi> {
+        self.veritabani_gerektir()?;
+        self.ic.postgresql_degistir(sorgu, parametreler)
     }
 
     fn sunucu_kur(&mut self, kapi: i64) -> Result<(), String> {

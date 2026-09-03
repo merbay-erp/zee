@@ -16,11 +16,16 @@ Kararlı proje yazımları şunlardır:
 | `donanım` | Sensör ve ışık adaptörü |
 | `web-oturumu` | Oturum, rol, çerez ve CSRF adaptörü |
 | `kriptografi` | Parola/kriptografi adaptörü |
+| `veritabanı` | Bildirilmiş exact loopback PostgreSQL adaptörü |
 
 `proje.dil` içindeki `yetkinlikler` ve `ağ_hedefleri` yoksa boş listedir.
 Değerler tekil olmak ZORUNDADIR. `yerel-ağ` → `ağ`, `web-oturumu` →
 `ağ-sunucusu` bağı ZORUNLUDUR. `ağ` ancak boş olmayan `ağ_hedefleri` ile ve
 tersi birlikte bulunabilir. İhlal P015'tir.
+
+`veritabanı`, bildirimsiz tek dosya geliştirici profilinde örtük açılmaz.
+Proje hedefi, bağlantı sırrı ve migration kökü spec/25'teki üçlü bildirime
+bağlıdır; outbound `ağ` allowlist'i yerine geçmez.
 
 ## Origin ve IP kuralları (TANIMLI)
 
