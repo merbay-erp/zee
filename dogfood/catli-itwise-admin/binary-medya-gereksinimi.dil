@@ -1,0 +1,24 @@
+# K-163/F030 gerçek ürün ihtiyacının CORE FREEZE kanıt aynası.
+# Çalışan 970 satırlık ürün ve öldürme noktası kanıtları itwise-admin
+# 38dff9ffa40be0d08d670d1d1c54c04f6d45ef0c commit'indedir. Bu dosya yalnız
+# ürünün istediği en küçük binary medya yaşam döngüsü sözleşmesini sabitler.
+
+eylem hazırlanmış medyayı yayınla
+    TamSayı sonucu döndürür
+
+    ".zee/yuklemeler/ornek.parca" dosyasını "medya/ornek.bin" yoluna atomik taşımayı dene döndür
+
+işlem medya özetini doğrula
+    Metin sonucu döndürür
+
+    "medya/ornek.bin" dosyasının sha256 özetini almayı dene döndür
+
+işlem yarım yüklemeleri bul
+    Metin listesi sonucu döndürür
+
+    ".zee/yuklemeler" yolundaki dosyaları listelemeyi dene döndür
+
+eylem medyayı temizle
+    TamSayı sonucu döndürür
+
+    "medya/ornek.bin" dosyasını silmeyi dene döndür

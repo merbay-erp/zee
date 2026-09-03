@@ -181,11 +181,11 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **636** |
+| Rust + doctest vakası | **642** |
 | Tanı kimliği | **155 etkin + 3 ayrılmış** |
-| RFC | **26** (2 kabul, 22 geçici kabul, 2 taslak) |
-| ADR | **58** (58 kabul) |
-| Normatif spec bölümü | **25** |
+| RFC | **27** (2 kabul, 23 geçici kabul, 2 taslak) |
+| ADR | **59** (59 kabul) |
+| Normatif spec bölümü | **26** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
 ### Golden korpus hakkında
@@ -326,7 +326,7 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   2k/5k/10k/20k p95 167,281 ms / 1.081,746 ms / 4.669,372 ms /
   20.159,636 ms'dir; 250/500/1000 ms eşiklerinin üçü de 5k'da aşılır.
   K-154/B-062 kapandı; bu dilimde optimizasyon yapılmadı.
-  K-149/ADR-046 bütün production Rust ağacını 35 sorumluluk sahibine, exact
+  K-149/ADR-046 bütün production Rust ağacını bugün 38 sorumluluk sahibine, exact
   doğrudan kenar tabanına ve izinli katman yönüne bağladı. Yeni/kayıp modül,
   yeni/kaldırılmış kenar ve ters katman geçişi fail-closed'dur; SHA-256 ile
   takvim ilkellerinin iki gerçek ters bağımlılığı aşağı taşındı. Ayrıntı
@@ -376,6 +376,14 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   [COMMIT belirsizliği runbook'undadır](docs/postgresql-commit-belirsizligi.md).
   Gerçek pool hâlâ açıktır. 492 LOC
   bakım tabanı 1000+ satır karşılaştırması için exact yöntemle kaydedildi.
+  F029'un ardından F030, RFC-0027/ADR-061/spec-26 ile gerçek binary medya
+  yüzeyini açtı: octet-stream gövde 16 KiB parçalarla 16 MiB sınırlı temp
+  dosyaya akar, SHA-256 aynı geçişte hesaplanır; no-clobber publish,
+  idempotent silme, sıralı listeleme ve akışlı özetleme `Sonuç` taşır. Çatlı
+  970 Zee LOC/4 modül/10 testte normal upload→ready→delete ile temp, DB
+  hazırlama, rename ve tombstone process-kesme sınırlarının restart
+  uzlaştırmasını gerçek PG16.11 üzerinde geçti. Production TLS/pool,
+  multipart ve içerik güvenlik politikası açık kalır.
   K-151/ADR-048 bütün GitHub Actions `uses:` referanslarını incelenmiş 40
   haneli commit SHA'lara sabitledi. Sürümlü pin kaydı workflow'larla birebir,
   haftalık Dependabot yalnız inceleme PR'ı açar; hareketli `@v4`, `@stable`

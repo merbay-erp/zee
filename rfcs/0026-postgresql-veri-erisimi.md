@@ -76,3 +76,6 @@ tamamlanıp ReadyForQuery yanıtı yutulduğunda kayıt vardır. İki durumda da
 503/C027, sıfır otomatik retry ve yaşayan worker gözlenir. Sonraki bağlantıda
 iş anahtarı okunur; aynı UNIQUE anahtarlı bilinçli girişim ikinci kayıt
 oluşturamaz.
+
+DB dışı binary medya yaşam döngüsü F030/RFC-0027/spec-26'da ayrı saga olarak
+kanıtlandı; bu PostgreSQL RFC'si dağıtık atomiklik sözü kazanmadı.

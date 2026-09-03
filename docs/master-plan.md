@@ -775,7 +775,7 @@ K-148/ADR-045 dokuz parse/checker/HIR/runtime/yürütme/LSP/bellek yüzeyini
 iki ısınma+25 turluk ham dağılım, p50/p95, JSON/Markdown ve sürümlü TSV
 tarihçesine bağladı. Shared CI sonucu yalnız summary+90 günlük artefakttır;
 hard eşik ancak sabit adanmış runner'da açıkça etkinleşir. B-040 kapandı.
-K-149/ADR-046 bütün production Rust ağacını 35 sorumluluk sahibine, exact
+K-149/ADR-046 bütün production Rust ağacını bugün 38 sorumluluk sahibine, exact
 doğrudan kenar tabanına ve temel→adaptör katman yönüne bağladı. Morfoloji→
 paket SHA-256 ve tedarik→runtime takvim ters bağımlılıkları `guvenlik` ve
 `zaman` temel sahiplerine taşındı; B-057/V1-P0-32 kapandı. K-150/ADR-047
@@ -886,6 +886,13 @@ C013 503/no-retry verirken worker sağlık isteğinde 200 kaldı; eksik dosya
 metadata'sı `hatalı`ya, finalize reddiyle kalan kayıt process restartından
 sonra `hazır`a uzlaştırıldı. Aynı kodlu tekrar UNIQUE ile reddedildi ve dosya
 hash'i değişmedi. Böylece F029 metin-payload yaşam döngüsü kapandı.
+F030, ürünün gerçek binary ihtiyacıyla RFC-0027/ADR-061/spec-26'yı açtı.
+Native octet-stream 16 KiB parçalarla temp dosyaya ve SHA-256'ya akar;
+no-clobber publish, idempotent silme, listeleme ve hash beklenen hataları
+`Sonuç` olarak taşır. Çatlı 970 Zee LOC/4 modül/10 testte normal yaşam
+döngüsünü ve temp, DB-hazırlama, rename, tombstone kesmelerinin restart
+yakınsamasını PG16.11 üzerinde kanıtladı. F030 kapalıdır; sıradaki saha kapısı
+production TLS/pool, ardından organik 1000+ LOC bakım kontrolüdür.
 B-001 çağrı sözdizimi ile B-002 gezme zihinsel modeli gerçek insan
 kanıtı gelmeden kapatılmaz veya yeni syntax kararıyla atlanmaz.
 # 40. Proje felsefesinin korunması

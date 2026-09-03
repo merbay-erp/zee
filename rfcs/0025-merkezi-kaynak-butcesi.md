@@ -92,3 +92,8 @@ K-143 ile playground'a özgü açık allocation-order boşluğu da kapandı; B-0
 B-056 ve V1-P0-31 kapalıdır. RFC tam kabul yerine proje genelindeki usability
 kabul politikasına uyarak geçici kabulde kalır. Cancellation ve duvar-saati
 invariant'ları bu bütçe sözleşmesinin değil B-026'nın ayrı kapsamıdır.
+
+K-163/F030 form gövdesinin 64 KiB sınırını değiştirmeden exact
+`application/octet-stream` için 16 MiB'lık ayrı yükleme görünümü ekler. Gövde
+16 KiB parçalarla temp dosyaya/hash durumuna akar; 16 MiB toplu heap tahsisi
+yapılmaz. Dosya hash okuması da aynı 16 MiB zarfındadır.

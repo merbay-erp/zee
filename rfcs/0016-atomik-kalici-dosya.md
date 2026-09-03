@@ -101,3 +101,8 @@ dışı Unix'te var olan dosya replace'i ACL/xattr koruması kanıtlanmadığı 
 Linux/macOS/Windows metadata conformance'ı K-128 ile CI'a bağlıdır. Kalan tam
 kabul kapısı güç-kesintisi/disk-dolu hata enjeksiyonu, büyük dosya davranışı ve
 gözlemlenebilir performans sınırıdır.
+
+K-163/F030, hazırlanmış binary dosyayı var olan hedefi ezmeden `rename` ile
+yayımlayan ve bulunmayan hedefte idempotent olan silme primitive'lerini ekler.
+İki işlem de hedef kilidi ve dizin fsync'i kullanır; DB ile dağıtık commit sözü
+vermez. Kaynak sözleşmesi RFC-0027/spec-26'dadır.

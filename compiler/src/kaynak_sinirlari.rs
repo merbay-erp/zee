@@ -201,6 +201,7 @@ pub const VARSAYILAN_KAYNAK_SINIRLARI: KaynakSinirlari = KaynakSinirlari {
         calistirma_zaman_asimi_ms: 30_000,
         istek_baslik_bayti: 16 * 1024,
         istek_govde_bayti: 64 * 1024,
+        yukleme_bayti: 16 * 1024 * 1024,
         istek_alani: 100,
     },
     web: WebSinirlari {

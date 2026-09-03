@@ -12,6 +12,18 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **Akışlı binary upload ve dosya yaşam döngüsü** (K-163/F030,
+  RFC-0027/ADR-061/spec-26): Native web adaptörü exact
+  `application/octet-stream` gövdesini 16 MiB sınırında belleğe toplamadan
+  `0600` temp dosyaya akıtır; SHA-256 ve boyutu aynı geçişte üretir. Yeni
+  `atomik taşımayı dene`, `silmeyi dene`, `dosyaları listelemeyi dene` ve
+  `sha256 özetini almayı dene` yüzeyleri beklenen arızayı C013 `Hata` değeriyle
+  taşır, capability ve IO trace/replay sınırını korur. Çatlı'nın 970 LOC/4
+  modül/10 test ürünü gerçek PostgreSQL 16.11 üzerinde normal upload→ready→
+  delete akışını ve temp/metadata/rename/tombstone kesmelerinden restart
+  yakınsamasını kanıtladı. Multipart, antivirüs, production TLS/pool ve nesne
+  deposu hâlâ açık kapsamdadır.
+
 - **Dosya yazma arızasında web worker survival** (K-163/F029): Çatlı medya +
   metadata protokolündeki gerçek dizin çakışması C013'ün yalnız isteği değil
   bütün worker'ı sonlandırdığını gösterdi. Web adaptörü artık C013'ü ayrıntı

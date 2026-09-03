@@ -19,7 +19,8 @@ use crate::agac::{
     Parametre, RotaErisimi, Test, Yapi,
 };
 use crate::intrinsic::{
-    CSRF_BELIRTECI, HTTP_GETIR, PAROLA_DOGRULA, POSTGRESQL_DEGISTIR, POSTGRESQL_OKU, SENSOR_ACIK_MI,
+    CSRF_BELIRTECI, DOSYALARI_LISTELE, DOSYA_ATOMIK_TASI, DOSYA_SHA256, DOSYA_SIL, HTTP_GETIR,
+    PAROLA_DOGRULA, POSTGRESQL_DEGISTIR, POSTGRESQL_OKU, SENSOR_ACIK_MI,
 };
 use crate::ondalik::Ondalik;
 use crate::sozcukleyici::{Token, TokenTur};

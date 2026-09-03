@@ -152,7 +152,7 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
     25 turluk ham örnek, p50/p95, JSON, Markdown ve sürümlü TSV tarihçesine
     bağladı. Shared CI yalnız summary+90 günlük artefakt üretir; hard eşik
     ancak sabit adanmış runner'da açıkça etkinleşir. B-040 kapandı (603 test).
-46. K-149/ADR-046 bütün production Rust ağacını 35 üst sahibe, exact doğrudan
+46. K-149/ADR-046 bütün production Rust ağacını bugün 38 üst sahibe, exact doğrudan
     kenar tabanına ve izinli katman yönüne bağladı. Yeni/kayıp modül,
     eklenen/kaldırılan kenar ve ters katman geçişi fail-closed'dur. Morfoloji→
     paket SHA-256 ve tedarik→runtime takvim terslikleri temel sahiplere
@@ -752,8 +752,9 @@ CSRF CRUD, JSON site ayarları ve slug doğrulamalı taslak/yayında sayfa yaşa
 döngüsünü taşır. 7/7 hermetik test ile gerçek TCP içerik+ayar+sayfa provası
 geçmiştir. Dördüncü dilim 492 Zee satırında yerel PostgreSQL/migration,
 parameterized bind, 23505 ve rollback kanıtını ekledi. K-163 henüz kapanmış
-değildir; 500–1500 satır, production TLS/pool, medya gibi gerçek ürün yüzeyleri
-ve ölçülü ergonomi günlüğü beklenir.
+değildir. F030, 970 Zee LOC/4 modül/10 testte binary upload/hash, publish,
+tombstone/silme ve restart orphan uzlaştırmasını gerçek PG16.11 ile kapattı.
+Production TLS/pool ve organik 1000+ bakım skor kartı beklenir.
 K-161/K-162 gerçek insan testleri de insan verisini beklemeyi sürdürür.
 İnsan verisi gelmeden yeni syntax seçilmez
 veya B-001/B-002 tamamlanmış gösterilmez.
@@ -782,7 +783,7 @@ tamamlanmış sayılmaz; burada istenen ek kanıt ayrıca üretilir.
 | K-160A | **KAPALI — EXECUTABLE FREEZE** | Exact commit sınıfı; dogfood feature için ürün+iş+reproducer+proje+minimalite+karar |
 | K-161 | **İNSAN KANITI** | B-001/K-016 için 10 öğrenci/çocuk + 5 profesyonel kör oturum |
 | K-162 | **İNSAN KANITI** | B-002/K-093 morphology/scope/call/error zihinsel model oturumu |
-| K-163 | **DEVAM EDİYOR** | Çatlı 690 Zee satırı/4 modül/9 testte medya+DB durum makinesine ulaştı. F027 write survival ve F028 COMMIT belirsizliğinden sonra `b3cee9a` F029 C013 worker kırığını buldu; Zee `395b2e9` request-local 503/no-retry düzeltmesiyle final `29d30c8` provasında worker 200 kaldı, eksik dosya `hatalı`, restart sonrası finalize `hazır` oldu ve UNIQUE aynı dosya hash'ini korudu. Gerçek TLS/pool, binary medya/silme/orphan tarama ve 1000+ LOC skor kartı bekleniyor |
+| K-163 | **DEVAM EDİYOR** | Çatlı 970 Zee LOC/4 modül/10 testte F030 binary medya saga'sına ulaştı. RFC-0027/ADR-061/spec-26 akışlı octet-stream+SHA-256, no-clobber publish, tombstone/idempotent silme ve orphan taramayı taşır. Gerçek PG16.11'de normal akış ve temp/DB-hazırlama/rename/tombstone process-kesmeleri restartta kanonik sonuca ulaştı; duplicate final hash'i korudu. Sırada production TLS/pool, ardından organik 1000+ LOC skor kartı vardır |
 | K-164 | **AÇIK** | Farklı workload'da ikinci gerçek proje |
 | K-165 | **AÇIK** | Aynı uygulamanın Zee–Go/Rust veri temelli dogfood karşılaştırması |
 | K-166 | **AÇIK** | En sık 50 hata için span/öneri/noise düzeltme başarısı |

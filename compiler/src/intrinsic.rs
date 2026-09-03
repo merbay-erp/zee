@@ -9,6 +9,10 @@ pub const CSRF_BELIRTECI: &str = "web.csrf_belirteci";
 pub const PAROLA_DOGRULA: &str = "guvenlik.parola_dogrula";
 pub const POSTGRESQL_OKU: &str = "veritabani.postgresql_oku";
 pub const POSTGRESQL_DEGISTIR: &str = "veritabani.postgresql_degistir";
+pub const DOSYA_ATOMIK_TASI: &str = "dosya.atomik_tasi";
+pub const DOSYA_SIL: &str = "dosya.sil";
+pub const DOSYALARI_LISTELE: &str = "dosya.listele";
+pub const DOSYA_SHA256: &str = "dosya.sha256";
 
 pub use crate::yetkinlik::Yetkinlik;
 
@@ -20,6 +24,8 @@ pub enum IntrinsicTuru {
     AgYaniti,
     MetinListesi,
     MetinSozlukListesiSonucu,
+    MetinListesiSonucu,
+    MetinSonucu,
     TamSayiSonucu,
 }
 
@@ -98,6 +104,38 @@ pub const TANIMLAR: &[IntrinsicTanimi] = &[
         donus_turu: IntrinsicTuru::TamSayiSonucu,
         etki: IntrinsicEtkisi::DisYazma,
         tur_hatasi: "PostgreSQL değişikliği Metin sorgu ve Metin parametre listesi ister.",
+    },
+    IntrinsicTanimi {
+        kimlik: DOSYA_ATOMIK_TASI,
+        yetkinlik: Yetkinlik::DosyaYazma,
+        arguman_turleri: IKI_METIN,
+        donus_turu: IntrinsicTuru::TamSayiSonucu,
+        etki: IntrinsicEtkisi::DisYazma,
+        tur_hatasi: "Kaynak ve hedef dosya yolları Metin olmalı.",
+    },
+    IntrinsicTanimi {
+        kimlik: DOSYA_SIL,
+        yetkinlik: Yetkinlik::DosyaYazma,
+        arguman_turleri: METIN,
+        donus_turu: IntrinsicTuru::TamSayiSonucu,
+        etki: IntrinsicEtkisi::DisYazma,
+        tur_hatasi: "Silinecek dosya yolu Metin olmalı.",
+    },
+    IntrinsicTanimi {
+        kimlik: DOSYALARI_LISTELE,
+        yetkinlik: Yetkinlik::DosyaOkuma,
+        arguman_turleri: METIN,
+        donus_turu: IntrinsicTuru::MetinListesiSonucu,
+        etki: IntrinsicEtkisi::DisOkuma,
+        tur_hatasi: "Listelenecek dizin yolu Metin olmalı.",
+    },
+    IntrinsicTanimi {
+        kimlik: DOSYA_SHA256,
+        yetkinlik: Yetkinlik::DosyaOkuma,
+        arguman_turleri: METIN,
+        donus_turu: IntrinsicTuru::MetinSonucu,
+        etki: IntrinsicEtkisi::DisOkuma,
+        tur_hatasi: "Özetlenecek dosya yolu Metin olmalı.",
     },
 ];
 

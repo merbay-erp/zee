@@ -117,3 +117,7 @@ kayıtlı sonuçla oynatılır.
 Doğal ✓ (Türkçe CLI) · Deterministik ✓ (tek sıra/tek byte biçimi) ·
 Öğrenilebilir ✓ (koşu yeniden görülebilir) · Savunulabilir ✓ (bütçeli,
 fail-closed, dış etkisiz replay).
+
+K-163/F030 ile atomik taşıma, silme, dizin listeleme ve dosya SHA-256 olayları
+şema-1'in kapalı işlem listesine eklendi. Replay kaydedilmiş typed sonucu verir;
+fiziksel dosya sistemine dokunmaz.

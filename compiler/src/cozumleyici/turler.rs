@@ -12,6 +12,8 @@ pub(super) fn intrinsic_turunu_cevir(tur: IntrinsicTuru) -> Tur {
         IntrinsicTuru::AgYaniti => Tur::AgYaniti,
         IntrinsicTuru::MetinListesi => Tur::Liste(VeriTuru::Metin),
         IntrinsicTuru::MetinSozlukListesiSonucu => Tur::Sonuc(VeriTuru::MetinSozlukListesi),
+        IntrinsicTuru::MetinListesiSonucu => Tur::Sonuc(VeriTuru::MetinListesi),
+        IntrinsicTuru::MetinSonucu => Tur::Sonuc(VeriTuru::Metin),
         IntrinsicTuru::TamSayiSonucu => Tur::Sonuc(VeriTuru::TamSayi),
     }
 }
@@ -80,6 +82,7 @@ pub(super) fn veri_turu_yap(tur: &Tur) -> Option<VeriTuru> {
         Tur::Sozluk(SozlukDegerTuru::TamSayi) => Some(VeriTuru::Sozluk),
         Tur::Sozluk(SozlukDegerTuru::Metin) => Some(VeriTuru::MetinSozluk),
         Tur::Liste(VeriTuru::MetinSozluk) => Some(VeriTuru::MetinSozlukListesi),
+        Tur::Liste(VeriTuru::Metin) => Some(VeriTuru::MetinListesi),
         Tur::Yapi(i) => Some(VeriTuru::Yapi(*i)),
         _ => None,
     }

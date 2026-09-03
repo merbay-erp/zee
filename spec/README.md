@@ -47,6 +47,7 @@ Kırıcı değişiklik sessizce yapılamaz: davranış değişikliği RFC'den ge
 | [23 — Yetkinlik ve outbound ağ güvenliği](23-yetkinlik-ve-outbound-guvenligi.md) | proje/paket izinleri, compile/runtime kapısı, ortak inbound/outbound origin, DNS/HTTPS ve dosya kökü | RFC-0024, ADR-031/036, K-127/K-139 |
 | [24 — Kaynak güvenlik profili](24-kaynak-guvenlik-profili.md) | kaynak/token, runtime adım/çıktı/değer heap'i, bağlantı, dosya, byte HTTP, protokol-kesin LSP ve playground ön-tahsis sınırları | RFC-0025, ADR-033/035/037/040, K-129/K-130/K-131/K-132/K-138/K-140/K-143 |
 | [25 — PostgreSQL veri erişimi](25-postgresql-veri-erisimi.md) | exact loopback bildirim, parametreli sorgu, eylem transaction'ı, structured hata ve migration geçmişi | RFC-0026, ADR-060, K-163 |
+| [26 — Binary yükleme ve dosya yaşam döngüsü](26-binary-yukleme-ve-dosya-yasam-dongusu.md) | akışlı octet-stream, SHA-256, no-clobber publish, silme ve orphan tarama primitive'leri | RFC-0027, ADR-061, K-163/F030 |
 
 ## Faza bağlı — henüz spec dışı
 

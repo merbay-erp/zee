@@ -126,7 +126,7 @@ politikası mimari sınır testiyle korunur.
 
 K-149/ADR-046'nın [katman rehberi](katman-mimarisi.md) ve
 [`katman-mimarisi-v1.tsv`](../compiler/tests/fixtures/katman-mimarisi-v1.tsv)
-bütün production Rust dosyalarını 37 üst sahibe bağlar. Exact doğrudan
+bütün production Rust dosyalarını 38 üst sahibe bağlar. Exact doğrudan
 bağımlılık tabanı eklenen kadar artık kullanılmayan kenarı da görünür inceleme
 ister; katman yönü ters kenarı tabana yazmakla geçilebilir olmaz.
 

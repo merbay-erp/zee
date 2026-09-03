@@ -174,5 +174,10 @@ transaction sözleşmesini kurar. Kimlik doğrulama, yetkilendirme, CSRF,
 güvenli oturum/çerez ve TLS/proxy güveni K-088 ile
 [spec/12](12-web-guvenlik-profili.md)'de tanımlıdır. Idempotency anahtarı
 ayrı açık kapıdır.
+
+K-163/F030 native binary isteği ve uygulama kontrollü dosya saga'sı spec/26'da
+tanımlıdır. `application/octet-stream` gövde rota çalışmadan önce temp dosyaya
+akar; rota yalnız göreli yol/hash/boyut metadata'sını görür. Publish ve silme
+ayrı dosya eylemleridir; PostgreSQL durum geçişiyle aynı eylemde birleşemez.
 Bu nedenle gerçek TCP yüzeyi `--deneysel-web` açık seçimini korur; bu bölüm tek
 başına “production web framework” sözü değildir.

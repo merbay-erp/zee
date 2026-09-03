@@ -93,3 +93,8 @@ ZORUNDADIR; yerel ve kullanıcı tarafından yükseltilebilir sabit YASAKTIR.
 B-025/K-132 kaynak bütçesi, B-051/K-138 protokol-kesin JSON-RPC ve
 B-056/K-143 playground ön-tahsis kapsamı tamamdır. Duvar-saati/cancellation
 sözleşmesi B-026'nın ayrı kapsamıdır.
+
+Form/text HTTP gövdesi 64 KiB kalır. Exact `application/octet-stream` için
+ayrı 16 MiB yükleme zarfı vardır; tahsis bu boyutta yapılmaz, 16 KiB parçalar
+temp dosya ve SHA-256 durumuna akar. Dosya SHA-256 işlemi de 16 MiB'ta
+fail-closed olur. Bu zarf metin heap limitini genişletmez.

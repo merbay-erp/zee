@@ -51,3 +51,8 @@ Kaynak program iz içine gömülmez. Derleme/birim yükleme yürütme IO izi de�
 Saat/rastgele tohum ve sanal zaman ilerleme algoritması spec/22'deki
 `zee-io-1` profilidir. Şema-1 profil algoritmasını yeniden çalıştırmaz;
 gözlenen çağrı, sonuç ve sırayı korur.
+
+Şema-1'in dosya olayları `dosya_atomik_tasi`, `dosya_sil`,
+`dosyalari_listele` ve `dosya_sha256` işlemlerini de kapsar. Argümanlar exact
+göreli yollar; sonuçlar başarı etiketiyle sayı/liste/özet veya hata mesajıdır.
+Replay hiçbir fiziksel taşıma, silme, listeleme ya da hashing yapmaz.

@@ -1,5 +1,7 @@
 use super::*;
 
+mod dosya;
+
 pub(super) fn gecerli_hata_kodu(kod: &str) -> bool {
     let mut harfler = kod.chars();
     matches!(harfler.next(), Some('A'..='Z'))
@@ -822,6 +824,10 @@ fn yapili_kalip_ic(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifa
                 tekil_ifade(tokenlar[2].clone())?,
             ],
         }));
+    }
+
+    if let Some(ifade) = dosya::yasam_dongusu_kalibi(tokenlar)? {
+        return Ok(Some(ifade));
     }
 
     // W ın durum kodu / gövdesi — AğYanıtı özellikleri.

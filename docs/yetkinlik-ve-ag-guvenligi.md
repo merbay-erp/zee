@@ -61,6 +61,9 @@ Bağlantı URL'si kaynakta tutulmaz. İlk profil yalnız loopback ve
   onay ister.
 - Proje dosya erişimi kök dışına çıkan `..`, mutlak yol ve sembolik bağ
   kaçışını reddeder.
+- Binary yaşam döngüsünde listeleme/SHA-256 `dosya-okuma`; no-clobber atomik
+  taşıma ve idempotent silme `dosya-yazma` ister. Temp ve final yollar aynı
+  proje-kökü/canonical symlink sınırından kaçamaz.
 
 ## Profil farkları
 

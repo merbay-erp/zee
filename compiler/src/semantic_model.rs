@@ -16,6 +16,8 @@ pub enum VeriTuru {
     MetinSozluk,
     /// PostgreSQL okumasının metin değerli satır listesi.
     MetinSozlukListesi,
+    /// Dış kaynak işlemlerinin metin listesi sonucu.
+    MetinListesi,
     /// Yapılandırılmış beklenen hata değeri (K-091).
     Hata,
     /// Boş koleksiyonun henüz belirlenmemiş öğe türü (K-045): ilk eklemede
@@ -75,6 +77,7 @@ impl VeriTuru {
             VeriTuru::Sozluk => "Sözlük",
             VeriTuru::MetinSozluk => "satır",
             VeriTuru::MetinSozlukListesi => "Metin sözlüğü listesi",
+            VeriTuru::MetinListesi => "Metin listesi",
             VeriTuru::Hata => "Hata",
         }
     }
@@ -89,6 +92,7 @@ impl VeriTuru {
             VeriTuru::Sozluk => Tur::Sozluk(SozlukDegerTuru::TamSayi),
             VeriTuru::MetinSozluk => Tur::Sozluk(SozlukDegerTuru::Metin),
             VeriTuru::MetinSozlukListesi => Tur::Liste(VeriTuru::MetinSozluk),
+            VeriTuru::MetinListesi => Tur::Liste(VeriTuru::Metin),
             VeriTuru::Hata => Tur::Hata,
         }
     }

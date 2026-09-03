@@ -13,6 +13,9 @@ use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::{Duration, Instant};
 
 mod metadata;
+mod yasam_dongusu;
+
+pub use yasam_dongusu::{atomik_sil, atomik_tasi};
 
 const KILIT_BEKLEME: Duration = Duration::from_millis(
     crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
@@ -468,6 +471,7 @@ mod platform {
 #[cfg(test)]
 mod tests {
     use super::*;
+
     use std::collections::HashSet;
     use std::sync::atomic::{AtomicBool, Ordering as AtomikSira};
     use std::sync::{Arc, Barrier};

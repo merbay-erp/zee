@@ -11,7 +11,7 @@ bin_faz_test_matrisi	muhendislik	-	Faz test sahipligi ve raporu
 bin_islev_egilimi	muhendislik	kalici_dosya	Kritik islev egilim kapisi
 bin_olcum	muhendislik	agac,cozumleyici,faz,lsp,yorumlayici	Performans gozlem artefakti
 cozumleyici	semantik	agac,hir,intrinsic,kimlik,morfoloji,semantic_model,tani,yetkinlik	Ad tur etki ve HIR kaniti
-dil_cli	adapter	ag_istemcisi,agac,artefakt_dogrulama,bicimleyici,cozumleyici,faz,guvenlik,http_istegi,kalici_dosya,kaynak_sinirlari,morfoloji,paket,postgresql,proje,tani,web_guvenligi,yayin,yetkinlik,yorumlayici,zaman	Komut satiri ve web host adaptoru
+dil_cli	adapter	ag_istemcisi,agac,artefakt_dogrulama,bicimleyici,cozumleyici,faz,guvenlik,http_istegi,kalici_dosya,kaynak_sinirlari,morfoloji,paket,postgresql,proje,tani,web_guvenligi,web_yukleme,yayin,yetkinlik,yorumlayici,zaman	Komut satiri ve web host adaptoru
 dillsp	adapter	lsp	LSP stdio framing adaptoru
 faz	semantik	agac,ayristirici,cozumleyici,hir,sozcukleyici,tani	Derleyici faz tipleri ve gecisleri
 guvenlik	temel	-	Kriptografik ve sabit zamanli ilkeller
@@ -38,6 +38,7 @@ tani_politikasi	temel	-	Tanilar ile kaynak profili arasindaki bagimliliksiz butc
 tedarik	adapter	artefakt_dogrulama	Eski ic tedarik yolunun gecici uyumluluk cephesi
 wasm_api	adapter	faz,kaynak_sinirlari,proje,yorumlayici	Playground C ABI adaptoru
 web_guvenligi	web	agac,guvenlik,kalici_dosya,kaynak_sinirlari	Oturum CSRF ve oran siniri
+web_yukleme	adapter	guvenlik	Binary HTTP govdesini gecici dosyaya akitma ve SHA-256 metadata uretme
 yayin	adapter	artefakt_dogrulama,faz,paket,paket_modeli,proje	Dogrulanmis proje grafiginden yayin artefakti orkestrasyonu
 yetkinlik	altyapi	-	Yetkinlik ve origin politikasi
 veritabani_modeli	model	-	Proje runtime ve adaptorler arasinda davranissiz hedef bildirim ve hata sozlesmesi
