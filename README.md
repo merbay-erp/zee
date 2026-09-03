@@ -341,10 +341,11 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   executable yaptı: CI exact freeze sınıfını ve dogfood feature için ürün,
   K-işi, reproducer, etkilenen proje, minimalite ve ADR/spec/RFC kanıtını ister.
   K-163 ilk gerçek ürün hattı da başladı: Çatlı/ITWISE Admin'in temiz dogfood
-  dalındaki `43171b9 → 55c8985` hattı 213 satır Zee ile yönetici oturumu,
-  CSRF korumalı duyuru CRUD'u, JSON site ayarları ve ayrı görünüm birimini
-  çalıştırdı. 3/3 test ile gerçek TCP içerik+ayar provası geçer. Bu henüz iki
-  dikey dilimdir; K-163'ün 500–1500 satır ve geniş ürün yüzeyi kapısı açıktır.
+  dalındaki `43171b9 → cef5ae3` hattı 495 satır Zee ile yönetici oturumu,
+  CSRF korumalı duyuru CRUD'u, JSON site ayarları ve slug doğrulamalı
+  taslak/yayında sayfa yaşam döngüsünü çalıştırdı. 7/7 test ile gerçek TCP
+  içerik+ayar+sayfa provası geçer. K-163'ün 500–1500 satır ve DB/medya gibi
+  geniş ürün yüzeyi kapısı açıktır.
   K-151/ADR-048 bütün GitHub Actions `uses:` referanslarını incelenmiş 40
   haneli commit SHA'lara sabitledi. Sürümlü pin kaydı workflow'larla birebir,
   haftalık Dependabot yalnız inceleme PR'ı açar; hareketli `@v4`, `@stable`
