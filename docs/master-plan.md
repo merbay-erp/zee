@@ -863,7 +863,8 @@ otomatik tekrar ve satır üretmedi fakat C021 ile uygulamayı sonlandırdı;
 COMMIT-kaybı gerçek enjeksiyonla henüz kanıtlanmadı ve normatif olarak “sonuç
 belirsiz” kaldı. F027, transaction sınırı C021'ini 503'e çevirip client'ı
 geçersiz kılarak worker'ı sonraki bağımsız read/write için yaşattı; aynı write
-tekrar edilmedi ve savepoint durumu sızmadı. Gerçek pool, wire-level COMMIT
+tekrar edilmedi ve savepoint durumu sızmadı. Exact saha kaydı `00a659a` ürün
+commit'indedir. Gerçek pool, wire-level COMMIT
 ambiguity ve medya+DB uzlaştırma K-163'ün açık production kanıtıdır. 492 LOC tabanı;
 modül/test/dokunulan dosya, bugfix süresi, sürtünme, workaround ve LSP p95 için
 aynı yöntemli 1000+ LOC skor kartına bağlandı.

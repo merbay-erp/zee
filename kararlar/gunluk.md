@@ -2888,3 +2888,5 @@ usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.
   temizlendi.
 - Wire-level COMMIT ambiguity enjeksiyonu ayrı açık saha kanıtıdır; 503 sonucu
   işlemin uygulanmadığını iddia etmez ve otomatik tekrar önermez.
+- Exact deney günlüğü ve temizlik `itwise-admin` ürün deposunda `00a659a`
+  commit'iyle sabitlendi.
