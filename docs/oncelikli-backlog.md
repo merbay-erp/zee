@@ -745,13 +745,13 @@ kapattı. K-158 seçici düzeyi çoklu kapsam ve gerçek blast-radius raporunu
 kapattı. K-159 sürümlü facade ve SemVer sınırını, K-160 paket sahipliği
 ayrımını ve son SCC'yi kapattı. CORE FREEZE sonrasında sıradaki kanıt hattı
 K-160A executable freeze kapısını da kapattı. K-163 ilk gerçek Zee ürünü,
-`itwise-admin` deposundaki temiz `codex/k-163-catli-dogfood` dalında
-`43171b9` commit'iyle başladı: 137 satırlık ilk Zee dilimi duyuru listesi,
-yönetici oturumu, rol, CSRF ve ekleme/silme akışını taşır; 2/2 hermetik test
-ile gerçek TCP login/ekleme/silme provası geçmiştir. K-163 henüz kapanmış
-değildir; 500–1500 satır, PostgreSQL/migration/medya gibi gerçek ürün
-yüzeyleri ve ölçülü ergonomi günlüğü beklenir. K-161/K-162 gerçek insan
-testleri de insan verisini beklemeyi sürdürür.
+`itwise-admin` deposundaki temiz `codex/k-163-catli-dogfood` dalında başladı.
+`43171b9 → 55c8985` hattındaki 213 satır Zee; duyuru listesi, yönetici oturumu,
+rol, CSRF CRUD, JSON site ayarları ve ayrı görünüm birimini taşır. 3/3 hermetik
+test ile gerçek TCP içerik+ayar provası geçmiştir. K-163 henüz kapanmış
+değildir; 500–1500 satır, PostgreSQL/migration/medya gibi gerçek ürün yüzeyleri
+ve ölçülü ergonomi günlüğü beklenir. K-161/K-162 gerçek insan testleri de insan
+verisini beklemeyi sürdürür.
 İnsan verisi gelmeden yeni syntax seçilmez
 veya B-001/B-002 tamamlanmış gösterilmez.
 
@@ -779,7 +779,7 @@ tamamlanmış sayılmaz; burada istenen ek kanıt ayrıca üretilir.
 | K-160A | **KAPALI — EXECUTABLE FREEZE** | Exact commit sınıfı; dogfood feature için ürün+iş+reproducer+proje+minimalite+karar |
 | K-161 | **İNSAN KANITI** | B-001/K-016 için 10 öğrenci/çocuk + 5 profesyonel kör oturum |
 | K-162 | **İNSAN KANITI** | B-002/K-093 morphology/scope/call/error zihinsel model oturumu |
-| K-163 | **DEVAM EDİYOR** | `itwise-admin`/Çatlı dalında `43171b9`: 137 satır, 2/2 test, gerçek login+CSRF CRUD; 500–1500 satır ve geniş ürün yüzeyi bekleniyor |
+| K-163 | **DEVAM EDİYOR** | `itwise-admin`/Çatlı `43171b9 → 55c8985`: 213 satır, 3/3 test, içerik+ayar TCP provası; 500–1500 satır ve geniş ürün yüzeyi bekleniyor |
 | K-164 | **AÇIK** | Farklı workload'da ikinci gerçek proje |
 | K-165 | **AÇIK** | Aynı uygulamanın Zee–Go/Rust veri temelli dogfood karşılaştırması |
 | K-166 | **AÇIK** | En sık 50 hata için span/öneri/noise düzeltme başarısı |

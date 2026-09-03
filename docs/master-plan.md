@@ -833,13 +833,15 @@ K-işi, root-altı Zee proje/kaynak yolu ve karar belgesi referansı ilk
 dogfood-kaynaklı compiler değişikliğinden önce zorunlu olacak; K-163'ün
 başlangıcını engellemez.
 K-163 bu sınırlar korunarak `itwise-admin` deposunun temiz
-`codex/k-163-catli-dogfood` dalında başladı. İlk `43171b9` saha commit'i 137
-satır Zee ile duyuru listeleme, Argon2id yönetici girişi, rol, CSRF korumalı
-ekleme/silme ve oturum kapatmayı birleştirir. `dil denetle`, 2/2 hermetik test
-ve gerçek TCP login/ekleme/silme provası geçmiştir. Satır dosyası geçici ürün
-depolamasıdır; PostgreSQL, migration, medya ve template sürtünmeleri ölçülmeden
-compiler ihtiyacı sayılmaz. Bu başlangıç K-163'ü kapatmaz; 500–1500 satırlık
-gerçek uygulama ve süreli ergonomi günlüğü hâlâ kabul koşuludur.
+`codex/k-163-catli-dogfood` dalında başladı. `43171b9 → 55c8985` ürün hattı
+213 satır Zee ile duyuru listeleme, Argon2id yönetici girişi, rol, CSRF
+korumalı ekleme/silme, oturum kapatma ve JSON site ayarlarını birleştirir.
+Görünüm 51 satırlık ayrı birime ayrıldı; ana HTTP/eylem kaynağı 162 satırdır.
+`dil denetle`, 3/3 hermetik test ve gerçek TCP içerik+ayar provası geçmiştir.
+Satır/JSON dosyası geçici ürün depolamasıdır; PostgreSQL, migration, medya ve
+template sürtünmeleri ölçülmeden compiler ihtiyacı sayılmaz. Bu başlangıç
+K-163'ü kapatmaz; 500–1500 satırlık gerçek uygulama ve süreli ergonomi günlüğü
+hâlâ kabul koşuludur.
 B-001 çağrı sözdizimi ile B-002 gezme zihinsel modeli gerçek insan
 kanıtı gelmeden kapatılmaz veya yeni syntax kararıyla atlanmaz.
 # 40. Proje felsefesinin korunması
