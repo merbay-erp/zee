@@ -43,4 +43,5 @@ artefakt yapmak coverage korpusunun soy ağacını korumuyordu.
   kaynak commit'ine bağlanabilir.
 - Kalıcı repo korpusu hâlâ küçük, adlandırılmış ve review'lidir; CI artefaktı
   otomatik olarak dil sözleşmesine dönüşmez.
-- Uzun RC fuzz kampanyası, sanitizer ve Miri K-157'nin ayrı açık kapısıdır.
+- Uzun RC fuzz kampanyası, sanitizer ve Miri K-157/ADR-056'nın ayrı ve
+  kapanmış kapısıdır; bu karar korpusun saklanma/terfi sınırını sahiplenir.

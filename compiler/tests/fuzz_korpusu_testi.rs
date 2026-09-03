@@ -162,3 +162,32 @@ fn nightly_ogrenimi_cache_disinda_provenanceli_artefaktta_kalir() {
     );
     std::fs::remove_dir_all(gecici).expect("geçici artifact temizlenmeli");
 }
+
+#[test]
+fn rc_kampanyasi_dort_hedefi_address_sanitizer_ve_miriyle_korur() {
+    let depo = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .parent()
+        .expect("compiler depo içinde olmalı");
+    let workflow = std::fs::read_to_string(depo.join(".github/workflows/fuzz-rc.yml"))
+        .expect("RC fuzz workflow okunmalı");
+    for hedef in ["lexer_parser", "morfoloji", "http_istegi", "wasm_abi"] {
+        assert!(
+            workflow.contains(&format!("hedef: {hedef}")),
+            "eksik RC hedefi: {hedef}"
+        );
+    }
+    for parca in [
+        "timeout-minutes: 75",
+        "-max_total_time=3600",
+        "--sanitizer address",
+        "-print_final_stats=1",
+        "# zee-fuzz-rc-sonucu-1",
+        "if: always()",
+        "retention-days: 90",
+        "component add --toolchain nightly-2026-08-31 miri rust-src",
+        "miri test --lib ondalik::testler::",
+        "miri test --lib zaman::testler::",
+    ] {
+        assert!(workflow.contains(parca), "RC fuzz kapısı eksik: {parca}");
+    }
+}

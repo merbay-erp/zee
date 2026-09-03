@@ -694,6 +694,12 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   [depo bütünlüğü rehberindedir](depo-butunlugu.md).
 - **B-045 · KAPALI İLKE — self-hosting'e erken atlama.** P0 omurga ve semantik
   V1 yaklaşmadan Rust bootstrap'tan ikinci compiler'a borç kopyalanmaz.
+- **B-067 · KAPALI (K-157) — uzun fuzz RC kapısı.** Dört hedef aynı kaynak
+  commit'inde 30'ar dakika explicit AddressSanitizer altında toplam
+  136.789.564 girdi yürüttü; crash, timeout ve sanitizer bulgusu sıfırdır.
+  Seçili ondalık/zaman Miri testleri 3/3 geçti. Haftalık/elle CI 60 dakika,
+  90 günlük log+sonuç+korpus provenance artefaktı ve append-only tarihçe ister.
+  ADR-056 ve [RC fuzz rehberi](fuzz-rc.md) bağlayıcıdır.
 
 ## Bir sonraki somut kapı
 
@@ -703,8 +709,9 @@ process→stdio LSP cold-start yolunu exact 25 örnekli tabanla kapattı.
 K-154 tam-metin değişim ölçek eğrisini ve invalidation sınırını exact tabanla,
 K-155 semantic regresyon provenance zincirini v2 manifeste taşıdı; K-155A
 mesajdan bağımsız fail-closed beyan kapısını kurdu; K-176 strict form decode'u,
-K-156 ise cache dışı fuzz korpus kalıcılığını kapattı. Sıradaki makine işi
-K-157 uzun fuzz kampanyasıdır.
+K-156 cache dışı fuzz korpus kalıcılığını, K-157 ise dört hedefte toplam
+136.789.564 yürütmeli uzun AddressSanitizer kampanyasını ve 3/3 Miri kanıtını
+kapattı. Sıradaki makine işi K-158 faz matrisi çoklu kapsama metadatasıdır.
 İnsan verisi gelmeden yeni syntax seçilmez
 veya B-001/B-002 tamamlanmış gösterilmez.
 
@@ -725,7 +732,7 @@ tamamlanmış sayılmaz; burada istenen ek kanıt ayrıca üretilir.
 | K-155A | **KAPALI** | Her compiler kaynak commit'inde mesajdan bağımsız semantic beyan; bugfixte exact fixture |
 | K-176 | **KAPALI** | Strict `%xx`/UTF-8 form reddi, rota-öncesi 400 ve exact SHA'lı web regression fixture'ı |
 | K-156 | **KAPALI** | Her hedefte SHA-256/run/commit provenance'lı 90 günlük korpus artefaktı ve review'lü seed terfisi |
-| K-157 | **AÇIK** | Dört hedefte 30–60 dk RC kampanyası; uygun sanitizer/Miri kanıtı |
+| K-157 | **KAPALI** | Dört hedefte 30 dk, toplam 136.789.564 yürütme; sıfır crash/timeout/ASan ve 3/3 Miri |
 | K-158 | **AÇIK** | Faz matrisinde opsiyonel çoklu `covers` ve doğru blast radius |
 | K-159 | **AÇIK** | Desteklenen facade, internal API ve SemVer politikası |
 | K-160 | **AÇIK — C001 son tarihi 2026-10-01** | Paket modeli/çözüm/registry/doğrulama sahipliği ve SCC kaldırma |

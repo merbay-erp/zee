@@ -1,0 +1,128 @@
+name: compiler-fuzz-rc
+
+on:
+  schedule:
+    - cron: "23 2 * * 0"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  hedef:
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - hedef: lexer_parser
+            korpus: lexer_parser
+            azami_girdi: 65536
+          - hedef: morfoloji
+            korpus: morfoloji
+            azami_girdi: 128
+          - hedef: http_istegi
+            korpus: http_istegi
+            azami_girdi: 81920
+          - hedef: wasm_abi
+            korpus: wasm_abi
+            azami_girdi: 4097
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - name: Sabit nightly araç zinciri
+        run: rustup toolchain install nightly-2026-08-31 --profile minimal
+      - name: Sabit cargo-fuzz
+        run: cargo +nightly-2026-08-31 install cargo-fuzz --version 0.13.2 --locked
+      - name: Önceki coverage korpusunu geri yükle
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: compiler/fuzz/corpus/${{ matrix.korpus }}
+          key: ${{ matrix.hedef }}-fuzz-rc-${{ github.run_id }}
+          restore-keys: |
+            ${{ matrix.hedef }}-fuzz-rc-
+            ${{ matrix.hedef }}-fuzz-
+      - name: AddressSanitizer ile 60 dakikalık RC kampanyası
+        working-directory: compiler
+        env:
+          FUZZ_LOG: ${{ runner.temp }}/${{ matrix.hedef }}-rc.log
+          FUZZ_DURUM: ${{ runner.temp }}/${{ matrix.hedef }}-rc-durum.tsv
+        run: |
+          set +e
+          cargo +nightly-2026-08-31 fuzz run --sanitizer address \
+            ${{ matrix.hedef }} fuzz/corpus/${{ matrix.korpus }} -- \
+            -dict=fuzz/dictionaries/zee.dict \
+            -max_total_time=3600 \
+            -max_len=${{ matrix.azami_girdi }} \
+            -timeout=5 \
+            -print_final_stats=1 2>&1 | tee "$FUZZ_LOG"
+          durum="${PIPESTATUS[0]}"
+          set -e
+          {
+            echo "# zee-fuzz-rc-sonucu-1"
+            printf 'target\t%s\n' '${{ matrix.hedef }}'
+            printf 'source_commit\t%s\n' "$GITHUB_SHA"
+            printf 'run_id\t%s\n' "$GITHUB_RUN_ID"
+            printf 'run_attempt\t%s\n' "$GITHUB_RUN_ATTEMPT"
+            printf 'requested_seconds\t3600\n'
+            printf 'sanitizer\taddress\n'
+            printf 'exit_code\t%s\n' "$durum"
+          } > "$FUZZ_DURUM"
+          exit "$durum"
+      - name: RC korpusunu provenance ile paketle
+        if: always()
+        env:
+          FUZZ_HEDEF: ${{ matrix.hedef }}
+          FUZZ_KORPUS: ${{ matrix.korpus }}
+          FUZZ_ARTEFAKT: ${{ runner.temp }}/zee-fuzz-rc-${{ matrix.hedef }}
+        run: |
+          mkdir -p "$FUZZ_ARTEFAKT/corpus"
+          cp -a "compiler/fuzz/corpus/$FUZZ_KORPUS/." "$FUZZ_ARTEFAKT/corpus/"
+          cp "${{ runner.temp }}/${FUZZ_HEDEF}-rc.log" "$FUZZ_ARTEFAKT/run.log" 2>/dev/null || true
+          cp "${{ runner.temp }}/${FUZZ_HEDEF}-rc-durum.tsv" "$FUZZ_ARTEFAKT/sonuc.tsv" 2>/dev/null || true
+          {
+            echo "# zee-fuzz-corpus-artifact-1"
+            printf '# target\t%s\n' "$FUZZ_HEDEF"
+            printf '# corpus\t%s\n' "$FUZZ_KORPUS"
+            printf '# source_commit\t%s\n' "$GITHUB_SHA"
+            printf '# run_id\t%s\n' "$GITHUB_RUN_ID"
+            printf '# run_attempt\t%s\n' "$GITHUB_RUN_ATTEMPT"
+            printf '# toolchain\tnightly-2026-08-31\n'
+            printf '# cargo_fuzz\t0.13.2\n'
+            printf '# seed_sha256\trelative_path\n'
+            find "$FUZZ_ARTEFAKT/corpus" -type f -print0 | LC_ALL=C sort -z |
+              while IFS= read -r -d '' dosya; do
+                ozet="$(sha256sum "$dosya" | cut -d ' ' -f 1)"
+                goreli="${dosya#"$FUZZ_ARTEFAKT/corpus/"}"
+                printf '%s\t%s\n' "$ozet" "$goreli"
+              done
+          } > "$FUZZ_ARTEFAKT/manifest.tsv"
+      - name: RC raporu, korpusu ve crash girdisini sakla
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ${{ matrix.hedef }}-fuzz-rc-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/zee-fuzz-rc-${{ matrix.hedef }}
+            compiler/fuzz/artifacts/${{ matrix.hedef }}
+          if-no-files-found: error
+          retention-days: 90
+
+  miri:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - name: Sabit Miri araç zinciri
+        run: |
+          rustup toolchain install nightly-2026-08-31 --profile minimal
+          rustup component add --toolchain nightly-2026-08-31 miri rust-src
+      - name: Saf sayısal ve zaman çekirdeğini Miri ile denetle
+        working-directory: compiler
+        run: |
+          cargo +nightly-2026-08-31 miri test --lib ondalik::testler::
+          cargo +nightly-2026-08-31 miri test --lib zaman::testler::

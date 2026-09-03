@@ -77,6 +77,7 @@ adr/052-semantic-regresyon-provenance.md	kanitli	compiler/tests/semantic_regresy
 adr/053-compiler-semantic-degisiklik-beyani.md	kanitli	compiler/tests/semantic_regresyon_korugu_testi.rs,compiler/tests/mimari_sinir_testi.rs	K-155A her compiler kaynak commitini mesajdan bagimsiz semantic beyana ve bugfixi exact fixture'a zorlar
 adr/054-strict-form-url-kodlamasi.md	kanitli	compiler/tests/web_testi.rs,compiler/tests/semantic_regresyon_korpusu_testi.rs	K-176 eksik bozuk yuzde kodlamasi ve gecersiz UTF-8 form alanlarini rota oncesi 400 ile reddeder
 adr/055-fuzz-korpus-kaliciligi.md	kanitli	compiler/tests/fuzz_korpusu_testi.rs	K-156 her hedefin coverage korpusunu cache disinda SHA-256 ve run commit provenance'li 90 gunluk artefakta saklar
+adr/056-uzun-fuzz-rc-kapisi.md	kanitli	compiler/tests/fuzz_korpusu_testi.rs	K-157 dort hedefte 30-60 dakika explicit AddressSanitizer RC kampanyasi raporu ve saf cekirdekte Miri kapisi
 spec/01-sozcukleme.md	kanitli	compiler/tests/kacis_ve_negatif_testi.rs,compiler/tests/metin_testi.rs	Token kaçış Unicode ve sayı kuralları
 spec/02-dizim.md	kanitli	compiler/tests/golden_testi.rs,compiler/tests/ifade_grameri_testi.rs	Cümle blok ve ifade dizimi
 spec/03-adlar-ve-kapsam.md	kanitli	compiler/tests/kapsam_testi.rs,compiler/tests/morfoloji_testi.rs,compiler/tests/lsp_testi.rs	Ad çözümü kapsam morfoloji ve semantic rename
