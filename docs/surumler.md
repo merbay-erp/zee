@@ -40,6 +40,13 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   availability, gerçek pool ve COMMIT-kaybı enjeksiyonu hâlâ açık kanıttır.
   492 LOC maintenance tabanı 1000+ satır karşılaştırması için kaydedildi.
 
+- **Write bağlantı kaybında worker survival** (K-163/F027): Web isteğindeki
+  C021 transaction-boundary hatası artık istek taslağını geri alıp 503 üretir;
+  PostgreSQL client'ı yeniden kullanılmaz ve worker sonraki isteği kabul eder.
+  Gerçek backend-kill provasında başarısız write otomatik tekrar edilmedi, satır
+  sayısı 0 kaldı; sonraki GET yeni backend PID'sine bağlandı ve sonraki bağımsız
+  write 303 ile tek satır üretti. Wire-level COMMIT ambiguity enjeksiyonu açık.
+
 - **Dogfood kanıt referans bütünlüğü** (B-073): Append-only ürün kaydı tekil
   slug, repo içi kanıt kökü, exact harici ürün commit'i ve durum taşır. CORE
   FREEZE koruğu artık dogfood değişikliğinin kayıtlı etkin ürüne, gerçek K-işine,

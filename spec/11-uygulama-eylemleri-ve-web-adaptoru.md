@@ -139,6 +139,13 @@ K-084 kilitli atomik replace çekirdeğini kullanır. Hedef, eylemin en son
 bıraktığı içerikten sonra başka bir yazarca değişmişse bu yazarın verisi
 ezilmez; geri alma C021 ile görünür biçimde başarısız olur.
 
+Bir web isteğinde eylem transaction'ının başlaması, tamamlanması veya geri
+alınması C021 üretirse istek yanıtı/çerez/oturum taslağı geri alınmalı, istemciye
+503 verilmelidir. Worker/process bu istek yüzünden SONLANMAMALI ve sonraki
+bağımsız isteği kabul etmelidir. Bu recovery eylem gövdesini veya write'ı
+otomatik tekrar EDEMEZ. Transaction adaptörü bozuk bağlantıyı yeniden
+kullanıma bırakmamalı ve yerel savepoint bookkeeping'ini istekten sızdırmamalıdır.
+
 Bu sözleşme yorumlayıcı tarafından gözlenen hata/başarısız sonuç için çok
 dosyalı geri almadır. Süreç ya da makine tam eylemin ortasında çökerse bütün
 dosyaları tek bir kalıcı commit olarak yayınlama sözü vermez; çökme atomikliği

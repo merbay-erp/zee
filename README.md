@@ -181,7 +181,7 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **631** |
+| Rust + doctest vakası | **632** |
 | Tanı kimliği | **154 etkin + 3 ayrılmış** |
 | RFC | **26** (2 kabul, 22 geçici kabul, 2 taslak) |
 | ADR | **58** (58 kabul) |
@@ -365,8 +365,10 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   okuma, SQL reddi, write ve COMMIT otomatik
   tekrar edilmez; COMMIT kaybı “sonuç belirsiz”dir. Write olumsuzunda satır
   oluşmadı fakat uygulama C021 ile sonlandı. Ürünün DB hatasını boş liste gibi
-  göstermesi görünür arıza kartına çevrildi; doğru HTTP 503, gerçek pool ve
-  write-path availability açık kaldı. 492 LOC bakım tabanı 1000+ satır
+  göstermesi görünür arıza kartına çevrildi. F027 doğruluk dilimi transaction
+  sınırı hatasını 503'e çevirdi, client/savepoint durumunu geçersiz kıldı ve
+  worker'ı sonraki bağımsız read/write için ayakta tuttu; başarısız write tekrar
+  edilmedi. Gerçek pool ve wire-level COMMIT ambiguity açık kaldı. 492 LOC bakım tabanı 1000+ satır
   karşılaştırması için exact yöntemle kaydedildi.
   K-151/ADR-048 bütün GitHub Actions `uses:` referanslarını incelenmiş 40
   haneli commit SHA'lara sabitledi. Sürümlü pin kaydı workflow'larla birebir,

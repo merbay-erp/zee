@@ -107,6 +107,9 @@ ekran/girdi/donanım etkisi taşıyamaz. Ayrıntılı normatif sözleşme spec/1
   süre/iptal, başlık enjeksiyonu ve sahte proxy K-088 olumsuzlarıyla kanıtlıdır.
 - **K-087 kapalı:** eylemin aynı iş mantığı web ve CLI bağlamından çağrılır;
   çalışma hatası ve başarısız Sonuç savepoint'i geri alır.
+- **K-163/F027:** Web isteğindeki C021 transaction-boundary arızası istek
+  taslağını geri alıp 503 üretir; worker sonraki isteği işler. Başarısız write
+  veya eylem gövdesi otomatik tekrar edilmez. CLI davranışı C021 olarak kalır.
 - Tek-dosya atomik durum V1-P0-04/K-084 ile kapandı; eylemin çok-kaynaklı
   transaction/idempotency kapısı bu RFC'de açık kalır.
 

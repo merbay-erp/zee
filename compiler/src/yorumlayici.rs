@@ -474,6 +474,7 @@ pub struct ToplayanIo {
     /// Sahte sensörler (varsayılan kapalı) ve an ölçümü kuyruğu.
     pub sensorler: HashMap<String, bool>,
     pub an_degerleri: VecDeque<i64>,
+    pub eylem_baslat_sonuclari: VecDeque<Result<(), String>>,
     an_son_degeri: i64,
     pub cikti: Vec<String>,
     eylem_yedekleri: Vec<HashMap<String, String>>,
@@ -523,6 +524,7 @@ impl ToplayanIo {
             sunucu_durumlari: Vec::new(),
             sensorler: HashMap::new(),
             an_degerleri: VecDeque::new(),
+            eylem_baslat_sonuclari: VecDeque::new(),
             an_son_degeri: 0,
             cikti: Vec::new(),
             eylem_yedekleri: Vec::new(),
@@ -837,6 +839,9 @@ impl GirdiCikti for ToplayanIo {
         }
     }
     fn eylem_baslat(&mut self) -> Result<(), String> {
+        if let Some(sonuc) = self.eylem_baslat_sonuclari.pop_front() {
+            sonuc?;
+        }
         self.eylem_yedekleri.push(self.dosyalar.clone());
         Ok(())
     }
@@ -1047,6 +1052,10 @@ fn calistir_program_kodla(
                         504,
                         &format!("istek {} saniyelik son tarihini aştı", zaman_asimi / 1000),
                     );
+                }
+                Err(tani) if tani.kod == "C021" => {
+                    io.istek_islemini_geri_al();
+                    io.durum_yaniti_gonder(503, "işlem tamamlanamadı; otomatik tekrar yok");
                 }
                 Err(tani) => {
                     io.istek_islemini_geri_al();

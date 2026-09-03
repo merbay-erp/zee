@@ -1442,6 +1442,28 @@ impl GercekIo {
             })
     }
 
+    fn eylem_dosya_yedegini_geri_al(
+        &mut self,
+        yedek: std::collections::HashMap<std::path::PathBuf, EylemDosyaYedegi>,
+    ) -> Result<(), String> {
+        let mut girdiler = yedek.into_iter().collect::<Vec<_>>();
+        girdiler.sort_by(|(a, _), (b, _)| a.cmp(b));
+        for (yol, kayit) in girdiler {
+            dil::kalici_dosya::atomik_karsilastir_ve_geri_al(
+                &yol,
+                kayit.beklenen.as_deref(),
+                kayit.onceki.as_deref(),
+            )
+            .map_err(|hata| format!("\"{}\" geri yüklenemedi: {}", yol.display(), hata))?;
+            for ust in &mut self.eylem_yedekleri {
+                if let Some(ust_kayit) = ust.get_mut(&yol) {
+                    ust_kayit.beklenen = kayit.onceki.clone();
+                }
+            }
+        }
+        Ok(())
+    }
+
     fn dosya_yolu(&self, yol: &str, yazma: bool) -> Result<std::path::PathBuf, String> {
         let istenen = std::path::Path::new(yol);
         let aday = if istenen.is_absolute() {
@@ -2273,29 +2295,28 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         Ok(())
     }
     fn eylem_baslat(&mut self) -> Result<(), String> {
-        if let Some(postgresql) = &mut self.postgresql {
-            postgresql.eylem_baslat().map_err(|hata| hata.mesaj)?;
+        if let Some(mut postgresql) = self.postgresql.take() {
+            match postgresql.eylem_baslat() {
+                Ok(()) => self.postgresql = Some(postgresql),
+                Err(hata) => return Err(hata.mesaj),
+            }
         }
         self.eylem_yedekleri.push(std::collections::HashMap::new());
         self.postgresql_yazma_eylemleri.push(false);
         Ok(())
     }
     fn eylem_tamamla(&mut self) -> Result<(), String> {
-        if let Some(postgresql) = &mut self.postgresql {
-            postgresql.eylem_tamamla().map_err(|hata| hata.mesaj)?;
-        }
-        self.postgresql_yazma_eylemleri
-            .pop()
-            .ok_or_else(|| "açık eylem transaction'ı yok".to_string())?;
-        self.eylem_yedekleri
-            .pop()
-            .map(|_| ())
-            .ok_or_else(|| "açık eylem transaction'ı yok".into())
-    }
-    fn eylem_geri_al(&mut self) -> Result<(), String> {
-        if let Some(postgresql) = &mut self.postgresql {
-            postgresql.eylem_geri_al().map_err(|hata| hata.mesaj)?;
-        }
+        let postgresql_sonucu = if let Some(mut postgresql) = self.postgresql.take() {
+            match postgresql.eylem_tamamla() {
+                Ok(()) => {
+                    self.postgresql = Some(postgresql);
+                    Ok(())
+                }
+                Err(hata) => Err(hata.mesaj),
+            }
+        } else {
+            Ok(())
+        };
         self.postgresql_yazma_eylemleri
             .pop()
             .ok_or_else(|| "açık eylem transaction'ı yok".to_string())?;
@@ -2303,24 +2324,41 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             .eylem_yedekleri
             .pop()
             .ok_or_else(|| "açık eylem transaction'ı yok".to_string())?;
-        let mut girdiler = yedek.into_iter().collect::<Vec<_>>();
-        girdiler.sort_by(|(a, _), (b, _)| a.cmp(b));
-        for (yol, kayit) in girdiler {
-            dil::kalici_dosya::atomik_karsilastir_ve_geri_al(
-                &yol,
-                kayit.beklenen.as_deref(),
-                kayit.onceki.as_deref(),
-            )
-            .map_err(|hata| format!("\"{}\" geri yüklenemedi: {}", yol.display(), hata))?;
-            // İç savepoint geri alındıysa dış savepoint artık hedefte geri
-            // yüklenen içeriği bekler; sonraki dış rollback bunu doğrular.
-            for ust in &mut self.eylem_yedekleri {
-                if let Some(ust_kayit) = ust.get_mut(&yol) {
-                    ust_kayit.beklenen = kayit.onceki.clone();
+        match postgresql_sonucu {
+            Ok(()) => Ok(()),
+            Err(hata) => match self.eylem_dosya_yedegini_geri_al(yedek) {
+                Ok(()) => Err(hata),
+                Err(geri_alma) => Err(format!("{hata}; dosya eylemi geri alınamadı: {geri_alma}")),
+            },
+        }
+    }
+    fn eylem_geri_al(&mut self) -> Result<(), String> {
+        let postgresql_sonucu = if let Some(mut postgresql) = self.postgresql.take() {
+            match postgresql.eylem_geri_al() {
+                Ok(()) => {
+                    self.postgresql = Some(postgresql);
+                    Ok(())
                 }
+                Err(hata) => Err(hata.mesaj),
+            }
+        } else {
+            Ok(())
+        };
+        self.postgresql_yazma_eylemleri
+            .pop()
+            .ok_or_else(|| "açık eylem transaction'ı yok".to_string())?;
+        let yedek = self
+            .eylem_yedekleri
+            .pop()
+            .ok_or_else(|| "açık eylem transaction'ı yok".to_string())?;
+        let dosya_sonucu = self.eylem_dosya_yedegini_geri_al(yedek);
+        match (postgresql_sonucu, dosya_sonucu) {
+            (Ok(()), Ok(())) => Ok(()),
+            (Err(hata), Ok(())) | (Ok(()), Err(hata)) => Err(hata),
+            (Err(hata), Err(geri_alma)) => {
+                Err(format!("{hata}; dosya eylemi geri alınamadı: {geri_alma}"))
             }
         }
-        Ok(())
     }
     fn yanit_gonder(&mut self, yanit: &str) {
         if self.web_istek_yedegi.is_some() {

@@ -861,8 +861,10 @@ backend'e bağlandı ve sentinel'ı süreç restartı olmadan gördü; süreler,
 ve temizlik `78cce11` ürün commit'indedir. Write olumsuzu
 otomatik tekrar ve satır üretmedi fakat C021 ile uygulamayı sonlandırdı;
 COMMIT-kaybı gerçek enjeksiyonla henüz kanıtlanmadı ve normatif olarak “sonuç
-belirsiz” kaldı. Doğru HTTP 503, gerçek pool, write-path availability ve
-medya+DB uzlaştırma K-163'ün açık production kanıtıdır. 492 LOC tabanı;
+belirsiz” kaldı. F027, transaction sınırı C021'ini 503'e çevirip client'ı
+geçersiz kılarak worker'ı sonraki bağımsız read/write için yaşattı; aynı write
+tekrar edilmedi ve savepoint durumu sızmadı. Gerçek pool, wire-level COMMIT
+ambiguity ve medya+DB uzlaştırma K-163'ün açık production kanıtıdır. 492 LOC tabanı;
 modül/test/dokunulan dosya, bugfix süresi, sürtünme, workaround ve LSP p95 için
 aynı yöntemli 1000+ LOC skor kartına bağlandı.
 B-001 çağrı sözdizimi ile B-002 gezme zihinsel modeli gerçek insan
