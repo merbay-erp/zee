@@ -3,3 +3,4 @@
 # commit	sinif	urun	is	reproducer	etkilenen_proje	minimalite	karar
 cc2df180256b60c9ccee1e189aed8255a3415f8c	maintenance	-	-	-	-	Yalnız sabit toolchain Clippy uyarıları giderildi; grammar ve runtime davranışı değişmedi.	-
 f9f5b46014d19a46998f617c5f7f3eb4b97e9182	dogfood-change	catli-itwise-admin	K-163	compiler/tests/postgresql_testi.rs	dogfood/catli-itwise-admin/postgresql-gereksinimi.dil	Yalnız gerçek Çatlı sayfa yaşam döngüsünün gerektirdiği parametreli sorgu, eylem transaction'ı ve migration yüzeyi eklendi; production TLS/pool kapsam dışı bırakıldı.	adr/060-postgresql-adaptor-siniri.md
+8b24382247be05bc8a0886ba09dc2f161dab48e5	correctness	-	K-163	compiler/tests/fixtures/postgresql-recovery-v1.tsv	-	Yalnız transaction dışı idempotent okuma bir kez reconnect edilir; write, transaction içi okuma ve COMMIT otomatik tekrar edilmez.	adr/060-postgresql-adaptor-siniri.md
