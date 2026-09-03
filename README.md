@@ -181,10 +181,10 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **642** |
+| Rust + doctest vakası | **647** |
 | Tanı kimliği | **155 etkin + 3 ayrılmış** |
 | RFC | **27** (2 kabul, 23 geçici kabul, 2 taslak) |
-| ADR | **59** (59 kabul) |
+| ADR | **60** (60 kabul) |
 | Normatif spec bölümü | **26** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
@@ -355,7 +355,8 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   transaction/savepoint'i ve SHA-256 geçmişli dil göçür komutu çalışır.
   PostgreSQL 16.11 gerçek provada apply→skip→değişmiş-hash reddi, injection
   benzeri slug'ın aynen saklanması, 23505 dalı ve outer rollback geçti.
-  Production TLS/pool/multi-process hâlâ açıkça kapsam dışıdır.
+  Bu ilk dilimin production TLS/pool kanıtı yoktu; F031 aşağıda bu sınırı
+  ayrı ürün gerekçesiyle kapatır.
   Beşinci dilimin `43d04fc` ürün kanıtı ilk dayanıklılık kırığını buldu:
   başlangıç bağlantısı kapasite dönünce iyileşiyor, öldürülmüş canlı client ise
   süreç içinde yeniden bağlanmıyordu. K-163 correctness dilimi transaction dışı
@@ -374,7 +375,7 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   anahtarı uzlaştırmayı güvenli tutuyor. Exact ürün kanıtı `8a12848`
   commit'indedir. Yeniden üretim adımları
   [COMMIT belirsizliği runbook'undadır](docs/postgresql-commit-belirsizligi.md).
-  Gerçek pool hâlâ açıktır. 492 LOC
+  Gerçek pool bu aşamada açıktı; F031 ile kapanmıştır. 492 LOC
   bakım tabanı 1000+ satır karşılaştırması için exact yöntemle kaydedildi.
   F029'un ardından F030, RFC-0027/ADR-061/spec-26 ile gerçek binary medya
   yüzeyini açtı: octet-stream gövde 16 KiB parçalarla 16 MiB sınırlı temp
@@ -382,8 +383,15 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   idempotent silme, sıralı listeleme ve akışlı özetleme `Sonuç` taşır. Çatlı
   970 Zee LOC/4 modül/10 testte normal upload→ready→delete ile temp, DB
   hazırlama, rename ve tombstone process-kesme sınırlarının restart
-  uzlaştırmasını gerçek PG16.11 üzerinde geçti. Production TLS/pool,
-  multipart ve içerik güvenlik politikası açık kalır.
+  uzlaştırmasını gerçek PG16.11 üzerinde geçti. F031/ADR-062 pinned deney
+  CA'sıyla hostname ve yanlış-CA reddini, worker başına 4 bağlantılık havuzu,
+  2 sn checkout, 30 sn idle, 300 sn lifetime hedefi + bakım çevrimi, stale replacement ve kontrollü
+  kapanışı gerçek PG16.11 üzerinde kapattı. Multipart, managed-provider CA
+  rotasyonu, çok-worker toplam bütçe provası ve içerik güvenlik politikası açık
+  kalır; organik 1000+ LOC bakım kapanışı sıradadır.
+  Exact F031 ürün saha kaydı `977cd2a` commit'indedir; yeniden üretim ve dürüst
+  kapsam [PostgreSQL TLS/havuz runbook'unda](docs/postgresql-tls-havuz-profili.md)
+  sabittir.
   K-151/ADR-048 bütün GitHub Actions `uses:` referanslarını incelenmiş 40
   haneli commit SHA'lara sabitledi. Sürümlü pin kaydı workflow'larla birebir,
   haftalık Dependabot yalnız inceleme PR'ı açar; hareketli `@v4`, `@stable`

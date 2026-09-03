@@ -45,8 +45,12 @@ veritabanı_bağlantı_değişkeni "UYGULAMA_DATABASE_URL" olsun
 veritabanı_göçleri "göçler" olsun
 ```
 
-Bağlantı URL'si kaynakta tutulmaz. İlk profil yalnız loopback ve
-`sslmode=disable` kabul eder; production TLS desteği anlamına gelmez.
+Bağlantı URL'si kaynakta tutulmaz. Loopback geliştirme açık
+`sslmode=disable` kullanabilir. Uzak production hedefi kanonik DNS/IP bildirimi,
+exact eşleşen `sslmode=require` URL'si ve
+`<BAĞLANTI_DEĞİŞKENİ>_TLS_CA_PEM` içinde sabit CA ister. Sistem kökleri,
+`hostaddr` ve örtük `prefer` kullanılmaz. Worker başına 4 bağlantılık sınır ve
+ayrıntılı işletim kuralları [PostgreSQL TLS/havuz profilindedir](postgresql-tls-havuz-profili.md).
 
 ## Neyi korur?
 

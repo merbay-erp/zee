@@ -12,6 +12,20 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **PostgreSQL production TLS ve sınırlı havuz** (K-163/F031,
+  ADR-062/spec-25): Proje manifesti secretsiz kanonik DNS/IP hedefi taşır;
+  URL exact eşleşir, `hostaddr` ve örtük `prefer` reddedilir. `sslmode=require`
+  yalnız bağlantı değişkenine bağlı PEM CA'yı güvenilir sayar, sistem köklerini
+  kapatır, hostname ve en az TLS 1.2 doğrular. Worker başına 4 bağlantı, 2 sn
+  checkout, 30 sn idle, 300 sn lifetime hedefi + en çok 30 sn bakım çevrimi ve
+  checkout sağlık kontrolü vardır.
+  Gerçek PG16.11 deneyi doğru CA/hostname, iki olumsuz sertifika vakası,
+  exhaustion, stale replacement, idle/lifetime ve shutdown sınırlarını geçti.
+  Managed-provider rotasyonu ile çok-worker toplam bütçe tatbikatı açık kalır.
+  Exact ürün saha kaydı `977cd2a` commit'indedir.
+  Ana+fuzz lock'ları aynı zincire güncellendi; 163 paketlik iki vendor üretimi
+  `6adafc91…9456e` özetiyle eş ve boş Cargo home offline derlemesi yeşildir.
+
 - **Akışlı binary upload ve dosya yaşam döngüsü** (K-163/F030,
   RFC-0027/ADR-061/spec-26): Native web adaptörü exact
   `application/octet-stream` gövdesini 16 MiB sınırında belleğe toplamadan
@@ -21,8 +35,8 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   taşır, capability ve IO trace/replay sınırını korur. Çatlı'nın 970 LOC/4
   modül/10 test ürünü gerçek PostgreSQL 16.11 üzerinde normal upload→ready→
   delete akışını ve temp/metadata/rename/tombstone kesmelerinden restart
-  yakınsamasını kanıtladı. Multipart, antivirüs, production TLS/pool ve nesne
-  deposu hâlâ açık kapsamdadır.
+  yakınsamasını kanıtladı. Multipart, antivirüs ve nesne deposu hâlâ açık
+  kapsamdadır; production TLS/pool F031 ile ayrıca kapandı.
 
 - **Dosya yazma arızasında web worker survival** (K-163/F029): Çatlı medya +
   metadata protokolündeki gerçek dizin çakışması C013'ün yalnız isteği değil
@@ -30,7 +44,7 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   sızdırmayan 503'e dönüştürür, başarısız yazımı otomatik tekrarlamaz ve sonraki
   isteği kabul eder; CLI C013'ü korur. İlk ürün reproducer'ı `itwise-admin`
   `b3cee9a` commit'indedir. Binary upload, hash, fiziksel silme/orphan tarama ve
-  production TLS/pool hâlâ açık kanıttır. Final gerçek koşuda C013 503 verdi,
+  production TLS/pool bu dilimde açık kanıttı ve F031 ile kapandı. Final gerçek koşuda C013 503 verdi,
   aynı worker sağlık isteğini kabul etti, metadata `hatalı`ya uzlaştırıldı;
   finalize reddi ise process restartından sonra `hazır` oldu. Exact sonuç ve
   temizlik ürünün `29d30c8` commit'indedir.
@@ -48,7 +62,8 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   SHA-256 migration geçmişine bağlıdır. Gerçek PostgreSQL 16.11 ürün provası
   apply→skip→hash reddi, injection-benzeri değer, 23505 ve rollback'i geçti.
   Çalışan ürün kanıtı `itwise-admin` deposundaki `a393128` commit'indedir.
-  Bu yalnız localhost sslmode=disable profilidir; production TLS/pool sözü yoktur.
+  Bu ilk kanıt yalnız localhost sslmode=disable profilidir; production
+  TLS/pool sözü F031/ADR-062 ile sonradan eklenmiştir.
 
 - **İlk PostgreSQL dayanıklılık kırılma noktası** (K-163): `43d04fc` ürün
   commit'inde PostgreSQL backend'i gerçek koşuda sonlandırıldı. Hiç kurulamayan
@@ -60,7 +75,7 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   Transaction içi okuma, SQL reddi, write ve COMMIT tekrar edilmez; COMMIT
   bağlantı kaybı “sonuç belirsiz” olarak raporlanır. Write olumsuzu satır
   üretmedi fakat C021 ile süreci sonlandırdı. F027 write-path availability'yi,
-  F028 iki uçlu COMMIT-kaybı enjeksiyonunu kapattı; gerçek pool açık kanıttır.
+  F028 iki uçlu COMMIT-kaybı enjeksiyonunu kapattı; gerçek pool F031'de kapandı.
   492 LOC maintenance tabanı 1000+ satır karşılaştırması için kaydedildi.
 
 - **Write bağlantı kaybında worker survival** (K-163/F027): Web isteğindeki
@@ -80,7 +95,7 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   aynı 503 çıktı ve retry olmadı. Sonraki bağlantıda iş anahtarıyla uzlaştırma
   ve UNIQUE altında aynı anahtarlı bilinçli tekrar kayıt sayısını 1'de tuttu.
   Exact ürün kanıtı `8a12848` commit'indedir.
-  Production TLS/pool ve genel idempotency servisi hâlâ açık kapsamdadır.
+  Genel idempotency servisi hâlâ açık kapsamdadır; production TLS/pool F031'de kapandı.
   PostgreSQL geçişli bağımlılık kapanışı fuzz aracının ayrı Cargo.lock'una da
   işlendi; iki `cargo deny --locked` grafiği yeniden yeşildir.
 
@@ -99,8 +114,9 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   ürün sürtünmeleri ayrıca kaydedildi: P011 doğru çözüme götürdü; morfoloji ve
   zincirleme ergonomisi izleniyor; son kayıt silmede kaybolan boş CSV başlığı
   mevcut dille kapatılıp teste alındı. Dördüncü dilimde yerel PostgreSQL ve
-  migration kanıtı da üretildi; K-163 production TLS/pool, medya ve süreli
-  ergonomi kanıtı tamamlanmadığı için henüz kapanmadı.
+  migration kanıtı da üretildi. Medya F030, production TLS/pool F031 ile
+  kapandı; K-163 organik 1000+ LOC bakım skor kartı tamamlanmadığı için henüz
+  kapanmadı.
 
 - **Executable CORE FREEZE** (K-160A, ADR-059): Yazılı politika artık her
   `compiler/src` commit'ini exact freeze sınıfına zorlayan CI kapısıdır.

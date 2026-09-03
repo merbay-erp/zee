@@ -1,6 +1,6 @@
 # 25 — PostgreSQL veri erişimi
 
-Normatif kaynak: RFC-0026, ADR-060. Durum: **TANIMLI — K-163 ilk yerel profil**.
+Normatif kaynak: RFC-0026, ADR-060, ADR-062. Durum: **TANIMLI — K-163/F031 TLS ve sınırlı havuz profili**.
 
 ## Proje bildirimi
 
@@ -13,10 +13,32 @@ veritabanı_bağlantı_değişkeni "UYGULAMA_DATABASE_URL" olsun
 veritabanı_göçleri "göçler" olsun
 ```
 
-Hedef kullanıcı/parola/query taşıyamaz; yalnız `localhost`, `127.0.0.1` veya
-`::1` kabul edilir. Ortam değişkenindeki URL tek TCP host, exact hedef ve
-`sslmode=disable` taşımak ZORUNDADIR. Migration yolu relative ve proje içinde
-olmalıdır.
+Hedef kullanıcı/parola/query taşıyamaz; kanonik küçük ASCII DNS adı, IPv4,
+`localhost` veya `::1` kabul edilir. Ortam değişkenindeki URL tek TCP hostla
+exact hedefe eşleşmek ZORUNDADIR; `hostaddr` hostname doğrulamasını atlatamaz.
+Loopback hedefte açık `sslmode=disable`, bütün hedeflerde açık
+`sslmode=require` kullanılabilir; örtük `prefer` reddedilir. Migration yolu
+relative ve proje içinde olmalıdır.
+
+`sslmode=require`, `<BAĞLANTI_DEĞİŞKENİ>_TLS_CA_PEM` ortam değişkeninde PEM
+kök sertifika ister. Sistem kökleri bu profilde kapalıdır; yalnız bildirilen
+kök güvenilir sayılır. TLS en az 1.2 ve sürücü hostname doğrulaması ZORUNLUDUR.
+CA boş veya 256 KiB'dan büyük olamaz.
+
+## Bağlantı havuzu
+
+Her Zee worker'ı en çok 4 PostgreSQL bağlantısı açar. Checkout bütçesi 2
+saniye, boş bağlantı ömrü 30 saniye, azami bağlantı ömrü hedefi 300 saniyedir.
+Aktif kira yarıda kesilmez; süresi dolan bağlantı bırakıldıktan sonra en geç
+30 saniyelik bakım çevriminde emekliye ayrılır. Her checkout sağlık
+kontrolünden geçer. Transaction tek kirayı BEGIN'den
+COMMIT/ROLLBACK'e kadar tutar; transaction dışı sorgu kirayı işlem sonunda
+havuza bırakır. Deployment toplam bağlantı bütçesi `worker sayısı × 4` olarak
+ayrıca hesaplanmalıdır.
+
+Havuz tükenmesi ve TLS/bağlantı kurma hatası C026'dır. Hata zinciri en fazla
+dört neden ve 512 karakter taşır. Worker kapanırken boş bağlantılar kapanır;
+aktif kira yarıda kesilmez ve son sahibi bıraktığında kapanır.
 
 ## Sorgular
 
@@ -92,7 +114,14 @@ F028 wire-level proxy'si COMMIT'i iletmeden kesilen durumda 0, COMMIT
 ReadyForQuery yanıtı yutulan durumda 1 satır üretmiş; iki durumda da aynı
 C027/503 görünmüş, worker yaşamış ve otomatik retry olmamıştır.
 
+F031 saha profili pinned deney CA'sıyla gerçek hostname/CA reddini, dört
+bağlantılık exhaustion sınırını, stale backend atımını, idle cleanup'ı,
+300 saniye + bakım çevrimi sonunda lease dönüşünde lifetime yenilemeyi ve kontrollü worker
+kapanışını kanıtlamıştır. Hermetik CI aynı havuz invariants'ını sahte manager
+üzerinden zorlar; gerçek TLS koşusu açık ortam değişkenli saha testidir.
+
 ## Açık sınır
 
-Uzak host, TLS doğrulama, connection pool, async driver, PostgreSQL dışı
-veritabanı, genel ORM/schema DSL ve production migration işletimi AÇIKTIR.
+Managed-provider sertifika rotasyonu, birden çok worker'ın toplam bütçe provası,
+async driver, PostgreSQL dışı veritabanı, genel ORM/schema DSL ve production
+migration işletimi AÇIKTIR.

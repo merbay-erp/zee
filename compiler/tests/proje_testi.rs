@@ -225,7 +225,7 @@ fn bildirim_gecerli_zee_kaynagidir() {
 }
 
 #[test]
-fn postgresql_bildirimi_sirri_kaynaga_almadan_loopback_hedefini_kilitler() {
+fn postgresql_bildirimi_sirri_kaynaga_almadan_kesin_hedefi_kilitler() {
     let kaynak = "proje \"uygulama\" olsun\nsürüm \"1.0.0\" olsun\ngiriş \"ana.dil\" olsun\nyetkinlikler \"veritabanı\" listesi olsun\nağ_hedefleri boş liste olsun\nveritabanı_hedefi \"postgresql://127.0.0.1:5432/uygulama\" olsun\nveritabanı_bağlantı_değişkeni \"UYGULAMA_DATABASE_URL\" olsun\nveritabanı_göçleri \"göçler\" olsun\n";
     let bildirim = bildirimi_oku(kaynak).expect("PostgreSQL bildirimi geçmeli");
     let veritabani = bildirim.veritabani.expect("veritabanı ayarı");
@@ -240,16 +240,22 @@ fn postgresql_bildirimi_sirri_kaynaga_almadan_loopback_hedefini_kilitler() {
             "postgresql://127.0.0.1:5432/uygulama",
             "postgresql://kullanici:parola@127.0.0.1:5432/uygulama",
         ),
-        (
-            "postgresql://127.0.0.1:5432/uygulama",
-            "postgresql://db.example:5432/uygulama",
-        ),
         ("UYGULAMA_DATABASE_URL", "postgresql://sır"),
         ("\"göçler\"", "\"../göçler\""),
     ] {
         let bozuk = kaynak.replacen(eski, yeni, 1);
         let hata = bildirimi_oku(&bozuk).expect_err("güvensiz DB bildirimi");
         assert_eq!(hata.kod, "P015", "{eski} → {yeni}: {}", hata.mesaj);
+    }
+
+    let production = kaynak.replacen("127.0.0.1", "db.example", 1);
+    let production = bildirimi_oku(&production).expect("kanonik DNS hedefi bildirilebilmeli");
+    assert_eq!(production.veritabani.unwrap().hedef.konak, "db.example");
+
+    for gecersiz in ["DB.example", "999.999.999.999", "-db.example"] {
+        let bozuk = kaynak.replacen("127.0.0.1", gecersiz, 1);
+        let hata = bildirimi_oku(&bozuk).expect_err("kanonik olmayan konak reddedilmeli");
+        assert_eq!(hata.kod, "P015", "{gecersiz}: {}", hata.mesaj);
     }
 }
 

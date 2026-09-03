@@ -1,0 +1,12 @@
+# K-163/F031 gerçek ürün ihtiyacının CORE FREEZE kanıt aynası.
+# Çalışan ürünün doğru/yanlış CA, hostname, 4/5 exhaustion, stale recovery,
+# idle/lifetime ve shutdown kanıtı itwise-admin
+# 977cd2aaf5d41089d5bff184ed7f583839b93ee0 commit'indedir.
+# TLS ve pool kaynak sözdizimi değildir; manifest hedefi ile runtime adaptörünün
+# fail-closed sözleşmesidir. Bu küçük kaynak yalnız gerçek read yolunu sabitler.
+
+işlem veritabanı sağlığını denetle
+    Metin sözlüğü listesi sonucu döndürür
+
+    parametreler boş liste olsun
+    "SELECT pg_backend_pid()::text AS backend" sorgusunu parametreler ile okumayı dene döndür

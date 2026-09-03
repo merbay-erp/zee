@@ -3,13 +3,14 @@
 - **Durum:** **geçici kabul** (K-163 dogfood dilimi)
 - **Tarih:** 3 Eylül 2026
 - **İlgili kayıtlar:** K-163, B-073, ADR-060, spec/25
-- **Gerçekleme:** `postgresql.rs`, PostgreSQL intrinsic'leri ve `dil göçür`
+- **Gerçekleme:** `postgresql.rs`, `postgresql/havuz.rs`, PostgreSQL intrinsic'leri ve `dil göçür`
 
 ## Amaç
 
 Çatlı/ITWISE Admin'in gerçek veri kalıcılığı ihtiyacını, SQL metni ile kullanıcı
-değerini ayıran en küçük güvenli native yüzeyle karşılamak. Bu karar genel ORM,
-uzak production TLS profili veya bütün veritabanlarını destekleme sözü değildir.
+değerini ayıran en küçük güvenli native yüzeyle karşılamak. F031 bu yüzeye
+pinned-CA TLS ve sınırlandırılmış senkron havuz ekler. Bu karar genel ORM veya
+bütün veritabanlarını destekleme sözü değildir.
 
 ## Dil yüzeyi
 
@@ -34,12 +35,22 @@ advisory lock içinde uygular. `_zee_gocleri` sürüm, ad ve SHA-256 kaydını
 tutar. Aynı dosyanın ikinci koşusu idempotenttir; uygulanmış dosyanın silinmesi
 veya değiştirilmesi fail-closed hatadır.
 
-## İlk profil sınırı
+## Hedef, TLS ve havuz profili
 
-Proje bildirimi yalnız sır içermeyen loopback hedefi, bağlantı URL'sini taşıyan
-ortam değişkeni adı ve proje içi migration klasörü taşır. URL hedefle exact
-eşleşmeli ve `sslmode=disable` olmalıdır. Bu yalnız yerel K-163 kanıt profilidir;
-production TLS/uzak host ayrı dogfood ve güvenlik kararı ister.
+Proje bildirimi sır içermeyen kanonik DNS/IP hedefi, bağlantı URL'sini taşıyan
+ortam değişkeni adı ve proje içi migration klasörü taşır. URL tek TCP hostla
+hedefe exact eşleşir; `hostaddr` reddedilir. Loopback geliştirmede açık
+`sslmode=disable`, production profilde açık `sslmode=require` kullanılır;
+`prefer` kabul edilmez. Require profili yalnız bağlantı değişkenine bağlı
+`_TLS_CA_PEM` içindeki kökü güvenilir sayar, sistem köklerini kapatır, en az
+TLS 1.2 ve hostname doğrulamasını zorlar.
+
+Her worker'ın havuzu 4 bağlantı, 2 saniye checkout, 30 saniye idle ve 300
+saniye azami lifetime hedefine sahiptir. Aktif lease kesilmez; süresi dolan
+bağlantı bırakıldıktan sonra en geç 30 saniyelik bakım çevriminde emekliye
+ayrılır. Checkout sağlık kontrollüdür;
+transaction tek kirayı sınır boyunca tutar. Bu değerler bir dağıtım geneli
+koordinatör değildir: toplam bütçe worker sayısıyla çarpılarak işletilir.
 
 ## Bağlantı kaybı ve tekrar sınırı
 
@@ -53,7 +64,8 @@ kullanmaz.
 Özellikle COMMIT cevabı kaybolduğunda veritabanı işlemi uygulamış olabilir.
 Otomatik tekrar çift yan etki doğurabileceğinden adaptör
 `hata_sinifi=db.commit_unknown` üretir; transaction sınırı bunu C027'ye taşır
-ve kullanıcı yeniden denemeye yönlendirilmez. Pool, cursor/stream ve kilitli
+ve kullanıcı yeniden denemeye yönlendirilmez. Havuz transaction dışı güvenli
+read recovery'nin yeni bağlantı edinme sahibidir; cursor/stream ve kilitli
 okuma bu ilk senkron profilin parçası değildir.
 
 Transaction sınırındaki bağlantı hatası mevcut client'ı ve o bağlantıya ait
@@ -79,3 +91,10 @@ oluşturamaz.
 
 DB dışı binary medya yaşam döngüsü F030/RFC-0027/spec-26'da ayrı saga olarak
 kanıtlandı; bu PostgreSQL RFC'si dağıtık atomiklik sözü kazanmadı.
+
+F031 gerçek PostgreSQL 16.11 TLS cluster'ında doğru CA+hostname'i kabul etti;
+yanlış CA ile DNS-only sertifikaya IP erişimini reddetti. Dört farklı backend
+PID'de havuz doldu, beşinci checkout zaman aşımına uğradı; öldürülen stale PID
+atılıp yenisi alındı. Idle bağlantı temizliği, 300 saniye + bakım çevrimindeki lifetime dönüşü
+ve worker sonrası sıfır bağlantı ayrıca ölçüldü. Managed provider rotasyonu ve
+çok-worker toplam bütçe provası hâlâ release işletim kanıtıdır.

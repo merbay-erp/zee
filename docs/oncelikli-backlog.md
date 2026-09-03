@@ -754,7 +754,11 @@ geçmiştir. Dördüncü dilim 492 Zee satırında yerel PostgreSQL/migration,
 parameterized bind, 23505 ve rollback kanıtını ekledi. K-163 henüz kapanmış
 değildir. F030, 970 Zee LOC/4 modül/10 testte binary upload/hash, publish,
 tombstone/silme ve restart orphan uzlaştırmasını gerçek PG16.11 ile kapattı.
-Production TLS/pool ve organik 1000+ bakım skor kartı beklenir.
+F031 production TLS ve kontrollü havuzu pinned CA/hostname, 4 bağlantılık
+exhaustion, stale recovery, idle/lifetime ve shutdown saha kanıtıyla kapattı.
+Organik 1000+ bakım skor kartı beklenir; managed-provider ve çok-worker toplam
+bütçe tatbikatı release hattında açıktır.
+Exact F031 ürün kanıtı `977cd2a` commit'indedir.
 K-161/K-162 gerçek insan testleri de insan verisini beklemeyi sürdürür.
 İnsan verisi gelmeden yeni syntax seçilmez
 veya B-001/B-002 tamamlanmış gösterilmez.
@@ -783,7 +787,7 @@ tamamlanmış sayılmaz; burada istenen ek kanıt ayrıca üretilir.
 | K-160A | **KAPALI — EXECUTABLE FREEZE** | Exact commit sınıfı; dogfood feature için ürün+iş+reproducer+proje+minimalite+karar |
 | K-161 | **İNSAN KANITI** | B-001/K-016 için 10 öğrenci/çocuk + 5 profesyonel kör oturum |
 | K-162 | **İNSAN KANITI** | B-002/K-093 morphology/scope/call/error zihinsel model oturumu |
-| K-163 | **DEVAM EDİYOR** | Çatlı 970 Zee LOC/4 modül/10 testte F030 binary medya saga'sına ulaştı. RFC-0027/ADR-061/spec-26 akışlı octet-stream+SHA-256, no-clobber publish, tombstone/idempotent silme ve orphan taramayı taşır. Gerçek PG16.11'de normal akış ve temp/DB-hazırlama/rename/tombstone process-kesmeleri restartta kanonik sonuca ulaştı; duplicate final hash'i korudu. Sırada production TLS/pool, ardından organik 1000+ LOC skor kartı vardır |
+| K-163 | **DEVAM EDİYOR** | Çatlı 970 Zee LOC/4 modül/10 testte F030 binary medya saga'sını ve F031 production TLS/havuzu geçti. ADR-062/spec-25 pinned CA+hostname, yanlış CA/IP reddi, worker başına 4 bağlantı, 2 sn checkout, 30 sn idle, 300 sn lifetime hedefi + bakım çevrimi, stale replacement ve kontrollü shutdown taşır; gerçek PG16.11 saha kanıtı vardır. Sırada organik 1000+ LOC bakım skor kartı vardır; managed-provider/çok-worker toplam bütçe release tatbikatına kalır |
 | K-164 | **AÇIK** | Farklı workload'da ikinci gerçek proje |
 | K-165 | **AÇIK** | Aynı uygulamanın Zee–Go/Rust veri temelli dogfood karşılaştırması |
 | K-166 | **AÇIK** | En sık 50 hata için span/öneri/noise düzeltme başarısı |

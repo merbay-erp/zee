@@ -68,8 +68,27 @@ impl VeritabaniHedefi {
         } else {
             (otorite, 5432)
         };
-        if !matches!(konak, "localhost" | "127.0.0.1" | "::1") {
-            return Err("ilk PostgreSQL dogfood profili yalnız loopback hedefi kabul eder".into());
+        let dns_gecerli = konak.len() <= 253
+            && !konak.is_empty()
+            && konak.split('.').all(|etiket| {
+                !etiket.is_empty()
+                    && etiket.len() <= 63
+                    && !etiket.starts_with('-')
+                    && !etiket.ends_with('-')
+                    && etiket.bytes().all(|bayt| {
+                        bayt.is_ascii_lowercase() || bayt.is_ascii_digit() || bayt == b'-'
+                    })
+            });
+        let sayisal_konak = konak
+            .split('.')
+            .all(|etiket| !etiket.is_empty() && etiket.bytes().all(|bayt| bayt.is_ascii_digit()));
+        if konak.parse::<std::net::Ipv4Addr>().is_err()
+            && !matches!(konak, "localhost" | "::1")
+            && (!dns_gecerli || sayisal_konak)
+        {
+            return Err(
+                "PostgreSQL konağı kanonik küçük ASCII DNS adı, IPv4 veya ::1 olmalı".into(),
+            );
         }
         if kapi == 0 {
             return Err("PostgreSQL kapısı 1..65535 arasında olmalı".into());
@@ -88,5 +107,14 @@ impl VeritabaniHedefi {
             self.konak.clone()
         };
         format!("postgresql://{}:{}/{}", konak, self.kapi, self.veritabani)
+    }
+
+    pub fn loopback_mi(&self) -> bool {
+        self.konak == "localhost"
+            || self.konak == "::1"
+            || self
+                .konak
+                .parse::<std::net::Ipv4Addr>()
+                .is_ok_and(|adres| adres.is_loopback())
     }
 }

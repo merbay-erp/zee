@@ -1,15 +1,14 @@
 //! K-163 PostgreSQL dogfood adaptörü.
 //!
-//! İlk profil loopback + `sslmode=disable` ile sınırlıdır; production TLS sözü
-//! değildir. Değerler SQL metnine eklenmez, extended-query protokolüne açık
-//! TEXT parametreleri olarak bind edilir.
+//! Loopback geliştirme açık `sslmode=disable`; production profili pinned CA,
+//! hostname doğrulamalı `sslmode=require` ve sınırlı havuz kullanır. Değerler
+//! SQL metnine eklenmez, extended-query protokolüne açık TEXT parametreleri
+//! olarak bind edilir.
+
+mod havuz;
 
 use crate::veritabani_modeli::{VeritabaniBildirimi, VeritabaniHatasi, VeritabaniHedefi};
-use postgres::config::{Host, SslMode};
 use postgres::types::{ToSql, Type};
-use postgres::{Client, Config, NoTls};
-use std::str::FromStr;
-use std::time::Duration;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct GocRaporu {
@@ -18,8 +17,8 @@ pub struct GocRaporu {
 }
 
 pub struct PostgresqlOturumu {
-    istemci: Client,
-    bildirim: VeritabaniBildirimi,
+    havuz: havuz::PostgresqlHavuzu,
+    kiralik: Option<havuz::PostgresqlKirasi>,
     eylem_derinligi: usize,
 }
 
@@ -35,10 +34,13 @@ impl PostgresqlOturumu {
         bildirim: &VeritabaniBildirimi,
         eylem_derinligi: usize,
     ) -> Result<Self, VeritabaniHatasi> {
-        let istemci = istemciyi_ac(bildirim)?;
+        let havuz = havuz::kur(bildirim)?;
+        // Yapılandırma hatası ilk sorguya kadar saklanmasın; başlangıçta bir
+        // gerçek bağlantı checkout/health kontrolünden geçsin.
+        drop(havuz::al(&havuz)?);
         let mut sonuc = Self {
-            istemci,
-            bildirim: bildirim.clone(),
+            havuz,
+            kiralik: None,
             eylem_derinligi: 0,
         };
         for _ in 0..eylem_derinligi {
@@ -54,23 +56,33 @@ impl PostgresqlOturumu {
     ) -> Result<Vec<Vec<(String, String)>>, VeritabaniHatasi> {
         girdiyi_denetle(sorgu, parametreler)?;
         let baglar = metin_baglari(parametreler);
-        let satirlar = match self.istemci.query_typed(sorgu, &baglar) {
-            Ok(satirlar) => satirlar,
-            Err(_ilk_hata)
-                if yeniden_baglanabilir(
-                    SorguSinifi::Okuma,
-                    self.eylem_derinligi,
-                    self.istemci.is_closed(),
-                    0,
-                ) =>
-            {
-                self.istemci = istemciyi_ac(&self.bildirim)?;
-                self.istemci.query_typed(sorgu, &baglar).map_err(|h| {
-                    postgres_hatasi("PostgreSQL sorgusu yeniden denendi ama başarısız", h)
-                })?
-            }
-            Err(hata_degeri) => {
-                return Err(postgres_hatasi("PostgreSQL sorgusu başarısız", hata_degeri));
+        let satirlar = if self.eylem_derinligi > 0 {
+            self.kiralik
+                .as_mut()
+                .ok_or_else(|| hata("PostgreSQL transaction bağlantısı kayıp"))?
+                .query_typed(sorgu, &baglar)
+                .map_err(|h| postgres_hatasi("PostgreSQL sorgusu başarısız", h))?
+        } else {
+            let mut kiralik = havuz::al(&self.havuz)?;
+            match kiralik.query_typed(sorgu, &baglar) {
+                Ok(satirlar) => satirlar,
+                Err(_ilk_hata)
+                    if yeniden_baglanabilir(
+                        SorguSinifi::Okuma,
+                        self.eylem_derinligi,
+                        kiralik.is_closed(),
+                        0,
+                    ) =>
+                {
+                    drop(kiralik);
+                    let mut ikinci = havuz::al(&self.havuz)?;
+                    ikinci.query_typed(sorgu, &baglar).map_err(|h| {
+                        postgres_hatasi("PostgreSQL sorgusu yeniden denendi ama başarısız", h)
+                    })?
+                }
+                Err(hata_degeri) => {
+                    return Err(postgres_hatasi("PostgreSQL sorgusu başarısız", hata_degeri));
+                }
             }
         };
         let sinirlar = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.veritabani();
@@ -128,7 +140,7 @@ impl PostgresqlOturumu {
         debug_assert!(!yeniden_baglanabilir(
             SorguSinifi::Yazma,
             self.eylem_derinligi,
-            self.istemci.is_closed(),
+            self.kiralik.as_ref().is_some_and(|k| k.is_closed()),
             0,
         ));
         if self.eylem_derinligi == 0 {
@@ -137,20 +149,24 @@ impl PostgresqlOturumu {
             ));
         }
         girdiyi_denetle(sorgu, parametreler)?;
-        self.istemci
+        let istemci = self
+            .kiralik
+            .as_mut()
+            .ok_or_else(|| hata("PostgreSQL transaction bağlantısı kayıp"))?;
+        istemci
             .batch_execute("SAVEPOINT zee_intrinsic")
             .map_err(|h| postgres_hatasi("PostgreSQL sorgu savepoint'i açılamadı", h))?;
         let baglar = metin_baglari(parametreler);
-        let adet = match self.istemci.execute_typed(sorgu, &baglar) {
+        let adet = match istemci.execute_typed(sorgu, &baglar) {
             Ok(adet) => {
-                self.istemci
+                istemci
                     .batch_execute("RELEASE SAVEPOINT zee_intrinsic")
                     .map_err(|h| postgres_hatasi("PostgreSQL sorgu savepoint'i kapanamadı", h))?;
                 adet
             }
             Err(h) => {
                 let asil = postgres_hatasi("PostgreSQL değişikliği başarısız", h);
-                self.istemci
+                istemci
                     .batch_execute(
                         "ROLLBACK TO SAVEPOINT zee_intrinsic; RELEASE SAVEPOINT zee_intrinsic",
                     )
@@ -164,12 +180,19 @@ impl PostgresqlOturumu {
     }
 
     pub fn eylem_baslat(&mut self) -> Result<(), VeritabaniHatasi> {
-        let sorgu = if self.eylem_derinligi == 0 {
-            "BEGIN".to_string()
-        } else {
-            format!("SAVEPOINT zee_{}", self.eylem_derinligi)
-        };
-        self.istemci
+        if self.eylem_derinligi == 0 {
+            let mut kiralik = havuz::al(&self.havuz)?;
+            kiralik
+                .batch_execute("BEGIN")
+                .map_err(|h| postgres_hatasi("PostgreSQL transaction'ı başlatılamadı", h))?;
+            self.kiralik = Some(kiralik);
+            self.eylem_derinligi = 1;
+            return Ok(());
+        }
+        let sorgu = format!("SAVEPOINT zee_{}", self.eylem_derinligi);
+        self.kiralik
+            .as_mut()
+            .ok_or_else(|| hata("PostgreSQL transaction bağlantısı kayıp"))?
             .batch_execute(&sorgu)
             .map_err(|h| postgres_hatasi("PostgreSQL transaction'ı başlatılamadı", h))?;
         self.eylem_derinligi += 1;
@@ -180,7 +203,7 @@ impl PostgresqlOturumu {
         debug_assert!(!yeniden_baglanabilir(
             SorguSinifi::Commit,
             self.eylem_derinligi,
-            self.istemci.is_closed(),
+            self.kiralik.as_ref().is_some_and(|k| k.is_closed()),
             0,
         ));
         let Some(yeni_derinlik) = self.eylem_derinligi.checked_sub(1) else {
@@ -191,17 +214,26 @@ impl PostgresqlOturumu {
         } else {
             format!("RELEASE SAVEPOINT zee_{}", yeni_derinlik)
         };
-        self.istemci.batch_execute(&sorgu).map_err(|h| {
+        let sonuc = self
+            .kiralik
+            .as_mut()
+            .ok_or_else(|| hata("PostgreSQL transaction bağlantısı kayıp"))?
+            .batch_execute(&sorgu);
+        if let Err(h) = sonuc {
             if yeni_derinlik == 0 {
-                commit_sonucu_belirsiz_hatasi(
+                self.eylem_derinligi = 0;
+                self.kiralik.take();
+                return Err(commit_sonucu_belirsiz_hatasi(
                     "PostgreSQL COMMIT sonucu belirsiz; otomatik yeniden deneme yapılmadı",
                     h,
-                )
-            } else {
-                postgres_hatasi("PostgreSQL savepoint'i tamamlanamadı", h)
+                ));
             }
-        })?;
+            return Err(postgres_hatasi("PostgreSQL savepoint'i tamamlanamadı", h));
+        }
         self.eylem_derinligi = yeni_derinlik;
+        if yeni_derinlik == 0 {
+            self.kiralik.take();
+        }
         Ok(())
     }
 
@@ -217,10 +249,15 @@ impl PostgresqlOturumu {
                 yeni_derinlik
             )
         };
-        self.istemci
+        self.kiralik
+            .as_mut()
+            .ok_or_else(|| hata("PostgreSQL transaction bağlantısı kayıp"))?
             .batch_execute(&sorgu)
             .map_err(|h| postgres_hatasi("PostgreSQL transaction'ı geri alınamadı", h))?;
         self.eylem_derinligi = yeni_derinlik;
+        if yeni_derinlik == 0 {
+            self.kiralik.take();
+        }
         Ok(())
     }
 }
@@ -313,7 +350,8 @@ pub fn gocleri_uygula(
         ));
     }
 
-    let mut istemci = istemciyi_ac(bildirim)?;
+    let havuz = havuz::kur(bildirim)?;
+    let mut istemci = havuz::al(&havuz)?;
     let mut tx = istemci
         .transaction()
         .map_err(|h| postgres_hatasi("Migration transaction'ı başlatılamadı", h))?;
@@ -390,47 +428,6 @@ fn migration_sqlini_denetle(sql: &str) -> Result<(), VeritabaniHatasi> {
     Ok(())
 }
 
-fn istemciyi_ac(bildirim: &VeritabaniBildirimi) -> Result<Client, VeritabaniHatasi> {
-    let baglanti = std::env::var(&bildirim.baglanti_degiskeni).map_err(|_| {
-        hata(format!(
-            "{} ortam değişkeninde PostgreSQL bağlantısı bulunamadı",
-            bildirim.baglanti_degiskeni
-        ))
-    })?;
-    let mut ayar = Config::from_str(&baglanti)
-        .map_err(|h| hata(format!("PostgreSQL bağlantı ayarı geçersiz: {}", h)))?;
-    baglanti_hedefini_denetle(&ayar, &bildirim.hedef)?;
-    ayar.connect_timeout(Duration::from_secs(5));
-    ayar.connect(NoTls)
-        .map_err(|h| postgres_hatasi("PostgreSQL bağlantısı kurulamadı", h))
-}
-
-fn baglanti_hedefini_denetle(
-    ayar: &Config,
-    hedef: &VeritabaniHedefi,
-) -> Result<(), VeritabaniHatasi> {
-    let [Host::Tcp(konak)] = ayar.get_hosts() else {
-        return Err(hata("PostgreSQL bağlantısı tek TCP hostu taşımalı"));
-    };
-    let kapi = ayar.get_ports().first().copied().unwrap_or(5432);
-    let veritabani = ayar.get_dbname().unwrap_or("");
-    if konak != &hedef.konak || kapi != hedef.kapi || veritabani != hedef.veritabani {
-        return Err(verili_hata(
-            "PostgreSQL bağlantısı proje bildirimindeki secretsiz hedefle eşleşmiyor",
-            vec![("beklenen_hedef".into(), hedef.yazimi())],
-        ));
-    }
-    if !ayar.get_hostaddrs().is_empty() {
-        return Err(hata("İlk PostgreSQL profilinde hostaddr kullanılamaz"));
-    }
-    if ayar.get_ssl_mode() != SslMode::Disable {
-        return Err(hata(
-            "İlk loopback PostgreSQL profili sslmode=disable ister; production TLS henüz kanıtlanmadı",
-        ));
-    }
-    Ok(())
-}
-
 fn girdiyi_denetle(sorgu: &str, parametreler: &[String]) -> Result<(), VeritabaniHatasi> {
     let sinirlar = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.veritabani();
     if sorgu.is_empty() || sorgu.len() > sinirlar.sorgu_bayti() {
@@ -494,6 +491,8 @@ fn verili_hata(mesaj: impl Into<String>, veri: Vec<(String, String)>) -> Veritab
 #[cfg(test)]
 mod testler {
     use super::*;
+    use postgres::Config;
+    use std::str::FromStr;
 
     #[test]
     fn migration_kendi_transaction_sinirini_tasiyamaz() {
@@ -517,16 +516,12 @@ mod testler {
         let dogru =
             Config::from_str("postgresql://kullanici@127.0.0.1:5432/uygulama?sslmode=disable")
                 .expect("ayar geçerli");
-        assert!(baglanti_hedefini_denetle(&dogru, &hedef).is_ok());
+        assert!(havuz::hedefi_denetle(&dogru, &hedef).is_ok());
 
         let yanlis =
             Config::from_str("postgresql://kullanici@127.0.0.1:5432/baska?sslmode=disable")
                 .expect("ayar geçerli");
-        assert!(baglanti_hedefini_denetle(&yanlis, &hedef).is_err());
-
-        let tls = Config::from_str("postgresql://kullanici@127.0.0.1:5432/uygulama")
-            .expect("ayar geçerli");
-        assert!(baglanti_hedefini_denetle(&tls, &hedef).is_err());
+        assert!(havuz::hedefi_denetle(&yanlis, &hedef).is_err());
     }
 
     #[test]

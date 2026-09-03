@@ -879,8 +879,8 @@ kurdu. PostgreSQL `hazır` geçişi reddedildiğinde kalan dosya+metadata sonrak
 uzlaştırmada başarıyla tamamlandı. Gerçek dizin çakışmalı dosya yazımı ise
 metadata'yı `hazırlanıyor` bırakırken C013 ile worker'ı sonlandırdı. Bu bulgu
 web'de request-local C013 → 503, sıfır retry ve worker survival correctness
-sözünü açtı. Binary hash/upload, fiziksel silme/orphan tarama ve production
-TLS/pool açık kalır.
+sözünü açtı. Binary hash/upload ve fiziksel silme/orphan tarama F030'da;
+production TLS/pool ise F031'de kapanmıştır.
 Zee `395b2e9` değişikliğinin ardından exact final ürün kanıtı `29d30c8` oldu:
 C013 503/no-retry verirken worker sağlık isteğinde 200 kaldı; eksik dosya
 metadata'sı `hatalı`ya, finalize reddiyle kalan kayıt process restartından
@@ -891,8 +891,13 @@ Native octet-stream 16 KiB parçalarla temp dosyaya ve SHA-256'ya akar;
 no-clobber publish, idempotent silme, listeleme ve hash beklenen hataları
 `Sonuç` olarak taşır. Çatlı 970 Zee LOC/4 modül/10 testte normal yaşam
 döngüsünü ve temp, DB-hazırlama, rename, tombstone kesmelerinin restart
-yakınsamasını PG16.11 üzerinde kanıtladı. F030 kapalıdır; sıradaki saha kapısı
-production TLS/pool, ardından organik 1000+ LOC bakım kontrolüdür.
+yakınsamasını PG16.11 üzerinde kanıtladı. F030 kapalıdır. F031/ADR-062 pinned
+CA+hostname, yanlış CA/IP reddi, 4 bağlantılık exhaustion, stale replacement,
+idle/lifetime ve shutdown ölçümüyle production TLS/pool sınırını da gerçek
+PG16.11 üzerinde kapattı. Sıradaki saha kapısı organik 1000+ LOC bakım
+kontrolüdür; managed-provider rotasyonu ve çok-worker toplam bütçe release
+tatbikatında açık kalır.
+Exact ürün saha kaydı `977cd2a` commit'indedir.
 B-001 çağrı sözdizimi ile B-002 gezme zihinsel modeli gerçek insan
 kanıtı gelmeden kapatılmaz veya yeni syntax kararıyla atlanmaz.
 # 40. Proje felsefesinin korunması
