@@ -17,9 +17,11 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   `introduced_by` ve `guaranteed_since=0.8.0-dev` taşır. Eski introduced
   commit'ler reproducer olmadan tahmin edilmedi; açık `-` yalnız kanıtlı ata
   SHA'ya tek yönlü zenginleştirilebilir. Manifest testi commit varlığı ve ata
-  yönünü, Git koruğu v1→v2 soy ağacını ve fix/bug/düzeltme başlıklı her
-  compiler kaynak commit'inin yeni fixture sahibi olmasını denetler. B-063
-  kapandı; grammar, runtime, tanı anlamı, RFC ve normatif spec değişmedi.
+  yönünü ve Git koruğu v1→v2 soy ağacını denetler. K-155A/ADR-053 ilk
+  başlık-regex kapısını kaldırdı: `1c73298…` sonrasındaki her compiler kaynak
+  commit'i mesajından bağımsız semantic sınıf, kanıt ve gerekçe taşır;
+  `semantic-bugfix` exact fixture ister. B-063/B-064 kapandı; grammar, runtime,
+  tanı anlamı, RFC ve normatif spec değişmedi.
 
 - **LSP tam-metin değişiklik ölçeği** (K-154, ADR-051): Ölçüm koşucusu artık
   açık `--lsp-olcek` kipinde 2.000/5.000/10.000/20.000 satır `didChange`

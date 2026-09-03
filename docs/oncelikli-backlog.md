@@ -186,9 +186,10 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 52. K-155/ADR-052, 17 semantic regresyonu exact `fixed_by`, kanıtlıysa
     `introduced_by` ve `guaranteed_since=0.8.0-dev` alanlı v2 manifeste
     taşıdı. Tarihsel introduced commit'ler reproducer olmadan tahmin edilmedi.
-    Git koruğu yayımlanmış provenance'ı ve compiler bug-fix commit'inin yeni
-    fixture sahibi olmasını geçici gerçek Git deposundaki uçtan uca regresyonla
-    fail-closed denetler; B-063 kapandı, sırada K-156.
+    Git koruğu yayımlanmış provenance'ı korur. K-155A/ADR-053 başlık regex'ini
+    kaldırdı; sabit başlangıçtan sonraki her compiler kaynak commit'i mesajdan
+    bağımsız beyan taşır ve bugfix exact fixture ister. Geçici gerçek Git deposu
+    red/kabul/yeniden-yazım yollarını uçtan uca kanıtlar; B-063/B-064 kapandı.
 
 ## P0 — V1 öncesi dil ve derleyici omurgası
 
@@ -637,9 +638,13 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   anında minimal reproducer bulunmadığından tahmin edilmez ve `-` kalır;
   sonradan yalnız kanıtlı ata SHA'ya tek yönlü zenginleştirilebilir. Koruk v1
   tabanını okuyarak v2 göçünü korur; yayımlanmış kimlik/fixed/garanti yeniden
-  yazılamaz. `compiler/src` altında fix/bug/düzeltme bildiren commit exact
-  `fixed_by` sahibi yeni fixture olmadan CI'dan geçemez; geçici Git deposu
-  regresyonu reddetme/kabul/yeniden-yazım yollarının üçünü de yürütür.
+  yazılamaz. İlk commit-başlığı sezgisi K-155A ile yürürlükten kaldırılmıştır.
+- **B-064 · KAPALI (K-155A/ADR-053) — Mesajdan bağımsız compiler semantic
+  değişiklik beyanı.** `1c73298…` sonrasındaki her `compiler/src` commit'i tam
+  SHA ile tekil `semantic-bugfix`, `semantic-change` veya `maintenance` beyanı
+  taşır. Bugfix exact fixture, semantic değişiklik normatif belge, maintenance
+  en az 40 karakterlik açık gerekçe ister. Geçici gerçek Git deposu, düzeltme
+  kelimesi taşımayan commit'in dahi beyansız geçemediğini kanıtlar.
 - **B-041 · KAPALI (K-120) — LSP'yi SymbolId/HIR'a bağla.** Definition ve
   rename yalnız başarılı checker'ın `SymbolId`/`IslemId`/`YapiId` typed-HIR
   bağından hedef seçer. HIR ilk tanım, yeniden atama ve okuma aralıklarını
@@ -675,8 +680,9 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 ile önceden ilan edilmiş eşikleri bekler. Makine hattında K-153 gerçek
 process→stdio LSP cold-start yolunu exact 25 örnekli tabanla kapattı.
 K-154 tam-metin değişim ölçek eğrisini ve invalidation sınırını exact tabanla,
-K-155 semantic regresyon provenance zincirini v2 manifest ve bug-fix koruğuyla
-kapattı; sıradaki makine işi K-156 fuzz corpus kalıcılığıdır.
+K-155 semantic regresyon provenance zincirini v2 manifeste taşıdı; K-155A
+mesajdan bağımsız fail-closed beyan kapısını kurdu. Sıradaki güvenlik işi strict
+form decode, ardından makine işi K-156 fuzz corpus kalıcılığıdır.
 İnsan verisi gelmeden yeni syntax seçilmez
 veya B-001/B-002 tamamlanmış gösterilmez.
 
@@ -693,7 +699,8 @@ tamamlanmış sayılmaz; burada istenen ek kanıt ayrıca üretilir.
 | K-152 | **KAPALI** | Gerçek Git SHA/milestone ve tam benchmark provenance şeması |
 | K-153 | **KAPALI** | Engine/process ayrımı, gerçek ikili testi ve exact 25 örnek taban |
 | K-154 | **KAPALI** | 2k/5k/10k/20k full-change eğrisi, invalidation sınırı ve üç ilk-aşım eşiği |
-| K-155 | **KAPALI** | V2 manifestte exact `fixed_by`, kanıtlı `introduced_by`, garanti sürümü ve bug-fix koruğu |
+| K-155 | **KAPALI** | V2 manifestte exact `fixed_by`, kanıtlı `introduced_by` ve garanti sürümü |
+| K-155A | **KAPALI** | Her compiler kaynak commit'inde mesajdan bağımsız semantic beyan; bugfixte exact fixture |
 | K-156 | **AÇIK** | Nightly fuzz corpus artefaktı ve review'lü coverage seed kalıcılığı |
 | K-157 | **AÇIK** | Dört hedefte 30–60 dk RC kampanyası; uygun sanitizer/Miri kanıtı |
 | K-158 | **AÇIK** | Faz matrisinde opsiyonel çoklu `covers` ve doğru blast radius |

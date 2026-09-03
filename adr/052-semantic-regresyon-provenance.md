@@ -28,10 +28,11 @@ düzeltmesinin fixture ekleme kuralı yalnız yazılı politikaydı.
    bug, dosya, fixed commit veya garanti sürümü yeniden yazılamaz.
    `introduced_by` yalnız `-` değerinden, `fixed_by` atası olduğu kanıtlanan
    tam SHA'ya bir kez zenginleştirilebilir; geri alınamaz veya değiştirilemez.
-5. `compiler/src` altında düzeltme bildiren (`fix`, `bugfix`, `bug`, `duzelt`
-   veya `düzelt`) her commit, aynı karşılaştırma aralığında `fixed_by` alanı o
-   exact SHA olan yeni bir manifest satırı ister. Akış bu nedenle iki atomik
-   adımdır: önce düzeltme commit'i; sonra minimal fixture+provenance commit'i.
+5. İlk uygulama, `compiler/src` altında düzeltme bildiren commit başlıklarını
+   tarayarak exact fixture istiyordu. K-155A/ADR-053 bu zayıf niyet sezgisini
+   yürürlükten kaldırdı: sabit başlangıçtan sonraki her compiler kaynak commit'i
+   mesajından bağımsız, tekil semantic beyan taşır; bugfix sınıfı exact fixture
+   ister. İki atomik commit akışı korunur.
 
 ## Reddedilen seçenekler
 
@@ -43,6 +44,8 @@ düzeltmesinin fixture ekleme kuralı yalnız yazılı politikaydı.
   kurulamaz.
 - **Bug fix ile aynı commit'in SHA'sını manifestte istemek:** commit kendi
   hash'ini önceden taşıyamaz; döngüsel ve üretilemez bir sözleşmedir.
+- **Commit başlığını semantic sınır saymak:** ilk K-155 uygulamasının regex'i
+  farklı yazımlarla atlanabildiği için ADR-053 tarafından kaldırılmıştır.
 
 ## Sonuçlar
 

@@ -85,12 +85,14 @@ Manifest testi tam SHA biçimini, commit varlığını, `fixed_by`→HEAD ve var
 `introduced_by`→`fixed_by` ata yönünü denetler. İlk 17 tarihsel vakada
 minimal reproducer düzeltme anında mevcut olmadığı için introduced commit
 tahmin edilmemiş, açıkça `-` bırakılmıştır. Sonradan bisect ile kanıtlanan
-değer yalnız `-`→ata SHA yönünde bir kez eklenebilir. Koruk ayrıca
-`compiler/src` tarihindeki başlığı fix/bug/düzeltme bildiren her commit için
-aynı karşılaştırma aralığında `fixed_by` sahibi yeni bir fixture ister.
-`semantic_regresyon_korugu_testi`, geçici gerçek Git deposunda fixture'sız
-bug-fix reddini, exact `fixed_by` ile kabulü ve provenance yeniden yazım
-reddini uçtan uca çalıştırır; yalnız script metnine bakmakla yetinmez.
+değer yalnız `-`→ata SHA yönünde bir kez eklenebilir. K-155A/ADR-053 ile koruk,
+`1c73298…` sonrasındaki her `compiler/src` commit'ini mesajından bağımsız
+olarak [semantic değişiklik beyanında](compiler-semantic-degisiklik-beyani.md)
+tekil sınıflandırır. `semantic-bugfix` aynı SHA'yı `fixed_by` taşıyan fixture,
+`semantic-change` normatif belge, `maintenance` ise açık gerekçe ister.
+`semantic_regresyon_korugu_testi`, geçici gerçek Git deposunda masum görünen
+başlığın beyansız reddini, exact beyan+fixture kabulünü ve provenance yeniden
+yazım reddini uçtan uca çalıştırır; yalnız script metnine bakmakla yetinmez.
 
 ## Korpusların rolleri
 
