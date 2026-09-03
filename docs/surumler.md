@@ -56,6 +56,7 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   uygulanıp ReadyForQuery yanıtı yutulduğunda 1 satır gözledi; iki durumda da
   aynı 503 çıktı ve retry olmadı. Sonraki bağlantıda iş anahtarıyla uzlaştırma
   ve UNIQUE altında aynı anahtarlı bilinçli tekrar kayıt sayısını 1'de tuttu.
+  Exact ürün kanıtı `8a12848` commit'indedir.
   Production TLS/pool ve genel idempotency servisi hâlâ açık kapsamdadır.
 
 - **Dogfood kanıt referans bütünlüğü** (B-073): Append-only ürün kaydı tekil
