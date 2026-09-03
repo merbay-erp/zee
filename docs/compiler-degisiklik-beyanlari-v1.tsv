@@ -2,3 +2,4 @@
 # enforcement_parent	1c73298dca6bdbe27fc652daeb940b53709e1dbc
 # commit	sinif	kanit	gerekce
 32247c79321b5b350b18b15198a245776b22fc84	semantic-bugfix	bozuk-form-kodlamasi	Bozuk yüzde kodlaması ve geçersiz UTF-8 artık kayıplı çözülmeden 400 ile reddedilir.
+42e662986167d26a8baf358ea599487cdd7ff9ad	maintenance	-	Faz matrisi yalnız test kanıtı metadatasını ve raporunu genişletir; Zee grammar, runtime ve kullanıcı programı davranışı değişmez.
