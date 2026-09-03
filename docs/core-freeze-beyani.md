@@ -24,6 +24,15 @@ etkilenen proje depo içindeki var olan göreli dosyalardır; böylece “ürün
 iddiası incelenebilir bir kanıta bağlanır. Yeni bir semantic feature yalnız
 `dogfood-change`, `security` veya `correctness` sınıfıyla geçebilir.
 
+B-073 ile ürün kimliği ayrıca append-only
+[`dogfood-projeleri-v1.tsv`](dogfood-projeleri-v1.tsv) kaydında tekil ve
+`active` olmalıdır. Kayıt repo içindeki kanıt kökünü ve gerçek ürünün exact
+provenance commit'ini taşır. `etkilenen_proje` bu kökün altındaki gerçek bir
+`.dil`/`proje.dil` dosyası, K-işi backlog veya günlükte gerçek kayıt ve karar
+belgesi K-işi ya da ürün slug'ına açık referans olmak zorundadır. CI
+reproducer'ın ihtiyaca semantik uygunluğunu iddia etmez; bu bağ insan
+review'unda kalır.
+
 Kaynak commit'i önce; semantic ve core-freeze beyanları exact SHA ile sonraki
 committe alınır. Koruğu yerelde şu şekilde çalıştır:
 
