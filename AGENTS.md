@@ -76,6 +76,16 @@ bug düzeltmesi tamamlanmış ya da commitlenebilir sayılmaz. Korpus sözleşme
 K-kimliği veya yolu silinmez/yeniden kullanılmaz; CI bunu Git tabanına karşı
 `scripts/semantic-regresyon-korugu.sh` ile denetler.
 
+`1c73298dca6bdbe27fc652daeb940b53709e1dbc` sonrasındaki her
+`compiler/src` commit'i, başlığından bağımsız olarak
+`docs/compiler-degisiklik-beyanlari-v1.tsv` içinde tam SHA, semantic sınıf ve
+en az 40 karakterlik gerekçe taşır. `semantic-bugfix` exact `fixed_by` sahibi
+regression vakasına; `semantic-change` var olan `spec/`, `rfcs/` veya `adr/`
+kanıtına bağlanır. `maintenance` yalnız `kanıt=-` ve semantic davranışın neden
+değişmediğini açıklayan gerekçeyle geçer. Kaynak commit'i önce, beyan ve
+gerekiyorsa fixture/provenance commit'i sonra alınır; commit mesajı muafiyet
+veya güvenlik sınırı değildir.
+
 ## V1 öncesi iş sırası
 
 Bağlayıcı sıra `docs/oncelikli-backlog.md` içindedir. P0 compiler/dil omurgası

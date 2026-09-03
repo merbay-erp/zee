@@ -2586,10 +2586,26 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
 - **Kapı:** Test SHA biçimini, commit varlığını ve ata yönünü denetler. Git
   koruğu v1→v2 göçünü okur; yayımlanmış kimlik/fixed/garanti yeniden yazılamaz.
   `introduced_by` yalnız `-`→kanıtlı ata SHA yönünde zenginleşebilir.
-  `compiler/src` altında fix/bug/düzeltme bildiren commit exact `fixed_by`
-  sahibi yeni fixture olmadan CI'dan geçemez.
+  İlk uygulama `compiler/src` commit başlığındaki fix/bug/düzeltme sözcüklerini
+  kullanıyordu; K-155A bu atlanabilir sezgiyi yürürlükten kaldırdı.
 - **Kapanış:** ADR-052 ve güncel bakım protokolüyle K-155/B-063 kapandı.
   Grammar, runtime, tanı anlamı, RFC ve normatif spec değişmedi.
+
+## K-155A — Compiler değişikliği niyet sezgisine bırakılamaz (3 Eyl)
+
+- **Dış denetim bulgusu:** K-155'in ilk koruğu commit başlığı regex'ine
+  dayanıyordu; farklı sözcük veya sıradan bir başlık fixture zorunluluğunu
+  atlayabiliyordu.
+- **Kapı:** `1c73298…` sonrasındaki her `compiler/src` commit'i
+  `docs/compiler-degisiklik-beyanlari-v1.tsv` içinde tam SHA ile tekil
+  `semantic-bugfix`, `semantic-change` veya `maintenance` sınıfı ve en az 40
+  karakter gerekçe taşır. Bugfix exact fixture, semantic değişiklik var olan
+  normatif belge ister; commit mesajına bakılmaz.
+- **Kanıt:** Geçici gerçek Git deposu düzeltme sözcüğü taşımayan beyansız
+  kaynak commit'ini reddeder; exact beyan+fixture'ı kabul eder ve yayımlanmış
+  provenance yeniden yazımını yine reddeder.
+- **Kapanış:** ADR-053/B-064 ile denetimdeki bypass kapanmıştır. Grammar,
+  runtime, tanı anlamı, RFC ve normatif spec değişmemiştir.
 
 ---
 
@@ -2600,7 +2616,8 @@ Hafta 2'de kağıt üstünde) sesli okutulacak; her kayıt için "doğal mı /
 deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
 Makine hattında K-154 tam-metin ölçek eğrisini exact tabanla, K-155 semantic
-regresyon provenance zincirini v2 manifest ve fixture'sız bug-fix koruğuyla
-kapattı. Sırada K-156 fuzz corpus kalıcılığı vardır.
+regresyon provenance zincirini v2 manifestle ve K-155A bütün compiler kaynak
+commit'lerini mesajdan bağımsız beyan kapısıyla kapattı. Sırada strict form
+decode güvenlik düzeltmesi, ardından K-156 fuzz corpus kalıcılığı vardır.
 B-001/B-002 (yeni sırada K-161/K-162), gerçek 10 çocuk/öğrenci + 5 profesyonel
 usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.

@@ -67,7 +67,7 @@ fn korugu_calistir(kok: &Path, taban: &str) -> Output {
 }
 
 #[test]
-fn fixture_siz_bug_fix_reddedilir_ve_provenance_yeniden_yazilamaz() {
+fn commit_mesajindan_bagimsiz_beyan_ve_fixture_zorunludur() {
     let kok = gecici_depo();
     std::fs::create_dir_all(kok.join("regression")).expect("regression klasörü");
     std::fs::create_dir_all(kok.join("compiler/src")).expect("compiler klasörü");
@@ -81,14 +81,25 @@ fn fixture_siz_bug_fix_reddedilir_ve_provenance_yeniden_yazilamaz() {
     std::fs::write(kok.join("compiler/src/lib.rs"), "pub fn eski() {}\n")
         .expect("kaynak yazılmalı");
     let taban = commit(&kok, "başlangıç");
+    std::fs::create_dir_all(kok.join("docs")).expect("docs klasörü");
+    std::fs::write(
+        kok.join("docs/compiler-degisiklik-beyanlari-v1.tsv"),
+        format!(
+            "# zee-compiler-degisiklik-beyanlari-1\n\
+             # enforcement_parent\t{taban}\n\
+             # commit\tsinif\tkanit\tgerekce\n"
+        ),
+    )
+    .expect("beyan manifesti yazılmalı");
+    commit(&kok, "semantic beyan kapısı");
 
     std::fs::write(kok.join("compiler/src/lib.rs"), "pub fn duzeltilmis() {}\n")
         .expect("düzeltme yazılmalı");
-    let fixed_by = commit(&kok, "fix: compiler hatasını düzelt");
+    let fixed_by = commit(&kok, "anlatımdan bağımsız bir başlık");
     let eksik = korugu_calistir(&kok, &taban);
     assert!(!eksik.status.success(), "fixture'sız bug fix geçmemeli");
     assert!(String::from_utf8_lossy(&eksik.stderr)
-        .contains("COMPILER BUG DÜZELTMESİ REGRESYON PROVENANCE'I TAŞIMIYOR"));
+        .contains("COMPILER KAYNAK COMMIT'İ TEKİL SEMANTIC BEYAN TAŞIMIYOR"));
 
     let yeni = format!(
         "yeni\tK-002\t{fixed_by}\t-\t0.8.0-dev\tchecker\trun\t-\t-\t0\t-\tregression/checker/yeni.dil\n"
@@ -96,6 +107,15 @@ fn fixture_siz_bug_fix_reddedilir_ve_provenance_yeniden_yazilamaz() {
     let manifest = std::fs::read_to_string(kok.join("regression/v2.tsv")).expect("manifest");
     std::fs::write(kok.join("regression/v2.tsv"), format!("{manifest}{yeni}"))
         .expect("provenance yazılmalı");
+    let beyan_yolu = kok.join("docs/compiler-degisiklik-beyanlari-v1.tsv");
+    let beyanlar = std::fs::read_to_string(&beyan_yolu).expect("beyan manifesti");
+    std::fs::write(
+        &beyan_yolu,
+        format!(
+            "{beyanlar}{fixed_by}\tsemantic-bugfix\tyeni\tİsmi ne olursa olsun bu compiler değişikliği exact fixture gerektirir.\n"
+        ),
+    )
+    .expect("semantic beyan yazılmalı");
     let provenance = commit(&kok, "regresyon provenance kaydı");
     assert!(
         korugu_calistir(&kok, &taban).status.success(),

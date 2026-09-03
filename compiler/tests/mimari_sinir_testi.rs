@@ -424,10 +424,13 @@ fn semantic_regresyon_korpusu_gecmisten_sessizce_silinemez() {
         "KALICI SEMANTIC REGRESYON VAKASI SİLİNDİ",
         "SEMANTIC REGRESYON KİMLİĞİ YENİDEN KULLANILDI",
         "SEMANTIC REGRESYON PROVENANCE'I YENİDEN YAZILDI",
-        "COMPILER BUG DÜZELTMESİ REGRESYON PROVENANCE'I TAŞIMIYOR",
+        "COMPILER KAYNAK COMMIT'İ TEKİL SEMANTIC BEYAN TAŞIMIYOR",
+        "SEMANTIC BUGFIX EXACT FIXTURE PROVENANCE'I TAŞIMIYOR",
+        "SEMANTIC DEĞİŞİKLİK NORMATİF KANIT TAŞIMIYOR",
+        "SAHİPSİZ COMPILER DEĞİŞİKLİK BEYANI",
+        "docs/compiler-degisiklik-beyanlari-v1.tsv",
         "git show \"${taban}:${taban_manifest}\"",
-        "git log --format='%H%x09%s' \"${taban}..HEAD\" -- compiler/src",
-        "'$1 !~ /^#/ && $3 == commit",
+        "git rev-list --reverse \"${enforcement_parent}..HEAD\" -- compiler/src",
     ] {
         assert!(
             koruk.contains(kanit),

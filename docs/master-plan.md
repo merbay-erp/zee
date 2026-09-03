@@ -801,7 +801,11 @@ incremental cache ve bu dilimde optimizasyon yoktur. Exact temiz 25 örnekli
 üçü de ilk kez 5k'da aşılır. B-062/K-154 kapandı. K-155/ADR-052 semantic
 regresyon manifestini exact `fixed_by`, kanıtlıysa `introduced_by` ve garanti
 sürümüyle v2'ye taşıdı; v1→v2 soy ağacını ve fixture'sız compiler bug fix'ini
-fail-closed korur. B-063 kapandı, sırada K-156 fuzz corpus kalıcılığı vardır.
+fail-closed korur. K-155A/ADR-053 başlık regex'ini kaldırarak sabit başlangıçtan
+sonraki bütün compiler kaynak commit'lerini explicit semantic sınıf, kanıt ve
+gerekçeye bağladı; bugfix exact fixture ister. B-063/B-064 kapandı, sırada
+strict form decode güvenlik düzeltmesi, ardından K-156 fuzz corpus kalıcılığı
+vardır.
 B-001 çağrı sözdizimi ile B-002 gezme zihinsel modeli gerçek insan
 kanıtı gelmeden kapatılmaz veya yeni syntax kararıyla atlanmaz.
 # 40. Proje felsefesinin korunması

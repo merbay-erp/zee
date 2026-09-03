@@ -156,8 +156,10 @@ kesin tanı spanı, exit ve çıktı aynı satırdır. Ağaç ile manifest bireb
 değilse ya da fixture minimality sınırını aşarsa test başarısız olur. Faz matrisi bu testi ayrı `Semantic regression`
 fazında sayar; böylece genel yeşil toplam geçmiş arıza kimliğini gizlemez.
 `semantic-regresyon-korugu.sh` ayrıca CI tabanındaki vaka+bug+yol+provenance
-zincirinin silinmesini veya yeniden kullanılmasını reddeder; compiler bug fix
-commit'i exact `fixed_by` sahibi yeni satır ve fixture olmadan geçemez.
+zincirinin silinmesini veya yeniden kullanılmasını reddeder. K-155A/ADR-053
+sabit başlangıçtan sonraki her `compiler/src` commit'ini mesajdan bağımsız
+`docs/compiler-degisiklik-beyanlari-v1.tsv` kaydına zorlar; bugfix sınıfı exact
+`fixed_by` sahibi yeni satır ve fixture olmadan geçemez.
 
 ## Immutable conformance verisi
 
