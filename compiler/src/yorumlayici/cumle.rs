@@ -350,13 +350,21 @@ pub(super) fn blok_calistir_async<'a>(
                 Cumle::IstekGeldiginde { .. } => {
                     // Yalnız kayıt: gövde, sunucu döngüsünde istek gelince koşulur.
                 }
-                Cumle::YanitGonder { deger, satir } => {
+                Cumle::YanitGonder {
+                    deger,
+                    durum,
+                    satir,
+                } => {
                     let deger =
                         degerlendir_async(deger, ortam, program, cikti, derinlik, *satir).await?;
                     let metin = metne_sinirli(&deger, *satir)?;
                     cikti_butcesini_tuket(&metin, *satir)?;
                     son_tarihi_denetle(cikti, *satir)?;
-                    cikti.yanit_gonder(&metin);
+                    if let Some(durum) = durum {
+                        cikti.durum_yaniti_gonder(*durum, &metin);
+                    } else {
+                        cikti.yanit_gonder(&metin);
+                    }
                 }
                 Cumle::Yonlendir { adres, satir } => {
                     let hedef = metne_sinirli(

@@ -5,7 +5,8 @@
 - **İlgili kararlar:** ADR-010, K-081, K-087, K-088, RFC-0017; v1 kapıları P0-02/P0-03/P0-04
 - **Gerçekleme:** açık imzalı eylem, yöntemli rota, geçişli etki denetimi,
   istek limiti/son tarihi, yerel dosya savepoint'i, production oturum/CSRF ve
-  TLS/proxy profili var; idempotency ve dağıtık transaction açık
+  TLS/proxy profili, literal 100..599 HTTP durumlu yanıt var; idempotency ve
+  dağıtık transaction açık
 
 ## Problem
 
@@ -54,6 +55,11 @@ POST "/notlar" adresine istek geldiğinde
     not ile notu kaydet
     "/notlar" adresine yönlendir
 ```
+
+K-163/F032 readiness ve gerçek 404 ihtiyacıyla rota sonucu için en küçük açık
+yüzey eklenmiştir: `<ifade> yanıtını <100..599 literal> durumuyla gönder`.
+Durumun literal olması response politikasını kaynakta görünür tutar; dinamik
+status/header builder ve eylem içi HTTP etkisi kabul edilmemiştir.
 
 Eylem HTTP bilmez. Aynı eylem daha sonra CLI, zamanlanmış iş, kuyruk veya
 test adaptöründen çağrılabilir. Form bir iş kuralı değil, eyleme adaptördür.
@@ -114,6 +120,10 @@ ekran/girdi/donanım etkisi taşıyamaz. Ayrıntılı normatif sözleşme spec/1
   `CommitSonucuBelirsiz` sınırı C027 üretir. Web aynı anlamı uzlaştırma isteyen
   503'e çevirir; process yaşar ve write otomatik tekrarlanmaz. IO izi sınıfı
   korur, eski iki alanlı genel hata kayıtlarını okumayı sürdürür.
+- **K-163/F032:** Literal 100..599 durumlu yanıt readiness için 503 ve içerik
+  yokluğu için 404 üretir; varsayılan yanıt 200 kalır. Dinamik/aralık dışı
+  durum S037'dir. Gerçek ürün aynı worker'da DB-down 503, liveness 200 ve DB
+  dönüşünde readiness 200 zincirini geçmiştir.
 - Tek-dosya atomik durum V1-P0-04/K-084 ile kapandı; eylemin çok-kaynaklı
   transaction/idempotency kapısı bu RFC'de açık kalır.
 

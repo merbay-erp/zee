@@ -70,6 +70,20 @@ POST "/notlar" adresine istek geldiğinde
     "/notlar" adresine yönlendir
 ```
 
+Rota, varsayılan 200 yerine sabit bir HTTP durumu gönderebilir:
+
+```text
+GET "/hazir" adresine istek geldiğinde
+    "hazır değil" yanıtını 503 durumuyla gönder
+```
+
+Durum yalnız kaynakta görünen `100..599` aralığında bir `TamSayı` literalidir.
+Değişken, hesaplanmış ifade ve aralık dışı değer S037 ile reddedilir. Böylece
+review ve etki analizi rota kaynak metninden exact durum kümesini görebilir.
+V1 bu cümleyle dinamik status/header builder, ham response nesnesi veya eylem
+içinden HTTP etkisi açmaz. Durumlu yanıt da yalnız rota gövdesindedir ve ilk
+yanıtın istek transaction'ını kapatma kurallarına tabidir.
+
 Desteklenen yöntemler `GET`, `HEAD`, `POST`, `PUT`, `PATCH`, `DELETE`dir.
 Yöntemsiz tarihsel rota yazımı geriye uyum için yalnız GET'e bağlanır; yeni kod
 yöntemi açıkça yazar. `istek` sözlüğündeki `"yöntem"` alanı gözlem amacıyla
@@ -181,3 +195,9 @@ akar; rota yalnız göreli yol/hash/boyut metadata'sını görür. Publish ve si
 ayrı dosya eylemleridir; PostgreSQL durum geçişiyle aynı eylemde birleşemez.
 Bu nedenle gerçek TCP yüzeyi `--deneysel-web` açık seçimini korur; bu bölüm tek
 başına “production web framework” sözü değildir.
+
+K-163/F032 gerçek ürün readiness ihtiyacı, yukarıdaki sabit durum yüzeyini
+açmıştır. Çatlı'da DB-bağımsız liveness 200 kalırken PostgreSQL readiness
+başarısızlığı 503, bulunamayan/taslak içerik 404 olur. Bu ürün kanıtı dynamic
+response API gerekçesi değildir; yeni durum kodları aynı literal sözleşmeyle
+yazılır.

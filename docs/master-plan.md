@@ -821,7 +821,8 @@ kapısına bağlandı. K-160/ADR-059 paket modelini davranıştan, resolver'ı t
 ve imzadan, registry'yi verification'dan ve yayın orkestrasyonunu güven
 mekanizmasından ayırdı. B-069/B-070 kapandı ve CORE FREEZE başladı. Yeni
 compiler özelliği gerçek dogfood ihtiyacı kanıtlanmadıkça reddedilir; sırada
-K-161/K-162 insan kanıtı ve K-163 ilk gerçek Zee ürünü vardır.
+K-161/K-162 insan kanıtı ve K-163 ilk gerçek Zee ürünü hattı vardır; K-163
+F032 ile kapanmıştır.
 K-160A bu sözü `core-freeze-beyanlari-v1.tsv` ve CI koruğuyla executable yaptı:
 semantic feature yalnız dogfood/security/correctness sınıfında; dogfood ise
 ürün, K-işi, reproducer, etkilenen proje, minimalite ve normatif kararın
@@ -894,10 +895,19 @@ döngüsünü ve temp, DB-hazırlama, rename, tombstone kesmelerinin restart
 yakınsamasını PG16.11 üzerinde kanıtladı. F030 kapalıdır. F031/ADR-062 pinned
 CA+hostname, yanlış CA/IP reddi, 4 bağlantılık exhaustion, stale replacement,
 idle/lifetime ve shutdown ölçümüyle production TLS/pool sınırını da gerçek
-PG16.11 üzerinde kapattı. Sıradaki saha kapısı organik 1000+ LOC bakım
-kontrolüdür; managed-provider rotasyonu ve çok-worker toplam bütçe release
+PG16.11 üzerinde kapattı. Organik 1000+ LOC bakım kontrolü F032'de kapanmıştır;
+managed-provider rotasyonu ve çok-worker toplam bütçe release
 tatbikatında açık kalır.
 Exact ürün saha kaydı `977cd2a` commit'indedir.
+F032/ADR-063 ürün kontrollü yanıtı en küçük yüzeyle açtı: durum yalnız
+100..599 literalidir; dinamik response/header builder yoktur. Çatlı'nın
+DB-bağımsız `/canli` rotası backend kapalıyken 200 kalırken `/hazir` 503 oldu,
+PostgreSQL dönüşünde aynı worker 200'e iyileşti. F014'ün yayımlanmamış/yok
+içerik için 200 workaround'u 404 ile emekli edildi. Ürün organik 1037 Zee
+LOC/5 modül/12 teste ulaştı; gerçek workspace LSP full-change p95 41,416 ms,
+10 dogfood commit'inde dosya medyanı 5,5'tir. Exact final ürün kanıtı
+`bb8e1ac`tır. Böylece K-163/V1-P0-36 kapanır; managed-provider/çok-worker
+tatbikatı K-169/K-173'e, içerik/malware politikası K-170'e açık aktarılır.
 B-001 çağrı sözdizimi ile B-002 gezme zihinsel modeli gerçek insan
 kanıtı gelmeden kapatılmaz veya yeni syntax kararıyla atlanmaz.
 # 40. Proje felsefesinin korunması

@@ -12,6 +12,16 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **Sabit HTTP durumlu yanıt ve K-163 kapanışı** (K-163/F032, ADR-063,
+  RFC-0015/spec-11): Rota artık `<ifade> yanıtını <100..599 literal>
+  durumuyla gönder` diyebilir; değişken/aralık dışı durum S037'dir ve eski
+  yanıt 200 kalır. Çatlı gerçek TLS PostgreSQL kapanınca aynı worker'da
+  readiness 503/liveness 200, backend dönüşünde readiness 200 verdi; eski
+  bulunamayan/taslak içerik 200 workaround'u 404 ile emekli edildi. Ürün 1037
+  Zee LOC/5 modül/12 teste ulaştı. Gerçek workspace LSP full-change p95
+  41,416 ms; 10 dogfood commit'inde dokunulan dosya medyanı 5,5'tir. Exact
+  ürün kanıtı `bb8e1ac`; K-163/V1-P0-36 kapalıdır.
+
 - **PostgreSQL production TLS ve sınırlı havuz** (K-163/F031,
   ADR-062/spec-25): Proje manifesti secretsiz kanonik DNS/IP hedefi taşır;
   URL exact eşleşir, `hostaddr` ve örtük `prefer` reddedilir. `sslmode=require`
@@ -115,8 +125,8 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   zincirleme ergonomisi izleniyor; son kayıt silmede kaybolan boş CSV başlığı
   mevcut dille kapatılıp teste alındı. Dördüncü dilimde yerel PostgreSQL ve
   migration kanıtı da üretildi. Medya F030, production TLS/pool F031 ile
-  kapandı; K-163 organik 1000+ LOC bakım skor kartı tamamlanmadığı için henüz
-  kapanmadı.
+  kapandı; F032 organik 1000+ LOC bakım skor kartını ve readiness/liveness
+  ayrımını kapatarak K-163'ü tamamladı.
 
 - **Executable CORE FREEZE** (K-160A, ADR-059): Yazılı politika artık her
   `compiler/src` commit'ini exact freeze sınıfına zorlayan CI kapısıdır.

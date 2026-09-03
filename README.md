@@ -181,10 +181,10 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **647** |
+| Rust + doctest vakası | **649** |
 | Tanı kimliği | **155 etkin + 3 ayrılmış** |
 | RFC | **27** (2 kabul, 23 geçici kabul, 2 taslak) |
-| ADR | **60** (60 kabul) |
+| ADR | **61** (61 kabul) |
 | Normatif spec bölümü | **26** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
@@ -343,7 +343,7 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   B-073 bu bağı append-only ürün/provenance kaydıyla sertleştirdi: K-işi gerçek
   backlog/günlük kaydı, etkilenen Zee dosyası etkin ürün kökü ve karar belgesi
   iş/ürün referansı taşımadan kapı açılmaz.
-  K-163 ilk gerçek ürün hattı da başladı: Çatlı/ITWISE Admin'in temiz dogfood
+  K-163 ilk gerçek ürün hattı Çatlı/ITWISE Admin'in temiz dogfood
   dalındaki `43171b9 → cef5ae3` hattı 495 satır Zee ile yönetici oturumu,
   CSRF korumalı duyuru CRUD'u, JSON site ayarları ve slug doğrulamalı
   taslak/yayında sayfa yaşam döngüsünü çalıştırdı. 7/7 test ile gerçek TCP
@@ -388,10 +388,18 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   2 sn checkout, 30 sn idle, 300 sn lifetime hedefi + bakım çevrimi, stale replacement ve kontrollü
   kapanışı gerçek PG16.11 üzerinde kapattı. Multipart, managed-provider CA
   rotasyonu, çok-worker toplam bütçe provası ve içerik güvenlik politikası açık
-  kalır; organik 1000+ LOC bakım kapanışı sıradadır.
+  kalır; organik 1000+ LOC bakım kapanışı F032'de tamamlanmıştır.
   Exact F031 ürün saha kaydı `977cd2a` commit'indedir; yeniden üretim ve dürüst
   kapsam [PostgreSQL TLS/havuz runbook'unda](docs/postgresql-tls-havuz-profili.md)
   sabittir.
+  F032/ADR-063 ile gerçek readiness ihtiyacı yalnız sabit 100..599 HTTP durum
+  literalini açtı; dinamik response/header builder açılmadı. Çatlı aynı
+  worker'da PostgreSQL kapalıyken readiness 503/liveness 200, backend dönüşünde
+  readiness 200 verdi; eski bulunamayan içerik 200 workaround'u 404'e döndü.
+  Ürün 1037 gerçek Zee LOC, 5 modül, 12 test ve gerçek workspace LSP
+  full-change p95 41,416 ms ile K-163/V1-P0-36'yı kapattı. Exact final ürün
+  provenance'ı `bb8e1ac`tır; deployment/security açıkları K-169/K-170/K-173'e
+  dürüstçe aktarılmıştır.
   K-151/ADR-048 bütün GitHub Actions `uses:` referanslarını incelenmiş 40
   haneli commit SHA'lara sabitledi. Sürümlü pin kaydı workflow'larla birebir,
   haftalık Dependabot yalnız inceleme PR'ı açar; hareketli `@v4`, `@stable`

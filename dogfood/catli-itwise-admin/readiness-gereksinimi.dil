@@ -1,0 +1,11 @@
+# K-163/F032 exact ürün ihtiyacı aynası.
+# Kaynak ürün commit'i: bb8e1ac00329ecb99f5640086fa9eb64e22f1963
+# Çalışan ürün ayrı itwise-admin deposundadır; bu dosya CORE FREEZE reproducer'ıdır.
+
+8080 kapısında sunucu başlat
+
+GET "/hazir" adresine istek geldiğinde
+    "hazır değil" yanıtını 503 durumuyla gönder
+
+GET "/canli" adresine istek geldiğinde
+    "canlı" yanıtını gönder

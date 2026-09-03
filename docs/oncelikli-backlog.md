@@ -751,14 +751,18 @@ K-160A executable freeze kapısını da kapattı. K-163 ilk gerçek Zee ürünü
 CSRF CRUD, JSON site ayarları ve slug doğrulamalı taslak/yayında sayfa yaşam
 döngüsünü taşır. 7/7 hermetik test ile gerçek TCP içerik+ayar+sayfa provası
 geçmiştir. Dördüncü dilim 492 Zee satırında yerel PostgreSQL/migration,
-parameterized bind, 23505 ve rollback kanıtını ekledi. K-163 henüz kapanmış
-değildir. F030, 970 Zee LOC/4 modül/10 testte binary upload/hash, publish,
+parameterized bind, 23505 ve rollback kanıtını ekledi. F030, 970 Zee LOC/4
+modül/10 testte binary upload/hash, publish,
 tombstone/silme ve restart orphan uzlaştırmasını gerçek PG16.11 ile kapattı.
 F031 production TLS ve kontrollü havuzu pinned CA/hostname, 4 bağlantılık
 exhaustion, stale recovery, idle/lifetime ve shutdown saha kanıtıyla kapattı.
-Organik 1000+ bakım skor kartı beklenir; managed-provider ve çok-worker toplam
-bütçe tatbikatı release hattında açıktır.
-Exact F031 ürün kanıtı `977cd2a` commit'indedir.
+F032 ürün hattını 1037 gerçek Zee LOC/5 modül/12 teste taşıdı; DB-down
+readiness 503 olurken liveness 200 kaldı ve backend dönüşünde aynı worker
+readiness 200'e döndü. 1000+ skor kartında LSP full-change p95 41,416 ms,
+dogfood commit'i başına dokunulan dosya medyanı 5,5'tir. Exact final ürün
+kanıtı `bb8e1ac` commit'indedir; K-163 kapalıdır. Managed-provider ve
+çok-worker toplam bütçe K-169/K-173; multipart/içerik güvenliği K-170
+hattında açık kalır.
 K-161/K-162 gerçek insan testleri de insan verisini beklemeyi sürdürür.
 İnsan verisi gelmeden yeni syntax seçilmez
 veya B-001/B-002 tamamlanmış gösterilmez.
@@ -787,7 +791,7 @@ tamamlanmış sayılmaz; burada istenen ek kanıt ayrıca üretilir.
 | K-160A | **KAPALI — EXECUTABLE FREEZE** | Exact commit sınıfı; dogfood feature için ürün+iş+reproducer+proje+minimalite+karar |
 | K-161 | **İNSAN KANITI** | B-001/K-016 için 10 öğrenci/çocuk + 5 profesyonel kör oturum |
 | K-162 | **İNSAN KANITI** | B-002/K-093 morphology/scope/call/error zihinsel model oturumu |
-| K-163 | **DEVAM EDİYOR** | Çatlı 970 Zee LOC/4 modül/10 testte F030 binary medya saga'sını ve F031 production TLS/havuzu geçti. ADR-062/spec-25 pinned CA+hostname, yanlış CA/IP reddi, worker başına 4 bağlantı, 2 sn checkout, 30 sn idle, 300 sn lifetime hedefi + bakım çevrimi, stale replacement ve kontrollü shutdown taşır; gerçek PG16.11 saha kanıtı vardır. Sırada organik 1000+ LOC bakım skor kartı vardır; managed-provider/çok-worker toplam bütçe release tatbikatına kalır |
+| K-163 | **KAPALI** | Çatlı 1037 Zee LOC/5 modül/12 testte gerçek PG16.11, TLS/bounded pool, binary saga, failure reconciliation ve F032 liveness/readiness zincirini geçti. Bakım skor kartı LSP p95 41,416 ms ve dosya medyanı 5,5 ile kapalı; exact ürün `bb8e1ac` |
 | K-164 | **AÇIK** | Farklı workload'da ikinci gerçek proje |
 | K-165 | **AÇIK** | Aynı uygulamanın Zee–Go/Rust veri temelli dogfood karşılaştırması |
 | K-166 | **AÇIK** | En sık 50 hata için span/öneri/noise düzeltme başarısı |
