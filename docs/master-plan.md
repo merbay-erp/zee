@@ -881,6 +881,11 @@ metadata'yı `hazırlanıyor` bırakırken C013 ile worker'ı sonlandırdı. Bu 
 web'de request-local C013 → 503, sıfır retry ve worker survival correctness
 sözünü açtı. Binary hash/upload, fiziksel silme/orphan tarama ve production
 TLS/pool açık kalır.
+Zee `395b2e9` değişikliğinin ardından exact final ürün kanıtı `29d30c8` oldu:
+C013 503/no-retry verirken worker sağlık isteğinde 200 kaldı; eksik dosya
+metadata'sı `hatalı`ya, finalize reddiyle kalan kayıt process restartından
+sonra `hazır`a uzlaştırıldı. Aynı kodlu tekrar UNIQUE ile reddedildi ve dosya
+hash'i değişmedi. Böylece F029 metin-payload yaşam döngüsü kapandı.
 B-001 çağrı sözdizimi ile B-002 gezme zihinsel modeli gerçek insan
 kanıtı gelmeden kapatılmaz veya yeni syntax kararıyla atlanmaz.
 # 40. Proje felsefesinin korunması

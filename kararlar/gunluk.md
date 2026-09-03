@@ -2905,3 +2905,8 @@ usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.
   isteği kabul etmesini correctness gereği yaptı. CLI C013 değişmez.
 - Binary upload/hash, fiziksel silme/rename ve otomatik orphan tarama F030 ile;
   production TLS/pool ve 1000+ LOC ölçümü K-163 içinde açık kalır.
+- Zee `395b2e9` sonrası final ürün commit'i `29d30c8`, gerçek C013'ü 503 yaptı;
+  aynı worker sağlık GET'inde 200 kaldı ve metadata `hatalı`ya uzlaştırıldı.
+  Finalize reddiyle kalan dosya+metadata yeni process'te `hazır` oldu; aynı
+  kodlu tekrar dosya SHA-256'sını değiştirmedi. Deney satırı, trigger'ı, dosyası
+  ve bağlantısı sıfırlandı; F029 kapandı.
