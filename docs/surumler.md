@@ -45,7 +45,8 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   PostgreSQL client'ı yeniden kullanılmaz ve worker sonraki isteği kabul eder.
   Gerçek backend-kill provasında başarısız write otomatik tekrar edilmedi, satır
   sayısı 0 kaldı; sonraki GET yeni backend PID'sine bağlandı ve sonraki bağımsız
-  write 303 ile tek satır üretti. Wire-level COMMIT ambiguity enjeksiyonu açık.
+  write 303 ile tek satır üretti. Exact saha kaydı `00a659a` ürün commit'indedir.
+  Wire-level COMMIT ambiguity enjeksiyonu açık.
 
 - **Dogfood kanıt referans bütünlüğü** (B-073): Append-only ürün kaydı tekil
   slug, repo içi kanıt kökü, exact harici ürün commit'i ve durum taşır. CORE

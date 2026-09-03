@@ -368,7 +368,8 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   göstermesi görünür arıza kartına çevrildi. F027 doğruluk dilimi transaction
   sınırı hatasını 503'e çevirdi, client/savepoint durumunu geçersiz kıldı ve
   worker'ı sonraki bağımsız read/write için ayakta tuttu; başarısız write tekrar
-  edilmedi. Gerçek pool ve wire-level COMMIT ambiguity açık kaldı. 492 LOC bakım tabanı 1000+ satır
+  edilmedi. Exact ürün kanıtı `00a659a` commit'indedir. Gerçek pool ve
+  wire-level COMMIT ambiguity açık kaldı. 492 LOC bakım tabanı 1000+ satır
   karşılaştırması için exact yöntemle kaydedildi.
   K-151/ADR-048 bütün GitHub Actions `uses:` referanslarını incelenmiş 40
   haneli commit SHA'lara sabitledi. Sürümlü pin kaydı workflow'larla birebir,

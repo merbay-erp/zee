@@ -33,7 +33,7 @@ Gerçek IO sahibi transaction başlangıç/tamamlama/geri alma hatasında client
 yeniden kullanmaz. Yerel eylem bookkeeping'i temizlenir; web yorumlayıcısı
 C021'i 503 isteğine dönüştürüp worker döngüsünü sürdürür. Bu yalnız süreç
 survival ve sonraki bağımsız bağlantıdır; başarısız write'ın tekrarına izin
-veren bir recovery değildir.
+veren bir recovery değildir. K-163 F027 exact ürün kanıtı `00a659a` commit'idir.
 
 Bağlantı URL'si kaynakta bulunamaz. İlk adaptör yalnız exact loopback hedefi ve
 `sslmode=disable` kabul eder. Bu kısıt production güvenlik çözümü değil,
