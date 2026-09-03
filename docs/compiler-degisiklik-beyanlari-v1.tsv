@@ -4,3 +4,4 @@
 32247c79321b5b350b18b15198a245776b22fc84	semantic-bugfix	bozuk-form-kodlamasi	Bozuk yüzde kodlaması ve geçersiz UTF-8 artık kayıplı çözülmeden 400 ile reddedilir.
 42e662986167d26a8baf358ea599487cdd7ff9ad	maintenance	-	Faz matrisi yalnız test kanıtı metadatasını ve raporunu genişletir; Zee grammar, runtime ve kullanıcı programı davranışı değişmez.
 9e1418bd8fce6a991259de59a189b5ec34e47fd8	maintenance	-	Sürümlü Rust facade ve internal görünürlük sınıfı gömme sözleşmesini belgeler; Zee grammar, runtime ve kullanıcı programı davranışı değişmez.
+5a33cc48d0ae8d9368ac8efb99b8e7cee372984a	maintenance	-	Paket modeli, doğrulama, registry, çözüm ve yayın sahipliği ayrıldı; Zee grammar, runtime ve kullanıcı programı davranışı değişmedi.
