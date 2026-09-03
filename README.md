@@ -18,6 +18,7 @@ Bu bir çeviri katmanı değildir (`if→eğer` makyajı yok); AI semantiğin pa
 - **Derleyici tedarik zinciri:** [docs/tedarik-zinciri.md](docs/tedarik-zinciri.md) — RustSec/lisans/kaynak ve gerçek offline vendor kapısı
 - **Playground host sözleşmesi:** [docs/wasm-c-abi.md](docs/wasm-c-abi.md) — sürümlü, kayıtlı ve fuzz kanıtlı WASM C ABI
 - **RC fuzz güveni:** [docs/fuzz-rc.md](docs/fuzz-rc.md) — dört hedefte uzun AddressSanitizer kampanyası ve seçili Miri kapısı
+- **Rust gömme API'si:** [docs/public-api-politikasi.md](docs/public-api-politikasi.md) — desteklenen `dil::api::v1` facade ve SemVer sınırı
 - **Derleyici büyüme eğilimi:** [docs/islev-egilimi.md](docs/islev-egilimi.md) — kritik işlevlerde incelenmiş Clippy tabanı ve CI gözden geçirme payı
 - Dosya uzantısı: **`.dil`** (kalıcı — ADR-009)
 - Master plan: [docs/master-plan.md](docs/master-plan.md) (kaynak: [docs/Turkce_Programlama_Dili_Master_Proje_Dokumani.docx](docs/Turkce_Programlama_Dili_Master_Proje_Dokumani.docx))
@@ -180,10 +181,10 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **617** |
+| Rust + doctest vakası | **620** |
 | Tanı kimliği | **152 etkin + 3 ayrılmış** |
 | RFC | **25** (2 kabul, 21 geçici kabul, 2 taslak) |
-| ADR | **55** (55 kabul) |
+| ADR | **56** (56 kabul) |
 | Normatif spec bölümü | **24** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 

@@ -99,6 +99,10 @@ AddressSanitizer ile çalıştırır; crash, timeout veya sanitizer bulgusu kap�
 kırar. Seçili saf çekirdek Miri testleri de geçmeli ve exact çevre/sonuç
 `docs/fuzz-rc-gecmisi-v1.tsv` dosyasına aynı toplu committe eklenmelidir.
 
+Rust gömme kullanıcılarına destek sözü yalnız `dil::api::v1` facade'ıdır.
+Yeni export `public_api_testi` exact allowlist'i ve SemVer politikasıyla aynı
+değişiklikte bilinçli açılır; internal kök modül işaretlenmeden public bırakılamaz.
+
 ## V1 öncesi iş sırası
 
 Bağlayıcı sıra `docs/oncelikli-backlog.md` içindedir. P0 compiler/dil omurgası

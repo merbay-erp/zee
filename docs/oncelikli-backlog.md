@@ -705,6 +705,10 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   `ek_kapsam` bağlar. Geçersiz bağlar fail-closed reddedilir; rapor birincil
   test, çapraz gerçek kanıt ve mimari aşağı akışı ayrı gösterir. ADR-057
   bağlayıcıdır.
+- **B-069 · KAPALI (K-159) — public/internal API sınırı.** Desteklenen Rust
+  gömme sözleşmesi exact `dil::api::v1` facade'ıdır. Kök legacy modüller
+  `doc(hidden)` internal sınıfındadır; smoke, exact export allowlist'i ve yeni
+  kök modül sızıntısı test kapısıdır. ADR-058 ve public API politikası bağlayıcıdır.
 
 ## Bir sonraki somut kapı
 
@@ -717,7 +721,8 @@ mesajdan bağımsız fail-closed beyan kapısını kurdu; K-176 strict form deco
 K-156 cache dışı fuzz korpus kalıcılığını, K-157 dört hedefte toplam
 136.789.564 yürütmeli uzun AddressSanitizer kampanyasını ve 3/3 Miri kanıtını
 kapattı. K-158 seçici düzeyi çoklu kapsam ve gerçek blast-radius raporunu
-kapattı. Sıradaki makine işi K-159 public/internal facade sınırıdır.
+kapattı. K-159 sürümlü facade ve SemVer sınırını kapattı. Sıradaki makine işi
+K-160 paket/registry/tedarik ownership ayrımıdır.
 İnsan verisi gelmeden yeni syntax seçilmez
 veya B-001/B-002 tamamlanmış gösterilmez.
 
@@ -740,7 +745,7 @@ tamamlanmış sayılmaz; burada istenen ek kanıt ayrıca üretilir.
 | K-156 | **KAPALI** | Her hedefte SHA-256/run/commit provenance'lı 90 günlük korpus artefaktı ve review'lü seed terfisi |
 | K-157 | **KAPALI** | Dört hedefte 30 dk, toplam 136.789.564 yürütme; sıfır crash/timeout/ASan ve 3/3 Miri |
 | K-158 | **KAPALI** | Exact seçicide opsiyonel çoklu `ek_kapsam`; birincil/çapraz/aşağı-akış blast radius |
-| K-159 | **AÇIK** | Desteklenen facade, internal API ve SemVer politikası |
+| K-159 | **KAPALI** | Exact `dil::api::v1` allowlist, internal kök sınıfı ve SemVer politikası |
 | K-160 | **AÇIK — C001 son tarihi 2026-10-01** | Paket modeli/çözüm/registry/doğrulama sahipliği ve SCC kaldırma |
 | K-161 | **İNSAN KANITI** | B-001/K-016 için 10 öğrenci/çocuk + 5 profesyonel kör oturum |
 | K-162 | **İNSAN KANITI** | B-002/K-093 morphology/scope/call/error zihinsel model oturumu |
