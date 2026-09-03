@@ -827,6 +827,11 @@ semantic feature yalnız dogfood/security/correctness sınıfında; dogfood ise
 ürün, K-işi, reproducer, etkilenen proje, minimalite ve normatif kararın
 tamamıyla geçer. B-071/V1-P0-35 kapandı. Eski `tedarik` cephesinin V1 ömrü
 K-167 compatibility policy içinde kararlaştırılacak; dogfood'u geciktirmez.
+Freeze metadata'sının kolayca alakasız mevcut dosyalarla doldurulmasını
+daraltacak B-073 de açık P1 governance hardening'dir: ürün root kaydı, gerçek
+K-işi, root-altı Zee proje/kaynak yolu ve karar belgesi referansı ilk
+dogfood-kaynaklı compiler değişikliğinden önce zorunlu olacak; K-163'ün
+başlangıcını engellemez.
 B-001 çağrı sözdizimi ile B-002 gezme zihinsel modeli gerçek insan
 kanıtı gelmeden kapatılmaz veya yeni syntax kararıyla atlanmaz.
 # 40. Proje felsefesinin korunması

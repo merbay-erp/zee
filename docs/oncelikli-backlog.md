@@ -723,6 +723,13 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
 - **B-072 · AÇIK (K-167) — eski `tedarik` cephesinin ömrü.** Facade'ın depo
   içi production tüketicisi sıfırdır. V1 compatibility policy sırasında silme
   ya da süreli deprecation kararı verilecek; dogfood öncesi compiler işi açmaz.
+- **B-073 · AÇIK (P1, dogfood'u engellemez) — freeze kanıt referans
+  bütünlüğü.** İlk dogfood kaynaklı compiler değişikliğinden önce kayıtlı ürün
+  slug→root tablosu eklenecek. Freeze kapısı K-işinin backlog/günlükte varlığını,
+  etkilenen `proje.dil`/`.dil` yolunun kayıtlı ürün root'u altında oluşunu ve
+  karar belgesinin K-işi ya da ürün kimliğine açık referansını doğrulayacak.
+  Reproducer'ın ihtiyaca semantik uygunluğu insan review'unda kalır; CI bunun
+  doğru olduğunu iddia etmez.
 
 ## Bir sonraki somut kapı
 
