@@ -33,6 +33,7 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   client yeniden bağlanmıyordu. Ardındaki correctness değişikliği transaction
   dışı salt okumada kapalı client'ı atıp tek reconnect + tek SELECT tekrarı
   yapar; aynı PostgreSQL 16.11 provası process restart olmadan başarıya döndü.
+  Exact PID/süre/temizlik ve negatif write kanıtı `78cce11` ürün commit'indedir.
   Transaction içi okuma, SQL reddi, write ve COMMIT tekrar edilmez; COMMIT
   bağlantı kaybı “sonuç belirsiz” olarak raporlanır. Write olumsuzu satır
   üretmedi fakat C021 ile süreci sonlandırdı. Doğru HTTP 503, write-path

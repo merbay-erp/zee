@@ -361,7 +361,8 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   süreç içinde yeniden bağlanmıyordu. K-163 correctness dilimi transaction dışı
   salt okumada kapalı client'ı atıp tek reconnect + tek SELECT tekrarı ekledi;
   aynı gerçek PostgreSQL 16.11 backend-sonlandırma provası process restart
-  olmadan iyileşti. Transaction içi okuma, SQL reddi, write ve COMMIT otomatik
+  olmadan iyileşti; exact ürün kanıtı `78cce11` commit'indedir. Transaction içi
+  okuma, SQL reddi, write ve COMMIT otomatik
   tekrar edilmez; COMMIT kaybı “sonuç belirsiz”dir. Write olumsuzunda satır
   oluşmadı fakat uygulama C021 ile sonlandı. Ürünün DB hatasını boş liste gibi
   göstermesi görünür arıza kartına çevrildi; doğru HTTP 503, gerçek pool ve

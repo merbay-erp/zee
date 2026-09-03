@@ -43,6 +43,7 @@ girer; replay dış veritabanına bağlanmaz.
 
 K-163 ürün commit'i `43d04fc` stale-client arızasını buldu. Ardından gerçek
 PostgreSQL 16.11 backend sonlandırma koşusunda tek read reconnect aynı süreçte
-başarılı oldu; write olumsuzunda tekrar ve satır oluşmadı. Uygulamanın write
+başarılı oldu; write olumsuzunda tekrar ve satır oluşmadı. Exact saha kanıtı
+ürün deposundaki `78cce11` commit'indedir. Uygulamanın write
 bağlantı kaybında C021 ile sonlanması ile gerçek COMMIT-kaybı enjeksiyonu açık
 availability/kanıt sınırıdır; bu karar onları çözülmüş göstermez.
