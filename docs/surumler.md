@@ -24,6 +24,7 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   eylem transaction/savepoint'ine, dil göçür ise advisory lock ve değişmez
   SHA-256 migration geçmişine bağlıdır. Gerçek PostgreSQL 16.11 ürün provası
   apply→skip→hash reddi, injection-benzeri değer, 23505 ve rollback'i geçti.
+  Çalışan ürün kanıtı `itwise-admin` deposundaki `a393128` commit'indedir.
   Bu yalnız localhost sslmode=disable profilidir; production TLS/pool sözü yoktur.
 
 - **Dogfood kanıt referans bütünlüğü** (B-073): Append-only ürün kaydı tekil

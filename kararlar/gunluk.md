@@ -2812,7 +2812,8 @@ usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.
 
 ### K-163 dördüncü dilim — PostgreSQL saha sınırı — 3 Eylül 2026
 
-- **Ürün kanıtı:** Dosya tabanlı slug ön-kontrolü gerçek PRIMARY KEY'e taşındı.
+- **Ürün kanıtı:** `itwise-admin` ürün commit'i `a393128`, dosya tabanlı slug
+  ön-kontrolünü gerçek PRIMARY KEY'e taşıdı.
   Çatlı uygulaması 492 Zee satırı, 12 satır manifest ve 6 satır migration ile
   510 satırlık dikey kanıttır; denetim temiz ve DB'siz testler 6/6'dır.
 - **Dil/runtime kararı:** RFC-0026/ADR-060/spec-25 secretsiz exact loopback
