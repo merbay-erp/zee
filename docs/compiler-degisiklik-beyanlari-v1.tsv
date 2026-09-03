@@ -10,3 +10,4 @@ b8f8d8a6d9b608975177407e403f92403ce06eb9	semantic-change	spec/25-postgresql-veri
 5c5d9e18f4f22674bc142dc2b6ffc7a895fe75fe	semantic-change	spec/25-postgresql-veri-erisimi.md	K-163 saha bulgusu transaction dışı salt okumaya tek güvenli reconnect verir; write ve COMMIT tekrarını yasak tutar.
 246c729e0b92b4b784a7f397852c395825772f33	semantic-change	spec/11-uygulama-eylemleri-ve-web-adaptoru.md	K-163 F027 transaction sınırı arızasını write tekrarı olmadan 503 isteğine dönüştürür ve web worker'ını yaşatır.
 c8a86829d221732d76160f16cc113a7fea17707b	semantic-change	spec/25-postgresql-veri-erisimi.md	K-163 F028 COMMIT sonucunun doğrulanamadığı iki DB durumunu aynı C027 sınıfında, otomatik retry olmadan ve uzlaştırma gereğiyle taşır.
+284fb4c3acb85cac574be429f2c45b015f99b86e	semantic-change	spec/11-uygulama-eylemleri-ve-web-adaptoru.md	K-163 F029 gerçek medya yazma arızası C013'ü web'de request-local 503'e çevirir; CLI tanısını ve no-retry davranışını korur.
