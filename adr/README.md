@@ -57,6 +57,7 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-052 | [Semantic regresyon provenance zinciri](052-semantic-regresyon-provenance.md) | **kabul** (K-155/B-063) |
 | ADR-053 | [Compiler semantic değişiklik beyanı](053-compiler-semantic-degisiklik-beyani.md) | **kabul** (K-155A/B-064; ADR-052 kapı revizyonu) |
 | ADR-054 | [Strict form URL kodlaması](054-strict-form-url-kodlamasi.md) | **kabul** (K-176/B-065) |
+| ADR-055 | [Fuzz korpus öğreniminin kalıcılığı](055-fuzz-korpus-kaliciligi.md) | **kabul** (K-156/B-066) |
 | ADR-004 | Bellek yönetimi prototip kararı (GC / ARC benchmark) | bekliyor |
 | ADR-005 | Native backend seçimi (Cranelift / LLVM) | bekliyor — Faz 4 |
 | ADR-007 | [Telemetri ve gizlilik: araçlar veri toplamaz](007-telemetri-ve-gizlilik.md) | **kabul** |

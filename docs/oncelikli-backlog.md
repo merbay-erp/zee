@@ -194,6 +194,11 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
     sonrası geçersiz UTF-8'i rota çalışmadan 400'e çeviren strict uygulamayı
     ekledi. `web` kipli kalıcı fixture exact `32247c7…` uygulama SHA'sına ve
     compiler semantic bugfix beyanına bağlıdır; B-065 kapandı.
+54. K-156/ADR-055 dört gecelik hedefin koşu sonu coverage korpusunu cache'ten
+    bağımsız, SHA-256 seed manifestli ve kaynak commit+run provenance'lı 90
+    günlük artefakta taşır. Doğrulayıcı Linux/macOS hash yollarını ve
+    manifest↔ağaç birebirliğini gerçek geçerli/bozuk artefaktla sınar; repo
+    seed'i `cmin`+stable replay+insan review'u ister. B-066 kapandı.
 
 ## P0 — V1 öncesi dil ve derleyici omurgası
 
@@ -300,7 +305,8 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   ve 64 KiB uç girdiler yürür. Sabit nightly+cargo-fuzz gece işi korpusu cache
   ile büyütür, crash girdisini artifact yapar. İlk yerel smoke 1.048.287
   girdiyi crash/panic olmadan tamamladı. ADR-022, [fuzz rehberi](fuzzing.md)
-  ve üç regresyonla V1-P0-20 kapandı; toplam 432 test yeşildir.
+  ve üç regresyonla V1-P0-20 kapandı; toplam 432 test yeşildir. K-156/B-066
+  daha sonra bütün coverage korpusunu cache dışı provenance'lı artefakta aldı.
 - **B-016 · KAPALI (K-111) — morfoloji property/fuzz testini büyüt.** Profilin
   bütün geçerli tek/iki katman zincirleri 4.096 deterministik kökte üret→çöz
   değişmezini korur. Üretilmiş 2.048 yüzey bütün adayları kapsama alınarak
@@ -654,6 +660,12 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   400'dür; kayıplı dönüşüm kaldırılmıştır. Hedefli web testi ile `web` kipli
   kalıcı fixture çalışır; `fixed_by=32247c7…` aynı exact SHA'yı compiler
   değişiklik beyanında taşır.
+- **B-066 · KAPALI (K-156/ADR-055) — Fuzz corpus kalıcılığı.** Lexer/parser,
+  morfoloji, HTTP ve WASM ABI hedeflerinin koşu sonu coverage korpusu,
+  başarı/başarısızlıktan bağımsız 90 günlük artefakta yüklenir. Manifest kaynak
+  commit, run/attempt, araç sürümleri ve her seed'in göreli yolu+SHA-256'sını
+  taşır. Cache yalnız hızlandırmadır; repoya terfi doğrulama, `cmin`, stable
+  replay ve insan review'u ister.
 - **B-041 · KAPALI (K-120) — LSP'yi SymbolId/HIR'a bağla.** Definition ve
   rename yalnız başarılı checker'ın `SymbolId`/`IslemId`/`YapiId` typed-HIR
   bağından hedef seçer. HIR ilk tanım, yeniden atama ve okuma aralıklarını
@@ -690,8 +702,9 @@ ile önceden ilan edilmiş eşikleri bekler. Makine hattında K-153 gerçek
 process→stdio LSP cold-start yolunu exact 25 örnekli tabanla kapattı.
 K-154 tam-metin değişim ölçek eğrisini ve invalidation sınırını exact tabanla,
 K-155 semantic regresyon provenance zincirini v2 manifeste taşıdı; K-155A
-mesajdan bağımsız fail-closed beyan kapısını kurdu. Sıradaki güvenlik işi strict
-form decode, ardından makine işi K-156 fuzz corpus kalıcılığıdır.
+mesajdan bağımsız fail-closed beyan kapısını kurdu; K-176 strict form decode'u,
+K-156 ise cache dışı fuzz korpus kalıcılığını kapattı. Sıradaki makine işi
+K-157 uzun fuzz kampanyasıdır.
 İnsan verisi gelmeden yeni syntax seçilmez
 veya B-001/B-002 tamamlanmış gösterilmez.
 
@@ -711,7 +724,7 @@ tamamlanmış sayılmaz; burada istenen ek kanıt ayrıca üretilir.
 | K-155 | **KAPALI** | V2 manifestte exact `fixed_by`, kanıtlı `introduced_by` ve garanti sürümü |
 | K-155A | **KAPALI** | Her compiler kaynak commit'inde mesajdan bağımsız semantic beyan; bugfixte exact fixture |
 | K-176 | **KAPALI** | Strict `%xx`/UTF-8 form reddi, rota-öncesi 400 ve exact SHA'lı web regression fixture'ı |
-| K-156 | **AÇIK** | Nightly fuzz corpus artefaktı ve review'lü coverage seed kalıcılığı |
+| K-156 | **KAPALI** | Her hedefte SHA-256/run/commit provenance'lı 90 günlük korpus artefaktı ve review'lü seed terfisi |
 | K-157 | **AÇIK** | Dört hedefte 30–60 dk RC kampanyası; uygun sanitizer/Miri kanıtı |
 | K-158 | **AÇIK** | Faz matrisinde opsiyonel çoklu `covers` ve doğru blast radius |
 | K-159 | **AÇIK** | Desteklenen facade, internal API ve SemVer politikası |

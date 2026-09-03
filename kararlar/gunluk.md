@@ -2623,6 +2623,21 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   gösterir ve aynı SHA compiler semantic bugfix beyanında bulunur. ADR-054 ve
   B-065 kapalıdır; duplicate alan politikası ayrı dilimdir.
 
+## K-156 — Fuzz öğrenimi cache tahliyesiyle kaybolmamalı (3 Eyl)
+
+- **Sorun:** LibFuzzer coverage artıran girdiyi korpusa yazsa da gecelik iş bu
+  öğrenimi yalnız cache'te tutuyor, sadece crash'i artefakt yapıyordu. Cache
+  tahliyesi crash üretmeyen değerli yolları sessizce silebilirdi.
+- **Karar:** Dört hedefin koşu sonu korpusu `always()` ile 90 günlük ayrı
+  artefakta gider. Şema-1 manifest kaynak commit, run/attempt, araç sürümleri
+  ve her seed'in göreli yolu+SHA-256 özetini taşır; cache yalnız hızlandırmadır.
+- **Kanıt:** Stable test workflow'daki dört hedef/always/upload/provenance
+  bağını korur. Gerçek geçici artefakt doğrulayıcıdan geçer; seed byte'ı
+  değiştirildiğinde SHA-256 kapısı reddeder.
+- **Kapanış:** ADR-055/B-066 kapalıdır. Repo korpusuna terfi otomatik değildir;
+  doğrulama, `cargo fuzz cmin`, stable replay ve insan review'u zorunludur.
+  K-157 uzun RC fuzz/sanitizer/Miri kapısı açık kalır.
+
 ---
 
 ## Sonraki adım
@@ -2633,8 +2648,8 @@ deterministik mi / öğrenilebilir mi / savunulabilir mi" dört soru süzgeci
 işletilip durumlar güncellenecek. `AÇIK` kayıtlar ilgili RFC'lere taşınacak.
 Makine hattında K-154 tam-metin ölçek eğrisini exact tabanla, K-155 semantic
 regresyon provenance zincirini v2 manifestle ve K-155A bütün compiler kaynak
-commit'lerini mesajdan bağımsız beyan kapısıyla, K-176 ise strict form decode
-güvenlik açığını exact web fixture'ıyla kapattı. Sırada K-156 fuzz corpus
-kalıcılığı vardır.
+commit'lerini mesajdan bağımsız beyan kapısıyla, K-176 strict form decode
+güvenlik açığını exact web fixture'ıyla ve K-156 cache dışı provenance'lı fuzz
+korpusu artefaktıyla kapattı. Sırada K-157 uzun fuzz kampanyası vardır.
 B-001/B-002 (yeni sırada K-161/K-162), gerçek 10 çocuk/öğrenci + 5 profesyonel
 usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.

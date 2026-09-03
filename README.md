@@ -113,7 +113,9 @@ Determinizm testlerde tam: rastgelelik, saat, dosyalar, HTTP, sunucu istekleri,
 sensörler ve an ölçümü IO soyutlamasından gelir; bütün testler hermetik koşar.
 Lexer/parser panic-free ve morfoloji üret→çöz sözlerini ayrıca kalıcı saldırı
 korpusları, deterministik üretim ve gecelik [libFuzzer hattı](docs/fuzzing.md)
-denetler. Parser sonrası AST ile checker sonrası typed HIR arasındaki iç
+denetler. K-156 her hedefin coverage öğrenimini cache'ten bağımsız, SHA-256 ve
+run/commit provenance'lı 90 günlük artefakta taşır; repoya giriş küçültme,
+stable replay ve review ister. Parser sonrası AST ile checker sonrası typed HIR arasındaki iç
 sözleşme de debug/test hattında yürütülebilir
 [invariant kapısıyla](docs/ast-hir-invariantleri.md) doğrulanır.
 
@@ -177,10 +179,10 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **614** |
+| Rust + doctest vakası | **615** |
 | Tanı kimliği | **152 etkin + 3 ayrılmış** |
 | RFC | **25** (2 kabul, 21 geçici kabul, 2 taslak) |
-| ADR | **52** (52 kabul) |
+| ADR | **53** (53 kabul) |
 | Normatif spec bölümü | **24** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 

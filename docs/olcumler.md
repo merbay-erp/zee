@@ -121,7 +121,8 @@ katken maliyet 4,32 kat; 10k→20k iki katken maliyet 4,32 kattır. Bu gözlem
 mevcut tam-ön-uç yolunun belirgin süper-doğrusal davrandığını gösterir;
 nedensel algoritma hükmü veya henüz optimizasyon değildir. K-154/B-062
 kapanmıştır; K-155 semantic regresyon provenance'ını da kapattığı için
-bağlayıcı sırada K-156 fuzz corpus kalıcılığı vardır.
+K-156 cache dışı fuzz corpus kalıcılığını da kapatmıştır. Bağlayıcı sıradaki
+makine işi K-157 uzun fuzz kampanyasıdır.
 
 ## K-148 başlangıç tabanı — 2 Eylül 2026 · Apple M4 Pro, macOS arm64, Rust 1.93.1
 

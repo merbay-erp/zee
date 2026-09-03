@@ -12,6 +12,14 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **Cache dışı fuzz korpus kalıcılığı** (K-156, ADR-055): Dört gecelik hedefin
+  koşu sonu coverage korpusu artık başarılı/başarısız her koşuda 90 günlük
+  ayrı artefakttır. Manifest kaynak commit, run/attempt, sabit toolchain ve
+  cargo-fuzz sürümüyle her seed'in göreli yolu+SHA-256 özetini taşır. Linux ve
+  macOS uyumlu doğrulayıcı değiştirilmiş/ağaçtan kopmuş artefaktı reddeder;
+  kalıcı kaynak seed'i `cmin`, stable replay ve review ister. B-066 kapandı;
+  K-157 uzun RC fuzz/sanitizer/Miri kampanyası açık kalır.
+
 - **Strict form URL kodlaması** (K-176,
   ADR-054): Sorgu ve form alanlarının adı/değeri artık tam iki hexadecimal
   haneli `%xx` ve çözüm sonrasında exact UTF-8 ister. Eksik/kuralsız kaçış ile

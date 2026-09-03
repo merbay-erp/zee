@@ -86,6 +86,12 @@ değişmediğini açıklayan gerekçeyle geçer. Kaynak commit'i önce, beyan ve
 gerekiyorsa fixture/provenance commit'i sonra alınır; commit mesajı muafiyet
 veya güvenlik sınırı değildir.
 
+Fuzz workflow'u coverage korpusunu yalnız cache'te bırakamaz; her hedefin koşu
+sonu korpusu `zee-fuzz-corpus-artifact-1` SHA-256/run/commit manifestiyle 90
+günlük artefakta gider. İndirilen seed doğrulanıp küçültülmeden, stable
+replay/regresyon kanıtı ve insan review'u olmadan `compiler/fuzz/corpus/`
+altına alınmaz.
+
 ## V1 öncesi iş sırası
 
 Bağlayıcı sıra `docs/oncelikli-backlog.md` içindedir. P0 compiler/dil omurgası
