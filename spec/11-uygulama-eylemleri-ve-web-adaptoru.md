@@ -83,6 +83,12 @@ ile aynı başlık hesabını yapar ama yanıt gövdesi göndermez.
 Yol eşleşip yöntem eşleşmezse 405, yol eşleşmezse 404 döner. PUT/PATCH/DELETE
 form gövdesi POST ile aynı sınırlı alan çözümlemesini kullanır.
 
+Sorgu ve form alan adları/değerleri strict URL-form kodlamasıyla çözülür. `+`
+boşluktur; `%` işaretini tam iki ASCII hexadecimal hane izler. Eksik/kuralsız
+yüzde kaçışı veya çözülmüş baytların geçersiz UTF-8 oluşturması 400'dür.
+Kayıplı UTF-8 dönüşümü ve kısmi kabul YASAKTIR; rota gövdesi bu red sonrasında
+çalıştırılmaz.
+
 ## 5. İstek kaynak sınırları ve son tarih
 
 Her istek varsayılan olarak:

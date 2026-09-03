@@ -75,7 +75,8 @@ fn csrfli_istek_ile(istek: &str, oturum: &str, csrf: &str) -> String {
 #[test]
 fn istek_parcala_sorgu_ve_govde() {
     let (yontem, yol, veriler) =
-        istek_parcala("POST /kaydet?k=1\nad=Zeynep+Eliz&not=%C3%A7ok%20iyi");
+        istek_parcala("POST /kaydet?k=1\nad=Zeynep+Eliz&not=%C3%A7ok%20iyi")
+            .expect("geçerli form çözülmeli");
     assert_eq!((yontem.as_str(), yol.as_str()), ("POST", "/kaydet"));
     let bul = |a: &str| {
         veriler
@@ -89,8 +90,36 @@ fn istek_parcala_sorgu_ve_govde() {
     assert_eq!(bul("yöntem"), Some("POST"));
     assert_eq!(bul("yol"), Some("/kaydet"));
 
-    let (yontem, yol, _) = istek_parcala("/durum");
+    let (yontem, yol, _) = istek_parcala("/durum").expect("yalın GET çözülmeli");
     assert_eq!((yontem.as_str(), yol.as_str()), ("GET", "/durum"));
+}
+
+#[test]
+fn bozuk_yuzde_kodlamasi_ve_utf8_formu_400_ile_reddedilir() {
+    for istek in [
+        "GET /form?ad=%",
+        "GET /form?ad=%A",
+        "GET /form?ad=%GG",
+        "GET /form?%GG=deger",
+        "GET /form?ad=%C3%28",
+        "GET /form?ad=%FF",
+        "POST /form\nad=%GG",
+    ] {
+        let (durum, _) = istek_parcala(istek).expect_err("bozuk form kabul edilmemeli");
+        assert_eq!(durum, 400, "{istek}");
+    }
+
+    let kaynak = "\
+8080 kapısında sunucu başlat
+GET \"/form\" adresine istek geldiğinde
+    \"rota çalıştı\" yanıtını gönder
+";
+    let io = sunucuyla(kaynak, vec!["GET /form?ad=%GG"]);
+    assert_eq!(io.sunucu_durumlari, vec![400]);
+    assert_eq!(
+        io.sunucu_yanitlari[0].1,
+        "istek formunda geçersiz yüzde kodlaması"
+    );
 }
 
 #[test]

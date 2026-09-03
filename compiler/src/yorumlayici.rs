@@ -46,10 +46,12 @@ use std::task::{Context, Poll, Wake, Waker};
 /// Girdi/çıktı ve rastgelelik soyutlaması: testler deterministik kuyruk
 /// kullanır, CLI gerçek klavye/ekran ve gerçek rastgelelik.
 /// Ham istek metnini çözer (K-051). Biçim: "YÖNTEM yol?sorgu\ngövde" ya da
-/// yalnız "/yol" (= GET). Dönen: (yöntem, salt yol, istek sözlüğü girdileri).
-pub fn istek_parcala(ham: &str) -> (String, String, Vec<(String, String)>) {
-    let (yontem, yol, veriler, _) = istek_parcala_cerezli(ham);
-    (yontem, yol, veriler)
+/// yalnız "/yol" (= GET). Bozuk form kodlaması 400 sınıfı hatadır.
+pub fn istek_parcala(
+    ham: &str,
+) -> Result<(String, String, Vec<(String, String)>), (u16, &'static str)> {
+    let (yontem, yol, veriler, _) = istek_parcala_cerezli(ham)?;
+    Ok((yontem, yol, veriler))
 }
 
 /// (ad, değer) çiftleri — istek verileri ve çerezler bu biçimde taşınır.
@@ -89,9 +91,7 @@ fn istek_sinirlarini_denetle(ham: &str) -> Result<(), (u16, &'static str)> {
     Ok(())
 }
 
-/// istek_parcala + çerezler (K-052). İkinci satır "çerez a=1; b=2" ise
-/// Cookie başlığıdır; kalan satırlar gövdedir.
-pub fn istek_parcala_cerezli(ham: &str) -> (String, String, AdDegerler, AdDegerler) {
+fn istek_zarfi_parcala(ham: &str) -> (&str, &str, &str) {
     let (ilk_satir, kalan) = ham.split_once('\n').unwrap_or((ham, ""));
     let (cerez_satiri, govde) = match kalan.strip_prefix("çerez ") {
         Some(devam) => match devam.split_once('\n') {
@@ -100,6 +100,10 @@ pub fn istek_parcala_cerezli(ham: &str) -> (String, String, AdDegerler, AdDegerl
         },
         None => ("", kalan),
     };
+    (ilk_satir, cerez_satiri, govde)
+}
+
+fn cerezleri_parcala(cerez_satiri: &str) -> AdDegerler {
     let mut cerezler: Vec<(String, String)> = Vec::new();
     for cift in cerez_satiri.split(';') {
         let cift = cift.trim();
@@ -109,13 +113,24 @@ pub fn istek_parcala_cerezli(ham: &str) -> (String, String, AdDegerler, AdDegerl
         let (ad, deger) = cift.split_once('=').unwrap_or((cift, ""));
         cerezler.push((ad.trim().to_string(), deger.trim().to_string()));
     }
-    let ham = ilk_satir;
-    let govde_tam = govde;
-    let (yontem, yol, veriler) = istek_govdesiyle(ham, govde_tam);
-    (yontem, yol, veriler, cerezler)
+    cerezler
 }
 
-fn istek_govdesiyle(ilk_satir: &str, govde: &str) -> (String, String, Vec<(String, String)>) {
+/// istek_parcala + çerezler (K-052). İkinci satır "çerez a=1; b=2" ise
+/// Cookie başlığıdır; kalan satırlar gövdedir.
+pub fn istek_parcala_cerezli(
+    ham: &str,
+) -> Result<(String, String, AdDegerler, AdDegerler), (u16, &'static str)> {
+    let (ilk_satir, cerez_satiri, govde) = istek_zarfi_parcala(ham);
+    let cerezler = cerezleri_parcala(cerez_satiri);
+    let (yontem, yol, veriler) = istek_govdesiyle(ilk_satir, govde)?;
+    Ok((yontem, yol, veriler, cerezler))
+}
+
+fn istek_govdesiyle(
+    ilk_satir: &str,
+    govde: &str,
+) -> Result<(String, String, Vec<(String, String)>), (u16, &'static str)> {
     let (yontem, hedef) = match ilk_satir.split_once(' ') {
         Some((y, h)) => (y.to_uppercase(), h.trim()),
         None => ("GET".to_string(), ilk_satir.trim()),
@@ -128,36 +143,44 @@ fn istek_govdesiyle(ilk_satir: &str, govde: &str) -> (String, String, Vec<(Strin
     for kaynak in [sorgu, if govde_kullanilir { govde.trim() } else { "" }] {
         for cift in kaynak.split('&').filter(|p| !p.is_empty()) {
             let (ad, deger) = cift.split_once('=').unwrap_or((cift, ""));
-            let ad = url_coz(ad);
-            let deger = url_coz(deger);
+            let ad = url_coz(ad)?;
+            let deger = url_coz(deger)?;
             match veriler.iter_mut().find(|(v_ad, _)| *v_ad == ad) {
                 Some((_, v)) => *v = deger,
                 None => veriler.push((ad, deger)),
             }
         }
     }
-    (yontem, yol.to_string(), veriler)
+    Ok((yontem, yol.to_string(), veriler))
 }
 
-/// Yüzde-kodlamayı ve formdaki artıyı çözer (UTF-8).
-fn url_coz(metin: &str) -> String {
+/// Yüzde-kodlamayı ve formdaki artıyı strict UTF-8 olarak çözer.
+fn url_coz(metin: &str) -> Result<String, (u16, &'static str)> {
     let mut baytlar: Vec<u8> = Vec::with_capacity(metin.len());
-    let mut karakterler = metin.bytes().peekable();
-    while let Some(b) = karakterler.next() {
+    let ham = metin.as_bytes();
+    let mut sira = 0;
+    while sira < ham.len() {
+        let b = ham[sira];
         match b {
             b'+' => baytlar.push(b' '),
             b'%' => {
-                let yuksek = karakterler.next().and_then(|k| (k as char).to_digit(16));
-                let dusuk = karakterler.next().and_then(|k| (k as char).to_digit(16));
-                match (yuksek, dusuk) {
-                    (Some(y), Some(d)) => baytlar.push((y * 16 + d) as u8),
-                    _ => baytlar.push(b'%'),
-                }
+                let Some((&yuksek, &dusuk)) = ham.get(sira + 1).zip(ham.get(sira + 2)) else {
+                    return Err((400, "istek formunda geçersiz yüzde kodlaması"));
+                };
+                let Some(yuksek) = (yuksek as char).to_digit(16) else {
+                    return Err((400, "istek formunda geçersiz yüzde kodlaması"));
+                };
+                let Some(dusuk) = (dusuk as char).to_digit(16) else {
+                    return Err((400, "istek formunda geçersiz yüzde kodlaması"));
+                };
+                baytlar.push((yuksek * 16 + dusuk) as u8);
+                sira += 2;
             }
             b => baytlar.push(b),
         }
+        sira += 1;
     }
-    String::from_utf8_lossy(&baytlar).into_owned()
+    String::from_utf8(baytlar).map_err(|_| (400, "istek formu geçerli UTF-8 olmalı"))
 }
 
 /// Türk alfabesi sırası (K-056): a b c ç d e f g ğ h ı i j k l m n o ö p r s ş t u ü v y z.
@@ -586,8 +609,13 @@ impl GirdiCikti for ToplayanIo {
     }
     fn istek_al(&mut self) -> Option<String> {
         let ham = self.istekler.pop_front()?;
-        let (_, yol, _) = istek_parcala(&ham);
-        let (_, _, _, cerezler) = istek_parcala_cerezli(&ham);
+        let (ilk_satir, cerez_satiri, _) = istek_zarfi_parcala(&ham);
+        let hedef = ilk_satir
+            .split_once(' ')
+            .map(|(_, hedef)| hedef.trim())
+            .unwrap_or_else(|| ilk_satir.trim());
+        let yol = hedef.split_once('?').map(|(yol, _)| yol).unwrap_or(hedef);
+        let cerezler = cerezleri_parcala(cerez_satiri);
         let belirtec = cerezler
             .iter()
             .find(|(ad, _)| ad == "__Host-zee-oturum" || ad == "zee-oturum")
@@ -605,7 +633,7 @@ impl GirdiCikti for ToplayanIo {
             self.web_istek_yedegi = None;
             return None;
         }
-        self.sunucu_yanitlari.push((yol, String::new()));
+        self.sunucu_yanitlari.push((yol.to_string(), String::new()));
         self.sunucu_durumlari.push(200);
         Some(ham)
     }
