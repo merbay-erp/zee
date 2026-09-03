@@ -2709,6 +2709,10 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   istek dönüş tipi adlandırıldı; faz matrisindeki bool→filter-map zinciri açık
   `filter`+`map` oldu. Bu maintenance dil/runtime davranışını değiştirmez ve
   yeni freeze manifestinin ilk gerçek commit beyanıyla korunur.
+- **Dış denetim P1'i:** Alanların varlığı zorunlu olsa da birbirleriyle referans
+  bütünlüğü henüz makinece kurulmaz. B-073 ürün root kaydı, gerçek K-işi,
+  root-altı Zee dosyası ve karar belgesi referansını ilk dogfood kaynaklı
+  compiler değişikliğinden önce zorunlu kılacak; K-163 başlangıcını engellemez.
 
 ---
 
