@@ -7,7 +7,8 @@ ve birim yükleme girişleri burada exact allowlist ile yayımlanır.
 Crate kökündeki eski işlevler ve `#[doc(hidden)]` modüller bootstrap CLI,
 entegrasyon testleri ve 1.0 öncesi geçiş için erişilebilir kalır; desteklenen
 SemVer sözleşmesi değildir. Yeni tüketici bunlara bağlanmamalıdır. K-160
-ownership ayrışmasında bu yollar serbestçe daraltılabilir.
+ownership ayrışması bu internal yolları saf model, çözüm, taşıma, doğrulama ve
+yayın sahiplerine böldü; facade sözleşmesi değişmedi.
 
 ## Değişiklik kuralları
 

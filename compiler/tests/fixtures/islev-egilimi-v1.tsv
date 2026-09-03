@@ -1,5 +1,5 @@
 # zee-islev-egilimi-v1
-# inceleme: K-145/ADR-041 kanonik rustfmt tabanı
+# inceleme: K-160 paket sahipligi ayrimi: yayin orkestrasyonu ve artefakt dogrulama fiziksel olarak ayrildi
 # yol	kimlik	satir	karmasiklik
 src/ayristirici.rs	aralik_ayristir#1	86	3
 src/ayristirici.rs	dondur_ayristir#1	105	4
@@ -36,17 +36,16 @@ src/main.rs	istek_al#1	282	25
 src/morfoloji.rs	eki_uydur#1	63	13
 src/paket.rs	kilit_metni#1	89	9
 src/paket.rs	ziyaret_et#1	186	4
-src/paket/uzak.rs	paketleri_hazirla#1	169	4
+src/paket/uzak.rs	paketleri_hazirla#1	171	4
 src/proje.rs	bildirimi_oku#1	203	4
 src/proje.rs	uzak_bagimliliklari_guncelle#1	94	12
 src/registry.rs	targets_yapisini_dogrula#1	95	5
 src/registry.rs	zinciri_dogrula#1	92	1
 src/sozcukleyici.rs	sozcukle#1	320	29
-src/tedarik.rs	paketle_zamanla#1	85	2
 src/yorumlayici.rs	gorevleri_calistir#1	136	2
 src/yorumlayici.rs	json_nesnesi_ayristir#1	96	8
 src/yorumlayici/cumle.rs	blok_calistir_async#1	807	1
 src/yorumlayici/ifade.rs	degerlendir_async#1	838	1
 src/yorumlayici/io_izi.rs	olay_semasini_denetle#1	139	21
 src/yorumlayici/kaynak.rs	deger_heap_bayti#1	101	8
-src/yorumlayici/web_istek.rs	web_istegini_calistir#1	92	9
+src/yorumlayici/web_istek.rs	web_istegini_calistir#1	98	9

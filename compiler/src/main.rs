@@ -642,7 +642,7 @@ fn anahtar_komutu(argumanlar: &[String]) -> ExitCode {
         return ExitCode::from(2);
     }
     let yol = std::path::Path::new(&argumanlar[2]);
-    match dil::tedarik::anahtar_uret(yol) {
+    match dil::artefakt_dogrulama::anahtar_uret(yol) {
         Ok(kimlik) => {
             println!("Yayıncı anahtarı üretildi: {}", yol.display());
             println!("Açık anahtar kimliği: {}", kimlik);
@@ -707,7 +707,7 @@ fn paketle_komutu(argumanlar: &[String]) -> ExitCode {
     let cikti = cikti
         .map(std::path::PathBuf::from)
         .unwrap_or(varsayilan_cikti);
-    match dil::tedarik::paketle(proje, std::path::Path::new(anahtar), &cikti) {
+    match dil::yayin::paketle(proje, std::path::Path::new(anahtar), &cikti) {
         Ok(uretim) => {
             println!("Paketlendi: {}", uretim.paket.display());
             println!("SHA-256: {}", uretim.paket_ozeti);

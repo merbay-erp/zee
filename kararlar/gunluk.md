@@ -2677,6 +2677,21 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
 - **Politika:** v1 kırılmaz; uyumsuz söz v2 ile yan yana doğar, göç/deprecation
   sürüm notuna yazılır. B-069/K-159/ADR-058 kapandı; sırada K-160 vardır.
 
+## K-160 — Paket sahipliği gerçek sınırlarla ayrılmalı (3 Eyl)
+
+- **Sorun:** Paket çözümü, registry taşıması ve artefakt güveni birbirini
+  çağırıyor; son production SCC ancak süreli C001 izniyle görünür tutuluyordu.
+- **Karar:** Davranışsız veri sözleşmesi `paket_modeli`ne, çözüm kararları
+  `paket`e, protokol/taşıma `registry`ye, imza/SBOM/provenance/kurulum
+  `artefakt_dogrulama`ya ve üst seviye üretim akışı `yayin`a aittir. Model
+  davranışa bağımlanmaz; verification paket/registry/yayın çağırmaz; registry
+  artefaktı verification'a devreder; resolver taşıma ve imza ayrıntısını bilmez.
+- **Kapı:** Exact katman fixture'ı fiziksel kenarları, ayrı sahiplik testi yasak
+  geri kenarları korur. C001 silinmiştir; production SCC ve izin sayısı sıfırdır.
+- **Kapanış:** B-070/K-160/ADR-059 kapandı ve CORE FREEZE başladı. Yeni compiler
+  özelliği varsayılan olarak reddedilir; gerçek dogfood ihtiyacı kanıtlanmadıkça
+  core genişletilmez.
+
 ---
 
 ## Sonraki adım
@@ -2693,6 +2708,8 @@ korpusu artefaktıyla kapattı. K-157 dört hedefte 30'ar dakikalık explicit
 AddressSanitizer kampanyasını toplam 136.789.564 yürütme ve sıfır bulguyla;
 seçili Miri çekirdeğini 3/3 sonuçla kapattı. K-158 seçici düzeyi çoklu kapsamı
 ve gerçek blast-radius raporunu kapattı. K-159 sürümlü facade ile SemVer
-sınırını kapattı. Sırada K-160 ownership ayrımı vardır.
+sınırını, K-160 gerçek paket sahipliği ayrımıyla son production SCC ve izin
+borcunu kapattı. CORE FREEZE etkindir; sırada K-161/K-162 gerçek insan kanıtı
+ve K-163 ilk gerçek Zee ürünü vardır.
 B-001/B-002 (yeni sırada K-161/K-162), gerçek 10 çocuk/öğrenci + 5 profesyonel
 usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.

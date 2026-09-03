@@ -181,10 +181,10 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **620** |
+| Rust + doctest vakası | **621** |
 | Tanı kimliği | **152 etkin + 3 ayrılmış** |
 | RFC | **25** (2 kabul, 21 geçici kabul, 2 taslak) |
-| ADR | **56** (56 kabul) |
+| ADR | **57** (57 kabul) |
 | Normatif spec bölümü | **24** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
@@ -333,9 +333,11 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   [katman mimarisi rehberindedir](docs/katman-mimarisi.md); B-057 kapandı.
   K-150/ADR-047 exact graph'a SCC kapısı ekledi: tanı↔kaynak bütçesi ile
   checker↔HIR çevrimleri bağımsız `tani_politikasi` ve `semantic_model`
-  sahipleriyle kırıldı. Kalan paket/registry/tedarik SCC'si yalnız K-160'a ve
-  1 Ekim 2026'ya kadar gerekçeli geçici kayıttır; yeni, bayat veya süresi
-  dolmuş çevrim CI'da reddedilir. Açıklamasız production çevrimi sıfırdır.
+  sahipleriyle kırıldı. K-160/ADR-059 son paket/registry/tedarik SCC'sini
+  davranışsız model, resolver, registry taşıması, artefakt doğrulama ve yayın
+  sahiplerine ayırdı. Geçici C001 silindi; production SCC ve izin sayısı
+  sıfırdır. CORE FREEZE etkindir: yeni compiler özelliği gerçek dogfood
+  ihtiyacı kanıtlanmadıkça varsayılan olarak reddedilir.
   K-151/ADR-048 bütün GitHub Actions `uses:` referanslarını incelenmiş 40
   haneli commit SHA'lara sabitledi. Sürümlü pin kaydı workflow'larla birebir,
   haftalık Dependabot yalnız inceleme PR'ı açar; hareketli `@v4`, `@stable`

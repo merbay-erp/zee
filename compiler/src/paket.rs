@@ -15,6 +15,7 @@ mod uzak;
 #[path = "paket/uzak_wasm.rs"]
 mod uzak;
 
+pub use crate::paket_modeli::PaketBilgisi;
 pub use uzak::RegistryCozumPolitikasi;
 use uzak::{paketleri_hazirla, UzakPaketCozumleri, UzakPaketKilidi, UzakPaketKimligi};
 
@@ -44,18 +45,6 @@ struct ProjeDugumu {
 pub struct ProjeGrafigi {
     ana_kok: PathBuf,
     dugumler: BTreeMap<PathBuf, ProjeDugumu>,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct PaketBilgisi {
-    pub ad: String,
-    pub surum: String,
-    pub morfoloji: String,
-    pub yol: String,
-    pub ozet: String,
-    pub dogrudan: bool,
-    pub registry_kok_sha256: Option<String>,
-    pub arsiv_sha256: Option<String>,
 }
 
 impl ProjeGrafigi {

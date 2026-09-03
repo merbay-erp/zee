@@ -49,7 +49,7 @@ adr/024-parser-hata-kurtarma-politikasi.md	kanitli	compiler/tests/parser_kurtarm
 adr/025-tani-kimligi-kararlilik-politikasi.md	kanitli	compiler/tests/tani_kimligi_testi.rs	Kod anlam fixture'ı ve mezar taşları
 adr/026-deterministik-io-izi-mimarisi.md	kanitli	compiler/tests/io_izi_testi.rs,compiler/tests/io_izi_cli_testi.rs	Bütün IO protokolü trace replay
 adr/027-surumlu-deterministik-io-profili.md	kanitli	compiler/tests/deterministik_io_profili_testi.rs	Tek PRNG ve hermetik profil
-adr/028-kanonik-zep-yol-profili.md	kanitli	compiler/tests/tedarik_testi.rs,compiler/src/tedarik.rs	NFC fixture ve 80 saldırı vakası
+adr/028-kanonik-zep-yol-profili.md	kanitli	compiler/tests/tedarik_testi.rs,compiler/src/artefakt_dogrulama.rs	NFC fixture ve 80 saldırı vakası
 adr/029-ondalik-binary-float-siniri.md	kanitli	compiler/tests/ffi_sinir_testi.rs	Ondalık değer envanteri ve örtük binary float yasağı
 adr/030-kesin-ast-kaynak-araliklari.md	kanitli	compiler/tests/hir_modeli_testi.rs,compiler/tests/invariant_testi.rs,compiler/tests/lsp_testi.rs,compiler/tests/mimari_sinir_testi.rs	Bütün AST ifadelerinde kesin aralık HIR eşliği tanı ve LSP tüketimi
 adr/031-merkezi-yetkinlik-ve-outbound-istemci.md	kanitli	compiler/tests/yetkinlik_testi.rs,compiler/tests/proje_testi.rs,compiler/tests/mimari_sinir_testi.rs,compiler/src/ag_istemcisi.rs	Compile runtime izin DNS sonrası outbound ve K-139 inbound ortak AgHedefi kapısı
@@ -80,6 +80,7 @@ adr/055-fuzz-korpus-kaliciligi.md	kanitli	compiler/tests/fuzz_korpusu_testi.rs	K
 adr/056-uzun-fuzz-rc-kapisi.md	kanitli	compiler/tests/fuzz_korpusu_testi.rs	K-157 dort hedefte 30-60 dakika explicit AddressSanitizer RC kampanyasi raporu ve saf cekirdekte Miri kapisi
 adr/057-coklu-test-kapsami.md	kanitli	compiler/src/bin/faz_test_matrisi.rs	K-158 exact seciciye bagli opsiyonel coklu kapsam dogrulamasi ve gercek blast-radius raporu
 adr/058-public-api-facade.md	kanitli	compiler/tests/public_api_testi.rs	K-159 api v1 exact allowlist internal modul sinifi ve calisan facade smoke kapisi
+adr/059-paket-sahipligi-ve-core-freeze.md	kanitli	compiler/tests/bagimlilik_cevrimi_testi.rs,compiler/tests/katman_mimarisi_testi.rs	K-160 saf paket modeli verification registry resolver yayin sahipligi sifir SCC ve bos allowlist
 spec/01-sozcukleme.md	kanitli	compiler/tests/kacis_ve_negatif_testi.rs,compiler/tests/metin_testi.rs	Token kaçış Unicode ve sayı kuralları
 spec/02-dizim.md	kanitli	compiler/tests/golden_testi.rs,compiler/tests/ifade_grameri_testi.rs	Cümle blok ve ifade dizimi
 spec/03-adlar-ve-kapsam.md	kanitli	compiler/tests/kapsam_testi.rs,compiler/tests/morfoloji_testi.rs,compiler/tests/lsp_testi.rs	Ad çözümü kapsam morfoloji ve semantic rename
@@ -97,7 +98,7 @@ spec/14-yapilandirilmis-eszamanlilik.md	kanitli	compiler/tests/ag_ve_esz_testi.r
 spec/15-yapilandirilmis-hata-degeri.md	kanitli	compiler/tests/yapilandirilmis_hata_testi.rs	Kod mesaj neden veri ve JSON
 spec/16-keyfi-hassasiyetli-ondalik.md	kanitli	compiler/tests/ondalik_testi.rs,compiler/tests/ffi_sinir_testi.rs	Tam işlemler yuvarlama bağlamı ve binary float sınırı
 spec/17-deger-semantigi-ve-gezme.md	kanitli	compiler/tests/koleksiyon_testi.rs	Derin değer kopyası ve gezme imleci
-spec/18-paket-yayini.md	kanitli	compiler/tests/tedarik_testi.rs,compiler/src/tedarik.rs	Kanonik zep SBOM provenance ve imza
+spec/18-paket-yayini.md	kanitli	compiler/tests/tedarik_testi.rs,compiler/src/artefakt_dogrulama.rs	Kanonik zep SBOM provenance ve imza
 spec/19-registry-metadata-guveni.md	kanitli	compiler/tests/proje_testi.rs,compiler/src/registry/istemci/testler.rs	Root timestamp snapshot targets HTTPS cache exact manifest kilit ve offline derleme zinciri
 spec/20-ifade-grameri.md	kanitli	compiler/tests/ifade_grameri_testi.rs,compiler/tests/bicimleyici_testi.rs	İfade katmanları tam tüketim ve formatter eşdeğerliği
 spec/21-deterministik-io-izi.md	kanitli	compiler/tests/io_izi_testi.rs,compiler/tests/io_izi_cli_testi.rs	Şema olay sırası redaksiyon ve replay

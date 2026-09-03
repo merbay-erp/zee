@@ -10,8 +10,9 @@ pub use istemci::{
     HttpsRegistryTasiyici, RegistryIstemcisi, RegistryPaketCiktisi, RegistryTasiyici,
 };
 
+use crate::artefakt_dogrulama::yayini_dogrula;
 use crate::guvenlik::sha256_hex;
-use crate::tedarik::{yayini_dogrula, ImzaliYayin, YayinDosyasi};
+use crate::paket_modeli::{ImzaliYayin, YayinDosyasi};
 use ed25519_dalek::{Signature, VerifyingKey};
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};

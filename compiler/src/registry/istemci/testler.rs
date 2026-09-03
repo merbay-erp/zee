@@ -1,5 +1,6 @@
 use super::*;
-use crate::tedarik::{anahtar_uret, paketle_zamanla, yayini_dogrula};
+use crate::artefakt_dogrulama::{anahtar_uret, yayini_dogrula};
+use crate::yayin::paketle_zamanla;
 use ed25519_dalek::{Signer, SigningKey};
 use std::collections::BTreeMap;
 use std::sync::atomic::{AtomicU64, Ordering};

@@ -255,3 +255,37 @@ fn scc_hesabi_yeni_cevrimi_ve_oz_cevrimi_yakalar() {
         ])
     );
 }
+
+#[test]
+fn k160_saf_model_dogrulama_tasima_ve_cozum_sahipligini_korur() {
+    let graph = graph_oku();
+    assert!(
+        cevrimler(&graph).is_empty(),
+        "CORE FREEZE öncesi SCC sıfır olmalı"
+    );
+    assert!(
+        izinleri_oku().is_empty(),
+        "C001 dahil çevrim izni kalmamalı"
+    );
+    assert!(
+        graph["paket_modeli"].is_empty(),
+        "paket modeli davranışa bağlanamaz"
+    );
+    assert_eq!(
+        graph["tedarik"],
+        BTreeSet::from(["artefakt_dogrulama".to_string()]),
+        "eski tedarik yolu yalnız verification cephesi olabilir"
+    );
+    for yasak in ["paket", "registry", "yayin", "tedarik"] {
+        assert!(
+            !graph["artefakt_dogrulama"].contains(yasak),
+            "verification davranış sahibine geri bağlanamaz: {yasak}"
+        );
+    }
+    assert!(graph["registry"].contains("artefakt_dogrulama"));
+    assert!(graph["registry"].contains("paket_modeli"));
+    assert!(!graph["registry"].contains("paket"));
+    assert!(graph["paket"].contains("registry"));
+    assert!(graph["paket"].contains("paket_modeli"));
+    assert!(!graph["paket"].contains("tedarik"));
+}

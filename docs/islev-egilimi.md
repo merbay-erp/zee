@@ -7,7 +7,7 @@ Bu rapor K-144/ADR-041 makine kapısının güncel görünümüdür. Mutlak bir
 kılar. Clippy ölçümü sabit Rust araç zinciriyle üretim `lib` ve `dil` ikilisinde
 çalışır; `allow` öznitelikleri `--force-warn` nedeniyle kapıyı atlayamaz.
 
-- İncelenmiş taban: `K-145/ADR-041 kanonik rustfmt tabanı`
+- İncelenmiş taban: `K-160 paket sahipligi ayrimi: yayin orkestrasyonu ve artefakt dogrulama fiziksel olarak ayrildi`
 - İzlemeye giriş: en az 80 satır veya bilişsel karmaşıklık 12
 - Satır gözden geçirme payı: tabanın %10'u; en az +8, en çok +24
 - Karmaşıklık gözden geçirme payı: tabanın %20'si; en az +2, en çok +5
@@ -49,20 +49,19 @@ kılar. Clippy ölçümü sabit Rust araç zinciriyle üretim `lib` ve `dil` iki
 | `compiler/src/morfoloji.rs::eki_uydur#1` | 63→63 (+0/+8) | 13→13 (+0/+3) | SABİT |
 | `compiler/src/paket.rs::kilit_metni#1` | 89→89 (+0/+9) | 9→9 (+0/+2) | SABİT |
 | `compiler/src/paket.rs::ziyaret_et#1` | 186→186 (+0/+19) | 4→4 (+0/+2) | SABİT |
-| `compiler/src/paket/uzak.rs::paketleri_hazirla#1` | 169→169 (+0/+17) | 4→4 (+0/+2) | SABİT |
+| `compiler/src/paket/uzak.rs::paketleri_hazirla#1` | 171→171 (+0/+18) | 4→4 (+0/+2) | SABİT |
 | `compiler/src/proje.rs::bildirimi_oku#1` | 203→203 (+0/+21) | 4→4 (+0/+2) | SABİT |
 | `compiler/src/proje.rs::uzak_bagimliliklari_guncelle#1` | 94→94 (+0/+10) | 12→12 (+0/+3) | SABİT |
 | `compiler/src/registry.rs::targets_yapisini_dogrula#1` | 95→95 (+0/+10) | 5→5 (+0/+2) | SABİT |
 | `compiler/src/registry.rs::zinciri_dogrula#1` | 92→92 (+0/+10) | 1→1 (+0/+2) | SABİT |
 | `compiler/src/sozcukleyici.rs::sozcukle#1` | 320→320 (+0/+24) | 29→29 (+0/+5) | SABİT |
-| `compiler/src/tedarik.rs::paketle_zamanla#1` | 85→85 (+0/+9) | 2→2 (+0/+2) | SABİT |
 | `compiler/src/yorumlayici.rs::gorevleri_calistir#1` | 136→136 (+0/+14) | 2→2 (+0/+2) | SABİT |
 | `compiler/src/yorumlayici.rs::json_nesnesi_ayristir#1` | 96→96 (+0/+10) | 8→8 (+0/+2) | SABİT |
 | `compiler/src/yorumlayici/cumle.rs::blok_calistir_async#1` | 807→807 (+0/+24) | 1→1 (+0/+2) | SABİT |
 | `compiler/src/yorumlayici/ifade.rs::degerlendir_async#1` | 838→838 (+0/+24) | 1→1 (+0/+2) | SABİT |
 | `compiler/src/yorumlayici/io_izi.rs::olay_semasini_denetle#1` | 139→139 (+0/+14) | 21→21 (+0/+5) | SABİT |
 | `compiler/src/yorumlayici/kaynak.rs::deger_heap_bayti#1` | 101→101 (+0/+11) | 8→8 (+0/+2) | SABİT |
-| `compiler/src/yorumlayici/web_istek.rs::web_istegini_calistir#1` | 92→92 (+0/+10) | 9→9 (+0/+2) | SABİT |
+| `compiler/src/yorumlayici/web_istek.rs::web_istegini_calistir#1` | 98→98 (+0/+10) | 9→9 (+0/+2) | SABİT |
 
 Eşik aşımı otomatik bir tasarım hükmü değildir; işi durdurup işlevi bölme veya
 gerekçeli yeni tabanı aynı kod incelemesinde kabul etme zorunluluğudur. Düşüşler

@@ -215,15 +215,17 @@ pub(super) fn paketleri_hazirla(
                 bildirim_kaynagi.clone(),
             )
         })?;
-        crate::tedarik::paket_arsivini_kur(&cikti.arsiv, &paket_koku).map_err(|mesaj| {
-            proje_hatasi(
-                "P016",
-                &format!("Doğrulanmış paket kaynak cache'ine kurulamadı: {}", mesaj),
-                "Cache izinlerini denetle; bozuk kurulumu kullanma.",
-                bildirim_yolu.clone(),
-                bildirim_kaynagi.clone(),
-            )
-        })?;
+        crate::artefakt_dogrulama::paket_arsivini_kur(&cikti.arsiv, &paket_koku).map_err(
+            |mesaj| {
+                proje_hatasi(
+                    "P016",
+                    &format!("Doğrulanmış paket kaynak cache'ine kurulamadı: {}", mesaj),
+                    "Cache izinlerini denetle; bozuk kurulumu kullanma.",
+                    bildirim_yolu.clone(),
+                    bildirim_kaynagi.clone(),
+                )
+            },
+        )?;
         let paket_bildirim_yolu = paket_koku.join("proje.dil");
         let paket_bildirim_kaynagi =
             crate::kaynak_sinirlari::kaynak_dosyasi_oku(&paket_bildirim_yolu).map_err(|hata| {
