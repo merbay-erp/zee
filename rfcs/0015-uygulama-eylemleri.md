@@ -121,3 +121,8 @@ K-088 ile başlayan production oturum/CSRF/proxy profili K-137/ADR-034'te
 süreçler arası ortak kalıcı durum, oran sınırı ve tek-worker/N süreç modeline
 genişledi. Secret dağıtımı, çok-hostlu harici backend ve idempotency ayrı
 deployment/RFC kapılarıdır; dil bunları varmış gibi göstermez.
+
+K-163/F030 binary upload'ın temp→publish→metadata ve
+tombstone→fiziksel-temizlik akışını ayrı eylemlerle kurdu. Runtime DB+dosyayı
+tek eylemde hâlâ reddeder; restart yakınsaması ürün durum makinesinin
+sorumluluğudur (RFC-0027/spec-26).

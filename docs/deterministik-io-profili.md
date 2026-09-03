@@ -38,6 +38,8 @@ taşır.
   kırpılır.
 - `sor` istemi çıktıya ekler; dosya yazımı her satıra LF ekler.
 - Sahte dosya yolu ve HTTP URL'si birebir eşleşir.
+- Atomik taşıma var olan hedefi ezmez; silme bulunmayanda sıfırdır; dizin
+  listesi sıralı doğrudan dosyaları ve SHA-256 exact içeriği kullanır.
 - Bildirilmemiş sensör kapalıdır; ışık değişimi normal çıktı izine girer.
 - Negatif bekleme zamanı geriye götürmez; enjekte edilen eski an yok sayılır.
 

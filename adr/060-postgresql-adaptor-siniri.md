@@ -69,5 +69,6 @@ başarılı oldu; write olumsuzunda tekrar ve satır oluşmadı. Exact saha kan�
 survival'ı; F028 ise COMMIT öncesi kesinti ve uygulanmış COMMIT sonrası kayıp
 yanıtı aynı C027 ile ayırmadan raporlamayı kapatır. Proxy deneyinde iki DB
 durumu sırasıyla 0 ve 1 satırdır; ikisinde de retry yoktur. Production
-TLS/pool/multi-process ile binary medya, fiziksel silme ve orphan tarama bu
-kararla çözülmüş sayılmaz.
+TLS/pool/multi-process bu kararla çözülmüş sayılmaz. Binary medya, fiziksel
+silme ve orphan tarama F030/RFC-0027/ADR-061 ile ayrı sahiplikte kanıtlandı;
+PostgreSQL katmanı dağıtık transaction sözü kazanmadı.

@@ -5,8 +5,8 @@
 
 use dil::agac::{Cumle, Ifade};
 use dil::intrinsic::{
-    self, IntrinsicEtkisi, Yetkinlik, CSRF_BELIRTECI, HTTP_GETIR, PAROLA_DOGRULA,
-    POSTGRESQL_DEGISTIR, POSTGRESQL_OKU, SENSOR_ACIK_MI,
+    self, IntrinsicEtkisi, Yetkinlik, CSRF_BELIRTECI, DOSYALARI_LISTELE, DOSYA_ATOMIK_TASI,
+    HTTP_GETIR, PAROLA_DOGRULA, POSTGRESQL_DEGISTIR, POSTGRESQL_OKU, SENSOR_ACIK_MI,
 };
 use dil::kaynagi_derle;
 use std::collections::HashSet;
@@ -25,7 +25,7 @@ fn intrinsic_kaydi_kimlik_yetkinlik_ve_etkiyi_tekillestirir() {
         .map(|tanim| tanim.kimlik)
         .collect::<HashSet<_>>();
     assert_eq!(kimlikler.len(), intrinsic::TANIMLAR.len());
-    assert_eq!(kimlikler.len(), 6);
+    assert_eq!(kimlikler.len(), 10);
 
     let http = intrinsic::tanim(HTTP_GETIR).expect("HTTP kaydı");
     assert_eq!(http.yetkinlik, Yetkinlik::Ag);
@@ -38,6 +38,13 @@ fn intrinsic_kaydi_kimlik_yetkinlik_ve_etkiyi_tekillestirir() {
     let postgresql = intrinsic::tanim(POSTGRESQL_DEGISTIR).expect("PostgreSQL kaydı");
     assert_eq!(postgresql.yetkinlik, Yetkinlik::Veritabani);
     assert_eq!(postgresql.etki, IntrinsicEtkisi::DisYazma);
+
+    let yayin = intrinsic::tanim(DOSYA_ATOMIK_TASI).expect("atomik yayın kaydı");
+    assert_eq!(yayin.yetkinlik, Yetkinlik::DosyaYazma);
+    assert_eq!(yayin.etki, IntrinsicEtkisi::DisYazma);
+    let tarama = intrinsic::tanim(DOSYALARI_LISTELE).expect("dizin tarama kaydı");
+    assert_eq!(tarama.yetkinlik, Yetkinlik::DosyaOkuma);
+    assert_eq!(tarama.etki, IntrinsicEtkisi::DisOkuma);
 }
 
 #[test]

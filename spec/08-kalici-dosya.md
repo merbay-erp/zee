@@ -51,3 +51,11 @@ kullanmamalıdır.
 Bu söz tek bir dosyanın commit sınırıdır. Birden çok dosya/veritabanı kaydını
 tek iş kuralı olarak değiştiren transaction, RFC-0015'in uygulama eylemi
 sınırında ayrıca tanımlanacaktır.
+
+## Binary yaşam döngüsü
+
+K-163/F030'un no-clobber atomik taşıma ve idempotent silme kuralları
+[spec/26](26-binary-yukleme-ve-dosya-yasam-dongusu.md) bölümündedir. Taşıma
+aynı dosya sistemi rename görünürlük sınırını, iki işlem de kalıcı dizin
+eşzamanlamasını ve süreçler-arası hedef kilidini kullanır. Bunlar DB ile
+dağıtık commit sözü vermez.

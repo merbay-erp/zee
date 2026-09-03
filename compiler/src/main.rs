@@ -20,6 +20,7 @@ use std::process::ExitCode;
 
 #[path = "cli/registry.rs"]
 mod dil_registry;
+mod web_yukleme;
 
 const HTTP_ISTEK_OKUMA_SURESI: std::time::Duration = std::time::Duration::from_secs(
     dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
@@ -1374,6 +1375,38 @@ struct EylemDosyaYedegi {
 }
 
 impl GercekIo {
+    fn dosya_eylem_yedegini_al(&mut self, yol: &std::path::Path) -> Result<(), String> {
+        if !self
+            .eylem_yedekleri
+            .iter()
+            .any(|yedek| !yedek.contains_key(yol))
+        {
+            return Ok(());
+        }
+        let onceki = match dil::kaynak_sinirlari::veri_dosyasi_baytlarini_oku(yol) {
+            Ok(icerik) => Some(icerik),
+            Err(hata) if hata.kind() == std::io::ErrorKind::NotFound => None,
+            Err(hata) => return Err(format!("transaction yedeği alınamadı: {}", hata)),
+        };
+        for yedek in &mut self.eylem_yedekleri {
+            yedek
+                .entry(yol.to_path_buf())
+                .or_insert_with(|| EylemDosyaYedegi {
+                    onceki: onceki.clone(),
+                    beklenen: onceki.clone(),
+                });
+        }
+        Ok(())
+    }
+
+    fn dosya_eylem_bekleneni(&mut self, yol: &std::path::Path, beklenen: Option<Vec<u8>>) {
+        for yedek in &mut self.eylem_yedekleri {
+            if let Some(kayit) = yedek.get_mut(yol) {
+                kayit.beklenen = beklenen.clone();
+            }
+        }
+    }
+
     fn yeni_argumanlarla(
         kok: &std::path::Path,
         dosya_siniri_koku: &std::path::Path,
@@ -1833,35 +1866,121 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             );
         }
         let gercek_yol = self.dosya_yolu(yol, true)?;
-        if self
-            .eylem_yedekleri
-            .iter()
-            .any(|yedek| !yedek.contains_key(&gercek_yol))
-        {
-            let onceki = match dil::kaynak_sinirlari::veri_dosyasi_baytlarini_oku(&gercek_yol) {
-                Ok(icerik) => Some(icerik),
-                Err(hata) if hata.kind() == std::io::ErrorKind::NotFound => None,
-                Err(hata) => return Err(format!("transaction yedeği alınamadı: {}", hata)),
-            };
-            for yedek in &mut self.eylem_yedekleri {
-                yedek
-                    .entry(gercek_yol.clone())
-                    .or_insert_with(|| EylemDosyaYedegi {
-                        onceki: onceki.clone(),
-                        beklenen: onceki.clone(),
-                    });
-            }
-        }
+        self.dosya_eylem_yedegini_al(&gercek_yol)?;
         dil::kalici_dosya::atomik_satir_yaz(&gercek_yol, satir, ekleme)
             .map_err(|hata| format!("\"{}\" dosyasına yazılamadı: {}", yol, hata))?;
         let sonraki = dil::kaynak_sinirlari::veri_dosyasi_baytlarini_oku(&gercek_yol)
             .map_err(|hata| format!("transaction yazımı doğrulanamadı: {}", hata))?;
-        for yedek in &mut self.eylem_yedekleri {
-            if let Some(kayit) = yedek.get_mut(&gercek_yol) {
-                kayit.beklenen = Some(sonraki.clone());
-            }
-        }
+        self.dosya_eylem_bekleneni(&gercek_yol, Some(sonraki));
         Ok(())
+    }
+    fn dosya_atomik_tasi(&mut self, kaynak: &str, hedef: &str) -> Result<i64, String> {
+        self.politika
+            .gerektir(dil::yetkinlik::Yetkinlik::DosyaYazma)?;
+        if self
+            .postgresql_yazma_eylemleri
+            .iter()
+            .any(|kullandi| *kullandi)
+        {
+            return Err("aynı eylem dosya ve PostgreSQL yazımını birlikte kullanamaz; dağıtık atomiklik sözü verilmez".into());
+        }
+        let kaynak_yolu = self.dosya_yolu(kaynak, false)?;
+        let hedef_yolu = self.dosya_yolu(hedef, true)?;
+        if hedef_yolu.exists() {
+            return Err(format!("\"{}\" hedef dosyası zaten var", hedef));
+        }
+        let icerik = dil::kaynak_sinirlari::veri_dosyasi_baytlarini_oku(&kaynak_yolu)
+            .map_err(|hata| format!("\"{}\" kaynak dosyası okunamadı: {}", kaynak, hata))?;
+        self.dosya_eylem_yedegini_al(&kaynak_yolu)?;
+        self.dosya_eylem_yedegini_al(&hedef_yolu)?;
+        dil::kalici_dosya::atomik_tasi(&kaynak_yolu, &hedef_yolu)
+            .map_err(|hata| format!("dosya atomik taşınamadı: {}", hata))?;
+        self.dosya_eylem_bekleneni(&kaynak_yolu, None);
+        self.dosya_eylem_bekleneni(&hedef_yolu, Some(icerik));
+        Ok(1)
+    }
+    fn dosya_sil(&mut self, yol: &str) -> Result<i64, String> {
+        self.politika
+            .gerektir(dil::yetkinlik::Yetkinlik::DosyaYazma)?;
+        if self
+            .postgresql_yazma_eylemleri
+            .iter()
+            .any(|kullandi| *kullandi)
+        {
+            return Err("aynı eylem dosya ve PostgreSQL yazımını birlikte kullanamaz; dağıtık atomiklik sözü verilmez".into());
+        }
+        // Silme yokluğu da başarı sayar; bu yüzden var olmayan hedefin kendisini
+        // kanonikleştirmek yerine yazma yolunda olduğu gibi mevcut üst dizini
+        // doğrula. Var olan hedeflerde symlink/kök denetimi yine dosya_yolu
+        // içinde uygulanır.
+        let gercek_yol = self.dosya_yolu(yol, true)?;
+        self.dosya_eylem_yedegini_al(&gercek_yol)?;
+        match dil::kalici_dosya::atomik_sil(&gercek_yol) {
+            Ok(true) => {
+                self.dosya_eylem_bekleneni(&gercek_yol, None);
+                Ok(1)
+            }
+            Ok(false) => Ok(0),
+            Err(hata) => Err(format!("\"{}\" dosyası silinemedi: {}", yol, hata)),
+        }
+    }
+    fn dosyalari_listele(&mut self, dizin: &str) -> Result<Vec<String>, String> {
+        self.politika
+            .gerektir(dil::yetkinlik::Yetkinlik::DosyaOkuma)?;
+        let gercek_dizin = self.dosya_yolu(dizin, false)?;
+        let mut yollar = Vec::new();
+        let girdiler = std::fs::read_dir(&gercek_dizin)
+            .map_err(|hata| format!("\"{}\" dizini listelenemedi: {}", dizin, hata))?;
+        for girdi in girdiler {
+            let girdi = girdi.map_err(|hata| format!("dizin girdisi okunamadı: {}", hata))?;
+            let tur = girdi
+                .file_type()
+                .map_err(|hata| format!("dizin girdisi türü okunamadı: {}", hata))?;
+            if !tur.is_file() {
+                continue;
+            }
+            let girdi_yolu = girdi.path();
+            let goreli = girdi_yolu
+                .strip_prefix(&self.kok)
+                .map_err(|_| "listelenen dosya proje kaynak kökünün dışında kaldı".to_string())?;
+            yollar.push(goreli.to_string_lossy().into_owned());
+        }
+        yollar.sort();
+        Ok(yollar)
+    }
+    fn dosya_sha256(&mut self, yol: &str) -> Result<String, String> {
+        use sha2::{Digest, Sha256};
+        use std::io::Read;
+
+        self.politika
+            .gerektir(dil::yetkinlik::Yetkinlik::DosyaOkuma)?;
+        let gercek_yol = self.dosya_yolu(yol, false)?;
+        let mut dosya = std::fs::File::open(&gercek_yol)
+            .map_err(|hata| format!("\"{}\" dosyası açılamadı: {}", yol, hata))?;
+        let mut ozet = Sha256::new();
+        let mut toplam = 0usize;
+        let sinir = dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+            .http()
+            .yukleme_bayti();
+        let mut parca = [0u8; 16 * 1024];
+        loop {
+            let okunan = dosya
+                .read(&mut parca)
+                .map_err(|hata| format!("\"{}\" dosyası okunamadı: {}", yol, hata))?;
+            if okunan == 0 {
+                break;
+            }
+            toplam = toplam.saturating_add(okunan);
+            if toplam > sinir {
+                return Err(format!(
+                    "dosya {} MiB özet sınırını aşıyor",
+                    sinir / 1024 / 1024
+                ));
+            }
+            ozet.update(&parca[..okunan]);
+        }
+        let ozet = ozet.finalize();
+        Ok(ozet.iter().map(|bayt| format!("{bayt:02x}")).collect())
     }
     fn simdi(&mut self) -> (i64, u32, u32, u32, u32) {
         // v0: UTC. Yerel saat dilimi desteği stdlib Zaman modülüyle gelecek.
@@ -2037,14 +2156,30 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                 }
             };
             let beklenen = baslik.govde_uzunlugu();
-            if beklenen > http_siniri.istek_govde_bayti() {
+            let icerik_turleri = baslik.baslik_degerleri("Content-Type");
+            if icerik_turleri.len() > 1 {
+                ham_http_hatasi_gonder(
+                    &mut akis,
+                    400,
+                    "birden çok Content-Type başlığı reddedildi",
+                    false,
+                    https,
+                );
+                continue;
+            }
+            let binary_yukleme = icerik_turleri
+                .first()
+                .is_some_and(|deger| deger.eq_ignore_ascii_case("application/octet-stream"));
+            let govde_siniri = if binary_yukleme {
+                http_siniri.yukleme_bayti()
+            } else {
+                http_siniri.istek_govde_bayti()
+            };
+            if beklenen > govde_siniri {
                 ham_http_hatasi_gonder(
                     &mut akis,
                     413,
-                    &format!(
-                        "istek gövdesi {} KiB sınırını aşıyor",
-                        http_siniri.istek_govde_bayti() / 1024
-                    ),
+                    &format!("istek gövdesi {} KiB sınırını aşıyor", govde_siniri / 1024),
                     baslik.yontem().eq_ignore_ascii_case("HEAD"),
                     https,
                 );
@@ -2061,16 +2196,34 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                 );
                 continue;
             }
-            let mut govde_baytlari = Vec::with_capacity(beklenen);
-            govde_baytlari.extend_from_slice(ilk_govde);
-            while govde_baytlari.len() < beklenen {
-                let onceki = govde_baytlari.len();
-                govde_baytlari.resize(beklenen, 0);
-                match son_tarihli_soket_oku(
-                    &mut akis,
-                    &mut govde_baytlari[onceki..beklenen],
-                    son_tarih,
-                ) {
+            let mut yukleme = if binary_yukleme {
+                match web_yukleme::AkanYukleme::yeni(&self.kok) {
+                    Ok(mut yukleme) => {
+                        if let Err(hata) = yukleme.yaz(ilk_govde) {
+                            ham_http_hatasi_gonder(&mut akis, 503, &hata, false, https);
+                            continue 'istekler;
+                        }
+                        Some(yukleme)
+                    }
+                    Err(hata) => {
+                        ham_http_hatasi_gonder(&mut akis, 503, &hata, false, https);
+                        continue 'istekler;
+                    }
+                }
+            } else {
+                None
+            };
+            let mut govde_baytlari = if binary_yukleme {
+                Vec::new()
+            } else {
+                ilk_govde.to_vec()
+            };
+            let mut okunan_toplam = ilk_govde.len();
+            while okunan_toplam < beklenen {
+                let mut parca = [0u8; 16 * 1024];
+                let kalan = beklenen - okunan_toplam;
+                let parca_siniri = kalan.min(parca.len());
+                match son_tarihli_soket_oku(&mut akis, &mut parca[..parca_siniri], son_tarih) {
                     Ok(0) => {
                         ham_http_hatasi_gonder(
                             &mut akis,
@@ -2081,7 +2234,17 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                         );
                         continue 'istekler;
                     }
-                    Ok(okunan) => govde_baytlari.truncate(onceki + okunan),
+                    Ok(okunan) => {
+                        okunan_toplam += okunan;
+                        if let Some(yukleme) = &mut yukleme {
+                            if let Err(hata) = yukleme.yaz(&parca[..okunan]) {
+                                ham_http_hatasi_gonder(&mut akis, 503, &hata, false, https);
+                                continue 'istekler;
+                            }
+                        } else {
+                            govde_baytlari.extend_from_slice(&parca[..okunan]);
+                        }
+                    }
                     Err(hata)
                         if matches!(
                             hata.kind(),
@@ -2112,17 +2275,33 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                     }
                 }
             }
-            let govde = match govde_metni(&govde_baytlari) {
-                Ok(govde) => govde,
-                Err(hata) => {
-                    ham_http_hatasi_gonder(
-                        &mut akis,
-                        400,
-                        &hata.to_string(),
-                        baslik.yontem().eq_ignore_ascii_case("HEAD"),
-                        https,
-                    );
-                    continue;
+            let govde = if let Some(yukleme) = yukleme {
+                match yukleme.tamamla() {
+                    Ok(bilgi) => {
+                        let csrf = tek_http_basligi(&baslik, "X-Zee-CSRF").unwrap_or_default();
+                        format!(
+                            "_csrf={}&yukleme_gecici_yolu={}&yukleme_sha256={}&yukleme_bayti={}",
+                            csrf, bilgi.goreli_yol, bilgi.sha256, bilgi.bayt
+                        )
+                    }
+                    Err(hata) => {
+                        ham_http_hatasi_gonder(&mut akis, 503, &hata, false, https);
+                        continue 'istekler;
+                    }
+                }
+            } else {
+                match govde_metni(&govde_baytlari) {
+                    Ok(govde) => govde.to_string(),
+                    Err(hata) => {
+                        ham_http_hatasi_gonder(
+                            &mut akis,
+                            400,
+                            &hata.to_string(),
+                            baslik.yontem().eq_ignore_ascii_case("HEAD"),
+                            https,
+                        );
+                        continue;
+                    }
                 }
             };
             let yontem = baslik.yontem();

@@ -30,6 +30,7 @@ pub struct HttpSinirlari {
     pub(super) calistirma_zaman_asimi_ms: i64,
     pub(super) istek_baslik_bayti: usize,
     pub(super) istek_govde_bayti: usize,
+    pub(super) yukleme_bayti: usize,
     pub(super) istek_alani: usize,
 }
 
@@ -48,6 +49,10 @@ impl HttpSinirlari {
 
     pub const fn istek_govde_bayti(self) -> usize {
         self.istek_govde_bayti
+    }
+
+    pub const fn yukleme_bayti(self) -> usize {
+        self.yukleme_bayti
     }
 
     pub const fn istek_alani(self) -> usize {

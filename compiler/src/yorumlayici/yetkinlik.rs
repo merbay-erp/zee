@@ -1,8 +1,10 @@
 //! `GirdiCikti` çağrılarını merkezî yetkinlik politikasında fail-closed tutar.
+mod dosya;
+
 use super::{EylemHatasi, GirdiCikti, VeritabaniHatasi};
 use crate::agac::RotaErisimi;
 use crate::web_guvenligi::WebReddi;
-use crate::yetkinlik::{DosyaSiniri, Yetkinlik, YetkinlikPolitikasi};
+use crate::yetkinlik::{Yetkinlik, YetkinlikPolitikasi};
 
 pub struct PolitikaliIo<T: GirdiCikti> {
     pub ic: T,
@@ -10,9 +12,7 @@ pub struct PolitikaliIo<T: GirdiCikti> {
     cocuk_modu: bool,
 }
 
-/// K-047 API uyumluluğu: eski ad artık merkezî politikanın çocuk profilidir.
 pub type GuvenliIo<T> = PolitikaliIo<T>;
-
 impl<T: GirdiCikti> PolitikaliIo<T> {
     pub fn yeni(ic: T) -> Self {
         Self {
@@ -35,28 +35,7 @@ impl<T: GirdiCikti> PolitikaliIo<T> {
     }
 
     fn dosya_yolunu_denetle(&self, yol: &str, yetkinlik: Yetkinlik) -> Result<(), String> {
-        self.gerektir(yetkinlik)?;
-        if self.politika.dosya_siniri() == DosyaSiniri::HerYer {
-            return Ok(());
-        }
-        let mutlak =
-            yol.starts_with('/') || yol.starts_with('\\') || yol.chars().nth(1) == Some(':');
-        let guvensiz = yol.is_empty()
-            || yol.chars().any(char::is_control)
-            || yol.split(['/', '\\']).any(|parca| parca == "..");
-        if mutlak || guvensiz {
-            if self.cocuk_modu {
-                return Err(format!(
-                    "güvenli modda yalnız çalışma klasöründeki dosyalara erişilir; \"{}\" dışarıyı gösteriyor",
-                    yol
-                ));
-            }
-            return Err(format!(
-                "proje dosya sınırında yalnız kök içinde kalan göreli yol kullanılabilir; \"{}\" reddedildi",
-                yol
-            ));
-        }
-        Ok(())
+        dosya::yolu_denetle(&self.politika, self.cocuk_modu, yol, yetkinlik)
     }
 
     fn web_gerektir(&self) -> Result<(), String> {
@@ -101,6 +80,27 @@ impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
     fn dosya_yaz(&mut self, yol: &str, satir: &str, ekleme: bool) -> Result<(), String> {
         self.dosya_yolunu_denetle(yol, Yetkinlik::DosyaYazma)?;
         self.ic.dosya_yaz(yol, satir, ekleme)
+    }
+
+    fn dosya_atomik_tasi(&mut self, kaynak: &str, hedef: &str) -> Result<i64, String> {
+        self.dosya_yolunu_denetle(kaynak, Yetkinlik::DosyaYazma)?;
+        self.dosya_yolunu_denetle(hedef, Yetkinlik::DosyaYazma)?;
+        self.ic.dosya_atomik_tasi(kaynak, hedef)
+    }
+
+    fn dosya_sil(&mut self, yol: &str) -> Result<i64, String> {
+        self.dosya_yolunu_denetle(yol, Yetkinlik::DosyaYazma)?;
+        self.ic.dosya_sil(yol)
+    }
+
+    fn dosyalari_listele(&mut self, dizin: &str) -> Result<Vec<String>, String> {
+        self.dosya_yolunu_denetle(dizin, Yetkinlik::DosyaOkuma)?;
+        self.ic.dosyalari_listele(dizin)
+    }
+
+    fn dosya_sha256(&mut self, yol: &str) -> Result<String, String> {
+        self.dosya_yolunu_denetle(yol, Yetkinlik::DosyaOkuma)?;
+        self.ic.dosya_sha256(yol)
     }
 
     fn simdi(&mut self) -> (i64, u32, u32, u32, u32) {

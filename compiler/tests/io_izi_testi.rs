@@ -6,6 +6,38 @@ use dil::yorumlayici::{
 };
 
 #[test]
+fn dosya_yasam_dongusu_izi_fiziksel_etki_yapmadan_oynatilir() {
+    let mut taban = ToplayanIo::yeni(Vec::new());
+    taban.dosyalar.insert("temp/a.bin".into(), "abc".into());
+    taban.dosyalar.insert("temp/orphan.bin".into(), "x".into());
+    let mut kaydeden = IzKaydedenIo::yeni(taban);
+    assert_eq!(
+        kaydeden.dosya_atomik_tasi("temp/a.bin", "medya/a.bin"),
+        Ok(1)
+    );
+    assert_eq!(
+        kaydeden.dosyalari_listele("temp"),
+        Ok(vec!["temp/orphan.bin".into()])
+    );
+    let ozet = kaydeden.dosya_sha256("medya/a.bin").unwrap();
+    assert_eq!(kaydeden.dosya_sil("medya/a.bin"), Ok(1));
+    let iz = kaydeden.iz_metni().unwrap();
+
+    let mut oynatici = IzYenidenOynatici::yeni(&iz).unwrap();
+    assert_eq!(
+        oynatici.dosya_atomik_tasi("temp/a.bin", "medya/a.bin"),
+        Ok(1)
+    );
+    assert_eq!(
+        oynatici.dosyalari_listele("temp"),
+        Ok(vec!["temp/orphan.bin".into()])
+    );
+    assert_eq!(oynatici.dosya_sha256("medya/a.bin"), Ok(ozet));
+    assert_eq!(oynatici.dosya_sil("medya/a.bin"), Ok(1));
+    oynatici.bitir().unwrap();
+}
+
+#[test]
 fn commit_sonucu_belirsiz_sinifi_io_izinde_korunur() {
     let mut taban = ToplayanIo::yeni(Vec::new());
     taban

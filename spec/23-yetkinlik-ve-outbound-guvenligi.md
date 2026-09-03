@@ -8,8 +8,8 @@ Kararlı proje yazımları şunlardır:
 
 | Yazım | Açtığı sınır |
 |---|---|
-| `dosya-okuma` | Proje kökündeki dosyayı okuma |
-| `dosya-yazma` | Proje kökündeki dosyayı atomik yazma/ekleme |
+| `dosya-okuma` | Proje kökündeki dosyayı okuma/listeleme/SHA-256 hesaplama |
+| `dosya-yazma` | Proje kökündeki dosyayı atomik yazma/ekleme/taşıma/silme |
 | `ağ` | Bildirilmiş origin'e outbound HTTP(S) |
 | `yerel-ağ` | Private/loopback hedef ve explicit düz HTTP |
 | `ağ-sunucusu` | Native loopback web sunucusu/adaptörü |

@@ -28,7 +28,7 @@ görünürdür. Katmanlar arası ters kenar ise tabana yazılsa bile reddedilir.
 ## Makine-okunur sahiplik
 
 [`katman-mimarisi-v1.tsv`](../compiler/tests/fixtures/katman-mimarisi-v1.tsv)
-37 production sahibinin katmanını, bütün doğrudan iç bağımlılıklarını ve tek
+38 production sahibinin katmanını, bütün doğrudan iç bağımlılıklarını ve tek
 cümlelik sorumluluğunu taşır. Kapsam şunların tamamıdır:
 
 - `lib.rs`, bütün kök kitaplık modülleri ve alt modülleri;
