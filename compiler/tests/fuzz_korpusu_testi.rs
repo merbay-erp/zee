@@ -85,3 +85,80 @@ fn dev_sayi_virgul_ve_girinti_girdileri_panik_uretmez() {
         hatti_panik_bekcisiyle_calistir(ad, &kaynak);
     }
 }
+
+#[test]
+fn nightly_ogrenimi_cache_disinda_provenanceli_artefaktta_kalir() {
+    let depo = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .parent()
+        .expect("compiler depo içinde olmalı");
+    let workflow = std::fs::read_to_string(depo.join(".github/workflows/fuzz.yml"))
+        .expect("fuzz workflow okunmalı");
+    for parca in [
+        "Öğrenilen korpusu her koşuda sakla",
+        "if: always()",
+        "zee-fuzz-corpus-artifact-1",
+        "source_commit",
+        "run_attempt",
+        "retention-days: 90",
+        "if-no-files-found: error",
+        "compiler/fuzz/corpus/$FUZZ_KORPUS/.",
+    ] {
+        assert!(
+            workflow.contains(parca),
+            "fuzz kalıcılık kapısı eksik: {parca}"
+        );
+    }
+    let upload_sayisi = workflow.matches("actions/upload-artifact@").count();
+    assert_eq!(upload_sayisi, 2, "korpus ve crash ayrı artefakt olmalı");
+
+    let dogrulayici =
+        std::fs::read_to_string(depo.join("scripts/fuzz-korpus-artefakti-dogrula.sh"))
+            .expect("fuzz artefakt doğrulayıcısı okunmalı");
+    assert!(dogrulayici.contains("# zee-fuzz-corpus-artifact-1"));
+    assert!(dogrulayici.contains("sha256sum"));
+    assert!(dogrulayici.contains("shasum -a 256"));
+    assert!(dogrulayici.contains("manifest_sayisi"));
+
+    let damga = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .expect("saat")
+        .as_nanos();
+    let gecici =
+        std::env::temp_dir().join(format!("zee-fuzz-artefakt-{}-{damga}", std::process::id()));
+    std::fs::create_dir_all(gecici.join("corpus")).expect("geçici korpus");
+    std::fs::write(gecici.join("corpus/tohum"), b"abc").expect("seed");
+    std::fs::write(
+        gecici.join("manifest.tsv"),
+        "# zee-fuzz-corpus-artifact-1\n\
+         # target\tlexer_parser\n\
+         # corpus\tlexer_parser\n\
+         # source_commit\t1111111111111111111111111111111111111111\n\
+         # run_id\t42\n\
+         # run_attempt\t1\n\
+         # toolchain\tnightly-2026-08-31\n\
+         # cargo_fuzz\t0.13.2\n\
+         ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\ttohum\n",
+    )
+    .expect("manifest");
+    let betik = depo.join("scripts/fuzz-korpus-artefakti-dogrula.sh");
+    let gecerli = std::process::Command::new("bash")
+        .arg(&betik)
+        .arg("lexer_parser")
+        .arg(&gecici)
+        .output()
+        .expect("doğrulayıcı çalışmalı");
+    assert!(gecerli.status.success(), "doğru artifact kabul edilmeli");
+
+    std::fs::write(gecici.join("corpus/tohum"), b"bozuk").expect("seed bozma");
+    let bozuk = std::process::Command::new("bash")
+        .arg(&betik)
+        .arg("lexer_parser")
+        .arg(&gecici)
+        .output()
+        .expect("doğrulayıcı çalışmalı");
+    assert!(
+        !bozuk.status.success(),
+        "değiştirilmiş artifact reddedilmeli"
+    );
+    std::fs::remove_dir_all(gecici).expect("geçici artifact temizlenmeli");
+}

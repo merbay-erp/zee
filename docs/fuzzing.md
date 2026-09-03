@@ -1,7 +1,7 @@
 # Compiler fuzz rehberi
 
-Bu rehber K-110/ADR-022, K-111, K-140/ADR-037, K-142/ADR-039 ve
-K-143/ADR-040'ın ortak işletim
+Bu rehber K-110/ADR-022, K-111, K-140/ADR-037, K-142/ADR-039,
+K-143/ADR-040 ve K-156/ADR-055'in ortak işletim
 sözleşmesidir. Lexer/parser hedefi geçerli her UTF-8 kaynağın token/AST ya da
 Türkçe tanı üretmesini; morfoloji hedefi geçerli her üretilmiş kök+ek zincirinin
 aynı soyut çözüme dönmesini ve çoklu köklerin sessizce seçilmemesini;
@@ -83,9 +83,27 @@ koşudur.
 4. Düzeltmeden sonra ana testleri, Clippy'yi, WASM'ı ve en az 30 saniyelik
    fuzz smoke koşusunu geçir.
 
-Gece işinde korpus cache ile sonraki koşuya taşınır. Başarısız koşunun crash
-girdisi GitHub artifact'ı olur; yalnız logda kalan ve tekrar üretilemeyen bulgu
-kapatılmış sayılmaz.
+Gece işinde korpus cache ile sonraki koşuya taşınır; cache yalnız hızlandırma
+katmanıdır. Her hedefin başarılı veya başarısız koşu sonu korpusu ayrıca 90
+günlük `${hedef}-fuzz-corpus-${run_id}-${run_attempt}` artefaktına yüklenir.
+Artefakt içindeki `manifest.tsv`; hedef/korpus, kaynak commit, run/attempt,
+sabit araç sürümleri ve her seed'in göreli yol+SHA-256 özetini taşır. Başarısız
+koşunun crash girdisi de ayrı 90 günlük artefakttır; yalnız logda kalan ve
+tekrar üretilemeyen bulgu kapatılmış sayılmaz.
+
+İndirilen korpus önce doğrulanır:
+
+```sh
+scripts/fuzz-korpus-artefakti-dogrula.sh lexer_parser \
+  indirilen/zee-fuzz-corpus-lexer_parser
+```
+
+Yeni coverage seed'leri doğrudan repoya kopyalanmaz. Hedefin mevcut kaynak
+korpusuyla birlikte `cargo fuzz cmin` ile küçültülür; yeni yolu koruyan en küçük
+girdi anlamlı bir adla `compiler/fuzz/corpus/<hedef>/` altına alınır. Stable
+replay veya adı konmuş regresyon testi eklenir ve normal code review'dan geçer.
+Bu nedenle cache silinmesi öğrenimi yok etmez, fakat geçici mutation çıktısı da
+otomatik olarak kalıcı dil kanıtına dönüşmez.
 
 Derlenmiş `compiler/fuzz/target/`, crash `artifacts/` ve coverage çıktıları
 kaynak arşivine girmez. Kalıcı korpus ile fuzz kaynakları korunur; paylaşılacak
@@ -115,3 +133,6 @@ kaynak 8 MiB, soru girdisi 1 MiB/4.096 satırla kopya ve satır koleksiyonundan
 native ve gerçek wasm32 Node regresyonu her ana kapıda exact uygular.
 Kaynak+soru kipli ilk K-143 kampanyası 1.709.869 çağrıyı 61 saniyede ihlalsiz
 tamamlamıştır.
+
+K-156 kalıcılık kapısı kampanya süresini büyütmez. Dört hedefte 30–60 dakikalık
+release-candidate koşusu ve uygun sanitizer/Miri kanıtı K-157'de açık kalır.

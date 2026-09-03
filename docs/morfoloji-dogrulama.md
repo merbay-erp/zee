@@ -44,8 +44,9 @@ Compiler'dan bağımsız JSON Schema, 27 çözüm/karar ve 21 üretim vakası
 köküne dönüştürür. Girdinin seçtiği tek veya iki katmanlı zinciri üretir,
 özgün soyut çözümün korunduğunu ve elde edilen bütün adayların A001/A002
 politikasından kaçamadığını doğrular. Dört başlangıç tohumu gecelik CI cache'i
-ile büyür; crash girdileri artifact olarak saklanır. Ortak komutlar ve küçültme
-akışı [compiler fuzz rehberindedir](fuzzing.md).
+ile büyür; K-156 sonrasında coverage korpusu da cache dışı provenance'lı 90
+günlük artefakta, crash girdileri ayrı artefakta saklanır. Ortak komutlar,
+doğrulama ve küçültme akışı [compiler fuzz rehberindedir](fuzzing.md).
 
 İlk yerel smoke kampanyası sabit `nightly-2026-08-31` ve `cargo-fuzz 0.13.2`
 ile 31 saniyede 527.966 girdi yürüttü; crash, panic veya property ihlali bulmadı.

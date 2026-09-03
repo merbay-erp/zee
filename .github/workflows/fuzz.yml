@@ -51,6 +51,41 @@ jobs:
           -max_total_time=300
           -max_len=${{ matrix.azami_girdi }}
           -timeout=5
+      - name: Öğrenilen korpusu provenance ile paketle
+        if: always()
+        env:
+          FUZZ_HEDEF: ${{ matrix.hedef }}
+          FUZZ_KORPUS: ${{ matrix.korpus }}
+          FUZZ_ARTEFAKT: ${{ runner.temp }}/zee-fuzz-corpus-${{ matrix.hedef }}
+        run: |
+          rm -rf "$FUZZ_ARTEFAKT"
+          mkdir -p "$FUZZ_ARTEFAKT/corpus"
+          cp -a "compiler/fuzz/corpus/$FUZZ_KORPUS/." "$FUZZ_ARTEFAKT/corpus/"
+          {
+            echo "# zee-fuzz-corpus-artifact-1"
+            printf '# target\t%s\n' "$FUZZ_HEDEF"
+            printf '# corpus\t%s\n' "$FUZZ_KORPUS"
+            printf '# source_commit\t%s\n' "$GITHUB_SHA"
+            printf '# run_id\t%s\n' "$GITHUB_RUN_ID"
+            printf '# run_attempt\t%s\n' "$GITHUB_RUN_ATTEMPT"
+            printf '# toolchain\tnightly-2026-08-31\n'
+            printf '# cargo_fuzz\t0.13.2\n'
+            printf '# seed_sha256\trelative_path\n'
+            find "$FUZZ_ARTEFAKT/corpus" -type f -print0 | LC_ALL=C sort -z |
+              while IFS= read -r -d '' dosya; do
+                ozet="$(sha256sum "$dosya" | cut -d ' ' -f 1)"
+                goreli="${dosya#"$FUZZ_ARTEFAKT/corpus/"}"
+                printf '%s\t%s\n' "$ozet" "$goreli"
+              done
+          } > "$FUZZ_ARTEFAKT/manifest.tsv"
+      - name: Öğrenilen korpusu her koşuda sakla
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ${{ matrix.hedef }}-fuzz-corpus-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/zee-fuzz-corpus-${{ matrix.hedef }}
+          if-no-files-found: error
+          retention-days: 90
       - name: Crash girdisini sakla
         if: failure()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
@@ -58,3 +93,4 @@ jobs:
           name: ${{ matrix.hedef }}-fuzz-crash-${{ github.run_id }}
           path: compiler/fuzz/artifacts/${{ matrix.hedef }}
           if-no-files-found: ignore
+          retention-days: 90

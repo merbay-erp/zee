@@ -3,7 +3,8 @@
 - **Durum:** kabul
 - **Tarih:** 1 Eylül 2026
 - **Revizyon:** 2 Eylül 2026 — K-140/ADR-037 ham byte HTTP hedefini ekledi.
-- **İlgili kayıt:** K-110, K-140, B-015, B-053, V1-P0-20
+- **Revizyon:** 3 Eylül 2026 — K-156/ADR-055 cache dışı provenance'lı korpus artefaktını ekledi.
+- **İlgili kayıt:** K-110, K-140, K-156, B-015, B-053, B-066, V1-P0-20
 - **İlgili yüzey:** `compiler/fuzz/`, `compiler/tests/fuzz_korpusu_testi.rs`
 
 ## Bağlam
@@ -35,6 +36,10 @@ başına kanıtlamaz. Örnek testler de mutation kaynaklı bileşimleri aramaz.
    `&[u8]` alır; request-line/header CRLF, target biçimi, TE/CL framing,
    NUL/UTF-8 ve exact gövde kararını mutasyona açar. HTTP korpusu geçerli ve
    fail-closed girdileri ana testte de yeniden oynatır.
+8. K-156'da dört hedefin koşu sonu korpusu cache'ten bağımsız, SHA-256
+   manifestli ve kaynak commit/run provenance'lı 90 günlük artefakt olur.
+   Coverage seed'i ancak doğrulama, küçültme, stable replay ve insan review'u
+   sonrasında kalıcı kaynak korpusuna girer.
 
 ## Sonuçlar
 
