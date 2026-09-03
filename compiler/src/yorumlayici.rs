@@ -45,17 +45,21 @@ use std::task::{Context, Poll, Wake, Waker};
 
 /// Girdi/çıktı ve rastgelelik soyutlaması: testler deterministik kuyruk
 /// kullanır, CLI gerçek klavye/ekran ve gerçek rastgelelik.
+/// (ad, değer) çiftleri — istek verileri ve çerezler bu biçimde taşınır.
+pub type AdDegerler = Vec<(String, String)>;
+
+/// Ham web isteğinin yöntem, yol ve alanlara ayrılmış iç sonucu.
+pub type IstekParcalari = (String, String, AdDegerler);
+
+/// Web isteği ayrıştırmasının HTTP durum kodu ve kararlı kısa açıklaması.
+pub type IstekParcalamaHatasi = (u16, &'static str);
+
 /// Ham istek metnini çözer (K-051). Biçim: "YÖNTEM yol?sorgu\ngövde" ya da
 /// yalnız "/yol" (= GET). Bozuk form kodlaması 400 sınıfı hatadır.
-pub fn istek_parcala(
-    ham: &str,
-) -> Result<(String, String, Vec<(String, String)>), (u16, &'static str)> {
+pub fn istek_parcala(ham: &str) -> Result<IstekParcalari, IstekParcalamaHatasi> {
     let (yontem, yol, veriler, _) = istek_parcala_cerezli(ham)?;
     Ok((yontem, yol, veriler))
 }
-
-/// (ad, değer) çiftleri — istek verileri ve çerezler bu biçimde taşınır.
-pub type AdDegerler = Vec<(String, String)>;
 
 pub const AZAMI_ISTEK_GOVDESI: usize = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
     .http()
@@ -127,10 +131,7 @@ pub fn istek_parcala_cerezli(
     Ok((yontem, yol, veriler, cerezler))
 }
 
-fn istek_govdesiyle(
-    ilk_satir: &str,
-    govde: &str,
-) -> Result<(String, String, Vec<(String, String)>), (u16, &'static str)> {
+fn istek_govdesiyle(ilk_satir: &str, govde: &str) -> Result<IstekParcalari, IstekParcalamaHatasi> {
     let (yontem, hedef) = match ilk_satir.split_once(' ') {
         Some((y, h)) => (y.to_uppercase(), h.trim()),
         None => ("GET".to_string(), ilk_satir.trim()),

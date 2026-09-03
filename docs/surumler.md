@@ -17,7 +17,9 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   Semantic feature yalnız dogfood/security/correctness olabilir;
   `dogfood-change` ürün, K-işi, reproducer, etkilenen proje, minimalite ve
   ADR/spec/RFC'nin tamamını ister. Maintenance sınıfıyla kaçış ve geçmiş beyan
-  yeniden yazımı geçici Git depo testinde reddedilir. B-071 kapandı.
+  yeniden yazımı geçici Git depo testinde reddedilir. Kapanış denetiminde
+  bulunan üç Clippy borcu davranış değiştirmeyen adlandırılmış istek tipleri ve
+  açık filter/map zinciriyle temizlendi. B-071 kapandı.
 
 - **Paket sahipliği ve CORE FREEZE** (K-160, ADR-059): Davranışsız
   `paket_modeli`, bağımlılık resolver'ı, registry protokol/taşıması,
