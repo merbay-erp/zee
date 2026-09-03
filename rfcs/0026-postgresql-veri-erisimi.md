@@ -55,6 +55,12 @@ Otomatik tekrar çift yan etki doğurabileceğinden sonuç “belirsiz” olarak
 taşınır ve kullanıcı yeniden denemeye yönlendirilmez. Pool, cursor/stream ve
 kilitli okuma bu ilk senkron profilin parçası değildir.
 
+Transaction sınırındaki bağlantı hatası mevcut client'ı ve o bağlantıya ait
+savepoint durumunu geçersiz kılar. Web adaptörü C021'i istek düzeyinde 503'e
+dönüştürür ve dinleme döngüsünü sürdürür. Sonraki bağımsız istek yeni bağlantı
+kurabilir; başarısız write hiçbir koşulda bu recovery tarafından tekrar
+çalıştırılmaz.
+
 ## Kabul kanıtı
 
 Parser/tür/etki, parametre ayrılığı, structured hata, IO trace/replay, hedef

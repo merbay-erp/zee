@@ -2870,3 +2870,21 @@ usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.
   kontrollü 503'e dönüşmüyor. COMMIT cevabının kaybolduğu dar pencere gerçek
   enjeksiyonla üretilmedi; yalnız no-retry politikası ve belirsiz sonuç mesajı
   testlidir. Production pool/TLS, doğru HTTP statüsü ve availability açıktır.
+
+### K-163 yedinci dilim — F027 write-path survival — 3 Eylül 2026
+
+- Web isteğindeki C021 artık request transaction'ını geri alır, 503 üretir ve
+  dinleme döngüsünü sonlandırmaz. CLI davranışı değişmeden C021 tanısıdır.
+- PostgreSQL transaction başlangıç/tamamlama/geri alma hatasında client düşürülür
+  ve yerel eylem/savepoint kaydı temizlenir. Başarısız eylem gövdesi veya write
+  otomatik tekrar edilmez.
+- Hermetik üç istek regresyonu ilk POST'u enjekte edilmiş C021 ile 503 yapar,
+  izleyen GET'i 200 ve bağımsız POST'u 200 yapar; append kaydı yalnız bir kez
+  oluşur. Bu process survival ile no-retry invariant'ını birlikte korur.
+- Gerçek PostgreSQL 16.11 provasında backend PID 8140 öldürüldü. İlk write
+  `0,000700 s` içinde 503 verdi ve satır sayısı 0 kaldı. Aynı worker'daki GET
+  `0,005888 s` içinde yeni PID 8163'e bağlandı; bağımsız write `0,003010 s`
+  içinde 303 verdi ve tam bir satır oluşturdu. Deney sonunda satır ve bağlantı
+  temizlendi.
+- Wire-level COMMIT ambiguity enjeksiyonu ayrı açık saha kanıtıdır; 503 sonucu
+  işlemin uygulanmadığını iddia etmez ve otomatik tekrar önermez.

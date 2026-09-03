@@ -45,6 +45,12 @@ COMMIT sırasında bağlantı kaybı işlemin gerçekleşip gerçekleşmediğini
 belirsiz bırakır; C025 mesajı bu belirsizliği ve tekrar yapılmadığını açıkça
 bildirmelidir.
 
+Eylem sınırındaki PostgreSQL bağlantı hatası client'ı geçersiz kılmalı;
+transaction/savepoint durumu sonraki isteğe taşınmamalıdır. Web adaptörü C021'i
+503'e çevirip worker'ı ayakta tutar. Aynı write kendiliğinden tekrar edilmez;
+sonraki bağımsız read veya write yeni bağlantıyla başlayabilir. CLI/web dışı
+çağrıda C021 normal çalışma tanısı olarak yayılmayı sürdürür.
+
 ## Migration
 
 `dil göçür [proje]`, yalnız `NNNN_aciklama.sql` düzenli dosyalarını sürüm

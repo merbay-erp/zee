@@ -29,6 +29,12 @@ ikinci başarısızlık, yazı ve COMMIT fail-closed kalır. COMMIT bağlantı k
 “sonuç belirsiz”dir; adaptör otomatik tekrar yapamaz. Bu sınır
 `postgresql-recovery-v1.tsv` karar matrisiyle korunur.
 
+Gerçek IO sahibi transaction başlangıç/tamamlama/geri alma hatasında client'ı
+yeniden kullanmaz. Yerel eylem bookkeeping'i temizlenir; web yorumlayıcısı
+C021'i 503 isteğine dönüştürüp worker döngüsünü sürdürür. Bu yalnız süreç
+survival ve sonraki bağımsız bağlantıdır; başarısız write'ın tekrarına izin
+veren bir recovery değildir.
+
 Bağlantı URL'si kaynakta bulunamaz. İlk adaptör yalnız exact loopback hedefi ve
 `sslmode=disable` kabul eder. Bu kısıt production güvenlik çözümü değil,
 production sözü vermeyen dar bir dogfood sınırıdır.

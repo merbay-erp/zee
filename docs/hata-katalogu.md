@@ -161,7 +161,7 @@ kalır (ADR-025).
 | C018 | Ağ isteği başarısız | HTTPS adresini, proje yetkinliğini, tam origin allowlist'ini, DNS sonucunu ve zaman aşımını denetle; düz HTTP yalnız açık `yerel-ağ` içindir |
 | C019 | Çağrı derinliği 500'ü aştı | Özyinelemeli adım her seferinde temel duruma yaklaşmalı |
 | C020 | Çıkış kodu 0–255 dışında | `programı 0 ile bitir` … `programı 255 ile bitir` (K-069) |
-| C021 | Eylem transaction'ı başlatılamadı, tamamlanamadı ya da geri alınamadı | Kalıcı kaynağın yol/izin durumunu denetle; yarım başarı ayrıntısını kaybetmeden raporla |
+| C021 | Eylem transaction'ı başlatılamadı, tamamlanamadı ya da geri alınamadı | Kalıcı kaynağın yol/izin/bağlantı durumunu denetle; write'ı otomatik tekrarlama. Web adaptörü isteği 503 ile kapatıp worker'ı yaşatır; CLI tanıyı yayar |
 | C022 | Web güvenlik adaptörü işlemi reddetti | Güvenli oturum/CSRF desteğini ve başlığa yazılan çerez ya da yerel yönlendirme değerini denetle |
 | C023 | Çalışma adımı, çıktı, koleksiyon ya da eşzamanlı görev kaynak bütçesi aşıldı | Sonsuz döngüyü düzelt; işi, çıktıyı veya koleksiyonu daha küçük sonlu parçalara böl |
 | C024 | Metin ya da saklanan değer heap bütçesi aşıldı | Büyük metin ve değer grafiklerini daha küçük çalışma adımlarına böl |

@@ -36,6 +36,62 @@ fn sunucuyla(kaynak: &str, istekler: Vec<&str>) -> ToplayanIo {
     io
 }
 
+fn csrfli_bos_io() -> (ToplayanIo, String, String) {
+    let mut io = ToplayanIo::yeni(Vec::new());
+    io.istekler.push_back("GET /__test-csrf".into());
+    assert!(io.istek_al().is_some());
+    let csrf = io.csrf_belirteci().expect("CSRF oturumu");
+    let (_, oturum) = io.yazilan_cerezler[0].clone();
+    io.yanit_gonder("");
+    io.istek_islemini_tamamla().expect("oturum commit'i");
+    io.sunucu_yanitlari.clear();
+    io.sunucu_durumlari.clear();
+    io.yazilan_cerezler.clear();
+    io.guvenli_cerezler.clear();
+    (io, oturum, csrf)
+}
+
+#[test]
+fn eylem_transaction_hatasi_503_olur_ve_sonraki_istekler_calisir() {
+    let kaynak = r#"
+8080 kapısında sunucu başlat
+
+eylem kaydet
+    değer döndürmez
+    "sayac.txt" dosyasına "eylem-gövdesi" ekle
+
+POST "/kaydet" adresine istek geldiğinde
+    herkese açık
+    kaydet
+    "kaydedildi" yanıtını gönder
+
+GET "/saglik" adresine istek geldiğinde
+    "ayakta" yanıtını gönder
+"#;
+    let program = dil::kaynagi_derle(kaynak).expect("web programı derlenmeli");
+    let (mut io, oturum, csrf) = csrfli_bos_io();
+
+    let post = csrfli_istek_ile("POST /kaydet", &oturum, &csrf);
+    io.istekler.push_back(post.clone());
+    io.istekler.push_back("GET /saglik".into());
+    io.istekler.push_back(post);
+    io.eylem_baslat_sonuclari
+        .push_back(Err("bağlantı kaybedildi".into()));
+
+    calistir_io(&program, &mut io).expect("worker transaction hatasından sonra yaşamalı");
+    assert_eq!(io.sunucu_durumlari, [503, 200, 200]);
+    assert_eq!(
+        io.sunucu_yanitlari[0].1,
+        "işlem tamamlanamadı; otomatik tekrar yok"
+    );
+    assert_eq!(io.sunucu_yanitlari[1].1, "ayakta");
+    assert_eq!(io.sunucu_yanitlari[2].1, "kaydedildi");
+    assert_eq!(
+        io.dosyalar.get("sayac.txt").map(String::as_str),
+        Some("eylem-gövdesi\n")
+    );
+}
+
 fn unsafe_istek(istek: &str) -> bool {
     matches!(
         istek.split_whitespace().next(),
