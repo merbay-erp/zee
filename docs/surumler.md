@@ -18,7 +18,10 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   sızdırmayan 503'e dönüştürür, başarısız yazımı otomatik tekrarlamaz ve sonraki
   isteği kabul eder; CLI C013'ü korur. İlk ürün reproducer'ı `itwise-admin`
   `b3cee9a` commit'indedir. Binary upload, hash, fiziksel silme/orphan tarama ve
-  production TLS/pool hâlâ açık kanıttır.
+  production TLS/pool hâlâ açık kanıttır. Final gerçek koşuda C013 503 verdi,
+  aynı worker sağlık isteğini kabul etti, metadata `hatalı`ya uzlaştırıldı;
+  finalize reddi ise process restartından sonra `hazır` oldu. Exact sonuç ve
+  temizlik ürünün `29d30c8` commit'indedir.
 
 - **WASM/native bağımlılık sınırı:** Playground WASM hedefi native
   yayın/artefakt imzalama modüllerini artık derleme grafiğine almaz. Paket

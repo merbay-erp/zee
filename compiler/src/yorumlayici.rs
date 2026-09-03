@@ -479,7 +479,6 @@ pub struct ToplayanIo {
     pub an_degerleri: VecDeque<i64>,
     pub eylem_baslat_sonuclari: VecDeque<Result<(), EylemHatasi>>,
     pub eylem_tamamla_sonuclari: VecDeque<Result<(), EylemHatasi>>,
-    /// Testlerin istek-yerel dosya yazma arızasını deterministik üretmesi için.
     pub dosya_yaz_sonuclari: VecDeque<Result<(), String>>,
     an_son_degeri: i64,
     pub cikti: Vec<String>,

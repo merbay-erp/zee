@@ -47,6 +47,8 @@ failure sınırını ihlal etti. Web adaptörü bu nedenle C013'ü ayrıntı sı
 503'e çevirir, istek taslağını geri alır ve worker'ı yaşatır; dosya yazımını
 otomatik tekrar etmez. CLI tanısı değişmez. İlk saha reproducer'ı kayıtlı
 `itwise-admin` ürünündeki `b3cee9a` commit'indedir.
+Final PostgreSQL 16.11, worker-survival, restart sonrası uzlaştırma ve temizlik
+kanıtı aynı ürünün `29d30c8` commit'indedir.
 
 Bağlantı URL'si kaynakta bulunamaz. İlk adaptör yalnız exact loopback hedefi ve
 `sslmode=disable` kabul eder. Bu kısıt production güvenlik çözümü değil,
