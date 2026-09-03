@@ -2753,5 +2753,19 @@ insan kanıtı ve K-163 ilk gerçek Zee ürünü vardır.
   değişikliğinden önce açık zorunluluk olarak kalır.
 - K-163 **DEVAM EDİYOR**: 500–1500 satır, daha geniş gerçek ürün yüzeyi ve
   süreli ergonomi/hata günlüğü tamamlanmadan kapanmaz.
+
+### K-163 ikinci dilim — site ayarları ve birim ölçeği — 3 Eylül 2026
+
+- Ürün commit'i `55c8985`, JSON tabanlı marka/e-posta/telefon/adres ayarını
+  yetkili ve CSRF korumalı düzenleme akışına bağladı. Gerçek TCP provasında
+  kaydetme ve varsayılanı geri yükleme 303 döndü; dört alan genel sayfada
+  görünür oldu.
+- Kaynak 213 satıra çıktı. HTTP/eylem orkestrasyonu 162 satır `ana.dil`, saf
+  HTML üretimi tam public imzalı 51 satır `gorunum.dil` birimidir. Ana proje
+  komutu birim testlerini birlikte buldu; 3/3 test ve biçim/denetim temizdir.
+- K163-F007 zincirli `sözlük değeri + html güvenlisi` yazımının S015 verdiğini
+  kaydetti. Değerin ara ada bağlanmasıyla mevcut dilde çözüldü; tek vaka ile
+  compiler değişikliği açılmadı. Birim ayrımı ve ayar kaydı için mevcut Zee
+  yüzeyi yeterli bulundu.
 B-001/B-002 (yeni sırada K-161/K-162), gerçek 10 çocuk/öğrenci + 5 profesyonel
 usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.
