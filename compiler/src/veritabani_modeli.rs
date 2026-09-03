@@ -6,6 +6,14 @@ pub struct VeritabaniHatasi {
     pub veri: Vec<(String, String)>,
 }
 
+impl VeritabaniHatasi {
+    pub fn commit_sonucu_belirsiz_mi(&self) -> bool {
+        self.veri
+            .iter()
+            .any(|(ad, deger)| ad == "hata_sinifi" && deger == "db.commit_unknown")
+    }
+}
+
 pub type VeritabaniSatiri = Vec<(String, String)>;
 pub type VeritabaniSatirlari = Vec<VeritabaniSatiri>;
 pub type VeritabaniOkumaSonucu = Result<VeritabaniSatirlari, VeritabaniHatasi>;

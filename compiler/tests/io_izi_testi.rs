@@ -1,8 +1,35 @@
 //! K-115 deterministik IO trace/replay davranış kanıtları.
 
 use dil::yorumlayici::{
-    calistir_io, GirdiCikti, IzKaydedenIo, IzYenidenOynatici, ToplayanIo, VeritabaniHatasi,
+    calistir_io, EylemHataSinifi, EylemHatasi, GirdiCikti, IzKaydedenIo, IzYenidenOynatici,
+    ToplayanIo, VeritabaniHatasi,
 };
+
+#[test]
+fn commit_sonucu_belirsiz_sinifi_io_izinde_korunur() {
+    let mut taban = ToplayanIo::yeni(Vec::new());
+    taban
+        .eylem_tamamla_sonuclari
+        .push_back(Err(EylemHatasi::commit_sonucu_belirsiz(
+            "COMMIT cevabı kayboldu",
+        )));
+    let mut kaydeden = IzKaydedenIo::yeni(taban);
+    kaydeden.eylem_baslat().expect("transaction başlamalı");
+    let hata = kaydeden
+        .eylem_tamamla()
+        .expect_err("COMMIT sonucu belirsiz olmalı");
+    assert_eq!(hata.sinif, EylemHataSinifi::CommitSonucuBelirsiz);
+
+    let iz = kaydeden.iz_metni().expect("iz yazılmalı");
+    assert!(iz.contains("636f6d6d69745f736f6e7563755f62656c697273697a"));
+    let mut oynatici = IzYenidenOynatici::yeni(&iz).expect("iz okunmalı");
+    oynatici.eylem_baslat().expect("başlangıç oynatılmalı");
+    let hata = oynatici
+        .eylem_tamamla()
+        .expect_err("belirsiz sınıf oynatılmalı");
+    assert_eq!(hata.sinif, EylemHataSinifi::CommitSonucuBelirsiz);
+    oynatici.bitir().expect("iz bitmeli");
+}
 
 #[test]
 fn program_gercek_io_izinden_dis_dunyasiz_aynen_oynatilir() {

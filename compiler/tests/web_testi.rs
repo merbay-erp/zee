@@ -2,7 +2,7 @@
 //! html güvenlisi. Hepsi hermetik — sahte istek kuyruğuyla.
 
 use dil::agac::RotaErisimi;
-use dil::yorumlayici::{calistir_io, istek_parcala, GirdiCikti, ToplayanIo};
+use dil::yorumlayici::{calistir_io, istek_parcala, EylemHatasi, GirdiCikti, ToplayanIo};
 
 fn sunucuyla(kaynak: &str, istekler: Vec<&str>) -> ToplayanIo {
     let csrf_gerekli = istekler.iter().any(|istek| unsafe_istek(istek));
@@ -90,6 +90,72 @@ GET "/saglik" adresine istek geldiğinde
         io.dosyalar.get("sayac.txt").map(String::as_str),
         Some("eylem-gövdesi\n")
     );
+}
+
+#[test]
+fn commit_sonucu_belirsizse_retry_yapilmaz_worker_ve_sonraki_istek_yasar() {
+    let kaynak = r#"
+8080 kapısında sunucu başlat
+
+eylem kaydet
+    değer döndürmez
+    "sayac.txt" dosyasına "eylem-gövdesi" ekle
+
+POST "/kaydet" adresine istek geldiğinde
+    herkese açık
+    kaydet
+    "kaydedildi" yanıtını gönder
+
+GET "/saglik" adresine istek geldiğinde
+    "ayakta" yanıtını gönder
+"#;
+    let program = dil::kaynagi_derle(kaynak).expect("web programı derlenmeli");
+    let (mut io, oturum, csrf) = csrfli_bos_io();
+
+    let post = csrfli_istek_ile("POST /kaydet", &oturum, &csrf);
+    io.istekler.push_back(post.clone());
+    io.istekler.push_back("GET /saglik".into());
+    io.istekler.push_back(post);
+    io.eylem_tamamla_sonuclari
+        .push_back(Err(EylemHatasi::commit_sonucu_belirsiz(
+            "COMMIT cevabı alınamadı",
+        )));
+
+    calistir_io(&program, &mut io).expect("worker belirsiz COMMIT sonucundan sonra yaşamalı");
+    assert_eq!(io.sunucu_durumlari, [503, 200, 200]);
+    assert_eq!(
+        io.sunucu_yanitlari[0].1,
+        "işlem sonucu belirsiz; otomatik tekrar yok; uzlaştırma gerekli"
+    );
+    assert_eq!(io.sunucu_yanitlari[1].1, "ayakta");
+    assert_eq!(io.sunucu_yanitlari[2].1, "kaydedildi");
+    assert_eq!(
+        io.dosyalar.get("sayac.txt").map(String::as_str),
+        Some("eylem-gövdesi\n"),
+        "ilk eylem otomatik tekrarlanmamalı, ikinci bağımsız eylem tam bir kez yazmalı"
+    );
+}
+
+#[test]
+fn commit_sonucu_belirsiz_cli_yolunda_c027_olur() {
+    let kaynak = r#"
+eylem kaydet
+    değer döndürmez
+    "sayac.txt" dosyasına "bir" ekle
+
+kaydet
+"#;
+    let program = dil::kaynagi_derle(kaynak).expect("program derlenmeli");
+    let mut io = ToplayanIo::yeni(Vec::new());
+    io.eylem_tamamla_sonuclari
+        .push_back(Err(EylemHatasi::commit_sonucu_belirsiz(
+            "COMMIT cevabı alınamadı",
+        )));
+
+    let tani = calistir_io(&program, &mut io).expect_err("belirsizlik yayılmalı");
+    assert_eq!(tani.kod, "C027");
+    assert!(tani.mesaj.contains("COMMIT cevabı alınamadı"));
+    assert!(!io.dosyalar.contains_key("sayac.txt"));
 }
 
 fn unsafe_istek(istek: &str) -> bool {

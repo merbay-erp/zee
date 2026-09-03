@@ -146,6 +146,13 @@ bağımsız isteği kabul etmelidir. Bu recovery eylem gövdesini veya write'ı
 otomatik tekrar EDEMEZ. Transaction adaptörü bozuk bağlantıyı yeniden
 kullanıma bırakmamalı ve yerel savepoint bookkeeping'ini istekten sızdırmamalıdır.
 
+En dış COMMIT'in sonucu bağlantı kaybı yüzünden doğrulanamıyorsa genel C021
+yerine C027 üretilmelidir. Web adaptörü C027'yi “işlem sonucu belirsiz;
+otomatik tekrar yok; uzlaştırma gerekli” gövdeli 503'e çevirir ve worker'ı
+yaşatır; CLI C027'yi doğrudan yayar. COMMIT'in PostgreSQL'e ulaşmamış veya
+ulaşıp uygulanmış olması bu istemci sözleşmesini DEĞİŞTİREMEZ. Yeni bağlantıda
+iş anahtarıyla okuma/uzlaştırma yapılmadan aynı write tekrarlanamaz.
+
 Bu sözleşme yorumlayıcı tarafından gözlenen hata/başarısız sonuç için çok
 dosyalı geri almadır. Süreç ya da makine tam eylemin ortasında çökerse bütün
 dosyaları tek bir kalıcı commit olarak yayınlama sözü vermez; çökme atomikliği

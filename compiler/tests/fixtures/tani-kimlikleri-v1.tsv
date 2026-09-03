@@ -137,6 +137,7 @@ aktif	C023	calisma.kaynak_butcesi	Çalışma adımı, çıktı, koleksiyon ya da
 aktif	C024	calisma.deger_heap_butcesi	Metin ya da saklanan değer heap bütçesi aşıldı
 aktif	C025	calisma.postgresql_sorgu	PostgreSQL sorgusu veya değişikliği başarısız
 aktif	C026	calisma.postgresql_migration	PostgreSQL migration veya bağlantı işlemi başarısız
+aktif	C027	calisma.postgresql_commit_belirsiz	COMMIT sonucu istemci tarafından doğrulanamadı; otomatik tekrar güvenli değil
 aktif	D001	dogrulama.tutmayan_beklenti	`olmalı` koşulu tutmadı
 aktif	P001	proje.gecersiz_bildirim_cumlesi	`proje.dil` bilinmeyen/tekrarlı alan ya da değer tanımı dışında cümle içeriyor
 aktif	P002	proje.eksik_zorunlu_alan	Zorunlu proje alanı eksik

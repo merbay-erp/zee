@@ -860,12 +860,16 @@ Gerçek PostgreSQL 16.11 provasında öldürülen backend'den sonraki ilk istek 
 backend'e bağlandı ve sentinel'ı süreç restartı olmadan gördü; süreler, PID'ler
 ve temizlik `78cce11` ürün commit'indedir. Write olumsuzu
 otomatik tekrar ve satır üretmedi fakat C021 ile uygulamayı sonlandırdı;
-COMMIT-kaybı gerçek enjeksiyonla henüz kanıtlanmadı ve normatif olarak “sonuç
-belirsiz” kaldı. F027, transaction sınırı C021'ini 503'e çevirip client'ı
+COMMIT-kaybı F028'e kadar gerçek enjeksiyonla kanıtlanmamıştı. F027,
+transaction sınırı C021'ini 503'e çevirip client'ı
 geçersiz kılarak worker'ı sonraki bağımsız read/write için yaşattı; aynı write
 tekrar edilmedi ve savepoint durumu sızmadı. Exact saha kaydı `00a659a` ürün
-commit'indedir. Gerçek pool, wire-level COMMIT
-ambiguity ve medya+DB uzlaştırma K-163'ün açık production kanıtıdır. 492 LOC tabanı;
+commit'indedir. F028 tipli `db.commit_unknown` → C027 hattını ekledi; wire
+proxy COMMIT öncesi kesintide 0, uygulanmış COMMIT'in ReadyForQuery yanıtı
+yutulduğunda 1 satır üretirken iki durumda da aynı 503, sıfır retry ve worker
+survival gözlendi. Yeni bağlantıdaki iş anahtarı sorgusu ve UNIQUE, bilinçli
+aynı-anahtar girişimini tek kayıtta tuttu. Gerçek pool ile medya+DB uzlaştırma
+K-163'ün açık production kanıtıdır. 492 LOC tabanı;
 modül/test/dokunulan dosya, bugfix süresi, sürtünme, workaround ve LSP p95 için
 aynı yöntemli 1000+ LOC skor kartına bağlandı.
 B-001 çağrı sözdizimi ile B-002 gezme zihinsel modeli gerçek insan
