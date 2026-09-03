@@ -12,6 +12,15 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **İlk gerçek ürün dogfood'u başladı** (K-163): Çatlı/ITWISE Admin için temiz
+  `codex/k-163-catli-dogfood` dalındaki `43171b9`, 137 satırlık ilk Zee dikey
+  dilimini kurdu. Duyuru listeleme, Argon2id yönetici girişi, rol, CSRF,
+  transaction destekli ekleme/silme ve oturum kapatma 2/2 hermetik testten ve
+  gerçek TCP login/ekleme/silme provasından geçti. İlk ürün sürtünmeleri ayrıca
+  kaydedildi: P011 profil tanısı doğrudan çözüme götürdü; `başlık/kayıt`
+  ünsüz yumuşaması ad ergonomisi izlemeye alındı. K-163 henüz tamamlanmadı;
+  500–1500 satır ve PostgreSQL/migration/medya gibi gerçek yüzeyler bekleniyor.
+
 - **Executable CORE FREEZE** (K-160A, ADR-059): Yazılı politika artık her
   `compiler/src` commit'ini exact freeze sınıfına zorlayan CI kapısıdır.
   Semantic feature yalnız dogfood/security/correctness olabilir;

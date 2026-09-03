@@ -2733,5 +2733,25 @@ ve gerçek blast-radius raporunu kapattı. K-159 sürümlü facade ile SemVer
 sınırını, K-160 gerçek paket sahipliği ayrımıyla son production SCC ve izin
 borcunu kapattı. K-160A freeze'i executable yaptı. Sırada K-161/K-162 gerçek
 insan kanıtı ve K-163 ilk gerçek Zee ürünü vardır.
+
+### K-163 başladı — Çatlı/ITWISE Admin ilk saha dilimi — 3 Eylül 2026
+
+- Kirli kullanıcı çalışma ağacına dokunulmadı. `itwise-admin` temiz HEAD'i
+  `e950d3660367cd356530c542155784d38ae5d30d` üzerinden ayrı
+  `codex/k-163-catli-dogfood` worktree/dalına açıldı.
+- İlk toplu ürün commit'i `43171b9`, `dogfood/k-163-catli` altında 137 satır
+  Zee kaynağı, proje bildirimi, sürtünme günlüğü ve doğrulama kanıtı taşır.
+- Dikey dilim duyuru listeleme, Argon2id yönetici girişi, rol, sunucu tarafı
+  oturum, CSRF korumalı ekleme/silme ve çıkışı kapsar. `dil denetle` temiz,
+  hermetik testler 2/2 ve gerçek TCP login/ekleme/silme yanıtları 303'tür.
+- İlk dogfood bulguları: P011 morfoloji profili tanısı doğru tek satırlık
+  düzeltmeyi verdi; `başlık/kayıt` ünsüz yumuşaması değişken ergonomisinde
+  ölçülecek bir sürtünme oluşturdu. Bunlar compiler değişikliği açmadı.
+- Satır dosyası ilk dikey dilimin açık geçici depolamasıdır. PostgreSQL,
+  migration, medya ve template gereksinimleri gerçek kullanımda ölçülmeden
+  yeni core özelliği kabul edilmeyecek. B-073 ilk dogfood kaynaklı compiler
+  değişikliğinden önce açık zorunluluk olarak kalır.
+- K-163 **DEVAM EDİYOR**: 500–1500 satır, daha geniş gerçek ürün yüzeyi ve
+  süreli ergonomi/hata günlüğü tamamlanmadan kapanmaz.
 B-001/B-002 (yeni sırada K-161/K-162), gerçek 10 çocuk/öğrenci + 5 profesyonel
 usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.

@@ -832,6 +832,14 @@ daraltacak B-073 de açık P1 governance hardening'dir: ürün root kaydı, ger�
 K-işi, root-altı Zee proje/kaynak yolu ve karar belgesi referansı ilk
 dogfood-kaynaklı compiler değişikliğinden önce zorunlu olacak; K-163'ün
 başlangıcını engellemez.
+K-163 bu sınırlar korunarak `itwise-admin` deposunun temiz
+`codex/k-163-catli-dogfood` dalında başladı. İlk `43171b9` saha commit'i 137
+satır Zee ile duyuru listeleme, Argon2id yönetici girişi, rol, CSRF korumalı
+ekleme/silme ve oturum kapatmayı birleştirir. `dil denetle`, 2/2 hermetik test
+ve gerçek TCP login/ekleme/silme provası geçmiştir. Satır dosyası geçici ürün
+depolamasıdır; PostgreSQL, migration, medya ve template sürtünmeleri ölçülmeden
+compiler ihtiyacı sayılmaz. Bu başlangıç K-163'ü kapatmaz; 500–1500 satırlık
+gerçek uygulama ve süreli ergonomi günlüğü hâlâ kabul koşuludur.
 B-001 çağrı sözdizimi ile B-002 gezme zihinsel modeli gerçek insan
 kanıtı gelmeden kapatılmaz veya yeni syntax kararıyla atlanmaz.
 # 40. Proje felsefesinin korunması
