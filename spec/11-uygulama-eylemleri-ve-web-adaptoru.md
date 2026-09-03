@@ -146,6 +146,13 @@ bağımsız isteği kabul etmelidir. Bu recovery eylem gövdesini veya write'ı
 otomatik tekrar EDEMEZ. Transaction adaptörü bozuk bağlantıyı yeniden
 kullanıma bırakmamalı ve yerel savepoint bookkeeping'ini istekten sızdırmamalıdır.
 
+İstek içindeki atomik dosya yazımı C013 üretirse de aynı istek-yalıtımı
+geçerlidir: taslak geri alınır, istemciye ayrıntı sızdırmayan “dosya kaydı
+tamamlanamadı; otomatik tekrar yok” gövdeli 503 verilir ve worker sonraki
+isteği kabul eder. CLI C013 tanısını doğrudan korur. Web adaptörü başarısız
+dosya yazımını otomatik tekrarlayamaz; ürün, dosya dışındaki metadata veya yan
+etkileri kendi açık uzlaştırma protokolüyle ele almalıdır.
+
 En dış COMMIT'in sonucu bağlantı kaybı yüzünden doğrulanamıyorsa genel C021
 yerine C027 üretilmelidir. Web adaptörü C027'yi “işlem sonucu belirsiz;
 otomatik tekrar yok; uzlaştırma gerekli” gövdeli 503'e çevirir ve worker'ı

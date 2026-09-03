@@ -56,6 +56,7 @@ pub(super) fn tani(ad: &str, eylem: &str, hata: &EylemHatasi, satir: usize) -> T
 
 pub(super) fn web_mesaji(kod: &str) -> Option<&'static str> {
     match kod {
+        "C013" => Some("dosya kaydı tamamlanamadı; otomatik tekrar yok"),
         "C021" => Some("işlem tamamlanamadı; otomatik tekrar yok"),
         "C027" => Some("işlem sonucu belirsiz; otomatik tekrar yok; uzlaştırma gerekli"),
         _ => None,

@@ -93,6 +93,48 @@ GET "/saglik" adresine istek geldiğinde
 }
 
 #[test]
+fn dosya_yazma_hatasi_503_olur_ve_sonraki_istekler_calisir() {
+    let kaynak = r#"
+8080 kapısında sunucu başlat
+
+eylem kaydet
+    değer döndürmez
+    "medya.txt" dosyasına "içerik" yaz
+
+POST "/kaydet" adresine istek geldiğinde
+    herkese açık
+    kaydet
+    "kaydedildi" yanıtını gönder
+
+GET "/saglik" adresine istek geldiğinde
+    "ayakta" yanıtını gönder
+"#;
+    let program = dil::kaynagi_derle(kaynak).expect("web programı derlenmeli");
+    let (mut io, oturum, csrf) = csrfli_bos_io();
+
+    let post = csrfli_istek_ile("POST /kaydet", &oturum, &csrf);
+    io.istekler.push_back(post.clone());
+    io.istekler.push_back("GET /saglik".into());
+    io.istekler.push_back(post);
+    io.dosya_yaz_sonuclari
+        .push_back(Err("disk kullanılamıyor".into()));
+
+    calistir_io(&program, &mut io).expect("worker dosya hatasından sonra yaşamalı");
+    assert_eq!(io.sunucu_durumlari, [503, 200, 200]);
+    assert_eq!(
+        io.sunucu_yanitlari[0].1,
+        "dosya kaydı tamamlanamadı; otomatik tekrar yok"
+    );
+    assert_eq!(io.sunucu_yanitlari[1].1, "ayakta");
+    assert_eq!(io.sunucu_yanitlari[2].1, "kaydedildi");
+    assert_eq!(
+        io.dosyalar.get("medya.txt").map(String::as_str),
+        Some("içerik\n"),
+        "başarısız istek otomatik tekrarlanmamalı; yalnız sonraki bağımsız istek yazmalı"
+    );
+}
+
+#[test]
 fn commit_sonucu_belirsizse_retry_yapilmaz_worker_ve_sonraki_istek_yasar() {
     let kaynak = r#"
 8080 kapısında sunucu başlat

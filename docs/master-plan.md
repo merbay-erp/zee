@@ -873,6 +873,14 @@ K-163'ün açık production kanıtıdır; exact F028 ürün kaydı `8a12848`
 commit'indedir. 492 LOC tabanı;
 modül/test/dokunulan dosya, bugfix süresi, sürtünme, workaround ve LSP p95 için
 aynı yöntemli 1000+ LOC skor kartına bağlandı.
+F029 ürün commit'i `b3cee9a`, 690 Zee satırı ve 4 modülde DB metadata ile
+fiziksel dosyayı ayrı eylemlere bölen `hazırlanıyor → hazır/hatalı` protokolünü
+kurdu. PostgreSQL `hazır` geçişi reddedildiğinde kalan dosya+metadata sonraki
+uzlaştırmada başarıyla tamamlandı. Gerçek dizin çakışmalı dosya yazımı ise
+metadata'yı `hazırlanıyor` bırakırken C013 ile worker'ı sonlandırdı. Bu bulgu
+web'de request-local C013 → 503, sıfır retry ve worker survival correctness
+sözünü açtı. Binary hash/upload, fiziksel silme/orphan tarama ve production
+TLS/pool açık kalır.
 B-001 çağrı sözdizimi ile B-002 gezme zihinsel modeli gerçek insan
 kanıtı gelmeden kapatılmaz veya yeni syntax kararıyla atlanmaz.
 # 40. Proje felsefesinin korunması

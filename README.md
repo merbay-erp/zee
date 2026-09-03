@@ -181,7 +181,7 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **635** |
+| Rust + doctest vakası | **636** |
 | Tanı kimliği | **155 etkin + 3 ayrılmış** |
 | RFC | **26** (2 kabul, 22 geçici kabul, 2 taslak) |
 | ADR | **58** (58 kabul) |

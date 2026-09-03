@@ -2890,3 +2890,18 @@ usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.
   işlemin uygulanmadığını iddia etmez ve otomatik tekrar önermez.
 - Exact deney günlüğü ve temizlik `itwise-admin` ürün deposunda `00a659a`
   commit'iyle sabitlendi.
+
+### K-163 dokuzuncu dilim — F029 medya uzlaştırma kırığı — 3 Eylül 2026
+
+- Kayıtlı `itwise-admin` ürününün `b3cee9a` commit'i 690 Zee satırı, 4 modül ve
+  9 hermetik testte medya metadata durum makinesini kurdu. DB ve dosya ayrı
+  eylemlerdedir; dağıtık atomiklik iddiası yoktur.
+- Normal PostgreSQL 16.11 akışı `hazır` oldu. Son `hazır` UPDATE'i trigger ile
+  reddedildiğinde dosya ve `hazırlanıyor` metadata görünür kaldı; sonraki exact
+  içerik uzlaştırması aynı kaydı `hazır` yaptı.
+- Dosya hedefi dizinle çakıştırıldığında metadata `hazırlanıyor`, write retry'sız
+  kaldı fakat C013 web worker'ını sonlandırdı. Bu saha reproducer'ı, C013'ün
+  web'de güvenli 503 olup istek taslağını geri almasını ve worker'ın sonraki
+  isteği kabul etmesini correctness gereği yaptı. CLI C013 değişmez.
+- Binary upload/hash, fiziksel silme/rename ve otomatik orphan tarama F030 ile;
+  production TLS/pool ve 1000+ LOC ölçümü K-163 içinde açık kalır.

@@ -782,7 +782,7 @@ tamamlanmış sayılmaz; burada istenen ek kanıt ayrıca üretilir.
 | K-160A | **KAPALI — EXECUTABLE FREEZE** | Exact commit sınıfı; dogfood feature için ürün+iş+reproducer+proje+minimalite+karar |
 | K-161 | **İNSAN KANITI** | B-001/K-016 için 10 öğrenci/çocuk + 5 profesyonel kör oturum |
 | K-162 | **İNSAN KANITI** | B-002/K-093 morphology/scope/call/error zihinsel model oturumu |
-| K-163 | **DEVAM EDİYOR** | Çatlı 509 Zee satırında PostgreSQL saha kanıtını geçti. Transaction dışı read tek reconnect ile iyileşiyor. `00a659a` F027 ürün kanıtında başarısız write tekrarlanmadan 503 verdi ve worker yaşadı. `8a12848` F028 ürün kanıtında wire proxy COMMIT öncesi 0 / uygulanmış-COMMIT sonrası 1 satırı aynı C027/503, sıfır retry ve uzlaştırma+UNIQUE ile doğruladı. Gerçek TLS/pool, medya ve 1000+ LOC skor kartı bekleniyor |
+| K-163 | **DEVAM EDİYOR** | Çatlı 690 Zee satırı/4 modül/9 testte medya+DB durum makinesine ulaştı. `00a659a` F027 write survival'ı, `8a12848` F028 iki uçlu COMMIT belirsizliğini kapattı. `b3cee9a` F029 ürün reproducer'ı `hazırlanıyor→dosya→hazır/hatalı` uzlaştırmasını kurup C013'ün worker'ı düşürdüğünü kanıtladı; web request-local 503/no-retry correctness değişikliği uygulanıyor. Gerçek TLS/pool, binary medya/silme/orphan tarama ve 1000+ LOC skor kartı bekleniyor |
 | K-164 | **AÇIK** | Farklı workload'da ikinci gerçek proje |
 | K-165 | **AÇIK** | Aynı uygulamanın Zee–Go/Rust veri temelli dogfood karşılaştırması |
 | K-166 | **AÇIK** | En sık 50 hata için span/öneri/noise düzeltme başarısı |

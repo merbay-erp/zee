@@ -12,6 +12,14 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **Dosya yazma arızasında web worker survival** (K-163/F029): Çatlı medya +
+  metadata protokolündeki gerçek dizin çakışması C013'ün yalnız isteği değil
+  bütün worker'ı sonlandırdığını gösterdi. Web adaptörü artık C013'ü ayrıntı
+  sızdırmayan 503'e dönüştürür, başarısız yazımı otomatik tekrarlamaz ve sonraki
+  isteği kabul eder; CLI C013'ü korur. İlk ürün reproducer'ı `itwise-admin`
+  `b3cee9a` commit'indedir. Binary upload, hash, fiziksel silme/orphan tarama ve
+  production TLS/pool hâlâ açık kanıttır.
+
 - **WASM/native bağımlılık sınırı:** Playground WASM hedefi native
   yayın/artefakt imzalama modüllerini artık derleme grafiğine almaz. Paket
   grafiğinin davranışsız modeli WASM'da serde gerektirmeden korunur; gerçek

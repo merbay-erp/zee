@@ -40,6 +40,14 @@ C021'i 503 isteğine dönüştürüp worker döngüsünü sürdürür. Bu yalnı
 survival ve sonraki bağımsız bağlantıdır; başarısız write'ın tekrarına izin
 veren bir recovery değildir. K-163 F027 exact ürün kanıtı `00a659a` commit'idir.
 
+K-163/F029 ürün protokolü DB metadata ile fiziksel dosyayı ayrı eylemlerde
+tutar; ikisini tek transaction gibi göstermeye çalışmaz. Bu protokol gerçek
+dizin çakışmasıyla C013 ürettiğinde web worker'ının sonlanması request-local
+failure sınırını ihlal etti. Web adaptörü bu nedenle C013'ü ayrıntı sızdırmayan
+503'e çevirir, istek taslağını geri alır ve worker'ı yaşatır; dosya yazımını
+otomatik tekrar etmez. CLI tanısı değişmez. İlk saha reproducer'ı kayıtlı
+`itwise-admin` ürünündeki `b3cee9a` commit'indedir.
+
 Bağlantı URL'si kaynakta bulunamaz. İlk adaptör yalnız exact loopback hedefi ve
 `sslmode=disable` kabul eder. Bu kısıt production güvenlik çözümü değil,
 production sözü vermeyen dar bir dogfood sınırıdır.
@@ -59,4 +67,5 @@ başarılı oldu; write olumsuzunda tekrar ve satır oluşmadı. Exact saha kan�
 survival'ı; F028 ise COMMIT öncesi kesinti ve uygulanmış COMMIT sonrası kayıp
 yanıtı aynı C027 ile ayırmadan raporlamayı kapatır. Proxy deneyinde iki DB
 durumu sırasıyla 0 ve 1 satırdır; ikisinde de retry yoktur. Production
-TLS/pool/multi-process bu kararla çözülmüş sayılmaz.
+TLS/pool/multi-process ile binary medya, fiziksel silme ve orphan tarama bu
+kararla çözülmüş sayılmaz.
