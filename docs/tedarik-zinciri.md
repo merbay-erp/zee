@@ -65,6 +65,11 @@ yayımlanamaz.
 - Action güncellemesi de bağımlılık PR'ıdır; immutable SHA, insan-okur sürüm
   yorumu ve pin kaydı birlikte incelenmeden birleştirilmez.
 
+K-163 PostgreSQL adaptörü root crate'in bağımlılık kapanışını genişlettiği için
+fuzz path dependency'sinin ayrı lock'u da aynı geçişli PostgreSQL grafiğine
+yenilendi. `cargo deny --locked` fuzz kapısı bu eşleşme olmadan fail-closed
+durur; root lock güncelken fuzz lock'unun bayat kalması kabul edilmez.
+
 ## Gerçek offline vendor kanıtı
 
 Depo kökünden:

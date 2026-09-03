@@ -58,6 +58,8 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   ve UNIQUE altında aynı anahtarlı bilinçli tekrar kayıt sayısını 1'de tuttu.
   Exact ürün kanıtı `8a12848` commit'indedir.
   Production TLS/pool ve genel idempotency servisi hâlâ açık kapsamdadır.
+  PostgreSQL geçişli bağımlılık kapanışı fuzz aracının ayrı Cargo.lock'una da
+  işlendi; iki `cargo deny --locked` grafiği yeniden yeşildir.
 
 - **Dogfood kanıt referans bütünlüğü** (B-073): Append-only ürün kaydı tekil
   slug, repo içi kanıt kökü, exact harici ürün commit'i ve durum taşır. CORE
