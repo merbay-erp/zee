@@ -57,6 +57,12 @@ struct Secici {
 }
 
 #[derive(Clone, Debug)]
+struct EkKapsam {
+    secici: Secici,
+    fazlar: Vec<String>,
+}
+
+#[derive(Clone, Debug)]
 struct Faz {
     kimlik: String,
     baslik: String,
@@ -65,6 +71,7 @@ struct Faz {
     fuzz: Vec<String>,
     conformance: Vec<String>,
     asagi_akis: Vec<String>,
+    ek_kapsam: Vec<EkKapsam>,
     not: String,
 }
 
@@ -179,6 +186,29 @@ fn seciciyi_oku(metin: &str) -> Result<Secici, String> {
     })
 }
 
+fn ek_kapsami_oku(alan: &str) -> Result<Vec<EkKapsam>, String> {
+    if alan == "-" {
+        return Ok(Vec::new());
+    }
+    let mut sonuc = Vec::new();
+    let mut seciciler = BTreeSet::new();
+    for kayit in alan.split(';') {
+        let (secici, fazlar) = kayit
+            .split_once('>')
+            .ok_or_else(|| format!("geçersiz ek kapsam kaydı: {kayit}"))?;
+        let secici = seciciyi_oku(secici)?;
+        if !seciciler.insert(secici.clone()) {
+            return Err(format!("yinelenen ek kapsam seçicisi: {secici:?}"));
+        }
+        let fazlar = fazlar.split(',').map(str::to_string).collect::<Vec<_>>();
+        if fazlar.is_empty() || fazlar.iter().any(String::is_empty) {
+            return Err(format!("boş faz taşıyan ek kapsam kaydı: {kayit}"));
+        }
+        sonuc.push(EkKapsam { secici, fazlar });
+    }
+    Ok(sonuc)
+}
+
 fn fazlari_oku(metin: &str) -> Result<Vec<Faz>, String> {
     let mut fazlar = Vec::new();
     let mut kimlikler = BTreeSet::new();
@@ -188,15 +218,49 @@ fn fazlari_oku(metin: &str) -> Result<Vec<Faz>, String> {
             continue;
         }
         let alanlar = satir.split('\t').collect::<Vec<_>>();
-        let [kimlik, baslik, seciciler, regresyonlar, fuzz, conformance, asagi_akis, not] =
-            alanlar.as_slice()
-        else {
-            return Err(format!(
-                "faz matrisi satırı {} sekiz alan taşımalı",
-                sira + 1
-            ));
+        let (
+            kimlik,
+            baslik,
+            seciciler,
+            regresyonlar,
+            fuzz,
+            conformance,
+            asagi_akis,
+            not,
+            ek_kapsam,
+        ) = match alanlar.as_slice() {
+            [kimlik, baslik, seciciler, regresyonlar, fuzz, conformance, asagi_akis, not] => (
+                *kimlik,
+                *baslik,
+                *seciciler,
+                *regresyonlar,
+                *fuzz,
+                *conformance,
+                *asagi_akis,
+                *not,
+                "-",
+            ),
+            [kimlik, baslik, seciciler, regresyonlar, fuzz, conformance, asagi_akis, not, ek_kapsam] => {
+                (
+                    *kimlik,
+                    *baslik,
+                    *seciciler,
+                    *regresyonlar,
+                    *fuzz,
+                    *conformance,
+                    *asagi_akis,
+                    *not,
+                    *ek_kapsam,
+                )
+            }
+            _ => {
+                return Err(format!(
+                    "faz matrisi satırı {} sekiz veya dokuz alan taşımalı",
+                    sira + 1
+                ));
+            }
         };
-        if !kimlikler.insert((*kimlik).to_string()) {
+        if !kimlikler.insert(kimlik.to_string()) {
             return Err(format!("yinelenen faz kimliği: {kimlik}"));
         }
         if baslik.is_empty() || not.is_empty() {
@@ -215,14 +279,15 @@ fn fazlari_oku(metin: &str) -> Result<Vec<Faz>, String> {
             }
         }
         fazlar.push(Faz {
-            kimlik: (*kimlik).to_string(),
-            baslik: (*baslik).to_string(),
+            kimlik: kimlik.to_string(),
+            baslik: baslik.to_string(),
             seciciler,
             regresyonlar: listeyi_oku(regresyonlar),
             fuzz: listeyi_oku(fuzz),
             conformance: listeyi_oku(conformance),
             asagi_akis: listeyi_oku(asagi_akis),
-            not: (*not).to_string(),
+            ek_kapsam: ek_kapsami_oku(ek_kapsam)?,
+            not: not.to_string(),
         });
     }
     if fazlar.is_empty() {
@@ -242,6 +307,36 @@ fn fazlari_oku(metin: &str) -> Result<Vec<Faz>, String> {
             }
             if !gorulen.insert(hedef) {
                 return Err(format!("{} yinelenen aşağı akış fazı: {hedef}", faz.kimlik));
+            }
+        }
+        let sahipli_seciciler = faz.seciciler.iter().collect::<BTreeSet<_>>();
+        for kapsam in &faz.ek_kapsam {
+            if !sahipli_seciciler.contains(&kapsam.secici) {
+                return Err(format!(
+                    "{} ek kapsam seçicisi bu fazın birincil sahibi değil: {:?}",
+                    faz.kimlik, kapsam.secici
+                ));
+            }
+            let mut kapsananlar = BTreeSet::new();
+            for kapsanan in &kapsam.fazlar {
+                if kapsanan == &faz.kimlik {
+                    return Err(format!(
+                        "{} birincil fazı ek kapsam olarak yinelenemez",
+                        faz.kimlik
+                    ));
+                }
+                if !kimlikler.contains(kapsanan) {
+                    return Err(format!(
+                        "{} bilinmeyen ek kapsam fazı: {kapsanan}",
+                        faz.kimlik
+                    ));
+                }
+                if !kapsananlar.insert(kapsanan) {
+                    return Err(format!(
+                        "{} yinelenen ek kapsam fazı: {kapsanan}",
+                        faz.kimlik
+                    ));
+                }
             }
         }
     }
@@ -525,6 +620,34 @@ fn kod_listesi(degerler: &[String]) -> String {
     }
 }
 
+fn ek_kapsami_yaz(faz: &Faz) -> Vec<String> {
+    faz.ek_kapsam
+        .iter()
+        .map(|kapsam| {
+            format!(
+                "{} → {}",
+                seciciyi_yaz(&kapsam.secici),
+                kapsam.fazlar.join(", ")
+            )
+        })
+        .collect()
+}
+
+fn capraz_kapsayan_seciciler(fazlar: &[Faz], hedef_faz: &str) -> Vec<String> {
+    fazlar
+        .iter()
+        .flat_map(|birincil| {
+            birincil.ek_kapsam.iter().filter_map(move |kapsam| {
+                kapsam
+                    .fazlar
+                    .iter()
+                    .any(|faz| faz == hedef_faz)
+                    .then(|| format!("{} / {}", birincil.kimlik, seciciyi_yaz(&kapsam.secici)))
+            })
+        })
+        .collect()
+}
+
 fn kanonik_dokuman(fazlar: &[Faz]) -> String {
     let mut metin = String::from(
         "# Faza özgü test matrisi\n\n\
@@ -533,7 +656,7 @@ fn kanonik_dokuman(fazlar: &[Faz]) -> String {
          > gerçek test sayıları her platformun dinamik CI raporunda çıkar.\n\n",
     );
     metin.push_str(&format!(
-        "- Şema: `zee-faz-test-matrisi-1`\n- Faz: **{}**\n- Sayım: Her CI işletim sisteminde derlenen gerçek test envanteri\n\n",
+        "- Şema: `zee-faz-test-matrisi-2`\n- Faz: **{}**\n- Sayım: Her CI işletim sisteminde derlenen gerçek test envanteri\n\n",
         fazlar.len()
     ));
     metin.push_str("## Envanter ve saldırı yüzeyi ilişkileri\n\n");
@@ -550,23 +673,44 @@ fn kanonik_dokuman(fazlar: &[Faz]) -> String {
         ));
     }
     metin.push_str("\n## Birincil sahiplik\n\n");
-    metin.push_str("Bir test tam bir birincil faza aittir; aşağı akış sütunu değişikliğin\n");
-    metin.push_str("yeniden koşulması gereken sonraki yüzeylerini gösterir.\n\n");
-    metin.push_str("| Faz | Cargo/libtest seçicileri | Kapsam |\n|---|---|---|\n");
+    metin.push_str("Bir test tam bir birincil faza aittir. Seçici düzeyindeki isteğe bağlı\n");
+    metin.push_str("ek kapsam, test grubunun gerçekten yokladığı diğer fazları bildirir.\n\n");
+    metin.push_str("| Faz | Cargo/libtest seçicileri | Ek kapsam | Kapsam |\n|---|---|---|---|\n");
     for faz in fazlar {
         let seciciler = faz.seciciler.iter().map(seciciyi_yaz).collect::<Vec<_>>();
         metin.push_str(&format!(
-            "| {} | {} | {} |\n",
+            "| {} | {} | {} | {} |\n",
             faz.baslik,
             kod_listesi(&seciciler),
+            kod_listesi(&ek_kapsami_yaz(faz)),
             faz.not.replace('|', "\\|")
+        ));
+    }
+    metin.push_str("\n## Gerçek blast radius\n\n");
+    metin.push_str("Bir faz değiştiğinde kendi birincil gruplarına ek olarak aşağıdaki çapraz\n");
+    metin.push_str(
+        "seçiciler doğrudan kanıt taşır. Aşağı akış sütunu mimari yayılımı gösterir.\n\n",
+    );
+    metin.push_str(
+        "| Değişen faz | Birincil test grupları | Çapraz kapsayan test grupları | Aşağı akış |\n",
+    );
+    metin.push_str("|---|---|---|---|\n");
+    for faz in fazlar {
+        let birincil = faz.seciciler.iter().map(seciciyi_yaz).collect::<Vec<_>>();
+        metin.push_str(&format!(
+            "| {} | {} | {} | {} |\n",
+            faz.baslik,
+            kod_listesi(&birincil),
+            kod_listesi(&capraz_kapsayan_seciciler(fazlar, &faz.kimlik)),
+            kod_listesi(&faz.asagi_akis)
         ));
     }
     metin.push_str(
         "\n## Çalıştırma sözleşmesi\n\n\
          `cargo run --locked --bin faz_test_matrisi -- --denetle --rapor \
          target/faz-test-matrisi.md` önce bütün test hedeflerini JSON Cargo çıktısından\n\
-         derler. Her gerçek test kimliğinin tam bir faz sahibi olduğunu ve bu belgenin\n\
+         derler. Her gerçek test kimliğinin tam bir faz sahibi olduğunu, ek kapsamın\n\
+         yalnız bilinen fazlara ve kendi birincil seçicisine bağlandığını ve bu belgenin\n\
          güncel kaldığını doğrular; ardından fazları ayrı çalıştırıp test sayısı,\n\
          pass/fail/ignored ve duvar süresini dinamik Markdown raporuna yazar. `cfg`\n\
          koşullu testler nedeniyle sayı işletim sistemine göre değişebilir; sahiplik\n\
@@ -735,8 +879,8 @@ fn dinamik_rapor(fazlar: &[Faz], sonuclar: &BTreeMap<String, FazSonucu>) -> Stri
         if basarili { "GEÇTİ" } else { "KALDI" },
         sure.as_secs_f64()
     );
-    metin.push_str("| Faz | Sonuç | Geçen/Beklenen | Kalan | Atlanan | Duvar süresi | Regresyon | Fuzz | Conformance | Aşağı akış |\n");
-    metin.push_str("|---|---|---:|---:|---:|---:|---|---|---|---|\n");
+    metin.push_str("| Faz | Sonuç | Geçen/Beklenen | Kalan | Atlanan | Duvar süresi | Regresyon | Fuzz | Conformance | Çapraz kapsama | Aşağı akış |\n");
+    metin.push_str("|---|---|---:|---:|---:|---:|---|---|---|---|---|\n");
     for faz in fazlar {
         let sonuc = &sonuclar[&faz.kimlik];
         let durum = if sonuc.hatalar.is_empty() && sonuc.kalan == 0 {
@@ -745,7 +889,7 @@ fn dinamik_rapor(fazlar: &[Faz], sonuclar: &BTreeMap<String, FazSonucu>) -> Stri
             "KALDI"
         };
         metin.push_str(&format!(
-            "| {} | {} | {}/{} | {} | {} | {:.3} sn | {} | {} | {} | {} |\n",
+            "| {} | {} | {}/{} | {} | {} | {:.3} sn | {} | {} | {} | {} | {} |\n",
             faz.baslik,
             durum,
             sonuc.gecen,
@@ -756,6 +900,7 @@ fn dinamik_rapor(fazlar: &[Faz], sonuclar: &BTreeMap<String, FazSonucu>) -> Stri
             kod_listesi(&faz.regresyonlar),
             kod_listesi(&faz.fuzz),
             kod_listesi(&faz.conformance),
+            kod_listesi(&capraz_kapsayan_seciciler(fazlar, &faz.kimlik)),
             kod_listesi(&faz.asagi_akis)
         ));
     }
@@ -871,20 +1016,20 @@ mod testler {
 
     #[test]
     fn yinelenen_faz_ve_secici_reddedilir() {
-        let satir = "a\tA\ttest|x\t-\t-\t-\tb\tnot";
+        let satir = "a\tA\ttest|x\t-\t-\t-\tb\tnot\t-";
         let metin = format!("{satir}\n{satir}\n");
         assert!(fazlari_oku(&metin).is_err());
     }
 
     #[test]
     fn zorunlu_fazlardan_biri_sessizce_dusurulemez() {
-        let fazlar = fazlari_oku("lexer\tLexer\ttest|x\tx\t-\t-\t-\tnot\n").expect("faz");
+        let fazlar = fazlari_oku("lexer\tLexer\ttest|x\tx\t-\t-\t-\tnot\t-\n").expect("faz");
         assert!(zorunlu_fazlari_dogrula(&fazlar).is_err());
     }
 
     #[test]
     fn her_test_tam_bir_faz_sahibi_ister() {
-        let fazlar = fazlari_oku("a\tA\tlib|mod::\t-\t-\t-\t-\tnot\n").expect("faz");
+        let fazlar = fazlari_oku("a\tA\tlib|mod::\t-\t-\t-\t-\tnot\t-\n").expect("faz");
         let kimlik = HedefKimligi {
             tur: HedefTuru::Lib,
             ad: "dil".to_string(),
@@ -909,5 +1054,21 @@ mod testler {
             kod_listesi(&["a/b".to_string(), "c|d".to_string()]),
             "`a/b`<br>`c\\|d`"
         );
+    }
+
+    #[test]
+    fn ek_kapsam_sahipli_secici_ve_bilinen_faz_ister() {
+        let gecerli = "a\tA\ttest|x\tx\t-\t-\tb\tnot\ttest|x>b\n\
+                       b\tB\ttest|y\ty\t-\t-\t-\tnot\t-\n";
+        let fazlar = fazlari_oku(gecerli).expect("ek kapsam ayrıştırılmalı");
+        assert_eq!(capraz_kapsayan_seciciler(&fazlar, "b"), ["a / test:x"]);
+
+        let sahipsiz = "a\tA\ttest|x\tx\t-\t-\tb\tnot\ttest|z>b\n\
+                        b\tB\ttest|y\ty\t-\t-\t-\tnot\t-\n";
+        assert!(fazlari_oku(sahipsiz).is_err());
+        let bilinmeyen = "a\tA\ttest|x\tx\t-\t-\t-\tnot\ttest|x>y\n";
+        assert!(fazlari_oku(bilinmeyen).is_err());
+        let birincil_tekrari = "a\tA\ttest|x\tx\t-\t-\t-\tnot\ttest|x>a\n";
+        assert!(fazlari_oku(birincil_tekrari).is_err());
     }
 }
