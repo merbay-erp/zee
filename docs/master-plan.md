@@ -851,6 +851,14 @@ migration geçmişi tamamlandı. Çatlı kaynağı dosya slug ön-kontrolünden 
 PRIMARY KEY'e geçti; PostgreSQL 16.11'de apply→skip→hash reddi, injection
 benzeri değer, UNIQUE dalı ve outer rollback gerçek koşuda geçti. Production
 TLS, pool ve multi-process yarışı ayrı açık dogfood kanıtıdır.
+Beşinci dilimin `43d04fc` ürün commit'i 509 Zee satırında ilk dayanıklılık
+kırığını ölçtü. Bağlantı daha önce hiç kurulamamışsa kapasite geri geldiğinde
+restart olmadan iyileşir; kurulmuş client backend sonlandırması sonrası yeniden
+bağlanmaz. Beş ardışık istek bunu görünür arıza kartıyla raporlar fakat HTTP
+200 taşır. Doğru 503, stale-client recovery, gerçek pool ve medya+DB uzlaştırma
+K-163'ün açık production kanıtıdır. 492 LOC tabanı; modül/test/dokunulan dosya,
+bugfix süresi, sürtünme, workaround ve LSP p95 için aynı yöntemli 1000+ LOC
+skor kartına bağlandı.
 B-001 çağrı sözdizimi ile B-002 gezme zihinsel modeli gerçek insan
 kanıtı gelmeden kapatılmaz veya yeni syntax kararıyla atlanmaz.
 # 40. Proje felsefesinin korunması

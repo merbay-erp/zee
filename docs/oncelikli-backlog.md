@@ -782,7 +782,7 @@ tamamlanmış sayılmaz; burada istenen ek kanıt ayrıca üretilir.
 | K-160A | **KAPALI — EXECUTABLE FREEZE** | Exact commit sınıfı; dogfood feature için ürün+iş+reproducer+proje+minimalite+karar |
 | K-161 | **İNSAN KANITI** | B-001/K-016 için 10 öğrenci/çocuk + 5 profesyonel kör oturum |
 | K-162 | **İNSAN KANITI** | B-002/K-093 morphology/scope/call/error zihinsel model oturumu |
-| K-163 | **DEVAM EDİYOR** | Çatlı dördüncü dilim: 492 Zee satırı; PostgreSQL 16.11 parameterized bind, C025/23505, rollback ve migration apply/skip/hash reddi geçti; production TLS/pool, medya ve süreli günlük bekleniyor |
+| K-163 | **DEVAM EDİYOR** | Çatlı 509 Zee satırında PostgreSQL saha kanıtını ve ilk dayanıklılık deneyini geçti. İlk bağlantı kapasite dönünce iyileşiyor; öldürülmüş client reconnect olmuyor. Boş başarı görünümü ürün katmanında kapandı; doğru 503, stale-client recovery, production TLS/pool, medya ve 1000+ LOC skor kartı bekleniyor |
 | K-164 | **AÇIK** | Farklı workload'da ikinci gerçek proje |
 | K-165 | **AÇIK** | Aynı uygulamanın Zee–Go/Rust veri temelli dogfood karşılaştırması |
 | K-166 | **AÇIK** | En sık 50 hata için span/öneri/noise düzeltme başarısı |

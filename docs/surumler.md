@@ -27,6 +27,14 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   Çalışan ürün kanıtı `itwise-admin` deposundaki `a393128` commit'indedir.
   Bu yalnız localhost sslmode=disable profilidir; production TLS/pool sözü yoktur.
 
+- **İlk PostgreSQL dayanıklılık kırılma noktası** (K-163): `43d04fc` ürün
+  commit'inde PostgreSQL backend'i gerçek koşuda sonlandırıldı. Hiç kurulamayan
+  bağlantı kapasite geri gelince süreç içinde iyileşirken öldürülmüş canlı
+  client yeniden bağlanmadı. Ürünün başarısız DB sonucunu boş liste gibi
+  göstermesi mevcut Zee ile görünür hata kartına çevrildi; doğru HTTP 503,
+  stale-client recovery ve gerçek pool hâlâ açık kanıttır. 492 LOC maintenance
+  tabanı 1000+ satır karşılaştırması için exact yöntemle kaydedildi.
+
 - **Dogfood kanıt referans bütünlüğü** (B-073): Append-only ürün kaydı tekil
   slug, repo içi kanıt kökü, exact harici ürün commit'i ve durum taşır. CORE
   FREEZE koruğu artık dogfood değişikliğinin kayıtlı etkin ürüne, gerçek K-işine,

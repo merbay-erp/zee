@@ -347,8 +347,8 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   dalındaki `43171b9 → cef5ae3` hattı 495 satır Zee ile yönetici oturumu,
   CSRF korumalı duyuru CRUD'u, JSON site ayarları ve slug doğrulamalı
   taslak/yayında sayfa yaşam döngüsünü çalıştırdı. 7/7 test ile gerçek TCP
-  içerik+ayar+sayfa provası geçer. K-163'ün 500–1500 satır ve DB/medya gibi
-  geniş ürün yüzeyi kapısı açıktır.
+  içerik+ayar+sayfa provası geçer. K-163'ün 500–1500 satır, medya ve production
+  dayanıklılığı gibi geniş ürün yüzeyi kapısı açıktır.
   K-163'ün dördüncü dilimi bu ilk gerçek runtime eksiğini ürün kanıtıyla
   açtı: RFC-0026/ADR-060/spec-25 altında secretsiz exact loopback bildirim,
   ayrı TEXT parametre bind'i, C025 içinde SQLSTATE/constraint, eylem
@@ -356,6 +356,12 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   PostgreSQL 16.11 gerçek provada apply→skip→değişmiş-hash reddi, injection
   benzeri slug'ın aynen saklanması, 23505 dalı ve outer rollback geçti.
   Production TLS/pool/multi-process hâlâ açıkça kapsam dışıdır.
+  Beşinci dilimin `43d04fc` ürün kanıtı ilk dayanıklılık kırığını buldu:
+  başlangıç bağlantısı kapasite dönünce iyileşiyor, öldürülmüş canlı client ise
+  süreç içinde yeniden bağlanmıyor. Ürünün DB hatasını boş liste gibi göstermesi
+  mevcut Zee ile görünür arıza kartına çevrildi; doğru HTTP 503 ve stale-client
+  recovery açık kaldı. 492 LOC bakım tabanı 1000+ satır karşılaştırması için
+  exact yöntemle kaydedildi.
   K-151/ADR-048 bütün GitHub Actions `uses:` referanslarını incelenmiş 40
   haneli commit SHA'lara sabitledi. Sürümlü pin kaydı workflow'larla birebir,
   haftalık Dependabot yalnız inceleme PR'ı açar; hareketli `@v4`, `@stable`

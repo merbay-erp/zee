@@ -2833,3 +2833,21 @@ usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.
   grafiğine sızdığı görüldü. Bu modüller native-only yapıldı; davranışsız paket
   modeli WASM'da serde türetimi olmadan kaldı. PostgreSQL adaptörü de aynı
   native sınırının dışına çıkmıyor.
+
+### K-163 beşinci dilim — ilk dayanıklılık kırığı — 3 Eylül 2026
+
+- `itwise-admin` ürün commit'i `43d04fc`, kaynağı 509 Zee satırı ve 7 hermetik
+  teste çıkardı; 492 satırlık dördüncü dilimi exact bakım tabanı olarak
+  modül/test/dokunulan dosya/bugfix/sürtünme/workaround/LSP alanlarıyla kaydetti.
+- PostgreSQL 16.11'de öldürülmüş canlı bağlantı sonraki beş istekte yeniden
+  kurulmadı. Veritabanındaki sentinel yalnız süreç restartı sonrası göründü.
+  Buna karşılık connection limit 1 ile reddedilen ilk bağlantı, slot açılınca
+  restart olmadan iyileşti. Geçici rol, limit ve sentinel deney sonunda silindi.
+- Ürünün DB hatasını boş başarılı listeye çevirmesi mevcut Zee ile görünür
+  “İçerik deposuna erişilemiyor” kartına dönüştürüldü. Beş gerçek istek ve
+  statik görünüm testi bunu doğruladı. HTTP 200 yerine doğru 503 verme F014 ile,
+  stale-client recovery ise F021 ile açık kaldı.
+- Medya+DB için aynı eylemde iki kalıcı kaynağı yazma yasağı doğru korkuluktur;
+  başarılı yaşam döngüsü için partial failure, yetim/dangling kayıt ve
+  idempotent uzlaştırma matrisi sonuçtan önce sabitlendi. Core değişikliği henüz
+  açılmadı.
