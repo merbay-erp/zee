@@ -135,4 +135,7 @@ Kaynak+soru kipli ilk K-143 kampanyası 1.709.869 çağrıyı 61 saniyede ihlals
 tamamlamıştır.
 
 K-156 kalıcılık kapısı kampanya süresini büyütmez. Dört hedefte 30–60 dakikalık
-release-candidate koşusu ve uygun sanitizer/Miri kanıtı K-157'de açık kalır.
+Uzun release-candidate koşusu K-157/ADR-056 ile ayrı bir kapıdır. İlk doğrulanmış
+tabanda dört hedef 30'ar dakika AddressSanitizer altında toplam 136.789.564
+girdiyi crash/timeout/bulgu olmadan yürüttü; seçili Miri testleri 3/3 geçti.
+Tekrar ve provenance sözleşmesi [RC fuzz rehberindedir](fuzz-rc.md).

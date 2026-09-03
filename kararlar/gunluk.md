@@ -2636,7 +2636,22 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   değiştirildiğinde SHA-256 kapısı reddeder.
 - **Kapanış:** ADR-055/B-066 kapalıdır. Repo korpusuna terfi otomatik değildir;
   doğrulama, `cargo fuzz cmin`, stable replay ve insan review'u zorunludur.
-  K-157 uzun RC fuzz/sanitizer/Miri kapısı açık kalır.
+  K-157 uzun RC fuzz/sanitizer/Miri kapısıyla ayrıca kapanmıştır.
+
+## K-157 — Uzun fuzz RC kanıtı ölçülebilir olmalı (3 Eyl)
+
+- **Karar:** Nightly smoke'tan ayrı haftalık/elle iş dört hedefi aynı commit'te
+  60'ar dakika explicit AddressSanitizer ile çalıştırır. Crash, tek-girdi
+  timeout'u veya sanitizer bulgusu bütün RC kapısını kırar; log, sonuç ve
+  provenance'lı korpus 90 gün saklanır.
+- **İlk taban:** `b75072beac1a54125f7cd76c51965accc4d9526f` üzerinde hedef
+  başına 1.801 saniye koşuldu. Lexer/parser 13.034.402, morfoloji 19.622.858,
+  HTTP 85.659.451 ve WASM ABI 18.472.853 olmak üzere toplam 136.789.564
+  yürütme; sıfır crash, timeout ve AddressSanitizer bulgusu üretildi.
+- **Miri:** Saf ondalık ve zaman çekirdeği 3/3 geçti. Ağ/TLS/süreç yüzeylerini
+  Miri kapsamıymış gibi göstermiyoruz.
+- **Kapanış:** ADR-056, RC rehberi, append-only exact çevre tarihçesi ve
+  workflow regresyonuyla B-067/K-157 kapandı. Sıradaki makine işi K-158'dir.
 
 ---
 
@@ -2650,6 +2665,9 @@ Makine hattında K-154 tam-metin ölçek eğrisini exact tabanla, K-155 semantic
 regresyon provenance zincirini v2 manifestle ve K-155A bütün compiler kaynak
 commit'lerini mesajdan bağımsız beyan kapısıyla, K-176 strict form decode
 güvenlik açığını exact web fixture'ıyla ve K-156 cache dışı provenance'lı fuzz
-korpusu artefaktıyla kapattı. Sırada K-157 uzun fuzz kampanyası vardır.
+korpusu artefaktıyla kapattı. K-157 dört hedefte 30'ar dakikalık explicit
+AddressSanitizer kampanyasını toplam 136.789.564 yürütme ve sıfır bulguyla;
+seçili Miri çekirdeğini 3/3 sonuçla kapattı. Sırada K-158 faz matrisi çoklu
+kapsama metadatası vardır.
 B-001/B-002 (yeni sırada K-161/K-162), gerçek 10 çocuk/öğrenci + 5 profesyonel
 usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.

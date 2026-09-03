@@ -807,8 +807,10 @@ gerekçeye bağladı; bugfix exact fixture ister. K-176/ADR-054 de strict form
 çözümünü exact `32247c7…` uygulama commit'ine bağlı web fixture'ı ve semantic
 beyanla kapattı. K-156/ADR-055 her hedefin coverage korpusunu cache dışı,
 SHA-256 ve run/commit provenance'lı 90 günlük artefakta bağladı; review'lü
-küçültme akışı kalıcı repo seed'ini korur. B-063/B-064/B-065/B-066 kapandı;
-sırada K-157 uzun fuzz kampanyası vardır.
+küçültme akışı kalıcı repo seed'ini korur. K-157/ADR-056 dört hedefi ayrı RC
+işinde explicit AddressSanitizer'a bağladı; ilk exact taban 30'ar dakikada
+toplam 136.789.564 yürütme, sıfır crash/timeout/bulgu ve 3/3 seçili Miri testi
+üretti. B-063/B-064/B-065/B-066/B-067 kapandı; sırada K-158 vardır.
 B-001 çağrı sözdizimi ile B-002 gezme zihinsel modeli gerçek insan
 kanıtı gelmeden kapatılmaz veya yeni syntax kararıyla atlanmaz.
 # 40. Proje felsefesinin korunması

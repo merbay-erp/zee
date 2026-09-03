@@ -4,7 +4,8 @@
 - **Tarih:** 1 Eylül 2026
 - **Revizyon:** 2 Eylül 2026 — K-140/ADR-037 ham byte HTTP hedefini ekledi.
 - **Revizyon:** 3 Eylül 2026 — K-156/ADR-055 cache dışı provenance'lı korpus artefaktını ekledi.
-- **İlgili kayıt:** K-110, K-140, K-156, B-015, B-053, B-066, V1-P0-20
+- **Revizyon:** 3 Eylül 2026 — K-157/ADR-056 uzun RC ve sanitizer/Miri kapısını ekledi.
+- **İlgili kayıt:** K-110, K-140, K-156, K-157, B-015, B-053, B-066, B-067, V1-P0-20
 - **İlgili yüzey:** `compiler/fuzz/`, `compiler/tests/fuzz_korpusu_testi.rs`
 
 ## Bağlam
@@ -40,6 +41,9 @@ başına kanıtlamaz. Örnek testler de mutation kaynaklı bileşimleri aramaz.
    manifestli ve kaynak commit/run provenance'lı 90 günlük artefakt olur.
    Coverage seed'i ancak doğrulama, küçültme, stable replay ve insan review'u
    sonrasında kalıcı kaynak korpusuna girer.
+9. K-157'de smoke'tan ayrı RC işi dört hedefi 30–60 dakika explicit
+   AddressSanitizer altında çalıştırır. Exact sonuç tarihçeye eklenir; seçili
+   saf çekirdek testleri sabit nightly Miri altında ayrıca geçer.
 
 ## Sonuçlar
 
