@@ -5,3 +5,4 @@ d20d85738d6958849e642f508ae594586d9289fc	semantic-bugfix	bozuk-form-kodlamasi	Bo
 f84283d2ceef02c437061de0695594d6a7bb7e35	maintenance	-	Faz matrisi yalnız test kanıtı metadatasını ve raporunu genişletir; Zee grammar, runtime ve kullanıcı programı davranışı değişmez.
 e567c4e6eb2d212dc3fe7ab160b7b50d07a217c3	maintenance	-	Sürümlü Rust facade ve internal görünürlük sınıfı gömme sözleşmesini belgeler; Zee grammar, runtime ve kullanıcı programı davranışı değişmez.
 c407f7133cf017f9851565f5fde8d45f3720164c	maintenance	-	Paket modeli, doğrulama, registry, çözüm ve yayın sahipliği ayrıldı; Zee grammar, runtime ve kullanıcı programı davranışı değişmedi.
+7f2f7e904fce37b97e1fb442536cc56dc0de2649	maintenance	-	Adlandırılmış istek dönüş tipleri ve açık filter/map zinciri yalnız Clippy uyumudur; Zee program davranışı değişmedi.
