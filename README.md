@@ -181,7 +181,7 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **621** |
+| Rust + doctest vakası | **623** |
 | Tanı kimliği | **152 etkin + 3 ayrılmış** |
 | RFC | **25** (2 kabul, 21 geçici kabul, 2 taslak) |
 | ADR | **57** (57 kabul) |
@@ -337,7 +337,9 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   davranışsız model, resolver, registry taşıması, artefakt doğrulama ve yayın
   sahiplerine ayırdı. Geçici C001 silindi; production SCC ve izin sayısı
   sıfırdır. CORE FREEZE etkindir: yeni compiler özelliği gerçek dogfood
-  ihtiyacı kanıtlanmadıkça varsayılan olarak reddedilir.
+  ihtiyacı kanıtlanmadıkça varsayılan olarak reddedilir. K-160A bu sözü
+  executable yaptı: CI exact freeze sınıfını ve dogfood feature için ürün,
+  K-işi, reproducer, etkilenen proje, minimalite ve ADR/spec/RFC kanıtını ister.
   K-151/ADR-048 bütün GitHub Actions `uses:` referanslarını incelenmiş 40
   haneli commit SHA'lara sabitledi. Sürümlü pin kaydı workflow'larla birebir,
   haftalık Dependabot yalnız inceleme PR'ı açar; hareketli `@v4`, `@stable`

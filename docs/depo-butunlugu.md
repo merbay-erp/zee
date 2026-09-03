@@ -160,6 +160,10 @@ zincirinin silinmesini veya yeniden kullanılmasını reddeder. K-155A/ADR-053
 sabit başlangıçtan sonraki her `compiler/src` commit'ini mesajdan bağımsız
 `docs/compiler-degisiklik-beyanlari-v1.tsv` kaydına zorlar; bugfix sınıfı exact
 `fixed_by` sahibi yeni satır ve fixture olmadan geçemez.
+K-160A/ADR-059 bunun üstüne `docs/core-freeze-beyanlari-v1.tsv` kapısını koyar:
+semantic feature yalnız dogfood/security/correctness sınıfıyla, dogfood ise
+ürün+iş+reproducer+etkilenen proje+minimalite+karar zinciriyle geçer. CI tabanı
+eski freeze beyanının yeniden yazılmasını da reddeder.
 
 ## Immutable conformance verisi
 

@@ -45,4 +45,6 @@ component (SCC) oluşturabiliyordu. İlk SCC incelemesi üç çevrim buldu:
 - Üç SCC'nin tamamı kaldırılmıştır; production SCC ve izin sayısı sıfırdır.
 - K-160 paket modeli, çözümleme, registry protokolü, verification ve yayın
   orkestrasyonu sahipliğini ayrı bağımlılık yönlerine taşımıştır.
+- Gelecekte zorunlu olacak mimari izin kimlikleri tanı kodlarıyla karışmayan
+  `SCC-NNN` ad alanını kullanır; tarihsel C001 kaydı yeniden yazılmaz.
 - Dil grammar'ı, runtime semantiği, tanılar ve normatif spec değişmedi.

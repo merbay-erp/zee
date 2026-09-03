@@ -2692,6 +2692,20 @@ karar verilemedi, korpusta işaretli) · `bulgu` (korpusun ortaya çıkardığı
   özelliği varsayılan olarak reddedilir; gerçek dogfood ihtiyacı kanıtlanmadıkça
   core genişletilmez.
 
+## K-160A — Core freeze yalnız yazılı niyet olarak kalmamalı (3 Eyl)
+
+- **Açık:** Semantic beyan kapısı bir feature'ı ADR/spec yoluyla kabul
+  edebiliyor; gerçek dogfood talebini makinece zorunlu tutmuyordu.
+- **Karar:** Her yeni compiler kaynak commit'i ikinci bir exact freeze beyanı
+  taşır: maintenance, bugfix, security, correctness veya dogfood-change.
+  Semantic feature yalnız son üç izinli değişiklik sınıfıyla eşleşebilir.
+- **Dogfood kanıtı:** Ürün kimliği, K-işi, depo içi reproducer, etkilenen gerçek
+  proje dosyası, en az 40 karakterlik minimalite gerekçesi ve ADR/spec/RFC
+  birlikte zorunludur. “ADR yazıldı” tek başına feature izni değildir.
+- **Kapı:** Geçici Git depo testi beyansız feature'ı, maintenance kaçışını,
+  eksik provenance'ı ve geçmiş beyan yeniden yazımını reddeder. CI aynı koruğu
+  Git tabanına karşı çalıştırır. B-071/V1-P0-35/K-160A kapandı.
+
 ---
 
 ## Sonraki adım
@@ -2709,7 +2723,7 @@ AddressSanitizer kampanyasını toplam 136.789.564 yürütme ve sıfır bulguyla
 seçili Miri çekirdeğini 3/3 sonuçla kapattı. K-158 seçici düzeyi çoklu kapsamı
 ve gerçek blast-radius raporunu kapattı. K-159 sürümlü facade ile SemVer
 sınırını, K-160 gerçek paket sahipliği ayrımıyla son production SCC ve izin
-borcunu kapattı. CORE FREEZE etkindir; sırada K-161/K-162 gerçek insan kanıtı
-ve K-163 ilk gerçek Zee ürünü vardır.
+borcunu kapattı. K-160A freeze'i executable yaptı. Sırada K-161/K-162 gerçek
+insan kanıtı ve K-163 ilk gerçek Zee ürünü vardır.
 B-001/B-002 (yeni sırada K-161/K-162), gerçek 10 çocuk/öğrenci + 5 profesyonel
 usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.

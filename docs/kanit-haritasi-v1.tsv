@@ -80,7 +80,7 @@ adr/055-fuzz-korpus-kaliciligi.md	kanitli	compiler/tests/fuzz_korpusu_testi.rs	K
 adr/056-uzun-fuzz-rc-kapisi.md	kanitli	compiler/tests/fuzz_korpusu_testi.rs	K-157 dort hedefte 30-60 dakika explicit AddressSanitizer RC kampanyasi raporu ve saf cekirdekte Miri kapisi
 adr/057-coklu-test-kapsami.md	kanitli	compiler/src/bin/faz_test_matrisi.rs	K-158 exact seciciye bagli opsiyonel coklu kapsam dogrulamasi ve gercek blast-radius raporu
 adr/058-public-api-facade.md	kanitli	compiler/tests/public_api_testi.rs	K-159 api v1 exact allowlist internal modul sinifi ve calisan facade smoke kapisi
-adr/059-paket-sahipligi-ve-core-freeze.md	kanitli	compiler/tests/bagimlilik_cevrimi_testi.rs,compiler/tests/katman_mimarisi_testi.rs	K-160 saf paket modeli verification registry resolver yayin sahipligi sifir SCC ve bos allowlist
+adr/059-paket-sahipligi-ve-core-freeze.md	kanitli	compiler/tests/bagimlilik_cevrimi_testi.rs,compiler/tests/katman_mimarisi_testi.rs,compiler/tests/core_freeze_korugu_testi.rs	K-160 saf paket sahipligi sifir SCC ve K-160A gercek dogfood provenance'i isteyen executable core freeze
 spec/01-sozcukleme.md	kanitli	compiler/tests/kacis_ve_negatif_testi.rs,compiler/tests/metin_testi.rs	Token kaçış Unicode ve sayı kuralları
 spec/02-dizim.md	kanitli	compiler/tests/golden_testi.rs,compiler/tests/ifade_grameri_testi.rs	Cümle blok ve ifade dizimi
 spec/03-adlar-ve-kapsam.md	kanitli	compiler/tests/kapsam_testi.rs,compiler/tests/morfoloji_testi.rs,compiler/tests/lsp_testi.rs	Ad çözümü kapsam morfoloji ve semantic rename

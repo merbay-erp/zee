@@ -93,6 +93,9 @@ tekil sınıflandırır. `semantic-bugfix` aynı SHA'yı `fixed_by` taşıyan fi
 `semantic_regresyon_korugu_testi`, geçici gerçek Git deposunda masum görünen
 başlığın beyansız reddini, exact beyan+fixture kabulünü ve provenance yeniden
 yazım reddini uçtan uca çalıştırır; yalnız script metnine bakmakla yetinmez.
+K-160A sonrasında ayrı [core freeze beyanı](core-freeze-beyani.md), semantic
+değişikliğin gerçek dogfood/security/correctness provenance'ı olmadan sırf
+normatif belge eklenerek geçmesini engeller.
 
 ## Korpusların rolleri
 

@@ -87,6 +87,15 @@ değişmediğini açıklayan gerekçeyle geçer. Kaynak commit'i önce, beyan ve
 gerekiyorsa fixture/provenance commit'i sonra alınır; commit mesajı muafiyet
 veya güvenlik sınırı değildir.
 
+K-160A sonrasında aynı kaynak commit'i ayrıca
+`docs/core-freeze-beyanlari-v1.tsv` içinde `maintenance`, `bugfix`, `security`,
+`correctness` veya `dogfood-change` sınıfı taşır. `semantic-change` yalnız
+kanıtlı dogfood, security veya correctness sınıfıyla geçebilir.
+`dogfood-change`; ürün kimliği, K-işi, depo içi reproducer, etkilenen gerçek
+proje dosyası, en az 40 karakterlik minimalite gerekçesi ve ADR/spec/RFC yolu
+olmadan kabul edilmez. Toplu commit öncesi
+`scripts/core-freeze-korugu.sh <taban>` çalıştırılır.
+
 Fuzz workflow'u coverage korpusunu yalnız cache'te bırakamaz; her hedefin koşu
 sonu korpusu `zee-fuzz-corpus-artifact-1` SHA-256/run/commit manifestiyle 90
 günlük artefakta gider. İndirilen seed doğrulanıp küçültülmeden, stable
@@ -105,7 +114,7 @@ değişiklikte bilinçli açılır; internal kök modül işaretlenmeden public 
 
 ## V1 öncesi iş sırası
 
-K-160/ADR-059 sonrasında core freeze etkindir: **Yeni compiler özelliği
+K-160/K-160A/ADR-059 sonrasında core freeze makinece etkindir: **Yeni compiler özelliği
 varsayılan olarak reddedilir; gerçek dogfood ihtiyacı kanıtlanmadıkça core
 genişletilmez.** Dogfood bugfix ile security/correctness işi yapılabilir. API
 kırılması gerçek ürün kanıtı; grammar değişikliği çok yüksek eşik ister. Ürün

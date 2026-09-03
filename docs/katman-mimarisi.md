@@ -79,7 +79,8 @@ verification'a devreder; resolver taşıma ve imza ayrıntısını bilmez. Eski
 Güncel production graph'ta SCC sayısı ve
 [`izinli-katman-cevrimleri-v1.tsv`](../compiler/tests/fixtures/izinli-katman-cevrimleri-v1.tsv)
 izin sayısı sıfırdır. Yeni çevrim veya yeni izin CI'ı durdurur; C001
-silinmiştir.
+silinmiştir. Gelecekte zorunlu bir istisna doğarsa tanı kodlarıyla karışmayan
+`SCC-NNN` kimliği kullanılır; tarihsel C001 kayıtları yeniden adlandırılmaz.
 
 ## K-149'da temizlenen iki ters kenar
 

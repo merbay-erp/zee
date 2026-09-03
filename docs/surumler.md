@@ -12,6 +12,13 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **Executable CORE FREEZE** (K-160A, ADR-059): Yazılı politika artık her
+  `compiler/src` commit'ini exact freeze sınıfına zorlayan CI kapısıdır.
+  Semantic feature yalnız dogfood/security/correctness olabilir;
+  `dogfood-change` ürün, K-işi, reproducer, etkilenen proje, minimalite ve
+  ADR/spec/RFC'nin tamamını ister. Maintenance sınıfıyla kaçış ve geçmiş beyan
+  yeniden yazımı geçici Git depo testinde reddedilir. B-071 kapandı.
+
 - **Paket sahipliği ve CORE FREEZE** (K-160, ADR-059): Davranışsız
   `paket_modeli`, bağımlılık resolver'ı, registry protokol/taşıması,
   `artefakt_dogrulama` güveni ve `yayin` orkestrasyonu fiziksel olarak ayrıldı.
