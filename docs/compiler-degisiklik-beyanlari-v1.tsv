@@ -8,3 +8,4 @@ c407f7133cf017f9851565f5fde8d45f3720164c	maintenance	-	Paket modeli, doğrulama,
 7f2f7e904fce37b97e1fb442536cc56dc0de2649	maintenance	-	Adlandırılmış istek dönüş tipleri ve açık filter/map zinciri yalnız Clippy uyumudur; Zee program davranışı değişmedi.
 b8f8d8a6d9b608975177407e403f92403ce06eb9	semantic-change	spec/25-postgresql-veri-erisimi.md	K-163 gerçek ürün ihtiyacı PostgreSQL okuma, değişiklik, transaction ve migration davranışını normatif sözleşmeyle ekler.
 5c5d9e18f4f22674bc142dc2b6ffc7a895fe75fe	semantic-change	spec/25-postgresql-veri-erisimi.md	K-163 saha bulgusu transaction dışı salt okumaya tek güvenli reconnect verir; write ve COMMIT tekrarını yasak tutar.
+246c729e0b92b4b784a7f397852c395825772f33	semantic-change	spec/11-uygulama-eylemleri-ve-web-adaptoru.md	K-163 F027 transaction sınırı arızasını write tekrarı olmadan 503 isteğine dönüştürür ve web worker'ını yaşatır.
