@@ -827,11 +827,12 @@ semantic feature yalnız dogfood/security/correctness sınıfında; dogfood ise
 ürün, K-işi, reproducer, etkilenen proje, minimalite ve normatif kararın
 tamamıyla geçer. B-071/V1-P0-35 kapandı. Eski `tedarik` cephesinin V1 ömrü
 K-167 compatibility policy içinde kararlaştırılacak; dogfood'u geciktirmez.
-Freeze metadata'sının kolayca alakasız mevcut dosyalarla doldurulmasını
-daraltacak B-073 de açık P1 governance hardening'dir: ürün root kaydı, gerçek
-K-işi, root-altı Zee proje/kaynak yolu ve karar belgesi referansı ilk
-dogfood-kaynaklı compiler değişikliğinden önce zorunlu olacak; K-163'ün
-başlangıcını engellemez.
+B-073 de ilk dogfood-kaynaklı compiler değişikliğinden önce kapandı. Append-only
+ürün kaydı, exact harici ürün provenance'ı, etkin repo-içi kanıt kökü, gerçek
+K-işi, kök-altı Zee dosyası ve karar belgesi referansı artık freeze koruğunda
+zorunludur. Reproducer'ın ürün ihtiyacına semantik uygunluğu bilinçli olarak
+insan review'unda kalır; CI kolay sahte metadata'yı daraltır ama insan hükmünü
+taklit etmez.
 K-163 bu sınırlar korunarak `itwise-admin` deposunun temiz
 `codex/k-163-catli-dogfood` dalında başladı. `43171b9 → cef5ae3` ürün hattı
 495 satır Zee ile duyuru listeleme, Argon2id yönetici girişi, rol, CSRF CRUD,

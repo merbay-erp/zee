@@ -12,6 +12,13 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **Dogfood kanıt referans bütünlüğü** (B-073): Append-only ürün kaydı tekil
+  slug, repo içi kanıt kökü, exact harici ürün commit'i ve durum taşır. CORE
+  FREEZE koruğu artık dogfood değişikliğinin kayıtlı etkin ürüne, gerçek K-işine,
+  ürün kökü altındaki Zee dosyasına ve ilgili karar belgesine bağlı olduğunu
+  doğrular. Geçici Git testi kayıtsız ürün/iş, kök dışı dosya ve alakasız karar
+  kaçışlarını reddeder. Reproducer'ın semantik ilgisi insan review'undadır.
+
 - **İlk gerçek ürün dogfood'u başladı** (K-163): Çatlı/ITWISE Admin için temiz
   `codex/k-163-catli-dogfood` dalındaki `43171b9 → cef5ae3`, 495 satırlık üç
   Zee dikey dilimini kurdu. Duyuru, Argon2id yönetici oturumu/rol, CSRF CRUD,

@@ -72,18 +72,27 @@ fn feature_gercek_dogfood_kaniti_olmadan_freeze_kapisini_gecemez() {
     for klasor in [
         "compiler/src",
         "docs",
+        "kararlar",
         "spec",
         "regression",
-        "projeler/catli",
+        "dogfood/catli-itwise-admin",
     ] {
         std::fs::create_dir_all(kok.join(klasor)).expect("fixture klasörü");
     }
     basarili_git(&kok, &["init", "-q"]);
     std::fs::write(kok.join("compiler/src/lib.rs"), "pub fn cekirdek() {}\n")
         .expect("başlangıç kaynağı");
-    std::fs::write(kok.join("spec/ozellik.md"), "# Kanıt\n").expect("karar kanıtı");
+    std::fs::write(
+        kok.join("spec/ozellik.md"),
+        "# K-163 catli-itwise-admin kanıtı\n",
+    )
+    .expect("karar kanıtı");
     std::fs::write(kok.join("regression/istek.dil"), "1 yaz\n").expect("reproducer");
-    std::fs::write(kok.join("projeler/catli/proje.dil"), "proje catli\n").expect("ürün kanıtı");
+    std::fs::write(
+        kok.join("dogfood/catli-itwise-admin/proje.dil"),
+        "proje catli\n",
+    )
+    .expect("ürün kanıtı");
     let freeze_parent = commit(&kok, "core freeze başlangıcı");
 
     std::fs::write(
@@ -104,6 +113,21 @@ fn feature_gercek_dogfood_kaniti_olmadan_freeze_kapisini_gecemez() {
         ),
     )
     .expect("freeze manifest");
+    std::fs::write(
+        kok.join("docs/dogfood-projeleri-v1.tsv"),
+        format!(
+            "# zee-dogfood-projeleri-1\n\
+             # urun\tkok\tkoken_commit\tdurum\n\
+             catli-itwise-admin\tdogfood/catli-itwise-admin\t{freeze_parent}\tactive\n"
+        ),
+    )
+    .expect("dogfood ürün kaydı");
+    std::fs::write(
+        kok.join("docs/oncelikli-backlog.md"),
+        "# Backlog\n\nK-163 — ilk gerçek ürün\n",
+    )
+    .expect("backlog kaydı");
+    std::fs::write(kok.join("kararlar/gunluk.md"), "# Günlük\n").expect("günlük kaydı");
     commit(&kok, "freeze kapısı");
 
     std::fs::write(
@@ -146,7 +170,7 @@ fn feature_gercek_dogfood_kaniti_olmadan_freeze_kapisini_gecemez() {
     let freeze = std::fs::read_to_string(&freeze_yolu).expect("freeze manifest");
     let yanlis_satir = freeze.lines().last().expect("yanlış satır");
     let dogfood_satiri = format!(
-        "{feature}\tdogfood-change\tcatli-itwise-admin\tK-163\tregression/istek.dil\tprojeler/catli/proje.dil\tGerçek ürünün istediği en küçük compiler yüzeyiyle sınırlıdır.\tspec/ozellik.md"
+        "{feature}\tdogfood-change\tcatli-itwise-admin\tK-163\tregression/istek.dil\tdogfood/catli-itwise-admin/proje.dil\tGerçek ürünün istediği en küçük compiler yüzeyiyle sınırlıdır.\tspec/ozellik.md"
     );
     std::fs::write(
         &freeze_yolu,
@@ -156,11 +180,73 @@ fn feature_gercek_dogfood_kaniti_olmadan_freeze_kapisini_gecemez() {
         ),
     )
     .expect("dogfood beyanı");
+
+    let beyani_degistir = |satir: &str| {
+        let guncel = std::fs::read_to_string(&freeze_yolu).expect("freeze manifest");
+        let onceki = guncel.lines().last().expect("beyan satırı");
+        std::fs::write(
+            &freeze_yolu,
+            format!("{}\n", guncel.replace(onceki, satir).trim_end()),
+        )
+        .expect("beyan güncellenmeli");
+    };
+
+    beyani_degistir(&dogfood_satiri.replace(
+        "\tdogfood-change\tcatli-itwise-admin\t",
+        "\tdogfood-change\tkayitsiz-urun\t",
+    ));
+    commit(&kok, "kayıtsız dogfood ürünü");
+    let kayitsiz = korugu_calistir(&kok, &freeze_parent);
+    assert!(!kayitsiz.status.success());
+    assert!(String::from_utf8_lossy(&kayitsiz.stderr)
+        .contains("CORE FREEZE DOGFOOD ÜRÜNÜ KAYITLI DEĞİL"));
+
+    beyani_degistir(&dogfood_satiri.replace("K-163", "K-999"));
+    commit(&kok, "kayıtsız dogfood işi");
+    let kayitsiz_is = korugu_calistir(&kok, &freeze_parent);
+    assert!(!kayitsiz_is.status.success());
+    assert!(String::from_utf8_lossy(&kayitsiz_is.stderr)
+        .contains("CORE FREEZE DOGFOOD İŞİ KAYITLI DEĞİL"));
+
+    beyani_degistir(&dogfood_satiri.replace(
+        "dogfood/catli-itwise-admin/proje.dil",
+        "regression/istek.dil",
+    ));
+    commit(&kok, "ürün kökü dışındaki etkilenen dosya");
+    let yanlis_kok = korugu_calistir(&kok, &freeze_parent);
+    assert!(!yanlis_kok.status.success());
+    assert!(String::from_utf8_lossy(&yanlis_kok.stderr)
+        .contains("CORE FREEZE ETKİLENEN PROJE KAYITLI ÜRÜN KÖKÜNDE DEĞİL"));
+
+    std::fs::write(kok.join("spec/alakasiz.md"), "# Başka karar\n").expect("alakasız karar");
+    beyani_degistir(&dogfood_satiri.replace("spec/ozellik.md", "spec/alakasiz.md"));
+    commit(&kok, "alakasız dogfood kararı");
+    let alakasiz = korugu_calistir(&kok, &freeze_parent);
+    assert!(!alakasiz.status.success());
+    assert!(String::from_utf8_lossy(&alakasiz.stderr)
+        .contains("CORE FREEZE KARARI DOGFOOD İŞİNE/ÜRÜNÜNE BAĞLI DEĞİL"));
+
+    beyani_degistir(&dogfood_satiri);
     let dogfood_commit = commit(&kok, "gerçek dogfood provenance");
     assert!(
         korugu_calistir(&kok, &freeze_parent).status.success(),
         "tam dogfood kanıtı geçmeli"
     );
+
+    let dogfood_kaydi = kok.join("docs/dogfood-projeleri-v1.tsv");
+    let urunler = std::fs::read_to_string(&dogfood_kaydi).expect("dogfood ürün kaydı");
+    std::fs::write(
+        &dogfood_kaydi,
+        urunler.replace(&freeze_parent, "0000000000000000000000000000000000000000"),
+    )
+    .expect("ürün provenance yeniden yazımı");
+    commit(&kok, "geçmiş ürün provenance kaydını yeniden yaz");
+    let urun_yeniden_yazim = korugu_calistir(&kok, &dogfood_commit);
+    assert!(!urun_yeniden_yazim.status.success());
+    assert!(String::from_utf8_lossy(&urun_yeniden_yazim.stderr)
+        .contains("DOGFOOD ÜRÜN KAYDI YENİDEN YAZILDI"));
+    std::fs::write(&dogfood_kaydi, urunler).expect("ürün provenance kaydı geri yüklenmeli");
+    commit(&kok, "ürün provenance kaydını geri yükle");
 
     let freeze = std::fs::read_to_string(&freeze_yolu).expect("freeze manifest");
     std::fs::write(

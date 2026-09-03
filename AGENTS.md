@@ -121,6 +121,13 @@ kırılması gerçek ürün kanıtı; grammar değişikliği çok yüksek eşik 
 ihtiyacı → minimal değişiklik → regression → ADR/spec zinciri aynı değişiklikte
 kurulmadan merge edilmez.
 
+Dogfood kaynaklı compiler değişikliğinde ürün `docs/dogfood-projeleri-v1.tsv`
+kaydında etkin olmalı; exact harici provenance ve repo içi kanıt kökü
+korunmalıdır. Freeze beyanındaki K-işi gerçek backlog/günlük kaydına, etkilenen
+Zee dosyası kayıtlı ürün köküne ve karar belgesi K-işi ya da ürün kimliğine
+bağlanır. Reproducer'ın ürün ihtiyacına gerçekten karşılık geldiği insan
+review'unda ayrıca doğrulanır.
+
 Bağlayıcı sıra `docs/oncelikli-backlog.md` içindedir. P0 compiler/dil omurgası
 kapanmadan yeni dil özelliği varsayılan olarak öne alınmaz. Başlamış atomik bir
 correctness/güvenlik dilimi önce kod+test+belgesiyle kapatılır; ardından sıradaki

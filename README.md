@@ -340,6 +340,9 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   ihtiyacı kanıtlanmadıkça varsayılan olarak reddedilir. K-160A bu sözü
   executable yaptı: CI exact freeze sınıfını ve dogfood feature için ürün,
   K-işi, reproducer, etkilenen proje, minimalite ve ADR/spec/RFC kanıtını ister.
+  B-073 bu bağı append-only ürün/provenance kaydıyla sertleştirdi: K-işi gerçek
+  backlog/günlük kaydı, etkilenen Zee dosyası etkin ürün kökü ve karar belgesi
+  iş/ürün referansı taşımadan kapı açılmaz.
   K-163 ilk gerçek ürün hattı da başladı: Çatlı/ITWISE Admin'in temiz dogfood
   dalındaki `43171b9 → cef5ae3` hattı 495 satır Zee ile yönetici oturumu,
   CSRF korumalı duyuru CRUD'u, JSON site ayarları ve slug doğrulamalı

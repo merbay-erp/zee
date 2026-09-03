@@ -2787,5 +2787,25 @@ insan kanıtı ve K-163 ilk gerçek Zee ürünü vardır.
 - Zincirli dönüşüm/özellik koşulu aynı ailede üç gerçek kullanıma ulaştı.
   Önceden belirlenen 5–10 tekrar eşiği dolmadığı için compiler değişikliği
   açılmadı; B-073 hâlâ ilk dogfood core değişikliğinin ön koşuludur.
+
+### B-073 kapandı — dogfood kanıtı referans bütünlüğü kazandı — 3 Eylül 2026
+
+- İlk gerçek runtime eksiği olan PostgreSQL dilimine geçmeden önce CORE FREEZE
+  metadata'sının kolayca alakasız mevcut dosyalarla doldurulabildiği P1 açıklık
+  kapatıldı.
+- `docs/dogfood-projeleri-v1.tsv` append-only ürün kaydı; tekil slug, repo içi
+  kanıt kökü, exact harici ürün commit'i ve active/retired durumu taşır. İlk
+  kayıt `catli-itwise-admin` ürününü `cef5ae33b48264d9c271293d6746e7524f078c4a`
+  provenance'ına bağlar; repo içindeki `dogfood/catli-itwise-admin/proje.dil`
+  bunun açıkça kanıt aynasıdır, çalışan ürünün yerine geçmez.
+- Freeze koruğu dogfood ürününün kayıtlı ve etkin, K-numarasının backlog veya
+  günlükte gerçek, etkilenen `.dil` dosyasının kayıtlı ürün kökü altında ve
+  karar belgesinin K-işi ya da ürün kimliğine bağlı olmasını zorunlu tutar.
+- Geçici Git regresyonu kayıtsız ürün, uydurma K-işi, kök dışı dosya, alakasız
+  karar ve geçmiş beyan yeniden yazımını reddeder. macOS'un sistem Bash 3.2'si
+  dahil çalışmak için associative-array gerektirmez.
+- CI reproducer'ın ürün ihtiyacına semantik uygunluğunu kanıtladığını söylemez;
+  bu hüküm insan review'unda kalır. B-073 kapandı; ilk gerçek dogfood kaynaklı
+  compiler değişikliği için yönetişim önkoşulu artık hazırdır.
 B-001/B-002 (yeni sırada K-161/K-162), gerçek 10 çocuk/öğrenci + 5 profesyonel
 usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.

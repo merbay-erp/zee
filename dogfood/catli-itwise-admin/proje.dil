@@ -1,0 +1,13 @@
+# K-163 dogfood kanıt aynası.
+# Kaynak: itwise-admin codex/k-163-catli-dogfood
+# Exact ürün commit'i: cef5ae33b48264d9c271293d6746e7524f078c4a
+# Bu dosya CI'ın dogfood ürün kökünü doğrulaması içindir; çalışan ürünün sahibi
+# ayrı itwise-admin deposudur ve burada sahte bir tamamlanmış proje gösterilmez.
+
+proje "catli-admin" olsun
+sürüm "0.1.0" olsun
+morfoloji "zee-tr-1" olsun
+giriş "kaynak/ana.dil" olsun
+yetkinlikler "dosya-okuma", "dosya-yazma", "ağ-sunucusu", "web-oturumu", "kriptografi" listesi olsun
+ağ_hedefleri boş liste olsun
+yerel_bağımlılıklar boş liste olsun
