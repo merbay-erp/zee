@@ -417,7 +417,7 @@ pub(super) fn blok_denetle(
                     istek_ortami.insert("çerezler".into(), Tur::Sozluk(SozlukDegerTuru::Metin));
                     blok_denetle(govde, &mut istek_ortami, baglam)?;
                 }
-                Cumle::YanitGonder { deger, satir } => {
+                Cumle::YanitGonder { deger, satir, .. } => {
                     let satir = *satir;
                     ifade_denetle(deger, ortam, baglam, satir)?;
                 }

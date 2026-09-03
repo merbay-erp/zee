@@ -36,6 +36,35 @@ fn sunucuyla(kaynak: &str, istekler: Vec<&str>) -> ToplayanIo {
     io
 }
 
+#[test]
+fn sabit_http_durumlu_yanit_readinessi_503_yaparken_liveness_200_kalir() {
+    let kaynak = r#"
+8080 kapısında sunucu başlat
+
+GET "/hazir" adresine istek geldiğinde
+    "hazır değil" yanıtını 503 durumuyla gönder
+
+GET "/canli" adresine istek geldiğinde
+    "ayakta" yanıtını gönder
+"#;
+    let io = sunucuyla(kaynak, vec!["GET /hazir", "GET /canli"]);
+    assert_eq!(io.sunucu_durumlari, [503, 200]);
+    assert_eq!(io.sunucu_yanitlari[0].1, "hazır değil");
+    assert_eq!(io.sunucu_yanitlari[1].1, "ayakta");
+}
+
+#[test]
+fn http_durumlu_yanit_sabit_100_599_araligini_ister() {
+    for bozuk in [
+        "\"hata\" yanıtını 99 durumuyla gönder",
+        "\"hata\" yanıtını 600 durumuyla gönder",
+        "kod 503 olsun\n\"hata\" yanıtını kod durumuyla gönder",
+    ] {
+        let hata = dil::kaynagi_derle(bozuk).expect_err("geçersiz durum reddedilmeli");
+        assert_eq!(hata.kod, "S037", "{bozuk}");
+    }
+}
+
 fn csrfli_bos_io() -> (ToplayanIo, String, String) {
     let mut io = ToplayanIo::yeni(Vec::new());
     io.istekler.push_back("GET /__test-csrf".into());

@@ -74,7 +74,7 @@ impl Denetleyici<'_> {
                 istem: deger,
                 satir,
             }
-            | Cumle::YanitGonder { deger, satir }
+            | Cumle::YanitGonder { deger, satir, .. }
             | Cumle::Yonlendir {
                 adres: deger,
                 satir,

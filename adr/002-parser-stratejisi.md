@@ -9,6 +9,8 @@
   eşdeğerliği kalıcı kapıya bağlandı
 - **Revizyon:** 2 Eylül 2026 — K-126/ADR-030 ile her AST ifadesinin kesin
   token aralığı zorunlu kılındı
+- **Revizyon:** 3 Eylül 2026 — K-163/F032 ile sabit HTTP yanıt cümlesi ayrı
+  `ayristirici/cumle/web.rs` handler'ında sınırlandı
 
 ## Bağlam
 
@@ -52,6 +54,8 @@ Niyet EBNF'si ve normatif katman sırası artık RFC-0021/spec-20'dedir; parser
 referans gerçekleme kalır. B-005/K-099'da cümle ve ifade handler'ları
 ADR-012'nin fiziksel modüllerine ayrıldı; sınırlar bu katmanları izler ve
 davranış conformance testiyle korunur.
+K-163/F032'de web'e özgü yanıt kalıbı genel cümle handler'ını büyütmeden ayrı
+alt modüle taşındı; iki dosyanın satır bütçesi mimari sınır testindedir.
 Gelecekte ikinci compiler geldiğinde spec/20 + ortak korpus kaynak olur;
 Rust fonksiyon sırası normatif kaynak sayılmaz.
 

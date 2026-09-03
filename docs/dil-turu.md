@@ -509,7 +509,14 @@ cevap "http://127.0.0.1:8081/durum" adresinden gelen yanıt olsun
 8080 kapısında sunucu başlat
 GET "/durum" adresine istek geldiğinde
     "çalışıyor" yanıtını gönder
+
+GET "/hazir" adresine istek geldiğinde
+    "hazır değil" yanıtını 503 durumuyla gönder
 ```
+
+Özel HTTP durumu yalnız `100..599` aralığında kaynakta yazılı bir tam sayı
+olabilir. Değişkenden/dinamik ifadeden durum üretmek V1'de bilinçli olarak
+kapalıdır; normal `yanıtını gönder` 200 davranışını korur.
 
 Gerçek TCP dinleyicisi production sözleşmesi değildir ve güvenli varsayılanla
 kapalıdır. Yalnız localhost eğitim/prototipi için açıkça

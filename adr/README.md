@@ -65,6 +65,7 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-060 | [PostgreSQL adaptör sahipliği ve güven sınırı](060-postgresql-adaptor-siniri.md) | **kabul** (K-163/B-073) |
 | ADR-061 | [Binary yükleme ve dosya yaşam döngüsü sahipliği](061-binary-yukleme-sahipligi.md) | **kabul** (K-163/F030) |
 | ADR-062 | [PostgreSQL TLS ve sınırlı havuz sahipliği](062-postgresql-tls-ve-havuz.md) | **kabul** (K-163/F031) |
+| ADR-063 | [Sabit HTTP durumlu yanıt sınırı](063-sabit-http-durumlu-yanit.md) | **kabul** (K-163/F014/F032) |
 | ADR-004 | Bellek yönetimi prototip kararı (GC / ARC benchmark) | bekliyor |
 | ADR-005 | Native backend seçimi (Cranelift / LLVM) | bekliyor — Faz 4 |
 | ADR-007 | [Telemetri ve gizlilik: araçlar veri toplamaz](007-telemetri-ve-gizlilik.md) | **kabul** |

@@ -1,5 +1,7 @@
 use super::*;
 
+mod web;
+
 impl Ayristirici {
     pub(super) fn cumle_ayristir(&mut self) -> Result<Cumle, Tani> {
         // "işlem ...", "eylem ..." ve "yapı ..." satırları ilk kelimesinden tanınır
@@ -299,26 +301,7 @@ impl Ayristirici {
                     ))
                 }
             }
-            Some("gönder") => {
-                let mut t = satir_tokenlari;
-                t.pop(); // gönder
-                if matches!(t.last(), Some(son) if kelime_mi(son, "yanıtını")) {
-                    t.pop();
-                    let deger = ile_ifadesi(&t, satir_no, &self.islem_adlari)?;
-                    Ok(Cumle::YanitGonder {
-                        deger,
-                        satir: satir_no,
-                    })
-                } else {
-                    Err(Tani::yeni(
-                        "S037",
-                        "Yanıt \"<değer> yanıtını gönder\" biçiminde gönderilir.".into(),
-                        satir_no,
-                        1,
-                        1,
-                    ))
-                }
-            }
+            Some("gönder") => self.yanit_ayristir(satir_tokenlari, satir_no),
             Some("olarak") => {
                 if satir_tokenlari.len() == 2 && kelime_mi(&satir_tokenlari[0], "eşzamanlı") {
                     self.eszamanli_ayristir(satir_no)

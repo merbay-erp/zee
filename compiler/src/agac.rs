@@ -636,8 +636,12 @@ pub enum Cumle {
         govde: Vec<Cumle>,
         satir: usize,
     },
-    /// `"çalışıyor" yanıtını gönder` — istek gövdesi içinde.
-    YanitGonder { deger: Ifade, satir: usize },
+    /// `"çalışıyor" yanıtını gönder` veya sabit `503 durumuyla gönder`.
+    YanitGonder {
+        deger: Ifade,
+        durum: Option<u16>,
+        satir: usize,
+    },
     /// `"/liste" adresine yönlendir` — 303 yönlendirmesi (K-051).
     Yonlendir { adres: Ifade, satir: usize },
     /// `"oturum" çerezine kimlik yaz` — yanıtla Set-Cookie gönderilir (K-052).

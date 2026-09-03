@@ -52,6 +52,7 @@ fn kok_faz_dosyalari_yeniden_sismez() {
 fn handler_modulleri_yeni_domain_icin_sinir_tasir() {
     for (goreli, butce) in [
         ("src/ayristirici/cumle.rs", 540),
+        ("src/ayristirici/cumle/web.rs", 80),
         ("src/ayristirici/ifade.rs", 1_220),
         ("src/ayristirici/kaynak.rs", 80),
         ("src/ayristirici/kurtarma.rs", 160),

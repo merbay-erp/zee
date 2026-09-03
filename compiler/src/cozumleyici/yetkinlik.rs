@@ -171,7 +171,7 @@ fn cumle_bilgisi(cumle: &Cumle, bilgi: &mut Bilgi) {
             ifade_bilgisi(yol, bilgi);
             blok_bilgisi(govde, bilgi);
         }
-        Cumle::YanitGonder { deger, satir } => {
+        Cumle::YanitGonder { deger, satir, .. } => {
             bilgi.ekle(Yetkinlik::AgSunucusu, (*satir, 1, 1));
             ifade_bilgisi(deger, bilgi);
         }
