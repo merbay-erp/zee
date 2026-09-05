@@ -2972,3 +2972,27 @@ usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.
   `tedarik` sahibinin yeniden doğamayacağını korur. Bu iş `maintenance`
   sınıfıdır: grammar, runtime, tanı ve Zee kaynak programı davranışı değişmedi.
   Edition alanının sözdizimi AÇIK RFC işidir; K-167/B-072/V1-P1-21 kapandı.
+
+## K-171 — Belge düzeyi kanıt, madde düzeyi sürüklenmeyi gizler (5 Eyl)
+
+- **Bulgu:** K-118 haritası her spec dosyasını test dosyalarına bağlıyordu;
+  on maddelik bir bölüm tek testle "kanıtlı" görünebiliyor, madde metni
+  değişince harita kırılmıyor, test işlevi silinince belge kanıtlı kalıyordu.
+- **Karar:** ADR-065. Madde mekanik tanımlıdır: kod bloğu/tablo dışında
+  büyük harfli ZORUNLU*/ZORUNDA*/YASAK*/TANIMLI*/AÇIK* taşıyan paragraf, liste
+  öğesi ya da başlık; `AÇIK değil` normatif sayılır. Kimlik dosya adı +
+  sadeleştirilmiş metnin FNV-1a parmak izidir. `spec-madde-kaniti-v1.tsv` her
+  maddeyi `kanitli|kismi|acik` ve exact `<dosya>::<işlev>` seçicisiyle
+  kaydeder; `spec_drift --denetle` kayıtsız/bayat madde, bayat özet, durum
+  uyuşmazlığı, kayıp işlev ve bayat raporu reddeder.
+- **İlk taban:** 169 madde — 151 kanıtlı, 16 kısmi, 2 açık. Kısmi liste
+  gerçek boşluktur: S005/S007/T015/C005 doğrudan olumsuz vakası yok; UTF-8
+  olmayan kaynak reddi, `__Host-` çerez nitelikleri, X-Zee-CSRF başlığı ve
+  parametresiz public dönüş satırı doğrudan test edilmiyor; PostgreSQL
+  sınır/TLS/NULL sütun vakaları gerçek sunucu istediği için saha testinde;
+  sürüm kimliğinin CLI/LSP/SBOM eşitliği ve ilk DEP kaldırmasının tanı kanıtı
+  henüz yok. Bu liste K-166/K-172 girdisidir.
+- **Sınır:** RFC/ADR gerekçe belgesidir, belge düzeyi haritada kalır.
+  Seçicinin maddeyi gerçekten kanıtladığı hükmü kod incelemesindedir; araç
+  varlık, tazelik ve sınıf doğrular. Dil semantiği, tanı ve normatif metin
+  değişmedi; K-171/V1-P1-22 kapandı.

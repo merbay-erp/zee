@@ -10,6 +10,7 @@ bin_depo_sayilari	muhendislik	kalici_dosya	Canli depo envanteri
 bin_faz_test_matrisi	muhendislik	-	Faz test sahipligi ve raporu
 bin_islev_egilimi	muhendislik	kalici_dosya	Kritik islev egilim kapisi
 bin_olcum	muhendislik	agac,cozumleyici,faz,lsp,yorumlayici	Performans gozlem artefakti
+bin_spec_drift	muhendislik	kalici_dosya	Spec madde kanit drift kapisi
 cozumleyici	semantik	agac,hir,intrinsic,kimlik,morfoloji,semantic_model,tani,yetkinlik	Ad tur etki ve HIR kaniti
 dil_cli	adapter	ag_istemcisi,agac,artefakt_dogrulama,bicimleyici,cozumleyici,faz,guvenlik,http_istegi,kalici_dosya,kaynak_sinirlari,morfoloji,paket,postgresql,proje,tani,web_guvenligi,web_yukleme,yayin,yetkinlik,yorumlayici,zaman	Komut satiri ve web host adaptoru
 dillsp	adapter	lsp	LSP stdio framing adaptoru

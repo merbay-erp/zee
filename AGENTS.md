@@ -120,6 +120,13 @@ içinde süreli `DEP-NNN` kaydı, kaldırma commit'inde fixture mezar taşı ve
 tanı+öneriyi kanıtlayan regression vakası ister. Etiket sonrası Cargo sürümü
 bir sonraki `-dev` serisine çekilir; `uyumluluk_testi` toplu commit kapısıdır.
 
+`spec/` altında normatif madde (ZORUNLU/ZORUNDA/YASAK/TANIMLI/AÇIK işaretli
+paragraf, liste öğesi ya da başlık) ekleyen, değiştiren veya kaldıran iş aynı
+committe `docs/spec-madde-kaniti-v1.tsv` içinde exact `<dosya>::<işlev>`
+kanıtını günceller ve `cd compiler && cargo run --locked --bin spec_drift --
+--rapor-yaz` ile raporu yeniler; `--denetle` kayıtsız/bayat madde, kayıp test
+işlevi ve bayat raporu reddeder (K-171/ADR-065). Kısmi madde açık gerekçe ister.
+
 ## V1 öncesi iş sırası
 
 K-160/K-160A/ADR-059 sonrasında core freeze makinece etkindir: **Yeni compiler özelliği
