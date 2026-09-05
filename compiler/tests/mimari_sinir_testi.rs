@@ -528,3 +528,41 @@ fn performans_gozlemi_shared_ci_esigine_donusmez() {
     assert!(gecmis.contains("df737f643c4ee9c8525ce7e972660230e75f5f45\tK-148\tfalse"));
     assert!(gecmis.contains("a2693d6ec98d52b8e2e882b43ecaae682fcce48a\tK-153\tfalse"));
 }
+
+#[test]
+fn spec_maddeleri_exact_test_kanitindan_kopamaz() {
+    let arac = kaynak("src/bin/spec_drift.rs");
+    let ci = kaynak("../.github/workflows/ci.yml");
+    let harita = kaynak("../docs/spec-madde-kaniti-v1.tsv");
+    let rapor = kaynak("../docs/spec-drift-raporu.md");
+    for kok in [
+        "\"ZORUNLU\"",
+        "\"ZORUNDA\"",
+        "\"YASAK\"",
+        "\"TANIMLI\"",
+        "\"AÇIK\"",
+    ] {
+        assert!(arac.contains(kok), "normatif işaretçi kökü eksik: {kok}");
+    }
+    for kural in [
+        "spec drift raporu bayat",
+        "kayıtsız madde",
+        "bayat kayıt",
+        "özet bayat",
+        "AÇIK madde yalnız acik",
+        "yürütülebilir test taşımıyor",
+    ] {
+        assert!(arac.contains(kural), "drift kuralı eksik: {kural}");
+    }
+    assert!(ci.contains("cargo run --locked --bin spec_drift -- --denetle"));
+    assert!(harita.starts_with("# zee-spec-madde-kaniti-1\n"));
+    assert!(rapor.contains("cargo run --locked --bin spec_drift -- --rapor-yaz"));
+    let kayit = harita
+        .lines()
+        .filter(|satir| !satir.is_empty() && !satir.starts_with('#'))
+        .count();
+    assert!(
+        kayit >= 150,
+        "madde kanıt haritası beklenmedik biçimde küçüldü: {kayit}"
+    );
+}

@@ -187,3 +187,17 @@ sonrası yayımlanmış sürüm kimliği fail-closed reddedilir.
 cd compiler
 cargo test --locked --test uyumluluk_testi
 ```
+
+## Spec maddesi drift kapısı
+
+K-171/ADR-065'in [drift rehberi](spec-drift.md),
+[`spec-madde-kaniti-v1.tsv`](spec-madde-kaniti-v1.tsv) ve
+[`spec-drift-raporu.md`](spec-drift-raporu.md); her normatif spec maddesini
+exact test işlevine bağlar. Metni değişen madde yeni kimlik alır, kayıp test
+işlevi ve bayat rapor CI'ı durdurur; kısmi/açık maddeler gerekçesiyle görünür.
+
+```bash
+cd compiler
+cargo run --locked --bin spec_drift -- --denetle
+cargo run --locked --bin spec_drift -- --rapor-yaz
+```

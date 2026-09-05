@@ -85,6 +85,10 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         working-directory: compiler
         run: cargo run --locked --bin islev_egilimi -- --denetle
+      - name: Spec maddeleri exact test kanıtı taşır
+        if: matrix.os == 'ubuntu-latest'
+        working-directory: compiler
+        run: cargo run --locked --bin spec_drift -- --denetle
       - name: Fuzz hedefleri stable araç zincirinde derlenir
         if: matrix.os == 'ubuntu-latest'
         working-directory: compiler

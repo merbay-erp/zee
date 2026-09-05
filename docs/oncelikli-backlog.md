@@ -194,6 +194,10 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
     sonrası geçersiz UTF-8'i rota çalışmadan 400'e çeviren strict uygulamayı
     ekledi. `web` kipli kalıcı fixture exact `32247c7…` uygulama SHA'sına ve
     compiler semantic bugfix beyanına bağlıdır; B-065 kapandı.
+56. K-171/ADR-065 spec altındaki 169 normatif maddeyi parmak-izi kimliğiyle
+    exact `<dosya>::<işlev>` test kanıtına bağladı; 151 kanıtlı, 16 gerekçeli
+    kısmi ve 2 açık madde deterministik raporda görünür, kayıtsız/bayat madde
+    ve kayıp test işlevi CI'ı durdurur. Kısmi liste K-166/K-172 girdisidir.
 55. K-167/RFC-0028/ADR-064 kalıp kelimesi, koşul yüklemi, CLI komutu, biçim,
     profil, ABI, API ve tanı yüzeyini giriş sürümlü tek envantere, kaldırmayı
     ardışık `DEP-NNN` kaydı + bir alt sürüm serisi süre + göç yoluna bağladı.
@@ -772,8 +776,9 @@ kanıtı `bb8e1ac` commit'indedir; K-163 kapalıdır. Managed-provider ve
 hattında açık kalır. K-177 uzak CI görmemiş 126 commit için bütün kapıları
 yerelde koşup tek kırık olan kritik işlev eğilimini bölmeyle kapattı. K-167
 uyumluluk sözünü RFC-0028/ADR-064/spec-27 ile yürütülebilir yaptı ve B-072'yi
-kapattı; sıradaki makine işi K-171 madde düzeyi drift raporu ile K-170
-birleşik güvenlik kapısıdır.
+kapattı. K-171 spec maddelerini exact test işlevine bağlayıp 16 gerçek kanıt
+boşluğunu adlandırdı; sıradaki makine işi K-170 birleşik güvenlik kapısı ve
+K-166/K-172 için bu boşlukların kapatılmasıdır.
 K-161/K-162 gerçek insan testleri de insan verisini beklemeyi sürdürür.
 İnsan verisi gelmeden yeni syntax seçilmez
 veya B-001/B-002 tamamlanmış gösterilmez.
@@ -810,7 +815,7 @@ tamamlanmış sayılmaz; burada istenen ek kanıt ayrıca üretilir.
 | K-168 | **AÇIK** | İki temiz ortamda eş hash, SBOM, imza ve provenance |
 | K-169 | **AÇIK** | Linux/macOS/Windows kurulum-kaldırma ve release runbook tatbikatı |
 | K-170 | **AÇIK** | Birleşik security release gate; kritik/yüksek açık sıfır |
-| K-171 | **AÇIK** | Spec/RFC/ADR/implementation/test madde düzeyi drift raporu |
+| K-171 | **KAPALI** | ADR-065 `spec_drift`: 169 normatif spec maddesi parmak-izi kimliği + exact test işlevi; 151 kanıtlı/16 kısmi/2 açık deterministik raporla CI'da; RFC/ADR belge düzeyinde kalır |
 | K-172 | **AÇIK** | Yalnız dogfood boşluklarından büyüyen başarı+başarısızlık corpus'u |
 | K-173 | **AÇIK** | Uzun compiler/LSP workspace soak ve kaynak sızıntısı kanıtı |
 | K-174 | **AÇIK** | 2–4 hafta yeni syntax kapalı V1 freeze |

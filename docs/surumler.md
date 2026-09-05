@@ -12,6 +12,12 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **Spec maddesi drift kapısı** (K-171, ADR-065): `spec/` altındaki 169
+  normatif madde (ZORUNLU/YASAK/TANIMLI/AÇIK) parmak-izi kimliğiyle exact
+  test işlevine bağlandı; 151 kanıtlı, 16 gerekçeli kısmi ve 2 açık madde
+  `docs/spec-drift-raporu.md` içinde görünür. Metni değişen madde, kayıp test
+  işlevi ve bayat rapor CI'ı durdurur. Dil davranışı değişmedi.
+
 - **Uyumluluk ve deprecation politikası** (K-167, RFC-0028/ADR-064/spec-27):
   Kalıp kelimeleri, koşul yüklemleri, CLI komutları, `proje.kilit`/ZEP/yayın
   zarfı biçimleri, morfoloji/IO/eşzamanlılık profilleri, WASM ABI, Rust
