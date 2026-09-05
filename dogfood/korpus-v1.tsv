@@ -1,0 +1,12 @@
+# zee-dogfood-korpusu-1
+# vaka	urun	kaynak_is	kip	beklenti	tani	cikti	dosya	not
+binary-medya-gereksinimi	catli-itwise-admin	K-163/F030	denetle	basarili	-	-	dogfood/catli-itwise-admin/binary-medya-gereksinimi.dil	Ürünün istediği binary medya yaşam döngüsü yüzeyi ürün yetkinlik politikasıyla derlenir.
+postgresql-gereksinimi	catli-itwise-admin	K-163	denetle	basarili	-	-	dogfood/catli-itwise-admin/postgresql-gereksinimi.dil	Parametreli okuma ve eylem içi yazma yüzeyi veritabanı yetkinliğiyle derlenir.
+postgresql-tls-havuz-gereksinimi	catli-itwise-admin	K-163/F031	denetle	basarili	-	-	dogfood/catli-itwise-admin/postgresql-tls-havuz-gereksinimi.dil	TLS ve sınırlı havuz profili altındaki gerçek okuma yolu derlenir.
+readiness-gereksinimi	catli-itwise-admin	K-163/F032	denetle	basarili	-	-	dogfood/catli-itwise-admin/readiness-gereksinimi.dil	Sabit 503 readiness ve 200 liveness rotaları ağ-sunucusu yetkinliğiyle derlenir.
+f007-zincirli-html-guvenlisi	catli-itwise-admin	K-163/F007	denetle	basarisiz	S015	-	dogfood/catli-itwise-admin/korpus/f007-zincirli-html-guvenlisi.dil	Zincirli sözlük değeri + html güvenlisi yazımı S015 ile reddedilir; ürün ara ad deseniyle çözdü.
+f007-ara-ad-html-guvenlisi	catli-itwise-admin	K-163/F007	calistir	basarili	-	&lt;b&gt;Çatlı&lt;/b&gt; &amp; Co	dogfood/catli-itwise-admin/korpus/f007-ara-ad-html-guvenlisi.dil	Ara ad deseni sözlük değerinin HTML kaçışını üretir; site ayarları görünümünün gerçek çözümü.
+f012-bos-csv-basligi-kaybi	catli-itwise-admin	K-163/F012	calistir	basarisiz	C015	-	dogfood/catli-itwise-admin/korpus/f012-bos-csv-basligi-kaybi.dil	Boş tablonun csv metni başlıksızdır; yeniden okuma C015 verir. Ürünün sayfa deposunda görülen kırık.
+f012-bos-tabloda-kanonik-baslik	catli-itwise-admin	K-163/F012	calistir	basarili	-	0	dogfood/catli-itwise-admin/korpus/f012-bos-tabloda-kanonik-baslik.dil	Boş tabloda kanonik başlığın açıkça yazılması okumayı 0 kayıtla korur; ürünün mevcut dilde çözümü.
+f030-eksik-kaynak-tasima-sonucu	catli-itwise-admin	K-163/F030	calistir	basarili	-	taşıma reddedildi	dogfood/catli-itwise-admin/korpus/f030-eksik-kaynak-tasima-sonucu.dil	Var olmayan kaynağı atomik taşıma beklenen arızadır; C013 Hata değeri olarak yakalanır, süreç düşmez.
+f032-aralik-disi-http-durumu	catli-itwise-admin	K-163/F032	denetle	basarisiz	S037	-	dogfood/catli-itwise-admin/korpus/f032-aralik-disi-http-durumu.dil	Aralık dışı sabit HTTP durumu S037 ile derlemede reddedilir; ürün yalnız 404/503 literal kullanır.

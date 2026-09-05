@@ -194,6 +194,11 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
     sonrası geçersiz UTF-8'i rota çalışmadan 400'e çeviren strict uygulamayı
     ekledi. `web` kipli kalıcı fixture exact `32247c7…` uygulama SHA'sına ve
     compiler semantic bugfix beyanına bağlıdır; B-065 kapandı.
+58. K-172/ADR-067 dogfood korpusunu kurdu: `dogfood/` altındaki her `.dil`
+    ürün slug'ı, K-işi/dilimi, kip, beklenti ve exact çıktı/tanıyla manifestte;
+    ilk taban 4 gereksinim aynası ve F007/F012/F030/F032 ret+çözüm çiftleri
+    ürün politikasıyla derlenip hermetik koşar. Eksik F030–F032 günlük
+    dilimleri yazıldı; GB-020/GB-021 gerçek adaptör birim testleriyle kapandı.
 57. K-170/ADR-066 güvenlik kanıtını tek kapıda birleştirdi: ardışık `GB-NNN`
     bulgu kaydı (15 kapalı, 4 kabul edilen sınır, 3 açık düşük/orta), açık
     kritik/yüksek sıfır kuralı, `tedarik` workflow'unda sürekli kip ve etiket
@@ -783,8 +788,10 @@ yerelde koşup tek kırık olan kritik işlev eğilimini bölmeyle kapattı. K-1
 uyumluluk sözünü RFC-0028/ADR-064/spec-27 ile yürütülebilir yaptı ve B-072'yi
 kapattı. K-171 spec maddelerini exact test işlevine bağlayıp 16 gerçek kanıt
 boşluğunu adlandırdı. K-170 güvenlik kanıtını tek kapıda birleştirip açık
-kritik/yüksek bulgu sıfırını makinece zorunlu kıldı; sıradaki makine işi
-K-172 dogfood corpus'u ile K-166 için drift/bulgu boşluklarının kapatılmasıdır.
+kritik/yüksek bulgu sıfırını makinece zorunlu kıldı. K-172 dogfood korpusunu
+kurup iki güvenlik test boşluğunu kapattı; sıradaki makine işi K-166 için
+K-171 drift listesindeki tanı/kapsam boşlukları ile K-168 tekrar üretilebilir
+derleme kanıtıdır.
 K-161/K-162 gerçek insan testleri de insan verisini beklemeyi sürdürür.
 İnsan verisi gelmeden yeni syntax seçilmez
 veya B-001/B-002 tamamlanmış gösterilmez.
@@ -820,9 +827,9 @@ tamamlanmış sayılmaz; burada istenen ek kanıt ayrıca üretilir.
 | K-167 | **KAPALI** | RFC-0028/ADR-064/spec-27: sekiz dondurulmuş yüzey envanteri, süreli `DEP-NNN` deprecation kaydı, `-dev` sürüm kimliği ve B-072 kaldırması `uyumluluk_testi` ile CI'da |
 | K-168 | **AÇIK** | İki temiz ortamda eş hash, SBOM, imza ve provenance |
 | K-169 | **AÇIK** | Linux/macOS/Windows kurulum-kaldırma ve release runbook tatbikatı |
-| K-170 | **KAPALI** | ADR-066 `guvenlik-kapisi.sh` + `GB-NNN` bulgu kaydı + SECURITY.md: 15 kapalı/4 kabul/3 açık düşük-orta, açık kritik/yüksek sıfır; sürüm adayı kipi exact HEAD RC fuzz + clippy + tam test ister |
+| K-170 | **KAPALI** | ADR-066 `guvenlik-kapisi.sh` + `GB-NNN` bulgu kaydı + SECURITY.md: 17 kapalı/4 kabul/1 açık orta, açık kritik/yüksek sıfır; sürüm adayı kipi exact HEAD RC fuzz + clippy + tam test ister |
 | K-171 | **KAPALI** | ADR-065 `spec_drift`: 169 normatif spec maddesi parmak-izi kimliği + exact test işlevi; 151 kanıtlı/16 kısmi/2 açık deterministik raporla CI'da; RFC/ADR belge düzeyinde kalır |
-| K-172 | **AÇIK** | Yalnız dogfood boşluklarından büyüyen başarı+başarısızlık corpus'u |
+| K-172 | **KAPALI** | ADR-067 `dogfood/korpus-v1.tsv`: 10 vaka (4 gereksinim aynası + F007/F012/F030/F032 ret/çözüm çiftleri) ürün politikasıyla CI'da; manifest dışı dogfood kaynağı reddedilir; GB-020/021 kapandı |
 | K-173 | **AÇIK** | Uzun compiler/LSP workspace soak ve kaynak sızıntısı kanıtı |
 | K-174 | **AÇIK** | 2–4 hafta yeni syntax kapalı V1 freeze |
 | K-175 | **AÇIK** | İnsan+iki proje+üç platform+signed reproducible V1 RC |

@@ -3019,6 +3019,132 @@ mod web_profili_testleri {
     }
 
     #[test]
+    fn binary_yukleme_x_zee_csrf_basligini_tasir_ve_cift_content_type_400_olur() {
+        let kok = std::env::temp_dir().join(format!("zee-yukleme-{}", std::process::id()));
+        std::fs::create_dir_all(&kok).unwrap();
+        let dinleyici = std::net::TcpListener::bind(("127.0.0.1", 0)).unwrap();
+        let adres = dinleyici.local_addr().unwrap();
+        let son_tarih = || std::time::Instant::now() + std::time::Duration::from_secs(5);
+
+        let mut istemci = std::net::TcpStream::connect(adres).unwrap();
+        istemci
+            .write_all(
+                b"POST /yukle HTTP/1.1\r\nHost: x\r\nContent-Type: application/octet-stream\r\n\
+                  X-Zee-CSRF: belirtec-42\r\nContent-Length: 5\r\n\r\nhello",
+            )
+            .unwrap();
+        let (mut sunucu, _) = dinleyici.accept().unwrap();
+        let (tampon, govde_basi) = istek_basliklarini_oku(&mut sunucu, son_tarih(), false).unwrap();
+        let baslik = HttpIstekBasligi::ayristir(&tampon[..govde_basi]).unwrap();
+        let govde = istek_govdesini_oku(
+            &mut sunucu,
+            &kok,
+            &baslik,
+            &tampon[govde_basi..],
+            son_tarih(),
+            false,
+        )
+        .expect("binary gövde rota alanlarına dönüşmeli");
+        let alanlar = govde
+            .split('&')
+            .filter_map(|parca| parca.split_once('='))
+            .collect::<std::collections::BTreeMap<_, _>>();
+        assert_eq!(alanlar["_csrf"], "belirtec-42");
+        assert_eq!(alanlar["yukleme_bayti"], "5");
+        assert_eq!(
+            alanlar["yukleme_sha256"],
+            "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824"
+        );
+        assert!(alanlar["yukleme_gecici_yolu"].starts_with(".zee/yuklemeler/"));
+        assert_eq!(
+            std::fs::read(kok.join(alanlar["yukleme_gecici_yolu"])).unwrap(),
+            b"hello"
+        );
+
+        let mut istemci = std::net::TcpStream::connect(adres).unwrap();
+        istemci
+            .write_all(
+                b"POST /yukle HTTP/1.1\r\nHost: x\r\nContent-Type: application/octet-stream\r\n\
+                  Content-Type: text/plain\r\nX-Zee-CSRF: b\r\nContent-Length: 1\r\n\r\nx",
+            )
+            .unwrap();
+        let (mut sunucu, _) = dinleyici.accept().unwrap();
+        let (tampon, govde_basi) = istek_basliklarini_oku(&mut sunucu, son_tarih(), false).unwrap();
+        let baslik = HttpIstekBasligi::ayristir(&tampon[..govde_basi]).unwrap();
+        assert!(istek_govdesini_oku(
+            &mut sunucu,
+            &kok,
+            &baslik,
+            &tampon[govde_basi..],
+            son_tarih(),
+            false,
+        )
+        .is_none());
+        drop(sunucu);
+        let mut yanit = String::new();
+        std::io::Read::read_to_string(&mut istemci, &mut yanit).unwrap();
+        assert!(yanit.starts_with("HTTP/1.1 400"), "{yanit}");
+        assert!(yanit.contains("birden çok Content-Type"));
+        let _ = std::fs::remove_dir_all(&kok);
+    }
+
+    #[test]
+    fn proxy_profili_host_cerezini_tam_niteliklerle_ve_domainsiz_yazar() {
+        let kok = std::env::temp_dir().join(format!("zee-cerez-{}", std::process::id()));
+        std::fs::create_dir_all(&kok).unwrap();
+        let mut io = GercekIo::yeni_argumanlarla(
+            &kok,
+            &kok,
+            WebModu::GuvenliProxy {
+                origin: AgHedefi::https_origininden("https://panel.example").unwrap(),
+                worker_kapi: None,
+            },
+            Vec::new(),
+            dil::yetkinlik::YetkinlikPolitikasi::gelistirici(),
+            None,
+        );
+        assert_eq!(io.oturum_cerez_adi(), "__Host-zee-oturum");
+        io.bekleyen_cerezler.push(BekleyenCerez {
+            ad: io.oturum_cerez_adi().to_string(),
+            deger: "belirtec".into(),
+            azami_omur_saniye: Some(1800),
+        });
+        io.bekleyen_silinen_cerezler
+            .push("__Host-zee-oturum".into());
+        let basliklar = io.cerez_basliklarini_al();
+        let satirlar = basliklar.lines().collect::<Vec<_>>();
+        assert_eq!(
+            satirlar[0],
+            "Set-Cookie: __Host-zee-oturum=belirtec; Path=/; HttpOnly; SameSite=Lax; Max-Age=1800; Secure"
+        );
+        assert_eq!(
+            satirlar[1],
+            "Set-Cookie: __Host-zee-oturum=; Path=/; Max-Age=0; HttpOnly; SameSite=Lax; Secure"
+        );
+        assert!(!basliklar.contains("Domain="));
+
+        let mut deneysel = GercekIo::yeni_argumanlarla(
+            &kok,
+            &kok,
+            WebModu::Deneysel,
+            Vec::new(),
+            dil::yetkinlik::YetkinlikPolitikasi::gelistirici(),
+            None,
+        );
+        assert_eq!(deneysel.oturum_cerez_adi(), "zee-oturum");
+        deneysel.bekleyen_cerezler.push(BekleyenCerez {
+            ad: "zee-oturum".into(),
+            deger: "b".into(),
+            azami_omur_saniye: None,
+        });
+        assert_eq!(
+            deneysel.cerez_basliklarini_al().trim_end(),
+            "Set-Cookie: zee-oturum=b; Path=/; HttpOnly; SameSite=Lax"
+        );
+        let _ = std::fs::remove_dir_all(&kok);
+    }
+
+    #[test]
     fn soket_okumasi_mutlak_son_tarihi_gecemez() {
         let dinleyici = std::net::TcpListener::bind(("127.0.0.1", 0)).unwrap();
         let adres = dinleyici.local_addr().unwrap();

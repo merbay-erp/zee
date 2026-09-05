@@ -175,6 +175,7 @@ korpus üzerinde regression testine girer.
 | Semantic regresyon | [docs/semantic-regresyon-korpusu.md](docs/semantic-regresyon-korpusu.md) | ✅ 17 geçmiş bug → minimal `.dil` + faz/tanı/span/exit/çıktı |
 | Uyumluluk politikası | [docs/uyumluluk-politikasi.md](docs/uyumluluk-politikasi.md) | ✅ sekiz dondurulmuş yüzey envanteri, süreli `DEP-NNN` deprecation kaydı ve `-dev` sürüm kimliği CI'da |
 | Spec drift raporu | [docs/spec-drift-raporu.md](docs/spec-drift-raporu.md) | ✅ her normatif spec maddesi exact test işlevine bağlı; kısmi/açık maddeler gerekçesiyle görünür |
+| Dogfood korpusu | [docs/dogfood-korpusu.md](docs/dogfood-korpusu.md) | ✅ gerçek ürün sürtünmesinden doğan başarı+başarısızlık vakaları ürün politikasıyla CI'da |
 | Güvenlik kapısı | [SECURITY.md](SECURITY.md) | ✅ `GB-NNN` bulgu kaydı, açık kritik/yüksek sıfır kuralı ve sürüm adayı kapısı `tedarik` workflow'unda |
 
 <!-- ZEE-DEPO-SAYILARI:BEGIN -->
@@ -184,10 +185,10 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **661** |
+| Rust + doctest vakası | **666** |
 | Tanı kimliği | **155 etkin + 3 ayrılmış** |
 | RFC | **28** (2 kabul, 24 geçici kabul, 2 taslak) |
-| ADR | **64** (64 kabul) |
+| ADR | **65** (65 kabul) |
 | Normatif spec bölümü | **27** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 

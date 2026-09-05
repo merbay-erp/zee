@@ -2911,6 +2911,52 @@ usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.
   kodlu tekrar dosya SHA-256'sını değiştirmedi. Deney satırı, trigger'ı, dosyası
   ve bağlantısı sıfırlandı; F029 kapandı.
 
+### K-163 onuncu dilim — F030 binary yaşam döngüsü — 3 Eylül 2026
+
+- Çatlı gerçek binary gövde, akışlı özet, temp→final yayın, tombstone ve
+  orphan tarama istedi. RFC-0027/ADR-061/spec-26 ile native adaptör exact
+  `application/octet-stream` için 16 MiB'lık ayrı zarf açtı; gövde 16 KiB
+  parçalarla `0600` temp dosyaya ve SHA-256'ya tek geçişte akar, rota yalnız
+  göreli yol/hash/boyut görür.
+- Dört dar, capability kontrollü dosya intrinsic'i eklendi: no-clobber atomik
+  taşıma, idempotent silme, tek dizin listeleme ve akışlı SHA-256; beklenen
+  arıza C013 kodlu `Hata` değeridir ve worker'ı düşürmez. Aynı eylemde
+  PostgreSQL ve dosya yazımı yasağı korundu.
+- Ürün 970 Zee LOC/4 modül/10 testte normal upload→ready→delete akışını ve
+  temp, DB-hazırlama, rename, tombstone kesmelerinden restart yakınsamasını
+  gerçek PG16.11 üzerinde kanıtladı; exact saha kaydı `38dff9f` ürün
+  commit'indedir. Multipart, antivirüs ve nesne deposu açık sınır kaldı; F030
+  kapandı.
+
+### K-163 on birinci dilim — F031 production TLS ve sınırlı havuz — 3 Eylül 2026
+
+- ADR-062/spec-25: proje manifesti secretsiz kanonik DNS/IP hedefi taşır, URL
+  exact eşleşir, `hostaddr` ve örtük `prefer` reddedilir. `sslmode=require`
+  yalnız bağlantı değişkenine bağlı PEM CA'yı güvenilir sayar, sistem köklerini
+  kapatır, hostname ve en az TLS 1.2 doğrular.
+- Worker başına 4 bağlantı, 2 sn checkout, 30 sn idle, 300 sn lifetime hedefi
+  ve en çok 30 sn bakım çevrimi; her checkout sağlık kontrolünden geçer. Write
+  ve COMMIT otomatik retry kazanmadı.
+- Gerçek PG16.11 deneyi doğru CA/hostname, iki olumsuz sertifika vakası,
+  exhaustion, stale replacement, idle/lifetime ve shutdown sınırlarını geçti;
+  exact saha kaydı `977cd2a` ürün commit'indedir. Ana+fuzz lock'ları aynı
+  zincire güncellendi; iki vendor üretimi eş özet verdi. Managed-provider
+  rotasyonu ve çok-worker toplam bütçe tatbikatı K-169/K-173'e açık kaldı.
+
+### K-163 kapanış — F032 sabit HTTP durumu ve 1000+ bakım skoru — 3 Eylül 2026
+
+- F014'ün bulunamayan/taslak içerik için 200 workaround'u ile readiness
+  ihtiyacı ADR-063'ü açtı: rota `<ifade> yanıtını <100..599 literal>
+  durumuyla gönder` diyebilir; değişken/aralık dışı durum S037'dir, eski yanıt
+  200 kalır. Dinamik status/header builder açılmadı.
+- Çatlı gerçek TLS PostgreSQL kapatıldığında aynı worker'da readiness 503,
+  liveness 200 verdi; backend dönüşünde readiness 200'e döndü. Eski 200
+  workaround'u 404 ile emekli edildi.
+- Ürün organik 1037 Zee LOC/5 modül/12 teste ulaştı; gerçek workspace LSP
+  full-change p95 41,416 ms, 10 dogfood commit'inde dosya medyanı 5,5. Exact
+  final ürün kanıtı `bb8e1ac`tır. K-163/V1-P0-36 kapandı; managed-provider/
+  çok-worker tatbikatı K-169/K-173'e, içerik güvenliği K-170'e aktarıldı.
+
 ## K-177 — CI kapıları yerelde tam koşulmadan “yeşil” denmez (5 Eyl)
 
 - **Bulgu:** 1 Eylül'den sonraki 126 commit uzak depoya itilmemişti; CI
@@ -3020,3 +3066,28 @@ usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.
   hedefli). Açık kritik/yüksek sıfır.
 - **Sınır:** Kapı bakım/işletim aracıdır; dil semantiği, tanı ve normatif
   metin değişmedi. K-170/V1-P1-23 kapandı.
+
+## K-172 — Ürün sürtünmesi ürün deposunda kalırsa kanıt değildir (5 Eyl)
+
+- **Bulgu:** K-163'ün F007…F032 sürtünmeleri ve `*-gereksinimi.dil`
+  aynaları hiçbir testte derlenmiyordu; yalnız freeze koruğu dosya varlığına
+  bakıyordu. Golden tasarım örneği, `regression/` düzeltilmiş bug taşır;
+  gerçek ürünün reddedilen biçimi ve mevcut dildeki çözümü için yer yoktu.
+  Günlükte F030–F032 dilim kayıtları da eksikti.
+- **Karar:** ADR-067. `dogfood/korpus-v1.tsv` her vakayı ürün slug'ı,
+  `K-NNN[/FNNN]` kaynak işi, `denetle|calistir` kipi, `basarili|basarisiz`
+  beklentisi, tanı/çıktı ve sürtünme notuyla kaydeder. `dogfood/` altındaki
+  her `.dil` (ürün `proje.dil` hariç) manifestte tam bir kez bulunur, etkin ürün
+  kökü altındadır, ürünün `proje.dil` politikasıyla derlenir, hermetik IO ile
+  koşar, kanonik biçimde ve `# ` sürtünme yorumuyla başlar.
+- **İlk taban:** 10 vaka — dört gereksinim aynası derlenir; F007 zincirli
+  `sözlük değeri + html güvenlisi` S015 ve ara ad çözümü; F012 boş tablonun
+  csv metni → C015 ve kanonik başlık çözümü (0 kayıt); F030 eksik kaynak
+  atomik taşıma başarısız `Sonuç`; F032 aralık dışı durum S037.
+- **Yan kapanışlar:** Eksik F030/F031/F032 günlük dilimleri yazıldı. K-171
+  drift listesinden iki güvenlik test boşluğu gerçek adaptör birim testiyle
+  kapandı: X-Zee-CSRF başlığı+çoklu Content-Type reddi (GB-020) ve `__Host-`
+  çerezinin Path/HttpOnly/SameSite/Max-Age/Secure nitelikleri ile Domain
+  yokluğu (GB-021); spec/12 ve spec/26 maddeleri `kanitli`ye çekildi.
+- **Sınır:** Korpus yalnız gerçek ürün sürtünmesinden büyür; dil semantiği,
+  tanı ve normatif metin değişmedi. K-172/V1-P1-24 kapandı.

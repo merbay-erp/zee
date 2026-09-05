@@ -134,6 +134,11 @@ kritik/yüksek bulgu aynı dalgada kapanmadan CI ve sürüm etiketi geçmez.
 `bash scripts/guvenlik-kapisi.sh --surekli` tedarik kapısıdır; etiket öncesi
 `--surum-adayi` exact HEAD RC fuzz kanıtı, clippy ve tam test ister.
 
+`dogfood/` altına eklenen her `.dil` kaynağı aynı committe `dogfood/korpus-v1.tsv`
+içinde ürün, kaynak işi/dilimi, kip, beklenti ve exact çıktı/tanıyla kayıtlıdır
+(K-172/ADR-067); korpus yalnız gerçek ürün sürtünmesinden büyür, tasarım örneği
+golden'a, düzeltilmiş bug `regression/`e gider.
+
 ## V1 öncesi iş sırası
 
 K-160/K-160A/ADR-059 sonrasında core freeze makinece etkindir: **Yeni compiler özelliği

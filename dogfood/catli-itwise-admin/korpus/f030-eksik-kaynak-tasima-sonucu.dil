@@ -1,0 +1,8 @@
+# K-163/F030 dogfood sözleşmesi: var olmayan kaynağı atomik taşıma beklenen
+# arızadır; C013 kodlu Hata değeri döner, süreç düşmez.
+
+sonuç ".zee/yuklemeler/yok.parca" dosyasını "medya/yok.bin" yoluna atomik taşımayı dene olsun
+sonuç başarısızsa
+    "taşıma reddedildi" yaz
+sonuç başarılıysa
+    "taşındı" yaz

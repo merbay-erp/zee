@@ -1,0 +1,7 @@
+# K-163/F007 çözümü: sözlük değeri önce bir ada bağlanır, sonra html güvenlisi
+# alınır. Ürünün site ayarları görünümü bu deseni kullanır.
+
+ayarlar boş sözlük olsun
+ayarların "marka" değeri "<b>Çatlı</b> & Co" olsun
+marka ayarların "marka" değeri olsun
+markanın html güvenlisi yaz

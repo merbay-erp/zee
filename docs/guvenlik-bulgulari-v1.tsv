@@ -19,6 +19,6 @@ GB-016	2026-09-05	inceleme	orta	dosya	Proje dosya sınırı eşzamanlı düşman
 GB-017	2026-09-05	inceleme	orta	web	TLS sonlandırma ve secret dağıtımı deployment katmanına bırakılır; runtime yalnız loopback dinler ve proxy'ye güvenir.	kabul	-	spec/12-web-guvenlik-profili.md
 GB-018	2026-09-05	inceleme	dusuk	web	Kalıcı web durumu tek makine ya da güvenilir kilitli ortak dosya sistemiyle sınırlıdır; çok-hostlu backend yoktur.	kabul	-	spec/12-web-guvenlik-profili.md
 GB-019	2026-09-05	dogfood	orta	web	Yüklenen binary için multipart, içerik türü doğrulaması ve antivirüs yoktur; runtime yüklenen baytı sunmaz, doğrulama ürün sorumluluğudur.	kabul	-	adr/066-birlesik-guvenlik-surum-kapisi.md
-GB-020	2026-09-05	drift	dusuk	web	X-Zee-CSRF başlığı ve çoklu Content-Type reddi gerçek TCP adaptöründe hermetik testle doğrulanmıyor.	acik	K-172	docs/spec-drift-raporu.md
-GB-021	2026-09-05	drift	dusuk	web	__Host- oturum çerezinin Path/Secure/HttpOnly/SameSite nitelikleri tek tek test edilmiyor.	acik	K-172	docs/spec-drift-raporu.md
+GB-020	2026-09-05	drift	dusuk	web	X-Zee-CSRF başlığı ve çoklu Content-Type reddi gerçek TCP adaptöründe hermetik testle doğrulanmıyordu; gerçek TCP birim testi eklendi.	kapali	K-172	adr/067-dogfood-korpusu.md
+GB-021	2026-09-05	drift	dusuk	web	__Host- oturum çerezinin Path/Secure/HttpOnly/SameSite nitelikleri tek tek test edilmiyordu; proxy profili birim testi eklendi.	kapali	K-172	adr/067-dogfood-korpusu.md
 GB-022	2026-09-05	saha	orta	veritabani	Gerçek TLS hostname/CA reddi ve NULL sütun reddi yalnız ortam değişkenli saha testinde koşar; hermetik CI'da yok.	acik	K-173	docs/spec-drift-raporu.md

@@ -12,9 +12,16 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **Dogfood korpusu** (K-172, ADR-067): `dogfood/` altındaki her `.dil`
+  kaynağı ürün, K-işi/dilimi, kip ve exact çıktı/tanıyla manifestte; ilk 10
+  vaka Çatlı'nın F007/F012/F030/F032 sürtünmelerinin reddedilen biçimini ve
+  mevcut dildeki çözümünü ürün politikasıyla CI'da koşar. X-Zee-CSRF/çoklu
+  Content-Type ve `__Host-` çerez nitelikleri gerçek adaptör testleriyle
+  kanıtlandı (GB-020/GB-021 kapandı). Dil davranışı değişmedi.
+
 - **Birleşik güvenlik sürüm kapısı** (K-170, ADR-066, SECURITY.md): K-105'ten
   K-176'ya 15 kapalı güvenlik bulgusu, 4 kabul edilen sınır ve 3 açık düşük/orta
-  test boşluğu ardışık `GB-NNN` kaydında; açık kritik/yüksek bulgu CI'ı ve
+  test boşluğu (ikisi K-172 ile kapandı) ardışık `GB-NNN` kaydında; açık kritik/yüksek bulgu CI'ı ve
   etiketi durdurur. `scripts/guvenlik-kapisi.sh --surekli` tedarik
   workflow'unda; `--surum-adayi` exact HEAD RC fuzz kanıtı, clippy ve tam test
   ister. İçerik güvenliği (multipart/antivirüs yok) GB-019 kabul kaydıdır.
