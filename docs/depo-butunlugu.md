@@ -215,3 +215,16 @@ kabul edilmiş sınır fail-closed'dur.
 bash scripts/guvenlik-kapisi.sh --surekli
 bash scripts/guvenlik-kapisi.sh --surum-adayi
 ```
+
+## Dogfood korpusu
+
+K-172/ADR-067'nin [rehberi](dogfood-korpusu.md) ve
+[`dogfood/korpus-v1.tsv`](../dogfood/korpus-v1.tsv); gerçek ürün
+sürtünmesinden doğan başarı+başarısızlık vakalarını ürün yetkinlik
+politikasıyla derler ve hermetik IO ile çalıştırır. Manifest dışı dogfood
+kaynağı, kanonik olmayan biçim ve günlükte olmayan dilim fail-closed'dur.
+
+```bash
+cd compiler
+cargo test --locked --test dogfood_korpusu_testi
+```

@@ -1,0 +1,8 @@
+# K-163/F012 dogfood sürtünmesi: son kayıt silinince boş tablonun csv metni
+# başlığı kaybeder; sonraki okuma C015 verir.
+
+"sayfalar.csv" dosyasına "slug,başlık" yaz
+tablo "sayfalar.csv" dosyasından okunan tablo olsun
+"yedek.csv" dosyasına tablonun csv metni yaz
+yedek "yedek.csv" dosyasından okunan tablo olsun
+yedeğin adedi yaz

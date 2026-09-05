@@ -51,9 +51,10 @@ gate ve sıfır açık kritik/yüksek kuralı istedi.
 ## Sonuçlar
 
 - İlk taban 22 kayıt: 15 kapalı (K-105…K-176), 4 kabul edilen sınır, 3 açık
-  düşük/orta test-kapsam boşluğu (X-Zee-CSRF ve çoklu Content-Type gerçek
-  adaptör testi, `__Host-` çerez nitelikleri, gerçek TLS/NULL sütun reddi);
-  hepsi K-172/K-173 hedeflidir. Açık kritik/yüksek sıfırdır.
+  düşük/orta test-kapsam boşluğu. K-172 aynı gün X-Zee-CSRF/çoklu Content-Type
+  ve `__Host-` çerez niteliği boşluklarını gerçek adaptör birim testiyle kapattı;
+  kalan tek açık kayıt GB-022 (gerçek TLS/NULL sütun reddi, K-173 hedefli)
+  ortadır. Açık kritik/yüksek sıfırdır.
 - Yeni güvenlik düzeltmesi aynı committe kayıt satırını `kapali` yapar; yeni
   bulgu önce `acik` girilir. Kritik/yüksek açık bulgu CI'ı ve sürümü durdurur.
 - Kapı bakım/işletim aracıdır; dil semantiği ve tanılar değişmez.

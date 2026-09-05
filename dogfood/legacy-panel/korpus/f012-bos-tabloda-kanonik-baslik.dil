@@ -1,0 +1,11 @@
+# K-163/F012 çözümü: boş tabloda kanonik başlık açıkça yazılır; okuma 0 kayıt
+# verir. Ürünün sayfa deposu bu deseni kullanır.
+
+"sayfalar.csv" dosyasına "slug,başlık" yaz
+tablo "sayfalar.csv" dosyasından okunan tablo olsun
+tablo boşsa
+    "yedek.csv" dosyasına "slug,başlık" yaz
+tablo doluysa
+    "yedek.csv" dosyasına tablonun csv metni yaz
+yedek "yedek.csv" dosyasından okunan tablo olsun
+yedeğin adedi yaz

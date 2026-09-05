@@ -1,0 +1,6 @@
+# K-163/F007 dogfood sürtünmesi: zincirli `sözlük değeri + html güvenlisi`
+# yazımı mevcut dilde S015 verir; ürün değeri ara ada bağlayarak çözdü.
+
+POST "/kaydet" adresine istek geldiğinde
+    herkese açık
+    isteğin "ad" değerinin html güvenlisi yaz

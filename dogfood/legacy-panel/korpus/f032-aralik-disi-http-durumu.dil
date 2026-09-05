@@ -1,0 +1,5 @@
+# K-163/F014-F032 dogfood sınırı: sabit HTTP durumu 100..599 literal olmalı;
+# aralık dışı değer S037 ile derlemede reddedilir.
+
+GET "/hazir" adresine istek geldiğinde
+    "hazır değil" yanıtını 600 durumuyla gönder
