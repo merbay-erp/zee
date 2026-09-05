@@ -194,6 +194,12 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
     sonrası geçersiz UTF-8'i rota çalışmadan 400'e çeviren strict uygulamayı
     ekledi. `web` kipli kalıcı fixture exact `32247c7…` uygulama SHA'sına ve
     compiler semantic bugfix beyanına bağlıdır; B-065 kapandı.
+55. K-167/RFC-0028/ADR-064 kalıp kelimesi, koşul yüklemi, CLI komutu, biçim,
+    profil, ABI, API ve tanı yüzeyini giriş sürümlü tek envantere, kaldırmayı
+    ardışık `DEP-NNN` kaydı + bir alt sürüm serisi süre + göç yoluna bağladı.
+    Cargo sürümü `0.8.0-dev` serisine çekildi; `dil::tedarik` DEP-004 ile
+    kaldırılıp B-072 kapandı. K-177 önce CI görmemiş 126 commit için bütün
+    kapıları yerelde koşup kritik işlev eğilim kırığını bölmeyle kapattı.
 54. K-156/ADR-055 dört gecelik hedefin koşu sonu coverage korpusunu cache'ten
     bağımsız, SHA-256 seed manifestli ve kaynak commit+run provenance'lı 90
     günlük artefakta taşır. Doğrulayıcı Linux/macOS hash yollarını ve
@@ -720,9 +726,10 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
   K-işi, reproducer, etkilenen proje, minimalite ve ADR/spec/RFC'nin tamamıyla
   geçer. Geçici Git testi maintenance kaçışını ve beyan yeniden yazımını
   reddeder; CI koruğu çalıştırır.
-- **B-072 · AÇIK (K-167) — eski `tedarik` cephesinin ömrü.** Facade'ın depo
-  içi production tüketicisi sıfırdır. V1 compatibility policy sırasında silme
-  ya da süreli deprecation kararı verilecek; dogfood öncesi compiler işi açmaz.
+- **B-072 · KAPALI (K-167) — eski `tedarik` cephesinin ömrü.** Depo içi ve
+  bilinen dış tüketicisi sıfır, ADR-058 ile zaten internal sınıfındaydı;
+  DEP-004 kaydıyla kaldırıldı, kurulum katmanı `artefakt_dogrulama` sahibine
+  taşındı ve production sahip sayısı 37 oldu. ADR-064 bağlayıcıdır.
 - **B-073 · KAPALI — freeze kanıt referans bütünlüğü.** Append-only dogfood
   ürün kaydı tekil slug, repo içi kanıt kökü, exact harici ürün commit'i ve
   active/retired durumu taşır. Freeze kapısı K-işinin backlog/günlükte varlığını,
@@ -762,7 +769,11 @@ readiness 200'e döndü. 1000+ skor kartında LSP full-change p95 41,416 ms,
 dogfood commit'i başına dokunulan dosya medyanı 5,5'tir. Exact final ürün
 kanıtı `bb8e1ac` commit'indedir; K-163 kapalıdır. Managed-provider ve
 çok-worker toplam bütçe K-169/K-173; multipart/içerik güvenliği K-170
-hattında açık kalır.
+hattında açık kalır. K-177 uzak CI görmemiş 126 commit için bütün kapıları
+yerelde koşup tek kırık olan kritik işlev eğilimini bölmeyle kapattı. K-167
+uyumluluk sözünü RFC-0028/ADR-064/spec-27 ile yürütülebilir yaptı ve B-072'yi
+kapattı; sıradaki makine işi K-171 madde düzeyi drift raporu ile K-170
+birleşik güvenlik kapısıdır.
 K-161/K-162 gerçek insan testleri de insan verisini beklemeyi sürdürür.
 İnsan verisi gelmeden yeni syntax seçilmez
 veya B-001/B-002 tamamlanmış gösterilmez.
@@ -795,7 +806,7 @@ tamamlanmış sayılmaz; burada istenen ek kanıt ayrıca üretilir.
 | K-164 | **AÇIK** | Farklı workload'da ikinci gerçek proje |
 | K-165 | **AÇIK** | Aynı uygulamanın Zee–Go/Rust veri temelli dogfood karşılaştırması |
 | K-166 | **AÇIK** | En sık 50 hata için span/öneri/noise düzeltme başarısı |
-| K-167 | **AÇIK** | Grammar freeze, breaking/deprecation, tanı ve paket uyumluluğu |
+| K-167 | **KAPALI** | RFC-0028/ADR-064/spec-27: sekiz dondurulmuş yüzey envanteri, süreli `DEP-NNN` deprecation kaydı, `-dev` sürüm kimliği ve B-072 kaldırması `uyumluluk_testi` ile CI'da |
 | K-168 | **AÇIK** | İki temiz ortamda eş hash, SBOM, imza ve provenance |
 | K-169 | **AÇIK** | Linux/macOS/Windows kurulum-kaldırma ve release runbook tatbikatı |
 | K-170 | **AÇIK** | Birleşik security release gate; kritik/yüksek açık sıfır |

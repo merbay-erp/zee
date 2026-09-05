@@ -12,6 +12,16 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **Uyumluluk ve deprecation politikası** (K-167, RFC-0028/ADR-064/spec-27):
+  Kalıp kelimeleri, koşul yüklemleri, CLI komutları, `proje.kilit`/ZEP/yayın
+  zarfı biçimleri, morfoloji/IO/eşzamanlılık profilleri, WASM ABI, Rust
+  `api::v1` ve tanı şeması tek envanterde giriş sürümüyle donduruldu.
+  Kaldırma yalnız ardışık `DEP-NNN` kaydı, bir alt sürüm serisi süre ve göç
+  yoluyla olur; kaldırılan kelime mezar taşı kalır. Çalışma ağacı artık
+  `0.8.0-dev` kimliği taşır (`dil sürüm`, LSP ve SBOM). **Kaldırılan:**
+  internal `dil::tedarik` cephesi (DEP-004; göç `dil::artefakt_dogrulama`,
+  desteklenen yol `dil::api::v1`). Zee kaynak programları etkilenmez.
+
 - **Kritik işlev bölünmesi ve yerel kapı turu** (K-177, ADR-041): Uzak CI
   görmemiş 126 commit için bütün kapılar yerelde koşuldu; yalnız işlev eğilim
   kapısı kırıktı. Web host'un `istek_al` işlevi başlık okuma, gövde zarfı,

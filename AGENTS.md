@@ -112,6 +112,14 @@ Rust gömme kullanıcılarına destek sözü yalnız `dil::api::v1` facade'ıdı
 Yeni export `public_api_testi` exact allowlist'i ve SemVer politikasıyla aynı
 değişiklikte bilinçli açılır; internal kök modül işaretlenmeden public bırakılamaz.
 
+Kalıp kelimesi, koşul yüklemi, CLI komutu, biçim/profil/ABI/API kaydı ve tanı
+kodu K-167/ADR-064 uyumluluk yüzeyidir. Ekleme aynı committe
+`compiler/tests/fixtures/dil-yuzeyi-v1.tsv` içinde `aktif` satırı ve giriş
+sürümü taşır; kaldırma/yeniden adlandırma önce `docs/deprecation-kayitlari-v1.tsv`
+içinde süreli `DEP-NNN` kaydı, kaldırma commit'inde fixture mezar taşı ve
+tanı+öneriyi kanıtlayan regression vakası ister. Etiket sonrası Cargo sürümü
+bir sonraki `-dev` serisine çekilir; `uyumluluk_testi` toplu commit kapısıdır.
+
 ## V1 öncesi iş sırası
 
 K-160/K-160A/ADR-059 sonrasında core freeze makinece etkindir: **Yeni compiler özelliği

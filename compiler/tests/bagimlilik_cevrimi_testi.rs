@@ -271,10 +271,9 @@ fn k160_saf_model_dogrulama_tasima_ve_cozum_sahipligini_korur() {
         graph["paket_modeli"].is_empty(),
         "paket modeli davranışa bağlanamaz"
     );
-    assert_eq!(
-        graph["tedarik"],
-        BTreeSet::from(["artefakt_dogrulama".to_string()]),
-        "eski tedarik yolu yalnız verification cephesi olabilir"
+    assert!(
+        !graph.contains_key("tedarik"),
+        "K-167/B-072: eski tedarik cephesi kaldırıldı; yeniden doğamaz"
     );
     for yasak in ["paket", "registry", "yayin", "tedarik"] {
         assert!(
@@ -287,5 +286,4 @@ fn k160_saf_model_dogrulama_tasima_ve_cozum_sahipligini_korur() {
     assert!(!graph["registry"].contains("paket"));
     assert!(graph["paket"].contains("registry"));
     assert!(graph["paket"].contains("paket_modeli"));
-    assert!(!graph["paket"].contains("tedarik"));
 }

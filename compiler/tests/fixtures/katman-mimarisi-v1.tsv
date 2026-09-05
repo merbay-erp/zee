@@ -35,7 +35,6 @@ semantic_model	model	kimlik	Checker ve HIR ortak semantic tur modeli
 sozcukleyici	sozdizimi	kaynak_sinirlari,tani	Kaynak metni tokenlastirma
 tani	temel	tani_politikasi	Kararli kullanici tanilari
 tani_politikasi	temel	-	Tanilar ile kaynak profili arasindaki bagimliliksiz butce
-tedarik	adapter	artefakt_dogrulama	Eski ic tedarik yolunun gecici uyumluluk cephesi
 wasm_api	adapter	faz,kaynak_sinirlari,proje,yorumlayici	Playground C ABI adaptoru
 web_guvenligi	web	agac,guvenlik,kalici_dosya,kaynak_sinirlari	Oturum CSRF ve oran siniri
 web_yukleme	adapter	guvenlik	Binary HTTP govdesini gecici dosyaya akitma ve SHA-256 metadata uretme

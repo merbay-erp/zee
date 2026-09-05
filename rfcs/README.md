@@ -33,9 +33,10 @@ Dil değişikliği RFC ister (master plan bölüm 25). Şablon: [0000-sablon.md]
 | RFC-0025 | [Merkezî Kaynak Bütçesi](0025-merkezi-kaynak-butcesi.md) | **geçici kabul** (K-129/K-130/K-131/K-132/K-143; B-025/B-056 kapalı) | K-105, K-107, K-129/K-130/K-131/K-132/K-143, B-025/B-056, V1-P0-31/V1-P1-11 |
 | RFC-0026 | [PostgreSQL Veri Erişimi](0026-postgresql-veri-erisimi.md) | **geçici kabul** (K-163/F031 TLS ve sınırlı havuz profili) | K-163, B-073, ADR-060/062 |
 | RFC-0027 | [Binary Yükleme ve Dosya Yaşam Döngüsü](0027-binary-yukleme-ve-dosya-yasam-dongusu.md) | **geçici kabul** (K-163/F030 dogfood) | K-163, ADR-061 |
+| RFC-0028 | [Uyumluluk ve Deprecation Politikası](0028-uyumluluk-ve-deprecation-politikasi.md) | **geçici kabul** (K-167 yürütülebilir kapı; edition sözdizimi açık) | K-167, B-072, ADR-064 |
 
-**Durum özeti (3 Eylül 2026, K-163/F032):** 27 RFC — 2 kabul (0001, 0010),
-23 geçici kabul (RFC-0020'nin yayın, metadata doğrulama, taşıma/cache/offline ve
+**Durum özeti (5 Eylül 2026, K-167):** 28 RFC — 2 kabul (0001, 0010),
+24 geçici kabul (RFC-0020'nin yayın, metadata doğrulama, taşıma/cache/offline ve
 exact proje/kilit/CLI katmanları çalışır), 2 taslak: 0012 (FFI — Faz
 4/5) ve 0014 (standart kitaplık — çalışan prototiple).
 Kural: bir RFC ancak yüzeyi gerçeklenmiş VE regression testine bağlanmışsa

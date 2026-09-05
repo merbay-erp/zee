@@ -33,7 +33,7 @@
 | Project system | `compiler/tests/proje_testi.rs`<br>`projeler` | — | — | `paket`<br>`registry`<br>`cli`<br>`uctan_uca` |
 | Semantic regression | `regression/v2.tsv`<br>`regression`<br>`scripts/semantic-regresyon-korugu.sh`<br>`scripts/core-freeze-korugu.sh`<br>`docs/compiler-degisiklik-beyanlari-v1.tsv`<br>`docs/core-freeze-beyanlari-v1.tsv` | — | — | `uctan_uca` |
 | End-to-end | `golden` | — | — | — |
-| Engineering gates | `compiler/tests/fixtures/islev-egilimi-v1.tsv`<br>`compiler/tests/fixtures/izinli-katman-cevrimleri-v1.tsv`<br>`compiler/tests/fixtures/katman-mimarisi-v1.tsv`<br>`compiler/tests/fixtures/tani-kimlikleri-v1.tsv`<br>`docs/kanit-haritasi-v1.tsv`<br>`docs/performans-gecmisi-v2.tsv`<br>`docs/olcumler.md` | — | — | — |
+| Engineering gates | `compiler/tests/fixtures/islev-egilimi-v1.tsv`<br>`compiler/tests/fixtures/izinli-katman-cevrimleri-v1.tsv`<br>`compiler/tests/fixtures/katman-mimarisi-v1.tsv`<br>`compiler/tests/fixtures/tani-kimlikleri-v1.tsv`<br>`compiler/tests/fixtures/dil-yuzeyi-v1.tsv`<br>`docs/deprecation-kayitlari-v1.tsv`<br>`docs/kanit-haritasi-v1.tsv`<br>`docs/performans-gecmisi-v2.tsv`<br>`docs/olcumler.md` | — | — | — |
 
 ## Birincil sahiplik
 
@@ -63,7 +63,7 @@ ek kapsam, test grubunun gerçekten yokladığı diğer fazları bildirir.
 | Project system | `test:proje_testi`<br>`test:projeler_testi` | `test:proje_testi → paket, registry, cli`<br>`test:projeler_testi → lexer, parser, cozumleyici, tur, hir, runtime, cli` | Bildirim, kilit, bagimlilik, yetkinlik ve tam proje ornekleri. |
 | Semantic regression | `test:core_freeze_korugu_testi`<br>`test:semantic_regresyon_korpusu_testi`<br>`test:semantic_regresyon_korugu_testi` | `test:semantic_regresyon_korpusu_testi → parser, cozumleyici, tur, hir, morfoloji, runtime, eszamanlilik, web_guvenlik` | Duzeltilmis bug provenance'i semantic beyan ve gercek dogfood kaniti isteyen executable core-freeze kapisi. |
 | End-to-end | `test:golden_testi` | `test:golden_testi → lexer, parser, ast, cozumleyici, tur, hir, runtime, cli` | 33 golden program ile kullanici yuzeyinden tam derleme ve yurutme hatti. |
-| Engineering gates | `test:bagimlilik_cevrimi_testi`<br>`test:dokuman_tazelik_testi`<br>`test:katalog_testi`<br>`test:katman_mimarisi_testi`<br>`test:mimari_sinir_testi`<br>`test:panic_guvenligi_testi`<br>`test:public_api_testi`<br>`test:tani_kimligi_testi`<br>`bin:islev_egilimi:testler::`<br>`bin:faz_test_matrisi:testler::`<br>`bin:olcum:testler::` | `test:public_api_testi → lexer, parser, cozumleyici, tur, hir, runtime` | Belge tani mimari panic bicim katman cevrim public API ve exact provenance/esik performans gozetim kapilarinin kendi regresyonlari. |
+| Engineering gates | `test:bagimlilik_cevrimi_testi`<br>`test:dokuman_tazelik_testi`<br>`test:katalog_testi`<br>`test:katman_mimarisi_testi`<br>`test:mimari_sinir_testi`<br>`test:panic_guvenligi_testi`<br>`test:public_api_testi`<br>`test:tani_kimligi_testi`<br>`test:uyumluluk_testi`<br>`bin:islev_egilimi:testler::`<br>`bin:faz_test_matrisi:testler::`<br>`bin:olcum:testler::` | `test:public_api_testi → lexer, parser, cozumleyici, tur, hir, runtime` | Belge tani mimari panic bicim katman cevrim public API uyumluluk/deprecation ve exact provenance/esik performans gozetim kapilarinin kendi regresyonlari. |
 
 ## Gerçek blast radius
 
@@ -93,7 +93,7 @@ seçiciler doğrudan kanıt taşır. Aşağı akış sütunu mimari yayılımı 
 | Project system | `test:proje_testi`<br>`test:projeler_testi` | — | `paket`<br>`registry`<br>`cli`<br>`uctan_uca` |
 | Semantic regression | `test:core_freeze_korugu_testi`<br>`test:semantic_regresyon_korpusu_testi`<br>`test:semantic_regresyon_korugu_testi` | — | `uctan_uca` |
 | End-to-end | `test:golden_testi` | — | — |
-| Engineering gates | `test:bagimlilik_cevrimi_testi`<br>`test:dokuman_tazelik_testi`<br>`test:katalog_testi`<br>`test:katman_mimarisi_testi`<br>`test:mimari_sinir_testi`<br>`test:panic_guvenligi_testi`<br>`test:public_api_testi`<br>`test:tani_kimligi_testi`<br>`bin:islev_egilimi:testler::`<br>`bin:faz_test_matrisi:testler::`<br>`bin:olcum:testler::` | — | — |
+| Engineering gates | `test:bagimlilik_cevrimi_testi`<br>`test:dokuman_tazelik_testi`<br>`test:katalog_testi`<br>`test:katman_mimarisi_testi`<br>`test:mimari_sinir_testi`<br>`test:panic_guvenligi_testi`<br>`test:public_api_testi`<br>`test:tani_kimligi_testi`<br>`test:uyumluluk_testi`<br>`bin:islev_egilimi:testler::`<br>`bin:faz_test_matrisi:testler::`<br>`bin:olcum:testler::` | — | — |
 
 ## Çalıştırma sözleşmesi
 

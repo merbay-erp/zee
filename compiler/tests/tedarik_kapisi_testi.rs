@@ -99,7 +99,7 @@ fn cargo_deny_politikasi_fail_closed_ve_istisnalari_gerekcelidir() {
     let politika = oku("compiler/deny.toml");
     assert!(manifest.contains("publish = false"));
     assert!(fuzz_manifesti.contains("publish = false"));
-    assert!(fuzz_manifesti.contains("version = \"=0.7.0\""));
+    assert!(fuzz_manifesti.contains("version = \"=0.8.0-dev\""));
     assert!(politika.contains("unknown-registry = \"deny\""));
     assert!(politika.contains("unknown-git = \"deny\""));
     assert!(politika.contains("multiple-versions = \"deny\""));

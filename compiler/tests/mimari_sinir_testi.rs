@@ -110,7 +110,7 @@ fn handler_modulleri_yeni_domain_icin_sinir_tasir() {
         ("src/paket/uzak.rs", 480),
         ("src/paket/uzak/politika.rs", 180),
         ("src/paket/uzak_wasm.rs", 140),
-        ("src/tedarik/kurulum.rs", 220),
+        ("src/artefakt_dogrulama/kurulum.rs", 220),
         ("src/cli/registry.rs", 500),
         ("src/zaman.rs", 80),
     ] {

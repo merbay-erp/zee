@@ -38,3 +38,6 @@ ve normatif kararın tamamını ister. Eski beyan tabana göre yeniden yazılama
 Eski `tedarik` cephesinin production tüketicisi yoktur; yalnız 1.0 öncesi iç
 uyumluluk adıdır. Silme/deprecation kararı K-167 compatibility policy içinde
 verilecek, bu P2 borç yeni compiler çalışmasını veya dogfood'u öne çekmez.
+
+> Güncelleme (K-167, 5 Eylül 2026): cephe ADR-064 ile DEP-004 kaydı altında
+> kaldırıldı; kurulum katmanı `artefakt_dogrulama/kurulum.rs` altındadır.
