@@ -274,22 +274,16 @@ fn yeniden_baglanabilir(
         && yeniden_deneme_sayisi == 0
 }
 
-pub fn gocleri_uygula(
-    bildirim: &VeritabaniBildirimi,
-    proje_koku: &std::path::Path,
-) -> Result<GocRaporu, VeritabaniHatasi> {
-    let proje_koku = std::fs::canonicalize(proje_koku)
-        .map_err(|h| hata(format!("Proje kökü çözülemedi: {}", h)))?;
-    let goc_koku = std::fs::canonicalize(proje_koku.join(&bildirim.gocler))
-        .map_err(|h| hata(format!("Migration klasörü çözülemedi: {}", h)))?;
-    if !goc_koku.starts_with(&proje_koku) || !goc_koku.is_dir() {
-        return Err(hata(
-            "Migration klasörü proje kökü içinde gerçek bir klasör olmalı",
-        ));
-    }
+/// Migration klasörünü tarar; her dosyayı `NNNN_aciklama.sql` adı, tek dosya
+/// ve toplam byte bütçesi, UTF-8 ve SQL profili açısından doğrular. Sürüme
+/// göre sıralı `(sürüm, ad, sha256, sql)` listesi döner.
+fn goc_dosyalarini_topla(
+    goc_koku: &std::path::Path,
+) -> Result<Vec<(i64, String, String, String)>, VeritabaniHatasi> {
+    let sinirlar = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.veritabani();
     let mut gocler = Vec::new();
     let mut toplam = 0u64;
-    let girdiler = std::fs::read_dir(&goc_koku)
+    let girdiler = std::fs::read_dir(goc_koku)
         .map_err(|h| hata(format!("Migration klasörü okunamadı: {}", h)))?;
     for girdi in girdiler {
         let girdi = girdi.map_err(|h| hata(format!("Migration girdisi okunamadı: {}", h)))?;
@@ -305,30 +299,10 @@ pub fn gocleri_uygula(
             .file_name()
             .into_string()
             .map_err(|_| hata("Migration dosya adı geçerli UTF-8 olmalı"))?;
-        let govde_adi = ad
-            .strip_suffix(".sql")
-            .ok_or_else(|| hata("Migration dosyaları .sql uzantılı olmalı"))?;
-        let (surum, aciklama) = govde_adi
-            .split_once('_')
-            .ok_or_else(|| hata("Migration adı NNNN_aciklama.sql biçiminde olmalı"))?;
-        let surum = surum
-            .parse::<i64>()
-            .ok()
-            .filter(|s| *s > 0)
-            .ok_or_else(|| hata("Migration sürümü pozitif sayı olmalı"))?;
-        if aciklama.is_empty()
-            || !aciklama
-                .chars()
-                .all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '_')
-        {
-            return Err(hata(
-                "Migration açıklaması küçük ASCII harf, sayı ve _ taşımalı",
-            ));
-        }
+        let surum = goc_surumunu_coz(&ad)?;
         let metadata = girdi
             .metadata()
             .map_err(|h| hata(format!("Migration boyutu okunamadı: {}", h)))?;
-        let sinirlar = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.veritabani();
         if metadata.len() > sinirlar.goc_dosyasi_bayti() {
             return Err(hata("Tek migration 1 MiB sınırını aşıyor"));
         }
@@ -349,6 +323,49 @@ pub fn gocleri_uygula(
             "Aynı migration sürümü birden çok dosyada kullanılamaz",
         ));
     }
+    Ok(gocler)
+}
+
+/// `NNNN_aciklama.sql` adından pozitif sürümü çözer; açıklama küçük ASCII
+/// harf, rakam ve alt çizgiyle sınırlıdır.
+fn goc_surumunu_coz(ad: &str) -> Result<i64, VeritabaniHatasi> {
+    let govde_adi = ad
+        .strip_suffix(".sql")
+        .ok_or_else(|| hata("Migration dosyaları .sql uzantılı olmalı"))?;
+    let (surum, aciklama) = govde_adi
+        .split_once('_')
+        .ok_or_else(|| hata("Migration adı NNNN_aciklama.sql biçiminde olmalı"))?;
+    let surum = surum
+        .parse::<i64>()
+        .ok()
+        .filter(|s| *s > 0)
+        .ok_or_else(|| hata("Migration sürümü pozitif sayı olmalı"))?;
+    if aciklama.is_empty()
+        || !aciklama
+            .chars()
+            .all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '_')
+    {
+        return Err(hata(
+            "Migration açıklaması küçük ASCII harf, sayı ve _ taşımalı",
+        ));
+    }
+    Ok(surum)
+}
+
+pub fn gocleri_uygula(
+    bildirim: &VeritabaniBildirimi,
+    proje_koku: &std::path::Path,
+) -> Result<GocRaporu, VeritabaniHatasi> {
+    let proje_koku = std::fs::canonicalize(proje_koku)
+        .map_err(|h| hata(format!("Proje kökü çözülemedi: {}", h)))?;
+    let goc_koku = std::fs::canonicalize(proje_koku.join(&bildirim.gocler))
+        .map_err(|h| hata(format!("Migration klasörü çözülemedi: {}", h)))?;
+    if !goc_koku.starts_with(&proje_koku) || !goc_koku.is_dir() {
+        return Err(hata(
+            "Migration klasörü proje kökü içinde gerçek bir klasör olmalı",
+        ));
+    }
+    let gocler = goc_dosyalarini_topla(&goc_koku)?;
 
     let havuz = havuz::kur(bildirim)?;
     let mut istemci = havuz::al(&havuz)?;

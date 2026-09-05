@@ -2910,3 +2910,31 @@ usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.
   Finalize reddiyle kalan dosya+metadata yeni process'te `hazır` oldu; aynı
   kodlu tekrar dosya SHA-256'sını değiştirmedi. Deney satırı, trigger'ı, dosyası
   ve bağlantısı sıfırlandı; F029 kapandı.
+
+## K-177 — CI kapıları yerelde tam koşulmadan “yeşil” denmez (5 Eyl)
+
+- **Bulgu:** 1 Eylül'den sonraki 126 commit uzak depoya itilmemişti; CI
+  hiçbirini görmemişti. Bütün kapılar yerelde sırayla koşulduğunda tam test
+  paketi, clippy, fmt, uyarısız derleme, fuzz derlemesi, wasm ABI v3, cargo-deny,
+  conformance/semantic-regresyon/core-freeze korukları ve faz matrisi geçti;
+  yalnız K-144/ADR-041 kritik işlev eğilim kapısı kırıktı. `istek_al` F030/F031
+  dalgasında 282→342 satır (+60 > +24) ve karmaşıklık 25→35 (+10 > +5)
+  büyümüş, `gocleri_uygula` 131 satırlık yeni kritik işlev olarak tabana
+  girmeden doğmuş, `docs/islev-egilimi.md` bayat kalmıştı.
+- **Karar:** Eşik, gerekçeli taban yerine bölmeyle karşılandı. `istek_al`
+  yalnız kabul/bağlantı izni/son tarih orkestrasyonudur; başlık okuma
+  (`istek_basliklarini_oku`), Content-Type/Length zarfı
+  (`govde_zarfini_denetle`), binary akışlı gövde (`istek_govdesini_oku`) ve
+  kimlik/oturum/oran kapısı (`web_istegini_baslat`) ayrı işlevlerdir. Ortak
+  408 ve zaman aşımı sınıflandırması tek yardımcıdadır. `gocleri_uygula` dosya
+  taramasını `goc_dosyalarini_topla` ve ad çözümünü `goc_surumunu_coz`
+  işlevlerine bıraktı; DB transaction'ı değişmedi.
+- **Davranış sözü:** HTTP durumları, mesajları, HEAD işareti, 16 KiB parça
+  boyu, no-retry ve worker survival birebir korunur; web, çok süreçli web,
+  HTTP framing, dosya yaşam döngüsü, PostgreSQL ve mimari testleri değişmeden
+  geçer. Yeni kritik kayıtlar `istek_govdesini_oku` (79 satır/12) ve
+  `web_istegini_baslat` (85 satır/6) bilinçli tabandadır; K-163 dalgasında pay
+  içinde büyüyen yedi işlev de aynı incelemeyle yeni tabana alındı.
+- **Ders:** Uzun yerel dalga sonunda kapılar tek tek yerelde koşulur; uzak
+  CI görmediği sürece “üç platformda yeşil” yazılmaz. Bu iş semantic ve
+  freeze beyanında `maintenance` sınıfıdır.
