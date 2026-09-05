@@ -127,6 +127,13 @@ kanıtını günceller ve `cd compiler && cargo run --locked --bin spec_drift --
 --rapor-yaz` ile raporu yeniler; `--denetle` kayıtsız/bayat madde, kayıp test
 işlevi ve bayat raporu reddeder (K-171/ADR-065). Kısmi madde açık gerekçe ister.
 
+Güvenlik bulgusu, düzeltmesi ya da bilinçli güvenlik sınırı aynı committe
+`docs/guvenlik-bulgulari-v1.tsv` içinde ardışık `GB-NNN` satırı taşır
+(K-170/ADR-066). Açık bulgu yalnız orta/düşük olabilir ve hedef K-işi ister;
+kritik/yüksek bulgu aynı dalgada kapanmadan CI ve sürüm etiketi geçmez.
+`bash scripts/guvenlik-kapisi.sh --surekli` tedarik kapısıdır; etiket öncesi
+`--surum-adayi` exact HEAD RC fuzz kanıtı, clippy ve tam test ister.
+
 ## V1 öncesi iş sırası
 
 K-160/K-160A/ADR-059 sonrasında core freeze makinece etkindir: **Yeni compiler özelliği

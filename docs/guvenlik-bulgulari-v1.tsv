@@ -1,0 +1,24 @@
+# zee-guvenlik-bulgulari-1
+# kimlik	tarih	kaynak	onem	yuzey	ozet	durum	kapanis	karar
+GB-001	2026-09-01	inceleme	yuksek	ag	Native HTTP istemcisi ve yerel sunucu sınırsız bekleme ve yanıt belleği tüketebiliyordu; kimliksiz DoS sınıfı.	kapali	K-105	adr/017-native-ag-kaynak-sinirlari.md
+GB-002	2026-09-01	inceleme	yuksek	web-oturumu	Web oturum deposu sınırsız büyüyor ve oturum ömrü sliding ilerliyordu; bellek tükenmesi ve oturum uzatma.	kapali	K-106	adr/018-sinirli-web-oturum-deposu.md
+GB-003	2026-09-01	inceleme	yuksek	lsp	LSP çerçeve ve JSON girdisi tahsis öncesi sınırlanmıyordu; editör sürecine karşı bellek DoS.	kapali	K-107	adr/019-lsp-girdi-sinirlari.md
+GB-004	2026-09-01	inceleme	orta	runtime	Production yolunda 46 doğrudan unwrap/expect/panic noktası hasım girdiyle süreci düşürebiliyordu.	kapali	K-109	adr/021-production-panic-politikasi.md
+GB-005	2026-09-02	inceleme	orta	dosya	Atomik replace mode/uid/gid, ACL/xattr ve Windows DACL metadata'sını sessizce düşürebiliyordu.	kapali	K-128	adr/032-atomik-replace-metadata-politikasi.md
+GB-006	2026-09-02	inceleme	orta	runtime	Son tarih dolduktan sonra dosya/ağ/çerez/eyleyici etkisi başlayabiliyordu; iptal sonrası yan etki.	kapali	K-133	spec/09-son-tarih-ve-iptal.md
+GB-007	2026-09-02	inceleme	yuksek	web	Oturum ve çerez mutation'ı ilk yanıt commit edilmeden kalıcılaşıyordu; başarısız istek yarım durum bırakıyordu.	kapali	K-134	adr/034-web-ortak-depo-ve-worker-modeli.md
+GB-008	2026-09-02	inceleme	yuksek	web	Süreç başına oturum/rate-limit deposu çok worker'da iptal ve giriş kotasını paylaşmıyordu; kota ve logout atlatılabiliyordu.	kapali	K-137	adr/034-web-ortak-depo-ve-worker-modeli.md
+GB-009	2026-09-02	inceleme	orta	lsp	JSON-RPC sayıları float'a çevrilip yinelenen alanlar sessizce kabul ediliyordu; protokol belirsizliği.	kapali	K-138	adr/035-protokol-kesin-lsp-json-rpc.md
+GB-010	2026-09-02	inceleme	orta	web	Inbound Host/Forwarded/Origin ile outbound origin'i iki ayrı parser çözüyordu; drift ile bypass riski.	kapali	K-139	adr/036-kanonik-web-proxy-origin-siniri.md
+GB-011	2026-09-02	inceleme	kritik	http	HTTP framing Transfer-Encoding, obs-fold, bare-LF ve NUL kabul ediyordu; request smuggling sınıfı.	kapali	K-140	adr/037-byte-tabanli-http-istek-siniri.md
+GB-012	2026-09-02	inceleme	yuksek	tedarik	GitHub Actions hareketli tag'lerden çalışıyordu; aynı commit farklı üçüncü taraf kodu yürütebilirdi.	kapali	K-151	adr/048-github-actions-immutable-sha-pinleme.md
+GB-013	2026-09-02	fuzz	yuksek	wasm	Playground C ABI kayıtsız pointer/uzunluk kopyalıyor ve girdiyi tahsis öncesi sınırlamıyordu.	kapali	K-142	adr/039-hasim-hosta-karsi-wasm-c-abi.md
+GB-014	2026-09-03	dogfood	yuksek	web	Eylem transaction, dosya yazma ve COMMIT arızası web worker'ını sonlandırıyordu; tek istekle availability kaybı.	kapali	K-163	adr/060-postgresql-adaptor-siniri.md
+GB-015	2026-09-03	dogfood	orta	web	Bozuk %xx ve geçersiz UTF-8 form kodlaması kayıplı dönüşümle rota gövdesine giriyordu.	kapali	K-176	adr/054-strict-form-url-kodlamasi.md
+GB-016	2026-09-05	inceleme	orta	dosya	Proje dosya sınırı eşzamanlı düşman yerel süreçlere karşı OS sandbox'ı değildir; sözleşme dil düzeyindedir.	kabul	-	spec/23-yetkinlik-ve-outbound-guvenligi.md
+GB-017	2026-09-05	inceleme	orta	web	TLS sonlandırma ve secret dağıtımı deployment katmanına bırakılır; runtime yalnız loopback dinler ve proxy'ye güvenir.	kabul	-	spec/12-web-guvenlik-profili.md
+GB-018	2026-09-05	inceleme	dusuk	web	Kalıcı web durumu tek makine ya da güvenilir kilitli ortak dosya sistemiyle sınırlıdır; çok-hostlu backend yoktur.	kabul	-	spec/12-web-guvenlik-profili.md
+GB-019	2026-09-05	dogfood	orta	web	Yüklenen binary için multipart, içerik türü doğrulaması ve antivirüs yoktur; runtime yüklenen baytı sunmaz, doğrulama ürün sorumluluğudur.	kabul	-	adr/066-birlesik-guvenlik-surum-kapisi.md
+GB-020	2026-09-05	drift	dusuk	web	X-Zee-CSRF başlığı ve çoklu Content-Type reddi gerçek TCP adaptöründe hermetik testle doğrulanmıyor.	acik	K-172	docs/spec-drift-raporu.md
+GB-021	2026-09-05	drift	dusuk	web	__Host- oturum çerezinin Path/Secure/HttpOnly/SameSite nitelikleri tek tek test edilmiyor.	acik	K-172	docs/spec-drift-raporu.md
+GB-022	2026-09-05	saha	orta	veritabani	Gerçek TLS hostname/CA reddi ve NULL sütun reddi yalnız ortam değişkenli saha testinde koşar; hermetik CI'da yok.	acik	K-173	docs/spec-drift-raporu.md

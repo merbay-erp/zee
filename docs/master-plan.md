@@ -907,7 +907,8 @@ içerik için 200 workaround'u 404 ile emekli edildi. Ürün organik 1037 Zee
 LOC/5 modül/12 teste ulaştı; gerçek workspace LSP full-change p95 41,416 ms,
 10 dogfood commit'inde dosya medyanı 5,5'tir. Exact final ürün kanıtı
 `bb8e1ac`tır. Böylece K-163/V1-P0-36 kapanır; managed-provider/çok-worker
-tatbikatı K-169/K-173'e, içerik/malware politikası K-170'e açık aktarılır.
+tatbikatı K-169/K-173'e aktarılır; içerik/malware politikası K-170/ADR-066
+ile kabul edilen sınır (GB-019) olarak kayıtlıdır.
 B-001 çağrı sözdizimi ile B-002 gezme zihinsel modeli gerçek insan
 kanıtı gelmeden kapatılmaz veya yeni syntax kararıyla atlanmaz.
 # 40. Proje felsefesinin korunması

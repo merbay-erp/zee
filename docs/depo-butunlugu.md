@@ -201,3 +201,17 @@ cd compiler
 cargo run --locked --bin spec_drift -- --denetle
 cargo run --locked --bin spec_drift -- --rapor-yaz
 ```
+
+## Birleşik güvenlik sürüm kapısı
+
+K-170/ADR-066'nın [rehberi](guvenlik-surum-kapisi.md), kök
+[SECURITY.md](../SECURITY.md) ve
+[`guvenlik-bulgulari-v1.tsv`](guvenlik-bulgulari-v1.tsv); inceleme/fuzz/
+dogfood/advisory/drift/saha bulgularını önem ve durumla kaydeder. Açık
+kritik/yüksek bulgu, kapanış işi olmayan kapalı bulgu ve karar yolu olmayan
+kabul edilmiş sınır fail-closed'dur.
+
+```bash
+bash scripts/guvenlik-kapisi.sh --surekli
+bash scripts/guvenlik-kapisi.sh --surum-adayi
+```

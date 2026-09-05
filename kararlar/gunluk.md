@@ -2996,3 +2996,27 @@ usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.
   Seçicinin maddeyi gerçekten kanıtladığı hükmü kod incelemesindedir; araç
   varlık, tazelik ve sınıf doğrular. Dil semantiği, tanı ve normatif metin
   değişmedi; K-171/V1-P1-22 kapandı.
+
+## K-170 — "Açık kritik var mı" sorusunun makine cevabı olmalı (5 Eyl)
+
+- **Bulgu:** Güvenlik kanıtı dört yerde dağınıktı: cargo-deny/vendor,
+  günlük ve haftalık fuzz, web/ağ regresyonları ve K-105…K-176 inceleme
+  bulguları yalnız günlük metninde. Sürüm öncesi "açık kritik/yüksek bulgu var
+  mı" sorusunun tek makine-okunur cevabı, bildirim kanalı ve önem sözlüğü yoktu;
+  K-163'ün multipart/içerik sınırı kayıtsızdı.
+- **Karar:** ADR-066. `guvenlik-bulgulari-v1.tsv` ardışık `GB-NNN` kimlik,
+  kaynak, önem, yüzey, durum, kapanış K-işi ve karar yolu taşır. Açık bulgu
+  yalnız orta/düşük ve hedef işli; kapalı bulgu gerçek K-işine, kabul edilen
+  sınır normatif spec/ADR'ye bağlı; kritik sınır kabul edilemez. Tek betik:
+  `--surekli` (tedarik workflow'u; cargo-deny compiler+fuzz, fuzz derlemesi,
+  kayıt ve tedarik testleri) ve `--surum-adayi` (temiz ağaç, exact HEAD için
+  dört hedefli ≥1800 sn RC fuzz satırı, clippy, tam test, üç koruk). Kök
+  `SECURITY.md` GitHub Security Advisories kanalını ve dört önem sınıfını
+  tanımlar.
+- **İlk taban:** 22 kayıt — 15 kapalı (GB-011 HTTP smuggling sınıfı tek
+  kritik, K-140 ile kapalı), 4 kabul edilen sınır (OS sandbox değil, TLS
+  deployment'ta, tek-host kalıcı depo, içerik güvenliği ürün sorumluluğu), 3
+  açık düşük/orta test-kapsam boşluğu (K-171 drift listesinden; K-172/K-173
+  hedefli). Açık kritik/yüksek sıfır.
+- **Sınır:** Kapı bakım/işletim aracıdır; dil semantiği, tanı ve normatif
+  metin değişmedi. K-170/V1-P1-23 kapandı.
