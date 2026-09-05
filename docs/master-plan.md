@@ -826,8 +826,8 @@ F032 ile kapanmıştır.
 K-160A bu sözü `core-freeze-beyanlari-v1.tsv` ve CI koruğuyla executable yaptı:
 semantic feature yalnız dogfood/security/correctness sınıfında; dogfood ise
 ürün, K-işi, reproducer, etkilenen proje, minimalite ve normatif kararın
-tamamıyla geçer. B-071/V1-P0-35 kapandı. Eski `tedarik` cephesinin V1 ömrü
-K-167 compatibility policy içinde kararlaştırılacak; dogfood'u geciktirmez.
+tamamıyla geçer. B-071/V1-P0-35 kapandı. Eski `tedarik` cephesi K-167/ADR-064
+uyumluluk politikasıyla DEP-004 olarak kaldırıldı; B-072 kapandı.
 B-073 de ilk dogfood-kaynaklı compiler değişikliğinden önce kapandı. Append-only
 ürün kaydı, exact harici ürün provenance'ı, etkin repo-içi kanıt kökü, gerçek
 K-işi, kök-altı Zee dosyası ve karar belgesi referansı artık freeze koruğunda

@@ -16,7 +16,6 @@ use std::io::Write;
 use std::path::{Component, Path};
 use unicode_normalization::UnicodeNormalization;
 
-#[path = "tedarik/kurulum.rs"]
 mod kurulum;
 
 pub use kurulum::paket_arsivini_kur;

@@ -74,9 +74,6 @@ pub mod sozcukleyici;
 pub mod tani;
 mod tani_politikasi;
 #[doc(hidden)]
-#[cfg(not(target_arch = "wasm32"))]
-pub mod tedarik;
-#[doc(hidden)]
 pub mod veritabani_modeli;
 #[doc(hidden)]
 pub mod wasm_api;

@@ -2938,3 +2938,37 @@ usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.
 - **Ders:** Uzun yerel dalga sonunda kapılar tek tek yerelde koşulur; uzak
   CI görmediği sürece “üç platformda yeşil” yazılmaz. Bu iş semantic ve
   freeze beyanında `maintenance` sınıfıdır.
+
+## K-167 — Uyumluluk sözü yazılı niyet değil, yürütülebilir kayıt olmalı (5 Eyl)
+
+- **Bulgu:** Tanı (ADR-025), morfoloji (RFC-0018), ZEP (ADR-028), Rust API
+  (ADR-058) ve WASM ABI (ADR-039) donuktu; kalıp kelimeleri, koşul yüklemleri
+  ve CLI komutları yalnız golden korpus ve LSP listesiyle örtük korunuyordu.
+  Kullanılmayan bir kelime golden'ı kırmadan silinebilirdi. Hiçbir yerde
+  "ne zaman girdi, ne zaman ve hangi göç yoluyla kalkar" kaydı yoktu. Çalışma
+  ağacı 126 commit boyunca `0.7.0` kimliği taşıdı; `dil sürüm`, LSP ve SBOM
+  yayımlanmamış yüzeyi yayımlanmış sanıyordu. B-072 `tedarik` cephesi açıktı.
+- **Karar:** RFC-0028 sekiz dondurulmuş yüzeyi, üç değişiklik sınıfını
+  (ekleme/davranış/kaldırma) ve süreli deprecation protokolünü; spec/27
+  ZORUNLU/YASAK kurallarını; ADR-064 makine kapısını tanımlar.
+  `dil-yuzeyi-v1.tsv` 87 kalıp kelimesi, 17 koşul yüklemi, 24 CLI komutu
+  (Türkçe+ASCII) ve exact biçim/profil/ABI/API/tanı kayıtlarını giriş
+  sürümüyle taşır: 62 kelime, 16 yüklem ve 11 komut `0.7.0`; kalanı
+  `0.8.0-dev`. `deprecation-kayitlari-v1.tsv` ardışık `DEP-NNN` ile S032/A004/
+  C014 mezar taşlarını ve `dil::tedarik` kaldırmasını kaydeder. Desteklenen
+  yüzeyde kaldırma duyurudan en az bir alt sürüm serisi sonradır; tanı ve iç
+  yüzeyler süre şartı taşımaz. Kaldırılan kelime fixture'da mezar taşı kalır.
+- **Sürüm kimliği:** Cargo, fuzz bağımlılığı ve iki kilit `0.8.0-dev`
+  serisine çekildi; kapı çalışma ağacının en yüksek `v*` etiketinden büyük
+  olmasını ister. Regresyon korpusunun `guaranteed_since=0.8.0-dev` sözüyle
+  aynı seridir.
+- **B-072:** `dil::tedarik` kaldırıldı (DEP-004); depo içi ve bilinen dış
+  tüketicisi sıfırdı, facade zaten `doc(hidden)` internal sınıfındaydı.
+  Kurulum katmanı `artefakt_dogrulama/kurulum.rs` altına taşındı; production
+  sahip sayısı 37, `tedarik` adı katman graph'ında reddedilir.
+- **Kanıt:** `uyumluluk_testi` fixture↔kaynak birebirliği, exact kayıt, şema/
+  süre/ardışık kimlik, tanı mezar taşı çaprazı, kaldırılan iç modülün yokluğu,
+  sürüm kimliği ve sentetik bozuk girdi reddi; `bagimlilik_cevrimi_testi`
+  `tedarik` sahibinin yeniden doğamayacağını korur. Bu iş `maintenance`
+  sınıfıdır: grammar, runtime, tanı ve Zee kaynak programı davranışı değişmedi.
+  Edition alanının sözdizimi AÇIK RFC işidir; K-167/B-072/V1-P1-21 kapandı.

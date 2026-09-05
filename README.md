@@ -173,6 +173,7 @@ korpus üzerinde regression testine girer.
 | Kanıt haritası | [docs/depo-butunlugu.md](docs/depo-butunlugu.md) | ✅ bütün RFC/ADR/spec → test yolları ve canlı sayılar CI'da |
 | Faz test matrisi | [docs/faz-test-matrisi.md](docs/faz-test-matrisi.md) | ✅ gerçek Cargo/libtest envanteri, Tier-1 pass/fail/süre artefaktı |
 | Semantic regresyon | [docs/semantic-regresyon-korpusu.md](docs/semantic-regresyon-korpusu.md) | ✅ 17 geçmiş bug → minimal `.dil` + faz/tanı/span/exit/çıktı |
+| Uyumluluk politikası | [docs/uyumluluk-politikasi.md](docs/uyumluluk-politikasi.md) | ✅ sekiz dondurulmuş yüzey envanteri, süreli `DEP-NNN` deprecation kaydı ve `-dev` sürüm kimliği CI'da |
 
 <!-- ZEE-DEPO-SAYILARI:BEGIN -->
 <!-- `cd compiler && cargo run --bin depo_sayilari -- --yaz` üretir. Elle değiştirme. -->
@@ -181,11 +182,11 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **649** |
+| Rust + doctest vakası | **654** |
 | Tanı kimliği | **155 etkin + 3 ayrılmış** |
-| RFC | **27** (2 kabul, 23 geçici kabul, 2 taslak) |
-| ADR | **61** (61 kabul) |
-| Normatif spec bölümü | **26** |
+| RFC | **28** (2 kabul, 24 geçici kabul, 2 taslak) |
+| ADR | **62** (62 kabul) |
+| Normatif spec bölümü | **27** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
 ### Golden korpus hakkında

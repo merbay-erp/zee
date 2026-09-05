@@ -48,12 +48,13 @@ Kırıcı değişiklik sessizce yapılamaz: davranış değişikliği RFC'den ge
 | [24 — Kaynak güvenlik profili](24-kaynak-guvenlik-profili.md) | kaynak/token, runtime adım/çıktı/değer heap'i, bağlantı, dosya, byte HTTP, protokol-kesin LSP ve playground ön-tahsis sınırları | RFC-0025, ADR-033/035/037/040, K-129/K-130/K-131/K-132/K-138/K-140/K-143 |
 | [25 — PostgreSQL veri erişimi](25-postgresql-veri-erisimi.md) | exact loopback bildirim, parametreli sorgu, eylem transaction'ı, structured hata ve migration geçmişi | RFC-0026, ADR-060, K-163 |
 | [26 — Binary yükleme ve dosya yaşam döngüsü](26-binary-yukleme-ve-dosya-yasam-dongusu.md) | akışlı octet-stream, SHA-256, no-clobber publish, silme ve orphan tarama primitive'leri | RFC-0027, ADR-061, K-163/F030 |
+| [27 — Uyumluluk ve sürümleme](27-uyumluluk-ve-surumleme.md) | sürüm kimliği, sekiz dondurulmuş yüzey, süreli deprecation kaydı ve 1.0/edition çerçevesi | RFC-0028, ADR-064, K-167 |
 
 ## Faza bağlı — henüz spec dışı
 
 Çok çekirdekli paralellik ve yarış/akış/dinamik görev yüzeyleri (RFC-0011),
 ikili FFI/ABI (RFC-0012, Faz 4/5), standart kütüphane kararlılık
-politikası, çok-hostlu web durumu/idempotency (RFC-0015/0017) ile genel
-deprecation/edition modeli. Morfoloji
+politikası, çok-hostlu web durumu/idempotency (RFC-0015/0017) ile edition
+alanının sözdizimi (spec/27 çerçeveyi bağlar, alan AÇIK). Morfoloji
 profili için kırıcı sürüm sınırı spec/13'te şimdiden tanımlıdır.
 Bu başlıklar karara bağlandıkça buraya bölüm olarak eklenir.

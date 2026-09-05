@@ -21,14 +21,14 @@ ayrıntısını ve LSP compiler iç geçişlerini doğrudan bilmemelidir.
 | `muhendislik` | bütün katmanlar; ürün kodu buna bağımlanamaz |
 
 Bu yön tek tek Rust dosyalarının sırasını değil sorumluluk seviyesini anlatır.
-Aynı `proje` kümesindeki paket/registry/tedarik koreografisi bu kararla
+Aynı `proje` kümesindeki paket/registry/yayın koreografisi bu kararla
 çevrimsiz ilan edilmez; mevcut doğrudan kenarlar ayrıca exact tabanda
 görünürdür. Katmanlar arası ters kenar ise tabana yazılsa bile reddedilir.
 
 ## Makine-okunur sahiplik
 
 [`katman-mimarisi-v1.tsv`](../compiler/tests/fixtures/katman-mimarisi-v1.tsv)
-38 production sahibinin katmanını, bütün doğrudan iç bağımlılıklarını ve tek
+37 production sahibinin katmanını, bütün doğrudan iç bağımlılıklarını ve tek
 cümlelik sorumluluğunu taşır. Kapsam şunların tamamıdır:
 
 - `lib.rs`, bütün kök kitaplık modülleri ve alt modülleri;
@@ -74,7 +74,8 @@ taşıma/protokol, `artefakt_dogrulama` güven ve kurulum, `yayin` üst seviye
 orkestrasyon sahibidir. Model production davranışına bağımlı değildir;
 verification paket/registry/yayın sahibini çağırmaz; registry artefaktı
 verification'a devreder; resolver taşıma ve imza ayrıntısını bilmez. Eski
-`tedarik` yolu yalnız verification için geçici uyumluluk cephesidir.
+`tedarik` cephesi K-167/ADR-064 ile kaldırıldı (DEP-004); kurulum katmanı
+`artefakt_dogrulama/kurulum.rs` altındadır.
 
 Güncel production graph'ta SCC sayısı ve
 [`izinli-katman-cevrimleri-v1.tsv`](../compiler/tests/fixtures/izinli-katman-cevrimleri-v1.tsv)
@@ -86,7 +87,7 @@ silinmiştir. Gelecekte zorunlu bir istisna doğarsa tanı kodlarıyla karışma
 
 - FIPS 180-4 `sha256_hex`, paket modülünden temel `guvenlik` sahibine taşındı.
   Böylece morfoloji profil parmak izi artık `sozdizimi → proje/paket` ters
-  bağımlılığı kurmaz; paket, registry, tedarik, web ve IO izi aynı temel ilkeyi
+  bağımlılığı kurmaz; paket, registry, artefakt doğrulama, web ve IO izi aynı temel ilkeyi
   tüketir.
 - Gregoryen gün↔tarih algoritması runtime'dan yeni temel `zaman` sahibine
   taşındı. Tedarik zinciri RFC 3339 zamanı için runtime'a bağımlanmaz;

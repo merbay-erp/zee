@@ -1,0 +1,6 @@
+# zee-deprecation-kayitlari-1
+# kimlik	yuzey	oge	sinif	duyuru	kaldirma	goc	karar	durum
+DEP-001	tani	S032	kaldirma	0.8.0-dev	0.8.0-dev	Ondalık keyfî hassasiyetlidir; eski 9 hane sınırı kalktı, kullanıcı kaynağı değişmez (K-092). Kod başka anlamda yeniden kullanılamaz.	adr/025-tani-kimligi-kararlilik-politikasi.md	kaldirildi
+DEP-002	tani	A004	kaldirma	0.8.0-dev	0.8.0-dev	Hiç üretilmemiş ad çözümleme yuvası; kullanıcı programı etkilenmez (K-114 mezar taşı). Kod başka anlamda yeniden kullanılamaz.	adr/025-tani-kimligi-kararlilik-politikasi.md	kaldirildi
+DEP-003	tani	C014	kaldirma	0.8.0-dev	0.8.0-dev	Hiç üretilmemiş çalışma zamanı yuvası; kullanıcı programı etkilenmez (K-114 mezar taşı). Kod başka anlamda yeniden kullanılamaz.	adr/025-tani-kimligi-kararlilik-politikasi.md	kaldirildi
+DEP-004	ic	dil::tedarik	kaldirma	0.8.0-dev	0.8.0-dev	dil::artefakt_dogrulama::{anahtar_uret, paket_arsivini_kur, yayini_dogrula}; desteklenen gömme sözleşmesi yalnız dil::api::v1'dir (ADR-058).	adr/064-uyumluluk-kapisi.md	kaldirildi

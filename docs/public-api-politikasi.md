@@ -8,7 +8,10 @@ Crate kökündeki eski işlevler ve `#[doc(hidden)]` modüller bootstrap CLI,
 entegrasyon testleri ve 1.0 öncesi geçiş için erişilebilir kalır; desteklenen
 SemVer sözleşmesi değildir. Yeni tüketici bunlara bağlanmamalıdır. K-160
 ownership ayrışması bu internal yolları saf model, çözüm, taşıma, doğrulama ve
-yayın sahiplerine böldü; facade sözleşmesi değişmedi.
+yayın sahiplerine böldü; facade sözleşmesi değişmedi. K-167/ADR-064 eski
+`dil::tedarik` cephesini DEP-004 kaydıyla kaldırdı; göç yolu
+`dil::artefakt_dogrulama`dır. Kaldırma ve deprecation süresi
+[uyumluluk rehberinde](uyumluluk-politikasi.md) kayıtlıdır.
 
 ## Değişiklik kuralları
 

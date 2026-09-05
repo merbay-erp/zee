@@ -126,7 +126,7 @@ politikası mimari sınır testiyle korunur.
 
 K-149/ADR-046'nın [katman rehberi](katman-mimarisi.md) ve
 [`katman-mimarisi-v1.tsv`](../compiler/tests/fixtures/katman-mimarisi-v1.tsv)
-bütün production Rust dosyalarını 38 üst sahibe bağlar. Exact doğrudan
+bütün production Rust dosyalarını 37 üst sahibe bağlar. Exact doğrudan
 bağımlılık tabanı eklenen kadar artık kullanılmayan kenarı da görünür inceleme
 ister; katman yönü ters kenarı tabana yazmakla geçilebilir olmaz.
 
@@ -173,3 +173,17 @@ kayıtlarını korur. Var olan artefaktın değiştirilmesi, silinmesi veya yeni
 adlandırılması reddedilir; yeni anlam yeni profil/şema kimliğiyle ayrı dosya
 olarak eklenir. Morfoloji ve `zee-esz-1` scheduler korpusları aynı genel kapıyı
 paylaşır.
+
+## Uyumluluk ve deprecation kapısı
+
+K-167/ADR-064'ün [uyumluluk rehberi](uyumluluk-politikasi.md),
+[`dil-yuzeyi-v1.tsv`](../compiler/tests/fixtures/dil-yuzeyi-v1.tsv) envanteri
+ve [`deprecation-kayitlari-v1.tsv`](deprecation-kayitlari-v1.tsv) kaydı; kalıp
+kelimesi, koşul yüklemi, CLI komutu, biçim, profil, ABI, API ve tanı yüzeyini
+kaynakla birebir tutar. Kayıtsız kaldırma, süresiz deprecation ve etiket
+sonrası yayımlanmış sürüm kimliği fail-closed reddedilir.
+
+```bash
+cd compiler
+cargo test --locked --test uyumluluk_testi
+```
