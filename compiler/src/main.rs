@@ -1643,6 +1643,103 @@ impl GercekIo {
         akis.write_all(&yanit)
             .map_err(|hata| format!("HTTP yanıtı yazılamadı: {}", hata))
     }
+    /// İstemci kimliği, oturum ve uç nokta oran sınırı kapısı. Başarıda
+    /// `çerez ...` satırını (boşsa boş metin) döndürür; hata yanıtı
+    /// gönderildiyse web transaction taslağını geri alıp `None` döner.
+    fn web_istegini_baslat(
+        &mut self,
+        akis: &mut std::net::TcpStream,
+        baslik: &HttpIstekBasligi<'_>,
+        es: std::net::SocketAddr,
+        https: bool,
+    ) -> Option<String> {
+        let yontem = baslik.yontem();
+        let hedef = baslik.hedef();
+        let head = yontem.eq_ignore_ascii_case("HEAD");
+        let istemci_kimligi = if let Some(origin) = self.guvenli_proxy_origin() {
+            match guvenli_proxy_istegini_denetle(baslik, origin, yontem) {
+                Ok(kimlik) => kimlik,
+                Err((durum, mesaj)) => {
+                    ham_http_hatasi_gonder(akis, durum, mesaj, head, true);
+                    return None;
+                }
+            }
+        } else {
+            es.ip().to_string()
+        };
+        // Cookie başlığı "çerez ..." satırı olarak taşınır (K-052).
+        let cerez_degerleri = baslik.baslik_degerleri("Cookie");
+        if cerez_degerleri.len() > 1 {
+            ham_http_hatasi_gonder(
+                akis,
+                400,
+                "birden çok Cookie başlığı reddedildi",
+                head,
+                https,
+            );
+            return None;
+        }
+        let cerez = cerez_degerleri.first().copied().unwrap_or_default();
+        let oturum = cerez
+            .split(';')
+            .filter_map(|parca| parca.trim().split_once('='))
+            .find_map(|(ad, deger)| (ad == self.oturum_cerez_adi()).then_some(deger.trim()));
+        let an = web_duvar_saati_ms();
+        self.web_istek_yedegi = Some(WebIstekYedegi {
+            bekleyen_cerezler: self.bekleyen_cerezler.clone(),
+            bekleyen_silinen_cerezler: self.bekleyen_silinen_cerezler.clone(),
+        });
+        self.bekleyen_web_yaniti = None;
+        if let Err(hata) = self
+            .web_guvenligi
+            .istegi_baslat_kimlikle(oturum, &istemci_kimligi, an)
+        {
+            ham_http_hatasi_gonder(
+                akis,
+                503,
+                &format!("web güvenlik deposuna erişilemedi: {hata}"),
+                head,
+                https,
+            );
+            self.web_istek_yedegi = None;
+            return None;
+        }
+        let kapsam = format!(
+            "{} {}",
+            yontem.to_ascii_uppercase(),
+            hedef.split('?').next().unwrap_or(hedef)
+        );
+        match self.web_guvenligi.rate_limit_artir(
+            dil::web_guvenligi::RateLimitTuru::Ucnokta,
+            &kapsam,
+            an,
+        ) {
+            Ok(karar) if karar.izinli => {}
+            Ok(_) => {
+                ham_http_hatasi_gonder(akis, 429, "uç nokta oran sınırı aşıldı", head, https);
+                self.web_guvenligi.istegi_geri_al();
+                self.web_istek_yedegi = None;
+                return None;
+            }
+            Err(hata) => {
+                ham_http_hatasi_gonder(
+                    akis,
+                    503,
+                    &format!("oran sınırı deposuna erişilemedi: {hata}"),
+                    head,
+                    https,
+                );
+                self.web_guvenligi.istegi_geri_al();
+                self.web_istek_yedegi = None;
+                return None;
+            }
+        }
+        Some(if cerez.is_empty() {
+            String::new()
+        } else {
+            format!("çerez {}\n", cerez)
+        })
+    }
 }
 
 fn guvenlik_basliklari(https: bool) -> String {
@@ -1792,6 +1889,220 @@ fn son_tarihli_soket_oku(
         .ok_or_else(|| std::io::Error::new(std::io::ErrorKind::TimedOut, "son tarih doldu"))?;
     akis.set_read_timeout(Some(kalan))?;
     akis.read(tampon)
+}
+
+fn zaman_asimi_mi(hata: &std::io::Error) -> bool {
+    matches!(
+        hata.kind(),
+        std::io::ErrorKind::TimedOut | std::io::ErrorKind::WouldBlock
+    )
+}
+
+fn istek_zaman_asimi_gonder(akis: &mut std::net::TcpStream, https: bool) {
+    ham_http_hatasi_gonder(
+        akis,
+        408,
+        &format!(
+            "istek {} saniyede tamamlanmadı",
+            HTTP_ISTEK_OKUMA_SURESI.as_secs()
+        ),
+        false,
+        https,
+    );
+}
+
+/// İstek başlıklarını tek son tarih ve başlık byte sınırı içinde okur.
+/// Başarıda okunan tamponu ve gövdenin başladığı konumu döndürür; hata yanıtı
+/// gönderildiyse ya da bağlantı sessizce düştüyse `None` döner.
+fn istek_basliklarini_oku(
+    akis: &mut std::net::TcpStream,
+    son_tarih: std::time::Instant,
+    https: bool,
+) -> Option<(Vec<u8>, usize)> {
+    let baslik_siniri = dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+        .http()
+        .istek_baslik_bayti();
+    let mut tampon = Vec::with_capacity(baslik_siniri);
+    loop {
+        match baslik_sonunu_bul(&tampon) {
+            Ok(Some(yer)) => return Some((tampon, yer)),
+            Ok(None) => {}
+            Err(hata) => {
+                ham_http_hatasi_gonder(akis, 400, &hata.to_string(), false, https);
+                return None;
+            }
+        }
+        if tampon.len() >= baslik_siniri {
+            ham_http_hatasi_gonder(
+                akis,
+                431,
+                &format!(
+                    "istek başlıkları {} KiB sınırını aşıyor",
+                    baslik_siniri / 1024
+                ),
+                false,
+                https,
+            );
+            return None;
+        }
+        let mut parca = [0u8; 4096];
+        let sinir = (baslik_siniri - tampon.len()).min(parca.len());
+        match son_tarihli_soket_oku(akis, &mut parca[..sinir], son_tarih) {
+            Ok(0) => return None,
+            Ok(okunan) => tampon.extend_from_slice(&parca[..okunan]),
+            Err(hata) if zaman_asimi_mi(&hata) => {
+                istek_zaman_asimi_gonder(akis, https);
+                return None;
+            }
+            Err(_) => return None,
+        }
+    }
+}
+
+/// Content-Type ve Content-Length zarfını doğrular. Başarıda gövdenin binary
+/// yükleme olup olmadığını ve beklenen byte sayısını döndürür.
+fn govde_zarfini_denetle(
+    akis: &mut std::net::TcpStream,
+    baslik: &HttpIstekBasligi<'_>,
+    ilk_govde_uzunlugu: usize,
+    https: bool,
+) -> Option<(bool, usize)> {
+    let head = baslik.yontem().eq_ignore_ascii_case("HEAD");
+    let icerik_turleri = baslik.baslik_degerleri("Content-Type");
+    if icerik_turleri.len() > 1 {
+        ham_http_hatasi_gonder(
+            akis,
+            400,
+            "birden çok Content-Type başlığı reddedildi",
+            false,
+            https,
+        );
+        return None;
+    }
+    let binary_yukleme = icerik_turleri
+        .first()
+        .is_some_and(|deger| deger.eq_ignore_ascii_case("application/octet-stream"));
+    let http_siniri = dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.http();
+    let govde_siniri = if binary_yukleme {
+        http_siniri.yukleme_bayti()
+    } else {
+        http_siniri.istek_govde_bayti()
+    };
+    let beklenen = baslik.govde_uzunlugu();
+    if beklenen > govde_siniri {
+        ham_http_hatasi_gonder(
+            akis,
+            413,
+            &format!("istek gövdesi {} KiB sınırını aşıyor", govde_siniri / 1024),
+            head,
+            https,
+        );
+        return None;
+    }
+    if ilk_govde_uzunlugu > beklenen {
+        ham_http_hatasi_gonder(
+            akis,
+            400,
+            "Content-Length sonrasında fazladan istek baytı var",
+            head,
+            https,
+        );
+        return None;
+    }
+    Some((binary_yukleme, beklenen))
+}
+
+/// Gövdeyi Content-Length'e kadar aynı son tarihle okur. Binary yükleme
+/// belleğe alınmadan diske akar ve rotaya yol/özet/boy alanları olarak
+/// verilir; metin gövdesi exact UTF-8 olarak döner. Hata yanıtı
+/// gönderildiyse `None` döner.
+fn istek_govdesini_oku(
+    akis: &mut std::net::TcpStream,
+    kok: &std::path::Path,
+    baslik: &HttpIstekBasligi<'_>,
+    ilk_govde: &[u8],
+    son_tarih: std::time::Instant,
+    https: bool,
+) -> Option<String> {
+    let (binary_yukleme, beklenen) = govde_zarfini_denetle(akis, baslik, ilk_govde.len(), https)?;
+    let mut yukleme = if binary_yukleme {
+        match web_yukleme::AkanYukleme::yeni(kok)
+            .and_then(|mut yukleme| yukleme.yaz(ilk_govde).map(|()| yukleme))
+        {
+            Ok(yukleme) => Some(yukleme),
+            Err(hata) => {
+                ham_http_hatasi_gonder(akis, 503, &hata, false, https);
+                return None;
+            }
+        }
+    } else {
+        None
+    };
+    let mut govde_baytlari = if binary_yukleme {
+        Vec::new()
+    } else {
+        ilk_govde.to_vec()
+    };
+    let mut okunan_toplam = ilk_govde.len();
+    while okunan_toplam < beklenen {
+        let mut parca = [0u8; 16 * 1024];
+        let parca_siniri = (beklenen - okunan_toplam).min(parca.len());
+        let okunan = match son_tarihli_soket_oku(akis, &mut parca[..parca_siniri], son_tarih) {
+            Ok(okunan) if okunan > 0 => okunan,
+            Err(hata) if zaman_asimi_mi(&hata) => {
+                istek_zaman_asimi_gonder(akis, https);
+                return None;
+            }
+            _ => {
+                ham_http_hatasi_gonder(
+                    akis,
+                    400,
+                    "istek gövdesi Content-Length'ten kısa",
+                    false,
+                    https,
+                );
+                return None;
+            }
+        };
+        okunan_toplam += okunan;
+        match &mut yukleme {
+            Some(yukleme) => {
+                if let Err(hata) = yukleme.yaz(&parca[..okunan]) {
+                    ham_http_hatasi_gonder(akis, 503, &hata, false, https);
+                    return None;
+                }
+            }
+            None => govde_baytlari.extend_from_slice(&parca[..okunan]),
+        }
+    }
+    match yukleme {
+        Some(yukleme) => match yukleme.tamamla() {
+            Ok(bilgi) => {
+                let csrf = tek_http_basligi(baslik, "X-Zee-CSRF").unwrap_or_default();
+                Some(format!(
+                    "_csrf={}&yukleme_gecici_yolu={}&yukleme_sha256={}&yukleme_bayti={}",
+                    csrf, bilgi.goreli_yol, bilgi.sha256, bilgi.bayt
+                ))
+            }
+            Err(hata) => {
+                ham_http_hatasi_gonder(akis, 503, &hata, false, https);
+                None
+            }
+        },
+        None => match govde_metni(&govde_baytlari) {
+            Ok(govde) => Some(govde.to_string()),
+            Err(hata) => {
+                ham_http_hatasi_gonder(
+                    akis,
+                    400,
+                    &hata.to_string(),
+                    baslik.yontem().eq_ignore_ascii_case("HEAD"),
+                    https,
+                );
+                None
+            }
+        },
+    }
 }
 
 fn web_duvar_saati_ms() -> i64 {
@@ -2063,9 +2374,8 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         Ok(())
     }
     fn istek_al(&mut self) -> Option<String> {
-        let dinleyici = self.dinleyici.as_ref()?;
-        'istekler: loop {
-            let (mut akis, es) = dinleyici.accept().ok()?;
+        loop {
+            let (mut akis, es) = self.dinleyici.as_ref()?.accept().ok()?;
             let https = self.guvenli_proxy_origin().is_some();
             if https && !guvenilir_proxy_esi_mi(es) {
                 ham_http_hatasi_gonder(
@@ -2097,56 +2407,9 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             {
                 continue;
             }
-            let http_siniri = dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.http();
-            let baslik_siniri = http_siniri.istek_baslik_bayti();
-            let mut tampon = Vec::with_capacity(baslik_siniri);
-            let govde_basi = loop {
-                match baslik_sonunu_bul(&tampon) {
-                    Ok(Some(yer)) => break yer,
-                    Ok(None) => {}
-                    Err(hata) => {
-                        ham_http_hatasi_gonder(&mut akis, 400, &hata.to_string(), false, https);
-                        continue 'istekler;
-                    }
-                }
-                if tampon.len() >= baslik_siniri {
-                    ham_http_hatasi_gonder(
-                        &mut akis,
-                        431,
-                        &format!(
-                            "istek başlıkları {} KiB sınırını aşıyor",
-                            baslik_siniri / 1024
-                        ),
-                        false,
-                        https,
-                    );
-                    continue 'istekler;
-                }
-                let mut parca = [0u8; 4096];
-                let sinir = (baslik_siniri - tampon.len()).min(parca.len());
-                match son_tarihli_soket_oku(&mut akis, &mut parca[..sinir], son_tarih) {
-                    Ok(0) => continue 'istekler,
-                    Ok(okunan) => tampon.extend_from_slice(&parca[..okunan]),
-                    Err(hata)
-                        if matches!(
-                            hata.kind(),
-                            std::io::ErrorKind::TimedOut | std::io::ErrorKind::WouldBlock
-                        ) =>
-                    {
-                        ham_http_hatasi_gonder(
-                            &mut akis,
-                            408,
-                            &format!(
-                                "istek {} saniyede tamamlanmadı",
-                                HTTP_ISTEK_OKUMA_SURESI.as_secs()
-                            ),
-                            false,
-                            https,
-                        );
-                        continue 'istekler;
-                    }
-                    Err(_) => continue 'istekler,
-                }
+            let Some((tampon, govde_basi)) = istek_basliklarini_oku(&mut akis, son_tarih, https)
+            else {
+                continue;
             };
             let baslik = match HttpIstekBasligi::ayristir(&tampon[..govde_basi]) {
                 Ok(baslik) => baslik,
@@ -2155,256 +2418,29 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                     continue;
                 }
             };
-            let beklenen = baslik.govde_uzunlugu();
-            let icerik_turleri = baslik.baslik_degerleri("Content-Type");
-            if icerik_turleri.len() > 1 {
-                ham_http_hatasi_gonder(
-                    &mut akis,
-                    400,
-                    "birden çok Content-Type başlığı reddedildi",
-                    false,
-                    https,
-                );
+            let Some(govde) = istek_govdesini_oku(
+                &mut akis,
+                &self.kok,
+                &baslik,
+                &tampon[govde_basi..],
+                son_tarih,
+                https,
+            ) else {
                 continue;
-            }
-            let binary_yukleme = icerik_turleri
-                .first()
-                .is_some_and(|deger| deger.eq_ignore_ascii_case("application/octet-stream"));
-            let govde_siniri = if binary_yukleme {
-                http_siniri.yukleme_bayti()
-            } else {
-                http_siniri.istek_govde_bayti()
             };
-            if beklenen > govde_siniri {
-                ham_http_hatasi_gonder(
-                    &mut akis,
-                    413,
-                    &format!("istek gövdesi {} KiB sınırını aşıyor", govde_siniri / 1024),
-                    baslik.yontem().eq_ignore_ascii_case("HEAD"),
-                    https,
-                );
+            let Some(cerez_satiri) = self.web_istegini_baslat(&mut akis, &baslik, es, https) else {
                 continue;
-            }
-            let ilk_govde = &tampon[govde_basi..];
-            if ilk_govde.len() > beklenen {
-                ham_http_hatasi_gonder(
-                    &mut akis,
-                    400,
-                    "Content-Length sonrasında fazladan istek baytı var",
-                    baslik.yontem().eq_ignore_ascii_case("HEAD"),
-                    https,
-                );
-                continue;
-            }
-            let mut yukleme = if binary_yukleme {
-                match web_yukleme::AkanYukleme::yeni(&self.kok) {
-                    Ok(mut yukleme) => {
-                        if let Err(hata) = yukleme.yaz(ilk_govde) {
-                            ham_http_hatasi_gonder(&mut akis, 503, &hata, false, https);
-                            continue 'istekler;
-                        }
-                        Some(yukleme)
-                    }
-                    Err(hata) => {
-                        ham_http_hatasi_gonder(&mut akis, 503, &hata, false, https);
-                        continue 'istekler;
-                    }
-                }
-            } else {
-                None
             };
-            let mut govde_baytlari = if binary_yukleme {
-                Vec::new()
-            } else {
-                ilk_govde.to_vec()
-            };
-            let mut okunan_toplam = ilk_govde.len();
-            while okunan_toplam < beklenen {
-                let mut parca = [0u8; 16 * 1024];
-                let kalan = beklenen - okunan_toplam;
-                let parca_siniri = kalan.min(parca.len());
-                match son_tarihli_soket_oku(&mut akis, &mut parca[..parca_siniri], son_tarih) {
-                    Ok(0) => {
-                        ham_http_hatasi_gonder(
-                            &mut akis,
-                            400,
-                            "istek gövdesi Content-Length'ten kısa",
-                            false,
-                            https,
-                        );
-                        continue 'istekler;
-                    }
-                    Ok(okunan) => {
-                        okunan_toplam += okunan;
-                        if let Some(yukleme) = &mut yukleme {
-                            if let Err(hata) = yukleme.yaz(&parca[..okunan]) {
-                                ham_http_hatasi_gonder(&mut akis, 503, &hata, false, https);
-                                continue 'istekler;
-                            }
-                        } else {
-                            govde_baytlari.extend_from_slice(&parca[..okunan]);
-                        }
-                    }
-                    Err(hata)
-                        if matches!(
-                            hata.kind(),
-                            std::io::ErrorKind::TimedOut | std::io::ErrorKind::WouldBlock
-                        ) =>
-                    {
-                        ham_http_hatasi_gonder(
-                            &mut akis,
-                            408,
-                            &format!(
-                                "istek {} saniyede tamamlanmadı",
-                                HTTP_ISTEK_OKUMA_SURESI.as_secs()
-                            ),
-                            false,
-                            https,
-                        );
-                        continue 'istekler;
-                    }
-                    Err(_) => {
-                        ham_http_hatasi_gonder(
-                            &mut akis,
-                            400,
-                            "istek gövdesi Content-Length'ten kısa",
-                            false,
-                            https,
-                        );
-                        continue 'istekler;
-                    }
-                }
-            }
-            let govde = if let Some(yukleme) = yukleme {
-                match yukleme.tamamla() {
-                    Ok(bilgi) => {
-                        let csrf = tek_http_basligi(&baslik, "X-Zee-CSRF").unwrap_or_default();
-                        format!(
-                            "_csrf={}&yukleme_gecici_yolu={}&yukleme_sha256={}&yukleme_bayti={}",
-                            csrf, bilgi.goreli_yol, bilgi.sha256, bilgi.bayt
-                        )
-                    }
-                    Err(hata) => {
-                        ham_http_hatasi_gonder(&mut akis, 503, &hata, false, https);
-                        continue 'istekler;
-                    }
-                }
-            } else {
-                match govde_metni(&govde_baytlari) {
-                    Ok(govde) => govde.to_string(),
-                    Err(hata) => {
-                        ham_http_hatasi_gonder(
-                            &mut akis,
-                            400,
-                            &hata.to_string(),
-                            baslik.yontem().eq_ignore_ascii_case("HEAD"),
-                            https,
-                        );
-                        continue;
-                    }
-                }
-            };
-            let yontem = baslik.yontem();
-            let hedef = baslik.hedef();
-            let istemci_kimligi = if let Some(origin) = self.guvenli_proxy_origin() {
-                match guvenli_proxy_istegini_denetle(&baslik, origin, yontem) {
-                    Ok(kimlik) => kimlik,
-                    Err((durum, mesaj)) => {
-                        ham_http_hatasi_gonder(
-                            &mut akis,
-                            durum,
-                            mesaj,
-                            yontem.eq_ignore_ascii_case("HEAD"),
-                            true,
-                        );
-                        continue;
-                    }
-                }
-            } else {
-                es.ip().to_string()
-            };
-            // Cookie başlığı "çerez ..." satırı olarak taşınır (K-052).
-            let cerez_degerleri = baslik.baslik_degerleri("Cookie");
-            if cerez_degerleri.len() > 1 {
-                ham_http_hatasi_gonder(
-                    &mut akis,
-                    400,
-                    "birden çok Cookie başlığı reddedildi",
-                    yontem.eq_ignore_ascii_case("HEAD"),
-                    https,
-                );
-                continue;
-            }
-            let cerez = cerez_degerleri.first().copied().unwrap_or_default();
-            let oturum = cerez
-                .split(';')
-                .filter_map(|parca| parca.trim().split_once('='))
-                .find_map(|(ad, deger)| (ad == self.oturum_cerez_adi()).then_some(deger.trim()));
-            let an = web_duvar_saati_ms();
-            self.web_istek_yedegi = Some(WebIstekYedegi {
-                bekleyen_cerezler: self.bekleyen_cerezler.clone(),
-                bekleyen_silinen_cerezler: self.bekleyen_silinen_cerezler.clone(),
-            });
-            self.bekleyen_web_yaniti = None;
-            if let Err(hata) =
-                self.web_guvenligi
-                    .istegi_baslat_kimlikle(oturum, &istemci_kimligi, an)
-            {
-                ham_http_hatasi_gonder(
-                    &mut akis,
-                    503,
-                    &format!("web güvenlik deposuna erişilemedi: {hata}"),
-                    yontem.eq_ignore_ascii_case("HEAD"),
-                    https,
-                );
-                self.web_istek_yedegi = None;
-                continue;
-            }
-            let kapsam = format!(
-                "{} {}",
-                yontem.to_ascii_uppercase(),
-                hedef.split('?').next().unwrap_or(hedef)
-            );
-            match self.web_guvenligi.rate_limit_artir(
-                dil::web_guvenligi::RateLimitTuru::Ucnokta,
-                &kapsam,
-                an,
-            ) {
-                Ok(karar) if karar.izinli => {}
-                Ok(_) => {
-                    ham_http_hatasi_gonder(
-                        &mut akis,
-                        429,
-                        "uç nokta oran sınırı aşıldı",
-                        yontem.eq_ignore_ascii_case("HEAD"),
-                        https,
-                    );
-                    self.web_guvenligi.istegi_geri_al();
-                    self.web_istek_yedegi = None;
-                    continue;
-                }
-                Err(hata) => {
-                    ham_http_hatasi_gonder(
-                        &mut akis,
-                        503,
-                        &format!("oran sınırı deposuna erişilemedi: {hata}"),
-                        yontem.eq_ignore_ascii_case("HEAD"),
-                        https,
-                    );
-                    self.web_guvenligi.istegi_geri_al();
-                    self.web_istek_yedegi = None;
-                    continue;
-                }
-            }
             self.bekleyen_akis = Some(akis);
             self.bekleyen_baglanti_izni = Some(baglanti_izni);
-            self.bekleyen_head = yontem.eq_ignore_ascii_case("HEAD");
-            let cerez_satiri = if cerez.is_empty() {
-                String::new()
-            } else {
-                format!("çerez {}\n", cerez)
-            };
-            return Some(format!("{} {}\n{}{}", yontem, hedef, cerez_satiri, govde));
+            self.bekleyen_head = baslik.yontem().eq_ignore_ascii_case("HEAD");
+            return Some(format!(
+                "{} {}\n{}{}",
+                baslik.yontem(),
+                baslik.hedef(),
+                cerez_satiri,
+                govde
+            ));
         }
     }
     fn istek_islemini_tamamla(&mut self) -> Result<(), String> {

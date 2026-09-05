@@ -12,6 +12,13 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **Kritik işlev bölünmesi ve yerel kapı turu** (K-177, ADR-041): Uzak CI
+  görmemiş 126 commit için bütün kapılar yerelde koşuldu; yalnız işlev eğilim
+  kapısı kırıktı. Web host'un `istek_al` işlevi başlık okuma, gövde zarfı,
+  akışlı gövde ve kimlik/oturum/oran yardımcılarına; PostgreSQL migration
+  uygulaması dosya tarama ve DB uygulamaya bölündü. HTTP davranışı, tanılar
+  ve dil semantiği değişmedi; eğilim tabanı K-177 incelemesiyle yenilendi.
+
 - **Sabit HTTP durumlu yanıt ve K-163 kapanışı** (K-163/F032, ADR-063,
   RFC-0015/spec-11): Rota artık `<ifade> yanıtını <100..599 literal>
   durumuyla gönder` diyebilir; değişken/aralık dışı durum S037'dir ve eski

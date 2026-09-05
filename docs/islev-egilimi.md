@@ -7,7 +7,7 @@ Bu rapor K-144/ADR-041 makine kapısının güncel görünümüdür. Mutlak bir
 kılar. Clippy ölçümü sabit Rust araç zinciriyle üretim `lib` ve `dil` ikilisinde
 çalışır; `allow` öznitelikleri `--force-warn` nedeniyle kapıyı atlayamaz.
 
-- İncelenmiş taban: `K-160 paket sahipligi ayrimi: yayin orkestrasyonu ve artefakt dogrulama fiziksel olarak ayrildi`
+- İncelenmiş taban: `K-177 kritik islev bolunmesi: istek_al baslik/govde/web-guvenlik yardimcilarina, gocleri_uygula dosya tarama ve DB uygulamaya ayrildi`
 - İzlemeye giriş: en az 80 satır veya bilişsel karmaşıklık 12
 - Satır gözden geçirme payı: tabanın %10'u; en az +8, en çok +24
 - Karmaşıklık gözden geçirme payı: tabanın %20'si; en az +2, en çok +5
@@ -19,9 +19,9 @@ kılar. Clippy ölçümü sabit Rust araç zinciriyle üretim `lib` ve `dil` iki
 | `compiler/src/ayristirici.rs::gore_ayristir#1` | 108→108 (+0/+11) | 12→12 (+0/+3) | SABİT |
 | `compiler/src/ayristirici.rs::islem_ayristir#1` | 141→141 (+0/+15) | 8→8 (+0/+2) | SABİT |
 | `compiler/src/ayristirici.rs::yapi_ayristir#1` | 83→83 (+0/+9) | 7→7 (+0/+2) | SABİT |
-| `compiler/src/ayristirici/cumle.rs::cumle_ayristir#1` | 492→492 (+0/+24) | 35→35 (+0/+5) | SABİT |
+| `compiler/src/ayristirici/cumle.rs::cumle_ayristir#1` | 473→473 (+0/+24) | 32→32 (+0/+5) | SABİT |
 | `compiler/src/ayristirici/ifade.rs::kosul_atomu_ic#1` | 183→183 (+0/+19) | 12→12 (+0/+3) | SABİT |
-| `compiler/src/ayristirici/ifade.rs::yapili_kalip_ic#1` | 402→402 (+0/+24) | 52→52 (+0/+5) | SABİT |
+| `compiler/src/ayristirici/ifade.rs::yapili_kalip_ic#1` | 424→424 (+0/+24) | 54→54 (+0/+5) | SABİT |
 | `compiler/src/bicimleyici.rs::bicimle#1` | 112→112 (+0/+12) | 22→22 (+0/+5) | SABİT |
 | `compiler/src/bicimleyici.rs::satiri_parcala#1` | 73→73 (+0/+8) | 15→15 (+0/+3) | SABİT |
 | `compiler/src/cozumleyici.rs::denetle_coklu#1` | 50→50 (+0/+8) | 14→14 (+0/+3) | SABİT |
@@ -30,8 +30,8 @@ kılar. Clippy ölçümü sabit Rust araç zinciriyle üretim `lib` ve `dil` iki
 | `compiler/src/cozumleyici/donus.rs::donusleri_birlestir#1` | 87→87 (+0/+9) | 9→9 (+0/+2) | SABİT |
 | `compiler/src/cozumleyici/etki.rs::cumle_bilgisi#1` | 178→178 (+0/+18) | 12→12 (+0/+3) | SABİT |
 | `compiler/src/cozumleyici/etki.rs::denetle#1` | 133→133 (+0/+14) | 5→5 (+0/+2) | SABİT |
-| `compiler/src/cozumleyici/etki.rs::ifade_bilgisi#1` | 114→114 (+0/+12) | 6→6 (+0/+2) | SABİT |
-| `compiler/src/cozumleyici/ifade.rs::ifade_denetle_ic#1` | 961→961 (+0/+24) | 37→37 (+0/+5) | SABİT |
+| `compiler/src/cozumleyici/etki.rs::ifade_bilgisi#1` | 119→119 (+0/+12) | 7→7 (+0/+2) | SABİT |
+| `compiler/src/cozumleyici/ifade.rs::ifade_denetle_ic#1` | 964→964 (+0/+24) | 37→37 (+0/+5) | SABİT |
 | `compiler/src/cozumleyici/yetkinlik.rs::cumle_bilgisi#1` | 173→173 (+0/+18) | 8→8 (+0/+2) | SABİT |
 | `compiler/src/cozumleyici/yetkinlik.rs::ifade_bilgisi#1` | 112→112 (+0/+12) | 6→6 (+0/+2) | SABİT |
 | `compiler/src/invariant/cumle.rs::cumleyi_dogrula#1` | 296→296 (+0/+24) | 13→13 (+0/+3) | SABİT |
@@ -45,21 +45,22 @@ kılar. Clippy ölçümü sabit Rust araç zinciriyle üretim `lib` ve `dil` iki
 | `compiler/src/main.rs::cikar_komutu#1` | 99→99 (+0/+10) | 6→6 (+0/+2) | SABİT |
 | `compiler/src/main.rs::ekle_komutu#1` | 135→135 (+0/+14) | 10→10 (+0/+2) | SABİT |
 | `compiler/src/main.rs::io_izi_komutu#1` | 108→108 (+0/+11) | 10→10 (+0/+2) | SABİT |
-| `compiler/src/main.rs::istek_al#1` | 282→282 (+0/+24) | 25→25 (+0/+5) | SABİT |
+| `compiler/src/main.rs::istek_govdesini_oku#1` | 79→79 (+0/+8) | 12→12 (+0/+3) | SABİT |
+| `compiler/src/main.rs::web_istegini_baslat#1` | 85→85 (+0/+9) | 6→6 (+0/+2) | SABİT |
 | `compiler/src/morfoloji.rs::eki_uydur#1` | 63→63 (+0/+8) | 13→13 (+0/+3) | SABİT |
 | `compiler/src/paket.rs::kilit_metni#1` | 89→89 (+0/+9) | 9→9 (+0/+2) | SABİT |
 | `compiler/src/paket.rs::ziyaret_et#1` | 186→186 (+0/+19) | 4→4 (+0/+2) | SABİT |
 | `compiler/src/paket/uzak.rs::paketleri_hazirla#1` | 171→171 (+0/+18) | 4→4 (+0/+2) | SABİT |
-| `compiler/src/proje.rs::bildirimi_oku#1` | 203→203 (+0/+21) | 4→4 (+0/+2) | SABİT |
+| `compiler/src/proje.rs::bildirimi_oku#1` | 208→208 (+0/+21) | 4→4 (+0/+2) | SABİT |
 | `compiler/src/proje.rs::uzak_bagimliliklari_guncelle#1` | 94→94 (+0/+10) | 12→12 (+0/+3) | SABİT |
 | `compiler/src/registry.rs::targets_yapisini_dogrula#1` | 95→95 (+0/+10) | 5→5 (+0/+2) | SABİT |
 | `compiler/src/registry.rs::zinciri_dogrula#1` | 92→92 (+0/+10) | 1→1 (+0/+2) | SABİT |
 | `compiler/src/sozcukleyici.rs::sozcukle#1` | 320→320 (+0/+24) | 29→29 (+0/+5) | SABİT |
 | `compiler/src/yorumlayici.rs::gorevleri_calistir#1` | 136→136 (+0/+14) | 2→2 (+0/+2) | SABİT |
 | `compiler/src/yorumlayici.rs::json_nesnesi_ayristir#1` | 96→96 (+0/+10) | 8→8 (+0/+2) | SABİT |
-| `compiler/src/yorumlayici/cumle.rs::blok_calistir_async#1` | 807→807 (+0/+24) | 1→1 (+0/+2) | SABİT |
-| `compiler/src/yorumlayici/ifade.rs::degerlendir_async#1` | 838→838 (+0/+24) | 1→1 (+0/+2) | SABİT |
-| `compiler/src/yorumlayici/io_izi.rs::olay_semasini_denetle#1` | 139→139 (+0/+14) | 21→21 (+0/+5) | SABİT |
+| `compiler/src/yorumlayici/cumle.rs::blok_calistir_async#1` | 815→815 (+0/+24) | 1→1 (+0/+2) | SABİT |
+| `compiler/src/yorumlayici/ifade.rs::degerlendir_async#1` | 847→847 (+0/+24) | 1→1 (+0/+2) | SABİT |
+| `compiler/src/yorumlayici/io_izi.rs::olay_semasini_denetle#1` | 141→141 (+0/+15) | 19→19 (+0/+4) | SABİT |
 | `compiler/src/yorumlayici/kaynak.rs::deger_heap_bayti#1` | 101→101 (+0/+11) | 8→8 (+0/+2) | SABİT |
 | `compiler/src/yorumlayici/web_istek.rs::web_istegini_calistir#1` | 98→98 (+0/+10) | 9→9 (+0/+2) | SABİT |
 
