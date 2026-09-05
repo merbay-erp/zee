@@ -30,3 +30,5 @@ jobs:
             --locked check -D warnings
       - name: Tekrar üretilebilir offline vendor kanıtı
         run: bash scripts/offline-vendor-denetle.sh
+      - name: Birleşik güvenlik kapısı (açık kritik/yüksek bulgu sıfır)
+        run: bash scripts/guvenlik-kapisi.sh --surekli

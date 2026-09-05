@@ -194,6 +194,11 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
     sonrası geçersiz UTF-8'i rota çalışmadan 400'e çeviren strict uygulamayı
     ekledi. `web` kipli kalıcı fixture exact `32247c7…` uygulama SHA'sına ve
     compiler semantic bugfix beyanına bağlıdır; B-065 kapandı.
+57. K-170/ADR-066 güvenlik kanıtını tek kapıda birleştirdi: ardışık `GB-NNN`
+    bulgu kaydı (15 kapalı, 4 kabul edilen sınır, 3 açık düşük/orta), açık
+    kritik/yüksek sıfır kuralı, `tedarik` workflow'unda sürekli kip ve etiket
+    öncesi exact HEAD RC fuzz + clippy + tam test isteyen sürüm adayı kipi;
+    kök `SECURITY.md` bildirim kanalını ve önem sözlüğünü tanımlar.
 56. K-171/ADR-065 spec altındaki 169 normatif maddeyi parmak-izi kimliğiyle
     exact `<dosya>::<işlev>` test kanıtına bağladı; 151 kanıtlı, 16 gerekçeli
     kısmi ve 2 açık madde deterministik raporda görünür, kayıtsız/bayat madde
@@ -777,8 +782,9 @@ hattında açık kalır. K-177 uzak CI görmemiş 126 commit için bütün kapı
 yerelde koşup tek kırık olan kritik işlev eğilimini bölmeyle kapattı. K-167
 uyumluluk sözünü RFC-0028/ADR-064/spec-27 ile yürütülebilir yaptı ve B-072'yi
 kapattı. K-171 spec maddelerini exact test işlevine bağlayıp 16 gerçek kanıt
-boşluğunu adlandırdı; sıradaki makine işi K-170 birleşik güvenlik kapısı ve
-K-166/K-172 için bu boşlukların kapatılmasıdır.
+boşluğunu adlandırdı. K-170 güvenlik kanıtını tek kapıda birleştirip açık
+kritik/yüksek bulgu sıfırını makinece zorunlu kıldı; sıradaki makine işi
+K-172 dogfood corpus'u ile K-166 için drift/bulgu boşluklarının kapatılmasıdır.
 K-161/K-162 gerçek insan testleri de insan verisini beklemeyi sürdürür.
 İnsan verisi gelmeden yeni syntax seçilmez
 veya B-001/B-002 tamamlanmış gösterilmez.
@@ -814,7 +820,7 @@ tamamlanmış sayılmaz; burada istenen ek kanıt ayrıca üretilir.
 | K-167 | **KAPALI** | RFC-0028/ADR-064/spec-27: sekiz dondurulmuş yüzey envanteri, süreli `DEP-NNN` deprecation kaydı, `-dev` sürüm kimliği ve B-072 kaldırması `uyumluluk_testi` ile CI'da |
 | K-168 | **AÇIK** | İki temiz ortamda eş hash, SBOM, imza ve provenance |
 | K-169 | **AÇIK** | Linux/macOS/Windows kurulum-kaldırma ve release runbook tatbikatı |
-| K-170 | **AÇIK** | Birleşik security release gate; kritik/yüksek açık sıfır |
+| K-170 | **KAPALI** | ADR-066 `guvenlik-kapisi.sh` + `GB-NNN` bulgu kaydı + SECURITY.md: 15 kapalı/4 kabul/3 açık düşük-orta, açık kritik/yüksek sıfır; sürüm adayı kipi exact HEAD RC fuzz + clippy + tam test ister |
 | K-171 | **KAPALI** | ADR-065 `spec_drift`: 169 normatif spec maddesi parmak-izi kimliği + exact test işlevi; 151 kanıtlı/16 kısmi/2 açık deterministik raporla CI'da; RFC/ADR belge düzeyinde kalır |
 | K-172 | **AÇIK** | Yalnız dogfood boşluklarından büyüyen başarı+başarısızlık corpus'u |
 | K-173 | **AÇIK** | Uzun compiler/LSP workspace soak ve kaynak sızıntısı kanıtı |

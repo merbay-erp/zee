@@ -12,6 +12,13 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **Birleşik güvenlik sürüm kapısı** (K-170, ADR-066, SECURITY.md): K-105'ten
+  K-176'ya 15 kapalı güvenlik bulgusu, 4 kabul edilen sınır ve 3 açık düşük/orta
+  test boşluğu ardışık `GB-NNN` kaydında; açık kritik/yüksek bulgu CI'ı ve
+  etiketi durdurur. `scripts/guvenlik-kapisi.sh --surekli` tedarik
+  workflow'unda; `--surum-adayi` exact HEAD RC fuzz kanıtı, clippy ve tam test
+  ister. İçerik güvenliği (multipart/antivirüs yok) GB-019 kabul kaydıdır.
+
 - **Spec maddesi drift kapısı** (K-171, ADR-065): `spec/` altındaki 169
   normatif madde (ZORUNLU/YASAK/TANIMLI/AÇIK) parmak-izi kimliğiyle exact
   test işlevine bağlandı; 151 kanıtlı, 16 gerekçeli kısmi ve 2 açık madde

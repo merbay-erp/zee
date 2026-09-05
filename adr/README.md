@@ -68,6 +68,7 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-063 | [Sabit HTTP durumlu yanıt sınırı](063-sabit-http-durumlu-yanit.md) | **kabul** (K-163/F014/F032) |
 | ADR-064 | [Yürütülebilir uyumluluk ve deprecation kapısı](064-uyumluluk-kapisi.md) | **kabul** (K-167/B-072) |
 | ADR-065 | [Spec maddesi düzeyinde drift kapısı](065-spec-madde-drift-kapisi.md) | **kabul** (K-171) |
+| ADR-066 | [Birleşik güvenlik sürüm kapısı](066-birlesik-guvenlik-surum-kapisi.md) | **kabul** (K-170) |
 | ADR-004 | Bellek yönetimi prototip kararı (GC / ARC benchmark) | bekliyor |
 | ADR-005 | Native backend seçimi (Cranelift / LLVM) | bekliyor — Faz 4 |
 | ADR-007 | [Telemetri ve gizlilik: araçlar veri toplamaz](007-telemetri-ve-gizlilik.md) | **kabul** |

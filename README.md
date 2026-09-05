@@ -175,6 +175,7 @@ korpus üzerinde regression testine girer.
 | Semantic regresyon | [docs/semantic-regresyon-korpusu.md](docs/semantic-regresyon-korpusu.md) | ✅ 17 geçmiş bug → minimal `.dil` + faz/tanı/span/exit/çıktı |
 | Uyumluluk politikası | [docs/uyumluluk-politikasi.md](docs/uyumluluk-politikasi.md) | ✅ sekiz dondurulmuş yüzey envanteri, süreli `DEP-NNN` deprecation kaydı ve `-dev` sürüm kimliği CI'da |
 | Spec drift raporu | [docs/spec-drift-raporu.md](docs/spec-drift-raporu.md) | ✅ her normatif spec maddesi exact test işlevine bağlı; kısmi/açık maddeler gerekçesiyle görünür |
+| Güvenlik kapısı | [SECURITY.md](SECURITY.md) | ✅ `GB-NNN` bulgu kaydı, açık kritik/yüksek sıfır kuralı ve sürüm adayı kapısı `tedarik` workflow'unda |
 
 <!-- ZEE-DEPO-SAYILARI:BEGIN -->
 <!-- `cd compiler && cargo run --bin depo_sayilari -- --yaz` üretir. Elle değiştirme. -->
@@ -183,10 +184,10 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **658** |
+| Rust + doctest vakası | **661** |
 | Tanı kimliği | **155 etkin + 3 ayrılmış** |
 | RFC | **28** (2 kabul, 24 geçici kabul, 2 taslak) |
-| ADR | **63** (63 kabul) |
+| ADR | **64** (64 kabul) |
 | Normatif spec bölümü | **27** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
@@ -389,8 +390,8 @@ v0.3 sürüm notlarına bak). Şimdiki kapılar:
   CA'sıyla hostname ve yanlış-CA reddini, worker başına 4 bağlantılık havuzu,
   2 sn checkout, 30 sn idle, 300 sn lifetime hedefi + bakım çevrimi, stale replacement ve kontrollü
   kapanışı gerçek PG16.11 üzerinde kapattı. Multipart, managed-provider CA
-  rotasyonu, çok-worker toplam bütçe provası ve içerik güvenlik politikası açık
-  kalır; organik 1000+ LOC bakım kapanışı F032'de tamamlanmıştır.
+  rotasyonu ve çok-worker toplam bütçe provası açık kalır; içerik güvenliği
+  K-170/ADR-066 ile kabul edilen sınır (GB-019) olarak kayıtlıdır; organik 1000+ LOC bakım kapanışı F032'de tamamlanmıştır.
   Exact F031 ürün saha kaydı `977cd2a` commit'indedir; yeniden üretim ve dürüst
   kapsam [PostgreSQL TLS/havuz runbook'unda](docs/postgresql-tls-havuz-profili.md)
   sabittir.
