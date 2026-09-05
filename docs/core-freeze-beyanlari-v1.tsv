@@ -14,3 +14,4 @@ cd0473d42e592417ccd3877a8d8af66e0088de4d	correctness	-	K-163	compiler/tests/web_
 c177d833dad1e26e5c30f9516f9a2054cc35aa80	maintenance	-	-	-	-	K-177 kritik işlev eğilim kapısı için istek_al ve gocleri_uygula davranış değiştirmeden bölündü; yeni özellik, tanı veya yüzey açılmadı.	-
 4b9fec6304ccf7bbc6301ab881345fcee1f140e7	maintenance	-	-	-	-	K-167 uyumluluk kapısı için yalnız ölü internal tedarik cephesi silindi ve sürüm kimliği geliştirme serisine çekildi; yeni özellik, tanı veya kullanıcı yüzeyi açılmadı.	-
 fef50b636d36c6c8d795c05c354ea73f5d2e8cae	maintenance	-	-	-	-	K-171 spec madde drift kapısı için yalnız bakım ikilisi ve testi eklendi; yeni dil özelliği, tanı veya kullanıcı yüzeyi açılmadı.	-
+d587737a6baafe9018d42cefb0054f3d7ab99eb2	maintenance	-	-	-	-	K-172 için yalnız CLI adaptörünün mevcut davranışını kanıtlayan birim testleri eklendi; yeni özellik, tanı veya kullanıcı yüzeyi açılmadı.	-
