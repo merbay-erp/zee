@@ -20,3 +20,4 @@ c177d833dad1e26e5c30f9516f9a2054cc35aa80	maintenance	-	istek_al ve gocleri_uygul
 fef50b636d36c6c8d795c05c354ea73f5d2e8cae	maintenance	-	Yalnız bakım ikilisi spec_drift eklendi; derleyici kütüphanesi, grammar, runtime, tanı ve kullanıcı programı davranışı değişmedi.
 d587737a6baafe9018d42cefb0054f3d7ab99eb2	maintenance	-	Yalnız main.rs test modülüne gerçek TCP yükleme ve proxy çerez birim testleri eklendi; üretim kodu, grammar, runtime ve tanı davranışı değişmedi.
 75b0220ceecc4ea2190c69d0d42e874913a09078	maintenance	-	Yalnız bakım ikilisi surum_artefakti eklendi; derleyici kütüphanesi, grammar, runtime, tanı ve kullanıcı programı davranışı değişmedi.
+44a4aba12cba4509ce93a9d379ca9ce798897a76	maintenance	-	Yalnız bakım ikilisi soak eklendi; derleyici kütüphanesi, grammar, runtime, tanı ve kullanıcı programı davranışı değişmedi.
