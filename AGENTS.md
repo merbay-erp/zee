@@ -145,6 +145,11 @@ iki temiz klonda eş SHA-256 olmadan artefakt yoktur; SBOM, provenance ve imza
 bağımlılık değişen iş betiği ve SBOM/provenance beklentilerini aynı committe
 inceler.
 
+Derleyici ya da LSP'ye önbellek, kalıcı durum veya uzun ömürlü tampon ekleyen iş
+`cargo run --locked --release --bin soak -- --sure-sn 1800` koşusunu yeniden
+ister (K-173/ADR-069); tarihçe yalnız temiz ağaçtan exact SHA ile yazılır ve
+ısınma sonrası RSS büyümesi %10 + 32 MiB'ı birlikte aşarsa iş tamamlanmış sayılmaz.
+
 ## V1 öncesi iş sırası
 
 K-160/K-160A/ADR-059 sonrasında core freeze makinece etkindir: **Yeni compiler özelliği

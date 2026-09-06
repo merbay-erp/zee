@@ -12,6 +12,12 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **Uzun soak kapısı** (K-173, ADR-069): `soak` koşucusu golden korpusunu
+  derleyip sabit programı yürütürken gerçek `dillsp` sürecine sürekli
+  `didChange` gönderir; ısınma sonrası RSS büyümesi %10 ve 32 MiB'ı birlikte
+  aşarsa kapı kalır. Tarihçe exact SHA ile yazılır; haftalık workflow 30 dk
+  koşar. Dil davranışı değişmedi.
+
 - **Tekrar üretilebilir sürüm artefaktı** (K-168, ADR-068): `dil` ve `dillsp`
   iki bağımsız temiz klonda sabit toolchain, `--remap-path-prefix` ve commit
   zamanı `SOURCE_DATE_EPOCH` ile bayt-bayt eş üretilir; eşit değilse artefakt

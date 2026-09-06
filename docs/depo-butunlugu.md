@@ -240,3 +240,16 @@ SLSA provenance ve `zee-surum-imza-v1` imzasını deterministik üretir/doğrula
 ```bash
 bash scripts/surum-artefakti.sh --cikti /tmp/surum [--anahtar surum.zee-anahtar]
 ```
+
+## Uzun soak kapısı
+
+K-173/ADR-069'un [rehberi](soak.md) ve
+[`soak-gecmisi-v1.tsv`](soak-gecmisi-v1.tsv); derleyici döngüsü ile gerçek
+`dillsp` sürecini süre bütçesi boyunca koşturur, RSS'i pencere pencere
+örnekler ve ısınma sonrası büyüme hem %10 hem 32 MiB'ı aşarsa kalır.
+
+```bash
+cd compiler
+cargo build --locked --release --bin dillsp --bin soak
+target/release/soak --sure-sn 1800 --pencere-sn 60 --dillsp target/release/dillsp --rapor target/soak.md
+```

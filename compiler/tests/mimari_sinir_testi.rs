@@ -566,3 +566,41 @@ fn spec_maddeleri_exact_test_kanitindan_kopamaz() {
         "madde kanıt haritası beklenmedik biçimde küçüldü: {kayit}"
     );
 }
+
+#[test]
+fn uzun_soak_kapisi_rss_egilimini_ve_provenance_tarihcesini_tasir() {
+    let arac = kaynak("src/bin/soak.rs");
+    let workflow = kaynak("../.github/workflows/soak.yml");
+    let gecmis = kaynak("../docs/soak-gecmisi-v1.tsv");
+    for parca in [
+        "AZAMI_BUYUME_YUZDE",
+        "AZAMI_BUYUME_KIB",
+        "ISINMA_PENCERESI",
+        "publishDiagnostics",
+        "kaynagi_derle_birimlerle",
+        "soak tarihçesi kirli çalışma ağacından yazılamaz",
+        "zee-soak-gecmisi-1",
+    ] {
+        assert!(
+            arac.contains(parca),
+            "soak kapısı sözleşmesi eksik: {parca}"
+        );
+    }
+    assert!(workflow.contains("--sure-sn 1800"));
+    assert!(workflow.contains("schedule:"));
+    assert!(workflow.contains("cargo build --locked --release --bin dillsp --bin soak"));
+    assert!(gecmis.starts_with("# zee-soak-gecmisi-1\n# git_sha\t"));
+    for satir in gecmis
+        .lines()
+        .filter(|s| !s.starts_with('#') && !s.is_empty())
+    {
+        let alanlar = satir.split('\t').collect::<Vec<_>>();
+        assert_eq!(
+            alanlar.len(),
+            17,
+            "soak tarihçe satırı 17 alan taşımalı: {satir}"
+        );
+        assert_eq!(alanlar[0].len(), 40, "soak tarihçesi tam Git SHA ister");
+        assert!(matches!(alanlar[16], "gecti" | "kaldi"));
+    }
+}

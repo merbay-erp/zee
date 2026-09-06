@@ -3115,3 +3115,23 @@ usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.
 - **Sınır:** Eşitlik aynı platform/toolchain içindir; Linux/macOS/Windows
   ayrı çift-klon kanıtı taşır. SLSA L2/L3, hosted builder ve HSM imzası vaat
   edilmez. Dil semantiği değişmedi; K-168/V1-P1-25 kapandı.
+
+## K-173 — Tepe bellek sızıntıyı göstermez, eğilim gösterir (6 Eyl)
+
+- **Bulgu:** K-148 koşucusu tek `ru_maxrss` tepe değeri ve 25 turluk süre
+  ölçer; saatlerce açık editör oturumunun ya da sürekli derleyen sürecin
+  bellek eğilimi hiç ölçülmemişti.
+- **Karar:** ADR-069. `soak` ikilisi süre bütçesince golden korpusunu (birim
+  yükleyicisiyle) derler, sabit programı yürütür ve gerçek `dillsp` sürecine
+  içeriği değişen 2.000 satırlık `didChange` gönderip `publishDiagnostics`
+  bekler; her 5 sn iki sürecin RSS'i `ps -o rss=` ile örneklenir. Isınma
+  penceresi atılır; ısınma sonrası ilk/son pencere medyanı büyümesi hem %10
+  hem 32 MiB'ı aşarsa kalır. `--gecmis` yalnız temiz ağaçtan exact SHA,
+  platform, rustc, süre, pencere, dönem sayıları ve medyanlarla yazar.
+  Haftalık `soak` workflow'u 30 dk koşar.
+- **Duman koşusu** (macOS arm64, 45 sn/15 sn pencere): 282 derleme ve 282
+  LSP dönemi; soak süreci 8.400→8.400 KiB (%0), dillsp 17.520→17.632 KiB
+  (%1); GEÇTİ. 30 dakikalık ilk taban tarihçe satırı ayrı committe.
+- **Sınır:** Mutlak bellek bütçesi spec/24'tedir; süreler karar girdisi
+  değildir; Windows'ta `ps` yok. Dil semantiği değişmedi; K-173/V1-P1-26
+  kapandı.

@@ -177,6 +177,7 @@ korpus üzerinde regression testine girer.
 | Spec drift raporu | [docs/spec-drift-raporu.md](docs/spec-drift-raporu.md) | ✅ her normatif spec maddesi exact test işlevine bağlı; kısmi/açık maddeler gerekçesiyle görünür |
 | Dogfood korpusu | [docs/dogfood-korpusu.md](docs/dogfood-korpusu.md) | ✅ gerçek ürün sürtünmesinden doğan başarı+başarısızlık vakaları ürün politikasıyla CI'da |
 | Tekrar üretilebilir sürüm | [docs/tekrar-uretilebilir-surum.md](docs/tekrar-uretilebilir-surum.md) | ✅ iki temiz klonda eş SHA-256, SPDX SBOM, SLSA provenance ve Ed25519 imza; `surum-adayi` workflow'u |
+| Uzun soak | [docs/soak.md](docs/soak.md) | ✅ derleyici + gerçek `dillsp` 30 dk; ısınma sonrası RSS büyümesi %10 ve 32 MiB'ı birlikte aşarsa kapı kırılır; haftalık workflow |
 | Güvenlik kapısı | [SECURITY.md](SECURITY.md) | ✅ `GB-NNN` bulgu kaydı, açık kritik/yüksek sıfır kuralı ve sürüm adayı kapısı `tedarik` workflow'unda |
 
 <!-- ZEE-DEPO-SAYILARI:BEGIN -->
@@ -186,10 +187,10 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **672** |
+| Rust + doctest vakası | **677** |
 | Tanı kimliği | **155 etkin + 3 ayrılmış** |
 | RFC | **28** (2 kabul, 24 geçici kabul, 2 taslak) |
-| ADR | **66** (66 kabul) |
+| ADR | **67** (67 kabul) |
 | Normatif spec bölümü | **27** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
