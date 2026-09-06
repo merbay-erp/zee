@@ -27,7 +27,7 @@ kalici_dosya	altyapi	kaynak_sinirlari	Atomik kalici dosya ilkelleri
 kaynak_sinirlari	temel	tani,tani_politikasi	Merkezi kaynak butcesi uygulamasi
 kimlik	temel	-	Semantic kimlik newtype lari
 lib	adapter	agac,ayristirici,cozumleyici,faz,tani,yorumlayici	Dis derleme ve yurutme cephesi
-lsp	adapter	faz,hir,kaynak_sinirlari,kimlik,morfoloji,paket,proje,tani	Editor protokolu ve semantic sorgular
+lsp	adapter	ayristirici,faz,hir,kaynak_sinirlari,kimlik,morfoloji,paket,proje,tani	Editor protokolu ve semantic sorgular
 morfoloji	sozdizimi	guvenlik	Surumlu Turkce ek profili
 ondalik	temel	-	Keyfi hassasiyetli onluk cekirdegi
 paket	proje	agac,artefakt_dogrulama,ayristirici,guvenlik,kalici_dosya,kaynak_sinirlari,paket_modeli,proje,registry,sozcukleyici,tani	Paket grafigi ve kilit cozumu

@@ -1,0 +1,7 @@
+# K-164/F001 çözümü: postfix önce bir ada bağlanır, doğrulama düz adla yapılır.
+# Ürünün bütün birim testleri bu deseni kullanır.
+
+test "adet ara adla doğrulanır"
+    liste 1, 2 listesi olsun
+    adet listenin adedi olsun
+    adet 2 ye eşit olmalı

@@ -137,7 +137,13 @@ kritik/yüksek bulgu aynı dalgada kapanmadan CI ve sürüm etiketi geçmez.
 `dogfood/` altına eklenen her `.dil` kaynağı aynı committe `dogfood/korpus-v1.tsv`
 içinde ürün, kaynak işi/dilimi, kip, beklenti ve exact çıktı/tanıyla kayıtlıdır
 (K-172/ADR-067); korpus yalnız gerçek ürün sürtünmesinden büyür, tasarım örneği
-golden'a, düzeltilmiş bug `regression/`e gider.
+golden'a, düzeltilmiş bug `regression/`e gider. Depo içi ürün (`kanit-ozeti`,
+K-164/ADR-072) tek `proje` vakasıyla kapsanır; kayıt defteri ya da ürün kaynağı
+değişince `cd compiler && cargo run --locked -- çalıştır ../dogfood/kanit-ozeti/kaynak/ana.dil`
+ile `docs/kanit-ozeti.md` aynı committe yenilenir, bayat sayfa CI'ı durdurur.
+Ürünün Rust/Go eşdeğerleri (K-165/ADR-073) aynı sayfayı bayt bayt üretmek
+zorundadır; çıktı sözleşmesi değişen iş üçünü birlikte günceller ve
+`scripts/dogfood-karsilastirma.sh` ile tarihçeye yeni satır yazar.
 
 Sürüm ikilisi yalnız `scripts/surum-artefakti.sh` ile üretilir (K-168/ADR-068):
 iki temiz klonda eş SHA-256 olmadan artefakt yoktur; SBOM, provenance ve imza

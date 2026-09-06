@@ -22,6 +22,14 @@ bağını bu kaynak yüzeyine eklemiştir.
 
 - Aynı ad iki kaynaktan gelirse **A008** — sessiz gölgeleme yoktur;
   çözüm kullanıcıya bırakılır (adlardan birini değiştir / tek kaynağa topla).
+- Aynı tanımın elmas yoldan iki kez gelmesi (`c → a` ve `c → b → a`)
+  çakışma değildir: çakışma tanımın geldiği yola değil tanımlandığı kökene
+  bakılarak sayılır; birimin testleri kökeni başına bir kez alınır
+  (K-164/ADR-072). Görünürlük kuralı değişmez.
+- Birimde doğan tanı (ayrıştırma, sözleşme, gövde, çalışma, test) o birimin
+  kökenini taşır; satır birimin metnine göredir. CLI alıntıyı birim
+  dosyasından alır, LSP tanıyı `kullan` satırına taşıyıp birim adını ve
+  özgün satırı söyler (K-164/ADR-072).
 - Birimlerin döngüsel kullanımı **YASAK** (A009); ortak tanımlar üçüncü
   birime taşınır.
 

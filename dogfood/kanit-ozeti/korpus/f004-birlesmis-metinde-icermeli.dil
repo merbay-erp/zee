@@ -1,0 +1,7 @@
+# K-164/F004 çözümü: liste satır sonuyla birleştirilir, içerme metinde sorgulanır.
+# Ürünün bölüm testleri bu deseni kullanır.
+
+test "birleşmiş metin içermeli"
+    satırlar "| parser | 2 |", "| S004 | 2 |" listesi olsun
+    metin satırların "\n" ile birleşmişi olsun
+    metin "| parser | 2 |" içermeli

@@ -275,3 +275,20 @@ K-169/ADR-071'in [runbook'u](surum-runbook.md), `scripts/kur.sh`/`kur.ps1` ve
 dosya silme ve üzerine yazma yoktur. `kurulum_testi` gerçek ikililerle akışı
 ve oynanmış artefakt reddini sınar; `kurulum-tatbikati` workflow'u üç Tier-1
 platformda etikette koşar.
+
+## İkinci ürün: kanıt özeti aracı
+
+K-164/ADR-072'nin [aracı](kanit-ozeti-araci.md) `dogfood/kanit-ozeti` altında
+Zee ile yazılmıştır; dokuz kayıt defterinden [`docs/kanit-ozeti.md`](kanit-ozeti.md)
+üretir. `kanit_ozeti_testi` ürünü gerçek kayıt defteri içerikleriyle hermetik
+koşar ve sayfanın bayt bayt tazeliğini, determinizmini ve bağımsız sayımla
+doğruluğunu ister; `dogfood_korpusu_testi` `proje` kipiyle bütün birim
+testlerini koşar; CI gerçek CLI ile sayfayı yeniden üretip farkı reddeder.
+
+## Zee–Rust–Go karşılaştırması
+
+K-165/ADR-073'ün [veri sayfası](dogfood-karsilastirma.md) ve exact SHA
+tarihçesi `docs/dogfood-karsilastirma-v1.tsv`. `dogfood_karsilastirma_testi`
+Rust (ve varsa Go) eşdeğerinin aynı sayfayı bayt bayt ürettiğini ve tarihçenin
+son kaydındaki kaynak satırı/test sayılarının yeniden hesapla tuttuğunu
+doğrular; süre ve RSS makineye bağlıdır, kapı değildir.

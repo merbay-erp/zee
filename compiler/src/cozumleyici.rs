@@ -188,7 +188,13 @@ fn denetle_tek_gecis(
     if sonuc.is_ok() {
         for (test_indeksi, test) in program.testler.iter_mut().enumerate() {
             let mut test_ortami = SembolTablosu::yeni(baglam.test_kapsami(test_indeksi));
-            sonuc = blok_denetle(&mut test.govde, &mut test_ortami, &mut baglam);
+            let test_kokeni = test.koken.clone();
+            sonuc = blok_denetle(&mut test.govde, &mut test_ortami, &mut baglam).map_err(|tani| {
+                match &test_kokeni {
+                    Some(koken) => tani.kokenle(koken),
+                    None => tani,
+                }
+            });
             if sonuc.is_err() {
                 break;
             }

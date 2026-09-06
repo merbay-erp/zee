@@ -1,0 +1,70 @@
+# K-164 kanıt özeti — güvenlik bulguları bölümü (docs/guvenlik-bulgulari-v1.tsv).
+# Önem × durum çapraz tablosu ve açık kritik/yüksek sıfır kapısı.
+# Sürtünme: çağrı argümanı içinde `ile` birleştirmesi yok; anahtar önce ada bağlanır.
+# Sürtünme: `her önem için` kaynağı çoğul çıkarımıyla `önemler` sütununa bağlanır;
+# sabit sıra listesi `sıradaki her önem için` ile açıkça seçilir.
+
+tsv_araclari birimini kullan
+sayim_araclari birimini kullan
+markdown_araclari birimini kullan
+
+işlem güvenlik bölümünü üret
+    satırları Metin listesi olarak al
+    Metin listesi döndürür
+
+    bölüm "Güvenlik bulguları" ve "docs/guvenlik-bulgulari-v1.tsv" ile bölüm başlığını yap olsun
+    metin bölümün "\n" ile birleşmişi olsun
+    önemler satırlar ve "onem" ile sütunu topla olsun
+    durumlar satırlar ve "durum" ile sütunu topla olsun
+    çiftler önemler ve durumlar ve "|" ile çiftleri birleştir olsun
+    sayaçlar çiftler için değerleri say olsun
+    sütunlar "Önem", "Kapalı", "Kabul", "Açık", "Toplam" listesi olsun
+    tablo sütunlar için tablo başlığını yap olsun
+    tablodaki her çizgi için
+        bölüme çizgiyi ekle
+    sıra "kritik", "yuksek", "orta", "dusuk" listesi olsun
+    açık_ağır 0 olsun
+    sıradaki her önem için
+        kapalı_ad önem ile "|kapali" olsun
+        kabul_ad önem ile "|kabul" olsun
+        açık_ad önem ile "|acik" olsun
+        kapalı sayaçlar ve kapalı_ad ile sayımı oku olsun
+        kabul sayaçlar ve kabul_ad ile sayımı oku olsun
+        açık sayaçlar ve açık_ad ile sayımı oku olsun
+        ara kapalı ile kabulün toplamı olsun
+        toplam ara ile açığın toplamı olsun
+        önem "kritik" e eşitse
+            açık_ağırı açıkla artır
+        önem "yuksek" e eşitse
+            açık_ağırı açıkla artır
+        hücreler boş liste olsun
+        hücrelere önemi ekle
+        hücrelere "" ile kapalı ekle
+        hücrelere "" ile kabul ekle
+        hücrelere "" ile açık ekle
+        hücrelere "" ile toplam ekle
+        satır hücreler için hücreleri birleştir olsun
+        bölüme satırı ekle
+    bölüme "" ekle
+    açık_ağır 0 a eşitse
+        bölüme "Kapı: açık kritik/yüksek bulgu 0 → **GEÇTİ** (ADR-066 sürekli kapı koşulu)." ekle
+    değilse
+        bölüme "Kapı: açık kritik/yüksek bulgu " ile açık_ağır ile " → **KALDI**." ekle
+    bölüme "Toplam bulgu: " ile önemlerin adedi ile "." ekle
+    bölümü döndür
+
+test "güvenlik bölümü çapraz tablo ve kapı üretir"
+    satırlar "# kimlik	tarih	kaynak	onem	yuzey	ozet	durum	kapanis	karar", "GB-001	2026-09-01	inceleme	yuksek	ag	x	kapali	K-1	a.md", "GB-002	2026-09-01	inceleme	orta	ag	y	acik	K-2	b.md" listesi olsun
+    bölüm satırlar için güvenlik bölümünü üret olsun
+    metin bölümün "\n" ile birleşmişi olsun
+    metin "| yuksek | 1 | 0 | 0 | 1 |" içermeli
+    metin "| orta | 0 | 0 | 1 | 1 |" içermeli
+    metin "Kapı: açık kritik/yüksek bulgu 0 → **GEÇTİ** (ADR-066 sürekli kapı koşulu)." içermeli
+    son bölümün sonu olsun
+    son "Toplam bulgu: 2." ye eşit olmalı
+
+test "açık yüksek bulgu kapıyı düşürür"
+    satırlar "# kimlik	tarih	kaynak	onem	yuzey	ozet	durum	kapanis	karar", "GB-001	2026-09-01	inceleme	yuksek	ag	x	acik	K-1	a.md" listesi olsun
+    bölüm satırlar için güvenlik bölümünü üret olsun
+    metin bölümün "\n" ile birleşmişi olsun
+    metin "Kapı: açık kritik/yüksek bulgu 1 → **KALDI**." içermeli

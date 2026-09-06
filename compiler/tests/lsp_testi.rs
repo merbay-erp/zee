@@ -561,3 +561,44 @@ fn baska_birimdeki_tanim_ayni_satira_dusse_de_eksik_rename_uretilmez() {
         rename.govdeler[0]
     );
 }
+
+#[test]
+fn birim_dosyasindaki_tani_kullan_satirina_tasinir_ve_birimi_soyler() {
+    // K-164/ADR-072: birimin 5. satırındaki S016 açık belgede 5. satıra değil,
+    // o birimin `kullan` satırına düşer; mesaj birim adını ve özgün satırı söyler.
+    let klasor = std::env::temp_dir().join(format!(
+        "zee-lsp-birim-{}-{}",
+        std::process::id(),
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map(|d| d.as_nanos())
+            .unwrap_or(0)
+    ));
+    std::fs::create_dir_all(&klasor).expect("geçici klasör");
+    std::fs::write(
+        klasor.join("hesaplar.dil"),
+        "işlem selamla\n    adı Metin olarak al\n    Metin döndürür\n\n    x adın adedi 3 e eşit olmalı\n    adı döndür\n",
+    )
+    .expect("birim yazılmalı");
+    let uri = format!(
+        "file://{}/ana.dil",
+        klasor.to_string_lossy().replace('\\', "/")
+    );
+    let mut sunucu = Sunucu::yeni();
+    let mesaj = format!(
+        r##"{{"jsonrpc":"2.0","method":"textDocument/didOpen","params":{{"textDocument":{{"uri":"{uri}","languageId":"dil","version":1,"text":"# ana\nhesaplar birimini kullan\n\n\"Zeynep\" için selamla yaz\n"}}}}}}"##
+    );
+    let cikti = sunucu.mesaj_isle(&mesaj);
+    let yayin = &cikti.govdeler[0];
+    assert!(yayin.contains("\"code\":\"S016\""), "{yayin}");
+    assert!(
+        yayin.contains("\"start\":{\"line\":1,\"character\":0}"),
+        "tanı kullan satırına (0 tabanlı 1) taşınmalı: {yayin}"
+    );
+    assert!(yayin.contains("hesaplar birimi, satır 5:"), "{yayin}");
+    assert!(
+        !yayin.contains("\"line\":4"),
+        "birimin satırı ana belgede işaretlenemez: {yayin}"
+    );
+    let _ = std::fs::remove_dir_all(&klasor);
+}

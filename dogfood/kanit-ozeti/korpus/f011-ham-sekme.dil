@@ -1,0 +1,7 @@
+# K-164/F011 çözümü: sekme metin sabitine ham karakter olarak gömülür; biçimleyici
+# ve sözcükleyici bunu korur. Ürünün TSV okuyucusu bu deseni kullanır.
+
+sekme "	" olsun
+metin "a	b	c" olsun
+parçalar metnin sekme ile parçaları olsun
+parçaların adedi yaz

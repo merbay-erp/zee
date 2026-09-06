@@ -1,0 +1,42 @@
+# K-164 kanıt özeti — semantic regresyon korpusu bölümü (regression/v2.tsv).
+
+tsv_araclari birimini kullan
+sayim_araclari birimini kullan
+markdown_araclari birimini kullan
+
+işlem regresyon bölümünü üret
+    satırları Metin listesi olarak al
+    Metin listesi döndürür
+
+    bölüm "Semantic regresyon korpusu" ve "regression/v2.tsv" ile bölüm başlığını yap olsun
+    metin bölümün "\n" ile birleşmişi olsun
+    fazlar satırlar ve "faz" ile sütunu topla olsun
+    faz_sayaçları fazlar için değerleri say olsun
+    tablo faz_sayaçları ve "Faz" ve "Vaka" ile sayım tablosunu yap olsun
+    tablodaki her çizgi için
+        bölüme çizgiyi ekle
+    bölüme "" ekle
+    kodlar satırlar ve "tani" ile sütunu topla olsun
+    kod_sayaçları kodlar için değerleri say olsun
+    tablo kod_sayaçları ve "Tanı" ve "Vaka" ile sayım tablosunu yap olsun
+    tablodaki her çizgi için
+        bölüme çizgiyi ekle
+    düzeltmeler satırlar ve "fixed_by" ile sütunu topla olsun
+    tam 0 olsun
+    her düzeltme için
+        uzunluk düzeltmenin uzunluğu olsun
+        uzunluk 40 a eşitse
+            tamı 1 artır
+    toplam fazların adedi olsun
+    bölüme "" ekle
+    bölüme "Toplam " ile toplam ile " vaka; `-` tanısız çalışma/eşzamanlılık vakasıdır. Tam 40 karakterlik `fixed_by` commit'i taşıyan vaka: " ile tam ile "/" ile toplam ile "." ekle
+    bölümü döndür
+
+test "regresyon bölümü faz ve tanı tablolarını üretir"
+    satırlar "# vaka	bug	fixed_by	introduced_by	guaranteed_since	faz	kip	tani	span	exit	cikti	dosya", "a	K-1	0123456789012345678901234567890123456789	-	0.8.0-dev	parser	parser	S004	1:1:1	1	-	x.dil", "b	K-2	abc	-	0.8.0-dev	parser	parser	S004	1:1:1	1	-	y.dil" listesi olsun
+    bölüm satırlar için regresyon bölümünü üret olsun
+    metin bölümün "\n" ile birleşmişi olsun
+    son bölümün sonu olsun
+    son "Toplam 2 vaka; `-` tanısız çalışma/eşzamanlılık vakasıdır. Tam 40 karakterlik `fixed_by` commit'i taşıyan vaka: 1/2." e eşit olmalı
+    metin "| parser | 2 |" içermeli
+    metin "| S004 | 2 |" içermeli

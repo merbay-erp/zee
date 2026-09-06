@@ -72,7 +72,7 @@ kalır (ADR-025).
 | A005 | Aynı adla ikinci işlem tanımı | İşlem adları benzersizdir |
 | A006 | Aynı adla ikinci yapı tanımı | Yapı adları benzersizdir |
 | A007 | `yeni <Ad>` — yapı tanımlı değil | Yapıyı kullanmadan önce tanımla |
-| A008 | Ad iki kaynaktan geliyor (birim çakışması) | Sessiz gölgeleme yoktur: adlardan birini değiştir ya da tek kaynakta topla (RFC-0009) |
+| A008 | Ad iki kaynaktan geliyor (birim çakışması) | Sessiz gölgeleme yoktur: adlardan birini değiştir ya da tek kaynakta topla (RFC-0009). Aynı tanımın elmas yoldan iki kez gelmesi çakışma değildir (ADR-072) |
 | A009 | Birimler döngüsel kullanıyor | Ortak tanımları üçüncü bir birime taşı |
 | A010 | Birim yüklenemedi | Aynı klasörde `<ad>.dil` dosyası olmalı (RFC-0009 §4) |
 | A011 | Paket yüklenemedi | Paketi `yerel_bağımlılıklar` listesine ekle, ardından `dil kilitle .` çalıştır |

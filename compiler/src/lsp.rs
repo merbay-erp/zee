@@ -504,8 +504,65 @@ impl Sunucu {
         };
         let tanilar =
             proje_tanilari.unwrap_or_else(|| crate::kaynagi_tanilari(&metin, &mut yukleyici));
+        let tanilar = birim_tanilarini_konumla(&metin, tanilar);
         tanilari_yaz(uri, &tanilar)
     }
+}
+
+/// Kökendeki birim adı: dosya yolunun gövdesi ya da `gömülü:` sonrası.
+fn koken_birim_adi(koken: &str) -> String {
+    if let Some(ad) = koken.strip_prefix("gömülü:") {
+        return ad.to_string();
+    }
+    std::path::Path::new(koken)
+        .file_stem()
+        .and_then(|ad| ad.to_str())
+        .unwrap_or(koken)
+        .to_string()
+}
+
+/// Birim kökenli tanının satırı birimin metnine aittir; açık belgede
+/// işaretlenemez. Tanı, o birimin `kullan` satırına taşınır ve mesaj birim
+/// adı ile özgün satırı söyler (K-164/ADR-072). Kökensiz tanılar değişmez.
+fn birim_tanilarini_konumla(metin: &str, tanilar: Vec<Tani>) -> Vec<Tani> {
+    if tanilar.iter().all(|tani| tani.koken.is_none()) {
+        return tanilar;
+    }
+    let kullanimlar = crate::faz::KaynakMetni::yeni(metin)
+        .sozcukle()
+        .map(|tokenlar: crate::faz::TokenAkisi| {
+            crate::ayristirici::kullanilan_birimler(tokenlar.tokenlar())
+        })
+        .unwrap_or_default();
+    tanilar
+        .into_iter()
+        .map(|tani| {
+            let Some(koken) = tani.koken.clone() else {
+                return tani;
+            };
+            let birim_adi = koken_birim_adi(&koken);
+            let satir = kullanimlar
+                .iter()
+                .find(|(ad, _, _)| *ad == birim_adi)
+                .map(|(_, _, satir)| *satir)
+                .unwrap_or(1);
+            let uzunluk = metin
+                .lines()
+                .nth(satir.saturating_sub(1))
+                .map(|satir_metni| satir_metni.chars().count())
+                .unwrap_or(1)
+                .max(1);
+            Tani {
+                kod: tani.kod,
+                mesaj: format!("{} birimi, satır {}: {}", birim_adi, tani.satir, tani.mesaj),
+                satir,
+                sutun: 1,
+                uzunluk,
+                oneri: tani.oneri,
+                koken: tani.koken,
+            }
+        })
+        .collect()
 }
 
 /// textDocument + position parametrelerini söker (satır/sütun 0 tabanlı).

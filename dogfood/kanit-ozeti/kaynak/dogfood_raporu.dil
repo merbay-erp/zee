@@ -1,0 +1,76 @@
+# K-164 kanıt özeti — dogfood ürünleri ve korpusu bölümü.
+# Kaynaklar: docs/dogfood-projeleri-v1.tsv ve dogfood/korpus-v1.tsv.
+# Sürtünme: `ürün_satırlarını al` parametresi "ürün_satırların" kökünü bağlar
+# (iyelik+belirtme ayrışmaz); parametreler `kayıtları`/`vakaları` oldu.
+
+tsv_araclari birimini kullan
+sayim_araclari birimini kullan
+markdown_araclari birimini kullan
+
+işlem dogfood bölümünü üret
+    kayıtları Metin listesi olarak al
+    vakaları Metin listesi olarak al
+    Metin listesi döndürür
+
+    bölüm "Dogfood ürünleri ve korpusu" ve "docs/dogfood-projeleri-v1.tsv + dogfood/korpus-v1.tsv" ile bölüm başlığını yap olsun
+    metin bölümün "\n" ile birleşmişi olsun
+    ürünler kayıtlar ve "urun" ile sütunu topla olsun
+    kökler kayıtlar ve "kok" ile sütunu topla olsun
+    durumlar kayıtlar ve "durum" ile sütunu topla olsun
+    ürün_durumları ürünler ve durumlar ve " (" ile çiftleri birleştir olsun
+    çizgiler ürün_durumları ve kökler ve ") | " ile çiftleri birleştir olsun
+    sütunlar "Ürün (durum)", "Kök" listesi olsun
+    tablo sütunlar için tablo başlığını yap olsun
+    tablodaki her çizgi için
+        bölüme çizgiyi ekle
+    her çizgi için
+        bölüme "| " ile çizgi ile " |" ekle
+    bölüme "" ekle
+    vaka_ürünleri vakalar ve "urun" ile sütunu topla olsun
+    kipler vakalar ve "kip" ile sütunu topla olsun
+    beklentiler vakalar ve "beklenti" ile sütunu topla olsun
+    kip_çiftleri vaka_ürünleri ve kipler ve "|" ile çiftleri birleştir olsun
+    beklenti_çiftleri vaka_ürünleri ve beklentiler ve "|" ile çiftleri birleştir olsun
+    kip_sayaçları kip_çiftleri için değerleri say olsun
+    beklenti_sayaçları beklenti_çiftleri için değerleri say olsun
+    ürün_sayaçları vaka_ürünleri için değerleri say olsun
+    sıralı_ürünler ürün_sayaçları için sıralı anahtarları ver olsun
+    vaka_sütunları "Ürün", "denetle", "calistir", "proje", "basarili", "basarisiz", "Toplam" listesi olsun
+    tablo vaka_sütunları için tablo başlığını yap olsun
+    tablodaki her çizgi için
+        bölüme çizgiyi ekle
+    her sıralı_ürün için
+        denetle_ad sıralı_ürün ile "|denetle" olsun
+        çalıştır_ad sıralı_ürün ile "|calistir" olsun
+        proje_ad sıralı_ürün ile "|proje" olsun
+        başarılı_ad sıralı_ürün ile "|basarili" olsun
+        başarısız_ad sıralı_ürün ile "|basarisiz" olsun
+        denetle kip_sayaçları ve denetle_ad ile sayımı oku olsun
+        çalıştır kip_sayaçları ve çalıştır_ad ile sayımı oku olsun
+        proje kip_sayaçları ve proje_ad ile sayımı oku olsun
+        başarılı beklenti_sayaçları ve başarılı_ad ile sayımı oku olsun
+        başarısız beklenti_sayaçları ve başarısız_ad ile sayımı oku olsun
+        toplam ürün_sayaçları ve sıralı_ürün ile sayımı oku olsun
+        hücreler boş liste olsun
+        hücrelere sıralı_ürünü ekle
+        hücrelere "" ile denetle ekle
+        hücrelere "" ile çalıştır ekle
+        hücrelere "" ile proje ekle
+        hücrelere "" ile başarılı ekle
+        hücrelere "" ile başarısız ekle
+        hücrelere "" ile toplam ekle
+        satır hücreler için hücreleri birleştir olsun
+        bölüme satırı ekle
+    bölüme "" ekle
+    bölüme "Toplam korpus vakası: " ile vaka_ürünlerinin adedi ile "." ekle
+    bölümü döndür
+
+test "dogfood bölümü ürün ve vaka tablolarını üretir"
+    ürünler "# urun	kok	koken_commit	durum", "a-urun	dogfood/a	abc	active" listesi olsun
+    korpus "# vaka	urun	kaynak_is	kip	beklenti	tani	cikti	dosya	not", "v1	a-urun	K-1	denetle	basarili	-	-	dogfood/a/x.dil	n", "v2	a-urun	K-1	calistir	basarisiz	C001	-	dogfood/a/y.dil	n" listesi olsun
+    bölüm ürünler ve korpus ile dogfood bölümünü üret olsun
+    metin bölümün "\n" ile birleşmişi olsun
+    metin "| a-urun (active) | dogfood/a |" içermeli
+    metin "| a-urun | 1 | 1 | 0 | 1 | 1 | 2 |" içermeli
+    son bölümün sonu olsun
+    son "Toplam korpus vakası: 2." ye eşit olmalı

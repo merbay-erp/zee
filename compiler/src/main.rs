@@ -654,7 +654,7 @@ fn denetle_yolu(argumanlar: &[String]) -> ExitCode {
             println!("{{\"durum\":\"hata\",\"tanilar\":[{}]}}", govde.join(","));
         } else {
             for tani in &tanilar {
-                eprint!("{}", tani.raporla(&girdi.kaynak));
+                eprint!("{}", tani_raporu(tani, &girdi.kaynak));
                 eprintln!();
             }
             eprintln!("{} tanı bulundu.", tanilar.len());
@@ -836,7 +836,7 @@ fn ekle_komutu(argumanlar: &[String]) -> ExitCode {
             1,
         )
         .onerili("Paylaşılacak kodu ayrı bir zee projesine taşı.".into());
-        eprint!("{}", tani.raporla(&eski_kaynak));
+        eprint!("{}", tani_raporu(&tani, &eski_kaynak));
         return ExitCode::FAILURE;
     }
 
@@ -874,7 +874,7 @@ fn ekle_komutu(argumanlar: &[String]) -> ExitCode {
     let yeni_kaynak = match dil::proje::yerel_bagimliliklari_guncelle(&eski_kaynak, &yollar) {
         Ok(kaynak) => kaynak,
         Err(tani) => {
-            eprint!("{}", tani.raporla(&eski_kaynak));
+            eprint!("{}", tani_raporu(&tani, &eski_kaynak));
             return ExitCode::FAILURE;
         }
     };
@@ -951,7 +951,7 @@ fn cikar_komutu(argumanlar: &[String]) -> ExitCode {
     let bildirim = match dil::proje::bildirimi_oku(&eski_kaynak) {
         Ok(bildirim) => bildirim,
         Err(tani) => {
-            eprint!("{}", tani.raporla(&eski_kaynak));
+            eprint!("{}", tani_raporu(&tani, &eski_kaynak));
             return ExitCode::FAILURE;
         }
     };
@@ -989,7 +989,7 @@ fn cikar_komutu(argumanlar: &[String]) -> ExitCode {
     let yeni_kaynak = match dil::proje::yerel_bagimliliklari_guncelle(&eski_kaynak, &yollar) {
         Ok(kaynak) => kaynak,
         Err(tani) => {
-            eprint!("{}", tani.raporla(&eski_kaynak));
+            eprint!("{}", tani_raporu(&tani, &eski_kaynak));
             return ExitCode::FAILURE;
         }
     };
@@ -1049,7 +1049,7 @@ fn bir_dosyayi_bicimle(yol: &std::path::Path) -> ExitCode {
             }
         },
         Err(tani) => {
-            eprint!("{}", tani.raporla(&kaynak));
+            eprint!("{}", tani_raporu(&tani, &kaynak));
             ExitCode::FAILURE
         }
     }
@@ -1082,7 +1082,7 @@ fn projeyi_bicimle(kok: &std::path::Path) -> ExitCode {
             Ok(bicimli) => hazir.push((yol, kaynak, bicimli)),
             Err(tani) => {
                 eprintln!("Biçimlenemedi: {}", yol.display());
-                eprint!("{}", tani.raporla(&kaynak));
+                eprint!("{}", tani_raporu(&tani, &kaynak));
                 return ExitCode::FAILURE;
             }
         }
@@ -1235,6 +1235,18 @@ impl KaynakGirdisi {
     }
 }
 
+/// Tanıyı raporlar; birim kökenli tanıda alıntı ana kaynaktan değil, okunabilen
+/// birim dosyasından alınır (K-164/ADR-072). Gömülü birim ya da okunamayan
+/// köken başlıkta adıyla anılır.
+fn tani_raporu(tani: &dil::tani::Tani, ana_kaynak: &str) -> String {
+    if let Some(koken) = &tani.koken {
+        if let Ok(birim_kaynagi) = std::fs::read_to_string(koken) {
+            return tani.raporla_birimle(&birim_kaynagi);
+        }
+    }
+    tani.raporla(ana_kaynak)
+}
+
 enum GirdiHatasi {
     Mesaj(String),
     Tani {
@@ -1264,7 +1276,7 @@ impl GirdiHatasi {
             }
             GirdiHatasi::Tani { tani, kaynak, yol } => {
                 eprintln!("Proje çözülemedi: {}", yol.display());
-                eprint!("{}", tani.raporla(kaynak));
+                eprint!("{}", tani_raporu(tani, kaynak));
             }
         }
     }
@@ -2786,19 +2798,19 @@ fn calistir_io_ile(
         match dil::kaynagi_derle_kokenlerle(&girdi.kaynak, Some(&girdi.koken), &mut yukleyici) {
             Ok(program) => program,
             Err(tani) => {
-                eprint!("{}", tani.raporla(&girdi.kaynak));
+                eprint!("{}", tani_raporu(&tani, &girdi.kaynak));
                 return ExitCode::FAILURE;
             }
         };
     if let Err(tani) = dil::cozumleyici::yetkinlikleri_denetle(&program, politika) {
-        eprint!("{}", tani.raporla(&girdi.kaynak));
+        eprint!("{}", tani_raporu(&tani, &girdi.kaynak));
         return ExitCode::FAILURE;
     }
     match dil::yorumlayici::calistir_io_kodla(&program, io) {
         // K-069: `programı N ile bitir` süreç çıkış kodu olur (0–255).
         Ok(kod) => ExitCode::from(kod.clamp(0, 255) as u8),
         Err(tani) => {
-            eprint!("{}", tani.raporla(&girdi.kaynak));
+            eprint!("{}", tani_raporu(&tani, &girdi.kaynak));
             ExitCode::FAILURE
         }
     }
@@ -2810,12 +2822,12 @@ fn dene_komutu(girdi: &KaynakGirdisi) -> ExitCode {
         match dil::kaynagi_derle_kokenlerle(&girdi.kaynak, Some(&girdi.koken), &mut yukleyici) {
             Ok(program) => program,
             Err(tani) => {
-                eprint!("{}", tani.raporla(&girdi.kaynak));
+                eprint!("{}", tani_raporu(&tani, &girdi.kaynak));
                 return ExitCode::FAILURE;
             }
         };
     if let Err(tani) = dil::cozumleyici::yetkinlikleri_denetle(&program, &girdi.politikasi()) {
-        eprint!("{}", tani.raporla(&girdi.kaynak));
+        eprint!("{}", tani_raporu(&tani, &girdi.kaynak));
         return ExitCode::FAILURE;
     }
     let sonuclar = dil::programi_dene(&program);
@@ -2832,7 +2844,7 @@ fn dene_komutu(girdi: &KaynakGirdisi) -> ExitCode {
             }
             Some(tani) => {
                 println!("✗ {}", sonuc.ad);
-                eprint!("{}", tani.raporla(&girdi.kaynak));
+                eprint!("{}", tani_raporu(tani, &girdi.kaynak));
             }
         }
     }

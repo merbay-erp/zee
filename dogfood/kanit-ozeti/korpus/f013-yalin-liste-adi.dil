@@ -1,0 +1,6 @@
+# K-164/F013 çözümü: liste iyeliksiz yalın ad alır (`tablo`), `tablodaki her ...`
+# çözülür. Ürünün bölüm üreticileri tabloyu bu adla yeniden bağlar.
+
+tablo "a", "b" listesi olsun
+tablodaki her çizgi için
+    çizgi yaz

@@ -1,0 +1,52 @@
+# K-164 kanıt özeti — uzun soak tarihçesi bölümü (docs/soak-gecmisi-v1.tsv).
+# Son koşu satırı ve geçti/kaldı sayımı.
+
+tsv_araclari birimini kullan
+sayim_araclari birimini kullan
+markdown_araclari birimini kullan
+
+işlem soak bölümünü üret
+    satırları Metin listesi olarak al
+    Metin listesi döndürür
+
+    bölüm "Uzun soak tarihçesi" ve "docs/soak-gecmisi-v1.tsv" ile bölüm başlığını yap olsun
+    metin bölümün "\n" ile birleşmişi olsun
+    sonuçlar satırlar ve "sonuc" ile sütunu topla olsun
+    sonuç_sayaçları sonuçlar için değerleri say olsun
+    tablo sonuç_sayaçları ve "Sonuç" ve "Koşu" ile sayım tablosunu yap olsun
+    tablodaki her çizgi için
+        bölüme çizgiyi ekle
+    bölüme "" ekle
+    sonuçlar boşsa
+        bölüme "Henüz soak koşusu yok." ekle
+        bölümü döndür
+    şalar satırlar ve "git_sha" ile sütunu topla olsun
+    tarihler satırlar ve "tarih" ile sütunu topla olsun
+    platformlar satırlar ve "platform" ile sütunu topla olsun
+    süreler satırlar ve "sure_sn" ile sütunu topla olsun
+    derleyiciler satırlar ve "derleyici_buyume_yuzde" ile sütunu topla olsun
+    dilsplar satırlar ve "dillsp_buyume_yuzde" ile sütunu topla olsun
+    son_şa şaların sonu olsun
+    son_tarih tarihlerin sonu olsun
+    son_platform platformların sonu olsun
+    son_süre sürelerin sonu olsun
+    son_derleyici derleyicilerin sonu olsun
+    son_dillsp dilspların sonu olsun
+    son_sonuç sonuçların sonu olsun
+    bölüme "Son koşu: `" ile son_şa ile "` (" ile son_tarih ile ", " ile son_platform ile ", " ile son_süre ile " sn): derleyici %" ile son_derleyici ile ", dillsp %" ile son_dillsp ile " RSS büyümesi → " ile son_sonuç ile "." ekle
+    bölümü döndür
+
+test "soak bölümü son koşuyu özetler"
+    satırlar "# git_sha	tarih	platform	rustc	sure_sn	pencere_sn	derleme_donemi	lsp_donemi	derleyici_rss_ilk_kib	derleyici_rss_son_kib	dillsp_rss_ilk_kib	dillsp_rss_son_kib	derleyici_buyume_yuzde	dillsp_buyume_yuzde	azami_buyume_yuzde	azami_buyume_kib	sonuc", "abc	2026-09-06	macos	rustc	1800	60	1	1	1	1	1	1	1	7	10	32768	gecti" listesi olsun
+    bölüm satırlar için soak bölümünü üret olsun
+    metin bölümün "\n" ile birleşmişi olsun
+    metin "| gecti | 1 |" içermeli
+    son bölümün sonu olsun
+    son "Son koşu: `abc` (2026-09-06, macos, 1800 sn): derleyici %1, dillsp %7 RSS büyümesi → gecti." ye eşit olmalı
+
+test "boş tarihçe açıkça söylenir"
+    satırlar "# git_sha	sonuc" listesi olsun
+    bölüm satırlar için soak bölümünü üret olsun
+    metin bölümün "\n" ile birleşmişi olsun
+    son bölümün sonu olsun
+    son "Henüz soak koşusu yok." a eşit olmalı

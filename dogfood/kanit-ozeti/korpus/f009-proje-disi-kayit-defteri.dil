@@ -1,0 +1,6 @@
+# K-164/F009 sürtünmesi: proje kipinde dosya sınırı ürün köküdür; depo kökündeki
+# kayıt defterine `../` ile ulaşmak C012 ile reddedilir. Ürün bu yüzden dosya
+# kipinde koşar (`dil çalıştır .../kaynak/ana.dil`).
+
+satırlar "../../regression/v2.tsv" dosyasının satırları olsun
+satırların adedi yaz

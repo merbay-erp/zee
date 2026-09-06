@@ -1240,7 +1240,12 @@ async fn islem_cagir(
     } else {
         None
     };
-    let sonuc = blok_calistir_async(&islem.govde, &mut yerel, program, io, derinlik).await;
+    let sonuc = blok_calistir_async(&islem.govde, &mut yerel, program, io, derinlik)
+        .await
+        .map_err(|tani| match &islem.koken {
+            Some(koken) => tani.kokenle(koken),
+            None => tani,
+        });
     if eylem {
         GOREV_BEKLEME_SINYALI.with(|yuva| *yuva.borrow_mut() = askidaki_gorev_sinyali);
     }

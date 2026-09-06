@@ -1,0 +1,11 @@
+# K-164/F006 sürtünmesi: `başlığı Metin olarak al` parametresi "başlığ" kökünü
+# bağlar; gövdede sert kök `başlık` A001 verir (ünsüz yumuşaması geri alınmaz).
+
+işlem başlık satırı yap
+    başlığı Metin olarak al
+    Metin döndürür
+
+    satır "## " ile başlık olsun
+    satırı döndür
+
+"Özet" için başlık satırı yap yaz

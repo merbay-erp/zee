@@ -12,6 +12,15 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **İkinci gerçek ürün ve iki birim düzeltmesi** (K-164, ADR-072):
+  `dogfood/kanit-ozeti` depo kayıt defterlerinden `docs/kanit-ozeti.md`
+  üretir (toplu veri işleme iş yükü). Elmas birim içe alımı (`c→a`, `c→b→a`)
+  artık A008 değildir; birimde doğan tanı kökenini taşır, CLI birim
+  dosyasından alıntılar, LSP `kullan` satırına taşır, JSON kökenli tanıda
+  `koken` alanı verir. Tanı kimlikleri ve geçerli program davranışı değişmedi.
+- **Zee–Rust–Go karşılaştırması** (K-165, ADR-073): aynı araç üç dilde bayt
+  bayt aynı sayfayı üretir; ölçüler exact SHA tarihçesinde.
+
 - **Kurulum-kaldırma ve sürüm runbook'u** (K-169, ADR-071): `scripts/kur.sh`
   ve `kur.ps1` artefaktı `SHA256SUMS` ile doğrulayıp kullanıcı klasörüne kurar,
   var olan dosyayı ezmez; `kaldir.sh`/`kaldir.ps1` yalnız manifestteki

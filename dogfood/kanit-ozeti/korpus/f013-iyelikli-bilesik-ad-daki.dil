@@ -1,0 +1,6 @@
+# K-164/F013 sürtünmesi: iyelik ekli bileşik ad (`faz_tablosu`) `-ndaki` ile
+# kaynak olarak çözülemez; `faz_tablosundaki her çizgi için` A001 verir.
+
+faz_tablosu "a", "b" listesi olsun
+faz_tablosundaki her çizgi için
+    çizgi yaz

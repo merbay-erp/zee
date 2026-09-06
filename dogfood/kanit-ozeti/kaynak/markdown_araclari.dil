@@ -1,0 +1,77 @@
+# K-164 kanıt özeti — Markdown tablo ve bölüm yardımcıları.
+# Sürtünme: `satır` ve `satırlar` birlikteyken `satırlara` A002 verir; liste `çıktı` oldu.
+# Sürtünme: liste listeye eklenemez; bölümler satır satır kopyalanır.
+# Sürtünme: `başlığı al` parametresi "başlığ" kökünü bağlar (yumuşama geri
+# alınmaz); parametre adları sert ünsüzle bitmeyecek biçimde seçildi.
+
+sayim_araclari birimini kullan
+
+işlem hücreleri birleştir
+    hücreleri Metin listesi olarak al
+    Metin döndürür
+
+    iç hücrelerin " | " ile birleşmişi olsun
+    satır "| " ile iç ile " |" olsun
+    satırı döndür
+
+işlem tablo başlığını yap
+    sütunları Metin listesi olarak al
+    Metin listesi döndürür
+
+    satırlar boş liste olsun
+    başlık sütunlar için hücreleri birleştir olsun
+    satırlara başlığı ekle
+    çizgiler boş liste olsun
+    her sütun için
+        çizgilere "---" ekle
+    ayraç çizgiler için hücreleri birleştir olsun
+    satırlara ayracı ekle
+    satırları döndür
+
+işlem sayım tablosunu yap
+    sayaçları TamSayı sözlüğü olarak al
+    etiketi Metin olarak al
+    ölçüyü Metin olarak al
+    Metin listesi döndürür
+
+    sütunlar etiket, ölçü listesi olsun
+    çıktı sütunlar için tablo başlığını yap olsun
+    anahtarlar sayaçlar için sıralı anahtarları ver olsun
+    her anahtar için
+        değer sayaçlar ve anahtar ile sayımı oku olsun
+        hücreler boş liste olsun
+        hücrelere anahtarı ekle
+        hücrelere "" ile değer ekle
+        satır hücreler için hücreleri birleştir olsun
+        çıktıya satırı ekle
+    çıktıyı döndür
+
+işlem bölüm başlığını yap
+    adı Metin olarak al
+    yolu Metin olarak al
+    Metin listesi döndürür
+
+    satırlar boş liste olsun
+    satırlara "" ekle
+    satırlara "## " ile ad ekle
+    satırlara "" ekle
+    satırlara "Kaynak: `" ile yol ile "`" ekle
+    satırlara "" ekle
+    satırları döndür
+
+test "tablo başlığı ve sayım satırları"
+    sayaçlar boş sözlük olsun
+    sayaçların "parser" değeri 5 olsun
+    sayaçların "checker" değeri 4 olsun
+    satırlar sayaçlar ve "Faz" ve "Vaka" ile sayım tablosunu yap olsun
+    adet satırların adedi olsun
+    adet 4 e eşit olmalı
+    ilk satırların ilki olsun
+    ilk "| Faz | Vaka |" e eşit olmalı
+    son satırların sonu olsun
+    son "| parser | 5 |" e eşit olmalı
+
+test "bölüm başlığı kaynağı gösterir"
+    satırlar "Başlık" ve "docs/x.tsv" ile bölüm başlığını yap olsun
+    adet satırların adedi olsun
+    adet 5 e eşit olmalı

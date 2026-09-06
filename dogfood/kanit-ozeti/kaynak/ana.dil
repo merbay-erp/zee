@@ -1,0 +1,59 @@
+# K-164 kanıt özeti — giriş: depo kayıt defterlerini okur, docs/kanit-ozeti.md yazar.
+# Göreli yollar bu dosyanın klasöründen çözülür (spec/07); depo kökü üç üsttedir.
+# Sürtünme: proje kipinde dosya sınırı ürün köküdür (C012); depo-genel araç bu
+# yüzden dosya kipinde (`... kaynak/ana.dil`) koşar, politikası hermetik testte doğrulanır.
+# Bölümler birimlerde saf işlemdir; dosya IO yalnız burada yapılır.
+
+regresyon_raporu birimini kullan
+guvenlik_raporu birimini kullan
+spec_raporu birimini kullan
+dogfood_raporu birimini kullan
+deprecation_raporu birimini kullan
+soak_raporu birimini kullan
+beyan_raporu birimini kullan
+
+çıktı boş liste olsun
+çıktıya "# Kanıt özeti" ekle
+çıktıya "" ekle
+çıktıya "Bu sayfa `dogfood/kanit-ozeti` Zee ürünü tarafından depo kayıt defterlerinden üretilir (K-164/ADR-072) ve elle düzenlenmez. Yenilemek için: `cd compiler && cargo run --locked -- çalıştır ../dogfood/kanit-ozeti/kaynak/ana.dil`. CI aynı komutu koşar ve bu dosya bayatsa kırılır." ekle
+
+regresyon_satırları "../../../regression/v2.tsv" dosyasının satırları olsun
+bölüm regresyon_satırları için regresyon bölümünü üret olsun
+bölümdeki her satır için
+    çıktıya satırı ekle
+
+güvenlik_satırları "../../../docs/guvenlik-bulgulari-v1.tsv" dosyasının satırları olsun
+bölüm güvenlik_satırları için güvenlik bölümünü üret olsun
+bölümdeki her satır için
+    çıktıya satırı ekle
+
+spec_satırları "../../../docs/spec-madde-kaniti-v1.tsv" dosyasının satırları olsun
+bölüm spec_satırları için spec bölümünü üret olsun
+bölümdeki her satır için
+    çıktıya satırı ekle
+
+ürün_satırları "../../../docs/dogfood-projeleri-v1.tsv" dosyasının satırları olsun
+korpus_satırları "../../../dogfood/korpus-v1.tsv" dosyasının satırları olsun
+bölüm ürün_satırları ve korpus_satırları ile dogfood bölümünü üret olsun
+bölümdeki her satır için
+    çıktıya satırı ekle
+
+deprecation_satırları "../../../docs/deprecation-kayitlari-v1.tsv" dosyasının satırları olsun
+bölüm deprecation_satırları için deprecation bölümünü üret olsun
+bölümdeki her satır için
+    çıktıya satırı ekle
+
+soak_satırları "../../../docs/soak-gecmisi-v1.tsv" dosyasının satırları olsun
+bölüm soak_satırları için soak bölümünü üret olsun
+bölümdeki her satır için
+    çıktıya satırı ekle
+
+değişiklik_satırları "../../../docs/compiler-degisiklik-beyanlari-v1.tsv" dosyasının satırları olsun
+freeze_satırları "../../../docs/core-freeze-beyanlari-v1.tsv" dosyasının satırları olsun
+bölüm değişiklik_satırları ve freeze_satırları ile beyan bölümünü üret olsun
+bölümdeki her satır için
+    çıktıya satırı ekle
+
+metin çıktının "\n" ile birleşmişi olsun
+"../../../docs/kanit-ozeti.md" dosyasına metin yaz
+"docs/kanit-ozeti.md yazıldı: " ile çıktının adedi ile " satır" yaz

@@ -1,0 +1,6 @@
+# K-164/F010 sürtünmesi: listede sıra numarasıyla öğe erişimi yok; `alanların
+# 2 inci` S015'tir. Yalnız `ilki`/`sonu` vardır.
+
+alanlar "GB-001", "kapali", "yuksek" listesi olsun
+durum alanların 2 inci olsun
+durum yaz
