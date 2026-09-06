@@ -267,3 +267,11 @@ cd compiler
 cargo run --locked --bin tani_kalitesi -- --denetle
 cargo run --locked --bin tani_kalitesi -- --rapor-yaz
 ```
+
+## Kurulum-kaldırma tatbikatı
+
+K-169/ADR-071'in [runbook'u](surum-runbook.md), `scripts/kur.sh`/`kur.ps1` ve
+`kaldir.sh`/`kaldir.ps1`; `SHA256SUMS` doğrulanmadan kurulum, manifest dışı
+dosya silme ve üzerine yazma yoktur. `kurulum_testi` gerçek ikililerle akışı
+ve oynanmış artefakt reddini sınar; `kurulum-tatbikati` workflow'u üç Tier-1
+platformda etikette koşar.

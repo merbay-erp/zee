@@ -12,6 +12,12 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **Kurulum-kaldırma ve sürüm runbook'u** (K-169, ADR-071): `scripts/kur.sh`
+  ve `kur.ps1` artefaktı `SHA256SUMS` ile doğrulayıp kullanıcı klasörüne kurar,
+  var olan dosyayı ezmez; `kaldir.sh`/`kaldir.ps1` yalnız manifestteki
+  değişmemiş dosyaları siler. Üç platform tatbikat workflow'u etikette koşar;
+  `docs/surum-runbook.md` sürüm günü sırasıdır. Dil davranışı değişmedi.
+
 - **Tanı kalitesi kapısı ve üç tanı düzeltmesi** (K-166, ADR-070, ADR-024
   §8–9): golden'a 11 acemi hatası mutasyonu uygulayan `tani_kalitesi`
   öneri/işaret/gürültü ölçer. Düzeltmeler: işlem/yapı/`göre` başlığının S007'si

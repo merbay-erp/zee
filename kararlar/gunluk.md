@@ -3168,3 +3168,23 @@ usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.
   derleme ve tanı kimlikleri değişmedi.
 - **Sınır:** “En sık” sıralaması insan verisi gelene kadar korpus frekansıdır;
   kök tohumlama yalnız çoklu tanı görünümündedir. K-166/V1-P1-27 kapandı.
+
+## K-169 — Kurulum da bir güvenlik sınırıdır (6 Eyl)
+
+- **Bulgu:** K-168 artefaktı imzalı ve tekrar üretilebilirdi; fakat kurulum,
+  kaldırma ve sürüm günü sırası yazılı değildi. `curl | sh` ya da elle kopya,
+  doğrulanmamış ikiliyi PATH'e koyar ve kaldırırken yabancı dosyaya dokunabilir.
+- **Karar:** ADR-071. `kur.sh`/`kur.ps1` yalnız `SHA256SUMS` ile doğrulanan
+  `dil`/`dillsp` ikililerini kurar, var olan dosyayı ezmez, manifest
+  (`kurulum-v1.tsv`: yol, SHA-256, kaynak Git SHA) yazar ve manifest varken
+  ikinci kurulumu reddeder. `kaldir.sh`/`kaldir.ps1` yalnız manifestteki, özeti
+  değişmemiş dosyaları siler (`--zorla` dışında). `kurulum-tatbikati`
+  workflow'u Ubuntu/macOS/Windows'ta artefakt→kur→`dil sürüm`→kaldır koşar;
+  `docs/surum-runbook.md` sürüm gününün bağlayıcı sırasıdır.
+- **Yerel tatbikat** (macOS arm64, K-168 artefaktıyla): kurulum 2 ikili,
+  `dil 0.8.0-dev …` çıktısı, ikinci kurulum reddi, değişmiş dosyada kaldırma
+  reddi ve `--zorla` ile temiz kaldırma, oynanmış `dil` için “SHA-256
+  uyuşmuyor” reddi. Aynı akış `kurulum_testi` ile her Unix CI koşusundadır.
+- **Sınır:** Linux/Windows tatbikatı workflow kanıtıdır; paket yöneticisi
+  formülü ve otomatik güncelleme V1 sözü değildir. K-169/V1-P1-28 kapandı;
+  üçüncü incelemenin makine hattı tamamlandı.

@@ -7,7 +7,7 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 | Bölüm | Madde | Kanıtlı | Kısmi | Açık |
 |---|---:|---:|---:|---:|
 | `spec/01-sozcukleme.md` | 6 | 5 | 1 | 0 |
-| `spec/02-dizim.md` | 7 | 5 | 2 | 0 |
+| `spec/02-dizim.md` | 7 | 6 | 1 | 0 |
 | `spec/03-adlar-ve-kapsam.md` | 6 | 6 | 0 | 0 |
 | `spec/04-turler.md` | 13 | 12 | 1 | 0 |
 | `spec/05-degerlendirme.md` | 9 | 8 | 1 | 0 |
@@ -33,12 +33,11 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 | `spec/25-postgresql-veri-erisimi.md` | 7 | 4 | 2 | 1 |
 | `spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md` | 2 | 2 | 0 | 0 |
 | `spec/27-uyumluluk-ve-surumleme.md` | 10 | 7 | 2 | 1 |
-| **Toplam** | **169** | **153** | **14** | **2** |
+| **Toplam** | **169** | **154** | **13** | **2** |
 
 ## Kısmi kanıtlı maddeler
 
 - `spec/01-sozcukleme.md#7da78144c1ad1213` — - Kodlama **ZORUNLU** UTF-8'dir. — UTF-8 olmayan kaynak dosyanın açık reddi ayrı testte değil; lexer yalnız geçerli UTF-8 üzerinde fuzz/golden ile kanıtlı.
-- `spec/02-dizim.md#fe0bd61f6615fe9d` — - Blok açan satırdan sonra girintili en az bir satır **ZORUNLU** (S007). — S007 için doğrudan olumsuz vaka yok; girinti kurtarma testleri eksik gövdeyi dolaylı kapsar.
 - `spec/02-dizim.md#218b7d3be6574e46` — - Bir satırın girintisi, açık bloklardan birinin hizasına inmiyorsa **YA… — S005 hizasız girinti için doğrudan kodlu olumsuz vaka yok; kurtarma testleri girinti sınırını dolaylı kapsar.
 - `spec/04-turler.md#8c66243a23919002` — - `<ad> al` başlangıç biçiminde parametre türleri bütün erişilebilir çağ… — T017 iki sırada kanıtlı; parametre sayısı uyuşmazlığı T015 için doğrudan olumsuz vaka yok.
 - `spec/05-degerlendirme.md#a15d6be626477b4e` — Girdi bitişi (TANIMLI) — C005 girdi bitişi için doğrudan olumsuz vaka yok; `programı bitir` erken sonlanması golden 03/28 ile kanıtlı.
