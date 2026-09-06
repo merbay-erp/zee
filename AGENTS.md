@@ -139,6 +139,12 @@ içinde ürün, kaynak işi/dilimi, kip, beklenti ve exact çıktı/tanıyla kay
 (K-172/ADR-067); korpus yalnız gerçek ürün sürtünmesinden büyür, tasarım örneği
 golden'a, düzeltilmiş bug `regression/`e gider.
 
+Sürüm ikilisi yalnız `scripts/surum-artefakti.sh` ile üretilir (K-168/ADR-068):
+iki temiz klonda eş SHA-256 olmadan artefakt yoktur; SBOM, provenance ve imza
+`surum_artefakti` ikilisinden gelir. Derleme bayrağı, toolchain ya da
+bağımlılık değişen iş betiği ve SBOM/provenance beklentilerini aynı committe
+inceler.
+
 ## V1 öncesi iş sırası
 
 K-160/K-160A/ADR-059 sonrasında core freeze makinece etkindir: **Yeni compiler özelliği

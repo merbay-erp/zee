@@ -70,6 +70,7 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-065 | [Spec maddesi düzeyinde drift kapısı](065-spec-madde-drift-kapisi.md) | **kabul** (K-171) |
 | ADR-066 | [Birleşik güvenlik sürüm kapısı](066-birlesik-guvenlik-surum-kapisi.md) | **kabul** (K-170) |
 | ADR-067 | [Yalnız dogfood boşluklarından büyüyen korpus](067-dogfood-korpusu.md) | **kabul** (K-172) |
+| ADR-068 | [Tekrar üretilebilir sürüm artefaktı](068-tekrar-uretilebilir-surum.md) | **kabul** (K-168) |
 | ADR-004 | Bellek yönetimi prototip kararı (GC / ARC benchmark) | bekliyor |
 | ADR-005 | Native backend seçimi (Cranelift / LLVM) | bekliyor — Faz 4 |
 | ADR-007 | [Telemetri ve gizlilik: araçlar veri toplamaz](007-telemetri-ve-gizlilik.md) | **kabul** |

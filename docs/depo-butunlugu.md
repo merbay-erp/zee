@@ -228,3 +228,15 @@ kaynağı, kanonik olmayan biçim ve günlükte olmayan dilim fail-closed'dur.
 cd compiler
 cargo test --locked --test dogfood_korpusu_testi
 ```
+
+## Tekrar üretilebilir sürüm artefaktı
+
+K-168/ADR-068'in [rehberi](tekrar-uretilebilir-surum.md) ve
+`scripts/surum-artefakti.sh`; iki bağımsız temiz klonda sabit toolchain,
+`--remap-path-prefix` ve commit zamanı `SOURCE_DATE_EPOCH` ile `dil`/`dillsp`
+derler, özetler eşit değilse artefakt üretmez. `surum_artefakti` SPDX SBOM,
+SLSA provenance ve `zee-surum-imza-v1` imzasını deterministik üretir/doğrular.
+
+```bash
+bash scripts/surum-artefakti.sh --cikti /tmp/surum [--anahtar surum.zee-anahtar]
+```

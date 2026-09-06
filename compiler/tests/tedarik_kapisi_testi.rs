@@ -233,3 +233,46 @@ fn vendor_kaniti_iki_uretimi_ve_bos_cargo_home_offline_derlemeyi_ister() {
     assert!(betik.contains("cargo check --quiet --locked --offline --bins"));
     assert!(oku(".gitignore").lines().any(|satir| satir == "**/vendor/"));
 }
+
+#[test]
+fn surum_artefakti_iki_temiz_klon_sbom_provenance_ve_imza_kablosunu_tasir() {
+    let betik = oku("scripts/surum-artefakti.sh");
+    for adim in [
+        "set -euo pipefail",
+        "git clone -q --local",
+        "for klon in a b",
+        "--remap-path-prefix=",
+        "SOURCE_DATE_EPOCH",
+        "cargo build --locked --release --bin dil --bin dillsp",
+        "TEKRAR ÜRETİLEMEDİ",
+        "surum_artefakti",
+        "sbom.spdx.json",
+        "provenance.intoto.json",
+        "SHA256SUMS.zee-imza",
+    ] {
+        assert!(betik.contains(adim), "sürüm betiği adımı eksik: {adim}");
+    }
+    let workflow = oku(".github/workflows/surum-adayi.yml");
+    assert!(workflow.contains("tags:\n      - \"v*\""));
+    assert!(workflow.contains("workflow_dispatch:"));
+    assert!(workflow.contains("bash scripts/guvenlik-kapisi.sh --surekli"));
+    assert!(workflow.contains("bash scripts/surum-artefakti.sh --cikti"));
+    assert!(workflow.contains("retention-days: 90"));
+    assert!(workflow.contains("persist-credentials: false"));
+    for satir in workflow.lines().filter(|s| s.contains("cargo ")) {
+        assert!(satir.contains("--locked"), "kilitsiz sürüm komutu: {satir}");
+    }
+    let arac = oku("compiler/src/bin/surum_artefakti.rs");
+    for parca in [
+        "zee-surum-imza-v1",
+        "https://spdx.org/rdf/3.0.1/spdx-context.jsonld",
+        "https://slsa.dev/provenance/v1",
+        "ikiTemizKlonEsit",
+        "zee-ed25519-private-v1",
+    ] {
+        assert!(
+            arac.contains(parca),
+            "sürüm aracı sözleşmesi eksik: {parca}"
+        );
+    }
+}

@@ -3091,3 +3091,27 @@ usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.
   yokluğu (GB-021); spec/12 ve spec/26 maddeleri `kanitli`ye çekildi.
 - **Sınır:** Korpus yalnız gerçek ürün sürtünmesinden büyür; dil semantiği,
   tanı ve normatif metin değişmedi. K-172/V1-P1-24 kapandı.
+
+## K-168 — Derleyicinin kendisi de tekrar üretilebilir olmalı (6 Eyl)
+
+- **Bulgu:** `.zep` yayını K-094'ten beri byte-byte tekrar üretilebilir ve
+  imzalıydı; derleyici ikilisi içinse iki ortamın aynı çıktıyı verip vermediği
+  hiç ölçülmemiş, SBOM/provenance/imza yoktu.
+- **Deney:** Aynı commit iki bağımsız `git clone --local` ağacında
+  `--remap-path-prefix` (klon→/zee, Cargo home→/cargo, sysroot→/rust) ve
+  commit zamanı `SOURCE_DATE_EPOCH` ile `cargo build --locked --release` edildi;
+  `dil` ve `dillsp` macOS arm64/rustc 1.93.1'de bayt-bayt eş çıktı.
+- **Karar:** ADR-068. `scripts/surum-artefakti.sh` iki klon eşitliğini şart
+  koşar; `surum_artefakti` bakım ikilisi SHA256SUMS, SPDX 3.0.1 SBOM
+  (`Cargo.lock` bağımlılıkları `dependsOn`), SLSA v1 provenance
+  (`ikiTemizKlonEsit`) ve `zee-surum-imza-v1` Ed25519 imzasını deterministik
+  üretir/doğrular. `surum-adayi` workflow'u `v*` etiketinde ve elle önce
+  güvenlik kapısını, sonra artefaktı koşar; `ZEE_SURUM_ANAHTARI` secret'ı
+  varsa imzalar. `dil imzala` gibi kullanıcı komutu açılmadı (CORE FREEZE).
+- **İlk kanıt** (`f2b703c` commit'i, yerel): `dil`
+  `494a0749b3e26cb63fe033d65d2b4d62a63358289bcd1ec8779a4fdd618fbe49`, `dillsp`
+  `24899c5d356982190fb18f7763de96e62c2db4c44b0513a8b5f5efa4f4010c78`; 161
+  paketlik SBOM; deneme anahtarıyla imza üretildi ve doğrulandı.
+- **Sınır:** Eşitlik aynı platform/toolchain içindir; Linux/macOS/Windows
+  ayrı çift-klon kanıtı taşır. SLSA L2/L3, hosted builder ve HSM imzası vaat
+  edilmez. Dil semantiği değişmedi; K-168/V1-P1-25 kapandı.
