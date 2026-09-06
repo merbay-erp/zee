@@ -36,8 +36,10 @@ senkronlanır; sonraki aynı-girintili kardeş korunur. Kısmi AST yürütülebi
 değildir.
 
 Parser/birim/checker tanıları kaynak konumunda kararlı sıradadır ve belge
-başına en çok 20 kayıt yayımlanır. Lexer'ın token üretemediği lexical hata tek
-tanıdır. Bu bütçe tanı kimliğini veya kodunu değiştirmez.
+başına en çok 20 kayıt yayımlanır. Aynı eksik tanımdan doğan A001/A003/A007
+tekrarları ve başlığı bozuk işlemin çağrı tanıları bastırılır; kök neden bir
+kez raporlanır (K-166, ADR-024 §8). Lexer'ın token üretemediği lexical
+hata tek tanıdır. Bu bütçe tanı kimliğini veya kodunu değiştirmez.
 
 ## Hata sınıflandırması (TANIMLI — RFC-0008)
 

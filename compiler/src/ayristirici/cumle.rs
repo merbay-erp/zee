@@ -100,6 +100,20 @@ impl Ayristirici {
                         rol: tekil_ifade(t[2].clone())?,
                         satir: satir_no,
                     })
+                } else if t.len() == 2 || (t.len() == 4 && kelime_mi(&t[2], "olarak")) {
+                    // `sayıyı al` / `sayıyı TamSayı olarak al` gövde dışına düşmüş
+                    // bir parametre satırıdır; oturum kalıbıyla karıştırılmaz (K-166).
+                    Err(Tani::yeni(
+                        "S004",
+                        "Bu cümle tanınmadı: parametre satırı yalnız işlem gövdesinde olur.".into(),
+                        satir_no,
+                        1,
+                        1,
+                    )
+                    .onerili(
+                        "`sayıyı al` satırını işlem başlığının altına 4 boşluk içeriden yaz."
+                            .into(),
+                    ))
                 } else {
                     Err(Tani::yeni(
                         "S043",

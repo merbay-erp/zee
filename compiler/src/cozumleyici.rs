@@ -71,6 +71,14 @@ fn hir_kaynak_hatasi(satir: usize) -> Tani {
 /// bir cümlenin hatası sonrakilerin denetimini durdurmaz. LSP/denetle --json
 /// bu görünümü kullanır; derleme (çalıştır) ilk tanıda durur.
 pub fn denetle_coklu(program: &mut Program) -> Vec<Tani> {
+    denetle_coklu_hatali_tanimlarla(program).0
+}
+
+/// Çoklu tanı geçişi; ikinci değer denetimi başarısız olan `olsun` tanımlarının
+/// adlarıdır. Çoklu tanı hattı bu adların sonraki kullanımlarını kök nedene
+/// bağlayıp A001 tekrarını bastırır (K-166, ADR-024 §8).
+pub(crate) fn denetle_coklu_hatali_tanimlarla(program: &mut Program) -> (Vec<Tani>, Vec<String>) {
+    let mut hatali_tanimlar = Vec::new();
     // Geçerli programda asıl tanı/HIR geçişi de bütün çağrılardan
     // birleştirilmiş parametreleri görür. Bozuk belgede keşif hatası ayrıca
     // yayımlanmaz; mevcut çoklu tanı geçişi kaynak sırasında devam eder.
@@ -89,7 +97,7 @@ pub fn denetle_coklu(program: &mut Program) -> Vec<Tani> {
     if let Err(tani) = acik_islemleri_denetle(&mut baglam) {
         tanilar.push(tani);
         program.islemler = baglam.islemler;
-        return tanilar;
+        return (tanilar, hatali_tanimlar);
     }
     let mut bas = 0;
     while bas < program.cumleler.len() {
@@ -107,6 +115,9 @@ pub fn denetle_coklu(program: &mut Program) -> Vec<Tani> {
         }
         let onceki_bekleyenler = baglam.bekleyen_gorevler.clone();
         if let Err(tani) = blok_denetle(&mut program.cumleler[bas..son], &mut ortam, &mut baglam) {
+            if let Cumle::Olsun { ad, .. } = &program.cumleler[bas] {
+                hatali_tanimlar.push(ad.clone());
+            }
             tanilar.push(tani);
             baglam.bekleyen_gorevler = onceki_bekleyenler;
             if tanilar.len() >= crate::tani::AZAMI_TANI_SAYISI {
@@ -125,7 +136,7 @@ pub fn denetle_coklu(program: &mut Program) -> Vec<Tani> {
         }
     }
     program.islemler = baglam.islemler;
-    tanilar
+    (tanilar, hatali_tanimlar)
 }
 
 /// Programı yerinde çözümler ve tür denetiminden geçirir.
