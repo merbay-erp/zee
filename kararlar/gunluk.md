@@ -2994,6 +2994,12 @@ usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.
   `tedarik_kapisi_testi` aynı committe güncellendi. "Yerelde yeşil" uzak
   workflow'un çözülebilirliğini kanıtlamaz; pin doğrulaması artık
   `gh api repos/<action>/commits/<sha>` ile yapılır.
+- **Engel (6 Eyl 15:56):** Pinler düzeldikten sonra da `dil`/`tedarik` işleri
+  adım koşmadan düşüyor; GitHub check-run notu: "The job was not started
+  because recent account payments have failed or your spending limit needs
+  to be increased" (merbay-erp hesabı, özel depo). Uzak CI, hesap sahibi
+  faturalandırmayı düzeltene kadar hiçbir commit'i doğrulayamaz; Linux/Windows
+  tatbikat, soak ve sürüm adayı kanıtları o güne kadar yerel kanıttır.
 
 ## K-167 — Uyumluluk sözü yazılı niyet değil, yürütülebilir kayıt olmalı (5 Eyl)
 
