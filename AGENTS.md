@@ -155,6 +155,12 @@ Tanı üreten ya da parser kurtarmasını değiştiren iş aynı committe
 yeniler; `--denetle` sık hata sınıflarında öneri %100, işaret ≥ %90 ve gürültü
 ≤ 2/4 ister (K-166/ADR-070). İhlal yalnız gerekçeli ve K-işli istisnayla geçer.
 
+Sürüm günü sırası `docs/surum-runbook.md`tedir (K-169/ADR-071); kurulum yalnız
+`SHA256SUMS` doğrulamalı `scripts/kur.sh`/`kur.ps1`, kaldırma yalnız manifestli
+`kaldir.sh`/`kaldir.ps1` ile yapılır. Artefakt dosya kümesi ya da betik
+sözleşmesi değişen iş `kurulum_testi` ve tatbikat workflow'unu aynı committe
+günceller.
+
 ## V1 öncesi iş sırası
 
 K-160/K-160A/ADR-059 sonrasında core freeze makinece etkindir: **Yeni compiler özelliği

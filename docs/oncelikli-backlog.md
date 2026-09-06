@@ -194,6 +194,10 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
     sonrası geçersiz UTF-8'i rota çalışmadan 400'e çeviren strict uygulamayı
     ekledi. `web` kipli kalıcı fixture exact `32247c7…` uygulama SHA'sına ve
     compiler semantic bugfix beyanına bağlıdır; B-065 kapandı.
+62. K-169/ADR-071 kurulum-kaldırma sözleşmesini ve sürüm runbook'unu kurdu:
+    `SHA256SUMS` doğrulamalı kur, manifestli ve no-clobber kaldır betikleri
+    (bash + PowerShell), gerçek ikililerle Unix entegrasyon testi, üç platform
+    tatbikat workflow'u ve sürüm günü sırası.
 61. K-166/ADR-070 tanı kalitesi kapısını kurdu: golden'a 11 acemi hatası
     mutasyonu, sınıf başına öneri/işaret/gürültü ölçütü; S007 öneri, gövde
     dışı parametre satırı S004 ve A001/A007 tekrar ayıklaması ilk altı ihlali
@@ -804,8 +808,9 @@ kritik/yüksek bulgu sıfırını makinece zorunlu kıldı. K-172 dogfood korpus
 kurup iki güvenlik test boşluğunu kapattı. K-168 sürüm ikilisini iki temiz
 klonda eş özetle, SBOM/provenance/imzayla üretilebilir yaptı. K-173 uzun soak
 kapısını ve ilk 30 dakikalık sızıntısız tabanı kaydetti. K-166 tanı kalitesini
-ölçülebilir yapıp ilk altı ihlali kapattı. Makine hattında kalan iş K-169
-kurulum/kaldırma tatbikatıdır; K-174/K-175 takvim ve insan kanıtı bekler.
+ölçülebilir yapıp ilk altı ihlali kapattı. K-169 kurulum/kaldırma sözleşmesini
+ve runbook'u kurdu. Üçüncü incelemenin makine hattı burada bitti; K-174 freeze
+takvimi, K-175 RC ile K-161/K-162/K-164/K-165 insan ve ikinci ürün kanıtı bekler.
 K-161/K-162 gerçek insan testleri de insan verisini beklemeyi sürdürür.
 İnsan verisi gelmeden yeni syntax seçilmez
 veya B-001/B-002 tamamlanmış gösterilmez.
@@ -840,7 +845,7 @@ tamamlanmış sayılmaz; burada istenen ek kanıt ayrıca üretilir.
 | K-166 | **KAPALI** | ADR-070 `tani_kalitesi`: 244 vaka/14 sınıf mutasyon korpusu; S007 öneri, gövde dışı parametre S004 ve A001/A007 tek tanı düzeltmeleriyle 6 ihlal → 0; öneri %100, işaret ≥ %90, gürültü ≤ 2/4 CI'da |
 | K-167 | **KAPALI** | RFC-0028/ADR-064/spec-27: sekiz dondurulmuş yüzey envanteri, süreli `DEP-NNN` deprecation kaydı, `-dev` sürüm kimliği ve B-072 kaldırması `uyumluluk_testi` ile CI'da |
 | K-168 | **KAPALI** | ADR-068 `surum-artefakti.sh` + `surum_artefakti`: iki temiz klonda eş SHA-256, SPDX SBOM, SLSA provenance, `zee-surum-imza-v1`; `surum-adayi` workflow'u etikette koşar |
-| K-169 | **AÇIK** | Linux/macOS/Windows kurulum-kaldırma ve release runbook tatbikatı |
+| K-169 | **KAPALI** | ADR-071 `kur.sh`/`kur.ps1` + `kaldir.sh`/`kaldir.ps1` (SHA256SUMS doğrulama, manifest, no-clobber), `kurulum_testi`, üç platform `kurulum-tatbikati` workflow'u ve `docs/surum-runbook.md` |
 | K-170 | **KAPALI** | ADR-066 `guvenlik-kapisi.sh` + `GB-NNN` bulgu kaydı + SECURITY.md: 17 kapalı/4 kabul/1 açık orta, açık kritik/yüksek sıfır; sürüm adayı kipi exact HEAD RC fuzz + clippy + tam test ister |
 | K-171 | **KAPALI** | ADR-065 `spec_drift`: 169 normatif spec maddesi parmak-izi kimliği + exact test işlevi; 151 kanıtlı/16 kısmi/2 açık deterministik raporla CI'da; RFC/ADR belge düzeyinde kalır |
 | K-172 | **KAPALI** | ADR-067 `dogfood/korpus-v1.tsv`: 10 vaka (4 gereksinim aynası + F007/F012/F030/F032 ret/çözüm çiftleri) ürün politikasıyla CI'da; manifest dışı dogfood kaynağı reddedilir; GB-020/021 kapandı |
