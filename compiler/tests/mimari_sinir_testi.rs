@@ -604,3 +604,42 @@ fn uzun_soak_kapisi_rss_egilimini_ve_provenance_tarihcesini_tasir() {
         assert!(matches!(alanlar[16], "gecti" | "kaldi"));
     }
 }
+
+#[test]
+fn tani_kalitesi_kapisi_mutasyon_korpusunu_ve_esikleri_tasir() {
+    let arac = kaynak("src/bin/tani_kalitesi.rs");
+    let ci = kaynak("../.github/workflows/ci.yml");
+    let rapor = kaynak("../docs/tani-kalitesi.md");
+    let istisnalar = kaynak("../docs/tani-kalitesi-istisnalari-v1.tsv");
+    for operator in [
+        "girinti-sil",
+        "sekme-girinti",
+        "tirnak-kapatma",
+        "esittir",
+        "olsun-eksik",
+        "ad-yazim",
+        "ingilizce-print",
+        "buyuk-harf",
+        "nokta-ondalik",
+        "parantez",
+        "bos-blok",
+    ] {
+        assert!(
+            arac.contains(&format!("\"{operator}\"")),
+            "mutasyon operatörü eksik: {operator}"
+        );
+    }
+    for esik in [
+        "SIK_ESIGI",
+        "AZAMI_SINIF",
+        "ASGARI_ISARET_YUZDE",
+        "AZAMI_GURULTU_MEDYAN",
+        "AZAMI_GURULTU_TEPE",
+        "tanı kalitesi raporu bayat",
+    ] {
+        assert!(arac.contains(esik), "tanı kalitesi eşiği eksik: {esik}");
+    }
+    assert!(ci.contains("cargo run --locked --bin tani_kalitesi -- --denetle"));
+    assert!(rapor.contains("cargo run --locked --bin tani_kalitesi -- --rapor-yaz"));
+    assert!(istisnalar.starts_with("# zee-tani-kalitesi-istisnalari-1\n"));
+}

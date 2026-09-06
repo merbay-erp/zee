@@ -194,6 +194,10 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
     sonrası geçersiz UTF-8'i rota çalışmadan 400'e çeviren strict uygulamayı
     ekledi. `web` kipli kalıcı fixture exact `32247c7…` uygulama SHA'sına ve
     compiler semantic bugfix beyanına bağlıdır; B-065 kapandı.
+61. K-166/ADR-070 tanı kalitesi kapısını kurdu: golden'a 11 acemi hatası
+    mutasyonu, sınıf başına öneri/işaret/gürültü ölçütü; S007 öneri, gövde
+    dışı parametre satırı S004 ve A001/A007 tekrar ayıklaması ilk altı ihlali
+    sıfırladı; insan verisi gelene kadar “en sık” korpus frekansıdır.
 60. K-173/ADR-069 uzun soak kapısını kurdu: golden derleme + yürütme döngüsü ile
     gerçek `dillsp` didChange döngüsü süre bütçesince koşar, iki sürecin RSS'i
     örneklenir, ısınma sonrası büyüme %10 ve 32 MiB'ı birlikte aşarsa kalır;
@@ -799,9 +803,9 @@ boşluğunu adlandırdı. K-170 güvenlik kanıtını tek kapıda birleştirip a
 kritik/yüksek bulgu sıfırını makinece zorunlu kıldı. K-172 dogfood korpusunu
 kurup iki güvenlik test boşluğunu kapattı. K-168 sürüm ikilisini iki temiz
 klonda eş özetle, SBOM/provenance/imzayla üretilebilir yaptı. K-173 uzun soak
-kapısını ve ilk 30 dakikalık sızıntısız tabanı kaydetti; sıradaki makine işi
-K-166 tanı kalitesidir. K-169 kurulum tatbikatı ile K-174/K-175 takvim ve insan
-kanıtı bekler.
+kapısını ve ilk 30 dakikalık sızıntısız tabanı kaydetti. K-166 tanı kalitesini
+ölçülebilir yapıp ilk altı ihlali kapattı. Makine hattında kalan iş K-169
+kurulum/kaldırma tatbikatıdır; K-174/K-175 takvim ve insan kanıtı bekler.
 K-161/K-162 gerçek insan testleri de insan verisini beklemeyi sürdürür.
 İnsan verisi gelmeden yeni syntax seçilmez
 veya B-001/B-002 tamamlanmış gösterilmez.
@@ -833,7 +837,7 @@ tamamlanmış sayılmaz; burada istenen ek kanıt ayrıca üretilir.
 | K-163 | **KAPALI** | Çatlı 1037 Zee LOC/5 modül/12 testte gerçek PG16.11, TLS/bounded pool, binary saga, failure reconciliation ve F032 liveness/readiness zincirini geçti. Bakım skor kartı LSP p95 41,416 ms ve dosya medyanı 5,5 ile kapalı; exact ürün `bb8e1ac` |
 | K-164 | **AÇIK** | Farklı workload'da ikinci gerçek proje |
 | K-165 | **AÇIK** | Aynı uygulamanın Zee–Go/Rust veri temelli dogfood karşılaştırması |
-| K-166 | **AÇIK** | En sık 50 hata için span/öneri/noise düzeltme başarısı |
+| K-166 | **KAPALI** | ADR-070 `tani_kalitesi`: 244 vaka/14 sınıf mutasyon korpusu; S007 öneri, gövde dışı parametre S004 ve A001/A007 tek tanı düzeltmeleriyle 6 ihlal → 0; öneri %100, işaret ≥ %90, gürültü ≤ 2/4 CI'da |
 | K-167 | **KAPALI** | RFC-0028/ADR-064/spec-27: sekiz dondurulmuş yüzey envanteri, süreli `DEP-NNN` deprecation kaydı, `-dev` sürüm kimliği ve B-072 kaldırması `uyumluluk_testi` ile CI'da |
 | K-168 | **KAPALI** | ADR-068 `surum-artefakti.sh` + `surum_artefakti`: iki temiz klonda eş SHA-256, SPDX SBOM, SLSA provenance, `zee-surum-imza-v1`; `surum-adayi` workflow'u etikette koşar |
 | K-169 | **AÇIK** | Linux/macOS/Windows kurulum-kaldırma ve release runbook tatbikatı |

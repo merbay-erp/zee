@@ -18,3 +18,6 @@ son-tarih-iptali	K-133	f56fef0e9246847cb0f7001d989e9212881f4de3	-	0.8.0-dev	conc
 kapali-ag-yetkinligi	K-127	c213c0502e96fca010c9199b26aa71ca3e0b0419	-	0.8.0-dev	security	capability	T054	2:7:49	1	-	regression/security/kapali-ag-yetkinligi.dil
 olu-kod-dosya-yetkinligi	K-127	c213c0502e96fca010c9199b26aa71ca3e0b0419	-	0.8.0-dev	security	capability	T054	3:14:31	1	-	regression/security/olu-kod-dosya-yetkinligi.dil
 bozuk-form-kodlamasi	K-176	32247c79321b5b350b18b15198a245776b22fc84	-	0.8.0-dev	security	web	-	-	0	400 istek formunda geçersiz yüzde kodlaması	regression/security/bozuk-form-kodlamasi.dil
+girintisiz-islem-basligi	K-166	024912ea3af8739820978f228a48262eaa8428f8	-	0.8.0-dev	parser	parser	S007	1:1:1	1	-	regression/parser/girintisiz-islem-basligi.dil
+govde-disi-parametre-satiri	K-166	024912ea3af8739820978f228a48262eaa8428f8	-	0.8.0-dev	parser	parser	S004	1:1:1	1	-	regression/parser/govde-disi-parametre-satiri.dil
+tanimsiz-ad-tek-tani	K-166	024912ea3af8739820978f228a48262eaa8428f8	-	0.8.0-dev	checker	diagnostics	A001	1:1:4	1	-	regression/checker/tanimsiz-ad-tek-tani.dil
