@@ -100,6 +100,58 @@ impl fmt::Display for Tani {
 }
 
 /// Fazlardan gelen tanıları kaynak konumunda kararlı sıraya koyar ve bütçeler.
+/// Tanı mesajındaki ilk tırnaklı sözü döndürür; A003 için `her X için`
+/// kalıbının ortasındaki X'tir.
+fn tirnakli_soz(mesaj: &str) -> Option<String> {
+    let bas = mesaj.find('"')? + 1;
+    let son = mesaj[bas..].find('"')? + bas;
+    let soz = &mesaj[bas..son];
+    let soz = soz
+        .strip_prefix("her ")
+        .and_then(|k| k.strip_suffix(" için"))
+        .unwrap_or(soz);
+    Some(soz.to_string())
+}
+
+/// İki yüzeyin aynı kökten geldiğini kabaca sınar: kısa olanın son harfi
+/// atılmış hali uzun olanın önekiyse (ünsüz yumuşaması dahil) aynı köktür.
+fn ayni_kok_mu(a: &str, b: &str) -> bool {
+    if a == b {
+        return true;
+    }
+    let (kisa, uzun) = if a.chars().count() <= b.chars().count() {
+        (a, b)
+    } else {
+        (b, a)
+    };
+    let harfler = kisa.chars().collect::<Vec<_>>();
+    harfler.len() >= 3 && uzun.starts_with(&harfler[..harfler.len() - 1].iter().collect::<String>())
+}
+
+/// Çoklu tanı hattında aynı tanımsız ad ya da yapı için A001/A003/A007 yalnız
+/// ilk kaynak konumunda yayımlanır; tek eksik tanımın her kullanımda (ekli
+/// biçimleri dahil) yeniden raporlanması gürültüdür (K-166, ADR-024 §8).
+pub(crate) fn tanimsiz_ad_tekrarlarini_ayikla(
+    tanilar: &mut Vec<Tani>,
+    kok_nedeni_raporlanan: &[String],
+) {
+    tanilar.sort_by_key(|tani| (tani.satir, tani.sutun));
+    let mut raporlanan: Vec<String> = kok_nedeni_raporlanan.to_vec();
+    tanilar.retain(|tani| {
+        if !matches!(tani.kod.as_str(), "A001" | "A003" | "A007") {
+            return true;
+        }
+        let Some(soz) = tirnakli_soz(&tani.mesaj) else {
+            return true;
+        };
+        if raporlanan.iter().any(|onceki| ayni_kok_mu(onceki, &soz)) {
+            return false;
+        }
+        raporlanan.push(soz);
+        true
+    });
+}
+
 pub(crate) fn tanilari_sirala_ve_sinirla(tanilar: &mut Vec<Tani>) {
     tanilar.sort_by(|sol, sag| {
         (sol.satir, sol.sutun, &sol.kod, &sol.mesaj)

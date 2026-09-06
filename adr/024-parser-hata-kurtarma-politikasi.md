@@ -57,6 +57,14 @@ durma davranışını korur; kısmi AST yürütülebilir program değildir.
 6. Tanılar kaynak konumunda deterministik sıradadır ve toplam 20'yi aşmaz.
 7. Lexer'ın token üretmeden durduğu lexical hata bu ADR kapsamında yeniden
    yazılmaz; o durumda tek güvenilir tanı döner.
+8. Çoklu tanı hattında aynı eksik tanımın tekrarı gürültüdür (K-166/ADR-070):
+   A001/A003/A007 aynı kök için (ekli biçimler dahil) yalnız ilk konumda
+   yayımlanır; parser'ın düşürdüğü satırın baş sözü ile denetimi başarısız
+   `olsun` tanımının adı kök nedeni raporlanmış sayılır; başlığı bozuk işlemin
+   çağrıları T016 iç tutarlılık tanısı üretmez. Farklı kökler ayrı raporlanır.
+9. Girintisiz kalan işlem/yapı/`göre`/döngü başlığının S007'si girinti
+   önerisi taşır; gövde dışına düşen `sayıyı al` parametre satırı oturum
+   kalıbı S043 yerine yol gösteren S004 üretir.
 
 ## Sonuçlar
 

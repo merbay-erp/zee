@@ -18,7 +18,7 @@ kalır (ADR-025).
 | S001 | Beklenmeyen karakter (sembolik işleç, parantez...) | Kalıpları kelimelerle yaz; bkz. anti-örnek A03/A06 |
 | S002 | Metin sabiti kapanmadan satır bitti | Kapatan `"` ekle |
 | S003 | Girintide sekme (tab) | 4 boşluk kullan (RFC-0003) |
-| S004 | Cümle tanınmadı — satır bilinen bir eylemle bitmiyor | Desteklenen kalıplar öneride listelenir; işlem çağrısıysa işlem önce tanımlanmalı |
+| S004 | Cümle tanınmadı — satır bilinen bir eylemle bitmiyor | Desteklenen kalıplar öneride listelenir; işlem çağrısıysa işlem önce tanımlanmalı; gövde dışına düşen `sayıyı al` parametre satırında öneri satırı işlem başlığının altına almayı söyler |
 | S005 | Girinti hizası hiçbir açık blokla eşleşmiyor | Satırı bloklardan birinin hizasına getir |
 | S006 | Sayı TamSayı sınırından büyük | Daha küçük değer kullan (i64 sınırı) |
 | S007 | Blok bekleyen satırdan sonra girinti yok | Alt satırları 4 boşluk içeriden yaz |

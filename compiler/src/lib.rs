@@ -633,6 +633,7 @@ pub fn kaynagi_tanilari_kokenlerle(
         .filter(|islem| islem.disari_acik)
         .map(|islem| islem.ad.clone())
         .collect();
+    let on_taranan_islemler = ayristirici::islem_adlarini_tara(tokenlar.tokenlar());
     let (ast, ayristirma_tanilari) = tokenlar.ayristir_kurtarmali(tohum);
     let cumleler = ast.into_cumleler();
     tanilar.extend(ayristirma_tanilari);
@@ -678,14 +679,48 @@ pub fn kaynagi_tanilari_kokenlerle(
         yapilar,
         testler,
     };
+    let mut kok_nedeni_raporlanan = dusen_satirlarin_bas_sozleri(kaynak, &tanilar);
     if tanilar.len() < tani::AZAMI_TANI_SAYISI {
         let kalan = tani::AZAMI_TANI_SAYISI - tanilar.len();
-        tanilar.extend(
-            cozumleyici::denetle_coklu(&mut program)
-                .into_iter()
-                .take(kalan),
-        );
+        let (checker_tanilari, hatali_tanimlar) =
+            cozumleyici::denetle_coklu_hatali_tanimlarla(&mut program);
+        kok_nedeni_raporlanan.extend(hatali_tanimlar);
+        tanilar.extend(checker_tanilari.into_iter().take(kalan));
     }
+    tanimlanamayan_islem_cagrilarini_ayikla(&mut tanilar, &on_taranan_islemler, &program);
+    tani::tanimsiz_ad_tekrarlarini_ayikla(&mut tanilar, &kok_nedeni_raporlanan);
     tani::tanilari_sirala_ve_sinirla(&mut tanilar);
     tanilar
+}
+
+/// Parser'ın düşürdüğü satırın baş sözü (`isim "Ayşe"` → `isim`) kök nedeni
+/// raporlanmış ad sayılır; sonraki A001 tekrarları gürültüdür (K-166, ADR-024 §8).
+fn dusen_satirlarin_bas_sozleri(kaynak: &str, tanilar: &[Tani]) -> Vec<String> {
+    tanilar
+        .iter()
+        .filter_map(|tani| kaynak.lines().nth(tani.satir.checked_sub(1)?))
+        .filter_map(|satir| satir.split_whitespace().next())
+        .filter(|soz| soz.chars().all(|k| k.is_alphabetic() || k == '_'))
+        .map(str::to_string)
+        .collect()
+}
+
+/// Başlığı bozuk olduğu için tanımlanamayan işlemin çağrıları kök nedeni
+/// (parser tanısı) tekrar etmez; T016 iç tutarlılık mesajı kullanıcıya
+/// yansımaz (K-166, ADR-024 §8).
+fn tanimlanamayan_islem_cagrilarini_ayikla(
+    tanilar: &mut Vec<Tani>,
+    on_taranan_islemler: &[String],
+    program: &Program,
+) {
+    let tanimlanamayan = on_taranan_islemler
+        .iter()
+        .filter(|ad| !program.islemler.contains_key(*ad))
+        .collect::<Vec<_>>();
+    tanilar.retain(|tani| {
+        tani.kod != "T016"
+            || !tanimlanamayan
+                .iter()
+                .any(|ad| tani.mesaj.starts_with(&format!("\"{ad}\" işleminin")))
+    });
 }

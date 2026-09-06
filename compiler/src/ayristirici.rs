@@ -287,6 +287,10 @@ impl Ayristirici {
                     satir,
                     1,
                     1,
+                )
+                .onerili(
+                    "Gövdeyi 4 boşluk içeriden yaz; ilk satır parametre (`sayıyı al`) ya da cümle olabilir."
+                        .into(),
                 ))
             }
         }
@@ -428,6 +432,9 @@ impl Ayristirici {
                     satir,
                     1,
                     1,
+                )
+                .onerili(
+                    "Alanları 4 boşluk içeriden `ad Tür` biçiminde yaz. Örnek: ad Metin".into(),
                 ))
             }
         }
@@ -1118,7 +1125,8 @@ impl Ayristirici {
                     satir,
                     1,
                     1,
-                ))
+                )
+                .onerili("Kolları 4 boşluk içeriden yaz. Örnek: \"daire\" ise".into()))
             }
         }
         self.derinlik += 1;
