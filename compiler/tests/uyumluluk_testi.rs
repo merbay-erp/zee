@@ -543,3 +543,62 @@ fn kapi_kayitsiz_kaldirma_ve_kayitsiz_mezar_tasini_reddeder() {
         capraz_denetle(&yuzeyler, &kayitlar, &BTreeSet::from(["S999".to_string()])).unwrap_err();
     assert!(hata.contains("S999 deprecation kaydı taşımıyor"), "{hata}");
 }
+
+// --- K-174: V1 syntax freeze penceresi ---
+
+const SYNTAX_FREEZE: &str = include_str!("../../docs/v1-syntax-freeze-v1.tsv");
+
+/// Freeze kaydı: alan → değer.
+fn syntax_freeze_kaydi() -> BTreeMap<String, String> {
+    let mut satirlar = SYNTAX_FREEZE.lines();
+    assert_eq!(satirlar.next(), Some("# zee-v1-syntax-freeze-1"));
+    satirlar
+        .filter(|s| !s.is_empty() && !s.starts_with('#'))
+        .map(|s| {
+            let (alan, deger) = s.split_once('\t').expect("alan\tdeger");
+            (alan.to_string(), deger.to_string())
+        })
+        .collect()
+}
+
+#[test]
+fn v1_syntax_freeze_penceresinde_kalip_kosul_komut_yuzeyi_degismez() {
+    // K-174: 6 Eylül – 4 Ekim 2026 arasında yeni syntax açılmaz. Kalıp, koşul
+    // ve komut satırlarının özeti kayıtla birebir olmalıdır; bilinçli bir
+    // değişiklik kaydı, tarihi ve K-işini aynı committe günceller.
+    use sha2::{Digest, Sha256};
+    let kayit = syntax_freeze_kaydi();
+    assert_eq!(kayit.get("karar").map(String::as_str), Some("K-174"));
+    for alan in ["baslangic", "bitis"] {
+        let tarih = &kayit[alan];
+        assert!(
+            tarih.len() == 10 && tarih.as_bytes()[4] == b'-' && tarih.as_bytes()[7] == b'-',
+            "{alan} YYYY-AA-GG olmalı: {tarih}"
+        );
+    }
+    assert!(kayit["baslangic"] < kayit["bitis"], "pencere ileri akmalı");
+    let yuzeyler: Vec<&str> = kayit["dondurulmus_yuzeyler"].split(',').collect();
+    assert_eq!(yuzeyler, vec!["kalip", "kosul", "komut"]);
+    let fixture = std::fs::read_to_string(depo_koku().join(&kayit["yuzey_fixture"]))
+        .expect("yüzey fixture'ı okunmalı");
+    let mut ozet = Sha256::new();
+    for satir in fixture.lines() {
+        if yuzeyler
+            .iter()
+            .any(|y| satir.starts_with(&format!("{y}\t")))
+        {
+            ozet.update(satir.as_bytes());
+            ozet.update(b"\n");
+        }
+    }
+    let bulunan = ozet
+        .finalize()
+        .iter()
+        .map(|b| format!("{b:02x}"))
+        .collect::<String>();
+    assert_eq!(
+        bulunan, kayit["dondurulmus_sha256"],
+        "V1 syntax freeze penceresinde ({}–{}) kalıp/koşul/komut yüzeyi değişti; K-174 kaydı bilinçli olarak güncellenmeden geçmez",
+        kayit["baslangic"], kayit["bitis"]
+    );
+}

@@ -860,7 +860,7 @@ tamamlanmış sayılmaz; burada istenen ek kanıt ayrıca üretilir.
 | K-171 | **KAPALI** | ADR-065 `spec_drift`: 169 normatif spec maddesi parmak-izi kimliği + exact test işlevi; 151 kanıtlı/16 kısmi/2 açık deterministik raporla CI'da; RFC/ADR belge düzeyinde kalır |
 | K-172 | **KAPALI** | ADR-067 `dogfood/korpus-v1.tsv`: 10 vaka (4 gereksinim aynası + F007/F012/F030/F032 ret/çözüm çiftleri) ürün politikasıyla CI'da; manifest dışı dogfood kaynağı reddedilir; GB-020/021 kapandı |
 | K-173 | **KAPALI** | ADR-069 `soak`: derleyici döngüsü + gerçek `dillsp`, 5 sn RSS örneği, ısınma sonrası %10+32 MiB çift eşik, exact SHA tarihçesi ve haftalık workflow |
-| K-174 | **AÇIK** | 2–4 hafta yeni syntax kapalı V1 freeze |
+| K-174 | **BAŞLADI (6 Eyl → 4 Ekim 2026)** | `docs/v1-syntax-freeze-v1.tsv` kalıp/koşul/komut yüzeyinin özetini dondurur; `uyumluluk_testi` pencere boyunca özeti birebir ister. Pencere sıfır syntax değişikliğiyle dolunca kapanır; K-161/K-162 insan verisi bir değişiklik isterse pencere bilinçli olarak yeniden başlar |
 | K-175 | **AÇIK** | İnsan+iki proje+üç platform+signed reproducible V1 RC |
 
 ## Önceki kanıt: 2 Eylül 2026 ikinci dış inceleme ayrımı
