@@ -1,2 +1,3 @@
 # zee-soak-gecmisi-1
 # git_sha	tarih	platform	rustc	sure_sn	pencere_sn	derleme_donemi	lsp_donemi	derleyici_rss_ilk_kib	derleyici_rss_son_kib	dillsp_rss_ilk_kib	dillsp_rss_son_kib	derleyici_buyume_yuzde	dillsp_buyume_yuzde	azami_buyume_yuzde	azami_buyume_kib	sonuc
+051ee9a0296eaefb3f25bf3f8da124ddd48c7d49	2026-09-06	macos-aarch64	rustc 1.93.1 (01f6ddf75 2026-02-11)	1800	60	10535	10535	8848	8928	18592	19712	1	7	10	32768	gecti

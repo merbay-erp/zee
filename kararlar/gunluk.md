@@ -3131,7 +3131,12 @@ usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.
   Haftalık `soak` workflow'u 30 dk koşar.
 - **Duman koşusu** (macOS arm64, 45 sn/15 sn pencere): 282 derleme ve 282
   LSP dönemi; soak süreci 8.400→8.400 KiB (%0), dillsp 17.520→17.632 KiB
-  (%1); GEÇTİ. 30 dakikalık ilk taban tarihçe satırı ayrı committe.
+  (%1); GEÇTİ.
+- **İlk 30 dakikalık taban** (`051ee9a`, temiz klon, macOS arm64, rustc
+  1.93.1): 10.535 derleme ve 10.535 LSP dönemi; soak süreci 8.848→8.928 KiB
+  (%1), dillsp 18.592→19.712 KiB (%7, +1,1 MiB); GEÇTİ. dillsp'nin %7'si
+  sınır içindedir ama izlenir: sonraki koşuda büyüme sürerse tanı önbelleği
+  incelenir.
 - **Sınır:** Mutlak bellek bütçesi spec/24'tedir; süreler karar girdisi
   değildir; Windows'ta `ps` yok. Dil semantiği değişmedi; K-173/V1-P1-26
   kapandı.
