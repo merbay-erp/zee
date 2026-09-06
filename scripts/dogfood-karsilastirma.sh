@@ -47,15 +47,18 @@ PY
 export ZEE_TUR="$tur"
 
 echo "== derleme"
-zee_derleme_ms="$(python3 -c '
-import subprocess, time; t=time.perf_counter(); subprocess.run(["cargo","build","--locked","--release","--bin","dil"],cwd="compiler",check=True,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL); print(int((time.perf_counter()-t)*1000))')"
+# Zee yorumlayıcıdır: ürünün kendi derlemesi çalışma süresine dahildir; `dil`
+# ikilisinin cargo derlemesi ürünün ölçüsü değildir, bu yüzden "-" yazılır.
+cargo build --locked --release --bin dil --manifest-path compiler/Cargo.toml >/dev/null 2>&1
+zee_derleme_ms="-"
 rust_derleme_ms="$(python3 -c '
 import subprocess, time, shutil; shutil.rmtree("'"$rust_kok"'/target", ignore_errors=True); t=time.perf_counter(); subprocess.run(["cargo","build","--locked","--release"],cwd="'"$rust_kok"'",check=True,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL); print(int((time.perf_counter()-t)*1000))')"
 go_derleme_ms="-"
 go_var=0
 if command -v go >/dev/null 2>&1; then
     go_var=1
-    go_derleme_ms="$(python3 -c '
+    # Soğuk derleme: Rust hedef klasörü silinir, Go için taze GOCACHE kullanılır.
+    go_derleme_ms="$(GOCACHE="$cikti_dizini/gocache" python3 -c '
 import subprocess, time; t=time.perf_counter(); subprocess.run(["go","build","-o","'"$cikti_dizini"'/kanit-ozeti-go","."],cwd="'"$go_kok"'",check=True,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL); print(int((time.perf_counter()-t)*1000))')"
 fi
 
@@ -91,7 +94,7 @@ if [[ "$go_var" == 1 ]]; then
     go_rss="$(tepe_rss_kib "$cikti_dizini/kanit-ozeti-go" .)"
 fi
 git checkout -- docs/kanit-ozeti.md 2>/dev/null || true
-surtunme="$(grep -c '^f0' dogfood/korpus-v1.tsv || true)"
+surtunme="$(awk -F '\t' '$2 == "kanit-ozeti" && $1 ~ /^f0/ { n++ } END { print n+0 }' dogfood/korpus-v1.tsv)"
 
 sha="$(git rev-parse HEAD)"
 tarih="$(date -u +%Y-%m-%d)"
@@ -119,7 +122,7 @@ Son ölçüm: \`${sha:0:12}\` · $tarih · $platform · $rustc_surumu · go $go_
 |---|---:|---:|---:|
 | Kaynak satırı (boş/yorum dışı, testler dahil) | $zee_loc | $rust_loc | $go_loc |
 | Birim testi | $zee_test | $rust_test | $go_test |
-| Derleme süresi (ms; Zee için \`dil\` release derlemesi) | $zee_derleme_ms | $rust_derleme_ms | $go_derleme_ms |
+| Soğuk derleme süresi (ms; Zee yorumlayıcı: ürün derlemesi çalışma süresinde) | $zee_derleme_ms | $rust_derleme_ms | $go_derleme_ms |
 | Çalışma süresi (ms; Zee: derle+yürüt) | $zee_calisma_ms | $rust_calisma_ms | $go_calisma_ms |
 | Tepe RSS (KiB) | $zee_rss | $rust_rss | $go_rss |
 | Korpusa giren sürtünme vakası | $surtunme | — | — |
