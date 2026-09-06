@@ -2984,6 +2984,16 @@ usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.
 - **Ders:** Uzun yerel dalga sonunda kapılar tek tek yerelde koşulur; uzak
   CI görmediği sürece “üç platformda yeşil” yazılmaz. Bu iş semantic ve
   freeze beyanında `maintenance` sınıfıdır.
+- **Düzeltme (6 Eyl, GB-023):** İlk gerçek push sonrası uzak CI saniyeler içinde
+  düştü: dört action pini (checkout `11d5960…`, cache `0057852…`,
+  upload-artifact `ea165f8…`, rust-toolchain `4360b52…`) upstream'de var
+  olmayan SHA'lardı ve `kurulum-tatbikati.yml` adında tırnaksız `Unix: …`
+  YAML'ı bozuyordu. Pinler etiketten doğrulanmış gerçek SHA'larla
+  (checkout v7.0.1, upload-artifact v7.0.1, cache v6.1.0, rust-toolchain
+  master 2026-09-03) değiştirildi; `github-actions-pinleri-v1.tsv` ve
+  `tedarik_kapisi_testi` aynı committe güncellendi. "Yerelde yeşil" uzak
+  workflow'un çözülebilirliğini kanıtlamaz; pin doğrulaması artık
+  `gh api repos/<action>/commits/<sha>` ile yapılır.
 
 ## K-167 — Uyumluluk sözü yazılı niyet değil, yürütülebilir kayıt olmalı (5 Eyl)
 

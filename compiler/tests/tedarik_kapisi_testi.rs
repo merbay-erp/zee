@@ -114,7 +114,7 @@ fn cargo_deny_politikasi_fail_closed_ve_istisnalari_gerekcelidir() {
 fn ci_sabit_aracla_guncel_advisory_ve_offline_vendor_kapisi_kosar() {
     let ci = oku(".github/workflows/tedarik.yml");
     assert!(ci.contains("cargo install cargo-deny --version 0.20.2 --locked"));
-    assert!(ci.contains("actions/checkout@11d5960a326750d5838078e36cf38b85af677262"));
+    assert!(ci.contains("actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"));
     assert!(ci.contains("cargo deny --locked check -D warnings"));
     assert!(ci.contains("--manifest-path fuzz/Cargo.toml --config deny.toml"));
     assert!(ci.contains("schedule:"));
