@@ -12,6 +12,13 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **Tekrar üretilebilir sürüm artefaktı** (K-168, ADR-068): `dil` ve `dillsp`
+  iki bağımsız temiz klonda sabit toolchain, `--remap-path-prefix` ve commit
+  zamanı `SOURCE_DATE_EPOCH` ile bayt-bayt eş üretilir; eşit değilse artefakt
+  yoktur. Çıktı SHA256SUMS, SPDX 3.0.1 SBOM (`Cargo.lock` bağımlılıkları),
+  SLSA v1 provenance ve `zee-surum-imza-v1` Ed25519 imzası taşır;
+  `surum-adayi` workflow'u `v*` etiketinde koşar. Dil davranışı değişmedi.
+
 - **Dogfood korpusu** (K-172, ADR-067): `dogfood/` altındaki her `.dil`
   kaynağı ürün, K-işi/dilimi, kip ve exact çıktı/tanıyla manifestte; ilk 10
   vaka Çatlı'nın F007/F012/F030/F032 sürtünmelerinin reddedilen biçimini ve

@@ -194,6 +194,10 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
     sonrası geçersiz UTF-8'i rota çalışmadan 400'e çeviren strict uygulamayı
     ekledi. `web` kipli kalıcı fixture exact `32247c7…` uygulama SHA'sına ve
     compiler semantic bugfix beyanına bağlıdır; B-065 kapandı.
+59. K-168/ADR-068 sürüm ikilisini tekrar üretilebilir yaptı: iki bağımsız temiz
+    klonda sabit toolchain + `--remap-path-prefix` + `SOURCE_DATE_EPOCH` ile eş
+    SHA-256 zorunlu; SPDX SBOM, SLSA provenance ve Ed25519 imza deterministik
+    üretilir/doğrulanır; `surum-adayi` workflow'u `v*` etiketinde koşar.
 58. K-172/ADR-067 dogfood korpusunu kurdu: `dogfood/` altındaki her `.dil`
     ürün slug'ı, K-işi/dilimi, kip, beklenti ve exact çıktı/tanıyla manifestte;
     ilk taban 4 gereksinim aynası ve F007/F012/F030/F032 ret+çözüm çiftleri
@@ -789,9 +793,9 @@ uyumluluk sözünü RFC-0028/ADR-064/spec-27 ile yürütülebilir yaptı ve B-07
 kapattı. K-171 spec maddelerini exact test işlevine bağlayıp 16 gerçek kanıt
 boşluğunu adlandırdı. K-170 güvenlik kanıtını tek kapıda birleştirip açık
 kritik/yüksek bulgu sıfırını makinece zorunlu kıldı. K-172 dogfood korpusunu
-kurup iki güvenlik test boşluğunu kapattı; sıradaki makine işi K-166 için
-K-171 drift listesindeki tanı/kapsam boşlukları ile K-168 tekrar üretilebilir
-derleme kanıtıdır.
+kurup iki güvenlik test boşluğunu kapattı. K-168 sürüm ikilisini iki temiz
+klonda eş özetle, SBOM/provenance/imzayla üretilebilir yaptı; sıradaki makine
+işi K-166 tanı kalitesi ve K-173 uzun soak kanıtıdır.
 K-161/K-162 gerçek insan testleri de insan verisini beklemeyi sürdürür.
 İnsan verisi gelmeden yeni syntax seçilmez
 veya B-001/B-002 tamamlanmış gösterilmez.
@@ -825,7 +829,7 @@ tamamlanmış sayılmaz; burada istenen ek kanıt ayrıca üretilir.
 | K-165 | **AÇIK** | Aynı uygulamanın Zee–Go/Rust veri temelli dogfood karşılaştırması |
 | K-166 | **AÇIK** | En sık 50 hata için span/öneri/noise düzeltme başarısı |
 | K-167 | **KAPALI** | RFC-0028/ADR-064/spec-27: sekiz dondurulmuş yüzey envanteri, süreli `DEP-NNN` deprecation kaydı, `-dev` sürüm kimliği ve B-072 kaldırması `uyumluluk_testi` ile CI'da |
-| K-168 | **AÇIK** | İki temiz ortamda eş hash, SBOM, imza ve provenance |
+| K-168 | **KAPALI** | ADR-068 `surum-artefakti.sh` + `surum_artefakti`: iki temiz klonda eş SHA-256, SPDX SBOM, SLSA provenance, `zee-surum-imza-v1`; `surum-adayi` workflow'u etikette koşar |
 | K-169 | **AÇIK** | Linux/macOS/Windows kurulum-kaldırma ve release runbook tatbikatı |
 | K-170 | **KAPALI** | ADR-066 `guvenlik-kapisi.sh` + `GB-NNN` bulgu kaydı + SECURITY.md: 17 kapalı/4 kabul/1 açık orta, açık kritik/yüksek sıfır; sürüm adayı kipi exact HEAD RC fuzz + clippy + tam test ister |
 | K-171 | **KAPALI** | ADR-065 `spec_drift`: 169 normatif spec maddesi parmak-izi kimliği + exact test işlevi; 151 kanıtlı/16 kısmi/2 açık deterministik raporla CI'da; RFC/ADR belge düzeyinde kalır |

@@ -1,0 +1,49 @@
+# K-168/ADR-068: sürüm adayı artefaktı — iki temiz klonda eş SHA-256, SBOM,
+# provenance ve (secret varsa) imza. Etiket ve elle tetiklenir.
+name: surum-adayi
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tekrar-uretilebilir-surum:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@4360b52568e2003a75bf9bc1d59f33a8e3fc893c # stable 2026-09-02
+        with:
+          toolchain: 1.93.1
+      - name: Birleşik güvenlik kapısı (sürüm adayı kipi öncesi sürekli kip)
+        run: |
+          cargo install cargo-deny --version 0.20.2 --locked
+          bash scripts/guvenlik-kapisi.sh --surekli
+      - name: İki temiz klonda tekrar üretilebilir derleme, SBOM ve provenance
+        env:
+          ZEE_SURUM_ANAHTARI: ${{ secrets.ZEE_SURUM_ANAHTARI }}
+        shell: bash
+        run: |
+          if [[ -n "${ZEE_SURUM_ANAHTARI:-}" ]]; then
+            umask 077
+            printf '%s\n' "$ZEE_SURUM_ANAHTARI" > "$RUNNER_TEMP/surum.zee-anahtar"
+            bash scripts/surum-artefakti.sh --cikti "$RUNNER_TEMP/surum" --anahtar "$RUNNER_TEMP/surum.zee-anahtar"
+            rm -f "$RUNNER_TEMP/surum.zee-anahtar"
+          else
+            bash scripts/surum-artefakti.sh --cikti "$RUNNER_TEMP/surum"
+          fi
+          cat "$RUNNER_TEMP/surum/SHA256SUMS" >> "$GITHUB_STEP_SUMMARY"
+      - name: Sürüm artefaktını sakla
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: surum-${{ github.sha }}-ubuntu
+          path: ${{ runner.temp }}/surum
+          retention-days: 90
