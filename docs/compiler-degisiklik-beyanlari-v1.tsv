@@ -22,3 +22,4 @@ d587737a6baafe9018d42cefb0054f3d7ab99eb2	maintenance	-	Yalnız main.rs test mod�
 75b0220ceecc4ea2190c69d0d42e874913a09078	maintenance	-	Yalnız bakım ikilisi surum_artefakti eklendi; derleyici kütüphanesi, grammar, runtime, tanı ve kullanıcı programı davranışı değişmedi.
 44a4aba12cba4509ce93a9d379ca9ce798897a76	maintenance	-	Yalnız bakım ikilisi soak eklendi; derleyici kütüphanesi, grammar, runtime, tanı ve kullanıcı programı davranışı değişmedi.
 024912ea3af8739820978f228a48262eaa8428f8	semantic-bugfix	girintisiz-islem-basligi	K-166: S007 önerisi, gövde dışı parametre satırında S004 ve çoklu tanı hattında kök nedene bağlı A001/A003/A007/T016 gürültü ayıklaması; govde-disi-parametre-satiri ve tanimsiz-ad-tek-tani vakaları da bu SHA ile düzeldi.
+3f0f5feeef4c4eb2add753a2757e99b5c83a95dd	maintenance	-	Yalnız bakım ikilisi tani_kalitesi ile testleri ve belge kablosu eklendi; derleyici davranışı bu commit ile değişmedi.
