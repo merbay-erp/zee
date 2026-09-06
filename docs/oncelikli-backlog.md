@@ -194,6 +194,10 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
     sonrası geçersiz UTF-8'i rota çalışmadan 400'e çeviren strict uygulamayı
     ekledi. `web` kipli kalıcı fixture exact `32247c7…` uygulama SHA'sına ve
     compiler semantic bugfix beyanına bağlıdır; B-065 kapandı.
+60. K-173/ADR-069 uzun soak kapısını kurdu: golden derleme + yürütme döngüsü ile
+    gerçek `dillsp` didChange döngüsü süre bütçesince koşar, iki sürecin RSS'i
+    örneklenir, ısınma sonrası büyüme %10 ve 32 MiB'ı birlikte aşarsa kalır;
+    tarihçe temiz ağaçtan exact SHA ile yazılır, haftalık workflow 30 dk koşar.
 59. K-168/ADR-068 sürüm ikilisini tekrar üretilebilir yaptı: iki bağımsız temiz
     klonda sabit toolchain + `--remap-path-prefix` + `SOURCE_DATE_EPOCH` ile eş
     SHA-256 zorunlu; SPDX SBOM, SLSA provenance ve Ed25519 imza deterministik
@@ -794,8 +798,10 @@ kapattı. K-171 spec maddelerini exact test işlevine bağlayıp 16 gerçek kan�
 boşluğunu adlandırdı. K-170 güvenlik kanıtını tek kapıda birleştirip açık
 kritik/yüksek bulgu sıfırını makinece zorunlu kıldı. K-172 dogfood korpusunu
 kurup iki güvenlik test boşluğunu kapattı. K-168 sürüm ikilisini iki temiz
-klonda eş özetle, SBOM/provenance/imzayla üretilebilir yaptı; sıradaki makine
-işi K-166 tanı kalitesi ve K-173 uzun soak kanıtıdır.
+klonda eş özetle, SBOM/provenance/imzayla üretilebilir yaptı. K-173 uzun soak
+kapısını ve ilk 30 dakikalık sızıntısız tabanı kaydetti; sıradaki makine işi
+K-166 tanı kalitesidir. K-169 kurulum tatbikatı ile K-174/K-175 takvim ve insan
+kanıtı bekler.
 K-161/K-162 gerçek insan testleri de insan verisini beklemeyi sürdürür.
 İnsan verisi gelmeden yeni syntax seçilmez
 veya B-001/B-002 tamamlanmış gösterilmez.
@@ -834,7 +840,7 @@ tamamlanmış sayılmaz; burada istenen ek kanıt ayrıca üretilir.
 | K-170 | **KAPALI** | ADR-066 `guvenlik-kapisi.sh` + `GB-NNN` bulgu kaydı + SECURITY.md: 17 kapalı/4 kabul/1 açık orta, açık kritik/yüksek sıfır; sürüm adayı kipi exact HEAD RC fuzz + clippy + tam test ister |
 | K-171 | **KAPALI** | ADR-065 `spec_drift`: 169 normatif spec maddesi parmak-izi kimliği + exact test işlevi; 151 kanıtlı/16 kısmi/2 açık deterministik raporla CI'da; RFC/ADR belge düzeyinde kalır |
 | K-172 | **KAPALI** | ADR-067 `dogfood/korpus-v1.tsv`: 10 vaka (4 gereksinim aynası + F007/F012/F030/F032 ret/çözüm çiftleri) ürün politikasıyla CI'da; manifest dışı dogfood kaynağı reddedilir; GB-020/021 kapandı |
-| K-173 | **AÇIK** | Uzun compiler/LSP workspace soak ve kaynak sızıntısı kanıtı |
+| K-173 | **KAPALI** | ADR-069 `soak`: derleyici döngüsü + gerçek `dillsp`, 5 sn RSS örneği, ısınma sonrası %10+32 MiB çift eşik, exact SHA tarihçesi ve haftalık workflow |
 | K-174 | **AÇIK** | 2–4 hafta yeni syntax kapalı V1 freeze |
 | K-175 | **AÇIK** | İnsan+iki proje+üç platform+signed reproducible V1 RC |
 
