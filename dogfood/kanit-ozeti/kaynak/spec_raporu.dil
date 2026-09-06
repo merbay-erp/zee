@@ -1,0 +1,75 @@
+# K-164 kanıt özeti — spec maddesi kanıt durumu bölümü (docs/spec-madde-kaniti-v1.tsv).
+# Sürtünme: alt metin alma yok; bölüm adı `#` ile parçalamanın ilkidir.
+
+tsv_araclari birimini kullan
+sayim_araclari birimini kullan
+markdown_araclari birimini kullan
+
+işlem spec bölümünü üret
+    satırları Metin listesi olarak al
+    Metin listesi döndürür
+
+    bölüm "Spec maddeleri" ve "docs/spec-madde-kaniti-v1.tsv" ile bölüm başlığını yap olsun
+    metin bölümün "\n" ile birleşmişi olsun
+    maddeler satırlar ve "madde" ile sütunu topla olsun
+    durumlar satırlar ve "durum" ile sütunu topla olsun
+    dosyalar boş liste olsun
+    her madde için
+        parçalar maddenin "#" ile parçaları olsun
+        birinci parçaların ilki olsun
+        dosyalara birinciyi ekle
+    çiftler dosyalar ve durumlar ve "|" ile çiftleri birleştir olsun
+    sayaçlar çiftler için değerleri say olsun
+    dosya_sayaçları dosyalar için değerleri say olsun
+    sıralı_dosyalar dosya_sayaçları için sıralı anahtarları ver olsun
+    sütunlar "Bölüm", "Kanıtlı", "Kısmi", "Açık", "Toplam", "Kanıt %" listesi olsun
+    tablo sütunlar için tablo başlığını yap olsun
+    tablodaki her çizgi için
+        bölüme çizgiyi ekle
+    toplam_kanıtlı 0 olsun
+    toplam_kısmi 0 olsun
+    toplam_açık 0 olsun
+    her sıralı_dosya için
+        kanıtlı_ad sıralı_dosya ile "|kanitli" olsun
+        kısmi_ad sıralı_dosya ile "|kismi" olsun
+        açık_ad sıralı_dosya ile "|acik" olsun
+        kanıtlı sayaçlar ve kanıtlı_ad ile sayımı oku olsun
+        kısmi sayaçlar ve kısmi_ad ile sayımı oku olsun
+        açık sayaçlar ve açık_ad ile sayımı oku olsun
+        ara kanıtlı ile kısminin toplamı olsun
+        toplam ara ile açığın toplamı olsun
+        yüzde kanıtlı ve toplam ile yüzdeyi hesapla olsun
+        toplam_kanıtlıyı kanıtlıyla artır
+        toplam_kısmiyi kısmiyle artır
+        toplam_açığı açıkla artır
+        hücreler boş liste olsun
+        hücrelere sıralı_dosyayı ekle
+        hücrelere "" ile kanıtlı ekle
+        hücrelere "" ile kısmi ekle
+        hücrelere "" ile açık ekle
+        hücrelere "" ile toplam ekle
+        hücrelere "" ile yüzde ekle
+        satır hücreler için hücreleri birleştir olsun
+        bölüme satırı ekle
+    genel_ara toplam_kanıtlı ile toplam_kısminin toplamı olsun
+    genel_toplam genel_ara ile toplam_açığın toplamı olsun
+    genel_yüzde toplam_kanıtlı ve genel_toplam ile yüzdeyi hesapla olsun
+    hücreler boş liste olsun
+    hücrelere "**Toplam**" ekle
+    hücrelere "" ile toplam_kanıtlı ekle
+    hücrelere "" ile toplam_kısmi ekle
+    hücrelere "" ile toplam_açık ekle
+    hücrelere "" ile genel_toplam ekle
+    hücrelere "" ile genel_yüzde ekle
+    satır hücreler için hücreleri birleştir olsun
+    bölüme satırı ekle
+    bölümü döndür
+
+test "spec bölümü dosya başına ve toplam satır üretir"
+    satırlar "# madde	ozet	durum	kanit	not", "spec/02-dizim.md#aa	x	kanitli	t	-", "spec/02-dizim.md#bb	y	kismi	t	-", "spec/01-sozcukleme.md#cc	z	acik	-	-" listesi olsun
+    bölüm satırlar için spec bölümünü üret olsun
+    metin bölümün "\n" ile birleşmişi olsun
+    metin "| spec/01-sozcukleme.md | 0 | 0 | 1 | 1 | 0 |" içermeli
+    metin "| spec/02-dizim.md | 1 | 1 | 0 | 2 | 50 |" içermeli
+    son bölümün sonu olsun
+    son "| **Toplam** | 1 | 1 | 1 | 3 | 33 |" e eşit olmalı

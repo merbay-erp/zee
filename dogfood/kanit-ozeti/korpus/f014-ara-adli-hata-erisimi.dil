@@ -1,0 +1,7 @@
+# K-164/F014 çözümü: hata önce bir ada bağlanır, mesajı sonra okunur.
+# Depo kayıt defteri eksikse ürünün vereceği açıklama bu desenle üretilir.
+
+sonuç "yok.tsv" dosyasını okumayı dene olsun
+sonuç başarısızsa
+    hata sonucun hatası olsun
+    hatanın kodu yaz

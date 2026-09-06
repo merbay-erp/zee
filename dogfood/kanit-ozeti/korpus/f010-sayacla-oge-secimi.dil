@@ -1,0 +1,12 @@
+# K-164/F010 çözümü: hedef sıradaki öğe sayaç döngüsüyle seçilir. Ürünün
+# `bilgiye çevir` ve `çiftleri birleştir` işlemleri bu deseni kullanır.
+
+alanlar "GB-001", "kapali", "yuksek" listesi olsun
+hedef 1 olsun
+sayaç 0 olsun
+durum "" olsun
+her alan için
+    sayaç hedefe eşitse
+        durum alan olsun
+    sayacı 1 artır
+durum yaz

@@ -1,0 +1,40 @@
+# K-164 kanıt özeti — compiler değişiklik ve core freeze beyanları bölümü.
+# Kaynaklar: docs/compiler-degisiklik-beyanlari-v1.tsv, docs/core-freeze-beyanlari-v1.tsv.
+# Başlık satırı `# enforcement_parent` satırından SONRA gelir; tsv_araclari son
+# sekmeli yorumu başlık sayar.
+
+tsv_araclari birimini kullan
+sayim_araclari birimini kullan
+markdown_araclari birimini kullan
+
+işlem beyan bölümünü üret
+    değişiklikleri Metin listesi olarak al
+    donmaları Metin listesi olarak al
+    Metin listesi döndürür
+
+    bölüm "Compiler değişiklik ve core freeze beyanları" ve "docs/compiler-degisiklik-beyanlari-v1.tsv + docs/core-freeze-beyanlari-v1.tsv" ile bölüm başlığını yap olsun
+    metin bölümün "\n" ile birleşmişi olsun
+    değişiklik_sınıfları değişiklikler ve "sinif" ile sütunu topla olsun
+    değişiklik_sayaçları değişiklik_sınıfları için değerleri say olsun
+    tablo değişiklik_sayaçları ve "Değişiklik sınıfı" ve "Beyan" ile sayım tablosunu yap olsun
+    tablodaki her çizgi için
+        bölüme çizgiyi ekle
+    bölüme "" ekle
+    freeze_sınıfları donmalar ve "sinif" ile sütunu topla olsun
+    freeze_sayaçları freeze_sınıfları için değerleri say olsun
+    tablo freeze_sayaçları ve "Freeze sınıfı" ve "Beyan" ile sayım tablosunu yap olsun
+    tablodaki her çizgi için
+        bölüme çizgiyi ekle
+    bölüme "" ekle
+    bölüme "Toplam: " ile değişiklik_sınıflarının adedi ile " compiler değişiklik beyanı, " ile freeze_sınıflarının adedi ile " core freeze beyanı." ekle
+    bölümü döndür
+
+test "beyan bölümü iki sınıf tablosu üretir"
+    değişiklikler "# zee-x", "# enforcement_parent	abc", "# commit	sinif	kanit	gerekce", "c1	maintenance	k	g", "c2	correctness	k	g", "c3	maintenance	k	g" listesi olsun
+    freezeler "# zee-y", "# enforcement_parent	abc", "# commit	sinif	urun	is	reproducer	etkilenen_proje	minimalite	karar", "c1	maintenance	-	K-1	-	-	m	adr/x.md" listesi olsun
+    bölüm değişiklikler ve freezeler ile beyan bölümünü üret olsun
+    metin bölümün "\n" ile birleşmişi olsun
+    metin "| maintenance | 2 |" içermeli
+    metin "| correctness | 1 |" içermeli
+    son bölümün sonu olsun
+    son "Toplam: 3 compiler değişiklik beyanı, 1 core freeze beyanı." e eşit olmalı

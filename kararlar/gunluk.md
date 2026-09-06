@@ -3188,3 +3188,63 @@ usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.
 - **Sınır:** Linux/Windows tatbikatı workflow kanıtıdır; paket yöneticisi
   formülü ve otomatik güncelleme V1 sözü değildir. K-169/V1-P1-28 kapandı;
   üçüncü incelemenin makine hattı tamamlandı.
+
+## K-164 — İkinci gerçek ürün farklı iş yükünde: kanıt özeti (6 Eyl)
+
+- **Bulgu:** Tek dogfood ürünü (Çatlı, web + PostgreSQL) dilin bir iş yüküne
+  aşırı uyup uymadığını gösteremezdi. Depo kayıt defterleri (regresyon,
+  güvenlik bulguları, spec maddeleri, dogfood korpusu, deprecation, soak,
+  beyanlar) elle okunuyor; tek sayfalık makine üretimi özet yoktu.
+- **Karar:** ADR-072. `dogfood/kanit-ozeti` depo içi ikinci üründür: toplu
+  metin/veri işleme iş yükü (TSV → Markdown), web/DB/ağ yok; 10 birim, 19 birim
+  testi; `docs/kanit-ozeti.md`'yi üretir ve `kanit_ozeti_testi` sayfayı gerçek
+  kayıt defteri içerikleriyle hermetik koşup bayt bayt tazelik ve bağımsız Rust
+  sayımıyla doğruluk ister. Korpus manifesti `proje` kipi kazandı: depo içi
+  ürünün giriş klasörü tek vakayla kapsanır.
+- **Sürtünmeler (K-164/F001–F016):** F001 test doğrulamasının solu postfix
+  taşımaz (S016); F002 elmas birim içe alımı (`c→a`, `c→b→a`) yanlış A008;
+  F003 çağrı argümanında `ile` birleştirmesi (S015); F004 `içermeli` listede
+  (T022); F005 türü somutlaşmamış boş sözlük açık imzaya (T017); F006
+  `başlığı al` parametresi "başlığ" kökünü bağlar (A001); F007 `payı al` → "pa";
+  F008 `satır`/`satırlar` birlikteyken `satırlara` (A002); F009 proje kipinde
+  dosya sınırı ürün kökü — depo-genel araç için okunabilir ek kök yok (C012);
+  F010 listede sıra ile öğe erişimi yok (S015); F011 `\t` kaçışı yok (S040),
+  ham sekme gömülür; F012 birim dosyasındaki tanı ana kaynağa göre satırla
+  ve dosya adı olmadan raporlanıyordu; F013 iyelikli bileşik ad `-ndaki`
+  kaynağı olamaz (A001); F014 postfix zinciri yok (S015); F015 `her önem için`
+  örtük çoğul kaynağı sabit sıra listesi yerine sütuna bağladı; F016
+  `dosyalara parçaların ilkini ekle` yapı alanı sanıldı (T028). F002 ve F012
+  compiler düzeltmesi; diğerleri dilde çözüldü ve korpusa ret/çözüm çifti
+  olarak girdi (F002/F007/F012/F015/F016 çift taşımaz: birim gerektirir ya da
+  aynı tanı sınıfının tekrarıdır).
+- **Compiler düzeltmeleri (dogfood-change, minimal):** (1) `dosyayi_coz`
+  her tanımın TANIMLANDIĞI kökeni izler; aynı kökenli tanımın ikinci yoldan
+  gelişi çakışma değildir, birim testleri kökeni başına bir kez alınır; farklı
+  kökenli aynı ad A008 kalır. (2) `Tani.koken`, `Islem.koken`, `Test.koken`:
+  birim ayrıştırma, sözleşme, gövde denetimi, çalışma ve test tanıları
+  doğdukları kökenle etiketlenir; CLI alıntıyı birim dosyasından alır ve
+  "Birim: … (satır N)" der; LSP tanıyı `kullan` satırına taşıyıp birim adı ve
+  özgün satırı söyler; JSON kökenli tanıda `koken` alanı taşır, kökensiz tanı
+  bayt bayt değişmez. Tanı kimlikleri ve geçerli program davranışı değişmedi.
+- **Sınır:** Morfoloji profili `zee-tr-1` değişmedi; F006/F007/F008/F013 ad
+  seçimi kılavuzuyla yaşar, `zee-tr-2` adayıdır. Ürün depo-genel olduğu için
+  dosya kipinde koşar (F009). K-164/V1-P1-29 kapandı.
+
+## K-165 — Aynı araç üç dilde: Zee–Rust–Go veri temelli karşılaştırma (6 Eyl)
+
+- **Bulgu:** Zee'nin bir işi kaç satırda, kaç testle, ne sürede ve hangi
+  sürtünmeyle yaptığı sayıyla söylenmiyordu.
+- **Karar:** ADR-073. K-164'ün kanıt özeti aracı Rust
+  (`dogfood/kanit-ozeti-karsilastirma/rust`) ve Go (`.../go`) ile yeniden
+  yazıldı; üçü aynı sayfayı bayt bayt üretmek zorundadır
+  (`dogfood_karsilastirma_testi`; Go yalnız araç zinciri varsa).
+  `scripts/dogfood-karsilastirma.sh` temiz ağaçta exact SHA ile kaynak satırı,
+  test sayısı, derleme/çalışma süresi medyanı, tepe RSS ve korpusa giren
+  sürtünme vakasını `docs/dogfood-karsilastirma-v1.tsv`ye yazar; satır/test
+  sayıları testte yeniden hesaplanır, süre/RSS kapı değildir.
+- **Yorum kuralı:** belge üstünlük iddiası yazmaz; Zee'nin kaybettiği yerler
+  (yorumlayıcı derle+yürüt süresi, F010 sıra erişimi, F011 sekme kaçışı,
+  morfoloji ad kısıtları, F003/F014 ara ad zorunluluğu) açıkça listelenir ve
+  backlog girdisidir. İlk kayıt `docs/dogfood-karsilastirma.md` içindedir.
+- **Sınır:** Tek araç, tek makine; farklı iş yükü ve adanmış koşucu ölçümü
+  V1 sözü değildir. K-165/V1-P1-30 kapandı.

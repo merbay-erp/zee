@@ -1,0 +1,7 @@
+# K-164/F008 çözümü: liste tekilin çoğulu olmayan bir ad alır (`çıktı`).
+# Ürünün tablo üreticisi bu deseni kullanır.
+
+satır "| a |" olsun
+çıktı boş liste olsun
+çıktıya satırı ekle
+çıktının adedi yaz

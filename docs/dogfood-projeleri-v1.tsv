@@ -1,3 +1,5 @@
 # zee-dogfood-projeleri-1
 # urun	kok	koken_commit	durum
 catli-itwise-admin	dogfood/catli-itwise-admin	cef5ae33b48264d9c271293d6746e7524f078c4a	active
+# kanit-ozeti depo içi üründür; koken_commit ürünün üzerine kurulduğu taban commit'idir (K-164/ADR-072).
+kanit-ozeti	dogfood/kanit-ozeti	6124f12c5691b04f1e441315623c5ce4e2ca4c3a	active

@@ -1,0 +1,19 @@
+# K-164/F003 çözümü: birleşik anahtar önce bir ada bağlanır, çağrıya düz ad girer.
+# Ürünün güvenlik/spec/dogfood bölümleri bu deseni kullanır.
+
+işlem sayımı oku
+    sayaçları TamSayı sözlüğü olarak al
+    anahtarı Metin olarak al
+    TamSayı döndürür
+
+    sayaçlarda anahtar yoksa
+        0 döndür
+    değer sayaçların anahtar değeri olsun
+    değeri döndür
+
+sayaçlar boş sözlük olsun
+sayaçların "orta|kapali" değeri 6 olsun
+önem "orta" olsun
+kapalı_ad önem ile "|kapali" olsun
+kapalı sayaçlar ve kapalı_ad ile sayımı oku olsun
+kapalı yaz

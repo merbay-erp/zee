@@ -1,0 +1,6 @@
+# K-164/F001 sürtünmesi: test doğrulamasının sol tarafı postfix taşıyamaz;
+# `listenin adedi 2 ye eşit olmalı` S016 ile reddedilir.
+
+test "adet doğrudan doğrulanamaz"
+    liste 1, 2 listesi olsun
+    listenin adedi 2 ye eşit olmalı

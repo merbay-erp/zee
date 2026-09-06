@@ -93,6 +93,14 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         working-directory: compiler
         run: cargo run --locked --bin tani_kalitesi -- --denetle
+      # K-164/ADR-072: ikinci ürün gerçek CLI ile sayfayı yeniden üretir; bayatsa kırılır.
+      - name: Kanıt özeti sayfası ikinci Zee ürünüyle güncel
+        if: matrix.os == 'ubuntu-latest'
+        working-directory: compiler
+        shell: bash
+        run: |
+          cargo run --locked -- çalıştır ../dogfood/kanit-ozeti/kaynak/ana.dil
+          git diff --exit-code -- ../docs/kanit-ozeti.md
       - name: Fuzz hedefleri stable araç zincirinde derlenir
         if: matrix.os == 'ubuntu-latest'
         working-directory: compiler

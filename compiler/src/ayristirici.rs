@@ -391,6 +391,7 @@ impl Ayristirici {
             donus_satiri,
             govde,
             satir,
+            koken: None,
         }))
     }
 
@@ -594,7 +595,12 @@ impl Ayristirici {
             }
         };
         let govde = self.alt_blok(satir)?;
-        Ok(Cumle::TestBlogu(Test { ad, govde, satir }))
+        Ok(Cumle::TestBlogu(Test {
+            ad,
+            govde,
+            satir,
+            koken: None,
+        }))
     }
 
     /// `<koşul> olmalı` — doğrulama cümlesi (K-025).

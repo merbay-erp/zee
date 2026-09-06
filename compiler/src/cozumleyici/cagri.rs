@@ -191,6 +191,13 @@ pub(super) fn cagri_denetle(
             1,
         )
     })?;
+    // Birimden gelen işlemin sözleşme ve gövde tanıları o birimin kökenini
+    // taşır; ana kaynağın satırıyla karıştırılmaz (K-164/ADR-072).
+    let islem_kokeni = islem.koken.clone();
+    let kokenle = |tani: Tani| match &islem_kokeni {
+        Some(koken) => tani.kokenle(koken),
+        None => tani,
+    };
 
     if islem.parametreler.len() != arg_turleri.len() {
         let beklenen = islem.parametreler.len();
@@ -213,14 +220,14 @@ pub(super) fn cagri_denetle(
         Ok(turler) => turler,
         Err(tani) => {
             baglam.islemler.insert(ad.to_string(), islem);
-            return Err(tani);
+            return Err(kokenle(tani));
         }
     };
     let bildirilmis_donus = match bildirilmis_donus_turu(&islem, baglam) {
         Ok(donus) => donus,
         Err(tani) => {
             baglam.islemler.insert(ad.to_string(), islem);
-            return Err(tani);
+            return Err(kokenle(tani));
         }
     };
     let donus_bildirim_satiri = islem.donus_satiri.unwrap_or(satir);
@@ -270,7 +277,7 @@ pub(super) fn cagri_denetle(
         donusler: Vec::new(),
         verilen_ozyineleme: None,
     });
-    let denetim = blok_denetle(&mut islem.govde, &mut islem_ortami, baglam);
+    let denetim = blok_denetle(&mut islem.govde, &mut islem_ortami, baglam).map_err(kokenle);
     let kayit = baglam.denetim_yigini.pop().ok_or_else(|| {
         ic_tutarlilik_hatasi(
             format!("\"{}\" işleminin denetim kaydı kayboldu", ad),

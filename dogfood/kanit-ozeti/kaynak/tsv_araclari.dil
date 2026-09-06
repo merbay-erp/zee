@@ -1,0 +1,129 @@
+# K-164 kanıt özeti — TSV kayıt defteri okuma yardımcıları.
+# Sürtünme: dilde sıra ile öğe erişimi yok; başlık→alan eşlemesi sayaçla yapılır.
+# Sürtünme: "\t" kaçışı yok; sekme metin sabitine ham olarak gömülür.
+
+işlem veri satırlarını ayıkla
+    satırları Metin listesi olarak al
+    Metin listesi döndürür
+
+    seçilenler boş liste olsun
+    her satır için
+        temiz satırın kırpılmışı olsun
+        temiz boşsa
+            atla doğru olsun
+        değilse temiz "#" ile başlıyorsa
+            atla doğru olsun
+        değilse
+            seçilenlere satırı ekle
+    seçilenleri döndür
+
+işlem başlık satırını bul
+    satırları Metin listesi olarak al
+    Metin listesi döndürür
+
+    sekme "	" olsun
+    başlık "" olsun
+    her satır için
+        satır "# " ile başlıyorsa
+            satır sekme içeriyorsa
+                başlık satırın "# " yerine "" değişmişi olsun
+    sütunlar boş liste olsun
+    başlık doluysa
+        sütunlar başlığın sekme ile parçaları olsun
+    sütunları döndür
+
+işlem alanlara böl
+    satırı Metin olarak al
+    Metin listesi döndürür
+
+    sekme "	" olsun
+    parçalar satırın sekme ile parçaları olsun
+    parçaları döndür
+
+işlem bilgiye çevir
+    başlıkları Metin listesi olarak al
+    alanları Metin listesi olarak al
+    Metin sözlüğü döndürür
+
+    bilgi boş sözlük olsun
+    sıra 0 olsun
+    her başlık için
+        hedef sıra olsun
+        sayaç 0 olsun
+        her alan için
+            sayaç hedefe eşitse
+                bilginin başlık değeri alan olsun
+            sayacı 1 artır
+        sırayı 1 artır
+    bilgiyi döndür
+
+işlem sütunu topla
+    satırları Metin listesi olarak al
+    sütunu Metin olarak al
+    Metin listesi döndürür
+
+    başlıklar satırlar için başlık satırını bul olsun
+    veriler satırlar için veri satırlarını ayıkla olsun
+    değerler boş liste olsun
+    verilerdeki her veri için
+        alanlar veri için alanlara böl olsun
+        bilgi başlıklar ve alanlar ile bilgiye çevir olsun
+        bilgide sütun yoksa
+            değerlere "" ekle
+        değilse
+            değerlere bilginin sütun değerini ekle
+    değerleri döndür
+
+işlem çiftleri birleştir
+    birincileri Metin listesi olarak al
+    ikincileri Metin listesi olarak al
+    ayırıcıyı Metin olarak al
+    Metin listesi döndürür
+
+    çiftler boş liste olsun
+    sıra 0 olsun
+    her birinci için
+        hedef sıra olsun
+        sayaç 0 olsun
+        her ikinci için
+            sayaç hedefe eşitse
+                çiftlere birinci ile ayırıcı ile ikinci ekle
+            sayacı 1 artır
+        sırayı 1 artır
+    çiftleri döndür
+
+test "çiftler sırayla birleşir"
+    birinciler "a", "b" listesi olsun
+    ikinciler "1", "2" listesi olsun
+    çiftler birinciler ve ikinciler ve "|" ile çiftleri birleştir olsun
+    son çiftlerin sonu olsun
+    son "b|2" ye eşit olmalı
+
+test "yorum ve boş satır düşer"
+    ham "a	b", "# y", "", "c	d" listesi olsun
+    kalan ham için veri satırlarını ayıkla olsun
+    adet kalanın adedi olsun
+    adet 2 ye eşit olmalı
+
+test "başlık son sekmeli yorum satırıdır"
+    ham "# zee-x-1", "# enforcement_parent	abc", "# kimlik	durum", "GB-1	acik" listesi olsun
+    başlıklar ham için başlık satırını bul olsun
+    adet başlıkların adedi olsun
+    adet 2 ye eşit olmalı
+    ilk başlıkların ilki olsun
+    ilk "kimlik" e eşit olmalı
+
+test "sekme ile bölme ve bilgiye çevirme"
+    alanlar "GB-1	acik" için alanlara böl olsun
+    başlıklar "kimlik", "durum" listesi olsun
+    bilgi başlıklar ve alanlar ile bilgiye çevir olsun
+    durum bilginin "durum" değeri olsun
+    durum "acik" a eşit olmalı
+
+test "sütun toplama veri sırasını korur"
+    ham "# kimlik	durum", "GB-1	acik", "", "GB-2	kapali" listesi olsun
+    durumlar ham ve "durum" ile sütunu topla olsun
+    adet durumların adedi olsun
+    adet 2 ye eşit olmalı
+    son durumların sonu olsun
+    son "kapali" a eşit olmalı

@@ -1,0 +1,6 @@
+# K-164/F004 sürtünmesi: `içermeli` yalnız metinler arasında sorgulanır;
+# Metin listesinde T022 verir.
+
+test "liste içermeli desteklenmez"
+    satırlar "| parser | 2 |", "| S004 | 2 |" listesi olsun
+    satırlar "| parser | 2 |" içermeli

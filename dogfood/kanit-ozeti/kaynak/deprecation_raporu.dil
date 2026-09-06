@@ -1,0 +1,37 @@
+# K-164 kanıt özeti — deprecation kayıtları bölümü (docs/deprecation-kayitlari-v1.tsv).
+
+tsv_araclari birimini kullan
+sayim_araclari birimini kullan
+markdown_araclari birimini kullan
+
+işlem deprecation bölümünü üret
+    satırları Metin listesi olarak al
+    Metin listesi döndürür
+
+    bölüm "Deprecation kayıtları" ve "docs/deprecation-kayitlari-v1.tsv" ile bölüm başlığını yap olsun
+    metin bölümün "\n" ile birleşmişi olsun
+    durumlar satırlar ve "durum" ile sütunu topla olsun
+    durum_sayaçları durumlar için değerleri say olsun
+    tablo durum_sayaçları ve "Durum" ve "Kayıt" ile sayım tablosunu yap olsun
+    tablodaki her çizgi için
+        bölüme çizgiyi ekle
+    bölüme "" ekle
+    yüzeyler satırlar ve "yuzey" ile sütunu topla olsun
+    sınıflar satırlar ve "sinif" ile sütunu topla olsun
+    çiftler yüzeyler ve sınıflar ve " / " ile çiftleri birleştir olsun
+    çift_sayaçları çiftler için değerleri say olsun
+    tablo çift_sayaçları ve "Yüzey / sınıf" ve "Kayıt" ile sayım tablosunu yap olsun
+    tablodaki her çizgi için
+        bölüme çizgiyi ekle
+    bölüme "" ekle
+    bölüme "Toplam kayıt: " ile durumların adedi ile "." ekle
+    bölümü döndür
+
+test "deprecation bölümü durum ve yüzey tablolarını üretir"
+    satırlar "# kimlik	yuzey	oge	sinif	duyuru	kaldirma	goc	karar	durum", "DEP-001	tani	S032	kaldirma	0.8.0-dev	0.8.0-dev	g	a.md	kaldirildi", "DEP-002	kalip	x	yeniden-adlandirma	0.8.0-dev	0.9.0	g	a.md	duyuruldu" listesi olsun
+    bölüm satırlar için deprecation bölümünü üret olsun
+    metin bölümün "\n" ile birleşmişi olsun
+    metin "| kaldirildi | 1 |" içermeli
+    metin "| tani / kaldirma | 1 |" içermeli
+    son bölümün sonu olsun
+    son "Toplam kayıt: 2." ye eşit olmalı

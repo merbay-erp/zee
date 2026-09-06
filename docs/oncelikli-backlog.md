@@ -194,6 +194,13 @@ Durumlar: **SIRADA** · **AÇIK** · **KISMEN** · **KAPALI**.
     sonrası geçersiz UTF-8'i rota çalışmadan 400'e çeviren strict uygulamayı
     ekledi. `web` kipli kalıcı fixture exact `32247c7…` uygulama SHA'sına ve
     compiler semantic bugfix beyanına bağlıdır; B-065 kapandı.
+64. K-165/ADR-073 aynı aracı Rust ve Go ile bayt bayt eşdeğer yazıp kaynak
+    satırı, test, derleme/çalışma süresi, tepe RSS ve sürtünme sayısını exact
+    SHA tarihçesine bağladı; Zee'nin kaybettiği yerler belgede açık.
+63. K-164/ADR-072 ikinci gerçek ürünü farklı iş yükünde kurdu: `kanit-ozeti`
+    dokuz kayıt defterinden `docs/kanit-ozeti.md` üretir (10 birim/19 test,
+    bayt bayt tazelik kapısı). On altı sürtünmeden ikisi compiler düzeltmesi
+    (elmas birim içe alımı, birim kökenli tanı), on biri korpus çifti oldu.
 62. K-169/ADR-071 kurulum-kaldırma sözleşmesini ve sürüm runbook'unu kurdu:
     `SHA256SUMS` doğrulamalı kur, manifestli ve no-clobber kaldır betikleri
     (bash + PowerShell), gerçek ikililerle Unix entegrasyon testi, üç platform
@@ -809,8 +816,11 @@ kurup iki güvenlik test boşluğunu kapattı. K-168 sürüm ikilisini iki temiz
 klonda eş özetle, SBOM/provenance/imzayla üretilebilir yaptı. K-173 uzun soak
 kapısını ve ilk 30 dakikalık sızıntısız tabanı kaydetti. K-166 tanı kalitesini
 ölçülebilir yapıp ilk altı ihlali kapattı. K-169 kurulum/kaldırma sözleşmesini
-ve runbook'u kurdu. Üçüncü incelemenin makine hattı burada bitti; K-174 freeze
-takvimi, K-175 RC ile K-161/K-162/K-164/K-165 insan ve ikinci ürün kanıtı bekler.
+ve runbook'u kurdu. K-164 ikinci gerçek ürünü farklı iş yükünde (kanıt özeti
+aracı) yazıp elmas birim içe alımı ve birim kökenli tanı kusurlarını kapattı;
+K-165 aynı aracı Rust/Go ile bayt bayt eşdeğer yazıp veri temelli karşılaştırdı.
+Üçüncü incelemenin makine ve ikinci ürün hattı burada bitti; K-174 freeze
+takvimi ve K-175 RC ile K-161/K-162 insan kanıtı bekler.
 K-161/K-162 gerçek insan testleri de insan verisini beklemeyi sürdürür.
 İnsan verisi gelmeden yeni syntax seçilmez
 veya B-001/B-002 tamamlanmış gösterilmez.
@@ -840,8 +850,8 @@ tamamlanmış sayılmaz; burada istenen ek kanıt ayrıca üretilir.
 | K-161 | **İNSAN KANITI** | B-001/K-016 için 10 öğrenci/çocuk + 5 profesyonel kör oturum |
 | K-162 | **İNSAN KANITI** | B-002/K-093 morphology/scope/call/error zihinsel model oturumu |
 | K-163 | **KAPALI** | Çatlı 1037 Zee LOC/5 modül/12 testte gerçek PG16.11, TLS/bounded pool, binary saga, failure reconciliation ve F032 liveness/readiness zincirini geçti. Bakım skor kartı LSP p95 41,416 ms ve dosya medyanı 5,5 ile kapalı; exact ürün `bb8e1ac` |
-| K-164 | **AÇIK** | Farklı workload'da ikinci gerçek proje |
-| K-165 | **AÇIK** | Aynı uygulamanın Zee–Go/Rust veri temelli dogfood karşılaştırması |
+| K-164 | **KAPALI** | ADR-072 `dogfood/kanit-ozeti`: toplu veri işleme (TSV → Markdown) ikinci ürünü, 10 birim/19 test, `docs/kanit-ozeti.md` bayt bayt tazelik kapısı; 16 sürtünme (F001–F016), elmas birim içe alımı ve birim kökenli tanı düzeltmesi, korpus `proje` kipi ve 22 yeni vaka |
+| K-165 | **KAPALI** | ADR-073: aynı araç Rust ve Go ile bayt bayt eşdeğer; satır/test/derleme/çalışma/RSS/sürtünme exact SHA tarihçesinde (`docs/dogfood-karsilastirma-v1.tsv`), `dogfood_karsilastirma_testi` CI'da |
 | K-166 | **KAPALI** | ADR-070 `tani_kalitesi`: 244 vaka/14 sınıf mutasyon korpusu; S007 öneri, gövde dışı parametre S004 ve A001/A007 tek tanı düzeltmeleriyle 6 ihlal → 0; öneri %100, işaret ≥ %90, gürültü ≤ 2/4 CI'da |
 | K-167 | **KAPALI** | RFC-0028/ADR-064/spec-27: sekiz dondurulmuş yüzey envanteri, süreli `DEP-NNN` deprecation kaydı, `-dev` sürüm kimliği ve B-072 kaldırması `uyumluluk_testi` ile CI'da |
 | K-168 | **KAPALI** | ADR-068 `surum-artefakti.sh` + `surum_artefakti`: iki temiz klonda eş SHA-256, SPDX SBOM, SLSA provenance, `zee-surum-imza-v1`; `surum-adayi` workflow'u etikette koşar |

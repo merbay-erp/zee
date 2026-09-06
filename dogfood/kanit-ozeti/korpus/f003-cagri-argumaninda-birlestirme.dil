@@ -1,0 +1,18 @@
+# K-164/F003 sürtünmesi: çağrı argümanı içinde `ile` birleştirmesi ayraçla
+# karışır; `sayaçlar ve önem ile "|kapali" ile sayımı oku` S015'tir.
+
+işlem sayımı oku
+    sayaçları TamSayı sözlüğü olarak al
+    anahtarı Metin olarak al
+    TamSayı döndürür
+
+    sayaçlarda anahtar yoksa
+        0 döndür
+    değer sayaçların anahtar değeri olsun
+    değeri döndür
+
+sayaçlar boş sözlük olsun
+sayaçların "orta|kapali" değeri 6 olsun
+önem "orta" olsun
+kapalı sayaçlar ve önem ile "|kapali" ile sayımı oku olsun
+kapalı yaz

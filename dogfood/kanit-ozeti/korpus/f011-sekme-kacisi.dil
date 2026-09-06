@@ -1,0 +1,5 @@
+# K-164/F011 sürtünmesi: metin kaçışları yalnız \" \\ \n; `"\t"` S040 ile reddedilir.
+# TSV ayracı için sekme kaçışı yoktur.
+
+sekme "\t" olsun
+sekmenin uzunluğu yaz

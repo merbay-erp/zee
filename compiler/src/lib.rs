@@ -91,7 +91,7 @@ pub mod zaman;
 
 use agac::{Cumle, Islem, KullanimTuru, Program, Test, Yapi};
 use faz::{BaglanmamisProgram, BaglanmisProgram, KaynakMetni};
-use std::collections::HashMap;
+use std::collections::{BTreeSet, HashMap};
 use tani::Tani;
 
 /// Birim yükleyici: birim adını kaynak metne çevirir (RFC-0009). CLI gerçek
@@ -253,35 +253,57 @@ pub fn kaynagi_fazli_derle_kokenlerle(
     yukleyici: &mut KokenliBirimYukleyici,
 ) -> Result<BaglanmisProgram, Tani> {
     let mut yigin: Vec<String> = Vec::new();
-    let (cumleler, islemler, yapilar, testler) =
-        dosyayi_coz(kaynak, koken, true, yukleyici, &mut yigin)?;
+    let cozulmus = dosyayi_coz(kaynak, koken, true, yukleyici, &mut yigin)?;
     BaglanmamisProgram::yeni(Program {
-        cumleler,
-        islemler,
-        yapilar,
-        testler,
+        cumleler: cozulmus.cumleler,
+        islemler: cozulmus.islemler,
+        yapilar: cozulmus.yapilar,
+        testler: cozulmus.testler,
     })
     .denetle()
 }
 
+/// Bir kaynak dosyanın çözülmüş tanımları. `islemler`/`yapilar` çalışma
+/// için gereken geçişli tanımları da taşır; `*_kokenleri` her adın
+/// TANIMLANDIĞI kaynağı söyler ki elmas içe alım çakışma sayılmasın
+/// (spec/07, K-164/ADR-072). `alinan_kokenler` bu düzeyde birleşen bütün
+/// kaynak kökenleridir; birim testleri kökeni başına bir kez alınır.
+struct CozulmusDosya {
+    cumleler: Vec<Cumle>,
+    islemler: HashMap<String, Islem>,
+    islem_kokenleri: HashMap<String, String>,
+    yapilar: Vec<Yapi>,
+    yapi_kokenleri: HashMap<String, String>,
+    testler: Vec<Test>,
+    alinan_kokenler: BTreeSet<String>,
+}
+
+/// Birimden dönen tanıyı, henüz kökeni yoksa o birimin kökeniyle etiketler.
+fn birim_kokeniyle(tani: Tani, koken: &str) -> Tani {
+    tani.kokenle(koken)
+}
+
 /// Bir kaynak dosyayı çözer: birimlerini özyinelemeli yükler, kendi
 /// tanımlarını içe alınanlarla birleştirir. `birim_adi` None ise ana dosyadır.
-#[allow(clippy::type_complexity)]
 fn dosyayi_coz(
     kaynak: &str,
     kaynak_kokeni: Option<&str>,
     ana_kaynak: bool,
     yukleyici: &mut KokenliBirimYukleyici,
     yigin: &mut Vec<String>,
-) -> Result<(Vec<Cumle>, HashMap<String, Islem>, Vec<Yapi>, Vec<Test>), Tani> {
+) -> Result<CozulmusDosya, Tani> {
     let tokenlar = KaynakMetni::yeni(kaynak).sozcukle()?;
+    let bu_koken = kaynak_kokeni.unwrap_or("").to_string();
 
     // 1) Birimleri önden yükle (çağrı tanıma için işlem adları gerekli).
     let mut islemler: HashMap<String, Islem> = HashMap::new();
     let mut islem_kaynagi: HashMap<String, String> = HashMap::new();
+    let mut islem_kokenleri: HashMap<String, String> = HashMap::new();
     let mut yapilar: Vec<Yapi> = Vec::new();
     let mut yapi_kaynagi: HashMap<String, String> = HashMap::new();
+    let mut yapi_kokenleri: HashMap<String, String> = HashMap::new();
     let mut testler: Vec<Test> = Vec::new();
+    let mut alinan_kokenler: BTreeSet<String> = BTreeSet::new();
 
     for (ad, tur, satir) in ayristirici::kullanilan_birimler(tokenlar.tokenlar()) {
         let yuklenen = yukleyici(BirimIstegi {
@@ -307,36 +329,30 @@ fn dosyayi_coz(
             .onerili("Ortak tanımları üçüncü bir birime ya da pakete taşı.".into()));
         }
         yigin.push(yuklenen.koken.clone());
-        let (_, birim_islemleri, birim_yapilari, birim_testleri) = dosyayi_coz(
+        let birim = dosyayi_coz(
             &yuklenen.kaynak,
             Some(&yuklenen.koken),
             false,
             yukleyici,
             yigin,
-        )?;
+        )
+        .map_err(|tani| birim_kokeniyle(tani, &yuklenen.koken));
         yigin.pop();
+        let birim = birim?;
 
-        for (islem_adi, islem) in birim_islemleri {
-            if let Some(onceki) = islem_kaynagi.get(&islem_adi) {
-                return Err(cakisma("işlemi", &islem_adi, onceki, &ad, satir));
-            }
-            islem_kaynagi.insert(islem_adi.clone(), ad.clone());
-            islemler.insert(islem_adi, islem);
-        }
-        for yapi in birim_yapilari {
-            if let Some(onceki) = yapi_kaynagi.get(&yapi.ad) {
-                return Err(cakisma("yapısı", &yapi.ad, onceki, &ad, satir));
-            }
-            yapi_kaynagi.insert(yapi.ad.clone(), ad.clone());
-            yapilar.push(yapi);
-        }
-        // Birimin testleri de görünür olur (RFC-0009 §2); ad birimle önek alır.
-        for mut test in birim_testleri {
-            if !test.ad.starts_with(&format!("{}: ", ad)) {
-                test.ad = format!("{}: {}", ad, test.ad);
-            }
-            testler.push(test);
-        }
+        birim_tanimlarini_birlestir(
+            &ad,
+            satir,
+            birim,
+            &mut islemler,
+            &mut islem_kaynagi,
+            &mut islem_kokenleri,
+            &mut yapilar,
+            &mut yapi_kaynagi,
+            &mut yapi_kokenleri,
+            &mut testler,
+            &mut alinan_kokenler,
+        )?;
     }
 
     // 2) İçe alınan işlem adlarıyla tohumlanmış ayrıştırma.
@@ -348,46 +364,21 @@ fn dosyayi_coz(
     let cumleler = tokenlar.ayristir(tohum)?.into_cumleler();
 
     // 3) Kendi tanımlarını ayıkla ve birleştir.
-    let mut kalan = Vec::new();
-    let mut kendi_islem_adlari = Vec::new();
-    for cumle in cumleler {
-        match cumle {
-            Cumle::Kullan { .. } => {} // 1. adımda çözüldü
-            Cumle::IslemTanimi(islem) => {
-                if let Some(birim) = islem_kaynagi.get(&islem.ad) {
-                    return Err(cakisma("işlemi", &islem.ad, birim, "bu dosya", islem.satir));
-                }
-                if islemler.contains_key(&islem.ad) {
-                    return Err(Tani::yeni(
-                        "A005",
-                        format!("\"{}\" işlemi birden çok kez tanımlandı.", islem.ad),
-                        islem.satir,
-                        1,
-                        1,
-                    ));
-                }
-                kendi_islem_adlari.push(islem.ad.clone());
-                islemler.insert(islem.ad.clone(), islem);
-            }
-            Cumle::TestBlogu(test) => testler.push(test),
-            Cumle::YapiTanimi(yapi) => {
-                if let Some(birim) = yapi_kaynagi.get(&yapi.ad) {
-                    return Err(cakisma("yapısı", &yapi.ad, birim, "bu dosya", yapi.satir));
-                }
-                if yapilar.iter().any(|y| y.ad == yapi.ad) {
-                    return Err(Tani::yeni(
-                        "A006",
-                        format!("\"{}\" yapısı birden çok kez tanımlandı.", yapi.ad),
-                        yapi.satir,
-                        1,
-                        1,
-                    ));
-                }
-                yapilar.push(yapi);
-            }
-            baska => kalan.push(baska),
-        }
-    }
+    let (kalan, kendi_islem_adlari) = kendi_tanimlarini_ayikla(
+        cumleler,
+        ana_kaynak,
+        kaynak_kokeni,
+        &bu_koken,
+        &islem_kaynagi,
+        &yapi_kaynagi,
+        &mut islemler,
+        &mut islem_kokenleri,
+        &mut yapilar,
+        &mut yapi_kokenleri,
+        &mut testler,
+    )?;
+    let mut kalan = kalan;
+    alinan_kokenler.insert(bu_koken);
 
     if !ana_kaynak {
         // Alınan işlemler bu dosyanın public API'sine örtük yeniden açılmaz.
@@ -418,7 +409,150 @@ fn dosyayi_coz(
         kalan.clear();
     }
 
-    Ok((kalan, islemler, yapilar, testler))
+    Ok(CozulmusDosya {
+        cumleler: kalan,
+        islemler,
+        islem_kokenleri,
+        yapilar,
+        yapi_kokenleri,
+        testler,
+        alinan_kokenler,
+    })
+}
+
+/// Dosyanın kendi işlem/yapı/test tanımlarını içe alınanlarla birleştirir;
+/// üst düzey cümleleri ve kendi işlem adlarını verir. Birim olarak yüklenen
+/// dosyanın tanımları kökeniyle etiketlenir (K-164/ADR-072).
+#[allow(clippy::too_many_arguments, clippy::type_complexity)]
+fn kendi_tanimlarini_ayikla(
+    cumleler: Vec<Cumle>,
+    ana_kaynak: bool,
+    kaynak_kokeni: Option<&str>,
+    bu_koken: &str,
+    islem_kaynagi: &HashMap<String, String>,
+    yapi_kaynagi: &HashMap<String, String>,
+    islemler: &mut HashMap<String, Islem>,
+    islem_kokenleri: &mut HashMap<String, String>,
+    yapilar: &mut Vec<Yapi>,
+    yapi_kokenleri: &mut HashMap<String, String>,
+    testler: &mut Vec<Test>,
+) -> Result<(Vec<Cumle>, Vec<String>), Tani> {
+    let mut kalan = Vec::new();
+    let mut kendi_islem_adlari = Vec::new();
+    for cumle in cumleler {
+        match cumle {
+            Cumle::Kullan { .. } => {} // 1. adımda çözüldü
+            Cumle::IslemTanimi(mut islem) => {
+                if let Some(birim) = islem_kaynagi.get(&islem.ad) {
+                    return Err(cakisma("işlemi", &islem.ad, birim, "bu dosya", islem.satir));
+                }
+                if islemler.contains_key(&islem.ad) {
+                    return Err(Tani::yeni(
+                        "A005",
+                        format!("\"{}\" işlemi birden çok kez tanımlandı.", islem.ad),
+                        islem.satir,
+                        1,
+                        1,
+                    ));
+                }
+                if !ana_kaynak {
+                    islem.koken = kaynak_kokeni.map(str::to_string);
+                }
+                kendi_islem_adlari.push(islem.ad.clone());
+                islem_kokenleri.insert(islem.ad.clone(), bu_koken.to_string());
+                islemler.insert(islem.ad.clone(), islem);
+            }
+            Cumle::TestBlogu(mut test) => {
+                if !ana_kaynak {
+                    test.koken = kaynak_kokeni.map(str::to_string);
+                }
+                testler.push(test);
+            }
+            Cumle::YapiTanimi(yapi) => {
+                if let Some(birim) = yapi_kaynagi.get(&yapi.ad) {
+                    return Err(cakisma("yapısı", &yapi.ad, birim, "bu dosya", yapi.satir));
+                }
+                if yapilar.iter().any(|y| y.ad == yapi.ad) {
+                    return Err(Tani::yeni(
+                        "A006",
+                        format!("\"{}\" yapısı birden çok kez tanımlandı.", yapi.ad),
+                        yapi.satir,
+                        1,
+                        1,
+                    ));
+                }
+                yapi_kokenleri.insert(yapi.ad.clone(), bu_koken.to_string());
+                yapilar.push(yapi);
+            }
+            baska => kalan.push(baska),
+        }
+    }
+    Ok((kalan, kendi_islem_adlari))
+}
+
+/// `ad` birimiyle gelen tanımları üst dosyaya katar. Aynı ad daha önce
+/// AYNI kökenden geldiyse (elmas içe alım) sessizce atlanır; farklı kökenden
+/// geldiyse A008'dir. Birim testleri kökeni başına yalnız bir kez alınır.
+#[allow(clippy::too_many_arguments)]
+fn birim_tanimlarini_birlestir(
+    ad: &str,
+    satir: usize,
+    birim: CozulmusDosya,
+    islemler: &mut HashMap<String, Islem>,
+    islem_kaynagi: &mut HashMap<String, String>,
+    islem_kokenleri: &mut HashMap<String, String>,
+    yapilar: &mut Vec<Yapi>,
+    yapi_kaynagi: &mut HashMap<String, String>,
+    yapi_kokenleri: &mut HashMap<String, String>,
+    testler: &mut Vec<Test>,
+    alinan_kokenler: &mut BTreeSet<String>,
+) -> Result<(), Tani> {
+    for (islem_adi, islem) in birim.islemler {
+        let koken = birim
+            .islem_kokenleri
+            .get(&islem_adi)
+            .cloned()
+            .unwrap_or_default();
+        if let Some(onceki) = islem_kaynagi.get(&islem_adi) {
+            if islem_kokenleri.get(&islem_adi) == Some(&koken) {
+                continue;
+            }
+            return Err(cakisma("işlemi", &islem_adi, onceki, ad, satir));
+        }
+        islem_kaynagi.insert(islem_adi.clone(), ad.to_string());
+        islem_kokenleri.insert(islem_adi.clone(), koken);
+        islemler.insert(islem_adi, islem);
+    }
+    for yapi in birim.yapilar {
+        let koken = birim
+            .yapi_kokenleri
+            .get(&yapi.ad)
+            .cloned()
+            .unwrap_or_default();
+        if let Some(onceki) = yapi_kaynagi.get(&yapi.ad) {
+            if yapi_kokenleri.get(&yapi.ad) == Some(&koken) {
+                continue;
+            }
+            return Err(cakisma("yapısı", &yapi.ad, onceki, ad, satir));
+        }
+        yapi_kaynagi.insert(yapi.ad.clone(), ad.to_string());
+        yapi_kokenleri.insert(yapi.ad.clone(), koken);
+        yapilar.push(yapi);
+    }
+    // Birimin testleri de görünür olur (RFC-0009 §2); ad birimle önek alır.
+    // Elmas yoldan ikinci kez gelen köken testlerini yinelemez.
+    for mut test in birim.testler {
+        let test_kokeni = test.koken.clone().unwrap_or_default();
+        if alinan_kokenler.contains(&test_kokeni) {
+            continue;
+        }
+        if !test.ad.starts_with(&format!("{}: ", ad)) {
+            test.ad = format!("{}: {}", ad, test.ad);
+        }
+        testler.push(test);
+    }
+    alinan_kokenler.extend(birim.alinan_kokenler);
+    Ok(())
 }
 
 /// K-086: Bir dosya birim ya da paket olarak alındığında içindeki bütün
@@ -527,6 +661,14 @@ pub struct TestSonucu {
     pub hata: Option<Tani>,
 }
 
+/// Birimden alınan testin tanısını o birimin kökeniyle etiketler.
+fn test_kokeniyle(tani: Tani, test: &Test) -> Tani {
+    match &test.koken {
+        Some(koken) => tani.kokenle(koken),
+        None => tani,
+    }
+}
+
 /// Programın testlerini koşar. v0: her test taze ortamda ve dış dünyaya
 /// dokunmayan hermetik IO ile çalışır (gerçek dosya/ağ erişimi yok).
 pub fn programi_dene(program: &Program) -> Vec<TestSonucu> {
@@ -535,7 +677,9 @@ pub fn programi_dene(program: &Program) -> Vec<TestSonucu> {
         .iter()
         .map(|test| {
             let mut io = yorumlayici::ToplayanIo::yeni(Vec::new());
-            let hata = yorumlayici::test_calistir(program, test, &mut io).err();
+            let hata = yorumlayici::test_calistir(program, test, &mut io)
+                .map_err(|tani| test_kokeniyle(tani, test))
+                .err();
             TestSonucu {
                 ad: test.ad.clone(),
                 hata,
@@ -551,7 +695,9 @@ pub fn programi_dene_baglanmis(program: &BaglanmisProgram) -> Vec<TestSonucu> {
         .iter()
         .map(|test| {
             let mut io = yorumlayici::ToplayanIo::yeni(Vec::new());
-            let hata = yorumlayici::test_calistir_baglanmis(program, test, &mut io).err();
+            let hata = yorumlayici::test_calistir_baglanmis(program, test, &mut io)
+                .map_err(|tani| test_kokeniyle(tani, test))
+                .err();
             TestSonucu {
                 ad: test.ad.clone(),
                 hata,
@@ -615,12 +761,12 @@ pub fn kaynagi_tanilari_kokenlerle(
                     yukleyici,
                     &mut yigin,
                 ) {
-                    Ok((_, birim_islemleri, birim_yapilari, birim_testleri)) => {
-                        islemler.extend(birim_islemleri);
-                        yapilar.extend(birim_yapilari);
-                        testler.extend(birim_testleri);
+                    Ok(birim) => {
+                        islemler.extend(birim.islemler);
+                        yapilar.extend(birim.yapilar);
+                        testler.extend(birim.testler);
                     }
-                    Err(tani) => tanilar.push(tani),
+                    Err(tani) => tanilar.push(birim_kokeniyle(tani, &yuklenen.koken)),
                 }
                 yigin.pop();
             }

@@ -1,0 +1,7 @@
+# K-164/F008 sürtünmesi: `satır` ve `satırlar` birlikte tanımlıyken `satırlara`
+# iki ada çözülür (satır+lar+a / satırlar+a) ve A002 verir.
+
+satır "| a |" olsun
+satırlar boş liste olsun
+satırlara satırı ekle
+satırların adedi yaz

@@ -1,6 +1,10 @@
 //! K-172/ADR-067 dogfood korpusu: yalnız gerçek ürün sürtünmesinden doğan
 //! başarı ve başarısızlık vakaları; her `dogfood/**/*.dil` kaynağı manifestte
 //! tam bir kez bulunur ve ürünün yetkinlik politikasıyla koşar.
+//!
+//! K-164/ADR-072: depo içi ürünün kaynağı tek bir `proje` vakasıyla kapsanır —
+//! giriş dosyası birimleriyle diskten yüklenir, ürün politikasıyla derlenir ve
+//! bütün `test` blokları koşar; giriş klasörü altındaki her `.dil` o vakaya aittir.
 
 use dil::yetkinlik::YetkinlikPolitikasi;
 use dil::yorumlayici::ToplayanIo;
@@ -86,9 +90,16 @@ fn vakalari_oku() -> Vec<Vaka> {
             "{vaka}: kaynak işi K-NNN ya da K-NNN/FNNN olmalı: {kaynak_is}"
         );
         assert!(
-            matches!(*kip, "denetle" | "calistir"),
-            "{vaka}: kip denetle|calistir olmalı"
+            matches!(*kip, "denetle" | "calistir" | "proje"),
+            "{vaka}: kip denetle|calistir|proje olmalı"
         );
+        if *kip == "proje" {
+            assert_eq!(
+                *beklenti, "basarili",
+                "{vaka}: proje vakası başarılı olmalı"
+            );
+            assert_eq!(*cikti, "-", "{vaka}: proje kipinde çıktı yoktur");
+        }
         assert!(
             matches!(*beklenti, "basarili" | "basarisiz"),
             "{vaka}: beklenti basarili|basarisiz olmalı"
@@ -167,6 +178,34 @@ fn dil_dosyalarini_topla(klasor: &Path, sonuc: &mut BTreeSet<String>) {
     }
 }
 
+/// `proje` vakasının giriş klasörü altındaki bütün `.dil` kaynakları o vakaya aittir.
+fn proje_kapsami(vakalar: &[Vaka]) -> BTreeSet<String> {
+    let mut kapsam = BTreeSet::new();
+    for vaka in vakalar.iter().filter(|v| v.kip == "proje") {
+        let giris = depo().join(&vaka.dosya);
+        let klasor = giris.parent().expect("giriş klasörü");
+        dil_dosyalarini_topla(klasor, &mut kapsam);
+    }
+    kapsam
+}
+
+/// Diskteki proje girişini birimleriyle derler (CLI ile aynı kökenli yükleme).
+fn projeyi_derle(giris: &str) -> Result<dil::agac::Program, dil::tani::Tani> {
+    let giris_yolu = depo().join(giris);
+    let klasor = giris_yolu.parent().expect("giriş klasörü").to_path_buf();
+    let kaynak = oku(giris);
+    let mut yukleyici = |istek: dil::BirimIstegi<'_>| -> Result<dil::YuklenenBirim, String> {
+        let yol = klasor.join(format!("{}.dil", istek.ad));
+        std::fs::read_to_string(&yol)
+            .map(|kaynak| dil::YuklenenBirim {
+                kaynak,
+                koken: yol.to_string_lossy().into_owned(),
+            })
+            .map_err(|hata| hata.to_string())
+    };
+    dil::kaynagi_derle_kokenlerle(&kaynak, Some(&giris_yolu.to_string_lossy()), &mut yukleyici)
+}
+
 fn urun_politikasi(kok: &str) -> YetkinlikPolitikasi {
     let bildirim = dil::proje::bildirimi_oku(&oku(&format!("{kok}/proje.dil")))
         .unwrap_or_else(|hata| panic!("{kok}/proje.dil geçerli olmalı: {hata:?}"));
@@ -180,13 +219,14 @@ fn dogfood_korpusu_manifesti_tam_tekil_ve_urune_baglidir() {
     let gunluk = oku("kararlar/gunluk.md");
     let mut agac = BTreeSet::new();
     dil_dosyalarini_topla(&depo().join("dogfood"), &mut agac);
-    let manifestte = vakalar
+    let mut manifestte = vakalar
         .iter()
         .map(|v| v.dosya.clone())
         .collect::<BTreeSet<_>>();
+    manifestte.extend(proje_kapsami(&vakalar));
     assert_eq!(
         agac, manifestte,
-        "dogfood altındaki her .dil kaynağı manifestte tam bir kez bulunmalı (proje.dil hariç)"
+        "dogfood altındaki her .dil kaynağı manifestte tam bir kez ya da bir proje vakasının giriş klasöründe bulunmalı (proje.dil hariç)"
     );
     for vaka in &vakalar {
         let kok = urunler
@@ -212,17 +252,38 @@ fn dogfood_korpusu_manifesti_tam_tekil_ve_urune_baglidir() {
             );
         }
         let kaynak = oku(&vaka.dosya);
-        assert_eq!(
-            dil::api::v1::bicimle(&kaynak).expect("biçimlenmeli"),
-            kaynak,
-            "{}: dogfood kaynağı kanonik biçimde değil",
-            vaka.vaka
-        );
+        match dil::api::v1::bicimle(&kaynak) {
+            Ok(bicimli) => assert_eq!(
+                bicimli, kaynak,
+                "{}: dogfood kaynağı kanonik biçimde değil",
+                vaka.vaka
+            ),
+            // Sözcükleme düzeyinde reddedilen sürtünme (örn. S040 kaçış) biçimlenemez;
+            // yalnız beklenen tanısı aynı kodsa kabul edilir.
+            Err(tani) => assert!(
+                vaka.beklenti == "basarisiz" && tani.kod == vaka.tani,
+                "{}: biçimlenemeyen kaynak yalnız beklenen sözcükleme tanısıyla kabul edilir: {}",
+                vaka.vaka,
+                tani.kod
+            ),
+        }
         assert!(
             kaynak.starts_with("# "),
             "{}: kaynak sürtünmeyi anlatan başlık yorumu taşımalı",
             vaka.vaka
         );
+        if vaka.kip == "proje" {
+            for dosya in proje_kapsami(std::slice::from_ref(vaka)) {
+                let birim = oku(&dosya);
+                assert_eq!(
+                    dil::api::v1::bicimle(&birim).expect("proje kaynağı biçimlenmeli"),
+                    birim,
+                    "{}: proje kaynağı kanonik biçimde değil: {dosya}",
+                    vaka.vaka
+                );
+                assert!(birim.starts_with("# "), "{dosya}: başlık yorumu taşımalı");
+            }
+        }
     }
 }
 
@@ -237,6 +298,23 @@ fn dogfood_korpusu_basari_ve_basarisizlik_beklentilerini_korur() {
             dil::cozumleyici::yetkinlikleri_denetle(&program, &politika).map(|()| program)
         });
         match (vaka.kip.as_str(), vaka.beklenti.as_str()) {
+            ("proje", "basarili") => {
+                let program = projeyi_derle(&vaka.dosya)
+                    .unwrap_or_else(|hata| panic!("{}: proje derlenmeli: {hata:?}", vaka.vaka));
+                dil::cozumleyici::yetkinlikleri_denetle(&program, &politika)
+                    .unwrap_or_else(|hata| panic!("{}: ürün politikası: {hata:?}", vaka.vaka));
+                let sonuclar = dil::programi_dene(&program);
+                assert!(!sonuclar.is_empty(), "{}: proje test taşımalı", vaka.vaka);
+                for sonuc in &sonuclar {
+                    assert!(
+                        sonuc.hata.is_none(),
+                        "{}: proje testi kaldı: {} → {:?}",
+                        vaka.vaka,
+                        sonuc.ad,
+                        sonuc.hata
+                    );
+                }
+            }
             ("denetle", "basarili") => {
                 assert!(
                     derleme.is_ok(),

@@ -24,6 +24,9 @@ pub struct Test {
     pub ad: String,
     pub govde: Vec<Cumle>,
     pub satir: usize,
+    /// Test bir birimden alındıysa o birimin kökeni; tanılar bu kökenle
+    /// etiketlenir (K-164/ADR-072). Ana kaynağın testi `None`dır.
+    pub koken: Option<String>,
 }
 
 /// "yapı Öğrenci" tanımı: alan adı + tür yazımı ("TamSayı", "Metin"...).
@@ -51,6 +54,10 @@ pub struct Islem {
     pub donus_satiri: Option<usize>,
     pub govde: Vec<Cumle>,
     pub satir: usize,
+    /// İşlem bir birim/paketten alındıysa tanımlandığı kaynağın kökeni.
+    /// Gövdesinde doğan derleme ve çalışma tanıları bu kökenle etiketlenir;
+    /// ana kaynağın işlemi `None`dır (K-164/ADR-072).
+    pub koken: Option<String>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

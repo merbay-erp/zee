@@ -1,0 +1,104 @@
+# K-164 kanıt özeti — sayaç sözlüğü ve yüzde yardımcıları.
+# Sürtünme: `payı al` parametresi "pa" kökünü bağlar; ad `bölünen/bölen` seçildi.
+# Sürtünme: `anahtarlara anahtarı ekle` A002 verir (anahtar/anahtarlar çift
+# çözüm); döngü adı `ad` seçildi.
+# Sürtünme: değer semantiği nedeniyle sayaç sözlüğü işlemden geri döndürülür;
+# boş sözlük türü somutlaşmadan açık imzalı işleme verilemez (T017), sayım
+# döngüsü bu yüzden yerinde yazılır.
+
+işlem sayımı artır
+    sayaçları TamSayı sözlüğü olarak al
+    anahtarı Metin olarak al
+    TamSayı sözlüğü döndürür
+
+    sayaçlarda anahtar yoksa
+        sayaçların anahtar değeri 0 olsun
+    eski sayaçların anahtar değeri olsun
+    sayaçların anahtar değeri eski ile 1 in toplamı olsun
+    sayaçları döndür
+
+işlem değerleri say
+    değerleri Metin listesi olarak al
+    TamSayı sözlüğü döndürür
+
+    sayaçlar boş sözlük olsun
+    her değer için
+        sayaçlarda değer yoksa
+            sayaçların değer değeri 0 olsun
+        eski sayaçların değer değeri olsun
+        sayaçların değer değeri eski ile 1 in toplamı olsun
+    sayaçları döndür
+
+işlem sıralı anahtarları ver
+    sayaçları TamSayı sözlüğü olarak al
+    Metin listesi döndürür
+
+    anahtarlar boş liste olsun
+    sayaçlardaki her ad için
+        anahtarlara adı ekle
+    sıralılar anahtarların sıralanmışı olsun
+    sıralıları döndür
+
+işlem sayımı oku
+    sayaçları TamSayı sözlüğü olarak al
+    anahtarı Metin olarak al
+    TamSayı döndürür
+
+    sayaçlarda anahtar yoksa
+        0 döndür
+    değer sayaçların anahtar değeri olsun
+    değeri döndür
+
+işlem toplamı bul
+    sayaçları TamSayı sözlüğü olarak al
+    TamSayı döndürür
+
+    toplam 0 olsun
+    sayaçlardaki her anahtar için
+        değer sayaçların anahtar değeri olsun
+        toplamı değerle artır
+    toplamı döndür
+
+işlem yüzdeyi hesapla
+    bölüneni TamSayı olarak al
+    böleni TamSayı olarak al
+    TamSayı döndürür
+
+    bölen 0 a eşitse
+        0 döndür
+    yüzlük bölünen ile 100 ün çarpımı olsun
+    oran yüzlüğün bölene bölümü olsun
+    oranı döndür
+
+test "sayım ve Türk alfabesiyle sıralı anahtarlar (ç, k'den önce)"
+    değerler "kapali", "acik", "kapali", "çok" listesi olsun
+    sayaçlar değerler için değerleri say olsun
+    kapalı sayaçlar ve "kapali" ile sayımı oku olsun
+    kapalı 2 ye eşit olmalı
+    hiç sayaçlar ve "hiç" ile sayımı oku olsun
+    hiç 0 a eşit olmalı
+    anahtarlar sayaçlar için sıralı anahtarları ver olsun
+    ilk anahtarların ilki olsun
+    ilk "acik" a eşit olmalı
+    son anahtarların sonu olsun
+    son "kapali" a eşit olmalı
+    ikinci anahtarların "|" ile birleşmişi olsun
+    ikinci "acik|çok|kapali" a eşit olmalı
+    toplam sayaçlar için toplamı bul olsun
+    toplam 4 e eşit olmalı
+
+test "somut sayaç sözlüğü artırılır"
+    sayaçlar boş sözlük olsun
+    sayaçların "a" değeri 1 olsun
+    sayaçlar sayaçlar ve "a" ile sayımı artır olsun
+    sayaçlar sayaçlar ve "b" ile sayımı artır olsun
+    a sayaçlar ve "a" ile sayımı oku olsun
+    a 2 ye eşit olmalı
+    b sayaçlar ve "b" ile sayımı oku olsun
+    b 1 e eşit olmalı
+
+test "yüzde tam sayı ve sıfır paydaya dayanıklı"
+    yüzde 154 ve 169 ile yüzdeyi hesapla olsun
+    yüzde 91 e eşit olmalı
+    sıfır 3 ve 0 ile yüzdeyi hesapla olsun
+    sıfır 0 a eşit olmalı

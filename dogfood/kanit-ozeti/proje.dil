@@ -1,0 +1,12 @@
+# K-164 ikinci gerçek Zee ürünü: kanıt özeti.
+# İş yükü: toplu metin/veri işleme (TSV kayıt defterleri → Markdown). Web,
+# veritabanı ve ağ yoktur; K-163'ün web+PostgreSQL yükünden bilinçli olarak
+# farklıdır. Çıktı docs/kanit-ozeti.md'dir ve CI bayatlığını denetler.
+
+proje "kanit_ozeti" olsun
+sürüm "0.1.0" olsun
+morfoloji "zee-tr-1" olsun
+giriş "kaynak/ana.dil" olsun
+yetkinlikler "dosya-okuma", "dosya-yazma" listesi olsun
+ağ_hedefleri boş liste olsun
+yerel_bağımlılıklar boş liste olsun

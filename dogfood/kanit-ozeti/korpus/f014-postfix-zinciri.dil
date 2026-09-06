@@ -1,0 +1,6 @@
+# K-164/F014 sürtünmesi: postfix zinciri yok; `sonucun hatasının mesajı` S015'tir
+# (spec/20 zincir kuralı). Hata mesajı iki adımda alınır.
+
+sonuç "yok.tsv" dosyasını okumayı dene olsun
+sonuç başarısızsa
+    sonucun hatasının mesajı yaz

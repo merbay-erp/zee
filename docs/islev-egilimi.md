@@ -17,7 +17,7 @@ kılar. Clippy ölçümü sabit Rust araç zinciriyle üretim `lib` ve `dil` iki
 | `compiler/src/ayristirici.rs::aralik_ayristir#1` | 86→86 (+0/+9) | 3→3 (+0/+2) | SABİT |
 | `compiler/src/ayristirici.rs::dondur_ayristir#1` | 105→105 (+0/+11) | 4→4 (+0/+2) | SABİT |
 | `compiler/src/ayristirici.rs::gore_ayristir#1` | 109→109 (+0/+11) | 12→12 (+0/+3) | SABİT |
-| `compiler/src/ayristirici.rs::islem_ayristir#1` | 145→145 (+0/+15) | 8→8 (+0/+2) | SABİT |
+| `compiler/src/ayristirici.rs::islem_ayristir#1` | 145→146 (+1/+15) | 8→8 (+0/+2) | PAY İÇİNDE |
 | `compiler/src/ayristirici.rs::yapi_ayristir#1` | 86→86 (+0/+9) | 7→7 (+0/+2) | SABİT |
 | `compiler/src/ayristirici/cumle.rs::cumle_ayristir#1` | 485→485 (+0/+24) | 33→33 (+0/+5) | SABİT |
 | `compiler/src/ayristirici/ifade.rs::kosul_atomu_ic#1` | 183→183 (+0/+19) | 12→12 (+0/+3) | SABİT |
@@ -25,7 +25,7 @@ kılar. Clippy ölçümü sabit Rust araç zinciriyle üretim `lib` ve `dil` iki
 | `compiler/src/bicimleyici.rs::bicimle#1` | 112→112 (+0/+12) | 22→22 (+0/+5) | SABİT |
 | `compiler/src/bicimleyici.rs::satiri_parcala#1` | 73→73 (+0/+8) | 15→15 (+0/+3) | SABİT |
 | `compiler/src/cozumleyici.rs::denetle_coklu_hatali_tanimlarla#1` | 54→54 (+0/+8) | 15→15 (+0/+3) | SABİT |
-| `compiler/src/cozumleyici/cagri.rs::cagri_denetle#1` | 296→296 (+0/+24) | 7→7 (+0/+2) | SABİT |
+| `compiler/src/cozumleyici/cagri.rs::cagri_denetle#1` | 296→301 (+5/+24) | 7→7 (+0/+2) | PAY İÇİNDE |
 | `compiler/src/cozumleyici/cumle.rs::blok_denetle#1` | 1120→1120 (+0/+24) | 3→3 (+0/+2) | SABİT |
 | `compiler/src/cozumleyici/donus.rs::donusleri_birlestir#1` | 87→87 (+0/+9) | 9→9 (+0/+2) | SABİT |
 | `compiler/src/cozumleyici/etki.rs::cumle_bilgisi#1` | 178→178 (+0/+18) | 12→12 (+0/+3) | SABİT |
@@ -38,7 +38,7 @@ kılar. Clippy ölçümü sabit Rust araç zinciriyle üretim `lib` ve `dil` iki
 | `compiler/src/invariant/ifade.rs::ifadenin_faz_bagini_dogrula#1` | 126→126 (+0/+13) | 5→5 (+0/+2) | SABİT |
 | `compiler/src/invariant/ifade.rs::ifadeyi_dogrula#1` | 142→142 (+0/+15) | 4→4 (+0/+2) | SABİT |
 | `compiler/src/lib.rs::birim_ozeti#1` | 52→52 (+0/+8) | 14→14 (+0/+3) | SABİT |
-| `compiler/src/lib.rs::dosyayi_coz#1` | 127→127 (+0/+13) | 12→12 (+0/+3) | SABİT |
+| `compiler/src/lib.rs::dosyayi_coz#1` | 127→109 (-18/+13) | 12→6 (-6/+3) | İYİLEŞTİ |
 | `compiler/src/lib.rs::kaynagi_tanilari_kokenlerle#1` | 96→96 (+0/+10) | 10→10 (+0/+2) | SABİT |
 | `compiler/src/lsp.rs::mesaj_isle#1` | 195→195 (+0/+20) | 12→12 (+0/+3) | SABİT |
 | `compiler/src/lsp.rs::yeniden_adlandirma_plani#1` | 81→81 (+0/+9) | 12→12 (+0/+3) | SABİT |

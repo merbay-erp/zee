@@ -1,0 +1,17 @@
+# K-164/F005 sürtünmesi: türü henüz somutlaşmamış `boş sözlük`, açık imzalı
+# işleme argüman olamaz; T017 "Sözlük<Metin, belirsiz>" der.
+
+işlem sayımı artır
+    sayaçları TamSayı sözlüğü olarak al
+    anahtarı Metin olarak al
+    TamSayı sözlüğü döndürür
+
+    sayaçlarda anahtar yoksa
+        sayaçların anahtar değeri 0 olsun
+    eski sayaçların anahtar değeri olsun
+    sayaçların anahtar değeri eski ile 1 in toplamı olsun
+    sayaçları döndür
+
+sayaçlar boş sözlük olsun
+sayaçlar sayaçlar ve "a" ile sayımı artır olsun
+sayaçların json metni yaz

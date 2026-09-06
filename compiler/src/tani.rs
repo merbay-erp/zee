@@ -19,6 +19,10 @@ pub struct Tani {
     /// İşaretlenecek karakter sayısı (en az 1).
     pub uzunluk: usize,
     pub oneri: Option<String>,
+    /// Tanının doğduğu kaynak birim/paket kökeni. `None` ana kaynaktır;
+    /// `Some` ise `satir`/`sutun` o kökenin metnine göredir ve ana kaynağın
+    /// satırıyla eşleştirilemez (K-164/ADR-072).
+    pub koken: Option<String>,
 }
 
 impl Tani {
@@ -30,6 +34,7 @@ impl Tani {
             sutun,
             uzunluk: uzunluk.max(1),
             oneri: None,
+            koken: None,
         }
     }
 
@@ -38,10 +43,38 @@ impl Tani {
         self
     }
 
-    /// Kaynak metinle birlikte tam Türkçe rapor üretir.
+    /// Tanıyı doğduğu birim kökenine bağlar. En içteki köken kazanır: zaten
+    /// kökenli tanı dış birimin adıyla yeniden etiketlenmez.
+    pub fn kokenle(mut self, koken: &str) -> Tani {
+        if self.koken.is_none() {
+            self.koken = Some(koken.to_string());
+        }
+        self
+    }
+
+    /// Kaynak metinle birlikte tam Türkçe rapor üretir. Kökenli tanıda
+    /// verilen metin ana kaynaktır; satır o metne ait olmadığı için alıntı
+    /// basılmaz, köken ve satır başlıkta söylenir.
     pub fn raporla(&self, kaynak: &str) -> String {
+        match &self.koken {
+            Some(_) => self.raporla_ic(None),
+            None => self.raporla_ic(Some(kaynak)),
+        }
+    }
+
+    /// Kökenli tanıyı doğduğu birimin kendi metniyle raporlar; alıntı o
+    /// metinden alınır.
+    pub fn raporla_birimle(&self, birim_kaynagi: &str) -> String {
+        self.raporla_ic(Some(birim_kaynagi))
+    }
+
+    fn raporla_ic(&self, kaynak: Option<&str>) -> String {
         let mut cikti = format!("HATA {}\n\n{}\n", self.kod, self.mesaj);
-        if let Some(satir_metni) = kaynak.lines().nth(self.satir.saturating_sub(1)) {
+        if let Some(koken) = &self.koken {
+            cikti.push_str(&format!("\nBirim: {} (satır {})\n", koken, self.satir));
+        }
+        if let Some(satir_metni) = kaynak.and_then(|k| k.lines().nth(self.satir.saturating_sub(1)))
+        {
             let numara = self.satir.to_string();
             cikti.push_str(&format!("\n{} | {}\n", numara, satir_metni));
             let bosluk = " ".repeat(numara.chars().count() + 3 + self.sutun.saturating_sub(1));
@@ -60,14 +93,19 @@ impl Tani {
             Some(oneri) => format!("\"{}\"", json_kacis(oneri)),
             None => "null".to_string(),
         };
+        let koken = match &self.koken {
+            Some(koken) => format!(",\"koken\":\"{}\"", json_kacis(koken)),
+            None => String::new(),
+        };
         format!(
-            "{{\"kod\":\"{}\",\"mesaj\":\"{}\",\"satir\":{},\"sutun\":{},\"uzunluk\":{},\"oneri\":{}}}",
+            "{{\"kod\":\"{}\",\"mesaj\":\"{}\",\"satir\":{},\"sutun\":{},\"uzunluk\":{},\"oneri\":{}{}}}",
             json_kacis(&self.kod),
             json_kacis(&self.mesaj),
             self.satir,
             self.sutun,
             self.uzunluk,
-            oneri
+            oneri,
+            koken
         )
     }
 }
