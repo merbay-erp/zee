@@ -1,0 +1,8 @@
+# zee-v1-syntax-freeze-1
+# alan	deger
+karar	K-174
+baslangic	2026-09-06
+bitis	2026-10-04
+yuzey_fixture	compiler/tests/fixtures/dil-yuzeyi-v1.tsv
+dondurulmus_yuzeyler	kalip,kosul,komut
+dondurulmus_sha256	dc073b541b45bcc49c1a4a9a872d7a4be249428c99218d0228d189bd0536ed19

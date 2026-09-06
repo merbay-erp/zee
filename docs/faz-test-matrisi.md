@@ -33,7 +33,7 @@
 | Project system | `compiler/tests/proje_testi.rs`<br>`projeler` | — | — | `paket`<br>`registry`<br>`cli`<br>`uctan_uca` |
 | Semantic regression | `regression/v2.tsv`<br>`regression`<br>`scripts/semantic-regresyon-korugu.sh`<br>`scripts/core-freeze-korugu.sh`<br>`docs/compiler-degisiklik-beyanlari-v1.tsv`<br>`docs/core-freeze-beyanlari-v1.tsv` | — | — | `uctan_uca` |
 | End-to-end | `golden`<br>`dogfood/korpus-v1.tsv`<br>`dogfood`<br>`docs/kanit-ozeti.md`<br>`docs/dogfood-karsilastirma-v1.tsv` | — | — | — |
-| Engineering gates | `compiler/tests/fixtures/islev-egilimi-v1.tsv`<br>`docs/spec-madde-kaniti-v1.tsv`<br>`docs/soak-gecmisi-v1.tsv`<br>`docs/tani-kalitesi-istisnalari-v1.tsv`<br>`compiler/tests/fixtures/izinli-katman-cevrimleri-v1.tsv`<br>`compiler/tests/fixtures/katman-mimarisi-v1.tsv`<br>`compiler/tests/fixtures/tani-kimlikleri-v1.tsv`<br>`compiler/tests/fixtures/dil-yuzeyi-v1.tsv`<br>`docs/deprecation-kayitlari-v1.tsv`<br>`docs/kanit-haritasi-v1.tsv`<br>`docs/performans-gecmisi-v2.tsv`<br>`docs/olcumler.md` | — | — | — |
+| Engineering gates | `compiler/tests/fixtures/islev-egilimi-v1.tsv`<br>`docs/spec-madde-kaniti-v1.tsv`<br>`docs/soak-gecmisi-v1.tsv`<br>`docs/tani-kalitesi-istisnalari-v1.tsv`<br>`compiler/tests/fixtures/izinli-katman-cevrimleri-v1.tsv`<br>`compiler/tests/fixtures/katman-mimarisi-v1.tsv`<br>`compiler/tests/fixtures/tani-kimlikleri-v1.tsv`<br>`compiler/tests/fixtures/dil-yuzeyi-v1.tsv`<br>`docs/v1-syntax-freeze-v1.tsv`<br>`docs/deprecation-kayitlari-v1.tsv`<br>`docs/kanit-haritasi-v1.tsv`<br>`docs/performans-gecmisi-v2.tsv`<br>`docs/olcumler.md` | — | — | — |
 
 ## Birincil sahiplik
 

@@ -3248,3 +3248,15 @@ usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.
   backlog girdisidir. İlk kayıt `docs/dogfood-karsilastirma.md` içindedir.
 - **Sınır:** Tek araç, tek makine; farklı iş yükü ve adanmış koşucu ölçümü
   V1 sözü değildir. K-165/V1-P1-30 kapandı.
+
+## K-174 — V1 syntax freeze penceresi başladı (6 Eyl → 4 Ekim 2026)
+
+- **Karar:** Makine ve ikinci ürün hattı bitince V1 syntax freeze takvimi
+  ilan edildi: dört hafta boyunca kalıp, koşul yüklemi ve CLI komut yüzeyi
+  değişmez. `docs/v1-syntax-freeze-v1.tsv` `dil-yuzeyi-v1.tsv` içindeki
+  kalıp/koşul/komut satırlarının SHA-256'sını dondurur; `uyumluluk_testi`
+  özeti birebir ister. Bilinçli değişiklik kaydı, tarihi ve K-işini aynı
+  committe günceller ve pencereyi yeniden başlatır.
+- **Sınır:** Pencere takvimle dolar; makine yalnız ihlali görür. K-161/K-162
+  insan verisi çağrı yüzeyini değiştirirse pencere o karardan sonra yeniden
+  başlar. K-174 kapanışı 4 Ekim 2026'dan önce ilan edilemez.

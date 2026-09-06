@@ -18,7 +18,10 @@ Bu rehber K-167/RFC-0028/ADR-064'ün işletim sözleşmesidir; normatif metin
 
 ## Yeni yüzey eklerken
 
-1. Kelimeyi/komutu kaynağa ekle (K-160A freeze kuralları geçerlidir).
+1. Kelimeyi/komutu kaynağa ekle (K-160A freeze kuralları geçerlidir; K-174
+   V1 syntax freeze penceresinde — `docs/v1-syntax-freeze-v1.tsv` — kalıp,
+   koşul ve komut yüzeyi değişmez, değişiklik kaydı bilinçli güncellenmeden
+   `uyumluluk_testi` geçmez).
 2. Fixture'a `aktif` satırı ve mevcut `-dev` giriş sürümünü yaz.
 3. `cargo test --locked --test uyumluluk_testi` geçmeli.
 
