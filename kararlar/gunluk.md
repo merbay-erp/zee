@@ -3135,3 +3135,31 @@ usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.
 - **Sınır:** Mutlak bellek bütçesi spec/24'tedir; süreler karar girdisi
   değildir; Windows'ta `ps` yok. Dil semantiği değişmedi; K-173/V1-P1-26
   kapandı.
+
+## K-166 — “En sık hata” ölçülmeden tanı kalitesi iddia edilemez (6 Eyl)
+
+- **Bulgu:** RFC-0010 her tanıya öneri, ADR-024 çoklu tanı ister; fakat
+  acemi hatalarında işaretin doğru satırda olup olmadığı, önerinin varlığı ve
+  tek hatanın kaç tanı doğurduğu ölçülmüyordu. Gerçek kullanıcı frekansı
+  (K-161/K-162) yok; ölçülebilir vekil gerekti.
+- **Karar:** ADR-070. `tani_kalitesi` ikilisi golden korpusuna 11
+  deterministik acemi hatası uygular (girinti silme, sekme, kapanmayan tırnak,
+  `=`, eksik `olsun`, ad yazımı, `print`, büyük harf, nokta ondalık, parantez,
+  boş blok); sınıf = (operatör, ilk kod); en az 3 vakalı sınıflar frekansla en
+  çok 50 taneye kadar kapıdadır. Ölçütler: öneri %100, işaret ±1 satır ≥ %90,
+  gürültü medyan ≤ 2 ve tepe ≤ 4. İhlal yalnız ≥40 karakter gerekçeli ve K-işli
+  istisnayla geçer; rapor bayatsa CI kırılır.
+- **İlk ölçüm:** 244 vaka/14 sınıf, 6 ihlal: işlem/yapı/`göre` S007'sinde
+  öneri %60–62; boş blok, girintisiz başlık, eksik `olsun` ve ad yazımında
+  gürültü tepe 5–9 (`sayıyı al` satırı yanıltıcı S043 oturum tanısı, aynı
+  tanımsız adın her kullanımda A001'i, başlığı bozuk işlemin çağrılarında
+  “derleyici iç hatası olabilir” T016'sı).
+- **Düzeltmeler** (semantic bugfix, ADR-024 §8–9): üç S007 sitesi öneri
+  kazandı; gövde dışı parametre satırı S004 ile yol gösterir; çoklu tanı
+  hattında A001/A003/A007 aynı kök için (ekli biçimler dahil) bir kez, düşen
+  satırın baş sözü ve başarısız `olsun` tanımı kök neden sayılır, tanımlanamayan
+  işlemin çağrılarında T016 bastırılır. Sonuç: 0 ihlal, 0 istisna; öneri %100,
+  işaret %100, gürültü tepe ≤ 4. Geçerli programların davranışı, tek-tanılı
+  derleme ve tanı kimlikleri değişmedi.
+- **Sınır:** “En sık” sıralaması insan verisi gelene kadar korpus frekansıdır;
+  kök tohumlama yalnız çoklu tanı görünümündedir. K-166/V1-P1-27 kapandı.

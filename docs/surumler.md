@@ -12,6 +12,14 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **Tanı kalitesi kapısı ve üç tanı düzeltmesi** (K-166, ADR-070, ADR-024
+  §8–9): golden'a 11 acemi hatası mutasyonu uygulayan `tani_kalitesi`
+  öneri/işaret/gürültü ölçer. Düzeltmeler: işlem/yapı/`göre` başlığının S007'si
+  girinti önerisi taşır; gövde dışına düşen `sayıyı al` satırı oturum kalıbı
+  S043 yerine yol gösteren S004 verir; `dil denetle` ve LSP'de aynı tanımsız
+  ad/yapı için A001/A007 bir kez yayımlanır. Geçerli programların davranışı
+  değişmedi.
+
 - **Uzun soak kapısı** (K-173, ADR-069): `soak` koşucusu golden korpusunu
   derleyip sabit programı yürütürken gerçek `dillsp` sürecine sürekli
   `didChange` gönderir; ısınma sonrası RSS büyümesi %10 ve 32 MiB'ı birlikte

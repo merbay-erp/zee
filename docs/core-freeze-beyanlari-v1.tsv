@@ -17,3 +17,4 @@ b5c81c99c5fc03ca35b4026163af573b5094ef3e	maintenance	-	-	-	-	K-171 spec madde dr
 e264b3f1190e897bfd15f0224a0bab49279cb774	maintenance	-	-	-	-	K-172 için yalnız CLI adaptörünün mevcut davranışını kanıtlayan birim testleri eklendi; yeni özellik, tanı veya kullanıcı yüzeyi açılmadı.	-
 c9f426c351c1c80a5b0d8bcb3d33599162c7404e	maintenance	-	-	-	-	K-168 sürüm artefaktı için yalnız bakım ikilisi ve testleri eklendi; yeni dil özelliği, tanı veya kullanıcı komutu açılmadı.	-
 5c84e97ccd57cab637b1b33cb17ef334b79885b9	maintenance	-	-	-	-	K-173 soak kapısı için yalnız bakım ikilisi ve testleri eklendi; yeni dil özelliği, tanı veya kullanıcı yüzeyi açılmadı.	-
+a0a3c3f20d75187cd25bbfb6617657d2973d9c0c	correctness	-	K-166	regression/parser/girintisiz-islem-basligi.dil	-	Yalnız tanı önerisi, yanıltıcı kod ve çoklu tanı gürültüsü düzeltildi; grammar, geçerli program davranışı, tek-tanılı derleme ve tanı kimlikleri değişmedi.	adr/024-parser-hata-kurtarma-politikasi.md

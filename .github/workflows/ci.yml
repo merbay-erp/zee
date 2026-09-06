@@ -89,6 +89,10 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         working-directory: compiler
         run: cargo run --locked --bin spec_drift -- --denetle
+      - name: Tanı kalitesi (öneri/işaret/gürültü) sınır içinde
+        if: matrix.os == 'ubuntu-latest'
+        working-directory: compiler
+        run: cargo run --locked --bin tani_kalitesi -- --denetle
       - name: Fuzz hedefleri stable araç zincirinde derlenir
         if: matrix.os == 'ubuntu-latest'
         working-directory: compiler

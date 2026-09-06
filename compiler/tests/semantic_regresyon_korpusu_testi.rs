@@ -180,7 +180,7 @@ fn hata_gozle(tani: Tani, cikti: Vec<String>) -> Gozlem {
 fn faz_kipi_kabul_eder(faz: &str, kip: &str) -> bool {
     match faz {
         "parser" => matches!(kip, "parser" | "diagnostics" | "run"),
-        "checker" | "morphology" => matches!(kip, "compile" | "run"),
+        "checker" | "morphology" => matches!(kip, "compile" | "run" | "diagnostics"),
         "hir" => matches!(kip, "hir" | "run"),
         "runtime" | "concurrency" => kip == "run",
         "security" => matches!(kip, "capability" | "web"),

@@ -253,3 +253,17 @@ cd compiler
 cargo build --locked --release --bin dillsp --bin soak
 target/release/soak --sure-sn 1800 --pencere-sn 60 --dillsp target/release/dillsp --rapor target/soak.md
 ```
+
+## Tanı kalitesi kapısı
+
+K-166/ADR-070'in [raporu](tani-kalitesi.md) ve
+[`tani-kalitesi-istisnalari-v1.tsv`](tani-kalitesi-istisnalari-v1.tsv); golden
+korpusuna 11 deterministik acemi hatası uygular, her (operatör, kod) sınıfı
+için öneri, işaret ve gürültü ölçer. Sık sınıflarda ihlal ve bayat rapor CI'ı
+durdurur.
+
+```bash
+cd compiler
+cargo run --locked --bin tani_kalitesi -- --denetle
+cargo run --locked --bin tani_kalitesi -- --rapor-yaz
+```

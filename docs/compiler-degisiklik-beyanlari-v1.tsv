@@ -21,3 +21,4 @@ b5c81c99c5fc03ca35b4026163af573b5094ef3e	maintenance	-	Yalnız bakım ikilisi sp
 e264b3f1190e897bfd15f0224a0bab49279cb774	maintenance	-	Yalnız main.rs test modülüne gerçek TCP yükleme ve proxy çerez birim testleri eklendi; üretim kodu, grammar, runtime ve tanı davranışı değişmedi.
 c9f426c351c1c80a5b0d8bcb3d33599162c7404e	maintenance	-	Yalnız bakım ikilisi surum_artefakti eklendi; derleyici kütüphanesi, grammar, runtime, tanı ve kullanıcı programı davranışı değişmedi.
 5c84e97ccd57cab637b1b33cb17ef334b79885b9	maintenance	-	Yalnız bakım ikilisi soak eklendi; derleyici kütüphanesi, grammar, runtime, tanı ve kullanıcı programı davranışı değişmedi.
+a0a3c3f20d75187cd25bbfb6617657d2973d9c0c	semantic-bugfix	girintisiz-islem-basligi	K-166: S007 önerisi, gövde dışı parametre satırında S004 ve çoklu tanı hattında kök nedene bağlı A001/A003/A007/T016 gürültü ayıklaması; govde-disi-parametre-satiri ve tanimsiz-ad-tek-tani vakaları da bu SHA ile düzeldi.
