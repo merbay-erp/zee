@@ -7,16 +7,16 @@ ile temiz ağaçta exact SHA'yla [`docs/dogfood-karsilastirma-v1.tsv`](dogfood-k
 tarihçesine yazılır.
 
 <!-- ZEE-KARSILASTIRMA:BEGIN -->
-Son ölçüm: `75c0389d5311` · 2026-09-06 · darwin-arm64 · rustc 1.93.1 (01f6ddf75 2026-02-11) · go go1.26.1 · 10 tur medyanı.
+Son ölçüm: `e4a583c29813` · 2026-09-06 · darwin-arm64 · rustc 1.93.1 (01f6ddf75 2026-02-11) · go go1.26.1 · 10 tur medyanı.
 
 | Ölçü | Zee | Rust | Go |
 |---|---:|---:|---:|
 | Kaynak satırı (boş/yorum dışı, testler dahil) | 639 | 364 | 328 |
 | Birim testi | 19 | 6 | 6 |
-| Derleme süresi (ms; Zee için `dil` release derlemesi) | 167 | 2544 | 135 |
-| Çalışma süresi (ms; Zee: derle+yürüt) | 89 | 3 | 3 |
-| Tepe RSS (KiB) | 11920 | 2272 | 4624 |
-| Korpusa giren sürtünme vakası | 27 | — | — |
+| Soğuk derleme süresi (ms; Zee yorumlayıcı: ürün derlemesi çalışma süresinde) | - | 3235 | 1902 |
+| Çalışma süresi (ms; Zee: derle+yürüt) | 90 | 3 | 3 |
+| Tepe RSS (KiB) | 12000 | 2240 | 4608 |
+| Korpusa giren sürtünme vakası | 21 | — | — |
 <!-- ZEE-KARSILASTIRMA:END -->
 
 ## Okuma kuralı
@@ -34,6 +34,11 @@ Son ölçüm: `75c0389d5311` · 2026-09-06 · darwin-arm64 · rustc 1.93.1 (01f6
 
 ## Zee'nin kaybettiği yerler (backlog girdisi)
 
+- Kaynak satırı: Zee ~1,8× uzun (tablo). Ara ad zorunlulukları, sayaç
+  döngüleri ve yerinde sayım kalıpları satır ekliyor; 19 birim testi de
+  sayıma dahildir (Rust/Go 6'şar).
+- Çalışma süresi ve tepe RSS: yorumlayıcı derle+yürüt, derlenmiş ikilinin
+  ~30 katı; RSS 2,6–5×. V1 sözü değildir.
 - Sıra ile öğe erişimi yok (F010) ve `\t` kaçışı yok (F011): TSV işleme
   Rust/Go'dan daha dolaylı yazılıyor.
 - Morfoloji kökü seçimi (F006/F007/F008/F013) ad seçimini kısıtlıyor;
