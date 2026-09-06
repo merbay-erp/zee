@@ -10,7 +10,7 @@ bin_depo_sayilari	muhendislik	kalici_dosya	Canli depo envanteri
 bin_faz_test_matrisi	muhendislik	-	Faz test sahipligi ve raporu
 bin_islev_egilimi	muhendislik	kalici_dosya	Kritik islev egilim kapisi
 bin_olcum	muhendislik	agac,cozumleyici,faz,lsp,yorumlayici	Performans gozlem artefakti
-bin_soak	muhendislik	kalici_dosya,lib	Uzun soak ve RSS buyume kapisi
+bin_soak	muhendislik	faz,kalici_dosya,lib	Uzun soak ve RSS buyume kapisi
 bin_spec_drift	muhendislik	kalici_dosya	Spec madde kanit drift kapisi
 bin_surum_artefakti	muhendislik	-	Tekrar uretilebilir surum artefakti SBOM provenance ve imza
 cozumleyici	semantik	agac,hir,intrinsic,kimlik,morfoloji,semantic_model,tani,yetkinlik	Ad tur etki ve HIR kaniti
