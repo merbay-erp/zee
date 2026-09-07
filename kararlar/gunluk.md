@@ -3276,3 +3276,14 @@ usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.
 - **Sınır:** Pencere takvimle dolar; makine yalnız ihlali görür. K-161/K-162
   insan verisi çağrı yüzeyini değiştirirse pencere o karardan sonra yeniden
   başlar. K-174 kapanışı 4 Ekim 2026'dan önce ilan edilemez.
+
+## Belge numarası benzersizlik kapısı (7 Eyl)
+
+- **Bulgu:** Ana checkout'ta paralel bir çalışma kendi `spec/27-*.md`
+  dosyasını taşıyordu; K-167'nin `spec/27-uyumluluk-ve-surumleme.md`
+  dosyasıyla numara çakışması birleştirmede sessizce yan yana yaşayabilirdi.
+- **Karar:** `dokuman_tazelik_testi::rfc_adr_ve_spec_numaralari_benzersizdir`
+  aynı numaralı iki RFC/ADR/spec dosyasını doğrudan reddeder; numara kimliktir,
+  indeks ve kanıt haritası ona bağlanır. İnsan hafızasına bırakılmaz.
+- **Not:** Bu commit, GitHub faturalandırması düzeldiğinde uzak CI'ın
+  koşacağı adaydır; o güne kadar HEAD'e yeni kod eklenmez.
