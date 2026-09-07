@@ -1,7 +1,7 @@
 //! Yapısal belge tazelik kapısı: yeni karar/spec dosyası indekslenmeden ve
 //! yerel Markdown bağlantısı kırıkken toplu iş tamamlanamaz.
 
-use std::collections::BTreeSet;
+use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
@@ -105,6 +105,36 @@ fn rfc_adr_ve_spec_dosyalari_indeksli() {
     indeksi_dogrula(&depo.join("rfcs"), &depo.join("rfcs/README.md"), 4);
     indeksi_dogrula(&depo.join("adr"), &depo.join("adr/README.md"), 3);
     indeksi_dogrula(&depo.join("spec"), &depo.join("spec/README.md"), 2);
+}
+
+#[test]
+fn rfc_adr_ve_spec_numaralari_benzersizdir() {
+    // K-164 sonrası kural: aynı numarayı taşıyan iki karar/spec dosyası
+    // (örn. iki ayrı `spec/27-*.md`) sessizce yan yana yaşayamaz; numara
+    // kimliktir, indeks ve kanıt haritası ona bağlanır. Paralel dallarda
+    // doğan çakışma birleştirmede burada yakalanır.
+    let depo = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .parent()
+        .expect("depo kökü");
+    for (klasor, basamak, sablon) in [("rfcs", 4, "0000"), ("adr", 3, "000"), ("spec", 2, "00")] {
+        let mut gorulen: BTreeMap<String, Vec<String>> = BTreeMap::new();
+        for ad in numarali_belgeler(&depo.join(klasor), basamak, sablon) {
+            gorulen
+                .entry(ad[..basamak].to_string())
+                .or_default()
+                .push(ad);
+        }
+        let cakisan = gorulen
+            .iter()
+            .filter(|(_, dosyalar)| dosyalar.len() > 1)
+            .map(|(numara, dosyalar)| format!("{klasor}/{numara}: {}", dosyalar.join(", ")))
+            .collect::<Vec<_>>();
+        assert!(
+            cakisan.is_empty(),
+            "aynı numaralı belge çakışması; birini yeniden numaralandır ve indeksi/kanıt haritasını güncelle:\n{}",
+            cakisan.join("\n")
+        );
+    }
 }
 
 #[test]
