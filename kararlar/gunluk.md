@@ -3312,3 +3312,7 @@ usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.
 - **Sınır:** Bu Linux aarch64'tür; ubuntu x86-64 ve Windows kanıtı yalnız uzak
   CI'dan gelir. Yerel koşu depoya artefakt yazmaz; aday commit bu düzeltmelerle
   ilerler, faturalandırma düzelince aynı commit'te uzak zincir koşulur.
+- **Ek (aynı gece):** Beyan satırları eklenince `docs/kanit-ozeti.md` bayatladı;
+  AGENTS.md'deki "kayıt defteri değişince sayfayı aynı committe yenile" kuralı
+  atlanmıştı, ikinci Linux koşusu yakaladı. Sayfa yenilendi; aday commit
+  bu belge düzeltmesiyle ilerler.
