@@ -862,6 +862,7 @@ tamamlanmış sayılmaz; burada istenen ek kanıt ayrıca üretilir.
 | K-173 | **KAPALI** | ADR-069 `soak`: derleyici döngüsü + gerçek `dillsp`, 5 sn RSS örneği, ısınma sonrası %10+32 MiB çift eşik, exact SHA tarihçesi ve haftalık workflow |
 | K-174 | **BAŞLADI (6 Eyl → 4 Ekim 2026)** | `docs/v1-syntax-freeze-v1.tsv` kalıp/koşul/komut yüzeyinin özetini dondurur; `uyumluluk_testi` pencere boyunca özeti birebir ister. Pencere sıfır syntax değişikliğiyle dolunca kapanır; K-161/K-162 insan verisi bir değişiklik isterse pencere bilinçli olarak yeniden başlar |
 | K-175 | **AÇIK** | İnsan+iki proje+üç platform+signed reproducible V1 RC |
+| K-178 | **AÇIK** | Yorumlayıcı çerçeve maliyeti platforma göre değişir: Linux aarch64 debug'da düzey başına ~200–400 KiB; C019 derinlik koruğu (500) 32 MiB yığında her platformda yığın bitmeden garanti değildir. Yerel Linux aynası bulgusu (8 Eyl); ölçüm + çerçeve küçültme ya da yığın-kalan denetimi ister |
 
 ## Önceki kanıt: 2 Eylül 2026 ikinci dış inceleme ayrımı
 

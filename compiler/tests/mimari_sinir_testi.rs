@@ -406,7 +406,7 @@ fn faz_test_matrisi_tier1_ci_raporundan_kopamaz() {
         "os: [ubuntu-latest, macos-latest, windows-latest]",
         "cargo run --locked --bin faz_test_matrisi -- --denetle --rapor target/faz-test-matrisi.md",
         "cat target/faz-test-matrisi.md >> \"$GITHUB_STEP_SUMMARY\"",
-        "uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02", // v4.6.2
+        "uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a", // v7.0.1 (GB-023)
         "name: faz-test-matrisi-${{ matrix.os }}",
     ] {
         assert!(ci.contains(kanit), "faz matrisi CI kanıtı eksik: {kanit}");

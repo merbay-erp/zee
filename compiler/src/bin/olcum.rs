@@ -275,6 +275,25 @@ fn cpu_adi() -> String {
             }) {
                 return temiz_tek_satir(ad.to_string());
             }
+            // aarch64 Linux /proc/cpuinfo "model name" taşımaz; "Hardware" ya da
+            // implementer/part çifti provenance için yeterli ve kararlıdır.
+            let alan = |anahtar: &str| {
+                metin.lines().find_map(|satir| {
+                    satir
+                        .split_once(':')
+                        .filter(|(a, _)| a.trim() == anahtar)
+                        .map(|(_, deger)| deger.trim().to_string())
+                })
+            };
+            if let Some(ad) = alan("Hardware") {
+                return temiz_tek_satir(ad);
+            }
+            if let (Some(uygulayici), Some(parca)) = (alan("CPU implementer"), alan("CPU part")) {
+                return temiz_tek_satir(format!(
+                    "{} implementer {uygulayici} part {parca}",
+                    env::consts::ARCH
+                ));
+            }
         }
     }
     #[cfg(target_os = "macos")]
