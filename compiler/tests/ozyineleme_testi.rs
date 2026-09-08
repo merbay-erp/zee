@@ -42,7 +42,15 @@ işlem fibonaççiyi hesapla
 x 10 için fibonaççiyi hesapla olsun
 x yaz
 ";
-    let cikti = kaynagi_calistir(kaynak).expect("fibonacci çalışmalı");
+    // Linux aarch64 debug derlemesinde yorumlayıcı çerçevesi düzey başına
+    // ~200–400 KiB tutar: on düzeylik fib(10) 2 MiB'lık test iş parçacığında
+    // taşar. Sınıra dokunan test CLI ile aynı yığını getirir (K-040/K-178).
+    let cikti = std::thread::Builder::new()
+        .stack_size(dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.calistirma_yigin_bayti())
+        .spawn(move || kaynagi_calistir(kaynak).expect("fibonacci çalışmalı"))
+        .expect("iş parçacığı açılamadı")
+        .join()
+        .expect("iş parçacığı düştü");
     assert_eq!(cikti, vec!["55"]);
 }
 

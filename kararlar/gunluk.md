@@ -3287,3 +3287,28 @@ usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.
   indeks ve kanıt haritası ona bağlanır. İnsan hafızasına bırakılmaz.
 - **Not:** Bu commit, GitHub faturalandırması düzeldiğinde uzak CI'ın
   koşacağı adaydır; o güne kadar HEAD'e yeni kod eklenmez.
+
+## Yerel Linux CI aynası: HEAD'de üç kırık (8 Eyl)
+
+- **Bağlam:** GitHub faturalandırma engeli sürdüğü için `62e5cc6` temiz
+  klonu `rust:1.93.1-bookworm` (Debian 12, Linux aarch64) konteynerinde
+  CI/tedarik/tatbikat zinciriyle birebir koşuldu. Üç koruk, uyarısız derleme,
+  clippy, fmt, işlev eğilimi, spec drift, tanı kalitesi, K-164 kanıt özeti,
+  fuzz derlemesi, wasm ABI v3 yeşil; üç kırık çıktı.
+- **Bulgu 1 (her platform):** `mimari_sinir_testi::faz_test_matrisi_tier1_ci_raporundan_kopamaz`
+  GB-023'ün v7.0.1 `upload-artifact` pinini değil eski v4.6.2 SHA'sını
+  bekliyordu; GB-023 commit'inden sonra tam paket yerelde yeniden koşulmamıştı.
+  K-177'nin dersi bir kez daha: kapı yerelde tam koşulmadan “yeşil” denmez.
+  Pin `actions/upload-artifact` `v7.0.1` etiketinden doğrulandı
+  (`043fb46d…`), test güncellendi.
+- **Bulgu 2 (Linux aarch64 debug):** `ozyineleme_testi::fibonacci_cift_ozyineleme`
+  2 MiB test iş parçacığında taştı; 4 MiB'da geçti. On düzeylik özyineleme için
+  düzey başına ~200–400 KiB çerçeve demektir. Test, CLI ile aynı
+  `calistirma_yigin_bayti` iş parçacığında koşar; asıl soru K-178'e açıldı:
+  C019 koruğu 500 derinliği her platformda yığın bitmeden vermeyebilir.
+- **Bulgu 3 (Linux aarch64):** `olcum` CPU adını yalnız `/proc/cpuinfo`
+  `model name` alanından okuyordu; aarch64 çekirdeği bu alanı vermez, ölçüm
+  provenance reddiyle düşüyordu. `Hardware` ve implementer/part yedeği eklendi.
+- **Sınır:** Bu Linux aarch64'tür; ubuntu x86-64 ve Windows kanıtı yalnız uzak
+  CI'dan gelir. Yerel koşu depoya artefakt yazmaz; aday commit bu düzeltmelerle
+  ilerler, faturalandırma düzelince aynı commit'te uzak zincir koşulur.

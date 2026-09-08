@@ -40,7 +40,7 @@ trap 'rm -rf "$gecici"' EXIT
 echo "== Sürüm artefaktı: $sha ($platform, $rustc_surumu, SOURCE_DATE_EPOCH=$epoch)"
 for klon in a b; do
     echo "-- Temiz klon $klon derleniyor"
-    git clone -q --local "$depo_koku" "$gecici/$klon"
+    git clone -q --local --no-hardlinks "$depo_koku" "$gecici/$klon"
     git -C "$gecici/$klon" checkout -q "$sha"
     (
         cd "$gecici/$klon/compiler"
