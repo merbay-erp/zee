@@ -57,6 +57,13 @@ platformda AYNIDIR ve dilin kendi tanısıyla karşılanır — altındaki
 makinenin yığın taşmasıyla değil. Sınır, en dar hedef platforma (tarayıcı
 motoru çağrı yığını) paylı seçilmiştir.
 
+Resmî CLI ve test koşucuları yürütmeyi `calistirma_yigin_bayti` (256 MiB
+rezervasyon) büyüklüğünde ayrı bir iş parçacığında koşar. K-178 ölçümü (9
+Eylül 2026): yorumlayıcı çerçevesi debug profilde düzey başına ~194 KiB,
+release'te ~11 KiB; macOS arm64 ve Linux aarch64 birebir aynıdır. Bağlayıcı
+kanıt `compiler/tests/ozyineleme_testi.rs` ve
+`regression/runtime/derinlik-499-resmi-yiginda.dil` vakasıdır.
+
 ## Program sonlanması (TANIMLI — K-069)
 
 `programı bitir` = çıkış kodu 0; `programı <n> ile bitir` süreç çıkış

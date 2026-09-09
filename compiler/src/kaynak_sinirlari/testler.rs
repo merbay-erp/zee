@@ -9,6 +9,14 @@ fn varsayilan_profil_kritik_limitleri_sifira_birakmaz() {
     assert!(sinirlar.token_sayisi() > 0);
     assert!(sinirlar.cagri_derinligi() > 0);
     assert!(sinirlar.calistirma_yigin_bayti() > 0);
+    // K-178: debug çerçevesi ~194 KiB/düzey ölçüldü; resmî yığın bütün C019
+    // derinliğini en az iki kat payla taşımalı (spec/05: taşma değil tanı).
+    let debug_duzey_butcesi_bayti = 200 * 1024;
+    assert!(
+        sinirlar.calistirma_yigin_bayti()
+            >= 2 * sinirlar.cagri_derinligi() * debug_duzey_butcesi_bayti,
+        "yürütme yığını C019 derinliğini debug çerçeve bütçesiyle iki kat payla taşımalı"
+    );
     assert!(sinirlar.calistirma_adimi() > 0);
     assert!(sinirlar.koleksiyon_ogesi() > 0);
     assert!(sinirlar.eszamanli_gorev() > 0);

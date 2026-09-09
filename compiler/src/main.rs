@@ -110,7 +110,8 @@ fn web_modunu_ayikla(argumanlar: &mut Vec<String>) -> Result<WebModu, String> {
 fn main() -> ExitCode {
     // Derinlik sınırına (C019, 500) kadar özyineleme her platformda doğal
     // yığını taşırmamalı; Windows ana iş parçacığı 1 MB olduğundan iş
-    // 32 MB yığınlı bir iş parçacığında koşar (K-040).
+    // resmî yürütme yığınlı (K-178: 256 MiB rezervasyon) iş parçacığında
+    // koşar (K-040).
     let is_parcacigi = match std::thread::Builder::new()
         .name("dil".into())
         .stack_size(dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.calistirma_yigin_bayti())

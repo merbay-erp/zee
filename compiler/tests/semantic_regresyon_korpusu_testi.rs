@@ -27,7 +27,7 @@ const KIPLER: &[&str] = &[
     "web",
 ];
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 struct Vaka {
     ad: String,
     bug: String,
@@ -457,7 +457,20 @@ fn duzeltilmis_semantic_buglar_tani_span_cikis_ve_ciktiyi_korur() {
     for vaka in vakalari_oku() {
         let kaynak = std::fs::read_to_string(depo().join(&vaka.dosya))
             .unwrap_or_else(|hata| panic!("{} okunamadı: {hata}", vaka.dosya));
-        let gozlem = vakayi_calistir(&vaka, &kaynak);
+        // K-178: vaka resmî CLI yığınında koşar; debug çerçevesi 2 MiB test iş
+        // parçacığına sığmaz, derinlik sözü ancak resmî yığında sınanabilir.
+        let gozlem = {
+            let vaka_kopyasi = vaka.clone();
+            let kaynak_kopyasi = kaynak.clone();
+            std::thread::Builder::new()
+                .stack_size(
+                    dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.calistirma_yigin_bayti(),
+                )
+                .spawn(move || vakayi_calistir(&vaka_kopyasi, &kaynak_kopyasi))
+                .expect("vaka iş parçacığı açılamadı")
+                .join()
+                .expect("vaka iş parçacığı düştü")
+        };
         assert_eq!(
             gozlem.tani.as_ref().map(|tani| tani.kod.as_str()),
             vaka.tani.as_deref(),
