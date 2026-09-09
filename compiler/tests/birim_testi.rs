@@ -348,3 +348,47 @@ fn kokenli_tani_raporu_ana_kaynaktan_alinti_yapmaz_birim_metniyle_yapar() {
         "en içteki köken kalır"
     );
 }
+
+#[test]
+fn rota_birimi_rotalari_kullan_satirinin_yerine_sirayla_katilir() {
+    // K-182: `<ad> rotalarını kullan` — birimin üst düzey rotaları ana programa girer.
+    let dosyalar = HashMap::from([
+        (
+            "panel",
+            "yardimci birimini kullan\n\nGET \"/panel\" adresine istek geldiğinde\n    cevap \"panel\" için selam olsun\n    cevap yanıtını gönder\n",
+        ),
+        (
+            "yardimci",
+            "işlem selam\n    adı Metin olarak al\n    Metin döndürür\n\n    sonuc \"merhaba \" ile ad olsun\n    sonuc döndür\n",
+        ),
+    ]);
+    let kaynak = "8080 kapısında sunucu başlat\n\nGET \"/\" adresine istek geldiğinde\n    \"ana\" yanıtını gönder\n\npanel rotalarını kullan\n\nGET \"/\" önekli adrese istek geldiğinde\n    \"son\" yanıtını gönder\n";
+    let program = kaynagi_derle_birimlerle(kaynak, &mut yukleyici(&dosyalar)).expect("derlenmeli");
+    let rotalar: Vec<String> = program
+        .cumleler
+        .iter()
+        .filter_map(|c| match c {
+            dil::agac::Cumle::IstekGeldiginde { yol, .. } => Some(format!("{yol:?}")),
+            _ => None,
+        })
+        .collect();
+    assert_eq!(rotalar.len(), 3, "{rotalar:?}");
+    assert!(rotalar[1].contains("/panel"), "{rotalar:?}");
+    assert!(
+        program.islemler.contains_key("selam"),
+        "rota biriminin tanımları da alınır"
+    );
+
+    // `birimini kullan` rotaları almaz (kapsülleme korunur).
+    let sade = "panel birimini kullan\n\n8080 kapısında sunucu başlat\n";
+    let program = kaynagi_derle_birimlerle(sade, &mut yukleyici(&dosyalar)).expect("derlenmeli");
+    assert!(!program
+        .cumleler
+        .iter()
+        .any(|c| matches!(c, dil::agac::Cumle::IstekGeldiginde { .. })));
+
+    // Rotasız birim rota olarak alınamaz.
+    let hata = kaynagi_derle_birimlerle("yardimci rotalarını kullan\n", &mut yukleyici(&dosyalar))
+        .expect_err("A010 bekleniyordu");
+    assert_eq!(hata.kod, "A010");
+}

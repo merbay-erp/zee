@@ -127,3 +127,4 @@ adr/072-ikinci-urun-ve-birim-kokenli-tanilar.md	kanitli	compiler/tests/kanit_oze
 adr/073-zee-rust-go-karsilastirmasi.md	kanitli	compiler/tests/dogfood_karsilastirma_testi.rs	Rust/Go bayt bayt eşdeğerlik ve exact SHA karşılaştırma tarihçesi
 adr/074-ucuncu-urun-ve-surtunme-tekrari.md	kanitli	compiler/tests/kelime_avi_testi.rs,compiler/tests/dogfood_korpusu_testi.rs	Üçüncü ürün hermetik oyun kanıtı ve korpus proje/sürtünme vakaları
 adr/075-urun-e-kriptografi-iletisim-gorsel.md	kanitli	compiler/tests/urun_e_yetkinlik_testi.rs	K-181 dört yüzeyin lowering hermetik davranış yetkinlik kapısı T048 ve smtp/smtps hedef kanıtı
+adr/076-rota-birimleri.md	kanitli	compiler/tests/birim_testi.rs	K-182 rota birimlerinin sırayla katılması, kapsülleme ve rotasız birim A010 kanıtı

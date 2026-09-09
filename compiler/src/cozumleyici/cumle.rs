@@ -699,6 +699,7 @@ pub(super) fn blok_denetle(
                     let tur_adi = match tur {
                         crate::agac::KullanimTuru::Birim => "birim",
                         crate::agac::KullanimTuru::Paket => "paket",
+                        crate::agac::KullanimTuru::Rota => "rota",
                     };
                     return Err(Tani::yeni(
                         "S021",

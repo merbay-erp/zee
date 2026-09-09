@@ -410,21 +410,21 @@ impl Ayristirici {
                 ) {
                     (Some(TokenTur::Kelime(ad)), Some(TokenTur::Kelime(tur)))
                         if satir_tokenlari.len() == 3
-                            && matches!(tur.as_str(), "birimini" | "paketini") =>
+                            && matches!(tur.as_str(), "birimini" | "paketini" | "rotalarını") =>
                     {
                         Ok(Cumle::Kullan {
                             ad: ad.clone(),
-                            tur: if tur == "birimini" {
-                                crate::agac::KullanimTuru::Birim
-                            } else {
-                                crate::agac::KullanimTuru::Paket
+                            tur: match tur.as_str() {
+                                "birimini" => crate::agac::KullanimTuru::Birim,
+                                "paketini" => crate::agac::KullanimTuru::Paket,
+                                _ => crate::agac::KullanimTuru::Rota,
                             },
                             satir: satir_no,
                         })
                     }
                     _ => Err(Tani::yeni(
                         "S034",
-                        "Kullanım \"<ad> birimini kullan\" ya da \"<ad> paketini kullan\" biçiminde yazılır.".into(),
+                        "Kullanım \"<ad> birimini kullan\", \"<ad> paketini kullan\" ya da \"<ad> rotalarını kullan\" biçiminde yazılır.".into(),
                         satir_no,
                         1,
                         1,

@@ -97,7 +97,7 @@ fn base64_yaz(baytlar: &[u8]) -> String {
 
 fn base64_oku(metin: &str) -> Option<Vec<u8>> {
     let baytlar = metin.as_bytes();
-    if baytlar.len() % 4 != 0 {
+    if !baytlar.len().is_multiple_of(4) {
         return None;
     }
     let deger = |c: u8| ALFABE.iter().position(|&a| a == c).map(|p| p as u32);

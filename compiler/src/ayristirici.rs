@@ -143,6 +143,9 @@ pub fn kullanilan_birimler(tokenlar: &[Token]) -> Vec<(String, crate::agac::Kull
                     Some(TokenTur::Kelime(k)) if k == "paketini" => {
                         Some(crate::agac::KullanimTuru::Paket)
                     }
+                    Some(TokenTur::Kelime(k)) if k == "rotalarını" => {
+                        Some(crate::agac::KullanimTuru::Rota)
+                    }
                     _ => None,
                 };
                 let kullan = matches!(

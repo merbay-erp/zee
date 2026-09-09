@@ -3422,3 +3422,12 @@ gizli-anahtar`. Hermetik profil sabit anahtar + tohumlu nonce. Kalıp kelimeleri
 `şifrelenmişi`, `çözmeyi`; K-174 kaydı 12 kalıp. `Permissions-Policy` başlığı
 varsayılan güvenlik başlıklarına eklendi. Bütçeler: yorumlayici/yetkinlik.rs
 310, io_izi.rs 1300.
+
+### K-182 — Rota birimleri (`rotalarını kullan`) — 9 Eylül 2026
+
+ürün E `ana.dil` 145 KB oldu (inceleme P1-5). RFC-0009 birimleri rota taşımadığı için
+dosya bölünemiyordu. `KullanimTuru::Rota`: birimin üst düzey rotaları `rotalarını
+kullan` satırının yerine sırayla girer, tanımlar alınır, `birimini kullan` rotaları
+yine düşürür, rotasız birim A010. Yükleyici (`lib.rs`), ayrıştırıcı, paket çözücü,
+LSP, yüzey fixture'ı; ADR-076; test `birim_testi`. Panel rotaları
+`kaynak/rotalar/` altına bölündü.

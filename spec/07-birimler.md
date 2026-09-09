@@ -17,6 +17,10 @@ bağını bu kaynak yüzeyine eklemiştir.
   türleriyle birlikte `<Tür> döndürür` ya da `değer döndürmez` (T039, spec/10).
 - Birimin kendi aldığı işlem, bir üst kaynağa örtük yeniden açılmaz. Birim
   gövdesi onu çağırabilir; kullanan yalnız birimin doğrudan tanımını görür.
+- **Rota birimi (K-182, ADR-076):** `panel_guvenlik rotalarını kullan`, birimin
+  üst düzey rota cümlelerini bu satırın yerine, birimdeki sırasıyla ana
+  programa katar; tanımlar `birimini kullan` gibi alınır. Rotasız birim rota
+  olarak alınamaz (A010). `birimini kullan` rotaları almaz.
 
 ## Çakışma ve döngü (TANIMLI)
 

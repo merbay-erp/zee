@@ -5,5 +5,6 @@ baslangic	2026-09-06
 bitis	2026-10-04
 yuzey_fixture	compiler/tests/fixtures/dil-yuzeyi-v1.tsv
 dondurulmus_yuzeyler	kalip,kosul,komut
-dondurulmus_sha256	c6254b78e4439a418f4204ddb59b71ad4dcb8336b6b0ba2f748f54d060c4df9f
+dondurulmus_sha256	c275f59a1da19f816e27d7a140597dba532f41a1cf8ca8319a34d8fdc96ac166
 # K-181 (9 Eylül 2026, ADR-075): urun-e dogfood'u için ürün sahibi kararıyla 12 kalıp eklendi (argon2, totp, anahtarı, anahtarıyla, ileti, göndermeyi, üzerinden, görselini, piksele, küçültmeyi, şifrelenmişi, çözmeyi); pencere ve kapanış tarihi değişmedi.
+# K-181 eki 3 / K-182 (9 Eylül 2026): `gizli-anahtar` komutu ve rota birimleri için `rotalarını` kalıp kelimesi eklendi (ürün sahibi kararı, urun-e); pencere değişmedi.

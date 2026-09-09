@@ -30,7 +30,7 @@ pub const AZAMI_LSP_JSON_DUGUMU: usize = crate::kaynak_sinirlari::VARSAYILAN_KAY
 // ---------- sunucu ----------
 
 /// Tamamlama önerileri: dilin kalıp kelimeleri (kaynağı: ayrıştırıcı yüzeyi).
-const KALIP_KELIMELERI: [&str; 99] = [
+const KALIP_KELIMELERI: [&str; 100] = [
     "yaz",
     "olsun",
     "ise",
@@ -64,6 +64,7 @@ const KALIP_KELIMELERI: [&str; 99] = [
     "kullan",
     "birimini",
     "paketini",
+    "rotalarını",
     "doğru",
     "yanlış",
     "yok",
@@ -135,7 +136,7 @@ const KALIP_KELIMELERI: [&str; 99] = [
 /// Hover açıklamaları: kalıp kelimesi → tek satır Türkçe açıklama + örnek.
 /// (Kaynak: spec/02-dizim ve dil turu; kelime kalıbın son ya da ayırt edici
 /// parçasıdır.)
-const KELIME_ACIKLAMALARI: [(&str, &str); 52] = [
+const KELIME_ACIKLAMALARI: [(&str, &str); 53] = [
     ("yaz", "Cümleyi bitirir: değeri ekrana (ya da `X dosyasına`) yazar.\n\n`\"Merhaba\" ile isim yaz`"),
     ("olsun", "Ad tanımlar ya da var olan ada atar; tür ilk değerden çıkar ve sonra değişmez.\n\n`yaş 10 olsun`"),
     ("ise", "Koşul dalı açar; koşul yüklem-sonludur (`...se/...sa`).\n\n`yaş 8 veya daha büyükse`"),
@@ -185,6 +186,7 @@ const KELIME_ACIKLAMALARI: [(&str, &str); 52] = [
     ("anahtarıyla", "RFC 6238 TOTP kodunu adaptörün saatiyle ±30 saniye penceresinde doğrular.\n\n`kod gizli anahtarıyla doğrulanıyorsa`"),
     ("göndermeyi", "SMTP ile düz metin e-posta gönderir (ağ yetkinliği + `e_posta_bağlantı_değişkeni`); geri alınamaz, eylem içinde kullanılmaz.\n\n`sonuç alıcı konu gövde ile ileti göndermeyi dene olsun`"),
     ("üzerinden", "E-postayı ortam değişkeni yerine verilen SMTP bağlantı metniyle gönderir (panelden ayarlanan SMTP); ağ hedefi denetimi aynen uygulanır.\n\n`sonuç alıcı konu gövde ile bağlantı üzerinden ileti göndermeyi dene olsun`"),
+    ("rotalarını", "Birimin üst düzey rotalarını bu satırın yerine, kendi sırasıyla ana programa katar (rota birimleri; büyük ana.dil'i bölmek için). Birimin tanımları da alınır.\n\n`panel_guvenlik rotalarını kullan`"),
     ("şifrelenmişi", "Gizli değeri XChaCha20-Poly1305 ile şifreler (kriptografi yetkinliği + `gizli_anahtar_değişkeni`); çıktı `zee1:` metnidir, veritabanında saklanabilir.\n\n`sifreli parolanın gizli şifrelenmişi olsun`"),
     ("çözmeyi", "`zee1:` metnini gizli anahtarla çözer; anahtar farklı ya da veri bozuksa başarısız Sonuç.\n\n`sonuç sifreli gizli çözmeyi dene olsun`"),
     ("küçültmeyi", "Görseli azami kenara küçültüp .jpg/.png/.webp olarak yazar; büyütmez.\n\n`sonuç kaynak görselini hedef dosyasına 1600 piksele küçültmeyi dene olsun`"),

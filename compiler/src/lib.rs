@@ -306,6 +306,8 @@ fn dosyayi_coz(
     let mut yapi_kokenleri: HashMap<String, String> = HashMap::new();
     let mut testler: Vec<Test> = Vec::new();
     let mut alinan_kokenler: BTreeSet<String> = BTreeSet::new();
+    // K-182: `<ad> rotalarını kullan` ile alınan birimlerin üst düzey rotaları.
+    let mut rota_birimleri: HashMap<String, Vec<Cumle>> = HashMap::new();
 
     for (ad, tur, satir) in ayristirici::kullanilan_birimler(tokenlar.tokenlar()) {
         let yuklenen = yukleyici(BirimIstegi {
@@ -340,7 +342,20 @@ fn dosyayi_coz(
         )
         .map_err(|tani| birim_kokeniyle(tani, &yuklenen.koken));
         yigin.pop();
-        let birim = birim?;
+        let mut birim = birim?;
+        if tur == KullanimTuru::Rota {
+            if birim.cumleler.is_empty() {
+                return Err(Tani::yeni(
+                    "A010",
+                    format!("\"{}\" biriminde üst düzey rota yok; rota birimi en az bir `... adresine istek geldiğinde` taşır.", ad),
+                    satir,
+                    1,
+                    1,
+                )
+                .onerili("Yalnız tanım taşıyan birimi `birimini kullan` ile al.".into()));
+            }
+            rota_birimleri.insert(ad.clone(), std::mem::take(&mut birim.cumleler));
+        }
 
         birim_tanimlarini_birlestir(
             &ad,
@@ -364,6 +379,27 @@ fn dosyayi_coz(
         .map(|islem| islem.ad.clone())
         .collect();
     let cumleler = tokenlar.ayristir(tohum)?.into_cumleler();
+    // K-182: rota birimlerinin rotaları `rotalarını kullan` satırının yerine, kendi sırasıyla girer.
+    let cumleler = if rota_birimleri.is_empty() {
+        cumleler
+    } else {
+        let mut birlesik = Vec::with_capacity(cumleler.len());
+        for cumle in cumleler {
+            match cumle {
+                Cumle::Kullan {
+                    tur: KullanimTuru::Rota,
+                    ref ad,
+                    ..
+                } => {
+                    if let Some(rotalar) = rota_birimleri.remove(ad) {
+                        birlesik.extend(rotalar);
+                    }
+                }
+                diger => birlesik.push(diger),
+            }
+        }
+        birlesik
+    };
 
     // 3) Kendi tanımlarını ayıkla ve birleştir.
     let (kalan, kendi_islem_adlari) = kendi_tanimlarini_ayikla(
@@ -406,9 +442,11 @@ fn dosyayi_coz(
 
     // Birim olarak yüklenen dosyanın üst düzey cümleleri İÇE ALINMAZ
     // (kapsülleme, RFC-0009 §2): dosya kendi başına çalıştırılabilir kalır,
-    // birim olarak yalnız tanımlarını verir.
+    // birim olarak yalnız tanımlarını verir. K-182 istisnası: rota cümleleri
+    // korunur; yalnız `rotalarını kullan` ile alan üst dosya onları kendi
+    // rota sırasına katar, `birimini kullan` yine düşürür.
     if !ana_kaynak {
-        kalan.clear();
+        kalan.retain(|cumle| matches!(cumle, Cumle::IstekGeldiginde { .. }));
     }
 
     Ok(CozulmusDosya {
@@ -599,7 +637,7 @@ fn disari_acik_imzalari_denetle(
 
 fn yukleme_hatasi(ad: &str, tur: KullanimTuru, hata: &str, satir: usize) -> Tani {
     match tur {
-        KullanimTuru::Birim => Tani::yeni(
+        KullanimTuru::Birim | KullanimTuru::Rota => Tani::yeni(
             "A010",
             format!("\"{}\" birimi yüklenemedi: {}.", ad, hata),
             satir,

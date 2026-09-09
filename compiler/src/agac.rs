@@ -132,6 +132,9 @@ pub enum KullanimTuru {
     Birim,
     /// Proje bildirimindeki doğrudan yerel bağımlılık.
     Paket,
+    /// K-182: `<ad> rotalarını kullan` — birimin üst düzey rotaları bu satırın
+    /// yerine, kendi sırasıyla katılır (rota birimleri; ana.dil bölme).
+    Rota,
 }
 
 #[derive(Debug, Clone, PartialEq)]

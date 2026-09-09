@@ -77,6 +77,7 @@ kalip	paketini	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	parçaları	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	piksele	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	rolüyle	aktif	0.8.0-dev	compiler/src/lsp.rs	-
+kalip	rotalarını	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	saniye	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	sil	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	sor	aktif	0.7.0	compiler/src/lsp.rs	-
@@ -113,6 +114,7 @@ komut	cikar	aktif	0.8.0-dev	compiler/src/main.rs	-
 komut	dene	aktif	0.7.0	compiler/src/main.rs	-
 komut	denetle	aktif	0.7.0	compiler/src/main.rs	-
 komut	ekle	aktif	0.8.0-dev	compiler/src/main.rs	-
+komut	gizli-anahtar	aktif	0.8.0-dev	compiler/src/main.rs	-
 komut	gocur	aktif	0.8.0-dev	compiler/src/main.rs	-
 komut	göçür	aktif	0.8.0-dev	compiler/src/main.rs	-
 komut	hata	aktif	0.7.0	compiler/src/main.rs	-

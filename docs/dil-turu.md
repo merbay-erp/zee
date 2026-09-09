@@ -642,6 +642,7 @@ kod gizli anahtarıyla doğrulanıyorsa           # RFC 6238, ±30 saniye pencer
 
 sonuç alıcı konu gövde ile ileti göndermeyi dene olsun   # SMTP; geri alınamaz → eylemde T048
 sonuç alıcı konu gövde ile bağlantı üzerinden ileti göndermeyi dene olsun   # SMTP bağlantısı değerden (panel ayarı)
+panel_guvenlik rotalarını kullan                        # birimin rotaları bu satırın yerine sırayla girer (K-182)
 sifreli parolanın gizli şifrelenmişi olsun            # XChaCha20-Poly1305; anahtar gizli_anahtar_değişkeni'nden
 çözüm sifreli gizli çözmeyi dene olsun                 # Metin Sonucu; anahtar farklı/veri bozuksa başarısız
 sonuç başarısızsa
