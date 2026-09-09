@@ -73,13 +73,10 @@ fn dosyayi_ac(yol: &Path) -> io::Result<std::fs::File> {
         let mut kalan = 25u32;
         loop {
             match std::fs::File::open(yol) {
-                Err(hata)
-                    if kalan > 0
-                        && matches!(
-                            hata.kind(),
-                            io::ErrorKind::NotFound | io::ErrorKind::PermissionDenied
-                        ) =>
-                {
+                // ERROR_FILE_NOT_FOUND(2) / PATH_NOT_FOUND(3) / ACCESS_DENIED(5) /
+                // SHARING_VIOLATION(32): son ikisi `Uncategorized` sınıfına düşer,
+                // bu yüzden ham kod eşlenir.
+                Err(hata) if kalan > 0 && matches!(hata.raw_os_error(), Some(2 | 3 | 5 | 32)) => {
                     kalan -= 1;
                     std::thread::sleep(std::time::Duration::from_millis(2));
                 }
