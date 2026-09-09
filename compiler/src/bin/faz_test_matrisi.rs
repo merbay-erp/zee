@@ -422,9 +422,21 @@ fn hedefi_listele(kimlik: HedefKimligi, yol: PathBuf) -> Result<Hedef, String> {
 
 fn cargo_envanteri(depo: &Path) -> Result<BTreeMap<HedefKimligi, Hedef>, String> {
     let compiler = depo.join("compiler");
+    // K-182: araç `cargo run` (dev profili) ile koşarken içerideki `cargo test`
+    // varsayılan `test` profiliyle bütün ikilileri (CARGO_BIN_EXE_* bağları)
+    // yeniden derleyip `target/debug/faz_test_matrisi.exe`yi uplift etmeye
+    // kalkar; Windows çalışan .exe'yi sildirmez (Access is denied). Aynı dev
+    // profili kullanılınca artefakt taze sayılır, uplift ve çift derleme olmaz.
     let mut komut = Command::new("cargo");
     komut
-        .args(["test", "--locked", "--no-run", "--message-format=json"])
+        .args([
+            "test",
+            "--locked",
+            "--profile",
+            "dev",
+            "--no-run",
+            "--message-format=json",
+        ])
         .current_dir(&compiler)
         .env("CARGO_TERM_COLOR", "never");
     let cikti = komut_ciktisi(komut, "faz matrisi test derlemesi")?;
@@ -506,7 +518,15 @@ fn cargo_envanteri(depo: &Path) -> Result<BTreeMap<HedefKimligi, Hedef>, String>
     let mut doc_komutu = Command::new("cargo");
     doc_komutu
         .args([
-            "test", "--locked", "--doc", "--", "--list", "--format", "terse",
+            "test",
+            "--locked",
+            "--profile",
+            "dev",
+            "--doc",
+            "--",
+            "--list",
+            "--format",
+            "terse",
         ])
         .current_dir(&compiler)
         .env("CARGO_TERM_COLOR", "never");
@@ -769,7 +789,7 @@ fn seciciyi_calistir(depo: &Path, hedef: &Hedef, secici: &Secici) -> Result<Outp
     if secici.hedef.tur == HedefTuru::Doc {
         let mut komut = Command::new("cargo");
         komut
-            .args(["test", "--locked", "--doc"])
+            .args(["test", "--locked", "--profile", "dev", "--doc"])
             .current_dir(depo.join("compiler"))
             .env("CARGO_TERM_COLOR", "never");
         return komut
@@ -968,7 +988,25 @@ fn calistir() -> Result<(), String> {
     Ok(())
 }
 
+/// Windows çalışan bir .exe'nin silinmesine izin vermez ama yeniden
+/// adlandırılmasına verir. Cargo her çağrıda ikilileri `target/debug` altına
+/// yeniden uplift ettiğinden (K-182: "failed to remove file ... Access is
+/// denied"), araç içerideki `cargo test` başlamadan kendi dosyasını `.old`
+/// adına taşır; cargo boşalan yola yeni dosyayı yazar, bu süreç eski dosyadan
+/// koşmaya devam eder. Eski `.old` bir önceki koşudan kaldıysa silinir.
+#[cfg(windows)]
+fn kendini_kenara_al() {
+    let Ok(exe) = std::env::current_exe() else {
+        return;
+    };
+    let eski = exe.with_extension("exe.old");
+    let _ = fs::remove_file(&eski);
+    let _ = fs::rename(&exe, &eski);
+}
+
 fn main() -> ExitCode {
+    #[cfg(windows)]
+    kendini_kenara_al();
     match calistir() {
         Ok(()) => ExitCode::SUCCESS,
         Err(hata) => {
