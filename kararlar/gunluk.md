@@ -3420,3 +3420,11 @@ usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.
   yalnız ubuntu'da koşar, testler `cfg(unix)` oldu — Windows koruk hostu
   değildir. macOS `37e430c`'de yeşil (imza testi düzeltmesi doğrulandı), ubuntu
   `aa220f8`'den beri yeşil.
+- **Kapanış (`7d8d985`, 10 Eyl 00:xx):** `dil` workflow'u ubuntu, macOS ve
+  Windows'ta ilk kez birlikte yeşil. Windows'un son iki katmanı clippy'ydi:
+  registry testinde `set_readonly(false)` (Windows'ta tek bayrak; allow +
+  gerekçe) ve yalnız Unix testlerinin kullandığı yardımcı/içe alımların
+  Windows'ta ölü kod olması (`cfg(unix)`). Ders: platforma kapılı test
+  yazınca yardımcıları ve içe alımları da kapıla; Windows'a çapraz clippy
+  `ring` için mingw istediğinden yerelde koşturulamadı, kanıt uzak koşudur.
+  Tedarik her adayda yeşil. K-182 kapandı; K-183 (kilit adaleti) açık.
