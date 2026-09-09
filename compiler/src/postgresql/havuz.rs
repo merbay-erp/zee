@@ -263,6 +263,13 @@ mod testler {
             "aktif kira erken kapatılmamalı"
         );
         drop(kira);
+        // K-182: son kiranın kapanışı r2d2'nin iş parçacığında tamamlanır;
+        // Windows'ta hemen görünmedi. Sonuç kesin ama zamanı değil: en çok 2 sn
+        // beklenir, süre dolarsa hâlâ açık bağlantı hatadır.
+        let son = std::time::Instant::now() + Duration::from_secs(2);
+        while acik.load(Ordering::SeqCst) != 0 && std::time::Instant::now() < son {
+            std::thread::sleep(Duration::from_millis(10));
+        }
         assert_eq!(acik.load(Ordering::SeqCst), 0);
     }
 

@@ -66,6 +66,9 @@ fn korugu_calistir(kok: &Path, taban: &str) -> Output {
         .expect("koruk çalışmalı")
 }
 
+// K-182: bash betiği (core freeze koruğu) POSIX kabuk ister; CI onu yalnız
+// ubuntu'da koşar, Windows Git Bash desteklenen koruk hostu değildir.
+#[cfg(unix)]
 #[test]
 fn feature_gercek_dogfood_kaniti_olmadan_freeze_kapisini_gecemez() {
     let kok = gecici_depo();

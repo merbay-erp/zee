@@ -66,6 +66,9 @@ fn korugu_calistir(kok: &Path, taban: &str) -> Output {
         .expect("koruk çalışmalı")
 }
 
+// K-182: bash betiği (semantic regresyon koruğu) POSIX kabuk ister; CI onu yalnız
+// ubuntu'da koşar, Windows Git Bash desteklenen koruk hostu değildir.
+#[cfg(unix)]
 #[test]
 fn commit_mesajindan_bagimsiz_beyan_ve_fixture_zorunludur() {
     let kok = gecici_depo();

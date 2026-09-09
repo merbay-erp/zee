@@ -40,6 +40,11 @@ türü `InvalidInput` ile, eski nesne değiştirilmeden reddedilir.
 - Bu kapsamın uygulanamadığı destekli platform hata vermek ZORUNDADIR;
   best-effort metadata düşürme YASAKTIR.
 
+Windows'ta `ReplaceFileW` hedefi iki yeniden adlandırmayla değiştirir; aradaki
+anda yolu açan okuyucu dosyayı bulamayabilir. Resmî okuma yolu bu pencerede
+kısa ve sınırlı süre yeniden dener (K-182); böylece okuyucu yine eski ya da
+yeni bütün içeriği görür.
+
 İçerik değişikliğinde Unix mtime/ctime korunmaz. Görünmeyen Linux `trusted.*`,
 Windows SACL/owner SID ve dosya sistemine özel immutable bayraklar verilmiş söz
 değildir. Bunlar için yönetilen deployment aracı gerekir.

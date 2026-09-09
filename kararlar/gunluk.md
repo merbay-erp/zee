@@ -3407,3 +3407,16 @@ usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.
   imza oynama testi 1/256 olasılıkla kendiliğinden düşüyordu (imza "00" ile
   başlarsa "00" ile bozma bozmaz); ilk bayt XOR 0xff ile her zaman değişir.
   Windows kanıtı yalnız uzak koşudur.
+- **Ek (`37e430c`, Windows ilk tam test koşusu):** Kendini kenara alma
+  çalıştı; Windows faz matrisini ilk kez uçtan uca koştu ve beş kırık verdi.
+  (1) `okuyucu_yalniz_eski_ya_da_yeni_butunu_gorur`: `ReplaceFileW` iki
+  yeniden adlandırma arasında hedefi yok gösteriyor, eşzamanlı okuyucu NotFound
+  aldı — resmî okuma yolu Windows'ta en çok 25×2 ms yeniden dener, test ürün
+  yolunu kullanır, spec/08'e not düştü (semantic-change/correctness beyanı).
+  (2) `son_kira_birakilinca_kontrollu_kapanis_baglantiyi_kapatir`: kapanış
+  r2d2 iş parçacığında tamamlanıyor, Windows'ta hemen görünmedi; test 2 sn'ye
+  kadar bekler. (3–5) Core freeze / semantic regresyon koruğu ve fuzz artefakt
+  doğrulayıcısı bash betiği testleri Windows Git Bash'te düştü; koruklar CI'da
+  yalnız ubuntu'da koşar, testler `cfg(unix)` oldu — Windows koruk hostu
+  değildir. macOS `37e430c`'de yeşil (imza testi düzeltmesi doğrulandı), ubuntu
+  `aa220f8`'den beri yeşil.
