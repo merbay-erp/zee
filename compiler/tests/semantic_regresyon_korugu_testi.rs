@@ -143,3 +143,23 @@ fn commit_mesajindan_bagimsiz_beyan_ve_fixture_zorunludur() {
 
     std::fs::remove_dir_all(&kok).expect("geçici depo temizlenmeli");
 }
+
+/// Kabuktan bağımsız sözleşme kanıtı: beyan sınıfları ve fail-closed mesajları
+/// her platformda betik metninden doğrulanır (K-182: Windows koruk hostu
+/// değildir ama hedef boş kalamaz).
+#[test]
+fn koruk_betigi_beyan_siniflarini_ve_fail_closed_mesajlarini_kabloluyor() {
+    let betik = std::fs::read_to_string(depo().join("scripts/semantic-regresyon-korugu.sh"))
+        .expect("koruk betiği okunmalı");
+    for kanit in [
+        "semantic-bugfix)",
+        "semantic-change)",
+        "maintenance)",
+        "SEMANTIC BUGFIX EXACT FIXTURE PROVENANCE'I TAŞIMIYOR",
+        "SEMANTIC DEĞİŞİKLİK NORMATİF KANIT TAŞIMIYOR",
+        "COMPILER KAYNAK COMMIT'İ TEKİL SEMANTIC BEYAN TAŞIMIYOR",
+        "COMPILER DEĞİŞİKLİK BEYANI GEREKÇESİ YETERSİZ",
+    ] {
+        assert!(betik.contains(kanit), "koruk betiği kanıtı eksik: {kanit}");
+    }
+}

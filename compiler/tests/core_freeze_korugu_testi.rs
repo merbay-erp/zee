@@ -265,3 +265,25 @@ fn feature_gercek_dogfood_kaniti_olmadan_freeze_kapisini_gecemez() {
 
     std::fs::remove_dir_all(&kok).expect("geçici depo temizlenmeli");
 }
+
+/// Kabuktan bağımsız sözleşme kanıtı: betiğin sınıf dalları, manifest şemaları
+/// ve dogfood kaydı bağı her platformda metinden doğrulanır (K-182: Windows
+/// koruk hostu değildir ama hedef boş kalamaz).
+#[test]
+fn koruk_betigi_sinif_dallarini_ve_dogfood_kaydini_kabloluyor() {
+    let betik = std::fs::read_to_string(depo().join("scripts/core-freeze-korugu.sh"))
+        .expect("koruk betiği okunmalı");
+    for kanit in [
+        "# zee-core-freeze-beyanlari-1",
+        "enforcement_parent",
+        "docs/dogfood-projeleri-v1.tsv",
+        "maintenance)",
+        "bugfix)",
+        "security|correctness)",
+        "dogfood-change)",
+        "CORE FREEZE DOGFOOD ÜRÜNÜ KAYITLI DEĞİL",
+        "CORE FREEZE COMPILER COMMIT'İ TEKİL BEYAN TAŞIMIYOR",
+    ] {
+        assert!(betik.contains(kanit), "koruk betiği kanıtı eksik: {kanit}");
+    }
+}
