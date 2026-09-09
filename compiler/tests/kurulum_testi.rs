@@ -3,6 +3,7 @@
 //! kaldırılır; oynanmış artefakt ve ikinci kurulum reddedilir.
 
 use std::path::{Path, PathBuf};
+#[cfg(unix)]
 use std::process::Command;
 
 fn depo() -> PathBuf {
