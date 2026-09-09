@@ -3316,3 +3316,26 @@ usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.
   AGENTS.md'deki "kayıt defteri değişince sayfayı aynı committe yenile" kuralı
   atlanmıştı, ikinci Linux koşusu yakaladı. Sayfa yenilendi; aday commit
   bu belge düzeltmesiyle ilerler.
+
+## K-178 — Derinlik sözü yığın rezervasyonuyla tutulur (9 Eyl)
+
+- **Ölçüm:** Parametrik `düş` programı resmî CLI'da ikili aramayla ve 499
+  derinlik için gereken en küçük yığın geçici bir koşumla ölçüldü. Debug:
+  32 MiB'da en büyük başarılı derinlik 167, 499 için ≈97.185 KiB (düzey başına
+  ~194 KiB). Release: 499 için ≈5.626 KiB (~11 KiB). macOS arm64 ve Linux
+  aarch64 sonuçları KiB'ına kadar aynı; maliyet ISA'ya değil async durum
+  makinesinin çerçevesine bağlı.
+- **Bulgu:** spec/05 "sınır her platformda AYNIDIR, yığın taşmasıyla değil"
+  der; debug CLI (`cargo run -- çalıştır`, CI'daki golden/dogfood adımları)
+  167. düzeyde doğal taşmayla düşüyordu. Release CLI 499'u geçip 600'de C019
+  veriyordu.
+- **Karar:** `calistirma_yigin_bayti` 32 → 256 MiB (yalnız adres alanı
+  rezervasyonu; fiziksel sayfa kullanılan derinlik kadar). Kaynak sınırı
+  testi yığının `2 × 500 × 200 KiB` debug bütçesini taşımasını ister.
+  Regresyon koşucusu her vakayı resmî yığında koşar; `derinlik_korkulugu` ve
+  fibonacci testleri kendi 128 MiB'ı yerine resmî yığını kullanır; yeni
+  `c019_sinirinin_altindaki_derinlik_resmi_yiginda_her_profilde_sigar` testi
+  ve `regression/runtime/derinlik-499-resmi-yiginda.dil` vakası kapıda.
+- **Sınır:** Çerçeve küçültme yapılmadı; tarayıcı (wasm, 16 MiB) hattı kendi
+  playground sınırlarını taşır ve bu ölçümün dışındadır. Debug çerçevesi
+  büyürse test düşer; K-040 dersi makineleşti. K-178 kapandı.

@@ -181,7 +181,9 @@ pub const VARSAYILAN_KAYNAK_SINIRLARI: KaynakSinirlari = KaynakSinirlari {
     kaynak_dosyasi: 4_096,
     token_sayisi: 1_000_000,
     cagri_derinligi: 500,
-    calistirma_yigin_bayti: 32 * 1024 * 1024,
+    // K-178: debug çerçevesi ~194 KiB/düzey; 500 derinlik ~99 MiB ister.
+    // Yalnız adres alanı rezervasyonu (spec/05 taşma değil C019 sözü).
+    calistirma_yigin_bayti: 256 * 1024 * 1024,
     calistirma_adimi: 10_000_000,
     koleksiyon_ogesi: 1_000_000,
     eszamanli_gorev: 1_024,

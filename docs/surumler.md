@@ -18,6 +18,10 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   artık A008 değildir; birimde doğan tanı kökenini taşır, CLI birim
   dosyasından alıntılar, LSP `kullan` satırına taşır, JSON kökenli tanıda
   `koken` alanı verir. Tanı kimlikleri ve geçerli program davranışı değişmedi.
+- **Yürütme yığını 32 → 256 MiB rezervasyon** (K-178): debug profilde
+  yorumlayıcı çerçevesi ~194 KiB/düzey ölçüldü; eski yığın debug CLI'yı 167.
+  düzeyde C019 yerine doğal taşmayla düşürüyordu. Regresyon koşucusu ve
+  derinlik testleri resmî yığında koşar; `regression/runtime/derinlik-499-resmi-yiginda.dil`.
 - **Zee–Rust–Go karşılaştırması** (K-165, ADR-073): aynı araç üç dilde bayt
   bayt aynı sayfayı üretir; ölçüler exact SHA tarihçesinde.
 

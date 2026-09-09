@@ -97,10 +97,10 @@ işlem düş
 
 x 5 için düş olsun
 ";
-    // Debug derlemede yorumlayıcı çerçeveleri platforma göre şişebilir;
-    // sınıra dokunan tek test kendi yığınını getirir (K-040 — CLI da öyle).
+    // K-178: sınıra dokunan test CLI ile aynı resmî yığında koşar; sözün
+    // kanıtı ayrı bir yığın değil, ürünün kendi yapılandırmasıdır.
     let hata = std::thread::Builder::new()
-        .stack_size(128 * 1024 * 1024)
+        .stack_size(dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.calistirma_yigin_bayti())
         .spawn(move || kaynagi_calistir(kaynak).expect_err("sonsuz iniş C019 vermeli"))
         .expect("iş parçacığı açılamadı")
         .join()
@@ -142,4 +142,32 @@ x yaz
 ";
     let cikti = kaynagi_calistir(kaynak).expect("bölge argümanlar çalışmalı");
     assert_eq!(cikti, vec!["6"]);
+}
+
+#[test]
+fn c019_sinirinin_altindaki_derinlik_resmi_yiginda_her_profilde_sigar() {
+    // spec/05: 500 derinlik her platformda C019 ile karşılanır, doğal yığın
+    // taşmasıyla değil. K-178 ölçümü: debug ~194 KiB/düzey, release ~11 KiB.
+    // 499 düzey resmî yığında (debug testte de) sığmalı; sığmazsa çerçeve
+    // maliyeti büyümüştür ve K-040 dersi yeniden yaşanır.
+    let kaynak = "\
+işlem düş
+    sayıyı al
+    sayı 0 a eşitse
+        0 döndür
+    kalan sayı ile 1 in farkı olsun
+    sonuç kalan için düş olsun
+    toplam sonuç ile 1 in toplamı olsun
+    toplamı döndür
+
+x 499 için düş olsun
+x yaz
+";
+    let cikti = std::thread::Builder::new()
+        .stack_size(dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.calistirma_yigin_bayti())
+        .spawn(move || kaynagi_calistir(kaynak).expect("499 düzey resmî yığında çalışmalı"))
+        .expect("iş parçacığı açılamadı")
+        .join()
+        .expect("iş parçacığı düştü");
+    assert_eq!(cikti, vec!["499"]);
 }
