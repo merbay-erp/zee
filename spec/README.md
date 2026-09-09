@@ -49,6 +49,7 @@ Kırıcı değişiklik sessizce yapılamaz: davranış değişikliği RFC'den ge
 | [25 — PostgreSQL veri erişimi](25-postgresql-veri-erisimi.md) | exact loopback bildirim, parametreli sorgu, eylem transaction'ı, structured hata ve migration geçmişi | RFC-0026, ADR-060, K-163 |
 | [26 — Binary yükleme ve dosya yaşam döngüsü](26-binary-yukleme-ve-dosya-yasam-dongusu.md) | akışlı octet-stream, SHA-256, no-clobber publish, silme ve orphan tarama primitive'leri | RFC-0027, ADR-061, K-163/F030 |
 | [27 — Uyumluluk ve sürümleme](27-uyumluluk-ve-surumleme.md) | sürüm kimliği, sekiz dondurulmuş yüzey, süreli deprecation kaydı ve 1.0/edition çerçevesi | RFC-0028, ADR-064, K-167 |
+| [28 — Görünüm bloğu](28-gorunum-blogu.md) | `<ad> görünüm olsun` tipli HTML ağacı: varsayılan kaçış, bayrak öznitelik, boş öğe, `ham` parça; S046/T055 | ADR-077, K-183 |
 
 ## Faza bağlı — henüz spec dışı
 

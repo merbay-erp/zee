@@ -42,6 +42,7 @@ kalip	gerekli	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	göndermeyi	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	göre	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	görselini	aktif	0.8.0-dev	compiler/src/lsp.rs	-
+kalip	görünüm	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	günler	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	harfleri	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	hatasını	aktif	0.7.0	compiler/src/lsp.rs	-

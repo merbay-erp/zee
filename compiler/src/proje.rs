@@ -1000,6 +1000,7 @@ fn cumle_satiri(cumle: &Cumle) -> usize {
         Cumle::Yaz { satir, .. }
         | Cumle::Olsun { satir, .. }
         | Cumle::KezTekrarla { satir, .. }
+        | Cumle::Gorunum { satir, .. }
         | Cumle::AralikDongusu { satir, .. }
         | Cumle::OlduguSurece { satir, .. }
         | Cumle::OlanaKadar { satir, .. }

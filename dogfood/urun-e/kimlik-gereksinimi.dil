@@ -109,3 +109,23 @@ test "geçersiz alıcı adresi Sonuç hatasıdır"
 test "olmayan görsel küçültülemez"
     durum "yok.jpg" ve "kucuk.jpg" ile gorseli_hazirla olsun
     durum "hata" ya eşit olmalı
+
+# 5) Panel formu: görünüm bloğu — kaçış varsayılan, etiket dengesi derleyicide (K-183).
+işlem giris_formu
+    csrfyi Metin olarak al
+    Metin döndürür
+
+    form_html görünüm olsun
+        form method "post" action "/giris-yap"
+            input type "hidden" name "_csrf" value csrf
+            label
+                "E-posta"
+                input type "email" name "eposta" required doğru
+            button type "submit"
+                "Giriş Yap"
+    form_html döndür
+
+test "görünüm bloğu csrf değerini kaçışlı yazar"
+    html "a\"b" için giris_formu olsun
+    html "value=\"a&quot;b\"" içermeli
+    html "<label>E-posta<input type=\"email\" name=\"eposta\" required></label>" içermeli

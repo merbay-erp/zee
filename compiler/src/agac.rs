@@ -500,6 +500,44 @@ pub struct KosulKolu {
     pub govde: Vec<Cumle>,
 }
 
+/// K-183: `<ad> görünüm olsun` bloğunun düğümleri. Metin ve öznitelik değerleri
+/// varsayılan olarak HTML kaçışlıdır; yalnız `ham <ifade>` ham girer.
+#[derive(Debug, Clone)]
+pub enum GorunumDugumu {
+    /// `etiket ad değer ad değer …` + girintili çocuklar.
+    Oge {
+        etiket: String,
+        oznitelikler: Vec<(String, Ifade)>,
+        cocuklar: Vec<GorunumDugumu>,
+        satir: usize,
+    },
+    /// `"sabit"` ya da `metin <ifade>` — kaçışlı metin düğümü.
+    Metin { ifade: Ifade, satir: usize },
+    /// `ham <ifade>` — kaçışsız (önceden güvenli kılınmış parça).
+    Ham { ifade: Ifade, satir: usize },
+}
+
+/// Görünüm ağacındaki bütün ifadeleri (öznitelik değerleri, metinler) sırayla verir.
+pub fn gorunum_ifadeleri(dugumler: &[GorunumDugumu]) -> Vec<&Ifade> {
+    let mut sonuc = Vec::new();
+    for dugum in dugumler {
+        match dugum {
+            GorunumDugumu::Oge {
+                oznitelikler,
+                cocuklar,
+                ..
+            } => {
+                sonuc.extend(oznitelikler.iter().map(|(_, ifade)| ifade));
+                sonuc.extend(gorunum_ifadeleri(cocuklar));
+            }
+            GorunumDugumu::Metin { ifade, .. } | GorunumDugumu::Ham { ifade, .. } => {
+                sonuc.push(ifade)
+            }
+        }
+    }
+    sonuc
+}
+
 #[derive(Debug, Clone)]
 pub enum Cumle {
     /// `<ifade> yaz`
@@ -508,6 +546,14 @@ pub enum Cumle {
     Olsun {
         ad: String,
         deger: Ifade,
+        satir: usize,
+        sutun: usize,
+        uzunluk: usize,
+    },
+    /// K-183: `<ad> görünüm olsun` + girintili HTML ağacı → Metin.
+    Gorunum {
+        ad: String,
+        dugumler: Vec<GorunumDugumu>,
         satir: usize,
         sutun: usize,
         uzunluk: usize,

@@ -194,20 +194,7 @@ pub(super) fn degerlendir_async<'a>(
                     }
                     (Ozellik::JsonMetin, deger) => json_yaz(&deger, satir).map(Deger::Metin),
                     (Ozellik::HtmlGuvenli, Deger::Metin(m)) => {
-                        let mut kacisli = String::with_capacity(m.len());
-                        for k in m.chars() {
-                            let mut tampon = [0u8; 4];
-                            let parca = match k {
-                                '&' => "&amp;",
-                                '<' => "&lt;",
-                                '>' => "&gt;",
-                                '"' => "&quot;",
-                                '\'' => "&#39;",
-                                b => b.encode_utf8(&mut tampon),
-                            };
-                            metin_parcasi_ekle(&mut kacisli, parca, satir)?;
-                        }
-                        Ok(Deger::Metin(kacisli))
+                        html_kacisla(&m, satir).map(Deger::Metin)
                     }
                     (Ozellik::Uzunluk, Deger::Metin(m)) => {
                         Ok(Deger::TamSayi(m.chars().count() as i64))
@@ -878,4 +865,22 @@ pub(super) fn degerlendir_async<'a>(
         deger_sinirini_denetle(&deger, satir)?;
         Ok(deger)
     })
+}
+
+/// HTML'e gömülmeye güvenli kaçış (K-051 `html güvenlisi`, K-183 görünüm bloğu).
+pub(super) fn html_kacisla(metin: &str, satir: usize) -> Result<String, Tani> {
+    let mut kacisli = String::with_capacity(metin.len());
+    for k in metin.chars() {
+        let mut tampon = [0u8; 4];
+        let parca = match k {
+            '&' => "&amp;",
+            '<' => "&lt;",
+            '>' => "&gt;",
+            '"' => "&quot;",
+            '\'' => "&#39;",
+            b => b.encode_utf8(&mut tampon),
+        };
+        metin_parcasi_ekle(&mut kacisli, parca, satir)?;
+    }
+    Ok(kacisli)
 }

@@ -23,7 +23,8 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   olarak gönderilmesi (panel hata sayfaları), `parolanın gizli şifrelenmişi` /
   `sifreli gizli çözmeyi dene` (XChaCha20-Poly1305, `gizli_anahtar_değişkeni`,
   `dil gizli-anahtar`), `Permissions-Policy` başlığı, rota birimleri
-  (`<ad> rotalarını kullan`, K-182/ADR-076) ve `kaynak
+  (`<ad> rotalarını kullan`, K-182/ADR-076), görünüm bloğu (`<ad> görünüm
+  olsun`, tipli HTML ağacı, K-183/ADR-077, S046/T055) ve `kaynak
   görselini hedef dosyasına N piksele küçültmeyi dene` (`image` crate) merkezi
   intrinsic kaydına girdi. Yeni tanılar C028/C029. K-174 freeze yüzey kaydı
   ürün sahibi kararıyla güncellendi.

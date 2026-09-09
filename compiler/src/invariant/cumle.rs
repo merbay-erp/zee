@@ -87,6 +87,16 @@ impl Denetleyici<'_> {
             Cumle::Olsun { deger, satir, .. } => {
                 self.ifadeyi_dogrula(deger, &format!("{yol}.değer"), *satir, false)?;
             }
+            Cumle::Gorunum {
+                dugumler, satir, ..
+            } => {
+                for (sira, ifade) in crate::agac::gorunum_ifadeleri(dugumler)
+                    .into_iter()
+                    .enumerate()
+                {
+                    self.ifadeyi_dogrula(ifade, &format!("{yol}.görünüm[{sira}]"), *satir, false)?;
+                }
+            }
             Cumle::KezTekrarla { adet, govde, satir } => {
                 self.ifadeyi_dogrula(adet, &format!("{yol}.adet"), *satir, false)?;
                 self.cumleleri_dogrula(govde, &format!("{yol}.gövde"), hoist_sonrasi)?;

@@ -94,6 +94,11 @@ fn cumle_bilgisi(cumle: &Cumle, bilgi: &mut Bilgi) {
             ifade_bilgisi(adet, bilgi);
             blok_bilgisi(govde, bilgi);
         }
+        Cumle::Gorunum { dugumler, .. } => {
+            for ifade in crate::agac::gorunum_ifadeleri(dugumler) {
+                ifade_bilgisi(ifade, bilgi);
+            }
+        }
         Cumle::AralikDongusu {
             bastan,
             sona,

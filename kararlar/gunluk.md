@@ -3423,6 +3423,17 @@ gizli-anahtar`. Hermetik profil sabit anahtar + tohumlu nonce. Kalıp kelimeleri
 varsayılan güvenlik başlıklarına eklendi. Bütçeler: yorumlayici/yetkinlik.rs
 310, io_izi.rs 1300.
 
+### K-183 — Görünüm bloğu: tipli HTML ağacı — 9 Eylül 2026
+
+İnceleme v3: HTML dize birleştirmeleri "Zee'nin en belirgin ergonomi borcu".
+`<ad> görünüm olsun` + girintili düğümler (`etiket ad değer …`, `"sabit"`,
+`metin ifade`, `ham ifade`); kaçış varsayılan, bayrak öznitelik Mantıksal, boş
+öğeler kapanışsız. AST: `Cumle::Gorunum`, `GorunumDugumu`; ayrıştırıcı,
+çözümleyici (T055), etki/yetkinlik/invariant gezgini, yorumlayıcı
+(`gorunum_yaz_async`), LSP `görünüm`, S046. `html güvenlisi` kaçışı
+`html_kacisla` olarak paylaşıldı. ADR-077, spec/26, test `gorunum_testi`.
+ürün E paneli: yeni kullanıcı ve e-posta test formları görünüm bloğuna geçti.
+
 ### K-182 — Rota birimleri (`rotalarını kullan`) — 9 Eylül 2026
 
 ürün E `ana.dil` 145 KB oldu (inceleme P1-5). RFC-0009 birimleri rota taşımadığı için
