@@ -1,3 +1,7 @@
+# Bütün metin dosyaları her platformda LF iner: Windows autocrlf'nin CRLF'i
+# bayt bayt karşılaştırılan belgeleri (faz matrisi, kanıt özeti) bozar (K-182).
+* text=auto eol=lf
+
 # .dil kaynakları her platformda LF iner (deterministik bayt — bölüm 27).
 *.dil text eol=lf
 

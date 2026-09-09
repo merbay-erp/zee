@@ -304,6 +304,10 @@ fn cpu_adi() -> String {
     if let Ok(ad) = env::var("PROCESSOR_IDENTIFIER") {
         return temiz_tek_satir(ad);
     }
+    // Model adı verilmeyen çekirdeklerde mimari kimliği gerçek provenance'tır.
+    if let Some(makine) = komutun_tek_satiri("uname", &["-m"]) {
+        return temiz_tek_satir(format!("{makine} (model adı yok)"));
+    }
     "bilinmiyor".into()
 }
 
@@ -333,6 +337,11 @@ fn os_surumu() -> String {
     #[cfg(target_os = "windows")]
     if let Some(surum) = komutun_tek_satiri("cmd", &["/C", "ver"]) {
         return temiz_tek_satir(surum);
+    }
+    // Dağıtım dosyası ya da sürüm aracı yoksa çekirdek kimliği yine de gerçek
+    // provenance'tır; "bilinmiyor" yalnız hiçbir kaynak yokken kalır.
+    if let Some(cekirdek) = komutun_tek_satiri("uname", &["-sr"]) {
+        return temiz_tek_satir(format!("{} ({cekirdek})", env::consts::OS));
     }
     "bilinmiyor".into()
 }
@@ -1280,10 +1289,21 @@ fn olcumleri_calistir() -> Result<(), String> {
     if profil != "release" && (ayarlar.json.is_some() || ayarlar.gecmis_cikti.is_some()) {
         return Err("arşiv/artefakt yalnız --release profiliyle üretilebilir".into());
     }
-    if ayarlar.milestone.is_empty()
-        || [os.as_str(), cpu.as_str(), rustc.as_str()].contains(&"bilinmiyor")
-    {
-        return Err("ölçüm milestone, OS, CPU ve Rust provenance alanlarını ister".into());
+    let eksik = [
+        ("milestone", ayarlar.milestone.is_empty()),
+        ("OS", os == "bilinmiyor"),
+        ("CPU", cpu == "bilinmiyor"),
+        ("rustc", rustc == "bilinmiyor"),
+    ]
+    .iter()
+    .filter(|(_, eksik)| *eksik)
+    .map(|(ad, _)| *ad)
+    .collect::<Vec<_>>();
+    if !eksik.is_empty() {
+        return Err(format!(
+            "ölçüm milestone, OS, CPU ve Rust provenance alanlarını ister (eksik: {})",
+            eksik.join(", ")
+        ));
     }
     if ayarlar.gecmis_cikti.is_some() {
         tarihce_provenance_denetle(git_dirty)?;

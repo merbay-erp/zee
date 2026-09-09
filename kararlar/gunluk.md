@@ -3373,3 +3373,26 @@ usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.
   satırıyla aynı. Oran (~20–30×) platformdan bağımsız; Linux `ru_maxrss`
   tabanı RSS sütununu düzleştirdiğinden RSS karşılaştırması macOS satırında
   okunur (veri sayfasına not düşüldü).
+
+## K-182 — Repo public: ilk gerçek Tier-1 koşusu ve üç bulgu (9 Eyl)
+
+- **Olay:** Depo public yapılınca Actions kotası açıldı; `b172957` üzerinde
+  `dil`, `tedarik`, `kurulum-tatbikati`, `soak` ve `compiler-fuzz` gerçekten
+  koştu. Tatbikat üç Tier-1 platformda (kur → `dil sürüm` → kaldır) ve
+  tedarik yeşil; `dil` macOS yeşil, ubuntu ve Windows kırmızı.
+- **Windows:** `docs/faz-test-matrisi.md bayat`. `.gitattributes` yalnız
+  `*.dil` için LF zorluyordu; autocrlf `.md`/`.tsv` dosyalarını CRLF indirdi,
+  üretilen LF metinle bayt karşılaştırması düştü (kanıt özeti sayfası da aynı
+  sınıfa girerdi). `* text=auto eol=lf` eklendi; HTTP/WASM fuzz korpusu
+  `binary` kalır, indeks zaten LF olduğundan yeniden normalizasyon yok.
+- **ubuntu / olcum:** "provenance alanlarını ister" hatası hangi alanın eksik
+  olduğunu söylemiyordu; mesaj eksik alanları listeler, OS ve CPU için `uname`
+  tabanlı gerçek yedekler eklendi. Kök neden bir sonraki koşuda mesajdan
+  okunacak.
+- **ubuntu / kalıcı rate-limit:** 10 yazar × 10 fsync'li artış, 5 ms
+  yoklamalı ve adil olmayan kilitte 5 sn sınırını aştı ("kilit 5 saniye içinde
+  alınamadı"). Test 4 × 5'e indirildi (20 > 5 eşiği; paralel atomiklik yine
+  kanıtlanır); kilit adaleti ve yavaş disk bütçesi K-183'e açıldı, spec/08'in
+  5 sn sözü değişmedi.
+- **Sınır:** Bu üç düzeltme yerelde (macOS, Linux aarch64 konteyner) yeniden
+  üretilemeyen platform bulgularıdır; kanıt yeni adayın uzak koşusudur.
