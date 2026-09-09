@@ -865,6 +865,8 @@ tamamlanmış sayılmaz; burada istenen ek kanıt ayrıca üretilir.
 | K-178 | **KAPALI** | Ölçüm: yorumlayıcı çerçevesi debug ~194 KiB/düzey, release ~11 KiB/düzey (macOS arm64 = Linux aarch64). Eski 32 MiB yığın debug CLI'yı 167. düzeyde doğal taşmayla düşürüyordu; resmî yığın 256 MiB rezervasyon oldu, regresyon koşucusu ve derinlik testleri resmî yığında; `derinlik-499-resmi-yiginda` vakası ve bütçe testi kapıda |
 | K-179 | **KAPALI** | ADR-074 `dogfood/kelime-avi`: üçüncü ürün (etkileşimli CLI oyunu, 3 birim/7 test, `kelime_avi_testi` hermetik); sürtünme tekrarı ölçüldü — 2 yeni (F001 iyelikli döngü adı A003, F003 `metnin satırları` T028), 4 tekrar (F010 ×3 yer, F009, F013, F011), 5 kılavuzla önlenen; compiler değişikliği yok
 | K-180 | **AÇIK** | Liste sıra ile öğe erişimi iki bağımsız üründe (K-164/F010, K-179) beş yerde sayaç döngüsüne zorladı; syntax freeze (4 Ekim) sonrası RFC adayı, freeze içinde açılmaz. F001/F013 iyelik zinciri `zee-tr-2` morfoloji adayına eklendi |
+| K-182 | **KAPALI** | İlk gerçek uzak Tier-1 koşusu (`b172957`, repo public): Windows autocrlf `.md`/`.tsv` dosyalarını CRLF indirip bayt karşılaştırmalı faz matrisini bozdu (`* text=auto eol=lf`); ubuntu `olcum` eksik provenance alanını söylemiyordu (alan adı + uname yedeği); kalıcı rate-limit testi 100 fsync'li yazmayı 5 sn kilit sınırına sıkıştırıyordu (4×5). Tatbikat üç platformda ve tedarik yeşil |
+| K-183 | **AÇIK** | Kalıcı yazma kilidi 5 ms yoklamalı ve adil değil; yavaş diskte (ubuntu-latest) 10 eşzamanlı yazar 5 sn sınırını aştı. Kilit adaleti (FIFO) ve fsync bütçesi ölçülmeli; spec/08 5 sn sözü değişmez |
 
 ## Önceki kanıt: 2 Eylül 2026 ikinci dış inceleme ayrımı
 

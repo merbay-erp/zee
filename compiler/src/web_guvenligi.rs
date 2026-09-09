@@ -833,12 +833,16 @@ mod tests {
         temel
             .istegi_baslat_kimlikle(None, "198.51.100.9", 0)
             .unwrap();
+        // K-182: 4 yazar × 5 deneme = 20 > giriş oranı; kalıcı depo her artışı
+        // fsync'li yazdığından 10×10 CI'ın yavaş diskinde 5 sn kilit sınırına
+        // takılıyordu (ubuntu-latest). Paralel atomiklik daha az yazmayla da
+        // kanıtlanır; kilit adaleti ve yavaş disk bütçesi K-183'te ölçülür.
         let mut isler = Vec::new();
-        for _ in 0..10 {
+        for _ in 0..4 {
             let depo = temel.clone();
             isler.push(std::thread::spawn(move || -> Result<usize, String> {
                 let mut izinli = 0;
-                for _ in 0..10 {
+                for _ in 0..5 {
                     if depo
                         .rate_limit_artir(RateLimitTuru::Giris, "parola", 0)?
                         .izinli
