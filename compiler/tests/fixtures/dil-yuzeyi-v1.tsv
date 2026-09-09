@@ -100,8 +100,10 @@ kalip	yok	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	yoksa	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	yönlendir	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	çerezine	aktif	0.7.0	compiler/src/lsp.rs	-
+kalip	çözmeyi	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	önekli	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	üzerinden	aktif	0.8.0-dev	compiler/src/lsp.rs	-
+kalip	şifrelenmişi	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 komut	anahtar	aktif	0.8.0-dev	compiler/src/main.rs	-
 komut	belge	aktif	0.7.0	compiler/src/main.rs	-
 komut	bicimle	aktif	0.7.0	compiler/src/main.rs	-

@@ -204,3 +204,27 @@ fn baglantili_eposta_gonderimi_baglantiyi_dogrular_ve_kutuya_duser() {
     assert_eq!(tanim.yetkinlik, Yetkinlik::Ag);
     assert_eq!(tanim.etki, IntrinsicEtkisi::GeriAlinamaz);
 }
+
+#[test]
+fn gizli_deger_sifreleme_hermetikte_deterministik_ve_dogrulamali() {
+    // K-181 eki 3: SMTP parolası gibi sırlar veritabanına `zee1:` metniyle yazılır.
+    let program = dil::kaynagi_derle(
+        "parola \"Gizli:P@ss/1\" olsun\nsifreli parolanın gizli şifrelenmişi olsun\nsifreli yaz\nsonuç sifreli gizli çözmeyi dene olsun\nsonuç başarılıysa\n    sonucun değeri yaz\nbozuk \"zee1:AAAA\" gizli çözmeyi dene olsun\nbozuk başarısızsa\n    bozuğun hatası yaz\n",
+    )
+    .expect("derlenmeli");
+    let mut io = ToplayanIo::yeni(Vec::new());
+    calistir_io(&program, &mut io).expect("çalışmalı");
+    assert_eq!(io.cikti.len(), 3, "{:?}", io.cikti);
+    assert!(io.cikti[0].starts_with("zee1:"), "{:?}", io.cikti);
+    assert_eq!(io.cikti[1], "Gizli:P@ss/1");
+    assert!(io.cikti[2].contains("gizli değer"), "{:?}", io.cikti);
+    let mut io2 = ToplayanIo::yeni(Vec::new());
+    calistir_io(&program, &mut io2).expect("çalışmalı");
+    assert_eq!(io.cikti[0], io2.cikti[0], "zee-io-1 determinizmi");
+
+    let sifrele = intrinsic::tanim(intrinsic::GIZLI_SIFRELE).expect("kayıt");
+    assert_eq!(sifrele.yetkinlik, Yetkinlik::Kriptografi);
+    assert_eq!(sifrele.etki, IntrinsicEtkisi::Saf);
+    let coz = intrinsic::tanim(intrinsic::GIZLI_COZ).expect("kayıt");
+    assert_eq!(coz.yetkinlik, Yetkinlik::Kriptografi);
+}

@@ -26,6 +26,10 @@ pub const EPOSTA_GONDER: &str = "iletisim.eposta_gonder";
 pub const EPOSTA_GONDER_BAGLANTILI: &str = "iletisim.eposta_gonder_baglantili";
 /// K-181: `<kaynak> görselini <hedef> dosyasına <N> piksele küçültmeyi dene`.
 pub const GORSEL_KUCULT: &str = "gorsel.kucult";
+/// K-181 eki 3: `<metin>in gizli şifrelenmişi` — XChaCha20-Poly1305, anahtar `gizli_anahtar_değişkeni`.
+pub const GIZLI_SIFRELE: &str = "guvenlik.gizli_sifrele";
+/// K-181 eki 3: `<şifreli> gizli çözmeyi dene` → Metin Sonucu.
+pub const GIZLI_COZ: &str = "guvenlik.gizli_coz";
 
 pub use crate::yetkinlik::Yetkinlik;
 
@@ -209,6 +213,22 @@ pub const TANIMLAR: &[IntrinsicTanimi] = &[
         donus_turu: IntrinsicTuru::TamSayiSonucu,
         etki: IntrinsicEtkisi::GeriAlinamaz,
         tur_hatasi: "Alıcı, konu, gövde ve bağlantı Metin olmalı.",
+    },
+    IntrinsicTanimi {
+        kimlik: GIZLI_SIFRELE,
+        yetkinlik: Yetkinlik::Kriptografi,
+        arguman_turleri: METIN,
+        donus_turu: IntrinsicTuru::Metin,
+        etki: IntrinsicEtkisi::Saf,
+        tur_hatasi: "Şifrelenecek gizli değer Metin olmalı.",
+    },
+    IntrinsicTanimi {
+        kimlik: GIZLI_COZ,
+        yetkinlik: Yetkinlik::Kriptografi,
+        arguman_turleri: METIN,
+        donus_turu: IntrinsicTuru::MetinSonucu,
+        etki: IntrinsicEtkisi::Saf,
+        tur_hatasi: "Çözülecek gizli değer Metin olmalı.",
     },
     IntrinsicTanimi {
         kimlik: GORSEL_KUCULT,

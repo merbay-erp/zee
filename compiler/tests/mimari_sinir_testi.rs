@@ -81,13 +81,13 @@ fn handler_modulleri_yeni_domain_icin_sinir_tasir() {
         ("src/yorumlayici/cumle.rs", 860),
         ("src/yorumlayici/ifade.rs", 900),
         ("src/yorumlayici/hir_gecisi.rs", 140),
-        ("src/yorumlayici/io_izi.rs", 1_270), // K-181 eki: bağlantılı e-posta imzası
+        ("src/yorumlayici/io_izi.rs", 1_300), // K-181 ekleri: bağlantılı e-posta imzası, gizli değer kayıt/oynatma
         ("src/yorumlayici/io_profili.rs", 80),
         ("src/yorumlayici/kaynak.rs", 280),
         ("src/yorumlayici/metin.rs", 240),
         ("src/yorumlayici/web_istek.rs", 180),
         // K-181: beş yetkinlik kapısı (parola özeti, TOTP ×2, e-posta, görsel) trait yöntemidir; ayrı modüle taşınamaz.
-        ("src/yorumlayici/yetkinlik.rs", 290), // K-181 eki: bağlantılı e-posta imzası
+        ("src/yorumlayici/yetkinlik.rs", 310), // K-181 ekleri: bağlantılı e-posta imzası, gizli değer kapıları
         ("src/yetkinlik.rs", 520),
         ("src/yetkinlik/origin.rs", 100),
         ("src/http_istegi.rs", 260),

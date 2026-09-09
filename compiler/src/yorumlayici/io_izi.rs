@@ -624,6 +624,16 @@ impl<T: GirdiCikti> GirdiCikti for IzKaydedenIo<T> {
         self.kaydet("parola_ozeti_uret", alanlar, metin_sonuc_yaz(&sonuc));
         sonuc
     }
+    fn gizli_sifrele(&mut self, duz: &str) -> Result<String, String> {
+        let sonuc = self.ic.gizli_sifrele(duz);
+        self.kaydet("gizli_sifrele", k181::parola(duz), metin_sonuc_yaz(&sonuc));
+        sonuc
+    }
+    fn gizli_coz(&mut self, sifreli: &str) -> Result<String, String> {
+        let sonuc = self.ic.gizli_coz(sifreli);
+        self.kaydet("gizli_coz", k181::parola(sifreli), metin_sonuc_yaz(&sonuc));
+        sonuc
+    }
 
     fn totp_anahtari_uret(&mut self) -> Result<String, String> {
         let sonuc = self.ic.totp_anahtari_uret();
@@ -1190,6 +1200,14 @@ impl GirdiCikti for IzYenidenOynatici {
     fn parola_ozeti_uret(&mut self, parola: &str) -> Result<String, String> {
         let sonuc = self.siradaki("parola_ozeti_uret", k181::parola(parola));
         self.metin_sonuc("parola_ozeti_uret", sonuc)
+    }
+    fn gizli_sifrele(&mut self, duz: &str) -> Result<String, String> {
+        let sonuc = self.siradaki("gizli_sifrele", k181::parola(duz));
+        self.metin_sonuc("gizli_sifrele", sonuc)
+    }
+    fn gizli_coz(&mut self, sifreli: &str) -> Result<String, String> {
+        let sonuc = self.siradaki("gizli_coz", k181::parola(sifreli));
+        self.metin_sonuc("gizli_coz", sonuc)
     }
 
     fn totp_anahtari_uret(&mut self) -> Result<String, String> {

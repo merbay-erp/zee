@@ -45,8 +45,9 @@ use crate::agac::{
 };
 use crate::intrinsic::{
     self, CSRF_BELIRTECI, DOSYALARI_LISTELE, DOSYA_ATOMIK_TASI, DOSYA_SHA256, DOSYA_SIL,
-    EPOSTA_GONDER, EPOSTA_GONDER_BAGLANTILI, GORSEL_KUCULT, HTTP_GETIR, PAROLA_DOGRULA,
-    PAROLA_OZETI, POSTGRESQL_DEGISTIR, POSTGRESQL_OKU, SENSOR_ACIK_MI, TOTP_ANAHTARI, TOTP_DOGRULA,
+    EPOSTA_GONDER, EPOSTA_GONDER_BAGLANTILI, GIZLI_COZ, GIZLI_SIFRELE, GORSEL_KUCULT, HTTP_GETIR,
+    PAROLA_DOGRULA, PAROLA_OZETI, POSTGRESQL_DEGISTIR, POSTGRESQL_OKU, SENSOR_ACIK_MI,
+    TOTP_ANAHTARI, TOTP_DOGRULA,
 };
 use crate::ondalik::Ondalik;
 use crate::tani::Tani;
@@ -351,6 +352,14 @@ pub trait GirdiCikti {
     fn gorsel_kucult(&mut self, _kaynak: &str, _hedef: &str, _azami: i64) -> Result<i64, String> {
         Err("IO adaptörü görsel küçültmüyor".into())
     }
+    /// K-181 eki 3: gizli değeri adaptörün anahtarıyla şifreler (`zee1:` metni).
+    fn gizli_sifrele(&mut self, _duz: &str) -> Result<String, String> {
+        Err("IO adaptörü gizli değer şifrelemiyor".into())
+    }
+    /// K-181 eki 3: `zee1:` metnini çözer; anahtar farklı ya da veri bozuksa Err.
+    fn gizli_coz(&mut self, _sifreli: &str) -> Result<String, String> {
+        Err("IO adaptörü gizli değer çözmüyor".into())
+    }
     /// Her `eylem` çağrısı bir transaction/savepoint sınırıdır. Adaptör,
     /// desteklediği kalıcı kaynakları başarıda tamamlar, hata dönüşünde geri alır.
     fn eylem_baslat(&mut self) -> Result<(), EylemHatasi> {
@@ -508,6 +517,12 @@ impl GirdiCikti for PaylasilanIo<'_> {
     }
     fn gorsel_kucult(&mut self, kaynak: &str, hedef: &str, azami: i64) -> Result<i64, String> {
         self.ic.borrow_mut().gorsel_kucult(kaynak, hedef, azami)
+    }
+    fn gizli_sifrele(&mut self, duz: &str) -> Result<String, String> {
+        self.ic.borrow_mut().gizli_sifrele(duz)
+    }
+    fn gizli_coz(&mut self, sifreli: &str) -> Result<String, String> {
+        self.ic.borrow_mut().gizli_coz(sifreli)
     }
     fn eylem_baslat(&mut self) -> Result<(), EylemHatasi> {
         self.ic.borrow_mut().eylem_baslat()

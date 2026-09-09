@@ -5,5 +5,5 @@ baslangic	2026-09-06
 bitis	2026-10-04
 yuzey_fixture	compiler/tests/fixtures/dil-yuzeyi-v1.tsv
 dondurulmus_yuzeyler	kalip,kosul,komut
-dondurulmus_sha256	fe410e0e241ad565bb57eeb6b0521bf686b60ee47bd5a88a7f7ae6b6bb90b0ff
-# K-181 (9 Eylül 2026, ADR-075): urun-e dogfood'u için ürün sahibi kararıyla 10 kalıp eklendi (argon2, totp, anahtarı, anahtarıyla, ileti, göndermeyi, üzerinden, görselini, piksele, küçültmeyi); pencere ve kapanış tarihi değişmedi.
+dondurulmus_sha256	c6254b78e4439a418f4204ddb59b71ad4dcb8336b6b0ba2f748f54d060c4df9f
+# K-181 (9 Eylül 2026, ADR-075): urun-e dogfood'u için ürün sahibi kararıyla 12 kalıp eklendi (argon2, totp, anahtarı, anahtarıyla, ileti, göndermeyi, üzerinden, görselini, piksele, küçültmeyi, şifrelenmişi, çözmeyi); pencere ve kapanış tarihi değişmedi.

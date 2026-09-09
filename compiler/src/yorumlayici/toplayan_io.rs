@@ -2,6 +2,9 @@
 
 use super::*;
 
+/// zee-io-1 hermetik profilinin sabit gizli anahtarı (yalnız test/oynatma; üretim anahtarı ortam değişkenindedir).
+const HERMETIK_GIZLI_ANAHTAR: [u8; 32] = [0x5a; 32];
+
 pub struct ToplayanIo {
     pub girdiler: VecDeque<String>,
     pub rastgele_degerler: VecDeque<i64>,
@@ -457,6 +460,19 @@ impl GirdiCikti for ToplayanIo {
         tuz[..8].copy_from_slice(&self.guvenli_belirtec_sirasi.to_be_bytes());
         tuz[8..].copy_from_slice(b"zee-io-1");
         crate::guvenlik::parola_ozeti_uret_tuzlu(parola, &tuz)
+    }
+    fn gizli_sifrele(&mut self, duz: &str) -> Result<String, String> {
+        // zee-io-1: sabit test anahtarı, nonce tohumlu sayaçtan; aynı program aynı şifreli metin.
+        self.guvenli_belirtec_sirasi += 1;
+        let ozet = crate::guvenlik::sha256_hex(
+            format!("zee-io-1-nonce-{}", self.guvenli_belirtec_sirasi).as_bytes(),
+        );
+        let mut nonce = [0u8; 24];
+        nonce.copy_from_slice(&ozet.as_bytes()[..24]);
+        crate::guvenlik::gizli::sifrele(&HERMETIK_GIZLI_ANAHTAR, &nonce, duz)
+    }
+    fn gizli_coz(&mut self, sifreli: &str) -> Result<String, String> {
+        crate::guvenlik::gizli::coz(&HERMETIK_GIZLI_ANAHTAR, sifreli)
     }
     fn totp_anahtari_uret(&mut self) -> Result<String, String> {
         // zee-io-1: tohumlu sayaçtan türetilen 20 bayt; aynı program aynı anahtar.

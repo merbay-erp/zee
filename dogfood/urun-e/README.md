@@ -12,6 +12,7 @@ reproducer aynasıdır:
 | İki adımlı doğrulama | Giriş / Güvenlik | `yeni totp anahtarı`, `kod gizli anahtarıyla doğrulanıyorsa` |
 | İletişim formu e-posta bildirimi | `/iletisim-gonder` rotası | `alıcı konu gövde ile ileti göndermeyi dene` |
 | Panelden SMTP ayarı (E-posta sayfası) | `/yonet/eposta` rotası | `alıcı konu gövde ile bağlantı üzerinden ileti göndermeyi dene` |
+| SMTP parolasının veritabanında şifreli saklanması | `eposta_ayarlari.dil` | `parolanın gizli şifrelenmişi`, `sifreli gizli çözmeyi dene` (`gizli_anahtar_değişkeni`) |
 | Yüklenen görselin küçültülmesi | Medya yükleme | `kaynak görselini hedef dosyasına N piksele küçültmeyi dene` |
 
 `dil denetle .` ve `dil dene .` bu klasörde hermetik koşar. Kanıt: ADR-075,

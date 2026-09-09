@@ -20,7 +20,9 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   bildirimi `e_posta_bağlantı_değişkeni`; smtp/smtps ağ hedefleri), aynı
   kalıbın `... ile bağlantı üzerinden ...` biçimi (SMTP bağlantısı değerden,
   panelden ayarlanabilir), `<` ile başlayan durum yanıtlarının `text/html`
-  olarak gönderilmesi (panel hata sayfaları) ve `kaynak
+  olarak gönderilmesi (panel hata sayfaları), `parolanın gizli şifrelenmişi` /
+  `sifreli gizli çözmeyi dene` (XChaCha20-Poly1305, `gizli_anahtar_değişkeni`,
+  `dil gizli-anahtar`), `Permissions-Policy` başlığı ve `kaynak
   görselini hedef dosyasına N piksele küçültmeyi dene` (`image` crate) merkezi
   intrinsic kaydına girdi. Yeni tanılar C028/C029. K-174 freeze yüzey kaydı
   ürün sahibi kararıyla güncellendi.

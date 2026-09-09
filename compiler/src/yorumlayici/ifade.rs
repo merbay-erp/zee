@@ -103,7 +103,9 @@ pub(super) fn degerlendir_async<'a>(
                     | TOTP_DOGRULA
                     | EPOSTA_GONDER
                     | EPOSTA_GONDER_BAGLANTILI
-                    | GORSEL_KUCULT => {
+                    | GORSEL_KUCULT
+                    | GIZLI_SIFRELE
+                    | GIZLI_COZ => {
                         kimlik_iletisim::intrinsic_degerlendir(kimlik, &degerler, io, satir)
                     }
                     SENSOR_ACIK_MI => {

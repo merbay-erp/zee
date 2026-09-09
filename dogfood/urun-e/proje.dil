@@ -8,4 +8,5 @@ morfoloji "zee-tr-1" olsun
 giriş "kimlik-gereksinimi.dil" olsun
 yetkinlikler "dosya-okuma", "dosya-yazma", "ağ", "kriptografi" listesi olsun
 ağ_hedefleri "smtps://mail.example.invalid:465" listesi olsun
+gizli_anahtar_değişkeni "URUN_E_GIZLI_ANAHTAR" olsun
 e_posta_bağlantı_değişkeni "URUN_E_SMTP_URL" olsun

@@ -30,6 +30,8 @@ taşımaz.
 | `guvenlik.parola_dogrula` | `(Metin, Metin) → Mantıksal` | `Kriptografi` | `Saf` |
 | `guvenlik.parola_ozeti` | `Metin → Metin` | `Kriptografi` | `Saf` |
 | `guvenlik.totp_anahtari` | `() → Metin` | `Kriptografi` | `Saf` |
+| `guvenlik.gizli_sifrele` | `Metin → Metin` | `Kriptografi` | `Saf` |
+| `guvenlik.gizli_coz` | `Metin → Metin Sonucu` | `Kriptografi` | `Saf` |
 | `guvenlik.totp_dogrula` | `(Metin, Metin) → Mantıksal` | `Kriptografi` | `Saf` |
 | `iletisim.eposta_gonder` | `(Metin, Metin, Metin) → TamSayı Sonucu` | `Ag` | `GeriAlinamaz` |
 | `iletisim.eposta_gonder_baglantili` | `(Metin, Metin, Metin, Metin) → TamSayı Sonucu` | `Ag` | `GeriAlinamaz` |

@@ -41,6 +41,25 @@ işlem bildirim_gonder
         "gönderildi" döndür
     "gönderilemedi" döndür
 
+# 3a) Panel sırları (SMTP parolası) veritabanına şifreli yazılır; anahtar ortam
+# değişkenindedir (proje.dil gizli_anahtar_değişkeni), koda girmez.
+işlem sirri_sakla
+    parolayı Metin olarak al
+    Metin döndürür
+
+    sifreli parolanın gizli şifrelenmişi olsun
+    sifreli döndür
+
+işlem sirri_oku
+    sifreliyi Metin olarak al
+    Metin döndürür
+
+    sonuç sifreli gizli çözmeyi dene olsun
+    sonuç başarılıysa
+        duz sonucun değeri olsun
+        duz döndür
+    "" döndür
+
 # 3b) Panelden ayarlanan SMTP: bağlantı metni veritabanından gelir, ağ hedefi
 # denetimi ve oran sınırı ortam değişkeni yoluyla aynıdır.
 işlem bildirim_gonder_baglantili

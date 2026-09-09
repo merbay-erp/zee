@@ -15,7 +15,7 @@ Kararlı proje yazımları şunlardır:
 | `ağ-sunucusu` | Native loopback web sunucusu/adaptörü |
 | `donanım` | Sensör ve ışık adaptörü |
 | `web-oturumu` | Oturum, rol, çerez ve CSRF adaptörü |
-| `kriptografi` | Parola/kriptografi adaptörü |
+| `kriptografi` | Parola/kriptografi adaptörü; K-181 eki 3 ile gizli değer şifreleme (`gizli_anahtar_değişkeni` ortam değişkeni, `zee1:` XChaCha20-Poly1305) |
 | `veritabanı` | Bildirilmiş exact loopback PostgreSQL adaptörü |
 
 `proje.dil` içindeki `yetkinlikler` ve `ağ_hedefleri` yoksa boş listedir.

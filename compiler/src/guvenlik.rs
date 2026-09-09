@@ -200,6 +200,7 @@ mod tests {
     }
 }
 
+pub mod gizli;
 mod parola;
 mod totp;
 pub use parola::parola_ozeti_uret_tuzlu;

@@ -3412,3 +3412,13 @@ ortam değişkeni yolu üretimde hâlâ tercih edilendir (README notu).
 ile başlıyorsa `text/html` gönderilir (200 yanıtıyla aynı sniff kuralı); ürün E paneli
 192 düz metin hata yanıtını panel kabuklu hata sayfasına çevirdi. Grammar, tanı
 kimlikleri ve hermetik IO değişmedi; yalnız gerçek adaptör başlığı.
+
+**Ek 3 (aynı gün) — gizli değer şifreleme + Permissions-Policy.** İnceleme P0-2:
+SMTP parolası veritabanında düz metindi. `<metin>in gizli şifrelenmişi` ve
+`<şifreli> gizli çözmeyi dene` (`guvenlik.gizli_sifrele/gizli_coz`,
+XChaCha20-Poly1305, `chacha20poly1305 0.10` — ikinci yeni bağımlılık, cargo-deny
+temiz), proje bildirimi `gizli_anahtar_değişkeni` (kriptografi ister), CLI `dil
+gizli-anahtar`. Hermetik profil sabit anahtar + tohumlu nonce. Kalıp kelimeleri
+`şifrelenmişi`, `çözmeyi`; K-174 kaydı 12 kalıp. `Permissions-Policy` başlığı
+varsayılan güvenlik başlıklarına eklendi. Bütçeler: yorumlayici/yetkinlik.rs
+310, io_izi.rs 1300.

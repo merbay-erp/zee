@@ -28,6 +28,22 @@ pub(super) fn yapili_kalip(tokenlar: &[Token]) -> Result<Option<Ifade>, Tani> {
         }));
     }
 
+    // W ın gizli şifrelenmişi — XChaCha20-Poly1305 şifreli metin (K-181 eki 3).
+    if n == 3 && k(1) == Some("gizli") && son == "şifrelenmişi" {
+        return Ok(Some(Ifade::Intrinsic {
+            kimlik: GIZLI_SIFRELE.into(),
+            argumanlar: vec![tekil_ifade(tokenlar[0].clone())?],
+        }));
+    }
+
+    // <şifreli> gizli çözmeyi dene → Metin Sonucu (K-181 eki 3).
+    if n == 4 && k(1) == Some("gizli") && k(2) == Some("çözmeyi") && son == "dene" {
+        return Ok(Some(Ifade::Intrinsic {
+            kimlik: GIZLI_COZ.into(),
+            argumanlar: vec![tekil_ifade(tokenlar[0].clone())?],
+        }));
+    }
+
     // yeni totp anahtarı — 160 bit Base32 gizli anahtar (K-181).
     if n == 3 && k(0) == Some("yeni") && k(1) == Some("totp") && son == "anahtarı" {
         return Ok(Some(Ifade::Intrinsic {

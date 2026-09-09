@@ -223,6 +223,16 @@ impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
         self.ic.parola_ozeti_uret(parola)
     }
 
+    fn gizli_sifrele(&mut self, duz: &str) -> Result<String, String> {
+        self.politika.gerektir(Yetkinlik::Kriptografi)?;
+        self.ic.gizli_sifrele(duz)
+    }
+
+    fn gizli_coz(&mut self, sifreli: &str) -> Result<String, String> {
+        self.politika.gerektir(Yetkinlik::Kriptografi)?;
+        self.ic.gizli_coz(sifreli)
+    }
+
     fn totp_anahtari_uret(&mut self) -> Result<String, String> {
         self.politika.gerektir(Yetkinlik::Kriptografi)?;
         self.ic.totp_anahtari_uret()

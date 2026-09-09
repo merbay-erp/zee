@@ -192,6 +192,16 @@ fn govde() -> ExitCode {
         Some("morfoloji") => morfoloji_komutu(&argumanlar),
         Some("iz") => io_izi_komutu(&argumanlar),
         Some("parola-özeti") | Some("parola-ozeti") => parola_ozeti_komutu(&argumanlar),
+        Some("gizli-anahtar") => match dil::guvenlik::gizli::anahtar_uret() {
+            Ok(anahtar) => {
+                println!("{anahtar}");
+                ExitCode::SUCCESS
+            }
+            Err(hata) => {
+                eprintln!("Gizli anahtar üretilemedi: {hata}");
+                ExitCode::FAILURE
+            }
+        },
         Some("yeni") => yeni_komutu(&argumanlar),
         Some("sürüm") | Some("surum") => {
             println!(
@@ -218,6 +228,9 @@ fn kullanim() {
     eprintln!("  dil çalıştır --deneysel-web ... localhost web prototipine açıkça izin verir");
     eprintln!("  dil çalıştır --web-proxy https://host [--web-worker-port N] ... güvenli yerel TLS-proxy profili");
     eprintln!("  dil parola-özeti           parolayı gizli okuyup Argon2id PHC özeti üretir");
+    eprintln!(
+        "  dil gizli-anahtar          gizli değer şifrelemesi için 256 bit anahtar üretir (hex)"
+    );
     eprintln!("  dil denetle <dosya|proje>  çalıştırmadan denetler (--json: makine çıktısı)");
     eprintln!("  dil dene <dosya|proje>     test bloklarını koşar");
     eprintln!("  dil biçimle <dosya|proje>  dosyayı ya da bütün projeyi biçimler");
@@ -1194,6 +1207,9 @@ impl KaynakGirdisi {
             self.proje
                 .as_ref()
                 .and_then(|proje| proje.ana_bildirim().eposta_baglanti_degiskeni.clone()),
+            self.proje
+                .as_ref()
+                .and_then(|proje| proje.ana_bildirim().gizli_anahtar_degiskeni.clone()),
         )
     }
 
@@ -1362,6 +1378,7 @@ struct GercekIo {
     dosya_siniri_koku: std::path::PathBuf,
     veritabani_bildirimi: Option<dil::proje::VeritabaniBildirimi>,
     eposta_baglanti_degiskeni: Option<String>,
+    gizli_anahtar_degiskeni: Option<String>,
     postgresql: Option<dil::postgresql::PostgresqlOturumu>,
     postgresql_yazma_eylemleri: Vec<bool>,
 }
@@ -1432,6 +1449,7 @@ impl GercekIo {
         politika: dil::yetkinlik::YetkinlikPolitikasi,
         veritabani_bildirimi: Option<dil::proje::VeritabaniBildirimi>,
         eposta_baglanti_degiskeni: Option<String>,
+        gizli_anahtar_degiskeni: Option<String>,
     ) -> GercekIo {
         let tohum = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
@@ -1466,6 +1484,7 @@ impl GercekIo {
                 .unwrap_or_else(|_| dosya_siniri_koku.to_path_buf()),
             veritabani_bildirimi,
             eposta_baglanti_degiskeni,
+            gizli_anahtar_degiskeni,
             postgresql: None,
             postgresql_yazma_eylemleri: Vec::new(),
         }
@@ -1580,6 +1599,19 @@ impl GercekIo {
 
     fn guvenlik_basliklari(&self) -> String {
         guvenlik_basliklari(self.guvenli_proxy_origin().is_some())
+    }
+
+    /// K-181 eki 3: gizli değer anahtarı yalnız proje bildirimindeki ortam değişkeninden gelir.
+    fn gizli_anahtari(&self) -> Result<[u8; 32], String> {
+        self.politika
+            .gerektir(dil::yetkinlik::Yetkinlik::Kriptografi)?;
+        let degisken = self
+            .gizli_anahtar_degiskeni
+            .clone()
+            .ok_or_else(|| "proje bildiriminde `gizli_anahtar_değişkeni` yok".to_string())?;
+        let hex = std::env::var(&degisken)
+            .map_err(|_| format!("{degisken} ortam değişkeni gizli anahtarı taşımıyor"))?;
+        dil::guvenlik::gizli::anahtar_coz(&hex)
     }
 
     fn cerez_basliklarini_al(&mut self) -> String {
@@ -1770,7 +1802,7 @@ impl GercekIo {
 
 fn guvenlik_basliklari(https: bool) -> String {
     let mut sonuc = String::from(
-        "Cache-Control: no-store\r\nX-Content-Type-Options: nosniff\r\nX-Frame-Options: DENY\r\nReferrer-Policy: no-referrer\r\nContent-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'\r\n",
+        "Cache-Control: no-store\r\nX-Content-Type-Options: nosniff\r\nX-Frame-Options: DENY\r\nReferrer-Policy: no-referrer\r\nPermissions-Policy: camera=(), microphone=(), geolocation=()\r\nContent-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'\r\n",
     );
     if https {
         sonuc.push_str("Strict-Transport-Security: max-age=31536000\r\n");
@@ -2759,6 +2791,17 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         let _ = hedef;
         Ok(1)
     }
+    fn gizli_sifrele(&mut self, duz: &str) -> Result<String, String> {
+        let anahtar = self.gizli_anahtari()?;
+        let mut nonce = [0u8; 24];
+        getrandom::fill(&mut nonce)
+            .map_err(|hata| format!("işletim sistemi güvenli rastgelelik vermedi: {hata}"))?;
+        dil::guvenlik::gizli::sifrele(&anahtar, &nonce, duz)
+    }
+    fn gizli_coz(&mut self, sifreli: &str) -> Result<String, String> {
+        let anahtar = self.gizli_anahtari()?;
+        dil::guvenlik::gizli::coz(&anahtar, sifreli)
+    }
     fn gorsel_kucult(&mut self, kaynak: &str, hedef: &str, azami: i64) -> Result<i64, String> {
         self.politika
             .gerektir(dil::yetkinlik::Yetkinlik::DosyaYazma)?;
@@ -3146,6 +3189,7 @@ mod web_profili_testleri {
     fn https_profili_hsts_ve_tarayici_korkuluklarini_tasir() {
         let basliklar = guvenlik_basliklari(true);
         assert!(basliklar.contains("Strict-Transport-Security"));
+        assert!(basliklar.contains("Permissions-Policy: camera=(), microphone=(), geolocation=()"));
         assert!(basliklar.contains("Content-Security-Policy"));
         assert!(basliklar.contains("X-Content-Type-Options: nosniff"));
         assert!(!guvenlik_basliklari(false).contains("Strict-Transport-Security"));

@@ -36,7 +36,7 @@ fn parmak_izi_mi(alan: &str) -> bool {
 pub(super) fn sema(olay: &IzOlay) -> Result<(), String> {
     let hata = |neden: &str| Err(format!("`{}` {neden} şeması geçersiz", olay.islem));
     let (arguman, parmak_izli) = match olay.islem.as_str() {
-        "parola_ozeti_uret" => (1, true),
+        "parola_ozeti_uret" | "gizli_sifrele" | "gizli_coz" => (1, true),
         "totp_anahtari_uret" => (0, false),
         "totp_dogrula" => (2, true),
         "eposta_gonder" => (4, false),
@@ -51,7 +51,9 @@ pub(super) fn sema(olay: &IzOlay) -> Result<(), String> {
     }
     let gecerli = match olay.islem.as_str() {
         "totp_dogrula" => olay.sonuc.len() == 1 && bool_coz(&olay.sonuc[0]).is_ok(),
-        "parola_ozeti_uret" | "totp_anahtari_uret" => metin_sonuc_coz(&olay.sonuc).is_ok(),
+        "parola_ozeti_uret" | "totp_anahtari_uret" | "gizli_sifrele" | "gizli_coz" => {
+            metin_sonuc_coz(&olay.sonuc).is_ok()
+        }
         _ => tamsayi_sonuc_coz(&olay.sonuc).is_ok(),
     };
     if gecerli {

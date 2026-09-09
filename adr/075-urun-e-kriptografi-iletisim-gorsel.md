@@ -35,6 +35,8 @@ büyümez, her yüzey mevcut yetkinlik ve etki modelinden geçer:
 | `<kod> <gizli> anahtarıyla doğrulanıyorsa` | `guvenlik.totp_dogrula` | kriptografi | saf | Mantıksal |
 | `<alıcı> <konu> <gövde> ile ileti göndermeyi dene` | `iletisim.eposta_gonder` | ağ | **geri alınamaz** | TamSayı Sonucu |
 | `<alıcı> <konu> <gövde> ile <bağlantı> üzerinden ileti göndermeyi dene` | `iletisim.eposta_gonder_baglantili` | ağ | **geri alınamaz** | TamSayı Sonucu |
+| `<metin>in gizli şifrelenmişi` | `guvenlik.gizli_sifrele` | kriptografi | saf | Metin (`zee1:` XChaCha20-Poly1305) |
+| `<şifreli> gizli çözmeyi dene` | `guvenlik.gizli_coz` | kriptografi | saf | Metin Sonucu |
 | `<kaynak> görselini <hedef> dosyasına <N> piksele küçültmeyi dene` | `gorsel.kucult` | dosya-yazma | dış yazma | TamSayı Sonucu (yazılan bayt) |
 
 - **Bağlantılı gönderim (9 Eylül 2026 eki):** ürün E paneli SMTP ayarlarını yönetici
@@ -45,6 +47,17 @@ büyümez, her yüzey mevcut yetkinlik ve etki modelinden geçer:
   değişkeni yoluyla birebir aynıdır. IO izinde bağlantı yalnız SHA-256 parmak
   iziyle kaydedilir (parola taşır); `eposta_gonder` olayı 4 alanlıdır, bağlantı
   verilmediğinde ilk alan boştur. Hermetik profil bağlantıyı yalnız ayrıştırır.
+- **Gizli değer şifreleme (9 Eylül 2026 eki 3):** panelden girilen SMTP parolası
+  veritabanında düz metin kalıyordu (inceleme P0-2). `gizli şifrelenmişi` /
+  `gizli çözmeyi dene` XChaCha20-Poly1305 (`chacha20poly1305 0.10`, RustCrypto,
+  cargo-deny lisans kapısı temiz) ile kimlik doğrulamalı şifreler; anahtar
+  yalnız proje bildirimindeki `gizli_anahtar_değişkeni` ortam değişkeninden
+  (64 hex, `dil gizli-anahtar`) gelir, uygulama koduna girmez. Şifreli metin
+  `zee1:` önekli base64 (nonce ‖ veri ‖ etiket). Hermetik profil sabit anahtar
+  ve tohumlu nonce ile deterministiktir. IO izi argümanı parmak iziyle, sonucu
+  değerle tutar; `gizli_coz` içeren iz dosyaları sır taşır — operatör artefaktı
+  olarak korunmalıdır. Yetkinlik yeni bir ad almaz: `kriptografi` + anahtar
+  değişkeni birlikte kapıdır.
 - Argon2id üretimi `argon2 0.6` (zaten bağımlılık) ile CSPRNG tuzlu PHC'dir.
   `zee-io-1` hermetik profilinde tuz tohumlu sayaçtan gelir; aynı program aynı
   özeti üretir ve `doğrulanıyorsa` ile doğrulanır. Web isteğinde giriş oran

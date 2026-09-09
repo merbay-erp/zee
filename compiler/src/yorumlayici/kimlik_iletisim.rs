@@ -54,6 +54,33 @@ pub(super) fn intrinsic_degerlendir(
             );
             Ok(eposta_sonucu(sonuc))
         }
+        (GIZLI_SIFRELE, [duz]) => io
+            .gizli_sifrele(&metne_sinirli(duz, satir)?)
+            .map(Deger::Metin)
+            .map_err(|hata| {
+                Tani::yeni(
+                    "C028",
+                    format!("Gizli değer şifrelenemedi: {}.", hata),
+                    satir,
+                    1,
+                    1,
+                )
+            }),
+        (GIZLI_COZ, [sifreli]) => Ok(match io.gizli_coz(&metne_sinirli(sifreli, satir)?) {
+            Ok(duz) => Deger::Sonuc {
+                basarili: true,
+                icerik: Box::new(Deger::Metin(duz)),
+            },
+            Err(mesaj) => Deger::Sonuc {
+                basarili: false,
+                icerik: Box::new(Deger::Hata(Box::new(HataDegeri {
+                    kod: "C028".into(),
+                    mesaj,
+                    neden: None,
+                    veri: Vec::new(),
+                }))),
+            },
+        }),
         (GORSEL_KUCULT, [kaynak, hedef, Deger::TamSayi(azami)]) => {
             let sonuc = io.gorsel_kucult(
                 &metne_sinirli(kaynak, satir)?,
