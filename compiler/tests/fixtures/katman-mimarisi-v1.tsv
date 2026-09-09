@@ -15,7 +15,7 @@ bin_spec_drift	muhendislik	kalici_dosya	Spec madde kanit drift kapisi
 bin_surum_artefakti	muhendislik	-	Tekrar uretilebilir surum artefakti SBOM provenance ve imza
 bin_tani_kalitesi	muhendislik	faz,kalici_dosya	Acemi hatasi mutasyonlariyla tani kalitesi kapisi
 cozumleyici	semantik	agac,hir,intrinsic,kimlik,morfoloji,semantic_model,tani,yetkinlik	Ad tur etki ve HIR kaniti
-dil_cli	adapter	ag_istemcisi,agac,artefakt_dogrulama,bicimleyici,cozumleyici,faz,guvenlik,http_istegi,kalici_dosya,kaynak_sinirlari,morfoloji,paket,postgresql,proje,tani,web_guvenligi,web_yukleme,yayin,yetkinlik,yorumlayici,zaman	Komut satiri ve web host adaptoru
+dil_cli	adapter	ag_istemcisi,agac,artefakt_dogrulama,bicimleyici,cozumleyici,eposta,faz,gorsel,guvenlik,http_istegi,kalici_dosya,kaynak_sinirlari,morfoloji,paket,postgresql,proje,tani,web_guvenligi,web_yukleme,yayin,yetkinlik,yorumlayici,zaman	Komut satiri ve web host adaptoru
 dillsp	adapter	lsp	LSP stdio framing adaptoru
 eposta	altyapi	zaman	Bagimliliksiz SMTP istemcisi ve RFC 5322 ileti kurulumu (K-181)
 faz	semantik	agac,ayristirici,cozumleyici,hir,sozcukleyici,tani	Derleyici faz tipleri ve gecisleri
@@ -47,5 +47,5 @@ web_guvenligi	web	agac,guvenlik,kalici_dosya,kaynak_sinirlari	Oturum CSRF ve ora
 web_yukleme	adapter	guvenlik	Binary HTTP govdesini gecici dosyaya akitma ve SHA-256 metadata uretme
 yayin	adapter	artefakt_dogrulama,faz,paket,paket_modeli,proje	Dogrulanmis proje grafiginden yayin artefakti orkestrasyonu
 yetkinlik	altyapi	-	Yetkinlik ve origin politikasi
-yorumlayici	runtime	agac,faz,guvenlik,hir,intrinsic,kaynak_sinirlari,ondalik,tani,veritabani_modeli,web_guvenligi,yetkinlik,zaman	Typed HIR yurutme ve IO
+yorumlayici	runtime	agac,eposta,faz,guvenlik,hir,intrinsic,kaynak_sinirlari,ondalik,tani,veritabani_modeli,web_guvenligi,yetkinlik,zaman	Typed HIR yurutme ve IO
 zaman	temel	-	Gregoryen takvim donusumleri

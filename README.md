@@ -193,7 +193,7 @@ korpus üzerinde regression testine girer.
 |---|---:|
 | Golden program | **33/33** |
 | Rust + doctest vakası | **726** |
-| Tanı kimliği | **155 etkin + 3 ayrılmış** |
+| Tanı kimliği | **157 etkin + 3 ayrılmış** |
 | RFC | **28** (2 kabul, 24 geçici kabul, 2 taslak) |
 | ADR | **73** (73 kabul) |
 | Normatif spec bölümü | **27** |

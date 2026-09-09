@@ -9,6 +9,7 @@
 mod cumle;
 mod ifade;
 mod kaynak;
+mod kimlik_iletisim;
 mod kurtarma;
 
 use self::ifade::*;
