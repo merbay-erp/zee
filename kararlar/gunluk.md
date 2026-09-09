@@ -3428,3 +3428,10 @@ usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.
   yazınca yardımcıları ve içe alımları da kapıla; Windows'a çapraz clippy
   `ring` için mingw istediğinden yerelde koşturulamadı, kanıt uzak koşudur.
   Tedarik her adayda yeşil. K-182 kapandı; K-183 (kilit adaleti) açık.
+- **K-183 verisi (`e1e44c4`, ubuntu):** kod `7d8d985` ile aynıyken
+  `iki_yazar_satir_kaybetmez` (2 × 40 fsync'li ekleme) "kilit 5 saniye içinde
+  alınamadı" ile düştü: kilidi ardışık yeniden alan yazar, 5 ms yoklayan
+  diğerini yavaş diskte 5 sn boyunca dışarıda bırakabiliyor. Bu bir yazar
+  açlığıdır, yalnız disk hızı değil. Test 2 × 12'ye indirildi (kayıpsızlık
+  yine kanıtlanır); adil kilit (bekleyen önceliği / bloklayan flock + zaman
+  aşımı) K-183'ün tasarım işi olarak kaldı, spec/08 5 sn sözü değişmedi.
