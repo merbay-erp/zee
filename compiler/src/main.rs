@@ -1637,10 +1637,17 @@ impl GercekIo {
             WebYanitTaslagi::Durum(durum, govde) => {
                 self.bekleyen_cerezler.clear();
                 self.bekleyen_silinen_cerezler.clear();
+                // Gövde `<` ile başlıyorsa HTML hata sayfasıdır (200 yanıtıyla aynı kural, K-181 eki).
+                let tur = if govde.trim_start().starts_with('<') {
+                    "text/html"
+                } else {
+                    "text/plain"
+                };
                 let baslik = format!(
-                    "HTTP/1.1 {} {}\r\nContent-Type: text/plain; charset=utf-8\r\nContent-Length: {}\r\n{}Connection: close\r\n\r\n",
+                    "HTTP/1.1 {} {}\r\nContent-Type: {}; charset=utf-8\r\nContent-Length: {}\r\n{}Connection: close\r\n\r\n",
                     durum,
                     http_durum_aciklamasi(durum),
+                    tur,
                     govde.len(),
                     guvenlik_basliklari
                 );

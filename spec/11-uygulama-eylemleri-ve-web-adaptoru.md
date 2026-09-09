@@ -78,6 +78,10 @@ GET "/hazir" adresine istek geldiğinde
     "hazır değil" yanıtını 503 durumuyla gönder
 ```
 
+Durum yanıtının içerik türü 200 yanıtıyla aynı kuralla seçilir: gövde `<` ile
+başlıyorsa `text/html`, aksi hâlde `text/plain` (K-181 eki, 9 Eylül 2026; panel
+hata sayfaları için).
+
 Durum yalnız kaynakta görünen `100..599` aralığında bir `TamSayı` literalidir.
 Değişken, hesaplanmış ifade ve aralık dışı değer S037 ile reddedilir. Böylece
 review ve etki analizi rota kaynak metninden exact durum kümesini görebilir.

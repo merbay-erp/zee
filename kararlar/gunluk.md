@@ -3407,3 +3407,8 @@ hedefi/IP/oran sınırı denetimleri aynıdır; IO izi bağlantıyı parmak iziy
 Bütçeler: io_izi.rs 1250→1270, yorumlayici/yetkinlik.rs 280→290 (imza
 genişlemesi). Panel tarafında SMTP parolası veritabanında düz metin tutulur;
 ortam değişkeni yolu üretimde hâlâ tercih edilendir (README notu).
+
+**Ek 2 (aynı gün) — HTML durum yanıtı.** `yanıtını N durumuyla gönder` gövdesi `<`
+ile başlıyorsa `text/html` gönderilir (200 yanıtıyla aynı sniff kuralı); ürün E paneli
+192 düz metin hata yanıtını panel kabuklu hata sayfasına çevirdi. Grammar, tanı
+kimlikleri ve hermetik IO değişmedi; yalnız gerçek adaptör başlığı.

@@ -19,7 +19,8 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   `alıcı konu gövde ile ileti göndermeyi dene` (geri alınamaz etki; proje
   bildirimi `e_posta_bağlantı_değişkeni`; smtp/smtps ağ hedefleri), aynı
   kalıbın `... ile bağlantı üzerinden ...` biçimi (SMTP bağlantısı değerden,
-  panelden ayarlanabilir) ve `kaynak
+  panelden ayarlanabilir), `<` ile başlayan durum yanıtlarının `text/html`
+  olarak gönderilmesi (panel hata sayfaları) ve `kaynak
   görselini hedef dosyasına N piksele küçültmeyi dene` (`image` crate) merkezi
   intrinsic kaydına girdi. Yeni tanılar C028/C029. K-174 freeze yüzey kaydı
   ürün sahibi kararıyla güncellendi.
