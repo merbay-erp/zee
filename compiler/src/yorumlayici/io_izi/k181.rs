@@ -12,8 +12,16 @@ pub(super) fn totp(gizli: &str, kod: &str) -> Vec<String> {
     vec![sha256_hex(gizli.as_bytes()), sha256_hex(kod.as_bytes())]
 }
 
-pub(super) fn eposta(alici: &str, konu: &str, govde: &str) -> Vec<String> {
-    vec![alici.into(), konu.into(), sha256_hex(govde.as_bytes())]
+/// Bağlantı (parola taşır) ve gövde yalnız parmak iziyle kaydedilir; bağlantı
+/// verilmemişse (ortam değişkeni yolu) alan boş kalır.
+pub(super) fn eposta(baglanti: Option<&str>, alici: &str, konu: &str, govde: &str) -> Vec<String> {
+    let baglanti = baglanti.map_or_else(String::new, |b| sha256_hex(b.as_bytes()));
+    vec![
+        baglanti,
+        alici.into(),
+        konu.into(),
+        sha256_hex(govde.as_bytes()),
+    ]
 }
 
 pub(super) fn gorsel(kaynak: &str, hedef: &str, azami: i64) -> Vec<String> {
@@ -31,7 +39,8 @@ pub(super) fn sema(olay: &IzOlay) -> Result<(), String> {
         "parola_ozeti_uret" => (1, true),
         "totp_anahtari_uret" => (0, false),
         "totp_dogrula" => (2, true),
-        "eposta_gonder" | "gorsel_kucult" => (3, false),
+        "eposta_gonder" => (4, false),
+        "gorsel_kucult" => (3, false),
         _ => return hata("bilinmeyen olay"),
     };
     if olay.argumanlar.len() != arguman {

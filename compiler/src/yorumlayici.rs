@@ -45,8 +45,8 @@ use crate::agac::{
 };
 use crate::intrinsic::{
     self, CSRF_BELIRTECI, DOSYALARI_LISTELE, DOSYA_ATOMIK_TASI, DOSYA_SHA256, DOSYA_SIL,
-    EPOSTA_GONDER, GORSEL_KUCULT, HTTP_GETIR, PAROLA_DOGRULA, PAROLA_OZETI, POSTGRESQL_DEGISTIR,
-    POSTGRESQL_OKU, SENSOR_ACIK_MI, TOTP_ANAHTARI, TOTP_DOGRULA,
+    EPOSTA_GONDER, EPOSTA_GONDER_BAGLANTILI, GORSEL_KUCULT, HTTP_GETIR, PAROLA_DOGRULA,
+    PAROLA_OZETI, POSTGRESQL_DEGISTIR, POSTGRESQL_OKU, SENSOR_ACIK_MI, TOTP_ANAHTARI, TOTP_DOGRULA,
 };
 use crate::ondalik::Ondalik;
 use crate::tani::Tani;
@@ -336,8 +336,15 @@ pub trait GirdiCikti {
     fn totp_dogrula(&mut self, _gizli: &str, _kod: &str) -> bool {
         false
     }
-    /// K-181: SMTP ile düz metin e-posta gönderir; başarıda 1.
-    fn eposta_gonder(&mut self, _alici: &str, _konu: &str, _govde: &str) -> Result<i64, String> {
+    /// K-181: SMTP ile düz metin e-posta gönderir; başarıda 1. `baglanti`
+    /// verilmezse proje bildirimindeki ortam değişkeni kullanılır.
+    fn eposta_gonder(
+        &mut self,
+        _baglanti: Option<&str>,
+        _alici: &str,
+        _konu: &str,
+        _govde: &str,
+    ) -> Result<i64, String> {
         Err("IO adaptörü e-posta göndermiyor".into())
     }
     /// K-181: görseli azami kenara küçültüp hedefe yazar; başarıda yazılan bayt sayısı.
@@ -488,8 +495,16 @@ impl GirdiCikti for PaylasilanIo<'_> {
     fn totp_dogrula(&mut self, gizli: &str, kod: &str) -> bool {
         self.ic.borrow_mut().totp_dogrula(gizli, kod)
     }
-    fn eposta_gonder(&mut self, alici: &str, konu: &str, govde: &str) -> Result<i64, String> {
-        self.ic.borrow_mut().eposta_gonder(alici, konu, govde)
+    fn eposta_gonder(
+        &mut self,
+        baglanti: Option<&str>,
+        alici: &str,
+        konu: &str,
+        govde: &str,
+    ) -> Result<i64, String> {
+        self.ic
+            .borrow_mut()
+            .eposta_gonder(baglanti, alici, konu, govde)
     }
     fn gorsel_kucult(&mut self, kaynak: &str, hedef: &str, azami: i64) -> Result<i64, String> {
         self.ic.borrow_mut().gorsel_kucult(kaynak, hedef, azami)

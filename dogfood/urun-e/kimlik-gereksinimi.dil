@@ -41,6 +41,20 @@ işlem bildirim_gonder
         "gönderildi" döndür
     "gönderilemedi" döndür
 
+# 3b) Panelden ayarlanan SMTP: bağlantı metni veritabanından gelir, ağ hedefi
+# denetimi ve oran sınırı ortam değişkeni yoluyla aynıdır.
+işlem bildirim_gonder_baglantili
+    alıcıyı Metin olarak al
+    konuyu Metin olarak al
+    gövdeyi Metin olarak al
+    bağlantıyı Metin olarak al
+    Metin döndürür
+
+    sonuç alıcı konu gövde ile bağlantı üzerinden ileti göndermeyi dene olsun
+    sonuç başarılıysa
+        "gönderildi" döndür
+    "gönderilemedi" döndür
+
 # 4) Medya yükleme: görseli yükleme sonrası 1600 piksele küçült.
 işlem gorseli_hazirla
     girdiyi Metin olarak al

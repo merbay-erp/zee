@@ -176,3 +176,31 @@ fn ag_hedefi_smtp_semalarini_tanir() {
     assert_eq!(d.semasi(), AgSemasi::Smtp);
     assert_eq!(d.kapisi(), 2525);
 }
+
+#[test]
+fn baglantili_eposta_gonderimi_baglantiyi_dogrular_ve_kutuya_duser() {
+    // K-181 eki: bağlantı metni değerden gelir (panelden ayarlanan SMTP); hermetikte
+    // yalnız ayrıştırılır ve ileti kutuya düşer. Bağlantı izde parmak iziyle kalır.
+    let program = dil::kaynagi_derle(
+        "sonuç \"ali@ornek.com\" \"Konu\" \"Gövde\" ile \"smtps://k:p@mail.ornek.com:465?from=info@ornek.com\" üzerinden ileti göndermeyi dene olsun\nsonuç başarılıysa\n    sonucun değeri yaz\n",
+    )
+    .expect("derlenmeli");
+    let mut io = ToplayanIo::yeni(Vec::new());
+    calistir_io(&program, &mut io).expect("çalışmalı");
+    assert_eq!(io.cikti, vec!["1"]);
+    assert_eq!(io.eposta_kutusu.len(), 1);
+    assert_eq!(io.eposta_kutusu[0].0, "ali@ornek.com");
+
+    let bozuk = dil::kaynagi_derle(
+        "sonuç \"ali@ornek.com\" \"k\" \"g\" ile \"http://mail.ornek.com\" üzerinden ileti göndermeyi dene olsun\nsonuç başarısızsa\n    sonucun hatası yaz\n",
+    )
+    .expect("derlenmeli");
+    let mut io = ToplayanIo::yeni(Vec::new());
+    calistir_io(&bozuk, &mut io).expect("dene hatayı Sonuç yapar");
+    assert!(io.cikti[0].contains("smtp"), "{:?}", io.cikti);
+    assert!(io.eposta_kutusu.is_empty());
+
+    let tanim = intrinsic::tanim(intrinsic::EPOSTA_GONDER_BAGLANTILI).expect("kayıt");
+    assert_eq!(tanim.yetkinlik, Yetkinlik::Ag);
+    assert_eq!(tanim.etki, IntrinsicEtkisi::GeriAlinamaz);
+}

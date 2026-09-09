@@ -21,6 +21,9 @@ pub const DOSYALARI_LISTELE: &str = "dosya.listele";
 pub const DOSYA_SHA256: &str = "dosya.sha256";
 /// K-181: `<alıcı> <konu> <gövde> ile ileti göndermeyi dene` — SMTP e-posta.
 pub const EPOSTA_GONDER: &str = "iletisim.eposta_gonder";
+/// K-181 eki: `<alıcı> <konu> <gövde> ile <bağlantı> üzerinden ileti göndermeyi dene` —
+/// SMTP bağlantısı ortam değişkeninden değil değerden gelir (panelden ayarlanabilir SMTP).
+pub const EPOSTA_GONDER_BAGLANTILI: &str = "iletisim.eposta_gonder_baglantili";
 /// K-181: `<kaynak> görselini <hedef> dosyasına <N> piksele küçültmeyi dene`.
 pub const GORSEL_KUCULT: &str = "gorsel.kucult";
 
@@ -70,6 +73,12 @@ const YOK: &[IntrinsicTuru] = &[];
 const METIN_VE_METIN_LISTESI: &[IntrinsicTuru] =
     &[IntrinsicTuru::Metin, IntrinsicTuru::MetinListesi];
 const UC_METIN: &[IntrinsicTuru] = &[
+    IntrinsicTuru::Metin,
+    IntrinsicTuru::Metin,
+    IntrinsicTuru::Metin,
+];
+const DORT_METIN: &[IntrinsicTuru] = &[
+    IntrinsicTuru::Metin,
     IntrinsicTuru::Metin,
     IntrinsicTuru::Metin,
     IntrinsicTuru::Metin,
@@ -192,6 +201,14 @@ pub const TANIMLAR: &[IntrinsicTanimi] = &[
         donus_turu: IntrinsicTuru::TamSayiSonucu,
         etki: IntrinsicEtkisi::GeriAlinamaz,
         tur_hatasi: "Alıcı, konu ve gövde Metin olmalı.",
+    },
+    IntrinsicTanimi {
+        kimlik: EPOSTA_GONDER_BAGLANTILI,
+        yetkinlik: Yetkinlik::Ag,
+        arguman_turleri: DORT_METIN,
+        donus_turu: IntrinsicTuru::TamSayiSonucu,
+        etki: IntrinsicEtkisi::GeriAlinamaz,
+        tur_hatasi: "Alıcı, konu, gövde ve bağlantı Metin olmalı.",
     },
     IntrinsicTanimi {
         kimlik: GORSEL_KUCULT,

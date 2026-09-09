@@ -38,22 +38,21 @@ pub(super) fn intrinsic_degerlendir(
         )),
         (EPOSTA_GONDER, [alici, konu, govde]) => {
             let sonuc = io.eposta_gonder(
+                None,
                 &metne_sinirli(alici, satir)?,
                 &metne_sinirli(konu, satir)?,
                 &metne_sinirli(govde, satir)?,
             );
-            Ok(match sonuc {
-                Ok(deger) => basarili(deger),
-                Err(mesaj) => Deger::Sonuc {
-                    basarili: false,
-                    icerik: Box::new(Deger::Hata(Box::new(HataDegeri {
-                        kod: "C029".into(),
-                        mesaj,
-                        neden: None,
-                        veri: Vec::new(),
-                    }))),
-                },
-            })
+            Ok(eposta_sonucu(sonuc))
+        }
+        (EPOSTA_GONDER_BAGLANTILI, [alici, konu, govde, baglanti]) => {
+            let sonuc = io.eposta_gonder(
+                Some(&metne_sinirli(baglanti, satir)?),
+                &metne_sinirli(alici, satir)?,
+                &metne_sinirli(konu, satir)?,
+                &metne_sinirli(govde, satir)?,
+            );
+            Ok(eposta_sonucu(sonuc))
         }
         (GORSEL_KUCULT, [kaynak, hedef, Deger::TamSayi(azami)]) => {
             let sonuc = io.gorsel_kucult(
@@ -75,6 +74,22 @@ pub(super) fn intrinsic_degerlendir(
             })
         }
         _ => Err(ic_hata(satir)),
+    }
+}
+
+/// E-posta gönderimi `Sonuç` değeri: başarıda 1, hatada C029.
+fn eposta_sonucu(sonuc: Result<i64, String>) -> Deger {
+    match sonuc {
+        Ok(deger) => basarili(deger),
+        Err(mesaj) => Deger::Sonuc {
+            basarili: false,
+            icerik: Box::new(Deger::Hata(Box::new(HataDegeri {
+                kod: "C029".into(),
+                mesaj,
+                neden: None,
+                veri: Vec::new(),
+            }))),
+        },
     }
 }
 

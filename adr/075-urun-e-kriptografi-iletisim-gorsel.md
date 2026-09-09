@@ -34,8 +34,17 @@ büyümez, her yüzey mevcut yetkinlik ve etki modelinden geçer:
 | `yeni totp anahtarı` | `guvenlik.totp_anahtari` | kriptografi | saf | Metin (Base32, 160 bit) |
 | `<kod> <gizli> anahtarıyla doğrulanıyorsa` | `guvenlik.totp_dogrula` | kriptografi | saf | Mantıksal |
 | `<alıcı> <konu> <gövde> ile ileti göndermeyi dene` | `iletisim.eposta_gonder` | ağ | **geri alınamaz** | TamSayı Sonucu |
+| `<alıcı> <konu> <gövde> ile <bağlantı> üzerinden ileti göndermeyi dene` | `iletisim.eposta_gonder_baglantili` | ağ | **geri alınamaz** | TamSayı Sonucu |
 | `<kaynak> görselini <hedef> dosyasına <N> piksele küçültmeyi dene` | `gorsel.kucult` | dosya-yazma | dış yazma | TamSayı Sonucu (yazılan bayt) |
 
+- **Bağlantılı gönderim (9 Eylül 2026 eki):** ürün E paneli SMTP ayarlarını yönetici
+  arayüzünden (veritabanı) düzenlemek istedi; ortam değişkeni tek yol olunca
+  panel "mail ayarları" sunamıyordu. `... ile <bağlantı> üzerinden ileti
+  göndermeyi dene` bağlantı metnini değerden alır; `smtps://`/`smtp://` şema,
+  `ağ_hedefleri` allowlist'i, çözülmüş IP denetimi ve oran sınırı ortam
+  değişkeni yoluyla birebir aynıdır. IO izinde bağlantı yalnız SHA-256 parmak
+  iziyle kaydedilir (parola taşır); `eposta_gonder` olayı 4 alanlıdır, bağlantı
+  verilmediğinde ilk alan boştur. Hermetik profil bağlantıyı yalnız ayrıştırır.
 - Argon2id üretimi `argon2 0.6` (zaten bağımlılık) ile CSPRNG tuzlu PHC'dir.
   `zee-io-1` hermetik profilinde tuz tohumlu sayaçtan gelir; aynı program aynı
   özeti üretir ve `doğrulanıyorsa` ile doğrulanır. Web isteğinde giriş oran

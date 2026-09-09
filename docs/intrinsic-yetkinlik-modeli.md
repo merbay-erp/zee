@@ -32,6 +32,7 @@ taşımaz.
 | `guvenlik.totp_anahtari` | `() → Metin` | `Kriptografi` | `Saf` |
 | `guvenlik.totp_dogrula` | `(Metin, Metin) → Mantıksal` | `Kriptografi` | `Saf` |
 | `iletisim.eposta_gonder` | `(Metin, Metin, Metin) → TamSayı Sonucu` | `Ag` | `GeriAlinamaz` |
+| `iletisim.eposta_gonder_baglantili` | `(Metin, Metin, Metin, Metin) → TamSayı Sonucu` | `Ag` | `GeriAlinamaz` |
 | `gorsel.kucult` | `(Metin, Metin, TamSayı) → TamSayı Sonucu` | `DosyaYazma` | `DisYazma` |
 
 Intrinsic kaydındaki yetkinlik ihtiyaçtır; izin K-127/RFC-0024'ün merkezî

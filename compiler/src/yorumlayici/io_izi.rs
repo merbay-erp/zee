@@ -638,9 +638,15 @@ impl<T: GirdiCikti> GirdiCikti for IzKaydedenIo<T> {
         sonuc
     }
 
-    fn eposta_gonder(&mut self, alici: &str, konu: &str, govde: &str) -> Result<i64, String> {
-        let sonuc = self.ic.eposta_gonder(alici, konu, govde);
-        let alanlar = k181::eposta(alici, konu, govde);
+    fn eposta_gonder(
+        &mut self,
+        b: Option<&str>,
+        alici: &str,
+        konu: &str,
+        govde: &str,
+    ) -> Result<i64, String> {
+        let sonuc = self.ic.eposta_gonder(b, alici, konu, govde);
+        let alanlar = k181::eposta(b, alici, konu, govde);
         self.kaydet("eposta_gonder", alanlar, tamsayi_sonuc_yaz(&sonuc));
         sonuc
     }
@@ -1196,8 +1202,14 @@ impl GirdiCikti for IzYenidenOynatici {
         self.bool_sonuc("totp_dogrula", sonuc)
     }
 
-    fn eposta_gonder(&mut self, alici: &str, konu: &str, govde: &str) -> Result<i64, String> {
-        let sonuc = self.siradaki("eposta_gonder", k181::eposta(alici, konu, govde));
+    fn eposta_gonder(
+        &mut self,
+        b: Option<&str>,
+        alici: &str,
+        konu: &str,
+        govde: &str,
+    ) -> Result<i64, String> {
+        let sonuc = self.siradaki("eposta_gonder", k181::eposta(b, alici, konu, govde));
         self.tamsayi_sonuc("eposta_gonder", sonuc)
     }
 

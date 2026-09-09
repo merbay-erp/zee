@@ -3397,3 +3397,13 @@ usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.
   sınıfı, zee-tr-2 adayı); `X in uzunluğu N ye eşit olmalı` doğrudan yazılamıyor
   (önce değişkene alınıyor).
 
+**Ek (9 Eylül 2026, öğleden sonra) — bağlantılı e-posta.** ürün E paneli için
+"mail ayarları" sayfası istendi; SMTP bağlantısı yalnız ortam değişkeninden
+gelince panel bunu sunamıyordu. `<alıcı> <konu> <gövde> ile <bağlantı>
+üzerinden ileti göndermeyi dene` (`iletisim.eposta_gonder_baglantili`, yeni
+kalıp kelimesi `üzerinden`) eklendi: bağlantı metni değerden gelir, şema/ağ
+hedefi/IP/oran sınırı denetimleri aynıdır; IO izi bağlantıyı parmak iziyle tutar
+(`eposta_gonder` olayı 4 alan). K-174 yüzey kaydı 10 kalıba güncellendi.
+Bütçeler: io_izi.rs 1250→1270, yorumlayici/yetkinlik.rs 280→290 (imza
+genişlemesi). Panel tarafında SMTP parolası veritabanında düz metin tutulur;
+ortam değişkeni yolu üretimde hâlâ tercih edilendir (README notu).

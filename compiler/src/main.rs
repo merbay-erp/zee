@@ -2703,18 +2703,28 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             .gerektir(dil::yetkinlik::Yetkinlik::Kriptografi)?;
         dil::guvenlik::totp_anahtari_uret()
     }
-    fn eposta_gonder(&mut self, alici: &str, konu: &str, govde: &str) -> Result<i64, String> {
+    fn eposta_gonder(
+        &mut self,
+        baglanti: Option<&str>,
+        alici: &str,
+        konu: &str,
+        govde: &str,
+    ) -> Result<i64, String> {
         self.politika.gerektir(dil::yetkinlik::Yetkinlik::Ag)?;
-        let degisken = self
-            .eposta_baglanti_degiskeni
-            .clone()
-            .ok_or_else(|| "proje bildiriminde `e_posta_bağlantı_değişkeni` yok".to_string())?;
-        let url = std::env::var(&degisken).map_err(|_| {
-            format!(
-                "{} ortam değişkeni SMTP bağlantı URL'sini taşımıyor",
-                degisken
-            )
-        })?;
+        let url = match baglanti {
+            Some(url) => url.to_string(),
+            None => {
+                let degisken = self.eposta_baglanti_degiskeni.clone().ok_or_else(|| {
+                    "proje bildiriminde `e_posta_bağlantı_değişkeni` yok".to_string()
+                })?;
+                std::env::var(&degisken).map_err(|_| {
+                    format!(
+                        "{} ortam değişkeni SMTP bağlantı URL'sini taşımıyor",
+                        degisken
+                    )
+                })?
+            }
+        };
         let ayar = dil::eposta::EpostaAyari::ayristir(&url)?;
         let sema = if ayar.implicit_tls { "smtps" } else { "smtp" };
         let hedef = self

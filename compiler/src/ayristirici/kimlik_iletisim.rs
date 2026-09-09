@@ -53,6 +53,26 @@ pub(super) fn yapili_kalip(tokenlar: &[Token]) -> Result<Option<Ifade>, Tani> {
         }));
     }
 
+    // <alıcı> <konu> <gövde> ile <bağlantı> üzerinden ileti göndermeyi dene (K-181 eki):
+    // SMTP bağlantısı değerden gelir; ağ hedefi denetimi aynen uygulanır.
+    if n == 9
+        && k(3) == Some("ile")
+        && k(5) == Some("üzerinden")
+        && k(6) == Some("ileti")
+        && k(7) == Some("göndermeyi")
+        && son == "dene"
+    {
+        return Ok(Some(Ifade::Intrinsic {
+            kimlik: EPOSTA_GONDER_BAGLANTILI.into(),
+            argumanlar: vec![
+                tekil_ifade(tokenlar[0].clone())?,
+                tekil_ifade(tokenlar[1].clone())?,
+                tekil_ifade(tokenlar[2].clone())?,
+                tekil_ifade(tokenlar[4].clone())?,
+            ],
+        }));
+    }
+
     // <kaynak> görselini <hedef> dosyasına <N> piksele küçültmeyi dene (K-181).
     if n == 8
         && k(1) == Some("görselini")

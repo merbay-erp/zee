@@ -232,9 +232,15 @@ impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
         self.politika.izin_verir(Yetkinlik::Kriptografi) && self.ic.totp_dogrula(gizli, kod)
     }
 
-    fn eposta_gonder(&mut self, alici: &str, konu: &str, govde: &str) -> Result<i64, String> {
+    fn eposta_gonder(
+        &mut self,
+        baglanti: Option<&str>,
+        alici: &str,
+        konu: &str,
+        govde: &str,
+    ) -> Result<i64, String> {
         self.politika.gerektir(Yetkinlik::Ag)?;
-        self.ic.eposta_gonder(alici, konu, govde)
+        self.ic.eposta_gonder(baglanti, alici, konu, govde)
     }
 
     fn gorsel_kucult(&mut self, kaynak: &str, hedef: &str, azami: i64) -> Result<i64, String> {

@@ -641,6 +641,7 @@ kod gizli anahtarıyla doğrulanıyorsa           # RFC 6238, ±30 saniye pencer
     "ikinci adım tamam" yaz
 
 sonuç alıcı konu gövde ile ileti göndermeyi dene olsun   # SMTP; geri alınamaz → eylemde T048
+sonuç alıcı konu gövde ile bağlantı üzerinden ileti göndermeyi dene olsun   # SMTP bağlantısı değerden (panel ayarı)
 sonuç başarısızsa
     sonucun hatası yaz
 

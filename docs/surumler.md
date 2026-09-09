@@ -17,7 +17,9 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   panelinin dört "desteklenmeyen" maddesini tekrar etti. `parolanın argon2
   özeti`, `yeni totp anahtarı` / `kod gizli anahtarıyla doğrulanıyorsa`,
   `alıcı konu gövde ile ileti göndermeyi dene` (geri alınamaz etki; proje
-  bildirimi `e_posta_bağlantı_değişkeni`; smtp/smtps ağ hedefleri) ve `kaynak
+  bildirimi `e_posta_bağlantı_değişkeni`; smtp/smtps ağ hedefleri), aynı
+  kalıbın `... ile bağlantı üzerinden ...` biçimi (SMTP bağlantısı değerden,
+  panelden ayarlanabilir) ve `kaynak
   görselini hedef dosyasına N piksele küçültmeyi dene` (`image` crate) merkezi
   intrinsic kaydına girdi. Yeni tanılar C028/C029. K-174 freeze yüzey kaydı
   ürün sahibi kararıyla güncellendi.

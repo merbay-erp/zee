@@ -30,7 +30,7 @@ pub const AZAMI_LSP_JSON_DUGUMU: usize = crate::kaynak_sinirlari::VARSAYILAN_KAY
 // ---------- sunucu ----------
 
 /// Tamamlama önerileri: dilin kalıp kelimeleri (kaynağı: ayrıştırıcı yüzeyi).
-const KALIP_KELIMELERI: [&str; 96] = [
+const KALIP_KELIMELERI: [&str; 97] = [
     "yaz",
     "olsun",
     "ise",
@@ -124,6 +124,7 @@ const KALIP_KELIMELERI: [&str; 96] = [
     "anahtarıyla",
     "ileti",
     "göndermeyi",
+    "üzerinden",
     "görselini",
     "piksele",
     "küçültmeyi",
@@ -132,7 +133,7 @@ const KALIP_KELIMELERI: [&str; 96] = [
 /// Hover açıklamaları: kalıp kelimesi → tek satır Türkçe açıklama + örnek.
 /// (Kaynak: spec/02-dizim ve dil turu; kelime kalıbın son ya da ayırt edici
 /// parçasıdır.)
-const KELIME_ACIKLAMALARI: [(&str, &str); 49] = [
+const KELIME_ACIKLAMALARI: [(&str, &str); 50] = [
     ("yaz", "Cümleyi bitirir: değeri ekrana (ya da `X dosyasına`) yazar.\n\n`\"Merhaba\" ile isim yaz`"),
     ("olsun", "Ad tanımlar ya da var olan ada atar; tür ilk değerden çıkar ve sonra değişmez.\n\n`yaş 10 olsun`"),
     ("ise", "Koşul dalı açar; koşul yüklem-sonludur (`...se/...sa`).\n\n`yaş 8 veya daha büyükse`"),
@@ -181,6 +182,7 @@ const KELIME_ACIKLAMALARI: [(&str, &str); 49] = [
     ("totp", "160 bit Base32 TOTP gizli anahtarı üretir; otpauth bağlantısında kullanılır.\n\n`gizli yeni totp anahtarı olsun`"),
     ("anahtarıyla", "RFC 6238 TOTP kodunu adaptörün saatiyle ±30 saniye penceresinde doğrular.\n\n`kod gizli anahtarıyla doğrulanıyorsa`"),
     ("göndermeyi", "SMTP ile düz metin e-posta gönderir (ağ yetkinliği + `e_posta_bağlantı_değişkeni`); geri alınamaz, eylem içinde kullanılmaz.\n\n`sonuç alıcı konu gövde ile ileti göndermeyi dene olsun`"),
+    ("üzerinden", "E-postayı ortam değişkeni yerine verilen SMTP bağlantı metniyle gönderir (panelden ayarlanan SMTP); ağ hedefi denetimi aynen uygulanır.\n\n`sonuç alıcı konu gövde ile bağlantı üzerinden ileti göndermeyi dene olsun`"),
     ("küçültmeyi", "Görseli azami kenara küçültüp .jpg/.png/.webp olarak yazar; büyütmez.\n\n`sonuç kaynak görselini hedef dosyasına 1600 piksele küçültmeyi dene olsun`"),
 ];
 

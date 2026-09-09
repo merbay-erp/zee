@@ -483,7 +483,16 @@ impl GirdiCikti for ToplayanIo {
             + i64::from(dakika) * 60;
         crate::guvenlik::totp_dogrula(gizli, kod, saniye)
     }
-    fn eposta_gonder(&mut self, alici: &str, konu: &str, govde: &str) -> Result<i64, String> {
+    fn eposta_gonder(
+        &mut self,
+        baglanti: Option<&str>,
+        alici: &str,
+        konu: &str,
+        govde: &str,
+    ) -> Result<i64, String> {
+        if let Some(url) = baglanti {
+            crate::eposta::EpostaAyari::ayristir(url)?;
+        }
         if !crate::eposta::adres_gecerli(alici) {
             return Err("alıcı e-posta adresi geçersiz".into());
         }
