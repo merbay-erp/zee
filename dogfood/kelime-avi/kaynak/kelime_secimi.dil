@@ -1,0 +1,49 @@
+# K-179 kelime avı — sözlük ayıklama ve rastgele seçim.
+# Sürtünme (K-164/F010 tekrarı): listeden sıra ile öğe almak sayaç ister.
+
+harf_araclari birimini kullan
+
+işlem sözlüğü ayıkla
+    satırları Metin listesi olarak al
+    boyu TamSayı olarak al
+    Metin listesi döndürür
+
+    kelimeler boş liste olsun
+    her satır için
+        temiz satırın kırpılmışı olsun
+        temiz boşsa
+            atla doğru olsun
+        değilse temiz "#" ile başlıyorsa
+            atla doğru olsun
+        değilse
+            küçük temizin küçük harflisi olsun
+            uzunluk küçük için harf boyunu ölç olsun
+            uzunluk boya eşitse
+                kelimelere küçüğü ekle
+    kelimeleri döndür
+
+işlem sıradaki kelimeyi al
+    kelimeleri Metin listesi olarak al
+    sırayı TamSayı olarak al
+    Metin döndürür
+
+    sayaç 1 olsun
+    seçilen kelimelerin ilki olsun
+    her kelime için
+        sayaç sıraya eşitse
+            seçilen kelime olsun
+        sayacı 1 artır
+    seçileni döndür
+
+test "sözlük yorum, boş ve boyu tutmayan satırları eler"
+    satırlar "# başlık", "", "Elmas", "nar", "kitap " listesi olsun
+    kelimeler satırlar ve 5 ile sözlüğü ayıkla olsun
+    adet kelimelerin adedi olsun
+    adet 2 ye eşit olmalı
+    ilk kelimelerin ilki olsun
+    ilk "elmas" a eşit olmalı
+
+test "sıradaki kelime bir tabanlıdır"
+    kelimeler "elmas", "kalem", "kitap" listesi olsun
+    üçüncü kelimeler ve 3 ile sıradaki kelimeyi al olsun
+    üçüncü "kitap" a eşit olmalı

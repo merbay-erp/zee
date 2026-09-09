@@ -1,0 +1,63 @@
+# K-179 kelime avı — harf ipucu yardımcıları.
+# Sürtünme (K-164/F010 tekrarı): sıra ile öğe erişimi olmadığından iki harf
+# listesi sayaçla eşlenir.
+# Sürtünme (K-179/F001, yeni): `her tahmin_harfi için` kaynağı `tahmin_harfilar`
+# diye arar; iyelik ekli döngü adının çoğulu türetilemez.
+# Sürtünme (K-179/F002, yeni): `tahmin_harflerindeki` iyelik+bulunma zinciri
+# `tahmin_harfleri` adına çözülmez; liste adları iyeliksiz seçildi.
+
+işlem harf boyunu ölç
+    kelimeyi Metin olarak al
+    TamSayı döndürür
+
+    harfler kelimenin harfleri olsun
+    adet harflerin adedi olsun
+    adedi döndür
+
+işlem sıradaki harfi al
+    harfleri Metin listesi olarak al
+    sırayı TamSayı olarak al
+    Metin döndürür
+
+    sayaç 0 olsun
+    bulunan "" olsun
+    her harf için
+        sayaç sıraya eşitse
+            bulunan harf olsun
+        sayacı 1 artır
+    bulunanı döndür
+
+işlem ipucu üret
+    hedefi Metin olarak al
+    tahmini Metin olarak al
+    Metin döndürür
+
+    hedef_liste hedefin harfleri olsun
+    tahmin_liste tahminin harfleri olsun
+    ipucu "" olsun
+    sıra 0 olsun
+    tahmin_listedeki her harf için
+        hedef_harfi hedef_liste ve sıra ile sıradaki harfi al olsun
+        harf hedef_harfine eşitse
+            ipucu ipucu ile "●" olsun
+        değilse hedef harf içeriyorsa
+            ipucu ipucu ile "○" olsun
+        değilse
+            ipucu ipucu ile "·" olsun
+        sırayı 1 artır
+    ipucunu döndür
+
+test "harf boyu Türkçe harflerle sayılır"
+    boy "çiçek" için harf boyunu ölç olsun
+    boy 5 e eşit olmalı
+
+test "sıradaki harf sıfır tabanlıdır"
+    harfler "e", "l", "m", "a" listesi olsun
+    ikinci harfler ve 1 ile sıradaki harfi al olsun
+    ikinci "l" ye eşit olmalı
+
+test "ipucu doğru yer, var ve yok işaretlerini üretir"
+    ipucu "kalem" ve "kitap" ile ipucu üret olsun
+    ipucu "●··○·" e eşit olmalı
+    tam "elmas" ve "elmas" ile ipucu üret olsun
+    tam "●●●●●" e eşit olmalı

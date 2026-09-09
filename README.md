@@ -180,6 +180,7 @@ korpus üzerinde regression testine girer.
 | Uzun soak | [docs/soak.md](docs/soak.md) | ✅ derleyici + gerçek `dillsp` 30 dk; ısınma sonrası RSS büyümesi %10 ve 32 MiB'ı birlikte aşarsa kapı kırılır; haftalık workflow |
 | Tanı kalitesi | [docs/tani-kalitesi.md](docs/tani-kalitesi.md) | ✅ golden'a 11 acemi hatası mutasyonu; sınıf başına öneri %100, işaret ≥ %90, gürültü ≤ 2/4 CI'da |
 | Kanıt özeti aracı | [docs/kanit-ozeti-araci.md](docs/kanit-ozeti-araci.md) | ✅ ikinci gerçek Zee ürünü (TSV → Markdown, 10 birim/19 test) `docs/kanit-ozeti.md`yi üretir; bayat sayfa CI'da kırılır |
+| Kelime avı oyunu | [docs/kelime-avi-oyunu.md](docs/kelime-avi-oyunu.md) | ✅ üçüncü gerçek Zee ürünü (etkileşimli CLI oyunu, 3 birim/7 test); K-164 sürtünmelerinin tekrarı ölçüldü, K-180 tasarım sinyali |
 | Zee–Rust–Go karşılaştırması | [docs/dogfood-karsilastirma.md](docs/dogfood-karsilastirma.md) | ✅ aynı araç üç dilde bayt bayt aynı sayfayı üretir; satır/test/süre/RSS/sürtünme exact SHA tarihçesinde |
 | Sürüm runbook'u | [docs/surum-runbook.md](docs/surum-runbook.md) | ✅ SHA256SUMS doğrulamalı kur/kaldır betikleri, üç platform tatbikat workflow'u ve sürüm günü sırası |
 | Güvenlik kapısı | [SECURITY.md](SECURITY.md) | ✅ `GB-NNN` bulgu kaydı, açık kritik/yüksek sıfır kuralı ve sürüm adayı kapısı `tedarik` workflow'unda |
@@ -191,10 +192,10 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **706** |
+| Rust + doctest vakası | **712** |
 | Tanı kimliği | **155 etkin + 3 ayrılmış** |
 | RFC | **28** (2 kabul, 24 geçici kabul, 2 taslak) |
-| ADR | **71** (71 kabul) |
+| ADR | **72** (72 kabul) |
 | Normatif spec bölümü | **27** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 

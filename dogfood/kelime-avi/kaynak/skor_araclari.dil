@@ -1,0 +1,61 @@
+# K-179 kelime avı — skor satırı ve en iyi sonuç özeti.
+# Sürtünme (K-164/F011 tekrarı): sekme kaçışı olmadığından ayraç `|` seçildi.
+
+işlem skor satırı yap
+    adı Metin olarak al
+    denemeyi TamSayı olarak al
+    kelimeyi Metin olarak al
+    Metin döndürür
+
+    satır ad ile "|" ile deneme ile "|" ile kelime olsun
+    satırı döndür
+
+işlem en iyileri özetle
+    satırları Metin listesi olarak al
+    Metin listesi döndürür
+
+    en_iyiler boş sözlük olsun
+    her satır için
+        temiz satırın kırpılmışı olsun
+        temiz boşsa
+            atla doğru olsun
+        değilse
+            parçalar temizin "|" ile parçaları olsun
+            ad parçaların ilki olsun
+            parça_sayısı parçaların adedi olsun
+            parça_sayısı 3 e eşitse
+                sayaç 0 olsun
+                deneme_metni "" olsun
+                her parça için
+                    sayaç 1 e eşitse
+                        deneme_metni parça olsun
+                    sayacı 1 artır
+                deneme deneme_metninin sayısı olsun
+                en_iyilerde ad yoksa
+                    en_iyilerin ad değeri deneme olsun
+                eski en_iyilerin ad değeri olsun
+                deneme eskiden küçükse
+                    en_iyilerin ad değeri deneme olsun
+    özet boş liste olsun
+    adlar boş liste olsun
+    en_iyilerdeki her oyuncu için
+        adlara oyuncuyu ekle
+    sıralılar adların sıralanmışı olsun
+    her sıralı için
+        en_iyi en_iyilerin sıralı değeri olsun
+        özete sıralı ile ": " ile en_iyi ile " deneme" ekle
+    özeti döndür
+
+test "skor satırı üç alanlıdır"
+    satır "Zeynep" ve 3 ve "elmas" ile skor satırı yap olsun
+    satır "Zeynep|3|elmas" a eşit olmalı
+
+test "en iyi özet oyuncu başına en küçük denemeyi alır"
+    satırlar "Zeynep|4|kalem", "Ali|3|kitap", "", "Zeynep|2|elmas", "bozuk satır" listesi olsun
+    özet satırlar için en iyileri özetle olsun
+    adet özetin adedi olsun
+    adet 2 ye eşit olmalı
+    ilk özetin ilki olsun
+    ilk "Ali: 3 deneme" ye eşit olmalı
+    son özetin sonu olsun
+    son "Zeynep: 2 deneme" ye eşit olmalı

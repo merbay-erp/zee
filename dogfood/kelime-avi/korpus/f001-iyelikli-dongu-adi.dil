@@ -1,0 +1,6 @@
+# K-179/F001 sürtünmesi: iyelik ekli döngü adının örtük çoğul kaynağı
+# türetilemez; `her tahmin_harfi için` kaynağı "tahmin_harfilar" diye arar.
+
+tahmin_harfleri "k", "a" listesi olsun
+her tahmin_harfi için
+    tahmin_harfi yaz

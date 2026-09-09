@@ -285,6 +285,14 @@ koşar ve sayfanın bayt bayt tazeliğini, determinizmini ve bağımsız sayıml
 doğruluğunu ister; `dogfood_korpusu_testi` `proje` kipiyle bütün birim
 testlerini koşar; CI gerçek CLI ile sayfayı yeniden üretip farkı reddeder.
 
+## Üçüncü ürün: kelime avı oyunu
+
+K-179/ADR-074'ün [oyunu](kelime-avi-oyunu.md) `dogfood/kelime-avi` altında
+etkileşimli komut satırı yüküdür. `kelime_avi_testi` gerçek sözlükle hermetik
+kazanma/kaybetme/kısa tahmin/skor özeti/boş sözlük senaryolarını koşar;
+korpus `proje` vakası birim testlerini, `f001`/`f003` çiftleri yeni
+sürtünmeleri taşır. Tekrar eden sınıflar ADR-074'te K-164 kimliğiyle sayılır.
+
 ## Zee–Rust–Go karşılaştırması
 
 K-165/ADR-073'ün [veri sayfası](dogfood-karsilastirma.md) ve exact SHA

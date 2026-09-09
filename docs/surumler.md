@@ -22,6 +22,10 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   yorumlayıcı çerçevesi ~194 KiB/düzey ölçüldü; eski yığın debug CLI'yı 167.
   düzeyde C019 yerine doğal taşmayla düşürüyordu. Regresyon koşucusu ve
   derinlik testleri resmî yığında koşar; `regression/runtime/derinlik-499-resmi-yiginda.dil`.
+- **Üçüncü ürün: kelime avı** (K-179, ADR-074): etkileşimli CLI oyunu
+  (`dogfood/kelime-avi`, 3 birim/7 test) K-164 sürtünmelerinin tekrarını ölçtü:
+  2 yeni sınıf, 4 tekrar, 5 kılavuzla önlenen; compiler değişikliği yok,
+  sıra erişimi (F010) iki üründe tekrar edince K-180 tasarım maddesi açıldı.
 - **Zee–Rust–Go karşılaştırması** (K-165, ADR-073): aynı araç üç dilde bayt
   bayt aynı sayfayı üretir; ölçüler exact SHA tarihçesinde.
 

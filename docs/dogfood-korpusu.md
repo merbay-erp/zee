@@ -28,7 +28,8 @@ K-172/ADR-067'nin işletim sözleşmesi. Manifest
   uyguladığı çözüm, dogfood dilimi gereksinim aynası.
 - Girmez: dil tasarımı örneği (golden), düzeltilmiş compiler bug'ı
   (`regression/`), dış ürün kaynağının kopyası. Depo içi ürünün kendi
-  kaynağı tek `proje` vakasıyla kapsanır; sürtünme çiftleri `korpus/`
+  kaynağı tek `proje` vakasıyla kapsanır — `kanit-ozeti` ve `kelime-avi`
+  (K-179/ADR-074); sürtünme çiftleri `korpus/`
   altındadır.
 
 ## Komut

@@ -1,0 +1,6 @@
+# K-179/F003 çözümü: okunmuş metin `"\n" ile parçaları` ile satırlara bölünür.
+# Ürünün skor özeti bu deseni kullanır.
+
+metin "a\nb" olsun
+satırlar metnin "\n" ile parçaları olsun
+satırların adedi yaz

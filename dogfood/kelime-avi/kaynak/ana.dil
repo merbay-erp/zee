@@ -1,0 +1,74 @@
+# K-179 kelime avı — giriş: beş harfli gizli kelimeyi altı denemede bul.
+# Çalıştır: dil çalıştır dogfood/kelime-avi [oyuncu adı]
+# Sözlük ve skorlar giriş klasöründedir (kaynak/kelimeler.txt, kaynak/skorlar.txt).
+# Sürtünme (K-164/F009 tekrarı): proje kipinde `../` ile üst klasöre çıkılamaz;
+# veri dosyaları giriş klasörüne alındı.
+# Sürtünme (K-179/F003, yeni): `metnin satırları` yok (yalnız dosyanın);
+# okunan metin `"\n" ile parçaları` ile bölünür.
+
+harf_araclari birimini kullan
+kelime_secimi birimini kullan
+skor_araclari birimini kullan
+
+boy 5 olsun
+hak 6 olsun
+
+satırlar "kelimeler.txt" dosyasının satırları olsun
+kelimeler satırlar ve boy ile sözlüğü ayıkla olsun
+kelimeler boşsa
+    "Sözlük boş: kaynak/kelimeler.txt içine beş harfli kelimeler yaz." yaz
+    programı 2 ile bitir
+
+argümanlar komut satırından gelenler olsun
+oyuncu "" olsun
+argümanlar boşsa
+    "Adın ne?" diye sor
+    oyuncu yanıtın kırpılmışı olsun
+değilse
+    oyuncu argümanların ilki olsun
+oyuncu boşsa
+    oyuncu "misafir" olsun
+
+adet kelimelerin adedi olsun
+sıra 1 ile adet arasında rastgele sayı olsun
+gizli kelimeler ve sıra ile sıradaki kelimeyi al olsun
+
+"Merhaba " ile oyuncu ile "! Beş harfli bir kelime tuttum; " ile hak ile " hakkın var." yaz
+"İpucu: ● doğru yer, ○ kelimede var, · yok." yaz
+
+bildi yanlış olsun
+deneme 0 olsun
+bildi doğru olana kadar tekrarla
+    deneme hakka eşitse
+        bildi doğru olsun
+    değilse
+        kalan hak ile denemenin farkı olsun
+        "Tahminin? (" ile kalan ile " hak)" diye sor
+        tahmin yanıtın küçük harflisi olsun
+        temiz tahminin kırpılmışı olsun
+        uzunluk temiz için harf boyunu ölç olsun
+        uzunluk boya eşit değilse
+            "Beş harfli bir kelime yaz." yaz
+        değilse
+            denemeyi 1 artır
+            temiz gizliye eşitse
+                "Bildin! " ile deneme ile " denemede." yaz
+                skor oyuncu ve deneme ve gizli ile skor satırı yap olsun
+                "skorlar.txt" dosyasına skor ekle
+                bildi doğru olsun
+            değilse
+                ipucu gizli ve temiz ile ipucu üret olsun
+                ipucu yaz
+
+deneme hakka eşitse
+    "Hakların bitti. Kelime: " ile gizli yaz
+
+skor_sonucu "skorlar.txt" dosyasını okumayı dene olsun
+skor_sonucu başarılıysa
+    skor_metni skor_sonucunun değeri olsun
+    skor_satırları skor_metninin "\n" ile parçaları olsun
+    özet skor_satırları için en iyileri özetle olsun
+    özet doluysa
+        "--- en iyiler ---" yaz
+        özetteki her satır için
+            satır yaz

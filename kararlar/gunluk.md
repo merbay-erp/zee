@@ -3339,3 +3339,28 @@ usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.
 - **Sınır:** Çerçeve küçültme yapılmadı; tarayıcı (wasm, 16 MiB) hattı kendi
   playground sınırlarını taşır ve bu ölçümün dışındadır. Debug çerçevesi
   büyürse test düşer; K-040 dersi makineleşti. K-178 kapandı.
+
+## K-179 — Üçüncü ürün: kelime avı ve sürtünme tekrarı (9 Eyl)
+
+- **Amaç:** K-174 freeze içinde dile bir şey eklemeden, K-164'ün on altı
+  sürtünmesinin bağımsız bir üründe tekrar edip etmediğini ölçmek. İş yükü
+  önceki ikisinden farklı: etkileşimli CLI oyunu (stdin döngüsü, rastgele
+  seçim, harf işleme, skor dosyası). `dogfood/kelime-avi`, 3 birim, 198
+  kaynak satırı, 7 birim testi; `kelime_avi_testi` beş hermetik senaryo.
+- **Yeni sürtünme (K-179/F001–F003):** F001 `her tahmin_harfi için` kaynağı
+  "tahmin_harfilar" diye arandı — iyelik ekli döngü adının örtük çoğulu
+  türetilmiyor (A003); F002 `tahmin_harflerindeki` çözülmedi — bu K-164/F013
+  sınıfının tekrarıdır, yeni sayılmadı; F003 okunmuş metnin `satırları` yok,
+  yapı alanı sanıldı (T028), `"\n" ile parçaları` ile çözüldü. F001 ve F003
+  ret/çözüm çiftleri korpusta.
+- **Tekrarlar:** K-164/F010 sıra ile öğe erişimi üç işlemde daha sayaç döngüsü
+  istedi (iki üründe beş yer); F009 proje kipinde `../` C012 — sözlük ve skor
+  dosyası giriş klasörüne alındı; F013 iyelikli `-ndeki`; F011 sekme kaçışı
+  yokluğu skor ayracını `|` yaptı. Kılavuzla önceden önlenen: F001 (test
+  satırı), F006/F007 (parametre kökü), F008 (tekil/çoğul), F014 (postfix
+  zinciri).
+- **Karar (ADR-074):** compiler değişikliği yok. İki bağımsız üründe tekrar
+  eden F010 için K-180 tasarım maddesi açıldı (freeze sonrası RFC adayı);
+  F001/F013 iyelik zinciri `zee-tr-2` morfoloji adayına eklendi. K-164'ün
+  kökenli tanı düzeltmesi bu üründe ilk hatadan itibaren doğru dosya/satırı
+  gösterdi. K-179 kapandı.
