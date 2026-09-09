@@ -3364,3 +3364,12 @@ usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.
   F001/F013 iyelik zinciri `zee-tr-2` morfoloji adayına eklendi. K-164'ün
   kökenli tanı düzeltmesi bu üründe ilk hatadan itibaren doğru dosya/satırı
   gösterdi. K-179 kapandı.
+
+## K-165 ek — Linux aarch64 ölçüm satırı (9 Eyl)
+
+- `scripts/dogfood-karsilastirma.sh 10`, `rust:1.93.1-bookworm` konteynerinde
+  (go1.26.1 linux/arm64, K-179 ağacı `bc651d8`): Zee 114 ms, Rust 5 ms, Go
+  7 ms; soğuk derleme Rust 3522 / Go 3519 ms; satır ve test sayıları macOS
+  satırıyla aynı. Oran (~20–30×) platformdan bağımsız; Linux `ru_maxrss`
+  tabanı RSS sütununu düzleştirdiğinden RSS karşılaştırması macOS satırında
+  okunur (veri sayfasına not düşüldü).

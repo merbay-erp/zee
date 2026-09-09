@@ -1,3 +1,4 @@
 # zee-dogfood-karsilastirma-1
 # git_sha	tarih	platform	rustc	go	tur	zee_loc	rust_loc	go_loc	zee_test	rust_test	go_test	zee_derleme_ms	rust_derleme_ms	go_derleme_ms	zee_calisma_ms	rust_calisma_ms	go_calisma_ms	zee_rss_kib	rust_rss_kib	go_rss_kib	korpus_surtunme_vakasi
 e4a583c2981320655acb9fcd78007ffbfe0db695	2026-09-06	darwin-arm64	rustc 1.93.1 (01f6ddf75 2026-02-11)	go1.26.1	10	639	364	328	19	6	6	-	3235	1902	90	3	3	12000	2240	4608	21
+bc651d823a4b2595f8df460cf59ddb991629a15b	2026-09-09	linux-aarch64	rustc 1.93.1 (01f6ddf75 2026-02-11)	go1.26.1	10	639	364	328	19	6	6	-	3522	3519	114	5	7	9436	9308	9436	21
