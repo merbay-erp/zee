@@ -64,8 +64,37 @@ fn sinirli_metin_oku(yol: &Path, azami: usize) -> io::Result<String> {
     })
 }
 
+/// Dosyayı okuma için açar. Windows'ta `ReplaceFileW` hedefi iki yeniden
+/// adlandırmayla değiştirir; aradaki anda yolu açan okuyucu NotFound (ya da
+/// paylaşım ihlali) görebilir (K-182, windows-latest). Kısa ve sınırlı
+/// yeniden deneme spec/08'in "okuyucu eski ya da yeni bütünü görür" sözünü
+/// Windows'ta da tutar; gerçekten yok olan dosya en çok ~50 ms sonra hata verir.
+fn dosyayi_ac(yol: &Path) -> io::Result<std::fs::File> {
+    #[cfg(windows)]
+    {
+        let mut kalan = 25u32;
+        loop {
+            match std::fs::File::open(yol) {
+                Err(hata)
+                    if kalan > 0
+                        && matches!(
+                            hata.kind(),
+                            io::ErrorKind::NotFound | io::ErrorKind::PermissionDenied
+                        ) =>
+                {
+                    kalan -= 1;
+                    std::thread::sleep(std::time::Duration::from_millis(2));
+                }
+                sonuc => return sonuc,
+            }
+        }
+    }
+    #[cfg(not(windows))]
+    std::fs::File::open(yol)
+}
+
 fn sinirli_bayt_oku(yol: &Path, azami: usize) -> io::Result<Vec<u8>> {
-    let dosya = std::fs::File::open(yol)?;
+    let dosya = dosyayi_ac(yol)?;
     let bildirilen = dosya.metadata()?.len();
     if bildirilen > azami as u64 {
         return Err(sinir_hatasi(yol, azami));

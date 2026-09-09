@@ -696,8 +696,11 @@ mod tests {
         });
 
         basla.wait();
+        // Okuyucu ürünün kendi okuma yolunu kullanır: Windows'ta ReplaceFileW
+        // penceresini kapatan kısa yeniden deneme oradadır (K-182).
         while !bitti.load(AtomikSira::Acquire) {
-            let gorulen = std::fs::read(&*yol).expect("eşzamanlı okuma");
+            let gorulen = crate::kaynak_sinirlari::veri_dosyasi_baytlarini_oku(&yol)
+                .expect("eşzamanlı okuma");
             assert!(
                 gorulen == a || gorulen == b,
                 "okuyucu kısmi/karışık içerik görmemeli"

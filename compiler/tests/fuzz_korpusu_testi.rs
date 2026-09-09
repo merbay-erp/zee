@@ -86,6 +86,9 @@ fn dev_sayi_virgul_ve_girinti_girdileri_panik_uretmez() {
     }
 }
 
+// K-182: bash betiği (fuzz artefakt doğrulayıcısı) POSIX kabuk ister; CI onu yalnız
+// ubuntu'da koşar, Windows Git Bash desteklenen koruk hostu değildir.
+#[cfg(unix)]
 #[test]
 fn nightly_ogrenimi_cache_disinda_provenanceli_artefaktta_kalir() {
     let depo = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
