@@ -32,3 +32,4 @@ a0a3c3f20d75187cd25bbfb6617657d2973d9c0c	semantic-bugfix	girintisiz-islem-baslig
 84e60178ca358e530200111fda137e8697744531	maintenance	-	Yalnız okuma.rs doc yorumu kısaltıldı (mimari satır bütçesi); davranış değişmedi.
 f7ee12c4c4894f562493cfa00376e69b5c85186f	semantic-change	spec/08-kalici-dosya.md	K-182: Windows okuyucu yeniden denemesi ERROR_SHARING_VIOLATION(32) ve ACCESS_DENIED(5) ham kodlarını da kapsar (Uncategorized sınıfına düştükleri için); Unix davranışı, grammar ve tanı kimlikleri değişmedi.
 9ecdf7da4f42ac2b5eb35b63bf098b0da0eeed72	maintenance	-	Yalnız Windows'a özgü test yardımcısında clippy allow niteliği (permissions_set_readonly_false); derleyici ve dil davranışı değişmedi.
+51b7778ed11a7df440382653b3c0b2ad9f87e5ab	maintenance	-	Yalnız bir lib testinin ekleme sayısı (2×40 → 2×12) ve K-183 açlık notu; kilit, dosya yazma ve dil davranışı değişmedi.

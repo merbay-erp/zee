@@ -28,3 +28,4 @@ a0a3c3f20d75187cd25bbfb6617657d2973d9c0c	correctness	-	K-166	regression/parser/g
 84e60178ca358e530200111fda137e8697744531	maintenance	-	-	-	-	Yeni grammar, kalıp, tanı kodu ya da runtime davranışı yok; yalnız yorum satırı bütçesi.	-
 f7ee12c4c4894f562493cfa00376e69b5c85186f	correctness	-	K-182	compiler/src/kalici_dosya.rs	-	Yalnız Windows dosya açma yeniden denemesinin eşleştiği ham hata kodları genişletildi; yeni grammar, kalıp, tanı kodu ya da Unix runtime davranışı yok.	spec/08-kalici-dosya.md
 9ecdf7da4f42ac2b5eb35b63bf098b0da0eeed72	maintenance	-	-	-	-	Yeni grammar, kalıp, tanı kodu ya da runtime davranışı yok; yalnız test yardımcısı lint niteliği.	-
+51b7778ed11a7df440382653b3c0b2ad9f87e5ab	maintenance	-	-	-	-	Yeni grammar, kalıp, tanı kodu ya da runtime davranışı yok; yalnız test parametresi ve backlog/günlük notu.	-
