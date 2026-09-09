@@ -86,7 +86,7 @@ fn handler_modulleri_yeni_domain_icin_sinir_tasir() {
         ("src/yorumlayici/kaynak.rs", 280),
         ("src/yorumlayici/metin.rs", 240),
         ("src/yorumlayici/web_istek.rs", 180),
-        ("src/yorumlayici/yetkinlik.rs", 250),
+        ("src/yorumlayici/yetkinlik.rs", 280) // K-181: beş yetkinlik kapısı (parola özeti, TOTP ×2, e-posta, görsel) trait yöntemidir; ayrı modüle taşınamaz,
         ("src/yetkinlik.rs", 520),
         ("src/yetkinlik/origin.rs", 100),
         ("src/http_istegi.rs", 260),

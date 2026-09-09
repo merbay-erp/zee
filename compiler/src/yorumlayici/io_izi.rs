@@ -3,6 +3,7 @@
 
 mod codec;
 mod eylem;
+mod k181;
 
 use self::codec::*;
 use self::eylem::{semayi_denetle as eylem_semasi, sonuc_yaz as eylem_sonuc_yaz};
@@ -257,13 +258,8 @@ fn olay_semasini_denetle(olay: &IzOlay) -> Result<(), String> {
                 Err("parola doğrulama parmak izi/sonuç şeması geçersiz".into())
             }
         }
-        "parola_ozeti_uret" => metin_sonuc_semasi(olay, 1),
-        "totp_anahtari_uret" => metin_sonuc_semasi(olay, 0),
-        "eposta_gonder" | "gorsel_kucult" => tamsayi_sonuc_semasi(olay, 3),
-        "totp_dogrula" => {
-            alan_sayisi(olay, 2, 1)?;
-            bool_coz(&olay.sonuc[0]).map(|_| ())
-        }
+        "parola_ozeti_uret" | "totp_anahtari_uret" | "totp_dogrula" | "eposta_gonder"
+        | "gorsel_kucult" => k181::sema(olay),
         "sensor_acik_mi" => {
             alan_sayisi(olay, 1, 1)?;
             bool_coz(&olay.sonuc[0]).map(|_| ())
@@ -624,11 +620,8 @@ impl<T: GirdiCikti> GirdiCikti for IzKaydedenIo<T> {
 
     fn parola_ozeti_uret(&mut self, parola: &str) -> Result<String, String> {
         let sonuc = self.ic.parola_ozeti_uret(parola);
-        self.kaydet(
-            "parola_ozeti_uret",
-            vec![sha256_hex(parola.as_bytes())],
-            metin_sonuc_yaz(&sonuc),
-        );
+        let alanlar = k181::parola(parola);
+        self.kaydet("parola_ozeti_uret", alanlar, metin_sonuc_yaz(&sonuc));
         sonuc
     }
 
@@ -640,31 +633,22 @@ impl<T: GirdiCikti> GirdiCikti for IzKaydedenIo<T> {
 
     fn totp_dogrula(&mut self, gizli: &str, kod: &str) -> bool {
         let sonuc = self.ic.totp_dogrula(gizli, kod);
-        self.kaydet(
-            "totp_dogrula",
-            vec![sha256_hex(gizli.as_bytes()), sha256_hex(kod.as_bytes())],
-            vec![bool_yaz(sonuc)],
-        );
+        let alanlar = k181::totp(gizli, kod);
+        self.kaydet("totp_dogrula", alanlar, vec![bool_yaz(sonuc)]);
         sonuc
     }
 
     fn eposta_gonder(&mut self, alici: &str, konu: &str, govde: &str) -> Result<i64, String> {
         let sonuc = self.ic.eposta_gonder(alici, konu, govde);
-        self.kaydet(
-            "eposta_gonder",
-            vec![alici.into(), konu.into(), sha256_hex(govde.as_bytes())],
-            tamsayi_sonuc_yaz(&sonuc),
-        );
+        let alanlar = k181::eposta(alici, konu, govde);
+        self.kaydet("eposta_gonder", alanlar, tamsayi_sonuc_yaz(&sonuc));
         sonuc
     }
 
     fn gorsel_kucult(&mut self, kaynak: &str, hedef: &str, azami: i64) -> Result<i64, String> {
         let sonuc = self.ic.gorsel_kucult(kaynak, hedef, azami);
-        self.kaydet(
-            "gorsel_kucult",
-            vec![kaynak.into(), hedef.into(), azami.to_string()],
-            tamsayi_sonuc_yaz(&sonuc),
-        );
+        let alanlar = k181::gorsel(kaynak, hedef, azami);
+        self.kaydet("gorsel_kucult", alanlar, tamsayi_sonuc_yaz(&sonuc));
         sonuc
     }
 
@@ -1198,7 +1182,7 @@ impl GirdiCikti for IzYenidenOynatici {
     }
 
     fn parola_ozeti_uret(&mut self, parola: &str) -> Result<String, String> {
-        let sonuc = self.siradaki("parola_ozeti_uret", vec![sha256_hex(parola.as_bytes())]);
+        let sonuc = self.siradaki("parola_ozeti_uret", k181::parola(parola));
         self.metin_sonuc("parola_ozeti_uret", sonuc)
     }
 
@@ -1208,26 +1192,17 @@ impl GirdiCikti for IzYenidenOynatici {
     }
 
     fn totp_dogrula(&mut self, gizli: &str, kod: &str) -> bool {
-        let sonuc = self.siradaki(
-            "totp_dogrula",
-            vec![sha256_hex(gizli.as_bytes()), sha256_hex(kod.as_bytes())],
-        );
+        let sonuc = self.siradaki("totp_dogrula", k181::totp(gizli, kod));
         self.bool_sonuc("totp_dogrula", sonuc)
     }
 
     fn eposta_gonder(&mut self, alici: &str, konu: &str, govde: &str) -> Result<i64, String> {
-        let sonuc = self.siradaki(
-            "eposta_gonder",
-            vec![alici.into(), konu.into(), sha256_hex(govde.as_bytes())],
-        );
+        let sonuc = self.siradaki("eposta_gonder", k181::eposta(alici, konu, govde));
         self.tamsayi_sonuc("eposta_gonder", sonuc)
     }
 
     fn gorsel_kucult(&mut self, kaynak: &str, hedef: &str, azami: i64) -> Result<i64, String> {
-        let sonuc = self.siradaki(
-            "gorsel_kucult",
-            vec![kaynak.into(), hedef.into(), azami.to_string()],
-        );
+        let sonuc = self.siradaki("gorsel_kucult", k181::gorsel(kaynak, hedef, azami));
         self.tamsayi_sonuc("gorsel_kucult", sonuc)
     }
 
