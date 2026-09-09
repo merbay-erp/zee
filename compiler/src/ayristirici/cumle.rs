@@ -677,7 +677,7 @@ fn gorunum_dugumu_kur(tokenlar: Vec<Token>) -> Result<GorunumDugumu, Tani> {
         ));
     }
     let kalan = &tokenlar[1..];
-    if kalan.len() % 2 != 0 {
+    if !kalan.len().is_multiple_of(2) {
         return Err(gorunum_tanisi(
             "Öznitelikler ad-değer çiftleri hâlinde yazılır.",
             satir,
