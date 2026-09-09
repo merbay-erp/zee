@@ -28,3 +28,4 @@ d083de76a44605fc65f3328f660adabf845eb569	maintenance	-	-	-	-	Yeni grammar, kalı
 2a5edc34a7596035401bc6098ee837ccc5949a56	maintenance	-	-	-	-	Yeni grammar, kalıp, tanı kodu ya da runtime davranışı yok; yalnız yorum satırı bütçesi.	-
 1e23ba7340750098459ac07ce6eba71515793642	correctness	-	K-182	compiler/src/kalici_dosya.rs	-	Yalnız Windows dosya açma yeniden denemesinin eşleştiği ham hata kodları genişletildi; yeni grammar, kalıp, tanı kodu ya da Unix runtime davranışı yok.	spec/08-kalici-dosya.md
 59c1d9ba4badb81d843b771a8448a10605a7957d	maintenance	-	-	-	-	Yeni grammar, kalıp, tanı kodu ya da runtime davranışı yok; yalnız test yardımcısı lint niteliği.	-
+b11bfb59b44ee4d075f4ae13ab6f5e3675092efd	maintenance	-	-	-	-	Yeni grammar, kalıp, tanı kodu ya da runtime davranışı yok; yalnız test parametresi ve backlog/günlük notu.	-
