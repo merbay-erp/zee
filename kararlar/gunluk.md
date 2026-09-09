@@ -3396,3 +3396,14 @@ usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.
   5 sn sözü değişmedi.
 - **Sınır:** Bu üç düzeltme yerelde (macOS, Linux aarch64 konteyner) yeniden
   üretilemeyen platform bulgularıdır; kanıt yeni adayın uzak koşusudur.
+- **Ek (aynı akşam, aday `aa220f8`):** LF düzeltmesi Windows'ta bayat
+  denetimini geçirdi; sıradaki katman ortaya çıktı: cargo her çağrıda
+  ikilileri `target/debug` altına yeniden uplift eder (yerelde ölçüldü: inode
+  her `cargo test --no-run`/`cargo build`de değişir, `--profile dev` de
+  değiştirmez) ve Windows çalışan `faz_test_matrisi.exe`yi sildirmez. Araç
+  Windows'ta başlarken kendi dosyasını `.exe.old`a yeniden adlandırır (çalışan
+  .exe yeniden adlandırılabilir); cargo boşalan yola yazar. İç `cargo test`
+  çağrıları `--profile dev` ile `cargo run`ın artefaktlarını paylaşır. macOS'ta
+  imza oynama testi 1/256 olasılıkla kendiliğinden düşüyordu (imza "00" ile
+  başlarsa "00" ile bozma bozmaz); ilk bayt XOR 0xff ile her zaman değişir.
+  Windows kanıtı yalnız uzak koşudur.

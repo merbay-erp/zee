@@ -598,12 +598,14 @@ mod testler {
         assert!(kimlik.starts_with("sha256:"));
         assert!(imzayi_dogrula(&belge, b"aaaa  dil\nekstra\n", None).is_err());
         assert!(imzayi_dogrula(&belge, icerik, Some("sha256:yanlis")).is_err());
+        // K-182: ilk baytı sabit "00" yapmak imza zaten "00" ile başlıyorsa
+        // (1/256) belgeyi bozmaz ve test kendiliğinden düşerdi (macOS CI);
+        // bayt her zaman değiştirilir.
+        let imza = belge["ed25519"].as_str().unwrap();
+        let ilk_bayt = u8::from_str_radix(&imza[..2], 16).unwrap();
         let mut bozuk = belge.clone();
-        bozuk["ed25519"] = json!(format!(
-            "{}{}",
-            "00",
-            &belge["ed25519"].as_str().unwrap()[2..]
-        ));
+        bozuk["ed25519"] = json!(format!("{:02x}{}", ilk_bayt ^ 0xff, &imza[2..]));
+        assert_ne!(bozuk["ed25519"], belge["ed25519"]);
         assert!(imzayi_dogrula(&bozuk, icerik, None).is_err());
         std::fs::write(&anahtar_yolu, "bozuk\n").unwrap();
         assert!(anahtari_oku(&anahtar_yolu).is_err());
