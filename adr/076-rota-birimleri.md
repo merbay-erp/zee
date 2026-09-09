@@ -1,6 +1,9 @@
 # ADR-076 — Rota birimleri: `<ad> rotalarını kullan` (K-182)
 
-**Tarih:** 9 Eylül 2026 · **Durum:** kabul · **Kanıt:** `compiler/tests/birim_testi.rs`
+- **Durum:** kabul
+- **Tarih:** 9 Eylül 2026
+- **İlgili kayıt:** K-182, `dogfood/urun-e`, K-174 (syntax freeze), spec/07, RFC-0009
+- **Kanıt:** `compiler/tests/birim_testi.rs`
 
 ## Bağlam
 
