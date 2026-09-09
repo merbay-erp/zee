@@ -25,3 +25,4 @@ a0a3c3f20d75187cd25bbfb6617657d2973d9c0c	correctness	-	K-166	regression/parser/g
 387aa6deff026db8314e0cf0d0dae5ee6f775aef	maintenance	-	-	-	-	Yeni grammar, kalıp, tanı kodu ya da runtime davranışı yok; Tier-1 CI bulguları için ölçüm ikilisi, test parametresi ve satır sonu politikası.	-
 54d15bbb8b33351ed05b051acc3072619f052319	maintenance	-	-	-	-	Yeni grammar, kalıp, tanı kodu ya da runtime davranışı yok; yalnız iki bakım ikilisinin test/işletim ayrıntısı.	-
 2e06884adedac54c0a1b533416bd4cff884fdb23	correctness	-	K-182	compiler/src/kalici_dosya.rs	-	Yalnız Windows dosya açma yolunda sınırlı yeniden deneme; yeni grammar, kalıp, tanı kodu ya da Unix runtime davranışı yok. Havuz testi bekleme ve bash betiği testlerinin cfg(unix) sınırı test-only.	spec/08-kalici-dosya.md
+84e60178ca358e530200111fda137e8697744531	maintenance	-	-	-	-	Yeni grammar, kalıp, tanı kodu ya da runtime davranışı yok; yalnız yorum satırı bütçesi.	-
