@@ -76,6 +76,7 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-071 | [Kurulum, kaldırma ve sürüm runbook sözleşmesi](071-kurulum-kaldirma-sozlesmesi.md) | **kabul** (K-169) |
 | ADR-072 | [İkinci gerçek ürün; elmas birim içe alımı ve birim kökenli tanılar](072-ikinci-urun-ve-birim-kokenli-tanilar.md) | **kabul** (K-164) |
 | ADR-073 | [Aynı aracın Zee, Rust ve Go gerçeklemeleriyle karşılaştırma](073-zee-rust-go-karsilastirmasi.md) | **kabul** (K-165) |
+| ADR-074 | [Üçüncü ürün: sürtünme tekrarı dil tasarımının sinyalidir](074-ucuncu-urun-ve-surtunme-tekrari.md) | **kabul** (K-179) |
 | ADR-004 | Bellek yönetimi prototip kararı (GC / ARC benchmark) | bekliyor |
 | ADR-005 | Native backend seçimi (Cranelift / LLVM) | bekliyor — Faz 4 |
 | ADR-007 | [Telemetri ve gizlilik: araçlar veri toplamaz](007-telemetri-ve-gizlilik.md) | **kabul** |

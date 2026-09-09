@@ -3,3 +3,5 @@
 catli-itwise-admin	dogfood/catli-itwise-admin	cef5ae33b48264d9c271293d6746e7524f078c4a	active
 # kanit-ozeti depo içi üründür; koken_commit ürünün üzerine kurulduğu taban commit'idir (K-164/ADR-072).
 kanit-ozeti	dogfood/kanit-ozeti	6124f12c5691b04f1e441315623c5ce4e2ca4c3a	active
+# kelime-avi depo içi üçüncü üründür (etkileşimli CLI oyunu); koken_commit üzerine kurulduğu taban commit'idir (K-179/ADR-074).
+kelime-avi	dogfood/kelime-avi	227e984f8b36813b2c6ff928e32bce5a330a5d05	active

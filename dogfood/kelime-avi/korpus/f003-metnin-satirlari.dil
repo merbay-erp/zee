@@ -1,0 +1,5 @@
+# K-179/F003 sürtünmesi: `satırları` yalnız dosya için vardır; okunmuş bir
+# metnin satırları istenince yapı alanı sanılır (T028).
+
+metin "a\nb" olsun
+satırlar metnin satırları olsun

@@ -1,0 +1,12 @@
+# K-179 üçüncü gerçek Zee ürünü: kelime avı.
+# İş yükü: etkileşimli komut satırı oyunu (stdin döngüsü, rastgelelik, harf
+# işleme, skor dosyası). Web/PostgreSQL (K-163) ve toplu veri (K-164) dışı
+# üçüncü bağımsız yük; amaç K-164 sürtünmelerinin tekrarını ölçmektir.
+
+proje "kelime_avi" olsun
+sürüm "0.1.0" olsun
+morfoloji "zee-tr-1" olsun
+giriş "kaynak/ana.dil" olsun
+yetkinlikler "dosya-okuma", "dosya-yazma" listesi olsun
+ağ_hedefleri boş liste olsun
+yerel_bağımlılıklar boş liste olsun

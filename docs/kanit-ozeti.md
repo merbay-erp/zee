@@ -87,13 +87,15 @@ Kaynak: `docs/dogfood-projeleri-v1.tsv + dogfood/korpus-v1.tsv`
 | --- | --- |
 | catli-itwise-admin (active) | dogfood/catli-itwise-admin |
 | kanit-ozeti (active) | dogfood/kanit-ozeti |
+| kelime-avi (active) | dogfood/kelime-avi |
 
 | Ürün | denetle | calistir | proje | basarili | basarisiz | Toplam |
 | --- | --- | --- | --- | --- | --- | --- |
 | catli-itwise-admin | 6 | 4 | 0 | 7 | 3 | 10 |
 | kanit-ozeti | 12 | 9 | 1 | 11 | 11 | 22 |
+| kelime-avi | 2 | 2 | 1 | 3 | 2 | 5 |
 
-Toplam korpus vakası: 32.
+Toplam korpus vakası: 37.
 
 ## Deprecation kayıtları
 

@@ -1,0 +1,6 @@
+# K-179/F001 çözümü: liste adı iyeliksiz, döngü adı yalın ve kaynak `-deki`
+# ile açık yazılır. Ürünün ipucu üreticisi bu deseni kullanır.
+
+tahmin_liste "k", "a" listesi olsun
+tahmin_listedeki her harf için
+    harf yaz
