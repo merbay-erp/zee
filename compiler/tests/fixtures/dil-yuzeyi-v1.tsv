@@ -14,7 +14,10 @@ kalip	PUT	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	adresine	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	al	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	alanı	aktif	0.8.0-dev	compiler/src/lsp.rs	-
+kalip	anahtarı	aktif	0.8.0-dev	compiler/src/lsp.rs	-
+kalip	anahtarıyla	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	arasındaki	aktif	0.7.0	compiler/src/lsp.rs	-
+kalip	argon2	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	artır	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	azalt	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	açık	aktif	0.8.0-dev	compiler/src/lsp.rs	-
@@ -36,13 +39,16 @@ kalip	döndür	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	ekle	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	eylem	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	gerekli	aktif	0.8.0-dev	compiler/src/lsp.rs	-
+kalip	göndermeyi	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	göre	aktif	0.7.0	compiler/src/lsp.rs	-
+kalip	görselini	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	günler	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	harfleri	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	hatasını	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	her	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	herkese	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	ile	aktif	0.7.0	compiler/src/lsp.rs	-
+kalip	ileti	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	ise	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	içermeli	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	için	aktif	0.7.0	compiler/src/lsp.rs	-
@@ -55,6 +61,7 @@ kalip	kodu	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	kullan	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	kullanıcısını	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	kuruşlusu	aktif	0.7.0	compiler/src/lsp.rs	-
+kalip	küçültmeyi	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	kırpılmışı	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	mesajı	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	metni	aktif	0.7.0	compiler/src/lsp.rs	-
@@ -68,6 +75,7 @@ kalip	olsun	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	oturum	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	paketini	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	parçaları	aktif	0.7.0	compiler/src/lsp.rs	-
+kalip	piksele	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	rolüyle	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	saniye	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	sil	aktif	0.7.0	compiler/src/lsp.rs	-
@@ -76,6 +84,7 @@ kalip	sürece	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	sıralanmışı	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	tekrarla	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	test	aktif	0.7.0	compiler/src/lsp.rs	-
+kalip	totp	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	varsa	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	ve	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	verisi	aktif	0.8.0-dev	compiler/src/lsp.rs	-

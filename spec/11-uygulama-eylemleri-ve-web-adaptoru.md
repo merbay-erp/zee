@@ -33,8 +33,9 @@ tanımlayamaz. Bu etkileri doğrudan ya da çağırdığı başka bir işlem üz
 taşırsa T044 üretilir. Rota HTTP adaptörüdür; doğrulanmış girdiyi eyleme verir
 ve eylem sonucunu protokole çevirir.
 
-Transaction ile geri alınamayan ekran çıktısı, kullanıcı girdisi ve donanım
-eyleyicisi de eylem içinde kullanılamaz (T048). Bunlar CLI, web, görev veya
+Transaction ile geri alınamayan ekran çıktısı, kullanıcı girdisi, donanım
+eyleyicisi ve e-posta gönderimi (`ileti göndermeyi dene`, K-181) de eylem
+içinde kullanılamaz (T048). Bunlar CLI, web, görev veya
 donanım adaptöründe kalır. Ağdan salt okuma, zaman, rastgelelik, dosya okuma ve
 transaction destekli dosya yazma eylem içinde kullanılabilir.
 

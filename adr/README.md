@@ -81,3 +81,4 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-005 | Native backend seçimi (Cranelift / LLVM) | bekliyor — Faz 4 |
 | ADR-007 | [Telemetri ve gizlilik: araçlar veri toplamaz](007-telemetri-ve-gizlilik.md) | **kabul** |
 | ADR-008 | [Self-hosting aşamaları ve geçiş kapıları](008-self-hosting-asamalari.md) | **kabul** |
+| ADR-075 | [Site E dogfood'u: parola özeti, TOTP, SMTP ve görsel küçültme](075-urun-e-kriptografi-iletisim-gorsel.md) | **kabul** |

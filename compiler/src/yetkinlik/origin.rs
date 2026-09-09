@@ -11,11 +11,17 @@ pub(super) fn ayristir(yazim: &str) -> Result<(AgHedefi, &str), String> {
     let (sema, kalan) = yazim
         .split_once("://")
         .ok_or_else(|| "ağ adresi https:// veya açıkça izinli http:// ile başlamalı".to_string())?;
-    let sema = match sema {
-        "https" => AgSemasi::Https,
-        "http" => AgSemasi::Http,
-        _ => return Err("yalnız https:// ve açık izinli http:// şemaları desteklenir".into()),
-    };
+    let sema =
+        match sema {
+            "https" => AgSemasi::Https,
+            "http" => AgSemasi::Http,
+            "smtps" => AgSemasi::Smtps,
+            "smtp" => AgSemasi::Smtp,
+            _ => return Err(
+                "yalnız https://, açık izinli http://, smtps:// ve smtp:// şemaları desteklenir"
+                    .into(),
+            ),
+        };
     let kuyruk_yeri = kalan.find(['/', '?']).unwrap_or(kalan.len());
     let (yetki, kuyruk) = kalan.split_at(kuyruk_yeri);
     if yetki.is_empty() || yetki.contains('@') {

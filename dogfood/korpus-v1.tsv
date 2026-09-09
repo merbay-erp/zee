@@ -37,3 +37,4 @@ f001-iyelikli-dongu-adi	kelime-avi	K-179/F001	denetle	basarisiz	A003	-	dogfood/k
 f001-yalin-dongu-adi	kelime-avi	K-179/F001	calistir	basarili	-	k|a	dogfood/kelime-avi/korpus/f001-yalin-dongu-adi.dil	Liste adı iyeliksiz, döngü adı yalın ve kaynak `-deki` ile açık; ürünün çözümü.
 f003-metnin-satirlari	kelime-avi	K-179/F003	denetle	basarisiz	T028	-	dogfood/kelime-avi/korpus/f003-metnin-satirlari.dil	`satırları` yalnız dosya için vardır; okunmuş metnin satırları yapı alanı sanılır (T028). Skor özetinde yaşandı.
 f003-satir-sonuyla-parcalama	kelime-avi	K-179/F003	calistir	basarili	-	2	dogfood/kelime-avi/korpus/f003-satir-sonuyla-parcalama.dil	Okunmuş metin satır sonu ile parçalanır; ürünün skor özeti bu deseni kullanır.
+kimlik-gereksinimi	urun-e	K-181	denetle	basarili	-	-	dogfood/urun-e/kimlik-gereksinimi.dil	ürün E panelinin dört ihtiyacı (argon2 özeti, TOTP, ileti gönderme, görsel küçültme) ürün yetkinlik politikasıyla derlenir; dil dene hermetik koşar.

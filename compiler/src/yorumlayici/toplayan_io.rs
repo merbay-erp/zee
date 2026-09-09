@@ -31,6 +31,8 @@ pub struct ToplayanIo {
     pub eylem_baslat_sonuclari: VecDeque<Result<(), EylemHatasi>>,
     pub eylem_tamamla_sonuclari: VecDeque<Result<(), EylemHatasi>>,
     pub dosya_yaz_sonuclari: VecDeque<Result<(), String>>,
+    /// K-181: sahte SMTP giden kutusu — (alıcı, konu, gövde).
+    pub eposta_kutusu: Vec<(String, String, String)>,
     an_son_degeri: i64,
     pub cikti: Vec<String>,
     eylem_yedekleri: Vec<HashMap<String, String>>,
@@ -83,6 +85,7 @@ impl ToplayanIo {
             eylem_baslat_sonuclari: VecDeque::new(),
             eylem_tamamla_sonuclari: VecDeque::new(),
             dosya_yaz_sonuclari: VecDeque::new(),
+            eposta_kutusu: Vec::new(),
             an_son_degeri: 0,
             cikti: Vec::new(),
             eylem_yedekleri: Vec::new(),
@@ -434,6 +437,73 @@ impl GirdiCikti for ToplayanIo {
                 false
             }
         }
+    }
+    fn parola_ozeti_uret(&mut self, parola: &str) -> Result<String, String> {
+        if self.web_istek_yedegi.is_some() {
+            let karar = self.web_guvenligi.rate_limit_artir(
+                crate::web_guvenligi::RateLimitTuru::Giris,
+                "parola",
+                self.an_son_degeri,
+            );
+            match karar {
+                Ok(karar) if karar.izinli => {}
+                Ok(_) => return Err("çok fazla parola özeti isteği".into()),
+                Err(_) => return Err("giriş oran sınırı deposuna erişilemedi".into()),
+            }
+        }
+        // zee-io-1: tuz tohumlu sayaçtan gelir; aynı program aynı özeti üretir.
+        self.guvenli_belirtec_sirasi = self.guvenli_belirtec_sirasi.saturating_add(1);
+        let mut tuz = [0u8; 16];
+        tuz[..8].copy_from_slice(&self.guvenli_belirtec_sirasi.to_be_bytes());
+        tuz[8..].copy_from_slice(b"zee-io-1");
+        crate::guvenlik::parola_ozeti_uret_tuzlu(parola, &tuz)
+    }
+    fn totp_anahtari_uret(&mut self) -> Result<String, String> {
+        // zee-io-1: tohumlu sayaçtan türetilen 20 bayt; aynı program aynı anahtar.
+        self.guvenli_belirtec_sirasi = self.guvenli_belirtec_sirasi.saturating_add(1);
+        let mut baytlar = [0u8; 20];
+        baytlar[..8].copy_from_slice(&self.guvenli_belirtec_sirasi.to_be_bytes());
+        baytlar[8..].copy_from_slice(b"zee-io-1-tot");
+        Ok(crate::guvenlik::base32_kodla(&baytlar))
+    }
+    fn totp_dogrula(&mut self, gizli: &str, kod: &str) -> bool {
+        if self.web_istek_yedegi.is_some() {
+            let karar = self.web_guvenligi.rate_limit_artir(
+                crate::web_guvenligi::RateLimitTuru::Giris,
+                "totp",
+                self.an_son_degeri,
+            );
+            if !matches!(karar, Ok(karar) if karar.izinli) {
+                return false;
+            }
+        }
+        let (yil, ay, gun, saat, dakika) = self.zaman;
+        let saniye = crate::zaman::tarihten_gunler(yil, ay, gun) * 86_400
+            + i64::from(saat) * 3_600
+            + i64::from(dakika) * 60;
+        crate::guvenlik::totp_dogrula(gizli, kod, saniye)
+    }
+    fn eposta_gonder(&mut self, alici: &str, konu: &str, govde: &str) -> Result<i64, String> {
+        if !crate::eposta::adres_gecerli(alici) {
+            return Err("alıcı e-posta adresi geçersiz".into());
+        }
+        self.eposta_kutusu
+            .push((alici.to_string(), konu.to_string(), govde.to_string()));
+        Ok(1)
+    }
+    fn gorsel_kucult(&mut self, kaynak: &str, hedef: &str, azami: i64) -> Result<i64, String> {
+        if !(1..=8192).contains(&azami) {
+            return Err("azami kenar 1..8192 piksel arasında olmalı".into());
+        }
+        let icerik = self
+            .dosyalar
+            .get(kaynak)
+            .cloned()
+            .ok_or_else(|| format!("\"{}\" kaynak görseli bulunamadı", kaynak))?;
+        let yeni = format!("küçültülmüş({azami}): {icerik}");
+        let bayt = yeni.len() as i64;
+        self.dosyalar.insert(hedef.into(), yeni);
+        Ok(bayt)
     }
     fn eylem_baslat(&mut self) -> Result<(), EylemHatasi> {
         if let Some(sonuc) = self.eylem_baslat_sonuclari.pop_front() {

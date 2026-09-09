@@ -168,6 +168,8 @@ kalır (ADR-025).
 | C025 | PostgreSQL sorgusu veya değişikliği başarısız | Hatanın `sqlstate`, `kısıt` ve `tablo` verisini incele; sorgu ve parametreyi düzelt |
 | C026 | PostgreSQL migration veya bağlantı işlemi başarısız | Exact hedefi, `sslmode`, pinned CA ortam değişkenini, havuz kapasitesini ve değişmez migration geçmişini doğrula |
 | C027 | COMMIT sonucu istemci tarafından doğrulanamadı; otomatik tekrar güvenli değil | Aynı write'ı körlemesine tekrarlama. Yeni bağlantıda kararlı iş anahtarıyla sonucu uzlaştır; varsa mevcut sonucu benimse, yoksa ürünün idempotency politikasına göre yeni girişim başlat |
+| C028 | Kriptografi adaptörü parola özeti ya da TOTP anahtarı üretemedi | `kriptografi` yetkinliğini aç; playground üretmez; web'de giriş oran sınırını bekle |
+| C029 | E-posta gönderimi başarısız (SMTP bağlantı/kimlik/alıcı hatası) | `e_posta_bağlantı_değişkeni` ortam değişkenini, `ağ_hedefleri` içindeki smtps:// sunucuyu ve alıcı adresini denetle; `dene` sonucunun hatasını göster |
 
 ## D — Doğrulama
 

@@ -98,6 +98,9 @@ pub(super) fn degerlendir_async<'a>(
                     DOSYA_ATOMIK_TASI | DOSYA_SIL | DOSYALARI_LISTELE | DOSYA_SHA256 => {
                         dosya::intrinsic_degerlendir(kimlik, &degerler, io, satir)
                     }
+                    PAROLA_OZETI | TOTP_ANAHTARI | TOTP_DOGRULA | EPOSTA_GONDER | GORSEL_KUCULT => {
+                        kimlik_iletisim::intrinsic_degerlendir(kimlik, &degerler, io, satir)
+                    }
                     SENSOR_ACIK_MI => {
                         let [Deger::Metin(ad)] = degerler.as_slice() else {
                             return Err(ic_hata(satir));

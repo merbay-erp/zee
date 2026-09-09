@@ -12,6 +12,16 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **Parola özeti, TOTP, SMTP ve görsel küçültme** (K-181, ADR-075,
+  `dogfood/urun-e`): zee ile yazılan ilk müşteri sitesi Site E, legacy panel
+  panelinin dört "desteklenmeyen" maddesini tekrar etti. `parolanın argon2
+  özeti`, `yeni totp anahtarı` / `kod gizli anahtarıyla doğrulanıyorsa`,
+  `alıcı konu gövde ile ileti göndermeyi dene` (geri alınamaz etki; proje
+  bildirimi `e_posta_bağlantı_değişkeni`; smtp/smtps ağ hedefleri) ve `kaynak
+  görselini hedef dosyasına N piksele küçültmeyi dene` (`image` crate) merkezi
+  intrinsic kaydına girdi. Yeni tanılar C028/C029. K-174 freeze yüzey kaydı
+  ürün sahibi kararıyla güncellendi.
+
 - **İkinci gerçek ürün ve iki birim düzeltmesi** (K-164, ADR-072):
   `dogfood/kanit-ozeti` depo kayıt defterlerinden `docs/kanit-ozeti.md`
   üretir (toplu veri işleme iş yükü). Elmas birim içe alımı (`c→a`, `c→b→a`)

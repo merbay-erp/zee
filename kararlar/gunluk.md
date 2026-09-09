@@ -3373,3 +3373,27 @@ usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.
   satırıyla aynı. Oran (~20–30×) platformdan bağımsız; Linux `ru_maxrss`
   tabanı RSS sütununu düzleştirdiğinden RSS karşılaştırması macOS satırında
   okunur (veri sayfasına not düşüldü).
+
+### K-181 — Site E dogfood'u: parola özeti, TOTP, SMTP, görsel — 9 Eylül 2026
+
+- Dördüncü ürün `dogfood/urun-e` (gerçek ürün `urun-e`, adminpanelzee
+  çatalı, zee ile ilk müşteri sitesi) kaydedildi; ADR-075.
+- legacy panel panelinin "Desteklenmeyen" listesindeki dört madde ürün E'de aynen tekrar
+  etti (tarayıcıda parola, 2FA, e-posta bildirimi, görsel küçültme). K-180
+  ölçütü (iki bağımsız üründe tekrar) karşılandı; ürün sahibi K-174 freeze
+  penceresi içinde açılmasına karar verdi, yüzey kaydı bilinçli güncellendi.
+- Dört intrinsic merkezi kayda eklendi (AST büyümedi): `guvenlik.parola_ozeti`,
+  `guvenlik.totp_anahtari`, `guvenlik.totp_dogrula`, `iletisim.eposta_gonder`
+  (yeni `GeriAlinamaz` etkisi → eylemde T048), `gorsel.kucult`
+  (`IntrinsicTuru::TamSayi` argümanı). `AgSemasi` smtp/smtps; proje bildirimi
+  `e_posta_bağlantı_değişkeni`.
+- Bağımlılık: yalnız `image 0.25.10` (jpeg/png/webp, cargo-deny temiz, cache'ten
+  offline). SHA-1/HMAC/Base32/TOTP ve SMTP istemcisi bağımlılıksız yazıldı;
+  Argon2id üretimi mevcut `argon2` ile.
+- Hermetik profil: Argon2id tuzu ve TOTP anahtarı tohumlu sayaçtan, TOTP saati
+  sabit `zaman`dan, e-posta `eposta_kutusu`na, görsel sahte dosya sistemine.
+  IO izi dört yeni olay şeması taşır.
+- Sürtünme: iyelik ekli parametre adı `kaynağı` → yalın ad `kaynağ` (F001
+  sınıfı, zee-tr-2 adayı); `X in uzunluğu N ye eşit olmalı` doğrudan yazılamıyor
+  (önce değişkene alınıyor).
+

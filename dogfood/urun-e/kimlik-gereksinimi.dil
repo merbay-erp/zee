@@ -1,0 +1,78 @@
+# K-181 — Site E yönetim panelinin zee v0.7'de kapanamayan dört ihtiyacı.
+# Her cümle gerçek üründeki kullanımın küçültülmüş halidir; `dil dene` ile
+# hermetik profilde (zee-io-1) deterministik koşar.
+
+# 1) Tarayıcıda parola belirleme: Argon2id PHC özeti dil içinde üretilir.
+işlem parolayi_kaydet
+    parolayı Metin olarak al
+    Metin döndürür
+
+    parolanın argon2 özeti döndür
+
+işlem parola_dogru
+    parolayı Metin olarak al
+    özeti Metin olarak al
+    Mantıksal döndürür
+
+    parola özet ile doğrulanıyorsa
+        doğru döndür
+    yanlış döndür
+
+# 2) İki adımlı doğrulama: TOTP gizli anahtarı üret, kodu adaptör saatiyle doğrula.
+işlem ikinci_adim_gecerli
+    gizliyi Metin olarak al
+    kodu Metin olarak al
+    Mantıksal döndürür
+
+    kod gizli anahtarıyla doğrulanıyorsa
+        doğru döndür
+    yanlış döndür
+
+# 3) İletişim formu bildirimi: e-posta geri alınamaz dış etkidir; eylemde değil
+#    çağıran adaptörde (rota/CLI) gönderilir.
+işlem bildirim_gonder
+    alıcıyı Metin olarak al
+    konuyu Metin olarak al
+    gövdeyi Metin olarak al
+    Metin döndürür
+
+    sonuç alıcı konu gövde ile ileti göndermeyi dene olsun
+    sonuç başarılıysa
+        "gönderildi" döndür
+    "gönderilemedi" döndür
+
+# 4) Medya yükleme: görseli yükleme sonrası 1600 piksele küçült.
+işlem gorseli_hazirla
+    girdiyi Metin olarak al
+    hedefi Metin olarak al
+    Metin döndürür
+
+    sonuç girdi görselini hedef dosyasına 1600 piksele küçültmeyi dene olsun
+    sonuç başarılıysa
+        "hazır" döndür
+    "hata" döndür
+
+test "argon2 özeti üretilir ve aynı parolayla doğrulanır"
+    özet "gizli parola" için parolayi_kaydet olsun
+    özet "$argon2id$" içermeli
+    dogru "gizli parola" ve özet ile parola_dogru olsun
+    dogru doğru eşit olmalı
+    yanlis "başka" ve özet ile parola_dogru olsun
+    yanlis yanlış eşit olmalı
+
+test "totp anahtarı üretilir, rastgele kod reddedilir"
+    gizli yeni totp anahtarı olsun
+    uzunluk gizlinin uzunluğu olsun
+    uzunluk 32 ye eşit olmalı
+    gecerli gizli ve "000000" ile ikinci_adim_gecerli olsun
+    gecerli yanlış eşit olmalı
+
+test "geçersiz alıcı adresi Sonuç hatasıdır"
+    durum "bozuk adres" ve "konu" ve "gövde" ile bildirim_gonder olsun
+    durum "gönderilemedi" a eşit olmalı
+    durum "ali@ornek.com" ve "konu" ve "gövde" ile bildirim_gonder olsun
+    durum "gönderildi" e eşit olmalı
+
+test "olmayan görsel küçültülemez"
+    durum "yok.jpg" ve "kucuk.jpg" ile gorseli_hazirla olsun
+    durum "hata" ya eşit olmalı

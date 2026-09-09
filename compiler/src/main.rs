@@ -1191,6 +1191,9 @@ impl KaynakGirdisi {
             self.proje
                 .as_ref()
                 .and_then(|proje| proje.ana_bildirim().veritabani.clone()),
+            self.proje
+                .as_ref()
+                .and_then(|proje| proje.ana_bildirim().eposta_baglanti_degiskeni.clone()),
         )
     }
 
@@ -1358,6 +1361,7 @@ struct GercekIo {
     politika: dil::yetkinlik::YetkinlikPolitikasi,
     dosya_siniri_koku: std::path::PathBuf,
     veritabani_bildirimi: Option<dil::proje::VeritabaniBildirimi>,
+    eposta_baglanti_degiskeni: Option<String>,
     postgresql: Option<dil::postgresql::PostgresqlOturumu>,
     postgresql_yazma_eylemleri: Vec<bool>,
 }
@@ -1427,6 +1431,7 @@ impl GercekIo {
         argumanlar: Vec<String>,
         politika: dil::yetkinlik::YetkinlikPolitikasi,
         veritabani_bildirimi: Option<dil::proje::VeritabaniBildirimi>,
+        eposta_baglanti_degiskeni: Option<String>,
     ) -> GercekIo {
         let tohum = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
@@ -1460,6 +1465,7 @@ impl GercekIo {
             dosya_siniri_koku: std::fs::canonicalize(dosya_siniri_koku)
                 .unwrap_or_else(|_| dosya_siniri_koku.to_path_buf()),
             veritabani_bildirimi,
+            eposta_baglanti_degiskeni,
             postgresql: None,
             postgresql_yazma_eylemleri: Vec::new(),
         }
@@ -2692,6 +2698,103 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             .push(self.oturum_cerez_adi().to_string());
         Ok(())
     }
+    fn totp_anahtari_uret(&mut self) -> Result<String, String> {
+        self.politika
+            .gerektir(dil::yetkinlik::Yetkinlik::Kriptografi)?;
+        dil::guvenlik::totp_anahtari_uret()
+    }
+    fn eposta_gonder(&mut self, alici: &str, konu: &str, govde: &str) -> Result<i64, String> {
+        self.politika.gerektir(dil::yetkinlik::Yetkinlik::Ag)?;
+        let degisken = self
+            .eposta_baglanti_degiskeni
+            .clone()
+            .ok_or_else(|| "proje bildiriminde `e_posta_bağlantı_değişkeni` yok".to_string())?;
+        let url = std::env::var(&degisken).map_err(|_| {
+            format!(
+                "{} ortam değişkeni SMTP bağlantı URL'sini taşımıyor",
+                degisken
+            )
+        })?;
+        let ayar = dil::eposta::EpostaAyari::ayristir(&url)?;
+        let sema = if ayar.implicit_tls { "smtps" } else { "smtp" };
+        let hedef = self
+            .politika
+            .ag_istegini_denetle(&format!("{}://{}:{}", sema, ayar.konak, ayar.kapi))?;
+        let politika = self.politika.clone();
+        let kimlik = dil::guvenlik::guvenli_belirtec_uret()?;
+        let saniye = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map(|s| s.as_secs() as i64)
+            .unwrap_or(0);
+        let tarih = dil::eposta::rfc2822_tarih(saniye);
+        dil::eposta::gonder(
+            &ayar,
+            &dil::eposta::Ileti {
+                alici,
+                konu,
+                govde,
+                kimlik: &kimlik[..32],
+                tarih: &tarih,
+            },
+            std::time::Duration::from_secs(20),
+            &|ip| politika.cozulmus_ipyi_denetle(ip),
+        )?;
+        let _ = hedef;
+        Ok(1)
+    }
+    fn gorsel_kucult(&mut self, kaynak: &str, hedef: &str, azami: i64) -> Result<i64, String> {
+        self.politika
+            .gerektir(dil::yetkinlik::Yetkinlik::DosyaYazma)?;
+        let kaynak_yolu = self.dosya_yolu(kaynak, false)?;
+        let hedef_yolu = self.dosya_yolu(hedef, true)?;
+        let azami = u32::try_from(azami)
+            .map_err(|_| "azami kenar 1..8192 piksel arasında olmalı".to_string())?;
+        dil::gorsel::kucult(&kaynak_yolu, &hedef_yolu, azami)?;
+        let bayt = std::fs::metadata(&hedef_yolu)
+            .map_err(|hata| format!("hedef görsel okunamadı: {hata}"))?
+            .len();
+        Ok(i64::try_from(bayt).unwrap_or(i64::MAX))
+    }
+    fn totp_dogrula(&mut self, gizli: &str, kod: &str) -> bool {
+        if !self
+            .politika
+            .izin_verir(dil::yetkinlik::Yetkinlik::Kriptografi)
+        {
+            return false;
+        }
+        if self.web_istek_yedegi.is_some() {
+            let karar = self.web_guvenligi.rate_limit_artir(
+                dil::web_guvenligi::RateLimitTuru::Giris,
+                "totp",
+                web_duvar_saati_ms(),
+            );
+            if !matches!(karar, Ok(karar) if karar.izinli) {
+                return false;
+            }
+        }
+        let saniye = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map(|s| s.as_secs() as i64)
+            .unwrap_or(0);
+        dil::guvenlik::totp_dogrula(gizli, kod, saniye)
+    }
+    fn parola_ozeti_uret(&mut self, parola: &str) -> Result<String, String> {
+        self.politika
+            .gerektir(dil::yetkinlik::Yetkinlik::Kriptografi)?;
+        if self.web_istek_yedegi.is_some() {
+            let karar = self.web_guvenligi.rate_limit_artir(
+                dil::web_guvenligi::RateLimitTuru::Giris,
+                "parola",
+                web_duvar_saati_ms(),
+            );
+            match karar {
+                Ok(karar) if karar.izinli => {}
+                Ok(_) => return Err("çok fazla parola özeti isteği".into()),
+                Err(_) => return Err("giriş oran sınırı deposuna erişilemedi".into()),
+            }
+        }
+        dil::guvenlik::parola_ozeti_uret(parola)
+    }
     fn parola_dogrula(&mut self, parola: &str, ozet: &str) -> bool {
         if !self
             .politika
@@ -3115,6 +3218,7 @@ mod web_profili_testleri {
             Vec::new(),
             dil::yetkinlik::YetkinlikPolitikasi::gelistirici(),
             None,
+            None,
         );
         assert_eq!(io.oturum_cerez_adi(), "__Host-zee-oturum");
         io.bekleyen_cerezler.push(BekleyenCerez {
@@ -3142,6 +3246,7 @@ mod web_profili_testleri {
             WebModu::Deneysel,
             Vec::new(),
             dil::yetkinlik::YetkinlikPolitikasi::gelistirici(),
+            None,
             None,
         );
         assert_eq!(deneysel.oturum_cerez_adi(), "zee-oturum");
@@ -3188,6 +3293,7 @@ mod web_profili_testleri {
             Vec::new(),
             dil::yetkinlik::YetkinlikPolitikasi::gelistirici(),
             None,
+            None,
         );
         io.bekleyen_akis = Some(sunucu);
         io.web_istek_yedegi = Some(WebIstekYedegi {
@@ -3231,6 +3337,7 @@ mod web_profili_testleri {
             Vec::new(),
             dil::yetkinlik::YetkinlikPolitikasi::gelistirici(),
             None,
+            None,
         );
         io.bekleyen_akis = Some(sunucu);
         io.web_istek_yedegi = Some(WebIstekYedegi {
@@ -3263,6 +3370,7 @@ mod web_profili_testleri {
             },
             Vec::new(),
             dil::yetkinlik::YetkinlikPolitikasi::gelistirici(),
+            None,
             None,
         );
         io.web_guvenligi
@@ -3327,6 +3435,7 @@ mod web_profili_testleri {
             WebModu::Kapali,
             Vec::new(),
             politika,
+            None,
             None,
         );
         let (durum, govde) = io

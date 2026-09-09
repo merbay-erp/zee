@@ -31,8 +31,10 @@ pub mod ayristirici;
 pub mod bicimleyici;
 #[doc(hidden)]
 pub mod cozumleyici;
+pub mod eposta;
 #[doc(hidden)]
 pub mod faz;
+pub mod gorsel;
 #[doc(hidden)]
 pub mod guvenlik;
 #[doc(hidden)]

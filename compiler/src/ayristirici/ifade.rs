@@ -375,6 +375,17 @@ fn kosul_atomu_ic(tokenlar: &[Token], satir: usize) -> Result<Ifade, Tani> {
         });
     }
 
+    // <kod> <gizli> anahtarıyla doğrulanıyorsa — RFC 6238 TOTP (K-181).
+    if n == 4 && kelimeler[2] == Some("anahtarıyla") && yuklem == "doğrulanıyorsa" {
+        return Ok(Ifade::Intrinsic {
+            kimlik: TOTP_DOGRULA.into(),
+            argumanlar: vec![
+                tekil_ifade(tokenlar[0].clone())?,
+                tekil_ifade(tokenlar[1].clone())?,
+            ],
+        });
+    }
+
     // <parola> <Argon2id PHC özeti> ile doğrulanıyorsa.
     if n == 4 && kelimeler[2] == Some("ile") && yuklem == "doğrulanıyorsa" {
         return Ok(Ifade::Intrinsic {
@@ -574,6 +585,49 @@ fn yapili_kalip_ic(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifa
         }
     }
 
+    // <alıcı> <konu> <gövde> ile ileti göndermeyi dene → TamSayı Sonucu (K-181).
+    if n == 7
+        && kelime(3) == Some("ile")
+        && kelime(4) == Some("ileti")
+        && kelime(5) == Some("göndermeyi")
+        && son == "dene"
+    {
+        return Ok(Some(Ifade::Intrinsic {
+            kimlik: EPOSTA_GONDER.into(),
+            argumanlar: vec![
+                tekil_ifade(tokenlar[0].clone())?,
+                tekil_ifade(tokenlar[1].clone())?,
+                tekil_ifade(tokenlar[2].clone())?,
+            ],
+        }));
+    }
+
+    // <kaynak> görselini <hedef> dosyasına <N> piksele küçültmeyi dene (K-181).
+    if n == 8
+        && kelime(1) == Some("görselini")
+        && kelime(3) == Some("dosyasına")
+        && kelime(5) == Some("piksele")
+        && kelime(6) == Some("küçültmeyi")
+        && son == "dene"
+    {
+        return Ok(Some(Ifade::Intrinsic {
+            kimlik: GORSEL_KUCULT.into(),
+            argumanlar: vec![
+                tekil_ifade(tokenlar[0].clone())?,
+                tekil_ifade(tokenlar[2].clone())?,
+                tekil_ifade(tokenlar[4].clone())?,
+            ],
+        }));
+    }
+
+    // yeni totp anahtarı — 160 bit Base32 gizli anahtar (K-181).
+    if n == 3 && kelime(0) == Some("yeni") && kelime(1) == Some("totp") && son == "anahtarı" {
+        return Ok(Some(Ifade::Intrinsic {
+            kimlik: TOTP_ANAHTARI.into(),
+            argumanlar: Vec::new(),
+        }));
+    }
+
     if n == 2 && kelime(0) == Some("csrf") && son == "belirteci" {
         return Ok(Some(Ifade::Intrinsic {
             kimlik: CSRF_BELIRTECI.into(),
@@ -707,6 +761,14 @@ fn yapili_kalip_ic(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifa
             metin: Box::new(tekil_ifade(tokenlar[0].clone())?),
             eski: Box::new(tekil_ifade(tokenlar[1].clone())?),
             yeni: Box::new(tekil_ifade(tokenlar[3].clone())?),
+        }));
+    }
+
+    // W ın argon2 özeti — Argon2id PHC parola özeti (K-181).
+    if n == 3 && son == "özeti" && kelime(1) == Some("argon2") {
+        return Ok(Some(Ifade::Intrinsic {
+            kimlik: PAROLA_OZETI.into(),
+            argumanlar: vec![tekil_ifade(tokenlar[0].clone())?],
         }));
     }
 

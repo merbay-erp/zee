@@ -629,6 +629,30 @@ NUL, duplicate uzunluk ve HTTP pipelining desteklenmez.
 Kurulum ve güven sözleşmesi [web production
 profilinde](web-production-profili.md) açıklanır.
 
+Parola özeti, iki adımlı doğrulama, e-posta ve görsel (K-181/ADR-075):
+
+```
+özet parolanın argon2 özeti olsun            # Argon2id PHC; kriptografi yetkinliği
+parola özet ile doğrulanıyorsa
+    "giriş tamam" yaz
+
+gizli yeni totp anahtarı olsun                 # 160 bit Base32; otpauth://totp/... içinde kullan
+kod gizli anahtarıyla doğrulanıyorsa           # RFC 6238, ±30 saniye penceresi
+    "ikinci adım tamam" yaz
+
+sonuç alıcı konu gövde ile ileti göndermeyi dene olsun   # SMTP; geri alınamaz → eylemde T048
+sonuç başarısızsa
+    sonucun hatası yaz
+
+bayt "buyuk.jpg" görselini "kucuk.webp" dosyasına 1600 piksele küçültmeyi dene olsun   # başarıda yazılan bayt
+```
+
+E-posta için proje bildirimi `e_posta_bağlantı_değişkeni "UYGULAMA_SMTP_URL"
+olsun` der; ortam değişkeni `smtps://kullanici:parola@sunucu:465?from=gonderen@alan&name=Ad`
+taşır ve sunucu `ağ_hedefleri` içinde `smtps://sunucu:465` olarak listelenir.
+Hermetik testlerde özet/anahtar tohumludur, TOTP saati sabit `zaman`dır,
+e-posta `eposta_kutusu`na düşer, görsel sahte dosya sisteminde küçültülür.
+
 ## 19. Fiziksel dünya (ESP32)
 
 Gerçek projede bu yüzey `yetkinlikler "donanım" listesi olsun` bildirimi

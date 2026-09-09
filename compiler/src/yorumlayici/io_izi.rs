@@ -68,6 +68,11 @@ fn gecerli_islem(islem: &str) -> bool {
             | "oturum_ac"
             | "oturum_kapat"
             | "parola_dogrula"
+            | "parola_ozeti_uret"
+            | "totp_anahtari_uret"
+            | "totp_dogrula"
+            | "eposta_gonder"
+            | "gorsel_kucult"
             | "eylem_baslat"
             | "eylem_tamamla"
             | "eylem_geri_al"
@@ -251,6 +256,13 @@ fn olay_semasini_denetle(olay: &IzOlay) -> Result<(), String> {
             } else {
                 Err("parola doğrulama parmak izi/sonuç şeması geçersiz".into())
             }
+        }
+        "parola_ozeti_uret" => metin_sonuc_semasi(olay, 1),
+        "totp_anahtari_uret" => metin_sonuc_semasi(olay, 0),
+        "eposta_gonder" | "gorsel_kucult" => tamsayi_sonuc_semasi(olay, 3),
+        "totp_dogrula" => {
+            alan_sayisi(olay, 2, 1)?;
+            bool_coz(&olay.sonuc[0]).map(|_| ())
         }
         "sensor_acik_mi" => {
             alan_sayisi(olay, 1, 1)?;
@@ -610,6 +622,52 @@ impl<T: GirdiCikti> GirdiCikti for IzKaydedenIo<T> {
         sonuc
     }
 
+    fn parola_ozeti_uret(&mut self, parola: &str) -> Result<String, String> {
+        let sonuc = self.ic.parola_ozeti_uret(parola);
+        self.kaydet(
+            "parola_ozeti_uret",
+            vec![sha256_hex(parola.as_bytes())],
+            metin_sonuc_yaz(&sonuc),
+        );
+        sonuc
+    }
+
+    fn totp_anahtari_uret(&mut self) -> Result<String, String> {
+        let sonuc = self.ic.totp_anahtari_uret();
+        self.kaydet("totp_anahtari_uret", Vec::new(), metin_sonuc_yaz(&sonuc));
+        sonuc
+    }
+
+    fn totp_dogrula(&mut self, gizli: &str, kod: &str) -> bool {
+        let sonuc = self.ic.totp_dogrula(gizli, kod);
+        self.kaydet(
+            "totp_dogrula",
+            vec![sha256_hex(gizli.as_bytes()), sha256_hex(kod.as_bytes())],
+            vec![bool_yaz(sonuc)],
+        );
+        sonuc
+    }
+
+    fn eposta_gonder(&mut self, alici: &str, konu: &str, govde: &str) -> Result<i64, String> {
+        let sonuc = self.ic.eposta_gonder(alici, konu, govde);
+        self.kaydet(
+            "eposta_gonder",
+            vec![alici.into(), konu.into(), sha256_hex(govde.as_bytes())],
+            tamsayi_sonuc_yaz(&sonuc),
+        );
+        sonuc
+    }
+
+    fn gorsel_kucult(&mut self, kaynak: &str, hedef: &str, azami: i64) -> Result<i64, String> {
+        let sonuc = self.ic.gorsel_kucult(kaynak, hedef, azami);
+        self.kaydet(
+            "gorsel_kucult",
+            vec![kaynak.into(), hedef.into(), azami.to_string()],
+            tamsayi_sonuc_yaz(&sonuc),
+        );
+        sonuc
+    }
+
     fn eylem_baslat(&mut self) -> Result<(), EylemHatasi> {
         let sonuc = self.ic.eylem_baslat();
         self.kaydet("eylem_baslat", Vec::new(), eylem_sonuc_yaz(&sonuc));
@@ -768,6 +826,22 @@ impl IzYenidenOynatici {
                     .unwrap_or_else(|| "IO izi sonucu bozuk".into()))
             }
         }
+    }
+
+    fn tamsayi_sonuc(&mut self, islem: &str, sonuc: Option<Vec<String>>) -> Result<i64, String> {
+        let Some(alanlar) = sonuc else {
+            return Err(self
+                .hata
+                .clone()
+                .unwrap_or_else(|| "IO izi uyuşmazlığı".into()));
+        };
+        tamsayi_sonuc_coz(&alanlar).unwrap_or_else(|hata| {
+            self.bozuk_sonuc(islem, hata);
+            Err(self
+                .hata
+                .clone()
+                .unwrap_or_else(|| "IO izi sonucu bozuk".into()))
+        })
     }
 
     fn sayi_sonuc<T>(&mut self, islem: &str, sonuc: Option<Vec<String>>, varsayilan: T) -> T
@@ -1121,6 +1195,40 @@ impl GirdiCikti for IzYenidenOynatici {
             vec![sha256_hex(parola.as_bytes()), sha256_hex(ozet.as_bytes())],
         );
         self.bool_sonuc("parola_dogrula", sonuc)
+    }
+
+    fn parola_ozeti_uret(&mut self, parola: &str) -> Result<String, String> {
+        let sonuc = self.siradaki("parola_ozeti_uret", vec![sha256_hex(parola.as_bytes())]);
+        self.metin_sonuc("parola_ozeti_uret", sonuc)
+    }
+
+    fn totp_anahtari_uret(&mut self) -> Result<String, String> {
+        let sonuc = self.siradaki("totp_anahtari_uret", Vec::new());
+        self.metin_sonuc("totp_anahtari_uret", sonuc)
+    }
+
+    fn totp_dogrula(&mut self, gizli: &str, kod: &str) -> bool {
+        let sonuc = self.siradaki(
+            "totp_dogrula",
+            vec![sha256_hex(gizli.as_bytes()), sha256_hex(kod.as_bytes())],
+        );
+        self.bool_sonuc("totp_dogrula", sonuc)
+    }
+
+    fn eposta_gonder(&mut self, alici: &str, konu: &str, govde: &str) -> Result<i64, String> {
+        let sonuc = self.siradaki(
+            "eposta_gonder",
+            vec![alici.into(), konu.into(), sha256_hex(govde.as_bytes())],
+        );
+        self.tamsayi_sonuc("eposta_gonder", sonuc)
+    }
+
+    fn gorsel_kucult(&mut self, kaynak: &str, hedef: &str, azami: i64) -> Result<i64, String> {
+        let sonuc = self.siradaki(
+            "gorsel_kucult",
+            vec![kaynak.into(), hedef.into(), azami.to_string()],
+        );
+        self.tamsayi_sonuc("gorsel_kucult", sonuc)
     }
 
     fn eylem_baslat(&mut self) -> Result<(), EylemHatasi> {

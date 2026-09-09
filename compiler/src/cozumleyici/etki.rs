@@ -563,6 +563,7 @@ fn ifade_bilgisi(ifade: &Ifade, bilgi: &mut Bilgi) {
                     // Uygulama durumu değil, güvenlik adaptörünün kısa ömürlü ve
                     // anlam taşımayan synchronizer oturumudur. GET'te üretilebilir.
                     IntrinsicEtkisi::WebAdaptoru => bilgi.web = true,
+                    IntrinsicEtkisi::GeriAlinamaz => bilgi.geri_alinamaz = true,
                     IntrinsicEtkisi::Saf | IntrinsicEtkisi::DisOkuma => {}
                 }
             }

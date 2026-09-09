@@ -1,0 +1,11 @@
+# Site E — zee ile yazılmış dördüncü dogfood ürünü (K-181).
+# Gerçek ürün [ürün deposu (özel)] deposundadır (adminpanelzee çatalı);
+# bu klasör derleyiciyi genişleten gereksinimlerin depo içi kanıt aynasıdır.
+
+proje "urun-e" olsun
+sürüm "0.1.0" olsun
+morfoloji "zee-tr-1" olsun
+giriş "kimlik-gereksinimi.dil" olsun
+yetkinlikler "dosya-okuma", "dosya-yazma", "ağ", "kriptografi" listesi olsun
+ağ_hedefleri "smtps://mail.example.invalid:465" listesi olsun
+e_posta_bağlantı_değişkeni "URUN_E_SMTP_URL" olsun

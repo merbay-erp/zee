@@ -33,7 +33,11 @@ Bildirim hedefi yalnız `http://host[:port]` veya `https://host[:port]`
 origin'idir; yol, sorgu ve parça YASAKTIR. İstek URL'sinin yolu/sorgusu olabilir
 ama şema+küçük-harfli ASCII DNS/IP+etkin port exact bildirime eşleşmek
 ZORUNDADIR. Kullanıcı bilgisi, kontrol karakteri, ters bölü, sıfır port,
-ayraçsız IPv6 ve başka şema YASAKTIR.
+ayraçsız IPv6 ve başka şema YASAKTIR. K-181 ile `smtps://` (465, implicit TLS) ve
+`smtp://` (587, STARTTLS zorunlu; düz metin yalnız loopback) şemaları aynı
+exact origin kuralıyla kabul edilir; bildirimsiz geliştirici ağında yalnız
+şifreli şemalar (https, smtps) kendiliğinden izinlidir. SMTP kimlik bilgisi
+bildirimde değil `e_posta_bağlantı_değişkeni` ortam değişkenindedir.
 
 Public hedef HTTPS olmak ZORUNDADIR. Düz HTTP bildirimi için `yerel-ağ`
 ZORUNLUDUR. DNS çözümünden sonra bağlantıda kullanılabilecek bütün IP'ler

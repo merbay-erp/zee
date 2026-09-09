@@ -46,6 +46,10 @@ pub struct ProjeBildirimi {
     /// K-163 ilk dogfood profili: sır içermeyen loopback hedef kimliği,
     /// bağlantı URL'sini taşıyan ortam değişkeni ve repo içi migration kökü.
     pub veritabani: Option<VeritabaniBildirimi>,
+    /// K-181: SMTP bağlantı URL'sini taşıyan ortam değişkeninin adı
+    /// (`smtps://kullanici:parola@sunucu:465?from=gonderen@alan`). Sır kaynakta
+    /// değildir; sunucu `ağ_hedefleri` içinde açıkça listelenir.
+    pub eposta_baglanti_degiskeni: Option<String>,
 }
 
 pub use crate::veritabani_modeli::{VeritabaniBildirimi, VeritabaniHedefi};
@@ -143,12 +147,13 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
                 | "veritabanı_hedefi"
                 | "veritabanı_bağlantı_değişkeni"
                 | "veritabanı_göçleri"
+                | "e_posta_bağlantı_değişkeni"
         ) {
             return Err(proje_hatasi(
                 "P001",
                 &format!("\"{}\" proje bildirimi alanı değil.", ad),
                 satir,
-                "Geçerli alanlar: proje, sürüm, morfoloji, giriş, yetkinlikler, ağ_hedefleri, yerel_bağımlılıklar, registry, registry_kök_sürümü, registry_kök_özeti, uzak_bağımlılıklar, veritabanı_hedefi, veritabanı_bağlantı_değişkeni, veritabanı_göçleri.",
+                "Geçerli alanlar: proje, sürüm, morfoloji, giriş, yetkinlikler, ağ_hedefleri, yerel_bağımlılıklar, registry, registry_kök_sürümü, registry_kök_özeti, uzak_bağımlılıklar, veritabanı_hedefi, veritabanı_bağlantı_değişkeni, veritabanı_göçleri, e_posta_bağlantı_değişkeni.",
             ));
         }
         if alanlar.insert(ad.clone(), (deger, satir)).is_some() {
@@ -177,6 +182,36 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
     let (ag_hedef_yazimlari, ag_hedef_satiri) =
         metin_listesini_al(&mut alanlar, "ağ_hedefleri", "P015")?;
     let veritabani = veritabani_bildirimini_al(&mut alanlar, &yetkinlik_yazimlari)?;
+    let eposta_baglanti_degiskeni = match istege_bagli_sabit_metni_al(
+        &mut alanlar,
+        "e_posta_bağlantı_değişkeni",
+    )? {
+        None => None,
+        Some((degisken, satir)) => {
+            if !yetkinlik_yazimlari.iter().any(|y| y == "ağ") {
+                return Err(proje_hatasi(
+                        "P015",
+                        "E-posta ayarı var ama `ağ` yetkinliği açık değil.",
+                        satir,
+                        "Yetkinliklere \"ağ\" ekle ve SMTP sunucusunu `ağ_hedefleri` içinde smtps://sunucu:465 olarak bildir.",
+                    ));
+            }
+            let mut karakterler = degisken.chars();
+            if !karakterler
+                .next()
+                .is_some_and(|c| c.is_ascii_uppercase() || c == '_')
+                || !karakterler.all(|c| c.is_ascii_uppercase() || c.is_ascii_digit() || c == '_')
+            {
+                return Err(proje_hatasi(
+                        "P015",
+                        "E-posta bağlantı ortam değişkeni A-Z, 0-9 ve _ biçiminde olmalı.",
+                        satir,
+                        "Sır değerini değil yalnız ortam değişkeninin adını yaz; örnek: UYGULAMA_SMTP_URL.",
+                    ));
+            }
+            Some(degisken)
+        }
+    };
     let mut yetkinlikler = BTreeSet::new();
     for yazim in yetkinlik_yazimlari {
         let Some(yetkinlik) = Yetkinlik::ayristir(&yazim) else {
@@ -315,6 +350,7 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
         registry,
         uzak_bagimliliklar,
         veritabani,
+        eposta_baglanti_degiskeni,
     })
 }
 
