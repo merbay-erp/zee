@@ -55,7 +55,10 @@ fn dosyayi_yazilabilir_yap(yol: &Path) {
         use std::os::unix::fs::PermissionsExt;
         izin.set_mode(izin.mode() | 0o200);
     }
+    // K-182: Windows'ta yalnız salt-okunur bayrağı vardır; lint'in uyardığı
+    // "dünya yazılabilir" Unix etkisi burada oluşmaz (Unix dalı mode kullanır).
     #[cfg(not(unix))]
+    #[allow(clippy::permissions_set_readonly_false)]
     izin.set_readonly(false);
     let _ = std::fs::set_permissions(yol, izin);
 }
