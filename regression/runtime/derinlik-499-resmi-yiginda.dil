@@ -1,0 +1,15 @@
+# K-178: C019 sınırının hemen altındaki derinlik resmî yürütme yığınında
+# taşmadan çalışır; debug CLI eskiden 167. düzeyde doğal yığın taşmasıyla
+# düşüyordu (spec/05 sözü ihlali).
+
+işlem düş
+    sayıyı al
+    sayı 0 a eşitse
+        0 döndür
+    kalan sayı ile 1 in farkı olsun
+    sonuç kalan için düş olsun
+    toplam sonuç ile 1 in toplamı olsun
+    toplamı döndür
+
+x 499 için düş olsun
+x yaz
