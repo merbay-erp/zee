@@ -1441,6 +1441,7 @@ impl GercekIo {
         }
     }
 
+    #[allow(clippy::too_many_arguments)]
     fn yeni_argumanlarla(
         kok: &std::path::Path,
         dosya_siniri_koku: &std::path::Path,
