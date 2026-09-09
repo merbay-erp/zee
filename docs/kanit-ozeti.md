@@ -88,14 +88,16 @@ Kaynak: `docs/dogfood-projeleri-v1.tsv + dogfood/korpus-v1.tsv`
 | legacy-panel (active) | dogfood/legacy-panel |
 | kanit-ozeti (active) | dogfood/kanit-ozeti |
 | kelime-avi (active) | dogfood/kelime-avi |
+| urun-e (active) | dogfood/urun-e |
 
 | Ürün | denetle | calistir | proje | basarili | basarisiz | Toplam |
 | --- | --- | --- | --- | --- | --- | --- |
+| urun-e | 1 | 0 | 0 | 1 | 0 | 1 |
 | legacy-panel | 6 | 4 | 0 | 7 | 3 | 10 |
 | kanit-ozeti | 12 | 9 | 1 | 11 | 11 | 22 |
 | kelime-avi | 2 | 2 | 1 | 3 | 2 | 5 |
 
-Toplam korpus vakası: 37.
+Toplam korpus vakası: 38.
 
 ## Deprecation kayıtları
 
@@ -130,12 +132,12 @@ Kaynak: `docs/compiler-degisiklik-beyanlari-v1.tsv + docs/core-freeze-beyanlari-
 | --- | --- |
 | maintenance | 13 |
 | semantic-bugfix | 3 |
-| semantic-change | 9 |
+| semantic-change | 10 |
 
 | Freeze sınıfı | Beyan |
 | --- | --- |
 | correctness | 6 |
-| dogfood-change | 5 |
+| dogfood-change | 6 |
 | maintenance | 10 |
 
-Toplam: 25 compiler değişiklik beyanı, 21 core freeze beyanı.
+Toplam: 26 compiler değişiklik beyanı, 22 core freeze beyanı.
