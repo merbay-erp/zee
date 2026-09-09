@@ -1,5 +1,7 @@
 use std::path::{Path, PathBuf};
+#[cfg(unix)]
 use std::process::{Command, Output};
+#[cfg(unix)]
 use std::time::{SystemTime, UNIX_EPOCH};
 
 fn depo() -> PathBuf {
@@ -9,6 +11,7 @@ fn depo() -> PathBuf {
         .to_path_buf()
 }
 
+#[cfg(unix)]
 fn gecici_depo() -> PathBuf {
     let damga = SystemTime::now()
         .duration_since(UNIX_EPOCH)
@@ -17,6 +20,7 @@ fn gecici_depo() -> PathBuf {
     std::env::temp_dir().join(format!("zee-core-freeze-{}-{damga}", std::process::id()))
 }
 
+#[cfg(unix)]
 fn git(kok: &Path, argumanlar: &[&str]) -> Output {
     Command::new("git")
         .args(argumanlar)
@@ -25,6 +29,7 @@ fn git(kok: &Path, argumanlar: &[&str]) -> Output {
         .expect("git çalışmalı")
 }
 
+#[cfg(unix)]
 fn basarili_git(kok: &Path, argumanlar: &[&str]) -> String {
     let cikti = git(kok, argumanlar);
     assert!(
@@ -39,6 +44,7 @@ fn basarili_git(kok: &Path, argumanlar: &[&str]) -> String {
         .to_string()
 }
 
+#[cfg(unix)]
 fn commit(kok: &Path, mesaj: &str) -> String {
     basarili_git(kok, &["add", "."]);
     basarili_git(
@@ -57,6 +63,7 @@ fn commit(kok: &Path, mesaj: &str) -> String {
     basarili_git(kok, &["rev-parse", "HEAD"])
 }
 
+#[cfg(unix)]
 fn korugu_calistir(kok: &Path, taban: &str) -> Output {
     Command::new("bash")
         .arg(depo().join("scripts/core-freeze-korugu.sh"))
