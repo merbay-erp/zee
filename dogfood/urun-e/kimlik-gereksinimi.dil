@@ -29,7 +29,7 @@ işlem ikinci_adim_gecerli
     yanlış döndür
 
 # 3) İletişim formu bildirimi: e-posta geri alınamaz dış etkidir; eylemde değil
-#    çağıran adaptörde (rota/CLI) gönderilir.
+# çağıran adaptörde (rota/CLI) gönderilir.
 işlem bildirim_gonder
     alıcıyı Metin olarak al
     konuyu Metin olarak al
