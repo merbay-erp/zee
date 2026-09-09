@@ -392,3 +392,52 @@ fn rota_birimi_rotalari_kullan_satirinin_yerine_sirayla_katilir() {
         .expect_err("A010 bekleniyordu");
     assert_eq!(hata.kod, "A010");
 }
+
+#[test]
+fn elmas_ice_alimda_gorunurluk_sira_bagimsizdir_ve_denetim_yolu_rotalari_katar() {
+    // K-182 düzeltmesi: `baska` doğrudan alınmış public işlem, onu kendi içinde alan
+    // `orta` sonradan gelse de görünür kalır (strict ve tanı/denetim yolları).
+    let dosyalar = HashMap::from([
+        (
+            "baska",
+            "işlem baska\n    Metin döndürür\n\n    \"b\" döndür\n",
+        ),
+        (
+            "orta",
+            "baska birimini kullan\n\nişlem selam3\n    Metin döndürür\n\n    x baska olsun\n    x döndür\n",
+        ),
+        (
+            "rota_p",
+            "baska birimini kullan\n\nGET \"/p\" adresine istek geldiğinde\n    y baska olsun\n    y yanıtını gönder\n",
+        ),
+    ]);
+    for kaynak in [
+        "baska birimini kullan\norta birimini kullan\n\ny baska olsun\ny yaz\n",
+        "orta birimini kullan\nbaska birimini kullan\n\ny baska olsun\ny yaz\n",
+    ] {
+        assert_eq!(
+            calistir(kaynak, dosyalar.clone()).expect("çalışmalı"),
+            vec!["b"]
+        );
+        let tanilar = dil::kaynagi_tanilari(kaynak, &mut yukleyici(&dosyalar));
+        assert!(tanilar.is_empty(), "{tanilar:?}");
+    }
+    // Denetim yolu rota birimini de katar: rota gövdesindeki tanımsız ad tanı üretir.
+    let kirik = HashMap::from([(
+        "rota_k",
+        "GET \"/k\" adresine istek geldiğinde\n    y bilinmeyen_islem olsun\n    y yanıtını gönder\n",
+    )]);
+    let tanilar = dil::kaynagi_tanilari(
+        "8080 kapısında sunucu başlat\n\nrota_k rotalarını kullan\n",
+        &mut yukleyici(&kirik),
+    );
+    assert!(
+        !tanilar.is_empty(),
+        "rota birimindeki hata denetimde görünmeli"
+    );
+    let temiz = dil::kaynagi_tanilari(
+        "8080 kapısında sunucu başlat\n\nrota_p rotalarını kullan\n",
+        &mut yukleyici(&dosyalar),
+    );
+    assert!(temiz.is_empty(), "{temiz:?}");
+}

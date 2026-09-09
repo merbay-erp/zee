@@ -3430,4 +3430,11 @@ dosya bölünemiyordu. `KullanimTuru::Rota`: birimin üst düzey rotaları `rota
 kullan` satırının yerine sırayla girer, tanımlar alınır, `birimini kullan` rotaları
 yine düşürür, rotasız birim A010. Yükleyici (`lib.rs`), ayrıştırıcı, paket çözücü,
 LSP, yüzey fixture'ı; ADR-076; test `birim_testi`. Panel rotaları
-`kaynak/rotalar/` altına bölündü.
+`kaynak/rota_*.dil` birimlerine bölündü (birim adı yol içeremez).
+
+**Bulunan hata (aynı gün):** elmas içe alımda görünürlük içe alım sırasına
+bağlıydı — `A birimini kullan` + `B birimini kullan` (B, A'yı içeride alıyorsa)
+sırasına göre A'nın işlemi `dil denetle`de A001 veriyordu; kurtarmalı yol
+`extend` ile kapsüllü kopyayı public kopyanın üstüne yazıyordu, strict yol da
+ilk gelen kapsüllü kopyayı koruyordu. Her iki yol görünürlük-OR ile sıra
+bağımsız yapıldı; denetim yolu rota birimlerini de katıyor. Test `birim_testi`.

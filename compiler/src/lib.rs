@@ -555,6 +555,13 @@ fn birim_tanimlarini_birlestir(
             .unwrap_or_default();
         if let Some(onceki) = islem_kaynagi.get(&islem_adi) {
             if islem_kokenleri.get(&islem_adi) == Some(&koken) {
+                // Elmas içe alım: doğrudan alınan kopya public ise görünürlük
+                // içe alım sırasından bağımsız korunur (K-182 düzeltmesi).
+                if islem.disari_acik {
+                    if let Some(mevcut) = islemler.get_mut(&islem_adi) {
+                        mevcut.disari_acik = true;
+                    }
+                }
                 continue;
             }
             return Err(cakisma("işlemi", &islem_adi, onceki, ad, satir));
@@ -786,6 +793,8 @@ pub fn kaynagi_tanilari_kokenlerle(
     let mut yapilar: Vec<Yapi> = Vec::new();
     let mut testler: Vec<Test> = Vec::new();
     let mut yigin: Vec<String> = Vec::new();
+    // K-182: rota birimlerinin rotaları denetimde de ana programa katılır.
+    let mut rota_birimleri: HashMap<String, Vec<Cumle>> = HashMap::new();
     for (ad, tur, satir) in ayristirici::kullanilan_birimler(tokenlar.tokenlar()) {
         match yukleyici(BirimIstegi {
             ad: &ad,
@@ -801,8 +810,20 @@ pub fn kaynagi_tanilari_kokenlerle(
                     yukleyici,
                     &mut yigin,
                 ) {
-                    Ok(birim) => {
-                        islemler.extend(birim.islemler);
+                    Ok(mut birim) => {
+                        if tur == KullanimTuru::Rota {
+                            rota_birimleri.insert(ad.clone(), std::mem::take(&mut birim.cumleler));
+                        }
+                        // Elmas içe alımda doğrudan alınan public kopya, sonradan gelen
+                        // kapsüllü kopyayla ezilmez (görünürlük OR; K-182 düzeltmesi).
+                        for (islem_adi, islem) in birim.islemler {
+                            match islemler.get_mut(&islem_adi) {
+                                Some(mevcut) => mevcut.disari_acik |= islem.disari_acik,
+                                None => {
+                                    islemler.insert(islem_adi, islem);
+                                }
+                            }
+                        }
                         yapilar.extend(birim.yapilar);
                         testler.extend(birim.testler);
                     }
@@ -823,6 +844,26 @@ pub fn kaynagi_tanilari_kokenlerle(
     let (ast, ayristirma_tanilari) = tokenlar.ayristir_kurtarmali(tohum);
     let cumleler = ast.into_cumleler();
     tanilar.extend(ayristirma_tanilari);
+    let cumleler = if rota_birimleri.is_empty() {
+        cumleler
+    } else {
+        let mut birlesik = Vec::with_capacity(cumleler.len());
+        for cumle in cumleler {
+            match cumle {
+                Cumle::Kullan {
+                    tur: KullanimTuru::Rota,
+                    ref ad,
+                    ..
+                } => {
+                    if let Some(rotalar) = rota_birimleri.remove(ad) {
+                        birlesik.extend(rotalar);
+                    }
+                }
+                diger => birlesik.push(diger),
+            }
+        }
+        birlesik
+    };
 
     // Hoist (çakışmalar tanı olur, tanımlar yine de alınır ki devamı denetlensin).
     let mut kalan = Vec::new();
