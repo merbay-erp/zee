@@ -64,11 +64,9 @@ fn sinirli_metin_oku(yol: &Path, azami: usize) -> io::Result<String> {
     })
 }
 
-/// Dosyayı okuma için açar. Windows'ta `ReplaceFileW` hedefi iki yeniden
-/// adlandırmayla değiştirir; aradaki anda yolu açan okuyucu NotFound (ya da
-/// paylaşım ihlali) görebilir (K-182, windows-latest). Kısa ve sınırlı
-/// yeniden deneme spec/08'in "okuyucu eski ya da yeni bütünü görür" sözünü
-/// Windows'ta da tutar; gerçekten yok olan dosya en çok ~50 ms sonra hata verir.
+/// Windows'ta `ReplaceFileW` iki yeniden adlandırma arasında hedefi yok
+/// gösterir; sınırlı yeniden deneme spec/08 "eski ya da yeni bütün" sözünü
+/// tutar (K-182). Gerçekten yok olan dosya en çok ~50 ms sonra hata verir.
 fn dosyayi_ac(yol: &Path) -> io::Result<std::fs::File> {
     #[cfg(windows)]
     {
