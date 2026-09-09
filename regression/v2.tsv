@@ -21,3 +21,4 @@ bozuk-form-kodlamasi	K-176	d20d85738d6958849e642f508ae594586d9289fc	-	0.8.0-dev	
 girintisiz-islem-basligi	K-166	a0a3c3f20d75187cd25bbfb6617657d2973d9c0c	-	0.8.0-dev	parser	parser	S007	1:1:1	1	-	regression/parser/girintisiz-islem-basligi.dil
 govde-disi-parametre-satiri	K-166	a0a3c3f20d75187cd25bbfb6617657d2973d9c0c	-	0.8.0-dev	parser	parser	S004	1:1:1	1	-	regression/parser/govde-disi-parametre-satiri.dil
 tanimsiz-ad-tek-tani	K-166	a0a3c3f20d75187cd25bbfb6617657d2973d9c0c	-	0.8.0-dev	checker	diagnostics	A001	1:1:4	1	-	regression/checker/tanimsiz-ad-tek-tani.dil
+derinlik-499-resmi-yiginda	K-178	9527c395ef303cf526537facf0ae775ee2ee16db	-	0.8.0-dev	runtime	run	-	-	0	499	regression/runtime/derinlik-499-resmi-yiginda.dil
