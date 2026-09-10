@@ -3452,3 +3452,13 @@ usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.
   katmanı `kalici_dosya/platform.rs`e taşındı (850 satır bütçesi).
 - **Sınır:** Çekirdek kuyruğu katı FIFO sözü vermez; kanıt ölçülen üst
   sınırdır. Windows/ubuntu kanıtı uzak koşudur. K-183 kapandı.
+
+## K-180 — RFC-0029 taslağı: sıra ile öğe erişimi (10 Eyl)
+
+- İki bağımsız üründe beş sayaç döngüsü (K-164/F010 ×2, K-179 ×3) ADR-074
+  kuralıyla tasarım maddesi oldu. RFC-0029 sorunu kanıtla, üç Türkçe yüzey
+  adayını (`3. öğesi`, `üçüncü öğesi`, `sıra. öğesi`), anlamı (1 tabanlı,
+  kopya, aralık dışı çalışma hatası, `almayı dene`) ve önden bağlı seçim
+  ölçütlerini (K-161/K-162 kartı, spec/20 katmanı, morfoloji, conformance)
+  yazar. Freeze içinde uygulama yok; karar 4 Ekim sonrası RFC-0006 ile aynı
+  oturumda. K-180 açık kalır, taslak yazıldı.

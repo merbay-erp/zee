@@ -34,6 +34,7 @@ Dil değişikliği RFC ister (master plan bölüm 25). Şablon: [0000-sablon.md]
 | RFC-0026 | [PostgreSQL Veri Erişimi](0026-postgresql-veri-erisimi.md) | **geçici kabul** (K-163/F031 TLS ve sınırlı havuz profili) | K-163, B-073, ADR-060/062 |
 | RFC-0027 | [Binary Yükleme ve Dosya Yaşam Döngüsü](0027-binary-yukleme-ve-dosya-yasam-dongusu.md) | **geçici kabul** (K-163/F030 dogfood) | K-163, ADR-061 |
 | RFC-0028 | [Uyumluluk ve Deprecation Politikası](0028-uyumluluk-ve-deprecation-politikasi.md) | **geçici kabul** (K-167 yürütülebilir kapı; edition sözdizimi açık) | K-167, B-072, ADR-064 |
+| RFC-0029 | [Listede sıra ile öğe erişimi](0029-liste-sira-erisimi.md) | **taslak** (K-174 freeze sonrası; K-161/K-162 kartı bekler) | K-180, K-164/F010, K-179, ADR-074 |
 
 **Durum özeti (5 Eylül 2026, K-167):** 28 RFC — 2 kabul (0001, 0010),
 24 geçici kabul (RFC-0020'nin yayın, metadata doğrulama, taşıma/cache/offline ve
