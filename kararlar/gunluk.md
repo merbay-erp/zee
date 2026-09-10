@@ -3462,3 +3462,8 @@ usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.
   ölçütlerini (K-161/K-162 kartı, spec/20 katmanı, morfoloji, conformance)
   yazar. Freeze içinde uygulama yok; karar 4 Ekim sonrası RFC-0006 ile aynı
   oturumda. K-180 açık kalır, taslak yazıldı.
+- **Ek (10 Eyl öğleden sonra):** Usability kitine K-180 sıra erişimi kartı
+  eklendi (serbest üretim, kör tercih, 0/1 taban sorusu; 15'te 10 / 12
+  eşiği) — K-016/K-093 protokollerine dokunmadan 3 dakikalık ek adım.
+  Backlog "bir sonraki somut kapı" paragrafı K-178…K-183 ve Tier-1 CI
+  durumuyla güncellendi.

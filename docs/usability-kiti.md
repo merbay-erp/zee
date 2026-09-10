@@ -10,7 +10,7 @@ K-016'nın teknik bağlamları, kör adayları ve önceden taahhütlü karar eş
 [K-016 karar paketinde](k016-cagri-karar-paketi.md) bağlayıcıdır. Bu kit yalnız
 oturum uygulamasıdır; sonuç geldikten sonra eşik değiştirilmez.
 
-## Oturum düzeni (kişi başı ~30–35 dakika)
+## Oturum düzeni (kişi başı ~33–38 dakika)
 
 1. **Isınma (2 dk):** "Bilgisayara Türkçe komut veren bir dil deniyoruz.
    Doğru cevap yok; takıldığın her yer bizim hatamız, senin değil."
@@ -19,10 +19,12 @@ oturum uygulamasıdır; sonuç geldikten sonra eşik değiştirilmez.
 3. **K-016 kör kartlar (8 dk):** Katılımcıya atanmış sırayla üç kartı uygula.
 4. **Sesli okuma (7 dk):** Aşağıdaki programları KAĞITTAN sesli okut.
    Kural: satırı önce okusun, sonra "sence bu ne yapar?" — cevabı YAZ.
-5. **K-093 tahmin kartları (7 dk):** İlk tahmin, tek cümlelik öğretim, ikinci
+5. **K-180 sıra erişimi kartı (3 dk):** serbest üretim, kör tercih, taban
+   sorusu (RFC-0029; eşiği aşağıda).
+6. **K-093 tahmin kartları (7 dk):** İlk tahmin, tek cümlelik öğretim, ikinci
    tahmin; G3 yalnız profesyonel/isteyen çocuk.
-6. **Genel yazma görevi (5 dk):** Küçük bir işi dilde yazmayı DENESİN.
-7. **Kapanış (2 dk):** "En garip gelen satır hangisiydi?" — birebir not al.
+7. **Genel yazma görevi (5 dk):** Küçük bir işi dilde yazmayı DENESİN.
+8. **Kapanış (2 dk):** "En garip gelen satır hangisiydi?" — birebir not al.
 
 ## Okutulacak programlar (sırayla)
 
@@ -134,6 +136,36 @@ Seçenekler: A `[1,2]` · B `[7,7]`
 - İki eşik de oluşmazsa V1-P1-05 açık kalır; veri çoğaltılır, sonuç zorlanmaz.
 - Profesyonellerin G3'te çoğunluğu B beklerse alias açıklaması ayrıca yeniden
   tasarlanır; bu sonuç tek başına paylaşılan referansı dile eklemez.
+
+## K-180 sıra erişimi kartı (RFC-0029; K-016/K-093 eşiklerinden bağımsız)
+
+K-016 ve K-093 protokolleri donuktur; bu kart onlara dokunmadan oturuma
+**3 dakikalık ek adım** olarak girer (sesli okumadan sonra, K-093'ten önce).
+Amaç: listede N'inci öğeye erişim için hangi Türkçe yüzeyin kendiliğinden
+yazıldığını ve hangi sayma tabanının beklendiğini ölçmek.
+
+1. **Serbest üretim (öğretmeden):** "Elinde `kelimeler` diye bir liste var;
+   üçüncü kelimeyi ekrana yazdıran tek satırı yaz." Yazılanı birebir kaydet;
+   düzeltme yok.
+2. **Kör tercih:** Üç satırı karışık sırayla göster, "sana en doğal geleni
+   seç, neden?" — cevabı yaz.
+
+```dil
+kelimelerin 3. öğesi yaz
+kelimelerin üçüncü öğesi yaz
+kelimelerin sıra. öğesi yaz
+```
+
+3. **Taban sorusu:** "`elma, armut, kiraz` listesinde `2. öğesi` sence
+   hangisi?" — armut (1 tabanlı) mı kiraz (0 tabanlı) mı, birebir yaz.
+
+Önceden taahhüt edilen karar eşiği:
+
+- 15 kişinin **en az 10'u** serbest üretimde ya da kör tercihte aynı yüzeyi
+  yazıyor/seçiyorsa o aday RFC-0029'un önerilen yüzeyi olur; taban sorusunda
+  en az 12 kişi armut diyorsa 1 tabanı kesinleşir.
+- Eşik oluşmazsa RFC-0029 taslak kalır ve ikinci karşılaştırmalı oturum
+  yapılır; freeze içinde ve insan verisi olmadan yüzey seçilmez.
 
 ## Görev kartları
 
