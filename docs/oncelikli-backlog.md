@@ -819,8 +819,15 @@ kapısını ve ilk 30 dakikalık sızıntısız tabanı kaydetti. K-166 tanı ka
 ve runbook'u kurdu. K-164 ikinci gerçek ürünü farklı iş yükünde (kanıt özeti
 aracı) yazıp elmas birim içe alımı ve birim kökenli tanı kusurlarını kapattı;
 K-165 aynı aracı Rust/Go ile bayt bayt eşdeğer yazıp veri temelli karşılaştırdı.
-Üçüncü incelemenin makine ve ikinci ürün hattı burada bitti; K-174 freeze
-takvimi ve K-175 RC ile K-161/K-162 insan kanıtı bekler.
+Üçüncü incelemenin makine ve ikinci ürün hattı burada bitti. Ardından K-178
+yürütme yığınını ölçüp derinlik sözünü resmî yığında test etti; K-179 üçüncü
+ürünle (kelime avı) sürtünme tekrarını ölçtü ve K-180 sıra erişimini RFC-0029
+taslağı olarak açtı; repo public olunca K-182 ilk gerçek Tier-1 koşularının
+(CRLF, cargo uplift, ReplaceFileW okuyucu, Windows lint'leri) bulgularını
+kapattı ve `dil`/tedarik/tatbikat/fuzz/soak beş workflow'u üç platformda
+yeşile çekti; K-183 kalıcı kilit açlığını adil beklemeyle (ADR-075) kapattı.
+K-174 freeze takvimi ve K-175 RC ile K-161/K-162 insan kanıtı bekler; usability
+kiti RFC-0029 için de kart taşır.
 K-161/K-162 gerçek insan testleri de insan verisini beklemeyi sürdürür.
 İnsan verisi gelmeden yeni syntax seçilmez
 veya B-001/B-002 tamamlanmış gösterilmez.

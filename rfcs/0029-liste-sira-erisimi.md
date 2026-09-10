@@ -60,9 +60,10 @@ tasarımın çekirdeği "sıra bir ifadedir"dir. Aday yazım: `<liste>nin <sıra
 
 ## Seçim ölçütleri (önden bağlanır)
 
-1. **İnsan verisi:** K-161/K-162 oturumlarına bir kart eklenir: çocuklar
-   "3. öğesi" mi "üçüncü öğesi" mi yazıyor, 0/1 tabanı hangisini bekliyor.
-   Kart olmadan yüzey seçilmez.
+1. **İnsan verisi:** K-161/K-162 oturumlarındaki
+   [K-180 sıra erişimi kartı](../docs/usability-kiti.md) (serbest üretim, kör
+   tercih, taban sorusu) ve önden ilan edilmiş eşik (15 kişiden 10'u aynı
+   yüzey; 12'si 1 tabanı). Kart olmadan yüzey seçilmez.
 2. **Katman ve tam tüketim:** spec/20 sırasına oturmalı; `3.` tokeni sözcükleme
    düzeyinde belirsizlik yaratmamalı (fuzz + formatter parse-equivalence).
 3. **Morfoloji:** `harflerin` tamlayanı mevcut çözümle aynı; `-inci` eki
