@@ -3435,3 +3435,20 @@ usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.
   açlığıdır, yalnız disk hızı değil. Test 2 × 12'ye indirildi (kayıpsızlık
   yine kanıtlanır); adil kilit (bekleyen önceliği / bloklayan flock + zaman
   aşımı) K-183'ün tasarım işi olarak kaldı, spec/08 5 sn sözü değişmedi.
+
+## K-183 — Bekleyen yazar yoklamaz, kuyrukta bloklanır (10 Eyl)
+
+- **Bulgu:** İlk Tier-1 koşuları aynı sınıfta iki flake verdi (10×10
+  rate-limit, 2×40 ekleme): kilidi ardışık yeniden alan yazar, 5 ms yoklayan
+  diğerini ubuntu'nun yavaş diskinde 5 sn dışarıda bıraktı. Testleri
+  küçültmek açlığı gizliyordu.
+- **Karar (ADR-075):** hızlı yol `LOCK_NB` aynı; kilit doluysa yardımcı iş
+  parçacığı bloklayan `flock(LOCK_EX)`/`LockFileEx` ile çekirdek kuyruğuna
+  girer, çağıran 5 sn kanaldan bekler; süre dolunca aynı C013, geç gelen kilit
+  anında bırakılır. spec/08'e tek cümle eklendi: bekleyen aç bırakılamaz.
+- **Kanıt:** `iki_yazar_satir_kaybetmez` 2×40'a döndü; yeni
+  `kilidi_ardisik_yeniden_alan_yazar_bekleyeni_ac_birakmaz` A'nın 120 ardışık
+  eklemesinde B'nin tek eklemesini 2 sn içinde ister (macOS'ta ~ms). Platform
+  katmanı `kalici_dosya/platform.rs`e taşındı (850 satır bütçesi).
+- **Sınır:** Çekirdek kuyruğu katı FIFO sözü vermez; kanıt ölçülen üst
+  sınırdır. Windows/ubuntu kanıtı uzak koşudur. K-183 kapandı.

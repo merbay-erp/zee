@@ -22,6 +22,8 @@ sonuna ekler. Hedef yoksa iki biçim de dosyayı oluşturur.
 - Dayanıklılık/kilit primitive'leri bulunmayan platform işlemi reddetmek
   ZORUNDADIR; daha zayıf sessiz fallback YASAKTIR.
 - Beş saniyede alınamayan yazma kilidi hata sayılır ve dosya korunur (C013).
+- Bekleyen yazar yoklamaz, çekirdeğin kilit kuyruğunda bloklanır; kilidi
+  ardışık yeniden alan yazar bekleyeni aç bırakamaz (K-183/ADR-075).
 
 ## Metadata ve hedef türü
 

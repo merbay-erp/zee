@@ -10,7 +10,7 @@ use std::fs::{File, OpenOptions};
 use std::io::{self, Write};
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU64, Ordering};
-use std::time::{Duration, Instant};
+use std::time::Duration;
 
 mod metadata;
 mod yasam_dongusu;
@@ -21,11 +21,6 @@ const KILIT_BEKLEME: Duration = Duration::from_millis(
     crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
         .kalici_dosya()
         .kilit_bekleme_ms(),
-);
-const KILIT_YENIDEN_DENE: Duration = Duration::from_millis(
-    crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
-        .kalici_dosya()
-        .kilit_yeniden_dene_ms(),
 );
 static GECICI_SAYACI: AtomicU64 = AtomicU64::new(0);
 
@@ -120,21 +115,37 @@ impl DosyaKilidi {
             .read(true)
             .write(true)
             .open(kilit_yolu)?;
-        let baslangic = Instant::now();
-        loop {
-            match platform::kilitlemeyi_dene(&dosya) {
-                Ok(true) => return Ok(Self { dosya }),
-                Ok(false) if baslangic.elapsed() < KILIT_BEKLEME => {
-                    std::thread::sleep(KILIT_YENIDEN_DENE);
+        // Hızlı yol: boş kilit iş parçacığı açmadan alınır.
+        if platform::kilitlemeyi_dene(&dosya)? {
+            return Ok(Self { dosya });
+        }
+        Self::bekleyerek_al(dosya)
+    }
+
+    /// K-183/ADR-075: bekleyen yazar 5 ms yoklamaz; çekirdeğin kilit
+    /// kuyruğunda bloklanır. Yoklama, kilidi ardışık yeniden alan bir yazarın
+    /// diğerini yavaş diskte 5 sn boyunca aç bırakmasına yol açıyordu (CI'da
+    /// iki kez). Bloklayan çağrı yardımcı iş parçacığında yapılır ki spec/08'in
+    /// 5 sn sınırı korunsun; süre dolarsa geç gelen kilit anında bırakılır.
+    fn bekleyerek_al(dosya: File) -> io::Result<Self> {
+        let (gonder, al) = std::sync::mpsc::channel::<io::Result<File>>();
+        std::thread::Builder::new()
+            .name("zee-kilit-bekleyen".into())
+            .spawn(move || {
+                let sonuc = platform::kilitle_bloklayarak(&dosya).map(|()| dosya);
+                if let Err(geri) = gonder.send(sonuc) {
+                    if let Ok(dosya) = geri.0 {
+                        platform::kilidi_birak(&dosya);
+                    }
                 }
-                Ok(false) => {
-                    return Err(io::Error::new(
-                        io::ErrorKind::TimedOut,
-                        "zee dosya yazma kilidi 5 saniye içinde alınamadı",
-                    ));
-                }
-                Err(hata) => return Err(hata),
-            }
+            })?;
+        match al.recv_timeout(KILIT_BEKLEME) {
+            Ok(Ok(dosya)) => Ok(Self { dosya }),
+            Ok(Err(hata)) => Err(hata),
+            Err(_) => Err(io::Error::new(
+                io::ErrorKind::TimedOut,
+                "zee dosya yazma kilidi 5 saniye içinde alınamadı",
+            )),
         }
     }
 }
@@ -225,252 +236,12 @@ fn atomik_degistir(gecici: &Path, hedef: &Path) -> io::Result<()> {
     platform::atomik_degistir(gecici, hedef)
 }
 
-#[cfg(unix)]
-mod platform {
-    use std::fs::File;
-    use std::io;
-    use std::os::fd::AsRawFd;
-
-    const LOCK_EX: i32 = 2;
-    const LOCK_NB: i32 = 4;
-    const LOCK_UN: i32 = 8;
-
-    extern "C" {
-        fn flock(fd: i32, islem: i32) -> i32;
-    }
-
-    pub fn kilitlemeyi_dene(dosya: &File) -> io::Result<bool> {
-        // SAFETY: geçerli File tanıtıcısı verilir; flock işaretçi kullanmaz.
-        let sonuc = unsafe { flock(dosya.as_raw_fd(), LOCK_EX | LOCK_NB) };
-        if sonuc == 0 {
-            return Ok(true);
-        }
-        let hata = io::Error::last_os_error();
-        if hata.kind() == io::ErrorKind::WouldBlock {
-            Ok(false)
-        } else {
-            Err(hata)
-        }
-    }
-
-    pub fn kilidi_birak(dosya: &File) {
-        // SAFETY: kilitlemedeki aynı geçerli File tanıtıcısı kullanılır.
-        let _ = unsafe { flock(dosya.as_raw_fd(), LOCK_UN) };
-    }
-}
-
-#[cfg(windows)]
-mod platform {
-    use std::ffi::c_void;
-    use std::fs::File;
-    use std::io;
-    use std::os::windows::ffi::OsStrExt;
-    use std::os::windows::io::AsRawHandle;
-    use std::path::{Path, PathBuf};
-
-    type Handle = *mut c_void;
-
-    #[repr(C)]
-    struct Overlapped {
-        internal: usize,
-        internal_high: usize,
-        offset: u32,
-        offset_high: u32,
-        olay: Handle,
-    }
-
-    const LOCKFILE_FAIL_IMMEDIATELY: u32 = 0x00000001;
-    const LOCKFILE_EXCLUSIVE_LOCK: u32 = 0x00000002;
-    const MOVEFILE_REPLACE_EXISTING: u32 = 0x00000001;
-    const MOVEFILE_WRITE_THROUGH: u32 = 0x00000008;
-    const ERROR_FILE_NOT_FOUND: i32 = 2;
-    const ERROR_PATH_NOT_FOUND: i32 = 3;
-    const ERROR_LOCK_VIOLATION: i32 = 33;
-    const ERROR_UNABLE_TO_MOVE_REPLACEMENT_2: i32 = 1177;
-
-    #[link(name = "kernel32")]
-    extern "system" {
-        fn LockFileEx(
-            dosya: Handle,
-            bayraklar: u32,
-            ayrilmis: u32,
-            dusuk: u32,
-            yuksek: u32,
-            ortusen: *mut Overlapped,
-        ) -> i32;
-        fn UnlockFileEx(
-            dosya: Handle,
-            ayrilmis: u32,
-            dusuk: u32,
-            yuksek: u32,
-            ortusen: *mut Overlapped,
-        ) -> i32;
-        fn MoveFileExW(eski: *const u16, yeni: *const u16, bayraklar: u32) -> i32;
-        fn ReplaceFileW(
-            degistirilen: *const u16,
-            yeni: *const u16,
-            yedek: *const u16,
-            bayraklar: u32,
-            dislanan: *mut c_void,
-            ayrilmis: *mut c_void,
-        ) -> i32;
-    }
-
-    fn ortusen() -> Overlapped {
-        Overlapped {
-            internal: 0,
-            internal_high: 0,
-            offset: 0,
-            offset_high: 0,
-            olay: std::ptr::null_mut(),
-        }
-    }
-
-    pub fn kilitlemeyi_dene(dosya: &File) -> io::Result<bool> {
-        let mut bilgi = ortusen();
-        // SAFETY: File yaşamda, OVERLAPPED çağrı boyunca geçerli ve ayrılmış
-        // alanlar Win32 sözleşmesine uygun sıfırdır.
-        let sonuc = unsafe {
-            LockFileEx(
-                dosya.as_raw_handle() as Handle,
-                LOCKFILE_EXCLUSIVE_LOCK | LOCKFILE_FAIL_IMMEDIATELY,
-                0,
-                u32::MAX,
-                u32::MAX,
-                &mut bilgi,
-            )
-        };
-        if sonuc != 0 {
-            return Ok(true);
-        }
-        let hata = io::Error::last_os_error();
-        if hata.raw_os_error() == Some(ERROR_LOCK_VIOLATION)
-            || hata.kind() == io::ErrorKind::WouldBlock
-        {
-            Ok(false)
-        } else {
-            Err(hata)
-        }
-    }
-
-    pub fn kilidi_birak(dosya: &File) {
-        let mut bilgi = ortusen();
-        // SAFETY: Kilit için kullanılan aynı File ve geçerli OVERLAPPED.
-        let _ = unsafe {
-            UnlockFileEx(
-                dosya.as_raw_handle() as Handle,
-                0,
-                u32::MAX,
-                u32::MAX,
-                &mut bilgi,
-            )
-        };
-    }
-
-    pub fn atomik_degistir(gecici: &Path, hedef: &Path) -> io::Result<()> {
-        let eski = genis_yol(gecici)?;
-        let yeni = genis_yol(hedef)?;
-        let mut yedek_adi = gecici.as_os_str().to_os_string();
-        yedek_adi.push(".zee-yedek");
-        let yedek = PathBuf::from(yedek_adi);
-        if yedek.exists() {
-            return Err(io::Error::new(
-                io::ErrorKind::AlreadyExists,
-                "benzersiz Windows metadata kurtarma yedeği oluşturulamadı",
-            ));
-        }
-        let yedek_genis = genis_yol(&yedek)?;
-        // ReplaceFileW var olan hedefin DACL, security attributes, şifreleme,
-        // sıkıştırma ve named stream metadata'sını taşır. Merge hatalarını
-        // yoksayan hiçbir bayrak verilmez; yedek nadir kısmi-hata durumunda
-        // eski inode'u geri getirebilmek içindir.
-        // SAFETY: Diziler NUL ile sonlandırılmış ve çağrı boyunca yaşamda.
-        let sonuc = unsafe {
-            ReplaceFileW(
-                yeni.as_ptr(),
-                eski.as_ptr(),
-                yedek_genis.as_ptr(),
-                0,
-                std::ptr::null_mut(),
-                std::ptr::null_mut(),
-            )
-        };
-        if sonuc != 0 {
-            return std::fs::remove_file(yedek);
-        }
-        let hata = io::Error::last_os_error();
-        if hata.raw_os_error() == Some(ERROR_UNABLE_TO_MOVE_REPLACEMENT_2) && yedek.exists() {
-            // SAFETY: NUL sonlu yollar geçerli; hedef eski yedekten atomik
-            // write-through taşımayla geri kurulur.
-            let geri_alindi = unsafe {
-                MoveFileExW(
-                    yedek_genis.as_ptr(),
-                    yeni.as_ptr(),
-                    MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH,
-                )
-            };
-            if geri_alindi == 0 {
-                return Err(io::Error::other(format!(
-                    "Windows replace başarısız oldu ({hata}); eski dosya `{}` yedeğinde kaldı: {}",
-                    yedek.display(),
-                    io::Error::last_os_error()
-                )));
-            }
-        }
-        if !matches!(
-            hata.raw_os_error(),
-            Some(ERROR_FILE_NOT_FOUND) | Some(ERROR_PATH_NOT_FOUND)
-        ) {
-            return Err(hata);
-        }
-        let _ = std::fs::remove_file(&yedek);
-        // Hedef henüz yoksa metadata taşıma gerekmez; ilk yerleştirme yine
-        // aynı hacimde atomik ve write-through MoveFileExW ile yapılır.
-        let sonuc = unsafe {
-            MoveFileExW(
-                eski.as_ptr(),
-                yeni.as_ptr(),
-                MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH,
-            )
-        };
-        if sonuc != 0 {
-            Ok(())
-        } else {
-            Err(io::Error::last_os_error())
-        }
-    }
-
-    fn genis_yol(yol: &Path) -> io::Result<Vec<u16>> {
-        let mut genis = yol.as_os_str().encode_wide().collect::<Vec<_>>();
-        if genis.contains(&0) {
-            return Err(io::Error::new(
-                io::ErrorKind::InvalidInput,
-                "dosya yolu NUL içeremez",
-            ));
-        }
-        genis.push(0);
-        Ok(genis)
-    }
-}
-
-#[cfg(not(any(unix, windows)))]
-mod platform {
-    use std::fs::File;
-    use std::io;
-
-    pub fn kilitlemeyi_dene(_dosya: &File) -> io::Result<bool> {
-        Err(io::Error::new(
-            io::ErrorKind::Unsupported,
-            "bu platformda süreçler arası dosya kilidi desteklenmiyor",
-        ))
-    }
-
-    pub fn kilidi_birak(_dosya: &File) {}
-}
+mod platform;
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::time::Instant;
 
     use std::collections::HashSet;
     use std::sync::atomic::{AtomicBool, Ordering as AtomikSira};
@@ -646,13 +417,11 @@ mod tests {
         for onek in ["a", "b"] {
             let yol = Arc::clone(&yol);
             let basla = Arc::clone(&basla);
-            // K-183: 2×40 fsync'li ekleme ubuntu-latest'ta yazar açlığına düştü
-            // (biri kilidi ardışık yeniden alır, 5 ms yoklayan diğeri yavaş diskte
-            // 5 sn'de sıra bulamaz). Kayıpsızlık 2×12 ile de kanıtlanır; adalet
-            // K-183'te ele alınır.
+            // K-183/ADR-075: 2×40 ardışık fsync'li ekleme; bekleyen yazar
+            // çekirdek kuyruğunda bloklandığından yavaş diskte de aç kalmaz.
             kollar.push(std::thread::spawn(move || {
                 basla.wait();
-                for sayi in 0..12 {
+                for sayi in 0..40 {
                     atomik_satir_yaz(&yol, &format!("{}-{}", onek, sayi), true)
                         .expect("yarışlı ekleme");
                 }
@@ -667,12 +436,44 @@ mod tests {
             .lines()
             .map(str::to_string)
             .collect::<HashSet<_>>();
-        assert_eq!(satirlar.len(), 24);
+        assert_eq!(satirlar.len(), 80);
         for onek in ["a", "b"] {
-            for sayi in 0..12 {
+            for sayi in 0..40 {
                 assert!(satirlar.contains(&format!("{}-{}", onek, sayi)));
             }
         }
+    }
+
+    #[test]
+    fn kilidi_ardisik_yeniden_alan_yazar_bekleyeni_ac_birakmaz() {
+        // K-183/ADR-075: A durmadan ekler; B tek bir ekleme için en çok bir
+        // A yazması kadar bekler (5 ms yoklamayla B yavaş diskte 5 sn aç
+        // kalıyordu). Eşik 2 sn: en yavaş CI diskinde bile tek yazmanın çok
+        // üstü, spec/08 5 sn sınırının altında.
+        let gecici = GeciciKlasor::yeni();
+        let yol = Arc::new(gecici.0.join("kuyruk.txt"));
+        let basla = Arc::new(Barrier::new(2));
+        let yazar_yolu = Arc::clone(&yol);
+        let yazar_basla = Arc::clone(&basla);
+        let yazar = std::thread::spawn(move || {
+            yazar_basla.wait();
+            for sayi in 0..120 {
+                atomik_satir_yaz(&yazar_yolu, &format!("a-{sayi}"), true).expect("A ekler");
+            }
+        });
+        basla.wait();
+        std::thread::sleep(Duration::from_millis(30));
+        let baslangic = Instant::now();
+        atomik_satir_yaz(&yol, "b-0", true).expect("B ekler");
+        let bekleme = baslangic.elapsed();
+        yazar.join().expect("A düşmemeli");
+        assert!(
+            bekleme < Duration::from_secs(2),
+            "bekleyen yazar aç bırakıldı: {bekleme:?}"
+        );
+        let icerik = std::fs::read_to_string(&*yol).unwrap();
+        assert!(icerik.lines().any(|s| s == "b-0"));
+        assert_eq!(icerik.lines().count(), 121);
     }
 
     #[test]
