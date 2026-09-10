@@ -192,10 +192,10 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **714** |
+| Rust + doctest vakası | **715** |
 | Tanı kimliği | **155 etkin + 3 ayrılmış** |
 | RFC | **28** (2 kabul, 24 geçici kabul, 2 taslak) |
-| ADR | **72** (72 kabul) |
+| ADR | **73** (73 kabul) |
 | Normatif spec bölümü | **27** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 

@@ -22,6 +22,10 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   yorumlayıcı çerçevesi ~194 KiB/düzey ölçüldü; eski yığın debug CLI'yı 167.
   düzeyde C019 yerine doğal taşmayla düşürüyordu. Regresyon koşucusu ve
   derinlik testleri resmî yığında koşar; `regression/runtime/derinlik-499-resmi-yiginda.dil`.
+- **Adil kalıcı yazma kilidi** (K-183, ADR-075): bekleyen yazar 5 ms
+  yoklamak yerine çekirdek kuyruğunda bloklanır; kilidi ardışık yeniden alan
+  yazar diğerini yavaş diskte 5 sn boyunca aç bırakamaz (ubuntu CI'da iki
+  kez görüldü). Beş saniye sözü ve C013 değişmedi.
 - **Üçüncü ürün: kelime avı** (K-179, ADR-074): etkileşimli CLI oyunu
   (`dogfood/kelime-avi`, 3 birim/7 test) K-164 sürtünmelerinin tekrarını ölçtü:
   2 yeni sınıf, 4 tekrar, 5 kılavuzla önlenen; compiler değişikliği yok,
