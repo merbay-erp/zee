@@ -3468,7 +3468,7 @@ usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.
   Backlog "bir sonraki somut kapı" paragrafı K-178…K-183 ve Tier-1 CI
   durumuyla güncellendi.
 
-## 12 Eylül 2026 — K-184 public depo güvenliği
+## K-184 — Public depo güvenliği (12 Eylül 2026)
 
 Public görünürlük kullanıcı tercihidir; değiştirilmedi. Güncel kaynak bb58b1e
 üzerinden SECURITY tutarsızlığı, IO izinin izinleri ve CI sır taraması ele alındı.
