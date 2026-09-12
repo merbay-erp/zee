@@ -72,3 +72,21 @@ kaydedilir. Bu, bütün izin gizli olmadığı anlamına gelmez.
 - Saat/rastgele tohum ve sanal zaman ilerleme semantiği K-116/ADR-027 ile
   `zee-io-1` profiline bağlandı; şema-1 algoritmayı değil gözlenen sonuçları
   kaydetmeye devam eder.
+
+### Özel dosya yazımı (K-184)
+
+CLI iz kaydı Unix'te geçici dosyayı `0600` ile açar; macOS'ta `openx_np` ile boş ve mirassız ACL'yi
+ilk açılışta uygular. Windows'ta dosya ilk oluşturulurken
+miras kapalı, yalnız nesne sahibine tam erişim veren DACL kullanılır.
+Atomik değiştirme eski hedefin geniş izinlerini veya ACL'sini yeni ize taşımaz.
+Symlink ve normal dosya olmayan hedefler reddedilir. Genel dosya yazımının
+metadata koruma sözleşmesi değişmez. Erişim kısıtlaması sağlanamıyorsa iz
+kaydedilmez; bu durum kayıttan önce çalışmış programın etkilerini geri almaz.
+
+Bu koruma şifreleme veya anonimleştirme değildir. Mevcut eski izler kendiliğinden
+taranmaz; yeniden kaydedilen hedef daraltılır. Başka kullanıcının önceden
+aldığı kopyalar veya açık dosya tanıtıcıları geri alınamaz. Güvenilir bir
+kullanıcı dizini kullanın; root/Administrator erişimi kapsam dışıdır.
+
+Genel atomik yazıcı yerine aynı kilit ve geçici dosya sahipliğini kullanan
+özel yazıcı seçildi; yeni bağımlılık, grammar veya replay şeması eklenmedi.

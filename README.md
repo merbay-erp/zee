@@ -192,7 +192,7 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **715** |
+| Rust + doctest vakası | **719** |
 | Tanı kimliği | **155 etkin + 3 ayrılmış** |
 | RFC | **29** (2 kabul, 24 geçici kabul, 3 taslak) |
 | ADR | **73** (73 kabul) |
@@ -533,3 +533,6 @@ Tek dosya: `merhaba.dil` — tek satır:
 ```
 
 Bu dosya kendi lexer/parser/type checker zincirimizden geçip çalıştığında proje doğmuş sayılır.
+
+Public depo güvenlik bildirimi ve yerel/CI sır taraması: [güvenlik politikası](SECURITY.md).
+IO izleri özel veri taşır; [saklama ve paylaşım sınırları](docs/io-izi.md) geçerlidir.

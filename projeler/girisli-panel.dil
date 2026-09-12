@@ -3,7 +3,9 @@
 # session rotation, CSRF ve oturum kapatma. Oturum kimliğini dilin güvenlik
 # adaptörü üretir ve yalnız özetini bellekte tutar.
 # Çalıştır: dil çalıştır --deneysel-web girisli-panel.dil
-# Üretim: HTTPS reverse proxy arkasında
+# Bu örnek sabit demo parolası taşır; bu haliyle canlıya yayımlanmaz.
+# Gerçek kullanımda demo hesap kaldırılıp benzersiz parola kurulmalıdır.
+# Proxy yapılandırması örneği: HTTPS reverse proxy arkasında
 # dil çalıştır --web-proxy https://panel.example girisli-panel.dil
 # Parola: zee2026 (yalnız demo). Adres → http://127.0.0.1:8092
 

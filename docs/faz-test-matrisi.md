@@ -29,7 +29,7 @@
 | Supply-chain | `compiler/tests/guvenlik_kapisi_testi.rs`<br>`compiler/tests/tedarik_kapisi_testi.rs`<br>`compiler/deny.toml`<br>`compiler/Cargo.lock`<br>`compiler/fuzz/Cargo.lock`<br>`docs/github-actions-pinleri-v1.tsv`<br>`docs/guvenlik-bulgulari-v1.tsv`<br>`scripts/guvenlik-kapisi.sh`<br>`SECURITY.md`<br>`scripts/surum-artefakti.sh`<br>`.github/workflows/surum-adayi.yml`<br>`scripts/kur.sh`<br>`scripts/kaldir.sh`<br>`scripts/kur.ps1`<br>`scripts/kaldir.ps1`<br>`.github/workflows/kurulum-tatbikati.yml` | — | — | `paket`<br>`registry`<br>`proje`<br>`muhe_kapilari` |
 | LSP | `compiler/tests/lsp_testi.rs`<br>`compiler/tests/olcum_lsp_process_testi.rs` | — | — | `cli`<br>`uctan_uca` |
 | WASM | `compiler/tests/playground_testi.rs`<br>`compiler/fuzz/corpus/wasm_abi` | `compiler/fuzz/fuzz_targets/wasm_abi.rs`<br>`compiler/fuzz/corpus/wasm_abi` | — | `uctan_uca` |
-| CLI | `compiler/tests/io_izi_cli_testi.rs`<br>`golden/28-cli-araci.dil` | — | — | `proje`<br>`uctan_uca` |
+| CLI | `compiler/tests/io_izi_cli_testi.rs`<br>`golden/28-cli-araci.dil`<br>`regression/runtime/ozel-io-izi.dil` | — | — | `proje`<br>`uctan_uca` |
 | Project system | `compiler/tests/proje_testi.rs`<br>`projeler` | — | — | `paket`<br>`registry`<br>`cli`<br>`uctan_uca` |
 | Semantic regression | `regression/v2.tsv`<br>`regression`<br>`scripts/semantic-regresyon-korugu.sh`<br>`scripts/core-freeze-korugu.sh`<br>`docs/compiler-degisiklik-beyanlari-v1.tsv`<br>`docs/core-freeze-beyanlari-v1.tsv` | — | — | `uctan_uca` |
 | End-to-end | `golden`<br>`dogfood/korpus-v1.tsv`<br>`dogfood`<br>`docs/kanit-ozeti.md`<br>`docs/dogfood-karsilastirma-v1.tsv` | — | — | — |

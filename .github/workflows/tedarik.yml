@@ -11,6 +11,27 @@ permissions:
   contents: read
 
 jobs:
+  sir-taramasi:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Sabit ve SHA-256 doğrulanmış Gitleaks
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 \
+            -o gitleaks.tar.gz https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz
+          echo '551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb  gitleaks.tar.gz' | sha256sum --check --strict
+          mkdir -p zee-security-bin
+          tar -xzf gitleaks.tar.gz -C zee-security-bin gitleaks
+          echo "$RUNNER_TEMP/zee-security-bin" >> "$GITHUB_PATH"
+      - name: Tüm Git geçmişi ve çalışma ağacında sır taraması
+        run: bash scripts/sir-taramasi.sh
   rust-bagimliliklari:
     runs-on: ubuntu-latest
     timeout-minutes: 20

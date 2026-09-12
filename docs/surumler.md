@@ -12,6 +12,11 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **Public depo güvenliği (K-184):** IO iz kaydı yeni/eski hedefte yalnız
+  sahibine erişimle atomik yazılır; eski geniş izinler taşınmaz. Public depo
+  bildirim belgesi, hassas dosya ignore kuralları ve sabit Gitleaks CI taraması
+  eklendi. Replay şeması değişmez; eski izler ayrıca değerlendirilmelidir.
+
 - **İkinci gerçek ürün ve iki birim düzeltmesi** (K-164, ADR-072):
   `dogfood/kanit-ozeti` depo kayıt defterlerinden `docs/kanit-ozeti.md`
   üretir (toplu veri işleme iş yükü). Elmas birim içe alımı (`c→a`, `c→b→a`)

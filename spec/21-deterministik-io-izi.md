@@ -45,6 +45,11 @@ sürümü gerektirir.
 özel artefakttır ve varsayılan olarak Git dışında kalır. Parola ile PHC özeti
 ham/geri çevrilebilir alan olamaz; yalnız ayrı SHA-256 parmak izleri kaydedilir.
 
+CLI dosya kaydı yalnız sahibine erişimle yayımlanır: Unix `0600`, macOS
+boş genişletilmiş ACL, Windows mirassız owner-rights DACL. Eski hedefin
+geniş izinleri taşınmaz; symlink hedefi reddedilir. Bu davranış IO olaylarını
+maskelemez ve gömme API’sinin döndürdüğü metnin saklama politikasını belirlemez.
+
 ## Sınır
 
 Kaynak program iz içine gömülmez. Derleme/birim yükleme yürütme IO izi değildir.

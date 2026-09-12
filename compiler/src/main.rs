@@ -335,7 +335,7 @@ fn io_izi_komutu(argumanlar: &[String]) -> ExitCode {
                 return ExitCode::FAILURE;
             }
         };
-        if let Err(hata) = dil::kalici_dosya::atomik_yaz(iz_yolu, iz.as_bytes()) {
+        if let Err(hata) = dil::kalici_dosya::atomik_ozel_yaz(iz_yolu, iz.as_bytes()) {
             eprintln!(
                 "IO izi \"{}\" dosyasına yazılamadı: {}",
                 iz_yolu.display(),
