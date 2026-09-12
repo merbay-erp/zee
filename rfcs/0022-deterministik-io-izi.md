@@ -121,3 +121,9 @@ fail-closed, dış etkisiz replay).
 K-163/F030 ile atomik taşıma, silme, dizin listeleme ve dosya SHA-256 olayları
 şema-1'in kapalı işlem listesine eklendi. Replay kaydedilmiş typed sonucu verir;
 fiziksel dosya sistemine dokunmaz.
+
+## K-184 güvenlik tamamlaması
+
+CLI kayıtlarının özel dosya izinleri ADR-026 ve spec/21 doğrultusunda
+daraltılır. Şema-1 ve replay eşleşmesi değişmez; genel içerik maskelemesi
+aynı çağrıların yeniden üretimini bozacağından paylaşım sentetik kayıtla yapılır.

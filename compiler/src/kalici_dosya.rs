@@ -13,6 +13,8 @@ use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::Duration;
 
 mod metadata;
+mod ozel;
+pub use ozel::atomik_ozel_yaz;
 mod yasam_dongusu;
 
 pub use yasam_dongusu::{atomik_sil, atomik_tasi};
@@ -175,6 +177,15 @@ fn ebeveyn(yol: &Path) -> &Path {
 }
 
 fn gecici_dosya_ac(hedef: &Path) -> io::Result<(File, GeciciDosya)> {
+    gecici_dosyayi_acarak(hedef, |yol| {
+        OpenOptions::new().create_new(true).write(true).open(yol)
+    })
+}
+
+fn gecici_dosyayi_acarak(
+    hedef: &Path,
+    ac: impl Fn(&Path) -> io::Result<File>,
+) -> io::Result<(File, GeciciDosya)> {
     let dosya_adi = hedef.file_name().ok_or_else(|| {
         io::Error::new(io::ErrorKind::InvalidInput, "hedef bir dosya adı taşımalı")
     })?;
@@ -184,7 +195,7 @@ fn gecici_dosya_ac(hedef: &Path) -> io::Result<(File, GeciciDosya)> {
         ad.push(dosya_adi);
         ad.push(format!(".zee-gecici-{}-{}", std::process::id(), sira));
         let yol = ebeveyn(hedef).join(ad);
-        match OpenOptions::new().create_new(true).write(true).open(&yol) {
+        match ac(&yol) {
             Ok(dosya) => return Ok((dosya, GeciciDosya { yol: Some(yol) })),
             Err(hata) if hata.kind() == io::ErrorKind::AlreadyExists => continue,
             Err(hata) => return Err(hata),

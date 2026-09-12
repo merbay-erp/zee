@@ -108,3 +108,15 @@ kopyalanmaz.
 Hareketli RustSec verisinin dün yeşil olan commit'i bugün kırması beklenen
 güvenlik davranışıdır. Tekrar üretilebilir olan dependency çözümü ve vendor
 içeriğidir; güvenlik bilgisini geçmiş tarihe dondurmak değildir.
+
+## K-184: Public kaynakta sır taraması
+
+Public görünürlük bilinçli tercihtir. `tedarik.yml` geçmişi tam indirir ve
+Gitleaks 8.30.1 Linux x64 arşivini SHA-256
+`551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb`
+ile doğrular. [Resmî sürüm](https://github.com/gitleaks/gitleaks/releases/tag/v8.30.1)
+checksum listesiyle karşılaştırılmıştır. `scripts/sir-taramasi.sh` tam erişilebilir
+geçmişi ve çalışma ağacını ayrı tarar; `--staged` commit öncesi kullanım içindir.
+Gerçek değerler maskelenir, repo içi inline allowlist/ignore bastırmaları kullanılmaz.
+Yeni harici Action veya üretim Rust bağımlılığı eklenmez. GitHub secret scanning
+ve push protection ek korumadır; tarayıcı tüm kodlanmış/ikili sırları bulma sözü vermez.

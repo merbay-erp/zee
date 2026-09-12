@@ -3467,3 +3467,15 @@ usability verisini bekler; bu kanıt gelmeden yeni syntax seçilmez.
   eşiği) — K-016/K-093 protokollerine dokunmadan 3 dakikalık ek adım.
   Backlog "bir sonraki somut kapı" paragrafı K-178…K-183 ve Tier-1 CI
   durumuyla güncellendi.
+
+## 12 Eylül 2026 — K-184 public depo güvenliği
+
+Public görünürlük kullanıcı tercihidir; değiştirilmedi. Güncel kaynak bb58b1e
+üzerinden SECURITY tutarsızlığı, IO izinin izinleri ve CI sır taraması ele alındı.
+Genel atomik yazıcı metadata sözü korunarak yalnız CLI izine özel yazıcı eklendi.
+Katman sahibi kalici_dosya, mevcut bağımlılık kenarları ve facade değişmedi.
+Grammar/tanı/profil değişmediğinden hata kataloğu, dil yüzeyi ve RFC/ADR indekslerine
+satır eklenmedi. Master plan ve v1 kapıları aynı kapsamı korur; yeni dil kapasitesi
+veya release sertifikası iddia edilmez. Test kanıtı io_izi_cli_testi, spec/21,
+ADR-026 ve GB-024/025 kaydındadır. Otomatik maskeleme replay'i bozacağından
+paylaşım için sentetik kayıt ve CI'a iz koymama sınırı belgelendi.
