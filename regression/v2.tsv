@@ -22,3 +22,4 @@ girintisiz-islem-basligi	K-166	a0a3c3f20d75187cd25bbfb6617657d2973d9c0c	-	0.8.0-
 govde-disi-parametre-satiri	K-166	a0a3c3f20d75187cd25bbfb6617657d2973d9c0c	-	0.8.0-dev	parser	parser	S004	1:1:1	1	-	regression/parser/govde-disi-parametre-satiri.dil
 tanimsiz-ad-tek-tani	K-166	a0a3c3f20d75187cd25bbfb6617657d2973d9c0c	-	0.8.0-dev	checker	diagnostics	A001	1:1:4	1	-	regression/checker/tanimsiz-ad-tek-tani.dil
 derinlik-499-resmi-yiginda	K-178	9527c395ef303cf526537facf0ae775ee2ee16db	-	0.8.0-dev	runtime	run	-	-	0	499	regression/runtime/derinlik-499-resmi-yiginda.dil
+ozel-io-izi	K-184	20138344fee2c10cae9d9835f3e4d2a1d383e466	-	0.8.0-dev	runtime	run	-	-	0	ornek	regression/runtime/ozel-io-izi.dil
