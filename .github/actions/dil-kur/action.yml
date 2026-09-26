@@ -5,7 +5,7 @@ description: >
   Depo erişimi "organization" olduğundan jeton/sır gerekmez. Linux x64 (Mac runner ya da ubuntu-latest).
 outputs:
   surum:
-    description: dil --version çıktısı
+    description: dil sürüm çıktısı
     value: ${{ steps.dogrula.outputs.surum }}
 runs:
   using: composite
@@ -46,5 +46,5 @@ runs:
       shell: bash
       run: |
         echo "$RUNNER_TEMP/zee-dil" >> "$GITHUB_PATH"
-        s=$("$RUNNER_TEMP/zee-dil/dil" --version 2>&1 | head -1 || true)
+        s=$("$RUNNER_TEMP/zee-dil/dil" sürüm 2>&1 | head -1 || true)
         echo "surum=$s" >> "$GITHUB_OUTPUT"; echo "dil: $s"
