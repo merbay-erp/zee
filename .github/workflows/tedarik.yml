@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   sir-taramasi:
-    runs-on: ubuntu-latest
+    runs-on: ${{ fromJSON(vars.CI_RUNNER || '"ubuntu-latest"') }}
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -33,7 +33,7 @@ jobs:
       - name: Tüm Git geçmişi ve çalışma ağacında sır taraması
         run: bash scripts/sir-taramasi.sh
   rust-bagimliliklari:
-    runs-on: ubuntu-latest
+    runs-on: ${{ fromJSON(vars.CI_RUNNER || '"ubuntu-latest"') }}
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
