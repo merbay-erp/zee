@@ -1610,13 +1610,17 @@ impl GercekIo {
             .ok_or_else(|| "yanıt bekleyen web bağlantısı yok".to_string())?;
         let _baglanti_izni = self.bekleyen_baglanti_izni.take();
         let head = std::mem::take(&mut self.bekleyen_head);
-        let guvenlik_basliklari = self.guvenlik_basliklari();
         let (baslik, govde) = match taslak {
             WebYanitTaslagi::Govde(govde) => {
                 let tur = if govde.trim_start().starts_with('<') {
                     "text/html"
                 } else {
                     "text/plain"
+                };
+                let guvenlik_basliklari = if tur == "text/html" {
+                    html_guvenlik_basliklari(self.guvenli_proxy_origin().is_some(), &govde)
+                } else {
+                    self.guvenlik_basliklari()
                 };
                 let cerezler = self.cerez_basliklarini_al();
                 let baslik = format!(
@@ -1629,6 +1633,7 @@ impl GercekIo {
                 (baslik, govde)
             }
             WebYanitTaslagi::Durum(durum, govde) => {
+                let guvenlik_basliklari = self.guvenlik_basliklari();
                 self.bekleyen_cerezler.clear();
                 self.bekleyen_silinen_cerezler.clear();
                 let baslik = format!(
@@ -1641,6 +1646,7 @@ impl GercekIo {
                 (baslik, govde)
             }
             WebYanitTaslagi::Yonlendirme(adres) => {
+                let guvenlik_basliklari = self.guvenlik_basliklari();
                 let cerezler = self.cerez_basliklarini_al();
                 let baslik = format!(
                     "HTTP/1.1 303 See Other\r\nLocation: {}\r\nContent-Length: 0\r\n{}{}Connection: close\r\n\r\n",
@@ -1761,6 +1767,59 @@ fn guvenlik_basliklari(https: bool) -> String {
     );
     if https {
         sonuc.push_str("Strict-Transport-Security: max-age=31536000\r\n");
+    }
+    sonuc
+}
+
+fn html_guvenlik_basliklari(https: bool, govde: &str) -> String {
+    use sha2::{Digest, Sha256};
+
+    let mut script_kaynaklari = String::from(" 'self'");
+    let mut kalan = govde;
+    while let Some(acilis) = kalan.find("<script>") {
+        let script_basi = acilis + "<script>".len();
+        let script_sonrasi = &kalan[script_basi..];
+        let Some(kapanis) = script_sonrasi.find("</script>") else {
+            break;
+        };
+        let script = &script_sonrasi[..kapanis];
+        let ozet = Sha256::digest(script.as_bytes());
+        script_kaynaklari.push_str(" 'sha256-");
+        script_kaynaklari.push_str(&base64_kodla(&ozet));
+        script_kaynaklari.push('\'');
+        kalan = &script_sonrasi[kapanis + "</script>".len()..];
+    }
+
+    let mut basliklar = guvenlik_basliklari(https);
+    let eski = "Content-Security-Policy: default-src 'self';";
+    let yeni = format!(
+        "Content-Security-Policy: default-src 'self'; script-src{};",
+        script_kaynaklari
+    );
+    basliklar = basliklar.replacen(eski, &yeni, 1);
+    basliklar
+}
+
+fn base64_kodla(girdi: &[u8]) -> String {
+    const ALFABE: &[u8; 64] =
+        b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    let mut sonuc = String::with_capacity(girdi.len().div_ceil(3) * 4);
+    for parca in girdi.chunks(3) {
+        let a = parca[0];
+        let b = parca.get(1).copied().unwrap_or(0);
+        let c = parca.get(2).copied().unwrap_or(0);
+        sonuc.push(ALFABE[(a >> 2) as usize] as char);
+        sonuc.push(ALFABE[(((a & 0x03) << 4) | (b >> 4)) as usize] as char);
+        sonuc.push(if parca.len() > 1 {
+            ALFABE[(((b & 0x0f) << 2) | (c >> 6)) as usize] as char
+        } else {
+            '='
+        });
+        sonuc.push(if parca.len() > 2 {
+            ALFABE[(c & 0x3f) as usize] as char
+        } else {
+            '='
+        });
     }
     sonuc
 }
@@ -3105,6 +3164,26 @@ mod web_profili_testleri {
         assert!(basliklar.contains("Content-Security-Policy"));
         assert!(basliklar.contains("X-Content-Type-Options: nosniff"));
         assert!(!guvenlik_basliklari(false).contains("Strict-Transport-Security"));
+    }
+
+    #[test]
+    fn html_scriptleri_icerige_bagli_csp_ozetiyle_calisir() {
+        let basliklar = html_guvenlik_basliklari(
+            false,
+            "<!doctype html><script>console.log('zee')</script>",
+        );
+        assert!(basliklar.contains(
+            "script-src 'self' 'sha256-8VHn0UwRo0MmaR7ebsXpVTH6AA4wJBSlghouXTG/w50='"
+        ));
+        assert!(!basliklar.contains("'unsafe-inline'"));
+    }
+
+    #[test]
+    fn base64_kodlama_rfc_4648_ve_padding_kurallarina_uyar() {
+        assert_eq!(base64_kodla(b""), "");
+        assert_eq!(base64_kodla(b"f"), "Zg==");
+        assert_eq!(base64_kodla(b"fo"), "Zm8=");
+        assert_eq!(base64_kodla(b"foo"), "Zm9v");
     }
 
     #[test]
