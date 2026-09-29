@@ -507,10 +507,7 @@ pub fn gocleri_uygula(
 }
 
 fn migration_sqlini_denetle(sql: &str) -> Result<(), VeritabaniHatasi> {
-    let kelimeler = sql
-        .split(|c: char| !c.is_ascii_alphanumeric() && c != '_')
-        .map(str::to_ascii_lowercase)
-        .collect::<Vec<_>>();
+    let kelimeler = migration_ust_seviye_kelimeleri(sql);
     for yasak in ["begin", "commit", "rollback", "savepoint"] {
         if kelimeler.iter().any(|kelime| kelime == yasak) {
             return Err(hata(format!(
@@ -520,6 +517,95 @@ fn migration_sqlini_denetle(sql: &str) -> Result<(), VeritabaniHatasi> {
         }
     }
     Ok(())
+}
+
+/// Transaction sınırı yalnız migration'ın üst seviye SQL komutlarında aranır.
+/// String, yorum, quoted identifier ve dollar-quoted işlev gövdelerindeki
+/// `BEGIN`/`COMMIT` sözcükleri SQL transaction komutu değildir.
+fn migration_ust_seviye_kelimeleri(sql: &str) -> Vec<String> {
+    let baytlar = sql.as_bytes();
+    let mut kelimeler = Vec::new();
+    let mut i = 0usize;
+    while i < baytlar.len() {
+        if baytlar[i] == b'\'' || baytlar[i] == b'"' {
+            let tirnak = baytlar[i];
+            i += 1;
+            while i < baytlar.len() {
+                if baytlar[i] == tirnak {
+                    if i + 1 < baytlar.len() && baytlar[i + 1] == tirnak {
+                        i += 2;
+                    } else {
+                        i += 1;
+                        break;
+                    }
+                } else {
+                    i += 1;
+                }
+            }
+            continue;
+        }
+        if baytlar[i..].starts_with(b"--") {
+            i += 2;
+            while i < baytlar.len() && baytlar[i] != b'\n' {
+                i += 1;
+            }
+            continue;
+        }
+        if baytlar[i..].starts_with(b"/*") {
+            i += 2;
+            let mut derinlik = 1usize;
+            while i < baytlar.len() && derinlik > 0 {
+                if baytlar[i..].starts_with(b"/*") {
+                    derinlik += 1;
+                    i += 2;
+                } else if baytlar[i..].starts_with(b"*/") {
+                    derinlik -= 1;
+                    i += 2;
+                } else {
+                    i += 1;
+                }
+            }
+            continue;
+        }
+        if baytlar[i] == b'$' {
+            let mut etiket_sonu = i + 1;
+            let ilk_uygun = etiket_sonu >= baytlar.len()
+                || baytlar[etiket_sonu] == b'$'
+                || baytlar[etiket_sonu] == b'_'
+                || baytlar[etiket_sonu].is_ascii_alphabetic();
+            if ilk_uygun {
+                while etiket_sonu < baytlar.len()
+                    && (baytlar[etiket_sonu].is_ascii_alphanumeric()
+                        || baytlar[etiket_sonu] == b'_')
+                {
+                    etiket_sonu += 1;
+                }
+                if etiket_sonu < baytlar.len() && baytlar[etiket_sonu] == b'$' {
+                    let ayirici = &baytlar[i..=etiket_sonu];
+                    i = etiket_sonu + 1;
+                    if let Some(uzaklik) = baytlar[i..]
+                        .windows(ayirici.len())
+                        .position(|pencere| pencere == ayirici)
+                    {
+                        i += uzaklik + ayirici.len();
+                    } else {
+                        i = baytlar.len();
+                    }
+                    continue;
+                }
+            }
+        }
+        if baytlar[i].is_ascii_alphanumeric() || baytlar[i] == b'_' {
+            let baslangic = i;
+            while i < baytlar.len() && (baytlar[i].is_ascii_alphanumeric() || baytlar[i] == b'_') {
+                i += 1;
+            }
+            kelimeler.push(String::from_utf8_lossy(&baytlar[baslangic..i]).to_ascii_lowercase());
+            continue;
+        }
+        i += 1;
+    }
+    kelimeler
 }
 
 fn girdiyi_denetle(sorgu: &str, parametreler: &[String]) -> Result<(), VeritabaniHatasi> {
@@ -601,6 +687,24 @@ mod testler {
                 "reddedilmeli: {sql}"
             );
         }
+    }
+
+    #[test]
+    fn migration_islev_govdesini_transaction_komutu_sanmaz() {
+        let sql = r#"
+            -- BEGIN yorumda transaction değildir
+            CREATE FUNCTION cycle_guard() RETURNS trigger
+            LANGUAGE plpgsql AS $body$
+            BEGIN
+                RAISE NOTICE 'COMMIT metni';
+                RETURN NEW;
+            END
+            $body$;
+            COMMENT ON FUNCTION cycle_guard() IS 'ROLLBACK değil';
+            CREATE TABLE "savepoint" (id bigint);
+            /* BEGIN /* ROLLBACK */ COMMIT */
+        "#;
+        assert!(migration_sqlini_denetle(sql).is_ok());
     }
 
     #[test]
