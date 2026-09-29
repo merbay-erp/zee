@@ -103,6 +103,12 @@ sırasıyla tek transaction içinde uygular. Sürüm pozitif ve tekil, açıklam
 küçük ASCII/sayı/alt çizgi olmalıdır. Kendi `BEGIN`, `COMMIT`, `ROLLBACK` veya
 `SAVEPOINT` komutunu taşıyan migration reddedilir.
 
+Bu yasak yalnız üst seviye SQL komutlarına uygulanır. Tek/çift tırnaklı
+içerik, satır ve iç içe blok yorumları ile dollar-quoted işlev/trigger
+gövdelerindeki aynı sözcükler transaction komutu değildir ve reddedilemez.
+Denetimin bu içerikleri ayırması, üst seviyedeki transaction sınırını
+gevşetmemelidir.
+
 Uygulayıcı `_zee_gocleri` tablosunda sürüm, ad ve içerik SHA-256'sını tutar ve
 transaction-scoped advisory lock alır. Aynı ağaç ikinci koşuda atlanır.
 Uygulanmış dosyanın kaybolması veya aynı sürümün ad/içerik değiştirmesi C026 ile
