@@ -12,6 +12,12 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **Doğrulanmış rota oturumu (K-185, ADR-076):** Gerçek Zee ERP tenant
+  gereksinimiyle, sunucu oturumundaki kullanıcı ve rol yalnız rota içindeki
+  `oturum` sözlüğünden okunur. İstemci girdisi bu sözlüğü dolduramaz; oturum
+  sırrı ve CSRF açılmaz. Sahte iç alan ve rota dışı kapsam regresyonları ile
+  Zee ERP dogfood reproducer'ı eklendi.
+
 - **Public depo güvenliği (K-184):** IO iz kaydı yeni/eski hedefte yalnız
   sahibine erişimle atomik yazılır; eski geniş izinler taşınmaz. Public depo
   bildirim belgesi, hassas dosya ignore kuralları ve sabit Gitleaks CI taraması

@@ -327,6 +327,13 @@ impl WebGuvenligi {
         })
     }
 
+    /// Geçerli ve kimliği doğrulanmış oturumun uygulamaya açılabilen dar
+    /// kimlik görünümü. Belirteç ve CSRF hiçbir zaman bu sınırdan çıkmaz.
+    pub fn oturum_bilgisi(&self, an_ms: i64) -> Option<(&str, &str)> {
+        let oturum = self.gecerli_oturum(an_ms)?;
+        Some((oturum.kullanici.as_deref()?, oturum.rol.as_deref()?))
+    }
+
     fn gecerli_oturum(&self, an_ms: i64) -> Option<&Oturum> {
         self.gelen_oturum
             .as_ref()
@@ -594,6 +601,7 @@ mod tests {
             .expect("giriş");
         assert_ne!(anonim.belirtec, yeni.belirtec, "session fixation");
         istegi_baslat(&mut depo, Some(&yeni.belirtec), 2);
+        assert_eq!(depo.oturum_bilgisi(2), Some(("Mustafa", "yönetici")));
         assert!(depo
             .denetle(&RotaErisimi::Rol("yönetici".into()), None, false, 2)
             .is_ok());
@@ -604,6 +612,7 @@ mod tests {
             403
         );
         depo.oturum_kapat();
+        assert_eq!(depo.oturum_bilgisi(2), None);
         assert_eq!(depo.oturum_sayisi().unwrap(), 0);
     }
 

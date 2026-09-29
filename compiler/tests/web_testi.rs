@@ -602,6 +602,47 @@ fn girisli_panel_oturum_dongusu() {
 }
 
 #[test]
+fn dogrulanmis_oturum_kullanici_ve_rolu_rota_ortamina_tasir() {
+    let kaynak = r#"
+8080 kapısında sunucu başlat
+
+POST "/giris" adresine istek geldiğinde
+    herkese açık
+    "9f4bd2c8-4bd4-4b69-9f73-17a5df2a8a20" kullanıcısını "yönetici" rolüyle oturuma al
+    "/kim" adresine yönlendir
+
+GET "/kim" adresine istek geldiğinde
+    "yönetici" yetkisi gerekli
+    kullanıcı oturumun "kullanıcı" değeri olsun
+    rol oturumun "rol" değeri olsun
+    kullanıcı ile "|" ile rol yanıtını gönder
+"#;
+    let program = dil::kaynagi_derle(kaynak).expect("oturum sözlüğü derlenmeli");
+    let (mut io, anonim, csrf) = csrfli_bos_io();
+    io.istekler
+        .push_back(csrfli_istek_ile("POST /giris", &anonim, &csrf));
+    calistir_io(&program, &mut io).expect("giriş çalışmalı");
+    let (_, kimlik) = io.yazilan_cerezler.last().cloned().expect("yeni oturum");
+
+    io.istekler.push_back(format!(
+        "GET /kim\nçerez __Host-zee-oturum={}; __zee_ic_oturum_kullanicisi=sahte; __zee_ic_oturum_rolu=sahte",
+        kimlik
+    ));
+    calistir_io(&program, &mut io).expect("korumalı rota çalışmalı");
+    assert_eq!(
+        io.sunucu_yanitlari.last().unwrap().1,
+        "9f4bd2c8-4bd4-4b69-9f73-17a5df2a8a20|yönetici"
+    );
+}
+
+#[test]
+fn oturum_sozlugu_rota_disina_sizmaz() {
+    let hata = dil::kaynagi_derle("oturumun \"kullanıcı\" değerini yaz\n")
+        .expect_err("örtük oturum sözlüğü yalnız rotada olmalı");
+    assert_eq!(hata.kod, "A001");
+}
+
+#[test]
 fn onekli_rota_kuyrugu_yakalar() {
     // K-055: "/yazi/" önekli adrese... — kimlik, yol metninden çıkarılır.
     let kaynak = "\

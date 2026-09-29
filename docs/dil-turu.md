@@ -609,6 +609,11 @@ POST "/giris-yap" adresine istek geldiğinde
 POST "/cikis" adresine istek geldiğinde
     oturum gerekli
     oturumu kapat
+
+GET "/panel" adresine istek geldiğinde
+    oturum gerekli
+    kullanıcı oturumun "kullanıcı" değeri olsun
+    rol oturumun "rol" değeri olsun
 ```
 
 Unsafe yöntemlerde `_csrf` otomatik zorunludur. Production kipinde
@@ -626,6 +631,9 @@ runtime hem sabit loopback bind'i hem kabul edilen loopback peer'i doğrular.
 K-140'ta gerçek TCP isteği yalnız CRLF, origin-form, tek Content-Length ve
 exact UTF-8 gövde kabul eden byte parser'a bağlandı; chunked/TE, obs-fold,
 NUL, duplicate uzunluk ve HTTP pipelining desteklenmez.
+K-185'te geçerli sunucu oturumunun kullanıcı ve rolü rota içindeki `oturum`
+sözlüğüne açıldı. Anonim istekte sözlük boştur; istemci başlığı/formu/çerezi
+onu dolduramaz ve oturum sırrı ile CSRF değeri uygulamaya verilmez.
 Kurulum ve güven sözleşmesi [web production
 profilinde](web-production-profili.md) açıklanır.
 

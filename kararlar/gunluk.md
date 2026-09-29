@@ -3479,3 +3479,18 @@ satır eklenmedi. Master plan ve v1 kapıları aynı kapsamı korur; yeni dil ka
 veya release sertifikası iddia edilmez. Test kanıtı io_izi_cli_testi, spec/21,
 ADR-026 ve GB-024/025 kaydındadır. Otomatik maskeleme replay'i bozacağından
 paylaşım için sentetik kayıt ve CI'a iz koymama sınırı belgelendi.
+
+## K-185 — Doğrulanmış oturum bilgisi rota ortamında (29 Eylül 2026)
+
+- **Ürün bulgusu:** Zee ERP tenant bağlamını PostgreSQL RLS'e güvenle bağlamak
+  için oturumdaki kullanıcı kimliğine ihtiyaç duydu; mevcut dil kullanıcı ve
+  rolü sunucuda tutuyor fakat rota gövdesine açmıyordu.
+- **Karar (ADR-076):** Rotalarda `oturum` adlı `Metin` sözlüğü vardır. Geçerli
+  kimlikli oturum `kullanıcı` ve `rol` anahtarlarını taşır; anonim istekte
+  sözlük boştur. Kaynak yalnız doğrulanmış sunucu kaydıdır, tarayıcı girdisi
+  olamaz; oturum sırrı ve CSRF uygulamaya açılmaz.
+- **Kanıt:** Zee ERP exact ilk commit'i ve minimal reproducer dogfood kaydına
+  alındı. Adaptör testi sahte iç çerezi gerçek sunucu değeriyle ezer; kapsam
+  testi `oturum` adının rota dışında A001 verdiğini sabitler.
+- **Sınır:** Özel claim, tenant kimliği ve yeni grammar eklenmedi. Tenant
+  eşlemesi ERP'nin PostgreSQL güven sınırında kalır. K-185 ve GB-026 kapandı.

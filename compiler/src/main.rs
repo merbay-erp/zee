@@ -2447,12 +2447,22 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             self.bekleyen_akis = Some(akis);
             self.bekleyen_baglanti_izni = Some(baglanti_izni);
             self.bekleyen_head = baslik.yontem().eq_ignore_ascii_case("HEAD");
-            return Some(format!(
+            let ham = format!(
                 "{} {}\n{}{}",
                 baslik.yontem(),
                 baslik.hedef(),
                 cerez_satiri,
                 govde
+            );
+            let bilgi = self
+                .web_guvenligi
+                .oturum_bilgisi(web_duvar_saati_ms())
+                .map(|(kullanici, rol)| (kullanici.to_string(), rol.to_string()));
+            return Some(dil::yorumlayici::dogrulanmis_oturumu_istege_ekle(
+                &ham,
+                bilgi
+                    .as_ref()
+                    .map(|(kullanici, rol)| (kullanici.as_str(), rol.as_str())),
             ));
         }
     }
