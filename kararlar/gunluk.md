@@ -3494,3 +3494,17 @@ paylaşım için sentetik kayıt ve CI'a iz koymama sınırı belgelendi.
   testi `oturum` adının rota dışında A001 verdiğini sabitler.
 - **Sınır:** Özel claim, tenant kimliği ve yeni grammar eklenmedi. Tenant
   eşlemesi ERP'nin PostgreSQL güven sınırında kalır. K-185 ve GB-026 kapandı.
+
+## K-186 — Request-bound PostgreSQL tenant bağlamı (29 Eylül 2026)
+
+- **Ürün bulgusu:** K-185 güvenilir kullanıcıyı açtı; ancak her ERP sorgusunda
+  aynı leased bağlantıya RLS tenant bağlamını kurmak uygulamaya bırakılırsa
+  unutulabilir, istemci girdisine kayabilir veya havuz lease'ine sızabilir.
+- **Karar (ADR-077):** Proje dar `şema.işlev` resolver'ı bildirir. Korumalı
+  rotada doğrulanmış kullanıcı bind edilir, dönen UUID transaction-local
+  `app.tenant_id` olur. Eylemler savepoint; public rota bağlamsızdır.
+- **Kanıt:** Zee ERP dogfood reproducer'ı ve proje bildirimi yeni alanı taşır;
+  parser saldırgan SQL adlarını reddeder. Gerçek PG16 kanıtı ürün Git2
+  workflow'unda login → RLS panel → logout ve çapraz tenant reddini ölçer.
+- **Sınır:** Genel SQL identifier, istemci tenant seçimi veya yeni Zee grammar
+  açılmadı. Resolver yetkileri ve sabit search_path ürün migration'ındadır.

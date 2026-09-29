@@ -13,6 +13,15 @@ veritabanı_bağlantı_değişkeni "UYGULAMA_DATABASE_URL" olsun
 veritabanı_göçleri "göçler" olsun
 ```
 
+Çok tenantlı web projesi ayrıca isteğe bağlı
+`veritabanı_istek_bağlamı "şema.işlev" olsun` alanını bildirir. Korumalı rota
+yetkilendirildikten sonra runtime, yalnız doğrulanmış sunucu oturumundaki
+kullanıcıyı bu security-definer işleve verir. İşlevin tek `tenant_id` UUID
+satırı aynı bağlantıda `app.tenant_id` transaction-local ayarına çevrilir.
+Rota okumaları bu request transaction'ını paylaşır; uygulama eylemleri onun
+içinde savepoint olarak kalır. Public rotada bağlam kurulmaz. Resolver reddi,
+eksik/çoklu satır ve geçersiz UUID fail-closed 503'tür; istemci tenant seçemez.
+
 Hedef kullanıcı/parola/query taşıyamaz; kanonik küçük ASCII DNS adı, IPv4,
 `localhost` veya `::1` kabul edilir. Ortam değişkenindeki URL tek TCP hostla
 exact hedefe eşleşmek ZORUNDADIR; `hostaddr` hostname doğrulamasını atlatamaz.
@@ -26,6 +35,11 @@ kök güvenilir sayılır. TLS en az 1.2 ve sürücü hostname doğrulaması ZOR
 CA boş veya 256 KiB'dan büyük olamaz.
 
 ## Bağlantı havuzu
+
+Request-bound tenant transaction'ı başarılı yanıttan önce commit edilir;
+rota hatası, zaman aşımı veya yanıtsız bitişte rollback edilir. En dış uygulama
+eylemi bu transaction'ı commit etmez, yalnız savepoint'i tamamlar. Böylece
+`set_config(..., true)` havuzdaki sonraki isteğe taşınmaz.
 
 Her Zee worker'ı en çok 4 PostgreSQL bağlantısı açar. Checkout bütçesi 2
 saniye, boş bağlantı ömrü 30 saniye, azami bağlantı ömrü hedefi 300 saniyedir.
