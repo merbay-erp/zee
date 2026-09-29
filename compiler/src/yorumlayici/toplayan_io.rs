@@ -263,6 +263,16 @@ impl GirdiCikti for ToplayanIo {
             self.web_istek_yedegi = None;
             return None;
         }
+        let bilgi = self
+            .web_guvenligi
+            .oturum_bilgisi(self.an_son_degeri)
+            .map(|(kullanici, rol)| (kullanici.to_string(), rol.to_string()));
+        let ham = dogrulanmis_oturumu_istege_ekle(
+            &ham,
+            bilgi
+                .as_ref()
+                .map(|(kullanici, rol)| (kullanici.as_str(), rol.as_str())),
+        );
         self.sunucu_yanitlari.push((yol.to_string(), String::new()));
         self.sunucu_durumlari.push(200);
         Some(ham)

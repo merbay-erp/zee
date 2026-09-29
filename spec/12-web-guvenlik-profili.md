@@ -1,6 +1,6 @@
 # 12 — Web güvenlik profili
 
-Bu bölüm K-088/K-134/K-137/K-139 ile gelen normatif oturum, yetki, CSRF, ortak
+Bu bölüm K-088/K-134/K-137/K-139/K-185 ile gelen normatif oturum, yetki, CSRF, ortak
 oran sınırı ve HTTPS reverse-proxy sözleşmesidir. Uygulama eyleminin HTTP'den
 ayrılması spec/11'de tanımlıdır; bu bölüm tarayıcı isteğinin o eyleme hangi
 kapılardan geçerek ulaştığını tanımlar.
@@ -72,6 +72,22 @@ production profili proje kökündeki `.zee/web-durumu-v1.json` kalıcı ortak
 adaptörüyle uygular. Kalıcı kayıt tokenın kendisini değil yalnız SHA-256
 özetini tutar. Bilinmeyen biçim sürümü, bozuk/aşırı büyük içerik, symlink,
 güvensiz dosya türü veya IO hatası 503'tür.
+
+Her rota gövdesinde `oturum`, `Metin` değerli bir sözlük olarak ZORUNLU
+bulunur. Geçerli kimlikli sunucu oturumunda tam olarak `kullanıcı` ve `rol`
+anahtarlarını taşır; anonim istekte boştur. Bu değerlerin tek kaynağı
+doğrulanmış sunucu oturum kaydıdır. İstek başlığı, form alanı veya tarayıcı
+çerezi `oturum` sözlüğünü dolduramaz; adaptör iç taşıma alanlarını istemci
+girdisinden ayırıp güvenilir kayıttan yeniden kurar. Oturum kimliği/özeti,
+CSRF belirteci ve başka sırlar sözlüğe konmaz. `oturum` yalnız rota kapsamına
+aittir; rota dışında kullanımı A001'dir.
+
+```text
+GET "/panel" adresine istek geldiğinde
+    oturum gerekli
+    kullanıcı oturumun "kullanıcı" değeri olsun
+    rol oturumun "rol" değeri olsun
+```
 
 ## 3. CSRF
 
@@ -199,5 +215,5 @@ sistemiyle sınırlıdır; çok-hostlu harici backend henüz yoktur. Sticky sess
 ortak revoke ve oran sınırının yerine geçmez. Operasyon ayrıntıları
 `docs/web-production-profili.md` içindedir.
 
-Normatif gerekçe: RFC-0017, ADR-034, ADR-036 ve ADR-037. Rota/eylem ayrımı:
+Normatif gerekçe: RFC-0017, ADR-034, ADR-036, ADR-037 ve ADR-076. Rota/eylem ayrımı:
 RFC-0015 ve spec/11. Ortak origin tipi: ADR-031 ve spec/23.

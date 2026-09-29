@@ -70,6 +70,9 @@ pub type IstekParcalari = (String, String, AdDegerler);
 /// Web isteği ayrıştırmasının HTTP durum kodu ve kararlı kısa açıklaması.
 pub type IstekParcalamaHatasi = (u16, &'static str);
 
+const IC_OTURUM_KULLANICISI: &str = "__zee_ic_oturum_kullanicisi";
+const IC_OTURUM_ROLU: &str = "__zee_ic_oturum_rolu";
+
 /// PostgreSQL adaptörünün dilde yapılandırılmış `Hata`ya çevrilen sonucu.
 pub use crate::veritabani_modeli::VeritabaniHatasi;
 
@@ -137,6 +140,74 @@ fn cerezleri_parcala(cerez_satiri: &str) -> AdDegerler {
         cerezler.push((ad.trim().to_string(), deger.trim().to_string()));
     }
     cerezler
+}
+
+fn url_kodla(metin: &str) -> String {
+    let mut sonuc = String::with_capacity(metin.len());
+    for bayt in metin.as_bytes() {
+        if bayt.is_ascii_alphanumeric() || matches!(bayt, b'-' | b'.' | b'_' | b'~') {
+            sonuc.push(*bayt as char);
+        } else {
+            use std::fmt::Write;
+            let _ = write!(sonuc, "%{bayt:02X}");
+        }
+    }
+    sonuc
+}
+
+/// Host adaptörünün doğruladığı oturum kimliğini iç istek zarfına ekler.
+/// İstemcinin aynı iç adlarla yolladığı çerezler önce atılır; uygulama yalnız
+/// runtime'ın oturum deposundan gelen kullanıcı/rol çiftini görebilir.
+pub fn dogrulanmis_oturumu_istege_ekle(ham: &str, bilgi: Option<(&str, &str)>) -> String {
+    let (ilk_satir, cerez_satiri, govde) = istek_zarfi_parcala(ham);
+    let mut cerezler = cerezleri_parcala(cerez_satiri);
+    cerezler.retain(|(ad, _)| ad != IC_OTURUM_KULLANICISI && ad != IC_OTURUM_ROLU);
+    if let Some((kullanici, rol)) = bilgi {
+        cerezler.push((IC_OTURUM_KULLANICISI.into(), url_kodla(kullanici)));
+        cerezler.push((IC_OTURUM_ROLU.into(), url_kodla(rol)));
+    }
+    let cerez_satiri = cerezler
+        .into_iter()
+        .map(|(ad, deger)| format!("{ad}={deger}"))
+        .collect::<Vec<_>>()
+        .join("; ");
+    if cerez_satiri.is_empty() {
+        if govde.is_empty() {
+            ilk_satir.to_string()
+        } else {
+            format!("{ilk_satir}\n{govde}")
+        }
+    } else {
+        format!("{ilk_satir}\nçerez {cerez_satiri}\n{govde}")
+    }
+}
+
+fn oturum_cerezlerini_ayir(
+    cerezler: AdDegerler,
+) -> Result<(AdDegerler, AdDegerler), IstekParcalamaHatasi> {
+    let mut uygulama_cerezleri = Vec::new();
+    let mut oturum = Vec::new();
+    let mut kullanici_goruldu = false;
+    let mut rol_goruldu = false;
+    for (ad, deger) in cerezler {
+        let (hedef, goruldu, uygulama_adi) = if ad == IC_OTURUM_KULLANICISI {
+            (&mut oturum, &mut kullanici_goruldu, "kullanıcı")
+        } else if ad == IC_OTURUM_ROLU {
+            (&mut oturum, &mut rol_goruldu, "rol")
+        } else {
+            uygulama_cerezleri.push((ad, deger));
+            continue;
+        };
+        if *goruldu {
+            return Err((400, "iç oturum bilgisi yinelenemez"));
+        }
+        *goruldu = true;
+        hedef.push((uygulama_adi.into(), url_coz(&deger)?.to_string()));
+    }
+    if kullanici_goruldu != rol_goruldu {
+        return Err((400, "iç oturum bilgisi eksik"));
+    }
+    Ok((uygulama_cerezleri, oturum))
 }
 
 /// istek_parcala + çerezler (K-052). İkinci satır "çerez a=1; b=2" ise

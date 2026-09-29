@@ -87,7 +87,8 @@ kapısı; K-137 kalıcı ortak oturum/rate-limit deposu, kanonik `Forwarded`
 istemci kimliği ve N ayrı tek-worker süreç modeli; K-139 ortak kanonik
 DNS/IPv6/port origin tipi ve loopback bind+peer değişmezi; K-140 byte tabanlı
 CRLF/target/TE-CL/UTF-8 HTTP framing kapısı; K-176 strict `%xx` ve exact UTF-8
-form çözümü), form/istek sözlüğü,
+form çözümü; K-185 yalnız doğrulanmış sunucu kaynağından rota içi `oturum`
+sözlüğünde kullanıcı/rol), form/istek sözlüğü,
 yönlendirme, html güvenlisi ve
 önekli rotalar, **metin cerrahisi** (parçala/birleştir/
 değiştir/kırp/harfler), **JSON/CSV yazma**, **Türk alfabesiyle sıralama**,
@@ -192,10 +193,10 @@ korpus üzerinde regression testine girer.
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **719** |
+| Rust + doctest vakası | **721** |
 | Tanı kimliği | **155 etkin + 3 ayrılmış** |
 | RFC | **29** (2 kabul, 24 geçici kabul, 3 taslak) |
-| ADR | **73** (73 kabul) |
+| ADR | **74** (74 kabul) |
 | Normatif spec bölümü | **27** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 

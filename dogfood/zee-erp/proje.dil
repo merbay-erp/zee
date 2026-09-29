@@ -1,0 +1,14 @@
+# K-185 gerçek Zee ERP ürününün derleyici içi kanıt aynası.
+# Çalışan ürün: /Users/mustafaerbay/IdeaProjects/ZeeErp
+# İlk ürün commit'i: de655a81a1c355014176519f5db80c6b4ae5cea2
+
+proje "zee_erp" olsun
+sürüm "0.1.0" olsun
+morfoloji "zee-tr-1" olsun
+giriş "oturum-bilgisi-gereksinimi.dil" olsun
+yetkinlikler "ağ-sunucusu", "web-oturumu", "kriptografi", "veritabanı" listesi olsun
+ağ_hedefleri boş liste olsun
+yerel_bağımlılıklar boş liste olsun
+veritabanı_hedefi "postgresql://127.0.0.1:5432/zee_erp" olsun
+veritabanı_bağlantı_değişkeni "ZEE_ERP_DATABASE_URL" olsun
+veritabanı_göçleri "göçler" olsun
