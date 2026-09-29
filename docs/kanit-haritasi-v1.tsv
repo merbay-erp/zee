@@ -129,3 +129,4 @@ adr/073-zee-rust-go-karsilastirmasi.md	kanitli	compiler/tests/dogfood_karsilasti
 adr/074-ucuncu-urun-ve-surtunme-tekrari.md	kanitli	compiler/tests/kelime_avi_testi.rs,compiler/tests/dogfood_korpusu_testi.rs	Üçüncü ürün hermetik oyun kanıtı ve korpus proje/sürtünme vakaları
 adr/075-adil-kalici-yazma-kilidi.md	kanitli	compiler/src/kalici_dosya.rs	Bekleyen yazarın açlık sınırı ve iki yazar kayıpsızlığı
 adr/076-dogrulanmis-oturum-bilgisi.md	kanitli	compiler/tests/web_testi.rs,compiler/tests/dogfood_korpusu_testi.rs	Doğrulanmış sunucu oturumunun rota kapsamına güvenli aktarımı, sahte istemci alanı reddi ve Zee ERP dogfood gereksinimi
+adr/077-request-bound-postgresql-tenant-baglami.md	kanitli	compiler/tests/proje_testi.rs,compiler/src/postgresql.rs,compiler/src/main.rs,dogfood/zee-erp/oturum-bilgisi-gereksinimi.dil	Doğrulanmış kullanıcıdan aynı request transaction bağlantısında tenant RLS bağlamı ve rollback sınırı

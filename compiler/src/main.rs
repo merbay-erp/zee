@@ -2471,6 +2471,14 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             return Ok(());
         };
         let Some(taslak) = self.bekleyen_web_yaniti.take() else {
+            if let Some(postgresql) = self.postgresql.as_mut() {
+                if let Err(hata) = postgresql.istek_baglamini_geri_al() {
+                    eprintln!(
+                        "PostgreSQL istek transaction'ı geri alınamadı: {}",
+                        hata.mesaj
+                    );
+                }
+            }
             self.web_guvenligi.istegi_geri_al();
             self.bekleyen_cerezler = yedek.bekleyen_cerezler;
             self.bekleyen_silinen_cerezler = yedek.bekleyen_silinen_cerezler;
@@ -2492,6 +2500,29 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                 ));
             }
         };
+        if let Some(postgresql) = self.postgresql.as_mut() {
+            if let Err(hata) = postgresql.istek_baglamini_tamamla() {
+                eprintln!(
+                    "PostgreSQL istek transaction'ı tamamlanamadı: {}",
+                    hata.mesaj
+                );
+                self.bekleyen_cerezler = yedek.bekleyen_cerezler;
+                self.bekleyen_silinen_cerezler = yedek.bekleyen_silinen_cerezler;
+                let geri_alma = self.web_guvenligi.commiti_geri_al(commit);
+                let mesaj = if hata.commit_sonucu_belirsiz_mi() {
+                    "veritabanı commit sonucu belirsiz; uzlaştırma gerekli"
+                } else {
+                    "veritabanı istek transaction'ı tamamlanamadı"
+                };
+                if let Err(geri_alma) = geri_alma {
+                    eprintln!("Web oturum commit'i geri alınamadı: {geri_alma}");
+                }
+                return self.web_yanit_taslagini_yaz(WebYanitTaslagi::Durum(
+                    503,
+                    mesaj.into(),
+                ));
+            }
+        }
         if let Err(hata) = self.web_yanit_taslagini_yaz(taslak) {
             self.bekleyen_cerezler = yedek.bekleyen_cerezler;
             self.bekleyen_silinen_cerezler = yedek.bekleyen_silinen_cerezler;
@@ -2505,6 +2536,14 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         Ok(())
     }
     fn istek_islemini_geri_al(&mut self) {
+        if let Some(postgresql) = self.postgresql.as_mut() {
+            if let Err(hata) = postgresql.istek_baglamini_geri_al() {
+                eprintln!(
+                    "PostgreSQL istek transaction'ı geri alınamadı: {}",
+                    hata.mesaj
+                );
+            }
+        }
         if let Some(yedek) = self.web_istek_yedegi.take() {
             self.web_guvenligi.istegi_geri_al();
             self.bekleyen_cerezler = yedek.bekleyen_cerezler;
@@ -2667,7 +2706,34 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                 });
             }
         }
-        self.web_guvenligi.denetle(erisim, csrf, csrf_gerekli, an)
+        self.web_guvenligi.denetle(erisim, csrf, csrf_gerekli, an)?;
+        if !matches!(erisim, dil::agac::RotaErisimi::HerkeseAcik) {
+            let cozucu = self
+                .veritabani_bildirimi
+                .as_ref()
+                .and_then(|bildirim| bildirim.istek_baglami_cozucusu.clone());
+            if let Some(cozucu) = cozucu {
+                let kullanici = self
+                    .web_guvenligi
+                    .oturum_bilgisi(an)
+                    .map(|(kullanici, _)| kullanici.to_string())
+                    .ok_or(dil::web_guvenligi::WebReddi {
+                        durum: 401,
+                        mesaj: "bu rota kimliği doğrulanmış oturum istiyor",
+                    })?;
+                self.postgresql_oturumunu_al()
+                    .map_err(|_| dil::web_guvenligi::WebReddi {
+                        durum: 503,
+                        mesaj: "veritabanı tenant bağlantısı kurulamadı",
+                    })?
+                    .istek_baglamini_baslat(&cozucu, &kullanici)
+                    .map_err(|_| dil::web_guvenligi::WebReddi {
+                        durum: 503,
+                        mesaj: "veritabanı tenant bağlamı kurulamadı",
+                    })?;
+            }
+        }
+        Ok(())
     }
     fn csrf_belirteci(&mut self) -> Result<String, String> {
         self.politika

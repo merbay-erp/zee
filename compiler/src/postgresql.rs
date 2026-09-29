@@ -20,6 +20,7 @@ pub struct PostgresqlOturumu {
     havuz: havuz::PostgresqlHavuzu,
     kiralik: Option<havuz::PostgresqlKirasi>,
     eylem_derinligi: usize,
+    istek_baglami_acik: bool,
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -42,6 +43,7 @@ impl PostgresqlOturumu {
             havuz,
             kiralik: None,
             eylem_derinligi: 0,
+            istek_baglami_acik: false,
         };
         for _ in 0..eylem_derinligi {
             sonuc.eylem_baslat()?;
@@ -177,6 +179,81 @@ impl PostgresqlOturumu {
             }
         };
         i64::try_from(adet).map_err(|_| hata("Etkilenen satır sayısı TamSayı sınırını aşıyor"))
+    }
+
+    /// Doğrulanmış web oturumunu aynı bağlantıda request-local RLS bağlamına
+    /// dönüştürür. Çözücü adı proje bildirimi tarafından kapalı profilde
+    /// doğrulanır; kullanıcı ise yalnız sunucu oturumundan gelir.
+    pub fn istek_baglamini_baslat(
+        &mut self,
+        cozucu: &str,
+        kullanici: &str,
+    ) -> Result<(), VeritabaniHatasi> {
+        if self.istek_baglami_acik || self.eylem_derinligi != 0 {
+            return Err(hata("PostgreSQL istek bağlamı zaten açık"));
+        }
+        self.eylem_baslat()?;
+        let sonuc = (|| {
+            let sorgu = format!(
+                "SELECT tenant_id::text AS tenant_id FROM {}($1::text)",
+                cozucu
+            );
+            let satirlar = self.oku(&sorgu, &[kullanici.to_string()])?;
+            let tenant_id = match satirlar.as_slice() {
+                [satir] => match satir.as_slice() {
+                    [(ad, deger)] if ad == "tenant_id" => deger.clone(),
+                    _ => {
+                        return Err(hata(
+                            "İstek bağlamı çözücüsü yalnız tenant_id döndürmeli",
+                        ));
+                    }
+                },
+                _ => return Err(hata("İstek bağlamı çözücüsü tam bir satır döndürmeli")),
+            };
+            let ayar = self.oku(
+                "SELECT set_config('app.tenant_id', $1::uuid::text, true) AS tenant_id",
+                &[tenant_id],
+            )?;
+            if ayar.len() != 1 {
+                return Err(hata("PostgreSQL tenant bağlamı kurulamadı"));
+            }
+            Ok(())
+        })();
+        match sonuc {
+            Ok(()) => {
+                self.istek_baglami_acik = true;
+                Ok(())
+            }
+            Err(asil) => match self.eylem_geri_al() {
+                Ok(()) => Err(asil),
+                Err(geri) => Err(hata(format!(
+                    "{}; istek transaction'ı geri alınamadı: {}",
+                    asil.mesaj, geri.mesaj
+                ))),
+            },
+        }
+    }
+
+    pub fn istek_baglamini_tamamla(&mut self) -> Result<(), VeritabaniHatasi> {
+        if !self.istek_baglami_acik {
+            return Ok(());
+        }
+        if self.eylem_derinligi != 1 {
+            return Err(hata("PostgreSQL istek transaction sınırı dengeli değil"));
+        }
+        self.istek_baglami_acik = false;
+        self.eylem_tamamla()
+    }
+
+    pub fn istek_baglamini_geri_al(&mut self) -> Result<(), VeritabaniHatasi> {
+        if !self.istek_baglami_acik {
+            return Ok(());
+        }
+        while self.eylem_derinligi > 0 {
+            self.eylem_geri_al()?;
+        }
+        self.istek_baglami_acik = false;
+        Ok(())
     }
 
     pub fn eylem_baslat(&mut self) -> Result<(), VeritabaniHatasi> {

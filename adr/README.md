@@ -79,6 +79,7 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-074 | [Üçüncü ürün: sürtünme tekrarı dil tasarımının sinyalidir](074-ucuncu-urun-ve-surtunme-tekrari.md) | **kabul** (K-179) |
 | ADR-075 | [Adil kalıcı yazma kilidi: bekleyen yazar kuyrukta bloklanır](075-adil-kalici-yazma-kilidi.md) | **kabul** (K-183) |
 | ADR-076 | [Doğrulanmış oturum bilgisi rota ortamında okunur](076-dogrulanmis-oturum-bilgisi.md) | **kabul** (K-185/GB-026) |
+| ADR-077 | [Request-bound PostgreSQL tenant bağlamı](077-request-bound-postgresql-tenant-baglami.md) | **kabul** (K-186/GB-027) |
 | ADR-004 | Bellek yönetimi prototip kararı (GC / ARC benchmark) | bekliyor |
 | ADR-005 | Native backend seçimi (Cranelift / LLVM) | bekliyor — Faz 4 |
 | ADR-007 | [Telemetri ve gizlilik: araçlar veri toplamaz](007-telemetri-ve-gizlilik.md) | **kabul** |

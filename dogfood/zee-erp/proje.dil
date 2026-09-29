@@ -12,3 +12,4 @@ yerel_bağımlılıklar boş liste olsun
 veritabanı_hedefi "postgresql://127.0.0.1:5432/zee_erp" olsun
 veritabanı_bağlantı_değişkeni "ZEE_ERP_DATABASE_URL" olsun
 veritabanı_göçleri "göçler" olsun
+veritabanı_istek_bağlamı "platform.session_context" olsun

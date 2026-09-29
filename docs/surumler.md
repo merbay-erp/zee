@@ -12,6 +12,12 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **Request-bound PostgreSQL tenant bağlamı (K-186, ADR-077):** Korumalı rota,
+  doğrulanmış sunucu oturumu kullanıcısını bildirilen dar resolver işlevine
+  bind eder; tenant UUID aynı leased bağlantıda transaction-local RLS ayarı
+  olur. Public rota bağlamsızdır, hata rollback'tir ve uygulama eylemleri
+  request transaction'ı içindeki savepoint'ler olarak kalır.
+
 - **Doğrulanmış rota oturumu (K-185, ADR-076):** Gerçek Zee ERP tenant
   gereksinimiyle, sunucu oturumundaki kullanıcı ve rol yalnız rota içindeki
   `oturum` sözlüğünden okunur. İstemci girdisi bu sözlüğü dolduramaz; oturum

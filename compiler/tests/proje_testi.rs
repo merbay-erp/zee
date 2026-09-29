@@ -226,7 +226,7 @@ fn bildirim_gecerli_zee_kaynagidir() {
 
 #[test]
 fn postgresql_bildirimi_sirri_kaynaga_almadan_kesin_hedefi_kilitler() {
-    let kaynak = "proje \"uygulama\" olsun\nsürüm \"1.0.0\" olsun\ngiriş \"ana.dil\" olsun\nyetkinlikler \"veritabanı\" listesi olsun\nağ_hedefleri boş liste olsun\nveritabanı_hedefi \"postgresql://127.0.0.1:5432/uygulama\" olsun\nveritabanı_bağlantı_değişkeni \"UYGULAMA_DATABASE_URL\" olsun\nveritabanı_göçleri \"göçler\" olsun\n";
+    let kaynak = "proje \"uygulama\" olsun\nsürüm \"1.0.0\" olsun\ngiriş \"ana.dil\" olsun\nyetkinlikler \"veritabanı\" listesi olsun\nağ_hedefleri boş liste olsun\nveritabanı_hedefi \"postgresql://127.0.0.1:5432/uygulama\" olsun\nveritabanı_bağlantı_değişkeni \"UYGULAMA_DATABASE_URL\" olsun\nveritabanı_göçleri \"göçler\" olsun\nveritabanı_istek_bağlamı \"platform.session_context\" olsun\n";
     let bildirim = bildirimi_oku(kaynak).expect("PostgreSQL bildirimi geçmeli");
     let veritabani = bildirim.veritabani.expect("veritabanı ayarı");
     assert_eq!(veritabani.hedef.konak, "127.0.0.1");
@@ -234,6 +234,10 @@ fn postgresql_bildirimi_sirri_kaynaga_almadan_kesin_hedefi_kilitler() {
     assert_eq!(veritabani.hedef.veritabani, "uygulama");
     assert_eq!(veritabani.baglanti_degiskeni, "UYGULAMA_DATABASE_URL");
     assert_eq!(veritabani.gocler, "göçler");
+    assert_eq!(
+        veritabani.istek_baglami_cozucusu.as_deref(),
+        Some("platform.session_context")
+    );
 
     for (eski, yeni) in [
         (
@@ -255,6 +259,17 @@ fn postgresql_bildirimi_sirri_kaynaga_almadan_kesin_hedefi_kilitler() {
     for gecersiz in ["DB.example", "999.999.999.999", "-db.example"] {
         let bozuk = kaynak.replacen("127.0.0.1", gecersiz, 1);
         let hata = bildirimi_oku(&bozuk).expect_err("kanonik olmayan konak reddedilmeli");
+        assert_eq!(hata.kod, "P015", "{gecersiz}: {}", hata.mesaj);
+    }
+
+    for gecersiz in [
+        "session_context",
+        "Platform.session_context",
+        "platform.session-context",
+        "platform.session_context.extra",
+    ] {
+        let bozuk = kaynak.replacen("platform.session_context", gecersiz, 1);
+        let hata = bildirimi_oku(&bozuk).expect_err("SQL işlev adı kapalı profilde olmalı");
         assert_eq!(hata.kod, "P015", "{gecersiz}: {}", hata.mesaj);
     }
 }
