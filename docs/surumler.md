@@ -12,6 +12,10 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **Migration işlev gövdesi ayrımı (K-187, ADR-078):** C026 transaction
+  sınırı artık yalnız üst seviye SQL komutlarını tarar; PL/pgSQL ve
+  dollar-quoted trigger gövdeleri yanlış `BEGIN` reddi üretmez.
+
 - **Request-bound PostgreSQL tenant bağlamı (K-186, ADR-077):** Korumalı rota,
   doğrulanmış sunucu oturumu kullanıcısını bildirilen dar resolver işlevine
   bind eder; tenant UUID aynı leased bağlantıda transaction-local RLS ayarı
