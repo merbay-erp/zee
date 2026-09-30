@@ -10,6 +10,6 @@ GET "/panel" adresine istek geldiğinde
     parametreler boş liste olsun
     bağlam "SELECT current_setting('app.tenant_id', true)::text AS tenant_id" sorgusunu parametreler ile okumayı dene olsun
     bağlam başarısızsa
-        503 durumuyla "tenant bağlamı kurulamadı" yanıtını gönder
+        "tenant bağlamı kurulamadı" yanıtını 503 durumuyla gönder
     yanıt kullanıcı ile ":" ile rol ile ":tenant-bound" olsun
     yanıt yanıtını gönder

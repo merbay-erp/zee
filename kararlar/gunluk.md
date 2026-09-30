@@ -3508,3 +3508,18 @@ paylaşım için sentetik kayıt ve CI'a iz koymama sınırı belgelendi.
   workflow'unda login → RLS panel → logout ve çapraz tenant reddini ölçer.
 - **Sınır:** Genel SQL identifier, istemci tenant seçimi veya yeni Zee grammar
   açılmadı. Resolver yetkileri ve sabit search_path ürün migration'ındadır.
+
+## K-188 — ERP oturum listesi ve tekil iptal (30 Eylül 2026)
+
+- **Ürün bulgusu:** Zee ERP parola/MFA/rol/kullanıcı/tenant güvenlik
+  değişikliklerinde diğer oturumları düşürmek ve etkin cihazları tek tek
+  kapatmak zorundaydı; runtime yalnız mevcut oturumu kapatabiliyordu.
+- **Karar (ADR-079):** Kullanıcı oturumları ham bearer yerine SHA-256 özet
+  kimlik ve zaman metadata'sıyla listelenir; seçili özet kimlik ortak depoda
+  istek transaction'ı içinde iptal edilir. CSRF ve ham token açılmaz.
+- **Kanıt:** `dogfood/zee-erp/oturum-iptali-gereksinimi.dil`, çekirdek depo
+  testi, rota sahte-metadata testi, intrinsic lowering ve IO trace/replay
+  şeması aynı değişikliktedir. GB-028 kapandı.
+- **Sınır:** Runtime ürün rolü veya tenant yetkisi yorumlamaz; kullanıcı-geneli
+  revoke ERP'nin güvenli listeyi dolaşmasıdır. İki yeni kalıp nedeniyle K-174
+  syntax freeze 30 Eylül–28 Ekim 2026 için yeniden başladı.

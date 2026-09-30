@@ -7,6 +7,8 @@ pub const HTTP_GETIR: &str = "ag.http_getir";
 pub const SENSOR_ACIK_MI: &str = "donanim.sensor_acik_mi";
 pub const CSRF_BELIRTECI: &str = "web.csrf_belirteci";
 pub const PAROLA_DOGRULA: &str = "guvenlik.parola_dogrula";
+pub const WEB_OTURUMLARINI_LISTELE: &str = "web.oturumlarini_listele";
+pub const WEB_OTURUMUNU_IPTAL_ET: &str = "web.oturumunu_iptal_et";
 pub const POSTGRESQL_OKU: &str = "veritabani.postgresql_oku";
 pub const POSTGRESQL_DEGISTIR: &str = "veritabani.postgresql_degistir";
 pub const DOSYA_ATOMIK_TASI: &str = "dosya.atomik_tasi";
@@ -88,6 +90,22 @@ pub const TANIMLAR: &[IntrinsicTanimi] = &[
         donus_turu: IntrinsicTuru::Mantiksal,
         etki: IntrinsicEtkisi::Saf,
         tur_hatasi: "Parola ve Argon2id özeti Metin olmalı.",
+    },
+    IntrinsicTanimi {
+        kimlik: WEB_OTURUMLARINI_LISTELE,
+        yetkinlik: Yetkinlik::WebOturumu,
+        arguman_turleri: METIN,
+        donus_turu: IntrinsicTuru::MetinSozlukListesiSonucu,
+        etki: IntrinsicEtkisi::WebAdaptoru,
+        tur_hatasi: "Oturumları listelenecek kullanıcı Metin olmalı.",
+    },
+    IntrinsicTanimi {
+        kimlik: WEB_OTURUMUNU_IPTAL_ET,
+        yetkinlik: Yetkinlik::WebOturumu,
+        arguman_turleri: METIN,
+        donus_turu: IntrinsicTuru::TamSayiSonucu,
+        etki: IntrinsicEtkisi::WebAdaptoru,
+        tur_hatasi: "İptal edilecek web oturum kimliği Metin olmalı.",
     },
     IntrinsicTanimi {
         kimlik: POSTGRESQL_OKU,

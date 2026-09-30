@@ -51,6 +51,11 @@ normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
 | V1-P0-35 Core freeze gerçek ürün kanıtı olmadan açılamaz | **KAPALI (K-160A/B-073)** | Her yeni `compiler/src` commit'i semantic sınıfına ek exact freeze sınıfı taşır. Semantic feature yalnız dogfood/security/correctness olabilir. Dogfood kanıtı append-only kayıttaki etkin ürün ve exact provenance'a, gerçek K-işine, ürün kökü altındaki Zee dosyasına, reproducer'a, minimaliteye ve ilgili normatif karara bağlanır. | ADR-059 + [core freeze beyanı](core-freeze-beyani.md) + [dogfood ürün kaydı](dogfood-projeleri-v1.tsv) + `core_freeze_korugu_testi`; CI beyansız feature'ı, maintenance kaçışını, geçmiş satır yeniden yazımını, kayıtsız ürün/işi, kök dışı dosyayı ve alakasız kararı reddeder. B-071/B-073 kapandı; semantik ilgi insan review'undadır. |
 | V1-P0-36 İlk gerçek Zee ürünü laboratuvar dışı kanıt üretir | **KAPALI (K-163)** | legacy panel/legacy Next.js yönetim paneli 1037 gerçek Zee LOC, 5 modül ve 12 hermetik testte auth/CSRF/içerik/ayar/sayfa, gerçek PostgreSQL, bağlantı/COMMIT arızası, binary medya saga'sı, production TLS/havuz ve liveness/readiness taşır. | F030 binary yaşam döngüsü, F031 pinned CA+bounded pool, F032 aynı worker'da DB-down readiness 503/liveness 200/DB dönüşü 200 ve 1000+ bakım skor kartını kapattı. Gerçek ürün LSP full-change p95 41,416 ms; değişiklik başına dosya medyanı 6'dan 5,5'e indi. Managed-provider rotasyonu/çok-worker toplam bütçe K-169/K-173; multipart/içerik güvenliği K-170 kapsamındadır, K-163'ü açık tutmaz. |
 
+K-188/ADR-079, V1-P0-03'ün revoke kanıtını gerçek Zee ERP ihtiyacıyla
+genişletir: kullanıcı oturumları ham bearer/CSRF açılmadan özet kimlik ve zaman
+metadata'sıyla listelenir; seçili kimlik ortak kalıcı depoda transaction
+kapsamında, worker ve restart sınırlarını aşarak iptal edilir.
+
 ## P1 — profesyonel kapasite kapıları
 
 | Kapı | Durum | Kaynakta görülen gerçek | Kapanma kanıtı |

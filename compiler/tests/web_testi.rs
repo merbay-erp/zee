@@ -613,9 +613,11 @@ POST "/giris" adresine istek geldiğinde
 
 GET "/kim" adresine istek geldiğinde
     "yönetici" yetkisi gerekli
+    kimlik oturumun "kimlik" değeri olsun
     kullanıcı oturumun "kullanıcı" değeri olsun
     rol oturumun "rol" değeri olsun
-    kullanıcı ile "|" ile rol yanıtını gönder
+    oluşturulma oturumun "oluşturulma_ms" değeri olsun
+    kimlik ile "|" ile kullanıcı ile "|" ile rol ile "|" ile oluşturulma yanıtını gönder
 "#;
     let program = dil::kaynagi_derle(kaynak).expect("oturum sözlüğü derlenmeli");
     let (mut io, anonim, csrf) = csrfli_bos_io();
@@ -625,14 +627,30 @@ GET "/kim" adresine istek geldiğinde
     let (_, kimlik) = io.yazilan_cerezler.last().cloned().expect("yeni oturum");
 
     io.istekler.push_back(format!(
-        "GET /kim\nçerez __Host-zee-oturum={}; __zee_ic_oturum_kullanicisi=sahte; __zee_ic_oturum_rolu=sahte",
+        "GET /kim\nçerez __Host-zee-oturum={}; __zee_ic_oturum_kimligi=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa; __zee_ic_oturum_kullanicisi=sahte; __zee_ic_oturum_rolu=sahte; __zee_ic_oturum_olusturma_ms=-1; __zee_ic_oturum_son_erisim_ms=-1; __zee_ic_oturum_son_gecerlilik_ms=-1",
         kimlik
     ));
     calistir_io(&program, &mut io).expect("korumalı rota çalışmalı");
-    assert_eq!(
-        io.sunucu_yanitlari.last().unwrap().1,
-        "9f4bd2c8-4bd4-4b69-9f73-17a5df2a8a20|yönetici"
-    );
+    let yanit = &io.sunucu_yanitlari.last().unwrap().1;
+    let alanlar = yanit.split('|').collect::<Vec<_>>();
+    assert_eq!(alanlar.len(), 4);
+    assert_eq!(alanlar[0].len(), 64);
+    assert_ne!(alanlar[0], kimlik, "ham belirteç uygulamaya açılmamalı");
+    assert_eq!(alanlar[1], "9f4bd2c8-4bd4-4b69-9f73-17a5df2a8a20");
+    assert_eq!(alanlar[2], "yönetici");
+    assert_eq!(alanlar[3], "0");
+}
+
+#[test]
+fn web_oturumu_listeleme_ve_iptal_intrinsicleri_derlenir() {
+    let kaynak = r#"
+kullanıcı "mustafa" olsun
+oturumlar kullanıcı ile web oturumlarını listelemeyi dene olsun
+kimlik "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" olsun
+iptal kimlik ile web oturumunu iptal etmeyi dene olsun
+"tamam" yaz
+"#;
+    dil::kaynagi_derle(kaynak).expect("web oturumu yönetim yüzeyi derlenmeli");
 }
 
 #[test]

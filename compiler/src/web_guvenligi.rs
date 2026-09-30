@@ -8,7 +8,7 @@ use crate::guvenlik::sabit_zamanli_esit;
 use std::collections::BTreeSet;
 
 mod depo;
-
+mod oturum_yonetimi;
 use depo::{Depo, DepoDurumu};
 
 pub const OTURUM_OMRU_SANIYE: i64 = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
@@ -36,6 +36,21 @@ pub struct YeniOturum {
     pub azami_omur_saniye: i64,
 }
 
+/// Uygulamaya açılabilen, sır taşımayan oturum görünümü. `kimlik`, ham çerez
+/// belirteci değil depodaki SHA-256 özetidir ve yalnız iptal hedefi olarak
+/// kullanılmalıdır.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct OturumBilgisi {
+    pub kimlik: String,
+    pub kullanici: String,
+    pub rol: String,
+    pub olusturma_ms: i64,
+    pub son_erisim_ms: i64,
+    pub son_gecerlilik_ms: i64,
+}
+
+pub use oturum_yonetimi::oturum_satiri;
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 #[cfg_attr(
     not(target_arch = "wasm32"),
@@ -47,6 +62,8 @@ pub(super) struct Oturum {
     pub(super) rol: Option<String>,
     pub(super) son_gecerlilik_ms: i64,
     pub(super) son_erisim_ms: i64,
+    #[cfg_attr(not(target_arch = "wasm32"), serde(default))]
+    pub(super) olusturma_ms: i64,
     pub(super) olusturma_sirasi: u64,
 }
 
@@ -192,6 +209,7 @@ impl WebGuvenligi {
             rol: None,
             son_gecerlilik_ms: an_ms.saturating_add(omur * 1000),
             son_erisim_ms: an_ms,
+            olusturma_ms: an_ms,
             olusturma_sirasi: 0,
         };
         let anahtar = anahtar(&belirtec);
@@ -288,6 +306,7 @@ impl WebGuvenligi {
             rol: Some(rol),
             son_gecerlilik_ms: an_ms.saturating_add(omur * 1000),
             son_erisim_ms: an_ms,
+            olusturma_ms: an_ms,
             olusturma_sirasi: 0,
         };
         let anahtar = anahtar(&belirtec);
@@ -325,13 +344,6 @@ impl WebGuvenligi {
             }
             Ok(gorunum.oturumlar.len())
         })
-    }
-
-    /// Geçerli ve kimliği doğrulanmış oturumun uygulamaya açılabilen dar
-    /// kimlik görünümü. Belirteç ve CSRF hiçbir zaman bu sınırdan çıkmaz.
-    pub fn oturum_bilgisi(&self, an_ms: i64) -> Option<(&str, &str)> {
-        let oturum = self.gecerli_oturum(an_ms)?;
-        Some((oturum.kullanici.as_deref()?, oturum.rol.as_deref()?))
     }
 
     fn gecerli_oturum(&self, an_ms: i64) -> Option<&Oturum> {
@@ -601,7 +613,11 @@ mod tests {
             .expect("giriş");
         assert_ne!(anonim.belirtec, yeni.belirtec, "session fixation");
         istegi_baslat(&mut depo, Some(&yeni.belirtec), 2);
-        assert_eq!(depo.oturum_bilgisi(2), Some(("Mustafa", "yönetici")));
+        let bilgi = depo.oturum_bilgisi(2).expect("oturum bilgisi");
+        assert_eq!(bilgi.kullanici, "Mustafa");
+        assert_eq!(bilgi.rol, "yönetici");
+        assert_eq!(bilgi.olusturma_ms, 1);
+        assert_eq!(bilgi.son_erisim_ms, 2);
         assert!(depo
             .denetle(&RotaErisimi::Rol("yönetici".into()), None, false, 2)
             .is_ok());
@@ -614,6 +630,33 @@ mod tests {
         depo.oturum_kapat();
         assert_eq!(depo.oturum_bilgisi(2), None);
         assert_eq!(depo.oturum_sayisi().unwrap(), 0);
+    }
+
+    #[test]
+    fn kullanici_oturumlarini_sirsiz_listeler_ve_ozet_kimlikle_iptal_eder() {
+        let mut depo = WebGuvenligi::yeni();
+        istegi_baslat(&mut depo, None, 10);
+        let yeni = depo
+            .oturum_ac("Mustafa".into(), "yönetici".into(), 10, uretici())
+            .unwrap();
+        depo.istegi_tamamla(10).unwrap();
+
+        let oturumlar = depo.kullanici_oturumlarini_listele("Mustafa", 11).unwrap();
+        assert_eq!(oturumlar.len(), 1);
+        assert_eq!(oturumlar[0].kimlik, anahtar(&yeni.belirtec));
+        assert_ne!(oturumlar[0].kimlik, yeni.belirtec);
+        assert_eq!(oturumlar[0].olusturma_ms, 10);
+        assert!(depo
+            .kullanici_oturumlarini_listele("Başka", 11)
+            .unwrap()
+            .is_empty());
+
+        assert_eq!(depo.oturum_kimligini_iptal_et(&oturumlar[0].kimlik), Ok(1));
+        depo.istegi_tamamla(11).unwrap();
+        istegi_baslat(&mut depo, Some(&yeni.belirtec), 12);
+        assert_eq!(depo.oturum_bilgisi(12), None);
+        assert_eq!(depo.oturum_kimligini_iptal_et(&oturumlar[0].kimlik), Ok(0));
+        assert!(depo.oturum_kimligini_iptal_et("ham-belirtec").is_err());
     }
 
     #[test]
