@@ -1,0 +1,23 @@
+# K-188 Zee ERP gereksinimi: yönetici, ham çerez belirteci görmeden bir
+# kullanıcının etkin oturumlarını listeleyip seçili güvenli kimliği iptal eder.
+
+8080 kapısında sunucu başlat
+
+GET "/oturumlar" adresine istek geldiğinde
+    "yönetici" yetkisi gerekli
+    kullanıcı oturumun "kullanıcı" değeri olsun
+    oturumlar kullanıcı ile web oturumlarını listelemeyi dene olsun
+    oturumlar başarılıysa
+        oturumların değeri yanıtını gönder
+    değilse
+        "oturumlar alınamadı" yanıtını 503 durumuyla gönder
+
+POST "/oturum-iptal" adresine istek geldiğinde
+    "yönetici" yetkisi gerekli
+    "kimlik" alanı gerekli
+    kimlik isteğin "kimlik" değeri olsun
+    iptal kimlik ile web oturumunu iptal etmeyi dene olsun
+    iptal başarılıysa
+        "/oturumlar" adresine yönlendir
+    değilse
+        "oturum iptal edilemedi" yanıtını 400 durumuyla gönder

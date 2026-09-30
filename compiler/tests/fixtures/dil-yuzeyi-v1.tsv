@@ -43,6 +43,7 @@ kalip	hatasını	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	her	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	herkese	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	ile	aktif	0.7.0	compiler/src/lsp.rs	-
+kalip	iptal	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	ise	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	içermeli	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	için	aktif	0.7.0	compiler/src/lsp.rs	-
@@ -56,6 +57,7 @@ kalip	kullan	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	kullanıcısını	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	kuruşlusu	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	kırpılmışı	aktif	0.7.0	compiler/src/lsp.rs	-
+kalip	listelemeyi	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	mesajı	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	metni	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	nedeni	aktif	0.8.0-dev	compiler/src/lsp.rs	-

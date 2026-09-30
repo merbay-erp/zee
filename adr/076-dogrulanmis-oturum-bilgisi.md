@@ -20,7 +20,9 @@ değeri okuyamıyordu. Uygulamanın tenant veya kullanıcıyı URL, form ya da h
 3. Değerler yalnız doğrulanmış sunucu oturum kaydından gelir. İstek başlığı,
    form alanı ve tarayıcı çerezi bu sözlüğü dolduramaz; iç taşıma alanları
    adaptör sınırında silinip güvenilir değerlerle yeniden kurulur.
-4. Oturum kimliği/özeti, CSRF belirteci ve başka sırlar uygulamaya açılmaz.
+4. Bu karar anında oturum kimliği/özeti, CSRF belirteci ve başka sırlar
+   uygulamaya açılmaz. K-188/ADR-079 daha sonra ham belirteci gizli tutarak
+   yalnız iptal hedefi olan SHA-256 özet kimliği açmıştır.
 5. `oturum`, `istek` ve `çerezler` gibi yalnız rota kapsamındadır; rota dışında
    kullanımı A001'dir. Yeni anahtar sözcük veya grammar eklenmez.
 

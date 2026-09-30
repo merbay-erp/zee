@@ -1801,8 +1801,7 @@ fn html_guvenlik_basliklari(https: bool, govde: &str) -> String {
 }
 
 fn base64_kodla(girdi: &[u8]) -> String {
-    const ALFABE: &[u8; 64] =
-        b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    const ALFABE: &[u8; 64] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
     let mut sonuc = String::with_capacity(girdi.len().div_ceil(3) * 4);
     for parca in girdi.chunks(3) {
         let a = parca[0];
@@ -2513,15 +2512,10 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                 cerez_satiri,
                 govde
             );
-            let bilgi = self
-                .web_guvenligi
-                .oturum_bilgisi(web_duvar_saati_ms())
-                .map(|(kullanici, rol)| (kullanici.to_string(), rol.to_string()));
+            let bilgi = self.web_guvenligi.oturum_bilgisi(web_duvar_saati_ms());
             return Some(dil::yorumlayici::dogrulanmis_oturumu_istege_ekle(
                 &ham,
-                bilgi
-                    .as_ref()
-                    .map(|(kullanici, rol)| (kullanici.as_str(), rol.as_str())),
+                bilgi.as_ref(),
             ));
         }
     }
@@ -2576,10 +2570,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                 if let Err(geri_alma) = geri_alma {
                     eprintln!("Web oturum commit'i geri alınamadı: {geri_alma}");
                 }
-                return self.web_yanit_taslagini_yaz(WebYanitTaslagi::Durum(
-                    503,
-                    mesaj.into(),
-                ));
+                return self.web_yanit_taslagini_yaz(WebYanitTaslagi::Durum(503, mesaj.into()));
             }
         }
         if let Err(hata) = self.web_yanit_taslagini_yaz(taslak) {
@@ -2775,7 +2766,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                 let kullanici = self
                     .web_guvenligi
                     .oturum_bilgisi(an)
-                    .map(|(kullanici, _)| kullanici.to_string())
+                    .map(|bilgi| bilgi.kullanici)
                     .ok_or(dil::web_guvenligi::WebReddi {
                         durum: 401,
                         mesaj: "bu rota kimliği doğrulanmış oturum istiyor",
@@ -2826,6 +2817,35 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         self.bekleyen_silinen_cerezler
             .push(self.oturum_cerez_adi().to_string());
         Ok(())
+    }
+    fn kullanici_oturumlarini_listele(
+        &mut self,
+        kullanici: &str,
+    ) -> Result<Vec<Vec<(String, String)>>, String> {
+        self.politika
+            .gerektir(dil::yetkinlik::Yetkinlik::WebOturumu)?;
+        self.web_guvenligi
+            .kullanici_oturumlarini_listele(kullanici, web_duvar_saati_ms())
+            .map(|oturumlar| {
+                oturumlar
+                    .into_iter()
+                    .map(dil::web_guvenligi::oturum_satiri)
+                    .collect()
+            })
+    }
+    fn oturum_kimligini_iptal_et(&mut self, kimlik: &str) -> Result<i64, String> {
+        self.politika
+            .gerektir(dil::yetkinlik::Yetkinlik::WebOturumu)?;
+        let mevcut = self
+            .web_guvenligi
+            .oturum_bilgisi(web_duvar_saati_ms())
+            .is_some_and(|bilgi| bilgi.kimlik == kimlik);
+        let adet = self.web_guvenligi.oturum_kimligini_iptal_et(kimlik)?;
+        if mevcut && adet == 1 {
+            self.bekleyen_silinen_cerezler
+                .push(self.oturum_cerez_adi().to_string());
+        }
+        Ok(adet)
     }
     fn parola_dogrula(&mut self, parola: &str, ozet: &str) -> bool {
         if !self
@@ -3168,14 +3188,19 @@ mod web_profili_testleri {
 
     #[test]
     fn html_scriptleri_icerige_bagli_csp_ozetiyle_calisir() {
-        let basliklar = html_guvenlik_basliklari(
-            false,
-            "<!doctype html><script>console.log('zee')</script>",
-        );
-        assert!(basliklar.contains(
-            "script-src 'self' 'sha256-8VHn0UwRo0MmaR7ebsXpVTH6AA4wJBSlghouXTG/w50='"
-        ));
-        assert!(!basliklar.contains("'unsafe-inline'"));
+        let basliklar =
+            html_guvenlik_basliklari(false, "<!doctype html><script>console.log('zee')</script>");
+        assert!(basliklar
+            .contains("script-src 'self' 'sha256-8VHn0UwRo0MmaR7ebsXpVTH6AA4wJBSlghouXTG/w50='"));
+        let csp = basliklar
+            .lines()
+            .find(|satir| satir.starts_with("Content-Security-Policy:"))
+            .expect("CSP başlığı");
+        let script_src = csp
+            .split(';')
+            .find(|parca| parca.trim_start().starts_with("script-src "))
+            .expect("script-src yönergesi");
+        assert!(!script_src.contains("'unsafe-inline'"));
     }
 
     #[test]

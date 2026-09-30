@@ -1,6 +1,7 @@
 use super::*;
 
 mod dosya;
+mod web;
 
 pub(super) fn gecerli_hata_kodu(kod: &str) -> bool {
     let mut harfler = kod.chars();
@@ -824,6 +825,10 @@ fn yapili_kalip_ic(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifa
                 tekil_ifade(tokenlar[2].clone())?,
             ],
         }));
+    }
+
+    if let Some(ifade) = web::oturum_yonetimi_kalibi(tokenlar)? {
+        return Ok(Some(ifade));
     }
 
     if let Some(ifade) = dosya::yasam_dongusu_kalibi(tokenlar)? {

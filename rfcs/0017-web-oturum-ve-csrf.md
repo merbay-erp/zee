@@ -3,12 +3,12 @@
 - **Durum:** geçici kabul — K-088 güvenlik profili, K-134 istek transaction'ı,
   K-137 ortak durum/rate-limit, K-139 kanonik origin/loopback peer ve K-140
   byte HTTP framing sınırı saldırı regresyonlarına; K-185 doğrulanmış oturum
-  bilgisi gerçek ERP tenant gereksinimine bağlandı
+  bilgisi ve K-188 güvenli oturum yönetimi gerçek ERP gereksinimine bağlandı
 - **Tarih:** 1 Eylül 2026
-- **Revizyon:** 29 Eylül 2026 — K-185/ADR-076
+- **Revizyon:** 30 Eylül 2026 — K-188/ADR-079
 - **İlgili kararlar:** K-082, K-087, K-088, K-134, K-137, K-139, K-140,
-  K-185, ADR-010, ADR-018, ADR-034, ADR-036, ADR-037, ADR-076; B-046,
-  B-052, B-053, GB-026, V1-P0-03
+  K-185, K-188, ADR-010, ADR-018, ADR-034, ADR-036, ADR-037, ADR-076,
+  ADR-079; B-046, B-052, B-053, GB-026, GB-028, V1-P0-03
 - **Normatif metin:** spec/12
 
 ## Problem
@@ -65,6 +65,10 @@ kapısı olmalıdır.
 16. Doğrulanmış sunucu oturumundaki kullanıcı ve rol, yalnız rota kapsamındaki
     `oturum` sözlüğünde okunur. Tarayıcı girdisi bu sözlüğü dolduramaz;
     oturum sırrı, özeti ve CSRF belirteci uygulamaya açılmaz.
+17. Uygulama, kullanıcıya ait geçerli oturumları sır taşımayan SHA-256 özet
+    kimliği ve zaman metadata'sıyla listeleyebilir; tek bir özet kimliği ortak
+    depoda transaction kapsamında iptal edebilir. Ham bearer ve CSRF değeri bu
+    yüzeyden çıkmaz.
 
 ## Dil yüzeyi
 
@@ -92,6 +96,15 @@ GET "/panel" adresine istek geldiğinde
     oturum gerekli
     kullanıcı oturumun "kullanıcı" değeri olsun
     rol oturumun "rol" değeri olsun
+
+    oturumlar kullanıcı ile web oturumlarını listelemeyi dene olsun
+    # listedeki "kimlik" alanı ham çerez değil güvenli iptal hedefidir
+
+POST "/oturum-iptal" adresine istek geldiğinde
+    oturum gerekli
+    "kimlik" alanı gerekli
+    kimlik isteğin "kimlik" değeri olsun
+    iptal kimlik ile web oturumunu iptal etmeyi dene olsun
 ```
 
 ## Reddedilen seçenekler
@@ -132,6 +145,11 @@ K-185 kanıtı Zee ERP dogfood gereksinimini derler; gerçek adaptör testinde
 istemcinin taklit ettiği iç oturum alanlarını atıp yalnız sunucu deposundaki
 kullanıcı ve rolü verir, ayrıca `oturum` adının rota dışında A001 olduğunu
 sabitler.
+K-188 kanıtı ERP dogfood reproducer'ında listeleme/iptal ifadelerini derler;
+çekirdek test güvenli kimliğin ham belirteçten farklı olduğunu, kullanıcı
+izolasyonunu, idempotent iptali ve iptal edilen kaydın sonraki istekte
+tanınmadığını doğrular. Rota testi sahte iç metadata'yı atıp güvenilir depo
+değerlerini yeniden kurar.
 
 ## Bilinçli sınır
 

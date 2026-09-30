@@ -1,5 +1,7 @@
 use super::*;
 
+mod web;
+
 pub(super) fn degerlendir_async<'a>(
     ifade: &'a Ifade,
     ortam: &'a HashMap<String, Deger>,
@@ -51,6 +53,9 @@ pub(super) fn degerlendir_async<'a>(
                             &metne_sinirli(parola, satir)?,
                             &metne_sinirli(ozet, satir)?,
                         )))
+                    }
+                    WEB_OTURUMLARINI_LISTELE | WEB_OTURUMUNU_IPTAL_ET => {
+                        web::oturum_yonetimini_degerlendir(kimlik, &degerler, io, satir)
                     }
                     HTTP_GETIR => {
                         let [Deger::Metin(url)] = degerler.as_slice() else {

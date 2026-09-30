@@ -7,6 +7,7 @@ use dil::agac::{Cumle, Ifade};
 use dil::intrinsic::{
     self, IntrinsicEtkisi, Yetkinlik, CSRF_BELIRTECI, DOSYALARI_LISTELE, DOSYA_ATOMIK_TASI,
     HTTP_GETIR, PAROLA_DOGRULA, POSTGRESQL_DEGISTIR, POSTGRESQL_OKU, SENSOR_ACIK_MI,
+    WEB_OTURUMLARINI_LISTELE, WEB_OTURUMUNU_IPTAL_ET,
 };
 use dil::kaynagi_derle;
 use std::collections::HashSet;
@@ -25,7 +26,7 @@ fn intrinsic_kaydi_kimlik_yetkinlik_ve_etkiyi_tekillestirir() {
         .map(|tanim| tanim.kimlik)
         .collect::<HashSet<_>>();
     assert_eq!(kimlikler.len(), intrinsic::TANIMLAR.len());
-    assert_eq!(kimlikler.len(), 10);
+    assert_eq!(kimlikler.len(), 12);
 
     let http = intrinsic::tanim(HTTP_GETIR).expect("HTTP kaydı");
     assert_eq!(http.yetkinlik, Yetkinlik::Ag);
@@ -34,6 +35,11 @@ fn intrinsic_kaydi_kimlik_yetkinlik_ve_etkiyi_tekillestirir() {
     let csrf = intrinsic::tanim(CSRF_BELIRTECI).expect("CSRF kaydı");
     assert_eq!(csrf.yetkinlik, Yetkinlik::WebOturumu);
     assert_eq!(csrf.etki, IntrinsicEtkisi::WebAdaptoru);
+    for kimlik in [WEB_OTURUMLARINI_LISTELE, WEB_OTURUMUNU_IPTAL_ET] {
+        let oturum = intrinsic::tanim(kimlik).expect("web oturum yönetimi kaydı");
+        assert_eq!(oturum.yetkinlik, Yetkinlik::WebOturumu);
+        assert_eq!(oturum.etki, IntrinsicEtkisi::WebAdaptoru);
+    }
 
     let postgresql = intrinsic::tanim(POSTGRESQL_DEGISTIR).expect("PostgreSQL kaydı");
     assert_eq!(postgresql.yetkinlik, Yetkinlik::Veritabani);

@@ -203,9 +203,7 @@ impl PostgresqlOturumu {
                 [satir] => match satir.as_slice() {
                     [(ad, deger)] if ad == "tenant_id" => deger.clone(),
                     _ => {
-                        return Err(hata(
-                            "İstek bağlamı çözücüsü yalnız tenant_id döndürmeli",
-                        ));
+                        return Err(hata("İstek bağlamı çözücüsü yalnız tenant_id döndürmeli"));
                     }
                 },
                 _ => return Err(hata("İstek bağlamı çözücüsü tam bir satır döndürmeli")),

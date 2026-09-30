@@ -98,7 +98,10 @@ kapattı (RFC-0017, spec/12). K-137/ADR-034 kalıcı ortak oturum/rate-limit
 deposunu, güvenilir proxy istemci kimliğini ve tek-worker/N süreç modelini
 ekledi. K-185/ADR-076 gerçek Zee ERP ihtiyacıyla doğrulanmış kullanıcı ve rolü
 yalnız rota kapsamındaki `oturum` sözlüğüne açtı; istemci girdisi ve oturum
-sırları bu sınırın dışındadır. Secret dağıtımı, çok-hostlu backend ve idempotency ayrı deployment/RFC
+sırları bu sınırın dışındadır. K-188/ADR-079 aynı gerçek ürünün güvenlik yaşam
+döngüsü için kullanıcı oturumlarını sır taşımayan özet kimlikle listeleme ve
+ortak depoda tekil iptal yüzeyini ekledi; ham bearer/CSRF açılmadı ve syntax
+freeze yeniden başladı. Secret dağıtımı, çok-hostlu backend ve idempotency ayrı deployment/RFC
 kapılarıdır.
 # 7. Temel dil yüzeyi
 Değer tanımı: “isim Ayşe olsun”.
