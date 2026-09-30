@@ -877,6 +877,7 @@ tamamlanmış sayılmaz; burada istenen ek kanıt ayrıca üretilir.
 | K-186 | **KAPALI** | ADR-077: Zee ERP korumalı rotalarında doğrulanmış kullanıcı → security-definer resolver → transaction-local `app.tenant_id`; aynı leased bağlantı, iç eylemlerde savepoint, hata/timeout rollback ve public rotada sıfır tenant bağlamı. |
 | K-187 | **KAPALI** | ADR-078: Migration transaction yasağı yalnız üst seviye SQL tokenlarında uygulanır; PL/pgSQL/dollar-quoted gövde, string, quoted identifier ve yorumlar yanlış C026 üretmez. |
 | K-188 | **KAPALI** | ADR-079/GB-028: Zee ERP için güvenli özet kimlikli oturum metadata listesi ve transaction kapsamlı tekil iptal; ortak kalıcı depoda worker/restart revoke, mevcut oturumda çerez silme, ham bearer/CSRF sızıntısı yok. K-174 syntax freeze 30 Eylül–28 Ekim olarak yeniden başladı. |
+| K-189 | **KAPALI** | Native HTML inline scriptleri içerik SHA-256 CSP kaynağına bağlandı; `unsafe-inline` açılmadan dinamik ERP kabuğu çalışır, exact başlık testi ve freeze beyanı vardır. |
 | K-183 | **KAPALI** | ADR-075: bekleyen yazar 5 ms yoklamak yerine yardımcı iş parçacığında bloklayan `flock`/`LockFileEx` ile çekirdek kuyruğuna girer; 5 sn sözü ve C013 aynı. `iki_yazar_satir_kaybetmez` 2×40'a döndü, `kilidi_ardisik_yeniden_alan_yazar_bekleyeni_ac_birakmaz` 120 ardışık ekleme altında tek eklemeyi 2 sn içinde ister; platform katmanı `kalici_dosya/platform.rs` |
 
 ## Önceki kanıt: 2 Eylül 2026 ikinci dış inceleme ayrımı

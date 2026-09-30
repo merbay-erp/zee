@@ -3523,3 +3523,14 @@ paylaşım için sentetik kayıt ve CI'a iz koymama sınırı belgelendi.
 - **Sınır:** Runtime ürün rolü veya tenant yetkisi yorumlamaz; kullanıcı-geneli
   revoke ERP'nin güvenli listeyi dolaşmasıdır. İki yeni kalıp nedeniyle K-174
   syntax freeze 30 Eylül–28 Ekim 2026 için yeniden başladı.
+
+## K-189 — Native HTML script CSP provenance kapanışı (30 Eylül 2026)
+
+- **Bulgu:** ERP kabuğunun gömülü davranışları çalışırken CSP'nin `unsafe-inline`
+  açmaması için daha önce eklenen içerik hash'i değişikliği freeze kayıtlarında
+  beyansız kalmıştı.
+- **Karar:** Her exact `<script>` gövdesi SHA-256 ile `script-src` kaynağına
+  bağlanır; HTML dışı yanıtların başlık yolu değişmez.
+- **Kanıt:** `compiler/src/main.rs` içindeki başlık/base64 birim testleri ve
+  `spec/12-web-guvenlik-profili.md`; semantic ve core-freeze beyanları exact
+  kaynak commit'i gösterir.
