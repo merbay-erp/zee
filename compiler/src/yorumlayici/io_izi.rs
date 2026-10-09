@@ -3,9 +3,11 @@
 
 mod codec;
 mod eylem;
+mod oturum;
 
 use self::codec::*;
 use self::eylem::{semayi_denetle as eylem_semasi, sonuc_yaz as eylem_sonuc_yaz};
+use self::oturum::{sonuc_coz as oturum_listesi_sonuc_coz, sonuc_yaz as oturum_listesi_sonuc_yaz};
 use super::io_izi_veritabani::{
     degistirme_coz as veritabani_degistirme_coz, degistirme_yaz as veritabani_degistirme_yaz,
     okuma_coz as veritabani_okuma_coz, okuma_yaz as veritabani_okuma_yaz,
@@ -67,6 +69,8 @@ fn gecerli_islem(islem: &str) -> bool {
             | "csrf_belirteci"
             | "oturum_ac"
             | "oturum_kapat"
+            | "kullanici_oturumlarini_listele"
+            | "oturum_kimligini_iptal_et"
             | "parola_dogrula"
             | "eylem_baslat"
             | "eylem_tamamla"
@@ -237,6 +241,14 @@ fn olay_semasini_denetle(olay: &IzOlay) -> Result<(), String> {
             }
         }
         "oturum_kapat" => birim_semasi(olay, 0),
+        "kullanici_oturumlarini_listele" => {
+            if olay.argumanlar.len() == 1 && oturum_listesi_sonuc_coz(&olay.sonuc).is_ok() {
+                Ok(())
+            } else {
+                Err("web oturum listesi argüman/sonuç şeması geçersiz".into())
+            }
+        }
+        "oturum_kimligini_iptal_et" => tamsayi_sonuc_semasi(olay, 1),
         "eylem_baslat" | "eylem_tamamla" | "eylem_geri_al" => eylem_semasi(olay),
         "parola_dogrula" => {
             alan_sayisi(olay, 2, 1)?;
@@ -597,6 +609,29 @@ impl<T: GirdiCikti> GirdiCikti for IzKaydedenIo<T> {
     fn oturum_kapat(&mut self) -> Result<(), String> {
         let sonuc = self.ic.oturum_kapat();
         self.kaydet("oturum_kapat", Vec::new(), birim_sonuc_yaz(&sonuc));
+        sonuc
+    }
+
+    fn kullanici_oturumlarini_listele(
+        &mut self,
+        kullanici: &str,
+    ) -> Result<Vec<Vec<(String, String)>>, String> {
+        let sonuc = self.ic.kullanici_oturumlarini_listele(kullanici);
+        self.kaydet(
+            "kullanici_oturumlarini_listele",
+            vec![kullanici.into()],
+            oturum_listesi_sonuc_yaz(&sonuc),
+        );
+        sonuc
+    }
+
+    fn oturum_kimligini_iptal_et(&mut self, kimlik: &str) -> Result<i64, String> {
+        let sonuc = self.ic.oturum_kimligini_iptal_et(kimlik);
+        self.kaydet(
+            "oturum_kimligini_iptal_et",
+            vec![kimlik.into()],
+            tamsayi_sonuc_yaz(&sonuc),
+        );
         sonuc
     }
 
@@ -1113,6 +1148,43 @@ impl GirdiCikti for IzYenidenOynatici {
     fn oturum_kapat(&mut self) -> Result<(), String> {
         let sonuc = self.siradaki("oturum_kapat", Vec::new());
         self.birim_sonuc("oturum_kapat", sonuc)
+    }
+
+    fn kullanici_oturumlarini_listele(
+        &mut self,
+        kullanici: &str,
+    ) -> Result<Vec<Vec<(String, String)>>, String> {
+        let sonuc = self.siradaki("kullanici_oturumlarini_listele", vec![kullanici.into()]);
+        let Some(alanlar) = sonuc else {
+            return Err(self
+                .hata
+                .clone()
+                .unwrap_or_else(|| "IO izi uyuşmazlığı".into()));
+        };
+        oturum_listesi_sonuc_coz(&alanlar).unwrap_or_else(|hata| {
+            self.bozuk_sonuc("kullanici_oturumlarini_listele", hata);
+            Err(self
+                .hata
+                .clone()
+                .unwrap_or_else(|| "IO izi sonucu bozuk".into()))
+        })
+    }
+
+    fn oturum_kimligini_iptal_et(&mut self, kimlik: &str) -> Result<i64, String> {
+        let sonuc = self.siradaki("oturum_kimligini_iptal_et", vec![kimlik.into()]);
+        let Some(alanlar) = sonuc else {
+            return Err(self
+                .hata
+                .clone()
+                .unwrap_or_else(|| "IO izi uyuşmazlığı".into()));
+        };
+        tamsayi_sonuc_coz(&alanlar).unwrap_or_else(|hata| {
+            self.bozuk_sonuc("oturum_kimligini_iptal_et", hata);
+            Err(self
+                .hata
+                .clone()
+                .unwrap_or_else(|| "IO izi sonucu bozuk".into()))
+        })
     }
 
     fn parola_dogrula(&mut self, parola: &str, ozet: &str) -> bool {

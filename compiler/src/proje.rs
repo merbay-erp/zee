@@ -17,6 +17,7 @@
 //! veritabanı_hedefi "postgresql://127.0.0.1:5432/uygulama" olsun
 //! veritabanı_bağlantı_değişkeni "UYGULAMA_DATABASE_URL" olsun
 //! veritabanı_göçleri "göçler" olsun
+//! veritabanı_istek_bağlamı "platform.session_context" olsun
 //! ```
 
 use crate::agac::{Cumle, Ifade};
@@ -143,12 +144,13 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
                 | "veritabanı_hedefi"
                 | "veritabanı_bağlantı_değişkeni"
                 | "veritabanı_göçleri"
+                | "veritabanı_istek_bağlamı"
         ) {
             return Err(proje_hatasi(
                 "P001",
                 &format!("\"{}\" proje bildirimi alanı değil.", ad),
                 satir,
-                "Geçerli alanlar: proje, sürüm, morfoloji, giriş, yetkinlikler, ağ_hedefleri, yerel_bağımlılıklar, registry, registry_kök_sürümü, registry_kök_özeti, uzak_bağımlılıklar, veritabanı_hedefi, veritabanı_bağlantı_değişkeni, veritabanı_göçleri.",
+                "Geçerli alanlar: proje, sürüm, morfoloji, giriş, yetkinlikler, ağ_hedefleri, yerel_bağımlılıklar, registry, registry_kök_sürümü, registry_kök_özeti, uzak_bağımlılıklar, veritabanı_hedefi, veritabanı_bağlantı_değişkeni, veritabanı_göçleri, veritabanı_istek_bağlamı.",
             ));
         }
         if alanlar.insert(ad.clone(), (deger, satir)).is_some() {
@@ -331,8 +333,14 @@ fn veritabani_bildirimini_al(
     let hedef = istege_bagli_sabit_metni_al(alanlar, "veritabanı_hedefi")?;
     let degisken = istege_bagli_sabit_metni_al(alanlar, "veritabanı_bağlantı_değişkeni")?;
     let gocler = istege_bagli_sabit_metni_al(alanlar, "veritabanı_göçleri")?;
+    let istek_baglami = istege_bagli_sabit_metni_al(alanlar, "veritabanı_istek_bağlamı")?;
     let yetkili = yetkinlikler.iter().any(|y| y == "veritabanı");
-    if !yetkili && hedef.is_none() && degisken.is_none() && gocler.is_none() {
+    if !yetkili
+        && hedef.is_none()
+        && degisken.is_none()
+        && gocler.is_none()
+        && istek_baglami.is_none()
+    {
         return Ok(None);
     }
     let Some((hedef, satir)) = hedef else {
@@ -396,11 +404,39 @@ fn veritabani_bildirimini_al(
             "Migration klasörü proje kökünde kalan göreli bir yol olmalı.",
         ));
     }
+    let istek_baglami_cozucusu = match istek_baglami {
+        Some((cozucu, _)) if postgresql_islev_adi_gecerli(&cozucu) => Some(cozucu),
+        Some((_, cozucu_satiri)) => {
+            return Err(proje_hatasi(
+                "P015",
+                "Veritabanı istek bağlamı çözücüsü şema.işlev biçiminde olmalı.",
+                cozucu_satiri,
+                "Yalnız küçük ASCII harf, sayı ve _ kullan; örnek: platform.session_context.",
+            ));
+        }
+        None => None,
+    };
     Ok(Some(VeritabaniBildirimi {
         hedef,
         baglanti_degiskeni,
         gocler,
+        istek_baglami_cozucusu,
     }))
+}
+
+fn postgresql_islev_adi_gecerli(ad: &str) -> bool {
+    let mut parcalar = ad.split('.');
+    let gecerli = |parca: &str| {
+        let mut karakterler = parca.chars();
+        karakterler
+            .next()
+            .is_some_and(|c| c.is_ascii_lowercase() || c == '_')
+            && karakterler.all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '_')
+    };
+    matches!(
+        (parcalar.next(), parcalar.next(), parcalar.next()),
+        (Some(sema), Some(islev), None) if gecerli(sema) && gecerli(islev)
+    )
 }
 
 fn istege_bagli_sabit_metni_al(

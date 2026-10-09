@@ -1,19 +1,19 @@
 # zee-islev-egilimi-v1
-# inceleme: K-166 tani kalitesi: denetle_coklu hatali tanim listesi donduren ic islevle sarildi, cok tanili hat kok neden ayiklamasini yardimcilara verdi
+# inceleme: K-185/K-186/K-187 inceleme: web_istegini_calistir dogrulanmis oturum ortami icin +15 satir; veritabani_bildirimini_al (K-186) ve migration_ust_seviye_kelimeleri (K-187) yeni kritik islev olarak tabana alindi; K-190 elmas birlesimi elmas_tanimlarini_kat yardimcisina ayrildi
 # yol	kimlik	satir	karmasiklik
 src/ayristirici.rs	aralik_ayristir#1	86	3
 src/ayristirici.rs	dondur_ayristir#1	105	4
 src/ayristirici.rs	gore_ayristir#1	109	12
-src/ayristirici.rs	islem_ayristir#1	145	8
+src/ayristirici.rs	islem_ayristir#1	146	8
 src/ayristirici.rs	yapi_ayristir#1	86	7
 src/ayristirici/cumle.rs	cumle_ayristir#1	485	33
 src/ayristirici/ifade.rs	kosul_atomu_ic#1	183	12
-src/ayristirici/ifade.rs	yapili_kalip_ic#1	424	54
+src/ayristirici/ifade.rs	yapili_kalip_ic#1	427	54
 src/bicimleyici.rs	bicimle#1	112	22
 src/bicimleyici.rs	satiri_parcala#1	73	15
 src/cozumleyici.rs	denetle_coklu_hatali_tanimlarla#1	54	15
-src/cozumleyici/cagri.rs	cagri_denetle#1	296	7
-src/cozumleyici/cumle.rs	blok_denetle#1	1120	3
+src/cozumleyici/cagri.rs	cagri_denetle#1	301	7
+src/cozumleyici/cumle.rs	blok_denetle#1	1121	3
 src/cozumleyici/donus.rs	donusleri_birlestir#1	87	9
 src/cozumleyici/etki.rs	cumle_bilgisi#1	178	12
 src/cozumleyici/etki.rs	denetle#1	133	5
@@ -25,8 +25,8 @@ src/invariant/cumle.rs	cumleyi_dogrula#1	296	13
 src/invariant/ifade.rs	ifadenin_faz_bagini_dogrula#1	126	5
 src/invariant/ifade.rs	ifadeyi_dogrula#1	142	4
 src/lib.rs	birim_ozeti#1	52	14
-src/lib.rs	dosyayi_coz#1	127	12
-src/lib.rs	kaynagi_tanilari_kokenlerle#1	96	10
+src/lib.rs	dosyayi_coz#1	109	6
+src/lib.rs	kaynagi_tanilari_kokenlerle#1	100	10
 src/lsp.rs	mesaj_isle#1	195	12
 src/lsp.rs	yeniden_adlandirma_plani#1	81	12
 src/main.rs	cikar_komutu#1	99	6
@@ -38,15 +38,17 @@ src/morfoloji.rs	eki_uydur#1	63	13
 src/paket.rs	kilit_metni#1	89	9
 src/paket.rs	ziyaret_et#1	186	4
 src/paket/uzak.rs	paketleri_hazirla#1	171	4
-src/proje.rs	bildirimi_oku#1	208	4
+src/postgresql.rs	migration_ust_seviye_kelimeleri#1	77	19
+src/proje.rs	bildirimi_oku#1	209	4
 src/proje.rs	uzak_bagimliliklari_guncelle#1	94	12
+src/proje.rs	veritabani_bildirimini_al#1	92	12
 src/registry.rs	targets_yapisini_dogrula#1	95	5
 src/registry.rs	zinciri_dogrula#1	92	1
 src/sozcukleyici.rs	sozcukle#1	320	29
 src/yorumlayici.rs	gorevleri_calistir#1	136	2
 src/yorumlayici.rs	json_nesnesi_ayristir#1	96	8
 src/yorumlayici/cumle.rs	blok_calistir_async#1	815	1
-src/yorumlayici/ifade.rs	degerlendir_async#1	847	1
-src/yorumlayici/io_izi.rs	olay_semasini_denetle#1	141	19
+src/yorumlayici/ifade.rs	degerlendir_async#1	850	1
+src/yorumlayici/io_izi.rs	olay_semasini_denetle#1	149	20
 src/yorumlayici/kaynak.rs	deger_heap_bayti#1	101	8
-src/yorumlayici/web_istek.rs	web_istegini_calistir#1	98	9
+src/yorumlayici/web_istek.rs	web_istegini_calistir#1	113	9

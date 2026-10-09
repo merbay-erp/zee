@@ -63,7 +63,6 @@ impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
     fn yazdir(&mut self, satir: String) {
         self.ic.yazdir(satir);
     }
-
     fn sor(&mut self, istem: &str) -> Option<String> {
         self.ic.sor(istem)
     }
@@ -71,7 +70,6 @@ impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
     fn rastgele(&mut self, alt: i64, ust: i64) -> i64 {
         self.ic.rastgele(alt, ust)
     }
-
     fn dosya_oku(&mut self, yol: &str) -> Result<String, String> {
         self.dosya_yolunu_denetle(yol, Yetkinlik::DosyaOkuma)?;
         self.ic.dosya_oku(yol)
@@ -81,7 +79,6 @@ impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
         self.dosya_yolunu_denetle(yol, Yetkinlik::DosyaYazma)?;
         self.ic.dosya_yaz(yol, satir, ekleme)
     }
-
     fn dosya_atomik_tasi(&mut self, kaynak: &str, hedef: &str) -> Result<i64, String> {
         self.dosya_yolunu_denetle(kaynak, Yetkinlik::DosyaYazma)?;
         self.dosya_yolunu_denetle(hedef, Yetkinlik::DosyaYazma)?;
@@ -92,7 +89,6 @@ impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
         self.dosya_yolunu_denetle(yol, Yetkinlik::DosyaYazma)?;
         self.ic.dosya_sil(yol)
     }
-
     fn dosyalari_listele(&mut self, dizin: &str) -> Result<Vec<String>, String> {
         self.dosya_yolunu_denetle(dizin, Yetkinlik::DosyaOkuma)?;
         self.ic.dosyalari_listele(dizin)
@@ -102,7 +98,6 @@ impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
         self.dosya_yolunu_denetle(yol, Yetkinlik::DosyaOkuma)?;
         self.ic.dosya_sha256(yol)
     }
-
     fn simdi(&mut self) -> (i64, u32, u32, u32, u32) {
         self.ic.simdi()
     }
@@ -110,7 +105,6 @@ impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
     fn argumanlar(&mut self) -> Vec<String> {
         self.ic.argumanlar()
     }
-
     fn http_getir(
         &mut self,
         url: &str,
@@ -138,7 +132,6 @@ impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
         self.veritabani_gerektir()?;
         self.ic.postgresql_degistir(sorgu, parametreler)
     }
-
     fn sunucu_kur(&mut self, kapi: i64) -> Result<(), String> {
         self.web_gerektir()?;
         self.ic.sunucu_kur(kapi)
@@ -150,7 +143,6 @@ impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
             .then(|| self.ic.istek_al())
             .flatten()
     }
-
     fn istek_islemini_tamamla(&mut self) -> Result<(), String> {
         self.ic.istek_islemini_tamamla()
     }
@@ -158,7 +150,6 @@ impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
     fn istek_islemini_geri_al(&mut self) {
         self.ic.istek_islemini_geri_al();
     }
-
     fn yanit_gonder(&mut self, yanit: &str) {
         if self.politika.izin_verir(Yetkinlik::AgSunucusu) {
             self.ic.yanit_gonder(yanit);
@@ -170,7 +161,6 @@ impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
             self.ic.durum_yaniti_gonder(durum, yanit);
         }
     }
-
     fn yonlendir_gonder(&mut self, adres: &str) -> Result<(), String> {
         self.web_gerektir()?;
         self.ic.yonlendir_gonder(adres)
@@ -185,7 +175,6 @@ impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
         self.web_oturumu_gerektir()?;
         self.ic.cerez_sil(ad)
     }
-
     fn rota_guvenligini_denetle(
         &mut self,
         erisim: &RotaErisimi,
@@ -203,7 +192,6 @@ impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
         self.web_oturumu_gerektir()?;
         self.ic.csrf_belirteci()
     }
-
     fn oturum_ac(&mut self, kullanici: &str, rol: &str) -> Result<(), String> {
         self.web_oturumu_gerektir()?;
         self.ic.oturum_ac(kullanici, rol)
@@ -212,6 +200,18 @@ impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
     fn oturum_kapat(&mut self) -> Result<(), String> {
         self.web_oturumu_gerektir()?;
         self.ic.oturum_kapat()
+    }
+    fn kullanici_oturumlarini_listele(
+        &mut self,
+        kullanici: &str,
+    ) -> Result<Vec<Vec<(String, String)>>, String> {
+        self.web_oturumu_gerektir()?;
+        self.ic.kullanici_oturumlarini_listele(kullanici)
+    }
+
+    fn oturum_kimligini_iptal_et(&mut self, kimlik: &str) -> Result<i64, String> {
+        self.web_oturumu_gerektir()?;
+        self.ic.oturum_kimligini_iptal_et(kimlik)
     }
 
     fn parola_dogrula(&mut self, parola: &str, ozet: &str) -> bool {

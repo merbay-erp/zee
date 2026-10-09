@@ -1610,13 +1610,17 @@ impl GercekIo {
             .ok_or_else(|| "yanıt bekleyen web bağlantısı yok".to_string())?;
         let _baglanti_izni = self.bekleyen_baglanti_izni.take();
         let head = std::mem::take(&mut self.bekleyen_head);
-        let guvenlik_basliklari = self.guvenlik_basliklari();
         let (baslik, govde) = match taslak {
             WebYanitTaslagi::Govde(govde) => {
                 let tur = if govde.trim_start().starts_with('<') {
                     "text/html"
                 } else {
                     "text/plain"
+                };
+                let guvenlik_basliklari = if tur == "text/html" {
+                    html_guvenlik_basliklari(self.guvenli_proxy_origin().is_some(), &govde)
+                } else {
+                    self.guvenlik_basliklari()
                 };
                 let cerezler = self.cerez_basliklarini_al();
                 let baslik = format!(
@@ -1629,6 +1633,7 @@ impl GercekIo {
                 (baslik, govde)
             }
             WebYanitTaslagi::Durum(durum, govde) => {
+                let guvenlik_basliklari = self.guvenlik_basliklari();
                 self.bekleyen_cerezler.clear();
                 self.bekleyen_silinen_cerezler.clear();
                 let baslik = format!(
@@ -1641,6 +1646,7 @@ impl GercekIo {
                 (baslik, govde)
             }
             WebYanitTaslagi::Yonlendirme(adres) => {
+                let guvenlik_basliklari = self.guvenlik_basliklari();
                 let cerezler = self.cerez_basliklarini_al();
                 let baslik = format!(
                     "HTTP/1.1 303 See Other\r\nLocation: {}\r\nContent-Length: 0\r\n{}{}Connection: close\r\n\r\n",
@@ -1761,6 +1767,58 @@ fn guvenlik_basliklari(https: bool) -> String {
     );
     if https {
         sonuc.push_str("Strict-Transport-Security: max-age=31536000\r\n");
+    }
+    sonuc
+}
+
+fn html_guvenlik_basliklari(https: bool, govde: &str) -> String {
+    use sha2::{Digest, Sha256};
+
+    let mut script_kaynaklari = String::from(" 'self'");
+    let mut kalan = govde;
+    while let Some(acilis) = kalan.find("<script>") {
+        let script_basi = acilis + "<script>".len();
+        let script_sonrasi = &kalan[script_basi..];
+        let Some(kapanis) = script_sonrasi.find("</script>") else {
+            break;
+        };
+        let script = &script_sonrasi[..kapanis];
+        let ozet = Sha256::digest(script.as_bytes());
+        script_kaynaklari.push_str(" 'sha256-");
+        script_kaynaklari.push_str(&base64_kodla(&ozet));
+        script_kaynaklari.push('\'');
+        kalan = &script_sonrasi[kapanis + "</script>".len()..];
+    }
+
+    let mut basliklar = guvenlik_basliklari(https);
+    let eski = "Content-Security-Policy: default-src 'self';";
+    let yeni = format!(
+        "Content-Security-Policy: default-src 'self'; script-src{};",
+        script_kaynaklari
+    );
+    basliklar = basliklar.replacen(eski, &yeni, 1);
+    basliklar
+}
+
+fn base64_kodla(girdi: &[u8]) -> String {
+    const ALFABE: &[u8; 64] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    let mut sonuc = String::with_capacity(girdi.len().div_ceil(3) * 4);
+    for parca in girdi.chunks(3) {
+        let a = parca[0];
+        let b = parca.get(1).copied().unwrap_or(0);
+        let c = parca.get(2).copied().unwrap_or(0);
+        sonuc.push(ALFABE[(a >> 2) as usize] as char);
+        sonuc.push(ALFABE[(((a & 0x03) << 4) | (b >> 4)) as usize] as char);
+        sonuc.push(if parca.len() > 1 {
+            ALFABE[(((b & 0x0f) << 2) | (c >> 6)) as usize] as char
+        } else {
+            '='
+        });
+        sonuc.push(if parca.len() > 2 {
+            ALFABE[(c & 0x3f) as usize] as char
+        } else {
+            '='
+        });
     }
     sonuc
 }
@@ -2447,12 +2505,17 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             self.bekleyen_akis = Some(akis);
             self.bekleyen_baglanti_izni = Some(baglanti_izni);
             self.bekleyen_head = baslik.yontem().eq_ignore_ascii_case("HEAD");
-            return Some(format!(
+            let ham = format!(
                 "{} {}\n{}{}",
                 baslik.yontem(),
                 baslik.hedef(),
                 cerez_satiri,
                 govde
+            );
+            let bilgi = self.web_guvenligi.oturum_bilgisi(web_duvar_saati_ms());
+            return Some(dil::yorumlayici::dogrulanmis_oturumu_istege_ekle(
+                &ham,
+                bilgi.as_ref(),
             ));
         }
     }
@@ -2461,6 +2524,14 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             return Ok(());
         };
         let Some(taslak) = self.bekleyen_web_yaniti.take() else {
+            if let Some(postgresql) = self.postgresql.as_mut() {
+                if let Err(hata) = postgresql.istek_baglamini_geri_al() {
+                    eprintln!(
+                        "PostgreSQL istek transaction'ı geri alınamadı: {}",
+                        hata.mesaj
+                    );
+                }
+            }
             self.web_guvenligi.istegi_geri_al();
             self.bekleyen_cerezler = yedek.bekleyen_cerezler;
             self.bekleyen_silinen_cerezler = yedek.bekleyen_silinen_cerezler;
@@ -2482,6 +2553,26 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                 ));
             }
         };
+        if let Some(postgresql) = self.postgresql.as_mut() {
+            if let Err(hata) = postgresql.istek_baglamini_tamamla() {
+                eprintln!(
+                    "PostgreSQL istek transaction'ı tamamlanamadı: {}",
+                    hata.mesaj
+                );
+                self.bekleyen_cerezler = yedek.bekleyen_cerezler;
+                self.bekleyen_silinen_cerezler = yedek.bekleyen_silinen_cerezler;
+                let geri_alma = self.web_guvenligi.commiti_geri_al(commit);
+                let mesaj = if hata.commit_sonucu_belirsiz_mi() {
+                    "veritabanı commit sonucu belirsiz; uzlaştırma gerekli"
+                } else {
+                    "veritabanı istek transaction'ı tamamlanamadı"
+                };
+                if let Err(geri_alma) = geri_alma {
+                    eprintln!("Web oturum commit'i geri alınamadı: {geri_alma}");
+                }
+                return self.web_yanit_taslagini_yaz(WebYanitTaslagi::Durum(503, mesaj.into()));
+            }
+        }
         if let Err(hata) = self.web_yanit_taslagini_yaz(taslak) {
             self.bekleyen_cerezler = yedek.bekleyen_cerezler;
             self.bekleyen_silinen_cerezler = yedek.bekleyen_silinen_cerezler;
@@ -2495,6 +2586,14 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         Ok(())
     }
     fn istek_islemini_geri_al(&mut self) {
+        if let Some(postgresql) = self.postgresql.as_mut() {
+            if let Err(hata) = postgresql.istek_baglamini_geri_al() {
+                eprintln!(
+                    "PostgreSQL istek transaction'ı geri alınamadı: {}",
+                    hata.mesaj
+                );
+            }
+        }
         if let Some(yedek) = self.web_istek_yedegi.take() {
             self.web_guvenligi.istegi_geri_al();
             self.bekleyen_cerezler = yedek.bekleyen_cerezler;
@@ -2657,7 +2756,34 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                 });
             }
         }
-        self.web_guvenligi.denetle(erisim, csrf, csrf_gerekli, an)
+        self.web_guvenligi.denetle(erisim, csrf, csrf_gerekli, an)?;
+        if !matches!(erisim, dil::agac::RotaErisimi::HerkeseAcik) {
+            let cozucu = self
+                .veritabani_bildirimi
+                .as_ref()
+                .and_then(|bildirim| bildirim.istek_baglami_cozucusu.clone());
+            if let Some(cozucu) = cozucu {
+                let kullanici = self
+                    .web_guvenligi
+                    .oturum_bilgisi(an)
+                    .map(|bilgi| bilgi.kullanici)
+                    .ok_or(dil::web_guvenligi::WebReddi {
+                        durum: 401,
+                        mesaj: "bu rota kimliği doğrulanmış oturum istiyor",
+                    })?;
+                self.postgresql_oturumunu_al()
+                    .map_err(|_| dil::web_guvenligi::WebReddi {
+                        durum: 503,
+                        mesaj: "veritabanı tenant bağlantısı kurulamadı",
+                    })?
+                    .istek_baglamini_baslat(&cozucu, &kullanici)
+                    .map_err(|_| dil::web_guvenligi::WebReddi {
+                        durum: 503,
+                        mesaj: "veritabanı tenant bağlamı kurulamadı",
+                    })?;
+            }
+        }
+        Ok(())
     }
     fn csrf_belirteci(&mut self) -> Result<String, String> {
         self.politika
@@ -2691,6 +2817,35 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         self.bekleyen_silinen_cerezler
             .push(self.oturum_cerez_adi().to_string());
         Ok(())
+    }
+    fn kullanici_oturumlarini_listele(
+        &mut self,
+        kullanici: &str,
+    ) -> Result<Vec<Vec<(String, String)>>, String> {
+        self.politika
+            .gerektir(dil::yetkinlik::Yetkinlik::WebOturumu)?;
+        self.web_guvenligi
+            .kullanici_oturumlarini_listele(kullanici, web_duvar_saati_ms())
+            .map(|oturumlar| {
+                oturumlar
+                    .into_iter()
+                    .map(dil::web_guvenligi::oturum_satiri)
+                    .collect()
+            })
+    }
+    fn oturum_kimligini_iptal_et(&mut self, kimlik: &str) -> Result<i64, String> {
+        self.politika
+            .gerektir(dil::yetkinlik::Yetkinlik::WebOturumu)?;
+        let mevcut = self
+            .web_guvenligi
+            .oturum_bilgisi(web_duvar_saati_ms())
+            .is_some_and(|bilgi| bilgi.kimlik == kimlik);
+        let adet = self.web_guvenligi.oturum_kimligini_iptal_et(kimlik)?;
+        if mevcut && adet == 1 {
+            self.bekleyen_silinen_cerezler
+                .push(self.oturum_cerez_adi().to_string());
+        }
+        Ok(adet)
     }
     fn parola_dogrula(&mut self, parola: &str, ozet: &str) -> bool {
         if !self
@@ -3029,6 +3184,31 @@ mod web_profili_testleri {
         assert!(basliklar.contains("Content-Security-Policy"));
         assert!(basliklar.contains("X-Content-Type-Options: nosniff"));
         assert!(!guvenlik_basliklari(false).contains("Strict-Transport-Security"));
+    }
+
+    #[test]
+    fn html_scriptleri_icerige_bagli_csp_ozetiyle_calisir() {
+        let basliklar =
+            html_guvenlik_basliklari(false, "<!doctype html><script>console.log('zee')</script>");
+        assert!(basliklar
+            .contains("script-src 'self' 'sha256-8VHn0UwRo0MmaR7ebsXpVTH6AA4wJBSlghouXTG/w50='"));
+        let csp = basliklar
+            .lines()
+            .find(|satir| satir.starts_with("Content-Security-Policy:"))
+            .expect("CSP başlığı");
+        let script_src = csp
+            .split(';')
+            .find(|parca| parca.trim_start().starts_with("script-src "))
+            .expect("script-src yönergesi");
+        assert!(!script_src.contains("'unsafe-inline'"));
+    }
+
+    #[test]
+    fn base64_kodlama_rfc_4648_ve_padding_kurallarina_uyar() {
+        assert_eq!(base64_kodla(b""), "");
+        assert_eq!(base64_kodla(b"f"), "Zg==");
+        assert_eq!(base64_kodla(b"fo"), "Zm8=");
+        assert_eq!(base64_kodla(b"foo"), "Zm9v");
     }
 
     #[test]

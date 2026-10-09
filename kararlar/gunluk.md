@@ -3479,3 +3479,74 @@ satır eklenmedi. Master plan ve v1 kapıları aynı kapsamı korur; yeni dil ka
 veya release sertifikası iddia edilmez. Test kanıtı io_izi_cli_testi, spec/21,
 ADR-026 ve GB-024/025 kaydındadır. Otomatik maskeleme replay'i bozacağından
 paylaşım için sentetik kayıt ve CI'a iz koymama sınırı belgelendi.
+
+## K-185 — Doğrulanmış oturum bilgisi rota ortamında (29 Eylül 2026)
+
+- **Ürün bulgusu:** Zee ERP tenant bağlamını PostgreSQL RLS'e güvenle bağlamak
+  için oturumdaki kullanıcı kimliğine ihtiyaç duydu; mevcut dil kullanıcı ve
+  rolü sunucuda tutuyor fakat rota gövdesine açmıyordu.
+- **Karar (ADR-076):** Rotalarda `oturum` adlı `Metin` sözlüğü vardır. Geçerli
+  kimlikli oturum `kullanıcı` ve `rol` anahtarlarını taşır; anonim istekte
+  sözlük boştur. Kaynak yalnız doğrulanmış sunucu kaydıdır, tarayıcı girdisi
+  olamaz; oturum sırrı ve CSRF uygulamaya açılmaz.
+- **Kanıt:** Zee ERP exact ilk commit'i ve minimal reproducer dogfood kaydına
+  alındı. Adaptör testi sahte iç çerezi gerçek sunucu değeriyle ezer; kapsam
+  testi `oturum` adının rota dışında A001 verdiğini sabitler.
+- **Sınır:** Özel claim, tenant kimliği ve yeni grammar eklenmedi. Tenant
+  eşlemesi ERP'nin PostgreSQL güven sınırında kalır. K-185 ve GB-026 kapandı.
+
+## K-186 — Request-bound PostgreSQL tenant bağlamı (29 Eylül 2026)
+
+- **Ürün bulgusu:** K-185 güvenilir kullanıcıyı açtı; ancak her ERP sorgusunda
+  aynı leased bağlantıya RLS tenant bağlamını kurmak uygulamaya bırakılırsa
+  unutulabilir, istemci girdisine kayabilir veya havuz lease'ine sızabilir.
+- **Karar (ADR-077):** Proje dar `şema.işlev` resolver'ı bildirir. Korumalı
+  rotada doğrulanmış kullanıcı bind edilir, dönen UUID transaction-local
+  `app.tenant_id` olur. Eylemler savepoint; public rota bağlamsızdır.
+- **Kanıt:** Zee ERP dogfood reproducer'ı ve proje bildirimi yeni alanı taşır;
+  parser saldırgan SQL adlarını reddeder. Gerçek PG16 kanıtı ürün Git2
+  workflow'unda login → RLS panel → logout ve çapraz tenant reddini ölçer.
+- **Sınır:** Genel SQL identifier, istemci tenant seçimi veya yeni Zee grammar
+  açılmadı. Resolver yetkileri ve sabit search_path ürün migration'ındadır.
+
+## K-188 — ERP oturum listesi ve tekil iptal (30 Eylül 2026)
+
+- **Ürün bulgusu:** Zee ERP parola/MFA/rol/kullanıcı/tenant güvenlik
+  değişikliklerinde diğer oturumları düşürmek ve etkin cihazları tek tek
+  kapatmak zorundaydı; runtime yalnız mevcut oturumu kapatabiliyordu.
+- **Karar (ADR-079):** Kullanıcı oturumları ham bearer yerine SHA-256 özet
+  kimlik ve zaman metadata'sıyla listelenir; seçili özet kimlik ortak depoda
+  istek transaction'ı içinde iptal edilir. CSRF ve ham token açılmaz.
+- **Kanıt:** `dogfood/zee-erp/oturum-iptali-gereksinimi.dil`, çekirdek depo
+  testi, rota sahte-metadata testi, intrinsic lowering ve IO trace/replay
+  şeması aynı değişikliktedir. GB-028 kapandı.
+- **Sınır:** Runtime ürün rolü veya tenant yetkisi yorumlamaz; kullanıcı-geneli
+  revoke ERP'nin güvenli listeyi dolaşmasıdır. İki yeni kalıp nedeniyle K-174
+  syntax freeze 30 Eylül–28 Ekim 2026 için yeniden başladı.
+
+## K-189 — Native HTML script CSP provenance kapanışı (30 Eylül 2026)
+
+- **Bulgu:** ERP kabuğunun gömülü davranışları çalışırken CSP'nin `unsafe-inline`
+  açmaması için daha önce eklenen içerik hash'i değişikliği freeze kayıtlarında
+  beyansız kalmıştı.
+- **Karar:** Her exact `<script>` gövdesi SHA-256 ile `script-src` kaynağına
+  bağlanır; HTML dışı yanıtların başlık yolu değişmez.
+- **Kanıt:** `compiler/src/main.rs` içindeki başlık/base64 birim testleri ve
+  `spec/12-web-guvenlik-profili.md`; semantic ve core-freeze beyanları exact
+  kaynak commit'i gösterir.
+
+## K-190 — Elmas içe alımda dışa açık işlem korunur (9 Ekim 2026)
+
+- **Bulgu:** Bir birim hem doğrudan hem de onu kullanan aracı bir birim üzerinden
+  içe alındığında aracı birimin gizli kopyası, içe alım sırasına göre dışa açık
+  tanımın yerine geçiyordu. İşlem ayrıştırma tohumundan düşüyor, argümanlı
+  çağrılar S015 veriyordu. Derleme/çalıştırma yolu aracı birim önce gelirse,
+  denetim/LSP yolu (`kaynagi_tanilari`) sonra gelirse bozuluyordu. ZEE ERP'nin
+  büyük giriş dosyasını modül birimlerine bölmesini bu hata engelliyordu.
+- **Karar:** Aynı kökenli tanım birden çok yoldan geldiğinde dışa açık kopya
+  korunur ya da gizli kopyayı yükseltir; denetim yolunda aynı yapı iki kez
+  eklenmez. spec/07'deki elmas kuralı ve A008 farklı köken çakışması değişmez.
+- **Kanıt:** `compiler/tests/birim_testi.rs` içindeki
+  `elmas_ice_alim_aracinin_gizli_kopyasi_dogrudan_tanimi_dusurmez` iki içe alım
+  sırasını çalıştırma ve denetim yolunda doğrular; yamasız derleyicide başarısız
+  olur. Semantic ve core-freeze beyanları exact kaynak commit'i gösterir.

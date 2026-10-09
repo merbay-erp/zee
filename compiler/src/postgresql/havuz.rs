@@ -280,6 +280,7 @@ mod testler {
                 .unwrap(),
             baglanti_degiskeni: "ZEE_TESTTE_OLMAYAN_DATABASE_URL".into(),
             gocler: "göçler".into(),
+            istek_baglami_cozucusu: None,
         };
         let plaintext = Config::from_str(
             "postgresql://kullanici@db.example.internal:5432/uygulama?sslmode=disable",
@@ -322,6 +323,7 @@ mod testler {
             hedef: VeritabaniHedefi::ayristir(&hedef).expect("saha hedefi geçerli olmalı"),
             baglanti_degiskeni: "ZEE_POSTGRES_SAHA_URL".into(),
             gocler: "göçler".into(),
+            istek_baglami_cozucusu: None,
         };
         let havuz = kur(&bildirim).expect("gerçek TLS havuzu kurulmalı");
         let mut kiralar = (0..BAGLANTI_SINIRI)

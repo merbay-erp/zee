@@ -415,6 +415,7 @@ pub(super) fn blok_denetle(
                     let mut istek_ortami = SembolTablosu::yeni(baglam.istek_kapsami(satir));
                     istek_ortami.insert("istek".into(), Tur::Sozluk(SozlukDegerTuru::Metin));
                     istek_ortami.insert("çerezler".into(), Tur::Sozluk(SozlukDegerTuru::Metin));
+                    istek_ortami.insert("oturum".into(), Tur::Sozluk(SozlukDegerTuru::Metin));
                     blok_denetle(govde, &mut istek_ortami, baglam)?;
                 }
                 Cumle::YanitGonder { deger, satir, .. } => {

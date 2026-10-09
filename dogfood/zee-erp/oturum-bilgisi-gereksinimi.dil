@@ -1,0 +1,15 @@
+# K-185 Zee ERP gereksinimi: tenant bağlamı tarayıcı girdisinden değil,
+# doğrulanmış sunucu oturumundaki kullanıcı kimliğinden kurulmalıdır.
+
+8080 kapısında sunucu başlat
+
+GET "/panel" adresine istek geldiğinde
+    oturum gerekli
+    kullanıcı oturumun "kullanıcı" değeri olsun
+    rol oturumun "rol" değeri olsun
+    parametreler boş liste olsun
+    bağlam "SELECT current_setting('app.tenant_id', true)::text AS tenant_id" sorgusunu parametreler ile okumayı dene olsun
+    bağlam başarısızsa
+        "tenant bağlamı kurulamadı" yanıtını 503 durumuyla gönder
+    yanıt kullanıcı ile ":" ile rol ile ":tenant-bound" olsun
+    yanıt yanıtını gönder
