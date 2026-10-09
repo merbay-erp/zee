@@ -3534,3 +3534,19 @@ paylaşım için sentetik kayıt ve CI'a iz koymama sınırı belgelendi.
 - **Kanıt:** `compiler/src/main.rs` içindeki başlık/base64 birim testleri ve
   `spec/12-web-guvenlik-profili.md`; semantic ve core-freeze beyanları exact
   kaynak commit'i gösterir.
+
+## K-190 — Elmas içe alımda dışa açık işlem korunur (9 Ekim 2026)
+
+- **Bulgu:** Bir birim hem doğrudan hem de onu kullanan aracı bir birim üzerinden
+  içe alındığında aracı birimin gizli kopyası, içe alım sırasına göre dışa açık
+  tanımın yerine geçiyordu. İşlem ayrıştırma tohumundan düşüyor, argümanlı
+  çağrılar S015 veriyordu. Derleme/çalıştırma yolu aracı birim önce gelirse,
+  denetim/LSP yolu (`kaynagi_tanilari`) sonra gelirse bozuluyordu. ZEE ERP'nin
+  büyük giriş dosyasını modül birimlerine bölmesini bu hata engelliyordu.
+- **Karar:** Aynı kökenli tanım birden çok yoldan geldiğinde dışa açık kopya
+  korunur ya da gizli kopyayı yükseltir; denetim yolunda aynı yapı iki kez
+  eklenmez. spec/07'deki elmas kuralı ve A008 farklı köken çakışması değişmez.
+- **Kanıt:** `compiler/tests/birim_testi.rs` içindeki
+  `elmas_ice_alim_aracinin_gizli_kopyasi_dogrudan_tanimi_dusurmez` iki içe alım
+  sırasını çalıştırma ve denetim yolunda doğrular; yamasız derleyicide başarısız
+  olur. Semantic ve core-freeze beyanları exact kaynak commit'i gösterir.
