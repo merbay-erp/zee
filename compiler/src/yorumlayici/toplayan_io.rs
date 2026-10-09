@@ -263,6 +263,8 @@ impl GirdiCikti for ToplayanIo {
             self.web_istek_yedegi = None;
             return None;
         }
+        let bilgi = self.web_guvenligi.oturum_bilgisi(self.an_son_degeri);
+        let ham = dogrulanmis_oturumu_istege_ekle(&ham, bilgi.as_ref());
         self.sunucu_yanitlari.push((yol.to_string(), String::new()));
         self.sunucu_durumlari.push(200);
         Some(ham)
@@ -413,6 +415,22 @@ impl GirdiCikti for ToplayanIo {
             azami_omur_saniye: 0,
         });
         Ok(())
+    }
+    fn kullanici_oturumlarini_listele(
+        &mut self,
+        kullanici: &str,
+    ) -> Result<Vec<Vec<(String, String)>>, String> {
+        self.web_guvenligi
+            .kullanici_oturumlarini_listele(kullanici, self.an_son_degeri)
+            .map(|oturumlar| {
+                oturumlar
+                    .into_iter()
+                    .map(crate::web_guvenligi::oturum_satiri)
+                    .collect()
+            })
+    }
+    fn oturum_kimligini_iptal_et(&mut self, kimlik: &str) -> Result<i64, String> {
+        self.web_guvenligi.oturum_kimligini_iptal_et(kimlik)
     }
     fn parola_dogrula(&mut self, parola: &str, ozet: &str) -> bool {
         if self.web_istek_yedegi.is_none() {

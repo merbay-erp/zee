@@ -2,7 +2,7 @@
 
 - **Durum:** **geçici kabul** (K-163 dogfood dilimi)
 - **Tarih:** 3 Eylül 2026
-- **İlgili kayıtlar:** K-163, B-073, ADR-060, spec/25
+- **İlgili kayıtlar:** K-163, K-186, B-073, ADR-060, ADR-077, spec/25
 - **Gerçekleme:** `postgresql.rs`, `postgresql/havuz.rs`, PostgreSQL intrinsic'leri ve `dil göçür`
 
 ## Amaç
@@ -29,6 +29,13 @@ UNIQUE ihlali olan `23505` metin eşleştirmeyle kaybolmaz.
 Değişiklik yalnız `eylem` transaction'ında geçerlidir. İç içe eylem savepoint
 kullanır. Aynı eylemde kalıcı dosya ve PostgreSQL yazısı yasaktır; dağıtık
 atomiklik sözü verilmez.
+
+K-186/ADR-077 ile proje bildirimi korumalı web rotaları için dar bir
+`şema.işlev` tenant çözücüsü seçebilir. Runtime bu işleve istemci alanı değil,
+sunucu oturumunda doğrulanmış kullanıcı kimliğini bind eder; dönen UUID'yi aynı
+request transaction'ında `app.tenant_id` olarak transaction-local kurar.
+Uygulama eylemleri bu tabanın içindeki savepoint'lerdir. Public rota bağlamsız,
+başarısız rota rollback'tir; bağlantı havuzuna tenant ayarı sızamaz.
 
 `dil göçür [proje]`, `NNNN_aciklama.sql` dosyalarını tek transaction ve
 advisory lock içinde uygular. `_zee_gocleri` sürüm, ad ve SHA-256 kaydını

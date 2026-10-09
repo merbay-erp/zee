@@ -45,6 +45,7 @@ use crate::agac::{
 use crate::intrinsic::{
     self, CSRF_BELIRTECI, DOSYALARI_LISTELE, DOSYA_ATOMIK_TASI, DOSYA_SHA256, DOSYA_SIL,
     HTTP_GETIR, PAROLA_DOGRULA, POSTGRESQL_DEGISTIR, POSTGRESQL_OKU, SENSOR_ACIK_MI,
+    WEB_OTURUMLARINI_LISTELE, WEB_OTURUMUNU_IPTAL_ET,
 };
 use crate::ondalik::Ondalik;
 use crate::tani::Tani;
@@ -69,6 +70,13 @@ pub type IstekParcalari = (String, String, AdDegerler);
 
 /// Web isteği ayrıştırmasının HTTP durum kodu ve kararlı kısa açıklaması.
 pub type IstekParcalamaHatasi = (u16, &'static str);
+
+const IC_OTURUM_KULLANICISI: &str = "__zee_ic_oturum_kullanicisi";
+const IC_OTURUM_ROLU: &str = "__zee_ic_oturum_rolu";
+const IC_OTURUM_KIMLIGI: &str = "__zee_ic_oturum_kimligi";
+const IC_OTURUM_OLUSTURMA_MS: &str = "__zee_ic_oturum_olusturma_ms";
+const IC_OTURUM_SON_ERISIM_MS: &str = "__zee_ic_oturum_son_erisim_ms";
+const IC_OTURUM_SON_GECERLILIK_MS: &str = "__zee_ic_oturum_son_gecerlilik_ms";
 
 /// PostgreSQL adaptörünün dilde yapılandırılmış `Hata`ya çevrilen sonucu.
 pub use crate::veritabani_modeli::VeritabaniHatasi;
@@ -137,6 +145,112 @@ fn cerezleri_parcala(cerez_satiri: &str) -> AdDegerler {
         cerezler.push((ad.trim().to_string(), deger.trim().to_string()));
     }
     cerezler
+}
+
+fn url_kodla(metin: &str) -> String {
+    let mut sonuc = String::with_capacity(metin.len());
+    for bayt in metin.as_bytes() {
+        if bayt.is_ascii_alphanumeric() || matches!(bayt, b'-' | b'.' | b'_' | b'~') {
+            sonuc.push(*bayt as char);
+        } else {
+            use std::fmt::Write;
+            let _ = write!(sonuc, "%{bayt:02X}");
+        }
+    }
+    sonuc
+}
+
+/// Host adaptörünün doğruladığı oturum kimliğini iç istek zarfına ekler.
+/// İstemcinin aynı iç adlarla yolladığı çerezler önce atılır; uygulama yalnız
+/// runtime'ın oturum deposundan gelen kullanıcı/rol çiftini görebilir.
+pub fn dogrulanmis_oturumu_istege_ekle(
+    ham: &str,
+    bilgi: Option<&crate::web_guvenligi::OturumBilgisi>,
+) -> String {
+    let (ilk_satir, cerez_satiri, govde) = istek_zarfi_parcala(ham);
+    let mut cerezler = cerezleri_parcala(cerez_satiri);
+    cerezler.retain(|(ad, _)| !ad.starts_with("__zee_ic_oturum_"));
+    if let Some(bilgi) = bilgi {
+        cerezler.push((IC_OTURUM_KIMLIGI.into(), bilgi.kimlik.clone()));
+        cerezler.push((IC_OTURUM_KULLANICISI.into(), url_kodla(&bilgi.kullanici)));
+        cerezler.push((IC_OTURUM_ROLU.into(), url_kodla(&bilgi.rol)));
+        cerezler.push((
+            IC_OTURUM_OLUSTURMA_MS.into(),
+            bilgi.olusturma_ms.to_string(),
+        ));
+        cerezler.push((
+            IC_OTURUM_SON_ERISIM_MS.into(),
+            bilgi.son_erisim_ms.to_string(),
+        ));
+        cerezler.push((
+            IC_OTURUM_SON_GECERLILIK_MS.into(),
+            bilgi.son_gecerlilik_ms.to_string(),
+        ));
+    }
+    let cerez_satiri = cerezler
+        .into_iter()
+        .map(|(ad, deger)| format!("{ad}={deger}"))
+        .collect::<Vec<_>>()
+        .join("; ");
+    if cerez_satiri.is_empty() {
+        if govde.is_empty() {
+            ilk_satir.to_string()
+        } else {
+            format!("{ilk_satir}\n{govde}")
+        }
+    } else {
+        format!("{ilk_satir}\nçerez {cerez_satiri}\n{govde}")
+    }
+}
+
+fn oturum_cerezlerini_ayir(
+    cerezler: AdDegerler,
+) -> Result<(AdDegerler, AdDegerler), IstekParcalamaHatasi> {
+    let mut uygulama_cerezleri = Vec::new();
+    let mut oturum = Vec::new();
+    let mut ic_alan_sayisi = 0usize;
+    for (ad, deger) in cerezler {
+        let uygulama_adi = match ad.as_str() {
+            IC_OTURUM_KIMLIGI => "kimlik",
+            IC_OTURUM_KULLANICISI => "kullanıcı",
+            IC_OTURUM_ROLU => "rol",
+            IC_OTURUM_OLUSTURMA_MS => "oluşturulma_ms",
+            IC_OTURUM_SON_ERISIM_MS => "son_erişim_ms",
+            IC_OTURUM_SON_GECERLILIK_MS => "son_geçerlilik_ms",
+            _ => {
+                if ad.starts_with("__zee_ic_oturum_") {
+                    return Err((400, "bilinmeyen iç oturum bilgisi"));
+                }
+                uygulama_cerezleri.push((ad, deger));
+                continue;
+            }
+        };
+        if oturum.iter().any(|(mevcut, _)| mevcut == uygulama_adi) {
+            return Err((400, "iç oturum bilgisi yinelenemez"));
+        }
+        let cozulmus = url_coz(&deger)?.to_string();
+        if uygulama_adi == "kimlik"
+            && (cozulmus.len() != 64
+                || !cozulmus
+                    .bytes()
+                    .all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b)))
+        {
+            return Err((400, "iç oturum kimliği geçersiz"));
+        }
+        if matches!(
+            uygulama_adi,
+            "oluşturulma_ms" | "son_erişim_ms" | "son_geçerlilik_ms"
+        ) && cozulmus.parse::<i64>().is_err()
+        {
+            return Err((400, "iç oturum zamanı geçersiz"));
+        }
+        ic_alan_sayisi += 1;
+        oturum.push((uygulama_adi.into(), cozulmus));
+    }
+    if ic_alan_sayisi != 0 && ic_alan_sayisi != 6 {
+        return Err((400, "iç oturum bilgisi eksik"));
+    }
+    Ok((uygulama_cerezleri, oturum))
 }
 
 /// istek_parcala + çerezler (K-052). İkinci satır "çerez a=1; b=2" ise
@@ -319,6 +433,15 @@ pub trait GirdiCikti {
     fn oturum_kapat(&mut self) -> Result<(), String> {
         Err("IO adaptörü güvenli oturum desteklemiyor".into())
     }
+    fn kullanici_oturumlarini_listele(
+        &mut self,
+        _kullanici: &str,
+    ) -> Result<Vec<Vec<(String, String)>>, String> {
+        Err("IO adaptörü web oturumu listelemeyi desteklemiyor".into())
+    }
+    fn oturum_kimligini_iptal_et(&mut self, _kimlik: &str) -> Result<i64, String> {
+        Err("IO adaptörü web oturumu iptalini desteklemiyor".into())
+    }
     fn parola_dogrula(&mut self, _parola: &str, _ozet: &str) -> bool {
         false
     }
@@ -453,6 +576,17 @@ impl GirdiCikti for PaylasilanIo<'_> {
     }
     fn oturum_kapat(&mut self) -> Result<(), String> {
         self.ic.borrow_mut().oturum_kapat()
+    }
+    fn kullanici_oturumlarini_listele(
+        &mut self,
+        kullanici: &str,
+    ) -> Result<Vec<Vec<(String, String)>>, String> {
+        self.ic
+            .borrow_mut()
+            .kullanici_oturumlarini_listele(kullanici)
+    }
+    fn oturum_kimligini_iptal_et(&mut self, kimlik: &str) -> Result<i64, String> {
+        self.ic.borrow_mut().oturum_kimligini_iptal_et(kimlik)
     }
     fn parola_dogrula(&mut self, parola: &str, ozet: &str) -> bool {
         self.ic.borrow_mut().parola_dogrula(parola, ozet)

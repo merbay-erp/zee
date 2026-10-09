@@ -12,6 +12,28 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **Güvenli oturum listesi ve tekil iptal (K-188, ADR-079):** Zee ERP artık
+  kullanıcıya ait etkin oturumları ham çerez sırrı olmadan SHA-256 özet kimlik
+  ve zaman metadata'sıyla listeleyebilir; seçili kimliği ortak runtime deposunda
+  worker/restart sınırları boyunca iptal edebilir. İki yeni `Sonuç` ifadesi
+  eklendi; K-174 syntax freeze penceresi 30 Eylül–28 Ekim olarak yeniden başladı.
+
+- **Migration işlev gövdesi ayrımı (K-187, ADR-078):** C026 transaction
+  sınırı artık yalnız üst seviye SQL komutlarını tarar; PL/pgSQL ve
+  dollar-quoted trigger gövdeleri yanlış `BEGIN` reddi üretmez.
+
+- **Request-bound PostgreSQL tenant bağlamı (K-186, ADR-077):** Korumalı rota,
+  doğrulanmış sunucu oturumu kullanıcısını bildirilen dar resolver işlevine
+  bind eder; tenant UUID aynı leased bağlantıda transaction-local RLS ayarı
+  olur. Public rota bağlamsızdır, hata rollback'tir ve uygulama eylemleri
+  request transaction'ı içindeki savepoint'ler olarak kalır.
+
+- **Doğrulanmış rota oturumu (K-185, ADR-076):** Gerçek Zee ERP tenant
+  gereksinimiyle, sunucu oturumundaki kullanıcı ve rol yalnız rota içindeki
+  `oturum` sözlüğünden okunur. İstemci girdisi bu sözlüğü dolduramaz; oturum
+  sırrı ve CSRF açılmaz. Sahte iç alan ve rota dışı kapsam regresyonları ile
+  Zee ERP dogfood reproducer'ı eklendi.
+
 - **Public depo güvenliği (K-184):** IO iz kaydı yeni/eski hedefte yalnız
   sahibine erişimle atomik yazılır; eski geniş izinler taşınmaz. Public depo
   bildirim belgesi, hassas dosya ignore kuralları ve sabit Gitleaks CI taraması

@@ -515,6 +515,17 @@ fn birim_tanimlarini_birlestir(
             .unwrap_or_default();
         if let Some(onceki) = islem_kaynagi.get(&islem_adi) {
             if islem_kokenleri.get(&islem_adi) == Some(&koken) {
+                // Elmas: aynı tanım önce bir aracı birimin gizli kopyası olarak
+                // geldiyse, doğrudan içe alımın dışa açık kopyası onu yükseltir;
+                // aksi hâlde işlem ayrıştırma tohumundan düşer (S015).
+                if islem.disari_acik
+                    && islemler
+                        .get(&islem_adi)
+                        .is_some_and(|mevcut| !mevcut.disari_acik)
+                {
+                    islem_kaynagi.insert(islem_adi.clone(), ad.to_string());
+                    islemler.insert(islem_adi, islem);
+                }
                 continue;
             }
             return Err(cakisma("işlemi", &islem_adi, onceki, ad, satir));
@@ -729,6 +740,31 @@ pub fn kaynagi_tanilari(kaynak: &str, yukleyici: &mut BirimYukleyici) -> Vec<Tan
     kaynagi_tanilari_kokenlerle(kaynak, None, &mut kokenli)
 }
 
+/// Elmas içe alım (spec/07, K-164): aynı işlem ikinci yoldan gizli kopya olarak
+/// gelebilir. Düz `extend` sonra gelen gizli kopyayı dışa açık tanımın üstüne
+/// yazıp ayrıştırma tohumundan düşürüyordu (S015). Dışa açık kopya korunur.
+fn elmas_tanimlarini_kat(
+    islemler: &mut HashMap<String, Islem>,
+    yapilar: &mut Vec<Yapi>,
+    yeni_islemler: HashMap<String, Islem>,
+    yeni_yapilar: Vec<Yapi>,
+) {
+    for (ad, islem) in yeni_islemler {
+        let degistir = match islemler.get(&ad) {
+            Some(mevcut) => !mevcut.disari_acik && islem.disari_acik,
+            None => true,
+        };
+        if degistir {
+            islemler.insert(ad, islem);
+        }
+    }
+    for yapi in yeni_yapilar {
+        if !yapilar.iter().any(|y| y.ad == yapi.ad) {
+            yapilar.push(yapi);
+        }
+    }
+}
+
 /// Çoklu tanı görünümünün kaynak-kökenli karşılığı.
 pub fn kaynagi_tanilari_kokenlerle(
     kaynak: &str,
@@ -762,8 +798,12 @@ pub fn kaynagi_tanilari_kokenlerle(
                     &mut yigin,
                 ) {
                     Ok(birim) => {
-                        islemler.extend(birim.islemler);
-                        yapilar.extend(birim.yapilar);
+                        elmas_tanimlarini_kat(
+                            &mut islemler,
+                            &mut yapilar,
+                            birim.islemler,
+                            birim.yapilar,
+                        );
                         testler.extend(birim.testler);
                     }
                     Err(tani) => tanilar.push(birim_kokeniyle(tani, &yuklenen.koken)),

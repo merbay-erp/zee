@@ -246,6 +246,38 @@ fn elmas_ice_alimda_birim_testleri_bir_kez_alinir() {
     assert!(sonuclar.iter().all(|s| s.hata.is_none()));
 }
 
+fn elmas_argumanli_dosyalari() -> HashMap<&'static str, &'static str> {
+    HashMap::from([
+        (
+            "ortak",
+            "işlem kart hazırla\n    xi Metin olarak al\n    yi Metin olarak al\n    Metin döndürür\n    xi ile yi döndür\n",
+        ),
+        (
+            "orta",
+            "ortak birimini kullan\n\nişlem orta kart hazırla\n    xi Metin olarak al\n    Metin döndürür\n    s xi ve \"b\" ile kart hazırla olsun\n    s döndür\n",
+        ),
+    ])
+}
+
+#[test]
+fn elmas_ice_alim_aracinin_gizli_kopyasi_dogrudan_tanimi_dusurmez() {
+    // Aracı birim (`orta`) doğrudan içe alımdan ÖNCE gelirse, onun gizli
+    // `kart hazırla` kopyası ana dosyanın ayrıştırma tohumundan düşmemeli;
+    // argümanlı çağrı ancak tohumda tanınır (aksi hâlde S015).
+    for kaynak in [
+        "orta birimini kullan\nortak birimini kullan\n\ny \"a\" ve \"b\" ile kart hazırla olsun\nz \"a\" ile orta kart hazırla olsun\ny yaz\nz yaz\n",
+        "ortak birimini kullan\norta birimini kullan\n\ny \"a\" ve \"b\" ile kart hazırla olsun\nz \"a\" ile orta kart hazırla olsun\ny yaz\nz yaz\n",
+    ] {
+        assert_eq!(
+            calistir(kaynak, elmas_argumanli_dosyalari()).expect("içe alım sırasından bağımsız çalışmalı"),
+            vec!["ab", "ab"]
+        );
+        let dosyalar = elmas_argumanli_dosyalari();
+        let tanilar = dil::kaynagi_tanilari(kaynak, &mut yukleyici(&dosyalar));
+        assert!(tanilar.is_empty(), "denetim de sıradan bağımsız temiz olmalı: {tanilar:?}");
+    }
+}
+
 #[test]
 fn farkli_kokenli_ayni_ad_elmas_sayilmaz_a008_kalir() {
     let mut dosyalar = elmas_dosyalari();

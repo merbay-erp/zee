@@ -563,7 +563,8 @@ fn syntax_freeze_kaydi() -> BTreeMap<String, String> {
 
 #[test]
 fn v1_syntax_freeze_penceresinde_kalip_kosul_komut_yuzeyi_degismez() {
-    // K-174: 6 Eylül – 4 Ekim 2026 arasında yeni syntax açılmaz. Kalıp, koşul
+    // K-174: K-188 dogfood yüzeyi sonrası 30 Eylül – 28 Ekim 2026 arasında
+    // yeni syntax açılmaz. Kalıp, koşul
     // ve komut satırlarının özeti kayıtla birebir olmalıdır; bilinçli bir
     // değişiklik kaydı, tarihi ve K-işini aynı committe günceller.
     use sha2::{Digest, Sha256};

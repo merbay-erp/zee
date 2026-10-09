@@ -25,6 +25,13 @@ pub(super) fn web_istegini_calistir(
             return Ok(None);
         }
     };
+    let (cerezler, oturum_bilgileri) = match oturum_cerezlerini_ayir(cerezler) {
+        Ok(deger) => deger,
+        Err((durum, mesaj)) => {
+            io.durum_yaniti_gonder(durum, mesaj);
+            return Ok(None);
+        }
+    };
     let istek_sozlugu = Deger::Sozluk(
         veriler
             .iter()
@@ -34,6 +41,12 @@ pub(super) fn web_istegini_calistir(
     );
     let cerez_sozlugu = Deger::Sozluk(
         cerezler
+            .into_iter()
+            .map(|(ad, deger)| (ad, Deger::Metin(deger)))
+            .collect(),
+    );
+    let oturum_sozlugu = Deger::Sozluk(
+        oturum_bilgileri
             .into_iter()
             .map(|(ad, deger)| (ad, Deger::Metin(deger)))
             .collect(),
@@ -89,6 +102,8 @@ pub(super) fn web_istegini_calistir(
         rota_ortami.insert("istek".into(), istek_sozlugu.clone());
         ortama_yazma_butcesini_tuket(&rota_ortami, "çerezler", &cerez_sozlugu, *satir)?;
         rota_ortami.insert("çerezler".into(), cerez_sozlugu.clone());
+        ortama_yazma_butcesini_tuket(&rota_ortami, "oturum", &oturum_sozlugu, *satir)?;
+        rota_ortami.insert("oturum".into(), oturum_sozlugu.clone());
         let zaman_asimi = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
             .http()
             .calistirma_zaman_asimi_ms();

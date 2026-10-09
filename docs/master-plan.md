@@ -96,7 +96,12 @@ eylemi, etki denetimi ve yerel transaction/savepoint sözleşmesini kapattı.
 K-088 production oturum/çerez/CSRF ve loopback HTTPS reverse-proxy profilini
 kapattı (RFC-0017, spec/12). K-137/ADR-034 kalıcı ortak oturum/rate-limit
 deposunu, güvenilir proxy istemci kimliğini ve tek-worker/N süreç modelini
-ekledi. Secret dağıtımı, çok-hostlu backend ve idempotency ayrı deployment/RFC
+ekledi. K-185/ADR-076 gerçek Zee ERP ihtiyacıyla doğrulanmış kullanıcı ve rolü
+yalnız rota kapsamındaki `oturum` sözlüğüne açtı; istemci girdisi ve oturum
+sırları bu sınırın dışındadır. K-188/ADR-079 aynı gerçek ürünün güvenlik yaşam
+döngüsü için kullanıcı oturumlarını sır taşımayan özet kimlikle listeleme ve
+ortak depoda tekil iptal yüzeyini ekledi; ham bearer/CSRF açılmadı ve syntax
+freeze yeniden başladı. Secret dağıtımı, çok-hostlu backend ve idempotency ayrı deployment/RFC
 kapılarıdır.
 # 7. Temel dil yüzeyi
 Değer tanımı: “isim Ayşe olsun”.
@@ -746,7 +751,9 @@ kalıcı rollback ve offline dilimini kapattı. K-136 exact manifest, kilit v3,
 salt-okunur kaynak kurulumu ve CLI entegrasyonuyla B-029/V1-P1-07'yi kapattı.
 K-137 kalıcı ortak web oturumu/revoke/expiry ve atomik rate-limit deposunu,
 tek-hop `Forwarded` kimliğini ve N ayrı tek-worker süreç modelini kurarak
-B-046'yı kapattı. K-138/ADR-035 RFC 8259 sayı/duplicate alan doğrulamasını,
+B-046'yı kapattı. K-185/ADR-076 doğrulanmış oturum kullanıcı/rolünü rota içi
+salt-okunur bağlama taşıyarak Zee ERP'nin tenant bağlamını istemci girdisinden
+kurma riskini GB-026 ile kapattı. K-138/ADR-035 RFC 8259 sayı/duplicate alan doğrulamasını,
 kayıpsız JSON-RPC kimliğini ve standart parse/request/method/params hata
 ayrımını kurarak B-051'i kapattı. K-139/ADR-036 CLI'a özel origin parser'ını
 kaldırıp web proxy'yi ortak `AgHedefi` DNS/IPv6/port kimliğine ve açık

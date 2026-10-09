@@ -23,6 +23,9 @@ pub struct VeritabaniBildirimi {
     pub hedef: VeritabaniHedefi,
     pub baglanti_degiskeni: String,
     pub gocler: String,
+    /// Korumalı web rotalarında doğrulanmış kullanıcıyı tenant kimliğine
+    /// çeviren, `şema.işlev` biçimindeki security-definer PostgreSQL işlevi.
+    pub istek_baglami_cozucusu: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
