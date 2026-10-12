@@ -88,6 +88,9 @@ boş Cargo home vendor kapısı önceden kurulu Rust/linker/SDK'yi içermez.
    envanteri, linker/SDK provenance sınırı ve Rust bulunmayan makinede kurulum
    provası. Mevcut kurulum tatbikatının compiler dev ortamından bağımsızlığı
    ayrıca değerlendirilir; saha kanıtı olmadan kapanmaz.
+   [Yerel kanıt](derleme-bagimlilik-kaniti-2026-10-12.md) macOS release
+   ikilisinin sistem kitaplıklarını ve Rust olmayan PATH ile çalışmasını
+   ölçtü; temiz makine/üç platform ve kaynak repo kimliği kanıtı açıktır.
 3. **K-193 açık:** native/WASM kod üretimi için gerçek ürün ihtiyacı, mevcut
    semantik korpusuyla eşdeğerlik ölçütleri ve backend karar verisi.
    [Backlog](oncelikli-backlog.md), CORE FREEZE ve insan kanıtı kapıları korunur;

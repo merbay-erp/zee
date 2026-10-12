@@ -3575,3 +3575,16 @@ paylaşım için sentetik kayıt ve CI'a iz koymama sınırı belgelendi.
   `b5cacf9a07f3f364c3e72f0a272bfdc12836f43cd5b0521d8a6d3ea2522e160e`
   manifestini iki kez eş üretti. WASM lib check geçti. Shell regresyonu
   eski HEAD betiklerinde başarısız, düzeltilmiş girişlerde başarılıdır.
+
+## K-192 — Sistem bağımlılıkları: macOS ilk kanıtı (12 Ekim 2026)
+
+- **Kanıt:** K-191 kaynak commit'inin iki temiz klonda eş release ikilileri,
+  pinned Rust provenance ve SHA-256 kayıtları derleme kanıtı sayfasındadır.
+  macOS release `otool -L` sistem framework/libSystem/libiconv bağımlılıklarını
+  gösterdi; Rust/Cargo/rustup PATH'te yokken merhaba-dünya exit 0 çalıştı.
+- **Sınır:** Temiz makine değil; Linux/Windows, minimum OS, stdio LSP ve
+  linker/SDK provenance kayıtları açıktır. K-192 kısmen, K-193 açık kalır.
+  SBOM/provenance sabit eski depo URI'si GB-030/K-192 olarak açık kaydedildi;
+  URL yönlendirmesi ve exact uzak kaynak erişimi henüz kanıtlanmadı.
+- **Etki:** Bu dilim yalnız kanıt ve güvenlik/backlog kaydıdır; production
+  kaynak, spec/RFC, API, tanı, crate sürümü ve artefakt şeması değişmez.
