@@ -995,3 +995,16 @@ kaldır kapısını geçti. Linux GCC 13.3.0; macOS Apple Clang 21.0.0 ve SDK
 kayıtta doğrulandı. İndirilen ikili byte'ları runtime hash'leriyle eşleşir;
 ham provenance/runtime JSON ve artifact/job/hash defteri kalıcıdır. İlk
 Windows çıktı biçimi/help sorgusu retleri geçmiş olarak korunur.
+
+### K-198 — Temiz Windows kurulum/kaldırma kanıtı (K-192 dilimi)
+
+**AÇIK — kod/ret testleri hazır; gerçek Server Core sonucu beklenir.**
+K-197 yalnız hazır byte program/LSP kanıtıdır. K-198 stock Server Core
+LTSC 2025 exact digest üzerinde aynı ContainerUser container'ında Türkçe
+boşluklu kurulum, manifest exact path/hash/source doğrulaması, program/LSP
+ve kaldırma sonrası iki ikili+manifest yokluğu ister. Installer/helper
+byte hash'leri ve release/prova source kimlikleri raporlanır; yalnız bu
+provanın UUID container'ı sonunda kaldırılır. Network none/read-only bind,
+host kernel ve geçici root sınırı korunur. Kapanma: başarılı exact image/
+source/kurulum/kaldırma ham raporu ve kimlik/hash defteri. Desktop/minimum
+Windows ve fiziksel macOS K-192'de ayrıca açık. ADR-068/GB-035.

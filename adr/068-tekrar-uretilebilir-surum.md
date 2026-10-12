@@ -151,3 +151,24 @@ K-196 kapanma kanıtı b153064/run 38252942210: üç platform iki temiz klon
 eş hash ve dört linker kaydı. Windows linker FileVersion 14.51.36260.0,
 SDK 10.0.26100.0; macOS SDK 26.5/Clang 21.0.0, Linux GCC 13.3.0.
 Ham metadata ve runtime raporları kalıcı fixture/defterde korunur.
+
+## K-198 — Temiz Windows kurulum zinciri
+
+Nano Server program/LSP kanıtı kurulum/kaldırma değildir. K-198 exact
+Server Core digest `22505496dd4229dba63453ba0c6dc31c06fd3e11810e5b8e429aa6b16dab2457`
+(amd64/windows/10.0.26100.33438) üzerinde aynı ContainerUser container'ında
+kur.ps1 → program/LSP → kaldir.ps1 zincirini sınar. İkili+source hash'leri
+Docker'dan önce ve staged alanda, installer byte'ları kopyadan sonra
+denetlenir. Türkçe boşluklu kullanıcı dizinine kurulumun manifesti exact
+iki path/hash/source kaydıyla eşleşmelidir; kaldırma sonunda iki ikili ve
+manifest yokluğu denetlenir. Prova/helper ve installer hash'leri release
+source'undan ayrı kayıtlıdır. Host kernel, stock image, network none ve
+read-only bind sınırı değişmez; tam desktop/minimum OS veya bütün IO
+sözü verilmez. Gerçek Server Core sonucu gelmeden K-198 kapanmaz.
+
+GB-035: installer yalnız bu geçici container'ın ContainerUser dizinini
+yönetir; host manifest/kurulumuna dokunmaz. Son temizlik yalnız bu koşunun
+UUID adlı container'ını siler; ana hata cleanup hatasıyla örtülmez. SHA
+özgün yayıncı kimliği değildir; yalnız incelenmiş kendi CI release'leri
+tüketilir. GH_TOKEN runtime environment'ına taşınmaz. Release dosya
+kümesi, SBOM/provenance ve imza sözleşmesi değişmez.
