@@ -871,7 +871,7 @@ tamamlanmış sayılmaz; burada istenen ek kanıt ayrıca üretilir.
 | K-175 | **AÇIK** | İnsan+iki proje+üç platform+signed reproducible V1 RC |
 | K-178 | **KAPALI** | Ölçüm: yorumlayıcı çerçevesi debug ~194 KiB/düzey, release ~11 KiB/düzey (macOS arm64 = Linux aarch64). Eski 32 MiB yığın debug CLI'yı 167. düzeyde doğal taşmayla düşürüyordu; resmî yığın 256 MiB rezervasyon oldu, regresyon koşucusu ve derinlik testleri resmî yığında; `derinlik-499-resmi-yiginda` vakası ve bütçe testi kapıda |
 | K-179 | **KAPALI** | ADR-074 `dogfood/kelime-avi`: üçüncü ürün (etkileşimli CLI oyunu, 3 birim/7 test, `kelime_avi_testi` hermetik); sürtünme tekrarı ölçüldü — 2 yeni (F001 iyelikli döngü adı A003, F003 `metnin satırları` T028), 4 tekrar (F010 ×3 yer, F009, F013, F011), 5 kılavuzla önlenen; compiler değişikliği yok
-| K-180 | **AÇIK** | Liste sıra ile öğe erişimi iki bağımsız üründe (K-164/F010, K-179) beş yerde sayaç döngüsüne zorladı; syntax freeze (4 Ekim) sonrası RFC adayı, freeze içinde açılmaz. F001/F013 iyelik zinciri `zee-tr-2` morfoloji adayına eklendi; RFC-0029 taslağı sorunu, adayları (`listenin sıra. öğesi`, 1 tabanlı, aralık dışı çalışma hatası + `almayı dene`) ve seçim ölçütlerini önden bağladı |
+| K-180 | **AÇIK** | Liste sıra ile öğe erişimi iki bağımsız üründe (K-164/F010, K-179) beş yerde sayaç döngüsüne zorladı; syntax freeze (28 Ekim) sonrası RFC adayı, freeze içinde açılmaz. F001/F013 iyelik zinciri `zee-tr-2` morfoloji adayına eklendi; RFC-0029 taslağı sorunu, adayları (`listenin sıra. öğesi`, 1 tabanlı, aralık dışı çalışma hatası + `almayı dene`) ve seçim ölçütlerini önden bağladı |
 | K-182 | **KAPALI** | İlk gerçek uzak Tier-1 koşusu (`b172957`, repo public): Windows autocrlf `.md`/`.tsv` dosyalarını CRLF indirip bayt karşılaştırmalı faz matrisini bozdu (`* text=auto eol=lf`); ubuntu `olcum` eksik provenance alanını söylemiyordu (alan adı + uname yedeği); kalıcı rate-limit testi 100 fsync'li yazmayı 5 sn kilit sınırına sıkıştırıyordu (4×5). Tatbikat üç platformda ve tedarik yeşil |
 | K-184 | **KAPALI** | Public depo güvenliği: özel IO izi yazımı, platform izin/ACL testleri, SECURITY belgesi, Gitleaks geçmiş/ağaç CI taraması. ADR-026 ve güvenlik kayıtları GB-024/025. |
 | K-186 | **KAPALI** | ADR-077: Zee ERP korumalı rotalarında doğrulanmış kullanıcı → security-definer resolver → transaction-local `app.tenant_id`; aynı leased bağlantı, iç eylemlerde savepoint, hata/timeout rollback ve public rotada sıfır tenant bağlamı. |
@@ -933,6 +933,7 @@ ikili hedefte manifestsiz kalıyordu. Unix/Windows betikleri önce bütün kopya
 geçici alanda doğrular, sonra no-clobber yayımlar ve hata halinde kendi
 kurduğu dosyaları geri alır. Unix gerçek ikili testi bozuk/eksik/mevcut ikinci
 hedef, yinelenen kayıt, ikinci yayınlama hatası ve kırık bağ reddini geçti.
-Aynı ana test Windows'ta gerçek PowerShell betiklerine açıldı; üç platform
+GB-032 kaynak metadata manifest enjeksiyonu da exact SHA/yol doğrulaması ve
+yabancı dosyalı regresyonla kapandı. Aynı ana test Windows'ta gerçek PowerShell betiklerine açıldı; üç platform
 CI kanıtı alınmadan bu madde kapanmaz. GB-031, ADR-071. Bu atomik correctness
 bulgusu K-192 dağıtım kanıtı ve K-193 backend işinden önce kapatılır.

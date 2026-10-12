@@ -49,3 +49,9 @@ Unix dosya sistemi hard-link desteklemelidir; Windows File.Move var olan
 hedefi ezmez. Güç kaybı/SIGKILL sonrası otomatik uzlaştırma bu sözleşmede yoktur.
 `kurulum_testi` artık Windows'ta da gerçek ikililerle ret/kur/kaldır akışını
 çalıştırır; platform sonuçları [backlog](oncelikli-backlog.md) durumuyla izlenir.
+
+GB-032/K-194: `GIT_SHA` varsa exact 40 küçük hex olmak zorundadır; eksik
+legacy metadata yalnız `-` kaydı üretir. Hedef/veri yollarında TAB/CR/LF
+reddedilir; kanonik fiziksel yol da denetlenir. Bu alanlar manifest satırı
+ve sahiplik kaydı oluşturamaz. Bilinçli yerel manifest değiştirme ve aynı
+kullanıcı kimliğiyle düşman süreçlere karşı OS sandbox'ı vaat edilmez.

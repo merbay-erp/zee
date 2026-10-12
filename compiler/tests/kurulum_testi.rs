@@ -131,6 +131,96 @@ fn gercek_ikililer_kurulur_calisir_kaldirilir_ve_oynanmis_artefakt_reddedilir() 
         veri.to_str().unwrap(),
     );
 
+    // K-194/GB-032: unsigned kaynak metadata'sı manifest sahipliğini genişletemez.
+    let yabanci = gecici.join("yabanci-dosya");
+    std::fs::write(&yabanci, b"kurulumun sahibi olmadigi veri").unwrap();
+    std::fs::write(
+        artefakt.join("GIT_SHA"),
+        format!(
+            "{}\n{}\t{}\t-\n",
+            "1".repeat(40),
+            yabanci.display(),
+            sha256_hex(&yabanci)
+        ),
+    )
+    .unwrap();
+    let metadata_reddi = betik(
+        "kur.sh",
+        &[
+            "--artefakt",
+            artefakt_s,
+            "--hedef",
+            hedef_s,
+            "--veri",
+            veri_s,
+        ],
+    );
+    assert!(
+        !metadata_reddi.status.success(),
+        "GIT_SHA üzerinden manifest satırı eklenemez"
+    );
+    assert!(!hedef.join(&dil_ad).exists() && !hedef.join(&dillsp_ad).exists());
+    assert!(!veri.join("kurulum-v1.tsv").exists());
+    assert_eq!(
+        std::fs::read(&yabanci).unwrap(),
+        b"kurulumun sahibi olmadigi veri"
+    );
+    std::fs::write(
+        artefakt.join("GIT_SHA"),
+        "0123456789abcdef0123456789abcdef01234567\n",
+    )
+    .unwrap();
+
+    for kontrol in ['\t', '\r', '\n'] {
+        let bozuk_yol = gecici.join(format!("hedef{kontrol}satir"));
+        for (hedef_degeri, veri_degeri) in [
+            (bozuk_yol.to_str().unwrap(), veri_s),
+            (hedef_s, bozuk_yol.to_str().unwrap()),
+        ] {
+            let yol_reddi = betik(
+                "kur.sh",
+                &[
+                    "--artefakt",
+                    artefakt_s,
+                    "--hedef",
+                    hedef_degeri,
+                    "--veri",
+                    veri_degeri,
+                ],
+            );
+            assert!(
+                !yol_reddi.status.success(),
+                "TSV kontrol karakterli yol reddedilmeli"
+            );
+            assert!(!hedef.join(&dil_ad).exists() && !hedef.join(&dillsp_ad).exists());
+            assert!(!veri.join("kurulum-v1.tsv").exists());
+        }
+    }
+    #[cfg(unix)]
+    {
+        let fiziksel = gecici.join("fiziksel\n");
+        std::fs::create_dir_all(&fiziksel).unwrap();
+        let takma_yol = gecici.join("gecerli-takma-yol");
+        std::os::unix::fs::symlink(&fiziksel, &takma_yol).unwrap();
+        let kanonik_ret = betik(
+            "kur.sh",
+            &[
+                "--artefakt",
+                artefakt_s,
+                "--hedef",
+                takma_yol.to_str().unwrap(),
+                "--veri",
+                veri_s,
+            ],
+        );
+        assert!(
+            !kanonik_ret.status.success(),
+            "fiziksel yoldaki son newline gizlenemez"
+        );
+        assert!(!fiziksel.join(&dil_ad).exists() && !fiziksel.join(&dillsp_ad).exists());
+        assert!(!veri.join("kurulum-v1.tsv").exists());
+    }
+
     // K-194: ikinci kaydın reddi ilk ikiliyi manifestsiz bırakamaz.
     let iyi_ozetler = std::fs::read_to_string(artefakt.join("SHA256SUMS")).unwrap();
     let kur_argumanlari = [

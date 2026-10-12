@@ -30,6 +30,10 @@ ve release runbook tatbikatı istedi.
 2. **Manifestli sahiplik.** Kurulum `kurulum-v1.tsv` manifesti yazar: kurulu
    dosya yolu, SHA-256 ve kaynak Git SHA. Var olan dosyanın üzerine yazılmaz;
    manifest varken ikinci kurulum reddedilir.
+   GB-032/K-194: Artefaktta `GIT_SHA` varsa değer exact 40 küçük hex'tir;
+   yoksa yalnız eski yerel artefaktlar için `-` kaydedilir. Hedef/veri yolları
+   TAB/CR/LF taşıyamaz; fiziksel kanonik yol da denetlenir. Kaynak metadata
+   manifest satırı/alanı enjekte ederek kurulum sahipliğini genişletemez.
 3. **Yalnız kendi dosyasını kaldırma.** `kaldir.sh`/`kaldir.ps1` yalnız
    manifestteki dosyaları siler; kurulumdan sonra değişmiş dosya `--zorla`
    verilmeden silinmez. Yabancı dosyaya dokunulmaz.
