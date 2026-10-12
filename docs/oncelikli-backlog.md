@@ -1041,7 +1041,7 @@ kapsamı değildir; sonraki release normal iki-klon kapısından geçer.
 
 ### K-200 — macOS native C/Rust deployment uyumu
 
-**AÇIK — gerçek yerel önce/sonra kanıtı hazır; exact release tatbikatı beklenir.**
+**KAPALI — exact üç platform iki-klon release tatbikatı geçti.**
 Locked cc 1.4.4/Ring build izinde C `-mmacosx-version-min=27.0` ve
 object minos 27.0 iken Rust final Mach-O minos 11.0 çıktı. Resmî release
 Rust default deployment hedefini caller ENV dışında sorgular, C/Rust
@@ -1050,5 +1050,8 @@ başlığı/hash'i incelenir; üst minos/yanlış platform/eksik toplam kanıt
 release'i reddeder. Başlıksız assembly ayrı sınırdır. Yerel sonrası 24/24
 nesne minos 11.0 ve Rust'sız PATH program/LSP geçti. Kapanma: exact üç
 platform iki-klon tatbikatı ve macOS a/b native başlık kayıtları kalıcı.
+Kaynak `44fba404c79762aff1698a07978c79ea069a59df`, run 38263264133;
+macOS a/b ayrı ayrı 24/24 nesne minos 11.0. Ham provenance/runtime
+ve artefakt hash/job kayıtları `derleme-platform-kaniti-v1.tsv` içindedir.
 Gerçek macOS 11/desktop/minimum OS ve tüm C alt süreç envanteri değildir.
 ADR-068/GB-037.

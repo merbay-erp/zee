@@ -211,7 +211,9 @@ ve gerçek minimum OS desteği bu başlık uyumundan çıkarılmaz.
 
 GB-037 eski düşük final minos ile daha yüksek C deployment uyumsuzluğu
 bilinçli uyum kapısıyla kapanır. Yerel sonrası 24/24 nesne minos 11.0
-ve program/LSP geçti; actual exact release tatbikatı ayrı açık. Native
+ve program/LSP geçti. Exact kaynak 44fba404c79762aff1698a07978c79ea069a59df,
+run 38263264133 üç platform iki-klon release tatbikatını geçti; macOS
+a/b ayrı ayrı 24 native nesne minos 11.0 kanıtı kalıcıdır. Native
 compile deployment bayrağı değiştiği için ADR-045/049/history etkisi
 incelendi; benchmark baseline üretilmedi. Release dosya kümesi ve imza
 sözleşmesi değişmez; native header metadata provenance'ın additive
