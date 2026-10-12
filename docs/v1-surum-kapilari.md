@@ -17,6 +17,10 @@ K-192/K-193 kapsamındadır; bu düzeltme yeni backend kapatmaz. K-192 kaynak
 metadata alanlarını aynı kanonik resmî depo ve exact SHA'ya bağladı; uzak
 erişim ve üç platform kanıtları ayrıca tamamlanır.
 
+K-194 kurulum hata geri almasını Unix regresyonuyla doğruladı; Windows
+ret/kur/kaldır gerçek koşusu beklenir (ADR-071/GB-031). Ani güç kaybı
+uzlaştırması veya dizin çapında atomiklik iddia edilmez.
+
 ## P0 — v1 etiketi öncesi zorunlu
 
 | Kapı | Durum | Kaynakta görülen gerçek | Kapanma kanıtı |

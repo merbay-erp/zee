@@ -925,3 +925,14 @@ CORE FREEZE ve ürün kanıtı olmadan açılmaz. Bu hat araç/dağıtım doğru
 | K-193 | **AÇIK** | K-192 ve mevcut V1/ürün kapıları sonrası: ürün kanıtlı native/WASM backend değerlendirmesi ve semantik eşdeğerlik ölçütleri; kod üretimi henüz yok |
 
 Kapsam ve yeniden üretim komutları [derleme envanterindedir](derleme-ve-bagimliliklar.md).
+
+### K-194 — Kurulum hata geri alma (K-192 sırasında bulunan correctness dilimi)
+
+**KISMEN — Windows saha koşusu bekleniyor.** İkinci checksum reddinde ilk
+ikili hedefte manifestsiz kalıyordu. Unix/Windows betikleri önce bütün kopyaları
+geçici alanda doğrular, sonra no-clobber yayımlar ve hata halinde kendi
+kurduğu dosyaları geri alır. Unix gerçek ikili testi bozuk/eksik/mevcut ikinci
+hedef, yinelenen kayıt, ikinci yayınlama hatası ve kırık bağ reddini geçti.
+Aynı ana test Windows'ta gerçek PowerShell betiklerine açıldı; üç platform
+CI kanıtı alınmadan bu madde kapanmaz. GB-031, ADR-071. Bu atomik correctness
+bulgusu K-192 dağıtım kanıtı ve K-193 backend işinden önce kapatılır.
