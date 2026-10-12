@@ -1,4 +1,4 @@
-# K-169/ADR-071 Windows kaldırma: yalnız manifestte kayıtlı ve özeti değişmemiş
+﻿# K-169/ADR-071 Windows kaldırma: yalnız manifestte kayıtlı ve özeti değişmemiş
 # dosyaları siler.
 #   powershell -File scripts/kaldir.ps1 [-Veri $env:LOCALAPPDATA\zee] [-Zorla]
 param(
@@ -8,7 +8,7 @@ param(
 $ErrorActionPreference = "Stop"
 $manifest = Join-Path $Veri "kurulum-v1.tsv"
 if (-not (Test-Path $manifest)) { throw "Kurulum manifesti yok: $manifest (kurulu değil)." }
-$satirlar = Get-Content $manifest
+$satirlar = Get-Content -LiteralPath $manifest -Encoding utf8
 if ($satirlar[0] -ne "# zee-kurulum-1") { throw "Kurulum manifesti şeması bilinmiyor." }
 # Önce bütün dosyalar doğrulanır; tek biri değişmişse hiçbiri silinmez.
 $kayitlar = @()

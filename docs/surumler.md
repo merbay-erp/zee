@@ -12,6 +12,12 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **Çalışma ortamı kanıtı (K-192):** Kurulu release ikililerinin hash/SHA,
+  doğrudan sistem kitaplıkları, Rust araçları PATH dışında exact program
+  çıktısı ve stdio LSP initialize/shutdown/exit akışı ortak kapıda ölçülür.
+  Üç platform tatbikatı başarılı/başarısız JSON raporunu exact commit+OS
+  adıyla saklar; temiz makine/minimum OS/SDK provenance kapsamı açık kalır.
+
 - **Kurulum hata geri alma (K-194):** Unix ve Windows kurulumları bütün
   ikilileri geçici alanda kopyalayıp doğrular; bozuk/eksik/yinelenen ikinci
   kayıt ilk ikiliyi manifestsiz bırakamaz. Yayınlama hatasında bu koşunun

@@ -24,7 +24,9 @@ ve release runbook tatbikatı istedi.
    son, no-clobber olarak yayımlanır. Unix hard-link, Windows aynı dosya
    sisteminde File.Move kullanır; desteklenmeyen dosya sistemi hata verir.
    Ani güç kaybı/SIGKILL için crash-recovery veya tüm dizinin tek atomik
-   değişimi vaat edilmez; normal hata geri alma bu dilimin sözüdür.
+   değişimi vaat edilmez; normal hata geri alma bu dilimin sözüdür. Manifest
+   iki platformda UTF-8/BOM'suz/LF yazılır; Windows kaldırma açık UTF-8 okur.
+   PowerShell kaynakları 5.x Türkçe literal desteği için UTF-8 BOM taşır.
 2. **Manifestli sahiplik.** Kurulum `kurulum-v1.tsv` manifesti yazar: kurulu
    dosya yolu, SHA-256 ve kaynak Git SHA. Var olan dosyanın üzerine yazılmaz;
    manifest varken ikinci kurulum reddedilir.

@@ -41,6 +41,10 @@ fn kurulum_betikleri_ve_tatbikat_workflowu_sozlesmeyi_tasir() {
         "powershell -File scripts/kur.ps1",
         "powershell -File scripts/kaldir.ps1",
         "persist-credentials: false",
+        "scripts/calisma-ortami-denetle.py --artefakt",
+        "scripts/tests/calisma-ortami-test.py",
+        "calisma-ortami-${{ github.sha }}-${{ runner.os }}",
+        "if-no-files-found: error",
     ] {
         assert!(
             workflow.contains(parca),
@@ -98,7 +102,7 @@ fn betik(ad: &str, argumanlar: &[&str]) -> std::process::Output {
 fn gercek_ikililer_kurulur_calisir_kaldirilir_ve_oynanmis_artefakt_reddedilir() {
     let dil_ad = format!("dil{}", std::env::consts::EXE_SUFFIX);
     let dillsp_ad = format!("dillsp{}", std::env::consts::EXE_SUFFIX);
-    let gecici = std::env::temp_dir().join(format!("zee-kurulum-{}", std::process::id()));
+    let gecici = std::env::temp_dir().join(format!("zee-kurulum-Türkçe-{}", std::process::id()));
     let artefakt = gecici.join("surum");
     let hedef = gecici.join("bin");
     let veri = gecici.join("veri");

@@ -26,6 +26,14 @@ jobs:
       - uses: dtolnay/rust-toolchain@d1031067263f94b142dd6c0ce24c5eb9d02d52a0 # master 2026-09-03
         with:
           toolchain: 1.93.1
+      - name: Çalışma ortamı ret regresyonları
+        shell: bash
+        run: |
+          if [[ "$RUNNER_OS" == Windows ]]; then
+            python scripts/tests/calisma-ortami-test.py
+          else
+            python3 scripts/tests/calisma-ortami-test.py
+          fi
       - name: "Sürüm artefaktı (Unix: iki temiz klon)"
         if: runner.os != 'Windows'
         shell: bash
@@ -46,6 +54,7 @@ jobs:
         run: |
           bash scripts/kur.sh --artefakt "$RUNNER_TEMP/surum" --hedef "$RUNNER_TEMP/bin" --veri "$RUNNER_TEMP/veri"
           "$RUNNER_TEMP/bin/dil" sürüm
+          python3 scripts/calisma-ortami-denetle.py --artefakt "$RUNNER_TEMP/surum" --kurulu "$RUNNER_TEMP/bin" --rapor "$RUNNER_TEMP/calisma-ortami.json" --beklenen-sha "$GITHUB_SHA"
           bash scripts/kaldir.sh --veri "$RUNNER_TEMP/veri"
           test ! -e "$RUNNER_TEMP/bin/dil" && test ! -e "$RUNNER_TEMP/veri/kurulum-v1.tsv"
       - name: Kur → sürüm → kaldır (Windows)
@@ -54,5 +63,16 @@ jobs:
         run: |
           powershell -File scripts/kur.ps1 -Artefakt "$env:RUNNER_TEMP\surum" -Hedef "$env:RUNNER_TEMP\bin" -Veri "$env:RUNNER_TEMP\veri"
           & "$env:RUNNER_TEMP\bin\dil.exe" sürüm
+          if ($LASTEXITCODE -ne 0) { throw "dil sürüm başarısız" }
+          python scripts/calisma-ortami-denetle.py --artefakt "$env:RUNNER_TEMP\surum" --kurulu "$env:RUNNER_TEMP\bin" --rapor "$env:RUNNER_TEMP\calisma-ortami.json" --beklenen-sha "$env:GITHUB_SHA"
+          if ($LASTEXITCODE -ne 0) { throw "çalışma ortamı denetimi başarısız" }
           powershell -File scripts/kaldir.ps1 -Veri "$env:RUNNER_TEMP\veri"
           if (Test-Path "$env:RUNNER_TEMP\bin\dil.exe") { throw "kaldırma başarısız" }
+      - name: Exact kaynak ve çalışma ortamı kanıtını sakla
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: calisma-ortami-${{ github.sha }}-${{ runner.os }}
+          path: ${{ runner.temp }}/calisma-ortami.json
+          if-no-files-found: error
+          retention-days: 90
