@@ -169,83 +169,73 @@ Kalıcı JSON raporları `.gitattributes` içinde binary olarak işaretlidir;
 Windows CRLF dahil indirilen ham byte'lar Git satır sonu dönüşümünden korunur.
 Defterdeki SHA-256 normalize edilmiş JSON metninin değil ham raporun özetidir.
 
-## K-195 Windows dağıtım profili — CI kanıtı açık
+## K-195 Windows dağıtım profili — kısmen kanıtlı
 
-Önceki `30dcfae` Windows artefaktı VCRUNTIME140/UCRT ister; bu tarihsel
-kanıt yeniden yazılmaz. Yeni MSVC dağıtım tarifi statik CRT ve explicit
-`--target <exact-host>` kullanır; yalnız `surum-artefakti.sh` release
-üretiminde etkin, geliştirme/Cargo varsayılanı aynı kalır. Üç platform
+Önceki `30dcfae` Windows artefaktı VCRUNTIME140/UCRT ister; tarihsel kanıt
+korunur. Yeni MSVC dağıtım tarifi statik CRT, explicit `--target <exact-host>`
+ve `-C link-arg=/Brepro` kullanır. Yalnız `surum-artefakti.sh` release
+üretiminde etkindir; geliştirme/Cargo varsayılanı aynı kalır. Üç platform
 kurulum tatbikatı aynı iki-klon scriptini çağırır. Profil provenance
-`cargoArgs`/`crtLinkage`/`targetRustflags` alanlarıyla izlenir; Windows
-runtime kapısı `static` kaydının dinamik CRT DLL importu taşımadığını da
-kontrol eder. Sistem DLL bağımlılığı ve minimum OS sınırı sürer.
+`cargoArgs`/`crtLinkage`/`targetRustflags` alanlarıyla izlenir.
 
-Rust bakım ikilisindeki değişiklik dil semantiği maintenance kapsamındadır;
-yeni grammar, komut, tanı veya gömme API exportu yoktur. ADR-046/katman
-fixture ve bağımlılık çevrim grafı yeni modül/kenar almaz. RFC/spec/hata
-kataloğu normatif dil davranışı açısından incelendi ve değişmedi. Release
-profilinin performans etkisi henüz ölçülmedi; ADR-045/049 uyarınca eski
-benchmark satırları taşınmaz veya yeni baseline uydurulmaz.
+Windows kapısı `static` metadata kaydının dinamik CRT DLL importu
+taşımadığını kontrol eder; tatbikat raporun `statik-crt-import-yok`
+sonucunu ayrıca ister. Metadata olmadan yapılan eski genel runtime provası
+K-195 kapanma kanıtı değildir. Yeni dumpbin header gözlemi PE
+time-date-stamp/reproducible alanlarını da saklar. Sistem DLL bağımlılığı ve
+minimum OS sınırı sürer. `/Brepro` MSVC'de dokümante olmayan bir seçenektir;
+[cc-rs sahipleri](https://github.com/rust-lang/cc-rs/issues/373) ve kullanılan
+cc 1.4.4 kaynak yorumu bu sınırı belirtir. Bayrak varlığı başarı kanıtı değildir.
 
-Windows Git Bash üreticisi klon/Cargo home/sysroot yollarını `cygpath -m`
-ile native rustc yol biçimine getirir; remap iki klonun farklı MSYS
-yollarını ikiliye sızdırmamalıdır. Bu da çift-klon eş-hash kapısındadır.
+Git Bash klon/Cargo home/sysroot yolları `cygpath -m`, çıktı yolu
+`cygpath -am` ile native rustc yol biçimine getirilir. Göreli `--cikti`
+depo köküne sabitlenir; compiler çalışma dizininde yeniden çözülmez.
+[Cargo encoded rustflags](https://doc.rust-lang.org/cargo/reference/config.html#buildrustflags)
+boşluklu remap yollarını tek argüman tutar; caller encoded flags CRT/remap
+tarifini ezemez. Giriş regresyonları göreli/boşluklu yol, caller bayrağı,
+Windows hedef dizini ve eş olmayan mock ikilileri denetler.
 
-Release bayrakları [Cargo encoded rustflags sözleşmesi](https://doc.rust-lang.org/cargo/reference/config.html#buildrustflags)
-ile ayrı argümanlar halinde taşınır; boşluklu remap yolları parçalanmaz ve
-caller encoded flags seçilen CRT/remap tarifini ezemez. Giriş regresyonu
-caller bayrağıyla Windows tarifini de denetler.
+İlk `ddaec060ac2d8b9a30461d64241c53bbcc19558c` kaynağının
+[38242263231 tatbikatı](https://github.com/itwise-bilisim/zee/actions/runs/38242263231)
+Linux/macOS çift-klon ve kur/program/LSP/kaldır job'larını geçti. Ham
+runtime/provenance JSON'ları fixture'da, artifact/report özetleri
+[platform defterinde](derleme-platform-kaniti-v1.tsv) kalıcıdır. Kurulum
+testi metadata subject'lerini ve iki klon manifest özetini runtime binary
+hash'leriyle karşılaştırır. Defter sonucu exact platform job'ına aittir;
+tüm run Windows reddi nedeniyle başarısızdır.
 
-K-195 yerel çift-klon provasının ikili hash'leri eşittir; göreli `--cikti`
-yolu metadata araçlarının compiler çalışma dizininde yanlış çözülüyordu.
-Çıktı yolu depo köküne sabitlendi; giriş testi gerçek metadata cwd'sinden
-iki ikili dosyasının bulunmasını denetler. Tam artefakt provası tekrarlanır.
-
-Windows tatbikatı raporun `statik-crt-import-yok` sonucunu ayrıca ister;
-metadata olmadan yapılan eski genel runtime provasını K-195 kapanma
-kanıtı kabul etmez. Tarihsel K-192 raporları geçerli eski gözlemdir.
-
-Windows çıktı yolu da `cygpath -am` ile mutlak native yola çevrilir;
-metadata aracının compiler çalışma dizinine göre tekrar çözülmez.
-
-K-195 göreli yol düzeltmesinin gerçek yerel tam provası
-`5a4e81f9c3d14eb12395e70752f3031768648bb7` kaynağında geçti: iki temiz
-klonda dil `c73ee537c628def5151ea97206e714e9d3dd01f90dbced2745f14047fdcb603c`,
-dillsp `064f2ab948f5b32a707962a0e8045cd7794136a18d97e40d78e72acd7372abad`.
-macOS arm64/Rust 1.93.1 release, kur/program/LSP/kaldır başarılı;
-UTF-8 runtime raporu SHA-256 `4d9f0fc5df28d9ed9d4efa6da3883f66f9468739946a817a271605dc132d6d64`. Unsigned yerel artefakt
-`compiler/target/k195-surmeler/goreli-prova/` altındadır; benchmark veya
-yayın etiketi değildir.
-
-`ddaec060ac2d8b9a30461d64241c53bbcc19558c` kaynağının
-[38242263231 tatbikatında](https://github.com/itwise-bilisim/zee/actions/runs/38242263231)
-Linux ve macOS çift-klon/kur/program/LSP/kaldır geçti. Ham runtime ve
-provenance JSON'ları kalıcı fixture'da, artifact/report özetleri
-[platform defterinde](derleme-platform-kaniti-v1.tsv). Kurulum testi
-metadata subject'lerini ve iki klon manifest özetini runtime binary
-hash'leriyle karşılaştırır. Windows kanıtı gelmeden K-195 açıktır.
-
-K-195 ilk Windows çift-klon koşusu `ddaec06` kaynağında eş-hash kapısını
-kırdı: dil `1debd0c76d98f057832b238338d98af7d3d1cf451a49b2fe64485dbf3c96330f`
-ve `775bddf93399858a00ee63fc4eba7f6f420d66d0b742d4d6d84279c898b593fd`;
-kur/runtime provasına geçilmedi ve sürüm artefaktı üretilmedi. PE timestamp
-farkı şu an çıkarımdır; ilk başarısız koşu ikilileri saklamadığı için byte
-nedeni kanıtlanmış değildir. MSVC linker'a `-C link-arg=/Brepro` eklenir
-ve exact yeni koşu ile denenir. Bu seçenek MSVC'de dokümante olmayan
-bir tekrarlanabilirlik bayrağıdır; [cc-rs sahiplerinin açıklaması](https://github.com/rust-lang/cc-rs/issues/373)
-ve kullanılan cc 1.4.4 kaynak yorumu sınırı belirtir. Başarı ölçütü
-bayrağın varlığı değil, iki gerçek ikili hash'i ve program/LSP provasıdır.
-
-Yeni çift-klon reddinde geçici a/b ikilileri temizlenmeden ayrı
+İlk Windows çift-klon hash'leri dil için
+`1debd0c76d98f057832b238338d98af7d3d1cf451a49b2fe64485dbf3c96330f` ve
+`775bddf93399858a00ee63fc4eba7f6f420d66d0b742d4d6d84279c898b593fd` oldu.
+Kur/runtime provasına geçilmedi, release artefaktı üretilmedi. PE timestamp
+farkı çıkarımdır; ilk koşu ikilileri saklamadığı için byte nedeni henüz
+kanıtlı değildir. Yeni koşuda eş olmayan a/b byte'ları ayrı
 `yayinlanamaz-surum-farki` tanı artefaktına gider. `DURUM` dosyası
-yayınlanamayacağını belirtir; release/SBOM/imza yoktur. Bu sayede sonraki
-fark, byte/header/path düzeyinde araştırılabilir. Giriş regresyonu eş
-olmayan mock ikililerle release reddini ve ayrı tanı korumasını kanıtlar.
+yayınlanamayacağını belirtir; release/SBOM/imza üretilmez.
 
-Platform defterindeki sonuç, kayıtlı exact job'ın sonucudur; tüm run
-sonucu değildir. `ddaec06` run'ı Windows reddi nedeniyle başarısızdır,
-Linux/macOS job'ları ise başarılıdır. Kısmi başarı tüm platformların
-kapanması olarak yorumlanmaz.
+Göreli yol düzeltmesi `5a4e81f9c3d14eb12395e70752f3031768648bb7` yerel
+macOS arm64/Rust 1.93.1 release tam provasını geçti: iki klonda dil
+`c73ee537c628def5151ea97206e714e9d3dd01f90dbced2745f14047fdcb603c`,
+dillsp `064f2ab948f5b32a707962a0e8045cd7794136a18d97e40d78e72acd7372abad`.
+Kur/program/LSP/kaldır başarılıdır; ayrıntı ve runtime rapor özeti
+[çalışma günlüğündedir](../kararlar/gunluk.md). Unsigned artefakt
+`compiler/target/k195-surmeler/goreli-prova/` altındadır.
 
-Yeni Windows raporu dumpbin header'ından PE time-date-stamp/reproducible
-gözlemlerini de saklar; çıkarım ile gözlenen header birbirinden ayrılır.
+`c7e3d04adf27905ade8b622d24bd76762123d2dc` yeni linker tarifinin
+[38244549913 tatbikatı](https://github.com/itwise-bilisim/zee/actions/runs/38244549913)
+sürmektedir. Windows eş-hash, statik CRT ve kur/program/LSP/kaldır
+kanıtı alınmadan K-195 kapanmaz. Temiz Windows/macOS, minimum OS ve
+linker/SDK üretim provenance sınırları K-192 içinde ayrıca açıktır.
+
+Rust bakım üreticisi dil semantiği maintenance kapsamındadır; yeni grammar,
+komut, tanı ya da gömme API exportu yoktur. ADR-046/katman fixture ve
+bağımlılık çevrim grafı yeni modül/kenar almaz. RFC/spec/hata kataloğu
+normatif dil davranışı açısından incelendi ve değişmedi. Release profilinin
+performans etkisi henüz ölçülmedi; ADR-045/049 uyarınca eski benchmark
+satırları taşınmaz veya yeni baseline uydurulmaz.
+
+K-195 tedarik CI ret nedeni test fixture'ının yanlış yol varsayımıdır:
+release klonu kendi TMPDIR'ında açılırken test ilk remap argümanında
+spaced fixture kökünü varsayıyordu. Giriş testi release çocuk süreçlerine
+özel spaced TMPDIR verir; üretim tarifi değiştirilmez. Aynı test
+macOS Bash 3 ve ağsız Linux Bash 5 container'ında doğrulanır.

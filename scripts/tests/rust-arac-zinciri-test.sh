@@ -25,21 +25,21 @@ printf '%s\t%s\t%s\n' "${RUSTUP_TOOLCHAIN:-yok}" "$*" "$bayraklar" >> "$ZEE_TEST
 case "$1" in
     build)
         IFS=$'\x1f' read -r -a ayrik <<< "$CARGO_ENCODED_RUSTFLAGS"
-        [[ "${ayrik[0]}" == --remap-path-prefix=*"zee toolchain-test."*=/zee ]]
+        [[ "${ayrik[0]}" == --remap-path-prefix=*"zee toolchain-test."*=/zee ]] || exit 1
         if [[ "$*" == *"--target x86_64-pc-windows-msvc"* ]]; then
-            [[ "${#ayrik[@]}" == 7 ]]
+            [[ "${#ayrik[@]}" == 7 ]] || exit 1
         else
-            [[ "${#ayrik[@]}" == 3 ]]
+            [[ "${#ayrik[@]}" == 3 ]] || exit 1
         fi
         dizin="$CARGO_TARGET_DIR/release"
         uzanti=""
         if [[ "$*" == *"--target x86_64-pc-windows-msvc"* ]]; then
             dizin="$CARGO_TARGET_DIR/x86_64-pc-windows-msvc/release"
             uzanti=.exe
-            [[ "$bayraklar" == *"-C target-feature=+crt-static"* ]]
-            [[ "$bayraklar" == *"-C link-arg=/Brepro"* ]]
+            [[ "$bayraklar" == *"-C target-feature=+crt-static"* ]] || exit 1
+            [[ "$bayraklar" == *"-C link-arg=/Brepro"* ]] || exit 1
         else
-            [[ "$bayraklar" != *"crt-static"* ]]
+            [[ "$bayraklar" != *"crt-static"* ]] || exit 1
         fi
         mkdir -p "$dizin"
         for ad in dil dillsp; do
@@ -53,7 +53,7 @@ case "$1" in
             # Üreticinin ozet argümanı cwd=compiler altında da bulunmalı.
             while [[ "$1" != ozet ]]; do shift; done
             shift
-            [[ -f "$1/$2" && -f "$1/$3" ]]
+            [[ -f "$1/$2" && -f "$1/$3" ]] || exit 1
         fi
         echo 'test metadata' ;;
     vendor)
@@ -67,7 +67,7 @@ esac
 CARGO
 cat > "$gecici/bin/cygpath" <<'CYGPATH'
 #!/usr/bin/env bash
-[[ "$1" == -m || "$1" == -am ]]
+[[ "$1" == -m || "$1" == -am ]] || exit 1
 printf '%s\n' "$2"
 CYGPATH
 chmod +x "$gecici/bin/rustc" "$gecici/bin/cargo" "$gecici/bin/cygpath"
@@ -99,7 +99,7 @@ printf 'test fuzz lock\n' > "$gecici/depo/compiler/fuzz/Cargo.lock"
     # Kirli kabul bile commit içindeki pinle provenance üretmelidir.
     printf '[toolchain]\nchannel = "1.97.1"\n' > compiler/rust-toolchain.toml
     export RUSTUP_TOOLCHAIN=9.9.9
-    bash scripts/surum-artefakti.sh --kirli-kabul --cikti "$gecici/cikti" > "$gecici/surum.log"
+    TMPDIR="$gecici" bash scripts/surum-artefakti.sh --kirli-kabul --cikti "$gecici/cikti" > "$gecici/surum.log"
 )
 [[ "$(wc -l < "$ZEE_TEST_KOMUTLAR" | tr -d ' ')" == 6 ]]
 awk -F '\t' '$1 != "1.93.1" { exit 1 }' "$ZEE_TEST_KOMUTLAR"
@@ -111,7 +111,7 @@ sabit_ara '--remap-path-prefix=/test/rust/1.93.1=/rust' "$ZEE_TEST_KOMUTLAR"
     cd "$gecici/depo"
     export ZEE_TEST_PLATFORM=x86_64-pc-windows-msvc
     export CARGO_ENCODED_RUSTFLAGS=caller-bayragi
-    bash scripts/surum-artefakti.sh --kirli-kabul --cikti goreli-windows > "$gecici/windows.log"
+    TMPDIR="$gecici" bash scripts/surum-artefakti.sh --kirli-kabul --cikti goreli-windows > "$gecici/windows.log"
 )
 [[ -f "$gecici/depo/goreli-windows/dil.exe" && -f "$gecici/depo/goreli-windows/dillsp.exe" ]]
 [[ "$(wc -l < "$ZEE_TEST_KOMUTLAR" | tr -d ' ')" == 6 ]]
@@ -125,7 +125,7 @@ if (
     cd "$gecici/depo"
     export ZEE_TEST_OZET_FARKI=1
     export ZEE_SURUM_TANI_DIZINI="$gecici/tani"
-    bash scripts/surum-artefakti.sh --kirli-kabul --cikti "$gecici/ret-surum"
+    TMPDIR="$gecici" bash scripts/surum-artefakti.sh --kirli-kabul --cikti "$gecici/ret-surum"
 ) > "$gecici/ret.log" 2>&1; then
     echo 'Eş olmayan iki klon kabul edildi' >&2; exit 1
 fi
