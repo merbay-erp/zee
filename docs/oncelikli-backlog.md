@@ -941,14 +941,15 @@ bulgusu K-192 dağıtım kanıtı ve K-193 backend işinden önce kapatılır.
 
 ### K-195 — Windows statik CRT ve çift-klon dağıtımı
 
-**KISMEN — yerel, Linux/macOS kanıtlı; Windows açık.** K-192 gerçek DLL envanteri
-VCRUNTIME140 bağımlılığını gösterdi. MSVC release hedefi statik CRT ile
-explicit target altında derlenir; Windows tatbikatı diğer iki platform gibi
-iki temiz klonda eş hash ister. Provenance tarifi ve CRT import retleri aynı
-iştedir. Kapanma: exact kaynakta iki ikili eş hash, dinamik CRT importu yok,
-kur/program/LSP/kaldır prova başarılı; ADR-068. Temiz Windows/minimum OS ve
-linker/SDK provenance K-192 içinde ayrı açık kalır. `ddaec06` exact kaynağında
-Linux/macOS çift-klon ve kur/program/LSP/kaldır geçti; ham runtime/provenance
-kanıtı [platform defterindedir](derleme-platform-kaniti-v1.tsv). Göreli çıktı
-yolu `5a4e81f` yerel tam provasını geçti. Windows ilk çift-klon koşusu eş-hash reddiyle kaldı; `/Brepro` linker
-tarifinin exact yeni koşusu gerekir.
+**KAPALI — üç platform exact kaynak kanıtlı.** K-192 gerçek DLL envanteri
+VCRUNTIME140 bağımlılığını gösterdi. MSVC release statik CRT/explicit target
+ve `/Brepro` linker tarifiyle üretilir; Windows da iki temiz klonda eş hash
+ister. `c7e3d04adf27905ade8b622d24bd76762123d2dc` kaynağındaki
+[38244549913 tatbikatı](https://github.com/itwise-bilisim/zee/actions/runs/38244549913)
+üç platformda geçti. Windows CRT importu yok; kur/program/LSP/kaldır ve iki
+ikili eş hash başarılı. Ham runtime/provenance ve kaynak/job/artifact
+özetleri [platform defterindedir](derleme-platform-kaniti-v1.tsv); ADR-068.
+İlk Windows eş-hash reddi tarihsel kanıtta korunur; başarısız ikili yayınlanmaz.
+Göreli çıktı yolu `5a4e81f` yerel tam provasını geçti. Shell fixture retleri
+macOS Bash 3.2.57 ve Linux Bash 5.2.37'de doğrulandı. Temiz Windows/macOS,
+minimum OS ve linker/SDK provenance K-192 içinde ayrı açık kalır.

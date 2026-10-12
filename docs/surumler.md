@@ -1234,10 +1234,18 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 Etiketler: `baslangic` (ilk taahhüt), `dogum` (merhaba.dil çalıştı),
 `v0.1.0` (kabul kriterleri kapandı).
 
-K-195 geliştirme: Windows MSVC dağıtım tarifi statik CRT/explicit target taşır; üç platform tatbikatı çift-klon üreticisini kullanır. Provenance CRT/bayrak alanları eklendi; Windows dinamik CRT importu ret kapısı vardır. Exact CI kanıtı beklenir, yayın etiketi üretilmedi.
+K-195 geliştirme: Windows MSVC dağıtım tarifi statik CRT/explicit target taşır; üç platform tatbikatı çift-klon üreticisini kullanır. Provenance CRT/bayrak alanları eklendi; Windows dinamik CRT importu ret kapısı vardır. Exact `c7e3d04` üç platform CI kanıtı geçti; yayın etiketi üretilmedi.
 
 K-195 ilk Windows çift-klon koşusu eş-hash kapısında kaldı; artefakt
 üretilmedi. Yeni MSVC linker tarifi `/Brepro` ve provenance
 `targetRustflags` alanını birlikte günceller; exact tekrar kanıtı gerekir.
 Eş olmayan byte'lar ayrı `yayinlanamaz-surum-farki` tanısında saklanır,
 sürüm/kurulum kümesine girmez. Benchmark tarihçesine yeni satır yazılmadı.
+
+K-195 kapanma: `c7e3d04adf27905ade8b622d24bd76762123d2dc` kaynağındaki
+[38244549913 tatbikatı](https://github.com/itwise-bilisim/zee/actions/runs/38244549913)
+üç platformda geçti. Windows iki temiz klonda eş hash, dinamik CRT importu
+yok ve kur/program/LSP/kaldır başarılı. İndirilen byte'lar metadata ile
+ayrıca eşleştirildi; ham rapor/provenance kalıcı fixture'dadır. İlk Windows
+reddi korunur. K-192 temiz Windows/macOS, minimum OS/linker-SDK kanıtı
+ayrı açık kalır; native Zee backend ve self-hosting tamamlanmış değildir.

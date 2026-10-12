@@ -169,7 +169,7 @@ Kalıcı JSON raporları `.gitattributes` içinde binary olarak işaretlidir;
 Windows CRLF dahil indirilen ham byte'lar Git satır sonu dönüşümünden korunur.
 Defterdeki SHA-256 normalize edilmiş JSON metninin değil ham raporun özetidir.
 
-## K-195 Windows dağıtım profili — kısmen kanıtlı
+## K-195 Windows dağıtım profili — kapalı
 
 Önceki `30dcfae` Windows artefaktı VCRUNTIME140/UCRT ister; tarihsel kanıt
 korunur. Yeni MSVC dağıtım tarifi statik CRT, explicit `--target <exact-host>`
@@ -223,8 +223,13 @@ Kur/program/LSP/kaldır başarılıdır; ayrıntı ve runtime rapor özeti
 
 `c7e3d04adf27905ade8b622d24bd76762123d2dc` yeni linker tarifinin
 [38244549913 tatbikatı](https://github.com/itwise-bilisim/zee/actions/runs/38244549913)
-sürmektedir. Windows eş-hash, statik CRT ve kur/program/LSP/kaldır
-kanıtı alınmadan K-195 kapanmaz. Temiz Windows/macOS, minimum OS ve
+üç platformda başarılıdır. Windows iki klonda dil
+`48a1d3a4b63834bf21342a0b6af33d52464473bcb8ce0962f894b58c1572008d`,
+dillsp `d873c81763efb51cfc5a624cbfb2b281775a413a7d1cb1f56a62eb2e7791da75`
+hash'lerini üretti. İndirilen ikili byte'ları runtime/provenance/SHA256SUMS
+ile eşleştirildi; statik CRT import kontrolü ve kur/program/LSP/kaldır geçti.
+Ham rapor/provenance ve kaynak/job/artifact özetleri kalıcı defterdedir.
+K-195 bu sınırlı dağıtım kapsamında kapandı. Temiz Windows/macOS, minimum OS ve
 linker/SDK üretim provenance sınırları K-192 içinde ayrıca açıktır.
 
 Rust bakım üreticisi dil semantiği maintenance kapsamındadır; yeni grammar,

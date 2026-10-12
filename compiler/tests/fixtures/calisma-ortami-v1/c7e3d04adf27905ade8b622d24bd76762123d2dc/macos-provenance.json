@@ -1,0 +1,74 @@
+{
+  "_type": "https://in-toto.io/Statement/v1",
+  "predicate": {
+    "buildDefinition": {
+      "buildType": "https://zee-lang.dev/surum/tekrar-uretilebilir/v1",
+      "externalParameters": {
+        "cargoArgs": "cargo build --locked --release --bin dil --bin dillsp",
+        "crtLinkage": "target-default",
+        "gitCommit": "c7e3d04adf27905ade8b622d24bd76762123d2dc",
+        "platform": "aarch64-apple-darwin",
+        "remapPathPrefix": [
+          "/zee",
+          "/cargo",
+          "/rust"
+        ],
+        "rustc": "rustc 1.93.1 (01f6ddf75 2026-02-11)",
+        "sourceDateEpoch": 1791805437,
+        "surum": "0.8.0-dev",
+        "targetRustflags": []
+      },
+      "resolvedDependencies": [
+        {
+          "digest": {
+            "gitCommit": "c7e3d04adf27905ade8b622d24bd76762123d2dc"
+          },
+          "uri": "git+https://github.com/itwise-bilisim/zee@c7e3d04adf27905ade8b622d24bd76762123d2dc"
+        }
+      ]
+    },
+    "runDetails": {
+      "builder": {
+        "id": "https://zee-lang.dev/surum/surum-artefakti"
+      },
+      "byproducts": [
+        {
+          "digest": {
+            "sha256": "b318385ef989898dce8f17f2b05cc8167501be67b398e4ad0a48ab6a643013f7"
+          },
+          "name": "SHA256SUMS"
+        },
+        {
+          "digest": {
+            "sha256": "b318385ef989898dce8f17f2b05cc8167501be67b398e4ad0a48ab6a643013f7"
+          },
+          "name": "SHA256SUMS.ikinci-klon"
+        }
+      ],
+      "metadata": {
+        "finishedOn": "2026-10-12T11:43:57Z",
+        "invocationId": "surum-c7e3d04adf27905ade8b622d24bd76762123d2dc",
+        "startedOn": "2026-10-12T11:43:57Z"
+      }
+    },
+    "zeeTekrarUretim": {
+      "ikiTemizKlonEsit": true,
+      "yontem": "iki bağımsız git klonu, aynı toolchain, --remap-path-prefix, SOURCE_DATE_EPOCH"
+    }
+  },
+  "predicateType": "https://slsa.dev/provenance/v1",
+  "subject": [
+    {
+      "digest": {
+        "sha256": "2e32b96038f641166252df7c9d8b9ea67f4f1d2603ef0cfa18872fd5b7bb54a1"
+      },
+      "name": "dil"
+    },
+    {
+      "digest": {
+        "sha256": "5bb6cea59fd7b65d4392e4417505d6a0db4060228b17ffb04138f1f733dca70a"
+      },
+      "name": "dillsp"
+    }
+  ]
+}
