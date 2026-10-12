@@ -131,3 +131,16 @@ ve yinelenen checksum'ı çalıştırmadan reddetmeyi kanıtlar.
 sonuçları alınmadan üç platform kapalı değildir. Builder'da Rust'ın kurulu
 olmaya devam etmesi, minimum OS ve gerçek linker/SDK üretim provenance'ı
 ayrı açık sınırlardır; PATH yalıtımı bunların yerine geçmez.
+
+İlk uzak tatbikat `3bf59d6dd4641ba91fa983048f051cbbda6b70d3` kaynağında
+Linux/macOS workflow'u geçti; Windows raporundaki program/LSP sonucu geçti,
+ama log satırının CP1252 kodlanması workflow'u kırdı. K-192 log özeti ASCII,
+JSON raporu UTF-8 olarak ayrıldı; ret regresyonları `PYTHONIOENCODING=ascii:strict`
+altında da çalışır. Güncel kaynağın üç platform koşusu ayrıca tamamlanır.
+
+Linux `dil` doğrudan `libssl.so.3`/`libcrypto.so.3` ister; Windows ikilileri
+`VCRUNTIME140.dll` ve UCRT/API-set kitaplıklarını ister. Bu gerçek bağımlılıklar
+"yalnız tek statik ikili" sözü değildir. DLL/ELF listesi runtime yükleme
+başarısıyla birlikte değerlendirilir. Ayrı tatbikat artefaktı JSON ile o
+koşunun mevcut `surum/` kümesini birlikte saklar; böylece indirilen byte'lar
+rapor hash'leriyle doğrulanıp ayrı runtime ortamında tekrar sınanabilir.

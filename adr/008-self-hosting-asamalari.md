@@ -10,7 +10,7 @@
 
 | Aşama | İçerik | Başlama kapısı |
 |---|---|---|
-| **Stage 0** | Rust bootstrap derleyici | ✅ bugün buradayız (v0.2.0) |
+| **Stage 0** | Rust bootstrap derleyici | ✅ Stage 0; çalışma Cargo sürümü `0.8.0-dev` |
 | **Stage 1** | Standart kütüphanenin parçaları zee'de yazılır | Birim sistemi + K-016 usability onayı; stdlib RFC'si |
 | **Stage 2** | Parser/tür denetçisi bölümleri zee'de | Stage 1'de ≥2 gerçek birim; dilde yapı+liste+Sonuç olgunluğu kanıtı |
 | **Stage 3** | Derleyici kendi kaynağını derler | Native backend (ADR-005) YA DA yeterli hızda yorumlama; tam spec |
@@ -21,7 +21,7 @@
 
 1. **Bootstrap asla silinmez.** Rust Stage 0, Stage 5'ten sonra bile
    depoda derlenebilir kalır: güven zincirinin kökü ve öğretim aracıdır.
-2. **Golden korpus hakemdir.** Her aşamada yeni derleyici, 32 golden +
+2. **Golden korpus hakemdir.** Her aşamada yeni derleyici, bütün golden +
    proje kitaplığını bit-eş çıktıyla geçmek zorundadır (determinizm sözü
    aşama geçişlerinin test tanımıdır).
 3. **Aşama atlanmaz.** Stage 2'ye stdlib deneyimi olmadan girmek, dil

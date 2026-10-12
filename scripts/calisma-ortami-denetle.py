@@ -196,7 +196,8 @@ def main():
         rapor["hata"] = str(hata)[:4000]
     args.rapor.parent.mkdir(parents=True, exist_ok=True)
     args.rapor.write_text(json.dumps(rapor, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    print(f"Çalışma ortamı: {rapor['sonuc']} → {args.rapor}")
+    # CI stdout Windows kod sayfasından bağımsızdır; ayrıntılı rapor UTF-8 kalır.
+    print(f"calisma-ortami: {rapor['sonuc']}")
     return 0 if rapor["sonuc"] == "gecti" else 1
 
 
