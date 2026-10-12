@@ -3588,3 +3588,16 @@ paylaşım için sentetik kayıt ve CI'a iz koymama sınırı belgelendi.
   URL yönlendirmesi ve exact uzak kaynak erişimi henüz kanıtlanmadı.
 - **Etki:** Bu dilim yalnız kanıt ve güvenlik/backlog kaydıdır; production
   kaynak, spec/RFC, API, tanı, crate sürümü ve artefakt şeması değişmez.
+
+## K-192 — Kanonik SBOM/provenance kaynak kimliği (12 Ekim 2026)
+
+- **Bulgu/karar:** Metadata eski `merbay-erp/zee` kimliğini kullanıyordu;
+  resmî origin ve GitHub `nameWithOwner` `itwise-bilisim/zee` olarak doğrulandı.
+  Tek sabit iki belgeyi aynı resmî kaynak ve exact SHA'ya bağlar; GB-030 kapandı.
+- **Kanıt:** Mevcut SBOM/provenance testi iki kaynak alanı ve exact SHA'yı
+  denetler; yeni assertion eski üreticide başarısızdır. Şema, imza, CLI ve
+  Zee lexer/parser/tür/runtime semantiği değişmez. Kaynak beyanı bakım sınıfıdır.
+- **Etki incelemesi:** Yeni production sahibi veya bağımlılık kenarı yoktur;
+  ADR-046/fixture, spec/RFC, tanı kataloğu ve dil yüzeyi değişmez. ADR-068,
+  backlog, sürüm notu, master plan ve V1 kapısı güncellendi. Uzak retrieval,
+  platform/system/SDK ve temiz kurulum kanıtları K-192 içinde açık kalır.

@@ -56,13 +56,15 @@ bu dilimde ölçülmedi; K-192 **kısmen açık** kalır.
 
 ## Provenance'da kalan kaynak kimliği sınırı
 
-Mevcut SBOM `software_downloadLocation` ve provenance `resolvedDependencies.uri`
+Bu kaynak commit'inde üretilen SBOM `software_downloadLocation` ve provenance `resolvedDependencies.uri`
 `compiler/src/bin/surum_artefakti.rs` içinde sabit
 `git+https://github.com/merbay-erp/zee@<sha>` kullanır. Bu checkout'un origin'i
 `https://github.com/itwise-bilisim/zee.git`tir. Eski URL'nin yönlendirmesi veya
 bu exact commit'in uzaktan erişilebilirliği bu koşuda doğrulanmadı.
-Kaynak depo kimliğinin kanonik kaydı ve üretim/retrieval doğrulaması
-GB-030/K-192 kapsamındadır. Hash eşitliği bu ayrı kaynağa erişim sorununu kapatmaz.
+K-192 devam dilimi (ADR-068) SBOM/provenance üreticisini kanonik
+`itwise-bilisim/zee` kaynağına bağlayarak GB-030 metadata bulgusunu kapattı.
+Bu tarihsel artefaktın metadata'sı yeniden yazılmadı. Exact yeni commit'in
+uzak erişimi ayrı yayın kanıtıdır; hash eşitliği bunun yerini tutmaz.
 
 ## Açık devam
 

@@ -46,6 +46,13 @@ temiz ortamda eş hash, SBOM, imza ve provenance istedi.
    zaman yalnız commit zamanından türetilir. Üretici ikili bakım aracıdır ve
    `dil` diline dokunmaz.
 
+K-192: SBOM kök paketinin kaynak konumu ve provenance resolved dependency
+URI'si aynı resmî `https://github.com/itwise-bilisim/zee` kaynağına ve exact
+SHA'ya bağlanır. Eski `merbay-erp/zee` yönlendirmesi metadata kimliği değildir.
+Fork/yerel dal commit'inin resmî depoda erişilebilirliği ayrı yayın kanıtıdır;
+metadata üretimi uzak erişimin başarılı olduğunu iddia etmez. Bu bakım değişikliği
+Zee kaynaklarının ayrıştırma/tür/yürütme davranışını değiştirmez.
+
 ## Reddedilen seçenekler
 
 - **Tek derlemenin hash'ini yayımlamak:** tekrar üretilebilirlik iddiası
