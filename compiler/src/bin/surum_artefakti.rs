@@ -294,7 +294,7 @@ fn provenance_belgesi(
                     "sourceDateEpoch": epoch,
                     "cargoArgs": cargo_argumanlari,
                     "crtLinkage": if windows_msvc { "static" } else { "target-default" },
-                    "targetRustflags": if windows_msvc { vec!["-C", "target-feature=+crt-static"] } else { vec![] },
+                    "targetRustflags": if windows_msvc { vec!["-C", "target-feature=+crt-static", "-C", "link-arg=/Brepro"] } else { vec![] },
                     "remapPathPrefix": ["/zee", "/cargo", "/rust"]
                 },
                 "resolvedDependencies": [{
@@ -623,7 +623,7 @@ mod testler {
         assert_eq!(parametreler["crtLinkage"], json!("static"));
         assert_eq!(
             parametreler["targetRustflags"],
-            json!(["-C", "target-feature=+crt-static"])
+            json!(["-C", "target-feature=+crt-static", "-C", "link-arg=/Brepro"])
         );
         assert!(parametreler["cargoArgs"]
             .as_str()

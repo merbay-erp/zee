@@ -36,6 +36,8 @@ jobs:
           fi
       - name: "Sürüm artefaktı (üç platform: iki temiz klon)"
         shell: bash
+        env:
+          ZEE_SURUM_TANI_DIZINI: ${{ runner.temp }}/surum-farki
         run: bash scripts/surum-artefakti.sh --cikti "$RUNNER_TEMP/surum"
       - name: Kur → sürüm → kaldır (Unix)
         if: runner.os != 'Windows'
@@ -55,6 +57,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "dil sürüm başarısız" }
           python scripts/calisma-ortami-denetle.py --artefakt "$env:RUNNER_TEMP\surum" --kurulu "$env:RUNNER_TEMP\bin" --rapor "$env:RUNNER_TEMP\calisma-ortami.json" --beklenen-sha "$env:GITHUB_SHA"
           if ($LASTEXITCODE -ne 0) { throw "çalışma ortamı denetimi başarısız" }
+          $rapor = Get-Content -Raw -Encoding UTF8 "$env:RUNNER_TEMP\calisma-ortami.json" | ConvertFrom-Json
+          if ($rapor.crt_sozlesmesi -ne "statik-crt-import-yok") { throw "statik CRT kanıtı yok" }
           powershell -File scripts/kaldir.ps1 -Veri "$env:RUNNER_TEMP\veri"
           if (Test-Path "$env:RUNNER_TEMP\bin\dil.exe") { throw "kaldırma başarısız" }
       - name: Exact kaynak ve çalışma ortamı kanıtını sakla
@@ -66,4 +70,13 @@ jobs:
             ${{ runner.temp }}/calisma-ortami.json
             ${{ runner.temp }}/surum
           if-no-files-found: error
+          retention-days: 90
+
+      - name: Başarısız çift-klon ikililerini tanı için sakla
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: yayinlanamaz-surum-farki-${{ github.sha }}-${{ runner.os }}
+          path: ${{ runner.temp }}/surum-farki
+          if-no-files-found: ignore
           retention-days: 90

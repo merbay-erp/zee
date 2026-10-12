@@ -75,7 +75,7 @@ def bagimliliklar(ikili):
                  if re.fullmatch(r"\s*[^\s]+\.dll\s*", satir, flags=re.IGNORECASE)]
         baslik = calistir([arac, "/HEADERS", str(ikili)], ortam=ortam).decode("utf-8", errors="replace")
         abi = [satir.strip() for satir in baslik.splitlines()
-               if "version" in satir.lower() or "machine" in satir.lower()]
+               if any(anahtar in satir.lower() for anahtar in ("version", "machine", "time date stamp", "reproducible"))]
     else:
         raise ValueError(f"Desteklenmeyen platform: {sys.platform}")
     if not adlar:

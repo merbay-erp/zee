@@ -27,7 +27,7 @@ case "$1" in
         IFS=$'\x1f' read -r -a ayrik <<< "$CARGO_ENCODED_RUSTFLAGS"
         [[ "${ayrik[0]}" == --remap-path-prefix=*"zee toolchain-test."*=/zee ]]
         if [[ "$*" == *"--target x86_64-pc-windows-msvc"* ]]; then
-            [[ "${#ayrik[@]}" == 5 ]]
+            [[ "${#ayrik[@]}" == 7 ]]
         else
             [[ "${#ayrik[@]}" == 3 ]]
         fi
@@ -37,11 +37,17 @@ case "$1" in
             dizin="$CARGO_TARGET_DIR/x86_64-pc-windows-msvc/release"
             uzanti=.exe
             [[ "$bayraklar" == *"-C target-feature=+crt-static"* ]]
+            [[ "$bayraklar" == *"-C link-arg=/Brepro"* ]]
         else
             [[ "$bayraklar" != *"crt-static"* ]]
         fi
         mkdir -p "$dizin"
-        for ad in dil dillsp; do printf 'test binary\n' > "$dizin/$ad$uzanti"; done ;;
+        for ad in dil dillsp; do
+            printf 'test binary\n' > "$dizin/$ad$uzanti"
+            if [[ "${ZEE_TEST_OZET_FARKI:-0}" == 1 ]]; then
+                printf '%s\n' "$dizin" >> "$dizin/$ad$uzanti"
+            fi
+        done ;;
     run)
         if [[ "$*" == *"-- ozet "* ]]; then
             # Üreticinin ozet argümanı cwd=compiler altında da bulunmalı.
@@ -61,7 +67,7 @@ esac
 CARGO
 cat > "$gecici/bin/cygpath" <<'CYGPATH'
 #!/usr/bin/env bash
-[[ "$1" == -m ]]
+[[ "$1" == -m || "$1" == -am ]]
 printf '%s\n' "$2"
 CYGPATH
 chmod +x "$gecici/bin/rustc" "$gecici/bin/cargo" "$gecici/bin/cygpath"
@@ -114,6 +120,18 @@ sabit_ara '-C target-feature=+crt-static' "$ZEE_TEST_KOMUTLAR"
 if awk -F '\t' '$2 ~ /^build / { print $3 }' "$ZEE_TEST_KOMUTLAR" | grep -F caller-bayragi; then
     echo 'Caller encoded flags release tarifini ezdi' >&2; exit 1
 fi
+: > "$ZEE_TEST_KOMUTLAR"
+if (
+    cd "$gecici/depo"
+    export ZEE_TEST_OZET_FARKI=1
+    export ZEE_SURUM_TANI_DIZINI="$gecici/tani"
+    bash scripts/surum-artefakti.sh --kirli-kabul --cikti "$gecici/ret-surum"
+) > "$gecici/ret.log" 2>&1; then
+    echo 'Eş olmayan iki klon kabul edildi' >&2; exit 1
+fi
+sabit_ara 'TEKRAR ÜRETİLEMEDİ' "$gecici/ret.log"
+[[ ! -e "$gecici/ret-surum" ]]
+[[ -f "$gecici/tani/a/dil" && -f "$gecici/tani/b/dil" && -f "$gecici/tani/DURUM" ]]
 : > "$ZEE_TEST_KOMUTLAR"
 (
     cd "$gecici/depo"

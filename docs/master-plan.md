@@ -946,3 +946,9 @@ Amaç yalnız yeni bir syntax üretmek değil; Türkçe konuşan insanların bil
 Projenin temel cümlesi değişmez: Çocukların kullanabileceği bir dil yapacağız; çocuk dili yapmayacağız.
 
 K-195 Windows dağıtımında statik CRT ve iki temiz klon üretimi uygular; exact uzak eş-hash/DLL/program/LSP kanıtı henüz açıktır. Native backend ve self-hosting tamamlanmış değildir.
+
+K-195 ilk Windows çift-klon koşusu eş-hash kapısında kaldı; artefakt
+üretilmedi. Yeni MSVC linker tarifi `/Brepro` ve provenance
+`targetRustflags` alanını birlikte günceller; exact tekrar kanıtı gerekir.
+Eş olmayan byte'lar ayrı `yayinlanamaz-surum-farki` tanısında saklanır,
+sürüm/kurulum kümesine girmez. Benchmark tarihçesine yeni satır yazılmadı.

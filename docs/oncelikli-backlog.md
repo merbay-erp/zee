@@ -941,10 +941,14 @@ bulgusu K-192 dağıtım kanıtı ve K-193 backend işinden önce kapatılır.
 
 ### K-195 — Windows statik CRT ve çift-klon dağıtımı
 
-**AÇIK — uygulama hazır, CI kanıtı beklenir.** K-192 gerçek DLL envanteri
+**KISMEN — yerel, Linux/macOS kanıtlı; Windows açık.** K-192 gerçek DLL envanteri
 VCRUNTIME140 bağımlılığını gösterdi. MSVC release hedefi statik CRT ile
 explicit target altında derlenir; Windows tatbikatı diğer iki platform gibi
 iki temiz klonda eş hash ister. Provenance tarifi ve CRT import retleri aynı
 iştedir. Kapanma: exact kaynakta iki ikili eş hash, dinamik CRT importu yok,
 kur/program/LSP/kaldır prova başarılı; ADR-068. Temiz Windows/minimum OS ve
-linker/SDK provenance K-192 içinde ayrı açık kalır.
+linker/SDK provenance K-192 içinde ayrı açık kalır. `ddaec06` exact kaynağında
+Linux/macOS çift-klon ve kur/program/LSP/kaldır geçti; ham runtime/provenance
+kanıtı [platform defterindedir](derleme-platform-kaniti-v1.tsv). Göreli çıktı
+yolu `5a4e81f` yerel tam provasını geçti. Windows ilk çift-klon koşusu eş-hash reddiyle kaldı; `/Brepro` linker
+tarifinin exact yeni koşusu gerekir.

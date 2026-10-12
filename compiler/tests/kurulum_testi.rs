@@ -45,6 +45,7 @@ fn kurulum_betikleri_ve_tatbikat_workflowu_sozlesmeyi_tasir() {
         "scripts/tests/calisma-ortami-test.py",
         "calisma-ortami-${{ github.sha }}-${{ runner.os }}",
         "if-no-files-found: error",
+        "statik CRT kanıtı yok",
     ] {
         assert!(
             workflow.contains(parca),
@@ -467,6 +468,59 @@ fn calisma_ortami_kaydi_exact_kaynak_ve_ikili_hashleriyle_program_lsp_kaniti_tas
         assert_eq!(prova["lsp_initialize_shutdown_exit"], "gecti");
         let ikililer = rapor["ikililer"].as_object().unwrap();
         assert_eq!(ikililer.len(), 2);
+        let provenance_yolu = depo()
+            .join(yol)
+            .with_file_name(format!("{}-provenance.json", os.to_lowercase()));
+        if rapor.get("crt_sozlesmesi").is_some() {
+            assert!(
+                provenance_yolu.exists(),
+                "CRT kanıtının ham provenance belgesi korunmalı"
+            );
+        }
+        if provenance_yolu.exists() {
+            let provenance: serde_json::Value =
+                serde_json::from_slice(&std::fs::read(provenance_yolu).unwrap()).unwrap();
+            let predicate = &provenance["predicate"];
+            assert_eq!(predicate["zeeTekrarUretim"]["ikiTemizKlonEsit"], true);
+            assert_eq!(
+                predicate["buildDefinition"]["externalParameters"]["gitCommit"],
+                *sha
+            );
+            let subject = provenance["subject"].as_array().unwrap();
+            assert_eq!(subject.len(), 2);
+            let mut subject_adlari = BTreeSet::new();
+            for ikili in subject {
+                let ad = ikili["name"].as_str().unwrap();
+                assert!(subject_adlari.insert(ad));
+                assert_eq!(ikili["digest"]["sha256"], ikililer[ad]["sha256"]);
+            }
+            assert_eq!(
+                subject_adlari,
+                ikililer.keys().map(String::as_str).collect()
+            );
+            let ozetler = predicate["runDetails"]["byproducts"].as_array().unwrap();
+            assert_eq!(ozetler.len(), 2);
+            let kanonik_ozet = ikililer
+                .iter()
+                .map(|(ad, ikili)| format!("{}  {ad}\n", ikili["sha256"].as_str().unwrap()))
+                .collect::<String>();
+            let manifest_sha = Sha256::digest(kanonik_ozet.as_bytes())
+                .iter()
+                .map(|b| format!("{b:02x}"))
+                .collect::<String>();
+            assert_eq!(ozetler[0]["digest"]["sha256"], manifest_sha);
+            assert_eq!(
+                ozetler[0]["digest"]["sha256"],
+                ozetler[1]["digest"]["sha256"]
+            );
+            if *os == "Windows" {
+                assert_eq!(
+                    predicate["buildDefinition"]["externalParameters"]["crtLinkage"],
+                    "static"
+                );
+                assert_eq!(rapor["crt_sozlesmesi"], "statik-crt-import-yok");
+            }
+        }
         let uzanti = if *os == "Windows" { ".exe" } else { "" };
         for ad in ["dil", "dillsp"] {
             let ikili = &ikililer[&format!("{ad}{uzanti}")];

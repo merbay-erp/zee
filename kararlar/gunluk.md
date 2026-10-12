@@ -3698,3 +3698,31 @@ K-195 yerel çift-klon provasının ikili hash'leri eşittir; göreli `--cikti`
 yolu metadata araçlarının compiler çalışma dizininde yanlış çözülüyordu.
 Çıktı yolu depo köküne sabitlendi; giriş testi gerçek metadata cwd'sinden
 iki ikili dosyasının bulunmasını denetler. Tam artefakt provası tekrarlanır.
+
+K-195 göreli yol düzeltmesinin gerçek yerel tam provası
+`5a4e81f9c3d14eb12395e70752f3031768648bb7` kaynağında geçti: iki temiz
+klonda dil `c73ee537c628def5151ea97206e714e9d3dd01f90dbced2745f14047fdcb603c`,
+dillsp `064f2ab948f5b32a707962a0e8045cd7794136a18d97e40d78e72acd7372abad`.
+macOS arm64/Rust 1.93.1 release, kur/program/LSP/kaldır başarılı;
+UTF-8 runtime raporu SHA-256 `4d9f0fc5df28d9ed9d4efa6da3883f66f9468739946a817a271605dc132d6d64`. Unsigned yerel artefakt
+`compiler/target/k195-surmeler/goreli-prova/` altındadır; benchmark veya
+yayın etiketi değildir.
+
+`ddaec060ac2d8b9a30461d64241c53bbcc19558c` kaynağının
+[38242263231 tatbikatında](https://github.com/itwise-bilisim/zee/actions/runs/38242263231)
+Linux ve macOS çift-klon/kur/program/LSP/kaldır geçti. Ham runtime ve
+provenance JSON'ları kalıcı fixture'da, artifact/report özetleri
+[platform defterinde](../docs/derleme-platform-kaniti-v1.tsv). Kurulum testi
+metadata subject'lerini ve iki klon manifest özetini runtime binary
+hash'leriyle karşılaştırır. Windows kanıtı gelmeden K-195 açıktır.
+
+K-195 ilk Windows çift-klon koşusu `ddaec06` kaynağında eş-hash kapısını
+kırdı: dil `1debd0c76d98f057832b238338d98af7d3d1cf451a49b2fe64485dbf3c96330f`
+ve `775bddf93399858a00ee63fc4eba7f6f420d66d0b742d4d6d84279c898b593fd`;
+kur/runtime provasına geçilmedi ve sürüm artefaktı üretilmedi. PE timestamp
+farkı şu an çıkarımdır; ilk başarısız koşu ikilileri saklamadığı için byte
+nedeni kanıtlanmış değildir. MSVC linker'a `-C link-arg=/Brepro` eklenir
+ve exact yeni koşu ile denenir. Bu seçenek MSVC'de dokümante olmayan
+bir tekrarlanabilirlik bayrağıdır; [cc-rs sahiplerinin açıklaması](https://github.com/rust-lang/cc-rs/issues/373)
+ve kullanılan cc 1.4.4 kaynak yorumu sınırı belirtir. Başarı ölçütü
+bayrağın varlığı değil, iki gerçek ikili hash'i ve program/LSP provasıdır.

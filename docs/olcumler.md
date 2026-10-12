@@ -242,3 +242,9 @@ sağlanıyor (2000 satır ≈ 12 ms). Ağaç-yürüyen yorumlayıcının (ADR-00
 Faz 4) kararına veri birikiyor.
 
 K-195 Windows MSVC dağıtımında statik CRT/explicit target release tarifi değişti. Bu profil için performans karşılaştırması henüz yoktur; mevcut tarihçe önceki exact kaynak/profil kanıtıdır. ADR-045/049 sabit workload ve temiz exact kaynak/ortam kuralları değişmez; yeni baseline veya eşik kaydı yazılmadı.
+
+K-195 ilk Windows çift-klon koşusu eş-hash kapısında kaldı; artefakt
+üretilmedi. Yeni MSVC linker tarifi `/Brepro` ve provenance
+`targetRustflags` alanını birlikte günceller; exact tekrar kanıtı gerekir.
+Eş olmayan byte'lar ayrı `yayinlanamaz-surum-farki` tanısında saklanır,
+sürüm/kurulum kümesine girmez. Benchmark tarihçesine yeni satır yazılmadı.

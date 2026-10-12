@@ -21,7 +21,7 @@ temiz ortamda eş hash, SBOM, imza ve provenance istedi.
    sysroot→`/rust`) ve commit zamanı `SOURCE_DATE_EPOCH` altında
    `cargo build --locked --release --bin dil --bin dillsp` ile derler.
    K-195 Windows MSVC dağıtımında exact host `--target` eklenir ve hedef
-   Rustflags `-C target-feature=+crt-static` olur; çıktı target-triple/release
+   Rustflags `-C target-feature=+crt-static -C link-arg=/Brepro` olur; çıktı target-triple/release
    dizininden alınır. Host build-script/proc-macro bayrakları ayrıdır. İki
    klonun SHA-256'sı eşit değilse artefakt üretilmez.
    K-191: host/rustc/sysroot sorguları da aynı exact pin altında çalışır.
@@ -85,3 +85,9 @@ kanıtı alınmadan K-195 kapatılmaz.
   eklenir. K-169 kurulum/kaldırma tatbikatı bu artefaktı tüketir.
 - Cross-platform eşitlik, SLSA L2/L3 iddiası ve managed imza servisi vaat
   edilmez; bunlar açık sınırdır.
+
+K-195 başarısız çift-klon koşusunda isteğe bağlı `ZEE_SURUM_TANI_DIZINI`
+ikili farkını araştırmak için a/b byte'larını ve `YAYINLANAMAZ` durumunu
+saklar. Bu ayrı tanı kümesi kurulum/release artefaktı değildir; SBOM/imza
+üreticisi eş-hash kapısını geçmeden çalışmaz. CI ayrı `yayinlanamaz-surum-farki`
+adıyla 90 gün saklar; normal sürüm kümesi değişmez.
