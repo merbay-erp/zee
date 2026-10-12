@@ -3691,3 +3691,5 @@ LSP initialize/shutdown/exit geçti. Exact runtime paket sürümleri envanterde;
 macOS host amd64 emülasyonudur. K-192 minimum OS, linker/SDK ve Windows/macOS
 temiz makine sınırlarını açık tutar. Yeni compiler behavior/grammar/kenar
 ve benchmark/soak yükü yok; ilgili spec/RFC/ADR-046 kayıtları korunur.
+
+K-195 başladı: K-192 gerçek Windows DLL listesinde VCRUNTIME140 görülmesi üzerine dağıtım CRT profili statik yapıldı. Windows tek derleme yerine aynı iki-klon üreticiye alındı; metadata tarif assertionları, gerçek eski raporla CRT ret testi ve Unix/Windows shell girişleri birlikte. Dil semantiği, katman kenarı, spec/RFC/tanı ve public API değişmedi; exact CI kapanma kanıtı açık.

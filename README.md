@@ -540,3 +540,5 @@ Bu dosya kendi lexer/parser/type checker zincirimizden geçip çalıştığında
 
 Public depo güvenlik bildirimi ve yerel/CI sır taraması: [güvenlik politikası](SECURITY.md).
 IO izleri özel veri taşır; [saklama ve paylaşım sınırları](docs/io-izi.md) geçerlidir.
+
+Windows MSVC dağıtımının statik CRT/çift-klon profili K-195 kapsamında hazırlanıyor; exact CI kanıtı beklenir. Güncel platform bağımlılıkları ve açık sınırlar [derleme envanterinde](docs/derleme-ve-bagimliliklar.md).

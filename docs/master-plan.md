@@ -944,3 +944,5 @@ Bu dosya kendi lexer/parser/type checker zincirimizden geçip çalıştığında
 # 42. Son söz
 Amaç yalnız yeni bir syntax üretmek değil; Türkçe konuşan insanların bilgisayara kendi dillerinin düşünme ritmiyle kesin talimat verebildiği, öğrenme ile profesyonel üretim arasındaki duvarı azaltan kalıcı bir teknik eser bırakmaktır.
 Projenin temel cümlesi değişmez: Çocukların kullanabileceği bir dil yapacağız; çocuk dili yapmayacağız.
+
+K-195 Windows dağıtımında statik CRT ve iki temiz klon üretimi uygular; exact uzak eş-hash/DLL/program/LSP kanıtı henüz açıktır. Native backend ve self-hosting tamamlanmış değildir.

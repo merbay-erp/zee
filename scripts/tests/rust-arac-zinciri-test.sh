@@ -2,7 +2,7 @@
 # K-191: gerçek giriş betikleri, farklı varsayılan ve negatif pin vakaları.
 set -euo pipefail
 depo_koku="$(cd "$(dirname "$0")/../.." && pwd)"
-gecici="$(mktemp -d "${TMPDIR:-/tmp}/zee-toolchain-test.XXXXXX")"
+gecici="$(mktemp -d "${TMPDIR:-/tmp}/zee toolchain-test.XXXXXX")"
 trap 'rm -rf "$gecici"' EXIT
 mkdir -p "$gecici/bin" "$gecici/depo/scripts" "$gecici/depo/compiler/fuzz"
 cat > "$gecici/bin/rustc" <<'RUSTC'
@@ -11,7 +11,7 @@ set -euo pipefail
 surum="${RUSTUP_TOOLCHAIN:-9.9.9}"
 case "$*" in
     --version) echo "rustc ${ZEE_TEST_YANLIS_SURUM:-$surum} (test 2026-10-12)" ;;
-    -vV) echo 'host: aarch64-apple-darwin' ;;
+    -vV) echo "host: ${ZEE_TEST_PLATFORM:-aarch64-apple-darwin}" ;;
     '--print sysroot') echo "/test/rust/$surum" ;;
     *) exit 1 ;;
 esac
@@ -19,11 +19,29 @@ RUSTC
 cat > "$gecici/bin/cargo" <<'CARGO'
 #!/usr/bin/env bash
 set -euo pipefail
-printf '%s\t%s\t%s\n' "${RUSTUP_TOOLCHAIN:-yok}" "$*" "${RUSTFLAGS:-}" >> "$ZEE_TEST_KOMUTLAR"
+bayraklar="${CARGO_ENCODED_RUSTFLAGS:-${RUSTFLAGS:-}}"
+bayraklar="${bayraklar//$'\x1f'/ }"
+printf '%s\t%s\t%s\n' "${RUSTUP_TOOLCHAIN:-yok}" "$*" "$bayraklar" >> "$ZEE_TEST_KOMUTLAR"
 case "$1" in
     build)
-        mkdir -p "$CARGO_TARGET_DIR/release"
-        for ad in dil dillsp; do printf 'test binary\n' > "$CARGO_TARGET_DIR/release/$ad"; done ;;
+        IFS=$'\x1f' read -r -a ayrik <<< "$CARGO_ENCODED_RUSTFLAGS"
+        [[ "${ayrik[0]}" == --remap-path-prefix=*"zee toolchain-test."*=/zee ]]
+        if [[ "$*" == *"--target x86_64-pc-windows-msvc"* ]]; then
+            [[ "${#ayrik[@]}" == 5 ]]
+        else
+            [[ "${#ayrik[@]}" == 3 ]]
+        fi
+        dizin="$CARGO_TARGET_DIR/release"
+        uzanti=""
+        if [[ "$*" == *"--target x86_64-pc-windows-msvc"* ]]; then
+            dizin="$CARGO_TARGET_DIR/x86_64-pc-windows-msvc/release"
+            uzanti=.exe
+            [[ "$bayraklar" == *"-C target-feature=+crt-static"* ]]
+        else
+            [[ "$bayraklar" != *"crt-static"* ]]
+        fi
+        mkdir -p "$dizin"
+        for ad in dil dillsp; do printf 'test binary\n' > "$dizin/$ad$uzanti"; done ;;
     run) echo 'test metadata' ;;
     vendor)
         for son; do :; done
@@ -34,7 +52,12 @@ case "$1" in
     *) exit 1 ;;
 esac
 CARGO
-chmod +x "$gecici/bin/rustc" "$gecici/bin/cargo"
+cat > "$gecici/bin/cygpath" <<'CYGPATH'
+#!/usr/bin/env bash
+[[ "$1" == -m ]]
+printf '%s\n' "$2"
+CYGPATH
+chmod +x "$gecici/bin/rustc" "$gecici/bin/cargo" "$gecici/bin/cygpath"
 export PATH="$gecici/bin:$PATH"
 export ZEE_TEST_KOMUTLAR="$gecici/komutlar"
 source "$depo_koku/scripts/rust-arac-zinciri.sh"
@@ -70,6 +93,20 @@ awk -F '\t' '$1 != "1.93.1" { exit 1 }' "$ZEE_TEST_KOMUTLAR"
 sabit_ara() { LC_ALL=C grep -F -- "$1" "$2" > /dev/null; }
 sabit_ara '--rustc rustc 1.93.1 (test 2026-10-12)' "$ZEE_TEST_KOMUTLAR"
 sabit_ara '--remap-path-prefix=/test/rust/1.93.1=/rust' "$ZEE_TEST_KOMUTLAR"
+: > "$ZEE_TEST_KOMUTLAR"
+(
+    cd "$gecici/depo"
+    export ZEE_TEST_PLATFORM=x86_64-pc-windows-msvc
+    export CARGO_ENCODED_RUSTFLAGS=caller-bayragi
+    bash scripts/surum-artefakti.sh --kirli-kabul --cikti "$gecici/windows" > "$gecici/windows.log"
+)
+[[ -f "$gecici/windows/dil.exe" && -f "$gecici/windows/dillsp.exe" ]]
+[[ "$(wc -l < "$ZEE_TEST_KOMUTLAR" | tr -d ' ')" == 6 ]]
+sabit_ara 'build --locked --release --bin dil --bin dillsp --target x86_64-pc-windows-msvc' "$ZEE_TEST_KOMUTLAR"
+sabit_ara '-C target-feature=+crt-static' "$ZEE_TEST_KOMUTLAR"
+if awk -F '\t' '$2 ~ /^build / { print $3 }' "$ZEE_TEST_KOMUTLAR" | grep -F caller-bayragi; then
+    echo 'Caller encoded flags release tarifini ezdi' >&2; exit 1
+fi
 : > "$ZEE_TEST_KOMUTLAR"
 (
     cd "$gecici/depo"

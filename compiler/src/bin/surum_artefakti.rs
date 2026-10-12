@@ -269,6 +269,12 @@ fn provenance_belgesi(
     ikinci_ozet: &str,
     ilk_ozet: &str,
 ) -> Value {
+    let windows_msvc = platform.ends_with("-pc-windows-msvc");
+    let cargo_argumanlari = if windows_msvc {
+        format!("cargo build --locked --release --bin dil --bin dillsp --target {platform}")
+    } else {
+        "cargo build --locked --release --bin dil --bin dillsp".to_string()
+    };
     let subject = ozetler
         .iter()
         .map(|(ad, ozet)| json!({"name": ad, "digest": {"sha256": ozet}}))
@@ -286,7 +292,9 @@ fn provenance_belgesi(
                     "rustc": rustc,
                     "platform": platform,
                     "sourceDateEpoch": epoch,
-                    "cargoArgs": "cargo build --locked --release --bin dil --bin dillsp",
+                    "cargoArgs": cargo_argumanlari,
+                    "crtLinkage": if windows_msvc { "static" } else { "target-default" },
+                    "targetRustflags": if windows_msvc { vec!["-C", "target-feature=+crt-static"] } else { vec![] },
                     "remapPathPrefix": ["/zee", "/cargo", "/rust"]
                 },
                 "resolvedDependencies": [{
@@ -599,6 +607,35 @@ mod testler {
         assert_eq!(
             farkli["predicate"]["zeeTekrarUretim"]["ikiTemizKlonEsit"],
             json!(false)
+        );
+        let windows = provenance_belgesi(
+            sha,
+            "0.8.0-dev",
+            &rfc3339(10),
+            10,
+            "rustc 1.93.1",
+            "x86_64-pc-windows-msvc",
+            &ozetler,
+            "x",
+            "x",
+        );
+        let parametreler = &windows["predicate"]["buildDefinition"]["externalParameters"];
+        assert_eq!(parametreler["crtLinkage"], json!("static"));
+        assert_eq!(
+            parametreler["targetRustflags"],
+            json!(["-C", "target-feature=+crt-static"])
+        );
+        assert!(parametreler["cargoArgs"]
+            .as_str()
+            .unwrap()
+            .ends_with("--target x86_64-pc-windows-msvc"));
+        assert_eq!(
+            p["predicate"]["buildDefinition"]["externalParameters"]["crtLinkage"],
+            json!("target-default")
+        );
+        assert_eq!(
+            p["predicate"]["buildDefinition"]["externalParameters"]["targetRustflags"],
+            json!([])
         );
         assert!(ozetleri_coz("kısa  dil\n").is_err());
         assert!(ozetleri_coz("").is_err());

@@ -51,6 +51,9 @@ fn kurulum_betikleri_ve_tatbikat_workflowu_sozlesmeyi_tasir() {
             "tatbikat workflow adımı eksik: {parca}"
         );
     }
+    assert!(!workflow.contains("Windows: tek derleme"));
+    assert!(!workflow.contains("if: runner.os != 'Windows'\n        shell: bash\n        run: bash scripts/surum-artefakti.sh"));
+    assert!(oku("scripts/calisma-ortami-denetle.py").contains("statik_crt_denetle"));
     for satir in workflow.lines().filter(|s| s.contains("cargo ")) {
         assert!(
             satir.contains("--locked"),

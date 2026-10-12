@@ -37,20 +37,46 @@ git show "$sha:compiler/rust-toolchain.toml" > "$gecici/rust-toolchain.toml"
 source "$depo_koku/scripts/rust-arac-zinciri.sh"
 zee_rust_arac_zinciri "$gecici/rust-toolchain.toml"
 platform="$(rustc -vV | awk '/^host:/ {print $2}')"
+# Windows dağıtımı CRT'yi ikiliye bağlar. Explicit target yalnız hedef
+# crate'lerine bayrak uygular; host proc-macro/build-script profili değişmez.
+build_argumanlari=(--locked --release --bin dil --bin dillsp)
+release_dizini=release
+if [[ "$platform" == *-pc-windows-msvc ]]; then
+    build_argumanlari+=(--target "$platform")
+    release_dizini="$platform/release"
+fi
 rustc_surumu="$(rustc --version)"
 cargo_home="${CARGO_HOME:-$HOME/.cargo}"
 sysroot="$(rustc --print sysroot)"
+if [[ "$platform" == *-pc-windows-msvc ]]; then
+    # MSYS shell yolları native rustc'nin gördüğü yollarla aynı olmalıdır.
+    cargo_home="$(cygpath -m "$cargo_home")"
+    sysroot="$(cygpath -m "$sysroot")"
+fi
 
 echo "== Sürüm artefaktı: $sha ($platform, $rustc_surumu, SOURCE_DATE_EPOCH=$epoch)"
 for klon in a b; do
     echo "-- Temiz klon $klon derleniyor"
     git clone -q --local --no-hardlinks "$depo_koku" "$gecici/$klon"
     git -C "$gecici/$klon" checkout -q "$sha"
+    klon_yolu="$gecici/$klon"
+    hedef_yolu="$gecici/$klon/target"
+    if [[ "$platform" == *-pc-windows-msvc ]]; then
+        klon_yolu="$(cygpath -m "$klon_yolu")"
+        hedef_yolu="$(cygpath -m "$hedef_yolu")"
+    fi
     (
         cd "$gecici/$klon/compiler"
-        RUSTFLAGS="--remap-path-prefix=$gecici/$klon=/zee --remap-path-prefix=$cargo_home=/cargo --remap-path-prefix=$sysroot=/rust" \
-        CARGO_TARGET_DIR="$gecici/$klon/target" \
-        cargo build --locked --release --bin dil --bin dillsp
+        rust_bayraklari=("--remap-path-prefix=$klon_yolu=/zee" "--remap-path-prefix=$cargo_home=/cargo" "--remap-path-prefix=$sysroot=/rust")
+        if [[ "$platform" == *-pc-windows-msvc ]]; then
+            rust_bayraklari+=(-C target-feature=+crt-static)
+        fi
+        printf -v kodlanmis_bayraklar '%s\x1f' "${rust_bayraklari[@]}"
+        kodlanmis_bayraklar="${kodlanmis_bayraklar%$'\x1f'}"
+        # Boşluklu yollar tek argümandır; caller encoded flags tarifi ezemez.
+        RUSTFLAGS="" CARGO_ENCODED_RUSTFLAGS="$kodlanmis_bayraklar" \
+        CARGO_TARGET_DIR="$hedef_yolu" \
+        cargo build "${build_argumanlari[@]}"
     )
 done
 
@@ -65,8 +91,8 @@ ozet_hesapla() {
 uzanti=""
 [[ "$platform" == *windows* ]] && uzanti=".exe"
 for ikili in dil dillsp; do
-    a="$(ozet_hesapla "$gecici/a/target/release/$ikili$uzanti")"
-    b="$(ozet_hesapla "$gecici/b/target/release/$ikili$uzanti")"
+    a="$(ozet_hesapla "$gecici/a/target/$release_dizini/$ikili$uzanti")"
+    b="$(ozet_hesapla "$gecici/b/target/$release_dizini/$ikili$uzanti")"
     if [[ "$a" != "$b" ]]; then
         echo "TEKRAR ÜRETİLEMEDİ: $ikili iki temiz klonda farklı ($a / $b)" >&2
         exit 1
@@ -75,12 +101,12 @@ for ikili in dil dillsp; do
 done
 
 mkdir -p "$cikti"
-cp "$gecici/a/target/release/dil$uzanti" "$gecici/a/target/release/dillsp$uzanti" "$cikti/"
+cp "$gecici/a/target/$release_dizini/dil$uzanti" "$gecici/a/target/$release_dizini/dillsp$uzanti" "$cikti/"
 arac=(cargo run -q --locked --bin surum_artefakti --)
 (cd compiler && "${arac[@]}" ozet "$cikti" "dil$uzanti" "dillsp$uzanti") > "$cikti/SHA256SUMS"
 cp "$cikti/SHA256SUMS" "$gecici/SHA256SUMS.b"
 # İkinci klonun özeti bağımsız hesaplanır; provenance eşitliği kayda geçirir.
-(cd compiler && "${arac[@]}" ozet "$gecici/b/target/release" "dil$uzanti" "dillsp$uzanti") > "$gecici/SHA256SUMS.b"
+(cd compiler && "${arac[@]}" ozet "$gecici/b/target/$release_dizini" "dil$uzanti" "dillsp$uzanti") > "$gecici/SHA256SUMS.b"
 (cd compiler && "${arac[@]}" sbom --sha "$sha" --kilit Cargo.lock --ozet "$cikti/SHA256SUMS" --epoch "$epoch") > "$cikti/sbom.spdx.json"
 (cd compiler && "${arac[@]}" provenance --sha "$sha" --ozet "$cikti/SHA256SUMS" --ikinci-ozet "$gecici/SHA256SUMS.b" \
     --epoch "$epoch" --rustc "$rustc_surumu" --platform "$platform") > "$cikti/provenance.intoto.json"
