@@ -15,6 +15,7 @@ on:
           - release
           - clean-windows
           - clean-windows-install
+          - toolchain-probe
       source_run:
         description: "clean-windows: başarılı Windows artefaktının run kimliği"
         required: false
@@ -34,7 +35,7 @@ permissions:
 
 jobs:
   tatbikat:
-    if: inputs.mode != 'clean-windows' && inputs.mode != 'clean-windows-install'
+    if: inputs.mode != 'clean-windows' && inputs.mode != 'clean-windows-install' && inputs.mode != 'toolchain-probe'
     strategy:
       fail-fast: false
       matrix:
@@ -104,6 +105,34 @@ jobs:
           name: yayinlanamaz-surum-farki-${{ github.sha }}-${{ runner.os }}
           path: ${{ runner.temp }}/surum-farki
           if-no-files-found: ignore
+          retention-days: 90
+  arac_zinciri_provasi:
+    if: inputs.mode == 'toolchain-probe'
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@d1031067263f94b142dd6c0ce24c5eb9d02d52a0 # master 2026-09-03
+        with:
+          toolchain: 1.93.1
+      - name: Exact compiler ve Cargo config provası
+        shell: bash
+        env:
+          ZEE_PIN_RAPOR: ${{ runner.temp }}/rustc-pin.json
+        run: bash scripts/tests/rust-arac-zinciri-gercek-test.sh
+      - name: Compiler pin kanıtını koru
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: rustc-pin-${{ github.sha }}-${{ runner.os }}
+          path: ${{ runner.temp }}/rustc-pin.json
+          if-no-files-found: error
           retention-days: 90
   temiz_windows:
     if: inputs.mode == 'clean-windows' || inputs.mode == 'clean-windows-install'

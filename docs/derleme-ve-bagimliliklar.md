@@ -430,3 +430,28 @@ helper ve iki installer byte hash'i ayrıca kaynakla eşleştirildi.
 [Ham rapor](temiz-windows-kurulum-kaniti-2026-10-12.json),
 [defter](temiz-windows-platform-kaniti-v1.tsv) kalıcıdır. Bu kapsamta
 K-198 kapandı; fiziksel/desktop/minimum OS ve tüm IO ayrı K-192 sınırıdır.
+
+## K-199 Cargo compiler/wrapper pin sınırı — üç platform kanıtı açık
+
+Yerel gerçek probe RUSTUP_TOOLCHAIN=1.93.1, RUSTC=kurulu 1.97.1 ile
+helper'ın 1.93.1 version sorgusu ve Cargo'nun 1.97.1 invocation'ını
+birlikte gösterdi. Tam Zee release bu farklı compiler ile üretilmedi;
+bu küçük gerçek Cargo reproducer'ı pin seçim kusurunun kanıtıdır.
+Helper exact rustup executable'ını doğrular ve Cargo RUSTC'ye bağlar;
+Windows native yol normalize edilir. İki wrapper boş string'i config ve
+ENV wrapper önceliğini kapatır. Installer/runtime byte'ları, SBOM/provenance
+schema ve profile bayrakları değişmez; compiler seçimi sağlamlaştırılır.
+
+Gerçek depsiz Cargo/build-script/ikili probe'u wrong compiler/wrapper
+ENV ve Cargo home config ile koşar. Actual compiler sürümü yürütülen
+ikiliden, tool path/hash ve log exact prova commit'iyle kaydedilir.
+Bu tam Zee release veya tüm Cargo profil/linker/native C ayarlarının
+envanteri değildir. Yerel probe geçti; üç platform exact veri açık.
+Performans profil/baseline'ı değişmedi; ADR-045/049/history incelendi,
+izlenen benchmark tarihçesine yeni satır yazılmadı. GB-036/ADR-068.
+
+K-199 wrapper kapatma caller'ın derleme cache davranışını değiştirir;
+derleme süreleri etkilenebilir. Runtime profile/iş yükü değişmez;
+ADR-045/049/history incelemesi `docs/olcumler.md` kaydındadır. Küçük
+probe raporu source tree cleanliness, helper/prova byte hash ve exact
+Git SHA taşır; dirty yerel deneme exact kaynak kapanma kanıtı değildir.

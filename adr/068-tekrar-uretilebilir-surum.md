@@ -173,3 +173,24 @@ UUID adlı container'ını siler; ana hata cleanup hatasıyla örtülmez. SHA
 özgün yayıncı kimliği değildir; yalnız incelenmiş kendi CI release'leri
 tüketilir. GH_TOKEN runtime environment'ına taşınmaz. Release dosya
 kümesi, SBOM/provenance ve imza sözleşmesi değişmez.
+
+## K-199 — Rustup channel ve Cargo executable farklı yüzeylerdir
+
+RUSTUP_TOOLCHAIN exact olmak Cargo compiler/wrapper seçimini tek başına
+korumaz. Yerel gerçek reproducer helper rustc 1.93.1 sorgularken Cargo
+RUSTC ile kurulu 1.97.1 executable'ını çağırdı. [Cargo ENV sözleşmesi](https://doc.rust-lang.org/cargo/reference/environment-variables.html)
+RUSTC ve wrapper/config önceliğini açıklar. Helper şimdi rustup which
+ile exact compiler yolunu çözer, yürütülebilirlik ve gerçek --version
+kontrol eder; Windows native yolu cygpath -m ile normalize edilir. Cargo
+RUSTC bu yola bağlanır; iki wrapper boş string'i ENV/config wrapper
+seçimini kapatır. Resmî release/offline girişlerinde ambient compiler/
+wrapper tercihi korunmaz; custom wrapper isteyen yerel geliştirme
+kendi Cargo komutunu kullanır.
+
+Poisoned RUSTC/CARGO_BUILD_RUSTC, iki wrapper ENV ve Cargo home config
+altındaki gerçek depsiz Cargo/build-script/ikili testi actual compiler
+sürümünü yürütülen ikiliden doğrular. Bu küçük probe tam Zee release
+veya bütün Cargo profil/linker/native CC/AR config kanıtı değildir.
+Rustup kurulu toolchain'e güvenilir; signed dağıtıcı/tool hash özgünlüğü
+sözü genişlemez. GB-036 eski yanlış compiler metadata riski bu sınırlı
+seçim sözleşmesiyle kapanır; üç platform exact kanıtı açık kalır.

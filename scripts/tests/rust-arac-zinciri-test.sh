@@ -16,12 +16,20 @@ case "$*" in
     *) exit 1 ;;
 esac
 RUSTC
+cat > "$gecici/bin/rustup" <<'RUSTUP'
+#!/usr/bin/env bash
+set -euo pipefail
+[[ "$#" == 4 && "$1" == which && "$2" == --toolchain && "$4" == rustc ]] || exit 1
+[[ "$3" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || exit 1
+printf '%s\n' "$ZEE_TEST_RUSTC_PATH"
+RUSTUP
 cat > "$gecici/bin/cargo" <<'CARGO'
 #!/usr/bin/env bash
 set -euo pipefail
 bayraklar="${CARGO_ENCODED_RUSTFLAGS:-${RUSTFLAGS:-}}"
 bayraklar="${bayraklar//$'\x1f'/ }"
 printf '%s\t%s\t%s\n' "${RUSTUP_TOOLCHAIN:-yok}" "$*" "$bayraklar" >> "$ZEE_TEST_KOMUTLAR"
+[[ "$RUSTC" == "$ZEE_TEST_RUSTC_PATH" && -z "$RUSTC_WRAPPER" && -z "$RUSTC_WORKSPACE_WRAPPER" ]] || exit 1
 case "$1" in
     build)
         IFS=$'\x1f' read -r -a ayrik <<< "$CARGO_ENCODED_RUSTFLAGS"
@@ -77,14 +85,25 @@ cat > "$gecici/bin/cygpath" <<'CYGPATH'
 [[ "$1" == -m || "$1" == -am ]] || exit 1
 printf '%s\n' "$2"
 CYGPATH
-chmod +x "$gecici/bin/rustc" "$gecici/bin/cargo" "$gecici/bin/cygpath" "$gecici/bin/cc"
+chmod +x "$gecici/bin/rustc" "$gecici/bin/rustup" "$gecici/bin/cargo" "$gecici/bin/cygpath" "$gecici/bin/cc"
 export PATH="$gecici/bin:$PATH"
 export ZEE_TEST_KOMUTLAR="$gecici/komutlar"
+export ZEE_TEST_RUSTC_PATH="$gecici/bin/rustc"
+export RUSTC=/caller/other/rustc RUSTC_WRAPPER=/caller/wrapper RUSTC_WORKSPACE_WRAPPER=/caller/workspace-wrapper
 source "$depo_koku/scripts/rust-arac-zinciri.sh"
 printf '[toolchain]\nchannel = "1.93.1"\n' > "$gecici/pin"
 export RUSTUP_TOOLCHAIN=9.9.9
 zee_rust_arac_zinciri "$gecici/pin"
 [[ "$RUSTUP_TOOLCHAIN" == 1.93.1 ]]
+[[ "$RUSTC" == "$ZEE_TEST_RUSTC_PATH" && -z "$RUSTC_WRAPPER" && -z "$RUSTC_WORKSPACE_WRAPPER" ]]
+if (ZEE_TEST_RUSTC_PATH="$gecici/yok-rustc" zee_rust_arac_zinciri "$gecici/pin") >/dev/null 2>&1; then
+    echo "Rustup eksik executable yolu kabul edildi" >&2; exit 1
+fi
+printf '#!/usr/bin/env bash\necho "rustc 1.97.1 (yanlis arac)"\n' > "$gecici/yanlis-rustc"
+chmod +x "$gecici/yanlis-rustc"
+if (ZEE_TEST_RUSTC_PATH="$gecici/yanlis-rustc" zee_rust_arac_zinciri "$gecici/pin") >/dev/null 2>&1; then
+    echo "Rustup farkli compiler surumu kabul edildi" >&2; exit 1
+fi
 for icerik in 'channel = "stable"' 'channel = "nightly"' $'channel = "1.93.1"\nchannel = "stable"' '' $'channel = "1.93.1"\nchannel = "1.97.1"'; do
     printf '%s\n' "$icerik" > "$gecici/kotu-pin"
     if (zee_rust_arac_zinciri "$gecici/kotu-pin") > /dev/null 2>&1; then

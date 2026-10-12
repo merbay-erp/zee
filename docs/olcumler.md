@@ -256,3 +256,10 @@ aracıdır, runtime bağımlılığı değildir. Eksik kanıt yayımlanmadan red
 Exact üç platform üretim kanıtı açık; minimum OS/temiz Windows-macOS ve
 bütün native C araçlarının kaydı tamamlanmış gösterilmez. Performans
 baseline'ı/tarihçe satırı üretilmedi; ADR-045/049 kuralları korunur.
+
+K-199 derleme etkisi: resmî release/offline compiler seçimi exact rustup
+executable'ına bağlandı, ambient compiler cache wrapper'ları kapatıldı.
+Cache wrapper kullanan çağıranda derleme süresi değişebilir; runtime
+profile/iş yükü değişmez. ADR-045/049/history etkisi incelendi; exact
+clean kaynak/makine/sample/warmup ölçümü alınmadan performans tarihçesine
+yeni satır/baseline yazılmadı. Shared CI yalnız gözlemseldir, hard eşik yok.
