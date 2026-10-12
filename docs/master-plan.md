@@ -968,3 +968,9 @@ aracıdır, runtime bağımlılığı değildir. Eksik kanıt yayımlanmadan red
 Exact üç platform üretim kanıtı açık; minimum OS/temiz Windows-macOS ve
 bütün native C araçlarının kaydı tamamlanmış gösterilmez. Performans
 baseline'ı/tarihçe satırı üretilmedi; ADR-045/049 kuralları korunur.
+
+K-192 ek kanıt: exact `e0f5363` Linux ikilileri AlmaLinux 9.8 minimal
+userland/glibc 2.34 üzerinde ağsız, read-only, ayrıcalıksız program ve LSP
+provasını geçti; Rust paketleri/PATH araçları yok. [Ham rapor](temiz-almalinux-runtime-kaniti-2026-10-12.json).
+Bu seçili amd64 emülasyon provası tüm dil IO davranışları, minimum kernel
+ve temiz Windows/macOS garantisi değildir; K-192 kısmen açık kalır.

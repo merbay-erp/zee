@@ -270,7 +270,7 @@ Provenance `targetRustflags` aynı tarifi taşır; release dosya kümesi değiş
 `scripts/derleme-ortami-kaydet.py` yalnız Python 3 standart kitaplığıyla
 iki klonda iki binary komutunu seçer. Log shell olarak çalıştırılmaz;
 quoted Debug String değerleri çözülür. İzdeki PATH/programdan gerçek araç
-çözülür; executable byte SHA-256 ve o programın `--version`/`/?` çıktısı
+çözülür; executable byte SHA-256 ve o programın `--version`/Windows FileVersionInfo çıktısı
 kaydedilir. SDK referansları ham komut/build log gözlemidir; Apple
 SDKSettings Version ve Windows Kits Lib sürümü varsa ayrıca çıkarılır.
 Bu kapsam linker driver'ını kanıtlar; tüm C build-script compiler/assembler
@@ -331,3 +331,41 @@ kanıtlar. Bu olası biçim farkının gerçek hatayı çözdüğü ancak yeni W
 koşusuyla doğrulanabilir. Kayıt aracı hatasında iki build logu artık ayrı
 yayınlanamaz tanı artefaktına korunur; sürüm kümesi üretilmez. Rust 1.93.1
 Command debug çıktısı platforma bağlıdır: [Windows uygulaması](https://github.com/rust-lang/rust/blob/1.93.1/library/std/src/sys/process/windows.rs).
+
+### K-192 glibc 2.34 kullanıcı alanı kanıtı
+
+Exact `e0f53630fe02c3239b9fc248e07abcedbe7ca681` Linux dağıtım ikilileri
+AlmaLinux 9.8 temiz minimal image üzerinde program ve gerçek LSP
+initialize/shutdown/exit provasını geçti. `glibc-2.34-275.el9_8`,
+`libgcc-11.5.0-14.el9.alma.1`, `openssl-libs-3.5.8-2.el9_8` kaydedildi.
+Base digest `8e56ca192f602eb1c486b870f268730f4b08179b43845184a3623c6634f5d01a`;
+Dockerfile yalnız openssl-libs/libgcc ekler. Rust paketleri ve PATH
+araçları yoktur. Koşu user 10001:10001, network none, read-only root,
+cap-drop ALL, no-new-privileges ve geçici /tmp ile yapıldı. [Ham kanıt](temiz-almalinux-runtime-kaniti-2026-10-12.json)
+exact image/base, tüm paket envanteri, Docker argümanları, ikili hash ve
+LSP yanıtlarını taşır. Host macOS arm64, hedef amd64 emülasyonudur; kernel
+6.10.14-linuxkit hostundur. Bu seçili runtime provası glibc 2.34 kullanıcı
+alanını doğrular; bütün dil IO özellikleri, fiziksel Linux minimum kernel,
+Windows/macOS temiz kurulum ve genel minimum OS desteği ayrı açıktır.
+
+İlk K-196 run 38250463153 Linux job 114815113812 geçti; GCC 13.3.0 dört
+gerçek link kaydı kalıcı ham provenance ile eşleşir. Aynı run Windows
+kayıt kapısında kaldı; koşu bütünü başarılı gösterilmez.
+
+K-196 ikinci Windows job 114819400810 gerçek linker komutlarını seçti,
+fakat MSVC `link.exe /?` sürüm çağrısı nonzero verdi. Ham build logları
+yayınlanamaz tanı artefaktında korunmuştur. Windows MSVC kimliği artık
+PowerShell 5/.NET `FileVersionInfo.GetVersionInfo` ile executable dosyasının
+FileVersion/ProductVersion kaynağından okunur; `version_source` bunu
+açıkça belirtir. Yol statik komuta eklenmez, ayrı environment alanındadır.
+Unix/LLVM araçları `--version` kullanır; boş sürüm veya başarısız metadata
+yine release kanıtını reddeder. [API kaynağı](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo.getversioninfo).
+Bu Windows build kanıtı PowerShell gerektirir; Zee runtime bağımlılığı
+değişmez. Yeni exact üç platform doğrulaması gelmeden K-196 açık kalır.
+
+İndirilen ikinci Windows a/b build loglarının komut/SDK ayrıştırması
+incelendi: gerçek `/OUT:` sonları hash'siz `dil.exe`/`dillsp.exe`; SDK
+verbose satırları `Windows Kits/10/lib/10.0.26100.0` taşıyor. Ayrıştırma
+deneyi resolver'ı yalnız yerel Python executable'ına yönlendirerek
+indirilen komuttan hiçbir araç yürütmedi; bu Windows üretim sürüm
+kanıtı değildir. Gerçek FileVersionInfo üretim kapısı ayrı beklenir.

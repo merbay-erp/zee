@@ -49,6 +49,24 @@ class KayitTestleri(unittest.TestCase):
         with patch("shutil.which", return_value=None), self.assertRaisesRegex(ValueError, "bulunamadı"):
             self.kaydet(self.logs, self.sha)
 
+    def test_msvc_surumu_link_help_calistirmadan_dosya_metadatasindan_okunur(self):
+        from unittest.mock import patch
+        import subprocess
+        version = runpy.run_path(str(SCRIPT))['arac_surumu']
+        path = Path('link.exe')
+        result = subprocess.CompletedProcess([], 0, b'FileVersion: 14.51.36231\nProductVersion: 14.51\n', b'')
+        with patch('subprocess.run', return_value=result) as run:
+            value, source = version(path)
+        self.assertIn('14.51.36231', value)
+        self.assertEqual(source, 'Windows FileVersionInfo')
+        args, kwargs = run.call_args
+        self.assertEqual(args[0][0], 'powershell.exe')
+        self.assertEqual(kwargs['env']['ZEE_LINKER_ID_PATH'], str(path))
+        self.assertNotIn(str(path), args[0][-1])
+        with patch('subprocess.run', return_value=subprocess.CompletedProcess([], 1, b'', b'metadata failure')):
+            with self.assertRaisesRegex(ValueError, 'exit=1'):
+                version(path)
+
     def test_gercek_arac_hashi_ve_iki_klon_kaydi(self):
         from unittest.mock import patch
         with patch("shutil.which", return_value=sys.executable):
