@@ -42,7 +42,14 @@ case "$1" in
         fi
         mkdir -p "$dizin"
         for ad in dil dillsp; do printf 'test binary\n' > "$dizin/$ad$uzanti"; done ;;
-    run) echo 'test metadata' ;;
+    run)
+        if [[ "$*" == *"-- ozet "* ]]; then
+            # Üreticinin ozet argümanı cwd=compiler altında da bulunmalı.
+            while [[ "$1" != ozet ]]; do shift; done
+            shift
+            [[ -f "$1/$2" && -f "$1/$3" ]]
+        fi
+        echo 'test metadata' ;;
     vendor)
         for son; do :; done
         mkdir -p "$son/test-paket"
@@ -98,9 +105,9 @@ sabit_ara '--remap-path-prefix=/test/rust/1.93.1=/rust' "$ZEE_TEST_KOMUTLAR"
     cd "$gecici/depo"
     export ZEE_TEST_PLATFORM=x86_64-pc-windows-msvc
     export CARGO_ENCODED_RUSTFLAGS=caller-bayragi
-    bash scripts/surum-artefakti.sh --kirli-kabul --cikti "$gecici/windows" > "$gecici/windows.log"
+    bash scripts/surum-artefakti.sh --kirli-kabul --cikti goreli-windows > "$gecici/windows.log"
 )
-[[ -f "$gecici/windows/dil.exe" && -f "$gecici/windows/dillsp.exe" ]]
+[[ -f "$gecici/depo/goreli-windows/dil.exe" && -f "$gecici/depo/goreli-windows/dillsp.exe" ]]
 [[ "$(wc -l < "$ZEE_TEST_KOMUTLAR" | tr -d ' ')" == 6 ]]
 sabit_ara 'build --locked --release --bin dil --bin dillsp --target x86_64-pc-windows-msvc' "$ZEE_TEST_KOMUTLAR"
 sabit_ara '-C target-feature=+crt-static' "$ZEE_TEST_KOMUTLAR"
