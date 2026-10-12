@@ -12,6 +12,11 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **Sürüm kaynak kimliği (K-192):** SBOM ve provenance, eski depo
+  yönlendirmesi yerine kanonik `itwise-bilisim/zee` ve aynı exact commit'i
+  kaydeder. Dil davranışı/artefakt şeması değişmez; uzak commit erişimi
+  yayın öncesi ayrıca doğrulanır.
+
 - **Derleme araç zinciri provenance tutarlılığı (K-191):** Sürüm ve offline
   vendor betikleri kayıtlı exact Rust pinini kullanır. Host/rustc/sysroot ve
   ikili üretimi aynı araç zincirindedir; farklı varsayılan Rust yanlış

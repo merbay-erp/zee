@@ -31,6 +31,11 @@ Betik iki bağımsız `git clone` ağacında aynı commit'i sabit toolchain,
 | `SHA256SUMS.zee-imza` | `zee-surum-imza-v1` Ed25519 imzası (anahtar verildiyse) |
 | `GIT_SHA` | üretilen commit |
 
+K-192: SBOM/provenance kaynak URI'si aynı kanonik
+`git+https://github.com/itwise-bilisim/zee@<tam-sha>` değerini kullanır.
+Sürüm yayımlanmadan exact commit'in bu resmî depodan erişilebilirliği ayrıca
+kontrol edilir; iki yerel klon eşitliği uzak kaynak erişimi kanıtı değildir.
+
 ## Doğrulama
 
 ```bash

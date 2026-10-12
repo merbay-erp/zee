@@ -217,7 +217,8 @@ Bootstrap derleyici için Rust güçlü adaydır. Parser için handwritten recur
 K-191 derleme/bağımlılık envanteri ve exact Rust provenance tutarlılığını
 kapattı. [Envanter](derleme-ve-bagimliliklar.md) mevcut yorumlayıcı ve Rust'tan
 üretilen WASM'i gelecekteki Zee kod üretiminden ayırır. Sistem kitaplığı ve
-linker/SDK provenance K-192; ürün kanıtlı backend değerlendirmesi K-193
+linker/SDK provenance K-192; kaynak metadata kimliği aynı dilimde kanonik depoya bağlandı.
+Ürün kanıtlı backend değerlendirmesi K-193
 olarak açıktır. Native backend ve self-hosting gerçeklenmiş değildir.
 
 # 12. Self-hosting stratejisi

@@ -84,13 +84,14 @@ boş Cargo home vendor kapısı önceden kurulu Rust/linker/SDK'yi içermez.
 
 1. **K-191 kapalı kapsam:** derleme/bağımlılık envanteri ve araç zinciri
    provenance tutarlılığı. Dil semantiği, crate sürümleri ve SBOM şeması değişmez.
-2. **K-192 açık:** Linux/macOS/Windows release ikililerinde sistem kitaplığı
+2. **K-192 kısmen açık:** Linux/macOS/Windows release ikililerinde sistem kitaplığı
    envanteri, linker/SDK provenance sınırı ve Rust bulunmayan makinede kurulum
    provası. Mevcut kurulum tatbikatının compiler dev ortamından bağımsızlığı
    ayrıca değerlendirilir; saha kanıtı olmadan kapanmaz.
    [Yerel kanıt](derleme-bagimlilik-kaniti-2026-10-12.md) macOS release
    ikilisinin sistem kitaplıklarını ve Rust olmayan PATH ile çalışmasını
-   ölçtü; temiz makine/üç platform ve kaynak repo kimliği kanıtı açıktır.
+   ölçtü; kaynak kimliği kanonik depoya bağlandı. Temiz makine/üç platform
+   ve uzak exact kaynak erişimi kanıtı açıktır.
 3. **K-193 açık:** native/WASM kod üretimi için gerçek ürün ihtiyacı, mevcut
    semantik korpusuyla eşdeğerlik ölçütleri ve backend karar verisi.
    [Backlog](oncelikli-backlog.md), CORE FREEZE ve insan kanıtı kapıları korunur;

@@ -15,6 +15,8 @@ const IMZA_ALANI: &[u8] = b"zee-surum-v1\0";
 const ANAHTAR_BASLIGI: &str = "zee-ed25519-private-v1";
 const BUILD_TYPE: &str = "https://zee-lang.dev/surum/tekrar-uretilebilir/v1";
 const BUILDER_ID: &str = "https://zee-lang.dev/surum/surum-artefakti";
+// K-192: resmî kaynak kimliği; yerel klon yolu veya yönlendirmeye bağlı URL değil.
+const KAYNAK_DEPOSU: &str = "https://github.com/itwise-bilisim/zee";
 
 fn hex_yaz(baytlar: &[u8]) -> String {
     baytlar.iter().map(|b| format!("{b:02x}")).collect()
@@ -244,7 +246,7 @@ fn sbom_belgesi(
         "creationInfo": "_:creationinfo",
         "name": "dil",
         "software_packageVersion": surum,
-        "software_downloadLocation": format!("git+https://github.com/merbay-erp/zee@{git_sha}"),
+        "software_downloadLocation": format!("git+{KAYNAK_DEPOSU}@{git_sha}"),
         "software_copyrightText": "NOASSERTION",
         "suppliedBy": format!("{taban}/agent"),
         "verifiedUsing": [{"type": "Hash", "algorithm": "sha256", "hashValue": sha256_hex(git_sha.as_bytes())}]
@@ -288,7 +290,7 @@ fn provenance_belgesi(
                     "remapPathPrefix": ["/zee", "/cargo", "/rust"]
                 },
                 "resolvedDependencies": [{
-                    "uri": format!("git+https://github.com/merbay-erp/zee@{git_sha}"),
+                    "uri": format!("git+{KAYNAK_DEPOSU}@{git_sha}"),
                     "digest": {"gitCommit": git_sha}
                 }]
             },
@@ -542,6 +544,15 @@ mod testler {
         ))
         .unwrap();
         assert_eq!(a, b);
+        let sbom: Value = serde_json::from_str(&a).unwrap();
+        let kok = sbom["@graph"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|oge| oge["type"] == "software_Package" && oge["name"] == "dil")
+            .unwrap();
+        let kaynak = format!("git+https://github.com/itwise-bilisim/zee@{sha}");
+        assert_eq!(kok["software_downloadLocation"], json!(kaynak));
         assert!(a.contains(
             "\"hashValue\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\""
         ));
@@ -566,6 +577,14 @@ mod testler {
             json!(true)
         );
         assert_eq!(p["subject"].as_array().unwrap().len(), 2);
+        assert_eq!(
+            p["predicate"]["buildDefinition"]["resolvedDependencies"][0]["uri"],
+            json!(kaynak)
+        );
+        assert_eq!(
+            p["predicate"]["buildDefinition"]["resolvedDependencies"][0]["digest"]["gitCommit"],
+            json!(sha)
+        );
         let farkli = provenance_belgesi(
             sha,
             "0.8.0-dev",
