@@ -21,7 +21,8 @@ raporlar; rapor builder'da hiç Rust kurulmadığını iddia etmez.
 
 K-194 kurulum hata geri almasını Unix regresyonuyla doğruladı; Windows
 ret/kur/kaldır gerçek koşusu beklenir (ADR-071/GB-031). Ani güç kaybı
-uzlaştırması veya dizin çapında atomiklik iddia edilmez.
+uzlaştırması veya dizin çapında atomiklik iddia edilmez. GB-032 kaynak
+metadata manifest enjeksiyonu exact SHA ve TSV yol kontrolüyle kapandı.
 
 ## P0 — v1 etiketi öncesi zorunlu
 

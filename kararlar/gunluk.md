@@ -3645,3 +3645,20 @@ Manifest ortak UTF-8/BOM'suz/LF olarak yazılır, Windows kaldırma açık UTF-8
 okur; PowerShell kaynakları Türkçe literal desteği için UTF-8 BOM taşır.
 Gerçek kur/kaldır testi Türkçe karakterli temp yoluyla iki platformda aynı
 manifest başlığını ve dosya sahipliğini denetler. K-194 Windows sonucu beklenir.
+
+### K-194/GB-032 — Kaynak metadata manifest enjeksiyonu
+
+- **Reproducer:** Geçici artefakta doğru iki ikili checksum'ı, `GIT_SHA`
+  dosyasına ise hex SHA + yabancı temp dosyasının yol/hash/`-` satırı yazıldı.
+  Eski kurulum exit 0 verdi; normal kaldırma bu yabancı dosyayı sildi.
+  Yeni gerçek ikili assertionı eski betikte başarısızdır.
+- **Karar/kanıt:** Var olan GIT_SHA exact 40 küçük hex olarak denetlenir;
+  eksik legacy metadata yalnız `-` üretir. Hedef/veri yollarındaki TSV
+  TAB/CR/LF ve fiziksel kanonik yoldaki kontrol karakterleri reddedilir.
+  `cd -P` sonucunun son newline'ı sentinel ile korunur; command substitution
+  yol karakterini gizleyemez. Unix saldırı/ret testleri geçti, yabancı veri
+  korunur; Windows aynı metin sınırını uygular ve gerçek CI koşusu bekler.
+  Bilinen yüksek Unix bulgusu GB-032 aynı güvenlik diliminde kapandı.
+- **Etki:** Compiler kaynakları, dil yüzeyi, manifest şeması ve artefakt
+  kümesi değişmez. ADR-071, güvenlik defteri, sürüm/runbook, master plan,
+  V1 kapısı, backlog ve üretilen kanıt özeti bu düzeltmeyle güncellenir.

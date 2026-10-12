@@ -8,11 +8,18 @@ param(
 $ErrorActionPreference = "Stop"
 $ozetDosyasi = Join-Path $Artefakt "SHA256SUMS"
 if (-not (Test-Path -LiteralPath $ozetDosyasi -PathType Leaf)) { throw "Artefaktta SHA256SUMS yok; doğrulanamayan ikili kurulmaz." }
+if ($Hedef -match '[\t\r\n]' -or $Veri -match '[\t\r\n]') { throw "Kurulum yolu TSV kontrol karakteri içeremez." }
+$gitSha = "-"
+if (Test-Path -LiteralPath (Join-Path $Artefakt "GIT_SHA")) {
+    $gitSha = (Get-Content -LiteralPath (Join-Path $Artefakt "GIT_SHA") -Raw -Encoding utf8).Trim()
+    if ($gitSha -cnotmatch '\A[0-9a-f]{40}\z') { throw "GIT_SHA exact 40 küçük hex olmalı." }
+}
 $manifest = Join-Path $Veri "kurulum-v1.tsv"
 if (Test-Path -LiteralPath $manifest) { throw "Önce var olan kurulumu kaldır: scripts/kaldir.ps1 -Veri $Veri" }
 New-Item -ItemType Directory -Force -Path $Hedef, $Veri | Out-Null
 $Hedef = (Resolve-Path -LiteralPath $Hedef).ProviderPath
 $Veri = (Resolve-Path -LiteralPath $Veri).ProviderPath
+if ($Hedef -match '[\t\r\n]' -or $Veri -match '[\t\r\n]') { throw "Kurulum yolu TSV kontrol karakteri içeremez." }
 $manifest = Join-Path $Veri "kurulum-v1.tsv"
 $hazirlik = Join-Path $Hedef (".zee-kurulum-" + [Guid]::NewGuid().ToString("N"))
 $geciciManifest = Join-Path $Veri (".zee-kurulum-manifest-" + [Guid]::NewGuid().ToString("N"))
@@ -22,7 +29,6 @@ $gorulen = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::O
 $tamamlandi = $false
 try {
     New-Item -ItemType Directory -Path $hazirlik | Out-Null
-    $gitSha = if (Test-Path -LiteralPath (Join-Path $Artefakt "GIT_SHA")) { (Get-Content -LiteralPath (Join-Path $Artefakt "GIT_SHA")).Trim() } else { "-" }
     $satirlar = @("# zee-kurulum-1", "# dosya`tsha256`tkaynak_git_sha")
     foreach ($satir in Get-Content -LiteralPath $ozetDosyasi) {
         if ($satir.Trim() -eq "") { continue }

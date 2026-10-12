@@ -22,6 +22,21 @@ ozet_hesapla() {
     if command -v sha256sum >/dev/null 2>&1; then sha256sum "$1" | awk '{print $1}'; else shasum -a 256 "$1" | awk '{print $1}'; fi
 }
 
+manifest_yolu_denetle() {
+    local yol
+    for yol in "$@"; do
+        case "$yol" in
+            *$'\t'* | *$'\r'* | *$'\n'*) echo "Kurulum yolu TSV kontrol karakteri içeremez." >&2; return 1 ;;
+        esac
+    done
+}
+manifest_yolu_denetle "$hedef" "$veri"
+git_sha="-"
+if [[ -f "$artefakt/GIT_SHA" ]]; then
+    git_sha="$(cat "$artefakt/GIT_SHA")"
+    [[ "$git_sha" =~ ^[0-9a-f]{40}$ ]] || { echo "GIT_SHA exact 40 küçük hex olmalı." >&2; exit 1; }
+fi
+
 manifest="$veri/kurulum-v1.tsv"
 if [[ -e "$manifest" || -L "$manifest" ]]; then
     echo "Önce var olan kurulumu kaldır: scripts/kaldir.sh --veri $veri" >&2
@@ -29,8 +44,11 @@ if [[ -e "$manifest" || -L "$manifest" ]]; then
 fi
 mkdir -p "$hedef" "$veri"
 # Manifestte yollar çalışma dizininden bağımsızdır.
-hedef="$(cd "$hedef" && pwd -P)"
-veri="$(cd "$veri" && pwd -P)"
+hedef="$(cd -P "$hedef" && printf '%s/' "$PWD")"
+hedef="${hedef%/}"
+veri="$(cd -P "$veri" && printf '%s/' "$PWD")"
+veri="${veri%/}"
+manifest_yolu_denetle "$hedef" "$veri"
 manifest="$veri/kurulum-v1.tsv"
 hazirlik=""
 gecici_manifest=""
@@ -52,7 +70,6 @@ trap temizle EXIT
 hazirlik="$(mktemp -d "$hedef/.zee-kurulum.XXXXXX")"
 gecici_manifest="$(mktemp "$veri/.zee-kurulum-manifest.XXXXXX")"
 printf '# zee-kurulum-1\n# dosya\tsha256\tkaynak_git_sha\n' > "$gecici_manifest"
-git_sha="$( [[ -f "$artefakt/GIT_SHA" ]] && cat "$artefakt/GIT_SHA" || echo '-' )"
 
 while IFS= read -r satir || [[ -n "$satir" ]]; do
     [[ -z "$satir" ]] && continue

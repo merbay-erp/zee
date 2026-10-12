@@ -12,6 +12,12 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **Kurulum metadata sahipliği (K-194, GB-032):** Kaynak `GIT_SHA` alanından
+  manifest satırı enjekte edip kaldırma sırasında yabancı dosya sildirme
+  yolu kapatıldı. Var olan `GIT_SHA` exact 40 küçük hex ister; hedef/veri
+  yollarındaki TAB/CR/LF ve kanonik fiziksel yoldaki kontrol karakterleri
+  kurulumdan önce reddedilir. Normal dosya sahipliği ve kaldırma korunur.
+
 - **Çalışma ortamı kanıtı (K-192):** Kurulu release ikililerinin hash/SHA,
   doğrudan sistem kitaplıkları, Rust araçları PATH dışında exact program
   çıktısı ve stdio LSP initialize/shutdown/exit akışı ortak kapıda ölçülür.
