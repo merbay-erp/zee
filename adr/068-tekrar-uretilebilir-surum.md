@@ -193,4 +193,5 @@ sürümünü yürütülen ikiliden doğrular. Bu küçük probe tam Zee release
 veya bütün Cargo profil/linker/native CC/AR config kanıtı değildir.
 Rustup kurulu toolchain'e güvenilir; signed dağıtıcı/tool hash özgünlüğü
 sözü genişlemez. GB-036 eski yanlış compiler metadata riski bu sınırlı
-seçim sözleşmesiyle kapanır; üç platform exact kanıtı açık kalır.
+seçim sözleşmesiyle kapanır. Exact 22ea2b8/run 38259341995 üç platform
+gerçek Cargo pin kanıtı geçti ve kalıcı defter/fixture kaydıyla K-199 kapandı.

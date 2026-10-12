@@ -431,7 +431,7 @@ helper ve iki installer byte hash'i ayrıca kaynakla eşleştirildi.
 [defter](temiz-windows-platform-kaniti-v1.tsv) kalıcıdır. Bu kapsamta
 K-198 kapandı; fiziksel/desktop/minimum OS ve tüm IO ayrı K-192 sınırıdır.
 
-## K-199 Cargo compiler/wrapper pin sınırı — üç platform kanıtı açık
+## K-199 Cargo compiler/wrapper pin sınırı — exact üç platform kanıtıyla kapalı
 
 Yerel gerçek probe RUSTUP_TOOLCHAIN=1.93.1, RUSTC=kurulu 1.97.1 ile
 helper'ın 1.93.1 version sorgusu ve Cargo'nun 1.97.1 invocation'ını
@@ -446,7 +446,7 @@ Gerçek depsiz Cargo/build-script/ikili probe'u wrong compiler/wrapper
 ENV ve Cargo home config ile koşar. Actual compiler sürümü yürütülen
 ikiliden, tool path/hash ve log exact prova commit'iyle kaydedilir.
 Bu tam Zee release veya tüm Cargo profil/linker/native C ayarlarının
-envanteri değildir. Yerel probe geçti; üç platform exact veri açık.
+envanteri değildir. Exact 22ea2b8/run 38259341995 üç platformda geçti.
 Performans profil/baseline'ı değişmedi; ADR-045/049/history incelendi,
 izlenen benchmark tarihçesine yeni satır yazılmadı. GB-036/ADR-068.
 
@@ -455,3 +455,12 @@ derleme süreleri etkilenebilir. Runtime profile/iş yükü değişmez;
 ADR-045/049/history incelemesi `docs/olcumler.md` kaydındadır. Küçük
 probe raporu source tree cleanliness, helper/prova byte hash ve exact
 Git SHA taşır; dirty yerel deneme exact kaynak kapanma kanıtı değildir.
+
+K-199 source `22ea2b8d4d8425788c1ef5c49874d66df14eb7f5`,
+[run 38259341995](https://github.com/itwise-bilisim/zee/actions/runs/38259341995)
+üç platformda geçti. Rust/Cargo 1.93.1, compiler absolute path/hash, boş
+wrapper alanları, poisoned config ve source tree temizliği raw raporda
+vardır. Helper/prova/pin hash'leri ayrıca kaynakla eşleşir. [Defter](rustc-pin-platform-kaniti-v1.tsv)
+source/run/job/artifact/zip/raw hash'lerini bağlar. K-199 bu sınırlı
+compiler seçimi kapsamında kapandı; tam Zee release profil/native C
+envanteri değildir. K-192 kalan makine sınırları açık kalır.

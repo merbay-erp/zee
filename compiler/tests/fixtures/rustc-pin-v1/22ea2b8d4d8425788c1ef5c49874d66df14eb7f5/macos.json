@@ -1,0 +1,21 @@
+{
+  "sema": "zee-rustc-pin-prova-1",
+  "sonuc": "gecti",
+  "prova_git_sha": "22ea2b8d4d8425788c1ef5c49874d66df14eb7f5",
+  "calisma_agaci_temiz": true,
+  "prova_araci_sha256": "dbdf49371816cb8cadde316fe5b9d6ad5019645eae1169f4b81802c21141ca89",
+  "helper_sha256": "b634e533a312fa81f2e0cdadd5082def6ff6dff8d4b434d452d651e320a6f478",
+  "os": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "mimari": "arm64",
+  "rustc_path": "/Users/runner/.rustup/toolchains/1.93.1-aarch64-apple-darwin/bin/rustc",
+  "rustc_sha256": "34a8f7034eeb844189a3c36ebb3fe36c2193fdb47b60028eb7f9392cb1f62484",
+  "pin_sha256": "3260f10937490e272267a11d1bca85ee76b0ef972022ab8fba8a1df0dbb3b397",
+  "rustc_version": "rustc 1.93.1 (01f6ddf75 2026-02-11)",
+  "cargo_version": "cargo 1.93.1 (083ac5135 2025-12-15)",
+  "compiler_env": "/Users/runner/.rustup/toolchains/1.93.1-aarch64-apple-darwin/bin/rustc",
+  "wrapper": "",
+  "workspace_wrapper": "",
+  "compiler_config_poisoned": true,
+  "build_log": "\u001b[1m\u001b[92m   Compiling\u001b[0m zee_exact_pin_probe v0.0.0 (/var/folders/36/tjdph2t965j8snz9_vkdnw0r0000gn/T/zee-rustc-pin.ByyVdp/proje)\n\u001b[1m\u001b[92m     Running\u001b[0m `/Users/runner/.rustup/toolchains/1.93.1-aarch64-apple-darwin/bin/rustc --crate-name build_script_build --edition=2021 build.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type bin --emit=dep-info,link -C embed-bitcode=no --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=77c5f274b755d525 -C extra-filename=-e6df885a4f081293 --out-dir /var/folders/36/tjdph2t965j8snz9_vkdnw0r0000gn/T//zee-rustc-pin.ByyVdp/target/debug/build/zee_exact_pin_probe-e6df885a4f081293 -L dependency=/var/folders/36/tjdph2t965j8snz9_vkdnw0r0000gn/T//zee-rustc-pin.ByyVdp/target/debug/deps`\n\u001b[1m\u001b[92m     Running\u001b[0m `/var/folders/36/tjdph2t965j8snz9_vkdnw0r0000gn/T//zee-rustc-pin.ByyVdp/target/debug/build/zee_exact_pin_probe-e6df885a4f081293/build-script-build`\n\u001b[1m\u001b[92m     Running\u001b[0m `/Users/runner/.rustup/toolchains/1.93.1-aarch64-apple-darwin/bin/rustc --crate-name zee_exact_pin_probe --edition=2021 src/main.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type bin --emit=dep-info,link -C embed-bitcode=no -C debuginfo=2 -C split-debuginfo=unpacked --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=7e5097d9512766f4 -C extra-filename=-c4377b97221391eb --out-dir /var/folders/36/tjdph2t965j8snz9_vkdnw0r0000gn/T//zee-rustc-pin.ByyVdp/target/debug/deps -L dependency=/var/folders/36/tjdph2t965j8snz9_vkdnw0r0000gn/T//zee-rustc-pin.ByyVdp/target/debug/deps`\n\u001b[1m\u001b[92m    Finished\u001b[0m `dev` profile [unoptimized + debuginfo] target(s) in 2.41s\n",
+  "sinir": "Gerçek küçük Cargo/build-script/ikili derlemesi; tam Zee release veya tüm Cargo profil/linker config kaydı değildir."
+}
