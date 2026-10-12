@@ -3761,3 +3761,31 @@ aracıdır, runtime bağımlılığı değildir. Eksik kanıt yayımlanmadan red
 Exact üç platform üretim kanıtı açık; minimum OS/temiz Windows-macOS ve
 bütün native C araçlarının kaydı tamamlanmış gösterilmez. Performans
 baseline'ı/tarihçe satırı üretilmedi; ADR-045/049 kuralları korunur.
+
+## 2026-10-12 — K-196 yerel exact üretim ve kalıcı kanıt kapısı
+
+`e3adc22895840fc25069153b3457f17b74a2836d` yerel iki-klon macOS üretimi,
+Apple Clang 21.0.0/SDK 27.0 kaydı ve gerçek kur/program/LSP/kaldır provasını
+geçti. Run 38250463153 macOS job 114815113244 geçti; Linux/Windows beklenir.
+Yeni provenance fixture kayıtlarında dört linker kimliği ve Apple/Windows
+SDK sürümü denetlenir. K-196 henüz açık; minimum OS/temiz Windows/macOS
+ve tüm native C build-script araçları ayrıca K-192 sınırıdır.
+
+K-196 Linux tatbikat işi kuruluşun `itwise-gitsrv` koşucusunda başlamadan
+kuyrukta kaldı. `kurulum-tatbikati` manuel girişindeki `linux_runner`
+seçimi `configured` (mevcut kuruluş ayarı, varsayılan) veya `ubuntu-latest`
+olabilir. Bu koşuya özel seçim kuruluş/repo değişkenlerini değiştirmez;
+tag koşuları mevcut kuruluş ayarını izler. Aynı exact kaynağın üç platform
+kanıtı için `gh workflow run kurulum-tatbikati.yml --ref codex/zee-derleme-bagimlilik -f linux_runner=ubuntu-latest`
+ile GitHub Linux koşucusunda yeni tatbikat başlatılır.
+
+K-196 ilk Windows job 114815113651 iki klonda dil/dillsp eş hash
+üretti, fakat kayıt aracı iki link komutunu seçemedi; release metadata
+ve runtime provasına geçilmedi. Temp build logları bu koşuda saklanmadığı
+için exact başarısız komut biçimi henüz bilinmez. MSVC `/OUT:` ve düz
+`.exe` çıktı adları artık hashli adlarla birlikte seçilir; aynı kayıt
+testi bu biçimi ve quoted olmayan `/VERBOSE:LIB` Windows Kits yollarını
+kanıtlar. Bu olası biçim farkının gerçek hatayı çözdüğü ancak yeni Windows
+koşusuyla doğrulanabilir. Kayıt aracı hatasında iki build logu artık ayrı
+yayınlanamaz tanı artefaktına korunur; sürüm kümesi üretilmez. Rust 1.93.1
+Command debug çıktısı platforma bağlıdır: [Windows uygulaması](https://github.com/rust-lang/rust/blob/1.93.1/library/std/src/sys/process/windows.rs).

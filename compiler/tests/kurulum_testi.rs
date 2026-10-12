@@ -486,6 +486,35 @@ fn calisma_ortami_kaydi_exact_kaynak_ve_ikili_hashleriyle_program_lsp_kaniti_tas
                 predicate["buildDefinition"]["externalParameters"]["gitCommit"],
                 *sha
             );
+            if let Some(ortam) =
+                predicate["buildDefinition"]["externalParameters"].get("buildEnvironment")
+            {
+                assert_eq!(ortam["schema"], "zee-build-environment-1");
+                assert_eq!(ortam["gitCommit"], *sha);
+                let klonlar = ortam["clones"].as_object().unwrap();
+                assert_eq!(klonlar.len(), 2);
+                for klon in ["a", "b"] {
+                    let kayit = &klonlar[klon];
+                    let araclar = kayit["binaries"].as_object().unwrap();
+                    assert_eq!(araclar.len(), 2);
+                    for ad in ["dil", "dillsp"] {
+                        let arac = &araclar[ad];
+                        for alan in ["program", "path", "version", "command"] {
+                            assert!(!arac[alan].as_str().unwrap().is_empty());
+                        }
+                        let ozet = arac["sha256"].as_str().unwrap();
+                        assert_eq!(ozet.len(), 64);
+                        assert!(ozet
+                            .bytes()
+                            .all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase()));
+                    }
+                    let sdk = kayit["sdkVersions"].as_object().unwrap();
+                    if *os != "Linux" {
+                        assert!(!sdk.is_empty(), "Apple/Windows SDK sürüm kanıtı gerekli");
+                        assert!(sdk.values().all(|v| !v.as_str().unwrap().is_empty()));
+                    }
+                }
+            }
             let subject = provenance["subject"].as_array().unwrap();
             assert_eq!(subject.len(), 2);
             let mut subject_adlari = BTreeSet::new();

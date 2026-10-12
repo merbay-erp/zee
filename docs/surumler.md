@@ -1257,3 +1257,9 @@ aracıdır, runtime bağımlılığı değildir. Eksik kanıt yayımlanmadan red
 Exact üç platform üretim kanıtı açık; minimum OS/temiz Windows-macOS ve
 bütün native C araçlarının kaydı tamamlanmış gösterilmez. Performans
 baseline'ı/tarihçe satırı üretilmedi; ADR-045/049 kuralları korunur.
+
+K-196 release kanıtı MSVC `/OUT:` anahtarıyla düz/hashli exe adlarını ve
+Windows Kits verbose library yollarını tanır. Eksik linker kanıtı hâlâ
+release kümesini reddeder; tanı artefaktında iki build logu korunur. Linux
+tatbikatında yalnız o koşuya özel GitHub koşucusu seçilebilir. Dil davranışı
+ve kurulum dosya kümesi değişmez; üç platform kapanma kanıtı açık kalır.

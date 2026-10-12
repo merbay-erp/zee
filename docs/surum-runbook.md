@@ -79,3 +79,11 @@ aracıdır, runtime bağımlılığı değildir. Eksik kanıt yayımlanmadan red
 Exact üç platform üretim kanıtı açık; minimum OS/temiz Windows-macOS ve
 bütün native C araçlarının kaydı tamamlanmış gösterilmez. Performans
 baseline'ı/tarihçe satırı üretilmedi; ADR-045/049 kuralları korunur.
+
+K-196 Linux tatbikat işi kuruluşun `itwise-gitsrv` koşucusunda başlamadan
+kuyrukta kaldı. `kurulum-tatbikati` manuel girişindeki `linux_runner`
+seçimi `configured` (mevcut kuruluş ayarı, varsayılan) veya `ubuntu-latest`
+olabilir. Bu koşuya özel seçim kuruluş/repo değişkenlerini değiştirmez;
+tag koşuları mevcut kuruluş ayarını izler. Aynı exact kaynağın üç platform
+kanıtı için `gh workflow run kurulum-tatbikati.yml --ref codex/zee-derleme-bagimlilik -f linux_runner=ubuntu-latest`
+ile GitHub Linux koşucusunda yeni tatbikat başlatılır.

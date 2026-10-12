@@ -6,6 +6,14 @@ on:
     tags:
       - "v*"
   workflow_dispatch:
+    inputs:
+      linux_runner:
+        description: "Linux tatbikat koşucusu (kuruluş ayarını değiştirmez)"
+        type: choice
+        default: configured
+        options:
+          - configured
+          - ubuntu-latest
 
 permissions:
   contents: read
@@ -16,7 +24,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-    runs-on: ${{ matrix.os == 'ubuntu-latest' && fromJSON(vars.CI_RUNNER || '"ubuntu-latest"') || matrix.os }}  # Linux → org runner'ı (gitsrv); Windows/macOS GitHub'da
+    runs-on: ${{ matrix.os == 'ubuntu-latest' && (inputs.linux_runner == 'ubuntu-latest' && 'ubuntu-latest' || fromJSON(vars.CI_RUNNER || '"ubuntu-latest"')) || matrix.os }}
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

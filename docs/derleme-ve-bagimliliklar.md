@@ -295,3 +295,39 @@ GB-033 güven sınırı: kayıt aracı yalnız üreticinin kendi temiz-klon
 loglarıyla kullanılır; harici indirilen log güvenilir girdi değildir.
 Sürüm sorgusu logda çözülen programa gider; kanıt yayın imzasının yerine
 geçmez. Bu sınır güvenlik defterinde ve ADR-068'de kayıtlıdır.
+
+### K-196 yerel exact üretim doğrulaması
+
+`e3adc22895840fc25069153b3457f17b74a2836d` temiz kaynağı yerel macOS
+arm64 üzerinde iki temiz klonda aynı dil/dillsp SHA-256 değerlerini üretti.
+Dört link kaydında `/usr/bin/cc`, Apple Clang 21.0.0
+(`clang-2100.3.34.2`) ve macOS SDKSettings 27.0 doğrulandı.
+Linker byte SHA-256: `b8763cf250e607a778bb4603cecb5b90338814d0a3dfcba0d57b1de242f610e9`.
+Bu ikililer hash doğrulamalı kurulum, Rust araçları olmayan PATH ile program
+ve LSP initialize/shutdown/exit, ardından manifestli kaldırma provasını geçti.
+Uzak macOS job 114815113244 geçti; run 38250463153 için Linux/Windows
+sonuçları ve kalıcı ham kayıtlar incelenmeden K-196 kapanmaz.
+Kalıcı kanıt testi yeni `buildEnvironment` kayıtlarında dört araç kaydı ve
+Apple/Windows SDK sürümü ister. Eski kayıtlar bu yeni alanı üretmemiştir.
+
+Bu dilim spec/RFC/tanı/API, production Rust modül kenarı ve benchmark
+tarihçesini değiştirmez; ilgili belgeler bu sınırla yeniden incelendi.
+
+K-196 Linux tatbikat işi kuruluşun `itwise-gitsrv` koşucusunda başlamadan
+kuyrukta kaldı. `kurulum-tatbikati` manuel girişindeki `linux_runner`
+seçimi `configured` (mevcut kuruluş ayarı, varsayılan) veya `ubuntu-latest`
+olabilir. Bu koşuya özel seçim kuruluş/repo değişkenlerini değiştirmez;
+tag koşuları mevcut kuruluş ayarını izler. Aynı exact kaynağın üç platform
+kanıtı için `gh workflow run kurulum-tatbikati.yml --ref codex/zee-derleme-bagimlilik -f linux_runner=ubuntu-latest`
+ile GitHub Linux koşucusunda yeni tatbikat başlatılır.
+
+K-196 ilk Windows job 114815113651 iki klonda dil/dillsp eş hash
+üretti, fakat kayıt aracı iki link komutunu seçemedi; release metadata
+ve runtime provasına geçilmedi. Temp build logları bu koşuda saklanmadığı
+için exact başarısız komut biçimi henüz bilinmez. MSVC `/OUT:` ve düz
+`.exe` çıktı adları artık hashli adlarla birlikte seçilir; aynı kayıt
+testi bu biçimi ve quoted olmayan `/VERBOSE:LIB` Windows Kits yollarını
+kanıtlar. Bu olası biçim farkının gerçek hatayı çözdüğü ancak yeni Windows
+koşusuyla doğrulanabilir. Kayıt aracı hatasında iki build logu artık ayrı
+yayınlanamaz tanı artefaktına korunur; sürüm kümesi üretilmez. Rust 1.93.1
+Command debug çıktısı platforma bağlıdır: [Windows uygulaması](https://github.com/rust-lang/rust/blob/1.93.1/library/std/src/sys/process/windows.rs).
