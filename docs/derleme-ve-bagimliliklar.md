@@ -405,3 +405,19 @@ araç dizin adı 14.51.36231 iken dosya metadata sürümü 14.51.36260.0
 olduğundan klasör adı sürüm kanıtı sayılmaz. [Kalıcı defter](derleme-platform-kaniti-v1.tsv)
 ve fixture raw JSON byte'ları indirilen artefakt/hash/source ile eşleşir.
 İlk iki Windows ret koşusu saklıdır; başarı yeni exact kaynak içindir.
+
+## K-198 temiz Windows kurulum/kaldırma — kanıt açık
+
+`scripts/temiz-windows-kurulum-prova.py` stock Server Core LTSC 2025
+immutable digest'inde mevcut PowerShell ile kur/program/LSP/kaldır
+zincirini yürütür. Rust veya harici VC runtime kurulmaz. Exact artefakt
+SHA/hash, staged iki ikili ve installer byte hash denetlenir. Aynı
+ContainerUser container'ında Türkçe boşluklu hedefe kurulur; manifest
+iki exact path/hash/source kaydı ister. Program/LSP ardından manifestli
+kaldırma ve dosya yokluğu doğrulanır. Kapanışta yalnız bu provanın UUID
+container'ı kaldırılır. Source/helper/installer/prova hash'leri ham
+raporda ayrı tutulur. GB-035 güven sınırı ADR-068'dedir.
+
+Yerel macOS Parallels CLI inventory çağrısı servise bağlanamadı; guest
+listesi/kanıtı elde edilmedi. Kullanıcının Mac'i yeniden başlatılmadı.
+Fiziksel/VM macOS temiz runtime ve minimum OS kanıtı açık kalır.

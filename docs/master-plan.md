@@ -993,3 +993,10 @@ kur/program/LSP/kaldır üç platformda geçti. GCC 13.3.0, Apple Clang 21.0.0
 link kaydında doğrulandı. Ham runtime/provenance ve artifact hash'leri
 [platform defterinde](derleme-platform-kaniti-v1.tsv) korunur. K-192 minimum OS, bütün native C
 araçları ve fiziksel temiz makine kanıtı ayrıca açıktır.
+
+K-198 temiz Server Core kurulum/kaldırma dilimi hazırdır; exact source/
+byte/script hash'leri, Türkçe boşluklu ContainerUser dizini, manifest
+path/hash/source, program/LSP ve kaldırma yokluk kanıtı istenir. Gerçek
+Windows koşusu açık; desktop/minimum OS/fiziksel macOS ve bütün IO
+tamamlanmış gösterilmez. ADR-068/GB-035. Spec/RFC/tanı/API, production
+Rust katmanları, release dosya kümesi ve benchmark tarihçesi değişmez.

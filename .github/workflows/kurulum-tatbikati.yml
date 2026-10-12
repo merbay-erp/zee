@@ -14,6 +14,7 @@ on:
         options:
           - release
           - clean-windows
+          - clean-windows-install
       source_run:
         description: "clean-windows: başarılı Windows artefaktının run kimliği"
         required: false
@@ -33,7 +34,7 @@ permissions:
 
 jobs:
   tatbikat:
-    if: inputs.mode != 'clean-windows'
+    if: inputs.mode != 'clean-windows' && inputs.mode != 'clean-windows-install'
     strategy:
       fail-fast: false
       matrix:
@@ -105,7 +106,7 @@ jobs:
           if-no-files-found: ignore
           retention-days: 90
   temiz_windows:
-    if: inputs.mode == 'clean-windows'
+    if: inputs.mode == 'clean-windows' || inputs.mode == 'clean-windows-install'
     runs-on: windows-latest
     timeout-minutes: 25
     permissions:
@@ -117,7 +118,11 @@ jobs:
           persist-credentials: false
       - name: Kaynak/ikili/LSP ret kapıları
         shell: pwsh
-        run: python scripts/tests/temiz-windows-test.py
+        run: |
+          python scripts/tests/temiz-windows-test.py
+          if ($LASTEXITCODE -ne 0) { throw "runtime ret tests failed" }
+          python scripts/tests/temiz-windows-kurulum-test.py
+          if ($LASTEXITCODE -ne 0) { throw "install ret tests failed" }
       - name: Exact Windows release artefaktını indir
         shell: pwsh
         env:
@@ -129,12 +134,21 @@ jobs:
           gh run download $env:SOURCE_RUN --repo $env:GITHUB_REPOSITORY --name "calisma-ortami-$env:SOURCE_SHA-Windows" --dir "$env:RUNNER_TEMP\source"
           if ($LASTEXITCODE -ne 0) { throw "source artifact download failed" }
       - name: Nano Server program ve LSP provası
+        if: inputs.mode == 'clean-windows'
         shell: pwsh
         env:
           SOURCE_SHA: ${{ inputs.source_sha }}
         run: |
           python scripts/temiz-windows-prova.py --artefakt "$env:RUNNER_TEMP\source\surum" --beklenen-sha $env:SOURCE_SHA --rapor "$env:RUNNER_TEMP\temiz-windows.json"
           if ($LASTEXITCODE -ne 0) { throw "clean runtime proof failed" }
+      - name: Server Core kurulum program LSP ve kaldırma provası
+        if: inputs.mode == 'clean-windows-install'
+        shell: pwsh
+        env:
+          SOURCE_SHA: ${{ inputs.source_sha }}
+        run: |
+          python scripts/temiz-windows-kurulum-prova.py --artefakt "$env:RUNNER_TEMP\source\surum" --beklenen-sha $env:SOURCE_SHA --rapor "$env:RUNNER_TEMP\temiz-windows.json"
+          if ($LASTEXITCODE -ne 0) { throw "clean install proof failed" }
       - name: Runtime kanıtını veya başarısızlık kaydını koru
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

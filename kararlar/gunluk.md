@@ -3817,8 +3817,15 @@ K-197 kapanma: release c7e3d04, prova 27c0fa9/run 38253777857/job
 program/LSP geçti. Kurulum/kaldırma, desktop/minimum OS ve bütün IO ayrı.
 
 K-196 b153064/run 38252942210 üç platformda geçti; artifact byte'ları,
-four linker record ve SDK sürümleri ayrıca doğrulandı. K-196 kapandı.
+dört linker kaydı ve SDK sürümleri ayrıca doğrulandı. K-196 kapandı.
 GCC 13.3.0, Clang 21.0.0/SDK 26.5, MSVC FileVersion 14.51.36260.0/SDK
 10.0.26100.0. K-197 Nano Server program/LSP kanıtıyla kapalı; test faz
 matrisi 726/726 geçti. Fiziksel clean Windows/macOS, minimum OS ve tüm
 IO/bütün native C araçları K-192 içinde ayrıca açıktır.
+
+K-198 temiz Server Core kurulum/kaldırma dilimi hazırdır; exact source/
+byte/script hash'leri, Türkçe boşluklu ContainerUser dizini, manifest
+path/hash/source, program/LSP ve kaldırma yokluk kanıtı istenir. Gerçek
+Windows koşusu açık; desktop/minimum OS/fiziksel macOS ve bütün IO
+tamamlanmış gösterilmez. ADR-068/GB-035. Spec/RFC/tanı/API, production
+Rust katmanları, release dosya kümesi ve benchmark tarihçesi değişmez.

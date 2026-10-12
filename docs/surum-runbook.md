@@ -106,3 +106,13 @@ kur/program/LSP/kaldır üç platformda geçti. GCC 13.3.0, Apple Clang 21.0.0
 link kaydında doğrulandı. Ham runtime/provenance ve artifact hash'leri
 [platform defterinde](derleme-platform-kaniti-v1.tsv) korunur. K-192 minimum OS, bütün native C
 araçları ve fiziksel temiz makine kanıtı ayrıca açıktır.
+
+K-198 aynı stock Server Core container'ında kur/program/LSP/kaldır:
+
+```sh
+gh workflow run kurulum-tatbikati.yml --ref codex/zee-derleme-bagimlilik -f mode=clean-windows-install -f source_run=38252942210 -f source_sha=b1530641a3f902047b57ad6e7c0c004ec5f1c420
+```
+
+Kaynak kendi incelenmiş successful release koşusudur; release ve prova
+commit'i farklı olabilir ve ayrı kaydedilir. Actual Server Core sonucu
+gelmeden K-198 kapalı sayılmaz. Masaüstü/minimum OS/fiziksel macOS ayrı.
