@@ -63,6 +63,16 @@ class KayitTestleri(unittest.TestCase):
         parse = runpy.run_path(str(SCRIPT))["quoted"]
         value = r"C:\Program Files\Microsoft Visual Studio\link.exe"
         self.assertEqual(parse("INFO " + json.dumps(value)), [value])
+        from unittest.mock import patch
+        sdk = r"C:\Program Files (x86)\Windows Kits\10\Lib\10.0.26100.0\um\x64\kernel32.lib"
+        for clone, path in self.logs.items():
+            lines = [' INFO rustc_codegen_ssa::back::link "cc" ' + json.dumps('/OUT:C:\\build\\' + binary + '.exe')
+                     for binary in ('dil', 'dillsp')]
+            path.write_text('\n'.join(lines) + '\nSearching ' + sdk + '\n', encoding='utf-8')
+        with patch('shutil.which', return_value=sys.executable):
+            data = self.kaydet(self.logs, self.sha)
+        self.assertEqual(set(data['clones']['a']['binaries']), {'dil', 'dillsp'})
+        self.assertEqual(data['clones']['b']['sdkVersions'][sdk], '10.0.26100.0')
 
 
 if __name__ == "__main__":

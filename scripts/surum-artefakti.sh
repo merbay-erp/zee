@@ -126,7 +126,16 @@ done
 
 python_komutu=python
 command -v python3 >/dev/null 2>&1 && python_komutu=python3
-"$python_komutu" "$depo_koku/scripts/derleme-ortami-kaydet.py" --a "$gecici/a/build.log" --b "$gecici/b/build.log" --sha "$sha" --out "$gecici/build-environment.json"
+if ! "$python_komutu" "$depo_koku/scripts/derleme-ortami-kaydet.py" --a "$gecici/a/build.log" --b "$gecici/b/build.log" --sha "$sha" --out "$gecici/build-environment.json"; then
+    if [[ -n "${ZEE_SURUM_TANI_DIZINI:-}" ]]; then
+        mkdir -p "$ZEE_SURUM_TANI_DIZINI"
+        cp "$gecici/a/build.log" "$ZEE_SURUM_TANI_DIZINI/a-build.log"
+        cp "$gecici/b/build.log" "$ZEE_SURUM_TANI_DIZINI/b-build.log"
+        printf '%s\n' "$sha" > "$ZEE_SURUM_TANI_DIZINI/GIT_SHA"
+        printf 'YAYINLANAMAZ: linker ortam kanıtı eksik.\n' > "$ZEE_SURUM_TANI_DIZINI/DURUM"
+    fi
+    exit 1
+fi
 mkdir -p "$cikti"
 cp "$gecici/a/target/$release_dizini/dil$uzanti" "$gecici/a/target/$release_dizini/dillsp$uzanti" "$cikti/"
 arac=(cargo run -q --locked --bin surum_artefakti --)

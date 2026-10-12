@@ -1,0 +1,58 @@
+{
+  "sema": "zee-calisma-ortami-1",
+  "sonuc": "gecti",
+  "tarih_utc": "2026-10-12T12:41:46.739821+00:00",
+  "os": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "mimari": "arm64",
+  "python": "3.14.7",
+  "ikililer": {
+    "dil": {
+      "sha256": "2e32b96038f641166252df7c9d8b9ea67f4f1d2603ef0cfa18872fd5b7bb54a1",
+      "arac": "/usr/bin/otool",
+      "dogrudan": [
+        "/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation",
+        "/System/Library/Frameworks/Security.framework/Versions/A/Security",
+        "/System/Library/Frameworks/SystemConfiguration.framework/Versions/A/SystemConfiguration",
+        "/usr/lib/libSystem.B.dylib",
+        "/usr/lib/libiconv.2.dylib"
+      ],
+      "abi_basliklari": [
+        "cmd LC_BUILD_VERSION",
+        "minos 11.0",
+        "sdk 26.5",
+        "version 1267.0",
+        "version 0.0"
+      ],
+      "ham_arac_ciktisi": "/Users/runner/work/_temp/bin/dil:\n\t/System/Library/Frameworks/SystemConfiguration.framework/Versions/A/SystemConfiguration (compatibility version 1.0.0, current version 1405.120.5)\n\t/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation (compatibility version 150.0.0, current version 5026.5.4)\n\t/System/Library/Frameworks/Security.framework/Versions/A/Security (compatibility version 1.0.0, current version 61901.120.67)\n\t/usr/lib/libiconv.2.dylib (compatibility version 7.0.0, current version 7.0.0)\n\t/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1356.0.0)\n"
+    },
+    "dillsp": {
+      "sha256": "5bb6cea59fd7b65d4392e4417505d6a0db4060228b17ffb04138f1f733dca70a",
+      "arac": "/usr/bin/otool",
+      "dogrudan": [
+        "/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation",
+        "/System/Library/Frameworks/Security.framework/Versions/A/Security",
+        "/System/Library/Frameworks/SystemConfiguration.framework/Versions/A/SystemConfiguration",
+        "/usr/lib/libSystem.B.dylib",
+        "/usr/lib/libiconv.2.dylib"
+      ],
+      "abi_basliklari": [
+        "cmd LC_BUILD_VERSION",
+        "minos 11.0",
+        "sdk 26.5",
+        "version 1267.0",
+        "version 0.0"
+      ],
+      "ham_arac_ciktisi": "/Users/runner/work/_temp/bin/dillsp:\n\t/System/Library/Frameworks/SystemConfiguration.framework/Versions/A/SystemConfiguration (compatibility version 1.0.0, current version 1405.120.5)\n\t/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation (compatibility version 150.0.0, current version 5026.5.4)\n\t/System/Library/Frameworks/Security.framework/Versions/A/Security (compatibility version 1.0.0, current version 61901.120.67)\n\t/usr/lib/libiconv.2.dylib (compatibility version 7.0.0, current version 7.0.0)\n\t/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1356.0.0)\n"
+    }
+  },
+  "sinir": "Rust araçları PATH dışında; temiz makine/minimum OS/SDK provenance kanıtı değildir.",
+  "git_sha": "e3adc22895840fc25069153b3457f17b74a2836d",
+  "prova": {
+    "path": "/usr/bin:/bin:/usr/sbin:/sbin",
+    "rust_araclari": "yok",
+    "surum": "dil 0.8.0-dev — Türkçe programlama dili (bootstrap, Stage 0) — morfoloji zee-tr-1 — IO zee-io-1",
+    "program_ciktisi": "Dünyaya merhaba\n",
+    "program_exit": 0,
+    "lsp_initialize_shutdown_exit": "gecti"
+  }
+}

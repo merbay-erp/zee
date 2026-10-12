@@ -31,9 +31,11 @@ def kaydet(logs, sha):
             fields = quoted(line)
             binary = None
             for value in fields:
+                # MSVC çıktı anahtarı Cargo'nun hash'li veya düz exe adını taşır.
+                value = re.sub(r"^/OUT:", "", value, flags=re.IGNORECASE)
                 name = PureWindowsPath(value).name if "\\" in value else Path(value).name
                 for candidate in ("dil", "dillsp"):
-                    if re.fullmatch(candidate + r"-[0-9a-f]+(?:\.exe)?", name):
+                    if re.fullmatch(candidate + r"(?:-[0-9a-f]+)?(?:\.exe)?", name):
                         binary = candidate
             if binary is None:
                 continue
@@ -60,7 +62,9 @@ def kaydet(logs, sha):
                                "command": line.strip(), "sdk_references": sdk_paths}
         if set(records) != {"dil", "dillsp"}:
             raise ValueError(f"İki gerçek release link komutu yok: {clone}")
-        sdk_observations = sorted(set(v for v in quoted(text) if ".sdk" in v or "Windows Kits" in v))
+        sdk_observations = sorted(set(
+            [v for v in quoted(text) if ".sdk" in v or "Windows Kits" in v] +
+            re.findall(r'(?im)[a-z]:[\\/][^\r\n"]*?Windows Kits[\\/]10[\\/]Lib[\\/][0-9.]+[\\/][^\r\n"]*', text)))
         sdk_versions = {}
         for reference in sdk_observations:
             windows_sdk = re.search(r"Windows Kits[\\/]10[\\/]Lib[\\/]([0-9.]+)[\\/]", reference, re.IGNORECASE)
