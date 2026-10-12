@@ -163,7 +163,7 @@ initialize/shutdown/exit geçti. Runtime Ubuntu 24.04.5 x86_64; libc6
 `2.39-0ubuntu8.9`, libgcc-s1 `14.2.0-4ubuntu2~24.04.1`, libssl3t64
 `3.0.13-0ubuntu3.15`. macOS arm64 Docker hostunda amd64 emülasyonu kullanıldı;
 bu performans ya da bare-metal minimum OS ölçümü değildir. Windows/macOS
-temiz fiziksel makine ve minimum OS/linker-SDK provenance sınırları açıktır.
+temiz fiziksel makine ve minimum OS/tüm native C araçları provenance sınırları açıktır.
 
 Kalıcı JSON raporları `.gitattributes` içinde binary olarak işaretlidir;
 Windows CRLF dahil indirilen ham byte'lar Git satır sonu dönüşümünden korunur.
@@ -230,7 +230,7 @@ hash'lerini üretti. İndirilen ikili byte'ları runtime/provenance/SHA256SUMS
 ile eşleştirildi; statik CRT import kontrolü ve kur/program/LSP/kaldır geçti.
 Ham rapor/provenance ve kaynak/job/artifact özetleri kalıcı defterdedir.
 K-195 bu sınırlı dağıtım kapsamında kapandı. Temiz Windows/macOS, minimum OS ve
-linker/SDK üretim provenance sınırları K-192 içinde ayrıca açıktır.
+tüm native C araçlarının üretim kaydı K-192 içinde ayrıca açıktır.
 
 Rust bakım üreticisi dil semantiği maintenance kapsamındadır; yeni grammar,
 komut, tanı ya da gömme API exportu yoktur. ADR-046/katman fixture ve
@@ -256,9 +256,9 @@ Kernel Docker hostunundur; minimum OS tam destek veya performans garantisi
 değildir. [Ham rapor](temiz-linux-runtime-kaniti-2026-10-12.json)
 SHA-256 `5d9df5d2fb4a6c4273c8efee1ed1824016271153b02fb3461a85f92c09b56d5e`; Dockerfile, base/derived image kimliği,
 package/kernel/ikili hash ve LSP yanıtları raporda korunur. K-192
-minimum OS/linker-SDK ve temiz Windows/macOS sınırları ayrı açıktır.
+minimum OS/tüm native C araçları ve temiz Windows/macOS sınırları ayrı açıktır.
 
-## K-196 gerçek linker ve SDK izleme — kanıtı açık
+## K-196 gerçek linker ve SDK izleme — exact üç platform kanıtıyla kapalı
 
 Release derlemesi sabit Rust 1.93.1 `RUSTC_LOG=rustc_codegen_ssa::back::link=info`
 izini alır. [Rust compiler tracing](https://rustc-dev-guide.rust-lang.org/tracing.html)
@@ -289,7 +289,8 @@ Dil spec/RFC/tanı/API yüzeyi değişmedi. ADR-046/katman ve SCC fixture
 incelendi, yeni production import/kenar yok; kapılar geçti. Verbose link
 bayrakları nedeniyle ADR-045/049/ölçüm etkisi incelendi; profil karşılaştırması
 olmadan benchmark tarihçesine baseline/performans satırı eklenmedi.
-Exact clean kaynak ve uzak üç platform sonuçları gelmeden K-196 kapalı değildir.
+Exact b153064 kaynağı/run 38252942210 üç platformda geçti; K-196 bu
+linker driver/SDK referansı kapsamında kapandı.
 
 GB-033 güven sınırı: kayıt aracı yalnız üreticinin kendi temiz-klon
 loglarıyla kullanılır; harici indirilen log güvenilir girdi değildir.
@@ -370,7 +371,7 @@ deneyi resolver'ı yalnız yerel Python executable'ına yönlendirerek
 indirilen komuttan hiçbir araç yürütmedi; bu Windows üretim sürüm
 kanıtı değildir. Gerçek FileVersionInfo üretim kapısı ayrı beklenir.
 
-## K-197 temiz Windows runtime provası — kanıt açık
+## K-197 temiz Windows runtime provası — exact kanıtla kapalı
 
 `scripts/temiz-windows-prova.py` yalnız Python standart kitaplığı kullanır.
 Exact release SHA/hash/yol/tekillik denetimi Docker veya ikili yürütmeden
@@ -388,4 +389,19 @@ ContainerUser/network none/read-only bind kullanılır; root geçici ve
 yazılabilirdir, process isolation host kernel'ini paylaşır. Trusted kendi
 release byte'ları dışında sandbox sözü verilmez (GB-034). Desktop/minimum
 Windows, bütün IO davranışları ve temiz fiziksel macOS ayrı açıktır.
-Gerçek Windows sonucu alınmadan K-197 kapanmaz.
+Release c7e3d04/prova 27c0fa9 run 38253777857 job 114826470199 gerçek
+Windows Nano Server program/LSP kanıtıyla K-197 kapandı. [Ham rapor](temiz-windows-runtime-kaniti-2026-10-12.json)
+ve [defter](temiz-windows-platform-kaniti-v1.tsv) kaynak/image/prova aracı
+hash'i ve ikili byte'larını bağlar; Cargo kurulum kanıtı veya desktop
+Windows desteği bu dar kapının kapsamı değildir.
+
+K-196 exact kapanma kaynağı `b1530641a3f902047b57ad6e7c0c004ec5f1c420`,
+[run 38252942210](https://github.com/itwise-bilisim/zee/actions/runs/38252942210).
+Üç platform eş iki-klon SHA-256 ve kur/program/LSP/kaldır geçti. Her a/b
+klonunda dil/dillsp gerçek araç path/byte hash/sürüm/komut kaydı vardır.
+Linux GCC 13.3.0, macOS Apple Clang 21.0.0 (clang-2100.1.1.101)/SDK 26.5,
+Windows MSVC linker FileVersion 14.51.36260.0/SDK 10.0.26100.0. Windows
+araç dizin adı 14.51.36231 iken dosya metadata sürümü 14.51.36260.0
+olduğundan klasör adı sürüm kanıtı sayılmaz. [Kalıcı defter](derleme-platform-kaniti-v1.tsv)
+ve fixture raw JSON byte'ları indirilen artefakt/hash/source ile eşleşir.
+İlk iki Windows ret koşusu saklıdır; başarı yeni exact kaynak içindir.

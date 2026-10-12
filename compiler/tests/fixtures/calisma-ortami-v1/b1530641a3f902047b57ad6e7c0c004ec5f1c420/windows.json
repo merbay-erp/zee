@@ -1,0 +1,76 @@
+{
+  "sema": "zee-calisma-ortami-1",
+  "sonuc": "gecti",
+  "tarih_utc": "2026-10-12T13:14:06.715414+00:00",
+  "os": "Windows-2025Server-10.0.26100-SP0",
+  "mimari": "AMD64",
+  "python": "3.12.10",
+  "ikililer": {
+    "dil.exe": {
+      "sha256": "48a1d3a4b63834bf21342a0b6af33d52464473bcb8ce0962f894b58c1572008d",
+      "arac": "C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\VC\\Tools\\MSVC\\14.51.36231\\bin\\Hostx64\\x64\\dumpbin.exe",
+      "dogrudan": [
+        "ADVAPI32.dll",
+        "KERNEL32.dll",
+        "WS2_32.dll",
+        "advapi32.dll",
+        "api-ms-win-core-synch-l1-2-0.dll",
+        "bcrypt.dll",
+        "bcryptprimitives.dll",
+        "crypt32.dll",
+        "kernel32.dll",
+        "ntdll.dll",
+        "secur32.dll",
+        "ws2_32.dll"
+      ],
+      "abi_basliklari": [
+        "Microsoft (R) COFF/PE Dumper Version 14.51.36260.0",
+        "8664 machine (x64)",
+        "210D6039 time date stamp",
+        "14.51 linker version",
+        "6.00 operating system version",
+        "0.00 image version",
+        "6.00 subsystem version",
+        "0 Win32 version"
+      ],
+      "ham_arac_ciktisi": "Microsoft (R) COFF/PE Dumper Version 14.51.36260.0\r\nCopyright (C) Microsoft Corporation.  All rights reserved.\r\n\r\n\r\nDump of file D:\\a\\_temp\\bin\\dil.exe\r\n\r\nFile Type: EXECUTABLE IMAGE\r\n\r\n  Image has the following dependencies:\r\n\r\n    kernel32.dll\r\n    ws2_32.dll\r\n    secur32.dll\r\n    crypt32.dll\r\n    bcryptprimitives.dll\r\n    api-ms-win-core-synch-l1-2-0.dll\r\n    advapi32.dll\r\n    ntdll.dll\r\n    ADVAPI32.dll\r\n    KERNEL32.dll\r\n    bcrypt.dll\r\n    WS2_32.dll\r\n\r\n  Summary\r\n\r\n        2000 .data\r\n        1000 .fptable\r\n       39000 .pdata\r\n      1CE000 .rdata\r\n        4000 .reloc\r\n      564000 .text\r\n"
+    },
+    "dillsp.exe": {
+      "sha256": "d873c81763efb51cfc5a624cbfb2b281775a413a7d1cb1f56a62eb2e7791da75",
+      "arac": "C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\VC\\Tools\\MSVC\\14.51.36231\\bin\\Hostx64\\x64\\dumpbin.exe",
+      "dogrudan": [
+        "ADVAPI32.dll",
+        "KERNEL32.dll",
+        "WS2_32.dll",
+        "api-ms-win-core-synch-l1-2-0.dll",
+        "bcrypt.dll",
+        "bcryptprimitives.dll",
+        "kernel32.dll",
+        "ntdll.dll",
+        "ws2_32.dll"
+      ],
+      "abi_basliklari": [
+        "Microsoft (R) COFF/PE Dumper Version 14.51.36260.0",
+        "8664 machine (x64)",
+        "E7C9A68B time date stamp",
+        "14.51 linker version",
+        "6.00 operating system version",
+        "0.00 image version",
+        "6.00 subsystem version",
+        "0 Win32 version"
+      ],
+      "ham_arac_ciktisi": "Microsoft (R) COFF/PE Dumper Version 14.51.36260.0\r\nCopyright (C) Microsoft Corporation.  All rights reserved.\r\n\r\n\r\nDump of file D:\\a\\_temp\\bin\\dillsp.exe\r\n\r\nFile Type: EXECUTABLE IMAGE\r\n\r\n  Image has the following dependencies:\r\n\r\n    kernel32.dll\r\n    api-ms-win-core-synch-l1-2-0.dll\r\n    bcryptprimitives.dll\r\n    ws2_32.dll\r\n    ntdll.dll\r\n    ADVAPI32.dll\r\n    KERNEL32.dll\r\n    bcrypt.dll\r\n    WS2_32.dll\r\n\r\n  Summary\r\n\r\n        2000 .data\r\n        1000 .fptable\r\n       1E000 .pdata\r\n      120000 .rdata\r\n        3000 .reloc\r\n      32A000 .text\r\n"
+    }
+  },
+  "sinir": "Rust araçları PATH dışında; temiz makine/minimum OS/SDK provenance kanıtı değildir.",
+  "git_sha": "b1530641a3f902047b57ad6e7c0c004ec5f1c420",
+  "crt_sozlesmesi": "statik-crt-import-yok",
+  "prova": {
+    "path": "C:\\Windows\\System32;C:\\Windows",
+    "rust_araclari": "yok",
+    "surum": "dil 0.8.0-dev — Türkçe programlama dili (bootstrap, Stage 0) — morfoloji zee-tr-1 — IO zee-io-1",
+    "program_ciktisi": "Dünyaya merhaba\n",
+    "program_exit": 0,
+    "lsp_initialize_shutdown_exit": "gecti"
+  }
+}

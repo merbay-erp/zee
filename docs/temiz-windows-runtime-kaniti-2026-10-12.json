@@ -1,0 +1,63 @@
+{
+  "sema": "zee-temiz-windows-runtime-1",
+  "sonuc": "gecti",
+  "git_sha": "c7e3d04adf27905ade8b622d24bd76762123d2dc",
+  "prova_git_sha": "27c0fa9f566855c433e58607c3ecc9e66804059f",
+  "prova_araci_sha256": "79e6b3fedb510a9ba5a105264e4b3a8a323232bf81900e605ed049070d716d8d",
+  "tarih_utc": "2026-10-12T13:11:11.550666+00:00",
+  "base": "mcr.microsoft.com/windows/nanoserver@sha256:4fe6f59e0aadb628a933345eae1f5ab43a2af802969ac0e2ef996c66a3188438",
+  "image_id": "sha256:974fd0e86a90c651e28b63a325cc4dc9b518630331e7928a3980304433d34f58",
+  "image_os_version": "10.0.26100.33438",
+  "repo_digests": [
+    "mcr.microsoft.com/windows/nanoserver@sha256:4fe6f59e0aadb628a933345eae1f5ab43a2af802969ac0e2ef996c66a3188438"
+  ],
+  "docker_server_version": "29.7.2",
+  "inventory": "\r\nMicrosoft Windows [Version 10.0.26100.33438]\r\n",
+  "container_arguments": [
+    "run",
+    "--rm",
+    "--isolation",
+    "process",
+    "--network",
+    "none",
+    "--user",
+    "ContainerUser",
+    "--env",
+    "PATH=C:\\Windows\\System32;C:\\Windows",
+    "--mount",
+    "type=bind,src=C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\zee-clean-windows-yn3wawl5,dst=C:\\zee,readonly"
+  ],
+  "rust_araclari": "yok",
+  "program_exit": 0,
+  "program_ciktisi": "Dünyaya merhaba\n",
+  "lsp_initialize_shutdown_exit": "gecti",
+  "lsp_cevaplari": [
+    {
+      "jsonrpc": "2.0",
+      "id": 1,
+      "result": {
+        "capabilities": {
+          "textDocumentSync": 1,
+          "completionProvider": {},
+          "hoverProvider": true,
+          "definitionProvider": true,
+          "renameProvider": true
+        },
+        "serverInfo": {
+          "name": "dillsp",
+          "version": "0.8.0-dev"
+        }
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "id": 2,
+      "result": null
+    }
+  ],
+  "ikililer": {
+    "dil.exe": "48a1d3a4b63834bf21342a0b6af33d52464473bcb8ce0962f894b58c1572008d",
+    "dillsp.exe": "d873c81763efb51cfc5a624cbfb2b281775a413a7d1cb1f56a62eb2e7791da75"
+  },
+  "sinir": "Nano Server process isolation paylaşılmış host kernel; yalnız program/LSP. Read-only bind, geçici yazılabilir root. Masaüstü/minimum OS veya bütün IO kanıtı değildir."
+}

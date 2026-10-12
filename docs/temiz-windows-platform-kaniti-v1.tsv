@@ -1,0 +1,3 @@
+# zee-temiz-windows-platform-kaniti-1
+# release_sha	prova_sha	source_run	prova_run	job	artifact	zip_sha256	rapor_sha256	rapor_yolu	sonuc
+c7e3d04adf27905ade8b622d24bd76762123d2dc	27c0fa9f566855c433e58607c3ecc9e66804059f	38244549913	38253777857	114826470199	11749058268	8a875c1b02cda0558fd494bda1e62ec52988b3b4f67a48e9187fc5567fc6321d	f83c4054e96a2e005a75dc8625cd980249cf3b40e8478839eabd325d006f6a9e	docs/temiz-windows-runtime-kaniti-2026-10-12.json	gecti
