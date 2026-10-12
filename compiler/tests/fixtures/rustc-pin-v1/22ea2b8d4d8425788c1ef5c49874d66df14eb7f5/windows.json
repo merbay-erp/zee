@@ -1,0 +1,21 @@
+{
+  "sema": "zee-rustc-pin-prova-1",
+  "sonuc": "gecti",
+  "prova_git_sha": "22ea2b8d4d8425788c1ef5c49874d66df14eb7f5",
+  "calisma_agaci_temiz": true,
+  "prova_araci_sha256": "dbdf49371816cb8cadde316fe5b9d6ad5019645eae1169f4b81802c21141ca89",
+  "helper_sha256": "b634e533a312fa81f2e0cdadd5082def6ff6dff8d4b434d452d651e320a6f478",
+  "os": "Windows-2025Server-10.0.26100-SP0",
+  "mimari": "AMD64",
+  "rustc_path": "C:\\Users\\runneradmin\\.rustup\\toolchains\\1.93.1-x86_64-pc-windows-msvc\\bin\\rustc.exe",
+  "rustc_sha256": "830890c09c00c504a860016bb34903a5df44bddb8115dc8db15cbf23d5464a2b",
+  "pin_sha256": "3260f10937490e272267a11d1bca85ee76b0ef972022ab8fba8a1df0dbb3b397",
+  "rustc_version": "rustc 1.93.1 (01f6ddf75 2026-02-11)",
+  "cargo_version": "cargo 1.93.1 (083ac5135 2025-12-15)",
+  "compiler_env": "C:/Users/runneradmin/.rustup/toolchains/1.93.1-x86_64-pc-windows-msvc/bin/rustc.exe",
+  "wrapper": "",
+  "workspace_wrapper": "",
+  "compiler_config_poisoned": true,
+  "build_log": "\u001b[1m\u001b[92m   Compiling\u001b[0m zee_exact_pin_probe v0.0.0 (C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\zee-rustc-pin.13qaln\\proje)\n\u001b[1m\u001b[92m     Running\u001b[0m `C:/Users/runneradmin/.rustup/toolchains/1.93.1-x86_64-pc-windows-msvc/bin/rustc.exe --crate-name build_script_build --edition=2021 build.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type bin --emit=dep-info,link -C embed-bitcode=no --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=fed113f1944df9ec -C extra-filename=-9870bc887dbe7b9f --out-dir 'C:/Users/RUNNER~1/AppData/Local/Temp/zee-rustc-pin.13qaln/target\\debug\\build\\zee_exact_pin_probe-9870bc887dbe7b9f' -L 'dependency=C:/Users/RUNNER~1/AppData/Local/Temp/zee-rustc-pin.13qaln/target\\debug\\deps'`\n\u001b[1m\u001b[92m     Running\u001b[0m `C:/Users/RUNNER~1/AppData/Local/Temp/zee-rustc-pin.13qaln/target\\debug\\build\\zee_exact_pin_probe-9870bc887dbe7b9f\\build-script-build`\n\u001b[1m\u001b[92m     Running\u001b[0m `C:/Users/runneradmin/.rustup/toolchains/1.93.1-x86_64-pc-windows-msvc/bin/rustc.exe --crate-name zee_exact_pin_probe --edition=2021 'src\\main.rs' --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type bin --emit=dep-info,link -C embed-bitcode=no -C debuginfo=2 --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=d4834d02c05ed8b0 --out-dir 'C:/Users/RUNNER~1/AppData/Local/Temp/zee-rustc-pin.13qaln/target\\debug\\deps' -L 'dependency=C:/Users/RUNNER~1/AppData/Local/Temp/zee-rustc-pin.13qaln/target\\debug\\deps'`\n\u001b[1m\u001b[92m    Finished\u001b[0m `dev` profile [unoptimized + debuginfo] target(s) in 2.36s\n",
+  "sinir": "Gerçek küçük Cargo/build-script/ikili derlemesi; tam Zee release veya tüm Cargo profil/linker config kaydı değildir."
+}

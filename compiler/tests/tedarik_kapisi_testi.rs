@@ -248,6 +248,80 @@ fn vendor_kaniti_iki_uretimi_ve_bos_cargo_home_offline_derlemeyi_ister() {
             String::from_utf8_lossy(&sonuc.stderr)
         );
     }
+    let pin_kaydi = oku("docs/rustc-pin-platform-kaniti-v1.tsv");
+    assert_eq!(
+        pin_kaydi.lines().next(),
+        Some("# zee-rustc-pin-platform-kaniti-1")
+    );
+    let mut platformlar = std::collections::BTreeSet::new();
+    for satir in pin_kaydi
+        .lines()
+        .filter(|s| !s.is_empty() && !s.starts_with('#'))
+    {
+        let alanlar = satir.split('\t').collect::<Vec<_>>();
+        let [sha, os, run, job, artifact, zip_sha, rapor_sha, yol, sonuc] = alanlar.as_slice()
+        else {
+            panic!("compiler pin kanıtı dokuz alan taşımalı");
+        };
+        assert!(platformlar.insert(*os));
+        assert_eq!(*sonuc, "gecti");
+        for (deger, uzunluk) in [(sha, 40), (zip_sha, 64), (rapor_sha, 64)] {
+            assert_eq!(deger.len(), uzunluk);
+            assert!(deger
+                .bytes()
+                .all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase()));
+        }
+        for kimlik in [run, job, artifact] {
+            assert!(kimlik.parse::<u64>().unwrap() > 0);
+        }
+        let baytlar = std::fs::read(depo().join(yol)).unwrap();
+        use sha2::Digest;
+        let ozet = sha2::Sha256::digest(&baytlar)
+            .iter()
+            .map(|b| format!("{b:02x}"))
+            .collect::<String>();
+        assert_eq!(ozet, *rapor_sha);
+        let rapor: serde_json::Value = serde_json::from_slice(&baytlar).unwrap();
+        assert_eq!(rapor["sema"], "zee-rustc-pin-prova-1");
+        assert_eq!(rapor["prova_git_sha"], *sha);
+        assert_eq!(rapor["sonuc"], "gecti");
+        assert_eq!(rapor["calisma_agaci_temiz"], true);
+        assert_eq!(rapor["compiler_config_poisoned"], true);
+        assert!(rapor["rustc_version"]
+            .as_str()
+            .unwrap()
+            .starts_with("rustc 1.93.1 "));
+        assert!(rapor["cargo_version"]
+            .as_str()
+            .unwrap()
+            .starts_with("cargo 1.93.1 "));
+        assert_eq!(rapor["wrapper"], "");
+        assert_eq!(rapor["workspace_wrapper"], "");
+        assert_eq!(
+            rapor["rustc_path"].as_str().unwrap().replace('\\', "/"),
+            rapor["compiler_env"].as_str().unwrap().replace('\\', "/")
+        );
+        for alan in [
+            "rustc_sha256",
+            "pin_sha256",
+            "prova_araci_sha256",
+            "helper_sha256",
+        ] {
+            let hash = rapor[alan].as_str().unwrap();
+            assert_eq!(hash.len(), 64);
+            assert!(hash
+                .bytes()
+                .all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase()));
+        }
+        assert!(rapor["build_log"]
+            .as_str()
+            .unwrap()
+            .contains("zee_exact_pin_probe"));
+    }
+    assert_eq!(
+        platformlar,
+        std::collections::BTreeSet::from(["Linux", "macOS", "Windows"])
+    );
 }
 
 #[test]

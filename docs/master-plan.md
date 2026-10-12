@@ -1008,11 +1008,17 @@ ve [kimlik/hash defteri](temiz-windows-platform-kaniti-v1.tsv) kalıcıdır.
 ContainerUser/network none/read-only bind; host kernel, fiziksel/desktop
 minimum OS ve tüm IO kapsamı ayrı açıktır.
 
-K-199 Cargo compiler/wrapper pin düzeltmesi yerelde kanıtlandı: helper
+K-199 Cargo compiler/wrapper pin düzeltmesi üç platform exact kanıtıyla kapandı: helper
 exact kurulu rustc executable path/version'ını Cargo RUSTC'ye bağlar ve
 wrapper/config seçimini boş değerle kapatır. Önce helper 1.93.1 bildirip
 Cargo RUSTC ile 1.97.1 çağırabiliyordu. Resmî release/offline girişi
 ambient compiler/wrapper seçimini korumaz; custom geliştirme wrapper
 kendi Cargo çağrısıyla kullanılır. Gerçek küçük Cargo poisoned ENV/config
-provasının üç platform exact kanıtı açık. ADR-068/GB-036; dil spec/RFC/
+provası exact 22ea2b8/run 38259341995 üç platformda geçti. ADR-068/GB-036; dil spec/RFC/
 tanı/API/production Rust kenarı ve release dosya kümesi değişmez.
+
+K-199 kapanma: 22ea2b8/run 38259341995; Linux/macOS/Windows gerçek
+Cargo/build-script/ikili Rust 1.93.1, empty wrappers ve temiz source
+kanıtı [kalıcı defterde](rustc-pin-platform-kaniti-v1.tsv). Helper/prova/pin
+hash'leri kaynakla ayrıca eşleşir. Tam Zee release ve bütün Cargo
+profil/linker/native C ayarları bu dar probe'un kapsamı değildir.
