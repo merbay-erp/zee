@@ -164,7 +164,8 @@ iki path/hash/source kaydıyla eşleşmelidir; kaldırma sonunda iki ikili ve
 manifest yokluğu denetlenir. Prova/helper ve installer hash'leri release
 source'undan ayrı kayıtlıdır. Host kernel, stock image, network none ve
 read-only bind sınırı değişmez; tam desktop/minimum OS veya bütün IO
-sözü verilmez. Gerçek Server Core sonucu gelmeden K-198 kapanmaz.
+sözü verilmez. K-198 release b153064/prova 33176cf run 38255788989/job 114833388588
+ile bu dar stock Server Core kur/program/LSP/kaldır kapsamında kapandı.
 
 GB-035: installer yalnız bu geçici container'ın ContainerUser dizinini
 yönetir; host manifest/kurulumuna dokunmaz. Son temizlik yalnız bu koşunun

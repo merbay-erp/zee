@@ -406,7 +406,7 @@ olduğundan klasör adı sürüm kanıtı sayılmaz. [Kalıcı defter](derleme-p
 ve fixture raw JSON byte'ları indirilen artefakt/hash/source ile eşleşir.
 İlk iki Windows ret koşusu saklıdır; başarı yeni exact kaynak içindir.
 
-## K-198 temiz Windows kurulum/kaldırma — kanıt açık
+## K-198 temiz Windows kurulum/kaldırma — exact kanıtla kapalı
 
 `scripts/temiz-windows-kurulum-prova.py` stock Server Core LTSC 2025
 immutable digest'inde mevcut PowerShell ile kur/program/LSP/kaldır
@@ -421,3 +421,12 @@ raporda ayrı tutulur. GB-035 güven sınırı ADR-068'dedir.
 Yerel macOS Parallels CLI inventory çağrısı servise bağlanamadı; guest
 listesi/kanıtı elde edilmedi. Kullanıcının Mac'i yeniden başlatılmadı.
 Fiziksel/VM macOS temiz runtime ve minimum OS kanıtı açık kalır.
+
+K-198 release b153064/prova 33176cf run 38255788989/job 114833388588
+ile geçti: stock Server Core 10.0.26100.33438, Docker 29.7.2, ContainerUser
+ve Türkçe boşluklu kurulum hedefi. Manifest exact iki path/hash/source ile
+eşleşir; program/LSP ve kaldırma sonrası dosya yokluğu doğrulandı. Prova,
+helper ve iki installer byte hash'i ayrıca kaynakla eşleştirildi.
+[Ham rapor](temiz-windows-kurulum-kaniti-2026-10-12.json),
+[defter](temiz-windows-platform-kaniti-v1.tsv) kalıcıdır. Bu kapsamta
+K-198 kapandı; fiziksel/desktop/minimum OS ve tüm IO ayrı K-192 sınırıdır.

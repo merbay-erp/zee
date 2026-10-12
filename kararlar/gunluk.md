@@ -3823,9 +3823,16 @@ GCC 13.3.0, Clang 21.0.0/SDK 26.5, MSVC FileVersion 14.51.36260.0/SDK
 matrisi 726/726 geçti. Fiziksel clean Windows/macOS, minimum OS ve tüm
 IO/bütün native C araçları K-192 içinde ayrıca açıktır.
 
-K-198 temiz Server Core kurulum/kaldırma dilimi hazırdır; exact source/
+K-198 temiz Server Core kurulum/kaldırma dilimi exact kanıtla kapandı; exact source/
 byte/script hash'leri, Türkçe boşluklu ContainerUser dizini, manifest
 path/hash/source, program/LSP ve kaldırma yokluk kanıtı istenir. Gerçek
-Windows koşusu açık; desktop/minimum OS/fiziksel macOS ve bütün IO
+Windows koşusu geçti; desktop/minimum OS/fiziksel macOS ve bütün IO
 tamamlanmış gösterilmez. ADR-068/GB-035. Spec/RFC/tanı/API, production
 Rust katmanları, release dosya kümesi ve benchmark tarihçesi değişmez.
+
+K-198 kapanma: release b153064/prova 33176cf/run 38255788989/job
+114833388588; stock Server Core 10.0.26100.33438'de Rust kurulmadan
+Türkçe dizine kur/program/LSP/kaldır geçti. [Ham rapor](../docs/temiz-windows-kurulum-kaniti-2026-10-12.json)
+ve [kimlik/hash defteri](../docs/temiz-windows-platform-kaniti-v1.tsv) kalıcıdır.
+ContainerUser/network none/read-only bind; host kernel, fiziksel/desktop
+minimum OS ve tüm IO kapsamı ayrı açıktır.

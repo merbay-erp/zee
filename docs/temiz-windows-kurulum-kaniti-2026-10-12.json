@@ -1,0 +1,76 @@
+{
+  "sema": "zee-temiz-windows-kurulum-1",
+  "sonuc": "gecti",
+  "git_sha": "b1530641a3f902047b57ad6e7c0c004ec5f1c420",
+  "prova_git_sha": "33176cf35102868343b0c2bd2119cd14443ab8d7",
+  "tarih_utc": "2026-10-12T13:34:16.495143+00:00",
+  "prova_araci_sha256": "4b743cf4208a5d8c4ccb55c4a9a8cd78cce6c4096b3a77e781c133a4a95e6b66",
+  "helper_sha256": "79e6b3fedb510a9ba5a105264e4b3a8a323232bf81900e605ed049070d716d8d",
+  "kurulum_betikleri": {
+    "kur.ps1": "0f9d0dea6a0847f76b076b3f1c1fe58bfa65a7c1e81459215f20912f4319a306",
+    "kaldir.ps1": "f47272e7386c0b1fc65f1e57fca33e5ed88cdf06d5eebf228d9199f4298489ac"
+  },
+  "base": "mcr.microsoft.com/windows/servercore@sha256:22505496dd4229dba63453ba0c6dc31c06fd3e11810e5b8e429aa6b16dab2457",
+  "image_id": "sha256:6945e72b2e92addfa509b4e3c0cd0ec688b4a4e5424256c495c08b25cc2b31ed",
+  "image_os_version": "10.0.26100.33438",
+  "repo_digests": [
+    "mcr.microsoft.com/windows/servercore@sha256:22505496dd4229dba63453ba0c6dc31c06fd3e11810e5b8e429aa6b16dab2457"
+  ],
+  "docker_server_version": "29.7.2",
+  "container_arguments": [
+    "run",
+    "--detach",
+    "--name",
+    "zee-k198-961827a312db4d938e6b940124582bf2",
+    "--isolation",
+    "process",
+    "--network",
+    "none",
+    "--user",
+    "ContainerUser",
+    "--env",
+    "PATH=C:\\Windows\\System32;C:\\Windows",
+    "--mount",
+    "type=bind,src=C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\zee-clean-install-5rixujzc,dst=C:\\zee,readonly"
+  ],
+  "inventory": "\r\nMicrosoft Windows [Version 10.0.26100.33438]\r\n",
+  "rust_araclari": "yok",
+  "kurulum": "gecti",
+  "kurulum_log": "Kuruldu (2 ikili) -> C:\\Users\\ContainerUser\\Zee Türkçe\\bin; manifest: C:\\Users\\ContainerUser\\Zee Türkçe\\veri\\kurulum-v1.tsv\r\n",
+  "manifest": "# zee-kurulum-1\n# dosya\tsha256\tkaynak_git_sha\nC:\\Users\\ContainerUser\\Zee Türkçe\\bin\\dil.exe\t48a1d3a4b63834bf21342a0b6af33d52464473bcb8ce0962f894b58c1572008d\tb1530641a3f902047b57ad6e7c0c004ec5f1c420\nC:\\Users\\ContainerUser\\Zee Türkçe\\bin\\dillsp.exe\td873c81763efb51cfc5a624cbfb2b281775a413a7d1cb1f56a62eb2e7791da75\tb1530641a3f902047b57ad6e7c0c004ec5f1c420\n\r\n",
+  "kaldirma": "gecti",
+  "kaldirma_log": "Kaldırıldı (2 dosya); manifest silindi.\r\n",
+  "container_temizligi": "gecti",
+  "program_exit": 0,
+  "program_ciktisi": "Dünyaya merhaba\n",
+  "ikililer": {
+    "dil.exe": "48a1d3a4b63834bf21342a0b6af33d52464473bcb8ce0962f894b58c1572008d",
+    "dillsp.exe": "d873c81763efb51cfc5a624cbfb2b281775a413a7d1cb1f56a62eb2e7791da75"
+  },
+  "lsp_initialize_shutdown_exit": "gecti",
+  "lsp_cevaplari": [
+    {
+      "jsonrpc": "2.0",
+      "id": 1,
+      "result": {
+        "capabilities": {
+          "textDocumentSync": 1,
+          "completionProvider": {},
+          "hoverProvider": true,
+          "definitionProvider": true,
+          "renameProvider": true
+        },
+        "serverInfo": {
+          "name": "dillsp",
+          "version": "0.8.0-dev"
+        }
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "id": 2,
+      "result": null
+    }
+  ],
+  "sinir": "Stock Server Core, ContainerUser, ağsız read-only bind; geçici root ve host kernel paylaşımı. Seçili kur/program/LSP/kaldır; masaüstü/minimum OS veya bütün IO kanıtı değildir."
+}
