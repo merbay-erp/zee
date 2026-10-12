@@ -3662,3 +3662,14 @@ manifest başlığını ve dosya sahipliğini denetler. K-194 Windows sonucu bek
 - **Etki:** Compiler kaynakları, dil yüzeyi, manifest şeması ve artefakt
   kümesi değişmez. ADR-071, güvenlik defteri, sürüm/runbook, master plan,
   V1 kapısı, backlog ve üretilen kanıt özeti bu düzeltmeyle güncellenir.
+
+### K-192 ilk uzak sonuç ve Windows log düzeltmesi
+
+`38235725614` koşusu `3bf59d6dd4641ba91fa983048f051cbbda6b70d3` kaynağında
+Linux/macOS tatbikatını geçti. Windows program/LSP JSON sonucu `gecti`, fakat
+rapor sonrası Türkçe/ok işaretli log satırı CP1252 UnicodeEncodeError ile
+process exit 1 üretti. Log özeti ASCII, proof JSON UTF-8 olarak korundu;
+ret testleri strict ASCII stdio'da, macOS gerçek prova da aynı stdio'da geçti.
+Tatbikat artefaktı aynı koşunun `surum/` byte'larını raporla saklar; release
+kümesi değişmez. Linux OpenSSL 3 ve Windows VC runtime bağımlılığı gerçek
+raporda görüldü; temiz runtime/minimum OS/profil kanıtı K-192 içinde açıktır.

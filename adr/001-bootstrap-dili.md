@@ -30,8 +30,11 @@ platform davranışını dış kütüphaneye devretmez. Kriptografik imza, JSON 
 
 ## Gerekçe
 
-- Tek statik ikili: `dil` komutu kurulumsuz kopyalanabiliyor (bölüm 3:
-  "10 dakikada Merhaba Dünya" hedefi).
+- Tek CLI ikilisi: son kullanıcı Rust araç zinciri kurmadan `dil` kullanır.
+  K-192 gerçek raporu Linux'ta OpenSSL 3, Windows'ta VC runtime/UCRT ve
+  macOS'ta OS framework bağımlılıklarını gösterdi. İkilinin tüm platformlarda
+  statik olduğu sözü verilmez; runtime önkoşulları
+  [derleme envanterinde](../docs/derleme-ve-bagimliliklar.md) açıktır.
 - Küçük ve kilitli bağımlılık grafiği tedarik zinciri incelemesini yapılabilir
   tutar; kaynakta exact Ondalık ya da Argon2 gibi güvenlik çekirdeklerini
   yeniden yazmaktan daha düşük doğruluk riski taşır.

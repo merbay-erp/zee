@@ -921,7 +921,7 @@ CORE FREEZE ve ürün kanıtı olmadan açılmaz. Bu hat araç/dağıtım doğru
 | Kayıt | Durum | Çıktı ve bağımlılık |
 |---|---|---|
 | K-191 | **KAPALI** | Derleme/bağımlılık envanteri; release HEAD pini, host/rustc/sysroot/build aynı toolchain, offline vendor çalışma ağacı pini; olumlu/olumsuz shell giriş regresyonları ve CI kablosu |
-| K-192 | **KISMEN** | macOS release sistem kitaplıkları ve Rust araçları PATH dışında iken merhaba-dünya exit 0 kanıtlandı; temiz makine, Linux/Windows, linker/SDK provenance ve uzak exact kaynak erişimi açık; GB-030 kaynak kimliği düzeltildi. Ortak checksum/SHA/OS-kitaplığı/Rust'sız-PATH/LSP kapısı üç platform tatbikatına bağlandı; gerçek CI sonucu beklenir. [Exact kaynak kanıtı](derleme-bagimlilik-kaniti-2026-10-12.md) |
+| K-192 | **KISMEN** | macOS release sistem kitaplıkları ve Rust araçları PATH dışında iken merhaba-dünya exit 0 kanıtlandı; temiz makine, Linux/Windows, linker/SDK provenance ve uzak exact kaynak erişimi açık; GB-030 kaynak kimliği düzeltildi. Ortak checksum/SHA/OS-kitaplığı/Rust'sız-PATH/LSP kapısı üç platform tatbikatına bağlandı; ilk koşuda Linux/macOS geçti, Windows log kod sayfası düzeltildi; güncel CI sonucu beklenir. [Exact kaynak kanıtı](derleme-bagimlilik-kaniti-2026-10-12.md) |
 | K-193 | **AÇIK** | K-192 ve mevcut V1/ürün kapıları sonrası: ürün kanıtlı native/WASM backend değerlendirmesi ve semantik eşdeğerlik ölçütleri; kod üretimi henüz yok |
 
 Kapsam ve yeniden üretim komutları [derleme envanterindedir](derleme-ve-bagimliliklar.md).

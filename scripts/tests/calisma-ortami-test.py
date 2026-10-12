@@ -2,6 +2,7 @@
 """K-192: bozuk kaynak/artefakt, ikili çalıştırılmadan reddedilir."""
 import hashlib
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -30,7 +31,8 @@ class RetTestleri(unittest.TestCase):
     def ret(self, sha, neden):
         sonuc = subprocess.run([sys.executable, str(SCRIPT), "--artefakt", str(self.artefakt),
                                 "--kurulu", str(self.artefakt), "--rapor", str(self.rapor),
-                                "--beklenen-sha", sha], capture_output=True, timeout=10)
+                                "--beklenen-sha", sha], capture_output=True, timeout=10,
+                                env=dict(os.environ, PYTHONIOENCODING="ascii:strict"))
         self.assertEqual(sonuc.returncode, 1, sonuc.stderr.decode("utf-8", errors="replace"))
         rapor = json.loads(self.rapor.read_text(encoding="utf-8"))
         self.assertEqual(rapor["sonuc"], "kaldi")
