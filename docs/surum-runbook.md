@@ -15,7 +15,9 @@ atlanmaz.
 4. **Artefakt.** `surum-adayi` artefaktı (`dil`, `dillsp`, `SHA256SUMS`,
    `sbom.spdx.json`, `provenance.intoto.json`, varsa `SHA256SUMS.zee-imza`)
    indirilir; yerel iki-klon özetiyle karşılaştırılır.
-5. **Tatbikat.** Üç platformda `kurulum-tatbikati` yeşil; yerelde
+5. **Tatbikat.** Üç platformda `kurulum-tatbikati` yeşil; exact commit+OS
+   `zee-calisma-ortami-1` raporları kurulu ikili hash'ini, sistem kitaplıklarını
+   ve Rust araçları PATH dışında program/LSP provasını taşır. Yerelde
    `bash scripts/kur.sh --artefakt <klasör>` → `dil sürüm` →
    `bash scripts/kaldir.sh`.
 6. **Duyuru.** Sürüm notu, yayıncı anahtar kimliği ve `SHA256SUMS` içeriği
@@ -40,6 +42,9 @@ manifestindeki dosyaları kaldırır. Editör bağı için `editors/README.md`.
 ikili yayımlanmaz. Hedefte yabancı dosya/kırık sembolik bağ ve yinelenen
 checksum kaydı reddedilir. Yayınlama hatasında bu koşunun oluşturduğu
 ikili dosyalar geri alınır; manifest en son yayımlanır ve yollar mutlak olur.
+Manifest UTF-8/BOM'suz/LF'tir; PowerShell kaldırma açık UTF-8 okur, Türkçe
+karakterli hedef/veri yolları gerçek ikili testindedir. Windows PowerShell
+5.x kaynak kodlamasının gerekçesi [Microsoft kodlama belgesindedir](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_character_encoding).
 Unix dosya sistemi hard-link desteklemelidir; Windows File.Move var olan
 hedefi ezmez. Güç kaybı/SIGKILL sonrası otomatik uzlaştırma bu sözleşmede yoktur.
 `kurulum_testi` artık Windows'ta da gerçek ikililerle ret/kur/kaldır akışını

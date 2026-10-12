@@ -1,4 +1,4 @@
-# K-169/ADR-071, K-194: önce bütün ikilileri geçici alanda doğrula;
+﻿# K-169/ADR-071, K-194: önce bütün ikilileri geçici alanda doğrula;
 # yayınlama hatasında bu koşunun oluşturduğu dosyaları geri al.
 param(
     [Parameter(Mandatory = $true)][string]$Artefakt,
@@ -44,7 +44,7 @@ try {
         $satirlar += "$hedefDosya`t$bulunan`t$gitSha"
     }
     if ($kurulacakAdlar.Count -eq 0) { throw "SHA256SUMS içinde dil/dillsp girdisi yok." }
-    Set-Content -LiteralPath $geciciManifest -Value ($satirlar -join "`n") -Encoding utf8 -NoNewline
+    [System.IO.File]::WriteAllText($geciciManifest, ($satirlar -join "`n") + "`n", [System.Text.UTF8Encoding]::new($false))
     foreach ($ad in $kurulacakAdlar) {
         $hedefDosya = Join-Path $Hedef $ad
         # Aynı hedef dosya sisteminde taşınır; File.Move var olan dosyayı ezmez.

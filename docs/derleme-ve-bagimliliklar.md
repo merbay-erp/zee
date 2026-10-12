@@ -99,3 +99,35 @@ boş Cargo home vendor kapısı önceden kurulu Rust/linker/SDK'yi içermez.
 4. **Self-hosting açık:** [ADR-008](../adr/008-self-hosting-asamalari.md)
    aşamalarına göre önce Zee kitaplığı, ardından derleyici parçaları;
    Stage 0 bootstrap güven kökü olarak korunur.
+
+## K-192 otomatik çalışma ortamı kapısı
+
+`python3 scripts/calisma-ortami-denetle.py --artefakt <surum> --kurulu <bin>
+--rapor <rapor.json> --beklenen-sha <tam-sha>` (`Windows: python`) kurulu
+`dil`/`dillsp` hash'lerini artefakt manifestiyle ve kaynak SHA'yı beklenen
+commit ile karşılaştırır. Fark varsa ikili çalıştırmadan kapı kırılır.
+
+Linux `readelf`, macOS `otool -L` ve Windows `dumpbin /DEPENDENTS` doğrudan
+sistem bağımlılıklarını raporlar. Windows araç bulma
+[Microsoft vswhere tarifine](https://github.com/microsoft/vswhere/wiki/Find-VC),
+DLL listesi [resmî dumpbin sözleşmesine](https://learn.microsoft.com/en-us/cpp/build/reference/dependents)
+dayanır. Python ve inceleme araçları kanıt üreticisidir; Zee programının
+runtime bağımlılığı olarak sunulmaz.
+
+Ayrı çocuk süreçlerinin PATH'i yalnız sistem dizinleridir; `rustc`, `cargo`,
+`rustup` bulunursa prova reddedilir. `dil sürüm`, exact merhaba-dünya çıktısı
+ve gerçek `dillsp` initialize/shutdown/exit yanıtları kontrol edilir.
+`zee-calisma-ortami-1` raporu başarılı/başarısız durum, kaynak SHA, ikili
+hash'leri, OS/mimari, doğrudan kitaplıklar, ABI header gözlemleri ve prova
+sınırını taşır. Hata raporu başarı gibi sunulmaz.
+
+`kurulum-tatbikati` bu kapıyı üç platformda kurulu ikili üzerinde çalıştırır;
+rapor exact commit+OS adıyla 90 günlük ayrı artefakta gider. Sürüm artefakt
+kümesi/SBOM şeması değişmez. Saf ret regresyonları
+`scripts/tests/calisma-ortami-test.py` ile farklı kaynak, değiştirilmiş ikili
+ve yinelenen checksum'ı çalıştırmadan reddetmeyi kanıtlar.
+
+İlk macOS prova K-191'in exact release ikililerinde geçti. Linux/Windows
+sonuçları alınmadan üç platform kapalı değildir. Builder'da Rust'ın kurulu
+olmaya devam etmesi, minimum OS ve gerçek linker/SDK üretim provenance'ı
+ayrı açık sınırlardır; PATH yalıtımı bunların yerine geçmez.

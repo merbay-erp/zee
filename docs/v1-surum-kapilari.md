@@ -15,7 +15,9 @@ bağladı; varsayılan Rust farklılığı giriş regresyonuyla korunur.
 [Sistem bağımlılıkları ve backend açıkları](derleme-ve-bagimliliklar.md)
 K-192/K-193 kapsamındadır; bu düzeltme yeni backend kapatmaz. K-192 kaynak
 metadata alanlarını aynı kanonik resmî depo ve exact SHA'ya bağladı; uzak
-erişim ve üç platform kanıtları ayrıca tamamlanır.
+erişim ve üç platform kanıtları ayrıca tamamlanır. Çalışma ortamı kapısı
+checksum/SHA, doğrudan OS kitaplığı, Rust'sız PATH program ve LSP provasını
+raporlar; rapor builder'da hiç Rust kurulmadığını iddia etmez.
 
 K-194 kurulum hata geri almasını Unix regresyonuyla doğruladı; Windows
 ret/kur/kaldır gerçek koşusu beklenir (ADR-071/GB-031). Ani güç kaybı

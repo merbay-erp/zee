@@ -222,6 +222,8 @@ K-191 derleme/bağımlılık envanteri ve exact Rust provenance tutarlılığın
 kapattı. [Envanter](derleme-ve-bagimliliklar.md) mevcut yorumlayıcı ve Rust'tan
 üretilen WASM'i gelecekteki Zee kod üretiminden ayırır. Sistem kitaplığı ve
 linker/SDK provenance K-192; kaynak metadata kimliği aynı dilimde kanonik depoya bağlandı.
+K-192 ortak kapısı kurulu ikili hash/SHA ve Rust'sız PATH program+LSP
+provasını sistem kitaplığı raporuna bağlar; üç platform sonucu beklenir.
 Ürün kanıtlı backend değerlendirmesi K-193
 olarak açıktır. Native backend ve self-hosting gerçeklenmiş değildir.
 

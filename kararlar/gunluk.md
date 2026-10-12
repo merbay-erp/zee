@@ -3621,3 +3621,27 @@ paylaşım için sentetik kayıt ve CI'a iz koymama sınırı belgelendi.
   yüzeyi değişmez. ADR-071, README, sürüm/runbook, V1 kapısı, master plan,
   backlog ve güvenlik/üretilen kanıt özeti birlikte güncellendi. Manifest
   şeması ve artefakt kümesi korunur. Benchmark/soak yükü değişmez.
+
+## K-192 — Üç platform çalışma ortamı kapısının kablosu (12 Ekim 2026)
+
+- **Karar:** Python stdlib kapısı kurulu ikili checksum'ını ve beklenen exact
+  SHA'yı doğrular; Linux readelf/macOS otool/Windows dumpbin doğrudan sistem
+  kitaplıklarını raporlar. Ayrı çocukların sistem PATH'inde Rust araçları
+  yokken merhaba-dünya ve gerçek LSP initialize/shutdown/exit çalışır.
+- **Kanıt:** macOS K-191 release ikililerinde program ve LSP geçti. Saf ret
+  testleri farklı SHA, değiştirilmiş ikili ve yinelenen checksum'ı ikili
+  yürütülmeden reddeder. Üç platform tatbikatı exact commit+OS JSON raporunu
+  ayrı 90 günlük artefakta bağlar; Linux/Windows gerçek sonuçları beklenir.
+- **Sınır/etki:** Yeni compiler kaynağı, dil yüzeyi veya bağımlılık yok;
+  spec/RFC/tanı kataloğu ve production katman fixture'ı değişmez. Release
+  dosya kümesi/SBOM şeması korunur. PATH yalıtımı temiz makine, minimum OS,
+  SDK provenance veya native backend kanıtı değildir. Backlog/master-plan,
+  V1 kapısı, envanter ve sürüm/runbook belgeleri aynı dilimdedir.
+
+### K-194 Windows metin kodlaması
+
+PowerShell 5 UTF-8 Set-Content BOM yazarken Unix manifesti BOM'suzdur.
+Manifest ortak UTF-8/BOM'suz/LF olarak yazılır, Windows kaldırma açık UTF-8
+okur; PowerShell kaynakları Türkçe literal desteği için UTF-8 BOM taşır.
+Gerçek kur/kaldır testi Türkçe karakterli temp yoluyla iki platformda aynı
+manifest başlığını ve dosya sahipliğini denetler. K-194 Windows sonucu beklenir.

@@ -57,3 +57,12 @@ Açık anahtar kimliği (`sha256:…`) sürüm notunda ilan edilir.
 Eşitlik aynı platform ve toolchain içindir; Linux/macOS/Windows artefaktları
 ayrı ayrı çift-klon kanıtı taşır. SLSA L2/L3, hosted builder veya HSM imzası
 iddia edilmez.
+
+## Sistem bağımlılığı ve kurulu ikili provası
+
+K-192 `calisma-ortami-denetle.py`, kurulu `dil`/`dillsp` checksum'ını ve exact
+kaynak SHA'yı doğrular; doğrudan OS kitaplıkları, Rust'sız PATH merhaba-dünya
+ve stdio LSP initialize/shutdown/exit sonucunu ayrı JSON raporunda üretir.
+`kurulum-tatbikati` üç platform raporunu 90 gün saklar. Bu dosya release
+artefakt kümesine eklenmez; SDK provenance veya temiz makine kanıtı yerine
+geçmez. Komut/sınırlar [envanterde](derleme-ve-bagimliliklar.md).
