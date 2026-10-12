@@ -178,10 +178,18 @@ kapsamında, worker ve restart sınırlarını aşarak iptal edilir.
 Her kapının kapanışı: karar + spec + olumlu/olumsuz test + sürüm notu. Yalnız
 “kod çalışıyor” işareti v1 kanıtı değildir (ADR-010).
 
-K-195 Windows statik CRT profili ve çift-klon dağıtım kablosu hazırdır; exact Windows eş-hash ve çalışma kanıtı gelmeden kapalı sayılmaz. K-192 temiz Windows/macOS ve minimum OS/linker-SDK kanıtı açıktır.
+K-195 Windows statik CRT profili ve çift-klon dağıtım kablosu hazırdır; exact `c7e3d04` kaynağının üç platform tatbikatı geçti ve K-195 kapandı. K-192 temiz Windows/macOS ve minimum OS/linker-SDK kanıtı açıktır.
 
 K-195 ilk Windows çift-klon koşusu eş-hash kapısında kaldı; artefakt
 üretilmedi. Yeni MSVC linker tarifi `/Brepro` ve provenance
 `targetRustflags` alanını birlikte günceller; exact tekrar kanıtı gerekir.
 Eş olmayan byte'lar ayrı `yayinlanamaz-surum-farki` tanısında saklanır,
 sürüm/kurulum kümesine girmez. Benchmark tarihçesine yeni satır yazılmadı.
+
+K-195 kapanma: `c7e3d04adf27905ade8b622d24bd76762123d2dc` kaynağındaki
+[38244549913 tatbikatı](https://github.com/itwise-bilisim/zee/actions/runs/38244549913)
+üç platformda geçti. Windows iki temiz klonda eş hash, dinamik CRT importu
+yok ve kur/program/LSP/kaldır başarılı. İndirilen byte'lar metadata ile
+ayrıca eşleştirildi; ham rapor/provenance kalıcı fixture'dadır. İlk Windows
+reddi korunur. K-192 temiz Windows/macOS, minimum OS/linker-SDK kanıtı
+ayrı açık kalır; native Zee backend ve self-hosting tamamlanmış değildir.

@@ -945,10 +945,18 @@ Bu dosya kendi lexer/parser/type checker zincirimizden geçip çalıştığında
 Amaç yalnız yeni bir syntax üretmek değil; Türkçe konuşan insanların bilgisayara kendi dillerinin düşünme ritmiyle kesin talimat verebildiği, öğrenme ile profesyonel üretim arasındaki duvarı azaltan kalıcı bir teknik eser bırakmaktır.
 Projenin temel cümlesi değişmez: Çocukların kullanabileceği bir dil yapacağız; çocuk dili yapmayacağız.
 
-K-195 Windows dağıtımında statik CRT ve iki temiz klon üretimi uygular; exact uzak eş-hash/DLL/program/LSP kanıtı henüz açıktır. Native backend ve self-hosting tamamlanmış değildir.
+K-195 Windows dağıtımında statik CRT ve iki temiz klon üretimi uygular; exact `c7e3d04` kaynağında üç platform eş-hash/DLL/program/LSP kanıtı geçti. Native backend ve self-hosting tamamlanmış değildir.
 
 K-195 ilk Windows çift-klon koşusu eş-hash kapısında kaldı; artefakt
 üretilmedi. Yeni MSVC linker tarifi `/Brepro` ve provenance
 `targetRustflags` alanını birlikte günceller; exact tekrar kanıtı gerekir.
 Eş olmayan byte'lar ayrı `yayinlanamaz-surum-farki` tanısında saklanır,
 sürüm/kurulum kümesine girmez. Benchmark tarihçesine yeni satır yazılmadı.
+
+K-195 kapanma: `c7e3d04adf27905ade8b622d24bd76762123d2dc` kaynağındaki
+[38244549913 tatbikatı](https://github.com/itwise-bilisim/zee/actions/runs/38244549913)
+üç platformda geçti. Windows iki temiz klonda eş hash, dinamik CRT importu
+yok ve kur/program/LSP/kaldır başarılı. İndirilen byte'lar metadata ile
+ayrıca eşleştirildi; ham rapor/provenance kalıcı fixture'dadır. İlk Windows
+reddi korunur. K-192 temiz Windows/macOS, minimum OS/linker-SDK kanıtı
+ayrı açık kalır; native Zee backend ve self-hosting tamamlanmış değildir.

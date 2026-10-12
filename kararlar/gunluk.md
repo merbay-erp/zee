@@ -3732,3 +3732,11 @@ release klonu kendi TMPDIR'ında açılırken test ilk remap argümanında
 spaced fixture kökünü varsayıyordu. Giriş testi release çocuk süreçlerine
 özel spaced TMPDIR verir; üretim tarifi değiştirilmez. Aynı test
 macOS Bash 3 ve ağsız Linux Bash 5 container'ında doğrulanır.
+
+K-195 kapanma: `c7e3d04adf27905ade8b622d24bd76762123d2dc` kaynağındaki
+[38244549913 tatbikatı](https://github.com/itwise-bilisim/zee/actions/runs/38244549913)
+üç platformda geçti. Windows iki temiz klonda eş hash, dinamik CRT importu
+yok ve kur/program/LSP/kaldır başarılı. İndirilen byte'lar metadata ile
+ayrıca eşleştirildi; ham rapor/provenance kalıcı fixture'dadır. İlk Windows
+reddi korunur. K-192 temiz Windows/macOS, minimum OS/linker-SDK kanıtı
+ayrı açık kalır; native Zee backend ve self-hosting tamamlanmış değildir.

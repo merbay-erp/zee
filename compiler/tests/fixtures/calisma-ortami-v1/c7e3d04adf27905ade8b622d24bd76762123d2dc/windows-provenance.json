@@ -1,0 +1,79 @@
+{
+  "_type": "https://in-toto.io/Statement/v1",
+  "predicate": {
+    "buildDefinition": {
+      "buildType": "https://zee-lang.dev/surum/tekrar-uretilebilir/v1",
+      "externalParameters": {
+        "cargoArgs": "cargo build --locked --release --bin dil --bin dillsp --target x86_64-pc-windows-msvc",
+        "crtLinkage": "static",
+        "gitCommit": "c7e3d04adf27905ade8b622d24bd76762123d2dc",
+        "platform": "x86_64-pc-windows-msvc",
+        "remapPathPrefix": [
+          "/zee",
+          "/cargo",
+          "/rust"
+        ],
+        "rustc": "rustc 1.93.1 (01f6ddf75 2026-02-11)",
+        "sourceDateEpoch": 1791805437,
+        "surum": "0.8.0-dev",
+        "targetRustflags": [
+          "-C",
+          "target-feature=+crt-static",
+          "-C",
+          "link-arg=/Brepro"
+        ]
+      },
+      "resolvedDependencies": [
+        {
+          "digest": {
+            "gitCommit": "c7e3d04adf27905ade8b622d24bd76762123d2dc"
+          },
+          "uri": "git+https://github.com/itwise-bilisim/zee@c7e3d04adf27905ade8b622d24bd76762123d2dc"
+        }
+      ]
+    },
+    "runDetails": {
+      "builder": {
+        "id": "https://zee-lang.dev/surum/surum-artefakti"
+      },
+      "byproducts": [
+        {
+          "digest": {
+            "sha256": "0b6beb7feef69070240b02df17172eb705a57f1056d094a6c163dc5465faf4b1"
+          },
+          "name": "SHA256SUMS"
+        },
+        {
+          "digest": {
+            "sha256": "0b6beb7feef69070240b02df17172eb705a57f1056d094a6c163dc5465faf4b1"
+          },
+          "name": "SHA256SUMS.ikinci-klon"
+        }
+      ],
+      "metadata": {
+        "finishedOn": "2026-10-12T11:43:57Z",
+        "invocationId": "surum-c7e3d04adf27905ade8b622d24bd76762123d2dc",
+        "startedOn": "2026-10-12T11:43:57Z"
+      }
+    },
+    "zeeTekrarUretim": {
+      "ikiTemizKlonEsit": true,
+      "yontem": "iki bağımsız git klonu, aynı toolchain, --remap-path-prefix, SOURCE_DATE_EPOCH"
+    }
+  },
+  "predicateType": "https://slsa.dev/provenance/v1",
+  "subject": [
+    {
+      "digest": {
+        "sha256": "48a1d3a4b63834bf21342a0b6af33d52464473bcb8ce0962f894b58c1572008d"
+      },
+      "name": "dil.exe"
+    },
+    {
+      "digest": {
+        "sha256": "d873c81763efb51cfc5a624cbfb2b281775a413a7d1cb1f56a62eb2e7791da75"
+      },
+      "name": "dillsp.exe"
+    }
+  ]
+}
