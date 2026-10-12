@@ -921,19 +921,20 @@ CORE FREEZE ve ürün kanıtı olmadan açılmaz. Bu hat araç/dağıtım doğru
 | Kayıt | Durum | Çıktı ve bağımlılık |
 |---|---|---|
 | K-191 | **KAPALI** | Derleme/bağımlılık envanteri; release HEAD pini, host/rustc/sysroot/build aynı toolchain, offline vendor çalışma ağacı pini; olumlu/olumsuz shell giriş regresyonları ve CI kablosu |
-| K-192 | **KISMEN** | macOS release sistem kitaplıkları ve Rust araçları PATH dışında iken merhaba-dünya exit 0 kanıtlandı; temiz makine, Linux/Windows, linker/SDK provenance ve uzak exact kaynak erişimi açık; GB-030 kaynak kimliği düzeltildi. Ortak checksum/SHA/OS-kitaplığı/Rust'sız-PATH/LSP kapısı üç platform tatbikatına bağlandı; ilk koşuda Linux/macOS geçti, Windows log kod sayfası düzeltildi; güncel CI sonucu beklenir. [Exact kaynak kanıtı](derleme-bagimlilik-kaniti-2026-10-12.md) |
+| K-192 | **KISMEN** | Exact `30dcfae` kaynağında üç platform kur/program/LSP/kaldır tatbikatı geçti; raporlar ve hash'ler kalıcı defterde. Aynı Linux ikilisi Rust araçları bulunmayan, ağsız/read-only Ubuntu 24.04 container'ında program+LSP testini geçti. Kanonik uzak exact kaynak erişimi doğrulandı; temiz Windows/macOS, minimum OS ve linker/SDK provenance açık. [Platform kanıtı](derleme-platform-kaniti-v1.tsv) |
 | K-193 | **AÇIK** | K-192 ve mevcut V1/ürün kapıları sonrası: ürün kanıtlı native/WASM backend değerlendirmesi ve semantik eşdeğerlik ölçütleri; kod üretimi henüz yok |
 
 Kapsam ve yeniden üretim komutları [derleme envanterindedir](derleme-ve-bagimliliklar.md).
 
 ### K-194 — Kurulum hata geri alma (K-192 sırasında bulunan correctness dilimi)
 
-**KISMEN — Windows saha koşusu bekleniyor.** İkinci checksum reddinde ilk
+**KAPALI — üç platform kanıtlı.** İkinci checksum reddinde ilk
 ikili hedefte manifestsiz kalıyordu. Unix/Windows betikleri önce bütün kopyaları
 geçici alanda doğrular, sonra no-clobber yayımlar ve hata halinde kendi
 kurduğu dosyaları geri alır. Unix gerçek ikili testi bozuk/eksik/mevcut ikinci
 hedef, yinelenen kayıt, ikinci yayınlama hatası ve kırık bağ reddini geçti.
 GB-032 kaynak metadata manifest enjeksiyonu da exact SHA/yol doğrulaması ve
-yabancı dosyalı regresyonla kapandı. Aynı ana test Windows'ta gerçek PowerShell betiklerine açıldı; üç platform
-CI kanıtı alınmadan bu madde kapanmaz. GB-031, ADR-071. Bu atomik correctness
+yabancı dosyalı regresyonla kapandı. Aynı ana test Windows'ta gerçek PowerShell betiklerine açıldı ve uzak ana
+CI'da geçti; `30dcfae` kaynağındaki `38238657801` üç platform tatbikatı
+kur/çalışma ortamı/kaldır akışını geçti. GB-031 kapandı; ADR-071. Bu atomik correctness
 bulgusu K-192 dağıtım kanıtı ve K-193 backend işinden önce kapatılır.
