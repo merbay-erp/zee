@@ -27,9 +27,9 @@ case "$1" in
         IFS=$'\x1f' read -r -a ayrik <<< "$CARGO_ENCODED_RUSTFLAGS"
         [[ "${ayrik[0]}" == --remap-path-prefix=*"zee toolchain-test."*=/zee ]] || exit 1
         if [[ "$*" == *"--target x86_64-pc-windows-msvc"* ]]; then
-            [[ "${#ayrik[@]}" == 7 ]] || exit 1
+            [[ "${#ayrik[@]}" == 9 ]] || exit 1
         else
-            [[ "${#ayrik[@]}" == 3 ]] || exit 1
+            [[ "${#ayrik[@]}" == 5 ]] || exit 1
         fi
         dizin="$CARGO_TARGET_DIR/release"
         uzanti=""
@@ -47,7 +47,10 @@ case "$1" in
             if [[ "${ZEE_TEST_OZET_FARKI:-0}" == 1 ]]; then
                 printf '%s\n' "$dizin" >> "$dizin/$ad$uzanti"
             fi
-        done ;;
+        done
+        printf ' INFO rustc_codegen_ssa::back::link "cc" "-o" "%s/dil-abc123%s"\n' "$dizin" "$uzanti" >&2
+        printf ' INFO rustc_codegen_ssa::back::link "cc" "-o" "%s/dillsp-abc123%s"\n' "$dizin" "$uzanti" >&2
+        ;;
     run)
         if [[ "$*" == *"-- ozet "* ]]; then
             # Üreticinin ozet argümanı cwd=compiler altında da bulunmalı.
@@ -65,12 +68,16 @@ case "$1" in
     *) exit 1 ;;
 esac
 CARGO
+cat > "$gecici/bin/cc" <<'CC'
+#!/usr/bin/env bash
+echo 'test linker 1.0'
+CC
 cat > "$gecici/bin/cygpath" <<'CYGPATH'
 #!/usr/bin/env bash
 [[ "$1" == -m || "$1" == -am ]] || exit 1
 printf '%s\n' "$2"
 CYGPATH
-chmod +x "$gecici/bin/rustc" "$gecici/bin/cargo" "$gecici/bin/cygpath"
+chmod +x "$gecici/bin/rustc" "$gecici/bin/cargo" "$gecici/bin/cygpath" "$gecici/bin/cc"
 export PATH="$gecici/bin:$PATH"
 export ZEE_TEST_KOMUTLAR="$gecici/komutlar"
 source "$depo_koku/scripts/rust-arac-zinciri.sh"
@@ -88,6 +95,7 @@ if (export ZEE_TEST_YANLIS_SURUM=9.9.9; zee_rust_arac_zinciri "$gecici/pin") > /
     echo 'Pin ile uyuşmayan rustc kabul edildi' >&2; exit 1
 fi
 cp "$depo_koku/scripts/"{rust-arac-zinciri,surum-artefakti,offline-vendor-denetle}.sh "$gecici/depo/scripts/"
+cp "$depo_koku/scripts/derleme-ortami-kaydet.py" "$gecici/depo/scripts/"
 cp "$gecici/pin" "$gecici/depo/compiler/rust-toolchain.toml"
 printf 'test lock\n' > "$gecici/depo/compiler/Cargo.lock"
 printf 'test fuzz lock\n' > "$gecici/depo/compiler/fuzz/Cargo.lock"

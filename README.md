@@ -542,3 +542,11 @@ Public depo güvenlik bildirimi ve yerel/CI sır taraması: [güvenlik politikas
 IO izleri özel veri taşır; [saklama ve paylaşım sınırları](docs/io-izi.md) geçerlidir.
 
 Windows MSVC dağıtımı statik CRT kullanır; K-195 üç platform çift-klon ve kur/program/LSP/kaldır tatbikatı geçti. Güncel platform bağımlılıkları ve açık sınırlar [derleme envanterinde](docs/derleme-ve-bagimliliklar.md).
+
+K-196 linker/SDK kayıt dilimi hazırdır: release iki klonun gerçek link
+komutunu, program path/hash/version ve SDK referanslarını provenance'a
+bağlar. Unix `-v`, MSVC `/VERBOSE:LIB` tarifte görünür; Python 3 build kanıtı
+aracıdır, runtime bağımlılığı değildir. Eksik kanıt yayımlanmadan reddedilir.
+Exact üç platform üretim kanıtı açık; minimum OS/temiz Windows-macOS ve
+bütün native C araçlarının kaydı tamamlanmış gösterilmez. Performans
+baseline'ı/tarihçe satırı üretilmedi; ADR-045/049 kuralları korunur.

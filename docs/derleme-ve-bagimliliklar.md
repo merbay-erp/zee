@@ -257,3 +257,41 @@ değildir. [Ham rapor](temiz-linux-runtime-kaniti-2026-10-12.json)
 SHA-256 `5d9df5d2fb4a6c4273c8efee1ed1824016271153b02fb3461a85f92c09b56d5e`; Dockerfile, base/derived image kimliği,
 package/kernel/ikili hash ve LSP yanıtları raporda korunur. K-192
 minimum OS/linker-SDK ve temiz Windows/macOS sınırları ayrı açıktır.
+
+## K-196 gerçek linker ve SDK izleme — kanıtı açık
+
+Release derlemesi sabit Rust 1.93.1 `RUSTC_LOG=rustc_codegen_ssa::back::link=info`
+izini alır. [Rust compiler tracing](https://rustc-dev-guide.rust-lang.org/tracing.html)
+ve exact [1.93.1 link yürütme kaynağı](https://github.com/rust-lang/rust/blob/1.93.1/compiler/rustc_codegen_ssa/src/back/link.rs)
+gerçek komutun ne zaman kaydedildiğini tanımlar. Unix `-C link-arg=-v`,
+MSVC `-C link-arg=/VERBOSE:LIB` gerçek SDK/library aramasını görünür kılar.
+Provenance `targetRustflags` aynı tarifi taşır; release dosya kümesi değişmez.
+
+`scripts/derleme-ortami-kaydet.py` yalnız Python 3 standart kitaplığıyla
+iki klonda iki binary komutunu seçer. Log shell olarak çalıştırılmaz;
+quoted Debug String değerleri çözülür. İzdeki PATH/programdan gerçek araç
+çözülür; executable byte SHA-256 ve o programın `--version`/`/?` çıktısı
+kaydedilir. SDK referansları ham komut/build log gözlemidir; Apple
+SDKSettings Version ve Windows Kits Lib sürümü varsa ayrıca çıkarılır.
+Bu kapsam linker driver'ını kanıtlar; tüm C build-script compiler/assembler
+araçları veya driver'ın bütün alt süreçlerini eksiksiz envanterlediğini
+iddia etmez. Linux ayrı Windows/macOS SDK semantiği taşımaz.
+
+Üretici `--build-environment` kaydını kaynak SHA/schema, a/b ve dil/dillsp,
+araç hash/path/version/command varlığıyla denetler. Eski bakım CLI çağrısında
+alan isteğe bağlıdır; resmi release scripti alanı daima üretir ve eksik
+kanıtta durur. Windows hata log özeti ASCII-safe; rapor UTF-8'tir.
+Python 3 artık release kanıtının build-time aracıdır; hazır Zee runtime
+bağımlılığı değildir. Ret testleri ve gerçek iki-klon giriş mock'u birlikte
+koşar; üç platform tatbikatı ret testini de yürütür.
+
+Dil spec/RFC/tanı/API yüzeyi değişmedi. ADR-046/katman ve SCC fixture
+incelendi, yeni production import/kenar yok; kapılar geçti. Verbose link
+bayrakları nedeniyle ADR-045/049/ölçüm etkisi incelendi; profil karşılaştırması
+olmadan benchmark tarihçesine baseline/performans satırı eklenmedi.
+Exact clean kaynak ve uzak üç platform sonuçları gelmeden K-196 kapalı değildir.
+
+GB-033 güven sınırı: kayıt aracı yalnız üreticinin kendi temiz-klon
+loglarıyla kullanılır; harici indirilen log güvenilir girdi değildir.
+Sürüm sorgusu logda çözülen programa gider; kanıt yayın imzasının yerine
+geçmez. Bu sınır güvenlik defterinde ve ADR-068'de kayıtlıdır.

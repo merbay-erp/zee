@@ -76,14 +76,20 @@ for klon in a b; do
         cd "$gecici/$klon/compiler"
         rust_bayraklari=("--remap-path-prefix=$klon_yolu=/zee" "--remap-path-prefix=$cargo_home=/cargo" "--remap-path-prefix=$sysroot=/rust")
         if [[ "$platform" == *-pc-windows-msvc ]]; then
-            rust_bayraklari+=(-C target-feature=+crt-static -C link-arg=/Brepro)
+            rust_bayraklari+=(-C target-feature=+crt-static -C link-arg=/Brepro -C link-arg=/VERBOSE:LIB)
+        else
+            rust_bayraklari+=(-C link-arg=-v)
         fi
         printf -v kodlanmis_bayraklar '%s\x1f' "${rust_bayraklari[@]}"
         kodlanmis_bayraklar="${kodlanmis_bayraklar%$'\x1f'}"
         # Boşluklu yollar tek argümandır; caller encoded flags tarifi ezemez.
-        RUSTFLAGS="" CARGO_ENCODED_RUSTFLAGS="$kodlanmis_bayraklar" \
-        CARGO_TARGET_DIR="$hedef_yolu" \
-        cargo build "${build_argumanlari[@]}"
+        if ! RUSTFLAGS="" CARGO_ENCODED_RUSTFLAGS="$kodlanmis_bayraklar" \
+            RUSTC_LOG=rustc_codegen_ssa::back::link=info \
+            CARGO_TARGET_DIR="$hedef_yolu" \
+            cargo build "${build_argumanlari[@]}" > "$gecici/$klon/build.log" 2>&1; then
+            cat "$gecici/$klon/build.log" >&2
+            exit 1
+        fi
     )
 done
 
@@ -118,6 +124,9 @@ for ikili in dil dillsp; do
     echo "-- $ikili iki klonda eş: $a"
 done
 
+python_komutu=python
+command -v python3 >/dev/null 2>&1 && python_komutu=python3
+"$python_komutu" "$depo_koku/scripts/derleme-ortami-kaydet.py" --a "$gecici/a/build.log" --b "$gecici/b/build.log" --sha "$sha" --out "$gecici/build-environment.json"
 mkdir -p "$cikti"
 cp "$gecici/a/target/$release_dizini/dil$uzanti" "$gecici/a/target/$release_dizini/dillsp$uzanti" "$cikti/"
 arac=(cargo run -q --locked --bin surum_artefakti --)
@@ -127,7 +136,7 @@ cp "$cikti/SHA256SUMS" "$gecici/SHA256SUMS.b"
 (cd compiler && "${arac[@]}" ozet "$gecici/b/target/$release_dizini" "dil$uzanti" "dillsp$uzanti") > "$gecici/SHA256SUMS.b"
 (cd compiler && "${arac[@]}" sbom --sha "$sha" --kilit Cargo.lock --ozet "$cikti/SHA256SUMS" --epoch "$epoch") > "$cikti/sbom.spdx.json"
 (cd compiler && "${arac[@]}" provenance --sha "$sha" --ozet "$cikti/SHA256SUMS" --ikinci-ozet "$gecici/SHA256SUMS.b" \
-    --epoch "$epoch" --rustc "$rustc_surumu" --platform "$platform") > "$cikti/provenance.intoto.json"
+    --epoch "$epoch" --rustc "$rustc_surumu" --platform "$platform" --build-environment "$gecici/build-environment.json") > "$cikti/provenance.intoto.json"
 if [[ -n "$anahtar" ]]; then
     (cd compiler && "${arac[@]}" imzala --anahtar "$anahtar" "$cikti/SHA256SUMS") > "$cikti/SHA256SUMS.zee-imza"
     (cd compiler && "${arac[@]}" dogrula --dosya "$cikti/SHA256SUMS" --imza "$cikti/SHA256SUMS.zee-imza")

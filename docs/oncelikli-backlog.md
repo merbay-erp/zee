@@ -953,3 +953,16 @@ ikili eş hash başarılı. Ham runtime/provenance ve kaynak/job/artifact
 Göreli çıktı yolu `5a4e81f` yerel tam provasını geçti. Shell fixture retleri
 macOS Bash 3.2.57 ve Linux Bash 5.2.37'de doğrulandı. Temiz Windows/macOS,
 minimum OS ve linker/SDK provenance K-192 içinde ayrı açık kalır.
+
+### K-196 — Gerçek linker/SDK derleme kaydı (K-192 dilimi)
+
+**AÇIK — uygulama/test hazır, exact üç platform üretim kanıtı beklenir.**
+İki klonun Rust 1.93.1 link izinden dil/dillsp için çağrılan program,
+çözülen araç yolu, araç byte SHA-256 ve sürümü kaydedilir. Unix linker
+verbose, Windows `/VERBOSE:LIB` SDK referanslarını görünür kılar. Ham gerçek
+komut ve build SDK gözlemleri provenance `buildEnvironment` alanına girer;
+eksik/bozuk kayıt release yayımlamadan reddedilir. Kapanma: exact kaynakta
+iki-klon eş-hash ve dört link kaydı üç platformda doğrulanmış olmalı;
+macOS SDKSettings/Windows Kits sürüm referansları ayrıca gözden geçirilir.
+Tüm native C build-script araçları ve minimum OS desteği bu kayıt değildir;
+K-192 açık sınırları korunur. ADR-068.
