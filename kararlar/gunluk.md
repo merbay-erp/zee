@@ -3804,10 +3804,21 @@ PowerShell/.NET FileVersionInfo ile dosyadan okunur; yol environment alanı
 olarak taşınır, shell metnine eklenmez. Metadata ret testi eklendi; yeni
 üç platform kanıtı beklenir.
 
-K-197 temiz Windows runtime provasının ret kapıları ve koşu kablosu
-hazırdır; exact release kaynağı/hash, immutable Nano Server image,
+K-197 temiz Windows runtime provası exact kanıtıyla kapandı; exact release kaynağı/hash, immutable Nano Server image,
 ContainerUser/network none/read-only bind ile program ve LSP denenir.
-Gerçek Windows sonucu açık; masaüstü/minimum OS ve bütün IO desteği
-tamamlanmış gösterilmez. Release/prova kaynak SHA'ları ayrı kaydedilir.
+Nano Server program/LSP sonucu geçti; masaüstü/minimum OS ve bütün IO
+desteği ayrı açıktır. Release/prova kaynak SHA'ları ayrı kaydedilir.
 ADR-068/GB-034; spec/RFC/tanı/API/production Rust katmanları ve benchmark
 tarihçesi değişmez.
+
+K-197 kapanma: release c7e3d04, prova 27c0fa9/run 38253777857/job
+114826470199. [Ham rapor](../docs/temiz-windows-runtime-kaniti-2026-10-12.json),
+[defter](../docs/temiz-windows-platform-kaniti-v1.tsv); Nano Server 10.0.26100.33438
+program/LSP geçti. Kurulum/kaldırma, desktop/minimum OS ve bütün IO ayrı.
+
+K-196 b153064/run 38252942210 üç platformda geçti; artifact byte'ları,
+four linker record ve SDK sürümleri ayrıca doğrulandı. K-196 kapandı.
+GCC 13.3.0, Clang 21.0.0/SDK 26.5, MSVC FileVersion 14.51.36260.0/SDK
+10.0.26100.0. K-197 Nano Server program/LSP kanıtıyla kapalı; test faz
+matrisi 726/726 geçti. Fiziksel clean Windows/macOS, minimum OS ve tüm
+IO/bütün native C araçları K-192 içinde ayrıca açıktır.

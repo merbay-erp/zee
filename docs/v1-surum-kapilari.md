@@ -194,11 +194,11 @@ ayrıca eşleştirildi; ham rapor/provenance kalıcı fixture'dadır. İlk Windo
 reddi korunur. K-192 temiz Windows/macOS, minimum OS/linker-SDK kanıtı
 ayrı açık kalır; native Zee backend ve self-hosting tamamlanmış değildir.
 
-K-196 linker/SDK kayıt dilimi hazırdır: release iki klonun gerçek link
+K-196 linker/SDK kayıt dilimi exact üç platform kanıtıyla kapandı: release iki klonun gerçek link
 komutunu, program path/hash/version ve SDK referanslarını provenance'a
 bağlar. Unix `-v`, MSVC `/VERBOSE:LIB` tarifte görünür; Python 3 build kanıtı
 aracıdır, runtime bağımlılığı değildir. Eksik kanıt yayımlanmadan reddedilir.
-Exact üç platform üretim kanıtı açık; minimum OS/temiz Windows-macOS ve
+Exact b153064 kaynağı/run 38252942210 üç platformda geçti; minimum OS/temiz Windows-macOS ve
 bütün native C araçlarının kaydı tamamlanmış gösterilmez. Performans
 baseline'ı/tarihçe satırı üretilmedi; ADR-045/049 kuralları korunur.
 
@@ -208,10 +208,21 @@ provasını geçti; Rust paketleri/PATH araçları yok. [Ham rapor](temiz-almali
 Bu seçili amd64 emülasyon provası tüm dil IO davranışları, minimum kernel
 ve temiz Windows/macOS garantisi değildir; K-192 kısmen açık kalır.
 
-K-197 temiz Windows runtime provasının ret kapıları ve koşu kablosu
-hazırdır; exact release kaynağı/hash, immutable Nano Server image,
+K-197 temiz Windows runtime provası exact kanıtıyla kapandı; exact release kaynağı/hash, immutable Nano Server image,
 ContainerUser/network none/read-only bind ile program ve LSP denenir.
-Gerçek Windows sonucu açık; masaüstü/minimum OS ve bütün IO desteği
-tamamlanmış gösterilmez. Release/prova kaynak SHA'ları ayrı kaydedilir.
+Nano Server program/LSP sonucu geçti; masaüstü/minimum OS ve bütün IO
+desteği ayrı açıktır. Release/prova kaynak SHA'ları ayrı kaydedilir.
 ADR-068/GB-034; spec/RFC/tanı/API/production Rust katmanları ve benchmark
 tarihçesi değişmez.
+
+K-197 kapanma: release c7e3d04, prova 27c0fa9/run 38253777857/job
+114826470199. [Ham rapor](temiz-windows-runtime-kaniti-2026-10-12.json),
+[defter](temiz-windows-platform-kaniti-v1.tsv); Nano Server 10.0.26100.33438
+program/LSP geçti. Kurulum/kaldırma, desktop/minimum OS ve bütün IO ayrı.
+
+K-196 kapanma: b153064/run 38252942210; iki klon eş hash ve gerçek
+kur/program/LSP/kaldır üç platformda geçti. GCC 13.3.0, Apple Clang 21.0.0
++ SDK 26.5, MSVC FileVersion 14.51.36260.0 + SDK 10.0.26100.0 dört
+link kaydında doğrulandı. Ham runtime/provenance ve artifact hash'leri
+[platform defterinde](derleme-platform-kaniti-v1.tsv) korunur. K-192 minimum OS, bütün native C
+araçları ve fiziksel temiz makine kanıtı ayrıca açıktır.

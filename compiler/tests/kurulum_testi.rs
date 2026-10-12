@@ -567,4 +567,88 @@ fn calisma_ortami_kaydi_exact_kaynak_ve_ikili_hashleriyle_program_lsp_kaniti_tas
         platformlar,
         BTreeSet::from(["Linux".into(), "macOS".into(), "Windows".into()])
     );
+    let temiz = oku("docs/temiz-windows-platform-kaniti-v1.tsv");
+    assert_eq!(
+        temiz.lines().next(),
+        Some("# zee-temiz-windows-platform-kaniti-1")
+    );
+    for satir in temiz
+        .lines()
+        .filter(|s| !s.is_empty() && !s.starts_with('#'))
+    {
+        let alanlar = satir.split('\t').collect::<Vec<_>>();
+        let [release_sha, prova_sha, source_run, prova_run, job, artifact, zip_sha, rapor_sha, yol, sonuc] =
+            alanlar.as_slice()
+        else {
+            panic!("temiz Windows kanıtı on alan taşımalı");
+        };
+        for (deger, uzunluk) in [
+            (release_sha, 40),
+            (prova_sha, 40),
+            (zip_sha, 64),
+            (rapor_sha, 64),
+        ] {
+            assert_eq!(deger.len(), uzunluk);
+            assert!(deger
+                .bytes()
+                .all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase()));
+        }
+        for kimlik in [source_run, prova_run, job, artifact] {
+            assert!(kimlik.parse::<u64>().unwrap() > 0);
+        }
+        assert_eq!(*sonuc, "gecti");
+        let baytlar = std::fs::read(depo().join(yol)).unwrap();
+        let ozet = Sha256::digest(&baytlar)
+            .iter()
+            .map(|b| format!("{b:02x}"))
+            .collect::<String>();
+        assert_eq!(ozet, *rapor_sha);
+        let rapor: serde_json::Value = serde_json::from_slice(&baytlar).unwrap();
+        assert_eq!(rapor["sema"], "zee-temiz-windows-runtime-1");
+        assert_eq!(rapor["sonuc"], "gecti");
+        assert_eq!(rapor["git_sha"], *release_sha);
+        assert_eq!(rapor["prova_git_sha"], *prova_sha);
+        assert_eq!(rapor["program_ciktisi"], "Dünyaya merhaba\n");
+        assert_eq!(rapor["program_exit"], 0);
+        assert_eq!(rapor["rust_araclari"], "yok");
+        assert_eq!(rapor["lsp_initialize_shutdown_exit"], "gecti");
+        let image = rapor["base"].as_str().unwrap();
+        assert!(image.starts_with("mcr.microsoft.com/windows/nanoserver@sha256:"));
+        assert_eq!(image.rsplit(':').next().unwrap().len(), 64);
+        assert!(rapor["repo_digests"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|v| v == image));
+        let bagli = rapor["container_arguments"].as_array().unwrap();
+        for deger in [
+            "--isolation",
+            "process",
+            "--network",
+            "none",
+            "--user",
+            "ContainerUser",
+        ] {
+            assert!(bagli.iter().any(|v| v == deger));
+        }
+        assert!(bagli
+            .iter()
+            .any(|v| v.as_str().unwrap().ends_with(",readonly")));
+        let release: serde_json::Value = serde_json::from_slice(
+            &std::fs::read(depo().join(format!(
+                "compiler/tests/fixtures/calisma-ortami-v1/{release_sha}/windows.json"
+            )))
+            .unwrap(),
+        )
+        .unwrap();
+        for ad in ["dil.exe", "dillsp.exe"] {
+            assert_eq!(rapor["ikililer"][ad], release["ikililer"][ad]["sha256"]);
+        }
+        let cevaplar = rapor["lsp_cevaplari"].as_array().unwrap();
+        assert_eq!(cevaplar.len(), 2);
+        assert_eq!(cevaplar[0]["id"], 1);
+        assert!(cevaplar[0]["result"]["capabilities"].is_object());
+        assert_eq!(cevaplar[1]["id"], 2);
+        assert!(cevaplar[1]["result"].is_null());
+    }
 }

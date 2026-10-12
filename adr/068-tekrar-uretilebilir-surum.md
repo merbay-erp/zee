@@ -116,7 +116,8 @@ açıkça belirtir. Yol statik komuta eklenmez, ayrı environment alanındadır.
 Unix/LLVM araçları `--version` kullanır; boş sürüm veya başarısız metadata
 yine release kanıtını reddeder. [API kaynağı](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo.getversioninfo).
 Bu Windows build kanıtı PowerShell gerektirir; Zee runtime bağımlılığı
-değişmez. Yeni exact üç platform doğrulaması gelmeden K-196 açık kalır.
+değişmez. b153064/run 38252942210 üç platform exact kanıtı bu kapıyı geçti;
+K-196 gerçek linker driver/SDK kaydı kapsamında kapandı.
 
 ## K-197 — Temiz Windows runtime provasının sınırı
 
@@ -141,4 +142,12 @@ izni değildir. GH_TOKEN yalnız host download adımındadır; container'a
 sadece PATH environment'ı taşınır. ACL yalnız geçici, kamuya açık release
 byte'larına Users read/execute verir. Release artefakt kümesi/SBOM/imza
 sözleşmesi değişmez. [Resmî Windows Docker kurulumu](https://github.com/actions/runner-images/blob/main/images/windows/scripts/build/Install-Docker.ps1).
-Gerçek runtime sonucu gelmeden K-197 tamamlanmış sayılmaz.
+K-197 release c7e3d04/prova 27c0fa9 run 38253777857/job 114826470199
+ile bu sınırlı Nano Server program/LSP kapsamında kapandı; ham rapor ve
+kimlik/hash defteri kalıcıdır. Kurulum/kaldırma ve desktop/minimum OS
+desteği ayrı K-192 sınırıdır.
+
+K-196 kapanma kanıtı b153064/run 38252942210: üç platform iki temiz klon
+eş hash ve dört linker kaydı. Windows linker FileVersion 14.51.36260.0,
+SDK 10.0.26100.0; macOS SDK 26.5/Clang 21.0.0, Linux GCC 13.3.0.
+Ham metadata ve runtime raporları kalıcı fixture/defterde korunur.

@@ -921,7 +921,7 @@ CORE FREEZE ve ürün kanıtı olmadan açılmaz. Bu hat araç/dağıtım doğru
 | Kayıt | Durum | Çıktı ve bağımlılık |
 |---|---|---|
 | K-191 | **KAPALI** | Derleme/bağımlılık envanteri; release HEAD pini, host/rustc/sysroot/build aynı toolchain, offline vendor çalışma ağacı pini; olumlu/olumsuz shell giriş regresyonları ve CI kablosu |
-| K-192 | **KISMEN** | Exact `30dcfae` kaynağında üç platform kur/program/LSP/kaldır tatbikatı geçti; raporlar ve hash'ler kalıcı defterde. Linux ikilileri Rust araçları bulunmayan, ağsız/read-only Ubuntu 24.04, Debian 12 ve AlmaLinux 9.8 (glibc 2.34) userland container'larında program+LSP testini geçti. Kanonik uzak exact kaynak erişimi doğrulandı; temiz Windows/macOS, minimum OS ve linker/SDK provenance açık. [Platform kanıtı](derleme-platform-kaniti-v1.tsv) |
+| K-192 | **KISMEN** | Exact `30dcfae` kaynağında üç platform kur/program/LSP/kaldır tatbikatı geçti; raporlar ve hash'ler kalıcı defterde. Linux ikilileri Rust araçları bulunmayan, ağsız/read-only Ubuntu 24.04, Debian 12 ve AlmaLinux 9.8 (glibc 2.34) userland container'larında program+LSP testini geçti. Kanonik uzak exact kaynak erişimi doğrulandı; temiz fiziksel Windows/macOS, minimum OS ve tüm native C araçları açık; linker driver/SDK kaydı K-196 ile kapalı. [Platform kanıtı](derleme-platform-kaniti-v1.tsv) |
 | K-193 | **AÇIK** | K-192 ve mevcut V1/ürün kapıları sonrası: ürün kanıtlı native/WASM backend değerlendirmesi ve semantik eşdeğerlik ölçütleri; kod üretimi henüz yok |
 
 Kapsam ve yeniden üretim komutları [derleme envanterindedir](derleme-ve-bagimliliklar.md).
@@ -956,7 +956,7 @@ minimum OS ve linker/SDK provenance K-192 içinde ayrı açık kalır.
 
 ### K-196 — Gerçek linker/SDK derleme kaydı (K-192 dilimi)
 
-**AÇIK — uygulama/test hazır, exact üç platform üretim kanıtı beklenir.**
+**KAPALI — exact üç platform üretim kanıtı depoda.**
 İki klonun Rust 1.93.1 link izinden dil/dillsp için çağrılan program,
 çözülen araç yolu, araç byte SHA-256 ve sürümü kaydedilir. Unix linker
 verbose, Windows `/VERBOSE:LIB` SDK referanslarını görünür kılar. Ham gerçek
@@ -969,7 +969,7 @@ K-192 açık sınırları korunur. ADR-068.
 
 ### K-197 — Temiz Windows container runtime kanıtı (K-192 dilimi)
 
-**AÇIK — ret kapıları ve koşu kablosu hazır, gerçek Windows sonucu beklenir.**
+**KAPALI — exact Nano Server runtime kanıtı depoda.**
 K-195 statik CRT release byte'ları exact kaynak ve SHA256SUMS ile yürütmeden
 önce doğrulanır; Nano Server LTSC 2025 immutable amd64 digest'inde yalnız
 iki ikili ve merhaba kaynağı read-only mount edilir. ContainerUser/network
@@ -979,3 +979,19 @@ kaydedilir. Windows process isolation host kernel'ini paylaşır; bu tüm
 IO özellikleri, desktop/minimum Windows veya temiz fiziksel macOS kanıtı
 değildir. Kapanma: exact kaynak/hash/image/host/prova kimliği olan gerçek
 başarılı ham rapor depoya alınmış olmalı. ADR-068/GB-034.
+
+K-197 kapanma: release `c7e3d04adf27905ade8b622d24bd76762123d2dc`,
+prova `27c0fa9f566855c433e58607c3ecc9e66804059f`; run 38253777857/job
+114826470199 geçti. Program/LSP, immutable Nano Server 10.0.26100.33438,
+prova aracı byte hash ve release ikili hash'leri ayrıca eşleştirildi.
+[Defter](temiz-windows-platform-kaniti-v1.tsv) ve [ham rapor](temiz-windows-runtime-kaniti-2026-10-12.json)
+kalıcıdır. Kurulum/kaldırma bu container provasının kapsamında değildir;
+K-192 fiziksel Windows/macOS, minimum OS ve bütün IO sınırları açıktır.
+
+K-196 kapanma: exact `b1530641a3f902047b57ad6e7c0c004ec5f1c420`
+run 38252942210 üç platformda iki temiz klon eş hash ve kur/program/LSP/
+kaldır kapısını geçti. Linux GCC 13.3.0; macOS Apple Clang 21.0.0 ve SDK
+26.5; Windows linker FileVersion 14.51.36260.0 ve SDK 10.0.26100.0 dört
+kayıtta doğrulandı. İndirilen ikili byte'ları runtime hash'leriyle eşleşir;
+ham provenance/runtime JSON ve artifact/job/hash defteri kalıcıdır. İlk
+Windows çıktı biçimi/help sorgusu retleri geçmiş olarak korunur.
