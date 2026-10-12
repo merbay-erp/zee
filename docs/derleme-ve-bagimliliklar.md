@@ -369,3 +369,23 @@ verbose satırları `Windows Kits/10/lib/10.0.26100.0` taşıyor. Ayrıştırma
 deneyi resolver'ı yalnız yerel Python executable'ına yönlendirerek
 indirilen komuttan hiçbir araç yürütmedi; bu Windows üretim sürüm
 kanıtı değildir. Gerçek FileVersionInfo üretim kapısı ayrı beklenir.
+
+## K-197 temiz Windows runtime provası — kanıt açık
+
+`scripts/temiz-windows-prova.py` yalnız Python standart kitaplığı kullanır.
+Exact release SHA/hash/yol/tekillik denetimi Docker veya ikili yürütmeden
+önce yapılır; staged byte'lar da yeniden hash'lenir. Docker Windows
+daemon ve pinned image mimarisi denetlenir. Microsoft Nano Server digest
+`4fe6f59e0aadb628a933345eae1f5ab43a2af802969ac0e2ef996c66a3188438`
+amd64/10.0.26100.33438 manifestidir. Container'da Rust kurulmaz; PATH
+system dizinleriyle sınırlıdır ve rustc/cargo/rustup byte varlığı reddedilir.
+Program exact çıktı, LSP yanıt kimliği/capabilities/shutdown koşullarıyla
+denetlenir. Windows Python/Docker/PowerShell/gh bakım hostunun araçlarıdır,
+Zee runtime bağımlılığı değildir. Ham JSON UTF-8, log özeti ASCII'dir.
+Host/prova kaynak ve araç hash'i release kaynağından ayrı raporlanır.
+
+ContainerUser/network none/read-only bind kullanılır; root geçici ve
+yazılabilirdir, process isolation host kernel'ini paylaşır. Trusted kendi
+release byte'ları dışında sandbox sözü verilmez (GB-034). Desktop/minimum
+Windows, bütün IO davranışları ve temiz fiziksel macOS ayrı açıktır.
+Gerçek Windows sonucu alınmadan K-197 kapanmaz.

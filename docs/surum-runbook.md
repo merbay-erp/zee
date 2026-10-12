@@ -87,3 +87,15 @@ olabilir. Bu koşuya özel seçim kuruluş/repo değişkenlerini değiştirmez;
 tag koşuları mevcut kuruluş ayarını izler. Aynı exact kaynağın üç platform
 kanıtı için `gh workflow run kurulum-tatbikati.yml --ref codex/zee-derleme-bagimlilik -f linux_runner=ubuntu-latest`
 ile GitHub Linux koşucusunda yeni tatbikat başlatılır.
+
+K-197 ayrı temiz Windows provasını mevcut successful release ile başlat:
+
+```sh
+gh workflow run kurulum-tatbikati.yml --ref codex/zee-derleme-bagimlilik -f mode=clean-windows -f source_run=38244549913 -f source_sha=c7e3d04adf27905ade8b622d24bd76762123d2dc
+```
+
+Source_run/source_sha aynı depodaki incelenmiş exact release'e ait olmalı;
+90 günlük artefakt süresi dolduğunda yeni successful release kimliği
+kullanılır. Bu kip iki-klon üretimini tekrarlamaz, ready byte'ları temiz
+Nano Server'da sınar. Varsayılan/tag kipinde üç platform release tatbikatı
+sürer. Prova kaynak SHA'sı release SHA'sından ayrı kayıttadır.

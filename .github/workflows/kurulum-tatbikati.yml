@@ -7,6 +7,19 @@ on:
       - "v*"
   workflow_dispatch:
     inputs:
+      mode:
+        description: "Release üretimi veya mevcut exact release için temiz Windows runtime"
+        type: choice
+        default: release
+        options:
+          - release
+          - clean-windows
+      source_run:
+        description: "clean-windows: başarılı Windows artefaktının run kimliği"
+        required: false
+      source_sha:
+        description: "clean-windows: release kaynağının exact SHA'sı"
+        required: false
       linux_runner:
         description: "Linux tatbikat koşucusu (kuruluş ayarını değiştirmez)"
         type: choice
@@ -20,6 +33,7 @@ permissions:
 
 jobs:
   tatbikat:
+    if: inputs.mode != 'clean-windows'
     strategy:
       fail-fast: false
       matrix:
@@ -89,4 +103,43 @@ jobs:
           name: yayinlanamaz-surum-farki-${{ github.sha }}-${{ runner.os }}
           path: ${{ runner.temp }}/surum-farki
           if-no-files-found: ignore
+          retention-days: 90
+  temiz_windows:
+    if: inputs.mode == 'clean-windows'
+    runs-on: windows-latest
+    timeout-minutes: 25
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Kaynak/ikili/LSP ret kapıları
+        shell: pwsh
+        run: python scripts/tests/temiz-windows-test.py
+      - name: Exact Windows release artefaktını indir
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_RUN: ${{ inputs.source_run }}
+          SOURCE_SHA: ${{ inputs.source_sha }}
+        run: |
+          if ($env:SOURCE_RUN -notmatch '^[0-9]+$' -or $env:SOURCE_SHA -notmatch '^[0-9a-f]{40}$') { throw "invalid source identity" }
+          gh run download $env:SOURCE_RUN --repo $env:GITHUB_REPOSITORY --name "calisma-ortami-$env:SOURCE_SHA-Windows" --dir "$env:RUNNER_TEMP\source"
+          if ($LASTEXITCODE -ne 0) { throw "source artifact download failed" }
+      - name: Nano Server program ve LSP provası
+        shell: pwsh
+        env:
+          SOURCE_SHA: ${{ inputs.source_sha }}
+        run: |
+          python scripts/temiz-windows-prova.py --artefakt "$env:RUNNER_TEMP\source\surum" --beklenen-sha $env:SOURCE_SHA --rapor "$env:RUNNER_TEMP\temiz-windows.json"
+          if ($LASTEXITCODE -ne 0) { throw "clean runtime proof failed" }
+      - name: Runtime kanıtını veya başarısızlık kaydını koru
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: temiz-windows-${{ inputs.source_sha }}-prova-${{ github.sha }}
+          path: ${{ runner.temp }}/temiz-windows.json
+          if-no-files-found: error
           retention-days: 90

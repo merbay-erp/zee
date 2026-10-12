@@ -117,3 +117,28 @@ Unix/LLVM araçları `--version` kullanır; boş sürüm veya başarısız metad
 yine release kanıtını reddeder. [API kaynağı](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo.getversioninfo).
 Bu Windows build kanıtı PowerShell gerektirir; Zee runtime bağımlılığı
 değişmez. Yeni exact üç platform doğrulaması gelmeden K-196 açık kalır.
+
+## K-197 — Temiz Windows runtime provasının sınırı
+
+Release üretimi ve runtime tüketimi ayrı işlerdir. `kurulum-tatbikati`
+`mode=clean-windows` ile aynı depodaki explicit source_run/source_sha
+artefaktını indirir; ikili hash ve kaynak eşleşmeden Docker/ikili yürütmez.
+Temiz Microsoft Nano Server LTSC 2025 digest'i
+`4fe6f59e0aadb628a933345eae1f5ab43a2af802969ac0e2ef996c66a3188438`
+manifestinde amd64/windows/10.0.26100.33438 gözlenmiştir. Host Docker
+daemon ve image OS/mimarisi denetlenir; ContainerUser, network none,
+system PATH, read-only iki ikili+kaynak mount'u ile program ve LSP koşar.
+Container root geçici ve yazılabilirdir; process isolation host kernel'ini
+paylaşır. Nano Server provasının kapsamı desktop/minimum OS veya bütün
+IO davranışlarını kapsamaz. Host/prova aracı ve release source kimliği
+raporda ayrı tutulur; başarısız koşu da raporla saklanır.
+
+GB-034: unsigned SHA256SUMS yayımlayan kişinin özgünlüğünü kanıtlamaz.
+Bu bakım provası yalnız kendi depomuzdaki incelenmiş üretim koşularından
+indirilen byte'larla kullanılır; keyfi üçüncü taraf artefakt çalıştırma
+ve Windows container'ını kötü niyetli kod için güvenlik sandbox'ı sayma
+izni değildir. GH_TOKEN yalnız host download adımındadır; container'a
+sadece PATH environment'ı taşınır. ACL yalnız geçici, kamuya açık release
+byte'larına Users read/execute verir. Release artefakt kümesi/SBOM/imza
+sözleşmesi değişmez. [Resmî Windows Docker kurulumu](https://github.com/actions/runner-images/blob/main/images/windows/scripts/build/Install-Docker.ps1).
+Gerçek runtime sonucu gelmeden K-197 tamamlanmış sayılmaz.

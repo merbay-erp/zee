@@ -1267,3 +1267,11 @@ ve kurulum dosya kümesi değişmez; üç platform kapanma kanıtı açık kalı
 Windows MSVC build kimliğinde help exit davranışı yerine executable
 FileVersion/ProductVersion metadata'sı kullanılır; `version_source`
 provenance kaydında görünür. Başarısız/boş metadata release'i reddeder.
+
+K-197 temiz Windows runtime provasının ret kapıları ve koşu kablosu
+hazırdır; exact release kaynağı/hash, immutable Nano Server image,
+ContainerUser/network none/read-only bind ile program ve LSP denenir.
+Gerçek Windows sonucu açık; masaüstü/minimum OS ve bütün IO desteği
+tamamlanmış gösterilmez. Release/prova kaynak SHA'ları ayrı kaydedilir.
+ADR-068/GB-034; spec/RFC/tanı/API/production Rust katmanları ve benchmark
+tarihçesi değişmez.
