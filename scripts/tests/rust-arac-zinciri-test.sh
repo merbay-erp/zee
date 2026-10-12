@@ -13,6 +13,7 @@ case "$*" in
     --version) echo "rustc ${ZEE_TEST_YANLIS_SURUM:-$surum} (test 2026-10-12)" ;;
     -vV) echo "host: ${ZEE_TEST_PLATFORM:-aarch64-apple-darwin}" ;;
     '--print sysroot') echo "/test/rust/$surum" ;;
+    '--print deployment-target') echo "MACOSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET:-11.0}" ;;
     *) exit 1 ;;
 esac
 RUSTC
@@ -50,6 +51,11 @@ case "$1" in
             [[ "$bayraklar" != *"crt-static"* ]] || exit 1
         fi
         mkdir -p "$dizin"
+        if [[ "${ZEE_TEST_PLATFORM:-aarch64-apple-darwin}" == *-apple-darwin ]]; then
+            [[ "$MACOSX_DEPLOYMENT_TARGET" == 11.0 ]] || exit 1
+            mkdir -p "$dizin/build/ring-test/out"
+            printf 'test native object\n' > "$dizin/build/ring-test/out/native.o"
+        fi
         for ad in dil dillsp; do
             printf 'test binary\n' > "$dizin/$ad$uzanti"
             if [[ "${ZEE_TEST_OZET_FARKI:-0}" == 1 ]]; then
@@ -80,12 +86,16 @@ cat > "$gecici/bin/cc" <<'CC'
 #!/usr/bin/env bash
 echo 'test linker 1.0'
 CC
+cat > "$gecici/bin/otool" <<'OTOOL'
+#!/usr/bin/env bash
+printf 'Load command 0\n cmd LC_BUILD_VERSION\n platform 1\n minos 11.0\n sdk 27.0\n'
+OTOOL
 cat > "$gecici/bin/cygpath" <<'CYGPATH'
 #!/usr/bin/env bash
 [[ "$1" == -m || "$1" == -am ]] || exit 1
 printf '%s\n' "$2"
 CYGPATH
-chmod +x "$gecici/bin/rustc" "$gecici/bin/rustup" "$gecici/bin/cargo" "$gecici/bin/cygpath" "$gecici/bin/cc"
+chmod +x "$gecici/bin/rustc" "$gecici/bin/rustup" "$gecici/bin/cargo" "$gecici/bin/cygpath" "$gecici/bin/cc" "$gecici/bin/otool"
 export PATH="$gecici/bin:$PATH"
 export ZEE_TEST_KOMUTLAR="$gecici/komutlar"
 export ZEE_TEST_RUSTC_PATH="$gecici/bin/rustc"
@@ -93,6 +103,7 @@ export RUSTC=/caller/other/rustc RUSTC_WRAPPER=/caller/wrapper RUSTC_WORKSPACE_W
 source "$depo_koku/scripts/rust-arac-zinciri.sh"
 printf '[toolchain]\nchannel = "1.93.1"\n' > "$gecici/pin"
 export RUSTUP_TOOLCHAIN=9.9.9
+export MACOSX_DEPLOYMENT_TARGET=27.0
 zee_rust_arac_zinciri "$gecici/pin"
 [[ "$RUSTUP_TOOLCHAIN" == 1.93.1 ]]
 [[ "$RUSTC" == "$ZEE_TEST_RUSTC_PATH" && -z "$RUSTC_WRAPPER" && -z "$RUSTC_WORKSPACE_WRAPPER" ]]
@@ -114,7 +125,7 @@ if (export ZEE_TEST_YANLIS_SURUM=9.9.9; zee_rust_arac_zinciri "$gecici/pin") > /
     echo 'Pin ile uyuşmayan rustc kabul edildi' >&2; exit 1
 fi
 cp "$depo_koku/scripts/"{rust-arac-zinciri,surum-artefakti,offline-vendor-denetle}.sh "$gecici/depo/scripts/"
-cp "$depo_koku/scripts/derleme-ortami-kaydet.py" "$gecici/depo/scripts/"
+cp "$depo_koku/scripts/"{derleme-ortami-kaydet,native-deployment-denetle}.py "$gecici/depo/scripts/"
 cp "$gecici/pin" "$gecici/depo/compiler/rust-toolchain.toml"
 printf 'test lock\n' > "$gecici/depo/compiler/Cargo.lock"
 printf 'test fuzz lock\n' > "$gecici/depo/compiler/fuzz/Cargo.lock"

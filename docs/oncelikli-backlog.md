@@ -1038,3 +1038,17 @@ alanları boş, helper/prova/pin byte hash'leri kaynakla eşleşir.
 [Defter](rustc-pin-platform-kaniti-v1.tsv) ve raw fixture kayıtları kalıcı.
 Tam Zee release veya tüm Cargo profil/linker/native C ayarları bu probe
 kapsamı değildir; sonraki release normal iki-klon kapısından geçer.
+
+### K-200 — macOS native C/Rust deployment uyumu
+
+**AÇIK — gerçek yerel önce/sonra kanıtı hazır; exact release tatbikatı beklenir.**
+Locked cc 1.4.4/Ring build izinde C `-mmacosx-version-min=27.0` ve
+object minos 27.0 iken Rust final Mach-O minos 11.0 çıktı. Resmî release
+Rust default deployment hedefini caller ENV dışında sorgular, C/Rust
+MACOSX_DEPLOYMENT_TARGET'ını ortak seçer. İki klon native build-script .o
+başlığı/hash'i incelenir; üst minos/yanlış platform/eksik toplam kanıt
+release'i reddeder. Başlıksız assembly ayrı sınırdır. Yerel sonrası 24/24
+nesne minos 11.0 ve Rust'sız PATH program/LSP geçti. Kapanma: exact üç
+platform iki-klon tatbikatı ve macOS a/b native başlık kayıtları kalıcı.
+Gerçek macOS 11/desktop/minimum OS ve tüm C alt süreç envanteri değildir.
+ADR-068/GB-037.

@@ -263,3 +263,10 @@ Cache wrapper kullanan çağıranda derleme süresi değişebilir; runtime
 profile/iş yükü değişmez. ADR-045/049/history etkisi incelendi; exact
 clean kaynak/makine/sample/warmup ölçümü alınmadan performans tarihçesine
 yeni satır/baseline yazılmadı. Shared CI yalnız gözlemseldir, hard eşik yok.
+
+K-200 native C macOS deployment bayrağı exact Rust default'una
+eşitlendi (yerel SDK 27.0 minos yerine 11.0). Native code generation/
+compatibility etkisi vardır; sabit dil iş yükü değişmez. ADR-045/049 ve
+performans tarihçesi incelendi; yeni exact clean makine/sample/warmup
+ölçümü alınmadan baseline/tarihçe satırı yazılmadı. Shared CI gözlemsel
+kalır, hard eşik etkinleştirilmedi.

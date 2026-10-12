@@ -56,9 +56,11 @@ jobs:
           if [[ "$RUNNER_OS" == Windows ]]; then
             python scripts/tests/calisma-ortami-test.py
             python scripts/tests/derleme-ortami-test.py
+            python scripts/tests/native-deployment-test.py
           else
             python3 scripts/tests/calisma-ortami-test.py
             python3 scripts/tests/derleme-ortami-test.py
+            python3 scripts/tests/native-deployment-test.py
           fi
       - name: "Sürüm artefaktı (üç platform: iki temiz klon)"
         shell: bash

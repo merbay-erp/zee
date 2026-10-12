@@ -43,6 +43,16 @@ git show "$sha:compiler/rust-toolchain.toml" > "$gecici/rust-toolchain.toml"
 source "$depo_koku/scripts/rust-arac-zinciri.sh"
 zee_rust_arac_zinciri "$gecici/rust-toolchain.toml"
 platform="$(rustc -vV | awk '/^host:/ {print $2}')"
+native_hedef=none
+if [[ "$platform" == *-apple-darwin ]]; then
+    # CC/ring SDK sürümünü minimum OS sanamaz; exact Rust varsayılanı ortak.
+    deployment="$(env -u MACOSX_DEPLOYMENT_TARGET rustc --print deployment-target)"
+    [[ "$deployment" =~ ^MACOSX_DEPLOYMENT_TARGET=[0-9]+\.[0-9]+(\.[0-9]+)?$ ]] || {
+        echo "Rust native deployment hedefi okunamadı." >&2; exit 1
+    }
+    native_hedef="${deployment#*=}"
+    export MACOSX_DEPLOYMENT_TARGET="$native_hedef"
+fi
 # Windows dağıtımı CRT'yi ikiliye bağlar. Explicit target yalnız hedef
 # crate'lerine bayrak uygular; host proc-macro/build-script profili değişmez.
 build_argumanlari=(--locked --release --bin dil --bin dillsp)
@@ -91,6 +101,11 @@ for klon in a b; do
             exit 1
         fi
     )
+    if [[ "$native_hedef" != none ]]; then
+        python_komutu=python
+        command -v python3 >/dev/null 2>&1 && python_komutu=python3
+        "$python_komutu" "$depo_koku/scripts/native-deployment-denetle.py" --root "$gecici/$klon/target" --target "$native_hedef" --out "$gecici/$klon/native-deployment.json"
+    fi
 done
 
 ozet_hesapla() {
@@ -126,7 +141,7 @@ done
 
 python_komutu=python
 command -v python3 >/dev/null 2>&1 && python_komutu=python3
-if ! "$python_komutu" "$depo_koku/scripts/derleme-ortami-kaydet.py" --a "$gecici/a/build.log" --b "$gecici/b/build.log" --sha "$sha" --out "$gecici/build-environment.json"; then
+if ! "$python_komutu" "$depo_koku/scripts/derleme-ortami-kaydet.py" --a "$gecici/a/build.log" --b "$gecici/b/build.log" --sha "$sha" --out "$gecici/build-environment.json" --native-target "$native_hedef"; then
     if [[ -n "${ZEE_SURUM_TANI_DIZINI:-}" ]]; then
         mkdir -p "$ZEE_SURUM_TANI_DIZINI"
         cp "$gecici/a/build.log" "$ZEE_SURUM_TANI_DIZINI/a-build.log"
