@@ -164,3 +164,7 @@ initialize/shutdown/exit geçti. Runtime Ubuntu 24.04.5 x86_64; libc6
 `3.0.13-0ubuntu3.15`. macOS arm64 Docker hostunda amd64 emülasyonu kullanıldı;
 bu performans ya da bare-metal minimum OS ölçümü değildir. Windows/macOS
 temiz fiziksel makine ve minimum OS/linker-SDK provenance sınırları açıktır.
+
+Kalıcı JSON raporları `.gitattributes` içinde binary olarak işaretlidir;
+Windows CRLF dahil indirilen ham byte'lar Git satır sonu dönüşümünden korunur.
+Defterdeki SHA-256 normalize edilmiş JSON metninin değil ham raporun özetidir.
