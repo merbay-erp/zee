@@ -91,3 +91,18 @@ ikili farkını araştırmak için a/b byte'larını ve `YAYINLANAMAZ` durumunu
 saklar. Bu ayrı tanı kümesi kurulum/release artefaktı değildir; SBOM/imza
 üreticisi eş-hash kapısını geçmeden çalışmaz. CI ayrı `yayinlanamaz-surum-farki`
 adıyla 90 gün saklar; normal sürüm kümesi değişmez.
+
+K-196 linker/SDK kayıt revizyonu: iki klonun gerçek Rust 1.93.1 link komutu,
+çağrılan araç path/byte hash/version ve SDK referansları provenance
+`buildEnvironment` içine girer. Unix `-v`, MSVC `/VERBOSE:LIB` ve Rust link
+info izi tanı çıktısıdır; `targetRustflags` tarifle eşleşir. Python 3
+standart kitaplığı build kanıtı aracıdır. Eksik iki-klon/iki-ikili kaydı veya
+bozuk hash/source/schema release yayımlamadan reddedilir. Eski bakım CLI
+çağrısı buildEnvironment olmadan çalışabilir; resmi script alanı daima ister.
+Driver alt süreçleri ve bütün C build-script toolchain'i bu kısmi kaydın
+ötesidir; exact üç platform üretim gözden geçirilmeden kapatılmaz.
+
+GB-033: derleme kayıt aracı yalnız üreticinin kendi taze loglarına güvenir;
+harici logdan sürüm programı çalıştırma yetkisi verilmez. Log shell olarak
+değerlendirilmez, çözülen araca sürüm argümanı verilir. Kaydın kendisi
+release imzasının ya da bütün native toolchain envanterinin yerine geçmez.

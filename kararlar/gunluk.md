@@ -3753,3 +3753,11 @@ değildir. [Ham rapor](../docs/temiz-linux-runtime-kaniti-2026-10-12.json)
 SHA-256 `5d9df5d2fb4a6c4273c8efee1ed1824016271153b02fb3461a85f92c09b56d5e`; Dockerfile, base/derived image kimliği,
 package/kernel/ikili hash ve LSP yanıtları raporda korunur. K-192
 minimum OS/linker-SDK ve temiz Windows/macOS sınırları ayrı açıktır.
+
+K-196 linker/SDK kayıt dilimi hazırdır: release iki klonun gerçek link
+komutunu, program path/hash/version ve SDK referanslarını provenance'a
+bağlar. Unix `-v`, MSVC `/VERBOSE:LIB` tarifte görünür; Python 3 build kanıtı
+aracıdır, runtime bağımlılığı değildir. Eksik kanıt yayımlanmadan reddedilir.
+Exact üç platform üretim kanıtı açık; minimum OS/temiz Windows-macOS ve
+bütün native C araçlarının kaydı tamamlanmış gösterilmez. Performans
+baseline'ı/tarihçe satırı üretilmedi; ADR-045/049 kuralları korunur.

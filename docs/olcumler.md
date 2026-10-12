@@ -248,3 +248,11 @@ K-195 ilk Windows çift-klon koşusu eş-hash kapısında kaldı; artefakt
 `targetRustflags` alanını birlikte günceller; exact tekrar kanıtı gerekir.
 Eş olmayan byte'lar ayrı `yayinlanamaz-surum-farki` tanısında saklanır,
 sürüm/kurulum kümesine girmez. Benchmark tarihçesine yeni satır yazılmadı.
+
+K-196 linker/SDK kayıt dilimi hazırdır: release iki klonun gerçek link
+komutunu, program path/hash/version ve SDK referanslarını provenance'a
+bağlar. Unix `-v`, MSVC `/VERBOSE:LIB` tarifte görünür; Python 3 build kanıtı
+aracıdır, runtime bağımlılığı değildir. Eksik kanıt yayımlanmadan reddedilir.
+Exact üç platform üretim kanıtı açık; minimum OS/temiz Windows-macOS ve
+bütün native C araçlarının kaydı tamamlanmış gösterilmez. Performans
+baseline'ı/tarihçe satırı üretilmedi; ADR-045/049 kuralları korunur.

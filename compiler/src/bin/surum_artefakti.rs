@@ -294,7 +294,7 @@ fn provenance_belgesi(
                     "sourceDateEpoch": epoch,
                     "cargoArgs": cargo_argumanlari,
                     "crtLinkage": if windows_msvc { "static" } else { "target-default" },
-                    "targetRustflags": if windows_msvc { vec!["-C", "target-feature=+crt-static", "-C", "link-arg=/Brepro"] } else { vec![] },
+                    "targetRustflags": if windows_msvc { vec!["-C", "target-feature=+crt-static", "-C", "link-arg=/Brepro", "-C", "link-arg=/VERBOSE:LIB"] } else { vec!["-C", "link-arg=-v"] },
                     "remapPathPrefix": ["/zee", "/cargo", "/rust"]
                 },
                 "resolvedDependencies": [{
@@ -316,6 +316,39 @@ fn provenance_belgesi(
             }
         }
     })
+}
+
+fn derleme_ortami_dogrula(ortam: Value, sha: &str) -> Result<Value, String> {
+    let hata = || "build environment kaynak/şema/klon/ikili sözleşmesi geçersiz".to_string();
+    if ortam["schema"] != "zee-build-environment-1"
+        || ortam["gitCommit"] != sha
+        || ortam["clones"].as_object().map(|v| v.len()) != Some(2)
+    {
+        return Err(hata());
+    }
+    for klon in ["a", "b"] {
+        let ikililer = &ortam["clones"][klon]["binaries"];
+        if ikililer.as_object().map(|v| v.len()) != Some(2) {
+            return Err(hata());
+        }
+        for ikili in ["dil", "dillsp"] {
+            let kayit = &ikililer[ikili];
+            for alan in ["program", "path", "version", "command"] {
+                if kayit[alan].as_str().map(|v| v.trim().is_empty()) != Some(false) {
+                    return Err(hata());
+                }
+            }
+            let ozet = kayit["sha256"].as_str().ok_or_else(hata)?;
+            if ozet.len() != 64
+                || !ozet
+                    .bytes()
+                    .all(|v| v.is_ascii_digit() || (b'a'..=b'f').contains(&v))
+            {
+                return Err(hata());
+            }
+        }
+    }
+    Ok(ortam)
 }
 
 fn anahtari_oku(yol: &Path) -> Result<SigningKey, String> {
@@ -457,7 +490,7 @@ fn calistir(argumanlar: &[String]) -> Result<String, String> {
             let epoch = secenek(kalan, "--epoch")?
                 .parse::<i64>()
                 .map_err(|_| "--epoch tam sayı olmalı")?;
-            json_metni(&provenance_belgesi(
+            let mut belge = provenance_belgesi(
                 &secenek(kalan, "--sha")?,
                 env!("CARGO_PKG_VERSION"),
                 &rfc3339(epoch),
@@ -467,7 +500,15 @@ fn calistir(argumanlar: &[String]) -> Result<String, String> {
                 &ozetler,
                 &sha256_hex(&ikinci),
                 &sha256_hex(&ilk),
-            ))
+            );
+            if let Ok(yol) = secenek(kalan, "--build-environment") {
+                let ortam: Value = serde_json::from_slice(&dosya_oku(Path::new(&yol))?)
+                    .map_err(|_| "build environment JSON değil".to_string())?;
+                let ortam = derleme_ortami_dogrula(ortam, &secenek(kalan, "--sha")?)?;
+                belge["predicate"]["buildDefinition"]["externalParameters"]["buildEnvironment"] =
+                    ortam;
+            }
+            json_metni(&belge)
         }
         "imzala" => {
             let anahtar = anahtari_oku(Path::new(&secenek(kalan, "--anahtar")?))?;
@@ -623,7 +664,14 @@ mod testler {
         assert_eq!(parametreler["crtLinkage"], json!("static"));
         assert_eq!(
             parametreler["targetRustflags"],
-            json!(["-C", "target-feature=+crt-static", "-C", "link-arg=/Brepro"])
+            json!([
+                "-C",
+                "target-feature=+crt-static",
+                "-C",
+                "link-arg=/Brepro",
+                "-C",
+                "link-arg=/VERBOSE:LIB"
+            ])
         );
         assert!(parametreler["cargoArgs"]
             .as_str()
@@ -635,8 +683,22 @@ mod testler {
         );
         assert_eq!(
             p["predicate"]["buildDefinition"]["externalParameters"]["targetRustflags"],
-            json!([])
+            json!(["-C", "link-arg=-v"])
         );
+        let kayit = json!({"program": "cc", "path": "/usr/bin/cc", "version": "clang 21", "command": "actual command", "sha256": "a".repeat(64)});
+        let klon = json!({"binaries": {"dil": kayit.clone(), "dillsp": kayit}});
+        let ortam = json!({"schema": "zee-build-environment-1", "gitCommit": sha, "clones": {"a": klon.clone(), "b": klon}});
+        assert_eq!(derleme_ortami_dogrula(ortam.clone(), sha).unwrap(), ortam);
+        assert!(derleme_ortami_dogrula(ortam.clone(), "wrong-sha").is_err());
+        let mut eksik = ortam.clone();
+        eksik["clones"]["b"]["binaries"]
+            .as_object_mut()
+            .unwrap()
+            .remove("dillsp");
+        assert!(derleme_ortami_dogrula(eksik, sha).is_err());
+        let mut bozuk = ortam;
+        bozuk["clones"]["a"]["binaries"]["dil"]["sha256"] = json!("bad");
+        assert!(derleme_ortami_dogrula(bozuk, sha).is_err());
         assert!(ozetleri_coz("kısa  dil\n").is_err());
         assert!(ozetleri_coz("").is_err());
     }

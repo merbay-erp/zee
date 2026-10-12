@@ -1,0 +1,99 @@
+#!/usr/bin/env python3
+"""K-196: Rust 1.93.1 gerçek linker izinden iki release ikilisinin ortamı.
+
+Rustc RUSTC_LOG sözleşmesi: https://rustc-dev-guide.rust-lang.org/tracing.html
+Log bir shell komutu olarak çalıştırılmaz; quoted Debug String alanları okunur.
+"""
+import argparse
+import hashlib
+import json
+from pathlib import Path, PureWindowsPath
+import re
+import shutil
+import subprocess
+import sys
+
+
+def quoted(line):
+    return [json.loads(m.group()) for m in re.finditer(r'"(?:[^"\\]|\\.)*"', line)]
+
+
+def kaydet(logs, sha):
+    if not re.fullmatch(r"[0-9a-f]{40}", sha):
+        raise ValueError("Kaynak SHA exact 40 hex olmalı")
+    clones = {}
+    for clone, log in logs.items():
+        text = log.read_text(encoding="utf-8", errors="strict")
+        records = {}
+        for line in text.splitlines():
+            if "rustc_codegen_ssa::back::link" not in line or "preparing " in line:
+                continue
+            fields = quoted(line)
+            binary = None
+            for value in fields:
+                name = PureWindowsPath(value).name if "\\" in value else Path(value).name
+                for candidate in ("dil", "dillsp"):
+                    if re.fullmatch(candidate + r"-[0-9a-f]+(?:\.exe)?", name):
+                        binary = candidate
+            if binary is None:
+                continue
+            programs = [v for v in fields if PureWindowsPath(v).name.lower() in
+                        ("cc", "gcc", "clang", "link.exe", "lld-link.exe", "rust-lld", "ld")]
+            if len(programs) != 1:
+                raise ValueError(f"Gerçek linker programı tekil değil: {binary}")
+            program = programs[0]
+            path_match = re.search(r'PATH=("(?:[^"\\]|\\.)*")', line)
+            search_path = json.loads(path_match.group(1)) if path_match else None
+            resolved = shutil.which(program, path=search_path)
+            if not resolved:
+                raise ValueError(f"İzdeki linker bulunamadı: {program}")
+            executable = Path(resolved).resolve()
+            option = "/?" if executable.name.lower() in ("link.exe", "lld-link.exe") else "--version"
+            version = subprocess.run([str(executable), option], capture_output=True, timeout=20)
+            if version.returncode != 0:
+                raise ValueError(f"Linker sürümü okunamadı: {executable}")
+            sdk_paths = sorted(set(v for v in fields if "Windows Kits" in v or
+                                   ".sdk" in v or v.startswith("/LIBPATH:")))
+            records[binary] = {"program": program, "path": str(executable),
+                               "sha256": hashlib.sha256(executable.read_bytes()).hexdigest(),
+                               "version": (version.stdout + version.stderr).decode("utf-8", errors="replace")[:4000].strip(),
+                               "command": line.strip(), "sdk_references": sdk_paths}
+        if set(records) != {"dil", "dillsp"}:
+            raise ValueError(f"İki gerçek release link komutu yok: {clone}")
+        sdk_observations = sorted(set(v for v in quoted(text) if ".sdk" in v or "Windows Kits" in v))
+        sdk_versions = {}
+        for reference in sdk_observations:
+            windows_sdk = re.search(r"Windows Kits[\\/]10[\\/]Lib[\\/]([0-9.]+)[\\/]", reference, re.IGNORECASE)
+            if windows_sdk:
+                sdk_versions[reference] = windows_sdk.group(1)
+            if reference.endswith(".sdk"):
+                settings = Path(reference) / "SDKSettings.json"
+                if settings.is_file():
+                    sdk_versions[reference] = json.loads(settings.read_text())["Version"]
+        clones[clone] = {"binaries": records, "sdkObservations": sdk_observations,
+                         "sdkVersions": sdk_versions}
+    if set(clones) != {"a", "b"}:
+        raise ValueError("İki klon kanıtı gerekir")
+    return {"schema": "zee-build-environment-1", "gitCommit": sha, "clones": clones,
+            "boundary": "Gerçek rustc linker programı ve komut SDK referansları; minimum OS veya tüm native C build-script araçlarının kanıtı değildir."}
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--a", type=Path, required=True)
+    parser.add_argument("--b", type=Path, required=True)
+    parser.add_argument("--sha", required=True)
+    parser.add_argument("--out", type=Path, required=True)
+    args = parser.parse_args()
+    try:
+        data = kaydet({"a": args.a, "b": args.b}, args.sha)
+        args.out.write_bytes((json.dumps(data, ensure_ascii=False, indent=2) + "\n").encode())
+    except (OSError, ValueError, subprocess.SubprocessError) as error:
+        print("build-environment: failed: " + str(error).encode("ascii", errors="backslashreplace").decode("ascii"), file=sys.stderr)
+        return 1
+    print("build-environment: passed")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
