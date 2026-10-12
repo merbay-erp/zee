@@ -40,3 +40,4 @@ f97ac995973edd94822bd89f446d76531ee7deef	dogfood-change	zee-erp	K-188	dogfood/ze
 7f24eb3576cf870c915ceaacb1a85b2d5ef7cb36	maintenance	-	-	-	-	Yeni grammar, kalıp, tanı kodu ya da runtime davranışı yok; yalnız clippy expect_used düzeltmesi, yardımcıya ayırma ve rustfmt biçimi.	-
 a09ea5b856d182455ed7d121f9e3028d31c7dea2	maintenance	-	-	-	-	Yeni grammar, kalıp, tanı kodu ya da runtime davranışı yok; yalnız serde_json kullanımı wasm hedefinin dışına alındı.	-
 2d467145aee33f51219008a25825df2a7324a306	maintenance	-	-	-	-	K-192 yalnız sürüm metadata kaynak URL değeri ve mevcut araç regresyon assertionları değişti; yeni dil yüzeyi, tanı, public API ya da runtime davranışı eklenmedi.	-
+db146eac750381fe71a6a4704ed55cc0dfdc2ae4	maintenance	-	-	-	-	K-195 yalnız dağıtım profili metadata ve mevcut araç assertionları değişti; grammar, dil komutu, tanı ve gömme API exportu eklenmedi, kullanıcı program semantiği aynı kalır.	-
