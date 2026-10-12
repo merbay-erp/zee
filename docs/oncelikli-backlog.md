@@ -998,7 +998,7 @@ Windows çıktı biçimi/help sorgusu retleri geçmiş olarak korunur.
 
 ### K-198 — Temiz Windows kurulum/kaldırma kanıtı (K-192 dilimi)
 
-**AÇIK — kod/ret testleri hazır; gerçek Server Core sonucu beklenir.**
+**KAPALI — exact stock Server Core kurulum/kaldırma kanıtı depoda.**
 K-197 yalnız hazır byte program/LSP kanıtıdır. K-198 stock Server Core
 LTSC 2025 exact digest üzerinde aynı ContainerUser container'ında Türkçe
 boşluklu kurulum, manifest exact path/hash/source doğrulaması, program/LSP
@@ -1008,3 +1008,11 @@ provanın UUID container'ı sonunda kaldırılır. Network none/read-only bind,
 host kernel ve geçici root sınırı korunur. Kapanma: başarılı exact image/
 source/kurulum/kaldırma ham raporu ve kimlik/hash defteri. Desktop/minimum
 Windows ve fiziksel macOS K-192'de ayrıca açık. ADR-068/GB-035.
+
+K-198 kapanma: release b153064, prova 33176cf; run 38255788989/job
+114833388588 stock Server Core 10.0.26100.33438'de geçti. ContainerUser
+Türkçe boşluklu dizinde exact manifest ile kurdu, program/LSP geçti,
+kaldırma sonunda iki ikili+manifest yok; yalnız prova container'ı silindi.
+[Ham rapor](temiz-windows-kurulum-kaniti-2026-10-12.json),
+[defter](temiz-windows-platform-kaniti-v1.tsv); source/prova/helper/installer
+hash'leri bağımsız eşleştirildi. Fiziksel/desktop/minimum OS ve tüm IO ayrı.

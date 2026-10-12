@@ -604,7 +604,8 @@ fn calisma_ortami_kaydi_exact_kaynak_ve_ikili_hashleriyle_program_lsp_kaniti_tas
             .collect::<String>();
         assert_eq!(ozet, *rapor_sha);
         let rapor: serde_json::Value = serde_json::from_slice(&baytlar).unwrap();
-        assert_eq!(rapor["sema"], "zee-temiz-windows-runtime-1");
+        let kurulum_provasi = rapor["sema"] == "zee-temiz-windows-kurulum-1";
+        assert!(kurulum_provasi || rapor["sema"] == "zee-temiz-windows-runtime-1");
         assert_eq!(rapor["sonuc"], "gecti");
         assert_eq!(rapor["git_sha"], *release_sha);
         assert_eq!(rapor["prova_git_sha"], *prova_sha);
@@ -613,7 +614,11 @@ fn calisma_ortami_kaydi_exact_kaynak_ve_ikili_hashleriyle_program_lsp_kaniti_tas
         assert_eq!(rapor["rust_araclari"], "yok");
         assert_eq!(rapor["lsp_initialize_shutdown_exit"], "gecti");
         let image = rapor["base"].as_str().unwrap();
-        assert!(image.starts_with("mcr.microsoft.com/windows/nanoserver@sha256:"));
+        assert!(image.starts_with(if kurulum_provasi {
+            "mcr.microsoft.com/windows/servercore@sha256:"
+        } else {
+            "mcr.microsoft.com/windows/nanoserver@sha256:"
+        }));
         assert_eq!(image.rsplit(':').next().unwrap().len(), 64);
         assert!(rapor["repo_digests"]
             .as_array()
@@ -643,6 +648,33 @@ fn calisma_ortami_kaydi_exact_kaynak_ve_ikili_hashleriyle_program_lsp_kaniti_tas
         .unwrap();
         for ad in ["dil.exe", "dillsp.exe"] {
             assert_eq!(rapor["ikililer"][ad], release["ikililer"][ad]["sha256"]);
+        }
+        if kurulum_provasi {
+            for alan in ["kurulum", "kaldirma", "container_temizligi"] {
+                assert_eq!(rapor[alan], "gecti");
+            }
+            let manifest = rapor["manifest"].as_str().unwrap();
+            assert!(manifest.starts_with("# zee-kurulum-1\n"));
+            let kayitlar = manifest
+                .lines()
+                .filter(|s| !s.is_empty() && !s.starts_with('#'))
+                .map(|s| s.split('\t').collect::<Vec<_>>())
+                .collect::<Vec<_>>();
+            assert_eq!(kayitlar.len(), 2);
+            for (kayit, ad) in kayitlar.iter().zip(["dil.exe", "dillsp.exe"]) {
+                assert_eq!(kayit.len(), 3);
+                assert!(kayit[0].contains("Zee Türkçe\\bin\\"));
+                assert!(kayit[0].ends_with(ad));
+                assert_eq!(kayit[1], rapor["ikililer"][ad].as_str().unwrap());
+                assert_eq!(kayit[2], *release_sha);
+            }
+            for ad in ["kur.ps1", "kaldir.ps1"] {
+                let hash = rapor["kurulum_betikleri"][ad].as_str().unwrap();
+                assert_eq!(hash.len(), 64);
+                assert!(hash
+                    .bytes()
+                    .all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase()));
+            }
         }
         let cevaplar = rapor["lsp_cevaplari"].as_array().unwrap();
         assert_eq!(cevaplar.len(), 2);

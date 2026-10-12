@@ -114,5 +114,5 @@ gh workflow run kurulum-tatbikati.yml --ref codex/zee-derleme-bagimlilik -f mode
 ```
 
 Kaynak kendi incelenmiş successful release koşusudur; release ve prova
-commit'i farklı olabilir ve ayrı kaydedilir. Actual Server Core sonucu
-gelmeden K-198 kapalı sayılmaz. Masaüstü/minimum OS/fiziksel macOS ayrı.
+commit'i farklı olabilir ve ayrı kaydedilir. Server Core run 38255788989/job 114833388588
+kur/program/LSP/kaldır kapısını geçti ve K-198 bu kapsamda kapandı. Masaüstü/minimum OS/fiziksel macOS ayrı.

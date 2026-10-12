@@ -994,9 +994,16 @@ link kaydında doğrulandı. Ham runtime/provenance ve artifact hash'leri
 [platform defterinde](derleme-platform-kaniti-v1.tsv) korunur. K-192 minimum OS, bütün native C
 araçları ve fiziksel temiz makine kanıtı ayrıca açıktır.
 
-K-198 temiz Server Core kurulum/kaldırma dilimi hazırdır; exact source/
+K-198 temiz Server Core kurulum/kaldırma dilimi exact kanıtla kapandı; exact source/
 byte/script hash'leri, Türkçe boşluklu ContainerUser dizini, manifest
 path/hash/source, program/LSP ve kaldırma yokluk kanıtı istenir. Gerçek
-Windows koşusu açık; desktop/minimum OS/fiziksel macOS ve bütün IO
+Windows koşusu geçti; desktop/minimum OS/fiziksel macOS ve bütün IO
 tamamlanmış gösterilmez. ADR-068/GB-035. Spec/RFC/tanı/API, production
 Rust katmanları, release dosya kümesi ve benchmark tarihçesi değişmez.
+
+K-198 kapanma: release b153064/prova 33176cf/run 38255788989/job
+114833388588; stock Server Core 10.0.26100.33438'de Rust kurulmadan
+Türkçe dizine kur/program/LSP/kaldır geçti. [Ham rapor](temiz-windows-kurulum-kaniti-2026-10-12.json)
+ve [kimlik/hash defteri](temiz-windows-platform-kaniti-v1.tsv) kalıcıdır.
+ContainerUser/network none/read-only bind; host kernel, fiziksel/desktop
+minimum OS ve tüm IO kapsamı ayrı açıktır.
