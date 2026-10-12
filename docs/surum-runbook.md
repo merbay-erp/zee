@@ -57,3 +57,9 @@ ve sahiplik kaydı oluşturamaz. Bilinçli yerel manifest değiştirme ve aynı
 kullanıcı kimliğiyle düşman süreçlere karşı OS sandbox'ı vaat edilmez.
 
 K-195: Windows MSVC üretimi de `scripts/surum-artefakti.sh` ile iki temiz klon ister. Statik CRT tarifi provenance alanlarında görülmeli ve çalışma ortamı kapısı dinamik CRT importunu reddetmelidir. Eski tek-derleme tatbikat artefaktı tekrar üretilebilir sürüm yerine kullanılamaz.
+
+K-195 ilk Windows çift-klon koşusu eş-hash kapısında kaldı; artefakt
+üretilmedi. Yeni MSVC linker tarifi `/Brepro` ve provenance
+`targetRustflags` alanını birlikte günceller; exact tekrar kanıtı gerekir.
+Eş olmayan byte'lar ayrı `yayinlanamaz-surum-farki` tanısında saklanır,
+sürüm/kurulum kümesine girmez. Benchmark tarihçesine yeni satır yazılmadı.

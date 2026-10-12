@@ -56,6 +56,7 @@ cargo_home="${CARGO_HOME:-$HOME/.cargo}"
 sysroot="$(rustc --print sysroot)"
 if [[ "$platform" == *-pc-windows-msvc ]]; then
     # MSYS shell yolları native rustc'nin gördüğü yollarla aynı olmalıdır.
+    cikti="$(cygpath -am "$cikti")"
     cargo_home="$(cygpath -m "$cargo_home")"
     sysroot="$(cygpath -m "$sysroot")"
 fi
@@ -75,7 +76,7 @@ for klon in a b; do
         cd "$gecici/$klon/compiler"
         rust_bayraklari=("--remap-path-prefix=$klon_yolu=/zee" "--remap-path-prefix=$cargo_home=/cargo" "--remap-path-prefix=$sysroot=/rust")
         if [[ "$platform" == *-pc-windows-msvc ]]; then
-            rust_bayraklari+=(-C target-feature=+crt-static)
+            rust_bayraklari+=(-C target-feature=+crt-static -C link-arg=/Brepro)
         fi
         printf -v kodlanmis_bayraklar '%s\x1f' "${rust_bayraklari[@]}"
         kodlanmis_bayraklar="${kodlanmis_bayraklar%$'\x1f'}"
@@ -101,6 +102,17 @@ for ikili in dil dillsp; do
     b="$(ozet_hesapla "$gecici/b/target/$release_dizini/$ikili$uzanti")"
     if [[ "$a" != "$b" ]]; then
         echo "TEKRAR ÜRETİLEMEDİ: $ikili iki temiz klonda farklı ($a / $b)" >&2
+        # Yalnız CI tanısı: eş olmayan byte'lar sürüm kümesine girmez.
+        if [[ -n "${ZEE_SURUM_TANI_DIZINI:-}" ]]; then
+            mkdir -p "$ZEE_SURUM_TANI_DIZINI/a" "$ZEE_SURUM_TANI_DIZINI/b"
+            for tani_klonu in a b; do
+                for tani_ikilisi in dil dillsp; do
+                    cp "$gecici/$tani_klonu/target/$release_dizini/$tani_ikilisi$uzanti" "$ZEE_SURUM_TANI_DIZINI/$tani_klonu/"
+                done
+            done
+            printf '%s\n' "$sha" > "$ZEE_SURUM_TANI_DIZINI/GIT_SHA"
+            printf 'YAYINLANAMAZ: iki temiz klon hashleri eş değil.\n' > "$ZEE_SURUM_TANI_DIZINI/DURUM"
+        fi
         exit 1
     fi
     echo "-- $ikili iki klonda eş: $a"
