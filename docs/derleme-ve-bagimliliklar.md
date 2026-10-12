@@ -244,3 +244,16 @@ release klonu kendi TMPDIR'ında açılırken test ilk remap argümanında
 spaced fixture kökünü varsayıyordu. Giriş testi release çocuk süreçlerine
 özel spaced TMPDIR verir; üretim tarifi değiştirilmez. Aynı test
 macOS Bash 3 ve ağsız Linux Bash 5 container'ında doğrulanır.
+
+K-192 ek temiz Linux kanıtı: `c7e3d04` CI ikilisi Debian 12 userland'ında
+program exact çıktı/exit 0 ve LSP initialize/shutdown/exit provasını geçti.
+Base amd64 `debian@sha256:a4672c0cb26fbdde88e38fa2dfb6c681942306680e41e4378b28770b6e79ee91`
+image'ına yalnız libssl3/libgcc-s1 eklendi; libc6 `2.36-9+deb12u14`,
+libgcc-s1 `12.2.0-14+deb12u1`, libssl3 `3.0.22-1~deb12u1`.
+Rust araçları PATH'te yoktur; rustc/cargo paketleri dpkg'de yoktur. Çalışma
+`--read-only --network none`; host macOS arm64, amd64 emülasyonudur.
+Kernel Docker hostunundur; minimum OS tam destek veya performans garantisi
+değildir. [Ham rapor](temiz-linux-runtime-kaniti-2026-10-12.json)
+SHA-256 `5d9df5d2fb4a6c4273c8efee1ed1824016271153b02fb3461a85f92c09b56d5e`; Dockerfile, base/derived image kimliği,
+package/kernel/ikili hash ve LSP yanıtları raporda korunur. K-192
+minimum OS/linker-SDK ve temiz Windows/macOS sınırları ayrı açıktır.

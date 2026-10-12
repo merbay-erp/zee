@@ -1,0 +1,47 @@
+{
+  "sema": "zee-temiz-linux-runtime-1",
+  "git_sha": "c7e3d04adf27905ade8b622d24bd76762123d2dc",
+  "tarih_utc": "2026-10-12T12:08:51.156193+00:00",
+  "base": "debian@sha256:a4672c0cb26fbdde88e38fa2dfb6c681942306680e41e4378b28770b6e79ee91",
+  "image": "sha256:8cef9008dce3c4509549117052feadd69153cab31396536a16cffff008c67592",
+  "dockerfile": "FROM debian@sha256:a4672c0cb26fbdde88e38fa2dfb6c681942306680e41e4378b28770b6e79ee91\nRUN apt-get update && apt-get install -y --no-install-recommends libssl3 libgcc-s1 && rm -rf /var/lib/apt/lists/*\n",
+  "os_release": "PRETTY_NAME=\"Debian GNU/Linux 12 (bookworm)\"\nNAME=\"Debian GNU/Linux\"\nVERSION_ID=\"12\"\nVERSION=\"12 (bookworm)\"\nVERSION_CODENAME=bookworm\nID=debian\nHOME_URL=\"https://www.debian.org/\"\nSUPPORT_URL=\"https://www.debian.org/support\"\nBUG_REPORT_URL=\"https://bugs.debian.org/\"\n",
+  "uname": "x86_64",
+  "paketler": "libc6:amd64\t2.36-9+deb12u14\nlibgcc-s1:amd64\t12.2.0-14+deb12u1\nlibssl3:amd64\t3.0.22-1~deb12u1\n",
+  "sinir": "macOS arm64 hostunda amd64 emülasyonu; read-only/network none; minimum OS tam destek veya performans kanıtı değildir.",
+  "rust_araclari": "yok",
+  "program_exit": 0,
+  "program_ciktisi": "Dünyaya merhaba\n",
+  "lsp_initialize_shutdown_exit": "gecti",
+  "lsp_cevaplari": [
+    {
+      "jsonrpc": "2.0",
+      "id": 1,
+      "result": {
+        "capabilities": {
+          "textDocumentSync": 1,
+          "completionProvider": {},
+          "hoverProvider": true,
+          "definitionProvider": true,
+          "renameProvider": true
+        },
+        "serverInfo": {
+          "name": "dillsp",
+          "version": "0.8.0-dev"
+        }
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "id": 2,
+      "result": null
+    }
+  ],
+  "ikililer": {
+    "dil": "147a240a364beebdb9731ad9081b46bf964ed505455101904f9198d72cd0c5a6",
+    "dillsp": "84bbb1eb6d85decc50958f67f4e50c71752293566e3550393aebe2d2c90fa523"
+  },
+  "sonuc": "gecti",
+  "rust_paketleri": "yok",
+  "kernel": "6.10.14-linuxkit"
+}
