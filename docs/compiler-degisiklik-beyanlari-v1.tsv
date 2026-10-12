@@ -44,3 +44,4 @@ de54187f70f6913d885fbb81f7e2b695b82b7d20	semantic-change	spec/12-web-guvenlik-pr
 d6439417415a8ea36cc1482e978115504ac31c4e	maintenance	-	Yalnız oturum sonucu kodlamasında expect yerine hata sonucu, elmas birleşiminin yardımcı işleve ayrılması ve rustfmt biçimi; derleyici ve dil davranışı değişmedi.
 9d68286755b1781afc2ea3bbf90b3a0f5d82179f	maintenance	-	Yalnız oturum izi JSON kodlaması wasm dışı hedefe koşullandı; yerel davranış değişmedi, wasm playground yeniden derlenir.
 ea5bcf98d9e36acdb08ff5e2f41b658c23c45f59	maintenance	-	K-192 yalnız sürüm bakım ikilisinin SBOM/provenance kaynak depo URL değerini kanonikleştirir; Zee grammar, tür çözümü, bağlı program ve runtime gözlemleri değişmez.
+ed1d20ab161ab3dc40233125186058e345957bf4	maintenance	-	K-195 yalnız sürüm bakım üreticisinin Windows CRT ve exact Cargo hedef tarifini provenance alanlarına ekler; Zee ayrıştırma, tür, bağlı program, runtime ve public API davranışları değişmez.
