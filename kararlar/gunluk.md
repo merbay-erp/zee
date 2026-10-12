@@ -3550,3 +3550,28 @@ paylaşım için sentetik kayıt ve CI'a iz koymama sınırı belgelendi.
   `elmas_ice_alim_aracinin_gizli_kopyasi_dogrudan_tanimi_dusurmez` iki içe alım
   sırasını çalıştırma ve denetim yolunda doğrular; yamasız derleyicide başarısız
   olur. Semantic ve core-freeze beyanları exact kaynak commit'i gösterir.
+
+## K-191 — Derleme ve bağımlılık envanteri, exact Rust provenance (12 Ekim 2026)
+
+- **Bulgu:** Kök varsayılan Rust 1.98.1 iken compiler pini 1.93.1'di.
+  Sürüm betiği rustc/host/sysroot bilgisini kökten, ikilileri compiler'dan
+  alıyordu; provenance ve remap gerçek üretici araç zinciriyle ayrışabiliyordu.
+- **Karar:** Ortak exact pin seçicisi release için üretilen HEAD'i, offline
+  vendor için incelenen çalışma ağacını kullanır. Caller varsayılanı yerine
+  pin kullanılır; eksik/geçersiz pin ve uyuşmayan rustc hata verir.
+- **Kanıt:** Shell giriş regresyonları iki klon, kirli pin, offline vendor,
+  farklı varsayılan ve negatif vakaları yürütür; tedarik CI'ı ve mevcut Cargo
+  kablo testleri bunları bağlar. ADR-068, GB-029 ve derleme envanteri aynı dilimdedir.
+- **Etki incelemesi:** Compiler production kaynakları, mimari kenarlar,
+  crate/toolchain sürümleri, SBOM/provenance şeması, dil spec/RFC/tanıları,
+  kurulum artefakt kümesi ve benchmark iş yükleri değişmez; ilgili fixture,
+  hata kataloğu, spec madde kayıtları ve ölçüm tarihçeleri bu yüzden korunur.
+  README, master plan, sürüm notu, V1 kapısı ve backlog güncellendi.
+- **Açık devam:** K-192 sistem/linker/SDK bağımlılık kanıtı; K-193 gerçek ürün
+  kanıtıyla backend değerlendirmesi. Self-hosting ve insan kapıları kapanmadı.
+- **Yerel doğrulama:** Faz matrisi 725/725, 0 kalan/atlanan; katalog,
+  doküman tazeliği, tedarik, güvenlik, dogfood/kanıt özeti ve pinned rustfmt
+  geçti. Native compiler+fuzz boş Cargo home offline kapısı 163 pakette
+  `b5cacf9a07f3f364c3e72f0a272bfdc12836f43cd5b0521d8a6d3ea2522e160e`
+  manifestini iki kez eş üretti. WASM lib check geçti. Shell regresyonu
+  eski HEAD betiklerinde başarısız, düzeltilmiş girişlerde başarılıdır.

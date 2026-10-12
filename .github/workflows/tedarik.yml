@@ -41,6 +41,8 @@ jobs:
           persist-credentials: false
       - name: Sabit Rust araç zinciri
         run: rustup toolchain install 1.93.1 --profile minimal
+      - name: Rust pin ve provenance giriş regresyonları
+        run: bash scripts/tests/rust-arac-zinciri-test.sh
       - name: Sabit cargo-deny
         run: cargo install cargo-deny --version 0.20.2 --locked
       - name: RustSec, lisans, ban ve kaynak politikası

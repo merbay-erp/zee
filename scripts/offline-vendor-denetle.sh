@@ -2,6 +2,8 @@
 set -euo pipefail
 
 depo_koku="$(git rev-parse --show-toplevel)"
+source "$depo_koku/scripts/rust-arac-zinciri.sh"
+zee_rust_arac_zinciri "$depo_koku/compiler/rust-toolchain.toml"
 manifest="$depo_koku/compiler/Cargo.toml"
 kilit="$depo_koku/compiler/Cargo.lock"
 fuzz_manifesti="$depo_koku/compiler/fuzz/Cargo.toml"

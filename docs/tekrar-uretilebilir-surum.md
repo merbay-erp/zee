@@ -4,6 +4,13 @@ K-168/ADR-068'in işletim sözleşmesi. Betik `scripts/surum-artefakti.sh`,
 araç `compiler/src/bin/surum_artefakti.rs`, workflow
 `.github/workflows/surum-adayi.yml`.
 
+K-191: Host, rustc ve sysroot bilgisi de derlemeyle aynı exact Rust pininden
+alınır. Ortak araç zinciri seçicisi caller'ın `RUSTUP_TOOLCHAIN` değerini
+kayıtlı sürümle değiştirir; pin `git show HEAD:compiler/rust-toolchain.toml`
+kaynağından gelir. `--kirli-kabul` HEAD'i üretir, yerel değiştirilmiş pini
+kullanmaz. Yönlendirme regresyonu `scripts/tests/rust-arac-zinciri-test.sh`
+ile CI'da çalışır. [Envanter ve açık sınırlar](derleme-ve-bagimliliklar.md).
+
 ## Yerel üretim
 
 ```bash
