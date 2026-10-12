@@ -129,3 +129,9 @@ RUSTC'yi exact kurulu executable'a bağlar ve wrapper'ları kapatır.
 Custom compiler/wrapper geliştirme resmi release'in dışında kendi
 Cargo çağrısıyla yapılır. Tam Zee release, tüm Cargo profil/linker ve
 native C envanteri bu küçük probe'un kapsamı değildir.
+
+K-200 macOS release caller deployment ENV'ını kullanmaz; exact Rust
+default'unu C/Rust için ortak uygular ve a/b native .o başlıklarını
+provenance'a kaydeder. Üst minos/yanlış platform/eksik toplam native
+kanıt yayımlamayı durdurur. Bu target başlığı gerçek minimum OS
+çalıştırma/desktop desteği değildir; o kapı ayrıca korunur.

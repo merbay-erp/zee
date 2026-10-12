@@ -464,3 +464,22 @@ vardır. Helper/prova/pin hash'leri ayrıca kaynakla eşleşir. [Defter](rustc-p
 source/run/job/artifact/zip/raw hash'lerini bağlar. K-199 bu sınırlı
 compiler seçimi kapsamında kapandı; tam Zee release profil/native C
 envanteri değildir. K-192 kalan makine sınırları açık kalır.
+
+## K-200 macOS C/Rust deployment uyumu — release kanıtı açık
+
+Gerçek local Cargo -vv + CC_ENABLE_DEBUG_OUTPUT locked cc 1.4.4/Ring
+C bayrağı `-mmacosx-version-min=27.0` gösterdi. otool native curve25519.o
+minos 27.0, final dil minos 11.0 bildirdi. Bu final başlığın native
+object deployment uyumunu tek başına kanıtlamadığını gösterir; macOS 11
+çalıştırma testi yapılmadı. Export MACOSX_DEPLOYMENT_TARGET=11.0 sonrası
+24/24 build-script object minos 11.0, program/LSP Rust'sız PATH ile geçti.
+
+Release exact Rust default'unu caller ENV dışında alır ve C/Rust için
+ortak export eder. Native .o başlığı doğru Apple platform/üst minos/
+en az bir toplam version kanıtıyla denetlenir. Object relative path/
+byte hash/ham başlık ve target iki-klon buildEnvironment metadata'sına
+girer. Başlıksız assembly açık sınırlıdır; gerçek minimum OS/runtime
+desteği veya bütün C alt süreçlerinin araç envanteri değildir. Release
+dosya kümesi, SBOM/imza sözleşmesi ve dil API değişmez. Compiler/native
+compile bayrağı değişti; ADR-045/049/history etkisi `olcumler.md` içindedir.
+K-200 exact üç platform release sonuçları olmadan kapatılmaz.

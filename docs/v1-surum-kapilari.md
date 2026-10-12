@@ -255,3 +255,11 @@ Cargo/build-script/ikili Rust 1.93.1, empty wrappers ve temiz source
 kanıtı [kalıcı defterde](rustc-pin-platform-kaniti-v1.tsv). Helper/prova/pin
 hash'leri kaynakla ayrıca eşleşir. Tam Zee release ve bütün Cargo
 profil/linker/native C ayarları bu dar probe'un kapsamı değildir.
+
+K-200 macOS C/Rust deployment uyum kapısı hazır: final minos 11.0
+bildiren eski derlemede C nesnesi 27.0 idi. Resmî release exact Rust
+default deployment'ını C/Rust'a ortak export eder; iki klon native .o
+başlık/hash kanıtı provenance'a girer. Yerel sonrası 24/24 nesne 11.0
+ve program/LSP geçti; exact release üç platform kanıtı açık. Gerçek
+macOS 11/minimum OS/tüm native alt süreç desteği değildir. ADR-068/GB-037;
+spec/RFC/tanı/API/production Rust katmanı ve release dosya kümesi değişmez.

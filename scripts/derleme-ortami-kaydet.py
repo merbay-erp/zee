@@ -110,9 +110,17 @@ def main():
     parser.add_argument("--b", type=Path, required=True)
     parser.add_argument("--sha", required=True)
     parser.add_argument("--out", type=Path, required=True)
+    parser.add_argument("--native-target", default="none")
     args = parser.parse_args()
     try:
         data = kaydet({"a": args.a, "b": args.b}, args.sha)
+        if args.native_target != "none":
+            for clone, log in {"a":args.a,"b":args.b}.items():
+                native=json.loads(log.with_name('native-deployment.json').read_bytes())
+                if native.get('schema')!='zee-native-deployment-1' or native.get('target')!=args.native_target:
+                    raise ValueError('Native deployment source/target mismatch')
+                data['clones'][clone]['nativeDeployment']=native
+            data['nativeDeploymentTarget']='MACOSX_DEPLOYMENT_TARGET='+args.native_target
         args.out.write_bytes((json.dumps(data, ensure_ascii=False, indent=2) + "\n").encode())
     except (OSError, ValueError, subprocess.SubprocessError) as error:
         print("build-environment: failed: " + str(error).encode("ascii", errors="backslashreplace").decode("ascii"), file=sys.stderr)

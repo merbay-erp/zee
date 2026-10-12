@@ -195,3 +195,25 @@ Rustup kurulu toolchain'e güvenilir; signed dağıtıcı/tool hash özgünlüğ
 sözü genişlemez. GB-036 eski yanlış compiler metadata riski bu sınırlı
 seçim sözleşmesiyle kapanır. Exact 22ea2b8/run 38259341995 üç platform
 gerçek Cargo pin kanıtı geçti ve kalıcı defter/fixture kaydıyla K-199 kapandı.
+
+## K-200 — Rust minos native C nesne uyumunun kanıtı değildir
+
+Yerel gerçek locked cc 1.4.4/Ring Cargo izi C deployment 27.0 ve object
+LC_BUILD_VERSION minos 27.0, final Rust Mach-O minos 11.0 verdi. Yeni
+release caller MACOSX_DEPLOYMENT_TARGET dışında exact Rust'ın
+`--print deployment-target` varsayılanını alır ve aynı değeri iki klonun
+C/Rust derlemesine export eder. Başka platform tarifi değişmez.
+`scripts/native-deployment-denetle.py` build-script out .o dosyalarını
+otool ile inceler: bildirilen minos hedefi aşamaz, Apple platform doğru
+olmalı, en az bir native sürüm kanıtı olmalı. Object byte hash/ham başlık
+ve target a/b provenance buildEnvironment'ına eklenir. Başlıksız assembly
+ve gerçek minimum OS desteği bu başlık uyumundan çıkarılmaz.
+
+GB-037 eski düşük final minos ile daha yüksek C deployment uyumsuzluğu
+bilinçli uyum kapısıyla kapanır. Yerel sonrası 24/24 nesne minos 11.0
+ve program/LSP geçti; actual exact release tatbikatı ayrı açık. Native
+compile deployment bayrağı değiştiği için ADR-045/049/history etkisi
+incelendi; benchmark baseline üretilmedi. Release dosya kümesi ve imza
+sözleşmesi değişmez; native header metadata provenance'ın additive
+buildEnvironment alanındadır. Spec/RFC/tanı/API ve Rust katman kenarı
+değişmedi.
