@@ -3726,3 +3726,9 @@ ve exact yeni koşu ile denenir. Bu seçenek MSVC'de dokümante olmayan
 bir tekrarlanabilirlik bayrağıdır; [cc-rs sahiplerinin açıklaması](https://github.com/rust-lang/cc-rs/issues/373)
 ve kullanılan cc 1.4.4 kaynak yorumu sınırı belirtir. Başarı ölçütü
 bayrağın varlığı değil, iki gerçek ikili hash'i ve program/LSP provasıdır.
+
+K-195 tedarik CI ret nedeni test fixture'ının yanlış yol varsayımıdır:
+release klonu kendi TMPDIR'ında açılırken test ilk remap argümanında
+spaced fixture kökünü varsayıyordu. Giriş testi release çocuk süreçlerine
+özel spaced TMPDIR verir; üretim tarifi değiştirilmez. Aynı test
+macOS Bash 3 ve ağsız Linux Bash 5 container'ında doğrulanır.
