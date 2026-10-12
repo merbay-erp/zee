@@ -195,3 +195,8 @@ Release bayrakları [Cargo encoded rustflags sözleşmesi](https://doc.rust-lang
 ile ayrı argümanlar halinde taşınır; boşluklu remap yolları parçalanmaz ve
 caller encoded flags seçilen CRT/remap tarifini ezemez. Giriş regresyonu
 caller bayrağıyla Windows tarifini de denetler.
+
+K-195 yerel çift-klon provasının ikili hash'leri eşittir; göreli `--cikti`
+yolu metadata araçlarının compiler çalışma dizininde yanlış çözülüyordu.
+Çıktı yolu depo köküne sabitlendi; giriş testi gerçek metadata cwd'sinden
+iki ikili dosyasının bulunmasını denetler. Tam artefakt provası tekrarlanır.

@@ -30,6 +30,12 @@ sha="$(git rev-parse HEAD)"
 epoch="$(git log -1 --format=%ct "$sha")"
 export SOURCE_DATE_EPOCH="$epoch"
 cikti="${cikti:-$depo_koku/hedef/surum/$sha}"
+# Metadata araçları compiler/ içinde koşar; caller'ın göreli yolu depo
+# köküne sabitlenir. Native Windows drive yolu zaten mutlaktır.
+case "$cikti" in
+    /*|[A-Za-z]:*) ;;
+    *) cikti="$depo_koku/$cikti" ;;
+esac
 gecici="$(mktemp -d "${TMPDIR:-/tmp}/zee-surum.XXXXXX")"
 trap 'rm -rf "$gecici"' EXIT
 # --kirli-kabul dahi HEAD'i üretir; yerel değiştirilmiş pin kullanılmaz.

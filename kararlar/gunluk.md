@@ -3693,3 +3693,8 @@ temiz makine sınırlarını açık tutar. Yeni compiler behavior/grammar/kenar
 ve benchmark/soak yükü yok; ilgili spec/RFC/ADR-046 kayıtları korunur.
 
 K-195 başladı: K-192 gerçek Windows DLL listesinde VCRUNTIME140 görülmesi üzerine dağıtım CRT profili statik yapıldı. Windows tek derleme yerine aynı iki-klon üreticiye alındı; metadata tarif assertionları, gerçek eski raporla CRT ret testi ve Unix/Windows shell girişleri birlikte. Dil semantiği, katman kenarı, spec/RFC/tanı ve public API değişmedi; exact CI kapanma kanıtı açık.
+
+K-195 yerel çift-klon provasının ikili hash'leri eşittir; göreli `--cikti`
+yolu metadata araçlarının compiler çalışma dizininde yanlış çözülüyordu.
+Çıktı yolu depo köküne sabitlendi; giriş testi gerçek metadata cwd'sinden
+iki ikili dosyasının bulunmasını denetler. Tam artefakt provası tekrarlanır.
