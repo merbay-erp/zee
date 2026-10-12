@@ -1,7 +1,7 @@
 # ADR-068 — Tekrar üretilebilir sürüm artefaktı
 
 - **Durum:** kabul
-- **Tarih:** 5 Eylül 2026
+- **Tarih:** 5 Eylül 2026; K-191 araç zinciri revizyonu 12 Ekim 2026
 - **İlgili kayıt:** K-168, ADR-006/038/048/066, V1-P1-25
 
 ## Bağlam
@@ -21,6 +21,10 @@ temiz ortamda eş hash, SBOM, imza ve provenance istedi.
    sysroot→`/rust`) ve commit zamanı `SOURCE_DATE_EPOCH` altında
    `cargo build --locked --release --bin dil --bin dillsp` ile derler. İki
    klonun SHA-256'sı eşit değilse artefakt üretilmez.
+   K-191: host/rustc/sysroot sorguları da aynı exact pin altında çalışır.
+   Pin üretilen commit'ten okunur; caller'ın varsayılanı veya kirli yerel
+   pin provenance'a taşınmaz. Ortak seçici ve CI giriş regresyonları
+   `scripts/rust-arac-zinciri.sh` ve `scripts/tests/rust-arac-zinciri-test.sh`.
 2. **Artefakt kümesi.** Çıktı klasörü `dil`, `dillsp`, `SHA256SUMS`,
    `sbom.spdx.json` (SPDX 3.0.1: kök `dil` paketi, her ikili `software_File`,
    `Cargo.lock`taki her bağımlılık `dependsOn` ilişkisiyle), 

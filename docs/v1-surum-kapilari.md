@@ -10,6 +10,11 @@ derlenen toplam ve faz dağılımı CI'ın faz matrisi artefaktındadır.
 Durumlar: **KAPALI** = kanıtı var · **AÇIK** = v1 engeli · **KARAR** = önce
 normatif seçim gerekir · **KAPSAM DIŞI** = v1'in açıkça vermediği söz.
 
+K-191, V1-P1-25 provenance'ın araç zinciri seçimini exact kaynak commit'ine
+bağladı; varsayılan Rust farklılığı giriş regresyonuyla korunur.
+[Sistem bağımlılıkları ve backend açıkları](derleme-ve-bagimliliklar.md)
+K-192/K-193 kapsamındadır; bu düzeltme yeni backend kapatmaz.
+
 ## P0 — v1 etiketi öncesi zorunlu
 
 | Kapı | Durum | Kaynakta görülen gerçek | Kapanma kanıtı |

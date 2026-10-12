@@ -30,12 +30,16 @@ sha="$(git rev-parse HEAD)"
 epoch="$(git log -1 --format=%ct "$sha")"
 export SOURCE_DATE_EPOCH="$epoch"
 cikti="${cikti:-$depo_koku/hedef/surum/$sha}"
+gecici="$(mktemp -d "${TMPDIR:-/tmp}/zee-surum.XXXXXX")"
+trap 'rm -rf "$gecici"' EXIT
+# --kirli-kabul dahi HEAD'i üretir; yerel değiştirilmiş pin kullanılmaz.
+git show "$sha:compiler/rust-toolchain.toml" > "$gecici/rust-toolchain.toml"
+source "$depo_koku/scripts/rust-arac-zinciri.sh"
+zee_rust_arac_zinciri "$gecici/rust-toolchain.toml"
 platform="$(rustc -vV | awk '/^host:/ {print $2}')"
 rustc_surumu="$(rustc --version)"
 cargo_home="${CARGO_HOME:-$HOME/.cargo}"
 sysroot="$(rustc --print sysroot)"
-gecici="$(mktemp -d "${TMPDIR:-/tmp}/zee-surum.XXXXXX")"
-trap 'rm -rf "$gecici"' EXIT
 
 echo "== Sürüm artefaktı: $sha ($platform, $rustc_surumu, SOURCE_DATE_EPOCH=$epoch)"
 for klon in a b; do

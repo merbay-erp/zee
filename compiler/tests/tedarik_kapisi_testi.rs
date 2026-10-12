@@ -119,6 +119,7 @@ fn ci_sabit_aracla_guncel_advisory_ve_offline_vendor_kapisi_kosar() {
     assert!(ci.contains("--manifest-path fuzz/Cargo.toml --config deny.toml"));
     assert!(ci.contains("schedule:"));
     assert!(ci.contains("bash scripts/offline-vendor-denetle.sh"));
+    assert!(ci.contains("bash scripts/tests/rust-arac-zinciri-test.sh"));
 
     let ana_ci = oku(".github/workflows/ci.yml");
     assert!(!ana_ci.contains("cargo test --locked || cargo test"));
@@ -223,6 +224,7 @@ fn github_actionlari_incelenmis_immutable_commitlere_sabitlidir() {
 #[test]
 fn vendor_kaniti_iki_uretimi_ve_bos_cargo_home_offline_derlemeyi_ister() {
     let betik = oku("scripts/offline-vendor-denetle.sh");
+    assert!(betik.contains("zee_rust_arac_zinciri"));
     assert!(betik.contains("cargo vendor --locked --versioned-dirs"));
     assert!(betik.contains("--sync \"$fuzz_manifesti\""));
     assert!(betik.contains("for tur in bir iki"));
@@ -239,6 +241,8 @@ fn surum_artefakti_iki_temiz_klon_sbom_provenance_ve_imza_kablosunu_tasir() {
     let betik = oku("scripts/surum-artefakti.sh");
     for adim in [
         "set -euo pipefail",
+        "zee_rust_arac_zinciri",
+        "git show \"$sha:compiler/rust-toolchain.toml\"",
         "git clone -q --local",
         "for klon in a b",
         "--remap-path-prefix=",

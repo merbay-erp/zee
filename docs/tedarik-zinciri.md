@@ -75,6 +75,11 @@ paket aynı
 `6adafc91e5c1283cd030c21a36e9ab35e3f71ca95275ccaee32b6b590e79456e`
 manifest özetini verdi ve boş Cargo home ile compiler+fuzz offline derlendi.
 
+K-191: Vendor ve boş Cargo home derlemeleri de çalışma ağacındaki
+`compiler/rust-toolchain.toml` exact pinini kullanır; caller'ın Rust
+varsayılanına bırakılmaz. Araç zinciri/linker/SDK önceden kurulu olmalıdır;
+vendor ağacı bu araçları içermez. [Derleme envanteri](derleme-ve-bagimliliklar.md).
+
 ## Gerçek offline vendor kanıtı
 
 Depo kökünden:

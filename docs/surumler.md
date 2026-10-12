@@ -12,6 +12,12 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **Derleme araç zinciri provenance tutarlılığı (K-191):** Sürüm ve offline
+  vendor betikleri kayıtlı exact Rust pinini kullanır. Host/rustc/sysroot ve
+  ikili üretimi aynı araç zincirindedir; farklı varsayılan Rust yanlış
+  provenance üretemez. Sürüm pininin kaynağı exact HEAD'dir. Dil davranışı
+  ve bağımlılık sürümleri değişmez; geçersiz/eksik pin hata verir.
+
 - **Güvenli oturum listesi ve tekil iptal (K-188, ADR-079):** Zee ERP artık
   kullanıcıya ait etkin oturumları ham çerez sırrı olmadan SHA-256 özet kimlik
   ve zaman metadata'sıyla listeleyebilir; seçili kimliği ortak runtime deposunda
