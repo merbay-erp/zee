@@ -491,6 +491,44 @@ fn calisma_ortami_kaydi_exact_kaynak_ve_ikili_hashleriyle_program_lsp_kaniti_tas
             {
                 assert_eq!(ortam["schema"], "zee-build-environment-1");
                 assert_eq!(ortam["gitCommit"], *sha);
+                if let Some(deployment) = ortam.get("nativeDeploymentTarget") {
+                    assert_eq!(*os, "macOS");
+                    assert_eq!(deployment, "MACOSX_DEPLOYMENT_TARGET=11.0");
+                    for klon in ["a", "b"] {
+                        let native = &ortam["clones"][klon]["nativeDeployment"];
+                        assert_eq!(native["schema"], "zee-native-deployment-1");
+                        assert_eq!(native["target"], "11.0");
+                        let nesneler = native["objects"].as_array().unwrap();
+                        assert!(!nesneler.is_empty());
+                        let mut bildirilen = 0;
+                        for nesne in nesneler {
+                            let yol = nesne["path"].as_str().unwrap();
+                            assert!(yol.contains("build/") && yol.ends_with(".o"));
+                            assert!(!yol.starts_with('/') && !yol.split('/').any(|p| p == ".."));
+                            let hash = nesne["sha256"].as_str().unwrap();
+                            assert_eq!(hash.len(), 64);
+                            assert!(hash
+                                .bytes()
+                                .all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase()));
+                            for surum in nesne["deployment_versions"].as_array().unwrap() {
+                                let mut parcalar = surum
+                                    .as_str()
+                                    .unwrap()
+                                    .split('.')
+                                    .map(|p| p.parse::<u32>().unwrap())
+                                    .collect::<Vec<_>>();
+                                parcalar.resize(3, 0);
+                                assert!(parcalar.as_slice() <= [11, 0, 0].as_slice());
+                                assert!(nesne["header"]
+                                    .as_str()
+                                    .unwrap()
+                                    .contains(surum.as_str().unwrap()));
+                                bildirilen += 1;
+                            }
+                        }
+                        assert!(bildirilen > 0);
+                    }
+                }
                 let klonlar = ortam["clones"].as_object().unwrap();
                 assert_eq!(klonlar.len(), 2);
                 for klon in ["a", "b"] {

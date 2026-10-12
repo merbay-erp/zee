@@ -1,0 +1,82 @@
+{
+  "sema": "zee-calisma-ortami-1",
+  "sonuc": "gecti",
+  "tarih_utc": "2026-10-12T14:33:27.449258+00:00",
+  "os": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+  "mimari": "x86_64",
+  "python": "3.12.3",
+  "ikililer": {
+    "dil": {
+      "sha256": "3399749af7bf63cf8cabe1dd31ecad6800bc53a4fe9b7aa6fd53c66c6d64583a",
+      "arac": "/usr/bin/readelf",
+      "dogrudan": [
+        "ld-linux-x86-64.so.2",
+        "libc.so.6",
+        "libcrypto.so.3",
+        "libgcc_s.so.1",
+        "libm.so.6",
+        "libssl.so.3"
+      ],
+      "abi_basliklari": [
+        "GLIBC_2.10",
+        "GLIBC_2.14",
+        "GLIBC_2.16",
+        "GLIBC_2.17",
+        "GLIBC_2.18",
+        "GLIBC_2.2.5",
+        "GLIBC_2.25",
+        "GLIBC_2.28",
+        "GLIBC_2.29",
+        "GLIBC_2.3",
+        "GLIBC_2.3.2",
+        "GLIBC_2.3.4",
+        "GLIBC_2.30",
+        "GLIBC_2.32",
+        "GLIBC_2.33",
+        "GLIBC_2.34",
+        "GLIBC_2.4",
+        "GLIBC_2.7",
+        "GLIBC_2.9"
+      ],
+      "ham_arac_ciktisi": "\nDynamic section at offset 0x6e9be8 contains 32 entries:\n  Tag        Type                         Name/Value\n 0x0000000000000001 (NEEDED)             Shared library: [libssl.so.3]\n 0x0000000000000001 (NEEDED)             Shared library: [libcrypto.so.3]\n 0x0000000000000001 (NEEDED)             Shared library: [libgcc_s.so.1]\n 0x0000000000000001 (NEEDED)             Shared library: [libm.so.6]\n 0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]\n 0x0000000000000001 (NEEDED)             Shared library: [ld-linux-x86-64.so.2]\n 0x000000000000001e (FLAGS)              BIND_NOW\n 0x000000006ffffffb (FLAGS_1)            Flags: NOW PIE\n 0x0000000000000015 (DEBUG)              0x0\n 0x0000000000000007 (RELA)               0x26e0\n 0x0000000000000008 (RELASZ)             205392 (bytes)\n 0x0000000000000009 (RELAENT)            24 (bytes)\n 0x000000006ffffff9 (RELACOUNT)          8353\n 0x0000000000000017 (JMPREL)             0x34930\n 0x0000000000000002 (PLTRELSZ)           96 (bytes)\n 0x0000000000000003 (PLTGOT)             0x6efe20\n 0x0000000000000014 (PLTREL)             RELA\n 0x0000000000000006 (SYMTAB)             0x340\n 0x000000000000000b (SYMENT)             24 (bytes)\n 0x0000000000000005 (STRTAB)             0x1a8c\n 0x000000000000000a (STRSZ)              3151 (bytes)\n 0x000000006ffffef5 (GNU_HASH)           0x1a70\n 0x0000000000000019 (INIT_ARRAY)         0x6cbb40\n 0x000000000000001b (INIT_ARRAYSZ)       16 (bytes)\n 0x000000000000001a (FINI_ARRAY)         0x6cbb38\n 0x000000000000001c (FINI_ARRAYSZ)       8 (bytes)\n 0x000000000000000c (INIT)               0x6caa18\n 0x000000000000000d (FINI)               0x6caa34\n 0x000000006ffffff0 (VERSYM)             0x16d8\n 0x000000006ffffffe (VERNEED)            0x187c\n 0x000000006fffffff (VERNEEDNUM)         6\n 0x0000000000000000 (NULL)               0x0\n"
+    },
+    "dillsp": {
+      "sha256": "39f5248c75bbf66875fb76cb6fb7a0c3b429f15c1ae98a01ebc6c927957ea711",
+      "arac": "/usr/bin/readelf",
+      "dogrudan": [
+        "ld-linux-x86-64.so.2",
+        "libc.so.6",
+        "libgcc_s.so.1",
+        "libm.so.6"
+      ],
+      "abi_basliklari": [
+        "GLIBC_2.14",
+        "GLIBC_2.16",
+        "GLIBC_2.17",
+        "GLIBC_2.18",
+        "GLIBC_2.2.5",
+        "GLIBC_2.25",
+        "GLIBC_2.28",
+        "GLIBC_2.29",
+        "GLIBC_2.3",
+        "GLIBC_2.3.4",
+        "GLIBC_2.30",
+        "GLIBC_2.32",
+        "GLIBC_2.33",
+        "GLIBC_2.34",
+        "GLIBC_2.4"
+      ],
+      "ham_arac_ciktisi": "\nDynamic section at offset 0x477db8 contains 30 entries:\n  Tag        Type                         Name/Value\n 0x0000000000000001 (NEEDED)             Shared library: [libgcc_s.so.1]\n 0x0000000000000001 (NEEDED)             Shared library: [libm.so.6]\n 0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]\n 0x0000000000000001 (NEEDED)             Shared library: [ld-linux-x86-64.so.2]\n 0x000000000000001e (FLAGS)              BIND_NOW\n 0x000000006ffffffb (FLAGS_1)            Flags: NOW PIE\n 0x0000000000000015 (DEBUG)              0x0\n 0x0000000000000007 (RELA)               0x1730\n 0x0000000000000008 (RELASZ)             133584 (bytes)\n 0x0000000000000009 (RELAENT)            24 (bytes)\n 0x000000006ffffff9 (RELACOUNT)          5452\n 0x0000000000000017 (JMPREL)             0x22100\n 0x0000000000000002 (PLTRELSZ)           96 (bytes)\n 0x0000000000000003 (PLTGOT)             0x47c918\n 0x0000000000000014 (PLTREL)             RELA\n 0x0000000000000006 (SYMTAB)             0x340\n 0x000000000000000b (SYMENT)             24 (bytes)\n 0x0000000000000005 (STRTAB)             0x10cc\n 0x000000000000000a (STRSZ)              1632 (bytes)\n 0x000000006ffffef5 (GNU_HASH)           0x10b0\n 0x0000000000000019 (INIT_ARRAY)         0x465240\n 0x000000000000001b (INIT_ARRAYSZ)       16 (bytes)\n 0x000000000000001a (FINI_ARRAY)         0x465238\n 0x000000000000001c (FINI_ARRAYSZ)       8 (bytes)\n 0x000000000000000c (INIT)               0x464188\n 0x000000000000000d (FINI)               0x4641a4\n 0x000000006ffffff0 (VERSYM)             0xe50\n 0x000000006ffffffe (VERNEED)            0xf3c\n 0x000000006fffffff (VERNEEDNUM)         4\n 0x0000000000000000 (NULL)               0x0\n"
+    }
+  },
+  "sinir": "Rust araçları PATH dışında; temiz makine/minimum OS/SDK provenance kanıtı değildir.",
+  "git_sha": "44fba404c79762aff1698a07978c79ea069a59df",
+  "prova": {
+    "path": "/usr/bin:/bin:/usr/sbin:/sbin",
+    "rust_araclari": "yok",
+    "surum": "dil 0.8.0-dev — Türkçe programlama dili (bootstrap, Stage 0) — morfoloji zee-tr-1 — IO zee-io-1",
+    "program_ciktisi": "Dünyaya merhaba\n",
+    "program_exit": 0,
+    "lsp_initialize_shutdown_exit": "gecti"
+  }
+}

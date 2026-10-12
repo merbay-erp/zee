@@ -465,7 +465,7 @@ source/run/job/artifact/zip/raw hash'lerini bağlar. K-199 bu sınırlı
 compiler seçimi kapsamında kapandı; tam Zee release profil/native C
 envanteri değildir. K-192 kalan makine sınırları açık kalır.
 
-## K-200 macOS C/Rust deployment uyumu — release kanıtı açık
+## K-200 macOS C/Rust deployment uyumu — kapalı
 
 Gerçek local Cargo -vv + CC_ENABLE_DEBUG_OUTPUT locked cc 1.4.4/Ring
 C bayrağı `-mmacosx-version-min=27.0` gösterdi. otool native curve25519.o
@@ -482,4 +482,8 @@ girer. Başlıksız assembly açık sınırlıdır; gerçek minimum OS/runtime
 desteği veya bütün C alt süreçlerinin araç envanteri değildir. Release
 dosya kümesi, SBOM/imza sözleşmesi ve dil API değişmez. Compiler/native
 compile bayrağı değişti; ADR-045/049/history etkisi `olcumler.md` içindedir.
-K-200 exact üç platform release sonuçları olmadan kapatılmaz.
+K-200 exact kaynak `44fba404c79762aff1698a07978c79ea069a59df`, run
+38263264133 ile kapandı: Linux/macOS/Windows iki-klon eş hash, kurulum,
+program/LSP ve kaldırma geçti. macOS a/b ayrı ayrı 24 nesne minos 11.0
+bildirdi. Ham runtime/provenance, job ve artefakt hash kayıtları
+[platform kanıtı](derleme-platform-kaniti-v1.tsv) içindedir.
