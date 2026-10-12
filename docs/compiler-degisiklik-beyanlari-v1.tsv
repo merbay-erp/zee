@@ -43,3 +43,4 @@ f97ac995973edd94822bd89f446d76531ee7deef	semantic-change	spec/12-web-guvenlik-pr
 460d560df237211cda9b412bfc0a3e5e1cac964f	semantic-change	spec/07-birimler.md	K-190: Elmas içe alımda aracı birimin gizli kopyası doğrudan içe alımın dışa açık tanımını ayrıştırma tohumundan düşürmez; derleme, çalıştırma ve denetim içe alım sırasından bağımsızdır.
 7f24eb3576cf870c915ceaacb1a85b2d5ef7cb36	maintenance	-	Yalnız oturum sonucu kodlamasında expect yerine hata sonucu, elmas birleşiminin yardımcı işleve ayrılması ve rustfmt biçimi; derleyici ve dil davranışı değişmedi.
 a09ea5b856d182455ed7d121f9e3028d31c7dea2	maintenance	-	Yalnız oturum izi JSON kodlaması wasm dışı hedefe koşullandı; yerel davranış değişmedi, wasm playground yeniden derlenir.
+2d467145aee33f51219008a25825df2a7324a306	maintenance	-	K-192 yalnız sürüm bakım ikilisinin SBOM/provenance kaynak depo URL değerini kanonikleştirir; Zee grammar, tür çözümü, bağlı program ve runtime gözlemleri değişmez.

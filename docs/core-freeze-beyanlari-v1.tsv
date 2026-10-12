@@ -39,3 +39,4 @@ f97ac995973edd94822bd89f446d76531ee7deef	dogfood-change	zee-erp	K-188	dogfood/ze
 460d560df237211cda9b412bfc0a3e5e1cac964f	correctness	-	K-190	compiler/tests/birim_testi.rs	-	Yalnız elmas içe alımda aynı kökenli işlemin dışa açık kopyası korunur; grammar, tanı kimlikleri, A008 çakışma kuralı ve birim kapsüllemesi değişmez.	spec/07-birimler.md
 7f24eb3576cf870c915ceaacb1a85b2d5ef7cb36	maintenance	-	-	-	-	Yeni grammar, kalıp, tanı kodu ya da runtime davranışı yok; yalnız clippy expect_used düzeltmesi, yardımcıya ayırma ve rustfmt biçimi.	-
 a09ea5b856d182455ed7d121f9e3028d31c7dea2	maintenance	-	-	-	-	Yeni grammar, kalıp, tanı kodu ya da runtime davranışı yok; yalnız serde_json kullanımı wasm hedefinin dışına alındı.	-
+2d467145aee33f51219008a25825df2a7324a306	maintenance	-	-	-	-	K-192 yalnız sürüm metadata kaynak URL değeri ve mevcut araç regresyon assertionları değişti; yeni dil yüzeyi, tanı, public API ya da runtime davranışı eklenmedi.	-
