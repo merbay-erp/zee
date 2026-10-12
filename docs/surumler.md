@@ -27,8 +27,9 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 - **Kurulum hata geri alma (K-194):** Unix ve Windows kurulumları bütün
   ikilileri geçici alanda kopyalayıp doğrular; bozuk/eksik/yinelenen ikinci
   kayıt ilk ikiliyi manifestsiz bırakamaz. Yayınlama hatasında bu koşunun
-  oluşturduğu dosyalar geri alınır, manifest en son yayımlanır. Windows
-  gerçek CI kanıtı bekleniyor; ani güç kaybı uzlaştırması vaat edilmez.
+  oluşturduğu dosyalar geri alınır, manifest en son yayımlanır. Üç platform
+  gerçek CI kanıtı `38238657801` koşusunda geçti; ani güç kaybı uzlaştırması
+  vaat edilmez.
 
 - **Sürüm kaynak kimliği (K-192):** SBOM ve provenance, eski depo
   yönlendirmesi yerine kanonik `itwise-bilisim/zee` ve aynı exact commit'i

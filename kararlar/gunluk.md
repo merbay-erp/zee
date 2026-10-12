@@ -3673,3 +3673,21 @@ ret testleri strict ASCII stdio'da, macOS gerçek prova da aynı stdio'da geçti
 Tatbikat artefaktı aynı koşunun `surum/` byte'larını raporla saklar; release
 kümesi değişmez. Linux OpenSSL 3 ve Windows VC runtime bağımlılığı gerçek
 raporda görüldü; temiz runtime/minimum OS/profil kanıtı K-192 içinde açıktır.
+
+### K-192/K-194 üç platform kapanış kanıtı
+
+`30dcfaeec34f2bb992719f7a210bdf3138a226b0` kaynağında `38238657801`
+Linux/macOS/Windows tatbikatı geçti; raporların exact kaynak, SHA256SUMS ve
+indirilen binary byte'ları eşleştirildi. Ham raporlar fixture'a, job/artifact
+kimlikleri ve zip/rapor hash'leri platform defterine alındı. Yeni tek libtest
+birincil supply-chain sahibindedir; gerçek kurulum→CLI sürüm yürütmesine
+exact seçiciyle `cli` ek kapsamı bağlandı. Resmî sayaç üreticisi çalıştırıldı.
+Windows ana CI'da K-194 negatif/pozitif gerçek testleri de geçti; GB-031 ve
+K-194 kapandı. GB-032 yüksek bulgu aynı dilimde kapalıdır.
+
+Aynı Linux byte'ları sabit Ubuntu amd64 digest'inin ağsız/read-only yeni
+container'ında Rust/cargo paketleri ve Rust araçları olmadan merhaba ve
+LSP initialize/shutdown/exit geçti. Exact runtime paket sürümleri envanterde;
+macOS host amd64 emülasyonudur. K-192 minimum OS, linker/SDK ve Windows/macOS
+temiz makine sınırlarını açık tutar. Yeni compiler behavior/grammar/kenar
+ve benchmark/soak yükü yok; ilgili spec/RFC/ADR-046 kayıtları korunur.

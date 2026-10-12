@@ -399,3 +399,86 @@ fn gercek_ikililer_kurulur_calisir_kaldirilir_ve_oynanmis_artefakt_reddedilir() 
     );
     let _ = std::fs::remove_dir_all(&gecici);
 }
+
+#[test]
+fn calisma_ortami_kaydi_exact_kaynak_ve_ikili_hashleriyle_program_lsp_kaniti_tasir() {
+    use sha2::{Digest, Sha256};
+    use std::collections::BTreeSet;
+    let kayit = oku("docs/derleme-platform-kaniti-v1.tsv");
+    assert_eq!(
+        kayit.lines().next(),
+        Some("# zee-derleme-platform-kaniti-1")
+    );
+    assert!(kayit.ends_with('\n') && !kayit.contains('\r'));
+    let mut gorulen = BTreeSet::new();
+    let mut platformlar = BTreeSet::new();
+    for satir in kayit
+        .lines()
+        .filter(|s| !s.is_empty() && !s.starts_with('#'))
+    {
+        let alanlar = satir.split('\t').collect::<Vec<_>>();
+        let [sha, os, run, job, artifact, zip_sha, rapor_sha, yol, sonuc] = alanlar.as_slice()
+        else {
+            panic!("platform kanıt satırı dokuz alan taşımalı");
+        };
+        for (deger, uzunluk) in [(sha, 40), (zip_sha, 64), (rapor_sha, 64)] {
+            assert_eq!(deger.len(), uzunluk);
+            assert!(deger
+                .bytes()
+                .all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase()));
+        }
+        assert!(matches!(*os, "Linux" | "macOS" | "Windows"));
+        assert!(gorulen.insert((sha.to_string(), os.to_string())));
+        platformlar.insert(os.to_string());
+        for kimlik in [run, job, artifact] {
+            assert!(kimlik.parse::<u64>().unwrap() > 0);
+        }
+        assert_eq!(*sonuc, "gecti");
+        assert_eq!(
+            *yol,
+            format!(
+                "compiler/tests/fixtures/calisma-ortami-v1/{sha}/{}.json",
+                os.to_lowercase()
+            )
+        );
+        let baytlar = std::fs::read(depo().join(yol)).unwrap();
+        let bulunan = Sha256::digest(&baytlar)
+            .iter()
+            .map(|b| format!("{b:02x}"))
+            .collect::<String>();
+        assert_eq!(
+            bulunan, *rapor_sha,
+            "kanıt raporu kayıtlı byte özetiyle eşleşmeli"
+        );
+        let rapor: serde_json::Value = serde_json::from_slice(&baytlar).unwrap();
+        assert_eq!(rapor["sema"], "zee-calisma-ortami-1");
+        assert_eq!(rapor["sonuc"], "gecti");
+        assert_eq!(rapor["git_sha"], *sha);
+        assert!(!rapor["os"].as_str().unwrap().is_empty());
+        assert!(!rapor["mimari"].as_str().unwrap().is_empty());
+        assert!(rapor["sinir"].as_str().unwrap().contains("temiz makine"));
+        let prova = &rapor["prova"];
+        assert_eq!(prova["rust_araclari"], "yok");
+        assert_eq!(prova["program_ciktisi"], "Dünyaya merhaba\n");
+        assert_eq!(prova["program_exit"], 0);
+        assert_eq!(prova["lsp_initialize_shutdown_exit"], "gecti");
+        let ikililer = rapor["ikililer"].as_object().unwrap();
+        assert_eq!(ikililer.len(), 2);
+        let uzanti = if *os == "Windows" { ".exe" } else { "" };
+        for ad in ["dil", "dillsp"] {
+            let ikili = &ikililer[&format!("{ad}{uzanti}")];
+            let hash = ikili["sha256"].as_str().unwrap();
+            assert_eq!(hash.len(), 64);
+            assert!(hash
+                .bytes()
+                .all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase()));
+            let kutuphaneler = ikili["dogrudan"].as_array().unwrap();
+            assert!(!kutuphaneler.is_empty());
+            assert!(kutuphaneler.iter().all(|v| !v.as_str().unwrap().is_empty()));
+        }
+    }
+    assert_eq!(
+        platformlar,
+        BTreeSet::from(["Linux".into(), "macOS".into(), "Windows".into()])
+    );
+}

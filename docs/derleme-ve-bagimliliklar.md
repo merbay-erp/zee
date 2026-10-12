@@ -90,8 +90,8 @@ boş Cargo home vendor kapısı önceden kurulu Rust/linker/SDK'yi içermez.
    ayrıca değerlendirilir; saha kanıtı olmadan kapanmaz.
    [Yerel kanıt](derleme-bagimlilik-kaniti-2026-10-12.md) macOS release
    ikilisinin sistem kitaplıklarını ve Rust olmayan PATH ile çalışmasını
-   ölçtü; kaynak kimliği kanonik depoya bağlandı. Temiz makine/üç platform
-   ve uzak exact kaynak erişimi kanıtı açıktır.
+   ölçtü; kaynak kimliği kanonik depoya bağlandı. Üç platform tatbikatı, temiz Linux container runtime ve uzak exact kaynak
+   erişimi kanıtlandı; temiz Windows/macOS ve minimum OS sınırları açıktır.
 3. **K-193 açık:** native/WASM kod üretimi için gerçek ürün ihtiyacı, mevcut
    semantik korpusuyla eşdeğerlik ölçütleri ve backend karar verisi.
    [Backlog](oncelikli-backlog.md), CORE FREEZE ve insan kanıtı kapıları korunur;
@@ -127,8 +127,7 @@ kümesi/SBOM şeması değişmez. Saf ret regresyonları
 `scripts/tests/calisma-ortami-test.py` ile farklı kaynak, değiştirilmiş ikili
 ve yinelenen checksum'ı çalıştırmadan reddetmeyi kanıtlar.
 
-İlk macOS prova K-191'in exact release ikililerinde geçti. Linux/Windows
-sonuçları alınmadan üç platform kapalı değildir. Builder'da Rust'ın kurulu
+İlk macOS prova K-191'in exact release ikililerinde geçti. Güncel üç platform sonuçları aşağıdaki kalıcı deftere kaydedildi. Builder'da Rust'ın kurulu
 olmaya devam etmesi, minimum OS ve gerçek linker/SDK üretim provenance'ı
 ayrı açık sınırlardır; PATH yalıtımı bunların yerine geçmez.
 
@@ -136,7 +135,7 @@ ayrı açık sınırlardır; PATH yalıtımı bunların yerine geçmez.
 Linux/macOS workflow'u geçti; Windows raporundaki program/LSP sonucu geçti,
 ama log satırının CP1252 kodlanması workflow'u kırdı. K-192 log özeti ASCII,
 JSON raporu UTF-8 olarak ayrıldı; ret regresyonları `PYTHONIOENCODING=ascii:strict`
-altında da çalışır. Güncel kaynağın üç platform koşusu ayrıca tamamlanır.
+altında da çalışır. Güncel `30dcfae` kaynağında üç platform koşusu geçti.
 
 Linux `dil` doğrudan `libssl.so.3`/`libcrypto.so.3` ister; Windows ikilileri
 `VCRUNTIME140.dll` ve UCRT/API-set kitaplıklarını ister. Bu gerçek bağımlılıklar
@@ -144,3 +143,24 @@ Linux `dil` doğrudan `libssl.so.3`/`libcrypto.so.3` ister; Windows ikilileri
 başarısıyla birlikte değerlendirilir. Ayrı tatbikat artefaktı JSON ile o
 koşunun mevcut `surum/` kümesini birlikte saklar; böylece indirilen byte'lar
 rapor hash'leriyle doğrulanıp ayrı runtime ortamında tekrar sınanabilir.
+
+## Üç platform kanıtı ve temiz Linux runtime
+
+`30dcfaeec34f2bb992719f7a210bdf3138a226b0` kaynak commit'inin
+[38238657801 tatbikatı](https://github.com/itwise-bilisim/zee/actions/runs/38238657801)
+Linux/macOS/Windows'ta başarılıdır. Üç rapor ve byte özeti
+[platform kanıt defterinde](derleme-platform-kaniti-v1.tsv) kalıcıdır;
+`kurulum_testi` kaynak/hash, schema, ikili listesi, Rust'sız PATH program ve
+LSP gözlemlerini denetler. Archive zip digest'leri GitHub artifact metadata'sıdır;
+indirilen ikili byte'ları rapor/SHA256SUMS ile ayrıca eşleştirildi.
+
+Aynı Linux artefaktı Ubuntu amd64
+`sha256:f610ab94648195aa356059f5b41d6085c9d4d903c072430cdd1af7bdb646106b`
+image'ının yeni container'ında `--read-only --network none` ile çalıştı.
+Yalnız artefakt ve merhaba kaynağı read-only bağlandı; `rustc`/`cargo` paketleri
+ve PATH'te `rustc`/`cargo`/`rustup` yoktur. Program exact çıktı, stdio LSP
+initialize/shutdown/exit geçti. Runtime Ubuntu 24.04.5 x86_64; libc6
+`2.39-0ubuntu8.9`, libgcc-s1 `14.2.0-4ubuntu2~24.04.1`, libssl3t64
+`3.0.13-0ubuntu3.15`. macOS arm64 Docker hostunda amd64 emülasyonu kullanıldı;
+bu performans ya da bare-metal minimum OS ölçümü değildir. Windows/macOS
+temiz fiziksel makine ve minimum OS/linker-SDK provenance sınırları açıktır.

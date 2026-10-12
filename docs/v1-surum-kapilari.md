@@ -19,8 +19,9 @@ erişim ve üç platform kanıtları ayrıca tamamlanır. Çalışma ortamı kap
 checksum/SHA, doğrudan OS kitaplığı, Rust'sız PATH program ve LSP provasını
 raporlar; rapor builder'da hiç Rust kurulmadığını iddia etmez.
 
-K-194 kurulum hata geri almasını Unix regresyonuyla doğruladı; Windows
-ret/kur/kaldır gerçek koşusu beklenir (ADR-071/GB-031). Ani güç kaybı
+K-194 kurulum hata geri alması Unix/Windows gerçek ret testleri ve
+`38238657801` üç platform kur/çalıştır/kaldır tatbikatıyla kapandı
+(ADR-071/GB-031). Ani güç kaybı
 uzlaştırması veya dizin çapında atomiklik iddia edilmez. GB-032 kaynak
 metadata manifest enjeksiyonu exact SHA ve TSV yol kontrolüyle kapandı.
 

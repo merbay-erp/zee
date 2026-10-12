@@ -216,8 +216,8 @@ Backend
 Bootstrap derleyici için Rust güçlü adaydır. Parser için handwritten recursive-descent + Pratt yaklaşımı değerlendirilir. İlk çalışan semantiği hızlı doğrulamak için interpreter/bytecode, ardından Cranelift ve LLVM karşılaştırması yapılır. Backend kararı benchmark, debug deneyimi, binary boyutu, compile süresi ve bakım maliyetiyle ADR üzerinden verilir.
 K-194 kurulumun ikinci kayıt retlerinde manifestsiz ikili bırakmasını
 staging/doğrulama/geri almayla düzeltti; GB-032 kaynak metadata manifest
-enjeksiyonu exact SHA/yol doğrulamasıyla kapandı; Unix kanıtı geçti, Windows gerçek
-CI koşusu açıktır. Bu correctness dilimi dağıtım kanıtından önce kapanır.
+enjeksiyonu exact SHA/yol doğrulamasıyla kapandı; gerçek Unix/Windows retleri ve üç platform
+`38238657801` tatbikatı geçti, K-194 kapandı. Bu correctness dilimi dağıtım kanıtından önce kapanır.
 
 K-191 derleme/bağımlılık envanteri ve exact Rust provenance tutarlılığını
 kapattı. [Envanter](derleme-ve-bagimliliklar.md) mevcut yorumlayıcı ve Rust'tan
