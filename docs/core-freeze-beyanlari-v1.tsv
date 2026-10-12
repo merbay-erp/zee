@@ -41,3 +41,4 @@ d6439417415a8ea36cc1482e978115504ac31c4e	maintenance	-	-	-	-	Yeni grammar, kalı
 9d68286755b1781afc2ea3bbf90b3a0f5d82179f	maintenance	-	-	-	-	Yeni grammar, kalıp, tanı kodu ya da runtime davranışı yok; yalnız serde_json kullanımı wasm hedefinin dışına alındı.	-
 ea5bcf98d9e36acdb08ff5e2f41b658c23c45f59	maintenance	-	-	-	-	K-192 yalnız sürüm metadata kaynak URL değeri ve mevcut araç regresyon assertionları değişti; yeni dil yüzeyi, tanı, public API ya da runtime davranışı eklenmedi.	-
 ed1d20ab161ab3dc40233125186058e345957bf4	maintenance	-	-	-	-	K-195 yalnız dağıtım profili metadata ve mevcut araç assertionları değişti; grammar, dil komutu, tanı ve gömme API exportu eklenmedi, kullanıcı program semantiği aynı kalır.	-
+c5ab66f5cfa60a6e8b237fbf471ebba3446c2803	maintenance	-	-	-	-	K-195 kaynak değişikliği yalnız bakım provenance linker bayrağı ve mevcut metadata assertionlarıdır; yeni dil yüzeyi, tanı, gömme API veya engine davranışı eklenmedi.	-
