@@ -106,3 +106,14 @@ GB-033: derleme kayıt aracı yalnız üreticinin kendi taze loglarına güvenir
 harici logdan sürüm programı çalıştırma yetkisi verilmez. Log shell olarak
 değerlendirilmez, çözülen araca sürüm argümanı verilir. Kaydın kendisi
 release imzasının ya da bütün native toolchain envanterinin yerine geçmez.
+
+K-196 ikinci Windows job 114819400810 gerçek linker komutlarını seçti,
+fakat MSVC `link.exe /?` sürüm çağrısı nonzero verdi. Ham build logları
+yayınlanamaz tanı artefaktında korunmuştur. Windows MSVC kimliği artık
+PowerShell 5/.NET `FileVersionInfo.GetVersionInfo` ile executable dosyasının
+FileVersion/ProductVersion kaynağından okunur; `version_source` bunu
+açıkça belirtir. Yol statik komuta eklenmez, ayrı environment alanındadır.
+Unix/LLVM araçları `--version` kullanır; boş sürüm veya başarısız metadata
+yine release kanıtını reddeder. [API kaynağı](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo.getversioninfo).
+Bu Windows build kanıtı PowerShell gerektirir; Zee runtime bağımlılığı
+değişmez. Yeni exact üç platform doğrulaması gelmeden K-196 açık kalır.

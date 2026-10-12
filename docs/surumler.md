@@ -1263,3 +1263,7 @@ Windows Kits verbose library yollarını tanır. Eksik linker kanıtı hâlâ
 release kümesini reddeder; tanı artefaktında iki build logu korunur. Linux
 tatbikatında yalnız o koşuya özel GitHub koşucusu seçilebilir. Dil davranışı
 ve kurulum dosya kümesi değişmez; üç platform kapanma kanıtı açık kalır.
+
+Windows MSVC build kimliğinde help exit davranışı yerine executable
+FileVersion/ProductVersion metadata'sı kullanılır; `version_source`
+provenance kaydında görünür. Başarısız/boş metadata release'i reddeder.

@@ -1,0 +1,64 @@
+{
+  "sema": "zee-temiz-linux-runtime-1",
+  "git_sha": "e0f53630fe02c3239b9fc248e07abcedbe7ca681",
+  "tarih_utc": "2026-10-12T12:58:58.357427+00:00",
+  "base": "almalinux@sha256:8e56ca192f602eb1c486b870f268730f4b08179b43845184a3623c6634f5d01a",
+  "image": "sha256:becc63fb50dcc02a567c48638c9c7c9b1e84490ffe850e81d5cec1d9874a1c23",
+  "dockerfile": "FROM almalinux@sha256:8e56ca192f602eb1c486b870f268730f4b08179b43845184a3623c6634f5d01a\nRUN microdnf install -y openssl-libs libgcc && microdnf clean all\n",
+  "inventory": "NAME=\"AlmaLinux\"\nVERSION=\"9.8 (Olive Jaguar)\"\nID=\"almalinux\"\nID_LIKE=\"rhel centos fedora\"\nVERSION_ID=\"9.8\"\nPLATFORM_ID=\"platform:el9\"\nPRETTY_NAME=\"AlmaLinux 9.8 (Olive Jaguar)\"\nANSI_COLOR=\"0;34\"\nLOGO=\"fedora-logo-icon\"\nCPE_NAME=\"cpe:/o:almalinux:almalinux:9::baseos\"\nHOME_URL=\"https://almalinux.org/\"\nDOCUMENTATION_URL=\"https://wiki.almalinux.org/\"\nBUG_REPORT_URL=\"https://bugs.almalinux.org/\"\n\nALMALINUX_MANTISBT_PROJECT=\"AlmaLinux-9\"\nALMALINUX_MANTISBT_PROJECT_VERSION=\"9.8\"\nREDHAT_SUPPORT_PRODUCT=\"AlmaLinux\"\nREDHAT_SUPPORT_PRODUCT_VERSION=\"9.8\"\nSUPPORT_END=2032-06-01\n6.10.14-linuxkit\nglibc-2.34-275.el9_8.x86_64\nlibgcc-11.5.0-14.el9.alma.1.x86_64\nopenssl-libs-3.5.8-2.el9_8.x86_64\nalmalinux-gpg-keys-9.8-1.el9.x86_64\nalmalinux-release-9.8-1.el9.x86_64\nalmalinux-repos-9.8-1.el9.x86_64\nalternatives-1.24-2.el9.x86_64\naudit-libs-3.1.5-8.el9.x86_64\nbasesystem-11-13.el9.noarch\nbash-5.1.8-9.el9.x86_64\nbzip2-libs-1.0.8-11.el9.x86_64\nca-certificates-2025.2.80_v9.0.305-91.el9.noarch\ncoreutils-single-8.32-41.el9_8.1.x86_64\ncrypto-policies-20260224-1.gitea0f072.el9_8.noarch\ncurl-minimal-7.76.1-40.el9_8.7.x86_64\ncyrus-sasl-lib-2.1.27-22.el9.x86_64\ndnf-data-4.14.0-34.el9_8.alma.1.noarch\nfile-libs-5.39-17.el9.x86_64\nfilesystem-3.16-5.el9.x86_64\nfindutils-4.8.0-7.el9.x86_64\ngawk-5.1.0-6.el9_8.1.x86_64\ngdbm-libs-1.23-1.el9.x86_64\nglib2-2.68.4-19.el9_8.10.x86_64\nglibc-2.34-275.el9_8.x86_64\nglibc-common-2.34-275.el9_8.x86_64\nglibc-minimal-langpack-2.34-275.el9_8.x86_64\ngmp-6.2.0-13.el9.x86_64\ngnupg2-2.3.3-5.el9_7.x86_64\ngnutls-3.8.10-8.el9_8.x86_64\ngobject-introspection-1.68.0-11.el9.x86_64\ngpg-pubkey-b86b3716-61e69f29\ngpgme-1.15.1-6.el9.x86_64\ngrep-3.6-5.el9.x86_64\njson-c-0.14-11.el9.x86_64\nkeyutils-libs-1.6.3-1.el9.x86_64\nkrb5-libs-1.21.1-10.el9_8.x86_64\nlibacl-2.4.0-1.el9_8.x86_64\nlibarchive-3.5.3-11.el9_8.x86_64\nlibassuan-2.5.5-3.el9.x86_64\nlibattr-2.6.0-1.el9_8.x86_64\nlibblkid-2.37.4-25.el9.x86_64\nlibcap-2.48-10.el9_8.1.x86_64\nlibcap-ng-0.8.2-7.el9.x86_64\nlibcom_err-1.46.5-8.el9.x86_64\nlibcurl-minimal-7.76.1-40.el9_8.7.x86_64\nlibdnf-0.69.0-18.el9.alma.1.x86_64\nlibevent-2.1.13-1.el9_8.x86_64\nlibffi-3.4.2-8.el9.x86_64\nlibgcc-11.5.0-14.el9.alma.1.x86_64\nlibgcrypt-1.10.0-13.el9_8.x86_64\nlibgpg-error-1.42-5.el9.x86_64\nlibidn2-2.3.0-7.el9.x86_64\nlibksba-1.5.1-7.el9.x86_64\nlibmodulemd-2.13.0-2.el9.x86_64\nlibmount-2.37.4-25.el9.x86_64\nlibnghttp2-1.43.0-6.el9_8.2.x86_64\nlibpeas-1.30.0-4.el9.x86_64\nlibrepo-1.19.0-1.el9.x86_64\nlibreport-filesystem-2.15.2-6.el9.alma.noarch\nlibselinux-3.6-3.el9.x86_64\nlibsemanage-3.6-5.el9_6.x86_64\nlibsepol-3.6-3.el9.x86_64\nlibsigsegv-2.13-4.el9.x86_64\nlibsmartcols-2.37.4-25.el9.x86_64\nlibsolv-0.7.24-6.el9_8.x86_64\nlibstdc++-11.5.0-14.el9.alma.1.x86_64\nlibtasn1-4.16.0-10.el9_8.x86_64\nlibtool-ltdl-2.4.6-46.el9.x86_64\nlibunistring-0.9.10-15.el9.x86_64\nlibusbx-1.0.30-1.el9_8.x86_64\nlibuuid-2.37.4-25.el9.x86_64\nlibverto-0.3.2-3.el9.x86_64\nlibxcrypt-4.4.18-3.el9.x86_64\nlibxml2-2.9.13-14.el9_8.5.x86_64\nlibyaml-0.2.5-7.el9.x86_64\nlibzstd-1.5.5-1.el9.x86_64\nlua-libs-5.4.4-4.el9.x86_64\nlz4-libs-1.9.3-5.el9.x86_64\nmicrodnf-3.9.1-3.el9.x86_64\nmpfr-4.1.0-10.el9.x86_64\nncurses-base-6.2-12.20210508.el9.noarch\nncurses-libs-6.2-12.20210508.el9.x86_64\nnettle-3.10.1-1.el9.x86_64\nnpth-1.6-8.el9.x86_64\nopenldap-2.6.8-4.el9.x86_64\nopenssl-fips-provider-3.5.8-2.el9_8.x86_64\nopenssl-libs-3.5.8-2.el9_8.x86_64\np11-kit-0.26.4-1.el9_8.x86_64\np11-kit-trust-0.26.4-1.el9_8.x86_64\npcre-8.44-4.el9.x86_64\npcre2-10.40-6.el9.x86_64\npcre2-syntax-10.40-6.el9.noarch\npopt-1.18-8.el9.x86_64\nreadline-8.1-4.el9.x86_64\nrootfiles-8.1-35.el9.noarch\nrpm-4.16.1.3-40.el9.x86_64\nrpm-libs-4.16.1.3-40.el9.x86_64\nsed-4.8-10.el9.x86_64\nsetup-2.13.7-10.el9.noarch\nshadow-utils-4.9-16.el9.x86_64\nsqlite-libs-3.34.1-11.el9_8.x86_64\nsystemd-libs-252-67.el9_8.6.alma.1.x86_64\ntzdata-2026c-1.el9_8.noarch\nxz-libs-5.2.5-8.el9_0.x86_64\nzlib-1.2.11-40.el9.x86_64\n",
+  "container_arguments": [
+    "run",
+    "--rm",
+    "--platform",
+    "linux/amd64",
+    "--network",
+    "none",
+    "--read-only",
+    "--cap-drop",
+    "ALL",
+    "--security-opt",
+    "no-new-privileges",
+    "--user",
+    "10001:10001",
+    "--tmpfs",
+    "/tmp:rw,nosuid,nodev,size=32m",
+    "-e",
+    "PATH=/usr/bin:/bin",
+    "-v",
+    "/Users/mustafaerbay/.codex/worktrees/zee-derleme-bagimlilik/zee/compiler/target/k196-platform-e0/linux/surum:/zee:ro"
+  ],
+  "rust_araclari": "yok",
+  "program_exit": 0,
+  "program_ciktisi": "Dünyaya merhaba\n",
+  "lsp_initialize_shutdown_exit": "gecti",
+  "lsp_cevaplari": [
+    {
+      "jsonrpc": "2.0",
+      "id": 1,
+      "result": {
+        "capabilities": {
+          "textDocumentSync": 1,
+          "completionProvider": {},
+          "hoverProvider": true,
+          "definitionProvider": true,
+          "renameProvider": true
+        },
+        "serverInfo": {
+          "name": "dillsp",
+          "version": "0.8.0-dev"
+        }
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "id": 2,
+      "result": null
+    }
+  ],
+  "ikililer": {
+    "dil": "147a240a364beebdb9731ad9081b46bf964ed505455101904f9198d72cd0c5a6",
+    "dillsp": "84bbb1eb6d85decc50958f67f4e50c71752293566e3550393aebe2d2c90fa523"
+  },
+  "sinir": "macOS arm64 hostunda amd64 emülasyonu; host kernel; minimum OS tam destek veya performans kanıtı değildir.",
+  "sonuc": "gecti"
+}

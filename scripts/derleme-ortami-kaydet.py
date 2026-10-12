@@ -7,6 +7,7 @@ Log bir shell komutu olarak çalıştırılmaz; quoted Debug String alanları ok
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path, PureWindowsPath
 import re
 import shutil
@@ -16,6 +17,30 @@ import sys
 
 def quoted(line):
     return [json.loads(m.group()) for m in re.finditer(r'"(?:[^"\\]|\\.)*"', line)]
+
+
+def arac_surumu(executable):
+    if executable.name.lower() == "link.exe":
+        # MSVC help çağrısının exit/DLL ortamını sürüm kanıtıyla karıştırma.
+        # Yol komut metnine eklenmez; .NET dosya metadata'sı doğrudan okunur.
+        query = ("$ErrorActionPreference='Stop'; "
+                 "$v=[System.Diagnostics.FileVersionInfo]::GetVersionInfo($env:ZEE_LINKER_ID_PATH); "
+                 "[Console]::OutputEncoding=[System.Text.UTF8Encoding]::new($false); "
+                 "if (!$v.FileVersion) { throw 'Missing linker file version' }; "
+                 "Write-Output ('FileVersion: '+$v.FileVersion); "
+                 "Write-Output ('ProductVersion: '+$v.ProductVersion)")
+        command = ["powershell.exe", "-NoProfile", "-NonInteractive", "-Command", query]
+        environment = dict(os.environ, ZEE_LINKER_ID_PATH=str(executable))
+        source = "Windows FileVersionInfo"
+    else:
+        command = [str(executable), "--version"]
+        environment = None
+        source = "--version"
+    result = subprocess.run(command, capture_output=True, timeout=20, env=environment)
+    value = (result.stdout + result.stderr).decode("utf-8", errors="replace")[:4000].strip()
+    if result.returncode != 0 or not value:
+        raise ValueError(f"Linker sürümü okunamadı: {executable}: exit={result.returncode}: {value}")
+    return value, source
 
 
 def kaydet(logs, sha):
@@ -50,15 +75,12 @@ def kaydet(logs, sha):
             if not resolved:
                 raise ValueError(f"İzdeki linker bulunamadı: {program}")
             executable = Path(resolved).resolve()
-            option = "/?" if executable.name.lower() in ("link.exe", "lld-link.exe") else "--version"
-            version = subprocess.run([str(executable), option], capture_output=True, timeout=20)
-            if version.returncode != 0:
-                raise ValueError(f"Linker sürümü okunamadı: {executable}")
+            version, version_source = arac_surumu(executable)
             sdk_paths = sorted(set(v for v in fields if "Windows Kits" in v or
                                    ".sdk" in v or v.startswith("/LIBPATH:")))
             records[binary] = {"program": program, "path": str(executable),
                                "sha256": hashlib.sha256(executable.read_bytes()).hexdigest(),
-                               "version": (version.stdout + version.stderr).decode("utf-8", errors="replace")[:4000].strip(),
+                               "version": version, "version_source": version_source,
                                "command": line.strip(), "sdk_references": sdk_paths}
         if set(records) != {"dil", "dillsp"}:
             raise ValueError(f"İki gerçek release link komutu yok: {clone}")

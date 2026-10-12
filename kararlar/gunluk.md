@@ -3789,3 +3789,17 @@ kanıtlar. Bu olası biçim farkının gerçek hatayı çözdüğü ancak yeni W
 koşusuyla doğrulanabilir. Kayıt aracı hatasında iki build logu artık ayrı
 yayınlanamaz tanı artefaktına korunur; sürüm kümesi üretilmez. Rust 1.93.1
 Command debug çıktısı platforma bağlıdır: [Windows uygulaması](https://github.com/rust-lang/rust/blob/1.93.1/library/std/src/sys/process/windows.rs).
+
+2026-10-12 K-192 ek Linux kanıtı: `e0f5363` ikilileri temiz AlmaLinux
+9.8/glibc 2.34/OpenSSL 3.5.8 üzerinde program+LSP provasını geçti.
+Image/base/paket/ikili hash ve LSP yanıtları ham JSON kaydında korunur;
+Rust yok, network none/read-only/user 10001/cap-drop ALL. Host amd64
+emülasyonu ve seçili runtime kapsamı nedeniyle tam minimum OS kapısı
+kapatılmaz. K-196 ilk Linux job 114815113812 GCC 13.3.0 ile geçti; Windows
+kayıt reddi korunur.
+
+K-196 ikinci Windows koşusu komut seçimini geçti; MSVC `/?` sürüm sorgusu
+nonzero ile kaldı. İki build logu artık tanı artefaktındadır. MSVC sürümü
+PowerShell/.NET FileVersionInfo ile dosyadan okunur; yol environment alanı
+olarak taşınır, shell metnine eklenmez. Metadata ret testi eklendi; yeni
+üç platform kanıtı beklenir.
