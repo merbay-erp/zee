@@ -8,16 +8,30 @@ dosyasını çift tıkla — derleyici sayfanın içinde, tarayıcıda yaz-çal�
 
 ## 1. Kur (bir kez)
 
-```bash
-cd compiler && cargo build --release
-```
-
-Çıkan tek dosya her şeydir: `compiler/target/release/dil` — kopyala, taşı,
-internetsiz kullan. İstersen PATH'e ekle:
+Kaynaktan derlemek için Git, rustup ve platformunun C/linker araçları gerekir.
+Rust sürümü `compiler/rust-toolchain.toml` ile sabitlenir.
 
 ```bash
-sudo cp compiler/target/release/dil [sunucu ikili yolu]
+git clone https://github.com/merbay-erp/zee.git
+cd zee/compiler
+cargo build --locked --release --bin dil --bin dillsp
 ```
+
+Linux/macOS'ta `./target/release/dil`, Windows PowerShell'de
+`.\target\release\dil.exe` ile çalıştır. Rust araç zinciri derleme içindir;
+çıkan ikililerin sistem kitaplığı gereksinimleri
+[derleme ve bağımlılık rehberinde](derleme-ve-bagimliliklar.md) açıklanır.
+
+Doğrulanmış sürüm artefaktın varsa manifestli kurulum kullan:
+
+```bash
+bash scripts/kur.sh --artefakt ~/İndirilenler/zee-surum
+```
+
+Bu komut depo kökünden çalışır; varsayılan hedef `~/.local/bin` dizinidir.
+Sonraki adımlarda `dil` komutunun PATH'te olduğu varsayılır. Windows kurulumu,
+checksum doğrulaması ve kaldırma adımları
+[sürüm runbook'unda](surum-runbook.md#kullanıcı-kurulumu).
 
 ## 2. İlk projen
 
