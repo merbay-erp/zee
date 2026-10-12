@@ -207,3 +207,11 @@ userland/glibc 2.34 üzerinde ağsız, read-only, ayrıcalıksız program ve LSP
 provasını geçti; Rust paketleri/PATH araçları yok. [Ham rapor](temiz-almalinux-runtime-kaniti-2026-10-12.json).
 Bu seçili amd64 emülasyon provası tüm dil IO davranışları, minimum kernel
 ve temiz Windows/macOS garantisi değildir; K-192 kısmen açık kalır.
+
+K-197 temiz Windows runtime provasının ret kapıları ve koşu kablosu
+hazırdır; exact release kaynağı/hash, immutable Nano Server image,
+ContainerUser/network none/read-only bind ile program ve LSP denenir.
+Gerçek Windows sonucu açık; masaüstü/minimum OS ve bütün IO desteği
+tamamlanmış gösterilmez. Release/prova kaynak SHA'ları ayrı kaydedilir.
+ADR-068/GB-034; spec/RFC/tanı/API/production Rust katmanları ve benchmark
+tarihçesi değişmez.

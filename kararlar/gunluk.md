@@ -3803,3 +3803,11 @@ nonzero ile kaldı. İki build logu artık tanı artefaktındadır. MSVC sürüm
 PowerShell/.NET FileVersionInfo ile dosyadan okunur; yol environment alanı
 olarak taşınır, shell metnine eklenmez. Metadata ret testi eklendi; yeni
 üç platform kanıtı beklenir.
+
+K-197 temiz Windows runtime provasının ret kapıları ve koşu kablosu
+hazırdır; exact release kaynağı/hash, immutable Nano Server image,
+ContainerUser/network none/read-only bind ile program ve LSP denenir.
+Gerçek Windows sonucu açık; masaüstü/minimum OS ve bütün IO desteği
+tamamlanmış gösterilmez. Release/prova kaynak SHA'ları ayrı kaydedilir.
+ADR-068/GB-034; spec/RFC/tanı/API/production Rust katmanları ve benchmark
+tarihçesi değişmez.

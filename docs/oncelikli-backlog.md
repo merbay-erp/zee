@@ -966,3 +966,16 @@ iki-klon eş-hash ve dört link kaydı üç platformda doğrulanmış olmalı;
 macOS SDKSettings/Windows Kits sürüm referansları ayrıca gözden geçirilir.
 Tüm native C build-script araçları ve minimum OS desteği bu kayıt değildir;
 K-192 açık sınırları korunur. ADR-068.
+
+### K-197 — Temiz Windows container runtime kanıtı (K-192 dilimi)
+
+**AÇIK — ret kapıları ve koşu kablosu hazır, gerçek Windows sonucu beklenir.**
+K-195 statik CRT release byte'ları exact kaynak ve SHA256SUMS ile yürütmeden
+önce doğrulanır; Nano Server LTSC 2025 immutable amd64 digest'inde yalnız
+iki ikili ve merhaba kaynağı read-only mount edilir. ContainerUser/network
+none, sınırlandırılmış system PATH, program ve gerçek LSP initialize/
+shutdown/exit kanıtı istenir. Release ve prova kaynağı ayrı SHA'larla
+kaydedilir. Windows process isolation host kernel'ini paylaşır; bu tüm
+IO özellikleri, desktop/minimum Windows veya temiz fiziksel macOS kanıtı
+değildir. Kapanma: exact kaynak/hash/image/host/prova kimliği olan gerçek
+başarılı ham rapor depoya alınmış olmalı. ADR-068/GB-034.

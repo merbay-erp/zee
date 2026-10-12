@@ -550,3 +550,11 @@ aracıdır, runtime bağımlılığı değildir. Eksik kanıt yayımlanmadan red
 Exact üç platform üretim kanıtı açık; minimum OS/temiz Windows-macOS ve
 bütün native C araçlarının kaydı tamamlanmış gösterilmez. Performans
 baseline'ı/tarihçe satırı üretilmedi; ADR-045/049 kuralları korunur.
+
+K-197 temiz Windows runtime provasının ret kapıları ve koşu kablosu
+hazırdır; exact release kaynağı/hash, immutable Nano Server image,
+ContainerUser/network none/read-only bind ile program ve LSP denenir.
+Gerçek Windows sonucu açık; masaüstü/minimum OS ve bütün IO desteği
+tamamlanmış gösterilmez. Release/prova kaynak SHA'ları ayrı kaydedilir.
+ADR-068/GB-034; spec/RFC/tanı/API/production Rust katmanları ve benchmark
+tarihçesi değişmez.

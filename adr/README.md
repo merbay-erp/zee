@@ -70,7 +70,7 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-065 | [Spec maddesi düzeyinde drift kapısı](065-spec-madde-drift-kapisi.md) | **kabul** (K-171) |
 | ADR-066 | [Birleşik güvenlik sürüm kapısı](066-birlesik-guvenlik-surum-kapisi.md) | **kabul** (K-170) |
 | ADR-067 | [Yalnız dogfood boşluklarından büyüyen korpus](067-dogfood-korpusu.md) | **kabul** (K-172) |
-| ADR-068 | [Tekrar üretilebilir sürüm artefaktı](068-tekrar-uretilebilir-surum.md) | **kabul** (K-168/K-191/K-195/K-196) |
+| ADR-068 | [Tekrar üretilebilir sürüm artefaktı](068-tekrar-uretilebilir-surum.md) | **kabul** (K-168/K-191/K-195/K-196/K-197) |
 | ADR-069 | [Uzun soak ve kaynak sızıntısı kapısı](069-uzun-soak-kapisi.md) | **kabul** (K-173) |
 | ADR-070 | [Tanı kalitesi kapısı](070-tani-kalitesi-kapisi.md) | **kabul** (K-166) |
 | ADR-071 | [Kurulum, kaldırma ve sürüm runbook sözleşmesi](071-kurulum-kaldirma-sozlesmesi.md) | **kabul** (K-169) |
