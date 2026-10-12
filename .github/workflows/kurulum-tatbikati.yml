@@ -34,20 +34,9 @@ jobs:
           else
             python3 scripts/tests/calisma-ortami-test.py
           fi
-      - name: "Sürüm artefaktı (Unix: iki temiz klon)"
-        if: runner.os != 'Windows'
+      - name: "Sürüm artefaktı (üç platform: iki temiz klon)"
         shell: bash
         run: bash scripts/surum-artefakti.sh --cikti "$RUNNER_TEMP/surum"
-      - name: "Sürüm artefaktı (Windows: tek derleme + SHA256SUMS)"
-        if: runner.os == 'Windows'
-        shell: bash
-        working-directory: compiler
-        run: |
-          cargo build --locked --release --bin dil --bin dillsp
-          mkdir -p "$RUNNER_TEMP/surum"
-          cp target/release/dil.exe target/release/dillsp.exe "$RUNNER_TEMP/surum/"
-          cargo run --locked --bin surum_artefakti -- ozet "$RUNNER_TEMP/surum" dil.exe dillsp.exe > "$RUNNER_TEMP/surum/SHA256SUMS"
-          git rev-parse HEAD > "$RUNNER_TEMP/surum/GIT_SHA"
       - name: Kur → sürüm → kaldır (Unix)
         if: runner.os != 'Windows'
         shell: bash

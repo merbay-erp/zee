@@ -177,3 +177,5 @@ kapsamında, worker ve restart sınırlarını aşarak iptal edilir.
 
 Her kapının kapanışı: karar + spec + olumlu/olumsuz test + sürüm notu. Yalnız
 “kod çalışıyor” işareti v1 kanıtı değildir (ADR-010).
+
+K-195 Windows statik CRT profili ve çift-klon dağıtım kablosu hazırdır; exact Windows eş-hash ve çalışma kanıtı gelmeden kapalı sayılmaz. K-192 temiz Windows/macOS ve minimum OS/linker-SDK kanıtı açıktır.

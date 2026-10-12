@@ -168,3 +168,30 @@ temiz fiziksel makine ve minimum OS/linker-SDK provenance sınırları açıktı
 Kalıcı JSON raporları `.gitattributes` içinde binary olarak işaretlidir;
 Windows CRLF dahil indirilen ham byte'lar Git satır sonu dönüşümünden korunur.
 Defterdeki SHA-256 normalize edilmiş JSON metninin değil ham raporun özetidir.
+
+## K-195 Windows dağıtım profili — CI kanıtı açık
+
+Önceki `30dcfae` Windows artefaktı VCRUNTIME140/UCRT ister; bu tarihsel
+kanıt yeniden yazılmaz. Yeni MSVC dağıtım tarifi statik CRT ve explicit
+`--target <exact-host>` kullanır; yalnız `surum-artefakti.sh` release
+üretiminde etkin, geliştirme/Cargo varsayılanı aynı kalır. Üç platform
+kurulum tatbikatı aynı iki-klon scriptini çağırır. Profil provenance
+`cargoArgs`/`crtLinkage`/`targetRustflags` alanlarıyla izlenir; Windows
+runtime kapısı `static` kaydının dinamik CRT DLL importu taşımadığını da
+kontrol eder. Sistem DLL bağımlılığı ve minimum OS sınırı sürer.
+
+Rust bakım ikilisindeki değişiklik dil semantiği maintenance kapsamındadır;
+yeni grammar, komut, tanı veya gömme API exportu yoktur. ADR-046/katman
+fixture ve bağımlılık çevrim grafı yeni modül/kenar almaz. RFC/spec/hata
+kataloğu normatif dil davranışı açısından incelendi ve değişmedi. Release
+profilinin performans etkisi henüz ölçülmedi; ADR-045/049 uyarınca eski
+benchmark satırları taşınmaz veya yeni baseline uydurulmaz.
+
+Windows Git Bash üreticisi klon/Cargo home/sysroot yollarını `cygpath -m`
+ile native rustc yol biçimine getirir; remap iki klonun farklı MSYS
+yollarını ikiliye sızdırmamalıdır. Bu da çift-klon eş-hash kapısındadır.
+
+Release bayrakları [Cargo encoded rustflags sözleşmesi](https://doc.rust-lang.org/cargo/reference/config.html#buildrustflags)
+ile ayrı argümanlar halinde taşınır; boşluklu remap yolları parçalanmaz ve
+caller encoded flags seçilen CRT/remap tarifini ezemez. Giriş regresyonu
+caller bayrağıyla Windows tarifini de denetler.

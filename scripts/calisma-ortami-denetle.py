@@ -158,6 +158,16 @@ def prova(dil, dillsp):
             "lsp_initialize_shutdown_exit": "gecti"}
 
 
+def statik_crt_denetle(ikililer):
+    """Statik CRT sözü sistem DLL'lerini yasaklamaz; CRT importunu reddeder."""
+    for ad, kayit in ikililer.items():
+        for kitaplik in kayit["dogrudan"]:
+            kucuk = kitaplik.lower()
+            if (kucuk.startswith(("vcruntime", "msvcp", "api-ms-win-crt-"))
+                    or kucuk in ("ucrtbase.dll", "msvcrt.dll")):
+                raise ValueError(f"Statik CRT profilinde dinamik CRT bağımlılığı: {ad}: {kitaplik}")
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--artefakt", type=Path, required=True)
@@ -190,9 +200,16 @@ def main():
             if ozetler.get(ikili.name) != ozet:
                 raise ValueError(f"Kurulu ikili artefakt özetiyle uyuşmuyor: {ikili.name}")
             rapor["ikililer"][ikili.name] = {"sha256": ozet, **bagimliliklar(ikili)}
+        provenance_yolu = args.artefakt / "provenance.intoto.json"
+        if sys.platform == "win32" and provenance_yolu.is_file():
+            provenance = json.loads(provenance_yolu.read_text(encoding="utf-8"))
+            parametreler = provenance["predicate"]["buildDefinition"]["externalParameters"]
+            if parametreler.get("crtLinkage") == "static":
+                statik_crt_denetle(rapor["ikililer"])
+                rapor["crt_sozlesmesi"] = "statik-crt-import-yok"
         rapor["prova"] = prova(*ikililer)
         rapor["sonuc"] = "gecti"
-    except (OSError, ValueError, subprocess.SubprocessError) as hata:
+    except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError) as hata:
         rapor["hata"] = str(hata)[:4000]
     args.rapor.parent.mkdir(parents=True, exist_ok=True)
     args.rapor.write_text(json.dumps(rapor, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

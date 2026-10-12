@@ -19,7 +19,10 @@ temiz ortamda eş hash, SBOM, imza ve provenance istedi.
    bağımsız `git clone` ağacına alır; her ikisini sabit `rust-toolchain.toml`
    ile, `--remap-path-prefix` (klon→`/zee`, Cargo home→`/cargo`,
    sysroot→`/rust`) ve commit zamanı `SOURCE_DATE_EPOCH` altında
-   `cargo build --locked --release --bin dil --bin dillsp` ile derler. İki
+   `cargo build --locked --release --bin dil --bin dillsp` ile derler.
+   K-195 Windows MSVC dağıtımında exact host `--target` eklenir ve hedef
+   Rustflags `-C target-feature=+crt-static` olur; çıktı target-triple/release
+   dizininden alınır. Host build-script/proc-macro bayrakları ayrıdır. İki
    klonun SHA-256'sı eşit değilse artefakt üretilmez.
    K-191: host/rustc/sysroot sorguları da aynı exact pin altında çalışır.
    Pin üretilen commit'ten okunur; caller'ın varsayılanı veya kirli yerel
@@ -52,6 +55,16 @@ SHA'ya bağlanır. Eski `merbay-erp/zee` yönlendirmesi metadata kimliği değil
 Fork/yerel dal commit'inin resmî depoda erişilebilirliği ayrı yayın kanıtıdır;
 metadata üretimi uzak erişimin başarılı olduğunu iddia etmez. Bu bakım değişikliği
 Zee kaynaklarının ayrıştırma/tür/yürütme davranışını değiştirmez.
+
+K-195: üç platform kurulum tatbikatı aynı çift-klon üreticisini kullanır;
+Windows tek-derleme smoke artefaktı kaldırıldı. Provenance `cargoArgs`,
+`crtLinkage` ve `targetRustflags` ile seçilen tarifi kaydeder. Windows
+`static` sözü dumpbin listesindeki VCRUNTIME/MSVCP/UCRT importlarının reddiyle
+sınanır; işletim sistemi DLL'leri gereklidir. CRT seçimi
+[Rust linkage sözleşmesine](https://doc.rust-lang.org/stable/reference/linkage.html)
+dayanır. SBOM lockfile/package ilişkileri ve artefakt dosya kümesi değişmez;
+sistem bağımlılıkları ayrıca runtime raporundadır. CI eş-hash ve çalışma
+kanıtı alınmadan K-195 kapatılmaz.
 
 ## Reddedilen seçenekler
 

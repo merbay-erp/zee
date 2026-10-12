@@ -3,6 +3,7 @@
 import hashlib
 import json
 import os
+import runpy
 from pathlib import Path
 import subprocess
 import sys
@@ -49,6 +50,27 @@ class RetTestleri(unittest.TestCase):
     def test_yinelenen_checksum_calistirmadan_reddedilir(self):
         (self.artefakt / "SHA256SUMS").write_text(self.kayit + "\n" + self.kayit + "\n", encoding="ascii")
         self.ret(SHA, "tekilliği geçersiz")
+
+
+class CrtTestleri(unittest.TestCase):
+    def test_statik_crt_dinamik_crt_importunu_reddeder(self):
+        denetle = runpy.run_path(str(SCRIPT))["statik_crt_denetle"]
+        for dll in ("VCRUNTIME140.dll", "MSVCP140.dll", "ucrtbase.dll", "msvcrt.dll",
+                    "api-ms-win-crt-runtime-l1-1-0.dll"):
+            with self.subTest(dll=dll), self.assertRaisesRegex(ValueError, "dinamik CRT"):
+                denetle({"dil.exe": {"dogrudan": ["KERNEL32.dll", dll]}})
+
+    def test_eski_gercek_windows_raporu_statik_crt_sozunu_karsilamaz(self):
+        yol = SCRIPT.parent.parent / "compiler/tests/fixtures/calisma-ortami-v1/30dcfaeec34f2bb992719f7a210bdf3138a226b0/windows.json"
+        rapor = json.loads(yol.read_bytes())
+        with self.assertRaisesRegex(ValueError, "dinamik CRT"):
+            runpy.run_path(str(SCRIPT))["statik_crt_denetle"](rapor["ikililer"])
+
+    def test_statik_crt_sistem_dlllerini_kabul_eder(self):
+        runpy.run_path(str(SCRIPT))["statik_crt_denetle"]({
+            "dil.exe": {"dogrudan": ["KERNEL32.dll", "WS2_32.dll", "bcrypt.dll"]},
+            "dillsp.exe": {"dogrudan": ["ADVAPI32.dll"]},
+        })
 
 
 if __name__ == "__main__":

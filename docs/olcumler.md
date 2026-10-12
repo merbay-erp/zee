@@ -240,3 +240,5 @@ Okuma: "küçük projede anlık typecheck" hedefi (bölüm 22) bu ölçekte
 sağlanıyor (2000 satır ≈ 12 ms). Ağaç-yürüyen yorumlayıcının (ADR-003)
 çağrı maliyeti görünür durumda (~0,6 µs/çağrı) — native backend (ADR-005,
 Faz 4) kararına veri birikiyor.
+
+K-195 Windows MSVC dağıtımında statik CRT/explicit target release tarifi değişti. Bu profil için performans karşılaştırması henüz yoktur; mevcut tarihçe önceki exact kaynak/profil kanıtıdır. ADR-045/049 sabit workload ve temiz exact kaynak/ortam kuralları değişmez; yeni baseline veya eşik kaydı yazılmadı.

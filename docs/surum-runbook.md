@@ -55,3 +55,5 @@ legacy metadata yalnız `-` kaydı üretir. Hedef/veri yollarında TAB/CR/LF
 reddedilir; kanonik fiziksel yol da denetlenir. Bu alanlar manifest satırı
 ve sahiplik kaydı oluşturamaz. Bilinçli yerel manifest değiştirme ve aynı
 kullanıcı kimliğiyle düşman süreçlere karşı OS sandbox'ı vaat edilmez.
+
+K-195: Windows MSVC üretimi de `scripts/surum-artefakti.sh` ile iki temiz klon ister. Statik CRT tarifi provenance alanlarında görülmeli ve çalışma ortamı kapısı dinamik CRT importunu reddetmelidir. Eski tek-derleme tatbikat artefaktı tekrar üretilebilir sürüm yerine kullanılamaz.

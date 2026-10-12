@@ -1233,3 +1233,5 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 8/8'i (master plan bölüm 33). Tam yüzey listesi: [README](../README.md).
 Etiketler: `baslangic` (ilk taahhüt), `dogum` (merhaba.dil çalıştı),
 `v0.1.0` (kabul kriterleri kapandı).
+
+K-195 geliştirme: Windows MSVC dağıtım tarifi statik CRT/explicit target taşır; üç platform tatbikatı çift-klon üreticisini kullanır. Provenance CRT/bayrak alanları eklendi; Windows dinamik CRT importu ret kapısı vardır. Exact CI kanıtı beklenir, yayın etiketi üretilmedi.
