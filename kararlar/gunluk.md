@@ -3601,3 +3601,23 @@ paylaşım için sentetik kayıt ve CI'a iz koymama sınırı belgelendi.
   ADR-046/fixture, spec/RFC, tanı kataloğu ve dil yüzeyi değişmez. ADR-068,
   backlog, sürüm notu, master plan ve V1 kapısı güncellendi. Uzak retrieval,
   platform/system/SDK ve temiz kurulum kanıtları K-192 içinde açık kalır.
+
+## K-194 — Kurulum ikinci kayıt reddinde kalıntı bırakmaz (12 Ekim 2026)
+
+- **Reproducer:** İyi `dil` checksum'ı + bozuk `dillsp` checksum'ı eski
+  kurulumda exit 1, hedefte `dil` var, manifest yok üretti. Yeni assertion
+  eski Unix betiğinde başarısız oldu.
+- **Karar:** Bütün kopyalar hedefteki geçici alanda checksum'lanır; eksik,
+  bozuk, mevcut hedef ve yinelenen kayıt yayından önce reddedilir. Unix
+  hard-link/Windows File.Move hedefi ezmeden yayımlar; hata kendi dosyalarını
+  geri alır, manifest en son yayımlanır. Kaynak→kopya TOCTOU için checksum
+  kaynak yerine geçici kopyadan hesaplanır; yollar mutlak kaydedilir.
+- **Kanıt:** Mevcut gerçek ikili testinde yukarıdaki retler ve normal
+  kur/sürüm/kaldır korunur; Unix zorlanmış ikinci yayınlama hatası ve kırık
+  bağ reddi geçti. Windows aynı testi çalıştıracak şekilde açıldı; saha
+  sonucu beklenir. GB-031 açık orta ve K-194 hedeflidir.
+- **Etki incelemesi:** Yeni compiler production modülü/kenarı, grammar,
+  public API, tanı kodu veya crate yoktur; ADR/spec/RFC indeksleri ve dil
+  yüzeyi değişmez. ADR-071, README, sürüm/runbook, V1 kapısı, master plan,
+  backlog ve güvenlik/üretilen kanıt özeti birlikte güncellendi. Manifest
+  şeması ve artefakt kümesi korunur. Benchmark/soak yükü değişmez.

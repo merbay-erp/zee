@@ -1,6 +1,5 @@
-# K-169/ADR-071 Windows kurulum: SHA256SUMS doğrulayarak dil.exe/dillsp.exe kopyalar
-# ve kurulum manifestini yazar.
-#   powershell -File scripts/kur.ps1 -Artefakt KLASÖR [-Hedef $env:LOCALAPPDATA\zee\bin] [-Veri $env:LOCALAPPDATA\zee]
+# K-169/ADR-071, K-194: önce bütün ikilileri geçici alanda doğrula;
+# yayınlama hatasında bu koşunun oluşturduğu dosyaları geri al.
 param(
     [Parameter(Mandatory = $true)][string]$Artefakt,
     [string]$Hedef = "$env:LOCALAPPDATA\zee\bin",
@@ -8,28 +7,57 @@ param(
 )
 $ErrorActionPreference = "Stop"
 $ozetDosyasi = Join-Path $Artefakt "SHA256SUMS"
-if (-not (Test-Path $ozetDosyasi)) { throw "Artefaktta SHA256SUMS yok; doğrulanamayan ikili kurulmaz." }
+if (-not (Test-Path -LiteralPath $ozetDosyasi -PathType Leaf)) { throw "Artefaktta SHA256SUMS yok; doğrulanamayan ikili kurulmaz." }
 $manifest = Join-Path $Veri "kurulum-v1.tsv"
-if (Test-Path $manifest) { throw "Önce var olan kurulumu kaldır: scripts/kaldir.ps1 -Veri $Veri" }
+if (Test-Path -LiteralPath $manifest) { throw "Önce var olan kurulumu kaldır: scripts/kaldir.ps1 -Veri $Veri" }
 New-Item -ItemType Directory -Force -Path $Hedef, $Veri | Out-Null
-$gitSha = if (Test-Path (Join-Path $Artefakt "GIT_SHA")) { (Get-Content (Join-Path $Artefakt "GIT_SHA")).Trim() } else { "-" }
-$satirlar = @("# zee-kurulum-1", "# dosya`tsha256`tkaynak_git_sha")
-$kurulan = 0
-foreach ($satir in Get-Content $ozetDosyasi) {
-    if ($satir.Trim() -eq "") { continue }
-    $parcalar = $satir -split "  ", 2
-    $beklenen = $parcalar[0]; $ad = $parcalar[1]
-    if ($ad -notin @("dil", "dil.exe", "dillsp", "dillsp.exe")) { continue }
-    $kaynak = Join-Path $Artefakt $ad
-    if (-not (Test-Path $kaynak)) { throw "Artefaktta $ad yok." }
-    $bulunan = (Get-FileHash -Algorithm SHA256 $kaynak).Hash.ToLower()
-    if ($bulunan -ne $beklenen) { throw "SHA-256 uyuşmuyor: $ad; kurulum iptal." }
-    $hedefDosya = Join-Path $Hedef $ad
-    if (Test-Path $hedefDosya) { throw "$hedefDosya zaten var; kaldırmadan üzerine yazılmaz." }
-    Copy-Item $kaynak $hedefDosya
-    $satirlar += "$hedefDosya`t$bulunan`t$gitSha"
-    $kurulan++
+$Hedef = (Resolve-Path -LiteralPath $Hedef).ProviderPath
+$Veri = (Resolve-Path -LiteralPath $Veri).ProviderPath
+$manifest = Join-Path $Veri "kurulum-v1.tsv"
+$hazirlik = Join-Path $Hedef (".zee-kurulum-" + [Guid]::NewGuid().ToString("N"))
+$geciciManifest = Join-Path $Veri (".zee-kurulum-manifest-" + [Guid]::NewGuid().ToString("N"))
+$kurulanYollar = [System.Collections.Generic.List[string]]::new()
+$kurulacakAdlar = [System.Collections.Generic.List[string]]::new()
+$gorulen = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
+$tamamlandi = $false
+try {
+    New-Item -ItemType Directory -Path $hazirlik | Out-Null
+    $gitSha = if (Test-Path -LiteralPath (Join-Path $Artefakt "GIT_SHA")) { (Get-Content -LiteralPath (Join-Path $Artefakt "GIT_SHA")).Trim() } else { "-" }
+    $satirlar = @("# zee-kurulum-1", "# dosya`tsha256`tkaynak_git_sha")
+    foreach ($satir in Get-Content -LiteralPath $ozetDosyasi) {
+        if ($satir.Trim() -eq "") { continue }
+        $parcalar = $satir -split "  ", 2
+        if ($parcalar.Length -ne 2) { throw "SHA256SUMS satırı geçersiz." }
+        $beklenen = $parcalar[0]; $ad = $parcalar[1]
+        if ($ad -notin @("dil", "dil.exe", "dillsp", "dillsp.exe")) { continue }
+        if ($beklenen -cnotmatch '^[0-9a-f]{64}$') { throw "SHA256SUMS özeti geçersiz: $ad" }
+        if (-not $gorulen.Add($ad)) { throw "SHA256SUMS içinde yinelenen ad: $ad" }
+        $kaynak = Join-Path $Artefakt $ad
+        if (-not (Test-Path -LiteralPath $kaynak -PathType Leaf)) { throw "Artefaktta $ad yok." }
+        $hedefDosya = Join-Path $Hedef $ad
+        if (Test-Path -LiteralPath $hedefDosya) { throw "$hedefDosya zaten var; kaldırmadan üzerine yazılmaz." }
+        $hazirDosya = Join-Path $hazirlik $ad
+        [System.IO.File]::Copy($kaynak, $hazirDosya, $false)
+        $bulunan = (Get-FileHash -Algorithm SHA256 -LiteralPath $hazirDosya).Hash.ToLower()
+        if ($bulunan -ne $beklenen) { throw "SHA-256 uyuşmuyor: $ad; kurulum iptal." }
+        $kurulacakAdlar.Add($ad)
+        $satirlar += "$hedefDosya`t$bulunan`t$gitSha"
+    }
+    if ($kurulacakAdlar.Count -eq 0) { throw "SHA256SUMS içinde dil/dillsp girdisi yok." }
+    Set-Content -LiteralPath $geciciManifest -Value ($satirlar -join "`n") -Encoding utf8 -NoNewline
+    foreach ($ad in $kurulacakAdlar) {
+        $hedefDosya = Join-Path $Hedef $ad
+        # Aynı hedef dosya sisteminde taşınır; File.Move var olan dosyayı ezmez.
+        [System.IO.File]::Move((Join-Path $hazirlik $ad), $hedefDosya)
+        $kurulanYollar.Add($hedefDosya)
+    }
+    [System.IO.File]::Move($geciciManifest, $manifest)
+    $tamamlandi = $true
+    Write-Output "Kuruldu ($($kurulanYollar.Count) ikili) -> $Hedef; manifest: $manifest"
+} finally {
+    if (-not $tamamlandi) {
+        foreach ($dosya in $kurulanYollar) { Remove-Item -LiteralPath $dosya -Force }
+    }
+    if (Test-Path -LiteralPath $hazirlik) { Remove-Item -LiteralPath $hazirlik -Recurse -Force }
+    if (Test-Path -LiteralPath $geciciManifest) { Remove-Item -LiteralPath $geciciManifest -Force }
 }
-if ($kurulan -eq 0) { throw "SHA256SUMS içinde dil/dillsp girdisi yok." }
-Set-Content -Path $manifest -Value ($satirlar -join "`n") -Encoding utf8 -NoNewline
-Write-Output "Kuruldu ($kurulan ikili) -> $Hedef; manifest: $manifest"

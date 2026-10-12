@@ -15,6 +15,7 @@ Bu bir çeviri katmanı değildir (`if→eğer` makyajı yok); AI semantiğin pa
 - **Dili gez:** [docs/dil-turu.md](docs/dil-turu.md) — bütün yüzey, çalışan örneklerle
 - **Oynayarak öğren:** [projeler/](projeler/) — çocuk proje kitaplığı (hepsi regression testte)
 - **Web'i üretime hazırla:** [docs/web-production-profili.md](docs/web-production-profili.md) — güvenilir proxy, ortak durum ve N worker süreci
+- **Kurulum ve hata geri alma:** [docs/surum-runbook.md](docs/surum-runbook.md) — checksum doğrulaması, manifestli sahiplik ve K-194 platform kanıtı
 - **Derleme ve bağımlılıklar:** [docs/derleme-ve-bagimliliklar.md](docs/derleme-ve-bagimliliklar.md) — Rust, native/WASM ve self-hosting sınırları
 - **Derleyici tedarik zinciri:** [docs/tedarik-zinciri.md](docs/tedarik-zinciri.md) — RustSec/lisans/kaynak ve gerçek offline vendor kapısı
 - **Playground host sözleşmesi:** [docs/wasm-c-abi.md](docs/wasm-c-abi.md) — sürümlü, kayıtlı ve fuzz kanıtlı WASM C ABI

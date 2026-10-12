@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# K-169/ADR-071 kurulum: sürüm artefaktındaki dil/dillsp ikililerini SHA256SUMS
-# doğrulayarak hedef klasöre kopyalar ve kurulum manifestini yazar.
+# K-169/ADR-071, K-194: ikililerin tamamı geçici alanda doğrulanır;
+# yayınlama hatasında bu koşunun oluşturduğu dosyalar geri alınır.
 #   scripts/kur.sh --artefakt KLASÖR [--hedef ~/.local/bin] [--veri ~/.local/share/zee]
 set -euo pipefail
 
@@ -23,39 +23,73 @@ ozet_hesapla() {
 }
 
 manifest="$veri/kurulum-v1.tsv"
-if [[ -f "$manifest" ]]; then
+if [[ -e "$manifest" || -L "$manifest" ]]; then
     echo "Önce var olan kurulumu kaldır: scripts/kaldir.sh --veri $veri" >&2
     exit 1
 fi
 mkdir -p "$hedef" "$veri"
-gecici_manifest="$(mktemp "${TMPDIR:-/tmp}/zee-kurulum.XXXXXX")"
+# Manifestte yollar çalışma dizininden bağımsızdır.
+hedef="$(cd "$hedef" && pwd -P)"
+veri="$(cd "$veri" && pwd -P)"
+manifest="$veri/kurulum-v1.tsv"
+hazirlik=""
+gecici_manifest=""
+kurulan_yollar=()
+kurulacak_adlar=()
+tamamlandi=0
+
+temizle() {
+    local sonuc="$?" dosya
+    trap - EXIT
+    if [[ "$tamamlandi" -ne 1 && ${#kurulan_yollar[@]} -gt 0 ]]; then
+        for dosya in "${kurulan_yollar[@]}"; do rm -f "$dosya"; done
+    fi
+    [[ -z "$hazirlik" ]] || rm -rf "$hazirlik"
+    [[ -z "$gecici_manifest" ]] || rm -f "$gecici_manifest"
+    exit "$sonuc"
+}
+trap temizle EXIT
+hazirlik="$(mktemp -d "$hedef/.zee-kurulum.XXXXXX")"
+gecici_manifest="$(mktemp "$veri/.zee-kurulum-manifest.XXXXXX")"
 printf '# zee-kurulum-1\n# dosya\tsha256\tkaynak_git_sha\n' > "$gecici_manifest"
 git_sha="$( [[ -f "$artefakt/GIT_SHA" ]] && cat "$artefakt/GIT_SHA" || echo '-' )"
-kurulan=0
-while IFS= read -r satir; do
+
+while IFS= read -r satir || [[ -n "$satir" ]]; do
     [[ -z "$satir" ]] && continue
     beklenen="${satir%%  *}"
     ad="${satir##*  }"
     case "$ad" in dil | dil.exe | dillsp | dillsp.exe) ;; *) continue ;; esac
+    [[ "$beklenen" =~ ^[0-9a-f]{64}$ ]] || { echo "SHA256SUMS özeti geçersiz: $ad" >&2; exit 1; }
+    if [[ -e "$hazirlik/$ad" ]]; then
+        echo "SHA256SUMS içinde yinelenen ad: $ad" >&2; exit 1
+    fi
     kaynak="$artefakt/$ad"
-    [[ -f "$kaynak" ]] || { echo "Artefaktta $ad yok." >&2; rm -f "$gecici_manifest"; exit 1; }
-    bulunan="$(ozet_hesapla "$kaynak")"
+    [[ -f "$kaynak" ]] || { echo "Artefaktta $ad yok." >&2; exit 1; }
+    if [[ -e "$hedef/$ad" || -L "$hedef/$ad" ]]; then
+        echo "$hedef/$ad zaten var; kaldırmadan üzerine yazılmaz." >&2; exit 1
+    fi
+    install -m 0755 "$kaynak" "$hazirlik/$ad"
+    bulunan="$(ozet_hesapla "$hazirlik/$ad")"
     if [[ "$bulunan" != "$beklenen" ]]; then
         echo "SHA-256 uyuşmuyor: $ad (beklenen $beklenen, bulunan $bulunan); kurulum iptal." >&2
-        rm -f "$gecici_manifest"; exit 1
+        exit 1
     fi
-    if [[ -e "$hedef/$ad" ]]; then
-        echo "$hedef/$ad zaten var; kaldırmadan üzerine yazılmaz." >&2
-        rm -f "$gecici_manifest"; exit 1
-    fi
-    install -m 0755 "$kaynak" "$hedef/$ad"
+    kurulacak_adlar+=("$ad")
     printf '%s\t%s\t%s\n' "$hedef/$ad" "$bulunan" "$git_sha" >> "$gecici_manifest"
-    kurulan=$((kurulan + 1))
 done < "$artefakt/SHA256SUMS"
-if [[ "$kurulan" -eq 0 ]]; then
-    echo "SHA256SUMS içinde dil/dillsp girdisi yok." >&2
-    rm -f "$gecici_manifest"; exit 1
+if [[ ${#kurulacak_adlar[@]} -eq 0 ]]; then
+    echo "SHA256SUMS içinde dil/dillsp girdisi yok." >&2; exit 1
 fi
-mv "$gecici_manifest" "$manifest"
-echo "Kuruldu ($kurulan ikili) → $hedef; manifest: $manifest"
+
+for ad in "${kurulacak_adlar[@]}"; do
+    # Hard link aynı hedef dosya sisteminde oluşturulur; var olan dosya ezilmez.
+    [[ ! -e "$hedef/$ad" && ! -L "$hedef/$ad" ]] || { echo "$hedef/$ad zaten var; kaldırmadan üzerine yazılmaz." >&2; exit 1; }
+    ln "$hazirlik/$ad" "$hedef/$ad"
+    kurulan_yollar+=("$hedef/$ad")
+done
+# Manifestin yayınlanması da no-clobber'dır ve kendi veri dosya sistemindedir.
+[[ ! -e "$manifest" && ! -L "$manifest" ]] || { echo "Kurulum manifesti zaten var." >&2; exit 1; }
+ln "$gecici_manifest" "$manifest"
+tamamlandi=1
+echo "Kuruldu (${#kurulan_yollar[@]} ikili) → $hedef; manifest: $manifest"
 case ":$PATH:" in *":$hedef:"*) ;; *) echo "Not: $hedef PATH içinde değil; kabuğuna ekle." ;; esac

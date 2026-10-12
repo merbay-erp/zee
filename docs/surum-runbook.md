@@ -33,3 +33,14 @@ Windows: `powershell -File scripts/kur.ps1 -Artefakt <klasör>` ve
 `scripts/kaldir.ps1`. Betikler yalnız `SHA256SUMS` ile doğrulanan `dil`/`dillsp`
 ikililerini kurar, var olan dosyanın üzerine yazmaz ve yalnız kendi
 manifestindeki dosyaları kaldırır. Editör bağı için `editors/README.md`.
+
+## K-194 kurulum hata sınırı
+
+İkililerin tamamı geçici alanda kopyalanıp SHA-256 ile doğrulanmadan hedefe
+ikili yayımlanmaz. Hedefte yabancı dosya/kırık sembolik bağ ve yinelenen
+checksum kaydı reddedilir. Yayınlama hatasında bu koşunun oluşturduğu
+ikili dosyalar geri alınır; manifest en son yayımlanır ve yollar mutlak olur.
+Unix dosya sistemi hard-link desteklemelidir; Windows File.Move var olan
+hedefi ezmez. Güç kaybı/SIGKILL sonrası otomatik uzlaştırma bu sözleşmede yoktur.
+`kurulum_testi` artık Windows'ta da gerçek ikililerle ret/kur/kaldır akışını
+çalıştırır; platform sonuçları [backlog](oncelikli-backlog.md) durumuyla izlenir.

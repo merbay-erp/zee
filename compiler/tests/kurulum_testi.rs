@@ -3,7 +3,7 @@
 //! kaldırılır; oynanmış artefakt ve ikinci kurulum reddedilir.
 
 use std::path::{Path, PathBuf};
-#[cfg(unix)]
+#[cfg(any(unix, windows))]
 use std::process::Command;
 
 fn depo() -> PathBuf {
@@ -56,39 +56,63 @@ fn kurulum_betikleri_ve_tatbikat_workflowu_sozlesmeyi_tasir() {
     assert!(oku("docs/surum-runbook.md").contains("guvenlik-kapisi.sh --surum-adayi"));
 }
 
-#[cfg(unix)]
+#[cfg(any(unix, windows))]
 fn sha256_hex(yol: &Path) -> String {
     use sha2::{Digest, Sha256};
     let ozet = Sha256::digest(std::fs::read(yol).expect("okunmalı"));
     ozet.iter().map(|b| format!("{b:02x}")).collect()
 }
 
-#[cfg(unix)]
+#[cfg(any(unix, windows))]
 fn betik(ad: &str, argumanlar: &[&str]) -> std::process::Output {
-    Command::new("bash")
-        .arg(depo().join("scripts").join(ad))
-        .args(argumanlar)
-        .env("HOME", std::env::temp_dir())
-        .output()
-        .expect("betik çalışmalı")
+    let mut komut = if cfg!(windows) {
+        let mut komut = Command::new("powershell");
+        komut.args([
+            "-NoProfile",
+            "-NonInteractive",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+        ]);
+        komut.arg(depo().join("scripts").join(ad.replace(".sh", ".ps1")));
+        for arguman in argumanlar {
+            komut.arg(match *arguman {
+                "--artefakt" => "-Artefakt",
+                "--hedef" => "-Hedef",
+                "--veri" => "-Veri",
+                "--zorla" => "-Zorla",
+                diger => diger,
+            });
+        }
+        komut
+    } else {
+        let mut komut = Command::new("bash");
+        komut.arg(depo().join("scripts").join(ad)).args(argumanlar);
+        komut
+    };
+    komut.output().expect("betik çalışmalı")
 }
 
-#[cfg(unix)]
+#[cfg(any(unix, windows))]
 #[test]
 fn gercek_ikililer_kurulur_calisir_kaldirilir_ve_oynanmis_artefakt_reddedilir() {
+    let dil_ad = format!("dil{}", std::env::consts::EXE_SUFFIX);
+    let dillsp_ad = format!("dillsp{}", std::env::consts::EXE_SUFFIX);
     let gecici = std::env::temp_dir().join(format!("zee-kurulum-{}", std::process::id()));
     let artefakt = gecici.join("surum");
     let hedef = gecici.join("bin");
     let veri = gecici.join("veri");
     std::fs::create_dir_all(&artefakt).unwrap();
-    std::fs::copy(env!("CARGO_BIN_EXE_dil"), artefakt.join("dil")).unwrap();
-    std::fs::copy(env!("CARGO_BIN_EXE_dillsp"), artefakt.join("dillsp")).unwrap();
+    std::fs::copy(env!("CARGO_BIN_EXE_dil"), artefakt.join(&dil_ad)).unwrap();
+    std::fs::copy(env!("CARGO_BIN_EXE_dillsp"), artefakt.join(&dillsp_ad)).unwrap();
     std::fs::write(
         artefakt.join("SHA256SUMS"),
         format!(
-            "{}  dil\n{}  dillsp\n",
-            sha256_hex(&artefakt.join("dil")),
-            sha256_hex(&artefakt.join("dillsp"))
+            "{}  {}\n{}  {}\n",
+            sha256_hex(&artefakt.join(&dil_ad)),
+            dil_ad,
+            sha256_hex(&artefakt.join(&dillsp_ad)),
+            dillsp_ad
         ),
     )
     .unwrap();
@@ -102,6 +126,107 @@ fn gercek_ikililer_kurulur_calisir_kaldirilir_ve_oynanmis_artefakt_reddedilir() 
         hedef.to_str().unwrap(),
         veri.to_str().unwrap(),
     );
+
+    // K-194: ikinci kaydın reddi ilk ikiliyi manifestsiz bırakamaz.
+    let iyi_ozetler = std::fs::read_to_string(artefakt.join("SHA256SUMS")).unwrap();
+    let kur_argumanlari = [
+        "--artefakt",
+        artefakt_s,
+        "--hedef",
+        hedef_s,
+        "--veri",
+        veri_s,
+    ];
+    std::fs::write(
+        artefakt.join("SHA256SUMS"),
+        format!(
+            "{}  {}\n{}  {}\n",
+            sha256_hex(&artefakt.join(&dil_ad)),
+            dil_ad,
+            "0".repeat(64),
+            dillsp_ad
+        ),
+    )
+    .unwrap();
+    let bozuk_ikinci = betik("kur.sh", &kur_argumanlari);
+    assert!(!bozuk_ikinci.status.success());
+    assert!(
+        !hedef.join(&dil_ad).exists(),
+        "ikinci checksum reddinde ilk ikili de kurulmaz"
+    );
+    assert!(!hedef.join(&dillsp_ad).exists());
+    assert!(!veri.join("kurulum-v1.tsv").exists());
+    std::fs::write(artefakt.join("SHA256SUMS"), &iyi_ozetler).unwrap();
+
+    let saklanan = artefakt.join("dillsp-saklanan");
+    std::fs::rename(artefakt.join(&dillsp_ad), &saklanan).unwrap();
+    let eksik_ikinci = betik("kur.sh", &kur_argumanlari);
+    assert!(!eksik_ikinci.status.success());
+    assert!(!hedef.join(&dil_ad).exists());
+    assert!(!veri.join("kurulum-v1.tsv").exists());
+    std::fs::rename(&saklanan, artefakt.join(&dillsp_ad)).unwrap();
+
+    std::fs::create_dir_all(&hedef).unwrap();
+    std::fs::write(hedef.join(&dillsp_ad), b"yabanci dosya").unwrap();
+    let mevcut_ikinci = betik("kur.sh", &kur_argumanlari);
+    assert!(!mevcut_ikinci.status.success());
+    assert!(!hedef.join(&dil_ad).exists());
+    assert_eq!(
+        std::fs::read(hedef.join(&dillsp_ad)).unwrap(),
+        b"yabanci dosya"
+    );
+    assert!(!veri.join("kurulum-v1.tsv").exists());
+    std::fs::remove_file(hedef.join(&dillsp_ad)).unwrap();
+
+    let ilk_kayit = iyi_ozetler.lines().next().unwrap();
+    std::fs::write(
+        artefakt.join("SHA256SUMS"),
+        format!("{iyi_ozetler}{ilk_kayit}\n"),
+    )
+    .unwrap();
+    let yinelenen = betik("kur.sh", &kur_argumanlari);
+    assert!(!yinelenen.status.success());
+    assert!(!hedef.join(&dil_ad).exists() && !hedef.join(&dillsp_ad).exists());
+    assert!(!veri.join("kurulum-v1.tsv").exists());
+    std::fs::write(artefakt.join("SHA256SUMS"), &iyi_ozetler).unwrap();
+
+    #[cfg(unix)]
+    {
+        // İlk yayınlanan ikiliden sonra ikinci ln hatası tüm koşuyu geri alır.
+        use std::os::unix::fs::PermissionsExt;
+        let sahte_araclar = gecici.join("sahte-araclar");
+        std::fs::create_dir_all(&sahte_araclar).unwrap();
+        let ln = sahte_araclar.join("ln");
+        std::fs::write(
+            &ln,
+            "#!/bin/sh\ncase \"$2\" in */dillsp) exit 1 ;; esac\nexec /bin/ln \"$@\"\n",
+        )
+        .unwrap();
+        std::fs::set_permissions(&ln, std::fs::Permissions::from_mode(0o755)).unwrap();
+        let mut yollar = vec![sahte_araclar];
+        yollar.extend(std::env::split_paths(&std::env::var_os("PATH").unwrap()));
+        let yayin_hatasi = Command::new("bash")
+            .arg(depo().join("scripts/kur.sh"))
+            .args(kur_argumanlari)
+            .env("PATH", std::env::join_paths(yollar).unwrap())
+            .output()
+            .unwrap();
+        assert!(!yayin_hatasi.status.success());
+        assert!(!hedef.join(&dil_ad).exists() && !hedef.join(&dillsp_ad).exists());
+        assert!(!veri.join("kurulum-v1.tsv").exists());
+
+        std::os::unix::fs::symlink("/zee-olmayan-hedef", hedef.join(&dillsp_ad)).unwrap();
+        let kirik_bag = betik("kur.sh", &kur_argumanlari);
+        assert!(!kirik_bag.status.success());
+        assert!(!hedef.join(&dil_ad).exists());
+        assert!(hedef
+            .join(&dillsp_ad)
+            .symlink_metadata()
+            .unwrap()
+            .file_type()
+            .is_symlink());
+        std::fs::remove_file(hedef.join(&dillsp_ad)).unwrap();
+    }
 
     let kur = betik(
         "kur.sh",
@@ -122,7 +247,7 @@ fn gercek_ikililer_kurulur_calisir_kaldirilir_ve_oynanmis_artefakt_reddedilir() 
     let manifest = std::fs::read_to_string(veri.join("kurulum-v1.tsv")).unwrap();
     assert!(manifest.starts_with("# zee-kurulum-1\n"));
     assert_eq!(manifest.lines().filter(|s| !s.starts_with('#')).count(), 2);
-    let surum = Command::new(hedef.join("dil"))
+    let surum = Command::new(hedef.join(&dil_ad))
         .arg("sürüm")
         .output()
         .unwrap();
@@ -144,23 +269,23 @@ fn gercek_ikililer_kurulur_calisir_kaldirilir_ve_oynanmis_artefakt_reddedilir() 
         "kurulu sistemde ikinci kurulum reddedilmeli"
     );
 
-    std::fs::write(hedef.join("dillsp"), b"degistirildi").unwrap();
+    std::fs::write(hedef.join(&dillsp_ad), b"degistirildi").unwrap();
     let kaldir_reddi = betik("kaldir.sh", &["--veri", veri_s]);
     assert!(
         !kaldir_reddi.status.success(),
         "değişmiş dosya zorlamadan silinmez"
     );
-    assert!(hedef.join("dil").exists());
+    assert!(hedef.join(&dil_ad).exists());
     let kaldir = betik("kaldir.sh", &["--veri", veri_s, "--zorla"]);
     assert!(
         kaldir.status.success(),
         "{}",
         String::from_utf8_lossy(&kaldir.stderr)
     );
-    assert!(!hedef.join("dil").exists() && !hedef.join("dillsp").exists());
+    assert!(!hedef.join(&dil_ad).exists() && !hedef.join(&dillsp_ad).exists());
     assert!(!veri.join("kurulum-v1.tsv").exists());
 
-    std::fs::write(artefakt.join("dil"), b"oynanmis").unwrap();
+    std::fs::write(artefakt.join(&dil_ad), b"oynanmis").unwrap();
     let oynanmis = betik(
         "kur.sh",
         &[
@@ -175,7 +300,7 @@ fn gercek_ikililer_kurulur_calisir_kaldirilir_ve_oynanmis_artefakt_reddedilir() 
     assert!(!oynanmis.status.success());
     assert!(String::from_utf8_lossy(&oynanmis.stderr).contains("SHA-256 uyuşmuyor"));
     assert!(
-        !hedef.join("dil").exists(),
+        !hedef.join(&dil_ad).exists(),
         "oynanmış artefakttan hiçbir dosya kurulmaz"
     );
     let _ = std::fs::remove_dir_all(&gecici);
