@@ -234,6 +234,20 @@ fn vendor_kaniti_iki_uretimi_ve_bos_cargo_home_offline_derlemeyi_ister() {
     assert!(betik.contains("cargo check --quiet --locked --offline --all-targets --all-features"));
     assert!(betik.contains("cargo check --quiet --locked --offline --bins"));
     assert!(oku(".gitignore").lines().any(|satir| satir == "**/vendor/"));
+    #[cfg(unix)]
+    {
+        let sonuc = std::process::Command::new("bash")
+            .arg(depo().join("scripts/tests/rust-arac-zinciri-test.sh"))
+            .current_dir(depo())
+            .output()
+            .expect("araç zinciri giriş regresyonu çalışmalı");
+        assert!(
+            sonuc.status.success(),
+            "exact compiler/config/wrapper girişleri başarısız: {}{}",
+            String::from_utf8_lossy(&sonuc.stdout),
+            String::from_utf8_lossy(&sonuc.stderr)
+        );
+    }
 }
 
 #[test]

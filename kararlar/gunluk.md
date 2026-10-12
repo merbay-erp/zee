@@ -3836,3 +3836,12 @@ Türkçe dizine kur/program/LSP/kaldır geçti. [Ham rapor](../docs/temiz-window
 ve [kimlik/hash defteri](../docs/temiz-windows-platform-kaniti-v1.tsv) kalıcıdır.
 ContainerUser/network none/read-only bind; host kernel, fiziksel/desktop
 minimum OS ve tüm IO kapsamı ayrı açıktır.
+
+K-199 Cargo compiler/wrapper pin düzeltmesi yerelde kanıtlandı: helper
+exact kurulu rustc executable path/version'ını Cargo RUSTC'ye bağlar ve
+wrapper/config seçimini boş değerle kapatır. Önce helper 1.93.1 bildirip
+Cargo RUSTC ile 1.97.1 çağırabiliyordu. Resmî release/offline girişi
+ambient compiler/wrapper seçimini korumaz; custom geliştirme wrapper
+kendi Cargo çağrısıyla kullanılır. Gerçek küçük Cargo poisoned ENV/config
+provasının üç platform exact kanıtı açık. ADR-068/GB-036; dil spec/RFC/
+tanı/API/production Rust kenarı ve release dosya kümesi değişmez.

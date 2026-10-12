@@ -1016,3 +1016,17 @@ kaldırma sonunda iki ikili+manifest yok; yalnız prova container'ı silindi.
 [Ham rapor](temiz-windows-kurulum-kaniti-2026-10-12.json),
 [defter](temiz-windows-platform-kaniti-v1.tsv); source/prova/helper/installer
 hash'leri bağımsız eşleştirildi. Fiziksel/desktop/minimum OS ve tüm IO ayrı.
+
+### K-199 — Cargo compiler/wrapper pin sınırı
+
+**AÇIK — gerçek yerel reproducer ve düzeltme hazır; üç platform kanıtı beklenir.**
+K-191 helper yalnız RUSTUP_TOOLCHAIN seçiyordu. Gerçek yerel küçük Cargo
+derlemesinde helper rustc 1.93.1 bildirirken RUSTC=1.97.1 yolu gerçek
+derleyiciyi değiştirdi. Artık rustup which exact executable yolu/sürümü
+denetlenir, RUSTC bu yola bağlanır, RUSTC_WRAPPER ve WORKSPACE_WRAPPER
+boş değerle Cargo config/ENV wrapper seçimini kapatır. Unix/Windows path
+semantiği, yanlış resolved path/sürüm retleri ve poisoned Cargo config/
+env altında gerçek Cargo/build-script/ikili testi birlikte kanıtlanır.
+Bu diğer Cargo profil/linker/CC/AR ayarlarının tam envanteri değildir.
+Kapanma: exact kaynakta üç platform gerçek küçük Cargo pin raporu/hash
+defteri ve giriş regresyonları. ADR-068/GB-036.

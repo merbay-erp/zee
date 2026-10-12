@@ -116,3 +116,16 @@ gh workflow run kurulum-tatbikati.yml --ref codex/zee-derleme-bagimlilik -f mode
 Kaynak kendi incelenmiş successful release koşusudur; release ve prova
 commit'i farklı olabilir ve ayrı kaydedilir. Server Core run 38255788989/job 114833388588
 kur/program/LSP/kaldır kapısını geçti ve K-198 bu kapsamda kapandı. Masaüstü/minimum OS/fiziksel macOS ayrı.
+
+K-199 compiler/wrapper ENV/config gerçek küçük Cargo provası:
+
+```sh
+gh workflow run kurulum-tatbikati.yml --ref codex/zee-derleme-bagimlilik -f mode=toolchain-probe
+```
+
+Üç GitHub platformunda mevcut exact 1.93.1 kurulumu kullanılır; depsiz
+probe network/offline Cargo ile derlenir. Resmî release/offline helper
+RUSTC'yi exact kurulu executable'a bağlar ve wrapper'ları kapatır.
+Custom compiler/wrapper geliştirme resmi release'in dışında kendi
+Cargo çağrısıyla yapılır. Tam Zee release, tüm Cargo profil/linker ve
+native C envanteri bu küçük probe'un kapsamı değildir.
