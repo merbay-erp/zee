@@ -134,3 +134,8 @@ adr/078-migration-sql-seviye-ayristirma.md	kanitli	compiler/src/postgresql.rs	Mi
 adr/079-erp-oturum-listeleme-ve-iptal.md	kanitli	compiler/tests/web_testi.rs,compiler/src/web_guvenligi.rs	Sır taşımayan kullanıcı oturum listesi, sahte metadata reddi ve transaction kapsamlı tekil iptal
 rfcs/0030-legacy-parola-ve-istemci-adresi.md	kanitli	compiler/src/guvenlik/legacy_bcrypt.rs,compiler/tests/web_cok_surec_testi.rs,compiler/tests/io_izi_testi.rs	Legacy Node vektörleri ve gerçek proxy/socket IP, replay kabulü; usability tam kabul değildir.
 adr/082-legacy-giris-ve-kanonik-istemci-kimligi.md	kanitli	compiler/src/guvenlik/legacy_bcrypt.rs,compiler/tests/web_cok_surec_testi.rs,compiler/tests/web_testi.rs	Maliyet/byte/algoritma retleri, trusted host IP ve istek dışı sınır.
+adr/083-urun-e-kriptografi-iletisim-gorsel.md	kanitli	compiler/tests/urun_e_yetkinlik_testi.rs	K-210 dört yüzeyin lowering hermetik davranış yetkinlik kapısı T048 ve smtp/smtps hedef kanıtı
+adr/084-rota-birimleri.md	kanitli	compiler/tests/birim_testi.rs	K-211 rota birimlerinin sırayla katılması, kapsülleme ve rotasız birim A010 kanıtı
+adr/085-gorunum-blogu.md	kanitli	compiler/tests/gorunum_testi.rs	K-212 görünüm bloğu kaçış, bayrak öznitelik, boş öğe, ham ve tanı kanıtı
+spec/28-gorunum-blogu.md	kanitli	compiler/tests/gorunum_testi.rs	Görünüm bloğu sözdizimi ve anlam kanıtı
+adr/086-site-hatlarinin-birlestirilmesi.md	kanitli	compiler/tests/birim_testi.rs,compiler/tests/gorunum_testi.rs,compiler/tests/io_izi_testi.rs,compiler/tests/semantic_regresyon_korugu_testi.rs	K-213 tek kaynak hattı ve bütün proje kabulü

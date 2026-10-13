@@ -33,8 +33,9 @@ tanımlayamaz. Bu etkileri doğrudan ya da çağırdığı başka bir işlem üz
 taşırsa T044 üretilir. Rota HTTP adaptörüdür; doğrulanmış girdiyi eyleme verir
 ve eylem sonucunu protokole çevirir.
 
-Transaction ile geri alınamayan ekran çıktısı, kullanıcı girdisi ve donanım
-eyleyicisi de eylem içinde kullanılamaz (T048). Bunlar CLI, web, görev veya
+Transaction ile geri alınamayan ekran çıktısı, kullanıcı girdisi, donanım
+eyleyicisi ve e-posta gönderimi (`ileti göndermeyi dene`, K-210) de eylem
+içinde kullanılamaz (T048). Bunlar CLI, web, görev veya
 donanım adaptöründe kalır. Ağdan salt okuma, zaman, rastgelelik, dosya okuma ve
 transaction destekli dosya yazma eylem içinde kullanılabilir.
 
@@ -76,6 +77,10 @@ Rota, varsayılan 200 yerine sabit bir HTTP durumu gönderebilir:
 GET "/hazir" adresine istek geldiğinde
     "hazır değil" yanıtını 503 durumuyla gönder
 ```
+
+Durum yanıtının içerik türü 200 yanıtıyla aynı kuralla seçilir: gövde `<` ile
+başlıyorsa `text/html`, aksi hâlde `text/plain` (K-210 eki, 9 Eylül 2026; panel
+hata sayfaları için).
 
 Durum yalnız kaynakta görünen `100..599` aralığında bir `TamSayı` literalidir.
 Değişken, hesaplanmış ifade ve aralık dışı değer S037 ile reddedilir. Böylece

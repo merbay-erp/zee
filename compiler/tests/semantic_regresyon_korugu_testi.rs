@@ -170,3 +170,107 @@ fn koruk_betigi_beyan_siniflarini_ve_fail_closed_mesajlarini_kabloluyor() {
         assert!(betik.contains(kanit), "koruk betiği kanıtı eksik: {kanit}");
     }
 }
+
+#[cfg(unix)]
+#[test]
+fn iki_kaynak_dalinin_merge_sha_beyani_iki_korukte_de_zorunludur() {
+    let kok = gecici_depo();
+    for dizin in ["regression", "compiler/src", "docs"] {
+        std::fs::create_dir_all(kok.join(dizin)).unwrap();
+    }
+    basarili_git(&kok, &["init", "-q", "-b", "ana"]);
+    std::fs::write(
+        kok.join("regression/v2.tsv"),
+        "# zee-semantic-regresyon-2\n",
+    )
+    .unwrap();
+    std::fs::write(kok.join("compiler/src/lib.rs"), "// taban\n").unwrap();
+    let taban = commit(&kok, "taban");
+    let semantic =
+        format!("# zee-compiler-degisiklik-beyanlari-1\n# enforcement_parent\t{taban}\n");
+    let freeze = format!("# zee-core-freeze-beyanlari-1\n# enforcement_parent\t{taban}\n");
+    std::fs::write(
+        kok.join("docs/compiler-degisiklik-beyanlari-v1.tsv"),
+        &semantic,
+    )
+    .unwrap();
+    std::fs::write(kok.join("docs/core-freeze-beyanlari-v1.tsv"), &freeze).unwrap();
+    std::fs::write(
+        kok.join("docs/dogfood-projeleri-v1.tsv"),
+        "# zee-dogfood-projeleri-1\n",
+    )
+    .unwrap();
+    commit(&kok, "kapılar");
+    basarili_git(&kok, &["checkout", "-q", "-b", "urun"]);
+    std::fs::write(kok.join("compiler/src/urun.rs"), "// ürün açıklaması\n").unwrap();
+    // grep -q pipe'ı erken kapatırsa pipefail gerçek Git çıktısında SIGPIPE
+    // üretir. Küçük sentetik merge bu hatayı göstermediğinden boruyu doldur.
+    for sira in 0..1024 {
+        std::fs::write(
+            kok.join("docs")
+                .join(format!("buyuk-fark-{sira:04}-{}.md", "a".repeat(96))),
+            "Kaynakla birlikte incelenen belge.\n",
+        )
+        .unwrap();
+    }
+    let urun = commit(&kok, "ürün açıklaması");
+    basarili_git(&kok, &["checkout", "-q", "ana"]);
+    std::fs::write(kok.join("compiler/src/lib.rs"), "// ana dal açıklaması\n").unwrap();
+    let ana = commit(&kok, "ana açıklama");
+    basarili_git(
+        &kok,
+        &[
+            "-c",
+            "user.name=Zee Test",
+            "-c",
+            "user.email=zee@example.invalid",
+            "merge",
+            "--no-commit",
+            "--no-ff",
+            "urun",
+        ],
+    );
+    let birlesim = commit(&kok, "iki kaynak dalını birleştir");
+    let beyan_yaz = |merge_var: bool| {
+        let sha_lar = if merge_var {
+            vec![&urun, &ana, &birlesim]
+        } else {
+            vec![&urun, &ana]
+        };
+        let gerekce =
+            "Yalnız kaynak yorumları birleşir; executable davranış, grammar ve tanı değişmez.";
+        let mut s = semantic.clone();
+        let mut f = freeze.clone();
+        for sha in sha_lar {
+            s.push_str(&format!("{sha}\tmaintenance\t-\t{gerekce}\n"));
+            f.push_str(&format!("{sha}\tmaintenance\t-\t-\t-\t-\t{gerekce}\t-\n"));
+        }
+        std::fs::write(kok.join("docs/compiler-degisiklik-beyanlari-v1.tsv"), s).unwrap();
+        std::fs::write(kok.join("docs/core-freeze-beyanlari-v1.tsv"), f).unwrap();
+    };
+    beyan_yaz(false);
+    for betik in ["semantic-regresyon-korugu.sh", "core-freeze-korugu.sh"] {
+        let calistir = || {
+            Command::new("bash")
+                .arg(depo().join("scripts").join(betik))
+                .arg(&taban)
+                .current_dir(&kok)
+                .output()
+                .unwrap()
+        };
+        let eksik = calistir();
+        assert!(
+            !eksik.status.success(),
+            "merge SHA beyansız geçemez: {betik}"
+        );
+        beyan_yaz(true);
+        let tam = calistir();
+        assert!(
+            tam.status.success(),
+            "{betik}: {}",
+            String::from_utf8_lossy(&tam.stderr)
+        );
+        beyan_yaz(false);
+    }
+    std::fs::remove_dir_all(kok).unwrap();
+}

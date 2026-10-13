@@ -44,3 +44,12 @@ Kural: bir RFC ancak yüzeyi gerçeklenmiş VE regression testine bağlanmışsa
 geçici kabule geçer; tam kabul usability kapısından geçmeyi bekler.
 
 | RFC-0030 | [Legacy parola ve istemci adresi](0030-legacy-parola-ve-istemci-adresi.md) | **geçici kabul** (K-208/K-209) | ADR-082, spec/12 |
+
+### ürün E özelliklerinin ana kaynak hattı — K-213
+
+[ADR-086](../adr/086-site-hatlarinin-birlestirilmesi.md) mevcut ürün E
+parola üretimi/TOTP/SMTP, rota birimi, görünüm, görsel ve gizli değer
+yüzeylerini K-208/K-209 bcrypt/IP ile aynı hatta toplar. Ürün kabulü
+dosya kontrolüyle değil bütün proje `dil dene .` ile alınır. Ham ürün E
+şablonu normal katalog üretimini ister. Exact source/CI kapanışı beklenir;
+canlı dağıtım ve otomatik parola göçü bu işte yapılmaz.

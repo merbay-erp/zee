@@ -372,3 +372,23 @@ daaa3ea. 742/742 faz, Node crypto ve gerçek HTTP/CLI/trace kabulü,
 167 paket offline vendor ve iki-clone binary eşitliği geçti.
 [Ham kayıt](incelemeler/k208/README.md) yerel macOS kanıtıdır; V1
 usability/RC/signed release ve sunucu dağıtımı değildir.
+
+### ürün E özelliklerinin ana kaynak hattı — K-213
+
+[ADR-086](../adr/086-site-hatlarinin-birlestirilmesi.md) mevcut ürün E
+parola üretimi/TOTP/SMTP, rota birimi, görünüm, görsel ve gizli değer
+yüzeylerini K-208/K-209 bcrypt/IP ile aynı hatta toplar. Ürün kabulü
+dosya kontrolüyle değil bütün proje `dil dene .` ile alınır. Ham ürün E
+şablonu normal katalog üretimini ister. Exact source/CI kapanışı beklenir;
+canlı dağıtım ve otomatik parola göçü bu işte yapılmaz.
+
+K-213 clean source kabulü: source e09493e, beyan/ikili/test 0531432;
+769/769 faz, beş bütün proje 242/242, 187 paket offline vendor ve
+macOS arm64 iki-clone eşliği geçti. Exact [kayıt](incelemeler/k213/README.md).
+İlk Linux CI'ın test Git kimliği bağımlılığı düzeltildi; son uzak CI
+kapanışı beklenir. Canlı dağıtım ve otomatik parola göçü açık kalır.
+
+K-213 compiler gerçekleme/test/belge dilimi kapandı. Eski ürün E
+sunucu hattı ile master aynı kaynak geçmişinde; ürün CI/sunucu pininin
+bu kaynağa geçirilmesi ve canlı giriş/IP kabulü ürün tarafının işidir.
+Otomatik bcrypt→Argon2 ürün göçü henüz uygulanmadı.

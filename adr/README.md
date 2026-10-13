@@ -88,3 +88,8 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-008 | [Self-hosting aşamaları ve geçiş kapıları](008-self-hosting-asamalari.md) | **kabul** |
 
 | ADR-082 | [Legacy giriş ve kanonik istemci kimliği](082-legacy-giris-ve-kanonik-istemci-kimligi.md) | **kabul** (K-208/K-209) |
+| ADR-083 | [Site E dogfood'u: parola özeti, TOTP, SMTP ve görsel küçültme](083-urun-e-kriptografi-iletisim-gorsel.md) | **kabul** |
+| ADR-084 | [Rota birimleri: `<ad> rotalarını kullan` (K-211)](084-rota-birimleri.md) | **kabul** |
+| ADR-085 | [Görünüm bloğu: tipli HTML ağacı (K-212)](085-gorunum-blogu.md) | **kabul** |
+
+| ADR-086 | [Site derleyici hatlarının birleştirilmesi](086-site-hatlarinin-birlestirilmesi.md) | **kabul** (K-213) |

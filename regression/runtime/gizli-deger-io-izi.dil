@@ -1,0 +1,5 @@
+metin "sentetik-iz-parolasi" olsun
+sifreli metnin gizli şifrelenmişi olsun
+sonuc sifreli gizli çözmeyi dene olsun
+sonuc başarılıysa
+    sonucun değerini yaz

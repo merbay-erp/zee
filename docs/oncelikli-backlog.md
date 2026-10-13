@@ -880,6 +880,8 @@ tamamlanmış sayılmaz; burada istenen ek kanıt ayrıca üretilir.
 | K-189 | **KAPALI** | Native HTML inline scriptleri içerik SHA-256 CSP kaynağına bağlandı; `unsafe-inline` açılmadan dinamik ERP kabuğu çalışır, exact başlık testi ve freeze beyanı vardır. |
 | K-183 | **KAPALI** | ADR-075: bekleyen yazar 5 ms yoklamak yerine yardımcı iş parçacığında bloklayan `flock`/`LockFileEx` ile çekirdek kuyruğuna girer; 5 sn sözü ve C013 aynı. `iki_yazar_satir_kaybetmez` 2×40'a döndü, `kilidi_ardisik_yeniden_alan_yazar_bekleyeni_ac_birakmaz` 120 ardışık ekleme altında tek eklemeyi 2 sn içinde ister; platform katmanı `kalici_dosya/platform.rs` |
 
+| K-210 | **KAPALI** | ADR-083 `dogfood/urun-e`: dördüncü ürün (zee ile ilk müşteri sitesi, adminpanelzee çatalı). legacy panel+ürün E'de tekrar eden dört eksik dile alındı: `parolanın argon2 özeti`, `yeni totp anahtarı` / `kod gizli anahtarıyla doğrulanıyorsa`, `alıcı konu gövde ile ileti göndermeyi dene` (SMTP, geri alınamaz etki, `e_posta_bağlantı_değişkeni`, smtp/smtps ağ hedefi), `kaynak görselini hedef dosyasına N piksele küçültmeyi dene` (`image` crate). K-174 yüzey kaydı ürün sahibi kararıyla güncellendi; C028/C029 tanıları; `urun_e_yetkinlik_testi` 8 test |
+
 ## Önceki kanıt: 2 Eylül 2026 ikinci dış inceleme ayrımı
 
 - **Doğrulandı ve K-129/K-130/K-131/K-132 ile kapandı:** B-025 kaynak/token,
@@ -1243,3 +1245,24 @@ daaa3ea. 742/742 faz, Node crypto ve gerçek HTTP/CLI/trace kabulü,
 167 paket offline vendor ve iki-clone binary eşitliği geçti.
 [Ham kayıt](incelemeler/k208/README.md) yerel macOS kanıtıdır; V1
 usability/RC/signed release ve sunucu dağıtımı değildir.
+
+## K-213 — ürün E ve master kaynak hattının birleştirilmesi
+
+**KAPALI:** K-210/ADR-083, K-211/ADR-084, K-212/ADR-085 ürün E dalından
+kaynak geçmişi korunarak aynı derleyicide birleştirildi. Source e09493e,
+exact beyan/clean kabul 0531432. Beş bütün proje 242/242, 769/769 faz,
+187 paket offline vendor, macOS arm64 iki-clone ve legacy zee1 ciphertext
+uyumluluğu kanıtlıdır. ADR-086 kayıt eşlemesini, HIR/trace regresyonlarını
+ve ham ürün E şablonunun katalog üretim sınırını taşır. Otomatik parola göçü,
+canlı sunucu yükseltmesi ve K-192 minimum OS kanıtı ayrı açık işlerdir.
+
+K-213 clean source kabulü: source e09493e, beyan/ikili/test 0531432;
+769/769 faz, beş bütün proje 242/242, 187 paket offline vendor ve
+macOS arm64 iki-clone eşliği geçti. Exact [kayıt](incelemeler/k213/README.md).
+İlk Linux CI'ın test Git kimliği bağımlılığı düzeltildi; son uzak CI
+kapanışı beklenir. Canlı dağıtım ve otomatik parola göçü açık kalır.
+
+Son kod/test kanıt HEAD'i `2ef362818bf0dc6b8cf4a9951d8ef2a25303a152`: Linux,
+macOS, Windows, tedarik ve sır taramasının 10 kontrolü geçti.
+`dil` koşuları 38392031371/38392039728, `tedarik` 38392031424/38392039739.
+Önceki Linux hatası tarihsel kalır; source e09493e değişmedi.

@@ -198,7 +198,7 @@ while IFS=$'\t' read -r commit _ _ _ _ _ _ _; do
     [[ -z "$commit" || "$commit" == \#* ]] && continue
     if ! git merge-base --is-ancestor "$enforcement_parent" "$commit" \
         || ! git merge-base --is-ancestor "$commit" HEAD \
-        || ! git diff-tree --no-commit-id --name-only -r "$commit" | grep -q '^compiler/src/'; then
+        || ! git diff-tree --first-parent -m --no-commit-id --name-only -r "$commit" | grep '^compiler/src/' > /dev/null; then
         echo "SAHİPSİZ CORE FREEZE BEYANI: $commit" >&2
         exit 1
     fi

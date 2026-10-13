@@ -28,3 +28,19 @@ pub(super) fn istek_al<T: GirdiCikti>(io: &mut PolitikaliIo<T>) -> Option<String
         .then(|| io.ic.istek_al())
         .flatten()
 }
+
+pub(super) fn oturumlari_listele<T: GirdiCikti>(
+    io: &mut PolitikaliIo<T>,
+    kullanici: &str,
+) -> Result<Vec<Vec<(String, String)>>, String> {
+    io.web_oturumu_gerektir()?;
+    io.ic.kullanici_oturumlarini_listele(kullanici)
+}
+
+pub(super) fn oturumu_iptal_et<T: GirdiCikti>(
+    io: &mut PolitikaliIo<T>,
+    kimlik: &str,
+) -> Result<i64, String> {
+    io.web_oturumu_gerektir()?;
+    io.ic.oturum_kimligini_iptal_et(kimlik)
+}
