@@ -31,19 +31,25 @@ jobs:
         shell: bash
         env:
           ZEE_CONFORMANCE_TABANI: ${{ github.event.pull_request.base.sha || github.event.before }}
-        run: bash scripts/conformance-korugu.sh "$(python3 scripts/ci-taban-kimligi.py "$ZEE_CONFORMANCE_TABANI")"
+        run: |
+          ZEE_CONFORMANCE_TABANI="$(python3 scripts/ci-taban-kimligi.py "$ZEE_CONFORMANCE_TABANI")"
+          bash scripts/conformance-korugu.sh "$ZEE_CONFORMANCE_TABANI"
       - name: Semantic regresyon vaka soy ağacı kalıcı
         if: matrix.os == 'ubuntu-latest'
         shell: bash
         env:
           ZEE_REGRESYON_TABANI: ${{ github.event.pull_request.base.sha || github.event.before }}
-        run: bash scripts/semantic-regresyon-korugu.sh "$(python3 scripts/ci-taban-kimligi.py "$ZEE_REGRESYON_TABANI")"
+        run: |
+          ZEE_REGRESYON_TABANI="$(python3 scripts/ci-taban-kimligi.py "$ZEE_REGRESYON_TABANI")"
+          bash scripts/semantic-regresyon-korugu.sh "$ZEE_REGRESYON_TABANI"
       - name: Core freeze gerçek dogfood kanıtı olmadan açılamaz
         if: matrix.os == 'ubuntu-latest'
         shell: bash
         env:
           ZEE_CORE_FREEZE_TABANI: ${{ github.event.pull_request.base.sha || github.event.before }}
-        run: bash scripts/core-freeze-korugu.sh "$(python3 scripts/ci-taban-kimligi.py "$ZEE_CORE_FREEZE_TABANI")"
+        run: |
+          ZEE_CORE_FREEZE_TABANI="$(python3 scripts/ci-taban-kimligi.py "$ZEE_CORE_FREEZE_TABANI")"
+          bash scripts/core-freeze-korugu.sh "$ZEE_CORE_FREEZE_TABANI"
       # rust-toolchain.toml sürümü sabitler; action yalnız rustup'ı hazırlar.
       - uses: dtolnay/rust-toolchain@d1031067263f94b142dd6c0ce24c5eb9d02d52a0 # master 2026-09-03
         with:

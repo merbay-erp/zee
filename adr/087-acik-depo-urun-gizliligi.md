@@ -46,7 +46,7 @@ ve `scripts/tests/acik-depo-test.py` olumlu/olumsuz tarihçe testleri.
 
 Özel depo CI'ında self Git bağımlılığı aynı exact checkout nesnesinden gelir;
 Cargo URI/rev değişmez, credential saklanmaz. Tam checkout zorunludur.
-`ci-taban-kimligi.py` yalnız eski master 45b66f3 için kaydedilmiş yeni
+`ci-taban-kimligi.py` yalnız K-214 eski master ve iki birleşmiş dal ucu için kaydedilmiş yeni
 ata SHA'yı doğrular; diğer tabanlar aynen geçer, genel force istisnası yoktur.
 `acik-depo` workflow'u push/PR kaynağını güvenilir master denetleyicisiyle
 yalnız veri olarak tarar; PR kodu çalıştırılmaz, token salt-okunurdur.

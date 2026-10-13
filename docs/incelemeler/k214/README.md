@@ -42,7 +42,7 @@ Doğrulama sonuçları ve uzak ref eşitliği aynı kayıt dalgasında eklenir.
 
 Özel depo CI'ında self Git bağımlılığı aynı exact checkout nesnesinden gelir;
 Cargo URI/rev değişmez, credential saklanmaz. Tam checkout zorunludur.
-`ci-taban-kimligi.py` yalnız eski master 45b66f3 için kaydedilmiş yeni
+`ci-taban-kimligi.py` yalnız K-214 eski master ve iki birleşmiş dal ucu için kaydedilmiş yeni
 ata SHA'yı doğrular; diğer tabanlar aynen geçer, genel force istisnası yoktur.
 `acik-depo` workflow'u push/PR kaynağını güvenilir master denetleyicisiyle
 yalnız veri olarak tarar; PR kodu çalıştırılmaz, token salt-okunurdur.
@@ -53,3 +53,9 @@ kapısı yeni eşleşme bulmadı. Uzak ref eşitliği push sonrasında doğrulan
 
 Kapı/kod/test/belge commit’i: `8706447a7337a54cad4bf4e8547c31d57fbfb2f0`. Kaynak beyanı takip commitindedir.
 9 sentetik gizlilik/CI testi geçti; terim listesi veya eşleşme değeri loga yazılmadı.
+
+İlk uzak 7eddb01 koşusu: gizlilik kapısı ve sır taraması geçti. CI komut
+kimlik eşlemesindeki inline çağrı, iki mevcut mimari kablo assertion'ını
+bozdu. Exact guard çağrısı çok satırlı adımda korunarak düzeltildi;
+23 mimari vaka, 9 sentetik gizlilik/CI vakası ve 770/770 tam faz tekrar geçti.
+Güvenlik eşiği/fixture gevşetilmedi; final uzak CI sonucu ayrıca izlenir.

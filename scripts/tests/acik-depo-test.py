@@ -119,8 +119,9 @@ class PublicPrivacyTests(unittest.TestCase):
         api = runpy.run_path(str(ROOT / "scripts/ci-taban-kimligi.py"))
         for before in ["", "0" * 40, "a" * 40]:
             self.assertEqual(api["resolve"](before), before)
-        target = api["resolve"](api["OLD_MASTER"])
-        subprocess.run(["git", "-C", str(ROOT), "merge-base", "--is-ancestor", target, "HEAD"], check=True)
+        for before in api["OLD_TIPS"]:
+            target = api["resolve"](before)
+            subprocess.run(["git", "-C", str(ROOT), "merge-base", "--is-ancestor", target, "HEAD"], check=True)
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory); path = root / "docs/incelemeler/k214/sha-esleme-v1.tsv"
             path.parent.mkdir(parents=True); path.write_text("# empty\n")
