@@ -1,0 +1,50 @@
+name: zee derleyicisini (dil) kur
+description: >
+  Bu commit'teki zee derleyicisini derler (önbellekli) ve PATH'e ekler. Organizasyon içi başka
+  depolar (ör. site-b, site-c) kullanır: `uses: merbay-erp/zee/.github/actions/dil-kur@<tam-40-haneli-sha>`.
+  Ana kaynak merbay-erp/zee public deposudur; Enterprise yalnız aynadır. Linux x64 (Mac runner ya da ubuntu-latest).
+outputs:
+  surum:
+    description: dil sürüm çıktısı
+    value: ${{ steps.dogrula.outputs.surum }}
+runs:
+  using: composite
+  steps:
+    - name: Kaynak özeti
+      id: ozet
+      shell: bash
+      run: |
+        kok=$(cd "$GITHUB_ACTION_PATH/../../.." && pwd)
+        echo "kok=$kok" >> "$GITHUB_OUTPUT"
+        ozet=$(cd "$kok" && find compiler/src compiler/Cargo.toml compiler/Cargo.lock compiler/rust-toolchain.toml kitaplik -type f -print0 \
+          | LC_ALL=C sort -z | xargs -0 sha256sum | sha256sum | cut -c1-16)
+        echo "anahtar=zee-dil-${RUNNER_OS}-${RUNNER_ARCH}-$ozet" >> "$GITHUB_OUTPUT"
+    - name: Önbellek
+      id: onbellek
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: ${{ runner.temp }}/zee-dil
+        key: ${{ steps.ozet.outputs.anahtar }}
+    - name: Derle
+      if: steps.onbellek.outputs.cache-hit != 'true'
+      shell: bash
+      env:
+        CARGO_TARGET_DIR: ${{ runner.temp }}/zee-hedef
+      run: |
+        set -euo pipefail
+        tc=$(sed -n 's/^channel *= *"\(.*\)"/\1/p' "${{ steps.ozet.outputs.kok }}/compiler/rust-toolchain.toml")
+        if ! command -v rustup >/dev/null; then
+          curl -fsSL https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain none
+          echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"; export PATH="$HOME/.cargo/bin:$PATH"
+        fi
+        rustup toolchain install "$tc" --profile minimal
+        cd "${{ steps.ozet.outputs.kok }}/compiler"
+        RUSTUP_TOOLCHAIN="$tc" cargo build --release --locked --bin dil
+        mkdir -p "$RUNNER_TEMP/zee-dil"; install -m 0755 "$CARGO_TARGET_DIR/release/dil" "$RUNNER_TEMP/zee-dil/dil"
+    - name: PATH ve doğrulama
+      id: dogrula
+      shell: bash
+      run: |
+        echo "$RUNNER_TEMP/zee-dil" >> "$GITHUB_PATH"
+        s=$("$RUNNER_TEMP/zee-dil/dil" sürüm 2>&1 | head -1 || true)
+        echo "surum=$s" >> "$GITHUB_OUTPUT"; echo "dil: $s"

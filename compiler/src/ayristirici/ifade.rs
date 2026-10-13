@@ -2,7 +2,6 @@ use super::*;
 
 mod dosya;
 mod web;
-
 pub(super) fn gecerli_hata_kodu(kod: &str) -> bool {
     let mut harfler = kod.chars();
     matches!(harfler.next(), Some('A'..='Z'))
@@ -376,6 +375,10 @@ fn kosul_atomu_ic(tokenlar: &[Token], satir: usize) -> Result<Ifade, Tani> {
         });
     }
 
+    if let Some(ifade) = kimlik_iletisim::kosul_kalibi(tokenlar)? {
+        return Ok(ifade);
+    }
+
     // <parola> <Argon2id PHC özeti> ile doğrulanıyorsa.
     if n == 4 && kelimeler[2] == Some("ile") && yuklem == "doğrulanıyorsa" {
         return Ok(Ifade::Intrinsic {
@@ -544,6 +547,9 @@ fn yapili_kalip_ic(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifa
         Some(k) => k,
         None => return Ok(None),
     };
+    if let Some(ifade) = kimlik_iletisim::yapili_kalip(tokenlar)? {
+        return Ok(Some(ifade));
+    }
 
     // Bütün bölge görünür işlem adıysa sıfır argümanlı çağrıdır. Bu eski ve
     // geçerli çağrı biçimini korur; yalnız işlem-adı KUYRUĞUNUN daha güçlü bir

@@ -20,6 +20,8 @@
 //! veritabanı_istek_bağlamı "platform.session_context" olsun
 //! ```
 
+mod kimlik_iletisim;
+
 use crate::agac::{Cumle, Ifade};
 use crate::tani::Tani;
 use crate::yetkinlik::{AgHedefi, Yetkinlik, YetkinlikPolitikasi};
@@ -47,6 +49,12 @@ pub struct ProjeBildirimi {
     /// K-163 ilk dogfood profili: sır içermeyen loopback hedef kimliği,
     /// bağlantı URL'sini taşıyan ortam değişkeni ve repo içi migration kökü.
     pub veritabani: Option<VeritabaniBildirimi>,
+    /// K-210: SMTP bağlantı URL'sini taşıyan ortam değişkeninin adı
+    /// (`smtps://kullanici:parola@sunucu:465?from=gonderen@alan`). Sır kaynakta
+    /// değildir; sunucu `ağ_hedefleri` içinde açıkça listelenir.
+    pub eposta_baglanti_degiskeni: Option<String>,
+    /// K-210 eki 3: gizli değer anahtarını taşıyan ortam değişkeninin adı (kriptografi yetkinliği ister).
+    pub gizli_anahtar_degiskeni: Option<String>,
 }
 
 pub use crate::veritabani_modeli::{VeritabaniBildirimi, VeritabaniHedefi};
@@ -145,12 +153,14 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
                 | "veritabanı_bağlantı_değişkeni"
                 | "veritabanı_göçleri"
                 | "veritabanı_istek_bağlamı"
+                | "e_posta_bağlantı_değişkeni"
+                | "gizli_anahtar_değişkeni"
         ) {
             return Err(proje_hatasi(
                 "P001",
                 &format!("\"{}\" proje bildirimi alanı değil.", ad),
                 satir,
-                "Geçerli alanlar: proje, sürüm, morfoloji, giriş, yetkinlikler, ağ_hedefleri, yerel_bağımlılıklar, registry, registry_kök_sürümü, registry_kök_özeti, uzak_bağımlılıklar, veritabanı_hedefi, veritabanı_bağlantı_değişkeni, veritabanı_göçleri, veritabanı_istek_bağlamı.",
+                "Geçerli alanlar: proje, sürüm, morfoloji, giriş, yetkinlikler, ağ_hedefleri, yerel_bağımlılıklar, registry, registry_kök_sürümü, registry_kök_özeti, uzak_bağımlılıklar, veritabanı_hedefi, veritabanı_bağlantı_değişkeni, veritabanı_göçleri, veritabanı_istek_bağlamı, e_posta_bağlantı_değişkeni, gizli_anahtar_değişkeni.",
             ));
         }
         if alanlar.insert(ad.clone(), (deger, satir)).is_some() {
@@ -179,6 +189,8 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
     let (ag_hedef_yazimlari, ag_hedef_satiri) =
         metin_listesini_al(&mut alanlar, "ağ_hedefleri", "P015")?;
     let veritabani = veritabani_bildirimini_al(&mut alanlar, &yetkinlik_yazimlari)?;
+    let (eposta_baglanti_degiskeni, gizli_anahtar_degiskeni) =
+        kimlik_iletisim::alanlari_al(&mut alanlar, &yetkinlik_yazimlari)?;
     let mut yetkinlikler = BTreeSet::new();
     for yazim in yetkinlik_yazimlari {
         let Some(yetkinlik) = Yetkinlik::ayristir(&yazim) else {
@@ -317,6 +329,8 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
         registry,
         uzak_bagimliliklar,
         veritabani,
+        eposta_baglanti_degiskeni,
+        gizli_anahtar_degiskeni,
     })
 }
 
@@ -966,6 +980,7 @@ fn cumle_satiri(cumle: &Cumle) -> usize {
         Cumle::Yaz { satir, .. }
         | Cumle::Olsun { satir, .. }
         | Cumle::KezTekrarla { satir, .. }
+        | Cumle::Gorunum { satir, .. }
         | Cumle::AralikDongusu { satir, .. }
         | Cumle::OlduguSurece { satir, .. }
         | Cumle::OlanaKadar { satir, .. }

@@ -1,4 +1,7 @@
+use super::ifade::html_kacisla;
 use super::*;
+mod gorunum;
+use gorunum::gorunum_yaz_async;
 
 pub(super) fn blok_calistir_async<'a>(
     cumleler: &'a [Cumle],
@@ -45,6 +48,18 @@ pub(super) fn blok_calistir_async<'a>(
                 } => {
                     let sonuc =
                         degerlendir_async(deger, ortam, program, cikti, derinlik, *satir).await?;
+                    ortama_yazma_butcesini_tuket(ortam, ad, &sonuc, *satir)?;
+                    ortam.insert(ad.clone(), sonuc);
+                }
+                Cumle::Gorunum {
+                    ad,
+                    dugumler,
+                    satir,
+                    ..
+                } => {
+                    let mut html = String::new();
+                    gorunum_yaz_async(dugumler, ortam, program, cikti, derinlik, &mut html).await?;
+                    let sonuc = Deger::Metin(html);
                     ortama_yazma_butcesini_tuket(ortam, ad, &sonuc, *satir)?;
                     ortam.insert(ad.clone(), sonuc);
                 }
@@ -835,3 +850,9 @@ pub(super) fn blok_calistir_async<'a>(
         Ok(Akis::Devam)
     })
 }
+
+/// K-212: HTML5 boş (void) öğeler kapanış etiketi almaz.
+const BOS_OGELER: &[&str] = &[
+    "area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source",
+    "track", "wbr",
+];

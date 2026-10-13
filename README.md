@@ -145,11 +145,11 @@ Değişikliğe özel test, belge ve güvenlik kapıları [AGENTS.md](AGENTS.md) 
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **744** |
-| Tanı kimliği | **155 etkin + 3 ayrılmış** |
+| Rust + doctest vakası | **771** |
+| Tanı kimliği | **159 etkin + 3 ayrılmış** |
 | RFC | **30** (2 kabul, 25 geçici kabul, 3 taslak) |
-| ADR | **78** (78 kabul) |
-| Normatif spec bölümü | **27** |
+| ADR | **82** (82 kabul) |
+| Normatif spec bölümü | **28** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
 </details>
@@ -164,3 +164,12 @@ Gerçek ürün geçişleri için mevcut parola yüklemi sınırlı legacy bcrypt
 ile oran sınırının kullandığı kanonik IP'yi okur.
 [Kullanım ve güvenlik sınırı](spec/12-web-guvenlik-profili.md) ve
 [ürün kanıtı](dogfood/zee-cekirdek/KOKEN.md) aynı değişikliktedir.
+
+### ürün E özelliklerinin ana kaynak hattı — K-213
+
+[ADR-086](adr/086-site-hatlarinin-birlestirilmesi.md) mevcut ürün E
+parola üretimi/TOTP/SMTP, rota birimi, görünüm, görsel ve gizli değer
+yüzeylerini K-208/K-209 bcrypt/IP ile aynı hatta toplar. Ürün kabulü
+dosya kontrolüyle değil bütün proje `dil dene .` ile alınır. Ham ürün E
+şablonu normal katalog üretimini ister. Exact source/CI kapanışı beklenir;
+canlı dağıtım ve otomatik parola göçü bu işte yapılmaz.

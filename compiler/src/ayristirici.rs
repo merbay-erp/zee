@@ -9,6 +9,7 @@
 mod cumle;
 mod ifade;
 mod kaynak;
+mod kimlik_iletisim;
 mod kurtarma;
 
 use self::ifade::*;
@@ -19,9 +20,10 @@ use crate::agac::{
     Parametre, RotaErisimi, Test, Yapi,
 };
 use crate::intrinsic::{
-    DOSYALARI_LISTELE, DOSYA_ATOMIK_TASI, DOSYA_SHA256, DOSYA_SIL, HTTP_GETIR, PAROLA_DOGRULA,
-    POSTGRESQL_DEGISTIR, POSTGRESQL_OKU, SENSOR_ACIK_MI, WEB_OTURUMLARINI_LISTELE,
-    WEB_OTURUMUNU_IPTAL_ET,
+    DOSYALARI_LISTELE, DOSYA_ATOMIK_TASI, DOSYA_SHA256, DOSYA_SIL, EPOSTA_GONDER,
+    EPOSTA_GONDER_BAGLANTILI, GIZLI_COZ, GIZLI_SIFRELE, GORSEL_KUCULT, HTTP_GETIR, PAROLA_DOGRULA,
+    PAROLA_OZETI, POSTGRESQL_DEGISTIR, POSTGRESQL_OKU, SENSOR_ACIK_MI, TOTP_ANAHTARI, TOTP_DOGRULA,
+    WEB_OTURUMLARINI_LISTELE, WEB_OTURUMUNU_IPTAL_ET,
 };
 use crate::ondalik::Ondalik;
 use crate::sozcukleyici::{Token, TokenTur};
@@ -141,6 +143,9 @@ pub fn kullanilan_birimler(tokenlar: &[Token]) -> Vec<(String, crate::agac::Kull
                     }
                     Some(TokenTur::Kelime(k)) if k == "paketini" => {
                         Some(crate::agac::KullanimTuru::Paket)
+                    }
+                    Some(TokenTur::Kelime(k)) if k == "rotalarını" => {
+                        Some(crate::agac::KullanimTuru::Rota)
                     }
                     _ => None,
                 };

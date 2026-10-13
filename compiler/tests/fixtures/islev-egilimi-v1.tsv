@@ -52,3 +52,9 @@ src/yorumlayici/ifade.rs	degerlendir_async#1	850	1
 src/yorumlayici/io_izi.rs	olay_semasini_denetle#1	149	20
 src/yorumlayici/kaynak.rs	deger_heap_bayti#1	101	8
 src/yorumlayici/web_istek.rs	web_istegini_calistir#1	113	9
+# inceleme: K-213/ADR-086: ürün E import tarayıcısı, görünüm düğüm doğrulayıcısı, sınırları olan görsel adaptörü, CLI dispatcher ve intrinsic değer/sonuç handler'ı yeni sorumluluklarıyla incelendi. Eski taban/eşikler değiştirilmedi; büyüyen load/checker/proje işlevleri helperlara ayrıldı.
+src/ayristirici.rs	kullanilan_birimler#1	46	12
+src/ayristirici/cumle/gorunum.rs	gorunum_dugumu_kur#1	91	2
+src/gorsel.rs	kucult#1	82	2
+src/main.rs	govde#1	82	8
+src/yorumlayici/kimlik_iletisim.rs	intrinsic_degerlendir#1	92	4

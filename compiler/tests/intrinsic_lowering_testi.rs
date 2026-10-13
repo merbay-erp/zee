@@ -26,7 +26,7 @@ fn intrinsic_kaydi_kimlik_yetkinlik_ve_etkiyi_tekillestirir() {
         .map(|tanim| tanim.kimlik)
         .collect::<HashSet<_>>();
     assert_eq!(kimlikler.len(), intrinsic::TANIMLAR.len());
-    assert_eq!(kimlikler.len(), 13);
+    assert_eq!(kimlikler.len(), 21);
 
     let http = intrinsic::tanim(HTTP_GETIR).expect("HTTP kaydı");
     assert_eq!(http.yetkinlik, Yetkinlik::Ag);

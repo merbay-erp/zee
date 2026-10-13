@@ -60,6 +60,7 @@ kalır (ADR-025).
 | S043 | Web güvenlik cümlesi biçimi | Rota önsözünü, oturum açmayı veya kapatmayı tanıda gösterilen tam kalıpla yaz |
 | S044 | Yapılandırılmış hata biçimi/kodu geçersiz | `"DOSYA_YOK" kodlu "Dosya bulunamadı" hatasını döndür`; neden önce, veri sonra yazılır |
 | S045 | Kaynak metni ya da token akışı güvenli profil sınırını aştı | Kaynağı sorumluluğu açık daha küçük birimlere böl |
+| S046 | Görünüm bloğu satırı biçimi geçersiz | Satır `etiket ad değer …`, `"sabit"`, `metin ifade` ya da `ham ifade` olmalı; öznitelikler çift, çocuklar öğe altında (K-212) |
 
 ## A — Ad çözümleme
 
@@ -135,6 +136,7 @@ kalır (ADR-025).
 | T052 | Hata nedeni/verisi yanlış türde ya da yeniden yayma zenginleştiriliyor | Neden `Hata`, veri `Metin sözlüğü` olmalı; zenginleştirmek için yeni kodlu hata ile sar |
 | T053 | Gezilen kaynak koleksiyonun kendisi değiştiriliyor ya da aynı kaynak iç içe geziliyor | Öğeyi döngü adıyla güncelle; ekleme/silmeyi ayrı listede toplayıp gezme bitince uygula |
 | T054 | Program çalışma politikasında açılmayan yetkinliği ya da outbound origin'i kullanıyor | Yetkiyi ve gerekiyorsa tam şema+host+port hedefini `proje.dil` içinde bilinçli olarak bildir |
+| T055 | Görünüm metni/özniteliği Metin (ya da bayrak için Mantıksal) değil | Sayıyı metne çevir; bayrak öznitelik için `doğru`/`yanlış` ver |
 
 ## C — Çalışma zamanı
 
@@ -168,6 +170,8 @@ kalır (ADR-025).
 | C025 | PostgreSQL sorgusu veya değişikliği başarısız | Hatanın `sqlstate`, `kısıt` ve `tablo` verisini incele; sorgu ve parametreyi düzelt. `db.response_frame_limit` için yanıtı küçült; geçersiz transaction’ı temizleyip yeni bir işlem başlat |
 | C026 | PostgreSQL migration veya bağlantı işlemi başarısız | Exact hedefi, `sslmode`, pinned CA ortam değişkenini, havuz kapasitesini ve değişmez migration geçmişini doğrula |
 | C027 | COMMIT sonucu istemci tarafından doğrulanamadı; otomatik tekrar güvenli değil | Aynı write'ı körlemesine tekrarlama. Yeni bağlantıda kararlı iş anahtarıyla sonucu uzlaştır; varsa mevcut sonucu benimse, yoksa ürünün idempotency politikasına göre yeni girişim başlat |
+| C028 | Kriptografi adaptörü parola özeti ya da TOTP anahtarı üretemedi | `kriptografi` yetkinliğini aç; playground üretmez; web'de giriş oran sınırını bekle |
+| C029 | E-posta gönderimi başarısız (SMTP bağlantı/kimlik/alıcı hatası) | `e_posta_bağlantı_değişkeni` ortam değişkenini, `ağ_hedefleri` içindeki smtps:// sunucuyu ve alıcı adresini denetle; `dene` sonucunun hatasını göster |
 
 ## D — Doğrulama
 

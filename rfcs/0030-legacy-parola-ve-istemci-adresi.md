@@ -32,3 +32,7 @@ saklama veya sunucu/ürün dağıtımı bu dil değişikliğine ait değildir.
 Testler: Node bcryptjs vektörleri; üç önek/maliyet/ASCII ve UTF-8 byte sınırı;
 real worker proxy/socket/IPv6/spoofed XFF ve ardışık istek; CLI boş değer,
 eylem etki sınırı, IO replay. Mevcut Argon2 akışı ve handler'lar korunur.
+
+K-213/ADR-086 sonrasında ürün E dalındaki `<parola>nın argon2 özeti`
+üretim yüzeyi ana hatta taşınır. Bu derleyici kapasitesidir; ürünün
+ilk girişte otomatik özet göçü ve oturum bağı kabulü ayrı açık iştir.

@@ -108,3 +108,17 @@ normatif belge eklenerek geçmesini engeller.
 
 Bu alanlar birbirinin yerine geçmez; K-146 faz raporu aralarındaki bağı aynı
 satırda görünür tutar.
+
+### ürün E özelliklerinin ana kaynak hattı — K-213
+
+[ADR-086](../adr/086-site-hatlarinin-birlestirilmesi.md) mevcut ürün E
+parola üretimi/TOTP/SMTP, rota birimi, görünüm, görsel ve gizli değer
+yüzeylerini K-208/K-209 bcrypt/IP ile aynı hatta toplar. Ürün kabulü
+dosya kontrolüyle değil bütün proje `dil dene .` ile alınır. Ham ürün E
+şablonu normal katalog üretimini ister. Exact source/CI kapanışı beklenir;
+canlı dağıtım ve otomatik parola göçü bu işte yapılmaz.
+
+K-213/ADR-086 çok-kaynaklı HIR vakasının aynı dizindeki `.birim` girdileri
+hermetik birim yükleyici tarafından okunur. Birim kaynakları ağ/ürün deposuna
+bağlı değildir. `trace` runtime kipi, kayıt → kanonik şema okuma → replay
+zincirini aynı stdout/exit ve tam tüketimle doğrular.

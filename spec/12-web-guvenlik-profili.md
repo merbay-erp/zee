@@ -47,6 +47,15 @@ Bozuk, desteklenmeyen algoritmalı veya eşleşmeyen özet `yanlış` sonucudur.
 özeti `dil parola-özeti` ile parolayı terminalde göstermeden üretilir;
 otomasyon için açık `--stdin` seçeneği vardır.
 
+K-210/ADR-083 ile PHC özeti dil içinde de üretilir: `parolanın argon2 özeti`
+Argon2id v19 (kitaplık varsayılan parametreleri, CSPRNG tuz) döndürür;
+`kriptografi` yetkinliği ister, web isteğinde giriş oran sınırına tabidir,
+playground'da C028'dir. İki adımlı doğrulama `yeni totp anahtarı` (160 bit
+Base32, CSPRNG) ve `kod gizli anahtarıyla doğrulanıyorsa` (RFC 6238, 30 s adım,
+6 hane, HMAC-SHA1, ±1 adım pencere, sabit zamanlı karşılaştırma) ile kurulur;
+saat adaptörden gelir. Gizli anahtar sunucuda parola özeti gibi saklanır,
+istemciye yalnız kayıt anında otpauth bağlantısı olarak verilir.
+
 Başarılı `oturuma al` cümlesi:
 
 1. varsa anonim veya eski oturumu iptal eder;

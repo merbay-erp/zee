@@ -880,6 +880,8 @@ tamamlanmış sayılmaz; burada istenen ek kanıt ayrıca üretilir.
 | K-189 | **KAPALI** | Native HTML inline scriptleri içerik SHA-256 CSP kaynağına bağlandı; `unsafe-inline` açılmadan dinamik ERP kabuğu çalışır, exact başlık testi ve freeze beyanı vardır. |
 | K-183 | **KAPALI** | ADR-075: bekleyen yazar 5 ms yoklamak yerine yardımcı iş parçacığında bloklayan `flock`/`LockFileEx` ile çekirdek kuyruğuna girer; 5 sn sözü ve C013 aynı. `iki_yazar_satir_kaybetmez` 2×40'a döndü, `kilidi_ardisik_yeniden_alan_yazar_bekleyeni_ac_birakmaz` 120 ardışık ekleme altında tek eklemeyi 2 sn içinde ister; platform katmanı `kalici_dosya/platform.rs` |
 
+| K-210 | **KAPALI** | ADR-083 `dogfood/urun-e`: dördüncü ürün (zee ile ilk müşteri sitesi, adminpanelzee çatalı). legacy panel+ürün E'de tekrar eden dört eksik dile alındı: `parolanın argon2 özeti`, `yeni totp anahtarı` / `kod gizli anahtarıyla doğrulanıyorsa`, `alıcı konu gövde ile ileti göndermeyi dene` (SMTP, geri alınamaz etki, `e_posta_bağlantı_değişkeni`, smtp/smtps ağ hedefi), `kaynak görselini hedef dosyasına N piksele küçültmeyi dene` (`image` crate). K-174 yüzey kaydı ürün sahibi kararıyla güncellendi; C028/C029 tanıları; `urun_e_yetkinlik_testi` 8 test |
+
 ## Önceki kanıt: 2 Eylül 2026 ikinci dış inceleme ayrımı
 
 - **Doğrulandı ve K-129/K-130/K-131/K-132 ile kapandı:** B-025 kaynak/token,
@@ -1243,3 +1245,11 @@ daaa3ea. 742/742 faz, Node crypto ve gerçek HTTP/CLI/trace kabulü,
 167 paket offline vendor ve iki-clone binary eşitliği geçti.
 [Ham kayıt](incelemeler/k208/README.md) yerel macOS kanıtıdır; V1
 usability/RC/signed release ve sunucu dağıtımı değildir.
+
+## K-213 — ürün E ve master kaynak hattının birleştirilmesi
+
+**KISMEN:** K-210/ADR-083, K-211/ADR-084, K-212/ADR-085 ürün E dalından
+commit geçmişi korunarak ana hatta alınır. Beş bütün proje kabulü yeşil;
+source SHA/provenance, tüm depo kapıları ve uzak CI kapanışı beklenir.
+ADR-086 kayıt eşlemesi, HIR/trace regresyonları ve ham ürün E şablonunun
+katalog üretim sınırını taşır. Otomatik parola göçü ve sunucu dağıtımı açık.
