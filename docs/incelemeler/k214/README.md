@@ -59,3 +59,15 @@ kimlik eşlemesindeki inline çağrı, iki mevcut mimari kablo assertion'ını
 bozdu. Exact guard çağrısı çok satırlı adımda korunarak düzeltildi;
 23 mimari vaka, 9 sentetik gizlilik/CI vakası ve 770/770 tam faz tekrar geçti.
 Güvenlik eşiği/fixture gevşetilmedi; final uzak CI sonucu ayrıca izlenir.
+
+[Eski yayımlanmış dal uçları](onceki-dal-uclari.md) ayrıca tarandı: üç
+değiştirilmeyen dalda 261 dal/dosya/satır eşleşmesi (her dalda 87).
+Bu önceki geçişler kaynak tabanındaki 84 konumdan ayrı dökümdür; yeni
+hash istisnası eklenmedi. Tüm deponun geçmişten arındığı iddia edilmez.
+Eski dallar kullanıcı kararıyla temizlenmeden ve GitHub cache/PR refs
+teyidi gelmeden yeniden açılış hazır sayılmaz.
+
+Windows ilk ddf8b88 fazında Python'ın genel `bash` seçimi Git Bash yerine
+başka runtime'ı çağırdı. Sentetik CI hazırlık testi Windows'ta kurulu Git'in
+Git Bash executable'ını ve ileri eğik çizgili yolları açıkça seçer; ret eşiği
+ve gerçek kapı davranışı değişmez. Linux/macOS/tedarik aynı kaynakta geçti.
