@@ -1,6 +1,6 @@
-# K-206 erken mesaj sınırı kabul tasarımı
+# K-206 mesaj sınırı: aday geçmişi ve native entegrasyon
 
-**ETKİN DEĞİL.** `backend.patch` üretimde seçilen immutable protokol
+**Tarihsel aday kaydı (c68af0f).** `backend.patch` dosyası üretimde seçilen immutable protokol
 kaynağını değiştirmez. Compiler/fuzz lock, v2 yama kaydı ve release SBOM
 hâlâ c4e9d036'nın değiştirilmemiş upstream kodunu seçer. GB-041 açık,
 K-206 kısmi kalır. Bu dizin, bir sonraki security entegrasyonunun
@@ -99,3 +99,23 @@ wire entegrasyonu kanıtı değildir. GB-041 açık; aday üretimde etkin değil
 Hazırlık kopyası .2 guard taşımak üzere güncellendiğinde `verify.py`
 patch tabanını exact c4e9d036 Git bloblarından yeniden oluşturur; güncel
 hazırlık ağacını upstream sanmaz. Aktif pin taşınana kadar üretim .1 kalır.
+
+## Etkin Zee entegrasyonu
+
+Compiler/fuzz artık exact `1ffdb5846ef1f5022bbf3c695d6c70abcde85364`
+Git kaynağından .2 protokolünü seçer; v2 tree hash
+`dcddfbcde306fcf096dc0785c2ffa6338ef14ae63eaf624ce3eb783d851f08f5`tir.
+C025 typed hata verisi ve geçersiz transaction cleanup uygulanmıştır.
+`zee-native-driver.py` gerçek root adaptörünün 13 testini, eski stream
+oracle dahil, çalıştırır. Volatile sunucu sequence'i read'in bir kez
+çalıştığını denetler; Notice/write, nested/RLS cleanup ve gönderilmiş
+COMMIT belirsizliği ayrıca kapsanır. Opt-in env olmadan CI bu iki native
+saha testinde bağlantı kurmaz; ayrı izole koşu ham kanıtı gereklidir.
+
+`zee-probe-Cargo.*`, önceki native RSS probe kaynak byte'larını koruyup
+yeni Git patch'i standalone tüketiciye açıkça bağlar. Root patch'i
+tüketici manifestine miras kalıyor diye varsayılmaz. `zee-rss-driver.py`
+aynı 1×1 MiB, 64×1 MiB, 1×64 MiB vakalarını ölçer. Ham exact temiz
+source/native/RSS/release kapanışı takip eden committe kaydedilir.
+İlk bölümdeki etkin değil ifadesi eski adayın tarihidir; güncel pin
+üretim kaynak kodunda etkindir. Dağıtım/RC etiketi yayımlanmaz.

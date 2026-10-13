@@ -233,6 +233,7 @@ dependencies = [
  "num-traits",
  "postgres",
  "postgres-native-tls",
+ "postgres-protocol",
  "r2d2",
  "r2d2_postgres",
  "rpassword",
@@ -741,8 +742,8 @@ dependencies = [
 
 [[package]]
 name = "postgres-protocol"
-version = "0.6.12+zee.1"
-source = "git+https://github.com/merbay-erp/zee?rev=f2d40d21766674698f656851aacde3007d72334f#f2d40d21766674698f656851aacde3007d72334f"
+version = "0.6.12+zee.2"
+source = "git+https://github.com/merbay-erp/zee?rev=a4d7f208bc1bf01255f5ae9a16ebb97a74ff0d84#a4d7f208bc1bf01255f5ae9a16ebb97a74ff0d84"
 dependencies = [
  "base64 0.22.1",
  "byteorder",

@@ -1,6 +1,7 @@
 # zee-dil-yuzeyi-1
 # yuzey	oge	durum	giris	kaynak	kayit
 abi	wasm	aktif	0.8.0-dev	compiler/src/wasm_api/abi.rs	pub const DIL_ABI_SURUMU: u32 = 3;
+api	db.response_frame_limit	aktif	0.8.0-dev	compiler/src/postgresql.rs	"db.response_frame_limit"
 api	rust	aktif	0.8.0-dev	compiler/src/api.rs	pub mod v1 {
 bicim	proje.kilit	aktif	0.8.0-dev	compiler/src/paket.rs	kilit_sürümü 3
 bicim	yayin-zarfi	aktif	0.8.0-dev	compiler/src/artefakt_dogrulama.rs	const IMZA_ALANI: &[u8] = b"zee-yayin-v1\0";

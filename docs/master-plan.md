@@ -1111,3 +1111,11 @@ K-206 aday protokol kabulü clean c68af0f üzerinde kapandı: iki parser'da
 yazısının kalıcı olmaması doğrulandı. Ham JSON/log [kayıttadır](incelemeler/k206/frame-guard/README.md).
 Bu yalnız adayın kabulüdür; aktif pin, Zee session/retry/RLS cleanup
 entegrasyonu ve GB-041 açık kalır. Compiler fazı 735/735 geçti.
+
+K-206 wire entegrasyonu: compiler/fuzz protokolü exact 1ffdb584 .2 kaynağına
+pinlidir. İki parser'da 32 MiB length reddi, typed C025 verisi, read retry
+engeli ve geçersiz transaction/request-local cleanup uygulanır. Gönderilmiş
+COMMIT sonrası bağlantı kaybı C027 olarak korunur. Native loopback kabulü
+okuma, büyük Notice üreten write, nested/RLS ve deferred COMMIT'i kapsar.
+GB-041 bu kaynakta uygulandı; exact temiz kaynak, vendor/iki-clone ve
+sürekli kapı kabulü henüz beklenir. Global RSS sözü verilmez.

@@ -74,10 +74,10 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | spec/22-deterministik-io-profili.md | 4 | 1 | 0 | 5 | 80 |
 | spec/23-yetkinlik-ve-outbound-guvenligi.md | 10 | 0 | 0 | 10 | 100 |
 | spec/24-kaynak-guvenlik-profili.md | 6 | 1 | 0 | 7 | 85 |
-| spec/25-postgresql-veri-erisimi.md | 4 | 2 | 1 | 7 | 57 |
+| spec/25-postgresql-veri-erisimi.md | 5 | 2 | 1 | 8 | 62 |
 | spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md | 2 | 0 | 0 | 2 | 100 |
 | spec/27-uyumluluk-ve-surumleme.md | 7 | 2 | 1 | 10 | 70 |
-| **Toplam** | 157 | 13 | 2 | 172 | 91 |
+| **Toplam** | 158 | 13 | 2 | 173 | 91 |
 
 ## Dogfood ürünleri ve korpusu
 
