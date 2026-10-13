@@ -275,3 +275,16 @@ K-201 verbose Cargo/cc çıktısı ve native araç kimliği sorguları derleme
 I/O ve gözlem maliyetini artırır; runtime profili/sabit iş yükü değişmez.
 ADR-045/049 ve tarihçe etkisi incelendi; exact clean makine/sample/warmup
 ölçümü olmadan benchmark baseline veya izlenen tarihçe satırı yazılmadı.
+
+## K-207 ad çözümleme optimizasyonu — ölçüm açık
+
+Başarılı ad çözümlemesinde bütün sembol tablosunun clone/sort maliyeti
+hash üyeliği sorgusuna taşındı. Tanımlı ad listesi A001 için lazy, A002
+adayları sıralı/tekildir; exact-ad önceliği ve bütün gözlem alanları korunur.
+26.624 oracle karşılaştırması, golden/morfoloji/LSP/katman/çevrim geçti.
+ADR-045/049 ve performans tarihçesi etkisi incelendi. Taban 29be85b için
+ayrı temiz checkout'ta release/25 sample/2 warmup aynı ölçek iş yükü
+tamamlandı: 20k p95 22.169,906 ms. Exact sonrası kaynak ölçümü
+bekleniyor. İzlenen
+tarihçeye henüz yeni baseline yazılmadı; shared yerel masaüstü gözlemsel,
+hard eşik yok. Cache/persistent state eklenmedi; full didChange sürer.

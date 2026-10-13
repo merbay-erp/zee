@@ -1096,3 +1096,31 @@ K-202 beyan sonrası bayat kanıt özeti yeniden üretildi; kaynak beyanı
 47, core freeze beyanı 43 oldu. ADR-066/GB-040.
 K-203 ve ADR-081 site PR #6'ya ayrılmıştır; GB-038 çakışması birleşme
 sırasında ikinci dalda ardışık kayıt+türetilen belge güncellemesi ister.
+
+### K-205 — 27 maddelik dış inceleme ve adversarial kanıt eşlemesi
+
+**KISMEN — ilk kaynak/karar/test eşlemesi hazır; hedefli denetim sürüyor.**
+[13 Ekim eşleme tablosu](dis-inceleme-2026-10-13.md) ZEE-001..027 için
+gerçek özellik eksikliği, bilinçli sınır, tarihsel ölçüm ve henüz
+doğrulanmamış riski ayırır. Yazarın önerdiği öncelikler resmi sıra
+yerine geçirilmedi. Kontroller varlığı bütün saldırı yollarının kapandığı
+anlamına gelmez. Yeni güvenlik bulgusu reproducer/etki/GB kaydı ister.
+
+### K-206 — PostgreSQL sonuç belleği ve hata matrisi incelemesi
+
+**AÇIK — query_typed Vec toplaması kaynakta doğrulandı; gerçek RSS
+reproducer ve streaming/transaction kabul testi beklenir.**
+16 MiB uygulama sonucu driver/wire bellek sınırı diye sunulamaz. İzole
+sunucu ve özel geçici veriyle çok satır, tek büyük satır, timeout, retry,
+transaction/savepoint ve sonraki bağlantı sağlığı birlikte ölçülür.
+Mevcut veritabanlarına müdahale edilmez; ZEE-016/ZEE-018.
+
+### K-207 — Ad çözümleme maliyeti ve büyük dosya LSP
+
+**AÇIK — temiz exact taban ölçümü başlatıldı; uyumlu optimizasyon ve
+aynı iş yükünde sonrası ölçümü beklenir.**
+Ad çözümleme her başvuruda bütün adları clone/sort ediyor. Exact-ad
+önceliği ve morfoloji kök eşlemeleri hash üyeliğiyle sorgulanabilir;
+A001/A002 tam mesaj/span/öneri ve sıralama korunmalıdır. Dil yüzeyi,
+cache/persistent state ya da incremental parser eklenmez. K-154/ADR-013
+ve ADR-045/049 etkisi birlikte incelenir; 20k <1 sn yalnız hedeftir.

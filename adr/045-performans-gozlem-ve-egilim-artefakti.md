@@ -66,3 +66,8 @@ gibi sunmak da yanlış güven üretir.
   mimarisi denetimini ayrı kapı olarak tamamlamıştır.
 - K-152 sayısal K-148 tabanını değiştirmeden exact kaynak commit'ine bağladı;
   RSS satırının tek süreç-tepe görüntüsü olduğu ADR-049 ile görünürdür.
+
+K-207 ad çözümleme maliyetini azaltır; sabit 2k/5k/10k/20k iş yükü ve
+gerçek sample/warmup semantiği değişmez. Taban ve sonrası ayrı temiz exact
+commit, aynı makine/araç zinciri/release profile ile ölçülür; yerel paylaşılmış
+masaüstü gözlemidir. Raw sample/hash/çevre olmadan yeni tarihçe yazılmaz.

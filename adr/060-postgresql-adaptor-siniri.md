@@ -74,3 +74,11 @@ TLS/pool ADR-062 ile kapanır; multi-process toplam bütçe deployment
 sorumluluğudur. Binary medya, fiziksel
 silme ve orphan tarama F030/RFC-0027/ADR-061 ile ayrı sahiplikte kanıtlandı;
 PostgreSQL katmanı dağıtık transaction sözü kazanmadı.
+
+## K-206 sonuç belleği incelemesi
+
+[13 Ekim ölçümü](../docs/dis-inceleme-2026-10-13.md) eager Vec toplama
+ve büyük satır String kopyasını doğruladı; 16 MiB uygulama sonucu tüm
+driver/wire tahsislerinin tavanı değildir. GB-041 orta/açık, hedef K-206.
+Row-wise toplama yalnız normal çıktı, hata önceliği, retry ve transaction/
+bağlantı sağlığı korunarak değerlendirilecektir; yeni typed API eklenmedi.

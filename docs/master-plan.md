@@ -1047,3 +1047,13 @@ K-204: sır taramasının dört kamuya açık belge yanlış pozitifine yalnız
 immutable fingerprint/kaynak satırı hash doğrulaması uygulandı; yeni
 anahtar exit 1/REDACTED testi, default kurallar ve iki tarama korunur.
 K-202 beyan sonrası türetilen kanıt özeti yenilendi.
+
+13 Ekim [dış inceleme eşlemesi](dis-inceleme-2026-10-13.md) K-205 olarak
+izlenir. PostgreSQL ön-limit sonuç toplama K-206, ad çözümleme/LSP maliyeti
+K-207 dilimidir; gerçek kullanıcı kanıtı ve core freeze sınırı sürer.
+
+K-207 başarılı ad çözümlemesini hash üyeliğine taşıdı; full ad listesi
+yalnız A001 önerisinde üretilir, A002 ve exact-ad kararı değişmez. Oracle
+26.624 karar, golden/morfoloji/LSP ve mimari kapıları geçti; exact önce/
+sonra performans kanıtı açık. K-206 PG sonucu bellek deneyi GB-041 olarak
+orta/açık kaydedildi; 16 MiB sonuç bütün driver belleği tavanı değildir.

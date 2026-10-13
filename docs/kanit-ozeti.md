@@ -38,11 +38,11 @@ Kaynak: `docs/guvenlik-bulgulari-v1.tsv`
 | --- | --- | --- | --- | --- |
 | kritik | 1 | 0 | 0 | 1 |
 | yuksek | 12 | 0 | 0 | 12 |
-| orta | 13 | 3 | 1 | 17 |
+| orta | 13 | 3 | 2 | 18 |
 | dusuk | 9 | 1 | 0 | 10 |
 
 Kapı: açık kritik/yüksek bulgu 0 → **GEÇTİ** (ADR-066 sürekli kapı koşulu).
-Toplam bulgu: 40.
+Toplam bulgu: 41.
 
 ## Spec maddeleri
 
