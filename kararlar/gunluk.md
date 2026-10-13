@@ -4015,3 +4015,9 @@ SHA beyanlarını yenilemeyi istedi. Ürün kökeni özel depoda, açık kanıt 
 yeni/kopyalanmış/değiştirilmiş satıra genişletmez. Önceki geçişler ayrı
 karar, yeniden açılış kullanıcı onayı, PR refs temizliği GitHub destek teyidi
 bekler; test ve tedarik sonuçları K-214 kaydında kapanır.
+
+K-214 makine kapanışı: 290fa52 exact kod kaynağında Linux/macOS/Windows,
+tedarik, sır ve gizlilik altı kontrolü geçti. Anonim tarihçe kontrollü
+force push ile ana depoya, aynı HEAD özel aynaya gitti. Önceki geçiş
+dökümleri ve destek taslağı teslim edilir; GB-046 dış teyit bekler,
+depo kullanıcı onayı olmadan açılmaz.

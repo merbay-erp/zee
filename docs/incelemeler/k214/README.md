@@ -75,3 +75,21 @@ ve gerçek kapı davranışı değişmez. Linux/macOS/tedarik aynı kaynakta ge�
 Windows Git executable'ı cmd/bin/mingw64 dizinlerinden bulunabilir. Git Bash
 aynı kurulumun üst dizinlerinde aranır; System32/WSL seçilmez. Üç düzen ve
 eksik Bash ret testi eklendi: 10 sentetik kapı/CI testi yerelde geçti.
+
+## Makine dilimi kapanışı
+
+**KAPALI:** anonim içerik ve Git geçmişi, 51 source kimliği eşlemesi,
+source beyanları/regression sahipleri, PR #5/#7 metinleri ve CI kapısı
+tamamlandı. Merbay ana kaynak; Enterprise aynı commit'in özel aynası ve
+Actions kapalıdır. PR #6 kaynak dalının devraldığı tarihçe de anonimleştirildi.
+
+Test/kod kaynağı `290fa52ec28c65ad5ce445fd663374dd5ddbcdd7` için
+[altı uzak kontrolün tamamı geçti](ci-290fa52.json): Linux/macOS/Windows,
+Rust tedarik, Gitleaks ve açık depo kapısı. Koşular 38417531795,
+38417532301, 38417532272. Yerelde 770/770 faz ve 10 sentetik kapı
+testi geçti. Önceki kablo/Bash hataları tarihsel kayıt olarak yukarıdadır.
+
+**AÇIK:** önceki 84 ana-dal konumu ve üç eski dalda 261 dal/dosya/satır
+eşleşmesi kullanıcı kararı bekler; bunlar anonimleşti diye sunulmaz.
+GitHub PR refs/önbellek temizliği destek teyidi bekler (GB-046).
+Depo gizlidir; yeniden açmak için ayrıca kullanıcı onayı alınır.
