@@ -58,3 +58,20 @@ gate ve sıfır açık kritik/yüksek kuralı istedi.
 - Yeni güvenlik düzeltmesi aynı committe kayıt satırını `kapali` yapar; yeni
   bulgu önce `acik` girilir. Kritik/yüksek açık bulgu CI'ı ve sürümü durdurur.
 - Kapı bakım/işletim aracıdır; dil semantiği ve tanılar değişmez.
+
+## K-204 — Immutable sır taraması yanlış pozitifleri
+
+8d39c17 kaynak commit'inde dört belge satırındaki kamuya açık SBOM ve
+provenance terimleri generic-api-key kuralıyla yanlış eşleşti.
+[Exact kayıt](../docs/sir-yanlis-pozitif-v1.tsv) yalnız commit/dosya/kural/satır
+fingerprintlerini, kaynak satırı SHA-256'sını ve gerekçeyi taşır.
+`scripts/sir-yanlis-pozitif-denetle.py` immutable Git blob satırını doğrulamadan
+scanner ignore dosyası üretmez; bozuk kayıt, tekrar, wildcard ve bayat hash
+reddedilir. Kaynak satırı yeni belgelerde yeniden ifade edildi.
+
+Default Gitleaks kuralları, --redact ve --ignore-gitleaks-allow korunur.
+Kayıt bütün dosyayı/dizini/kuralı veya gelecek commit'i hariç tutmaz. Geçmiş
+ve çalışma ağacı taraması geçti; runtime üretilen sentetik anahtar hâlâ
+generic-api-key bulgusu ile exit 1 verir ve çıktı REDACTED'dır. Dört
+Python ret/pozitif test CI sır-taraması işinde Gitleaks kurulduktan sonra
+koşar. Gerçek sır döndürme/kaldırma süreci SECURITY politikasında değişmez.

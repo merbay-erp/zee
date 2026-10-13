@@ -1058,7 +1058,7 @@ ADR-068/GB-037.
 
 ### K-201 — Native build-script araç çağrıları (K-192 dilimi)
 
-**AÇIK — kayıt ve ret testleri hazır; exact üç platform release kanıtı beklenir.**
+**KAPALI — exact üç platform iki-klon release kanıtı depoda.**
 Release iki temiz klonda `cargo build -vv` ve `CC_ENABLE_DEBUG_OUTPUT=1`
 ile locked cc 1.4.4 driver komutlarını toplar. C compile ve archive çağrısı
 ikisinde de bulunmadan artefakt yayımlanmaz. Her çağrı paket sahibi,
@@ -1078,3 +1078,21 @@ Enterprise repository Actions enabled=false, aktif koşu yok. SBOM ve
 provenance aynı exact kaynak SHA ile merbay URI kullanır; eski run/job
 kanıtları tarihsel olarak korunur. Metadata regresyonu yeni kaynağı
 birebir denetler; compiler dil semantiği değişmez. ADR-068/GB-039.
+
+K-201 kapanma: [merbay run 38349601833](https://github.com/merbay-erp/zee/actions/runs/38349601833),
+exact 25b6882; Linux a/b 41'er, macOS a/b 36'şar cc driver çağrısı.
+MSVC cl/lib FileVersionInfo ve Linux gcc/ar sürüm/hash kayıtları kalıcı;
+Apple ar sürüm sorgusu unavailable olarak korunur. Bu dar cc driver
+kapsamında kapandı; tam native subprocess ve minimum OS K-192'de açıktır.
+
+### K-204 — Sır taraması tarihsel yanlış pozitif doğruluğu
+
+**KAPALI — exact geçmiş satırları ve yeni anahtar reddi doğrulandı.**
+K-202 kamuya açık belge ifadesi dört generic-api-key eşleşmesi üretti.
+Immutable commit/dosya/kural/satır + kaynak SHA-256 kayıt doğrulaması,
+bozuk/wildcard/tekrar/bayat hash retleri ve sentetik anahtar exit 1 testi
+eklendi. Geçmiş/çalışma ağacı taraması temizdir; geniş allowlist yoktur.
+K-202 beyan sonrası bayat kanıt özeti yeniden üretildi; kaynak beyanı
+47, core freeze beyanı 43 oldu. ADR-066/GB-040.
+K-203 ve ADR-081 site PR #6'ya ayrılmıştır; GB-038 çakışması birleşme
+sırasında ikinci dalda ardışık kayıt+türetilen belge güncellemesi ister.

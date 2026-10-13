@@ -203,6 +203,24 @@ fn guvenlik_kapisi_betigi_ci_ve_surum_adayi_adimlarini_tasir() {
     }
     let tedarik = oku(".github/workflows/tedarik.yml");
     assert!(tedarik.contains("bash scripts/guvenlik-kapisi.sh --surekli"));
+    assert!(tedarik.contains("python3 scripts/tests/sir-yanlis-pozitif-test.py"));
+    let scanner = oku("scripts/sir-taramasi.sh");
+    assert!(scanner.contains("--ignore-gitleaks-allow"));
+    assert!(scanner.contains("sir-yanlis-pozitif-denetle.py"));
+    let records = oku("docs/sir-yanlis-pozitif-v1.tsv");
+    let rows = records
+        .lines()
+        .filter(|line| !line.starts_with('#') && !line.is_empty())
+        .collect::<Vec<_>>();
+    assert_eq!(rows.len(), 4);
+    for row in rows {
+        let fields = row.split('\t').collect::<Vec<_>>();
+        assert_eq!(fields.len(), 3);
+        assert!(fields[0].starts_with("8d39c17c3df92c31482a87eb170d099977dc0d5b:"));
+        assert!(fields[0].contains(":generic-api-key:"));
+        assert_eq!(fields[1].len(), 64);
+        assert!(fields[2].starts_with("K-204:") && fields[2].chars().count() >= 40);
+    }
     let politika = oku("SECURITY.md");
     for anahtar in [
         "docs/guvenlik-bulgulari-v1.tsv",

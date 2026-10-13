@@ -1,0 +1,6 @@
+# zee-sir-yanlis-pozitif-1
+# fingerprint	source_line_sha256	gerekce
+8d39c17c3df92c31482a87eb170d099977dc0d5b:adr/068-tekrar-uretilebilir-surum.md:generic-api-key:257	1a5de4f2815f2b630d864b168a59db5646020f1e6831be9b5cc01b03cae6d05d	K-204: Kamuya açık SBOM/provenance belge ifadesi generic-api-key kuralıyla yanlış eşleşti; gerçek anahtar veya kimlik bilgisi değildir.
+8d39c17c3df92c31482a87eb170d099977dc0d5b:docs/derleme-ve-bagimliliklar.md:generic-api-key:525	1a5de4f2815f2b630d864b168a59db5646020f1e6831be9b5cc01b03cae6d05d	K-204: Kamuya açık SBOM/provenance belge ifadesi generic-api-key kuralıyla yanlış eşleşti; gerçek anahtar veya kimlik bilgisi değildir.
+8d39c17c3df92c31482a87eb170d099977dc0d5b:docs/tedarik-zinciri.md:generic-api-key:141	1a5de4f2815f2b630d864b168a59db5646020f1e6831be9b5cc01b03cae6d05d	K-204: Kamuya açık SBOM/provenance belge ifadesi generic-api-key kuralıyla yanlış eşleşti; gerçek anahtar veya kimlik bilgisi değildir.
+8d39c17c3df92c31482a87eb170d099977dc0d5b:docs/tekrar-uretilebilir-surum.md:generic-api-key:82	1a5de4f2815f2b630d864b168a59db5646020f1e6831be9b5cc01b03cae6d05d	K-204: Kamuya açık SBOM/provenance belge ifadesi generic-api-key kuralıyla yanlış eşleşti; gerçek anahtar veya kimlik bilgisi değildir.

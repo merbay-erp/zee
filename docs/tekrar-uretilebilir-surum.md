@@ -79,7 +79,7 @@ permissions `enabled=false` olarak API üzerinden doğrulandı. O anda
 SBOM/provenance kaynak URI değeri yeni ana depoya bağlanır; aynı exact
 Git SHA her iki depoda erişilebilir olmalıdır. Önceki itwise koşu bağlantısı
 ve ham fixture kaydı tarihsel kanıttır, yeniden adlandırılmaz. Dil semantiği,
-ABI/API, SBOM/provenance şeması ve release dosya kümesi değişmez.
+ABI ve public API sözleşmesi, SBOM, provenance şeması ve release dosya kümesi değişmez.
 Git `origin` merbay-erp, `enterprise-mirror` itwise-bilisim olarak adlandırılır.
 Aynadaki PR #9 eski çalışma kaydıdır; bundan sonraki işler/koşular ana
 depoda takip edilir. Kaynak testleri ve beyanları K-202 kapsamında güncellenir.

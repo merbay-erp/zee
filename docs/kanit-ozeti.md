@@ -39,10 +39,10 @@ Kaynak: `docs/guvenlik-bulgulari-v1.tsv`
 | kritik | 1 | 0 | 0 | 1 |
 | yuksek | 12 | 0 | 0 | 12 |
 | orta | 13 | 3 | 1 | 17 |
-| dusuk | 8 | 1 | 0 | 9 |
+| dusuk | 9 | 1 | 0 | 10 |
 
 Kapı: açık kritik/yüksek bulgu 0 → **GEÇTİ** (ADR-066 sürekli kapı koşulu).
-Toplam bulgu: 39.
+Toplam bulgu: 40.
 
 ## Spec maddeleri
 
@@ -130,7 +130,7 @@ Kaynak: `docs/compiler-degisiklik-beyanlari-v1.tsv + docs/core-freeze-beyanlari-
 
 | Değişiklik sınıfı | Beyan |
 | --- | --- |
-| maintenance | 24 |
+| maintenance | 25 |
 | semantic-bugfix | 3 |
 | semantic-change | 19 |
 
@@ -138,7 +138,7 @@ Kaynak: `docs/compiler-degisiklik-beyanlari-v1.tsv + docs/core-freeze-beyanlari-
 | --- | --- |
 | correctness | 11 |
 | dogfood-change | 8 |
-| maintenance | 21 |
+| maintenance | 22 |
 | security | 2 |
 
-Toplam: 46 compiler değişiklik beyanı, 42 core freeze beyanı.
+Toplam: 47 compiler değişiklik beyanı, 43 core freeze beyanı.
