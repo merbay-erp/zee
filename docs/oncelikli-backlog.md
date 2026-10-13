@@ -1316,11 +1316,11 @@ Dal yedekleri özel; uzak silme ve CI teyidi henüz açıktır.
 
 ## K-218 — Oran sınırı sıcak yolunu kalıcı dosyadan ayır
 
-Durum: **AÇIK, ürün talebi §3 birinci öncelik**. Sayaçların bellek içi/
+Durum: **GERÇEKLEME + YEREL ÜRÜN KABULÜ TAMAM; uzak tedarik/Windows CI AÇIK**. Sayaçların bellek içi/
 PostgreSQL durumu; açık süreç sınırı, oturum/revoke korunumu, atomiklik,
 boyut/expiry ve gerçek performans kanıtı aynı dilimde ele alınır.
 
 K-218 kabul dilimi: gerçek zee-cekirdek 100 kartlık yük reproducer'ı, explicit
 CLI bellek backend'i, atomik/süre/kapasite/iki-süreç testleri ve ADR-089/RFC-0031.
-Exact soak ve ölçüm kanıtı gelmeden kapanmış sayılmaz. §3/2 doluluk/kota,
+Exact 1800 sn soak ve gerçek ürün yük kabulü [K-218 kanıtında](incelemeler/k218/README.md); uzak CI tamamlanmadan tam platform kapanışı verilmez. §3/2 doluluk/kota,
 §3/3 HTTP POST, §3/4 HTML temizleyici ve §3/5 LSP artımlılık açık kalır.

@@ -1,0 +1,41 @@
+{
+  "binary_sha256": "d99990e15c7b34b2cfd9c25a9a1e5c1594bdf1b28426d72ed7d2bdfb85303de5",
+  "mode": "deneysel",
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "workload_sha256": "b69c2b205dce532351b7928bb0e4cbba853003253359e3cfff326585fa40fe09",
+  "runs": [
+    {
+      "args": [
+        "yuk.py",
+        300,
+        1,
+        "65171"
+      ],
+      "elapsed_seconds": 0.2340112499659881,
+      "stdout": "N=300 C=1 süre=0.18s  istek/sn=1632  p50=0.6ms p95=0.7ms p99=1.1ms  durumlar={200: 300}\n",
+      "state_bytes": 0
+    },
+    {
+      "args": [
+        "yuk.py",
+        1000,
+        10,
+        "65171"
+      ],
+      "elapsed_seconds": 0.39206824998836964,
+      "stdout": "N=1000 C=10 süre=0.35s  istek/sn=2876  p50=3.4ms p95=3.7ms p99=5.9ms  durumlar={200: 1000}\n",
+      "state_bytes": 0
+    }
+  ],
+  "source_commit": "fef5e989c0a72db220f4641e45fcf5ac52dbd8ca",
+  "cpu": "Apple M4 Pro",
+  "ram_bytes": 25769803776,
+  "os": "macOS 26.6.2 (25G83)",
+  "rustc": "1.93.1 (01f6ddf75 2026-02-11)",
+  "build": "cargo build --locked --release --bin dil",
+  "samples_per_scenario": 1,
+  "warmup_requests": 0,
+  "measurement_kind": "local-observation-no-hard-threshold",
+  "program_origin_commit": "1b002e09c3c3fa38d8e88c2d82669618d99cd762",
+  "program_header_comment_removed": false
+}

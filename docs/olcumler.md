@@ -342,3 +342,10 @@ ortak proxy kotası gerekir. Soak sürücüsü her dönemde 32768 anahtar
 doldurup süre dolumuyla temizler; yeni tampon derleyici RSS'ine dahildir.
 Sabit benchmark korpusu ve eski performans tarihçesi değiştirilmedi.
 Katman sahibi web_guvenligi'dir; bin_soak bu sahibe tek ileri kenar ekler.
+
+K-218 yerel kabul: temiz exact 4e351d34de861425c8a35b6ad1ddda6cd3e42707
+kaynağında tek worker 2638, iki worker 5079 istek/sn; aynı betikte eski
+master boşta 54/54. M4 Pro/24 GiB/macOS26.6.2/Rust1.93.1/release, tek
+tur/sıfır ısınma gözlemidir; yeni hard eşik/taban değildir. 1800 sn soak
+32.768 anahtar çevrimini de kapsadı, iki süreç RSS büyümesi %0.
+[Ham kanıt ve sınırlar](incelemeler/k218/README.md).
