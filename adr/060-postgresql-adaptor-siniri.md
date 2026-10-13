@@ -112,3 +112,9 @@ K-206 akış toplama dilimi kapalı: source f2ba654, temiz beyan/ölçüm
 136,77→72,72 MiB; üç vakada sonraki sorgu başarılıdır. Bir örnek/sıfır
 ısınma gözlemi, genel RSS garantisi değildir. [Ham kanıt](../docs/incelemeler/k206/README.md).
 **K-206 KISMEN:** tek wire satırı/driver sınırı ve GB-041 açık kalır.
+
+K-206 erken header kabul tasarımı: iki ayrı backend parser'ı kapsayan
+typed 32 MiB aday yama bağımsız geçici crate'te 34/34 testle doğrulandı.
+Aktif dependency pin değişmedi; üretimde mesaj sınırı etkin değildir.
+Transaction durum temizliği, read retry engeli ve exact immutable kaynak
+entegrasyonu açık; GB-041 kapatılmadı. [Kabul tasarımı](../docs/incelemeler/k206/frame-guard/README.md).

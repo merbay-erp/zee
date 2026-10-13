@@ -1199,3 +1199,9 @@ ikili üretimi ab8e97e. 735/735 faz, git pin/blob/tree SBOM, offline vendor
 kabulüdür; [ham kanıt](incelemeler/k206/source-identity/README.md).
 Path kaynaklı başarısız iki-clone koşusu da saklanır. Protokol src byte'ları
 upstream ile aynıdır; GB-041/32 MiB erken wire guard hâlâ açık kalır.
+
+K-206 erken header kabul tasarımı: iki ayrı backend parser'ı kapsayan
+typed 32 MiB aday yama bağımsız geçici crate'te 34/34 testle doğrulandı.
+Aktif dependency pin değişmedi; üretimde mesaj sınırı etkin değildir.
+Transaction durum temizliği, read retry engeli ve exact immutable kaynak
+entegrasyonu açık; GB-041 kapatılmadı. [Kabul tasarımı](incelemeler/k206/frame-guard/README.md).
