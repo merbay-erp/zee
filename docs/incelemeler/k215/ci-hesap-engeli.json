@@ -1,0 +1,97 @@
+{
+  "schema": "zee-ci-hesap-engeli-1",
+  "source_commit": "1f61e51ca56c324a914c8f796940d8b982aee3a3",
+  "observed_at_utc": "2026-10-13T18:34:49.668795+00:00",
+  "reason_code": "account-billing-or-spending-limit",
+  "jobs_started": 0,
+  "jobs_failed_before_start": 6,
+  "runner_tests_executed": false,
+  "runs": [
+    {
+      "id": 38447052318,
+      "url": "https://github.com/merbay-erp/zee/actions/runs/38447052318",
+      "jobs": [
+        {
+          "id": 115468063696,
+          "name": "test (windows-latest)",
+          "status": "completed",
+          "conclusion": "failure",
+          "steps_count": 0
+        },
+        {
+          "id": 115468063965,
+          "name": "test (macos-latest)",
+          "status": "completed",
+          "conclusion": "failure",
+          "steps_count": 0
+        },
+        {
+          "id": 115468064062,
+          "name": "test (ubuntu-latest)",
+          "status": "completed",
+          "conclusion": "failure",
+          "steps_count": 0
+        }
+      ]
+    },
+    {
+      "id": 38447052424,
+      "url": "https://github.com/merbay-erp/zee/actions/runs/38447052424",
+      "jobs": [
+        {
+          "id": 115468063408,
+          "name": "sir-taramasi",
+          "status": "completed",
+          "conclusion": "failure",
+          "steps_count": 0
+        },
+        {
+          "id": 115468063650,
+          "name": "rust-bagimliliklari",
+          "status": "completed",
+          "conclusion": "failure",
+          "steps_count": 0
+        }
+      ]
+    },
+    {
+      "id": 38447052296,
+      "url": "https://github.com/merbay-erp/zee/actions/runs/38447052296",
+      "jobs": [
+        {
+          "id": 115468063791,
+          "name": "urun-gizliligi",
+          "status": "completed",
+          "conclusion": "failure",
+          "steps_count": 0
+        }
+      ]
+    }
+  ],
+  "check_annotations": [
+    {
+      "check_id": 115468064062,
+      "failure": "The job was not started because recent account payments have failed or your spending limit needs to be increased. Please check the 'Billing & plans' section in your settings"
+    },
+    {
+      "check_id": 115468063965,
+      "failure": "The job was not started because recent account payments have failed or your spending limit needs to be increased. Please check the 'Billing & plans' section in your settings"
+    },
+    {
+      "check_id": 115468063696,
+      "failure": "The job was not started because recent account payments have failed or your spending limit needs to be increased. Please check the 'Billing & plans' section in your settings"
+    },
+    {
+      "check_id": 115468063791,
+      "failure": "The job was not started because recent account payments have failed or your spending limit needs to be increased. Please check the 'Billing & plans' section in your settings"
+    },
+    {
+      "check_id": 115468063650,
+      "failure": "The job was not started because recent account payments have failed or your spending limit needs to be increased. Please check the 'Billing & plans' section in your settings"
+    },
+    {
+      "check_id": 115468063408,
+      "failure": "The job was not started because recent account payments have failed or your spending limit needs to be increased. Please check the 'Billing & plans' section in your settings"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "schema": "zee-ozel-ayna-gecis-teyidi-1",
+  "observed_at_utc": "2026-10-13T18:37:03.052346+00:00",
+  "repository": "itwise-bilisim/zee",
+  "actions_enabled": false,
+  "previous_master": "4c13052abaed4f199aeb5210f4180e1f8cebc420",
+  "migration_master": "1f61e51ca56c324a914c8f796940d8b982aee3a3",
+  "updates": {
+    "master": "1f61e51ca56c324a914c8f796940d8b982aee3a3",
+    "codex/zee-derleme-bagimlilik": "39f6ca26e20805feb8833ea0fb1a61d7a7249df0",
+    "codex/zee-site-tek-hat": "39f6ca26e20805feb8833ea0fb1a61d7a7249df0"
+  },
+  "protected_private_branch": {
+    "ref": "refs/heads/ci/site-dil",
+    "before": "17b79c951b9eaeaad406da7a08804f5f1962ce09",
+    "after": "17b79c951b9eaeaad406da7a08804f5f1962ce09",
+    "parent": "45b66f3574e0be020aeffc95580dd8db822e1379",
+    "changed": false
+  },
+  "later_documentation_commits": "Both master refs follow this verified migration by normal fast-forward; final current HEAD is verified separately."
+}

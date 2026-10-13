@@ -78,20 +78,18 @@ Gizlilik tarayıcısı uzun derleme kayıtlarının bütün ara hash kümelerini
 cache anahtarına dahildir. Uzun kayıt içinde gömülü ad ret kapsamı korunur;
 farklı politikalar arasında sonuç paylaşılmaz (13 sentetik test).
 
-Kısa marka kimliği için hashli `word` kuralı kelime sınırında ve ayırıcılarla
-taranır; uzun terim kuralları gömülü adları da reddeder. Kısa rastgele harf
-dizisinin daha uzun sözcük içindeki çakışması ret değildir (13 sentetik test).
-
 Kısa kimlik `word` kuralıyla sözcük sınırında/ayırıcılarla denetlenir;
 uzun terimler gömülü adları da bulur. Ürün test dosyası/seçicileri
 `urun_e_yetkinlik_testi` olarak anonimleştirilir; vaka ve faz sahipliği korunur.
+Kısa rastgele harf dizisinin daha uzun sözcük içindeki çakışması ret değildir;
+Rust noktalama işaretleri ayırıcı sayılmaz (13 sentetik test).
 
 Yerel tedarik: cargo-deny/compiler+fuzz, stable fuzz derlemesi ve birleşik
 güvenlik kapısı geçti. 186 paket iki vendor üretiminde byte byte aynı;
 boş CARGO_HOME ile compiler/fuzz offline derlendi. Vendor manifest SHA-256:
 `723f334f8a3b7d259cf2f3f69f97da2fb8f3cdc17f6fc03baec6ed0e87385efd`.
 
-Son yerel faz matrisi: **770/770 geçti**, 0 kalan, 0 atlanan. Katalog,
+İlk yerel faz matrisi: **770/770 geçti**, 0 kalan, 0 atlanan. Katalog,
 belge tazeliği, spec kanıtları, katman/SCC, uyumluluk, dogfood/regression
 ve Rust/Go byte eşdeğerliği bu matriste geçti. Clippy/fmt ve Gitleaks
 tam geçmiş+çalışma ağacı temiz; 13 sentetik gizlilik testi geçti.
@@ -102,7 +100,8 @@ beyanları bu kaynağı izleyen committe kaydedilir.
 Son [bütün ref taraması](tarama.json): anonim tarihçe tabanında 18 ref,
 406 commit, 5.165 path/blob çifti ve **0 eşleşme**. Müşteri eski satır
 istisnası yoktur. Sonraki K-215 politika/kod/beyan dosyaları aynı
-politikayla çalışma ağacı ve uzak CI kapısında ayrıca denetlenir.
+politikayla çalışma ağacında ayrıca denetlenir. Uzak CI kapısı tanımlıdır;
+aşağıdaki hesap engeli nedeniyle bu yeni kaynakta henüz çalışmamıştır.
 
 ## Path yama ikili tekrarlanabilirliği
 
@@ -127,6 +126,31 @@ Merbay atomik [ref geçişi](ref-esleme-v1.tsv) doğrulandı: 7 dal ve 11
 etiket işlemi, exact-SHA lease ile yapıldı. Baslangıç/doğum etiketleri
 değişmedi; v0.1–v0.7 anonim source soy ağacına bağlandı. İlk geçiş
 masterı `39f6ca26e20805feb8833ea0fb1a61d7a7249df0`; bunu izleyen belgeler
-normal fast-forward commitlerdir. Eski refs için CI geçici duraklatıldı
-ve **enabled=true** özgün izinleriyle geri getirildi; güncel master CI
-normal belge commitinin push eventinde başlatılır. Depo gizli kalır.
+normal fast-forward commitlerdir. Geçiş sırasında Actions geçici kapatılıp
+**enabled=true** özgün izinleriyle geri getirildi. Ref/PR olayları yine
+başlatılamayan koşular oluşturdu; bu duraklama bildirimleri engellediği
+iddiasını taşımaz. Depo gizli kalır.
+
+## Uzak CI hesap engeli — açık kanıt
+
+`1f61e51ca56c324a914c8f796940d8b982aee3a3` master kaynağındaki üç workflow'un
+altı işi, hesap ödemesi/harcama limiti engeli nedeniyle koşucu başlamadan
+başarısız oldu. [GitHub API kanıtı](ci-hesap-engeli.json) her iş için
+`steps_count=0` ve aynı hesap tanısını kaydeder. Bu sonuç test başarısızlığı
+veya uzak test geçişi değildir; Linux/Windows ve uzak güvenlik/gizlilik
+kanıtı **AÇIK** kalır. Yerel 771/771 sonucu ve iki temiz macOS klonu kanıtı
+ayrı, gerçek sonuçlardır.
+
+Ödeme/limit ayarı kullanıcı tarafından düzeltildikten sonra güncel master'da
+`dil`, `tedarik` ve `acik-depo` yeniden çalıştırılmalı ve exact SHA sonuçları
+kaydedilmelidir. Ayar veya harcama yetkisi bu iş kapsamında değiştirilmez.
+Son belge/dış teyit commit'i `[skip ci]` taşır: yalnız zaten bilinen hesap
+engelinde yeni push koşuları üretmemek içindir; kontrol yeşili veya kalıcı
+workflow istisnası değildir. Enterprise Actions kapalı kalır.
+
+[Özel ayna geçiş teyidi](ayna-teyidi.json): Enterprise master aynı
+`1f61e51ca56c324a914c8f796940d8b982aee3a3` geçiş kaynağına eşitlendi;
+iki birleşmiş dal ana depodaki `39f6ca26e20805feb8833ea0fb1a61d7a7249df0`
+ile aynı. Actions önce/sonra kapalı, `ci/site-dil` pini ve özgün ebeveyni
+değişmedi. Bu teyidi ekleyen normal belge commit'i de iki master'a
+fast-forward olarak gönderilir; diğer özel ürün dalları sıfırlanmaz.

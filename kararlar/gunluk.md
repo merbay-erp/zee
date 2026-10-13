@@ -4031,3 +4031,11 @@ beyanları/regression sahipleri yeni exact SHA'ya bağlanır, gerçek geçmiş
 ölçümleri değiştirilmez. Kapıda eski satır istisnası kalmaz. Compiler/fuzz
 path yaması kullanır, SBOM actual build/tree kimliğini doğrular. Doğrulama
 ve dış teyit sınırı `docs/incelemeler/k215/README.md` içindedir.
+
+K-215 yerel makine dilimi tamamlandı: 771/771 test ve exact b8376349 iki
+temiz klon ikili eşitliği geçti; yayımlanmış ref geçişi doğrulandı. Güncel
+master 1f61e51 uzak CI'ında altı iş hesap ödemesi/harcama limiti nedeniyle
+başlamadı; test adımları sıfırdır. Bu engel uzak kanıtı açık bırakır.
+Belge kapanışında yeni push koşuları üretmemek için yalnız bu belge
+commit'i `[skip ci]` taşır; workflow politikası ve gelecekteki kapılar
+değişmez. GB-046 destek teyidi ve yeniden açılış onayı bekler.

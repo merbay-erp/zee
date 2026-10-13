@@ -177,16 +177,19 @@ canlı dağıtım ve otomatik parola göçü bu işte yapılmaz.
 ### K-214: Anonim açık depo kanıtı
 
 Müşteri ve altyapı kimliği anonimleştirildi; yeni içerik hash politikasıyla
-CI içinde denetlenir. Eski geçişler maskeli dökümle ayrı kullanıcı kararını
-bekler. Tarihsel ölçümler eski kaynak kimliklerini korur; yeniden açılış ve
+CI kapısında denetlenir. Önceki geçişler de K-215 kapsamında temizlendi.
+Tarihsel ölçümler eski kaynak kimliklerini korur; yeniden açılış ve
 GitHub PR önbelleği temizliği ayrıca onay/teyit ister. [Kayıt](docs/incelemeler/k214/README.md).
 
 ### K-215: Önceki ürün geçişleri ve bağımsız yerel yama
 
-K-214'te ayrı bırakılan geçişler kullanıcı onayıyla anonim kaynak soy ağacına
-taşınır; eski fingerprint istisnaları kaldırılır ve ilk commit dahil tüm ata
-geçmişi denetlenir. Compiler/fuzz PostgreSQL yaması path bağımlılığıdır;
-derleme self Git deposu veya credential gerektirmez. SBOM gerçek build
-commit'ini ve yerel paket baytlarını kayıtlı SHA-256 ile doğrular.
-Tarihi ölçümler yeni kaynakta koşulmuş sayılmaz. GitHub PR refs/cache teyidi
-ve yeniden açılış onayı açıktır; depo gizli kalır.
+Yayımlanmış yedi dal ve on bir etiketin kaynak geçmişi anonimleştirildi;
+ilk commit dahil taranan 406 commit'te sıfır eşleşme var. Eski müşteri satırı
+istisnası kaldırıldı. Compiler/fuzz PostgreSQL yaması yerel path bağımlılığıdır;
+SBOM hem kaynak commit'ini hem derlenen paket baytlarını doğrular.
+
+Yerelde **771/771 test** ve iki temiz macOS klonunda ikili eşitliği geçti.
+Güncel uzak CI işleri hesap ödemesi/harcama limiti nedeniyle başlamadı;
+Linux/Windows ve uzak kapı kanıtı açık. Enterprise yalnız aynı kaynak aynasıdır,
+Actions kapalıdır ve özel ürün pini korunur. GitHub PR refs/cache teyidi ile
+yeniden açılış onayı bekleniyor; depo gizli kalır. [Kayıt](docs/incelemeler/k215/README.md).
