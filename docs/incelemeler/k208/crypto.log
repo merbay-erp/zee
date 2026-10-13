@@ -1,0 +1,13 @@
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+   Compiling dil v0.8.0-dev (/Users/mustafaerbay/.codex/worktrees/zee-derleme-bagimlilik/zee/compiler)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.48s
+     Running unittests src/lib.rs (target/debug/deps/dil-6554f449f474803c)
+
+running 3 tests
+test guvenlik::legacy_bcrypt::tests::bcrypt_72_bayt_utf8_siniri_kirpma_yapmaz ... ok
+test guvenlik::legacy_bcrypt::tests::bcrypt_node_legacy_surumleri_yalniz_dogru_parolayi_dogrular ... ok
+test guvenlik::legacy_bcrypt::tests::bcrypt_maliyet_ve_bozuk_bicim_is_yapmadan_reddedilir ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 85 filtered out; finished in 3.19s

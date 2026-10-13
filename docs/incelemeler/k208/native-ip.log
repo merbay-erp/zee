@@ -1,0 +1,22 @@
+   Compiling dil v0.8.0-dev (/Users/mustafaerbay/.codex/worktrees/zee-derleme-bagimlilik/zee/compiler)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.28s
+     Running tests/io_izi_testi.rs (target/debug/deps/io_izi_testi-e8a2cedcbaf90f28)
+
+running 1 test
+test istemci_adresi_izi_sirali_ve_kanonik_ip_olarak_oynatilir ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 8 filtered out; finished in 0.00s
+
+     Running tests/web_cok_surec_testi.rs (target/debug/deps/web_cok_surec_testi-f7147ea930bbbbec)
+
+running 1 test
+test istemci_adresi_proxy_ve_socketten_gelir_xff_ve_form_alanindan_gelmez ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.65s
+
+     Running tests/web_testi.rs (target/debug/deps/web_testi-12ce09a7032fa007)
+
+running 1 test
+test istemci_adresi_web_disinda_bostur_ve_islem_etkisi_korunur ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 42 filtered out; finished in 0.01s

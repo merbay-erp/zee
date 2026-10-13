@@ -20,3 +20,22 @@ T034 kullanıcı metni iki algoritmayı kapsar; kod ve tip reddi değişmez.
 Yeni benchmark iş yükü açılmaz; ADR-045/049 ve performans tarihçesi değişmez.
 Bağımlılık SBOM/provenance, offline vendor ve iki temiz klon kabulüyle
 ayrıca kaydedilecektir. Sunucu dağıtımı/ürün hash migration'ı yapılmaz.
+
+## Kapanış
+
+Feature source `2c355efc0e1487dfc8de71579bcce72512ea5c2c`;
+clean beyan/ikili/test kaynağı `daaa3ea0803baff5a22ff2a0ea432111bd33240f`. [JSON](acceptance.json),
+[crypto](crypto.log), [gerçek worker/CLI/trace](native-ip.log),
+[offline vendor](vendor.log) ve [iki-clone](release/accepted.log) kalıcıdır.
+742/742 platform vakası geçti; tanı kalitesi 244 vaka/14 sınıf/0 ihlal.
+Katman/SCC/API/uyumluluk/fmt/Clippy/spec/katalog/tazelik/güvenlik/sır
+kapıları ve exact core-freeze/semantic beyanı geçti.
+Bu yerel macOS kabulüdür; signed release, RC fuzz/Miri veya yeni üç
+platform release sonucu değildir. Sunucu yükseltmesi ürün tarafında kalır.
+
+İlk Linux CI job 115241425892 işlev eğilim raporunu bayat buldu;
+rapor 51 kayıtla üretici tarafından yenilendi ve `--denetle` geçti.
+Eşik/fixture değiştirilmedi; başarısız run 38381098416 tarihsel kalır.
+
+Test loglarının yalnız EOF boş satırları kanonikleştirildi; test sonuç
+içeriği değişmez. SBOM/provenance/GIT_SHA/SHA256SUMS byte’ları aynen korunur.
