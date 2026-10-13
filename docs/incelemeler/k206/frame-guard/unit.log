@@ -1,0 +1,104 @@
+patching file 'src/message/backend.rs'
+   Compiling typenum v1.20.1
+   Compiling libc v0.2.189
+   Compiling cfg-if v1.0.4
+   Compiling cmov v0.5.4
+   Compiling const-oid v0.10.2
+   Compiling rand_core v0.10.1
+   Compiling getrandom v0.4.3
+   Compiling tinyvec_macros v0.1.1
+   Compiling unicode-properties v0.1.4
+   Compiling unicode-bidi v0.3.18
+   Compiling byteorder v1.5.0
+   Compiling fallible-iterator v0.2.0
+   Compiling bytes v1.12.1
+   Compiling base64 v0.22.1
+   Compiling tinyvec v1.12.0
+   Compiling memchr v2.8.3
+   Compiling ctutils v0.4.2
+   Compiling chacha20 v0.10.2
+   Compiling unicode-normalization v0.1.25
+   Compiling stringprep v0.1.5
+   Compiling hybrid-array v0.4.14
+   Compiling block-buffer v0.12.1
+   Compiling crypto-common v0.2.2
+   Compiling cpufeatures v0.3.1
+   Compiling rand v0.10.2
+   Compiling digest v0.11.3
+   Compiling hmac v0.13.0
+   Compiling md-5 v0.11.0
+   Compiling sha2 v0.11.0
+   Compiling postgres-protocol v0.6.12+zee.1 (/Users/mustafaerbay/.codex/worktrees/zee-derleme-bagimlilik/zee/compiler/target/zee-k206-frame-rh_0d7go/postgres-protocol)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.21s
+     Running unittests src/lib.rs (target/debug/deps/postgres_protocol-85a913d38b4fcf70)
+
+running 34 tests
+test authentication::sasl::test::parse_server_error_message ... ok
+test message::backend::zee_frame_tests::header_accepts_exact_limit_and_rejects_one_more ... ok
+test message::backend::zee_frame_tests::incomplete_headers_wait_without_reading_length ... ok
+test authentication::sasl::test::parse_server_first_message ... ok
+test message::backend::zee_frame_tests::valid_ready_for_query_still_parses_and_consumes_one_frame ... ok
+test escape::test::test_escape_idenifier ... ok
+test message::backend::zee_frame_tests::direct_message_parser_rejects_before_reserve_or_consume ... ok
+test password::test::test_encrypt_md5 ... ok
+test escape::test::test_escape_literal ... ok
+test authentication::sasl::test::excessive_iteration_count_is_rejected ... ok
+test authentication::test::md5 ... ok
+test message::backend::zee_frame_tests::malformed_lengths_keep_existing_error_kinds ... ok
+test types::test::array ... ok
+test types::test::bool ... ok
+test types::test::float4 ... ok
+test types::test::float8 ... ok
+test types::test::hstore ... ok
+test types::test::hstore_invalid_length ... ok
+test types::test::int2 ... ok
+test types::test::int4 ... ok
+test types::test::int8 ... ok
+test types::test::lquery_sql ... ok
+test types::test::lquery_str ... ok
+test types::test::lquery_wrong_version ... ok
+test types::test::ltree_sql ... ok
+test types::test::ltree_str ... ok
+test types::test::ltree_wrong_version ... ok
+test types::test::ltxtquery_sql ... ok
+test types::test::ltxtquery_str ... ok
+test types::test::ltxtquery_wrong_version ... ok
+test types::test::non_null_array ... ok
+test types::test::varbit ... ok
+test password::test::test_encrypt_scram_sha_256 ... ok
+test authentication::sasl::test::exchange ... ok
+
+test result: ok. 34 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+    Checking typenum v1.20.1
+    Checking cmov v0.5.4
+    Checking cfg-if v1.0.4
+    Checking const-oid v0.10.2
+    Checking tinyvec_macros v0.1.1
+    Checking rand_core v0.10.1
+    Checking unicode-properties v0.1.4
+    Checking unicode-bidi v0.3.18
+    Checking memchr v2.8.3
+    Checking fallible-iterator v0.2.0
+    Checking bytes v1.12.1
+    Checking byteorder v1.5.0
+    Checking libc v0.2.189
+    Checking base64 v0.22.1
+    Checking tinyvec v1.12.0
+    Checking chacha20 v0.10.2
+    Checking ctutils v0.4.2
+    Checking unicode-normalization v0.1.25
+    Checking cpufeatures v0.3.1
+    Checking getrandom v0.4.3
+    Checking rand v0.10.2
+    Checking stringprep v0.1.5
+    Checking hybrid-array v0.4.14
+    Checking block-buffer v0.12.1
+    Checking crypto-common v0.2.2
+    Checking digest v0.11.3
+    Checking hmac v0.13.0
+    Checking sha2 v0.11.0
+    Checking md-5 v0.11.0
+    Checking postgres-protocol v0.6.12+zee.1 (/Users/mustafaerbay/.codex/worktrees/zee-derleme-bagimlilik/zee/compiler/target/zee-k206-frame-rh_0d7go/postgres-protocol)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.33s
+{"patch_sha256": "941f1e84188e234571b470a1637da999eb91e82b32f06e6f4de2d718cf196347", "patched_backend_sha256": "8a85f9f340d28fc1a4087176bb86673045afdb36d72110e8990dc7f46a092fc7", "production_patch_active": false, "upstream_tree_sha256": "30fe54faeea20f6772380c5902389016cef4a7823c5886d5e8e39821764aabe4"}

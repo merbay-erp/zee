@@ -84,3 +84,14 @@ Entegrasyon, native okuma/yazma/nested/RLS/commit testleriyle birlikte
 spec-25, C025 hata verisi, uyumluluk yüzeyi, exact kaynak pin/tree kaydı,
 offline vendor ve iki-clone artefakt kanıtını aynı dilimde ele almalıdır.
 Yalnız Header yamasını açıp bu matrisi atlamak GB-041'i kapatmaz.
+
+## Temiz kaynak kapanışı
+
+Exact `c68af0fa071fa988e5b38757bacf6bd24b99e37f` temiz kaynakta [34-test ham koşusu](unit.log)
+ve [native 5-vaka JSON](native.json) geçti. 32/64 MiB reddinde ölçülen
+RSS 6.750.208 bayttır (yaklaşık 6,44 MiB); transaction INSERT sayısı
+sıfırdır. Bir örnek/sıfır ısınma, izole NoTLS loopback, macOS arm64
+kabulüdür. Native JSON input/ikili hash, Rust ve OS kimliğini taşır.
+735/735 mevcut compiler fazı, katalog/tazelik/fmt, güvenlik ve sır
+kapıları geçti. Bu deney RC fuzz/Miri, imzalı release veya üç-platform
+wire entegrasyonu kanıtı değildir. GB-041 açık; aday üretimde etkin değildir.

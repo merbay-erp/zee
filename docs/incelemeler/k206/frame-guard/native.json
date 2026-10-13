@@ -1,0 +1,61 @@
+{
+  "source": "c68af0fa071fa988e5b38757bacf6bd24b99e37f",
+  "image": "postgres@sha256:efedf3595f1d6f415c08568ba171029bf54052e754cc9f030e3f2412b21f3d67",
+  "samples": [
+    {
+      "mode": "plain",
+      "row_bytes": 1048576,
+      "max_rss_bytes": 8929280,
+      "output": "accepted_bytes=1048576\nclosed=false next_query_ok=true\n",
+      "exit": 0
+    },
+    {
+      "mode": "plain",
+      "row_bytes": 16777216,
+      "max_rss_bytes": 42500096,
+      "output": "accepted_bytes=16777216\nclosed=false next_query_ok=true\n",
+      "exit": 0
+    },
+    {
+      "mode": "plain",
+      "row_bytes": 33554432,
+      "max_rss_bytes": 6750208,
+      "output": "typed_limit=33554432 announced=33554442\nclosed=true next_query_ok=false\n",
+      "exit": 0
+    },
+    {
+      "mode": "plain",
+      "row_bytes": 67108864,
+      "max_rss_bytes": 6750208,
+      "output": "typed_limit=33554432 announced=67108874\nclosed=true next_query_ok=false\n",
+      "exit": 0
+    },
+    {
+      "mode": "txn",
+      "row_bytes": 67108864,
+      "max_rss_bytes": 6750208,
+      "output": "typed_limit=33554432 announced=67108874\nclosed=true next_query_ok=false\nrollback_acknowledged=false\n",
+      "exit": 0
+    }
+  ],
+  "boundary": "Experimental local protocol fork, not shipped. Inactive typed guard in both backend parsers; asserted driver cause and disconnected transaction rollback. Synthetic PostgreSQL and one sample/no warmup process RSS.",
+  "production_patch_active": false,
+  "samples_per_case": 1,
+  "warmup_per_case": 0,
+  "environment": {
+    "os": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+    "machine": "arm64",
+    "rustc": "rustc 1.93.1 (01f6ddf75 2026-02-11)\nbinary: rustc\ncommit-hash: 01f6ddf7588f42ae2d7eb0a2f21d44e8e96674cf\ncommit-date: 2026-02-11\nhost: aarch64-apple-darwin\nrelease: 1.93.1\nLLVM version: 21.1.8\n",
+    "profile": "release, --locked --offline, temporary path-patched standalone probe"
+  },
+  "input_sha256": {
+    "backend.patch": "941f1e84188e234571b470a1637da999eb91e82b32f06e6f4de2d718cf196347",
+    "probe.rs": "a92365de48ab1218c77c04c353cae17ccfb948a4269ff5acbb193c01dd75f5c5",
+    "probe-Cargo.lock": "c77c52b5b95f0a04e82915138531e5f29303871a9ce9242ba167e4cf1932707f",
+    "probe-Cargo.toml": "14ad90b81d813ec16afdeb53ca048fe7a1724ebff9036d078d1235233b9908c2"
+  },
+  "server_version": "postgres (PostgreSQL) 16.15 (Debian 16.15-1.pgdg12+2)",
+  "binary_sha256": "dfef1c8276a9fd3ad0b206035c69c36ff7c6743f64c98865291e1de52b7f6d2f",
+  "disconnected_transaction_persisted_rows": 0,
+  "source_clean": true
+}

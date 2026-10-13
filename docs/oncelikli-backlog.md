@@ -1205,3 +1205,9 @@ typed 32 MiB aday yama bağımsız geçici crate'te 34/34 testle doğrulandı.
 Aktif dependency pin değişmedi; üretimde mesaj sınırı etkin değildir.
 Transaction durum temizliği, read retry engeli ve exact immutable kaynak
 entegrasyonu açık; GB-041 kapatılmadı. [Kabul tasarımı](incelemeler/k206/frame-guard/README.md).
+
+K-206 aday protokol kabulü clean c68af0f üzerinde kapandı: iki parser'da
+34/34 bağımsız lib test, native 5 vaka, typed io cause ve kopan transaction
+yazısının kalıcı olmaması doğrulandı. Ham JSON/log [kayıttadır](incelemeler/k206/frame-guard/README.md).
+Bu yalnız adayın kabulüdür; aktif pin, Zee session/retry/RLS cleanup
+entegrasyonu ve GB-041 açık kalır. Compiler fazı 735/735 geçti.
