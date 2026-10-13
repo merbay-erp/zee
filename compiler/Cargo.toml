@@ -45,4 +45,4 @@ ureq = { version = "=3.4.0", default-features = false, features = ["rustls"] }
 libc = "=0.2.189"
 
 [patch.crates-io]
-postgres-protocol = { git = "https://github.com/merbay-erp/zee", rev = "a4d7f208bc1bf01255f5ae9a16ebb97a74ff0d84" }
+postgres-protocol = { path = "third_party/postgres-protocol" }

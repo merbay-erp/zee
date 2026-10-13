@@ -337,3 +337,13 @@ Eksik Git geçmişi, yanlış pin ve tree hash hâlâ fail-closed reddedilir.
 Bu bakım değişikliği aynı lock için aynı SBOM'u üretir; wire sınırını açmaz.
 Yeni fork önce kaynak commit'i, sonra exact tüketici pin'iyle etkinleşir.
 Grammar/spec/tanı/API/katman/benchmark/soak kapsamı değişmez.
+
+### K-215: Path yamanın build kimliği
+
+Önceki exact self Git pin tarihsel tedarik kanıtıdır. Güncel compiler/fuzz
+`postgres-protocol` 0.6.12+zee.2'yi depo içi path yamasıyla derler; paket
+baytları ve `patches-v2` kanonik SHA-256'sı aynıdır. Kayıtlı kaynak SHA'sı
+anonim soy ağacı bilgisidir. Güncel SBOM URL'si gerçek build SHA'sını taşır
+ve hem o commit ağacı hem derlenen disk ağacı kayıtlı hash'le eşleşmeden
+üretilmez. Git kaynakları deny istisnası olmadan reddedilir. Eski ikililer
+ve imzaları geçmiş kaynaklarına aittir; yeni kimlik adına sunulmaz.

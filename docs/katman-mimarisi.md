@@ -132,3 +132,7 @@ yüzeylerini K-208/K-209 bcrypt/IP ile aynı hatta toplar. Ürün kabulü
 dosya kontrolüyle değil bütün proje `dil dene .` ile alınır. Ham ürün E
 şablonu normal katalog üretimini ister. Exact source/CI kapanışı beklenir;
 canlı dağıtım ve otomatik parola göçü bu işte yapılmaz.
+
+K-215 etki incelemesi: SBOM path yama doğrulaması aynı sürüm mühendisliği
+sahibindedir; yeni production sahibi veya ters temel→adaptör kenarı eklenmez.
+Exact katman ve çevrim fixture'ları kapıyla doğrulanır.

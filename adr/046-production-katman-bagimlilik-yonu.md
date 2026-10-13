@@ -72,3 +72,5 @@ ADR-047 aynı exact graph'ın SCC'lerini de fail-closed yaptı. Sahip sayısı
 paket/registry/tedarik çevrimi süreli izinle görünür borç olarak sınırlandı.
 K-160/ADR-059 bu son borcu fiziksel sahiplik ayrımıyla kapattı; güncel graph'ta
 SCC ve izin sayısı sıfırdır. Güncel gerçek için katman rehberi bağlayıcıdır.
+
+K-215 SBOM path ağacı doğrulaması aynı mühendislik sahibinde kalır; katman/çevrim kapıları yeni kenar olmadığını doğrular.

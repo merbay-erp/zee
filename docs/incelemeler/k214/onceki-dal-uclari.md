@@ -268,3 +268,7 @@ Eski ürün dalındaki önceki geçişler kullanıcı kararı bekler.
 | `refs/heads/dependabot/github_actions/dtolnay/rust-toolchain-e2a55d2ffb04f378e9626c28d38b36d230d1e12f` | `0bb8e03727576a706b7bb9979ab36b32e356a03c` | `rfcs/0026-postgresql-veri-erisimi.md` | 10 | `[maskeli]` |
 | `refs/heads/dependabot/github_actions/dtolnay/rust-toolchain-e2a55d2ffb04f378e9626c28d38b36d230d1e12f` | `0bb8e03727576a706b7bb9979ab36b32e356a03c` | `rfcs/0027-binary-yukleme-ve-dosya-yasam-dongusu.md` | 11 | `[maskeli]` |
 | `refs/heads/dependabot/github_actions/dtolnay/rust-toolchain-e2a55d2ffb04f378e9626c28d38b36d230d1e12f` | `0bb8e03727576a706b7bb9979ab36b32e356a03c` | `spec/11-uygulama-eylemleri-ve-web-adaptoru.md` | 200 | `[maskeli]` |
+
+K-215 güncellemesi: yukarıdaki önceki geçiş listesi tarihsel envanterdir.
+Kullanıcı temizliğe onay verdi; fingerprint istisnaları kaldırıldı.
+Güncel kapsam ve sonuç [K-215 kaydında](../k215/README.md) izlenir.

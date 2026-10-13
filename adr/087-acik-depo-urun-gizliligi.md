@@ -15,7 +15,7 @@ reproducer ve anonim özet taşır. Yerel/sunucu yolu ve müşteri alan adı ta�
 K-208/K-209/K-210–K-213 dogfood kayıtları ve freeze zinciri korunur.
 
 `scripts/acik-depo-denetle.py` izlenen dosya adlarını, içerikleri, yeni dosyaları,
-symlink hedeflerini, tabandan sonraki commit ağaçlarını ve mesajlarını denetler.
+symlink hedeflerini, ilk commit dahil bütün ata ağaçlarını ve mesajlarını denetler.
 `docs/acik-depo-politikasi-v1.json` yalnız normalize edilmiş terim/yol hash'leri
 taşır. Unicode biçim/harf değişimleri ve ayırıcılar sentetik testle kapsanır.
 Hata çıktısı değer veya dosya adı yerine dosya SHA-256'sı ve satırı verir.
@@ -24,10 +24,11 @@ içini veya görseldeki yazıyı tarama iddiası yoktur; ürün kanıtı metin o
 Hash'ler sözlük saldırısına karşı sır saklama yöntemi değildir; plaintext listenin
 yanlışlıkla açık belge/loga kopyalanmasını önler. Özel terim listesi açık depoda yoktur.
 
-12c5921 tabanındaki önceki geçişler yalnız dosya+exact satır+terim fingerprint'i
-ve tekrar sayısıyla kabul edilir. Kopyalama, değişiklik veya ek tekrar kabul edilmez.
-Yeni istisna üretici komutu yoktur. Maskeli döküm kullanıcıya ayrı karar için
-sunulur; eski geçişlerin tamamen temizlendiği iddia edilmez.
+K-215 ile kullanıcı önceki geçişlerin temizliğini de onayladı. Eski kayıt
+istisnaları kaldırıldı: politika `all-reachable` ister, fingerprint listesi
+boş olmak zorundadır. İlk commit ve eski taban öncesindeki silinmiş içerik
+dahil dalın tüm ataları denetlenir. K-163 anonim `legacy-panel` kimliğiyle
+provenance/reproducer zincirini korur.
 
 `git filter-repo` yeniden yazımında merge ebeveynleri ve vaka kimlikleri korunur;
 kaynak beyanları ve regression `fixed_by`/`introduced_by` yeni SHA'ya bağlanır.
@@ -44,9 +45,12 @@ onayı ister. Karar ve destek taslağı [K-214 kaydındadır](../docs/incelemele
 Kanıt: `compiler/tests/guvenlik_kapisi_testi.rs::acik_depo_kapisi_anonim_politikayi_ve_ci_kablosunu_korur`
 ve `scripts/tests/acik-depo-test.py` olumlu/olumsuz tarihçe testleri.
 
-Özel depo CI'ında self Git bağımlılığı aynı exact checkout nesnesinden gelir;
-Cargo URI/rev değişmez, credential saklanmaz. Tam checkout zorunludur.
-`ci-taban-kimligi.py` yalnız K-214 eski master ve iki birleşmiş dal ucu için kaydedilmiş yeni
-ata SHA'yı doğrular; diğer tabanlar aynen geçer, genel force istisnası yoktur.
+K-215 compiler/fuzz PostgreSQL yamasını kayıtlı path kaynağına geçirir;
+Git/credential yönlendirmesi kaldırılır. SBOM exact build commit'inin ve
+derlenen yerel ağacın SHA-256'sını birlikte doğrular (ADR-068).
+`ci-taban-kimligi.py` yalnız K-214 üç eski uç ve K-215 eski master için
+kaydedilmiş yeni ata SHA'yı doğrular; genel force istisnası yoktur.
 `acik-depo` workflow'u push/PR kaynağını güvenilir master denetleyicisiyle
 yalnız veri olarak tarar; PR kodu çalıştırılmaz, token salt-okunurdur.
+
+K-215 kapsam/özel ürün dalı sınırı [yeni kayıttadır](../docs/incelemeler/k215/README.md).

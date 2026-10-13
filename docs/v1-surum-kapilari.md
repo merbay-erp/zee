@@ -399,3 +399,13 @@ Müşteri ve altyapı kimliği anonimleştirildi; yeni içerik hash politikasıy
 CI içinde denetlenir. Eski geçişler maskeli dökümle ayrı kullanıcı kararını
 bekler. Tarihsel ölçümler eski kaynak kimliklerini korur; yeniden açılış ve
 GitHub PR önbelleği temizliği ayrıca onay/teyit ister. [Kayıt](incelemeler/k214/README.md).
+
+### K-215: Önceki ürün geçişleri ve bağımsız yerel yama
+
+K-214'te ayrı bırakılan geçişler kullanıcı onayıyla anonim kaynak soy ağacına
+taşınır; eski fingerprint istisnaları kaldırılır ve ilk commit dahil tüm ata
+geçmişi denetlenir. Compiler/fuzz PostgreSQL yaması path bağımlılığıdır;
+derleme self Git deposu veya credential gerektirmez. SBOM gerçek build
+commit'ini ve yerel paket baytlarını kayıtlı SHA-256 ile doğrular.
+Tarihi ölçümler yeni kaynakta koşulmuş sayılmaz. GitHub PR refs/cache teyidi
+ve yeniden açılış onayı açıktır; depo gizli kalır.

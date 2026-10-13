@@ -575,7 +575,13 @@ mod testler {
     #[test]
     fn yerel_yama_sbomda_exact_repo_kaynagi_ve_hash_tasir() {
         let kilit = kilit_paketleri(include_str!("../../Cargo.lock")).unwrap();
-        let sha = "0123456789abcdef0123456789abcdef01234567";
+        let output = std::process::Command::new("git")
+            .args(["rev-parse", "HEAD"])
+            .output()
+            .unwrap();
+        assert!(output.status.success());
+        let sha = String::from_utf8(output.stdout).unwrap();
+        let sha = sha.trim();
         let belge = sbom_belgesi(
             sha,
             env!("CARGO_PKG_VERSION"),
@@ -592,7 +598,7 @@ mod testler {
             .unwrap();
         assert_eq!(
             patched["software_downloadLocation"],
-            format!("{KAYNAK_DEPOSU}/tree/a4d7f208bc1bf01255f5ae9a16ebb97a74ff0d84/compiler/third_party/postgres-protocol")
+            format!("{KAYNAK_DEPOSU}/tree/{sha}/compiler/third_party/postgres-protocol")
         );
         assert_eq!(patched["software_packageVersion"], "0.6.12+zee.2");
         assert_eq!(
@@ -603,6 +609,9 @@ mod testler {
             64
         );
         assert!(!patched.to_string().contains("crates.io"));
+        let package = kilit.iter().find(|p| p.ad == "postgres-protocol").unwrap();
+        assert!(package.kaynak.is_none() && package.ozet.is_none());
+        assert!(yamalar::kaynak(package, "0000000000000000000000000000000000000000").is_err());
     }
 
     #[test]

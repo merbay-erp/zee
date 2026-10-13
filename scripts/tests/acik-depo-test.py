@@ -58,6 +58,19 @@ class PublicPrivacyTests(unittest.TestCase):
     def test_utf16_icerigi(self):
         self.assertTrue(INSPECT("a", "Example Client".encode("utf-16"), rules(), {}))
 
+    def test_kisa_ad_sozcuk_siniri_ve_ayiricilarla_taranir(self):
+        short = dict(rules(), words={DIGEST("xyz")}, word_lengths={3})
+        for text in ["XYZ", "X-Y-Z", "xyz.example", "prefix_xyz"]:
+            self.assertTrue(INSPECT("a", text.encode(), short, {}))
+        self.assertFalse(INSPECT("a", b"prefixXYZsuffix", short, {}))
+        self.assertFalse(INSPECT("a", b'graph["x", "y", "z"]', short, {}))
+
+    def test_uzun_kayitta_gomulu_ad_ve_ayri_politika_korunur(self):
+        text = "z" * 9000 + "ExampleClient" + "z" * 9000
+        self.assertTrue(INSPECT("long.log", text.encode(), rules(), {}))
+        other = {"terms": {DIGEST("anotherclient")}, "paths": set(), "lengths": {13}}
+        self.assertFalse(INSPECT("long.log", text.encode(), other, {}))
+
     def test_eski_satir_istisnasi_kopyayi_degistirmeyi_ve_tekrari_kapsamaz(self):
         text = "Example Client"
         fp = API["fingerprint"]("old.md", text, DIGEST(NORMALIZE(text)))
@@ -73,6 +86,7 @@ class PublicPrivacyTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "policy.json"
             for change in [{"rules": []}, {"legacy_fingerprints": {"*": 1}},
+                           {"legacy_fingerprints": {"a" * 64: 1}}, {"history_scope": "since-base"},
                            {"history_base": "master"},
                            {"rules": original["rules"] * 2}]:
                 path.write_text(json.dumps(dict(original, **change)))
@@ -106,7 +120,7 @@ class PublicPrivacyTests(unittest.TestCase):
             subprocess.run(["git", "init", "-q", directory], check=True)
             subprocess.run(["git", "-C", directory, "-c", "user.name=Zee Test",
                 "-c", "user.email=zee@example.invalid", "commit", "--allow-empty", "-qm", "base"], check=True)
-            policy = {"schema": "zee-acik-depo-politikasi-1", "history_base": "0" * 40,
+            policy = {"schema": "zee-acik-depo-politikasi-1", "history_scope": "all-reachable", "history_base": "0" * 40,
                       "rules": [{"kind": "term", "length": 13,
                                  "sha256": DIGEST("exampleclient")}], "legacy_fingerprints": {}}
             path = root / "policy.json"; path.write_text(json.dumps(policy))
@@ -118,33 +132,26 @@ class PublicPrivacyTests(unittest.TestCase):
             self.assertNotIn(b"Example Client", result.stdout + result.stderr)
             self.assertNotIn(b"example-client.txt", result.stdout + result.stderr)
 
-    def test_ci_hazirligi_kimlik_bilgisi_olmadan_exact_yerel_kaynagi_kullanir(self):
+    def test_yerel_yama_iki_manifestte_git_erisimini_kaldirir(self):
+        import tomllib
+        for path, expected in [("compiler/Cargo.toml", "third_party/postgres-protocol"),
+                               ("compiler/fuzz/Cargo.toml", "../third_party/postgres-protocol")]:
+            manifest = tomllib.loads((ROOT / path).read_text())
+            self.assertEqual(manifest["patch"]["crates-io"]["postgres-protocol"], {"path": expected})
+        self.assertFalse((ROOT / "scripts/ci-oz-kaynak.sh").exists())
+
+    def test_kok_ve_eski_taban_oncesi_icerik_istisnasiz_taranir(self):
         with tempfile.TemporaryDirectory() as directory:
-            config = Path(directory) / "gitconfig"
-            envfile = Path(directory) / "env"
-            env = dict(os.environ, CI="false", GIT_CONFIG_GLOBAL=str(config),
-                       GIT_CONFIG_NOSYSTEM="1", GITHUB_ENV=str(envfile))
-            bash = "bash"
-            if os.name == "nt":
-                # Windows System32 bash may select WSL; this script uses the
-                # same Git Bash runtime as the workflow shell.
-                git_exe = Path(shutil.which("git"))
-                bash = str(git_bash(git_exe))
-                env["GIT_CONFIG_GLOBAL"] = config.as_posix()
-                env["GITHUB_ENV"] = envfile.as_posix()
-            command = [bash, (ROOT / "scripts/ci-oz-kaynak.sh").as_posix()]
-            result = subprocess.run(command, cwd=ROOT, env=env, capture_output=True)
-            self.assertEqual(result.returncode, 2, result.stderr.decode())
-            self.assertFalse(config.exists())
-            env["CI"] = "true"
-            result = subprocess.run(command, cwd=ROOT, env=env, capture_output=True)
-            self.assertEqual(result.returncode, 0, result.stderr.decode())
-            self.assertEqual(envfile.read_text(), "CARGO_NET_GIT_FETCH_WITH_CLI=true\n")
-            result = subprocess.run(["git", "ls-remote", "https://github.com/merbay-erp/zee", "HEAD"],
-                                    cwd=ROOT, env=env, capture_output=True)
-            self.assertEqual(result.returncode, 0, result.stderr.decode())
-            head = subprocess.check_output(["git", "-C", str(ROOT), "rev-parse", "HEAD"]).strip()
-            self.assertIn(head, result.stdout)
+            root = Path(directory)
+            def git(*args):
+                return subprocess.check_output(["git", "-C", directory, *args], stderr=subprocess.PIPE).decode().strip()
+            git("init", "-q"); git("config", "user.name", "Zee Test")
+            git("config", "user.email", "zee@example.invalid")
+            (root / "old.txt").write_text("Example Client")
+            git("add", "."); git("commit", "-qm", "root")
+            git("rm", "old.txt"); git("commit", "-qm", "old base")
+            base = git("rev-parse", "HEAD")
+            self.assertTrue(SCAN(root, {"history_base": base, "legacy_fingerprints": {}}, rules(), worktree=False))
 
     def test_taban_eslemesi_yalniz_onayli_eski_master_icin_gecerlidir(self):
         api = runpy.run_path(str(ROOT / "scripts/ci-taban-kimligi.py"))

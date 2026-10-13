@@ -23,9 +23,6 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-      - name: Özel depoda exact self Git kaynak hazırlığı
-        shell: bash
-        run: bash scripts/ci-oz-kaynak.sh
       - name: Yayımlanmış conformance artefaktları immutable
         if: matrix.os == 'ubuntu-latest'
         shell: bash

@@ -93,3 +93,7 @@ testi geçti. Önceki kablo/Bash hataları tarihsel kayıt olarak yukarıdadır.
 eşleşmesi kullanıcı kararı bekler; bunlar anonimleşti diye sunulmaz.
 GitHub PR refs/önbellek temizliği destek teyidi bekler (GB-046).
 Depo gizlidir; yeniden açmak için ayrıca kullanıcı onayı alınır.
+
+K-215 güncellemesi: yukarıdaki önceki geçiş listesi tarihsel envanterdir.
+Kullanıcı temizliğe onay verdi; fingerprint istisnaları kaldırıldı.
+Güncel kapsam ve sonuç [K-215 kaydında](../k215/README.md) izlenir.

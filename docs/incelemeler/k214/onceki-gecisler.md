@@ -89,3 +89,7 @@ Aynı dosya/aynı içerik dışındaki yeni kayıt kapıda reddedilir.
 | `rfcs/0026-postgresql-veri-erisimi.md` | 10 | `[maskeli]` |
 | `rfcs/0027-binary-yukleme-ve-dosya-yasam-dongusu.md` | 11 | `[maskeli]` |
 | `spec/11-uygulama-eylemleri-ve-web-adaptoru.md` | 200 | `[maskeli]` |
+
+K-215 güncellemesi: yukarıdaki önceki geçiş listesi tarihsel envanterdir.
+Kullanıcı temizliğe onay verdi; fingerprint istisnaları kaldırıldı.
+Güncel kapsam ve sonuç [K-215 kaydında](../k215/README.md) izlenir.

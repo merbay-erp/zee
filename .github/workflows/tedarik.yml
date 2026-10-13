@@ -46,8 +46,6 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-      - name: Özel depoda exact self Git kaynak hazırlığı
-        run: bash scripts/ci-oz-kaynak.sh
       - name: Sabit Rust araç zinciri
         run: rustup toolchain install 1.93.1 --profile minimal
       - name: Rust pin ve provenance giriş regresyonları

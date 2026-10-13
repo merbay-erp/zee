@@ -142,3 +142,13 @@ ikili üretimi ab8e97e. 735/735 faz, git pin/blob/tree SBOM, offline vendor
 kabulüdür; [ham kanıt](incelemeler/k206/source-identity/README.md).
 Path kaynaklı başarısız iki-clone koşusu da saklanır. Protokol src byte'ları
 upstream ile aynıdır; GB-041/32 MiB erken wire guard hâlâ açık kalır.
+
+### K-215: Path yamanın build kimliği
+
+Önceki exact self Git pin tarihsel tedarik kanıtıdır. Güncel compiler/fuzz
+`postgres-protocol` 0.6.12+zee.2'yi depo içi path yamasıyla derler; paket
+baytları ve `patches-v2` kanonik SHA-256'sı aynıdır. Kayıtlı kaynak SHA'sı
+anonim soy ağacı bilgisidir. Güncel SBOM URL'si gerçek build SHA'sını taşır
+ve hem o commit ağacı hem derlenen disk ağacı kayıtlı hash'le eşleşmeden
+üretilmez. Git kaynakları deny istisnası olmadan reddedilir. Eski ikililer
+ve imzaları geçmiş kaynaklarına aittir; yeni kimlik adına sunulmaz.
