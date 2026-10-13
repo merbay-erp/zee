@@ -1,0 +1,76 @@
+{
+  "binary_sha256": "d99990e15c7b34b2cfd9c25a9a1e5c1594bdf1b28426d72ed7d2bdfb85303de5",
+  "mode": "dosya",
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "workload_sha256": "b69c2b205dce532351b7928bb0e4cbba853003253359e3cfff326585fa40fe09",
+  "runs": [
+    {
+      "args": [
+        "yuk.py",
+        300,
+        1,
+        "58327"
+      ],
+      "elapsed_seconds": 5.680284291040152,
+      "stdout": "N=300 C=1 süre=5.63s  istek/sn=53  p50=18.7ms p95=22.1ms p99=25.2ms  durumlar={200: 300}\n",
+      "state_bytes": 33098
+    },
+    {
+      "args": [
+        "yuk.py",
+        1000,
+        10,
+        "58327"
+      ],
+      "elapsed_seconds": 18.530490415985696,
+      "stdout": "N=1000 C=10 süre=18.48s  istek/sn=54  p50=183.3ms p95=200.9ms p99=205.0ms  durumlar={200: 1000}\n",
+      "state_bytes": 110099
+    },
+    {
+      "args": [
+        "yuk2.py",
+        600,
+        10,
+        "58327,58337",
+        100000
+      ],
+      "elapsed_seconds": 11.562543333973736,
+      "stdout": "workers=2 N=600 istek/sn=52 200=600 diğer=0\n",
+      "state_bytes": 176099
+    },
+    {
+      "args": [
+        "yuk2.py",
+        4000,
+        10,
+        "58327",
+        200000
+      ],
+      "elapsed_seconds": 84.2172750000027,
+      "stdout": "workers=1 N=4000 istek/sn=48 200=4000 diğer=0\n",
+      "state_bytes": 307660
+    },
+    {
+      "args": [
+        "yuk.py",
+        300,
+        1,
+        "58327"
+      ],
+      "elapsed_seconds": 7.4230044999858364,
+      "stdout": "N=300 C=1 süre=7.35s  istek/sn=41  p50=23.1ms p95=32.7ms p99=45.9ms  durumlar={200: 300}\n",
+      "state_bytes": 303370
+    }
+  ],
+  "source_commit": "fef5e989c0a72db220f4641e45fcf5ac52dbd8ca",
+  "cpu": "Apple M4 Pro",
+  "ram_bytes": 25769803776,
+  "os": "macOS 26.6.2 (25G83)",
+  "rustc": "1.93.1 (01f6ddf75 2026-02-11)",
+  "build": "cargo build --locked --release --bin dil",
+  "samples_per_scenario": 1,
+  "warmup_requests": 0,
+  "measurement_kind": "local-observation-no-hard-threshold",
+  "program_origin_commit": "1b002e09c3c3fa38d8e88c2d82669618d99cd762",
+  "program_header_comment_removed": false
+}
