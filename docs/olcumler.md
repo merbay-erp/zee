@@ -310,3 +310,8 @@ yürüdü. Hard eşik yoktur; tek makine sonucu genel SLA değildir.
 Başarılı ad çözümlemesi yaklaşık 7,5 kat 20k hızlanma sağladı. Full
 didChange ve kapsam HashSet clone/retain maliyeti sürer; 20k <1 sn hedefi
 ve incremental/cache kapasitesi açık kalır. Cache/persistent state yoktur.
+
+K-207 tarihçe testi eski K-148/K-153/K-154 alt kümesinin exact 32
+satırını korur ve yeni iki kaydın 13'er satır/4 ölçek/source SHA/clean
+metadata'sını ayrıca doğrular. Toplam satır sayısı ilerlemeyi engelleyen
+sabit kabul edilmez; genel şema/metadata yinelenme kapıları yürürlüktedir.
