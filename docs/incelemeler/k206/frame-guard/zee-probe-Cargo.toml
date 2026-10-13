@@ -1,0 +1,10 @@
+[package]
+name = "zee-pg-wire-rss-probe"
+version = "0.0.0"
+edition = "2021"
+[dependencies]
+dil = { path = "../.." }
+[workspace]
+
+[patch.crates-io]
+postgres-protocol = { git = "https://github.com/merbay-erp/zee", rev = "1ffdb5846ef1f5022bbf3c695d6c70abcde85364" }

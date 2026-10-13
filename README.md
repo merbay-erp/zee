@@ -145,7 +145,7 @@ Değişikliğe özel test, belge ve güvenlik kapıları [AGENTS.md](AGENTS.md) 
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **737** |
+| Rust + doctest vakası | **738** |
 | Tanı kimliği | **155 etkin + 3 ayrılmış** |
 | RFC | **29** (2 kabul, 24 geçici kabul, 3 taslak) |
 | ADR | **77** (77 kabul) |
@@ -153,3 +153,8 @@ Değişikliğe özel test, belge ve güvenlik kapıları [AGENTS.md](AGENTS.md) 
 <!-- ZEE-DEPO-SAYILARI:END -->
 
 </details>
+
+PostgreSQL backend mesajları 32 MiB length sınırında erken reddedilir;
+kopan transaction ve RLS bağlamı yeni bağlantıda sürdürülmez.
+[Davranış ve hata verisi](spec/25-postgresql-veri-erisimi.md) sonuç bütçesi
+ile transport sınırını ayırır; bu global RSS garantisi değildir.

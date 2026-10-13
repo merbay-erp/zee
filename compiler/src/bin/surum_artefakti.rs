@@ -592,9 +592,9 @@ mod testler {
             .unwrap();
         assert_eq!(
             patched["software_downloadLocation"],
-            format!("{KAYNAK_DEPOSU}/tree/f2d40d21766674698f656851aacde3007d72334f/compiler/third_party/postgres-protocol")
+            format!("{KAYNAK_DEPOSU}/tree/a4d7f208bc1bf01255f5ae9a16ebb97a74ff0d84/compiler/third_party/postgres-protocol")
         );
-        assert_eq!(patched["software_packageVersion"], "0.6.12+zee.1");
+        assert_eq!(patched["software_packageVersion"], "0.6.12+zee.2");
         assert_eq!(
             patched["verifiedUsing"][0]["hashValue"]
                 .as_str()

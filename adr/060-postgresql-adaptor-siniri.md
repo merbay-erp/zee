@@ -123,3 +123,11 @@ K-206 hazırlık kopyası .2 artık iki-parser typed 32 MiB guard taşır.
 Compiler/fuzz pin hâlâ c4e9d036 .1 seçer; guard üretimde etkin değildir.
 Exact kaynak commitinden sonra tüketici pin ve transaction/retry/RLS
 kabulü birlikte taşınacaktır. GB-041 bu hazırlıkta açık kalır.
+
+K-206 wire entegrasyonu: compiler/fuzz protokolü exact 1ffdb584 .2 kaynağına
+pinlidir. İki parser'da 32 MiB length reddi, typed C025 verisi, read retry
+engeli ve geçersiz transaction/request-local cleanup uygulanır. Gönderilmiş
+COMMIT sonrası bağlantı kaybı C027 olarak korunur. Native loopback kabulü
+okuma, büyük Notice üreten write, nested/RLS ve deferred COMMIT'i kapsar.
+GB-041 bu kaynakta uygulandı; exact temiz kaynak, vendor/iki-clone ve
+sürekli kapı kabulü henüz beklenir. Global RSS sözü verilmez.
