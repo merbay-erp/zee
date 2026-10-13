@@ -68,3 +68,7 @@ python3 target/native-rss-driver.py
 
 Yeni koşu kendi exact SHA/temizlik/çevre kaydını üretir. Konteynerler
 UUID adıyla yalnız test tarafından oluşturulur ve kaldırılır.
+
+Yerel dependency source kimliği/iki-clone kabulü [buradadır](source-identity/README.md).
+Mesaj üst sınırı henüz etkin değildir; sıradaki security dilimi bağlantı
+kapanması/transaction kaybını ayrı typed hata ve native testle ele almalıdır.

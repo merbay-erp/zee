@@ -1092,3 +1092,10 @@ K-206 path patch iki-clone kabulünde reddedildi; yalnız kaynak kimliği
 exact ana repo Git SHA pinine çevrildi. Protokol davranışı değişmedi.
 SBOM yerel + Git blob tree hash eşitliği ve exact lock source ister;
 v2 kayıt etkin, v1 tarihsel. Yeniden offline/release kanıtı beklenir.
+
+K-206 dependency kimliği dilimi kapalı: source 9dae3e6, temiz beyan/
+ikili üretimi ab8e97e. 735/735 faz, git pin/blob/tree SBOM, offline vendor
+163 paket ve iki temiz klonda eş dil/dillsp SHA-256 geçti. Yerel macOS
+kabulüdür; [ham kanıt](incelemeler/k206/source-identity/README.md).
+Path kaynaklı başarısız iki-clone koşusu da saklanır. Protokol src byte'ları
+upstream ile aynıdır; GB-041/32 MiB erken wire guard hâlâ açık kalır.

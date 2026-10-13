@@ -313,3 +313,15 @@ ana repo URL'sine izin verir; SBOM ayrıca tam kayda/pine birebirlik ister.
 repo içindeki crate'i bulur ve `rev` pinini destekler. Yalnız sürüm build
 metadata'sı pinin yerini tutmaz. Offline vendor ve iki-klon kabulü bu exact
 Git kaynağıyla yeniden alınacaktır; başarısız path koşusu tarihten gizlenmez.
+
+K-206 dependency kimliği dilimi kapalı: source 9dae3e6, temiz beyan/
+ikili üretimi ab8e97e. 735/735 faz, git pin/blob/tree SBOM, offline vendor
+163 paket ve iki temiz klonda eş dil/dillsp SHA-256 geçti. Yerel macOS
+kabulüdür; [ham kanıt](../docs/incelemeler/k206/source-identity/README.md).
+Path kaynaklı başarısız iki-clone koşusu da saklanır. Protokol src byte'ları
+upstream ile aynıdır; GB-041/32 MiB erken wire guard hâlâ açık kalır.
+
+Dependency retention ref `dependency-retention/postgres-protocol-c4e9d03616fe`
+clean kabul kaynak ab8e97e'yi tutar; dependency c4e9d03 bunun ancestor'ıdır.
+Squash/branch temizliği bağımlılık commitini reachable kümeden çıkaramaz.
+Ref silinmez/taşınmaz; Zee `v*` etiketi veya binary publish değildir.
