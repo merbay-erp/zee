@@ -103,3 +103,17 @@ Son [bütün ref taraması](tarama.json): anonim tarihçe tabanında 18 ref,
 406 commit, 5.165 path/blob çifti ve **0 eşleşme**. Müşteri eski satır
 istisnası yoktur. Sonraki K-215 politika/kod/beyan dosyaları aynı
 politikayla çalışma ağacı ve uzak CI kapısında ayrıca denetlenir.
+
+## Path yama ikili tekrarlanabilirliği
+
+İlk temiz `b70f426cd29bd971a5aea68405549a273a06a9d8` artefakt denemesi
+macOS dil ikilisinde eş olmayan SHA-256 nedeniyle reddedildi; artefakt
+yayımlanmadı. Tanı PostgreSQL panic konumlarında Cargo kanonik
+`/private/var/.../a` ve `/b` kaynak yollarını gösterdi. Mantıksal `/var`
+prefix remap bu yolları kapsayamıyordu. Geçici klon kökü `pwd -P` ile
+kanonikleştirilir; Unix sembolik yol testi gerçek betik adımını çalıştırır.
+İki bağımsız temiz klon hash eşitliği yeniden doğrulanmadan kapı kapanmaz.
+
+Kanonik yol düzeltmesi sonrası **771/771 faz testi** geçti; yeni Unix
+sembolik yol vakası birincil tedarik fazındadır. Clippy/fmt, katalog ve
+belge tazeliği temiz. Temiz commit ikili tekrar üretimi ayrıca kaydedilir.

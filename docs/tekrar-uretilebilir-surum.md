@@ -152,3 +152,8 @@ anonim soy ağacı bilgisidir. Güncel SBOM URL'si gerçek build SHA'sını taş
 ve hem o commit ağacı hem derlenen disk ağacı kayıtlı hash'le eşleşmeden
 üretilmez. Git kaynakları deny istisnası olmadan reddedilir. Eski ikililer
 ve imzaları geçmiş kaynaklarına aittir; yeni kimlik adına sunulmaz.
+
+K-215 path paketleri için Cargo’nun kanonik kaynak yolu remap kapsamındadır:
+geçici klon kökü fiziksel yola açılır. İki ayrı temiz klon ve bağımsız hedef
+ağacı korunur; hash farkı artefaktı reddeder. Mantıksal sembolik kök
+(`/var` gibi) fiziksel kaynak yolunu maskeleyemediği için kabul edilmez.
