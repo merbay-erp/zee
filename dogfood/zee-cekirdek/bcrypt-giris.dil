@@ -1,0 +1,5 @@
+# K-208: legacy panel mevcut bcrypt kullanıcı parolasını değiştirmeden giriş yapmalıdır.
+parola "dogru-parola" olsun
+ozet "$2b$11$ps3248yUh0B5w2jKirP8QufvI/UGGxj8vc8YKmJKwj0plgNdg5jLy" olsun
+parola ozet ile doğrulanıyorsa
+    "legacy-giris-dogrulandi" yaz

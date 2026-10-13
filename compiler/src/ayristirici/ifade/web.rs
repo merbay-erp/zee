@@ -36,3 +36,19 @@ pub(super) fn oturum_yonetimi_kalibi(tokenlar: &[Token]) -> Result<Option<Ifade>
         _ => Ok(None),
     }
 }
+
+/// Contextual, zero-argument HTTP metadata expressions (K-209).
+pub(super) fn sifir_argumanli(n: usize, ilk: Option<&str>, son: &str) -> Option<Ifade> {
+    if n != 2 {
+        return None;
+    }
+    let kimlik = match (ilk, son) {
+        (Some("csrf"), "belirteci") => crate::intrinsic::CSRF_BELIRTECI,
+        (Some("istemci"), "adresi") => crate::intrinsic::ISTEMCI_ADRESI,
+        _ => return None,
+    };
+    Some(Ifade::Intrinsic {
+        kimlik: kimlik.into(),
+        argumanlar: Vec::new(),
+    })
+}

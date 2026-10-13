@@ -1045,3 +1045,15 @@ GET \"/x\" adresine istek geldiğinde
 ";
     assert_eq!(dil::kaynagi_derle(kaynak).expect_err("T047").kod, "T047");
 }
+
+#[test]
+fn istemci_adresi_web_disinda_bostur_ve_islem_etkisi_korunur() {
+    let program = dil::kaynagi_derle("istemci adresi yaz\n").unwrap();
+    let mut io = ToplayanIo::yeni(Vec::new());
+    calistir_io(&program, &mut io).unwrap();
+    assert_eq!(io.cikti, [""]);
+    let error =
+        dil::kaynagi_derle("eylem denetimYaz\n    Metin döndürür\n    istemci adresi döndür\n")
+            .unwrap_err();
+    assert_eq!(error.kod, "T044");
+}

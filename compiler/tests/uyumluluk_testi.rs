@@ -563,7 +563,7 @@ fn syntax_freeze_kaydi() -> BTreeMap<String, String> {
 
 #[test]
 fn v1_syntax_freeze_penceresinde_kalip_kosul_komut_yuzeyi_degismez() {
-    // K-174: K-188 dogfood yüzeyi sonrası 30 Eylül – 28 Ekim 2026 arasında
+    // K-174: K-209 gerçek ürün yüzeyi sonrası 13 Ekim – 10 Kasım 2026 arasında
     // yeni syntax açılmaz. Kalıp, koşul
     // ve komut satırlarının özeti kayıtla birebir olmalıdır; bilinçli bir
     // değişiklik kaydı, tarihi ve K-işini aynı committe günceller.

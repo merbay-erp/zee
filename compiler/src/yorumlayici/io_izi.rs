@@ -3,6 +3,7 @@
 
 mod codec;
 mod eylem;
+mod istemci;
 mod oturum;
 
 use self::codec::*;
@@ -66,6 +67,7 @@ fn gecerli_islem(islem: &str) -> bool {
             | "cerez_yaz"
             | "cerez_sil"
             | "rota_guvenligini_denetle"
+            | "istemci_adresi"
             | "csrf_belirteci"
             | "oturum_ac"
             | "oturum_kapat"
@@ -165,6 +167,7 @@ fn olay_semasini_denetle(olay: &IzOlay) -> Result<(), String> {
                 Err("rastgele alanları kanonik i64 olmalı".into())
             }
         }
+        "istemci_adresi" => istemci::semayi_denetle(olay),
         "dosya_oku" | "csrf_belirteci" => {
             metin_sonuc_semasi(olay, usize::from(olay.islem == "dosya_oku"))
         }
@@ -588,6 +591,10 @@ impl<T: GirdiCikti> GirdiCikti for IzKaydedenIo<T> {
             web_sonuc_yaz(&sonuc),
         );
         sonuc
+    }
+
+    fn istemci_adresi(&mut self) -> String {
+        istemci::kaydet(self)
     }
 
     fn csrf_belirteci(&mut self) -> Result<String, String> {
@@ -1133,6 +1140,10 @@ impl GirdiCikti for IzYenidenOynatici {
                 })
             }
         }
+    }
+
+    fn istemci_adresi(&mut self) -> String {
+        istemci::yeniden_oynat(self)
     }
 
     fn csrf_belirteci(&mut self) -> Result<String, String> {

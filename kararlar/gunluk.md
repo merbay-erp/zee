@@ -3885,3 +3885,15 @@ a4e1045; native 13 vaka, 736/736 faz, offline vendor 163 ve iki-clone
 release geçti. GB-041 kapalı; global RSS garantisi ve sürekli geniş
 fault-proxy matrisi değildir. Exact ham kanıt
 [buradadır](../docs/incelemeler/k206/frame-guard/README.md).
+
+## K-208/K-209 — Zee çekirdek legacy giriş ve audit IP
+
+Gerçek ürün talebi ve exact köken dogfood/zee-cekirdek altında korunur.
+K-208 bcrypt $2a/$2b/$2y yalnız doğrulama (maliyet 4–14, 72 UTF-8 byte
+sınırı), K-209 trusted `istemci adresi` Metin ifadesidir. Node vektör,
+real worker proxy/socket/IPv6/spoofed XFF, CLI boş değer ve replay testleri
+mevcuttur. RFC-0030 geçici kabul/ADR-082; yeni özet Argon2id kalır.
+Ürün upgrade/migration/audit saklama işini kendi tarafında yapar.
+K-174 syntax gözlem penceresi gerçek K-209 grammar değişikliği nedeniyle
+2026-10-13–2026-11-10 olarak yeniden başladı; B-001/B-002 açık.
+Tam faz, source beyanı ve vendor/release kapanışı beklenir.

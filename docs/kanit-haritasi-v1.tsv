@@ -132,3 +132,5 @@ adr/076-dogrulanmis-oturum-bilgisi.md	kanitli	compiler/tests/web_testi.rs,compil
 adr/077-request-bound-postgresql-tenant-baglami.md	kanitli	compiler/tests/proje_testi.rs,compiler/src/postgresql.rs,compiler/src/main.rs	Doğrulanmış kullanıcıdan aynı request transaction bağlantısında tenant RLS bağlamı ve rollback sınırı
 adr/078-migration-sql-seviye-ayristirma.md	kanitli	compiler/src/postgresql.rs	Migration transaction yasağının yalnız üst seviye SQL tokenlarında uygulanması
 adr/079-erp-oturum-listeleme-ve-iptal.md	kanitli	compiler/tests/web_testi.rs,compiler/src/web_guvenligi.rs	Sır taşımayan kullanıcı oturum listesi, sahte metadata reddi ve transaction kapsamlı tekil iptal
+rfcs/0030-legacy-parola-ve-istemci-adresi.md	kanitli	compiler/src/guvenlik/legacy_bcrypt.rs,compiler/tests/web_cok_surec_testi.rs,compiler/tests/io_izi_testi.rs	Legacy Node vektörleri ve gerçek proxy/socket IP, replay kabulü; usability tam kabul değildir.
+adr/082-legacy-giris-ve-kanonik-istemci-kimligi.md	kanitli	compiler/src/guvenlik/legacy_bcrypt.rs,compiler/tests/web_cok_surec_testi.rs,compiler/tests/web_testi.rs	Maliyet/byte/algoritma retleri, trusted host IP ve istek dışı sınır.

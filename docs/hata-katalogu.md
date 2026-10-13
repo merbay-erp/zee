@@ -206,3 +206,8 @@ kalır (ADR-025).
 
 > S032, A004 ve C014 bilinçli mezar taşlarıdır; ayrılmış kodlar başka anlamda
 > kullanılamaz. Yeni tanılar ilgili ailedeki sıradaki boş numarayı alır.
+
+K-208: parola doğrulama intrinsic’inde yanlış argüman türü mevcut T034
+koduyla `Parola ve parola özeti Metin olmalı.` bildirir. Bcrypt ve
+Argon2id aynı Metin imzasını kullanır; bozuk hash/yanlış parola tanı
+üretmek yerine `yanlış`tır. K-209 eylem içi IP okuması mevcut T044’tür.
