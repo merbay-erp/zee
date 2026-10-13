@@ -1,9 +1,6 @@
 --- a/src/message/backend.rs
 +++ b/src/message/backend.rs
-@@ -33,6 +33,42 @@
- pub const ROW_DESCRIPTION_TAG: u8 = b'T';
- pub const READY_FOR_QUERY_TAG: u8 = b'Z';
- 
+@@ -35,0 +36,36 @@
 +/// Maximum backend message length, including its four-byte length field.
 +/// The one-byte message tag is excluded. This is not a process RSS bound.
 +pub const ZEE_BACKEND_FRAME_LIMIT: usize = 32 * 1024 * 1024;
@@ -40,29 +37,11 @@
 +    Ok(())
 +}
 +
- #[derive(Debug, Copy, Clone)]
- pub struct Header {
-     tag: u8,
-@@ -57,6 +93,7 @@
-             ));
-         }
- 
+@@ -59,0 +96 @@
 +        check_frame_length(len as usize)?;
-         Ok(Some(Header { tag, len }))
-     }
- 
-@@ -126,6 +163,7 @@
-             ));
-         }
- 
+@@ -128,0 +166 @@
 +        check_frame_length(len as usize)?;
-         let total_len = len as usize + 1;
-         if buf.len() < total_len {
-             let to_read = total_len - buf.len();
-@@ -901,3 +939,118 @@
- fn get_str(buf: &[u8]) -> io::Result<&str> {
-     str::from_utf8(buf).map_err(|e| io::Error::new(io::ErrorKind::InvalidInput, e))
- }
+@@ -903,0 +942,115 @@
 +
 +#[cfg(test)]
 +mod zee_frame_tests {
