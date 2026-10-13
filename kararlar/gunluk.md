@@ -3859,3 +3859,9 @@ başlık/hash kanıtı provenance'a girer. Yerel sonrası 24/24 nesne 11.0
 ve program/LSP geçti; exact release üç platform kanıtı açık. Gerçek
 macOS 11/minimum OS/tüm native alt süreç desteği değildir. ADR-068/GB-037;
 spec/RFC/tanı/API/production Rust katmanı ve release dosya kümesi değişmez.
+
+K-206 erken header kabul tasarımı: iki ayrı backend parser'ı kapsayan
+typed 32 MiB aday yama bağımsız geçici crate'te 34/34 testle doğrulandı.
+Aktif dependency pin değişmedi; üretimde mesaj sınırı etkin değildir.
+Transaction durum temizliği, read retry engeli ve exact immutable kaynak
+entegrasyonu açık; GB-041 kapatılmadı. [Kabul tasarımı](../docs/incelemeler/k206/frame-guard/README.md).
