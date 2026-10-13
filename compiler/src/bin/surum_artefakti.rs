@@ -10,6 +10,9 @@ use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 
+#[path = "surum_artefakti/yamalar.rs"]
+mod yamalar;
+
 const IMZA_SEMASI: &str = "zee-surum-imza-v1";
 const IMZA_ALANI: &[u8] = b"zee-surum-v1\0";
 const ANAHTAR_BASLIGI: &str = "zee-ed25519-private-v1";
@@ -84,29 +87,38 @@ struct KilitPaketi {
     ad: String,
     surum: String,
     ozet: Option<String>,
+    kaynak: Option<String>,
+}
+
+#[derive(Default)]
+struct KilitGirdisi {
+    ad: Option<String>,
+    surum: Option<String>,
+    ozet: Option<String>,
+    kaynak: Option<String>,
 }
 
 /// `Cargo.lock` `[[package]]` bloklarını (kök paket dahil) sıralı okur.
 fn kilit_paketleri(metin: &str) -> Result<Vec<KilitPaketi>, String> {
     let mut paketler = Vec::new();
-    let mut acik: Option<(Option<String>, Option<String>, Option<String>)> = None;
-    let kapat = |acik: &mut Option<(Option<String>, Option<String>, Option<String>)>,
-                 paketler: &mut Vec<KilitPaketi>|
-     -> Result<(), String> {
-        if let Some((ad, surum, ozet)) = acik.take() {
-            paketler.push(KilitPaketi {
-                ad: ad.ok_or("Cargo.lock paketinde name eksik")?,
-                surum: surum.ok_or("Cargo.lock paketinde version eksik")?,
-                ozet,
-            });
-        }
-        Ok(())
-    };
+    let mut acik: Option<KilitGirdisi> = None;
+    let kapat =
+        |acik: &mut Option<KilitGirdisi>, paketler: &mut Vec<KilitPaketi>| -> Result<(), String> {
+            if let Some(girdi) = acik.take() {
+                paketler.push(KilitPaketi {
+                    ad: girdi.ad.ok_or("Cargo.lock paketinde name eksik")?,
+                    surum: girdi.surum.ok_or("Cargo.lock paketinde version eksik")?,
+                    ozet: girdi.ozet,
+                    kaynak: girdi.kaynak,
+                });
+            }
+            Ok(())
+        };
     for satir in metin.lines() {
         let satir = satir.trim();
         if satir == "[[package]]" {
             kapat(&mut acik, &mut paketler)?;
-            acik = Some((None, None, None));
+            acik = Some(KilitGirdisi::default());
             continue;
         }
         if satir.starts_with('[') {
@@ -119,9 +131,10 @@ fn kilit_paketleri(metin: &str) -> Result<Vec<KilitPaketi>, String> {
         };
         let deger = deger.trim_matches('"').to_string();
         match anahtar {
-            "name" => blok.0 = Some(deger),
-            "version" => blok.1 = Some(deger),
-            "checksum" => blok.2 = Some(deger),
+            "name" => blok.ad = Some(deger),
+            "version" => blok.surum = Some(deger),
+            "checksum" => blok.ozet = Some(deger),
+            "source" => blok.kaynak = Some(deger),
             _ => {}
         }
     }
@@ -167,7 +180,16 @@ fn sbom_belgesi(
     zaman: &str,
     ozetler: &BTreeMap<String, String>,
     kilit: &[KilitPaketi],
-) -> Value {
+) -> Result<Value, String> {
+    hex_coz::<20>(git_sha, "Git SHA")?;
+    let kokler = kilit.iter().filter(|p| p.ad == "dil").collect::<Vec<_>>();
+    if kokler.len() != 1
+        || kokler[0].surum != surum
+        || kokler[0].kaynak.is_some()
+        || kokler[0].ozet.is_some()
+    {
+        return Err("SBOM kök paketi tek exact yerel dil sürümü olmalı".into());
+    }
     let taban = format!("https://zee-lang.dev/spdx/surum/{git_sha}");
     let kok = format!("{taban}/package/dil");
     let mut ogeler = vec![kok.clone()];
@@ -199,6 +221,7 @@ fn sbom_belgesi(
     let mut bagimlilik_ogeleri = Vec::new();
     let mut iliskiler = Vec::new();
     for paket in kilit.iter().filter(|p| p.ad != "dil") {
+        let (kaynak, paket_ozeti) = yamalar::kaynak(paket, git_sha)?;
         let kimlik = format!("{taban}/package/{}/{}", paket.ad, paket.surum);
         ogeler.push(kimlik.clone());
         let mut oge = json!({
@@ -207,13 +230,11 @@ fn sbom_belgesi(
             "creationInfo": "_:creationinfo",
             "name": paket.ad,
             "software_packageVersion": paket.surum,
-            "software_downloadLocation": format!("https://crates.io/crates/{}/{}", paket.ad, paket.surum),
+            "software_downloadLocation": kaynak,
             "software_copyrightText": "NOASSERTION"
         });
-        if let Some(ozet) = &paket.ozet {
-            oge["verifiedUsing"] =
-                json!([{"type": "Hash", "algorithm": "sha256", "hashValue": ozet}]);
-        }
+        oge["verifiedUsing"] =
+            json!([{"type": "Hash", "algorithm": "sha256", "hashValue": paket_ozeti}]);
         bagimlilik_ogeleri.push(oge);
         iliskiler.push(json!({
             "type": "Relationship",
@@ -254,7 +275,7 @@ fn sbom_belgesi(
     graph.extend(dosya_ogeleri);
     graph.extend(bagimlilik_ogeleri);
     graph.extend(iliskiler);
-    json!({"@context": "https://spdx.org/rdf/3.0.1/spdx-context.jsonld", "@graph": graph})
+    Ok(json!({"@context": "https://spdx.org/rdf/3.0.1/spdx-context.jsonld", "@graph": graph}))
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -479,7 +500,7 @@ fn calistir(argumanlar: &[String]) -> Result<String, String> {
                 &rfc3339(epoch),
                 &ozetler,
                 &kilit,
-            ))
+            )?)
         }
         "provenance" => {
             let ilk = dosya_oku(Path::new(&secenek(kalan, "--ozet")?))?;
@@ -551,7 +572,98 @@ fn main() -> ExitCode {
 mod testler {
     use super::*;
 
-    const KILIT: &str = "# lock\nversion = 4\n\n[[package]]\nname = \"dil\"\nversion = \"0.8.0-dev\"\ndependencies = [\n \"sha2\",\n]\n\n[[package]]\nname = \"sha2\"\nversion = \"0.11.0\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"abc\"\n";
+    #[test]
+    fn yerel_yama_sbomda_exact_repo_kaynagi_ve_hash_tasir() {
+        let kilit = kilit_paketleri(include_str!("../../Cargo.lock")).unwrap();
+        let sha = "0123456789abcdef0123456789abcdef01234567";
+        let belge = sbom_belgesi(
+            sha,
+            env!("CARGO_PKG_VERSION"),
+            &rfc3339(10),
+            &BTreeMap::new(),
+            &kilit,
+        )
+        .unwrap();
+        let patched = belge["@graph"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|v| v["name"] == "postgres-protocol")
+            .unwrap();
+        assert_eq!(
+            patched["software_downloadLocation"],
+            format!("{KAYNAK_DEPOSU}/tree/{sha}/compiler/third_party/postgres-protocol")
+        );
+        assert_eq!(patched["software_packageVersion"], "0.6.12+zee.1");
+        assert_eq!(
+            patched["verifiedUsing"][0]["hashValue"]
+                .as_str()
+                .unwrap()
+                .len(),
+            64
+        );
+        assert!(!patched.to_string().contains("crates.io"));
+    }
+
+    #[test]
+    fn sbom_kayitsiz_kaynagi_bozuk_checksum_ve_yanlis_koku_reddeder() {
+        let sha = "0123456789abcdef0123456789abcdef01234567";
+        let mut kilit = kilit_paketleri(KILIT).unwrap();
+        kilit[1].kaynak = None;
+        kilit[1].ozet = None;
+        assert!(sbom_belgesi(sha, "0.8.0-dev", &rfc3339(10), &BTreeMap::new(), &kilit).is_err());
+        kilit[1].kaynak = Some("git+https://example.invalid/foreign".into());
+        assert!(sbom_belgesi(sha, "0.8.0-dev", &rfc3339(10), &BTreeMap::new(), &kilit).is_err());
+        let mut kilit = kilit_paketleri(KILIT).unwrap();
+        kilit[1].ozet = Some("bad".into());
+        assert!(sbom_belgesi(sha, "0.8.0-dev", &rfc3339(10), &BTreeMap::new(), &kilit).is_err());
+        let mut kilit = kilit_paketleri(KILIT).unwrap();
+        kilit[0].kaynak = Some("registry+https://github.com/rust-lang/crates.io-index".into());
+        assert!(sbom_belgesi(sha, "0.8.0-dev", &rfc3339(10), &BTreeMap::new(), &kilit).is_err());
+    }
+
+    #[test]
+    fn yama_agaci_konumdan_bagimsiz_ve_bayt_degisimine_duyarlidir() {
+        let root = std::env::temp_dir().join(format!(
+            "zee-tree-{}-{}",
+            std::process::id(),
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap()
+                .as_nanos()
+        ));
+        std::fs::create_dir_all(root.join("a/sub")).unwrap();
+        std::fs::create_dir_all(root.join("b/sub")).unwrap();
+        std::fs::write(root.join("a/z"), b"one").unwrap();
+        std::fs::write(root.join("a/sub/x"), b"two").unwrap();
+        std::fs::write(root.join("b/sub/x"), b"two").unwrap();
+        std::fs::write(root.join("b/z"), b"one").unwrap();
+        let hash = yamalar::agac_ozeti(&root.join("a")).unwrap();
+        assert_eq!(hash, yamalar::agac_ozeti(&root.join("b")).unwrap());
+        std::fs::write(root.join("b/sub/x"), b"tampered").unwrap();
+        assert_ne!(hash, yamalar::agac_ozeti(&root.join("b")).unwrap());
+        std::fs::remove_dir_all(root).unwrap();
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn yama_agaci_symlink_icerigini_hashlemeden_reddeder() {
+        let root = std::env::temp_dir().join(format!(
+            "zee-tree-link-{}-{}",
+            std::process::id(),
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap()
+                .as_nanos()
+        ));
+        std::fs::create_dir_all(root.join("tree")).unwrap();
+        std::fs::write(root.join("outside"), b"not a patch file").unwrap();
+        std::os::unix::fs::symlink(root.join("outside"), root.join("tree/link")).unwrap();
+        assert!(yamalar::agac_ozeti(&root.join("tree")).is_err());
+        std::fs::remove_dir_all(root).unwrap();
+    }
+
+    const KILIT: &str = "# lock\nversion = 4\n\n[[package]]\nname = \"dil\"\nversion = \"0.8.0-dev\"\ndependencies = [\n \"sha2\",\n]\n\n[[package]]\nname = \"sha2\"\nversion = \"0.11.0\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n";
 
     #[test]
     fn kilit_paketleri_sirali_ve_kok_dahil_okunur() {
@@ -559,7 +671,10 @@ mod testler {
         assert_eq!(paketler.len(), 2);
         assert_eq!(paketler[0].ad, "dil");
         assert_eq!(paketler[0].ozet, None);
-        assert_eq!(paketler[1].ozet.as_deref(), Some("abc"));
+        assert_eq!(
+            paketler[1].ozet.as_deref(),
+            Some("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+        );
         assert!(kilit_paketleri("[[package]]\nversion = \"1\"\n").is_err());
     }
 
@@ -576,22 +691,12 @@ mod testler {
         let ozetler = ozetleri_coz("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa  dil\nbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb  dillsp\n").unwrap();
         let kilit = kilit_paketleri(KILIT).unwrap();
         let sha = "0123456789abcdef0123456789abcdef01234567";
-        let a = json_metni(&sbom_belgesi(
-            sha,
-            "0.8.0-dev",
-            &rfc3339(10),
-            &ozetler,
-            &kilit,
-        ))
-        .unwrap();
-        let b = json_metni(&sbom_belgesi(
-            sha,
-            "0.8.0-dev",
-            &rfc3339(10),
-            &ozetler,
-            &kilit,
-        ))
-        .unwrap();
+        let a =
+            json_metni(&sbom_belgesi(sha, "0.8.0-dev", &rfc3339(10), &ozetler, &kilit).unwrap())
+                .unwrap();
+        let b =
+            json_metni(&sbom_belgesi(sha, "0.8.0-dev", &rfc3339(10), &ozetler, &kilit).unwrap())
+                .unwrap();
         assert_eq!(a, b);
         let sbom: Value = serde_json::from_str(&a).unwrap();
         let kok = sbom["@graph"]

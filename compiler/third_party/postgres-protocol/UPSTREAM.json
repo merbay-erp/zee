@@ -1,0 +1,9 @@
+{
+  "crate": "postgres-protocol",
+  "version": "0.6.12",
+  "crate_sha256": "08808e3c483c46e999108051c78334f473d5adb59d78bb80a1268c7e6aa6c514",
+  "repository": "https://github.com/rust-postgres/rust-postgres",
+  "commit": "76062c9b242da6aada065c021aa3083d0922f7d2",
+  "license": "MIT OR Apache-2.0",
+  "stage": "Original src bytes; local source provenance preparation, no frame guard yet."
+}

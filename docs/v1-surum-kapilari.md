@@ -311,3 +311,8 @@ K-206 akış toplama dilimi kapalı: source f2ba654, temiz beyan/ölçüm
 136,77→72,72 MiB; üç vakada sonraki sorgu başarılıdır. Bir örnek/sıfır
 ısınma gözlemi, genel RSS garantisi değildir. [Ham kanıt](incelemeler/k206/README.md).
 **K-206 KISMEN:** tek wire satırı/driver sınırı ve GB-041 açık kalır.
+
+K-206 tedarik hazırlığı: upstream protokol Rust src byte'ları değişmeden
+local patch kimliği compiler/fuzz lock ve doğrulanmış SPDX kaynak/tree
+hash ile kaydedildi. GB-042 kapalı; GB-041/erken wire sınırı açık.
+Offline vendor ve iki-clone release kabulü kapanış öncesi beklenir.
