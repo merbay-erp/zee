@@ -38,3 +38,7 @@ geçti. Derleyici RSS medyanı 8.144→8.160 KiB, LSP 19.088→17.568 KiB.
 Ham örnek/çevre ve tarihçe [ölçümlerde](olcumler.md). 728/728 faz,
 26.624 ad oracle ve 4.096 kapsam işlemi oracle karşılaştırması geçti.
 K-207 KISMEN; full didChange ve incremental/cache kapasitesi açıktır.
+
+K-214 geçmiş düzeltmesi: yukarıdaki kaynak referansları anonim dal kimliğine
+eşlenmiştir. Ham ölçüm/log/ikili/provenance kayıtları ölçülen özgün SHA
+kimliğini korur; bu eşleme yeni ölçüm veya yeni ikili kabulü değildir.

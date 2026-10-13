@@ -63,3 +63,10 @@ immutable belge fingerprintini kaynak satırı SHA-256 ile doğrular (K-204).
 Bu kayıt yeni commit, dosya veya gerçek anahtar bulgusunu susturmaz.
 Default Gitleaks kuralları ve redaction yürürlüktedir; yeni kayıt aynı
 değişiklikte güvenlik bulgusu, gerekçe, hash ve ret testi ister.
+
+### K-214: Anonim açık depo kanıtı
+
+Müşteri ve altyapı kimliği anonimleştirildi; yeni içerik hash politikasıyla
+CI içinde denetlenir. Eski geçişler maskeli dökümle ayrı kullanıcı kararını
+bekler. Tarihsel ölçümler eski kaynak kimliklerini korur; yeniden açılış ve
+GitHub PR önbelleği temizliği ayrıca onay/teyit ister. [Kayıt](docs/incelemeler/k214/README.md).

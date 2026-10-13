@@ -449,8 +449,10 @@ mod tests {
 
     #[test]
     fn ileti_rfc2047_ve_base64() {
-        let ayar =
-            EpostaAyari::ayristir("smtps://u:p@mail.example.invalid?from=info@example.invalid&name=Site+E").unwrap();
+        let ayar = EpostaAyari::ayristir(
+            "smtps://u:p@mail.example.invalid?from=info@example.invalid&name=Site+E",
+        )
+        .unwrap();
         let ileti = ileti_kur(
             &ayar,
             &Ileti {

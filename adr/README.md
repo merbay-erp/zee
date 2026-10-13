@@ -93,3 +93,5 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-085 | [Görünüm bloğu: tipli HTML ağacı (K-212)](085-gorunum-blogu.md) | **kabul** |
 
 | ADR-086 | [Site derleyici hatlarının birleştirilmesi](086-site-hatlarinin-birlestirilmesi.md) | **kabul** (K-213) |
+
+| ADR-087 | [Açık depoda anonim ürün kanıtı](087-acik-depo-urun-gizliligi.md) | **kabul** (K-214) |

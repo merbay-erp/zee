@@ -1,0 +1,112 @@
+{
+  "schema": "zee-acik-depo-politikasi-1",
+  "history_base": "12c59218dc84e8e9d4610274c722985ce6a99dae",
+  "rules": [
+    {
+      "kind": "term",
+      "length": 6,
+      "sha256": "42dfbb658e99864e5c36cfb51436b7bb26cb56396fb6ab78b1840e9d229cce9d"
+    },
+    {
+      "kind": "term",
+      "length": 13,
+      "sha256": "5f77567f9269cb66197abc40a3769c189c2634b87e2c95077fb53fdad4767131"
+    },
+    {
+      "kind": "term",
+      "length": 16,
+      "sha256": "1b886a31219db334026944a305dd06196c83a829e09f530e297c52850fea5ef8"
+    },
+    {
+      "kind": "term",
+      "length": 9,
+      "sha256": "bc46985033bc35963244a69f22b58bb6fc0bf74450e92404156427525bf8e13e"
+    },
+    {
+      "kind": "term",
+      "length": 5,
+      "sha256": "12f23ba201a8abd7f9101848fc9b2c4f776adfabb3a30098c6e7e24c48d347cb"
+    },
+    {
+      "kind": "term",
+      "length": 5,
+      "sha256": "c0591e9a3e240f824a94673ef7c33a8328cb272916a95ea07ad6c0b089bf4323"
+    },
+    {
+      "kind": "term",
+      "length": 11,
+      "sha256": "09444effa7dcc3e9f91566a240dc72cdb2ce4d0f135a1fa0fb10fea5e82dce32"
+    },
+    {
+      "kind": "term",
+      "length": 5,
+      "sha256": "44882d45a5da3fb719be0756f7a86d8b804b6711691d14442d95d04995326065"
+    },
+    {
+      "kind": "term",
+      "length": 8,
+      "sha256": "2807ca2fd31c575338dae54ee641318c12ffa948f1b04dc81dd3ea5ab6f6867e"
+    },
+    {
+      "kind": "term",
+      "length": 6,
+      "sha256": "a55e57f062f2bef8c6d57f4b1fc5dd78b45e0dce382506b5b2b4cd5fbc907db8"
+    },
+    {
+      "kind": "term",
+      "length": 11,
+      "sha256": "1e3e24159bef875505efc5be914973ac134dc5a76300ae2c2a74ef1600fc696d"
+    },
+    {
+      "kind": "term",
+      "length": 7,
+      "sha256": "7165a0ed7ab010f0362d51582d7f0a797408aa2dc36c24922b62e3849fec62ac"
+    },
+    {
+      "kind": "term",
+      "length": 10,
+      "sha256": "7cb299ebd839ec1e178efd264c8d59f482f05eb27b07d1ac43175d5cc54ef6df"
+    },
+    {
+      "kind": "term",
+      "length": 7,
+      "sha256": "02202b8de70106f5c6fb20c14d42d66acf1bb7bd601df06f45822726986a1f58"
+    },
+    {
+      "kind": "term",
+      "length": 7,
+      "sha256": "4648c1b20eca0f3dc91ff640fb01c6c5686400a0f310545b70b4441f55677c53"
+    },
+    {
+      "kind": "term",
+      "length": 4,
+      "sha256": "1741c0cbc634d97cdf42850db5e506cb44e1284ca125266b1b4c32dcbf8001a0"
+    },
+    {
+      "kind": "term",
+      "length": 4,
+      "sha256": "b559d3ab729ae0a1cd8ce61dd775ef6d1ef14e61be6085dccf807e514a2ddf3c"
+    },
+    {
+      "kind": "path",
+      "length": 5,
+      "sha256": "407bb1063433b62ddbb68319d7e6ead9288b827592536658ffa7c46d39e0cc1d"
+    },
+    {
+      "kind": "path",
+      "length": 19,
+      "sha256": "f6243dc2e89cdcb3f3264734e5c469f6e8fe0579d0f9891cc788acf07af91ae5"
+    },
+    {
+      "kind": "term",
+      "length": 9,
+      "sha256": "493c882b81590c9640393e12f25b47b0580a8fe558449b0a125c870ce7cb805e"
+    },
+    {
+      "kind": "term",
+      "length": 12,
+      "sha256": "9fc607c1ad16059cf6d8d3054b540c18d2bc79085396f496b7a234d62c6ca498"
+    }
+  ],
+  "legacy_fingerprints": {}
+}

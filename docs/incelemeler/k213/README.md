@@ -68,3 +68,7 @@ Son kod/test kanıt HEAD'i `2ef362818bf0dc6b8cf4a9951d8ef2a25303a152`: Linux,
 macOS, Windows, tedarik ve sır taramasının 10 kontrolü geçti.
 `dil` koşuları 38392031371/38392039728, `tedarik` 38392031424/38392039739.
 Önceki Linux hatası tarihsel kalır; source e09493e değişmedi.
+
+K-214 geçmiş düzeltmesi: kaynak referansları anonim dal kimliğine eşlenmiştir.
+Ham ölçüm/log/ikili/provenance kayıtları ölçülen özgün SHA kimliğini korur;
+bu eşleme yeni ölçüm veya yeni ikili kabulü değildir.

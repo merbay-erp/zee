@@ -284,3 +284,32 @@ fn kayit_semasi_bozuk_ve_acik_agir_bulguyu_reddeder() {
         .unwrap_err()
         .contains("başlığıyla başlamalı"));
 }
+
+#[test]
+fn acik_depo_kapisi_anonim_politikayi_ve_ci_kablosunu_korur() {
+    let workflow = oku(".github/workflows/tedarik.yml");
+    assert!(workflow.contains("fetch-depth: 0"));
+    assert!(workflow.contains("python3 scripts/tests/acik-depo-test.py"));
+    assert!(workflow.contains("python3 scripts/acik-depo-denetle.py"));
+    let trusted = oku(".github/workflows/acik-depo.yml");
+    assert!(trusted.contains("pull_request_target:"));
+    assert!(trusted.contains("ref: master"));
+    assert!(trusted.contains("python3 kontrol/scripts/acik-depo-denetle.py --depo kaynak"));
+    assert!(oku(".github/workflows/ci.yml").contains("ci-taban-kimligi.py"));
+    assert!(workflow.contains("bash scripts/ci-oz-kaynak.sh"));
+    let policy: serde_json::Value = serde_json::from_str(&oku("docs/acik-depo-politikasi-v1.json"))
+        .expect("anonim politika JSON");
+    assert_eq!(policy["schema"], "zee-acik-depo-politikasi-1");
+    assert_eq!(policy["history_base"].as_str().expect("SHA").len(), 40);
+    assert!(!policy["rules"].as_array().expect("kurallar").is_empty());
+    let result = std::process::Command::new(if cfg!(windows) { "python" } else { "python3" })
+        .arg(depo().join("scripts/tests/acik-depo-test.py"))
+        .current_dir(depo())
+        .output()
+        .expect("sentetik gizlilik kapısı testleri");
+    assert!(
+        result.status.success(),
+        "{}",
+        String::from_utf8_lossy(&result.stderr)
+    );
+}
