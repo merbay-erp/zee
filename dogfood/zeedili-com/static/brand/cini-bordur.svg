@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="72" height="26" viewBox="0 0 72 26" aria-hidden="true">
+<rect width="72" height="26" fill="#f4efe3"/>
+<rect y="1" width="72" height="2" fill="#24508a"/><rect y="23" width="72" height="2" fill="#24508a"/>
+<polygon points="18.00,5.00 20.34,7.34 23.66,7.34 23.66,10.66 26.00,13.00 23.66,15.34 23.66,18.66 20.34,18.66 18.00,21.00 15.66,18.66 12.34,18.66 12.34,15.34 10.00,13.00 12.34,10.66 12.34,7.34 15.66,7.34" fill="#0f7c79" stroke="#0f7c79" stroke-width=".8" stroke-linejoin="round"/>
+<circle cx="18" cy="13" r="2.2" fill="#f4efe3"/>
+<path d="M54 5.5l7.5 7.5-7.5 7.5-7.5-7.5z" fill="#c0442d"/>
+<path d="M54 9.5l3.5 3.5-3.5 3.5-3.5-3.5z" fill="#f4efe3"/>
+<circle cx="36" cy="13" r="1.6" fill="#24508a"/><circle cx="0" cy="13" r="1.6" fill="#24508a"/><circle cx="72" cy="13" r="1.6" fill="#24508a"/>
+</svg>

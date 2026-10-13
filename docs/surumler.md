@@ -12,6 +12,38 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **Resmî Zee sitesi (K-203, ADR-081):** `zeedili.com` HTML ve rotaları Zee
+  ile üretir; on içerik sayfası, responsive/erişilebilir görünüm,
+  canonical/OG/Twitter/JSON-LD, sitemap/robots, yerel statik ön kapı ve sunucu A
+  systemd+Nginx dağıtımı eklendi. Production worker `text/html` üretir;
+  kurucunun sağladığı standalone Zee sembolü, mavi/camgöbeği/lacivert palet
+  ve favicon/PWA ikon ailesi dil kimliğine uyarlandı; ERP yazı kilidi ile
+  sloganı ürün sınırını korumak için kullanılmadı.
+  K-203/F003 ile site kod-öncelikli bir dil platformu olarak yeniden
+  tasarlandı: ana sayfada aynı WASM derleyicisiyle çalışan deneme kutusu,
+  yüklem-odaklı sözdizimi vurgusu, gerçek tanı ve `dil` komut yüzeyi,
+  açık/koyu tema ve kenar menülü dil turu/öğrenme/belge sayfaları. Sitedeki
+  her “Çalıştır” örneği gerçek derleyiciden geçer; 404 veren `blob/main`
+  depo bağlantıları varsayılan `master` dalına düzeltildi.
+  K-203/F005 ile görsel kimlik zee'nin resmî antrasit + altın logosuna,
+  kağıt zemin ve İznik turkuazı/mercanına taşındı; yazı tipleri aynı
+  origin'den sunuluyor. `/playground/` 15 derslik “30 dakikada Zee” akışına
+  dönüştü; dersler Zee'de üretiliyor ve gerçek derleyicide doğrulanıyor.
+  Site Selçuklu yıldızı, Kubadabad yıldız ve baklava deseni, İznik çini bordürü ve
+  lale motifleriyle Türk görsel diline bağlandı; “Türkçe harfler” dersi
+  `ı→I`, `i→İ` dönüşümünü gösteriyor. Depodaki 204 belge (kılavuz, spec, RFC,
+  ADR) artık GitHub yerine sitede `/belge/` altında okunuyor; Markdown
+  dönüştürücüsü de Zee ile yazıldı.
+  K-203/F002 ile `/playground/` gerçek compiler WASM C ABI v3 ikilisini
+  çalıştıran tam bir dil çalışma alanına dönüştü: altı örnek, düzenleyici,
+  girdi/tohum, çıktı/tanı sekmeleri, kopyalama, indirme ve URL parçasıyla
+  paylaşım vardır. Kaynak kodu cihazdan çıkmaz; binary SHA-256 ve ABI kapısı
+  dağıtım öncesinde zorunludur.
+  Nginx TLS/statik/HEAD normalizasyonu ve daha sıkı site CSP'sini uygulama
+  mantığından ayırır. 7 Ekim 2026'da https://zeedili.com Cloudflare proxy'si
+  ve DNS-01 Let's Encrypt sertifikasıyla public yayına girdi; uçlar
+  `scripts/canli-dogrula.sh` ile doğrulandı. Dil/compiler davranışı değişmedi.
+
 - **Kurulum metadata sahipliği (K-194, GB-032):** Kaynak `GIT_SHA` alanından
   manifest satırı enjekte edip kaldırma sırasında yabancı dosya sildirme
   yolu kapatıldı. Var olan `GIT_SHA` exact 40 küçük hex ister; hedef/veri
@@ -1509,3 +1541,11 @@ Windows runtime kanıtı ve GitHub destek teyidi açık kalır.
 eşlemesi ve HEAD atası şartıyla doğrulanır. Eski kaynak nesnelerini çekmek
 gerekmez. Bozuk/çelişkili/ilgisiz eşleme hermetik testle reddedilir. Gitsrv
 Go eşdeğerliğini doğrulanmış Go 1.26.1 aracıyla gerçekten çalıştırır.
+
+## K-217 — Tek merkez ve dal incelemesi
+
+Ürün talebi §2: site temiz içerik, issue formları, özel Forgejo MSVC
+çapraz akışı ve incelenmiş action pinleri ana hatta uygulanır. Snapshot
+compiler/CLI genişlemesi core freeze kanıt zinciri olmadığı için kapatılır.
+Dal yedekleri özel; uzak silme ve CI teyidi henüz açıktır.
+[Dal kararları](incelemeler/k217/README.md). Dil/spec/tanı/API değişmez.

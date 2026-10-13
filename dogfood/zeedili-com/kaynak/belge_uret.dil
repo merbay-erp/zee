@@ -1,0 +1,58 @@
+# Depo belgelerini site sayfalarına çeviren üretici (dağıtım öncesi koşar).
+# Girdi: tek satır — depo yolu (ör. docs/dil-turu.md) ya da DİZİN.
+# Okur: ../uretilen/katalog.txt ve ../uretilen/md/<yol>
+# Yazar: ../uretilen/belge/<ad>.html ya da ../uretilen/belge/index.html
+
+gorunum birimini kullan
+markdown birimini kullan
+
+"Belge yolu?" diye sor
+istek yanıt olsun
+yollar "../uretilen/katalog.txt" dosyasının satırları olsun
+
+istek "DİZİN" e eşitse
+    gruplar "docs/", "spec/", "rfcs/", "adr/", "editors/" listesi olsun
+    bölümler "" olsun
+    her grup için
+        grup_adı "Kılavuzlar ve kayıtlar" olsun
+        grup "spec/" e eşitse
+            grup_adı "Normatif spesifikasyon" olsun
+        değilse grup "rfcs/" e eşitse
+            grup_adı "RFC'ler" olsun
+        değilse grup "adr/" e eşitse
+            grup_adı "Mimari kararlar (ADR)" olsun
+        değilse grup "editors/" e eşitse
+            grup_adı "Editör desteği" olsun
+        satırlar_html "" olsun
+        her yol için
+            yol grup ile başlıyorsa
+                kaynak "../uretilen/md/" ile yol olsun
+                içerik kaynak dosyasının satırları olsun
+                başlık içerik için basligiBul olsun
+                ad yol için belgeAdi olsun
+                satırlar_html satırlar_html ile "<li><a href='/belge/" ile ad ile "/'><b>" ile başlığın html güvenlisi ile "</b><i>" ile yolun html güvenlisi ile "</i></a></li>" olsun
+        bölümler bölümler ile "<section><h2>" ile grup_adı ile "</h2><ul class='baglanti-listesi belge-dizini'>" ile satırlar_html ile "</ul></section>" olsun
+    üst "Belgeler" ve "Bütün belgeler" ve "Kılavuzlar, normatif spesifikasyon, RFC'ler ve mimari kararlar. Her sayfa depodaki Markdown kaynağından Zee ile üretilir." ile icSayfaBasliginiHazirla olsun
+    gövde üst ile "<div class='kabuk dar belge-dizin-kabugu'><div class='icerik'>" ile bölümler ile "</div></div>" olsun
+    sayfa "Bütün belgeler" ve "/belge/" ve gövde ile sayfayiHazirla olsun
+    "../uretilen/belge/index.html" dosyasına sayfa yaz
+değilse
+    kaynak "../uretilen/md/" ile istek olsun
+    satırlar kaynak dosyasının satırları olsun
+    parçalar isteğin "/" ile parçaları olsun
+    dizin "" olsun
+    parça_sayısı parçaların adedi olsun
+    parça_sayısı 1 den büyükse
+        dizin parçaların ilki olsun
+    başlık satırlar için basligiBul olsun
+    gövde satırlar ve dizin ve yollar ile markdownuCevir olsun
+    menü satırlar için icindekiler olsun
+    ad istek için belgeAdi olsun
+    adres "/belge/" ile ad ile "/" olsun
+    özet "Depodaki " ile istek ile " belgesinden Zee ile üretildi." olsun
+    üst "Belgeler" ve başlık ve özet ile icSayfaBasliginiHazirla olsun
+    kaynak_bağı "<p class='belge-kaynagi'>Kaynak: <a href='https://github.com/merbay-erp/zee/blob/master/" ile istek ile "' rel='noreferrer'>" ile istek ile "</a> · <a href='/belge/'>Bütün belgeler</a></p>" olsun
+    tam üst ile "<div class='kabuk belge-duzeni'>" ile menü ile "<article class='icerik belge-metni'>" ile gövde ile kaynak_bağı ile "</article></div>" olsun
+    sayfa başlık ve adres ve tam ile sayfayiHazirla olsun
+    hedef "../uretilen/belge/" ile ad ile ".html" olsun
+    hedef dosyasına sayfa yaz

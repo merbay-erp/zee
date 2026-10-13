@@ -422,11 +422,18 @@ fn standart_runtime_semantic_kararlari_hir_bagindan_alir() {
 #[test]
 fn faz_test_matrisi_tier1_ci_raporundan_kopamaz() {
     let ci = kaynak("../.github/workflows/ci.yml");
+    let pinler = kaynak("../docs/github-actions-pinleri-v1.tsv");
+    let artifact_pin = pinler
+        .lines()
+        .find(|s| s.starts_with("actions/upload-artifact\t"))
+        .and_then(|s| s.split('\t').nth(2))
+        .expect("incelenmiş artifact pini");
+    let artifact = format!("uses: actions/upload-artifact@{artifact_pin}");
     for kanit in [
         "os: [ubuntu-latest, macos-latest, windows-latest]",
         "cargo run --locked --bin faz_test_matrisi -- --denetle --rapor target/faz-test-matrisi.md",
         "cat target/faz-test-matrisi.md >> \"$GITHUB_STEP_SUMMARY\"",
-        "uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a", // v7.0.1 (GB-023)
+        artifact.as_str(), // Exact pin birebirliği ayrıca tedarik kapısında korunur.
         "name: faz-test-matrisi-${{ matrix.os }}",
     ] {
         assert!(ci.contains(kanit), "faz matrisi CI kanıtı eksik: {kanit}");

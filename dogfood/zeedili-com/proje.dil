@@ -1,0 +1,10 @@
+# zeedili.com — Zee'nin resmi tanıtım ve öğrenme sitesi.
+# K-203 dogfood ürünü: HTML ve rotalar Zee, TLS/statik varlık sınırı Nginx.
+
+proje "zeedili-com" olsun
+sürüm "0.1.0" olsun
+morfoloji "zee-tr-1" olsun
+giriş "kaynak/ana.dil" olsun
+yetkinlikler "ağ-sunucusu" listesi olsun
+ağ_hedefleri boş liste olsun
+yerel_bağımlılıklar boş liste olsun

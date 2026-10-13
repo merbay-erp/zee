@@ -925,6 +925,7 @@ CORE FREEZE ve ürün kanıtı olmadan açılmaz. Bu hat araç/dağıtım doğru
 | K-191 | **KAPALI** | Derleme/bağımlılık envanteri; release HEAD pini, host/rustc/sysroot/build aynı toolchain, offline vendor çalışma ağacı pini; olumlu/olumsuz shell giriş regresyonları ve CI kablosu |
 | K-192 | **KISMEN** | Exact `30dcfae` kaynağında üç platform kur/program/LSP/kaldır tatbikatı geçti; raporlar ve hash'ler kalıcı defterde. Linux ikilileri Rust araçları bulunmayan, ağsız/read-only Ubuntu 24.04, Debian 12 ve AlmaLinux 9.8 (glibc 2.34) userland container'larında program+LSP testini geçti. Kanonik uzak exact kaynak erişimi doğrulandı; temiz fiziksel Windows/macOS, minimum OS ve tüm native C araçları açık; linker driver/SDK kaydı K-196 ile kapalı. [Platform kanıtı](derleme-platform-kaniti-v1.tsv) |
 | K-193 | **AÇIK** | K-192 ve mevcut V1/ürün kapıları sonrası: ürün kanıtlı native/WASM backend değerlendirmesi ve semantik eşdeğerlik ölçütleri; kod üretimi henüz yok |
+| K-203 | **KAPALI** | ADR-081 `dogfood/zeedili-com`: 597 Zee LOC/4 birim/9 test; on SEO sayfası, gerçek WASM C ABI v3 derleyicili `/playground/` çalışma alanı, altı çalışan örnek, düzenleyici+girdi+tohum+çıktı/tanı+indirme+yerel paylaşım, F003 ile kod-öncelikli dil platformu tasarımı (ana sayfada aynı WASM ile çalışan deneme kutusu, yüklem-odaklı vurgu, açık/koyu tema, 22 çalıştırılabilir örneğin tamamı gerçek derleyicide yeşil, `blob/main` 404 bağlantıları `master`a düzeltildi), robots/sitemap/JSON-LD, resmî standalone Zee sembolü + kurumsal palet + favicon/PWA ailesi, güvenli Nginx/systemd üretim topolojisi ve sunucu A worker dağıtımı tamam. Kaynak kodu cihazdan çıkmaz; WASM SHA/ABI kapılıdır. Stok/AI görseli ile `Zee ERP` yazı kilidi/sloganı dil ürününe taşınmadı. 7 Ekim 2026: https://zeedili.com public yayında — Cloudflare proxy'li A kayıtları (sunucu A 80/443 yalnız Cloudflare'e açık), DNS-01 Let's Encrypt sertifikası, `scripts/canli-dogrula.sh` ile 14 uç 200, 308/301 yönlendirme, WASM MIME ve CSP kanıtı; compiler değişmedi. F005 (12 Ekim): kimlik resmî antrasit+altın zee logosuna, kağıt/turkuaz/mercan paletine ve aynı-origin OFL yazı tiplerine taşındı; `/playground/` 15 derslik “30 dakikada Zee” akışı oldu, 15/15 ders gerçek WASM derleyicide beklenen çıktıyı verdi. |
 
 Kapsam ve yeniden üretim komutları [derleme envanterindedir](derleme-ve-bagimliliklar.md).
 
@@ -1096,7 +1097,7 @@ bozuk/wildcard/tekrar/bayat hash retleri ve sentetik anahtar exit 1 testi
 eklendi. Geçmiş/çalışma ağacı taraması temizdir; geniş allowlist yoktur.
 K-202 beyan sonrası bayat kanıt özeti yeniden üretildi; kaynak beyanı
 47, core freeze beyanı 43 oldu. ADR-066/GB-040.
-K-203 ve ADR-081 site PR #6'ya ayrılmıştır; GB-038 çakışması birleşme
+K-203 ve ADR-081 site PR #6'ya ayrılmıştır; GB-049 çakışması birleşme
 sırasında ikinci dalda ardışık kayıt+türetilen belge güncellemesi ister.
 
 ### K-205 — 27 maddelik dış inceleme ve adversarial kanıt eşlemesi
@@ -1304,3 +1305,17 @@ K-214/K-215 exact eşlemesi ve HEAD atası şartıyla düzeltildi; eski ölçüm
 verisi değişmez, eski kaynak nesnesi geri alınmaz. Yeni hermetik olumlu/
 olumsuz vaka ve gerçek Go aracıyla uzak tekrar sonucu beklenir. Windows runtime
 kanıtı yerine çapraz veya Linux test sonucu konmaz.
+
+## K-217 — Tek merkez ve dal incelemesi
+
+Ürün talebi §2: site temiz içerik, issue formları, özel Forgejo MSVC
+çapraz akışı ve incelenmiş action pinleri ana hatta uygulanır. Snapshot
+compiler/CLI genişlemesi core freeze kanıt zinciri olmadığı için kapatılır.
+Dal yedekleri özel; uzak silme ve CI teyidi henüz açıktır.
+[Dal kararları](incelemeler/k217/README.md). Dil/spec/tanı/API değişmez.
+
+## K-218 — Oran sınırı sıcak yolunu kalıcı dosyadan ayır
+
+Durum: **AÇIK, ürün talebi §3 birinci öncelik**. Sayaçların bellek içi/
+PostgreSQL durumu; açık süreç sınırı, oturum/revoke korunumu, atomiklik,
+boyut/expiry ve gerçek performans kanıtı aynı dilimde ele alınır.

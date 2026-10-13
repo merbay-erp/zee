@@ -106,6 +106,11 @@ yetkinliklerini tanımlar. Dosyayı doğrudan çalıştırmak da mümkündür:
 
 ## Tarayıcıda dene
 
+Kurulum gerekmeden: [zeedili.com](https://zeedili.com) üzerindeki
+[30 dakikada Zee](https://zeedili.com/playground/) dersleri aynı derleyicinin
+WebAssembly sürümünü tarayıcıda çalıştırır; kod sunucuya gönderilmez.
+Çevrimdışı tek dosya için:
+
 ```bash
 bash playground/olustur.sh
 ```
@@ -145,10 +150,10 @@ Değişikliğe özel test, belge ve güvenlik kapıları [AGENTS.md](AGENTS.md) 
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **776** |
+| Rust + doctest vakası | **778** |
 | Tanı kimliği | **159 etkin + 3 ayrılmış** |
 | RFC | **30** (2 kabul, 25 geçici kabul, 3 taslak) |
-| ADR | **84** (84 kabul) |
+| ADR | **86** (86 kabul) |
 | Normatif spec bölümü | **28** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 

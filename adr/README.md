@@ -82,6 +82,8 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-077 | [Request-bound PostgreSQL tenant bağlamı](077-request-bound-postgresql-tenant-baglami.md) | **kabul** (K-186/GB-027) |
 | ADR-078 | [Migration SQL seviye ayrıştırması](078-migration-sql-seviye-ayristirma.md) | **kabul** (K-187) |
 | ADR-079 | [ERP için güvenli oturum listeleme ve tekil iptal](079-erp-oturum-listeleme-ve-iptal.md) | **kabul** (K-188/GB-028) |
+| [080 — Özel Gitsrv CI ve Tier-1 kanıt sınırı](080-tier1-kanit-kaynaklari.md) | kabul | K-217 özel CI ve çapraz/gerçek runtime ayrımı |
+| ADR-081 | [Resmî site ve üretim sınırı](081-resmi-site-ve-uretim-siniri.md) | **kabul** (K-203/GB-038) |
 | ADR-004 | Bellek yönetimi prototip kararı (GC / ARC benchmark) | bekliyor |
 | ADR-005 | Native backend seçimi (Cranelift / LLVM) | bekliyor — Faz 4 |
 | ADR-007 | [Telemetri ve gizlilik: araçlar veri toplamaz](007-telemetri-ve-gizlilik.md) | **kabul** |

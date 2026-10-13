@@ -63,3 +63,10 @@ kapanmasına yol açan sunucu tarafı süreç belirlenmedi. Kalıcı otomatik
 push tetikleme kanıtı açıktır. 13 Ekim 2026 22:32–22:38 İstanbul aralığında
 tarayıcı/API HTTPS erişimi zaman aşımı verdi; yeni uzak koşu bu erişim
 olmadan başlatılmış veya geçmiş sayılamaz.
+
+K-217 sırasında #21 (run id 752), exact 754fab3c9e2879739cdfb1b4bdc79202777861fb
+kaynağında Go kurulum adımında kaldı (14m26s toplam, Go 11m25s). Linux
+faz/kalite ve sonraki kapılar başlamadı. UI log indirmesi 404 verdi;
+ayrıntılı hata nedeni doğrulanmış sayılmaz. K-217 aynı Go 1.26.1'i resmî
+bookworm OCI image digest'iyle alır; ayrı ağ arşivi beklemesi kaldırılır.
+Push'un otomatik #21'i başlatması doğrulandı; yeni kapı sonuçları açıktır.

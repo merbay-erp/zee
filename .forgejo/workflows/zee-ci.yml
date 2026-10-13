@@ -7,8 +7,9 @@ on:
 
 jobs:
   linux-kapilari:
+    if: ${{ forgejo.event.repository.private == true }}
     runs-on: ubuntu-latest
-    container: node:20-bookworm
+    container: golang:1.26.1-bookworm@sha256:ab3d6955bbc813a0f3fdf220c1d817dd89c0b3f283777db8ece4a32fe7858edd
     timeout-minutes: 90
     env:
       CARGO_BUILD_JOBS: '2'
@@ -16,9 +17,28 @@ jobs:
       - name: İzole konteynerin derleme araçları
         run: |
           apt-get update -qq
-          apt-get install -y -qq git curl ca-certificates python3 build-essential pkg-config libssl-dev
+          apt-get install -y -qq git curl ca-certificates python3 nodejs build-essential pkg-config libssl-dev
           git config --global user.name 'Zee CI'
           git config --global user.email 'ci@ornek.com'
+      - name: Yalnız özel Git2 deposu
+        env:
+          ZEE_SERVER: ${{ forgejo.server_url }}
+          ZEE_REPOSITORY: ${{ forgejo.repository }}
+          ZEE_JOB_TOKEN: ${{ github.token }}
+        run: |
+          node <<'NODE'
+          (async () => {
+            const response = await fetch(`${process.env.ZEE_SERVER}/api/v1/repos/${process.env.ZEE_REPOSITORY}`, {
+              headers: { Authorization: `Basic ${Buffer.from(`x-access-token:${process.env.ZEE_JOB_TOKEN}`).toString('base64')}` }
+            });
+            if (!response.ok) throw new Error('Özel depo metadata doğrulaması başarısız');
+            const repo = await response.json();
+            if (repo.private !== true || repo.full_name !== process.env.ZEE_REPOSITORY) {
+              throw new Error('Gitsrv kod yürütmesi yalnız exact özel depoda kabul edilir');
+            }
+            console.log('Özel depo kapısı geçti');
+          })();
+          NODE
       - name: Tam ve yalnız seçili kaynak geçmişi
         env:
           ZEE_SERVER: ${{ forgejo.server_url }}
@@ -41,11 +61,11 @@ jobs:
           test "$(git rev-parse --is-shallow-repository)" = false
           git update-ref refs/heads/ci-kaynak "$ZEE_SHA"
       - name: Sabit Rust araç zinciri
-        uses: https://github.com/dtolnay/rust-toolchain@d1031067263f94b142dd6c0ce24c5eb9d02d52a0
+        uses: https://github.com/dtolnay/rust-toolchain@e2a55d2ffb04f378e9626c28d38b36d230d1e12f
         with:
           toolchain: 1.93.1
           components: clippy,rustfmt
-          targets: wasm32-unknown-unknown
+          targets: wasm32-unknown-unknown,x86_64-pc-windows-msvc
       - name: Kaynak soy ağacı korukları
         working-directory: kaynak
         env:
@@ -58,16 +78,12 @@ jobs:
           bash scripts/conformance-korugu.sh "$taban"
           bash scripts/semantic-regresyon-korugu.sh "$taban"
           bash scripts/core-freeze-korugu.sh "$taban"
-      - name: SHA-256 doğrulanmış Go karşılaştırma aracı
-        working-directory: kaynak
+      - name: Digest pinli resmî Go karşılaştırma aracı
         run: |
           set -euo pipefail
-          mkdir -p compiler/target/ci-araclar
-          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 -o compiler/target/ci-araclar/go.tar.gz https://go.dev/dl/go1.26.1.linux-amd64.tar.gz
-          echo '031f088e5d955bab8657ede27ad4e3bc5b7c1ba281f05f245bcc304f327c987a  compiler/target/ci-araclar/go.tar.gz' | sha256sum --check --strict
-          tar -xzf compiler/target/ci-araclar/go.tar.gz -C compiler/target/ci-araclar
-          echo "$PWD/compiler/target/ci-araclar/go/bin" >> "$GITHUB_PATH"
-          compiler/target/ci-araclar/go/bin/go version
+          test "$(go env GOVERSION)" = go1.26.1
+          go version
+          go env GOOS GOARCH
       - name: Tam Linux faz matrisi ve kalite kapıları
         working-directory: kaynak/compiler
         run: |
@@ -92,7 +108,7 @@ jobs:
           python3 scripts/tests/sir-yanlis-pozitif-test.py
           python3 scripts/acik-depo-denetle.py
           mkdir -p compiler/target/ci-araclar
-          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 -o compiler/target/ci-araclar/gitleaks.tar.gz https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz
+          curl --fail --silent --show-error --location --connect-timeout 20 --max-time 180 --retry 2 --retry-max-time 420 --proto '=https' --tlsv1.2 -o compiler/target/ci-araclar/gitleaks.tar.gz https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz
           echo '551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb  compiler/target/ci-araclar/gitleaks.tar.gz' | sha256sum --check --strict
           tar -xzf compiler/target/ci-araclar/gitleaks.tar.gz -C compiler/target/ci-araclar gitleaks
           PATH="$PWD/compiler/target/ci-araclar:$PATH" bash scripts/sir-taramasi.sh
@@ -120,6 +136,18 @@ jobs:
           set -euo pipefail
           cargo build --locked --release --bin dillsp
           cargo run --locked --release --bin olcum -- --tur 25 --gecmis ../docs/performans-gecmisi-v2.tsv --json target/performans.json --rapor target/performans.md --gecmis-cikti target/performans-gecmisi.tsv --kayit "git2-${ZEE_RUN_ID}-${ZEE_RUN_ATTEMPT}" --git-sha "$ZEE_SOURCE_SHA" --milestone shared-ci --dillsp target/release/dillsp --lsp-olcek
+      - name: Windows MSVC çapraz derleme ve lint
+        working-directory: kaynak/compiler
+        run: |
+          set -euo pipefail
+          apt-get update -qq
+          apt-get install -y -qq clang lld llvm
+          export PATH="$(ls -d /usr/lib/llvm-*/bin | sort -V | tail -1):$PATH"
+          cargo install --locked cargo-xwin --version 0.23.1 --root target/ci-araclar/xwin
+          export PATH="$PWD/target/ci-araclar/xwin/bin:$PATH"
+          cargo xwin clippy --locked --target x86_64-pc-windows-msvc --all-targets -- -D warnings
+          cargo xwin build --locked --release --target x86_64-pc-windows-msvc --bin dil --bin dillsp
+          printf '%s\n' 'Windows MSVC derleme/lint; Windows runtime testleri çalıştırılmadı.' > target/windows-capraz.md
       - name: Faz kanıtını sakla
         if: always()
         uses: https://code.forgejo.org/actions/upload-artifact@ff15f0306b3f739f7b6fd43fb5d26cd321bd4de5
@@ -130,5 +158,6 @@ jobs:
             kaynak/compiler/target/performans.json
             kaynak/compiler/target/performans.md
             kaynak/compiler/target/performans-gecmisi.tsv
+            kaynak/compiler/target/windows-capraz.md
           if-no-files-found: warn
           retention-days: 90

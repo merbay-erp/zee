@@ -1,0 +1,141 @@
+# zeedili.com ortak görünüm katmanı.
+# Yalnız güvenilir, depo içi içerikten HTML üretir; kullanıcı girdisi almaz.
+
+işlem etkinSinifi
+    bölümü Metin olarak al
+    etkileni Metin olarak al
+    Metin döndürür
+
+    bölüm etkilene eşitse
+        " class='etkin' aria-current='page'" döndür
+    "" döndür
+
+işlem ustGezinmeyiHazirla
+    yolu Metin olarak al
+    Metin döndürür
+
+    ogren_sinifi "/ogren/" ve yol ile etkinSinifi olsun
+    dil_sinifi "/dil/" ve yol ile etkinSinifi olsun
+    ornek_sinifi "/ornekler/" ve yol ile etkinSinifi olsun
+    belge_sinifi "/belgeler/" ve yol ile etkinSinifi olsun
+    oyun_sinifi "/playground/" ve yol ile etkinSinifi olsun
+    topluluk_sinifi "/topluluk/" ve yol ile etkinSinifi olsun
+    menu "<a" ile ogren_sinifi ile " href='/ogren/'>Öğren</a>" olsun
+    menu menu ile "<a" ile dil_sinifi ile " href='/dil/'>Dil turu</a>" olsun
+    menu menu ile "<a" ile ornek_sinifi ile " href='/ornekler/'>Örnekler</a>" olsun
+    menu menu ile "<a" ile belge_sinifi ile " href='/belgeler/'>Belgeler</a>" olsun
+    menu menu ile "<a" ile oyun_sinifi ile " href='/playground/'>Dene</a>" olsun
+    menu menu ile "<a" ile topluluk_sinifi ile " href='/topluluk/'>Topluluk</a>" olsun
+    marka "<a class='marka' href='/' aria-label='Zee ana sayfa'><img src='/assets/brand/zee-mark-koyu.svg?v=k190a1' width='76' height='34' alt='zee'><small>0.8-dev</small></a>" olsun
+    github "<a class='simge-dugme github' href='https://github.com/merbay-erp/zee' rel='noreferrer' aria-label='Zee GitHub deposu'><svg viewBox='0 0 24 24' fill='currentColor' aria-hidden='true'><path d='M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.08 2.91.83.09-.65.35-1.08.63-1.33-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02a9.5 9.5 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.75c0 .27.18.58.69.48A10 10 0 0 0 12 2z'/></svg></a>" olsun
+    menu_dugmesi "<button class='simge-dugme menu-dugmesi' type='button' aria-expanded='false' aria-controls='ana-menu' aria-label='Menüyü aç'><svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' aria-hidden='true'><path d='M4 7h16M4 12h16M4 17h16'/></svg></button>" olsun
+    "<a class='atla' href='#icerik'>İçeriğe geç</a><header class='ust'><div class='kabuk ust-ic'>" ile marka ile "<nav id='ana-menu' class='ana-menu' aria-label='Ana gezinme'>" ile menu ile "</nav><div class='ust-eylem'>" ile github ile "<a class='dugme kucuk' href='/indir/'>Kur</a>" ile menu_dugmesi ile "</div></div></header>" döndür
+
+işlem altBolumuHazirla
+    Metin döndürür
+
+    marka "<div class='alt-marka'><a class='marka' href='/'><img src='/assets/brand/zee-mark-acik.svg?v=k190a1' width='90' height='40' alt='zee'></a><p>Türkçe yazılan, kesin çalışan, genel amaçlı programlama dili. Kaynak açık, gelişim kanıta bağlı.</p></div>" olsun
+    ogren "<div><h2>Öğren</h2><a href='/ogren/'>Başlangıç</a><a href='/dil/'>Dil turu</a><a href='/ornekler/'>Örnekler</a><a href='/playground/'>30 dakikada Zee</a></div>" olsun
+    belge "<div><h2>Başvuru</h2><a href='/belgeler/'>Belgeler</a><a href='/belge/spec/' rel='noreferrer'>Spesifikasyon</a><a href='/belge/hata-katalogu/' rel='noreferrer'>Hata kataloğu</a><a href='/belge/surumler/' rel='noreferrer'>Sürüm notları</a></div>" olsun
+    proje "<div><h2>Proje</h2><a href='/manifesto/'>Manifesto</a><a href='/yol-haritasi/'>Yol haritası</a><a href='/indir/'>Kurulum</a></div>" olsun
+    topluluk "<div><h2>Topluluk</h2><a href='/topluluk/'>Katkı</a><a href='https://github.com/merbay-erp/zee' rel='noreferrer'>GitHub</a><a href='https://github.com/merbay-erp/zee/issues' rel='noreferrer'>Konular</a></div>" olsun
+    "<footer class='alt-bilgi'><div class='kabuk'><div class='alt-izgara'>" ile marka ile ogren ile belge ile proje ile topluluk ile "</div><div class='alt-satir'><span>© 2026 Zee Projesi</span><span class='zee-ile'><i></i>Bu sitenin HTML'i Zee ile üretiliyor</span></div></div></footer>" döndür
+
+işlem yazilimSemasiniHazirla
+    Metin döndürür
+
+    "<script type='application/ld+json'>{\"@context\":\"https://schema.org\",\"@type\":\"SoftwareApplication\",\"name\":\"Zee\",\"alternateName\":\"Zee Türkçe Programlama Dili\",\"applicationCategory\":\"DeveloperApplication\",\"operatingSystem\":\"Linux, macOS, Windows\",\"url\":\"https://zeedili.com/\",\"downloadUrl\":\"https://github.com/merbay-erp/zee\",\"softwareVersion\":\"0.8.0-dev\",\"inLanguage\":\"tr\",\"description\":\"Çocuğun başlayabildiği, profesyonelin bırakmak zorunda kalmadığı Türkçe programlama dili.\",\"isAccessibleForFree\":true}</script>" döndür
+
+işlem sayfaAciklamasiniHazirla
+    yolu Metin olarak al
+    Metin döndürür
+
+    yol "/belge/" ile başlıyorsa
+        "Zee belgeleri: kılavuzlar, normatif spesifikasyon, RFC'ler ve mimari kararlar; depo kaynaklarından Zee ile üretilir." döndür
+    yol "/" e eşitse
+        "Zee, Türkçenin ek ve cümle yapısını derleyici semantiğine dönüştüren statik türlü, genel amaçlı programlama dilidir. Tarayıcıda hemen deneyin." döndür
+    yol "/dil/" e eşitse
+        "Zee dil turu: değerler, koşullar, döngüler, listeler, işlemler, yapılar, Seçenek/Sonuç, testler ve web; her örnek gerçek derleyiciden geçer." döndür
+    yol "/playground/" e eşitse
+        "30 dakikada Zee: kurulum gerektirmeyen, tarayıcıda gerçek derleyiciyle çalışan Türkçe programlama dersleri. Kod cihazınızdan çıkmaz." döndür
+    yol "/ogren/" e eşitse
+        "Zee ile programlamaya başlayın: kurulum, ilk proje, araç zinciri ve çocuktan profesyonele öğrenme yolları." döndür
+    yol "/ornekler/" e eşitse
+        "Başlangıçtan web sunucusuna, gerçek derleyiciden geçen ve tarayıcıda çalıştırılabilen Zee kod örnekleri." döndür
+    yol "/belgeler/" e eşitse
+        "Zee başlangıç rehberi, dil turu, normatif spesifikasyon, RFC'ler, mimari kararlar ve Türkçe hata kataloğu." döndür
+    yol "/manifesto/" e eşitse
+        "Zee neden var: herkesin kendi dilinde düşünüp üretebilmesi, kanıt kültürü ve bir babanın kızına bıraktığı yaşayan miras." döndür
+    yol "/yol-haritasi/" e eşitse
+        "Zee'nin V1'e giden yolu: core freeze, gerçek ürün dogfood'u, insan kanıtı ve sürüm adayı kapıları." döndür
+    yol "/topluluk/" e eşitse
+        "Zee'ye katkı verin: hata bildirimi, örnek, kullanılabilirlik oturumu ve dogfood projeleriyle dili birlikte büyütün." döndür
+    "Zee'yi kaynak koddan derleyip kurun, ilk projenizi oluşturun ve çalıştırın. Linux, macOS ve Windows." döndür
+
+işlem sayfayiHazirla
+    adı Metin olarak al
+    yolu Metin olarak al
+    gövdeyi Metin olarak al
+    Metin döndürür
+
+    tam_baslik ad ile " · Zee programlama dili" olsun
+    açıklama yol ile sayfaAciklamasiniHazirla olsun
+    kanonik "https://zeedili.com" ile yol olsun
+    gezinme yol ile ustGezinmeyiHazirla olsun
+    altlik altBolumuHazirla olsun
+    sema yazilimSemasiniHazirla olsun
+    kafa "<!doctype html><html lang='tr'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1,viewport-fit=cover'><meta name='theme-color' content='#f4efe3'><meta name='color-scheme' content='light'><title>" ile tam_basligin html güvenlisi ile "</title>" olsun
+    kafa kafa ile "<meta name='description' content='" ile açıklamanın html güvenlisi ile "'><meta name='author' content='Zee Projesi'><meta name='robots' content='index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1'><link rel='canonical' href='" ile kanoniğin html güvenlisi ile "'>" olsun
+    kafa kafa ile "<link rel='alternate' hreflang='tr' href='" ile kanoniğin html güvenlisi ile "'><link rel='alternate' hreflang='x-default' href='" ile kanoniğin html güvenlisi ile "'><meta property='og:type' content='website'><meta property='og:locale' content='tr_TR'><meta property='og:site_name' content='Zee'><meta property='og:title' content='" ile tam_basligin html güvenlisi ile "'><meta property='og:description' content='" ile açıklamanın html güvenlisi ile "'><meta property='og:url' content='" ile kanoniğin html güvenlisi ile "'><meta property='og:image' content='https://zeedili.com/assets/og-cover.png?v=k190a1'><meta property='og:image:width' content='1200'><meta property='og:image:height' content='630'><meta property='og:image:alt' content='Zee — Türkçe yaz, kesin çalıştır'><meta name='twitter:card' content='summary_large_image'><meta name='twitter:title' content='" ile tam_basligin html güvenlisi ile "'><meta name='twitter:description' content='" ile açıklamanın html güvenlisi ile "'><meta name='twitter:image' content='https://zeedili.com/assets/og-cover.png?v=k190a1'>" olsun
+    kafa kafa ile "<link rel='icon' href='/assets/favicon.ico?v=k190a1' sizes='any'><link rel='icon' href='/assets/favicon.svg?v=k190a1' type='image/svg+xml'><link rel='icon' href='/assets/icons/favicon-32.png?v=k190a1' type='image/png' sizes='32x32'><link rel='apple-touch-icon' href='/assets/icons/apple-touch-icon.png?v=k190a1' sizes='180x180'><link rel='manifest' href='/manifest.webmanifest?v=k190a1'><link rel='preload' href='/assets/fonts/fraunces-latin.woff2' as='font' type='font/woff2' crossorigin><link rel='preload' href='/assets/fonts/figtree-latin.woff2' as='font' type='font/woff2' crossorigin><link rel='stylesheet' href='/assets/site.css?v=k192a2'><link rel='stylesheet' href='/assets/playground.css?v=k192a1'><script src='/assets/zee-motor.js?v=k190a1' defer></script><script src='/assets/site.js?v=k192a1' defer></script><script src='/assets/playground.js?v=k192a1' defer></script>" ile sema ile "</head>" olsun
+    kafa ile "<body>" ile gezinme ile "<main id='icerik'>" ile gövde ile "</main>" ile altlik ile "</body></html>" döndür
+
+işlem icSayfaBasliginiHazirla
+    izi Metin olarak al
+    adı Metin olarak al
+    özeti Metin olarak al
+    Metin döndürür
+
+    "<header class='sayfa-basi dalga-alt'><div class='kabuk'><nav class='iz' aria-label='Konum'><a href='/'>zee</a><span>/</span>" ile izin html güvenlisi ile "</nav><h1>" ile adın html güvenlisi ile "</h1><p>" ile özetin html güvenlisi ile "</p></div></header>" döndür
+
+işlem kodBlogunuHazirla
+    etiketi Metin olarak al
+    kodu Metin olarak al
+    Metin döndürür
+
+    güvenli_kod kodun html güvenlisi olsun
+    "<figure class='kod'><figcaption><span>" ile etiketin html güvenlisi ile "</span><button class='kod-eylem kopyala' type='button'>Kopyala</button></figcaption><pre><code class='zee'>" ile güvenli_kod ile "</code></pre></figure>" döndür
+
+işlem calisanKoduHazirla
+    etiketi Metin olarak al
+    kodu Metin olarak al
+    Metin döndürür
+
+    güvenli_kod kodun html güvenlisi olsun
+    "<figure class='kod'><figcaption><span>" ile etiketin html güvenlisi ile "</span><button class='kod-eylem kopyala' type='button'>Kopyala</button><a class='kod-eylem vurgulu' href='/playground/' data-alanda-ac>Çalıştır ▶</a></figcaption><pre><code class='zee'>" ile güvenli_kod ile "</code></pre></figure>" döndür
+
+işlem terminaliHazirla
+    etiketi Metin olarak al
+    satırları Metin olarak al
+    Metin döndürür
+
+    "<figure class='terminal'><figcaption><span>" ile etiketin html güvenlisi ile "</span><button class='kod-eylem kopyala' type='button'>Kopyala</button></figcaption><pre><code>" ile satırlar ile "</code></pre></figure>" döndür
+
+test "ortak sayfa eksiksiz SEO ve erişilebilir gezinme taşır"
+    sayfa "Başlangıç" ve "/ogren/" ve "<p>gövde</p>" ile sayfayiHazirla olsun
+    sayfa "<link rel='canonical' href='https://zeedili.com/ogren/'>" içermeli
+    sayfa "application/ld+json" içermeli
+    sayfa "aria-current='page'" içermeli
+    sayfa "og-cover.png" içermeli
+    sayfa "/assets/brand/zee-mark-koyu.svg" içermeli
+    sayfa "/assets/fonts/fraunces-latin.woff2" içermeli
+    sayfa "apple-touch-icon" içermeli
+    sayfa "İçeriğe geç" içermeli
+    sayfa "/assets/zee-motor.js" içermeli
+
+test "kod bloğu kaynak metnini HTML olarak çalıştırmaz"
+    blok "deneme.dil" ve "<script>alert(1)</script>" ile kodBlogunuHazirla olsun
+    blok "&lt;script&gt;alert(1)&lt;/script&gt;" içermeli
+    çalışan "deneme.dil" ve "<b>x</b>" ile calisanKoduHazirla olsun
+    çalışan "&lt;b&gt;x&lt;/b&gt;" içermeli
+    çalışan "data-alanda-ac" içermeli

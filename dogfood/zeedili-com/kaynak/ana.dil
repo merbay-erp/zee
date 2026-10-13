@@ -1,0 +1,52 @@
+# zeedili.com resmi site rotaları.
+# Production: Nginx TLS/statik ön kapı → Zee --web-proxy loopback worker.
+
+sayfalar birimini kullan
+
+8126 kapısında sunucu başlat
+
+GET "/" adresine istek geldiğinde
+    yanit_govdesi anasayfayiHazirla olsun
+    yanit_govdesi yanıtını gönder
+
+GET "/playground/" adresine istek geldiğinde
+    yanit_govdesi playgroundSayfasiniHazirla olsun
+    yanit_govdesi yanıtını gönder
+
+GET "/dil/" adresine istek geldiğinde
+    yanit_govdesi dilSayfasiniHazirla olsun
+    yanit_govdesi yanıtını gönder
+
+GET "/ogren/" adresine istek geldiğinde
+    yanit_govdesi ogrenSayfasiniHazirla olsun
+    yanit_govdesi yanıtını gönder
+
+GET "/ornekler/" adresine istek geldiğinde
+    yanit_govdesi orneklerSayfasiniHazirla olsun
+    yanit_govdesi yanıtını gönder
+
+GET "/belgeler/" adresine istek geldiğinde
+    yanit_govdesi belgelerSayfasiniHazirla olsun
+    yanit_govdesi yanıtını gönder
+
+GET "/manifesto/" adresine istek geldiğinde
+    yanit_govdesi manifestoSayfasiniHazirla olsun
+    yanit_govdesi yanıtını gönder
+
+GET "/yol-haritasi/" adresine istek geldiğinde
+    yanit_govdesi yolHaritasiSayfasiniHazirla olsun
+    yanit_govdesi yanıtını gönder
+
+GET "/topluluk/" adresine istek geldiğinde
+    yanit_govdesi toplulukSayfasiniHazirla olsun
+    yanit_govdesi yanıtını gönder
+
+GET "/indir/" adresine istek geldiğinde
+    yanit_govdesi indirSayfasiniHazirla olsun
+    yanit_govdesi yanıtını gönder
+
+GET "/canli" adresine istek geldiğinde
+    "canlı" yanıtını gönder
+
+GET "/hazir" adresine istek geldiğinde
+    "hazır" yanıtını gönder

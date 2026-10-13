@@ -63,6 +63,10 @@ Forgejo envanterine de uygulanır; test fazı ve canlı sayılar aynı committe
 güncellenir. Kullanıcı tanısı veya compiler bug olmadığı için yeni dil
 regression kaydı yoktur.
 
-Go karşılaştırması sessiz opsiyonel geçişe bırakılmaz: CI resmi Go 1.26.1
-Linux x64 arşivini SHA-256 doğrular ve Go aracıyla eşdeğerliği gerçekten
-çalıştırır. Bu CI aracı Zee runtime bağımlılığı değildir.
+Go karşılaştırması sessiz opsiyonel geçişe bırakılmaz: CI resmî Go 1.26.1
+bookworm image'ini immutable OCI digest ile alır ve GOVERSION değerini
+kontrol eder; eşdeğerlik gerçekten çalışır. Ayrı Go arşivi indirilmez.
+Node/derleme araçları imzalı Debian paket kaynağından gelir. Job yalnız
+private=true eventinde seçilir; güncel exact özel depo metadata kontrolü
+kaynak fetch'ten önce fail-closed çalışır. Bu CI araçları Zee runtime
+bağımlılığı değildir; container/pin kanıtı sürüm artefaktı üretmez.

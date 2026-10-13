@@ -491,6 +491,20 @@ RFC/ADR arşivi.
 Migration ve edition rehberleri.
 # 30. Ürün yüzeyi ve web
 Ana site: manifesto, indir, öğren, doküman, paketler, playground.
+K-203/ADR-081 ile `dogfood/zeedili-com` bu sözün ilk üretim dilimini Zee ile
+gerçekledi: on indexlenebilir sayfa, canonical/OG/Twitter/JSON-LD,
+sitemap/robots, erişilebilir responsive görünüm ve sunucu A systemd+Nginx sınırı.
+HTML/rota/içerik Zee'nin; TLS, statik dosya, HEAD/canonical normalizasyonu ve
+sıkı site güvenlik başlıkları Nginx'in sorumluluğundadır. Kurucu brand
+kitindeki standalone Zee sembolü, ana/vurgu mavi paleti ve ikon ailesi dil
+ürününe uygulanmış; ERP yazı kilidi ile sloganı ürünleri karıştırmamak için
+dışarıda tutulmuştur. `/playground/`, gerçek compiler WASM C ABI v3 ikilisini
+aynı origin'den yükleyip altı örneği düzenleme, girdi/tohum verme, çalıştırma,
+Türkçe çıktı/tanı görme, indirme ve URL parçasıyla yerel paylaşma yüzeyidir;
+kaynak kodu sunucuya çıkmaz. K-203/F003 ile ana sayfa da aynı WASM motoruyla
+çalışan örnekler taşıyan kod-öncelikli dil sitesine dönüştü. Paket araması
+hâlâ açık ekosistem dilimidir.
+https://zeedili.com 7 Ekim 2026'dan beri public yayındadır (Cloudflare proxy + DNS-01).
 Paket registry araması.
 Paylaşılabilir playground örnekleri.
 Sürüm ve güvenlik duyuruları.
@@ -1198,3 +1212,11 @@ WASM kapılarını exact seçili kaynakta çalıştırır; ilgisiz özel dal/eti
 almaz, PR kodu otomatik çalıştırılmaz. Uzak sonuç doğrulanınca kaydedilir;
 Windows runtime kanıtı ve GitHub destek teyidi açık kalır.
 [Karar](../adr/088-git2-gitsrv-kosulari.md).
+
+## K-217 — Tek merkez ve dal incelemesi
+
+Ürün talebi §2: site temiz içerik, issue formları, özel Forgejo MSVC
+çapraz akışı ve incelenmiş action pinleri ana hatta uygulanır. Snapshot
+compiler/CLI genişlemesi core freeze kanıt zinciri olmadığı için kapatılır.
+Dal yedekleri özel; uzak silme ve CI teyidi henüz açıktır.
+[Dal kararları](incelemeler/k217/README.md). Dil/spec/tanı/API değişmez.
