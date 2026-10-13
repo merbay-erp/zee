@@ -592,7 +592,7 @@ mod testler {
             .unwrap();
         assert_eq!(
             patched["software_downloadLocation"],
-            format!("{KAYNAK_DEPOSU}/tree/{sha}/compiler/third_party/postgres-protocol")
+            format!("{KAYNAK_DEPOSU}/tree/f2d40d21766674698f656851aacde3007d72334f/compiler/third_party/postgres-protocol")
         );
         assert_eq!(patched["software_packageVersion"], "0.6.12+zee.1");
         assert_eq!(
@@ -620,6 +620,14 @@ mod testler {
         let mut kilit = kilit_paketleri(KILIT).unwrap();
         kilit[0].kaynak = Some("registry+https://github.com/rust-lang/crates.io-index".into());
         assert!(sbom_belgesi(sha, "0.8.0-dev", &rfc3339(10), &BTreeMap::new(), &kilit).is_err());
+        for source in [
+            "git+https://github.com/merbay-erp/zee?branch=master#f2d40d21766674698f656851aacde3007d72334f",
+            "git+https://github.com/merbay-erp/zee?rev=0000000000000000000000000000000000000000#0000000000000000000000000000000000000000",
+        ] {
+            let mut kilit=kilit_paketleri(include_str!("../../Cargo.lock")).unwrap();
+            kilit.iter_mut().find(|p|p.ad=="postgres-protocol").unwrap().kaynak=Some(source.into());
+            assert!(sbom_belgesi(sha,env!("CARGO_PKG_VERSION"),&rfc3339(10),&BTreeMap::new(),&kilit).is_err());
+        }
     }
 
     #[test]

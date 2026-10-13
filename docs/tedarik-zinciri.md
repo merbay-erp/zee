@@ -189,3 +189,25 @@ Yeni yerel kayıt ve fork içeriği değişince tree hash aynı committe
 incelenerek yenilenir; sırf kapıyı susturmak için güncellenmez. SBOM
 şeması aynı SPDX 3.0.1; kurulum dosya kümesi/ABI/API ve native C araç
 bayrakları değişmez. İki-clone release/offline vendor kabulü beklenir.
+
+## K-206 tekrar üretilebilir dependency kimliği
+
+Path patch hazırlığı ba547f4 kaynakta iki temiz klonun farklı ikili hash
+üretmesine yol açtı; artefakt reddedildi. Bu kaynak başarılı release kanıtı
+değildir. Etkin compiler/fuzz patch artık ana merbay-erp/zee deposundaki
+exact c4e9d03616fefa3d4aa9edcdef5c3ab8af7a8c75 commitine pinlidir; dal/tag
+kullanılmaz. Cargo.lock iki graph'ta aynı git URL/rev/commit taşır. Rust
+protokol src byte'ları hâlâ upstream ile aynıdır; wire sınırı etkin değildir.
+
+`patches-v1.tsv` ilk path kayıt sözleşmesinin tarihidir; etkin sözleşme
+`compiler/third_party/patches-v2.tsv` sekizinci alan olarak Zee source Git
+SHA taşır. SBOM tam kaynak eşleşmesini, kayıtlı SHA-256'yı, yerel ağacı ve
+seçilen commitin gerçek Git blob ağacını birlikte denetler. Package URL
+build HEAD'i yerine dependency commitini gösterir. Git geçmişi eksikse
+metadata üretimi durur; release/CI full history kullanır. cargo-deny yalnız
+ana repo URL'sine izin verir; SBOM ayrıca tam kayda/pine birebirlik ister.
+
+[Cargo Git dependency sözleşmesi](https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html#specifying-dependencies-from-git-repositories)
+repo içindeki crate'i bulur ve `rev` pinini destekler. Yalnız sürüm build
+metadata'sı pinin yerini tutmaz. Offline vendor ve iki-klon kabulü bu exact
+Git kaynağıyla yeniden alınacaktır; başarısız path koşusu tarihten gizlenmez.

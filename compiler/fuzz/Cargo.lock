@@ -742,6 +742,7 @@ dependencies = [
 [[package]]
 name = "postgres-protocol"
 version = "0.6.12+zee.1"
+source = "git+https://github.com/merbay-erp/zee?rev=f2d40d21766674698f656851aacde3007d72334f#f2d40d21766674698f656851aacde3007d72334f"
 dependencies = [
  "base64 0.22.1",
  "byteorder",

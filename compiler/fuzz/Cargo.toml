@@ -43,4 +43,4 @@ doc = false
 bench = false
 
 [patch.crates-io]
-postgres-protocol = { path = "../third_party/postgres-protocol" }
+postgres-protocol = { git = "https://github.com/merbay-erp/zee", rev = "f2d40d21766674698f656851aacde3007d72334f" }

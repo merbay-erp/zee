@@ -316,3 +316,8 @@ K-206 tedarik hazırlığı: upstream protokol Rust src byte'ları değişmeden
 local patch kimliği compiler/fuzz lock ve doğrulanmış SPDX kaynak/tree
 hash ile kaydedildi. GB-042 kapalı; GB-041/erken wire sınırı açık.
 Offline vendor ve iki-clone release kabulü kapanış öncesi beklenir.
+
+K-206 path patch iki-clone kabulünde reddedildi; yalnız kaynak kimliği
+exact ana repo Git SHA pinine çevrildi. Protokol davranışı değişmedi.
+SBOM yerel + Git blob tree hash eşitliği ve exact lock source ister;
+v2 kayıt etkin, v1 tarihsel. Yeniden offline/release kanıtı beklenir.
