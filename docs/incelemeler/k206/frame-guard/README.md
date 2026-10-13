@@ -21,7 +21,9 @@ Upstream'in 29 testiyle toplam 34 lib testi geçer. Bunlar production
 compiler faz sayısına eklenmez; bağımsız tedarik/protokol kabul koşusudur.
 `verify.py`, exact upstream tree hash'ini doğrular, yamayı fuzz=0 ile
 geçici kopyaya uygular, locked/offline test + clippy + rustfmt çalıştırır,
-üretim kaynağının değişmediğini denetler ve kendi dizinini temizler:
+üretim kaynağının değişmediğini denetler ve kendi dizinini temizler.
+Yama sıfır bağlam satırlıdır; taban eşitliği exact tree hash ile sağlanır,
+diff bağlamının boş satırları whitespace borcu oluşturmaz:
 
 ```bash
 python3 docs/incelemeler/k206/frame-guard/verify.py
