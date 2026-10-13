@@ -117,3 +117,8 @@ kanonikleştirilir; Unix sembolik yol testi gerçek betik adımını çalıştı
 Kanonik yol düzeltmesi sonrası **771/771 faz testi** geçti; yeni Unix
 sembolik yol vakası birincil tedarik fazındadır. Clippy/fmt, katalog ve
 belge tazeliği temiz. Temiz commit ikili tekrar üretimi ayrıca kaydedilir.
+
+Temiz `b8376349b3645061e7b83338b5f9a28d12f8a8d9` kaynağında [iki klon kanıtı](ikili-esitligi.json)
+**GEÇTİ**: dil ve dillsp SHA-256 eş; SBOM, native deployment ve gerçek
+build-environment doğrulaması başarılı. Önceki fark denemeleri yukarıda
+tarihsel negatif kanıttır; başarısız ikililer dağıtıma çıkarılmadı.

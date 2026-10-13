@@ -1,0 +1,16 @@
+{
+  "schema": "zee-iki-temiz-klon-kaniti-1",
+  "source_commit": "b8376349b3645061e7b83338b5f9a28d12f8a8d9",
+  "platform": "aarch64-apple-darwin",
+  "rustc": "1.93.1",
+  "clones": 2,
+  "result": "passed",
+  "native_deployment": "passed",
+  "build_environment": "passed",
+  "sha256": {
+    "dil": "5e5f35b95d3635915a08dc4be2d910bd15d1c9e6daaccda6d8ea25f8857bfe6a",
+    "dillsp": "79bc90613c6bbb9337471a32feb3ae8ffd767b4a6ddc01fb8f2111fda901ea0d",
+    "sbom.spdx.json": "abf4947d210cfdd68f157941c860979cfc937e7619ed399324d36460ae67f85b",
+    "provenance.intoto.json": "3bb0c694cd6984b8dceadb22d60c702ec5e757cac46d30eebfe8875167d600c2"
+  }
+}
