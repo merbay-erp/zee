@@ -159,3 +159,33 @@ ve çalışma ağacı taraması geçti; runtime üretilen sentetik anahtar hâl�
 generic-api-key bulgusu ile exit 1 verir ve çıktı REDACTED'dır. Dört
 Python ret/pozitif test CI sır-taraması işinde Gitleaks kurulduktan sonra
 koşar. Gerçek sır döndürme/kaldırma süreci SECURITY politikasında değişmez.
+
+## K-206 yerel bağımlılık yaması kimliği — mesaj sınırı henüz açık
+
+PostgreSQL sürücüsü uzunluk başlığında bir üst sınır sunmaz. İzole 32 MiB
+prototipi gövdeyi almadan reddeder; fakat bağlantıyı kapatır ve aktif
+transaction rollback'i de başarısız olur. Bu davranış **üretimde etkin
+değildir**; GB-041 açık kalır. Önce tedarik/artefakt kimliği hazırlanır.
+
+`compiler/third_party/postgres-protocol` upstream 0.6.12 arşivinin
+Cargo.lock ile doğrulanmış kopyasıdır; Rust src byte'ları aynıdır. Sürüm
+kimliği yalnız kaynak ayrımını göstermek için `0.6.12+zee.1` olur.
+Compiler/fuzz patch ve iki lock aynı yerel kaynağı seçer; diğer paket
+sürümleri değişmez. MIT/Apache-2.0 lisansları, upstream Git SHA ve arşiv
+SHA-256 `UPSTREAM.json` içinde korunur.
+
+`compiler/third_party/patches-v1.tsv` exact ad/sürüm/repo yolu/kanonik
+tree SHA-256/upstream sürüm/arşiv hash/Git SHA taşır. Hash; sıralı UTF-8
+relative path uzunluğu (u64 BE), path byte'ları, içerik uzunluğu (u64 BE)
+ve içerik byte'larının SHA-256'sıdır. Mtime, absolute path, izin/UID
+karar girdisi değildir. Symlink ve normal olmayan dosya reddedilir.
+Registry paketinin checksum'u ile yerel dosya ağacının hash'i aynı
+anlamdaymış gibi gösterilmez: SPDX downloadLocation yerel yamada exact
+merbay-erp/zee Git SHA ve repo yolu, verifiedUsing bu kanonik tree'dir.
+GB-042 düşük/kapalı: kayıtsız kaynak, bozuk checksum ve yanlış kök
+paket ret testleriyle tedarik sınırı doğrulanır.
+
+Yeni yerel kayıt ve fork içeriği değişince tree hash aynı committe
+incelenerek yenilenir; sırf kapıyı susturmak için güncellenmez. SBOM
+şeması aynı SPDX 3.0.1; kurulum dosya kümesi/ABI/API ve native C araç
+bayrakları değişmez. İki-clone release/offline vendor kabulü beklenir.
