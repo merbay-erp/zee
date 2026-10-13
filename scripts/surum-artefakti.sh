@@ -37,6 +37,9 @@ case "$cikti" in
     *) cikti="$depo_koku/$cikti" ;;
 esac
 gecici="$(mktemp -d "${TMPDIR:-/tmp}/zee-surum.XXXXXX")"
+# Cargo canonicalizes absolute path-package sources. macOS /var is a symlink;
+# remapping its logical spelling would leave /private/var embedded in binaries.
+gecici="$(cd "$gecici" && pwd -P)"
 trap 'rm -rf "$gecici"' EXIT
 # --kirli-kabul dahi HEAD'i üretir; yerel değiştirilmiş pin kullanılmaz.
 git show "$sha:compiler/rust-toolchain.toml" > "$gecici/rust-toolchain.toml"

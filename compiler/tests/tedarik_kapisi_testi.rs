@@ -376,3 +376,36 @@ fn surum_artefakti_iki_temiz_klon_sbom_provenance_ve_imza_kablosunu_tasir() {
         );
     }
 }
+
+#[cfg(unix)]
+#[test]
+fn surum_klon_koku_sembolik_yoldan_kanoniklesir() {
+    let kok = std::env::temp_dir().join(format!("zee-canonical-{}", std::process::id()));
+    let _ = std::fs::remove_dir_all(&kok);
+    std::fs::create_dir_all(kok.join("real")).unwrap();
+    std::os::unix::fs::symlink(kok.join("real"), kok.join("alias")).unwrap();
+    let betik = oku("scripts/surum-artefakti.sh");
+    let adim = betik
+        .lines()
+        .find(|line| line.starts_with("gecici=\"$(cd "))
+        .expect("remap klon kökü Cargo gibi fiziksel yola açılmalı");
+    let cikti = std::process::Command::new("bash")
+        .args([
+            "-c",
+            &format!("gecici=\"$1\"\n{adim}\nprintf '%s' \"$gecici\""),
+            "zee-test",
+        ])
+        .arg(kok.join("alias"))
+        .output()
+        .unwrap();
+    assert!(cikti.status.success());
+    assert_eq!(
+        std::path::Path::new(std::str::from_utf8(&cikti.stdout).unwrap()),
+        std::fs::canonicalize(kok.join("real")).unwrap()
+    );
+    assert_ne!(
+        kok.join("alias"),
+        std::fs::canonicalize(kok.join("real")).unwrap()
+    );
+    std::fs::remove_dir_all(kok).unwrap();
+}
