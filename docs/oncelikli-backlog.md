@@ -1277,13 +1277,18 @@ bekler. Depo kullanıcı onayı olmadan açılmaz. ADR-087 ve
 
 K-214 makine dilimi **KAPALI**: 51 kaynak SHA eşlemesi, anonim
 PR/dogfood kanıtı ve güvenilir master'dan çalışan CI kapısı; exact
-290fa52 için altı uzak kontrol yeşil. Önceki geçiş kararı, GitHub PR refs
-silinme teyidi ve yeniden açılış onayı **AÇIK** (GB-046).
+290fa52 için altı uzak kontrol yeşil. Önceki geçiş kararı K-215 kapsamında
+verildi; GitHub PR refs silinme teyidi ve yeniden açılış onayı **AÇIK** (GB-046).
 
 ## K-215 — Önceki geçişlerin anonimleşmesi ve path yama
 
-Durum: **DEVAM**. Kullanıcı K-214 önceki geçiş dökümünün temizliğini onayladı.
+Durum: **DEVAM — yerel makine dilimi tamam, uzak CI ve dış teyit açık**.
+Kullanıcı K-214 önceki geçiş dökümünün temizliğini onayladı.
 Kapsam: tüm yayımlanmış dal/etiket geçmişi, istisnasız CI, exact kaynak SHA
 beyanları, path PostgreSQL yaması ve doğru SBOM. Kanıt:
 [K-215 kaydı](incelemeler/k215/README.md). Özel ürün `ci/site-dil` pini
-korunur. GB-046 GitHub PR refs/cache teyidi ve yeniden açılış onayı açıktır.
+korunur. 18 yayımlanmış ref'in 406 commit geçmişi sıfır eşleşmeyle tarandı;
+exact-SHA geçişi ana depoya gitti, 771/771 yerel test ve iki temiz klon
+ikili eşitliği geçti. Uzak altı iş hesap ödemesi/harcama limiti nedeniyle
+başlayamadı (0 test adımı); Linux/Windows/uzak kapı kanıtı açık kalır.
+GB-046 GitHub PR refs/cache teyidi ve yeniden açılış onayı açıktır.

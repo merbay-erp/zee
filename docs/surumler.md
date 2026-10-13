@@ -1472,8 +1472,9 @@ Otomatik bcrypt→Argon2 ürün göçü henüz uygulanmadı.
 ### K-214: Anonim açık depo kanıtı
 
 Müşteri ve altyapı kimliği anonimleştirildi; yeni içerik hash politikasıyla
-CI içinde denetlenir. Eski geçişler maskeli dökümle ayrı kullanıcı kararını
-bekler. Tarihsel ölçümler eski kaynak kimliklerini korur; yeniden açılış ve
+CI içinde denetlenir. Eski geçişler K-214 sırasında maskeli dökümle ayrı
+karar bekledi; K-215 için kullanıcı temizliği onayladı. Tarihsel ölçümler
+eski kaynak kimliklerini korur; yeniden açılış ve
 GitHub PR önbelleği temizliği ayrıca onay/teyit ister. [Kayıt](incelemeler/k214/README.md).
 
 ### K-215: Önceki ürün geçişleri ve bağımsız yerel yama
@@ -1485,3 +1486,10 @@ derleme self Git deposu veya credential gerektirmez. SBOM gerçek build
 commit'ini ve yerel paket baytlarını kayıtlı SHA-256 ile doğrular.
 Tarihi ölçümler yeni kaynakta koşulmuş sayılmaz. GitHub PR refs/cache teyidi
 ve yeniden açılış onayı açıktır; depo gizli kalır.
+
+K-215 yerel makine doğrulaması tamam: 771/771 test, bütün yayımlanmış
+ref geçmişinde sıfır gizlilik eşleşmesi ve iki temiz klon ikili eşitliği.
+Güncel master uzak CI'ında altı iş hesap ödemesi/harcama limiti nedeniyle
+başlamadı; test adımı sıfır. Linux/Windows ve uzak kapı kanıtı açık kalır.
+[Hesap engeli kaydı](incelemeler/k215/ci-hesap-engeli.json) ve GitHub destek
+teyidi tamamlanmadan yeniden açılış hazırlanmış sayılmaz.
