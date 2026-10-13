@@ -138,7 +138,24 @@ permissions `enabled=false` olarak API üzerinden doğrulandı. O anda
 SBOM/provenance kaynak URI değeri yeni ana depoya bağlanır; aynı exact
 Git SHA her iki depoda erişilebilir olmalıdır. Önceki itwise koşu bağlantısı
 ve ham fixture kaydı tarihsel kanıttır, yeniden adlandırılmaz. Dil semantiği,
-ABI/API, SBOM/provenance şeması ve release dosya kümesi değişmez.
+ABI ve public API sözleşmesi, SBOM, provenance şeması ve release dosya kümesi değişmez.
 Git `origin` merbay-erp, `enterprise-mirror` itwise-bilisim olarak adlandırılır.
 Aynadaki PR #9 eski çalışma kaydıdır; bundan sonraki işler/koşular ana
 depoda takip edilir. Kaynak testleri ve beyanları K-202 kapsamında güncellenir.
+
+## K-204 — Immutable sır taraması yanlış pozitifleri
+
+8d39c17 kaynak commit'inde dört belge satırındaki kamuya açık SBOM ve
+provenance terimleri generic-api-key kuralıyla yanlış eşleşti.
+[Exact kayıt](sir-yanlis-pozitif-v1.tsv) yalnız commit/dosya/kural/satır
+fingerprintlerini, kaynak satırı SHA-256'sını ve gerekçeyi taşır.
+`scripts/sir-yanlis-pozitif-denetle.py` immutable Git blob satırını doğrulamadan
+scanner ignore dosyası üretmez; bozuk kayıt, tekrar, wildcard ve bayat hash
+reddedilir. Kaynak satırı yeni belgelerde yeniden ifade edildi.
+
+Default Gitleaks kuralları, --redact ve --ignore-gitleaks-allow korunur.
+Kayıt bütün dosyayı/dizini/kuralı veya gelecek commit'i hariç tutmaz. Geçmiş
+ve çalışma ağacı taraması geçti; runtime üretilen sentetik anahtar hâlâ
+generic-api-key bulgusu ile exit 1 verir ve çıktı REDACTED'dır. Dört
+Python ret/pozitif test CI sır-taraması işinde Gitleaks kurulduktan sonra
+koşar. Gerçek sır döndürme/kaldırma süreci SECURITY politikasında değişmez.

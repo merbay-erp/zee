@@ -237,7 +237,10 @@ Eksik compile/archive, bozuk command biçimi veya kayıp executable release'i
 durdurur. Probe komutunun başarısız olması Cargo'nun başarılı derlemesiyle
 karıştırılmaz; kayıt tek tek compile exit sonucu eşlemesi vaat etmez.
 
-K-201 exact üç platform iki-klon tatbikatı bekler. pkg-config/vcpkg,
+K-201 exact kaynak `25b6882b3f148f536ea81079d98991370999cdd8`,
+merbay-erp/zee run 38349601833 üç platform iki-klon eş hash/kurulum/
+program/LSP/kaldırma kapısını geçti. Ham runtime/provenance ve job/artifact
+hash kayıtları `derleme-platform-kaniti-v1.tsv` içindedir. pkg-config/vcpkg,
 driver iç subprocess'leri ve işletim sistemi process tracing ayrı
 K-192 işidir. Release dosya kümesi/SBOM/imza değişmez; provenance additive
 alandır. Dil grammar/spec/RFC/tanı/API ve production Rust katmanı değişmez.
@@ -254,7 +257,7 @@ permissions `enabled=false` olarak API üzerinden doğrulandı. O anda
 SBOM/provenance kaynak URI değeri yeni ana depoya bağlanır; aynı exact
 Git SHA her iki depoda erişilebilir olmalıdır. Önceki itwise koşu bağlantısı
 ve ham fixture kaydı tarihsel kanıttır, yeniden adlandırılmaz. Dil semantiği,
-ABI/API, SBOM/provenance şeması ve release dosya kümesi değişmez.
+ABI ve public API sözleşmesi, SBOM, provenance şeması ve release dosya kümesi değişmez.
 Git `origin` merbay-erp, `enterprise-mirror` itwise-bilisim olarak adlandırılır.
 Aynadaki PR #9 eski çalışma kaydıdır; bundan sonraki işler/koşular ana
 depoda takip edilir. Kaynak testleri ve beyanları K-202 kapsamında güncellenir.

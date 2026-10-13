@@ -68,7 +68,7 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-063 | [Sabit HTTP durumlu yanıt sınırı](063-sabit-http-durumlu-yanit.md) | **kabul** (K-163/F014/F032) |
 | ADR-064 | [Yürütülebilir uyumluluk ve deprecation kapısı](064-uyumluluk-kapisi.md) | **kabul** (K-167/B-072) |
 | ADR-065 | [Spec maddesi düzeyinde drift kapısı](065-spec-madde-drift-kapisi.md) | **kabul** (K-171) |
-| ADR-066 | [Birleşik güvenlik sürüm kapısı](066-birlesik-guvenlik-surum-kapisi.md) | **kabul** (K-170) |
+| ADR-066 | [Birleşik güvenlik sürüm kapısı](066-birlesik-guvenlik-surum-kapisi.md) | **kabul** (K-170/K-204) |
 | ADR-067 | [Yalnız dogfood boşluklarından büyüyen korpus](067-dogfood-korpusu.md) | **kabul** (K-172) |
 | ADR-068 | [Tekrar üretilebilir sürüm artefaktı](068-tekrar-uretilebilir-surum.md) | **kabul** (K-168/K-191/K-195/K-196/K-197/K-198/K-199/K-200/K-201/K-202) |
 | ADR-069 | [Uzun soak ve kaynak sızıntısı kapısı](069-uzun-soak-kapisi.md) | **kabul** (K-173) |

@@ -55,3 +55,11 @@ bir tarama bütün sırların bulunacağını garanti etmez. `.env.example` gibi
 örnekler gerçek sır içeremez. IO izinin hassas veri sınırları için
 [IO izi rehberine](docs/io-izi.md) bakın. Commit e-postası tercihi ve Git
 geçmişi bu güvenlik çalışmasıyla değiştirilmez.
+
+## İncelenmiş tarihsel yanlış pozitifler
+
+Sır taraması [exact kayıt](docs/sir-yanlis-pozitif-v1.tsv) içindeki dört
+immutable belge fingerprintini kaynak satırı SHA-256 ile doğrular (K-204).
+Bu kayıt yeni commit, dosya veya gerçek anahtar bulgusunu susturmaz.
+Default Gitleaks kuralları ve redaction yürürlüktedir; yeni kayıt aynı
+değişiklikte güvenlik bulgusu, gerekçe, hash ve ret testi ister.

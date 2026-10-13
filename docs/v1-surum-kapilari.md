@@ -268,10 +268,15 @@ spec/RFC/tanı/API/production Rust katmanı ve release dosya kümesi değişmez.
 
 K-201 native C/archiver driver çağrı kaydı hazırdır; iki klonda compile ve
 archive zorunlu, paket/argüman/executable path/hash ve sürüm sorgusu sonucu
-provenance'a eklenir. Exact üç platform release kanıtı açıktır.
+provenance'a eklenir. Exact kaynak 25b6882/run 38349601833 üç platform release kanıtı geçti.
 pkg-config/vcpkg, driver iç alt süreçleri ve minimum OS K-192'de ayrıca
 açık kalır. Ayrıntı [derleme rehberinde](derleme-ve-bagimliliklar.md).
 
 K-202: ana GitHub/CI deposu `merbay-erp/zee`; `itwise-bilisim/zee` yalnız
 ayna ve repository Actions kapalıdır. SBOM/provenance yeni ana kaynak
 URI kullanır; eski CI/fixture kanıtları tarihsel bağlantılarıyla korunur.
+
+K-204: sır taramasının dört kamuya açık belge yanlış pozitifine yalnız
+immutable fingerprint/kaynak satırı hash doğrulaması uygulandı; yeni
+anahtar exit 1/REDACTED testi, default kurallar ve iki tarama korunur.
+K-202 beyan sonrası türetilen kanıt özeti yenilendi.

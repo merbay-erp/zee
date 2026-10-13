@@ -533,6 +533,47 @@ fn calisma_ortami_kaydi_exact_kaynak_ve_ikili_hashleriyle_program_lsp_kaniti_tas
                 assert_eq!(klonlar.len(), 2);
                 for klon in ["a", "b"] {
                     let kayit = &klonlar[klon];
+                    if let Some(native) = kayit.get("nativeTools") {
+                        assert_eq!(native["schema"], "zee-native-tools-1");
+                        let tools = native["tools"].as_array().unwrap();
+                        assert!(!tools.is_empty());
+                        let mut paths = BTreeSet::new();
+                        for tool in tools {
+                            let path = tool["path"].as_str().unwrap();
+                            assert!(!path.is_empty() && paths.insert(path));
+                            let hash = tool["sha256"].as_str().unwrap();
+                            assert_eq!(hash.len(), 64);
+                            assert!(hash
+                                .bytes()
+                                .all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b)));
+                            let query = &tool["versionQuery"];
+                            match query["status"].as_str().unwrap() {
+                                "available" => {
+                                    assert!(!query["value"].as_str().unwrap().is_empty())
+                                }
+                                "unavailable" => {
+                                    assert!(!query["reason"].as_str().unwrap().is_empty());
+                                    assert!(query.get("value").is_none());
+                                }
+                                status => panic!("bilinmeyen native sürüm sorgusu: {status}"),
+                            }
+                        }
+                        let calls = native["invocations"].as_array().unwrap();
+                        let mut roles = BTreeSet::new();
+                        for call in calls {
+                            assert!(paths.contains(call["tool"].as_str().unwrap()));
+                            for field in ["owner", "program", "command"] {
+                                assert!(!call[field].as_str().unwrap().is_empty());
+                            }
+                            assert!(call["arguments"]
+                                .as_array()
+                                .unwrap()
+                                .iter()
+                                .all(|a| a.is_string()));
+                            roles.insert(call["role"].as_str().unwrap());
+                        }
+                        assert!(roles.contains("compile") && roles.contains("archive"));
+                    }
                     let araclar = kayit["binaries"].as_object().unwrap();
                     assert_eq!(araclar.len(), 2);
                     for ad in ["dil", "dillsp"] {
