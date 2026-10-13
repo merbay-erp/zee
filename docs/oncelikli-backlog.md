@@ -1108,8 +1108,8 @@ anlamına gelmez. Yeni güvenlik bulgusu reproducer/etki/GB kaydı ister.
 
 ### K-206 — PostgreSQL sonuç belleği ve hata matrisi incelemesi
 
-**KISMEN — akış toplama gerçeklendi; exact native kabul/RSS kaydı
-beklenir, tek wire satırı sınırı açık.**
+**KISMEN — akış toplama, exact native kabul ve RSS kaydı kapalı;
+tek wire satırı sınırı açık.**
 16 MiB uygulama sonucu driver/wire bellek sınırı diye sunulamaz. İzole
 sunucu ve özel geçici veriyle çok satır, tek büyük satır, timeout, retry,
 transaction/savepoint ve sonraki bağlantı sağlığı birlikte ölçülür.
@@ -1173,6 +1173,12 @@ vardı; ömrü uzatılmadı, sürücüdeki tüm satır Vec'i kaldırıldı.
 
 **KISMEN:** tek wire satırının driver tahsisi uygulama sınırından önce
 gerçekleşir. GB-041 orta/açık kalır; bütün süreç için 16 MiB veya kesin
-RSS bütçesi sözü yoktur. Exact native kabul/RSS kaydı kapanış öncesinde
-alınır. Saf collector testleri ve eski 4a4fd0d Vec oracle'ı mevcut
+RSS bütçesi sözü yoktur. Exact native kabul/RSS kaydı aşağıdaki kapanışta saklıdır. Saf collector testleri ve eski 4a4fd0d Vec oracle'ı mevcut
 hata/sonuç gözlemini denetler; gerçek DB testi izole loopback opt-in'dir.
+
+K-206 akış toplama dilimi kapalı: source f2ba654, temiz beyan/ölçüm
+6463a7f; 731/731 faz ve gerçek native oracle/transaction kabulü geçti.
+64×1 MiB sonuçta native süreç RSS 128,77→23,81 MiB, tek 64 MiB satırda
+136,77→72,72 MiB; üç vakada sonraki sorgu başarılıdır. Bir örnek/sıfır
+ısınma gözlemi, genel RSS garantisi değildir. [Ham kanıt](incelemeler/k206/README.md).
+**K-206 KISMEN:** tek wire satırı/driver sınırı ve GB-041 açık kalır.

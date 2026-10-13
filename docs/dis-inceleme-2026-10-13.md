@@ -87,3 +87,10 @@ K-206 [izole prototip/uzun TLS kanıtı](incelemeler/k206/README.md):
 15 sorgu aynı sonuç/hata verisi ve transaction sağlığını verdi. 64×1 MiB
 prototip RSS 23,7 MiB, tek 64 MiB satır 72,7 MiB; doğrudan stream helper
 production adaptörü değildir. GB-041 ve üretim entegrasyonu açıktır.
+
+K-206 akış toplama dilimi kapalı: source f2ba654, temiz beyan/ölçüm
+6463a7f; 731/731 faz ve gerçek native oracle/transaction kabulü geçti.
+64×1 MiB sonuçta native süreç RSS 128,77→23,81 MiB, tek 64 MiB satırda
+136,77→72,72 MiB; üç vakada sonraki sorgu başarılıdır. Bir örnek/sıfır
+ısınma gözlemi, genel RSS garantisi değildir. [Ham kanıt](incelemeler/k206/README.md).
+**K-206 KISMEN:** tek wire satırı/driver sınırı ve GB-041 açık kalır.

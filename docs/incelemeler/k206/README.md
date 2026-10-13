@@ -35,3 +35,36 @@ geçici sunucudan TLS 1.2 gözlemidir. CA/private key dosyaları geçicidir ve
 silinmiştir; yalnız CA fingerprint'i saklanır. İlk self-signed sunucu
 kurulumunda handshake başarısız olmuş, ayrı CA ve localhost leaf ile pozitif
 koşu geçmiştir; ilk kurulum bir negatif hostname/CA test kanıtı sayılmaz.
+
+## K-206 üretim adaptörü kabulü
+
+`rss-native-after.json` temiz exact 6463a7f kaynakta gerçek Zee native
+adaptörünü ölçer; `probe.rs` öncekiyle bayt bayt aynı, hash kayıttadır.
+64×1 MiB sonuçta RSS 135.020.544→24.969.216 bayt (128,77→23,81 MiB),
+tek 64 MiB satırda 143.409.152→76.251.136 bayt (136,77→72,72 MiB).
+Her üç vakada sonraki sorgu başarılıdır. Bu örnek=1/ısınma=0 gözlemidir;
+kalıcı performans tabanı veya global RSS garantisi değildir.
+
+`native-acceptance.json`/log aynı temiz kaynakta production `oku` yolunu
+eski 4a4fd0d Vec oracle'ıyla karşılaştırır: 15 sorgu sınıfı, TEXT parameter
+bind ve transaction limit hatası sonrası sağlık. Satır sınırı NULL/tür/
+byte hatasını, sonradan gelen sunucu hatası satır/NULL hatasını geçersiz
+kılar. Uygulama hataları read retry sınıfına taşınmaz; mevcut write/commit
+ve recovery sözleşmesi değişmedi. Sürekli native fault proxy matrisi bu
+tek testin tamamladığı bir iş diye gösterilmez. Tek wire satırı ve GB-041
+**açıktır**.
+
+Reproducer için `native-probe-Cargo.*` dosyalarını compiler/target/
+k206-native-probe altında Cargo.* adlarıyla, `probe.rs` dosyasını bu
+klasörün src/main.rs yoluna kopyala. Native driver'ları compiler/target
+altına koy; compiler çalışma dizininde:
+
+```bash
+CARGO_TARGET_DIR=target cargo build --locked --offline --release \
+  --manifest-path target/k206-native-probe/Cargo.toml
+python3 target/native-acceptance-driver.py
+python3 target/native-rss-driver.py
+```
+
+Yeni koşu kendi exact SHA/temizlik/çevre kaydını üretir. Konteynerler
+UUID adıyla yalnız test tarafından oluşturulur ve kaldırılır.

@@ -303,4 +303,11 @@ K-207 KISMEN; full didChange ve incremental/cache kapasitesi açıktır.
 K-206 native okuma akış toplamasına geçti: sonuç sınırından sonra çıktı
 biriktirilmez; borrowed metin kopyalanmadan denetlenir. Hata önceliği ve
 mevcut read retry/transaction/API korunur. Tek wire satırı/driver RSS
-bütçesi GB-041'de açık; exact native kabul ve RSS kaydı beklenir.
+bütçesi GB-041'de açık; exact native kabul ve RSS kaydı aşağıdaki kapanışta saklıdır.
+
+K-206 akış toplama dilimi kapalı: source f2ba654, temiz beyan/ölçüm
+6463a7f; 731/731 faz ve gerçek native oracle/transaction kabulü geçti.
+64×1 MiB sonuçta native süreç RSS 128,77→23,81 MiB, tek 64 MiB satırda
+136,77→72,72 MiB; üç vakada sonraki sorgu başarılıdır. Bir örnek/sıfır
+ısınma gözlemi, genel RSS garantisi değildir. [Ham kanıt](incelemeler/k206/README.md).
+**K-206 KISMEN:** tek wire satırı/driver sınırı ve GB-041 açık kalır.
