@@ -50,3 +50,6 @@ yalnız veri olarak tarar; PR kodu çalıştırılmaz, token salt-okunurdur.
 Yerel kanıt: 770/770 faz, fmt/Clippy, katalog/tazelik/mimari/SCC/uyumluluk/
 regresyon kapıları ve Gitleaks geçmiş+ağaç taraması geçti. Anonim tarihçe
 kapısı yeni eşleşme bulmadı. Uzak ref eşitliği push sonrasında doğrulanır.
+
+Kapı/kod/test/belge commit’i: `8706447a7337a54cad4bf4e8547c31d57fbfb2f0`. Kaynak beyanı takip commitindedir.
+9 sentetik gizlilik/CI testi geçti; terim listesi veya eşleşme değeri loga yazılmadı.
