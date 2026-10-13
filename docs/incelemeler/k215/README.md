@@ -122,3 +122,11 @@ Temiz `b8376349b3645061e7b83338b5f9a28d12f8a8d9` kaynağında [iki klon kanıtı
 **GEÇTİ**: dil ve dillsp SHA-256 eş; SBOM, native deployment ve gerçek
 build-environment doğrulaması başarılı. Önceki fark denemeleri yukarıda
 tarihsel negatif kanıttır; başarısız ikililer dağıtıma çıkarılmadı.
+
+Merbay atomik [ref geçişi](ref-esleme-v1.tsv) doğrulandı: 7 dal ve 11
+etiket işlemi, exact-SHA lease ile yapıldı. Baslangıç/doğum etiketleri
+değişmedi; v0.1–v0.7 anonim source soy ağacına bağlandı. İlk geçiş
+masterı `39f6ca26e20805feb8833ea0fb1a61d7a7249df0`; bunu izleyen belgeler
+normal fast-forward commitlerdir. Eski refs için CI geçici duraklatıldı
+ve **enabled=true** özgün izinleriyle geri getirildi; güncel master CI
+normal belge commitinin push eventinde başlatılır. Depo gizli kalır.
