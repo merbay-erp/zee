@@ -315,3 +315,8 @@ K-207 tarihçe testi eski K-148/K-153/K-154 alt kümesinin exact 32
 satırını korur ve yeni iki kaydın 13'er satır/4 ölçek/source SHA/clean
 metadata'sını ayrıca doğrular. Toplam satır sayısı ilerlemeyi engelleyen
 sabit kabul edilmez; genel şema/metadata yinelenme kapıları yürürlüktedir.
+
+K-207 ikinci dilim: kapsam checkpoint sıra sınırıdır; journal yalnız
+yeni yerel adları siler, dış atama ve SymbolId sayacı korunur. Yeni
+derleme tamponu için exact temiz 1800 sn soak ve sabit ölçek sonrası
+benchmark açıktır. Journal her derleme sonunda düşer; LSP cache eklenmedi.

@@ -7,12 +7,12 @@ struct SembolKaydi {
 }
 
 /// Checker'ın ad, kimlik ve türü tek kayıtta tuttuğu kapsam tablosu.
-/// `HashMap<String, Tur>` yalnız geriye uyumlu public `ad_cozumle` yüzeyinde
-/// kalır; iç geçişler semantic identity taşır.
+/// `ad_cozumle` public yüzeyi HashMap, iç geçişler semantic identity taşır.
 pub(super) struct SembolTablosu {
     kapsam: usize,
     siradaki: usize,
     kayitlar: HashMap<String, SembolKaydi>,
+    yeni_adlar: Vec<(usize, String)>,
 }
 
 impl SembolTablosu {
@@ -21,6 +21,7 @@ impl SembolTablosu {
             kapsam,
             siradaki: 0,
             kayitlar: HashMap::new(),
+            yeni_adlar: Vec::new(),
         }
     }
 
@@ -42,13 +43,10 @@ impl SembolTablosu {
             return kayit.kimlik;
         }
         let kimlik = SymbolId::yeni(self.kapsam, self.siradaki);
+        self.yeni_adlar.push((self.siradaki, ad.clone()));
         self.siradaki += 1;
         self.kayitlar.insert(ad, SembolKaydi { kimlik, tur });
         kimlik
-    }
-
-    pub(super) fn retain(&mut self, mut tut: impl FnMut(&str, &Tur) -> bool) {
-        self.kayitlar.retain(|ad, kayit| tut(ad, &kayit.tur));
     }
 }
 
@@ -85,15 +83,18 @@ pub(super) fn alan_cozumle(yapi: &Yapi, ham: &str, satir: usize) -> Result<Strin
     }
 }
 
-/// Blok kapsamı (RFC-0004 kararı, v0.2): gövdeye girerken ad kümesi alınır,
+/// Blok kapsamı (RFC-0004 kararı, v0.2): gövdeye girerken sıra sınırı alınır,
 /// çıkarken gövdede DOĞAN adlar düşer. Dıştaki ada atama kalıcıdır; içerde
 /// aynı adla yeniden tanım diye bir şey yoktur (gölgeleme yapısal olarak yok).
-pub(super) fn kapsam_baslat(ortam: &SembolTablosu) -> std::collections::HashSet<String> {
-    ortam.keys().cloned().collect()
+pub(super) fn kapsam_baslat(ortam: &SembolTablosu) -> usize {
+    ortam.siradaki
 }
 
-pub(super) fn kapsam_bitir(ortam: &mut SembolTablosu, kapsam: &std::collections::HashSet<String>) {
-    ortam.retain(|ad, _| kapsam.contains(ad));
+pub(super) fn kapsam_bitir(ortam: &mut SembolTablosu, kapsam: &usize) {
+    let bas = ortam.yeni_adlar.partition_point(|(sira, _)| sira < kapsam);
+    for (_, ad) in ortam.yeni_adlar.drain(bas..) {
+        ortam.kayitlar.remove(&ad);
+    }
 }
 
 fn adi_coz(
@@ -194,3 +195,6 @@ pub fn ad_cozumle(
         uzunluk,
     )
 }
+
+#[cfg(test)]
+mod testler;

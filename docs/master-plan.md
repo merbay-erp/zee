@@ -1062,3 +1062,8 @@ K-207 ilk exact ölçümü: 29be85b → 94de420 aynı M4/Rust/release/25+2
 koşulunda 20k p95 22.169,906 → 2.961,638 ms. Raw sample ve tarihçe
 [ölçümlerde](olcumler.md). Kapsam maliyeti ve 1 sn hedefi açık;
 incremental parser/cache veya genel platform SLA eklenmedi.
+
+K-207 ikinci dilim: kapsam checkpoint sıra sınırıdır; journal yalnız
+yeni yerel adları siler, dış atama ve SymbolId sayacı korunur. Yeni
+derleme tamponu için exact temiz 1800 sn soak ve sabit ölçek sonrası
+benchmark açıktır. Journal her derleme sonunda düşer; LSP cache eklenmedi.

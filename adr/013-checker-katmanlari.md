@@ -79,3 +79,21 @@ Tam ad listesi yalnız A001 önerisinde üretilir; A002 eşleşmeleri sıralanı
 tekilleştirilir. Exact-ad önceliği, tanı mesaj/span/öneri ve SymbolId bağları
 eski algoritma oracle'ıyla 26.624 karar karşılaştırmasında aynı kalır.
 Yeni modül/kenar, ters katman geçişi, cache veya uzun ömürlü durum yoktur.
+
+## K-207 ikinci dilim — kapsam checkpoint
+
+Kapsam girişi bütün adların HashSet kopyası yerine monotonic tanım sıra
+sınırını alır. Sembol tablosunun geçici yeni-ad journal'ı scope çıkışında
+yalnız o sınırdan sonra doğan adları kaldırır. Dış ada atama ve SymbolId
+kimliği kalıcıdır; silinen kimlik sayacı geri sarılmaz. Nested scope,
+atama, yerel silme ve kimlik yeniden kullanmama testi mevcut kapsam/
+semantic/golden testlerini tamamlar. Eski HashSet algoritmasıyla 4.096
+deterministik iç içe kapsam/atama işlemi aynı ad, tür ve kimliği verir.
+Testler satır bütçisini koruyan cfg(test) alt modülündedir; production
+modül/kenar ve ters katman geçişi yoktur. Sorumluluk cozumleyici sahibindedir.
+
+Journal derleme başına düşer, LSP belge/cache alanına taşınmaz. Yeni
+derleme tamponu nedeniyle K-173/ADR-069 exact temiz 30 dk soak ve
+aynı sabit iş yüküyle ikinci sonrası benchmark beklenir. Bu kanıtlar
+olmadan K-207 kapsam dilimi kapalı sayılmaz. Dil/tanı/API/profil ve
+blokta doğan adın görünürlüğü değişmez.
