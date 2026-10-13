@@ -1503,3 +1503,9 @@ WASM kapılarını exact seçili kaynakta çalıştırır; ilgisiz özel dal/eti
 almaz, PR kodu otomatik çalıştırılmaz. Uzak sonuç doğrulanınca kaydedilir;
 Windows runtime kanıtı ve GitHub destek teyidi açık kalır.
 [Karar](../adr/088-git2-gitsrv-kosulari.md).
+
+İlk Linux koşusu #20'de 770/771 test geçti. Tarihsel karşılaştırma kanıtı
+özgün ölçüm SHA'sını korur; anonimleştirilmiş kaynak soyu K-214/K-215 exact
+eşlemesi ve HEAD atası şartıyla doğrulanır. Eski kaynak nesnelerini çekmek
+gerekmez. Bozuk/çelişkili/ilgisiz eşleme hermetik testle reddedilir. Gitsrv
+Go eşdeğerliğini doğrulanmış Go 1.26.1 aracıyla gerçekten çalıştırır.

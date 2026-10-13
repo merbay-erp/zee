@@ -58,6 +58,16 @@ jobs:
           bash scripts/conformance-korugu.sh "$taban"
           bash scripts/semantic-regresyon-korugu.sh "$taban"
           bash scripts/core-freeze-korugu.sh "$taban"
+      - name: SHA-256 doğrulanmış Go karşılaştırma aracı
+        working-directory: kaynak
+        run: |
+          set -euo pipefail
+          mkdir -p compiler/target/ci-araclar
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 -o compiler/target/ci-araclar/go.tar.gz https://go.dev/dl/go1.26.1.linux-amd64.tar.gz
+          echo '031f088e5d955bab8657ede27ad4e3bc5b7c1ba281f05f245bcc304f327c987a  compiler/target/ci-araclar/go.tar.gz' | sha256sum --check --strict
+          tar -xzf compiler/target/ci-araclar/go.tar.gz -C compiler/target/ci-araclar
+          echo "$PWD/compiler/target/ci-araclar/go/bin" >> "$GITHUB_PATH"
+          compiler/target/ci-araclar/go/bin/go version
       - name: Tam Linux faz matrisi ve kalite kapıları
         working-directory: kaynak/compiler
         run: |

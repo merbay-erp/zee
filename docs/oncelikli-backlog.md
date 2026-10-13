@@ -1298,5 +1298,9 @@ GB-046 GitHub PR refs/cache teyidi ve yeniden açılış onayı açıktır.
 Durum: **DEVAM**. Kullanıcı koşuların Git2/Gitsrv üzerinden yapılmasını
 istedi. Git2 gizli kalır; GitHub ana kaynak ve Enterprise ayna Actions'ı
 kapalıdır. Linux kapıları ve seçili ref/ephemeral token sınırı ADR-088
-ile kayıtlı; ilk exact uzak koşu ve sonuç kanıtı beklenir. Windows runtime
+ile kayıtlı; ilk exact uzak koşu #20'de 770/771 test geçti. Tek başarısızlık,
+özgün ölçüm SHA'sının anonim geçmişteki kaynak soyunu doğrulama kontrolüdür.
+K-214/K-215 exact eşlemesi ve HEAD atası şartıyla düzeltildi; eski ölçüm
+verisi değişmez, eski kaynak nesnesi geri alınmaz. Yeni hermetik olumlu/
+olumsuz vaka ve gerçek Go aracıyla uzak tekrar sonucu beklenir. Windows runtime
 kanıtı yerine çapraz veya Linux test sonucu konmaz.

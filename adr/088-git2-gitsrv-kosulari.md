@@ -62,3 +62,7 @@ eşiksizdir, geçmiş ölçümler ve sabit iş yükü değişmez. ADR-048 pin il
 Forgejo envanterine de uygulanır; test fazı ve canlı sayılar aynı committe
 güncellenir. Kullanıcı tanısı veya compiler bug olmadığı için yeni dil
 regression kaydı yoktur.
+
+Go karşılaştırması sessiz opsiyonel geçişe bırakılmaz: CI resmi Go 1.26.1
+Linux x64 arşivini SHA-256 doğrular ve Go aracıyla eşdeğerliği gerçekten
+çalıştırır. Bu CI aracı Zee runtime bağımlılığı değildir.

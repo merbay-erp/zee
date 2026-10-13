@@ -21,7 +21,7 @@ artefakta gider; erişim adresleri, tokenler ve ham özel metadata buraya alınm
 
 ## Yerel doğrulama
 
-Son macOS faz matrisi: **773/773 geçti**, 0 kalan, 0 atlanan;
+İlk K-216 macOS faz matrisi: **773/773 geçti**, 0 kalan, 0 atlanan;
 faz süreleri toplamı 195.902 sn. Clippy/fmt, katalog/tazelik, kaynak korukları,
 13 sentetik gizlilik testi, YAML parse ve tam kaynak/çalışma ağacı Gitleaks
 geçti. 407 commit yaklaşık 34.23 MB ve çalışma ağacı yaklaşık 11.63 MB
@@ -34,7 +34,32 @@ eşdeğerliği ve ardından tam tur geçti. Hata geçmişi olumlu sonuç sayılm
 
 ## Açık kanıt
 
-İlk exact Gitsrv koşusu ve uzak sonuç kaydı beklenir. GitHub hesap engeli
+İlk başarılı exact Gitsrv koşusu ve uzak sonuç kaydı beklenir. GitHub hesap engeli
 çözülmüş veya eski GitHub checks'i yeşile dönmüş sayılmaz. Linux koşusu
 Windows runtime testlerinin veya RC fuzz/Miri/kurulum kapılarının yerine
 geçmez. GitHub PR refs/cache destek teyidi ve yeniden açılış onayı açıktır.
+
+K-216: anonim CI eski ölçüm kaynak nesnesini geri getirmez. Tarihçedeki
+özgün SHA/süre/RSS/LOC değiştirilmez; kaynak soyu incelenmiş K-214/K-215
+exact eşlemesiyle ve eşlenmiş commit'in HEAD atası olmasıyla doğrulanır.
+Kayıt dışı, bozuk, çelişkili veya HEAD dışı eşleme reddedilir. Bu yeni
+kaynakta yeniden ölçüm değildir. Hermetik vaka eski nesne yokken olumlu
+ve ilgisiz/bozuk kaynakta olumsuz sonuçları korur.
+
+İlk Gitsrv koşusu #20 (run id 751), exact b3b96122e4bf364b82c3204d45052eac6a8acedc
+kaynağında **770/771**: yalnız tarihsel kaynak nesnesi bulunamadığı için
+karşılaştırma provenance testi kaldı. Kaynak/Rust/koruk adımları geçti;
+gizlilik/tedarik/WASM/performance adımları bu başarısızlıktan sonra
+çalışmadı. Faz artefaktı incelendi; bu koşu geçiş sayılmaz.
+
+Tarihsel kaynak kontrolü düzeltildikten sonraki macOS çalışma ağacı
+matrisi **774/774 geçti**, 0 kalan, 0 atlanan; faz süreleri toplamı
+220.087 sn. Katalog/tazelik, clippy/fmt, 13 gizlilik ve 4 sır istisnası testi
+geçti. Bu yerel sonuç uzak Linux tekrarının yerine yazılmaz.
+
+İlk Git2 push'u sonrasında depo Actions alanı kapalı görüldü. Yeniden
+açılıp manuel başlatılan #20 gerçekten Gitsrv'de çalıştı; alanın
+kapanmasına yol açan sunucu tarafı süreç belirlenmedi. Kalıcı otomatik
+push tetikleme kanıtı açıktır. 13 Ekim 2026 22:32–22:38 İstanbul aralığında
+tarayıcı/API HTTPS erişimi zaman aşımı verdi; yeni uzak koşu bu erişim
+olmadan başlatılmış veya geçmiş sayılamaz.

@@ -4049,3 +4049,10 @@ WASM kapılarını exact seçili kaynakta çalıştırır; ilgisiz özel dal/eti
 almaz, PR kodu otomatik çalıştırılmaz. Uzak sonuç doğrulanınca kaydedilir;
 Windows runtime kanıtı ve GitHub destek teyidi açık kalır.
 [Karar](../adr/088-git2-gitsrv-kosulari.md).
+
+K-216 ilk Gitsrv koşusu #20: 770/771. Anonim temiz klonda özgün ölçüm
+nesnesi yoktur; tarihsel ölçüm SHA'sı/verisi korunarak kaynak soyu K-214/
+K-215 exact eşlemesi ve HEAD atası şartıyla doğrulanır. Yeni hermetik
+test eski nesne olmadan geçişi ve bozuk/ilgisiz eşlemelerin reddini
+kanıtlar. Go eşdeğerliği CI'da doğrulanmış Go 1.26.1 ile çalışır; bu
+değişiklik compiler semantiğini genişletmez. Uzak tekrar sonucu beklenir.

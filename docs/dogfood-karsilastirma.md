@@ -61,3 +61,10 @@ satırında okunur, Linux satırı yalnız süre için anlamlıdır.
 ```bash
 bash scripts/dogfood-karsilastirma.sh 10
 ```
+
+K-216: anonim CI eski ölçüm kaynak nesnesini geri getirmez. Tarihçedeki
+özgün SHA/süre/RSS/LOC değiştirilmez; kaynak soyu incelenmiş K-214/K-215
+exact eşlemesiyle ve eşlenmiş commit'in HEAD atası olmasıyla doğrulanır.
+Kayıt dışı, bozuk, çelişkili veya HEAD dışı eşleme reddedilir. Bu yeni
+kaynakta yeniden ölçüm değildir. Hermetik vaka eski nesne yokken olumlu
+ve ilgisiz/bozuk kaynakta olumsuz sonuçları korur.
