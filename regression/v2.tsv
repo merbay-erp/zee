@@ -23,3 +23,6 @@ govde-disi-parametre-satiri	K-166	a0a3c3f20d75187cd25bbfb6617657d2973d9c0c	-	0.8
 tanimsiz-ad-tek-tani	K-166	a0a3c3f20d75187cd25bbfb6617657d2973d9c0c	-	0.8.0-dev	checker	diagnostics	A001	1:1:4	1	-	regression/checker/tanimsiz-ad-tek-tani.dil
 derinlik-499-resmi-yiginda	K-178	9527c395ef303cf526537facf0ae775ee2ee16db	-	0.8.0-dev	runtime	run	-	-	0	499	regression/runtime/derinlik-499-resmi-yiginda.dil
 ozel-io-izi	K-184	20138344fee2c10cae9d9835f3e4d2a1d383e466	-	0.8.0-dev	runtime	run	-	-	0	ornek	regression/runtime/ozel-io-izi.dil
+rota-birimlerinde-ayni-satir	K-213	de24878d3b361705d8dd7b6bb3dd165e32f99503	1a01971db4a16c0a96e3794b42d0a1029af1da3d	0.8.0-dev	hir	hir	-	-	0	-	regression/hir/rota-birimlerinde-ayni-satir.dil
+gorunum-sembol-kaydi	K-213	de24878d3b361705d8dd7b6bb3dd165e32f99503	8339cc10af6d8479663c4f66ff9e9ebca4be2dc4	0.8.0-dev	hir	definition	-	-	0	-	regression/hir/gorunum-sembol-kaydi.dil
+gizli-deger-io-izi	K-213	de24878d3b361705d8dd7b6bb3dd165e32f99503	e2d4070cfb24340f15497e259f8ae0dbd561e26d	0.8.0-dev	runtime	trace	-	-	0	sentetik-iz-parolasi	regression/runtime/gizli-deger-io-izi.dil

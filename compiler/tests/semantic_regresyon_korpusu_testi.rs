@@ -22,6 +22,7 @@ const KIPLER: &[&str] = &[
     "diagnostics",
     "compile",
     "hir",
+    "definition",
     "run",
     "trace",
     "capability",
@@ -182,7 +183,7 @@ fn faz_kipi_kabul_eder(faz: &str, kip: &str) -> bool {
     match faz {
         "parser" => matches!(kip, "parser" | "diagnostics" | "run"),
         "checker" | "morphology" => matches!(kip, "compile" | "run" | "diagnostics"),
-        "hir" => matches!(kip, "hir" | "run"),
+        "hir" => matches!(kip, "hir" | "definition" | "run"),
         "runtime" => matches!(kip, "run" | "trace"),
         "concurrency" => kip == "run",
         "security" => matches!(kip, "capability" | "web"),
@@ -238,6 +239,15 @@ fn vakayi_calistir(vaka: &Vaka, kaynak: &str) -> Gozlem {
         panic!("{}: bağlı HIR invarianti bozuk: {hata}", vaka.ad);
     }
 
+    if vaka.kip == "definition" {
+        for kullanim in program.hir().sembol_kullanimlari() {
+            assert!(
+                program.hir().sembol_tanimi(kullanim.kimlik()).is_some(),
+                "{}: user SymbolId definition kaydı yok",
+                vaka.ad
+            );
+        }
+    }
     match vaka.kip.as_str() {
         "trace" => {
             let mut kaydeden = IzKaydedenIo::yeni(ToplayanIo::yeni(Vec::new()));
@@ -256,7 +266,7 @@ fn vakayi_calistir(vaka: &Vaka, kaynak: &str) -> Gozlem {
                 cikti: kaydeden.ic.cikti,
             }
         }
-        "compile" | "hir" => Gozlem {
+        "compile" | "hir" | "definition" => Gozlem {
             tani: None,
             cikis: 0,
             cikti: Vec::new(),
