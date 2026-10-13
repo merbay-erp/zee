@@ -1346,3 +1346,8 @@ yalnız A001 önerisinde üretilir, A002 ve exact-ad kararı değişmez. Oracle
 26.624 karar, golden/morfoloji/LSP ve mimari kapıları geçti; exact önce/
 sonra performans kanıtı açık. K-206 PG sonucu bellek deneyi GB-041 olarak
 orta/açık kaydedildi; 16 MiB sonuç bütün driver belleği tavanı değildir.
+
+K-207 ilk exact ölçümü: 29be85b → 94de420 aynı M4/Rust/release/25+2
+koşulunda 20k p95 22.169,906 → 2.961,638 ms. Raw sample ve tarihçe
+[ölçümlerde](olcumler.md). Kapsam maliyeti ve 1 sn hedefi açık;
+incremental parser/cache veya genel platform SLA eklenmedi.

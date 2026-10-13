@@ -1124,3 +1124,11 @@ Ad çözümleme her başvuruda bütün adları clone/sort ediyor. Exact-ad
 A001/A002 tam mesaj/span/öneri ve sıralama korunmalıdır. Dil yüzeyi,
 cache/persistent state ya da incremental parser eklenmez. K-154/ADR-013
 ve ADR-045/049 etkisi birlikte incelenir; 20k <1 sn yalnız hedeftir.
+
+K-207 ilk dilim ölçümü kapalı: source 7827d8c/beyan+ölçüm 94de420, temiz
+taban 29be85b; 20k p95 22.169,906 → 2.961,638 ms, yaklaşık 7,5 kat.
+727/727 faz ve 26.624 oracle kararı aynı gözlemi kanıtladı. Raw sample
+ve exact tarihçe [ölçümlerde](olcumler.md). **K-207 KISMEN:** kapsam
+checkpoint HashSet clone/retain maliyeti, 20k <1 sn ve incremental/cache
+kapasitesi açık. İkinci dilim blokta doğan adları rollback kaydıyla
+izlemeyi değerlendirir; tampon eklenirse exact temiz 30 dk soak gerekir.
