@@ -529,3 +529,8 @@ ABI ve public API sözleşmesi, SBOM, provenance şeması ve release dosya küme
 Git `origin` merbay-erp, `enterprise-mirror` itwise-bilisim olarak adlandırılır.
 Aynadaki PR #9 eski çalışma kaydıdır; bundan sonraki işler/koşular ana
 depoda takip edilir. Kaynak testleri ve beyanları K-202 kapsamında güncellenir.
+
+K-206 native okuma akış toplamasına geçti: sonuç sınırından sonra çıktı
+biriktirilmez; borrowed metin kopyalanmadan denetlenir. Hata önceliği ve
+mevcut read retry/transaction/API korunur. Tek wire satırı/driver RSS
+bütçesi GB-041'de açık; exact native kabul ve RSS kaydı beklenir.

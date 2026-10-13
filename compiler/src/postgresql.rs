@@ -6,6 +6,7 @@
 //! olarak bind edilir.
 
 mod havuz;
+mod sonuc;
 
 use crate::veritabani_modeli::{VeritabaniBildirimi, VeritabaniHatasi, VeritabaniHedefi};
 use postgres::types::{ToSql, Type};
@@ -58,80 +59,33 @@ impl PostgresqlOturumu {
     ) -> Result<Vec<Vec<(String, String)>>, VeritabaniHatasi> {
         girdiyi_denetle(sorgu, parametreler)?;
         let baglar = metin_baglari(parametreler);
-        let satirlar = if self.eylem_derinligi > 0 {
-            self.kiralik
+        if self.eylem_derinligi > 0 {
+            let istemci = self
+                .kiralik
                 .as_mut()
-                .ok_or_else(|| hata("PostgreSQL transaction bağlantısı kayıp"))?
-                .query_typed(sorgu, &baglar)
-                .map_err(|h| postgres_hatasi("PostgreSQL sorgusu başarısız", h))?
-        } else {
-            let mut kiralik = havuz::al(&self.havuz)?;
-            match kiralik.query_typed(sorgu, &baglar) {
-                Ok(satirlar) => satirlar,
-                Err(_ilk_hata)
-                    if yeniden_baglanabilir(
-                        SorguSinifi::Okuma,
-                        self.eylem_derinligi,
-                        kiralik.is_closed(),
-                        0,
-                    ) =>
-                {
-                    drop(kiralik);
-                    let mut ikinci = havuz::al(&self.havuz)?;
-                    ikinci.query_typed(sorgu, &baglar).map_err(|h| {
-                        postgres_hatasi("PostgreSQL sorgusu yeniden denendi ama başarısız", h)
-                    })?
-                }
-                Err(hata_degeri) => {
-                    return Err(postgres_hatasi("PostgreSQL sorgusu başarısız", hata_degeri));
-                }
-            }
-        };
-        let sinirlar = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.veritabani();
-        if satirlar.len() > sinirlar.satir() {
-            return Err(hata("PostgreSQL sonucu 10.000 satır sınırını aşıyor"));
+                .ok_or_else(|| hata("PostgreSQL transaction bağlantısı kayıp"))?;
+            return sonuc::oku(istemci, sorgu, &baglar)
+                .map_err(|h| postgres_hatasi("PostgreSQL sorgusu başarısız", h))?;
         }
-        let mut toplam = 0usize;
-        let mut sonuc = Vec::with_capacity(satirlar.len());
-        for satir in satirlar {
-            if satir.len() > sinirlar.sutun() {
-                return Err(hata("PostgreSQL sonucu 100 sütun sınırını aşıyor"));
+        let mut kiralik = havuz::al(&self.havuz)?;
+        match sonuc::oku(&mut kiralik, sorgu, &baglar) {
+            Ok(sonuc) => sonuc,
+            Err(_ilk_hata)
+                if yeniden_baglanabilir(
+                    SorguSinifi::Okuma,
+                    self.eylem_derinligi,
+                    kiralik.is_closed(),
+                    0,
+                ) =>
+            {
+                drop(kiralik);
+                let mut ikinci = havuz::al(&self.havuz)?;
+                sonuc::oku(&mut ikinci, sorgu, &baglar).map_err(|h| {
+                    postgres_hatasi("PostgreSQL sorgusu yeniden denendi ama başarısız", h)
+                })?
             }
-            let mut alanlar = Vec::with_capacity(satir.len());
-            for (sira, sutun) in satir.columns().iter().enumerate() {
-                if !matches!(
-                    *sutun.type_(),
-                    Type::TEXT | Type::VARCHAR | Type::BPCHAR | Type::NAME
-                ) {
-                    return Err(verili_hata(
-                        format!(
-                            "\"{}\" sütunu Metin değil; sorguda açık ::text dönüşümü kullan",
-                            sutun.name()
-                        ),
-                        vec![("sutun".into(), sutun.name().into())],
-                    ));
-                }
-                let deger: Option<String> = satir
-                    .try_get(sira)
-                    .map_err(|h| postgres_hatasi("PostgreSQL sonuç sütunu okunamadı", h))?;
-                let Some(deger) = deger else {
-                    return Err(verili_hata(
-                        format!(
-                            "\"{}\" sütunu NULL; sorguda COALESCE ile açık metin değeri seç",
-                            sutun.name()
-                        ),
-                        vec![("sutun".into(), sutun.name().into())],
-                    ));
-                };
-                toplam = toplam.saturating_add(sutun.name().len() + deger.len());
-                if toplam > sinirlar.sonuc_bayti() {
-                    return Err(hata("PostgreSQL sonucu 16 MiB sınırını aşıyor"));
-                }
-                alanlar.push((sutun.name().to_string(), deger));
-            }
-            sonuc.push(alanlar);
+            Err(h) => Err(postgres_hatasi("PostgreSQL sorgusu başarısız", h)),
         }
-        Ok(sonuc)
     }
 
     pub fn degistir(

@@ -315,3 +315,11 @@ aynı masaüstünde ayrı süreçlerde yürüdü; karar process RSS üzerindedir
 **Kapsam optimizasyonu dilimi kapalı; K-207 KISMEN:** full didChange sürer,
 incremental/cache kapasitesi açıktır. Tarihçe testi eski exact kayıtları
 korur; toplam satır sayısı ilerlemeyi engelleyen sabit değildir.
+
+## K-206 native sonuç belleği
+
+Sabit benchmark iş yükü, olcum aracı ve ADR-045/049 eşik sözleşmesi
+incelendi; PostgreSQL collector bu sabit workload'da değildir. Native
+RSS deneyi ayrı izole kayıt olarak alınır; samples=1/warmup=0 gözlemi
+kalıcı benchmark tabanı veya hard CI eşiğine çevrilmez. Driver'ın tek
+wire satırı tahsisi uygulama sonucunun 16 MiB sözleşmesinin dışındadır.

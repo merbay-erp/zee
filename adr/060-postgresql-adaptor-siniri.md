@@ -82,3 +82,27 @@ ve büyük satır String kopyasını doğruladı; 16 MiB uygulama sonucu tüm
 driver/wire tahsislerinin tavanı değildir. GB-041 orta/açık, hedef K-206.
 Row-wise toplama yalnız normal çıktı, hata önceliği, retry ve transaction/
 bağlantı sağlığı korunarak değerlendirilecektir; yeni typed API eklenmedi.
+
+## K-206 akışla sonuç toplama
+
+Native okuma `query_typed_raw` ile satır satır ilerler. Boyut kontrolü
+borrowed metin üzerinde String kopyasından önce yapılır; hata sonrası
+birikmiş çıktı bırakılır ve kalan satırlar kopyalanmadan tüketilir.
+Sunucu/transport hatası bütün uygulama hatalarından, toplam satır sınırı
+ilk hücre hatasından önce gelir. Satır/sütun sırası, tekrar eden sütun
+adları, TEXT bind, NULL/tür hatası ve structured hata verisi değişmez.
+Yalnız transport hatası, transaction dışında kapalı bağlantıda mevcut
+tek read retry yoluna gider; uygulama sonucu hatası retry tetiklemez.
+Yazma/savepoint/commit kodu ve API yüzeyi değişmez.
+
+Sonuç sahipliği `postgresql/sonuc.rs`, transport/pool eski sahibindedir;
+production owner ve temel→adaptör yönü değişmedi. Katman fixture ve
+ADR-046 incelendi: yeni sahip/kenar/SCC yoktur. Yeni bağımlılık, cache,
+compiler/LSP uzun ömürlü tampon eklenmedi. Per-query birikim önce de
+vardı; ömrü uzatılmadı, sürücüdeki tüm satır Vec'i kaldırıldı.
+
+**KISMEN:** tek wire satırının driver tahsisi uygulama sınırından önce
+gerçekleşir. GB-041 orta/açık kalır; bütün süreç için 16 MiB veya kesin
+RSS bütçesi sözü yoktur. Exact native kabul/RSS kaydı kapanış öncesinde
+alınır. Saf collector testleri ve eski 4a4fd0d Vec oracle'ı mevcut
+hata/sonuç gözlemini denetler; gerçek DB testi izole loopback opt-in'dir.
