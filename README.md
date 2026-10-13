@@ -23,6 +23,9 @@ toplam yaz
 
 ## Mevcut durum
 
+Ana geliştirme ve CI deposu [merbay-erp/zee](https://github.com/merbay-erp/zee).
+Enterprise deposu yalnız aynadır.
+
 zee aktif olarak geliştiriliyor. Kaynak ağacının sürümü **0.8.0-dev**;
 son sürüm notu **v0.7.0**. V1 öncesi doğrulama çalışmaları sürüyor.
 

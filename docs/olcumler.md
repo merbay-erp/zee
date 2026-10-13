@@ -270,3 +270,8 @@ compatibility etkisi vardır; sabit dil iş yükü değişmez. ADR-045/049 ve
 performans tarihçesi incelendi; yeni exact clean makine/sample/warmup
 ölçümü alınmadan baseline/tarihçe satırı yazılmadı. Shared CI gözlemsel
 kalır, hard eşik etkinleştirilmedi.
+
+K-201 verbose Cargo/cc çıktısı ve native araç kimliği sorguları derleme
+I/O ve gözlem maliyetini artırır; runtime profili/sabit iş yükü değişmez.
+ADR-045/049 ve tarihçe etkisi incelendi; exact clean makine/sample/warmup
+ölçümü olmadan benchmark baseline veya izlenen tarihçe satırı yazılmadı.

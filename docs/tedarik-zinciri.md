@@ -125,3 +125,20 @@ geçmişi ve çalışma ağacını ayrı tarar; `--staged` commit öncesi kullan
 Gerçek değerler maskelenir, repo içi inline allowlist/ignore bastırmaları kullanılmaz.
 Yeni harici Action veya üretim Rust bağımlılığı eklenmez. GitHub secret scanning
 ve push protection ek korumadır; tarayıcı tüm kodlanmış/ikili sırları bulma sözü vermez.
+
+## K-202 — Ana depo ve enterprise ayna
+
+13 Ekim 2026 kurucu kararıyla ana geliştirme/yayın kaynağı
+`https://github.com/merbay-erp/zee` olur. CI, manual tatbikat, fuzz, soak
+ve release koşuları yalnız bu depoda yürütülür.
+`itwise-bilisim/zee` kaynak geçmişinin aynasıdır; repository Actions
+permissions `enabled=false` olarak API üzerinden doğrulandı. O anda
+çalışan/bekleyen koşu bulunmadı. Ayna push'u geçmişi korur; force push yoktur.
+
+SBOM/provenance kaynak URI değeri yeni ana depoya bağlanır; aynı exact
+Git SHA her iki depoda erişilebilir olmalıdır. Önceki itwise koşu bağlantısı
+ve ham fixture kaydı tarihsel kanıttır, yeniden adlandırılmaz. Dil semantiği,
+ABI/API, SBOM/provenance şeması ve release dosya kümesi değişmez.
+Git `origin` merbay-erp, `enterprise-mirror` itwise-bilisim olarak adlandırılır.
+Aynadaki PR #9 eski çalışma kaydıdır; bundan sonraki işler/koşular ana
+depoda takip edilir. Kaynak testleri ve beyanları K-202 kapsamında güncellenir.

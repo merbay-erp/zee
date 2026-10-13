@@ -16,7 +16,7 @@ const ANAHTAR_BASLIGI: &str = "zee-ed25519-private-v1";
 const BUILD_TYPE: &str = "https://zee-lang.dev/surum/tekrar-uretilebilir/v1";
 const BUILDER_ID: &str = "https://zee-lang.dev/surum/surum-artefakti";
 // K-192: resmî kaynak kimliği; yerel klon yolu veya yönlendirmeye bağlı URL değil.
-const KAYNAK_DEPOSU: &str = "https://github.com/itwise-bilisim/zee";
+const KAYNAK_DEPOSU: &str = "https://github.com/merbay-erp/zee";
 
 fn hex_yaz(baytlar: &[u8]) -> String {
     baytlar.iter().map(|b| format!("{b:02x}")).collect()
@@ -600,7 +600,7 @@ mod testler {
             .iter()
             .find(|oge| oge["type"] == "software_Package" && oge["name"] == "dil")
             .unwrap();
-        let kaynak = format!("git+https://github.com/itwise-bilisim/zee@{sha}");
+        let kaynak = format!("git+https://github.com/merbay-erp/zee@{sha}");
         assert_eq!(kok["software_downloadLocation"], json!(kaynak));
         assert!(a.contains(
             "\"hashValue\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\""

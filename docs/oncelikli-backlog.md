@@ -1055,3 +1055,26 @@ macOS a/b ayrı ayrı 24/24 nesne minos 11.0. Ham provenance/runtime
 ve artefakt hash/job kayıtları `derleme-platform-kaniti-v1.tsv` içindedir.
 Gerçek macOS 11/desktop/minimum OS ve tüm C alt süreç envanteri değildir.
 ADR-068/GB-037.
+
+### K-201 — Native build-script araç çağrıları (K-192 dilimi)
+
+**AÇIK — kayıt ve ret testleri hazır; exact üç platform release kanıtı beklenir.**
+Release iki temiz klonda `cargo build -vv` ve `CC_ENABLE_DEBUG_OUTPUT=1`
+ile locked cc 1.4.4 driver komutlarını toplar. C compile ve archive çağrısı
+ikisinde de bulunmadan artefakt yayımlanmaz. Her çağrı paket sahibi,
+program/argüman ve çözülen dosya path/SHA-256 kimliğini taşır; sürüm
+sorgusu başarısızsa `unavailable` açık kaydı vardır, sürüm uydurulmaz.
+Komut metni shell olarak yürütülmez. Windows cl/lib sürümü FileVersionInfo
+ile, destekleyen Unix araçları --version ile sorgulanır. Native çağrılar
+`buildEnvironment.clones.{a,b}.nativeTools` alanındadır.
+Bu cc driver kapsamıdır; driver iç süreçleri, pkg-config/vcpkg, tüm
+Cargo build-script alt süreçleri ve minimum OS ayrı açık kalır. ADR-068/GB-038.
+
+### K-202 — Ana GitHub deposu ve CI yönü
+
+**KAPALI — kurucu talimatı, remote ve Actions ayarı doğrulandı.**
+Ana depo merbay-erp/zee; enterprise itwise-bilisim/zee yalnız aynadır.
+Enterprise repository Actions enabled=false, aktif koşu yok. SBOM ve
+provenance aynı exact kaynak SHA ile merbay URI kullanır; eski run/job
+kanıtları tarihsel olarak korunur. Metadata regresyonu yeni kaynağı
+birebir denetler; compiler dil semantiği değişmez. ADR-068/GB-039.

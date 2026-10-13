@@ -77,6 +77,65 @@ class KayitTestleri(unittest.TestCase):
         self.assertEqual(data["clones"]["a"]["binaries"]["dil"]["sha256"], expected)
         self.assertTrue(data["clones"]["b"]["binaries"]["dillsp"]["version"])
 
+    def test_native_komutlar_calistirilmadan_kimliklenir(self):
+        from unittest.mock import patch
+        native = runpy.run_path(str(SCRIPT))['native_kaydet']
+        sentinel = self.root / 'calistirilmamali'
+        commands = ('[ring 0.17.14] running: env -u CC_TEST LC_ALL="C" "cc" "-c" ' +
+                    json.dumps('$(touch ' + str(sentinel) + ')') + '\n' +
+                    '[ring 0.17.14] running: ZERO_AR_DATE="1" "ar" "cq" "test.a"')
+        with patch('shutil.which', return_value=sys.executable):
+            data = native(commands)
+        self.assertFalse(sentinel.exists())
+        self.assertEqual(len(data['tools']), 1)
+        self.assertEqual([x['role'] for x in data['invocations']], ['compile', 'archive'])
+        self.assertEqual(data['tools'][0]['versionQuery']['status'], 'available')
+
+    def test_native_compile_ve_archive_kaniti_zorunludur(self):
+        from unittest.mock import patch
+        native = runpy.run_path(str(SCRIPT))['native_kaydet']
+        with patch('shutil.which', return_value=sys.executable):
+            for commands in ('', '[ring 0.17.14] running: "cc" "-c" "test.c"',
+                             '[ring 0.17.14] running: "ar" "cq" "test.a"'):
+                with self.assertRaisesRegex(ValueError, 'compile/archive'):
+                    native(commands)
+            with self.assertRaisesRegex(ValueError, 'Native compile/archive'):
+                self.kaydet(self.logs, self.sha, native_required=True)
+
+    def test_native_bozuk_debug_ve_kayip_arac_reddedilir(self):
+        from unittest.mock import patch
+        native = runpy.run_path(str(SCRIPT))['native_kaydet']
+        with self.assertRaisesRegex(ValueError, 'biçimi'):
+            native('[ring 0.17.14] running: "cc" "broken')
+        with patch('shutil.which', return_value=None), self.assertRaisesRegex(ValueError, 'bulunamadı'):
+            native('[ring 0.17.14] running: "cc" "-c" "test.c"')
+
+    def test_native_windows_debug_path_ve_env_path_korunur(self):
+        from unittest.mock import patch
+        native = runpy.run_path(str(SCRIPT))['native_kaydet']
+        cl = r'C:\Program Files\VS\cl.exe'
+        lib = r'C:\Program Files\VS\lib.exe'
+        commands = '[ring 0.17.14] running: PATH="explicit path" ' + json.dumps(cl) + ' "/c" "test.c"\n'
+        commands += '[ring 0.17.14] running: ' + json.dumps(lib) + ' "/OUT:test.lib"'
+        with patch('shutil.which', return_value=sys.executable) as resolve:
+            data = native(commands)
+        self.assertEqual(resolve.call_args_list[0].kwargs['path'], 'explicit path')
+        self.assertEqual(data['invocations'][0]['program'], cl)
+        self.assertEqual(data['invocations'][1]['role'], 'archive')
+
+    def test_native_surum_basarisizligi_surum_olarak_sunulmaz(self):
+        from unittest.mock import patch
+        import subprocess
+        native = runpy.run_path(str(SCRIPT))['native_kaydet']
+        commands = '[ring 0.17.14] running: "cc" "-c" "test.c"\n[ring 0.17.14] running: "ar" "cq" "test.a"'
+        failure = subprocess.CompletedProcess([], 1, b'', b'unsupported --version')
+        with patch('shutil.which', return_value=sys.executable), patch('subprocess.run', return_value=failure):
+            data = native(commands)
+        query = data['tools'][0]['versionQuery']
+        self.assertEqual(query['status'], 'unavailable')
+        self.assertNotIn('value', query)
+        self.assertIn('unsupported', query['reason'])
+
     def test_windows_debug_quoted_yolu_kayipsiz_cozulur(self):
         parse = runpy.run_path(str(SCRIPT))["quoted"]
         value = r"C:\Program Files\Microsoft Visual Studio\link.exe"

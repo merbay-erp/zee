@@ -62,6 +62,9 @@ case "$1" in
                 printf '%s\n' "$dizin" >> "$dizin/$ad$uzanti"
             fi
         done
+        [[ "$CC_ENABLE_DEBUG_OUTPUT" == 1 && "$*" == *"-vv"* ]] || exit 1
+        printf '[ring 0.17.14] running: LC_ALL="C" "cc" "-c" "test.c"\n' >&2
+        printf '[ring 0.17.14] running: ZERO_AR_DATE="1" "ar" "cq" "test.a"\n' >&2
         printf ' INFO rustc_codegen_ssa::back::link "cc" "-o" "%s/dil-abc123%s"\n' "$dizin" "$uzanti" >&2
         printf ' INFO rustc_codegen_ssa::back::link "cc" "-o" "%s/dillsp-abc123%s"\n' "$dizin" "$uzanti" >&2
         ;;
@@ -153,7 +156,7 @@ sabit_ara '--remap-path-prefix=/test/rust/1.93.1=/rust' "$ZEE_TEST_KOMUTLAR"
 )
 [[ -f "$gecici/depo/goreli-windows/dil.exe" && -f "$gecici/depo/goreli-windows/dillsp.exe" ]]
 [[ "$(wc -l < "$ZEE_TEST_KOMUTLAR" | tr -d ' ')" == 6 ]]
-sabit_ara 'build --locked --release --bin dil --bin dillsp --target x86_64-pc-windows-msvc' "$ZEE_TEST_KOMUTLAR"
+sabit_ara 'build -vv --locked --release --bin dil --bin dillsp --target x86_64-pc-windows-msvc' "$ZEE_TEST_KOMUTLAR"
 sabit_ara '-C target-feature=+crt-static' "$ZEE_TEST_KOMUTLAR"
 if awk -F '\t' '$2 ~ /^build / { print $3 }' "$ZEE_TEST_KOMUTLAR" | grep -F caller-bayragi; then
     echo 'Caller encoded flags release tarifini ezdi' >&2; exit 1

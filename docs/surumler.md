@@ -1325,3 +1325,13 @@ run 38263264133 üç platform iki-klon/kurulum/program/LSP/kaldırma kapısını
 geçti; macOS a/b klonlarında ayrı ayrı 24 nesnenin minos değeri 11.0. Gerçek
 macOS 11/minimum OS/tüm native alt süreç desteği değildir. ADR-068/GB-037;
 spec/RFC/tanı/API/production Rust katmanı ve release dosya kümesi değişmez.
+
+K-201 native C/archiver driver çağrı kaydı hazırdır; iki klonda compile ve
+archive zorunlu, paket/argüman/executable path/hash ve sürüm sorgusu sonucu
+provenance'a eklenir. Exact üç platform release kanıtı açıktır.
+pkg-config/vcpkg, driver iç alt süreçleri ve minimum OS K-192'de ayrıca
+açık kalır. Ayrıntı [derleme rehberinde](derleme-ve-bagimliliklar.md).
+
+K-202: ana GitHub/CI deposu `merbay-erp/zee`; `itwise-bilisim/zee` yalnız
+ayna ve repository Actions kapalıdır. SBOM/provenance yeni ana kaynak
+URI kullanır; eski CI/fixture kanıtları tarihsel bağlantılarıyla korunur.
