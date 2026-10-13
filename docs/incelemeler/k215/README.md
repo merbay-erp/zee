@@ -95,3 +95,11 @@ Son yerel faz matrisi: **770/770 geçti**, 0 kalan, 0 atlanan. Katalog,
 belge tazeliği, spec kanıtları, katman/SCC, uyumluluk, dogfood/regression
 ve Rust/Go byte eşdeğerliği bu matriste geçti. Clippy/fmt ve Gitleaks
 tam geçmiş+çalışma ağacı temiz; 13 sentetik gizlilik testi geçti.
+
+Kod/test/belge kaynağı: `8ac1e2ca770b8e9e98c5f096dd6f5b1024dd3f6f`. Exact compiler/core-freeze
+beyanları bu kaynağı izleyen committe kaydedilir.
+
+Son [bütün ref taraması](tarama.json): anonim tarihçe tabanında 18 ref,
+406 commit, 5.165 path/blob çifti ve **0 eşleşme**. Müşteri eski satır
+istisnası yoktur. Sonraki K-215 politika/kod/beyan dosyaları aynı
+politikayla çalışma ağacı ve uzak CI kapısında ayrıca denetlenir.
