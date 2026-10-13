@@ -119,3 +119,16 @@ aynı 1×1 MiB, 64×1 MiB, 1×64 MiB vakalarını ölçer. Ham exact temiz
 source/native/RSS/release kapanışı takip eden committe kaydedilir.
 İlk bölümdeki etkin değil ifadesi eski adayın tarihidir; güncel pin
 üretim kaynak kodunda etkindir. Dağıtım/RC etiketi yayımlanmaz.
+
+## Etkin kaynak kapanışı
+
+Clean exact `a4e104589477e0e786ff126513b6bdd6d1228547` üzerinde [13 native test](zee-native.json),
+[ham test logu](zee-native.log), [aynı probe ile native RSS](zee-rss.json),
+[163 paket offline vendor](vendor.log) ve [iki-clone release kanıtı](release/accepted.log)
+geçti. Bir 64 MiB satır native RSS 7.077.888 bayttır (6,75 MiB);
+sonraki bağımsız sorgu yeni checkout ile sağlıklıdır. 64×1 MiB vakasında
+uygulama limiti/akış tüketimi de korunur. Samples=1/warmup=0 gözlemidir.
+735→736 gerçek platform faz vakası geçti; static Rust+doctest 738'dir.
+Yeni source için yerel macOS kabulüdür; üç-platform RC/fuzz/Miri veya
+signed release değildir. GB-041 tanımlı tek-frame tehdidi kapandı;
+global RSS ve sürekli geniş fault-proxy matrisi sözü verilmez.

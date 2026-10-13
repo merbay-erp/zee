@@ -1119,3 +1119,9 @@ COMMIT sonrası bağlantı kaybı C027 olarak korunur. Native loopback kabulü
 okuma, büyük Notice üreten write, nested/RLS ve deferred COMMIT'i kapsar.
 GB-041 bu kaynakta uygulandı; exact temiz kaynak, vendor/iki-clone ve
 sürekli kapı kabulü henüz beklenir. Global RSS sözü verilmez.
+
+K-206 wire security dilimi kapandı: source 7836b73, clean beyan/kanıt
+a4e1045; native 13 vaka, 736/736 faz, offline vendor 163 ve iki-clone
+release geçti. GB-041 kapalı; global RSS garantisi ve sürekli geniş
+fault-proxy matrisi değildir. Exact ham kanıt
+[buradadır](incelemeler/k206/frame-guard/README.md).
