@@ -1248,14 +1248,21 @@ usability/RC/signed release ve sunucu dağıtımı değildir.
 
 ## K-213 — ürün E ve master kaynak hattının birleştirilmesi
 
-**KISMEN:** K-210/ADR-083, K-211/ADR-084, K-212/ADR-085 ürün E dalından
-commit geçmişi korunarak ana hatta alınır. Beş bütün proje kabulü yeşil;
-source SHA/provenance, tüm depo kapıları ve uzak CI kapanışı beklenir.
-ADR-086 kayıt eşlemesi, HIR/trace regresyonları ve ham ürün E şablonunun
-katalog üretim sınırını taşır. Otomatik parola göçü ve sunucu dağıtımı açık.
+**KAPALI:** K-210/ADR-083, K-211/ADR-084, K-212/ADR-085 ürün E dalından
+kaynak geçmişi korunarak aynı derleyicide birleştirildi. Source e09493e,
+exact beyan/clean kabul 0531432. Beş bütün proje 242/242, 769/769 faz,
+187 paket offline vendor, macOS arm64 iki-clone ve legacy zee1 ciphertext
+uyumluluğu kanıtlıdır. ADR-086 kayıt eşlemesini, HIR/trace regresyonlarını
+ve ham ürün E şablonunun katalog üretim sınırını taşır. Otomatik parola göçü,
+canlı sunucu yükseltmesi ve K-192 minimum OS kanıtı ayrı açık işlerdir.
 
 K-213 clean source kabulü: source e09493e, beyan/ikili/test 0531432;
 769/769 faz, beş bütün proje 242/242, 187 paket offline vendor ve
 macOS arm64 iki-clone eşliği geçti. Exact [kayıt](incelemeler/k213/README.md).
 İlk Linux CI'ın test Git kimliği bağımlılığı düzeltildi; son uzak CI
 kapanışı beklenir. Canlı dağıtım ve otomatik parola göçü açık kalır.
+
+Son kod/test kanıt HEAD'i `2ef362818bf0dc6b8cf4a9951d8ef2a25303a152`: Linux,
+macOS, Windows, tedarik ve sır taramasının 10 kontrolü geçti.
+`dil` koşuları 38392031371/38392039728, `tedarik` 38392031424/38392039739.
+Önceki Linux hatası tarihsel kalır; source e09493e değişmedi.

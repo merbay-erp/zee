@@ -3996,3 +3996,13 @@ K-213 clean source kabulü: source e09493e, beyan/ikili/test 0531432;
 macOS arm64 iki-clone eşliği geçti. Exact [kayıt](../docs/incelemeler/k213/README.md).
 İlk Linux CI'ın test Git kimliği bağımlılığı düzeltildi; son uzak CI
 kapanışı beklenir. Canlı dağıtım ve otomatik parola göçü açık kalır.
+
+K-213 compiler gerçekleme/test/belge dilimi kapandı. Eski ürün E
+sunucu hattı ile master aynı kaynak geçmişinde; ürün CI/sunucu pininin
+bu kaynağa geçirilmesi ve canlı giriş/IP kabulü ürün tarafının işidir.
+Otomatik bcrypt→Argon2 ürün göçü henüz uygulanmadı.
+
+Son kod/test kanıt HEAD'i `2ef362818bf0dc6b8cf4a9951d8ef2a25303a152`: Linux,
+macOS, Windows, tedarik ve sır taramasının 10 kontrolü geçti.
+`dil` koşuları 38392031371/38392039728, `tedarik` 38392031424/38392039739.
+Önceki Linux hatası tarihsel kalır; source e09493e değişmedi.
