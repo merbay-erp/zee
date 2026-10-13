@@ -5,5 +5,5 @@
   "repository": "https://github.com/rust-postgres/rust-postgres",
   "commit": "76062c9b242da6aada065c021aa3083d0922f7d2",
   "license": "MIT OR Apache-2.0",
-  "stage": "Original src bytes; local source provenance preparation, no frame guard yet."
+  "stage": "Zee .2 prepared source: typed 32 MiB backend length guard in Header and Message; not selected until consumer Git pin is updated."
 }

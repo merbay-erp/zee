@@ -13,7 +13,7 @@
 edition = "2024"
 rust-version = "1.85"
 name = "postgres-protocol"
-version = "0.6.12+zee.1"
+version = "0.6.12+zee.2"
 authors = ["Steven Fackler <sfackler@gmail.com>"]
 build = false
 autolib = false
