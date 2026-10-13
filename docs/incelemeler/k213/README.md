@@ -32,3 +32,29 @@ değiştirilmedi. Yeni sürümle 0.10.1 üretimli eski sentetik `zee1:`
 şifreli metin bayt bayt eşit üretilir ve çözülür; yanlış anahtar/bozulma
 reddi aynı testte korunur. SBOM/provenance ve iki-clone/offline kabulü
 yeni exact graph'tan üretilir.
+
+## Temiz kaynak kabulü
+
+Feature/merge source `e09493eb560ff14652280500c7d4848a0b7ed990`;
+exact beyan ve kabul kaynağı `0531432f0face3106ce271acefffb2f85440459f`.
+[769/769 faz](faz-clean.md), [ürün snapshot/komut/sonuç](acceptance.json),
+[offline vendor](vendor.log) ve [iki temiz klon](release/accepted.log) kalıcıdır.
+Vendor 187 paket, aynı iki üretimin manifest SHA-256'sı
+`124aceb6bca19e9aee16db8cc83bb243e050f0184fe46f937ba7e6852bc9e115`.
+`dil` SHA-256 `a8b534f1a1d2addf8326972fd2ceecd3114e25c37156aedb3431058740b68404`,
+`dillsp` `1141adda211ba35bf5ba79165dbff7036311418312c6b6d566e12edc13a09749`.
+[SBOM](release/sbom.spdx.json) ve [provenance](release/provenance.intoto.json)
+aynı clean kaynağın macOS arm64/Rust 1.93.1/release kabulünü taşır.
+İmza/sürüm etiketi, Linux sunucu ikilisi veya minimum OS kabulü değildir.
+
+[site-a](site-a.log) 54/54, [site-b](site-b.log) 48/48,
+[site-c](site-c.log) 49/49, [site-d](site-d.log) 47/47,
+[hazırlanmış ürün E](urun-e.log) 44/44 aynı clean `dil` ile geçti. Her ürünün
+kaynak SHA-256'sı koşu öncesi/sonrası aynı; kaynak ürün depoları değiştirilmedi.
+ürün E normal üretim adımıyla geçici köke hazırlandı; ham şablon katalog eksikliği
+bu kayıtta açıkça korunur.
+
+İlk Linux CI 38391037280/job 115274603591, geçici merge testinin Git
+committer kimliğini hosttan aldığı için başarısızdı. Merge komutu kendi
+sentetik test kimliğini açıkça alır; global/system config kapalı test ayrıca
+geçer. Bu test düzeltmesi production compiler kaynağını değiştirmez.

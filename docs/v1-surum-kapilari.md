@@ -381,3 +381,9 @@ yüzeylerini K-208/K-209 bcrypt/IP ile aynı hatta toplar. Ürün kabulü
 dosya kontrolüyle değil bütün proje `dil dene .` ile alınır. Ham ürün E
 şablonu normal katalog üretimini ister. Exact source/CI kapanışı beklenir;
 canlı dağıtım ve otomatik parola göçü bu işte yapılmaz.
+
+K-213 clean source kabulü: source e09493e, beyan/ikili/test 0531432;
+769/769 faz, beş bütün proje 242/242, 187 paket offline vendor ve
+macOS arm64 iki-clone eşliği geçti. Exact [kayıt](incelemeler/k213/README.md).
+İlk Linux CI'ın test Git kimliği bağımlılığı düzeltildi; son uzak CI
+kapanışı beklenir. Canlı dağıtım ve otomatik parola göçü açık kalır.

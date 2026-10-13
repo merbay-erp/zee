@@ -1,0 +1,49 @@
+{
+  "clean_commit": "57184595906fda8a3d9a5dbddffffa6a52982898",
+  "source_commit": "b15af47b904ce69061ba4bd303aac59be0dc1edd",
+  "binary_sha256": "a8b534f1a1d2addf8326972fd2ceecd3114e25c37156aedb3431058740b68404",
+  "command": "dil dene .",
+  "urun_e_preparation": "zee-catal --profil urun-e/zee/profil.py --ust zee-cekirdek/cekirdek --hedef temporary",
+  "products": [
+    {
+      "product": "site-a",
+      "root": "[yerel çalışma yolu]",
+      "source_sha256": "fd3ba8d634cfe49dc5cce4f51ffcad566e9b322547ec43848004d5a1621cb21b",
+      "unchanged": true,
+      "exit": 0,
+      "summary": "54 test: 54 geçti, 0 kaldı"
+    },
+    {
+      "product": "site-b",
+      "root": "[yerel çalışma yolu]",
+      "source_sha256": "5730928901771426dcf26efe16d015f2f6005daaf3031a5b09b2900ec82b622c",
+      "unchanged": true,
+      "exit": 0,
+      "summary": "48 test: 48 geçti, 0 kaldı"
+    },
+    {
+      "product": "site-c",
+      "root": "[yerel çalışma yolu]",
+      "source_sha256": "7b9ca3c03e689e84d5b2c1e4b45a0d3a5b0b260e60a9f5356d973c03ea4cd55e",
+      "unchanged": true,
+      "exit": 0,
+      "summary": "49 test: 49 geçti, 0 kaldı"
+    },
+    {
+      "product": "site-d",
+      "root": "[yerel çalışma yolu]",
+      "source_sha256": "1b374f438e7064cfe981ae448218c3b634c96e66feea0a7f2e24a804f56b5073",
+      "unchanged": true,
+      "exit": 0,
+      "summary": "47 test: 47 geçti, 0 kaldı"
+    },
+    {
+      "product": "urun-e",
+      "root": "[yerel çalışma yolu]",
+      "source_sha256": "d8a639aff45e03dbbdbd1e2f66ab166aec7d3fe7fc2fee0dc5511d39d38747b9",
+      "unchanged": true,
+      "exit": 0,
+      "summary": "44 test: 44 geçti, 0 kaldı"
+    }
+  ]
+}

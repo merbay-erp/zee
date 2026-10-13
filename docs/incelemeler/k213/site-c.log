@@ -1,0 +1,51 @@
+✓ gorunum: panel kabuğu etkin bölümü işaretler
+✓ gorunum: giriş kabuğu özgün marka düzenini taşır
+✓ gorunum: başarısız giriş kullanıcıya güvenli ve genel hata gösterir
+✓ gorunum: sayfa kartı yaşam döngüsü bağlantılarını taşır
+✓ gorunum: içerik kartı tür bilgisini bağlantılara taşır
+✓ gorunum: medya kartı özet ve bayt taşır
+✓ gorunum: kullanıcı metni kaçışlanır
+✓ gorunum: public sayfa saklanan betiği çalıştırılabilir HTML yapmaz
+✓ urun_akisi: alanlar: URL doğrulaması script ve protokol göreli adresleri engeller
+✓ urun_akisi: alanlar: renk ve sıra doğrulaması CSS ve SQL biçim karışmasını önler
+✓ urun_akisi: alanlar: zengin metin çalıştırılabilir HTML üretmez
+✓ urun_akisi: sayfa_bloklari: ozellik_ortak: özellik bölümü çıkarılır, işaretler temizlenir
+✓ urun_akisi: sayfa_bloklari: ozellik_ortak: özellik yolu ve kapalı listesi
+✓ urun_akisi: jsonMetni tırnak ve satır sonunu kaçırır
+✓ urun_akisi: şablon işaretleri kullanıcı metninden yeniden değerlendirilemez
+✓ urun_akisi: çift maddeleri başlık ve açıklamayı kaçışlayarak sarar
+✓ urun_akisi: site-c manifesti 88 ayar ve 21 içerik alanı içerir
+✓ urun_akisi: manifest formu JSON alanı yerine isimli ve tipli kontroller üretir
+✓ urun_akisi: tipli JSON listeleri ve boolean değerleri doğru serileştirir
+✓ urun_akisi: origin son çizgisi protokolü bozmaz
+✓ urun_akisi: benzer medya kodları varyant paylaşmaz
+✓ site_site-c: kalın işaretleri strong olur
+✓ site_site-c: paragraflar kaçışlı ve kalın destekli
+✓ site_site-c: bölüm ayırıcı üç parçayı ayırır
+✓ site_site-c: gecikme dörtlük döngü kurar
+✓ site_site-c: iki satırlı başlık kaçışlı
+✓ site_site-c: çiftler kalıbı kaçışlı doldurur
+✓ site_site-c: liste alanı JSON dizisinden satıra döner
+✓ site_site-c: tel anahtarı virgül ve nokta yazımını birleştirir
+✓ site_site-c: diş ailesi çıkarılır
+✓ araclar: slugify Türkçe harfleri indirir
+✓ araclar: boş slug boş döner
+✓ kimlik: eposta düzenlenir
+✓ kimlik: gerçek son yönetici silinemez
+✓ kimlik: kimlik rolü bilinmeyense veya editor yönetici isterse reddedilir
+✓ kimlik_yasam: rol allowlist bilinmeyen yetkiyi reddeder
+✓ kimlik_yasam: yonetici kendi rolunu dusuremez
+✓ kimlik_yasam: baska rol ve kendi parola degisimi politikaya uygun
+✓ medya_deposu: medya yolu proje kökünden kaçamaz
+✓ dosya_deposu: dosya yolu proje kökünden kaçamaz
+✓ dosya_deposu: dosya yolu hash ile kanoniktir
+✓ panel_plus: whatsapp numarası ülke koduna çevrilir
+✓ panel_plus: url parçası özel karakterleri kaçırır
+✓ panel_plus: küçük görsel yolu yalnız proje görsellerinde değişir
+✓ panel_plus: mesaj kısayolları whatsapp ve arama bağlantısı üretir
+✓ panel_plus: baş harf boş metinde nokta döner
+✓ panel_plus: uzunluk ölçer sınıfları
+✓ panel_plus: eylem adları okunur
+✓ modul_magazasi: mağaza kartı durumları ve kaçış
+
+49 test: 49 geçti, 0 kaldı

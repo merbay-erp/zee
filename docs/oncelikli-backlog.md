@@ -1253,3 +1253,9 @@ commit geçmişi korunarak ana hatta alınır. Beş bütün proje kabulü yeşil
 source SHA/provenance, tüm depo kapıları ve uzak CI kapanışı beklenir.
 ADR-086 kayıt eşlemesi, HIR/trace regresyonları ve ham ürün E şablonunun
 katalog üretim sınırını taşır. Otomatik parola göçü ve sunucu dağıtımı açık.
+
+K-213 clean source kabulü: source e09493e, beyan/ikili/test 0531432;
+769/769 faz, beş bütün proje 242/242, 187 paket offline vendor ve
+macOS arm64 iki-clone eşliği geçti. Exact [kayıt](incelemeler/k213/README.md).
+İlk Linux CI'ın test Git kimliği bağımlılığı düzeltildi; son uzak CI
+kapanışı beklenir. Canlı dağıtım ve otomatik parola göçü açık kalır.

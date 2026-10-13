@@ -79,3 +79,7 @@ Koruk fark çıktısını sonuna kadar tüketir: `grep -q` büyük merge
 çıktısında SIGPIPE/pipefail ile geçerli kaynak beyanını yanlış reddedebilir.
 1024 yan belge içeren gerçek çok-ebeveynli Git testi iki korukte hem
 eksik beyanı reddeder hem exact merge SHA beyanını kabul eder.
+
+Geçici Git test deposu merge kimliğini yalnız komutta `-c user.name`/
+`-c user.email` ile alır; host/global/system config kabul önkoşulu değildir.
+Linux ilk koşu bu bağımlılığı yakaladı; izolasyon testi global config kapalıdır.

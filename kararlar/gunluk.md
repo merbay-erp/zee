@@ -3990,3 +3990,9 @@ olayının trace allowlist eksikliği düzeltildi. Yeni cache yoktur; mevcut
 dosya bütçeleri artırılmadı. Gerçek beş proje `dil dene .` kabulü geçer;
 ürün E kataloğu normal zee-catal üretimiyle geçici kopyada hazırlanır.
 Exact source/provenance ve tüm CI kapanışı henüz beklenir.
+
+K-213 clean source kabulü: source e09493e, beyan/ikili/test 0531432;
+769/769 faz, beş bütün proje 242/242, 187 paket offline vendor ve
+macOS arm64 iki-clone eşliği geçti. Exact [kayıt](../docs/incelemeler/k213/README.md).
+İlk Linux CI'ın test Git kimliği bağımlılığı düzeltildi; son uzak CI
+kapanışı beklenir. Canlı dağıtım ve otomatik parola göçü açık kalır.
