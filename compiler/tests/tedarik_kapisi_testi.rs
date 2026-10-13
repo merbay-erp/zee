@@ -53,6 +53,164 @@ fn github_action_pinleri() -> BTreeMap<String, String> {
 }
 
 #[test]
+fn forgejo_akisi_exact_pin_ve_prsiz_kaynak_siniri_tasir() {
+    let ci = oku(".forgejo/workflows/zee-ci.yml");
+    let envanter = oku("docs/forgejo-actions-pinleri-v1.tsv");
+    assert_eq!(
+        envanter.lines().next(),
+        Some("# zee-forgejo-actions-pinleri-1")
+    );
+    let mut pinler = BTreeMap::new();
+    for satir in envanter
+        .lines()
+        .filter(|s| !s.starts_with('#') && !s.is_empty())
+    {
+        let alanlar = satir.split('\t').collect::<Vec<_>>();
+        let [action, surum, sha, kaynak] = alanlar.as_slice() else {
+            panic!("Forgejo pin kaydı dört alan ister");
+        };
+        assert!(!surum.is_empty());
+        assert_eq!(action, kaynak);
+        assert!(action.starts_with("https://"));
+        assert_eq!(sha.len(), 40);
+        assert!(sha
+            .bytes()
+            .all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase()));
+        assert!(pinler.insert(*action, *sha).is_none());
+    }
+    let mut gorulen = BTreeMap::new();
+    for satir in ci.lines() {
+        if let Some(kullanim) = satir.trim().strip_prefix("uses: ") {
+            let (action, sha) = kullanim.split_once('@').expect("exact pin");
+            assert_eq!(pinler.get(action).copied(), Some(sha));
+            gorulen.insert(action, sha);
+        }
+    }
+    assert_eq!(gorulen, pinler);
+    assert!(!ci.contains("pull_request"));
+    assert!(ci.contains("branches: [master, ci/zee-gitsrv]"));
+    assert!(ci.contains("container: node:20-bookworm"));
+    assert!(ci.contains("retention-days: 90"));
+    for komut in [
+        "scripts/core-freeze-korugu.sh",
+        "scripts/semantic-regresyon-korugu.sh",
+        "scripts/conformance-korugu.sh",
+        "scripts/acik-depo-denetle.py",
+        "scripts/sir-taramasi.sh",
+        "scripts/guvenlik-kapisi.sh --surekli",
+        "scripts/offline-vendor-denetle.sh",
+        "--bin faz_test_matrisi",
+        "cargo clippy --locked --all-targets -- -D warnings",
+        "cargo fmt --all -- --check",
+        "scripts/wasm-abi-denetle.mjs",
+    ] {
+        assert!(ci.contains(komut), "Forgejo kapısı eksik: {komut}");
+    }
+}
+
+#[test]
+#[cfg(unix)]
+fn forgejo_fetch_tam_secilen_gecmisi_alir_ozel_dal_ve_kimlik_almaz() {
+    use std::process::Command;
+    let ci = oku(".forgejo/workflows/zee-ci.yml");
+    let bolum = ci
+        .split_once("      - name: Tam ve yalnız seçili kaynak geçmişi\n")
+        .unwrap()
+        .1;
+    let bolum = bolum.split("      - name:").next().unwrap();
+    let betik = bolum
+        .split_once("        run: |\n")
+        .unwrap()
+        .1
+        .lines()
+        .map(|s| s.strip_prefix("          ").unwrap())
+        .collect::<Vec<_>>()
+        .join("\n");
+    let kok = std::env::temp_dir().join(format!(
+        "zee-forgejo-fetch-{}-{}",
+        std::process::id(),
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos()
+    ));
+    let kaynak = kok.join("depo");
+    std::fs::create_dir_all(&kaynak).unwrap();
+    let git = |yol: &Path, args: &[&str]| {
+        let out = Command::new("git")
+            .current_dir(yol)
+            .args(args)
+            .output()
+            .unwrap();
+        assert!(
+            out.status.success(),
+            "git {args:?}: {}",
+            String::from_utf8_lossy(&out.stderr)
+        );
+        String::from_utf8(out.stdout).unwrap().trim().to_string()
+    };
+    git(&kaynak, &["init", "-q", "--initial-branch=ci/zee-gitsrv"]);
+    git(&kaynak, &["config", "user.name", "Sentetik CI"]);
+    git(&kaynak, &["config", "user.email", "ci@ornek.com"]);
+    std::fs::write(kaynak.join("kayit"), "anonim kaynak\n").unwrap();
+    git(&kaynak, &["add", "."]);
+    git(&kaynak, &["commit", "-qm", "ilk kaynak"]);
+    std::fs::write(kaynak.join("kayit"), "anonim tam kaynak\n").unwrap();
+    git(&kaynak, &["commit", "-qam", "ikinci kaynak"]);
+    let secilen = git(&kaynak, &["rev-parse", "HEAD"]);
+    git(&kaynak, &["checkout", "-qb", "ilgisiz-ozel"]);
+    std::fs::write(kaynak.join("ozel"), "yalniz sentetik ayri dal verisi\n").unwrap();
+    git(&kaynak, &["add", "."]);
+    git(&kaynak, &["commit", "-qm", "ilgisiz ozel kaynak"]);
+    git(&kaynak, &["tag", "ilgisiz-etiket"]);
+    let ilgisiz = git(&kaynak, &["rev-parse", "HEAD"]);
+    let calistir = |ad: &str, sha: &str, dolu: bool| {
+        let yol = kok.join(ad);
+        std::fs::create_dir(&yol).unwrap();
+        if dolu {
+            std::fs::create_dir(yol.join("kaynak")).unwrap();
+        }
+        let out = Command::new("bash")
+            .current_dir(&yol)
+            .arg("-c")
+            .arg(&betik)
+            .env("ZEE_SERVER", &kok)
+            .env("ZEE_REPOSITORY", "depo")
+            .env("ZEE_REF", "refs/heads/ci/zee-gitsrv")
+            .env("ZEE_SHA", sha)
+            .env("ZEE_JOB_TOKEN", "yalniz-sentetik-token")
+            .output()
+            .unwrap();
+        (yol.join("kaynak"), out)
+    };
+    let (klon, out) = calistir("olumlu", &secilen, false);
+    assert!(
+        out.status.success(),
+        "{}",
+        String::from_utf8_lossy(&out.stderr)
+    );
+    assert_eq!(git(&klon, &["rev-parse", "HEAD"]), secilen);
+    assert_eq!(git(&klon, &["rev-list", "--count", "HEAD"]), "2");
+    assert_eq!(
+        git(&klon, &["rev-parse", "--is-shallow-repository"]),
+        "false"
+    );
+    assert!(git(&klon, &["for-each-ref", "refs/tags", "refs/remotes"]).is_empty());
+    assert!(!Command::new("git")
+        .current_dir(&klon)
+        .args(["cat-file", "-e", &ilgisiz])
+        .output()
+        .unwrap()
+        .status
+        .success());
+    let config = std::fs::read_to_string(klon.join(".git/config")).unwrap();
+    assert!(!config.contains("AUTHORIZATION") && !config.contains("yalniz-sentetik-token"));
+    assert!(!calistir("yanlis-sha", &ilgisiz, false).1.status.success());
+    assert!(!calistir("dolu-dizin", &secilen, true).1.status.success());
+    std::fs::remove_dir_all(kok).unwrap();
+}
+
+#[test]
 fn registry_lock_girdilerinin_sha256_ozeti_zorunludur() {
     for yol in ["compiler/Cargo.lock", "compiler/fuzz/Cargo.lock"] {
         let kilit = oku(yol);

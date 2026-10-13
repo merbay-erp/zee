@@ -1,0 +1,4 @@
+# zee-forgejo-actions-pinleri-1
+# action	surum	commit_sha	kaynak
+https://github.com/dtolnay/rust-toolchain	master@2026-09-03	d1031067263f94b142dd6c0ce24c5eb9d02d52a0	https://github.com/dtolnay/rust-toolchain
+https://code.forgejo.org/actions/upload-artifact	v3.2.1	ff15f0306b3f739f7b6fd43fb5d26cd321bd4de5	https://code.forgejo.org/actions/upload-artifact

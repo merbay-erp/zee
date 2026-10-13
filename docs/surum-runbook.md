@@ -139,3 +139,23 @@ kanıt yayımlamayı durdurur. Bu target başlığı gerçek minimum OS
 K-202: ana GitHub/CI deposu `merbay-erp/zee`; `itwise-bilisim/zee` yalnız
 ayna ve repository Actions kapalıdır. SBOM/provenance yeni ana kaynak
 URI kullanır; eski CI/fixture kanıtları tarihsel bağlantılarıyla korunur.
+
+### K-216 — Git2 / Gitsrv ana CI koşusu
+
+Kullanıcı isteğiyle GitHub Actions kapalıdır; ana kaynak GitHub'da,
+Enterprise yalnız aynadır. Özel Git2'de `ci/zee-gitsrv` dalına exact
+kaynak gönderimi veya `zee-ci.yml` manuel başlatması Linux kapılarını
+çalıştırır. Git2 erişim adresi/kimliği özel ortamda kalır. Örnek:
+
+```sh
+git push git2 HEAD:refs/heads/ci/zee-gitsrv
+```
+
+`.forgejo/workflows/zee-ci.yml` yalnız seçili dalın tam geçmişini alır;
+PR kodu ve ilgisiz özel dallar çekilmez. İki action SHA'sı ayrı
+`docs/forgejo-actions-pinleri-v1.tsv` envanterinde resmî kaynağa bağlıdır.
+Faz/kalite, gizlilik/sır, tedarik/offline vendor, WASM ve eşiksiz shared
+performans gözlemi aynı kaynakta çalışır; raporlar 90 günlük özel artefakt
+olur. Uzak başarısızlık veya başlamamış iş geçiş sayılmaz. Windows runtime
+ve release candidate fuzz/Miri/kurulum kanıtları bu Linux CI'ın yerine
+geçmez; ilgili sürüm runbook kapıları ayrıca korunur. [ADR-088](../adr/088-git2-gitsrv-kosulari.md).

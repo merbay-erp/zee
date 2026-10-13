@@ -145,10 +145,10 @@ Değişikliğe özel test, belge ve güvenlik kapıları [AGENTS.md](AGENTS.md) 
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **773** |
+| Rust + doctest vakası | **775** |
 | Tanı kimliği | **159 etkin + 3 ayrılmış** |
 | RFC | **30** (2 kabul, 25 geçici kabul, 3 taslak) |
-| ADR | **83** (83 kabul) |
+| ADR | **84** (84 kabul) |
 | Normatif spec bölümü | **28** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
@@ -193,3 +193,13 @@ Güncel uzak CI işleri hesap ödemesi/harcama limiti nedeniyle başlamadı;
 Linux/Windows ve uzak kapı kanıtı açık. Enterprise yalnız aynı kaynak aynasıdır,
 Actions kapalıdır ve özel ürün pini korunur. GitHub PR refs/cache teyidi ile
 yeniden açılış onayı bekleniyor; depo gizli kalır. [Kayıt](docs/incelemeler/k215/README.md).
+
+### K-216: Git2 ve Gitsrv üzerinde koşular
+
+Kullanıcı CI koşularını özel Git2/Gitsrv sistemine taşıdı. Ana GitHub kaynağı
+merbay-erp/zee, Enterprise yalnız aynadır; ikisinde Actions kapalıdır.
+Forgejo akışı tam Linux faz/kalite, gizlilik/sır, tedarik/offline vendor ve
+WASM kapılarını exact seçili kaynakta çalıştırır; ilgisiz özel dal/etiket
+almaz, PR kodu otomatik çalıştırılmaz. Uzak sonuç doğrulanınca kaydedilir;
+Windows runtime kanıtı ve GitHub destek teyidi açık kalır.
+[Karar](adr/088-git2-gitsrv-kosulari.md).
