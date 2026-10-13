@@ -20,7 +20,29 @@ def rules():
             "paths": {DIGEST("/private-host/")}, "lengths": {13}}
 
 
+def git_bash(git_exe):
+    # Git may be found through cmd/, bin/ or mingw64/bin/. The Bash runtime
+    # belongs to the same installation, not to Windows System32/WSL.
+    for parent in git_exe.parents:
+        for relative in ["bin/bash.exe", "usr/bin/bash.exe"]:
+            candidate = parent / relative
+            if candidate.is_file():
+                return candidate
+    raise ValueError("Git kurulumunda Git Bash bulunamadı")
+
+
 class PublicPrivacyTests(unittest.TestCase):
+    def test_git_bash_cmd_bin_ve_mingw_duzenlerini_bulur(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "Git"
+            bash = root / "bin/bash.exe"
+            bash.parent.mkdir(parents=True); bash.touch()
+            for relative in ["cmd/git.exe", "bin/git.exe", "mingw64/bin/git.exe"]:
+                self.assertEqual(git_bash(root / relative), bash)
+            bash.unlink()
+            with self.assertRaises(ValueError):
+                git_bash(root / "cmd/git.exe")
+
     def test_buyuk_kucuk_unicode_ve_ayiricilar(self):
         for value in ["Example Client", "EXAMPLE_CLIENT", "ｅｘａｍｐｌｅ client",
                       "example\u200bclient", "example-client", "example.client"]:
@@ -107,8 +129,7 @@ class PublicPrivacyTests(unittest.TestCase):
                 # Windows System32 bash may select WSL; this script uses the
                 # same Git Bash runtime as the workflow shell.
                 git_exe = Path(shutil.which("git"))
-                bash = str(git_exe.parent.parent / "bin/bash.exe")
-                self.assertTrue(Path(bash).is_file(), "Git Bash gerekli")
+                bash = str(git_bash(git_exe))
                 env["GIT_CONFIG_GLOBAL"] = config.as_posix()
                 env["GITHUB_ENV"] = envfile.as_posix()
             command = [bash, (ROOT / "scripts/ci-oz-kaynak.sh").as_posix()]
