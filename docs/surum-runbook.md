@@ -135,3 +135,7 @@ default'unu C/Rust için ortak uygular ve a/b native .o başlıklarını
 provenance'a kaydeder. Üst minos/yanlış platform/eksik toplam native
 kanıt yayımlamayı durdurur. Bu target başlığı gerçek minimum OS
 çalıştırma/desktop desteği değildir; o kapı ayrıca korunur.
+
+K-202: ana GitHub/CI deposu `merbay-erp/zee`; `itwise-bilisim/zee` yalnız
+ayna ve repository Actions kapalıdır. SBOM/provenance yeni ana kaynak
+URI kullanır; eski CI/fixture kanıtları tarihsel bağlantılarıyla korunur.

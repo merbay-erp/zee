@@ -20,7 +20,7 @@ def quoted(line):
 
 
 def arac_surumu(executable):
-    if executable.name.lower() == "link.exe":
+    if executable.name.lower() in ("link.exe", "cl.exe", "lib.exe", "ml.exe", "ml64.exe"):
         # MSVC help çağrısının exit/DLL ortamını sürüm kanıtıyla karıştırma.
         # Yol komut metnine eklenmez; .NET dosya metadata'sı doğrudan okunur.
         query = ("$ErrorActionPreference='Stop'; "
@@ -43,7 +43,61 @@ def arac_surumu(executable):
     return value, source
 
 
-def kaydet(logs, sha):
+DEBUG_STRING = r'"(?:[^"\\]|\\.)*"'
+NATIVE_COMMAND = re.compile(
+    r'^(?:env )?(?:(?:-u [A-Za-z_][A-Za-z_0-9]* |'
+    r'[A-Za-z_][A-Za-z_0-9]*=' + DEBUG_STRING + r' )*)'
+    r'(?P<program>' + DEBUG_STRING + r')(?P<args>(?: ' + DEBUG_STRING + r')*)$')
+
+
+def native_kaydet(text):
+    """Locked cc 1.4.4 Debug Command sözleşmesi; shell/eval kullanılmaz."""
+    tools, invocations = {}, []
+    for line in text.splitlines():
+        owner = re.match(r'^\[([^] ]+ [^] ]+)\] running: (.*)$', line)
+        if not owner:
+            continue
+        match = NATIVE_COMMAND.fullmatch(owner[2])
+        if not match:
+            raise ValueError('Native komut biçimi çözülemedi: ' + owner[1])
+        program = json.loads(match['program'])
+        args = quoted(match['args'])
+        environment_path = re.search(r'\bPATH=(' + DEBUG_STRING + ')', owner[2][:match.start('program')])
+        resolved = shutil.which(program, path=json.loads(environment_path[1]) if environment_path else None)
+        if not resolved:
+            raise ValueError('Native araç bulunamadı: ' + program)
+        executable = Path(resolved).resolve()
+        identity = str(executable)
+        if identity not in tools:
+            try:
+                version, source = arac_surumu(executable)
+                query = {'status': 'available', 'value': version, 'source': source}
+            except ValueError as error:
+                # Apple ar --version desteklemez. Hash kimliği sürüm adı değildir.
+                query = {'status': 'unavailable', 'reason': str(error)}
+            tools[identity] = {'path': identity,
+                               'sha256': hashlib.sha256(executable.read_bytes()).hexdigest(),
+                               'versionQuery': query}
+        name = PureWindowsPath(program).name.lower()
+        if name in ('ar', 'llvm-ar', 'gcc-ar', 'lib.exe'):
+            role = 'archive'
+        elif name == 'xcrun':
+            role = 'sdk-query'
+        elif any(arg.lower() in ('-c', '/c') for arg in args):
+            role = 'compile'
+        else:
+            role = 'probe'
+        invocations.append({'owner': owner[1], 'program': program, 'tool': identity,
+                            'arguments': args, 'role': role, 'command': owner[2]})
+    roles = {entry['role'] for entry in invocations}
+    if not {'compile', 'archive'} <= roles:
+        raise ValueError('Native compile/archive komut kanıtı eksik')
+    return {'schema': 'zee-native-tools-1', 'tools': list(tools.values()),
+            'invocations': invocations,
+            'boundary': 'Locked cc Debug Command driver çağrıları; sürüm sorgusu başarısızlığı açık kalır. Driver alt süreçleri, pkg-config/vcpkg ve işletim sistemi process trace kapsamı değildir.'}
+
+
+def kaydet(logs, sha, native_required=False):
     if not re.fullmatch(r"[0-9a-f]{40}", sha):
         raise ValueError("Kaynak SHA exact 40 hex olmalı")
     clones = {}
@@ -98,6 +152,8 @@ def kaydet(logs, sha):
                     sdk_versions[reference] = json.loads(settings.read_text())["Version"]
         clones[clone] = {"binaries": records, "sdkObservations": sdk_observations,
                          "sdkVersions": sdk_versions}
+        if native_required:
+            clones[clone]["nativeTools"] = native_kaydet(text)
     if set(clones) != {"a", "b"}:
         raise ValueError("İki klon kanıtı gerekir")
     return {"schema": "zee-build-environment-1", "gitCommit": sha, "clones": clones,
@@ -113,7 +169,7 @@ def main():
     parser.add_argument("--native-target", default="none")
     args = parser.parse_args()
     try:
-        data = kaydet({"a": args.a, "b": args.b}, args.sha)
+        data = kaydet({"a": args.a, "b": args.b}, args.sha, native_required=True)
         if args.native_target != "none":
             for clone, log in {"a":args.a,"b":args.b}.items():
                 native=json.loads(log.with_name('native-deployment.json').read_bytes())

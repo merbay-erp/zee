@@ -32,7 +32,7 @@ Betik iki bağımsız `git clone` ağacında aynı commit'i sabit toolchain,
 | `GIT_SHA` | üretilen commit |
 
 K-192: SBOM/provenance kaynak URI'si aynı kanonik
-`git+https://github.com/itwise-bilisim/zee@<tam-sha>` değerini kullanır.
+`git+https://github.com/merbay-erp/zee@<tam-sha>` değerini kullanır.
 Sürüm yayımlanmadan exact commit'in bu resmî depodan erişilebilirliği ayrıca
 kontrol edilir; iki yerel klon eşitliği uzak kaynak erişimi kanıtı değildir.
 
@@ -66,3 +66,20 @@ ve stdio LSP initialize/shutdown/exit sonucunu ayrı JSON raporunda üretir.
 `kurulum-tatbikati` üç platform raporunu 90 gün saklar. Bu dosya release
 artefakt kümesine eklenmez; SDK provenance veya temiz makine kanıtı yerine
 geçmez. Komut/sınırlar [envanterde](derleme-ve-bagimliliklar.md).
+
+## K-202 — Ana depo ve enterprise ayna
+
+13 Ekim 2026 kurucu kararıyla ana geliştirme/yayın kaynağı
+`https://github.com/merbay-erp/zee` olur. CI, manual tatbikat, fuzz, soak
+ve release koşuları yalnız bu depoda yürütülür.
+`itwise-bilisim/zee` kaynak geçmişinin aynasıdır; repository Actions
+permissions `enabled=false` olarak API üzerinden doğrulandı. O anda
+çalışan/bekleyen koşu bulunmadı. Ayna push'u geçmişi korur; force push yoktur.
+
+SBOM/provenance kaynak URI değeri yeni ana depoya bağlanır; aynı exact
+Git SHA her iki depoda erişilebilir olmalıdır. Önceki itwise koşu bağlantısı
+ve ham fixture kaydı tarihsel kanıttır, yeniden adlandırılmaz. Dil semantiği,
+ABI/API, SBOM/provenance şeması ve release dosya kümesi değişmez.
+Git `origin` merbay-erp, `enterprise-mirror` itwise-bilisim olarak adlandırılır.
+Aynadaki PR #9 eski çalışma kaydıdır; bundan sonraki işler/koşular ana
+depoda takip edilir. Kaynak testleri ve beyanları K-202 kapsamında güncellenir.

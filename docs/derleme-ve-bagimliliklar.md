@@ -487,3 +487,42 @@ K-200 exact kaynak `44fba404c79762aff1698a07978c79ea069a59df`, run
 program/LSP ve kaldırma geçti. macOS a/b ayrı ayrı 24 nesne minos 11.0
 bildirdi. Ham runtime/provenance, job ve artefakt hash kayıtları
 [platform kanıtı](derleme-platform-kaniti-v1.tsv) içindedir.
+
+## K-201 — Native araç çağrı kaydı
+
+İki release klonu verbose Cargo ve locked cc debug çıktısını kaydeder.
+Compile ve archive çağrı kanıtı zorunludur. Kayıt, her native driver
+çağrısının paket sahibini, argümanlarını ve çözülen executable path/hash
+kimliğini `zee-native-tools-1` alt şemasında provenance'a bağlar.
+Windows cl/lib/ml/link FileVersionInfo, diğer araçlar --version ile
+sorgulanır. Desteklenmeyen sürüm sorgusu `unavailable` ve gerekçesiyle
+görünür; byte hash araç sürümü yerine sunulmaz. Yerel gerçek cc izinde
+38 çağrı ve cc/xcrun/ar görüldü; Apple ar --version desteklemedi.
+Bu eski yerel log denemesi exact yeni release kapanma kanıtı değildir.
+
+Parser Rust Debug Command'ın quoted alanlarını çözer; shell/eval yoktur.
+Eksik compile/archive, bozuk command biçimi veya kayıp executable release'i
+durdurur. Probe komutunun başarısız olması Cargo'nun başarılı derlemesiyle
+karıştırılmaz; kayıt tek tek compile exit sonucu eşlemesi vaat etmez.
+
+K-201 exact üç platform iki-klon tatbikatı bekler. pkg-config/vcpkg,
+driver iç subprocess'leri ve işletim sistemi process tracing ayrı
+K-192 işidir. Release dosya kümesi/SBOM/imza değişmez; provenance additive
+alandır. Dil grammar/spec/RFC/tanı/API ve production Rust katmanı değişmez.
+
+## K-202 — Ana depo ve enterprise ayna
+
+13 Ekim 2026 kurucu kararıyla ana geliştirme/yayın kaynağı
+`https://github.com/merbay-erp/zee` olur. CI, manual tatbikat, fuzz, soak
+ve release koşuları yalnız bu depoda yürütülür.
+`itwise-bilisim/zee` kaynak geçmişinin aynasıdır; repository Actions
+permissions `enabled=false` olarak API üzerinden doğrulandı. O anda
+çalışan/bekleyen koşu bulunmadı. Ayna push'u geçmişi korur; force push yoktur.
+
+SBOM/provenance kaynak URI değeri yeni ana depoya bağlanır; aynı exact
+Git SHA her iki depoda erişilebilir olmalıdır. Önceki itwise koşu bağlantısı
+ve ham fixture kaydı tarihsel kanıttır, yeniden adlandırılmaz. Dil semantiği,
+ABI/API, SBOM/provenance şeması ve release dosya kümesi değişmez.
+Git `origin` merbay-erp, `enterprise-mirror` itwise-bilisim olarak adlandırılır.
+Aynadaki PR #9 eski çalışma kaydıdır; bundan sonraki işler/koşular ana
+depoda takip edilir. Kaynak testleri ve beyanları K-202 kapsamında güncellenir.
