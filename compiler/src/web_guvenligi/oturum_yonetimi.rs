@@ -95,3 +95,10 @@ impl WebGuvenligi {
         Ok(1)
     }
 }
+
+impl super::WebGuvenligi {
+    /// The same request identity as rate limiting, supplied by the trusted host.
+    pub fn istemci_adresi(&self) -> &str {
+        self.istemci_kimligi.as_deref().unwrap_or("")
+    }
+}

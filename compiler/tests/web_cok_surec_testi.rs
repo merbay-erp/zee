@@ -208,3 +208,93 @@ fn iki_worker_oturumu_iptali_restarti_ve_giris_limitini_paylasir() {
     drop(b);
     assert!(gecici.0.join(".zee/web-durumu-v1.json").is_file());
 }
+
+fn ham_ip_istegi(kapi: u16, basliklar: &str, yol: &str) -> String {
+    let adres = SocketAddr::from(([127, 0, 0, 1], kapi));
+    let son = Instant::now() + Duration::from_secs(10);
+    let mut stream = loop {
+        match TcpStream::connect_timeout(&adres, Duration::from_millis(100)) {
+            Ok(s) => break s,
+            Err(_) if Instant::now() < son => std::thread::sleep(Duration::from_millis(20)),
+            Err(h) => panic!("worker dinlemeye geçmedi: {h}"),
+        }
+    };
+    stream
+        .set_read_timeout(Some(Duration::from_secs(10)))
+        .unwrap();
+    stream
+        .write_all(
+            format!(
+                "GET {yol} HTTP/1.1\r\nHost: panel.example\r\n{basliklar}Connection: close\r\n\r\n"
+            )
+            .as_bytes(),
+        )
+        .unwrap();
+    let mut response = String::new();
+    stream.read_to_string(&mut response).unwrap();
+    response
+}
+
+#[test]
+fn istemci_adresi_proxy_ve_socketten_gelir_xff_ve_form_alanindan_gelmez() {
+    let gecici = GeciciKlasor::yeni();
+    let kaynak = gecici.0.join("adres.dil");
+    std::fs::write(&kaynak, "8092 kapısında sunucu başlat\nGET \"/ip\" adresine istek geldiğinde\n    istemci adresi yanıtını gönder\n").unwrap();
+    let cli_kaynak = gecici.0.join("cli.dil");
+    std::fs::write(&cli_kaynak, "istemci adresi yaz\n").unwrap();
+    let cli = Command::new(env!("CARGO_BIN_EXE_dil"))
+        .args(["çalıştır", cli_kaynak.to_str().unwrap()])
+        .output()
+        .unwrap();
+    assert!(
+        cli.status.success(),
+        "{}",
+        String::from_utf8_lossy(&cli.stderr)
+    );
+    assert_eq!(String::from_utf8(cli.stdout).unwrap(), "\n");
+    let proxy_kapi = bos_kapi();
+    let proxy = sunucuyu_baslat(&kaynak, proxy_kapi);
+    for (forwarded, expected) in [
+        ("203.0.113.7", "203.0.113.7"),
+        (
+            "\"[2001:0DB8:0000:0000:0000:0000:0000:0001]\"",
+            "2001:db8::1",
+        ),
+        ("198.51.100.9", "198.51.100.9"),
+    ] {
+        let headers = format!("Forwarded: for={forwarded};proto=https;host=panel.example\r\nX-Forwarded-For: 192.0.2.99\r\n");
+        let response = ham_ip_istegi(
+            proxy_kapi,
+            &headers,
+            "/ip?istemci=192.0.2.42&adresi=192.0.2.43",
+        );
+        assert_eq!(durum(&response), 200, "{response}");
+        assert_eq!(response.split_once("\r\n\r\n").unwrap().1, expected);
+    }
+    let rejected = ham_ip_istegi(
+        proxy_kapi,
+        "Forwarded: for=unknown;proto=https;host=panel.example\r\nX-Forwarded-For: 192.0.2.99\r\n",
+        "/ip",
+    );
+    assert_eq!(durum(&rejected), 400);
+    drop(proxy);
+    let direct_kapi = bos_kapi();
+    let direct_kaynak = gecici.0.join("socket.dil");
+    std::fs::write(&direct_kaynak, format!("{direct_kapi} kapısında sunucu başlat\nGET \"/ip\" adresine istek geldiğinde\n    istemci adresi yanıtını gönder\n")).unwrap();
+    let direct = Sunucu(
+        Command::new(env!("CARGO_BIN_EXE_dil"))
+            .args([
+                "çalıştır",
+                "--deneysel-web",
+                direct_kaynak.to_str().unwrap(),
+            ])
+            .stdout(Stdio::null())
+            .stderr(Stdio::null())
+            .spawn()
+            .unwrap(),
+    );
+    let response = ham_ip_istegi(direct_kapi, "X-Forwarded-For: 192.0.2.99\r\nForwarded: for=203.0.113.7;proto=https;host=panel.example\r\n", "/ip");
+    assert_eq!(durum(&response), 200, "{response}");
+    assert_eq!(response.split_once("\r\n\r\n").unwrap().1, "127.0.0.1");
+    drop(direct);
+}

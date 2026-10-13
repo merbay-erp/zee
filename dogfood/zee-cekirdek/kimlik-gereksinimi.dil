@@ -1,0 +1,13 @@
+# K-208/K-209: gerçek ürün giriş ve denetim ihtiyaçlarının minimal aynası.
+işlem legacyParolayiDogrula
+    parolayi Metin olarak al
+    ozeti Metin olarak al
+    Mantıksal döndürür
+
+    parola ozet ile doğrulanıyorsa
+        doğru döndür
+    yanlış döndür
+
+8092 kapısında sunucu başlat
+GET "/denetim-ip" adresine istek geldiğinde
+    istemci adresi yanıtını gönder

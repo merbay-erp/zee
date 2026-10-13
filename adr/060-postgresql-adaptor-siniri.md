@@ -74,3 +74,60 @@ TLS/pool ADR-062 ile kapanır; multi-process toplam bütçe deployment
 sorumluluğudur. Binary medya, fiziksel
 silme ve orphan tarama F030/RFC-0027/ADR-061 ile ayrı sahiplikte kanıtlandı;
 PostgreSQL katmanı dağıtık transaction sözü kazanmadı.
+
+## K-206 sonuç belleği incelemesi
+
+[13 Ekim ölçümü](../docs/dis-inceleme-2026-10-13.md) eager Vec toplama
+ve büyük satır String kopyasını doğruladı; 16 MiB uygulama sonucu tüm
+driver/wire tahsislerinin tavanı değildir. GB-041 orta/açık, hedef K-206.
+Row-wise toplama yalnız normal çıktı, hata önceliği, retry ve transaction/
+bağlantı sağlığı korunarak değerlendirilecektir; yeni typed API eklenmedi.
+
+## K-206 akışla sonuç toplama
+
+Native okuma `query_typed_raw` ile satır satır ilerler. Boyut kontrolü
+borrowed metin üzerinde String kopyasından önce yapılır; hata sonrası
+birikmiş çıktı bırakılır ve kalan satırlar kopyalanmadan tüketilir.
+Sunucu/transport hatası bütün uygulama hatalarından, toplam satır sınırı
+ilk hücre hatasından önce gelir. Satır/sütun sırası, tekrar eden sütun
+adları, TEXT bind, NULL/tür hatası ve structured hata verisi değişmez.
+Yalnız transport hatası, transaction dışında kapalı bağlantıda mevcut
+tek read retry yoluna gider; uygulama sonucu hatası retry tetiklemez.
+Yazma/savepoint/commit kodu ve API yüzeyi değişmez.
+
+Sonuç sahipliği `postgresql/sonuc.rs`, transport/pool eski sahibindedir;
+production owner ve temel→adaptör yönü değişmedi. Katman fixture ve
+ADR-046 incelendi: yeni sahip/kenar/SCC yoktur. Yeni bağımlılık, cache,
+compiler/LSP uzun ömürlü tampon eklenmedi. Per-query birikim önce de
+vardı; ömrü uzatılmadı, sürücüdeki tüm satır Vec'i kaldırıldı.
+
+**KISMEN:** tek wire satırının driver tahsisi uygulama sınırından önce
+gerçekleşir. GB-041 orta/açık kalır; bütün süreç için 16 MiB veya kesin
+RSS bütçesi sözü yoktur. Exact native kabul/RSS kaydı aynı kaynakla aşağıda kapandı. Saf collector testleri ve eski 4a4fd0d Vec oracle'ı mevcut
+hata/sonuç gözlemini denetler; gerçek DB testi izole loopback opt-in'dir.
+
+K-206 akış toplama dilimi kapalı: source f2ba654, temiz beyan/ölçüm
+6463a7f; 731/731 faz ve gerçek native oracle/transaction kabulü geçti.
+64×1 MiB sonuçta native süreç RSS 128,77→23,81 MiB, tek 64 MiB satırda
+136,77→72,72 MiB; üç vakada sonraki sorgu başarılıdır. Bir örnek/sıfır
+ısınma gözlemi, genel RSS garantisi değildir. [Ham kanıt](../docs/incelemeler/k206/README.md).
+**K-206 KISMEN:** tek wire satırı/driver sınırı ve GB-041 açık kalır.
+
+K-206 erken header kabul tasarımı: iki ayrı backend parser'ı kapsayan
+typed 32 MiB aday yama bağımsız geçici crate'te 34/34 testle doğrulandı.
+Aktif dependency pin değişmedi; üretimde mesaj sınırı etkin değildir.
+Transaction durum temizliği, read retry engeli ve exact immutable kaynak
+entegrasyonu açık; GB-041 kapatılmadı. [Kabul tasarımı](../docs/incelemeler/k206/frame-guard/README.md).
+
+K-206 hazırlık kopyası .2 artık iki-parser typed 32 MiB guard taşır.
+Compiler/fuzz pin hâlâ c4e9d036 .1 seçer; guard üretimde etkin değildir.
+Exact kaynak commitinden sonra tüketici pin ve transaction/retry/RLS
+kabulü birlikte taşınacaktır. GB-041 bu hazırlıkta açık kalır.
+
+K-206 wire entegrasyonu: compiler/fuzz protokolü exact 1ffdb584 .2 kaynağına
+pinlidir. İki parser'da 32 MiB length reddi, typed C025 verisi, read retry
+engeli ve geçersiz transaction/request-local cleanup uygulanır. Gönderilmiş
+COMMIT sonrası bağlantı kaybı C027 olarak korunur. Native loopback kabulü
+okuma, büyük Notice üreten write, nested/RLS ve deferred COMMIT'i kapsar.
+GB-041 bu kaynakta uygulandı; exact temiz kaynak, vendor/iki-clone ve
+sürekli kapı kabulü henüz beklenir. Global RSS sözü verilmez.

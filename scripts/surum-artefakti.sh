@@ -94,9 +94,10 @@ for klon in a b; do
         kodlanmis_bayraklar="${kodlanmis_bayraklar%$'\x1f'}"
         # Boşluklu yollar tek argümandır; caller encoded flags tarifi ezemez.
         if ! RUSTFLAGS="" CARGO_ENCODED_RUSTFLAGS="$kodlanmis_bayraklar" \
+            CC_ENABLE_DEBUG_OUTPUT=1 \
             RUSTC_LOG=rustc_codegen_ssa::back::link=info \
             CARGO_TARGET_DIR="$hedef_yolu" \
-            cargo build "${build_argumanlari[@]}" > "$gecici/$klon/build.log" 2>&1; then
+            cargo build -vv "${build_argumanlari[@]}" > "$gecici/$klon/build.log" 2>&1; then
             cat "$gecici/$klon/build.log" >&2
             exit 1
         fi

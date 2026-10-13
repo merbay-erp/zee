@@ -23,10 +23,12 @@ num-traits = "0.2.19"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 argon2 = { version = "0.6.0", features = ["getrandom"] }
+bcrypt = { version = "=0.19.3", default-features = false, features = ["std", "zeroize"] }
 ed25519-dalek = "3.0.0"
 getrandom = "0.4.3"
 native-tls = "=0.2.18"
 postgres = "=0.19.14"
+postgres-protocol = "=0.6.12"
 postgres-native-tls = "=0.5.3"
 r2d2 = "=0.8.10"
 r2d2_postgres = "=0.18.2"
@@ -39,3 +41,6 @@ ureq = { version = "=3.4.0", default-features = false, features = ["rustls"] }
 
 [target.'cfg(unix)'.dependencies]
 libc = "=0.2.189"
+
+[patch.crates-io]
+postgres-protocol = { git = "https://github.com/merbay-erp/zee", rev = "a4d7f208bc1bf01255f5ae9a16ebb97a74ff0d84" }

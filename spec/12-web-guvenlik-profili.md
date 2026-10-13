@@ -36,14 +36,14 @@ spec/11'in salt-okuma kanıtı yine geçerlidir.
 
 ## 2. Parola ve oturum açma
 
-Parola doğrulama yalnız Argon2id v19 PHC özeti kabul eder:
+Parola doğrulama Argon2id v19 PHC veya sınırlı legacy bcrypt özeti kabul eder:
 
 ```text
 verilen parola_özeti ile doğrulanıyorsa
     "Mustafa" kullanıcısını "yönetici" rolüyle oturuma al
 ```
 
-Bozuk, başka algoritmalı veya eşleşmeyen özet `yanlış` sonucudur. PHC
+Bozuk, desteklenmeyen algoritmalı veya eşleşmeyen özet `yanlış` sonucudur. PHC
 özeti `dil parola-özeti` ile parolayı terminalde göstermeden üretilir;
 otomasyon için açık `--stdin` seçeneği vardır.
 
@@ -200,7 +200,7 @@ ZORUNLUDUR:
 |---|---:|---:|---|
 | istemci + yöntem + sorgusuz path | 60 saniye | 100 | 429 |
 | CSRF doğrulaması | 60 saniye | 60 | 429 |
-| Argon2id parola doğrulaması | 300 saniye | 5 | Argon2id çalışmadan 429 |
+| Argon2id/bcrypt parola doğrulaması | 300 saniye | 5 | Parola doğrulaması çalışmadan 429 |
 
 Sayaç artışı ile pencere sonu tek atomik transaction'dır. En çok 32768 canlı
 oran anahtarı tutulur. Süresi dolan anahtarlar temizlenir; tablo yalnız canlı
@@ -218,7 +218,7 @@ kapanışıyla geçersiz kalır.
 
 ## 6. Platform sınırı
 
-Native CLI CSPRNG ve Argon2id capability'sini taşır. WASM playground
+Native CLI CSPRNG, Argon2id ve sınırlı legacy bcrypt doğrulama capability'sini taşır. WASM playground
 production oturumu veya parola özeti üretmez; parola doğrulaması başarısız
 olur. TLS sertifikası ve secret dağıtımı deployment katmanının
 sorumluluğudur.
@@ -236,3 +236,24 @@ ortak revoke ve oran sınırının yerine geçmez. Operasyon ayrıntıları
 
 Normatif gerekçe: RFC-0017, ADR-034, ADR-036, ADR-037, ADR-076 ve ADR-079. Rota/eylem ayrımı:
 RFC-0015 ve spec/11. Ortak origin tipi: ADR-031 ve spec/23.
+
+## Legacy bcrypt ve kanonik istemci adresi (K-208/K-209)
+
+TANIMLI: `parola ozet ile doğrulanıyorsa` native ortamda `$2a$`, `$2b$`
+ve `$2y$` önekli 60 ASCII bayt bcrypt özetini, maliyet 4–14 ve en fazla
+72 UTF-8 bayt parola ile doğrular. Büyük maliyet/uzun parola/bozuk biçim
+crypto işinden önce `yanlış` olur; sessiz kırpma yapılmaz. Digest
+karşılaştırması sabit zamanlıdır; toplam çalışma süresinin eşitliği sözü
+yoktur. Yeni bcrypt üretimi YASAKTIR; Argon2id tek üretim yolu kalır.
+
+TANIMLI: `istemci adresi` aktif native handler'da oran sınırıyla aynı
+trusted kimliğin kanonik Metin değeridir; güvenli proxy'de doğrulanmış
+tek-hop Forwarded, doğrudan deneysel web'de soket IP'sidir. X-Forwarded-For,
+form ve sorgu alanları kimlik kaynağı OLAMAZ. IPv6 parantezsizdir; request
+cleanup sonrası ve HTTP isteği dışındaki varsayılan adaptörde boş metindir.
+Ağ-sunucusu yetkinliği ve mevcut T044 eylem/web ayrımı korunur.
+
+Ürün başarılı girişte eski biçimi SQL LIKE veya mevcut Metin prefix
+yüklemiyle ayırıp Argon2'ye taşır; yeni algoritma sorgu yüklemi açılmaz.
+IP kişisel veri olarak ele alınır; KVKK bağlamında saklama süresini
+uygulama kendi politikasıyla belirler. IO trace IP içerebilir, özel veridir.

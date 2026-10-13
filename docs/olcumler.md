@@ -270,3 +270,63 @@ compatibility etkisi vardır; sabit dil iş yükü değişmez. ADR-045/049 ve
 performans tarihçesi incelendi; yeni exact clean makine/sample/warmup
 ölçümü alınmadan baseline/tarihçe satırı yazılmadı. Shared CI gözlemsel
 kalır, hard eşik etkinleştirilmedi.
+
+K-201 verbose Cargo/cc çıktısı ve native araç kimliği sorguları derleme
+I/O ve gözlem maliyetini artırır; runtime profili/sabit iş yükü değişmez.
+ADR-045/049 ve tarihçe etkisi incelendi; exact clean makine/sample/warmup
+ölçümü olmadan benchmark baseline veya izlenen tarihçe satırı yazılmadı.
+
+## K-207 ad ve kapsam maliyeti — exact ölçüm
+
+Başarılı ad çözümlemesi hash üyeliğini kullanır; tam ad listesi yalnız
+A001 önerisinde üretilir. Kapsam girişi sıra sınırıdır; çıkış yeni-ad
+kaydındaki yalnız yerel adları siler. Dış atamalar ve SymbolId korunur.
+26.624 ad oracle kararı, 4.096 iç içe kapsam oracle işlemi ve 728/728
+faz kapısı geçti. Incremental parser veya LSP cache eklenmedi.
+
+Aynı M4 Pro/macOS 26.6.2, 24 GiB, Rust 1.93.1 release ortamında,
+25 gerçek örnek ve 2 ısınma; üç checkout da ölçümde temizdir:
+
+| Satır | Taban 29be85b p95 | Ad çözümleme 94de420 p95 | Kapsam 9e80b69 p95 |
+|---:|---:|---:|---:|
+| 2.000 | 227,620 ms | 30,567 ms | 5,207 ms |
+| 5.000 | 1.122,488 ms | 175,842 ms | 18,131 ms |
+| 10.000 | 5.525,283 ms | 745,695 ms | 53,105 ms |
+| 20.000 | 22.169,906 ms | 2.961,638 ms | 165,137 ms |
+
+Ham örnekler/çevre: [taban](incelemeler/k207/before.json),
+[ad sonrası](incelemeler/k207/after.json),
+[kapsam sonrası](incelemeler/k207/scope-after.json). Otomatik exact TSV
+satırları [tarihçededir](performans-gecmisi-v2.tsv); ayrı milestone ve
+sample/warmup semantiği korunur. 20k yaklaşık 134 kat hızlandı ve bu
+sabit iş yükünde 1 sn hedefi sağlandı. Genel platform/ürün SLA değildir.
+Paylaşılan masaüstü gözlemidir; taban sırasında başka derleme ve kısa PG
+sorguları çalıştı. Hard eşik yoktur. ADR-045/049 ölçüm sözleşmesi ve sabit
+benchmark kaynağı değişmedi; performans tarihçesi etkisi incelendi.
+
+Geçici derleme tamponu için temiz exact 9e80b692f9a0a37cdd8136783b42f2a0056f2478
+üzerinde 1800 sn soak geçti: 264.343 golden/çalıştırma ve gerçek LSP döngüsü.
+Isınma sonrası derleyici RSS medyanı 8.144→8.160 KiB, LSP 19.088→17.568 KiB;
+%10 +32 MiB birlikte büyüme kapısı aşılmadı. [Rapor](incelemeler/k207/scope-soak.md),
+[çevre](incelemeler/k207/scope-soak-environment.json),
+[tarihçe](soak-gecmisi-v1.tsv). Kısa PG deneyleri/native TLS havuz testi
+aynı masaüstünde ayrı süreçlerde yürüdü; karar process RSS üzerindedir.
+
+**Kapsam optimizasyonu dilimi kapalı; K-207 KISMEN:** full didChange sürer,
+incremental/cache kapasitesi açıktır. Tarihçe testi eski exact kayıtları
+korur; toplam satır sayısı ilerlemeyi engelleyen sabit değildir.
+
+## K-206 native sonuç belleği
+
+Sabit benchmark iş yükü, olcum aracı ve ADR-045/049 eşik sözleşmesi
+incelendi; PostgreSQL collector bu sabit workload'da değildir. Native
+RSS deneyi ayrı izole kayıt olarak alınır; samples=1/warmup=0 gözlemi
+kalıcı benchmark tabanı veya hard CI eşiğine çevrilmez. Driver'ın tek
+wire satırı tahsisi uygulama sonucunun 16 MiB sözleşmesinin dışındadır.
+
+K-206 akış toplama dilimi kapalı: source f2ba654, temiz beyan/ölçüm
+6463a7f; 731/731 faz ve gerçek native oracle/transaction kabulü geçti.
+64×1 MiB sonuçta native süreç RSS 128,77→23,81 MiB, tek 64 MiB satırda
+136,77→72,72 MiB; üç vakada sonraki sorgu başarılıdır. Bir örnek/sıfır
+ısınma gözlemi, genel RSS garantisi değildir. [Ham kanıt](incelemeler/k206/README.md).
+**K-206 KISMEN:** tek wire satırı/driver sınırı ve GB-041 açık kalır.

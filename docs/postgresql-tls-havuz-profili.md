@@ -65,3 +65,9 @@ testi dört ayrı backend PID, beşinci checkout reddi ve stale replacement'ı
 doğrular. `ZEE_POSTGRES_SAHA_UZUN_SOAK=1` ayrıca 300 saniyelik active-lease
 lifetime + bakım çevrimi davranışını ölçer. Bu opt-in test hermetik CI yerine gerçek saha
 kanıtıdır; secrets ve CA repoya yazılmaz.
+
+K-205/K-206 ek incelemede temiz 9e80b69, izole PG 16.15/TLS localhost
+ortamında uzun native havuz testi 336,840 sn ve exit 0 verdi. Dört TLS 1.2
+backend, exhaustion/stale recovery ve active-lease lifetime ölçüldü.
+[Ham kayıt ve reproducer](incelemeler/k206/README.md). Bu üretim cluster
+kanıtı veya bağımsız negatif hostname/CA/TLS downgrade testi değildir.

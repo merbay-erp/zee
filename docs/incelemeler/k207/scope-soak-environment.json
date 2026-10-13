@@ -1,0 +1,16 @@
+{
+  "git_sha": "9e80b692f9a0a37cdd8136783b42f2a0056f2478",
+  "git_dirty": false,
+  "platform": "macos-aarch64",
+  "os": "macOS 26.6.2 (25G83)",
+  "cpu": "Apple M4 Pro",
+  "ram_bytes": 25769803776,
+  "rustc": "rustc 1.93.1 (01f6ddf75 2026-02-11)",
+  "build_profile": "release",
+  "duration_seconds": 1800,
+  "window_seconds": 60,
+  "sampling_seconds": 5,
+  "warmup_windows": 1,
+  "boundary": "K-207 compiler and real dillsp process RSS; golden compile/runtime and 2000-line changing LSP input. Shared desktop; short isolated PG prototypes, native TLS pool test and worktree cleanup ran concurrently. No timing hard threshold.",
+  "report_sha256": "b8ab1f1128fce2eb697cabcf8a43a3ded3c84e37d875faf90112c47a79d9ecdb"
+}

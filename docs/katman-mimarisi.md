@@ -119,3 +119,7 @@ Bu kapı Rust tip denetiminin veya semantic testlerin yerine geçmez. Makro ile
 üretilmiş dinamik adları tam bir Rust semantic graph'ı olarak iddia etmez;
 production kaynakta açık modül yollarının değişim kapısıdır. Tam faz matrisi,
 Clippy, rustdoc, WASM ve ilgili RFC/spec kanıtları ayrıca zorunludur.
+
+K-206 sonuç dönüşümü `postgresql/sonuc.rs` içinde aynı `postgresql`
+sahibindedir. Transport/havuz katmanı saf modele yükselmez; yeni
+üst sahip/bağımlılık kenarı/SCC yoktur. Fixture değişikliği gerekmedi.

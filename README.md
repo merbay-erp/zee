@@ -23,6 +23,9 @@ toplam yaz
 
 ## Mevcut durum
 
+Ana geliştirme ve CI deposu [merbay-erp/zee](https://github.com/merbay-erp/zee).
+Enterprise deposu yalnız aynadır.
+
 zee aktif olarak geliştiriliyor. Kaynak ağacının sürümü **0.8.0-dev**;
 son sürüm notu **v0.7.0**. V1 öncesi doğrulama çalışmaları sürüyor.
 
@@ -142,11 +145,22 @@ Değişikliğe özel test, belge ve güvenlik kapıları [AGENTS.md](AGENTS.md) 
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **728** |
+| Rust + doctest vakası | **744** |
 | Tanı kimliği | **155 etkin + 3 ayrılmış** |
-| RFC | **29** (2 kabul, 24 geçici kabul, 3 taslak) |
-| ADR | **77** (77 kabul) |
+| RFC | **30** (2 kabul, 25 geçici kabul, 3 taslak) |
+| ADR | **78** (78 kabul) |
 | Normatif spec bölümü | **27** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
 </details>
+
+PostgreSQL backend mesajları 32 MiB length sınırında erken reddedilir;
+kopan transaction ve RLS bağlamı yeni bağlantıda sürdürülmez.
+[Davranış ve hata verisi](spec/25-postgresql-veri-erisimi.md) sonuç bütçesi
+ile transport sınırını ayırır; bu global RSS garantisi değildir.
+
+Gerçek ürün geçişleri için mevcut parola yüklemi sınırlı legacy bcrypt
+($2a/$2b/$2y) doğrular; yeni özet Argon2id kalır. Handler `istemci adresi`
+ile oran sınırının kullandığı kanonik IP'yi okur.
+[Kullanım ve güvenlik sınırı](spec/12-web-guvenlik-profili.md) ve
+[ürün kanıtı](dogfood/zee-cekirdek/KOKEN.md) aynı değişikliktedir.

@@ -1,8 +1,10 @@
 # zee-v1-syntax-freeze-1
 # alan	deger
 karar	K-174
-baslangic	2026-09-30
-bitis	2026-10-28
+baslangic	2026-10-13
+bitis	2026-11-10
 yuzey_fixture	compiler/tests/fixtures/dil-yuzeyi-v1.tsv
 dondurulmus_yuzeyler	kalip,kosul,komut
-dondurulmus_sha256	8bddd11145a8f0fa645ea17097bf47a55cf2b2da2b6d438c1a458bc8ff72b058
+dondurulmus_sha256	a10446b9a9de7566466147648fb5547e2543fb9ab14f04ffac531aa32df5f7f1
+
+# K-209/ADR-082 gerçek ürün IP talebiyle iki contextual kalıp eklendi; dört haftalık syntax gözlem penceresi bu değişiklikte yeniden başladı. Core freeze yürürlükte, B-001/B-002 insan kanıtı kapatılmaz.
