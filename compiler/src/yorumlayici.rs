@@ -44,8 +44,8 @@ use crate::agac::{
 };
 use crate::intrinsic::{
     self, CSRF_BELIRTECI, DOSYALARI_LISTELE, DOSYA_ATOMIK_TASI, DOSYA_SHA256, DOSYA_SIL,
-    HTTP_GETIR, PAROLA_DOGRULA, POSTGRESQL_DEGISTIR, POSTGRESQL_OKU, SENSOR_ACIK_MI,
-    WEB_OTURUMLARINI_LISTELE, WEB_OTURUMUNU_IPTAL_ET,
+    HTTP_GETIR, ISTEMCI_ADRESI, PAROLA_DOGRULA, POSTGRESQL_DEGISTIR, POSTGRESQL_OKU,
+    SENSOR_ACIK_MI, WEB_OTURUMLARINI_LISTELE, WEB_OTURUMUNU_IPTAL_ET,
 };
 use crate::ondalik::Ondalik;
 use crate::tani::Tani;
@@ -424,6 +424,10 @@ pub trait GirdiCikti {
             mesaj: "IO adaptörü web güvenlik profilini desteklemiyor",
         })
     }
+    /// Canonical host-supplied request IP; empty outside an HTTP request.
+    fn istemci_adresi(&mut self) -> String {
+        String::new()
+    }
     fn csrf_belirteci(&mut self) -> Result<String, String> {
         Err("IO adaptörü CSRF oturumu desteklemiyor".into())
     }
@@ -567,6 +571,9 @@ impl GirdiCikti for PaylasilanIo<'_> {
         self.ic
             .borrow_mut()
             .rota_guvenligini_denetle(erisim, csrf, csrf_gerekli)
+    }
+    fn istemci_adresi(&mut self) -> String {
+        self.ic.borrow_mut().istemci_adresi()
     }
     fn csrf_belirteci(&mut self) -> Result<String, String> {
         self.ic.borrow_mut().csrf_belirteci()

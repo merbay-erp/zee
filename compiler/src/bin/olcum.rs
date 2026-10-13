@@ -1457,7 +1457,44 @@ mod testler {
     fn izlenen_k148_k153_ve_k154_gecmisi_exact_kaynaklari_tasir() {
         let yol = Path::new(env!("CARGO_MANIFEST_DIR")).join("../docs/performans-gecmisi-v2.tsv");
         let (_, satirlar) = gecmisi_oku(Some(&yol)).expect("izlenen geçmiş geçerli olmalı");
-        assert_eq!(satirlar.len(), 32);
+        assert_eq!(
+            satirlar
+                .iter()
+                .filter(|satir| matches!(
+                    satir.kayit.as_str(),
+                    "K-148-m4pro" | "K-153-m4pro" | "K-154-m4pro"
+                ))
+                .count(),
+            32
+        );
+        for (kayit, sha, milestone) in [
+            (
+                "K-207-m4pro-before",
+                "29be85bdc51f3d1f395fdd06d06e71181f5c73e0",
+                "K-207-before",
+            ),
+            (
+                "K-207-m4pro-after",
+                "94de4204ecd95e7c244cc65989f725ba140a1ded",
+                "K-207-after",
+            ),
+        ] {
+            let kayitlar = satirlar
+                .iter()
+                .filter(|satir| satir.kayit == kayit)
+                .collect::<Vec<_>>();
+            assert_eq!(kayitlar.len(), 13);
+            assert!(kayitlar.iter().all(|satir| satir.git_sha == sha
+                && satir.milestone == milestone
+                && !satir.git_dirty));
+            assert_eq!(
+                kayitlar
+                    .iter()
+                    .filter(|satir| satir.kimlik.starts_with("lsp_degistir_"))
+                    .count(),
+                4
+            );
+        }
         assert_eq!(
             satirlar
                 .iter()

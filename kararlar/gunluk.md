@@ -3859,3 +3859,47 @@ başlık/hash kanıtı provenance'a girer. Yerel sonrası 24/24 nesne 11.0
 ve program/LSP geçti; exact release üç platform kanıtı açık. Gerçek
 macOS 11/minimum OS/tüm native alt süreç desteği değildir. ADR-068/GB-037;
 spec/RFC/tanı/API/production Rust katmanı ve release dosya kümesi değişmez.
+
+K-206 erken header kabul tasarımı: iki ayrı backend parser'ı kapsayan
+typed 32 MiB aday yama bağımsız geçici crate'te 34/34 testle doğrulandı.
+Aktif dependency pin değişmedi; üretimde mesaj sınırı etkin değildir.
+Transaction durum temizliği, read retry engeli ve exact immutable kaynak
+entegrasyonu açık; GB-041 kapatılmadı. [Kabul tasarımı](../docs/incelemeler/k206/frame-guard/README.md).
+
+K-206 aday protokol kabulü clean c68af0f üzerinde kapandı: iki parser'da
+34/34 bağımsız lib test, native 5 vaka, typed io cause ve kopan transaction
+yazısının kalıcı olmaması doğrulandı. Ham JSON/log [kayıttadır](../docs/incelemeler/k206/frame-guard/README.md).
+Bu yalnız adayın kabulüdür; aktif pin, Zee session/retry/RLS cleanup
+entegrasyonu ve GB-041 açık kalır. Compiler fazı 735/735 geçti.
+
+K-206 wire entegrasyonu: compiler/fuzz protokolü exact 1ffdb584 .2 kaynağına
+pinlidir. İki parser'da 32 MiB length reddi, typed C025 verisi, read retry
+engeli ve geçersiz transaction/request-local cleanup uygulanır. Gönderilmiş
+COMMIT sonrası bağlantı kaybı C027 olarak korunur. Native loopback kabulü
+okuma, büyük Notice üreten write, nested/RLS ve deferred COMMIT'i kapsar.
+GB-041 bu kaynakta uygulandı; exact temiz kaynak, vendor/iki-clone ve
+sürekli kapı kabulü henüz beklenir. Global RSS sözü verilmez.
+
+K-206 wire security dilimi kapandı: source 7836b73, clean beyan/kanıt
+a4e1045; native 13 vaka, 736/736 faz, offline vendor 163 ve iki-clone
+release geçti. GB-041 kapalı; global RSS garantisi ve sürekli geniş
+fault-proxy matrisi değildir. Exact ham kanıt
+[buradadır](../docs/incelemeler/k206/frame-guard/README.md).
+
+## K-208/K-209 — Zee çekirdek legacy giriş ve audit IP
+
+Gerçek ürün talebi ve exact köken dogfood/zee-cekirdek altında korunur.
+K-208 bcrypt $2a/$2b/$2y yalnız doğrulama (maliyet 4–14, 72 UTF-8 byte
+sınırı), K-209 trusted `istemci adresi` Metin ifadesidir. Node vektör,
+real worker proxy/socket/IPv6/spoofed XFF, CLI boş değer ve replay testleri
+mevcuttur. RFC-0030 geçici kabul/ADR-082; yeni özet Argon2id kalır.
+Ürün upgrade/migration/audit saklama işini kendi tarafında yapar.
+K-174 syntax gözlem penceresi gerçek K-209 grammar değişikliği nedeniyle
+2026-10-13–2026-11-10 olarak yeniden başladı; B-001/B-002 açık.
+Tam faz, source beyanı ve vendor/release kapanışı beklenir.
+
+K-208/K-209 kapandı: feature source 2c355ef, clean beyan/ikili kanıt
+daaa3ea. 742/742 faz, Node crypto ve gerçek HTTP/CLI/trace kabulü,
+167 paket offline vendor ve iki-clone binary eşitliği geçti.
+[Ham kayıt](../docs/incelemeler/k208/README.md) yerel macOS kanıtıdır; V1
+usability/RC/signed release ve sunucu dağıtımı değildir.

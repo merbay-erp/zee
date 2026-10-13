@@ -30,6 +30,8 @@ jobs:
           mkdir -p zee-security-bin
           tar -xzf gitleaks.tar.gz -C zee-security-bin gitleaks
           echo "$RUNNER_TEMP/zee-security-bin" >> "$GITHUB_PATH"
+      - name: Exact yanlış pozitif ve yeni anahtar ret testleri
+        run: python3 scripts/tests/sir-yanlis-pozitif-test.py
       - name: Tüm Git geçmişi ve çalışma ağacında sır taraması
         run: bash scripts/sir-taramasi.sh
   rust-bagimliliklari:

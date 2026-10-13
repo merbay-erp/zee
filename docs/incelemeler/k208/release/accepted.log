@@ -1,0 +1,11 @@
+== Sürüm artefaktı: 02cdfab72d320200038f23a25c8997f30b2338a5 (aarch64-apple-darwin, rustc 1.93.1 (01f6ddf75 2026-02-11), SOURCE_DATE_EPOCH=1791885987)
+-- Temiz klon a derleniyor
+native-deployment: passed
+-- Temiz klon b derleniyor
+native-deployment: passed
+-- dil iki klonda eş: 2a20c549303f5c499390168b547eb1ea1032397c3ad28356a479ec0373e433a5
+-- dillsp iki klonda eş: 811d4b85a8baa19884d82eb9ef71b6b8d777e9f007540fce719824aa305461b8
+build-environment: passed
+Sürüm artefaktı hazır: /Users/mustafaerbay/.codex/worktrees/zee-derleme-bagimlilik/zee/compiler/target/k208-k209-release
+2a20c549303f5c499390168b547eb1ea1032397c3ad28356a479ec0373e433a5  dil
+811d4b85a8baa19884d82eb9ef71b6b8d777e9f007540fce719824aa305461b8  dillsp

@@ -9,7 +9,7 @@ zee_scan_tmp="$(mktemp -d)"
 trap 'rm -rf "$zee_scan_tmp"' EXIT
 printf '[extend]\nuseDefault = true\n' > "$zee_scan_tmp/default.toml"
 zee_scan_flags=(--redact --no-banner --ignore-gitleaks-allow --gitleaks-ignore-path "$zee_scan_tmp/ignore" --config "$zee_scan_tmp/default.toml")
-touch "$zee_scan_tmp/ignore"
+python3 scripts/sir-yanlis-pozitif-denetle.py --out "$zee_scan_tmp/ignore"
 if [[ "${1:-}" == '--staged' ]]; then
     git diff --cached --no-ext-diff --binary | gitleaks stdin "${zee_scan_flags[@]}"
 elif [[ $# == 0 ]]; then

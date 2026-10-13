@@ -30,7 +30,7 @@ pub const AZAMI_LSP_JSON_DUGUMU: usize = crate::kaynak_sinirlari::VARSAYILAN_KAY
 // ---------- sunucu ----------
 
 /// Tamamlama önerileri: dilin kalıp kelimeleri (kaynağı: ayrıştırıcı yüzeyi).
-const KALIP_KELIMELERI: [&str; 89] = [
+const KALIP_KELIMELERI: [&str; 91] = [
     "yaz",
     "olsun",
     "ise",
@@ -87,6 +87,8 @@ const KALIP_KELIMELERI: [&str; 89] = [
     "sil",
     "yönlendir",
     "adresine",
+    "istemci",
+    "adresi",
     "çerezine",
     "sıralanmışı",
     "parçaları",
@@ -125,7 +127,7 @@ const KALIP_KELIMELERI: [&str; 89] = [
 /// Hover açıklamaları: kalıp kelimesi → tek satır Türkçe açıklama + örnek.
 /// (Kaynak: spec/02-dizim ve dil turu; kelime kalıbın son ya da ayırt edici
 /// parçasıdır.)
-const KELIME_ACIKLAMALARI: [(&str, &str); 44] = [
+const KELIME_ACIKLAMALARI: [(&str, &str); 45] = [
     ("yaz", "Cümleyi bitirir: değeri ekrana (ya da `X dosyasına`) yazar.\n\n`\"Merhaba\" ile isim yaz`"),
     ("olsun", "Ad tanımlar ya da var olan ada atar; tür ilk değerden çıkar ve sonra değişmez.\n\n`yaş 10 olsun`"),
     ("ise", "Koşul dalı açar; koşul yüklem-sonludur (`...se/...sa`).\n\n`yaş 8 veya daha büyükse`"),
@@ -167,8 +169,9 @@ const KELIME_ACIKLAMALARI: [(&str, &str); 44] = [
     ("herkese", "Durum değiştiren rotanın açık erişim politikasıdır; CSRF yine zorunludur.\n\n`herkese açık`"),
     ("oturum", "Kimliği doğrulanmış kullanıcı isteyen rota politikasıdır.\n\n`oturum gerekli`"),
     ("yetkisi", "Sunucu tarafı rozet denetimi yapan rota politikasıdır.\n\n`\"yönetici\" yetkisi gerekli`"),
+    ("istemci", "Handler için oran sınırıyla aynı trusted IP metni.\n\n`ip istemci adresi olsun`"),
     ("belirteci", "Form için sunucu oturumuna bağlı CSRF değeri üretir.\n\n`csrf csrf belirteci olsun`"),
-    ("doğrulanıyorsa", "Parolayı Argon2id PHC özetiyle doğrular; düz parola karşılaştırması yapmaz.\n\n`verilen özet ile doğrulanıyorsa`"),
+    ("doğrulanıyorsa", "Parolayı Argon2id veya maliyeti 4–14 olan legacy bcrypt özetiyle doğrular; düz parola karşılaştırması yapmaz.\n\n`verilen özet ile doğrulanıyorsa`"),
     ("rolüyle", "Başarılı girişte yeni, döndürülmüş sunucu oturumu açar.\n\n`\"Zeynep\" kullanıcısını \"yönetici\" rolüyle oturuma al`"),
 ];
 

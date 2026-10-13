@@ -6,6 +6,7 @@
 //! olarak bind edilir.
 
 mod havuz;
+mod sonuc;
 
 use crate::veritabani_modeli::{VeritabaniBildirimi, VeritabaniHatasi, VeritabaniHedefi};
 use postgres::types::{ToSql, Type};
@@ -21,6 +22,7 @@ pub struct PostgresqlOturumu {
     kiralik: Option<havuz::PostgresqlKirasi>,
     eylem_derinligi: usize,
     istek_baglami_acik: bool,
+    gecersiz_eylem: Option<VeritabaniHatasi>,
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -44,6 +46,7 @@ impl PostgresqlOturumu {
             kiralik: None,
             eylem_derinligi: 0,
             istek_baglami_acik: false,
+            gecersiz_eylem: None,
         };
         for _ in 0..eylem_derinligi {
             sonuc.eylem_baslat()?;
@@ -56,82 +59,39 @@ impl PostgresqlOturumu {
         sorgu: &str,
         parametreler: &[String],
     ) -> Result<Vec<Vec<(String, String)>>, VeritabaniHatasi> {
+        self.eylemi_denetle()?;
         girdiyi_denetle(sorgu, parametreler)?;
         let baglar = metin_baglari(parametreler);
-        let satirlar = if self.eylem_derinligi > 0 {
-            self.kiralik
+        if self.eylem_derinligi > 0 {
+            let istemci = self
+                .kiralik
                 .as_mut()
-                .ok_or_else(|| hata("PostgreSQL transaction bağlantısı kayıp"))?
-                .query_typed(sorgu, &baglar)
-                .map_err(|h| postgres_hatasi("PostgreSQL sorgusu başarısız", h))?
-        } else {
-            let mut kiralik = havuz::al(&self.havuz)?;
-            match kiralik.query_typed(sorgu, &baglar) {
-                Ok(satirlar) => satirlar,
-                Err(_ilk_hata)
-                    if yeniden_baglanabilir(
-                        SorguSinifi::Okuma,
-                        self.eylem_derinligi,
-                        kiralik.is_closed(),
-                        0,
-                    ) =>
-                {
-                    drop(kiralik);
-                    let mut ikinci = havuz::al(&self.havuz)?;
-                    ikinci.query_typed(sorgu, &baglar).map_err(|h| {
-                        postgres_hatasi("PostgreSQL sorgusu yeniden denendi ama başarısız", h)
-                    })?
-                }
-                Err(hata_degeri) => {
-                    return Err(postgres_hatasi("PostgreSQL sorgusu başarısız", hata_degeri));
-                }
-            }
-        };
-        let sinirlar = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.veritabani();
-        if satirlar.len() > sinirlar.satir() {
-            return Err(hata("PostgreSQL sonucu 10.000 satır sınırını aşıyor"));
+                .ok_or_else(|| hata("PostgreSQL transaction bağlantısı kayıp"))?;
+            return sonuc::oku(istemci, sorgu, &baglar)
+                .map_err(|h| self.sorgu_hatasi("PostgreSQL sorgusu başarısız", h))?;
         }
-        let mut toplam = 0usize;
-        let mut sonuc = Vec::with_capacity(satirlar.len());
-        for satir in satirlar {
-            if satir.len() > sinirlar.sutun() {
-                return Err(hata("PostgreSQL sonucu 100 sütun sınırını aşıyor"));
+        let mut kiralik = havuz::al(&self.havuz)?;
+        match sonuc::oku(&mut kiralik, sorgu, &baglar) {
+            Ok(sonuc) => sonuc,
+            Err(h) if wire_hatasi(&h).is_some() => {
+                Err(postgres_hatasi("PostgreSQL sorgusu başarısız", h))
             }
-            let mut alanlar = Vec::with_capacity(satir.len());
-            for (sira, sutun) in satir.columns().iter().enumerate() {
-                if !matches!(
-                    *sutun.type_(),
-                    Type::TEXT | Type::VARCHAR | Type::BPCHAR | Type::NAME
-                ) {
-                    return Err(verili_hata(
-                        format!(
-                            "\"{}\" sütunu Metin değil; sorguda açık ::text dönüşümü kullan",
-                            sutun.name()
-                        ),
-                        vec![("sutun".into(), sutun.name().into())],
-                    ));
-                }
-                let deger: Option<String> = satir
-                    .try_get(sira)
-                    .map_err(|h| postgres_hatasi("PostgreSQL sonuç sütunu okunamadı", h))?;
-                let Some(deger) = deger else {
-                    return Err(verili_hata(
-                        format!(
-                            "\"{}\" sütunu NULL; sorguda COALESCE ile açık metin değeri seç",
-                            sutun.name()
-                        ),
-                        vec![("sutun".into(), sutun.name().into())],
-                    ));
-                };
-                toplam = toplam.saturating_add(sutun.name().len() + deger.len());
-                if toplam > sinirlar.sonuc_bayti() {
-                    return Err(hata("PostgreSQL sonucu 16 MiB sınırını aşıyor"));
-                }
-                alanlar.push((sutun.name().to_string(), deger));
+            Err(_ilk_hata)
+                if yeniden_baglanabilir(
+                    SorguSinifi::Okuma,
+                    self.eylem_derinligi,
+                    kiralik.is_closed(),
+                    0,
+                ) =>
+            {
+                drop(kiralik);
+                let mut ikinci = havuz::al(&self.havuz)?;
+                sonuc::oku(&mut ikinci, sorgu, &baglar).map_err(|h| {
+                    postgres_hatasi("PostgreSQL sorgusu yeniden denendi ama başarısız", h)
+                })?
             }
-            sonuc.push(alanlar);
+            Err(h) => Err(postgres_hatasi("PostgreSQL sorgusu başarısız", h)),
         }
-        Ok(sonuc)
     }
 
     pub fn degistir(
@@ -139,11 +99,12 @@ impl PostgresqlOturumu {
         sorgu: &str,
         parametreler: &[String],
     ) -> Result<i64, VeritabaniHatasi> {
+        self.eylemi_denetle()?;
         debug_assert!(!yeniden_baglanabilir(
             SorguSinifi::Yazma,
             self.eylem_derinligi,
             self.kiralik.as_ref().is_some_and(|k| k.is_closed()),
-            0,
+            0
         ));
         if self.eylem_derinligi == 0 {
             return Err(hata(
@@ -155,29 +116,31 @@ impl PostgresqlOturumu {
             .kiralik
             .as_mut()
             .ok_or_else(|| hata("PostgreSQL transaction bağlantısı kayıp"))?;
-        istemci
-            .batch_execute("SAVEPOINT zee_intrinsic")
-            .map_err(|h| postgres_hatasi("PostgreSQL sorgu savepoint'i açılamadı", h))?;
         let baglar = metin_baglari(parametreler);
-        let adet = match istemci.execute_typed(sorgu, &baglar) {
-            Ok(adet) => {
-                istemci
-                    .batch_execute("RELEASE SAVEPOINT zee_intrinsic")
-                    .map_err(|h| postgres_hatasi("PostgreSQL sorgu savepoint'i kapanamadı", h))?;
-                adet
+        let sonuc = (|| -> Result<u64, (&str, postgres::Error)> {
+            istemci
+                .batch_execute("SAVEPOINT zee_intrinsic")
+                .map_err(|h| ("PostgreSQL sorgu savepoint'i açılamadı", h))?;
+            match istemci.execute_typed(sorgu, &baglar) {
+                Ok(adet) => {
+                    istemci
+                        .batch_execute("RELEASE SAVEPOINT zee_intrinsic")
+                        .map_err(|h| ("PostgreSQL sorgu savepoint'i kapanamadı", h))?;
+                    Ok(adet)
+                }
+                Err(h) => {
+                    // A frame rejection closed the connection. Do not replace its
+                    // typed cause with the inevitable failed rollback acknowledgement.
+                    if wire_hatasi(&h).is_none() {
+                        istemci.batch_execute(
+                            "ROLLBACK TO SAVEPOINT zee_intrinsic; RELEASE SAVEPOINT zee_intrinsic",
+                        ).map_err(|h| ("PostgreSQL sorgu savepoint'i geri alınamadı", h))?;
+                    }
+                    Err(("PostgreSQL değişikliği başarısız", h))
+                }
             }
-            Err(h) => {
-                let asil = postgres_hatasi("PostgreSQL değişikliği başarısız", h);
-                istemci
-                    .batch_execute(
-                        "ROLLBACK TO SAVEPOINT zee_intrinsic; RELEASE SAVEPOINT zee_intrinsic",
-                    )
-                    .map_err(|geri| {
-                        postgres_hatasi("PostgreSQL sorgu savepoint'i geri alınamadı", geri)
-                    })?;
-                return Err(asil);
-            }
-        };
+        })();
+        let adet = sonuc.map_err(|(on, h)| self.sorgu_hatasi(on, h))?;
         i64::try_from(adet).map_err(|_| hata("Etkilenen satır sayısı TamSayı sınırını aşıyor"))
     }
 
@@ -189,6 +152,7 @@ impl PostgresqlOturumu {
         cozucu: &str,
         kullanici: &str,
     ) -> Result<(), VeritabaniHatasi> {
+        self.eylemi_denetle()?;
         if self.istek_baglami_acik || self.eylem_derinligi != 0 {
             return Err(hata("PostgreSQL istek bağlamı zaten açık"));
         }
@@ -233,6 +197,7 @@ impl PostgresqlOturumu {
     }
 
     pub fn istek_baglamini_tamamla(&mut self) -> Result<(), VeritabaniHatasi> {
+        self.eylemi_denetle()?;
         if !self.istek_baglami_acik {
             return Ok(());
         }
@@ -255,11 +220,12 @@ impl PostgresqlOturumu {
     }
 
     pub fn eylem_baslat(&mut self) -> Result<(), VeritabaniHatasi> {
+        self.eylemi_denetle()?;
         if self.eylem_derinligi == 0 {
             let mut kiralik = havuz::al(&self.havuz)?;
             kiralik
                 .batch_execute("BEGIN")
-                .map_err(|h| postgres_hatasi("PostgreSQL transaction'ı başlatılamadı", h))?;
+                .map_err(|h| self.sorgu_hatasi("PostgreSQL transaction'ı başlatılamadı", h))?;
             self.kiralik = Some(kiralik);
             self.eylem_derinligi = 1;
             return Ok(());
@@ -269,12 +235,13 @@ impl PostgresqlOturumu {
             .as_mut()
             .ok_or_else(|| hata("PostgreSQL transaction bağlantısı kayıp"))?
             .batch_execute(&sorgu)
-            .map_err(|h| postgres_hatasi("PostgreSQL transaction'ı başlatılamadı", h))?;
+            .map_err(|h| self.sorgu_hatasi("PostgreSQL transaction'ı başlatılamadı", h))?;
         self.eylem_derinligi += 1;
         Ok(())
     }
 
     pub fn eylem_tamamla(&mut self) -> Result<(), VeritabaniHatasi> {
+        self.eylemi_denetle()?;
         debug_assert!(!yeniden_baglanabilir(
             SorguSinifi::Commit,
             self.eylem_derinligi,
@@ -303,7 +270,7 @@ impl PostgresqlOturumu {
                     h,
                 ));
             }
-            return Err(postgres_hatasi("PostgreSQL savepoint'i tamamlanamadı", h));
+            return Err(self.sorgu_hatasi("PostgreSQL savepoint'i tamamlanamadı", h));
         }
         self.eylem_derinligi = yeni_derinlik;
         if yeni_derinlik == 0 {
@@ -313,6 +280,14 @@ impl PostgresqlOturumu {
     }
 
     pub fn eylem_geri_al(&mut self) -> Result<(), VeritabaniHatasi> {
+        if let Some(mut h) = self.gecersiz_eylem.take() {
+            self.kiralik.take();
+            self.eylem_derinligi = 0;
+            self.istek_baglami_acik = false;
+            h.mesaj = "PostgreSQL bağlantısı kapalı; yerel transaction temizlendi, ROLLBACK onayı alınamadı".into();
+            h.veri.push(("geri_alma_onayi".into(), "false".into()));
+            return Err(h);
+        }
         let Some(yeni_derinlik) = self.eylem_derinligi.checked_sub(1) else {
             return Err(hata("Açık PostgreSQL transaction'ı yok"));
         };
@@ -328,12 +303,26 @@ impl PostgresqlOturumu {
             .as_mut()
             .ok_or_else(|| hata("PostgreSQL transaction bağlantısı kayıp"))?
             .batch_execute(&sorgu)
-            .map_err(|h| postgres_hatasi("PostgreSQL transaction'ı geri alınamadı", h))?;
+            .map_err(|h| self.sorgu_hatasi("PostgreSQL transaction'ı geri alınamadı", h))?;
         self.eylem_derinligi = yeni_derinlik;
         if yeni_derinlik == 0 {
             self.kiralik.take();
         }
         Ok(())
+    }
+    fn eylemi_denetle(&self) -> Result<(), VeritabaniHatasi> {
+        self.gecersiz_eylem.clone().map_or(Ok(()), Err)
+    }
+
+    fn sorgu_hatasi(&mut self, on: &str, h: postgres::Error) -> VeritabaniHatasi {
+        if let Some(hata) = wire_hatasi(&h) {
+            if self.eylem_derinligi > 0 {
+                self.kiralik.take();
+                self.gecersiz_eylem = Some(hata.clone());
+            }
+            return hata;
+        }
+        postgres_hatasi(on, h)
     }
 }
 
@@ -630,7 +619,32 @@ fn metin_baglari(parametreler: &[String]) -> Vec<(&(dyn ToSql + Sync), Type)> {
         .collect()
 }
 
+fn wire_hatasi(h: &postgres::Error) -> Option<VeritabaniHatasi> {
+    use postgres_protocol::message::backend::FrameLimitExceeded;
+    use std::error::Error;
+    let mut cause = h.source();
+    while let Some(inner) = cause {
+        let limit = inner.downcast_ref::<FrameLimitExceeded>().or_else(|| {
+            inner
+                .downcast_ref::<std::io::Error>()
+                .and_then(std::io::Error::get_ref)
+                .and_then(|v| v.downcast_ref::<FrameLimitExceeded>())
+        });
+        if let Some(limit) = limit {
+            return Some(verili_hata("PostgreSQL yanıt mesajı 32 MiB sınırını aşıyor; bağlantı kapatıldı, otomatik tekrar yapılmadı",
+                vec![("hata_sinifi".into(), "db.response_frame_limit".into()),
+                     ("sinir_bayt".into(), limit.limit.to_string()),
+                     ("bildirilen_bayt".into(), limit.announced.to_string())]));
+        }
+        cause = inner.source();
+    }
+    None
+}
+
 fn postgres_hatasi(on: &str, hata_degeri: postgres::Error) -> VeritabaniHatasi {
+    if let Some(h) = wire_hatasi(&hata_degeri) {
+        return h;
+    }
     let mut veri = Vec::new();
     let mesaj = if let Some(db) = hata_degeri.as_db_error() {
         veri.push(("sqlstate".into(), db.code().code().into()));
@@ -649,6 +663,7 @@ fn postgres_hatasi(on: &str, hata_degeri: postgres::Error) -> VeritabaniHatasi {
 
 fn commit_sonucu_belirsiz_hatasi(on: &str, hata_degeri: postgres::Error) -> VeritabaniHatasi {
     let mut sonuc = postgres_hatasi(on, hata_degeri);
+    sonuc.veri.retain(|(ad, _)| ad != "hata_sinifi");
     sonuc
         .veri
         .push(("hata_sinifi".into(), "db.commit_unknown".into()));
@@ -671,6 +686,140 @@ mod testler {
     use super::*;
     use postgres::Config;
     use std::str::FromStr;
+
+    #[test]
+    fn izole_wire_siniri_retry_transaction_rls_ve_commit_sinirini_korur() {
+        let Ok(target) = std::env::var("ZEE_POSTGRES_K206_HEDEFI") else {
+            return;
+        };
+        let url = std::env::var("ZEE_POSTGRES_K206_URL").unwrap();
+        let hedef = VeritabaniHedefi::ayristir(&target).unwrap();
+        assert!(hedef.loopback_mi());
+        let bildirim = VeritabaniBildirimi {
+            hedef,
+            baglanti_degiskeni: "ZEE_POSTGRES_K206_URL".into(),
+            gocler: "unused".into(),
+            istek_baglami_cozucusu: None,
+        };
+        let mut admin = postgres::Client::connect(&url, postgres::NoTls).unwrap();
+        admin.batch_execute("CREATE SEQUENCE zee_wire_attempts; CREATE TABLE zee_wire_probe(value text); CREATE FUNCTION zee_wire_tenant(text) RETURNS TABLE(tenant_id uuid) LANGUAGE SQL AS $$ SELECT '00000000-0000-0000-0000-000000000001'::uuid $$;
+            CREATE FUNCTION zee_wire_notice() RETURNS text LANGUAGE plpgsql AS $$ BEGIN RAISE NOTICE '%', repeat('x',67108864); RETURN 'notice'; END $$;
+            CREATE FUNCTION zee_wire_commit_notice() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE NOTICE '%', repeat('x',67108864); RETURN NEW; END $$;
+            CREATE TABLE zee_wire_commit(value text);
+            CREATE CONSTRAINT TRIGGER zee_wire_deferred AFTER INSERT ON zee_wire_commit DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION zee_wire_commit_notice();").unwrap();
+        let mut session = PostgresqlOturumu::baglan(&bildirim, 0).unwrap();
+        let huge = "SELECT repeat('x',67108864 + nextval('zee_wire_attempts')::integer * 0)::text AS payload";
+        let class = |h: &VeritabaniHatasi, expected: &str| {
+            assert_eq!(h.veri.iter().filter(|(k, _)| k == "hata_sinifi").count(), 1);
+            assert!(
+                h.veri
+                    .iter()
+                    .any(|(k, v)| k == "hata_sinifi" && v == expected),
+                "{h:?}"
+            );
+        };
+        class(
+            &session.oku(huge, &[]).unwrap_err(),
+            "db.response_frame_limit",
+        );
+        assert!(session.oku("SELECT 'ok'::text", &[]).is_ok());
+        assert_eq!(
+            admin
+                .query_one("SELECT last_value FROM zee_wire_attempts", &[])
+                .unwrap()
+                .get::<_, i64>(0),
+            1,
+            "outside transaction frame rejection must not replay the query"
+        );
+        for request in [false, true] {
+            if request {
+                session
+                    .istek_baglamini_baslat("zee_wire_tenant", "synthetic")
+                    .unwrap();
+            } else {
+                session.eylem_baslat().unwrap();
+            }
+            session.eylem_baslat().unwrap();
+            session
+                .degistir("INSERT INTO zee_wire_probe VALUES ($1)", &["before".into()])
+                .unwrap();
+            class(
+                &session.oku(huge, &[]).unwrap_err(),
+                "db.response_frame_limit",
+            );
+            assert!(session.kiralik.is_none());
+            assert!(session.oku("SELECT 'blocked'::text", &[]).is_err());
+            assert!(session
+                .degistir(
+                    "INSERT INTO zee_wire_probe VALUES ($1)",
+                    &["blocked".into()]
+                )
+                .is_err());
+            assert!(session.eylem_baslat().is_err());
+            assert!(session.eylem_tamamla().is_err());
+            let error = if request {
+                session.istek_baglamini_geri_al().unwrap_err()
+            } else {
+                session.eylem_geri_al().unwrap_err()
+            };
+            assert!(error
+                .veri
+                .iter()
+                .any(|(k, v)| k == "geri_alma_onayi" && v == "false"));
+            assert_eq!(session.eylem_derinligi, 0);
+            assert!(!session.istek_baglami_acik);
+            assert!(session.gecersiz_eylem.is_none());
+            assert_eq!(
+                admin
+                    .query_one("SELECT count(*) FROM zee_wire_probe", &[])
+                    .unwrap()
+                    .get::<_, i64>(0),
+                0
+            );
+            assert!(session.oku("SELECT 'fresh'::text", &[]).is_ok());
+        }
+        session.eylem_baslat().unwrap();
+        class(
+            &session
+                .degistir("INSERT INTO zee_wire_probe VALUES (zee_wire_notice())", &[])
+                .unwrap_err(),
+            "db.response_frame_limit",
+        );
+        assert!(session.eylem_geri_al().is_err());
+        assert_eq!(session.eylem_derinligi, 0);
+        session.eylem_baslat().unwrap();
+        session
+            .degistir(
+                "INSERT INTO zee_wire_commit VALUES ($1)",
+                &["commit-unknown".into()],
+            )
+            .unwrap();
+        class(&session.eylem_tamamla().unwrap_err(), "db.commit_unknown");
+        assert_eq!(session.eylem_derinligi, 0);
+        assert!(session.gecersiz_eylem.is_none());
+        session
+            .istek_baglamini_baslat("zee_wire_tenant", "fresh-request")
+            .unwrap();
+        assert_eq!(
+            session
+                .oku(
+                    "SELECT current_setting('app.tenant_id')::text AS tenant",
+                    &[]
+                )
+                .unwrap()[0][0]
+                .1,
+            "00000000-0000-0000-0000-000000000001"
+        );
+        session.istek_baglamini_tamamla().unwrap();
+        let error = session
+            .oku(
+                "SELECT repeat('x',1048576)::text FROM generate_series(1,64)",
+                &[],
+            )
+            .unwrap_err();
+        assert!(error.mesaj.contains("16 MiB"));
+        assert!(session.oku("SELECT 'healthy'::text", &[]).is_ok());
+    }
 
     #[test]
     fn migration_kendi_transaction_sinirini_tasiyamaz() {

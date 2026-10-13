@@ -75,7 +75,7 @@ PostgreSQL yazısı YASAKTIR.
 Transaction dışında başlayan bir okuma, ilk sorgu bağlantı düzeyinde başarısız
 olur ve sürücü client'ı kapalı olarak işaretlerse adaptör eski client'ı atıp
 en fazla bir kez yeniden bağlanmalı ve aynı parametreli SELECT'i yeniden
-çalıştırmalıdır. SQL reddi, açık transaction içindeki okuma, lock/stream/cursor
+çalıştırmalıdır. SQL reddi, yanıt mesajı boyut reddi, açık transaction içindeki okuma, lock/stream/cursor
 işi, ikinci başarısızlık, değişiklik ve COMMIT otomatik yeniden DENENEMEZ.
 COMMIT sırasında bağlantı kaybı işlemin gerçekleşip gerçekleşmediğini
 belirsiz bırakır. PostgreSQL adaptörü structured hata verisinde
@@ -145,3 +145,20 @@ kapanışını kanıtlamıştır. Hermetik CI aynı havuz invariants'ını sahte
 Managed-provider sertifika rotasyonu, birden çok worker'ın toplam bütçe provası,
 async driver, PostgreSQL dışı veritabanı, genel ORM/schema DSL ve production
 migration işletimi AÇIKTIR.
+
+## Backend mesaj sınırı
+
+TANIMLI: backend mesajının dört baytlık length alanı dahil, bir baytlık tag
+hariç uzunluğu en fazla 32 MiB'dır. İki backend ayrıştırma girişi de aşımı
+gövde tamamlanmadan ve büyük reserve yapılmadan reddeder. Bu ret C025
+verisinde `hata_sinifi=db.response_frame_limit`, `sinir_bayt` ve
+`bildirilen_bayt` taşır; otomatik read retry yapılmaz. Açık transaction'ın
+kirası bırakılır ve işlem yerel geri almaya kadar geçersiz kalır; read,
+write, BEGIN ve COMMIT başka bağlantıda sürdürülmez. Yerel geri alma
+derinlik/request bağlamını temizler, fakat sunucu onayı yoksa başarı
+bildirmez ve `geri_alma_onayi=false` taşır. Gerçekten gönderilen COMMIT
+sonrası bağlantı kaybı mevcut C027/db.commit_unknown sınıfında kalır.
+
+32 MiB wire sınırı 16 MiB uygulama sonuç bütçesinden ayrıdır; DataRow
+overhead'i nedeniyle 32 MiB TEXT hücresi wire sınırını aşar. Bu sayı global
+RSS, bütün sürücü kuyrukları veya TLS record boyutu garantisi değildir.

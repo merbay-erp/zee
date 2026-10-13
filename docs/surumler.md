@@ -1325,3 +1325,110 @@ run 38263264133 üç platform iki-klon/kurulum/program/LSP/kaldırma kapısını
 geçti; macOS a/b klonlarında ayrı ayrı 24 nesnenin minos değeri 11.0. Gerçek
 macOS 11/minimum OS/tüm native alt süreç desteği değildir. ADR-068/GB-037;
 spec/RFC/tanı/API/production Rust katmanı ve release dosya kümesi değişmez.
+
+K-201 native C/archiver driver çağrı kaydı hazırdır; iki klonda compile ve
+archive zorunlu, paket/argüman/executable path/hash ve sürüm sorgusu sonucu
+provenance'a eklenir. Exact kaynak 25b6882/run 38349601833 üç platform release kanıtı geçti.
+pkg-config/vcpkg, driver iç alt süreçleri ve minimum OS K-192'de ayrıca
+açık kalır. Ayrıntı [derleme rehberinde](derleme-ve-bagimliliklar.md).
+
+K-202: ana GitHub/CI deposu `merbay-erp/zee`; `itwise-bilisim/zee` yalnız
+ayna ve repository Actions kapalıdır. SBOM/provenance yeni ana kaynak
+URI kullanır; eski CI/fixture kanıtları tarihsel bağlantılarıyla korunur.
+
+K-204: sır taramasının dört kamuya açık belge yanlış pozitifine yalnız
+immutable fingerprint/kaynak satırı hash doğrulaması uygulandı; yeni
+anahtar exit 1/REDACTED testi, default kurallar ve iki tarama korunur.
+K-202 beyan sonrası türetilen kanıt özeti yenilendi.
+
+K-207 başarılı ad çözümlemesini hash üyeliğine taşıdı; full ad listesi
+yalnız A001 önerisinde üretilir, A002 ve exact-ad kararı değişmez. Oracle
+26.624 karar, golden/morfoloji/LSP ve mimari kapıları geçti; exact önce/
+sonra performans kanıtı açık. K-206 PG sonucu bellek deneyi GB-041 olarak
+orta/açık kaydedildi; 16 MiB sonuç bütün driver belleği tavanı değildir.
+
+K-207 ilk exact ölçümü: 29be85b → 94de420 aynı M4/Rust/release/25+2
+koşulunda 20k p95 22.169,906 → 2.961,638 ms. Raw sample ve tarihçe
+[ölçümlerde](olcumler.md). Kapsam maliyeti ve 1 sn hedefi açık;
+incremental parser/cache veya genel platform SLA eklenmedi.
+
+
+K-207 kapsam dilimi kapalı: temiz exact 9e80b69 release/25 örnek/2 ısınma
+20k LSP p95 165,137 ms; aynı exact kaynakta 1800 sn/264.343 döngü soak
+geçti. Derleyici RSS medyanı 8.144→8.160 KiB, LSP 19.088→17.568 KiB.
+Ham örnek/çevre ve tarihçe [ölçümlerde](olcumler.md). 728/728 faz,
+26.624 ad oracle ve 4.096 kapsam işlemi oracle karşılaştırması geçti.
+K-207 KISMEN; full didChange ve incremental/cache kapasitesi açıktır.
+
+K-206 native okuma akış toplamasına geçti: sonuç sınırından sonra çıktı
+biriktirilmez; borrowed metin kopyalanmadan denetlenir. Hata önceliği ve
+mevcut read retry/transaction/API korunur. Tek wire satırı/driver RSS
+bütçesi GB-041'de açık; exact native kabul ve RSS kaydı aşağıdaki kapanışta saklıdır.
+
+K-206 akış toplama dilimi kapalı: source f2ba654, temiz beyan/ölçüm
+6463a7f; 731/731 faz ve gerçek native oracle/transaction kabulü geçti.
+64×1 MiB sonuçta native süreç RSS 128,77→23,81 MiB, tek 64 MiB satırda
+136,77→72,72 MiB; üç vakada sonraki sorgu başarılıdır. Bir örnek/sıfır
+ısınma gözlemi, genel RSS garantisi değildir. [Ham kanıt](incelemeler/k206/README.md).
+**K-206 KISMEN:** tek wire satırı/driver sınırı ve GB-041 açık kalır.
+
+K-206 tedarik hazırlığı: upstream protokol Rust src byte'ları değişmeden
+local patch kimliği compiler/fuzz lock ve doğrulanmış SPDX kaynak/tree
+hash ile kaydedildi. GB-042 kapalı; GB-041/erken wire sınırı açık.
+Offline vendor ve iki-clone release kabulü kapanış öncesi beklenir.
+
+K-206 path patch iki-clone kabulünde reddedildi; yalnız kaynak kimliği
+exact ana repo Git SHA pinine çevrildi. Protokol davranışı değişmedi.
+SBOM yerel + Git blob tree hash eşitliği ve exact lock source ister;
+v2 kayıt etkin, v1 tarihsel. Yeniden offline/release kanıtı beklenir.
+
+K-206 dependency kimliği dilimi kapalı: source 9dae3e6, temiz beyan/
+ikili üretimi ab8e97e. 735/735 faz, git pin/blob/tree SBOM, offline vendor
+163 paket ve iki temiz klonda eş dil/dillsp SHA-256 geçti. Yerel macOS
+kabulüdür; [ham kanıt](incelemeler/k206/source-identity/README.md).
+Path kaynaklı başarısız iki-clone koşusu da saklanır. Protokol src byte'ları
+upstream ile aynıdır; GB-041/32 MiB erken wire guard hâlâ açık kalır.
+
+K-206 erken header kabul tasarımı: iki ayrı backend parser'ı kapsayan
+typed 32 MiB aday yama bağımsız geçici crate'te 34/34 testle doğrulandı.
+Aktif dependency pin değişmedi; üretimde mesaj sınırı etkin değildir.
+Transaction durum temizliği, read retry engeli ve exact immutable kaynak
+entegrasyonu açık; GB-041 kapatılmadı. [Kabul tasarımı](incelemeler/k206/frame-guard/README.md).
+
+K-206 aday protokol kabulü clean c68af0f üzerinde kapandı: iki parser'da
+34/34 bağımsız lib test, native 5 vaka, typed io cause ve kopan transaction
+yazısının kalıcı olmaması doğrulandı. Ham JSON/log [kayıttadır](incelemeler/k206/frame-guard/README.md).
+Bu yalnız adayın kabulüdür; aktif pin, Zee session/retry/RLS cleanup
+entegrasyonu ve GB-041 açık kalır. Compiler fazı 735/735 geçti.
+
+K-206 wire entegrasyonu: compiler/fuzz protokolü exact 1ffdb584 .2 kaynağına
+pinlidir. İki parser'da 32 MiB length reddi, typed C025 verisi, read retry
+engeli ve geçersiz transaction/request-local cleanup uygulanır. Gönderilmiş
+COMMIT sonrası bağlantı kaybı C027 olarak korunur. Native loopback kabulü
+okuma, büyük Notice üreten write, nested/RLS ve deferred COMMIT'i kapsar.
+GB-041 bu kaynakta uygulandı; exact temiz kaynak, vendor/iki-clone ve
+sürekli kapı kabulü henüz beklenir. Global RSS sözü verilmez.
+
+K-206 wire security dilimi kapandı: source 7836b73, clean beyan/kanıt
+a4e1045; native 13 vaka, 736/736 faz, offline vendor 163 ve iki-clone
+release geçti. GB-041 kapalı; global RSS garantisi ve sürekli geniş
+fault-proxy matrisi değildir. Exact ham kanıt
+[buradadır](incelemeler/k206/frame-guard/README.md).
+
+## K-208/K-209 — Zee çekirdek legacy giriş ve audit IP
+
+Gerçek ürün talebi ve exact köken dogfood/zee-cekirdek altında korunur.
+K-208 bcrypt $2a/$2b/$2y yalnız doğrulama (maliyet 4–14, 72 UTF-8 byte
+sınırı), K-209 trusted `istemci adresi` Metin ifadesidir. Node vektör,
+real worker proxy/socket/IPv6/spoofed XFF, CLI boş değer ve replay testleri
+mevcuttur. RFC-0030 geçici kabul/ADR-082; yeni özet Argon2id kalır.
+Ürün upgrade/migration/audit saklama işini kendi tarafında yapar.
+K-174 syntax gözlem penceresi gerçek K-209 grammar değişikliği nedeniyle
+2026-10-13–2026-11-10 olarak yeniden başladı; B-001/B-002 açık.
+Tam faz, source beyanı ve vendor/release kapanışı beklenir.
+
+K-208/K-209 kapandı: feature source 2c355ef, clean beyan/ikili kanıt
+daaa3ea. 742/742 faz, Node crypto ve gerçek HTTP/CLI/trace kabulü,
+167 paket offline vendor ve iki-clone binary eşitliği geçti.
+[Ham kayıt](incelemeler/k208/README.md) yerel macOS kanıtıdır; V1
+usability/RC/signed release ve sunucu dağıtımı değildir.

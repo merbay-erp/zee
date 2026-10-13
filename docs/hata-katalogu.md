@@ -165,7 +165,7 @@ kalır (ADR-025).
 | C022 | Web güvenlik adaptörü işlemi reddetti | Güvenli oturum/CSRF desteğini ve başlığa yazılan çerez ya da yerel yönlendirme değerini denetle |
 | C023 | Çalışma adımı, çıktı, koleksiyon ya da eşzamanlı görev kaynak bütçesi aşıldı | Sonsuz döngüyü düzelt; işi, çıktıyı veya koleksiyonu daha küçük sonlu parçalara böl |
 | C024 | Metin ya da saklanan değer heap bütçesi aşıldı | Büyük metin ve değer grafiklerini daha küçük çalışma adımlarına böl |
-| C025 | PostgreSQL sorgusu veya değişikliği başarısız | Hatanın `sqlstate`, `kısıt` ve `tablo` verisini incele; sorgu ve parametreyi düzelt |
+| C025 | PostgreSQL sorgusu veya değişikliği başarısız | Hatanın `sqlstate`, `kısıt` ve `tablo` verisini incele; sorgu ve parametreyi düzelt. `db.response_frame_limit` için yanıtı küçült; geçersiz transaction’ı temizleyip yeni bir işlem başlat |
 | C026 | PostgreSQL migration veya bağlantı işlemi başarısız | Exact hedefi, `sslmode`, pinned CA ortam değişkenini, havuz kapasitesini ve değişmez migration geçmişini doğrula |
 | C027 | COMMIT sonucu istemci tarafından doğrulanamadı; otomatik tekrar güvenli değil | Aynı write'ı körlemesine tekrarlama. Yeni bağlantıda kararlı iş anahtarıyla sonucu uzlaştır; varsa mevcut sonucu benimse, yoksa ürünün idempotency politikasına göre yeni girişim başlat |
 
@@ -206,3 +206,8 @@ kalır (ADR-025).
 
 > S032, A004 ve C014 bilinçli mezar taşlarıdır; ayrılmış kodlar başka anlamda
 > kullanılamaz. Yeni tanılar ilgili ailedeki sıradaki boş numarayı alır.
+
+K-208: parola doğrulama intrinsic’inde yanlış argüman türü mevcut T034
+koduyla `Parola ve parola özeti Metin olmalı.` bildirir. Bcrypt ve
+Argon2id aynı Metin imzasını kullanır; bozuk hash/yanlış parola tanı
+üretmek yerine `yanlış`tır. K-209 eylem içi IP okuması mevcut T044’tür.

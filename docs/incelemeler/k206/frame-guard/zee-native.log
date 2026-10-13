@@ -1,0 +1,21 @@
+
+running 13 tests
+test postgresql::havuz::testler::saha_profili_gercek_tls_exhaustion_ve_stale_recoveryyi_olcer ... ok
+test postgresql::testler::yalniz_transaction_disindaki_okuma_bir_kez_yeniden_baglanabilir ... ok
+test postgresql::testler::migration_islev_govdesini_transaction_komutu_sanmaz ... ok
+test postgresql::testler::migration_kendi_transaction_sinirini_tasiyamaz ... ok
+test postgresql::sonuc::testler::hata_sonrasi_kopyalama_durur_ve_satir_siniri_onceliklidir ... ok
+test postgresql::havuz::testler::son_kira_birakilinca_kontrollu_kapanis_baglantiyi_kapatir ... ok
+test postgresql::testler::baglanti_tam_bildirim_hedefi_ve_guvensiz_profilde_kilitlidir ... ok
+test postgresql::havuz::testler::tls_profili_plaintext_uzak_hedefi_preferi_ve_koksuz_requirei_reddeder ... ok
+test postgresql::havuz::testler::havuz_hata_ayrintisi_neden_ve_karakter_butcesini_asmaz ... ok
+test postgresql::sonuc::testler::sinira_kadar_satir_ve_sutun_sirasi_korunur ... ok
+test postgresql::havuz::testler::havuz_siniri_exhaustion_recovery_ve_stale_atimini_korur ... ok
+test postgresql::testler::izole_wire_siniri_retry_transaction_rls_ve_commit_sinirini_korur ... ok
+test postgresql::sonuc::testler::izole_saha_eski_vec_ile_stream_hatalari_ve_transaction_sagligi_aynidir ... ok
+
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 72 filtered out; finished in 2.24s
+
+   Compiling dil v0.8.0-dev (/Users/mustafaerbay/.codex/worktrees/zee-derleme-bagimlilik/zee/compiler)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.88s
+     Running unittests src/lib.rs (target/debug/deps/dil-546c3a41bae8bc98)

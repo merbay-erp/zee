@@ -5,6 +5,7 @@
 
 pub const HTTP_GETIR: &str = "ag.http_getir";
 pub const SENSOR_ACIK_MI: &str = "donanim.sensor_acik_mi";
+pub const ISTEMCI_ADRESI: &str = "web.istemci_adresi";
 pub const CSRF_BELIRTECI: &str = "web.csrf_belirteci";
 pub const PAROLA_DOGRULA: &str = "guvenlik.parola_dogrula";
 pub const WEB_OTURUMLARINI_LISTELE: &str = "web.oturumlarini_listele";
@@ -76,6 +77,14 @@ pub const TANIMLAR: &[IntrinsicTanimi] = &[
         tur_hatasi: "Sensör adı Metin olmalı.",
     },
     IntrinsicTanimi {
+        kimlik: ISTEMCI_ADRESI,
+        yetkinlik: Yetkinlik::AgSunucusu,
+        arguman_turleri: YOK,
+        donus_turu: IntrinsicTuru::Metin,
+        etki: IntrinsicEtkisi::WebAdaptoru,
+        tur_hatasi: "İstemci adresi argüman almaz.",
+    },
+    IntrinsicTanimi {
         kimlik: CSRF_BELIRTECI,
         yetkinlik: Yetkinlik::WebOturumu,
         arguman_turleri: YOK,
@@ -89,7 +98,7 @@ pub const TANIMLAR: &[IntrinsicTanimi] = &[
         arguman_turleri: IKI_METIN,
         donus_turu: IntrinsicTuru::Mantiksal,
         etki: IntrinsicEtkisi::Saf,
-        tur_hatasi: "Parola ve Argon2id özeti Metin olmalı.",
+        tur_hatasi: "Parola ve parola özeti Metin olmalı.",
     },
     IntrinsicTanimi {
         kimlik: WEB_OTURUMLARINI_LISTELE,

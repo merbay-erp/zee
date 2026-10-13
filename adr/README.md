@@ -15,7 +15,7 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-010 | [Normatif otorite ve değişiklik bütünlüğü](010-normatif-otorite-ve-degisiklik-butunlugu.md) | **kabul** (K-118 kanıt/sayı tazelik kapısı) |
 | ADR-011 | [Core AST intrinsic/yetkinlik sınırı](011-intrinsic-yetkinlik-siniri.md) | **kabul** (K-098/B-004) |
 | ADR-012 | [Derleyici fiziksel faz modülleri](012-derleyici-faz-modulleri.md) | **kabul** (K-099/B-005) |
-| ADR-013 | [Checker semantik katmanları](013-checker-katmanlari.md) | **kabul** (K-100 katmanlar, K-121 çağrı çıkarımı) |
+| ADR-013 | [Checker semantik katmanları](013-checker-katmanlari.md) | **kabul** (K-100 katmanlar, K-121 çağrı çıkarımı, K-207 ad maliyeti) |
 | ADR-014 | [Semantic kimlikler](014-semantic-kimlikler.md) | **kabul** (K-101 temel, K-120 LSP tüketimi) |
 | ADR-015 | [Derleyici faz tipleri](015-derleyici-faz-tipleri.md) | **kabul** (K-102/B-018, K-121 checker-içi keşif sınırı) |
 | ADR-016 | [Typed HIR çekirdeği](016-typed-hir-cekirdegi.md) | **kabul** (K-103/K-104 runtime, K-120 LSP, K-121 nihai çıkarım) |
@@ -68,9 +68,9 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-063 | [Sabit HTTP durumlu yanıt sınırı](063-sabit-http-durumlu-yanit.md) | **kabul** (K-163/F014/F032) |
 | ADR-064 | [Yürütülebilir uyumluluk ve deprecation kapısı](064-uyumluluk-kapisi.md) | **kabul** (K-167/B-072) |
 | ADR-065 | [Spec maddesi düzeyinde drift kapısı](065-spec-madde-drift-kapisi.md) | **kabul** (K-171) |
-| ADR-066 | [Birleşik güvenlik sürüm kapısı](066-birlesik-guvenlik-surum-kapisi.md) | **kabul** (K-170) |
+| ADR-066 | [Birleşik güvenlik sürüm kapısı](066-birlesik-guvenlik-surum-kapisi.md) | **kabul** (K-170/K-204) |
 | ADR-067 | [Yalnız dogfood boşluklarından büyüyen korpus](067-dogfood-korpusu.md) | **kabul** (K-172) |
-| ADR-068 | [Tekrar üretilebilir sürüm artefaktı](068-tekrar-uretilebilir-surum.md) | **kabul** (K-168/K-191/K-195/K-196/K-197/K-198/K-199/K-200) |
+| ADR-068 | [Tekrar üretilebilir sürüm artefaktı](068-tekrar-uretilebilir-surum.md) | **kabul** (K-168/K-191/K-195/K-196/K-197/K-198/K-199/K-200/K-201/K-202) |
 | ADR-069 | [Uzun soak ve kaynak sızıntısı kapısı](069-uzun-soak-kapisi.md) | **kabul** (K-173) |
 | ADR-070 | [Tanı kalitesi kapısı](070-tani-kalitesi-kapisi.md) | **kabul** (K-166) |
 | ADR-071 | [Kurulum, kaldırma ve sürüm runbook sözleşmesi](071-kurulum-kaldirma-sozlesmesi.md) | **kabul** (K-169) |
@@ -86,3 +86,5 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-005 | Native backend seçimi (Cranelift / LLVM) | bekliyor — Faz 4 |
 | ADR-007 | [Telemetri ve gizlilik: araçlar veri toplamaz](007-telemetri-ve-gizlilik.md) | **kabul** |
 | ADR-008 | [Self-hosting aşamaları ve geçiş kapıları](008-self-hosting-asamalari.md) | **kabul** |
+
+| ADR-082 | [Legacy giriş ve kanonik istemci kimliği](082-legacy-giris-ve-kanonik-istemci-kimligi.md) | **kabul** (K-208/K-209) |

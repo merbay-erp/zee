@@ -49,3 +49,9 @@ Managed-provider CA rotasyonu, proxy/load-balancer davranışı ve birden çok
 worker'ın birlikte max_connections provası bu ADR'nin kanıtladığı kapsam
 değildir; release/deployment tatbikatında ayrıca ölçülür.
 Exact K-163/F031 ürün saha kaydı `977cd2a` commit'indedir.
+
+K-206 frame reddi aktif transaction lease’ini bırakır; yerel geçersizlik
+cleanup yapılmadan yeni checkout/request RLS bağlamıyla sürdürülemez.
+Havuz limiti/TLS/lease ömrü değişmedi; kapalı client havuzda yenilenir.
+Son hata verisinin küçük ve sınırlı oturum kaydı compiler/LSP cache ya da
+uzun ömürlü tampon değildir; oturum cleanup/drop ile sona erer.

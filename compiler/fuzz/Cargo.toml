@@ -41,3 +41,6 @@ path = "fuzz_targets/wasm_abi.rs"
 test = false
 doc = false
 bench = false
+
+[patch.crates-io]
+postgres-protocol = { git = "https://github.com/merbay-erp/zee", rev = "a4d7f208bc1bf01255f5ae9a16ebb97a74ff0d84" }

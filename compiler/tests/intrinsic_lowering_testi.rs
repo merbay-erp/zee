@@ -26,12 +26,16 @@ fn intrinsic_kaydi_kimlik_yetkinlik_ve_etkiyi_tekillestirir() {
         .map(|tanim| tanim.kimlik)
         .collect::<HashSet<_>>();
     assert_eq!(kimlikler.len(), intrinsic::TANIMLAR.len());
-    assert_eq!(kimlikler.len(), 12);
+    assert_eq!(kimlikler.len(), 13);
 
     let http = intrinsic::tanim(HTTP_GETIR).expect("HTTP kaydı");
     assert_eq!(http.yetkinlik, Yetkinlik::Ag);
     assert_eq!(http.etki, IntrinsicEtkisi::DisOkuma);
 
+    let ip = intrinsic::tanim("web.istemci_adresi").expect("istemci adresi kaydı");
+    assert_eq!(ip.yetkinlik, Yetkinlik::AgSunucusu);
+    assert_eq!(ip.etki, IntrinsicEtkisi::WebAdaptoru);
+    assert!(ip.arguman_turleri.is_empty());
     let csrf = intrinsic::tanim(CSRF_BELIRTECI).expect("CSRF kaydı");
     assert_eq!(csrf.yetkinlik, Yetkinlik::WebOturumu);
     assert_eq!(csrf.etki, IntrinsicEtkisi::WebAdaptoru);
@@ -166,5 +170,5 @@ verilen özet ile doğrulanıyorsa
 "#;
     let hata = kaynagi_derle(kaynak).expect_err("parola Metin olmalı");
     assert_eq!(hata.kod, "T034");
-    assert!(hata.mesaj.contains("Parola ve Argon2id özeti Metin olmalı"));
+    assert!(hata.mesaj.contains("Parola ve parola özeti Metin olmalı"));
 }

@@ -1,0 +1,42 @@
+{
+  "source": "29be85bdc51f3d1f395fdd06d06e71181f5c73e0",
+  "image": "postgres@sha256:efedf3595f1d6f415c08568ba171029bf54052e754cc9f030e3f2412b21f3d67",
+  "samples": [
+    {
+      "rows": 1,
+      "row_bytes": 1048576,
+      "max_rss_bytes": 9109504,
+      "output": "ok_rows=1\nnext_query_ok=true\n",
+      "exit": 0
+    },
+    {
+      "rows": 64,
+      "row_bytes": 1048576,
+      "max_rss_bytes": 135020544,
+      "output": "error=PostgreSQL sonucu 16 MiB sınırını aşıyor\nnext_query_ok=true\n",
+      "exit": 0
+    },
+    {
+      "rows": 1,
+      "row_bytes": 67108864,
+      "max_rss_bytes": 143409152,
+      "output": "error=PostgreSQL sonucu 16 MiB sınırını aşıyor\nnext_query_ok=true\n",
+      "exit": 0
+    }
+  ],
+  "boundary": "Native API internal audit helper; isolated synthetic data, loopback temporary container; RSS experiment is not a permanent performance baseline.",
+  "server_version": "postgres (PostgreSQL) 16.15 (Debian 16.15-1.pgdg12+2)",
+  "environment": {
+    "os": "26.6.2",
+    "cpu": "Apple M4 Pro",
+    "ram_bytes": 25769803776,
+    "rustc": "rustc 1.93.1 (01f6ddf75 2026-02-11)",
+    "build_profile": "release",
+    "sample_count_per_workload": 1,
+    "warmup_count": 0,
+    "source_tree_clean": true,
+    "helper_sha256": "c21197dc4fe035ff4ca6c358c08aadc20c0ee3fd9ff880192b4ca274019d410b",
+    "driver_sha256": "09e5a25220221a8d8c4b12fab92ec8597d5f0e14a1ece6a2c72e7740179d0fa9",
+    "cargo_lock_sha256": "f2d8020750490742e4c0df87e44eb38db6ff4cf4625e7465ffa7f8b114ad6bf5"
+  }
+}

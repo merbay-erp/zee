@@ -575,11 +575,8 @@ fn yapili_kalip_ic(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifa
         }
     }
 
-    if n == 2 && kelime(0) == Some("csrf") && son == "belirteci" {
-        return Ok(Some(Ifade::Intrinsic {
-            kimlik: CSRF_BELIRTECI.into(),
-            argumanlar: Vec::new(),
-        }));
+    if let Some(ifade) = web::sifir_argumanli(n, kelime(0), son) {
+        return Ok(Some(ifade));
     }
 
     // W ın adedi / ilki / sonu / uzunluğu / kelimeleri — özellikler.

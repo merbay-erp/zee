@@ -17,7 +17,7 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 | `spec/09-son-tarih-ve-iptal.md` | 1 | 1 | 0 | 0 |
 | `spec/10-disari-acik-islem-sozlesmesi.md` | 4 | 3 | 1 | 0 |
 | `spec/11-uygulama-eylemleri-ve-web-adaptoru.md` | 2 | 2 | 0 | 0 |
-| `spec/12-web-guvenlik-profili.md` | 9 | 9 | 0 | 0 |
+| `spec/12-web-guvenlik-profili.md` | 11 | 11 | 0 | 0 |
 | `spec/13-surumlu-morfoloji-profili.md` | 8 | 8 | 0 | 0 |
 | `spec/14-yapilandirilmis-eszamanlilik.md` | 2 | 2 | 0 | 0 |
 | `spec/15-yapilandirilmis-hata-degeri.md` | 3 | 3 | 0 | 0 |
@@ -30,10 +30,10 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 | `spec/22-deterministik-io-profili.md` | 5 | 4 | 1 | 0 |
 | `spec/23-yetkinlik-ve-outbound-guvenligi.md` | 10 | 10 | 0 | 0 |
 | `spec/24-kaynak-guvenlik-profili.md` | 7 | 6 | 1 | 0 |
-| `spec/25-postgresql-veri-erisimi.md` | 7 | 4 | 2 | 1 |
+| `spec/25-postgresql-veri-erisimi.md` | 8 | 5 | 2 | 1 |
 | `spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md` | 2 | 2 | 0 | 0 |
 | `spec/27-uyumluluk-ve-surumleme.md` | 10 | 7 | 2 | 1 |
-| **Toplam** | **172** | **157** | **13** | **2** |
+| **Toplam** | **175** | **160** | **13** | **2** |
 
 ## Kısmi kanıtlı maddeler
 

@@ -1,0 +1,10 @@
+[package]
+name = "zee-pg-typed-frame-probe"
+version = "0.0.0"
+edition = "2021"
+[dependencies]
+postgres = "=0.19.14"
+postgres-protocol = "=0.6.12"
+[patch.crates-io]
+postgres-protocol = { path = "../k206-typed-frame-source" }
+[workspace]

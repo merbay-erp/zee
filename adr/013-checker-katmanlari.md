@@ -70,3 +70,32 @@ yeniden dışa aktarılır ve kırılmaz.
   B-007, K-121'de ayrı `cikarim` katmanı ve mimari bütçesiyle kapandı.
 - K-121'in sıra-bağımsız yerel çıkarım semantiği RFC-0006 ile spec/04 ve
   spec/10'da normatifleşti; diğer katman ayrımları kaynak yüzeyini değiştirmez.
+
+## K-207 ad çözümleme maliyeti
+
+Sembol sahibi ve bağlama sorumluluğu değişmez. Başarılı exact ad çözümlemesi
+ve morfoloji adayları mevcut hash tablosunda üyelik sorgusuyla yürütülür.
+Tam ad listesi yalnız A001 önerisinde üretilir; A002 eşleşmeleri sıralanır/
+tekilleştirilir. Exact-ad önceliği, tanı mesaj/span/öneri ve SymbolId bağları
+eski algoritma oracle'ıyla 26.624 karar karşılaştırmasında aynı kalır.
+Yeni modül/kenar, ters katman geçişi, cache veya uzun ömürlü durum yoktur.
+
+## K-207 ikinci dilim — kapsam checkpoint
+
+Kapsam girişi bütün adların HashSet kopyası yerine monotonic tanım sıra
+sınırını alır. Sembol tablosunun geçici yeni-ad journal'ı scope çıkışında
+yalnız o sınırdan sonra doğan adları kaldırır. Dış ada atama ve SymbolId
+kimliği kalıcıdır; silinen kimlik sayacı geri sarılmaz. Nested scope,
+atama, yerel silme ve kimlik yeniden kullanmama testi mevcut kapsam/
+semantic/golden testlerini tamamlar. Eski HashSet algoritmasıyla 4.096
+deterministik iç içe kapsam/atama işlemi aynı ad, tür ve kimliği verir.
+Testler satır bütçisini koruyan cfg(test) alt modülündedir; production
+modül/kenar ve ters katman geçişi yoktur. Sorumluluk cozumleyici sahibindedir.
+
+Journal derleme başına düşer, LSP belge/cache alanına taşınmaz. Yeni
+geçici tampon için temiz exact 9e80b69 üzerinde 1800 sn/264.343 döngü
+soak geçti; compiler RSS medyanı 8.144→8.160 KiB, LSP 19.088→17.568 KiB.
+Aynı kaynakta release/25+2 ölçek ölçümünde 20k p95 165,137 ms oldu.
+[Ham kanıt ve sınırlar](../docs/olcumler.md). Kapsam dilimi kapalıdır;
+incremental/cache kapasitesi açık kalır. Dil/tanı/API/profil ve blokta
+doğan adın görünürlüğü değişmez.

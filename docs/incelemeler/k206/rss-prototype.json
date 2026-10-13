@@ -1,0 +1,38 @@
+{
+  "source": "9e80b692f9a0a37cdd8136783b42f2a0056f2478",
+  "image": "postgres@sha256:efedf3595f1d6f415c08568ba171029bf54052e754cc9f030e3f2412b21f3d67",
+  "samples": [
+    {
+      "rows": 1,
+      "row_bytes": 1048576,
+      "max_rss_bytes": 9076736,
+      "output": "ok_rows=1\nnext_query_ok=true\n",
+      "exit": 0
+    },
+    {
+      "rows": 64,
+      "row_bytes": 1048576,
+      "max_rss_bytes": 24854528,
+      "output": "error=PostgreSQL sonucu 16 MiB sınırını aşıyor\nnext_query_ok=true\n",
+      "exit": 0
+    },
+    {
+      "rows": 1,
+      "row_bytes": 67108864,
+      "max_rss_bytes": 76234752,
+      "output": "error=PostgreSQL sonucu 16 MiB sınırını aşıyor\nnext_query_ok=true\n",
+      "exit": 0
+    }
+  ],
+  "boundary": "Exploratory direct postgres streaming helper, not Zee production integration. Isolated synthetic loopback container; same driver versions as Cargo.lock. Concurrent K-207 soak. One sample, no warmup; RSS is total process, not a performance baseline or closed security finding.",
+  "server_version": "postgres (PostgreSQL) 16.15 (Debian 16.15-1.pgdg12+2)",
+  "source_clean": true,
+  "build_profile": "release",
+  "rustc": "rustc 1.93.1 (01f6ddf75 2026-02-11)",
+  "prototype_sources_sha256": {
+    "target/k206-stream-prototype/src/main.rs": "e57cf31696ca88833bfe38f2b32ed567fc4aa1ec6914ac36a79afdb34950c1c9",
+    "target/k206-stream-prototype/src/contracts.rs": "381abf13845e209e242dd6aa77513c402e32027d2d58c04ad5d44442a3c3d641",
+    "target/k206-stream-prototype/Cargo.toml": "9aa30dcc661a8d10598649bb98a7bad04fa997d37bc7b26b1ce461523ef805e0",
+    "target/k206-stream-prototype/Cargo.lock": "db060c5a8a6405e8ab87a3199f94973af417e08cac74b70e19ce210ee959abdf"
+  }
+}
