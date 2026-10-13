@@ -4,6 +4,7 @@ import json
 import os
 from pathlib import Path
 import runpy
+import shutil
 import subprocess
 import tempfile
 import unittest
@@ -101,9 +102,18 @@ class PublicPrivacyTests(unittest.TestCase):
             envfile = Path(directory) / "env"
             env = dict(os.environ, CI="false", GIT_CONFIG_GLOBAL=str(config),
                        GIT_CONFIG_NOSYSTEM="1", GITHUB_ENV=str(envfile))
-            command = ["bash", str(ROOT / "scripts/ci-oz-kaynak.sh")]
+            bash = "bash"
+            if os.name == "nt":
+                # Windows System32 bash may select WSL; this script uses the
+                # same Git Bash runtime as the workflow shell.
+                git_exe = Path(shutil.which("git"))
+                bash = str(git_exe.parent.parent / "bin/bash.exe")
+                self.assertTrue(Path(bash).is_file(), "Git Bash gerekli")
+                env["GIT_CONFIG_GLOBAL"] = config.as_posix()
+                env["GITHUB_ENV"] = envfile.as_posix()
+            command = [bash, (ROOT / "scripts/ci-oz-kaynak.sh").as_posix()]
             result = subprocess.run(command, cwd=ROOT, env=env, capture_output=True)
-            self.assertEqual(result.returncode, 2)
+            self.assertEqual(result.returncode, 2, result.stderr.decode())
             self.assertFalse(config.exists())
             env["CI"] = "true"
             result = subprocess.run(command, cwd=ROOT, env=env, capture_output=True)
