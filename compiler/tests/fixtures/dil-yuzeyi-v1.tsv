@@ -2,7 +2,22 @@
 # yuzey	oge	durum	giris	kaynak	kayit
 abi	wasm	aktif	0.8.0-dev	compiler/src/wasm_api/abi.rs	pub const DIL_ABI_SURUMU: u32 = 3;
 api	db.response_frame_limit	aktif	0.8.0-dev	compiler/src/postgresql.rs	"db.response_frame_limit"
+api	gorsel.kucult	aktif	0.8.0-dev	compiler/src/intrinsic.rs	pub const GORSEL_KUCULT: &str = "gorsel.kucult";
+api	guvenlik.gizli_coz	aktif	0.8.0-dev	compiler/src/intrinsic.rs	pub const GIZLI_COZ: &str = "guvenlik.gizli_coz";
+api	guvenlik.gizli_sifrele	aktif	0.8.0-dev	compiler/src/intrinsic.rs	pub const GIZLI_SIFRELE: &str = "guvenlik.gizli_sifrele";
+api	guvenlik.parola_ozeti	aktif	0.8.0-dev	compiler/src/intrinsic.rs	pub const PAROLA_OZETI: &str = "guvenlik.parola_ozeti";
+api	guvenlik.totp_anahtari	aktif	0.8.0-dev	compiler/src/intrinsic.rs	pub const TOTP_ANAHTARI: &str = "guvenlik.totp_anahtari";
+api	guvenlik.totp_dogrula	aktif	0.8.0-dev	compiler/src/intrinsic.rs	pub const TOTP_DOGRULA: &str = "guvenlik.totp_dogrula";
+api	iletisim.eposta_gonder	aktif	0.8.0-dev	compiler/src/intrinsic.rs	pub const EPOSTA_GONDER: &str = "iletisim.eposta_gonder";
+api	iletisim.eposta_gonder_baglantili	aktif	0.8.0-dev	compiler/src/intrinsic.rs	pub const EPOSTA_GONDER_BAGLANTILI: &str = "iletisim.eposta_gonder_baglantili";
+api	io-izi.eposta_gonder	aktif	0.8.0-dev	compiler/src/yorumlayici/io_izi.rs	"eposta_gonder"
+api	io-izi.gizli_coz	aktif	0.8.0-dev	compiler/src/yorumlayici/io_izi.rs	"gizli_coz"
+api	io-izi.gizli_sifrele	aktif	0.8.0-dev	compiler/src/yorumlayici/io_izi.rs	"gizli_sifrele"
+api	io-izi.gorsel_kucult	aktif	0.8.0-dev	compiler/src/yorumlayici/io_izi.rs	"gorsel_kucult"
 api	io-izi.istemci_adresi	aktif	0.8.0-dev	compiler/src/yorumlayici/io_izi.rs	"istemci_adresi"
+api	io-izi.parola_ozeti_uret	aktif	0.8.0-dev	compiler/src/yorumlayici/io_izi.rs	"parola_ozeti_uret"
+api	io-izi.totp_anahtari_uret	aktif	0.8.0-dev	compiler/src/yorumlayici/io_izi.rs	"totp_anahtari_uret"
+api	io-izi.totp_dogrula	aktif	0.8.0-dev	compiler/src/yorumlayici/io_izi.rs	"totp_dogrula"
 api	rust	aktif	0.8.0-dev	compiler/src/api.rs	pub mod v1 {
 api	web.istemci_adresi	aktif	0.8.0-dev	compiler/src/intrinsic.rs	pub const ISTEMCI_ADRESI: &str = "web.istemci_adresi";
 bicim	proje.kilit	aktif	0.8.0-dev	compiler/src/paket.rs	kilit_sürümü 3
@@ -18,7 +33,10 @@ kalip	adresi	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	adresine	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	al	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	alanı	aktif	0.8.0-dev	compiler/src/lsp.rs	-
+kalip	anahtarı	aktif	0.8.0-dev	compiler/src/lsp.rs	-
+kalip	anahtarıyla	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	arasındaki	aktif	0.7.0	compiler/src/lsp.rs	-
+kalip	argon2	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	artır	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	azalt	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	açık	aktif	0.8.0-dev	compiler/src/lsp.rs	-
@@ -40,13 +58,17 @@ kalip	döndür	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	ekle	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	eylem	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	gerekli	aktif	0.8.0-dev	compiler/src/lsp.rs	-
+kalip	göndermeyi	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	göre	aktif	0.7.0	compiler/src/lsp.rs	-
+kalip	görselini	aktif	0.8.0-dev	compiler/src/lsp.rs	-
+kalip	görünüm	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	günler	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	harfleri	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	hatasını	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	her	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	herkese	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	ile	aktif	0.7.0	compiler/src/lsp.rs	-
+kalip	ileti	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	iptal	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	ise	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	istemci	aktif	0.8.0-dev	compiler/src/lsp.rs	-
@@ -61,6 +83,7 @@ kalip	kodu	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	kullan	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	kullanıcısını	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	kuruşlusu	aktif	0.7.0	compiler/src/lsp.rs	-
+kalip	küçültmeyi	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	kırpılmışı	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	listelemeyi	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	mesajı	aktif	0.8.0-dev	compiler/src/lsp.rs	-
@@ -75,7 +98,9 @@ kalip	olsun	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	oturum	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	paketini	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	parçaları	aktif	0.7.0	compiler/src/lsp.rs	-
+kalip	piksele	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	rolüyle	aktif	0.8.0-dev	compiler/src/lsp.rs	-
+kalip	rotalarını	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	saniye	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	sil	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	sor	aktif	0.7.0	compiler/src/lsp.rs	-
@@ -83,6 +108,7 @@ kalip	sürece	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	sıralanmışı	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	tekrarla	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	test	aktif	0.7.0	compiler/src/lsp.rs	-
+kalip	totp	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	varsa	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	ve	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	verisi	aktif	0.8.0-dev	compiler/src/lsp.rs	-
@@ -98,7 +124,10 @@ kalip	yok	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	yoksa	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	yönlendir	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	çerezine	aktif	0.7.0	compiler/src/lsp.rs	-
+kalip	çözmeyi	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	önekli	aktif	0.7.0	compiler/src/lsp.rs	-
+kalip	üzerinden	aktif	0.8.0-dev	compiler/src/lsp.rs	-
+kalip	şifrelenmişi	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 komut	anahtar	aktif	0.8.0-dev	compiler/src/main.rs	-
 komut	belge	aktif	0.7.0	compiler/src/main.rs	-
 komut	bicimle	aktif	0.7.0	compiler/src/main.rs	-
@@ -108,6 +137,7 @@ komut	cikar	aktif	0.8.0-dev	compiler/src/main.rs	-
 komut	dene	aktif	0.7.0	compiler/src/main.rs	-
 komut	denetle	aktif	0.7.0	compiler/src/main.rs	-
 komut	ekle	aktif	0.8.0-dev	compiler/src/main.rs	-
+komut	gizli-anahtar	aktif	0.8.0-dev	compiler/src/main.rs	-
 komut	gocur	aktif	0.8.0-dev	compiler/src/main.rs	-
 komut	göçür	aktif	0.8.0-dev	compiler/src/main.rs	-
 komut	hata	aktif	0.7.0	compiler/src/main.rs	-

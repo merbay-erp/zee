@@ -68,6 +68,22 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   sahibine erişimle atomik yazılır; eski geniş izinler taşınmaz. Public depo
   bildirim belgesi, hassas dosya ignore kuralları ve sabit Gitleaks CI taraması
   eklendi. Replay şeması değişmez; eski izler ayrıca değerlendirilmelidir.
+- **Parola özeti, TOTP, SMTP ve görsel küçültme** (K-210, ADR-083,
+  `dogfood/urun-e`): zee ile yazılan ilk müşteri sitesi Site E, legacy panel
+  panelinin dört "desteklenmeyen" maddesini tekrar etti. `parolanın argon2
+  özeti`, `yeni totp anahtarı` / `kod gizli anahtarıyla doğrulanıyorsa`,
+  `alıcı konu gövde ile ileti göndermeyi dene` (geri alınamaz etki; proje
+  bildirimi `e_posta_bağlantı_değişkeni`; smtp/smtps ağ hedefleri), aynı
+  kalıbın `... ile bağlantı üzerinden ...` biçimi (SMTP bağlantısı değerden,
+  panelden ayarlanabilir), `<` ile başlayan durum yanıtlarının `text/html`
+  olarak gönderilmesi (panel hata sayfaları), `parolanın gizli şifrelenmişi` /
+  `sifreli gizli çözmeyi dene` (XChaCha20-Poly1305, `gizli_anahtar_değişkeni`,
+  `dil gizli-anahtar`), `Permissions-Policy` başlığı, rota birimleri
+  (`<ad> rotalarını kullan`, K-211/ADR-084), görünüm bloğu (`<ad> görünüm
+  olsun`, tipli HTML ağacı, K-212/ADR-085, S046/T055) ve `kaynak
+  görselini hedef dosyasına N piksele küçültmeyi dene` (`image` crate) merkezi
+  intrinsic kaydına girdi. Yeni tanılar C028/C029. K-174 freeze yüzey kaydı
+  ürün sahibi kararıyla güncellendi.
 
 - **İkinci gerçek ürün ve iki birim düzeltmesi** (K-164, ADR-072):
   `dogfood/kanit-ozeti` depo kayıt defterlerinden `docs/kanit-ozeti.md`
@@ -1432,3 +1448,23 @@ daaa3ea. 742/742 faz, Node crypto ve gerçek HTTP/CLI/trace kabulü,
 167 paket offline vendor ve iki-clone binary eşitliği geçti.
 [Ham kayıt](incelemeler/k208/README.md) yerel macOS kanıtıdır; V1
 usability/RC/signed release ve sunucu dağıtımı değildir.
+
+### ürün E özelliklerinin ana kaynak hattı — K-213
+
+[ADR-086](../adr/086-site-hatlarinin-birlestirilmesi.md) mevcut ürün E
+parola üretimi/TOTP/SMTP, rota birimi, görünüm, görsel ve gizli değer
+yüzeylerini K-208/K-209 bcrypt/IP ile aynı hatta toplar. Ürün kabulü
+dosya kontrolüyle değil bütün proje `dil dene .` ile alınır. Ham ürün E
+şablonu normal katalog üretimini ister. Exact source/CI kapanışı beklenir;
+canlı dağıtım ve otomatik parola göçü bu işte yapılmaz.
+
+K-213 clean source kabulü: source e09493e, beyan/ikili/test 0531432;
+769/769 faz, beş bütün proje 242/242, 187 paket offline vendor ve
+macOS arm64 iki-clone eşliği geçti. Exact [kayıt](incelemeler/k213/README.md).
+İlk Linux CI'ın test Git kimliği bağımlılığı düzeltildi; son uzak CI
+kapanışı beklenir. Canlı dağıtım ve otomatik parola göçü açık kalır.
+
+K-213 compiler gerçekleme/test/belge dilimi kapandı. Eski ürün E
+sunucu hattı ile master aynı kaynak geçmişinde; ürün CI/sunucu pininin
+bu kaynağa geçirilmesi ve canlı giriş/IP kabulü ürün tarafının işidir.
+Otomatik bcrypt→Argon2 ürün göçü henüz uygulanmadı.

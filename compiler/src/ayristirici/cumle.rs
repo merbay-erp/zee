@@ -1,5 +1,8 @@
+use super::ifade::{kelime_mi, tekil_ifade};
 use super::*;
+use crate::agac::GorunumDugumu;
 
+mod gorunum;
 mod web;
 
 impl Ayristirici {
@@ -24,6 +27,19 @@ impl Ayristirici {
         let satir_tokenlari = self.satir_oku();
         let satir_no = satir_tokenlari.first().map(|t| t.satir).unwrap_or(1);
         let son_kelime = son_kelime(&satir_tokenlari);
+
+        // K-212: `<ad> görünüm olsun` + girintili HTML ağacı.
+        if satir_tokenlari.len() == 3
+            && kelime_mi(&satir_tokenlari[1], "görünüm")
+            && kelime_mi(&satir_tokenlari[2], "olsun")
+        {
+            if let TokenTur::Kelime(ad) = &satir_tokenlari[0].tur {
+                let ad = ad.clone();
+                let sutun = satir_tokenlari[0].sutun;
+                let uzunluk = satir_tokenlari[0].uzunluk;
+                return self.gorunum_ayristir(ad, satir_no, sutun, uzunluk);
+            }
+        }
 
         match son_kelime.as_deref() {
             Some("açık") => {
@@ -410,21 +426,21 @@ impl Ayristirici {
                 ) {
                     (Some(TokenTur::Kelime(ad)), Some(TokenTur::Kelime(tur)))
                         if satir_tokenlari.len() == 3
-                            && matches!(tur.as_str(), "birimini" | "paketini") =>
+                            && matches!(tur.as_str(), "birimini" | "paketini" | "rotalarını") =>
                     {
                         Ok(Cumle::Kullan {
                             ad: ad.clone(),
-                            tur: if tur == "birimini" {
-                                crate::agac::KullanimTuru::Birim
-                            } else {
-                                crate::agac::KullanimTuru::Paket
+                            tur: match tur.as_str() {
+                                "birimini" => crate::agac::KullanimTuru::Birim,
+                                "paketini" => crate::agac::KullanimTuru::Paket,
+                                _ => crate::agac::KullanimTuru::Rota,
                             },
                             satir: satir_no,
                         })
                     }
                     _ => Err(Tani::yeni(
                         "S034",
-                        "Kullanım \"<ad> birimini kullan\" ya da \"<ad> paketini kullan\" biçiminde yazılır.".into(),
+                        "Kullanım \"<ad> birimini kullan\", \"<ad> paketini kullan\" ya da \"<ad> rotalarını kullan\" biçiminde yazılır.".into(),
                         satir_no,
                         1,
                         1,

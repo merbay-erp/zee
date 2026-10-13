@@ -63,6 +63,10 @@ pub enum DosyaSiniri {
 pub enum AgSemasi {
     Http,
     Https,
+    /// K-210: STARTTLS zorunlu SMTP (587); düz metin yalnız loopback.
+    Smtp,
+    /// K-210: implicit TLS SMTP (465).
+    Smtps,
 }
 
 impl AgSemasi {
@@ -70,6 +74,8 @@ impl AgSemasi {
         match self {
             Self::Http => "http",
             Self::Https => "https",
+            Self::Smtp => "smtp",
+            Self::Smtps => "smtps",
         }
     }
 
@@ -77,7 +83,14 @@ impl AgSemasi {
         match self {
             Self::Http => 80,
             Self::Https => 443,
+            Self::Smtp => 587,
+            Self::Smtps => 465,
         }
+    }
+
+    /// Bildirimsiz geliştirici ağında kendiliğinden izinli, şifreli şemalar.
+    pub const fn sifreli(self) -> bool {
+        matches!(self, Self::Https | Self::Smtps)
     }
 }
 
@@ -254,10 +267,10 @@ impl YetkinlikPolitikasi {
                 "{} proje bildirimindeki `ağ_hedefleri` listesinde yok",
                 hedef.yazimi()
             )),
-            AgHedefKapsami::GenelInternet if hedef.semasi() == AgSemasi::Https => Ok(hedef),
-            AgHedefKapsami::GenelInternet => {
-                Err("bildirimsiz geliştirici ağında yalnız https:// kullanılabilir".into())
-            }
+            AgHedefKapsami::GenelInternet if hedef.semasi().sifreli() => Ok(hedef),
+            AgHedefKapsami::GenelInternet => Err(
+                "bildirimsiz geliştirici ağında yalnız https:// ve smtps:// kullanılabilir".into(),
+            ),
         }
     }
 

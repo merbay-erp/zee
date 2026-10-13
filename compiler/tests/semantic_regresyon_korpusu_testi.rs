@@ -3,7 +3,7 @@
 use dil::faz::KaynakMetni;
 use dil::tani::Tani;
 use dil::yetkinlik::YetkinlikPolitikasi;
-use dil::yorumlayici::{calistir_baglanmis_io_kodla, ToplayanIo};
+use dil::yorumlayici::{calistir_baglanmis_io_kodla, IzKaydedenIo, IzYenidenOynatici, ToplayanIo};
 use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
 
@@ -22,7 +22,9 @@ const KIPLER: &[&str] = &[
     "diagnostics",
     "compile",
     "hir",
+    "definition",
     "run",
+    "trace",
     "capability",
     "web",
 ];
@@ -181,8 +183,9 @@ fn faz_kipi_kabul_eder(faz: &str, kip: &str) -> bool {
     match faz {
         "parser" => matches!(kip, "parser" | "diagnostics" | "run"),
         "checker" | "morphology" => matches!(kip, "compile" | "run" | "diagnostics"),
-        "hir" => matches!(kip, "hir" | "run"),
-        "runtime" | "concurrency" => kip == "run",
+        "hir" => matches!(kip, "hir" | "definition" | "run"),
+        "runtime" => matches!(kip, "run" | "trace"),
+        "concurrency" => kip == "run",
         "security" => matches!(kip, "capability" | "web"),
         _ => false,
     }
@@ -215,7 +218,20 @@ fn vakayi_calistir(vaka: &Vaka, kaynak: &str) -> Gozlem {
         return hata_gozle(tanilar.remove(0), Vec::new());
     }
 
-    let program = match dil::kaynagi_fazli_derle(kaynak) {
+    // HIR çok-kaynaklı vakalarının aynı dizindeki hermetik birim girdileri.
+    // Yerel dosya/ürün/ağ bağımlılığı yok; bütün girdiler korpusta sürümlüdür.
+    let mut yukleyici = |ad: &str| {
+        if let Some(kaynak) = dil::gomulu_birim(ad) {
+            return Ok(kaynak.to_string());
+        }
+        let dizin = depo()
+            .join(&vaka.dosya)
+            .parent()
+            .expect("vaka dizini")
+            .to_path_buf();
+        std::fs::read_to_string(dizin.join(format!("{ad}.birim"))).map_err(|hata| hata.to_string())
+    };
+    let program = match dil::kaynagi_fazli_derle_birimlerle(kaynak, &mut yukleyici) {
         Ok(program) => program,
         Err(tani) => return hata_gozle(tani, Vec::new()),
     };
@@ -223,8 +239,34 @@ fn vakayi_calistir(vaka: &Vaka, kaynak: &str) -> Gozlem {
         panic!("{}: bağlı HIR invarianti bozuk: {hata}", vaka.ad);
     }
 
+    if vaka.kip == "definition" {
+        for kullanim in program.hir().sembol_kullanimlari() {
+            assert!(
+                program.hir().sembol_tanimi(kullanim.kimlik()).is_some(),
+                "{}: user SymbolId definition kaydı yok",
+                vaka.ad
+            );
+        }
+    }
     match vaka.kip.as_str() {
-        "compile" | "hir" => Gozlem {
+        "trace" => {
+            let mut kaydeden = IzKaydedenIo::yeni(ToplayanIo::yeni(Vec::new()));
+            let kod =
+                calistir_baglanmis_io_kodla(&program, &mut kaydeden).expect("trace kayıt koşusu");
+            let iz = kaydeden.iz_metni().expect("kanonik kayıt şeması");
+            let mut oynatici = IzYenidenOynatici::yeni(&iz).expect("trace parse");
+            let tekrar =
+                calistir_baglanmis_io_kodla(&program, &mut oynatici).expect("trace replay");
+            assert_eq!(kod, tekrar, "trace exit eşitliği");
+            assert_eq!(kaydeden.ic.cikti, oynatici.cikti, "trace stdout eşitliği");
+            oynatici.bitir().expect("trace tam tüketim");
+            Gozlem {
+                tani: None,
+                cikis: kod,
+                cikti: kaydeden.ic.cikti,
+            }
+        }
+        "compile" | "hir" | "definition" => Gozlem {
             tani: None,
             cikis: 0,
             cikti: Vec::new(),

@@ -343,6 +343,11 @@ fn cumle_bilgisi(cumle: &Cumle, bilgi: &mut Bilgi) {
             ifade_bilgisi(adet, bilgi);
             bilgi.birlestir(&blok_bilgisi(govde));
         }
+        Cumle::Gorunum { dugumler, .. } => {
+            for ifade in crate::agac::gorunum_ifadeleri(dugumler) {
+                ifade_bilgisi(ifade, bilgi);
+            }
+        }
         Cumle::AralikDongusu {
             bastan,
             sona,
@@ -563,6 +568,7 @@ fn ifade_bilgisi(ifade: &Ifade, bilgi: &mut Bilgi) {
                     // Uygulama durumu değil, güvenlik adaptörünün kısa ömürlü ve
                     // anlam taşımayan synchronizer oturumudur. GET'te üretilebilir.
                     IntrinsicEtkisi::WebAdaptoru => bilgi.web = true,
+                    IntrinsicEtkisi::GeriAlinamaz => bilgi.geri_alinamaz = true,
                     IntrinsicEtkisi::Saf | IntrinsicEtkisi::DisOkuma => {}
                 }
             }

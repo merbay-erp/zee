@@ -6,6 +6,21 @@ use dil::yorumlayici::{
 };
 
 #[test]
+fn urun_e_kriptografi_olaylari_kanonik_izde_tam_oynatilir() {
+    let program = dil::kaynagi_derle(include_str!(
+        "../../regression/runtime/gizli-deger-io-izi.dil"
+    ))
+    .expect("gizli değer programı");
+    let mut kaydeden = IzKaydedenIo::yeni(ToplayanIo::yeni(Vec::new()));
+    calistir_io(&program, &mut kaydeden).expect("şifrele/çöz kayıt koşusu");
+    let iz = kaydeden.iz_metni().expect("gizli olaylar kayıtlı şemadır");
+    let mut oynatici = IzYenidenOynatici::yeni(&iz).expect("kanonik iz yeniden okunur");
+    calistir_io(&program, &mut oynatici).expect("gizli olaylar oynatılır");
+    assert_eq!(oynatici.cikti, ["sentetik-iz-parolasi"]);
+    oynatici.bitir().expect("bütün olaylar tüketildi");
+}
+
+#[test]
 fn dosya_yasam_dongusu_izi_fiziksel_etki_yapmadan_oynatilir() {
     let mut taban = ToplayanIo::yeni(Vec::new());
     taban.dosyalar.insert("temp/a.bin".into(), "abc".into());

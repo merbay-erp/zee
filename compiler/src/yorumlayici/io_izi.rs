@@ -4,7 +4,9 @@
 mod codec;
 mod eylem;
 mod istemci;
+mod k181;
 mod oturum;
+mod tasima;
 
 use self::codec::*;
 use self::eylem::{semayi_denetle as eylem_semasi, sonuc_yaz as eylem_sonuc_yaz};
@@ -74,6 +76,13 @@ fn gecerli_islem(islem: &str) -> bool {
             | "kullanici_oturumlarini_listele"
             | "oturum_kimligini_iptal_et"
             | "parola_dogrula"
+            | "parola_ozeti_uret"
+            | "gizli_sifrele"
+            | "gizli_coz"
+            | "totp_anahtari_uret"
+            | "totp_dogrula"
+            | "eposta_gonder"
+            | "gorsel_kucult"
             | "eylem_baslat"
             | "eylem_tamamla"
             | "eylem_geri_al"
@@ -267,6 +276,8 @@ fn olay_semasini_denetle(olay: &IzOlay) -> Result<(), String> {
                 Err("parola doğrulama parmak izi/sonuç şeması geçersiz".into())
             }
         }
+        "parola_ozeti_uret" | "gizli_sifrele" | "gizli_coz" | "totp_anahtari_uret"
+        | "totp_dogrula" | "eposta_gonder" | "gorsel_kucult" => k181::sema(olay),
         "sensor_acik_mi" => {
             alan_sayisi(olay, 1, 1)?;
             bool_coz(&olay.sonuc[0]).map(|_| ())
@@ -652,6 +663,38 @@ impl<T: GirdiCikti> GirdiCikti for IzKaydedenIo<T> {
         sonuc
     }
 
+    fn parola_ozeti_uret(&mut self, parola: &str) -> Result<String, String> {
+        k181::kaydet_parola_ozeti_uret(self, parola)
+    }
+    fn gizli_sifrele(&mut self, duz: &str) -> Result<String, String> {
+        k181::kaydet_gizli_sifrele(self, duz)
+    }
+    fn gizli_coz(&mut self, sifreli: &str) -> Result<String, String> {
+        k181::kaydet_gizli_coz(self, sifreli)
+    }
+
+    fn totp_anahtari_uret(&mut self) -> Result<String, String> {
+        k181::kaydet_totp_anahtari_uret(self)
+    }
+
+    fn totp_dogrula(&mut self, gizli: &str, kod: &str) -> bool {
+        k181::kaydet_totp_dogrula(self, gizli, kod)
+    }
+
+    fn eposta_gonder(
+        &mut self,
+        b: Option<&str>,
+        alici: &str,
+        konu: &str,
+        govde: &str,
+    ) -> Result<i64, String> {
+        k181::kaydet_eposta_gonder(self, b, alici, konu, govde)
+    }
+
+    fn gorsel_kucult(&mut self, kaynak: &str, hedef: &str, azami: i64) -> Result<i64, String> {
+        k181::kaydet_gorsel_kucult(self, kaynak, hedef, azami)
+    }
+
     fn eylem_baslat(&mut self) -> Result<(), EylemHatasi> {
         let sonuc = self.ic.eylem_baslat();
         self.kaydet("eylem_baslat", Vec::new(), eylem_sonuc_yaz(&sonuc));
@@ -812,6 +855,22 @@ impl IzYenidenOynatici {
         }
     }
 
+    fn tamsayi_sonuc(&mut self, islem: &str, sonuc: Option<Vec<String>>) -> Result<i64, String> {
+        let Some(alanlar) = sonuc else {
+            return Err(self
+                .hata
+                .clone()
+                .unwrap_or_else(|| "IO izi uyuşmazlığı".into()));
+        };
+        tamsayi_sonuc_coz(&alanlar).unwrap_or_else(|hata| {
+            self.bozuk_sonuc(islem, hata);
+            Err(self
+                .hata
+                .clone()
+                .unwrap_or_else(|| "IO izi sonucu bozuk".into()))
+        })
+    }
+
     fn sayi_sonuc<T>(&mut self, islem: &str, sonuc: Option<Vec<String>>, varsayilan: T) -> T
     where
         T: std::str::FromStr,
@@ -952,30 +1011,7 @@ impl GirdiCikti for IzYenidenOynatici {
         sorgu: &str,
         parametreler: &[String],
     ) -> Result<Vec<Vec<(String, String)>>, VeritabaniHatasi> {
-        let mut argumanlar = vec![sorgu.into()];
-        argumanlar.extend(parametreler.iter().cloned());
-        let Some(alanlar) = self.siradaki("postgresql_oku", argumanlar) else {
-            return Err(VeritabaniHatasi {
-                mesaj: self
-                    .hata
-                    .clone()
-                    .unwrap_or_else(|| "IO izi uyuşmazlığı".into()),
-                veri: Vec::new(),
-            });
-        };
-        match veritabani_okuma_coz(&alanlar) {
-            Ok(sonuc) => sonuc,
-            Err(hata) => {
-                self.bozuk_sonuc("postgresql_oku", hata);
-                Err(VeritabaniHatasi {
-                    mesaj: self
-                        .hata
-                        .clone()
-                        .unwrap_or_else(|| "IO izi sonucu bozuk".into()),
-                    veri: Vec::new(),
-                })
-            }
-        }
+        tasima::postgresql_oku_oynat(self, sorgu, parametreler)
     }
 
     fn postgresql_degistir(
@@ -983,54 +1019,11 @@ impl GirdiCikti for IzYenidenOynatici {
         sorgu: &str,
         parametreler: &[String],
     ) -> Result<i64, VeritabaniHatasi> {
-        let mut argumanlar = vec![sorgu.into()];
-        argumanlar.extend(parametreler.iter().cloned());
-        let Some(alanlar) = self.siradaki("postgresql_degistir", argumanlar) else {
-            return Err(VeritabaniHatasi {
-                mesaj: self
-                    .hata
-                    .clone()
-                    .unwrap_or_else(|| "IO izi uyuşmazlığı".into()),
-                veri: Vec::new(),
-            });
-        };
-        match veritabani_degistirme_coz(&alanlar) {
-            Ok(sonuc) => sonuc,
-            Err(hata) => {
-                self.bozuk_sonuc("postgresql_degistir", hata);
-                Err(VeritabaniHatasi {
-                    mesaj: self
-                        .hata
-                        .clone()
-                        .unwrap_or_else(|| "IO izi sonucu bozuk".into()),
-                    veri: Vec::new(),
-                })
-            }
-        }
+        tasima::postgresql_degistir_oynat(self, sorgu, parametreler)
     }
 
     fn simdi(&mut self) -> (i64, u32, u32, u32, u32) {
-        let sonuc = self.siradaki("simdi", Vec::new());
-        let Some(alanlar) = sonuc else {
-            return (0, 1, 1, 0, 0);
-        };
-        let [yil, ay, gun, saat, dakika] = alanlar.as_slice() else {
-            self.bozuk_sonuc("simdi", "beş zaman alanı bekleniyor".into());
-            return (0, 1, 1, 0, 0);
-        };
-        match (
-            yil.parse(),
-            ay.parse(),
-            gun.parse(),
-            saat.parse(),
-            dakika.parse(),
-        ) {
-            (Ok(yil), Ok(ay), Ok(gun), Ok(saat), Ok(dakika)) => (yil, ay, gun, saat, dakika),
-            _ => {
-                self.bozuk_sonuc("simdi", "zaman alanlarından biri sayı değil".into());
-                (0, 1, 1, 0, 0)
-            }
-        }
+        tasima::simdi_oynat(self)
     }
 
     fn argumanlar(&mut self) -> Vec<String> {
@@ -1042,36 +1035,7 @@ impl GirdiCikti for IzYenidenOynatici {
         url: &str,
         zaman_asimi_ms: Option<i64>,
     ) -> Result<(i64, String), String> {
-        let mut argumanlar = vec![url.into()];
-        argumanlar.extend(secenek_yaz(
-            zaman_asimi_ms.map(|deger| deger.to_string()).as_deref(),
-        ));
-        let Some(alanlar) = self.siradaki("http_getir", argumanlar) else {
-            return Err(self
-                .hata
-                .clone()
-                .unwrap_or_else(|| "IO izi uyuşmazlığı".into()));
-        };
-        match alanlar.as_slice() {
-            [etiket, durum, govde] if etiket == "ok" => match durum.parse() {
-                Ok(durum) => Ok((durum, govde.clone())),
-                Err(_) => {
-                    self.bozuk_sonuc("http_getir", "durum kodu sayı değil".into());
-                    Err(self
-                        .hata
-                        .clone()
-                        .unwrap_or_else(|| "IO izi sonucu bozuk".into()))
-                }
-            },
-            [etiket, hata] if etiket == "hata" => Err(hata.clone()),
-            _ => {
-                self.bozuk_sonuc("http_getir", "geçersiz HTTP sonuç alanları".into());
-                Err(self
-                    .hata
-                    .clone()
-                    .unwrap_or_else(|| "IO izi sonucu bozuk".into()))
-            }
-        }
+        tasima::http_getir_oynat(self, url, zaman_asimi_ms)
     }
 
     fn sunucu_kur(&mut self, kapi: i64) -> Result<(), String> {
@@ -1204,6 +1168,38 @@ impl GirdiCikti for IzYenidenOynatici {
             vec![sha256_hex(parola.as_bytes()), sha256_hex(ozet.as_bytes())],
         );
         self.bool_sonuc("parola_dogrula", sonuc)
+    }
+
+    fn parola_ozeti_uret(&mut self, parola: &str) -> Result<String, String> {
+        k181::oynat_parola_ozeti_uret(self, parola)
+    }
+    fn gizli_sifrele(&mut self, duz: &str) -> Result<String, String> {
+        k181::oynat_gizli_sifrele(self, duz)
+    }
+    fn gizli_coz(&mut self, sifreli: &str) -> Result<String, String> {
+        k181::oynat_gizli_coz(self, sifreli)
+    }
+
+    fn totp_anahtari_uret(&mut self) -> Result<String, String> {
+        k181::oynat_totp_anahtari_uret(self)
+    }
+
+    fn totp_dogrula(&mut self, gizli: &str, kod: &str) -> bool {
+        k181::oynat_totp_dogrula(self, gizli, kod)
+    }
+
+    fn eposta_gonder(
+        &mut self,
+        b: Option<&str>,
+        alici: &str,
+        konu: &str,
+        govde: &str,
+    ) -> Result<i64, String> {
+        k181::oynat_eposta_gonder(self, b, alici, konu, govde)
+    }
+
+    fn gorsel_kucult(&mut self, kaynak: &str, hedef: &str, azami: i64) -> Result<i64, String> {
+        k181::oynat_gorsel_kucult(self, kaynak, hedef, azami)
     }
 
     fn eylem_baslat(&mut self) -> Result<(), EylemHatasi> {

@@ -1,4 +1,5 @@
 use super::*;
+mod gorunum;
 fn sembol_yazimi_kaydet(
     baglam: &mut Baglam,
     kimlik: SymbolId,
@@ -22,6 +23,7 @@ pub(super) fn blok_denetle(
                     let satir = *satir;
                     ifade_denetle(deger, ortam, baglam, satir)?;
                 }
+                Cumle::Gorunum { .. } => gorunum::hedefi_denetle(cumle, ortam, baglam)?,
                 Cumle::Olsun {
                     ad,
                     deger,
@@ -412,7 +414,7 @@ pub(super) fn blok_denetle(
                     }
                     // Her istek taze ortamda işlenir (kapsülleme); form ve sorgu
                     // verisi örtük "istek" sözlüğünde gelir (K-051).
-                    let mut istek_ortami = SembolTablosu::yeni(baglam.istek_kapsami(satir));
+                    let mut istek_ortami = SembolTablosu::yeni(baglam.istek_kapsami(yol, satir)?);
                     istek_ortami.insert("istek".into(), Tur::Sozluk(SozlukDegerTuru::Metin));
                     istek_ortami.insert("çerezler".into(), Tur::Sozluk(SozlukDegerTuru::Metin));
                     istek_ortami.insert("oturum".into(), Tur::Sozluk(SozlukDegerTuru::Metin));
@@ -700,6 +702,7 @@ pub(super) fn blok_denetle(
                     let tur_adi = match tur {
                         crate::agac::KullanimTuru::Birim => "birim",
                         crate::agac::KullanimTuru::Paket => "paket",
+                        crate::agac::KullanimTuru::Rota => "rota",
                     };
                     return Err(Tani::yeni(
                         "S021",

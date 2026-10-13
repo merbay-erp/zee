@@ -205,3 +205,10 @@ mod tests {
         );
     }
 }
+
+pub mod gizli;
+mod parola;
+mod totp;
+pub use parola::parola_ozeti_uret_tuzlu;
+pub(crate) use totp::base32_kodla;
+pub use totp::{totp_anahtari_uret, totp_dogrula, totp_kodu};
