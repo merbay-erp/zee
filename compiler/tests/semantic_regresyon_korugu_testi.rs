@@ -217,7 +217,19 @@ fn iki_kaynak_dalinin_merge_sha_beyani_iki_korukte_de_zorunludur() {
     basarili_git(&kok, &["checkout", "-q", "ana"]);
     std::fs::write(kok.join("compiler/src/lib.rs"), "// ana dal açıklaması\n").unwrap();
     let ana = commit(&kok, "ana açıklama");
-    basarili_git(&kok, &["merge", "--no-commit", "--no-ff", "urun"]);
+    basarili_git(
+        &kok,
+        &[
+            "-c",
+            "user.name=Zee Test",
+            "-c",
+            "user.email=zee@example.invalid",
+            "merge",
+            "--no-commit",
+            "--no-ff",
+            "urun",
+        ],
+    );
     let birlesim = commit(&kok, "iki kaynak dalını birleştir");
     let beyan_yaz = |merge_var: bool| {
         let sha_lar = if merge_var {

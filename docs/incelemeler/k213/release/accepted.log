@@ -1,0 +1,11 @@
+== Sürüm artefaktı: 57184595906fda8a3d9a5dbddffffa6a52982898 (aarch64-apple-darwin, rustc 1.93.1 (01f6ddf75 2026-02-11), SOURCE_DATE_EPOCH=1791891117)
+-- Temiz klon a derleniyor
+native-deployment: passed
+-- Temiz klon b derleniyor
+native-deployment: passed
+-- dil iki klonda eş: a8b534f1a1d2addf8326972fd2ceecd3114e25c37156aedb3431058740b68404
+-- dillsp iki klonda eş: 1141adda211ba35bf5ba79165dbff7036311418312c6b6d566e12edc13a09749
+build-environment: passed
+Sürüm artefaktı hazır: [yerel çalışma yolu]
+a8b534f1a1d2addf8326972fd2ceecd3114e25c37156aedb3431058740b68404  dil
+1141adda211ba35bf5ba79165dbff7036311418312c6b6d566e12edc13a09749  dillsp
