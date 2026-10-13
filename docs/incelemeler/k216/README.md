@@ -34,7 +34,7 @@ eşdeğerliği ve ardından tam tur geçti. Hata geçmişi olumlu sonuç sayılm
 
 ## Açık kanıt
 
-İlk başarılı exact Gitsrv koşusu ve uzak sonuç kaydı beklenir. GitHub hesap engeli
+Gitsrv #24 ilk başarılı exact sürekli koşudur; uzak sonuç kaydı K-218 kanıtına eklendi. GitHub hesap engeli
 çözülmüş veya eski GitHub checks'i yeşile dönmüş sayılmaz. Linux koşusu
 Windows runtime testlerinin veya RC fuzz/Miri/kurulum kapılarının yerine
 geçmez. GitHub PR refs/cache destek teyidi ve yeniden açılış onayı açıktır.
@@ -60,7 +60,7 @@ geçti. Bu yerel sonuç uzak Linux tekrarının yerine yazılmaz.
 İlk Git2 push'u sonrasında depo Actions alanı kapalı görüldü. Yeniden
 açılıp manuel başlatılan #20 gerçekten Gitsrv'de çalıştı; alanın
 kapanmasına yol açan sunucu tarafı süreç belirlenmedi. Kalıcı otomatik
-push tetikleme kanıtı açıktır. 13 Ekim 2026 22:32–22:38 İstanbul aralığında
+push tetikleme kanıtı bu ilk denemede açıktı. 13 Ekim 2026 22:32–22:38 İstanbul aralığında
 tarayıcı/API HTTPS erişimi zaman aşımı verdi; yeni uzak koşu bu erişim
 olmadan başlatılmış veya geçmiş sayılamaz.
 
@@ -69,4 +69,11 @@ kaynağında Go kurulum adımında kaldı (14m26s toplam, Go 11m25s). Linux
 faz/kalite ve sonraki kapılar başlamadı. UI log indirmesi 404 verdi;
 ayrıntılı hata nedeni doğrulanmış sayılmaz. K-217 aynı Go 1.26.1'i resmî
 bookworm OCI image digest'iyle alır; ayrı ağ arşivi beklemesi kaldırılır.
-Push'un otomatik #21'i başlatması doğrulandı; yeni kapı sonuçları açıktır.
+Push'un otomatik #21'i başlatması doğrulandı; bu denemenin kapı sonuçları daha sonra kaydedildi.
+
+K-217/K-218 sonrası Gitsrv #24 ilk uçtan uca başarılı akıştır; source
+4077efe28eab23d8523ee89ee2fd07a793a07060, Linux 778/778, tedarik/gizlilik/
+WASM/shared gözlem ve MSVC çapraz lint/build geçti. [Filtrelenmiş proof](../k218/gitsrv-ci.json).
+Eski başarısız koşular, Windows runtime, RC fuzz/Miri ve dış PR/cache
+destek teyidi bu sonuçla kapanmaz. Geçici ürün/CI refs artık master'a
+taşındığı için eski ci/site-dil korunma notu yalnız tarihsel kayıttır.

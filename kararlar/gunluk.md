@@ -4193,3 +4193,5 @@ Dal yedekleri özel; uzak silme ve CI teyidi henüz açıktır.
 [Dal kararları](../docs/incelemeler/k217/README.md). Dil/spec/tanı/API değişmez.
 
 2026-10-13 — K-218 / ADR-089 / RFC-0031: gerçek ürün yük kanıtıyla minimal host backend seçimi; grammar eklenmez, varsayılan ortak kota korunur. Exact soak ve ürün kabulü beklenir.
+
+2026-10-14 — K-217/K-218: dal içerikleri tek master, snapshot core-freeze gerekçesiyle kapalı, altı kaynak ucu özel bundle'da; açık PR/dallar silindi. Explicit bellek oran backend'i yerel780/780, gerçek ürün yükü, exact1800sn soak ve Gitsrv24 başarılı akışıyla kabul edildi. §3/2–5, insan/RC/Windows runtime ve PR-cache dış teyidi açık; canlı yükseltme ürün tarafında.

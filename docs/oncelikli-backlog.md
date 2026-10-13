@@ -1311,16 +1311,16 @@ kanıtı yerine çapraz veya Linux test sonucu konmaz.
 Ürün talebi §2: site temiz içerik, issue formları, özel Forgejo MSVC
 çapraz akışı ve incelenmiş action pinleri ana hatta uygulanır. Snapshot
 compiler/CLI genişlemesi core freeze kanıt zinciri olmadığı için kapatılır.
-Dal yedekleri özel; uzak silme ve CI teyidi henüz açıktır.
+Dal yedekleri özel; uzak silmeler ve Gitsrv #24 CI teyidi tamamlandı.
 [Dal kararları](incelemeler/k217/README.md). Dil/spec/tanı/API değişmez.
 
 ## K-218 — Oran sınırı sıcak yolunu kalıcı dosyadan ayır
 
-Durum: **GERÇEKLEME + YEREL ÜRÜN KABULÜ TAMAM; uzak tedarik/Windows CI AÇIK**. Sayaçların bellek içi/
+Durum: **TAMAM — yerel ürün yükü, exact 1800 sn soak ve Gitsrv #24 sürekli CI kabulü geçti**. Sayaçların bellek içi/
 PostgreSQL durumu; açık süreç sınırı, oturum/revoke korunumu, atomiklik,
 boyut/expiry ve gerçek performans kanıtı aynı dilimde ele alınır.
 
 K-218 kabul dilimi: gerçek zee-cekirdek 100 kartlık yük reproducer'ı, explicit
 CLI bellek backend'i, atomik/süre/kapasite/iki-süreç testleri ve ADR-089/RFC-0031.
-Exact 1800 sn soak ve gerçek ürün yük kabulü [K-218 kanıtında](incelemeler/k218/README.md); uzak CI tamamlanmadan tam platform kapanışı verilmez. §3/2 doluluk/kota,
+Exact 1800 sn soak ve gerçek ürün yük kabulü [K-218 kanıtında](incelemeler/k218/README.md); Gitsrv sürekli CI tamamlandı; Windows runtime ve sürüm adayı kapıları ayrı açıktır. §3/2 doluluk/kota,
 §3/3 HTTP POST, §3/4 HTML temizleyici ve §3/5 LSP artımlılık açık kalır.

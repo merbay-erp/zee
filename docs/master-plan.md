@@ -1229,3 +1229,13 @@ korunur. Oturum/revoke kalıcı paylaşılır. Çok worker ve restart ortak kota
 vermez; proxy'de ortak limit gerekir. PostgreSQL ve §3/2 kota ayarı/tahliye
 açıktır. Exact 1800 sn soak ve gerçek ürün yük kabulü kapanış kanıtına eklenir;
 yalnız yerel ilk testlerle performans/sürüm hazır ilan edilmez.
+
+K-217/K-218 kapanış (14.10.2026): §2 dalları temiz içerik/gerekçeli kapatma
+ve exact lease silme ile tek master'da toplandı. Süreç başına bellek oran
+seçimi gerçek ürün yükünde 54→2638 tek-worker ve 54→5079 iki-worker
+istek/sn gözlemiyle, exact 1800 sn soak %0 RSS büyümesi ve Gitsrv #24
+başarılı sürekli akışıyla kabul edildi. Kaynak 4e351d34, exact beyan 5a3cb270,
+uzak kanıt 4077efe28; [tam kanıt](incelemeler/k218/README.md). Varsayılan
+ortak kota ve kalıcı oturum paylaşımı korunur; explicit bellek seçiminde
+proxy ortak saldırı bütçesi gerekir. Windows runtime/RC/usability ve
+§3/2–5 açık kalır; bu değişiklik V1 hazır veya canlı yükseltme değildir.

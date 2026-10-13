@@ -1,0 +1,33 @@
+{
+  "provider": "private-forgejo-gitsrv",
+  "source_sha": "4077efe28eab23d8523ee89ee2fd07a793a07060",
+  "compiler_source_commit": "4e351d34de861425c8a35b6ad1ddda6cd3e42707",
+  "run_id": 755,
+  "run_index": 24,
+  "status": "success",
+  "started_utc": "2026-10-13T21:21:13Z",
+  "stopped_utc": "2026-10-13T22:05:11Z",
+  "artifact_sha256": "d743cdbcd3918818d6bf2f67c811b773196546bd0c9e467d1a5bbd67ae99ba77",
+  "linux_phase": {
+    "passed": 778,
+    "expected": 778,
+    "ignored": 0,
+    "phase_seconds": 96.449
+  },
+  "gates_passed": [
+    "private-exact-repo-metadata",
+    "selected-full-source-fetch",
+    "core-freeze-semantic-provenance",
+    "go-equivalence",
+    "clippy-format-doc-spec-drift",
+    "privacy-and-gitleaks",
+    "cargo-deny-and-fuzz-build",
+    "offline-vendor",
+    "wasm-execution",
+    "shared-performance-observation",
+    "windows-msvc-cross-lint-build"
+  ],
+  "windows_runtime_tested": false,
+  "release_candidate_gate": false,
+  "repository_public": false
+}

@@ -59,3 +59,8 @@ eşiği 3,593 sn ile kaldı. Spec/08'in 5 sn correctness sınırı aşılmadı.
 Sonraki tedarik/gizlilik/WASM/Windows adımları koşmadı. Faz artefaktı
 indirildi ve incelendi; bu koşu geçiş değildir. Paylaşılan CI'daki 2 sn
 performans varsayımı normatif 5 sn kilit bütçesine hizalanır.
+
+Gitsrv #24, 4077efe28eab23d8523ee89ee2fd07a793a07060 kaynağında bütün
+akışı başarıyla tamamladı; Linux 778/778 ve MSVC çapraz lint/build geçti.
+K-217 dal kapanışı tamamdır; eski #20/#21/#22/#23 başarısız sonuçları
+geçiş sayılmaz. [Exact yeni CI kanıtı](../k218/gitsrv-ci.json).

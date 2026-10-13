@@ -49,10 +49,10 @@ beyan/semantic koruklar, 23 kurallı gizlilik ve Gitleaks geçti. Birleşik
 tedarik) geçti. İlk denemelerin başarısızlıkları kabul sayılmaz: korpus
 başlığı, test dosyası bütçesi, yüzey sırası ve taşınan kanıt yolu düzeltildi.
 
-1800 sn exact kaynak soak geçti; Gitsrv #24 sonucu beklenir. Soak her dönemde
+1800 sn exact kaynak soak geçti; Gitsrv #24 başarıyla tamamlandı. Soak her dönemde
 32.768 anahtar doldurur; zaman `dönem × 60000 ms` ile deterministik olarak
 ilerler, önceki pencere temizlenir. RSS aynı derleyici/soak sürecindeki bu
-uzun ömürlü tamponu ve ayrı gerçek dillsp sürecini kapsar. Uzak tedarik/Windows CI bitmeden tam platform kabulü veya sürüm hazır sayılmaz. Canlı yükseltme ürün tarafındadır.
+uzun ömürlü tamponu ve ayrı gerçek dillsp sürecini kapsar. Bu dilimin sürekli CI kabulü tamamdır; Windows runtime ve RC/sürüm kapıları ayrı açıktır. Canlı yükseltme ürün tarafındadır.
 
 Gitsrv #23 / 5a3cb270a10e39567243c3b6d10b7302f60cb17c: 774/778.
 Dört kanıt özeti/Rust/Go eşdeğerlik testi, SHA beyanları sonrası bayat
@@ -71,4 +71,30 @@ temiz checkout, 1800 sn, 60 sn pencere, bir ısınma penceresi dışlandı.
 yeni workload eski satırlarla aynı iş yükü olarak karşılaştırılmaz.
 
 Tam 23 kurallı HEAD tarihçesi gizlilik taraması sıfır bulguyla geçti.
-Gitsrv #24 Linux faz/kalite kapısı geçti; sonraki uzak adımlar sürmektedir.
+Gitsrv #24 bütün akış başarıyla tamamlandı.
+
+## Windows kaynak derlenebilirliği
+
+Temiz 4e351d34 kaynağında cargo-xwin 0.23.1, Rust 1.93.1, x86_64 MSVC
+target ile bütün target'lar clippy `-D warnings` ve dil/dillsp release
+derlemesi geçti. Host macOS ARM64, XWIN_ARCH=x86_64; clang-cl Homebrew
+LLVM'den, SDK mevcut xwin cache'inden kullanıldı. Bu yerel çapraz build
+[sınırlı kaynak kanıtıdır](windows-capraz.json); Windows runtime testleri
+ve iki temiz klon/imza/SBOM dağıtım artefaktı yerine geçmez. Gitsrv CI akışı da x86_64 MSVC derleme/lint adımını başarıyla tamamladı.
+
+## Uzak CI kapanışı
+
+Gitsrv #24 / kaynak 4077efe28eab23d8523ee89ee2fd07a793a07060,
+21:21:13–22:05:11 UTC (43 dk 58 sn), **başarılı**.
+[Filtrelenmiş exact sonuç](gitsrv-ci.json), [Linux faz artefaktı](gitsrv-faz.md).
+Linux 778/778, 0 atlanan; metadata/fetch/koruk/Go, clippy/fmt/spec, gizlilik
+ve Gitleaks, cargo-deny/fuzz/offline vendor, gerçek WASM, shared performans
+gözlemi ve Windows MSVC çapraz lint/build geçti. İndirilen artefakt SHA-256
+kaydedildi; özel adres/token/ham metadata yayımlanmadı. Shared ölçüm yeni
+kalıcı taban veya hard eşik değildir; eski performans geçmişi değişmedi.
+
+K-217 dal toparlaması ve K-218 ilk öncelik kabulü kapandı. Sonraki belge
+commit'leri compiler/src değiştirmez; source/beyan/ölçüm SHA'ları korunur.
+Windows runtime, RC fuzz/Miri, insan kullanılabilirlik ve GitHub PR/cache
+dış teyidi bu kapanışın dışında açık kalır. Depo gizli, canlı yükseltme
+ürün tarafındadır. §3/2–5 için yeni kapsam tamamlanmış gösterilmez.
