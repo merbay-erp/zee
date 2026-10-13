@@ -1,0 +1,79 @@
+/* zeedili.com — "30 dakikada Zee" ders sayfası. site.css token'larını kullanır. */
+
+.dene-sayfa { background: var(--kagit); padding: 44px 0 72px; min-height: calc(100dvh - var(--ust)); }
+.dene-izgara { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 56px; align-items: start; }
+
+.ders-paneli { position: sticky; top: calc(var(--ust) + 28px); }
+.ders-sayaci::before { content: ""; display: inline-block; width: 13px; height: 13px; margin-right: 8px; vertical-align: -1px; background: url('/assets/brand/yildiz-altin.svg?v=k191a1') center / contain no-repeat; }
+.ders-sayaci { display: inline-block; margin-bottom: 14px; font: 700 .76rem/1 var(--kod); letter-spacing: .1em; text-transform: uppercase; color: var(--altin-koyu); }
+.ders-ust { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.ders-ust .ders-sayaci { margin: 0; }
+.ders-oklar { display: flex; gap: 6px; }
+.ok-dugme { width: 38px; height: 38px; border-radius: 50%; border: 1.5px solid var(--cizgi-2); background: var(--beyaz); color: var(--murekkep); font-size: 1.05rem; cursor: pointer; }
+.ok-dugme:hover:not([disabled]) { border-color: var(--altin); }
+.ok-dugme[disabled] { opacity: .4; cursor: default; }
+.ders-yolu { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 22px; }
+.ders-yolu button { width: 22px; height: 22px; padding: 0; border: 0; cursor: pointer; background: url('/assets/brand/yildiz-altin.svg?v=k191a1') center / 18px 18px no-repeat; opacity: .28; transition: opacity .15s, transform .15s; }
+.ders-yolu button.gecildi { opacity: .65; }
+.ders-yolu button[aria-current="step"] { opacity: 1; transform: scale(1.25); }
+.ders-yolu button:hover { opacity: 1; }
+.ders-sonraki { display: flex; justify-content: flex-end; margin-top: 6px; }
+.ders-paneli h1 { font-size: clamp(1.9rem, 3.4vw, 2.6rem); margin-bottom: 22px; }
+.ders-metni { font-size: 1.06rem; color: var(--murekkep-2); }
+.ders-metni p { margin-bottom: 14px; }
+.ders-metni ul { margin: 0 0 14px; padding-left: 22px; }
+.ders-metni li { margin-bottom: 6px; }
+.ders-metni b { color: var(--murekkep); }
+.ders-metni .dene-ipucu { margin-top: 20px; padding: 14px 18px; background: var(--beyaz); border: 1.5px dashed var(--altin); border-radius: var(--yaricap); color: var(--murekkep); }
+.ders-notu { margin-top: 14px; font-size: .86rem; color: var(--soluk); }
+
+.ders-calisma { min-width: 0; display: grid; gap: 12px; }
+.etiket-satiri { display: flex; align-items: baseline; gap: 12px; font: 700 .74rem/1 var(--kod); letter-spacing: .1em; text-transform: uppercase; color: var(--soluk); }
+.etiket-satiri > :first-child { margin-right: auto; }
+.etiket-satiri #zee-position, .etiket-satiri #zee-timing { letter-spacing: 0; text-transform: none; font-weight: 500; }
+
+.ders-editor { display: grid; grid-template-columns: auto minmax(0, 1fr); background: var(--beyaz); border: 1.5px solid var(--cizgi-2); border-radius: var(--yaricap); overflow: hidden; }
+.ders-editor:focus-within { border-color: var(--altin); box-shadow: 0 0 0 4px var(--altin-acik); }
+.satir-no { margin: 0; padding: 16px 10px 16px 14px; overflow: hidden; font: .92rem/1.7 var(--kod); text-align: right; color: #b5ab96; user-select: none; background: #fbf7ee; border-right: 1px solid var(--cizgi); min-width: 46px; }
+
+.editor { position: relative; font: .92rem/1.7 var(--kod); tab-size: 4; }
+.editor pre, .editor textarea { margin: 0; padding: 16px 18px; font: inherit; letter-spacing: 0; tab-size: 4; white-space: pre; overflow-wrap: normal; word-break: normal; border: 0; }
+.editor pre { position: absolute; inset: 0; overflow: hidden; pointer-events: none; color: var(--murekkep); }
+.editor textarea { position: relative; display: block; width: 100%; height: 100%; resize: none; background: transparent; color: transparent; caret-color: var(--murekkep); overflow: auto; outline: none; scrollbar-color: var(--cizgi-2) transparent; }
+.editor textarea::selection { background: var(--altin-acik); color: transparent; }
+.ders-editor .editor { height: 330px; }
+
+.eylem-satiri { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.eylem-satiri .run-button, .eylem-satiri #zee-run { margin-left: auto; min-width: 160px; }
+.yazi-dugme { height: 38px; padding: 0 12px; border: 0; border-radius: 999px; background: transparent; color: var(--murekkep-2); font-weight: 700; font-size: .9rem; cursor: pointer; }
+.yazi-dugme:hover { background: var(--beyaz); color: var(--murekkep); }
+
+.cikti-kutusu { margin: 0; min-height: 150px; max-height: 340px; overflow: auto; padding: 16px 18px; background: var(--kagit-koyu); border-radius: var(--yaricap); font: .9rem/1.65 var(--kod); color: var(--murekkep); white-space: pre-wrap; overflow-wrap: anywhere; }
+
+.engine-state { display: inline-flex; align-items: center; gap: 7px; letter-spacing: 0; text-transform: none; font-weight: 600; color: var(--soluk); }
+.engine-state::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--cizgi-2); }
+.engine-state[data-state="ready"] { color: var(--turkuaz-koyu); }
+.engine-state[data-state="ready"]::before { background: var(--turkuaz); }
+.engine-state[data-state="loading"]::before { background: var(--altin); }
+.engine-state[data-state="error"] { color: var(--mercan); }
+.engine-state[data-state="error"]::before { background: var(--mercan); }
+
+.girdi-ayari { background: var(--beyaz); border: 1.5px solid var(--cizgi); border-radius: var(--yaricap); padding: 0 16px; }
+.girdi-ayari[open] { padding-bottom: 16px; }
+.girdi-ayari summary { cursor: pointer; padding: 13px 0; font-weight: 700; color: var(--murekkep-2); }
+.girdi-ayari label { display: block; margin: 8px 0 6px; font: 700 .72rem/1 var(--kod); letter-spacing: .08em; text-transform: uppercase; color: var(--soluk); }
+.girdi-ayari textarea, .girdi-ayari input { width: 100%; border: 1.5px solid var(--cizgi-2); border-radius: 10px; background: #fbf7ee; color: var(--murekkep); font: .88rem/1.5 var(--kod); padding: 9px 12px; }
+.girdi-ayari textarea { height: 92px; resize: vertical; }
+.girdi-ayari input { max-width: 140px; }
+.girdi-ayari textarea:focus, .girdi-ayari input:focus { outline: none; border-color: var(--altin); }
+
+
+@media (max-width: 960px) {
+  .dene-izgara { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  .ders-paneli { position: static; }
+  .ders-editor .editor { height: 280px; }
+}
+@media (max-width: 620px) {
+  .dene-sayfa { padding-top: 28px; }
+  .eylem-satiri #zee-run { min-width: 0; flex: 1 0 100%; order: -1; margin-left: 0; }
+    }

@@ -1,0 +1,56 @@
+name: "İyileştirme"
+description: "Somut ürün ihtiyacı, tekrar üretici ve kabul ölçütleriyle inceleme"
+title: "[İyileştirme] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Talep önce ürün ihtiyacı, minimal değişiklik ve kabul kanıtıyla incelenir.
+        V1 core freeze kuralları geçerlidir; yeni dil özelliği için gerçek dogfood kanıtı gerekir.
+        Açık kayıtlarda anonim örnek kullan; sır ve müşteri/sunucu bilgisi ekleme.
+  - type: textarea
+    id: simdi
+    attributes:
+      label: "Şu an nasıl?"
+    validations:
+      required: true
+  - type: textarea
+    id: olsun
+    attributes:
+      label: "Nasıl olsun?"
+    validations:
+      required: true
+  - type: dropdown
+    id: nerede
+    attributes:
+      label: "Nerede?"
+      options:
+        - "Derleyici & Çekirdek"
+        - "Dil Spesifikasyonu"
+        - "Çalışma Zamanı & Web"
+        - "CLI, LSP ve Playground"
+        - "Paket & Kayıt Defteri"
+        - "Emin değilim"
+      default: 5
+  - type: dropdown
+    id: oncelik
+    attributes:
+      label: "Öncelik"
+      options:
+        - "Acil"
+        - "Yüksek"
+        - "Normal"
+        - "Düşük"
+      default: 2
+    validations:
+      required: true
+  - type: textarea
+    id: kabul
+    attributes:
+      label: "Ne olunca bitti sayarız?"
+  - type: textarea
+    id: ek
+    attributes:
+      label: "Ekran görüntüsü / bağlantı"
+      description: "Görseli buraya sürükleyebilirsin."

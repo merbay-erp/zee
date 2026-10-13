@@ -106,6 +106,11 @@ kapsamında, worker ve restart sınırlarını aşarak iptal edilir.
 | V1-P1-29 İkinci gerçek ürün farklı iş yükünde dilde yazılmıştır | **KAPALI (K-164)** | `dogfood/kanit-ozeti` toplu metin/veri işleme aracıdır (TSV → Markdown; web/DB/ağ yok): 10 birim, 19 birim testi, `docs/kanit-ozeti.md` çıktısı. On altı sürtünme kaydedildi; elmas birim içe alımı ve birim kökenli tanı compiler düzeltmesi oldu, kalanı dilde çözülüp korpusa ret/çözüm çifti olarak girdi. | ADR-072 + `kanit_ozeti_testi` (hermetik koşu, bayt bayt tazelik, determinizm, bağımsız sayım) + `dogfood_korpusu_testi` `proje` kipi + `birim_testi`/`lsp_testi` (elmas, köken) + CI yeniden üretim/diff adımı. |
 | V1-P1-30 Aynı araç Zee, Rust ve Go ile veri temelli karşılaştırılmıştır | **KAPALI (K-165)** | Üç gerçekleme aynı sayfayı bayt bayt üretir; kaynak satırı, test sayısı, derleme/çalışma süresi, tepe RSS ve sürtünme sayısı exact SHA tarihçesindedir. Zee'nin kaybettiği yerler (yorumlayıcı süresi, sıra erişimi/sekme kaçışı/morfoloji kısıtları) belgede açıkça listelenir. | ADR-073 + `dogfood_karsilastirma_testi` (Rust/Go bayt bayt eşdeğerlik, tarihçe SHA ve yeniden hesaplanan satır/test sayıları) + `scripts/dogfood-karsilastirma.sh` + [veri sayfası](dogfood-karsilastirma.md). |
 
+K-203/ADR-081 resmî siteyi gerçek Zee ürünü olarak ekosisteme kazandırır;
+ancak yeni bir V1 kabul kapısı değildir. Gerçek WASM derleyicili yerel
+playground vardır ve site 7 Ekim 2026'dan beri public yayındadır; paket
+araması açıkken site V1 RC'yi kapatmış gösterilemez.
+
 ## Uygulama sırası
 
 1. Güvenli olmayan çalışan web/eşzamanlılık yüzeylerinin opt-in sınırını koru
@@ -427,3 +432,11 @@ WASM kapılarını exact seçili kaynakta çalıştırır; ilgisiz özel dal/eti
 almaz, PR kodu otomatik çalıştırılmaz. Uzak sonuç doğrulanınca kaydedilir;
 Windows runtime kanıtı ve GitHub destek teyidi açık kalır.
 [Karar](../adr/088-git2-gitsrv-kosulari.md).
+
+## K-217 — Tek merkez ve dal incelemesi
+
+Ürün talebi §2: site temiz içerik, issue formları, özel Forgejo MSVC
+çapraz akışı ve incelenmiş action pinleri ana hatta uygulanır. Snapshot
+compiler/CLI genişlemesi core freeze kanıt zinciri olmadığı için kapatılır.
+Dal yedekleri özel; uzak silme ve CI teyidi henüz açıktır.
+[Dal kararları](incelemeler/k217/README.md). Dil/spec/tanı/API değişmez.

@@ -10,3 +10,5 @@ zee-erp	dogfood/zee-erp	de655a81a1c355014176519f5db80c6b4ae5cea2	active
 zee-cekirdek	dogfood/zee-cekirdek	ebca9a6ddcc9c7535ee3204cfe2af3bbb7fc95d7	active
 # urun-e depo dışı gerçek ürünün (urun-e) depo içi kanıt aynasıdır; koken_commit harici urun-e ürün commit'idir (K-210/ADR-083, K-213/ADR-086). Eski ürün E dalı compiler tabanını kullanıyordu; bu ilk ana-hat kaydı gerçek harici kökeni sabitler.
 urun-e	dogfood/urun-e	79eb72e00ecddd11535a5a9de9c338db1dd6da70	active
+# zeedili-com resmî dil platformudur; koken_commit K-203'ün temiz tabanıdır (ADR-081).
+zeedili-com	dogfood/zeedili-com	12c59218dc84e8e9d4610274c722985ce6a99dae	active

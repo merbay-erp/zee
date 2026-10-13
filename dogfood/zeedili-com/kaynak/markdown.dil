@@ -1,0 +1,542 @@
+# Depo belgelerini (Markdown) site HTML'ine çeviren birim.
+# Yalnız depo içi, güvenilir belgeler işlenir; yine de her metin HTML kaçışından
+# geçer ve `javascript:` bağlantıları etkisizleştirilir.
+
+işlem belgeAdi
+    yolu Metin olarak al
+    Metin döndürür
+
+    ad yol olsun
+    yol "docs/" ile başlıyorsa
+        ad yolun "docs/" yerine "" değişmişi olsun
+    değilse yol "spec/" ile başlıyorsa
+        ad yolun "spec/" yerine "spec-" değişmişi olsun
+    değilse yol "adr/" ile başlıyorsa
+        ad yolun "adr/" yerine "adr-" değişmişi olsun
+    değilse yol "rfcs/" ile başlıyorsa
+        ad yolun "rfcs/" yerine "rfc-" değişmişi olsun
+    değilse yol "editors/" ile başlıyorsa
+        ad yolun "editors/" yerine "editor-" değişmişi olsun
+    ad adın ".md" yerine "" değişmişi olsun
+    ad adın küçük harflisi olsun
+    ad adın "-readme" yerine "" değişmişi olsun
+    ad döndür
+
+işlem basliktanKimlik
+    başlığı Metin olarak al
+    Metin döndürür
+
+    işaretler ".", ",", ":", ";", "!", "?", "(", ")", "[", "]", "{", "}", "'", "\"", "`", "/", "\\", "*", "&", "%", "$", "#", "@", "^", "+", "=", "<", ">", "|", "~", "—", "–", "’", "‘", "“", "”", "…", "→", "←", "↔", "·", "«", "»" listesi olsun
+    küçük başlığın küçük harflisi olsun
+    harfler küçüğün harfleri olsun
+    kimlik "" olsun
+    her harf için
+        harf " " e eşitse
+            kimlik kimlik ile "-" olsun
+        değilse işaretlerde harf varsa
+            kimlik kimlik ile "" olsun
+        değilse
+            kimlik kimlik ile harf olsun
+    kimlik döndür
+
+işlem baglantiyiCevir
+    adresi Metin olarak al
+    dizini Metin olarak al
+    listeyi Metin listesi olarak al
+    Metin döndürür
+
+    küçük adresin küçük harflisi olsun
+    küçük "javascript:" ile başlıyorsa
+        "#" döndür
+    adres "http" ile başlıyorsa
+        adres döndür
+    adres "mailto:" ile başlıyorsa
+        adres döndür
+    adres "#" ile başlıyorsa
+        adres döndür
+    parçalar adresin "#" ile parçaları olsun
+    yol parçaların ilki olsun
+    çapa "" olsun
+    parça_sayısı parçaların adedi olsun
+    parça_sayısı 1 den büyükse
+        çapa "#" ile parçaların sonu olsun
+    kök yol olsun
+    yol "../" ile başlıyorsa
+        kök yolun "../" yerine "" değişmişi olsun
+    değilse yol "./" ile başlıyorsa
+        kalan yolun "./" yerine "" değişmişi olsun
+        kök dizin ile "/" ile kalan olsun
+    değilse yol "/" ile başlıyorsa
+        kök yolun "/" yerine "" değişmişi olsun
+    değilse dizin "" e eşitse
+        kök yol olsun
+    değilse
+        kök dizin ile "/" ile yol olsun
+    kök "/" ile bitiyorsa
+        aday kök ile "README.md" olsun
+        listede aday varsa
+            kök aday olsun
+    değilse
+        aday kök ile "/README.md" olsun
+        listede aday varsa
+            kök aday olsun
+    listede kök varsa
+        ad kök için belgeAdi olsun
+        "/belge/" ile ad ile "/" ile çapa döndür
+    "https://github.com/merbay-erp/zee/blob/master/" ile kök ile çapa döndür
+
+# Satır içi biçim: `kod`, **kalın**, *eğik* ve [metin](adres).
+# Tek geçişli durum makinesi; düz metin harf harf HTML kaçışından geçer.
+işlem satirIciniCevir
+    yazıyı Metin olarak al
+    dizini Metin olarak al
+    listeyi Metin listesi olarak al
+    Metin döndürür
+
+    çıktı "" olsun
+    bağ_metni "" olsun
+    kod_parçası "" olsun
+    adres "" olsun
+    kip "metin" olsun
+    önceki_kip "metin" olsun
+    yıldız_bekliyor yanlış olsun
+    kapanış_bekliyor yanlış olsun
+    kalın yanlış olsun
+    eğik yanlış olsun
+    harfler yazının harfleri olsun
+    her harf için
+        işlendi yanlış olsun
+        kip "kod" a eşitse
+            işlendi doğru olsun
+            harf "`" e eşitse
+                kod_html "<code>" ile kod_parçasının html güvenlisi ile "</code>" olsun
+                önceki_kip "bağ" a eşitse
+                    bağ_metni bağ_metni ile kod_html olsun
+                değilse
+                    çıktı çıktı ile kod_html olsun
+                kip önceki_kip olsun
+                kod_parçası "" olsun
+            değilse
+                kod_parçası kod_parçası ile harf olsun
+        değilse kip "adres" e eşitse
+            işlendi doğru olsun
+            harf ")" e eşitse
+                hedef adres ve dizin ve liste ile baglantiyiCevir olsun
+                çıktı çıktı ile "<a href='" ile hedefin html güvenlisi ile "'>" ile bağ_metni ile "</a>" olsun
+                kip "metin" olsun
+                bağ_metni "" olsun
+            değilse
+                adres adres ile harf olsun
+        değilse kapanış_bekliyor ise
+            kapanış_bekliyor yanlış olsun
+            harf "(" e eşitse
+                işlendi doğru olsun
+                kip "adres" olsun
+                adres "" olsun
+            değilse
+                çıktı çıktı ile "[" ile bağ_metni ile "]" olsun
+                bağ_metni "" olsun
+                kip "metin" olsun
+        işlendi değilse
+            yıldız_bekliyor ise
+                harf "*" e eşitse
+                    işlendi doğru olsun
+                    yıldız_bekliyor yanlış olsun
+                    etiket "<strong>" olsun
+                    kalın ise
+                        etiket "</strong>" olsun
+                    kalın değilse
+                        etiket "<strong>" olsun
+                    kalın ise
+                        kalın yanlış olsun
+                    değilse
+                        kalın doğru olsun
+                    kip "bağ" a eşitse
+                        bağ_metni bağ_metni ile etiket olsun
+                    değilse
+                        çıktı çıktı ile etiket olsun
+                değilse
+                    yıldız_bekliyor yanlış olsun
+                    etiket "<em>" olsun
+                    eğik ise
+                        etiket "</em>" olsun
+                    eğik ise
+                        eğik yanlış olsun
+                    değilse
+                        eğik doğru olsun
+                    kip "bağ" a eşitse
+                        bağ_metni bağ_metni ile etiket olsun
+                    değilse
+                        çıktı çıktı ile etiket olsun
+        işlendi değilse
+            harf "*" e eşitse
+                yıldız_bekliyor doğru olsun
+            değilse harf "`" e eşitse
+                önceki_kip kip olsun
+                kip "kod" olsun
+                kod_parçası "" olsun
+            değilse harf "[" e eşitse
+                kip "metin" e eşitse
+                    kip "bağ" olsun
+                    bağ_metni "" olsun
+                değilse
+                    bağ_metni bağ_metni ile "[" olsun
+            değilse harf "]" e eşitse
+                kip "bağ" a eşitse
+                    kapanış_bekliyor doğru olsun
+                değilse
+                    çıktı çıktı ile "]" olsun
+            değilse
+                güvenli harfin html güvenlisi olsun
+                kip "bağ" a eşitse
+                    bağ_metni bağ_metni ile güvenli olsun
+                değilse
+                    çıktı çıktı ile güvenli olsun
+    yıldız_bekliyor ise
+        çıktı çıktı ile "*" olsun
+    kip "kod" a eşitse
+        çıktı çıktı ile "`" ile kod_parçasının html güvenlisi olsun
+    değilse kip "adres" e eşitse
+        çıktı çıktı ile "[" ile bağ_metni ile "](" ile adresin html güvenlisi olsun
+    değilse kip "bağ" a eşitse
+        çıktı çıktı ile "[" ile bağ_metni olsun
+        kapanış_bekliyor ise
+            çıktı çıktı ile "]" olsun
+    kalın ise
+        çıktı çıktı ile "</strong>" olsun
+    eğik ise
+        çıktı çıktı ile "</em>" olsun
+    çıktı döndür
+
+işlem bastanAt
+    yazıyı Metin olarak al
+    sınırı TamSayı olarak al
+    Metin döndürür
+
+    harfler yazının harfleri olsun
+    sonuç "" olsun
+    sayaç 0 olsun
+    her harf için
+        sayacı 1 artır
+        sayaç sınırdan büyükse
+            sonuç sonuç ile harf olsun
+    sonuç döndür
+
+işlem siraNumarasiMi
+    yazıyı Metin olarak al
+    Mantıksal döndürür
+
+    rakamlar "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" listesi olsun
+    noktalı yanlış olsun
+    yazı ". " içeriyorsa
+        noktalı doğru olsun
+    noktalı değilse
+        yanlış döndür
+    parçalar yazının ". " ile parçaları olsun
+    ilk parçaların ilki olsun
+    ilk "" e eşitse
+        yanlış döndür
+    harfler ilkin harfleri olsun
+    her harf için
+        rakamlarda harf yoksa
+            yanlış döndür
+    doğru döndür
+
+işlem basligiBul
+    satırları Metin listesi olarak al
+    Metin döndürür
+
+    her satır için
+        satır "# " ile başlıyorsa
+            başlık satırın "# " yerine "" değişmişi olsun
+            başlığın kırpılmışı döndür
+    "Zee belgesi" döndür
+
+işlem icindekiler
+    satırları Metin listesi olarak al
+    Metin döndürür
+
+    bağlar "" olsun
+    kodda yanlış olsun
+    her satır için
+        satır "```" ile başlıyorsa
+            kodda ise
+                kodda yanlış olsun
+            değilse
+                kodda doğru olsun
+        değilse kodda değilse
+            satır "## " ile başlıyorsa
+                metin satırın "## " yerine "" değişmişi olsun
+                kimlik metin için basliktanKimlik olsun
+                bağlar bağlar ile "<a href='#" ile kimliğin html güvenlisi ile "'>" ile metnin html güvenlisi ile "</a>" olsun
+    bağlar "" e eşitse
+        "" döndür
+    "<aside class='yan-menu' aria-label='Bu belgede'><strong>Bu belgede</strong>" ile bağlar ile "</aside>" döndür
+
+işlem blokKapanisi
+    durumu Metin olarak al
+    tamponu Metin olarak al
+    Metin döndürür
+
+    durum "p" ye eşitse
+        "<p>" ile tampon ile "</p>" döndür
+    durum "ul" ye eşitse
+        "<li>" ile tampon ile "</li></ul>" döndür
+    durum "ol" ye eşitse
+        "<li>" ile tampon ile "</li></ol>" döndür
+    durum "tablo" ya eşitse
+        "</tbody></table></div>" döndür
+    durum "alıntı" ya eşitse
+        "<blockquote><p>" ile tampon ile "</p></blockquote>" döndür
+    "" döndür
+
+işlem kodBlogunuYaz
+    dili Metin olarak al
+    kodu Metin olarak al
+    Metin döndürür
+
+    zee_dilleri "", "dil", "zee", "text" listesi olsun
+    sınıf "" olsun
+    zee_dillerinde dil varsa
+        sınıf " class='zee'" olsun
+    etiket dil olsun
+    dil "" e eşitse
+        etiket "zee" olsun
+    "<figure class='kod'><figcaption><span>" ile etiketin html güvenlisi ile "</span><button class='kod-eylem kopyala' type='button'>Kopyala</button></figcaption><pre><code" ile sınıf ile ">" ile kodun html güvenlisi ile "</code></pre></figure>" döndür
+
+# Blok düzeyi: başlık, paragraf, madde/sıra listesi, kod bloğu, tablo,
+# alıntı ve yatay çizgi. İlk `# ` başlığı sayfa başlığıdır, gövdeye girmez.
+işlem markdownuCevir
+    satırları Metin listesi olarak al
+    dizini Metin olarak al
+    listeyi Metin listesi olarak al
+    Metin döndürür
+
+    bloklar boş liste olsun
+    bloklara "" ekle
+    açık "" olsun
+    tampon "" olsun
+    kodda yanlış olsun
+    kod_dili "" olsun
+    kod_metni "" olsun
+    kod_satırı 0 olsun
+    başlık_geçti yanlış olsun
+    her satır için
+        kodda ise
+            satır "```" ile başlıyorsa
+                parça kod_dili ve kod_metni ile kodBlogunuYaz olsun
+                bloklara parça ekle
+                kodda yanlış olsun
+            değilse
+                kod_satırı 0 dan büyükse
+                    kod_metni kod_metni ile "\n" olsun
+                kod_metni kod_metni ile satır olsun
+                kod_satırını 1 artır
+        değilse
+            düz satırın kırpılmışı olsun
+            tür "metin" olsun
+            düz "" e eşitse
+                tür "boş" olsun
+            değilse düz "```" ile başlıyorsa
+                tür "çit" olsun
+            değilse satır "#" ile başlıyorsa
+                tür "başlık" olsun
+            değilse düz "<!--" ile başlıyorsa
+                tür "yorum" olsun
+            değilse düz "- " ile başlıyorsa
+                tür "madde" olsun
+            değilse düz "* " ile başlıyorsa
+                tür "madde" olsun
+            değilse düz "|" ile başlıyorsa
+                tür "tablo" olsun
+            değilse düz ">" ile başlıyorsa
+                tür "alıntı" olsun
+            değilse düz "---" e eşitse
+                tür "çizgi" olsun
+            değilse düz "***" e eşitse
+                tür "çizgi" olsun
+            değilse
+                sıralı düz için siraNumarasiMi olsun
+                sıralı ise
+                    tür "sıra" olsun
+                değilse satır "  " ile başlıyorsa
+                    açık "ul" ye eşitse
+                        tür "devam" olsun
+                    değilse açık "ol" ye eşitse
+                        tür "devam" olsun
+            gerekli "" olsun
+            tür "metin" e eşitse
+                gerekli "p" olsun
+            değilse tür "madde" ye eşitse
+                gerekli "ul" olsun
+            değilse tür "sıra" ya eşitse
+                gerekli "ol" olsun
+            değilse tür "tablo" ya eşitse
+                gerekli "tablo" olsun
+            değilse tür "alıntı" ya eşitse
+                gerekli "alıntı" olsun
+            değilse tür "devam" e eşitse
+                gerekli açık olsun
+            değilse tür "yorum" a eşitse
+                gerekli açık olsun
+            gerekli açığa eşit değilse
+                kapanış açık ve tampon ile blokKapanisi olsun
+                bloklara kapanış ekle
+                açık "" olsun
+                tampon "" olsun
+            tür "çit" e eşitse
+                kodda doğru olsun
+                kod_dili düz ve 3 ile bastanAt olsun
+                kod_dili kod_dilinin kırpılmışı olsun
+                kod_metni "" olsun
+                kod_satırı 0 olsun
+            değilse tür "başlık" a eşitse
+                düzey "h2" olsun
+                metin düz olsun
+                satır "#### " ile başlıyorsa
+                    düzey "h4" olsun
+                    metin düz ve 5 ile bastanAt olsun
+                değilse satır "### " ile başlıyorsa
+                    düzey "h3" olsun
+                    metin düz ve 4 ile bastanAt olsun
+                değilse satır "## " ile başlıyorsa
+                    metin düz ve 3 ile bastanAt olsun
+                değilse satır "# " ile başlıyorsa
+                    metin düz ve 2 ile bastanAt olsun
+                başlık_mı yanlış olsun
+                satır "# " ile başlıyorsa
+                    başlık_geçti değilse
+                        başlık_mı doğru olsun
+                başlık_mı ise
+                    başlık_geçti doğru olsun
+                değilse
+                    kimlik metin için basliktanKimlik olsun
+                    iç metin ve dizin ve liste ile satirIciniCevir olsun
+                    bloklara "<" ile düzey ile " id='" ile kimliğin html güvenlisi ile "'>" ile iç ile "</" ile düzey ile ">" ekle
+            değilse tür "madde" ye eşitse
+                metin düz ve 2 ile bastanAt olsun
+                iç metin ve dizin ve liste ile satirIciniCevir olsun
+                açık "ul" ye eşitse
+                    bloklara "<li>" ile tampon ile "</li>" ekle
+                değilse
+                    bloklara "<ul>" ekle
+                    açık "ul" olsun
+                tampon iç olsun
+            değilse tür "sıra" ya eşitse
+                parçalar düzün ". " ile parçaları olsun
+                numara parçaların ilki olsun
+                uzunluk numaranın uzunluğu olsun
+                atılacak uzunluk ile 2 nin toplamı olsun
+                metin düz ve atılacak ile bastanAt olsun
+                iç metin ve dizin ve liste ile satirIciniCevir olsun
+                açık "ol" ye eşitse
+                    bloklara "<li>" ile tampon ile "</li>" ekle
+                değilse
+                    bloklara "<ol>" ekle
+                    açık "ol" olsun
+                tampon iç olsun
+            değilse tür "devam" e eşitse
+                iç düz ve dizin ve liste ile satirIciniCevir olsun
+                tampon tampon ile " " ile iç olsun
+            değilse tür "tablo" ya eşitse
+                ayraçsız düzün "|" yerine "" değişmişi olsun
+                ayraçsız ayraçsızın "-" yerine "" değişmişi olsun
+                ayraçsız ayraçsızın ":" yerine "" değişmişi olsun
+                ayraçsız ayraçsızın kırpılmışı olsun
+                hücre_etiketi "td" olsun
+                açık "tablo" ya eşit değilse
+                    bloklara "<div class='tablo-kabugu'><table><thead>" ekle
+                    hücre_etiketi "th" olsun
+                    açık "tablo" olsun
+                ayraçsız "" e eşit değilse
+                    hücreler düzün "|" ile parçaları olsun
+                    hücre_sayısı hücrelerin adedi olsun
+                    sıra 0 olsun
+                    satır_html "<tr>" olsun
+                    her hücre için
+                        sırayı 1 artır
+                        sıra 1 den büyükse
+                            sıra hücre_sayısından küçükse
+                                hücre_metni hücrenin kırpılmışı olsun
+                                iç hücre_metni ve dizin ve liste ile satirIciniCevir olsun
+                                satır_html satır_html ile "<" ile hücre_etiketi ile ">" ile iç ile "</" ile hücre_etiketi ile ">" olsun
+                    satır_html satır_html ile "</tr>" olsun
+                    bloklara satır_html ekle
+                    hücre_etiketi "th" e eşitse
+                        bloklara "</thead><tbody>" ekle
+            değilse tür "alıntı" ya eşitse
+                metin düz ve 1 ile bastanAt olsun
+                metin metnin kırpılmışı olsun
+                iç metin ve dizin ve liste ile satirIciniCevir olsun
+                açık "alıntı" olsun
+                tampon "" e eşitse
+                    tampon iç olsun
+                değilse
+                    tampon tampon ile " " ile iç olsun
+            değilse tür "çizgi" ye eşitse
+                bloklara "<hr>" ekle
+            değilse tür "metin" e eşitse
+                iç düz ve dizin ve liste ile satirIciniCevir olsun
+                açık "p" olsun
+                tampon "" e eşitse
+                    tampon iç olsun
+                değilse
+                    tampon tampon ile " " ile iç olsun
+    kodda ise
+        parça kod_dili ve kod_metni ile kodBlogunuYaz olsun
+        bloklara parça ekle
+    kapanış açık ve tampon ile blokKapanisi olsun
+    bloklara kapanış ekle
+    blokların "" ile birleşmişi döndür
+
+test "belge adı depo yolundan türetilir"
+    a "docs/dil-turu.md" için belgeAdi olsun
+    a "dil-turu" ya eşit olmalı
+    b "spec/README.md" için belgeAdi olsun
+    b "spec" e eşit olmalı
+    c "adr/081-resmi-site-ve-uretim-siniri.md" için belgeAdi olsun
+    c "adr-081-resmi-site-ve-uretim-siniri" ye eşit olmalı
+
+test "başlık kimliği GitHub çapalarıyla uyumludur"
+    k "Kullanıcı kurulumu" için basliktanKimlik olsun
+    k "kullanıcı-kurulumu" ya eşit olmalı
+    m "10. İşlemler (K-038)" için basliktanKimlik olsun
+    m "10-işlemler-k-038" e eşit olmalı
+
+test "bağlantılar sitedeki belgeye ya da GitHub'a gider"
+    liste "docs/dil-turu.md", "spec/04-turler.md" listesi olsun
+    a "../spec/04-turler.md#türler" ve "docs" ve liste ile baglantiyiCevir olsun
+    a "/belge/spec-04-turler/#türler" e eşit olmalı
+    b "../compiler/src/main.rs" ve "docs" ve liste ile baglantiyiCevir olsun
+    b "https://github.com/merbay-erp/zee/blob/master/compiler/src/main.rs" ye eşit olmalı
+    liste2 "spec/README.md", "rfcs/README.md" listesi olsun
+    d "../spec/" ve "docs" ve liste2 ile baglantiyiCevir olsun
+    d "/belge/spec/" ye eşit olmalı
+    e "../rfcs" ve "docs" ve liste2 ile baglantiyiCevir olsun
+    e "/belge/rfc/" ye eşit olmalı
+    c "javascript:alert(1)" ve "docs" ve liste ile baglantiyiCevir olsun
+    c "#" e eşit olmalı
+
+test "satır içi biçimler kaçışlı HTML üretir"
+    liste "docs/dil-turu.md" listesi olsun
+    a "`dil` ve **kalın** <b>x</b> [tur](dil-turu.md)" ve "docs" ve liste ile satirIciniCevir olsun
+    a "<code>dil</code> ve <strong>kalın</strong> &lt;b&gt;x&lt;/b&gt; <a href='/belge/dil-turu/'>tur</a>" e eşit olmalı
+    b "[`zee-io-1` profili](deterministik-io-profili.md)" ve "docs" ve liste ile satirIciniCevir olsun
+    b "<a href='https://github.com/merbay-erp/zee/blob/master/docs/deterministik-io-profili.md'><code>zee-io-1</code> profili</a>" ye eşit olmalı
+
+test "blok düzeyi Markdown site HTML'ine dönüşür"
+    satırlar "# Başlık", "", "Bir **paragraf**", "ikinci satır.", "", "## Bölüm", "- bir", "- iki", "", "1. ilk", "2. ikinci", "", "| a | b |", "|---|---|", "| `x` | y |", "", "```", "x 1 olsun", "```", "> not" listesi olsun
+    liste boş liste olsun
+    listeye "docs/x.md" ekle
+    html satırlar ve "docs" ve liste ile markdownuCevir olsun
+    html "<p>Bir <strong>paragraf</strong> ikinci satır.</p>" içermeli
+    html "<h2 id='bölüm'>Bölüm</h2>" içermeli
+    html "<ul><li>bir</li><li>iki</li></ul>" içermeli
+    html "<ol><li>ilk</li><li>ikinci</li></ol>" içermeli
+    html "<thead><tr><th>a</th><th>b</th></tr></thead><tbody><tr><td><code>x</code></td><td>y</td></tr></tbody></table></div>" içermeli
+    html "<code class='zee'>x 1 olsun</code>" içermeli
+    html "<blockquote><p>not</p></blockquote>" içermeli
+    başlık satırlar için basligiBul olsun
+    başlık "Başlık" a eşit olmalı
+    menü satırlar için icindekiler olsun
+    menü "<a href='#bölüm'>Bölüm</a>" içermeli

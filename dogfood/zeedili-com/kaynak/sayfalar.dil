@@ -1,0 +1,388 @@
+# zeedili.com sayfa içerikleri.
+# Metinler sürüm vaadi değil, çalışan ve belgelenmiş Zee yüzeyini anlatır.
+# Sitedeki her çalıştırılabilir örnek gerçek derleyiciyle doğrulanmıştır.
+
+gorunum birimini kullan
+dersler birimini kullan
+markdown birimini kullan
+
+işlem merhabaKodu
+    Metin döndürür
+    "işlem selamla\n    adı Metin olarak al\n    Metin döndürür\n    \"Merhaba \" ile adı döndür\n\nmesaj \"Zeynep\" için selamla olsun\nmesaj yaz" döndür
+
+işlem notlarKodu
+    Metin döndürür
+    "notlar 85, 92, 78, 64, 99 listesi olsun\ntoplam 0,0 olsun\n\nher not için\n    toplamı notla artır\n\nadet notların adedi olsun\nortalama toplamın adede bölümü olsun\n\"Ortalama: \" ile ortalama yaz\n\ngeçenler boş liste olsun\nher not için\n    not 80 veya daha büyükse\n        geçenlere notu ekle\n\n\"80 ve üstü: \" ile geçenlerin adedi ile \" öğrenci\" yaz" döndür
+
+işlem kitapKodu
+    Metin döndürür
+    "yapı Kitap\n    ad Metin\n    yazar Metin\n    yıl TamSayı\n\nkitap yeni Kitap olsun\nkitabın adı \"Çalıkuşu\" olsun\nkitabın yazarı \"Reşat Nuri Güntekin\" olsun\nkitabın yılı 1922 olsun\n\nraf boş liste olsun\nrafa kitabı ekle\nrafın json metni yaz" döndür
+
+işlem faktoriyelKodu
+    Metin döndürür
+    "işlem faktöriyelini hesapla\n    sayıyı TamSayı olarak al\n    TamSayı döndürür\n\n    sayı 1 den küçükse\n        1 döndür\n    bir_eksiği sayı ile 1 in farkı olsun\n    alt bir_eksiği için faktöriyelini hesapla olsun\n    sonucu sayı ile altın çarpımı olsun\n    sonucu döndür\n\ntest \"faktöriyel doğru hesaplanır\"\n    sonuç 5 için faktöriyelini hesapla olsun\n    sonuç 120 ye eşit olmalı\n\nsonuç 5 için faktöriyelini hesapla olsun\n\"5! = \" ile sonuç yaz" döndür
+
+işlem fizzKodu
+    Metin döndürür
+    "1 den 15 e kadar her sayı için\n    k15 sayının 15 e bölümünden kalanı olsun\n    k3 sayının 3 e bölümünden kalanı olsun\n    k5 sayının 5 e bölümünden kalanı olsun\n    k15 0 a eşitse\n        \"FizzBuzz\" yaz\n    değilse k3 0 a eşitse\n        \"Fizz\" yaz\n    değilse k5 0 a eşitse\n        \"Buzz\" yaz\n    değilse\n        sayıyı yaz" döndür
+
+işlem sunucuKodu
+    Metin döndürür
+    "8080 kapısında sunucu başlat\n\nGET \"/\" adresine istek geldiğinde\n    \"Merhaba, web!\" yanıtını gönder\n\nGET \"/durum\" adresine istek geldiğinde\n    \"çalışıyor\" yanıtını gönder\n\nGET \"/hazir\" adresine istek geldiğinde\n    \"hazır değil\" yanıtını 503 durumuyla gönder" döndür
+
+işlem taniTerminali
+    Metin döndürür
+    satırlar "<span class='istem'>$</span> dil çalıştır tur.dil\n<span class='tani-hata'>HATA T002</span>\n\n\"sayı\" daha önce TamSayı olarak tanımlandı; şimdi Metin verilemez.\n\n<span class='tani-satir'>2 |</span> sayı \"kırk iki\" olsun\n    <span class='tani-isaret'>^^^^</span>\n\n<span class='tani-oneri'>Öneri:</span>\nBir değerin türü sonradan değişemez. Farklı türde bir değer gerekiyorsa yeni bir ad kullan; ya da \"sayı\" değerine yine TamSayı türünde bir değer ver.\n\n<span class='tani-ipucu'>Ayrıntı için: dil hata T002</span>" olsun
+    "tur.dil — gerçek derleyici çıktısı" ve satırlar ile terminaliHazirla döndür
+
+işlem defterSekmesi
+    adı Metin olarak al
+    kodu Metin olarak al
+    çıktıyı Metin olarak al
+    Metin döndürür
+
+    blok "örnek.dil" ve kod ile calisanKoduHazirla olsun
+    "<div class='defter-sayfasi' data-defter-sayfa='" ile adın html güvenlisi ile "'>" ile blok ile "<div class='defter-cikti'><span>Çıktı</span><pre>" ile çıktının html güvenlisi ile "</pre></div></div>" döndür
+
+işlem anasayfaGovdesiniHazirla
+    Metin döndürür
+
+    tani_terminali taniTerminali olsun
+    muhur "<span class='muhur' aria-hidden='true'><img class='muhur-zemin' src='/assets/brand/yildiz.svg?v=k192a1' alt=''><img class='muhur-z' src='/assets/brand/zee-mark-acik.svg?v=k192a1' alt=''></span>" olsun
+    cozumleme "<figure class='cozumleme'>" ile muhur ile "<figcaption>Cümle çözümlemesi</figcaption><div class='cumle'><span class='sozcuk ad'>mesaj<small>ad</small></span><span class='sozcuk deger'>\"Zeynep\"<small>değer</small></span><span class='sozcuk bag'>için<small>bağ</small></span><span class='sozcuk islem'>selamla<small>işlem</small></span><span class='sozcuk yuklem'>olsun<small>yüklem</small></span></div><div class='cumle'><span class='sozcuk ad'>mesaj<small>ad</small></span><span class='sozcuk yuklem'>yaz<small>yüklem</small></span></div><p class='cozum-notu'>Zee'de anahtar kelime yoktur: cümlenin ne yaptığını son kelime, yani <b>yüklem</b> söyler. Derleyici ekleri ve sırayı Türkçe dilbilgisiyle çözer.</p><div class='cozum-cikti'><span>Çıktı</span><b>Merhaba Zeynep</b></div></figure>" olsun
+    giris "<section class='giris'><div class='kabuk giris-izgara'><div class='giris-metin'><a class='surum-cipi' href='/yol-haritasi/'><img src='/assets/brand/yildiz-altin.svg?v=k192a1' alt=''><b>0.8.0-dev</b>V1 yolunda</a><h1>Türkçe yaz,<br><span>kesin çalıştır.</span></h1><p class='giris-ozet'>Zee, Türkçenin ek ve cümle yapısını gerçek bir derleyici semantiğine dönüştüren, statik türlü ve genel amaçlı bir programlama dilidir. Çocuğun başlayabildiği, profesyonelin bırakmak zorunda kalmadığı tek dil.</p><div class='giris-eylem'><a class='dugme' href='/playground/'>30 dakikada Zee</a><a class='dugme cizgili' href='/indir/'>Kur</a></div><ul class='giris-notlari'><li>Kurulum gerekmez</li><li>Kod tarayıcıda çalışır</li><li>Türkçe hata mesajları</li></ul></div>" ile cozumleme ile "</div></section><div class='bordur-serit' aria-hidden='true'></div>" olsun
+    k1 "işlem selamla\n    adı Metin olarak al\n    Metin döndürür\n    \"Merhaba \" ile adı döndür\n\nmesaj \"Zeynep\" için selamla olsun\nmesaj yaz" olsun
+    k2 "meyveler \"kiraz\", \"incir\", \"kayısı\" listesi olsun\nmeyvelere \"elma\" ekle\n\nher meyve için\n    meyveyi yaz\n\nsıralı meyvelerin sıralanmışı olsun\nsıralının json metni yaz" olsun
+    k3 "sıcaklık 28 olsun\n\nsıcaklık 25 ten büyükse\n    \"Maraş dondurması zamanı!\" yaz\ndeğilse\n    \"Ceketini al.\" yaz\n\n0,1 ile 0,2 nin toplamı yaz" olsun
+    k4 "söz \"ılık ılık esen rüzgâr\" olsun\nsözün büyük harflisi yaz\n\nplakalar boş sözlük olsun\nplakaların \"Ankara\" değeri 6 olsun\nplakaların \"İzmir\" değeri 35 olsun\n\nplakalardaki her şehir için\n    şehir ile \" → \" ile plakaların şehir değeri yaz" olsun
+    d1 "selamla" ve k1 ve "Merhaba Zeynep" ile defterSekmesi olsun
+    d2 "liste" ve k2 ve "kiraz\nincir\nkayısı\nelma\n[\"elma\",\"incir\",\"kayısı\",\"kiraz\"]" ile defterSekmesi olsun
+    d3 "karar" ve k3 ve "Maraş dondurması zamanı!\n0,3" ile defterSekmesi olsun
+    d4 "turkce" ve k4 ve "ILIK ILIK ESEN RÜZGÂR\nAnkara → 6\nİzmir → 35" ile defterSekmesi olsun
+    sekmeler "<div class='defter-sekmeleri' role='tablist' aria-label='Örnekler'><button type='button' role='tab' aria-selected='true' data-defter='selamla'><b>İşlem</b><span>Tanımla ve çağır</span></button><button type='button' role='tab' aria-selected='false' data-defter='liste'><b>Liste</b><span>Türkçe çoğul ve sıralama</span></button><button type='button' role='tab' aria-selected='false' data-defter='karar'><b>Karar</b><span>Koşul ve onluk aritmetik</span></button><button type='button' role='tab' aria-selected='false' data-defter='turkce'><b>Türkçe</b><span>ı/İ ve sözlük</span></button></div>" olsun
+    defter "<section class='bolum'><div class='kabuk'><div class='sol-baslik'><span class='ust-yazi-k'>Örnek defteri</span><h2>Okur gibi yazarsın.</h2><p>Her örnek gerçek derleyiciden geçer; çıktısı yanında. “Çalıştır” ile derslerde aç, değiştir, yeniden dene.</p></div><div class='defter' data-defter-kutusu>" ile sekmeler ile "<div class='defter-sayfalari'>" ile d1 ile d2 ile d3 ile d4 ile "</div></div></div></section>" olsun
+    karolar "<div class='karolar'><article class='karo'><img src='/assets/brand/lale.svg?v=k192a1' alt=''><span class='karo-no'>01</span><h3>Türkçe dilbilgisi</h3><p>Ekler süs değil, anlamdır: <code>kitabın adı</code> alan erişimi, <code>toplamı notla artır</code> bir güncellemedir. Sürümlü <code>zee-tr-1</code> profili eski kodun anlamını korur.</p></article><article class='karo'><img src='/assets/brand/yildiz-altin.svg?v=k192a1' alt=''><span class='karo-no'>02</span><h3>Kesin türler</h3><p>Türler çıkarılır, sınırda tam imza yazılır. <code>null</code> yoktur: olmayabilen değer <code>Seçenek</code>, başarısız olabilen iş <code>Sonuç</code>tur.</p></article><article class='karo'><img src='/assets/brand/karo.svg?v=k192a1' alt=''><span class='karo-no'>03</span><h3>Aynı girdi, aynı sonuç</h3><p>Rastgelelik, saat ve dosyalar <code>zee-io-1</code> profilinden geçer. Ondalık onluk aritmetiktir: <code>0,1 + 0,2</code> tam <code>0,3</code>.</p></article><article class='karo'><img src='/assets/brand/lale.svg?v=k192a1' alt=''><span class='karo-no'>04</span><h3>Güvenli varsayılan</h3><p>Proje ağa ve dosyalara kapalı doğar; izinler <code>proje.dil</code> içinde açıkça yazılır. Çocuk modu ağı tamamen kapatır.</p></article></div>" olsun
+    neden "<section class='bolum kagit'><div class='kabuk'><div class='bolum-basligi'><h2>Zee'nin dört sözü</h2><p>Çocuğun başlayabildiği, profesyonelin bırakmak zorunda kalmadığı tek dil. Zee <b>okunabilir</b> görünmekle yetinmez; <b>kesin</b> çalışır.</p></div>" ile karolar ile "</div></section>" olsun
+    tani "<section class='bolum'><div class='kabuk iki-sutun'><div class='metin-blogu'><span class='ust-yazi-k'>Derleyici Türkçe konuşur</span><h2>Hata mesajı bir derstir.</h2><p>Her tanı kesin satır ve sütunu gösterir, nedenini anlatır, doğru biçimi önerir ve kararlı bir kod taşır.</p><ul class='tikli'><li>Kararlı tanı kodları ve eksiksiz hata kataloğu</li><li>Kaynakta kesin aralık, tahmin değil</li><li>Sık hatalarda öneri ve örnek</li><li>Editörler için <code>dil denetle --json</code> çıktısı</li></ul><a class='baglanti' href='/belge/hata-katalogu/'>Hata kataloğunu aç →</a></div><div>" ile tani_terminali ile "</div></div></section>" olsun
+    manifesto "<section class='manifesto-seridi'><div class='kabuk dar'><img class='ayrac' src='/assets/brand/ayrac.svg?v=k192a1' alt=''><blockquote>Kendi dilinde düşünüp kendi dilinde inşa edebilsin diye.</blockquote><p>Zee, Zeynep Eliz Erbay için doğdu: çocukken yaklaşılabilen, büyüdükçe derinleşen ve profesyonel hayatta bırakılmak zorunda kalınmayan bir dil olsun diye.</p><a href='/manifesto/'>Manifestoyu oku →</a></div></section>" olsun
+    araclar "<section class='bolum desenli'><div class='kabuk'><div class='bolum-basligi'><h2>Tek komut: <code>dil</code></h2><p>Derleyici, test koşucusu, biçimleyici, paket yöneticisi ve editör sunucusu aynı ikilide gelir.</p></div><div class='komutlar'><div class='komut'><code>yeni</code><span>Yeni proje klasörü oluşturur</span></div><div class='komut'><code>çalıştır</code><span>Dosyayı ya da projeyi çalıştırır</span></div><div class='komut'><code>denetle</code><span>Çalıştırmadan sözdizimi ve türleri denetler</span></div><div class='komut'><code>dene</code><span>Test bloklarını hermetik koşar</span></div><div class='komut'><code>biçimle</code><span>Kodu kanonik biçime getirir</span></div><div class='komut'><code>ekle</code><span>Paketi doğrulayıp ekler ve kilitler</span></div><div class='komut'><code>paketle</code><span>Ed25519 imzalı paket üretir</span></div><div class='komut'><code>göçür</code><span>PostgreSQL migration'larını güvenle uygular</span></div><div class='komut'><code>hata</code><span>Bir tanı kodunu Türkçe açıklar</span></div></div><p class='not-satiri'>Editör desteği: tanı, tamamlama, hover, tanıma git ve ekleri koruyarak yeniden adlandırma sunan dil sunucusu <code>dillsp</code> ve <a href='/belge/editor/'>VS Code uzantısı</a>.</p></div></section><div class='bordur-serit' aria-hidden='true'></div>" olsun
+    kitle "<section class='bolum'><div class='kabuk'><div class='bolum-basligi'><h2>Dört yaşındaki meraktan üretim sistemlerine</h2></div><div class='kitle'><article><img class='kitle-simge' src='/assets/brand/lale.svg?v=k192a1' alt=''><span class='seviye'>İlk adım</span><h3>Çocuklar ve ilk kez kodlayanlar</h3><p>Kurulumsuz dersler, hikâye ve oyun projeleri, ağı kapatan güvenli mod. Kod, kendi dilinde okunur.</p><a href='/playground/'>30 dakikada Zee →</a></article><article><img class='kitle-simge' src='/assets/brand/yildiz-altin.svg?v=k192a1' alt=''><span class='seviye'>Gelişim</span><h3>Öğrenciler ve öğretmenler</h3><p>Algoritma, veri yapıları, birimler ve testlerle çok dosyalı projeler. Öğretmen rehberi ve proje kitaplığı hazır.</p><a href='/ogren/'>Öğrenme yolu →</a></article><article><img class='kitle-simge' src='/assets/brand/karo.svg?v=k192a1' alt=''><span class='seviye'>Üretim</span><h3>Profesyonel geliştiriciler</h3><p>Tür sözleşmeleri, yapılandırılmış hata, PostgreSQL, güvenli web profili, imzalı paketler ve sürüm kapıları.</p><a href='/dil/'>Dil turu →</a></article></div></div></section>" olsun
+    site_kodu "sayfalar birimini kullan\n\n8126 kapısında sunucu başlat\n\nGET \"/\" adresine istek geldiğinde\n    yanit_govdesi anasayfayiHazirla olsun\n    yanit_govdesi yanıtını gönder\n\nGET \"/canli\" adresine istek geldiğinde\n    \"canlı\" yanıtını gönder" olsun
+    site_blogu "zeedili-com/kaynak/ana.dil" ve site_kodu ile kodBlogunuHazirla olsun
+    dogfood "<div class='bordur-serit' aria-hidden='true'></div><section class='bolum kagit'><div class='kabuk iki-sutun ters'><div class='metin-blogu'><span class='ust-yazi-k'>Kendi ürününde sınanır</span><h2>Bu site Zee ile yazıldı.</h2><p>Okuduğun sayfanın rotaları, HTML'i ve SEO verisi bir Zee programından gelir; Nginx yalnız TLS ve statik dosyaları taşır. Derslerde çalışan, Rust ile yazılmış bootstrap derleyicinin WebAssembly derlemesidir; Zee kaynağını doğrudan WASM'e çeviren backend henüz yok.</p><p>Zee'ye yeni bir özellik ancak gerçek bir üründe ihtiyaç kanıtlanınca girer. Bu site de o ürünlerden biridir.</p><a class='baglanti' href='https://github.com/merbay-erp/zee/tree/master/dogfood' rel='noreferrer'>Dogfood projelerini incele →</a></div><div>" ile site_blogu ile "</div></div></section>" olsun
+    haberler "<div><h2>Gelişmeler</h2><article class='haber'><h3>Rust gerektirmeyen kurulum</h3><p>Derlenmiş <code>dil</code> ve <code>dillsp</code> artık Rust olmadan çalışıyor. Linux, macOS ve Windows'ta iki temiz klondan bayt bayt aynı ikili üretildi; kur, çalıştır, LSP ve kaldır tatbikatları geçti.</p><small>12 Ekim 2026 · <a href='/indir/#platformlar'>Platformlar</a></small></article><article class='haber'><h3>Güvenli oturum listesi ve tekil iptal</h3><p>Web uygulamaları kullanıcının açık oturumlarını ham çerez sırrı göstermeden listeleyip tek bir cihazdan çıkış yaptırabiliyor. Zee ERP'nin gerçek ihtiyacından doğdu.</p><small>Ekim 2026 · <a href='/dil/#web'>Dil turu: Web</a></small></article><article class='haber'><h3>zeedili.com ve 30 dakikada Zee</h3><p>Resmî site Zee ile yazıldı. Tarayıcıda gerçek derleyiciyle çalışan 16 derslik başlangıç eklendi.</p><small>Ekim 2026 · <a href='/playground/'>Derslere başla</a></small></article><p><a href='/belge/surumler/' rel='noreferrer'>Bütün sürüm notları →</a></p></div>" olsun
+    durum "<div><h2>Durum</h2><ul class='durum-listesi'><li><i class='nokta tamam'></i><div><b>Çekirdek dil ve tür sistemi</b><span>Türlü HIR, hata modeli, morfoloji profili, public API</span></div></li><li><i class='nokta tamam'></i><div><b>Gerçek ürün dogfood'u</b><span>Web, PostgreSQL, oturum, güvenlik, medya</span></div></li><li><i class='nokta suruyor'></i><div><b>Üç platform kurulumu</b><span>Tatbikatlar geçti; temiz fiziksel makine ve minimum OS kanıtı açık</span></div></li><li><i class='nokta suruyor'></i><div><b>İnsan kanıtı</b><span>Çocuk ve profesyonel kullanılabilirlik oturumları</span></div></li><li><i class='nokta'></i><div><b>V1 sürüm adayı</b><span>Uzun soak, ilk imzalı artefakt yayını</span></div></li><li><i class='nokta'></i><div><b>Native/WASM backend</b><span>Zee kaynağından doğrudan kod üretimi ve self-hosting</span></div></li></ul><p class='not-satiri'>Henüz 1.0 değil. <a href='/yol-haritasi/'>Yol haritası →</a></p></div>" olsun
+    gelismeler "<section class='bolum'><div class='kabuk gelismeler'>" ile haberler ile durum ile "</div></section>" olsun
+    cagri "<section class='bolum kagit'><div class='kabuk'><div class='cagri'><div><h2>Beş dakikada ilk programın.</h2><p>Tarayıcıda kurulumsuz başla ya da derleyiciyi kaynaktan kur.</p></div><div class='eylem'><a class='dugme altin' href='/playground/'>30 dakikada Zee</a><a class='dugme cizgili' href='/indir/'>Kurulum</a></div></div></div></section>" olsun
+    giris ile defter ile neden ile tani ile manifesto ile araclar ile kitle ile dogfood ile gelismeler ile cagri döndür
+
+işlem playgroundSayfasiGovdesiniHazirla
+    Metin döndürür
+
+    dersler dersleriHazirla olsun
+    panel "<div class='ders-paneli'><div class='ders-ust'><span class='ders-sayaci' id='ders-sayaci'>Ders 1</span><div class='ders-oklar'><button id='ders-geri' class='ok-dugme' type='button' aria-label='Önceki ders'>←</button><button id='ders-ileri' class='ok-dugme' type='button' aria-label='Sonraki ders'>→</button></div></div><nav id='ders-yolu' class='ders-yolu' aria-label='Ders yolu'></nav><h1 id='zee-example-title'>30 dakikan var mı? Zee'yi dene!</h1><div id='zee-example-summary' class='ders-metni'><p>Dersler yükleniyor…</p></div><p class='ders-notu'>Derleyici bu sekmede WASM ABI v3 ile çalışır. Kaynak, girdi ve tohum sunucuya gönderilmez.</p></div>" olsun
+    editor "<div class='etiket-satiri'><label for='zee-editor'>Editör</label><span id='zee-position'>Satır 1, Sütun 1</span></div><div class='ders-editor'><pre id='zee-lines' class='satir-no' aria-hidden='true'>1</pre><div class='editor' data-editor><pre aria-hidden='true'><code></code></pre><textarea id='zee-editor' spellcheck='false' autocapitalize='off' autocomplete='off' autocorrect='off'></textarea></div></div>" olsun
+    eylemler "<div class='eylem-satiri'><button id='zee-reset' class='dugme altin kucuk' type='button'>Örneği yükle</button><button id='zee-copy' class='yazi-dugme' type='button'>Kopyala</button><button id='zee-download' class='yazi-dugme' type='button'>.dil indir</button><button id='zee-share' class='yazi-dugme' type='button'>Paylaş</button><button id='zee-run' class='dugme' type='button'>▶ Çalıştır</button></div>" olsun
+    cikti "<div class='etiket-satiri'><span>Çıktı</span><span id='zee-engine-status' class='engine-state'>Başlatılıyor</span><span id='zee-timing'></span></div><pre id='zee-output' class='cikti-kutusu' aria-live='polite'>Derleyici yükleniyor…</pre><details class='girdi-ayari' id='girdi-kutusu'><summary>Program girdisi ve rastgele tohumu</summary><label for='zee-input'>Her satır bir cevap</label><textarea id='zee-input' spellcheck='false'></textarea><label for='zee-seed'>Rastgele tohumu</label><input id='zee-seed' type='number' min='1' value='1'></details>" olsun
+    gezinme "<div class='ders-sonraki'><button id='ders-ileri-alt' class='dugme altin kucuk' type='button'>Sonraki ders →</button></div>" olsun
+    "<section class='dene-sayfa'><div class='kabuk dene-izgara' data-zee-workbench>" ile panel ile "<div class='ders-calisma'>" ile editor ile eylemler ile cikti ile gezinme ile "</div>" ile dersler ile "</div></section>" döndür
+
+işlem turAdimi
+    adı Metin olarak al
+    yazıyı Metin olarak al
+    kodu Metin olarak al
+    Metin döndürür
+    blok "örnek.dil" ve kod ile calisanKoduHazirla olsun
+    "<div class='tur-adimi'><div><h3>" ile ad ile "</h3><p>" ile yazı ile "</p></div>" ile blok ile "</div>" döndür
+
+işlem dilSayfasiGovdesiniHazirla
+    Metin döndürür
+    kitap_kodu kitapKodu olsun
+    faktoriyel_kodu faktoriyelKodu olsun
+    sunucu_kodu sunucuKodu olsun
+
+    baslik "Dil turu" ve "Dil turu" ve "Zee'nin çalışan yüzeyi, kolaydan zora. Buradaki her örnek gerçek derleyiciden geçer; Çalıştır ile tarayıcıda dene." ile icSayfaBasliginiHazirla olsun
+    yan "<aside class='yan-menu' aria-label='Bu sayfada'><strong>Bu sayfada</strong><a href='#okuma'>Okuma anahtarı</a><a href='#temel'>Değerler ve akış</a><a href='#veri'>Veri yapıları</a><a href='#islemler'>İşlemler</a><a href='#guven'>Seçenek ve Sonuç</a><a href='#test'>Testler</a><a href='#web'>Web</a><a href='#derleyici'>Derleyici hattı</a><a href='#sinirlar'>Sınırlar</a></aside>" olsun
+    okuma_kodu "\"Dünyaya merhaba\" yaz\n\nisim \"Ayşe\" olsun\n\"Benim adım \" ile isim yaz" olsun
+    okuma_blogu "okuma.dil" ve okuma_kodu ile calisanKoduHazirla olsun
+    okuma "<section id='okuma'><h2>Okuma anahtarı</h2><p>Zee'de ayrılmış anahtar kelime yoktur. <strong>Cümlenin ne yaptığını son kelimesi, yani yüklemi söyler:</strong> <code>yaz</code>, <code>olsun</code>, <code>tekrarla</code>, <code>döndür</code>. Türkçenin yüklem-sonlu yapısı dilin ayrıştırma kuralıdır. Bu sitedeki renklendirme de yüklemi vurgular.</p>" ile okuma_blogu ile "</section>" olsun
+    a1 "Değerler" ve "Ad <code>olsun</code> ile bağlanır; türü çıkarılır ve sonradan değişmez. Ondalık bitişik virgülle yazılır ve onluk aritmetikle hesaplanır." ve "ad \"Zeynep\" olsun\nyaş 7 olsun\nboy 1,22 olsun\nhazır doğru olsun\n\"Merhaba \" ile ad yaz\n0,1 ile 0,2 nin toplamı yaz" ile turAdimi olsun
+    a2 "Koşullar" ve "Koşul da yüklemle biter: <code>-se/-sa</code>. <code>değilse</code> ile zincirlenir; <code>ve</code> ile <code>veya</code> aynı koşulda karışmaz." ve "yaş 7 olsun\nyaş 8 veya daha büyükse\n    \"Programlamaya başlayabilirsin!\" yaz\ndeğilse\n    \"Biraz daha oyun zamanı\" yaz" ile turAdimi olsun
+    a3 "Döngüler" ve "Dört döngü: <code>kez tekrarla</code>, aralıkta <code>her … için</code>, <code>olduğu sürece</code> ve <code>olana kadar tekrarla</code>. Sayıya gelen ek ayrı yazılır: <code>1 den</code>." ve "3 kez tekrarla\n    \"Merhaba\" yaz\n\n1 den 10 a kadar her sayı için\n    sayı çiftse\n        sayıyı yaz" ile turAdimi olsun
+    temel "<section id='temel'><h2>Değerler ve akış</h2>" ile a1 ile a2 ile a3 ile "</section>" olsun
+    v1 "Listeler" ve "<code>her sayı için</code> listeyi örtük çoğuldan bulur: <code>sayı → sayılar</code>. Metinler Türk alfabesine göre sıralanır." ve "sayılar 3, 7, 1, 9 listesi olsun\nsayılara 5 ekle\n\"Adet: \" ile sayıların adedi yaz\n\nsıralı sayıların sıralanmışı olsun\nsıralının json metni yaz" ile turAdimi olsun
+    v2 "Sözlükler" ve "Ekleme sırası korunur; gezme her çalışmada aynı sırayı verir." ve "plakalar boş sözlük olsun\nplakaların \"İstanbul\" değeri 34 olsun\nplakaların \"Ankara\" değeri 6 olsun\nplakaların \"İzmir\" değeri 35 olsun\n\nplakalardaki her şehir için\n    şehir ile \" → \" ile plakaların şehir değeri yaz" ile turAdimi olsun
+    v4 "Türkçe harfler" ve "Büyük/küçük harf dönüşümü Türkçe kurallıdır: <code>ı → I</code>, <code>i → İ</code>. Pek çok dilde bozulan bu kural Zee'de doğrudur; metinler de Türk alfabesine göre sıralanır." ve "söz \"ılık ılık esen rüzgâr\" olsun\nsözün büyük harflisi yaz\n\nad \"İSTANBUL\" olsun\nadın küçük harflisi yaz" ile turAdimi olsun
+    v3 "Yapılar" ve "Alan erişimi iyelik ekiyle yapılır: <code>kitabın adı</code>. Yapı listeleri kayıt tablosudur ve doğrudan JSON'a dönüşür." ve kitap_kodu ile turAdimi olsun
+    veri "<section id='veri'><h2>Veri yapıları</h2>" ile v1 ile v4 ile v2 ile v3 ile "</section>" olsun
+    i1 "Açık imzalı işlem" ve "Parametreler gövdenin başında <code>… al</code> satırlarıdır, değer <code>döndür</code> ile çıkar. Çağrı Türkçe cümle gibidir: argüman + <code>için</code> + işlem adı." ve "işlem yarısını bul\n    sayıyı Ondalık olarak al\n    Ondalık döndürür\n    sonuç sayının 2 ye bölümü olsun\n    sonucu döndür\n\nyarım 7 için yarısını bul olsun\nyarım yaz" ile turAdimi olsun
+    i2 "Desen eşleştirme" ve "<code>göre</code> bir değeri dallara ayırır; <code>değilse</code> kalan durumları toplar." ve "şekil \"kare\" olsun\n\nşekle göre\n    \"daire\" ise\n        \"Köşesi yok\" yaz\n    \"kare\" ise\n        \"4 köşesi var\" yaz\n    değilse\n        \"Bu şekli tanımıyorum\" yaz" ile turAdimi olsun
+    islemler "<section id='islemler'><h2>İşlemler</h2>" ile i1 ile i2 ile "</section>" olsun
+    g1 "Seçenek" ve "<code>yok döndür</code> içeren işlem Seçenek üretir. <code>bulunanın değeri</code> yalnız <code>varsa</code> dalında okunabilir; dal dışında derleme hatasıdır." ve "işlem ilk çift sayıyı bul\n    sayıları al\n    her sayı için\n        sayı çiftse\n            sayıyı döndür\n    yok döndür\n\nbulunan 3, 8, 5 listesi için ilk çift sayıyı bul olsun\n\nbulunan varsa\n    \"Bulundu: \" ile bulunanın değeri yaz\ndeğilse\n    \"Çift sayı yok\" yaz" ile turAdimi olsun
+    sonuc_kodu "\"Yaşın kaç?\" diye sor\nsonuç yanıtın sayısını almayı dene olsun\n\nsonuç başarılıysa\n    \"Sayı aldım: \" ile sonucun değeri yaz\ndeğilse\n    \"Bu bir sayı değil: \" ile sonucun hatası yaz" olsun
+    sonuc_blogu "yas.dil" ve sonuc_kodu ile kodBlogunuHazirla olsun
+    guven "<section id='guven'><h2>Seçenek ve Sonuç</h2><p>Zee'de <code>null</code> yoktur. Olmayabilen değer bir türdür, beklenen hata da bir değerdir.</p>" ile g1 ile "<div class='tur-adimi'><div><h3>Sonuç</h3><p>Beklenen hatalar <code>… dene</code> ile Sonuç'a dönüşür. Hata değeri kod, neden ve veri taşıyan yapılandırılmış bir zincirdir. Bu örnek girdi ister; çalışma alanındaki girdi kutusuyla dene.</p></div>" ile sonuc_blogu ile "</div></section>" olsun
+    test_blogu "faktoriyel.dil" ve faktoriyel_kodu ile calisanKoduHazirla olsun
+    test_bolumu "<section id='test'><h2>Testler</h2><p>Testler dilin parçasıdır. <code>dil dene</code> onları taze ortamda koşar; rastgelelik, saat ve dosyalar test dünyasından gelir, bu yüzden aynı test her makinede aynı sonucu verir.</p>" ile test_blogu ile "</section>" olsun
+    web_blogu "sunucu.dil" ve sunucu_kodu ile kodBlogunuHazirla olsun
+    oturum_kodu "oturumlar kullanıcı ile web oturumlarını listelemeyi dene olsun\niptal kimlik ile web oturumunu iptal etmeyi dene olsun" olsun
+    oturum_govdesi "oturumlar.dil" ve oturum_kodu ile kodBlogunuHazirla olsun
+    oturum_blogu "<h3>Oturum yönetimi</h3><p>Kullanıcının açık oturumları listelenebilir ve tek tek kapatılabilir. Liste ham çerez sırrını değil, SHA-256 özet kimliği ve zaman bilgisini taşır; iptal yalnız bu özet kimliği kabul eder. İkisi de <code>web-oturumu</code> yetkinliği ister ve istek transaction'ına bağlıdır.</p>" ile oturum_govdesi olsun
+    web "<section id='web'><h2>Web</h2><p>Yöntemli rotalar, kontrollü durum kodları, oturum, CSRF ve rol denetimi dilin yüzeyindedir. Yerelde <code>dil çalıştır --deneysel-web</code> ile denenir; üretimde Zee worker'ı TLS sonlandıran bir ters vekilin arkasında <code>--web-proxy</code> profiliyle koşar.</p>" ile web_blogu ile "" ile oturum_blogu ile "<div class='not-kutusu'><b>Not:</b> Tarayıcıdaki dersler ağ yetkinliği vermez; web örnekleri yerel kurulumda çalışır.</div></section>" olsun
+    derleyici "<section id='derleyici'><h2>Derleyici hattı</h2><p>Her katman bir sözleşme taşır. Bağımlılık yönleri, public API, semantic regresyon korpusu, spec maddeleri ve sürüm artefaktları CI kapılarıyla denetlenir.</p><div class='hat'><span>Kaynak</span><i>→</i><span>Sözcükleme</span><i>→</i><span>Dizim</span><i>→</i><span>Tür denetimi</span><i>→</i><span>Türlü HIR</span><i>→</i><span>Çalışma</span></div><p>Bugünkü bootstrap derleyici Rust ile yazılıdır ve programı türlü HIR üzerinden yorumlayarak çalıştırır. Aynı derleyici yerel CLI'da, <code>dillsp</code> dil sunucusunda ve WebAssembly'e derlenmiş hâliyle derslerde koşar. Zee kaynağını doğrudan native ya da WASM koduna çeviren backend ve self-hosting yol haritasındadır. Normatif davranış <a href='/belge/spec/' rel='noreferrer'>spec</a> belgelerindedir.</p></section>" olsun
+    sinirlar "<section id='sinirlar'><h2>Sınırlar</h2><p>Zee henüz 1.0 değildir. Dil yüzeyi core freeze altındadır; yeni özellik ancak gerçek ürün ihtiyacı, minimal reproducer ve kalıcı kanıtla girer. Bugün kapalı tutulan alanlar bilinçlidir: örneğin değişkenden HTTP durum kodu üretmek V1'de kapalıdır.</p><a href='/yol-haritasi/'>Yol haritası →</a></section>" olsun
+    baslik ile "<div class='kabuk belge-duzeni'>" ile yan ile "<div class='icerik'>" ile okuma ile temel ile veri ile islemler ile guven ile test_bolumu ile web ile derleyici ile sinirlar ile "</div></div>" döndür
+
+işlem ogrenSayfasiGovdesiniHazirla
+    Metin döndürür
+    merhaba_kodu merhabaKodu olsun
+
+    baslik "Öğren" ve "Zee ile başla" ve "İlk programdan ilk projeye: kurulum, araçlar ve yaşa ve deneyime göre ayrılmış öğrenme yolları." ile icSayfaBasliginiHazirla olsun
+    yan "<aside class='yan-menu' aria-label='Bu sayfada'><strong>Bu sayfada</strong><a href='#hizli'>Beş dakikada başla</a><a href='#ilk-program'>İlk programı oku</a><a href='#yollar'>Öğrenme yolları</a><a href='#yardim'>Takıldığında</a></aside>" olsun
+    t1 "<span class='istem'>$</span> git clone https://github.com/merbay-erp/zee.git\n<span class='istem'>$</span> cd zee/compiler\n<span class='istem'>$</span> cargo build --locked --release --bin dil --bin dillsp" olsun
+    t2 "<span class='istem'>$</span> ./target/release/dil yeni merhaba\n<span class='sonuc'>Oluşturuldu: merhaba/\nBaşlamak için: dil çalıştır merhaba</span>" olsun
+    t3 "<span class='istem'>$</span> ./target/release/dil çalıştır merhaba\n<span class='istem'>$</span> ./target/release/dil dene merhaba\n<span class='basari'>✓ karşılama hazır</span>\n\n<span class='sonuc'>1 test: 1 geçti, 0 kaldı</span>" olsun
+    k1 "terminal" ve t1 ile terminaliHazirla olsun
+    k2 "terminal" ve t2 ile terminaliHazirla olsun
+    k3 "terminal" ve t3 ile terminaliHazirla olsun
+    hizli "<section id='hizli'><h2>Beş dakikada başla</h2><ol class='adimlar'><li><div><b>Kurulumsuz dene</b><p>En hızlı yol tarayıcı: <a href='/playground/'>çalışma alanı</a> gerçek derleyiciyi WebAssembly olarak çalıştırır.</p></div></li><li><div><b>Derleyiciyi kaynaktan kur</b><p>Rust araç zinciri ve git yeterli. Ayrıntı: <a href='/indir/'>Kurulum</a>.</p>" ile k1 ile "</div></li><li><div><b>İlk projeyi oluştur</b><p><code>proje.dil</code>, <code>program.dil</code> ve kilit dosyası hazır gelir.</p>" ile k2 ile "</div></li><li><div><b>Çalıştır ve test et</b>" ile k3 ile "</div></li></ol></section>" olsun
+    ilk_blogu "program.dil" ve merhaba_kodu ile calisanKoduHazirla olsun
+    ilk "<section id='ilk-program'><h2>İlk programı oku</h2><p>Bir Zee programı yukarıdan aşağı Türkçe cümleler gibi okunur:</p>" ile ilk_blogu ile "<ul class='tikli'><li><code>işlem selamla</code> yeni bir işlem tanımlar; gövdesi girintiyle başlar.</li><li><code>adı Metin olarak al</code> bir parametredir; <code>Metin döndürür</code> dönüş türünü söyler.</li><li><code>\"Merhaba \" ile adı döndür</code> iki metni birleştirip sonucu döndürür.</li><li><code>mesaj \"Zeynep\" için selamla olsun</code> işlemi çağırır ve sonucu bir ada bağlar.</li><li><code>mesaj yaz</code> sonucu ekrana yazar. Yüklem hep sondadır.</li></ul></section>" olsun
+    yollar "<section id='yollar'><h2>Öğrenme yolları</h2><div class='kartlar uc'><div class='kart'><span class='etiket'>Başlangıç</span><h3>Oyna, değiştir, gör</h3><p>Değişken, koşul, döngü ve işlem; hikâye, quiz ve zar oyunu projeleriyle. <code>dil çalıştır --güvenli</code> ağı kapatır.</p><a class='kart-alt' href='/ornekler/'>Başlangıç örnekleri →</a></div><div class='kart'><span class='etiket'>Gelişim</span><h3>Fikri projeye dönüştür</h3><p>Listeler, sözlükler, yapılar, birimler, testler, CSV/JSON ve küçük bir web sunucusu.</p><a class='kart-alt' href='/dil/'>Dil turu →</a></div><div class='kart'><span class='etiket'>Profesyonel</span><h3>Sınırları olan sistemler</h3><p>Tür sözleşmeleri, yapılandırılmış hata, PostgreSQL ve migration, oturum ve CSRF, imzalı paketler.</p><a class='kart-alt' href='/belgeler/'>Belgeler →</a></div></div><div class='not-kutusu'><b>Öğretmenler için:</b> sınıf içi akış, ölçme önerileri ve proje sırası <a href='/belge/ogretmen-rehberi/' rel='noreferrer'>öğretmen rehberinde</a>.</div></section>" olsun
+    t4 "<span class='istem'>$</span> dil hata T002\n<span class='istem'>$</span> dil belge matematik\n<span class='istem'>$</span> dil morfoloji kitabın" olsun
+    k4 "terminal" ve t4 ile terminaliHazirla olsun
+    yardim "<section id='yardim'><h2>Takıldığında</h2><p>Her tanının kararlı bir kodu vardır. Kodu terminalde açıklatabilir, bir birimin işlemlerini listeleyebilir ya da bir kelimenin derleyicide nasıl çözümlendiğini görebilirsin.</p>" ile k4 ile "<p>Hâlâ takıldıysan <a href='https://github.com/merbay-erp/zee/issues' rel='noreferrer'>bir konu aç</a>; mümkünse hatayı üreten en küçük kodu ekle.</p></section>" olsun
+    baslik ile "<div class='kabuk belge-duzeni'>" ile yan ile "<div class='icerik'>" ile hizli ile ilk ile yollar ile yardim ile "</div></div>" döndür
+
+işlem ornekSatiri
+    etiketi Metin olarak al
+    adı Metin olarak al
+    parçayı Metin olarak al
+    Metin döndürür
+    "<article class='ornek'><div><span class='etiket'>" ile etiket ile "</span><h2>" ile ad ile "</h2></div>" ile parça ile "</article>" döndür
+
+işlem orneklerSayfasiGovdesiniHazirla
+    Metin döndürür
+    merhaba_kodu merhabaKodu olsun
+    notlar_kodu notlarKodu olsun
+    kitap_kodu kitapKodu olsun
+    faktoriyel_kodu faktoriyelKodu olsun
+    fizz_kodu fizzKodu olsun
+    sunucu_kodu sunucuKodu olsun
+
+    baslik "Örnekler" ve "Çalışan örnekler" ve "Okuyarak anlayabileceğin, değiştirerek öğrenebileceğin Zee programları. Çalıştır düğmesi örneği tarayıcıdaki çalışma alanında açar." ile icSayfaBasliginiHazirla olsun
+    b1 "merhaba.dil" ve merhaba_kodu ile calisanKoduHazirla olsun
+    b2 "notlar.dil" ve notlar_kodu ile calisanKoduHazirla olsun
+    b3 "fizzbuzz.dil" ve fizz_kodu ile calisanKoduHazirla olsun
+    b4 "kitap.dil" ve kitap_kodu ile calisanKoduHazirla olsun
+    b5 "faktoriyel.dil" ve faktoriyel_kodu ile calisanKoduHazirla olsun
+    soz_kodu "söz \"Damlaya damlaya göl olur\" olsun\n\"Harf sayısı: \" ile sözün uzunluğu yaz\n\nkelimeler sözün \" \" ile parçaları olsun\n\"Kelime sayısı: \" ile kelimelerin adedi yaz\n\nher kelime için\n    kelimenin büyük harflisi yaz" olsun
+    b7 "atasozu.dil" ve soz_kodu ile calisanKoduHazirla olsun
+    b6 "sunucu.dil" ve sunucu_kodu ile kodBlogunuHazirla olsun
+    s1 "Başlangıç" ve "İşlem tanımla ve çağır" ve b1 ile ornekSatiri olsun
+    s2 "Liste" ve "Not ortalaması ve süzme" ve b2 ile ornekSatiri olsun
+    s3 "Döngü" ve "FizzBuzz" ve b3 ile ornekSatiri olsun
+    s4 "Yapı" ve "Kitaplık kaydı ve JSON" ve b4 ile ornekSatiri olsun
+    s5 "Özyineleme + test" ve "Faktöriyel ve test bloğu" ve b5 ile ornekSatiri olsun
+    s7 "Metin" ve "Atasözünü harflerine ayır" ve b7 ile ornekSatiri olsun
+    s6 "Web · yerel kurulum" ve "Rotalı HTTP sunucusu" ve b6 ile ornekSatiri olsun
+    projeler "<section class='bolum kagit'><div class='kabuk'><div class='bolum-basligi'><span class='ust-yazi-k'>Proje kitaplığı</span><h2>Daha fazlası depoda.</h2><p>Çarpım tablosundan kelime sayacına, kumbaradan girişli panele; her proje depoda sürekli test edilir.</p></div><div class='kartlar uc'><a class='kart' href='https://github.com/merbay-erp/zee/blob/master/projeler/zar-oyunu.dil' rel='noreferrer'><h3>zar-oyunu.dil</h3><p>Rastgelelik ve döngüyle iki kişilik oyun.</p></a><a class='kart' href='https://github.com/merbay-erp/zee/blob/master/projeler/quiz.dil' rel='noreferrer'><h3>quiz.dil</h3><p>Soru, cevap ve puan tutma.</p></a><a class='kart' href='https://github.com/merbay-erp/zee/blob/master/projeler/kelime-sayaci.dil' rel='noreferrer'><h3>kelime-sayaci.dil</h3><p>Metin işleme ve sözlükle sayım.</p></a><a class='kart' href='https://github.com/merbay-erp/zee/blob/master/projeler/kumbara.dil' rel='noreferrer'><h3>kumbara.dil</h3><p>Ondalık para hesabı ve dosyaya kayıt.</p></a><a class='kart' href='https://github.com/merbay-erp/zee/blob/master/projeler/mini-site.dil' rel='noreferrer'><h3>mini-site.dil</h3><p>Birkaç sayfalık yerel web sitesi.</p></a><a class='kart' href='https://github.com/merbay-erp/zee/tree/master/projeler' rel='noreferrer'><h3>Tümü →</h3><p>Proje kitaplığının tamamı.</p></a></div></div></section>" olsun
+    baslik ile "<section class='bolum'><div class='kabuk'>" ile s1 ile s2 ile s3 ile s4 ile s5 ile s7 ile s6 ile "</div></section>" ile projeler döndür
+
+işlem belgeBaglantisi
+    yolu Metin olarak al
+    adı Metin olarak al
+    açıklamayı Metin olarak al
+    Metin döndürür
+    belge yol için belgeAdi olsun
+    "<li><a href='/belge/" ile belge ile "/'><b>" ile ad ile "</b><span>" ile açıklama ile "</span><i>" ile yol ile "</i></a></li>" döndür
+
+işlem belgelerSayfasiGovdesiniHazirla
+    Metin döndürür
+
+    arama "<label class='arama'><svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' aria-hidden='true'><circle cx='11' cy='11' r='7'/><path d='m20 20-3.5-3.5'/></svg><span class='ekran-okuyucu'>Belgelerde ara</span><input id='belge-arama' type='search' placeholder='Ara: liste, PostgreSQL, morfoloji…' autocomplete='off'><kbd>/</kbd></label><div id='arama-sonuclari' class='arama-sonuclari' aria-live='polite'></div><p class='not-satiri'>Depodaki bütün belgeler sitede okunabilir: <a href='/belge/'>Bütün belgeler →</a></p>" olsun
+    yan "<aside class='yan-menu' aria-label='Bu sayfada'><strong>Bölümler</strong><a href='#basla'>Başla</a><a href='#basvuru'>Başvuru</a><a href='#uygulama'>Uygulama geliştirme</a><a href='#tasarim'>Tasarım ve kararlar</a></aside>" olsun
+    l1 "docs/baslangic.md" ve "Başlangıç rehberi" ve "Kurulum, ilk proje ve temel araçlar" ile belgeBaglantisi olsun
+    l2 "docs/dil-turu.md" ve "Dil turu" ve "Dilin bütün yüzeyi, çalışan örneklerle" ile belgeBaglantisi olsun
+    l3 "docs/ogretmen-rehberi.md" ve "Öğretmen rehberi" ve "Sınıf içi akış ve proje sırası" ile belgeBaglantisi olsun
+    basla "<section id='basla'><h2>Başla</h2><ul class='baglanti-listesi'>" ile l1 ile l2 ile l3 ile "</ul></section>" olsun
+    r1 "docs/hata-katalogu.md" ve "Hata kataloğu" ve "Kararlı tanı kodları ve düzeltme önerileri" ile belgeBaglantisi olsun
+    r2 "spec/04-turler.md" ve "Türler" ve "Tür sistemi ve çıkarım kuralları" ile belgeBaglantisi olsun
+    r3 "spec/13-surumlu-morfoloji-profili.md" ve "Morfoloji profili" ve "zee-tr-1 ek çözümleme sözleşmesi" ile belgeBaglantisi olsun
+    r4 "spec/15-yapilandirilmis-hata-degeri.md" ve "Hata değeri" ve "Kod, neden ve veri taşıyan hata zinciri" ile belgeBaglantisi olsun
+    r5 "docs/deterministik-io-profili.md" ve "Deterministik IO" ve "zee-io-1 tohum, saat ve dosya davranışı" ile belgeBaglantisi olsun
+    r6 "spec/README.md" ve "Spesifikasyon dizini" ve "Bütün normatif belgeler" ile belgeBaglantisi olsun
+    basvuru "<section id='basvuru'><h2>Başvuru</h2><ul class='baglanti-listesi'>" ile r1 ile r2 ile r3 ile r4 ile r5 ile r6 ile "</ul></section>" olsun
+    u1 "docs/web-production-profili.md" ve "Web üretim profili" ve "Ters vekil, oturum, CSRF ve güvenlik başlıkları" ile belgeBaglantisi olsun
+    u2 "spec/25-postgresql-veri-erisimi.md" ve "PostgreSQL" ve "Havuz, transaction ve migration" ile belgeBaglantisi olsun
+    u3 "docs/yetkinlik-ve-ag-guvenligi.md" ve "Yetkinlik ve ağ" ve "İzinli hedefler ve outbound güvenliği" ile belgeBaglantisi olsun
+    u4 "docs/tedarik-zinciri.md" ve "Paketler ve tedarik" ve "Kilit dosyası, registry güveni ve imza" ile belgeBaglantisi olsun
+    u6 "docs/derleme-ve-bagimliliklar.md" ve "Derleme ve bağımlılıklar" ve "Rust sürümü, platform araçları ve bağımlılık sınırları" ile belgeBaglantisi olsun
+    u7 "docs/surum-runbook.md" ve "Kurulum ve sürüm" ve "kur.sh/kur.ps1, SHA256SUMS ve kaldırma" ile belgeBaglantisi olsun
+    u5 "editors/README.md" ve "Editör ve LSP" ve "VS Code uzantısı ve dil sunucusu" ile belgeBaglantisi olsun
+    uygulama "<section id='uygulama'><h2>Uygulama geliştirme</h2><ul class='baglanti-listesi'>" ile u1 ile u2 ile u3 ile u4 ile u5 ile u6 ile u7 ile "</ul></section>" olsun
+    d1 "rfcs/README.md" ve "RFC'ler" ve "Dil kararlarının gerekçesi ve kapsamı" ile belgeBaglantisi olsun
+    d2 "adr/README.md" ve "Mimari kararlar" ve "Katman, güvenlik ve sürüm mimarisi" ile belgeBaglantisi olsun
+    d3 "docs/surumler.md" ve "Sürüm notları" ve "Kullanıcıya görünen değişiklikler ve göç yolu" ile belgeBaglantisi olsun
+    d4 "docs/oncelikli-backlog.md" ve "Öncelikli backlog" ve "Açık işler ve kapanış kanıtları" ile belgeBaglantisi olsun
+    tasarim "<section id='tasarim'><h2>Tasarım ve kararlar</h2><ul class='baglanti-listesi'>" ile d1 ile d2 ile d3 ile d4 ile "</ul></section>" olsun
+    "<header class='sayfa-basi'><div class='kabuk'><nav class='iz' aria-label='Konum'><a href='/'>zee</a><span>/</span>Belgeler</nav><h1>Belgeler</h1><p>Öğreticiden normatif spesifikasyona, güvenlik sınırlarından mimari kararlara: Zee'nin bilgi haritası.</p>" ile arama ile "</div></header><div class='kabuk belge-duzeni'>" ile yan ile "<div class='icerik'>" ile basla ile basvuru ile uygulama ile tasarim ile "</div></div>" döndür
+
+işlem manifestoSayfasiGovdesiniHazirla
+    Metin döndürür
+
+    baslik "Manifesto" ve "Manifesto" ve "Zee'nin neden var olduğu, neye dönüşmek istediği ve hangi çizgileri geçmeyeceği." ile icSayfaBasliginiHazirla olsun
+    metin "<section class='bolum'><div class='kabuk dar'><blockquote class='alinti'>Kendi dilinde düşünüp kendi dilinde inşa edebilsin diye.</blockquote><img class='ayrac' src='/assets/brand/ayrac.svg?v=k191a1' alt=''><div class='icerik'><p>Zee, Zeynep Eliz Erbay için doğdu. Bir babanın bugün yazdığı kodun, yıllar sonra kızının elinde büyümeye devam edebilmesi fikrinden. Bu yüzden her satırı aceleyle değil, özenle büyüyen yaşayan bir mirastır.</p><p>Zee yalnız bir programlama dili değildir. Çocukken yaklaşılabilir, büyüdükçe derinleşebilir ve profesyonel hayatta terk edilmek zorunda kalınmazsa anlamını bulur.</p><p>Türkçe burada bir süs, çeviri tablosu ya da pazarlama cümlesi değildir. Dil tasarımının, hata mesajlarının, belgelerin ve topluluğun merkezidir.</p></div><h2>İlkeler</h2><ol class='ilkeler'><li><b>İnsan önce gelir.</b><span>Makine kesinliğinden vazgeçmeden insanın okuyabildiği kodu savunuruz.</span></li><li><b>Kanıt, iddiadan değerlidir.</b><span>Bir özelliği var saymayız; spec, test ve gerçek ürünle doğrularız.</span></li><li><b>Çocukluk bir eksiklik değildir.</b><span>Başlangıcı küçümsemeyen araçlar, geleceğin güçlü üreticilerini yetiştirir.</span></li><li><b>Dil kendi kendine şişmez.</b><span>Yeni yüzey ancak gerçek ihtiyaç ve en küçük doğru çözümle girer.</span></li><li><b>Miras yaşayan bir sorumluluktur.</b><span>Bugünkü kolaylık için yarının güvenini feda etmeyiz.</span></li></ol></div></section>" olsun
+    baslik ile metin döndür
+
+işlem yolHaritasiGovdesiniHazirla
+    Metin döndürür
+
+    baslik "Yol haritası" ve "Yol haritası" ve "Özellik sayısıyla değil, azalan belirsizlikle V1'e. Her aşama makine kapıları, gerçek ürün baskısı ve insan kanıtıyla kapanır." ile icSayfaBasliginiHazirla olsun
+    zaman "<section class='bolum'><div class='kabuk dar'><ol class='zaman'><li class='bitti'><small>Tamamlandı</small><h3>Çekirdek ve mimari disiplin</h3><p>Tür sistemi, türlü HIR, web güvenliği, paket modeli, bağımlılık çevrimi kapısı, public API ve yürütülebilir core freeze.</p></li><li class='bitti'><small>Tamamlandı</small><h3>Gerçek dünya dogfood'u</h3><p>PostgreSQL, transaction belirsizliği, medya yaşam döngüsü, güvenli kimlik ve üretim web topolojisi gerçek ürünlerde sınandı.</p></li><li class='simdi'><small>Şimdi</small><h3>İnsan ve ekosistem kanıtı</h3><p>Çocuk ve öğrenci kullanılabilirliği, profesyonel zihinsel model oturumları, resmî site ve tarayıcı çalışma alanı, öğretim materyalleri ve topluluk yüzeyi.</p></li><li><small>Sırada</small><h3>V1 freeze ve sürüm adayı</h3><p>Uzun soak, üç platform kurulum provası, uyumluluk kapanışı, bilinen kritik/yüksek hata sıfırı ve imzalı, tekrarlanabilir artefakt.</p></li></ol><div class='not-kutusu'><b>Açık geliştirme:</b> tamamlanan, kısmi kalan ve insan kanıtı bekleyen işler depoda ayrı ayrı görünür. <a href='/belge/oncelikli-backlog/' rel='noreferrer'>Canlı backlog'u incele →</a></div></div></section>" olsun
+    baslik ile zaman döndür
+
+işlem toplulukSayfasiGovdesiniHazirla
+    Metin döndürür
+
+    baslik "Topluluk" ve "Topluluk" ve "Zee'yi yalnız kullanan değil, anlamını koruyarak büyüten bir topluluk: öğrenciler, öğretmenler, dilbilimciler ve geliştiriciler." ile icSayfaBasliginiHazirla olsun
+    kartlar "<section class='bolum'><div class='kabuk'><div class='kartlar uc'><a class='kart' href='https://github.com/merbay-erp/zee/issues' rel='noreferrer'><span class='etiket'>Bildir</span><h3>Hata ya da sürtünme bildir</h3><p>Önce en küçük yeniden üreten kodu yaz. Tanı kodu ve beklediğin davranışla birlikte bir konu aç.</p><span class='kart-alt'>Konular →</span></a><a class='kart' href='https://github.com/merbay-erp/zee' rel='noreferrer'><span class='etiket'>Katkı</span><h3>Kod ve belge</h3><p>Davranış değişiyorsa test, spec ve belge aynı değişiklikte gelir. Kanıtsız özellik birleştirilmez.</p><span class='kart-alt'>Depo →</span></a><a class='kart' href='/yol-haritasi/'><span class='etiket'>Kanıt</span><h3>Kanıt üret</h3><p>Kullanılabilirlik oturumu, dogfood projesi ya da platform doğrulamasıyla bilinmeyeni azalt.</p><span class='kart-alt'>Açık işler →</span></a></div></div></section>" olsun
+    soz "<section class='bolum kagit'><div class='kabuk dar'><span class='ust-yazi-k'>Topluluk sözü</span><h2>Merak güvenlidir. Eleştiri değerlidir. Kanıt ortaktır.</h2><div class='icerik'><p>Zee; yaş, deneyim, dil ya da geçmiş üzerinden üstünlük kurulan bir alan olmayacak. Yeni başlayanın sorusu küçümsenmez; teknik kararlar kişiyle değil veriyle tartışılır.</p></div></div></section>" olsun
+    baslik ile kartlar ile soz döndür
+
+işlem indirSayfasiGovdesiniHazirla
+    Metin döndürür
+
+    baslik "Kurulum" ve "Zee'yi kur" ve "Zee V1 öncesindedir. Bugün geliştirme sürümünü kaynaktan derlersin; doğrulanmış sürüm artefaktları için Rust gerektirmeyen kurulum betikleri hazır." ile icSayfaBasliginiHazirla olsun
+    t1 "<span class='istem'>$</span> curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh\n<span class='istem'>$</span> git --version" olsun
+    t2 "<span class='istem'>$</span> git clone https://github.com/merbay-erp/zee.git\n<span class='istem'>$</span> cd zee/compiler\n<span class='istem'>$</span> cargo build --locked --release --bin dil --bin dillsp" olsun
+    t3 "<span class='istem'>$</span> ./target/release/dil sürüm\n<span class='sonuc'>dil 0.8.0-dev — Türkçe programlama dili (bootstrap, Stage 0) — morfoloji zee-tr-1 — IO zee-io-1</span>\n<span class='istem'>$</span> ./target/release/dil yeni merhaba\n<span class='istem'>$</span> ./target/release/dil çalıştır merhaba" olsun
+    t4 "<span class='istem'>PS&gt;</span> .\\target\\release\\dil.exe sürüm\n<span class='istem'>PS&gt;</span> .\\target\\release\\dil.exe çalıştır ..\\merhaba.dil" olsun
+    t5 "<span class='istem'>$</span> bash scripts/kur.sh --artefakt ~/İndirilenler/zee-surum\n<span class='istem'>$</span> dil sürüm\n<span class='istem'>$</span> bash scripts/kaldir.sh" olsun
+    t6 "<span class='istem'>PS&gt;</span> powershell -File scripts\\kur.ps1 -Artefakt C:\\zee-surum\n<span class='istem'>PS&gt;</span> dil sürüm\n<span class='istem'>PS&gt;</span> powershell -File scripts\\kaldir.ps1" olsun
+    k1 "terminal" ve t1 ile terminaliHazirla olsun
+    k2 "terminal" ve t2 ile terminaliHazirla olsun
+    k3 "Linux / macOS" ve t3 ile terminaliHazirla olsun
+    k4 "Windows PowerShell" ve t4 ile terminaliHazirla olsun
+    k5 "Linux / macOS" ve t5 ile terminaliHazirla olsun
+    k6 "Windows PowerShell" ve t6 ile terminaliHazirla olsun
+    yan "<aside class='yan-menu' aria-label='Bu sayfada'><strong>Bu sayfada</strong><a href='#kaynak'>Kaynaktan kurulum</a><a href='#artefakt'>Sürüm artefaktından</a><a href='#platformlar'>Platformlar</a><a href='#editor'>Editör</a><a href='#tarayici'>Kurulumsuz</a><a href='#not'>V1 öncesi not</a></aside>" olsun
+    kaynak "<section id='kaynak'><h2>Kaynaktan kurulum</h2><ol class='adimlar'><li><div><b>Rust, git ve platform araçları</b><p>rustup, git ve platformunun C/linker araçları yeterli. Doğru Rust sürümünü (1.93.1) depodaki <code>compiler/rust-toolchain.toml</code> kendisi seçer. Windows'ta rustup-init.exe ve MSVC derleme araçlarını kullan.</p>" ile k1 ile "</div></li><li><div><b>Derle</b><p>Komut satırı aracı <code>dil</code> ve dil sunucusu <code>dillsp</code> birlikte derlenir. Bağımlılıklar <code>Cargo.lock</code> ile kilitlidir.</p>" ile k2 ile "</div></li><li><div><b>Doğrula ve ilk projeyi aç</b><p>İkiliyi PATH'e ekleyebilir ya da tam yoluyla çağırabilirsin.</p>" ile k3 ile k4 ile "</div></li></ol><p>Platform araçlarının ve bağımlılıkların ayrıntısı <a href='/belge/derleme-ve-bagimliliklar/' rel='noreferrer'>derleme rehberinde</a>.</p></section>" olsun
+    artefakt "<section id='artefakt'><h2>Sürüm artefaktından kurulum</h2><p>Derlenmiş <code>dil</code> ve <code>dillsp</code> ikilileri için <b>Rust kurulumu gerekmez</b>. Kurulum betikleri yalnız <code>SHA256SUMS</code> ile doğrulanan ikilileri kurar, var olan dosyanın üzerine yazmaz, yarım kalan kurulumu geri alır ve kaldırırken yalnız kendi manifestindeki dosyalara dokunur.</p>" ile k5 ile k6 ile "<div class='not-kutusu'><b>Henüz yayımlanmış bir sürüm artefaktı yok.</b> Artefaktlar iki temiz klonda bayt bayt aynı üretilip SBOM ve provenance kaydıyla yayımlanacak; o zamana kadar kaynaktan kurulum yolunu kullan. Ayrıntı: <a href='/belge/surum-runbook/' rel='noreferrer'>sürüm runbook'u</a>.</div></section>" olsun
+    platformlar "<section id='platformlar'><h2>Platformlar</h2><p>Üç platformda da iki temiz klondan bayt bayt aynı ikili üretildi; kur → program çalıştır → LSP başlat → kaldır tatbikatı geçti.</p><div class='kartlar uc'><div class='kart'><span class='etiket'>Linux</span><h3>Rust'sız çalışır</h3><p>Rust araçları bulunmayan, ağsız ve salt okunur Ubuntu 24.04, Debian 12 ve AlmaLinux 9.8 (glibc 2.34) ortamlarında program ve LSP testi geçti.</p></div><div class='kart'><span class='etiket'>macOS</span><h3>Native hedef eşitlendi</h3><p>Kurulum, program ve LSP tatbikatı geçti; native C ve Rust dağıtım hedefleri aynı minimum sürüme bağlandı.</p></div><div class='kart'><span class='etiket'>Windows</span><h3>Statik CRT</h3><p>Dinamik C çalışma zamanı bağımlılığı yok. Temiz Server Core'da Rust'sız kurulum zinciri ve Nano Server'da çalışma provası geçti.</p></div></div><div class='not-kutusu'><b>Açık kalanlar:</b> temiz fiziksel Windows ve macOS makinelerde kanıt, minimum işletim sistemi sürümleri ve bütün native araçların tam envanteri.</div></section>" olsun
+    editor "<section id='editor'><h2>Editör</h2><p>Dil sunucusu <code>dillsp</code> tanıları anında gösterir; tamamlama, hover ile tür ve belge, tanıma gitme ve adı Türkçe eklerine uyarak yeniden adlandırma sunar. VS Code uzantısı ve kurulumu <a href='/belge/editor/' rel='noreferrer'>editors/</a> altındadır.</p></section>" olsun
+    tarayici "<section id='tarayici'><h2>Kurulumsuz</h2><p>Hiçbir şey kurmadan denemek için <a href='/playground/'>30 dakikada Zee</a> derslerini aç. Tarayıcıda Rust ile yazılmış bootstrap derleyicinin WebAssembly derlemesi çalışır; ağ ve dosya yetkinliği vermez.</p></section>" olsun
+    not_bolumu "<section id='not'><h2>V1 öncesi not</h2><div class='not-kutusu uyari'>Grammar ve public yüzey core freeze altındadır; ancak 1.0 etiketine kadar uyumluluk politikası içinde değişiklik olabilir. Zee kaynağını doğrudan native ya da WASM koduna çeviren backend ve self-hosting henüz tamamlanmadı. Üretim kararını kendi risk değerlendirmen ve <a href='/belge/surumler/' rel='noreferrer'>sürüm notlarıyla</a> ver.</div></section>" olsun
+    baslik ile "<div class='kabuk belge-duzeni'>" ile yan ile "<div class='icerik'>" ile kaynak ile artefakt ile platformlar ile editor ile tarayici ile not_bolumu ile "</div></div>" döndür
+
+# Rota bağlamının yalnız tek çağrı yapması için içerik ve SEO metadatasını
+# birleştiren sayfa adaptörleri bu birimde tutulur.
+işlem anasayfayiHazirla
+    Metin döndürür
+    gövde anasayfaGovdesiniHazirla olsun
+    sayfa "Zee — Türkçe yaz, kesin çalıştır" ve "/" ve gövde ile sayfayiHazirla olsun
+    sayfayı döndür
+
+işlem playgroundSayfasiniHazirla
+    Metin döndürür
+    gövde playgroundSayfasiGovdesiniHazirla olsun
+    sayfa "30 dakikada Zee — tarayıcıda dene" ve "/playground/" ve gövde ile sayfayiHazirla olsun
+    sayfayı döndür
+
+işlem dilSayfasiniHazirla
+    Metin döndürür
+    gövde dilSayfasiGovdesiniHazirla olsun
+    sayfa "Dil turu" ve "/dil/" ve gövde ile sayfayiHazirla olsun
+    sayfayı döndür
+
+işlem ogrenSayfasiniHazirla
+    Metin döndürür
+    gövde ogrenSayfasiGovdesiniHazirla olsun
+    sayfa "Zee ile başla" ve "/ogren/" ve gövde ile sayfayiHazirla olsun
+    sayfayı döndür
+
+işlem orneklerSayfasiniHazirla
+    Metin döndürür
+    gövde orneklerSayfasiGovdesiniHazirla olsun
+    sayfa "Çalışan örnekler" ve "/ornekler/" ve gövde ile sayfayiHazirla olsun
+    sayfayı döndür
+
+işlem belgelerSayfasiniHazirla
+    Metin döndürür
+    gövde belgelerSayfasiGovdesiniHazirla olsun
+    sayfa "Belgeler" ve "/belgeler/" ve gövde ile sayfayiHazirla olsun
+    sayfayı döndür
+
+işlem manifestoSayfasiniHazirla
+    Metin döndürür
+    gövde manifestoSayfasiGovdesiniHazirla olsun
+    sayfa "Manifesto" ve "/manifesto/" ve gövde ile sayfayiHazirla olsun
+    sayfayı döndür
+
+işlem yolHaritasiSayfasiniHazirla
+    Metin döndürür
+    gövde yolHaritasiGovdesiniHazirla olsun
+    sayfa "V1 yol haritası" ve "/yol-haritasi/" ve gövde ile sayfayiHazirla olsun
+    sayfayı döndür
+
+işlem toplulukSayfasiniHazirla
+    Metin döndürür
+    gövde toplulukSayfasiGovdesiniHazirla olsun
+    sayfa "Topluluk" ve "/topluluk/" ve gövde ile sayfayiHazirla olsun
+    sayfayı döndür
+
+işlem indirSayfasiniHazirla
+    Metin döndürür
+    gövde indirSayfasiGovdesiniHazirla olsun
+    sayfa "Kurulum" ve "/indir/" ve gövde ile sayfayiHazirla olsun
+    sayfayı döndür
+
+test "anasayfa cümle çözümlemesi, örnek defteri ve dürüst durum taşır"
+    gövde anasayfaGovdesiniHazirla olsun
+    gövde "Cümle çözümlemesi" içermeli
+    gövde "data-defter='turkce'" içermeli
+    gövde "data-alanda-ac" içermeli
+    gövde "/assets/brand/yildiz.svg" içermeli
+    gövde "Çocuğun başlayabildiği" içermeli
+    gövde "Henüz 1.0 değil" içermeli
+    gövde "HATA T002" içermeli
+    gövde "Bu site Zee ile yazıldı" içermeli
+
+test "defter sekmesi kaynağı ve çıktıyı kaçışlı taşır"
+    sekme "x" ve "\"a\" <b>yaz</b>" ve "<i>" ile defterSekmesi olsun
+    sekme "&quot;a&quot; &lt;b&gt;yaz&lt;/b&gt;" içermeli
+    sekme "<pre>&lt;i&gt;</pre>" içermeli
+
+test "deneme sayfası dersleri ve gerçek derleyiciyi bağlar"
+    gövde playgroundSayfasiGovdesiniHazirla olsun
+    gövde "data-zee-workbench" içermeli
+    gövde "id='zee-editor'" içermeli
+    gövde "id='zee-run'" içermeli
+    gövde "WASM ABI v3" içermeli
+    gövde "<template data-ders" içermeli
+    gövde "id='ders-ileri'" içermeli
+
+test "dil turu yüklem kuralını ve V1 sınırını anlatır"
+    gövde dilSayfasiGovdesiniHazirla olsun
+    gövde "henüz 1.0 değildir" içermeli
+    gövde "core freeze" içermeli
+    gövde "yüklemi söyler" içermeli
+    gövde "data-alanda-ac" içermeli
+
+test "manifesto kökeni ve kanıt kültürünü açıklar"
+    gövde manifestoSayfasiGovdesiniHazirla olsun
+    gövde "Zeynep Eliz Erbay" içermeli
+    gövde "Kanıt, iddiadan değerlidir" içermeli
+
+test "kurulum sayfası Rust'sız kurulumu ve yayımlanmamış artefaktı dürüstçe anlatır"
+    gövde indirSayfasiGovdesiniHazirla olsun
+    gövde "--bin dil --bin dillsp" içermeli
+    gövde "scripts/kur.sh" içermeli
+    gövde "Henüz yayımlanmış bir sürüm artefaktı yok" içermeli
+    gövde "self-hosting henüz tamamlanmadı" içermeli
+
+test "belge merkezi bağlantıları sitedeki belge sayfalarına gider"
+    gövde belgelerSayfasiGovdesiniHazirla olsun
+    gövde "href='/belge/dil-turu/'" içermeli
+    gövde "href='/belge/spec/'" içermeli
+    gövde "href='/belge/'" içermeli

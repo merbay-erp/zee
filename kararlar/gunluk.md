@@ -4056,3 +4056,138 @@ K-215 exact eşlemesi ve HEAD atası şartıyla doğrulanır. Yeni hermetik
 test eski nesne olmadan geçişi ve bozuk/ilgisiz eşlemelerin reddini
 kanıtlar. Go eşdeğerliği CI'da doğrulanmış Go 1.26.1 ile çalışır; bu
 değişiklik compiler semantiğini genişletmez. Uzak tekrar sonucu beklenir.
+## K-203 — zeedili.com resmî ürün yüzeyi (5–13 Ekim 2026)
+
+- **Numara notu:** Site dalı ilk olarak K-188/ADR-079/GB-028 numaralarıyla
+  geliştirildi; dal birleşmeden master bu numaraları Zee ERP oturum listesine
+  verdi. Birleştirmede site kayıtları K-203/ADR-081/GB-049 olarak yeniden
+  numaralandı; içerik ve kanıt değişmedi.
+
+- **Ürün ihtiyacı:** Zee'nin anlamını ve kanıtlı kapasitesini çocuklardan
+  profesyonellere anlatan; SEO, belge, manifesto, öğrenme ve yol haritasını
+  tek yerde toplayan resmî site istendi. Site başka bir uygulama diliyle
+  yazılırsa ilk temas yüzeyi kendi ürün kanıtını taşımayacaktı.
+- **Karar (ADR-081/GB-049):** On indexlenebilir rota, HTML, içerik ve SEO metadata
+  Zee'de; TLS/HTTP2, statik varlık, HEAD normalizasyonu, sıkı güvenlik başlığı ve loopback
+  reverse proxy Nginx'te. Worker `--web-proxy https://zeedili.com` ile 8126
+  loopback portundadır. Dış script/font/CDN yoktur; JSON-LD exact CSP hash'i
+  deploy anında üretilir.
+- **Kanıt:** 357 gerçek Zee LOC, üç birim, 7/7 hermetik test; gerçek HTTP'de
+  on içerik+iki sağlık ucu 200 ve dokuz canonical yol 308; JS/XML/PNG/WASM ölçü,
+  SHA-256 ve ABI v3 kapıları; masaüstü ve
+  390×844 mobil görsel denetim, menü/tema/kod kopyalama/belge arama davranışı.
+  `zeedili-com` etkin dogfood projesi ve tek `proje` korpus vakasıdır.
+- **Kurumsal kimlik:** Kurucunun son sağladığı `Zee-Brand-Kit-v2.zip` içinden
+  master standalone sembol, `#1478FF/#00A8FF/#0B172A` paleti ve aynı masterdan
+  türetilmiş favicon/PWA ikonları
+  alındı. ERP yazı kilidi ve sloganı dil ürünüyle karıştırılmadı; dile özgü
+  sosyal kart aynı sembol/paletle yeniden üretildi.
+- **Görsel revizyon:** İlk temiz landing düzeni fazla şablon/AI üretimi hissi
+  verdiği için ana sayfa tam ekran ve editoryal yeniden kuruldu. Hero IDE
+  sahnesi, morfoloji çözümlemesi, 4→∞ öğrenme çizgisi, gerçek workspace ve
+  kanıt yörüngesi yalnız HTML/CSS + gerçek Zee içeriğiyle üretildi; stok veya
+  üretken görsel kullanılmadı. 1440×900 ve 390×844 tarayıcı denetimi geçti.
+- **Sürtünme (F002):** Kurumsal anlatı tek başına programlama dili platformu
+  hissini vermedi. Compiler genişletilmeden var olan WASM C ABI v3 ile
+  `/playground/` kuruldu: altı örnek, gerçek düzenleyici, girdi/tohum,
+  çıktı/tanı, indirme ve URL parçasıyla yerel paylaşım vardır. Kaynak cihazdan
+  çıkmaz; aynı-origin binary'nin SHA-256'sı ve ABI'si dağıtım kapısındadır.
+- **Sürtünme (F001):** Birimler arası dört argümanlı sayfa üretici çağrısı
+  S015 verdi. Ürün SEO açıklamasını yol tablosuna alıp çağrıyı üç argümana
+  indirdi. Tek ürün verisi grammar/compiler değişikliği için yeterli değildir;
+  core freeze açılmadı.
+- **Yayın durumu:** sunucu A'te güncel `dil 0.8.0-dev`, boş 8126 ve yeterli disk
+  doğrulandı. Worker/dosya kurulumu yapılabilir; 5 Ekim'de domainin A/AAAA ve
+  `www` kaydı boş olduğundan Let's Encrypt/public HTTPS kanıtı bekler. DNS A
+  kaydı `[özel sunucu adresi]` olmadan K-203 tam kapalı sayılmaz.
+- **Sürtünme (F003, 7 Ekim 2026):** Kurucu editoryal/kurumsal tasarımı bir
+  programlama dili sitesi olarak beğenmedi. Site kod-öncelikli dil platformu
+  olarak yeniden kuruldu (ADR-081 revizyonu): ana sayfada aynı WASM ABI v3
+  ikilisiyle tembel yüklenen beş örnekli deneme kutusu, ortak `zee-motor.js`
+  (yükleme/çalıştırma, yüklem-odaklı vurgu, tanı biçimi), açık/koyu tema,
+  kenar menülü dil turu/öğren/belgeler/kurulum. Tasarım sırasında Codex
+  sürümündeki iki örneğin (`toplamın ondalığını … böl`, `sayfası` alanı)
+  derlenmediği, `blob/main` depo bağlantılarının 404 verdiği görüldü; sitedeki
+  22 çalıştırılabilir örnek tarayıcıdaki gerçek derleyicide hatasız koştu,
+  29 GitHub bağlantısı 200 döndü. Site testleri 7→8, kaynak 549 satır.
+  Compiler değişmedi.
+- **Sürtünme (F004, morfoloji):** Ürün kaynağında üç `zee-tr-1` sınırı
+  görüldü. (a) Parametre `metni Metin olarak al` kökü `metn` bağlar — ünlü
+  düşmesi, K-179/F003 (`metnin satırları` T028) sınıfının ikinci üründe
+  tekrarı. (b) Parametre `bloğu` kökü `bloğ` bağlar — ünsüz yumuşaması
+  (k→ğ) geri çözülmez. (c) Ünlüyle biten alanda iyelik çözülmez:
+  `kitabın sayfası` / `odanın kapısı` T028 verir, `dil morfoloji sayfası`
+  yalnız `sayfas + belirtme` gösterir. Ürün `yazıyı`/`parçayı` adları ve
+  ünsüzle biten alanlarla (`yazar`, `yıl`) çözüldü. (a) iki üründe tekrar
+  ettiği için `zee-tr-2` morfoloji adayına girmelidir; freeze içinde
+  `zee-tr-1` değişmez.
+- **Yayın (7 Ekim 2026):** Kurucu `zeedili.com`/`www` A kayıtlarını
+  `[özel sunucu adresi]`'a yöneltti. İlk HTTP-01 denemesi zaman aşımına düştü:
+  sunucu A'ün 80/443 portları sağlayıcı katmanında yalnız Cloudflare kenarına
+  açık (Mac, başka bir sunucu ve sunucu B'dan doğrudan bağlantı yok; sunucudaki diğer siteler
+  proxy'li). Kayıtlar proxy'li yapıldı; sertifika hesabın mevcut certbot
+  Cloudflare kimliğiyle DNS-01 alındı ve yenileme aynı yola bağlandı. Yerel
+  kurumsal çözücünün negatif önbelleği betik kapısını yanılttığı için DNS
+  denetimi `1.1.1.1`e taşındı. `scripts/canli-dogrula.sh` 14 uç 200, canonical
+  308, www→apex 301, `application/wasm` ve CSP'yi Cloudflare üzerinden
+  doğruladı. K-203 kapandı.
+- **Sürtünme (F005, 12 Ekim 2026):** Kurucu mavi/lacivert paleti “renkler çok
+  kötü, yapay zekâ ürünü olduğu anlaşılıyor” diye reddetti; yeni ruby-lang.org
+  ve TryRuby'yi kopya değil benzer yön olarak gösterdi. ERP'nin mavi kiti
+  bırakılıp zee'nin resmî antrasit + altın logosuna geçildi (ADR-081
+  revizyon 2). Kağıt zemin, İznik turkuazı/mercanı, Fraunces/Figtree/
+  JetBrains Mono (OFL, aynı origin), Selçuklu yıldızlı hero, altın çerçeveli
+  kod kartları ve dalga geçişleri kuruldu. `/playground/` TryRuby benzeri
+  15 derslik akışa dönüştü; dersler yeni `kaynak/dersler.dil` biriminde Zee
+  ile üretiliyor ve 15/15'i tarayıcıdaki gerçek derleyicide beklenen çıktıyı
+  verdi. Ders yazımında `kitabın json metni` (tek yapı) T014 verdi; JSON yalnız
+  yapı listesinde kullanıldı — beklenen davranış, sürtünme kaydı değil.
+  Compiler değişmedi.
+- **İçerik tazeliği (13 Ekim 2026):** Codex'in K-191…K-200 dalgası (Rust'sız
+  `dil`/`dillsp` kurulumu, üç platform eş-hash ve kur/çalıştır/LSP/kaldır
+  tatbikatı, `kur.sh`/`kur.ps1`, statik CRT, Server Core/Nano provası, ERP
+  oturum listesi/tekil iptal) siteye işlendi: kurulum sayfası `dillsp`,
+  Rust 1.93.1 pini, PowerShell komutları, sürüm artefaktı yolu ve dürüst
+  “henüz yayımlanmış artefakt yok” notuyla yenilendi; platform kartları
+  kanıtlanmış ortamlara (Ubuntu 24.04, Debian 12, AlmaLinux 9.8, Server
+  Core/Nano) indirildi, doğrulanmamış “x86_64 ve arm64” iddiası kaldırıldı.
+  Derslerdeki derleyicinin Rust bootstrap derleyicisinin WASM derlemesi
+  olduğu ve native/WASM backend ile self-hosting'in henüz bulunmadığı açıkça
+  yazıldı. Dil turuna oturum yönetimi eklendi. Not: sitenin dalı master'a
+  birleşmediği için master'da K-203/ADR-081 başka işe (ERP oturum listesi)
+  atanmış; birleştirmede site kayıtları yeniden numaralanmalıdır.
+- **Türk unsurları (F006, 13 Ekim 2026):** Kurucu hero'daki Selçuklu
+  yıldızını sevdi ve benzeri Türk unsurları istedi. Depo içinde çizilen
+  SVG'lerle Selçuklu ayracı, Kubadabad yıldız ve baklava deseni, İznik çini bordürü,
+  lale ve çini karo eklendi. Dersler 16'ya çıktı (“Türkçe harfler”: `ı→I`,
+  `i→İ`); örnek verileri atasözü, plaka kodları, Çalıkuşu, Maraş dondurması
+  ve çaya taşındı. 16/16 ders tarayıcıdaki gerçek derleyicide beklenen
+  çıktıyı verdi.
+- **Desen düzeltmesi (13 Ekim 2026):** Kurucu yıldız deseninin aralarındaki
+  haç biçimlerini sevmedi; haçlar küçük baklava dilimleriyle değiştirildi.
+  Desen artık yalnız sekiz köşeli yıldız ve baklavadan oluşur.
+- **Belgeler sitede (F007, 13 Ekim 2026):** Kurucu belge bağlantılarının
+  GitHub'a gitmesini istemedi. Markdown→HTML dönüştürücü Zee ile yazıldı
+  (`markdown.dil`, 5 test); 204 depo belgesi `/belge/<ad>/` altında sitede,
+  1.388 iç bağlantı ve çapanın hepsi sağlam. Sürtünmeler: (a) parametre
+  adlarında ünsüz yumuşaması geri çözülmüyor — `adedi`→`aded` (t→d),
+  `açığı`→`açığ` (k→ğ); K-203/F004(b) sınıfının tekrarı. (b) `dilini`
+  (iyelik+belirtme) `dilin` bağlanıyor — K-164/F001 sınıfı. (c) `içermiyorsa`
+  koşulu yok; olumlu koşul + bayrakla yazıldı. (d) Büyük metni `ile` ile
+  sürekli büyütmek ~90 KB belgede C024 değer bütçesini aştı; parçaları listede
+  toplayıp sonda `"" ile birleşmişi` kullanmak aşmadı — performans/bellek
+  modeli için belgelenmeye değer bir desen. Compiler değişmedi.
+- **Kopya izlenimi (F008, 13 Ekim 2026):** Kurucu görünümü beğendiğini ama
+  Ruby sitesine çok benzediğini söyledi. Ruby'ye özgü dört imza (ortada amblem
+  + ışınlar, üç kart + hap düğme, dev kelimeler + konuşma balonları, dalga
+  geçişleri) Zee'ye özgü kurgularla değiştirildi: cümle çözümlemesi kartı ve
+  yıldız mühür, sekmeli örnek defteri, çini karolar, manifesto şeridi, İznik
+  bordürü, yıldızlı ders yolu. Palet, yazı tipleri ve motifler korundu.
+
+## K-217 — Tek merkez ve dal incelemesi
+
+Ürün talebi §2: site temiz içerik, issue formları, özel Forgejo MSVC
+çapraz akışı ve incelenmiş action pinleri ana hatta uygulanır. Snapshot
+compiler/CLI genişlemesi core freeze kanıt zinciri olmadığı için kapatılır.
+Dal yedekleri özel; uzak silme ve CI teyidi henüz açıktır.
+[Dal kararları](../docs/incelemeler/k217/README.md). Dil/spec/tanı/API değişmez.

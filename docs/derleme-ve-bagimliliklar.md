@@ -314,13 +314,12 @@ Apple/Windows SDK sürümü ister. Eski kayıtlar bu yeni alanı üretmemiştir.
 Bu dilim spec/RFC/tanı/API, production Rust modül kenarı ve benchmark
 tarihçesini değiştirmez; ilgili belgeler bu sınırla yeniden incelendi.
 
-K-196 Linux tatbikat işi kuruluşun `itwise-gitsrv` koşucusunda başlamadan
-kuyrukta kaldı. `kurulum-tatbikati` manuel girişindeki `linux_runner`
-seçimi `configured` (mevcut kuruluş ayarı, varsayılan) veya `ubuntu-latest`
-olabilir. Bu koşuya özel seçim kuruluş/repo değişkenlerini değiştirmez;
-tag koşuları mevcut kuruluş ayarını izler. Aynı exact kaynağın üç platform
-kanıtı için `gh workflow run kurulum-tatbikati.yml --ref codex/zee-derleme-bagimlilik -f linux_runner=ubuntu-latest`
-ile GitHub Linux koşucusunda yeni tatbikat başlatılır.
+Tarihsel K-196 Linux tatbikatı kuruluş koşucusunda başlamadan kuyrukta
+kalmıştı. O sıradaki linux_runner geçişi K-217 ile kaldırıldı; GitHub
+workflow'ları sabit hosted hedefler taşır ve mevcut repo Actions'ı kapalıdır.
+Kurum işi özel Git2/Gitsrv akışında yürür (ADR-080/088). Önceki run/SHA
+kanıtları tarihsel kalır; güncel çapraz derleme gerçek Windows runtime
+kabulü yerine konmaz.
 
 K-196 ilk Windows job 114815113651 iki klonda dil/dillsp eş hash
 üretti, fakat kayıt aracı iki link komutunu seçemedi; release metadata

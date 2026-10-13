@@ -80,13 +80,12 @@ Exact b153064 kaynağı/run 38252942210 üç platformda geçti; minimum OS/temiz
 bütün native C araçlarının kaydı tamamlanmış gösterilmez. Performans
 baseline'ı/tarihçe satırı üretilmedi; ADR-045/049 kuralları korunur.
 
-K-196 Linux tatbikat işi kuruluşun `itwise-gitsrv` koşucusunda başlamadan
-kuyrukta kaldı. `kurulum-tatbikati` manuel girişindeki `linux_runner`
-seçimi `configured` (mevcut kuruluş ayarı, varsayılan) veya `ubuntu-latest`
-olabilir. Bu koşuya özel seçim kuruluş/repo değişkenlerini değiştirmez;
-tag koşuları mevcut kuruluş ayarını izler. Aynı exact kaynağın üç platform
-kanıtı için `gh workflow run kurulum-tatbikati.yml --ref codex/zee-derleme-bagimlilik -f linux_runner=ubuntu-latest`
-ile GitHub Linux koşucusunda yeni tatbikat başlatılır.
+Tarihsel K-196 Linux tatbikatı kuruluş koşucusunda başlamadan kuyrukta
+kalmıştı. O sıradaki linux_runner geçişi K-217 ile kaldırıldı; GitHub
+workflow'ları sabit hosted hedefler taşır ve mevcut repo Actions'ı kapalıdır.
+Kurum işi özel Git2/Gitsrv akışında yürür (ADR-080/088). Önceki run/SHA
+kanıtları tarihsel kalır; güncel çapraz derleme gerçek Windows runtime
+kabulü yerine konmaz.
 
 K-197 ayrı temiz Windows provasını mevcut successful release ile başlat:
 

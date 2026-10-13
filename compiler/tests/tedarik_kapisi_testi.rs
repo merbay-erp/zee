@@ -12,6 +12,96 @@ fn oku(goreli: &str) -> String {
     std::fs::read_to_string(depo().join(goreli)).expect("depo dosyası okunmalı")
 }
 
+fn public_runner_gecerli(satir: &str) -> bool {
+    matches!(
+        satir.trim().strip_prefix("runs-on: "),
+        Some("ubuntu-latest" | "windows-latest" | "macos-latest" | "${{ matrix.os }}")
+    )
+}
+
+#[test]
+fn public_github_akislari_kurum_kosucusuna_yonlenemez() {
+    for hatali in [
+        "runs-on: self-hosted",
+        "runs-on: [self-hosted, linux]",
+        "runs-on: ${{ vars.CI_RUNNER }}",
+        "runs-on: ${{ fromJSON(vars.CI_RUNNER || '\"ubuntu-latest\"') }}",
+    ] {
+        assert!(!public_runner_gecerli(hatali));
+    }
+    for dosya in std::fs::read_dir(depo().join(".github/workflows")).unwrap() {
+        let yol = dosya.unwrap().path();
+        if yol.extension().is_some_and(|e| e == "yml") {
+            let metin = std::fs::read_to_string(&yol).unwrap();
+            assert!(!metin.contains("CI_RUNNER"), "{}", yol.display());
+            for satir in metin.lines().filter(|s| s.trim().starts_with("runs-on:")) {
+                assert!(public_runner_gecerli(satir), "{}: {satir}", yol.display());
+            }
+        }
+    }
+}
+
+#[test]
+#[cfg(unix)]
+fn forgejo_kapisi_ozel_exact_metadata_ister_public_ve_bozuk_veriyi_reddeder() {
+    let ci = oku(".forgejo/workflows/zee-ci.yml");
+    let bolum = ci
+        .split_once("      - name: Yalnız özel Git2 deposu\n")
+        .unwrap()
+        .1
+        .split("      - name:")
+        .next()
+        .unwrap();
+    let kod = bolum
+        .split_once("          node <<'NODE'\n")
+        .unwrap()
+        .1
+        .split("          NODE\n")
+        .next()
+        .unwrap()
+        .lines()
+        .map(|s| s.strip_prefix("          ").unwrap())
+        .collect::<Vec<_>>()
+        .join("\n");
+    assert!(
+        ci.find("Yalnız özel Git2 deposu").unwrap()
+            < ci.find("Tam ve yalnız seçili kaynak").unwrap()
+    );
+    for (metadata, http_ok, izinli) in [
+        (r#"{"private":true,"full_name":"github/zee"}"#, true, true),
+        (r#"{"private":false,"full_name":"github/zee"}"#, true, false),
+        (
+            r#"{"private":"true","full_name":"github/zee"}"#,
+            true,
+            false,
+        ),
+        (
+            r#"{"private":true,"full_name":"github/baska"}"#,
+            true,
+            false,
+        ),
+        (r#"{}"#, true, false),
+        (r#"{"private":true,"full_name":"github/zee"}"#, false, false),
+    ] {
+        let program = format!(
+            "globalThis.fetch = async (url, options) => {{\n\
+             if (url !== 'https://ci.example/api/v1/repos/github/zee' || \
+             options.headers.Authorization !== 'Basic ' + \
+             Buffer.from('x-access-token:sentetik').toString('base64')) throw new Error('istek');\n\
+             return {{ok: {http_ok}, json: async () => ({metadata})}};\n\
+             }};\n{kod}"
+        );
+        let sonuc = std::process::Command::new("node")
+            .args(["-e", &program])
+            .env("ZEE_SERVER", "https://ci.example")
+            .env("ZEE_REPOSITORY", "github/zee")
+            .env("ZEE_JOB_TOKEN", "sentetik")
+            .output()
+            .expect("Node guard gerçek yürütmesi");
+        assert_eq!(sonuc.status.success(), izinli, "metadata: {metadata}");
+    }
+}
+
 fn github_action_pinleri() -> BTreeMap<String, String> {
     let kayit = oku("docs/github-actions-pinleri-v1.tsv");
     assert_eq!(kayit.lines().next(), Some("# zee-github-actions-pinleri-1"));
@@ -89,7 +179,9 @@ fn forgejo_akisi_exact_pin_ve_prsiz_kaynak_siniri_tasir() {
     assert_eq!(gorulen, pinler);
     assert!(!ci.contains("pull_request"));
     assert!(ci.contains("branches: [master, ci/zee-gitsrv]"));
-    assert!(ci.contains("container: node:20-bookworm"));
+    assert!(ci.contains("container: golang:1.26.1-bookworm@sha256:ab3d6955bbc813a0f3fdf220c1d817dd89c0b3f283777db8ece4a32fe7858edd"));
+    assert!(ci.contains("if: ${{ forgejo.event.repository.private == true }}"));
+    assert!(ci.contains("test \"$(go env GOVERSION)\" = go1.26.1"));
     assert!(ci.contains("retention-days: 90"));
     for komut in [
         "scripts/core-freeze-korugu.sh",

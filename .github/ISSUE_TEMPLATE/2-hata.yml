@@ -1,0 +1,57 @@
+name: "Hata bildirimi"
+description: "Somut ürün ihtiyacı, tekrar üretici ve kabul ölçütleriyle inceleme"
+title: "[Hata] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Talep önce ürün ihtiyacı, minimal değişiklik ve kabul kanıtıyla incelenir.
+        V1 core freeze kuralları geçerlidir; yeni dil özelliği için gerçek dogfood kanıtı gerekir.
+        Açık kayıtlarda anonim örnek kullan; sır ve müşteri/sunucu bilgisi ekleme.
+  - type: textarea
+    id: ne-oldu
+    attributes:
+      label: "Ne oldu?"
+    validations:
+      required: true
+  - type: textarea
+    id: ne-olmali
+    attributes:
+      label: "Ne olmalıydı?"
+    validations:
+      required: true
+  - type: textarea
+    id: adimlar
+    attributes:
+      label: "Nasıl tekrarlanır?"
+      description: "Adres/ekran, cihaz, adımlar."
+  - type: dropdown
+    id: nerede
+    attributes:
+      label: "Nerede?"
+      options:
+        - "Derleyici & Çekirdek"
+        - "Dil Spesifikasyonu"
+        - "Çalışma Zamanı & Web"
+        - "CLI, LSP ve Playground"
+        - "Paket & Kayıt Defteri"
+        - "Emin değilim"
+      default: 5
+  - type: dropdown
+    id: oncelik
+    attributes:
+      label: "Öncelik"
+      options:
+        - "Acil"
+        - "Yüksek"
+        - "Normal"
+        - "Düşük"
+      default: 1
+    validations:
+      required: true
+  - type: textarea
+    id: ek
+    attributes:
+      label: "Ekran görüntüsü / bağlantı"
+      description: "Görseli buraya sürükleyebilirsin."
