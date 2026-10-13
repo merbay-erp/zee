@@ -18,6 +18,118 @@ fn oku(goreli: &str) -> String {
         .unwrap_or_else(|hata| panic!("{goreli} okunmalı: {hata}"))
 }
 
+// Tarihi ölçüm özgün SHA'yı korur; K-214/K-215 yalnız kaynak soyunu eşler.
+fn tarihi_kanit_kaynagi(kok: &Path, sha: &str) -> Result<String, String> {
+    let exact = |s: &str| {
+        s.len() == 40
+            && s.bytes()
+                .all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase())
+    };
+    if !exact(sha) {
+        return Err("tarihsel kaynak exact SHA değil".into());
+    }
+    let mut eslemeler = std::collections::BTreeMap::new();
+    for yol in [
+        "docs/incelemeler/k214/sha-esleme-v1.tsv",
+        "docs/incelemeler/k215/sha-esleme-v1.tsv",
+    ] {
+        let metin = std::fs::read_to_string(kok.join(yol)).map_err(|e| e.to_string())?;
+        for satir in metin
+            .lines()
+            .filter(|s| !s.is_empty() && !s.starts_with('#'))
+        {
+            let alanlar = satir.split('\t').collect::<Vec<_>>();
+            let [eski, yeni] = alanlar.as_slice() else {
+                return Err("bozuk kaynak eşlemesi".into());
+            };
+            if !exact(eski) || !exact(yeni) {
+                return Err("eşleme exact SHA değil".into());
+            }
+            if let Some(onceki) = eslemeler.insert((*eski).to_string(), (*yeni).to_string()) {
+                if onceki != *yeni {
+                    return Err("çelişkili kaynak eşlemesi".into());
+                }
+            }
+        }
+    }
+    let kaynak = eslemeler.get(sha).map(String::as_str).unwrap_or(sha);
+    let var = Command::new("git")
+        .current_dir(kok)
+        .args(["merge-base", "--is-ancestor", kaynak, "HEAD"])
+        .output()
+        .map_err(|e| e.to_string())?;
+    if !var.status.success() {
+        return Err("tarihsel kaynak veya eşlenmiş kaynak HEAD atası değil".into());
+    }
+    Ok(kaynak.to_string())
+}
+
+#[test]
+#[cfg(unix)]
+fn tarihsel_kanit_anonim_ata_ister_eski_nesne_ve_rastgele_esleme_kabul_etmez() {
+    let kok = std::env::temp_dir().join(format!(
+        "zee-tarihsel-kanit-{}-{}",
+        std::process::id(),
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos()
+    ));
+    std::fs::create_dir_all(kok.join("docs/incelemeler/k214")).unwrap();
+    std::fs::create_dir_all(kok.join("docs/incelemeler/k215")).unwrap();
+    let git = |args: &[&str]| {
+        let out = Command::new("git")
+            .current_dir(&kok)
+            .args(args)
+            .output()
+            .unwrap();
+        assert!(
+            out.status.success(),
+            "{}",
+            String::from_utf8_lossy(&out.stderr)
+        );
+        String::from_utf8(out.stdout).unwrap().trim().to_string()
+    };
+    git(&["init", "-q", "--initial-branch=main"]);
+    git(&["config", "user.name", "Sentetik CI"]);
+    git(&["config", "user.email", "ci@ornek.com"]);
+    std::fs::write(kok.join("kaynak"), "anonim kaynak\n").unwrap();
+    git(&["add", "kaynak"]);
+    git(&["commit", "-qm", "anonim ata"]);
+    let ata = git(&["rev-parse", "HEAD"]);
+    git(&["checkout", "-qb", "ayri"]);
+    std::fs::write(kok.join("kaynak"), "ilgisiz kaynak\n").unwrap();
+    git(&["commit", "-qam", "ilgisiz dal"]);
+    let ayri = git(&["rev-parse", "HEAD"]);
+    git(&["checkout", "-q", "main"]);
+    let eski = "1".repeat(40);
+    let k214 = kok.join("docs/incelemeler/k214/sha-esleme-v1.tsv");
+    let k215 = kok.join("docs/incelemeler/k215/sha-esleme-v1.tsv");
+    std::fs::write(&k214, "# map\n").unwrap();
+    let satir = format!("{eski}\t{ata}\n");
+    std::fs::write(&k215, &satir).unwrap();
+    assert!(!Command::new("git")
+        .current_dir(&kok)
+        .args(["cat-file", "-e", &eski])
+        .output()
+        .unwrap()
+        .status
+        .success());
+    assert_eq!(tarihi_kanit_kaynagi(&kok, &eski).unwrap(), ata);
+    assert_eq!(std::fs::read_to_string(&k215).unwrap(), satir);
+    assert_eq!(tarihi_kanit_kaynagi(&kok, &ata).unwrap(), ata);
+    assert!(tarihi_kanit_kaynagi(&kok, &"2".repeat(40)).is_err());
+    assert!(tarihi_kanit_kaynagi(&kok, "kisa").is_err());
+    std::fs::write(&k215, format!("{eski}\t{ayri}\n")).unwrap();
+    assert!(tarihi_kanit_kaynagi(&kok, &eski).is_err());
+    std::fs::write(&k214, &satir).unwrap();
+    assert!(tarihi_kanit_kaynagi(&kok, &eski).is_err());
+    std::fs::write(&k214, "# map\n").unwrap();
+    std::fs::write(&k215, format!("{eski}\tbozuk\n")).unwrap();
+    assert!(tarihi_kanit_kaynagi(&kok, &eski).is_err());
+    std::fs::remove_dir_all(kok).unwrap();
+}
+
 fn loc(dosyalar: &[&str], yorum: &str) -> usize {
     dosyalar
         .iter()
@@ -121,12 +233,8 @@ fn karsilastirma_tarihcesi_exact_sha_ve_tekrar_hesaplanabilir_olculerle_tutarlid
             "exact SHA: {}",
             kayit[0]
         );
-        let var = Command::new("git")
-            .args(["cat-file", "-e", &format!("{}^{{commit}}", kayit[0])])
-            .current_dir(depo())
-            .status()
-            .expect("git");
-        assert!(var.success(), "kayıt commit'i depoda yok: {}", kayit[0]);
+        tarihi_kanit_kaynagi(&depo(), kayit[0])
+            .unwrap_or_else(|hata| panic!("tarihsel kaynak {}: {hata}", kayit[0]));
     }
     let son = kayitlar.last().expect("son kayıt");
     let zee = zee_kaynaklari();

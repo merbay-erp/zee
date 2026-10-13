@@ -43,3 +43,10 @@ sayım, Türk alfabesi sıralaması, Markdown üretimi — küçük ama gerçek.
   tasarımının bilinen bedelidir ve V1 sözü değildir.
 - Sürtünme sayısı ürün başına değil dil başına okunur: Zee'de 16 (K-164),
   Rust/Go'da bu iş için kaydedilen sürtünme yoktur.
+
+K-216: anonim CI eski ölçüm kaynak nesnesini geri getirmez. Tarihçedeki
+özgün SHA/süre/RSS/LOC değiştirilmez; kaynak soyu incelenmiş K-214/K-215
+exact eşlemesiyle ve eşlenmiş commit'in HEAD atası olmasıyla doğrulanır.
+Kayıt dışı, bozuk, çelişkili veya HEAD dışı eşleme reddedilir. Bu yeni
+kaynakta yeniden ölçüm değildir. Hermetik vaka eski nesne yokken olumlu
+ve ilgisiz/bozuk kaynakta olumsuz sonuçları korur.
