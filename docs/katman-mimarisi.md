@@ -136,3 +136,11 @@ canlı dağıtım ve otomatik parola göçü bu işte yapılmaz.
 K-215 etki incelemesi: SBOM path yama doğrulaması aynı sürüm mühendisliği
 sahibindedir; yeni production sahibi veya ters temel→adaptör kenarı eklenmez.
 Exact katman ve çevrim fixture'ları kapıyla doğrulanır.
+
+K-218 / ADR-089: explicit `--web-oran-deposu bellek` seçimi yalnız oran
+durumunu süreç başına sınırlı Arc/Mutex deposuna taşır. Varsayılan dosya
+backend'i ve kalıcı oturum/revoke paylaşımı sürer; ayrı worker/restart için
+ortak proxy kotası gerekir. Soak sürücüsü her dönemde 32768 anahtar
+doldurup süre dolumuyla temizler; yeni tampon derleyici RSS'ine dahildir.
+Sabit benchmark korpusu ve eski performans tarihçesi değiştirilmedi.
+Katman sahibi web_guvenligi'dir; bin_soak bu sahibe tek ileri kenar ekler.

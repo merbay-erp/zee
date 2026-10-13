@@ -4191,3 +4191,5 @@ değişiklik compiler semantiğini genişletmez. Uzak tekrar sonucu beklenir.
 compiler/CLI genişlemesi core freeze kanıt zinciri olmadığı için kapatılır.
 Dal yedekleri özel; uzak silme ve CI teyidi henüz açıktır.
 [Dal kararları](../docs/incelemeler/k217/README.md). Dil/spec/tanı/API değişmez.
+
+2026-10-13 — K-218 / ADR-089 / RFC-0031: gerçek ürün yük kanıtıyla minimal host backend seçimi; grammar eklenmez, varsayılan ortak kota korunur. Exact soak ve ürün kabulü beklenir.

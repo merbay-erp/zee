@@ -53,3 +53,5 @@ yüzeylerini K-208/K-209 bcrypt/IP ile aynı hatta toplar. Ürün kabulü
 dosya kontrolüyle değil bütün proje `dil dene .` ile alınır. Ham ürün E
 şablonu normal katalog üretimini ister. Exact source/CI kapanışı beklenir;
 canlı dağıtım ve otomatik parola göçü bu işte yapılmaz.
+
+| RFC-0031 | [Bellek oran backend’i](0031-bellek-oran-deposu.md) | **geçici kabul** (K-218) | ADR-089, spec/12 |

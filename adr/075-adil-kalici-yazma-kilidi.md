@@ -53,3 +53,9 @@ bir worker'ın diğerini C013'e düşürmesidir.
   yanında ihmal edilebilir, hızlı yolda yoktur.
 - K-183 kapandı; `kilit_yeniden_dene_ms` limiti API'de kalır ama resmî yol
   artık yoklamaz.
+
+K-217 Gitsrv kabul incelemesi: paylaşılan disk üzerinde bekleyen yazar
+3,593 sn'de tamamlandı. Eski testin 2 sn varsayımı taşınabilir performans
+garantisi değildir; kapı normatif 5 sn kilit bütçesini kullanır. Bloklayan
+OS kilidi ve süre aşımında fail-closed dönüş değişmedi. OS kuyruğu tüm
+platformlarda FIFO sırası garantilemez; bu karar böyle bir söz vermez.

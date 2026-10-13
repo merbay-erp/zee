@@ -37,3 +37,25 @@ Linux amd64 manifest'i sha256:09fb8a652cf7a990b714c46a9f0f5fd2d5bc2222d995166b91
 Kayıt sunucusunun Docker-Content-Digest değeri doğrulandı; GOVERSION
 kontrolü ve gerçek Go eşdeğerliği zorunludur. Bu source'da yeni kalıcı
 performans tabanı üretilmez. Gitleaks indirmesi süre/tekrar bütçelidir.
+
+## Master aktarımı ve ref kapanışı
+
+Temiz içerik commit'i `fef5e989c0a72db220f4641e45fcf5ac52dbd8ca`
+merbay-erp, Enterprise ayna ve Git2 master'a normal ileri push ile aktarıldı.
+Yerel tam faz 776/776, clippy/fmt/katalog/tazelik, site 15/15 ve gerçek
+WASM ABI, 23 kurallı tarihçe gizliliği ve staged Gitleaks geçti.
+
+Primary PR #6/#4/#3 kapalı, site ve iki Dependabot dalı silindi. Enterprise
+ve Git2 §2'nin beş eski dalı silindi; kalan ref listesi yalnız master olarak
+teyit edilir. Silmeler exact eski SHA lease'iyle yapıldı; Enterprise rust
+dalı silme anında zaten bulunmadığı için stale lease reddi
+yeni içerik silmek için aşılmadı. Özel bundle tam geçmişi doğrulandı.
+Git2 master kaynak koşusu #22
+automatik başladı; nihai CI sonucu ayrı kayıtta tamamlanacaktır. Depolar
+gizli ve GitHub Actions kapalı tutulur.
+
+Gitsrv #22: 773/774 test geçti; yalnız kilit yarış testinin 2 sn gözlem
+eşiği 3,593 sn ile kaldı. Spec/08'in 5 sn correctness sınırı aşılmadı.
+Sonraki tedarik/gizlilik/WASM/Windows adımları koşmadı. Faz artefaktı
+indirildi ve incelendi; bu koşu geçiş değildir. Paylaşılan CI'daki 2 sn
+performans varsayımı normatif 5 sn kilit bütçesine hizalanır.

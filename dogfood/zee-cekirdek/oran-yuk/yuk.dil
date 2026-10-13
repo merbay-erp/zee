@@ -1,0 +1,17 @@
+# K-218: zee-cekirdek 100 kartlık liste, ortak dosya+fsync oran sıcak yolu sürtünmesi.
+işlem kartı üret
+    başlığı al
+
+    temiz başlığın html güvenlisi olsun
+    "<article class=kart><h2>" ile temiz ile "</h2><p>Özet metni burada yer alır, makalenin kısa açıklaması.</p></article>" döndür
+
+8097 kapısında sunucu başlat
+
+GET "/wiki/" önekli adrese istek geldiğinde
+    gövde "<!doctype html><html lang=tr><body>" olsun
+    1 den 100 e kadar her sayı için
+        ad "Windows <11> güvenlik makalesi " ile sayı olsun
+        kart ad için kartı üret olsun
+        gövde gövde ile kart olsun
+    gövde gövde ile "</body></html>" olsun
+    gövde yanıtını gönder

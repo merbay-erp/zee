@@ -334,3 +334,11 @@ K-206 akış toplama dilimi kapalı: source f2ba654, temiz beyan/ölçüm
 K-214 geçmiş düzeltmesi: yukarıdaki kaynak referansları anonim dal kimliğine
 eşlenmiştir. Ham ölçüm/log/ikili/provenance kayıtları ölçülen özgün SHA
 kimliğini korur; bu eşleme yeni ölçüm veya yeni ikili kabulü değildir.
+
+K-218 / ADR-089: explicit `--web-oran-deposu bellek` seçimi yalnız oran
+durumunu süreç başına sınırlı Arc/Mutex deposuna taşır. Varsayılan dosya
+backend'i ve kalıcı oturum/revoke paylaşımı sürer; ayrı worker/restart için
+ortak proxy kotası gerekir. Soak sürücüsü her dönemde 32768 anahtar
+doldurup süre dolumuyla temizler; yeni tampon derleyici RSS'ine dahildir.
+Sabit benchmark korpusu ve eski performans tarihçesi değiştirilmedi.
+Katman sahibi web_guvenligi'dir; bin_soak bu sahibe tek ileri kenar ekler.

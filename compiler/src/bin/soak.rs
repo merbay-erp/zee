@@ -142,6 +142,26 @@ fn derleme_donemi(klasor: &Path, kaynaklar: &[String]) -> Result<(), String> {
     Ok(())
 }
 
+// K-218: her dönemde tam 32.768 oran anahtarı eklenir ve önceki pencere
+// dolarak temizlenir. Bu süreç RSS'i yeni uzun ömürlü tamponu da kapsar.
+fn oran_donemi(depo: &mut dil::web_guvenligi::WebGuvenligi, donem: u64) -> Result<(), String> {
+    let an = i64::try_from(donem)
+        .map_err(|_| "soak dönem taşması")?
+        .saturating_mul(60_000);
+    depo.istegi_baslat_kimlikle(None, "192.0.2.1", an)?;
+    for i in 0..32_768 {
+        let karar = depo.rate_limit_artir(
+            dil::web_guvenligi::RateLimitTuru::Ucnokta,
+            &format!("soak/{donem}/{i}"),
+            an,
+        )?;
+        if !karar.izinli {
+            return Err("soak yeni oran anahtarı reddedildi".into());
+        }
+    }
+    Ok(())
+}
+
 fn satirli_kaynak(satir_sayisi: usize, tohum: u64) -> String {
     let mut kaynak = String::new();
     for sira in 0..satir_sayisi / 4 {
@@ -398,6 +418,11 @@ fn gecmise_ekle(yol: &Path, satir: &str) -> Result<(), String> {
 fn calistir() -> Result<bool, String> {
     let ayarlar = argumanlari_oku()?;
     let (golden_klasoru, kaynaklar) = golden_kaynaklari(&ayarlar.depo)?;
+    let mut oran = dil::web_guvenligi::WebGuvenligi::kalici_bellek_oranli(
+        ayarlar
+            .depo
+            .join("compiler/target/soak-kullanilmayan-oturum.json"),
+    );
     let mut lsp = LspSureci::baslat(&ayarlar.dillsp)?;
     let kendi_pid = std::process::id();
     let baslangic = Instant::now();
@@ -413,6 +438,7 @@ fn calistir() -> Result<bool, String> {
     );
     while baslangic.elapsed() < ayarlar.sure {
         derleme_donemi(&golden_klasoru, &kaynaklar)?;
+        oran_donemi(&mut oran, derleme)?;
         derleme += 1;
         lsp.lsp_donemi()?;
         lsp_donemi += 1;

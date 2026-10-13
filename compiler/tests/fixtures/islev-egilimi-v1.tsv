@@ -58,3 +58,5 @@ src/ayristirici/cumle/gorunum.rs	gorunum_dugumu_kur#1	91	2
 src/gorsel.rs	kucult#1	82	2
 src/main.rs	govde#1	82	8
 src/yorumlayici/kimlik_iletisim.rs	intrinsic_degerlendir#1	92	4
+# K-218 inceleme: web_modunu_ayikla explicit bellek bayrağı doğrulamasını taşır; tek değer/tekrar/proxy zorunluluğu testle korunur, grammar ya da genel parser değişmez.
+src/main.rs	web_modunu_ayikla#1	88	4

@@ -47,10 +47,11 @@ kılar. Clippy ölçümü sabit Rust araç zinciriyle üretim `lib` ve `dil` iki
 | `compiler/src/lsp.rs::yeniden_adlandirma_plani#1` | 81→81 (+0/+9) | 12→12 (+0/+3) | SABİT |
 | `compiler/src/main.rs::cikar_komutu#1` | 99→99 (+0/+10) | 6→6 (+0/+2) | SABİT |
 | `compiler/src/main.rs::ekle_komutu#1` | 135→135 (+0/+14) | 10→10 (+0/+2) | SABİT |
-| `compiler/src/main.rs::govde#1` | 82→82 (+0/+9) | 8→8 (+0/+2) | SABİT |
+| `compiler/src/main.rs::govde#1` | 82→83 (+1/+9) | 8→8 (+0/+2) | PAY İÇİNDE |
 | `compiler/src/main.rs::io_izi_komutu#1` | 108→108 (+0/+11) | 10→10 (+0/+2) | SABİT |
 | `compiler/src/main.rs::istek_govdesini_oku#1` | 79→79 (+0/+8) | 12→12 (+0/+3) | SABİT |
 | `compiler/src/main.rs::web_istegini_baslat#1` | 85→85 (+0/+9) | 6→6 (+0/+2) | SABİT |
+| `compiler/src/main.rs::web_modunu_ayikla#1` | 88→88 (+0/+9) | 4→4 (+0/+2) | SABİT |
 | `compiler/src/morfoloji.rs::eki_uydur#1` | 63→63 (+0/+8) | 13→13 (+0/+3) | SABİT |
 | `compiler/src/paket.rs::kilit_metni#1` | 89→89 (+0/+9) | 9→9 (+0/+2) | SABİT |
 | `compiler/src/paket.rs::ziyaret_et#1` | 186→186 (+0/+19) | 4→4 (+0/+2) | SABİT |
