@@ -1274,3 +1274,8 @@ yazılması, müşteri/altyapı hash kapısı ve destek taslağı aynı dilimded
 Önceki geçişler kullanıcı kararı, GitHub PR refs temizliği destek teyidi
 bekler. Depo kullanıcı onayı olmadan açılmaz. ADR-087 ve
 [K-214 kaydı](incelemeler/k214/README.md) bu sınırı taşır.
+
+K-214 makine dilimi **KAPALI**: 51 kaynak SHA eşlemesi, anonim
+PR/dogfood kanıtı ve güvenilir master'dan çalışan CI kapısı; exact
+290fa52 için altı uzak kontrol yeşil. Önceki geçiş kararı, GitHub PR refs
+silinme teyidi ve yeniden açılış onayı **AÇIK** (GB-046).
