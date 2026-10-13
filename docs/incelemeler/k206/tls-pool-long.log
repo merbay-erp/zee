@@ -1,0 +1,9 @@
+
+running 1 test
+test postgresql::havuz::testler::saha_profili_gercek_tls_exhaustion_ve_stale_recoveryyi_olcer has been running for over 60 seconds
+test postgresql::havuz::testler::saha_profili_gercek_tls_exhaustion_ve_stale_recoveryyi_olcer ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 80 filtered out; finished in 334.84s
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.22s
+     Running unittests src/lib.rs (target/debug/deps/dil-a0a458cac002adcf)

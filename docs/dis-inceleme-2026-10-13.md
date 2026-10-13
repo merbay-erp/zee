@@ -80,3 +80,10 @@ modülü bu deneyde değiştirilmedi.
 farklı maliyetlerdir. K-206 bounded uygulama toplaması, hata önceliği,
 retry ve tam-drain bağlantı sağlığını birlikte test edecektir. Tek wire
 satırı/driver buffer sınırı 16 MiB uygulama sonucundan çıkarılmaz (GB-041).
+
+K-207 kapsam dilimi exact 9e80b69 üzerinde 20k p95 165,137 ms ve
+1800 sn/264.343 döngü RSS soak ile kapandı; incremental/cache açık.
+K-206 [izole prototip/uzun TLS kanıtı](incelemeler/k206/README.md):
+15 sorgu aynı sonuç/hata verisi ve transaction sağlığını verdi. 64×1 MiB
+prototip RSS 23,7 MiB, tek 64 MiB satır 72,7 MiB; doğrudan stream helper
+production adaptörü değildir. GB-041 ve üretim entegrasyonu açıktır.

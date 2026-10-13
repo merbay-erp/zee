@@ -1,0 +1,11 @@
+{
+  "source": "9e80b692f9a0a37cdd8136783b42f2a0056f2478",
+  "source_clean": true,
+  "image": "postgres@sha256:efedf3595f1d6f415c08568ba171029bf54052e754cc9f030e3f2412b21f3d67",
+  "server_version": "postgres (PostgreSQL) 16.15 (Debian 16.15-1.pgdg12+2)",
+  "test": "postgresql::havuz::testler::saha_profili_gercek_tls_exhaustion_ve_stale_recoveryyi_olcer",
+  "exit": 0,
+  "elapsed_seconds": 336.84,
+  "ca_fingerprint_sha256": "7468832181a71be5027839c296da01c331ce31689fde4c98b695d879b5361f3e",
+  "boundary": "Own synthetic loopback TLS container, ephemeral CA/key deleted, long native pool test: checkout exhaustion, stale replacement, active lease 300s plus 30s maintenance. Concurrent process-specific K-207 RSS soak; not user production cluster."
+}

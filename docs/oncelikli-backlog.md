@@ -1117,8 +1117,8 @@ Mevcut veritabanlarına müdahale edilmez; ZEE-016/ZEE-018.
 
 ### K-207 — Ad çözümleme maliyeti ve büyük dosya LSP
 
-**AÇIK — temiz exact taban ölçümü başlatıldı; uyumlu optimizasyon ve
-aynı iş yükünde sonrası ölçümü beklenir.**
+**KISMEN — ad/kapsam optimizasyonu ve exact ölçüm/soak kapalı;
+incremental/cache kapasitesi açık.**
 Ad çözümleme her başvuruda bütün adları clone/sort ediyor. Exact-ad
 önceliği ve morfoloji kök eşlemeleri hash üyeliğiyle sorgulanabilir;
 A001/A002 tam mesaj/span/öneri ve sıralama korunmalıdır. Dil yüzeyi,
@@ -1129,9 +1129,8 @@ K-207 ilk dilim ölçümü kapalı: source 7827d8c/beyan+ölçüm 94de420, temiz
 taban 29be85b; 20k p95 22.169,906 → 2.961,638 ms, yaklaşık 7,5 kat.
 727/727 faz ve 26.624 oracle kararı aynı gözlemi kanıtladı. Raw sample
 ve exact tarihçe [ölçümlerde](olcumler.md). **K-207 KISMEN:** kapsam
-checkpoint HashSet clone/retain maliyeti, 20k <1 sn ve incremental/cache
-kapasitesi açık. İkinci dilim blokta doğan adları rollback kaydıyla
-izlemeyi değerlendirir; tampon eklenirse exact temiz 30 dk soak gerekir.
+ilk ölçümde checkpoint maliyeti ve 20k <1 sn hedefi açıktı. İkinci
+dilim kapanışı aşağıdadır; incremental/cache kapasitesi açık kalır.
 
 ### K-207 ikinci dilim — kapsam checkpoint
 
@@ -1143,8 +1142,13 @@ atama, yerel silme ve kimlik yeniden kullanmama testi mevcut kapsam/
 semantic/golden testlerini tamamlar. Sorumluluk cozumleyici sahibindedir;
 yeni modül/kenar ve ters katman geçişi yoktur.
 
-Journal derleme başına düşer, LSP belge/cache alanına taşınmaz. Yeni
-derleme tamponu nedeniyle K-173/ADR-069 exact temiz 30 dk soak ve
-aynı sabit iş yüküyle ikinci sonrası benchmark beklenir. Bu kanıtlar
-olmadan K-207 kapsam dilimi kapalı sayılmaz. Dil/tanı/API/profil ve
-blokta doğan adın görünürlüğü değişmez.
+Journal derleme başına düşer, LSP belge/cache alanına taşınmaz.
+K-173/ADR-069 yeni geçici tampon kapısı aşağıdaki exact koşuda geçti.
+Dil/tanı/API/profil ve blokta doğan adın görünürlüğü değişmez.
+
+K-207 kapsam dilimi kapalı: temiz exact 9e80b69 release/25 örnek/2 ısınma
+20k LSP p95 165,137 ms; aynı exact kaynakta 1800 sn/264.343 döngü soak
+geçti. Derleyici RSS medyanı 8.144→8.160 KiB, LSP 19.088→17.568 KiB.
+Ham örnek/çevre ve tarihçe [ölçümlerde](olcumler.md). 728/728 faz,
+26.624 ad oracle ve 4.096 kapsam işlemi oracle karşılaştırması geçti.
+K-207 KISMEN; full didChange ve incremental/cache kapasitesi açıktır.
