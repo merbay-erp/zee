@@ -92,11 +92,8 @@ fn feature_gercek_dogfood_kaniti_olmadan_freeze_kapisini_gecemez() {
     basarili_git(&kok, &["init", "-q"]);
     std::fs::write(kok.join("compiler/src/lib.rs"), "pub fn cekirdek() {}\n")
         .expect("başlangıç kaynağı");
-    std::fs::write(
-        kok.join("spec/ozellik.md"),
-        "# K-163 legacy-panel kanıtı\n",
-    )
-    .expect("karar kanıtı");
+    std::fs::write(kok.join("spec/ozellik.md"), "# K-163 legacy-panel kanıtı\n")
+        .expect("karar kanıtı");
     std::fs::write(kok.join("regression/istek.dil"), "1 yaz\n").expect("reproducer");
     std::fs::write(
         kok.join("dogfood/legacy-panel/proje.dil"),
@@ -218,10 +215,9 @@ fn feature_gercek_dogfood_kaniti_olmadan_freeze_kapisini_gecemez() {
     assert!(String::from_utf8_lossy(&kayitsiz_is.stderr)
         .contains("CORE FREEZE DOGFOOD İŞİ KAYITLI DEĞİL"));
 
-    beyani_degistir(&dogfood_satiri.replace(
-        "dogfood/legacy-panel/proje.dil",
-        "regression/istek.dil",
-    ));
+    beyani_degistir(
+        &dogfood_satiri.replace("dogfood/legacy-panel/proje.dil", "regression/istek.dil"),
+    );
     commit(&kok, "ürün kökü dışındaki etkilenen dosya");
     let yanlis_kok = korugu_calistir(&kok, &freeze_parent);
     assert!(!yanlis_kok.status.success());

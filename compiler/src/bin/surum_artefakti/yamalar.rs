@@ -3,7 +3,6 @@ use super::{hex_coz, hex_yaz, KilitPaketi, KAYNAK_DEPOSU};
 use sha2::{Digest, Sha256};
 use std::path::{Component, Path};
 
-#[cfg(test)]
 fn dosyalar(kok: &Path, yol: &Path, sonuc: &mut Vec<(String, Vec<u8>)>) -> Result<(), String> {
     let entries = std::fs::read_dir(yol).map_err(|e| e.to_string())?;
     for entry in entries {
@@ -29,7 +28,6 @@ fn dosyalar(kok: &Path, yol: &Path, sonuc: &mut Vec<(String, Vec<u8>)>) -> Resul
     }
     Ok(())
 }
-#[cfg(test)]
 pub(super) fn agac_ozeti(kok: &Path) -> Result<String, String> {
     if std::fs::symlink_metadata(kok)
         .map_err(|e| e.to_string())?
@@ -97,7 +95,7 @@ fn git_agaci(repo: &Path, sha: &str, path: &str) -> Result<String, String> {
     kanonik_ozet(files)
 }
 
-pub(super) fn kaynak(paket: &KilitPaketi, _sha: &str) -> Result<(String, String), String> {
+pub(super) fn kaynak(paket: &KilitPaketi, sha: &str) -> Result<(String, String), String> {
     if paket.kaynak.as_deref() == Some("registry+https://github.com/rust-lang/crates.io-index") {
         let ozet = paket.ozet.as_ref().ok_or("registry paket checksum eksik")?;
         hex_coz::<32>(ozet, "registry checksum")?;
@@ -140,20 +138,21 @@ pub(super) fn kaynak(paket: &KilitPaketi, _sha: &str) -> Result<(String, String)
             return Err("yerel yama yolu/girdi kaydı geçersiz".into());
         }
         if *name == paket.ad && *version == paket.surum {
-            let expected_source = format!("git+{KAYNAK_DEPOSU}?rev={source_sha}#{source_sha}");
-            if paket.kaynak.as_deref() != Some(expected_source.as_str()) {
-                return Err("yerel yama exact kayıtlı Git URL/rev/commit kaynağını ister".into());
+            if paket.kaynak.is_some() {
+                return Err(
+                    "yerel yama kayıtlı path paketini ister; Git kaynağı kabul edilmez".into(),
+                );
             }
-            // Cargo compiles the immutable Git checkout, not the maintained
-            // preparation copy in the current repository working tree.
+            // Both the exact build checkout and the bytes Cargo compiles must
+            // match the reviewed canonical package tree.
             let repo = Path::new(env!("CARGO_MANIFEST_DIR"))
                 .parent()
                 .ok_or("compiler parent yok")?;
-            let actual = git_agaci(repo, source_sha, path)?;
-            if actual != *expected {
+            let actual = git_agaci(repo, sha, path)?;
+            if actual != *expected || agac_ozeti(&repo.join(path))? != *expected {
                 return Err("yerel yama ağacı kayıtlı SHA-256 ile eşleşmiyor".into());
             }
-            matched = Some((format!("{KAYNAK_DEPOSU}/tree/{source_sha}/{path}"), actual));
+            matched = Some((format!("{KAYNAK_DEPOSU}/tree/{sha}/{path}"), actual));
         }
     }
     matched.ok_or_else(|| format!("SBOM kayıtsız yerel paket: {} {}", paket.ad, paket.surum))

@@ -216,7 +216,7 @@ fn guvenlik_kapisi_betigi_ci_ve_surum_adayi_adimlarini_tasir() {
     for row in rows {
         let fields = row.split('\t').collect::<Vec<_>>();
         assert_eq!(fields.len(), 3);
-        assert!(fields[0].starts_with("8d39c17c3df92c31482a87eb170d099977dc0d5b:"));
+        assert!(fields[0].starts_with("47858358d6cf65210979fd210dfabae9465e9fb7:"));
         assert!(fields[0].contains(":generic-api-key:"));
         assert_eq!(fields[1].len(), 64);
         assert!(fields[2].starts_with("K-204:") && fields[2].chars().count() >= 40);
@@ -296,12 +296,17 @@ fn acik_depo_kapisi_anonim_politikayi_ve_ci_kablosunu_korur() {
     assert!(trusted.contains("ref: master"));
     assert!(trusted.contains("python3 kontrol/scripts/acik-depo-denetle.py --depo kaynak"));
     assert!(oku(".github/workflows/ci.yml").contains("ci-taban-kimligi.py"));
-    assert!(workflow.contains("bash scripts/ci-oz-kaynak.sh"));
+    assert!(!workflow.contains("ci-oz-kaynak.sh"));
     let policy: serde_json::Value = serde_json::from_str(&oku("docs/acik-depo-politikasi-v1.json"))
         .expect("anonim politika JSON");
     assert_eq!(policy["schema"], "zee-acik-depo-politikasi-1");
     assert_eq!(policy["history_base"].as_str().expect("SHA").len(), 40);
     assert!(!policy["rules"].as_array().expect("kurallar").is_empty());
+    assert_eq!(policy["history_scope"], "all-reachable");
+    assert!(policy["legacy_fingerprints"]
+        .as_object()
+        .unwrap()
+        .is_empty());
     let result = std::process::Command::new(if cfg!(windows) { "python" } else { "python3" })
         .arg(depo().join("scripts/tests/acik-depo-test.py"))
         .current_dir(depo())

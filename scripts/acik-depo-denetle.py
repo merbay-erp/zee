@@ -25,27 +25,59 @@ def digest(text):
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
-def tokens(text):
+def plain_text(text):
     text = unicodedata.normalize("NFKC", text)
-    text = "".join(c for c in text if c != "\0" and unicodedata.category(c) != "Cf")
-    return [normalize(t) for t in re.findall(r"[^\W_]+", text, re.UNICODE)]
+    return "".join(c for c in text if c != "\0" and unicodedata.category(c) != "Cf")
+
+
+def tokens(text):
+    return [normalize(t) for t in re.findall(r"[^\W_]+", plain_text(text), re.UNICODE)]
+
+
+def exact_words(text, rules):
+    if not rules.get("words"):
+        return set()
+    text = plain_text(text)
+    parts = list(re.finditer(r"[^\W_]+", text, re.UNICODE))
+    found = set()
+    limit = max(rules.get("word_lengths", set()), default=0)
+    for start in range(len(parts)):
+        candidate = ""
+        for end in range(start, min(start + 6, len(parts))):
+            if end > start and not re.fullmatch(r"[\s._-]*", text[parts[end-1].end():parts[end].start()]):
+                break
+            candidate += normalize(parts[end].group())
+            if len(candidate) > limit:
+                break
+            key = digest(candidate)
+            if key in rules.get("words", set()):
+                found.add(key)
+    return found
 
 
 @lru_cache(maxsize=8192)
-def word_hashes(word, lengths):
+def word_hashes(word, lengths, terms):
     if len(word) >= 32 and re.fullmatch(r"[0-9a-f]+", word):
         return frozenset()
-    return frozenset(digest(word[start:start + size])
-                     for size in lengths if size <= len(word)
-                     for start in range(len(word) - size + 1))
+    # Cache only matches, not every candidate digest in long build logs. The
+    # policy belongs in the key so independent policies cannot share results.
+    terms = frozenset(terms)
+    found = set()
+    for size in lengths:
+        for start in range(len(word) - size + 1):
+            key = digest(word[start:start + size])
+            if key in terms:
+                found.add(key)
+    return frozenset(found)
 
 
 def matches(text, rules):
     words = tokens(text)
     candidates = set()
     lengths = tuple(sorted(rules["lengths"]))
+    terms = tuple(sorted(rules["terms"]))
     for word in words:
-        candidates.update(word_hashes(word, lengths))
+        candidates.update(word_hashes(word, lengths, terms))
     max_length = max(rules["lengths"])
     for start in range(len(words)):
         candidate = ""
@@ -56,8 +88,11 @@ def matches(text, rules):
             if len(candidate) > max_length:
                 break
             if len(candidate) in rules["lengths"]:
-                candidates.add(digest(candidate))
+                key = digest(candidate)
+                if key in rules["terms"]:
+                    candidates.add(key)
     found = candidates & rules["terms"]
+    found.update(exact_words(text, rules))
     # Server roots have a separate exact structural rule; normal words such as
     # DNS SRV cannot trigger this rule.
     for path in re.findall(r"/(?:[^/\s`\"'<>]+/){1,5}", text):
@@ -82,7 +117,7 @@ def load_policy(path):
         raise ValueError("Tarihçe tabanı exact SHA olmalı")
     entries = data.get("rules", [])
     if not entries or any(set(row) != {"kind", "length", "sha256"}
-                          or row["kind"] not in {"term", "path"}
+                          or row["kind"] not in {"term", "word", "path"}
                           or not isinstance(row["length"], int)
                           or row["length"] < 1
                           or not re.fullmatch(r"[0-9a-f]{64}", row["sha256"])
@@ -90,7 +125,11 @@ def load_policy(path):
         raise ValueError("Hash kuralı geçersiz")
     if len({(r["kind"], r["sha256"]) for r in entries}) != len(entries):
         raise ValueError("Hash kuralı yineleniyor")
+    if data.get("history_scope") != "all-reachable":
+        raise ValueError("Tüm erişilebilir tarihçe zorunlu")
     baseline = data.get("legacy_fingerprints", {})
+    if baseline:
+        raise ValueError("Eski müşteri kaydı istisnası kabul edilmez")
     if not isinstance(baseline, dict) or any(
             not re.fullmatch(r"[0-9a-f]{64}", key)
             or not isinstance(count, int) or isinstance(count, bool) or count < 1
@@ -100,6 +139,8 @@ def load_policy(path):
         "terms": {r["sha256"] for r in entries if r["kind"] == "term"},
         "paths": {r["sha256"] for r in entries if r["kind"] == "path"},
         "lengths": {r["length"] for r in entries if r["kind"] == "term"},
+        "words": {r["sha256"] for r in entries if r["kind"] == "word"},
+        "word_lengths": {r["length"] for r in entries if r["kind"] == "word"},
     }
 
 
@@ -164,7 +205,7 @@ def scan(root, policy, rules, revision="HEAD", history=True, worktree=True):
     if history:
         # Never silently skip history because a shallow checkout lacks the base.
         git(root, "cat-file", "-e", base + "^{commit}")
-        revisions += git(root, "rev-list", base + ".." + revision).decode().splitlines()
+        revisions += git(root, "rev-list", revision).decode().splitlines()
     seen = set()
     findings = set()
     reader = BlobReader(root)
@@ -175,7 +216,7 @@ def scan(root, policy, rules, revision="HEAD", history=True, worktree=True):
                     continue
                 seen.add((path, oid))
                 findings.update(inspect(path, reader.read(oid), rules, allowances))
-            if history and rev != base:
+            if history:
                 message = git(root, "show", "-s", "--format=%B", rev)
                 findings.update(inspect("git-message", message, rules, {}))
     finally:
@@ -214,7 +255,7 @@ def main():
             print(f"MASKELİ BULGU dosya_sha256={path_hash} satır={number}", file=sys.stderr)
         print(f"Açık depo kapısı reddetti: {len(findings)} konum.", file=sys.stderr)
         return 1
-    print("Açık depo kapısı geçti; yeni müşteri/altyapı eşleşmesi yok.")
+    print("Açık depo kapısı geçti; erişilebilir tarihçede müşteri/altyapı eşleşmesi yok.")
     return 0
 
 

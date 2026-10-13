@@ -1,6 +1,6 @@
 {
   "schema": "zee-acik-depo-politikasi-1",
-  "history_base": "12c59218dc84e8e9d4610274c722985ce6a99dae",
+  "history_base": "dc1ec0dff184743f410d5cc80d01bbc9a7b3b12c",
   "rules": [
     {
       "kind": "term",
@@ -106,7 +106,13 @@
       "kind": "term",
       "length": 12,
       "sha256": "9fc607c1ad16059cf6d8d3054b540c18d2bc79085396f496b7a234d62c6ca498"
+    },
+    {
+      "kind": "word",
+      "length": 3,
+      "sha256": "90ad0603bdc466bab981d6e1663b3b7f73c0f47cd6eb7505ba233197f4472d4e"
     }
   ],
-  "legacy_fingerprints": {}
+  "legacy_fingerprints": {},
+  "history_scope": "all-reachable"
 }

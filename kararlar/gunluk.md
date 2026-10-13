@@ -4021,3 +4021,13 @@ tedarik, sır ve gizlilik altı kontrolü geçti. Anonim tarihçe kontrollü
 force push ile ana depoya, aynı HEAD özel aynaya gitti. Önceki geçiş
 dökümleri ve destek taslağı teslim edilir; GB-046 dış teyit bekler,
 depo kullanıcı onayı olmadan açılmaz.
+
+## 13 Ekim 2026 — K-215 önceki geçişler ve path PostgreSQL yaması
+
+Kullanıcı önceki geçişlerin anonimleştirilmesine devam talimatı verdi.
+Yayımlanmış kaynak graph'ı bağımsız yedekli klonda bütünüyle temizlenir;
+ürün talebinin 17:15 eki uyarınca özel `ci/site-dil` korunur. Eski kaynak
+beyanları/regression sahipleri yeni exact SHA'ya bağlanır, gerçek geçmiş
+ölçümleri değiştirilmez. Kapıda eski satır istisnası kalmaz. Compiler/fuzz
+path yaması kullanır, SBOM actual build/tree kimliğini doğrular. Doğrulama
+ve dış teyit sınırı `docs/incelemeler/k215/README.md` içindedir.

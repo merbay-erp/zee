@@ -1279,3 +1279,11 @@ K-214 makine dilimi **KAPALI**: 51 kaynak SHA eşlemesi, anonim
 PR/dogfood kanıtı ve güvenilir master'dan çalışan CI kapısı; exact
 290fa52 için altı uzak kontrol yeşil. Önceki geçiş kararı, GitHub PR refs
 silinme teyidi ve yeniden açılış onayı **AÇIK** (GB-046).
+
+## K-215 — Önceki geçişlerin anonimleşmesi ve path yama
+
+Durum: **DEVAM**. Kullanıcı K-214 önceki geçiş dökümünün temizliğini onayladı.
+Kapsam: tüm yayımlanmış dal/etiket geçmişi, istisnasız CI, exact kaynak SHA
+beyanları, path PostgreSQL yaması ve doğru SBOM. Kanıt:
+[K-215 kaydı](incelemeler/k215/README.md). Özel ürün `ci/site-dil` pini
+korunur. GB-046 GitHub PR refs/cache teyidi ve yeniden açılış onayı açıktır.
