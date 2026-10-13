@@ -4039,3 +4039,13 @@ başlamadı; test adımları sıfırdır. Bu engel uzak kanıtı açık bırakı
 Belge kapanışında yeni push koşuları üretmemek için yalnız bu belge
 commit'i `[skip ci]` taşır; workflow politikası ve gelecekteki kapılar
 değişmez. GB-046 destek teyidi ve yeniden açılış onayı bekler.
+
+### K-216: Git2 ve Gitsrv üzerinde koşular
+
+Kullanıcı CI koşularını özel Git2/Gitsrv sistemine taşıdı. Ana GitHub kaynağı
+merbay-erp/zee, Enterprise yalnız aynadır; ikisinde Actions kapalıdır.
+Forgejo akışı tam Linux faz/kalite, gizlilik/sır, tedarik/offline vendor ve
+WASM kapılarını exact seçili kaynakta çalıştırır; ilgisiz özel dal/etiket
+almaz, PR kodu otomatik çalıştırılmaz. Uzak sonuç doğrulanınca kaydedilir;
+Windows runtime kanıtı ve GitHub destek teyidi açık kalır.
+[Karar](../adr/088-git2-gitsrv-kosulari.md).

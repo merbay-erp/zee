@@ -1292,3 +1292,11 @@ exact-SHA geçişi ana depoya gitti, 771/771 yerel test ve iki temiz klon
 ikili eşitliği geçti. Uzak altı iş hesap ödemesi/harcama limiti nedeniyle
 başlayamadı (0 test adımı); Linux/Windows/uzak kapı kanıtı açık kalır.
 GB-046 GitHub PR refs/cache teyidi ve yeniden açılış onayı açıktır.
+
+## K-216 — Git2 / Gitsrv CI
+
+Durum: **DEVAM**. Kullanıcı koşuların Git2/Gitsrv üzerinden yapılmasını
+istedi. Git2 gizli kalır; GitHub ana kaynak ve Enterprise ayna Actions'ı
+kapalıdır. Linux kapıları ve seçili ref/ephemeral token sınırı ADR-088
+ile kayıtlı; ilk exact uzak koşu ve sonuç kanıtı beklenir. Windows runtime
+kanıtı yerine çapraz veya Linux test sonucu konmaz.

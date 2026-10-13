@@ -417,3 +417,13 @@ Güncel master uzak CI'ında altı iş hesap ödemesi/harcama limiti nedeniyle
 başlamadı; test adımı sıfır. Linux/Windows ve uzak kapı kanıtı açık kalır.
 [Hesap engeli kaydı](incelemeler/k215/ci-hesap-engeli.json) ve GitHub destek
 teyidi tamamlanmadan yeniden açılış hazırlanmış sayılmaz.
+
+### K-216: Git2 ve Gitsrv üzerinde koşular
+
+Kullanıcı CI koşularını özel Git2/Gitsrv sistemine taşıdı. Ana GitHub kaynağı
+merbay-erp/zee, Enterprise yalnız aynadır; ikisinde Actions kapalıdır.
+Forgejo akışı tam Linux faz/kalite, gizlilik/sır, tedarik/offline vendor ve
+WASM kapılarını exact seçili kaynakta çalıştırır; ilgisiz özel dal/etiket
+almaz, PR kodu otomatik çalıştırılmaz. Uzak sonuç doğrulanınca kaydedilir;
+Windows runtime kanıtı ve GitHub destek teyidi açık kalır.
+[Karar](../adr/088-git2-gitsrv-kosulari.md).

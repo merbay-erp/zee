@@ -140,3 +140,4 @@ adr/085-gorunum-blogu.md	kanitli	compiler/tests/gorunum_testi.rs	K-212 görünü
 spec/28-gorunum-blogu.md	kanitli	compiler/tests/gorunum_testi.rs	Görünüm bloğu sözdizimi ve anlam kanıtı
 adr/086-site-hatlarinin-birlestirilmesi.md	kanitli	compiler/tests/birim_testi.rs,compiler/tests/gorunum_testi.rs,compiler/tests/io_izi_testi.rs,compiler/tests/semantic_regresyon_korugu_testi.rs	K-213 tek kaynak hattı ve bütün proje kabulü
 adr/087-acik-depo-urun-gizliligi.md	kanitli	compiler/tests/guvenlik_kapisi_testi.rs	K-214 anonim hash politikası ve CI kablosu, sentetik olumlu/olumsuz tarihçe testleri
+adr/088-git2-gitsrv-kosulari.md	kanitli	compiler/tests/tedarik_kapisi_testi.rs	K-216 tam seçili ref fetch, ilgisiz özel dal ve yanlış SHA reddi, immutable Forgejo pinleri ve PRsiz akış

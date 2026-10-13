@@ -1,0 +1,124 @@
+name: zee-gitsrv
+
+on:
+  push:
+    branches: [master, ci/zee-gitsrv]
+  workflow_dispatch:
+
+jobs:
+  linux-kapilari:
+    runs-on: ubuntu-latest
+    container: node:20-bookworm
+    timeout-minutes: 90
+    env:
+      CARGO_BUILD_JOBS: '2'
+    steps:
+      - name: İzole konteynerin derleme araçları
+        run: |
+          apt-get update -qq
+          apt-get install -y -qq git curl ca-certificates python3 build-essential pkg-config libssl-dev
+          git config --global user.name 'Zee CI'
+          git config --global user.email 'ci@ornek.com'
+      - name: Tam ve yalnız seçili kaynak geçmişi
+        env:
+          ZEE_SERVER: ${{ forgejo.server_url }}
+          ZEE_REPOSITORY: ${{ forgejo.repository }}
+          ZEE_REF: ${{ forgejo.ref }}
+          ZEE_SHA: ${{ forgejo.sha }}
+          ZEE_JOB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          [[ "$ZEE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test ! -e kaynak
+          mkdir kaynak
+          cd kaynak
+          git init -q
+          export ZEE_GIT_AUTH="AUTHORIZATION: basic $(printf 'x-access-token:%s' "$ZEE_JOB_TOKEN" | base64 | tr -d '\n')"
+          git -c credential.helper= --config-env=http.extraHeader=ZEE_GIT_AUTH fetch --no-tags "${ZEE_SERVER%/}/$ZEE_REPOSITORY" "$ZEE_REF"
+          unset ZEE_GIT_AUTH ZEE_JOB_TOKEN
+          git checkout -q --detach "$ZEE_SHA"
+          test "$(git rev-parse HEAD)" = "$ZEE_SHA"
+          test "$(git rev-parse --is-shallow-repository)" = false
+          git update-ref refs/heads/ci-kaynak "$ZEE_SHA"
+      - name: Sabit Rust araç zinciri
+        uses: https://github.com/dtolnay/rust-toolchain@d1031067263f94b142dd6c0ce24c5eb9d02d52a0
+        with:
+          toolchain: 1.93.1
+          components: clippy,rustfmt
+          targets: wasm32-unknown-unknown
+      - name: Kaynak soy ağacı korukları
+        working-directory: kaynak
+        env:
+          ZEE_BEFORE: ${{ forgejo.event.before }}
+        run: |
+          set -euo pipefail
+          taban="$ZEE_BEFORE"
+          if [[ -z "$taban" || "$taban" =~ ^0+$ ]]; then taban="$(git rev-parse HEAD~1)"; fi
+          taban="$(python3 scripts/ci-taban-kimligi.py "$taban")"
+          bash scripts/conformance-korugu.sh "$taban"
+          bash scripts/semantic-regresyon-korugu.sh "$taban"
+          bash scripts/core-freeze-korugu.sh "$taban"
+      - name: Tam Linux faz matrisi ve kalite kapıları
+        working-directory: kaynak/compiler
+        run: |
+          set -euo pipefail
+          cargo run --locked --bin faz_test_matrisi -- --denetle --rapor target/faz-test-matrisi.md
+          derleme="$(cargo build --locked 2>&1)"
+          printf '%s\n' "$derleme"
+          case "$derleme" in *warning*|*Warning*) echo 'Uyarılı derleme reddedildi.'; exit 1 ;; esac
+          cargo clippy --locked --all-targets -- -D warnings
+          cargo fmt --all -- --check
+          cargo run --locked --bin islev_egilimi -- --denetle
+          cargo run --locked --bin spec_drift -- --denetle
+          cargo run --locked --bin tani_kalitesi -- --denetle
+          cargo run --locked -- çalıştır ../dogfood/kanit-ozeti/kaynak/ana.dil
+          git diff --exit-code -- ../docs/kanit-ozeti.md
+          cargo run --locked -- çalıştır ../merhaba.dil
+      - name: Gizlilik ve sır araçları
+        working-directory: kaynak
+        run: |
+          set -euo pipefail
+          python3 scripts/tests/acik-depo-test.py
+          python3 scripts/tests/sir-yanlis-pozitif-test.py
+          python3 scripts/acik-depo-denetle.py
+          mkdir -p compiler/target/ci-araclar
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 -o compiler/target/ci-araclar/gitleaks.tar.gz https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz
+          echo '551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb  compiler/target/ci-araclar/gitleaks.tar.gz' | sha256sum --check --strict
+          tar -xzf compiler/target/ci-araclar/gitleaks.tar.gz -C compiler/target/ci-araclar gitleaks
+          PATH="$PWD/compiler/target/ci-araclar:$PATH" bash scripts/sir-taramasi.sh
+      - name: Tedarik ve offline vendor
+        working-directory: kaynak
+        run: |
+          set -euo pipefail
+          cargo install cargo-deny --version 0.20.2 --locked
+          bash scripts/tests/rust-arac-zinciri-test.sh
+          bash scripts/guvenlik-kapisi.sh --surekli
+          bash scripts/offline-vendor-denetle.sh
+      - name: Gerçek WASM yürütmesi
+        working-directory: kaynak/compiler
+        run: |
+          set -euo pipefail
+          cargo rustc --locked --release --target wasm32-unknown-unknown --lib --crate-type cdylib -- -C link-arg=-zstack-size=16777216
+          node ../scripts/wasm-abi-denetle.mjs target/wasm32-unknown-unknown/release/dil.wasm
+      - name: Shared CI performans gözlemi
+        working-directory: kaynak/compiler
+        env:
+          ZEE_RUN_ID: ${{ forgejo.run_id }}
+          ZEE_RUN_ATTEMPT: ${{ forgejo.run_attempt }}
+          ZEE_SOURCE_SHA: ${{ forgejo.sha }}
+        run: |
+          set -euo pipefail
+          cargo build --locked --release --bin dillsp
+          cargo run --locked --release --bin olcum -- --tur 25 --gecmis ../docs/performans-gecmisi-v2.tsv --json target/performans.json --rapor target/performans.md --gecmis-cikti target/performans-gecmisi.tsv --kayit "git2-${ZEE_RUN_ID}-${ZEE_RUN_ATTEMPT}" --git-sha "$ZEE_SOURCE_SHA" --milestone shared-ci --dillsp target/release/dillsp --lsp-olcek
+      - name: Faz kanıtını sakla
+        if: always()
+        uses: https://code.forgejo.org/actions/upload-artifact@ff15f0306b3f739f7b6fd43fb5d26cd321bd4de5
+        with:
+          name: linux-faz-kaniti-${{ forgejo.sha }}
+          path: |
+            kaynak/compiler/target/faz-test-matrisi.md
+            kaynak/compiler/target/performans.json
+            kaynak/compiler/target/performans.md
+            kaynak/compiler/target/performans-gecmisi.tsv
+          if-no-files-found: warn
+          retention-days: 90
