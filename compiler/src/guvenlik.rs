@@ -5,6 +5,9 @@
 //! özetleri Argon2id'in PHC biçiminden gelir. WASM playground bu üretim
 //! capability'lerini bilinçli olarak sunmaz.
 
+#[cfg(not(target_arch = "wasm32"))]
+mod legacy_bcrypt;
+
 /// 256 bit işletim sistemi rastgeleliğini küçük harfli hex metne çevirir.
 #[cfg(not(target_arch = "wasm32"))]
 pub fn guvenli_belirtec_uret() -> Result<String, String> {
@@ -34,11 +37,14 @@ pub fn parola_ozeti_uret(_parola: &str) -> Result<String, String> {
     Err("playground parola özeti üretemez".into())
 }
 
-/// Yalnız Argon2id PHC dizelerini kabul eder. Bozuk/bilinmeyen özet ile yanlış
+/// Argon2id PHC ve sınırlı legacy bcrypt doğrular. Bozuk/bilinmeyen özet ile yanlış
 /// parola aynı `false` sonucunu verir; kimlik doğrulama ayrıntı sızdırmaz.
 #[cfg(not(target_arch = "wasm32"))]
 pub fn parola_dogrula(parola: &str, ozet: &str) -> bool {
     use argon2::password_hash::{phc::PasswordHash, PasswordVerifier};
+    if ozet.starts_with("$2") {
+        return legacy_bcrypt::dogrula(parola, ozet);
+    }
     let Ok(ayristirilmis) = PasswordHash::new(ozet) else {
         return false;
     };

@@ -23,6 +23,7 @@ num-traits = "0.2.19"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 argon2 = { version = "0.6.0", features = ["getrandom"] }
+bcrypt = { version = "=0.19.3", default-features = false, features = ["std", "zeroize"] }
 ed25519-dalek = "3.0.0"
 getrandom = "0.4.3"
 native-tls = "=0.2.18"

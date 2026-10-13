@@ -213,3 +213,38 @@ fn postgresql_okuma_yazma_ve_yapilandirilmis_hata_izden_aynen_oynatilir() {
     );
     oynatici.bitir().expect("bütün iz tüketilmeli");
 }
+
+#[test]
+fn istemci_adresi_izi_sirali_ve_kanonik_ip_olarak_oynatilir() {
+    let mut kaydeden = IzKaydedenIo::yeni(ToplayanIo::yeni(Vec::new()));
+    assert_eq!(kaydeden.istemci_adresi(), "");
+    let iz = kaydeden.iz_metni().unwrap();
+    let mut replay = IzYenidenOynatici::yeni(&iz).unwrap();
+    assert_eq!(replay.istemci_adresi(), "");
+    replay.bitir().unwrap();
+    for value in ["203.0.113.7", "2001:db8::1"] {
+        let encoded = value
+            .as_bytes()
+            .iter()
+            .map(|b| format!("{b:02x}"))
+            .collect::<String>();
+        let trace = format!("zee-io-izi\t1\n1\tistemci_adresi\t0\t1\t{encoded}\n");
+        let mut replay = IzYenidenOynatici::yeni(&trace).unwrap();
+        assert_eq!(replay.istemci_adresi(), value);
+        replay.bitir().unwrap();
+    }
+    for value in [
+        "[2001:db8::1]",
+        "2001:DB8:0:0:0:0:0:1",
+        "for=203.0.113.7",
+        "192.0.2.1,198.51.100.1",
+    ] {
+        let encoded = value
+            .as_bytes()
+            .iter()
+            .map(|b| format!("{b:02x}"))
+            .collect::<String>();
+        let trace = format!("zee-io-izi\t1\n1\tistemci_adresi\t0\t1\t{encoded}\n");
+        assert!(IzYenidenOynatici::yeni(&trace).is_err());
+    }
+}

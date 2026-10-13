@@ -2785,6 +2785,13 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         }
         Ok(())
     }
+    fn istemci_adresi(&mut self) -> String {
+        if self.web_istek_yedegi.is_some() {
+            self.web_guvenligi.istemci_adresi().to_string()
+        } else {
+            String::new()
+        }
+    }
     fn csrf_belirteci(&mut self) -> Result<String, String> {
         self.politika
             .gerektir(dil::yetkinlik::Yetkinlik::WebOturumu)?;

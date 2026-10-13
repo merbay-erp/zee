@@ -1,0 +1,8 @@
+# K-208/K-209 gerçek zee-cekirdek gereksinim aynası; çalışan ürün ayrı depodadır.
+proje "zee-cekirdek" olsun
+sürüm "0.1.0" olsun
+morfoloji "zee-tr-1" olsun
+giriş "kimlik-gereksinimi.dil" olsun
+yetkinlikler "ağ-sunucusu", "web-oturumu", "kriptografi" listesi olsun
+ağ_hedefleri boş liste olsun
+yerel_bağımlılıklar boş liste olsun

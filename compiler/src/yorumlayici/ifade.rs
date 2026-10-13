@@ -32,6 +32,7 @@ pub(super) fn degerlendir_async<'a>(
                     );
                 }
                 match kimlik.as_str() {
+                    ISTEMCI_ADRESI => Ok(Deger::Metin(io.istemci_adresi())),
                     CSRF_BELIRTECI => {
                         son_tarihi_denetle(io, satir)?;
                         io.csrf_belirteci().map(Deger::Metin).map_err(|hata| {

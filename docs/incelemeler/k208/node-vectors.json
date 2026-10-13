@@ -1,0 +1,26 @@
+{
+  "producer": "bcryptjs 3.0.3 hashSync(password,cost)",
+  "node": "v23.11.0",
+  "vectors": [
+    {
+      "password": "dogru-parola",
+      "cost": 11,
+      "hash": "$2b$11$ps3248yUh0B5w2jKirP8QufvI/UGGxj8vc8YKmJKwj0plgNdg5jLy"
+    },
+    {
+      "password": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "cost": 4,
+      "hash": "$2b$04$GIXDOrrzdGb1OyxFyoEH6.Xpip0zBlHblFtaKPpTrjyGl241EPbW."
+    },
+    {
+      "password": "éééééééééééééééééééééééééééééééééééé",
+      "cost": 4,
+      "hash": "$2b$04$V7cCT.0keO7mClAb9DaLv.qiuA27F8F9cZKgVIXRskVxYNayW1XU."
+    },
+    {
+      "password": "dogru-parola",
+      "cost": 14,
+      "hash": "$2b$14$vGeMUmkR4hXrISq.18F08uR81dSkkGZV4UXK4hObIAK3.g1omENLq"
+    }
+  ]
+}

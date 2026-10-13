@@ -1,5 +1,6 @@
 //! `GirdiCikti` çağrılarını merkezî yetkinlik politikasında fail-closed tutar.
 mod dosya;
+mod web;
 
 use super::{EylemHatasi, GirdiCikti, VeritabaniHatasi};
 use crate::agac::RotaErisimi;
@@ -138,10 +139,7 @@ impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
     }
 
     fn istek_al(&mut self) -> Option<String> {
-        self.politika
-            .izin_verir(Yetkinlik::AgSunucusu)
-            .then(|| self.ic.istek_al())
-            .flatten()
+        web::istek_al(self)
     }
     fn istek_islemini_tamamla(&mut self) -> Result<(), String> {
         self.ic.istek_islemini_tamamla()
@@ -181,11 +179,11 @@ impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
         csrf: Option<&str>,
         csrf_gerekli: bool,
     ) -> Result<(), WebReddi> {
-        self.web_gerektir().map_err(|_| WebReddi {
-            durum: 503,
-            mesaj: "çalışma politikası ağ sunucusunu açmıyor",
-        })?;
-        self.ic.rota_guvenligini_denetle(erisim, csrf, csrf_gerekli)
+        web::rota_denetle(self, erisim, csrf, csrf_gerekli)
+    }
+
+    fn istemci_adresi(&mut self) -> String {
+        web::istemci_adresi(self)
     }
 
     fn csrf_belirteci(&mut self) -> Result<String, String> {

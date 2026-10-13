@@ -42,3 +42,5 @@ exact proje/kilit/CLI katmanları çalışır), 2 taslak: 0012 (FFI — Faz
 4/5) ve 0014 (standart kitaplık — çalışan prototiple).
 Kural: bir RFC ancak yüzeyi gerçeklenmiş VE regression testine bağlanmışsa
 geçici kabule geçer; tam kabul usability kapısından geçmeyi bekler.
+
+| RFC-0030 | [Legacy parola ve istemci adresi](0030-legacy-parola-ve-istemci-adresi.md) | **geçici kabul** (K-208/K-209) | ADR-082, spec/12 |
