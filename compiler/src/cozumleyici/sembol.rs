@@ -98,22 +98,23 @@ pub(super) fn kapsam_bitir(ortam: &mut SembolTablosu, kapsam: &std::collections:
 
 fn adi_coz(
     ham: &str,
-    mut tanimli: Vec<String>,
+    tanimli_mi: impl Fn(&str) -> bool,
+    tanimli_adlar: impl FnOnce() -> Vec<String>,
     satir: usize,
     sutun: usize,
     uzunluk: usize,
 ) -> Result<String, Tani> {
-    tanimli.sort();
-    if tanimli.iter().any(|ad| ad == ham) {
+    if tanimli_mi(ham) {
         return Ok(ham.to_string());
     }
 
-    let adaylar = crate::morfoloji::kok_adaylari(ham);
-    let eslesenler = tanimli
-        .iter()
-        .filter(|ad| adaylar.iter().any(|aday| aday == *ad))
-        .cloned()
+    let mut eslesenler = crate::morfoloji::kok_adaylari(ham)
+        .into_iter()
+        .filter(|aday| tanimli_mi(aday))
         .collect::<Vec<_>>();
+    // Tanı sırası HashMap yerleşimine veya aday üretim sırasına bağlı değildir.
+    eslesenler.sort();
+    eslesenler.dedup();
 
     match eslesenler.len() {
         1 => eslesenler
@@ -121,6 +122,8 @@ fn adi_coz(
             .next()
             .ok_or_else(|| ic_tutarlilik_hatasi("Tek morfoloji eşleşmesi kayboldu", satir)),
         0 => {
+            let mut tanimli = tanimli_adlar();
+            tanimli.sort();
             let oneri = if tanimli.is_empty() {
                 "Bir değeri kullanmadan önce \"<ad> <değer> olsun\" ile tanımla.".to_string()
             } else {
@@ -160,7 +163,14 @@ pub(super) fn sembol_cozumle(
     sutun: usize,
     uzunluk: usize,
 ) -> Result<(String, SymbolId), Tani> {
-    let ad = adi_coz(ham, ortam.keys().cloned().collect(), satir, sutun, uzunluk)?;
+    let ad = adi_coz(
+        ham,
+        |ad| ortam.kimlik(ad).is_some(),
+        || ortam.keys().cloned().collect(),
+        satir,
+        sutun,
+        uzunluk,
+    )?;
     let kimlik = ortam
         .kimlik(&ad)
         .ok_or_else(|| ic_tutarlilik_hatasi("Çözülmüş adın sembol kaydı bulunamadı", satir))?;
@@ -175,5 +185,12 @@ pub fn ad_cozumle(
     sutun: usize,
     uzunluk: usize,
 ) -> Result<String, Tani> {
-    adi_coz(ham, ortam.keys().cloned().collect(), satir, sutun, uzunluk)
+    adi_coz(
+        ham,
+        |ad| ortam.contains_key(ad),
+        || ortam.keys().cloned().collect(),
+        satir,
+        sutun,
+        uzunluk,
+    )
 }

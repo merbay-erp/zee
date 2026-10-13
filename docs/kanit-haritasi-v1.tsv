@@ -38,7 +38,7 @@ adr/009-dil-adi.md	kanitli	compiler/tests/proje_testi.rs,compiler/tests/playgrou
 adr/010-normatif-otorite-ve-degisiklik-butunlugu.md	kanitli	compiler/tests/dokuman_tazelik_testi.rs	İndeks bağlantı kanıt ve sayı tazelik kapıları
 adr/011-intrinsic-yetkinlik-siniri.md	kanitli	compiler/tests/intrinsic_lowering_testi.rs	Intrinsic kayıt lowering ve yetkinlik
 adr/012-derleyici-faz-modulleri.md	kanitli	compiler/tests/mimari_sinir_testi.rs	Fiziksel modül sahipliği ve satır bütçeleri
-adr/013-checker-katmanlari.md	kanitli	compiler/tests/mimari_sinir_testi.rs,compiler/tests/cagri_cikarimi_testi.rs	Checker tek sorumluluk ve çağrı çıkarım katmanı
+adr/013-checker-katmanlari.md	kanitli	compiler/tests/mimari_sinir_testi.rs,compiler/tests/cagri_cikarimi_testi.rs,compiler/tests/ad_cozumleme_uyumlulugu_testi.rs	Checker tek sorumluluk, çağrı çıkarım katmanı ve K-207 ad çözümleme gözlem eşdeğerliği
 adr/014-semantic-kimlikler.md	kanitli	compiler/tests/semantic_kimlik_testi.rs,compiler/tests/hir_modeli_testi.rs,compiler/tests/lsp_testi.rs	Kimlik kararlılığı HIR tanım dizini ve semantic LSP
 adr/015-derleyici-faz-tipleri.md	kanitli	compiler/tests/faz_modeli_testi.rs,compiler/tests/cagri_cikarimi_testi.rs	Kaynak token AST bağlı program ve checker içi keşif ayrımı
 adr/016-typed-hir-cekirdegi.md	kanitli	compiler/tests/hir_modeli_testi.rs,compiler/tests/invariant_testi.rs,compiler/tests/lsp_testi.rs,compiler/tests/cagri_cikarimi_testi.rs	Typed HIR bağları tamlık production LSP tüketimi ve nihai çıkarım

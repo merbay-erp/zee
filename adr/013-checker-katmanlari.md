@@ -70,3 +70,12 @@ yeniden dışa aktarılır ve kırılmaz.
   B-007, K-121'de ayrı `cikarim` katmanı ve mimari bütçesiyle kapandı.
 - K-121'in sıra-bağımsız yerel çıkarım semantiği RFC-0006 ile spec/04 ve
   spec/10'da normatifleşti; diğer katman ayrımları kaynak yüzeyini değiştirmez.
+
+## K-207 ad çözümleme maliyeti
+
+Sembol sahibi ve bağlama sorumluluğu değişmez. Başarılı exact ad çözümlemesi
+ve morfoloji adayları mevcut hash tablosunda üyelik sorgusuyla yürütülür.
+Tam ad listesi yalnız A001 önerisinde üretilir; A002 eşleşmeleri sıralanır/
+tekilleştirilir. Exact-ad önceliği, tanı mesaj/span/öneri ve SymbolId bağları
+eski algoritma oracle'ıyla 26.624 karar karşılaştırmasında aynı kalır.
+Yeni modül/kenar, ters katman geçişi, cache veya uzun ömürlü durum yoktur.
