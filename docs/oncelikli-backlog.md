@@ -1237,3 +1237,9 @@ mevcuttur. RFC-0030 geçici kabul/ADR-082; yeni özet Argon2id kalır.
 K-174 syntax gözlem penceresi gerçek K-209 grammar değişikliği nedeniyle
 2026-10-13–2026-11-10 olarak yeniden başladı; B-001/B-002 açık.
 Tam faz, source beyanı ve vendor/release kapanışı beklenir.
+
+K-208/K-209 kapandı: feature source 2c355ef, clean beyan/ikili kanıt
+daaa3ea. 742/742 faz, Node crypto ve gerçek HTTP/CLI/trace kabulü,
+167 paket offline vendor ve iki-clone binary eşitliği geçti.
+[Ham kayıt](incelemeler/k208/README.md) yerel macOS kanıtıdır; V1
+usability/RC/signed release ve sunucu dağıtımı değildir.

@@ -1,0 +1,14 @@
+{
+  "feature_source_commit": "1567cc1b26be74e219699be585d2b390c3f72a91",
+  "clean_evidence_commit": "02cdfab72d320200038f23a25c8997f30b2338a5",
+  "source_clean": true,
+  "platform": "macOS arm64",
+  "root_phase_passed": 742,
+  "root_phase_expected": 742,
+  "crypto_cases": 3,
+  "native_ip_trace_cli_cases": 3,
+  "offline_vendor_packages": 167,
+  "offline_vendor_manifest_sha256": "c161ab7a76ccc19a1ce41d3108106adf96c7c87dddab2af99ce562b20353a05e",
+  "two_clone_equal": true,
+  "boundary": "Local clean Mac native evidence. No server deployment, signed release, RC fuzz/Miri or three-platform release claim."
+}

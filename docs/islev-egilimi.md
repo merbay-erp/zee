@@ -21,7 +21,7 @@ kılar. Clippy ölçümü sabit Rust araç zinciriyle üretim `lib` ve `dil` iki
 | `compiler/src/ayristirici.rs::yapi_ayristir#1` | 86→86 (+0/+9) | 7→7 (+0/+2) | SABİT |
 | `compiler/src/ayristirici/cumle.rs::cumle_ayristir#1` | 485→485 (+0/+24) | 33→33 (+0/+5) | SABİT |
 | `compiler/src/ayristirici/ifade.rs::kosul_atomu_ic#1` | 183→183 (+0/+19) | 12→12 (+0/+3) | SABİT |
-| `compiler/src/ayristirici/ifade.rs::yapili_kalip_ic#1` | 427→427 (+0/+24) | 54→54 (+0/+5) | SABİT |
+| `compiler/src/ayristirici/ifade.rs::yapili_kalip_ic#1` | 427→424 (-3/+24) | 54→54 (+0/+5) | İYİLEŞTİ |
 | `compiler/src/bicimleyici.rs::bicimle#1` | 112→112 (+0/+12) | 22→22 (+0/+5) | SABİT |
 | `compiler/src/bicimleyici.rs::satiri_parcala#1` | 73→73 (+0/+8) | 15→15 (+0/+3) | SABİT |
 | `compiler/src/cozumleyici.rs::denetle_coklu_hatali_tanimlarla#1` | 54→54 (+0/+8) | 15→15 (+0/+3) | SABİT |
@@ -61,8 +61,8 @@ kılar. Clippy ölçümü sabit Rust araç zinciriyle üretim `lib` ve `dil` iki
 | `compiler/src/yorumlayici.rs::gorevleri_calistir#1` | 136→136 (+0/+14) | 2→2 (+0/+2) | SABİT |
 | `compiler/src/yorumlayici.rs::json_nesnesi_ayristir#1` | 96→96 (+0/+10) | 8→8 (+0/+2) | SABİT |
 | `compiler/src/yorumlayici/cumle.rs::blok_calistir_async#1` | 815→815 (+0/+24) | 1→1 (+0/+2) | SABİT |
-| `compiler/src/yorumlayici/ifade.rs::degerlendir_async#1` | 850→850 (+0/+24) | 1→1 (+0/+2) | SABİT |
-| `compiler/src/yorumlayici/io_izi.rs::olay_semasini_denetle#1` | 149→149 (+0/+15) | 20→20 (+0/+4) | SABİT |
+| `compiler/src/yorumlayici/ifade.rs::degerlendir_async#1` | 850→851 (+1/+24) | 1→1 (+0/+2) | PAY İÇİNDE |
+| `compiler/src/yorumlayici/io_izi.rs::olay_semasini_denetle#1` | 149→150 (+1/+15) | 20→20 (+0/+4) | PAY İÇİNDE |
 | `compiler/src/yorumlayici/kaynak.rs::deger_heap_bayti#1` | 101→101 (+0/+11) | 8→8 (+0/+2) | SABİT |
 | `compiler/src/yorumlayici/web_istek.rs::web_istegini_calistir#1` | 113→113 (+0/+12) | 9→9 (+0/+2) | SABİT |
 
