@@ -288,3 +288,25 @@ tamamlandı: 20k p95 22.169,906 ms. Exact sonrası kaynak ölçümü
 bekleniyor. İzlenen
 tarihçeye henüz yeni baseline yazılmadı; shared yerel masaüstü gözlemsel,
 hard eşik yok. Cache/persistent state eklenmedi; full didChange sürer.
+
+### K-207 ilk ölçüm kapanışı
+
+Aynı M4 Pro/macOS 26.6.2, 24 GiB, Rust 1.93.1 release, 25 gerçek örnek
+ve 2 ısınma: temiz taban 29be85b, temiz sonrası 94de420.
+
+| Satır | Önce p95 | Sonra p95 |
+|---:|---:|---:|
+| 2.000 | 227,620 ms | 30,567 ms |
+| 5.000 | 1.122,488 ms | 175,842 ms |
+| 10.000 | 5.525,283 ms | 745,695 ms |
+| 20.000 | 22.169,906 ms | 2.961,638 ms |
+
+Raw sample/çevre bilgileri [önce](incelemeler/k207/before.json) ve
+[sonra](incelemeler/k207/after.json); otomatik üretilen exact TSV satırları
+performans tarihçesine eklendi. Paylaşılan yerel masaüstü gözlemidir;
+compiler build ve kısa PG deneyi taban koşusu sırasında başka süreçlerde
+yürüdü. Hard eşik yoktur; tek makine sonucu genel SLA değildir.
+
+Başarılı ad çözümlemesi yaklaşık 7,5 kat 20k hızlanma sağladı. Full
+didChange ve kapsam HashSet clone/retain maliyeti sürer; 20k <1 sn hedefi
+ve incremental/cache kapasitesi açık kalır. Cache/persistent state yoktur.
