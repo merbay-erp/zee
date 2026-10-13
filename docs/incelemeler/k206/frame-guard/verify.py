@@ -37,12 +37,22 @@ def run(args, cwd):
 
 def main():
     before = tree_hash(SOURCE)
-    if before != EXPECTED_TREE:
-        raise ValueError("pinned upstream source tree differs from reviewed patch base")
     (ROOT / "compiler/target").mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="zee-k206-frame-", dir=ROOT / "compiler/target") as temporary:
         crate = Path(temporary) / "postgres-protocol"
-        shutil.copytree(SOURCE, crate)
+        crate.mkdir()
+        pin = "c4e9d03616fefa3d4aa9edcdef5c3ab8af7a8c75"
+        prefix = "compiler/third_party/postgres-protocol/"
+        listing = subprocess.check_output(["git", "ls-tree", "-r", "--name-only", pin, "--", prefix], cwd=ROOT).decode().splitlines()
+        for name in listing:
+            relative = Path(name.removeprefix(prefix))
+            if relative.is_absolute() or ".." in relative.parts:
+                raise ValueError("invalid Git source path")
+            destination = crate / relative
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            destination.write_bytes(subprocess.check_output(["git", "show", f"{pin}:{name}"], cwd=ROOT))
+        if tree_hash(crate) != EXPECTED_TREE:
+            raise ValueError("exact Git patch base tree differs")
         # --fuzz=0 and the exact source digest forbid quietly applying to another base.
         run(["patch", "--batch", "--fuzz=0", "-p1", "-i", str(HERE / "backend.patch")], crate)
         shutil.copyfile(HERE / "Cargo.lock", crate / "Cargo.lock")
@@ -52,7 +62,7 @@ def main():
         run(["rustup", "run", "1.93.1", "rustfmt", "--check", str(crate / "src/message/backend.rs")], crate)
         if tree_hash(SOURCE) != before:
             raise ValueError("production source was modified")
-        print(json.dumps({"upstream_tree_sha256": before,
+        print(json.dumps({"upstream_tree_sha256": EXPECTED_TREE,
                           "patch_sha256": hashlib.sha256((HERE / "backend.patch").read_bytes()).hexdigest(),
                           "patched_backend_sha256": hashlib.sha256((crate / "src/message/backend.rs").read_bytes()).hexdigest(),
                           "production_patch_active": False}, sort_keys=True))

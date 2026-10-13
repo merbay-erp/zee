@@ -33,6 +33,42 @@ pub const PARAMETER_DESCRIPTION_TAG: u8 = b't';
 pub const ROW_DESCRIPTION_TAG: u8 = b'T';
 pub const READY_FOR_QUERY_TAG: u8 = b'Z';
 
+/// Maximum backend message length, including its four-byte length field.
+/// The one-byte message tag is excluded. This is not a process RSS bound.
+pub const ZEE_BACKEND_FRAME_LIMIT: usize = 32 * 1024 * 1024;
+
+/// A peer announced a backend message exceeding Zee's transport boundary.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct FrameLimitExceeded {
+    pub limit: usize,
+    pub announced: usize,
+}
+
+impl std::fmt::Display for FrameLimitExceeded {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "Zee backend frame length {} exceeds {} bytes",
+            self.announced, self.limit
+        )
+    }
+}
+
+impl std::error::Error for FrameLimitExceeded {}
+
+fn check_frame_length(len: usize) -> io::Result<()> {
+    if len > ZEE_BACKEND_FRAME_LIMIT {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidData,
+            FrameLimitExceeded {
+                limit: ZEE_BACKEND_FRAME_LIMIT,
+                announced: len,
+            },
+        ));
+    }
+    Ok(())
+}
+
 #[derive(Debug, Copy, Clone)]
 pub struct Header {
     tag: u8,
@@ -57,6 +93,7 @@ impl Header {
             ));
         }
 
+        check_frame_length(len as usize)?;
         Ok(Some(Header { tag, len }))
     }
 
@@ -126,6 +163,7 @@ impl Message {
             ));
         }
 
+        check_frame_length(len as usize)?;
         let total_len = len as usize + 1;
         if buf.len() < total_len {
             let to_read = total_len - buf.len();
@@ -900,4 +938,119 @@ fn find_null(buf: &[u8], start: usize) -> io::Result<usize> {
 #[inline]
 fn get_str(buf: &[u8]) -> io::Result<&str> {
     str::from_utf8(buf).map_err(|e| io::Error::new(io::ErrorKind::InvalidInput, e))
+}
+
+#[cfg(test)]
+mod zee_frame_tests {
+    use super::*;
+
+    fn header(tag: u8, len: u32) -> [u8; 5] {
+        let mut bytes = [tag, 0, 0, 0, 0];
+        bytes[1..].copy_from_slice(&len.to_be_bytes());
+        bytes
+    }
+
+    fn typed(err: &io::Error, announced: usize) {
+        assert_eq!(err.kind(), io::ErrorKind::InvalidData);
+        let cause = err
+            .get_ref()
+            .unwrap()
+            .downcast_ref::<FrameLimitExceeded>()
+            .unwrap();
+        assert_eq!(
+            *cause,
+            FrameLimitExceeded {
+                limit: ZEE_BACKEND_FRAME_LIMIT,
+                announced
+            }
+        );
+    }
+
+    #[test]
+    fn incomplete_headers_wait_without_reading_length() {
+        let bytes = header(b'D', u32::MAX);
+        for n in 0..5 {
+            assert!(Header::parse(&bytes[..n]).unwrap().is_none());
+            let mut buf = BytesMut::from(&bytes[..n]);
+            assert!(Message::parse(&mut buf).unwrap().is_none());
+            assert_eq!(&buf[..], &bytes[..n]);
+            assert!(buf.capacity() < 1024);
+        }
+    }
+
+    #[test]
+    fn header_accepts_exact_limit_and_rejects_one_more() {
+        for len in [4, 16 * 1024 * 1024, ZEE_BACKEND_FRAME_LIMIT] {
+            assert_eq!(
+                Header::parse(&header(b'D', len as u32))
+                    .unwrap()
+                    .unwrap()
+                    .len(),
+                len as i32
+            );
+        }
+        for tag in [b'D', b'E', b'N', b'R', b'd', 0] {
+            for len in [ZEE_BACKEND_FRAME_LIMIT + 1, i32::MAX as usize] {
+                typed(&Header::parse(&header(tag, len as u32)).unwrap_err(), len);
+            }
+        }
+    }
+
+    #[test]
+    fn direct_message_parser_rejects_before_reserve_or_consume() {
+        for tag in [b'D', b'E', b'N', b'R', b'd', 0] {
+            for len in [
+                ZEE_BACKEND_FRAME_LIMIT + 1,
+                i32::MAX as usize,
+                u32::MAX as usize,
+            ] {
+                let bytes = header(tag, len as u32);
+                let mut buf = BytesMut::from(&bytes[..]);
+                let capacity = buf.capacity();
+                let err = match Message::parse(&mut buf) {
+                    Err(err) => err,
+                    Ok(_) => panic!("oversized frame accepted"),
+                };
+                typed(&err, len);
+                assert_eq!(buf.capacity(), capacity);
+                assert_eq!(&buf[..], &bytes);
+            }
+        }
+    }
+
+    #[test]
+    fn malformed_lengths_keep_existing_error_kinds() {
+        for len in [0, 1, 2, 3, u32::MAX] {
+            let err = Header::parse(&header(b'D', len)).unwrap_err();
+            assert_eq!(err.kind(), io::ErrorKind::InvalidData);
+            assert!(err
+                .get_ref()
+                .unwrap()
+                .downcast_ref::<FrameLimitExceeded>()
+                .is_none());
+        }
+        for len in 0..4 {
+            let mut buf = BytesMut::from(&header(b'D', len)[..]);
+            let err = match Message::parse(&mut buf) {
+                Err(err) => err,
+                Ok(_) => panic!("malformed length accepted"),
+            };
+            assert_eq!(err.kind(), io::ErrorKind::InvalidInput);
+        }
+    }
+
+    #[test]
+    fn valid_ready_for_query_still_parses_and_consumes_one_frame() {
+        let mut buf = BytesMut::from(&b"Z\0\0\0\x05IZ\0\0\0\x05T"[..]);
+        assert!(matches!(
+            Message::parse(&mut buf).unwrap(),
+            Some(Message::ReadyForQuery(_))
+        ));
+        assert_eq!(&buf[..], b"Z\0\0\0\x05T");
+        assert!(matches!(
+            Message::parse(&mut buf).unwrap(),
+            Some(Message::ReadyForQuery(_))
+        ));
+        assert!(buf.is_empty());
+    }
 }

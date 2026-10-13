@@ -118,3 +118,8 @@ typed 32 MiB aday yama bağımsız geçici crate'te 34/34 testle doğrulandı.
 Aktif dependency pin değişmedi; üretimde mesaj sınırı etkin değildir.
 Transaction durum temizliği, read retry engeli ve exact immutable kaynak
 entegrasyonu açık; GB-041 kapatılmadı. [Kabul tasarımı](../docs/incelemeler/k206/frame-guard/README.md).
+
+K-206 hazırlık kopyası .2 artık iki-parser typed 32 MiB guard taşır.
+Compiler/fuzz pin hâlâ c4e9d036 .1 seçer; guard üretimde etkin değildir.
+Exact kaynak commitinden sonra tüketici pin ve transaction/retry/RLS
+kabulü birlikte taşınacaktır. GB-041 bu hazırlıkta açık kalır.

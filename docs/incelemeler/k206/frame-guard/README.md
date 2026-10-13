@@ -95,3 +95,7 @@ kabulüdür. Native JSON input/ikili hash, Rust ve OS kimliğini taşır.
 735/735 mevcut compiler fazı, katalog/tazelik/fmt, güvenlik ve sır
 kapıları geçti. Bu deney RC fuzz/Miri, imzalı release veya üç-platform
 wire entegrasyonu kanıtı değildir. GB-041 açık; aday üretimde etkin değildir.
+
+Hazırlık kopyası .2 guard taşımak üzere güncellendiğinde `verify.py`
+patch tabanını exact c4e9d036 Git bloblarından yeniden oluşturur; güncel
+hazırlık ağacını upstream sanmaz. Aktif pin taşınana kadar üretim .1 kalır.
