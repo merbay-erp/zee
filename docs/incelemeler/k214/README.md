@@ -71,3 +71,7 @@ Windows ilk ddf8b88 fazında Python'ın genel `bash` seçimi Git Bash yerine
 başka runtime'ı çağırdı. Sentetik CI hazırlık testi Windows'ta kurulu Git'in
 Git Bash executable'ını ve ileri eğik çizgili yolları açıkça seçer; ret eşiği
 ve gerçek kapı davranışı değişmez. Linux/macOS/tedarik aynı kaynakta geçti.
+
+Windows Git executable'ı cmd/bin/mingw64 dizinlerinden bulunabilir. Git Bash
+aynı kurulumun üst dizinlerinde aranır; System32/WSL seçilmez. Üç düzen ve
+eksik Bash ret testi eklendi: 10 sentetik kapı/CI testi yerelde geçti.
