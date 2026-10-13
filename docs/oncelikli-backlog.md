@@ -1132,3 +1132,19 @@ ve exact tarihçe [ölçümlerde](olcumler.md). **K-207 KISMEN:** kapsam
 checkpoint HashSet clone/retain maliyeti, 20k <1 sn ve incremental/cache
 kapasitesi açık. İkinci dilim blokta doğan adları rollback kaydıyla
 izlemeyi değerlendirir; tampon eklenirse exact temiz 30 dk soak gerekir.
+
+### K-207 ikinci dilim — kapsam checkpoint
+
+Kapsam girişi bütün adların HashSet kopyası yerine monotonic tanım sıra
+sınırını alır. Sembol tablosunun geçici yeni-ad journal'ı scope çıkışında
+yalnız o sınırdan sonra doğan adları kaldırır. Dış ada atama ve SymbolId
+kimliği kalıcıdır; silinen kimlik sayacı geri sarılmaz. Nested scope,
+atama, yerel silme ve kimlik yeniden kullanmama testi mevcut kapsam/
+semantic/golden testlerini tamamlar. Sorumluluk cozumleyici sahibindedir;
+yeni modül/kenar ve ters katman geçişi yoktur.
+
+Journal derleme başına düşer, LSP belge/cache alanına taşınmaz. Yeni
+derleme tamponu nedeniyle K-173/ADR-069 exact temiz 30 dk soak ve
+aynı sabit iş yüküyle ikinci sonrası benchmark beklenir. Bu kanıtlar
+olmadan K-207 kapsam dilimi kapalı sayılmaz. Dil/tanı/API/profil ve
+blokta doğan adın görünürlüğü değişmez.

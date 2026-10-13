@@ -30,3 +30,8 @@ platform, rustc, süre, pencere, dönem sayıları, medyanlar ve sonucu taşır.
 Kapı sızıntı eğilimini ölçer, mutlak bellek bütçesini değil (spec/24).
 Süreler shared CI'da gürültülüdür ve karar girdisi değildir. Windows'ta `ps`
 yoktur; koşu Unix Tier-1 platformlarında tanımlıdır.
+
+K-207 ikinci dilim: kapsam checkpoint sıra sınırıdır; journal yalnız
+yeni yerel adları siler, dış atama ve SymbolId sayacı korunur. Yeni
+derleme tamponu için exact temiz 1800 sn soak ve sabit ölçek sonrası
+benchmark açıktır. Journal her derleme sonunda düşer; LSP cache eklenmedi.
