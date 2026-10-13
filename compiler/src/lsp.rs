@@ -30,7 +30,7 @@ pub const AZAMI_LSP_JSON_DUGUMU: usize = crate::kaynak_sinirlari::VARSAYILAN_KAY
 // ---------- sunucu ----------
 
 /// Tamamlama önerileri: dilin kalıp kelimeleri (kaynağı: ayrıştırıcı yüzeyi).
-const KALIP_KELIMELERI: [&str; 91] = [
+const KALIP_KELIMELERI: [&str; 105] = [
     "yaz",
     "olsun",
     "ise",
@@ -64,6 +64,7 @@ const KALIP_KELIMELERI: [&str; 91] = [
     "kullan",
     "birimini",
     "paketini",
+    "rotalarını",
     "doğru",
     "yanlış",
     "yok",
@@ -122,12 +123,25 @@ const KALIP_KELIMELERI: [&str; 91] = [
     "kullanıcısını",
     "listelemeyi",
     "iptal",
+    "argon2",
+    "totp",
+    "anahtarı",
+    "anahtarıyla",
+    "ileti",
+    "göndermeyi",
+    "üzerinden",
+    "görünüm",
+    "şifrelenmişi",
+    "çözmeyi",
+    "görselini",
+    "piksele",
+    "küçültmeyi",
 ];
 
 /// Hover açıklamaları: kalıp kelimesi → tek satır Türkçe açıklama + örnek.
 /// (Kaynak: spec/02-dizim ve dil turu; kelime kalıbın son ya da ayırt edici
 /// parçasıdır.)
-const KELIME_ACIKLAMALARI: [(&str, &str); 45] = [
+const KELIME_ACIKLAMALARI: [(&str, &str); 55] = [
     ("yaz", "Cümleyi bitirir: değeri ekrana (ya da `X dosyasına`) yazar.\n\n`\"Merhaba\" ile isim yaz`"),
     ("olsun", "Ad tanımlar ya da var olan ada atar; tür ilk değerden çıkar ve sonra değişmez.\n\n`yaş 10 olsun`"),
     ("ise", "Koşul dalı açar; koşul yüklem-sonludur (`...se/...sa`).\n\n`yaş 8 veya daha büyükse`"),
@@ -173,6 +187,16 @@ const KELIME_ACIKLAMALARI: [(&str, &str); 45] = [
     ("belirteci", "Form için sunucu oturumuna bağlı CSRF değeri üretir.\n\n`csrf csrf belirteci olsun`"),
     ("doğrulanıyorsa", "Parolayı Argon2id veya maliyeti 4–14 olan legacy bcrypt özetiyle doğrular; düz parola karşılaştırması yapmaz.\n\n`verilen özet ile doğrulanıyorsa`"),
     ("rolüyle", "Başarılı girişte yeni, döndürülmüş sunucu oturumu açar.\n\n`\"Zeynep\" kullanıcısını \"yönetici\" rolüyle oturuma al`"),
+    ("argon2", "Parolanın Argon2id PHC özetini üretir (kriptografi yetkinliği); düz parola saklanmaz.\n\n`özet parolanın argon2 özeti olsun`"),
+    ("totp", "160 bit Base32 TOTP gizli anahtarı üretir; otpauth bağlantısında kullanılır.\n\n`gizli yeni totp anahtarı olsun`"),
+    ("anahtarıyla", "RFC 6238 TOTP kodunu adaptörün saatiyle ±30 saniye penceresinde doğrular.\n\n`kod gizli anahtarıyla doğrulanıyorsa`"),
+    ("göndermeyi", "SMTP ile düz metin e-posta gönderir (ağ yetkinliği + `e_posta_bağlantı_değişkeni`); geri alınamaz, eylem içinde kullanılmaz.\n\n`sonuç alıcı konu gövde ile ileti göndermeyi dene olsun`"),
+    ("görünüm", "`<ad> görünüm olsun` + girintili HTML ağacı: her satır `etiket öznitelik değer …`, `\"sabit\"`, `metin ifade` (kaçışlı) ya da `ham ifade` (kaçışsız); sonuç Metin.\n\n`form_html görünüm olsun\n    form method \"post\" action adres\n        input type \"email\" name \"eposta\" value eposta`"),
+    ("üzerinden", "E-postayı ortam değişkeni yerine verilen SMTP bağlantı metniyle gönderir (panelden ayarlanan SMTP); ağ hedefi denetimi aynen uygulanır.\n\n`sonuç alıcı konu gövde ile bağlantı üzerinden ileti göndermeyi dene olsun`"),
+    ("rotalarını", "Birimin üst düzey rotalarını bu satırın yerine, kendi sırasıyla ana programa katar (rota birimleri; büyük ana.dil'i bölmek için). Birimin tanımları da alınır.\n\n`panel_guvenlik rotalarını kullan`"),
+    ("şifrelenmişi", "Gizli değeri XChaCha20-Poly1305 ile şifreler (kriptografi yetkinliği + `gizli_anahtar_değişkeni`); çıktı `zee1:` metnidir, veritabanında saklanabilir.\n\n`sifreli parolanın gizli şifrelenmişi olsun`"),
+    ("çözmeyi", "`zee1:` metnini gizli anahtarla çözer; anahtar farklı ya da veri bozuksa başarısız Sonuç.\n\n`sonuç sifreli gizli çözmeyi dene olsun`"),
+    ("küçültmeyi", "Görseli azami kenara küçültüp .jpg/.png/.webp olarak yazar; büyütmez.\n\n`sonuç kaynak görselini hedef dosyasına 1600 piksele küçültmeyi dene olsun`"),
 ];
 
 #[derive(Default)]

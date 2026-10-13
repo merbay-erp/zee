@@ -8,6 +8,7 @@ use super::baglam::Baglam;
 pub(super) fn intrinsic_turunu_cevir(tur: IntrinsicTuru) -> Tur {
     match tur {
         IntrinsicTuru::Metin => Tur::Metin,
+        IntrinsicTuru::TamSayi => Tur::TamSayi,
         IntrinsicTuru::Mantiksal => Tur::Mantiksal,
         IntrinsicTuru::AgYaniti => Tur::AgYaniti,
         IntrinsicTuru::MetinListesi => Tur::Liste(VeriTuru::Metin),

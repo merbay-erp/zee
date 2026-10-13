@@ -15,7 +15,7 @@ Kararlı proje yazımları şunlardır:
 | `ağ-sunucusu` | Native loopback web sunucusu/adaptörü |
 | `donanım` | Sensör ve ışık adaptörü |
 | `web-oturumu` | Oturum, rol, çerez ve CSRF adaptörü |
-| `kriptografi` | Parola/kriptografi adaptörü |
+| `kriptografi` | Parola/kriptografi adaptörü; K-210 eki 3 ile gizli değer şifreleme (`gizli_anahtar_değişkeni` ortam değişkeni, `zee1:` XChaCha20-Poly1305) |
 | `veritabanı` | Bildirilmiş exact loopback PostgreSQL adaptörü |
 
 `proje.dil` içindeki `yetkinlikler` ve `ağ_hedefleri` yoksa boş listedir.
@@ -33,7 +33,11 @@ Bildirim hedefi yalnız `http://host[:port]` veya `https://host[:port]`
 origin'idir; yol, sorgu ve parça YASAKTIR. İstek URL'sinin yolu/sorgusu olabilir
 ama şema+küçük-harfli ASCII DNS/IP+etkin port exact bildirime eşleşmek
 ZORUNDADIR. Kullanıcı bilgisi, kontrol karakteri, ters bölü, sıfır port,
-ayraçsız IPv6 ve başka şema YASAKTIR.
+ayraçsız IPv6 ve başka şema YASAKTIR. K-210 ile `smtps://` (465, implicit TLS) ve
+`smtp://` (587, STARTTLS zorunlu; düz metin yalnız loopback) şemaları aynı
+exact origin kuralıyla kabul edilir; bildirimsiz geliştirici ağında yalnız
+şifreli şemalar (https, smtps) kendiliğinden izinlidir. SMTP kimlik bilgisi
+bildirimde değil `e_posta_bağlantı_değişkeni` ortam değişkenindedir.
 
 Public hedef HTTPS olmak ZORUNDADIR. Düz HTTP bildirimi için `yerel-ağ`
 ZORUNLUDUR. DNS çözümünden sonra bağlantıda kullanılabilecek bütün IP'ler

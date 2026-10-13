@@ -138,8 +138,13 @@ impl Baglam {
         (1usize << 30) + test_indeksi
     }
 
-    pub(super) fn istek_kapsami(&self, satir: usize) -> usize {
-        (1usize << 31) + satir
+    pub(super) fn istek_kapsami(&self, yol: &Ifade, satir: usize) -> Result<usize, Tani> {
+        // Rota birimlerinde yerel satır numaraları yinelenir; scope kimliği
+        // önceden bağlanan yol ifadesinin tekil HIR kimliğinden gelir.
+        self.hir_ifadeleri
+            .get(&crate::hir::ifade_adresi(yol))
+            .map(|bilgi| (1usize << 31) + bilgi.kimlik().sirasi())
+            .ok_or_else(|| hir_kaynak_hatasi(satir))
     }
 }
 

@@ -4,6 +4,42 @@
 use dil::kaynagi_derle_birimlerle;
 use std::collections::HashMap;
 
+#[test]
+fn farkli_rota_birimlerinin_ayni_satiri_ayri_hir_kapsamidir() {
+    let mut yukleyici = |ad: &str| match ad {
+        "sol" => Ok(include_str!("../../regression/hir/sol.birim").to_string()),
+        "sag" => Ok(include_str!("../../regression/hir/sag.birim").to_string()),
+        _ => Err("Birim yok".to_string()),
+    };
+    let program = dil::kaynagi_fazli_derle_birimlerle(
+        include_str!("../../regression/hir/rota-birimlerinde-ayni-satir.dil"),
+        &mut yukleyici,
+    )
+    .expect("aynı satırlı rota birimleri bağlanmalı");
+    program
+        .invariantleri_dogrula()
+        .expect("tekil scope ve SymbolId");
+    let kullanımlar = program.hir().sembol_kullanimlari();
+    let kapsamlar = kullanımlar
+        .iter()
+        .map(|k| k.kimlik().kapsam())
+        .collect::<std::collections::BTreeSet<_>>();
+    assert_eq!(kapsamlar.len(), 2);
+    let mut tekrar = |ad: &str| yukleyici(ad);
+    let ikinci = dil::kaynagi_fazli_derle_birimlerle(
+        include_str!("../../regression/hir/rota-birimlerinde-ayni-satir.dil"),
+        &mut tekrar,
+    )
+    .expect("aynı kaynak yeniden bağlanmalı");
+    let ikinci_kapsamlar = ikinci
+        .hir()
+        .sembol_kullanimlari()
+        .iter()
+        .map(|k| k.kimlik().kapsam())
+        .collect::<std::collections::BTreeSet<_>>();
+    assert_eq!(kapsamlar, ikinci_kapsamlar);
+}
+
 fn yukleyici<'a>(
     dosyalar: &'a HashMap<&'static str, &'static str>,
 ) -> impl FnMut(&str) -> Result<String, String> + 'a {
@@ -379,4 +415,97 @@ fn kokenli_tani_raporu_ana_kaynaktan_alinti_yapmaz_birim_metniyle_yapar() {
         Some("hesaplar"),
         "en içteki köken kalır"
     );
+}
+
+#[test]
+fn rota_birimi_rotalari_kullan_satirinin_yerine_sirayla_katilir() {
+    // K-211: `<ad> rotalarını kullan` — birimin üst düzey rotaları ana programa girer.
+    let dosyalar = HashMap::from([
+        (
+            "panel",
+            "yardimci birimini kullan\n\nGET \"/panel\" adresine istek geldiğinde\n    cevap \"panel\" için selam olsun\n    cevap yanıtını gönder\n",
+        ),
+        (
+            "yardimci",
+            "işlem selam\n    adı Metin olarak al\n    Metin döndürür\n\n    sonuc \"merhaba \" ile ad olsun\n    sonuc döndür\n",
+        ),
+    ]);
+    let kaynak = "8080 kapısında sunucu başlat\n\nGET \"/\" adresine istek geldiğinde\n    \"ana\" yanıtını gönder\n\npanel rotalarını kullan\n\nGET \"/\" önekli adrese istek geldiğinde\n    \"son\" yanıtını gönder\n";
+    let program = kaynagi_derle_birimlerle(kaynak, &mut yukleyici(&dosyalar)).expect("derlenmeli");
+    let rotalar: Vec<String> = program
+        .cumleler
+        .iter()
+        .filter_map(|c| match c {
+            dil::agac::Cumle::IstekGeldiginde { yol, .. } => Some(format!("{yol:?}")),
+            _ => None,
+        })
+        .collect();
+    assert_eq!(rotalar.len(), 3, "{rotalar:?}");
+    assert!(rotalar[1].contains("/panel"), "{rotalar:?}");
+    assert!(
+        program.islemler.contains_key("selam"),
+        "rota biriminin tanımları da alınır"
+    );
+
+    // `birimini kullan` rotaları almaz (kapsülleme korunur).
+    let sade = "panel birimini kullan\n\n8080 kapısında sunucu başlat\n";
+    let program = kaynagi_derle_birimlerle(sade, &mut yukleyici(&dosyalar)).expect("derlenmeli");
+    assert!(!program
+        .cumleler
+        .iter()
+        .any(|c| matches!(c, dil::agac::Cumle::IstekGeldiginde { .. })));
+
+    // Rotasız birim rota olarak alınamaz.
+    let hata = kaynagi_derle_birimlerle("yardimci rotalarını kullan\n", &mut yukleyici(&dosyalar))
+        .expect_err("A010 bekleniyordu");
+    assert_eq!(hata.kod, "A010");
+}
+
+#[test]
+fn elmas_ice_alimda_gorunurluk_sira_bagimsizdir_ve_denetim_yolu_rotalari_katar() {
+    // K-211 düzeltmesi: `baska` doğrudan alınmış public işlem, onu kendi içinde alan
+    // `orta` sonradan gelse de görünür kalır (strict ve tanı/denetim yolları).
+    let dosyalar = HashMap::from([
+        (
+            "baska",
+            "işlem baska\n    Metin döndürür\n\n    \"b\" döndür\n",
+        ),
+        (
+            "orta",
+            "baska birimini kullan\n\nişlem selam3\n    Metin döndürür\n\n    x baska olsun\n    x döndür\n",
+        ),
+        (
+            "rota_p",
+            "baska birimini kullan\n\nGET \"/p\" adresine istek geldiğinde\n    y baska olsun\n    y yanıtını gönder\n",
+        ),
+    ]);
+    for kaynak in [
+        "baska birimini kullan\norta birimini kullan\n\ny baska olsun\ny yaz\n",
+        "orta birimini kullan\nbaska birimini kullan\n\ny baska olsun\ny yaz\n",
+    ] {
+        assert_eq!(
+            calistir(kaynak, dosyalar.clone()).expect("çalışmalı"),
+            vec!["b"]
+        );
+        let tanilar = dil::kaynagi_tanilari(kaynak, &mut yukleyici(&dosyalar));
+        assert!(tanilar.is_empty(), "{tanilar:?}");
+    }
+    // Denetim yolu rota birimini de katar: rota gövdesindeki tanımsız ad tanı üretir.
+    let kirik = HashMap::from([(
+        "rota_k",
+        "GET \"/k\" adresine istek geldiğinde\n    y bilinmeyen_islem olsun\n    y yanıtını gönder\n",
+    )]);
+    let tanilar = dil::kaynagi_tanilari(
+        "8080 kapısında sunucu başlat\n\nrota_k rotalarını kullan\n",
+        &mut yukleyici(&kirik),
+    );
+    assert!(
+        !tanilar.is_empty(),
+        "rota birimindeki hata denetimde görünmeli"
+    );
+    let temiz = dil::kaynagi_tanilari(
+        "8080 kapısında sunucu başlat\n\nrota_p rotalarını kullan\n",
+        &mut yukleyici(&dosyalar),
+    );
+    assert!(temiz.is_empty(), "{temiz:?}");
 }

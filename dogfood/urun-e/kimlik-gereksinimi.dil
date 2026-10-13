@@ -1,0 +1,131 @@
+# K-210 — Site E yönetim panelinin zee v0.7'de kapanamayan dört ihtiyacı.
+# Her cümle gerçek üründeki kullanımın küçültülmüş halidir; `dil dene` ile
+# hermetik profilde (zee-io-1) deterministik koşar.
+
+# 1) Tarayıcıda parola belirleme: Argon2id PHC özeti dil içinde üretilir.
+işlem parolayi_kaydet
+    parolayı Metin olarak al
+    Metin döndürür
+
+    parolanın argon2 özeti döndür
+
+işlem parola_dogru
+    parolayı Metin olarak al
+    özeti Metin olarak al
+    Mantıksal döndürür
+
+    parola özet ile doğrulanıyorsa
+        doğru döndür
+    yanlış döndür
+
+# 2) İki adımlı doğrulama: TOTP gizli anahtarı üret, kodu adaptör saatiyle doğrula.
+işlem ikinci_adim_gecerli
+    gizliyi Metin olarak al
+    kodu Metin olarak al
+    Mantıksal döndürür
+
+    kod gizli anahtarıyla doğrulanıyorsa
+        doğru döndür
+    yanlış döndür
+
+# 3) İletişim formu bildirimi: e-posta geri alınamaz dış etkidir; eylemde değil
+# çağıran adaptörde (rota/CLI) gönderilir.
+işlem bildirim_gonder
+    alıcıyı Metin olarak al
+    konuyu Metin olarak al
+    gövdeyi Metin olarak al
+    Metin döndürür
+
+    sonuç alıcı konu gövde ile ileti göndermeyi dene olsun
+    sonuç başarılıysa
+        "gönderildi" döndür
+    "gönderilemedi" döndür
+
+# 3a) Panel sırları (SMTP parolası) veritabanına şifreli yazılır; anahtar ortam
+# değişkenindedir (proje.dil gizli_anahtar_değişkeni), koda girmez.
+işlem sirri_sakla
+    parolayı Metin olarak al
+    Metin döndürür
+
+    sifreli parolanın gizli şifrelenmişi olsun
+    sifreli döndür
+
+işlem sirri_oku
+    sifreliyi Metin olarak al
+    Metin döndürür
+
+    sonuç sifreli gizli çözmeyi dene olsun
+    sonuç başarılıysa
+        duz sonucun değeri olsun
+        duz döndür
+    "" döndür
+
+# 3b) Panelden ayarlanan SMTP: bağlantı metni veritabanından gelir, ağ hedefi
+# denetimi ve oran sınırı ortam değişkeni yoluyla aynıdır.
+işlem bildirim_gonder_baglantili
+    alıcıyı Metin olarak al
+    konuyu Metin olarak al
+    gövdeyi Metin olarak al
+    bağlantıyı Metin olarak al
+    Metin döndürür
+
+    sonuç alıcı konu gövde ile bağlantı üzerinden ileti göndermeyi dene olsun
+    sonuç başarılıysa
+        "gönderildi" döndür
+    "gönderilemedi" döndür
+
+# 4) Medya yükleme: görseli yükleme sonrası 1600 piksele küçült.
+işlem gorseli_hazirla
+    girdiyi Metin olarak al
+    hedefi Metin olarak al
+    Metin döndürür
+
+    sonuç girdi görselini hedef dosyasına 1600 piksele küçültmeyi dene olsun
+    sonuç başarılıysa
+        "hazır" döndür
+    "hata" döndür
+
+test "argon2 özeti üretilir ve aynı parolayla doğrulanır"
+    özet "gizli parola" için parolayi_kaydet olsun
+    özet "$argon2id$" içermeli
+    dogru "gizli parola" ve özet ile parola_dogru olsun
+    dogru doğru eşit olmalı
+    yanlis "başka" ve özet ile parola_dogru olsun
+    yanlis yanlış eşit olmalı
+
+test "totp anahtarı üretilir, rastgele kod reddedilir"
+    gizli yeni totp anahtarı olsun
+    uzunluk gizlinin uzunluğu olsun
+    uzunluk 32 ye eşit olmalı
+    gecerli gizli ve "000000" ile ikinci_adim_gecerli olsun
+    gecerli yanlış eşit olmalı
+
+test "geçersiz alıcı adresi Sonuç hatasıdır"
+    durum "bozuk adres" ve "konu" ve "gövde" ile bildirim_gonder olsun
+    durum "gönderilemedi" a eşit olmalı
+    durum "ali@ornek.com" ve "konu" ve "gövde" ile bildirim_gonder olsun
+    durum "gönderildi" e eşit olmalı
+
+test "olmayan görsel küçültülemez"
+    durum "yok.jpg" ve "kucuk.jpg" ile gorseli_hazirla olsun
+    durum "hata" ya eşit olmalı
+
+# 5) Panel formu: görünüm bloğu — kaçış varsayılan, etiket dengesi derleyicide (K-212).
+işlem giris_formu
+    csrfyi Metin olarak al
+    Metin döndürür
+
+    form_html görünüm olsun
+        form method "post" action "/giris-yap"
+            input type "hidden" name "_csrf" value csrf
+            label
+                "E-posta"
+                input type "email" name "eposta" required doğru
+            button type "submit"
+                "Giriş Yap"
+    form_html döndür
+
+test "görünüm bloğu csrf değerini kaçışlı yazar"
+    html "a\"b" için giris_formu olsun
+    html "value=\"a&quot;b\"" içermeli
+    html "<label>E-posta<input type=\"email\" name=\"eposta\" required></label>" içermeli

@@ -123,3 +123,12 @@ Clippy, rustdoc, WASM ve ilgili RFC/spec kanıtları ayrıca zorunludur.
 K-206 sonuç dönüşümü `postgresql/sonuc.rs` içinde aynı `postgresql`
 sahibindedir. Transport/havuz katmanı saf modele yükselmez; yeni
 üst sahip/bağımlılık kenarı/SCC yoktur. Fixture değişikliği gerekmedi.
+
+### ürün E özelliklerinin ana kaynak hattı — K-213
+
+[ADR-086](../adr/086-site-hatlarinin-birlestirilmesi.md) mevcut ürün E
+parola üretimi/TOTP/SMTP, rota birimi, görünüm, görsel ve gizli değer
+yüzeylerini K-208/K-209 bcrypt/IP ile aynı hatta toplar. Ürün kabulü
+dosya kontrolüyle değil bütün proje `dil dene .` ile alınır. Ham ürün E
+şablonu normal katalog üretimini ister. Exact source/CI kapanışı beklenir;
+canlı dağıtım ve otomatik parola göçü bu işte yapılmaz.

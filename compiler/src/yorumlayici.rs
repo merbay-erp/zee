@@ -13,6 +13,7 @@ mod io_izi_veritabani;
 mod io_izi_web;
 mod io_profili;
 mod kaynak;
+mod kimlik_iletisim;
 mod metin;
 mod siralama;
 mod toplayan_io;
@@ -44,8 +45,9 @@ use crate::agac::{
 };
 use crate::intrinsic::{
     self, CSRF_BELIRTECI, DOSYALARI_LISTELE, DOSYA_ATOMIK_TASI, DOSYA_SHA256, DOSYA_SIL,
-    HTTP_GETIR, ISTEMCI_ADRESI, PAROLA_DOGRULA, POSTGRESQL_DEGISTIR, POSTGRESQL_OKU,
-    SENSOR_ACIK_MI, WEB_OTURUMLARINI_LISTELE, WEB_OTURUMUNU_IPTAL_ET,
+    EPOSTA_GONDER, EPOSTA_GONDER_BAGLANTILI, GIZLI_COZ, GIZLI_SIFRELE, GORSEL_KUCULT, HTTP_GETIR,
+    ISTEMCI_ADRESI, PAROLA_DOGRULA, PAROLA_OZETI, POSTGRESQL_DEGISTIR, POSTGRESQL_OKU,
+    SENSOR_ACIK_MI, TOTP_ANAHTARI, TOTP_DOGRULA, WEB_OTURUMLARINI_LISTELE, WEB_OTURUMUNU_IPTAL_ET,
 };
 use crate::ondalik::Ondalik;
 use crate::tani::Tani;
@@ -449,6 +451,41 @@ pub trait GirdiCikti {
     fn parola_dogrula(&mut self, _parola: &str, _ozet: &str) -> bool {
         false
     }
+    /// K-210: Argon2id PHC parola özeti üretir. Varsayılan adaptör üretmez.
+    fn parola_ozeti_uret(&mut self, _parola: &str) -> Result<String, String> {
+        Err("IO adaptörü parola özeti üretmiyor".into())
+    }
+    /// K-210: Base32 TOTP gizli anahtarı üretir.
+    fn totp_anahtari_uret(&mut self) -> Result<String, String> {
+        Err("IO adaptörü TOTP anahtarı üretmiyor".into())
+    }
+    /// K-210: adaptörün saatiyle RFC 6238 TOTP kodunu ±1 adım doğrular.
+    fn totp_dogrula(&mut self, _gizli: &str, _kod: &str) -> bool {
+        false
+    }
+    /// K-210: SMTP ile düz metin e-posta gönderir; başarıda 1. `baglanti`
+    /// verilmezse proje bildirimindeki ortam değişkeni kullanılır.
+    fn eposta_gonder(
+        &mut self,
+        _baglanti: Option<&str>,
+        _alici: &str,
+        _konu: &str,
+        _govde: &str,
+    ) -> Result<i64, String> {
+        Err("IO adaptörü e-posta göndermiyor".into())
+    }
+    /// K-210: görseli azami kenara küçültüp hedefe yazar; başarıda yazılan bayt sayısı.
+    fn gorsel_kucult(&mut self, _kaynak: &str, _hedef: &str, _azami: i64) -> Result<i64, String> {
+        Err("IO adaptörü görsel küçültmüyor".into())
+    }
+    /// K-210 eki 3: gizli değeri adaptörün anahtarıyla şifreler (`zee1:` metni).
+    fn gizli_sifrele(&mut self, _duz: &str) -> Result<String, String> {
+        Err("IO adaptörü gizli değer şifrelemiyor".into())
+    }
+    /// K-210 eki 3: `zee1:` metnini çözer; anahtar farklı ya da veri bozuksa Err.
+    fn gizli_coz(&mut self, _sifreli: &str) -> Result<String, String> {
+        Err("IO adaptörü gizli değer çözmüyor".into())
+    }
     /// Her `eylem` çağrısı bir transaction/savepoint sınırıdır. Adaptör,
     /// desteklediği kalıcı kaynakları başarıda tamamlar, hata dönüşünde geri alır.
     fn eylem_baslat(&mut self) -> Result<(), EylemHatasi> {
@@ -597,6 +634,35 @@ impl GirdiCikti for PaylasilanIo<'_> {
     }
     fn parola_dogrula(&mut self, parola: &str, ozet: &str) -> bool {
         self.ic.borrow_mut().parola_dogrula(parola, ozet)
+    }
+    fn parola_ozeti_uret(&mut self, parola: &str) -> Result<String, String> {
+        self.ic.borrow_mut().parola_ozeti_uret(parola)
+    }
+    fn totp_anahtari_uret(&mut self) -> Result<String, String> {
+        self.ic.borrow_mut().totp_anahtari_uret()
+    }
+    fn totp_dogrula(&mut self, gizli: &str, kod: &str) -> bool {
+        self.ic.borrow_mut().totp_dogrula(gizli, kod)
+    }
+    fn eposta_gonder(
+        &mut self,
+        baglanti: Option<&str>,
+        alici: &str,
+        konu: &str,
+        govde: &str,
+    ) -> Result<i64, String> {
+        self.ic
+            .borrow_mut()
+            .eposta_gonder(baglanti, alici, konu, govde)
+    }
+    fn gorsel_kucult(&mut self, kaynak: &str, hedef: &str, azami: i64) -> Result<i64, String> {
+        self.ic.borrow_mut().gorsel_kucult(kaynak, hedef, azami)
+    }
+    fn gizli_sifrele(&mut self, duz: &str) -> Result<String, String> {
+        self.ic.borrow_mut().gizli_sifrele(duz)
+    }
+    fn gizli_coz(&mut self, sifreli: &str) -> Result<String, String> {
+        self.ic.borrow_mut().gizli_coz(sifreli)
     }
     fn eylem_baslat(&mut self) -> Result<(), EylemHatasi> {
         self.ic.borrow_mut().eylem_baslat()

@@ -1,5 +1,6 @@
 //! `GirdiCikti` çağrılarını merkezî yetkinlik politikasında fail-closed tutar.
 mod dosya;
+mod kimlik_iletisim;
 mod web;
 
 use super::{EylemHatasi, GirdiCikti, VeritabaniHatasi};
@@ -203,18 +204,18 @@ impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
         &mut self,
         kullanici: &str,
     ) -> Result<Vec<Vec<(String, String)>>, String> {
-        self.web_oturumu_gerektir()?;
-        self.ic.kullanici_oturumlarini_listele(kullanici)
+        web::oturumlari_listele(self, kullanici)
     }
 
     fn oturum_kimligini_iptal_et(&mut self, kimlik: &str) -> Result<i64, String> {
-        self.web_oturumu_gerektir()?;
-        self.ic.oturum_kimligini_iptal_et(kimlik)
+        web::oturumu_iptal_et(self, kimlik)
     }
 
     fn parola_dogrula(&mut self, parola: &str, ozet: &str) -> bool {
         self.politika.izin_verir(Yetkinlik::Kriptografi) && self.ic.parola_dogrula(parola, ozet)
     }
+
+    kimlik_iletisim::yontemler!();
 
     fn eylem_baslat(&mut self) -> Result<(), EylemHatasi> {
         self.ic.eylem_baslat()

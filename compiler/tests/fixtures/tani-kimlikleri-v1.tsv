@@ -45,6 +45,7 @@ aktif	S039	soz.gecersiz_isik_komutu	Işık komutu biçimi
 aktif	S043	soz.gecersiz_web_guvenligi	Web güvenlik cümlesi biçimi
 aktif	S044	soz.gecersiz_yapilandirilmis_hata	Yapılandırılmış hata biçimi/kodu geçersiz
 aktif	S045	soz.kaynak_butcesi	Kaynak metni ya da token akışı güvenli profil sınırını aştı
+aktif	S046	soz.gorunum_satiri	Görünüm bloğu satırı biçimi geçersiz
 aktif	A001	ad.tanimsiz_ad	Ad bu kapsamda tanımlı değil
 aktif	A002	ad.belirsiz_morfolojik_kok	Ad birden çok köke çözülüyor (belirsizlik)
 aktif	A003	ad.eksik_gezme_kaynagi	`her X için` gezilecek listeyi bulamadı
@@ -110,6 +111,7 @@ aktif	T051	tur.acik_eszamanli_grup	Eşzamanlı görev grubunun sözcüksel sahip
 aktif	T052	tur.hata_nedeni_verisi	Hata nedeni/verisi yanlış türde ya da yeniden yayma zenginleştiriliyor
 aktif	T053	tur.gezilen_koleksiyon_degisti	Gezilen kaynak koleksiyonun kendisi değiştiriliyor ya da aynı kaynak iç içe geziliyor
 aktif	T054	tur.yetkinlik_politikasi	Program çalışma politikasında açılmayan yetkinliği ya da outbound origin'i kullanıyor
+aktif	T055	tur.gorunum_ifadesi	Görünüm metni/özniteliği Metin (ya da bayrak için Mantıksal) değil
 aktif	C000	calisma.ic_tutarlilik	İç tutarlılık hatası; AST/HIR invariant ihlalinde faz ve yapısal düğüm yolu da gösterilir
 aktif	C001	calisma.eksik_deger	Değer bulunamadı
 aktif	C002	calisma.tamsayi_tasmasi	TamSayı taşması
@@ -138,6 +140,8 @@ aktif	C024	calisma.deger_heap_butcesi	Metin ya da saklanan değer heap bütçesi
 aktif	C025	calisma.postgresql_sorgu	PostgreSQL sorgusu veya değişikliği başarısız
 aktif	C026	calisma.postgresql_migration	PostgreSQL migration veya bağlantı işlemi başarısız
 aktif	C027	calisma.postgresql_commit_belirsiz	COMMIT sonucu istemci tarafından doğrulanamadı; otomatik tekrar güvenli değil
+aktif	C028	calisma.kriptografi_uretim_basarisiz	Kriptografi adaptörü parola özeti ya da TOTP anahtarı üretemedi
+aktif	C029	calisma.eposta_gonderim_basarisiz	E-posta gönderimi başarısız (SMTP bağlantı/kimlik/alıcı hatası)
 aktif	D001	dogrulama.tutmayan_beklenti	`olmalı` koşulu tutmadı
 aktif	P001	proje.gecersiz_bildirim_cumlesi	`proje.dil` bilinmeyen/tekrarlı alan ya da değer tanımı dışında cümle içeriyor
 aktif	P002	proje.eksik_zorunlu_alan	Zorunlu proje alanı eksik

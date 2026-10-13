@@ -28,6 +28,14 @@ taşımaz.
 | `donanim.sensor_acik_mi` | `Metin → Mantıksal` | `Donanim` | `DisOkuma` |
 | `web.csrf_belirteci` | `() → Metin` | `WebOturumu` | `WebAdaptoru` |
 | `guvenlik.parola_dogrula` | `(Metin, Metin) → Mantıksal` | `Kriptografi` | `Saf` |
+| `guvenlik.parola_ozeti` | `Metin → Metin` | `Kriptografi` | `Saf` |
+| `guvenlik.totp_anahtari` | `() → Metin` | `Kriptografi` | `Saf` |
+| `guvenlik.gizli_sifrele` | `Metin → Metin` | `Kriptografi` | `Saf` |
+| `guvenlik.gizli_coz` | `Metin → Metin Sonucu` | `Kriptografi` | `Saf` |
+| `guvenlik.totp_dogrula` | `(Metin, Metin) → Mantıksal` | `Kriptografi` | `Saf` |
+| `iletisim.eposta_gonder` | `(Metin, Metin, Metin) → TamSayı Sonucu` | `Ag` | `GeriAlinamaz` |
+| `iletisim.eposta_gonder_baglantili` | `(Metin, Metin, Metin, Metin) → TamSayı Sonucu` | `Ag` | `GeriAlinamaz` |
+| `gorsel.kucult` | `(Metin, Metin, TamSayı) → TamSayı Sonucu` | `DosyaYazma` | `DisYazma` |
 
 Intrinsic kaydındaki yetkinlik ihtiyaçtır; izin K-127/RFC-0024'ün merkezî
 `YetkinlikPolitikasi` modelinden gelir. Checker bütün gövdelerde ihtiyacı

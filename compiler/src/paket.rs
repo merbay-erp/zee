@@ -382,7 +382,7 @@ impl ProjeGrafigi {
             .ok_or_else(|| format!("\"{}\" proje grafiğinin dışında", isteyen.display()))?;
 
         match istek.tur {
-            KullanimTuru::Birim => {
+            KullanimTuru::Birim | KullanimTuru::Rota => {
                 if !crate::proje::gecerli_paket_adi(istek.ad) {
                     return Err("birim adı tek bir Türkçe/Latin tanımlayıcı olmalı".into());
                 }

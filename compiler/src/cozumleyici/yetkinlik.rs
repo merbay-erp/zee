@@ -94,6 +94,9 @@ fn cumle_bilgisi(cumle: &Cumle, bilgi: &mut Bilgi) {
             ifade_bilgisi(adet, bilgi);
             blok_bilgisi(govde, bilgi);
         }
+        Cumle::Gorunum { dugumler, .. } => crate::agac::gorunum_ifadeleri(dugumler)
+            .into_iter()
+            .for_each(|ifade| ifade_bilgisi(ifade, bilgi)),
         Cumle::AralikDongusu {
             bastan,
             sona,
@@ -369,7 +372,6 @@ fn ifade_bilgisi(ifade: &Ifade, bilgi: &mut Bilgi) {
         | Ifade::Kaynakli { .. } => {}
     }
 }
-
 fn ifade_konumu(ifade: &Ifade) -> Konum {
     ifade
         .kaynak_araligi()

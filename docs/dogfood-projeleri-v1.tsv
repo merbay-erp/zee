@@ -8,3 +8,5 @@ kelime-avi	dogfood/kelime-avi	227e984f8b36813b2c6ff928e32bce5a330a5d05	active
 # zee-erp ayrı çalışan gerçek üründür; koken_commit ilk ürün omurgasıdır (K-185/ADR-076).
 zee-erp	dogfood/zee-erp	de655a81a1c355014176519f5db80c6b4ae5cea2	active
 zee-cekirdek	dogfood/zee-cekirdek	ebca9a6ddcc9c7535ee3204cfe2af3bbb7fc95d7	active
+# urun-e depo dışı gerçek ürünün (urun-e) depo içi kanıt aynasıdır; koken_commit harici urun-e ürün commit'idir (K-210/ADR-083, K-213/ADR-086). Eski ürün E dalı compiler tabanını kullanıyordu; bu ilk ana-hat kaydı gerçek harici kökeni sabitler.
+urun-e	dogfood/urun-e	79eb72e00ecddd11535a5a9de9c338db1dd6da70	active

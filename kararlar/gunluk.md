@@ -3903,3 +3903,90 @@ daaa3ea. 742/742 faz, Node crypto ve gerçek HTTP/CLI/trace kabulü,
 167 paket offline vendor ve iki-clone binary eşitliği geçti.
 [Ham kayıt](../docs/incelemeler/k208/README.md) yerel macOS kanıtıdır; V1
 usability/RC/signed release ve sunucu dağıtımı değildir.
+### K-210 — Site E dogfood'u: parola özeti, TOTP, SMTP, görsel — 9 Eylül 2026
+
+- Dördüncü ürün `dogfood/urun-e` (gerçek ürün `urun-e`, adminpanelzee
+  çatalı, zee ile ilk müşteri sitesi) kaydedildi; ADR-083.
+- legacy panel panelinin "Desteklenmeyen" listesindeki dört madde ürün E'de aynen tekrar
+  etti (tarayıcıda parola, 2FA, e-posta bildirimi, görsel küçültme). K-180
+  ölçütü (iki bağımsız üründe tekrar) karşılandı; ürün sahibi K-174 freeze
+  penceresi içinde açılmasına karar verdi, yüzey kaydı bilinçli güncellendi.
+- Dört intrinsic merkezi kayda eklendi (AST büyümedi): `guvenlik.parola_ozeti`,
+  `guvenlik.totp_anahtari`, `guvenlik.totp_dogrula`, `iletisim.eposta_gonder`
+  (yeni `GeriAlinamaz` etkisi → eylemde T048), `gorsel.kucult`
+  (`IntrinsicTuru::TamSayi` argümanı). `AgSemasi` smtp/smtps; proje bildirimi
+  `e_posta_bağlantı_değişkeni`.
+- Bağımlılık: yalnız `image 0.25.10` (jpeg/png/webp, cargo-deny temiz, cache'ten
+  offline). SHA-1/HMAC/Base32/TOTP ve SMTP istemcisi bağımlılıksız yazıldı;
+  Argon2id üretimi mevcut `argon2` ile.
+- Hermetik profil: Argon2id tuzu ve TOTP anahtarı tohumlu sayaçtan, TOTP saati
+  sabit `zaman`dan, e-posta `eposta_kutusu`na, görsel sahte dosya sistemine.
+  IO izi dört yeni olay şeması taşır.
+- Sürtünme: iyelik ekli parametre adı `kaynağı` → yalın ad `kaynağ` (F001
+  sınıfı, zee-tr-2 adayı); `X in uzunluğu N ye eşit olmalı` doğrudan yazılamıyor
+  (önce değişkene alınıyor).
+
+**Ek (9 Eylül 2026, öğleden sonra) — bağlantılı e-posta.** ürün E paneli için
+"mail ayarları" sayfası istendi; SMTP bağlantısı yalnız ortam değişkeninden
+gelince panel bunu sunamıyordu. `<alıcı> <konu> <gövde> ile <bağlantı>
+üzerinden ileti göndermeyi dene` (`iletisim.eposta_gonder_baglantili`, yeni
+kalıp kelimesi `üzerinden`) eklendi: bağlantı metni değerden gelir, şema/ağ
+hedefi/IP/oran sınırı denetimleri aynıdır; IO izi bağlantıyı parmak iziyle tutar
+(`eposta_gonder` olayı 4 alan). K-174 yüzey kaydı 10 kalıba güncellendi.
+Bütçeler: io_izi.rs 1250→1270, yorumlayici/yetkinlik.rs 280→290 (imza
+genişlemesi). Panel tarafında SMTP parolası veritabanında düz metin tutulur;
+ortam değişkeni yolu üretimde hâlâ tercih edilendir (README notu).
+
+**Ek 2 (aynı gün) — HTML durum yanıtı.** `yanıtını N durumuyla gönder` gövdesi `<`
+ile başlıyorsa `text/html` gönderilir (200 yanıtıyla aynı sniff kuralı); ürün E paneli
+192 düz metin hata yanıtını panel kabuklu hata sayfasına çevirdi. Grammar, tanı
+kimlikleri ve hermetik IO değişmedi; yalnız gerçek adaptör başlığı.
+
+**Ek 3 (aynı gün) — gizli değer şifreleme + Permissions-Policy.** İnceleme P0-2:
+SMTP parolası veritabanında düz metindi. `<metin>in gizli şifrelenmişi` ve
+`<şifreli> gizli çözmeyi dene` (`guvenlik.gizli_sifrele/gizli_coz`,
+XChaCha20-Poly1305, `chacha20poly1305 0.10` — ikinci yeni bağımlılık, cargo-deny
+temiz), proje bildirimi `gizli_anahtar_değişkeni` (kriptografi ister), CLI `dil
+gizli-anahtar`. Hermetik profil sabit anahtar + tohumlu nonce. Kalıp kelimeleri
+`şifrelenmişi`, `çözmeyi`; K-174 kaydı 12 kalıp. `Permissions-Policy` başlığı
+varsayılan güvenlik başlıklarına eklendi. Bütçeler: yorumlayici/yetkinlik.rs
+310, io_izi.rs 1300.
+
+### K-212 — Görünüm bloğu: tipli HTML ağacı — 9 Eylül 2026
+
+İnceleme v3: HTML dize birleştirmeleri "Zee'nin en belirgin ergonomi borcu".
+`<ad> görünüm olsun` + girintili düğümler (`etiket ad değer …`, `"sabit"`,
+`metin ifade`, `ham ifade`); kaçış varsayılan, bayrak öznitelik Mantıksal, boş
+öğeler kapanışsız. AST: `Cumle::Gorunum`, `GorunumDugumu`; ayrıştırıcı,
+çözümleyici (T055), etki/yetkinlik/invariant gezgini, yorumlayıcı
+(`gorunum_yaz_async`), LSP `görünüm`, S046. `html güvenlisi` kaçışı
+`html_kacisla` olarak paylaşıldı. ADR-085, spec/26, test `gorunum_testi`.
+ürün E paneli: yeni kullanıcı ve e-posta test formları görünüm bloğuna geçti.
+
+### K-211 — Rota birimleri (`rotalarını kullan`) — 9 Eylül 2026
+
+ürün E `ana.dil` 145 KB oldu (inceleme P1-5). RFC-0009 birimleri rota taşımadığı için
+dosya bölünemiyordu. `KullanimTuru::Rota`: birimin üst düzey rotaları `rotalarını
+kullan` satırının yerine sırayla girer, tanımlar alınır, `birimini kullan` rotaları
+yine düşürür, rotasız birim A010. Yükleyici (`lib.rs`), ayrıştırıcı, paket çözücü,
+LSP, yüzey fixture'ı; ADR-084; test `birim_testi`. Panel rotaları
+`kaynak/rota_*.dil` birimlerine bölündü (birim adı yol içeremez).
+
+**Bulunan hata (aynı gün):** elmas içe alımda görünürlük içe alım sırasına
+bağlıydı — `A birimini kullan` + `B birimini kullan` (B, A'yı içeride alıyorsa)
+sırasına göre A'nın işlemi `dil denetle`de A001 veriyordu; kurtarmalı yol
+`extend` ile kapsüllü kopyayı public kopyanın üstüne yazıyordu, strict yol da
+ilk gelen kapsüllü kopyayı koruyordu. Her iki yol görünürlük-OR ile sıra
+bağımsız yapıldı; denetim yolu rota birimlerini de katıyor. Test `birim_testi`.
+
+## K-213 — Site kaynak hatları aynı derleyicide (13 Ekim 2026)
+
+Ürün talebinin 13:45 eki master 9482ce8'in SMTP proje alanını P001 ile
+reddettiğini kanıtladı. ci/urun-e-dil 34fbc0a source geçmişi korunarak
+birleştirilir; tarihsel K-181/182/183 → K-210/211/212 ve ADR-075/076/077
+→ ADR-083/084/085 eşlemesi ADR-086'dadır. Kabulte aynı satırlı rota
+birimlerinin SymbolId çakışması, görünüm HIR tanım kaydı ve gizli IO
+olayının trace allowlist eksikliği düzeltildi. Yeni cache yoktur; mevcut
+dosya bütçeleri artırılmadı. Gerçek beş proje `dil dene .` kabulü geçer;
+ürün E kataloğu normal zee-catal üretimiyle geçici kopyada hazırlanır.
+Exact source/provenance ve tüm CI kapanışı henüz beklenir.
