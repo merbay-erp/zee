@@ -98,3 +98,18 @@ doğrular. Proxy backend'e yalnız CRLF satırlı, origin-form hedefli, tek
 göndermelidir. Chunked aktarım, obs-fold, pipelining, UTF-8 dışı/NUL gövde ve
 duplicate CL desteklenmez. Her yanıt `Connection: close` ile bağlantıyı
 sonlandırır.
+
+K-218 / ADR-089: explicit `--web-oran-deposu bellek` seçimi yalnız oran
+durumunu süreç başına sınırlı Arc/Mutex deposuna taşır. Varsayılan dosya
+backend'i ve kalıcı oturum/revoke paylaşımı sürer; ayrı worker/restart için
+ortak proxy kotası gerekir. Soak sürücüsü her dönemde 32768 anahtar
+doldurup süre dolumuyla temizler; yeni tampon derleyici RSS'ine dahildir.
+Sabit benchmark korpusu ve eski performans tarihçesi değiştirilmedi.
+Katman sahibi web_guvenligi'dir; bin_soak bu sahibe tek ileri kenar ekler.
+
+Bellek kipine geçiş için `.zee` dosyası silinmez: oturumlar korunur. Eski
+dosya oran kayıtları bellek kotasına aktarılmaz; backend değişimi yeni
+süreç kotası başlatır. Karışık backend kullanan worker'lar ortak kota
+sağlamaz. Cookie'li istekler taze oturum/LRU kontrolü için kalıcı dosyaya
+erişmeye devam eder; bu iş bütün web dosya I/O'sunu kaldırdığı iddiasını
+taşımaz. Yeni bayrak ayrı worker başlatmalarının her birine verilmelidir.

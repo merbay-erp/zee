@@ -1549,3 +1549,12 @@ Go eşdeğerliğini doğrulanmış Go 1.26.1 aracıyla gerçekten çalıştırı
 compiler/CLI genişlemesi core freeze kanıt zinciri olmadığı için kapatılır.
 Dal yedekleri özel; uzak silme ve CI teyidi henüz açıktır.
 [Dal kararları](incelemeler/k217/README.md). Dil/spec/tanı/API değişmez.
+
+### K-218 — Bellek oran backend'i
+
+[ADR-089](../adr/089-bellek-oran-deposu.md) ile `--web-oran-deposu bellek`
+güvenli proxy'de süreç başına oran sayacı seçer; varsayılan ortak dosya kotası
+korunur. Oturum/revoke kalıcı paylaşılır. Çok worker ve restart ortak kota
+vermez; proxy'de ortak limit gerekir. PostgreSQL ve §3/2 kota ayarı/tahliye
+açıktır. Exact 1800 sn soak ve gerçek ürün yük kabulü kapanış kanıtına eklenir;
+yalnız yerel ilk testlerle performans/sürüm hazır ilan edilmez.

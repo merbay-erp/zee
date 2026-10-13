@@ -48,16 +48,24 @@ fn bos_kapi() -> u16 {
 }
 
 fn sunucuyu_baslat(kaynak: &Path, kapi: u16) -> Sunucu {
+    sunucuyu_baslat_oranla(kaynak, kapi, false)
+}
+
+fn sunucuyu_baslat_oranla(kaynak: &Path, kapi: u16, bellek: bool) -> Sunucu {
     let kapi_yazisi = kapi.to_string();
-    let cocuk = Command::new(env!("CARGO_BIN_EXE_dil"))
-        .args([
-            "çalıştır",
-            "--web-proxy",
-            "https://panel.example",
-            "--web-worker-port",
-            &kapi_yazisi,
-            kaynak.to_str().expect("UTF-8 kaynak yolu"),
-        ])
+    let mut komut = Command::new(env!("CARGO_BIN_EXE_dil"));
+    komut.args([
+        "çalıştır",
+        "--web-proxy",
+        "https://panel.example",
+        "--web-worker-port",
+        &kapi_yazisi,
+        kaynak.to_str().expect("UTF-8 kaynak yolu"),
+    ]);
+    if bellek {
+        komut.args(["--web-oran-deposu", "bellek"]);
+    }
+    let cocuk = komut
         .stdout(Stdio::null())
         .stderr(Stdio::null())
         .spawn()
@@ -136,6 +144,15 @@ fn csrf(yanit: &str) -> String {
 
 #[test]
 fn iki_worker_oturumu_iptali_restarti_ve_giris_limitini_paylasir() {
+    iki_worker_kabul(false);
+}
+
+#[test]
+fn bellek_oran_iki_worker_oturum_revoke_restart_paylasir_kota_yereldir() {
+    iki_worker_kabul(true);
+}
+
+fn iki_worker_kabul(bellek: bool) {
     let gecici = GeciciKlasor::yeni();
     let a_kapi = bos_kapi();
     let b_kapi = bos_kapi();
@@ -145,8 +162,8 @@ fn iki_worker_oturumu_iptali_restarti_ve_giris_limitini_paylasir() {
     std::fs::write(&a_yolu, kaynak).expect("A kaynağı");
     std::fs::write(&b_yolu, kaynak).expect("B kaynağı");
 
-    let mut a = sunucuyu_baslat(&a_yolu, a_kapi);
-    let b = sunucuyu_baslat(&b_yolu, b_kapi);
+    let mut a = sunucuyu_baslat_oranla(&a_yolu, a_kapi, bellek);
+    let b = sunucuyu_baslat_oranla(&b_yolu, b_kapi, bellek);
     let form = istek(a_kapi, "203.0.113.7", "GET", "/giris", None, "");
     assert_eq!(durum(&form), 200);
     let anonim = cerez(&form);
@@ -169,7 +186,7 @@ fn iki_worker_oturumu_iptali_restarti_ve_giris_limitini_paylasir() {
     a.0.kill().expect("A worker durdurulmalı");
     a.0.wait().expect("A worker sonucu");
     drop(a);
-    let a = sunucuyu_baslat(&a_yolu, a_kapi);
+    let a = sunucuyu_baslat_oranla(&a_yolu, a_kapi, bellek);
     let restart_okuma = istek(a_kapi, "203.0.113.7", "GET", "/yonet", Some(&oturum), "");
     assert_eq!(durum(&restart_okuma), 200, "restart oturumu kaybetmemeli");
 
@@ -202,7 +219,33 @@ fn iki_worker_oturumu_iptali_restarti_ve_giris_limitini_paylasir() {
         durumlar.push(durum(&yanit));
     }
     assert_eq!(&durumlar[..5], &[303, 303, 303, 303, 303]);
-    assert_eq!(durumlar[5], 429, "ortak altıncı giriş kesin reddedilmeli");
+    assert_eq!(durumlar[5], if bellek { 303 } else { 429 });
+    if bellek {
+        for _ in 0..2 {
+            assert_eq!(
+                durum(&istek(
+                    a_kapi,
+                    "198.51.100.9",
+                    "POST",
+                    "/giris-yap",
+                    Some(&rate_cerez),
+                    &format!("_csrf={rate_csrf}&parola=yanlis")
+                )),
+                303
+            );
+        }
+        assert_eq!(
+            durum(&istek(
+                a_kapi,
+                "198.51.100.9",
+                "POST",
+                "/giris-yap",
+                Some(&rate_cerez),
+                &format!("_csrf={rate_csrf}&parola=yanlis")
+            )),
+            429
+        );
+    }
 
     drop(a);
     drop(b);

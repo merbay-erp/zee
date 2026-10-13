@@ -458,9 +458,10 @@ mod tests {
     #[test]
     fn kilidi_ardisik_yeniden_alan_yazar_bekleyeni_ac_birakmaz() {
         // K-183/ADR-075: A durmadan ekler; B tek bir ekleme için en çok bir
-        // A yazması kadar bekler (5 ms yoklamayla B yavaş diskte 5 sn aç
-        // kalıyordu). Eşik 2 sn: en yavaş CI diskinde bile tek yazmanın çok
-        // üstü, spec/08 5 sn sınırının altında.
+        // yazar kuyruğuna katılır (5 ms yoklamayla B yavaş diskte aç
+        // kalıyordu). Shared CI 2 sn disk performansı garantilemez; K-217
+        // Gitsrv'de 3,593 sn gözlendi. Correctness sınırı spec/08'in 5 sn
+        // kilit bütçesidir; test benchmark hard eşiği koymaz.
         let gecici = GeciciKlasor::yeni();
         let yol = Arc::new(gecici.0.join("kuyruk.txt"));
         let basla = Arc::new(Barrier::new(2));
@@ -479,7 +480,7 @@ mod tests {
         let bekleme = baslangic.elapsed();
         yazar.join().expect("A düşmemeli");
         assert!(
-            bekleme < Duration::from_secs(2),
+            bekleme < KILIT_BEKLEME,
             "bekleyen yazar aç bırakıldı: {bekleme:?}"
         );
         let icerik = std::fs::read_to_string(&*yol).unwrap();

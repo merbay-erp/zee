@@ -202,7 +202,7 @@ gövdenin tamamı bağlantı kabulünden başlayan
 socket zaman aşımı taşır. Spec/11'in 100 alan ve 30 saniye uygulama sınırı
 ayrıca geçerlidir.
 
-Doğrulanmış kanonik istemci kimliğiyle ortak kalıcı depoda şu sabit pencereler
+Doğrulanmış kanonik istemci kimliğiyle varsayılan ortak kalıcı depoda (K-218 explicit bellek seçiminde süreç başına depoda) şu sabit pencereler
 ZORUNLUDUR:
 
 | Kapı | Pencere | Eşik | Aşım |
@@ -266,3 +266,11 @@ Ağ-sunucusu yetkinliği ve mevcut T044 eylem/web ayrımı korunur.
 yüklemiyle ayırıp Argon2'ye taşır; yeni algoritma sorgu yüklemi açılmaz.
 IP kişisel veri olarak ele alınır; KVKK bağlamında saklama süresini
 uygulama kendi politikasıyla belirler. IO trace IP içerebilir, özel veridir.
+
+## K-218 — Bellek oran backend'i
+
+TANIMLI: `--web-oran-deposu bellek` yalnız `--web-proxy` ile, tek değer ve tek kez kabul edilir; eksik, geçersiz, tekrar veya deneysel/kapalı kipte kullanım hata ile çıkar. Seçilmezse mevcut ortak dosya backend'i kullanılır.
+
+TANIMLI: Bellek backend'i aynı süreç ve clone'ları arasında atomiktir; ayrı worker ve restart ayrı kota oluşturur. Kullanıcı ortak saldırı bütçesini trusted proxy'de sağlamalıdır. Oturum/CSRF/revoke dosya paylaşımı sürer; cookie'siz anonim istek oturum dosyasına dokunmaz, cookie'li okuma ve oturum commit'i kalıcı taze durumla fail-closed çalışır.
+
+TANIMLI: Endpoint/CSRF/giriş eşikleri ve 32.768 canlı anahtar sınırı korunur; aktif kayıt tahliye edilmez. Dolu depoda yeni anahtar 503 ile reddedilir, mevcut anahtar kotası sürer; süre dolumu kayıt ve son-tarih indeksini birlikte temizler. İndeks canlı anahtar başına bir giriş taşır.

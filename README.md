@@ -150,10 +150,10 @@ Değişikliğe özel test, belge ve güvenlik kapıları [AGENTS.md](AGENTS.md) 
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **778** |
+| Rust + doctest vakası | **782** |
 | Tanı kimliği | **159 etkin + 3 ayrılmış** |
-| RFC | **30** (2 kabul, 25 geçici kabul, 3 taslak) |
-| ADR | **86** (86 kabul) |
+| RFC | **31** (2 kabul, 26 geçici kabul, 3 taslak) |
+| ADR | **87** (87 kabul) |
 | Normatif spec bölümü | **28** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
@@ -208,3 +208,8 @@ WASM kapılarını exact seçili kaynakta çalıştırır; ilgisiz özel dal/eti
 almaz, PR kodu otomatik çalıştırılmaz. Uzak sonuç doğrulanınca kaydedilir;
 Windows runtime kanıtı ve GitHub destek teyidi açık kalır.
 [Karar](adr/088-git2-gitsrv-kosulari.md).
+
+Üretim web kipinde ürünün proxy'si ortak saldırı kotası sağlıyorsa
+`--web-oran-deposu bellek` süreç başına oran deposunu seçebilir. Oturum
+paylaşımı sürer; restart ve ayrı worker sayaçları ayrıdır.
+[Karar ve sınırlar](adr/089-bellek-oran-deposu.md).
