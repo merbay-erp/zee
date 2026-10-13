@@ -145,7 +145,7 @@ Değişikliğe özel test, belge ve güvenlik kapıları [AGENTS.md](AGENTS.md) 
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **730** |
+| Rust + doctest vakası | **733** |
 | Tanı kimliği | **155 etkin + 3 ayrılmış** |
 | RFC | **29** (2 kabul, 24 geçici kabul, 3 taslak) |
 | ADR | **77** (77 kabul) |

@@ -1359,3 +1359,8 @@ geçti. Derleyici RSS medyanı 8.144→8.160 KiB, LSP 19.088→17.568 KiB.
 Ham örnek/çevre ve tarihçe [ölçümlerde](olcumler.md). 728/728 faz,
 26.624 ad oracle ve 4.096 kapsam işlemi oracle karşılaştırması geçti.
 K-207 KISMEN; full didChange ve incremental/cache kapasitesi açıktır.
+
+K-206 native okuma akış toplamasına geçti: sonuç sınırından sonra çıktı
+biriktirilmez; borrowed metin kopyalanmadan denetlenir. Hata önceliği ve
+mevcut read retry/transaction/API korunur. Tek wire satırı/driver RSS
+bütçesi GB-041'de açık; exact native kabul ve RSS kaydı beklenir.
