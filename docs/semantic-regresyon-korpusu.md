@@ -122,3 +122,7 @@ K-213/ADR-086 çok-kaynaklı HIR vakasının aynı dizindeki `.birim` girdileri
 hermetik birim yükleyici tarafından okunur. Birim kaynakları ağ/ürün deposuna
 bağlı değildir. `trace` runtime kipi, kayıt → kanonik şema okuma → replay
 zincirini aynı stdout/exit ve tam tüketimle doğrular.
+
+`definition` HIR kipi, kullanıcı sembollerinin definition kaydını
+her okuma/yazım SymbolId için ayrıca ister; görünüm LHS eksikliği yalnız
+ifade invariantıyla yakalanamaz. K-213 vaka kimlikleri silinmez.

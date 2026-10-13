@@ -203,6 +203,16 @@ fn iki_kaynak_dalinin_merge_sha_beyani_iki_korukte_de_zorunludur() {
     commit(&kok, "kapılar");
     basarili_git(&kok, &["checkout", "-q", "-b", "urun"]);
     std::fs::write(kok.join("compiler/src/urun.rs"), "// ürün açıklaması\n").unwrap();
+    // grep -q pipe'ı erken kapatırsa pipefail gerçek Git çıktısında SIGPIPE
+    // üretir. Küçük sentetik merge bu hatayı göstermediğinden boruyu doldur.
+    for sira in 0..1024 {
+        std::fs::write(
+            kok.join("docs")
+                .join(format!("buyuk-fark-{sira:04}-{}.md", "a".repeat(96))),
+            "Kaynakla birlikte incelenen belge.\n",
+        )
+        .unwrap();
+    }
     let urun = commit(&kok, "ürün açıklaması");
     basarili_git(&kok, &["checkout", "-q", "ana"]);
     std::fs::write(kok.join("compiler/src/lib.rs"), "// ana dal açıklaması\n").unwrap();

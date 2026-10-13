@@ -74,3 +74,8 @@ değiştirilmedi. Yeni sürümle 0.10.1 üretimli eski sentetik `zee1:`
 şifreli metin bayt bayt eşit üretilir ve çözülür; yanlış anahtar/bozulma
 reddi aynı testte korunur. SBOM/provenance ve iki-clone/offline kabulü
 yeni exact graph'tan üretilir.
+
+Koruk fark çıktısını sonuna kadar tüketir: `grep -q` büyük merge
+çıktısında SIGPIPE/pipefail ile geçerli kaynak beyanını yanlış reddedebilir.
+1024 yan belge içeren gerçek çok-ebeveynli Git testi iki korukte hem
+eksik beyanı reddeder hem exact merge SHA beyanını kabul eder.
