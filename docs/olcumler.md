@@ -330,3 +330,7 @@ K-206 akış toplama dilimi kapalı: source f2ba654, temiz beyan/ölçüm
 136,77→72,72 MiB; üç vakada sonraki sorgu başarılıdır. Bir örnek/sıfır
 ısınma gözlemi, genel RSS garantisi değildir. [Ham kanıt](incelemeler/k206/README.md).
 **K-206 KISMEN:** tek wire satırı/driver sınırı ve GB-041 açık kalır.
+
+K-214 geçmiş düzeltmesi: yukarıdaki kaynak referansları anonim dal kimliğine
+eşlenmiştir. Ham ölçüm/log/ikili/provenance kayıtları ölçülen özgün SHA
+kimliğini korur; bu eşleme yeni ölçüm veya yeni ikili kabulü değildir.

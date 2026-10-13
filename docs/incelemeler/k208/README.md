@@ -39,3 +39,7 @@ Eşik/fixture değiştirilmedi; başarısız run 38381098416 tarihsel kalır.
 
 Test loglarının yalnız EOF boş satırları kanonikleştirildi; test sonuç
 içeriği değişmez. SBOM/provenance/GIT_SHA/SHA256SUMS byte’ları aynen korunur.
+
+K-214 geçmiş düzeltmesi: yukarıdaki kaynak referansları anonim dal kimliğine
+eşlenmiştir. Ham ölçüm/log/ikili/provenance kayıtları ölçülen özgün SHA
+kimliğini korur; bu eşleme yeni ölçüm veya yeni ikili kabulü değildir.

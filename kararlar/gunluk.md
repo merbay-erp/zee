@@ -4006,3 +4006,12 @@ Son kod/test kanıt HEAD'i `2ef362818bf0dc6b8cf4a9951d8ef2a25303a152`: Linux,
 macOS, Windows, tedarik ve sır taramasının 10 kontrolü geçti.
 `dil` koşuları 38392031371/38392039728, `tedarik` 38392031424/38392039739.
 Önceki Linux hatası tarihsel kalır; source e09493e değişmedi.
+
+## 13 Ekim 2026 — K-214 açık depo ürün gizliliği (ADR-087)
+
+Kullanıcı bugünkü PR #5/#7 içeriğini anonimleştirmeyi ve force push ile
+SHA beyanlarını yenilemeyi istedi. Ürün kökeni özel depoda, açık kanıt anonim
+özet ve exact ürün SHA ile kalır. Hash kapısı eski exact fingerprintleri
+yeni/kopyalanmış/değiştirilmiş satıra genişletmez. Önceki geçişler ayrı
+karar, yeniden açılış kullanıcı onayı, PR refs temizliği GitHub destek teyidi
+bekler; test ve tedarik sonuçları K-214 kaydında kapanır.

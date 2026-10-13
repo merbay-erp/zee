@@ -223,3 +223,10 @@ Dependency retention ref `dependency-retention/postgres-protocol-c4e9d03616fe`
 clean kabul kaynak ab8e97e'yi tutar; dependency c4e9d03 bunun ancestor'ıdır.
 Squash/branch temizliği bağımlılık commitini reachable kümeden çıkaramaz.
 Ref silinmez/taşınmaz; Zee `v*` etiketi veya binary publish değildir.
+
+### K-214: Anonim açık depo kanıtı
+
+Müşteri ve altyapı kimliği anonimleştirildi; yeni içerik hash politikasıyla
+CI içinde denetlenir. Eski geçişler maskeli dökümle ayrı kullanıcı kararını
+bekler. Tarihsel ölçümler eski kaynak kimliklerini korur; yeniden açılış ve
+GitHub PR önbelleği temizliği ayrıca onay/teyit ister. [Kayıt](incelemeler/k214/README.md).

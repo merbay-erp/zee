@@ -1163,3 +1163,10 @@ K-213 compiler gerçekleme/test/belge dilimi kapandı. Eski ürün E
 sunucu hattı ile master aynı kaynak geçmişinde; ürün CI/sunucu pininin
 bu kaynağa geçirilmesi ve canlı giriş/IP kabulü ürün tarafının işidir.
 Otomatik bcrypt→Argon2 ürün göçü henüz uygulanmadı.
+
+### K-214: Anonim açık depo kanıtı
+
+Müşteri ve altyapı kimliği anonimleştirildi; yeni içerik hash politikasıyla
+CI içinde denetlenir. Eski geçişler maskeli dökümle ayrı kullanıcı kararını
+bekler. Tarihsel ölçümler eski kaynak kimliklerini korur; yeniden açılış ve
+GitHub PR önbelleği temizliği ayrıca onay/teyit ister. [Kayıt](incelemeler/k214/README.md).

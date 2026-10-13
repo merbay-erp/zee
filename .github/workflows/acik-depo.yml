@@ -1,0 +1,31 @@
+name: acik-depo
+on:
+  push:
+  pull_request_target:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  urun-gizliligi:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Güvenilir ana dal denetleyicisi
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: master
+          fetch-depth: 0
+          persist-credentials: false
+          path: kontrol
+      - name: Yalnız veri olarak incelenecek kaynak
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+          path: kaynak
+      - name: Sentetik kapı testleri
+        run: python3 kontrol/scripts/tests/acik-depo-test.py
+      - name: PR kodunu çalıştırmadan müşteri ve altyapı taraması
+        run: python3 kontrol/scripts/acik-depo-denetle.py --depo kaynak --calisma-agaci-yok

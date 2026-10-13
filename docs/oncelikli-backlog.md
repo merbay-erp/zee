@@ -1266,3 +1266,11 @@ Son kod/test kanıt HEAD'i `2ef362818bf0dc6b8cf4a9951d8ef2a25303a152`: Linux,
 macOS, Windows, tedarik ve sır taramasının 10 kontrolü geçti.
 `dil` koşuları 38392031371/38392039728, `tedarik` 38392031424/38392039739.
 Önceki Linux hatası tarihsel kalır; source e09493e değişmedi.
+
+## K-214 — Açık depoda ürün gizliliği
+
+Anonim içerik, bugünkü kaynak geçmişi ve exact-SHA beyanlarının yeniden
+yazılması, müşteri/altyapı hash kapısı ve destek taslağı aynı dilimdedir.
+Önceki geçişler kullanıcı kararı, GitHub PR refs temizliği destek teyidi
+bekler. Depo kullanıcı onayı olmadan açılmaz. ADR-087 ve
+[K-214 kaydı](incelemeler/k214/README.md) bu sınırı taşır.

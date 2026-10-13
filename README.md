@@ -145,10 +145,10 @@ Değişikliğe özel test, belge ve güvenlik kapıları [AGENTS.md](AGENTS.md) 
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **771** |
+| Rust + doctest vakası | **772** |
 | Tanı kimliği | **159 etkin + 3 ayrılmış** |
 | RFC | **30** (2 kabul, 25 geçici kabul, 3 taslak) |
-| ADR | **82** (82 kabul) |
+| ADR | **83** (83 kabul) |
 | Normatif spec bölümü | **28** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
@@ -173,3 +173,10 @@ yüzeylerini K-208/K-209 bcrypt/IP ile aynı hatta toplar. Ürün kabulü
 dosya kontrolüyle değil bütün proje `dil dene .` ile alınır. Ham ürün E
 şablonu normal katalog üretimini ister. Exact source/CI kapanışı beklenir;
 canlı dağıtım ve otomatik parola göçü bu işte yapılmaz.
+
+### K-214: Anonim açık depo kanıtı
+
+Müşteri ve altyapı kimliği anonimleştirildi; yeni içerik hash politikasıyla
+CI içinde denetlenir. Eski geçişler maskeli dökümle ayrı kullanıcı kararını
+bekler. Tarihsel ölçümler eski kaynak kimliklerini korur; yeniden açılış ve
+GitHub PR önbelleği temizliği ayrıca onay/teyit ister. [Kayıt](docs/incelemeler/k214/README.md).

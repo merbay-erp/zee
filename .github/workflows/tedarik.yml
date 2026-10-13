@@ -32,6 +32,10 @@ jobs:
           echo "$RUNNER_TEMP/zee-security-bin" >> "$GITHUB_PATH"
       - name: Exact yanlış pozitif ve yeni anahtar ret testleri
         run: python3 scripts/tests/sir-yanlis-pozitif-test.py
+      - name: Anonim açık depo politikası olumlu ve olumsuz testleri
+        run: python3 scripts/tests/acik-depo-test.py
+      - name: Müşteri ve altyapı bilgisi kapısı (tam geçmiş ve çalışma ağacı)
+        run: python3 scripts/acik-depo-denetle.py
       - name: Tüm Git geçmişi ve çalışma ağacında sır taraması
         run: bash scripts/sir-taramasi.sh
   rust-bagimliliklari:
@@ -40,7 +44,10 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          fetch-depth: 0
           persist-credentials: false
+      - name: Özel depoda exact self Git kaynak hazırlığı
+        run: bash scripts/ci-oz-kaynak.sh
       - name: Sabit Rust araç zinciri
         run: rustup toolchain install 1.93.1 --profile minimal
       - name: Rust pin ve provenance giriş regresyonları

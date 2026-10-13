@@ -38,11 +38,11 @@ Kaynak: `docs/guvenlik-bulgulari-v1.tsv`
 | --- | --- | --- | --- | --- |
 | kritik | 1 | 0 | 0 | 1 |
 | yuksek | 12 | 0 | 0 | 12 |
-| orta | 15 | 3 | 1 | 19 |
+| orta | 15 | 3 | 2 | 20 |
 | dusuk | 12 | 1 | 0 | 13 |
 
 Kapı: açık kritik/yüksek bulgu 0 → **GEÇTİ** (ADR-066 sürekli kapı koşulu).
-Toplam bulgu: 45.
+Toplam bulgu: 46.
 
 ## Spec maddeleri
 
@@ -95,10 +95,10 @@ Kaynak: `docs/dogfood-projeleri-v1.tsv + dogfood/korpus-v1.tsv`
 
 | Ürün | denetle | calistir | proje | basarili | basarisiz | Toplam |
 | --- | --- | --- | --- | --- | --- | --- |
-| urun-e | 1 | 0 | 0 | 1 | 0 | 1 |
 | legacy-panel | 6 | 4 | 0 | 7 | 3 | 10 |
 | kanit-ozeti | 12 | 9 | 1 | 11 | 11 | 22 |
 | kelime-avi | 2 | 2 | 1 | 3 | 2 | 5 |
+| urun-e | 1 | 0 | 0 | 1 | 0 | 1 |
 | zee-cekirdek | 1 | 1 | 0 | 2 | 0 | 2 |
 | zee-erp | 2 | 0 | 0 | 2 | 0 | 2 |
 
