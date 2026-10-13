@@ -31,7 +31,10 @@ Kapı sızıntı eğilimini ölçer, mutlak bellek bütçesini değil (spec/24).
 Süreler shared CI'da gürültülüdür ve karar girdisi değildir. Windows'ta `ps`
 yoktur; koşu Unix Tier-1 platformlarında tanımlıdır.
 
-K-207 ikinci dilim: kapsam checkpoint sıra sınırıdır; journal yalnız
-yeni yerel adları siler, dış atama ve SymbolId sayacı korunur. Yeni
-derleme tamponu için exact temiz 1800 sn soak ve sabit ölçek sonrası
-benchmark açıktır. Journal her derleme sonunda düşer; LSP cache eklenmedi.
+
+K-207 kapsam dilimi kapalı: temiz exact 9e80b69 release/25 örnek/2 ısınma
+20k LSP p95 165,137 ms; aynı exact kaynakta 1800 sn/264.343 döngü soak
+geçti. Derleyici RSS medyanı 8.144→8.160 KiB, LSP 19.088→17.568 KiB.
+Ham örnek/çevre ve tarihçe [ölçümlerde](olcumler.md). 728/728 faz,
+26.624 ad oracle ve 4.096 kapsam işlemi oracle karşılaştırması geçti.
+K-207 KISMEN; full didChange ve incremental/cache kapasitesi açıktır.

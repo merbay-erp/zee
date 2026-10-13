@@ -276,47 +276,42 @@ I/O ve gözlem maliyetini artırır; runtime profili/sabit iş yükü değişmez
 ADR-045/049 ve tarihçe etkisi incelendi; exact clean makine/sample/warmup
 ölçümü olmadan benchmark baseline veya izlenen tarihçe satırı yazılmadı.
 
-## K-207 ad çözümleme optimizasyonu — ölçüm açık
+## K-207 ad ve kapsam maliyeti — exact ölçüm
 
-Başarılı ad çözümlemesinde bütün sembol tablosunun clone/sort maliyeti
-hash üyeliği sorgusuna taşındı. Tanımlı ad listesi A001 için lazy, A002
-adayları sıralı/tekildir; exact-ad önceliği ve bütün gözlem alanları korunur.
-26.624 oracle karşılaştırması, golden/morfoloji/LSP/katman/çevrim geçti.
-ADR-045/049 ve performans tarihçesi etkisi incelendi. Taban 29be85b için
-ayrı temiz checkout'ta release/25 sample/2 warmup aynı ölçek iş yükü
-tamamlandı: 20k p95 22.169,906 ms. Exact sonrası kaynak ölçümü
-bekleniyor. İzlenen
-tarihçeye henüz yeni baseline yazılmadı; shared yerel masaüstü gözlemsel,
-hard eşik yok. Cache/persistent state eklenmedi; full didChange sürer.
+Başarılı ad çözümlemesi hash üyeliğini kullanır; tam ad listesi yalnız
+A001 önerisinde üretilir. Kapsam girişi sıra sınırıdır; çıkış yeni-ad
+kaydındaki yalnız yerel adları siler. Dış atamalar ve SymbolId korunur.
+26.624 ad oracle kararı, 4.096 iç içe kapsam oracle işlemi ve 728/728
+faz kapısı geçti. Incremental parser veya LSP cache eklenmedi.
 
-### K-207 ilk ölçüm kapanışı
+Aynı M4 Pro/macOS 26.6.2, 24 GiB, Rust 1.93.1 release ortamında,
+25 gerçek örnek ve 2 ısınma; üç checkout da ölçümde temizdir:
 
-Aynı M4 Pro/macOS 26.6.2, 24 GiB, Rust 1.93.1 release, 25 gerçek örnek
-ve 2 ısınma: temiz taban 29be85b, temiz sonrası 94de420.
+| Satır | Taban 29be85b p95 | Ad çözümleme 94de420 p95 | Kapsam 9e80b69 p95 |
+|---:|---:|---:|---:|
+| 2.000 | 227,620 ms | 30,567 ms | 5,207 ms |
+| 5.000 | 1.122,488 ms | 175,842 ms | 18,131 ms |
+| 10.000 | 5.525,283 ms | 745,695 ms | 53,105 ms |
+| 20.000 | 22.169,906 ms | 2.961,638 ms | 165,137 ms |
 
-| Satır | Önce p95 | Sonra p95 |
-|---:|---:|---:|
-| 2.000 | 227,620 ms | 30,567 ms |
-| 5.000 | 1.122,488 ms | 175,842 ms |
-| 10.000 | 5.525,283 ms | 745,695 ms |
-| 20.000 | 22.169,906 ms | 2.961,638 ms |
+Ham örnekler/çevre: [taban](incelemeler/k207/before.json),
+[ad sonrası](incelemeler/k207/after.json),
+[kapsam sonrası](incelemeler/k207/scope-after.json). Otomatik exact TSV
+satırları [tarihçededir](performans-gecmisi-v2.tsv); ayrı milestone ve
+sample/warmup semantiği korunur. 20k yaklaşık 134 kat hızlandı ve bu
+sabit iş yükünde 1 sn hedefi sağlandı. Genel platform/ürün SLA değildir.
+Paylaşılan masaüstü gözlemidir; taban sırasında başka derleme ve kısa PG
+sorguları çalıştı. Hard eşik yoktur. ADR-045/049 ölçüm sözleşmesi ve sabit
+benchmark kaynağı değişmedi; performans tarihçesi etkisi incelendi.
 
-Raw sample/çevre bilgileri [önce](incelemeler/k207/before.json) ve
-[sonra](incelemeler/k207/after.json); otomatik üretilen exact TSV satırları
-performans tarihçesine eklendi. Paylaşılan yerel masaüstü gözlemidir;
-compiler build ve kısa PG deneyi taban koşusu sırasında başka süreçlerde
-yürüdü. Hard eşik yoktur; tek makine sonucu genel SLA değildir.
+Geçici derleme tamponu için temiz exact 9e80b692f9a0a37cdd8136783b42f2a0056f2478
+üzerinde 1800 sn soak geçti: 264.343 golden/çalıştırma ve gerçek LSP döngüsü.
+Isınma sonrası derleyici RSS medyanı 8.144→8.160 KiB, LSP 19.088→17.568 KiB;
+%10 +32 MiB birlikte büyüme kapısı aşılmadı. [Rapor](incelemeler/k207/scope-soak.md),
+[çevre](incelemeler/k207/scope-soak-environment.json),
+[tarihçe](soak-gecmisi-v1.tsv). Kısa PG deneyleri/native TLS havuz testi
+aynı masaüstünde ayrı süreçlerde yürüdü; karar process RSS üzerindedir.
 
-Başarılı ad çözümlemesi yaklaşık 7,5 kat 20k hızlanma sağladı. Full
-didChange ve kapsam HashSet clone/retain maliyeti sürer; 20k <1 sn hedefi
-ve incremental/cache kapasitesi açık kalır. Cache/persistent state yoktur.
-
-K-207 tarihçe testi eski K-148/K-153/K-154 alt kümesinin exact 32
-satırını korur ve yeni iki kaydın 13'er satır/4 ölçek/source SHA/clean
-metadata'sını ayrıca doğrular. Toplam satır sayısı ilerlemeyi engelleyen
-sabit kabul edilmez; genel şema/metadata yinelenme kapıları yürürlüktedir.
-
-K-207 ikinci dilim: kapsam checkpoint sıra sınırıdır; journal yalnız
-yeni yerel adları siler, dış atama ve SymbolId sayacı korunur. Yeni
-derleme tamponu için exact temiz 1800 sn soak ve sabit ölçek sonrası
-benchmark açıktır. Journal her derleme sonunda düşer; LSP cache eklenmedi.
+**Kapsam optimizasyonu dilimi kapalı; K-207 KISMEN:** full didChange sürer,
+incremental/cache kapasitesi açıktır. Tarihçe testi eski exact kayıtları
+korur; toplam satır sayısı ilerlemeyi engelleyen sabit değildir.

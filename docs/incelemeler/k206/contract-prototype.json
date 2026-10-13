@@ -1,0 +1,9 @@
+{
+  "source": "9e80b692f9a0a37cdd8136783b42f2a0056f2478",
+  "image": "postgres@sha256:efedf3595f1d6f415c08568ba171029bf54052e754cc9f030e3f2412b21f3d67",
+  "samples": [],
+  "boundary": "Exploratory direct postgres streaming helper, not Zee production integration. Isolated synthetic loopback container; same driver versions as Cargo.lock. Concurrent K-207 soak. One sample, no warmup; RSS is total process, not a performance baseline or closed security finding.",
+  "server_version": "postgres (PostgreSQL) 16.15 (Debian 16.15-1.pgdg12+2)",
+  "contract_output": "contract_queries=15 transaction_health=passed original_Zee_vs_stream=equal transport_error_precedence=passed\n",
+  "exit": 0
+}

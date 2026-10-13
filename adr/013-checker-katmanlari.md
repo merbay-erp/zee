@@ -93,7 +93,9 @@ Testler satır bütçisini koruyan cfg(test) alt modülündedir; production
 modül/kenar ve ters katman geçişi yoktur. Sorumluluk cozumleyici sahibindedir.
 
 Journal derleme başına düşer, LSP belge/cache alanına taşınmaz. Yeni
-derleme tamponu nedeniyle K-173/ADR-069 exact temiz 30 dk soak ve
-aynı sabit iş yüküyle ikinci sonrası benchmark beklenir. Bu kanıtlar
-olmadan K-207 kapsam dilimi kapalı sayılmaz. Dil/tanı/API/profil ve
-blokta doğan adın görünürlüğü değişmez.
+geçici tampon için temiz exact 9e80b69 üzerinde 1800 sn/264.343 döngü
+soak geçti; compiler RSS medyanı 8.144→8.160 KiB, LSP 19.088→17.568 KiB.
+Aynı kaynakta release/25+2 ölçek ölçümünde 20k p95 165,137 ms oldu.
+[Ham kanıt ve sınırlar](../docs/olcumler.md). Kapsam dilimi kapalıdır;
+incremental/cache kapasitesi açık kalır. Dil/tanı/API/profil ve blokta
+doğan adın görünürlüğü değişmez.
