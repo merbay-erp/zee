@@ -3,6 +3,7 @@ use super::{hex_coz, hex_yaz, KilitPaketi, KAYNAK_DEPOSU};
 use sha2::{Digest, Sha256};
 use std::path::{Component, Path};
 
+#[cfg(test)]
 fn dosyalar(kok: &Path, yol: &Path, sonuc: &mut Vec<(String, Vec<u8>)>) -> Result<(), String> {
     let entries = std::fs::read_dir(yol).map_err(|e| e.to_string())?;
     for entry in entries {
@@ -28,6 +29,7 @@ fn dosyalar(kok: &Path, yol: &Path, sonuc: &mut Vec<(String, Vec<u8>)>) -> Resul
     }
     Ok(())
 }
+#[cfg(test)]
 pub(super) fn agac_ozeti(kok: &Path) -> Result<String, String> {
     if std::fs::symlink_metadata(kok)
         .map_err(|e| e.to_string())?
@@ -142,19 +144,12 @@ pub(super) fn kaynak(paket: &KilitPaketi, _sha: &str) -> Result<(String, String)
             if paket.kaynak.as_deref() != Some(expected_source.as_str()) {
                 return Err("yerel yama exact kayıtlı Git URL/rev/commit kaynağını ister".into());
             }
-            let root = Path::new(env!("CARGO_MANIFEST_DIR"))
-                .parent()
-                .ok_or("compiler parent yok")?
-                .join(path);
-            let actual = agac_ozeti(&root)?;
+            // Cargo compiles the immutable Git checkout, not the maintained
+            // preparation copy in the current repository working tree.
             let repo = Path::new(env!("CARGO_MANIFEST_DIR"))
                 .parent()
                 .ok_or("compiler parent yok")?;
-            if git_agaci(repo, source_sha, path)? != actual {
-                return Err(
-                    "yerel yama dosyaları seçili Git dependency commit ağacıyla uyuşmuyor".into(),
-                );
-            }
+            let actual = git_agaci(repo, source_sha, path)?;
             if actual != *expected {
                 return Err("yerel yama ağacı kayıtlı SHA-256 ile eşleşmiyor".into());
             }
