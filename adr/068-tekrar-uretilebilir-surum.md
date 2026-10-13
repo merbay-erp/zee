@@ -325,3 +325,15 @@ Dependency retention ref `dependency-retention/postgres-protocol-c4e9d03616fe`
 clean kabul kaynak ab8e97e'yi tutar; dependency c4e9d03 bunun ancestor'ıdır.
 Squash/branch temizliği bağımlılık commitini reachable kümeden çıkaramaz.
 Ref silinmez/taşınmaz; Zee `v*` etiketi veya binary publish değildir.
+
+## K-206 seçili dependency ağacı
+
+SBOM kimliğinin girdisi Cargo.lock'un exact Git URL/rev/commit kaydıdır.
+Release helper bu commitin gerçek blob ağacını kanonik SHA-256 kaydıyla
+doğrular. Güncel depodaki hazırlık kopyası Cargo tarafından derlenmez;
+bu kopyanın sonraki sürüme hazırlanması seçili dependency'nin kimliğini
+değiştirmez. SBOM hazırlık kopyasını etkin dependency diye sunmaz.
+Eksik Git geçmişi, yanlış pin ve tree hash hâlâ fail-closed reddedilir.
+Bu bakım değişikliği aynı lock için aynı SBOM'u üretir; wire sınırını açmaz.
+Yeni fork önce kaynak commit'i, sonra exact tüketici pin'iyle etkinleşir.
+Grammar/spec/tanı/API/katman/benchmark/soak kapsamı değişmez.
