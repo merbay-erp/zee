@@ -32,6 +32,17 @@ fn kurulum_betikleri_ve_tatbikat_workflowu_sozlesmeyi_tasir() {
         assert!(metin.contains("Get-FileHash -Algorithm SHA256"), "{betik}");
         assert!(metin.contains("zee-kurulum-1"), "{betik}");
     }
+    for betik in [
+        "scripts/kaldir.ps1",
+        "scripts/tests/kurulum-literal-yol-test.ps1",
+    ] {
+        assert!(
+            std::fs::read(depo().join(betik))
+                .unwrap()
+                .starts_with(b"\xef\xbb\xbf"),
+            "Windows PowerShell 5.1 için UTF-8 BOM korunmalı: {betik}"
+        );
+    }
     let workflow = oku(".github/workflows/kurulum-tatbikati.yml");
     for parca in [
         "os: [ubuntu-latest, macos-latest, windows-latest]",
@@ -40,6 +51,8 @@ fn kurulum_betikleri_ve_tatbikat_workflowu_sozlesmeyi_tasir() {
         "bash scripts/kaldir.sh --veri",
         "powershell -File scripts/kur.ps1",
         "powershell -File scripts/kaldir.ps1",
+        "-File scripts/tests/kurulum-literal-yol-test.ps1",
+        "literal yol kampanyası başarısız",
         "persist-credentials: false",
         "scripts/calisma-ortami-denetle.py --artefakt",
         "scripts/tests/calisma-ortami-test.py",
@@ -104,9 +117,57 @@ fn betik(ad: &str, argumanlar: &[&str]) -> std::process::Output {
 #[cfg(any(unix, windows))]
 #[test]
 fn gercek_ikililer_kurulur_calisir_kaldirilir_ve_oynanmis_artefakt_reddedilir() {
+    let gecici = std::env::temp_dir().join(format!("zee-kurulum-Türkçe-{}", std::process::id()));
+    std::fs::create_dir_all(&gecici).unwrap();
+    #[cfg(windows)]
+    {
+        // K-244: gerçek Windows PowerShell provider davranışı aynı birincil vakaya aittir.
+        let literal_rapor = gecici.join("kurulum-literal-yol.json");
+        let literal = Command::new("powershell")
+            .args([
+                "-NoLogo",
+                "-NoProfile",
+                "-NonInteractive",
+                "-ExecutionPolicy",
+                "Bypass",
+                "-File",
+            ])
+            .arg(depo().join("scripts/tests/kurulum-literal-yol-test.ps1"))
+            .arg("-SourceRoot")
+            .arg(depo())
+            .arg("-Report")
+            .arg(&literal_rapor)
+            .output()
+            .expect("Windows literal yol kampanyası çalışmalı");
+        assert!(
+            literal.status.success(),
+            "{}",
+            String::from_utf8_lossy(&literal.stderr)
+        );
+        let rapor: serde_json::Value =
+            serde_json::from_slice(&std::fs::read(&literal_rapor).unwrap()).unwrap();
+        std::fs::remove_file(&literal_rapor).unwrap();
+        assert_eq!(rapor["schema"], "zee-kurulum-literal-yol-1");
+        assert_eq!(rapor["result"], "gecti");
+        assert_eq!(rapor["case_count"], 6);
+        assert_eq!(rapor["owned_cleanup"], true);
+        assert_eq!(rapor["synthetic_binaries_executed"], false);
+        let vakalar = rapor["cases"].as_array().unwrap();
+        assert_eq!(vakalar.len(), 6);
+        for (vaka, ad) in vakalar.iter().zip([
+            "normal",
+            "unicode",
+            "bracket-sibling",
+            "changed-hash-no-delete-all",
+            "force-literal-only",
+            "missing-and-schema-fail-closed",
+        ]) {
+            assert_eq!(vaka["name"], ad);
+            assert_eq!(vaka["result"], "gecti");
+        }
+    }
     let dil_ad = format!("dil{}", std::env::consts::EXE_SUFFIX);
     let dillsp_ad = format!("dillsp{}", std::env::consts::EXE_SUFFIX);
-    let gecici = std::env::temp_dir().join(format!("zee-kurulum-Türkçe-{}", std::process::id()));
     let artefakt = gecici.join("surum");
     let hedef = gecici.join("bin");
     let veri = gecici.join("veri");

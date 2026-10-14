@@ -56,6 +56,32 @@ reddedilir; kanonik fiziksel yol da denetlenir. Bu alanlar manifest satırı
 ve sahiplik kaydı oluşturamaz. Bilinçli yerel manifest değiştirme ve aynı
 kullanıcı kimliğiyle düşman süreçlere karşı OS sandbox'ı vaat edilmez.
 
+### K-244 — PowerShell literal kaldırma yolları
+
+`kaldir.ps1`, manifestin varlığını ve kayıtlı dosyaların varlık/hash değerini
+`-LiteralPath` ile denetler; dosyaları ve manifesti aynı literal yolla siler.
+`bin[1]` gibi bir kurulum yolu wildcard eşleşmesi olarak yorumlanmaz. Aynı
+hash'e sahip `bin1` kardeşindeki yabancı dosyalar ve kardeş manifest korunur.
+Değişmiş hash zorlamasız kaldırmayı bütün dosyalar silinmeden reddeder;
+`-Zorla` yalnız hash reddini kaldırır, manifestteki literal yol kapsamını
+genişletmez. Eksik/bilinmeyen şemalı manifest silme etkisinden önce reddedilir.
+
+`scripts/tests/kurulum-literal-yol-test.ps1` sahipli geçici alanda altı vaka
+çalıştırır: normal, Unicode, köşeli parantez ve aynı hash'li yabancı kardeş,
+değişmiş hash ile bütün dosyaların korunması, literal zorla kaldırma ve
+eksik/bozuk şema reddi. Sentetik ikili baytları çalıştırılmaz; her koşu geçici
+alanını kaldırır. Windows'ta mevcut `kurulum_testi` gerçek ikili vakası ve
+tatbikatın Windows adımı bu native PowerShell kampanyasını çağırır; yeni
+libtest vakası yoktur. Kaynak UTF-8 BOM ve PowerShell 5.1 sözdizimi korunur.
+
+Yerel macOS arm64 PowerShell 7.5.11 provasındaki önceki betik, kurulu iki
+dosyayı bırakıp aynı hash'li yabancı kardeşteki iki dosyayı silerek hatayı
+yeniden üretti; literal düzeltmeyle altı vaka geçti. Runtime resmî Microsoft
+release tar'ı ve yayımlanmış checksum dosyasından exact SHA-256 ile doğrulandı,
+yalnız geçici portable dizinde çalıştı. Bu semantik kanıt fiziksel Windows,
+PowerShell 5.1 çalıştırma, minimum OS veya uzak CI kabulü değildir; bu sonuçlar
+ayrı kanıt ister. [ADR-071](../adr/071-kurulum-kaldirma-sozlesmesi.md).
+
 K-195: Windows MSVC üretimi de `scripts/surum-artefakti.sh` ile iki temiz klon ister. Statik CRT tarifi provenance alanlarında görülmeli ve çalışma ortamı kapısı dinamik CRT importunu reddetmelidir. Eski tek-derleme tatbikat artefaktı tekrar üretilebilir sürüm yerine kullanılamaz.
 
 K-195 ilk Windows çift-klon koşusu eş-hash kapısında kaldı; artefakt

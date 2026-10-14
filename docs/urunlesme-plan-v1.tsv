@@ -1,11 +1,11 @@
 # zee-urunlesme-plan-1
 # plan	talepler	mevcut_is	durum	sahip	bagimlilik	kanit	kabul_siniri
-P01	ZEE-001	K-224	kanitli-baslangic	altyapi	-	docs/incelemeler/urunlesme-20261014/source-ci.json	1036 exact kaynak ZIP esligi; Gitsrv #30 visible commit status; primary/step/artifact siniri acik
+P01	ZEE-001	K-224,K-243	kanitli-baslangic	altyapi	-	docs/incelemeler/urunlesme-20261014/source-ci.json	1036 exact kaynak ZIP esligi; Gitsrv #30 visible commit status; primary/step/artifact siniri acik; K243 yerel exact snapshot UTF8 canonical-output ve staging/selfverify kapisi, uzak CI degil
 P02	A1	K-226,K-241	yerel-kabul	dil,altyapi	P01	docs/incelemeler/urunlesme-20261014/final-2e970e4/build-proof.json	CLI/LSP/worker/SBOM arayuzu; K241 temiz2e970e4 macOS a/b/out exactSHA dirtyfalse ve iki-klon eshash kabul; imza/release/yeni LinuxWindows/uzakCI ayri
 P03	A6(1)	K-221	yerel-kabul	dil	P01	compiler/tests/cli_secenek_testi.rs	Exit2 acik bilinmeyen secenek, program argumani; exact regression/source/freeze kayitli
 P04	A6(2)	K-234	kismi	dil,urun	P03,P05	docs/zee-ayar.md	Surum1 zarf/unknownsecurityret/ordinarywarn/CLIprecedence17tests; realpreviousminorrollback/corpus acik
 P05	A2	K-167	kismi	dil,urun	P02,P08,P39	docs/uyumluluk-politikasi.md	Mevcut deprecation + aktif uyari, kanal/onceki korpus kabul eksigi
-P06	A3,D2	K-168,K-169,K-241	kismi	altyapi	P02,P29,P30,P39	scripts/surum-artefakti.sh	K241 temiz2e970e4 yerel macOS clone temizlik actualSHA dirtyfalse eshash kabul; yeni LinuxWindows/imza/kurulum ve apt/container ayri
+P06	A3,D2	K-168,K-169,K-241,K-244	kismi	altyapi	P02,P29,P30,P39	scripts/surum-artefakti.sh	K241 temiz2e970e4 yerel macOS clone temizlik actualSHA dirtyfalse eshash kabul; yeni LinuxWindows/imza/kurulum ve apt/container ayri; K244 LiteralPath kaldirma nativeMacPS6/6, Windowsphysical/remoteCI ayri
 P07	A4	K-233	kismi	altyapi,dil	P05,P06	docs/derleyici-secici.md	Signedlocalcatalog/privatebyte snapshot25tests; fullrustup/globaldil/proje.kilit/productionkeys/Windows acik
 P08	A5	K-172	anonim-tam-korpus-bekliyor	urun,altyapi	-	dogfood/korpus-v1.tsv	Anonim tam 5site+koku provenance N/N denetle/dene sure/RSS
 P09	B1	-	acik	urun,altyapi	P08,P34	docs/urunlesme-plani.md	Kalici job lease/idempotency/3retry/deadletter/crash; ilk prototype mevcut PG
@@ -14,7 +14,7 @@ P11	B3	K-210	kismi	dil,urun	P08	compiler/src/gorsel.rs	JPEG/PNG/WebP mevcut; PDF
 P12	B4	K-163,K-228	kismi	dil,urun	P31,P34	docs/urunlesme-sonucu-20261014.md	Durum/kuru noSQL owner/runtime checksum rollback concurrent; temiz2e970e4 native1/1; canli urun Python betigi kaldirilmasi acik
 P13	B5	K-137	kismi	dil,altyapi	P02,P12,P25	docs/web-production-profili.md	Hizmet hazirlik JSON log metrics draining reload
 P14	B6	-	acik	dil,altyapi	P13	adr/089-bellek-oran-deposu.md	Socket devir/ready overlap; kota/revoke korunumu yuk testi
-P15	B7,ZEE-012	K-223	kismi	urun	P08	docs/parola-goc-ci.md	Temiz2e970e4 native7/7 CAS yarisi rollback commit gorunurlugu; C027 agfault/live login/migration acik
+P15	B7,ZEE-012	K-223,K-242	kismi	urun	P08	docs/parola-goc-ci.md	Tarihsel temiz2e970e4 native7/7; K242 7TLS+4ownedloopback control/COMMIT fault, strict normalCargo ve exact native rapor; live login/migration/provider acik
 P16	B8,ZEE-011	K-220	kismi	urun	P08	dogfood/zee-cekirdek/http-post/turnstile.dil	Hermetik alti-form helper/403/timeout/secret/rollback; canli staging ve tam urun kabul acik
 P17	B9	-	ertelendi	urun,altyapi	urun-ihtiyaci	docs/urunlesme-plani.md	S3/yerel hash ve IAM ancak gercek cok-sunucu kaniti
 P18	C1	K-166	kismi	dil	anonim-5hata	docs/tani-kalitesi.md	Exact yanlis/dogru kalip, oneriler/codeaction; grammar ayri
@@ -33,9 +33,9 @@ P30	ZEE-006	K-175	kapilar-bekleniyor	altyapi,insan	P05,P06,P08,P24,P27,P28,P29,P
 P31	ZEE-007	K-222,K-235,GB-022	yerel-kabul	dil,altyapi	-	docs/urunlesme-sonucu-20261014.md	Temiz2e970e4 yerel PG16.15 TLS/NULL/butce5/5; dedicated CI wiring var, yeni uzakCI ayri
 P32	ZEE-008	K-215,GB-046	harici-yanit-yok	insan	GitHub-destek	docs/incelemeler/k215/github-destek-talebi.md	Kullanici gonderecek; PRrefs/cache teyidi yok; public ayri onay
 P33	ZEE-009	K-205	kismi	dil,altyapi	P01	docs/dis-inceleme-2026-10-13.md	27ilk esleme mevcut; adversarial guncel kanit matrisi
-P34	ZEE-010	K-206,K-237	kismi	dil,altyapi	P31,P33	docs/incelemeler/k206/frame-guard/README.md	GB041 kapali; global RSS/full fault matrisi acik; K237 SMTP yanit16KiB read-before-alloc ve native LF-yok kabul, RSS/toplam plain deadline ayri
+P34	ZEE-010	K-206,K-237,K-242	kismi	dil,altyapi	P31,P33	docs/incelemeler/k206/frame-guard/README.md	GB041 kapali; global RSS/full fault matrisi acik; K237 SMTP yanit16KiB read-before-alloc ve native LF-yok kabul, RSS/toplam plain deadline ayri; K242 COMMIT once/sonra kesinti ve ERROR23514 ile C027/no-retry/SMTP-durma; global fault matrisi degil
 P35	ZEE-014	K-180	ertelendi	dil,insan	P27,P28	rfcs/0029-liste-sira-erisimi.md	RFC aday syntax; insan+tekrarli urun kaniti
 P36	ZEE-015	K-225,K-226,K-235	kismi	dil	P31,P34,P05	docs/spec-madde-kaniti-v1.tsv	Bes direct kanit boslugu+DB budgets+SemVer esligi kapandi; 203 maddede196kanitli5kismi2acik; tam faz887+6 dedicated yerel, platform/surec acik
-P37	ZEE-016,ZEE-017	K-158,K-170,K-173,K-238,K-241	surekli	dil,altyapi	her-dilim	AGENTS.md	Fmt/faz/mimari/SCC/API/supply/spec/tani; etki varsa exact30dk soak; temiz2e970e4 faz887/893+dedicated5/1/7 ve guvenlik/sir kapisi kabul; K241 macOS actualSHA dirtyfalse eshash yerel kabul, RC/platform ayri
+P37	ZEE-016,ZEE-017	K-158,K-170,K-173,K-238,K-241,K-242,K-243,K-244	surekli	dil,altyapi	her-dilim	AGENTS.md	Fmt/faz/mimari/SCC/API/supply/spec/tani; etki varsa exact30dk soak; temiz2e970e4 faz887/893+dedicated5/1/7 ve guvenlik/sir kapisi kabul; K241 macOS actualSHA dirtyfalse eshash yerel kabul, RC/platform ayri; K242 wire/skorkarti normalCargo, K243 source-archive gercekGit retleri; devam exact raporu ayri; K244 literalownership nativePS6/6 ve WindowsCargo/tatbikatfixture, yeniWindowsCI degil
 P38	ZEE-018	K-193	ertelendi	dil	V1-urun-kapilari	docs/master-plan.md	NativeWASM/selfhosting yok; oracle/ABI/FFI/bellek kesif
 P39	E	K-224	kullanici-karari-kismi	insan	-	docs/urun-destek-politikasi.md	Lisans bekletildi; sinirli pilot secildi; mevcut marka/site korunur; public yok

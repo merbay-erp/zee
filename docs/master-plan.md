@@ -1334,3 +1334,19 @@ düzeltmesinde yeni sır istisnası açılmadı. Takip belge commit'i test HEAD'
 39 plan maddesinin bütünü kapanmadı: gerçek ürün korpusu ve kabulü yanında
 P09/P13/P14/P25 gibi eksik kod kapasitesi de açık kalır. Lisans bekletme,
 sınırlı pilot ve insan/fiziksel/uzak CI/RC sınırları korunur.
+
+### K-242 / K-243 — Yerel kanıt ve kaynak aracı devamı
+
+[Devam raporu](urunlesme-devam-20261014.md) K-242 on bir native senaryoyu
+(yedi TLS, dört owned loopback fault/kontrol) ayrı exact kaynak kanıtıyla
+izler. C027 ve otomatik tekrar etmeme korunur; canlı login/ürün/provider,
+RSS/full fault, fiziksel platform ve RC kabulü buradan çıkarılmaz.
+K-243 kaynak ZIP tek snapshot, UTF8 ve canonical çıktı sınırını gerçek
+Git testleriyle kapatır. Python3 stdlib araç bağımlılığıdır; compiler
+semantiği, spec normları, public facade ve core freeze aynı kalır.
+39 maddelik ürünleşme planının tam kabulü ve bekleyen dış kanıtlar açıktır.
+
+K-244/GB-067 literal kaldırma yerel resmî geçici PowerShell macOS
+koşusunda önce/sonra ve altı senaryo kanıtlıdır. Receipt/checksum/Zorla
+aynı kalır; Windows Cargo dalı ve tatbikat aynı native fixture'a bağlıdır.
+Yeni uzak CI, fiziksel Windows ve minimum OS bu yerel sonuçtan kapanmaz.

@@ -33,6 +33,29 @@ hermetiktir; gerçek PostgreSQL eşzamanlılık veya canlı ürün kabulü deği
 COMMIT belirsizliğinde C027 ve otomatik tekrar yoktur; sonucu ürün yeni
 bağımsız okumayla uzlaştırır.
 
+Hermetik `Commit::Red` açıkça backend-known ret/C021 modelidir; ham native
+PostgreSQL ErrorResponse bu bilgiye sahip bir sonuç değildir. Native
+adaptör bütün dış COMMIT hatalarında konservatif C027'yi korur. Tek bir
+`ERROR/23514` fixture'ında bağımsız gözlemcinin rollback görmesi bütün
+provider/extension durumlarına genellenmez.
+
+K-242 / [ADR-103](../../../adr/103-native-commit-belirsizligi-kaniti.md)
+ile [native koşucu](../../../scripts/parola-goc-ci.py) güncel
+`zee-parola-goc-ci-2` şemasında yedi TLS ve dört owned loopback plaintext
+vaka ister. Başarılı COMMIT kontrolü stdout'a ve bir sentetik SMTP
+bildirimine ulaşır. COMMIT iletilmeden kesinti, uygulanmış COMMIT sonrası
+ack kaybı ve iletilen deferred `ERROR/23514` yolları aynı C027, boş stdout
+ve sıfır SMTP üretir. Her ek vakada bir UPDATE attempt, bir INSERT attempt
+ve tek COMMIT; bağımsız DB bağlantısıyla eski/sıfır veya modern/tek
+oturum/audit sonucu doğrulanır. [Proxy ve kabul sınırı](../../../docs/postgresql-commit-belirsizligi.md)
+exact COMMIT completion + hata yokluğu + idle, bounded startup/frame,
+absolute deadline ve owned cleanup ister.
+
+Bu genişletmenin final temiz exact 11/11 kabulü bu aşamada bekleniyor;
+eski yedi vakalık kayıt tarihsel kalır. Plaintext yalnız owned loopback
+test profiline aittir; public plaintext desteği, TLS fault interception,
+canlı ürün login/göçü veya RC/uzak CI kabulü değildir.
+
 Maliyet bu değişiklikte özelleştirilmez. Üretim, mevcut Argon2id varsayılanını
 korur; bcrypt doğrulama maliyeti 4–14 ve parola 72 UTF-8 byte sınırındadır.
 Hermetik deterministik tuz üretim güvenlik tuzu değildir. Production tuzu

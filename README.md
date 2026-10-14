@@ -47,6 +47,8 @@ Ayrıntılar: [Derleme ve bağımlılıklar](docs/derleme-ve-bagimliliklar.md) �
 
 [14 Ekim teknik teslimi](docs/urunlesme-sonucu-20261014.md), güncel yerel
 kabulü ve 39 maddelik ürünleşme planının kalan işlerini birlikte gösterir.
+[Devam dalgası](docs/urunlesme-devam-20261014.md) native COMMIT hata kanıtını
+ve kaynak arşivi sınırını ayrıca izler.
 
 ## Kaynaktan hızlı başlangıç
 
@@ -153,10 +155,10 @@ Değişikliğe özel test, belge ve güvenlik kapıları [AGENTS.md](AGENTS.md) 
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **895** |
+| Rust + doctest vakası | **896** |
 | Tanı kimliği | **159 etkin + 3 ayrılmış** |
 | RFC | **34** (2 kabul, 29 geçici kabul, 3 taslak) |
-| ADR | **100** (100 kabul) |
+| ADR | **102** (102 kabul) |
 | Normatif spec bölümü | **28** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 

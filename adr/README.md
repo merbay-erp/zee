@@ -112,3 +112,6 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-101 | [rustls advisory güvenlik yaması](101-rustls-advisory-yamasi.md) | **kabul** (K-238/GB-062) |
 
 | ADR-102 | [Sürüm klonu ve build kimliği](102-surum-klonu-ve-build-kimligi.md) | **kabul** (K-241/GB-064) |
+
+| ADR-103 | [Native COMMIT belirsizliği kanıtı](103-native-commit-belirsizligi-kaniti.md) | **kabul** (K-242/GB-065) |
+| ADR-104 | [Exact kaynak arşivi sınırı](104-exact-kaynak-arsivi-siniri.md) | **kabul** (K-243/GB-066) |

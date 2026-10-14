@@ -73,6 +73,8 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
+          powershell -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File scripts/tests/kurulum-literal-yol-test.ps1
+          if ($LASTEXITCODE -ne 0) { throw "literal yol kampanyası başarısız" }
           powershell -File scripts/kur.ps1 -Artefakt "$env:RUNNER_TEMP\surum" -Hedef "$env:RUNNER_TEMP\bin" -Veri "$env:RUNNER_TEMP\veri"
           & "$env:RUNNER_TEMP\bin\dil.exe" sürüm
           if ($LASTEXITCODE -ne 0) { throw "dil sürüm başarısız" }

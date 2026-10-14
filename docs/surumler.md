@@ -1695,3 +1695,22 @@ kaynak SHA'sı ile `dirty: false` bildirmelidir. Aynı hash'e sahip iki kirli
 ikili veya değiştirilmiş klon artık çıktı oluşturamaz. Dil anlamı, build.rs
 kirli-ağaç denetimi ve mevcut imza/platform sınırı korunur.
 [ADR-102](../adr/102-surum-klonu-ve-build-kimligi.md).
+
+### K-242 / K-243 — COMMIT fault kanıtı ve kaynak ZIP güvenilirliği
+
+Native parola test koşucusu yedi TLS vakasına dört owned loopback kontrol
+ve COMMIT fault vakası ekler; C027 ve tekrar etmeme davranışı korunur.
+Salt SQLSTATE ile rollback sonucu çıkarılmaz. Strict skor kartı ve proxy
+negatifleri normal Cargo kapısındadır; canlı ürün kabulü ayrı kalır.
+Kaynak ZIP başlangıç SHA'sını tek kez çözer, Türkçe dosya adlarını NUL
+listeyle okur, canonical depo dışı/metadata/kaynak çıktısını reddeder ve
+yayın öncesi gerçek byte/comment/manifest eşliğini denetler. Yerel arşiv
+aracı Python3 standart kitaplığını gerektirir. Dil/config göçü gerekmez.
+[ADR-103](../adr/103-native-commit-belirsizligi-kaniti.md),
+[ADR-104](../adr/104-exact-kaynak-arsivi-siniri.md).
+
+K-244 Windows kaldırıcı receipt yollarını artık LiteralPath olarak okur,
+hashler ve siler; `bin[1]` gibi adlar yabancı `bin1` dosyasını seçmez.
+Checksum/Zorla/manifest sözleşmesi korunur. Altı gerçek geçici PowerShell
+macOS senaryosu yerel kabul; fiziksel Windows/minOS kabulü ayrı kalır.
+[ADR-071](../adr/071-kurulum-kaldirma-sozlesmesi.md).
