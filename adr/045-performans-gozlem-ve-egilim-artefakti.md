@@ -73,3 +73,13 @@ commit, aynı makine/araç zinciri/release profile ile ölçülür; yerel payla�
 masaüstü gözlemidir. Raw sample/hash/çevre olmadan yeni tarihçe yazılmaz.
 
 K-237/ADR-100 yanıt tahsisini 16 KiB + 1 bayt kapasiteli tek çağrı tamponuyla sınırlar; küçük yanıtın başlangıç tahsisi de değişir. Sabit benchmark korpusu SMTP taşımadığından iş yükü/örnek semantiği ve immutable tarihçe aynı kalır. Byte/capacity kanıtı p95/RSS dağılımı değildir; performans iyileşmesi veya yeni taban iddiası yoktur.
+
+## K-255 — Gözlemsel P19 checkpoint
+
+Temiz exact021bff47839092706c7698d360ae5face9cd2a19 release Rust1.93.1
+macOS26.6.2/M4Pro/24GiB, mevcut harness25sample/2warmup ve RSS1/0;
+[raw proof](../docs/incelemeler/urunlesme-20261014/k255-lsp-olcum/measurement.json)
+tam metadata/dağılımı taşır. DidChange2k–20k p95 7.490–177.321ms'dir.
+Komşu yerel işler vardır; hard eşik ve yeni adanmış baseline yoktur.
+Kaynak klonu önce/sonra temiz; kayıt yalnız actual checkpoint'e aittir.
+Gerçek P08 ürün200ms/cache kabulü açık, eski tarihçe/fixture semantiği korunur.

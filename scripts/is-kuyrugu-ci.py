@@ -8,6 +8,7 @@ import argparse
 from datetime import datetime, timezone
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import platform
@@ -62,6 +63,51 @@ EXPECTED = {
         {"c027": True, "stdout_empty": True, "jobs_before_reconcile": 1,
          "reconciled_ready": True, "jobs_after_reconcile": 1},
 }
+HEARTBEAT_EXPECTED = {'separate_lease_heartbeat_commits_while_handler_row_locked': {'handler_still_blocked_at_renewal_ack': True,
+                                                               'renewals_before': 0,
+                                                               'renewals_after': 7,
+                                                               'heartbeat_acks': 7,
+                                                               'held_seconds': 35.0,
+                                                               'original30s_expired': True,
+                                                               'effects': 1,
+                                                               'done': True},
+ 'done_job_renewal_rejected': {'renewals': 7},
+ 'early_revoked_lease_reused_token_does_not_resurrect_old_row': {'old_authoritative_expired': True,
+                                                                 'old_compatibility_deadline_future': True,
+                                                                 'returned_current_job': True,
+                                                                 'active_leases': 1},
+ 'wrong_token_generation_owner_no_mutation': {'rejections': 3, 'renewals': 0},
+ 'renewal_keeps_120second_server_clock_cap': {'renew_until_unchanged': True,
+                                              'renewals': 1,
+                                              'renew_window_seconds': 120},
+ 'expired_old_generation_no_resurrection_or_replacement_mutation': {'generation_increased': True,
+                                                                    'new_renewals': 0},
+ 'absolute_lifetime_cap_rejected': {'renewals': 0},
+ 'expired_locked_dead_worker_skiplocked_reaper_then_fenced_replacement': {'natural_lease_expiry': True,
+                                                                          'reaper_while_locked': 0,
+                                                                          'reaper_after_backend_gone': 1,
+                                                                          'old_generation_rejected': True,
+                                                                          'effects': 1,
+                                                                          'attempts': 2,
+                                                                          'no_heartbeat_resurrection': True,
+                                                                          'backend_gone': True,
+                                                                          'killed': True},
+ 'heartbeat_commit_before_c027_no_replay': {'c027': True,
+                                            'renewals': 0,
+                                            'effects': 0,
+                                            'commits_seen': 1,
+                                            'commit_forwarded': False,
+                                            'commit_complete': False,
+                                            'commit_ready': False},
+ 'heartbeat_commit_after_c027_no_replay': {'c027': True,
+                                           'renewals': 1,
+                                           'effects': 0,
+                                           'commits_seen': 1,
+                                           'commit_forwarded': True,
+                                           'commit_complete': True,
+                                           'commit_ready': True}}
+EXPECTED.update(HEARTBEAT_EXPECTED)
+
 FIXTURE_SQL = """
 CREATE TABLE zee_job_effects(job_id bigint PRIMARY KEY REFERENCES zee_jobs(id),value integer NOT NULL CHECK(value=1));
 CREATE TABLE zee_job_fixture_failures(job_id bigint PRIMARY KEY REFERENCES zee_jobs(id));
@@ -97,7 +143,7 @@ eylem sabitSqlHandler
 CALLS = {
     "enqueue": "isKuyrugaEkle", "claim": "isKirala", "begin": "isDenemesiniBaslat",
     "apply": "sabitSqlHandler", "fail": "isDenemesiniReddet",
-    "reap": "suresiDolanIsleriBirak", "read": "isDurumunuOku",
+    "reap": "suresiDolanIsleriBirak", "read": "isDurumunuOku", "renew": "isKirasiniYenile",
 }
 
 
@@ -122,16 +168,30 @@ def exact_types(actual, expected):
 
 def check_results(results, exit_code):
     require(type(exit_code) is int and exit_code == 0, "native queue command failed")
-    require(isinstance(results, list) and len(results) == len(EXPECTED), "all eleven queue cases are required")
+    require(isinstance(results, list) and len(results) == len(EXPECTED), "all twenty-one queue cases are required")
     require(all(type(r) is dict and r.keys() == {"name", "status", "ignored", "observations"}
                 for r in results), "queue case result shape is not exact")
     require([r.get("name") for r in results] == list(EXPECTED), "queue names/order are missing or duplicated")
+    heartbeat = None
     for result in results:
         require(result.get("status") == "passed" and result.get("ignored") is False,
                 "queue case failed, skipped or lacks an explicit result")
-        expected = EXPECTED[result["name"]]
-        require(result.get("observations") == expected and exact_types(result["observations"], expected),
-                "actual queue observations do not prove the invariant")
+        name, actual = result["name"], result["observations"]
+        expected = EXPECTED[name]
+        require(exact_types(actual, expected), "queue observation names or types differ")
+        if name == "separate_lease_heartbeat_commits_while_handler_row_locked":
+            varying = {"held_seconds", "heartbeat_acks", "renewals_after"}
+            require(all(actual[k] == expected[k] for k in actual.keys() - varying),
+                    "actual locked handler did not prove its invariant")
+            require(math.isfinite(actual["held_seconds"]) and 35.0 <= actual["held_seconds"] <= 60.0 and
+                    2 <= actual["heartbeat_acks"] <= 24 and actual["renewals_after"] == actual["heartbeat_acks"],
+                    "actual long handler and independent committed heartbeats are required")
+            heartbeat = actual
+        elif name == "done_job_renewal_rejected":
+            require(heartbeat is not None and actual["renewals"] == heartbeat["heartbeat_acks"],
+                    "done job renewal must not change the prior actual lease")
+        else:
+            require(actual == expected, "actual queue observations do not prove the invariant")
 
 
 def sql_string(value):
@@ -159,7 +219,7 @@ class Probe:
         return r.stdout.strip()
 
     def reset(self):
-        self.sql("TRUNCATE zee_job_effects,zee_job_fixture_failures,zee_jobs RESTART IDENTITY; ALTER SEQUENCE zee_job_handler_statements RESTART WITH 1")
+        self.sql("TRUNCATE zee_job_leases,zee_job_effects,zee_job_fixture_failures,zee_jobs RESTART IDENTITY; ALTER SEQUENCE zee_job_handler_statements RESTART WITH 1")
 
     def scalar(self, expression):
         return self.sql("SELECT (" + expression + ")::text")
@@ -235,11 +295,14 @@ class Probe:
         job, generation = value.split(":")
         return job, token, generation
 
+    def renew(self, lease, owner="worker-one"):
+        return self.op("renew", *lease, owner)
+
     def begin(self, lease):
         require(self.op("begin", *lease) == "1", "attempt reservation failed")
 
     def expire(self, job):
-        self.sql("UPDATE zee_jobs SET lease_expires=clock_timestamp()-interval '1 second' WHERE id=" + str(int(job)))
+        self.sql("UPDATE zee_job_leases SET expires_at=clock_timestamp() WHERE job_id=" + str(int(job)))
         require(self.op("reap").isdigit(), "expired lease recovery failed")
 
     def due(self, job):
@@ -300,7 +363,7 @@ def native_cases(probe, results):
         "same_owner_empty": probe.claim(apps[0]) is None})
     probe.reset(); expired_job = probe.enqueue("expired"); current_job = probe.enqueue("current")
     require(probe.claim("reused-owner", "reused-token")[0] == expired_job, "old token lease missing")
-    probe.sql("UPDATE zee_jobs SET lease_expires=clock_timestamp()-interval '1 second' WHERE id=" + expired_job)
+    probe.sql("UPDATE zee_job_leases SET expires_at=clock_timestamp() WHERE job_id=" + expired_job)
     current = probe.claim("reused-owner", "reused-token")
     reuse_current = (current is not None and current[0] == current_job and probe.state(expired_job) == "leased" and
                      int(probe.scalar("SELECT count(*) FROM zee_jobs WHERE state='leased' AND lease_owner='reused-owner' AND lease_token='reused-token'")) == 2)
@@ -400,7 +463,90 @@ def native_cases(probe, results):
                     "c027": True, "stdout_empty": True, "jobs_before_reconcile": count,
                     "reconciled_ready": state == "ready", "jobs_after_reconcile": int(probe.scalar("SELECT count(*) FROM zee_jobs"))})
         finally: proxy.close()
+    heartbeat_native_cases(probe, results)
     check_results(results, 0)
+
+
+def heartbeat_native_cases(probe, results):
+    """K-254: separate lease authority and real long-handler/fault observations."""
+    def passed(name, observations):
+        results.append({"name": name, "status": "passed", "ignored": False,
+                        "observations": observations})
+        print("native queue case: " + name + " ... passed", flush=True)
+    probe.reset();job=probe.enqueue();lease=probe.claim();probe.begin(lease);app='zee-v2-heartbeat-locked-handler'
+    with PAROLA['SqlBlocker'](probe,'SELECT pg_advisory_xact_lock(247001)'):
+        child=probe.start('apply',lease,application=app,barrier=True)
+        require(probe.wait_for_locks([app],'SELECT pg_advisory_xact_lock')==1,'real handler blocked')
+        before=probe.scalar('SELECT renewals FROM zee_job_leases WHERE job_id='+job)
+        require(probe.renew(lease)=='1','independent renewal commit while handler row lock held')
+        require(probe.wait_for_locks([app],'SELECT pg_advisory_xact_lock')==1,'old handler still blocked until control release')
+        after=probe.scalar('SELECT renewals FROM zee_job_leases WHERE job_id='+job)
+        require((before,after)==('0','1'),'one actual committed renewal')
+        held_started=time.monotonic();next_renew=time.monotonic()+5; renew_acks=1
+        # Real unchanged30s lease budget; wait until server observes its original deadline passed.
+        while probe.scalar('SELECT clock_timestamp()>lease_expires FROM zee_jobs WHERE id='+job)!='true' or time.monotonic()-held_started<35:
+            require(time.monotonic()-held_started<40,'server clock reached original deadline within bounded fixture')
+            if time.monotonic()>=next_renew:
+                require(probe.renew(lease)=='1','actual periodic heartbeat committed');renew_acks+=1;next_renew=time.monotonic()+5
+            time.sleep(.1)
+        require(probe.wait_for_locks([app],'SELECT pg_advisory_xact_lock')==1,'handler still alive beyond original lease')
+        require(probe.scalar('SELECT expires_at>clock_timestamp() FROM zee_job_leases WHERE job_id='+job)=='true','authoritative lease remains live beyond original30s')
+        held_seconds=round(time.monotonic()-held_started,3)
+    require(probe.finish(child)=='1','renewed handler completion');require(probe.effects()==1 and probe.state(job)=='done','durable one effect/done')
+    passed('separate_lease_heartbeat_commits_while_handler_row_locked',{'handler_still_blocked_at_renewal_ack':True,'renewals_before':0,'renewals_after':int(probe.scalar('SELECT renewals FROM zee_job_leases WHERE job_id='+job)),'heartbeat_acks':renew_acks,'held_seconds':held_seconds,'original30s_expired':True,'effects':1,'done':True})
+    require(probe.renew(lease)=='reddedildi','done job cannot renew');passed('done_job_renewal_rejected',{'renewals':renew_acks})
+    # Adversarial early revocation while compatibility expiry is still future.
+    probe.reset();old_job=probe.enqueue('old');current_job=probe.enqueue('current');old=probe.claim('reuse-owner','reuse-token')
+    probe.sql('UPDATE zee_job_leases SET expires_at=clock_timestamp() WHERE job_id='+old_job)
+    require(probe.scalar('SELECT lease_expires>clock_timestamp() FROM zee_jobs WHERE id='+old_job)=='true','legacy placeholder deliberately still future')
+    current=probe.claim('reuse-owner','reuse-token');require(current is not None and current[0]==current_job,'new exact generation upsert cannot revive old expired lease')
+    require(probe.scalar('SELECT expires_at<=clock_timestamp() FROM zee_job_leases WHERE job_id='+old_job)=='true','old authoritative lease remains expired')
+    require(probe.scalar("SELECT count(*) FROM zee_jobs j JOIN zee_job_leases l ON l.job_id=j.id WHERE j.state='leased' AND l.expires_at>clock_timestamp()")=='1','exact one live lease after token reuse')
+    passed('early_revoked_lease_reused_token_does_not_resurrect_old_row',{'old_authoritative_expired':True,'old_compatibility_deadline_future':True,'returned_current_job':True,'active_leases':1})
+    probe.reset();job=probe.enqueue();lease=probe.claim()
+    rejected=[probe.renew((lease[0],'wrong-token',lease[2])),probe.renew((lease[0],lease[1],str(int(lease[2])+1))),probe.renew(lease,'wrong-owner')]
+    require(rejected==['reddedildi']*3 and probe.scalar('SELECT renewals FROM zee_job_leases WHERE job_id='+job)=='0','wrong ownership/fence rejected')
+    passed('wrong_token_generation_owner_no_mutation',{'rejections':3,'renewals':0})
+    cap=probe.scalar('SELECT renew_until::text FROM zee_job_leases WHERE job_id='+job);require(probe.renew(lease)=='1','valid renewal')
+    require(cap==probe.scalar('SELECT renew_until::text FROM zee_job_leases WHERE job_id='+job),'renewal cannot move hard cap')
+    require(probe.scalar('SELECT round(extract(epoch FROM renew_until-issued_at))::integer FROM zee_job_leases WHERE job_id='+job)=='120','actual default renewal window is120seconds')
+    passed('renewal_keeps_120second_server_clock_cap',{'renew_until_unchanged':True,'renewals':1,'renew_window_seconds':120})
+    probe.expire(job);require(probe.renew(lease)=='reddedildi','expired lease no resurrection');new=probe.claim('replacement')
+    require(new is not None and int(new[2])>int(lease[2]),'fresh generation')
+    require(probe.renew(lease)=='reddedildi' and probe.scalar('SELECT renewals FROM zee_job_leases WHERE job_id='+job)=='0','old renewal cannot mutate replacement')
+    passed('expired_old_generation_no_resurrection_or_replacement_mutation',{'generation_increased':True,'new_renewals':0})
+    probe.sql('WITH an AS (SELECT clock_timestamp() AS t) UPDATE zee_job_leases SET expires_at=an.t,renew_until=an.t FROM an WHERE job_id='+job)
+    require(probe.renew(new,'replacement')=='reddedildi','hard lifetime cap refusal');passed('absolute_lifetime_cap_rejected',{'renewals':0})
+    # An abandoned heartbeat with a still-locked handler: actual unchanged30s expiration.
+    probe.reset();job=probe.enqueue();lease=probe.claim();probe.begin(lease);app='zee-v2-expired-locked-handler'
+    with PAROLA['SqlBlocker'](probe,'SELECT pg_advisory_xact_lock(247001)'):
+        child=probe.start('apply',lease,application=app,barrier=True)
+        require(probe.wait_for_locks([app],'SELECT pg_advisory_xact_lock')==1,'expired fixture actual SQL barrier')
+        started=time.monotonic()
+        while probe.scalar('SELECT expires_at<=clock_timestamp() FROM zee_job_leases WHERE job_id='+job)!='true':
+            require(time.monotonic()-started<40,'actual original30s expiry bounded');time.sleep(.1)
+        require(probe.op('reap')=='0','SKIP LOCKED reaper returns without blocked handler row')
+        require(probe.wait_for_locks([app],'SELECT pg_advisory_xact_lock')==1,'old handler remains blocked after reaper ack')
+        require(probe.renew(lease)=='reddedildi','expired heartbeat cannot revive locked handler')
+        child.kill();child.communicate(timeout=10)
+        require(child.returncode == -9,'owned expired handler was actually killed')
+    # PostgreSQL may not observe TLS disconnect until blocked SQL is released.
+    probe.wait_gone(app)
+    require(probe.effects()==0 and probe.op('reap')=='1','actual killed expired backend freed; reaper recovers one')
+    replacement=probe.claim('replacement');require(replacement is not None and int(replacement[2])>int(lease[2]),'replacement fenced')
+    require(probe.op('apply',*lease)=='reddedildi' and probe.renew(lease)=='reddedildi','old generation revoked')
+    probe.begin(replacement);require(probe.op('apply',*replacement)=='1','replacement actual SQL handler')
+    require(probe.effects()==1 and probe.attempts(job)==2,'two reserved attempts one durable effect')
+    passed('expired_locked_dead_worker_skiplocked_reaper_then_fenced_replacement',{'natural_lease_expiry':True,'reaper_while_locked':0,'reaper_after_backend_gone':1,'old_generation_rejected':True,'effects':1,'attempts':2,'no_heartbeat_resurrection':True,'backend_gone':True,'killed':True})
+    for mode in ('before','after'):
+        probe.reset();job=probe.enqueue();lease=probe.claim();app='zee-v2-heartbeat-commit-'+mode
+        proxy=PROXY['CommitProxy']('127.0.0.1',probe.cluster.port,mode,application=app,deadline_seconds=30).start()
+        try:
+            child=probe.start('renew',(*lease,'worker-one'),application=app,proxy=proxy);probe.finish(child,fault=True);wire=proxy.finish();probe.wait_gone(app)
+            actual=int(probe.scalar('SELECT renewals FROM zee_job_leases WHERE job_id='+job));require(actual==(0 if mode=='before' else 1),'actual commit effect observed')
+            require(probe.state(job)=='leased' and probe.effects()==0,'no SQL handler/admission continuation')
+            passed('heartbeat_commit_'+mode+'_c027_no_replay',{'c027':True,'renewals':actual,'effects':0,'commits_seen':wire['commits_seen'],'commit_forwarded':wire['commit_forwarded'],'commit_complete':wire['commit_complete'],'commit_ready':wire['commit_ready']})
+        finally:proxy.close()
 
 
 def main():
@@ -425,7 +571,7 @@ def main():
         run(["cargo", "build", "--locked", "--bin", "dil"], cwd=ROOT / "compiler", timeout=900)
     original = (args.dil or ROOT / "compiler/target/debug/dil").resolve()
     paths = [Path(__file__), ROOT / "scripts/tests/is-kuyrugu-ci-test.py",
-             QUEUE / "proje.dil", QUEUE / "README.md", QUEUE / "kaynak/kuyruk.dil", QUEUE / "gocler/0001_kuyruk.sql",
+             QUEUE / "proje.dil", QUEUE / "README.md", QUEUE / "kaynak/kuyruk.dil", QUEUE / "gocler/0001_kuyruk.sql", QUEUE / "gocler/0002_kira_sahibi.sql",
              ROOT / "scripts/postgresql-tls-ci.py", ROOT / "scripts/postgresql-commit-proxy.py",
              ROOT / "scripts/parola-goc-ci.py"]
     inputs = {str(path.relative_to(ROOT)): path.read_bytes() for path in paths}
@@ -453,7 +599,8 @@ def main():
             else:
                 report["runtime_identity"] = cluster.identity
             probe = Probe(directory, cluster, binary, ca, inputs[str((QUEUE / "kaynak/kuyruk.dil").relative_to(ROOT))].decode())
-            probe.sql(inputs[str((QUEUE / "gocler/0001_kuyruk.sql").relative_to(ROOT))].decode()); probe.sql(FIXTURE_SQL)
+            probe.sql(inputs[str((QUEUE / "gocler/0001_kuyruk.sql").relative_to(ROOT))].decode())
+            probe.sql(inputs[str((QUEUE / "gocler/0002_kira_sahibi.sql").relative_to(ROOT))].decode()); probe.sql(FIXTURE_SQL)
             report["phase"] = "native-cases"; native_cases(probe, report["cases"])
             report["status"] = "passed"; report["phase"] = "completed"
         finally:
@@ -470,7 +617,7 @@ def main():
             report["elapsed_seconds"] = round(time.monotonic() - started, 3)
             args.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n")
     require(report["status"] == "passed", "queue source or fixture changed during the campaign")
-    print("Native queue gate: 11/11 passed, 0 ignored; report=" + str(args.output))
+    print("Native queue gate: 21/21 passed, 0 ignored; report=" + str(args.output))
 
 
 if __name__ == "__main__":

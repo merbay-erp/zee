@@ -1,0 +1,6 @@
+# K-253/B5: tek anonim native hizmet proje sözleşmesi.
+proje "anonymous-drain" olsun
+sürüm "0.1.0" olsun
+morfoloji "zee-tr-1" olsun
+giriş "ana.dil" olsun
+yetkinlikler "ağ-sunucusu" listesi olsun

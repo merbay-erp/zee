@@ -139,3 +139,13 @@ değerini aynen bildirir; temiz exact commit kabulü ayrı tekrar koşusudur.
 
 B5'in tam işletim/temiz-host kabulü ve P14 socket/drain/overlap garantileri
 açık kalır; bu araç `dil hizmet örnek` komutu eklemez.
+
+## K-253 güncel Unix drain sınırı
+
+Native Unix worker SIGTERM sonrasında mevcut admitted isteği tamamlar,
+yeni handler almaz ve idle listener bounded poll ile kapanır. Host
+`--stop-grace` default5s kalır, kabul aralığının üstü60s'dir; explicit55s
+mevcut read10/handler30/write10 bütçelerine fırsat verir. Süre sonunda KILL
+ve sahipli cleanup korunur. Kernel/DB IO veya bütün backlog için hard
+wall-time/drain garantisi değildir. Windows/non-Unix, P14 socket devri ve
+zero downtime açık; [ADR-113](../adr/113-native-web-sigterm-drain.md).

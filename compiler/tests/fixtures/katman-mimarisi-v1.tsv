@@ -15,7 +15,7 @@ bin_spec_drift	muhendislik	kalici_dosya	Spec madde kanit drift kapisi
 bin_surum_artefakti	muhendislik	-	Tekrar uretilebilir surum artefakti SBOM provenance ve imza
 bin_tani_kalitesi	muhendislik	faz,kalici_dosya	Acemi hatasi mutasyonlariyla tani kalitesi kapisi
 cozumleyici	semantik	agac,hir,intrinsic,kimlik,morfoloji,semantic_model,tani,yetkinlik	Ad tur etki ve HIR kaniti
-dil_cli	adapter	ag_istemcisi,agac,artefakt_dogrulama,bicimleyici,cozumleyici,eposta,faz,gorsel,guvenlik,http_istegi,kalici_dosya,kaynak_sinirlari,morfoloji,paket,postgresql,proje,surum,tani,web_guvenligi,web_yukleme,yayin,yetkinlik,yorumlayici,zaman	Komut satiri ve web host adaptoru
+dil_cli	adapter	ag_istemcisi,agac,artefakt_dogrulama,bicimleyici,cozumleyici,eposta,faz,gorsel,guvenlik,http_istegi,kalici_dosya,kaynak_sinirlari,morfoloji,paket,postgresql,proje,surum,tani,web_guvenligi,web_kapanis,web_yukleme,yayin,yetkinlik,yorumlayici,zaman	Komut satiri ve web host adaptoru
 dillsp	adapter	lsp	LSP stdio framing adaptoru
 eposta	altyapi	kaynak_sinirlari,zaman	Bagimliliksiz SMTP istemcisi ve RFC 5322 ileti kurulumu (K-210)
 faz	semantik	agac,ayristirici,cozumleyici,hir,sozcukleyici,tani	Derleyici faz tipleri ve gecisleri
@@ -45,6 +45,7 @@ tani_politikasi	temel	-	Tanilar ile kaynak profili arasindaki bagimliliksiz butc
 veritabani_modeli	model	-	Proje runtime ve adaptorler arasinda davranissiz hedef bildirim ve hata sozlesmesi
 wasm_api	adapter	faz,kaynak_sinirlari,proje,yorumlayici	Playground C ABI adaptoru
 web_guvenligi	web	agac,guvenlik,kalici_dosya,kaynak_sinirlari	Oturum CSRF ve oran siniri
+web_kapanis	adapter	-	K-253 private CLI SIGTERM disposition sahipligi ve bounded poll; yalniz std/libc, temel cekirdege geri bag yok
 web_yukleme	adapter	guvenlik	Binary HTTP govdesini gecici dosyaya akitma ve SHA-256 metadata uretme
 yayin	adapter	artefakt_dogrulama,faz,paket,paket_modeli,proje	Dogrulanmis proje grafiginden yayin artefakti orkestrasyonu
 yetkinlik	altyapi	-	Yetkinlik ve origin politikasi

@@ -122,3 +122,13 @@ kanıt ayrı tutulur; integration sonrası yeni temiz exact kaynakta tekrar koş
 ve phase sayısı yenilenmesi gerekir. Yeni compiler davranışı, retry,
 SQLSTATE allowlist'i, desteklenen minimum PG sürümü, geniş fault matrisi veya
 uzak CI/platform/provider kabulü eklenmez. Üretim Rust kaynağı değişmedi.
+
+## K-256 güncel kapı — sekiz native vaka
+
+K-250'nin yedi vakası korunur; ek nativeTLS1.1 ret vakasından önce ayrı owned
+legacy cluster'a independent Python/OpenSSL client doğru CA/localhostSAN ile
+TLS1.1 bağlanır, pg_stat_ssl protokolü ayrıca doğrular. Legacy seclevel0 yalnız
+ikinci fixture'dadır; native connector minTLS1.2 değişmez. Strict14 vakası
+sahte positivecontrol ve expiry sonrası send'i reddeder; normal Cargo wrapper
+bu14 testi yürütür. Tarihsel dört/beş/yedi vaka kayıtları kendi SHA'sına aittir.
+Final clean exact acceptance ayrıca gerekir; [ADR-115](../adr/115-tls11-capable-positive-kontrol.md).

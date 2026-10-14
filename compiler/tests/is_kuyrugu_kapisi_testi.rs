@@ -18,7 +18,7 @@ fn is_kuyrugu_native_skor_karti_eksik_sahte_ve_tekrari_reddeder() {
     );
     assert!(sonuc.stdout.is_empty());
     assert!(
-        rapor.contains("\nRan 16 tests in ") && rapor.trim_end().ends_with("\nOK"),
-        "bütün16 validator vakası atlamasız yürütülmeli: {rapor}"
+        rapor.contains("\nRan 24 tests in ") && rapor.trim_end().ends_with("\nOK"),
+        "bütün24 validator vakası atlamasız yürütülmeli: {rapor}"
     );
 }
