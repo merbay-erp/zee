@@ -4411,3 +4411,12 @@ atlama; ayrı25 worker/14credential/11queue+16validator aday kabulü.
 Compiler source etkisi yalnız K-248 cfg(test) taşımasıdır; semantic
 maintenance/core-freeze beyanı izleyen committe exact kaydedilir. Temiz
 final kabulü ve native28kampanya ayrı devam eder.
+
+## K-249 — Anonim TR–EN plain Metin sayfa
+
+14.10.2026 C4/P21 gerçek talebi mevcut görünüm/Metin/birim/sözlük ile tek
+anonim article fragmentine indirgenir (ADR-109/GB-071). K-164 kapasitesi
+yeterli; yeni dil sürtünmesi veya compiler özelliği yoktur. Dört Zee testi
+ve yedi actual nativeCLI exactHTML/XSS/ret senaryosu; bağımsız incelemenin
+Python3.9 adaptör bulgusu streaming SHA256 ile kapandı. Genel layout/i18n,
+list/detail/router ve full P08/adoption açıktır; temiz exact kabul sürer.

@@ -20,7 +20,7 @@ P17	B9	-	ertelendi	urun,altyapi	urun-ihtiyaci	docs/urunlesme-plani.md	S3/yerel h
 P18	C1	K-166	kismi	dil	anonim-5hata	docs/tani-kalitesi.md	Exact yanlis/dogru kalip, oneriler/codeaction; grammar ayri
 P19	C2,ZEE-002	K-207,K-229,K-248	kismi	dil	P08	adr/094-bicimleyici-yazmadan-denetim.md	Formatter --denetle8/8; cache/LSP200ms/lint/JetBrains acik, olcum ve exact soak gerekir; K248 gercek LSP yuzdeUTF8 dosyayolu correctness native regressed, incrementality200ms kabul degil
 P20	C3	K-211,K-227	kismi	dil,urun	anonim-modul-fixture	dogfood/zee-cekirdek/modul-kompozisyonu/README.md	Metin ankrajsiz kur/kaldir2/2; genel extensionpoints/namespace/menu/content/goc ve exact urunfixture acik
-P21	C4	K-212	kismi	dil,urun	anonim-TR-EN-sayfa	compiler/tests/gorunum_testi.rs	Mevcut gorunum; layout/slot/translation minimal ihtiyac ve escaping
+P21	C4	K-212,K-249	kismi	dil,urun	anonim-TR-EN-sayfa	adr/109-tr-en-plain-slot-yardimcisi.md	Mevcut gorunum +anonimTR-EN plainMetin namedslot sabitdict4Zee+7nativeCLI exactHTMLXSSret; Python3.9/3.13; genericlayout/i18n listdetail router liveproduct fullP08 acik
 P22	C5	-	kismi	dil,urun	P08,P31	compiler/tests/web_testi.rs	Zee test HTTP session/CSRF, DB rollback/snapshot/coverage
 P23	C6	K-203	kismi	urun,insan	P05,P06,P08,P25,P27	docs/baslangic.md	Mevcut rehber/site; panel site sablonu ve gercek yeni kullanici
 P24	D1	K-224	yerel-belge-kabulu	insan,altyapi	P39	docs/urun-destek-politikasi.md	Sinirli pilot guvenlik ve uyumluluk kapilari; gercek guvenilir imza/yayin/bildirim acik

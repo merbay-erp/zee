@@ -1574,3 +1574,10 @@ Tam request drain/reload/metrics ve P14 socket devir açıktır.
 **KISMİ.** K-247/P09 (ADR-107/GB-070) dar idempotent SQL queue helper'ıdır;11 native
 PG crash/COMMIT observer ve16 validator aday kabulü vardır, temiz exact
 kabul devam eder. Canlı ürün adoptionı, SMTPretry ve full P08 açık kalır.
+
+## K-249 — P21/C4 TR–EN plain slot pilotu
+
+**KISMİ.** [ADR-109](../adr/109-tr-en-plain-slot-yardimcisi.md): mevcut
+görünüm ve sözlükle dört Zee testi/yedi nativeCLI escaping/ret senaryosu.
+Python3.9/3.13 actual aday kabulü var, temiz exact kabul sürer. Genel
+layout/i18n/list/detail/router ve gerçek ürün/P08 açık kalır.
