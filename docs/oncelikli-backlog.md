@@ -1591,7 +1591,7 @@ P21/P25 kapsamı açık kalır. Takip belge commit'i test kaynağı değildir.
 
 ## K-252 — SMTP mutlak süre correctness
 
-Kaynak ve native slow-trickle testleri hazır; exact regression provenance ve ortak kapılar tamamlanana kadar kapanma kabulü açık. [ADR-110](../adr/110-smtp-mutlak-sure-butcesi.md) mevcut MIME deadline sarmalayıcısını plain yolla paylaşır; DNS iptali vaat edilmez.
+**Correctness dilimi kapalı.** Kaynak `c0f79aded235266f75cda1bda9244d766d8a32cc`, exact regression fixed_by ve semantic/core-freeze takip kaydı 021bff4'tür. [Temiz ortak kabul](incelemeler/urunlesme-20261014/common-021bff4/README.md) normal fazdaki gerçek native slow-trickle testlerini ve sürekli kapıları doğrular. [ADR-110](../adr/110-smtp-mutlak-sure-butcesi.md) mevcut MIME deadline sarmalayıcısını plain yolla paylaşır; DNS iptali vaat edilmez.
 
 ## K-250 — PostgreSQL statement fault kanıtı
 
@@ -1599,7 +1599,7 @@ Kaynak ve native slow-trickle testleri hazır; exact regression provenance ve or
 40001, no-retry sayaçları, outer rollback onayı ve bağımsız durable observer
 iki native vakayla sınanır. Dedicated TLS kapısı yedi vakadır; COMMIT
 belirsizliği ADR-103/C027 olarak kalır. Çalışma ağacı native7/strict9 geçti;
-temiz exact ortak kabul ayrıca gereklidir; provider/full fault matrisi açık.
+021bff4 [temiz exact ortak kabul](incelemeler/urunlesme-20261014/common-021bff4/README.md) tamamlandı; provider/full fault matrisi açık.
 
 ## K-251 — DB ve göç hazırlık probu
 
@@ -1607,8 +1607,7 @@ temiz exact ortak kabul ayrıca gereklidir; provider/full fault matrisi açık.
 sahipli tek seferlik DB+migration gate üretir. Native13/strict10 yerel aday
 kabulü vardır; compiler özelliği yoktur. DB/worker nesli değişince yeniden
 prob gerekir; continuous/TTL, request metrics/drain/config reload ve P14
-socket devri açık kalır. Gerçek ürün/platform adoptionı ve exact ortak temiz
-kabul ayrıca gereklidir.
+socket devri açık kalır. 021bff4 [exact ortak temiz kabul](incelemeler/urunlesme-20261014/common-021bff4/README.md) tamamlandı; gerçek ürün/platform adoptionı ayrıca gereklidir.
 
 ## K-253 — Native Unix graceful shutdown
 

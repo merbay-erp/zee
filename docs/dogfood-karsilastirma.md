@@ -7,15 +7,15 @@ ile temiz ağaçta exact SHA'yla [`docs/dogfood-karsilastirma-v1.tsv`](dogfood-k
 tarihçesine yazılır.
 
 <!-- ZEE-KARSILASTIRMA:BEGIN -->
-Son ölçüm: `64f141dcc940` · 2026-10-14 · darwin-arm64 · rustc 1.93.1 (01f6ddf75 2026-02-11) · go go1.26.1 · 3 tur medyanı.
+Son ölçüm: `d42f14747006` · 2026-10-14 · darwin-arm64 · rustc 1.93.1 (01f6ddf75 2026-02-11) · go go1.26.1 · 3 tur medyanı.
 
 | Ölçü | Zee | Rust | Go |
 |---|---:|---:|---:|
 | Kaynak satırı (boş/yorum dışı, testler dahil) | 639 | 364 | 328 |
 | Birim testi | 19 | 6 | 6 |
-| Soğuk derleme süresi (ms; Zee yorumlayıcı: ürün derlemesi çalışma süresinde) | - | 2254 | 1540 |
-| Çalışma süresi (ms; Zee: derle+yürüt) | 118 | 2 | 2 |
-| Tepe RSS (KiB) | 12544 | 2384 | 5024 |
+| Soğuk derleme süresi (ms; Zee yorumlayıcı: ürün derlemesi çalışma süresinde) | - | 2406 | 1645 |
+| Çalışma süresi (ms; Zee: derle+yürüt) | 122 | 2 | 3 |
+| Tepe RSS (KiB) | 12320 | 2368 | 5344 |
 | Korpusa giren sürtünme vakası | 21 | — | — |
 <!-- ZEE-KARSILASTIRMA:END -->
 

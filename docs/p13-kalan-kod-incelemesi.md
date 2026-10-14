@@ -1,4 +1,12 @@
-# P13/B5 gerçek kod sınırları — K-253 aday incelemesi
+# P13/B5 gerçek kod sınırları — başlangıç incelemesi ve takip
+
+Aşağıdaki tablo temiz `965c3a979bf39ad575898785deaa4496c3384713`
+başlangıcının incelemesidir. K-253 native SIGTERM drain sonradan
+`ba719497669823033c665a6bdceeebde3bac8f3e` kaynak commit'inde uygulandı;
+exact dogfood-change beyanı `d42f14747006aa0c50335d3e7c8ea0a1026141a8`
+takip commit'indedir. Mevcut admitted handler'ın tamamlanması ve idle
+kapanış native testlerle kapsanır; son temiz soak kabulü ayrı gereklidir.
+Tablodaki başlangıç eksikleri güncel compiler davranışı diye okunmaz.
 
 | İhtiyaç | Mevcut API ile gerçek durum | Minimal sonraki iş |
 |---|---|---|
@@ -11,5 +19,6 @@
 Bu işler yalnız harici insan/platform kanıtıyla bloklu değildir. Metrics ve
 full transactional reload için gerçek production kodu ve güvenlik/state
 sözleşmesi eksiktir. K-253 gerçek B5 provenance ile minimal corefreeze
-threshold'u hedefler; bütün B5 clean-server15dk, P14 ve product adoption
-kabulünü kapatmaz.
+sınırını karşılar; bütün B5 clean-server15dk, P14 ve product adoption
+kabulünü kapatmaz. Metrik ve socket devri adayları kendi kaynak, test ve
+karar zinciri kabul edilene kadar bu incelemenin eksiklerini kapatmış sayılmaz.
