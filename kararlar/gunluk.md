@@ -4379,3 +4379,29 @@ klasör URI'si A010/S015 verdi. İlk LSP commit'indeki byte→char hatası
 minimal UTF-8 bayt çözümüyle düzeltilir (ADR-108); native disk-birim
 regresyonu, bozuk UTF-8 retleri ve exact fixed_by izleyen kayıtta tutulur.
 Yeni grammar, URI platform kapsamı veya cache eklenmez.
+
+K-248 exact düzeltme `176a35f09926dafdecfc15e30f1e5776714f3361`; ilk arızalı LSP kaynağı
+`9a1f0b7e683bf778d3226aecbe8bd7b5f273740e`. Manifest/freeze/semantic
+beyan izleyen commit'te kayıtlıdır; geniş faz exact kabulü devam eder.
+
+## K-245 — Credential dosyası host pilotu
+
+14.10.2026 D3 gerçek ürün talebi mevcut env bağlarıyla, compiler büyümeden
+POSIX host aracına indirgenir (ADR-105/GB-068). Native allowlist ve SMTP
+AUTH1/DATA1 dahil14 actual vaka; tam P25 ve file-native inheritance sınırı
+açıktır. Exact temiz kaynak kabulü devam eder.
+
+## K-246 — Worker host yaşam döngüsü ve public launcher
+
+14.10.2026 B5/P13 dar host pilotu ADR-106/GB-069 ile tanımlanır. Actual
+önce kanıtında exec node frontend TERM owned workerı bırakmıştır; WNOWAIT ile sahipli
+PID koruyan Python kontrolcü ve ayrı supervisor readiness/identity/cleanup
+kampanyasıyla düzeltme kabulü devam eder. Tam drain/reload/P14 açıktır.
+
+## K-247 — Kalıcı SQL iş kuyruğu prototipi
+
+14.10.2026 B1/P09 mevcut PG writer/eylem ile kaynak helper'ına indirgenir
+(ADR-107/GB-070). K-164 kataloğuyla karşılaştırmada temel SQL/Metin/Sonuç
+yüzeyi yeterlidir, yeni dil sürtünmesi veya compiler ihtiyacı icat edilmez.
+11 native vaka ve16 strict validator hazır; temiz exact kabul devam eder.
+Gerçek Python kaldırılması, SMTPretry/provider ve tam P09 açık kalır.

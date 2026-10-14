@@ -8,23 +8,23 @@ P05	A2	K-167	kismi	dil,urun	P02,P08,P39	docs/uyumluluk-politikasi.md	Mevcut depr
 P06	A3,D2	K-168,K-169,K-241,K-244	kismi	altyapi	P02,P29,P30,P39	scripts/surum-artefakti.sh	K241 temiz2e970e4 yerel macOS clone temizlik actualSHA dirtyfalse eshash kabul; yeni LinuxWindows/imza/kurulum ve apt/container ayri; K244 LiteralPath kaldirma nativeMacPS6/6, Windowsphysical/remoteCI ayri
 P07	A4	K-233	kismi	altyapi,dil	P05,P06	docs/derleyici-secici.md	Signedlocalcatalog/privatebyte snapshot25tests; fullrustup/globaldil/proje.kilit/productionkeys/Windows acik
 P08	A5	K-172	anonim-tam-korpus-bekliyor	urun,altyapi	-	dogfood/korpus-v1.tsv	Anonim tam 5site+koku provenance N/N denetle/dene sure/RSS
-P09	B1	-	acik	urun,altyapi	P08,P34	docs/urunlesme-plani.md	Kalici job lease/idempotency/3retry/deadletter/crash; ilk prototype mevcut PG
+P09	B1	K-247	kismi	urun,altyapi	P08,P34	adr/107-kalici-sql-is-kuyrugu-pilotu.md	Mevcut PG eylem SQLonly idempotent helper lease generation3attempt backoff deadletter 11nativecrashCOMMIT+16validator; cleanexactfinal adoption calendarSMTPretry acik
 P10	B2	K-210,K-232,K-236,K-237	kismi	dil,urun	P09	rfcs/0034-ekli-eposta.md	MIME readonlyPDF/gorsel ReplyTo HTMLalternative typed/native; queue3retry liveM365/Gmail/catalogacceptance acik; K236 AUTH echo C029 mask native/CLI3tests, responsebudget K237 ayri; K237 SMTP yanit16KiB read-before-alloc ve native LF-yok kabul, RSS/toplam plain deadline ayri
 P11	B3	K-210	kismi	dil,urun	P08	compiler/src/gorsel.rs	JPEG/PNG/WebP mevcut; PDF fixture/backend karari acik
 P12	B4	K-163,K-228	kismi	dil,urun	P31,P34	docs/urunlesme-sonucu-20261014.md	Durum/kuru noSQL owner/runtime checksum rollback concurrent; temiz2e970e4 native1/1; canli urun Python betigi kaldirilmasi acik
-P13	B5	K-137	kismi	dil,altyapi	P02,P12,P25	docs/web-production-profili.md	Hizmet hazirlik JSON log metrics draining reload
+P13	B5	K-137,K-246	kismi	dil,altyapi	P02,P12,P25	docs/worker-supervisor.md	POSIX host sourceheader+explicitappreadiness ownedgroup TERMKILLreap sequentialrestart; publiclauncher actualbugfix; cleanexactfinal inflightdrain requestDBmetrics HUP systemd15min acik
 P14	B6	-	acik	dil,altyapi	P13	adr/089-bellek-oran-deposu.md	Socket devir/ready overlap; kota/revoke korunumu yuk testi
 P15	B7,ZEE-012	K-223,K-242	kismi	urun	P08	docs/parola-goc-ci.md	Tarihsel2e970e4 native7/7; temiz316a313 native11/11 7TLS+4loopbackCOMMIT fault/control; C027/no-retry/noSMTP ve statement observer; live login/migration/provider acik
 P16	B8,ZEE-011	K-220	kismi	urun	P08	dogfood/zee-cekirdek/http-post/turnstile.dil	Hermetik alti-form helper/403/timeout/secret/rollback; canli staging ve tam urun kabul acik
 P17	B9	-	ertelendi	urun,altyapi	urun-ihtiyaci	docs/urunlesme-plani.md	S3/yerel hash ve IAM ancak gercek cok-sunucu kaniti
 P18	C1	K-166	kismi	dil	anonim-5hata	docs/tani-kalitesi.md	Exact yanlis/dogru kalip, oneriler/codeaction; grammar ayri
-P19	C2,ZEE-002	K-207,K-229	kismi	dil	P08	adr/094-bicimleyici-yazmadan-denetim.md	Formatter --denetle8/8; cache/LSP200ms/lint/JetBrains acik, olcum ve exact soak gerekir
+P19	C2,ZEE-002	K-207,K-229,K-248	kismi	dil	P08	adr/094-bicimleyici-yazmadan-denetim.md	Formatter --denetle8/8; cache/LSP200ms/lint/JetBrains acik, olcum ve exact soak gerekir; K248 gercek LSP yuzdeUTF8 dosyayolu correctness native regressed, incrementality200ms kabul degil
 P20	C3	K-211,K-227	kismi	dil,urun	anonim-modul-fixture	dogfood/zee-cekirdek/modul-kompozisyonu/README.md	Metin ankrajsiz kur/kaldir2/2; genel extensionpoints/namespace/menu/content/goc ve exact urunfixture acik
 P21	C4	K-212	kismi	dil,urun	anonim-TR-EN-sayfa	compiler/tests/gorunum_testi.rs	Mevcut gorunum; layout/slot/translation minimal ihtiyac ve escaping
 P22	C5	-	kismi	dil,urun	P08,P31	compiler/tests/web_testi.rs	Zee test HTTP session/CSRF, DB rollback/snapshot/coverage
 P23	C6	K-203	kismi	urun,insan	P05,P06,P08,P25,P27	docs/baslangic.md	Mevcut rehber/site; panel site sablonu ve gercek yeni kullanici
 P24	D1	K-224	yerel-belge-kabulu	insan,altyapi	P39	docs/urun-destek-politikasi.md	Sinirli pilot guvenlik ve uyumluluk kapilari; gercek guvenilir imza/yayin/bildirim acik
-P25	D3	K-220	kismi	dil,altyapi	anonim-credential	docs/http-post-kullanim.md	Env izin mevcut; file credential izin/symlink/rotasyon maskeleme
+P25	D3	K-220,K-245	kismi	dil,altyapi	anonim-credential	docs/credential-baslat.md	POSIX bounded private credential file-to-child-env host14nativecases; ambientfallback yok; nofollow FIFO race snapshot rotation metadata; Windows/systemd/liveproduct file-nativeinheritance fullP25 acik
 P26	D4,ZEE-013	-	ertelendi	urun,insan	gercek-HTML-import	docs/oncelikli-backlog.md	HTML kayit0 urun beyani; yeni API yok
 P27	ZEE-003	K-161,K-162	harici-kanit-yok	insan	gercek-katilimci	docs/usability-kiti.md	10 ogrenci/cocuk+5prof gercek anonim formlar; kullanici yok teyidi
 P28	ZEE-004	K-174	takvim-kapisi	dil,insan	2026-11-11	docs/v1-syntax-freeze-v1.tsv	14Ekim-11Kasim sifir syntax penceresi; ertelenecek grammar

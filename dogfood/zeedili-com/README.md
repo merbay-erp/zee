@@ -166,7 +166,17 @@ dogfood/zeedili-com/scripts/yerel-baslat.sh
 
 Site `http://127.0.0.1:8125` adresinde açılır. Yerel Node ön kapısı yalnız
 Nginx'in statik/proxy davranışını taklit eder; uygulama HTML'i Zee worker'dan
-gelir. Toplu doğrulama:
+gelir. K-246 başlatıcı artık Python 3.9+ ve POSIX `waitid/WNOWAIT` ister;
+mevcut host Python'unda bu primitive yoksa çocuk başlatmadan reddeder.
+Worker ve frontend ayrı sahipli process group'larında tutulur; frontend
+çıkışı, startup hatası ve INT/TERM sonrasında TERM/KILL ile temizlenip wait
+edilir. Lider PID'leri grup temizliğine kadar reap edilmez; port/ad üzerinden
+yabancı süreç bulunmaz. INT130, TERM143 ve frontend exit kodu korunur.
+Yerel prototipin görünür stdio/ortamı sürer; production JSON log/sır
+maskelemesi sözü değildir. [Yönetilen production pilotu](../../docs/worker-supervisor.md)
+ayrı safe-proxy/readiness/DEVNULL sözleşmesi taşır; canlı site deploy'u yapılmaz.
+
+Toplu doğrulama:
 
 ```bash
 dogfood/zeedili-com/scripts/dogrula.sh

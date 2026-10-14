@@ -44,3 +44,7 @@ ADR-046 katman sorumluluğu/kenarları ile SCC değişmez ve kapıları çalış
 ADR-045/049 sabit iş yükü ve performans tarihçesi değişmez; benchmark veya
 soak kabulü bu küçük yol çözümünden türetilmez. README, sürüm notu, LSP
 rehberi, corpus/ADR-044, günlük, backlog, faz ve kanıt kayıtları güncellenir.
+
+Private UTF-8 helper testleri `compiler/src/lsp/uri_testleri.rs` içindedir;
+LSP kök dosyasının 1500 satır sınırı yükseltilmez. Test taşıması production
+modül kenarı veya semantic davranış değişikliği değildir.
