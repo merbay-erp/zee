@@ -92,3 +92,46 @@ TANIMLI: `ad gizli ortam değerini okumayı dene` yalnız ana projenin `http_giz
 TANIMLI: `metin HTTP JSON sözlüğünü okumayı dene` native HTTP profilinde bir JSON nesnesini Metin sözlüğü Sonucu yapar; alan değerleri kanonik JSON metnidir (bool true `true`, metin true `"true"`). Girdi en fazla 1 MiB, en fazla 128 üst alan ve serde derinlik sınırıyla işlenir; üst düzey tekrar anahtar ve trailing veri reddedilir. İç nesnelerde serde tekrar anahtar davranışı korunur. Yeni native HTTP/ortam/JSON adaptörü WASM’da açılmaz; desteklenmeyen işlem başarısız Sonuç’tur.
 
 HTTP kabulündeki sentetik TLS kimliği yalnız localhost test Agent’ında kullanılır. Kaynak ve scanner kopyası immutable fixture blob’u ile aynı SHA-256 değerindeyken tek pkcs12-file directory fingerprint’i verilir; bu üretim TLS güven deposu veya sır kabul politikası değildir (ADR-091/GB-054).
+
+## Ekli SMTP e-posta (TANIMLI — K-232)
+
+`alici konu duz html yanit ekler baglanti ile ekli ileti göndermeyi dene`
+ZORUNLU imzası beş Metin, Metin listesi ve son Metin; dönüş TamSayı Sonucu'dur.
+Boş HTML/yanıt adresi opsiyonu, boş liste ekleri kaldırır. Boş bağlantı yalnız
+ana projenin mevcut `e_posta_bağlantı_değişkeni` ayarını seçer. Başarı 1,
+başarısızlık sır içermeyen C029'dur; otomatik tekrar YASAKTIR. DATA yanıtı
+kaybolan hata gönderilmedi kanıtı değildir. Eylemde kullanım T048 ile YASAKTIR.
+
+`ağ` ve mevcut exact SMTP origin/IP sınırı ZORUNLUDUR; ekler ayrıca
+`dosya-okuma` ister, `dosya-yazma` istemez. Host readonly açmadan önce yol ve
+normal dosyayı ZORUNLU denetler; Unix writer-yok FIFO üzerinde bloklayan açma
+YASAKTIR. Açılışta leaf symlink/reparse-point ve değişmiş handle kimliği
+reddedilir. Actual read metadata uzunluğuna eş ve okuma sonrası len/mtime
+sabit olmak ZORUNDADIR. Düşman yerel süreçlere/NFS'e karşı tam sandbox ve
+atomik/coherent filesystem snapshot garantisi AÇIKTIR (GB-016 sınırı).
+
+`zee-smtp-mime-1` profili HTML için multipart/alternative, ekler için dış
+multipart/mixed, 76 sütun Base64/CRLF, RFC2047 Unicode başlık ve RFC2231
+filename* kullanır. PDF/PNG/JPEG/WebP dışında ek tipi YASAKTIR. Bu etiket
+whitelist'idir; içerik/antivirüs doğrulaması AÇIKTIR. Envelope ASCII tek adres,
+254 bayt ve local-part 64 bayt sınırında olmak ZORUNDADIR. Header injection,
+boş/çok bileşenli ek basename'i ve 998 baytı aşan fiziksel SMTP satırı YASAKTIR.
+
+Kaynak politikasının tek sahibi `KaynakSinirlari.eposta()` olmak ZORUNDADIR:
+8 ek, tek ek 8 MiB, toplam ek 16 MiB, ayrı düz/HTML gövde 512 KiB, wire 24 MiB;
+konu/ad/tarih/kimlik sırasıyla 512/255/78/48 bayttır. Gerçek read upper bound
+sınır+1 ile ZORUNLU denetlenir; başarılı truncate YASAKTIR. SMTP global
+bağlantı iznini bütün sonuç yollarında ZORUNLU bırakır.
+
+Native MIME hazırlığı/SMTP süresi 20 saniye ve varsa dış son tarihin kalanıyla
+ZORUNLU sınırlanır; TLS handshake/read/write aynı kalan bütçeyi kullanır.
+SMTPS/STARTTLS sertifika+hostname doğrulaması ZORUNLUDUR; TLS downgrade/plain
+fallback YASAKTIR, STARTTLS'siz plaintext yalnız loopback'te TANIMLIDIR.
+Sistem DNS çözümüne ve bloklayan düzenli filesystem read'ine zorla iptal
+ile sert wall-time garantisi AÇIKTIR; sonrasında dolan bütçeyle SMTP başlamaz.
+
+MIME çağrısının IO iz kaydında yürütülmesi, export'u ve replay başarısı
+YASAKTIR; serialized sır/ek olayı eklenmez. WASM/playground unsupported
+başarısız Sonuç TANIMLIDIR. Canlı SMTP/M365/Gmail, özel ürün rota entegrasyonu
+ve staging kabulü ile P09 queue/outbox/retry/cron AÇIKTIR. Eski düz metin
+encoder/transport/deadline/failure davranışı K-232 kapsamında değişmez.

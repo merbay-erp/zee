@@ -5,10 +5,12 @@ baslangic	2026-10-14
 bitis	2026-11-11
 yuzey_fixture	compiler/tests/fixtures/dil-yuzeyi-v1.tsv
 dondurulmus_yuzeyler	kalip,kosul,komut
-dondurulmus_sha256	b779a7af5871d89984c117d231da003aa238217950e5d4b06b720f61a593b699
+dondurulmus_sha256	b007f7d62ddb0806f9accda3128f496642e48c82584e96798d0ebbf17084837c
 
 # K-209/ADR-082 gerçek ürün IP talebiyle iki contextual kalıp eklendi; dört haftalık syntax gözlem penceresi bu değişiklikte yeniden başladı. Core freeze yürürlükte, B-001/B-002 insan kanıtı kapatılmaz.
 
 # K-213/ADR-086: ürün E dalının mevcut ürün yüzeyleri ana hatta taşındı; birleşik kalıp/komut özeti yenilendi. Aynı gün başlayan 2026-10-13–2026-11-10 penceresi korunur.
 
 # K-220/ADR-091: kullanıcı tarafından verilen exact gerçek ürün Turnstile/Bearer ihtiyacı üç contextual kalıp gerektirdi. Yeni temel AST/value türü veya eski kalıp kaldırması yoktur; K-174 dört haftalık sıfır syntax değişikliği penceresi 14 Ekim–11 Kasım 2026 olarak bilinçli yeniden başlatılır. B-001/B-002 insan kanıtı ve RC kapıları açık kalır.
+
+# K-232/ADR-096/RFC-0034: exact cd5d12f gerçek katalog PDF/B2 ihtiyacına tek contextual ekli kalıp eklendi. 14 Ekim–11 Kasım syntax gözlem penceresi aynı gün yeniden başlar; insan/RC ve tam ürün kabulü açık kalır.

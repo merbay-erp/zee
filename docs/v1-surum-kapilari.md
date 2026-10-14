@@ -515,3 +515,8 @@ kaybı ayrı açıktır; insan ve RC kanıtını ikame etmez.
 K-234 config profile/capability mevcut host davranışını sürümlü taşır.
 17 yerel test eski-reader/önceki küçük sürüm, ürün ve fiziksel Windows
 rollback kabulü değildir. K-174 kalıp/koşul/komut fingerprint değişmez.
+
+K-232 tek ekli contextual kalıbı exact B2 ürün gerekçesiyle açar; K-174
+14 Ekim–11 Kasım syntax penceresi aynı gün restart edildi. Native/test
+kabulü live M365/Gmail/katalog/queue ve fiziksel Windows/RC kabulü değildir.
+Inherited SMTP güvenlik kapanışları K-236/K-237 ayrı izlenir.

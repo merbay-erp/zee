@@ -38,12 +38,12 @@ Kaynak: `docs/guvenlik-bulgulari-v1.tsv`
 | Önem | Kapalı | Kabul | Açık | Toplam |
 | --- | --- | --- | --- | --- |
 | kritik | 1 | 0 | 0 | 1 |
-| yuksek | 12 | 0 | 0 | 12 |
+| yuksek | 13 | 0 | 0 | 13 |
 | orta | 19 | 6 | 1 | 26 |
 | dusuk | 13 | 5 | 0 | 18 |
 
 Kapı: açık kritik/yüksek bulgu 0 → **GEÇTİ** (ADR-066 sürekli kapı koşulu).
-Toplam bulgu: 57.
+Toplam bulgu: 58.
 
 ## Spec maddeleri
 
@@ -73,13 +73,13 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | spec/20-ifade-grameri.md | 7 | 0 | 0 | 7 | 100 |
 | spec/21-deterministik-io-izi.md | 5 | 0 | 0 | 5 | 100 |
 | spec/22-deterministik-io-profili.md | 4 | 1 | 0 | 5 | 80 |
-| spec/23-yetkinlik-ve-outbound-guvenligi.md | 14 | 0 | 0 | 14 | 100 |
+| spec/23-yetkinlik-ve-outbound-guvenligi.md | 21 | 0 | 0 | 21 | 100 |
 | spec/24-kaynak-guvenlik-profili.md | 7 | 0 | 0 | 7 | 100 |
 | spec/25-postgresql-veri-erisimi.md | 7 | 1 | 1 | 9 | 77 |
 | spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md | 2 | 0 | 0 | 2 | 100 |
 | spec/27-uyumluluk-ve-surumleme.md | 11 | 1 | 1 | 13 | 84 |
 | spec/28-gorunum-blogu.md | 2 | 0 | 0 | 2 | 100 |
-| **Toplam** | 185 | 5 | 2 | 192 | 96 |
+| **Toplam** | 192 | 5 | 2 | 199 | 96 |
 
 ## Dogfood ürünleri ve korpusu
 
@@ -102,10 +102,10 @@ Kaynak: `docs/dogfood-projeleri-v1.tsv + dogfood/korpus-v1.tsv`
 | legacy-panel | 6 | 4 | 0 | 7 | 3 | 10 |
 | urun-e | 1 | 0 | 0 | 1 | 0 | 1 |
 | zeedili-com | 0 | 0 | 1 | 1 | 0 | 1 |
-| zee-cekirdek | 3 | 1 | 3 | 7 | 0 | 7 |
+| zee-cekirdek | 4 | 1 | 3 | 8 | 0 | 8 |
 | zee-erp | 2 | 0 | 0 | 2 | 0 | 2 |
 
-Toplam korpus vakası: 48.
+Toplam korpus vakası: 49.
 
 ## Deprecation kayıtları
 

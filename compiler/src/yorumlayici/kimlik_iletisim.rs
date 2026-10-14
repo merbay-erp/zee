@@ -54,6 +54,35 @@ pub(super) fn intrinsic_degerlendir(
             );
             Ok(eposta_sonucu(sonuc))
         }
+        (EPOSTA_MIME_GONDER, [alici, konu, govde, html, yanit, Deger::Liste(ekler), baglanti]) => {
+            let ekler: Vec<String> = ekler
+                .iter()
+                .map(|ek| match ek {
+                    Deger::Metin(yol) => Ok(yol.clone()),
+                    _ => Err(ic_hata(satir)),
+                })
+                .collect::<Result<_, _>>()?;
+            let baglanti = metne_sinirli(baglanti, satir)?;
+            let azami = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+                .eposta()
+                .zaman_asimi_ms();
+            let zaman_asimi_ms =
+                son_tarih_kalani(io, satir)?.map_or(azami, |(_, kalan)| kalan.min(azami));
+            let sonuc = io.eposta_mime_gonder(
+                (!baglanti.is_empty()).then_some(baglanti.as_str()),
+                &metne_sinirli(alici, satir)?,
+                &metne_sinirli(konu, satir)?,
+                &metne_sinirli(govde, satir)?,
+                &crate::eposta::MimeGonderim {
+                    html: &metne_sinirli(html, satir)?,
+                    yanit_adresi: &metne_sinirli(yanit, satir)?,
+                    ekler: &ekler,
+                    zaman_asimi_ms,
+                },
+            );
+            son_tarihi_denetle(io, satir)?;
+            Ok(eposta_sonucu(sonuc.map_err(|_| "MIME e-posta gönderilemedi; sır içeren ayrıntılar gizlendi; otomatik tekrar yok".into())))
+        }
         (GIZLI_SIFRELE, [duz]) => io
             .gizli_sifrele(&metne_sinirli(duz, satir)?)
             .map(Deger::Metin)

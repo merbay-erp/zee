@@ -17,7 +17,7 @@ bin_tani_kalitesi	muhendislik	faz,kalici_dosya	Acemi hatasi mutasyonlariyla tani
 cozumleyici	semantik	agac,hir,intrinsic,kimlik,morfoloji,semantic_model,tani,yetkinlik	Ad tur etki ve HIR kaniti
 dil_cli	adapter	ag_istemcisi,agac,artefakt_dogrulama,bicimleyici,cozumleyici,eposta,faz,gorsel,guvenlik,http_istegi,kalici_dosya,kaynak_sinirlari,morfoloji,paket,postgresql,proje,surum,tani,web_guvenligi,web_yukleme,yayin,yetkinlik,yorumlayici,zaman	Komut satiri ve web host adaptoru
 dillsp	adapter	lsp	LSP stdio framing adaptoru
-eposta	altyapi	zaman	Bagimliliksiz SMTP istemcisi ve RFC 5322 ileti kurulumu (K-210)
+eposta	altyapi	kaynak_sinirlari,zaman	Bagimliliksiz SMTP istemcisi ve RFC 5322 ileti kurulumu (K-210)
 faz	semantik	agac,ayristirici,cozumleyici,hir,sozcukleyici,tani	Derleyici faz tipleri ve gecisleri
 gorsel	adapter	-	Gorsel kucultme ve yeniden kodlama image crate (K-210)
 guvenlik	temel	-	Kriptografik ve sabit zamanli ilkeller

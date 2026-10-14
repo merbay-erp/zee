@@ -46,9 +46,10 @@ use crate::agac::{
 };
 use crate::intrinsic::{
     self, CSRF_BELIRTECI, DOSYALARI_LISTELE, DOSYA_ATOMIK_TASI, DOSYA_SHA256, DOSYA_SIL,
-    EPOSTA_GONDER, EPOSTA_GONDER_BAGLANTILI, GIZLI_COZ, GIZLI_SIFRELE, GORSEL_KUCULT, HTTP_GETIR,
-    ISTEMCI_ADRESI, PAROLA_DOGRULA, PAROLA_OZETI, POSTGRESQL_DEGISTIR, POSTGRESQL_OKU,
-    SENSOR_ACIK_MI, TOTP_ANAHTARI, TOTP_DOGRULA, WEB_OTURUMLARINI_LISTELE, WEB_OTURUMUNU_IPTAL_ET,
+    EPOSTA_GONDER, EPOSTA_GONDER_BAGLANTILI, EPOSTA_MIME_GONDER, GIZLI_COZ, GIZLI_SIFRELE,
+    GORSEL_KUCULT, HTTP_GETIR, ISTEMCI_ADRESI, PAROLA_DOGRULA, PAROLA_OZETI, POSTGRESQL_DEGISTIR,
+    POSTGRESQL_OKU, SENSOR_ACIK_MI, TOTP_ANAHTARI, TOTP_DOGRULA, WEB_OTURUMLARINI_LISTELE,
+    WEB_OTURUMUNU_IPTAL_ET,
 };
 use crate::ondalik::Ondalik;
 use crate::tani::Tani;
@@ -490,6 +491,17 @@ pub trait GirdiCikti {
     ) -> Result<i64, String> {
         Err("IO adaptörü e-posta göndermiyor".into())
     }
+    /// K-232: ekli ileti native host'ta; default/WASM adaptör göndermez.
+    fn eposta_mime_gonder(
+        &mut self,
+        _baglanti: Option<&str>,
+        _alici: &str,
+        _konu: &str,
+        _govde: &str,
+        _secenek: &crate::eposta::MimeGonderim<'_>,
+    ) -> Result<i64, String> {
+        Err("Native MIME e-posta adaptörü desteklenmiyor".into())
+    }
     /// K-210: görseli azami kenara küçültüp hedefe yazar; başarıda yazılan bayt sayısı.
     fn gorsel_kucult(&mut self, _kaynak: &str, _hedef: &str, _azami: i64) -> Result<i64, String> {
         Err("IO adaptörü görsel küçültmüyor".into())
@@ -689,6 +701,16 @@ impl GirdiCikti for PaylasilanIo<'_> {
     }
     fn gorsel_kucult(&mut self, kaynak: &str, hedef: &str, azami: i64) -> Result<i64, String> {
         self.ic.borrow_mut().gorsel_kucult(kaynak, hedef, azami)
+    }
+    fn eposta_mime_gonder(
+        &mut self,
+        b: Option<&str>,
+        a: &str,
+        k: &str,
+        g: &str,
+        s: &crate::eposta::MimeGonderim<'_>,
+    ) -> Result<i64, String> {
+        self.ic.borrow_mut().eposta_mime_gonder(b, a, k, g, s)
     }
     fn gizli_sifrele(&mut self, duz: &str) -> Result<String, String> {
         self.ic.borrow_mut().gizli_sifrele(duz)

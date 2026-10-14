@@ -1297,3 +1297,7 @@ vakayla ek kanıt taşır; live login/göç ve C027 ağ-fault kabulü açık kal
 K-234 zee-ayar-1 runtime config mevcut host seçenekleriyle sınırlıdır;
 unknown security ret/capability guard vardır. Genel ayar sistemi ve önceki
 küçük sürüm rollback, gerçek ürün korpusu kanıtına bağlı açık kapasitedir.
+
+K-232 MIME yerel typed/native e-posta kapasitesidir; genel binary değeri,
+PDF işleme, queue, cron, provider retry ve canlı ürün kabulü değildir.
+Core freeze ürün gerekçesi ve yeni contextual kalıp K-174'e kayıtlıdır.
