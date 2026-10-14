@@ -87,7 +87,9 @@ fn ifade_denetle_ic(
                 let beklenen_tur = intrinsic_turunu_cevir(*beklenen);
                 let bos_metin_listesi = *beklenen == intrinsic::IntrinsicTuru::MetinListesi
                     && bulunan == Tur::Liste(VeriTuru::Bilinmeyen);
-                if bulunan != beklenen_tur && !bos_metin_listesi {
+                let bos_metin_sozlugu = *beklenen == intrinsic::IntrinsicTuru::MetinSozluk
+                    && bulunan == Tur::Sozluk(SozlukDegerTuru::Bilinmeyen);
+                if bulunan != beklenen_tur && !bos_metin_listesi && !bos_metin_sozlugu {
                     let mesaj = if kimlik == intrinsic::HTTP_GETIR {
                         format!("Adres Metin olmalı; burada {} var.", bulunan.adi())
                     } else {

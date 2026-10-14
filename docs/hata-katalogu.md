@@ -215,3 +215,5 @@ K-208: parola doğrulama intrinsic’inde yanlış argüman türü mevcut T034
 koduyla `Parola ve parola özeti Metin olmalı.` bildirir. Bcrypt ve
 Argon2id aynı Metin imzasını kullanır; bozuk hash/yanlış parola tanı
 üretmek yerine `yanlış`tır. K-209 eylem içi IP okuması mevcut T044’tür.
+
+K-220: yeni HTTP/ortam/JSON işlemlerinin beklenen hatası C018 kodlu Sonuç değeridir; adaptör ayrıntısı gizlenir. T034 argüman türü, T048 eylemde geri alınamaz istek ve P015 proje ortam listesi tanıları mevcut kodları korur. Üst program deadline C020 kalır. [Sözleşme](../adr/091-http-post-baslik-ve-gizli-ortam.md).

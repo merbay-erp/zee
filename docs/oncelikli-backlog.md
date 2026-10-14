@@ -867,11 +867,11 @@ tamamlanmış sayılmaz; burada istenen ek kanıt ayrıca üretilir.
 | K-171 | **KAPALI** | ADR-065 `spec_drift`: 169 normatif spec maddesi parmak-izi kimliği + exact test işlevi; 151 kanıtlı/16 kısmi/2 açık deterministik raporla CI'da; RFC/ADR belge düzeyinde kalır |
 | K-172 | **KAPALI** | ADR-067 `dogfood/korpus-v1.tsv`: 10 vaka (4 gereksinim aynası + F007/F012/F030/F032 ret/çözüm çiftleri) ürün politikasıyla CI'da; manifest dışı dogfood kaynağı reddedilir; GB-020/021 kapandı |
 | K-173 | **KAPALI** | ADR-069 `soak`: derleyici döngüsü + gerçek `dillsp`, 5 sn RSS örneği, ısınma sonrası %10+32 MiB çift eşik, exact SHA tarihçesi ve haftalık workflow |
-| K-174 | **BAŞLADI (30 Eyl → 28 Ekim 2026)** | `docs/v1-syntax-freeze-v1.tsv` kalıp/koşul/komut yüzeyinin özetini dondurur; `uyumluluk_testi` pencere boyunca özeti birebir ister. Pencere sıfır syntax değişikliğiyle dolunca kapanır; K-161/K-162 insan verisi bir değişiklik isterse pencere bilinçli olarak yeniden başlar |
+| K-174 | **BAŞLADI (14 Ekim → 11 Kasım 2026, K-220)** | `docs/v1-syntax-freeze-v1.tsv` kalıp/koşul/komut yüzeyinin özetini dondurur; `uyumluluk_testi` pencere boyunca özeti birebir ister. Pencere sıfır syntax değişikliğiyle dolunca kapanır; K-161/K-162 insan verisi bir değişiklik isterse pencere bilinçli olarak yeniden başlar |
 | K-175 | **AÇIK** | İnsan+iki proje+üç platform+signed reproducible V1 RC |
 | K-178 | **KAPALI** | Ölçüm: yorumlayıcı çerçevesi debug ~194 KiB/düzey, release ~11 KiB/düzey (macOS arm64 = Linux aarch64). Eski 32 MiB yığın debug CLI'yı 167. düzeyde doğal taşmayla düşürüyordu; resmî yığın 256 MiB rezervasyon oldu, regresyon koşucusu ve derinlik testleri resmî yığında; `derinlik-499-resmi-yiginda` vakası ve bütçe testi kapıda |
 | K-179 | **KAPALI** | ADR-074 `dogfood/kelime-avi`: üçüncü ürün (etkileşimli CLI oyunu, 3 birim/7 test, `kelime_avi_testi` hermetik); sürtünme tekrarı ölçüldü — 2 yeni (F001 iyelikli döngü adı A003, F003 `metnin satırları` T028), 4 tekrar (F010 ×3 yer, F009, F013, F011), 5 kılavuzla önlenen; compiler değişikliği yok
-| K-180 | **AÇIK** | Liste sıra ile öğe erişimi iki bağımsız üründe (K-164/F010, K-179) beş yerde sayaç döngüsüne zorladı; syntax freeze (28 Ekim) sonrası RFC adayı, freeze içinde açılmaz. F001/F013 iyelik zinciri `zee-tr-2` morfoloji adayına eklendi; RFC-0029 taslağı sorunu, adayları (`listenin sıra. öğesi`, 1 tabanlı, aralık dışı çalışma hatası + `almayı dene`) ve seçim ölçütlerini önden bağladı |
+| K-180 | **AÇIK** | Liste sıra ile öğe erişimi iki bağımsız üründe (K-164/F010, K-179) beş yerde sayaç döngüsüne zorladı; syntax freeze (11 Kasım) sonrası RFC adayı, freeze içinde açılmaz. F001/F013 iyelik zinciri `zee-tr-2` morfoloji adayına eklendi; RFC-0029 taslağı sorunu, adayları (`listenin sıra. öğesi`, 1 tabanlı, aralık dışı çalışma hatası + `almayı dene`) ve seçim ölçütlerini önden bağladı |
 | K-182 | **KAPALI** | İlk gerçek uzak Tier-1 koşusu (`b172957`, repo public): Windows autocrlf `.md`/`.tsv` dosyalarını CRLF indirip bayt karşılaştırmalı faz matrisini bozdu (`* text=auto eol=lf`); ubuntu `olcum` eksik provenance alanını söylemiyordu (alan adı + uname yedeği); kalıcı rate-limit testi 100 fsync'li yazmayı 5 sn kilit sınırına sıkıştırıyordu (4×5). Tatbikat üç platformda ve tedarik yeşil |
 | K-184 | **KAPALI** | Public depo güvenliği: özel IO izi yazımı, platform izin/ACL testleri, SECURITY belgesi, Gitleaks geçmiş/ağaç CI taraması. ADR-026 ve güvenlik kayıtları GB-024/025. |
 | K-186 | **KAPALI** | ADR-077: Zee ERP korumalı rotalarında doğrulanmış kullanıcı → security-definer resolver → transaction-local `app.tenant_id`; aynı leased bağlantı, iç eylemlerde savepoint, hata/timeout rollback ve public rotada sıfır tenant bağlamı. |
@@ -1334,3 +1334,13 @@ Giriş/CSRF canlı kotası korunur; tümü korunmuş dolulukta 503 sınırı sü
 clone/churn ve gerçek 100 kart worker testi aynı dilimdedir.
 Exact 1800 sn soak, tam faz ve Gitsrv kapanışı [kanıt sayfasında](incelemeler/k219/README.md).
 §3/3 HTTP POST, §3/4 HTML temizleyici ve §3/5 LSP artımlılık sıradadır.
+
+## K-220 — Ürün HTTP POST ve başlıklar
+
+Durum: **KABUL KANITI BEKLENİYOR**. Ürün §3/3 ve 2d57060 exact talebi;
+POST /iletisim-gonder Turnstile, ikincil Bearer portal bildirimi.
+ADR-091 / RFC-0033; sınırlı native HTTPS GET/POST, Metin sözlüğü Sonucu,
+explicit proje ortam listesi, iz kapatma ve kanonik HTTP JSON helper.
+Olumlu/olumsuz dil, gerçek ürün helper ve localhost TLS testleri aynı dilimde.
+Tam faz, güvenlik ve Gitsrv sonucu [kanıtta](incelemeler/k220/README.md) kapanır.
+§3/4 HTML temizleyici ve §3/5 LSP artımlılık sıradadır.

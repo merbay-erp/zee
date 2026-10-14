@@ -4199,3 +4199,7 @@ Dal yedekleri özel; uzak silme ve CI teyidi henüz açıktır.
 2026-10-14 — K-219 / ADR-090 / RFC-0032: gerçek ürün §3/2 kapasite ihtiyacına yalnız bellek backend host ayarları eklenir. Explicit en-eski yalnız uç nokta pencerelerini çıkarır; canlı giriş/CSRF kotası ve kapasite üst bütçesi korunur. CLI, clone/churn ve gerçek 100 kart worker testleri aynı dilimdedir; tam faz, exact soak ve Gitsrv kabulü beklenir.
 
 2026-10-14 — K-219 kabul: yerel786/786, exact3595547 1800sn soak26530 döngü ve %0 RSS büyümesi, 40000 anahtarın tümünde200 ve250+1 kotada429, Windows MSVC çapraz lint/build ve Gitsrv26 başarılı. §3/2 tamam; ürün POST ihtiyacı 2d570601608592decc3a94d4ad061bdde1d84874 talebiyle sıradaki dilimdir. Canlı dağıtım ürün tarafında.
+
+2026-10-14 — K-220 / ADR-091 / RFC-0033: gerçek ürün Turnstile ve Bearer ihtiyacına minimal native HTTPS istek, explicit gizli ortam listesi ve kanonik JSON sözlüğü kalıpları; eski GET korunur, sır taşıyan işlem iz kipinde kapalıdır. Tam faz ve Gitsrv kabulü beklenir.
+
+K-220 / K-174: exact gerçek ürün talebiyle üç contextual kalıp eklendi; syntax gözlem penceresi 14.10.2026–11.11.2026 olarak bilinçli yeniden başladı. Core freeze ve insan/RC kapıları sürer; V1 tamamlandı olarak gösterilmez.

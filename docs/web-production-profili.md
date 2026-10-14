@@ -122,3 +122,5 @@ geldiğinde sıfırlanabilir. Login/CSRF canlı sayaçları asla tahliye edilmez
 yalnız korunmuş kayıtlarla dolulukta yeni anahtar hâlâ 503 alır. Ortak proxy
 bütçesi ve ayrı worker/restart sınırı sürer. Ayarlar her worker’a verilir;
 canlı yeniden yapılandırma, sınırsız kapasite ve PostgreSQL backend’i yoktur.
+
+K-220: form insan doğrulamasında POST doğrulaması kayıt/e-posta öncesinde yapılır. Native HTTPS başlıklı HTTP Sonucu, explicit `http_gizli_değişkenleri` ve kanonik HTTP JSON helper kullanılabilir. Yanlış hostname, JSON tür taklidi ve başarısız doğrulama reddedilir; erişim/bozuk yanıt kapalı başarısızlıktır. [Ürün helper](../dogfood/zee-cekirdek/http-post/turnstile.dil), [karar](../adr/091-http-post-baslik-ve-gizli-ortam.md). TLS/origin/IP/redirect sınırları korunur; canlı kurulum bu değişiklikte yapılmaz.

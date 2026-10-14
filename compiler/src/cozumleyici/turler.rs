@@ -11,6 +11,8 @@ pub(super) fn intrinsic_turunu_cevir(tur: IntrinsicTuru) -> Tur {
         IntrinsicTuru::TamSayi => Tur::TamSayi,
         IntrinsicTuru::Mantiksal => Tur::Mantiksal,
         IntrinsicTuru::AgYaniti => Tur::AgYaniti,
+        IntrinsicTuru::MetinSozluk => Tur::Sozluk(SozlukDegerTuru::Metin),
+        IntrinsicTuru::MetinSozlukSonucu => Tur::Sonuc(VeriTuru::MetinSozluk),
         IntrinsicTuru::MetinListesi => Tur::Liste(VeriTuru::Metin),
         IntrinsicTuru::MetinSozlukListesiSonucu => Tur::Sonuc(VeriTuru::MetinSozlukListesi),
         IntrinsicTuru::MetinListesiSonucu => Tur::Sonuc(VeriTuru::MetinListesi),

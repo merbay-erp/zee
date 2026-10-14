@@ -222,6 +222,7 @@ fn bildirim_gecerli_zee_kaynagidir() {
             veritabani: None,
             eposta_baglanti_degiskeni: None,
             gizli_anahtar_degiskeni: None,
+            http_gizli_degiskenleri: Vec::new(),
         }
     );
 }

@@ -1,4 +1,5 @@
 use super::*;
+mod http;
 
 mod dosya;
 mod web;
@@ -800,14 +801,9 @@ fn yapili_kalip_ic(tokenlar: &[Token], islemler: &[String]) -> Result<Option<Ifa
         }));
     }
 
-    // "..." adresinden gelen yanıt → AğYanıtı (golden 24).
-    if n == 4 && kelime(1) == Some("adresinden") && kelime(2) == Some("gelen") && son == "yanıt" {
-        return Ok(Some(Ifade::Intrinsic {
-            kimlik: HTTP_GETIR.into(),
-            argumanlar: vec![tekil_ifade(tokenlar[0].clone())?],
-        }));
+    if let Some(ifade) = http::yapili_kalip(tokenlar)? {
+        return Ok(Some(ifade));
     }
-
     // SQL sorgusunu PARAMETRELER ile okumayı/değiştirmeyi dene.
     // Değerler SQL metnine eklenmez; native adaptör extended-query bind'i yapar.
     if n == 6

@@ -147,3 +147,6 @@ adr/089-bellek-oran-deposu.md	kanitli	compiler/src/web_guvenligi/tests.rs,compil
 rfcs/0031-bellek-oran-deposu.md	kanitli	compiler/src/web_guvenligi/tests.rs,compiler/src/web_guvenligi/oran_bellek.rs,compiler/src/main.rs,compiler/tests/web_cok_surec_testi.rs	K-218 gerçek ürün, CLI olumsuzları, clone yarış ve oturum/revoke paylaşımı
 adr/090-web-oran-ayarlari.md	kanitli	compiler/src/web_guvenligi/oran_bellek.rs,compiler/src/main.rs,compiler/tests/web_cok_surec_testi.rs	K-219 CLI sınırları, tahliye ve korunmuş login/CSRF churn, gerçek ürün worker
 rfcs/0032-web-oran-ayarlari.md	kanitli	compiler/src/web_guvenligi/oran_bellek.rs,compiler/src/main.rs,compiler/tests/web_cok_surec_testi.rs	K-219 CLI sınırları, tahliye ve korunmuş login/CSRF churn, gerçek ürün worker
+
+adr/091-http-post-baslik-ve-gizli-ortam.md	kanitli	compiler/tests/http_post_testi.rs,compiler/src/ag_istemcisi/istek.rs	K-220 ürün helper, CLI ortam, trace, JSON, TLS POST ve sınır kanıtı
+rfcs/0033-http-post-baslik-ve-gizli-ortam.md	kanitli	compiler/tests/http_post_testi.rs,compiler/src/ag_istemcisi/istek.rs	K-220 ürün helper, CLI ortam, trace, JSON, TLS POST ve sınır kanıtı

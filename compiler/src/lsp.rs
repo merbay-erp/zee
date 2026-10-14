@@ -30,7 +30,7 @@ pub const AZAMI_LSP_JSON_DUGUMU: usize = crate::kaynak_sinirlari::VARSAYILAN_KAY
 // ---------- sunucu ----------
 
 /// Tamamlama önerileri: dilin kalıp kelimeleri (kaynağı: ayrıştırıcı yüzeyi).
-const KALIP_KELIMELERI: [&str; 105] = [
+const KALIP_KELIMELERI: [&str; 110] = [
     "yaz",
     "olsun",
     "ise",
@@ -123,6 +123,11 @@ const KALIP_KELIMELERI: [&str; 105] = [
     "kullanıcısını",
     "listelemeyi",
     "iptal",
+    "HTTP",
+    "JSON",
+    "ortam",
+    "isteğini",
+    "sözlüğünü",
     "argon2",
     "totp",
     "anahtarı",
@@ -141,7 +146,7 @@ const KALIP_KELIMELERI: [&str; 105] = [
 /// Hover açıklamaları: kalıp kelimesi → tek satır Türkçe açıklama + örnek.
 /// (Kaynak: spec/02-dizim ve dil turu; kelime kalıbın son ya da ayırt edici
 /// parçasıdır.)
-const KELIME_ACIKLAMALARI: [(&str, &str); 55] = [
+const KELIME_ACIKLAMALARI: [(&str, &str); 60] = [
     ("yaz", "Cümleyi bitirir: değeri ekrana (ya da `X dosyasına`) yazar.\n\n`\"Merhaba\" ile isim yaz`"),
     ("olsun", "Ad tanımlar ya da var olan ada atar; tür ilk değerden çıkar ve sonra değişmez.\n\n`yaş 10 olsun`"),
     ("ise", "Koşul dalı açar; koşul yüklem-sonludur (`...se/...sa`).\n\n`yaş 8 veya daha büyükse`"),
@@ -187,6 +192,11 @@ const KELIME_ACIKLAMALARI: [(&str, &str); 55] = [
     ("belirteci", "Form için sunucu oturumuna bağlı CSRF değeri üretir.\n\n`csrf csrf belirteci olsun`"),
     ("doğrulanıyorsa", "Parolayı Argon2id veya maliyeti 4–14 olan legacy bcrypt özetiyle doğrular; düz parola karşılaştırması yapmaz.\n\n`verilen özet ile doğrulanıyorsa`"),
     ("rolüyle", "Başarılı girişte yeni, döndürülmüş sunucu oturumu açar.\n\n`\"Zeynep\" kullanıcısını \"yönetici\" rolüyle oturuma al`"),
+    ("HTTP", "Native HTTPS GET/POST: başlık ve gövdeyle, süre milisaniye; Metin sözlüğü Sonucu.\n\n`sonuç adres \"POST\" başlıklar gövde 5000 ile HTTP isteğini dene olsun`"),
+    ("JSON", "HTTP JSON alanları kanonik JSON metni olarak Metin sözlüğü Sonucu’nda döner; bool true ile metin true ayrıdır.\n\n`sonuç metin HTTP JSON sözlüğünü okumayı dene olsun`"),
+    ("ortam", "Yalnız ana projenin http_gizli_değişkenleri listesinde izinli adı okur; iz kaydında kapalıdır.\n\n`sonuç \"TURNSTILE_SECRET\" gizli ortam değerini okumayı dene olsun`"),
+    ("isteğini", "HTTP istek adaptörünün başarısızlığı Sonuç olur; yeni çağrı eylem transaction’ında kapalıdır."),
+    ("sözlüğünü", "HTTP JSON nesnesini sınırlı, kanonik değerli Metin sözlüğü Sonucu olarak okur."),
     ("argon2", "Parolanın Argon2id PHC özetini üretir (kriptografi yetkinliği); düz parola saklanmaz.\n\n`özet parolanın argon2 özeti olsun`"),
     ("totp", "160 bit Base32 TOTP gizli anahtarı üretir; otpauth bağlantısında kullanılır.\n\n`gizli yeni totp anahtarı olsun`"),
     ("anahtarıyla", "RFC 6238 TOTP kodunu adaptörün saatiyle ±30 saniye penceresinde doğrular.\n\n`kod gizli anahtarıyla doğrulanıyorsa`"),

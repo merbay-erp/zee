@@ -4,6 +4,9 @@
 //! argüman taşır; tür, yetkinlik ve etki bilgisi bu tek tabloda tutulur.
 
 pub const HTTP_GETIR: &str = "ag.http_getir";
+pub const HTTP_JSON: &str = "ag.http_json";
+pub const HTTP_ISTEK: &str = "ag.http_istek";
+pub const HTTP_GIZLI_ORTAM: &str = "ag.http_gizli_ortam";
 pub const SENSOR_ACIK_MI: &str = "donanim.sensor_acik_mi";
 pub const ISTEMCI_ADRESI: &str = "web.istemci_adresi";
 pub const CSRF_BELIRTECI: &str = "web.csrf_belirteci";
@@ -43,6 +46,8 @@ pub enum IntrinsicTuru {
     TamSayi,
     Mantiksal,
     AgYaniti,
+    MetinSozluk,
+    MetinSozlukSonucu,
     MetinListesi,
     MetinSozlukListesiSonucu,
     MetinListesiSonucu,
@@ -97,6 +102,27 @@ const IKI_METIN_BIR_SAYI: &[IntrinsicTuru] = &[
 ];
 
 pub const TANIMLAR: &[IntrinsicTanimi] = &[
+    IntrinsicTanimi {
+        kimlik: HTTP_JSON, yetkinlik: Yetkinlik::Ag, arguman_turleri: METIN,
+        donus_turu: IntrinsicTuru::MetinSozlukSonucu, etki: IntrinsicEtkisi::Saf,
+        tur_hatasi: "HTTP JSON yanıtı Metin olmalı.",
+    },
+    IntrinsicTanimi {
+        kimlik: HTTP_ISTEK,
+        yetkinlik: Yetkinlik::Ag,
+        arguman_turleri: &[IntrinsicTuru::Metin, IntrinsicTuru::Metin, IntrinsicTuru::MetinSozluk, IntrinsicTuru::Metin, IntrinsicTuru::TamSayi],
+        donus_turu: IntrinsicTuru::MetinSozlukSonucu,
+        etki: IntrinsicEtkisi::GeriAlinamaz,
+        tur_hatasi: "HTTP adresi, yöntemi ve gövdesi Metin; başlıkları Metin sözlüğü, zaman aşımı TamSayı olmalı.",
+    },
+    IntrinsicTanimi {
+        kimlik: HTTP_GIZLI_ORTAM,
+        yetkinlik: Yetkinlik::Ag,
+        arguman_turleri: METIN,
+        donus_turu: IntrinsicTuru::MetinSonucu,
+        etki: IntrinsicEtkisi::DisOkuma,
+        tur_hatasi: "HTTP gizli ortam değişkeninin adı Metin olmalı.",
+    },
     IntrinsicTanimi {
         kimlik: HTTP_GETIR,
         yetkinlik: Yetkinlik::Ag,

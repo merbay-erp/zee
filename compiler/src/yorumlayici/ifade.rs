@@ -58,6 +58,14 @@ pub(super) fn degerlendir_async<'a>(
                     WEB_OTURUMLARINI_LISTELE | WEB_OTURUMUNU_IPTAL_ET => {
                         web::oturum_yonetimini_degerlendir(kimlik, &degerler, io, satir)
                     }
+                    crate::intrinsic::HTTP_JSON
+                    | crate::intrinsic::HTTP_ISTEK
+                    | crate::intrinsic::HTTP_GIZLI_ORTAM => {
+                        if kimlik == crate::intrinsic::HTTP_ISTEK && gorevde_miyiz() {
+                            gorev_bekleme_noktasi(0).await;
+                        }
+                        http_istek::degerlendir(kimlik, &degerler, io, satir)
+                    }
                     HTTP_GETIR => {
                         let [Deger::Metin(url)] = degerler.as_slice() else {
                             return Err(ic_hata(satir));
@@ -87,7 +95,7 @@ pub(super) fn degerlendir_async<'a>(
                                     1,
                                 )
                                 .onerili(
-                                    "Ağ hatası yönetilecekse ileride \"getirmeyi dene\" gelecek (RFC-0008 §4.3)."
+                                    "Ağ hatasını yönetmek için yeni HTTP isteğini dene kalıbıyla Sonuç al (RFC-0033)."
                                         .into(),
                                 ),
                             );

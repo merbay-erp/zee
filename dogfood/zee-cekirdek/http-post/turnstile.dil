@@ -1,0 +1,51 @@
+# K-220: zee-cekirdek POST /iletisim-gonder için gerçek ürün HTTP gereksinimi.
+# Kayıt/e-posta ürün rotasındadır; ip caller’ın kanonik istemci adresidir.
+
+işlem doğrulama cevabını denetle
+    cevabı Metin sözlüğü olarak al
+    bekleneni Metin olarak al
+    durum cevabın "durum" değeri olsun
+    durum "200" eşit değilse
+        "erisilemedi" döndür
+    metin cevabın "gövde" değeri olsun
+    okuma metin HTTP JSON sözlüğünü okumayı dene olsun
+    okuma başarılıysa
+        nesne okumanın değeri olsun
+        nesnede "success" yoksa
+            "erisilemedi" döndür
+        başarılı nesnenin "success" değeri olsun
+        başarılı "true" eşit değilse
+            "gecersiz" döndür
+        nesnede "hostname" yoksa
+            "gecersiz" döndür
+        konak nesnenin "hostname" değeri olsun
+        beklenen_json beklenenin json metni olsun
+        konak beklenen_json eşit değilse
+            "gecersiz" döndür
+        "gecti" döndür
+    değilse
+        "erisilemedi" döndür
+
+işlem insan doğrula
+    jetonu Metin olarak al
+    ipi Metin olarak al
+    bekleneni Metin olarak al
+    ortam "TURNSTILE_SECRET" gizli ortam değerini okumayı dene olsun
+    ortam başarılıysa
+        sır ortamın değeri olsun
+        veri boş sözlük olsun
+        verinin "secret" değeri sır olsun
+        verinin "response" değeri jeton olsun
+        verinin "remoteip" değeri ip olsun
+        gövde verinin json metni olsun
+        başlıklar boş sözlük olsun
+        başlıkların "Content-Type" değeri "application/json" olsun
+        adres "https://challenges.cloudflare.com/turnstile/v0/siteverify" olsun
+        yanıt adres "POST" başlıklar gövde 5000 ile HTTP isteğini dene olsun
+        yanıt başarılıysa
+            cevap yanıtın değeri olsun
+            cevap ve beklenen ile doğrulama cevabını denetle döndür
+        değilse
+            "erisilemedi" döndür
+    değilse
+        "erisilemedi" döndür

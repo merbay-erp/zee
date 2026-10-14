@@ -1,0 +1,15 @@
+# K-220 — HTTP POST kabul kanıtı
+
+[Ürün kökeni](../../../dogfood/zee-cekirdek/http-post/README.md), [karar](../../../adr/091-http-post-baslik-ve-gizli-ortam.md).
+
+## Yerel kabul
+
+14 Ekim 2026, macOS / Rust 1.93.1: [tam faz 801/801](macos-faz.md), sıfır kalan ve atlanan test. Format ve all-targets Clippy -D warnings, katalog/tazelik, katman/SCC/public API/uyumluluk, spec drift (187 madde), tanı kalitesi (244 vaka, sıfır ihlal) ve sürekli güvenlik kapısı geçti. Açık depo taraması tam erişilebilir Git geçmişi ve çalışma ağacında temizdir.
+
+11 HTTP ürün/CLI testi ve 4 ağ adaptörü unit testi aynı faz matrisi içindedir. Gerçek localhost TLS taşıması 200/403/302, form gövdesi/Bearer, güvenilmeyen sertifika ve timeout yollarını sınar. Sentetik CA yalnız test Agent’ındadır; production doğrulaması kapanmaz. Gerçek Zee Turnstile helper’ı dokuz başarı/başarısızlık senaryosuyla yürütüldü. Cloudflare’e gerçek anahtar/jeton veya canlı istek gönderilmedi.
+
+## Sınırlar
+
+Canlı sunucu veya ürün rotası yükseltilmedi. Genel heterojen JSON türü, form encoder, PUT/DELETE, WASM native HTTP adaptörü ve otomatik sır taint sistemi eklenmedi. HTTP sır işlemleri iz kaydında yürütülmez ve iz export’u kapanır. Mevcut GET semantiği korunur. Yeni büyüyen cache/kalıcı durum yoktur; ADR-069 etki incelemesi ADR-091’dedir.
+
+Gitsrv exact commit kabulü henüz beklenir; bu kayıt yerel kabulü gösterir. K-220 backlog kapanışı Gitsrv sonrası yapılır.

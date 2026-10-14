@@ -146,3 +146,5 @@ Sabit benchmark korpusu ve eski performans tarihçesi değiştirilmedi.
 Katman sahibi web_guvenligi'dir; bin_soak bu sahibe tek ileri kenar ekler.
 
 K-219 / ADR-090 etki incelemesi: bellek oran ayarı ve tahliye indeksi mevcut web_guvenligi sahibindedir; bin_dil ve bin_soak aynı ileri kenarları kullanır. Yeni kök modül, sahipler-arası kenar veya SCC eklenmez; fixture değişmez.
+
+K-220 / ADR-091: yeni alt dosyalar parser, yorumlayici ve ag_istemcisi sahiplerinde kalır; proje metadata kendi sahibindedir. Mevcut ileri kenarlar korunur, yeni kök sahip veya ters katman geçişi yoktur. Fixture/SCC/public API aynı kaynak kapısında incelenir.
