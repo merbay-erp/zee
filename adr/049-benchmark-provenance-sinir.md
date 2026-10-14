@@ -59,3 +59,13 @@ olarak yararlı olsa da bağımsız tekrarlanabilirlik iddiası için eksikti.
 - Dil grammar'ı, runtime davranışı, tanılar, RFC ve normatif spec değişmedi.
 
 K-237/ADR-100 helper byte/capacity sayacı ve native fixture son tarihi benchmark örnekleme/provenance kaydı değildir. Tahsis etkisi incelendi; sabit iş yükü/sample/warmup ve immutable tarihçe korunur. Yeni p95/RSS kaydı ancak temiz exact düzeltme SHA’sı ve tam makine/Rust/release/örnek metadata’sıyla ayrıca kabul edilir.
+
+## K-255 — Gözlemsel P19 checkpoint
+
+Temiz exact021bff47839092706c7698d360ae5face9cd2a19 release Rust1.93.1
+macOS26.6.2/M4Pro/24GiB, mevcut harness25sample/2warmup ve RSS1/0;
+[raw proof](../docs/incelemeler/urunlesme-20261014/k255-lsp-olcum/measurement.json)
+tam metadata/dağılımı taşır. DidChange2k–20k p95 7.490–177.321ms'dir.
+Komşu yerel işler vardır; hard eşik ve yeni adanmış baseline yoktur.
+Kaynak klonu önce/sonra temiz; kayıt yalnız actual checkpoint'e aittir.
+Gerçek P08 ürün200ms/cache kabulü açık, eski tarihçe/fixture semantiği korunur.

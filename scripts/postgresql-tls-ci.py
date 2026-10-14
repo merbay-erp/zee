@@ -9,6 +9,7 @@ import os
 from pathlib import Path
 import platform
 import re
+import runpy
 import subprocess
 import tempfile
 import time
@@ -17,6 +18,7 @@ import uuid
 ROOT = Path(__file__).resolve().parent.parent
 # Official postgres 16.15-bookworm multiarch index; amd64 and arm64 are available.
 IMAGE = "postgres@sha256:0ea6700a3b4f0ae6ce746519073558aed4d88a79d8d07622a9a644946c7319c4"
+TLS11 = runpy.run_path(str(Path(__file__).with_name("postgresql-tls11-control.py")))
 CA_ENV_PREFIX = "ZEE_POSTGRES_CI_"
 EXPECTED_TESTS = (
     "izole_tls_dogru_ca_hostname_ve_tls12_ile_baglanir",
@@ -26,6 +28,7 @@ EXPECTED_TESTS = (
     "izole_tls_sorgu_parametre_sonuc_ve_goc_sinirlarini_bir_fazlasinda_reddeder",
     "izole_tls_deadlock_40p01_tekrarsiz_rollback_ve_yeni_oturum_sagligi",
     "izole_tls_serialization_40001_tekrarsiz_rollback_ve_yeni_oturum_sagligi",
+    "izole_tls_11_erisilebilir_legacy_sunucuyu_reddeder",
 )
 FAULT_OBSERVATIONS = (
     "K250 deadlock sqlstate=40P01 attempts=4 rejected=1 accepted=1 durable_sum=0 fresh_health=true",
@@ -53,7 +56,7 @@ def check_results(transcript, returncode):
         re.MULTILINE,
     )
     if summaries != [(str(len(EXPECTED_TESTS)), "0", "0")]:
-        raise ValueError(f"TLS gate requires exactly 7 passed/0 failed/0 ignored: {summaries}")
+        raise ValueError(f"TLS gate requires exactly 8 passed/0 failed/0 ignored: {summaries}")
 
 
 def certificates(directory):
@@ -82,7 +85,8 @@ def certificates(directory):
 
 
 class DockerCluster:
-    def __init__(self, directory, cert, key):
+    def __init__(self, directory, cert, key, protocol="TLSv1.2"):
+        self.protocol = protocol
         self.name = "zee-tls-ci-" + uuid.uuid4().hex
         self.created = False
         self.directory, self.cert, self.key = directory, cert, key
@@ -95,8 +99,8 @@ class DockerCluster:
              "--publish", "127.0.0.1::5432", "--env", "POSTGRES_HOST_AUTH_METHOD=trust",
              "--entrypoint", "sh", IMAGE, "-c",
              "while [ ! -f /tmp/zee-tls-ready ]; do sleep 0.1; done; "
-             "exec docker-entrypoint.sh postgres -c ssl=on -c ssl_min_protocol_version=TLSv1.2 "
-             "-c ssl_max_protocol_version=TLSv1.2 -c ssl_cert_file=/tmp/server.crt "
+             f"exec docker-entrypoint.sh postgres -c ssl=on -c ssl_min_protocol_version={self.protocol} "
+             f"-c ssl_max_protocol_version={self.protocol} {('-c ssl_ciphers=ALL:@SECLEVEL=0 ' if self.protocol == 'TLSv1.1' else '')}-c ssl_cert_file=/tmp/server.crt "
              "-c ssl_key_file=/tmp/server.key -c hba_file=/tmp/zee-pg-hba.conf"], timeout=300)
         for source, target in [(self.cert, "server.crt"), (self.key, "server.key"),
                                (self.directory / "pg_hba.conf", "zee-pg-hba.conf")]:
@@ -129,7 +133,8 @@ class DockerCluster:
 
 
 class LocalCluster:
-    def __init__(self, directory, cert, key, binaries):
+    def __init__(self, directory, cert, key, binaries, protocol="TLSv1.2"):
+        self.protocol = protocol
         self.directory, self.cert, self.key = directory, cert, key
         self.binaries = Path(binaries).resolve()
         self.data = directory / "data"
@@ -152,8 +157,9 @@ class LocalCluster:
             self.port = listener.getsockname()[1]
         config = (f"listen_addresses='127.0.0.1'\nport={self.port}\n"
                   f"unix_socket_directories='{self.directory}'\nssl=on\n"
-                  "ssl_min_protocol_version='TLSv1.2'\nssl_max_protocol_version='TLSv1.2'\n"
-                  f"ssl_cert_file='{self.cert}'\nssl_key_file='{self.key}'\n"
+                  f"ssl_min_protocol_version='{self.protocol}'\nssl_max_protocol_version='{self.protocol}'\n"
+                  + ("ssl_ciphers='ALL:@SECLEVEL=0'\n" if self.protocol == "TLSv1.1" else "")
+                  + f"ssl_cert_file='{self.cert}'\nssl_key_file='{self.key}'\n"
                   f"hba_file='{self.directory / 'pg_hba.conf'}'\n")
         (self.data / "postgresql.conf").write_text(config)
         run(self.prefix + [str(self.binaries / "pg_ctl"), "--pgdata", str(self.data), "--wait",
@@ -189,6 +195,7 @@ def main():
         (directory / "pg_hba.conf").write_text("local all all trust\nhostssl all all 0.0.0.0/0 trust\nhostnossl all all 0.0.0.0/0 reject\n")
         cluster = (DockerCluster(directory, cert, key) if args.engine == "docker" else
                    LocalCluster(directory, cert, key, args.postgres_bin_dir))
+        downgrade = None
         try:
             cluster.start()
             # Independent connectivity preflight at 127.0.0.1 proves the negative hostname
@@ -198,6 +205,13 @@ def main():
                                             "--command", "SELECT ssl::text || ':' || version FROM pg_stat_ssl WHERE pid=pg_backend_pid()"])
             if preflight.strip() != "true:TLSv1.2":
                 raise ValueError("fixture preflight did not negotiate TLS 1.2")
+            legacy = directory / "tls11"
+            legacy.mkdir(mode=0o700)
+            (legacy / "pg_hba.conf").write_bytes((directory / "pg_hba.conf").read_bytes())
+            downgrade = (DockerCluster(legacy, cert, key, "TLSv1.1") if args.engine == "docker" else
+                         LocalCluster(legacy, cert, key, args.postgres_bin_dir, "TLSv1.1"))
+            downgrade.start()
+            tls11_control = TLS11["probe"](downgrade.port, ca)
             env = {k: v for k, v in os.environ.items() if not k.startswith(CA_ENV_PREFIX)}
             env["CARGO_TERM_COLOR"] = "never"
             for name, host, root in [("DOGRU", "localhost", ca), ("YANLIS_CA", "localhost", wrong_ca),
@@ -206,6 +220,10 @@ def main():
                 env[prefix + "_HEDEFI"] = f"postgresql://{host}:{cluster.port}/postgres"
                 env[prefix + "_URL"] = f"host={host} port={cluster.port} user=postgres dbname=postgres sslmode=require"
                 env[prefix + "_URL_TLS_CA_PEM"] = root.read_text()
+            prefix = f"{CA_ENV_PREFIX}TLS11"
+            env[prefix + "_HEDEFI"] = f"postgresql://localhost:{downgrade.port}/postgres"
+            env[prefix + "_URL"] = f"host=localhost port={downgrade.port} user=postgres dbname=postgres sslmode=require"
+            env[prefix + "_URL_TLS_CA_PEM"] = ca.read_text()
             for name, serializable, application in [("DEADLOCK", False, "zee_k250_deadlock"),
                                                       ("SERIALIZABLE", True, "zee_k250_serialization")]:
                 prefix = f"{CA_ENV_PREFIX}{name}"
@@ -222,21 +240,26 @@ def main():
             transcript = (result.stdout + result.stderr).decode(errors="replace")
             args.output.with_suffix(".log").write_text(transcript)
             hashes = {str(path.relative_to(ROOT)): hashlib.sha256(path.read_bytes()).hexdigest()
-                      for path in [Path(__file__), ROOT / "compiler/tests/postgresql_testi.rs"]}
+                      for path in [Path(__file__), ROOT / "compiler/tests/postgresql_testi.rs", ROOT / "scripts/postgresql-tls11-control.py"]}
             report = {"schema": "zee-postgresql-tls-ci-1", "source_sha": source,
                       "started_utc": timestamp, "host": platform.platform(),
                       "rustc": run(["rustc", "--version"], cwd=ROOT / "compiler").strip(),
                       "source_clean": not run(["git", "-C", str(ROOT), "status", "--porcelain"]).strip(),
                       "fixture_hashes": hashes, "engine": args.engine, "server": cluster.version,
                       "server_identity": cluster.identity, "ca_sha256": hashlib.sha256(ca.read_bytes()).hexdigest(),
-                      "tests": list(EXPECTED_TESTS), "fault_observations": list(FAULT_OBSERVATIONS), "command": command, "exit": result.returncode,
+                      "tls11_positive_control": tls11_control, "tests": list(EXPECTED_TESTS), "fault_observations": list(FAULT_OBSERVATIONS), "command": command, "exit": result.returncode,
                       "elapsed_seconds": round(time.monotonic() - started, 3),
-                      "boundary": "ephemeral loopback-only synthetic CA/key and cluster; TLS1.2 positive, wrong CA/SAN, real NULL/non-text, resource limits and two stock statement-time40P01/40001 fixtures with explicit rollback/no-replay/fresh health; no COMMIT outcome inference; no provider rotation, TLS1.1 refusal or production cluster evidence"}
+                      "boundary": "ephemeral loopback-only synthetic CA/key and cluster; TLS1.2 positive, wrong CA/SAN, real NULL/non-text, resource limits and two stock statement-time40P01/40001 fixtures with explicit rollback/no-replay/fresh health; no COMMIT outcome inference; capable TLS1.1 positive control plus native refusal; no provider rotation or production cluster evidence"}
             args.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n")
+            TLS11["validate_control"](tls11_control)
             check_results(transcript, result.returncode)
-            print(f"PostgreSQL TLS/resource gate: 7/7 passed, 0 ignored; {cluster.version}; report={args.output}")
+            print(f"PostgreSQL TLS/resource gate: 8/8 passed, 0 ignored; {cluster.version}; report={args.output}")
         finally:
-            cluster.close()
+            try:
+                if downgrade is not None:
+                    downgrade.close()
+            finally:
+                cluster.close()
 
 
 if __name__ == "__main__":

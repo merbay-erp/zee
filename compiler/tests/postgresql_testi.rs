@@ -5,7 +5,7 @@ use dil::yorumlayici::{self, ToplayanIo, VeritabaniHatasi};
 
 // K-222/GB-022: Bunlar yalnız aşağıdaki izolasyon koşucusunun sağladığı
 // geçici sunucuda koşar. Eksik fixture değişkeni başarı/return olamaz.
-// `python3 scripts/postgresql-tls-ci.py` yedi vakayı --ignored ile zorlar.
+// `python3 scripts/postgresql-tls-ci.py` sekiz vakayı --ignored ile zorlar.
 fn tls_bildirimi(ad: &str) -> dil::veritabani_modeli::VeritabaniBildirimi {
     let degisken = format!("ZEE_POSTGRES_CI_{ad}_URL");
     let hedef = std::env::var(format!("ZEE_POSTGRES_CI_{ad}_HEDEFI"))
@@ -543,4 +543,16 @@ fn izole_tls_serialization_40001_tekrarsiz_rollback_ve_yeni_oturum_sagligi() {
     );
     fault_fresh_health(&[pid]);
     eprintln!("K250 serialization sqlstate=40001 attempts=2 other_value=1 victim_marker=0 fresh_health=true");
+}
+
+#[test]
+#[ignore = "scripts/postgresql-tls-ci.py gerçek TLS1.1 capable-positive fixture sağlar"]
+fn izole_tls_11_erisilebilir_legacy_sunucuyu_reddeder() {
+    let mut olumlu = tls_olumlu_oturum();
+    assert!(olumlu.oku("SELECT 'once'::text AS health", &[]).is_ok());
+    assert!(
+        dil::postgresql::PostgresqlOturumu::baglan(&tls_bildirimi("TLS11"), 0).is_err(),
+        "native TLS minimum1.2 erişilebilir legacy sunucuyu reddetmeli"
+    );
+    assert!(olumlu.oku("SELECT 'sonra'::text AS health", &[]).is_ok());
 }
