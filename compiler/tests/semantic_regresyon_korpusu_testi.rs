@@ -204,6 +204,39 @@ fn faz_kipi_kabul_eder(faz: &str, kip: &str) -> bool {
     }
 }
 
+fn cli_gozle(kaynak: &str) -> Gozlem {
+    let argumanlar = kaynak
+        .lines()
+        .find_map(|satir| satir.strip_prefix("# cli-argumanlari: "))
+        .expect("CLI fixture argüman başlığını taşımalı");
+    let cikti = std::process::Command::new(env!("CARGO_BIN_EXE_dil"))
+        .args(argumanlar.split_whitespace())
+        .current_dir(depo())
+        .output()
+        .expect("CLI regresyon süreci çalışmalı");
+    let akim = kaynak
+        .lines()
+        .find_map(|satir| satir.strip_prefix("# cli-cikti: "))
+        .unwrap_or("stderr");
+    let gozlenen = match akim {
+        "stderr" => {
+            assert!(cikti.stdout.is_empty(), "ret stdout üretmemeli");
+            cikti.stderr
+        }
+        "stdout" => cikti.stdout,
+        _ => panic!("CLI fixture çıktı akımı stdout veya stderr olmalı"),
+    };
+    Gozlem {
+        tani: None,
+        cikis: i64::from(cikti.status.code().expect("normal CLI exit")),
+        cikti: String::from_utf8(gozlenen)
+            .expect("CLI seçili çıktı UTF-8")
+            .lines()
+            .map(str::to_string)
+            .collect(),
+    }
+}
+
 fn vakayi_calistir(vaka: &Vaka, kaynak: &str) -> Gozlem {
     if vaka.kip == "lsp-uri" {
         let birim = depo()
@@ -219,25 +252,7 @@ fn vakayi_calistir(vaka: &Vaka, kaynak: &str) -> Gozlem {
         };
     }
     if vaka.kip == "cli" {
-        let argumanlar = kaynak
-            .lines()
-            .find_map(|satir| satir.strip_prefix("# cli-argumanlari: "))
-            .expect("CLI fixture argüman başlığını taşımalı");
-        let cikti = std::process::Command::new(env!("CARGO_BIN_EXE_dil"))
-            .args(argumanlar.split_whitespace())
-            .current_dir(depo())
-            .output()
-            .expect("CLI regresyon süreci çalışmalı");
-        assert!(cikti.stdout.is_empty(), "ret stdout üretmemeli");
-        return Gozlem {
-            tani: None,
-            cikis: i64::from(cikti.status.code().expect("normal CLI exit")),
-            cikti: String::from_utf8(cikti.stderr)
-                .expect("CLI stderr UTF-8")
-                .lines()
-                .map(str::to_string)
-                .collect(),
-        };
+        return cli_gozle(kaynak);
     }
     if vaka.kip == "parser" {
         return match KaynakMetni::yeni(kaynak)
@@ -611,4 +626,13 @@ fn smtp_yavas_yanit_fixture_native_butce_ve_maskeyi_korur() {
     let (sonuc, cikti) = smtp_fixture::calistir(&program, kaynak);
     assert_eq!(sonuc.unwrap(), 0);
     assert_eq!(cikti, vec!["E-posta gönderilemedi; ayar geçersiz veya gönderim sonucu belirsiz; ayrıntılar gizlendi; otomatik tekrar yok"]);
+}
+
+#[test]
+fn cli_stdout_alt_turu_gercek_basariyi_stderr_startup_metadatasindan_ayirir() {
+    let kaynak = "# cli-argumanlari: çalıştır --web-proxy https://fixture.example --web-oran-deposu bellek golden/28-cli-araci.dil APP_ARG\n# cli-cikti: stdout\n";
+    let gozlem = cli_gozle(kaynak);
+    assert!(gozlem.tani.is_none());
+    assert_eq!(gozlem.cikis, 0);
+    assert_eq!(gozlem.cikti, vec!["Merhaba APP_ARG"]);
 }

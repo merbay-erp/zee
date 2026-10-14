@@ -52,9 +52,14 @@ programda stdout satır sırası byte düzeyinde sabittir.
 
 K-221 CLI vakası `cli` fazı ve `cli` kipindedir: ilk yorumdaki
 `# cli-argumanlari: ` sonrasında boşlukla ayrılmış sabit argümanları gerçek
-`dil` ikilisine verir. Fixture yalnız hermetik bilinmeyen seçenek reddini
-çalıştırır; stdin, dış ağ, özel dosya ya da kabuk yürütmez. Beklenti alanı
-bu kipte stderr satırlarıdır, stdout boş ve exit 2'dir. CLI kullanım
+`dil` ikilisine verir. Fixture hermetik bilinmeyen seçenek reddini veya yerel kaynakta program
+argümanlarının başarılı aktarılmasını çalıştırır; stdin, dış ağ, özel
+dosya ya da kabuk yürütmez. Beklenti alanı
+bu kipte varsayılan stderr satırlarıdır, stdout boş ve exit 2'dir. Explicit
+`# cli-cikti: stdout` başarılı CLI vakalarında stdout satırlarını seçer;
+startup metadata taşıyan stderr bu alt türde çıktı beklentisi değildir.
+Alt tür aynı v2 manifestinde normal exit ve exact stdout satırlarını
+korur; yeni compiler CLI seçeneği veya dil profili açmaz. CLI kullanım
 hatası kaynak tanısı üretmediği için tanı/span alanı `-` kalır.
 
 ## Kipler

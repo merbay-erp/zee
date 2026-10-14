@@ -55,3 +55,89 @@ fn mevcut_json_secimi_gecerli_kalmali() {
         "{\"durum\":\"temiz\",\"tanilar\":[]}"
     );
 }
+
+#[test]
+fn web_oran_degerleri_kaynak_oncesinde_program_argumani_olmaz() {
+    let kaynak =
+        std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../golden/28-cli-araci.dil");
+    for secimler in [
+        vec![
+            "--web-proxy",
+            "https://fixture.example",
+            "--web-oran-deposu",
+            "bellek",
+        ],
+        vec![
+            "--web-proxy",
+            "https://fixture.example",
+            "--web-oran-deposu",
+            "bellek",
+            "--web-oran-siniri",
+            "2",
+        ],
+        vec![
+            "--web-oran-deposu",
+            "bellek",
+            "--web-oran-siniri",
+            "2",
+            "--web-oran-kapasitesi",
+            "4",
+            "--web-oran-doluluk",
+            "en-eski",
+            "--güvenli-web-proxy",
+            "https://fixture.example",
+            "--web-worker-port",
+            "42445",
+        ],
+    ] {
+        let cikti = Command::new(env!("CARGO_BIN_EXE_dil"))
+            .arg("çalıştır")
+            .args(&secimler)
+            .arg(&kaynak)
+            .args(["APP_ARG", "SECOND_ARG"])
+            .output()
+            .unwrap();
+        assert_eq!(cikti.status.code(), Some(0), "{secimler:?}: {cikti:?}");
+        assert_eq!(
+            String::from_utf8(cikti.stdout).unwrap(),
+            "Merhaba APP_ARG\nMerhaba SECOND_ARG\n"
+        );
+    }
+}
+
+#[test]
+fn kaynak_sonrasi_oran_argumanlari_ve_eski_global_proxy_secimi_korunur() {
+    let kaynak =
+        std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../golden/28-cli-araci.dil");
+    let cikti = Command::new(env!("CARGO_BIN_EXE_dil"))
+        .args(["çalıştır", "--web-proxy", "https://fixture.example"])
+        .arg(&kaynak)
+        .args([
+            "--web-oran-deposu",
+            "bellek",
+            "--web-oran-siniri",
+            "2",
+            "APP_ARG",
+        ])
+        .output()
+        .unwrap();
+    assert_eq!(cikti.status.code(), Some(0), "{cikti:?}");
+    assert_eq!(String::from_utf8(cikti.stdout).unwrap(), "Merhaba --web-oran-deposu\nMerhaba bellek\nMerhaba --web-oran-siniri\nMerhaba 2\nMerhaba APP_ARG\n");
+    let cikti = Command::new(env!("CARGO_BIN_EXE_dil"))
+        .arg("çalıştır")
+        .arg(kaynak)
+        .args([
+            "--web-proxy",
+            "https://fixture.example",
+            "--web-worker-port",
+            "42445",
+            "APP_ARG",
+        ])
+        .output()
+        .unwrap();
+    assert_eq!(cikti.status.code(), Some(0), "{cikti:?}");
+    assert_eq!(
+        String::from_utf8(cikti.stdout).unwrap(),
+        "Merhaba APP_ARG\n"
+    );
+}
