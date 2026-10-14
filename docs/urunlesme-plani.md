@@ -75,3 +75,15 @@ kapıları bağlayıcıdır. Cache/kalıcı durum ekleyen iş exact temiz kaynak
 Normatif spec maddeleri exact test işlevine bağlanır; tasarım boşluğu test
 eklenerek kapatılmaz. Tamamlandı durumu yalnız gerçek kabulden sonra yazılır;
 yerel kabul, uzak CI, canlı ürün ve release birbirinin yerine geçmez.
+
+## Yerel teknik kapanış kayıtları
+
+[Temiz native checkpoint](incelemeler/urunlesme-20261014/native-7127c7d/README.md)
+TLS 4/4, göç 1/1 ve rehash 7/7 gerçek PostgreSQL kabulünü taşır.
+[K-226 iki-klon](incelemeler/urunlesme-20261014/build-99f31d7/README.md)
+exact kaynakta eş hash üretmiştir; imzasız çıktı yayın kabulü değildir.
+
+Mevcut primary GitHub HTTPS/connector ve mevcut SSH transport üzerinden
+read-only kaynak okuma sonuçları 404/repository-not-found; Enterprise ayna
+SSO sınırı 403'tür. Primary master yetkisi/SHA'sı bilinmiyor. Yerel onaylı
+uygulama dalı uzak master değişikliği veya yeni exact CI kabulü sayılmaz.

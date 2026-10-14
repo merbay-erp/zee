@@ -23,6 +23,7 @@ EXPECTED_TESTS = (
     "izole_tls_baska_ca_gercek_sunucuyu_reddeder",
     "izole_tls_san_disindaki_ip_hostnameini_reddeder",
     "izole_tls_null_ve_metin_disini_reddeder_transaction_sagligi_korunur",
+    "izole_tls_sorgu_parametre_sonuc_ve_goc_sinirlarini_bir_fazlasinda_reddeder",
 )
 
 
@@ -43,7 +44,7 @@ def check_results(transcript, returncode):
         re.MULTILINE,
     )
     if summaries != [(str(len(EXPECTED_TESTS)), "0", "0")]:
-        raise ValueError(f"TLS gate requires exactly 4 passed/0 failed/0 ignored: {summaries}")
+        raise ValueError(f"TLS gate requires exactly 5 passed/0 failed/0 ignored: {summaries}")
 
 
 def certificates(directory):
@@ -214,7 +215,7 @@ def main():
                       "boundary": "ephemeral loopback-only synthetic CA/key and cluster; TLS1.2 positive, wrong CA/SAN, real NULL/non-text and transaction health; no provider rotation, TLS1.1 refusal or production cluster evidence"}
             args.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n")
             check_results(transcript, result.returncode)
-            print(f"PostgreSQL TLS gate: 4/4 passed, 0 ignored; {cluster.version}; report={args.output}")
+            print(f"PostgreSQL TLS/resource gate: 5/5 passed, 0 ignored; {cluster.version}; report={args.output}")
         finally:
             cluster.close()
 

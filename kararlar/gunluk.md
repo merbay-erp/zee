@@ -4286,3 +4286,10 @@ Source commitini exact compiler/freeze beyanı izler; canlı ürün göçü ayr�
 strict helper/model/ikili SHA yakalama ve dokuz koşucu ret testi. Gerçek
 yarışta bir CAS kazanır, biri rollback; AFTER INSERT bariyeri commit öncesi
 özet/oturumu görünmez tutar. C027 ağ-fault/live ürün ayrı; CI kablosu eklendi.
+
+## K-235 — Native kaynak limitleri ve sürüm kanıtı
+
+14.10.2026: PG16.15 TLS üzerinde sekiz budget tam sınır/bir fazla ret,
+aynı transaction health/commit ve göç planı no-DDL kabulü geçti. Eski SemVer
+spec maddesi gerçek K-226 üç yüzey testine bağlandı. Yeni production/grammar
+yok; tarihsel 4/4 TLS kaydı korunur, dedicated güncel kapı 5/5 oldu.

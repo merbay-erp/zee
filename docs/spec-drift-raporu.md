@@ -29,21 +29,19 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 | `spec/21-deterministik-io-izi.md` | 5 | 5 | 0 | 0 |
 | `spec/22-deterministik-io-profili.md` | 5 | 4 | 1 | 0 |
 | `spec/23-yetkinlik-ve-outbound-guvenligi.md` | 14 | 14 | 0 | 0 |
-| `spec/24-kaynak-guvenlik-profili.md` | 7 | 6 | 1 | 0 |
+| `spec/24-kaynak-guvenlik-profili.md` | 7 | 7 | 0 | 0 |
 | `spec/25-postgresql-veri-erisimi.md` | 9 | 7 | 1 | 1 |
 | `spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md` | 2 | 2 | 0 | 0 |
-| `spec/27-uyumluluk-ve-surumleme.md` | 12 | 9 | 2 | 1 |
+| `spec/27-uyumluluk-ve-surumleme.md` | 12 | 10 | 1 | 1 |
 | `spec/28-gorunum-blogu.md` | 2 | 2 | 0 | 0 |
-| **Toplam** | **191** | **182** | **7** | **2** |
+| **Toplam** | **191** | **184** | **5** | **2** |
 
 ## Kısmi kanıtlı maddeler
 
 - `spec/08-kalici-dosya.md#532a9e61aa1fe70f` — - Dayanıklılık/kilit primitive'leri bulunmayan platform işlemi reddetmek… — Primitive'siz platform reddi yalnız desteklenen üç platformda derlenen koda bağlı; böyle bir platform CI matrisinde yok.
 - `spec/18-paket-yayini.md#2af407978947e1d4` — Üretici dört dosyayı yazmadan önce bütün kümeyi tüketici doğrulayıcıyla … — Yazmadan önce tam doğrulama ve yarım küme reddi kanıtlı; süreç çökmesi ortasında yarım küme senaryosu enjekte edilmiyor (söz de verilmiyor).
 - `spec/22-deterministik-io-profili.md#d68db0760744fd45` — Profilin bu gözlemlerinden birini kıran değişiklik yeni profil kimliği, … — Snapshot gözlem değişikliğini yakalar; yeni profil kimliği/RFC zorunluluğu süreç kuralıdır, makinece yalnız snapshot farkıyla görünür.
-- `spec/24-kaynak-guvenlik-profili.md#6077d317d3fd2556` — Sorgu 64 KiB, parametre listesi 100 öğe, tek parametre 64 KiB, okuma son… — Değerlerin tek profilden okunması mimari testle kanıtlı; sorgu/parametre/sonuç/migration sınırının bir fazlasında red gerçek PostgreSQL gerektirdiği için hermetik CI'da yok.
 - `spec/25-postgresql-veri-erisimi.md#61d77038cc9e2321` — `sslmode=require`, `<BAĞLANTI_DEĞİŞKENİ>_TLS_CA_PEM` ortam değişkeninde … — K-222 izole gerçek PostgreSQL kapısı CA/hostname reddi ve TLS 1.2 olumlusunu dört sıfır-atlamalı vakada zorlar; bağımsız TLS 1.1 sunucusu downgrade reddi henüz sınanmadığı için protokol tabanı maddesi kısmi kalır.
-- `spec/27-uyumluluk-ve-surumleme.md#b31a6f2c9df44412` — - `dil sürüm`, LSP `serverInfo.version` ve yayın SBOM'u aynı kimliği bas… — Üç yüzey aynı CARGO_PKG_VERSION sabitini okur; SBOM/LSP/CLI çıktılarını birbirine eşitleyen ayrı test yok.
 - `spec/27-uyumluluk-ve-surumleme.md#15d606bdb76e4dc1` — - Kaldırılan biçim sessizce kabul edilmez: derleyici tanı üretir ve öner… — Henüz kaldırılmış bir kullanıcı yüzeyi yok; tanı+öneri kanıtı ilk DEP kaldırmasında regresyon korpusuna eklenecek.
 
 ## Açık maddeler

@@ -1423,3 +1423,10 @@ artımlı LSP ve JetBrains dağıtım hattı ayrı açık kalır.
 metadata tablo yokken oluşturmaz. [ADR-095](../adr/095-postgresql-goc-plani.md).
 Native owner/runtime rol, checksum/kayıp dosya, rollback ve concurrent
 apply kabulü dedicated kapıda sınanır; eski Python ürün betiği ayrı açık.
+
+## K-235 — Spec kanıtı: DB kaynak sınırları ve sürüm eşliği
+
+Production davranışı değiştirilmeden gerçek TLS PostgreSQL tam eşik/bir fazla
+kampanyası ve var olan K-226 CLI/LSP/SBOM direct eşlik kanıtı iki kısmi
+maddeyi kapatır. Dedicated kapı 5/5 ister; platform, edition, provider,
+TLS1.1 ve süreç sözleşmesi boşlukları açık kalır.
