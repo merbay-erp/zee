@@ -1,8 +1,8 @@
 # zee-urunlesme-plan-1
 # plan	talepler	mevcut_is	durum	sahip	bagimlilik	kanit	kabul_siniri
 P01	ZEE-001	K-224	kanitli-baslangic	altyapi	-	docs/incelemeler/urunlesme-20261014/source-ci.json	1036 exact kaynak ZIP esligi; Gitsrv #30 visible commit status; primary/step/artifact siniri acik
-P02	A1	K-226	uygulaniyor	dil,altyapi	P01	compiler/src/main.rs	Deterministik SHA/tarih/kanal, JSON, LSP/worker, iki temiz klon ve iki farkli kaynak
-P03	A6(1)	K-221	yerel-test-gecti	dil	P01	compiler/tests/cli_secenek_testi.rs	Bilinmeyen secenek exit2; program argumani korunur; exact regression/provenance
+P02	A1	K-226	yerel-kabul	dil,altyapi	P01	adr/093-deterministik-build-kimligi.md	CLI/LSP/worker/SBOM esligi, iki temiz clone99f31d7; imzasiz proof ve final release/uzakCI ayri
+P03	A6(1)	K-221	yerel-kabul	dil	P01	compiler/tests/cli_secenek_testi.rs	Exit2 acik bilinmeyen secenek, program argumani; exact regression/source/freeze kayitli
 P04	A6(2)	-	acik	dil,urun	P03,P05	spec/07-birimler.md	Surumlu config; guvenlik anahtari fail-closed, precedence ve rollback
 P05	A2	K-167	kismi	dil,urun	P02,P08,P39	docs/uyumluluk-politikasi.md	Mevcut deprecation + aktif uyari, kanal/onceki korpus kabul eksigi
 P06	A3,D2	K-168,K-169	kismi	altyapi	P02,P29,P30,P39	scripts/surum-artefakti.sh	Hedef bazinda iki-klon/imza/kurulum; apt/container ayridir
@@ -11,31 +11,31 @@ P08	A5	K-172	urun-kaniti	urun,altyapi	-	dogfood/korpus-v1.tsv	Anonim tam 5site+k
 P09	B1	-	acik	urun,altyapi	P08,P34	docs/urunlesme-plani.md	Kalici job lease/idempotency/3retry/deadletter/crash; ilk prototype mevcut PG
 P10	B2	K-210	kismi	dil,urun	P09	compiler/src/eposta.rs	MIME ek/ReplyTo/alternatif govde; transient ve teslim belirsizligi
 P11	B3	K-210	kismi	dil,urun	P08	compiler/src/gorsel.rs	JPEG/PNG/WebP mevcut; PDF fixture/backend karari acik
-P12	B4	K-163	kismi	dil,urun	P31,P34	compiler/src/postgresql.rs	Goc mevcut; durum/kuru/rol ve urun gecisi acik
+P12	B4	K-163,K-228	kismi	dil,urun	P31,P34	docs/incelemeler/urunlesme-20261014/native-7127c7d/README.md	Durum/kuru noSQL owner/runtime checksum rollback concurrent1/1; canli urun Python betigi kaldirilmasi acik
 P13	B5	K-137	kismi	dil,altyapi	P02,P12,P25	docs/web-production-profili.md	Hizmet hazirlik JSON log metrics draining reload
 P14	B6	-	acik	dil,altyapi	P13	adr/089-bellek-oran-deposu.md	Socket devir/ready overlap; kota/revoke korunumu yuk testi
-P15	B7,ZEE-012	K-223	uygulaniyor	urun	P08	dogfood/zee-cekirdek/parola-goc/giriste-yukselt.dil	Mevcut primitive CAS rehash; atomiklik/race/C027; canli goc acik
+P15	B7,ZEE-012	K-223	kismi	urun	P08	docs/parola-goc-ci.md	Native7/7 CAS yarisi rollback commit gorunurlugu; C027agfault/live login/migration acik
 P16	B8,ZEE-011	K-220	urun-kabulu	urun	P08	dogfood/zee-cekirdek/http-post/turnstile.dil	Helper mevcut; 6form staging/TLS/403/timeout/secret/rollback
 P17	B9	-	ertelendi	urun,altyapi	urun-ihtiyaci	docs/urunlesme-plani.md	S3/yerel hash ve IAM ancak gercek cok-sunucu kaniti
 P18	C1	K-166	kismi	dil	anonim-5hata	docs/tani-kalitesi.md	Exact yanlis/dogru kalip, oneriler/codeaction; grammar ayri
-P19	C2,ZEE-002	K-207	kismi	dil	P08	docs/incelemeler/k207/http-master-20261014/README.md	Olcum once; cache kosullu identity/invalidation/soak; formatter check/lint ayri
-P20	C3	K-211	kismi	dil,urun	anonim-modul-fixture	spec/07-birimler.md	Mevcut rota/paket kompozisyon; metin yamasiz kur/kaldir ve cakisma
+P19	C2,ZEE-002	K-207,K-229	kismi	dil	P08	adr/094-bicimleyici-yazmadan-denetim.md	Formatter --denetle8/8; cache/LSP200ms/lint/JetBrains acik, olcum ve exact soak gerekir
+P20	C3	K-211,K-227	kismi	dil,urun	anonim-modul-fixture	dogfood/zee-cekirdek/modul-kompozisyonu/README.md	Metin ankrajsiz kur/kaldir2/2; genel extensionpoints/namespace/menu/content/goc ve exact urunfixture acik
 P21	C4	K-212	kismi	dil,urun	anonim-TR-EN-sayfa	compiler/tests/gorunum_testi.rs	Mevcut gorunum; layout/slot/translation minimal ihtiyac ve escaping
 P22	C5	-	kismi	dil,urun	P08,P31	compiler/tests/web_testi.rs	Zee test HTTP session/CSRF, DB rollback/snapshot/coverage
 P23	C6	K-203	kismi	urun,insan	P05,P06,P08,P25,P27	docs/baslangic.md	Mevcut rehber/site; panel site sablonu ve gercek yeni kullanici
-P24	D1	K-224	uygulaniyor	insan,altyapi	P39	docs/urun-destek-politikasi.md	Sinirli pilot; private/support/signed patch gercek islemi
+P24	D1	K-224	yerel-belge-kabulu	insan,altyapi	P39	docs/urun-destek-politikasi.md	Sinirli pilot guvenlik ve uyumluluk kapilari; gercek guvenilir imza/yayin/bildirim acik
 P25	D3	K-220	kismi	dil,altyapi	anonim-credential	docs/http-post-kullanim.md	Env izin mevcut; file credential izin/symlink/rotasyon maskeleme
 P26	D4,ZEE-013	-	ertelendi	urun,insan	gercek-HTML-import	docs/oncelikli-backlog.md	HTML kayit0 urun beyani; yeni API yok
 P27	ZEE-003	K-161,K-162	harici-kanit-yok	insan	gercek-katilimci	docs/usability-kiti.md	10 ogrenci/cocuk+5prof gercek anonim formlar; kullanici yok teyidi
 P28	ZEE-004	K-174	takvim-kapisi	dil,insan	2026-11-11	docs/v1-syntax-freeze-v1.tsv	14Ekim-11Kasim sifir syntax penceresi; ertelenecek grammar
 P29	ZEE-005	K-192	harici-cihaz-yok	altyapi,insan	temiz-fiziksel-minOS	docs/derleme-platform-kaniti-v1.tsv	Windows/minOS cihaz yok; gelistirici Mac temiz degil
 P30	ZEE-006	K-175	kapilar-bekleniyor	altyapi,insan	P05,P06,P08,P24,P27,P28,P29,P31,P34	docs/surum-runbook.md	Exact RC ASAN4/Miri/fulltest/signed artifact/install
-P31	ZEE-007	K-222,GB-022	yerel-test-gecti	dil,altyapi	-	docs/postgresql-tls-ci.md	Hermetik PG TLS/NULL4/4; dedicated CI wiring, future exact CI ayri
+P31	ZEE-007	K-222,K-235,GB-022	yerel-kabul	dil,altyapi	-	docs/postgresql-tls-ci.md	Temiz7127c TLSNULL4/4; K235 kaynak5/5 yerel; dedicatedCI wiring var, yeni uzakCI ayri
 P32	ZEE-008	K-215,GB-046	harici-yanit-yok	insan	GitHub-destek	docs/incelemeler/k215/github-destek-talebi.md	Kullanici gonderecek; PRrefs/cache teyidi yok; public ayri onay
 P33	ZEE-009	K-205	kismi	dil,altyapi	P01	docs/dis-inceleme-2026-10-13.md	27ilk esleme mevcut; adversarial guncel kanit matrisi
 P34	ZEE-010	K-206	kismi	dil,altyapi	P31,P33	docs/incelemeler/k206/frame-guard/README.md	GB041 kapali; global RSS/full fault matrisi acik
 P35	ZEE-014	K-180	ertelendi	dil,insan	P27,P28	rfcs/0029-liste-sira-erisimi.md	RFC aday syntax; insan+tekrarli urun kaniti
-P36	ZEE-015	K-225	uygulaniyor	dil	P31,P34,P05	docs/spec-madde-kaniti-v1.tsv	15bosluk test/tasarim/surec ayrimi; edition testle kapanmaz
+P36	ZEE-015	K-225,K-226,K-235	kismi	dil	P31,P34,P05	docs/spec-madde-kaniti-v1.tsv	Bes directkani boslugu+DBbudgets+SemVer esligi kapandi; 191maddede5kismi2acik, tasarim/platform/surec bekliyor
 P37	ZEE-016,ZEE-017	K-158,K-170,K-173	surekli	dil,altyapi	her-dilim	AGENTS.md	Fmt/faz/mimari/SCC/API/supply/spec/tani; etki varsa exact30dk soak
 P38	ZEE-018	K-193	ertelendi	dil	V1-urun-kapilari	docs/master-plan.md	NativeWASM/selfhosting yok; oracle/ABI/FFI/bellek kesif
 P39	E	K-224	kullanici-karari-kismi	insan	-	docs/urun-destek-politikasi.md	Lisans bekletildi; sinirli pilot secildi; mevcut marka/site korunur; public yok

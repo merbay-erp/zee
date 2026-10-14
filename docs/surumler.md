@@ -1633,3 +1633,7 @@ apply tek transaction/advisory lock ile sürer; göç credential/SQL basılmaz.
 K-223 native parola kabul koşucusu gerçek PostgreSQL üzerinde yedi vakayı
 atlamadan denetler; strict rapor sözleşmesinin dokuz ret testi vardır.
 [Koşucu ve C027/live sınırları](parola-goc-ci.md).
+
+K-235 test kanıtı DB kaynak bütçelerini gerçek PostgreSQL'de tam eşik ve
+bir fazla retle doğrular; production limitleri değişmez. İki kısmi spec
+kaydı DB bütçeleri ve CLI/LSP/SBOM kimlik eşliğiyle kanıtlı oldu.

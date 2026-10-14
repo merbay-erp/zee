@@ -10,12 +10,12 @@ CHECK = MODULE["check_results"]
 TESTS = MODULE["EXPECTED_TESTS"]
 
 
-def transcript(summary="4 passed; 0 failed; 0 ignored", tests=TESTS):
+def transcript(summary="5 passed; 0 failed; 0 ignored", tests=TESTS):
     return "\n".join(f"test {test} ... ok" for test in tests) + f"\ntest result: ok. {summary};\n"
 
 
 class StrictGateTests(unittest.TestCase):
-    def test_exact_four_real_passes(self):
+    def test_exact_five_real_passes(self):
         CHECK(transcript(), 0)
 
     def test_missing_selector_cannot_pass(self):
@@ -24,7 +24,7 @@ class StrictGateTests(unittest.TestCase):
                 CHECK(output, 0)
 
     def test_ignored_case_and_false_summary_cannot_pass(self):
-        for summary in ["3 passed; 0 failed; 1 ignored", "0 passed; 0 failed; 4 ignored", "5 passed; 0 failed; 0 ignored"]:
+        for summary in ["4 passed; 0 failed; 1 ignored", "0 passed; 0 failed; 5 ignored", "6 passed; 0 failed; 0 ignored"]:
             with self.assertRaises(ValueError):
                 CHECK(transcript(summary), 0)
 
@@ -32,7 +32,7 @@ class StrictGateTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             CHECK(transcript(), 1)
         with self.assertRaises(ValueError):
-            CHECK(transcript() + "test result: ok. 4 passed; 0 failed; 0 ignored;\n", 0)
+            CHECK(transcript() + "test result: ok. 5 passed; 0 failed; 0 ignored;\n", 0)
 
 
 if __name__ == "__main__":

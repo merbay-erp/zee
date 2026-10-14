@@ -74,12 +74,12 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | spec/21-deterministik-io-izi.md | 5 | 0 | 0 | 5 | 100 |
 | spec/22-deterministik-io-profili.md | 4 | 1 | 0 | 5 | 80 |
 | spec/23-yetkinlik-ve-outbound-guvenligi.md | 14 | 0 | 0 | 14 | 100 |
-| spec/24-kaynak-guvenlik-profili.md | 6 | 1 | 0 | 7 | 85 |
+| spec/24-kaynak-guvenlik-profili.md | 7 | 0 | 0 | 7 | 100 |
 | spec/25-postgresql-veri-erisimi.md | 7 | 1 | 1 | 9 | 77 |
 | spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md | 2 | 0 | 0 | 2 | 100 |
-| spec/27-uyumluluk-ve-surumleme.md | 9 | 2 | 1 | 12 | 75 |
+| spec/27-uyumluluk-ve-surumleme.md | 10 | 1 | 1 | 12 | 83 |
 | spec/28-gorunum-blogu.md | 2 | 0 | 0 | 2 | 100 |
-| **Toplam** | 182 | 7 | 2 | 191 | 95 |
+| **Toplam** | 184 | 5 | 2 | 191 | 96 |
 
 ## Dogfood ürünleri ve korpusu
 
@@ -140,14 +140,14 @@ Kaynak: `docs/compiler-degisiklik-beyanlari-v1.tsv + docs/core-freeze-beyanlari-
 | --- | --- |
 | maintenance | 38 |
 | semantic-bugfix | 4 |
-| semantic-change | 34 |
+| semantic-change | 35 |
 
 | Freeze sınıfı | Beyan |
 | --- | --- |
 | bugfix | 1 |
-| correctness | 13 |
+| correctness | 14 |
 | dogfood-change | 20 |
 | maintenance | 35 |
 | security | 3 |
 
-Toplam: 76 compiler değişiklik beyanı, 72 core freeze beyanı.
+Toplam: 77 compiler değişiklik beyanı, 73 core freeze beyanı.

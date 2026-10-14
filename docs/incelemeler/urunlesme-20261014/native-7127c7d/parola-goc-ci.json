@@ -1,0 +1,130 @@
+{
+  "schema": "zee-parola-goc-ci-1",
+  "started_utc": "2026-10-14T12:01:38.728249+00:00",
+  "status": "passed",
+  "phase": "completed",
+  "cases": [
+    {
+      "name": "ilk_bcrypt_girisi_argon2_ve_oturum_commit",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "variants": 3,
+        "updates": 3,
+        "sessions": 3,
+        "modern_verified": true
+      }
+    },
+    {
+      "name": "ikinci_modern_giriste_update_yok",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "accepted": true,
+        "hash_unchanged": true,
+        "additional_updates": 0,
+        "additional_update_attempts": 0,
+        "sessions": 2
+      }
+    },
+    {
+      "name": "yanlis_parola_yazisiz_reddedilir",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "rejected": true,
+        "hash_unchanged": true,
+        "updates": 0,
+        "update_attempts": 0,
+        "bind_attempts": 0,
+        "sessions": 0
+      }
+    },
+    {
+      "name": "ayni_eski_snapshot_gercek_sql_cas_yarisi",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "waiting_clients": 2,
+        "accepted": 1,
+        "rejected": 1,
+        "updates": 1,
+        "sessions": 1,
+        "modern_hash": true,
+        "idle_transactions": 0
+      }
+    },
+    {
+      "name": "sql_update_hatasi_rollback",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "rejected": true,
+        "legacy_preserved": true,
+        "update_attempts": 1,
+        "bind_attempts": 0,
+        "updates": 0,
+        "sessions": 0
+      }
+    },
+    {
+      "name": "oturum_bind_hatasi_dis_eylemi_rollback",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "rejected": true,
+        "legacy_preserved": true,
+        "update_attempts": 1,
+        "bind_attempts": 1,
+        "updates": 0,
+        "sessions": 0
+      }
+    },
+    {
+      "name": "oturum_ve_hash_yalniz_commit_sonrasi_gorunur",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "waiting_clients": 1,
+        "update_attempts_before_commit": 1,
+        "bind_attempts_before_commit": 1,
+        "legacy_visible_before_commit": true,
+        "sessions_before_commit": 0,
+        "updates_before_commit": 0,
+        "accepted": true,
+        "modern_hash_after_commit": true,
+        "sessions_after_commit": 1,
+        "updates_after_commit": 1
+      }
+    }
+  ],
+  "ignored": 0,
+  "commit_response_loss_probed": false,
+  "boundary": "Owned synthetic PostgreSQL and anonymous helper; SQL session row only. No live login, web cookie, product migration, C027 commit network fault or signed release.",
+  "source_sha": "7127c7d1f6da19d532946ded55fae8bddfeb0d24",
+  "binary_sha256": "eb238a6abd3aa3b207264b3c672a9e083a5767b23de4d95d4b68df9b4147fe9a",
+  "build_identity": {
+    "schema": "zee-build-v1",
+    "version": "0.8.0-dev",
+    "source_sha": "7127c7d1f6da19d532946ded55fae8bddfeb0d24",
+    "source_date": "2026-10-14",
+    "channel": "development",
+    "dirty": false
+  },
+  "fixture_hashes": {
+    "scripts/parola-goc-ci.py": "706fb287a8dfc38faab1943872739f0df35948bb0a24a188c3c90a16c5c20409",
+    "scripts/postgresql-tls-ci.py": "f0f354d442678a4b98d4486eb19ebfee02c090a031d399374086deaaf3d2b57d",
+    "dogfood/zee-cekirdek/parola-goc/giriste-yukselt.dil": "d51b7c213df19edf2f65f089ccdc750c1c17b691caeb928ed3faacbffd7bd8e0",
+    "compiler/tests/zee_cekirdek_urun_kabulu_testi.rs": "660cbd7ee9d887e655ce84a37fca40f331ee91277d7db9c5df811c3013ffcaac"
+  },
+  "server": "postgres (PostgreSQL) 16.15 (Debian 16.15-1.pgdg12+2)",
+  "server_identity": {
+    "image": "postgres@sha256:0ea6700a3b4f0ae6ce746519073558aed4d88a79d8d07622a9a644946c7319c4",
+    "platform": "linux/arm64 sha256:0ea6700a3b4f0ae6ce746519073558aed4d88a79d8d07622a9a644946c7319c4"
+  },
+  "source_clean": true,
+  "source_end_sha": "7127c7d1f6da19d532946ded55fae8bddfeb0d24",
+  "source_unchanged": true,
+  "source_acceptance": "clean-exact",
+  "elapsed_seconds": 12.694
+}

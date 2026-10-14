@@ -1,0 +1,20 @@
+{
+  "schema": "zee-postgresql-goc-ci-1",
+  "server": "postgres (PostgreSQL) 16.15 (Debian 16.15-1.pgdg12+2)",
+  "engine": "docker",
+  "source_sha": "7127c7d1f6da19d532946ded55fae8bddfeb0d24",
+  "source_clean": true,
+  "fixture_hashes": {
+    "compiler/src/postgresql.rs": "f9d60d0803294bc7c0fad8b37303e7f6e91463170524c1774940ec54bca0ddf3",
+    "compiler/tests/postgresql_goc_plani_testi.rs": "8d84c7b431dcfe88a8da1ebdadca58a1fbb794e3e6c262517911c2a2347211d8",
+    "scripts/postgresql-goc-ci.py": "54908b680ee5a7fe8f53dfe974a8d5f6508a59ad537a8975823d0cb55907e8b3"
+  },
+  "started_utc": "2026-10-14T12:01:32.987991+00:00",
+  "host": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "rustc": "rustc 1.93.1 (01f6ddf75 2026-02-11)",
+  "image": "postgres@sha256:0ea6700a3b4f0ae6ce746519073558aed4d88a79d8d07622a9a644946c7319c4",
+  "test": "izole_goc_durum_kuru_checksum_rol_ve_atomik_uygulama_sinirini_korur",
+  "exit": 0,
+  "elapsed_seconds": 5.506,
+  "boundary": "own empty loopback database and synthetic owner/runtime roles; no customer cluster or TLS claim"
+}

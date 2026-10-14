@@ -1,0 +1,28 @@
+{
+  "schema": "zee-build-proof-summary-1",
+  "source_sha": "99f31d77451ee129a796104596da80ce6b928abc",
+  "parameters": {
+    "cargoArgs": "cargo build --locked --release --bin dil --bin dillsp",
+    "crtLinkage": "target-default",
+    "platform": "aarch64-apple-darwin",
+    "rustc": "rustc 1.93.1 (01f6ddf75 2026-02-11)",
+    "sourceDateEpoch": 1791977551,
+    "surum": "0.8.0-dev"
+  },
+  "subjects": [
+    {
+      "digest": {
+        "sha256": "d5e6be03a138248240feb9f5ef8f74b0ec5fa1c1d9f56d2ebbe5d3744c1a44f9"
+      },
+      "name": "dil"
+    },
+    {
+      "digest": {
+        "sha256": "8e3d10f2c53c2dacdcce84f5b90e9c0bc00ebfcdbced9bf0e19088b524468e74"
+      },
+      "name": "dillsp"
+    }
+  ],
+  "source_document_sha256": "80c59fd720d93a45ff0a2f5e23ce1d1c339fb51c80c42ec03b51b6eca88a6b67",
+  "boundary": "derived neutral summary; original provenance contains local linker environment paths, remains outside repository; unsigned proof, no release acceptance"
+}

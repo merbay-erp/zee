@@ -51,9 +51,9 @@ GitHub Actions'ın açık/kapalı olması bu şablon değişikliğiyle değişti
    verisiyle reddedilir; aynı transaction'da sonraki sorgu ve commit başarılıdır.
    Açık `COALESCE` ve `::text` olumlu yolları da kabul edilir.
 
-Default Cargo/faz koşusunda bu dört vaka `ignored` görünür: her platforma
+Default Cargo/faz koşusunda bu beş vaka `ignored` görünür: her platforma
 Docker/PostgreSQL gereksinimi yüklenmez. Dedicated sürekli Linux kapısı
-aynı dört vakayı `--ignored` ile çalıştırır ve exact isimlerin her birinde
+aynı beş vakayı `--ignored` ile çalıştırır ve exact isimlerin her birinde
 `ok`, yalnız bir özet, **4 passed / 0 failed / 0 ignored** ister. Eksik
 fixture ortamı paniktir; erken `return` veya başarı sayılmaz. Sıfır test,
 yanlış selector, ignored vaka ve başarısız exit için koşucu negatif testleri
@@ -81,3 +81,9 @@ bu kapının kanıtı değildir. K-173'ün soak/platform açık işleri kapanmaz
 GB-022'nin yalnız env'e bağlı ve CI fixture'ı olmayan hostname/CA/NULL
 boşluğu kapanır; spec/25'in TLS protokol tabanı kanıtı bağımsız negatif
 downgrade deneyi olmadığı için kısmi kalır.
+
+K-235 kaynak bütçesi vakasıyla güncel dedicated kapı **5/5, sıfır ignored**
+ister. Gerçek SQL sorgu/parametre/satır/sütun/sonuç ve migration dosya/toplam
+bütçeleri tam eşik ve bir fazlasında sınanır. Sonuç bayt bütçesi sütun adı
+baytlarını da sayar; ret sonrası aynı transaction sağlık ve commit korunur.
+K-222'nin tarihsel 4/4 kayıtları değişmez; yeni exact kaynak CI kabulü ayrıdır.
