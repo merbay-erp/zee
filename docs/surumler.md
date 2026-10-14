@@ -1787,3 +1787,17 @@ Dispatcher/cron/SMTP non-idempotent etkiler ve gerçek katalog adoptionı açık
 positive connection+server gözlemi sonrasında native ret, dedicated8/strict14.
 Yeni compiler özelliği/tanı yoktur; legacy cipher policy test contextiyle
 sınırlıdır. Provider/full matrix/Windows/uzakCI ve final exactclean kabul ayrı.
+
+
+## 15 Ekim 2026 temiz teknik kontrol noktası
+
+[K-250–K-256 kontrol noktası](urunlesme-kontrol-noktasi-20261015.md)
+exact temiz d42f147 üzerinde faz904/913 (0 başarısız/9 dedicated atlama),
+ayrı PostgreSQL41, DB hazırlık13, native drain4, credential14, worker25 ve
+iki Python sürümünde TR–EN7+4 kabulünü kaydeder. K-252 exact regression ve
+beyan zinciriyle kapalıdır. K-253 mevcut admitted handler'ı SIGTERM sonrası
+bitirir; final1800s soak hâlâ gereklidir. K-254 uzun handler heartbeat ve
+K-256 verifiedTLS1.1 capable-positive ret kanıtı artık çalışma ağacı
+adayı değil, bu exact kaynakta yerel kabuldür. Metrics/socket/dispatcher,
+gerçek ürün, insan/platform ve RC/release kapıları açık kalır. Kaynak
+kimliği daha sonraki belge veya özellik commit'lerine taşınmaz.
