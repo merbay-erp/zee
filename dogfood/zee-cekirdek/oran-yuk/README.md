@@ -15,3 +15,5 @@ Eski ürün gözlemi yaklaşık 55/54/56 istek/sn'dir. Yaklaşık 11.000 deneyse
 istek/sn ham kanıtı yoktur; 32.768 anahtarda 1,8 MB tahmindi. Bunlar bu
 kaynakta ölçülmüş sayılmaz. Yeni kabul exact temiz kaynakta yeniden ölçülür.
 [Backend sınırı](../../../adr/089-bellek-oran-deposu.md).
+
+K-219 aynı ürün kaynağındaki §3/2 kapasite ihtiyacını host ayarlarıyla karşılar. Program ve özgün Python yük betikleri değiştirilmez; gerçek worker kabulü compiler/tests/web_cok_surec_testi.rs içinde, karar ADR-090’dadır.

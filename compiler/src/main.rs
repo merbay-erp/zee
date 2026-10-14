@@ -36,8 +36,72 @@ enum WebModu {
     GuvenliProxy {
         origin: AgHedefi,
         worker_kapi: Option<u16>,
-        oran_bellekte: bool,
+        oran_ayari: Option<dil::web_guvenligi::BellekOranAyari>,
     },
+}
+
+fn bellek_oran_ayarini_ayikla(
+    argumanlar: &mut Vec<String>,
+    oran_bellekte: bool,
+) -> Result<Option<dil::web_guvenligi::BellekOranAyari>, String> {
+    let mut ayarlar = Vec::new();
+    for bayrak in [
+        "--web-oran-siniri",
+        "--web-oran-kapasitesi",
+        "--web-oran-doluluk",
+    ] {
+        let yerler = argumanlar
+            .iter()
+            .enumerate()
+            .filter(|(_, a)| *a == bayrak)
+            .map(|(i, _)| i)
+            .collect::<Vec<_>>();
+        if yerler.len() > 1 {
+            return Err(format!("{bayrak} birden çok kez verilemez"));
+        }
+        let deger = if let Some(yer) = yerler.first().copied() {
+            if !oran_bellekte {
+                return Err(format!(
+                    "{bayrak} yalnız --web-oran-deposu bellek ile kullanılabilir"
+                ));
+            }
+            let deger = argumanlar
+                .get(yer + 1)
+                .ok_or_else(|| format!("{bayrak} ardından değer ister"))?
+                .clone();
+            argumanlar.remove(yer + 1);
+            argumanlar.remove(yer);
+            Some(deger)
+        } else {
+            None
+        };
+        ayarlar.push(deger);
+    }
+    let sinirlar = dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.web();
+    if oran_bellekte {
+        let sinir = ayarlar[0]
+            .as_deref()
+            .map(str::parse::<u32>)
+            .transpose()
+            .map_err(|_| "--web-oran-siniri pozitif tam sayı ister")?
+            .unwrap_or(sinirlar.ucnokta_orani());
+        let kapasite = ayarlar[1]
+            .as_deref()
+            .map(str::parse::<usize>)
+            .transpose()
+            .map_err(|_| "--web-oran-kapasitesi pozitif tam sayı ister")?
+            .unwrap_or(sinirlar.oran_anahtari_sayisi());
+        let doluluk = match ayarlar[2].as_deref() {
+            None | Some("reddet") => dil::web_guvenligi::OranDoluluk::Reddet,
+            Some("en-eski") => dil::web_guvenligi::OranDoluluk::EnEski,
+            _ => return Err("--web-oran-doluluk reddet veya en-eski olmalı".into()),
+        };
+        Ok(Some(dil::web_guvenligi::BellekOranAyari::yeni(
+            sinir, kapasite, doluluk,
+        )?))
+    } else {
+        Ok(None)
+    }
 }
 
 fn web_modunu_ayikla(argumanlar: &mut Vec<String>) -> Result<WebModu, String> {
@@ -60,6 +124,7 @@ fn web_modunu_ayikla(argumanlar: &mut Vec<String>) -> Result<WebModu, String> {
     } else {
         false
     };
+    let oran_ayari = bellek_oran_ayarini_ayikla(argumanlar, oran_bellekte)?;
     let worker_yerleri = argumanlar
         .iter()
         .enumerate()
@@ -114,7 +179,7 @@ fn web_modunu_ayikla(argumanlar: &mut Vec<String>) -> Result<WebModu, String> {
         return AgHedefi::https_origininden(&origin).map(|origin| WebModu::GuvenliProxy {
             origin,
             worker_kapi,
-            oran_bellekte,
+            oran_ayari,
         });
     }
     if oran_bellekte {
@@ -195,9 +260,9 @@ fn govde() -> ExitCode {
                     WebModu::GuvenliProxy {
                         origin,
                         worker_kapi,
-                        oran_bellekte,
+                        oran_ayari,
                     } => dosya_ile(&argumanlar, |girdi| {
-                        calistir_guvenli_web_komutu(girdi, origin, worker_kapi, oran_bellekte)
+                        calistir_guvenli_web_komutu(girdi, origin, worker_kapi, oran_ayari)
                     }),
                 }
             }
@@ -252,6 +317,7 @@ fn kullanim() {
     eprintln!("  dil çalıştır --güvenli ... çocuk modu: ağ kapalı, dosyalar klasörle sınırlı");
     eprintln!("  dil çalıştır --deneysel-web ... localhost web prototipine açıkça izin verir");
     eprintln!("  dil çalıştır --web-proxy https://host [--web-worker-port N] [--web-oran-deposu bellek] ... güvenli yerel TLS-proxy profili");
+    eprintln!("    bellek ayarları: --web-oran-siniri 1..1000000 (60 sn), --web-oran-kapasitesi 1..32768, --web-oran-doluluk reddet|en-eski");
     eprintln!("  dil parola-özeti           parolayı gizli okuyup Argon2id PHC özeti üretir");
     eprintln!(
         "  dil gizli-anahtar          gizli değer şifrelemesi için 256 bit anahtar üretir (hex)"
@@ -1484,14 +1550,12 @@ impl GercekIo {
             | 1;
         let web_guvenligi = if matches!(&web_modu, WebModu::GuvenliProxy { .. }) {
             let yol = dosya_siniri_koku.join(".zee/web-durumu-v1.json");
-            if matches!(
-                &web_modu,
-                WebModu::GuvenliProxy {
-                    oran_bellekte: true,
-                    ..
-                }
-            ) {
-                dil::web_guvenligi::WebGuvenligi::kalici_bellek_oranli(yol)
+            if let WebModu::GuvenliProxy {
+                oran_ayari: Some(ayar),
+                ..
+            } = &web_modu
+            {
+                dil::web_guvenligi::WebGuvenligi::kalici_bellek_oran_ayarli(yol, *ayar)
             } else {
                 dil::web_guvenligi::WebGuvenligi::kalici(yol)
             }
@@ -3115,13 +3179,16 @@ fn calistir_guvenli_web_komutu(
     girdi: &KaynakGirdisi,
     origin: AgHedefi,
     worker_kapi: Option<u16>,
-    oran_bellekte: bool,
+    oran_ayari: Option<dil::web_guvenligi::BellekOranAyari>,
 ) -> ExitCode {
     eprintln!(
         "Güvenli web profili: yalnız 127.0.0.1 üzerindeki HTTPS reverse proxy güvenilir; origin {}.",
         origin.yazimi()
     );
-    if oran_bellekte {
+    if let Some(ayar) = oran_ayari {
+        if ayar.doluluk() == dil::web_guvenligi::OranDoluluk::EnEski {
+            eprintln!("En eski uç nokta sayacı tahliye edilebilir: bu kota sıfırlanabilir; proxy ortak saldırı kotası zorunludur. Giriş/CSRF tahliye edilmez.");
+        }
         eprintln!("Oran deposu süreç başına bellekte: restart kotayı sıfırlar; çok worker için proxy ortak saldırı kotası gerekir.");
     }
     calistir_gercek_io_ile(
@@ -3129,7 +3196,7 @@ fn calistir_guvenli_web_komutu(
         WebModu::GuvenliProxy {
             origin,
             worker_kapi,
-            oran_bellekte,
+            oran_ayari,
         },
         girdi.politikasi(),
     )
@@ -3337,10 +3404,107 @@ mod web_profili_testleri {
         assert!(matches!(
             web_modunu_ayikla(&mut args),
             Ok(WebModu::GuvenliProxy {
-                oran_bellekte: true,
+                oran_ayari: Some(_),
                 ..
             })
         ));
+        assert_eq!(args, ["çalıştır", "ana.dil"]);
+    }
+
+    #[test]
+    fn bellek_oran_ayarlari_sinirli_tekil_ve_proxyye_ozgudur() {
+        for (bayrak, deger) in [
+            ("--web-oran-siniri", "0"),
+            ("--web-oran-siniri", "1000001"),
+            ("--web-oran-siniri", "4294967296"),
+            ("--web-oran-siniri", "-1"),
+            ("--web-oran-kapasitesi", "0"),
+            ("--web-oran-kapasitesi", "32769"),
+            ("--web-oran-kapasitesi", "999999999999999999999999"),
+            ("--web-oran-doluluk", "sınırsız"),
+        ] {
+            let mut args = [
+                "--web-proxy",
+                "https://panel.example",
+                "--web-oran-deposu",
+                "bellek",
+                bayrak,
+                deger,
+            ]
+            .into_iter()
+            .map(str::to_string)
+            .collect();
+            assert!(web_modunu_ayikla(&mut args).is_err(), "{bayrak}={deger}");
+        }
+        for bayrak in [
+            "--web-oran-siniri",
+            "--web-oran-kapasitesi",
+            "--web-oran-doluluk",
+        ] {
+            let deger = if bayrak == "--web-oran-doluluk" {
+                "en-eski"
+            } else {
+                "1"
+            };
+            for ekler in [
+                vec![bayrak, deger],
+                vec!["--deneysel-web", bayrak, deger],
+                vec!["--web-proxy", "https://panel.example", bayrak, deger],
+                vec![
+                    "--web-proxy",
+                    "https://panel.example",
+                    "--web-oran-deposu",
+                    "bellek",
+                    bayrak,
+                ],
+                vec![
+                    "--web-proxy",
+                    "https://panel.example",
+                    "--web-oran-deposu",
+                    "bellek",
+                    bayrak,
+                    deger,
+                    bayrak,
+                    deger,
+                ],
+            ] {
+                let mut args = ekler.into_iter().map(str::to_string).collect();
+                assert!(web_modunu_ayikla(&mut args).is_err());
+            }
+        }
+        let mut args = [
+            "çalıştır",
+            "--web-oran-doluluk",
+            "en-eski",
+            "--web-oran-kapasitesi",
+            "32",
+            "--web-oran-siniri",
+            "7",
+            "--web-oran-deposu",
+            "bellek",
+            "--web-proxy",
+            "https://panel.example",
+            "ana.dil",
+        ]
+        .into_iter()
+        .map(str::to_string)
+        .collect();
+        let WebModu::GuvenliProxy {
+            oran_ayari: Some(ayar),
+            ..
+        } = web_modunu_ayikla(&mut args).unwrap()
+        else {
+            panic!("proxy ayarı beklenir")
+        };
+        assert_eq!(
+            ayar,
+            dil::web_guvenligi::BellekOranAyari::yeni(
+                7,
+                32,
+                dil::web_guvenligi::OranDoluluk::EnEski
+            )
+            .unwrap()
+        );
         assert_eq!(args, ["çalıştır", "ana.dil"]);
     }
 
@@ -3542,7 +3706,7 @@ mod web_profili_testleri {
             WebModu::GuvenliProxy {
                 origin: AgHedefi::https_origininden("https://panel.example").unwrap(),
                 worker_kapi: None,
-                oran_bellekte: false,
+                oran_ayari: None,
             },
             Vec::new(),
             dil::yetkinlik::YetkinlikPolitikasi::gelistirici(),
@@ -3700,7 +3864,7 @@ mod web_profili_testleri {
             WebModu::GuvenliProxy {
                 origin,
                 worker_kapi: None,
-                oran_bellekte: false,
+                oran_ayari: None,
             },
             Vec::new(),
             dil::yetkinlik::YetkinlikPolitikasi::gelistirici(),

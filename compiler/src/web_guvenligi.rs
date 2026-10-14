@@ -9,6 +9,7 @@ use std::collections::BTreeSet;
 
 mod depo;
 mod oran_bellek;
+pub use oran_bellek::{BellekOranAyari, OranDoluluk};
 mod oturum_yonetimi;
 use depo::{Depo, DepoDurumu};
 
@@ -155,8 +156,16 @@ impl WebGuvenligi {
     /// Yeniden başlatma kotayı sıfırlar. Çok worker için ortak proxy kotası gerekir.
     #[cfg(not(target_arch = "wasm32"))]
     pub fn kalici_bellek_oranli(yol: impl Into<std::path::PathBuf>) -> Self {
+        Self::kalici_bellek_oran_ayarli(yol, BellekOranAyari::default())
+    }
+
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn kalici_bellek_oran_ayarli(
+        yol: impl Into<std::path::PathBuf>,
+        ayar: BellekOranAyari,
+    ) -> Self {
         Self {
-            oran_bellek: Some(oran_bellek::OranBellek::default()),
+            oran_bellek: Some(oran_bellek::OranBellek::yeni(ayar)),
             ..Self::kalici(yol)
         }
     }
@@ -475,7 +484,7 @@ impl WebGuvenligi {
             .web()
             .oran_anahtari_sayisi();
         if let Some(depo) = &self.oran_bellek {
-            return depo.artir(anahtar, an_ms, pencere_ms, sinir, azami_anahtar);
+            return depo.artir(anahtar, an_ms, pencere_ms, sinir, tur);
         }
         self.depo.guncelle(|durum| {
             durum

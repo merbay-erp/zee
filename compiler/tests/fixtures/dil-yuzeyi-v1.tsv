@@ -174,4 +174,8 @@ profil	eszamanlilik	aktif	0.8.0-dev	conformance/eszamanlilik/zee-esz-1.json	"kim
 profil	io	aktif	0.8.0-dev	compiler/src/yorumlayici/io_profili.rs	pub const DETERMINISTIK_IO_PROFILI: &str = "zee-io-1";
 profil	morfoloji	aktif	0.7.0	compiler/src/morfoloji.rs	pub const MORFOLOJI_PROFILI: &str = "zee-tr-1";
 profil	web-oran-deposu.bellek	aktif	0.8.0-dev	compiler/src/main.rs	"--web-oran-deposu"
+profil	web-oran-doluluk.en-eski	aktif	0.8.0-dev	compiler/src/main.rs	"--web-oran-doluluk"
+profil	web-oran-doluluk.reddet	aktif	0.8.0-dev	compiler/src/main.rs	"--web-oran-doluluk"
+profil	web-oran-kapasitesi	aktif	0.8.0-dev	compiler/src/main.rs	"--web-oran-kapasitesi"
+profil	web-oran-siniri	aktif	0.8.0-dev	compiler/src/main.rs	"--web-oran-siniri"
 tani	kimlik-semasi	aktif	0.8.0-dev	compiler/tests/fixtures/tani-kimlikleri-v1.tsv	# Zee tanı kimliği fixture'ı — şema 1

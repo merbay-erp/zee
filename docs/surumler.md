@@ -1568,3 +1568,14 @@ uzak kanıt 4077efe28; [tam kanıt](incelemeler/k218/README.md). Varsayılan
 ortak kota ve kalıcı oturum paylaşımı korunur; explicit bellek seçiminde
 proxy ortak saldırı bütçesi gerekir. Windows runtime/RC/usability ve
 §3/2–5 açık kalır; bu değişiklik V1 hazır veya canlı yükseltme değildir.
+
+### K-219 — Bellek oran ayarları
+
+[ADR-090](../adr/090-web-oran-ayarlari.md) / RFC-0032 ile yalnız explicit
+bellek backend’i için `--web-oran-siniri`, `--web-oran-kapasitesi` ve
+`--web-oran-doluluk` eklenir. Varsayılan 100/60 sn, 32768 ve reddet;
+en-eski yalnız uç nokta pencerelerini çıkarır, login/CSRF canlı sayaçları
+korunur. Tahliye ile uç nokta kotası sıfırlanabilir; proxy ortak saldırı
+bütçesi gerekir. Dosya backend’i ve kalıcı oturum paylaşımı değişmez.
+Kod/test/spec aynı dilimdedir; exact soak, tam faz ve Gitsrv kabulü
+[kanıt sayfasında](incelemeler/k219/README.md) sonuçlanır. Ürün sunucusu yükseltilmedi.

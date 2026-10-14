@@ -142,14 +142,14 @@ fn derleme_donemi(klasor: &Path, kaynaklar: &[String]) -> Result<(), String> {
     Ok(())
 }
 
-// K-218: her dönemde tam 32.768 oran anahtarı eklenir ve önceki pencere
-// dolarak temizlenir. Bu süreç RSS'i yeni uzun ömürlü tamponu da kapsar.
+// K-219: her dönemde 32.768 anahtar + 4.096 tahliye çalışır; sonraki
+// dönemde süre dolumu üç indeksi temizler. Bu süreç RSS'i yeni uzun ömürlü tamponu da kapsar.
 fn oran_donemi(depo: &mut dil::web_guvenligi::WebGuvenligi, donem: u64) -> Result<(), String> {
     let an = i64::try_from(donem)
         .map_err(|_| "soak dönem taşması")?
         .saturating_mul(60_000);
     depo.istegi_baslat_kimlikle(None, "192.0.2.1", an)?;
-    for i in 0..32_768 {
+    for i in 0..36_864 {
         let karar = depo.rate_limit_artir(
             dil::web_guvenligi::RateLimitTuru::Ucnokta,
             &format!("soak/{donem}/{i}"),
@@ -418,10 +418,15 @@ fn gecmise_ekle(yol: &Path, satir: &str) -> Result<(), String> {
 fn calistir() -> Result<bool, String> {
     let ayarlar = argumanlari_oku()?;
     let (golden_klasoru, kaynaklar) = golden_kaynaklari(&ayarlar.depo)?;
-    let mut oran = dil::web_guvenligi::WebGuvenligi::kalici_bellek_oranli(
+    let mut oran = dil::web_guvenligi::WebGuvenligi::kalici_bellek_oran_ayarli(
         ayarlar
             .depo
             .join("compiler/target/soak-kullanilmayan-oturum.json"),
+        dil::web_guvenligi::BellekOranAyari::yeni(
+            100,
+            32_768,
+            dil::web_guvenligi::OranDoluluk::EnEski,
+        )?,
     );
     let mut lsp = LspSureci::baslat(&ayarlar.dillsp)?;
     let kendi_pid = std::process::id();

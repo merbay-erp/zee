@@ -55,3 +55,5 @@ dosya kontrolüyle değil bütün proje `dil dene .` ile alınır. Ham ürün E
 canlı dağıtım ve otomatik parola göçü bu işte yapılmaz.
 
 | RFC-0031 | [Bellek oran backend’i](0031-bellek-oran-deposu.md) | **geçici kabul** (K-218) | ADR-089, spec/12 |
+
+| RFC-0032 | [Bellek oran sınırı ve doluluk ayarları](0032-web-oran-ayarlari.md) | **geçici kabul** (K-219) | ADR-090, spec/12 |

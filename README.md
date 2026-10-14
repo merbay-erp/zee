@@ -150,10 +150,10 @@ Değişikliğe özel test, belge ve güvenlik kapıları [AGENTS.md](AGENTS.md) 
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **782** |
+| Rust + doctest vakası | **788** |
 | Tanı kimliği | **159 etkin + 3 ayrılmış** |
-| RFC | **31** (2 kabul, 26 geçici kabul, 3 taslak) |
-| ADR | **87** (87 kabul) |
+| RFC | **32** (2 kabul, 27 geçici kabul, 3 taslak) |
+| ADR | **88** (88 kabul) |
 | Normatif spec bölümü | **28** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
@@ -213,3 +213,6 @@ Windows runtime kanıtı ve GitHub destek teyidi açık kalır.
 `--web-oran-deposu bellek` süreç başına oran deposunu seçebilir. Oturum
 paylaşımı sürer; restart ve ayrı worker sayaçları ayrıdır.
 [Karar ve sınırlar](adr/089-bellek-oran-deposu.md).
+Bu kipte `--web-oran-siniri`, `--web-oran-kapasitesi` ve
+`--web-oran-doluluk en-eski` seçilebilir. Tahliye uç nokta kotasını sıfırlayabilir;
+giriş/CSRF canlı sayaçları korunur. [Ayarlar](adr/090-web-oran-ayarlari.md).

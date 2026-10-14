@@ -1324,3 +1324,13 @@ K-218 kabul dilimi: gerçek zee-cekirdek 100 kartlık yük reproducer'ı, explic
 CLI bellek backend'i, atomik/süre/kapasite/iki-süreç testleri ve ADR-089/RFC-0031.
 Exact 1800 sn soak ve gerçek ürün yük kabulü [K-218 kanıtında](incelemeler/k218/README.md); Gitsrv sürekli CI tamamlandı; Windows runtime ve sürüm adayı kapıları ayrı açıktır. §3/2 doluluk/kota,
 §3/3 HTTP POST, §3/4 HTML temizleyici ve §3/5 LSP artımlılık açık kalır.
+
+## K-219 — Oran sınırı ayarı ve korunmuş doluluk
+
+Durum: **KABUL KANITI BEKLENİYOR**. Ürün §3/2: bellek backend’i için
+uç nokta eşiği, sınırlı kapasite ve explicit en-eski pencere tahliyesi.
+Giriş/CSRF canlı kotası korunur; tümü korunmuş dolulukta 503 sınırı sürer.
+[ADR-090](../adr/090-web-oran-ayarlari.md), RFC-0032, olumlu/olumsuz CLI,
+clone/churn ve gerçek 100 kart worker testi aynı dilimdedir.
+Exact 1800 sn soak, tam faz ve Gitsrv kapanışı [kanıt sayfasında](incelemeler/k219/README.md).
+§3/3 HTTP POST, §3/4 HTML temizleyici ve §3/5 LSP artımlılık sıradadır.

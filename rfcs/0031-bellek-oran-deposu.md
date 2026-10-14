@@ -15,7 +15,7 @@ dil çalıştır --web-proxy https://panel.example --web-worker-port 18097 --web
 ```
 
 Oran sayacı süreç başına, oturum dosyası süreçler arasında ortaktır. Ortak
-proxy kotasıyla birlikte seçilmelidir; restart oranı sıfırlar. PostgreSQL,
-kota ayarı ve aktif kayıt tahliyesi kapsam dışı açık işlerdir. Karar ve
+proxy kotasıyla birlikte seçilmelidir; restart oranı sıfırlar. PostgreSQL bu RFC’de açık kalır. Kota ayarı ve explicit uç nokta tahliyesi
+[RFC-0032](0032-web-oran-ayarlari.md) / K-219 dilimindedir. Karar ve
 olumlu/olumsuz test zinciri [ADR-089](../adr/089-bellek-oran-deposu.md) ve
 [spec/12](../spec/12-web-guvenlik-profili.md) içindedir.

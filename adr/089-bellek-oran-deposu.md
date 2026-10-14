@@ -27,15 +27,17 @@ okumaması, auth erişimi vermek anlamına gelmez.
 
 ## Boyut ve süre
 
-Sabit 32.768 anahtar, mevcut endpoint/CSRF/giriş profilleri korunur. Canlı
+Varsayılan 32.768 anahtar, mevcut endpoint/CSRF/giriş profilleri korunur. Canlı
 kayıt tahliye edilmez; dolu depoda yalnız yeni anahtar reddedilir (503),
 mevcut kota işlemeye devam eder. Son tarihe göre BTreeSet ve kayıt BTreeMap
 birlikte kilitlenir; her istek tüm tabloyu taramaz. İndeks her canlı kayıt
 başına tek giriş taşır; süre dolunca ikisinden de çıkarılır. Sistem saati
 geri giderse aktif pencereler uzayabilir; kotalar sıfırlanmaz.
 
-§3/2 ayarlanabilir kota/doluluk politikası ayrı açık iştir. En eski canlı
-kotayı düşürmek saldırganın limitini sıfırlayabilir; bu işte eklenmedi.
+§3/2 ayarlanabilir kota/doluluk politikası [K-219 / ADR-090](090-web-oran-ayarlari.md)
+ile ayrı dilimdedir. En eski canlı kotayı düşürmek saldırganın limitini
+sıfırlayabilir; K-218 varsayılan seçimi bunu eklemez. K-219 yalnız explicit
+uç nokta tahliyesi sunar; canlı giriş/CSRF sayaçları korunur.
 
 ## Kabul ve etki incelemesi
 
