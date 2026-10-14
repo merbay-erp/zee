@@ -135,3 +135,15 @@ yeniden etiketlenmedi. Ayrı koşularda örtüşen vakalar yeni toplam gibi
 birleştirilmez. Takip belge commit'i testleri kendi HEAD'ine taşımaz;
 uzak CI/platform/ürün/RC kabulü değildir. 39 plan maddesinin açık kapasitesi
 ve kullanıcıca bekletilen kararlar korunur.
+
+K-245/P25 credential host pilotu (ADR-105/GB-068) mevcut env izinlerini
+koruyan POSIX dosya köprüsüdür;14 actual vaka native allowlist/SMTP dahil
+yürütülür. Exact temiz kaynak kabulü devam eder; Windows/systemd/canlı
+ürün ve file-native sır inheritance sınırı tam P25 olarak kapanmaz.
+
+K-246/P13 (ADR-106/GB-069) worker host identity+ayrı readiness ve sahipli
+cleanup pilotudur; public launcher cleanup bug'ı 25-vaka çalışma ağacı kabulüyle kapandı; temiz exact tekrar bekler.
+Tam request drain/reload/metrics ve P14 socket devir açıktır.
+K-247/P09 (ADR-107/GB-070) dar idempotent SQL queue helper'ıdır;11 native
+PG crash/COMMIT observer ve16 validator aday kabulü vardır, temiz exact
+kabul devam eder. Canlı ürün adoptionı, SMTPretry ve full P08 açık kalır.

@@ -1555,3 +1555,22 @@ Kaynak düzeltmesi ve olumlu/olumsuz testler hazırdır; exact source/provenance
 ve faz kabulü devam eder. [ADR-108](../adr/108-lsp-uri-utf8-yolu.md) gerçek
 stdio Türkçe klasör arızasına minimal byte çözümünü ve iki satırlık native
 regresyonu bağlar. P08, insan/platform/RC kabulü bu işten kapanmaz.
+
+## K-245 — P25 credential host pilotu
+
+**KISMİ.** [ADR-105](../adr/105-credential-host-koprusu.md) mevcut env
+yüzeyine POSIX dosya köprüsü ekler;14 native dahil actual vaka hazırdır,
+exact temiz kabul devam eder. Windows/systemd/canlı ürün ve file-native
+sır inheritance sınırı P25 için açıktır.
+
+## K-246 — P13 worker host pilotu
+
+**KISMİ.** K-246/P13 (ADR-106/GB-069) worker host identity+ayrı readiness ve sahipli
+cleanup pilotudur; public launcher cleanup bug'ı 25-vaka çalışma ağacı kabulüyle kapandı; temiz exact tekrar bekler.
+Tam request drain/reload/metrics ve P14 socket devir açıktır.
+
+## K-247 — P09 kalıcı SQL queue prototipi
+
+**KISMİ.** K-247/P09 (ADR-107/GB-070) dar idempotent SQL queue helper'ıdır;11 native
+PG crash/COMMIT observer ve16 validator aday kabulü vardır, temiz exact
+kabul devam eder. Canlı ürün adoptionı, SMTPretry ve full P08 açık kalır.

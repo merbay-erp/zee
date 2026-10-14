@@ -12,6 +12,7 @@ Kaynak: `regression/v2.tsv`
 | cli | 1 |
 | concurrency | 2 |
 | hir | 4 |
+| lsp | 1 |
 | morphology | 2 |
 | parser | 5 |
 | runtime | 6 |
@@ -27,9 +28,9 @@ Kaynak: `regression/v2.tsv`
 | S030 | 1 |
 | T017 | 1 |
 | T054 | 2 |
-| - | 18 |
+| - | 19 |
 
-Toplam 29 vaka; `-` tanısız çalışma/eşzamanlılık vakasıdır. Tam 40 karakterlik `fixed_by` commit'i taşıyan vaka: 29/29.
+Toplam 30 vaka; `-` tanısız çalışma/eşzamanlılık vakasıdır. Tam 40 karakterlik `fixed_by` commit'i taşıyan vaka: 30/30.
 
 ## Güvenlik bulguları
 
@@ -39,11 +40,11 @@ Kaynak: `docs/guvenlik-bulgulari-v1.tsv`
 | --- | --- | --- | --- | --- |
 | kritik | 1 | 0 | 0 | 1 |
 | yuksek | 16 | 0 | 0 | 16 |
-| orta | 23 | 6 | 1 | 30 |
-| dusuk | 13 | 7 | 0 | 20 |
+| orta | 24 | 7 | 1 | 32 |
+| dusuk | 13 | 8 | 0 | 21 |
 
 Kapı: açık kritik/yüksek bulgu 0 → **GEÇTİ** (ADR-066 sürekli kapı koşulu).
-Toplam bulgu: 67.
+Toplam bulgu: 70.
 
 ## Spec maddeleri
 
@@ -102,10 +103,10 @@ Kaynak: `docs/dogfood-projeleri-v1.tsv + dogfood/korpus-v1.tsv`
 | legacy-panel | 6 | 4 | 0 | 7 | 3 | 10 |
 | urun-e | 1 | 0 | 0 | 1 | 0 | 1 |
 | zeedili-com | 0 | 0 | 1 | 1 | 0 | 1 |
-| zee-cekirdek | 4 | 1 | 3 | 8 | 0 | 8 |
+| zee-cekirdek | 5 | 1 | 3 | 9 | 0 | 9 |
 | zee-erp | 2 | 0 | 0 | 2 | 0 | 2 |
 
-Toplam korpus vakası: 49.
+Toplam korpus vakası: 50.
 
 ## Deprecation kayıtları
 
@@ -139,15 +140,15 @@ Kaynak: `docs/compiler-degisiklik-beyanlari-v1.tsv + docs/core-freeze-beyanlari-
 | Değişiklik sınıfı | Beyan |
 | --- | --- |
 | maintenance | 38 |
-| semantic-bugfix | 6 |
+| semantic-bugfix | 7 |
 | semantic-change | 38 |
 
 | Freeze sınıfı | Beyan |
 | --- | --- |
-| bugfix | 1 |
+| bugfix | 2 |
 | correctness | 14 |
 | dogfood-change | 21 |
 | maintenance | 35 |
 | security | 7 |
 
-Toplam: 82 compiler değişiklik beyanı, 78 core freeze beyanı.
+Toplam: 83 compiler değişiklik beyanı, 79 core freeze beyanı.

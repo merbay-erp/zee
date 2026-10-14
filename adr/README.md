@@ -115,4 +115,7 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 
 | ADR-103 | [Native COMMIT belirsizliği kanıtı](103-native-commit-belirsizligi-kaniti.md) | **kabul** (K-242/GB-065) |
 | ADR-104 | [Exact kaynak arşivi sınırı](104-exact-kaynak-arsivi-siniri.md) | **kabul** (K-243/GB-066) |
+| ADR-105 | [Credential host köprüsü](105-credential-host-koprusu.md) | **kabul, sınırlı POSIX pilot** (K-245/GB-068) |
+| ADR-106 | [Worker host yaşam döngüsü](106-worker-host-yasam-dongusu.md) | **kabul, sınırlı POSIX pilot** (K-246/GB-069) |
+| ADR-107 | [Kalıcı SQL iş kuyruğu pilotu](107-kalici-sql-is-kuyrugu-pilotu.md) | **kabul, dar SQL prototipi** (K-247/GB-070) |
 | ADR-108 | [LSP URI UTF-8 yolu](108-lsp-uri-utf8-yolu.md) | **kabul** (K-248) |

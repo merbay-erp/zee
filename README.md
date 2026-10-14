@@ -155,10 +155,10 @@ Değişikliğe özel test, belge ve güvenlik kapıları [AGENTS.md](AGENTS.md) 
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **899** |
+| Rust + doctest vakası | **902** |
 | Tanı kimliği | **159 etkin + 3 ayrılmış** |
 | RFC | **34** (2 kabul, 29 geçici kabul, 3 taslak) |
-| ADR | **103** (103 kabul) |
+| ADR | **106** (106 kabul) |
 | Normatif spec bölümü | **28** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
@@ -243,3 +243,8 @@ provider/ürün kabulü açık; IO izi/WASM gönderim yapmaz.
 K-248 LSP yüzde UTF-8 dosya yolu düzeltmesi ve gerçek stdio regresyonu
 [ADR-108](adr/108-lsp-uri-utf8-yolu.md) ile kaydedilir; exact source/faz
 kabulü yeni devam kaydında tamamlanır.
+
+Sınırlı POSIX [credential host köprüsü](docs/credential-baslat.md),
+[worker yaşam döngüsü](docs/worker-supervisor.md) ve mevcut SQL ile
+[kalıcı iş kuyruğu prototipi](dogfood/zee-cekirdek/is-kuyrugu/README.md)
+teknik pilot dilimleridir; P09/P13/P25 tam ürün kabulü açık kalır.
