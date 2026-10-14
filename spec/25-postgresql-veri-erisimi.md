@@ -138,7 +138,12 @@ F031 saha profili pinned deney CA'sıyla gerçek hostname/CA reddini, dört
 bağlantılık exhaustion sınırını, stale backend atımını, idle cleanup'ı,
 300 saniye + bakım çevrimi sonunda lease dönüşünde lifetime yenilemeyi ve kontrollü worker
 kapanışını kanıtlamıştır. Hermetik CI aynı havuz invariants'ını sahte manager
-üzerinden zorlar; gerçek TLS koşusu açık ortam değişkenli saha testidir.
+üzerinden zorlar. K-222 ayrı gerçek PostgreSQL kapısı kendi geçici CA/key
+ve cluster'ında doğru CA/hostname/TLS 1.2, yanlış CA/SAN ve NULL/non-text
+reddini dört sıfır-atlamalı vakada zorlar. Default faz bu gerçek-fixture
+vakalarını ignored olarak raporlar; dedicated sürekli Linux koşucusu eksik
+ortamı veya eksik/atlanan testleri reddeder. Bağımsız TLS 1.1 downgrade
+reddi ve managed-provider saha kapsamı bu kabulün dışında kalır.
 
 ## Açık sınır
 

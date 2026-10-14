@@ -34,7 +34,7 @@ işlem ustGezinmeyiHazirla
 işlem altBolumuHazirla
     Metin döndürür
 
-    marka "<div class='alt-marka'><a class='marka' href='/'><img src='/assets/brand/zee-mark-acik.svg?v=k190a1' width='90' height='40' alt='zee'></a><p>Türkçe yazılan, kesin çalışan, genel amaçlı programlama dili. Kaynak açık, gelişim kanıta bağlı.</p></div>" olsun
+    marka "<div class='alt-marka'><a class='marka' href='/'><img src='/assets/brand/zee-mark-acik.svg?v=k190a1' width='90' height='40' alt='zee'></a><p>Türkçe yazılan, kesin çalışan, genel amaçlı programlama dili. Depo erişimi sınırlı; lisans kararı bekleniyor. Gelişim kanıta bağlı.</p></div>" olsun
     ogren "<div><h2>Öğren</h2><a href='/ogren/'>Başlangıç</a><a href='/dil/'>Dil turu</a><a href='/ornekler/'>Örnekler</a><a href='/playground/'>30 dakikada Zee</a></div>" olsun
     belge "<div><h2>Başvuru</h2><a href='/belgeler/'>Belgeler</a><a href='/belge/spec/' rel='noreferrer'>Spesifikasyon</a><a href='/belge/hata-katalogu/' rel='noreferrer'>Hata kataloğu</a><a href='/belge/surumler/' rel='noreferrer'>Sürüm notları</a></div>" olsun
     proje "<div><h2>Proje</h2><a href='/manifesto/'>Manifesto</a><a href='/yol-haritasi/'>Yol haritası</a><a href='/indir/'>Kurulum</a></div>" olsun

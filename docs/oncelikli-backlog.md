@@ -1362,3 +1362,48 @@ A6(1) minimal correctness: bilinmeyen `--` seçenek yol değildir, exit 2
 ve etkin sürümle reddedilir. Program argümanları korunur.
 [ADR-092](../adr/092-cli-bilinmeyen-secenek-reddi.md).
 A6(2) runtime config ayrı açık kapsamdır; K-174 grameri değişmez.
+
+## K-222 — Hermetik PostgreSQL TLS ve NULL kabulü
+
+Yerel Docker PG16.15 ve native PG14.18 dört dedicated vaka sıfır atlamayla
+geçti; GB-022 kapandı. Aktif Forgejo CI kablosu eklendi, yeni exact uzak
+CI kabulü henüz yok. [Koşucu ve sınırlar](postgresql-tls-ci.md).
+Default tam faz dört ignored testi ayrı gösterir; dedicated kapı 4/4 ister.
+
+## K-223 — Mevcut dilde girişte parola yükseltme ve form kabulü
+
+Anonim ürün helper/CAS ve Turnstile form kabulü mevcut primitive'lerle
+sınanır. Hermetik model native DB yarışı veya canlı ürün migration değildir;
+ürün ve staging sınırı açıktır. [Rehash](../dogfood/zee-cekirdek/parola-goc/README.md).
+
+## K-224 — Pilot destek ve kaynak kanıtı
+
+Kullanıcı lisansı bekletti, sınırlı pilot desteği seçti. Kaynak/ZIP exact
+eşlik raporu, private depo/GB-046 sınırı ve site kaynak metni tutarlıdır.
+Destek taslağı gönderilmedi; site değişikliği dağıtılmadı.
+[Onaylı iş matrisi](urunlesme-plani.md).
+
+## K-225 — Beş doğrudan spec kanıt boşluğu
+
+UTF-8 ret, S005 girinti, T015 çağrı sayısı, C005 girdi bitişi ve
+parametresiz public T039 ret/olumlu yolları mevcut test hedeflerinde
+doğrudan kanıtlandı. Production davranışı veya grammar değişmedi.
+
+## K-226 — Deterministik compiler build kimliği
+
+A1 SemVer/SHA/source UTC tarih/kanal/dirty JSON; CLI/LSP/worker aynı kayıt.
+[ADR-093](../adr/093-deterministik-build-kimligi.md). Yeni grammar yok;
+asıl dil iki-clone release ve yeni exact uzak CI kabulü ayrı kapıdır.
+
+## K-227 — Minimal ürün modül kompozisyonu
+
+Yerel paket + host rota adapteri mevcut `rotalarını kullan` ile metin
+ankrajı olmadan kur/kaldır kabulünü taşır; 2/2 CLI/proje kabulü.
+[Exact anonim köken](../dogfood/zee-cekirdek/modul-kompozisyonu/README.md).
+Genel modül yöneticisi, namespace/version-range/menu/content/göç açık kalır.
+
+## K-230 — Güncel dış inceleme izlenebilirliği
+
+[27/27 güncel tablo](dis-inceleme-2026-10-13.md) tarihi kaynak ile committed
+K-221 ve aday/yerel K-222/K-226 kanıtını ayırır. PGGB041/LSP kapanan
+alt kapsamlar yeniden açılmaz; tam adversarial audit K-205'te açık kalır.

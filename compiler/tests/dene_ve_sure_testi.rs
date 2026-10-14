@@ -3,6 +3,28 @@
 use dil::{kaynagi_calistir, kaynagi_calistir_girdiyle};
 
 #[test]
+fn etkilesimsiz_girdi_bitisinde_c005_sonraki_cumleyi_calistirmaz() {
+    let kaynak = "\"Birinci?\" diye sor\nilk yanıt olsun\n\"İkinci?\" diye sor\n\"sonra\" yaz\n";
+    let program = dil::kaynagi_derle(kaynak).unwrap();
+    let mut io = dil::yorumlayici::ToplayanIo::yeni(vec!["bir".into()]);
+    let hata =
+        dil::yorumlayici::calistir_io(&program, &mut io).expect_err("ikinci soruda girdi kalmadı");
+    assert_eq!(hata.kod, "C005");
+    assert_eq!((hata.satir, hata.sutun, hata.uzunluk), (3, 1, 1));
+    assert_eq!(hata.mesaj, "Soruya verilecek girdi kalmadı.");
+    assert_eq!(io.cikti, ["Birinci?", "İkinci?"]);
+    assert_eq!(
+        kaynagi_calistir_girdiyle(kaynak, vec!["bir".into(), "iki".into()]).unwrap(),
+        ["Birinci?", "İkinci?", "sonra"]
+    );
+    // Erken sonlanma soru tüketmez; girdi bitişiyle karıştırılmaz.
+    assert_eq!(
+        kaynagi_calistir("\"önce\" yaz\nprogramı bitir\n\"Soru?\" diye sor\n").unwrap(),
+        ["önce"]
+    );
+}
+
+#[test]
 fn sayiyi_almayi_dene_cokme_yerine_sonuc() {
     // Sayı tahmini oyununun kırılgan noktası: çocuk "elma" yazarsa program
     // çökmez, konuşur.

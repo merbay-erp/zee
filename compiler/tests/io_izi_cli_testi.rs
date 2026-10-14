@@ -32,6 +32,33 @@ fn calistir(argumanlar: &[&Path], metinler: &[&str]) -> std::process::Output {
 }
 
 #[test]
+fn cli_gecersiz_utf8_kaynagi_derlemeden_ve_calistirmadan_reddeder() {
+    let klasor = gecici_klasor("utf8");
+    let kaynak = klasor.join("program.dil");
+    // Geçerli çok baytlı Türkçe kaynak aynı CLI yollarında kabul edilir.
+    std::fs::write(&kaynak, "\"çığ Öğrenci\" yaz\n").unwrap();
+    let olumlu = calistir(&[&kaynak], &["çalıştır"]);
+    assert!(olumlu.status.success(), "{olumlu:?}");
+    assert_eq!(String::from_utf8(olumlu.stdout).unwrap(), "çığ Öğrenci\n");
+
+    // Baştaki doğru program, kayıp/overlong/truncated UTF-8 yerine U+FFFD
+    // kullanılarak kısmen çalıştırılamaz. Kaynak okuma tamamlanmadan IO yoktur.
+    for bozuk in [vec![0xff], vec![0xc0, 0xaf], vec![0xe2, 0x82]] {
+        let mut baytlar = b"\"calismamali\" yaz\n# ".to_vec();
+        baytlar.extend(bozuk);
+        std::fs::write(&kaynak, baytlar).unwrap();
+        for komut in ["denetle", "çalıştır"] {
+            let olumsuz = calistir(&[&kaynak], &[komut]);
+            assert_eq!(olumsuz.status.code(), Some(2), "{komut}: {olumsuz:?}");
+            let stderr = String::from_utf8(olumsuz.stderr).unwrap();
+            assert!(stderr.contains("geçerli UTF-8 metin değil"), "{stderr}");
+            assert!(olumsuz.stdout.is_empty(), "bozuk kaynak IO üretemez");
+        }
+    }
+    std::fs::remove_dir_all(klasor).unwrap();
+}
+
+#[test]
 fn cli_kaydi_dis_dunyasiz_ayni_ciktiyla_oynatir() {
     let klasor = gecici_klasor("roundtrip");
     let kaynak = klasor.join("program.dil");

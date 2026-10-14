@@ -1,0 +1,7 @@
+# K-227: modülün host tarafındaki açık rota birimi; metin kancası yoktur.
+
+katalog paketini kullan
+
+GET "/katalog" adresine istek geldiğinde
+    sayfa katalogSayfasi olsun
+    sayfa yanıtını gönder

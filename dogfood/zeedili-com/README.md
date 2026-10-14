@@ -53,7 +53,7 @@ kuruldu:
   tanı biçimlendirmesini tek yerde tutar. DOM'a yalnız `textContent` yazar.
 - Dil turu, öğren, belgeler ve kurulum sayfaları kenar menülü belge
   düzenindedir; “Çalıştır” taşıyan her örnek gerçek derleyiciden geçer.
-- Depo bağlantıları public deponun varsayılan dalı `master`'a gider;
+- Depo bağlantıları özel ana kaynağın varsayılan dalı `master`'a gider;
   `scripts/dogrula.sh` `blob/main` bağlantısını reddeder.
 - Ana CSS/JS ve kimlik varlıkları sürümlü URL (`?v=k190a1`) ile çağrılır.
 
@@ -195,8 +195,11 @@ dogfood/zeedili-com/scripts/dogrula.sh
   üretir. Deneysel localhost profili `text/plain` verdiği için yalnız yerel ön
   kapı geliştirme sırasında içerik türünü uyarlar; production Nginx worker'ın
   içerik türünü korur ve daha sıkı site CSP'sini tekilleştirir.
-- Kaynak depo herkese görünür olsa da lisans seçimi ayrı kurucu kararıdır;
-  site yeniden dağıtım lisansı vaat etmez.
+- Kaynak depo özeldir; lisans seçimi bekler. Kaynak alt bilgisi sınırlı depo
+  erişimini açıkça söyler; site yeniden dağıtım lisansı vaat etmez. K-224
+  kaynak düzeltmesi yerel kabul içindir; canlı dağıtım yapılmış sayılmaz.
+  [Pilot destek politikası](../../docs/urun-destek-politikasi.md), güvenlik ve
+  uyumluluk kapılarına bağlı destek kapsamını tanımlar.
 - sunucu A worker ve dosya dağıtımı otomatikleştirilmiştir. 7 Ekim 2026'da
   https://zeedili.com public yayına girdi: Cloudflare proxy'li A kayıtları,
   DNS-01 Let's Encrypt sertifikası ve `scripts/canli-dogrula.sh` ile 14 uç

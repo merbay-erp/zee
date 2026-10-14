@@ -84,6 +84,41 @@ fn disari_acik_islem_tam_sozlesme_ister() {
 }
 
 #[test]
+fn parametresiz_public_islem_donus_bildirimi_yoksa_t039dur() {
+    let kaynak = "sabitler birimini kullan\n";
+    let dosyalar = HashMap::from([("sabitler", "işlem bir ver\n    1 döndür\n")]);
+    // Çağrılmayan parametresiz export da bütün birim yüzeyinde denetlenir.
+    let hata = calistir(kaynak, dosyalar).expect_err("T039 dönüş bildirimi ister");
+    assert_eq!(hata.kod, "T039");
+    assert_eq!((hata.satir, hata.sutun, hata.uzunluk), (1, 1, 1));
+    assert!(hata.mesaj.contains("bir ver"), "{}", hata.mesaj);
+    assert!(hata.mesaj.contains("sabitler"), "{}", hata.mesaj);
+    assert!(hata.oneri.as_deref().unwrap().contains("<Tür> döndürür"));
+
+    let tam = HashMap::from([(
+        "sabitler",
+        "işlem bir ver\n    TamSayı döndürür\n    1 döndür\n",
+    )]);
+    assert!(calistir(kaynak, tam.clone()).unwrap().is_empty());
+    assert_eq!(
+        calistir(
+            "sabitler birimini kullan\nsonuç bir ver olsun\nsonuç yaz\n",
+            tam
+        )
+        .unwrap(),
+        ["1"]
+    );
+    let void = HashMap::from([(
+        "sabitler",
+        "işlem selam ver\n    değer döndürmez\n    \"selam\" yaz\n",
+    )]);
+    assert_eq!(
+        calistir("sabitler birimini kullan\nselam ver\n", void).unwrap(),
+        ["selam"]
+    );
+}
+
+#[test]
 fn public_kapsayici_ve_ozyineleme_cagri_sirasindan_bagimsizdir() {
     let birim = "\
 işlem toplamını hesapla

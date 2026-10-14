@@ -1,0 +1,8 @@
+# K-227: gerçek C3 modül ihtiyacının anonim site kabulü.
+proje "modulkabulu" olsun
+sürüm "0.1.0" olsun
+morfoloji "zee-tr-1" olsun
+giriş "ana.dil" olsun
+yetkinlikler "ağ-sunucusu" listesi olsun
+ağ_hedefleri boş liste olsun
+yerel_bağımlılıklar "../katalog" listesi olsun

@@ -357,3 +357,12 @@ K-220 / ADR-091 etki incelemesi: kaynak toolchain/flags/Cargo graph ve sabit ben
 ## K-207 — Güncel HTTP master ön incelemesi
 
 [Exact gözlem](incelemeler/k207/http-master-20261014/README.md): temiz c743312 release kaynağında standart aynı-metin ölçümü 3 örnek/2 ısınma, gerçek son literal değişimi 5 örnek/2 ısınma ile yeniden ölçüldü; 20k gerçek stdio p95 165,731 ms. Yeni compiler optimizasyonu, artımlılık kapanışı veya kalıcı benchmark tabanı değildir. Ürün ana dosyası sayısı eksik üretilen katalog nedeniyle iki A010 taşır; hatasız tüm üretim projesi kabulüne çevrilmez. K-207 full didChange ve cache/artımlılık sınırı açık kalır.
+
+## K-226 build kimliği etki incelemesi
+
+Build JSON'u compile-time sabit metindir; response başlığına mevcut
+güvenlik başlık tamponunda eklenir. Yeni cache/kalıcı durum veya büyüyen
+tampon yoktur. LSP initialize ve HTTP response byte hacmi artar; önceki
+exact SHA ölçümü yeni SHA adına taşınmaz. ADR-045/049 tabanı ve performans
+tarihçesi korunur; yeni ölçüm yalnız temiz checkpointten exact çevre/örnek
+semantiğiyle yazılabilir. İki-clone kabulü farklı bir kapıdır.

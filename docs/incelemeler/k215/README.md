@@ -56,6 +56,11 @@ GitHub destek taslağı [K-214 dizininde](../k214/github-destek-talebi.md)
 genişletilir. PR refs/cache silinmesi destek teyidi bekler (GB-046).
 Depo gizli kalır; yeniden açılış ayrı kullanıcı onayı gerektirir.
 
+14 Ekim 2026 / K-224: [güncel özel depo destek taslağı](github-destek-talebi.md)
+hazırlandı; kullanıcı gönderecektir. Gönderim veya GitHub temizlik teyidi
+alınmış değildir. [Sınırlı pilot destek politikası](../../urun-destek-politikasi.md)
+lisans kararı beklerken güvenlik/uyumluluk kapılarını ve açık kanıtları korur.
+
 ## Etki incelemesi
 
 Spec/RFC metinlerinde yalnız ürün kimliği anonimleşir; grammar/tanı/ABI/API

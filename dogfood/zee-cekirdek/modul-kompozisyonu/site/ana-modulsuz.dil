@@ -1,0 +1,15 @@
+# K-227: modül kaldırıldığında seçilen tam giriş kaynağı; yama uygulanmaz.
+
+işlem cekirdekSayfasi
+    Metin döndürür
+    "Anonim çekirdek" döndür
+
+test "çekirdek sayfası modülsüz çalışır"
+    sayfa cekirdekSayfasi olsun
+    sayfa "Anonim çekirdek" e eşit olmalı
+
+8085 kapısında sunucu başlat
+
+GET "/" adresine istek geldiğinde
+    sayfa cekirdekSayfasi olsun
+    sayfa yanıtını gönder

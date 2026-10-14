@@ -290,6 +290,8 @@ impl Sunucu {
                          \"serverInfo\":{\"name\":\"dillsp\",\"version\":",
                     )?;
                     yazici.metin(env!("CARGO_PKG_VERSION"))?;
+                    yazici.ham(",\"zeeBuild\":")?;
+                    yazici.ham(crate::surum::json())?;
                     yazici.ham("}}")
                 });
                 rpc_yaniti_ekle(&mut cikti, kimlik, yanit);

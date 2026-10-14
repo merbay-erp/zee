@@ -15,7 +15,7 @@ bin_spec_drift	muhendislik	kalici_dosya	Spec madde kanit drift kapisi
 bin_surum_artefakti	muhendislik	-	Tekrar uretilebilir surum artefakti SBOM provenance ve imza
 bin_tani_kalitesi	muhendislik	faz,kalici_dosya	Acemi hatasi mutasyonlariyla tani kalitesi kapisi
 cozumleyici	semantik	agac,hir,intrinsic,kimlik,morfoloji,semantic_model,tani,yetkinlik	Ad tur etki ve HIR kaniti
-dil_cli	adapter	ag_istemcisi,agac,artefakt_dogrulama,bicimleyici,cozumleyici,eposta,faz,gorsel,guvenlik,http_istegi,kalici_dosya,kaynak_sinirlari,morfoloji,paket,postgresql,proje,tani,web_guvenligi,web_yukleme,yayin,yetkinlik,yorumlayici,zaman	Komut satiri ve web host adaptoru
+dil_cli	adapter	ag_istemcisi,agac,artefakt_dogrulama,bicimleyici,cozumleyici,eposta,faz,gorsel,guvenlik,http_istegi,kalici_dosya,kaynak_sinirlari,morfoloji,paket,postgresql,proje,surum,tani,web_guvenligi,web_yukleme,yayin,yetkinlik,yorumlayici,zaman	Komut satiri ve web host adaptoru
 dillsp	adapter	lsp	LSP stdio framing adaptoru
 eposta	altyapi	zaman	Bagimliliksiz SMTP istemcisi ve RFC 5322 ileti kurulumu (K-210)
 faz	semantik	agac,ayristirici,cozumleyici,hir,sozcukleyici,tani	Derleyici faz tipleri ve gecisleri
@@ -29,7 +29,7 @@ kalici_dosya	altyapi	kaynak_sinirlari	Atomik kalici dosya ilkelleri
 kaynak_sinirlari	temel	tani,tani_politikasi	Merkezi kaynak butcesi uygulamasi
 kimlik	temel	-	Semantic kimlik newtype lari
 lib	adapter	agac,ayristirici,cozumleyici,faz,tani,yorumlayici	Dis derleme ve yurutme cephesi
-lsp	adapter	ayristirici,faz,hir,kaynak_sinirlari,kimlik,morfoloji,paket,proje,tani	Editor protokolu ve semantic sorgular
+lsp	adapter	ayristirici,faz,hir,kaynak_sinirlari,kimlik,morfoloji,paket,proje,surum,tani	Editor protokolu ve semantic sorgular
 morfoloji	sozdizimi	guvenlik	Surumlu Turkce ek profili
 ondalik	temel	-	Keyfi hassasiyetli onluk cekirdegi
 paket	proje	agac,artefakt_dogrulama,ayristirici,guvenlik,kalici_dosya,kaynak_sinirlari,paket_modeli,proje,registry,sozcukleyici,tani	Paket grafigi ve kilit cozumu
@@ -39,6 +39,7 @@ proje	proje	agac,bicimleyici,faz,morfoloji,tani,veritabani_modeli,yetkinlik	Proj
 registry	proje	ag_istemcisi,artefakt_dogrulama,guvenlik,kalici_dosya,kaynak_sinirlari,morfoloji,paket_modeli,yetkinlik	Registry metadata ve cache zinciri
 semantic_model	model	kimlik	Checker ve HIR ortak semantic tur modeli
 sozcukleyici	sozdizimi	kaynak_sinirlari,tani	Kaynak metni tokenlastirma
+surum	temel	-	Deterministik compiler kaynak build kimligi; dil semantigi veya export facade degil
 tani	temel	tani_politikasi	Kararli kullanici tanilari
 tani_politikasi	temel	-	Tanilar ile kaynak profili arasindaki bagimliliksiz butce
 veritabani_modeli	model	-	Proje runtime ve adaptorler arasinda davranissiz hedef bildirim ve hata sozlesmesi

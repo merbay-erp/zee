@@ -84,10 +84,20 @@ jobs:
           test "$(go env GOVERSION)" = go1.26.1
           go version
           go env GOOS GOARCH
+      - name: Hermetik gerçek PostgreSQL TLS CA hostname ve NULL kapısı
+        working-directory: kaynak
+        run: |
+          set -euo pipefail
+          apt-get update -qq
+          apt-get install -y -qq postgresql-15 openssl
+          python3 scripts/tests/postgresql-tls-ci-test.py
+          python3 scripts/postgresql-tls-ci.py --engine local --postgres-bin-dir /usr/lib/postgresql/15/bin
       - name: Tam Linux faz matrisi ve kalite kapıları
         working-directory: kaynak/compiler
         run: |
           set -euo pipefail
+          python3 ../scripts/tests/kaynak-ci-esleme-test.py
+          python3 ../scripts/tests/build-kimligi-test.py
           cargo run --locked --bin faz_test_matrisi -- --denetle --rapor target/faz-test-matrisi.md
           derleme="$(cargo build --locked 2>&1)"
           printf '%s\n' "$derleme"
@@ -160,5 +170,7 @@ jobs:
             kaynak/compiler/target/performans.md
             kaynak/compiler/target/performans-gecmisi.tsv
             kaynak/compiler/target/windows-capraz.md
+            kaynak/compiler/target/postgresql-tls-ci.json
+            kaynak/compiler/target/postgresql-tls-ci.log
           if-no-files-found: warn
           retention-days: 90

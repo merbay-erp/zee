@@ -53,10 +53,24 @@ jobs:
           toolchain: 1.93.1
           components: clippy,rustfmt
           targets: wasm32-unknown-unknown
+      - name: Exact kaynak CI ve deterministik build kimliği izolasyonu
+        if: matrix.os == 'ubuntu-latest'
+        shell: bash
+        run: |
+          python3 scripts/tests/kaynak-ci-esleme-test.py
+          python3 scripts/tests/build-kimligi-test.py
       - name: Faza özgü test matrisi
         working-directory: compiler
         shell: bash
         run: cargo run --locked --bin faz_test_matrisi -- --denetle --rapor target/faz-test-matrisi.md
+      - name: Hermetik gerçek PostgreSQL TLS CA hostname ve NULL kapısı
+        if: matrix.os == 'ubuntu-latest'
+        shell: bash
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-16 openssl
+          python3 scripts/tests/postgresql-tls-ci-test.py
+          python3 scripts/postgresql-tls-ci.py --engine local --postgres-bin-dir /usr/lib/postgresql/16/bin
       - name: Faz matrisini iş özetine ekle
         if: always()
         working-directory: compiler
@@ -70,7 +84,10 @@ jobs:
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: faz-test-matrisi-${{ matrix.os }}
-          path: compiler/target/faz-test-matrisi.md
+          path: |
+            compiler/target/faz-test-matrisi.md
+            compiler/target/postgresql-tls-ci.json
+            compiler/target/postgresql-tls-ci.log
           if-no-files-found: warn
       - name: Uyarı yok
         working-directory: compiler

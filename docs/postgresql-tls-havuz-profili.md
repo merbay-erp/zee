@@ -50,6 +50,15 @@ Kontrollü shutdown boş bağlantıları kapatır. Aktif kira zorla kesilmez; so
 sahibi bıraktığında kapanır. Deployment drain süresi uygulamanın en uzun izinli
 transaction süresini taşımalıdır.
 
+## Sürekli izole TLS doğrulaması
+
+K-222/GB-022 koşucusu gerçek PostgreSQL'de doğru CA/hostname/TLS 1.2,
+yanlış CA/hostname ve NULL/non-text sonuç reddini kendi geçici CA/key ve
+kümesiyle dört atlamasız vakada zorlar. Sürekli Linux CI bu kapıyı ayrıca
+çalıştırır; default faz koşusunda dört gerçek-fixture vakası `ignored`
+olarak dürüstçe raporlanır. [Koşucu, exact kimlik ve sınır](postgresql-tls-ci.md).
+Bu yeni kapı production cluster ve uzun havuz soak kanıtı değildir.
+
 ## Saha doğrulaması
 
 Gerçek TLS cluster hazırken opt-in test şu üç değişkenle çalıştırılır:

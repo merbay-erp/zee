@@ -151,3 +151,4 @@ rfcs/0032-web-oran-ayarlari.md	kanitli	compiler/src/web_guvenligi/oran_bellek.rs
 adr/091-http-post-baslik-ve-gizli-ortam.md	kanitli	compiler/tests/http_post_testi.rs,compiler/src/ag_istemcisi/istek.rs	K-220 ürün helper, CLI ortam, trace, JSON, TLS POST ve sınır kanıtı
 rfcs/0033-http-post-baslik-ve-gizli-ortam.md	kanitli	compiler/tests/http_post_testi.rs,compiler/src/ag_istemcisi/istek.rs	K-220 ürün helper, CLI ortam, trace, JSON, TLS POST ve sınır kanıtı
 adr/092-cli-bilinmeyen-secenek-reddi.md	kanitli	compiler/tests/cli_secenek_testi.rs,compiler/tests/semantic_regresyon_korpusu_testi.rs	K-221 bilinmeyen CLI secenegi kaynak kesfinden once reddedilir
+adr/093-deterministik-build-kimligi.md	kanitli	compiler/tests/build_kimligi_testi.rs,compiler/src/main.rs	K-226 CLI LSP SBOM ve worker basligi ayni deterministik source build kaydi

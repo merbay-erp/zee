@@ -1,0 +1,9 @@
+# K-227: gerçek C3 katalog ihtiyacının anonim, tam public imzalı paketi.
+
+işlem katalogSayfasi
+    Metin döndürür
+    "Anonim katalog" döndür
+
+test "katalog paketi public sayfa sözleşmesini korur"
+    sayfa katalogSayfasi olsun
+    sayfa "Anonim katalog" e eşit olmalı

@@ -490,3 +490,13 @@ K-220 / K-174: exact gerçek ürün talebiyle üç contextual kalıp eklendi; sy
 Bilinmeyen seçenek kaynak keşfinden önce exit 2 üretir; program argümanları
 korunur. CLI regression ve exact compiler/core-freeze beyanı toplu
 kapanış ister. Bu değişiklik insan, fiziksel platform veya RC kabulü değildir.
+
+### Ürünleşme dalgası K-222–K-225
+
+GB-022 dedicated hermetik dört testle kapandı; normal faz dört ignored
+vakayı ayrı sayar. Yeni uzak source CI kabulü ayrıca gerekir. K-225 beş
+doğrudan spec testini tamamlar; insan/fiziksel/minOS/RC sınırları kapatılmaz.
+
+K-226 build JSON'u exact kaynak tanımlamayı sağlar; dirty/unknown kimlik
+release kabulü değildir. CLI/LSP/SBOM/worker eşliği ve iki-clone kapıları
+ayrı sınanır; kanal etiketi kapı geçişini ikame etmez.

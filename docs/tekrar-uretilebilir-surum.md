@@ -157,3 +157,12 @@ K-215 path paketleri için Cargo’nun kanonik kaynak yolu remap kapsamındadır
 geçici klon kökü fiziksel yola açılır. İki ayrı temiz klon ve bağımsız hedef
 ağacı korunur; hash farkı artefaktı reddeder. Mantıksal sembolik kök
 (`/var` gibi) fiziksel kaynak yolunu maskeleyemediği için kabul edilmez.
+
+## K-226 kaynak build kimliği
+
+Build tarihi commit UTC günüdür. `compiler/build.rs` Git varsa
+SOURCE_DATE_EPOCH=exact commit epoch ve explicit ZEE_SOURCE_SHA=HEAD ister.
+Duvar saati alınmaz; yanlış beyan build'i durdurur. Git olmayan archive
+explicit SHA+epoch alabilir; unknown veya kirli kaynak release değildir.
+Kanal varsayılanı development/beta; dev seri explicit stable olamaz.
+ADR-068 betiğinin aynı commit epoch kuralı ve remap iki-clone eşliği korunur.
