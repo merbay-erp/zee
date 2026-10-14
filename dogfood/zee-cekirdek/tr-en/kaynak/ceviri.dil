@@ -1,0 +1,47 @@
+# K-249/C4: uygulamaya ait sabit TR–EN sözlüğü; yeni dil/API değildir.
+# Değerler plain text'tir; HTML veya callback olarak çalıştırılmaz.
+
+işlem ceviriyiAl
+    dil Metin olarak al
+    anahtar Metin olarak al
+    Metin sonucu döndürür
+    dil "tr" e eşit değilse
+        dil "en" e eşit değilse
+            "dil-desteklenmiyor" hatasını döndür
+    sozluk boş sözlük olsun
+    sozlugun "tr.baslik" değeri "Bildirim Tercihleri" olsun
+    sozlugun "tr.icerik" değeri "Onaydan sonra görevi kuyruğa ekle." olsun
+    sozlugun "tr.eylem" değeri "Kaydet" olsun
+    sozlugun "en.baslik" değeri "Notification Preferences" olsun
+    sozlugun "en.icerik" değeri "Queue the task after approval." olsun
+    sozlugun "en.eylem" değeri "Save" olsun
+    tamAnahtar dil ile "." ile anahtar olsun
+    sozlukta tamAnahtar varsa
+        sozlugun tamAnahtar değeri döndür
+    "ceviri-anahtari-yok" hatasını döndür
+
+test "TR ve EN sözlük değerleri deterministiktir"
+    turkce "tr" ve "eylem" ile ceviriyiAl olsun
+    ingilizce "en" ve "eylem" ile ceviriyiAl olsun
+    turkce başarılıysa
+        trDeger turkcenin değeri olsun
+        trDeger "Kaydet" e eşit olmalı
+    değilse
+        1 0 a eşit olmalı
+    ingilizce başarılıysa
+        enDeger ingilizcenin değeri olsun
+        enDeger "Save" e eşit olmalı
+    değilse
+        1 0 a eşit olmalı
+
+test "Bilinmeyen dil ve çeviri anahtarı açıkça reddedilir"
+    dilHatasi "de" ve "eylem" ile ceviriyiAl olsun
+    anahtarHatasi "tr" ve "kayip" ile ceviriyiAl olsun
+    dilHatasi başarısızsa
+        1 1 e eşit olmalı
+    değilse
+        1 0 a eşit olmalı
+    anahtarHatasi başarısızsa
+        1 1 e eşit olmalı
+    değilse
+        1 0 a eşit olmalı

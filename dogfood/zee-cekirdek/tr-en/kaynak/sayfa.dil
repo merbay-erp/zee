@@ -1,0 +1,55 @@
+# K-249/C4: tek anonim sayfa; named slotlar yalnız plain Metin parametreleridir.
+# HTML slotu/ham parça, dinamik öznitelik adı veya URL/scheme girişi yoktur.
+ceviri birimini kullan
+
+işlem sayfayiKur
+    dil Metin olarak al
+    baslik Metin olarak al
+    icerik Metin olarak al
+    eylemEtiketi Metin olarak al
+    Metin sonucu döndürür
+    dil "tr" e eşit değilse
+        dil "en" e eşit değilse
+            "dil-desteklenmiyor" hatasını döndür
+    html görünüm olsun
+        article lang dil class "ayar-sayfasi"
+            h1 title baslik
+                metin baslik
+            p class "aciklama"
+                metin icerik
+            button type "button" "aria-label" eylemEtiketi
+                metin eylemEtiketi
+    html döndür
+
+işlem ceviriSayfasiniKur
+    dil Metin olarak al
+    Metin sonucu döndürür
+    baslikSonucu dil ve "baslik" ile ceviriyiAl olsun
+    baslikSonucu başarılıysa
+        baslik baslikSonucunun değeri olsun
+        icerikSonucu dil ve "icerik" ile ceviriyiAl olsun
+        icerikSonucu başarılıysa
+            icerik icerikSonucunun değeri olsun
+            eylemSonucu dil ve "eylem" ile ceviriyiAl olsun
+            eylemSonucu başarılıysa
+                etiket eylemSonucunun değeri olsun
+                sayfaSonucu dil ve baslik ve icerik ve etiket ile sayfayiKur olsun
+                sayfaSonucu başarılıysa
+                    sayfaSonucunun değeri döndür
+    "ceviri-desteklenmiyor" hatasını döndür
+
+test "Plain slotlar text ve attribute bağlamında kaçırılır"
+    sonuc "tr" ve "<b>başlık</b> & \"x\"" ve "<script>alert('x')</script>" ve "\" autofocus onfocus=\"alert(1)" ile sayfayiKur olsun
+    sonuc başarılıysa
+        beklenen "<article lang=\"tr\" class=\"ayar-sayfasi\"><h1 title=\"&lt;b&gt;başlık&lt;/b&gt; &amp; &quot;x&quot;\">&lt;b&gt;başlık&lt;/b&gt; &amp; &quot;x&quot;</h1><p class=\"aciklama\">&lt;script&gt;alert(&#39;x&#39;)&lt;/script&gt;</p><button type=\"button\" aria-label=\"&quot; autofocus onfocus=&quot;alert(1)\">&quot; autofocus onfocus=&quot;alert(1)</button></article>" olsun
+        gercek sonucun değeri olsun
+        gercek beklenene eşit olmalı
+    değilse
+        1 0 a eşit olmalı
+
+test "Dil özniteliği whitelist dışında markup kabul etmez"
+    sonuc "tr\" onmouseover=\"alert(1)" ve "a" ve "b" ve "c" ile sayfayiKur olsun
+    sonuc başarısızsa
+        1 1 e eşit olmalı
+    değilse
+        1 0 a eşit olmalı

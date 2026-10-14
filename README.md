@@ -155,10 +155,10 @@ Değişikliğe özel test, belge ve güvenlik kapıları [AGENTS.md](AGENTS.md) 
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **902** |
+| Rust + doctest vakası | **903** |
 | Tanı kimliği | **159 etkin + 3 ayrılmış** |
 | RFC | **34** (2 kabul, 29 geçici kabul, 3 taslak) |
-| ADR | **106** (106 kabul) |
+| ADR | **107** (107 kabul) |
 | Normatif spec bölümü | **28** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
@@ -248,3 +248,7 @@ Sınırlı POSIX [credential host köprüsü](docs/credential-baslat.md),
 [worker yaşam döngüsü](docs/worker-supervisor.md) ve mevcut SQL ile
 [kalıcı iş kuyruğu prototipi](dogfood/zee-cekirdek/is-kuyrugu/README.md)
 teknik pilot dilimleridir; P09/P13/P25 tam ürün kabulü açık kalır.
+
+K-249 [anonim TR–EN sayfa](dogfood/zee-cekirdek/tr-en/README.md) mevcut
+görünüm ve plain Metin ile native escaping/ret kanıtıdır; genel
+layout/i18n ve gerçek ürün kabulü P21 kapsamında açık kalır.

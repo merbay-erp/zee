@@ -586,3 +586,8 @@ Tam request drain/reload/metrics ve P14 socket devir açıktır.
 K-247/P09 (ADR-107/GB-070) dar idempotent SQL queue helper'ıdır;11 native
 PG crash/COMMIT observer ve16 validator aday kabulü vardır, temiz exact
 kabul devam eder. Canlı ürün adoptionı, SMTPretry ve full P08 açık kalır.
+
+K-249/P21 (ADR-109/GB-071) tek anonim TR–EN article fragmenti, plain
+Metin slotları ve sabit sözlüktür. Dört kaynak testi, yedi native CLI
+snapshot/XSS/ret senaryosu mevcut grammar/API ile yürür; temiz exact
+kabul devam eder. Genel layout/i18n ve gerçek ürün/P08 kabulü açıktır.
