@@ -106,3 +106,5 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-096 | [Ekli e-posta ve MIME sınırı](096-ekli-eposta-ve-mime.md) | **kabul** (K-232) |
 | ADR-098 | [Yerel exact compiler seçici](098-yerel-derleyici-secici.md) | **kabul** (K-233) |
 | ADR-099 | [SMTP hata maskelemesi](099-smtp-hata-maskelemesi.md) | **kabul** (K-236/GB-060) |
+
+| ADR-100 | [SMTP yanıt okuma sınırı](100-smtp-yanit-okuma-siniri.md) | **kabul** (K-237/GB-061) |

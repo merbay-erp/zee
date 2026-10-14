@@ -1665,3 +1665,7 @@ başarısını kullanmalıdır. İleti tel baytları, TLS/deadline ve retry yokl
 korunur; başarısızlık teslim edilmedi garantisi değildir.
 [ADR-099](../adr/099-smtp-hata-maskelemesi.md), gerçek native/CLI AUTH535
 kabulü ve exact `smtp` regression aynı güvenlik dilimindedir.
+
+### K-237 — SMTP yanıt büyümesinin okuma öncesinde kesilmesi
+
+LF/EOF vermeyen sunucu artık mevcut 16 KiB SMTP yanıt sınırını String büyüterek aşamaz. Tam sınır ve geçerli tel baytları korunur; taşmada UTF-8 hata önceliği sınır reddindedir. K-236 güvenli hata maskesi aynı; ayar/grammar göçü veya retry yoktur. [ADR-100](../adr/100-smtp-yanit-okuma-siniri.md): sabit BufReader ön okuması, TLS/kernel/RSS ve eski plain timeout/MIME deadline bu payload sınırından ayrıdır.

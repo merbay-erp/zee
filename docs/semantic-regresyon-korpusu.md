@@ -149,7 +149,10 @@ olmadığı için tanı/span `-` olabilir.
 K-236 [AUTH echo reproducer’ı](../regression/security/smtp-auth-echo-sir.dil)
 EHLO sonrası aldığı AUTH PLAIN payload’ını 535 ile echo eden gerçek peer’i
 kullanır; sonraki AUTH/mail/data yokluğu ve sabit C029 maskesi denetlenir.
-`yanit-siniri` fixture’ı LF/EOF vermeden sınır üstü yanıt taşır ve çağrı
-sonucuna kadar peer’i açık tutar; bu ayrı K-237 bounded-response kanıtıdır.
+`yanit-siniri` fixture’ı 16385 bayt LF/EOF’siz greeting ve 50 ms yeni baytla
+read timeout’ını canlı tutar; yalnız gerçek çağrı döndüğünde kapanır. Eski
+sınırsız yardımcı 5 saniyelik fixture son tarihini kırar. K-237'nin zamansız
+bayt/tampon sınırı beş actualhelper testinde ayrıca denetlenir; fixture zamanı
+benchmark veya eski plain toplam oturum deadline garantisi değildir.
 ToplayanIo yalnız diğer trait yöntemlerini taşır, SMTP başarısızlığı gerçek
 native socket çağrısından gelir. Bu kip canlı sağlayıcı veya ürün kabulü değildir.

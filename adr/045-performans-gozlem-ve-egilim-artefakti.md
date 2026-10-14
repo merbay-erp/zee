@@ -71,3 +71,5 @@ K-207 ad çözümleme maliyetini azaltır; sabit 2k/5k/10k/20k iş yükü ve
 gerçek sample/warmup semantiği değişmez. Taban ve sonrası ayrı temiz exact
 commit, aynı makine/araç zinciri/release profile ile ölçülür; yerel paylaşılmış
 masaüstü gözlemidir. Raw sample/hash/çevre olmadan yeni tarihçe yazılmaz.
+
+K-237/ADR-100 yanıt tahsisini 16 KiB + 1 bayt kapasiteli tek çağrı tamponuyla sınırlar; küçük yanıtın başlangıç tahsisi de değişir. Sabit benchmark korpusu SMTP taşımadığından iş yükü/örnek semantiği ve immutable tarihçe aynı kalır. Byte/capacity kanıtı p95/RSS dağılımı değildir; performans iyileşmesi veya yeni taban iddiası yoktur.

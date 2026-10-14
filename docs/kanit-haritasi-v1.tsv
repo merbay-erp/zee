@@ -159,3 +159,4 @@ adr/096-ekli-eposta-ve-mime.md	kanitli	compiler/tests/smtp_mime_testi.rs,compile
 rfcs/0034-ekli-eposta.md	kanitli	compiler/tests/smtp_mime_testi.rs,compiler/src/eposta/mime/tests.rs	K-232 tek typed MIME intrinsic gerçek ürün ve olumlu/olumsuz testler
 adr/098-yerel-derleyici-secici.md	kanitli	compiler/tests/derleyici_secici_testi.rs	K-233 gerçek Ed25519 verifier iki signed sentetik bundle ve 25 offline ret/kabul testi; release/human/Windows ayrı
 adr/099-smtp-hata-maskelemesi.md	kanitli	compiler/tests/smtp_hata_maskelemesi_testi.rs,compiler/tests/semantic_regresyon_korpusu_testi.rs	K-236 gerçek AUTH535 echo native CLI ve runtime C029 mask kanıtı; ayrı response cap K237
+adr/100-smtp-yanit-okuma-siniri.md	kanitli	compiler/src/eposta.rs,compiler/tests/semantic_regresyon_korpusu_testi.rs	K-237 beş actual helper budget/UTF8/EOF/timeout ve gerçek LF-yok native corpus; old-body negatif kanıt, BufReader/RSS/deadline sınırı ayrı

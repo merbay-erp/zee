@@ -366,3 +366,7 @@ tampon yoktur. LSP initialize ve HTTP response byte hacmi artar; önceki
 exact SHA ölçümü yeni SHA adına taşınmaz. ADR-045/049 tabanı ve performans
 tarihçesi korunur; yeni ölçüm yalnız temiz checkpointten exact çevre/örnek
 semantiğiyle yazılabilir. İki-clone kabulü farklı bir kapıdır.
+
+## K-237 SMTP tahsis sınırı etki incelemesi
+
+K-237 küçük yanıt için de başlangıçta 16 KiB + 1 bayt String ayırır; eski küçük/geometrik tahsis değişir, sınırsız büyüme kapanır. Yanıt ömürlü tampon cache/kalıcı state değildir. Sabit `olcum` korpusu SMTP transport yürütmez; iş yükü/sample/warmup/toolchain ve immutable performans-gecmisi-v2.tsv aynı kalır. Byte/capacity sayacı benchmark/RSS örneği değildir; p95/RSS iyileşmesi veya yeni taban iddiası yoktur. Gelecek kayıt temiz exact SHA ve ADR-049 tam provenance ister ([ADR-100](../adr/100-smtp-yanit-okuma-siniri.md)).

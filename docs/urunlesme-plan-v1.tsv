@@ -9,7 +9,7 @@ P06	A3,D2	K-168,K-169	kismi	altyapi	P02,P29,P30,P39	scripts/surum-artefakti.sh	H
 P07	A4	K-233	kismi	altyapi,dil	P05,P06	docs/derleyici-secici.md	Signedlocalcatalog/privatebyte snapshot25tests; fullrustup/globaldil/proje.kilit/productionkeys/Windows acik
 P08	A5	K-172	anonim-tam-korpus-bekliyor	urun,altyapi	-	dogfood/korpus-v1.tsv	Anonim tam 5site+koku provenance N/N denetle/dene sure/RSS
 P09	B1	-	acik	urun,altyapi	P08,P34	docs/urunlesme-plani.md	Kalici job lease/idempotency/3retry/deadletter/crash; ilk prototype mevcut PG
-P10	B2	K-210,K-232,K-236	kismi	dil,urun	P09	rfcs/0034-ekli-eposta.md	MIME readonlyPDF/gorsel ReplyTo HTMLalternative typed/native; queue3retry liveM365/Gmail/catalogacceptance acik; K236 AUTH echo C029 mask native/CLI3tests, responsebudget K237 ayri
+P10	B2	K-210,K-232,K-236,K-237	kismi	dil,urun	P09	rfcs/0034-ekli-eposta.md	MIME readonlyPDF/gorsel ReplyTo HTMLalternative typed/native; queue3retry liveM365/Gmail/catalogacceptance acik; K236 AUTH echo C029 mask native/CLI3tests, responsebudget K237 ayri; K237 SMTP yanit16KiB read-before-alloc ve native LF-yok kabul, RSS/toplam plain deadline ayri
 P11	B3	K-210	kismi	dil,urun	P08	compiler/src/gorsel.rs	JPEG/PNG/WebP mevcut; PDF fixture/backend karari acik
 P12	B4	K-163,K-228	kismi	dil,urun	P31,P34	docs/incelemeler/urunlesme-20261014/native-7127c7d/README.md	Durum/kuru noSQL owner/runtime checksum rollback concurrent1/1; canli urun Python betigi kaldirilmasi acik
 P13	B5	K-137	kismi	dil,altyapi	P02,P12,P25	docs/web-production-profili.md	Hizmet hazirlik JSON log metrics draining reload
@@ -33,7 +33,7 @@ P30	ZEE-006	K-175	kapilar-bekleniyor	altyapi,insan	P05,P06,P08,P24,P27,P28,P29,P
 P31	ZEE-007	K-222,K-235,GB-022	yerel-kabul	dil,altyapi	-	docs/postgresql-tls-ci.md	Temiz7127c TLSNULL4/4; K235 kaynak5/5 yerel; dedicatedCI wiring var, yeni uzakCI ayri
 P32	ZEE-008	K-215,GB-046	harici-yanit-yok	insan	GitHub-destek	docs/incelemeler/k215/github-destek-talebi.md	Kullanici gonderecek; PRrefs/cache teyidi yok; public ayri onay
 P33	ZEE-009	K-205	kismi	dil,altyapi	P01	docs/dis-inceleme-2026-10-13.md	27ilk esleme mevcut; adversarial guncel kanit matrisi
-P34	ZEE-010	K-206	kismi	dil,altyapi	P31,P33	docs/incelemeler/k206/frame-guard/README.md	GB041 kapali; global RSS/full fault matrisi acik
+P34	ZEE-010	K-206,K-237	kismi	dil,altyapi	P31,P33	docs/incelemeler/k206/frame-guard/README.md	GB041 kapali; global RSS/full fault matrisi acik; K237 SMTP yanit16KiB read-before-alloc ve native LF-yok kabul, RSS/toplam plain deadline ayri
 P35	ZEE-014	K-180	ertelendi	dil,insan	P27,P28	rfcs/0029-liste-sira-erisimi.md	RFC aday syntax; insan+tekrarli urun kaniti
 P36	ZEE-015	K-225,K-226,K-235	kismi	dil	P31,P34,P05	docs/spec-madde-kaniti-v1.tsv	Bes directkani boslugu+DBbudgets+SemVer esligi kapandi; 191maddede5kismi2acik, tasarim/platform/surec bekliyor
 P37	ZEE-016,ZEE-017	K-158,K-170,K-173	surekli	dil,altyapi	her-dilim	AGENTS.md	Fmt/faz/mimari/SCC/API/supply/spec/tani; etki varsa exact30dk soak

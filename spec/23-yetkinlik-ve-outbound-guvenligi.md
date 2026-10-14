@@ -149,3 +149,24 @@ SMTP tel baytları, AUTH/TLS/deadline ve failure kontrol akışı değişmez.
 Otomatik tekrar YASAKTIR; DATA yanıtı kaybolan başarısız Sonuç teslim
 edilmedi kanıtı değildir. Genel sır taint sistemi ve SMTP yanıt okuma
 bütçesi bu düzeltmenin kapsamı değildir; yanıt bütçesi K-237'ye aittir.
+
+## SMTP yanıt bayt bütçesi — K-237
+
+ZORUNLU: Düz metin ve MIME SMTP yolunun ortak yanıt okuyucusu, bütün çok
+satırlı yanıtı en fazla 16 KiB kabul eder; LF/EOF bekleyerek sınırsız String
+büyütmek YASAKTIR. Her satır okuması kalan toplam sınır + tek taşma baytıyla
+sınırlanır; en fazla 16385 yanıt baytı tüketildikten sonra taşma reddedilir.
+Tam 16 KiB terminal LF veya EOF yanıtının baytları ve cevap kodu korunur;
+sonraki yanıta ait BufReader tamponu tüketilmez.
+ZORUNLU: Ortak SMTP yanıt String tamponunun kapasitesi 16385 baytı aşmaz.
+Geçerli UTF-8 karakteri taşma baytında kesilse de 16 KiB sınır hatası UTF-8
+hatasından önce döner; sınır içindeki bozuk UTF-8 okuma hatasıdır. Tek baytlık
+LF/EOF vermeyen akış, timeout'a güvenmeden aynı tüketim sınırında reddedilir;
+boş EOF bağlantı-kapandı hata yolunu korur.
+
+Bu tüketim sınırı `BufReader`ın sabit ön okumasından ayrıdır. Varsayılan 8 KiB
+kapasitede alttaki okuyucudan en fazla 24 KiB alınabilir; kalan ön okuma
+byte'ları yanıt String'ine girmez. TLS iç buffer/socket kernel buffer veya
+toplam RSS için 16 KiB garantisi verilmez. Eski plain per-operation timeout
+ile MIME absolute deadline sınırı aynıdır; yeni toplam plain oturum deadline'ı
+eklenmez. Dış hata K-236 güvenli maskelemesini korur (ADR-099/100).
