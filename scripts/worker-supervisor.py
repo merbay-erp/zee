@@ -251,37 +251,50 @@ class Supervisor:
         return child
 
     def stop_child(self, child):
-        # Only handles created above may reach killpg. Never discover/adopt a PID from a port/file.
-        require(child in self.children, "ownership")
-        def group_alive():
-            try:
-                os.killpg(child.pid, 0)
-                return True
-            except ProcessLookupError:
-                return False
-            except PermissionError:
-                # Darwin reports EPERM for the vanished group of an unreaped zombie.
-                # WNOWAIT still reserves this owned leader PID, so no replacement group is adopted.
-                require(self.exit_status(child) is not None, "ownership")
-                return False
-        if group_alive():
-            try:
-                os.killpg(child.pid, signal.SIGTERM)
-            except ProcessLookupError:
-                pass
-            except PermissionError:
-                require(self.exit_status(child) is not None and not group_alive(), "ownership")
+        # Only handles created above may reach killpg. Keep the leader unreaped
+        # throughout the one absolute grace budget, including permission races.
+        require(child in self.children and child.returncode is None, "ownership")
         deadline = time.monotonic() + self.a.stop_grace
-        while group_alive() and time.monotonic() < deadline:
-            time.sleep(.02)
+        self.exit_status(child)  # ECHILD is lost authority, never a gone-group shortcut.
+
+        def retry_permission():
+            remaining = deadline - time.monotonic()
+            require(remaining > 0, "ownership")
+            time.sleep(min(.001, remaining))
+
+        def group_alive():
+            while True:
+                try:
+                    os.killpg(child.pid, 0)
+                    return True
+                except ProcessLookupError:
+                    return False
+                except PermissionError:
+                    # Darwin can exclude an exiting leader from group probes
+                    # before WNOWAIT exposes its terminal status. The held child
+                    # still reserves PID authority: retry, never reap or adopt.
+                    if self.exit_status(child) is not None:
+                        return False
+                    retry_permission()
+
+        def signal_owned(number):
+            while True:
+                try:
+                    os.killpg(child.pid, number)
+                    return True
+                except ProcessLookupError:
+                    return False
+                except PermissionError:
+                    if not group_alive():
+                        return False
+                    retry_permission()
+
         if group_alive():
-            try:
-                os.killpg(child.pid, signal.SIGKILL)
-                self.increment("forced_kills")
-            except ProcessLookupError:
-                pass
-            except PermissionError:
-                require(self.exit_status(child) is not None and not group_alive(), "ownership")
+            signal_owned(signal.SIGTERM)
+        while group_alive() and time.monotonic() < deadline:
+            time.sleep(min(.02, max(0, deadline - time.monotonic())))
+        if group_alive() and signal_owned(signal.SIGKILL):
+            self.increment("forced_kills")
         child.wait(timeout=2)
         if child.stdout is not None:
             child.stdout.close()
