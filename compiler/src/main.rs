@@ -235,6 +235,10 @@ fn govde() -> ExitCode {
         }
     };
     argumanlar.retain(|a| a != "--güvenli" && a != "--guvenli");
+    if let Err(hata) = cli_seceneklerini_denetle(&argumanlar) {
+        eprintln!("{hata}");
+        return ExitCode::from(2);
+    }
     if web_modu != WebModu::Kapali
         && !matches!(
             argumanlar.first().map(String::as_str),
@@ -307,6 +311,51 @@ fn govde() -> ExitCode {
             ExitCode::from(2)
         }
     }
+}
+
+/// K-221: Bir seçenek kaynak yolu gibi yorumlanmaz. Çalıştırılan programın
+/// kaynak yolundan sonraki argümanları ve iz kaydının program argümanları
+/// uygulamaya aittir; burada derleyici seçeneği olarak tüketilmez.
+fn cli_seceneklerini_denetle(argumanlar: &[String]) -> Result<(), String> {
+    let komut = argumanlar.first().map(String::as_str).unwrap_or("");
+    let (bayraklar, degerli): (&[&str], &[&str]) = match komut {
+        "denetle" => (&["--json"], &[]),
+        "paketle" => (&[], &["--anahtar", "--çıktı", "--cikti"]),
+        "ekle" | "kilitle" | "paketler" => (
+            &["--yenile", "--çevrimdışı", "--cevrimdisi"],
+            &[
+                "--registry",
+                "--kök",
+                "--kok",
+                "--yanked-kabul",
+                "--kritik-kabul",
+            ],
+        ),
+        "parola-özeti" | "parola-ozeti" => (&["--stdin"], &[]),
+        "morfoloji" => (&["--uyumluluk"], &[]),
+        _ => (&[], &[]),
+    };
+    for (yer, arguman) in argumanlar.iter().enumerate() {
+        if matches!(komut, "çalıştır" | "calistir") && yer > 1 {
+            break;
+        }
+        if komut == "iz" && argumanlar.get(1).is_some_and(|a| a == "kaydet") && yer > 3 {
+            break;
+        }
+        if yer > 0 && degerli.contains(&argumanlar[yer - 1].as_str()) {
+            continue;
+        }
+        if arguman.starts_with("--")
+            && !bayraklar.contains(&arguman.as_str())
+            && !degerli.contains(&arguman.as_str())
+        {
+            return Err(format!(
+                "Bilinmeyen seçenek: {arguman} (bu sürüm: {}).",
+                env!("CARGO_PKG_VERSION")
+            ));
+        }
+    }
+    Ok(())
 }
 
 fn kullanim() {

@@ -484,3 +484,9 @@ aynı dilimde; 801/801 yerel faz ve Gitsrv #29 [kabulü](incelemeler/k220/README
 Sunucu/ürün rotası ve otomatik kayıt/e-posta entegrasyonu ürün tarafındadır.
 
 K-220 / K-174: exact gerçek ürün talebiyle üç contextual kalıp eklendi; syntax gözlem penceresi 14.10.2026–11.11.2026 olarak bilinçli yeniden başladı. Core freeze ve insan/RC kapıları sürer; V1 tamamlandı olarak gösterilmez.
+
+### K-221 ürünleşme CLI kabulü
+
+Bilinmeyen seçenek kaynak keşfinden önce exit 2 üretir; program argümanları
+korunur. CLI regression ve exact compiler/core-freeze beyanı toplu
+kapanış ister. Bu değişiklik insan, fiziksel platform veya RC kabulü değildir.

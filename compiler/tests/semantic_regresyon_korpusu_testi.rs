@@ -16,6 +16,7 @@ const FAZLAR: &[&str] = &[
     "morphology",
     "concurrency",
     "security",
+    "cli",
 ];
 const KIPLER: &[&str] = &[
     "parser",
@@ -27,6 +28,7 @@ const KIPLER: &[&str] = &[
     "trace",
     "capability",
     "web",
+    "cli",
 ];
 
 #[derive(Debug, Clone)]
@@ -187,11 +189,33 @@ fn faz_kipi_kabul_eder(faz: &str, kip: &str) -> bool {
         "runtime" => matches!(kip, "run" | "trace"),
         "concurrency" => kip == "run",
         "security" => matches!(kip, "capability" | "web"),
+        "cli" => kip == "cli",
         _ => false,
     }
 }
 
 fn vakayi_calistir(vaka: &Vaka, kaynak: &str) -> Gozlem {
+    if vaka.kip == "cli" {
+        let argumanlar = kaynak
+            .lines()
+            .find_map(|satir| satir.strip_prefix("# cli-argumanlari: "))
+            .expect("CLI fixture argüman başlığını taşımalı");
+        let cikti = std::process::Command::new(env!("CARGO_BIN_EXE_dil"))
+            .args(argumanlar.split_whitespace())
+            .current_dir(depo())
+            .output()
+            .expect("CLI regresyon süreci çalışmalı");
+        assert!(cikti.stdout.is_empty(), "ret stdout üretmemeli");
+        return Gozlem {
+            tani: None,
+            cikis: i64::from(cikti.status.code().expect("normal CLI exit")),
+            cikti: String::from_utf8(cikti.stderr)
+                .expect("CLI stderr UTF-8")
+                .lines()
+                .map(str::to_string)
+                .collect(),
+        };
+    }
     if vaka.kip == "parser" {
         return match KaynakMetni::yeni(kaynak)
             .sozcukle()

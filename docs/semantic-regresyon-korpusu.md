@@ -17,7 +17,8 @@ regression/
 ├── runtime/
 ├── morphology/
 ├── concurrency/
-└── security/
+├── security/
+└── cli/
 ```
 
 Başlangıç tabanı yedi fazda 17 vaka taşır. Her `.dil` dosyası manifestte tam
@@ -47,6 +48,13 @@ sürüm notu aynı committe güncellenir; vaka soy ağacı korunur.
 Tanı ile span birlikte bulunur. Derleme, parser, policy veya runtime hatası
 `exit=1`; normal runtime kendi `programı N ile bitir` değerini taşır. Başarılı
 programda stdout satır sırası byte düzeyinde sabittir.
+
+K-221 CLI vakası `cli` fazı ve `cli` kipindedir: ilk yorumdaki
+`# cli-argumanlari: ` sonrasında boşlukla ayrılmış sabit argümanları gerçek
+`dil` ikilisine verir. Fixture yalnız hermetik bilinmeyen seçenek reddini
+çalıştırır; stdin, dış ağ, özel dosya ya da kabuk yürütmez. Beklenti alanı
+bu kipte stderr satırlarıdır, stdout boş ve exit 2'dir. CLI kullanım
+hatası kaynak tanısı üretmediği için tanı/span alanı `-` kalır.
 
 ## Kipler
 

@@ -1597,3 +1597,10 @@ K-220 / K-174: exact gerçek ürün talebiyle üç contextual kalıp eklendi; sy
 K-220 CI kabul düzeltmesi: sentetik localhost PKCS12 kimliği exact hash/kaynak doğrulamasıyla sır taramasında tanınır; başka anahtarlar reddedilir. Dil/HTTP çalışma davranışı değişmez, Gitsrv tekrar kabulü beklenir.
 
 K-220 makine kabulü: kaynak 488dc7d, exact CI 3d7ff93 / Gitsrv #29 başarılı; 801/801 yerel faz ve bağımsız kullanım rehberi temiz. Compiler kaynağı kapanışta değişmedi; canlı entegrasyon ve sunucu yükseltmesi ürün tarafında kalır.
+
+### K-221 — Bilinmeyen seçenek tanısı
+
+CLI seçenek bölgesindeki bilinmeyen `--` artık dosya okunamadı hatasına
+dönüşmez; seçenek ve etkin sürümle exit 2 döner. `çalıştır` kaynak yolundan
+sonraki program argümanları korunur. Eski ikili yeni runtime ayarlarını
+kendiliğinden desteklemez; rollback ayar uyumu ayrı kalır.

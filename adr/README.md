@@ -105,3 +105,5 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-090 | [Bellek oran ayarı ve korunmuş tahliye](090-web-oran-ayarlari.md) | **kabul** (K-219) |
 
 | ADR-091 | [HTTP POST, başlık ve gizli ortam sınırı](091-http-post-baslik-ve-gizli-ortam.md) | **kabul** (K-220) |
+
+| ADR-092 | [Bilinmeyen CLI seçeneği reddi](092-cli-bilinmeyen-secenek-reddi.md) | **kabul** (K-221) |
