@@ -101,3 +101,5 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-088 | [Git2 üzerinde Gitsrv CI](088-git2-gitsrv-kosulari.md) | **kabul** (K-216) |
 
 | ADR-089 | [Süreç başına bellek oran deposu](089-bellek-oran-deposu.md) | **kabul** (K-218) |
+
+| ADR-090 | [Bellek oran ayarı ve korunmuş tahliye](090-web-oran-ayarlari.md) | **kabul** (K-219) |

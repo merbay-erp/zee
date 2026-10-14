@@ -202,7 +202,7 @@ gövdenin tamamı bağlantı kabulünden başlayan
 socket zaman aşımı taşır. Spec/11'in 100 alan ve 30 saniye uygulama sınırı
 ayrıca geçerlidir.
 
-Doğrulanmış kanonik istemci kimliğiyle varsayılan ortak kalıcı depoda (K-218 explicit bellek seçiminde süreç başına depoda) şu sabit pencereler
+Doğrulanmış kanonik istemci kimliğiyle varsayılan ortak kalıcı depoda (K-218 explicit bellek seçiminde süreç başına depoda, K-219 uç nokta eşiği ayarı dışında) şu pencereler
 ZORUNLUDUR:
 
 | Kapı | Pencere | Eşik | Aşım |
@@ -213,8 +213,9 @@ ZORUNLUDUR:
 
 Sayaç artışı ile pencere sonu tek atomik transaction'dır. En çok 32768 canlı
 oran anahtarı tutulur. Süresi dolan anahtarlar temizlenir; tablo yalnız canlı
-kayıtlarla doluysa etkin bir sayacı tahliye ederek eşiği delmek yerine istek
-fail-closed 503 olur.
+kayıtlarla doluysa varsayılan doluluk seçiminde istek fail-closed 503 olur.
+K-219 explicit en-eski seçimi yalnız uç nokta kayıtlarına tahliye uygular;
+giriş/CSRF canlı kayıtları korunur.
 
 Oturum/çerez mutation'ı gönderilmemiş ilk yanıtla aynı request transaction'ına
 aittir. Mutation socket yanıtından önce ortak depoya atomik commit edilir.
@@ -273,4 +274,12 @@ TANIMLI: `--web-oran-deposu bellek` yalnız `--web-proxy` ile, tek değer ve tek
 
 TANIMLI: Bellek backend'i aynı süreç ve clone'ları arasında atomiktir; ayrı worker ve restart ayrı kota oluşturur. Kullanıcı ortak saldırı bütçesini trusted proxy'de sağlamalıdır. Oturum/CSRF/revoke dosya paylaşımı sürer; cookie'siz anonim istek oturum dosyasına dokunmaz, cookie'li okuma ve oturum commit'i kalıcı taze durumla fail-closed çalışır.
 
-TANIMLI: Endpoint/CSRF/giriş eşikleri ve 32.768 canlı anahtar sınırı korunur; aktif kayıt tahliye edilmez. Dolu depoda yeni anahtar 503 ile reddedilir, mevcut anahtar kotası sürer; süre dolumu kayıt ve son-tarih indeksini birlikte temizler. İndeks canlı anahtar başına bir giriş taşır.
+TANIMLI: Bellek backend’inin varsayılan Endpoint/CSRF/giriş eşikleri ve 32.768 canlı anahtar sınırı korunur; varsayılan doluluk seçiminde aktif kayıt tahliye edilmez. Dolu depoda yeni anahtar 503 ile reddedilir, mevcut anahtar kotası sürer; süre dolumu kayıt ve son-tarih indeksini birlikte temizler. İndeks canlı anahtar başına bir giriş taşır.
+
+## K-219 — Bellek oran ayarları
+
+TANIMLI: `--web-oran-siniri` 1..1000000 uç nokta isteği/60 saniye, `--web-oran-kapasitesi` 1..32768 canlı anahtar, `--web-oran-doluluk` `reddet` veya `en-eski` kabul eder. Bu tekil ayarlar yalnız `--web-proxy` ve `--web-oran-deposu bellek` ile kullanılabilir; eksik, tekrar, sayı taşması veya sınır dışı değer hata ile çıkar. Varsayılanlar 100, 32768 ve `reddet`tir; giriş 5/300 sn ve CSRF 60/60 sn değişmez.
+
+TANIMLI: Explicit `en-eski` seçiminde yeni anahtar için kapasite gerektiğinde yalnız en küçük pencere sonuna sahip uç nokta kaydı (eşitlikte hash sırası) tahliye edilir; erişim pencereyi uzatmaz. Tahliye edilmiş uç nokta yeniden gelince kota sıfırlanabilir; kullanıcı ortak proxy saldırı bütçesini sağlamalıdır. Canlı giriş/CSRF kayıtları tahliye edilmez; tüm kayıtlar korunmuşsa yeni anahtar 503 alır, mevcut sayaç kotası sürer.
+
+ZORUNLU: Bellek kayıt/süre/tahliye indeksleri aynı süreçte clone’lar arasında atomik tutulur ve seçilmiş kapasiteyi aşmaz. Süre dolumu ve tahliye ilgili tüm indeksleri temizler; mevcut anahtar artışı kapasite tahliyesi başlatmaz. Aynı IP/uç nokta seçilmiş eşiği aşınca 429 döner ve iç oran kararı kalan pencere süresini taşır; dosya backend’i ve oturum/revoke paylaşımı değişmez.

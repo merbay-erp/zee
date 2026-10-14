@@ -52,6 +52,18 @@ fn sunucuyu_baslat(kaynak: &Path, kapi: u16) -> Sunucu {
 }
 
 fn sunucuyu_baslat_oranla(kaynak: &Path, kapi: u16, bellek: bool) -> Sunucu {
+    sunucuyu_baslat_ayarlarla(
+        kaynak,
+        kapi,
+        if bellek {
+            &["--web-oran-deposu", "bellek"]
+        } else {
+            &[]
+        },
+    )
+}
+
+fn sunucuyu_baslat_ayarlarla(kaynak: &Path, kapi: u16, ayarlar: &[&str]) -> Sunucu {
     let kapi_yazisi = kapi.to_string();
     let mut komut = Command::new(env!("CARGO_BIN_EXE_dil"));
     komut.args([
@@ -62,9 +74,7 @@ fn sunucuyu_baslat_oranla(kaynak: &Path, kapi: u16, bellek: bool) -> Sunucu {
         &kapi_yazisi,
         kaynak.to_str().expect("UTF-8 kaynak yolu"),
     ]);
-    if bellek {
-        komut.args(["--web-oran-deposu", "bellek"]);
-    }
+    komut.args(ayarlar);
     let cocuk = komut
         .stdout(Stdio::null())
         .stderr(Stdio::null())
@@ -340,4 +350,40 @@ fn istemci_adresi_proxy_ve_socketten_gelir_xff_ve_form_alanindan_gelmez() {
     assert_eq!(durum(&response), 200, "{response}");
     assert_eq!(response.split_once("\r\n\r\n").unwrap().1, "127.0.0.1");
     drop(direct);
+}
+
+#[test]
+fn ayarli_bellek_worker_kapasiteyi_asinca_hizmet_eder_ve_kotayi_uygular() {
+    let gecici = GeciciKlasor::yeni();
+    let kaynak = gecici.0.join("yuk.dil");
+    std::fs::write(
+        &kaynak,
+        include_str!("../../dogfood/zee-cekirdek/oran-yuk/yuk.dil"),
+    )
+    .unwrap();
+    let kapi = bos_kapi();
+    let _sunucu = sunucuyu_baslat_ayarlarla(
+        &kaynak,
+        kapi,
+        &[
+            "--web-oran-deposu",
+            "bellek",
+            "--web-oran-siniri",
+            "2",
+            "--web-oran-kapasitesi",
+            "2",
+            "--web-oran-doluluk",
+            "en-eski",
+        ],
+    );
+    for i in 0..20 {
+        let yanit = istek(kapi, "203.0.113.9", "GET", &format!("/wiki/{i}"), None, "");
+        assert_eq!(durum(&yanit), 200);
+        assert!(yanit.contains("Windows &lt;11&gt; güvenlik makalesi 100"));
+    }
+    let yanit = istek(kapi, "203.0.113.9", "GET", "/wiki/19", None, "");
+    assert_eq!(durum(&yanit), 200);
+    let yanit = istek(kapi, "203.0.113.9", "GET", "/wiki/19", None, "");
+    assert_eq!(durum(&yanit), 429);
+    assert!(!gecici.0.join(".zee/web-durumu-v1.json").exists());
 }

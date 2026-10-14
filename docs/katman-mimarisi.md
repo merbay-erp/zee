@@ -144,3 +144,5 @@ ortak proxy kotası gerekir. Soak sürücüsü her dönemde 32768 anahtar
 doldurup süre dolumuyla temizler; yeni tampon derleyici RSS'ine dahildir.
 Sabit benchmark korpusu ve eski performans tarihçesi değiştirilmedi.
 Katman sahibi web_guvenligi'dir; bin_soak bu sahibe tek ileri kenar ekler.
+
+K-219 / ADR-090 etki incelemesi: bellek oran ayarı ve tahliye indeksi mevcut web_guvenligi sahibindedir; bin_dil ve bin_soak aynı ileri kenarları kullanır. Yeni kök modül, sahipler-arası kenar veya SCC eklenmez; fixture değişmez.

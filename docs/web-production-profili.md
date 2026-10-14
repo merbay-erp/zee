@@ -113,3 +113,12 @@ süreç kotası başlatır. Karışık backend kullanan worker'lar ortak kota
 sağlamaz. Cookie'li istekler taze oturum/LRU kontrolü için kalıcı dosyaya
 erişmeye devam eder; bu iş bütün web dosya I/O'sunu kaldırdığı iddiasını
 taşımaz. Yeni bayrak ayrı worker başlatmalarının her birine verilmelidir.
+
+K-219 / ADR-090: bellek backend’inde `--web-oran-siniri 250`,
+`--web-oran-kapasitesi 32768`, `--web-oran-doluluk en-eski` seçilebilir.
+Sınır IP+uç nokta başına 60 saniyedir; kapasite 1..32768, eşik 1..1000000.
+Varsayılan doluluk `reddet`; en-eski penceresi atılmış uç nokta kotası tekrar
+geldiğinde sıfırlanabilir. Login/CSRF canlı sayaçları asla tahliye edilmez;
+yalnız korunmuş kayıtlarla dolulukta yeni anahtar hâlâ 503 alır. Ortak proxy
+bütçesi ve ayrı worker/restart sınırı sürer. Ayarlar her worker’a verilir;
+canlı yeniden yapılandırma, sınırsız kapasite ve PostgreSQL backend’i yoktur.

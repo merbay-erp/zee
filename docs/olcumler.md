@@ -349,3 +349,5 @@ master boşta 54/54. M4 Pro/24 GiB/macOS26.6.2/Rust1.93.1/release, tek
 tur/sıfır ısınma gözlemidir; yeni hard eşik/taban değildir. 1800 sn soak
 32.768 anahtar çevrimini de kapsadı, iki süreç RSS büyümesi %0.
 [Ham kanıt ve sınırlar](incelemeler/k218/README.md).
+
+K-219 / ADR-090: kapasite/tahliye ürün yükü ayrı exact kanıtta incelenir; ADR-045/049 sabit benchmark girdisi ve performans-gecmisi-v2.tsv değiştirilmez. Soak her dönemde 32768 kayıt + 4096 tahliye çalıştırır; K-218 iş yüküyle aynı olduğu iddia edilmez. Sonuç [kanıt sayfasında](incelemeler/k219/README.md) kayıtlıdır.
