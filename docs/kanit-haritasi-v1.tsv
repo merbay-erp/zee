@@ -168,3 +168,4 @@ adr/108-lsp-uri-utf8-yolu.md	kanitli	compiler/tests/lsp_testi.rs,compiler/tests/
 adr/105-credential-host-koprusu.md	kanitli	compiler/tests/credential_baslat_testi.rs	K-245 POSIX Cargo strict14 actual dosya/yarış/rotation/native allowlist ve SMTP AUTH/DATA kampanyası; full P25 açık
 adr/106-worker-host-yasam-dongusu.md	kanitli	compiler/tests/worker_supervisor_testi.rs	K-246 actual native worker host lifecycle identity readiness ve owned cleanup; tam P13/P14 açık
 adr/107-kalici-sql-is-kuyrugu-pilotu.md	kanitli	compiler/tests/is_kuyrugu_kapisi_testi.rs,compiler/tests/dogfood_korpusu_testi.rs	K-24716 strict validator actualcases ve kayıtlı typed product helper; ayrı11 native PG crash COMMIT durable observer kabulü
+adr/109-tr-en-plain-slot-yardimcisi.md	kanitli	compiler/tests/tr_en_sayfa_testi.rs,compiler/tests/dogfood_korpusu_testi.rs	K-2497 nativeCLI exactHTML/XSS/ret ve4 canonicalZee testi; actualPython3.9/3.13; genel layout/i18n ve ürün adoptionı açık

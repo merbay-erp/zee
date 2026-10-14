@@ -1,0 +1,14 @@
+# K-249/C4: exact iki anonim HTML satırı; IO/DB/network yetkisi gerekmez.
+sayfa birimini kullan
+
+sonuc "tr" için ceviriSayfasiniKur olsun
+sonuc başarılıysa
+    sonucun değeri yaz
+değilse
+    programı 7 ile bitir
+
+sonuc "en" için ceviriSayfasiniKur olsun
+sonuc başarılıysa
+    sonucun değeri yaz
+değilse
+    programı 7 ile bitir

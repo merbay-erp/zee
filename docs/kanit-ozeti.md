@@ -41,10 +41,10 @@ Kaynak: `docs/guvenlik-bulgulari-v1.tsv`
 | kritik | 1 | 0 | 0 | 1 |
 | yuksek | 16 | 0 | 0 | 16 |
 | orta | 24 | 7 | 1 | 32 |
-| dusuk | 13 | 8 | 0 | 21 |
+| dusuk | 13 | 9 | 0 | 22 |
 
 Kapı: açık kritik/yüksek bulgu 0 → **GEÇTİ** (ADR-066 sürekli kapı koşulu).
-Toplam bulgu: 70.
+Toplam bulgu: 71.
 
 ## Spec maddeleri
 
@@ -103,10 +103,10 @@ Kaynak: `docs/dogfood-projeleri-v1.tsv + dogfood/korpus-v1.tsv`
 | legacy-panel | 6 | 4 | 0 | 7 | 3 | 10 |
 | urun-e | 1 | 0 | 0 | 1 | 0 | 1 |
 | zeedili-com | 0 | 0 | 1 | 1 | 0 | 1 |
-| zee-cekirdek | 5 | 1 | 3 | 9 | 0 | 9 |
+| zee-cekirdek | 5 | 1 | 4 | 10 | 0 | 10 |
 | zee-erp | 2 | 0 | 0 | 2 | 0 | 2 |
 
-Toplam korpus vakası: 50.
+Toplam korpus vakası: 51.
 
 ## Deprecation kayıtları
 

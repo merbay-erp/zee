@@ -119,3 +119,4 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-106 | [Worker host yaşam döngüsü](106-worker-host-yasam-dongusu.md) | **kabul, sınırlı POSIX pilot** (K-246/GB-069) |
 | ADR-107 | [Kalıcı SQL iş kuyruğu pilotu](107-kalici-sql-is-kuyrugu-pilotu.md) | **kabul, dar SQL prototipi** (K-247/GB-070) |
 | ADR-108 | [LSP URI UTF-8 yolu](108-lsp-uri-utf8-yolu.md) | **kabul** (K-248) |
+| ADR-109 | [TR–EN plain slot yardımcısı](109-tr-en-plain-slot-yardimcisi.md) | **kabul, dar uygulama yardımcısı** (K-249/GB-071) |
