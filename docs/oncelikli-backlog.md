@@ -1520,7 +1520,8 @@ bağlar. Yeni yayın, tüm platform veya tam ürün kabulü çıkarılmaz.
 
 ## K-242 — Native COMMIT yanıtı ve devam etmeme kanıtı
 
-Mevcut C027 politikası korunur; SQLSTATE veya ErrorResponse üzerinden genel
+**KAPALI — yerel native kanıt.** Temiz `316a313` kaynağında 11/11, sıfır
+atlama geçti. Mevcut C027 politikası korunur; SQLSTATE veya ErrorResponse üzerinden genel
 rollback allowlist açılmaz. [ADR-103](../adr/103-native-commit-belirsizligi-kaniti.md)/GB-065:
 yedi TLS vaka yanında owned loopback dört kontrol/fault vakası, bir COMMIT
 ve SQL attempt sayacı, SMTP devamı ve bağımsız durable sonuç birlikte

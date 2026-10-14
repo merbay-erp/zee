@@ -1,0 +1,41 @@
+{
+  "schema": "zee-k244-bounded-independent-review-1",
+  "recorded_utc": "2026-10-14T19:27:03.711124+00:00",
+  "head": "f0a75ea50f5e4d38e7c12ccf681070d9311618d2",
+  "snapshot": "current working tree; no fresh source acceptance inferred",
+  "files": [
+    {
+      "path": "scripts/kaldir.ps1",
+      "sha256": "e733822766ff14b78784bd33841d6fd20be539206528622fbaa667bceedde0c4"
+    },
+    {
+      "path": "scripts/tests/kurulum-literal-yol-test.ps1",
+      "sha256": "f08cf6ab2f20b806e264f7e65e77e1b390b4ff8447d86bd95c4233f573e242bc"
+    },
+    {
+      "path": "compiler/tests/kurulum_testi.rs",
+      "sha256": "309dd67f57852e9c75f0715400c8e4e37a277947d498cd479e8da2a4c7f37fe1"
+    },
+    {
+      "path": ".github/workflows/kurulum-tatbikati.yml",
+      "sha256": "c36f1a171d75778afedcbb291649a1eab8cb79609fe4be59e6ce39bc38cc1fd1"
+    }
+  ],
+  "findings": [],
+  "review_scope": [
+    "literal receipt/file/hash/removal calls",
+    "PowerShell5.1-compatible source constructs and UTF8BOM",
+    "six ordered names/count/result and owned_cleanup report checked by Windows wrapper",
+    "no executable synthetic binary fixture",
+    "GUID-owned test sandbox cleanup in finally",
+    "workflow external PowerShell exit checked before later steps"
+  ],
+  "runtime_repeated": false,
+  "source_mutation": false,
+  "actual_Windows_PS51_execution": false,
+  "boundaries": [
+    "Native Mac PowerShell six-case result reported separately; not physical Windows/provider5.1 proof",
+    "Pre-existing Rust outer fixed-PID temp harness lacks cleanup on every panic; GUID campaign sandbox cleanup is separate",
+    "Operator PowerShell executable/PATH and caller report destination remain trusted; no OS sandbox claim"
+  ]
+}

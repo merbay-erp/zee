@@ -80,4 +80,4 @@ Mevcut kurulum Cargo vakası Windows'ta gerçek native PowerShell fixture'ını
 yürütür; tatbikat workflow'u aynı fixture'a bağlıdır. macOS'taki resmî
 portable PowerShell ile önce/sonra kanıtı, fiziksel Windows veya minimum OS
 kabulü değildir. Temiz exact kaynak sonuçları [devam raporunda](../docs/urunlesme-devam-20261014.md)
-ayrı kaydedilir; yerel altı senaryo geçti, temiz exact commit tekrarı henüz bekleniyor.
+ayrı kaydedilir; yerel altı senaryo temiz `316a313` klonunda geçti.

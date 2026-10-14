@@ -1,0 +1,115 @@
+{
+  "schema": "zee-k242-k244-gate-summary-1",
+  "source_sha": "316a313ed6798d084450097d79281dce7f3fc82d",
+  "source_tree": "f04cb77c315887a58c1169527a57cc592d409354",
+  "source_git_clean_before_proof_copy": true,
+  "phase": {
+    "passed": 888,
+    "expected": 894,
+    "failed": 0,
+    "ignored": 6,
+    "phase_seconds": 94.303,
+    "command": [
+      "cargo",
+      "run",
+      "--locked",
+      "--bin",
+      "faz_test_matrisi",
+      "--",
+      "--denetle",
+      "--rapor",
+      "target/faz-test-matrisi-316a313.md"
+    ]
+  },
+  "dedicated_native": {
+    "postgresql_tls": 5,
+    "migration": 1,
+    "password_cas_commit": 11,
+    "failed": 0,
+    "ignored": 0,
+    "six_phase_ignored_cases_actually_run": true,
+    "rust_toolchain": "1.93.1",
+    "postgresql": "16.15"
+  },
+  "powershell": {
+    "passed": 6,
+    "failed": 0,
+    "version": "7.5.11",
+    "host": "macOS arm64",
+    "physical_windows_acceptance": false,
+    "powershell_5_1_acceptance": false
+  },
+  "security": {
+    "continuous_passed": true,
+    "release_candidate": false,
+    "history_commits_scanned": 435,
+    "tree_secret_scan_passed": true,
+    "new_scanner_exceptions_added": false
+  },
+  "source_archive": {
+    "files": 1146,
+    "zip_comment_and_manifest_and_hashes_passed": true
+  },
+  "logs": [
+    {
+      "path": "phase-316a313.log",
+      "bytes": 17448,
+      "sha256": "f073ac19881ead6165af9d45b5dd20d7fd1db0915e3f9209e6cf3f4218d5f345"
+    },
+    {
+      "path": "security-316a313.log",
+      "bytes": 2320,
+      "sha256": "5afd7860999ab76349bd656e58238af1ec991afb687c1b590a2aab4bc86d6699"
+    },
+    {
+      "path": "secrets-316a313.log",
+      "bytes": 284,
+      "sha256": "59795020324d044d5f7073069afd21cfe7089bf8734a1013ac0349ad2026f19c"
+    },
+    {
+      "path": "freeze-316a313.log",
+      "bytes": 68,
+      "sha256": "093ea0e89be978fa97a0627647be58889a23ec1a0324e65dceb07f27cc1600ff"
+    },
+    {
+      "path": "source-316a313.log",
+      "bytes": 280,
+      "sha256": "5192798603eadc0d9c69c60d9f3f09387dff523f4e5bc6a4d8e41397168e03c7"
+    }
+  ],
+  "evidence": [
+    {
+      "path": "faz-test-matrisi.md",
+      "sha256": "0ff7c04d28093feed5294c40789addb0e6e1dc838b8fdfe3a18269f771bc4b13"
+    },
+    {
+      "path": "k243-candidate-proof.json",
+      "sha256": "04abb7c7da4bbdf65bfe01f9752c85dda644beccbfcab109338300c3803b75cc"
+    },
+    {
+      "path": "k244-independent-review.json",
+      "sha256": "4ea91c761e3ba861a0acb52f2cf455bc0c9cd5e411b78670a9bf074a44dca807"
+    },
+    {
+      "path": "native-byte-verification.json",
+      "sha256": "b9a0d8327a5a9b31287720fde8ae92c8a39660e2d17679ed5ceb9dcfaa003298"
+    },
+    {
+      "path": "native-proof.json",
+      "sha256": "4392c0f8bc4f2a1f2a19250ea2432662fac3176df29a75cbacd63aa8e4655108"
+    },
+    {
+      "path": "parola-goc-ci.json",
+      "sha256": "9ba3313ebfdf0a0812f7a2e6f2b5755b63deaa1321e9f674be5e5028e5507c1e"
+    },
+    {
+      "path": "powershell-proof.json",
+      "sha256": "6dabb18d3900fe97152c96e53a78514b831d7bf2c678cba3e4d969988ca28e6f"
+    },
+    {
+      "path": "source-archive.json",
+      "sha256": "e94627b41635087dac341b683033259a904f6b851fb453f43866383b31c912d8"
+    }
+  ],
+  "boundary": "Exact local source acceptance only; tool/test changes, production compiler unchanged. No public push/deploy/release, remoteCI/artifact download, physical Windows/minimum OS, full product corpus/human/live provider or RC acceptance. Historical 2e checkpoint is not retagged."
+}

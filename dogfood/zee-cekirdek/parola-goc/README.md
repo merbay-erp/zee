@@ -51,7 +51,7 @@ oturum/audit sonucu doğrulanır. [Proxy ve kabul sınırı](../../../docs/postg
 exact COMMIT completion + hata yokluğu + idle, bounded startup/frame,
 absolute deadline ve owned cleanup ister.
 
-Bu genişletmenin final temiz exact 11/11 kabulü bu aşamada bekleniyor;
+Bu genişletmenin final temiz `316a313` kabulü 11/11, sıfır atlamayla geçti;
 eski yedi vakalık kayıt tarihsel kalır. Plaintext yalnız owned loopback
 test profiline aittir; public plaintext desteği, TLS fault interception,
 canlı ürün login/göçü veya RC/uzak CI kabulü değildir.

@@ -1,0 +1,45 @@
+{
+  "schema": "zee-k242-final-byte-verification-1",
+  "root_source": {
+    "sha": "316a313ed6798d084450097d79281dce7f3fc82d",
+    "clean": true
+  },
+  "clone_source": {
+    "sha": "316a313ed6798d084450097d79281dce7f3fc82d",
+    "clean": true
+  },
+  "artifact_manifest_verified": true,
+  "fixture_bytes_verified": true,
+  "prior_private_cache_binary_unchanged": true,
+  "preserved_f0_binary_unchanged": true,
+  "final_binary_sha256": "0737f24ef7eae8faa49542361c753448a5d4677239c79231488eaf2bcd487a69",
+  "build_identity": {
+    "schema": "zee-build-v1",
+    "version": "0.8.0-dev",
+    "source_sha": "316a313ed6798d084450097d79281dce7f3fc82d",
+    "source_date": "2026-10-14",
+    "channel": "development",
+    "dirty": false
+  },
+  "rustc": "rustc 1.93.1 (01f6ddf75 2026-02-11)",
+  "results": {
+    "tls": {
+      "passed": 5,
+      "failed": 0,
+      "ignored": 0
+    },
+    "migration": {
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0
+    },
+    "password_cas_commit": {
+      "passed": 11,
+      "failed": 0,
+      "ignored": 0
+    }
+  },
+  "observer_verified": true,
+  "owned_cleanup": true,
+  "runtime_hashes_verified": true
+}

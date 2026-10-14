@@ -109,3 +109,7 @@ Bu rapor 2e970e4 yerel koşularını ve önceki tarihsel sınırları anlatır. 
 üreticisinin araç davranışı düzeltmesidir; compiler dil yüzeyini veya API'sini
 genişletmez. İlgili davranış belgeleri kendi kaynak dilimlerinde incelenir;
 performans, soak ve RC tarihçelerine kayıtsız kabul eklenmedi.
+
+[Sonraki K-242/243/244 devamı](urunlesme-devam-20261014.md), temiz316a313
+kaynağında helper COMMIT fault, kaynak ZIP ve literal kaldırma kanıtını
+ayrıca kaydeder. Bu sayfanın 2e970e4 sonuçları tarihsel kalır.
