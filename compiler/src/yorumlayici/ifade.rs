@@ -75,33 +75,7 @@ pub(super) fn degerlendir_async<'a>(
                             // trait'i senkrondur; adaptör çağrısının içi atomik kalır.
                             gorev_bekleme_noktasi(0).await;
                         }
-                        // Sıra verme sırasında kardeş görev saati ilerletmiş veya
-                        // üst son tarihi doldurmuş olabilir. Adaptöre eski kalan
-                        // süreyle girmek yerine tam çağrı öncesi yeniden hesapla.
-                        let zaman_asimi_ms = son_tarih_kalani(io, satir)?.map(|(_, kalan)| kalan);
-                        let (durum, govde) = match io.http_getir(url, zaman_asimi_ms) {
-                            Ok(yanit) => {
-                                son_tarihi_denetle(io, satir)?;
-                                yanit
-                            }
-                            Err(hata) => {
-                                son_tarihi_denetle(io, satir)?;
-                                return Err(
-                                Tani::yeni(
-                                    "C018",
-                                    format!("Ağ isteği başarısız: {}.", hata),
-                                    satir,
-                                    1,
-                                    1,
-                                )
-                                .onerili(
-                                    "Ağ hatasını yönetmek için yeni HTTP isteğini dene kalıbıyla Sonuç al (RFC-0033)."
-                                        .into(),
-                                ),
-                            );
-                            }
-                        };
-                        Ok(Deger::AgYaniti { durum, govde })
+                        http_istek::getir(url, io, satir)
                     }
                     POSTGRESQL_OKU => {
                         veritabani::intrinsic_degerlendir(&degerler, io, satir, false)

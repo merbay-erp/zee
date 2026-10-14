@@ -60,3 +60,8 @@ artışlarla birikmesini veya eşik altına saklanmasını da göstermez.
 - K-145/ADR-042 bütün kaynakları sabit `rustfmt` çıktısına taşıdığı için satır
   ölçüsü semantik değişiklik olmadan yeniden tabanlandı. İnceleme kaydı
   `K-145/ADR-041 kanonik rustfmt tabanı`, güncel kapsam 49 işlevdir.
+
+K-240 yalnız üç yeni kritik işlevi ve büyüyen iki handler’ı bağımsız
+[sorumluluk/bütçe incelemesine](../docs/incelemeler/urunlesme-20261014/function-review/README.md)
+bağlar. Diğer 55 kayıt ve yüzde/min/max büyüme eşikleri korunur; toplu
+taban yazma yapılmaz. Kanonik rapor aynı değişiklikte yenilenir.

@@ -1357,7 +1357,7 @@ yeni optimizasyon veya artımlılık kapanışı değildir.
 
 ## K-221 — Ürünleşme A6 bilinmeyen CLI seçeneği
 
-Durum: uygulama ve yerel kabul; exact kaynak/provenance kapanışı bekler.
+Durum: uygulama ve yerel kabul; exact kaynak/provenance kayıtları tamamlandı.
 A6(1) minimal correctness: bilinmeyen `--` seçenek yol değildir, exit 2
 ve etkin sürümle reddedilir. Program argümanları korunur.
 [ADR-092](../adr/092-cli-bilinmeyen-secenek-reddi.md).
@@ -1408,7 +1408,7 @@ Genel modül yöneticisi, namespace/version-range/menu/content/göç açık kal�
 ## K-230 — Güncel dış inceleme izlenebilirliği
 
 [27/27 güncel tablo](dis-inceleme-2026-10-13.md) tarihi kaynak ile committed
-K-221 ve aday/yerel K-222/K-226 kanıtını ayırır. PGGB041/LSP kapanan
+K-221 ve kayıtlı yerel K-222/K-226 kanıtını ayırır. PGGB041/LSP kapanan
 alt kapsamlar yeniden açılmaz; tam adversarial audit K-205'te açık kalır.
 
 ## K-229 — Biçimleyici CI denetimi
@@ -1465,3 +1465,33 @@ izleyen provenance kaydına bağlanır; inherited yanıt DoS K-237 ayrı iştir.
 ## K-237 — SMTP yanıt okumasında tahsisten önce sınır
 
 **KAPALI — yerel güvenlik/correctness kabulü.** [ADR-100](../adr/100-smtp-yanit-okuma-siniri.md)/GB-061: mevcut 16 KiB bütçe kalan+1 Take ve 16 KiB + 1 bayt kapasiteli tek yanıt tamponuyla LF/EOF öncesinde zorlanır. Beş actualhelper ve gerçek loopback corpus kabulü; eski gövdeyle 1 MiB byte/deadline negatif ve restore pozitif kanıtı vardır. K-236 maskesi aynı; grammar/API/dependency/kalıcı state yoktur. Exact source/fixed_by beyanı takip kaydı, uzak CI/live/RSS/plain toplam deadline sınırı ayrıdır.
+
+## K-238 — rustls advisory güvenlik yaması
+
+Compiler ve fuzz lock'ları `ureq 3.4.0` üzerinden `rustls 0.23.46`ya
+birlikte yükseltilir; RUSTSEC-2026-0346/0347/0348/0349 için ignore yok.
+[ADR-101](../adr/101-rustls-advisory-yamasi.md)/GB-062 gerçek feature-tree
+ve erişilebilirlik sınırını ayırır. Manifest/production source/grammar/API
+değişmez. İki deny, offline vendor ve HTTP/tedarik kabulü yeni exact lock'a
+aittir; eski iki-klon/CI sonucu yeni release kabulü değildir.
+
+## K-239 — Özel CI bağlantıları ve kaynak kökeni temizliği
+
+GB-063 kapanışı yalnız izole iş serisini ve inceleme raporunu etkiler;
+başlangıç ağacı/ana kullanıcı checkout’u korunur. Exact
+[SHA eşlemesi](incelemeler/urunlesme-20261014/sanitized-sha-map.tsv)
+compiler/freeze/regression/TLS kaynak kayıtlarıyla birlikte tutulur.
+Özgün eski checkpoint kanıtları tarihsel kalır, yeni temiz kaynak kabulü
+ayrıca alınır. GitHub destek teyidi ve public yayın kapıları açıktır.
+
+## K-240 — Mevcut handler sorumluluklarının ayrılması
+
+GET yürütmesi HTTP handler’a, IO replay trait uygulaması aynı sahibin
+alt dosyasına taşınır. 900/1250 satır sınırları yükseltilmez; mevcut
+semantik/tanı/deadline/trace/state korunur. Katman/SCC/API ve olumlu/olumsuz
+IO testleri değişikliğin kabulüdür; yeni cache veya dil özelliği yoktur.
+
+K-240 SMTP testleri ayrı native test dosyasına, DB/posta profil erişicileri
+mevcut domain profil dosyalarına taşınır. Test isimleri/faz sahipliği, profil
+değerleri, public yüzey ve üretim gövdeleri korunur; spec kanıtı yeni exact
+test dosyasına taşınmıştır.

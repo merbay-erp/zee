@@ -370,3 +370,9 @@ semantiğiyle yazılabilir. İki-clone kabulü farklı bir kapıdır.
 ## K-237 SMTP tahsis sınırı etki incelemesi
 
 K-237 küçük yanıt için de başlangıçta 16 KiB + 1 bayt String ayırır; eski küçük/geometrik tahsis değişir, sınırsız büyüme kapanır. Yanıt ömürlü tampon cache/kalıcı state değildir. Sabit `olcum` korpusu SMTP transport yürütmez; iş yükü/sample/warmup/toolchain ve immutable performans-gecmisi-v2.tsv aynı kalır. Byte/capacity sayacı benchmark/RSS örneği değildir; p95/RSS iyileşmesi veya yeni taban iddiası yoktur. Gelecek kayıt temiz exact SHA ve ADR-049 tam provenance ister ([ADR-100](../adr/100-smtp-yanit-okuma-siniri.md)).
+
+K-238/ADR-101 yalnız TLS dependency kilit yamasıdır; sabit compiler/LSP
+workload, örnek ve ısınma semantiği değişmez. TLS performansı ölçülmüş
+sayılmaz; p95/RSS eşliği veya yeni taban iddiası yoktur. ADR-045/049 gereği
+immutable tarihçe korunur; yeni kalıcı ölçüm temiz exact yama kaynağı ve
+tam makine/Rust/release/sample provenance ister.

@@ -101,3 +101,32 @@ fn json_sozlugu(metin: &str) -> Result<Vec<(String, Deger)>, String> {
 fn json_sozlugu(_: &str) -> Result<Vec<(String, Deger)>, String> {
     Err("Native HTTP JSON adaptörü desteklenmiyor".into())
 }
+
+// K-240: mevcut GET tel/tanı/deadline akışı HTTP handler sahibinde kalır.
+pub(super) fn getir(url: &str, io: &mut dyn GirdiCikti, satir: usize) -> Result<Deger, Tani> {
+    // Sıra verme sırasında kardeş görev saati ilerletmiş veya
+    // üst son tarihi doldurmuş olabilir. Adaptöre eski kalan
+    // süreyle girmek yerine tam çağrı öncesi yeniden hesapla.
+    let zaman_asimi_ms = son_tarih_kalani(io, satir)?.map(|(_, kalan)| kalan);
+    let (durum, govde) = match io.http_getir(url, zaman_asimi_ms) {
+        Ok(yanit) => {
+            son_tarihi_denetle(io, satir)?;
+            yanit
+        }
+        Err(hata) => {
+            son_tarihi_denetle(io, satir)?;
+            return Err(Tani::yeni(
+                "C018",
+                format!("Ağ isteği başarısız: {}.", hata),
+                satir,
+                1,
+                1,
+            )
+            .onerili(
+                "Ağ hatasını yönetmek için yeni HTTP isteğini dene kalıbıyla Sonuç al (RFC-0033)."
+                    .into(),
+            ));
+        }
+    };
+    Ok(Deger::AgYaniti { durum, govde })
+}

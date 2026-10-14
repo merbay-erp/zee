@@ -38,12 +38,12 @@ Kaynak: `docs/guvenlik-bulgulari-v1.tsv`
 | Önem | Kapalı | Kabul | Açık | Toplam |
 | --- | --- | --- | --- | --- |
 | kritik | 1 | 0 | 0 | 1 |
-| yuksek | 15 | 0 | 0 | 15 |
-| orta | 19 | 6 | 1 | 26 |
+| yuksek | 16 | 0 | 0 | 16 |
+| orta | 20 | 6 | 1 | 27 |
 | dusuk | 13 | 6 | 0 | 19 |
 
 Kapı: açık kritik/yüksek bulgu 0 → **GEÇTİ** (ADR-066 sürekli kapı koşulu).
-Toplam bulgu: 61.
+Toplam bulgu: 63.
 
 ## Spec maddeleri
 

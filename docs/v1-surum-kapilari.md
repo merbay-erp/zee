@@ -522,3 +522,14 @@ kabulü live M365/Gmail/katalog/queue ve fiziksel Windows/RC kabulü değildir.
 Inherited SMTP güvenlik kapanışları K-236/K-237 ayrı izlenir.
 
 K-237/GB-061 yüksek SMTP yanıt-tahsis bulgusu beş actualhelper/native LF-yok corpus ve eski gövdeyle ret/düzeltme geri konunca kabul kabulüyle kapalıdır. K-236 maskesi ve mevcut 16 KiB profil korunur. P34 global RSS/full fault, P10 live/queue, fiziksel platform, RC ve yeni exact uzak CI kapıları bu yerel kanıttan kapanmaz.
+
+K-238/GB-062 rustls advisory patch'i compiler/fuzz kilitlerinde 0.23.46
+ortak checksumuyla dar tedarik kapanışıdır; manifest/production source ve
+advisory ignore kümesi değişmez. [ADR-101](../adr/101-rustls-advisory-yamasi.md)
+standart ring feature-tree ile dört upstream tetik koşulunu ayırır. İki
+deny, offline vendor ve yerel HTTPS/tedarik kapısı yeni lock için kaydedilir;
+eski #29/#30 ya da eski iki-klon kanıtı yeni CI/release/platform kabulü değildir.
+
+K-239/GB-063 özel inceleme URL’lerini yalnız izole çalışma geçmişinden
+çıkarır; GitHub yönetilen refs/cache destek teyidini veya public yayın
+kapısını kapatmaz. Tarihsel checkpoint kanıtları yeni SHA’ya taşınmaz.

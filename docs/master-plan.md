@@ -1313,3 +1313,10 @@ Genel sır taint sistemi, P09 queue/retry, canlı SMTP/ürün kabulü veya
 K-237 yanıt okuma bütçesi bu düzeltmeden tamamlanmış sayılmaz.
 
 K-237/ADR-100/GB-061, beş helper ve native LF-yok corpus ile mevcut 16 KiB SMTP tahsis/tüketim açığını kapatır; K-236 maskesi korunur. P10/P34 için dar bytecap kanıtıdır. Queue/provider/ürün, global RSS/TLS iç tampon ve plain toplam deadline kapasitesi çıkarılmaz; immutable performans tarihçesi/iş yükü aynı, kalıcı state yoktur. Exact kaynak/provenance ve yeni uzak CI ayrı kayıttır.
+
+K-238/ADR-101/GB-062 güncel RustSec nedeniyle iki lock'taki rustls'i
+0.23.46ya taşır; ureq 3.4.0 ve production dil yüzeyi korunur. Dört advisory
+standart ring config'te ayrı exploit kanıtı sayılmaz; iki-graph deny,
+HTTP/tedarik ve offline vendor kabulü yeni exact kaynağa bağlanır.
+P33 tam audit, P06/P30 signed release, platform/insan/ürün ve uzak CI
+kapıları bundan kapanmaz; benchmark tarihçesi yeniden yazılmaz.

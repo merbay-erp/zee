@@ -4330,3 +4330,22 @@ SMTP yanıt tahsis bütçesi ve canlı ürün/sağlayıcı kabulü ayrı kalır.
 ## K-237 — SMTP bounded yanıt okuyucusu
 
 14.10.2026: LF/EOF öncesi 1 MiB tüketim açığı, kalan 16 KiB + 1 bayt Take ve 16 KiB + 1 bayt kapasiteli tek yanıt tamponuyla kapatıldı (ADR-100/GB-061). Beş actualhelper ve native LF-yok corpus, eski gövdeyle ret/düzeltme geri konunca kabul; consumed16385 ile fixed-prefetch24576/unused8191 ayrıdır. Kaynak başlangıcı cbacc4c09cf0534b7436f33d771a30ce687d510f kesin; exact fix SHA/fixed_by/compiler-freeze beyanı takip kaydıdır. Benchmark/kalıcı state/grammar değişmez; archive kanıtı uzak CI kabulü değildir.
+
+## K-238 — rustls kilitlerinde güvenlik yaması
+
+14.10.2026: güncel RustSec RUSTSEC-2026-0346/0347/0348/0349 için ortak
+yamalı rustls 0.23.46ya iki lock yükseltildi. ureq 3.4.0 ve manifest/source
+korunur; actual ring/logging/std/tls12 feature tree özel Debug cache,
+ECH/Brotli/hybrid exploit iddiasından ayrılır (ADR-101/GB-062). Ignore yok.
+Canonical artifact/SBOM yeni kilidi alır; eski build kanıtı ve performans
+tarihçesi korunur. Yeni yerel kapı/iki-klon/remote CI sonuçları exact kaynak
+kayıtlarına ayrı yazılır; tam audit veya release tamamlanmış sayılmaz.
+
+- 2026-10-14 K-239/GB-063: Yeni inceleme raporunun üç özel CI URL’si
+  rol/hash kaydına çevrildi; 17 iş commit’inden 15’i yalnız izole dalda
+  yeniden kuruldu. Exact kaynak/freeze/regression/TLS referansları taşındı;
+  başlangıç ve kullanıcı checkout’u korunur, eski kanıt yeni SHA’ya atanmaz.
+
+- 2026-10-14 K-240: MIME sonrası katman dosya bütçileri GET ve replay
+  uygulamalarını mevcut handler sahiplerine taşıyarak korunur. Semantic
+  davranış ve state aynı; source maintenance/compiler/freeze kaydı exact.

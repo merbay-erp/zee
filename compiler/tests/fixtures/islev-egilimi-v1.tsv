@@ -1,5 +1,5 @@
 # zee-islev-egilimi-v1
-# inceleme: K-185/K-186/K-187 inceleme: web_istegini_calistir dogrulanmis oturum ortami icin +15 satir; veritabani_bildirimini_al (K-186) ve migration_ust_seviye_kelimeleri (K-187) yeni kritik islev olarak tabana alindi; K-190 elmas birlesimi elmas_tanimlarini_kat yardimcisina ayrildi
+# inceleme: K-185/K-186/K-187 inceleme: web_istegini_calistir dogrulanmis oturum ortami icin +15 satir; veritabani_bildirimini_al (K-186) ve migration_ust_seviye_kelimeleri (K-187) yeni kritik islev olarak tabana alindi; K-190 elmas birlesimi elmas_tanimlarini_kat yardimcisina ayrildi; K-240 dar inceleme: K-232 lowering/MIME/runtime ve K-234 config/CLI dispatcher kapsaminda yalniz 5 islev yeniden kabul edildi; sorumluluk/girdi/etki sinirlari ve mevcut olumlu-olumsuz testler depo disi inceleme notunda; global buyume payi ayni
 # yol	kimlik	satir	karmasiklik
 src/ayristirici.rs	aralik_ayristir#1	86	3
 src/ayristirici.rs	dondur_ayristir#1	105	4
@@ -56,7 +56,11 @@ src/yorumlayici/web_istek.rs	web_istegini_calistir#1	113	9
 src/ayristirici.rs	kullanilan_birimler#1	46	12
 src/ayristirici/cumle/gorunum.rs	gorunum_dugumu_kur#1	91	2
 src/gorsel.rs	kucult#1	82	2
-src/main.rs	govde#1	82	8
-src/yorumlayici/kimlik_iletisim.rs	intrinsic_degerlendir#1	92	4
+src/main.rs	govde#1	103	10
+src/yorumlayici/kimlik_iletisim.rs	intrinsic_degerlendir#1	125	4
 # K-218 inceleme: web_modunu_ayikla explicit bellek bayrağı doğrulamasını taşır; tek değer/tekrar/proxy zorunluluğu testle korunur, grammar ya da genel parser değişmez.
 src/main.rs	web_modunu_ayikla#1	88	4
+# K-240 dar inceleme: yeni kritik islevler tek faz/sorumlulukla mevcut guvenlik profilini tasir; diger 55 taban satiri degismedi.
+src/ayristirici/kimlik_iletisim.rs	yapili_kalip#1	92	0
+src/cli/ayar.rs	cozumle#1	94	8
+src/eposta/mime.rs	ileti_kur#1	93	8

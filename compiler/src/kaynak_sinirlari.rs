@@ -170,13 +170,6 @@ impl KaynakSinirlari {
     pub const fn kalici_dosya(self) -> KaliciDosyaSinirlari {
         self.kalici_dosya
     }
-
-    pub const fn veritabani(self) -> VeritabaniSinirlari {
-        self.veritabani
-    }
-    pub const fn eposta(self) -> EpostaSinirlari {
-        self.eposta
-    }
 }
 
 /// Resmî güvenli profil. Limit değişiklikleri kullanıcı programlarının

@@ -161,3 +161,12 @@ yöndedir. Yeni üst sahip/ters kenar/owner SCC veya facade export yoktur.
 Temel bütçe alt modülü `posta` adını taşır; `eposta` üst adaptör sahibiyle
 module adı çakışması oluşturulmaz. Kapı/fixture ters temel kenarına izin
 vermek için değiştirilmedi; public EpostaSinirlari ve bütçe değerleri aynıdır.
+
+K-240: GET C018/deadline gövdesi mevcut HTTP handler’dadır; replay trait
+uygulaması `yorumlayici/io_izi/iz_oynatici.rs` alt dosyasındadır. Aynı
+yorumlayıcı owner, aynı değer/state ve temel→adaptör yönü korunur.
+
+K-240 SMTP testleri ayrı native test dosyasına, DB/posta profil erişicileri
+mevcut domain profil dosyalarına taşınır. Test isimleri/faz sahipliği, profil
+değerleri, public yüzey ve üretim gövdeleri korunur; spec kanıtı yeni exact
+test dosyasına taşınmıştır.

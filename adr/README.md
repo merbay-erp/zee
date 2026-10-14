@@ -108,3 +108,5 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-099 | [SMTP hata maskelemesi](099-smtp-hata-maskelemesi.md) | **kabul** (K-236/GB-060) |
 
 | ADR-100 | [SMTP yanıt okuma sınırı](100-smtp-yanit-okuma-siniri.md) | **kabul** (K-237/GB-061) |
+
+| ADR-101 | [rustls advisory güvenlik yaması](101-rustls-advisory-yamasi.md) | **kabul** (K-238/GB-062) |
