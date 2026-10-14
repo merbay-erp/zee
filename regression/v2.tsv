@@ -27,3 +27,4 @@ rota-birimlerinde-ayni-satir	K-213	428df9cb21a6a058b047d913ddc2f1b6f95e7aa4	1a01
 gorunum-sembol-kaydi	K-213	428df9cb21a6a058b047d913ddc2f1b6f95e7aa4	8339cc10af6d8479663c4f66ff9e9ebca4be2dc4	0.8.0-dev	hir	definition	-	-	0	-	regression/hir/gorunum-sembol-kaydi.dil
 gizli-deger-io-izi	K-213	428df9cb21a6a058b047d913ddc2f1b6f95e7aa4	e2d4070cfb24340f15497e259f8ae0dbd561e26d	0.8.0-dev	runtime	trace	-	-	0	sentetik-iz-parolasi	regression/runtime/gizli-deger-io-izi.dil
 bilinmeyen-secenek	K-221	5525143d3367631aa25d7f744e081861742181b7	-	0.8.0-dev	cli	cli	-	-	2	Bilinmeyen seçenek: --bilinmeyen-secenek (bu sürüm: 0.8.0-dev).	regression/cli/bilinmeyen-secenek.dil
+smtp-auth-echo-sir	K-236	109a0647ec3e02432d3edf47cd28b4c6ee0c81fb	cbacc4c09cf0534b7436f33d771a30ce687d510f	0.8.0-dev	security	smtp	-	-	0	E-posta gönderilemedi; ayar geçersiz veya gönderim sonucu belirsiz; ayrıntılar gizlendi; otomatik tekrar yok	regression/security/smtp-auth-echo-sir.dil
