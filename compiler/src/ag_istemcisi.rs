@@ -1,6 +1,9 @@
 //! Native outbound HTTP(S) istemcisi: rustls + kapalı redirect + DNS sonrası
 //! IP capability denetimi. WASM host adaptörü bu modülü kullanmaz.
 
+mod istek;
+pub use istek::istek;
+
 use crate::yetkinlik::YetkinlikPolitikasi;
 use std::time::Duration;
 use ureq::unversioned::resolver::{DefaultResolver, ResolvedSocketAddrs, Resolver};

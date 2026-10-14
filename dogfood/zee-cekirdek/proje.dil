@@ -1,8 +1,9 @@
-# K-208/K-209 gerçek zee-cekirdek gereksinim aynası; çalışan ürün ayrı depodadır.
+# K-208/K-209/K-220 gerçek zee-cekirdek gereksinim aynası; çalışan ürün ayrı depodadır.
 proje "zee-cekirdek" olsun
 sürüm "0.1.0" olsun
 morfoloji "zee-tr-1" olsun
 giriş "kimlik-gereksinimi.dil" olsun
-yetkinlikler "ağ-sunucusu", "web-oturumu", "kriptografi" listesi olsun
-ağ_hedefleri boş liste olsun
+yetkinlikler "ağ-sunucusu", "web-oturumu", "kriptografi", "ağ" listesi olsun
+ağ_hedefleri "https://challenges.cloudflare.com" listesi olsun
+http_gizli_değişkenleri "TURNSTILE_SECRET" listesi olsun
 yerel_bağımlılıklar boş liste olsun

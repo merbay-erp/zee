@@ -26,6 +26,8 @@ bicim	zep	aktif	0.8.0-dev	compiler/src/artefakt_dogrulama.rs	const PAKET_SIHRI: 
 kalip	DELETE	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	GET	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	HEAD	aktif	0.8.0-dev	compiler/src/lsp.rs	-
+kalip	HTTP	aktif	0.8.0-dev	compiler/src/lsp.rs	-
+kalip	JSON	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	PATCH	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	POST	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	PUT	aktif	0.8.0-dev	compiler/src/lsp.rs	-
@@ -72,6 +74,7 @@ kalip	ileti	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	iptal	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	ise	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	istemci	aktif	0.8.0-dev	compiler/src/lsp.rs	-
+kalip	isteğini	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	içermeli	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	için	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	işlem	aktif	0.7.0	compiler/src/lsp.rs	-
@@ -95,6 +98,7 @@ kalip	olduğu	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	olmalı	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	olmamalı	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	olsun	aktif	0.7.0	compiler/src/lsp.rs	-
+kalip	ortam	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	oturum	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	paketini	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	parçaları	aktif	0.7.0	compiler/src/lsp.rs	-
@@ -104,6 +108,7 @@ kalip	rotalarını	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	saniye	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	sil	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	sor	aktif	0.7.0	compiler/src/lsp.rs	-
+kalip	sözlüğünü	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	sürece	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	sıralanmışı	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	tekrarla	aktif	0.7.0	compiler/src/lsp.rs	-
@@ -171,6 +176,9 @@ kosul	varsa	aktif	0.7.0	compiler/src/ayristirici/ifade.rs	-
 kosul	yoksa	aktif	0.7.0	compiler/src/ayristirici/ifade.rs	-
 kosul	çiftse	aktif	0.7.0	compiler/src/ayristirici/ifade.rs	-
 profil	eszamanlilik	aktif	0.8.0-dev	conformance/eszamanlilik/zee-esz-1.json	"kimlik": "zee-esz-1"
+profil	http-gizli-ortam-v1	aktif	0.8.0-dev	compiler/src/proje.rs	"http_gizli_değişkenleri"
+profil	http-istek-v1	aktif	0.8.0-dev	compiler/src/ag_istemcisi/istek.rs	pub fn istek(
+profil	http-json-v1	aktif	0.8.0-dev	compiler/src/intrinsic.rs	"ag.http_json"
 profil	io	aktif	0.8.0-dev	compiler/src/yorumlayici/io_profili.rs	pub const DETERMINISTIK_IO_PROFILI: &str = "zee-io-1";
 profil	morfoloji	aktif	0.7.0	compiler/src/morfoloji.rs	pub const MORFOLOJI_PROFILI: &str = "zee-tr-1";
 profil	web-oran-deposu.bellek	aktif	0.8.0-dev	compiler/src/main.rs	"--web-oran-deposu"

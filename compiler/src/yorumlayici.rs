@@ -7,6 +7,7 @@ mod cumle;
 mod dosya;
 mod eylem_hatasi;
 mod hir_gecisi;
+mod http_istek;
 mod ifade;
 mod io_izi;
 mod io_izi_veritabani;
@@ -370,6 +371,21 @@ pub trait GirdiCikti {
         url: &str,
         zaman_asimi_ms: Option<i64>,
     ) -> Result<(i64, String), String>;
+    /// K-220: başlıklı GET/POST. Transport hatası başarısız Sonuç olur.
+    fn http_istek(
+        &mut self,
+        _url: &str,
+        _yontem: &str,
+        _basliklar: &[(String, String)],
+        _govde: &str,
+        _zaman_asimi_ms: i64,
+    ) -> Result<(i64, String), String> {
+        Err("HTTP istek adaptörü desteklenmiyor".into())
+    }
+    /// Yalnız proje sahibinin izin verdiği HTTP ortam adları okunabilir.
+    fn http_gizli_ortam(&mut self, _ad: &str) -> Result<String, String> {
+        Err("HTTP gizli ortam erişimi desteklenmiyor".into())
+    }
     /// Tek ifadeli, extended-query protokolünde ayrı TEXT parametreleriyle
     /// yürütülen PostgreSQL okuması. Sonuç sütunları v1'de non-null metindir.
     fn postgresql_oku(
@@ -556,6 +572,22 @@ impl GirdiCikti for PaylasilanIo<'_> {
     ) -> Result<(i64, String), String> {
         self.ic.borrow_mut().http_getir(url, zaman_asimi_ms)
     }
+    fn http_istek(
+        &mut self,
+        url: &str,
+        yontem: &str,
+        basliklar: &[(String, String)],
+        govde: &str,
+        zaman_asimi_ms: i64,
+    ) -> Result<(i64, String), String> {
+        self.ic
+            .borrow_mut()
+            .http_istek(url, yontem, basliklar, govde, zaman_asimi_ms)
+    }
+    fn http_gizli_ortam(&mut self, ad: &str) -> Result<String, String> {
+        self.ic.borrow_mut().http_gizli_ortam(ad)
+    }
+
     fn postgresql_oku(
         &mut self,
         sorgu: &str,

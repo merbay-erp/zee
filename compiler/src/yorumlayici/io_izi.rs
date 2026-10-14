@@ -3,6 +3,7 @@
 
 mod codec;
 mod eylem;
+mod http;
 mod istemci;
 mod k181;
 mod oturum;
@@ -505,23 +506,7 @@ impl<T: GirdiCikti> GirdiCikti for IzKaydedenIo<T> {
         sonuc
     }
 
-    fn http_getir(
-        &mut self,
-        url: &str,
-        zaman_asimi_ms: Option<i64>,
-    ) -> Result<(i64, String), String> {
-        let sonuc = self.ic.http_getir(url, zaman_asimi_ms);
-        let mut argumanlar = vec![url.into()];
-        argumanlar.extend(secenek_yaz(
-            zaman_asimi_ms.map(|deger| deger.to_string()).as_deref(),
-        ));
-        let iz_sonucu = match &sonuc {
-            Ok((durum, govde)) => vec!["ok".into(), durum.to_string(), govde.clone()],
-            Err(hata) => vec!["hata".into(), hata.clone()],
-        };
-        self.kaydet("http_getir", argumanlar, iz_sonucu);
-        sonuc
-    }
+    http::yontemler!();
 
     fn sunucu_kur(&mut self, kapi: i64) -> Result<(), String> {
         let sonuc = self.ic.sunucu_kur(kapi);

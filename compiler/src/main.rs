@@ -1286,7 +1286,7 @@ impl KaynakGirdisi {
         argumanlar: Vec<String>,
         politika: dil::yetkinlik::YetkinlikPolitikasi,
     ) -> GercekIo {
-        GercekIo::yeni_argumanlarla(
+        let mut io = GercekIo::yeni_argumanlarla(
             &self.klasor,
             self.dosya_siniri_koku(),
             web_modu,
@@ -1301,7 +1301,13 @@ impl KaynakGirdisi {
             self.proje
                 .as_ref()
                 .and_then(|proje| proje.ana_bildirim().gizli_anahtar_degiskeni.clone()),
-        )
+        );
+        io.http_gizli_degiskenleri = self
+            .proje
+            .as_ref()
+            .map(|proje| proje.ana_bildirim().http_gizli_degiskenleri.clone())
+            .unwrap_or_default();
+        io
     }
 
     fn birim_yukle(&self, istek: dil::BirimIstegi<'_>) -> Result<dil::YuklenenBirim, String> {
@@ -1470,6 +1476,7 @@ struct GercekIo {
     veritabani_bildirimi: Option<dil::proje::VeritabaniBildirimi>,
     eposta_baglanti_degiskeni: Option<String>,
     gizli_anahtar_degiskeni: Option<String>,
+    http_gizli_degiskenleri: Vec<String>,
     postgresql: Option<dil::postgresql::PostgresqlOturumu>,
     postgresql_yazma_eylemleri: Vec<bool>,
 }
@@ -1584,6 +1591,7 @@ impl GercekIo {
             veritabani_bildirimi,
             eposta_baglanti_degiskeni,
             gizli_anahtar_degiskeni,
+            http_gizli_degiskenleri: Vec::new(),
             postgresql: None,
             postgresql_yazma_eylemleri: Vec::new(),
         }
@@ -2534,6 +2542,33 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         zaman_asimi_ms: Option<i64>,
     ) -> Result<(i64, String), String> {
         dil::ag_istemcisi::getir(url, zaman_asimi_ms, &self.politika)
+    }
+    fn http_istek(
+        &mut self,
+        url: &str,
+        yontem: &str,
+        basliklar: &[(String, String)],
+        govde: &str,
+        zaman_asimi_ms: i64,
+    ) -> Result<(i64, String), String> {
+        dil::ag_istemcisi::istek(
+            url,
+            yontem,
+            basliklar,
+            govde,
+            zaman_asimi_ms,
+            &self.politika,
+        )
+    }
+    fn http_gizli_ortam(&mut self, ad: &str) -> Result<String, String> {
+        if !self.http_gizli_degiskenleri.iter().any(|izin| izin == ad) {
+            return Err("HTTP ortam adı izinli değil".into());
+        }
+        let deger = std::env::var(ad).map_err(|_| "HTTP ortam değeri okunamadı")?;
+        if deger.len() > 65536 {
+            return Err("HTTP ortam değeri sınırı aşıldı".into());
+        }
+        Ok(deger)
     }
     fn postgresql_oku(
         &mut self,

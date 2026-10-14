@@ -471,3 +471,16 @@ bütçesi gerekir. Dosya backend’i ve kalıcı oturum paylaşımı değişmez.
 Kod/test/spec aynı dilimdedir; exact 1800 sn soak, 786/786 yerel faz, ürün
 kapasite yükü ve Gitsrv #26 kabulü [kanıt sayfasında](incelemeler/k219/README.md)
 tamamlandı. Ürün sunucusu yükseltilmedi.
+
+### K-220 — Ürün HTTP POST ve başlıklar
+
+[ADR-091](../adr/091-http-post-baslik-ve-gizli-ortam.md) / RFC-0033: native
+HTTPS GET/POST, başlık ve metin gövde, açık 1..30000 ms süre; Metin sözlüğü
+Sonucu (`durum`, `gövde`). Ortam sırları yalnız explicit ana proje listesiyle
+okunur; yeni sır taşıyan işlem iz kaydında/replay’de kapalıdır. Kanonik HTTP
+JSON helper bool/metin ayrımını korur. Eski GET ve Rust facade değişmez;
+WASM yeni native adaptörü açmaz. Ürün Turnstile helper ve yerel TLS testleri
+aynı dilimde; tam faz/Gitsrv sonucu [kabulde](incelemeler/k220/README.md) kapanır.
+Sunucu/ürün rotası ve otomatik kayıt/e-posta entegrasyonu ürün tarafındadır.
+
+K-220 / K-174: exact gerçek ürün talebiyle üç contextual kalıp eklendi; syntax gözlem penceresi 14.10.2026–11.11.2026 olarak bilinçli yeniden başladı. Core freeze ve insan/RC kapıları sürer; V1 tamamlandı olarak gösterilmez.

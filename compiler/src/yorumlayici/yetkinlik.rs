@@ -1,5 +1,6 @@
 //! `GirdiCikti` çağrılarını merkezî yetkinlik politikasında fail-closed tutar.
 mod dosya;
+mod http;
 mod kimlik_iletisim;
 mod web;
 
@@ -107,15 +108,7 @@ impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
     fn argumanlar(&mut self) -> Vec<String> {
         self.ic.argumanlar()
     }
-    fn http_getir(
-        &mut self,
-        url: &str,
-        zaman_asimi_ms: Option<i64>,
-    ) -> Result<(i64, String), String> {
-        self.gerektir(Yetkinlik::Ag)?;
-        self.politika.ag_istegini_denetle(url)?;
-        self.ic.http_getir(url, zaman_asimi_ms)
-    }
+    http::yontemler!();
 
     fn postgresql_oku(
         &mut self,

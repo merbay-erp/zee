@@ -20,6 +20,7 @@
 //! veritabanı_istek_bağlamı "platform.session_context" olsun
 //! ```
 
+mod http_istek;
 mod kimlik_iletisim;
 
 use crate::agac::{Cumle, Ifade};
@@ -55,6 +56,7 @@ pub struct ProjeBildirimi {
     pub eposta_baglanti_degiskeni: Option<String>,
     /// K-210 eki 3: gizli değer anahtarını taşıyan ortam değişkeninin adı (kriptografi yetkinliği ister).
     pub gizli_anahtar_degiskeni: Option<String>,
+    pub http_gizli_degiskenleri: Vec<String>,
 }
 
 pub use crate::veritabani_modeli::{VeritabaniBildirimi, VeritabaniHedefi};
@@ -155,12 +157,13 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
                 | "veritabanı_istek_bağlamı"
                 | "e_posta_bağlantı_değişkeni"
                 | "gizli_anahtar_değişkeni"
+                | "http_gizli_değişkenleri"
         ) {
             return Err(proje_hatasi(
                 "P001",
                 &format!("\"{}\" proje bildirimi alanı değil.", ad),
                 satir,
-                "Geçerli alanlar: proje, sürüm, morfoloji, giriş, yetkinlikler, ağ_hedefleri, yerel_bağımlılıklar, registry, registry_kök_sürümü, registry_kök_özeti, uzak_bağımlılıklar, veritabanı_hedefi, veritabanı_bağlantı_değişkeni, veritabanı_göçleri, veritabanı_istek_bağlamı, e_posta_bağlantı_değişkeni, gizli_anahtar_değişkeni.",
+                "Geçerli alanlar: proje, sürüm, morfoloji, giriş, yetkinlikler, ağ_hedefleri, yerel_bağımlılıklar, registry, registry_kök_sürümü, registry_kök_özeti, uzak_bağımlılıklar, veritabanı_hedefi, veritabanı_bağlantı_değişkeni, veritabanı_göçleri, veritabanı_istek_bağlamı, e_posta_bağlantı_değişkeni, gizli_anahtar_değişkeni, http_gizli_değişkenleri.",
             ));
         }
         if alanlar.insert(ad.clone(), (deger, satir)).is_some() {
@@ -191,6 +194,7 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
     let veritabani = veritabani_bildirimini_al(&mut alanlar, &yetkinlik_yazimlari)?;
     let (eposta_baglanti_degiskeni, gizli_anahtar_degiskeni) =
         kimlik_iletisim::alanlari_al(&mut alanlar, &yetkinlik_yazimlari)?;
+    let http_gizli_degiskenleri = http_istek::gizli_adlari_al(&mut alanlar, &yetkinlik_yazimlari)?;
     let mut yetkinlikler = BTreeSet::new();
     for yazim in yetkinlik_yazimlari {
         let Some(yetkinlik) = Yetkinlik::ayristir(&yazim) else {
@@ -331,6 +335,7 @@ pub fn bildirimi_oku(kaynak: &str) -> Result<ProjeBildirimi, Tani> {
         veritabani,
         eposta_baglanti_degiskeni,
         gizli_anahtar_degiskeni,
+        http_gizli_degiskenleri,
     })
 }
 

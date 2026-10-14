@@ -103,3 +103,5 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-089 | [Süreç başına bellek oran deposu](089-bellek-oran-deposu.md) | **kabul** (K-218) |
 
 | ADR-090 | [Bellek oran ayarı ve korunmuş tahliye](090-web-oran-ayarlari.md) | **kabul** (K-219) |
+
+| ADR-091 | [HTTP POST, başlık ve gizli ortam sınırı](091-http-post-baslik-ve-gizli-ortam.md) | **kabul** (K-220) |

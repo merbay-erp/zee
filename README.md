@@ -150,10 +150,10 @@ Değişikliğe özel test, belge ve güvenlik kapıları [AGENTS.md](AGENTS.md) 
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **788** |
+| Rust + doctest vakası | **803** |
 | Tanı kimliği | **159 etkin + 3 ayrılmış** |
-| RFC | **32** (2 kabul, 27 geçici kabul, 3 taslak) |
-| ADR | **88** (88 kabul) |
+| RFC | **33** (2 kabul, 28 geçici kabul, 3 taslak) |
+| ADR | **89** (89 kabul) |
 | Normatif spec bölümü | **28** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
@@ -216,3 +216,7 @@ paylaşımı sürer; restart ve ayrı worker sayaçları ayrıdır.
 Bu kipte `--web-oran-siniri`, `--web-oran-kapasitesi` ve
 `--web-oran-doluluk en-eski` seçilebilir. Tahliye uç nokta kotasını sıfırlayabilir;
 giriş/CSRF canlı sayaçları korunur. [Ayarlar](adr/090-web-oran-ayarlari.md).
+
+Native dış isteklerde başlıklı GET/POST ve gövde gönderimi başarısızlıkları
+`Sonuç` olarak yönetir. Ortam sırları explicit proje listesiyle okunur;
+[HTTP kullanımı ve sınırlar](adr/091-http-post-baslik-ve-gizli-ortam.md).

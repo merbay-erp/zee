@@ -1,12 +1,14 @@
 # zee-v1-syntax-freeze-1
 # alan	deger
 karar	K-174
-baslangic	2026-10-13
-bitis	2026-11-10
+baslangic	2026-10-14
+bitis	2026-11-11
 yuzey_fixture	compiler/tests/fixtures/dil-yuzeyi-v1.tsv
 dondurulmus_yuzeyler	kalip,kosul,komut
-dondurulmus_sha256	3510ac014b0ffc6d6d7c090df284883bdbfde39e78af1a17ca99369594b3d7b5
+dondurulmus_sha256	b779a7af5871d89984c117d231da003aa238217950e5d4b06b720f61a593b699
 
 # K-209/ADR-082 gerçek ürün IP talebiyle iki contextual kalıp eklendi; dört haftalık syntax gözlem penceresi bu değişiklikte yeniden başladı. Core freeze yürürlükte, B-001/B-002 insan kanıtı kapatılmaz.
 
 # K-213/ADR-086: ürün E dalının mevcut ürün yüzeyleri ana hatta taşındı; birleşik kalıp/komut özeti yenilendi. Aynı gün başlayan 2026-10-13–2026-11-10 penceresi korunur.
+
+# K-220/ADR-091: kullanıcı tarafından verilen exact gerçek ürün Turnstile/Bearer ihtiyacı üç contextual kalıp gerektirdi. Yeni temel AST/value türü veya eski kalıp kaldırması yoktur; K-174 dört haftalık sıfır syntax değişikliği penceresi 14 Ekim–11 Kasım 2026 olarak bilinçli yeniden başlatılır. B-001/B-002 insan kanıtı ve RC kapıları açık kalır.
