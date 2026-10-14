@@ -64,3 +64,11 @@ kimliği ister.
   bozuk girdilerin reddi.
 - `compiler/tests/tani_kimligi_testi.rs`, `morfoloji_testi.rs`,
   `public_api_testi.rs` ve `playground_testi.rs` kendi yüzeylerini korur.
+
+TANIMLI: `dil çalıştır <proje-klasörü>` kökte varsa bounded `zee.ayar`
+`zee-ayar-1`/sürüm 1 zarfını okur. Bilinmeyen olağan alan tek sabit uyarıyla
+varsayılanı korur; bilinmeyen güvenlik/üst zarf alanı, duplicate JSON,
+geçersiz tip/sınır ve config kök symlink'i exit 2 ile reddedilir. Kaynak
+öncesi açık CLI ayarı geçerli config alanını ezer. `dil sürüm --ayar-semasi`
+ayrı capability sorgusudur; config reader olmayan 0.7/önceki küçük sürüm
+rollback kabulü AÇIK kalır (K-234, ADR-097).

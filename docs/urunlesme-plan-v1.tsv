@@ -3,11 +3,11 @@
 P01	ZEE-001	K-224	kanitli-baslangic	altyapi	-	docs/incelemeler/urunlesme-20261014/source-ci.json	1036 exact kaynak ZIP esligi; Gitsrv #30 visible commit status; primary/step/artifact siniri acik
 P02	A1	K-226	yerel-kabul	dil,altyapi	P01	adr/093-deterministik-build-kimligi.md	CLI/LSP/worker/SBOM esligi, iki temiz clone99f31d7; imzasiz proof ve final release/uzakCI ayri
 P03	A6(1)	K-221	yerel-kabul	dil	P01	compiler/tests/cli_secenek_testi.rs	Exit2 acik bilinmeyen secenek, program argumani; exact regression/source/freeze kayitli
-P04	A6(2)	-	acik	dil,urun	P03,P05	spec/07-birimler.md	Surumlu config; guvenlik anahtari fail-closed, precedence ve rollback
+P04	A6(2)	K-234	kismi	dil,urun	P03,P05	docs/zee-ayar.md	Surum1 zarf/unknownsecurityret/ordinarywarn/CLIprecedence17tests; realpreviousminorrollback/corpus acik
 P05	A2	K-167	kismi	dil,urun	P02,P08,P39	docs/uyumluluk-politikasi.md	Mevcut deprecation + aktif uyari, kanal/onceki korpus kabul eksigi
 P06	A3,D2	K-168,K-169	kismi	altyapi	P02,P29,P30,P39	scripts/surum-artefakti.sh	Hedef bazinda iki-klon/imza/kurulum; apt/container ayridir
 P07	A4	-	acik	altyapi,dil	P05,P06	spec/07-birimler.md	Iki proje compiler pin/selector; mevcut paket kilidi compiler secmez
-P08	A5	K-172	urun-kaniti	urun,altyapi	-	dogfood/korpus-v1.tsv	Anonim tam 5site+koku provenance N/N denetle/dene sure/RSS
+P08	A5	K-172	anonim-tam-korpus-bekliyor	urun,altyapi	-	dogfood/korpus-v1.tsv	Anonim tam 5site+koku provenance N/N denetle/dene sure/RSS
 P09	B1	-	acik	urun,altyapi	P08,P34	docs/urunlesme-plani.md	Kalici job lease/idempotency/3retry/deadletter/crash; ilk prototype mevcut PG
 P10	B2	K-210	kismi	dil,urun	P09	compiler/src/eposta.rs	MIME ek/ReplyTo/alternatif govde; transient ve teslim belirsizligi
 P11	B3	K-210	kismi	dil,urun	P08	compiler/src/gorsel.rs	JPEG/PNG/WebP mevcut; PDF fixture/backend karari acik

@@ -1293,3 +1293,7 @@ rol ve Python betik geçişi ayrı kabul ister, yeni genel DB API/ORM yoktur.
 
 K-223 anonim rehash helper'ı gerçek PostgreSQL kampanyasında 7/7 native
 vakayla ek kanıt taşır; live login/göç ve C027 ağ-fault kabulü açık kalır.
+
+K-234 zee-ayar-1 runtime config mevcut host seçenekleriyle sınırlıdır;
+unknown security ret/capability guard vardır. Genel ayar sistemi ve önceki
+küçük sürüm rollback, gerçek ürün korpusu kanıtına bağlı açık kapasitedir.

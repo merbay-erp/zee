@@ -511,3 +511,7 @@ Live ürün, fiziksel platform veya RC kabulü yerine geçmez.
 K-223 native rehash 7/7 yerel kabulü CAS row-lock, dış eylem rollback ve
 commit öncesi görünürlüğü kapsar. Uzak CI/ürün staging ve COMMIT yanıt
 kaybı ayrı açıktır; insan ve RC kanıtını ikame etmez.
+
+K-234 config profile/capability mevcut host davranışını sürümlü taşır.
+17 yerel test eski-reader/önceki küçük sürüm, ürün ve fiziksel Windows
+rollback kabulü değildir. K-174 kalıp/koşul/komut fingerprint değişmez.

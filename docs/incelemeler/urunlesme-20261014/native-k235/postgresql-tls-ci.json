@@ -1,0 +1,41 @@
+{
+  "schema": "zee-postgresql-tls-ci-1",
+  "source_sha": "4bf0a82fbe5907022db1cb0859af672788b3cb91",
+  "started_utc": "2026-10-14T12:11:14.059099+00:00",
+  "host": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "rustc": "rustc 1.93.1 (01f6ddf75 2026-02-11)",
+  "source_clean": true,
+  "fixture_hashes": {
+    "scripts/postgresql-tls-ci.py": "86ab8eff17561645fe53f01202da09803d53661dc7ce60289c12644d7faef0a1",
+    "compiler/tests/postgresql_testi.rs": "c61cb659568c09ad966b3493c7eba1154dc6424ed65ed9f4fa702ba806414a3c"
+  },
+  "engine": "docker",
+  "server": "postgres (PostgreSQL) 16.15 (Debian 16.15-1.pgdg12+2)",
+  "server_identity": {
+    "image": "postgres@sha256:0ea6700a3b4f0ae6ce746519073558aed4d88a79d8d07622a9a644946c7319c4",
+    "platform": "linux/arm64 sha256:0ea6700a3b4f0ae6ce746519073558aed4d88a79d8d07622a9a644946c7319c4"
+  },
+  "ca_sha256": "5733c4a57cba229f4c3a190c58cc3dc3bd94dc9223cb3587132128eab3aa9aca",
+  "tests": [
+    "izole_tls_dogru_ca_hostname_ve_tls12_ile_baglanir",
+    "izole_tls_baska_ca_gercek_sunucuyu_reddeder",
+    "izole_tls_san_disindaki_ip_hostnameini_reddeder",
+    "izole_tls_null_ve_metin_disini_reddeder_transaction_sagligi_korunur",
+    "izole_tls_sorgu_parametre_sonuc_ve_goc_sinirlarini_bir_fazlasinda_reddeder"
+  ],
+  "command": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "postgresql_testi",
+    "izole_tls_",
+    "--",
+    "--ignored",
+    "--test-threads=1",
+    "--nocapture"
+  ],
+  "exit": 0,
+  "elapsed_seconds": 14.187,
+  "boundary": "ephemeral loopback-only synthetic CA/key and cluster; TLS1.2 positive, wrong CA/SAN, real NULL/non-text and transaction health; no provider rotation, TLS1.1 refusal or production cluster evidence"
+}

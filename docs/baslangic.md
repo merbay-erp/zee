@@ -185,3 +185,7 @@ internet gerekmez, katalog `dil`in içindedir.
 - Gömülü kitaplık: [../kitaplik/](../kitaplik/) — `matematik birimini kullan` her yerde çalışır
 - Tasarım kararlarının tamamı: [../rfcs/](../rfcs/) ve [../kararlar/gunluk.md](../kararlar/gunluk.md)
 - VS Code renklendirme: [../editors/vscode/](../editors/vscode/)
+
+Üretim host bayraklarını proje kökündeki [sürümlü zee.ayar](zee-ayar.md)
+ile taşıyabilirsiniz; ayrı capability sorgusu olmayan eski ikiliye
+rollback bu profil için kabul edilmez.

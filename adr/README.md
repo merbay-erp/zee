@@ -113,3 +113,5 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-094 | [Yazmadan biçim denetimi](094-bicimleyici-yazmadan-denetim.md) | **kabul** (K-229) |
 
 | ADR-095 | [PostgreSQL göç durum/kuru planı](095-postgresql-goc-plani.md) | **kabul** (K-228) |
+
+| ADR-097 | [Sürümlü runtime ayarları](097-surumlu-runtime-ayarlari.md) | **kabul** (K-234) |
