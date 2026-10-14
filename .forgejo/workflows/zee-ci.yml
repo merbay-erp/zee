@@ -92,6 +92,9 @@ jobs:
           apt-get install -y -qq postgresql-15 openssl
           python3 scripts/tests/postgresql-tls-ci-test.py
           python3 scripts/postgresql-tls-ci.py --engine local --postgres-bin-dir /usr/lib/postgresql/15/bin
+          python3 scripts/postgresql-goc-ci.py --engine local --postgres-bin-dir /usr/lib/postgresql/15/bin
+          python3 scripts/tests/parola-goc-ci-test.py
+          python3 scripts/parola-goc-ci.py --engine local --postgres-bin-dir /usr/lib/postgresql/15/bin
       - name: Tam Linux faz matrisi ve kalite kapıları
         working-directory: kaynak/compiler
         run: |
@@ -172,5 +175,8 @@ jobs:
             kaynak/compiler/target/windows-capraz.md
             kaynak/compiler/target/postgresql-tls-ci.json
             kaynak/compiler/target/postgresql-tls-ci.log
+            kaynak/compiler/target/postgresql-goc-ci.json
+            kaynak/compiler/target/postgresql-goc-ci.log
+            kaynak/compiler/target/parola-goc-ci.json
           if-no-files-found: warn
           retention-days: 90

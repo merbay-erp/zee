@@ -1287,3 +1287,9 @@ canlı worker yükseltme ve V1/RC insan-platform kabulü ayrı açıktır.
 
 K-229 biçimleyici --denetle CI dilimi tamamlanır; lint/artımlı LSP/JetBrains
 kapasitesi bundan çıkarılmaz. Mevcut formatter/parser sınırı korunur.
+
+K-228 göç planı mevcut PostgreSQL CLI kapasitesini tamamlar; canlı ürün
+rol ve Python betik geçişi ayrı kabul ister, yeni genel DB API/ORM yoktur.
+
+K-223 anonim rehash helper'ı gerçek PostgreSQL kampanyasında 7/7 native
+vakayla ek kanıt taşır; live login/göç ve C027 ağ-fault kabulü açık kalır.

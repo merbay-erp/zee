@@ -1623,3 +1623,13 @@ source commit UTC günüdür; yeniden derleme duvar saatini ikiliye gömmez.
 CI için `dil biçimle --denetle <dosya|proje>`: uygun biçim0, fark1; kaynak
 içeriği/mtime/izin değişmez. Default biçimleme writer aynı şekilde sürer.
 K-226 dirty işareti conservative tüm kaynak ağacı değişikliklerini kapsar.
+
+### K-228 — SQL yazmadan göç planı
+
+`dil göçür --durum|--kuru [proje]` bütün/bekleyen migration'ları gösterir.
+Plan read-only snapshot'tır; tablo yokken metadata oluşturmaz. Default
+apply tek transaction/advisory lock ile sürer; göç credential/SQL basılmaz.
+
+K-223 native parola kabul koşucusu gerçek PostgreSQL üzerinde yedi vakayı
+atlamadan denetler; strict rapor sözleşmesinin dokuz ret testi vardır.
+[Koşucu ve C027/live sınırları](parola-goc-ci.md).

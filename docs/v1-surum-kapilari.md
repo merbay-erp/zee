@@ -503,3 +503,11 @@ ayrı sınanır; kanal etiketi kapı geçişini ikame etmez.
 
 K-229 source biçim kapısı yazmadan denetlenebilir; sekiz CLI kabulü default
 writer ve readonly/mtime sınırlarını korur. V1 insan/RC kapıları ayrı açık.
+
+K-228 dedicated native göç testi normal fazda ignored ayrı raporlanır;
+no-DDL/no-DML/rol/checksum/rollback explicit1/1 kapısı CI'a bağlanır.
+Live ürün, fiziksel platform veya RC kabulü yerine geçmez.
+
+K-223 native rehash 7/7 yerel kabulü CAS row-lock, dış eylem rollback ve
+commit öncesi görünürlüğü kapsar. Uzak CI/ürün staging ve COMMIT yanıt
+kaybı ayrı açıktır; insan ve RC kanıtını ikame etmez.

@@ -40,10 +40,10 @@ Kaynak: `docs/guvenlik-bulgulari-v1.tsv`
 | kritik | 1 | 0 | 0 | 1 |
 | yuksek | 12 | 0 | 0 | 12 |
 | orta | 19 | 6 | 1 | 26 |
-| dusuk | 13 | 3 | 0 | 16 |
+| dusuk | 13 | 4 | 0 | 17 |
 
 Kapı: açık kritik/yüksek bulgu 0 → **GEÇTİ** (ADR-066 sürekli kapı koşulu).
-Toplam bulgu: 55.
+Toplam bulgu: 56.
 
 ## Spec maddeleri
 
@@ -75,11 +75,11 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | spec/22-deterministik-io-profili.md | 4 | 1 | 0 | 5 | 80 |
 | spec/23-yetkinlik-ve-outbound-guvenligi.md | 14 | 0 | 0 | 14 | 100 |
 | spec/24-kaynak-guvenlik-profili.md | 6 | 1 | 0 | 7 | 85 |
-| spec/25-postgresql-veri-erisimi.md | 6 | 1 | 1 | 8 | 75 |
+| spec/25-postgresql-veri-erisimi.md | 7 | 1 | 1 | 9 | 77 |
 | spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md | 2 | 0 | 0 | 2 | 100 |
 | spec/27-uyumluluk-ve-surumleme.md | 9 | 2 | 1 | 12 | 75 |
 | spec/28-gorunum-blogu.md | 2 | 0 | 0 | 2 | 100 |
-| **Toplam** | 181 | 7 | 2 | 190 | 95 |
+| **Toplam** | 182 | 7 | 2 | 191 | 95 |
 
 ## Dogfood ürünleri ve korpusu
 
@@ -140,14 +140,14 @@ Kaynak: `docs/compiler-degisiklik-beyanlari-v1.tsv + docs/core-freeze-beyanlari-
 | --- | --- |
 | maintenance | 38 |
 | semantic-bugfix | 4 |
-| semantic-change | 33 |
+| semantic-change | 34 |
 
 | Freeze sınıfı | Beyan |
 | --- | --- |
 | bugfix | 1 |
-| correctness | 12 |
+| correctness | 13 |
 | dogfood-change | 20 |
 | maintenance | 35 |
 | security | 3 |
 
-Toplam: 75 compiler değişiklik beyanı, 71 core freeze beyanı.
+Toplam: 76 compiler değişiklik beyanı, 72 core freeze beyanı.

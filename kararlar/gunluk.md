@@ -4275,3 +4275,14 @@ audit açık, K-205 kapsamı yeni özellik veya kapanmış risk diye sunulmaz.
 14 Ekim 2026 C2: mevcut biçimleyici --denetle ile içerik/mtime/izin
 yazmadan CI denetimi yapar; default writer korunur. ADR-094, sekiz
 olumlu/olumsuz CLI vakası. K-226 dirty scope conservative kaynak ağacıdır.
+
+## K-228 — Göç durum/kuru çalışma
+
+14 Ekim 2026 B4 için mevcut göç komutuna SQL yazmayan plan eklendi.
+ADR-095; snapshot/rol/hash/no-DDL ve default apply transaction korunur.
+Source commitini exact compiler/freeze beyanı izler; canlı ürün göçü ayrı.
+
+14.10.2026 K-223 native ek kabul: gerçek PG16.15 Docker 7/7, sıfır ignored;
+strict helper/model/ikili SHA yakalama ve dokuz koşucu ret testi. Gerçek
+yarışta bir CAS kazanır, biri rollback; AFTER INSERT bariyeri commit öncesi
+özet/oturumu görünmez tutar. C027 ağ-fault/live ürün ayrı; CI kablosu eklendi.

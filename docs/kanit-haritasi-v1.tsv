@@ -153,3 +153,4 @@ rfcs/0033-http-post-baslik-ve-gizli-ortam.md	kanitli	compiler/tests/http_post_te
 adr/092-cli-bilinmeyen-secenek-reddi.md	kanitli	compiler/tests/cli_secenek_testi.rs,compiler/tests/semantic_regresyon_korpusu_testi.rs	K-221 bilinmeyen CLI secenegi kaynak kesfinden once reddedilir
 adr/093-deterministik-build-kimligi.md	kanitli	compiler/tests/build_kimligi_testi.rs,compiler/src/main.rs	K-226 CLI LSP SBOM ve worker basligi ayni deterministik source build kaydi
 adr/094-bicimleyici-yazmadan-denetim.md	kanitli	compiler/tests/cli_bicim_denetle_testi.rs	K-229 gerçek CLI dosya/proje check writer ve read-only metadata kabulü
+adr/095-postgresql-goc-plani.md	kanitli	compiler/tests/cli_goc_plani_testi.rs,compiler/tests/postgresql_goc_plani_testi.rs,compiler/src/postgresql.rs	K-228 SQL yazmadan plan ve role checksum rollback gercek kabul

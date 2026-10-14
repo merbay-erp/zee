@@ -71,6 +71,9 @@ jobs:
           sudo apt-get install -y -qq postgresql-16 openssl
           python3 scripts/tests/postgresql-tls-ci-test.py
           python3 scripts/postgresql-tls-ci.py --engine local --postgres-bin-dir /usr/lib/postgresql/16/bin
+          python3 scripts/postgresql-goc-ci.py --engine local --postgres-bin-dir /usr/lib/postgresql/16/bin
+          python3 scripts/tests/parola-goc-ci-test.py
+          python3 scripts/parola-goc-ci.py --engine local --postgres-bin-dir /usr/lib/postgresql/16/bin
       - name: Faz matrisini iş özetine ekle
         if: always()
         working-directory: compiler
@@ -88,6 +91,9 @@ jobs:
             compiler/target/faz-test-matrisi.md
             compiler/target/postgresql-tls-ci.json
             compiler/target/postgresql-tls-ci.log
+            compiler/target/postgresql-goc-ci.json
+            compiler/target/postgresql-goc-ci.log
+            compiler/target/parola-goc-ci.json
           if-no-files-found: warn
       - name: Uyarı yok
         working-directory: compiler

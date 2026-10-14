@@ -17,6 +17,22 @@ pub struct GocRaporu {
     pub atlanan: usize,
 }
 
+/// SQL yürütmeyen migration durum/kuru çalışma görüntüsü.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct GocPlani {
+    pub adimlar: Vec<GocAdimi>,
+    pub uygulanmis: usize,
+    pub bekleyen: usize,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct GocAdimi {
+    pub surum: i64,
+    pub ad: String,
+    pub sha256: String,
+    pub uygulanmis: bool,
+}
+
 pub struct PostgresqlOturumu {
     havuz: havuz::PostgresqlHavuzu,
     kiralik: Option<havuz::PostgresqlKirasi>,
@@ -416,10 +432,10 @@ fn goc_surumunu_coz(ad: &str) -> Result<i64, VeritabaniHatasi> {
     Ok(surum)
 }
 
-pub fn gocleri_uygula(
+fn projenin_goclerini_topla(
     bildirim: &VeritabaniBildirimi,
     proje_koku: &std::path::Path,
-) -> Result<GocRaporu, VeritabaniHatasi> {
+) -> Result<Vec<(i64, String, String, String)>, VeritabaniHatasi> {
     let proje_koku = std::fs::canonicalize(proje_koku)
         .map_err(|h| hata(format!("Proje kökü çözülemedi: {}", h)))?;
     let goc_koku = std::fs::canonicalize(proje_koku.join(&bildirim.gocler))
@@ -429,8 +445,115 @@ pub fn gocleri_uygula(
             "Migration klasörü proje kökü içinde gerçek bir klasör olmalı",
         ));
     }
-    let gocler = goc_dosyalarini_topla(&goc_koku)?;
+    goc_dosyalarini_topla(&goc_koku)
+}
 
+fn goc_kayitlarini_oku(
+    istemci: &mut impl postgres::GenericClient,
+) -> Result<Vec<postgres::Row>, VeritabaniHatasi> {
+    istemci
+        .query(
+            "SELECT surum, ad, sha256 FROM _zee_gocleri ORDER BY surum",
+            &[],
+        )
+        .map_err(|h| postgres_hatasi("Migration kayıtları okunamadı", h))
+}
+
+fn goc_kayitlarini_guvenli_coz(
+    kayitlar: Vec<postgres::Row>,
+) -> Result<std::collections::BTreeMap<i64, (String, String)>, VeritabaniHatasi> {
+    let mut uygulananlar = std::collections::BTreeMap::new();
+    for kayit in kayitlar {
+        let surum = kayit
+            .try_get::<_, i64>(0)
+            .map_err(|h| postgres_hatasi("Migration sürümü okunamadı", h))?;
+        let ad = kayit
+            .try_get::<_, String>(1)
+            .map_err(|h| postgres_hatasi("Migration adı okunamadı", h))?;
+        let sha256 = kayit
+            .try_get::<_, String>(2)
+            .map_err(|h| postgres_hatasi("Migration özeti okunamadı", h))?;
+        uygulananlar.insert(surum, (ad, sha256));
+    }
+    Ok(uygulananlar)
+}
+
+fn goc_planini_kur(
+    gocler: &[(i64, String, String, String)],
+    uygulananlar: &std::collections::BTreeMap<i64, (String, String)>,
+) -> Result<GocPlani, VeritabaniHatasi> {
+    if uygulananlar
+        .keys()
+        .any(|surum| !gocler.iter().any(|goc| &goc.0 == surum))
+    {
+        return Err(hata(
+            "Veritabanında kayıtlı bir migration dosyası proje ağacında yok",
+        ));
+    }
+    let mut plan = GocPlani {
+        adimlar: Vec::with_capacity(gocler.len()),
+        uygulanmis: 0,
+        bekleyen: 0,
+    };
+    for (surum, ad, ozet, _) in gocler {
+        let uygulanmis = if let Some((eski_ad, eski_ozet)) = uygulananlar.get(surum) {
+            if eski_ad != ad || eski_ozet != ozet {
+                return Err(verili_hata(
+                    format!("{} uygulanmış migration içeriğiyle uyuşmuyor", ad),
+                    vec![("surum".into(), surum.to_string())],
+                ));
+            }
+            plan.uygulanmis += 1;
+            true
+        } else {
+            plan.bekleyen += 1;
+            false
+        };
+        plan.adimlar.push(GocAdimi {
+            surum: *surum,
+            ad: ad.clone(),
+            sha256: ozet.clone(),
+            uygulanmis,
+        });
+    }
+    Ok(plan)
+}
+
+/// Kayıt tablosu yoksa da sadece read-only snapshot alır; SQL/DDL/DML uygulamaz.
+/// `--durum` ve `--kuru` aynı dosya, sürüm, ad ve hash sözleşmesini paylaşır.
+pub fn gocleri_planla(
+    bildirim: &VeritabaniBildirimi,
+    proje_koku: &std::path::Path,
+) -> Result<GocPlani, VeritabaniHatasi> {
+    let gocler = projenin_goclerini_topla(bildirim, proje_koku)?;
+    let havuz = havuz::kur(bildirim)?;
+    let mut istemci = havuz::al(&havuz)?;
+    let mut tx = istemci
+        .build_transaction()
+        .isolation_level(postgres::IsolationLevel::RepeatableRead)
+        .read_only(true)
+        .start()
+        .map_err(|h| postgres_hatasi("Migration durum transaction'ı başlatılamadı", h))?;
+    let tablo_var: bool = tx
+        .query_one("SELECT to_regclass('_zee_gocleri') IS NOT NULL", &[])
+        .map_err(|h| postgres_hatasi("Migration kayıt tablosu sorgulanamadı", h))?
+        .get(0);
+    let kayitlar = if tablo_var {
+        goc_kayitlarini_guvenli_coz(goc_kayitlarini_oku(&mut tx)?)?
+    } else {
+        std::collections::BTreeMap::new()
+    };
+    let plan = goc_planini_kur(&gocler, &kayitlar)?;
+    tx.commit()
+        .map_err(|h| postgres_hatasi("Migration durum transaction'ı tamamlanamadı", h))?;
+    Ok(plan)
+}
+
+pub fn gocleri_uygula(
+    bildirim: &VeritabaniBildirimi,
+    proje_koku: &std::path::Path,
+) -> Result<GocRaporu, VeritabaniHatasi> {
+    let gocler = projenin_goclerini_topla(bildirim, proje_koku)?;
     let havuz = havuz::kur(bildirim)?;
     let mut istemci = havuz::al(&havuz)?;
     let mut tx = istemci
@@ -443,40 +566,24 @@ pub fn gocleri_uygula(
          SELECT pg_advisory_xact_lock(151663);",
     )
     .map_err(|h| postgres_hatasi("Migration kayıt tablosu hazırlanamadı", h))?;
-    let kayitlar = tx
-        .query(
-            "SELECT surum, ad, sha256 FROM _zee_gocleri ORDER BY surum",
-            &[],
-        )
-        .map_err(|h| postgres_hatasi("Migration kayıtları okunamadı", h))?;
-    let mut uygulananlar = std::collections::BTreeMap::new();
-    for kayit in kayitlar {
-        uygulananlar.insert(
-            kayit.get::<_, i64>(0),
-            (kayit.get::<_, String>(1), kayit.get::<_, String>(2)),
-        );
-    }
-    if uygulananlar
-        .keys()
-        .any(|surum| !gocler.iter().any(|goc| &goc.0 == surum))
-    {
-        return Err(hata(
-            "Veritabanında kayıtlı bir migration dosyası proje ağacında yok",
-        ));
-    }
+    // Existing apply metadata decoding is retained exactly. Malformed schema
+    // panic correction requires its own bugfix/reproducer/provenance slice.
+    let kayitlar = goc_kayitlarini_oku(&mut tx)?
+        .into_iter()
+        .map(|kayit| {
+            (
+                kayit.get::<_, i64>(0),
+                (kayit.get::<_, String>(1), kayit.get::<_, String>(2)),
+            )
+        })
+        .collect::<std::collections::BTreeMap<_, _>>();
+    let plan = goc_planini_kur(&gocler, &kayitlar)?;
     let mut rapor = GocRaporu {
         uygulanan: 0,
-        atlanan: 0,
+        atlanan: plan.uygulanmis,
     };
-    for (surum, ad, ozet, sql) in gocler {
-        if let Some((eski_ad, eski_ozet)) = uygulananlar.get(&surum) {
-            if eski_ad != &ad || eski_ozet != &ozet {
-                return Err(verili_hata(
-                    format!("{} uygulanmış migration içeriğiyle uyuşmuyor", ad),
-                    vec![("surum".into(), surum.to_string())],
-                ));
-            }
-            rapor.atlanan += 1;
+    for ((surum, ad, ozet, sql), adim) in gocler.into_iter().zip(plan.adimlar) {
+        if adim.uygulanmis {
             continue;
         }
         tx.batch_execute(&sql)
@@ -686,6 +793,45 @@ mod testler {
     use super::*;
     use postgres::Config;
     use std::str::FromStr;
+
+    #[test]
+    fn goc_plani_uygulanmis_ve_bekleyeni_ayni_sirali_kaynaktan_ayirir() {
+        let gocler = vec![
+            (1, "0001_ilk.sql".into(), "aaa".into(), "SELECT 1".into()),
+            (3, "0003_son.sql".into(), "ccc".into(), "SELECT 3".into()),
+        ];
+        let kayitlar =
+            std::collections::BTreeMap::from([(1, ("0001_ilk.sql".into(), "aaa".into()))]);
+        let plan = goc_planini_kur(&gocler, &kayitlar).unwrap();
+        assert_eq!((plan.uygulanmis, plan.bekleyen), (1, 1));
+        assert_eq!(
+            plan.adimlar.iter().map(|a| a.surum).collect::<Vec<_>>(),
+            [1, 3]
+        );
+        assert!(plan.adimlar[0].uygulanmis);
+        assert!(!plan.adimlar[1].uygulanmis);
+        assert_eq!(plan.adimlar[1].sha256, "ccc");
+    }
+
+    #[test]
+    fn goc_plani_degismis_ad_ozet_ve_kayip_dosyayi_reddeder() {
+        let gocler = vec![(1, "0001_ilk.sql".into(), "aaa".into(), "SELECT 1".into())];
+        for (ad, hash) in [("0001_degismis.sql", "aaa"), ("0001_ilk.sql", "bbb")] {
+            let kayitlar = std::collections::BTreeMap::from([(1, (ad.into(), hash.into()))]);
+            let h = goc_planini_kur(&gocler, &kayitlar).unwrap_err();
+            assert_eq!(h.veri, [("surum".into(), "1".into())]);
+            assert_eq!(
+                h.mesaj,
+                "0001_ilk.sql uygulanmış migration içeriğiyle uyuşmuyor"
+            );
+        }
+        let kayip =
+            std::collections::BTreeMap::from([(2, ("0002_kayip.sql".into(), "bbb".into()))]);
+        assert_eq!(
+            goc_planini_kur(&gocler, &kayip).unwrap_err().mesaj,
+            "Veritabanında kayıtlı bir migration dosyası proje ağacında yok"
+        );
+    }
 
     #[test]
     fn izole_wire_siniri_retry_transaction_rls_ve_commit_sinirini_korur() {
