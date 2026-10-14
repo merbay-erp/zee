@@ -1805,3 +1805,7 @@ kimliği daha sonraki belge veya özellik commit'lerine taşınmaz.
 ## K-263 — Sahipli supervisor EPERM geçişi
 
 K-263/ADR122/GB077 dar host correctness adayıdır: gerçek sahipli worker EPERM/WNOWAITNone geçişi artık tek mutlakgrace deadline içinde heldleader üzerinde gözlenir. Persistent ambiguity/returncode-set/ECHILD failclosed, canlı descendant temizliği ve foreigngroup sınırı korunur. Ayrı8 lifecycle testi +Cargo wrapper1 mevcutworker25 sayısını değiştirmez. Compiler source/API/grammar, performans/soak ve K262/featurewave kapsamı değişmez. Sourcecommit ve finalfullphase gate root entegrasyonunda AÇIKTIR; tamamlanmış release/adoption iddiası yoktur.
+
+## K-262 — Mevcut web oran CLI argüman kayması
+
+Temiz17b preexisting CLI bug kanıtlıdır: mevcut dört değerli oran seçeneği kaynak öncesi tüketilmediğinde APP_ARG yerine bellek görünür. K-262 dar kaynak öncesi skip onarımı, kaynak sonrası oran argümanları ve eski globalproxy sınırını korur. Yeni flag/grammar/export yoktur. ADR121 ve gerçekCLI olumlu/olumsuz +stdout corpus alt türü hazır; source commit, exact regression/v2 fixed_by ve semantic-bugfix/core-freeze correctness takip zinciri root entegrasyonunda AÇIKTIR; kapalı iş iddiası değildir.

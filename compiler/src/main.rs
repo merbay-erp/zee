@@ -2508,7 +2508,15 @@ fn program_argumanlari() -> Vec<String> {
                 proxy_originini_atla = false;
                 return None;
             }
-            if arguman == "--web-proxy"
+            if (!kaynak_goruldu
+                && matches!(
+                    arguman.as_str(),
+                    "--web-oran-deposu"
+                        | "--web-oran-siniri"
+                        | "--web-oran-kapasitesi"
+                        | "--web-oran-doluluk"
+                ))
+                || arguman == "--web-proxy"
                 || arguman == "--güvenli-web-proxy"
                 || arguman == "--web-worker-port"
             {
