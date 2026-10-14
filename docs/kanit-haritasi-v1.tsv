@@ -157,3 +157,5 @@ adr/095-postgresql-goc-plani.md	kanitli	compiler/tests/cli_goc_plani_testi.rs,co
 adr/097-surumlu-runtime-ayarlari.md	kanitli	compiler/tests/cli_ayar_testi.rs,compiler/src/cli/ayar.rs	K-234 gerçek CLI config capability tip/kök/override ve effective WebModu testleri
 adr/096-ekli-eposta-ve-mime.md	kanitli	compiler/tests/smtp_mime_testi.rs,compiler/src/eposta/mime/tests.rs	K-232 typed capability trace MIME TLS FIFO native kabulü; live queue Windows sınırı açık
 rfcs/0034-ekli-eposta.md	kanitli	compiler/tests/smtp_mime_testi.rs,compiler/src/eposta/mime/tests.rs	K-232 tek typed MIME intrinsic gerçek ürün ve olumlu/olumsuz testler
+adr/098-yerel-derleyici-secici.md	kanitli	compiler/tests/derleyici_secici_testi.rs	K-233 gerçek Ed25519 verifier iki signed sentetik bundle ve 25 offline ret/kabul testi; release/human/Windows ayrı
+adr/099-smtp-hata-maskelemesi.md	kanitli	compiler/tests/smtp_hata_maskelemesi_testi.rs,compiler/tests/semantic_regresyon_korpusu_testi.rs	K-236 gerçek AUTH535 echo native CLI ve runtime C029 mask kanıtı; ayrı response cap K237

@@ -6,10 +6,10 @@ P03	A6(1)	K-221	yerel-kabul	dil	P01	compiler/tests/cli_secenek_testi.rs	Exit2 ac
 P04	A6(2)	K-234	kismi	dil,urun	P03,P05	docs/zee-ayar.md	Surum1 zarf/unknownsecurityret/ordinarywarn/CLIprecedence17tests; realpreviousminorrollback/corpus acik
 P05	A2	K-167	kismi	dil,urun	P02,P08,P39	docs/uyumluluk-politikasi.md	Mevcut deprecation + aktif uyari, kanal/onceki korpus kabul eksigi
 P06	A3,D2	K-168,K-169	kismi	altyapi	P02,P29,P30,P39	scripts/surum-artefakti.sh	Hedef bazinda iki-klon/imza/kurulum; apt/container ayridir
-P07	A4	-	acik	altyapi,dil	P05,P06	spec/07-birimler.md	Iki proje compiler pin/selector; mevcut paket kilidi compiler secmez
+P07	A4	K-233	kismi	altyapi,dil	P05,P06	docs/derleyici-secici.md	Signedlocalcatalog/privatebyte snapshot25tests; fullrustup/globaldil/proje.kilit/productionkeys/Windows acik
 P08	A5	K-172	anonim-tam-korpus-bekliyor	urun,altyapi	-	dogfood/korpus-v1.tsv	Anonim tam 5site+koku provenance N/N denetle/dene sure/RSS
 P09	B1	-	acik	urun,altyapi	P08,P34	docs/urunlesme-plani.md	Kalici job lease/idempotency/3retry/deadletter/crash; ilk prototype mevcut PG
-P10	B2	K-210,K-232	kismi	dil,urun	P09	rfcs/0034-ekli-eposta.md	MIME readonlyPDF/gorsel ReplyTo HTMLalternative typed/native; queue3retry liveM365/Gmail/catalogacceptance acik
+P10	B2	K-210,K-232,K-236	kismi	dil,urun	P09	rfcs/0034-ekli-eposta.md	MIME readonlyPDF/gorsel ReplyTo HTMLalternative typed/native; queue3retry liveM365/Gmail/catalogacceptance acik; K236 AUTH echo C029 mask native/CLI3tests, responsebudget K237 ayri
 P11	B3	K-210	kismi	dil,urun	P08	compiler/src/gorsel.rs	JPEG/PNG/WebP mevcut; PDF fixture/backend karari acik
 P12	B4	K-163,K-228	kismi	dil,urun	P31,P34	docs/incelemeler/urunlesme-20261014/native-7127c7d/README.md	Durum/kuru noSQL owner/runtime checksum rollback concurrent1/1; canli urun Python betigi kaldirilmasi acik
 P13	B5	K-137	kismi	dil,altyapi	P02,P12,P25	docs/web-production-profili.md	Hizmet hazirlik JSON log metrics draining reload

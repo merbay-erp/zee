@@ -328,6 +328,19 @@ pub fn gonder(
     zaman_asimi: Duration,
     ip_denetimi: &dyn Fn(IpAddr) -> Result<(), String>,
 ) -> Result<(), String> {
+    gonder_ic(ayar, ileti, zaman_asimi, ip_denetimi).map_err(|_| GONDERIM_HATASI.into())
+}
+
+/// K-236: server echo, URL/credential ve adaptör ayrıntısı dışarı çıkmaz.
+pub(crate) const GONDERIM_HATASI: &str = "E-posta gönderilemedi; ayar geçersiz veya gönderim sonucu belirsiz; ayrıntılar gizlendi; otomatik tekrar yok";
+
+#[cfg(not(target_arch = "wasm32"))]
+fn gonder_ic(
+    ayar: &EpostaAyari,
+    ileti: &Ileti<'_>,
+    zaman_asimi: Duration,
+    ip_denetimi: &dyn Fn(IpAddr) -> Result<(), String>,
+) -> Result<(), String> {
     let (alici, konu, govde) = (ileti.alici, ileti.konu, ileti.govde);
     if !adres_gecerli(alici) {
         return Err("alıcı e-posta adresi geçersiz".into());

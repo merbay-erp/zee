@@ -88,32 +88,21 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-005 | Native backend seçimi (Cranelift / LLVM) | bekliyor — Faz 4 |
 | ADR-007 | [Telemetri ve gizlilik: araçlar veri toplamaz](007-telemetri-ve-gizlilik.md) | **kabul** |
 | ADR-008 | [Self-hosting aşamaları ve geçiş kapıları](008-self-hosting-asamalari.md) | **kabul** |
-
 | ADR-082 | [Legacy giriş ve kanonik istemci kimliği](082-legacy-giris-ve-kanonik-istemci-kimligi.md) | **kabul** (K-208/K-209) |
 | ADR-083 | [Site E dogfood'u: parola özeti, TOTP, SMTP ve görsel küçültme](083-urun-e-kriptografi-iletisim-gorsel.md) | **kabul** |
 | ADR-084 | [Rota birimleri: `<ad> rotalarını kullan` (K-211)](084-rota-birimleri.md) | **kabul** |
 | ADR-085 | [Görünüm bloğu: tipli HTML ağacı (K-212)](085-gorunum-blogu.md) | **kabul** |
-
 | ADR-086 | [Site derleyici hatlarının birleştirilmesi](086-site-hatlarinin-birlestirilmesi.md) | **kabul** (K-213) |
-
 | ADR-087 | [Açık depoda anonim ürün kanıtı](087-acik-depo-urun-gizliligi.md) | **kabul** (K-214) |
-
 | ADR-088 | [Git2 üzerinde Gitsrv CI](088-git2-gitsrv-kosulari.md) | **kabul** (K-216) |
-
 | ADR-089 | [Süreç başına bellek oran deposu](089-bellek-oran-deposu.md) | **kabul** (K-218) |
-
 | ADR-090 | [Bellek oran ayarı ve korunmuş tahliye](090-web-oran-ayarlari.md) | **kabul** (K-219) |
-
 | ADR-091 | [HTTP POST, başlık ve gizli ortam sınırı](091-http-post-baslik-ve-gizli-ortam.md) | **kabul** (K-220) |
-
 | ADR-092 | [Bilinmeyen CLI seçeneği reddi](092-cli-bilinmeyen-secenek-reddi.md) | **kabul** (K-221) |
-
 | ADR-093 | [Deterministik compiler build kimliği](093-deterministik-build-kimligi.md) | **kabul** (K-226) |
-
 | ADR-094 | [Yazmadan biçim denetimi](094-bicimleyici-yazmadan-denetim.md) | **kabul** (K-229) |
-
 | ADR-095 | [PostgreSQL göç durum/kuru planı](095-postgresql-goc-plani.md) | **kabul** (K-228) |
-
 | ADR-097 | [Sürümlü runtime ayarları](097-surumlu-runtime-ayarlari.md) | **kabul** (K-234) |
-
 | ADR-096 | [Ekli e-posta ve MIME sınırı](096-ekli-eposta-ve-mime.md) | **kabul** (K-232) |
+| ADR-098 | [Yerel exact compiler seçici](098-yerel-derleyici-secici.md) | **kabul** (K-233) |
+| ADR-099 | [SMTP hata maskelemesi](099-smtp-hata-maskelemesi.md) | **kabul** (K-236/GB-060) |

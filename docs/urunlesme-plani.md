@@ -91,3 +91,9 @@ uygulama dalı uzak master değişikliği veya yeni exact CI kabulü sayılmaz.
 Kullanıcı P08/A5 anonim beş tam site ve çekirdek korpusunun henüz hazır
 olmadığını teyit etti; kapı açık tutulur ve mevcut teknik dilimler sürer.
 Anonim küçük fixture sayısı tam ürün N/N kabulü değildir.
+
+K-236/GB-060, P10 SMTP diliminde incelemeyle bulunan AUTH echo sızıntısını
+sabit native/runtime C029 maskesine kapatır. Gerçek loopback AUTH535,
+explicit URL hatası ve CLI testleri ile [SMTP regression kipi](semantic-regresyon-korpusu.md)
+kullanılır. Kaynak SHA ve exact fixed_by takip provenance kaydında yazılır;
+P09 kuyruk, canlı provider/ürün ve K-237 yanıt bütçesi ayrı kalır.

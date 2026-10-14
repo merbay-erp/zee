@@ -1,0 +1,5 @@
+# K-236/GB-060: gerçek native SMTP AUTH 535 echo credential'ı Sonuç'a sızdıramaz.
+# smtp-vaka: auth-echo
+sonuç "ali@ornek.invalid" "Konu" "Gövde" ile ileti göndermeyi dene olsun
+sonuç başarısızsa
+    sonucun hatası yaz

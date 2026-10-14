@@ -4309,3 +4309,20 @@ dogfood-change exact provenance aynı dilimde; K-174 aynı gün restart ile
 11 Kasım bitişini korur. Bağımsız review FIFO ve dosya tutarlılığı adayını
 düzelttirdi; GB-058 kapandı. Inherited AUTH/reply riskleri ayrı K-236/K-237;
 queue ve canlı katalog teslim kabulü açık.
+
+## K-233 — Signed yerel pin seçici
+
+14.10.2026: explicit verifier/key, signed katalog/sidecar/binary ve private
+snapshot ile iki proje exact pin seçer. Bağımsız review FIFO swap, derin JSON,
+loader environment, host argv ve pin temp cleanup sertleştirmelerini
+gerektirdi; 25/25 offline kabul geçti. Yeni compiler source/grammar yok.
+
+## K-236 — SMTP AUTH echo hata maskelemesi
+
+14.10.2026: gerçek localhost AUTH535 echo, eski sender’ın Base64 credential
+payload’ını native/runtime hata metnine taşıdığını doğruladı. Public native
+sender ve iki plain handler başarısızlığı sabit C029 maskesine eşler; mevcut
+SMTP/TLS/deadline kontrol gövdesi byte düzeyinde korunur. GB-060 kapandı,
+ADR-099 ve üç native/runtime/CLI testi ile gerçek `smtp` regression kipi
+bağlandı. Exact fixed_by kaynak commit’ini izleyen kayıt işidir; K-237
+SMTP yanıt tahsis bütçesi ve canlı ürün/sağlayıcı kabulü ayrı kalır.

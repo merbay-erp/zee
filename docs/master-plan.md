@@ -1301,3 +1301,13 @@ küçük sürüm rollback, gerçek ürün korpusu kanıtına bağlı açık kapa
 K-232 MIME yerel typed/native e-posta kapasitesidir; genel binary değeri,
 PDF işleme, queue, cron, provider retry ve canlı ürün kabulü değildir.
 Core freeze ürün gerekçesi ve yeni contextual kalıp K-174'e kayıtlıdır.
+
+K-233 yerel offline pin seçimi pilot kapasitesidir. Standart dil PATH
+seçimi, rustup/kur-kullan/proje.kilit ve gerçek yayın anahtarı/dağıtım
+entegrasyonu henüz açık; sentetik bundle release kanıtı gösterilmez.
+
+K-236/GB-060 committed SMTP AUTH echo sızıntısını native/runtime C029
+maskesiyle kapatır; üç gerçek hedefli test ve loopback `smtp` regression
+kullanıcı hata metninde ham/geri çözülebilir credential bulunmadığını sınar.
+Genel sır taint sistemi, P09 queue/retry, canlı SMTP/ürün kabulü veya
+K-237 yanıt okuma bütçesi bu düzeltmeden tamamlanmış sayılmaz.

@@ -197,7 +197,7 @@ fn baglantili_eposta_gonderimi_baglantiyi_dogrular_ve_kutuya_duser() {
     .expect("derlenmeli");
     let mut io = ToplayanIo::yeni(Vec::new());
     calistir_io(&bozuk, &mut io).expect("dene hatayı Sonuç yapar");
-    assert!(io.cikti[0].contains("smtp"), "{:?}", io.cikti);
+    assert_eq!(io.cikti, ["E-posta gönderilemedi; ayar geçersiz veya gönderim sonucu belirsiz; ayrıntılar gizlendi; otomatik tekrar yok"]);
     assert!(io.eposta_kutusu.is_empty());
 
     let tanim = intrinsic::tanim(intrinsic::EPOSTA_GONDER_BAGLANTILI).expect("kayıt");

@@ -171,7 +171,7 @@ kalır (ADR-025).
 | C026 | PostgreSQL migration veya bağlantı işlemi başarısız | Exact hedefi, `sslmode`, pinned CA ortam değişkenini, havuz kapasitesini ve değişmez migration geçmişini doğrula |
 | C027 | COMMIT sonucu istemci tarafından doğrulanamadı; otomatik tekrar güvenli değil | Aynı write'ı körlemesine tekrarlama. Yeni bağlantıda kararlı iş anahtarıyla sonucu uzlaştır; varsa mevcut sonucu benimse, yoksa ürünün idempotency politikasına göre yeni girişim başlat |
 | C028 | Kriptografi adaptörü parola özeti ya da TOTP anahtarı üretemedi | `kriptografi` yetkinliğini aç; playground üretmez; web'de giriş oran sınırını bekle |
-| C029 | E-posta gönderimi başarısız (SMTP bağlantı/kimlik/alıcı hatası) | `e_posta_bağlantı_değişkeni` ortam değişkenini, `ağ_hedefleri` içindeki smtps:// sunucuyu ve alıcı adresini denetle; `dene` sonucunun hatasını göster |
+| C029 | E-posta gönderimi başarısız veya teslim sonucu belirsiz; SMTP/host ayrıntıları maskelenir | `e_posta_bağlantı_değişkeni`, exact `ağ_hedefleri`, alıcı ve ekli iletide readonly dosya/başlık sınırlarını denetle; başarısız `dene` sonucu teslim edilmedi garantisi değildir, otomatik tekrar yapma |
 
 ## D — Doğrulama
 
@@ -226,3 +226,10 @@ K-232 ekli ileti C029 Hata değeridir: SMTP bağlantı/izin, readonly ek
 yol/boyut/tür, başlık/Reply-To ve HTML/düz gövde sınırlarını kontrol edin.
 Hata SMTP credential, ileti/ek içeriği veya dosya yolu taşımaz; DATA ack
 kaybı gönderilmedi kanıtı değildir ve otomatik retry yapılmaz.
+
+K-236 eski plain ortam/explicit SMTP kalıplarında C029 kodunu korur; native
+transport ve host ayrıntıları şu sabit mesajla gizlenir: `E-posta gönderilemedi;
+ayar geçersiz veya gönderim sonucu belirsiz; ayrıntılar gizlendi; otomatik tekrar yok`.
+AUTH PLAIN echo, URL/credential ve policy ayrıntısı kullanıcı hata metnine girmez.
+Bu maske genel sır taint sistemi veya SMTP teslim onayı değildir.
+[Kanıt](../adr/099-smtp-hata-maskelemesi.md).
