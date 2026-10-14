@@ -1,0 +1,290 @@
+{
+  "schema": "zee-k245-k246-clean-host-raw-1",
+  "result": "passed-clean-posix-host-pilot",
+  "started_utc": "2026-10-14T20:58:52.446613+00:00",
+  "source_sha": "c67a69e6ed9c24c4a540a55eeaaa986a348a2de3",
+  "source_start": {
+    "sha": "c67a69e6ed9c24c4a540a55eeaaa986a348a2de3",
+    "clean": true
+  },
+  "source_files": [
+    {
+      "path": "compiler/tests/fixtures/tr-en-sayfa/en.html",
+      "sha256": "72d6a10cb61de89f4b478ed6ed3ea98f5548c65b95700e068c96afe3c25b7305"
+    },
+    {
+      "path": "compiler/tests/fixtures/tr-en-sayfa/tr.html",
+      "sha256": "dae9cfe7087f15d2ed0974944e4fb09f39f4b8953f8f535ab4b3aef0b0c62a02"
+    },
+    {
+      "path": "compiler/tests/fixtures/tr-en-sayfa/xss.html",
+      "sha256": "9817a81284644fd54f4bb429567b21f12c6e86602b41f3b0b923ce8a324416ba"
+    },
+    {
+      "path": "compiler/tests/tr_en_sayfa_testi.rs",
+      "sha256": "3d2f032fe73c8163c721006ebdabd833c87547fb4bb6def757be7b3a232f40c0"
+    },
+    {
+      "path": "dogfood/zee-cekirdek/tr-en/README.md",
+      "sha256": "35c83d75d695f0797c08de626a5c22aff8b1d7c96d24edfd4aa77cca9f77ab5a"
+    },
+    {
+      "path": "dogfood/zee-cekirdek/tr-en/kaynak/ana.dil",
+      "sha256": "8053e480a86d01f50d3966f536a46d77e7639e87831ad84db1a71c89d2594154"
+    },
+    {
+      "path": "dogfood/zee-cekirdek/tr-en/kaynak/ceviri.dil",
+      "sha256": "6fe1159af701fca50bff326f48115a07ad5e0c86cbdda13fa17b333adf087266"
+    },
+    {
+      "path": "dogfood/zee-cekirdek/tr-en/kaynak/sayfa.dil",
+      "sha256": "0337f3e62d2076b4c1ca97c16ce0a2bcb27f0e749d77fac323eed3d6597c6994"
+    },
+    {
+      "path": "dogfood/zee-cekirdek/tr-en/proje.dil",
+      "sha256": "490e75fd1b14673c4bbe452790a8de8e316511c92513a1116346b4b752064935"
+    },
+    {
+      "path": "dogfood/zeedili-com/scripts/yerel-baslat.sh",
+      "sha256": "83162b5120303b89bcab24ec2f8fb3390b48d879912ff82927e9318b19a797a8"
+    },
+    {
+      "path": "scripts/credential-baslat.py",
+      "sha256": "1706b1ecad2204c866d6be0a7dbaf35ba79b59e46df096188f1ce2824838c571"
+    },
+    {
+      "path": "scripts/tests/credential-baslat-test.py",
+      "sha256": "7a630e884d459b682ee39543bdc0b1ae2b80447be48e239ca0db0f13b60c26ec"
+    },
+    {
+      "path": "scripts/tests/tr-en-sayfa-test.py",
+      "sha256": "9f967fe58124081ee96890f66a8534331640951926c910ec56a6f7695f7132d2"
+    },
+    {
+      "path": "scripts/tests/worker-supervisor-test.py",
+      "sha256": "6b5c793027c8be59826529cea4f09db7bea0fd2dd285fd3d5e8fb244074a0bff"
+    },
+    {
+      "path": "scripts/worker-supervisor.py",
+      "sha256": "08342f754ce3db10f80046991e5d9ba67baf6928e9c34a9c26715b900138daa5"
+    }
+  ],
+  "input_groups": [
+    {
+      "name": "tr-en-source10",
+      "paths": [
+        "dogfood/zee-cekirdek/tr-en/README.md",
+        "dogfood/zee-cekirdek/tr-en/proje.dil",
+        "dogfood/zee-cekirdek/tr-en/kaynak/ana.dil",
+        "dogfood/zee-cekirdek/tr-en/kaynak/ceviri.dil",
+        "dogfood/zee-cekirdek/tr-en/kaynak/sayfa.dil",
+        "scripts/tests/tr-en-sayfa-test.py",
+        "compiler/tests/tr_en_sayfa_testi.rs",
+        "compiler/tests/fixtures/tr-en-sayfa/tr.html",
+        "compiler/tests/fixtures/tr-en-sayfa/en.html",
+        "compiler/tests/fixtures/tr-en-sayfa/xss.html"
+      ]
+    },
+    {
+      "name": "worker-host4",
+      "paths": [
+        "scripts/worker-supervisor.py",
+        "scripts/tests/worker-supervisor-test.py",
+        "dogfood/zeedili-com/scripts/yerel-baslat.sh",
+        "scripts/credential-baslat.py"
+      ]
+    },
+    {
+      "name": "credential-source2",
+      "paths": [
+        "scripts/credential-baslat.py",
+        "scripts/tests/credential-baslat-test.py"
+      ]
+    }
+  ],
+  "commands": [
+    {
+      "name": "python-runtime",
+      "exit": 0,
+      "elapsed_seconds": 0.02
+    },
+    {
+      "name": "binary-identity-start",
+      "exit": 0,
+      "elapsed_seconds": 0.005
+    },
+    {
+      "name": "credential14",
+      "exit": 0,
+      "elapsed_seconds": 2.634
+    },
+    {
+      "name": "worker25",
+      "exit": 0,
+      "elapsed_seconds": 75.494
+    },
+    {
+      "name": "binary-identity-end",
+      "exit": 0,
+      "elapsed_seconds": 0.006
+    }
+  ],
+  "native_binary_sha256": "04ed52eb4a75d9dd007479f686e6f53fac373eab847065f9240bdd14eea6afb8",
+  "previous_tr_en_proof_sha256": "3d008e87269a84413be45f7a1c66cf6162b7277d132794021a72d663e445f65b",
+  "boundaries": {
+    "posix_host_pilot_only": true,
+    "windows_acceptance": false,
+    "physical_platform_acceptance": false,
+    "live_product_adoption": false,
+    "zero_downtime_acceptance": false,
+    "db_migration_readiness": false,
+    "new_build": false,
+    "remote_ci_execution": false,
+    "ci_artifact_access": false
+  },
+  "runtime": {
+    "python_version": "3.13.3",
+    "system": "Darwin",
+    "architecture": "arm64",
+    "waitid": true,
+    "WNOWAIT": true
+  },
+  "native_identity_start": {
+    "schema": "zee-build-v1",
+    "version": "0.8.0-dev",
+    "source_sha": "c67a69e6ed9c24c4a540a55eeaaa986a348a2de3",
+    "source_date": "2026-10-14",
+    "channel": "development",
+    "dirty": false
+  },
+  "credential": {
+    "tests": 14,
+    "failed": 0,
+    "errors": 0,
+    "ignored": 0,
+    "case_names": [
+      "test_actual_child_value_argv_exit_and_echo_are_metadata_only",
+      "test_actual_native_dil_preserves_main_project_env_authority",
+      "test_actual_native_smtp_consumes_file_url_and_auth_once",
+      "test_cli_errors_and_unsupported_platform_never_print_arguments",
+      "test_exact_file_and_aggregate_size_boundaries",
+      "test_mapping_limit_duplicates_reserved_names_and_traversal",
+      "test_missing_file_and_ambient_collision_have_no_fallback_or_child",
+      "test_read_mutation_and_later_binding_mutation_reject_snapshot",
+      "test_replace_by_fifo_between_stat_and_open_is_nonblocking",
+      "test_restart_reads_new_file_while_existing_child_keeps_original_value",
+      "test_root_and_file_modes_and_owner_fail_before_child",
+      "test_root_replacement_and_all_before_child_close_owned_descriptors",
+      "test_symlink_component_final_file_hardlink_and_fifo_fail_closed",
+      "test_text_and_file_limits_are_bounded_without_trimming"
+    ],
+    "actual_native_cli_and_smtp": true
+  },
+  "worker": {
+    "schema": "zee-worker-supervisor-tests-1",
+    "tests": 25,
+    "failed": 0,
+    "errors": 0,
+    "ignored": 0,
+    "actual_native_workers": true,
+    "native_build": {
+      "schema": "zee-build-v1",
+      "version": "0.8.0-dev",
+      "source_sha": "c67a69e6ed9c24c4a540a55eeaaa986a348a2de3",
+      "source_date": "2026-10-14",
+      "channel": "development",
+      "dirty": false
+    },
+    "native_binary_sha256": "04ed52eb4a75d9dd007479f686e6f53fac373eab847065f9240bdd14eea6afb8",
+    "native_binary_private_snapshot_unchanged": true,
+    "sources_unchanged": true,
+    "native_node_fixture": true,
+    "credential_composition_native_crypto_and_group_cleanup": true,
+    "source_files": [
+      {
+        "path": "scripts/worker-supervisor.py",
+        "sha256": "08342f754ce3db10f80046991e5d9ba67baf6928e9c34a9c26715b900138daa5"
+      },
+      {
+        "path": "scripts/tests/worker-supervisor-test.py",
+        "sha256": "6b5c793027c8be59826529cea4f09db7bea0fd2dd285fd3d5e8fb244074a0bff"
+      },
+      {
+        "path": "dogfood/zeedili-com/scripts/yerel-baslat.sh",
+        "sha256": "83162b5120303b89bcab24ec2f8fb3390b48d879912ff82927e9318b19a797a8"
+      },
+      {
+        "path": "scripts/credential-baslat.py",
+        "sha256": "1706b1ecad2204c866d6be0a7dbaf35ba79b59e46df096188f1ce2824838c571"
+      }
+    ],
+    "boundaries": [
+      "native application init readiness signal is not DB/migration readiness",
+      "inflight request may be interrupted",
+      "no P14 socket/zero-downtime acceptance",
+      "no credential DB/SMTP end-to-end or live staging acceptance"
+    ]
+  },
+  "native_identity_end": {
+    "schema": "zee-build-v1",
+    "version": "0.8.0-dev",
+    "source_sha": "c67a69e6ed9c24c4a540a55eeaaa986a348a2de3",
+    "source_date": "2026-10-14",
+    "channel": "development",
+    "dirty": false
+  },
+  "source_finish": {
+    "sha": "c67a69e6ed9c24c4a540a55eeaaa986a348a2de3",
+    "clean": true
+  },
+  "source_unchanged": true,
+  "binary_unchanged": true,
+  "owned_temp_empty": true,
+  "credential_tests": 14,
+  "worker_tests": 25,
+  "failed": 0,
+  "ignored": 0,
+  "finished_utc": "2026-10-14T21:00:10.884369+00:00",
+  "raw_files": [
+    {
+      "path": "binary-identity-end-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "binary-identity-end-stdout.log",
+      "sha256": "90d81df35fc3f1aa9100712a55ea14d6a1d418e0a318f8ab2aae4913ab4867a2"
+    },
+    {
+      "path": "binary-identity-start-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "binary-identity-start-stdout.log",
+      "sha256": "90d81df35fc3f1aa9100712a55ea14d6a1d418e0a318f8ab2aae4913ab4867a2"
+    },
+    {
+      "path": "credential14-stderr.log",
+      "sha256": "cc9b1c5b9571472732d7df63b20ac9049a5b7cd6b6d39915ff9fdf3603141452"
+    },
+    {
+      "path": "credential14-stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "python-runtime-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "python-runtime-stdout.log",
+      "sha256": "891ae2a822b52d4a555fe646bf64217b302de4f6ebecf5763e8752fe7dab4b6f"
+    },
+    {
+      "path": "worker25-stderr.log",
+      "sha256": "24e2a4e2c516f4a33dc17610c1177edbeeb6b08bccceb09032be885b6bde5714"
+    },
+    {
+      "path": "worker25-stdout.log",
+      "sha256": "73572279a13181bb5ac8a62fe9f45ef1b9b16f6852c4842d9a2755fd8c8b0543"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "schema": "zee-local-source-archive-2",
+  "source_sha": "c67a69e6ed9c24c4a540a55eeaaa986a348a2de3",
+  "source_tree": "764cf5d47d9771e8cfd5d4978aa4505c6101980b",
+  "source_clean_before_after": true,
+  "generated_utc": "2026-10-14T20:55:34.408175+00:00",
+  "producer": "scripts/temiz-kaynak-arsivi.sh",
+  "source_files": 1190,
+  "archive": "zee-source-c67a69e.zip",
+  "archive_bytes": 4642937,
+  "archive_sha256": "b473cdba92a3bd3c3fdcefbf4d1a8ec413a2ea37be720861c1d7faa6d4d2a268",
+  "manifest_sha256": "1129d90335302cb952209d7ebf525ea4bc55941536a8a0775b417cd9aa55ab6a",
+  "zip_comment_exact": true,
+  "source_set_and_bytes_equal": true,
+  "helper_sha256": "d9d7ef6031da841d0fa87515de7ceb90cda14f3d253b691041fba35c149a8058",
+  "ci_record_supplied": false,
+  "remote_ci": null,
+  "network_or_artifact_download": false,
+  "release_artifact": false,
+  "boundary": "Local exact source ZIP via protected staging and same exact self verifier; no remote CI/source authority or signed binary release acceptance."
+}

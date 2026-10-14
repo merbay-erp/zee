@@ -1,0 +1,64 @@
+{
+  "schema": "zee-k249-independent-integration-review-1",
+  "result": "passed",
+  "reviewed_files": [
+    {
+      "path": "dogfood/zee-cekirdek/tr-en/README.md",
+      "sha256": "35c83d75d695f0797c08de626a5c22aff8b1d7c96d24edfd4aa77cca9f77ab5a"
+    },
+    {
+      "path": "scripts/tests/tr-en-sayfa-test.py",
+      "sha256": "9f967fe58124081ee96890f66a8534331640951926c910ec56a6f7695f7132d2"
+    },
+    {
+      "path": "compiler/tests/tr_en_sayfa_testi.rs",
+      "sha256": "3d2f032fe73c8163c721006ebdabd833c87547fb4bb6def757be7b3a232f40c0"
+    },
+    {
+      "path": "dogfood/zee-cekirdek/tr-en/proje.dil",
+      "sha256": "490e75fd1b14673c4bbe452790a8de8e316511c92513a1116346b4b752064935"
+    },
+    {
+      "path": "dogfood/zee-cekirdek/tr-en/kaynak/ana.dil",
+      "sha256": "8053e480a86d01f50d3966f536a46d77e7639e87831ad84db1a71c89d2594154"
+    },
+    {
+      "path": "dogfood/zee-cekirdek/tr-en/kaynak/ceviri.dil",
+      "sha256": "6fe1159af701fca50bff326f48115a07ad5e0c86cbdda13fa17b333adf087266"
+    },
+    {
+      "path": "dogfood/zee-cekirdek/tr-en/kaynak/sayfa.dil",
+      "sha256": "0337f3e62d2076b4c1ca97c16ce0a2bcb27f0e749d77fac323eed3d6597c6994"
+    },
+    {
+      "path": "compiler/tests/fixtures/tr-en-sayfa/tr.html",
+      "sha256": "dae9cfe7087f15d2ed0974944e4fb09f39f4b8953f8f535ab4b3aef0b0c62a02"
+    },
+    {
+      "path": "compiler/tests/fixtures/tr-en-sayfa/en.html",
+      "sha256": "72d6a10cb61de89f4b478ed6ed3ea98f5548c65b95700e068c96afe3c25b7305"
+    },
+    {
+      "path": "compiler/tests/fixtures/tr-en-sayfa/xss.html",
+      "sha256": "9817a81284644fd54f4bb429567b21f12c6e86602b41f3b0b923ce8a324416ba"
+    }
+  ],
+  "python39_actual": {
+    "proof": "integration-python39-proof.json",
+    "sha256": "223d2c465c1b21203bdbe4d7a3e72fe23e45295a661512ca22ffd61015c1ec91",
+    "cases": 7,
+    "source_tests": 4,
+    "failed": 0,
+    "ignored": 0
+  },
+  "resolved_findings": [
+    "streaming-sha256-compatible-with-python39",
+    "readme-relative-product-provenance",
+    "section-hash-normalization-explicit"
+  ],
+  "compiler_feature": false,
+  "live_product_acceptance": false,
+  "full_c4_or_p08_closed": false,
+  "clean_exact_acceptance_pending": true,
+  "source_mutation": false
+}

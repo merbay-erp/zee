@@ -1551,8 +1551,8 @@ sözleşmesi korunur; yeni dil özelliği veya sistem kurulumu yoktur.
 
 ## K-248 — LSP dosya URI UTF-8 correctness
 
-Kaynak düzeltmesi ve olumlu/olumsuz testler hazırdır; exact source/provenance
-ve faz kabulü devam eder. [ADR-108](../adr/108-lsp-uri-utf8-yolu.md) gerçek
+**KAPALI.** Kaynak düzeltmesi, olumlu/olumsuz testler, exact source/provenance
+ve temiz c67a69e faz/stdio regresyon kabulü tamamlandı. [ADR-108](../adr/108-lsp-uri-utf8-yolu.md) gerçek
 stdio Türkçe klasör arızasına minimal byte çözümünü ve iki satırlık native
 regresyonu bağlar. P08, insan/platform/RC kabulü bu işten kapanmaz.
 
@@ -1560,24 +1560,31 @@ regresyonu bağlar. P08, insan/platform/RC kabulü bu işten kapanmaz.
 
 **KISMİ.** [ADR-105](../adr/105-credential-host-koprusu.md) mevcut env
 yüzeyine POSIX dosya köprüsü ekler;14 native dahil actual vaka hazırdır,
-exact temiz kabul devam eder. Windows/systemd/canlı ürün ve file-native
+temiz c67a69e host14 kabulü tamamlandı. Windows/systemd/canlı ürün ve file-native
 sır inheritance sınırı P25 için açıktır.
 
 ## K-246 — P13 worker host pilotu
 
 **KISMİ.** K-246/P13 (ADR-106/GB-069) worker host identity+ayrı readiness ve sahipli
-cleanup pilotudur; public launcher cleanup bug'ı 25-vaka çalışma ağacı kabulüyle kapandı; temiz exact tekrar bekler.
+cleanup pilotudur; public launcher cleanup bug'ı temiz c67a69e üzerinde 25-vaka kabulüyle kapandı.
 Tam request drain/reload/metrics ve P14 socket devir açıktır.
 
 ## K-247 — P09 kalıcı SQL queue prototipi
 
 **KISMİ.** K-247/P09 (ADR-107/GB-070) dar idempotent SQL queue helper'ıdır;11 native
-PG crash/COMMIT observer ve16 validator aday kabulü vardır, temiz exact
-kabul devam eder. Canlı ürün adoptionı, SMTPretry ve full P08 açık kalır.
+PG crash/COMMIT observer ve16 validator temiz c67a69e kabulündedir. Canlı ürün adoptionı, SMTPretry ve full P08 açık kalır.
 
 ## K-249 — P21/C4 TR–EN plain slot pilotu
 
 **KISMİ.** [ADR-109](../adr/109-tr-en-plain-slot-yardimcisi.md): mevcut
 görünüm ve sözlükle dört Zee testi/yedi nativeCLI escaping/ret senaryosu.
-Python3.9/3.13 actual aday kabulü var, temiz exact kabul sürer. Genel
+Python3.9/3.13 temiz c67a69e kabulü tamamlandı. Genel
 layout/i18n/list/detail/router ve gerçek ürün/P08 açık kalır.
+
+K-245–K-249 [temiz pilot kabulü](urunlesme-pilot-k245-k249.md)
+`c67a69e6ed9c24c4a540a55eeaaa986a348a2de3` üzerinde 895/901 faz,
+0 başarısız/6 dedicated atlama; ayrıca 28 PostgreSQL, credential14,
+supervisor25 ve iki Python sürümünde TR–EN7+4 ile kanıtlıdır. İki temiz
+klondan Mac ARM64 ikilileri eş ve dirty=false; yeni sır istisnası yoktur.
+Lisans/insan/fiziksel/tam ürün/uzak CI/RC kapıları ve genel P09/P13/P14/
+P21/P25 kapsamı açık kalır. Takip belge commit'i test kaynağı değildir.

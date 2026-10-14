@@ -1,0 +1,237 @@
+{
+  "schema": "zee-owned-native-case-summary-1",
+  "source_sha": "c67a69e6ed9c24c4a540a55eeaaa986a348a2de3",
+  "build_identity": {
+    "schema": "zee-build-v1",
+    "version": "0.8.0-dev",
+    "source_sha": "c67a69e6ed9c24c4a540a55eeaaa986a348a2de3",
+    "source_date": "2026-10-14",
+    "channel": "development",
+    "dirty": false
+  },
+  "binary_sha256": "e366a7b2768d95e14bb2cb24480660dbd82da3a55bbf75a67dc4ccbaacb6ac09",
+  "cases": [
+    {
+      "name": "ilk_bcrypt_girisi_argon2_ve_oturum_commit",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "variants": 3,
+        "updates": 3,
+        "sessions": 3,
+        "modern_verified": true
+      }
+    },
+    {
+      "name": "ikinci_modern_giriste_update_yok",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "accepted": true,
+        "hash_unchanged": true,
+        "additional_updates": 0,
+        "additional_update_attempts": 0,
+        "sessions": 2
+      }
+    },
+    {
+      "name": "yanlis_parola_yazisiz_reddedilir",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "rejected": true,
+        "hash_unchanged": true,
+        "updates": 0,
+        "update_attempts": 0,
+        "bind_attempts": 0,
+        "sessions": 0
+      }
+    },
+    {
+      "name": "ayni_eski_snapshot_gercek_sql_cas_yarisi",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "waiting_clients": 2,
+        "accepted": 1,
+        "rejected": 1,
+        "updates": 1,
+        "sessions": 1,
+        "modern_hash": true,
+        "idle_transactions": 0
+      }
+    },
+    {
+      "name": "sql_update_hatasi_rollback",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "rejected": true,
+        "legacy_preserved": true,
+        "update_attempts": 1,
+        "bind_attempts": 0,
+        "updates": 0,
+        "sessions": 0
+      }
+    },
+    {
+      "name": "oturum_bind_hatasi_dis_eylemi_rollback",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "rejected": true,
+        "legacy_preserved": true,
+        "update_attempts": 1,
+        "bind_attempts": 1,
+        "updates": 0,
+        "sessions": 0
+      }
+    },
+    {
+      "name": "oturum_ve_hash_yalniz_commit_sonrasi_gorunur",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "waiting_clients": 1,
+        "update_attempts_before_commit": 1,
+        "bind_attempts_before_commit": 1,
+        "legacy_visible_before_commit": true,
+        "sessions_before_commit": 0,
+        "updates_before_commit": 0,
+        "accepted": true,
+        "modern_hash_after_commit": true,
+        "sessions_after_commit": 1,
+        "updates_after_commit": 1
+      }
+    },
+    {
+      "name": "commit_olumlu_kontrol_bildirim_bir_kez",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "client_exit": 0,
+        "c027": false,
+        "stdout_empty": false,
+        "continuation_completed": true,
+        "smtp_connections": 1,
+        "smtp_messages": 1,
+        "update_attempts": 1,
+        "bind_attempts": 1,
+        "commits_seen": 1,
+        "commit_forwarded": true,
+        "commit_complete": true,
+        "commit_ready_idle": true,
+        "completion_delivered": true,
+        "server_error": false,
+        "error_delivered": false,
+        "error_sqlstate": "",
+        "error_severity": "",
+        "actual_db_applied": true,
+        "modern_hash": true,
+        "modern_verified": true,
+        "sessions": 1,
+        "updates": 1,
+        "session_hash_consistent": true,
+        "remaining_client_backends": 0
+      }
+    },
+    {
+      "name": "commit_iletilmeden_kayip_c027_kayit_yok",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "client_exit": 1,
+        "c027": true,
+        "stdout_empty": true,
+        "continuation_completed": false,
+        "smtp_connections": 0,
+        "smtp_messages": 0,
+        "update_attempts": 1,
+        "bind_attempts": 1,
+        "commits_seen": 1,
+        "commit_forwarded": false,
+        "commit_complete": false,
+        "commit_ready_idle": false,
+        "completion_delivered": false,
+        "server_error": false,
+        "error_delivered": false,
+        "error_sqlstate": "",
+        "error_severity": "",
+        "actual_db_applied": false,
+        "modern_hash": false,
+        "modern_verified": false,
+        "sessions": 0,
+        "updates": 0,
+        "session_hash_consistent": true,
+        "remaining_client_backends": 0
+      }
+    },
+    {
+      "name": "commit_uygulandi_yanit_kayip_c027_kayit_var",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "client_exit": 1,
+        "c027": true,
+        "stdout_empty": true,
+        "continuation_completed": false,
+        "smtp_connections": 0,
+        "smtp_messages": 0,
+        "update_attempts": 1,
+        "bind_attempts": 1,
+        "commits_seen": 1,
+        "commit_forwarded": true,
+        "commit_complete": true,
+        "commit_ready_idle": true,
+        "completion_delivered": false,
+        "server_error": false,
+        "error_delivered": false,
+        "error_sqlstate": "",
+        "error_severity": "",
+        "actual_db_applied": true,
+        "modern_hash": true,
+        "modern_verified": true,
+        "sessions": 1,
+        "updates": 1,
+        "session_hash_consistent": true,
+        "remaining_client_backends": 0
+      }
+    },
+    {
+      "name": "commit_deferred_ret_c027_gozlemci_rollback",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "client_exit": 1,
+        "c027": true,
+        "stdout_empty": true,
+        "continuation_completed": false,
+        "smtp_connections": 0,
+        "smtp_messages": 0,
+        "update_attempts": 1,
+        "bind_attempts": 1,
+        "commits_seen": 1,
+        "commit_forwarded": true,
+        "commit_complete": false,
+        "commit_ready_idle": true,
+        "completion_delivered": false,
+        "server_error": true,
+        "error_delivered": true,
+        "error_sqlstate": "23514",
+        "error_severity": "ERROR",
+        "actual_db_applied": false,
+        "modern_hash": false,
+        "modern_verified": false,
+        "sessions": 0,
+        "updates": 0,
+        "session_hash_consistent": true,
+        "remaining_client_backends": 0
+      }
+    }
+  ],
+  "ignored": 0,
+  "owned_cluster_closed": true,
+  "source_acceptance": "clean-exact",
+  "raw_record_sha256": "694e79403dead28cda30e9f29d048ccd7b8b8d61c108440dd7046f62053262c7",
+  "boundary": "Owned synthetic PostgreSQL and anonymous helper; SQL session row only. Seven TLS cases plus four loopback plaintext COMMIT/SMTP controls. No live login, web cookie, product migration, TLS fault interception, postcommit extension audit or signed release."
+}

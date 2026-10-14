@@ -1,0 +1,211 @@
+{
+  "schema": "zee-owned-native-neutral-summary-1",
+  "status": "passed",
+  "source_start": {
+    "sha": "c67a69e6ed9c24c4a540a55eeaaa986a348a2de3",
+    "clean": true
+  },
+  "source_end": {
+    "sha": "c67a69e6ed9c24c4a540a55eeaaa986a348a2de3",
+    "clean": true
+  },
+  "source_tree": "764cf5d47d9771e8cfd5d4978aa4505c6101980b",
+  "rustc": "rustc 1.93.1 (01f6ddf75 2026-02-11)",
+  "cargo": "cargo 1.93.1 (083ac5135 2025-12-15)",
+  "postgres_version": "postgres (PostgreSQL) 16.15",
+  "upstream_source_sha256": "c1575341fa7bd40f5274ea465b34390f4dc64cdd0770af327005caaeb9f6b7ed",
+  "runtime_binaries": [
+    {
+      "path": "postgres",
+      "sha256": "9b89cfcd7b54a581c50c2fc5c3010f3ae0755635958d5789886718da22052fbd"
+    },
+    {
+      "path": "initdb",
+      "sha256": "c960be8780e673d65c97f78c54bd3438525e1de6f2822257b189effc8b48b740"
+    },
+    {
+      "path": "pg_ctl",
+      "sha256": "7c052138b54426bb3666814f25374a84cc4789bc0400ebf50dedca627e8563da"
+    },
+    {
+      "path": "psql",
+      "sha256": "c63479d6b17829552f52ac8f083b3bc4d6564dbea39eb64ffa01c150dc43d2af"
+    }
+  ],
+  "fixture_hashes": [
+    {
+      "path": "compiler/tests/postgresql_goc_plani_testi.rs",
+      "sha256": "8d84c7b431dcfe88a8da1ebdadca58a1fbb794e3e6c262517911c2a2347211d8"
+    },
+    {
+      "path": "compiler/tests/postgresql_testi.rs",
+      "sha256": "c61cb659568c09ad966b3493c7eba1154dc6424ed65ed9f4fa702ba806414a3c"
+    },
+    {
+      "path": "compiler/tests/zee_cekirdek_urun_kabulu_testi.rs",
+      "sha256": "660cbd7ee9d887e655ce84a37fca40f331ee91277d7db9c5df811c3013ffcaac"
+    },
+    {
+      "path": "dogfood/zee-cekirdek/is-kuyrugu/README.md",
+      "sha256": "798be92a51f5ef475626f88eecf4879918e1f5257fd044dc79f9dd196c71b400"
+    },
+    {
+      "path": "dogfood/zee-cekirdek/is-kuyrugu/gocler/0001_kuyruk.sql",
+      "sha256": "34b6eb8fa760c65c47c89bdc139d0696ff44a348324b204f165d0039bd7537e5"
+    },
+    {
+      "path": "dogfood/zee-cekirdek/is-kuyrugu/kaynak/kuyruk.dil",
+      "sha256": "0e93f820f2cfc933b466b8833f32b06fc4f0100e8eefb247dc89e38fa6842c4d"
+    },
+    {
+      "path": "dogfood/zee-cekirdek/is-kuyrugu/proje.dil",
+      "sha256": "af34bd315194c6099b6c5702b92e6cd21631c32127daf7404ac262e00ffdf05e"
+    },
+    {
+      "path": "dogfood/zee-cekirdek/parola-goc/giriste-yukselt.dil",
+      "sha256": "d51b7c213df19edf2f65f089ccdc750c1c17b691caeb928ed3faacbffd7bd8e0"
+    },
+    {
+      "path": "scripts/is-kuyrugu-ci.py",
+      "sha256": "2f5d3294ac1d7da172d10530ea5ca96dd18aa0bd58df65d030cf21bde6721797"
+    },
+    {
+      "path": "scripts/parola-goc-ci.py",
+      "sha256": "cdced5a360ccc5b1ca9293f247d0dd96b41353997483fb2acd8119581f0e7309"
+    },
+    {
+      "path": "scripts/postgresql-commit-proxy.py",
+      "sha256": "3c8a0de39e838d12db431803d69271805ad297730338e527053a51b012da1454"
+    },
+    {
+      "path": "scripts/postgresql-goc-ci.py",
+      "sha256": "54908b680ee5a7fe8f53dfe974a8d5f6508a59ad537a8975823d0cb55907e8b3"
+    },
+    {
+      "path": "scripts/postgresql-tls-ci.py",
+      "sha256": "86ab8eff17561645fe53f01202da09803d53661dc7ce60289c12644d7faef0a1"
+    },
+    {
+      "path": "scripts/tests/is-kuyrugu-ci-test.py",
+      "sha256": "1f3a425834b3431d0c8752e182ecc6d3258c2bed32ef2e8f6b8ebb72cf35b47e"
+    }
+  ],
+  "build_identity": {
+    "schema": "zee-build-v1",
+    "version": "0.8.0-dev",
+    "source_sha": "c67a69e6ed9c24c4a540a55eeaaa986a348a2de3",
+    "source_date": "2026-10-14",
+    "channel": "development",
+    "dirty": false
+  },
+  "binary_snapshot": {
+    "path": "binary/dil",
+    "sha256": "e366a7b2768d95e14bb2cb24480660dbd82da3a55bbf75a67dc4ccbaacb6ac09"
+  },
+  "source_unchanged": true,
+  "fixture_unchanged": true,
+  "runtime_unchanged": true,
+  "binary_unchanged": true,
+  "statement_observer_verified": true,
+  "results": {
+    "tls": {
+      "passed": 5,
+      "failed": 0,
+      "ignored": 0
+    },
+    "migration": {
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0
+    },
+    "password_cas_commit": {
+      "passed": 11,
+      "failed": 0,
+      "ignored": 0
+    },
+    "durable_queue": {
+      "passed": 11,
+      "failed": 0,
+      "ignored": 0
+    }
+  },
+  "total": {
+    "passed": 28,
+    "failed": 0,
+    "ignored": 0
+  },
+  "owned_cluster_cleanup": "All four commands exited0 after runner finally cleanup; parent owned temporary registry removed with no fallback clusters.",
+  "owned_temporary_registry_removed": true,
+  "aggregate_verification": "Schema-aware read-only verification after all four actual runner commands exited0. Original proof.json failed with a verifier-only KeyError for an absent parola engine key and is preserved unchanged. Its existing server_identity.binaries and runtime_binaries explicitly prove local runtime. Tests were not repeated or relabeled.",
+  "original_failed_aggregate_sha256": "8ac0a0af86e5dd49dc03612d8f533e6946b902448db2bb79c0f779d86765c198",
+  "boundary": "Owned fresh loopback PostgreSQL clusters and anonymous fixtures only. Local source-runtime acceptance; not Docker, remote CI, physical platforms, SMTP delivery retry, actual product migration/adoption, customer service, signed release or benchmark history.",
+  "raw_final_proof_sha256": "30bb7196b5f93531c64765d64e36c66fc34dc64a503313a773ee5e417bf65820",
+  "private_raw_files_verified": 16,
+  "raw_file_hashes": [
+    {
+      "path": "binary/dil",
+      "sha256": "e366a7b2768d95e14bb2cb24480660dbd82da3a55bbf75a67dc4ccbaacb6ac09"
+    },
+    {
+      "path": "build.command.log",
+      "sha256": "6b68333cb275548b96f2c7ee9ff4772211216a731bd9acafe5dbab658e24de51"
+    },
+    {
+      "path": "final-proof.json",
+      "sha256": "30bb7196b5f93531c64765d64e36c66fc34dc64a503313a773ee5e417bf65820"
+    },
+    {
+      "path": "goc-target/postgresql-goc-ci.json",
+      "sha256": "02967820441e0026b180131b3fd9440dfad011fc6e00520ebe44ef8b588c4754"
+    },
+    {
+      "path": "goc-target/postgresql-goc-ci.log",
+      "sha256": "9757a53b439946cab7e0a16576e8f4d569609f73aae0c4eb5c7c5b889da4313e"
+    },
+    {
+      "path": "is-kuyrugu-ci.json",
+      "sha256": "0bf800429a00c5698d0f96f3a5785e574b51ca98ffc98e6d87821cbca25237a2"
+    },
+    {
+      "path": "is-kuyrugu.command.log",
+      "sha256": "ec2c29c9ddd9fe9f9439e57e3053d966d48730d0e7e379859409d94a415a97d1"
+    },
+    {
+      "path": "parola-goc-ci.json",
+      "sha256": "694e79403dead28cda30e9f29d048ccd7b8b8d61c108440dd7046f62053262c7"
+    },
+    {
+      "path": "parola-goc.command.log",
+      "sha256": "c3b71f65266e19e20bb8f5d625d95286605a8544232ceba9fa4074ebb062a835"
+    },
+    {
+      "path": "postgresql-goc.command.log",
+      "sha256": "7d87c2d4adcff3fe407cc5380c56d04290e70234ffac0e6a4dfb1bca90aee7cf"
+    },
+    {
+      "path": "postgresql-tls-ci.json",
+      "sha256": "07fcb09aa3854f41b86b4e5560724ea4c68780d0b1e7a2f5dfd90b7a5a02ac8b"
+    },
+    {
+      "path": "postgresql-tls-ci.log",
+      "sha256": "d699b996a524b07ec6f2eddc75320c863e2dd4bc1e98bdbd61827dee6289e942"
+    },
+    {
+      "path": "postgresql-tls.command.log",
+      "sha256": "b284649df7d9e98791ab34c850bad43280d1b571b09f3c19d38fedd6b01931fb"
+    },
+    {
+      "path": "progress.json",
+      "sha256": "d1ae209bef5feb266c359b8a2c7ac390806cc99bec3cbe4446645ad5dd03cf6f"
+    },
+    {
+      "path": "proof.json",
+      "sha256": "8ac0a0af86e5dd49dc03612d8f533e6946b902448db2bb79c0f779d86765c198"
+    },
+    {
+      "path": "verify.py",
+      "sha256": "a59d298d34bf1ea203b0f671e52036ed3e6bbecd3f1f8bd43471078ec9079e55"
+    }
+  ],
+  "initial_aggregate_failure_retained": true
+}
