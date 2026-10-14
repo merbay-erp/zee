@@ -54,3 +54,11 @@ kaydedilmiş yeni ata SHA'yı doğrular; genel force istisnası yoktur.
 yalnız veri olarak tarar; PR kodu çalıştırılmaz, token salt-okunurdur.
 
 K-215 kapsam/özel ürün dalı sınırı [yeni kayıttadır](../docs/incelemeler/k215/README.md).
+
+K-239/GB-063, ürünleşme incelemesine yanlışlıkla eklenen üç özel CI ayna
+URL’sini rol ve SHA-256 kayıtlarına dönüştürür. Yalnız 14 Ekim izole iş
+serisinin 15 commit’i yeniden kurulur; ilk iki commit ve be5699c başlangıcı
+sabittir. Kaynak/freeze/regression ve sentetik TLS kökenleri yeni exact
+SHA’ya taşınır. Orijinal dal/rapor yayın ağacının dışında saklanır.
+[SHA eşlemesi](../docs/incelemeler/urunlesme-20261014/sanitized-sha-map.tsv)
+özgün derleme ve native checkpoint sonuçlarını yeni SHA’da üretilmiş saymaz.

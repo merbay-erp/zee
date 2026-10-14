@@ -74,3 +74,13 @@ K-160/ADR-059 bu son borcu fiziksel sahiplik ayrımıyla kapattı; güncel graph
 SCC ve izin sayısı sıfırdır. Güncel gerçek için katman rehberi bağlayıcıdır.
 
 K-215 SBOM path ağacı doğrulaması aynı mühendislik sahibinde kalır; katman/çevrim kapıları yeni kenar olmadığını doğrular.
+
+K-240 GET handler ve IO replay trait uygulamasını mevcut yorumlayıcı
+sahibinin alt dosyalarına ayırır. Yeni üst sahip veya temel→adaptör geçişi
+yoktur; exact owner kenarları/SCC fixture’ı yalnız farkı susturmak için
+güncellenmez, kapıda aynı graf olarak doğrulanır.
+
+K-240 SMTP testleri ayrı native test dosyasına, DB/posta profil erişicileri
+mevcut domain profil dosyalarına taşınır. Test isimleri/faz sahipliği, profil
+değerleri, public yüzey ve üretim gövdeleri korunur; spec kanıtı yeni exact
+test dosyasına taşınmıştır.

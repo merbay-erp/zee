@@ -99,3 +99,12 @@ kullanılır. Kaynak SHA ve exact fixed_by takip provenance kaydında yazılır;
 P09 kuyruk, canlı provider/ürün ve K-237 yanıt bütçesi ayrı kalır.
 
 K-237 P10/P34 inherited SMTP güvenlik dilimidir: [ADR-100](../adr/100-smtp-yanit-okuma-siniri.md)/GB-061 mevcut 16 KiB bütçeyi LF/EOF öncesinde zorlar; actualhelper/native/old-body negatif kanıtı vardır. K-236 AUTH gizlilik kapanışından ayrıdır. Global RSS/full audit, queue/provider/ürün, yeni exact CI ve insan/platform/syntax kapıları açık kalır; yeni benchmark tabanı/cache/state yoktur.
+
+## K-239 inceleme gizliliği ve tarihsel kanıt
+
+İnceleme raporuna eklenen üç özel ayna bağlantısı rol/hash kaydına
+dönüştürüldü. Yalnız bu izole iş serisi yeniden kuruldu;
+[exact SHA eşlemesi](incelemeler/urunlesme-20261014/sanitized-sha-map.tsv)
+regression/freeze ve sentetik TLS kökenleriyle tutarlıdır. Eski native ve
+iki-klon raporları özgün kaynaklarını adlandırır; eşlenmiş yeni SHA kabulü
+değildir. Güvenlik yaması sonrası temiz kabul ayrıca kaydedilir.

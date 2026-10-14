@@ -59,3 +59,9 @@ pub(super) const VARSAYILAN: EpostaSinirlari = EpostaSinirlari {
     tarih_bayti: 78,
     kimlik_bayti: 48,
 };
+
+impl super::KaynakSinirlari {
+    pub const fn eposta(self) -> EpostaSinirlari {
+        self.eposta
+    }
+}

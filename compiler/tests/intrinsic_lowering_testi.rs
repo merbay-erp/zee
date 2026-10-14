@@ -26,10 +26,11 @@ fn intrinsic_kaydi_kimlik_yetkinlik_ve_etkiyi_tekillestirir() {
         .map(|tanim| tanim.kimlik)
         .collect::<HashSet<_>>();
     assert_eq!(kimlikler.len(), intrinsic::TANIMLAR.len());
-    assert_eq!(kimlikler.len(), 24);
+    assert_eq!(kimlikler.len(), 25);
 
     for (kimlik, etki) in [
         (intrinsic::HTTP_ISTEK, IntrinsicEtkisi::GeriAlinamaz),
+        (intrinsic::EPOSTA_MIME_GONDER, IntrinsicEtkisi::GeriAlinamaz),
         (intrinsic::HTTP_GIZLI_ORTAM, IntrinsicEtkisi::DisOkuma),
         (intrinsic::HTTP_JSON, IntrinsicEtkisi::Saf),
     ] {

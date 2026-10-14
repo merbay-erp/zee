@@ -49,3 +49,9 @@ impl VeritabaniSinirlari {
         self.goc_toplami_bayti
     }
 }
+
+impl super::KaynakSinirlari {
+    pub const fn veritabani(self) -> VeritabaniSinirlari {
+        self.veritabani
+    }
+}

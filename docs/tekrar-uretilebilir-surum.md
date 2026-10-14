@@ -166,3 +166,9 @@ Duvar saati alınmaz; yanlış beyan build'i durdurur. Git olmayan archive
 explicit SHA+epoch alabilir; unknown veya kirli kaynak release değildir.
 Kanal varsayılanı development/beta; dev seri explicit stable olamaz.
 ADR-068 betiğinin aynı commit epoch kuralı ve remap iki-clone eşliği korunur.
+
+K-238 rustls lock yaması canonical betiği, SPDX/provenance/imza şemasını ve
+artefakt dosya kümesini değiştirmez. Yeni lock'tan üretilen SBOM paket kaydı
+rustls 0.23.46yı ve checksum'ını taşır. Eski 99f31d7 iki-klon hashleri bu
+kaynağa yeniden atanmaz; yeni temiz exact checkpoint'te iki-klon ve hedef
+kabulü ayrıca istenir ([ADR-101](../adr/101-rustls-advisory-yamasi.md)).

@@ -264,3 +264,14 @@ geçmez; ilgili sürüm runbook kapıları ayrıca korunur. [ADR-088](../adr/088
 ## K-220 — Exact sentetik TLS test kimliği
 
 [Fixture kaydı](sentetik-tls-fixture-v1.tsv) ve ADR-091/GB-054: directory taramasındaki pkcs12-file eşleşmesi yalnız bilinen localhost test kimliğidir. scripts/sir-yanlis-pozitif-denetle.py tek sabit dosya/kuralı, immutable Git blob’u ve kaynak/kopya SHA-256 eşitliğini doğrular; yalnız o geçici kopyanın exact fingerprint’i eklenir. Geniş yol, kural kapatma veya başka key dosyası istisnası yoktur. Yedi olumsuz/olumlu dedektör testi kurulu Gitleaks ile çalışır; başka PKCS12 ve API anahtarı hâlâ reddedilir. Action pinleri, Rust/Cargo graph’ı ve native TLS doğrulaması değişmez.
+
+## K-238 — Güncel rustls advisory yaması
+
+RUSTSEC-2026-0346/0347/0348/0349 ortak patched alt sınırı rustls 0.23.46dır;
+compiler ve fuzz lock'ları birlikte güncellenir. Ureq 3.4.0, manifest ve
+advisory ignore kümesi korunur. [ADR-101](../adr/101-rustls-advisory-yamasi.md)
+custom Debug-session, ECH, Brotli certificate decompression ve hybrid KX
+koşullarını gerçek ring feature-tree'den ayırır; dört ayrı Zee exploit'i
+veya genel sandbox iddiası verilmez. İki deny ve offline vendor kabulü yeni
+kilide aittir. Canonical artifact/SBOM mevcut üreticiyle yeniden üretilir;
+eski imzasız iki-klon/provenance kaydı tarihsel olarak kalır.

@@ -1669,3 +1669,20 @@ kabulü ve exact `smtp` regression aynı güvenlik dilimindedir.
 ### K-237 — SMTP yanıt büyümesinin okuma öncesinde kesilmesi
 
 LF/EOF vermeyen sunucu artık mevcut 16 KiB SMTP yanıt sınırını String büyüterek aşamaz. Tam sınır ve geçerli tel baytları korunur; taşmada UTF-8 hata önceliği sınır reddindedir. K-236 güvenli hata maskesi aynı; ayar/grammar göçü veya retry yoktur. [ADR-100](../adr/100-smtp-yanit-okuma-siniri.md): sabit BufReader ön okuması, TLS/kernel/RSS ve eski plain timeout/MIME deadline bu payload sınırından ayrıdır.
+
+### K-238 — HTTPS tedarik bağımlılığında rustls güvenlik yaması
+
+Compiler ve fuzz kilitleri `rustls 0.23.46`ya yükseltildi; `ureq 3.4.0`,
+kullanıcı kalıpları ve ayarlar değişmedi. Dört RustSec advisory için ignore
+eklenmedi. [ADR-101](../adr/101-rustls-advisory-yamasi.md) standart ring
+config ile upstream tetik koşullarını ayırır; dört ayrı ürün exploit'i
+iddia edilmez. Yeni ikili/SBOM yeniden üretilecektir; tarihsel artifact ve
+imza kayıtları bu yamaya aitmiş gibi değiştirilmez.
+
+K-239 özel CI bağlantılarını yayınlanabilir inceleme raporundan ve yalnız
+izole çalışma geçmişinden kaldırır; özgün kayıt dış kanıt paketinde korunur.
+K-232 intrinsic kayıt testi 25 kimliği ve MIME Ağ/geri-alınamaz etkisini
+bilinçli sayar. K-236 C029 kimliği korunur; fixture özeti yalnız teslim
+sonucu belirsizliği ve hata maskelemesini açıklayan editoryal güncellemedir.
+K-238 mevcut GET yürütmesi HTTP handler’a taşınarak 900 satır mimari sınırı
+korunur; deadline, C018 ve tel davranışı aynı kalır.

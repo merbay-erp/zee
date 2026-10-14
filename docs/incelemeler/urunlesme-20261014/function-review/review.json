@@ -1,0 +1,100 @@
+{
+  "schema": "zee-function-trend-review-1",
+  "reviewed_utc": "2026-10-14T14:12:48.938500+00:00",
+  "git_head_at_review": "278f70f8aabb5997f5299677586c3144d4379b81",
+  "working_tree_source_review": true,
+  "fixture": "/private/tmp/zee-k219-20261014/compiler/tests/fixtures/islev-egilimi-v1.tsv",
+  "original_fixture_sha256": "c587c85034b42af1a4ad8726d664e9ed35f91a6abcd6298217bb0bda8fae09ce",
+  "updated_fixture_sha256": "59acb174430a02db3c784b27a8f1873f81c28c82ef2c41b8e16a96950ed70da9",
+  "baseline_rows_before": 57,
+  "baseline_rows_after": 60,
+  "existing_rows_updated": 2,
+  "existing_rows_unchanged": 55,
+  "new_rows_added": 3,
+  "mass_rebaseline_used": false,
+  "growth_policy_changed": false,
+  "source_files_modified_by_reviewer": false,
+  "source_file_sha256": {
+    "compiler/src/main.rs": "39326e708cfb71002a3b9680b87b505a0b96b5d3fb4cd16d6a951d8c59af89ed",
+    "compiler/src/yorumlayici/kimlik_iletisim.rs": "cc03d4154cf3afad59056e512f6dba4d68a566e6c9cb5ab55046e7f3c57de91c",
+    "compiler/src/ayristirici/kimlik_iletisim.rs": "1fd8c2ac840c395675d745246ce8fe02ea87e3cda6ca9351ddca7a745de0e2ad",
+    "compiler/src/cli/ayar.rs": "5061b3d9d5a6feb3a158d91a10b6c97937ab14ca9acf8a51654d39cccd2c203d",
+    "compiler/src/eposta/mime.rs": "1f17f56070e7ba8b718b49cbb155e72b33516ffd617f2765b4d0b0b3e72dcc15"
+  },
+  "reviews": [
+    {
+      "key": "src/ayristirici/kimlik_iletisim.rs::yapili_kalip#1",
+      "decision": "keep; admit new92/0 baseline",
+      "reason": "Only contextual-token pattern recognition and intrinsic lowering. Exact12-token MIME branch builds7 typed operand expressions; token indexes guarded by exact arity. Nonempty input is inherited parser entry precondition. No type/policy/IO/cache ownership added. Flat early-return branches explain0 measured complexity. Splitting each small pattern would scatter one lowering domain.",
+      "coverage": [
+        "compiler/tests/smtp_mime_testi.rs::typed_kalip_merkezi_intrinsic_kaydi_ve_sonuc_turuyle_baglanir",
+        "compiler/tests/smtp_mime_testi.rs::typed_alan_ve_ek_listesi_yanlis_turleri_reddeder"
+      ],
+      "qualifier": "No direct empty-slice private-helper contract or new fuzz campaign claimed."
+    },
+    {
+      "key": "src/cli/ayar.rs::cozumle#1",
+      "decision": "keep; admit new94/8 baseline",
+      "reason": "One schema1 JSON→existing host flags decoder. Exact4-field envelope and8 security-key allowlist; duplicate handling at every depth; unknown ordinary no-op warning; scalar/enum/numeric and child-web conflicts reject before override. Caller supplies≤64KiB regular file and path guards; serde recursion guard remains. Reuses existing web flag validator instead of competing security interpretation. No file/DB/network or persistent state inside decoder.",
+      "coverage": [
+        "compiler/tests/cli_ayar_testi.rs::bilinmeyen_guvenlik_ve_ust_zarf_alanlari_deger_yazmadan_reddedilir",
+        "compiler/tests/cli_ayar_testi.rs::bos_invalid_future_ve_cift_anahtar_json_fail_closed",
+        "compiler/tests/cli_ayar_testi.rs::guvenlik_tur_aralik_ve_ic_bagimlilikler_cli_override_ile_asillamaz",
+        "compiler/tests/cli_ayar_testi.rs::sinirli_boyut_ve_derinlik_guvenle_reddedilir"
+      ],
+      "qualifier": "Readerless0.7 rollback, universal filesystem deadline and OS sandbox not inferred."
+    },
+    {
+      "key": "src/eposta/mime.rs::ileti_kur#1",
+      "decision": "keep; admit new93/8 baseline",
+      "reason": "Pure validated message serialization over borrowed attachment bytes. Header/control/id/address checks and8 attachments/8MiB each/16MiB total/512KiB text+HTML precede encoding; checked byte total;24MiB encoded message/998-byte line post-check. Empty options delegate to exact legacy serializer. Encoding helpers already split; path resolution/read and SMTP/TLS elsewhere. No writer/network/cache in this function.",
+      "coverage": [
+        "compiler/src/eposta/mime/tests.rs::bos_mime_secenegi_plaintext_iletiyi_bayt_bayt_korur",
+        "compiler/src/eposta/mime/tests.rs::baslik_kimlik_ve_ek_adinda_injection_reddedilir",
+        "compiler/src/eposta/mime/tests.rs::ek_adet_tek_ve_toplam_boyut_ile_metin_sinirlidir",
+        "compiler/src/eposta/mime/tests.rs::uzun_unicode_basliklar_75_sozcuk_ve_998_smtp_satir_sinirinda_katlanir"
+      ],
+      "qualifier": "Post-encoding final size check is a profile bound; no strict allocator/TLS/global RSS bound claimed."
+    },
+    {
+      "key": "src/main.rs::govde#1",
+      "decision": "keep;82/8→103/10 reviewed baseline",
+      "reason": "Still one host CLI dispatch phase. Growth is configuration application before flags, explicit unknown-option validation and separate capability/build output branches. Config parsing, filesystem handling, web argument logic and command bodies stay delegated. Reject paths stop before command effects; fixed command match. Moving only trivial guards into extra helpers would conceal launch order; no reusable domain mixed in.",
+      "coverage": [
+        "compiler/tests/cli_secenek_testi.rs::bilinmeyen_secenek_dosya_hatasi_olmayan_acik_ret_verir",
+        "compiler/tests/cli_secenek_testi.rs::kaynak_yolundan_sonraki_program_bayragi_korunur",
+        "compiler/tests/cli_ayar_testi.rs::mevcut_web_ayar_eslemesi_ve_cli_alana_gore_onceligi",
+        "compiler/tests/cli_ayar_testi.rs::capability_probe_build_jsonu_degistirmez_ve_selector_once_destek_ister"
+      ],
+      "qualifier": "OS argv is bounded by the host rather than a new compiler argv byte cap. Capability output is not previous-minor release proof."
+    },
+    {
+      "key": "src/yorumlayici/kimlik_iletisim.rs::intrinsic_degerlendir#1",
+      "decision": "keep;92/4→125/4 reviewed baseline",
+      "reason": "One typed intrinsic value dispatch phase for existing identity/communication family. New fixed-arity MIME arm converts typed values, caps requested timeout by remaining runtime deadline, delegates actual IO and checks deadline after return; sender errors fixed-mask to C029, no automatic retry. Old SMTP arm now masks echo. Native policy/path/open/8 attachment and byte guards are owned by IO/native layers, not reimplemented here. Splitting one arm merely to lower measured lines would add wrapper churn without changing responsibility.",
+      "coverage": [
+        "compiler/tests/smtp_mime_testi.rs::runtime_hata_siri_icerigi_hedefi_ve_yolu_gizler_tekrar_yapmaz",
+        "compiler/tests/smtp_mime_testi.rs::politika_ag_dosya_okuma_ve_goreli_yolu_ic_adaptorden_once_denetler",
+        "compiler/tests/smtp_mime_testi.rs::dis_son_tarih_mime_butcesini_kisaltir_ve_sinir_merkezi_sahiptir",
+        "compiler/tests/smtp_hata_maskelemesi_testi.rs::runtime_explicit_url_ayristirma_hatasi_c029_ile_sirsizdir"
+      ],
+      "qualifier": "MIME path list cloning occurs before downstream attachment-count rejection; only general runtime value/heap limits apply at this conversion. This review does not claim8-item temporary allocation or global RSS guarantee; native rejects before file/SMTP effects."
+    }
+  ],
+  "verification": "Exact static source/test-function inspection; targeted Rust coverage existed and parent current broad gates passed. No additional full campaign claimed. Fresh tool stdout verification follows; root report generation remains owned by root.",
+  "fresh_read_only_tool": {
+    "command": [
+      "cargo",
+      "run",
+      "--offline",
+      "--locked",
+      "--bin",
+      "islev_egilimi",
+      "--"
+    ],
+    "exit": 0,
+    "seconds": 46.638,
+    "report": "generated-report.md",
+    "root_report_written": false
+  }
+}
