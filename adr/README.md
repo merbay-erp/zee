@@ -109,3 +109,5 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-092 | [Bilinmeyen CLI seçeneği reddi](092-cli-bilinmeyen-secenek-reddi.md) | **kabul** (K-221) |
 
 | ADR-093 | [Deterministik compiler build kimliği](093-deterministik-build-kimligi.md) | **kabul** (K-226) |
+
+| ADR-094 | [Yazmadan biçim denetimi](094-bicimleyici-yazmadan-denetim.md) | **kabul** (K-229) |

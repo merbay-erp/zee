@@ -73,6 +73,10 @@ birimin işlem adlarını çağrı çözümünde görür.
 
 ## Yerel paket ve kilit (TANIMLI — K-078)
 
+`dil biçimle --denetle <dosya|proje>` kaynağı değiştirmeden kanonik biçimle
+karşılaştırmak ZORUNDADIR. Uygun biçim exit 0, biçim farkı exit 1'dir;
+içerik, mtime ve izin yazımı YASAKTIR. Varsayılan `biçimle` yazma kipi sürer.
+
 - `X paketini kullan`, kullanan kaynağın sahibi olan projenin **doğrudan**
   `yerel_bağımlılıklar` üyesi X'in giriş kaynağını bağlar; yoksa A011.
 - Paket adı bağımlı bildirimin `proje` alanıdır ve küçük harfli tek

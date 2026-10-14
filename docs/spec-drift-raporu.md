@@ -12,7 +12,7 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 | `spec/04-turler.md` | 13 | 13 | 0 | 0 |
 | `spec/05-degerlendirme.md` | 9 | 9 | 0 | 0 |
 | `spec/06-hata-modeli.md` | 7 | 7 | 0 | 0 |
-| `spec/07-birimler.md` | 7 | 7 | 0 | 0 |
+| `spec/07-birimler.md` | 8 | 8 | 0 | 0 |
 | `spec/08-kalici-dosya.md` | 5 | 4 | 1 | 0 |
 | `spec/09-son-tarih-ve-iptal.md` | 1 | 1 | 0 | 0 |
 | `spec/10-disari-acik-islem-sozlesmesi.md` | 4 | 4 | 0 | 0 |
@@ -34,7 +34,7 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 | `spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md` | 2 | 2 | 0 | 0 |
 | `spec/27-uyumluluk-ve-surumleme.md` | 12 | 9 | 2 | 1 |
 | `spec/28-gorunum-blogu.md` | 2 | 2 | 0 | 0 |
-| **Toplam** | **189** | **180** | **7** | **2** |
+| **Toplam** | **190** | **181** | **7** | **2** |
 
 ## Kısmi kanıtlı maddeler
 

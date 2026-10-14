@@ -500,3 +500,6 @@ doğrudan spec testini tamamlar; insan/fiziksel/minOS/RC sınırları kapatılma
 K-226 build JSON'u exact kaynak tanımlamayı sağlar; dirty/unknown kimlik
 release kabulü değildir. CLI/LSP/SBOM/worker eşliği ve iki-clone kapıları
 ayrı sınanır; kanal etiketi kapı geçişini ikame etmez.
+
+K-229 source biçim kapısı yazmadan denetlenebilir; sekiz CLI kabulü default
+writer ve readonly/mtime sınırlarını korur. V1 insan/RC kapıları ayrı açık.
