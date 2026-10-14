@@ -57,3 +57,5 @@ olarak yararlı olsa da bağımsız tekrarlanabilirlik iddiası için eksikti.
   değişmez. K-153/ADR-050 gerçek process→stdio LSP cold-start metriğini ayrı
   yüzey olarak eklemiştir; exact ilk tabanı ayrıca kaydedilecektir.
 - Dil grammar'ı, runtime davranışı, tanılar, RFC ve normatif spec değişmedi.
+
+K-237/ADR-100 helper byte/capacity sayacı ve native fixture son tarihi benchmark örnekleme/provenance kaydı değildir. Tahsis etkisi incelendi; sabit iş yükü/sample/warmup ve immutable tarihçe korunur. Yeni p95/RSS kaydı ancak temiz exact düzeltme SHA’sı ve tam makine/Rust/release/örnek metadata’sıyla ayrıca kabul edilir.

@@ -4326,3 +4326,7 @@ SMTP/TLS/deadline kontrol gövdesi byte düzeyinde korunur. GB-060 kapandı,
 ADR-099 ve üç native/runtime/CLI testi ile gerçek `smtp` regression kipi
 bağlandı. Exact fixed_by kaynak commit’ini izleyen kayıt işidir; K-237
 SMTP yanıt tahsis bütçesi ve canlı ürün/sağlayıcı kabulü ayrı kalır.
+
+## K-237 — SMTP bounded yanıt okuyucusu
+
+14.10.2026: LF/EOF öncesi 1 MiB tüketim açığı, kalan 16 KiB + 1 bayt Take ve 16 KiB + 1 bayt kapasiteli tek yanıt tamponuyla kapatıldı (ADR-100/GB-061). Beş actualhelper ve native LF-yok corpus, eski gövdeyle ret/düzeltme geri konunca kabul; consumed16385 ile fixed-prefetch24576/unused8191 ayrıdır. Kaynak başlangıcı cbacc4c09cf0534b7436f33d771a30ce687d510f kesin; exact fix SHA/fixed_by/compiler-freeze beyanı takip kaydıdır. Benchmark/kalıcı state/grammar değişmez; archive kanıtı uzak CI kabulü değildir.

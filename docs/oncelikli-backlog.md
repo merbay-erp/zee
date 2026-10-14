@@ -1461,3 +1461,7 @@ hata ayrıntısı sabit maskeye eşlenir; wire/deadline/failure akışı ve retr
 olmaması korunur. Üç hedefli test ve [gerçek SMTP reproducer](../regression/security/smtp-auth-echo-sir.dil)
 aynı kaynağı sınar. Exact fixed_by/compiler/freeze beyanı kaynak commit’ini
 izleyen provenance kaydına bağlanır; inherited yanıt DoS K-237 ayrı iştir.
+
+## K-237 — SMTP yanıt okumasında tahsisten önce sınır
+
+**KAPALI — yerel güvenlik/correctness kabulü.** [ADR-100](../adr/100-smtp-yanit-okuma-siniri.md)/GB-061: mevcut 16 KiB bütçe kalan+1 Take ve 16 KiB + 1 bayt kapasiteli tek yanıt tamponuyla LF/EOF öncesinde zorlanır. Beş actualhelper ve gerçek loopback corpus kabulü; eski gövdeyle 1 MiB byte/deadline negatif ve restore pozitif kanıtı vardır. K-236 maskesi aynı; grammar/API/dependency/kalıcı state yoktur. Exact source/fixed_by beyanı takip kaydı, uzak CI/live/RSS/plain toplam deadline sınırı ayrıdır.

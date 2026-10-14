@@ -1311,3 +1311,5 @@ maskesiyle kapatır; üç gerçek hedefli test ve loopback `smtp` regression
 kullanıcı hata metninde ham/geri çözülebilir credential bulunmadığını sınar.
 Genel sır taint sistemi, P09 queue/retry, canlı SMTP/ürün kabulü veya
 K-237 yanıt okuma bütçesi bu düzeltmeden tamamlanmış sayılmaz.
+
+K-237/ADR-100/GB-061, beş helper ve native LF-yok corpus ile mevcut 16 KiB SMTP tahsis/tüketim açığını kapatır; K-236 maskesi korunur. P10/P34 için dar bytecap kanıtıdır. Queue/provider/ürün, global RSS/TLS iç tampon ve plain toplam deadline kapasitesi çıkarılmaz; immutable performans tarihçesi/iş yükü aynı, kalıcı state yoktur. Exact kaynak/provenance ve yeni uzak CI ayrı kayıttır.
