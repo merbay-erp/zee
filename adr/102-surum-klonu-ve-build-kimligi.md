@@ -39,3 +39,10 @@ kirletme vakalarını yürütür. Final exact temiz kaynakta kanonik iki-klon
 native testi tarihsel geçerliliğini korur; eski ikili hash'leri yeni temiz
 kimlik kabulüne çevrilmez. Gerçek yayıncı anahtarı, fiziksel platform,
 ürün, uzak CI ve RC/V1 kapıları bu dar araç düzeltmesinden kapanmaz.
+
+Son [gerçek kanonik iki-klon kanıtı](../docs/incelemeler/urunlesme-20261014/final-2e970e4/build-proof.json)
+`2e970e47d59e2408eff836cdacef9bd0fe0b3028` kaynağında a/b/çıktı
+ikilisinin exact SHA ve `dirty: false` kimliğini, eş hash'leri ve native
+hedefi doğrular. Kanıt JSON'undaki Rust dosya checksum'u için tarayıcı
+istisnası açılmadı; alanlar `path` ve `sha256` olarak ayrıldı. Özgün eski
+koşular korunur ve yeni SHA'ya aktarılmaz.

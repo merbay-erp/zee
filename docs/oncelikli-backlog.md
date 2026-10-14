@@ -1510,3 +1510,10 @@ klon dışına taşınır; önce/sonra temizlik ve her gerçek ikilide exact
 SHA/temiz kimlik kapısı eklenir. ADR-102/GB-064 ile olumlu/olumsuz shell
 ve yeniden kanonik iki-klon kabulü birlikte kapanır. Dil anlamı veya
 build.rs koruması değiştirilmez; yeni yayın/RC iddiası yoktur.
+
+K-241 yerel teknik kapanışı exact
+`2e970e47d59e2408eff836cdacef9bd0fe0b3028` ile kanıtlıdır:
+faz 887/893 (6 dedicated atlama), ayrı native 5/1/7, sürekli güvenlik ve
+istisnasız yeni sır taraması; kanonik a/b/çıktı exact SHA, `dirty: false`
+ve dil/LSP eş hash. [Son teslim](urunlesme-sonucu-20261014.md) bu kapıları
+bağlar. Yeni yayın, tüm platform veya tam ürün kabulü çıkarılmaz.

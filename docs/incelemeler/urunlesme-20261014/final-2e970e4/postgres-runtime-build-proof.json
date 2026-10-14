@@ -1,0 +1,55 @@
+{
+  "schema": "zee-owned-postgresql-build-1",
+  "started_utc": "2026-10-14T13:44:33.865265+00:00",
+  "source_url": "https://ftp.postgresql.org/pub/source/v16.15/postgresql-16.15.tar.bz2",
+  "published_sha256_url": "https://ftp.postgresql.org/pub/source/v16.15/postgresql-16.15.tar.bz2.sha256",
+  "published_sha256": "c1575341fa7bd40f5274ea465b34390f4dc64cdd0770af327005caaeb9f6b7ed",
+  "observed_sha256": "c1575341fa7bd40f5274ea465b34390f4dc64cdd0770af327005caaeb9f6b7ed",
+  "checksum_verified": true,
+  "configure_argv": [
+    "/private/tmp/zee-plan-evidence/pg16-runtime/postgresql-16.15/configure",
+    "--prefix=/private/tmp/zee-plan-evidence/pg16-runtime/install",
+    "--with-ssl=openssl",
+    "--without-icu",
+    "--without-readline",
+    "--without-zlib",
+    "--with-includes=/opt/homebrew/opt/openssl@3/include",
+    "--with-libraries=/opt/homebrew/opt/openssl@3/lib"
+  ],
+  "configure_environment": {
+    "CPPFLAGS": "-I/opt/homebrew/opt/openssl@3/include",
+    "LDFLAGS": "-L/opt/homebrew/opt/openssl@3/lib -Wl,-rpath,/opt/homebrew/opt/openssl@3/lib"
+  },
+  "prefix": "/private/tmp/zee-plan-evidence/pg16-runtime/install",
+  "clang": "Apple clang version 21.0.0 (clang-2100.3.34.2)",
+  "make": "GNU Make 3.81",
+  "openssl": "OpenSSL 3.6.4 25 Aug 2026 (Library: OpenSSL 3.6.4 25 Aug 2026)",
+  "scope": "temporary source build only, no user install/packages/services/customer clusters changed",
+  "boundary": "official source16.15 TLS-enabled local runtime, not Docker-image acceptance",
+  "configure_exit": 0,
+  "build_exit": 0,
+  "install_exit": 0,
+  "version": "postgres (PostgreSQL) 16.15",
+  "pg_config": "'--prefix=/private/tmp/zee-plan-evidence/pg16-runtime/install' '--with-ssl=openssl' '--without-icu' '--without-readline' '--without-zlib' '--with-includes=/opt/homebrew/opt/openssl@3/include' '--with-libraries=/opt/homebrew/opt/openssl@3/lib' 'LDFLAGS=-L/opt/homebrew/opt/openssl@3/lib -Wl,-rpath,/opt/homebrew/opt/openssl@3/lib' 'CPPFLAGS=-I/opt/homebrew/opt/openssl@3/include'",
+  "binaries_sha256": {
+    "postgres": "9b89cfcd7b54a581c50c2fc5c3010f3ae0755635958d5789886718da22052fbd",
+    "initdb": "c960be8780e673d65c97f78c54bd3438525e1de6f2822257b189effc8b48b740",
+    "pg_ctl": "7c052138b54426bb3666814f25374a84cc4789bc0400ebf50dedca627e8563da",
+    "psql": "c63479d6b17829552f52ac8f083b3bc4d6564dbea39eb64ffa01c150dc43d2af"
+  },
+  "finished_utc": "2026-10-14T13:45:52.219436+00:00",
+  "dynamic_linkage": {
+    "postgres": "/private/tmp/zee-plan-evidence/pg16-runtime/install/bin/postgres:\n\t/opt/homebrew/opt/openssl@3/lib/libssl.3.dylib (compatibility version 3.0.0, current version 3.0.0)\n\t/opt/homebrew/opt/openssl@3/lib/libcrypto.3.dylib (compatibility version 3.0.0, current version 3.0.0)\n\t/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1359.0.0)\n",
+    "psql": "/private/tmp/zee-plan-evidence/pg16-runtime/install/bin/psql:\n\t/private/tmp/zee-plan-evidence/pg16-runtime/install/lib/libpq.5.dylib (compatibility version 5.0.0, current version 5.16.0)\n\t/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1359.0.0)\n"
+  },
+  "openssl_shared_library_sha256": {
+    "/opt/homebrew/Cellar/openssl@3/3.6.4/lib/libssl.3.dylib": "c6ee373222087cf31bc2f3817537d268b3c23e56b7fadd44bbf5c2317caed349",
+    "/opt/homebrew/Cellar/openssl@3/3.6.4/lib/libcrypto.3.dylib": "bae675614cd791d37ec35416ea9f87edcc85407d020810504cf458119b63522c"
+  },
+  "pg_config_compiler_flags": {
+    "cc": "gcc",
+    "cflags": "-Wall -Wmissing-prototypes -Wpointer-arith -Wdeclaration-after-statement -Werror=vla -Werror=unguarded-availability-new -Wendif-labels -Wmissing-format-attribute -Wcast-function-type -Wformat-security -fno-strict-aliasing -fwrapv -fexcess-precision=standard -Wno-unused-command-line-argument -Wno-compound-token-split-by-macro -Wno-format-truncation -Wno-cast-function-type-strict -O2",
+    "ldflags": "-isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX27.0.sdk -L/opt/homebrew/opt/openssl@3/lib -Wl,-rpath,/opt/homebrew/opt/openssl@3/lib -L/opt/homebrew/opt/openssl@3/lib -Wl,-dead_strip_dylibs",
+    "libs": "-lpgcommon -lpgport -lssl -lcrypto -lm"
+  }
+}

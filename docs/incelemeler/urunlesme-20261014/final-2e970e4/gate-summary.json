@@ -1,0 +1,89 @@
+{
+  "schema": "zee-final-gate-summary-1",
+  "source_sha": "2e970e47d59e2408eff836cdacef9bd0fe0b3028",
+  "source_tree": "17afbaece8217dae0f5c1bf33d17f6faecbc7096",
+  "phase": {
+    "passed": 887,
+    "failed": 0,
+    "ignored": 6,
+    "expected": 893,
+    "phase_wall_seconds": 138.698,
+    "command": [
+      "cargo",
+      "run",
+      "--locked",
+      "--bin",
+      "faz_test_matrisi",
+      "--",
+      "--denetle",
+      "--rapor",
+      "target/faz-test-matrisi-k241-clean.md"
+    ]
+  },
+  "dedicated_native": {
+    "tls_budget": 5,
+    "migration": 1,
+    "password_cas": 7,
+    "failed": 0,
+    "ignored": 0,
+    "proof": "native-proof.json",
+    "six_ignored_phase_cases_actually_run": true
+  },
+  "continuous_security": {
+    "passed": true,
+    "command": [
+      "bash",
+      "scripts/guvenlik-kapisi.sh",
+      "--surekli"
+    ],
+    "release_candidate": false
+  },
+  "secret_scan": {
+    "passed": true,
+    "history_commits_scanned": 435,
+    "tree_passed": true,
+    "leaks": 0,
+    "new_scanner_exceptions_added": false,
+    "metadata_false_positive": "actual Rust source SHA-256 path-key rewritten as path/sha256 fields; unpublished metadata-only amended source"
+  },
+  "source_logs": [
+    {
+      "path": "urunlesme-final-faz-k241-clean.log",
+      "bytes": 17044,
+      "sha256": "3a60c7e785733038927e8d8a48c340a092ea7b184cd19dc010fafe9c55536336"
+    },
+    {
+      "path": "urunlesme-final-guvenlik-k241-clean.log",
+      "bytes": 2245,
+      "sha256": "539f1f28d4daa9b5ae8fdc74ad345e2c2eeb72ad6cdca25db3c4d93a77737020"
+    },
+    {
+      "path": "urunlesme-final-secrets-k241-clean.log",
+      "bytes": 278,
+      "sha256": "5ec937d23dcca5703e0324ef7b14ddeb1d46aaf35a9318a165935b685b4c5d94"
+    }
+  ],
+  "evidence": [
+    {
+      "path": "build-proof.json",
+      "sha256": "544e6620318a17e4573947dff1fbe02c00d48702b34facd709dd5270becb5f08"
+    },
+    {
+      "path": "faz-test-matrisi.md",
+      "sha256": "265ca9ea170cf7f193ea5b8c1e0960f8236a7b0d81b26aef613a17f0a5d1949a"
+    },
+    {
+      "path": "native-proof.json",
+      "sha256": "76be1941dd54fadcee6bf617800456da27ef746d6bf9524853716a0d36d6c95a"
+    },
+    {
+      "path": "postgres-runtime-build-proof.json",
+      "sha256": "ac0377a5ae794732f2a6d6cd6962bec2cc90d4dd2a9fc03cc57b64e7e53ec6d6"
+    },
+    {
+      "path": "source-archive.json",
+      "sha256": "24912645f36df91f76875a2388d86335753d062f00aa672d86378ab674cb11d7"
+    }
+  ],
+  "boundary": "Clean exact local technical source; overlapping historical tests are not summed or retagged. Unsigned local macOS two-clone acceptance, no remoteCI/clean physicalOS/full product/RC/signing/publication acceptance."
+}
