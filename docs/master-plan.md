@@ -1264,3 +1264,7 @@ aynı dilimde; tam faz/Gitsrv sonucu [kabulde](incelemeler/k220/README.md) kapan
 Sunucu/ürün rotası ve otomatik kayıt/e-posta entegrasyonu ürün tarafındadır.
 
 K-220 / K-174: exact gerçek ürün talebiyle üç contextual kalıp eklendi; syntax gözlem penceresi 14.10.2026–11.11.2026 olarak bilinçli yeniden başladı. Core freeze ve insan/RC kapıları sürer; V1 tamamlandı olarak gösterilmez.
+
+## İnceleme §3/4 — HTML temizleyici ertelendi
+
+14 Ekim 2026 ürün sahibinin güncel talebi: `cekirdek/kaynak/alanlar.dil` richtext alanı düz metindir; `guvenliParagraflar` satırları `html güvenlisi` ile kaçışlayıp sabit etiketler üretir. Ürün tarafının beş veritabanı taramasında HTML etiketli kayıt 0 olarak bildirilmiştir; AI içerik kaynağı yoktur. Mevcut satır içi biçim eksikliği ürün işlemiyle giderilebilir, bugün yeni dil yüzeyi açılmaz. Gerçek HTML içe aktarma kaynağı gelirse dosya kanıtıyla yeniden değerlendirilir. Sıradaki inceleme maddesi §3/5 LSP yeniden analiz maliyetidir.
