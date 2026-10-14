@@ -13,6 +13,13 @@ K-167**.
 
 ## Dondurulmuş yüzeyler
 
+`dil sürüm --json`, LSP `serverInfo.zeeBuild` ve uygulama sağlık rotası dahil
+tamamlanmış worker yanıtının `X-Zee-Build` başlığı aynı `zee-build-v1`
+version/source_sha/source_date/channel/dirty kaydını taşımak ZORUNDADIR.
+Source tarihi commit UTC günüdür; duvar saati gömmek YASAKTIR. Kirli veya
+unknown kaynak kimliği exact temiz release kabulü değildir. Bu kayıt yalnız
+build kimliğini içerir; genel health/readiness rotası bu maddeyle eklenmez.
+
 CLI seçenek bölgesindeki bilinmeyen `--` argümanı kaynak yolu olarak
 okunmadan seçenek adı, etkin sürüm ve exit 2 ile reddedilmek ZORUNDADIR.
 `çalıştır` kaynak yolundan sonraki ve `iz kaydet` program argümanları

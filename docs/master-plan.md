@@ -1274,3 +1274,13 @@ K-220 / K-174: exact gerçek ürün talebiyle üç contextual kalıp eklendi; sy
 A6(1) bilinmeyen CLI seçenek reddi minimal correctness dilimidir.
 A6(2) genel config ve sürüm yöneticisi tamamlanmış değildir; K-174
 syntax freeze, insan kanıtı ve RC kapıları açık kalır.
+
+### Ürünleşme kabul matrisi
+
+[39 işlik plan](urunlesme-plani.md) onaylı kapsamı ve gerçek durumları
+ayırır. K-222 hermetik TLS/NULL, K-223 anonim helper, K-224 pilot/kanıt ve
+K-225 doğrudan spec testleri aynı dalgada yürür. RC kapıları açık kalır.
+
+K-226 build kimliği compiler anlamını genişletmez; yeni temel surum sahibi
+ve CLI/LSP kenarları ADR-093/katman fixture'ıyla incelendi. Readiness,
+canlı worker yükseltme ve V1/RC insan-platform kabulü ayrı açıktır.

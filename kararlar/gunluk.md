@@ -4211,3 +4211,61 @@ K-220 / K-174: exact gerçek ürün talebiyle üç contextual kalıp eklendi; sy
 14.10.2026 K-221 / ADR-092: onaylı ürünleşme A6(1) için bilinmeyen
 CLI seçeneği kaynak yolu olmadan exit 2 ile reddedilir. Runtime config,
 lisans seçimi ve yeni gramer bu dilimde yoktur. Exact kaynak beyanı izler.
+
+14.10.2026 K-222: kendi geçici PostgreSQL/CA ile TLS hostname/CA ve
+NULL/non-text reddi 4/4 dedicated testte atlamasız geçti; GB-022 kapandı.
+Yeni uzak exact CI, TLS1.1 ve provider rotasyonu ayrı sınırdır.
+
+14.10.2026 K-223: onaylı B7/B8 için mevcut bcrypt/Argon2id/transaction
+ve HTTP helper kullanılır; anonim CAS/model testi canlı ürün kabulü değildir.
+
+14.10.2026 K-224: lisans bekletildi, sınırlı pilot destek seçildi;
+private depo/site metni ve kaynak eşleme raporu aynı kapsamda güncellendi.
+İnsan/fiziksel/minOS/GB-046 kayıtları yok; kullanıcı destek taslağını gönderecek.
+
+14.10.2026 K-225: beş kısmi spec maddesi doğrudan olumlu/olumsuz
+testlerle kanıtlandı; yeni production davranışı veya grammar eklenmedi.
+
+## K-221 — Bilinmeyen CLI seçeneği
+
+14 Ekim 2026 onaylı ürünleşme dilimi; mevcut kayıt ve exact kabul sınırı
+[öncelikli backlog](../docs/oncelikli-backlog.md) içindedir.
+
+## K-222 — Hermetik PostgreSQL TLS ve NULL kabulü
+
+14 Ekim 2026 onaylı ürünleşme dilimi; mevcut kayıt ve exact kabul sınırı
+[öncelikli backlog](../docs/oncelikli-backlog.md) içindedir.
+
+## K-223 — Mevcut dilde parola yükseltme ve form kabulü
+
+14 Ekim 2026 onaylı ürünleşme dilimi; mevcut kayıt ve exact kabul sınırı
+[öncelikli backlog](../docs/oncelikli-backlog.md) içindedir.
+
+## K-224 — Pilot destek ve kaynak kanıtı
+
+14 Ekim 2026 onaylı ürünleşme dilimi; mevcut kayıt ve exact kabul sınırı
+[öncelikli backlog](../docs/oncelikli-backlog.md) içindedir.
+
+## K-225 — Doğrudan spec kanıt boşlukları
+
+14 Ekim 2026 onaylı ürünleşme dilimi; mevcut kayıt ve exact kabul sınırı
+[öncelikli backlog](../docs/oncelikli-backlog.md) içindedir.
+
+## K-226 — Deterministik compiler build kimliği
+
+14 Ekim 2026 onaylı A1: duvar saati gömülmez, kaynak commit UTC günü ve
+SHA kullanılır; dev seri stable iddiası taşımaz. GB-055 intentional minimal
+worker kimlik sınırıdır. Source/freeze beyanı kaynak commitini izler.
+
+## K-227 — Metin yamasız mevcut rota/paket kompozisyonu
+
+14 Ekim 2026 C3 exact ürün talebiyle anonim katalog fixture mevcut yerel
+paket ve açık rota importuyla kurulur/kaldırılır. Test helper gerçek
+ProjeGrafigi yükleyicisini kullanır; yeni grammar yok. Namespace/sürüm
+aralığı ve panel/içerik/göç extension yüzeyleri ayrı açık kalır.
+
+## K-230 — Dış inceleme güncel 27 madde eşlemesi
+
+14 Ekim 2026 27/27 kimlik ve 46 exact test işlevi güncel kaynak/kanıt
+sınırına bağlandı. Eski kaynak ölçümleri tarihsel bırakıldı; tam adversarial
+audit açık, K-205 kapsamı yeni özellik veya kapanmış risk diye sunulmaz.

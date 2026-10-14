@@ -75,6 +75,8 @@ mod semantic_model;
 #[doc(hidden)]
 pub mod sozcukleyici;
 #[doc(hidden)]
+pub mod surum;
+#[doc(hidden)]
 pub mod tani;
 mod tani_politikasi;
 #[doc(hidden)]

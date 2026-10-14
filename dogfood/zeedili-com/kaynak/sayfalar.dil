@@ -347,6 +347,8 @@ test "anasayfa cümle çözümlemesi, örnek defteri ve dürüst durum taşır"
     gövde "Henüz 1.0 değil" içermeli
     gövde "HATA T002" içermeli
     gövde "Bu site Zee ile yazıldı" içermeli
+    sayfa anasayfayiHazirla olsun
+    sayfa "Depo erişimi sınırlı; lisans kararı bekleniyor." içermeli
 
 test "defter sekmesi kaynağı ve çıktıyı kaçışlı taşır"
     sekme "x" ve "\"a\" <b>yaz</b>" ve "<i>" ile defterSekmesi olsun

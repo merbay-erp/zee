@@ -50,6 +50,15 @@ worker'ın birlikte max_connections provası bu ADR'nin kanıtladığı kapsam
 değildir; release/deployment tatbikatında ayrıca ölçülür.
 Exact K-163/F031 ürün saha kaydı `977cd2a` commit'indedir.
 
+K-222/GB-022 sürekli Linux kabulü kendi geçici CA/key ve native `initdb`
+kümesini kullanır; yerel alternatif resmî digest-pinli Docker kümesidir.
+Gerçek doğru CA/hostname/TLS 1.2, yanlış CA/SAN ve NULL/non-text retleri
+`postgresql_testi` içindeki dört strict-fixture vakasıyla sınanır. Default
+fazda ignored olan bu vakalar dedicated koşucuda 4/4 ve sıfır ignored
+zorunluluğuyla çalışır. Eksik ortam başarı değildir. Üretim TLS/havuz
+profili değişmedi; bağımsız TLS 1.1 downgrade reddi hâlâ bu kanıtın dışında.
+[Koşucu ve exact kaynak kayıt sözleşmesi](../docs/postgresql-tls-ci.md).
+
 K-206 frame reddi aktif transaction lease’ini bırakır; yerel geçersizlik
 cleanup yapılmadan yeni checkout/request RLS bağlamıyla sürdürülemez.
 Havuz limiti/TLS/lease ömrü değişmedi; kapalı client havuzda yenilenir.

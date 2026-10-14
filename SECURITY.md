@@ -6,15 +6,23 @@ tutulur (K-170/ADR-066). Bu dosya bildirim kanalını, önem sözlüğünü ve s
 
 ## Bildirim
 
-- Depo bilinçli olarak herkese açıktır. Hassas güvenlik bulguları
+- Depo özeldir; GitHub tarafından yönetilen eski PR refs/cache nesnelerinin
+  temizliği destek teyidi bekler (GB-046). Depoyu herkese açmak ayrı kullanıcı
+  kararıdır. Depo erişimi olan pilot katılımcıları hassas güvenlik bulgularını
   [Security Advisories — özel güvenlik bildirimi](https://github.com/merbay-erp/zee/security/advisories/new)
-  üzerinden iletilir; gerçek sırlar ve istismar ayrıntıları herkese açık
-  issue içine yazılmaz.
-- Kabul edilen bulgu 3 iş günü içinde önem sınıfıyla
+  üzerinden iletir. Kanal erişimi yoksa depo sahibiyle önceden belirlenen
+  özel pilot iletişim yolu kullanılır; gerçek sırlar ve istismar ayrıntıları
+  herkese açık issue içine yazılmaz. Yeni bir iletişim adresi bu belgeyle
+  tahsis edilmez.
+- İlk inceleme hedefi 3 iş günüdür; bu bir SLA değildir. Kabul edilen bulgu önem sınıfıyla
   [`docs/guvenlik-bulgulari-v1.tsv`](docs/guvenlik-bulgulari-v1.tsv)
   kaydına girer; düzeltme K-işi ve regresyon vakasıyla kapanır.
 - Düzeltme yayımlanmadan bulgu ayrıntısı paylaşılmaz; yayımdan sonra kayıt,
   sürüm notu ve varsa CVE/RustSec referansı açıktır.
+
+[Sınırlı pilot destek politikası](docs/urun-destek-politikasi.md) desteklenen
+kapsamı ve güvenlik/uyumluluk kapılarına bağlı yayın kararını tanımlar.
+Lisans seçimi, LTS süresi ve düzenli yayın takvimi henüz verilmiş söz değildir.
 
 ## Önem sözlüğü
 

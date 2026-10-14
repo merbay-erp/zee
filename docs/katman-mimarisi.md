@@ -7,6 +7,11 @@ ayrıntısını ve LSP compiler iç geçişlerini doğrudan bilmemelidir.
 
 ## Katman yönü
 
+K-226 `surum` temel sahibi yalnız deterministik build sabitleri/sunumudur;
+CLI ve LSP temele bağımlanır. Host Git sorgusu build betiğindedir, çalışan
+dil/lexer/checker katmanına girmez. ADR-093 ve exact fixture bu eklenen sahibi
+ve iki kenarı kaydeder; internal module desteklenen api::v1 export değildir.
+
 | Katman | Doğrudan bağımlanabileceği katmanlar |
 |---|---|
 | `temel` | `temel` |

@@ -298,9 +298,13 @@ fn govde() -> ExitCode {
         },
         Some("yeni") => yeni_komutu(&argumanlar),
         Some("sürüm") | Some("surum") => {
+            if argumanlar.iter().any(|a| a == "--json") {
+                println!("{}", dil::surum::json());
+                return ExitCode::SUCCESS;
+            }
             println!(
                 "dil {} — Türkçe programlama dili (bootstrap, Stage 0) — morfoloji {} — IO {}",
-                env!("CARGO_PKG_VERSION"),
+                dil::surum::metin(),
                 dil::morfoloji::MORFOLOJI_PROFILI,
                 dil::yorumlayici::DETERMINISTIK_IO_PROFILI,
             );
@@ -319,7 +323,7 @@ fn govde() -> ExitCode {
 fn cli_seceneklerini_denetle(argumanlar: &[String]) -> Result<(), String> {
     let komut = argumanlar.first().map(String::as_str).unwrap_or("");
     let (bayraklar, degerli): (&[&str], &[&str]) = match komut {
-        "denetle" => (&["--json"], &[]),
+        "denetle" | "sürüm" | "surum" => (&["--json"], &[]),
         "paketle" => (&[], &["--anahtar", "--çıktı", "--cikti"]),
         "ekle" | "kilitle" | "paketler" => (
             &["--yenile", "--çevrimdışı", "--cevrimdisi"],
@@ -389,7 +393,7 @@ fn kullanim() {
     eprintln!("  dil iz kaydet <iz> <program> [argümanlar] deterministik IO izi kaydeder");
     eprintln!("  dil iz oynat <iz> <program>              IO izini dış dünyasız oynatır");
     eprintln!("  dil morfoloji [kelime|--uyumluluk] profil, çözüm veya immutable kaydı gösterir");
-    eprintln!("  dil sürüm                  sürümü gösterir");
+    eprintln!("  dil sürüm [--json]         kaynak SHA/tarih/kanal ile sürümü gösterir");
 }
 
 fn gocur_komutu(argumanlar: &[String]) -> ExitCode {
@@ -1966,6 +1970,9 @@ fn guvenlik_basliklari(https: bool) -> String {
     let mut sonuc = String::from(
         "Cache-Control: no-store\r\nX-Content-Type-Options: nosniff\r\nX-Frame-Options: DENY\r\nReferrer-Policy: no-referrer\r\nPermissions-Policy: camera=(), microphone=(), geolocation=()\r\nContent-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'\r\n",
     );
+    sonuc.push_str("X-Zee-Build: ");
+    sonuc.push_str(dil::surum::json());
+    sonuc.push_str("\r\n");
     if https {
         sonuc.push_str("Strict-Transport-Security: max-age=31536000\r\n");
     }
@@ -3265,6 +3272,7 @@ fn calistir_guvenli_web_komutu(
     worker_kapi: Option<u16>,
     oran_ayari: Option<dil::web_guvenligi::BellekOranAyari>,
 ) -> ExitCode {
+    eprintln!("Zee worker build: {}", dil::surum::json());
     eprintln!(
         "Güvenli web profili: yalnız 127.0.0.1 üzerindeki HTTPS reverse proxy güvenilir; origin {}.",
         origin.yazimi()
@@ -4028,5 +4036,33 @@ mod web_profili_testleri {
         assert_eq!(durum, 200);
         assert_eq!(govde, "merhaba");
         sunucu.join().unwrap();
+    }
+
+    #[test]
+    fn worker_yanit_basligi_cli_ile_ayni_build_jsonunu_tasir() {
+        use std::io::Read;
+        let gecici = std::env::temp_dir().join(format!("zee-worker-build-{}", std::process::id()));
+        std::fs::create_dir_all(&gecici).unwrap();
+        let mut io = GercekIo::yeni_argumanlarla(
+            &gecici,
+            &gecici,
+            WebModu::Kapali,
+            Vec::new(),
+            dil::yetkinlik::YetkinlikPolitikasi::gelistirici(),
+            None,
+            None,
+            None,
+        );
+        let dinleyici = std::net::TcpListener::bind(("127.0.0.1", 0)).unwrap();
+        let mut istemci = std::net::TcpStream::connect(dinleyici.local_addr().unwrap()).unwrap();
+        let (sunucu, _) = dinleyici.accept().unwrap();
+        io.bekleyen_akis = Some(sunucu);
+        io.web_yanit_taslagini_yaz(WebYanitTaslagi::Govde("canlı".into()))
+            .unwrap();
+        let mut yanit = String::new();
+        istemci.read_to_string(&mut yanit).unwrap();
+        assert!(yanit.contains(&format!("X-Zee-Build: {}\r\n", dil::surum::json())));
+        assert!(yanit.ends_with("\r\n\r\ncanlı"));
+        std::fs::remove_dir_all(gecici).unwrap();
     }
 }

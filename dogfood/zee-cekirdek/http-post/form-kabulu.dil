@@ -1,0 +1,208 @@
+# K-220: altı gerçek public form için anonim, kapalı başarısızlık kabulü.
+# Gerçek kayıt/bildirim şeması ve canlı dağıtım bu fixture'da bulunmaz.
+
+turnstile birimini kullan
+
+eylem anonimFormKaydiniEkle
+    rotayi Metin olarak al
+    govdeyi Metin olarak al
+    TamSayı sonucu döndürür
+    parametreler rota, govde listesi olsun
+    "INSERT INTO zee_form_kabul (rota, govde) VALUES ($1, $2)" sorgusunu parametreler ile değiştirmeyi dene döndür
+
+işlem herkeseAcikFormuDogrula
+    formu Metin sözlüğü olarak al
+    rotayi Metin olarak al
+    bekleneni Metin olarak al
+    Metin döndürür
+    formda "website" varsa
+        tuzak formun "website" değeri olsun
+        tuzak boş değilse
+            "tuzak" döndür
+    jeton "" olsun
+    formda "cf-turnstile-response" varsa
+        jeton formun "cf-turnstile-response" değeri olsun
+    jeton boşsa
+        "gecersiz" döndür
+    ip istemci adresi olsun
+    karar jeton ve ip ve beklenen ile insan doğrula olsun
+    karar "gecti" eşit değilse
+        karar döndür
+    "gecti" döndür
+
+test "eksik jeton dış istek ve kayıt öncesinde reddedilir"
+    form boş sözlük olsun
+    formun "govde" değeri "anonim" olsun
+    karar form ve "/iletisim-gonder" ve "site.example" ile herkeseAcikFormuDogrula olsun
+    karar "gecersiz" e eşit olmalı
+
+test "bal küpü dış istek ve kayıt öncesinde reddedilir"
+    form boş sözlük olsun
+    formun "website" değeri "bot" olsun
+    formun "cf-turnstile-response" değeri "jeton" olsun
+    karar form ve "/iletisim-gonder" ve "site.example" ile herkeseAcikFormuDogrula olsun
+    karar "tuzak" e eşit olmalı
+
+8084 kapısında sunucu başlat
+
+POST "/iletisim-gonder" adresine istek geldiğinde
+    herkese açık
+    form istek olsun
+    karar form ve "/iletisim-gonder" ve "site.example" ile herkeseAcikFormuDogrula olsun
+    karar "gecti" eşitse
+        govde "" olsun
+        istekte "govde" varsa
+            govde isteğin "govde" değeri olsun
+        kayit "/iletisim-gonder" ve govde ile anonimFormKaydiniEkle olsun
+        kayit başarılıysa
+            adet kayidin değeri olsun
+            adet 1 e eşitse
+                bildirim "bildirim@example.invalid" "Anonim form kabulü" "/iletisim-gonder" ile ileti göndermeyi dene olsun
+                "/form-sonucu?durum=kaydedildi" adresine yönlendir
+            değilse
+                "Form şu anda alınamıyor." yanıtını 503 durumuyla gönder
+        değilse
+            "Form şu anda alınamıyor." yanıtını 503 durumuyla gönder
+    değilse
+        karar "tuzak" eşitse
+            "/form-sonucu?durum=kaydedildi" adresine yönlendir
+        değilse
+            karar "gecersiz" eşitse
+                "Doğrulama başarısız." yanıtını 403 durumuyla gönder
+            değilse
+                "Form şu anda alınamıyor." yanıtını 503 durumuyla gönder
+
+POST "/katalog-talep-gonder" adresine istek geldiğinde
+    herkese açık
+    form istek olsun
+    karar form ve "/katalog-talep-gonder" ve "site.example" ile herkeseAcikFormuDogrula olsun
+    karar "gecti" eşitse
+        govde "" olsun
+        istekte "govde" varsa
+            govde isteğin "govde" değeri olsun
+        kayit "/katalog-talep-gonder" ve govde ile anonimFormKaydiniEkle olsun
+        kayit başarılıysa
+            adet kayidin değeri olsun
+            adet 1 e eşitse
+                bildirim "bildirim@example.invalid" "Anonim form kabulü" "/katalog-talep-gonder" ile ileti göndermeyi dene olsun
+                "/form-sonucu?durum=kaydedildi" adresine yönlendir
+            değilse
+                "Form şu anda alınamıyor." yanıtını 503 durumuyla gönder
+        değilse
+            "Form şu anda alınamıyor." yanıtını 503 durumuyla gönder
+    değilse
+        karar "tuzak" eşitse
+            "/form-sonucu?durum=kaydedildi" adresine yönlendir
+        değilse
+            karar "gecersiz" eşitse
+                "Doğrulama başarısız." yanıtını 403 durumuyla gönder
+            değilse
+                "Form şu anda alınamıyor." yanıtını 503 durumuyla gönder
+
+POST "/teklif-talep" adresine istek geldiğinde
+    herkese açık
+    form istek olsun
+    karar form ve "/teklif-talep" ve "site.example" ile herkeseAcikFormuDogrula olsun
+    karar "gecti" eşitse
+        govde "" olsun
+        istekte "govde" varsa
+            govde isteğin "govde" değeri olsun
+        kayit "/teklif-talep" ve govde ile anonimFormKaydiniEkle olsun
+        kayit başarılıysa
+            adet kayidin değeri olsun
+            adet 1 e eşitse
+                bildirim "bildirim@example.invalid" "Anonim form kabulü" "/teklif-talep" ile ileti göndermeyi dene olsun
+                "/form-sonucu?durum=kaydedildi" adresine yönlendir
+            değilse
+                "Form şu anda alınamıyor." yanıtını 503 durumuyla gönder
+        değilse
+            "Form şu anda alınamıyor." yanıtını 503 durumuyla gönder
+    değilse
+        karar "tuzak" eşitse
+            "/form-sonucu?durum=kaydedildi" adresine yönlendir
+        değilse
+            karar "gecersiz" eşitse
+                "Doğrulama başarısız." yanıtını 403 durumuyla gönder
+            değilse
+                "Form şu anda alınamıyor." yanıtını 503 durumuyla gönder
+
+POST "/randevu-talep" adresine istek geldiğinde
+    herkese açık
+    form istek olsun
+    karar form ve "/randevu-talep" ve "site.example" ile herkeseAcikFormuDogrula olsun
+    karar "gecti" eşitse
+        govde "" olsun
+        istekte "govde" varsa
+            govde isteğin "govde" değeri olsun
+        kayit "/randevu-talep" ve govde ile anonimFormKaydiniEkle olsun
+        kayit başarılıysa
+            adet kayidin değeri olsun
+            adet 1 e eşitse
+                bildirim "bildirim@example.invalid" "Anonim form kabulü" "/randevu-talep" ile ileti göndermeyi dene olsun
+                "/form-sonucu?durum=kaydedildi" adresine yönlendir
+            değilse
+                "Form şu anda alınamıyor." yanıtını 503 durumuyla gönder
+        değilse
+            "Form şu anda alınamıyor." yanıtını 503 durumuyla gönder
+    değilse
+        karar "tuzak" eşitse
+            "/form-sonucu?durum=kaydedildi" adresine yönlendir
+        değilse
+            karar "gecersiz" eşitse
+                "Doğrulama başarısız." yanıtını 403 durumuyla gönder
+            değilse
+                "Form şu anda alınamıyor." yanıtını 503 durumuyla gönder
+
+POST "/kariyer-basvuru" adresine istek geldiğinde
+    herkese açık
+    form istek olsun
+    karar form ve "/kariyer-basvuru" ve "site.example" ile herkeseAcikFormuDogrula olsun
+    karar "gecti" eşitse
+        govde "" olsun
+        istekte "govde" varsa
+            govde isteğin "govde" değeri olsun
+        kayit "/kariyer-basvuru" ve govde ile anonimFormKaydiniEkle olsun
+        kayit başarılıysa
+            adet kayidin değeri olsun
+            adet 1 e eşitse
+                bildirim "bildirim@example.invalid" "Anonim form kabulü" "/kariyer-basvuru" ile ileti göndermeyi dene olsun
+                "/form-sonucu?durum=kaydedildi" adresine yönlendir
+            değilse
+                "Form şu anda alınamıyor." yanıtını 503 durumuyla gönder
+        değilse
+            "Form şu anda alınamıyor." yanıtını 503 durumuyla gönder
+    değilse
+        karar "tuzak" eşitse
+            "/form-sonucu?durum=kaydedildi" adresine yönlendir
+        değilse
+            karar "gecersiz" eşitse
+                "Doğrulama başarısız." yanıtını 403 durumuyla gönder
+            değilse
+                "Form şu anda alınamıyor." yanıtını 503 durumuyla gönder
+
+POST "/ebulten-kayit" adresine istek geldiğinde
+    herkese açık
+    form istek olsun
+    karar form ve "/ebulten-kayit" ve "site.example" ile herkeseAcikFormuDogrula olsun
+    karar "gecti" eşitse
+        govde "" olsun
+        istekte "govde" varsa
+            govde isteğin "govde" değeri olsun
+        kayit "/ebulten-kayit" ve govde ile anonimFormKaydiniEkle olsun
+        kayit başarılıysa
+            adet kayidin değeri olsun
+            adet 1 e eşitse
+                bildirim "bildirim@example.invalid" "Anonim form kabulü" "/ebulten-kayit" ile ileti göndermeyi dene olsun
+                "/form-sonucu?durum=kaydedildi" adresine yönlendir
+            değilse
+                "Form şu anda alınamıyor." yanıtını 503 durumuyla gönder
+        değilse
+            "Form şu anda alınamıyor." yanıtını 503 durumuyla gönder
+    değilse
+        karar "tuzak" eşitse
+            "/form-sonucu?durum=kaydedildi" adresine yönlendir
+        değilse
+            karar "gecersiz" eşitse
+                "Doğrulama başarısız." yanıtını 403 durumuyla gönder
+            değilse
+                "Form şu anda alınamıyor." yanıtını 503 durumuyla gönder

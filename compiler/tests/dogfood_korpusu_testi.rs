@@ -193,6 +193,24 @@ fn proje_kapsami(vakalar: &[Vaka]) -> BTreeSet<String> {
 fn projeyi_derle(giris: &str) -> Result<dil::agac::Program, dil::tani::Tani> {
     let giris_yolu = depo().join(giris);
     let klasor = giris_yolu.parent().expect("giriş klasörü").to_path_buf();
+    // K-227: gerçek proje bildirimi bulunan kesitlerde paketler de CLI'nin
+    // exact kaynak/kilit/köken grafiğiyle yüklenir. Eski yalnız-birim kesitlerin
+    // yükleyicisi ve aktif ürünün dış yetkinlik politikası aşağıda korunur.
+    if klasor.join("proje.dil").is_file() {
+        let grafik = dil::paket::ProjeGrafigi::cozumle(&klasor).map_err(|hata| *hata.tani)?;
+        grafik.kilidi_denetle().map_err(|hata| *hata.tani)?;
+        assert_eq!(
+            grafik.ana_giris_yolu(),
+            giris_yolu.canonicalize().expect("corpus giriş yolu"),
+            "proje vakası exact bildirimin girişini sınamalı"
+        );
+        let ana = grafik
+            .ana_giris()
+            .map_err(|hata| dil::tani::Tani::yeni("P006", hata, 1, 1, 1))?;
+        return dil::kaynagi_derle_kokenlerle(&ana.kaynak, Some(&ana.koken), &mut |istek| {
+            grafik.yukle(istek)
+        });
+    }
     let kaynak = oku(giris);
     let mut yukleyici = |istek: dil::BirimIstegi<'_>| -> Result<dil::YuklenenBirim, String> {
         let yol = klasor.join(format!("{}.dil", istek.ad));

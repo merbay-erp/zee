@@ -1,0 +1,5 @@
+# zee bağımlılık kilidi — `dil kilitle` üretir; elle düzenleme.
+kilit_sürümü 3
+ana "modulkabulu" "0.1.0" "zee-tr-1"
+paket "katalog" "1.0.0" "zee-tr-1" "../katalog" "sha256:6c4af11e9a0297943a4138f0b8734430f93c41fa1e0ffa6c97a42a44ea1dc41d"
+bağ "modulkabulu" "katalog" "katalog"

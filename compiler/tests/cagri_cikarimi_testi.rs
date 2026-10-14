@@ -9,6 +9,34 @@ işlem değeri geçir
 ";
 
 #[test]
+fn cikarimli_cagrida_eksik_ve_fazla_arguman_t015tir() {
+    let iki_parametre =
+        "işlem ilk değeri geçir\n    birinciyi al\n    ikinciyi al\n    birinciyi döndür\n";
+    let olumlu = format!("{iki_parametre}\nsonuç 1 ve 2 ile ilk değeri geçir olsun\nsonuç yaz\n");
+    assert_eq!(kaynagi_calistir(&olumlu).unwrap(), ["1"]);
+    let tek_olumlu = format!("{KIMLIK_ISLEMI}\nsonuç 1 için değeri geçir olsun\nsonuç yaz\n");
+    assert_eq!(kaynagi_calistir(&tek_olumlu).unwrap(), ["1"]);
+
+    for (kaynak, satir, mesaj) in [
+        (
+            format!("{iki_parametre}\nsonuç 1 için ilk değeri geçir olsun\n"),
+            6,
+            "\"ilk değeri geçir\" 2 parametre bekler, 1 argüman verildi.",
+        ),
+        (
+            format!("{KIMLIK_ISLEMI}\nsonuç 1 ve 2 ile değeri geçir olsun\n"),
+            5,
+            "\"değeri geçir\" 1 parametre bekler, 2 argüman verildi.",
+        ),
+    ] {
+        let hata = kaynagi_derle(&kaynak).expect_err("yanlış argüman adedi reddedilmeli");
+        assert_eq!(hata.kod, "T015");
+        assert_eq!((hata.satir, hata.sutun, hata.uzunluk), (satir, 7, 23));
+        assert_eq!(hata.mesaj, mesaj);
+    }
+}
+
+#[test]
 fn butun_cagri_kisitlari_ilk_sonuc_turlenmeden_once_birlestirilir() {
     let dar_once = format!(
         "{}\ndar 1 için değeri geçir olsun\ngeniş 1,5 için değeri geçir olsun\ndarı 0,5 artır\ndar yaz\n",

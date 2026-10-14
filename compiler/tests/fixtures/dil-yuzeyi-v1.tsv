@@ -22,6 +22,7 @@ api	rust	aktif	0.8.0-dev	compiler/src/api.rs	pub mod v1 {
 api	web.istemci_adresi	aktif	0.8.0-dev	compiler/src/intrinsic.rs	pub const ISTEMCI_ADRESI: &str = "web.istemci_adresi";
 bicim	proje.kilit	aktif	0.8.0-dev	compiler/src/paket.rs	kilit_sürümü 3
 bicim	yayin-zarfi	aktif	0.8.0-dev	compiler/src/artefakt_dogrulama.rs	const IMZA_ALANI: &[u8] = b"zee-yayin-v1\0";
+bicim	zee-build-v1	aktif	0.8.0-dev	compiler/src/surum.rs	zee-build-v1
 bicim	zep	aktif	0.8.0-dev	compiler/src/artefakt_dogrulama.rs	const PAKET_SIHRI: &[u8; 8] = b"ZEEZEP\0\x01";
 kalip	DELETE	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	GET	aktif	0.8.0-dev	compiler/src/lsp.rs	-

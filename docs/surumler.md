@@ -1604,3 +1604,16 @@ CLI seçenek bölgesindeki bilinmeyen `--` artık dosya okunamadı hatasına
 dönüşmez; seçenek ve etkin sürümle exit 2 döner. `çalıştır` kaynak yolundan
 sonraki program argümanları korunur. Eski ikili yeni runtime ayarlarını
 kendiliğinden desteklemez; rollback ayar uyumu ayrı kalır.
+
+### K-222–K-225 — Ürünleşme kanıtları ve pilot sınırı
+
+Hermetik gerçek PostgreSQL TLS/NULL dedicated kapısı; anonim mevcut dilde
+parola rehash/form helper kabulü; beş doğrudan spec testi ve sınırlı pilot
+destek politikası eklendi. Lisans, insan/temiz fiziksel/minOS ve destek
+teyidi açık; yeni compiler özelliği veya canlı migration iddia edilmez.
+
+### K-226 — Exact build kimliği
+
+`dil sürüm --json` source SHA/tarih/kanal/dirty verir; metin sürümü bunları
+gösterir. LSP zeeBuild ve worker X-Zee-Build/startup aynı kayıttır. Tarih
+source commit UTC günüdür; yeniden derleme duvar saatini ikiliye gömmez.

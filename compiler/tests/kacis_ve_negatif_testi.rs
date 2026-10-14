@@ -3,6 +3,27 @@
 use dil::kaynagi_calistir;
 
 #[test]
+fn acik_blok_hizasina_inmeyen_girinti_s005_kesin_span_verir() {
+    let baslangic = "doğru ise\n    doğru ise\n        \"iç\" yaz\n";
+    let hizali = format!("{baslangic}    \"kardeş\" yaz\n\"dış\" yaz\n");
+    assert_eq!(
+        kaynagi_calistir(&hizali).expect("0/4/8 açık blok hizaları geçerli"),
+        ["iç", "kardeş", "dış"]
+    );
+    for girinti in [2, 6] {
+        let kaynak = format!("{baslangic}{}\"kayık\" yaz\n", " ".repeat(girinti));
+        let hata = kaynagi_calistir(&kaynak).expect_err("ara hiza S005 olmalı");
+        assert_eq!(hata.kod, "S005");
+        assert_eq!((hata.satir, hata.sutun, hata.uzunluk), (4, 1, girinti));
+        assert_eq!(
+            hata.mesaj,
+            "Girinti hizası önceki bloklardan hiçbiriyle uyuşmuyor."
+        );
+        assert!(hata.oneri.as_deref().unwrap().contains("4 boşluk"));
+    }
+}
+
+#[test]
 fn tirnak_kacisi() {
     let kaynak = "mesaj \"O bana \\\"zee\\\" dedi\" olsun\nmesaj yaz\n";
     let cikti = kaynagi_calistir(kaynak).expect("kaçış çalışmalı");

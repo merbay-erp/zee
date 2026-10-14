@@ -1,0 +1,29 @@
+# K-223: ürün talebi B7; eski parola özetini ilk girişte yarışa karşı yükseltir.
+# Başarı değeri oturum bağlama eylemine beklenen yeni özet olarak aktarılır.
+
+eylem girişte parolayı yükselt
+    anahtarı Metin olarak al
+    parolayı Metin olarak al
+    eskiyi Metin olarak al
+    Metin sonucu döndürür
+    parola eski ile doğrulanıyorsa
+        legacy yanlış olsun
+        eski "$2a$" ile başlıyorsa
+            legacy doğru olsun
+        eski "$2b$" ile başlıyorsa
+            legacy doğru olsun
+        eski "$2y$" ile başlıyorsa
+            legacy doğru olsun
+        legacy ise
+            yeni parolanın argon2 özeti olsun
+            parametreler anahtar, eski, yeni listesi olsun
+            değişim "UPDATE zee_rehash_kullanicilar SET parola_ozeti = $3 WHERE kimlik = $1 AND parola_ozeti = $2" sorgusunu parametreler ile değiştirmeyi dene olsun
+            değişim başarılıysa
+                adet değişimin değeri olsun
+                adet 1 e eşit değilse
+                    "parola-ozeti-degisti" hatasını döndür
+                yeni döndür
+            değilse
+                "parola-yukseltme-depo-hatasi" hatasını döndür
+        eski döndür
+    "parola-gecersiz" hatasını döndür
