@@ -1593,3 +1593,5 @@ aynı dilimde; tam faz/Gitsrv sonucu [kabulde](incelemeler/k220/README.md) kapan
 Sunucu/ürün rotası ve otomatik kayıt/e-posta entegrasyonu ürün tarafındadır.
 
 K-220 / K-174: exact gerçek ürün talebiyle üç contextual kalıp eklendi; syntax gözlem penceresi 14.10.2026–11.11.2026 olarak bilinçli yeniden başladı. Core freeze ve insan/RC kapıları sürer; V1 tamamlandı olarak gösterilmez.
+
+K-220 CI kabul düzeltmesi: sentetik localhost PKCS12 kimliği exact hash/kaynak doğrulamasıyla sır taramasında tanınır; başka anahtarlar reddedilir. Dil/HTTP çalışma davranışı değişmez, Gitsrv tekrar kabulü beklenir.

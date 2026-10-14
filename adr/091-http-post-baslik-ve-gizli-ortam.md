@@ -86,3 +86,7 @@ incelendi; bu iş K-219 soak yükünü değiştirmez. Kabul [K-220](../docs/ince
 K-220 / K-174: exact gerçek ürün talebiyle üç contextual kalıp eklendi; syntax gözlem penceresi 14.10.2026–11.11.2026 olarak bilinçli yeniden başladı. Core freeze ve insan/RC kapıları sürer; V1 tamamlandı olarak gösterilmez.
 
 HTTP parser ve proje bildirim handler’ları ayrı alt modüldedir; politika/iz trait yöntemleri mevcut kimlik/iletişim örüntüsü gibi alan makrosunda toplanır. Yeni modüller bilinçli satır bütçesiyle mimari kapıya kaydedildi; kök handler büyümesi veya temel→adaptör ters kenarı yoktur.
+
+## Gitsrv sentetik kimlik taraması (GB-054)
+
+Gitsrv #28 Linux kalite/faz kapısını geçti, fakat directory sır taraması test server.p12 kimliğini pkcs12-file olarak reddetti. Kimlik yeni üretilmiş ve test parolası herkese açıktır. [Exact kayıt](../docs/sentetik-tls-fixture-v1.tsv) yalnız tek sabit fixture yolu/kuralı, immutable kaynak commit’i ve SHA-256 taşır. Tarayıcı öncesi immutable Git blob’u, kaynak dosyası ve kopya eş hash olmalıdır; başka PKCS12 veya değişmiş içerik istisna alamaz. Default kurallar, redact, ignore-gitleaks-allow ve tarihçe taraması korunur. Olumlu/olumsuz Python testleri Gitleaks kurulumu sonrasında koşar. Native TLS trust ve compiler kaynakları değişmedi.

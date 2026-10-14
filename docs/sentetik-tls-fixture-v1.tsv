@@ -1,0 +1,3 @@
+# zee-sentetik-tls-fixture-1
+# dosya\tkural\tsha256\tkaynak_commit\tkanit\tgerekce
+compiler/tests/fixtures/http-post-tls/server.p12	pkcs12-file	a475536a46613b88f12cd2e89f6a8a32f441794d92e52c5e0c4341e112cffb9e	488dc7dede31df2bddcec11cfbbc28246e076398	compiler/tests/fixtures/http-post-tls/README.md	K-220: yeni üretilen localhost test kimliği ve herkesçe bilinen zee-fixture parolasıdır; gerçek sunucu anahtarı içermez, CA yalnız cfg(test) Agent’ında güvenilir. Yalnız exact yol/kural/immutable blob ve iki disk SHA-256 eşitliğinde directory fingerprint’i verilir.

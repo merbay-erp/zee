@@ -260,3 +260,7 @@ performans gözlemi aynı kaynakta çalışır; raporlar 90 günlük özel artef
 olur. Uzak başarısızlık veya başlamamış iş geçiş sayılmaz. Windows runtime
 ve release candidate fuzz/Miri/kurulum kanıtları bu Linux CI'ın yerine
 geçmez; ilgili sürüm runbook kapıları ayrıca korunur. [ADR-088](../adr/088-git2-gitsrv-kosulari.md).
+
+## K-220 — Exact sentetik TLS test kimliği
+
+[Fixture kaydı](sentetik-tls-fixture-v1.tsv) ve ADR-091/GB-054: directory taramasındaki pkcs12-file eşleşmesi yalnız bilinen localhost test kimliğidir. scripts/sir-yanlis-pozitif-denetle.py tek sabit dosya/kuralı, immutable Git blob’u ve kaynak/kopya SHA-256 eşitliğini doğrular; yalnız o geçici kopyanın exact fingerprint’i eklenir. Geniş yol, kural kapatma veya başka key dosyası istisnası yoktur. Yedi olumsuz/olumlu dedektör testi kurulu Gitleaks ile çalışır; başka PKCS12 ve API anahtarı hâlâ reddedilir. Action pinleri, Rust/Cargo graph’ı ve native TLS doğrulaması değişmez.
