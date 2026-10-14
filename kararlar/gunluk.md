@@ -4488,3 +4488,7 @@ Dispatcher/cron/SMTP non-idempotent etkiler ve gerçek katalog adoptionı açık
 positive connection+server gözlemi sonrasında native ret, dedicated8/strict14.
 Yeni compiler özelliği/tanı yoktur; legacy cipher policy test contextiyle
 sınırlıdır. Provider/full matrix/Windows/uzakCI ve final exactclean kabul ayrı.
+
+## K-263 — Sahipli supervisor EPERM geçişi
+
+K-263/ADR122/GB077 dar host correctness adayıdır: gerçek sahipli worker EPERM/WNOWAITNone geçişi artık tek mutlakgrace deadline içinde heldleader üzerinde gözlenir. Persistent ambiguity/returncode-set/ECHILD failclosed, canlı descendant temizliği ve foreigngroup sınırı korunur. Ayrı8 lifecycle testi +Cargo wrapper1 mevcutworker25 sayısını değiştirmez. Compiler source/API/grammar, performans/soak ve K262/featurewave kapsamı değişmez. Sourcecommit ve finalfullphase gate root entegrasyonunda AÇIKTIR; tamamlanmış release/adoption iddiası yoktur.

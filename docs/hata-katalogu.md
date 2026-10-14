@@ -233,3 +233,5 @@ ayar geçersiz veya gönderim sonucu belirsiz; ayrıntılar gizlendi; otomatik t
 AUTH PLAIN echo, URL/credential ve policy ayrıntısı kullanıcı hata metnine girmez.
 Bu maske genel sır taint sistemi veya SMTP teslim onayı değildir.
 [Kanıt](../adr/099-smtp-hata-maskelemesi.md).
+
+K-263 host supervisor mevcut ownership/cleanup retlerini korur: geçici owned EPERM/WNOWAITNone aynı grace budget içinde yeniden gözlenir; kalıcı belirsizlik ve kaybolmuş child authority failclosed kalır. Compiler tanı kodu, özel argv/customer mesajı veya yeni hostret adı eklenmez. [ADR-122](../adr/122-supervisor-sahipli-eperm-gecisi.md).

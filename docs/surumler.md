@@ -1801,3 +1801,7 @@ K-256 verifiedTLS1.1 capable-positive ret kanıtı artık çalışma ağacı
 adayı değil, bu exact kaynakta yerel kabuldür. Metrics/socket/dispatcher,
 gerçek ürün, insan/platform ve RC/release kapıları açık kalır. Kaynak
 kimliği daha sonraki belge veya özellik commit'lerine taşınmaz.
+
+## K-263 — Sahipli supervisor EPERM geçişi
+
+K-263/ADR122/GB077 dar host correctness adayıdır: gerçek sahipli worker EPERM/WNOWAITNone geçişi artık tek mutlakgrace deadline içinde heldleader üzerinde gözlenir. Persistent ambiguity/returncode-set/ECHILD failclosed, canlı descendant temizliği ve foreigngroup sınırı korunur. Ayrı8 lifecycle testi +Cargo wrapper1 mevcutworker25 sayısını değiştirmez. Compiler source/API/grammar, performans/soak ve K262/featurewave kapsamı değişmez. Sourcecommit ve finalfullphase gate root entegrasyonunda AÇIKTIR; tamamlanmış release/adoption iddiası yoktur.

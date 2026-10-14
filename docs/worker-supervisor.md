@@ -149,3 +149,9 @@ mevcut read10/handler30/write10 bütçelerine fırsat verir. Süre sonunda KILL
 ve sahipli cleanup korunur. Kernel/DB IO veya bütün backlog için hard
 wall-time/drain garantisi değildir. Windows/non-Unix, P14 socket devri ve
 zero downtime açık; [ADR-113](../adr/113-native-web-sigterm-drain.md).
+
+## K-263 sahipli cleanup geçişi
+
+Dar host correctness adayı [ADR-122](../adr/122-supervisor-sahipli-eperm-gecisi.md), gerçek Darwin killpg0 EPERM/WNOWAITNone geçişini tek stop_grace budget içinde aynı heldleader üzerinde yeniden gözler. Deadline ilkprobe öncesinde başlar ve resetlenmez. Kalıcı ambiguouspermission ownership retlidir; Popen.returncode-set veya ECHILD signal öncesi reddedilir. Leader terminal olsa da group_alive True ise descendant grubu temizlenmeden wait/reap yapılmaz. TERM/KILL permissionretry aynı yetkidedir; SIGKILL grace sonunda ve başarılı dispatch sonrası mevcut2s wait korunur. Genel Unix/setuid containment veya foreignPID adoption sözü yoktur.
+
+Ayrı8 Python lifecycle vakası ve Cargo wrapper1 mevcut25 nativeworker kampanyasına eklenir; kampanya adı/sayısı değişmez. Kaynak/finalfullphase kabulü root entegrasyonuna bağlıdır.
