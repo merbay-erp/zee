@@ -7,6 +7,9 @@ use dil::yorumlayici::{calistir_baglanmis_io_kodla, IzKaydedenIo, IzYenidenOynat
 use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
 
+#[path = "semantic_regresyon/smtp.rs"]
+mod smtp_fixture;
+
 const SEMA: &str = "# zee-semantic-regresyon-2";
 const FAZLAR: &[&str] = &[
     "parser",
@@ -28,6 +31,7 @@ const KIPLER: &[&str] = &[
     "trace",
     "capability",
     "web",
+    "smtp",
     "cli",
 ];
 
@@ -188,7 +192,7 @@ fn faz_kipi_kabul_eder(faz: &str, kip: &str) -> bool {
         "hir" => matches!(kip, "hir" | "definition" | "run"),
         "runtime" => matches!(kip, "run" | "trace"),
         "concurrency" => kip == "run",
-        "security" => matches!(kip, "capability" | "web"),
+        "security" => matches!(kip, "capability" | "web" | "smtp"),
         "cli" => kip == "cli",
         _ => false,
     }
@@ -315,6 +319,17 @@ fn vakayi_calistir(vaka: &Vaka, kaynak: &str) -> Gozlem {
                     cikti: io.cikti,
                 },
                 Err(tani) => hata_gozle(tani, io.cikti),
+            }
+        }
+        "smtp" => {
+            let (sonuc, cikti) = smtp_fixture::calistir(&program, kaynak);
+            match sonuc {
+                Ok(cikis) => Gozlem {
+                    tani: None,
+                    cikis,
+                    cikti,
+                },
+                Err(tani) => hata_gozle(tani, cikti),
             }
         }
         "web" => {

@@ -135,3 +135,17 @@ YASAKTIR; serialized sır/ek olayı eklenmez. WASM/playground unsupported
 başarısız Sonuç TANIMLIDIR. Canlı SMTP/M365/Gmail, özel ürün rota entegrasyonu
 ve staging kabulü ile P09 queue/outbox/retry/cron AÇIKTIR. Eski düz metin
 encoder/transport/deadline/failure davranışı K-232 kapsamında değişmez.
+
+## SMTP hata sonucu (TANIMLI — K-236)
+
+Eski ortam ve explicit bağlantı e-posta kalıpları başarısızlıkta C029 Hata
+Sonucu döndürmek ZORUNDADIR. Native SMTP veya host adaptöründen gelen ham
+sunucu yanıtı, URL, credential ve policy ayrıntısı bu sonuçta YASAKTIR.
+AUTH PLAIN payload'ının ham ya da geri çözülebilir Base64 biçimi kullanıcı
+hata metnine taşınamaz; public native sender da aynı sabit maskeyi döndürür.
+
+K-236 yalnız dışarı dönen hata ayrıntısını kaldırır; mevcut plain encoder,
+SMTP tel baytları, AUTH/TLS/deadline ve failure kontrol akışı değişmez.
+Otomatik tekrar YASAKTIR; DATA yanıtı kaybolan başarısız Sonuç teslim
+edilmedi kanıtı değildir. Genel sır taint sistemi ve SMTP yanıt okuma
+bütçesi bu düzeltmenin kapsamı değildir; yanıt bütçesi K-237'ye aittir.

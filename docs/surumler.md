@@ -1651,3 +1651,17 @@ readonly ek, Reply-To ve HTML/düz alternative sağlar. Dosya-okuma ve ağ
 izinleri gerekir; IO izi ve WASM bu çağrıda başarı üretmez. Sır içermeyen
 C029 ve DATA yanıt kaybında belirsiz teslim; otomatik retry yok. Queue/live
 provider/ürün kabulü açık. Eski plain tel biçimi K-232'de korunur.
+
+K-233 [pilot compiler seçici](derleyici-secici.md) exact yerel signed paketi
+proje piniyle seçer; kurulum/indirme/apt/container/global shim değildir.
+Config projede compiler capability guard ve fail-closed kontroller vardır.
+
+### K-236 — SMTP hata ayrıntısında sır maskeleme
+
+Eski plain ortam/explicit SMTP kalıplarının C029 hata mesajı artık sunucu
+AUTH echo’sunu, URL/credential veya host ayrıntısını taşımaz; sabit güvenli
+mesaj döner. Hata mesajını ayrıştıran uygulamalar C029 kodunu ve Sonuç
+başarısını kullanmalıdır. İleti tel baytları, TLS/deadline ve retry yokluğu
+korunur; başarısızlık teslim edilmedi garantisi değildir.
+[ADR-099](../adr/099-smtp-hata-maskelemesi.md), gerçek native/CLI AUTH535
+kabulü ve exact `smtp` regression aynı güvenlik dilimindedir.

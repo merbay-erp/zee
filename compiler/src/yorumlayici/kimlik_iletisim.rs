@@ -43,7 +43,9 @@ pub(super) fn intrinsic_degerlendir(
                 &metne_sinirli(konu, satir)?,
                 &metne_sinirli(govde, satir)?,
             );
-            Ok(eposta_sonucu(sonuc))
+            Ok(eposta_sonucu(
+                sonuc.map_err(|_| crate::eposta::GONDERIM_HATASI.into()),
+            ))
         }
         (EPOSTA_GONDER_BAGLANTILI, [alici, konu, govde, baglanti]) => {
             let sonuc = io.eposta_gonder(
@@ -52,7 +54,9 @@ pub(super) fn intrinsic_degerlendir(
                 &metne_sinirli(konu, satir)?,
                 &metne_sinirli(govde, satir)?,
             );
-            Ok(eposta_sonucu(sonuc))
+            Ok(eposta_sonucu(
+                sonuc.map_err(|_| crate::eposta::GONDERIM_HATASI.into()),
+            ))
         }
         (EPOSTA_MIME_GONDER, [alici, konu, govde, html, yanit, Deger::Liste(ekler), baglanti]) => {
             let ekler: Vec<String> = ekler

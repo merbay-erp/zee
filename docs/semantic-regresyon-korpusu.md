@@ -66,6 +66,7 @@ hatası kaynak tanısı üretmediği için tanı/span alanı `-` kalır.
 | `hir` | Compile sonrası açık bağlı-HIR invariant denetimi |
 | `run` | Invariantı geçmiş typed HIR ile runtime; stdout ve program exit'i korunur |
 | `capability` | Compile sonrası kapalı yetkinlik politikası |
+| `smtp` | Security fazında typed runtime → gerçek native SMTP; yalnız sabit loopback fixture |
 
 ## Yeni bug düzeltme protokolü
 
@@ -134,3 +135,21 @@ zincirini aynı stdout/exit ve tam tüketimle doğrular.
 `definition` HIR kipi, kullanıcı sembollerinin definition kaydını
 her okuma/yazım SymbolId için ayrıca ister; görünüm LHS eksikliği yalnız
 ifade invariantıyla yakalanamaz. K-213 vaka kimlikleri silinmez.
+
+## SMTP security kipi (K-236/K-237)
+
+`smtp`, `security` fazına aittir. Kaynakta tam bir `# smtp-vaka: auth-echo`
+veya `# smtp-vaka: yanit-siniri` yorum satırı bulunur; duplicate/unknown
+başlık reddedilir. [Hermetik adaptör](../compiler/tests/semantic_regresyon/smtp.rs)
+serbest loopback portunda tek gerçek `eposta::gonder` çağrısı yapar; sabit
+sentetik credential kullanır, dış SMTP URL’sini/ortamı çalıştırmaz. Manifest
+beklentisi stdout ve exit’tir; yakalanan C029 Sonuç değeri kaynak tanısı
+olmadığı için tanı/span `-` olabilir.
+
+K-236 [AUTH echo reproducer’ı](../regression/security/smtp-auth-echo-sir.dil)
+EHLO sonrası aldığı AUTH PLAIN payload’ını 535 ile echo eden gerçek peer’i
+kullanır; sonraki AUTH/mail/data yokluğu ve sabit C029 maskesi denetlenir.
+`yanit-siniri` fixture’ı LF/EOF vermeden sınır üstü yanıt taşır ve çağrı
+sonucuna kadar peer’i açık tutar; bu ayrı K-237 bounded-response kanıtıdır.
+ToplayanIo yalnız diğer trait yöntemlerini taşır, SMTP başarısızlığı gerçek
+native socket çağrısından gelir. Bu kip canlı sağlayıcı veya ürün kabulü değildir.

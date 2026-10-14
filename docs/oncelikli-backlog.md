@@ -1445,3 +1445,19 @@ adaptörüyle karşılanır. [ADR-096](../adr/096-ekli-eposta-ve-mime.md),
 [RFC-0034](../rfcs/0034-ekli-eposta.md), [anonim ürün](../dogfood/zee-cekirdek/mime/README.md).
 12 integration/16 native e-posta kabulü; queue/3retry/live M365/Gmail/ürün
 katalog kabulü ve physical Windows açık. GB-058 aday FIFO riski kapandı.
+
+## K-233 — Yerel exact compiler seçimi
+
+[İmzalı katalog ve proje pini](derleyici-secici.md) pilot araçtır; 25 offline
+kabul/ret gerçek Ed25519 doğrulayıcıyla sınanır. İki sentetik release ve
+gerçek debug kopyası production iki-klon/release kanıtı değildir. Full
+rustup/PATH shim/proje.kilit birleşimi, gerçek publisher ve Windows açık.
+
+## K-236 — SMTP AUTH hata sızıntısı
+
+GB-060 yüksek bulgusu native AUTH535 echo ve gerçek CLI kabulüyle kapandı.
+[ADR-099](../adr/099-smtp-hata-maskelemesi.md): eski plain kalıpların C029
+hata ayrıntısı sabit maskeye eşlenir; wire/deadline/failure akışı ve retry
+olmaması korunur. Üç hedefli test ve [gerçek SMTP reproducer](../regression/security/smtp-auth-echo-sir.dil)
+aynı kaynağı sınar. Exact fixed_by/compiler/freeze beyanı kaynak commit’ini
+izleyen provenance kaydına bağlanır; inherited yanıt DoS K-237 ayrı iştir.
