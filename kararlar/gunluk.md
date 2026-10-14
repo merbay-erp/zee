@@ -4349,3 +4349,25 @@ kayıtlarına ayrı yazılır; tam audit veya release tamamlanmış sayılmaz.
 - 2026-10-14 K-240: MIME sonrası katman dosya bütçileri GET ve replay
   uygulamalarını mevcut handler sahiplerine taşıyarak korunur. Semantic
   davranış ve state aynı; source maintenance/compiler/freeze kaydı exact.
+
+## K-242 / K-243 — Kesinti ve kaynak arşivi devam dalgası
+
+14.10.2026: K-242 gerçek COMMIT cevabı fault kanıtını yedi TLS vaka yanında
+dört owned loopback kontrol/fault ile genişletir (ADR-103/GB-065). PostgreSQL
+durable commit sonrası hata sınırı incelendi; üretim C027 politikası ve
+compiler kaynakları korunur. Modelde backend-known Red, native SQLSTATE
+çıkarımı değildir. Strict skor kartı ve bounded proxy normal Cargo kapısına
+katılır; native sonuç exact devam raporunda ayrıca tutulur.
+
+K-243 controlled concurrent HEAD ile eski manifest/yeni ZIP exit0 arızasını,
+../symlink çıktı kaçışını ve quoted UTF8 listeyi doğruladı. Tek SHA, NUL,
+canonical çıktı ve yayın öncesi eşlik gerçek Git testleriyle kapandı
+(ADR-104/GB-066). Tool/test değişikliği grammar, public API, production
+bağımlılığı, kalıcı compiler state veya benchmark iş yükü değiştirmez.
+
+14.10.2026 K-244/GB-067: resmî v7.5.11 macOS arm64 portable runtime
+exact release/checksum doğrulaması sonrası yalnız geçici alanda yürütüldü.
+Eski wildcard kaldırıcı kurulu2/yabancı0 sonucunu verdi; LiteralPath
+düzeltmesi altı pozitif/negatif fixture'la kurulu0/yabancı2 ve fail-closed
+retleri doğruladı. Windows Cargo ve tatbikat native fixture'a bağlıdır;
+PS5.1 source uyumu gerçek PS5.1 veya fiziksel Windows kanıtı değildir.

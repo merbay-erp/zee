@@ -66,3 +66,18 @@ ve release runbook tatbikatı istedi.
 - VS Code eklentisi ve `dillsp` PATH bağı `editors/README.md`de kalır;
   betik yalnız ikilileri kurar. Otomatik güncelleme ve imza doğrulaması
   (`surum_artefakti dogrula`) kullanıcı adımı olarak runbook'tadır.
+
+## K-244 — Literal kaldırma yolları
+
+14 Ekim 2026 kaynak incelemesinde kaldırıcı Path parametrelerinin joker
+karakter yorumlaması, kurucunun LiteralPath ile kaydettiği receipt'e
+uymayan aday olarak bulundu (GB-067). `bin[1]` ve aynı hashli yabancı
+`bin1` ayrımı için gerçek PowerShell izole senaryosu hazırlanır. Kaldırıcı
+manifest, dosya varlığı, hash okuma ve silme işlemlerinde LiteralPath
+kullanır; mevcut manifest/checksum/Zorla sözleşmesi korunur.
+
+Mevcut kurulum Cargo vakası Windows'ta gerçek native PowerShell fixture'ını
+yürütür; tatbikat workflow'u aynı fixture'a bağlıdır. macOS'taki resmî
+portable PowerShell ile önce/sonra kanıtı, fiziksel Windows veya minimum OS
+kabulü değildir. Temiz exact kaynak sonuçları [devam raporunda](../docs/urunlesme-devam-20261014.md)
+ayrı kaydedilir; yerel altı senaryo geçti, temiz exact commit tekrarı henüz bekleniyor.

@@ -1,5 +1,10 @@
 # 14 Ekim 2026 onaylı ürünleşme uygulama kaydı
 
+[K-242/K-243 devam raporu](urunlesme-devam-20261014.md), yeni yerel
+COMMIT fault kanıtını ve kaynak ZIP düzeltmesini ayrı exact kaynakta izler.
+K-244 literal kaldırma düzeltmesi yerel PowerShell kabulündedir; fiziksel
+Windows ve yeni uzak CI kanıtı ayrı açıktır.
+
 Kullanıcı A1–A6, B1–B9, C1–C6, D1–D4, E ve ZEE-001–018'in birlikte
 değerlendirildiği planı 14 Ekim 2026'da onayladı. Exact ürün talebi
 `cd5d12f0008620819e6167af5146e83503fd2b38`, başlangıç compiler ağacı

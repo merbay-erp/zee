@@ -1517,3 +1517,33 @@ faz 887/893 (6 dedicated atlama), ayrı native 5/1/7, sürekli güvenlik ve
 istisnasız yeni sır taraması; kanonik a/b/çıktı exact SHA, `dirty: false`
 ve dil/LSP eş hash. [Son teslim](urunlesme-sonucu-20261014.md) bu kapıları
 bağlar. Yeni yayın, tüm platform veya tam ürün kabulü çıkarılmaz.
+
+## K-242 — Native COMMIT yanıtı ve devam etmeme kanıtı
+
+Mevcut C027 politikası korunur; SQLSTATE veya ErrorResponse üzerinden genel
+rollback allowlist açılmaz. [ADR-103](../adr/103-native-commit-belirsizligi-kaniti.md)/GB-065:
+yedi TLS vaka yanında owned loopback dört kontrol/fault vakası, bir COMMIT
+ve SQL attempt sayacı, SMTP devamı ve bağımsız durable sonuç birlikte
+denetlenir. Normal Cargo strict skor kartı ve gerçek fake-wire negatiflerini
+atlamasız çalıştırır. Native exact kaynak kapanışı [devam raporunda](urunlesme-devam-20261014.md)
+ayrıca kaydedilir; canlı ürün/uzak CI/RC sınırı açıktır. Compiler değişikliği yoktur.
+
+## K-243 — Kaynak ZIP snapshot ve çıktı sınırı
+
+**KAPALI — yerel araç kabulü.** [ADR-104](../adr/104-exact-kaynak-arsivi-siniri.md)/GB-066:
+başlangıç SHA tek kez sabitlenir; canonical depo çıktı sınırı, UTF8 NUL
+liste, staging ve yayın öncesi hash/comment/manifest eşliği normal Cargo
+içindeki gerçek izole Git olumluları/olumsuzlarıyla sınanır. Python3 stdlib
+yerel araç gereğidir. İki sidecar atomikliği veya uzak CI kabulü çıkarılmaz.
+
+## K-244 — Windows kaldırmada literal yol
+
+**KAPALI — yerel PowerShell araç kabulü.** GB-067: eski kaldırıcı, gerçek
+Mac PowerShell senaryosunda `bin[1]` yerine aynı hashli yabancı `bin1`
+dosyalarını sildi. Bütün yol işlemleri LiteralPath yapıldı; altı izole
+pozitif/negatif kurulum-kaldırma senaryosu geçti. Mevcut Cargo vakasının
+Windows dalı ve tatbikat workflow'u native fixture'ı zorunlu yürütür.
+Resmî geçici 7.5.11 macOS runtime kanıtı Windows/minOS veya yeni uzak CI
+kabulü değildir; source exact son kabul [devam raporundadır](urunlesme-devam-20261014.md).
+[ADR-071](../adr/071-kurulum-kaldirma-sozlesmesi.md) receipt/checksum/Zorla
+sözleşmesi korunur; yeni dil özelliği veya sistem kurulumu yoktur.
