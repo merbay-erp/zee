@@ -1,0 +1,32 @@
+{
+  "schema": "zee-local-source-archive-1",
+  "generated_utc": "2026-10-14T14:22:55.748866+00:00",
+  "source_sha": "a2b8557ba04897c60802d04b911a7eae6e91ae43",
+  "source_tree": "9be7d150a33be8a3e90467765f14f0d44bc29473",
+  "root_head_at_capture": "a2b8557ba04897c60802d04b911a7eae6e91ae43",
+  "root_clean_at_capture": true,
+  "origin": "local git archive plus only KAYNAK-SHA256.txt metadata",
+  "prefix": "zee/",
+  "source_file_count": 1124,
+  "source_file_hashes_equal_to_git_archive": true,
+  "zip_comment": "a2b8557ba04897c60802d04b911a7eae6e91ae43",
+  "manifest_sha256": "ca327baba5dea18e9df3155aae595159f4f21d8ac0f5d3e834d2a884f354c67f",
+  "zip_sha256": "fc253f9e2695a112ce09d0fe0236484fdb6968d5193632487059fff350b317b2",
+  "zip_bytes": 4461581,
+  "archive": "zee-source-a2b8557.zip",
+  "metadata_extra_files": [
+    "KAYNAK-SHA256.txt"
+  ],
+  "verification": "Existing archive_hashes and zip_hashes pure functions; no ci_records/main invocation",
+  "helper_source_sha256": "d9d7ef6031da841d0fa87515de7ceb90cda14f3d253b691041fba35c149a8058",
+  "ci_record_supplied": false,
+  "full_source_ci_helper_acceptance": false,
+  "remote_ci": null,
+  "remote_ci_claim": false,
+  "release_artifact": false,
+  "trusted_publisher_signature": false,
+  "network_or_artifact_download": false,
+  "root_mutation": false,
+  "publication_or_deployment": false,
+  "private_url_values_copied_to_report": false
+}

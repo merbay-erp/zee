@@ -1,0 +1,139 @@
+{
+  "schema": "zee-build-proof-summary-1",
+  "source_sha": "a2b8557ba04897c60802d04b911a7eae6e91ae43",
+  "parameters": {
+    "cargoArgs": "cargo build --locked --release --bin dil --bin dillsp",
+    "crtLinkage": "target-default",
+    "platform": "aarch64-apple-darwin",
+    "rustc": "rustc 1.93.1 (01f6ddf75 2026-02-11)",
+    "sourceDateEpoch": 1791987583,
+    "surum": "0.8.0-dev",
+    "targetRustflags": [
+      "-C",
+      "link-arg=-v"
+    ],
+    "remapPathPrefix": [
+      "/zee",
+      "/cargo",
+      "/rust"
+    ]
+  },
+  "subjects": [
+    {
+      "digest": {
+        "sha256": "722f7294b0b7da839bdb9f7e5adc724a1d9489bfdb7b9e94e1320780e103cd84"
+      },
+      "name": "dil"
+    },
+    {
+      "digest": {
+        "sha256": "5c5dd31aa4fa54b1f6c9ce9861f1ac646cc31fc86ada2c0b3278aff2703a514a"
+      },
+      "name": "dillsp"
+    }
+  ],
+  "clean_clone_binary_hashes": {
+    "a": {
+      "dillsp": "5c5dd31aa4fa54b1f6c9ce9861f1ac646cc31fc86ada2c0b3278aff2703a514a",
+      "dil": "722f7294b0b7da839bdb9f7e5adc724a1d9489bfdb7b9e94e1320780e103cd84"
+    },
+    "b": {
+      "dillsp": "5c5dd31aa4fa54b1f6c9ce9861f1ac646cc31fc86ada2c0b3278aff2703a514a",
+      "dil": "722f7294b0b7da839bdb9f7e5adc724a1d9489bfdb7b9e94e1320780e103cd84"
+    }
+  },
+  "source_document_sha256": "862414d8260273a7f2579464d50df8f5298c36f831fdf6bd6e7643fb49eb4a35",
+  "boundary": "canonical unsigned local two-clean-clone release-profile equality; raw linker environment retained outside repository; no signing/publication/release/platform acceptance",
+  "source_tree": "9be7d150a33be8a3e90467765f14f0d44bc29473",
+  "validated_at_utc": "2026-10-14T14:26:31.809905+00:00",
+  "canonical_command": [
+    "bash",
+    "scripts/surum-artefakti.sh",
+    "--cikti",
+    "<outside-repository-output>"
+  ],
+  "signing": "unsigned: no signing key supplied",
+  "source_files_sha256": {
+    "scripts/surum-artefakti.sh": "9f7e063e0304b44c0fa5cb6dc686eafad3cd08f023be4352d25de4d1bdca6575",
+    "scripts/rust-arac-zinciri.sh": "b634e533a312fa81f2e0cdadd5082def6ff6dff8d4b434d452d651e320a6f478",
+    "compiler/Cargo.lock": "dc8d703c3bfd86658c50b1732a4ac1f73096bc4a36c7150c2fc58483ec34fb92",
+    "compiler/Cargo.toml": "a84637b04a5940a75d0856e50c631bf83841bc504c1beb5d037862291262d6aa",
+    "compiler/src/bin/surum_artefakti.rs": "21780256f0df439a899e6932d69a41c1171300fa3cacd3e731f4da43a4bbfe43",
+    "compiler/rust-toolchain.toml": "3260f10937490e272267a11d1bca85ee76b0ef972022ab8fba8a1df0dbb3b397"
+  },
+  "artifacts_sha256": {
+    "dil": "722f7294b0b7da839bdb9f7e5adc724a1d9489bfdb7b9e94e1320780e103cd84",
+    "dillsp": "5c5dd31aa4fa54b1f6c9ce9861f1ac646cc31fc86ada2c0b3278aff2703a514a",
+    "GIT_SHA": "799bb5d5afa2fdcdc5a05a7b8dc69df95daa43d77c30e89e59066e858c32d439",
+    "SHA256SUMS": "af29100fa860eca58a70cb39b98abe93c5e22d49e05e886d2a6b354b050c4b34",
+    "sbom.spdx.json": "06fdd190c764129bb504f03f1cf8be2bf81dcdf2d8ce9c0983febcb18a7012d1",
+    "provenance.intoto.json": "862414d8260273a7f2579464d50df8f5298c36f831fdf6bd6e7643fb49eb4a35"
+  },
+  "evidence_logs_sha256": {
+    "a-build.log": "64e148778eaf34d140fe2c9de9607e6d4d30058521f8c872a87f6d57b80f4b85",
+    "a-native-deployment.json": "1d149b9b168d7e14ea537ce5fbeccbebe7518d244c5cc26bcfcdf8f21704a12e",
+    "b-build.log": "559a96f59feed4ed7c8b0c974a65d8df7c548bf0b169eed1e8691a91346fa0de",
+    "b-native-deployment.json": "9666a6c373441ae7a6b1fed03a82a3d18e3cff774d65afd48535dcf44c53ce21",
+    "canonical-producer.log": "5afacc845debd1aa804d4ad11d582af399ce6d11b19c5dab4e05630206c975ad",
+    "canonical-result.json": "d41aae93b52af81895ebe7f0928fea0f7905393c5ccbe713e7b59f84d4e73aad",
+    "clone-binary-hashes.json": "e9d35da2c0d83afd10b4a9ddcfe1d49355d2f4b47da4bb40a6857f2abfdd0158"
+  },
+  "native_deployment_target": "MACOSX_DEPLOYMENT_TARGET=11.0",
+  "native_clones": {
+    "a": {
+      "binaries": {
+        "dil": {
+          "program": "cc",
+          "sha256": "b8763cf250e607a778bb4603cecb5b90338814d0a3dfcba0d57b1de242f610e9",
+          "version": "Apple clang version 21.0.0 (clang-2100.3.34.2)\nTarget: arm64-apple-darwin25.6.0\nThread model: posix\nInstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin",
+          "version_source": "--version"
+        },
+        "dillsp": {
+          "program": "cc",
+          "sha256": "b8763cf250e607a778bb4603cecb5b90338814d0a3dfcba0d57b1de242f610e9",
+          "version": "Apple clang version 21.0.0 (clang-2100.3.34.2)\nTarget: arm64-apple-darwin25.6.0\nThread model: posix\nInstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin",
+          "version_source": "--version"
+        }
+      },
+      "native_deployment": {
+        "target": "11.0",
+        "object_count": 24,
+        "objects_with_deployment_header": 24,
+        "deployment_versions": [
+          "11.0"
+        ],
+        "evidence_document_sha256": "1d149b9b168d7e14ea537ce5fbeccbebe7518d244c5cc26bcfcdf8f21704a12e",
+        "boundary": "Yalnız build-script .o başlıkları; başlıksız assembly ve gerçek minimum OS/runtime desteği değildir."
+      }
+    },
+    "b": {
+      "binaries": {
+        "dil": {
+          "program": "cc",
+          "sha256": "b8763cf250e607a778bb4603cecb5b90338814d0a3dfcba0d57b1de242f610e9",
+          "version": "Apple clang version 21.0.0 (clang-2100.3.34.2)\nTarget: arm64-apple-darwin25.6.0\nThread model: posix\nInstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin",
+          "version_source": "--version"
+        },
+        "dillsp": {
+          "program": "cc",
+          "sha256": "b8763cf250e607a778bb4603cecb5b90338814d0a3dfcba0d57b1de242f610e9",
+          "version": "Apple clang version 21.0.0 (clang-2100.3.34.2)\nTarget: arm64-apple-darwin25.6.0\nThread model: posix\nInstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin",
+          "version_source": "--version"
+        }
+      },
+      "native_deployment": {
+        "target": "11.0",
+        "object_count": 24,
+        "objects_with_deployment_header": 24,
+        "deployment_versions": [
+          "11.0"
+        ],
+        "evidence_document_sha256": "9666a6c373441ae7a6b1fed03a82a3d18e3cff774d65afd48535dcf44c53ce21",
+        "boundary": "Yalnız build-script .o başlıkları; başlıksız assembly ve gerçek minimum OS/runtime desteği değildir."
+      }
+    }
+  },
+  "locked_rustls_versions": [
+    "0.23.46"
+  ]
+}

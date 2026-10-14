@@ -533,3 +533,9 @@ eski #29/#30 ya da eski iki-klon kanıtı yeni CI/release/platform kabulü deği
 K-239/GB-063 özel inceleme URL’lerini yalnız izole çalışma geçmişinden
 çıkarır; GitHub yönetilen refs/cache destek teyidini veya public yayın
 kapısını kapatmaz. Tarihsel checkpoint kanıtları yeni SHA’ya taşınmaz.
+
+[Son teknik teslim](urunlesme-sonucu-20261014.md) a2b8557 temiz kaynağında
+887/893 faz (6 dedicated atlama), ayrı TLS/bütçe 5/5, göç 1/1, CAS 7/7,
+sürekli güvenlik ve yerel macOS iki-klon eşliğini taşır. Atlanan altı vaka
+dedicated koşuda yürütülmüştür; yeni uzak CI, temiz fiziksel OS, tam ürün
+ve insan kabulü çıkarılmaz. ASan/Miri RC, imza ve yayın kapıları açıktır.

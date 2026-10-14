@@ -50,11 +50,13 @@ GitHub Actions'ın açık/kapalı olması bu şablon değişikliğiyle değişti
 4. Gerçek `NULL::text` ve integer sütunları exact mevcut hata/`sutun`
    verisiyle reddedilir; aynı transaction'da sonraki sorgu ve commit başarılıdır.
    Açık `COALESCE` ve `::text` olumlu yolları da kabul edilir.
+5. K-235 sorgu/parametre/satır/sütun/sonuç ve migration bütçelerini tam
+   eşik ve bir fazlasında sınar; ret sonrası transaction sağlığı korunur.
 
 Default Cargo/faz koşusunda bu beş vaka `ignored` görünür: her platforma
 Docker/PostgreSQL gereksinimi yüklenmez. Dedicated sürekli Linux kapısı
 aynı beş vakayı `--ignored` ile çalıştırır ve exact isimlerin her birinde
-`ok`, yalnız bir özet, **4 passed / 0 failed / 0 ignored** ister. Eksik
+`ok`, yalnız bir özet, **5 passed / 0 failed / 0 ignored** ister. Eksik
 fixture ortamı paniktir; erken `return` veya başarı sayılmaz. Sıfır test,
 yanlış selector, ignored vaka ve başarısız exit için koşucu negatif testleri
 `scripts/tests/postgresql-tls-ci-test.py` içindedir. Faz sahibi IO'dur;

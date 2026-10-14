@@ -1,0 +1,78 @@
+{
+  "schema": "zee-final-gate-summary-1",
+  "source_sha": "a2b8557ba04897c60802d04b911a7eae6e91ae43",
+  "source_tree": "9be7d150a33be8a3e90467765f14f0d44bc29473",
+  "phase": {
+    "passed": 887,
+    "failed": 0,
+    "ignored": 6,
+    "expected": 893,
+    "phase_wall_seconds": 125.041,
+    "command": [
+      "cargo",
+      "run",
+      "--locked",
+      "--bin",
+      "faz_test_matrisi",
+      "--",
+      "--denetle",
+      "--rapor",
+      "target/faz-test-matrisi.md"
+    ]
+  },
+  "dedicated_ignored_cases_executed": {
+    "postgresql_tls_budget": 5,
+    "postgresql_migration": 1,
+    "native_proof": "native-proof.json"
+  },
+  "additional_native_password_cas_cases": 7,
+  "continuous_security": {
+    "passed": true,
+    "command": [
+      "bash",
+      "scripts/guvenlik-kapisi.sh",
+      "--surekli"
+    ],
+    "release_candidate": false
+  },
+  "additional_doctest": {
+    "passed": 1,
+    "failed": 0,
+    "code_source": "b70955d3d82e22d028a0295500e2fb8e980bb556",
+    "code_equal_to_checkpoint": true
+  },
+  "source_logs": {
+    "urunlesme-final-faz-v2.log": {
+      "bytes": 16903,
+      "sha256": "4168abea48d25f7fdd2a07e4ac789fb128278a798554565c59e4aff2c0f90f5a"
+    },
+    "urunlesme-final-guvenlik-v2.log": {
+      "bytes": 2418,
+      "sha256": "27727f0ea813381460ee93ada82527ff97bc46b461933c62c13887572ccc04db"
+    },
+    "k239-privacy-history.log": {
+      "bytes": 90,
+      "sha256": "806b92cdffa4e8e0fc075bec27a7aa15368e54ca880920da84550789d02e8422"
+    },
+    "k239-privacy-tree.log": {
+      "bytes": 90,
+      "sha256": "806b92cdffa4e8e0fc075bec27a7aa15368e54ca880920da84550789d02e8422"
+    },
+    "k238-k239-final-secrets.log": {
+      "bytes": 278,
+      "sha256": "8172afbc79e106e47eba3112b095b49d38e4d994412a284ce591476e68ef7e23"
+    },
+    "k238-k240-staged-secrets.log": {
+      "bytes": 80,
+      "sha256": "624fbc9c90f9570c60ef4ec354f9c53d91fc38ce9fe1fe873aa6243a4a464994"
+    }
+  },
+  "evidence_sha256": {
+    "source-archive.json": "75507ecb1a36c1793bf4ebb8fba2af38f6262b70fcdc94aa5db1d8e42825a6f4",
+    "native-proof.json": "e5126aae629189e75a32c9466927a8870cb8ab3a235be4f5c9dd047ae92e6de3",
+    "build-proof.json": "d2f0aaed7e820e9300c545ae97e735022150a671e29ccc4423e567cf2d7769a2",
+    "faz-test-matrisi.md": "608f4cc799c151099eafeb4a532c15756359207067e1b12b13af62bd4e3c0106",
+    "postgres-runtime-build-proof.json": "ac0377a5ae794732f2a6d6cd6962bec2cc90d4dd2a9fc03cc57b64e7e53ec6d6"
+  },
+  "boundary": "Local clean technical checkpoint; historical and overlapping cases are not retagged or summed. No remote CI, live full product, clean physical OS, signing or RC acceptance."
+}
