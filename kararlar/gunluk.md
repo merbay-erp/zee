@@ -4405,3 +4405,9 @@ kampanyasıyla düzeltme kabulü devam eder. Tam drain/reload/P14 açıktır.
 yüzeyi yeterlidir, yeni dil sürtünmesi veya compiler ihtiyacı icat edilmez.
 11 native vaka ve16 strict validator hazır; temiz exact kabul devam eder.
 Gerçek Python kaldırılması, SMTPretry/provider ve tam P09 açık kalır.
+
+K-245–K-248 source `6a85a3ab3a16935a042a4b7ec82e8ac323683270`: çalışma ağacı faz894/900,0hata6dedicated
+atlama; ayrı25 worker/14credential/11queue+16validator aday kabulü.
+Compiler source etkisi yalnız K-248 cfg(test) taşımasıdır; semantic
+maintenance/core-freeze beyanı izleyen committe exact kaydedilir. Temiz
+final kabulü ve native28kampanya ayrı devam eder.
