@@ -1,0 +1,35 @@
+{
+  "source_commit": "35955470fdb4fc8474f39326ae0f7aa771b5515b",
+  "binary_sha256": "2f24450a6cd50fe9e0f992abff01628d99e64d3aaee6ac4de94e3d55a5fb9445",
+  "workload_sha256": "b69c2b205dce532351b7928bb0e4cbba853003253359e3cfff326585fa40fe09",
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "cpu": "Apple M4 Pro",
+  "ram_bytes": 25769803776,
+  "rustc": "1.93.1 (01f6ddf75 2026-02-11)",
+  "profile": "release default",
+  "samples": 1,
+  "warmup": 0,
+  "limit": 250,
+  "capacity": 32768,
+  "overflow": "en-eski",
+  "cases": [
+    {
+      "requests": 1000,
+      "concurrency": 10,
+      "elapsed_seconds": 0.3785237909760326,
+      "stdout": "workers=1 N=1000 istek/sn=2934 200=1000 diğer=0\n"
+    },
+    {
+      "requests": 40000,
+      "concurrency": 10,
+      "elapsed_seconds": 13.621045165986288,
+      "stdout": "workers=1 N=40000 istek/sn=2944 200=40000 diğer=0\n"
+    }
+  ],
+  "quota": {
+    "200": 250,
+    "429": 1
+  },
+  "rss_kib": 22464,
+  "session_file_exists": false
+}
