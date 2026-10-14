@@ -177,6 +177,8 @@ kosul	varsa	aktif	0.7.0	compiler/src/ayristirici/ifade.rs	-
 kosul	yoksa	aktif	0.7.0	compiler/src/ayristirici/ifade.rs	-
 kosul	çiftse	aktif	0.7.0	compiler/src/ayristirici/ifade.rs	-
 profil	cli-bicim-denetle	aktif	0.8.0-dev	compiler/src/main.rs	"--denetle"
+profil	cli-goc-durum	aktif	0.8.0-dev	compiler/src/main.rs	"--durum"
+profil	cli-goc-kuru	aktif	0.8.0-dev	compiler/src/main.rs	"--kuru"
 profil	eszamanlilik	aktif	0.8.0-dev	conformance/eszamanlilik/zee-esz-1.json	"kimlik": "zee-esz-1"
 profil	http-gizli-ortam-v1	aktif	0.8.0-dev	compiler/src/proje.rs	"http_gizli_değişkenleri"
 profil	http-istek-v1	aktif	0.8.0-dev	compiler/src/ag_istemcisi/istek.rs	pub fn istek(

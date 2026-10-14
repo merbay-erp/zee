@@ -1373,8 +1373,11 @@ Default tam faz dört ignored testi ayrı gösterir; dedicated kapı 4/4 ister.
 ## K-223 — Mevcut dilde girişte parola yükseltme ve form kabulü
 
 Anonim ürün helper/CAS ve Turnstile form kabulü mevcut primitive'lerle
-sınanır. Hermetik model native DB yarışı veya canlı ürün migration değildir;
-ürün ve staging sınırı açıktır. [Rehash](../dogfood/zee-cekirdek/parola-goc/README.md).
+sınanır. Ek native PostgreSQL 16.15 kampanyası 7/7, sıfır atlamayla
+gerçek CAS/row-lock yarışı, rollback ve commit görünürlüğünü kanıtladı.
+[Native koşucu](parola-goc-ci.md) CI'a bağlandı; temiz exact checkpoint ve
+yeni uzak CI kabulü ayrıca kaydedilir. C027 ağ-fault/live ürün/staging açıktır.
+[Rehash](../dogfood/zee-cekirdek/parola-goc/README.md).
 
 ## K-224 — Pilot destek ve kaynak kanıtı
 
@@ -1413,3 +1416,10 @@ alt kapsamlar yeniden açılmaz; tam adversarial audit K-205'te açık kalır.
 C2 --denetle dosya/proje modunda yazmadan exit0/1 verir; eksik kullanım
 exit2. [ADR-094](../adr/094-bicimleyici-yazmadan-denetim.md). Lint, cache,
 artımlı LSP ve JetBrains dağıtım hattı ayrı açık kalır.
+
+## K-228 — PostgreSQL göç planı
+
+`göçür --durum|--kuru` source/version/ad/hash/status karşılaştırır;
+metadata tablo yokken oluşturmaz. [ADR-095](../adr/095-postgresql-goc-plani.md).
+Native owner/runtime rol, checksum/kayıp dosya, rollback ve concurrent
+apply kabulü dedicated kapıda sınanır; eski Python ürün betiği ayrı açık.

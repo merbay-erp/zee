@@ -325,6 +325,7 @@ fn cli_seceneklerini_denetle(argumanlar: &[String]) -> Result<(), String> {
     let (bayraklar, degerli): (&[&str], &[&str]) = match komut {
         "denetle" | "sürüm" | "surum" => (&["--json"], &[]),
         "biçimle" | "bicimle" => (&["--denetle"], &[]),
+        "göçür" | "gocur" => (&["--durum", "--kuru"], &[]),
         "paketle" => (&[], &["--anahtar", "--çıktı", "--cikti"]),
         "ekle" | "kilitle" | "paketler" => (
             &["--yenile", "--çevrimdışı", "--cevrimdisi"],
@@ -383,7 +384,7 @@ fn kullanim() {
     eprintln!("      ilk uzak paket: --registry https://... --kök 1@sha256:<özet>");
     eprintln!("  dil çıkar <paket> [proje]    kullanılmayan doğrudan paketi kaldırır");
     eprintln!("  dil kilitle [proje] [--çevrimdışı] bütün bağımlılıkları sabitler");
-    eprintln!("  dil göçür [proje]          PostgreSQL migration'larını güvenle uygular");
+    eprintln!("  dil göçür [--durum|--kuru] [proje] migration uygular veya SQL yazmadan planlar");
     eprintln!("  dil anahtar üret <dosya>    0600 izinli Ed25519 yayıncı anahtarı üretir");
     eprintln!("  dil paketle [proje] --anahtar <dosya> [--çıktı <klasör>]");
     eprintln!("  dil paketler [proje] [--yenile] doğrudan/geçişli grafiği gösterir");
@@ -398,11 +399,21 @@ fn kullanim() {
 }
 
 fn gocur_komutu(argumanlar: &[String]) -> ExitCode {
-    if argumanlar.len() > 2 {
-        eprintln!("Kullanım: dil göçür [proje]");
+    let durum = argumanlar
+        .iter()
+        .filter(|a| a.as_str() == "--durum")
+        .count();
+    let kuru = argumanlar.iter().filter(|a| a.as_str() == "--kuru").count();
+    let yollar: Vec<&String> = argumanlar
+        .iter()
+        .skip(1)
+        .filter(|a| !matches!(a.as_str(), "--durum" | "--kuru"))
+        .collect();
+    if durum + kuru > 1 || yollar.len() > 1 {
+        eprintln!("Kullanım: dil göçür [--durum|--kuru] [proje]; kipler tekil ve ayrı olmalı");
         return ExitCode::from(2);
     }
-    let yol = std::path::Path::new(argumanlar.get(1).map_or(".", String::as_str));
+    let yol = std::path::Path::new(yollar.first().map_or(".", |a| a.as_str()));
     let proje = match dil::paket::ProjeGrafigi::cozumle(yol) {
         Ok(proje) => proje,
         Err(hata) => {
@@ -418,6 +429,36 @@ fn gocur_komutu(argumanlar: &[String]) -> ExitCode {
         eprintln!("P015: Proje PostgreSQL bildirimini taşımıyor.");
         return ExitCode::from(2);
     };
+    if durum + kuru == 1 {
+        return match dil::postgresql::gocleri_planla(bildirim, proje.ana_kok()) {
+            Ok(plan) => {
+                println!(
+                    "Migration planı: {} uygulanmış, {} bekleyen; SQL uygulanmadı.",
+                    plan.uygulanmis, plan.bekleyen
+                );
+                for adim in plan.adimlar {
+                    if durum == 1 || !adim.uygulanmis {
+                        println!(
+                            "{}\t{}\t{}\t{}",
+                            adim.surum,
+                            if adim.uygulanmis {
+                                "uygulanmış"
+                            } else {
+                                "bekleyen"
+                            },
+                            adim.ad,
+                            adim.sha256
+                        );
+                    }
+                }
+                ExitCode::SUCCESS
+            }
+            Err(hata) => {
+                eprintln!("C026: Migration planı başarısız: {}", hata.mesaj);
+                ExitCode::FAILURE
+            }
+        };
+    }
     match dil::postgresql::gocleri_uygula(bildirim, proje.ana_kok()) {
         Ok(rapor) => {
             println!(

@@ -167,3 +167,12 @@ sonrası bağlantı kaybı mevcut C027/db.commit_unknown sınıfında kalır.
 32 MiB wire sınırı 16 MiB uygulama sonuç bütçesinden ayrıdır; DataRow
 overhead'i nedeniyle 32 MiB TEXT hücresi wire sınırını aşar. Bu sayı global
 RSS, bütün sürücü kuyrukları veya TLS record boyutu garantisi değildir.
+
+## Göç durum ve kuru çalışma (K-228)
+
+`dil göçür --durum|--kuru [proje]` REPEATABLE READ READ ONLY transaction'da
+uygulanmış metadata ile aynı kaynak dosyalarını karşılaştırmak ZORUNDADIR.
+Tablo yoksa oluşturmak, migration DDL/DML'i veya apply lock'u yürütmek
+YASAKTIR. Durum bütün adımları, kuru yalnız bekleyeni ad/sürüm/SHA/durum
+olarak gösterir; değiştirilmiş ad/hash ve kayıp dosya reddedilir. Default
+apply tek transaction/advisory lock sözleşmesini korur.
