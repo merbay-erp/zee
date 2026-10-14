@@ -2,6 +2,21 @@
 
 use dil::lsp::{json_coz, Json, Sunucu, AZAMI_LSP_JSON_DERINLIGI, AZAMI_LSP_JSON_DUGUMU};
 
+#[path = "semantic_regresyon/lsp_uri.rs"]
+mod lsp_uri_fixture;
+
+#[test]
+fn uri_yuzde_utf8_gercek_stdio_birim_cozumunu_korur() {
+    let birim =
+        std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../regression/lsp/yardimci.birim");
+    let (cikis, cikti) = lsp_uri_fixture::calistir(
+        include_str!("../../regression/lsp/yuzde-utf8-birim-yolu.dil"),
+        &birim,
+    );
+    assert_eq!(cikis, 0);
+    assert_eq!(cikti, ["[]"]);
+}
+
 #[test]
 fn json_ayristirici_temel() {
     let json = json_coz(r#"{"a": 1, "b": [true, null, "me\"tin"], "c": {"iç": -2.5}}"#)

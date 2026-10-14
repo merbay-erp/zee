@@ -2,7 +2,7 @@
 
 - **Durum:** kabul
 - **Tarih:** 2 Eylül 2026
-- **İlgili kayıt:** K-147, B-039
+- **İlgili kayıt:** K-147, B-039; K-248 native LSP kipi
 
 ## Bağlam
 
@@ -17,7 +17,8 @@ içinde kaybolur.
 ## Karar
 
 1. Kök `regression/` ağacı parser, checker, typed HIR, runtime, morphology,
-   concurrency ve security fazlarına göre ayrılır. Her vaka tek, küçük `.dil`
+   concurrency ve security fazlarına göre ayrılır; K-221 CLI, K-248 LSP
+   sahipliğini ekler. Her vaka tek, küçük `.dil`
    dosyasıdır; dosya adı kararlı vaka kimliğiyle aynıdır.
 2. `regression/v1.tsv` (K-155/ADR-052 ile `v2.tsv`ye yükseltildi); vaka ve
    `K-NNN` bug kimliğini, birincil fazı, yürütme
@@ -32,6 +33,9 @@ içinde kaybolur.
    denetimi. Runtime sonucu hem kısmi/tam stdout'u hem gerçek program exit'ini
    karşılaştırır. Bunun için typed-HIR yüzeyine çıkış kodunu kaybetmeyen
    `calistir_baglanmis_io_kodla` eklenir.
+   K-248 `lsp-uri` mevcut gerçek stdio LSP ikilisini, yüzde UTF-8 dosya
+   URI'sini ve hermetik `.birim` girdisini yürütür; kanonik tanı kodu dizisi
+   ve gerçek exit gözlemidir. CLI derleme başarısı LSP yol kabulü sayılmaz.
 5. Her yeni compiler bug düzeltmesi, aynı committe minimal fixture ve metadata
    satırı bırakır. Git-tabanlı CI koruğu tabandaki vaka kimliği+bug kimliği+yol
    üçlüsünün silinmesini veya yeniden kullanılmasını reddeder. Beklenti ya da

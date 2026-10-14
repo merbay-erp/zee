@@ -18,7 +18,8 @@ regression/
 ├── morphology/
 ├── concurrency/
 ├── security/
-└── cli/
+├── cli/
+└── lsp/
 ```
 
 Başlangıç tabanı yedi fazda 17 vaka taşır. Her `.dil` dosyası manifestte tam
@@ -67,6 +68,15 @@ hatası kaynak tanısı üretmediği için tanı/span alanı `-` kalır.
 | `run` | Invariantı geçmiş typed HIR ile runtime; stdout ve program exit'i korunur |
 | `capability` | Compile sonrası kapalı yetkinlik politikası |
 | `smtp` | Security fazında typed runtime → gerçek native SMTP; yalnız sabit loopback fixture |
+| `lsp-uri` | LSP fazında gerçek stdio ikilisi, yüzde UTF-8 dosya URI'si ve hermetik disk birimi |
+
+K-248 `lsp-uri`, iki satırlık kaynağı ve aynı dizindeki `yardimci.birim`
+girdisini geçici Türkçe/emoji klasörüne kopyalar. Initialize, didOpen,
+shutdown/exit çerçeveleri gerçek `dillsp` sürecine gider. Beklenti sıralı
+tanı kodlarının kanonik JSON dizisi (`[]` başarı), gerçek exit ve boş
+stderr'dir; manifest tanı/span alanları `-` kalır. URI echo ve üç tam
+yanıt ayrıca doğrulanır; süreç 10 saniyede kapanmazsa öldürülüp beklenir.
+Bu kip salt CLI derlemesiyle taklit edilmez.
 
 ## Yeni bug düzeltme protokolü
 
