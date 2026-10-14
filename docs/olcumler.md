@@ -353,3 +353,7 @@ tur/sıfır ısınma gözlemidir; yeni hard eşik/taban değildir. 1800 sn soak
 K-219 / ADR-090: kapasite/tahliye ürün yükü ayrı exact kanıtta incelenir; ADR-045/049 sabit benchmark girdisi ve performans-gecmisi-v2.tsv değiştirilmez. Soak her dönemde 32768 kayıt + 4096 tahliye çalıştırır; K-218 iş yüküyle aynı olduğu iddia edilmez. Sonuç [kanıt sayfasında](incelemeler/k219/README.md) kayıtlıdır.
 
 K-220 / ADR-091 etki incelemesi: kaynak toolchain/flags/Cargo graph ve sabit benchmark korpusu değişmez; ADR-045/049 tarihçesine yeni taban yazılmaz. HTTP/JSON verileri çağrı ömürlüdür, immutable ortam listesi 16×64 adla sınırlıdır; yeni cache veya büyüyen kalıcı istemci tamponu yoktur. K-219 soak iş yükü ve eski sonuçlar korunur.
+
+## K-207 — Güncel HTTP master ön incelemesi
+
+[Exact gözlem](incelemeler/k207/http-master-20261014/README.md): temiz c743312 release kaynağında standart aynı-metin ölçümü 3 örnek/2 ısınma, gerçek son literal değişimi 5 örnek/2 ısınma ile yeniden ölçüldü; 20k gerçek stdio p95 165,731 ms. Yeni compiler optimizasyonu, artımlılık kapanışı veya kalıcı benchmark tabanı değildir. Ürün ana dosyası sayısı eksik üretilen katalog nedeniyle iki A010 taşır; hatasız tüm üretim projesi kabulüne çevrilmez. K-207 full didChange ve cache/artımlılık sınırı açık kalır.

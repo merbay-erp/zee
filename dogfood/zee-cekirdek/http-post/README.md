@@ -5,6 +5,7 @@ Kaynak talep `docs/dil-talepleri/2026-10-14-http-post-baslik.md`; birincil gerç
 ürün dosyası `cekirdek/kaynak/rota_site.dil:20`, POST /iletisim-gonder;
 ikincil portal heartbeat kabuk/Python geçişi talepte kayıtlıdır.
 [Anonim talep](talep.md), [minimal Zee reproducer](turnstile.dil).
+[Bağımsız proje kullanım rehberi](../../../docs/http-post-kullanim.md).
 
 Bu kesit eski proje kimlik/güvenlik gereksinimi ve 100 kartlık yükle aynı ürün
 kökündedir. Gerçek rota kaydı ve e-posta davranışı ürün tarafında kalır.

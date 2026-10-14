@@ -1260,7 +1260,7 @@ Sonucu (`durum`, `gövde`). Ortam sırları yalnız explicit ana proje listesiyl
 okunur; yeni sır taşıyan işlem iz kaydında/replay’de kapalıdır. Kanonik HTTP
 JSON helper bool/metin ayrımını korur. Eski GET ve Rust facade değişmez;
 WASM yeni native adaptörü açmaz. Ürün Turnstile helper ve yerel TLS testleri
-aynı dilimde; tam faz/Gitsrv sonucu [kabulde](incelemeler/k220/README.md) kapanır.
+aynı dilimde; 801/801 yerel faz ve Gitsrv #29 [kabulü](incelemeler/k220/README.md) geçti.
 Sunucu/ürün rotası ve otomatik kayıt/e-posta entegrasyonu ürün tarafındadır.
 
 K-220 / K-174: exact gerçek ürün talebiyle üç contextual kalıp eklendi; syntax gözlem penceresi 14.10.2026–11.11.2026 olarak bilinçli yeniden başladı. Core freeze ve insan/RC kapıları sürer; V1 tamamlandı olarak gösterilmez.

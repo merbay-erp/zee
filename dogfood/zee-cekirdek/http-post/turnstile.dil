@@ -4,6 +4,7 @@
 işlem doğrulama cevabını denetle
     cevabı Metin sözlüğü olarak al
     bekleneni Metin olarak al
+    Metin döndürür
     durum cevabın "durum" değeri olsun
     durum "200" eşit değilse
         "erisilemedi" döndür
@@ -30,6 +31,7 @@ işlem insan doğrula
     jetonu Metin olarak al
     ipi Metin olarak al
     bekleneni Metin olarak al
+    Metin döndürür
     ortam "TURNSTILE_SECRET" gizli ortam değerini okumayı dene olsun
     ortam başarılıysa
         sır ortamın değeri olsun

@@ -1,0 +1,238 @@
+{
+  "sema": "zee-performans-2",
+  "kayit": "K221-on-inceleme-20261014",
+  "git_sha": "c7433123ac1755bb81c476e2698ffee661500a69",
+  "milestone": "K221-on-inceleme",
+  "git_dirty": false,
+  "unix_zamani": 1791965732,
+  "platform": "macos-aarch64",
+  "os": "macOS 26.6.2 (25G83)",
+  "cpu": "Apple M4 Pro",
+  "ram_bytes": 25769803776,
+  "rustc": "rustc 1.93.1 (01f6ddf75 2026-02-11)",
+  "build_profile": "release",
+  "sample_count": 3,
+  "warmup_count": 2,
+  "esik_uygulandi": false,
+  "olcumler": [
+    {
+      "kimlik": "parse_gecikmesi",
+      "aciklama": "2000 satırda lexer + parser",
+      "birim": "ns",
+      "sampling_semantics": "bagimsiz_tur",
+      "sample_count": 3,
+      "warmup_count": 2,
+      "raw_samples": [
+        1828042,
+        1667875,
+        1878666
+      ],
+      "en_az": 1667875,
+      "p50": 1828042,
+      "p95": 1878666,
+      "en_cok": 1878666
+    },
+    {
+      "kimlik": "typecheck_gecikmesi",
+      "aciklama": "hazır AST'de resolver + checker ve HIR kanıt toplama",
+      "birim": "ns",
+      "sampling_semantics": "bagimsiz_tur",
+      "sample_count": 3,
+      "warmup_count": 2,
+      "raw_samples": [
+        3903125,
+        3287083,
+        3555458
+      ],
+      "en_az": 3287083,
+      "p50": 3555458,
+      "p95": 3903125,
+      "en_cok": 3903125
+    },
+    {
+      "kimlik": "hir_olusturma",
+      "aciklama": "2000 satır kaynak -> bağlı typed HIR tam ön uç",
+      "birim": "ns",
+      "sampling_semantics": "bagimsiz_tur",
+      "sample_count": 3,
+      "warmup_count": 2,
+      "raw_samples": [
+        5140458,
+        5168625,
+        4706375
+      ],
+      "en_az": 4706375,
+      "p50": 5140458,
+      "p95": 5168625,
+      "en_cok": 5168625
+    },
+    {
+      "kimlik": "runtime_baslangici",
+      "aciklama": "önceden derlenmiş boş typed HIR runtime dispatch",
+      "birim": "ns",
+      "sampling_semantics": "bagimsiz_tur",
+      "sample_count": 3,
+      "warmup_count": 2,
+      "raw_samples": [
+        208,
+        166,
+        125
+      ],
+      "en_az": 125,
+      "p50": 166,
+      "p95": 208,
+      "en_cok": 208
+    },
+    {
+      "kimlik": "yurutme_gecikmesi",
+      "aciklama": "önceden derlenmiş 100 bin turluk sayaç",
+      "birim": "ns",
+      "sampling_semantics": "bagimsiz_tur",
+      "sample_count": 3,
+      "warmup_count": 2,
+      "raw_samples": [
+        21968958,
+        22976833,
+        23363833
+      ],
+      "en_az": 21968958,
+      "p50": 22976833,
+      "p95": 23363833,
+      "en_cok": 23363833
+    },
+    {
+      "kimlik": "lsp_engine_initialize",
+      "aciklama": "in-process LSP engine kurma + initialize isteği",
+      "birim": "ns",
+      "sampling_semantics": "bagimsiz_tur",
+      "sample_count": 3,
+      "warmup_count": 2,
+      "raw_samples": [
+        875,
+        750,
+        708
+      ],
+      "en_az": 708,
+      "p50": 750,
+      "p95": 875,
+      "en_cok": 875
+    },
+    {
+      "kimlik": "lsp_process_cold_start",
+      "aciklama": "dillsp process spawn + stdio initialize capabilities yanıtı",
+      "birim": "ns",
+      "sampling_semantics": "bagimsiz_tur",
+      "sample_count": 3,
+      "warmup_count": 2,
+      "raw_samples": [
+        3253166,
+        3055875,
+        2464708
+      ],
+      "en_az": 2464708,
+      "p50": 3055875,
+      "p95": 3253166,
+      "en_cok": 3253166
+    },
+    {
+      "kimlik": "lsp_ac",
+      "aciklama": "initialize edilmiş sunucuda 2000 satır didOpen",
+      "birim": "ns",
+      "sampling_semantics": "bagimsiz_tur",
+      "sample_count": 3,
+      "warmup_count": 2,
+      "raw_samples": [
+        4961583,
+        4680208,
+        4683958
+      ],
+      "en_az": 4680208,
+      "p50": 4683958,
+      "p95": 4961583,
+      "en_cok": 4961583
+    },
+    {
+      "kimlik": "lsp_degistir_2k",
+      "aciklama": "açık 2000 satır belgede tam metin didChange",
+      "birim": "ns",
+      "sampling_semantics": "bagimsiz_tur",
+      "sample_count": 3,
+      "warmup_count": 2,
+      "raw_samples": [
+        4884459,
+        4561583,
+        4937000
+      ],
+      "en_az": 4561583,
+      "p50": 4884459,
+      "p95": 4937000,
+      "en_cok": 4937000
+    },
+    {
+      "kimlik": "lsp_degistir_5k",
+      "aciklama": "açık 5000 satır belgede tam metin didChange",
+      "birim": "ns",
+      "sampling_semantics": "bagimsiz_tur",
+      "sample_count": 3,
+      "warmup_count": 2,
+      "raw_samples": [
+        17402833,
+        16873167,
+        16035209
+      ],
+      "en_az": 16035209,
+      "p50": 16873167,
+      "p95": 17402833,
+      "en_cok": 17402833
+    },
+    {
+      "kimlik": "lsp_degistir_10k",
+      "aciklama": "açık 10000 satır belgede tam metin didChange",
+      "birim": "ns",
+      "sampling_semantics": "bagimsiz_tur",
+      "sample_count": 3,
+      "warmup_count": 2,
+      "raw_samples": [
+        51791250,
+        49346375,
+        49351333
+      ],
+      "en_az": 49346375,
+      "p50": 49351333,
+      "p95": 51791250,
+      "en_cok": 51791250
+    },
+    {
+      "kimlik": "lsp_degistir_20k",
+      "aciklama": "açık 20000 satır belgede tam metin didChange",
+      "birim": "ns",
+      "sampling_semantics": "bagimsiz_tur",
+      "sample_count": 3,
+      "warmup_count": 2,
+      "raw_samples": [
+        161960709,
+        165903041,
+        158573375
+      ],
+      "en_az": 158573375,
+      "p50": 161960709,
+      "p95": 165903041,
+      "en_cok": 165903041
+    },
+    {
+      "kimlik": "tepe_bellek",
+      "aciklama": "koşucu süreç tepe resident set'i",
+      "birim": "KiB",
+      "sampling_semantics": "surec_tepe_anlik_goruntusu",
+      "sample_count": 1,
+      "warmup_count": 0,
+      "raw_samples": [
+        140560
+      ],
+      "en_az": 140560,
+      "p50": 140560,
+      "p95": 140560,
+      "en_cok": 140560
+    }
+  ]
+}

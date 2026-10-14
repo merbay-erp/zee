@@ -1,0 +1,14 @@
+{
+  "provider": "private-forgejo-gitsrv",
+  "run_id": 761,
+  "run_index": 29,
+  "source_sha": "3d7ff9306a7f6cbd954a7bfbb283b4654b67a900",
+  "compiler_source_commit": "488dc7dede31df2bddcec11cfbbc28246e076398",
+  "status": "success",
+  "started_utc": "2026-10-14T08:46:01Z",
+  "stopped_utc": "2026-10-14T09:31:52Z",
+  "evidence": "Authenticated run status API plus visible workflow steps; no downloaded artifact",
+  "artifact_download": "Declined by user; no download workaround attempted",
+  "linux_test_count": "Not separately asserted from artifact",
+  "source_changes_after_ci": "No compiler/src change; helper explicit return signatures and standalone guide checked locally"
+}
