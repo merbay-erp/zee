@@ -4207,3 +4207,7 @@ K-220 / K-174: exact gerçek ürün talebiyle üç contextual kalıp eklendi; sy
 14.10.2026 K-220/GB-054: Gitsrv #28 sentetik PKCS12 directory eşleşmesiyle kaldı; exact immutable fixture fingerprint kapısı ve atlamasız dedektör testleri eklenir. Compiler kaynağı/dil semantiği değişmez; Gitsrv yeniden kabulü açıktır.
 
 14.10.2026 K-220 kapalı (dil makine kabulü): Gitsrv #29 / run 761, 3d7ff93 başarılı. Helper explicit Metin dönüşüyle ayrı proje denetimini ve 11 HTTP + 3 dogfood testini geçti. §3/4 ürün sahibi kararıyla ertelendi; §3/5 güncel performans gözlemi kayıtlı, K-207 artımlılık açık. Canlı ürün veya depo görünürlüğü değiştirilmedi.
+
+14.10.2026 K-221 / ADR-092: onaylı ürünleşme A6(1) için bilinmeyen
+CLI seçeneği kaynak yolu olmadan exit 2 ile reddedilir. Runtime config,
+lisans seçimi ve yeni gramer bu dilimde yoktur. Exact kaynak beyanı izler.

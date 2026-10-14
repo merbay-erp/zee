@@ -150,10 +150,10 @@ Değişikliğe özel test, belge ve güvenlik kapıları [AGENTS.md](AGENTS.md) 
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **803** |
+| Rust + doctest vakası | **810** |
 | Tanı kimliği | **159 etkin + 3 ayrılmış** |
 | RFC | **33** (2 kabul, 28 geçici kabul, 3 taslak) |
-| ADR | **89** (89 kabul) |
+| ADR | **90** (90 kabul) |
 | Normatif spec bölümü | **28** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
@@ -221,3 +221,6 @@ Native dış isteklerde başlıklı GET/POST ve gövde gönderimi başarısızl�
 `Sonuç` olarak yönetir. Ortam sırları explicit proje listesiyle okunur;
 [Testli kullanım örneği](docs/http-post-kullanim.md),
 [HTTP sınırları](adr/091-http-post-baslik-ve-gizli-ortam.md).
+
+Ürünleşme A6: bilinmeyen CLI seçenekleri kaynak dosyası adı gibi
+yorumlanmaz; exit 2 ve etkin sürümle reddedilir (K-221).

@@ -1354,3 +1354,11 @@ yeni optimizasyon veya artımlılık kapanışı değildir.
 ## İnceleme §3/4 — HTML temizleyici ertelendi
 
 14 Ekim 2026 ürün sahibinin güncel talebi: `cekirdek/kaynak/alanlar.dil` richtext alanı düz metindir; `guvenliParagraflar` satırları `html güvenlisi` ile kaçışlayıp sabit etiketler üretir. Ürün tarafının beş veritabanı taramasında HTML etiketli kayıt 0 olarak bildirilmiştir; AI içerik kaynağı yoktur. Mevcut satır içi biçim eksikliği ürün işlemiyle giderilebilir, bugün yeni dil yüzeyi açılmaz. Gerçek HTML içe aktarma kaynağı gelirse dosya kanıtıyla yeniden değerlendirilir. Sıradaki inceleme maddesi §3/5 LSP yeniden analiz maliyetidir.
+
+## K-221 — Ürünleşme A6 bilinmeyen CLI seçeneği
+
+Durum: uygulama ve yerel kabul; exact kaynak/provenance kapanışı bekler.
+A6(1) minimal correctness: bilinmeyen `--` seçenek yol değildir, exit 2
+ve etkin sürümle reddedilir. Program argümanları korunur.
+[ADR-092](../adr/092-cli-bilinmeyen-secenek-reddi.md).
+A6(2) runtime config ayrı açık kapsamdır; K-174 grameri değişmez.

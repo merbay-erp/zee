@@ -13,6 +13,11 @@ K-167**.
 
 ## Dondurulmuş yüzeyler
 
+CLI seçenek bölgesindeki bilinmeyen `--` argümanı kaynak yolu olarak
+okunmadan seçenek adı, etkin sürüm ve exit 2 ile reddedilmek ZORUNDADIR.
+`çalıştır` kaynak yolundan sonraki ve `iz kaydet` program argümanları
+kullanıcı programına aittir; bu seçenek reddinin kapsamına girmez.
+
 Kalıp kelimeleri, koşul yüklemleri, CLI komutları, tanı kodları, `proje.kilit`
 v3, `ZEEZEP` v1, `zee-yayin-v1` zarfı, `zee-tr-1`/`zee-io-1`/`zee-esz-1`
 profilleri, WASM ABI v3 ve `dil::api::v1` uyumluluk yüzeyidir.
