@@ -139,13 +139,13 @@ Kaynak: `docs/compiler-degisiklik-beyanlari-v1.tsv + docs/core-freeze-beyanlari-
 | --- | --- |
 | maintenance | 38 |
 | semantic-bugfix | 3 |
-| semantic-change | 30 |
+| semantic-change | 31 |
 
 | Freeze sınıfı | Beyan |
 | --- | --- |
 | correctness | 11 |
-| dogfood-change | 18 |
+| dogfood-change | 19 |
 | maintenance | 35 |
 | security | 3 |
 
-Toplam: 71 compiler değişiklik beyanı, 67 core freeze beyanı.
+Toplam: 72 compiler değişiklik beyanı, 68 core freeze beyanı.
