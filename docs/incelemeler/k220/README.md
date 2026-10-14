@@ -13,3 +13,5 @@
 Canlı sunucu veya ürün rotası yükseltilmedi. Genel heterojen JSON türü, form encoder, PUT/DELETE, WASM native HTTP adaptörü ve otomatik sır taint sistemi eklenmedi. HTTP sır işlemleri iz kaydında yürütülmez ve iz export’u kapanır. Mevcut GET semantiği korunur. Yeni büyüyen cache/kalıcı durum yoktur; ADR-069 etki incelemesi ADR-091’dedir.
 
 Gitsrv exact commit kabulü henüz beklenir; bu kayıt yerel kabulü gösterir. K-220 backlog kapanışı Gitsrv sonrası yapılır.
+
+Compiler kaynak commit’i `488dc7dede31df2bddcec11cfbbc28246e076398`; sentetik TLS fixture’ı aynı commit’te izlenir. Sonraki beyan commit’i exact compiler/core-freeze kayıtlarını ve üretilen kanıt özetini birlikte taşır.

@@ -1344,3 +1344,7 @@ explicit proje ortam listesi, iz kapatma ve kanonik HTTP JSON helper.
 Olumlu/olumsuz dil, gerçek ürün helper ve localhost TLS testleri aynı dilimde.
 Tam faz, güvenlik ve Gitsrv sonucu [kanıtta](incelemeler/k220/README.md) kapanır.
 §3/4 HTML temizleyici ve §3/5 LSP artımlılık sıradadır.
+
+## İnceleme §3/4 — HTML temizleyici ertelendi
+
+14 Ekim 2026 ürün sahibinin güncel talebi: `cekirdek/kaynak/alanlar.dil` richtext alanı düz metindir; `guvenliParagraflar` satırları `html güvenlisi` ile kaçışlayıp sabit etiketler üretir. Ürün tarafının beş veritabanı taramasında HTML etiketli kayıt 0 olarak bildirilmiştir; AI içerik kaynağı yoktur. Mevcut satır içi biçim eksikliği ürün işlemiyle giderilebilir, bugün yeni dil yüzeyi açılmaz. Gerçek HTML içe aktarma kaynağı gelirse dosya kanıtıyla yeniden değerlendirilir. Sıradaki inceleme maddesi §3/5 LSP yeniden analiz maliyetidir.
