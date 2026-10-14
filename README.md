@@ -34,7 +34,7 @@ son sürüm notu **v0.7.0**. V1 öncesi doğrulama çalışmaları sürüyor.
 | Dil ve araçlar | Lexer, parser, tür denetimi, yorumlayıcı, proje/paket araçları ve LSP çalışıyor. |
 | Derleme | Bootstrap derleyici Rust ile yazılıyor; araç zinciri Rust **1.93.1** sürümüne sabit. |
 | Çalıştırma | Derlenmiş `dil` ve `dillsp` için Rust kurulumu gerekmiyor; sistem kitaplığı gereksinimleri platforma bağlı. |
-| Platform doğrulaması | Linux, macOS ve Windows'ta iki temiz klonla eş hash, kurulum, program/LSP ve kaldırma tatbikatı geçti. |
+| Platform doğrulaması | Önceki kayıtlı checkpoint'lerde Linux, macOS ve Windows tatbikatı geçti; güncel kaynağın yerel macOS iki-klon kabulü ayrı kayıttadır. |
 | Açık işler | Gerçek kullanıcı testleri, minimum işletim sistemi/fiziksel makine kanıtı ve native derleme araçlarının tam envanteri. |
 
 **Zee kaynaklarını doğrudan native/WASM koduna derleyen backend ve
@@ -44,6 +44,9 @@ WebAssembly sürümünü tarayıcıda çalıştırır.
 Ayrıntılar: [Derleme ve bağımlılıklar](docs/derleme-ve-bagimliliklar.md) ·
 [V1 sürüm kapıları](docs/v1-surum-kapilari.md) ·
 [Öncelikli backlog](docs/oncelikli-backlog.md).
+
+[14 Ekim teknik teslimi](docs/urunlesme-sonucu-20261014.md), güncel yerel
+kabulü ve 39 maddelik ürünleşme planının kalan işlerini birlikte gösterir.
 
 ## Kaynaktan hızlı başlangıç
 

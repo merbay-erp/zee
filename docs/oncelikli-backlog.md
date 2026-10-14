@@ -1495,3 +1495,9 @@ K-240 SMTP testleri ayrı native test dosyasına, DB/posta profil erişicileri
 mevcut domain profil dosyalarına taşınır. Test isimleri/faz sahipliği, profil
 değerleri, public yüzey ve üretim gövdeleri korunur; spec kanıtı yeni exact
 test dosyasına taşınmıştır.
+
+K-238–K-240 son temiz teknik checkpoint'i a2b8557'dir;
+[teslim raporu](urunlesme-sonucu-20261014.md) faz/dedicated native/
+iki-klon ve sürekli güvenlik kabulünü exact kaynakla kaydeder. Bu son
+belge commit'i yeni compiler işi açmaz; P08 ve kalan ürün kapasitesi,
+insan/platform/uzak CI/lisans/RC sınırları açık tutulur.

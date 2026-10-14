@@ -108,3 +108,13 @@ dönüştürüldü. Yalnız bu izole iş serisi yeniden kuruldu;
 regression/freeze ve sentetik TLS kökenleriyle tutarlıdır. Eski native ve
 iki-klon raporları özgün kaynaklarını adlandırır; eşlenmiş yeni SHA kabulü
 değildir. Güvenlik yaması sonrası temiz kabul ayrıca kaydedilir.
+
+## Son temiz teknik kabul
+
+[14 Ekim teslim raporu](urunlesme-sonucu-20261014.md) exact
+`a2b8557ba04897c60802d04b911a7eae6e91ae43` kaynağında faz 887/893
+(6 dedicated atlama), ayrı TLS/bütçe 5/5, göç 1/1, parola CAS 7/7,
+sürekli güvenlik ve kanonik iki-klon eşliğini kaydeder. Ayrı koşularda
+örtüşen vakalar yeni toplam gibi birleştirilmez. Bu raporun takip belge
+commit'i yeni kaynak/uzak CI/platform/ürün/RC kabulü değildir. 39 plan
+maddesinin açık kapasitesi ve kullanıcıca bekletilen kararlar korunur.
