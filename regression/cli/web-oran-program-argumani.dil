@@ -1,0 +1,5 @@
+# K-262: mevcut oran deposu kaynak/APP_ARG konumunu kaydıramaz.
+# cli-argumanlari: çalıştır --web-proxy https://fixture.example --web-oran-deposu bellek regression/cli/web-oran-program-argumani.dil APP_ARG
+# cli-cikti: stdout
+argümanlar komut satırından gelenler olsun
+argümanların ilki yaz
