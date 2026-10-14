@@ -4,9 +4,9 @@
 //! `text/plain; charset=utf-8`, konu RFC 2047 UTF-8 Base64. Gönderim geri
 //! alınamaz dış etkidir; eylem içinde değil rota/CLI adaptöründe kullanılır.
 
-use std::io::{BufRead, BufReader, Read, Write};
+use std::io::{self, BufRead, BufReader, Read, Write};
 use std::net::{IpAddr, SocketAddr, TcpStream, ToSocketAddrs};
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
 /// `smtps://kullanici:parola@sunucu:465?from=info@alan&name=Ad` biçimindeki
 /// bağlantı URL'sinden çözülen gönderim ayarı. Sır kaynakta değil ortam
@@ -248,6 +248,36 @@ pub fn ileti_kur(ayar: &EpostaAyari, ileti: &Ileti<'_>) -> String {
     )
 }
 
+#[derive(Debug)]
+struct SonTarihliTcp {
+    tcp: TcpStream,
+    son: Instant,
+}
+impl SonTarihliTcp {
+    fn kalan(&self) -> io::Result<Duration> {
+        self.son
+            .checked_duration_since(Instant::now())
+            .filter(|sure| !sure.is_zero())
+            .ok_or_else(|| io::Error::new(io::ErrorKind::TimedOut, "SMTP son tarihi doldu"))
+    }
+}
+impl Read for SonTarihliTcp {
+    fn read(&mut self, b: &mut [u8]) -> io::Result<usize> {
+        self.tcp.set_read_timeout(Some(self.kalan()?))?;
+        self.tcp.read(b)
+    }
+}
+impl Write for SonTarihliTcp {
+    fn write(&mut self, b: &[u8]) -> io::Result<usize> {
+        self.tcp.set_write_timeout(Some(self.kalan()?))?;
+        self.tcp.write(b)
+    }
+    fn flush(&mut self) -> io::Result<()> {
+        self.kalan()?;
+        self.tcp.flush()
+    }
+}
+
 trait Akis: Read + Write {}
 impl<T: Read + Write> Akis for T {}
 
@@ -343,6 +373,12 @@ fn gonder_ic(
     zaman_asimi: Duration,
     ip_denetimi: &dyn Fn(IpAddr) -> Result<(), String>,
 ) -> Result<(), String> {
+    if zaman_asimi.is_zero() {
+        return Err("SMTP bütçesi sıfır".into());
+    }
+    let son = Instant::now()
+        .checked_add(zaman_asimi)
+        .ok_or("SMTP bütçesi geçersiz")?;
     let (alici, konu, govde) = (ileti.alici, ileti.konu, ileti.govde);
     if !adres_gecerli(alici) {
         return Err("alıcı e-posta adresi geçersiz".into());
@@ -354,10 +390,13 @@ fn gonder_ic(
         return Err("e-posta gövdesi 512 KiB sınırını aşıyor".into());
     }
     let adres = adres_coz(&ayar.konak, ayar.kapi, ip_denetimi)?;
-    let tcp = TcpStream::connect_timeout(&adres, zaman_asimi)
+    let kalan = son
+        .checked_duration_since(Instant::now())
+        .filter(|sure| !sure.is_zero())
+        .ok_or("SMTP son tarihi doldu")?;
+    let tcp = TcpStream::connect_timeout(&adres, kalan)
         .map_err(|hata| format!("SMTP sunucusuna bağlanılamadı: {hata}"))?;
-    tcp.set_read_timeout(Some(zaman_asimi)).ok();
-    tcp.set_write_timeout(Some(zaman_asimi)).ok();
+    let tcp = SonTarihliTcp { tcp, son };
     let loopback = adres.ip().is_loopback();
     let tls = || {
         native_tls::TlsConnector::builder()

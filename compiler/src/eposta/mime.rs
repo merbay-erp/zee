@@ -1,7 +1,7 @@
 //! K-232: sınırlı MIME kodlayıcı ve native SMTP adaptörü.
 
-use super::{base64, baslik_kodla, EpostaAyari, HamAkis, Ileti, Oturum};
-use std::io::{self, BufReader, Read, Write};
+use super::{base64, baslik_kodla, EpostaAyari, HamAkis, Ileti, Oturum, SonTarihliTcp};
+use std::io::{BufReader, Read};
 use std::net::{IpAddr, TcpStream};
 use std::time::{Duration, Instant};
 #[path = "mime/dosya.rs"]
@@ -292,36 +292,6 @@ pub fn ileti_kur(
         return Err("MIME SMTP satırı 998 bayt sınırını aşıyor".into());
     }
     Ok(cikti)
-}
-
-#[derive(Debug)]
-struct SonTarihliTcp {
-    tcp: TcpStream,
-    son: Instant,
-}
-impl SonTarihliTcp {
-    fn kalan(&self) -> io::Result<Duration> {
-        self.son
-            .checked_duration_since(Instant::now())
-            .filter(|sure| !sure.is_zero())
-            .ok_or_else(|| io::Error::new(io::ErrorKind::TimedOut, "SMTP MIME son tarihi doldu"))
-    }
-}
-impl Read for SonTarihliTcp {
-    fn read(&mut self, b: &mut [u8]) -> io::Result<usize> {
-        self.tcp.set_read_timeout(Some(self.kalan()?))?;
-        self.tcp.read(b)
-    }
-}
-impl Write for SonTarihliTcp {
-    fn write(&mut self, b: &[u8]) -> io::Result<usize> {
-        self.tcp.set_write_timeout(Some(self.kalan()?))?;
-        self.tcp.write(b)
-    }
-    fn flush(&mut self) -> io::Result<()> {
-        self.kalan()?;
-        self.tcp.flush()
-    }
 }
 
 /// Redacted, no retry. Deadline covers connect/SMTP/TLS IO; system DNS is not cancellable.

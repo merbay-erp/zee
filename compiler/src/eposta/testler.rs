@@ -241,3 +241,73 @@ fn smtp_yanit_tek_bayt_sel_timeout_ve_bos_eof_buyumeden_durur() {
     );
     assert_eq!(sayac.bayt.get(), 0);
 }
+
+#[test]
+#[cfg(not(target_arch = "wasm32"))]
+fn smtp_gecersiz_butce_dns_ve_agdan_once_reddedilir() {
+    let ayar = EpostaAyari::ayristir("smtp://u:p@invalid.invalid:25?from=a@b.c").unwrap();
+    let ileti = Ileti {
+        alici: "a@b.c",
+        konu: "fixture",
+        govde: "fixture",
+        kimlik: "fixture",
+        tarih: "fixture",
+    };
+    for butce in [Duration::ZERO, Duration::MAX] {
+        assert_eq!(
+            gonder(&ayar, &ileti, butce, &|_| panic!(
+                "geçersiz bütçe ağ denetimine ulaşamaz"
+            ))
+            .unwrap_err(),
+            GONDERIM_HATASI
+        );
+    }
+}
+
+#[test]
+#[cfg(not(target_arch = "wasm32"))]
+fn smtp_yavas_yanit_mutlak_butceyi_yenileyemez() {
+    use std::net::TcpListener;
+    use std::sync::mpsc;
+    let dinleyici = TcpListener::bind("127.0.0.1:0").unwrap();
+    let adres = dinleyici.local_addr().unwrap();
+    let (bitir, bitis) = mpsc::channel();
+    let sunucu = std::thread::spawn(move || {
+        let (mut akis, _) = dinleyici.accept().unwrap();
+        akis.set_write_timeout(Some(Duration::from_secs(1)))
+            .unwrap();
+        akis.write_all(b"220 ").unwrap();
+        let son = Instant::now() + Duration::from_secs(3);
+        while Instant::now() < son {
+            match bitis.recv_timeout(Duration::from_millis(40)) {
+                Ok(()) | Err(mpsc::RecvTimeoutError::Disconnected) => break,
+                Err(mpsc::RecvTimeoutError::Timeout) => {
+                    if akis.write_all(b"x").is_err() {
+                        break;
+                    }
+                }
+            }
+        }
+    });
+    let ayar = EpostaAyari::ayristir(&format!("smtp://u:p@{adres}?from=a@b.c")).unwrap();
+    let ileti = Ileti {
+        alici: "a@b.c",
+        konu: "fixture",
+        govde: "fixture",
+        kimlik: "fixture",
+        tarih: "fixture",
+    };
+    let baslangic = Instant::now();
+    let sonuc = gonder(&ayar, &ileti, Duration::from_millis(200), &|ip| {
+        assert!(ip.is_loopback());
+        Ok(())
+    });
+    let gecen = baslangic.elapsed();
+    bitir.send(()).ok();
+    sunucu.join().unwrap();
+    assert_eq!(sonuc.unwrap_err(), GONDERIM_HATASI);
+    assert!(
+        gecen < Duration::from_secs(1),
+        "200ms bütçe yenilendi: {gecen:?}"
+    );
+}

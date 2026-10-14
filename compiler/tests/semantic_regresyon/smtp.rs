@@ -13,6 +13,7 @@ const GIZLI_HATA: &str = "E-posta gönderilemedi; ayar geçersiz veya gönderim 
 enum SmtpVaka {
     YanitSiniri,
     AuthEcho,
+    YavasYanit,
 }
 
 pub(super) fn calistir(
@@ -26,7 +27,8 @@ pub(super) fn calistir(
     let vaka = match vakalar.as_slice() {
         ["yanit-siniri"] => SmtpVaka::YanitSiniri,
         ["auth-echo"] => SmtpVaka::AuthEcho,
-        _ => panic!("SMTP fixture tek exact yanit-siniri/auth-echo başlığı taşımalı"),
+        ["yavas-yanit"] => SmtpVaka::YavasYanit,
+        _ => panic!("SMTP fixture tek exact yanit-siniri/auth-echo/yavas-yanit başlığı taşımalı"),
     };
     let dinleyici = TcpListener::bind("127.0.0.1:0").unwrap();
     let adres = dinleyici.local_addr().unwrap();
@@ -53,6 +55,24 @@ pub(super) fn calistir(
         akis.set_write_timeout(Some(Duration::from_secs(2)))
             .unwrap();
         match vaka {
+            SmtpVaka::YavasYanit => {
+                akis.write_all(b"220 ").unwrap();
+                let son = Instant::now() + Duration::from_secs(3);
+                while Instant::now() < son {
+                    match bitis.recv_timeout(Duration::from_millis(40)) {
+                        Ok(()) | Err(mpsc::RecvTimeoutError::Disconnected) => break,
+                        Err(mpsc::RecvTimeoutError::Timeout) => {
+                            if akis.write_all(b"x").is_err() {
+                                break;
+                            }
+                        }
+                    }
+                }
+                // Fixture tek accept yapar; ikinci bağlantı otomatik tekrar olur.
+                assert!(
+                    matches!(dinleyici.accept(), Err(h) if h.kind() == std::io::ErrorKind::WouldBlock)
+                );
+            }
             SmtpVaka::YanitSiniri => {
                 let mut veri = vec![b'x'; 16 * 1024 + 1];
                 veri[..4].copy_from_slice(b"220 ");
@@ -137,6 +157,7 @@ impl GirdiCikti for SmtpIo {
         assert!(baglanti.is_none(), "fixture dış SMTP URL'sini çalıştıramaz");
         self.gonderim += 1;
         assert_eq!(self.gonderim, 1, "SMTP otomatik tekrar yok");
+        let baslangic = Instant::now();
         let sonuc = dil::eposta::gonder(
             &self.ayar,
             &dil::eposta::Ileti {
@@ -146,7 +167,11 @@ impl GirdiCikti for SmtpIo {
                 kimlik: "fixture",
                 tarih: "Tue, 14 Oct 2026 12:00:00 +0000",
             },
-            Duration::from_secs(2),
+            if matches!(self.vaka, SmtpVaka::YavasYanit) {
+                Duration::from_millis(200)
+            } else {
+                Duration::from_secs(2)
+            },
             &|ip| {
                 if ip.is_loopback() {
                     Ok(())
@@ -156,6 +181,14 @@ impl GirdiCikti for SmtpIo {
             },
         );
         match self.vaka {
+            SmtpVaka::YavasYanit => {
+                assert!(
+                    baslangic.elapsed() < Duration::from_secs(1),
+                    "200ms SMTP bütçesi yavaş LF-siz yanıtta yenilenmemeli: {:?}",
+                    baslangic.elapsed()
+                );
+                assert_eq!(sonuc.as_ref().unwrap_err(), GIZLI_HATA);
+            }
             SmtpVaka::YanitSiniri => assert_eq!(
                 sonuc.as_ref().unwrap_err(),
                 GIZLI_HATA,

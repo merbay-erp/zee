@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""K-222/GB-022: own ephemeral PostgreSQL, CA/key and strict TLS libtest gate."""
+"""K-222/GB-022: own ephemeral PostgreSQL, CA/key and strict TLS/statement-fault libtest gate."""
 
 import argparse
 from datetime import datetime, timezone
@@ -24,6 +24,12 @@ EXPECTED_TESTS = (
     "izole_tls_san_disindaki_ip_hostnameini_reddeder",
     "izole_tls_null_ve_metin_disini_reddeder_transaction_sagligi_korunur",
     "izole_tls_sorgu_parametre_sonuc_ve_goc_sinirlarini_bir_fazlasinda_reddeder",
+    "izole_tls_deadlock_40p01_tekrarsiz_rollback_ve_yeni_oturum_sagligi",
+    "izole_tls_serialization_40001_tekrarsiz_rollback_ve_yeni_oturum_sagligi",
+)
+FAULT_OBSERVATIONS = (
+    "K250 deadlock sqlstate=40P01 attempts=4 rejected=1 accepted=1 durable_sum=0 fresh_health=true",
+    "K250 serialization sqlstate=40001 attempts=2 other_value=1 victim_marker=0 fresh_health=true",
 )
 
 
@@ -33,18 +39,21 @@ def run(args, **kwargs):
 
 
 def check_results(transcript, returncode):
-    if returncode:
+    if type(returncode) is not int or returncode != 0:
         raise ValueError(f"TLS libtest failed with exit {returncode}")
-    for test in EXPECTED_TESTS:
-        if not re.search(rf"^test {re.escape(test)} \.\.\. ok$", transcript, re.MULTILINE):
-            raise ValueError(f"required TLS test did not pass: {test}")
+    actual = re.findall(r"^test (\S+) \.\.\. (\S+)$", transcript, re.MULTILINE)
+    if sorted(actual) != sorted((test, "ok") for test in EXPECTED_TESTS):
+        raise ValueError("TLS/fault case names or actual results are missing, duplicated or unexpected")
+    for observation in FAULT_OBSERVATIONS:
+        if len(re.findall(rf"^{re.escape(observation)}$", transcript, re.MULTILINE)) != 1:
+            raise ValueError("actual controlled fault observation is absent or duplicated")
     summaries = re.findall(
         r"^test result: ok\. (\d+) passed; (\d+) failed; (\d+) ignored;",
         transcript,
         re.MULTILINE,
     )
     if summaries != [(str(len(EXPECTED_TESTS)), "0", "0")]:
-        raise ValueError(f"TLS gate requires exactly 5 passed/0 failed/0 ignored: {summaries}")
+        raise ValueError(f"TLS gate requires exactly 7 passed/0 failed/0 ignored: {summaries}")
 
 
 def certificates(directory):
@@ -197,6 +206,16 @@ def main():
                 env[prefix + "_HEDEFI"] = f"postgresql://{host}:{cluster.port}/postgres"
                 env[prefix + "_URL"] = f"host={host} port={cluster.port} user=postgres dbname=postgres sslmode=require"
                 env[prefix + "_URL_TLS_CA_PEM"] = root.read_text()
+            for name, serializable, application in [("DEADLOCK", False, "zee_k250_deadlock"),
+                                                      ("SERIALIZABLE", True, "zee_k250_serialization")]:
+                prefix = f"{CA_ENV_PREFIX}{name}"
+                env[prefix + "_HEDEFI"] = f"postgresql://localhost:{cluster.port}/postgres"
+                options = "-c statement_timeout=15000 -c lock_timeout=12000 -c deadlock_timeout=200"
+                if serializable:
+                    options += " -c default_transaction_isolation=serializable"
+                env[prefix + "_URL"] = (f"host=localhost port={cluster.port} user=postgres dbname=postgres "
+                                        f"sslmode=require application_name={application} options='{options}'")
+                env[prefix + "_URL_TLS_CA_PEM"] = ca.read_text()
             command = ["cargo", "test", "--locked", "--test", "postgresql_testi", "izole_tls_", "--",
                        "--ignored", "--test-threads=1", "--nocapture"]
             result = subprocess.run(command, cwd=ROOT / "compiler", env=env, capture_output=True, timeout=600)
@@ -210,12 +229,12 @@ def main():
                       "source_clean": not run(["git", "-C", str(ROOT), "status", "--porcelain"]).strip(),
                       "fixture_hashes": hashes, "engine": args.engine, "server": cluster.version,
                       "server_identity": cluster.identity, "ca_sha256": hashlib.sha256(ca.read_bytes()).hexdigest(),
-                      "tests": list(EXPECTED_TESTS), "command": command, "exit": result.returncode,
+                      "tests": list(EXPECTED_TESTS), "fault_observations": list(FAULT_OBSERVATIONS), "command": command, "exit": result.returncode,
                       "elapsed_seconds": round(time.monotonic() - started, 3),
-                      "boundary": "ephemeral loopback-only synthetic CA/key and cluster; TLS1.2 positive, wrong CA/SAN, real NULL/non-text and transaction health; no provider rotation, TLS1.1 refusal or production cluster evidence"}
+                      "boundary": "ephemeral loopback-only synthetic CA/key and cluster; TLS1.2 positive, wrong CA/SAN, real NULL/non-text, resource limits and two stock statement-time40P01/40001 fixtures with explicit rollback/no-replay/fresh health; no COMMIT outcome inference; no provider rotation, TLS1.1 refusal or production cluster evidence"}
             args.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n")
             check_results(transcript, result.returncode)
-            print(f"PostgreSQL TLS/resource gate: 5/5 passed, 0 ignored; {cluster.version}; report={args.output}")
+            print(f"PostgreSQL TLS/resource gate: 7/7 passed, 0 ignored; {cluster.version}; report={args.output}")
         finally:
             cluster.close()
 

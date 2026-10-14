@@ -167,6 +167,10 @@ boş EOF bağlantı-kapandı hata yolunu korur.
 Bu tüketim sınırı `BufReader`ın sabit ön okumasından ayrıdır. Varsayılan 8 KiB
 kapasitede alttaki okuyucudan en fazla 24 KiB alınabilir; kalan ön okuma
 byte'ları yanıt String'ine girmez. TLS iç buffer/socket kernel buffer veya
-toplam RSS için 16 KiB garantisi verilmez. Eski plain per-operation timeout
-ile MIME absolute deadline sınırı aynıdır; yeni toplam plain oturum deadline'ı
-eklenmez. Dış hata K-236 güvenli maskelemesini korur (ADR-099/100).
+toplam RSS için 16 KiB garantisi verilmez. K-252 düz metin yolunu da MIME
+ile paylaşılan mutlak son tarihe bağlar. Dış hata K-236 güvenli maskelemesini
+korur (ADR-099/100/110).
+
+## SMTP mutlak süre bütçesi — K-252
+
+ZORUNLU: Native düz metin SMTP gönderimi tek mutlak süre bütçesini bağlantı, SMTP ve TLS okuma/yazmaları boyunca korur; yavaş kısmi yanıt veya yazma süreyi yenileyemez. Sıfır ve taşan süre ağdan önce reddedilir; son tarih dolunca yeni ağ işlemi başlamaz. Sistem DNS çözümlemesi iptal edilemez; sert toplam çağrı wall-time garantisi verilmez. C029 maskelemesi ve otomatik tekrar yasağı korunur.

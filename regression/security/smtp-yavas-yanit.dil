@@ -1,0 +1,4 @@
+# smtp-vaka: yavas-yanit
+sonuç "ali@ornek.invalid" "Konu" "Gövde" ile ileti göndermeyi dene olsun
+sonuç başarısızsa
+    sonucun hatası yaz

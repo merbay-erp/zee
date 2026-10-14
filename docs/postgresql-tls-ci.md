@@ -36,7 +36,7 @@ Debian Bookworm `postgresql-15` paketi ve GitHub Ubuntu şablonundaki
 sunucu sürümü her raporda kaydedilir, apt sürümü sabit taban diye sunulmaz.
 GitHub Actions'ın açık/kapalı olması bu şablon değişikliğiyle değiştirilmez.
 
-## Dört gerçek kabul vakası
+## Yedi gerçek kabul vakası
 
 `compiler/tests/postgresql_testi.rs` içindeki `izole_tls_*` vakaları:
 
@@ -53,12 +53,37 @@ GitHub Actions'ın açık/kapalı olması bu şablon değişikliğiyle değişti
 5. K-235 sorgu/parametre/satır/sütun/sonuç ve migration bütçelerini tam
    eşik ve bir fazlasında sınar; ret sonrası transaction sağlığı korunur.
 
-Default Cargo/faz koşusunda bu beş vaka `ignored` görünür: her platforma
+6. K-250 iki gerçek TLS oturumuna ters satır kilitleri aldırır. Döngü gerçek
+   `40P01` üretir; bir actor reddedilir, diğeri ilerler. Her actor iki UPDATE
+   denediği için rollback'ten etkilenmeyen BEFORE STATEMENT sequence toplam
+   dört yazı girişimi görür. Açık outer ROLLBACK onaylarından sonra bağımsız
+   observer kalıcı toplamı sıfır görür; farklı backend'de yeni bağlantı sağlıklıdır.
+7. K-250 SERIALIZABLE oturumun acknowledged snapshot okumasından sonra başka
+   TLS oturum aynı satırı değiştirip commit eder. Eski snapshot'ın UPDATE'i
+   gerçek `40001` verir. Victim'ın önceki marker yazısı ile reddedilen UPDATE'i
+   toplam iki sequence girişimidir; otomatik replay yoktur. Açık ROLLBACK
+   sonrası diğer commit kalır, victim marker'ı sıfırdır ve server oturumu idle'dır.
+   Yeni bağımsız backend aynı adaptörle sağlık sorgusunu tamamlar.
+
+Bu iki vaka statement hatalarını sınar. Kira/request transaction'ının veya
+COMMIT'in sonucunu SQLSTATE'ten türetmez. Stock PostgreSQL fixture'ının açık
+ROLLBACK onayı ve bağımsız kalıcı gözlemi vardır; bütün extension/provider
+hata yolları için genel rollback garantisi değildir. ADR-103'ün C027 ve
+COMMIT belirsizliği kararı korunur. Gönderilmiş COMMIT fault kampanyası
+`scripts/parola-goc-ci.py` içindeki ayrı on bir vakadır.
+
+Fault actor'ları için statement timeout 15 saniye, lock timeout 12 saniye,
+deadlock detector 200 ms'dir. Deadlock worker kapıları ve ana kontrol kanalı
+20 saniyelik bounded acknowledged bariyer kullanır. Yeni kaynakta timeout
+success diye kabul edilmez; exact SQLSTATE ve gözlenen sonuçlar gerekir.
+
+Default Cargo/faz koşusunda bu yedi vaka `ignored` görünür: her platforma
 Docker/PostgreSQL gereksinimi yüklenmez. Dedicated sürekli Linux kapısı
-aynı beş vakayı `--ignored` ile çalıştırır ve exact isimlerin her birinde
-`ok`, yalnız bir özet, **5 passed / 0 failed / 0 ignored** ister. Eksik
+aynı yedi vakayı `--ignored` ile çalıştırır ve exact isimlerin her birinde
+`ok`, yalnız bir özet, **7 passed / 0 failed / 0 ignored** ister. Eksik
 fixture ortamı paniktir; erken `return` veya başarı sayılmaz. Sıfır test,
-yanlış selector, ignored vaka ve başarısız exit için koşucu negatif testleri
+yanlış selector, ignored vaka, duplicate/unexpected isim, bool exit ve yanlış
+SQLSTATE/attempt/kalıcı durum/health gözlemi için dokuz koşucu kabul/ret testi
 `scripts/tests/postgresql-tls-ci-test.py` içindedir. Faz sahibi IO'dur;
 mevcut sahte-adaptör dil vakalarının yürüttüğü çekirdek fazlar aynı grubun
 `ek_kapsam` kaydındadır.
@@ -84,8 +109,16 @@ GB-022'nin yalnız env'e bağlı ve CI fixture'ı olmayan hostname/CA/NULL
 boşluğu kapanır; spec/25'in TLS protokol tabanı kanıtı bağımsız negatif
 downgrade deneyi olmadığı için kısmi kalır.
 
-K-235 kaynak bütçesi vakasıyla güncel dedicated kapı **5/5, sıfır ignored**
-ister. Gerçek SQL sorgu/parametre/satır/sütun/sonuç ve migration dosya/toplam
+K-235 kaynak bütçesi vakasının tarihsel dedicated kabulü **5/5** olarak kalır.
+K-250 sonrası güncel dedicated kapı **7/7, sıfır ignored** ister. Gerçek SQL sorgu/parametre/satır/sütun/sonuç ve migration dosya/toplam
 bütçeleri tam eşik ve bir fazlasında sınanır. Sonuç bayt bütçesi sütun adı
 baytlarını da sayar; ret sonrası aynı transaction sağlık ve commit korunur.
 K-222'nin tarihsel 4/4 kayıtları değişmez; yeni exact kaynak CI kabulü ayrıdır.
+
+K-250 adayında PostgreSQL 16.15 resmi kaynaktan yapılmış sahipli yerel runtime,
+Rust 1.93.1 ve `965c3a9` tabanlı kirli test çalışma ağacıyla 7/7 geçti.
+Bu sonuç temiz commit kabulü değildir. Test/binary/input hashleri ve ilk raw
+kanıt ayrı tutulur; integration sonrası yeni temiz exact kaynakta tekrar koşu
+ve phase sayısı yenilenmesi gerekir. Yeni compiler davranışı, retry,
+SQLSTATE allowlist'i, desteklenen minimum PG sürümü, geniş fault matrisi veya
+uzak CI/platform/provider kabulü eklenmez. Üretim Rust kaynağı değişmedi.
