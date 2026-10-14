@@ -9,7 +9,7 @@ Kaynak: `regression/v2.tsv`
 | Faz | Vaka |
 | --- | --- |
 | checker | 4 |
-| cli | 1 |
+| cli | 2 |
 | concurrency | 2 |
 | hir | 4 |
 | lsp | 1 |
@@ -28,9 +28,9 @@ Kaynak: `regression/v2.tsv`
 | S030 | 1 |
 | T017 | 1 |
 | T054 | 2 |
-| - | 20 |
+| - | 21 |
 
-Toplam 31 vaka; `-` tanısız çalışma/eşzamanlılık vakasıdır. Tam 40 karakterlik `fixed_by` commit'i taşıyan vaka: 31/31.
+Toplam 32 vaka; `-` tanısız çalışma/eşzamanlılık vakasıdır. Tam 40 karakterlik `fixed_by` commit'i taşıyan vaka: 32/32.
 
 ## Güvenlik bulguları
 
@@ -140,15 +140,15 @@ Kaynak: `docs/compiler-degisiklik-beyanlari-v1.tsv + docs/core-freeze-beyanlari-
 | Değişiklik sınıfı | Beyan |
 | --- | --- |
 | maintenance | 39 |
-| semantic-bugfix | 8 |
+| semantic-bugfix | 9 |
 | semantic-change | 39 |
 
 | Freeze sınıfı | Beyan |
 | --- | --- |
 | bugfix | 2 |
-| correctness | 14 |
+| correctness | 15 |
 | dogfood-change | 22 |
 | maintenance | 36 |
 | security | 8 |
 
-Toplam: 86 compiler değişiklik beyanı, 82 core freeze beyanı.
+Toplam: 87 compiler değişiklik beyanı, 83 core freeze beyanı.
