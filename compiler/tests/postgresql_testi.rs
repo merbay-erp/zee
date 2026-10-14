@@ -5,7 +5,7 @@ use dil::yorumlayici::{self, ToplayanIo, VeritabaniHatasi};
 
 // K-222/GB-022: Bunlar yalnız aşağıdaki izolasyon koşucusunun sağladığı
 // geçici sunucuda koşar. Eksik fixture değişkeni başarı/return olamaz.
-// `python3 scripts/postgresql-tls-ci.py` beş vakayı --ignored ile zorlar.
+// `python3 scripts/postgresql-tls-ci.py` yedi vakayı --ignored ile zorlar.
 fn tls_bildirimi(ad: &str) -> dil::veritabani_modeli::VeritabaniBildirimi {
     let degisken = format!("ZEE_POSTGRES_CI_{ad}_URL");
     let hedef = std::env::var(format!("ZEE_POSTGRES_CI_{ad}_HEDEFI"))
@@ -309,4 +309,238 @@ fn izole_tls_sorgu_parametre_sonuc_ve_goc_sinirlarini_bir_fazlasinda_reddeder() 
         .unwrap_err()
         .mesaj
         .contains("Tek migration 1 MiB"));
+}
+
+// K-250: statement-time faults on stock PostgreSQL; no COMMIT classification rule.
+fn fault_admin() -> postgres::Client {
+    let mut config: postgres::Config = std::env::var("ZEE_POSTGRES_CI_DOGRU_URL")
+        .expect("owned fixture URL required")
+        .parse()
+        .unwrap();
+    config.connect_timeout(std::time::Duration::from_secs(5));
+    config.options(
+        "-c statement_timeout=15000 -c lock_timeout=12000 -c application_name=zee_k250_observer",
+    );
+    let ca = std::env::var("ZEE_POSTGRES_CI_DOGRU_URL_TLS_CA_PEM").unwrap();
+    let mut tls = native_tls::TlsConnector::builder();
+    tls.disable_built_in_roots(true);
+    tls.add_root_certificate(native_tls::Certificate::from_pem(ca.as_bytes()).unwrap());
+    tls.min_protocol_version(Some(native_tls::Protocol::Tlsv12));
+    config
+        .connect(postgres_native_tls::MakeTlsConnector::new(
+            tls.build().unwrap(),
+        ))
+        .expect("independent owned TLS observer")
+}
+
+fn fault_oturum(ad: &str) -> dil::postgresql::PostgresqlOturumu {
+    dil::postgresql::PostgresqlOturumu::baglan(&tls_bildirimi(ad), 0)
+        .expect("controlled owned fault session")
+}
+
+fn fault_pid(oturum: &mut dil::postgresql::PostgresqlOturumu) -> i32 {
+    oturum
+        .oku("SELECT pg_backend_pid()::text AS pid", &[])
+        .unwrap()[0][0]
+        .1
+        .parse()
+        .unwrap()
+}
+
+fn fault_sqlstate(hata: &VeritabaniHatasi) -> &str {
+    assert!(
+        !hata
+            .veri
+            .iter()
+            .any(|(ad, deger)| ad == "hata_sinifi" && deger == "db.commit_unknown"),
+        "statement failure is not a COMMIT attempt"
+    );
+    hata.veri
+        .iter()
+        .find(|(ad, _)| ad == "sqlstate")
+        .expect("actual server SQLSTATE")
+        .1
+        .as_str()
+}
+
+fn fault_fresh_health(old_pids: &[i32]) {
+    let mut fresh = tls_olumlu_oturum();
+    assert_eq!(
+        fresh.oku("SELECT 'fresh'::text AS health", &[]).unwrap()[0][0].1,
+        "fresh"
+    );
+    assert!(
+        !old_pids.contains(&fault_pid(&mut fresh)),
+        "new pool uses an independent backend"
+    );
+}
+
+#[test]
+#[ignore = "scripts/postgresql-tls-ci.py creates the owned TLS statement-fault fixture"]
+fn izole_tls_deadlock_40p01_tekrarsiz_rollback_ve_yeni_oturum_sagligi() {
+    use std::sync::mpsc;
+    use std::time::Duration;
+    let mut admin = fault_admin();
+    admin.batch_execute("CREATE TABLE zee_k250_deadlock(id bigint PRIMARY KEY,value bigint NOT NULL); INSERT INTO zee_k250_deadlock VALUES(1,0),(2,0); CREATE SEQUENCE zee_k250_deadlock_attempts; CREATE FUNCTION zee_k250_deadlock_attempt() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN PERFORM nextval('zee_k250_deadlock_attempts'); RETURN NULL; END $$; CREATE TRIGGER zee_k250_deadlock_attempt BEFORE UPDATE ON zee_k250_deadlock FOR EACH STATEMENT EXECUTE FUNCTION zee_k250_deadlock_attempt();").unwrap();
+    let (ready_tx, ready_rx) = mpsc::channel();
+    let mut handles = Vec::new();
+    let mut gates = Vec::new();
+    for first in [1, 2] {
+        let (go_tx, go_rx) = mpsc::sync_channel(1);
+        gates.push(go_tx);
+        let ready = ready_tx.clone();
+        handles.push(std::thread::spawn(move || {
+            let mut oturum = fault_oturum("DEADLOCK");
+            oturum.eylem_baslat().unwrap();
+            let pid = fault_pid(&mut oturum);
+            let sql = "UPDATE zee_k250_deadlock SET value=value+1 WHERE id=$1::bigint";
+            assert_eq!(oturum.degistir(sql, &[first.to_string()]).unwrap(), 1);
+            ready.send(pid).unwrap();
+            go_rx
+                .recv_timeout(Duration::from_secs(20))
+                .expect("bounded control barrier");
+            let second = oturum.degistir(sql, &[(3 - first).to_string()]);
+            let health = oturum.oku("SELECT 'alive'::text AS health", &[]);
+            let rollback = oturum.eylem_geri_al();
+            (second, health, rollback)
+        }));
+    }
+    drop(ready_tx);
+    let pids: Vec<_> = (0..2)
+        .map(|_| {
+            ready_rx
+                .recv_timeout(Duration::from_secs(20))
+                .expect("both real row locks acknowledged")
+        })
+        .collect();
+    assert_ne!(pids[0], pids[1], "two independent PostgreSQL sessions");
+    for gate in gates {
+        gate.send(()).unwrap();
+    }
+    // Join both before asserting either result: a rejected actor explicitly releases
+    // its outer row lock so the other actor can complete, then also rolls back.
+    let joined: Vec<_> = handles.into_iter().map(|handle| handle.join()).collect();
+    let results: Vec<_> = joined.into_iter().map(Result::unwrap).collect();
+    let mut rejected = 0;
+    let mut accepted = 0;
+    for (second, health, rollback) in results {
+        match second {
+            Ok(1) => accepted += 1,
+            Err(hata) => {
+                assert_eq!(fault_sqlstate(&hata), "40P01");
+                rejected += 1;
+            }
+            other => panic!("unexpected controlled deadlock result: {other:?}"),
+        }
+        assert_eq!(
+            health.unwrap()[0][0].1,
+            "alive",
+            "intrinsic savepoint recovered"
+        );
+        rollback.expect("explicit outer ROLLBACK acknowledged");
+    }
+    assert_eq!((rejected, accepted), (1, 1));
+    let attempts: i64 = admin
+        .query_one("SELECT last_value FROM zee_k250_deadlock_attempts", &[])
+        .unwrap()
+        .get(0);
+    assert_eq!(
+        attempts, 4,
+        "two writes per actor; nontransactional statement observer exposes any replay"
+    );
+    let durable_sum: i64 = admin
+        .query_one("SELECT sum(value)::bigint FROM zee_k250_deadlock", &[])
+        .unwrap()
+        .get(0);
+    assert_eq!(
+        durable_sum, 0,
+        "independent durable observer sees both explicit rollbacks"
+    );
+    fault_fresh_health(&pids);
+    eprintln!("K250 deadlock sqlstate=40P01 attempts=4 rejected=1 accepted=1 durable_sum=0 fresh_health=true");
+}
+
+#[test]
+#[ignore = "scripts/postgresql-tls-ci.py creates the owned TLS statement-fault fixture"]
+fn izole_tls_serialization_40001_tekrarsiz_rollback_ve_yeni_oturum_sagligi() {
+    let mut admin = fault_admin();
+    admin.batch_execute("CREATE TABLE zee_k250_serial(id bigint PRIMARY KEY,value bigint NOT NULL); INSERT INTO zee_k250_serial VALUES(1,0),(2,0); CREATE SEQUENCE zee_k250_serial_attempts; CREATE FUNCTION zee_k250_serial_attempt() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF current_setting('application_name')='zee_k250_serialization' THEN PERFORM nextval('zee_k250_serial_attempts'); END IF; RETURN NULL; END $$; CREATE TRIGGER zee_k250_serial_attempt BEFORE UPDATE ON zee_k250_serial FOR EACH STATEMENT EXECUTE FUNCTION zee_k250_serial_attempt();").unwrap();
+    let mut victim = fault_oturum("SERIALIZABLE");
+    victim.eylem_baslat().unwrap();
+    assert_eq!(
+        victim
+            .oku(
+                "SELECT current_setting('transaction_isolation')::text AS isolation",
+                &[]
+            )
+            .unwrap()[0][0]
+            .1,
+        "serializable"
+    );
+    let pid = fault_pid(&mut victim);
+    assert_eq!(
+        victim
+            .oku("SELECT value::text FROM zee_k250_serial WHERE id=1", &[])
+            .unwrap()[0][0]
+            .1,
+        "0",
+        "snapshot barrier is an acknowledged read"
+    );
+    assert_eq!(
+        victim
+            .degistir("UPDATE zee_k250_serial SET value=value+10 WHERE id=2", &[])
+            .unwrap(),
+        1
+    );
+    let invisible: i64 = admin
+        .query_one("SELECT value FROM zee_k250_serial WHERE id=2", &[])
+        .unwrap()
+        .get(0);
+    assert_eq!(invisible, 0, "victim marker is still uncommitted");
+    admin
+        .batch_execute("BEGIN; UPDATE zee_k250_serial SET value=value+1 WHERE id=1; COMMIT")
+        .expect("other session commits after victim snapshot");
+    let hata = victim
+        .degistir("UPDATE zee_k250_serial SET value=value+10 WHERE id=1", &[])
+        .expect_err("stock concurrent update causes real serialization rejection");
+    assert_eq!(fault_sqlstate(&hata), "40001");
+    assert_eq!(
+        victim.oku("SELECT 'alive'::text AS health", &[]).unwrap()[0][0].1,
+        "alive"
+    );
+    victim
+        .eylem_geri_al()
+        .expect("explicit outer ROLLBACK acknowledged");
+    let attempts: i64 = admin
+        .query_one("SELECT last_value FROM zee_k250_serial_attempts", &[])
+        .unwrap()
+        .get(0);
+    assert_eq!(
+        attempts, 2,
+        "prior write and failing statement only; no automatic replay"
+    );
+    let values: Vec<i64> = admin
+        .query("SELECT value FROM zee_k250_serial ORDER BY id", &[])
+        .unwrap()
+        .into_iter()
+        .map(|row| row.get(0))
+        .collect();
+    assert_eq!(
+        values,
+        [1, 0],
+        "other commit survives; victim marker and failed update do not"
+    );
+    let idle: bool = admin
+        .query_one(
+            "SELECT state='idle' AND xact_start IS NULL FROM pg_stat_activity WHERE pid=$1",
+            &[&pid],
+        )
+        .unwrap()
+        .get(0);
+    assert!(
+        idle,
+        "server observed no open transaction after acknowledged rollback"
+    );
+    fault_fresh_health(&[pid]);
+    eprintln!("K250 serialization sqlstate=40001 attempts=2 other_value=1 victim_marker=0 fresh_health=true");
 }

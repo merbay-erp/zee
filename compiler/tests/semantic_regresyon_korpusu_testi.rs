@@ -598,3 +598,17 @@ fn duzeltilmis_semantic_buglar_tani_span_cikis_ve_ciktiyi_korur() {
         );
     }
 }
+
+#[test]
+fn smtp_yavas_yanit_fixture_native_butce_ve_maskeyi_korur() {
+    let kaynak = include_str!("../../regression/security/smtp-yavas-yanit.dil");
+    let mut yukleyici = |ad: &str| {
+        dil::gomulu_birim(ad)
+            .map(str::to_string)
+            .ok_or_else(|| "fixture birim yüklemez".to_string())
+    };
+    let program = dil::kaynagi_fazli_derle_birimlerle(kaynak, &mut yukleyici).unwrap();
+    let (sonuc, cikti) = smtp_fixture::calistir(&program, kaynak);
+    assert_eq!(sonuc.unwrap(), 0);
+    assert_eq!(cikti, vec!["E-posta gönderilemedi; ayar geçersiz veya gönderim sonucu belirsiz; ayrıntılar gizlendi; otomatik tekrar yok"]);
+}

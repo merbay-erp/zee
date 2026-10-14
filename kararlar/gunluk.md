@@ -4433,3 +4433,24 @@ verdi; sourceZIP1190 birebir doğrulandı. İlk dış Cargo target ayarı faz
 yalnız dış koşucu doğrulamaları düzeltildi, kod yeniden etiketlenmedi.
 [Toplu kayıt](../docs/urunlesme-pilot-k245-k249.md) bütün açık sınırları
 korur. Başlangıç ve ürün checkout'u temiz/aynı SHA; push/yayın yoktur.
+
+## K-252 — Düz metin SMTP mutlak süre bütçesi
+
+15 Ekim 2026: gerçek 200ms/3011ms slow-trickle arızası mevcut özel MIME wrapperı paylaşılarak giderilir. C029 ve no-retry korunur; DNS iptal edilemez. ADR-110, GB-072 ve security/smtp-yavas-yanit regresyonu aynı dilimdir.
+
+## K-250 — PostgreSQL statement fault kanıtı
+
+[ADR-111](../adr/111-postgresql-statement-fault-kaniti.md): gerçek 40P01 ve
+40001, no-retry sayaçları, outer rollback onayı ve bağımsız durable observer
+iki native vakayla sınanır. Dedicated TLS kapısı yedi vakadır; COMMIT
+belirsizliği ADR-103/C027 olarak kalır. Çalışma ağacı native7/strict9 geçti;
+temiz exact ortak kabul ayrıca gereklidir; provider/full fault matrisi açık.
+
+## K-251 — DB ve göç hazırlık probu
+
+[ADR-112](../adr/112-db-goc-hazirlik-probu.md), mevcut CLI ile uygulama
+sahipli tek seferlik DB+migration gate üretir. Native13/strict10 yerel aday
+kabulü vardır; compiler özelliği yoktur. DB/worker nesli değişince yeniden
+prob gerekir; continuous/TTL, request metrics/drain/config reload ve P14
+socket devri açık kalır. Gerçek ürün/platform adoptionı ve exact ortak temiz
+kabul ayrıca gereklidir.

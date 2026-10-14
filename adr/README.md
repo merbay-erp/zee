@@ -120,3 +120,6 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-107 | [Kalıcı SQL iş kuyruğu pilotu](107-kalici-sql-is-kuyrugu-pilotu.md) | **kabul, dar SQL prototipi** (K-247/GB-070) |
 | ADR-108 | [LSP URI UTF-8 yolu](108-lsp-uri-utf8-yolu.md) | **kabul** (K-248) |
 | ADR-109 | [TR–EN plain slot yardımcısı](109-tr-en-plain-slot-yardimcisi.md) | **kabul, dar uygulama yardımcısı** (K-249/GB-071) |
+| ADR-110 | [SMTP mutlak süre bütçesi](110-smtp-mutlak-sure-butcesi.md) | **kabul** (K-252/GB-072) |
+| ADR-111 | [PostgreSQL statement fault kanıtı](111-postgresql-statement-fault-kaniti.md) | **kabul, dar yerel pilot** (K-250) |
+| ADR-112 | [DB göç hazırlık probu](112-db-goc-hazirlik-probu.md) | **kabul, dar yerel pilot** (K-251/GB-073) |

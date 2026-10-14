@@ -146,10 +146,10 @@ zincirini aynı stdout/exit ve tam tüketimle doğrular.
 her okuma/yazım SymbolId için ayrıca ister; görünüm LHS eksikliği yalnız
 ifade invariantıyla yakalanamaz. K-213 vaka kimlikleri silinmez.
 
-## SMTP security kipi (K-236/K-237)
+## SMTP security kipi (K-236/K-237/K-252)
 
 `smtp`, `security` fazına aittir. Kaynakta tam bir `# smtp-vaka: auth-echo`
-veya `# smtp-vaka: yanit-siniri` yorum satırı bulunur; duplicate/unknown
+veya `# smtp-vaka: yanit-siniri` veya `# smtp-vaka: yavas-yanit` yorum satırı bulunur; duplicate/unknown
 başlık reddedilir. [Hermetik adaptör](../compiler/tests/semantic_regresyon/smtp.rs)
 serbest loopback portunda tek gerçek `eposta::gonder` çağrısı yapar; sabit
 sentetik credential kullanır, dış SMTP URL’sini/ortamı çalıştırmaz. Manifest
@@ -166,3 +166,9 @@ bayt/tampon sınırı beş actualhelper testinde ayrıca denetlenir; fixture zam
 benchmark veya eski plain toplam oturum deadline garantisi değildir.
 ToplayanIo yalnız diğer trait yöntemlerini taşır, SMTP başarısızlığı gerçek
 native socket çağrısından gelir. Bu kip canlı sağlayıcı veya ürün kabulü değildir.
+
+K-252 `yavas-yanit` fixture'ı 200ms native bütçede her40ms tek baytla
+LF-siz yanıt verir; bir saniye toleransı, tek gerçek bağlantı ve C029
+maskesini sınar. Eski idle-timeout yolunun gerçek3011ms önce-kaydı ve
+çalışma ağacı201ms sonrası [yerel kanıttadır](incelemeler/urunlesme-20261014/k252-smtp/README.md).
+Üç saniye bounded fixture cleanup'ı benchmark veya DNS iptali değildir.

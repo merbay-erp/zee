@@ -40,11 +40,11 @@ Kaynak: `docs/guvenlik-bulgulari-v1.tsv`
 | --- | --- | --- | --- | --- |
 | kritik | 1 | 0 | 0 | 1 |
 | yuksek | 16 | 0 | 0 | 16 |
-| orta | 24 | 7 | 1 | 32 |
-| dusuk | 13 | 9 | 0 | 22 |
+| orta | 25 | 7 | 1 | 33 |
+| dusuk | 13 | 10 | 0 | 23 |
 
 Kapı: açık kritik/yüksek bulgu 0 → **GEÇTİ** (ADR-066 sürekli kapı koşulu).
-Toplam bulgu: 71.
+Toplam bulgu: 73.
 
 ## Spec maddeleri
 
@@ -74,13 +74,13 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | spec/20-ifade-grameri.md | 7 | 0 | 0 | 7 | 100 |
 | spec/21-deterministik-io-izi.md | 5 | 0 | 0 | 5 | 100 |
 | spec/22-deterministik-io-profili.md | 4 | 1 | 0 | 5 | 80 |
-| spec/23-yetkinlik-ve-outbound-guvenligi.md | 25 | 0 | 0 | 25 | 100 |
+| spec/23-yetkinlik-ve-outbound-guvenligi.md | 26 | 0 | 0 | 26 | 100 |
 | spec/24-kaynak-guvenlik-profili.md | 7 | 0 | 0 | 7 | 100 |
 | spec/25-postgresql-veri-erisimi.md | 7 | 1 | 1 | 9 | 77 |
 | spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md | 2 | 0 | 0 | 2 | 100 |
 | spec/27-uyumluluk-ve-surumleme.md | 11 | 1 | 1 | 13 | 84 |
 | spec/28-gorunum-blogu.md | 2 | 0 | 0 | 2 | 100 |
-| **Toplam** | 196 | 5 | 2 | 203 | 96 |
+| **Toplam** | 197 | 5 | 2 | 204 | 96 |
 
 ## Dogfood ürünleri ve korpusu
 

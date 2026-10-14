@@ -1,0 +1,5 @@
+# K-251/B5: DB'den bağımsız liveness200; appgate yalnız owned host probe yazar.
+8080 kapısında sunucu başlat
+
+GET "/hazir" adresine istek geldiğinde
+    "ok" yanıtını gönder
