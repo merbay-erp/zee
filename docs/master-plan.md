@@ -1248,5 +1248,6 @@ bellek backend’i için `--web-oran-siniri`, `--web-oran-kapasitesi` ve
 en-eski yalnız uç nokta pencerelerini çıkarır, login/CSRF canlı sayaçları
 korunur. Tahliye ile uç nokta kotası sıfırlanabilir; proxy ortak saldırı
 bütçesi gerekir. Dosya backend’i ve kalıcı oturum paylaşımı değişmez.
-Kod/test/spec aynı dilimdedir; exact soak, tam faz ve Gitsrv kabulü
-[kanıt sayfasında](incelemeler/k219/README.md) sonuçlanır. Ürün sunucusu yükseltilmedi.
+Kod/test/spec aynı dilimdedir; exact 1800 sn soak, 786/786 yerel faz, ürün
+kapasite yükü ve Gitsrv #26 kabulü [kanıt sayfasında](incelemeler/k219/README.md)
+tamamlandı. Ürün sunucusu yükseltilmedi.

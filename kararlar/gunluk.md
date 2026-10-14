@@ -4197,3 +4197,5 @@ Dal yedekleri özel; uzak silme ve CI teyidi henüz açıktır.
 2026-10-14 — K-217/K-218: dal içerikleri tek master, snapshot core-freeze gerekçesiyle kapalı, altı kaynak ucu özel bundle'da; açık PR/dallar silindi. Explicit bellek oran backend'i yerel780/780, gerçek ürün yükü, exact1800sn soak ve Gitsrv24 başarılı akışıyla kabul edildi. §3/2–5, insan/RC/Windows runtime ve PR-cache dış teyidi açık; canlı yükseltme ürün tarafında.
 
 2026-10-14 — K-219 / ADR-090 / RFC-0032: gerçek ürün §3/2 kapasite ihtiyacına yalnız bellek backend host ayarları eklenir. Explicit en-eski yalnız uç nokta pencerelerini çıkarır; canlı giriş/CSRF kotası ve kapasite üst bütçesi korunur. CLI, clone/churn ve gerçek 100 kart worker testleri aynı dilimdedir; tam faz, exact soak ve Gitsrv kabulü beklenir.
+
+2026-10-14 — K-219 kabul: yerel786/786, exact3595547 1800sn soak26530 döngü ve %0 RSS büyümesi, 40000 anahtarın tümünde200 ve250+1 kotada429, Windows MSVC çapraz lint/build ve Gitsrv26 başarılı. §3/2 tamam; ürün POST ihtiyacı 2d570601608592decc3a94d4ad061bdde1d84874 talebiyle sıradaki dilimdir. Canlı dağıtım ürün tarafında.

@@ -1,0 +1,16 @@
+{
+  "source_commit": "35955470fdb4fc8474f39326ae0f7aa771b5515b",
+  "host": "macos-aarch64",
+  "target": "x86_64-pc-windows-msvc",
+  "rustc": "1.93.1 (01f6ddf75 2026-02-11)",
+  "cargo_xwin": "0.23.1",
+  "xwin_arch": "x86_64",
+  "clippy_all_targets": "passed -D warnings",
+  "build": "passed --locked --release --bin dil --bin dillsp",
+  "runtime_tests": "not run",
+  "release_distribution": "not produced",
+  "binary_sha256": {
+    "dil.exe": "4312bac29a8271f2d25a94097d19584c53e25dcf56d2a9610971c28b55a5d07c",
+    "dillsp.exe": "4b1d632294de307d2d95509d9bca829844284244e18d1655754a1ada07a2cbcd"
+  }
+}

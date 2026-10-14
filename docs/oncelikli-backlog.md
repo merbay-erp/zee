@@ -1327,7 +1327,7 @@ Exact 1800 sn soak ve gerçek ürün yük kabulü [K-218 kanıtında](incelemele
 
 ## K-219 — Oran sınırı ayarı ve korunmuş doluluk
 
-Durum: **KABUL KANITI BEKLENİYOR**. Ürün §3/2: bellek backend’i için
+Durum: **TAMAM — 786/786 yerel faz, exact 1800 sn soak, gerçek ürün yükü ve Gitsrv #26 geçti**. Ürün §3/2: bellek backend’i için
 uç nokta eşiği, sınırlı kapasite ve explicit en-eski pencere tahliyesi.
 Giriş/CSRF canlı kotası korunur; tümü korunmuş dolulukta 503 sınırı sürer.
 [ADR-090](../adr/090-web-oran-ayarlari.md), RFC-0032, olumlu/olumsuz CLI,
