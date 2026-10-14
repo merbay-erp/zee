@@ -1406,18 +1406,19 @@ fn uri_klasoru(uri: &str) -> Option<std::path::PathBuf> {
 
 fn uri_yolu(uri: &str) -> Option<std::path::PathBuf> {
     let yol = uri.strip_prefix("file://")?;
-    let mut cozulmus = String::new();
-    let mut karakterler = yol.chars().peekable();
-    while let Some(k) = karakterler.next() {
-        if k == '%' {
-            let yuksek = karakterler.next()?.to_digit(16)?;
-            let dusuk = karakterler.next()?.to_digit(16)?;
-            cozulmus.push(char::from_u32(yuksek * 16 + dusuk)?);
+    let mut cozulmus = Vec::with_capacity(yol.len());
+    let mut baytlar = yol.bytes();
+    while let Some(bayt) = baytlar.next() {
+        if bayt == b'%' {
+            let yuksek = char::from(baytlar.next()?).to_digit(16)?;
+            let dusuk = char::from(baytlar.next()?).to_digit(16)?;
+            cozulmus.push((yuksek * 16 + dusuk) as u8);
         } else {
-            cozulmus.push(k);
+            cozulmus.push(bayt);
         }
     }
-    Some(std::path::PathBuf::from(cozulmus))
+    // Yüzde-kaçışı bir UTF-8 karakteri değil tek baytı kodlar.
+    Some(std::path::PathBuf::from(String::from_utf8(cozulmus).ok()?))
 }
 
 fn proje_kokunu_bul(yol: &std::path::Path) -> Option<std::path::PathBuf> {
@@ -1433,6 +1434,37 @@ fn proje_kokunu_bul(yol: &std::path::Path) -> Option<std::path::PathBuf> {
 #[cfg(test)]
 mod kaynak_siniri_testleri {
     use super::*;
+
+    #[test]
+    fn uri_yuzde_kacislari_utf8_baytlari_olarak_cozulur() {
+        for uri in [
+            "file:///Türkçe ö 😀+%25/ana.dil",
+            "file:///T%C3%BCrk%C3%A7e%20%C3%B6%20%F0%9F%98%80+%25/ana.dil",
+            "file:///T%c3%bcrk%c3%a7e%20%c3%b6%20%f0%9f%98%80+%25/ana.dil",
+        ] {
+            assert_eq!(
+                uri_yolu(uri),
+                Some(std::path::PathBuf::from("/Türkçe ö 😀+%/ana.dil")),
+                "{uri}"
+            );
+        }
+    }
+
+    #[test]
+    fn uri_eksik_hex_ve_gecersiz_utf8_kacisini_reddeder() {
+        for uri in [
+            "file:///a%",
+            "file:///a%2",
+            "file:///a%GG",
+            "file:///a%C3",
+            "file:///a%80",
+            "file:///a%C0%AF",
+            "file:///a%ED%A0%80",
+            "https:///a.dil",
+        ] {
+            assert!(uri_yolu(uri).is_none(), "{uri}");
+        }
+    }
 
     #[test]
     fn acik_belge_sayisi_sinirli_ve_reddedilen_belge_saklanmaz() {

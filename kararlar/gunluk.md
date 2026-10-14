@@ -4371,3 +4371,11 @@ Eski wildcard kaldırıcı kurulu2/yabancı0 sonucunu verdi; LiteralPath
 düzeltmesi altı pozitif/negatif fixture'la kurulu0/yabancı2 ve fail-closed
 retleri doğruladı. Windows Cargo ve tatbikat native fixture'a bağlıdır;
 PS5.1 source uyumu gerçek PS5.1 veya fiziksel Windows kanıtı değildir.
+
+## K-248 — LSP yüzde UTF-8 dosya yolu
+
+14.10.2026: gerçek stdio oturumunda literal URI tanısız, yüzde kodlu Türkçe
+klasör URI'si A010/S015 verdi. İlk LSP commit'indeki byte→char hatası
+minimal UTF-8 bayt çözümüyle düzeltilir (ADR-108); native disk-birim
+regresyonu, bozuk UTF-8 retleri ve exact fixed_by izleyen kayıtta tutulur.
+Yeni grammar, URI platform kapsamı veya cache eklenmez.

@@ -12,6 +12,10 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **LSP Türkçe dosya yolu (K-248, ADR-108):** yüzde kodlu UTF-8 klasör
+  yolunun yanlış çözümlenmesi giderildi; yan birimler doğru klasörden
+  yüklenir. Yeni URI platform sözleşmesi veya dil özelliği eklenmedi.
+
 - **Resmî Zee sitesi (K-203, ADR-081):** `zeedili.com` HTML ve rotaları Zee
   ile üretir; on içerik sayfası, responsive/erişilebilir görünüm,
   canonical/OG/Twitter/JSON-LD, sitemap/robots, yerel statik ön kapı ve sunucu A

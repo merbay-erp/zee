@@ -10,6 +10,9 @@ use std::path::{Path, PathBuf};
 #[path = "semantic_regresyon/smtp.rs"]
 mod smtp_fixture;
 
+#[path = "semantic_regresyon/lsp_uri.rs"]
+mod lsp_uri_fixture;
+
 const SEMA: &str = "# zee-semantic-regresyon-2";
 const FAZLAR: &[&str] = &[
     "parser",
@@ -20,6 +23,7 @@ const FAZLAR: &[&str] = &[
     "concurrency",
     "security",
     "cli",
+    "lsp",
 ];
 const KIPLER: &[&str] = &[
     "parser",
@@ -33,6 +37,7 @@ const KIPLER: &[&str] = &[
     "web",
     "smtp",
     "cli",
+    "lsp-uri",
 ];
 
 #[derive(Debug, Clone)]
@@ -194,11 +199,25 @@ fn faz_kipi_kabul_eder(faz: &str, kip: &str) -> bool {
         "concurrency" => kip == "run",
         "security" => matches!(kip, "capability" | "web" | "smtp"),
         "cli" => kip == "cli",
+        "lsp" => kip == "lsp-uri",
         _ => false,
     }
 }
 
 fn vakayi_calistir(vaka: &Vaka, kaynak: &str) -> Gozlem {
+    if vaka.kip == "lsp-uri" {
+        let birim = depo()
+            .join(&vaka.dosya)
+            .parent()
+            .unwrap()
+            .join("yardimci.birim");
+        let (cikis, cikti) = lsp_uri_fixture::calistir(kaynak, &birim);
+        return Gozlem {
+            tani: None,
+            cikis,
+            cikti,
+        };
+    }
     if vaka.kip == "cli" {
         let argumanlar = kaynak
             .lines()

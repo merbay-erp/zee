@@ -155,10 +155,10 @@ Değişikliğe özel test, belge ve güvenlik kapıları [AGENTS.md](AGENTS.md) 
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **896** |
+| Rust + doctest vakası | **899** |
 | Tanı kimliği | **159 etkin + 3 ayrılmış** |
 | RFC | **34** (2 kabul, 29 geçici kabul, 3 taslak) |
-| ADR | **102** (102 kabul) |
+| ADR | **103** (103 kabul) |
 | Normatif spec bölümü | **28** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
@@ -239,3 +239,7 @@ ve canlı ürün kabulü ayrı açıktır.
 Native [ekli e-posta profili](rfcs/0034-ekli-eposta.md) readonly PDF/görsel
 eki, Reply-To ve HTML/düz alternatif gövdeyi destekler. Queue ve canlı
 provider/ürün kabulü açık; IO izi/WASM gönderim yapmaz.
+
+K-248 LSP yüzde UTF-8 dosya yolu düzeltmesi ve gerçek stdio regresyonu
+[ADR-108](adr/108-lsp-uri-utf8-yolu.md) ile kaydedilir; exact source/faz
+kabulü yeni devam kaydında tamamlanır.

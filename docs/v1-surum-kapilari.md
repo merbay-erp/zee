@@ -570,3 +570,7 @@ kaynak ZIP eşliğiyle tamamlandı. [Devam raporu](urunlesme-devam-20261014.md)
 kapıları aynı SHA'ya bağlar; takip belge commit'i yeni teknik checkpoint
 değildir. 2e970e4 iki-klon ikilileri tarihsel kalır; full ürün/insan/platform,
 uzak CI/lisans/signed release ve RC sınırları açıktır.
+
+K-248/ADR-108 gerçek LSP yüzde UTF-8 dosya yolu arızasını minimal byte
+çözümü ve native stdio birim regresyonuyla giderir; exact source/provenance
+ve yeni faz kabulü devam eder. Yeni core özelliği veya platform kabulü yoktur.

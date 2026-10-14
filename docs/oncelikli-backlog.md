@@ -1548,3 +1548,10 @@ Resmî geçici 7.5.11 macOS runtime kanıtı Windows/minOS veya yeni uzak CI
 kabulü değildir; source exact son kabul [devam raporundadır](urunlesme-devam-20261014.md).
 [ADR-071](../adr/071-kurulum-kaldirma-sozlesmesi.md) receipt/checksum/Zorla
 sözleşmesi korunur; yeni dil özelliği veya sistem kurulumu yoktur.
+
+## K-248 — LSP dosya URI UTF-8 correctness
+
+Kaynak düzeltmesi ve olumlu/olumsuz testler hazırdır; exact source/provenance
+ve faz kabulü devam eder. [ADR-108](../adr/108-lsp-uri-utf8-yolu.md) gerçek
+stdio Türkçe klasör arızasına minimal byte çözümünü ve iki satırlık native
+regresyonu bağlar. P08, insan/platform/RC kabulü bu işten kapanmaz.

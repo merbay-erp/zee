@@ -6,6 +6,11 @@ metin benzerliğiyle sembol tahmini yapmaz; checker'ın ürettiği typed HIR
 bağlarını tüketir. JSON-RPC zarfı, sayı ve hata davranışının ayrı sözleşmesi
 [LSP JSON-RPC bakım profilindedir](lsp-json-rpc-profili.md).
 
+K-248/ADR-108 dosya URI'sindeki yüzde kaçışlarını UTF-8 baytları olarak
+çözer. Türkçe/emoji ve boşluk içeren klasörde `didOpen` disk birimlerini
+aynı yoldan yükler; literal `+` korunur. Bozuk kaçış/UTF-8 yol üretmez.
+Bu düzeltme yeni URI authority veya platform yolu desteği ilan etmez.
+
 ## Semantic hat
 
 ```text
