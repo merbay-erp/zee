@@ -180,3 +180,12 @@ kabul eşlemesidir**. ZEE-019..024 ve ZEE-027'nin adversarial denetimleri,
 insan/platform/RC kanıtları ve yeni kapasite kararları açık kayıt olarak
 korunur. Yeni doğrulanmış arıza çıkarsa tek reproducer, etkisi, güvenlik
 sınıfı ve ilgili K/GB/test/regression zinciri olmadan “kapalı” yazılmaz.
+
+## K-250 — ZEE-018 yeni statement alt kanıtı
+
+15 Ekim 2026: [ADR-111](../adr/111-postgresql-statement-fault-kaniti.md)
+stock PG16.15 üzerinde gerçek40P01/40001 statement-time no-retry, outer
+rollback/idle ve bağımsız durable sonuç/fresh bağlantı alt kapsamını ekler.
+Dedicated TLS kapısı7 vakadır. Önceki tablolar tarihsel inceleme anıdır;
+COMMIT belirsizliği ADR-103/C027 olarak kalır. Bütün fault/provider matrisi,
+TLS1.1/minOS/çok-worker canlı ürün kabulü ve uzak exact CI hâlâ açıktır.

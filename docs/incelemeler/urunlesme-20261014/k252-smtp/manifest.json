@@ -1,0 +1,16 @@
+{
+  "schema": "zee-smtp-deadline-proof-1",
+  "before_source": "965c3a979bf39ad575898785deaa4496c3384713",
+  "after_source": "working-tree",
+  "rust": "1.93.1",
+  "files": [
+    {
+      "path": "before.json",
+      "sha256": "119fee9e7c3b7b79e648aa6074ad5237a3a18a995a137e4cf32da36f800c953e"
+    },
+    {
+      "path": "after.json",
+      "sha256": "a82aa26d5bc7f9fcacac2a79b87f9e47231fbe99421e845857deb840ea8ddb65"
+    }
+  ]
+}

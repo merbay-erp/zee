@@ -597,3 +597,24 @@ supervisor25 ve iki Python sürümünde TR–EN7+4 ile kanıtlıdır. İki temiz
 klondan Mac ARM64 ikilileri eş ve dirty=false; yeni sır istisnası yoktur.
 Lisans/insan/fiziksel/tam ürün/uzak CI/RC kapıları ve genel P09/P13/P14/
 P21/P25 kapsamı açık kalır. Takip belge commit'i test kaynağı değildir.
+
+### K-252 süre correctness dilimi
+
+Plain SMTP slow-trickle arızası için mutlak bütçe ve minimal security regresyonu eklendi ([ADR-110](../adr/110-smtp-mutlak-sure-butcesi.md)). Ortak exact kaynak ve RC kabulü ayrıca gereklidir; eski c67a69e kanıtı yeni kaynak kabulü sayılmaz.
+
+## K-250 — PostgreSQL statement fault kanıtı
+
+[ADR-111](../adr/111-postgresql-statement-fault-kaniti.md): gerçek 40P01 ve
+40001, no-retry sayaçları, outer rollback onayı ve bağımsız durable observer
+iki native vakayla sınanır. Dedicated TLS kapısı yedi vakadır; COMMIT
+belirsizliği ADR-103/C027 olarak kalır. Çalışma ağacı native7/strict9 geçti;
+temiz exact ortak kabul ayrıca gereklidir; provider/full fault matrisi açık.
+
+## K-251 — DB ve göç hazırlık probu
+
+[ADR-112](../adr/112-db-goc-hazirlik-probu.md), mevcut CLI ile uygulama
+sahipli tek seferlik DB+migration gate üretir. Native13/strict10 yerel aday
+kabulü vardır; compiler özelliği yoktur. DB/worker nesli değişince yeniden
+prob gerekir; continuous/TTL, request metrics/drain/config reload ve P14
+socket devri açık kalır. Gerçek ürün/platform adoptionı ve exact ortak temiz
+kabul ayrıca gereklidir.

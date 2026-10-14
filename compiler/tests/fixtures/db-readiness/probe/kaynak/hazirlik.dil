@@ -1,0 +1,14 @@
+# K-251/B5: tek anonim uygulamanın fixed schema/revision read-only SQL probu.
+# Migration receipt ayrı host CLI kontrolüdür; burası actual tabloyu sınar.
+# Raw DB hatası veya veri stdout'a çıkarılmaz; yalnız sabit başarı token'ı.
+parametreler boş liste olsun
+sorgu "SELECT 'zee-db-ready-1'::text AS durum FROM public.zee_app_state WHERE singleton IS TRUE AND revision='readiness-v1' AND (SELECT count(*) FROM public.zee_app_state)=1 AND (SELECT array_agg(a.attname||':'||pg_catalog.format_type(a.atttypid,a.atttypmod)||':'||a.attnotnull::text ORDER BY a.attnum) FROM pg_catalog.pg_attribute a WHERE a.attrelid='public.zee_app_state'::regclass AND a.attnum>0 AND NOT a.attisdropped)=ARRAY['singleton:boolean:true','revision:text:true'] AND EXISTS(SELECT 1 FROM pg_catalog.pg_constraint c WHERE c.conrelid='public.zee_app_state'::regclass AND c.contype='p' AND c.conkey=ARRAY[1]::smallint[])" sorgusunu parametreler ile okumayı dene olsun
+sorgu başarılıysa
+    kayitlar sorgunun değeri olsun
+    kayitlar boş değilse
+        kayit kayitların ilki olsun
+        durum kayidin "durum" değeri olsun
+        durum "zee-db-ready-1" e eşitse
+            "zee-db-ready-1" yaz
+            programı 0 ile bitir
+programı 1 ile bitir
