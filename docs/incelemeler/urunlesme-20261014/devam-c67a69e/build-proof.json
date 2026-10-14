@@ -1,0 +1,129 @@
+{
+  "schema": "zee-build-proof-summary-2",
+  "result": "passed",
+  "source_sha": "c67a69e6ed9c24c4a540a55eeaaa986a348a2de3",
+  "source_tree": "764cf5d47d9771e8cfd5d4978aa4505c6101980b",
+  "source_start": {
+    "source_sha": "c67a69e6ed9c24c4a540a55eeaaa986a348a2de3",
+    "source_tree": "764cf5d47d9771e8cfd5d4978aa4505c6101980b",
+    "clean": true
+  },
+  "source_end": {
+    "source_sha": "c67a69e6ed9c24c4a540a55eeaaa986a348a2de3",
+    "source_tree": "764cf5d47d9771e8cfd5d4978aa4505c6101980b",
+    "clean": true
+  },
+  "canonical_script": {
+    "path": "scripts/surum-artefakti.sh",
+    "sha256": "8a93e67c4285e182a056a59895d04a28aea7d0019cb2df023d7e64131dbbcbe6",
+    "execution": "source unchanged canonical shell; capture before owned EXIT cleanup"
+  },
+  "clean_clone_binary_hashes": {
+    "a": {
+      "dil": "5c869eb39d35069dcc56eb5ba3b968f23b4ebd0c738162564250813ab57dd5dd",
+      "dillsp": "203c4537c930715b6ab9e3bcdec2034101d5bd5fa2840aaed651ba86d78d2138"
+    },
+    "b": {
+      "dil": "5c869eb39d35069dcc56eb5ba3b968f23b4ebd0c738162564250813ab57dd5dd",
+      "dillsp": "203c4537c930715b6ab9e3bcdec2034101d5bd5fa2840aaed651ba86d78d2138"
+    }
+  },
+  "clean_clone_build_identities": {
+    "a": {
+      "schema": "zee-build-v1",
+      "version": "0.8.0-dev",
+      "source_sha": "c67a69e6ed9c24c4a540a55eeaaa986a348a2de3",
+      "source_date": "2026-10-14",
+      "channel": "development",
+      "dirty": false
+    },
+    "b": {
+      "schema": "zee-build-v1",
+      "version": "0.8.0-dev",
+      "source_sha": "c67a69e6ed9c24c4a540a55eeaaa986a348a2de3",
+      "source_date": "2026-10-14",
+      "channel": "development",
+      "dirty": false
+    }
+  },
+  "compiled_build_identity": {
+    "schema": "zee-build-v1",
+    "version": "0.8.0-dev",
+    "source_sha": "c67a69e6ed9c24c4a540a55eeaaa986a348a2de3",
+    "source_date": "2026-10-14",
+    "channel": "development",
+    "dirty": false
+  },
+  "clean_compiled_identity_accepted": true,
+  "artifacts": [
+    {
+      "path": "GIT_SHA",
+      "sha256": "102cb566fa75d1b1c4b597bfafe265327c652fb3d8383015ef92f273b5f46cbf"
+    },
+    {
+      "path": "SHA256SUMS",
+      "sha256": "b1d94b165b756a104c496b212b1a516b8d0e3379fbb9c5fa139763c103ca17a1"
+    },
+    {
+      "path": "dil",
+      "sha256": "5c869eb39d35069dcc56eb5ba3b968f23b4ebd0c738162564250813ab57dd5dd"
+    },
+    {
+      "path": "dillsp",
+      "sha256": "203c4537c930715b6ab9e3bcdec2034101d5bd5fa2840aaed651ba86d78d2138"
+    },
+    {
+      "path": "provenance.intoto.json",
+      "sha256": "c53362caee51ee06ee74cfa3f5c9f9089765936005ee64da953115e3bc63f3a7"
+    },
+    {
+      "path": "sbom.spdx.json",
+      "sha256": "64316ab01dd6bb99b2a0bafd360f82e5598546786d62e23a85f340bfc3611e46"
+    }
+  ],
+  "raw_evidence": [
+    {
+      "path": "a-build-identity.json",
+      "sha256": "cbfa2e33344648bf5c582a64ce701bfd844e0aaa9db542214ad5199870eb7f2a"
+    },
+    {
+      "path": "a-build.log",
+      "sha256": "dcac718036c27ca9a44752cdfd79126f8c3cc9f72656d78ec4bdafac42824258"
+    },
+    {
+      "path": "a-native-deployment.json",
+      "sha256": "52e2101ce7f003787ed46a7a8e4472b896130e0334b655444bc53ffb8c73e1be"
+    },
+    {
+      "path": "b-build-identity.json",
+      "sha256": "cbfa2e33344648bf5c582a64ce701bfd844e0aaa9db542214ad5199870eb7f2a"
+    },
+    {
+      "path": "b-build.log",
+      "sha256": "e4802fb622a7cada050adbbb14b3f2cf2b998587f23e9ce015cf234989fa4eb7"
+    },
+    {
+      "path": "b-native-deployment.json",
+      "sha256": "c0d5ee4d9501a194670e8ed0bac8d01c027f306b987ceea2af8381213f77161c"
+    },
+    {
+      "path": "build-environment.json",
+      "sha256": "c8b3b90173915ca7b55a78b375928aa095bc7f1d88c198ca0ef447e8dd2fac92"
+    },
+    {
+      "path": "compiled-build-identity.json",
+      "sha256": "cbfa2e33344648bf5c582a64ce701bfd844e0aaa9db542214ad5199870eb7f2a"
+    }
+  ],
+  "host": {
+    "system": "Darwin",
+    "architecture": "arm64"
+  },
+  "validated_at_utc": "2026-10-14T20:59:41.720188+00:00",
+  "signing": "unsigned; no signing key supplied",
+  "remote_ci": null,
+  "publication": false,
+  "release_candidate_acceptance": false,
+  "physical_minimum_os_acceptance": false,
+  "boundary": "Local canonical Mac ARM64 two-clean-clone release-profile hash equality only; private raw evidence stays outside source."
+}

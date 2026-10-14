@@ -4420,3 +4420,16 @@ yeterli; yeni dil sürtünmesi veya compiler özelliği yoktur. Dört Zee testi
 ve yedi actual nativeCLI exactHTML/XSS/ret senaryosu; bağımsız incelemenin
 Python3.9 adaptör bulgusu streaming SHA256 ile kapandı. Genel layout/i18n,
 list/detail/router ve full P08/adoption açıktır; temiz exact kabul sürer.
+
+## 15 Ekim 2026 — K-245–K-249 temiz pilot kabulü
+
+Exact c67a69e6ed9c24c4a540a55eeaaa986a348a2de3 kaynakta faz895/901,
+0 başarısız/6dedicated atlama; ayrı PG28=5/1/11/11, credential14,
+supervisor25 ve Python3.9/3.13 TR–EN7+4 geçti. Fmt/spec203/clippy/deny/
+fuzz/supply/sır443commit+tree ve semantic/core korukları geçti. Kanonik
+iki temiz Mac ARM64 klonu exactSHA dirtyfalse ve eşhash/SBOM/provenance
+verdi; sourceZIP1190 birebir doğrulandı. İlk dış Cargo target ayarı faz
+894/901 bir hata ve aggregate şema KeyError ham kayıtları saklandı;
+yalnız dış koşucu doğrulamaları düzeltildi, kod yeniden etiketlenmedi.
+[Toplu kayıt](../docs/urunlesme-pilot-k245-k249.md) bütün açık sınırları
+korur. Başlangıç ve ürün checkout'u temiz/aynı SHA; push/yayın yoktur.

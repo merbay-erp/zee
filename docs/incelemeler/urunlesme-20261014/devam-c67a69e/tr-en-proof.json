@@ -1,0 +1,236 @@
+{
+  "schema": "zee-k249-clean-native-1",
+  "result": "passed-clean-local-native",
+  "recorded_utc": "2026-10-14T20:54:23.653929+00:00",
+  "source_sha": "c67a69e6ed9c24c4a540a55eeaaa986a348a2de3",
+  "commands": [
+    {
+      "name": "clone",
+      "exit": 0,
+      "elapsed_seconds": 0.082
+    },
+    {
+      "name": "checkout",
+      "exit": 0,
+      "elapsed_seconds": 0.196
+    },
+    {
+      "name": "rustc",
+      "exit": 0,
+      "elapsed_seconds": 0.025
+    },
+    {
+      "name": "build",
+      "exit": 0,
+      "elapsed_seconds": 49.723
+    },
+    {
+      "name": "binary-identity-start",
+      "exit": 0,
+      "elapsed_seconds": 0.482
+    },
+    {
+      "name": "system-python",
+      "exit": 0,
+      "elapsed_seconds": 0.668
+    },
+    {
+      "name": "framework-python",
+      "exit": 0,
+      "elapsed_seconds": 0.607
+    },
+    {
+      "name": "cargo-wrapper",
+      "exit": 0,
+      "elapsed_seconds": 4.579
+    },
+    {
+      "name": "binary-identity-end",
+      "exit": 0,
+      "elapsed_seconds": 0.006
+    }
+  ],
+  "interpreter_runs": [
+    {
+      "name": "system-python",
+      "python_version": "3.9.6",
+      "exit": 0,
+      "native_cases": 7,
+      "source_tests": 4,
+      "skip_count": 0,
+      "campaign_path": "system-python-campaign.json"
+    },
+    {
+      "name": "framework-python",
+      "python_version": "3.13.3",
+      "exit": 0,
+      "native_cases": 7,
+      "source_tests": 4,
+      "skip_count": 0,
+      "campaign_path": "framework-python-campaign.json"
+    }
+  ],
+  "boundaries": {
+    "live_product_acceptance": false,
+    "full_p08_corpus": false,
+    "generic_layout_or_i18n": false,
+    "physical_platform_acceptance": false,
+    "remote_ci_execution": false,
+    "ci_artifact_access": false,
+    "canonical_release_artifact": false
+  },
+  "source_start": {
+    "sha": "c67a69e6ed9c24c4a540a55eeaaa986a348a2de3",
+    "clean": true
+  },
+  "source_tree": "764cf5d47d9771e8cfd5d4978aa4505c6101980b",
+  "source_files": [
+    {
+      "path": "dogfood/zee-cekirdek/tr-en/README.md",
+      "sha256": "35c83d75d695f0797c08de626a5c22aff8b1d7c96d24edfd4aa77cca9f77ab5a"
+    },
+    {
+      "path": "dogfood/zee-cekirdek/tr-en/proje.dil",
+      "sha256": "490e75fd1b14673c4bbe452790a8de8e316511c92513a1116346b4b752064935"
+    },
+    {
+      "path": "dogfood/zee-cekirdek/tr-en/kaynak/ana.dil",
+      "sha256": "8053e480a86d01f50d3966f536a46d77e7639e87831ad84db1a71c89d2594154"
+    },
+    {
+      "path": "dogfood/zee-cekirdek/tr-en/kaynak/ceviri.dil",
+      "sha256": "6fe1159af701fca50bff326f48115a07ad5e0c86cbdda13fa17b333adf087266"
+    },
+    {
+      "path": "dogfood/zee-cekirdek/tr-en/kaynak/sayfa.dil",
+      "sha256": "0337f3e62d2076b4c1ca97c16ce0a2bcb27f0e749d77fac323eed3d6597c6994"
+    },
+    {
+      "path": "scripts/tests/tr-en-sayfa-test.py",
+      "sha256": "9f967fe58124081ee96890f66a8534331640951926c910ec56a6f7695f7132d2"
+    },
+    {
+      "path": "compiler/tests/tr_en_sayfa_testi.rs",
+      "sha256": "3d2f032fe73c8163c721006ebdabd833c87547fb4bb6def757be7b3a232f40c0"
+    },
+    {
+      "path": "compiler/tests/fixtures/tr-en-sayfa/tr.html",
+      "sha256": "dae9cfe7087f15d2ed0974944e4fb09f39f4b8953f8f535ab4b3aef0b0c62a02"
+    },
+    {
+      "path": "compiler/tests/fixtures/tr-en-sayfa/en.html",
+      "sha256": "72d6a10cb61de89f4b478ed6ed3ea98f5548c65b95700e068c96afe3c25b7305"
+    },
+    {
+      "path": "compiler/tests/fixtures/tr-en-sayfa/xss.html",
+      "sha256": "9817a81284644fd54f4bb429567b21f12c6e86602b41f3b0b923ce8a324416ba"
+    }
+  ],
+  "rustc": "rustc 1.93.1 (01f6ddf75 2026-02-11)",
+  "rust_target": "aarch64-apple-darwin",
+  "native_identity_start": {
+    "schema": "zee-build-v1",
+    "version": "0.8.0-dev",
+    "source_sha": "c67a69e6ed9c24c4a540a55eeaaa986a348a2de3",
+    "source_date": "2026-10-14",
+    "channel": "development",
+    "dirty": false
+  },
+  "native_binary_sha256": "04ed52eb4a75d9dd007479f686e6f53fac373eab847065f9240bdd14eea6afb8",
+  "cargo_wrapper": {
+    "passed": 1,
+    "failed": 0,
+    "ignored": 0
+  },
+  "native_identity_end": {
+    "schema": "zee-build-v1",
+    "version": "0.8.0-dev",
+    "source_sha": "c67a69e6ed9c24c4a540a55eeaaa986a348a2de3",
+    "source_date": "2026-10-14",
+    "channel": "development",
+    "dirty": false
+  },
+  "source_finish": {
+    "sha": "c67a69e6ed9c24c4a540a55eeaaa986a348a2de3",
+    "clean": true
+  },
+  "source_unchanged": true,
+  "binary_unchanged": true,
+  "owned_temp_empty": true,
+  "source_clean": true,
+  "finished_utc": "2026-10-14T20:55:20.238049+00:00",
+  "raw_files": [
+    {
+      "path": "raw/binary-identity-end-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/binary-identity-end-stdout.log",
+      "sha256": "90d81df35fc3f1aa9100712a55ea14d6a1d418e0a318f8ab2aae4913ab4867a2"
+    },
+    {
+      "path": "raw/binary-identity-start-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/binary-identity-start-stdout.log",
+      "sha256": "90d81df35fc3f1aa9100712a55ea14d6a1d418e0a318f8ab2aae4913ab4867a2"
+    },
+    {
+      "path": "raw/build-stderr.log",
+      "sha256": "ed6d62378a062ebcc0a917bd8b898b2806a3322c677b70c6cb20e500a63da9f6"
+    },
+    {
+      "path": "raw/build-stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/cargo-wrapper-stderr.log",
+      "sha256": "cf3290e26cb03badb411ebef8e72cc04828fe1918db9905b58a694e54784af88"
+    },
+    {
+      "path": "raw/cargo-wrapper-stdout.log",
+      "sha256": "6c4b1ce79799977d2036b8a86014f36660f54b8301723a1931d71d13b5f830b5"
+    },
+    {
+      "path": "raw/checkout-stderr.log",
+      "sha256": "30a43df7c38be7386a90b29ca4b7c0eed0dbc279d28f5178801ee9dab086c534"
+    },
+    {
+      "path": "raw/checkout-stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/clone-stderr.log",
+      "sha256": "ed9fd6486a8e140cc6454bb927baf0da3d7db38af6b2f4a15157201cdb386fd3"
+    },
+    {
+      "path": "raw/clone-stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/framework-python-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/framework-python-stdout.log",
+      "sha256": "c28cf61f24a02a8e061c5b1ed3c01afe7564a3bc6e2f4690e58123d14f3556d0"
+    },
+    {
+      "path": "raw/rustc-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/rustc-stdout.log",
+      "sha256": "a09c3fc26c9b56a9da361644dc642164492d8ac440d6330c74c7c989bd0d2099"
+    },
+    {
+      "path": "raw/system-python-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/system-python-stdout.log",
+      "sha256": "80ac76933ce5f466b559c575bb8bbaaca250869497bda76f3062b48c3469b968"
+    }
+  ]
+}

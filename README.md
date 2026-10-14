@@ -252,3 +252,7 @@ teknik pilot dilimleridir; P09/P13/P25 tam ürün kabulü açık kalır.
 K-249 [anonim TR–EN sayfa](dogfood/zee-cekirdek/tr-en/README.md) mevcut
 görünüm ve plain Metin ile native escaping/ret kanıtıdır; genel
 layout/i18n ve gerçek ürün kabulü P21 kapsamında açık kalır.
+
+[K-245–K-249 temiz pilot kabulü](docs/urunlesme-pilot-k245-k249.md): POSIX
+credential/worker, dar SQL queue, TR–EN yardımcı ve LSP UTF-8 regresyonu.
+Tam ürün ve sürüm kapıları raporda açık sınırlarıyla izlenir.

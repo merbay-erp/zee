@@ -1,0 +1,165 @@
+{
+  "schema": "zee-owned-native-case-summary-1",
+  "source_sha": "c67a69e6ed9c24c4a540a55eeaaa986a348a2de3",
+  "build_identity": {
+    "schema": "zee-build-v1",
+    "version": "0.8.0-dev",
+    "source_sha": "c67a69e6ed9c24c4a540a55eeaaa986a348a2de3",
+    "source_date": "2026-10-14",
+    "channel": "development",
+    "dirty": false
+  },
+  "binary_sha256": "e366a7b2768d95e14bb2cb24480660dbd82da3a55bbf75a67dc4ccbaacb6ac09",
+  "cases": [
+    {
+      "name": "ayni_onay_tek_is_icerik_farki_reddedilir",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "jobs": 1,
+        "same_id": true,
+        "changed_payload_rejected": true,
+        "payload_is_data": true
+      }
+    },
+    {
+      "name": "iki_worker_sirasiz_ayri_kira_tek_sahip_ve_limit",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "waiting_workers": 2,
+        "distinct_jobs": 2,
+        "active_leases": 2,
+        "third_worker_empty": true,
+        "same_owner_empty": true
+      }
+    },
+    {
+      "name": "suresi_dolan_kira_eski_nesli_reddeder_tek_etki",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "expired_token_reuse_selects_current_job": true,
+        "generation_increased": true,
+        "stale_rejected": true,
+        "effects_before": 0,
+        "effects_after": 1,
+        "repeat_rejected": true,
+        "state_done": true
+      }
+    },
+    {
+      "name": "iki_ret_sonrasi_ucuncu_deneme_bir_etki",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "attempts": 3,
+        "handler_statements": 3,
+        "effects": 1,
+        "first_backoff": 1,
+        "second_backoff": 2,
+        "early_claim_empty": true,
+        "state_done": true
+      }
+    },
+    {
+      "name": "uc_ret_olu_mektup_dorduncu_deneme_yok",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "attempts": 3,
+        "handler_statements": 3,
+        "effects": 0,
+        "dead_letter": true,
+        "fourth_claim_empty": true
+      }
+    },
+    {
+      "name": "sigkill_commit_oncesi_yeniden_kira_tek_etki",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "actual_lock_wait": true,
+        "uncommitted_invisible": true,
+        "killed": true,
+        "effects_after_kill": 0,
+        "effects_after_recovery": 1,
+        "attempts": 2,
+        "state_done": true
+      }
+    },
+    {
+      "name": "sigkill_commit_sonrasi_uzlastirma_tekrar_yok",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "ack_observed": true,
+        "killed": true,
+        "reconciled_done": true,
+        "effects": 1,
+        "handler_statements": 1
+      }
+    },
+    {
+      "name": "handler_commit_iletilmeden_c027_uzlastirma",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "c027": true,
+        "stdout_empty": true,
+        "commits_seen": 1,
+        "commit_forwarded": false,
+        "commit_complete": false,
+        "commit_ready": false,
+        "effects": 0,
+        "reconcile_no_replay": true,
+        "state_leased": true
+      }
+    },
+    {
+      "name": "handler_commit_yanit_kayip_c027_uzlastirma",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "c027": true,
+        "stdout_empty": true,
+        "commits_seen": 1,
+        "commit_forwarded": true,
+        "commit_complete": true,
+        "commit_ready": true,
+        "effects": 1,
+        "reconcile_no_replay": true,
+        "state_done": true
+      }
+    },
+    {
+      "name": "enqueue_commit_iletilmeden_c027_anahtar_uzlastirma",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "c027": true,
+        "stdout_empty": true,
+        "jobs_before_reconcile": 0,
+        "reconciled_missing": true,
+        "jobs_after_explicit_decision": 1
+      }
+    },
+    {
+      "name": "enqueue_commit_yanit_kayip_c027_anahtar_uzlastirma",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "c027": true,
+        "stdout_empty": true,
+        "jobs_before_reconcile": 1,
+        "reconciled_ready": true,
+        "jobs_after_reconcile": 1
+      }
+    }
+  ],
+  "ignored": 0,
+  "owned_cluster_closed": true,
+  "source_acceptance": "clean-exact",
+  "raw_record_sha256": "0bf800429a00c5698d0f96f3a5785e574b51ca98ffc98e6d87821cbca25237a2",
+  "boundary": "Owned anonymous SQL-only queue; generated fixed counter is a test instrument. No SMTP retry, customer cluster, cron grammar, new CLI command, product adoption, Python removal or live deployment acceptance."
+}

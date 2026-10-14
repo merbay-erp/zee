@@ -1,0 +1,183 @@
+{
+  "schema": "zee-k245-k249-clean-gate-summary-1",
+  "source_sha": "c67a69e6ed9c24c4a540a55eeaaa986a348a2de3",
+  "source_start": {
+    "source_sha": "c67a69e6ed9c24c4a540a55eeaaa986a348a2de3",
+    "clean": true
+  },
+  "source_end": {
+    "source_sha": "c67a69e6ed9c24c4a540a55eeaaa986a348a2de3",
+    "clean": true
+  },
+  "result": "passed",
+  "full_phase": {
+    "passed": 895,
+    "total": 901,
+    "failed": 0,
+    "ignored_dedicated": 6,
+    "phase_seconds_sum": 178.603
+  },
+  "static_readme_count": 903,
+  "static_count_is_actual_libtest_count": false,
+  "commands": [
+    {
+      "gate": "phase",
+      "exit": 0,
+      "elapsed_seconds": 242.854,
+      "source_after": {
+        "source_sha": "c67a69e6ed9c24c4a540a55eeaaa986a348a2de3",
+        "clean": true
+      },
+      "log": "phase.log"
+    },
+    {
+      "gate": "fmt",
+      "exit": 0,
+      "elapsed_seconds": 0.496,
+      "source_after": {
+        "source_sha": "c67a69e6ed9c24c4a540a55eeaaa986a348a2de3",
+        "clean": true
+      },
+      "log": "fmt.log"
+    },
+    {
+      "gate": "spec",
+      "exit": 0,
+      "elapsed_seconds": 6.277,
+      "source_after": {
+        "source_sha": "c67a69e6ed9c24c4a540a55eeaaa986a348a2de3",
+        "clean": true
+      },
+      "log": "spec.log"
+    },
+    {
+      "gate": "clippy",
+      "exit": 0,
+      "elapsed_seconds": 16.204,
+      "source_after": {
+        "source_sha": "c67a69e6ed9c24c4a540a55eeaaa986a348a2de3",
+        "clean": true
+      },
+      "log": "clippy.log"
+    },
+    {
+      "gate": "continuous-security",
+      "exit": 0,
+      "elapsed_seconds": 31.328,
+      "source_after": {
+        "source_sha": "c67a69e6ed9c24c4a540a55eeaaa986a348a2de3",
+        "clean": true
+      },
+      "log": "continuous-security.log"
+    },
+    {
+      "gate": "secrets",
+      "exit": 0,
+      "elapsed_seconds": 10.555,
+      "source_after": {
+        "source_sha": "c67a69e6ed9c24c4a540a55eeaaa986a348a2de3",
+        "clean": true
+      },
+      "log": "secrets.log"
+    },
+    {
+      "gate": "semantic-provenance",
+      "exit": 0,
+      "elapsed_seconds": 1.642,
+      "source_after": {
+        "source_sha": "c67a69e6ed9c24c4a540a55eeaaa986a348a2de3",
+        "clean": true
+      },
+      "log": "semantic-provenance.log"
+    },
+    {
+      "gate": "core-freeze",
+      "exit": 0,
+      "elapsed_seconds": 2.119,
+      "source_after": {
+        "source_sha": "c67a69e6ed9c24c4a540a55eeaaa986a348a2de3",
+        "clean": true
+      },
+      "log": "core-freeze.log"
+    }
+  ],
+  "spec_items": 203,
+  "secrets": {
+    "history_commits_scanned": 443,
+    "history_and_current_tree_clean": true,
+    "new_exceptions": false
+  },
+  "actual_phase_binary_after": {
+    "build_identity": {
+      "schema": "zee-build-v1",
+      "version": "0.8.0-dev",
+      "source_sha": "c67a69e6ed9c24c4a540a55eeaaa986a348a2de3",
+      "source_date": "2026-10-14",
+      "channel": "development",
+      "dirty": false
+    },
+    "sha256": "60bab7cf298b1cf31d1f78b0f40c2076ed1d46f1f6beee774d281c42cef0af55"
+  },
+  "first_default_environment_failure": {
+    "raw_proof_sha256": "43724533c204d99e16173fd22e35dca70748dbb9f38a5f79745fd846692ecfc5",
+    "raw_report_sha256": "32e443ad6855a4cfbfe10459cdf7f76eb1a71b876933da90868e57650113db7e",
+    "passed": 894,
+    "total": 901,
+    "failed": 1,
+    "ignored": 6,
+    "cause": "External runner CARGO_TARGET_DIR redirected nested Rust equivalent away from existing manifest-local executable path; source unchanged, full gate repeated with default target in own ignored clone."
+  },
+  "raw_files": [
+    {
+      "path": "clippy.log",
+      "sha256": "1f27c325bf41f20d88d0a8ed0cf7b5d41e0b888e089896501e51d482392b8fb2",
+      "bytes": 4308
+    },
+    {
+      "path": "continuous-security.log",
+      "sha256": "926b2d83fc0c1bdcbe0db23c0376d8c39a53b1b24a1952a94a4167debf844f81",
+      "bytes": 6846
+    },
+    {
+      "path": "core-freeze.log",
+      "sha256": "093ea0e89be978fa97a0627647be58889a23ec1a0324e65dceb07f27cc1600ff",
+      "bytes": 68
+    },
+    {
+      "path": "faz-test-matrisi.md",
+      "sha256": "d7194d45f523b9d9e79616237b79c3deaf204a09a524ea2fd5df8c1ed9f45d73",
+      "bytes": 18858
+    },
+    {
+      "path": "fmt.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "phase.log",
+      "sha256": "16c20e1f38f9eb9ac98edc44c1beb0f4a07a309b9bccbd5c67af3261dc1f3cf6",
+      "bytes": 23786
+    },
+    {
+      "path": "proof.json",
+      "sha256": "a1557aa4368cf54b1fc6ba42bab8d5a879a90f0321a6e677029b8259397153ef",
+      "bytes": 2679
+    },
+    {
+      "path": "secrets.log",
+      "sha256": "fd0b2ba576e4eb4847743e5abfa1085514a7bc259638b40be774be68613e35ea",
+      "bytes": 284
+    },
+    {
+      "path": "semantic-provenance.log",
+      "sha256": "12dd9c1087653bda006c1223a9ae47a8baee8df99cb49e1146bfcfbf1e45e4c9",
+      "bytes": 92
+    },
+    {
+      "path": "spec.log",
+      "sha256": "12b386ad6bbf7a25180ad885067ebc051cd5347d32d1e10a8e5ef3027f38f1d4",
+      "bytes": 379
+    }
+  ],
+  "boundary": "Local exact clean source; full phase preserves six dedicated PG cases as ignored pending separate real owned runtime; Default Cargo target is inside this own ignored clean clone so nested Rust equivalent uses its documented manifest target; no remoteCI, clean physical platform or RC/release acceptance."
+}
