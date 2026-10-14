@@ -35,3 +35,6 @@ dogfood/kelime-avi/kaynak/skorlar.txt
 # Test sertifikaları gerçek üretim anahtarları içermez.
 !compiler/tests/fixtures/**/*.pem
 !compiler/tests/fixtures/**/*.key
+
+# K-232: exact public-password localhost SMTP test identity only.
+!compiler/tests/fixtures/smtp-mime/server.p12
