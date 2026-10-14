@@ -26,6 +26,8 @@ for name in paths.split(b'\0'):
     if src.is_file() and not src.is_symlink():
         dst = out / src; dst.parent.mkdir(parents=True, exist_ok=True); shutil.copyfile(src, dst)
 PY
+    # Yalnız immutable blob ve iki disk kopyası eş SHA-256 olan açık test kimliği.
+    python3 scripts/sir-yanlis-pozitif-denetle.py --tree "$zee_scan_tmp/tree" --out "$zee_scan_tmp/ignore"
     gitleaks dir "${zee_scan_flags[@]}" "$zee_scan_tmp/tree"
 else
     echo 'Kullanım: bash scripts/sir-taramasi.sh [--staged]' >&2; exit 2

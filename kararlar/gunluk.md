@@ -4203,3 +4203,5 @@ Dal yedekleri özel; uzak silme ve CI teyidi henüz açıktır.
 2026-10-14 — K-220 / ADR-091 / RFC-0033: gerçek ürün Turnstile ve Bearer ihtiyacına minimal native HTTPS istek, explicit gizli ortam listesi ve kanonik JSON sözlüğü kalıpları; eski GET korunur, sır taşıyan işlem iz kipinde kapalıdır. Tam faz ve Gitsrv kabulü beklenir.
 
 K-220 / K-174: exact gerçek ürün talebiyle üç contextual kalıp eklendi; syntax gözlem penceresi 14.10.2026–11.11.2026 olarak bilinçli yeniden başladı. Core freeze ve insan/RC kapıları sürer; V1 tamamlandı olarak gösterilmez.
+
+14.10.2026 K-220/GB-054: Gitsrv #28 sentetik PKCS12 directory eşleşmesiyle kaldı; exact immutable fixture fingerprint kapısı ve atlamasız dedektör testleri eklenir. Compiler kaynağı/dil semantiği değişmez; Gitsrv yeniden kabulü açıktır.
