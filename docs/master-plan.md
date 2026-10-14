@@ -1284,3 +1284,6 @@ K-225 doğrudan spec testleri aynı dalgada yürür. RC kapıları açık kalır
 K-226 build kimliği compiler anlamını genişletmez; yeni temel surum sahibi
 ve CLI/LSP kenarları ADR-093/katman fixture'ıyla incelendi. Readiness,
 canlı worker yükseltme ve V1/RC insan-platform kabulü ayrı açıktır.
+
+K-229 biçimleyici --denetle CI dilimi tamamlanır; lint/artımlı LSP/JetBrains
+kapasitesi bundan çıkarılmaz. Mevcut formatter/parser sınırı korunur.

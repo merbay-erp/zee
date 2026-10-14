@@ -1617,3 +1617,9 @@ teyidi açık; yeni compiler özelliği veya canlı migration iddia edilmez.
 `dil sürüm --json` source SHA/tarih/kanal/dirty verir; metin sürümü bunları
 gösterir. LSP zeeBuild ve worker X-Zee-Build/startup aynı kayıttır. Tarih
 source commit UTC günüdür; yeniden derleme duvar saatini ikiliye gömmez.
+
+### K-229 — Yazmadan biçim denetimi
+
+CI için `dil biçimle --denetle <dosya|proje>`: uygun biçim0, fark1; kaynak
+içeriği/mtime/izin değişmez. Default biçimleme writer aynı şekilde sürer.
+K-226 dirty işareti conservative tüm kaynak ağacı değişikliklerini kapsar.

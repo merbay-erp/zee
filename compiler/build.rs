@@ -33,7 +33,15 @@ fn main() {
     for alan in ["ZEE_SOURCE_SHA", "SOURCE_DATE_EPOCH", "ZEE_RELEASE_CHANNEL"] {
         println!("cargo:rerun-if-env-changed={alan}");
     }
-    for yol in ["src", "build.rs", "Cargo.toml", "Cargo.lock"] {
+    for yol in [
+        "src",
+        "build.rs",
+        "Cargo.toml",
+        "Cargo.lock",
+        "third_party",
+        "../kitaplik",
+        "../docs/hata-katalogu.md",
+    ] {
         println!("cargo:rerun-if-changed={yol}");
     }
     let manifest = env::var("CARGO_MANIFEST_DIR").expect("Cargo manifest directory");
@@ -97,16 +105,7 @@ fn main() {
     );
     let dirty = git(
         kok,
-        &[
-            "status",
-            "--porcelain",
-            "--untracked-files=all",
-            "--",
-            "compiler/src",
-            "compiler/build.rs",
-            "compiler/Cargo.toml",
-            "compiler/Cargo.lock",
-        ],
+        &["status", "--porcelain", "--untracked-files=all", "--", "."],
     )
     .is_some_and(|s| !s.is_empty());
     println!(

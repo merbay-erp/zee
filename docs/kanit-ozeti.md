@@ -57,7 +57,7 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | spec/04-turler.md | 13 | 0 | 0 | 13 | 100 |
 | spec/05-degerlendirme.md | 9 | 0 | 0 | 9 | 100 |
 | spec/06-hata-modeli.md | 7 | 0 | 0 | 7 | 100 |
-| spec/07-birimler.md | 7 | 0 | 0 | 7 | 100 |
+| spec/07-birimler.md | 8 | 0 | 0 | 8 | 100 |
 | spec/08-kalici-dosya.md | 4 | 1 | 0 | 5 | 80 |
 | spec/09-son-tarih-ve-iptal.md | 1 | 0 | 0 | 1 | 100 |
 | spec/10-disari-acik-islem-sozlesmesi.md | 4 | 0 | 0 | 4 | 100 |
@@ -79,7 +79,7 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md | 2 | 0 | 0 | 2 | 100 |
 | spec/27-uyumluluk-ve-surumleme.md | 9 | 2 | 1 | 12 | 75 |
 | spec/28-gorunum-blogu.md | 2 | 0 | 0 | 2 | 100 |
-| **Toplam** | 180 | 7 | 2 | 189 | 95 |
+| **Toplam** | 181 | 7 | 2 | 190 | 95 |
 
 ## Dogfood ürünleri ve korpusu
 
@@ -140,14 +140,14 @@ Kaynak: `docs/compiler-degisiklik-beyanlari-v1.tsv + docs/core-freeze-beyanlari-
 | --- | --- |
 | maintenance | 38 |
 | semantic-bugfix | 4 |
-| semantic-change | 32 |
+| semantic-change | 33 |
 
 | Freeze sınıfı | Beyan |
 | --- | --- |
 | bugfix | 1 |
-| correctness | 11 |
+| correctness | 12 |
 | dogfood-change | 20 |
 | maintenance | 35 |
 | security | 3 |
 
-Toplam: 74 compiler değişiklik beyanı, 70 core freeze beyanı.
+Toplam: 75 compiler değişiklik beyanı, 71 core freeze beyanı.

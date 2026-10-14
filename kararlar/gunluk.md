@@ -4269,3 +4269,9 @@ aralığı ve panel/içerik/göç extension yüzeyleri ayrı açık kalır.
 14 Ekim 2026 27/27 kimlik ve 46 exact test işlevi güncel kaynak/kanıt
 sınırına bağlandı. Eski kaynak ölçümleri tarihsel bırakıldı; tam adversarial
 audit açık, K-205 kapsamı yeni özellik veya kapanmış risk diye sunulmaz.
+
+## K-229 — Biçimleyici yazmadan denetim
+
+14 Ekim 2026 C2: mevcut biçimleyici --denetle ile içerik/mtime/izin
+yazmadan CI denetimi yapar; default writer korunur. ADR-094, sekiz
+olumlu/olumsuz CLI vakası. K-226 dirty scope conservative kaynak ağacıdır.

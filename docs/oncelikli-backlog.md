@@ -1407,3 +1407,9 @@ Genel modül yöneticisi, namespace/version-range/menu/content/göç açık kal�
 [27/27 güncel tablo](dis-inceleme-2026-10-13.md) tarihi kaynak ile committed
 K-221 ve aday/yerel K-222/K-226 kanıtını ayırır. PGGB041/LSP kapanan
 alt kapsamlar yeniden açılmaz; tam adversarial audit K-205'te açık kalır.
+
+## K-229 — Biçimleyici CI denetimi
+
+C2 --denetle dosya/proje modunda yazmadan exit0/1 verir; eksik kullanım
+exit2. [ADR-094](../adr/094-bicimleyici-yazmadan-denetim.md). Lint, cache,
+artımlı LSP ve JetBrains dağıtım hattı ayrı açık kalır.

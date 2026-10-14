@@ -17,7 +17,9 @@ commit zamanı ile eşleşir; yanlış beyan derlemeyi durdurur. Archive build
 bu iki girdiyi explicit sağlayabilir. Kanal varsayılanı `-dev` için
 development, diğer seri için beta'dır. Stable ancak explicit seçilir ve
 `-dev` seri stable olamaz; kanal etiketi RC kapılarını geçme iddiası değildir.
-Kirli compiler kaynak/manifest/lock/build betiği ayrı boolean'dır.
+Kirli kaynak checkout'u ayrı conservative boolean'dır; ignored build
+çıktıları bu alana girmez. Compiler source/manifest/lock/build betiği,
+vendored source, gömülü kitaplık ve hata kataloğu build girdileri izlenir.
 
 LSP serverInfo.version SemVer kalır; serverInfo.zeeBuild aynı JSON kaydıdır.
 Worker startup aynı kaydı yazar. Uygulamanın sağlık rotası dahil tamamlanmış

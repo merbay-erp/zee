@@ -150,10 +150,10 @@ Değişikliğe özel test, belge ve güvenlik kapıları [AGENTS.md](AGENTS.md) 
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **829** |
+| Rust + doctest vakası | **837** |
 | Tanı kimliği | **159 etkin + 3 ayrılmış** |
 | RFC | **33** (2 kabul, 28 geçici kabul, 3 taslak) |
-| ADR | **91** (91 kabul) |
+| ADR | **92** (92 kabul) |
 | Normatif spec bölümü | **28** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
@@ -224,3 +224,5 @@ Native dış isteklerde başlıklı GET/POST ve gövde gönderimi başarısızl�
 
 Ürünleşme A6: bilinmeyen CLI seçenekleri kaynak dosyası adı gibi
 yorumlanmaz; exit 2 ve etkin sürümle reddedilir (K-221).
+
+CI biçim denetimi: `dil biçimle --denetle .` (uygun biçim0, fark1, yazma yok).

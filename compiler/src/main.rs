@@ -324,6 +324,7 @@ fn cli_seceneklerini_denetle(argumanlar: &[String]) -> Result<(), String> {
     let komut = argumanlar.first().map(String::as_str).unwrap_or("");
     let (bayraklar, degerli): (&[&str], &[&str]) = match komut {
         "denetle" | "sürüm" | "surum" => (&["--json"], &[]),
+        "biçimle" | "bicimle" => (&["--denetle"], &[]),
         "paketle" => (&[], &["--anahtar", "--çıktı", "--cikti"]),
         "ekle" | "kilitle" | "paketler" => (
             &["--yenile", "--çevrimdışı", "--cevrimdisi"],
@@ -377,7 +378,7 @@ fn kullanim() {
     );
     eprintln!("  dil denetle <dosya|proje>  çalıştırmadan denetler (--json: makine çıktısı)");
     eprintln!("  dil dene <dosya|proje>     test bloklarını koşar");
-    eprintln!("  dil biçimle <dosya|proje>  dosyayı ya da bütün projeyi biçimler");
+    eprintln!("  dil biçimle [--denetle] <dosya|proje> biçimler; --denetle yazmadan biçim farkını denetler");
     eprintln!("  dil ekle <yerel-yol|ad@X.Y.Z> [proje] paketi doğrulayıp ekler ve kilitler");
     eprintln!("      ilk uzak paket: --registry https://... --kök 1@sha256:<özet>");
     eprintln!("  dil çıkar <paket> [proje]    kullanılmayan doğrudan paketi kaldırır");
@@ -822,18 +823,29 @@ fn denetle_yolu(argumanlar: &[String]) -> ExitCode {
 }
 
 fn bicimle_komutu(argumanlar: &[String]) -> ExitCode {
-    let yol = match argumanlar.get(1) {
-        Some(yol) => std::path::Path::new(yol),
-        None => {
-            eprintln!("Bir .dil dosyası veya proje klasörü belirtmelisin. Örnek: dil biçimle .");
+    let mut yol = None;
+    let mut denetle = false;
+    for arguman in argumanlar.iter().skip(1) {
+        if arguman == "--denetle" {
+            denetle = true;
+        } else if yol.is_none() {
+            yol = Some(std::path::Path::new(arguman));
+        } else {
+            eprintln!("Biçimleme tek dosya veya proje ister. Kullanım: dil biçimle [--denetle] <dosya|proje>");
             return ExitCode::from(2);
         }
+    }
+    let Some(yol) = yol else {
+        eprintln!(
+            "Bir .dil dosyası veya proje klasörü belirtmelisin. Örnek: dil biçimle --denetle ."
+        );
+        return ExitCode::from(2);
     };
 
     if yol.is_dir() {
-        return projeyi_bicimle(yol);
+        return projeyi_bicimle(yol, denetle);
     }
-    bir_dosyayi_bicimle(yol)
+    bir_dosyayi_bicimle(yol, denetle)
 }
 
 fn anahtar_komutu(argumanlar: &[String]) -> ExitCode {
@@ -1183,7 +1195,7 @@ fn proje_dosyalarini_guncelle(
     grafik.bildirim_ve_kilidi_yaz(eski_kaynak, yeni_kaynak)
 }
 
-fn bir_dosyayi_bicimle(yol: &std::path::Path) -> ExitCode {
+fn bir_dosyayi_bicimle(yol: &std::path::Path, denetle: bool) -> ExitCode {
     let kaynak = match dil::kaynak_sinirlari::kaynak_dosyasi_oku(yol) {
         Ok(kaynak) => kaynak,
         Err(hata) => {
@@ -1195,6 +1207,10 @@ fn bir_dosyayi_bicimle(yol: &std::path::Path) -> ExitCode {
         Ok(bicimli) if bicimli == kaynak => {
             println!("Zaten biçimli: {}", yol.display());
             ExitCode::SUCCESS
+        }
+        Ok(_) if denetle => {
+            eprintln!("Biçim farkı: {}", yol.display());
+            ExitCode::FAILURE
         }
         Ok(bicimli) => match dil::kalici_dosya::atomik_yaz(yol, bicimli.as_bytes()) {
             Ok(()) => {
@@ -1215,7 +1231,8 @@ fn bir_dosyayi_bicimle(yol: &std::path::Path) -> ExitCode {
 
 /// Projedeki bütün .dil kaynaklarını önce bellekte biçimler; tek bir kaynak
 /// hatalıysa hiçbir dosyaya dokunmaz. Yazma sırası yol sırasıdır (K-077).
-fn projeyi_bicimle(kok: &std::path::Path) -> ExitCode {
+/// K-229 denetleme kipi aynı sıralı taramayı yazı açmadan tamamlar.
+fn projeyi_bicimle(kok: &std::path::Path, denetle: bool) -> ExitCode {
     if let Err(hata) = girdiyi_oku(kok) {
         hata.yazdir(false);
         return hata.cikis_kodu();
@@ -1244,6 +1261,26 @@ fn projeyi_bicimle(kok: &std::path::Path) -> ExitCode {
                 return ExitCode::FAILURE;
             }
         }
+    }
+
+    if denetle {
+        let mut fark = 0usize;
+        for (yol, kaynak, bicimli) in &hazir {
+            if kaynak != bicimli {
+                eprintln!("Biçim farkı: {}", yol.display());
+                fark += 1;
+            }
+        }
+        println!(
+            "{} kaynak denetlendi; {} dosyada biçim farkı.",
+            yollar.len(),
+            fark
+        );
+        return if fark == 0 {
+            ExitCode::SUCCESS
+        } else {
+            ExitCode::FAILURE
+        };
     }
 
     let mut degisen = 0usize;
