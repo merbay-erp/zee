@@ -1321,8 +1321,13 @@ HTTP/tedarik ve offline vendor kabulü yeni exact kaynağa bağlanır.
 P33 tam audit, P06/P30 signed release, platform/insan/ürün ve uzak CI
 kapıları bundan kapanmaz; benchmark tarihçesi yeniden yazılmaz.
 
-[14 Ekim teknik teslimi](urunlesme-sonucu-20261014.md) temiz a2b8557
-checkpoint'ine bağlı faz, dedicated native ve iki-klon kanıtını toplar.
+[14 Ekim teknik teslimi](urunlesme-sonucu-20261014.md) temiz a2b8557 kaynak
+checkpoint'ine bağlı tarihsel faz, dedicated native ve iki-klon hash
+kanıtını toplar. [Gerçek ikili kimliği tekrar kontrolü](incelemeler/urunlesme-20261014/final-a2b8557/build-identity-recheck.json)
+`dirty: true` bildirdiği için temiz derlenmiş release kimliği kabul edilmez;
+hash eşliği bu kabulün yerine geçmez. [K-241 / ADR-102](../adr/102-surum-klonu-ve-build-kimligi.md)
+sonrası yeni exact commit'te kanonik yeniden koşu ve P02/P06/P37 doğrulaması
+bekliyor. Önceki a2b8557 faz/native sonuçları geçerli tarihsel kanıttır.
 39 plan maddesinin bütünü kapanmadı: gerçek ürün korpusu ve kabulü yanında
 P09/P13/P14/P25 gibi eksik kod kapasitesi de açık kalır. Lisans bekletme,
 sınırlı pilot ve insan/fiziksel/uzak CI/RC sınırları korunur.

@@ -109,12 +109,19 @@ regression/freeze ve sentetik TLS kökenleriyle tutarlıdır. Eski native ve
 iki-klon raporları özgün kaynaklarını adlandırır; eşlenmiş yeni SHA kabulü
 değildir. Güvenlik yaması sonrası temiz kabul ayrıca kaydedilir.
 
-## Son temiz teknik kabul
+## Tarihsel teknik kabul ve release kimliği düzeltmesi
 
 [14 Ekim teslim raporu](urunlesme-sonucu-20261014.md) exact
 `a2b8557ba04897c60802d04b911a7eae6e91ae43` kaynağında faz 887/893
 (6 dedicated atlama), ayrı TLS/bütçe 5/5, göç 1/1, parola CAS 7/7,
-sürekli güvenlik ve kanonik iki-klon eşliğini kaydeder. Ayrı koşularda
-örtüşen vakalar yeni toplam gibi birleştirilmez. Bu raporun takip belge
-commit'i yeni kaynak/uzak CI/platform/ürün/RC kabulü değildir. 39 plan
-maddesinin açık kapasitesi ve kullanıcıca bekletilen kararlar korunur.
+sürekli güvenlik ve tarihsel iki-klon hash eşliğini kaydeder. Gerçek
+release ikilisinin [kimlik tekrar kontrolü](incelemeler/urunlesme-20261014/final-a2b8557/build-identity-recheck.json)
+`dirty: true` sonucuyla temiz derlenmiş kimlik kabulünü reddetti; hashlerin
+eş olması bu kusuru kapatmaz. [K-241 / ADR-102](../adr/102-surum-klonu-ve-build-kimligi.md)
+klon dışı log, önce/sonra temizlik ve gerçek ikili exact SHA/`dirty: false`
+kabulünü gerektirir. Yeni exact kaynak commit'i ve kanonik yeniden koşunun
+sonucu henüz kaydedilmedi; P02/P06/P37 doğrulaması bekliyor. a2b8557
+faz/native sonuçları tarihsel geçerliliğini korur. Ayrı koşularda örtüşen
+vakalar yeni toplam gibi birleştirilmez. Sonraki belge/araç commit'i yeni
+uzak CI/platform/ürün/RC kabulü değildir. 39 plan maddesinin açık kapasitesi
+ve kullanıcıca bekletilen kararlar korunur.

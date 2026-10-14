@@ -75,10 +75,51 @@ if [[ "$platform" == *-pc-windows-msvc ]]; then
 fi
 
 echo "== Sürüm artefaktı: $sha ($platform, $rustc_surumu, SOURCE_DATE_EPOCH=$epoch)"
+python_komutu=python
+command -v python3 >/dev/null 2>&1 && python_komutu=python3
+
+klon_temizligini_denetle() {
+    local klon_durumu klon_sha
+    klon_sha="$(git -C "$1" rev-parse HEAD)" || {
+        echo "Sürüm klonunun kaynak kimliği okunamadı." >&2; exit 1
+    }
+    if [[ "$klon_sha" != "$sha" ]]; then
+        echo "Sürüm klonu exact kaynak SHA'sında kalmalı." >&2; exit 1
+    fi
+    klon_durumu="$(git -C "$1" status --porcelain --untracked-files=all -- .)" || {
+        echo "Sürüm klonunun kaynak durumu okunamadı." >&2; exit 1
+    }
+    if [[ -n "$klon_durumu" ]]; then
+        echo "Sürüm klonu derleme boyunca temiz kalmalı." >&2; exit 1
+    fi
+}
+
+ikili_kimligini_denetle() {
+    "$python_komutu" -I - "$1" "$sha" <<'PY'
+import json
+import subprocess
+import sys
+
+try:
+    result = subprocess.run([sys.argv[1], "sürüm", "--json"], capture_output=True, timeout=10)
+    if result.returncode != 0 or result.stderr or len(result.stdout) > 65536:
+        raise ValueError
+    identity = json.loads(result.stdout)
+    if (not isinstance(identity, dict) or identity.get("schema") != "zee-build-v1"
+            or identity.get("source_sha") != sys.argv[2] or identity.get("dirty") is not False):
+        raise ValueError
+except (OSError, ValueError, RecursionError, subprocess.SubprocessError):
+    print("Sürüm ikilisinin exact kaynak/temiz build kimliği doğrulanamadı.", file=sys.stderr)
+    sys.exit(1)
+PY
+}
+
 for klon in a b; do
     echo "-- Temiz klon $klon derleniyor"
     git clone -q --local --no-hardlinks "$depo_koku" "$gecici/$klon"
     git -C "$gecici/$klon" checkout -q "$sha"
+    klon_temizligini_denetle "$gecici/$klon"
+    mkdir -p "$gecici/evidence/$klon"
     klon_yolu="$gecici/$klon"
     hedef_yolu="$gecici/$klon/target"
     if [[ "$platform" == *-pc-windows-msvc ]]; then
@@ -100,15 +141,18 @@ for klon in a b; do
             CC_ENABLE_DEBUG_OUTPUT=1 \
             RUSTC_LOG=rustc_codegen_ssa::back::link=info \
             CARGO_TARGET_DIR="$hedef_yolu" \
-            cargo build -vv "${build_argumanlari[@]}" > "$gecici/$klon/build.log" 2>&1; then
-            cat "$gecici/$klon/build.log" >&2
+            cargo build -vv "${build_argumanlari[@]}" > "$gecici/evidence/$klon/build.log" 2>&1; then
+            cat "$gecici/evidence/$klon/build.log" >&2
             exit 1
         fi
     )
+    klon_temizligini_denetle "$gecici/$klon"
+    ikili_uzantisi=""
+    [[ "$platform" == *windows* ]] && ikili_uzantisi=.exe
+    ikili_kimligini_denetle "$gecici/$klon/target/$release_dizini/dil$ikili_uzantisi"
+    klon_temizligini_denetle "$gecici/$klon"
     if [[ "$native_hedef" != none ]]; then
-        python_komutu=python
-        command -v python3 >/dev/null 2>&1 && python_komutu=python3
-        "$python_komutu" "$depo_koku/scripts/native-deployment-denetle.py" --root "$gecici/$klon/target" --target "$native_hedef" --out "$gecici/$klon/native-deployment.json"
+        "$python_komutu" "$depo_koku/scripts/native-deployment-denetle.py" --root "$gecici/$klon/target" --target "$native_hedef" --out "$gecici/evidence/$klon/native-deployment.json"
     fi
 done
 
@@ -143,13 +187,11 @@ for ikili in dil dillsp; do
     echo "-- $ikili iki klonda eş: $a"
 done
 
-python_komutu=python
-command -v python3 >/dev/null 2>&1 && python_komutu=python3
-if ! "$python_komutu" "$depo_koku/scripts/derleme-ortami-kaydet.py" --a "$gecici/a/build.log" --b "$gecici/b/build.log" --sha "$sha" --out "$gecici/build-environment.json" --native-target "$native_hedef"; then
+if ! "$python_komutu" "$depo_koku/scripts/derleme-ortami-kaydet.py" --a "$gecici/evidence/a/build.log" --b "$gecici/evidence/b/build.log" --sha "$sha" --out "$gecici/build-environment.json" --native-target "$native_hedef"; then
     if [[ -n "${ZEE_SURUM_TANI_DIZINI:-}" ]]; then
         mkdir -p "$ZEE_SURUM_TANI_DIZINI"
-        cp "$gecici/a/build.log" "$ZEE_SURUM_TANI_DIZINI/a-build.log"
-        cp "$gecici/b/build.log" "$ZEE_SURUM_TANI_DIZINI/b-build.log"
+        cp "$gecici/evidence/a/build.log" "$ZEE_SURUM_TANI_DIZINI/a-build.log"
+        cp "$gecici/evidence/b/build.log" "$ZEE_SURUM_TANI_DIZINI/b-build.log"
         printf '%s\n' "$sha" > "$ZEE_SURUM_TANI_DIZINI/GIT_SHA"
         printf 'YAYINLANAMAZ: linker ortam kanıtı eksik.\n' > "$ZEE_SURUM_TANI_DIZINI/DURUM"
     fi

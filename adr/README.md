@@ -110,3 +110,5 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-100 | [SMTP yanıt okuma sınırı](100-smtp-yanit-okuma-siniri.md) | **kabul** (K-237/GB-061) |
 
 | ADR-101 | [rustls advisory güvenlik yaması](101-rustls-advisory-yamasi.md) | **kabul** (K-238/GB-062) |
+
+| ADR-102 | [Sürüm klonu ve build kimliği](102-surum-klonu-ve-build-kimligi.md) | **kabul** (K-241/GB-064) |

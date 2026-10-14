@@ -1501,3 +1501,12 @@ K-238–K-240 son temiz teknik checkpoint'i a2b8557'dir;
 iki-klon ve sürekli güvenlik kabulünü exact kaynakla kaydeder. Bu son
 belge commit'i yeni compiler işi açmaz; P08 ve kalan ürün kapasitesi,
 insan/platform/uzak CI/lisans/RC sınırları açık tutulur.
+
+## K-241 — Sürüm üretiminde kaynak klonu ve ikili kimliği
+
+Son doğrudan ikili denetimi a2b8557 sürüm çıktısında `dirty: true` buldu;
+üreticinin logu checkout'u derlemeden önce kirletiyordu. Log/ortam raporu
+klon dışına taşınır; önce/sonra temizlik ve her gerçek ikilide exact
+SHA/temiz kimlik kapısı eklenir. ADR-102/GB-064 ile olumlu/olumsuz shell
+ve yeniden kanonik iki-klon kabulü birlikte kapanır. Dil anlamı veya
+build.rs koruması değiştirilmez; yeni yayın/RC iddiası yoktur.

@@ -1686,3 +1686,12 @@ bilinçli sayar. K-236 C029 kimliği korunur; fixture özeti yalnız teslim
 sonucu belirsizliği ve hata maskelemesini açıklayan editoryal güncellemedir.
 K-238 mevcut GET yürütmesi HTTP handler’a taşınarak 900 satır mimari sınırı
 korunur; deadline, C018 ve tel davranışı aynı kalır.
+
+### K-241 — Temiz sürüm klonunda doğru build kimliği
+
+Sürüm üreticisinin kendi logları kaynak klonunun dışına taşındı. Her klon
+derleme öncesi/sonrası temiz kalmalı ve gerçek `dil sürüm --json` exact
+kaynak SHA'sı ile `dirty: false` bildirmelidir. Aynı hash'e sahip iki kirli
+ikili veya değiştirilmiş klon artık çıktı oluşturamaz. Dil anlamı, build.rs
+kirli-ağaç denetimi ve mevcut imza/platform sınırı korunur.
+[ADR-102](../adr/102-surum-klonu-ve-build-kimligi.md).

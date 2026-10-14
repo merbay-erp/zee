@@ -583,6 +583,16 @@ fn surum_artefakti_iki_temiz_klon_sbom_provenance_ve_imza_kablosunu_tasir() {
         "git show \"$sha:compiler/rust-toolchain.toml\"",
         "git clone -q --local",
         "for klon in a b",
+        "klon_temizligini_denetle",
+        "git -C \"$1\" rev-parse HEAD",
+        "--porcelain --untracked-files=all -- .",
+        "[[ \"$klon_sha\" != \"$sha\" ]]",
+        "$gecici/evidence/$klon/build.log",
+        "$gecici/evidence/$klon/native-deployment.json",
+        "ikili_kimligini_denetle",
+        "subprocess.run([sys.argv[1], \"sürüm\", \"--json\"]",
+        "identity.get(\"source_sha\") != sys.argv[2]",
+        "identity.get(\"dirty\") is not False",
         "--remap-path-prefix=",
         "SOURCE_DATE_EPOCH",
         "build_argumanlari=(--locked --release --bin dil --bin dillsp)",
@@ -602,6 +612,8 @@ fn surum_artefakti_iki_temiz_klon_sbom_provenance_ve_imza_kablosunu_tasir() {
     ] {
         assert!(betik.contains(adim), "sürüm betiği adımı eksik: {adim}");
     }
+    assert!(!betik.contains("$gecici/$klon/build.log"));
+    assert!(!betik.contains("$gecici/$klon/native-deployment.json"));
     let workflow = oku(".github/workflows/surum-adayi.yml");
     assert!(workflow.contains("tags:\n      - \"v*\""));
     assert!(workflow.contains("workflow_dispatch:"));

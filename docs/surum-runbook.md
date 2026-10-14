@@ -158,3 +158,9 @@ performans gözlemi aynı kaynakta çalışır; raporlar 90 günlük özel artef
 olur. Uzak başarısızlık veya başlamamış iş geçiş sayılmaz. Windows runtime
 ve release candidate fuzz/Miri/kurulum kanıtları bu Linux CI'ın yerine
 geçmez; ilgili sürüm runbook kapıları ayrıca korunur. [ADR-088](../adr/088-git2-gitsrv-kosulari.md).
+
+K-241 üretici kabulünde iki klonun derleme öncesi/sonrası temizliği ve
+gerçek ikililerin exact SHA/`dirty: false` kimliği ayrıca zorunludur.
+Build logu/native raporu kaynak klonuna yazılmaz. Eş hash'e rağmen kirli
+kimlik veya değiştirilmiş klon sürüm kümesi yaratmadan reddedilir;
+`--kirli-kabul` yalnız caller'ın HEAD'ini üretir. [ADR-102](../adr/102-surum-klonu-ve-build-kimligi.md).
