@@ -109,19 +109,24 @@ regression/freeze ve sentetik TLS kökenleriyle tutarlıdır. Eski native ve
 iki-klon raporları özgün kaynaklarını adlandırır; eşlenmiş yeni SHA kabulü
 değildir. Güvenlik yaması sonrası temiz kabul ayrıca kaydedilir.
 
-## Tarihsel teknik kabul ve release kimliği düzeltmesi
+## Son yerel teknik kabul ve tarihsel sınırlar
 
 [14 Ekim teslim raporu](urunlesme-sonucu-20261014.md) exact
-`a2b8557ba04897c60802d04b911a7eae6e91ae43` kaynağında faz 887/893
-(6 dedicated atlama), ayrı TLS/bütçe 5/5, göç 1/1, parola CAS 7/7,
-sürekli güvenlik ve tarihsel iki-klon hash eşliğini kaydeder. Gerçek
-release ikilisinin [kimlik tekrar kontrolü](incelemeler/urunlesme-20261014/final-a2b8557/build-identity-recheck.json)
-`dirty: true` sonucuyla temiz derlenmiş kimlik kabulünü reddetti; hashlerin
-eş olması bu kusuru kapatmaz. [K-241 / ADR-102](../adr/102-surum-klonu-ve-build-kimligi.md)
-klon dışı log, önce/sonra temizlik ve gerçek ikili exact SHA/`dirty: false`
-kabulünü gerektirir. Yeni exact kaynak commit'i ve kanonik yeniden koşunun
-sonucu henüz kaydedilmedi; P02/P06/P37 doğrulaması bekliyor. a2b8557
-faz/native sonuçları tarihsel geçerliliğini korur. Ayrı koşularda örtüşen
-vakalar yeni toplam gibi birleştirilmez. Sonraki belge/araç commit'i yeni
+`2e970e47d59e2408eff836cdacef9bd0fe0b3028` kaynağında faz 887/893
+(0 başarısız, 6 dedicated atlama, 138.698 sn), ayrı TLS/bütçe 5/5, göç 1/1,
+parola CAS 7/7 ve sürekli güvenlik/sır kapısının kabulünü kaydeder.
+[K-241 / ADR-102](../adr/102-surum-klonu-ve-build-kimligi.md) sonrası
+[kanonik iki-klon kanıtı](incelemeler/urunlesme-20261014/final-2e970e4/build-proof.json)
+önce/sonra temiz kaynak ve gerçek a/b/çıktı ikililerinde exact SHA ile
+`dirty: false` kimliği, eş `dil`/`dillsp` hashlerini doğrular. P02 yerel
+kabul; P06 kısmi, P37 sürekli kalır. Yeni Linux/Windows, imza ve RC kabulü
+bu yerel macOS koşusundan çıkarılmaz.
+
+a2b8557 [kimlik tekrar kontrolü](incelemeler/urunlesme-20261014/final-a2b8557/build-identity-recheck.json)
+`dirty: true` ile temiz ikili kimliğini reddeder; eski faz/native/hash
+kanıtları tarihsel kalır. e9145844 yalnız checksum JSON biçimi düzeltmesiyle
+yerini 2e970e4'e bıraktı; yeni sır istisnası eklenmedi ve eski raporlar
+yeniden etiketlenmedi. Ayrı koşularda örtüşen vakalar yeni toplam gibi
+birleştirilmez. Takip belge commit'i testleri kendi HEAD'ine taşımaz;
 uzak CI/platform/ürün/RC kabulü değildir. 39 plan maddesinin açık kapasitesi
 ve kullanıcıca bekletilen kararlar korunur.

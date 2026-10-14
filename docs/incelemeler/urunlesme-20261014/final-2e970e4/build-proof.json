@@ -1,0 +1,169 @@
+{
+  "schema": "zee-build-proof-summary-1",
+  "source_sha": "2e970e47d59e2408eff836cdacef9bd0fe0b3028",
+  "parameters": {
+    "cargoArgs": "cargo build --locked --release --bin dil --bin dillsp",
+    "crtLinkage": "target-default",
+    "platform": "aarch64-apple-darwin",
+    "rustc": "rustc 1.93.1 (01f6ddf75 2026-02-11)",
+    "sourceDateEpoch": 1791990320,
+    "surum": "0.8.0-dev",
+    "targetRustflags": [
+      "-C",
+      "link-arg=-v"
+    ],
+    "remapPathPrefix": [
+      "/zee",
+      "/cargo",
+      "/rust"
+    ]
+  },
+  "subjects": [
+    {
+      "digest": {
+        "sha256": "348d0691b7a7714b3b8f5495e2dae6d8bf566d8c2b5d73219af87e6d958606c5"
+      },
+      "name": "dil"
+    },
+    {
+      "digest": {
+        "sha256": "d954a76f2aff12210cad4ec26e056b9ee258e5a12989af8c7f5b40578b841841"
+      },
+      "name": "dillsp"
+    }
+  ],
+  "clean_clone_binary_hashes": {
+    "a": {
+      "dillsp": "d954a76f2aff12210cad4ec26e056b9ee258e5a12989af8c7f5b40578b841841",
+      "dil": "348d0691b7a7714b3b8f5495e2dae6d8bf566d8c2b5d73219af87e6d958606c5"
+    },
+    "b": {
+      "dillsp": "d954a76f2aff12210cad4ec26e056b9ee258e5a12989af8c7f5b40578b841841",
+      "dil": "348d0691b7a7714b3b8f5495e2dae6d8bf566d8c2b5d73219af87e6d958606c5"
+    }
+  },
+  "compiled_build_identity": {
+    "schema": "zee-build-v1",
+    "version": "0.8.0-dev",
+    "source_sha": "2e970e47d59e2408eff836cdacef9bd0fe0b3028",
+    "source_date": "2026-10-14",
+    "channel": "development",
+    "dirty": false
+  },
+  "clean_clone_build_identities": {
+    "a": {
+      "schema": "zee-build-v1",
+      "version": "0.8.0-dev",
+      "source_sha": "2e970e47d59e2408eff836cdacef9bd0fe0b3028",
+      "source_date": "2026-10-14",
+      "channel": "development",
+      "dirty": false
+    },
+    "b": {
+      "schema": "zee-build-v1",
+      "version": "0.8.0-dev",
+      "source_sha": "2e970e47d59e2408eff836cdacef9bd0fe0b3028",
+      "source_date": "2026-10-14",
+      "channel": "development",
+      "dirty": false
+    }
+  },
+  "clean_compiled_identity_accepted": true,
+  "source_document_sha256": "bddaab4877c4336e9db1d1887418b614d4768cfda497341d725489444de25ed7",
+  "boundary": "canonical unsigned local two-clean-clone release-profile equality; raw linker environment retained outside repository; no signing/publication/release/platform acceptance",
+  "source_tree": "17afbaece8217dae0f5c1bf33d17f6faecbc7096",
+  "validated_at_utc": "2026-10-14T15:10:00.770114+00:00",
+  "canonical_command": [
+    "bash",
+    "scripts/surum-artefakti.sh",
+    "--cikti",
+    "<outside-repository-output>"
+  ],
+  "signing": "unsigned: no signing key supplied",
+  "source_files_sha256": {
+    "scripts/surum-artefakti.sh": "8a93e67c4285e182a056a59895d04a28aea7d0019cb2df023d7e64131dbbcbe6",
+    "scripts/rust-arac-zinciri.sh": "b634e533a312fa81f2e0cdadd5082def6ff6dff8d4b434d452d651e320a6f478",
+    "compiler/Cargo.lock": "dc8d703c3bfd86658c50b1732a4ac1f73096bc4a36c7150c2fc58483ec34fb92",
+    "compiler/Cargo.toml": "a84637b04a5940a75d0856e50c631bf83841bc504c1beb5d037862291262d6aa",
+    "compiler/src/bin/surum_artefakti.rs": "21780256f0df439a899e6932d69a41c1171300fa3cacd3e731f4da43a4bbfe43",
+    "compiler/rust-toolchain.toml": "3260f10937490e272267a11d1bca85ee76b0ef972022ab8fba8a1df0dbb3b397"
+  },
+  "artifacts_sha256": {
+    "dil": "348d0691b7a7714b3b8f5495e2dae6d8bf566d8c2b5d73219af87e6d958606c5",
+    "dillsp": "d954a76f2aff12210cad4ec26e056b9ee258e5a12989af8c7f5b40578b841841",
+    "GIT_SHA": "57dca0c7370b1eb8a9f131c897f2e47a1a5b5458d577ab48acc3ac37e4dbdfd0",
+    "SHA256SUMS": "194f7c7f82cf6271d2d064e4d7e0d47a7c03078ed75a6365b0c0af4606bc55f2",
+    "sbom.spdx.json": "83ff995b7e12f8022d8a5b60958a5f004223b29dd5b251834e1190ae9adf8bc6",
+    "provenance.intoto.json": "bddaab4877c4336e9db1d1887418b614d4768cfda497341d725489444de25ed7"
+  },
+  "evidence_logs_sha256": {
+    "a-build-identity.json": "2dd28bdaa35c66627c4fbe87449fbc39a0680e5d337ffedad577e948b82526a2",
+    "a-build.log": "6c88b74ed809ca0d5e45b258ce79397b4aa06c21059fba8abad41a87271cecfc",
+    "a-native-deployment.json": "e7eecfb9005f43746fec7763a2ea0b68a22e439c3a14d4710c896290b44e822c",
+    "b-build-identity.json": "2dd28bdaa35c66627c4fbe87449fbc39a0680e5d337ffedad577e948b82526a2",
+    "b-build.log": "07462ca9a5a66b4d220c85d5ad3eae88a6737bc8f3d968d2db3ecbde14ed1f4d",
+    "b-native-deployment.json": "e0c2d5959280117cb2e55921403d6a5a586ca26c723883d554b6bd1a6c170571",
+    "canonical-producer.log": "303a2a4ee73cbd0451262c152eee7b59c53e407671d73079793d949b324f25fa",
+    "canonical-result.json": "e442191256f884cf891f6190d6206ff2b2070e995a2942e3b9ad6ec62f304347",
+    "clone-binary-hashes.json": "4f3257b9a154f5964669586428d9887a01543b35736ee9d574cd06e7dc2e1a4a",
+    "compiled-build-identity.json": "2dd28bdaa35c66627c4fbe87449fbc39a0680e5d337ffedad577e948b82526a2"
+  },
+  "native_deployment_target": "MACOSX_DEPLOYMENT_TARGET=11.0",
+  "native_clones": {
+    "a": {
+      "binaries": {
+        "dil": {
+          "program": "cc",
+          "sha256": "b8763cf250e607a778bb4603cecb5b90338814d0a3dfcba0d57b1de242f610e9",
+          "version": "Apple clang version 21.0.0 (clang-2100.3.34.2)\nTarget: arm64-apple-darwin25.6.0\nThread model: posix\nInstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin",
+          "version_source": "--version"
+        },
+        "dillsp": {
+          "program": "cc",
+          "sha256": "b8763cf250e607a778bb4603cecb5b90338814d0a3dfcba0d57b1de242f610e9",
+          "version": "Apple clang version 21.0.0 (clang-2100.3.34.2)\nTarget: arm64-apple-darwin25.6.0\nThread model: posix\nInstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin",
+          "version_source": "--version"
+        }
+      },
+      "native_deployment": {
+        "target": "11.0",
+        "object_count": 24,
+        "objects_with_deployment_header": 24,
+        "deployment_versions": [
+          "11.0"
+        ],
+        "evidence_document_sha256": "e7eecfb9005f43746fec7763a2ea0b68a22e439c3a14d4710c896290b44e822c",
+        "boundary": "Yalnız build-script .o başlıkları; başlıksız assembly ve gerçek minimum OS/runtime desteği değildir."
+      }
+    },
+    "b": {
+      "binaries": {
+        "dil": {
+          "program": "cc",
+          "sha256": "b8763cf250e607a778bb4603cecb5b90338814d0a3dfcba0d57b1de242f610e9",
+          "version": "Apple clang version 21.0.0 (clang-2100.3.34.2)\nTarget: arm64-apple-darwin25.6.0\nThread model: posix\nInstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin",
+          "version_source": "--version"
+        },
+        "dillsp": {
+          "program": "cc",
+          "sha256": "b8763cf250e607a778bb4603cecb5b90338814d0a3dfcba0d57b1de242f610e9",
+          "version": "Apple clang version 21.0.0 (clang-2100.3.34.2)\nTarget: arm64-apple-darwin25.6.0\nThread model: posix\nInstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin",
+          "version_source": "--version"
+        }
+      },
+      "native_deployment": {
+        "target": "11.0",
+        "object_count": 24,
+        "objects_with_deployment_header": 24,
+        "deployment_versions": [
+          "11.0"
+        ],
+        "evidence_document_sha256": "e0c2d5959280117cb2e55921403d6a5a586ca26c723883d554b6bd1a6c170571",
+        "boundary": "Yalnız build-script .o başlıkları; başlıksız assembly ve gerçek minimum OS/runtime desteği değildir."
+      }
+    }
+  },
+  "locked_rustls_versions": [
+    "0.23.46"
+  ]
+}
