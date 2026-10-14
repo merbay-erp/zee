@@ -1595,3 +1595,5 @@ Sunucu/ürün rotası ve otomatik kayıt/e-posta entegrasyonu ürün tarafındad
 K-220 / K-174: exact gerçek ürün talebiyle üç contextual kalıp eklendi; syntax gözlem penceresi 14.10.2026–11.11.2026 olarak bilinçli yeniden başladı. Core freeze ve insan/RC kapıları sürer; V1 tamamlandı olarak gösterilmez.
 
 K-220 CI kabul düzeltmesi: sentetik localhost PKCS12 kimliği exact hash/kaynak doğrulamasıyla sır taramasında tanınır; başka anahtarlar reddedilir. Dil/HTTP çalışma davranışı değişmez, Gitsrv tekrar kabulü beklenir.
+
+K-220 makine kabulü: kaynak 488dc7d, exact CI 3d7ff93 / Gitsrv #29 başarılı; 801/801 yerel faz ve bağımsız kullanım rehberi temiz. Compiler kaynağı kapanışta değişmedi; canlı entegrasyon ve sunucu yükseltmesi ürün tarafında kalır.

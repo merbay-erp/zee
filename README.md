@@ -219,4 +219,5 @@ giriş/CSRF canlı sayaçları korunur. [Ayarlar](adr/090-web-oran-ayarlari.md).
 
 Native dış isteklerde başlıklı GET/POST ve gövde gönderimi başarısızlıkları
 `Sonuç` olarak yönetir. Ortam sırları explicit proje listesiyle okunur;
-[HTTP kullanımı ve sınırlar](adr/091-http-post-baslik-ve-gizli-ortam.md).
+[Testli kullanım örneği](docs/http-post-kullanim.md),
+[HTTP sınırları](adr/091-http-post-baslik-ve-gizli-ortam.md).

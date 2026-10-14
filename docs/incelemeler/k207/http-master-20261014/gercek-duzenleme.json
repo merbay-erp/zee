@@ -1,0 +1,78 @@
+{
+  "schema": "zee-lsp-real-edits-review-1",
+  "git_sha": "c7433123ac1755bb81c476e2698ffee661500a69",
+  "git_dirty": false,
+  "build_profile": "release",
+  "binary_sha256": "33479a562dd508eda527d9b4fc5ef164954eb5421f2b83cae67b4cd3d5ff2e43",
+  "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)",
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "cpu": "Apple M4 Pro",
+  "ram_bytes": 25769803776,
+  "rows": [
+    {
+      "lines": 2000,
+      "source_sha256": "af4b9fd5526039e7b6a036b0660f665bb3761fcd8935867fd2858a14bfc884f5",
+      "sampling": "same_process_serial_real_last_literal_edits_stdio_roundtrip",
+      "sample_count": 5,
+      "warmup_count": 2,
+      "raw_samples_ns": [
+        5328042,
+        5477417,
+        5477125,
+        5315792,
+        5526333
+      ],
+      "p50_ns": 5477125,
+      "p95_ns": 5526333
+    },
+    {
+      "lines": 5000,
+      "source_sha256": "65e18d18c26eabdb357acf681b897aeaab871762ab9b877097ae653fff5402b5",
+      "sampling": "same_process_serial_real_last_literal_edits_stdio_roundtrip",
+      "sample_count": 5,
+      "warmup_count": 2,
+      "raw_samples_ns": [
+        18075500,
+        17234625,
+        17549083,
+        17417084,
+        17508167
+      ],
+      "p50_ns": 17508167,
+      "p95_ns": 18075500
+    },
+    {
+      "lines": 10000,
+      "source_sha256": "82342b59033d78a44e146db60315ef8cf8406f24975556f1221e82b1889d905d",
+      "sampling": "same_process_serial_real_last_literal_edits_stdio_roundtrip",
+      "sample_count": 5,
+      "warmup_count": 2,
+      "raw_samples_ns": [
+        49538333,
+        50350875,
+        51195166,
+        51535375,
+        50472292
+      ],
+      "p50_ns": 50472292,
+      "p95_ns": 51535375
+    },
+    {
+      "lines": 20000,
+      "source_sha256": "a9e0377a4ac17a1ee74bf5ff5210951c9313a2529fa04839f2afb71e7389b6bc",
+      "sampling": "same_process_serial_real_last_literal_edits_stdio_roundtrip",
+      "sample_count": 5,
+      "warmup_count": 2,
+      "raw_samples_ns": [
+        161050458,
+        165730917,
+        159590083,
+        158772834,
+        159265541
+      ],
+      "p50_ns": 159590083,
+      "p95_ns": 165730917
+    }
+  ],
+  "notes": "Synthetic scale, fresh dillsp per size; one didOpen then 2 warmups and 5 real edits. Full text transmitted. No hard threshold or compiler optimization claim."
+}

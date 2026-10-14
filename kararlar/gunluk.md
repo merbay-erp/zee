@@ -4205,3 +4205,5 @@ Dal yedekleri özel; uzak silme ve CI teyidi henüz açıktır.
 K-220 / K-174: exact gerçek ürün talebiyle üç contextual kalıp eklendi; syntax gözlem penceresi 14.10.2026–11.11.2026 olarak bilinçli yeniden başladı. Core freeze ve insan/RC kapıları sürer; V1 tamamlandı olarak gösterilmez.
 
 14.10.2026 K-220/GB-054: Gitsrv #28 sentetik PKCS12 directory eşleşmesiyle kaldı; exact immutable fixture fingerprint kapısı ve atlamasız dedektör testleri eklenir. Compiler kaynağı/dil semantiği değişmez; Gitsrv yeniden kabulü açıktır.
+
+14.10.2026 K-220 kapalı (dil makine kabulü): Gitsrv #29 / run 761, 3d7ff93 başarılı. Helper explicit Metin dönüşüyle ayrı proje denetimini ve 11 HTTP + 3 dogfood testini geçti. §3/4 ürün sahibi kararıyla ertelendi; §3/5 güncel performans gözlemi kayıtlı, K-207 artımlılık açık. Canlı ürün veya depo görünürlüğü değiştirilmedi.

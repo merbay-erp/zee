@@ -1333,17 +1333,23 @@ Giriş/CSRF canlı kotası korunur; tümü korunmuş dolulukta 503 sınırı sü
 [ADR-090](../adr/090-web-oran-ayarlari.md), RFC-0032, olumlu/olumsuz CLI,
 clone/churn ve gerçek 100 kart worker testi aynı dilimdedir.
 Exact 1800 sn soak, tam faz ve Gitsrv kapanışı [kanıt sayfasında](incelemeler/k219/README.md).
-§3/3 HTTP POST, §3/4 HTML temizleyici ve §3/5 LSP artımlılık sıradadır.
+§3/3 HTTP POST K-220 ile kapandı; §3/4 HTML temizleyici ürün sahibinin yeni kanıtıyla ertelendi. §3/5 artımlılık
+K-207’de açık kalır. Eski çok saniyeli süreler güncel master’da tekrarlanmadı;
+[gerçek düzenleme ve ürün gözlemi](incelemeler/k207/http-master-20261014/README.md)
+yeni optimizasyon veya artımlılık kapanışı değildir.
 
 ## K-220 — Ürün HTTP POST ve başlıklar
 
-Durum: **KABUL KANITI BEKLENİYOR**. Ürün §3/3 ve 2d57060 exact talebi;
+Durum: **KAPALI (dil makine kabulü)**. Ürün §3/3 ve 2d57060 exact talebi;
 POST /iletisim-gonder Turnstile, ikincil Bearer portal bildirimi.
 ADR-091 / RFC-0033; sınırlı native HTTPS GET/POST, Metin sözlüğü Sonucu,
 explicit proje ortam listesi, iz kapatma ve kanonik HTTP JSON helper.
 Olumlu/olumsuz dil, gerçek ürün helper ve localhost TLS testleri aynı dilimde.
-Tam faz, güvenlik ve Gitsrv sonucu [kanıtta](incelemeler/k220/README.md) kapanır.
-§3/4 HTML temizleyici ve §3/5 LSP artımlılık sıradadır.
+801/801 yerel faz, güvenlik ve Gitsrv #29 sonucu [kanıtta](incelemeler/k220/README.md) kapandı. Sunucu/ürün rotası yükseltmesi ürün tarafındadır.
+§3/4 HTML temizleyici ürün sahibinin yeni kanıtıyla ertelendi; §3/5 artımlılık
+K-207’de açık kalır. Eski çok saniyeli süreler güncel master’da tekrarlanmadı;
+[gerçek düzenleme ve ürün gözlemi](incelemeler/k207/http-master-20261014/README.md)
+yeni optimizasyon veya artımlılık kapanışı değildir.
 
 ## İnceleme §3/4 — HTML temizleyici ertelendi
 

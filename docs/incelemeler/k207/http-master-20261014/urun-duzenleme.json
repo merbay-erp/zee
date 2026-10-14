@@ -1,0 +1,66 @@
+{
+  "schema": "zee-lsp-product-review-1",
+  "git_sha": "c7433123ac1755bb81c476e2698ffee661500a69",
+  "git_dirty": false,
+  "build_profile": "release",
+  "product": "zee-cekirdek",
+  "product_commit": "35b56c79a48d159215ac662e53b5437ba1ead143",
+  "binary_sha256": "33479a562dd508eda527d9b4fc5ef164954eb5421f2b83cae67b4cd3d5ff2e43",
+  "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)",
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "cpu": "Apple M4 Pro",
+  "ram_bytes": 25769803776,
+  "rows": [
+    {
+      "source_file": "cekirdek/kaynak/ana.dil",
+      "source_sha256": "f0a65a0b1272a717728db4050fd450fd85900434ed6d5309bdcb9bbf9f138619",
+      "lines": 145,
+      "initial_diagnostics": 2,
+      "edit_diagnostics": [
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "sampling": "same_process_serial_leading_comment_edits_stdio_roundtrip_with_project_graph",
+      "sample_count": 5,
+      "warmup_count": 2,
+      "raw_samples_ns": [
+        192975583,
+        191237792,
+        191035833,
+        190340500,
+        194978042
+      ],
+      "p50_ns": 191237792,
+      "p95_ns": 194978042
+    },
+    {
+      "source_file": "cekirdek/kaynak/urun_akisi.dil",
+      "source_sha256": "8e665aad6ced3a96818355dee8f04885299e3357e383c3459dde6ece7afa3626",
+      "lines": 1517,
+      "initial_diagnostics": 0,
+      "edit_diagnostics": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "sampling": "same_process_serial_leading_comment_edits_stdio_roundtrip_with_project_graph",
+      "sample_count": 5,
+      "warmup_count": 2,
+      "raw_samples_ns": [
+        15789250,
+        15865708,
+        16428292,
+        15944125,
+        15884125
+      ],
+      "p50_ns": 15884125,
+      "p95_ns": 16428292
+    }
+  ],
+  "notes": "Private exact product archive; no source copied to public repository. Fresh dillsp per file; one didOpen then two warmups and five leading comment edits. Entire text transmitted; no hard threshold."
+}
