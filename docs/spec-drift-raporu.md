@@ -32,9 +32,9 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 | `spec/24-kaynak-guvenlik-profili.md` | 7 | 7 | 0 | 0 |
 | `spec/25-postgresql-veri-erisimi.md` | 9 | 7 | 1 | 1 |
 | `spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md` | 2 | 2 | 0 | 0 |
-| `spec/27-uyumluluk-ve-surumleme.md` | 12 | 10 | 1 | 1 |
+| `spec/27-uyumluluk-ve-surumleme.md` | 13 | 11 | 1 | 1 |
 | `spec/28-gorunum-blogu.md` | 2 | 2 | 0 | 0 |
-| **Toplam** | **191** | **184** | **5** | **2** |
+| **Toplam** | **192** | **185** | **5** | **2** |
 
 ## Kısmi kanıtlı maddeler
 

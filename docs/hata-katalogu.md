@@ -217,3 +217,7 @@ Argon2id aynı Metin imzasını kullanır; bozuk hash/yanlış parola tanı
 üretmek yerine `yanlış`tır. K-209 eylem içi IP okuması mevcut T044’tür.
 
 K-220: yeni HTTP/ortam/JSON işlemlerinin beklenen hatası C018 kodlu Sonuç değeridir; adaptör ayrıntısı gizlenir. T034 argüman türü, T048 eylemde geri alınamaz istek ve P015 proje ortam listesi tanıları mevcut kodları korur. Üst program deadline C020 kalır. [Sözleşme](../adr/091-http-post-baslik-ve-gizli-ortam.md).
+
+K-234 `zee.ayar` okuma/şema/güvenlik hataları tanı kodu üretmeyen CLI
+exit 2 retleridir; anahtar/değer/yol veya JSON alıntısı yazılmaz.
+Bilinmeyen olağan alan sabit uyarıyla güvenli varsayılanı korur.

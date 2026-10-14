@@ -176,6 +176,7 @@ kosul	tekse	aktif	0.7.0	compiler/src/ayristirici/ifade.rs	-
 kosul	varsa	aktif	0.7.0	compiler/src/ayristirici/ifade.rs	-
 kosul	yoksa	aktif	0.7.0	compiler/src/ayristirici/ifade.rs	-
 kosul	çiftse	aktif	0.7.0	compiler/src/ayristirici/ifade.rs	-
+profil	cli-ayar-semasi	aktif	0.8.0-dev	compiler/src/main.rs	"--ayar-semasi"
 profil	cli-bicim-denetle	aktif	0.8.0-dev	compiler/src/main.rs	"--denetle"
 profil	cli-goc-durum	aktif	0.8.0-dev	compiler/src/main.rs	"--durum"
 profil	cli-goc-kuru	aktif	0.8.0-dev	compiler/src/main.rs	"--kuru"
@@ -185,6 +186,7 @@ profil	http-istek-v1	aktif	0.8.0-dev	compiler/src/ag_istemcisi/istek.rs	pub fn i
 profil	http-json-v1	aktif	0.8.0-dev	compiler/src/intrinsic.rs	"ag.http_json"
 profil	io	aktif	0.8.0-dev	compiler/src/yorumlayici/io_profili.rs	pub const DETERMINISTIK_IO_PROFILI: &str = "zee-io-1";
 profil	morfoloji	aktif	0.7.0	compiler/src/morfoloji.rs	pub const MORFOLOJI_PROFILI: &str = "zee-tr-1";
+profil	runtime-ayar-v1	aktif	0.8.0-dev	compiler/src/cli/ayar.rs	pub(super) const SEMA: &str = "zee-ayar-1";
 profil	web-oran-deposu.bellek	aktif	0.8.0-dev	compiler/src/main.rs	"--web-oran-deposu"
 profil	web-oran-doluluk.en-eski	aktif	0.8.0-dev	compiler/src/main.rs	"--web-oran-doluluk"
 profil	web-oran-doluluk.reddet	aktif	0.8.0-dev	compiler/src/main.rs	"--web-oran-doluluk"

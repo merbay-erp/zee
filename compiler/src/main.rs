@@ -18,6 +18,9 @@ use dil::http_istegi::{baslik_sonunu_bul, govde_metni, HttpIstekBasligi};
 use dil::yetkinlik::AgHedefi;
 use std::process::ExitCode;
 
+#[path = "cli/ayar.rs"]
+mod dil_ayar;
+
 #[path = "cli/registry.rs"]
 mod dil_registry;
 mod web_yukleme;
@@ -223,6 +226,10 @@ fn main() -> ExitCode {
 
 fn govde() -> ExitCode {
     let mut argumanlar: Vec<String> = std::env::args().skip(1).collect();
+    if let Err(hata) = dil_ayar::uygula(&mut argumanlar) {
+        eprintln!("{hata}");
+        return ExitCode::from(2);
+    }
     // Çocuk modu (K-047): --güvenli bayrağı komuttan bağımsız yakalanır.
     let guvenli = argumanlar
         .iter()
@@ -298,6 +305,14 @@ fn govde() -> ExitCode {
         },
         Some("yeni") => yeni_komutu(&argumanlar),
         Some("sürüm") | Some("surum") => {
+            if argumanlar.iter().any(|a| a == "--ayar-semasi") {
+                if argumanlar.len() != 2 {
+                    eprintln!("--ayar-semasi tek başına sürüm yetenek sorgusudur");
+                    return ExitCode::from(2);
+                }
+                println!("{}", dil_ayar::yetenek_json());
+                return ExitCode::SUCCESS;
+            }
             if argumanlar.iter().any(|a| a == "--json") {
                 println!("{}", dil::surum::json());
                 return ExitCode::SUCCESS;
@@ -323,7 +338,8 @@ fn govde() -> ExitCode {
 fn cli_seceneklerini_denetle(argumanlar: &[String]) -> Result<(), String> {
     let komut = argumanlar.first().map(String::as_str).unwrap_or("");
     let (bayraklar, degerli): (&[&str], &[&str]) = match komut {
-        "denetle" | "sürüm" | "surum" => (&["--json"], &[]),
+        "denetle" => (&["--json"], &[]),
+        "sürüm" | "surum" => (&["--json", "--ayar-semasi"], &[]),
         "biçimle" | "bicimle" => (&["--denetle"], &[]),
         "göçür" | "gocur" => (&["--durum", "--kuru"], &[]),
         "paketle" => (&[], &["--anahtar", "--çıktı", "--cikti"]),
@@ -396,6 +412,8 @@ fn kullanim() {
     eprintln!("  dil iz oynat <iz> <program>              IO izini dış dünyasız oynatır");
     eprintln!("  dil morfoloji [kelime|--uyumluluk] profil, çözüm veya immutable kaydı gösterir");
     eprintln!("  dil sürüm [--json]         kaynak SHA/tarih/kanal ile sürümü gösterir");
+    eprintln!("  dil sürüm --ayar-semasi    runtime config yeteneğini sorgular");
+    eprintln!("  dil çalıştır <proje>       varsa proje kökündeki sürümlü zee.ayar okunur");
 }
 
 fn gocur_komutu(argumanlar: &[String]) -> ExitCode {

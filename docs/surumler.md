@@ -1637,3 +1637,9 @@ atlamadan denetler; strict rapor sözleşmesinin dokuz ret testi vardır.
 K-235 test kanıtı DB kaynak bütçelerini gerçek PostgreSQL'de tam eşik ve
 bir fazla retle doğrular; production limitleri değişmez. İki kısmi spec
 kaydı DB bütçeleri ve CLI/LSP/SBOM kimlik eşliğiyle kanıtlı oldu.
+
+### K-234 — Projede sürümlü runtime ayarları
+
+`dil çalıştır <proje-klasörü>` [zee.ayar](zee-ayar.md) profilini okur;
+CLI override, unknown ordinary uyarı, unknown security ret. İlk destek
+zee-ayar-1 yetenekli 0.8.0-dev; gerçek 0.7 rollback kabulü açık kalır.

@@ -150,10 +150,10 @@ Değişikliğe özel test, belge ve güvenlik kapıları [AGENTS.md](AGENTS.md) 
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **843** |
+| Rust + doctest vakası | **860** |
 | Tanı kimliği | **159 etkin + 3 ayrılmış** |
 | RFC | **33** (2 kabul, 28 geçici kabul, 3 taslak) |
-| ADR | **93** (93 kabul) |
+| ADR | **94** (94 kabul) |
 | Normatif spec bölümü | **28** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
@@ -226,3 +226,7 @@ Native dış isteklerde başlıklı GET/POST ve gövde gönderimi başarısızl�
 yorumlanmaz; exit 2 ve etkin sürümle reddedilir (K-221).
 
 CI biçim denetimi: `dil biçimle --denetle .` (uygun biçim0, fark1, yazma yok).
+
+Proje runtime host ayarları için [zee.ayar profili](docs/zee-ayar.md) ve
+`dil sürüm --ayar-semasi` yetenek sorgusu vardır; eski-reader rollback
+ve canlı ürün kabulü ayrı açıktır.

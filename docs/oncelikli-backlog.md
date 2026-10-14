@@ -1430,3 +1430,10 @@ Production davranışı değiştirilmeden gerçek TLS PostgreSQL tam eşik/bir f
 kampanyası ve var olan K-226 CLI/LSP/SBOM direct eşlik kanıtı iki kısmi
 maddeyi kapatır. Dedicated kapı 5/5 ister; platform, edition, provider,
 TLS1.1 ve süreç sözleşmesi boşlukları açık kalır.
+
+## K-234 — Sürümlü runtime ayarları
+
+`zee.ayar` mevcut çocuk/web/proxy/oran host ayarlarını taşır; unknown security
+ret, ordinary no-op uyarı ve CLI precedence 17 yeni testle sınanır.
+[Profil ve eski-sürüm sınırı](zee-ayar.md). Önceki küçük sürüm/full ürün
+rollback ve fiziksel Windows kabulü açık; yeni grammar yok.

@@ -4293,3 +4293,10 @@ yarışta bir CAS kazanır, biri rollback; AFTER INSERT bariyeri commit öncesi
 aynı transaction health/commit ve göç planı no-DDL kabulü geçti. Eski SemVer
 spec maddesi gerçek K-226 üç yüzey testine bağlandı. Yeni production/grammar
 yok; tarihsel 4/4 TLS kaydı korunur, dedicated güncel kapı 5/5 oldu.
+
+## K-234 — Runtime ayar profili
+
+14.10.2026: onaylı A6(2) için mevcut host bayraklarını bounded JSON profile
+taşıyan CLI adaptörü eklendi. Yeni grammar/API/dependency ve owner/edge yok.
+GB-057 güvenlik allowlist ve eski reader yokluğu sınırını kaydeder;
+aynı buildJSON korunur, ayrı --ayar-semasi capability seçici guard girdisidir.
