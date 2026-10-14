@@ -1,5 +1,8 @@
 # 14 Ekim 2026 onaylı ürünleşme uygulama kaydı
 
+[Son K-245–K-249 pilot kabulü](urunlesme-pilot-k245-k249.md) ayrı temiz
+exact kaynakta faz/native/host/iki-klon kapılarını kaydeder.
+
 [K-242/K-243 devam raporu](urunlesme-devam-20261014.md), yeni yerel
 COMMIT fault kanıtını ve kaynak ZIP düzeltmesini ayrı exact kaynakta izler.
 K-244 literal kaldırma düzeltmesi yerel PowerShell kabulündedir; fiziksel
@@ -138,17 +141,23 @@ ve kullanıcıca bekletilen kararlar korunur.
 
 K-245/P25 credential host pilotu (ADR-105/GB-068) mevcut env izinlerini
 koruyan POSIX dosya köprüsüdür;14 actual vaka native allowlist/SMTP dahil
-yürütülür. Exact temiz kaynak kabulü devam eder; Windows/systemd/canlı
+yürütülür. Temiz c67a69e host14 kabulü tamamlandı; Windows/systemd/canlı
 ürün ve file-native sır inheritance sınırı tam P25 olarak kapanmaz.
 
 K-246/P13 (ADR-106/GB-069) worker host identity+ayrı readiness ve sahipli
-cleanup pilotudur; public launcher cleanup bug'ı 25-vaka çalışma ağacı kabulüyle kapandı; temiz exact tekrar bekler.
+cleanup pilotudur; public launcher cleanup bug'ı temiz c67a69e üzerinde 25-vaka kabulüyle kapandı.
 Tam request drain/reload/metrics ve P14 socket devir açıktır.
 K-247/P09 (ADR-107/GB-070) dar idempotent SQL queue helper'ıdır;11 native
-PG crash/COMMIT observer ve16 validator aday kabulü vardır, temiz exact
-kabul devam eder. Canlı ürün adoptionı, SMTPretry ve full P08 açık kalır.
+PG crash/COMMIT observer ve16 validator temiz c67a69e kabulündedir. Canlı ürün adoptionı, SMTPretry ve full P08 açık kalır.
 
 K-249/P21 (ADR-109/GB-071) tek anonim TR–EN article fragmenti, plain
 Metin slotları ve sabit sözlüktür. Dört kaynak testi, yedi native CLI
-snapshot/XSS/ret senaryosu mevcut grammar/API ile yürür; temiz exact
-kabul devam eder. Genel layout/i18n ve gerçek ürün/P08 kabulü açıktır.
+snapshot/XSS/ret senaryosu mevcut grammar/API ile temiz c67a69e kabulündedir. Genel layout/i18n ve gerçek ürün/P08 kabulü açıktır.
+
+K-245–K-249 [temiz pilot kabulü](urunlesme-pilot-k245-k249.md)
+`c67a69e6ed9c24c4a540a55eeaaa986a348a2de3` üzerinde 895/901 faz,
+0 başarısız/6 dedicated atlama; ayrıca 28 PostgreSQL, credential14,
+supervisor25 ve iki Python sürümünde TR–EN7+4 ile kanıtlıdır. İki temiz
+klondan Mac ARM64 ikilileri eş ve dirty=false; yeni sır istisnası yoktur.
+Lisans/insan/fiziksel/tam ürün/uzak CI/RC kapıları ve genel P09/P13/P14/
+P21/P25 kapsamı açık kalır. Takip belge commit'i test kaynağı değildir.

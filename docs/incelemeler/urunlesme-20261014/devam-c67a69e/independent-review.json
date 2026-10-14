@@ -1,0 +1,112 @@
+{
+  "schema": "zee-final-local-evidence-cross-review-1",
+  "result": "passed-scoped-evidence-review",
+  "source_sha": "c67a69e6ed9c24c4a540a55eeaaa986a348a2de3",
+  "source_tree": "764cf5d47d9771e8cfd5d4978aa4505c6101980b",
+  "reviewed_at_utc": "2026-10-14T21:04:35.222914+00:00",
+  "stage_files": [
+    {
+      "path": "KAYNAK-SHA256.txt",
+      "sha256": "1129d90335302cb952209d7ebf525ea4bc55941536a8a0775b417cd9aa55ab6a"
+    },
+    {
+      "path": "REPORT-DRAFT.md",
+      "sha256": "381f51ea8f029ef5ee50744872f9983575be5ea0038dfbcb44b7e179f5b2ce09"
+    },
+    {
+      "path": "build-proof.json",
+      "sha256": "db03f7699f13719d9632658eb8d397ba43582df0b2fa1044f7726bf0105f6cf3"
+    },
+    {
+      "path": "host-proof.json",
+      "sha256": "c91b221898efd90681565ea41beac8d2737ba5624f87e2ce8df61345575bf022"
+    },
+    {
+      "path": "is-kuyrugu-cases.json",
+      "sha256": "82180c4eddad33185421ff21dc04535986ba93b2703fe4f8db10a5397b70fd32"
+    },
+    {
+      "path": "k249-independent-review.json",
+      "sha256": "c27cf5f7b65608a8dda769da4ff9543165950ca84dd9012de71e1c586330bcd5"
+    },
+    {
+      "path": "native-proof.json",
+      "sha256": "3b2b15b3d9353225017520943f5637ccaca7c8484c7ce4d728390fa06e5063c8"
+    },
+    {
+      "path": "parola-goc-cases.json",
+      "sha256": "210667fffe305002ff9f3094ee3cc36359e64cdf0a13466020b2c277322f8755"
+    },
+    {
+      "path": "source-archive.json",
+      "sha256": "368f844120f333d5084bde7e563e7c523594ec50314f86cd2832b228ecba12f4"
+    },
+    {
+      "path": "tr-en-proof.json",
+      "sha256": "3d008e87269a84413be45f7a1c66cf6162b7277d132794021a72d663e445f65b"
+    },
+    {
+      "path": "worker-campaign.json",
+      "sha256": "73572279a13181bb5ac8a62fe9f45ef1b9b16f6852c4842d9a2755fd8c8b0543"
+    }
+  ],
+  "verified": {
+    "all_current_build_identities_exact_source_and_dirty_false": true,
+    "source_hash_arrays_match_committed_git_bytes": true,
+    "native_raw_hashes_verified": 16,
+    "host_raw_hashes_verified": 10,
+    "tr_en_raw_hashes_verified": 18,
+    "canonical_proof_copy_byte_equal": true,
+    "source_zip_git_archive_file_set_and_bytes_equal": true,
+    "source_zip_comment_exact_sha": true,
+    "source_manifest_complete_and_equal": true,
+    "source_files": 1190,
+    "source_archive_sha256": "b473cdba92a3bd3c3fdcefbf4d1a8ec413a2ea37be720861c1d7faa6d4d2a268",
+    "neutral_metadata_personal_path_connection_uri_private_key_pattern_hits": 0
+  },
+  "accounting": {
+    "dedicated_postgresql": {
+      "tls": 5,
+      "migration": 1,
+      "password_cas_commit": 11,
+      "durable_sql_queue": 11,
+      "total": 28,
+      "failed": 0,
+      "ignored": 0
+    },
+    "host_tools": {
+      "credential": 14,
+      "worker": 25,
+      "failed": 0,
+      "ignored": 0
+    },
+    "tr_en": {
+      "unique_native_scenarios": 7,
+      "source_tests": 4,
+      "interpreter_replays": 2,
+      "cargo_wrapper": 1,
+      "failed": 0,
+      "ignored": 0
+    }
+  },
+  "findings": [],
+  "historical_records": {
+    "k249_independent_review": "original pre-clean acceptance review retained unchanged; actual clean acceptance resides in tr-en-proof.json",
+    "native_aggregate": "original verifier-only KeyError retained; strict schema-aware revalidation proves already-finished actual runner records without relabeling test executions",
+    "first_full_phase": "parent-reported 894 passed, 1 failed, 6 ignored out of901; nested equivalence harness target-path issue; failed raw retained and source unchanged"
+  },
+  "full_phase_retry": {
+    "status": "pending-at-review",
+    "passed_claim": false
+  },
+  "boundaries": [
+    "Current debug binary hashes differ across independently built PG and host/TR-EN campaigns; each owns its binary snapshot and exact clean source identity. Only canonical release a/b/output binary equality is claimed.",
+    "ADR103 native C027 policy deliberately remains for deferred ERROR/23514; independent fixture rollback is not general error-classification/provider acceptance.",
+    "Python replay counts and dedicated native tool cases are not added to Cargo/libtest phase totals.",
+    "POSIX host pilot does not prove physical Windows/minimumOS, DB/migration readiness, full drain/socket activation or zero downtime.",
+    "SQL queue proof does not prove SMTP retry, arbitrary callbacks, general exactly-once effects or live product adoption.",
+    "TR-EN plain slot fragment does not close generic layout/i18n/list/detail/router or full P08 corpus.",
+    "No signing, publication, remote CI/artifact access, RC fuzz/Miri acceptance, license decision or human/live product acceptance is supplied."
+  ],
+  "source_or_stage_mutation": false
+}
