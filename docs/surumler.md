@@ -1718,3 +1718,14 @@ hashler ve siler; `bin[1]` gibi adlar yabancı `bin1` dosyasını seçmez.
 Checksum/Zorla/manifest sözleşmesi korunur. Altı gerçek geçici PowerShell
 macOS senaryosu yerel kabul; fiziksel Windows/minOS kabulü ayrı kalır.
 [ADR-071](../adr/071-kurulum-kaldirma-sozlesmesi.md).
+
+K-245 sınırlı POSIX credential launcher, mevcut çalıştır argv ve proje
+izinlerini korur;14 actual vaka Cargo kapısına bağlıdır. Tam P25 veya
+Windows/systemd/canlı ürün kabulü değildir (ADR-105/GB-068).
+
+K-246/P13 (ADR-106/GB-069) worker host identity+ayrı readiness ve sahipli
+cleanup pilotudur; public launcher cleanup bug'ı 25-vaka çalışma ağacı kabulüyle kapandı; temiz exact tekrar bekler.
+Tam request drain/reload/metrics ve P14 socket devir açıktır.
+K-247/P09 (ADR-107/GB-070) dar idempotent SQL queue helper'ıdır;11 native
+PG crash/COMMIT observer ve16 validator aday kabulü vardır, temiz exact
+kabul devam eder. Canlı ürün adoptionı, SMTPretry ve full P08 açık kalır.
