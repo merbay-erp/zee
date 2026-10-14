@@ -221,3 +221,8 @@ K-220: yeni HTTP/ortam/JSON işlemlerinin beklenen hatası C018 kodlu Sonuç de�
 K-234 `zee.ayar` okuma/şema/güvenlik hataları tanı kodu üretmeyen CLI
 exit 2 retleridir; anahtar/değer/yol veya JSON alıntısı yazılmaz.
 Bilinmeyen olağan alan sabit uyarıyla güvenli varsayılanı korur.
+
+K-232 ekli ileti C029 Hata değeridir: SMTP bağlantı/izin, readonly ek
+yol/boyut/tür, başlık/Reply-To ve HTML/düz gövde sınırlarını kontrol edin.
+Hata SMTP credential, ileti/ek içeriği veya dosya yolu taşımaz; DATA ack
+kaybı gönderilmedi kanıtı değildir ve otomatik retry yapılmaz.

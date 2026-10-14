@@ -87,3 +87,7 @@ Mevcut primary GitHub HTTPS/connector ve mevcut SSH transport üzerinden
 read-only kaynak okuma sonuçları 404/repository-not-found; Enterprise ayna
 SSO sınırı 403'tür. Primary master yetkisi/SHA'sı bilinmiyor. Yerel onaylı
 uygulama dalı uzak master değişikliği veya yeni exact CI kabulü sayılmaz.
+
+Kullanıcı P08/A5 anonim beş tam site ve çekirdek korpusunun henüz hazır
+olmadığını teyit etti; kapı açık tutulur ve mevcut teknik dilimler sürer.
+Anonim küçük fixture sayısı tam ürün N/N kabulü değildir.

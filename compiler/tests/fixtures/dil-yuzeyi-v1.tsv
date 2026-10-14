@@ -10,6 +10,7 @@ api	guvenlik.totp_anahtari	aktif	0.8.0-dev	compiler/src/intrinsic.rs	pub const T
 api	guvenlik.totp_dogrula	aktif	0.8.0-dev	compiler/src/intrinsic.rs	pub const TOTP_DOGRULA: &str = "guvenlik.totp_dogrula";
 api	iletisim.eposta_gonder	aktif	0.8.0-dev	compiler/src/intrinsic.rs	pub const EPOSTA_GONDER: &str = "iletisim.eposta_gonder";
 api	iletisim.eposta_gonder_baglantili	aktif	0.8.0-dev	compiler/src/intrinsic.rs	pub const EPOSTA_GONDER_BAGLANTILI: &str = "iletisim.eposta_gonder_baglantili";
+api	iletisim.eposta_mime_gonder	aktif	0.8.0-dev	compiler/src/intrinsic.rs	pub const EPOSTA_MIME_GONDER: &str = "iletisim.eposta_mime_gonder";
 api	io-izi.eposta_gonder	aktif	0.8.0-dev	compiler/src/yorumlayici/io_izi.rs	"eposta_gonder"
 api	io-izi.gizli_coz	aktif	0.8.0-dev	compiler/src/yorumlayici/io_izi.rs	"gizli_coz"
 api	io-izi.gizli_sifrele	aktif	0.8.0-dev	compiler/src/yorumlayici/io_izi.rs	"gizli_sifrele"
@@ -59,6 +60,7 @@ kalip	doğru	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	doğrulanıyorsa	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	döndür	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	ekle	aktif	0.7.0	compiler/src/lsp.rs	-
+kalip	ekli	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	eylem	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	gerekli	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	göndermeyi	aktif	0.8.0-dev	compiler/src/lsp.rs	-
@@ -192,4 +194,5 @@ profil	web-oran-doluluk.en-eski	aktif	0.8.0-dev	compiler/src/main.rs	"--web-oran
 profil	web-oran-doluluk.reddet	aktif	0.8.0-dev	compiler/src/main.rs	"--web-oran-doluluk"
 profil	web-oran-kapasitesi	aktif	0.8.0-dev	compiler/src/main.rs	"--web-oran-kapasitesi"
 profil	web-oran-siniri	aktif	0.8.0-dev	compiler/src/main.rs	"--web-oran-siniri"
+profil	zee-smtp-mime-1	aktif	0.8.0-dev	compiler/src/eposta/mime.rs	pub const MIME_PROFILI: &str = "zee-smtp-mime-1";
 tani	kimlik-semasi	aktif	0.8.0-dev	compiler/tests/fixtures/tani-kimlikleri-v1.tsv	# Zee tanı kimliği fixture'ı — şema 1

@@ -3239,6 +3239,84 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         let _ = hedef;
         Ok(1)
     }
+    fn eposta_mime_gonder(
+        &mut self,
+        baglanti: Option<&str>,
+        alici: &str,
+        konu: &str,
+        govde: &str,
+        secenek: &dil::eposta::MimeGonderim<'_>,
+    ) -> Result<i64, String> {
+        let baslangic = std::time::Instant::now();
+        let sonuc = (|| {
+            self.politika.gerektir(dil::yetkinlik::Yetkinlik::Ag)?;
+            let url = match baglanti {
+                Some(url) => url.to_string(),
+                None => {
+                    let ad = self
+                        .eposta_baglanti_degiskeni
+                        .as_ref()
+                        .ok_or("SMTP ortam ayarı yok")?;
+                    std::env::var(ad).map_err(|_| "SMTP ortam değeri yok")?
+                }
+            };
+            let ayar = dil::eposta::EpostaAyari::ayristir(&url)?;
+            let sema = if ayar.implicit_tls { "smtps" } else { "smtp" };
+            self.politika
+                .ag_istegini_denetle(&format!("{sema}://{}:{}", ayar.konak, ayar.kapi))?;
+            let ekler = dil::eposta::mime::ekleri_oku(secenek.ekler, &mut |yol| {
+                self.politika
+                    .gerektir(dil::yetkinlik::Yetkinlik::DosyaOkuma)?;
+                let yol = self.dosya_yolu(yol, false)?;
+                dil::eposta::mime::dosyayi_guvenle_ac(&yol)
+            })?;
+            let ekler: Vec<_> = ekler
+                .iter()
+                .map(|ek| dil::eposta::mime::EkDosya {
+                    ad: &ek.ad,
+                    tur: ek.tur,
+                    baytlar: &ek.baytlar,
+                })
+                .collect();
+            let mime = dil::eposta::mime::MimeSecenekleri {
+                yanit_adresi: (!secenek.yanit_adresi.is_empty()).then_some(secenek.yanit_adresi),
+                html: (!secenek.html.is_empty()).then_some(secenek.html),
+                ekler: &ekler,
+            };
+            let kimlik = dil::guvenlik::guvenli_belirtec_uret()?;
+            let saniye = std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .map(|sure| sure.as_secs() as i64)
+                .unwrap_or(0);
+            let tarih = dil::eposta::rfc2822_tarih(saniye);
+            let azami = dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
+                .eposta()
+                .zaman_asimi_ms();
+            let ms = u64::try_from(secenek.zaman_asimi_ms.min(azami))
+                .map_err(|_| "MIME bütçesi geçersiz")?;
+            let kalan = std::time::Duration::from_millis(ms)
+                .checked_sub(baslangic.elapsed())
+                .ok_or("MIME bütçesi doldu")?;
+            let politika = self.politika.clone();
+            dil::eposta::mime::gonder(
+                &ayar,
+                &dil::eposta::Ileti {
+                    alici,
+                    konu,
+                    govde,
+                    kimlik: &kimlik[..32],
+                    tarih: &tarih,
+                },
+                &mime,
+                kalan,
+                &|ip| politika.cozulmus_ipyi_denetle(ip),
+            )?;
+            Ok(1)
+        })();
+        sonuc.map_err(|_: String| {
+            "MIME e-posta gönderilemedi; sır içeren ayrıntılar gizlendi; otomatik tekrar yok".into()
+        })
+    }
     fn gizli_sifrele(&mut self, duz: &str) -> Result<String, String> {
         let anahtar = self.gizli_anahtari()?;
         let mut nonce = [0u8; 24];

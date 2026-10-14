@@ -214,6 +214,15 @@ pub struct Ileti<'a> {
     pub tarih: &'a str,
 }
 
+/// K-232: MIME metadata ve host tarafından sınırlandırılan ek yolları.
+/// Native olmayan adaptör bu gönderimi bilinçli olarak desteklemez.
+pub struct MimeGonderim<'a> {
+    pub html: &'a str,
+    pub yanit_adresi: &'a str,
+    pub ekler: &'a [String],
+    pub zaman_asimi_ms: i64,
+}
+
 pub fn ileti_kur(ayar: &EpostaAyari, ileti: &Ileti<'_>) -> String {
     let Ileti {
         alici,
@@ -473,3 +482,8 @@ mod tests {
         assert!(!adres_gecerli("<a@c.com>"));
     }
 }
+
+// K-232 candidate: additive MIME implementation.
+#[cfg(not(target_arch = "wasm32"))]
+#[path = "eposta/mime.rs"]
+pub mod mime;

@@ -1643,3 +1643,11 @@ kaydı DB bütçeleri ve CLI/LSP/SBOM kimlik eşliğiyle kanıtlı oldu.
 `dil çalıştır <proje-klasörü>` [zee.ayar](zee-ayar.md) profilini okur;
 CLI override, unknown ordinary uyarı, unknown security ret. İlk destek
 zee-ayar-1 yetenekli 0.8.0-dev; gerçek 0.7 rollback kabulü açık kalır.
+
+### K-232 — Ekli SMTP e-posta
+
+[Ekli kalıp](../rfcs/0034-ekli-eposta.md) native ortamda PDF/PNG/JPEG/WebP
+readonly ek, Reply-To ve HTML/düz alternative sağlar. Dosya-okuma ve ağ
+izinleri gerekir; IO izi ve WASM bu çağrıda başarı üretmez. Sır içermeyen
+C029 ve DATA yanıt kaybında belirsiz teslim; otomatik retry yok. Queue/live
+provider/ürün kabulü açık. Eski plain tel biçimi K-232'de korunur.

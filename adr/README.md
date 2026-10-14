@@ -115,3 +115,5 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-095 | [PostgreSQL göç durum/kuru planı](095-postgresql-goc-plani.md) | **kabul** (K-228) |
 
 | ADR-097 | [Sürümlü runtime ayarları](097-surumlu-runtime-ayarlari.md) | **kabul** (K-234) |
+
+| ADR-096 | [Ekli e-posta ve MIME sınırı](096-ekli-eposta-ve-mime.md) | **kabul** (K-232) |

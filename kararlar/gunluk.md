@@ -4300,3 +4300,12 @@ yok; tarihsel 4/4 TLS kaydı korunur, dedicated güncel kapı 5/5 oldu.
 taşıyan CLI adaptörü eklendi. Yeni grammar/API/dependency ve owner/edge yok.
 GB-057 güvenlik allowlist ve eski reader yokluğu sınırını kaydeder;
 aynı buildJSON korunur, ayrı --ayar-semasi capability seçici guard girdisidir.
+
+## K-232 — MIME ürün dilimi
+
+14.10.2026: gerçek zee-cekirdek katalog PDF/B2 talebine tek ekli kalıp,
+readonly bounded binary ek, Reply-To ve alternative gövde açıldı. Core freeze
+dogfood-change exact provenance aynı dilimde; K-174 aynı gün restart ile
+11 Kasım bitişini korur. Bağımsız review FIFO ve dosya tutarlılığı adayını
+düzelttirdi; GB-058 kapandı. Inherited AUTH/reply riskleri ayrı K-236/K-237;
+queue ve canlı katalog teslim kabulü açık.

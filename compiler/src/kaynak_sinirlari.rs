@@ -6,6 +6,7 @@
 
 mod baglanti;
 mod okuma;
+mod posta;
 mod profiller;
 mod veritabani;
 mod web;
@@ -13,6 +14,7 @@ mod web;
 pub use baglanti::{baglanti_izni_al, BaglantiIzni};
 pub(crate) use okuma::{kaynak_boyutunu_denetle, token_sayisini_denetle};
 pub use okuma::{kaynak_dosyasi_oku, veri_dosyasi_baytlarini_oku, veri_dosyasi_oku};
+pub use posta::EpostaSinirlari;
 pub use profiller::{
     AgSinirlari, HttpSinirlari, IoIziSinirlari, KaliciDosyaSinirlari, LspSinirlari,
     MetadataSinirlari, PaketSinirlari, PlaygroundSinirlari, RegistrySinirlari, TaniSinirlari,
@@ -49,6 +51,7 @@ pub struct KaynakSinirlari {
     metadata: MetadataSinirlari,
     kalici_dosya: KaliciDosyaSinirlari,
     veritabani: VeritabaniSinirlari,
+    eposta: EpostaSinirlari,
 }
 
 impl KaynakSinirlari {
@@ -171,6 +174,9 @@ impl KaynakSinirlari {
     pub const fn veritabani(self) -> VeritabaniSinirlari {
         self.veritabani
     }
+    pub const fn eposta(self) -> EpostaSinirlari {
+        self.eposta
+    }
 }
 
 /// Resmî güvenli profil. Limit değişiklikleri kullanıcı programlarının
@@ -273,6 +279,7 @@ pub const VARSAYILAN_KAYNAK_SINIRLARI: KaynakSinirlari = KaynakSinirlari {
         kilit_yeniden_dene_ms: 5,
     },
     veritabani: veritabani::VARSAYILAN,
+    eposta: posta::VARSAYILAN,
 };
 
 #[cfg(test)]

@@ -1437,3 +1437,11 @@ TLS1.1 ve süreç sözleşmesi boşlukları açık kalır.
 ret, ordinary no-op uyarı ve CLI precedence 17 yeni testle sınanır.
 [Profil ve eski-sürüm sınırı](zee-ayar.md). Önceki küçük sürüm/full ürün
 rollback ve fiziksel Windows kabulü açık; yeni grammar yok.
+
+## K-232 — PDF/görsel ekiyle SMTP MIME
+
+Gerçek cd5d12f B2 talebi tek typed intrinsic ve native readonly dosya/SMTP
+adaptörüyle karşılanır. [ADR-096](../adr/096-ekli-eposta-ve-mime.md),
+[RFC-0034](../rfcs/0034-ekli-eposta.md), [anonim ürün](../dogfood/zee-cekirdek/mime/README.md).
+12 integration/16 native e-posta kabulü; queue/3retry/live M365/Gmail/ürün
+katalog kabulü ve physical Windows açık. GB-058 aday FIFO riski kapandı.

@@ -153,3 +153,11 @@ Katman sahibi web_guvenligi'dir; bin_soak bu sahibe tek ileri kenar ekler.
 K-219 / ADR-090 etki incelemesi: bellek oran ayarı ve tahliye indeksi mevcut web_guvenligi sahibindedir; bin_dil ve bin_soak aynı ileri kenarları kullanır. Yeni kök modül, sahipler-arası kenar veya SCC eklenmez; fixture değişmez.
 
 K-220 / ADR-091: yeni alt dosyalar parser, yorumlayici ve ag_istemcisi sahiplerinde kalır; proje metadata kendi sahibindedir. Mevcut ileri kenarlar korunur, yeni kök sahip veya ters katman geçişi yoktur. Fixture/SCC/public API aynı kaynak kapısında incelenir.
+
+K-232 MIME ve readonly safe-open alt modülleri mevcut `eposta` altyapı
+sahibindedir. Merkezi e-posta limitleri temel `kaynak_sinirlari` sahibindedir;
+bilinçli tek yeni exact kenar `eposta → kaynak_sinirlari`, adaptör aşağı
+yöndedir. Yeni üst sahip/ters kenar/owner SCC veya facade export yoktur.
+Temel bütçe alt modülü `posta` adını taşır; `eposta` üst adaptör sahibiyle
+module adı çakışması oluşturulmaz. Kapı/fixture ters temel kenarına izin
+vermek için değiştirilmedi; public EpostaSinirlari ve bütçe değerleri aynıdır.

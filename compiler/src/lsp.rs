@@ -30,7 +30,7 @@ pub const AZAMI_LSP_JSON_DUGUMU: usize = crate::kaynak_sinirlari::VARSAYILAN_KAY
 // ---------- sunucu ----------
 
 /// Tamamlama önerileri: dilin kalıp kelimeleri (kaynağı: ayrıştırıcı yüzeyi).
-const KALIP_KELIMELERI: [&str; 110] = [
+const KALIP_KELIMELERI: [&str; 111] = [
     "yaz",
     "olsun",
     "ise",
@@ -133,6 +133,7 @@ const KALIP_KELIMELERI: [&str; 110] = [
     "anahtarı",
     "anahtarıyla",
     "ileti",
+    "ekli",
     "göndermeyi",
     "üzerinden",
     "görünüm",
@@ -146,7 +147,7 @@ const KALIP_KELIMELERI: [&str; 110] = [
 /// Hover açıklamaları: kalıp kelimesi → tek satır Türkçe açıklama + örnek.
 /// (Kaynak: spec/02-dizim ve dil turu; kelime kalıbın son ya da ayırt edici
 /// parçasıdır.)
-const KELIME_ACIKLAMALARI: [(&str, &str); 60] = [
+const KELIME_ACIKLAMALARI: [(&str, &str); 61] = [
     ("yaz", "Cümleyi bitirir: değeri ekrana (ya da `X dosyasına`) yazar.\n\n`\"Merhaba\" ile isim yaz`"),
     ("olsun", "Ad tanımlar ya da var olan ada atar; tür ilk değerden çıkar ve sonra değişmez.\n\n`yaş 10 olsun`"),
     ("ise", "Koşul dalı açar; koşul yüklem-sonludur (`...se/...sa`).\n\n`yaş 8 veya daha büyükse`"),
@@ -201,6 +202,7 @@ const KELIME_ACIKLAMALARI: [(&str, &str); 60] = [
     ("totp", "160 bit Base32 TOTP gizli anahtarı üretir; otpauth bağlantısında kullanılır.\n\n`gizli yeni totp anahtarı olsun`"),
     ("anahtarıyla", "RFC 6238 TOTP kodunu adaptörün saatiyle ±30 saniye penceresinde doğrular.\n\n`kod gizli anahtarıyla doğrulanıyorsa`"),
     ("göndermeyi", "SMTP ile düz metin e-posta gönderir (ağ yetkinliği + `e_posta_bağlantı_değişkeni`); geri alınamaz, eylem içinde kullanılmaz.\n\n`sonuç alıcı konu gövde ile ileti göndermeyi dene olsun`"),
+    ("ekli", "SMTP MIME e-posta: Metin alıcı/konu/gövde/HTML/yanıt-adresi/bağlantı ve Metin yol listesi. Boş bağlantı proje ortam ayarını kullanır; ekler için dosya-okuma gerekir. Geri alınamaz; eylem ve iz kaydı kapalıdır.\n\n`sonuç alıcı konu düz html yanıt ekler bağlantı ile ekli ileti göndermeyi dene olsun`"),
     ("görünüm", "`<ad> görünüm olsun` + girintili HTML ağacı: her satır `etiket öznitelik değer …`, `\"sabit\"`, `metin ifade` (kaçışlı) ya da `ham ifade` (kaçışsız); sonuç Metin.\n\n`form_html görünüm olsun\n    form method \"post\" action adres\n        input type \"email\" name \"eposta\" value eposta`"),
     ("üzerinden", "E-postayı ortam değişkeni yerine verilen SMTP bağlantı metniyle gönderir (panelden ayarlanan SMTP); ağ hedefi denetimi aynen uygulanır.\n\n`sonuç alıcı konu gövde ile bağlantı üzerinden ileti göndermeyi dene olsun`"),
     ("rotalarını", "Birimin üst düzey rotalarını bu satırın yerine, kendi sırasıyla ana programa katar (rota birimleri; büyük ana.dil'i bölmek için). Birimin tanımları da alınır.\n\n`panel_guvenlik rotalarını kullan`"),

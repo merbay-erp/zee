@@ -20,6 +20,22 @@ pub(super) fn yapili_kalip(tokenlar: &[Token]) -> Result<Option<Ifade>, Tani> {
     };
     let k = |i: usize| kelime(tokenlar, i);
 
+    // K-232: alici konu duz html yanit ekler baglanti ile ekli ileti göndermeyi dene.
+    if n == 12
+        && k(7) == Some("ile")
+        && k(8) == Some("ekli")
+        && k(9) == Some("ileti")
+        && k(10) == Some("göndermeyi")
+        && son == "dene"
+    {
+        return Ok(Some(Ifade::Intrinsic {
+            kimlik: EPOSTA_MIME_GONDER.into(),
+            argumanlar: (0..7)
+                .map(|i| tekil_ifade(tokenlar[i].clone()))
+                .collect::<Result<Vec<_>, _>>()?,
+        }));
+    }
+
     // W ın argon2 özeti — Argon2id PHC parola özeti (K-210).
     if n == 3 && son == "özeti" && k(1) == Some("argon2") {
         return Ok(Some(Ifade::Intrinsic {

@@ -30,6 +30,8 @@ pub const EPOSTA_GONDER: &str = "iletisim.eposta_gonder";
 /// K-210 eki: `<alıcı> <konu> <gövde> ile <bağlantı> üzerinden ileti göndermeyi dene` —
 /// SMTP bağlantısı ortam değişkeninden değil değerden gelir (panelden ayarlanabilir SMTP).
 pub const EPOSTA_GONDER_BAGLANTILI: &str = "iletisim.eposta_gonder_baglantili";
+/// K-232: alıcı/konu/plain/HTML/Reply-To/ek yolları/bağlantı ile ekli ileti.
+pub const EPOSTA_MIME_GONDER: &str = "iletisim.eposta_mime_gonder";
 /// K-210: `<kaynak> görselini <hedef> dosyasına <N> piksele küçültmeyi dene`.
 pub const GORSEL_KUCULT: &str = "gorsel.kucult";
 /// K-210 eki 3: `<metin>in gizli şifrelenmişi` — XChaCha20-Poly1305, anahtar `gizli_anahtar_değişkeni`.
@@ -102,6 +104,14 @@ const IKI_METIN_BIR_SAYI: &[IntrinsicTuru] = &[
 ];
 
 pub const TANIMLAR: &[IntrinsicTanimi] = &[
+    IntrinsicTanimi {
+        kimlik: EPOSTA_MIME_GONDER,
+        yetkinlik: Yetkinlik::Ag,
+        arguman_turleri: &[IntrinsicTuru::Metin, IntrinsicTuru::Metin, IntrinsicTuru::Metin, IntrinsicTuru::Metin, IntrinsicTuru::Metin, IntrinsicTuru::MetinListesi, IntrinsicTuru::Metin],
+        donus_turu: IntrinsicTuru::TamSayiSonucu,
+        etki: IntrinsicEtkisi::GeriAlinamaz,
+        tur_hatasi: "Ekli iletinin alıcısı, konusu, gövdeleri, yanıt adresi ve bağlantısı Metin; ekleri Metin listesi olmalı.",
+    },
     IntrinsicTanimi {
         kimlik: HTTP_JSON, yetkinlik: Yetkinlik::Ag, arguman_turleri: METIN,
         donus_turu: IntrinsicTuru::MetinSozlukSonucu, etki: IntrinsicEtkisi::Saf,

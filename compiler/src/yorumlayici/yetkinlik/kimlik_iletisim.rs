@@ -41,6 +41,20 @@ macro_rules! yontemler {
             self.dosya_yolunu_denetle(hedef, Yetkinlik::DosyaYazma)?;
             self.ic.gorsel_kucult(kaynak, hedef, azami)
         }
+        fn eposta_mime_gonder(
+            &mut self,
+            b: Option<&str>,
+            a: &str,
+            k: &str,
+            g: &str,
+            s: &crate::eposta::MimeGonderim<'_>,
+        ) -> Result<i64, String> {
+            self.politika.gerektir(Yetkinlik::Ag)?;
+            for yol in s.ekler {
+                self.dosya_yolunu_denetle(yol, Yetkinlik::DosyaOkuma)?;
+            }
+            self.ic.eposta_mime_gonder(b, a, k, g, s)
+        }
     };
 }
 pub(super) use yontemler;

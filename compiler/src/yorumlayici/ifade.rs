@@ -117,6 +117,7 @@ pub(super) fn degerlendir_async<'a>(
                     | TOTP_DOGRULA
                     | EPOSTA_GONDER
                     | EPOSTA_GONDER_BAGLANTILI
+                    | EPOSTA_MIME_GONDER
                     | GORSEL_KUCULT
                     | GIZLI_SIFRELE
                     | GIZLI_COZ => {

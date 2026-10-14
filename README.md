@@ -150,10 +150,10 @@ Değişikliğe özel test, belge ve güvenlik kapıları [AGENTS.md](AGENTS.md) 
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **860** |
+| Rust + doctest vakası | **886** |
 | Tanı kimliği | **159 etkin + 3 ayrılmış** |
-| RFC | **33** (2 kabul, 28 geçici kabul, 3 taslak) |
-| ADR | **94** (94 kabul) |
+| RFC | **34** (2 kabul, 29 geçici kabul, 3 taslak) |
+| ADR | **95** (95 kabul) |
 | Normatif spec bölümü | **28** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
@@ -230,3 +230,7 @@ CI biçim denetimi: `dil biçimle --denetle .` (uygun biçim0, fark1, yazma yok)
 Proje runtime host ayarları için [zee.ayar profili](docs/zee-ayar.md) ve
 `dil sürüm --ayar-semasi` yetenek sorgusu vardır; eski-reader rollback
 ve canlı ürün kabulü ayrı açıktır.
+
+Native [ekli e-posta profili](rfcs/0034-ekli-eposta.md) readonly PDF/görsel
+eki, Reply-To ve HTML/düz alternatif gövdeyi destekler. Queue ve canlı
+provider/ürün kabulü açık; IO izi/WASM gönderim yapmaz.

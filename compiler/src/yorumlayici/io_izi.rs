@@ -680,6 +680,18 @@ impl<T: GirdiCikti> GirdiCikti for IzKaydedenIo<T> {
         k181::kaydet_gorsel_kucult(self, kaynak, hedef, azami)
     }
 
+    fn eposta_mime_gonder(
+        &mut self,
+        _b: Option<&str>,
+        _a: &str,
+        _k: &str,
+        _g: &str,
+        _s: &crate::eposta::MimeGonderim<'_>,
+    ) -> Result<i64, String> {
+        self.hata = Some("MIME e-posta IO iz kaydında kapalı".into());
+        Err("MIME e-posta IO iz kaydında kapalı".into())
+    }
+
     fn eylem_baslat(&mut self) -> Result<(), EylemHatasi> {
         let sonuc = self.ic.eylem_baslat();
         self.kaydet("eylem_baslat", Vec::new(), eylem_sonuc_yaz(&sonuc));
@@ -1185,6 +1197,18 @@ impl GirdiCikti for IzYenidenOynatici {
 
     fn gorsel_kucult(&mut self, kaynak: &str, hedef: &str, azami: i64) -> Result<i64, String> {
         k181::oynat_gorsel_kucult(self, kaynak, hedef, azami)
+    }
+
+    fn eposta_mime_gonder(
+        &mut self,
+        _b: Option<&str>,
+        _a: &str,
+        _k: &str,
+        _g: &str,
+        _s: &crate::eposta::MimeGonderim<'_>,
+    ) -> Result<i64, String> {
+        self.hata_yaz("MIME e-posta IO yeniden oynatımında kapalı".into());
+        Err("MIME e-posta IO yeniden oynatımında kapalı".into())
     }
 
     fn eylem_baslat(&mut self) -> Result<(), EylemHatasi> {
