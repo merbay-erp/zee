@@ -6,7 +6,7 @@ değildir.
 
 K-242 / [ADR-103](../adr/103-native-commit-belirsizligi-kaniti.md) aynı
 anonim parola helper'ında dört yeni kontrol/arızayı [şema 2 kampanyasına](parola-goc-ci.md)
-bağlar. Final temiz exact native kabulü bu aşamada bekleniyor; eski F028
+bağlar. Final temiz `316a313` native kabulü 11/11, sıfır atlamayla geçti; eski F028
 ve 7/7 TLS kayıtları kendi kaynak ve kapsamlarında tarihsel kalır.
 
 ## Araç
@@ -79,6 +79,5 @@ Mevcut native dış COMMIT hatasının konservatif C027 sınıfı değişmez.
 ErrorResponse, severity, SQLSTATE veya idle durumu evrensel rollback
 kanıtı değildir: PostgreSQL durable commit sonrasındaki cleanup/callback
 de hata üretebilir. Native wire cevabı hermetik modelin backend-known
-`Commit::Red`/C021 reddine eşitlenmez. Yeni 11/11 final exact kayıt henüz
-bekleniyor; particular fixture gözlemi provider/extension, canlı ürün,
+`Commit::Red`/C021 reddine eşitlenmez. Yeni 11/11 final exact kayıt temiz `316a313` kaynağındadır; particular fixture gözlemi provider/extension, canlı ürün,
 uzak CI, fiziksel platform veya RC kabulüne genişletilmez.

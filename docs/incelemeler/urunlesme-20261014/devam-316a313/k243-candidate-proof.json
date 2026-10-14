@@ -1,0 +1,68 @@
+{
+  "schema": "zee-k243-alias-hardened-acceptance-1",
+  "base_source_sha": "f0a75ea50f5e4d38e7c12ccf681070d9311618d2",
+  "files": [
+    {
+      "path": "scripts/temiz-kaynak-arsivi.sh",
+      "sha256": "268a7e0b2541224b2d85216d2ce14481976011ab4f275b90ceb4739abc45558f"
+    },
+    {
+      "path": "compiler/tests/dokuman_tazelik_testi.rs",
+      "sha256": "ae4f2ffe6149ca7e8cefcd04c0797d11ab5f6b285f1cb1b879069484bc3bbc87"
+    },
+    {
+      "path": "docs/temiz-kaynak-arsivi.md",
+      "sha256": "13199c26fafa1e6f3b2d10a2c07502333214ae899228ebba948eed297145c216"
+    }
+  ],
+  "earlier_preacceptance_record": "k243-candidate-proof.json",
+  "historical_native_case_bug": "case-alias-proof.json",
+  "historical_native_deleted_case_bug": "deleted-case-alias-before.json",
+  "campaign": [
+    {
+      "case": "present_guard_before_deleted_alias_fix",
+      "exit": 1,
+      "elapsed_seconds": 4.469,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 143, in <module>\n    assert result.returncode == 2 and not (repo / 'a.txt').exists()\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+    },
+    {
+      "case": "final_after",
+      "exit": 0,
+      "elapsed_seconds": 6.139,
+      "stdout": "K243: snapshot/ZIP, confinement, present/deleted case+normalization aliases, hardlinks and UTF8 passed\n",
+      "stderr": ""
+    }
+  ],
+  "cargo_result": {
+    "passed": 1,
+    "failed": 0,
+    "ignored": 0,
+    "filtered": 5,
+    "libtest_seconds": 6.19,
+    "exit": 0
+  },
+  "fmt_check_exit": 0,
+  "bash_syntax_exit": 0,
+  "git_diff_check_exit": 0,
+  "new_Cargo_case_count": 0,
+  "doc_norm_count_preserved": 164,
+  "native_platform": "macOS case-insensitive/normalizing filesystem",
+  "normal_case_sensitive_alternate_name": "capability-aware positive branch present; no Linux native execution claimed",
+  "acceptance": [
+    "present case alias cannot corrupt Git config or tracked source",
+    "output+sidecar hardlink identity protected by index and frozen tree even after cached removal",
+    "missing ASCII-case tracked path cannot be re-created under alias",
+    "missing NFC-vs-NFD canonical tracked path cannot be re-created under alias",
+    "untracked normal output renewal remains accepted",
+    "dirty caller and concurrent HEAD archive exactinitialsnapshot",
+    "tampered ZIP before publication rejection preserves prior outputs",
+    "canonical/outside/symlink/directory/metadata/UTF8 cases preserved"
+  ],
+  "filesystem_probe": "Only potential tracked-name aliases trigger an owned temporary file probe after canonical confinement, before output directories/publication; private probe always removed",
+  "boundaries": [
+    "ZIP/sidecar separately renamed; pair not transactional",
+    "same-user filesystem mutation and OS sandbox excluded",
+    "no historical2e acceptance retagged; no CI/download/release claim"
+  ]
+}

@@ -1,0 +1,294 @@
+{
+  "schema": "zee-parola-goc-ci-2",
+  "started_utc": "2026-10-14T19:28:40.828912+00:00",
+  "status": "passed",
+  "phase": "completed",
+  "cases": [
+    {
+      "name": "ilk_bcrypt_girisi_argon2_ve_oturum_commit",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "variants": 3,
+        "updates": 3,
+        "sessions": 3,
+        "modern_verified": true
+      }
+    },
+    {
+      "name": "ikinci_modern_giriste_update_yok",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "accepted": true,
+        "hash_unchanged": true,
+        "additional_updates": 0,
+        "additional_update_attempts": 0,
+        "sessions": 2
+      }
+    },
+    {
+      "name": "yanlis_parola_yazisiz_reddedilir",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "rejected": true,
+        "hash_unchanged": true,
+        "updates": 0,
+        "update_attempts": 0,
+        "bind_attempts": 0,
+        "sessions": 0
+      }
+    },
+    {
+      "name": "ayni_eski_snapshot_gercek_sql_cas_yarisi",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "waiting_clients": 2,
+        "accepted": 1,
+        "rejected": 1,
+        "updates": 1,
+        "sessions": 1,
+        "modern_hash": true,
+        "idle_transactions": 0
+      }
+    },
+    {
+      "name": "sql_update_hatasi_rollback",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "rejected": true,
+        "legacy_preserved": true,
+        "update_attempts": 1,
+        "bind_attempts": 0,
+        "updates": 0,
+        "sessions": 0
+      }
+    },
+    {
+      "name": "oturum_bind_hatasi_dis_eylemi_rollback",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "rejected": true,
+        "legacy_preserved": true,
+        "update_attempts": 1,
+        "bind_attempts": 1,
+        "updates": 0,
+        "sessions": 0
+      }
+    },
+    {
+      "name": "oturum_ve_hash_yalniz_commit_sonrasi_gorunur",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "waiting_clients": 1,
+        "update_attempts_before_commit": 1,
+        "bind_attempts_before_commit": 1,
+        "legacy_visible_before_commit": true,
+        "sessions_before_commit": 0,
+        "updates_before_commit": 0,
+        "accepted": true,
+        "modern_hash_after_commit": true,
+        "sessions_after_commit": 1,
+        "updates_after_commit": 1
+      }
+    },
+    {
+      "name": "commit_olumlu_kontrol_bildirim_bir_kez",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "client_exit": 0,
+        "c027": false,
+        "stdout_empty": false,
+        "continuation_completed": true,
+        "smtp_connections": 1,
+        "smtp_messages": 1,
+        "update_attempts": 1,
+        "bind_attempts": 1,
+        "commits_seen": 1,
+        "commit_forwarded": true,
+        "commit_complete": true,
+        "commit_ready_idle": true,
+        "completion_delivered": true,
+        "server_error": false,
+        "error_delivered": false,
+        "error_sqlstate": "",
+        "error_severity": "",
+        "actual_db_applied": true,
+        "modern_hash": true,
+        "modern_verified": true,
+        "sessions": 1,
+        "updates": 1,
+        "session_hash_consistent": true,
+        "remaining_client_backends": 0
+      }
+    },
+    {
+      "name": "commit_iletilmeden_kayip_c027_kayit_yok",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "client_exit": 1,
+        "c027": true,
+        "stdout_empty": true,
+        "continuation_completed": false,
+        "smtp_connections": 0,
+        "smtp_messages": 0,
+        "update_attempts": 1,
+        "bind_attempts": 1,
+        "commits_seen": 1,
+        "commit_forwarded": false,
+        "commit_complete": false,
+        "commit_ready_idle": false,
+        "completion_delivered": false,
+        "server_error": false,
+        "error_delivered": false,
+        "error_sqlstate": "",
+        "error_severity": "",
+        "actual_db_applied": false,
+        "modern_hash": false,
+        "modern_verified": false,
+        "sessions": 0,
+        "updates": 0,
+        "session_hash_consistent": true,
+        "remaining_client_backends": 0
+      }
+    },
+    {
+      "name": "commit_uygulandi_yanit_kayip_c027_kayit_var",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "client_exit": 1,
+        "c027": true,
+        "stdout_empty": true,
+        "continuation_completed": false,
+        "smtp_connections": 0,
+        "smtp_messages": 0,
+        "update_attempts": 1,
+        "bind_attempts": 1,
+        "commits_seen": 1,
+        "commit_forwarded": true,
+        "commit_complete": true,
+        "commit_ready_idle": true,
+        "completion_delivered": false,
+        "server_error": false,
+        "error_delivered": false,
+        "error_sqlstate": "",
+        "error_severity": "",
+        "actual_db_applied": true,
+        "modern_hash": true,
+        "modern_verified": true,
+        "sessions": 1,
+        "updates": 1,
+        "session_hash_consistent": true,
+        "remaining_client_backends": 0
+      }
+    },
+    {
+      "name": "commit_deferred_ret_c027_gozlemci_rollback",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "client_exit": 1,
+        "c027": true,
+        "stdout_empty": true,
+        "continuation_completed": false,
+        "smtp_connections": 0,
+        "smtp_messages": 0,
+        "update_attempts": 1,
+        "bind_attempts": 1,
+        "commits_seen": 1,
+        "commit_forwarded": true,
+        "commit_complete": false,
+        "commit_ready_idle": true,
+        "completion_delivered": false,
+        "server_error": true,
+        "error_delivered": true,
+        "error_sqlstate": "23514",
+        "error_severity": "ERROR",
+        "actual_db_applied": false,
+        "modern_hash": false,
+        "modern_verified": false,
+        "sessions": 0,
+        "updates": 0,
+        "session_hash_consistent": true,
+        "remaining_client_backends": 0
+      }
+    }
+  ],
+  "ignored": 0,
+  "commit_response_loss_probed": true,
+  "tls_cases": 7,
+  "plaintext_fault_cases": 4,
+  "boundary": "Owned synthetic PostgreSQL and anonymous helper; SQL session row only. Seven TLS cases plus four loopback plaintext COMMIT/SMTP controls. No live login, web cookie, product migration, TLS fault interception, postcommit extension audit or signed release.",
+  "source_start_sha": "316a313ed6798d084450097d79281dce7f3fc82d",
+  "source_clean_start": true,
+  "source_sha": "316a313ed6798d084450097d79281dce7f3fc82d",
+  "binary_sha256": "0737f24ef7eae8faa49542361c753448a5d4677239c79231488eaf2bcd487a69",
+  "build_identity": {
+    "schema": "zee-build-v1",
+    "version": "0.8.0-dev",
+    "source_sha": "316a313ed6798d084450097d79281dce7f3fc82d",
+    "source_date": "2026-10-14",
+    "channel": "development",
+    "dirty": false
+  },
+  "fixture_hashes": [
+    {
+      "path": "compiler/tests/zee_cekirdek_urun_kabulu_testi.rs",
+      "sha256": "660cbd7ee9d887e655ce84a37fca40f331ee91277d7db9c5df811c3013ffcaac"
+    },
+    {
+      "path": "dogfood/zee-cekirdek/parola-goc/giriste-yukselt.dil",
+      "sha256": "d51b7c213df19edf2f65f089ccdc750c1c17b691caeb928ed3faacbffd7bd8e0"
+    },
+    {
+      "path": "scripts/parola-goc-ci.py",
+      "sha256": "cdced5a360ccc5b1ca9293f247d0dd96b41353997483fb2acd8119581f0e7309"
+    },
+    {
+      "path": "scripts/postgresql-commit-proxy.py",
+      "sha256": "3c8a0de39e838d12db431803d69271805ad297730338e527053a51b012da1454"
+    },
+    {
+      "path": "scripts/postgresql-tls-ci.py",
+      "sha256": "86ab8eff17561645fe53f01202da09803d53661dc7ce60289c12644d7faef0a1"
+    }
+  ],
+  "statement_attempt_observer_verified": true,
+  "server": "postgres (PostgreSQL) 16.15",
+  "server_identity": {
+    "binaries": "/private/tmp/zee-plan-evidence/pg16-runtime/install/bin",
+    "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O"
+  },
+  "runtime_binaries": [
+    {
+      "path": "/private/tmp/zee-plan-evidence/pg16-runtime/install/bin/postgres",
+      "sha256": "9b89cfcd7b54a581c50c2fc5c3010f3ae0755635958d5789886718da22052fbd"
+    },
+    {
+      "path": "/private/tmp/zee-plan-evidence/pg16-runtime/install/bin/initdb",
+      "sha256": "c960be8780e673d65c97f78c54bd3438525e1de6f2822257b189effc8b48b740"
+    },
+    {
+      "path": "/private/tmp/zee-plan-evidence/pg16-runtime/install/bin/pg_ctl",
+      "sha256": "7c052138b54426bb3666814f25374a84cc4789bc0400ebf50dedca627e8563da"
+    },
+    {
+      "path": "/private/tmp/zee-plan-evidence/pg16-runtime/install/bin/psql",
+      "sha256": "c63479d6b17829552f52ac8f083b3bc4d6564dbea39eb64ffa01c150dc43d2af"
+    }
+  ],
+  "owned_cluster_closed": true,
+  "source_clean": true,
+  "source_end_sha": "316a313ed6798d084450097d79281dce7f3fc82d",
+  "source_unchanged": true,
+  "source_acceptance": "clean-exact",
+  "elapsed_seconds": 11.021
+}

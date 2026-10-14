@@ -9,8 +9,8 @@ bcrypt ve Argon2id yollarını yürütür.
 
 K-242 ile güncel rapor şeması `zee-parola-goc-ci-2`dir: mevcut yedi TLS
 vakası ve dört owned loopback plaintext COMMIT kontrol/arızası ayrı
-kaydedilir. Bu genişletmenin final temiz exact native kabulü bu aşamada
-bekleniyor; eski 7/7 raporlar 11/11 kabulü olarak yeniden etiketlenmez.
+kaydedilir. Bu genişletmenin final temiz `316a313` native kabulü 11/11,
+sıfır atlamayla geçti; eski 7/7 raporlar 11/11 kabulü olarak yeniden etiketlenmez.
 [Karar ve sınıflandırma sınırı](../adr/103-native-commit-belirsizligi-kaniti.md).
 
 ## Tek komut

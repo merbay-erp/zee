@@ -16,12 +16,33 @@ kullanıcıya karşı genel filesystem sandbox iddiası yoktur.
 
 ## Kabul kaydı
 
-Çalışma ağacında tam faz **888/894, 0 başarısız, 6 dedicated atlama**;
-aday native PostgreSQL on bir vaka, PowerShell altı vaka, fmt, sürekli
-güvenlik ve istisnasız yeni sır taraması geçti. Temiz exact kaynakta aynı
-faz, dedicated 5 TLS + 1 göç + 11 parola/COMMIT, PowerShell ve kaynak ZIP
-kabulü takip kanıtıyla kaydedilecektir. Bunlar henüz yeni exact kabul veya
-yeni imzalı ikili iddiası değildir.
+Temiz exact kaynak **`316a313ed6798d084450097d79281dce7f3fc82d`**:
+
+| Kapı | Gerçek sonuç | Kanıt |
+|---|---|---|
+| Tam faz | 888/894; 0 başarısız, 6 dedicated atlama; 94,303 sn faz toplamı | [Faz](incelemeler/urunlesme-20261014/devam-316a313/faz-test-matrisi.md) |
+| Dedicated PostgreSQL | Rust 1.93.1 / PostgreSQL 16.15; 5 TLS + 1 göç + 11 parola/COMMIT, 0 atlama | [Native](incelemeler/urunlesme-20261014/devam-316a313/native-proof.json) · [11 vaka](incelemeler/urunlesme-20261014/devam-316a313/parola-goc-ci.json) |
+| Literal kaldırma | PowerShell 7.5.11 / macOS arm64; 6/6, başlangıç/son temiz ve kaynak hash'leri aynı | [PowerShell](incelemeler/urunlesme-20261014/devam-316a313/powershell-proof.json) |
+| Sürekli güvenlik | İki graph deny, fuzz derleme, kayıt/tedarik; sır geçmişi 435 commit + kaynak ağacı temiz; yeni istisna yok | [Kapı özeti](incelemeler/urunlesme-20261014/devam-316a313/gate-summary.json) |
+| Kaynak ZIP | 1146 kaynak; exact comment, dosya kümesi/manifest ve byte hash'leri eş | [Arşiv](incelemeler/urunlesme-20261014/devam-316a313/source-archive.json) |
+
+Normal fazdaki altı dedicated vaka ayrıca gerçek koşuda yürütüldü. Python
+ve PowerShell vaka sayıları Cargo toplamına eklenmez. Native debug ikili
+actual SHA ve `dirty=false` kimliğini verdi; başlangıç/son ikili hash'i,
+kaynak SHA/temizliği, statement sayaç gözlemcisi ve küme kapanışı denetlendi.
+[Byte doğrulaması](incelemeler/urunlesme-20261014/devam-316a313/native-byte-verification.json)
+on bir ham native artefaktın SHA-256 eşliğini ayrıca kaydeder.
+
+K-243 [aday önce/sonra kanıtı](incelemeler/urunlesme-20261014/devam-316a313/k243-candidate-proof.json)
+F0 çalışma ağacına ve exact dosya hash'lerine aittir; yeni SHA kabulü olarak
+yeniden etiketlenmedi. [K-244 bağımsız incelemesi](incelemeler/urunlesme-20261014/devam-316a313/k244-independent-review.json)
+salt kaynak incelemesidir, Windows koşusu değildir. İlk başarısız native
+proxy/alias/PowerShell sonuçları kalıcı özel kanıt paketinde korunur.
+
+Yeni ZIP SHA-256 `3a64814a1858ebe1b7530bf55cd321ec8b9914a8aec007890dab09faaf0deaf8`
+ve dosya boyutu 4.532.595 bayttır. Paket ignored `dist/urunlesme-20261014/source-316a313/`
+altındadır. Önceki kanonik iki-klon ikilileri 2e970e4 kaynağında tarihsel
+kalır; bu dalgada yeni signed release veya yayın hazırlanmış gösterilmez.
 
 ## Etki incelemesi
 

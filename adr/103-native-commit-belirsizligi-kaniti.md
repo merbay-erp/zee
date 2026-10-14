@@ -23,7 +23,7 @@ koşunun byte/hash/exit ve bağımsız veritabanı gözlemleridir.
 
 Bu kararın temiz exact native kabulü [devam raporunda](../docs/urunlesme-devam-20261014.md)
 ayrıca tutulur. Aday çalışma ağacındaki 11/11 sonuç yeni exact kaynak
-kapanışı yerine geçmez; bu aşamada temiz commit tekrarı bekleniyor.
+kapanışı yerine geçmez; temiz `316a313` tekrarında 11/11, sıfır atlama geçti.
 
 K-223'ün gerçek anonim helper'ı ve dış eylemi değiştirilmeden yürütülür.
 Mevcut yedi TLS vaka korunur; yalnız testin yönettiği loopback PostgreSQL

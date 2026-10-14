@@ -1,0 +1,156 @@
+{
+  "schema": "zee-k244-clean-native-powershell-1",
+  "recorded_utc": "2026-10-14T19:27:47.694239+00:00",
+  "result": "passed-local-macos-semantics",
+  "source_sha": "316a313ed6798d084450097d79281dce7f3fc82d",
+  "source_start": {
+    "head": "316a313ed6798d084450097d79281dce7f3fc82d",
+    "porcelain": ""
+  },
+  "source_finish": {
+    "head": "316a313ed6798d084450097d79281dce7f3fc82d",
+    "porcelain": ""
+  },
+  "source_files": [
+    {
+      "path": "scripts/kur.ps1",
+      "sha256": "0f9d0dea6a0847f76b076b3f1c1fe58bfa65a7c1e81459215f20912f4319a306"
+    },
+    {
+      "path": "scripts/kaldir.ps1",
+      "sha256": "e733822766ff14b78784bd33841d6fd20be539206528622fbaa667bceedde0c4"
+    },
+    {
+      "path": "scripts/tests/kurulum-literal-yol-test.ps1",
+      "sha256": "f08cf6ab2f20b806e264f7e65e77e1b390b4ff8447d86bd95c4233f573e242bc"
+    },
+    {
+      "path": "compiler/tests/kurulum_testi.rs",
+      "sha256": "309dd67f57852e9c75f0715400c8e4e37a277947d498cd479e8da2a4c7f37fe1"
+    },
+    {
+      "path": ".github/workflows/kurulum-tatbikati.yml",
+      "sha256": "c36f1a171d75778afedcbb291649a1eab8cb79609fe4be59e6ce39bc38cc1fd1"
+    },
+    {
+      "path": "docs/surum-runbook.md",
+      "sha256": "6ee1fd842d54344dd2e3beb1399953b9b6d12e6693ff738fe75efe1166abe15a"
+    }
+  ],
+  "source_file_hashes_unchanged": true,
+  "runtime": {
+    "version": "7.5.11",
+    "architecture": "Arm64",
+    "edition": "Core",
+    "platform": "Unix",
+    "sha256": "89221b596087a140769641ae27a72dda8345a6a03c637fbbb19edfec0b871e97",
+    "mach_o_cpu_type": 16777228,
+    "host_os": "macOS"
+  },
+  "official_distribution": {
+    "release": "v7.5.11",
+    "release_url": "https://github.com/PowerShell/PowerShell/releases/tag/v7.5.11",
+    "assets": [
+      {
+        "name": "powershell-7.5.11-osx-arm64.tar.gz",
+        "url": "https://github.com/PowerShell/PowerShell/releases/download/v7.5.11/powershell-7.5.11-osx-arm64.tar.gz",
+        "bytes": 71073475,
+        "sha256": "93c5d5b71a3937e3dbb68934886d318689f57ecda466443764a9d7101f196e6f"
+      },
+      {
+        "name": "hashes.sha256",
+        "url": "https://github.com/PowerShell/PowerShell/releases/download/v7.5.11/hashes.sha256",
+        "bytes": 4724,
+        "sha256": "e3784f7f4492fe7655608069ab7ebac75ff999988ffa3649b671dcdf9c96ffd4"
+      }
+    ]
+  },
+  "exit": 0,
+  "campaign": {
+    "schema": "zee-kurulum-literal-yol-1",
+    "result": "gecti",
+    "powershell_version": "7.5.11",
+    "powershell_edition": "Core",
+    "platform": "Unix",
+    "case_count": 6,
+    "cases": [
+      {
+        "name": "normal",
+        "result": "gecti",
+        "installed_remaining": 0,
+        "foreign_remaining": 0,
+        "manifest_removed": true
+      },
+      {
+        "name": "unicode",
+        "result": "gecti",
+        "installed_remaining": 0,
+        "foreign_remaining": 0,
+        "manifest_removed": true
+      },
+      {
+        "name": "bracket-sibling",
+        "result": "gecti",
+        "installed_remaining": 0,
+        "foreign_remaining": 2,
+        "manifest_removed": true
+      },
+      {
+        "name": "changed-hash-no-delete-all",
+        "result": "gecti",
+        "installed_remaining": 2,
+        "foreign_remaining": 2,
+        "manifest_unchanged": true
+      },
+      {
+        "name": "force-literal-only",
+        "result": "gecti",
+        "installed_remaining": 0,
+        "foreign_remaining": 2,
+        "manifest_removed": true
+      },
+      {
+        "name": "missing-and-schema-fail-closed",
+        "result": "gecti",
+        "rejection_checks": 2,
+        "installed_remaining": 2,
+        "foreign_remaining": 2,
+        "manifest_unchanged": true
+      }
+    ],
+    "owned_cleanup": true,
+    "synthetic_binaries_executed": false,
+    "failure": null
+  },
+  "owned_temp_empty_after": true,
+  "raw_evidence": [
+    {
+      "path": "campaign.json",
+      "sha256": "7d97eef80d23292acc3ee33314154e42ee3a6cd4b1e0dbb125e35ee39aac030e"
+    },
+    {
+      "path": "stdout.log",
+      "sha256": "7d97eef80d23292acc3ee33314154e42ee3a6cd4b1e0dbb125e35ee39aac030e"
+    },
+    {
+      "path": "stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "runtime-stdout.json",
+      "sha256": "e5c5fb092eeebd102816b71527bc572f314d9b0d4e2df88e6c98e4965f9c78e7"
+    },
+    {
+      "path": "runtime-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "boundaries": {
+    "physical_windows_acceptance": false,
+    "native_powershell_5_1_execution": false,
+    "minimum_os_acceptance": false,
+    "remote_ci_execution": false,
+    "ci_artifact_access": false,
+    "permanent_runtime_installation": false
+  }
+}

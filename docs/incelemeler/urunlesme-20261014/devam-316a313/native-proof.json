@@ -1,0 +1,158 @@
+{
+  "schema": "zee-k242-owned-native-proof-1",
+  "status": "passed",
+  "started_utc": "2026-10-14T19:28:08.574573+00:00",
+  "source_start": {
+    "sha": "316a313ed6798d084450097d79281dce7f3fc82d",
+    "clean": true
+  },
+  "engine": "local-owned-official-source-runtime",
+  "host": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "rustc": "rustc 1.93.1 (01f6ddf75 2026-02-11)",
+  "cargo": "cargo 1.93.1 (083ac5135 2025-12-15)",
+  "postgres_version": "postgres (PostgreSQL) 16.15",
+  "runtime_binaries": [
+    {
+      "path": "/private/tmp/zee-plan-evidence/pg16-runtime/install/bin/postgres",
+      "sha256": "9b89cfcd7b54a581c50c2fc5c3010f3ae0755635958d5789886718da22052fbd"
+    },
+    {
+      "path": "/private/tmp/zee-plan-evidence/pg16-runtime/install/bin/initdb",
+      "sha256": "c960be8780e673d65c97f78c54bd3438525e1de6f2822257b189effc8b48b740"
+    },
+    {
+      "path": "/private/tmp/zee-plan-evidence/pg16-runtime/install/bin/pg_ctl",
+      "sha256": "7c052138b54426bb3666814f25374a84cc4789bc0400ebf50dedca627e8563da"
+    },
+    {
+      "path": "/private/tmp/zee-plan-evidence/pg16-runtime/install/bin/psql",
+      "sha256": "c63479d6b17829552f52ac8f083b3bc4d6564dbea39eb64ffa01c150dc43d2af"
+    }
+  ],
+  "commands": [
+    {
+      "gate": "postgresql-tls",
+      "argv": [
+        "python3",
+        "-I",
+        "/private/tmp/zee-k242-native-final/scripts/postgresql-tls-ci.py",
+        "--engine",
+        "local",
+        "--postgres-bin-dir",
+        "/private/tmp/zee-plan-evidence/pg16-runtime/install/bin",
+        "--output",
+        "/private/tmp/zee-plan-evidence/native-k242-final-raw/postgresql-tls-ci.json"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 8.879,
+      "source_before": {
+        "sha": "316a313ed6798d084450097d79281dce7f3fc82d",
+        "clean": true
+      },
+      "source_after": {
+        "sha": "316a313ed6798d084450097d79281dce7f3fc82d",
+        "clean": true
+      }
+    },
+    {
+      "gate": "postgresql-goc",
+      "argv": [
+        "python3",
+        "-I",
+        "/private/tmp/zee-k242-native-final/scripts/postgresql-goc-ci.py",
+        "--engine",
+        "local",
+        "--postgres-bin-dir",
+        "/private/tmp/zee-plan-evidence/pg16-runtime/install/bin"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 1.918,
+      "source_before": {
+        "sha": "316a313ed6798d084450097d79281dce7f3fc82d",
+        "clean": true
+      },
+      "source_after": {
+        "sha": "316a313ed6798d084450097d79281dce7f3fc82d",
+        "clean": true
+      }
+    },
+    {
+      "gate": "parola-goc",
+      "argv": [
+        "python3",
+        "-I",
+        "/private/tmp/zee-k242-native-final/scripts/parola-goc-ci.py",
+        "--engine",
+        "local",
+        "--postgres-bin-dir",
+        "/private/tmp/zee-plan-evidence/pg16-runtime/install/bin",
+        "--dil",
+        "/private/tmp/zee-plan-evidence/k242-final-target/debug/dil",
+        "--output",
+        "/private/tmp/zee-plan-evidence/native-k242-final-raw/parola-goc-ci.json"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 11.162,
+      "source_before": {
+        "sha": "316a313ed6798d084450097d79281dce7f3fc82d",
+        "clean": true
+      },
+      "source_after": {
+        "sha": "316a313ed6798d084450097d79281dce7f3fc82d",
+        "clean": true
+      }
+    }
+  ],
+  "boundary": "owned fresh initdb clusters, synthetic helper/roles/credentials, seven TLS + four plaintext COMMIT controls; not Docker image, remoteCI, physical platform, live product, RC or signed release acceptance",
+  "build_identity": {
+    "schema": "zee-build-v1",
+    "version": "0.8.0-dev",
+    "source_sha": "316a313ed6798d084450097d79281dce7f3fc82d",
+    "source_date": "2026-10-14",
+    "channel": "development",
+    "dirty": false
+  },
+  "binary_before": {
+    "path": "/private/tmp/zee-plan-evidence/k242-final-target/debug/dil",
+    "sha256": "0737f24ef7eae8faa49542361c753448a5d4677239c79231488eaf2bcd487a69"
+  },
+  "results": {
+    "tls": {
+      "passed": 5,
+      "failed": 0,
+      "ignored": 0
+    },
+    "migration": {
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0
+    },
+    "password_cas_commit": {
+      "passed": 11,
+      "failed": 0,
+      "ignored": 0
+    }
+  },
+  "owned_cluster_cleanup": "all three owned runner commands exited successfully after their finally cleanup",
+  "source_end": {
+    "sha": "316a313ed6798d084450097d79281dce7f3fc82d",
+    "clean": true
+  },
+  "source_unchanged": true,
+  "finished_utc": "2026-10-14T19:28:51.979014+00:00",
+  "binary_after": {
+    "path": "/private/tmp/zee-plan-evidence/k242-final-target/debug/dil",
+    "sha256": "0737f24ef7eae8faa49542361c753448a5d4677239c79231488eaf2bcd487a69"
+  },
+  "binary_unchanged": true,
+  "test_binaries": [
+    {
+      "path": "/private/tmp/zee-plan-evidence/k242-final-target/debug/deps/postgresql_testi-84e563c109807ac4",
+      "sha256": "c1aab8759b66ac01d799cd219f28a179e4d9821ce3910d797ccfcdead8cbb227"
+    },
+    {
+      "path": "/private/tmp/zee-plan-evidence/k242-final-target/debug/deps/postgresql_goc_plani_testi-f8cb3cee2f193770",
+      "sha256": "f2409922331627978b02e47fd40ac3429e51ef1adb7cf5dc32a6b2e533b3528f"
+    }
+  ]
+}
