@@ -57,11 +57,32 @@ case "$1" in
             printf 'test native object\n' > "$dizin/build/ring-test/out/native.o"
         fi
         for ad in dil dillsp; do
-            printf 'test binary\n' > "$dizin/$ad$uzanti"
+            ikili_sha="$(git rev-parse HEAD)"
+            kirli=false
+            [[ "${ZEE_TEST_IKILI_KIMLIGI:-temiz}" == kirli ]] && kirli=true
+            if [[ "${ZEE_TEST_IKILI_KIMLIGI:-temiz}" == yanlis-sha ]]; then
+                ikili_sha=0000000000000000000000000000000000000000
+            fi
+            cat > "$dizin/$ad$uzanti" <<IKILI
+#!/usr/bin/env bash
+set -euo pipefail
+[[ "\$*" == 'sürüm --json' ]] || exit 2
+printf '%s\n' '{"schema":"zee-build-v1","version":"0.8.0-dev","source_sha":"$ikili_sha","source_date":"2026-10-14","channel":"development","dirty":$kirli}'
+IKILI
+            if [[ "${ZEE_TEST_IKILI_KIMLIGI:-temiz}" == bozuk-json ]]; then
+                printf "printf '%%s\\n' '{'\\n" >> "$dizin/$ad$uzanti"
+            fi
+            chmod +x "$dizin/$ad$uzanti"
             if [[ "${ZEE_TEST_OZET_FARKI:-0}" == 1 ]]; then
-                printf '%s\n' "$dizin" >> "$dizin/$ad$uzanti"
+                printf '# %s\n' "$dizin" >> "$dizin/$ad$uzanti"
             fi
         done
+        if [[ "${ZEE_TEST_KAYNAK_MUTASYONU:-0}" == 1 ]]; then
+            printf 'synthetic mutation\n' > ../generated-untracked.txt
+        fi
+        if [[ "${ZEE_TEST_HEAD_MUTASYONU:-0}" == 1 ]]; then
+            git -c user.name=Zee -c user.email=zee@example.invalid -c commit.gpgsign=false commit -q --allow-empty -m 'synthetic clean HEAD mutation'
+        fi
         [[ "$CC_ENABLE_DEBUG_OUTPUT" == 1 && "$*" == *"-vv"* ]] || exit 1
         printf '[ring 0.17.14] running: LC_ALL="C" "cc" "-c" "test.c"\n' >&2
         printf '[ring 0.17.14] running: ZERO_AR_DATE="1" "ar" "cq" "test.a"\n' >&2
@@ -132,6 +153,7 @@ cp "$depo_koku/scripts/"{derleme-ortami-kaydet,native-deployment-denetle}.py "$g
 cp "$gecici/pin" "$gecici/depo/compiler/rust-toolchain.toml"
 printf 'test lock\n' > "$gecici/depo/compiler/Cargo.lock"
 printf 'test fuzz lock\n' > "$gecici/depo/compiler/fuzz/Cargo.lock"
+printf 'target/\n' > "$gecici/depo/.gitignore"
 (
     cd "$gecici/depo"
     git init -q
@@ -173,6 +195,36 @@ fi
 sabit_ara 'TEKRAR ÜRETİLEMEDİ' "$gecici/ret.log"
 [[ ! -e "$gecici/ret-surum" ]]
 [[ -f "$gecici/tani/a/dil" && -f "$gecici/tani/b/dil" && -f "$gecici/tani/DURUM" ]]
+# Equal hashes do not prove a clean/exact identity. No rejected run publishes.
+for kip in kirli yanlis-sha bozuk-json; do
+    if (
+        cd "$gecici/depo"
+        export ZEE_TEST_IKILI_KIMLIGI="$kip"
+        TMPDIR="$gecici" bash scripts/surum-artefakti.sh --kirli-kabul --cikti "$gecici/ret-$kip"
+    ) > "$gecici/ret-$kip.log" 2>&1; then
+        echo 'Bozuk built kimliği kabul edildi' >&2; exit 1
+    fi
+    sabit_ara 'exact kaynak/temiz build kimliği doğrulanamadı' "$gecici/ret-$kip.log"
+    [[ ! -e "$gecici/ret-$kip" ]]
+done
+if (
+    cd "$gecici/depo"
+    export ZEE_TEST_KAYNAK_MUTASYONU=1
+    TMPDIR="$gecici" bash scripts/surum-artefakti.sh --kirli-kabul --cikti "$gecici/ret-mutasyon"
+) > "$gecici/ret-mutasyon.log" 2>&1; then
+    echo 'Cargo kaynak mutasyonu kabul edildi' >&2; exit 1
+fi
+sabit_ara 'Sürüm klonu derleme boyunca temiz kalmalı' "$gecici/ret-mutasyon.log"
+[[ ! -e "$gecici/ret-mutasyon" ]]
+if (
+    cd "$gecici/depo"
+    export ZEE_TEST_HEAD_MUTASYONU=1
+    TMPDIR="$gecici" bash scripts/surum-artefakti.sh --kirli-kabul --cikti "$gecici/ret-head"
+) > "$gecici/ret-head.log" 2>&1; then
+    echo 'Cargo temiz HEAD değişimi kabul edildi' >&2; exit 1
+fi
+sabit_ara "Sürüm klonu exact kaynak SHA'sında kalmalı" "$gecici/ret-head.log"
+[[ ! -e "$gecici/ret-head" ]]
 : > "$ZEE_TEST_KOMUTLAR"
 (
     cd "$gecici/depo"

@@ -57,6 +57,11 @@ ağacının pinini kullanır. Derleme, sysroot remap ve metadata aynı araç
 zincirini kullanır. Eksik araç zinciri ve uyuşmayan rustc hata verir;
 betik otomatik araç zinciri kurmaz.
 
+K-241 sürüm loglarını/native raporlarını kaynak klonunun dışında tutar.
+İki klon derleme öncesi ve sonrası temiz kalmalı; her derlenmiş ikili exact
+SHA ve `dirty: false` bildirmelidir. Eş hash tek başına bu kimlik kapısını
+ikame etmez. [ADR-102](../adr/102-surum-klonu-ve-build-kimligi.md).
+
 `bash scripts/tests/rust-arac-zinciri-test.sh` farklı varsayılan, stable/nightly,
 eksik/yinelenen pin, uyuşmayan rustc, kirli yerel pin, iki klon ve boş Cargo
 home girişlerini sahte araçlarla sınar. Bu, betiklerin yönlendirme regresyonudur;

@@ -1,0 +1,79 @@
+{
+  "schema": "zee-tooling-acceptance-1",
+  "work": "K-241",
+  "source_base_sha": "e5ec6caeabf0c1a0090bcdadda2e0b062df8d345",
+  "snapshot_kind": "uncommitted authorized tooling patch",
+  "recorded_at_utc": "2026-10-14T14:55:38.951366+00:00",
+  "files": [
+    {
+      "path": "scripts/surum-artefakti.sh",
+      "sha256": "8a93e67c4285e182a056a59895d04a28aea7d0019cb2df023d7e64131dbbcbe6"
+    },
+    {
+      "path": "scripts/tests/rust-arac-zinciri-test.sh",
+      "sha256": "69945699f2256d72412ee27f453082396352a41f2cac0cbe68237ed0c8cbea9f"
+    },
+    {
+      "path": "compiler/tests/tedarik_kapisi_testi.rs",
+      "sha256": "71ee3059b0d8d361f3aadc48b239695d95c0f26a389470f633e58fcc75191fbd"
+    }
+  ],
+  "cause": "Cargo stdout redirection created an untracked build.log inside each clean source checkout before compiler/build.rs sampled Git status.",
+  "outside_clone_evidence_paths": [
+    "evidence/a/build.log",
+    "evidence/a/native-deployment.json",
+    "evidence/b/build.log",
+    "evidence/b/native-deployment.json"
+  ],
+  "guards": [
+    "exact clone HEAD and Git source cleanliness before build",
+    "exact clone HEAD and Git source cleanliness after build",
+    "each built dil queried with surum --json; zee-build-v1, exact source SHA and strict dirty false required",
+    "exact clone HEAD and Git source cleanliness after binary query",
+    "existing independent two-clone binary SHA-256 equality"
+  ],
+  "checks": [
+    {
+      "command": "bash -n scripts/surum-artefakti.sh scripts/tests/rust-arac-zinciri-test.sh",
+      "exit_code": 0
+    },
+    {
+      "command": "bash scripts/tests/rust-arac-zinciri-test.sh",
+      "exit_code": 0,
+      "fixture_kind": "synthetic executable Cargo fixture, actual producer script",
+      "positive": [
+        "Darwin command path",
+        "simulated Windows .exe command path",
+        "offline vendor entry"
+      ],
+      "negative": [
+        "equal-byte dirty true",
+        "forged binary source SHA",
+        "malformed binary JSON",
+        "Cargo untracked source mutation",
+        "Cargo clean HEAD commit mutation",
+        "existing unequal binary hashes"
+      ],
+      "rejected_runs_create_output_directory": false
+    },
+    {
+      "command": "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 CARGO_INCREMENTAL=0 CARGO_BUILD_JOBS=1 cargo test --offline --locked --test tedarik_kapisi_testi",
+      "exit_code": 0,
+      "passed": 11,
+      "failed": 0,
+      "ignored": 0,
+      "filtered": 0,
+      "libtest_seconds": 5.62,
+      "cargo_compile_seconds": 17.99
+    },
+    {
+      "command": "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 CARGO_INCREMENTAL=0 CARGO_BUILD_JOBS=1 cargo fmt --all -- --check",
+      "exit_code": 0
+    }
+  ],
+  "cargo_case_count_changed": false,
+  "compiler_source_changed": false,
+  "real_new_checkpoint_canonical_two_clone_production": "pending parent clean commit and actual rerun",
+  "release_or_remote_ci_claim": false,
+  "historical_a2_canonical_package_clean_identity": "rejected dirty true; equal hashes did not close identity acceptance"
+}

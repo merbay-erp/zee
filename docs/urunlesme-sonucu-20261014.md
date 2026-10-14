@@ -1,17 +1,25 @@
 # 14 Ekim 2026 ürünleşme teknik teslimi
 
-Mevcut teknik dilimler kod, test, belge ve exact kaynak kayıtlarıyla
-tamamlandı. **39 maddelik ürünleşme planının bütünü tamamlanmadı.**
+Uygulanmış teknik dilimlerin kod, test, belge ve exact kaynak kayıtları
+aşağıdadır. Kanonik release kimliği K-241 nedeniyle yeniden kabul bekler.
+**39 maddelik ürünleşme planının bütünü tamamlanmadı.**
 Çalışan kapasite ve kalan kabul sınırları
 [plan envanterinde](urunlesme-plan-v1.tsv) ayrı tutulur.
 
-Son temiz teknik checkpoint:
+Bu rapordaki tarihsel temiz kaynak checkpoint'i:
 `a2b8557ba04897c60802d04b911a7eae6e91ae43`.
 Kaynak güvenlik/bakım commit'i
 `b70955d3d82e22d028a0295500e2fb8e980bb556`; ardından exact compiler ve
-core-freeze beyanı kaydedildi. Bu raporu ekleyen commit yalnız belge ve
-kanıt içerir. Aşağıdaki koşular bu rapor commit'ine veya uzak CI'a aitmiş
-gibi yeniden etiketlenmez.
+core-freeze beyanı kaydedildi. Aşağıdaki koşular sonraki belge veya araç
+düzeltme commit'ine ya da uzak CI'a aitmiş gibi yeniden etiketlenmez.
+
+Kanonik üreticinin a2b8557 ikilisi doğrudan çalıştırılınca exact SHA yanında
+`dirty: true` bildirdi. Klon içindeki `build.log` derlemeden önce izlenmeyen
+dosya oluşturuyordu. [Gerçek ikili kimliği tekrar kontrolü](incelemeler/urunlesme-20261014/final-a2b8557/build-identity-recheck.json)
+hash eşliğini korur, **temiz derlenmiş kimlik kabulünü reddeder**.
+[K-241 / ADR-102](../adr/102-surum-klonu-ve-build-kimligi.md) bu üretici
+kusurunun düzeltmesine ayrılmıştır; yeni exact commit'te kanonik iki-klon koşusu henüz
+bekleniyor. a2b8557 faz/native sonuçları tarihsel kanıt olarak geçerlidir.
 
 ## Çalışan değişiklikler
 
@@ -37,13 +45,14 @@ penceresi **14 Ekim–11 Kasım 2026** olarak sürer.
 | Dedicated göç | **1/1**, sıfır atlama | Read-only durum/kuru, roller, checksum, rollback ve yarış |
 | Yerel parola CAS | **7/7**, sıfır atlama | Gerçek PostgreSQL transaction/row-lock; canlı ürün login'i değildir |
 | Sürekli güvenlik | **Geçti** | Compiler/fuzz deny, stable fuzz derlemesi, tedarik ve bulgu kapıları; ASan/Miri RC koşusu değildir |
-| İki temiz klon | **`dil` ve `dillsp` eş SHA-256** | Kanonik üretici, Rust 1.93.1, macOS arm64, release profili; imzasız yerel çıktı |
+| a2b8557 iki-klon hash kontrolü | **Eş SHA-256; temiz derlenmiş kimlik reddedildi** | Rust 1.93.1, macOS arm64, release profili; gerçek ikili `dirty: true`. K-241 sonrası yeni exact kanonik koşu bekleniyor. |
 | Diğer incelemeler | Fmt, clippy, katalog/tazelik, katman/SCC/API, uyumluluk, semantic/core-freeze, spec/tanı, gizlilik/sır ve offline vendor geçti | Spec 203 maddede 196 kanıtlı, 5 kısmi, 2 açık; bir doctest ayrıca geçti |
 
 [Koşu özeti ve log hash'leri](incelemeler/urunlesme-20261014/final-a2b8557/gate-summary.json),
 [native kanıtı](incelemeler/urunlesme-20261014/final-a2b8557/native-proof.json)
-ve [iki-klon kanıtı](incelemeler/urunlesme-20261014/final-a2b8557/build-proof.json)
-exact checkpoint'e bağlıdır. README'nin statik test sayısı koşuda geçen
+ve [tarihsel iki-klon hash kanıtı](incelemeler/urunlesme-20261014/final-a2b8557/build-proof.json)
+exact checkpoint'e bağlıdır. [Kimlik tekrar kontrolü](incelemeler/urunlesme-20261014/final-a2b8557/build-identity-recheck.json)
+bu ikilileri temiz release kimliği olarak kabul etmez. README'nin statik test sayısı koşuda geçen
 test sayısı yerine kullanılmadı; ayrı koşuların örtüşen vakaları toplanıp
 yeni bir tekil test toplamı üretilmedi.
 
@@ -54,7 +63,7 @@ Native testlerin Rust sürümü 1.98.1, kanonik release üretiminin sürümü
 1.93.1'dir. Bu kabul Docker imajı, müşteri sunucusu, temiz fiziksel OS veya
 uzak CI kabulü değildir.
 
-İki-klon çıktı hash'leri:
+a2b8557 için temiz kimlik kabulü reddedilen tarihsel iki-klon çıktı hash'leri:
 
 ```text
 dil     722f7294b0b7da839bdb9f7e5adc724a1d9489bfdb7b9e94e1320780e103cd84
@@ -65,6 +74,7 @@ dillsp  5c5dd31aa4fa54b1f6c9ce9861f1ac646cc31fc86ada2c0b3278aff2703a514a
 
 | İş | Kalan gerçek iş |
 |---|---|
+| P02/P06/P37 — K-241 | Üretici klonlarının derleme öncesi/sonrası temizliği ve her gerçek ikilinin exact SHA/`dirty: false` kontrolü; düzeltme sonrası yeni exact commit'te kanonik iki-klon kabulü bekleniyor. Düzeltme ve yeni koşunun sonucu henüz geçti olarak kaydedilmedi. |
 | P08 ürün korpusu | Beş tam anonim site ve çekirdek korpusu hazır değil; kullanıcı açık tutulmasını istedi. Küçük fixture'lar tam ürün N/N, süre/RSS veya staging kabulü sayılmaz. |
 | P09/P13/P14/P25 | Kalıcı iş kuyruğu/cron, readiness/log/metrics/draining/reload, socket devriyle restart ve dosyadan credential izin/symlink/rotasyon hattı tamamlanmadı. |
 | P07/P11/P18–P23 | Tam compiler yöneticisi/kurulum, PDF backend, genel modül/layout/çeviri/test kompozisyonu, lint/JetBrains ve artımlı LSP/200 ms ölçümü açık. |
@@ -93,7 +103,7 @@ raporlarının özgün SHA'ları korunur; sanitizasyon eşlemesi eski koşuyu ye
 SHA kabulüne dönüştürmez. GitHub destek cevabı veya yönetilen refs/cache
 temizliği bu yerel işlemle kapanmaz.
 
-Bu son kayıt belge/kanıt değişikliğidir: spec/RFC/ADR, tanı, dil yüzeyi,
-production modülleri, iş yükleri ve API'de yeni davranış tanımlamaz.
-İlgili davranış belgeleri kaynak dilimlerinde incelenip güncellendi;
+Bu rapor a2b8557 koşularını tarihsel kanıt olarak anlatır. K-241 sürüm
+üreticisinin araç davranışı düzeltmesidir; compiler dil yüzeyini veya API'sini
+genişletmez. İlgili davranış belgeleri kendi kaynak dilimlerinde incelenir;
 performans, soak ve RC tarihçelerine kayıtsız kabul eklenmedi.
