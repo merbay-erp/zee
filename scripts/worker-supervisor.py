@@ -137,7 +137,7 @@ def arguments(argv):
             all(1 <= port <= 65535 for port in a.worker_port), "ports")
     require(HEX40.fullmatch(a.expected_source) and HEX40.fullmatch(a.application_revision), "identity")
     for value, low, high in [(a.poll_seconds, 2, 60), (a.probe_timeout, .1, 5),
-                             (a.startup_timeout, 1, 120), (a.stop_grace, .1, 30)]:
+                             (a.startup_timeout, 1, 120), (a.stop_grace, .1, 60)]:
         require(math.isfinite(value) and low <= value <= high, "budgets")
     require(re.fullmatch(r"/[A-Za-z0-9/_-]{0,127}", a.health_path) and
             not a.health_path.startswith("//"), "health_path")

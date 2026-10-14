@@ -206,3 +206,7 @@ açmıştır. legacy panel'da DB-bağımsız liveness 200 kalırken PostgreSQL r
 başarısızlığı 503, bulunamayan/taslak içerik 404 olur. Bu ürün kanıtı dynamic
 response API gerekçesi değildir; yeni durum kodları aynı literal sözleşmeyle
 yazılır.
+
+## Native Unix SIGTERM yaşam döngüsü — K-253
+
+TANIMLI: Native Unix CLI web adaptörü SIGTERM alındığında yeni handler kabulünü durdurur; önceden kabul edilmiş tek isteğin okuma, handler, transaction ve yanıtı mevcut bütçelerle tamamlanır. Idle listener en çok 100 ms poll aralığında kapanış isteğini görür; incoming bağlantı poll beklemesini hemen uyandırır. Bu davranış dış stop-grace bütçesiyle sınırlıdır; KILL, kesilemeyen IO, bütün backlog drain, Windows signal drain ve socket devri garantisi yoktur. Önceki süreç SIGTERM disposition sahibi guard bırakıldığında geri yüklenir.

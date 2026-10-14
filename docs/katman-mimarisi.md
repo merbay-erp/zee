@@ -170,3 +170,9 @@ K-240 SMTP testleri ayrı native test dosyasına, DB/posta profil erişicileri
 mevcut domain profil dosyalarına taşınır. Test isimleri/faz sahipliği, profil
 değerleri, public yüzey ve üretim gövdeleri korunur; spec kanıtı yeni exact
 test dosyasına taşınmıştır.
+
+K-253: yeni private CLI `web_kapanis` adapter sahibi processwide SIGTERM
+disposition ve listener poll yaşam döngüsünü taşır. `dil_cli -> web_kapanis`
+exact kenarı bilinçli eklenir; helper yalnız std/libc kullanır, temel veya
+semantic modelden adapter'a ters geçiş ve yeni SCC yoktur. Domain handler,
+transaction ve desteklenen v1 facade sahipliği değişmez (ADR-113).

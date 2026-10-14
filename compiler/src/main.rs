@@ -23,6 +23,8 @@ mod dil_ayar;
 
 #[path = "cli/registry.rs"]
 mod dil_registry;
+#[cfg(unix)]
+mod web_kapanis;
 mod web_yukleme;
 
 const HTTP_ISTEK_OKUMA_SURESI: std::time::Duration = std::time::Duration::from_secs(
@@ -1612,6 +1614,8 @@ struct GercekIo {
     /// Üretim sözleşmesi tamamlanmamış localhost TCP yüzeyine açık opt-in.
     web_modu: WebModu,
     dinleyici: Option<std::net::TcpListener>,
+    #[cfg(unix)]
+    web_kapanis: Option<web_kapanis::WebKapanis>,
     bekleyen_akis: Option<std::net::TcpStream>,
     bekleyen_baglanti_izni: Option<dil::kaynak_sinirlari::BaglantiIzni>,
     bekleyen_head: bool,
@@ -1727,6 +1731,8 @@ impl GercekIo {
             baslangic: std::time::Instant::now(),
             web_modu,
             dinleyici: None,
+            #[cfg(unix)]
+            web_kapanis: None,
             bekleyen_akis: None,
             bekleyen_baglanti_izni: None,
             bekleyen_head: false,
@@ -2258,12 +2264,17 @@ fn son_tarihli_soket_oku(
     son_tarih: std::time::Instant,
 ) -> std::io::Result<usize> {
     use std::io::Read;
-    let kalan = son_tarih
-        .checked_duration_since(std::time::Instant::now())
-        .filter(|sure| !sure.is_zero())
-        .ok_or_else(|| std::io::Error::new(std::io::ErrorKind::TimedOut, "son tarih doldu"))?;
-    akis.set_read_timeout(Some(kalan))?;
-    akis.read(tampon)
+    loop {
+        let kalan = son_tarih
+            .checked_duration_since(std::time::Instant::now())
+            .filter(|sure| !sure.is_zero())
+            .ok_or_else(|| std::io::Error::new(std::io::ErrorKind::TimedOut, "son tarih doldu"))?;
+        akis.set_read_timeout(Some(kalan))?;
+        match akis.read(tampon) {
+            Err(e) if e.kind() == std::io::ErrorKind::Interrupted => continue,
+            result => return result,
+        }
+    }
 }
 
 fn zaman_asimi_mi(hata: &std::io::Error) -> bool {
@@ -2761,6 +2772,13 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         let gercek_kapi = self.web_worker_kapisi().map(i64::from).unwrap_or(kapi);
         let dinleyici = std::net::TcpListener::bind((WEB_BIND_IP, gercek_kapi as u16))
             .map_err(|e| e.to_string())?;
+        #[cfg(unix)]
+        {
+            dinleyici.set_nonblocking(true).map_err(|e| e.to_string())?;
+            if self.web_kapanis.is_none() {
+                self.web_kapanis = Some(web_kapanis::WebKapanis::kur()?);
+            }
+        }
         match &self.web_modu {
             WebModu::Deneysel => println!("Sunucu dinliyor: http://127.0.0.1:{}", kapi),
             WebModu::GuvenliProxy { origin, .. } => println!(
@@ -2777,7 +2795,34 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
     }
     fn istek_al(&mut self) -> Option<String> {
         loop {
-            let (mut akis, es) = self.dinleyici.as_ref()?.accept().ok()?;
+            #[cfg(unix)]
+            if self.web_kapanis.as_ref().is_some_and(|k| k.istendi()) {
+                // istek_al runs after the admitted handler/transaction/response.
+                // Stop admission of the next request and release the listener.
+                self.dinleyici = None;
+                return None;
+            }
+            let (mut akis, es) = match self.dinleyici.as_ref()?.accept() {
+                Ok(accepted) => accepted,
+                #[cfg(unix)]
+                Err(e) if e.kind() == std::io::ErrorKind::WouldBlock => {
+                    web_kapanis::bekle(self.dinleyici.as_ref()?).ok()?;
+                    continue;
+                }
+                Err(e) if e.kind() == std::io::ErrorKind::Interrupted => continue,
+                Err(_) => return None,
+            };
+            #[cfg(unix)]
+            if self.web_kapanis.as_ref().is_some_and(|k| k.istendi()) {
+                // A signal racing with nonblocking accept must not admit a new
+                // handler; dropping this stream and listener closes its backlog.
+                self.dinleyici = None;
+                return None;
+            }
+            // Platforms differ in accepted socket nonblocking inheritance.
+            if akis.set_nonblocking(false).is_err() {
+                continue;
+            }
             let https = self.guvenli_proxy_origin().is_some();
             if https && !guvenilir_proxy_esi_mi(es) {
                 ham_http_hatasi_gonder(

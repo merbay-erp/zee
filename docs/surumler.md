@@ -1761,3 +1761,29 @@ kabulü vardır; compiler özelliği yoktur. DB/worker nesli değişince yeniden
 prob gerekir; continuous/TTL, request metrics/drain/config reload ve P14
 socket devri açık kalır. Gerçek ürün/platform adoptionı ve exact ortak temiz
 kabul ayrıca gereklidir.
+
+## K-253 — Native Unix graceful shutdown
+
+[ADR-113](../adr/113-native-web-sigterm-drain.md), gerçek B5 ürün ihtiyacını
+anonim native listener reproducer'ına bağlar. Yeni grammar/CLI/API yoktur;
+SIGTERM mevcut admitted handler'ı bitirir, yeni admission durur ve idle
+listener kapanır. Supervisor default5s korunur, max60s/explicit55s fırsatı
+vardır; dış grace sonunda KILL/cleanup sürer. Native4/guard3 ve eski host25
+stage kanıtıdır; exact kaynak/beyan ve final soak1800s kabulü ayrıca gerekir.
+Bu semantic-change/dogfood-change'dir; bug fixed_by kaydı icat edilmez.
+Metrics, Windows signal drain, tüm backlog/P14 socket/overlap ve adoption açıktır.
+
+## K-254 — Ayrı SQL kira sahibi heartbeat
+
+[ADR-114](../adr/114-ayri-sql-kira-heartbeat.md): mevcut SQL-only job satırı
+handler'da kilitliyken ayrı lease satırı yenilenir. Lease30s/toplam120s/24renew;
+immutable0002 geçişi, old-generation fencing ve mixedv1/v2 ret sınırı vardır.
+Dedicated21 native+24validator stage kabulündedir; final exactclean ayrı.
+Dispatcher/cron/SMTP non-idempotent etkiler ve gerçek katalog adoptionı açık.
+
+## K-256 — TLS1.1 capable-positive kontrol
+
+[ADR-115](../adr/115-tls11-capable-positive-kontrol.md): owned verifiedTLS1.1
+positive connection+server gözlemi sonrasında native ret, dedicated8/strict14.
+Yeni compiler özelliği/tanı yoktur; legacy cipher policy test contextiyle
+sınırlıdır. Provider/full matrix/Windows/uzakCI ve final exactclean kabul ayrı.

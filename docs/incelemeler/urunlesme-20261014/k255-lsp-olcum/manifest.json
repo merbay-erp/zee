@@ -1,0 +1,18 @@
+{
+  "schema": "zee-lsp-observational-proof-1",
+  "source_sha": "021bff47839092706c7698d360ae5face9cd2a19",
+  "source_clean_before_after": true,
+  "milestone": "K-255-P19-checkpoint",
+  "observational": true,
+  "concurrent_other_local_work": true,
+  "files": [
+    {
+      "path": "measurement.json",
+      "sha256": "ab4205230f752077c0e0ad6f9a4be6826dc13a90deca401aa26453ec1809f217"
+    },
+    {
+      "path": "measurement.md",
+      "sha256": "dd493a90b7818620042340130c535f76205ea59684204bb19906aae5649ac995"
+    }
+  ]
+}

@@ -23,7 +23,7 @@ class StrictQueueGateTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     CHECK(values, 0)
 
-    def test_all_eleven_invariants_are_required(self):
+    def test_all_twenty_one_invariants_are_required(self):
         CHECK(cases(), 0)
 
     def test_empty_or_missing_campaign_rejected(self):
@@ -112,6 +112,66 @@ class StrictQueueGateTests(unittest.TestCase):
         self.reject_observations([(9, "jobs_before_reconcile", 1), (9, "reconciled_missing", False),
                                   (9, "jobs_after_explicit_decision", 2), (10, "reconciled_ready", False),
                                   (10, "jobs_before_reconcile", 0), (10, "jobs_after_reconcile", 2)])
+
+
+    def reject_named(self, name, mutations):
+        index = list(EXPECTED).index(name)
+        self.reject_observations([(index, field, value) for field, value in mutations])
+
+    def test_original_eleven_without_heartbeat_campaign_rejected(self):
+        with self.assertRaises(ValueError):
+            CHECK(cases()[:11], 0)
+
+    def test_handler_must_exceed_original_lease_in_actual_bounded_seconds(self):
+        self.reject_named("separate_lease_heartbeat_commits_while_handler_row_locked",
+                          [("held_seconds", 29.0), ("held_seconds", 34.9), ("held_seconds", 61.0),
+                           ("held_seconds", float("nan")), ("held_seconds", float("inf")),
+                           ("held_seconds", "35.0"), ("held_seconds", 35),
+                           ("original30s_expired", False), ("handler_still_blocked_at_renewal_ack", False)])
+
+    def test_independent_heartbeat_commits_must_match_actual_sequence_count(self):
+        self.reject_named("separate_lease_heartbeat_commits_while_handler_row_locked",
+                          [("heartbeat_acks", 0), ("heartbeat_acks", 1), ("heartbeat_acks", 25),
+                           ("heartbeat_acks", True), ("renewals_after", 8), ("renewals_before", 1),
+                           ("effects", 2), ("done", False)])
+
+    def test_done_renewal_must_preserve_prior_actual_heartbeat_count(self):
+        self.reject_named("done_job_renewal_rejected", [("renewals", 8), ("renewals", True)])
+        values = cases()
+        values[11]["observations"].update(heartbeat_acks=6, renewals_after=6)
+        with self.assertRaises(ValueError):
+            CHECK(values, 0)
+        values[12]["observations"]["renewals"] = 6
+        CHECK(values, 0)
+
+    def test_revoked_or_reused_generation_must_never_resurrect_a_lease(self):
+        self.reject_named("early_revoked_lease_reused_token_does_not_resurrect_old_row",
+                          [("old_authoritative_expired", False), ("old_compatibility_deadline_future", False),
+                           ("returned_current_job", False), ("active_leases", 2)])
+        self.reject_named("wrong_token_generation_owner_no_mutation", [("rejections", 2), ("renewals", 1)])
+        self.reject_named("expired_old_generation_no_resurrection_or_replacement_mutation",
+                          [("generation_increased", False), ("new_renewals", 1)])
+
+    def test_absolute_server_clock_cap_and_expired_renewal_refusal_required(self):
+        self.reject_named("renewal_keeps_120second_server_clock_cap",
+                          [("renew_until_unchanged", False), ("renew_window_seconds", 121),
+                           ("renew_window_seconds", True), ("renewals", 2)])
+        self.reject_named("absolute_lifetime_cap_rejected", [("renewals", 1)])
+
+    def test_skiplocked_and_real_dead_backend_required_before_recovery(self):
+        self.reject_named("expired_locked_dead_worker_skiplocked_reaper_then_fenced_replacement",
+                          [("natural_lease_expiry", False), ("reaper_while_locked", 1),
+                           ("reaper_after_backend_gone", 0), ("backend_gone", False), ("killed", False),
+                           ("old_generation_rejected", False), ("effects", 2), ("attempts", 3),
+                           ("no_heartbeat_resurrection", False)])
+
+    def test_heartbeat_c027_requires_independent_before_after_commit_observations(self):
+        self.reject_named("heartbeat_commit_before_c027_no_replay",
+                          [("c027", False), ("renewals", 1), ("effects", 1), ("commits_seen", 2),
+                           ("commit_forwarded", True), ("commit_complete", True), ("commit_ready", True)])
+        self.reject_named("heartbeat_commit_after_c027_no_replay",
+                          [("c027", False), ("renewals", 0), ("effects", 1), ("commits_seen", 2),
+                           ("commit_forwarded", False), ("commit_complete", False), ("commit_ready", False)])
 
 
 if __name__ == "__main__":

@@ -1,4 +1,4 @@
-# K-247 — kalıcı SQL iş kuyruğu prototipi
+# K-247/K-254 — Kalıcı SQL iş kuyruğu ve ayrı kira sahibi
 
 Bu kesit `zee-cekirdek` ürününün B1 talebinden gelir: katalog onayından sonra
 kalıcı iş, sınırlı eşzamanlılık, yeniden deneme, ölü mektup ve süreç çökmesinden
@@ -25,7 +25,10 @@ burada yeni bir sürtünme üretmez. Yeni dil yüzeyi istenmez.
 
 ## Uygulama protokolü
 
-[Göç](gocler/0001_kuyruk.sql) iş durumunu PostgreSQL'de tutar.
+[İlk göç](gocler/0001_kuyruk.sql) iş durumunu PostgreSQL'de tutar;
+[0002](gocler/0002_kira_sahibi.sql) lease yetkisini ayrı satıra taşır.
+0001 immutable kalır; 0002 eski süresi dolmuş kirayı uzatmaz. Karma v1/v2
+worker kullanımına izin verilmez.
 [Yardımcı](kaynak/kuyruk.dil) şu sabit işlemleri sunar:
 
 1. `isKuyrugaEkle`: iş anahtarı ve onay revizyonu UNIQUE'dir. Aynı içerikle
@@ -122,3 +125,23 @@ Karar ve ortak kayıtlar ADR-107 ile root iş dalgasında birlikte tutulur.
 Mevcut normatif SQL/eylem/C027 davranışı değişmez; yeni tanı, public API veya
 dependency yoktur. Performans ölçümü gözlemseldir, eşik veya tarihçe güncellemesi
 yoktur; ADR-045/049 ve compiler mimari/soak sınırları bu prototiple genişlemez.
+
+## K-254 protokol v2 — heartbeat yetki sahibi
+
+Jobs satırını SQL handler transaction'ı kilitler; heartbeat ayrı
+`zee_job_leases` satırını günceller, jobs durumunu yalnız MVCC okur.
+Kira30s, server-clock toplam tavan120s ve en çok24 yenilemedir. Doğru
+owner/token/generation ve süresi dolmamış kira olmadan yenileme yoktur.
+Reaper `FOR UPDATE OF job SKIP LOCKED` kullanır; kilitli handler'ı beklemez.
+Eski job expiry alanı v2 yetkisi değildir. Completion statement anındaki
+kira kontrolüdür; COMMIT anındaki saat veya physical worker concurrency
+sözü vermez. Expired eski kayda tekrar kullanılan token hayat vermez.
+
+Dedicated native kapı11eski+10yeni=21vaka ve24 validator yürütür. Actual35s
+kilitli handler sırasında7 heartbeat commit, ilk30s expiry sonrası geçerli
+kira ve tek durable effect/done görüldü. Doğal expiry/reaper/SIGKILL/backendgone,
+eski nesil retleri ve heartbeat C027 before/after renewal0/1 observer
+aynı kapıdadır. [ADR-114](../../../adr/114-ayri-sql-kira-heartbeat.md) ayrıntıyı
+ve sınırları açıklar. Bunlar stage sonuçlarıdır; final exact temiz kabul
+ayrıdır. Operasyonel dispatcher/cron, non-idempotent dış etki, SMTP teslim
+retry ve gerçek katalog Python kaldırma kabulü açık kalır.

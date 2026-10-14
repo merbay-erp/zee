@@ -123,3 +123,6 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-110 | [SMTP mutlak süre bütçesi](110-smtp-mutlak-sure-butcesi.md) | **kabul** (K-252/GB-072) |
 | ADR-111 | [PostgreSQL statement fault kanıtı](111-postgresql-statement-fault-kaniti.md) | **kabul, dar yerel pilot** (K-250) |
 | ADR-112 | [DB göç hazırlık probu](112-db-goc-hazirlik-probu.md) | **kabul, dar yerel pilot** (K-251/GB-073) |
+| ADR-113 | [Native Unix SIGTERM drain](113-native-web-sigterm-drain.md) | **kabul, sınırlı Unix yaşam döngüsü** (K-253) |
+| ADR-114 | [Ayrı SQL kira heartbeat](114-ayri-sql-kira-heartbeat.md) | **kabul, dar SQL-only pilot** (K-254/GB-075) |
+| ADR-115 | [TLS1.1 capable-positive kontrol](115-tls11-capable-positive-kontrol.md) | **kabul, owned fixture** (K-256/GB-076) |

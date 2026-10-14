@@ -172,3 +172,6 @@ adr/109-tr-en-plain-slot-yardimcisi.md	kanitli	compiler/tests/tr_en_sayfa_testi.
 adr/110-smtp-mutlak-sure-butcesi.md	kanitli	compiler/src/eposta/testler.rs,compiler/tests/semantic_regresyon_korpusu_testi.rs	K-252 native slow-trickle mutlak bütçe ve geçersiz bütçe reddi; DNS iptali açık
 adr/111-postgresql-statement-fault-kaniti.md	kanitli	compiler/tests/postgresql_testi.rs	K-250 actual40P01/40001 no-retry rollback durable observer; COMMIT ADR103 sınırı korunur
 adr/112-db-goc-hazirlik-probu.md	kanitli	compiler/tests/db_hazirlik_testi.rs	K-251 once DB/migration gate native13 ve strict10; TTL/continuous/drain açık
+adr/113-native-web-sigterm-drain.md	kanitli	compiler/tests/web_drain_testi.rs,compiler/src/web_kapanis.rs	K-253 native4 ve guard conflict/restore/poll; dış stopgrace ve Windows/P14 sınırı açık
+adr/114-ayri-sql-kira-heartbeat.md	kanitli	compiler/tests/is_kuyrugu_kapisi_testi.rs,compiler/tests/dogfood_korpusu_testi.rs	K-25424 strict validator ve typed helper; dedicated native21 heartbeat/expiry/C027, dispatcher açık
+adr/115-tls11-capable-positive-kontrol.md	kanitli	compiler/tests/postgresql_testi.rs,compiler/tests/postgresql_tls_kapisi_testi.rs	K-256 actualTLS1.1 verified positivecontrol/native refusal; strict14 includes absolutebudget no-stalesend negative

@@ -1,0 +1,8 @@
+# K-253/B5: native SIGTERM sırasında kabul edilmiş handler'ın yanıtı.
+8080 kapısında sunucu başlat
+GET "/hazir" adresine istek geldiğinde
+    "ok" yanıtını gönder
+GET "/slow" adresine istek geldiğinde
+    "entered" yaz
+    3 saniye bekle
+    "completed" yanıtını gönder

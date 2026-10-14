@@ -376,3 +376,20 @@ workload, örnek ve ısınma semantiği değişmez. TLS performansı ölçülmü
 sayılmaz; p95/RSS eşliği veya yeni taban iddiası yoktur. ADR-045/049 gereği
 immutable tarihçe korunur; yeni kalıcı ölçüm temiz exact yama kaynağı ve
 tam makine/Rust/release/sample provenance ister.
+
+## K-255 — P19 gözlemsel checkpoint ölçümü
+
+Temiz exact `021bff47839092706c7698d360ae5face9cd2a19`, Rust1.93.1,
+release, macOS26.6.2/AppleM4Pro/24GiB; normal süre metrikleri25 gerçek örnek
+ve2 ısınma, tepe RSS ayrı1/0 anlık görüntüdür. Sabit mevcut harness'in
+[ham dağılımı](../docs/incelemeler/urunlesme-20261014/k255-lsp-olcum/measurement.json)
+ve raporu saklanır. DidChange p95:2k7.490ms,5k18.227ms,10k53.784ms,
+20k177.321ms. Kaynak klonu ölçüm öncesi/sonrası temizdir; çıktı klon dışına yazılır.
+
+Yerel diğer derleme/test işleri eşzamanlıdır; gözlemsel checkpoint yeni
+adanmış baseline ya da release eşiği değildir. Hard eşik uygulanmadı;
+örnek/ısınma semantiği, fixture ve üretim LSP code değişmedi. Sentetik iş
+yükünde cache ihtiyacı kanıtlanmadı; gerçek P08 ürün korpusu ve kullanıcı
+200ms uçtan uca kabulü açık kalır. ADR-045/049 tedarik ve provenance sözleşmesi
+aynıdır. Tarihçe yalnız bu actual run için yeni satır taşır, eski kayıtlar
+silinmez. Sonraki kaynaklara bu checkpoint kabulü mal edilmez.
