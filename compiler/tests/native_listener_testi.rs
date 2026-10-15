@@ -8,8 +8,9 @@ fn kampanya(betik: &str, adet: usize, kompozisyon: bool) {
         .duration_since(std::time::UNIX_EPOCH)
         .unwrap()
         .as_nanos();
+    let rol = if kompozisyon { "native" } else { "preflight" };
     let cikti = depo.join(format!(
-        "compiler/target/native-listener-{}-{nesil}",
+        "compiler/target/native-listener-{rol}-{}-{nesil}",
         std::process::id()
     ));
     let mut komut = std::process::Command::new("python3");

@@ -701,3 +701,26 @@ fn native_deadline_manifesti_sadece_terminal0_bos_http_gozlemini_kabul_eder() {
     vaka.faz = "cli".into();
     assert!(!native_deadline_manifest_sozlesmesi(&vaka));
 }
+
+// Follow-up only: add with real fixture + exact fixed_by row, never before.
+#[test]
+#[cfg_attr(not(unix), ignore = "actual Unix owned FD capability unavailable")]
+fn native_listener_deadline_regresyonu_gercek_owned_host_ile_korunur() {
+    let vakalar: Vec<_> = vakalari_oku()
+        .into_iter()
+        .filter(|vaka| vaka.kip == "native-listener-deadline")
+        .collect();
+    assert!(
+        !vakalar.is_empty(),
+        "dedicated native regression cannot pass without a real manifest case"
+    );
+    for vaka in vakalar {
+        assert!(native_deadline_manifest_sozlesmesi(&vaka));
+        let kaynak = std::fs::read_to_string(depo().join(&vaka.dosya))
+            .expect("recorded minimal native source");
+        let gozlem = vakayi_calistir(&vaka, &kaynak);
+        assert!(gozlem.tani.is_none());
+        assert_eq!(gozlem.cikis, vaka.cikis);
+        assert_eq!(gozlem.cikti, vaka.cikti);
+    }
+}
