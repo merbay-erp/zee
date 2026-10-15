@@ -75,3 +75,5 @@ ve çalışma ağacı taraması geçti; runtime üretilen sentetik anahtar hâl�
 generic-api-key bulgusu ile exit 1 verir ve çıktı REDACTED'dır. Dört
 Python ret/pozitif test CI sır-taraması işinde Gitleaks kurulduktan sonra
 koşar. Gerçek sır döndürme/kaldırma süreci SECURITY politikasında değişmez.
+
+K-265 [ADR-124](124-exact-kaynak-dis-rc-kaniti.md) aynı temiz sourceS için explicit dış immutable kanıt profilini ekler. Dört uzun ASAN hedefi ve iki seçili Miri gereksinimi değişmez. Gate önce exact cleanHEAD/tree pinler, tüm adımlarda S’yi korur ve external rawhash/completepolicy doğrular. Sonraki append-only tarihçe commit’i E satırlarda S kimliğini taşır; E, S ile eşdeğer veya fuzzlanmış gösterilemez. Default tracked self-reference yolu çözülmüş sayılmaz. Gerçek yeni kampanya kısa protokol testlerinden kapanmaz.

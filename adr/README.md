@@ -133,3 +133,4 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-121 | [Web oran CLI program argümanları](121-web-oran-cli-program-argumanlari.md) | **kabul, exact source/provenance bugfix** (K-262) |
 | ADR-122 | [Supervisor sahipli EPERM geçişi](122-supervisor-sahipli-eperm-gecisi.md) | **kabul, dar POSIX host correctness adayı** (K-263/GB-077) |
 | ADR-123 | [Kritik işlev seçici taban incelemesi](123-kritik-islev-secici-taban-incelemesi.md) | **kabul, dar bakım incelemesi** (K-264) |
+| ADR-124 | [Exact kaynakta dış RC kanıtı](124-exact-kaynak-dis-rc-kaniti.md) | **kabul, kısa doğruluk dilimi; gerçek RC kampanyası açık** (K-265) |

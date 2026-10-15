@@ -38,3 +38,7 @@ Sürüm adayı kipi exact HEAD için `docs/fuzz-rc-gecmisi-v1.tsv` içinde dört
 hedefin ≥1800 saniyelik `gecti` satırını ister; K-157 kampanyası aynı
 commit'te koşulmadan etiket kesilemez. Etiket sonrası sürüm ikilisi yalnız
 [tekrar üretilebilir artefakt](tekrar-uretilebilir-surum.md) akışından gelir.
+
+## K-265 explicit dış RC kanıtı
+
+[Exact kaynak dış kanıt rehberi](rc-kaniti.md) ve [ADR-124](../adr/124-exact-kaynak-dis-rc-kaniti.md) temiz S’ye bağlı dış paketi tanımlar. Explicit geçersiz paket fallback yapmaz; etiket/build S’de, append-only arşiv commit’i E’de S kimliğini korur. Default tracked yolun self-reference sınırı açıkça korunur. Gerçek uzun kampanya henüz bu kısa entegrasyon testlerinden tamamlanmış sayılamaz.

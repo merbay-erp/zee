@@ -25,8 +25,12 @@ bicim	proje.kilit	aktif	0.8.0-dev	compiler/src/paket.rs	kilit_sürümü 3
 bicim	yayin-zarfi	aktif	0.8.0-dev	compiler/src/artefakt_dogrulama.rs	const IMZA_ALANI: &[u8] = b"zee-yayin-v1\0";
 bicim	zee-build-v1	aktif	0.8.0-dev	compiler/src/surum.rs	zee-build-v1
 bicim	zee-credential-baslat-1	aktif	0.8.0-dev	scripts/credential-baslat.py	zee-credential-baslat-1
+bicim	zee-local-asan-miri-campaign-1	aktif	0.8.0-dev	scripts/rc-kampanyasi.py	zee-local-asan-miri-campaign-1
+bicim	zee-local-asan-miri-driver-failure-1	aktif	0.8.0-dev	scripts/rc-kampanyasi.py	zee-local-asan-miri-driver-failure-1
 bicim	zee-native-listener-ready-1	aktif	0.8.0-dev	compiler/src/web_listener.rs	zee-native-listener-ready-1
 bicim	zee-native-metrics-1	aktif	0.8.0-dev	compiler/src/web_metrikleri.rs	"zee-native-metrics-1"
+bicim	zee-rc-evidence-1	aktif	0.8.0-dev	scripts/rc-kaniti.py	SCHEMA = 'zee-rc-evidence-1'
+bicim	zee-rc-evidence-check-1	aktif	0.8.0-dev	scripts/rc-kaniti.py	zee-rc-evidence-check-1
 bicim	zee-sql-intent-dispatcher-1	aktif	0.8.0-dev	scripts/job-dispatcher.py	zee-sql-intent-dispatcher-1
 bicim	zee-worker-readiness-1	aktif	0.8.0-dev	scripts/worker-supervisor.py	zee-worker-readiness-1
 bicim	zee-worker-supervisor-1	aktif	0.8.0-dev	scripts/worker-supervisor.py	zee-worker-supervisor-1
@@ -195,6 +199,8 @@ profil	http-istek-v1	aktif	0.8.0-dev	compiler/src/ag_istemcisi/istek.rs	pub fn i
 profil	http-json-v1	aktif	0.8.0-dev	compiler/src/intrinsic.rs	"ag.http_json"
 profil	io	aktif	0.8.0-dev	compiler/src/yorumlayici/io_profili.rs	pub const DETERMINISTIK_IO_PROFILI: &str = "zee-io-1";
 profil	morfoloji	aktif	0.7.0	compiler/src/morfoloji.rs	pub const MORFOLOJI_PROFILI: &str = "zee-tr-1";
+profil	rc-kanit	aktif	0.8.0-dev	scripts/guvenlik-kapisi.sh	--rc-kanit)
+profil	rc-kanit-sha256	aktif	0.8.0-dev	scripts/guvenlik-kapisi.sh	--rc-kanit-sha256)
 profil	runtime-ayar-v1	aktif	0.8.0-dev	compiler/src/cli/ayar.rs	pub(super) const SEMA: &str = "zee-ayar-1";
 profil	runtime-metrics	aktif	0.8.0-dev	scripts/worker-supervisor.py	--runtime-metrics
 profil	web-activate-fd	aktif	0.8.0-dev	compiler/src/web_listener.rs	"--web-activate-fd"
