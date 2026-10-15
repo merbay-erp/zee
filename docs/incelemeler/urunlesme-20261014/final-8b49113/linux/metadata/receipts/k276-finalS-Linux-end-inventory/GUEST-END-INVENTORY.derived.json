@@ -1,0 +1,91 @@
+{
+  "schema": "zee-derived-metadata-sha256-bindings-v1",
+  "boundary": "Derived parsed JSON; not raw byte identity. Original external receipt remains authoritative and unchanged.",
+  "raw_external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/root-final-S-archive-stage/final-8b49113/linux/metadata/receipts/k276-finalS-Linux-end-inventory/GUEST-END-INVENTORY.json",
+  "raw_sha256": "3de6a42dc80fb6c13c7c08b2d74178ddd96d85592487179e6d8dc8048665fde1",
+  "metadata": {
+    "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+    "source_tree": "09fa6e764bb317b4aa5b32b6ca15ce02f4cf389d",
+    "source_clean": true,
+    "actual_kernel": {
+      "system": "Linux",
+      "node": "lima-k276",
+      "release": "6.1.0-50-cloud-arm64",
+      "version": "#1 SMP Debian 6.1.176-1 (2026-07-02)",
+      "machine": "aarch64",
+      "processor": ""
+    },
+    "CPU_count": 2,
+    "RAM_MemTotal": "MemTotal:        2031696 kB",
+    "disk_free_bytes": 8604356608,
+    "uid": 501,
+    "gid": 1000,
+    "source_runtime_end_sha256": {
+      "/home/mustafaerbay.guest/zee-k276/final-delivery-v2/binaries/dil": "80cc4b162211b352e97dd8f3d54697e53d92f5d3dd40b03fe73f78963d37e739",
+      "/home/mustafaerbay.guest/zee-k276/final-delivery-v2/binaries/dillsp": "b2490655662939b7f2821c9707312c5c1631d83e60240c3a5aaae82bdd71edaa",
+      "/home/mustafaerbay.guest/zee-k276/final-delivery-v2/DELIVERY.json": "3edc90e19a73856312720551fe05abcde70c883a916d0523258accd1709a4f86",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/lifecycle_core.py": "e76fe65b6103fc4732aafc4468afc5bbf3d0699a0f79d7f74879165636ebb1a9",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/job-dispatcher.py": "06bc1f67f87a07b1ffdeb1547ff83a4d05cc926f2825df73b94cc36f86caba0e",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/finite_timer.py": "b75dc1af6da8505e7a3f984868b64da72f44e015842f0704aaaa4f2726cc7a88",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/worker-supervisor.py": "560bec4e4e36d2aa856936d9d32412bb9106b61b25a871495287e2287e3c6642",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/credential-baslat.py": {
+        "sha256_binding": 0
+      },
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/native-metrics.py": "d5d12902358591365ff201c13c44b255d265c49c71befabcdef0575fe7e854c4",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/native-capabilities.py": "0a336d915e6618b7bc9134598337c0e442a7d455008fa937a0e49771fe7d94fc",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/db-hazirlik.py": "37b554ba3bfbbd848b876c5a069e6a96f87804aca5bdb6024351d68c83cd847b",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/db-readiness-watch-native.py": "3ff5da8666334e05169e3c599f060b193d0346b84e68c0556ec844530fe72d1c",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/onceki-kucuk-surum-test.py": "280b4177b41c2d318c966aa9de92b7b0f652919f0dcdc6072c6a05c800f35db6",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/onceki-kucuk-surum-preflight-test.py": "e9d16d3adfb9a202dd2d384546eeec277d01a629edcddcff8c5964d90fc6b1c4",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/kur.sh": "1bea4701e9ac0cf8bdca5dd1ec6c4da424cfe03bcdf6bf1f33cc70ecee80a21f",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/kaldir.sh": "8f2351745c588687434d1a2a194af2b3299231e52bbc080a36698ca454e1e43d",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/linux-private-carrier.py": "6cb5974f99bcc495ebaf78d4ded91dd1a0a845d081764f86cdfbab885c793b6f",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/linux-runtime.Dockerfile.in": "b9c0c167059d2b5a1bd012b1ee11c85b91d1edd24367f3a0b3805a669409e859"
+    },
+    "external_review_trees": {
+      "/home/mustafaerbay.guest/zee-k276/final-drivers-v2": {
+        "manifest_sha256": "01bc2a3d4e4356d2dc1990b2c1cebb1a83caa6c0e931fb3c578fc7312b421a1d",
+        "all_leaves_equal": true,
+        "leaves": 11
+      },
+      "/home/mustafaerbay.guest/zee-k276/final-drivers-v4": {
+        "manifest_sha256": "02354b9b30fc18b6678368aa83eaf87a1e924d60ccc420a22a07b33876d52ac3",
+        "all_leaves_equal": true,
+        "leaves": 21
+      }
+    },
+    "user_units": [
+      {
+        "name": "zee-sql-intent.service",
+        "runtime_link_absent": true,
+        "systemctl": "LoadState=not-found\nActiveState=inactive\n"
+      },
+      {
+        "name": "zee-sql-intent.timer",
+        "runtime_link_absent": true,
+        "systemctl": "LoadState=not-found\nActiveState=inactive\n"
+      }
+    ],
+    "owned_carrier_package_absent": true,
+    "owned_prefix_modes": {
+      "/home/mustafaerbay.guest/zee-k276/final-acceptance": "0o700",
+      "/home/mustafaerbay.guest/zee-k276/final-acceptance/carrier-native-v2": "0o700",
+      "/home/mustafaerbay.guest/zee-k276/final-acceptance/carrier-native-audited": "0o700",
+      "/home/mustafaerbay.guest/zee-k276/final-acceptance/timer-native-v2": "0o700",
+      "/home/mustafaerbay.guest/zee-k276/final-acceptance/PG-native": "0o700",
+      "/home/mustafaerbay.guest/zee-k276/final-acceptance/container-native-v4": "0o700",
+      "/home/mustafaerbay.guest/zee-k276/final-acceptance/K279-native49": "0o700"
+    },
+    "VM_retained_for_root_audit": true,
+    "source_or_global_host_changes": false
+  },
+  "bindings": [
+    {
+      "original_field": [
+        "source_runtime_end_sha256",
+        "/home/mustafaerbay.guest/zee-k276/final-source/scripts/credential-baslat.py"
+      ],
+      "sha256": "6894667f5d2d529434c235c9ae54aec64d4fb3c1c25712c25fb7f710eee9961f"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "status": "passed",
+  "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "cases": 15,
+  "failed": 0,
+  "ignored": 0,
+  "manifest_sha256": "27cf121c99f1f89c8535556c49223b5ca488882733515a20bfd9319a8e5a3cb3",
+  "PROOF_sha256": "4ccb228eed0d0ad4ab043ee314418d2cfa77c5b058f964985b1de80fe9661252",
+  "owned_clusters_workers_watchers_closed": true,
+  "binary_source_unchanged": true
+}

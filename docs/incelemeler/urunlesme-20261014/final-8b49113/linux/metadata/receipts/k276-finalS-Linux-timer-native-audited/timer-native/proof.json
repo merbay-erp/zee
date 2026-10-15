@@ -1,0 +1,53 @@
+{
+  "scope": "owned Linux finalS timer/proc/SQL-only, no provider or project adoption",
+  "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "binary_sha256": "80cc4b162211b352e97dd8f3d54697e53d92f5d3dd40b03fe73f78963d37e739",
+  "cases": [
+    {
+      "name": "actual-rendered-profile-user-timer30s-procfd-nativeSQL",
+      "passed": true,
+      "native_attempts": 1,
+      "native_intents": 1,
+      "latch_absent": true,
+      "owned_cgroup_empty": true
+    },
+    {
+      "name": "actual-owned-unit-TERM-unknown-preserves-latch-no-retry",
+      "passed": true,
+      "native_attempts": 1,
+      "native_intents": 0,
+      "owned_cgroup_empty": true,
+      "latch_retained": true,
+      "automatic_reconcile": false
+    }
+  ],
+  "status": "passed",
+  "PG_version": "postgres (PostgreSQL) 16.15",
+  "rendered_units": [
+    {
+      "unit": "zee-sql-intent",
+      "original_service_sha256": "d223a3059b1259e8ed695914c00f894b06b9eb80d41271477e22b0391b5b2d2f",
+      "issued_service_sha256": "d223a3059b1259e8ed695914c00f894b06b9eb80d41271477e22b0391b5b2d2f",
+      "original_timer_sha256": "21da8a5e9d39b9d37078f6bde5fe6f1328f9e70346a71da0cc40b9febe4fc7b6",
+      "issued_timer_sha256": "21da8a5e9d39b9d37078f6bde5fe6f1328f9e70346a71da0cc40b9febe4fc7b6",
+      "rendered_files_both_byte_identical": true,
+      "canonical_unit_names_unchanged": true
+    },
+    {
+      "unit": "zee-sql-intent",
+      "original_service_sha256": "33df377058d2aa3dc9f90d9e0f639f61e472783341874e60baaa635095a67995",
+      "issued_service_sha256": "33df377058d2aa3dc9f90d9e0f639f61e472783341874e60baaa635095a67995",
+      "original_timer_sha256": "21da8a5e9d39b9d37078f6bde5fe6f1328f9e70346a71da0cc40b9febe4fc7b6",
+      "issued_timer_sha256": "21da8a5e9d39b9d37078f6bde5fe6f1328f9e70346a71da0cc40b9febe4fc7b6",
+      "rendered_files_both_byte_identical": true,
+      "canonical_unit_names_unchanged": true
+    }
+  ],
+  "paused_inflight_sha256": "a8e2713a2e5dfbd8a744222d82d5e48f540fca20ea601b2131d47588ba5b15e8",
+  "paused_state_retained_for_explicit_review": true,
+  "source_end_clean": true,
+  "binary_end_unchanged": true,
+  "owned_user_units_stopped": true,
+  "cleanup_errors": [],
+  "owned_cluster_closed": true
+}

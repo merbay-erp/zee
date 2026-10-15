@@ -1,0 +1,453 @@
+{
+  "status": "passed-owned-guest-tools",
+  "Node": "v18.20.4",
+  "official_tools": {
+    "go": {
+      "version": "go version go1.26.1 linux/arm64",
+      "binary": "/home/mustafaerbay.guest/zee-k276/tools/go-1.26.1/bin/go",
+      "sha256": "a819e415706f51a450de78e894d9c413c10920a8368428359907d5f347333b01",
+      "official_plan": {
+        "official_metadata_url": "https://go.dev/dl/?mode=json&include=all",
+        "archive_url": "https://go.dev/dl/go1.26.1.linux-arm64.tar.gz",
+        "filename": "go1.26.1.linux-arm64.tar.gz",
+        "os": "linux",
+        "arch": "arm64",
+        "version": "go1.26.1",
+        "sha256": "a290581cfe4fe28ddd737dde3095f3dbeb7f2e4065cab4eae44dfc53b760c2f7",
+        "size": 63690198,
+        "kind": "archive"
+      },
+      "archive_bytes": 63690198,
+      "extraction_members": 16658,
+      "expanded_bytes": 227368901
+    },
+    "gitleaks": {
+      "version": "8.30.1",
+      "binary": "/home/mustafaerbay.guest/zee-k276/tools/gitleaks-8.30.1/gitleaks",
+      "sha256": "00e91bbe655bd7c47753e8cfe61cb76ea1a5d7e7702fe161ee40102b46b3823b",
+      "official_plan": {
+        "version": "8.30.1",
+        "checksum_url": "https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_checksums.txt",
+        "url": "https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_arm64.tar.gz",
+        "sha256": "e4a487ee7ccd7d3a7f7ec08657610aa3606637dab924210b3aee62570fb4b080"
+      },
+      "archive_bytes": 7601421,
+      "extraction_members": 3,
+      "expanded_bytes": 20806163
+    }
+  },
+  "node_audited_packages": [
+    {
+      "name": "libc-ares2",
+      "version": "1.18.1-3",
+      "sha256": "ea0a1f3c9eae54bae44e7c7b31c5a0ac44d0b949c006653d4d806893f8d94010",
+      "hooks": {}
+    },
+    {
+      "name": "node-xtend",
+      "version": "4.0.2-3",
+      "sha256": "c64e37fbea40de012b59adbfa61e703b52c12713f34cbfd2d4049ebcc549f270",
+      "hooks": {}
+    },
+    {
+      "name": "nodejs",
+      "version": "18.20.4+dfsg-1~deb12u3",
+      "sha256": "099133734795484b814a6d5d624f420d540141a0baf0bf9c537d82ade240b314",
+      "hooks": {
+        "./postinst": "#!/bin/sh\n\nset -e\n\nif [ \"$1\" = \"configure\" ]; then\n    update-alternatives --install /usr/bin/js js /usr/bin/nodejs 200 \\\n                        --slave /usr/share/man/man1/js.1.gz js.1.gz /usr/share/man/man1/nodejs.1.gz\nfi\n\n\n",
+        "./prerm": "#!/bin/sh\n\nset -e\n\nif [ \"$1\" = \"remove\" ]; then\n    update-alternatives --remove js /usr/bin/nodejs\nfi\n\n\n"
+      }
+    },
+    {
+      "name": "node-acorn",
+      "version": "8.8.1+ds+~cs25.17.7-2",
+      "sha256": "5c6814cf6536892b3a93cc72a0a3792beb0d3f6be3d69f499ca7d764583479a9",
+      "hooks": {}
+    },
+    {
+      "name": "node-cjs-module-lexer",
+      "version": "1.2.2+dfsg-5",
+      "sha256": "8393ae2e6b596068bd13b165a678fb33a3d5e58de6571fa5370d30b20b7b3e5a",
+      "hooks": {}
+    },
+    {
+      "name": "node-busboy",
+      "version": "1.6.0+~cs2.6.0-2",
+      "sha256": "50934c61be2a090131f16420b6422d5c03d840a8595fab36b29eb86c46928713",
+      "hooks": {}
+    },
+    {
+      "name": "node-undici",
+      "version": "5.15.0+dfsg1+~cs20.10.9.3-1+deb12u4",
+      "sha256": "78ec8918d63e365bbdec6edd35bebec9e20cc931f084f24e8673badf191d100c",
+      "hooks": {
+        "./postinst": "#!/bin/sh\nset -e\n# Automatically added by dh_installdeb/13.11.4\ndpkg-maintscript-helper dir_to_symlink /usr/share/nodejs/undici/types /usr/share/nodejs/undici-types 5.28.2\\+dfsg1\\+\\~cs23.11.12.3-2\\~ node-undici -- \"$@\"\n# End automatically added section\n",
+        "./postrm": "#!/bin/sh\nset -e\n# Automatically added by dh_installdeb/13.11.4\ndpkg-maintscript-helper dir_to_symlink /usr/share/nodejs/undici/types /usr/share/nodejs/undici-types 5.28.2\\+dfsg1\\+\\~cs23.11.12.3-2\\~ node-undici -- \"$@\"\n# End automatically added section\n",
+        "./preinst": "#!/bin/sh\nset -e\n# Automatically added by dh_installdeb/13.11.4\ndpkg-maintscript-helper dir_to_symlink /usr/share/nodejs/undici/types /usr/share/nodejs/undici-types 5.28.2\\+dfsg1\\+\\~cs23.11.12.3-2\\~ node-undici -- \"$@\"\n# End automatically added section\n",
+        "./prerm": "#!/bin/sh\nset -e\n# Automatically added by dh_installdeb/13.11.4\ndpkg-maintscript-helper dir_to_symlink /usr/share/nodejs/undici/types /usr/share/nodejs/undici-types 5.28.2\\+dfsg1\\+\\~cs23.11.12.3-2\\~ node-undici -- \"$@\"\n# End automatically added section\n"
+      }
+    },
+    {
+      "name": "libnode108",
+      "version": "18.20.4+dfsg-1~deb12u3",
+      "sha256": "6dfd27581d4601e04a82335e5da1549edf5d5149e83c9c4cd13af46a95b09e73",
+      "hooks": {}
+    }
+  ],
+  "host_changes": false,
+  "services_enabled": false,
+  "profile_or_HOME_modified": false,
+  "commands": [
+    {
+      "name": "node-simulation",
+      "argv": [
+        "apt-get",
+        "-s",
+        "--no-install-recommends",
+        "install",
+        "nodejs"
+      ],
+      "log_sha256": "45db0865cd9ad1466c47bfe526e85a4bffb51262a79741100488e022edaf75e9"
+    },
+    {
+      "name": "node-metadata-libc-ares2",
+      "argv": [
+        "apt-cache",
+        "show",
+        "--no-all-versions",
+        "libc-ares2"
+      ],
+      "log_sha256": "07936756a3017c3be07d2b1d114e23e6cc860fc331a76b165717e8ae429f9dde"
+    },
+    {
+      "name": "node-download-libc-ares2",
+      "argv": [
+        "apt-get",
+        "download",
+        "libc-ares2=1.18.1-3"
+      ],
+      "log_sha256": "146438b19bd67a78487833f82affc3e3f827cc2887567b6c8b71677c6bc30223"
+    },
+    {
+      "name": "node-control-libc-ares2",
+      "argv": [
+        "dpkg-deb",
+        "--ctrl-tarfile",
+        "/home/mustafaerbay.guest/zee-k276/language-tools-bootstrap/libc-ares2_1.18.1-3_arm64.deb"
+      ],
+      "log_sha256": "169a2076764b1f1846babaeafe901ad315bbf3115328d9d5ab5a789df152dada"
+    },
+    {
+      "name": "node-inventory-libc-ares2",
+      "argv": [
+        "dpkg-deb",
+        "--contents",
+        "/home/mustafaerbay.guest/zee-k276/language-tools-bootstrap/libc-ares2_1.18.1-3_arm64.deb"
+      ],
+      "log_sha256": "d025341b0cc43e4adfd641efe994d26a7e419a8333c3649ead005f34b72bb17e"
+    },
+    {
+      "name": "node-metadata-node-xtend",
+      "argv": [
+        "apt-cache",
+        "show",
+        "--no-all-versions",
+        "node-xtend"
+      ],
+      "log_sha256": "17876462eb8998df1e647419a2fa0791e295d672c08c6a69f96325fd11afde3d"
+    },
+    {
+      "name": "node-download-node-xtend",
+      "argv": [
+        "apt-get",
+        "download",
+        "node-xtend=4.0.2-3"
+      ],
+      "log_sha256": "f5ac81ff5793c17a59a71439a2a79b3475d03da9660bca3c3d8cc7c1b46eba48"
+    },
+    {
+      "name": "node-control-node-xtend",
+      "argv": [
+        "dpkg-deb",
+        "--ctrl-tarfile",
+        "/home/mustafaerbay.guest/zee-k276/language-tools-bootstrap/node-xtend_4.0.2-3_all.deb"
+      ],
+      "log_sha256": "43e30488940be157ceccee620c3167a963d308b2d7ec1e3214eefc578212eea9"
+    },
+    {
+      "name": "node-inventory-node-xtend",
+      "argv": [
+        "dpkg-deb",
+        "--contents",
+        "/home/mustafaerbay.guest/zee-k276/language-tools-bootstrap/node-xtend_4.0.2-3_all.deb"
+      ],
+      "log_sha256": "d531f86a5dfe72800e471222b50bfd9599c513c72a8f2ba574a6fd5d6e81a337"
+    },
+    {
+      "name": "node-metadata-nodejs",
+      "argv": [
+        "apt-cache",
+        "show",
+        "--no-all-versions",
+        "nodejs"
+      ],
+      "log_sha256": "a589a6d6e7659b9ec6b8225d3f8ec8936b3cb6a53b9cec23b9e2108db4c8675f"
+    },
+    {
+      "name": "node-download-nodejs",
+      "argv": [
+        "apt-get",
+        "download",
+        "nodejs=18.20.4+dfsg-1~deb12u3"
+      ],
+      "log_sha256": "a0d01e2a70085dd0aaf24ceb1cce2ee8c2f79c4ef4d1b4b299751423634faad6"
+    },
+    {
+      "name": "node-control-nodejs",
+      "argv": [
+        "dpkg-deb",
+        "--ctrl-tarfile",
+        "/home/mustafaerbay.guest/zee-k276/language-tools-bootstrap/nodejs_18.20.4+dfsg-1~deb12u3_arm64.deb"
+      ],
+      "log_sha256": "5616f6befecb2ca4ac73d334329fc1d16edcaf918b8be610b17f5353dd2946cc"
+    },
+    {
+      "name": "node-inventory-nodejs",
+      "argv": [
+        "dpkg-deb",
+        "--contents",
+        "/home/mustafaerbay.guest/zee-k276/language-tools-bootstrap/nodejs_18.20.4+dfsg-1~deb12u3_arm64.deb"
+      ],
+      "log_sha256": "cdfdb37e7b925dc8746cc10ffaef4f9cd867ede7f85735e138ebca1db3f58030"
+    },
+    {
+      "name": "node-metadata-node-acorn",
+      "argv": [
+        "apt-cache",
+        "show",
+        "--no-all-versions",
+        "node-acorn"
+      ],
+      "log_sha256": "dc72e60fed4b5c1da53a05af7a2a37ee17e34b599c0e41fc8c2361256f795cf7"
+    },
+    {
+      "name": "node-download-node-acorn",
+      "argv": [
+        "apt-get",
+        "download",
+        "node-acorn=8.8.1+ds+~cs25.17.7-2"
+      ],
+      "log_sha256": "567dcb1b864ce38e65092180239dd8648087de469f1dbb3ec7fa05d78b8798ff"
+    },
+    {
+      "name": "node-control-node-acorn",
+      "argv": [
+        "dpkg-deb",
+        "--ctrl-tarfile",
+        "/home/mustafaerbay.guest/zee-k276/language-tools-bootstrap/node-acorn_8.8.1+ds+~cs25.17.7-2_all.deb"
+      ],
+      "log_sha256": "2e0f0a058846cb7a45bc2954b2fffd8bb70195b4ada7cf5eed16d4408714e616"
+    },
+    {
+      "name": "node-inventory-node-acorn",
+      "argv": [
+        "dpkg-deb",
+        "--contents",
+        "/home/mustafaerbay.guest/zee-k276/language-tools-bootstrap/node-acorn_8.8.1+ds+~cs25.17.7-2_all.deb"
+      ],
+      "log_sha256": "c23fc02e4810d444cfac4c7c91652e17cacddbaa4b1f039bae9b2ff2572c0292"
+    },
+    {
+      "name": "node-metadata-node-cjs-module-lexer",
+      "argv": [
+        "apt-cache",
+        "show",
+        "--no-all-versions",
+        "node-cjs-module-lexer"
+      ],
+      "log_sha256": "d012734823baed21ce019acc29d5dcdd5f1e12668f985b7eb99e3f2b7a522ebc"
+    },
+    {
+      "name": "node-download-node-cjs-module-lexer",
+      "argv": [
+        "apt-get",
+        "download",
+        "node-cjs-module-lexer=1.2.2+dfsg-5"
+      ],
+      "log_sha256": "ab35a71b25d1e9d553a96e01be626f04e1d6fb8d7751d75ad52e09c897f17a7d"
+    },
+    {
+      "name": "node-control-node-cjs-module-lexer",
+      "argv": [
+        "dpkg-deb",
+        "--ctrl-tarfile",
+        "/home/mustafaerbay.guest/zee-k276/language-tools-bootstrap/node-cjs-module-lexer_1.2.2+dfsg-5_all.deb"
+      ],
+      "log_sha256": "c1c111500aab2a423391d3de0b0e102d8b0de0fbb28913cd13915291c22b453e"
+    },
+    {
+      "name": "node-inventory-node-cjs-module-lexer",
+      "argv": [
+        "dpkg-deb",
+        "--contents",
+        "/home/mustafaerbay.guest/zee-k276/language-tools-bootstrap/node-cjs-module-lexer_1.2.2+dfsg-5_all.deb"
+      ],
+      "log_sha256": "c11979c556b7cc89be1e63aed62e90ab7aa71c66ea8a6d8d83b53fd073de11f5"
+    },
+    {
+      "name": "node-metadata-node-busboy",
+      "argv": [
+        "apt-cache",
+        "show",
+        "--no-all-versions",
+        "node-busboy"
+      ],
+      "log_sha256": "f0cb23dfa61bb68389e33626a6fa7a295a9904728dbf8e8cb2c33e0eced6f189"
+    },
+    {
+      "name": "node-download-node-busboy",
+      "argv": [
+        "apt-get",
+        "download",
+        "node-busboy=1.6.0+~cs2.6.0-2"
+      ],
+      "log_sha256": "49e0c831172b139404fa4da8383e9365457cbdab52890180fc473bfeb612eac2"
+    },
+    {
+      "name": "node-control-node-busboy",
+      "argv": [
+        "dpkg-deb",
+        "--ctrl-tarfile",
+        "/home/mustafaerbay.guest/zee-k276/language-tools-bootstrap/node-busboy_1.6.0+~cs2.6.0-2_all.deb"
+      ],
+      "log_sha256": "796dec5b7a0dd5cc6666bf324b95c44b524c7be67356a724ed66065ce13cb17c"
+    },
+    {
+      "name": "node-inventory-node-busboy",
+      "argv": [
+        "dpkg-deb",
+        "--contents",
+        "/home/mustafaerbay.guest/zee-k276/language-tools-bootstrap/node-busboy_1.6.0+~cs2.6.0-2_all.deb"
+      ],
+      "log_sha256": "9e9537f1368998becba578ed4801dcde45ffcecb69e34a8e7d3d1360782df14c"
+    },
+    {
+      "name": "node-metadata-node-undici",
+      "argv": [
+        "apt-cache",
+        "show",
+        "--no-all-versions",
+        "node-undici"
+      ],
+      "log_sha256": "377a46a0d1850c0460410d2fd8412a9d058d2beb0f1885005c7c0077ffbee480"
+    },
+    {
+      "name": "node-download-node-undici",
+      "argv": [
+        "apt-get",
+        "download",
+        "node-undici=5.15.0+dfsg1+~cs20.10.9.3-1+deb12u4"
+      ],
+      "log_sha256": "91b8905ff62dd03920e1a92ba884ca90b2d3313c36eaf1eb49db3c75fc0e8e63"
+    },
+    {
+      "name": "node-control-node-undici",
+      "argv": [
+        "dpkg-deb",
+        "--ctrl-tarfile",
+        "/home/mustafaerbay.guest/zee-k276/language-tools-bootstrap/node-undici_5.15.0+dfsg1+~cs20.10.9.3-1+deb12u4_all.deb"
+      ],
+      "log_sha256": "bbe5f3a28805efee724f033c0e63a383d83de60045af4278ec2b8a1a28e219c4"
+    },
+    {
+      "name": "node-inventory-node-undici",
+      "argv": [
+        "dpkg-deb",
+        "--contents",
+        "/home/mustafaerbay.guest/zee-k276/language-tools-bootstrap/node-undici_5.15.0+dfsg1+~cs20.10.9.3-1+deb12u4_all.deb"
+      ],
+      "log_sha256": "2e570cf0b8289612bdea4815ec370d6fa652909174e9c71cc9099fb4e19353a8"
+    },
+    {
+      "name": "node-metadata-libnode108",
+      "argv": [
+        "apt-cache",
+        "show",
+        "--no-all-versions",
+        "libnode108"
+      ],
+      "log_sha256": "f4415d195c0de56b434b532c292c4574fe613390dade546c4cdaa80fc035b5ba"
+    },
+    {
+      "name": "node-download-libnode108",
+      "argv": [
+        "apt-get",
+        "download",
+        "libnode108=18.20.4+dfsg-1~deb12u3"
+      ],
+      "log_sha256": "6b742276b068a44acd7c655e804d988b9260fb0d5232fb0497ad12edc42e69c3"
+    },
+    {
+      "name": "node-control-libnode108",
+      "argv": [
+        "dpkg-deb",
+        "--ctrl-tarfile",
+        "/home/mustafaerbay.guest/zee-k276/language-tools-bootstrap/libnode108_18.20.4+dfsg-1~deb12u3_arm64.deb"
+      ],
+      "log_sha256": "2dd8a73e4ada95ab8057020804bd098abac615d1d9f49d9674f69e1b4ecfe365"
+    },
+    {
+      "name": "node-inventory-libnode108",
+      "argv": [
+        "dpkg-deb",
+        "--contents",
+        "/home/mustafaerbay.guest/zee-k276/language-tools-bootstrap/libnode108_18.20.4+dfsg-1~deb12u3_arm64.deb"
+      ],
+      "log_sha256": "348a20884414e5356cef0f24be19f634925b6713c7ed65c854826485f8ee6de5"
+    },
+    {
+      "name": "node-install-no-service",
+      "argv": [
+        "sudo",
+        "-n",
+        "apt-get",
+        "install",
+        "-y",
+        "--no-install-recommends",
+        "libc-ares2=1.18.1-3",
+        "node-xtend=4.0.2-3",
+        "nodejs=18.20.4+dfsg-1~deb12u3",
+        "node-acorn=8.8.1+ds+~cs25.17.7-2",
+        "node-cjs-module-lexer=1.2.2+dfsg-5",
+        "node-busboy=1.6.0+~cs2.6.0-2",
+        "node-undici=5.15.0+dfsg1+~cs20.10.9.3-1+deb12u4",
+        "libnode108=18.20.4+dfsg-1~deb12u3"
+      ],
+      "log_sha256": "09bc5926c380d177d1daee33961def65f1c9be1b186640322cd70b87f6c1ce8e"
+    },
+    {
+      "name": "node-version",
+      "argv": [
+        "node",
+        "--version"
+      ],
+      "log_sha256": "593764ae7aa0b416ad8ca2dad0d87bde031426b40b5eb7563eb95a15b4b47b64"
+    },
+    {
+      "name": "go-version",
+      "argv": [
+        "/home/mustafaerbay.guest/zee-k276/tools/go-1.26.1/bin/go",
+        "version"
+      ],
+      "log_sha256": "55937b4033659aab490e61cf38cf861d82e9aa1bfe4cf1379488925cf5735fa9"
+    },
+    {
+      "name": "gitleaks-version",
+      "argv": [
+        "/home/mustafaerbay.guest/zee-k276/tools/gitleaks-8.30.1/gitleaks",
+        "version"
+      ],
+      "log_sha256": "c9fd9ccb6682c54b5fcb0363757b6c6873564e7c067f70b3b5581b611528b9f4"
+    }
+  ]
+}

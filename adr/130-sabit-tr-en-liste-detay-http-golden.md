@@ -1,6 +1,6 @@
 # ADR-130 — K-272 sabit TR/EN liste–detay HTTP golden
 
-- **Durum:** kabul; dar sabit Unix golden; ortak entegrasyon ve final temiz kaynak kabulü açık
+- **Durum:** kabul; temiz S Python3.9/3.13 fixed TR/EN HTTPgolden kabulü; ürün/platform/fullP21 açık
 - **Tarih:** 15 Ekim 2026
 - **İlgili:** P21/C4, K249/ADR109, GB088
 
@@ -23,3 +23,9 @@ C4 exact ürünkökü/hash kayıtları golden README’de, metadata-only tekrar 
 Compiler spec/RFC/tanı/ABI/API/katman/SCC değişmedi. ADR045/049 observational ölçüm politikası ve performans tarihçesi değişmez; yeni kalıcı compiler/LSP state veya cache olmadığı için bu dilim yeni soak geçmişi üretmez. JSON yalnız test raporu, production biçim/profil/CLI eklenmediği için compatibility yüzeyi değişmez. Golden/test counter ve faz kaydı actual root araçlarıyla güncellenir. Backlog/plan/release/gates/journal aynı atomik değişiklikte kısmi sınırları taşır.
 
 İlk commitlenmemiş test-runner aday incelemesi sonrası stream okunurken64KiB capture, HTTP connect/send/recv/EOF/parse boyunca tek3sn bütçe ve tüm kampanya180sn bütçesi eklendi. Runner/legacy helper ve4legacy kaynak/3snapshot dahil begin/end pinler iki kampanyadan sonra denetlenir; eski kampanya da aynı private binary/input snapshot’larını kullanır. Ret makbuzu yalnız fixed tür/reason taşır. Başarılı Cargo makbuzu owned target altında saklanır; formatter nedeniyle ast ek faz kapsamıdır. Bu Python aday düzeltmesi compiler bug SHA/regression kaydı icat etmez.
+
+## 15 Ekim 2026 — temiz S yerel kanıt güncellemesi
+
+S common her gerçek Python3.9 ve3.13 ortamında legacy7HTTP+4Zee ve liste/detay9HTTP+5Zee kohortlarını yürüttü. Exact HTML/contextescaping, altı fixedroute ve badlocale/path negatives korunur; publicrawHTMLslots/escapingbypass/newgrammar yoktur. Genericlayout/i18n/adoption/P08/Windows/fullP21 açık.
+
+[Güncel dar S raporu](../docs/urunlesme-final-kabul-20261015.md).

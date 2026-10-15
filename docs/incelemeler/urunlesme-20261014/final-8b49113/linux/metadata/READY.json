@@ -1,0 +1,12 @@
+{
+  "status": "passed-owned-local-Linux-final-S-only",
+  "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "tree_sha": "09fa6e764bb317b4aa5b32b6ca15ce02f4cf389d",
+  "manifest_sha256": "53751c60d4c8d012df4ea60a8fc6edaa99dfce7e35f9ab5fa5d7ea1f3f0ac174",
+  "SHA256SUMS_sha256": "e76cbb144cf711fb569464b600fe1be715502f8821be66164858435cf6e8f32b",
+  "leaf_count": 411,
+  "primary_receipt_count": 9,
+  "signed": false,
+  "published": false,
+  "VM_retained_for_root_audit": true
+}

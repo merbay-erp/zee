@@ -1,0 +1,4 @@
+  File "<string>", line 7
+    a=subprocess.run(['loginctl','show-user',str(os.geteuid()),'--property=Linger'],capture_output=True,timeout=5);assert a.stdout==b'Linger=no
+                                                                                                                                    ^
+SyntaxError: unterminated string literal (detected at line 7)

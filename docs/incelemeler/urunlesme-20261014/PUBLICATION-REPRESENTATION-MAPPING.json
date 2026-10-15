@@ -1,0 +1,65 @@
+{
+  "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "scope": "Publication preparation, not final RC acceptance. Frozen v2 external inputs remain byte-identical.",
+  "v2_external_root": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/root-final-S-archive-stage-v2",
+  "v2_external_manifest_sha256": "a09428a306294ae6b60bc03aca4cced4aa7a40d02d726711454d17af71877bc3",
+  "same_path_derived_files": [
+    {
+      "path": "final-8b49113/common/credential-listener-native5.derived.json",
+      "sha256": "84908e305c9a047698d3b613baca7d53c890c34fd468a5d4a9bcac3fada81f52"
+    },
+    {
+      "path": "final-8b49113/common/job-native11.derived.json",
+      "sha256": "3d6ab9b64dbed52e2e37203e2e9b827b4dca358f3e0621a6669797f965509d61"
+    },
+    {
+      "path": "final-8b49113/common/proof.derived.json",
+      "sha256": "0836c4bf038ad9d442270c4d039ef2f7c3a04e800ad925b94db65a2fce39744e"
+    },
+    {
+      "path": "final-8b49113/common/smtp-pg-fault277.derived.json",
+      "sha256": "bec6afc036a7048d40d92a3c05afb06e98c30400e4a764668ace940eb8802910"
+    },
+    {
+      "path": "final-8b49113/linux/metadata/producer-bindings/K279-PRODUCER-BEFORE-END.derived.json",
+      "sha256": "3defb1e90799fb4b3d6bc5c4159bac3011f8cd3941d96cfabdff124daaf099d2"
+    },
+    {
+      "path": "final-8b49113/linux/metadata/receipts/k276-finalS-Linux-end-inventory/END-INVENTORY.derived.json",
+      "sha256": "42def8c3ac0cc658d000a65f04b862c1b5a6a73cb5aef2a82307a16e341c7aad"
+    },
+    {
+      "path": "final-8b49113/linux/metadata/receipts/k276-finalS-Linux-end-inventory/FINAL-END-INVENTORY.derived.json",
+      "sha256": "c1d72ec1944f61830d86fca3bde93cdf978a49369865650002edd65292e20c68"
+    },
+    {
+      "path": "final-8b49113/linux/metadata/receipts/k276-finalS-Linux-end-inventory/GUEST-END-INVENTORY.derived.json",
+      "sha256": "1d88a3a3125160aea70c45b51ebe64f91f8cbadfa327aa9e89a1a158a3f2dc65"
+    },
+    {
+      "path": "final-8b49113/linux/metadata/receipts/k276-finalS-Linux-timer-native-audited/OUTER-SOURCE-END.derived.json",
+      "sha256": "559a4fb21a82872551f8adad1aa48bc0fc5e779e81719579d3bd33c6cd02b666"
+    },
+    {
+      "path": "final-8b49113/linux/metadata/receipts/k276-finalS-Linux-timer-native-audited/SOURCE-END.derived.json",
+      "sha256": "f2f5999696f7ddbab4ceba9ccdb1a95ac87a6240fabcd47e8bfb7261de40c041"
+    },
+    {
+      "path": "final-8b49113/linux/metadata/receipts/k276-finalS-Linux-timer-native-audited/SOURCE-START.derived.json",
+      "sha256": "920fda76190801f03bfa55ec6d006ee8d4100d9a0de1fae75212a55b0e35cf9d"
+    }
+  ],
+  "renamed_historical_manifest": {
+    "v2_path": "final-8b49113/STAGE-MANIFEST.json",
+    "publication_path": "final-8b49113/HISTORICAL-V1-STAGE-MANIFEST.json",
+    "sha256": "1ab539198d4a2c0ea026fc6c828b206b8eb0be7a8a7141d1078becd3c0f039fd",
+    "active_current_inventory": false
+  },
+  "v2_root_drafts_not_imported_as_active_source": [
+    "FINAL-DOCS-DRAFT.md",
+    "PLAN-ROW-UPDATES.json",
+    "DOC-APPEND-NOTES.json"
+  ],
+  "current_draft_authority": "PATCH-PLAN.json plus payload/diffs and current preparation manifest; final archive manifest PENDING after RC assembly",
+  "linux": "127representations=120raw+7derived; full411external archive not copied"
+}

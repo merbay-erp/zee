@@ -1,0 +1,151 @@
+{
+  "schema": "zee-owned-linux-final-archive-1",
+  "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "tree_sha": "09fa6e764bb317b4aa5b32b6ca15ce02f4cf389d",
+  "platform": "owned ephemeral Debian12 ARM64 VM,2CPU/2GiB/16GiB",
+  "signed_release": false,
+  "published": false,
+  "primary_receipts": [
+    {
+      "role": "canonical_delivery",
+      "actual_count": null,
+      "original_stage": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/k276-finalS-linux-delivery-v2",
+      "curated_ready": "receipts/k276-finalS-linux-delivery-v2/READY.json",
+      "ready_sha256": "b4d2241752a4379f92429629244565ce9ff1d5e0cba6a7b008f0f40356cd6019",
+      "manifest_sha256": "bf6e178cab7d4bff74ee503d071e98ed87a4ab711798429c37f71e7fe4bf812a",
+      "status": "passed"
+    },
+    {
+      "role": "canonical_install",
+      "actual_count": 8,
+      "original_stage": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/k276-finalS-Linux-native-install",
+      "curated_ready": "receipts/k276-finalS-Linux-native-install/READY.json",
+      "ready_sha256": "0a84f4c45e4a3d0e33828bc10153bf0645f6da5d7106cc2fe9bf347c38e9b67a",
+      "manifest_sha256": "09ccff3bdbba3cbe5557e1773b9bdf76ec6fa66d60bfe366e8d8b5a64c6a279b",
+      "status": "passed"
+    },
+    {
+      "role": "private_carrier_build_inspection",
+      "actual_count": null,
+      "original_stage": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/k276-finalS-Linux-carrier-build",
+      "curated_ready": "receipts/k276-finalS-Linux-carrier-build/READY.json",
+      "ready_sha256": "36887374d29f2a67e4c53eb94d199b59c6e00d337fdbc00b96ded822558bb932",
+      "manifest_sha256": "ab1fce44fb41f4ac29101ae9d92167a7d89ae8d163c00f9303759f796ced4125",
+      "status": "passed-build-inspection-only"
+    },
+    {
+      "role": "private_carrier_install_activation_remove",
+      "actual_count": 4,
+      "original_stage": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/k276-finalS-Linux-carrier-native-audited",
+      "curated_ready": "receipts/k276-finalS-Linux-carrier-native-audited/READY.json",
+      "ready_sha256": "a704b07c855b194db199a161eea21f6e137521fa4cc9f6b171677f15adca243d",
+      "manifest_sha256": "57ac0dbd69ccdd5a77e4fab808aeaa6bb5e917e0c9f7e3c00fb97461757fd68b",
+      "status": "passed"
+    },
+    {
+      "role": "rootless_container_payload_runs",
+      "actual_count": 6,
+      "original_stage": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/k276-finalS-Linux-container-revision2",
+      "curated_ready": "receipts/k276-finalS-Linux-container-revision2/READY.json",
+      "ready_sha256": "0d85100237cfdeae0af9ebcd107894fe28c9b916cc16f2b63588cf2f8d45c3d7",
+      "manifest_sha256": "79cf8fc23fabfaf75591fb540b30c38c8cd53bd0a65b894c9639a251c25cf54d",
+      "status": "passed"
+    },
+    {
+      "role": "rendered_user_timer_proc_SQL",
+      "actual_count": 2,
+      "original_stage": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/k276-finalS-Linux-timer-native-audited",
+      "curated_ready": "receipts/k276-finalS-Linux-timer-native-audited/READY.json",
+      "ready_sha256": "78e340a5e976cabb524b093e25ebe87c4cf4f64077f880bff67b5156f3a91fb0",
+      "manifest_sha256": "af5c0d2b9df2215122c45bfd9990bf258cebcc3ed4d222d31ea425762e29f1e8",
+      "status": "passed"
+    },
+    {
+      "role": "PG_readiness_watch",
+      "actual_count": 15,
+      "original_stage": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/k276-finalS-Linux-PG-native",
+      "curated_ready": "receipts/k276-finalS-Linux-PG-native/READY.json",
+      "ready_sha256": "45d1d40f873f2805635f38565954d41e7780cbe9ada9ff8e51f99129d73c4087",
+      "manifest_sha256": "27cf121c99f1f89c8535556c49223b5ca488882733515a20bfd9319a8e5a3cb3",
+      "status": "passed"
+    },
+    {
+      "role": "previous_minor_native",
+      "actual_count": 49,
+      "original_stage": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/k279-finalS-Linux-acceptance",
+      "curated_ready": "receipts/k279-finalS-Linux-acceptance/READY.json",
+      "ready_sha256": "2a12890c16829c2e8bbc67d76d8588f1fa51b9a2fcf299376f8cd6a83a6923d0",
+      "manifest_sha256": "d750e35f4ffadbcdc5ea3ab722b6dab6eb798155490566a4f98be3e078e343da",
+      "status": "passed"
+    },
+    {
+      "role": "final_inventory",
+      "actual_count": null,
+      "original_stage": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/k276-finalS-Linux-end-inventory",
+      "curated_ready": "receipts/k276-finalS-Linux-end-inventory/READY.json",
+      "ready_sha256": "f7e2f3b04139baadefd1d35e61775d5b9886c0d63890b15c6c2057537548b90a",
+      "manifest_sha256": "fc0a112b193c919a6b8e36aab0e7c218c39b04d00d9220df5c173f6c5484a9e1",
+      "status": "passed"
+    }
+  ],
+  "preserved_failures": [
+    {
+      "role": "old_Git_archive_mtime_unsupported",
+      "original_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/k276-finalS-linux-delivery/actual-Linux-delivery.log",
+      "curated_path": "preserved-failures/old_Git_archive_mtime_unsupported.log",
+      "sha256": "eca161dd51890799886c7709bc5265b1bbfeb6faf9a1ca171c0c9e113831eed6"
+    },
+    {
+      "role": "old_Git_capability_exit129",
+      "original_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/k276-finalS-linux-delivery/archive-capability.log",
+      "curated_path": "preserved-failures/old_Git_capability_exit129.log",
+      "sha256": "ffbf5b4464cd7a722e5f1d27752663b7a4762e3c452d0c315d73065aff88a195"
+    },
+    {
+      "role": "carrier_parent0755_preflight_only",
+      "original_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/k276-finalS-Linux-carrier-native/actual-carrier-native.log",
+      "curated_path": "preserved-failures/carrier_parent0755_preflight_only.log",
+      "sha256": "b595c0e6eb89491e76abeef18afbdc2666da479f23152dcc019bcf84549267c5"
+    },
+    {
+      "role": "carrier_parent_mode_metadata",
+      "original_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/k276-finalS-Linux-carrier-native/preflight-failure-metadata.log",
+      "curated_path": "preserved-failures/carrier_parent_mode_metadata.log",
+      "sha256": "461c3f827bfa7bbc2b55f559af3743d4b39ff7193f4ac99fd5567a9983702b41"
+    },
+    {
+      "role": "container_outer_readelf_symlink_preexec_only",
+      "original_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/k276-finalS-Linux-container/actual-container.log",
+      "curated_path": "preserved-failures/container_outer_readelf_symlink_preexec_only.log",
+      "sha256": "46c7aeac91f2bee46dfb034a144596f5fc251fb592a49966ae9cd689863cba55"
+    },
+    {
+      "role": "container_outer_missing_start_secondary",
+      "original_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/k276-finalS-Linux-container/OUTER-METADATA-END.json",
+      "curated_path": "preserved-failures/container_outer_missing_start_secondary.log",
+      "sha256": "77a98a11489e826e5b4a6f6d7c9f82a2f6fb799fc4779e1a9039f90442711911"
+    }
+  ],
+  "prior_source_stages_retained": [
+    "k276-linux-package-stage99leaves baseline1367",
+    "k276-linux-pg-bootstrap-stage42leaves",
+    "k276-package-implementation-stage191leaves",
+    "k279-linux-baseline-prototype",
+    "k276-finalS-Linux-carrier-native-revision2",
+    "k276-finalS-Linux-timer-native"
+  ],
+  "producer_bindings": "producer-bindings/",
+  "negative_latch": "receipts/k276-finalS-Linux-timer-native-audited/timer-native/paused-state/inflight.json",
+  "no_automatic_reconcile": true,
+  "K279_preflight_models": 5,
+  "K279_unmodified_all_compatible": false,
+  "K086_migration_required": true,
+  "boundaries": [
+    "actual owned local ARM64 Linux fixture acceptance only",
+    "no apt repository, distro-native autoactivation, generic Linux ABI, public distribution, production signing or publisher trust claim",
+    "P06/P09/P13/P04/P05 remain partial for actual product, provider acknowledgement and other platforms",
+    "ASan/Miri/1800scompiler-LSP soak/900sservice campaigns are separate root evidence, not inferred here",
+    "raw proofs are hash-bound local observations, not authenticated third-party execution attestation",
+    "VM retained for root audit; paused latch retained deliberately; no PID adoption or automatic unknown-COMMIT retry"
+  ]
+}

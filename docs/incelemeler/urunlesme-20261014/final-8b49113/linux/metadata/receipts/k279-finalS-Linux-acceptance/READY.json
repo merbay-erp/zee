@@ -1,0 +1,9 @@
+{
+  "status": "passed",
+  "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "manifest_sha256": "d750e35f4ffadbcdc5ea3ab722b6dab6eb798155490566a4f98be3e078e343da",
+  "PROOF_sha256": "8788defa1c30fb7b490627bdcf35568b824731471b7f822e1d64d82dd115b840",
+  "actual_cases": 49,
+  "source_begin_end_receipts": "fixture/helper/binary pins preserved by source producer",
+  "preflight5": true
+}

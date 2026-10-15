@@ -1,0 +1,299 @@
+{
+  "schema": "zee-previous-minor-tests-1",
+  "status": "passed",
+  "cases": [
+    {
+      "kind": "check",
+      "file": "01-merhaba-dunya.dil",
+      "exit": 0,
+      "passed": true
+    },
+    {
+      "kind": "check",
+      "file": "02-degiskenler.dil",
+      "exit": 0,
+      "passed": true
+    },
+    {
+      "kind": "check",
+      "file": "03-girdi-alma.dil",
+      "exit": 0,
+      "passed": true
+    },
+    {
+      "kind": "check",
+      "file": "04-hesap-makinesi.dil",
+      "exit": 0,
+      "passed": true
+    },
+    {
+      "kind": "check",
+      "file": "05-kosullar.dil",
+      "exit": 0,
+      "passed": true
+    },
+    {
+      "kind": "check",
+      "file": "06-donguler.dil",
+      "exit": 0,
+      "passed": true
+    },
+    {
+      "kind": "check",
+      "file": "07-sayi-tahmini.dil",
+      "exit": 0,
+      "passed": true
+    },
+    {
+      "kind": "check",
+      "file": "08-listeler.dil",
+      "exit": 0,
+      "passed": true
+    },
+    {
+      "kind": "check",
+      "file": "09-liste-isleme.dil",
+      "exit": 0,
+      "passed": true
+    },
+    {
+      "kind": "check",
+      "file": "10-sozlukler.dil",
+      "exit": 0,
+      "passed": true
+    },
+    {
+      "kind": "check",
+      "file": "11-metin-islemleri.dil",
+      "exit": 0,
+      "passed": true
+    },
+    {
+      "kind": "check",
+      "file": "12-islem-tanimi.dil",
+      "exit": 0,
+      "passed": true
+    },
+    {
+      "kind": "check",
+      "file": "13-islem-parametreleri.dil",
+      "exit": 0,
+      "passed": true
+    },
+    {
+      "kind": "check",
+      "file": "14-not-ortalamasi.dil",
+      "exit": 0,
+      "passed": true
+    },
+    {
+      "kind": "check",
+      "file": "15-secenek-turu.dil",
+      "exit": 0,
+      "passed": true
+    },
+    {
+      "kind": "check",
+      "file": "16-sonuc-ve-hata.dil",
+      "exit": 0,
+      "passed": true
+    },
+    {
+      "kind": "check",
+      "file": "17-dosya-okuma.dil",
+      "exit": 0,
+      "passed": true
+    },
+    {
+      "kind": "check",
+      "file": "18-dosya-yazma.dil",
+      "exit": 0,
+      "passed": true
+    },
+    {
+      "kind": "check",
+      "file": "19-csv-analizi.dil",
+      "exit": 0,
+      "passed": true
+    },
+    {
+      "kind": "check",
+      "file": "20-json-verisi.dil",
+      "exit": 0,
+      "passed": true
+    },
+    {
+      "kind": "check",
+      "file": "21-tarih-ve-saat.dil",
+      "exit": 0,
+      "passed": true
+    },
+    {
+      "kind": "check",
+      "file": "22-yapilar.dil",
+      "exit": 0,
+      "passed": true
+    },
+    {
+      "kind": "check",
+      "file": "23-desen-eslestirme.dil",
+      "exit": 0,
+      "passed": true
+    },
+    {
+      "kind": "check",
+      "file": "24-http-istemcisi.dil",
+      "exit": 0,
+      "passed": true
+    },
+    {
+      "kind": "check",
+      "file": "25-web-sunucusu.dil",
+      "exit": 0,
+      "passed": true
+    },
+    {
+      "kind": "check",
+      "file": "26-paralel-gorevler.dil",
+      "exit": 0,
+      "passed": true
+    },
+    {
+      "kind": "check",
+      "file": "27-zaman-asimi.dil",
+      "exit": 0,
+      "passed": true
+    },
+    {
+      "kind": "check",
+      "file": "28-cli-araci.dil",
+      "exit": 0,
+      "passed": true
+    },
+    {
+      "kind": "check",
+      "file": "29-esp32-led.dil",
+      "exit": 0,
+      "passed": true
+    },
+    {
+      "kind": "check",
+      "file": "30-testler.dil",
+      "exit": 0,
+      "passed": true
+    },
+    {
+      "kind": "check",
+      "file": "31-birimler.dil",
+      "exit": 1,
+      "passed": true
+    },
+    {
+      "kind": "check",
+      "file": "32-ondalik-market.dil",
+      "exit": 0,
+      "passed": true
+    },
+    {
+      "kind": "check",
+      "file": "hesap_araclari.dil",
+      "exit": 0,
+      "passed": true
+    },
+    {
+      "kind": "pure-runtime",
+      "file": "01-merhaba-dunya.dil",
+      "passed": true
+    },
+    {
+      "kind": "pure-runtime",
+      "file": "02-degiskenler.dil",
+      "passed": true
+    },
+    {
+      "kind": "pure-runtime",
+      "file": "05-kosullar.dil",
+      "passed": true
+    },
+    {
+      "kind": "pure-runtime",
+      "file": "06-donguler.dil",
+      "passed": true
+    },
+    {
+      "kind": "pure-runtime",
+      "file": "08-listeler.dil",
+      "passed": true
+    },
+    {
+      "kind": "pure-runtime",
+      "file": "09-liste-isleme.dil",
+      "passed": true
+    },
+    {
+      "kind": "pure-runtime",
+      "file": "10-sozlukler.dil",
+      "passed": true
+    },
+    {
+      "kind": "pure-runtime",
+      "file": "11-metin-islemleri.dil",
+      "passed": true
+    },
+    {
+      "kind": "pure-runtime",
+      "file": "12-islem-tanimi.dil",
+      "passed": true
+    },
+    {
+      "kind": "pure-runtime",
+      "file": "13-islem-parametreleri.dil",
+      "passed": true
+    },
+    {
+      "kind": "pure-runtime",
+      "file": "14-not-ortalamasi.dil",
+      "passed": true
+    },
+    {
+      "kind": "pure-runtime",
+      "file": "15-secenek-turu.dil",
+      "passed": true
+    },
+    {
+      "kind": "pure-runtime",
+      "file": "22-yapilar.dil",
+      "passed": true
+    },
+    {
+      "kind": "pure-runtime",
+      "file": "23-desen-eslestirme.dil",
+      "passed": true
+    },
+    {
+      "kind": "pure-runtime",
+      "file": "32-ondalik-market.dil",
+      "passed": true
+    },
+    {
+      "kind": "known-K086-migration",
+      "file": "31-birimler.dil",
+      "passed": true
+    }
+  ],
+  "binary_sha256": "80cc4b162211b352e97dd8f3d54697e53d92f5d3dd40b03fe73f78963d37e739",
+  "historical_source": "d08a947713ddc38d2163360c17d07fbffcb1213d",
+  "unmodified_corpus_all_compatible": false,
+  "legacy_rollback_accepted": false,
+  "build": {
+    "schema": "zee-build-v1",
+    "version": "0.8.0-dev",
+    "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+    "source_date": "2026-10-15",
+    "channel": "development",
+    "dirty": false
+  },
+  "case_count": 49,
+  "source_pins_unchanged": true,
+  "owned_commands_closed": true
+}

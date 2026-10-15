@@ -1,0 +1,49 @@
+{
+  "schema": "zee-worker-supervisor-tests-1",
+  "tests": 25,
+  "failed": 0,
+  "errors": 0,
+  "ignored": 0,
+  "actual_native_workers": true,
+  "native_build": {
+    "schema": "zee-build-v1",
+    "version": "0.8.0-dev",
+    "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+    "source_date": "2026-10-15",
+    "channel": "development",
+    "dirty": false
+  },
+  "native_binary_sha256": "fb21485fa46422844f5de9b4510a8957c957ac9f281e47df3907cb93eeb8ae4e",
+  "native_binary_private_snapshot_unchanged": true,
+  "sources_unchanged": true,
+  "native_node_fixture": true,
+  "credential_composition_native_crypto_and_group_cleanup": true,
+  "source_files": [
+    {
+      "path": "scripts/worker-supervisor.py",
+      "sha256": "560bec4e4e36d2aa856936d9d32412bb9106b61b25a871495287e2287e3c6642"
+    },
+    {
+      "path": "scripts/tests/worker-supervisor-test.py",
+      "sha256": "447525fd38503c150d6488e394e2ff13e51b5db70bbf9a9517daacadd1e59fe1"
+    },
+    {
+      "path": "dogfood/zeedili-com/scripts/yerel-baslat.sh",
+      "sha256": "83162b5120303b89bcab24ec2f8fb3390b48d879912ff82927e9318b19a797a8"
+    },
+    {
+      "path": "scripts/credential-baslat.py",
+      "sha256": "6894667f5d2d529434c235c9ae54aec64d4fb3c1c25712c25fb7f710eee9961f"
+    },
+    {
+      "path": "scripts/native-capabilities.py",
+      "sha256": "0a336d915e6618b7bc9134598337c0e442a7d455008fa937a0e49771fe7d94fc"
+    }
+  ],
+  "boundaries": [
+    "native application init readiness signal is not DB/migration readiness",
+    "inflight request may be interrupted",
+    "no P14 socket/zero-downtime acceptance",
+    "no credential DB/SMTP end-to-end or live staging acceptance"
+  ]
+}

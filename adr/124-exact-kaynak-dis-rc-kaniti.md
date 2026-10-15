@@ -1,6 +1,6 @@
 # ADR-124 — Exact kaynakta dış RC kanıtı
 
-- **Durum:** kabul; K-265 kaynak/kapı entegrasyonu ve kısa protokol testleri var; gerçek uzun kampanya ve nihai temiz kabul açık
+- **Durum:** kabul; temiz exactS canonicalexport ve aynıS RC güvenlik kapısı gerçek geçti; GB082 dar kapsamda kapalı
 - **Tarih:** 15 Ekim 2026
 - **İlgili:** ADR-056/066/064, GB-082
 
@@ -23,3 +23,13 @@ V3 kayıtlı corpus yolundan tek mutlak lexical campaignroot çıkarır; dört h
 Dizin envanteri de streaming scandir ile ortak giriş bütçesini isim listesi tahsisinden önce uygular; symlinkler izlenmez. MAX_FILES=3 kontrollü iterator negatifinde dördüncü girişte durup devamını taramama gerçek kısa testi vardır.
 
 Etki incelemesi: yeni compiler/src, grammar, facade export veya dil normu yoktur; mevcut RFC/spec/ADR-046 üretim Rust katman kenarları değişmez. Release gate politikası bu ADR ve runbook sahibindedir; yeni spec maddesi/FNV kaydı icat edilmez. Yeni kullanıcı tanı kodu olmadığı için hata kataloğu değişmez. ADR-045/049 sabit benchmark iş yükü ve tarihçesi değişmez; kısa protokol süreleri performans tabanı değildir. Yeni canonical namedformat/profile yüzeyi K-167/ADR-064 envanterindeki altı ek satırla kaydedilir.
+
+## 15 Ekim 2026 — temiz S yerel kanıt güncellemesi
+
+Temiz S üzerinde dört ASAN hedefi ayrı ayrı1801sn geçti; lexer_parser7.117.460, morfoloji8.265.144, http_istegi11.194.063 ve wasm_abi9.011.299 yürütme kaydedildi. İki seçili Miri grubunda toplam3test(ondalık2,zaman1) geçti. Kanonik export/check ve aynı S güvenlik kapısı510.198758sn exit0 ile geçti; kapının118 Cargo/libtest grubunda943passed/0failed/16ignored vardır. GB082 yalnız bu exactS yerel protokol ve kanıt kapısı için kapalıdır; E kaynakS gibi kabul edilmez.
+
+İlk producer PASS paketinin HTTP dış702.404sn/raw1921sn ve WASM dış695.844sn/raw1914sn süre uyuşmazlığı nedeniyle export reddi korunur. Recovery ayrı kampanyadır; eski dalganın sonuçlarıyla birleştirilmez. Duvar saati ve monotonik saat kayıtları recovery kimliğiyle korunur; failedkampanya raw süreleri değiştirilmez.
+
+[RC sonuç makbuzu](../docs/incelemeler/urunlesme-20261014/final-8b49113/rc/FINAL-RESULT.json), [aynı-S kapı makbuzunun türetilmiş temsili](../docs/incelemeler/urunlesme-20261014/final-8b49113/rc/POST-GATE-RECEIPT.derived.json), [bağımsız kök incelemesi](../docs/incelemeler/urunlesme-20261014/final-8b49113/rc/root-independent-review.json).
+
+S kaynak, E append-only kanıt/belge commit’idir; E kendi exactHEAD RC kabulünü devralmaz. Artefakt/etiket kaynak kimliği S kalır. Hash integrity owned-local güven review’unun yerine authenticated provenance sayılmaz.

@@ -1,0 +1,49 @@
+{
+  "schema": "external-preparation-manifest-1",
+  "files": [
+    {
+      "path": "CONTRACT.md",
+      "sha256": "53b69526a357a9bc427d9395afdb1c14f4ba4db8b011f1215e248ddaa1276ac1"
+    },
+    {
+      "path": "external/delivery/deliverable.py",
+      "sha256": "509106d70e5e35c1142594c98df022b01e689966415bdd94a8f67feecb8587d8"
+    },
+    {
+      "path": "external/install/install_acceptance.py",
+      "sha256": "c5143d1105a52bb0e3b232e5af5b765bb78ae34de814c660776a4e584e1f8af0"
+    },
+    {
+      "path": "external/install/lsp_smoke.py",
+      "sha256": "58afb02c9869a48b2cd3315b108dfd483b4e1b40872fe189705359816a00dfb5"
+    },
+    {
+      "path": "external/install/owned_helper.py",
+      "sha256": "509106d70e5e35c1142594c98df022b01e689966415bdd94a8f67feecb8587d8"
+    },
+    {
+      "path": "linux_carrier_native.py",
+      "sha256": "d0116847430a4342131e4b090f4b24e97b3a084f39f2caa6149bd96c517fb863"
+    },
+    {
+      "path": "linux_protocol.py",
+      "sha256": "4783fc83e6a9dd9c622e75ef88459796abde084bd7cad91a51f0afe4008e01c7"
+    },
+    {
+      "path": "linux_step.py",
+      "sha256": "af568bdd40da014cc3d0ed23df1f88dac5d442bece37a9c0fd1440db0a94ab04"
+    },
+    {
+      "path": "linux_timer_native.py",
+      "sha256": "386103e27a974372d3920ba687fef67428333568c19f10ca23f50315562b33a5"
+    },
+    {
+      "path": "preparation26.log",
+      "sha256": "1eac01d9277424e7d268cfa40a47783605801b0c46ca81acf0f386546df3106e"
+    },
+    {
+      "path": "test_linux_preparation.py",
+      "sha256": "9bad417c492445de8658918d6e869c16bcd7ca2cdd2471d64fb18c14aaf43964"
+    }
+  ]
+}

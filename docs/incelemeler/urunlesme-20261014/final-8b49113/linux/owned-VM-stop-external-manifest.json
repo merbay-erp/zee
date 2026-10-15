@@ -1,0 +1,9 @@
+{
+  "STOP.json": "49cfcfb5ad82e1b6b0ee82f7c6116ac4c2d8a9b9573ba7b5c62c129baf0730a5",
+  "after.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "after.stdout": "4826dd2b346cc83263170594c347692ac64a8ba49ef18a5ecbf513d67513df62",
+  "before.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "before.stdout": "44f3a2ad54a1636fe62c9f8ee68db9edc901cd396355c195db3a7b92dab7303d",
+  "stop.stderr": "2d8f97a79671c360066d7bcf602ea1dcdbe03beffb55ba362b376d5adf9aff27",
+  "stop.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

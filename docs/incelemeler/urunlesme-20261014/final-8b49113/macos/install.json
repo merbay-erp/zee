@@ -1,0 +1,329 @@
+{
+  "schema": "zee-owned-prefix-install-acceptance-1",
+  "K": "K-266",
+  "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "status": "passed",
+  "acceptance": true,
+  "delivery_report_sha256": "db5eb394b8193b3d50a9fdafb3504df970e2505382e1d90fdb9f9afbb5b13820",
+  "binary_sha256": {
+    "dil": "f47fcf76020c232ff97917d73c71b4225030ec00d3ff402247fce3b655ca0963",
+    "dillsp": "a03456d930288d0c09a6328bae67901fe10d5fcb73f527256d6a2c559b4dcf5c"
+  },
+  "source_helpers": {
+    "scripts/surum-artefakti.sh": "8a93e67c4285e182a056a59895d04a28aea7d0019cb2df023d7e64131dbbcbe6",
+    "scripts/temiz-kaynak-arsivi.sh": "268a7e0b2541224b2d85216d2ce14481976011ab4f275b90ceb4739abc45558f",
+    "scripts/kaynak-ci-esleme.py": "d9d7ef6031da841d0fa87515de7ceb90cda14f3d253b691041fba35c149a8058",
+    "scripts/rust-arac-zinciri.sh": "b634e533a312fa81f2e0cdadd5082def6ff6dff8d4b434d452d651e320a6f478",
+    "compiler/rust-toolchain.toml": "3260f10937490e272267a11d1bca85ee76b0ef972022ab8fba8a1df0dbb3b397",
+    "scripts/kur.sh": "1bea4701e9ac0cf8bdca5dd1ec6c4da424cfe03bcdf6bf1f33cc70ecee80a21f",
+    "scripts/kaldir.sh": "8f2351745c588687434d1a2a194af2b3299231e52bbc080a36698ca454e1e43d"
+  },
+  "external_start_sha256": {
+    "driver": "c5143d1105a52bb0e3b232e5af5b765bb78ae34de814c660776a4e584e1f8af0",
+    "helper": "509106d70e5e35c1142594c98df022b01e689966415bdd94a8f67feecb8587d8",
+    "smoke": "58afb02c9869a48b2cd3315b108dfd483b4e1b40872fe189705359816a00dfb5"
+  },
+  "cases": [
+    {
+      "name": "valid-install-buildJSON-owned-LSP",
+      "passed": true
+    },
+    {
+      "name": "repeat-install-refuses-no-overwrite",
+      "passed": true
+    },
+    {
+      "name": "changed-installed-refuses-without-removal",
+      "passed": true
+    },
+    {
+      "name": "manifest-uninstall-preserves-foreign",
+      "passed": true
+    },
+    {
+      "name": "repeat-uninstall-refuses-preserves-foreign",
+      "passed": true
+    },
+    {
+      "name": "reinstall-uninstall-manifest-cycle",
+      "passed": true
+    },
+    {
+      "name": "tampered-binary-refuses-no-installed-bytes",
+      "passed": true
+    },
+    {
+      "name": "tampered-checksum-refuses-no-installed-bytes",
+      "passed": true
+    }
+  ],
+  "commands": [
+    {
+      "name": "valid-install",
+      "argv": [
+        "bash",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/scripts/kur.sh",
+        "--artefakt",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-macos-delivery/binaries",
+        "--hedef",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-macos-install/valid/bin",
+        "--veri",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-macos-install/valid/data"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.08497708290815353,
+      "log": "logs/valid-install.log",
+      "log_sha256": "84fba63bb34ce05cb0833cb2a7f78ba3ed3992cdb33a2c79aa2cea32b5568eb0"
+    },
+    {
+      "name": "repeat-install-reject",
+      "argv": [
+        "bash",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/scripts/kur.sh",
+        "--artefakt",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-macos-delivery/binaries",
+        "--hedef",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-macos-install/valid/bin",
+        "--veri",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-macos-install/valid/data"
+      ],
+      "exit": 1,
+      "elapsed_seconds": 0.028153249993920326,
+      "log": "logs/repeat-install-reject.log",
+      "log_sha256": "95583345c261ac2a5289382a284130e890d9c69c40e3d421e722f7083420e9f1"
+    },
+    {
+      "name": "changed-installed-refuse",
+      "argv": [
+        "bash",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/scripts/kaldir.sh",
+        "--veri",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-macos-install/valid/data"
+      ],
+      "exit": 1,
+      "elapsed_seconds": 0.03547183296177536,
+      "log": "logs/changed-installed-refuse.log",
+      "log_sha256": "1281e6efac68a96f6f975fd945fdab4387fdf826220292df908a60896f2e2994"
+    },
+    {
+      "name": "valid-uninstall",
+      "argv": [
+        "bash",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/scripts/kaldir.sh",
+        "--veri",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-macos-install/valid/data"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.0517065409803763,
+      "log": "logs/valid-uninstall.log",
+      "log_sha256": "11b9202f5091b054369bc67b7dbac1b03102e4ceb4ca7eaa9df66d5c3cb4ccff"
+    },
+    {
+      "name": "repeat-uninstall-reject",
+      "argv": [
+        "bash",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/scripts/kaldir.sh",
+        "--veri",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-macos-install/valid/data"
+      ],
+      "exit": 1,
+      "elapsed_seconds": 0.026143957977183163,
+      "log": "logs/repeat-uninstall-reject.log",
+      "log_sha256": "2ef4d858849c76d7127fc0039fb5400b2779806c15d79429ab46d8f4bed2cd5b"
+    },
+    {
+      "name": "reinstall",
+      "argv": [
+        "bash",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/scripts/kur.sh",
+        "--artefakt",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-macos-delivery/binaries",
+        "--hedef",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-macos-install/valid/bin",
+        "--veri",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-macos-install/valid/data"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.07444337499327958,
+      "log": "logs/reinstall.log",
+      "log_sha256": "84fba63bb34ce05cb0833cb2a7f78ba3ed3992cdb33a2c79aa2cea32b5568eb0"
+    },
+    {
+      "name": "reinstall-uninstall",
+      "argv": [
+        "bash",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/scripts/kaldir.sh",
+        "--veri",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-macos-install/valid/data"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.055326374946162105,
+      "log": "logs/reinstall-uninstall.log",
+      "log_sha256": "11b9202f5091b054369bc67b7dbac1b03102e4ceb4ca7eaa9df66d5c3cb4ccff"
+    },
+    {
+      "name": "tampered-binary-reject",
+      "argv": [
+        "bash",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/scripts/kur.sh",
+        "--artefakt",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-macos-install/tampered-binary",
+        "--hedef",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-macos-install/reject-binary/bin",
+        "--veri",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-macos-install/reject-binary/data"
+      ],
+      "exit": 1,
+      "elapsed_seconds": 0.05645320797339082,
+      "log": "logs/tampered-binary-reject.log",
+      "log_sha256": "1bb1ef207738009048b9b0ad16b3f9df6a50566bb09b8d05e52d0b3ec64ad4c7"
+    },
+    {
+      "name": "tampered-checksum-reject",
+      "argv": [
+        "bash",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/scripts/kur.sh",
+        "--artefakt",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-macos-install/tampered-checksum",
+        "--hedef",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-macos-install/reject-checksum/bin",
+        "--veri",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-macos-install/reject-checksum/data"
+      ],
+      "exit": 1,
+      "elapsed_seconds": 0.08087754098232836,
+      "log": "logs/tampered-checksum-reject.log",
+      "log_sha256": "d895e25f49dcc598585a98f32081af1d5acca423813eec0746b6f623cef309c6"
+    }
+  ],
+  "scope": "Actual unsigned local canonical artifact, owned prefixes only; no HOME/PATH/global install, network, keys or publication.",
+  "source_end_clean": true,
+  "external_end_sha256": {
+    "driver": "c5143d1105a52bb0e3b232e5af5b765bb78ae34de814c660776a4e584e1f8af0",
+    "helper": "509106d70e5e35c1142594c98df022b01e689966415bdd94a8f67feecb8587d8",
+    "smoke": "58afb02c9869a48b2cd3315b108dfd483b4e1b40872fe189705359816a00dfb5"
+  },
+  "original_artifact_unchanged": true,
+  "files": [
+    {
+      "path": "logs/changed-installed-refuse.log",
+      "sha256": "1281e6efac68a96f6f975fd945fdab4387fdf826220292df908a60896f2e2994"
+    },
+    {
+      "path": "logs/installed-build-json.log",
+      "sha256": "dd05eea2a45a239105031ea3a070578ee077c457a8dadbf18f76d14d9b632f9a"
+    },
+    {
+      "path": "logs/lsp-smoke.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/reinstall-uninstall.log",
+      "sha256": "11b9202f5091b054369bc67b7dbac1b03102e4ceb4ca7eaa9df66d5c3cb4ccff"
+    },
+    {
+      "path": "logs/reinstall.log",
+      "sha256": "84fba63bb34ce05cb0833cb2a7f78ba3ed3992cdb33a2c79aa2cea32b5568eb0"
+    },
+    {
+      "path": "logs/repeat-install-reject.log",
+      "sha256": "95583345c261ac2a5289382a284130e890d9c69c40e3d421e722f7083420e9f1"
+    },
+    {
+      "path": "logs/repeat-uninstall-reject.log",
+      "sha256": "2ef4d858849c76d7127fc0039fb5400b2779806c15d79429ab46d8f4bed2cd5b"
+    },
+    {
+      "path": "logs/tampered-binary-reject.log",
+      "sha256": "1bb1ef207738009048b9b0ad16b3f9df6a50566bb09b8d05e52d0b3ec64ad4c7"
+    },
+    {
+      "path": "logs/tampered-checksum-reject.log",
+      "sha256": "d895e25f49dcc598585a98f32081af1d5acca423813eec0746b6f623cef309c6"
+    },
+    {
+      "path": "logs/valid-install.log",
+      "sha256": "84fba63bb34ce05cb0833cb2a7f78ba3ed3992cdb33a2c79aa2cea32b5568eb0"
+    },
+    {
+      "path": "logs/valid-uninstall.log",
+      "sha256": "11b9202f5091b054369bc67b7dbac1b03102e4ceb4ca7eaa9df66d5c3cb4ccff"
+    },
+    {
+      "path": "lsp-smoke.json",
+      "sha256": "24f091f68605c30dafe725a58506bbdb366134ae346e99520618b4da22c64096"
+    },
+    {
+      "path": "reject-binary/bin/foreign.sentinel",
+      "sha256": "f17f5d1cfdb6d38a4e5b10d93e8fea50dc33374a82a409cd7d6269bd1ccc8211"
+    },
+    {
+      "path": "reject-binary/data/foreign.sentinel",
+      "sha256": "f17f5d1cfdb6d38a4e5b10d93e8fea50dc33374a82a409cd7d6269bd1ccc8211"
+    },
+    {
+      "path": "reject-checksum/bin/foreign.sentinel",
+      "sha256": "f17f5d1cfdb6d38a4e5b10d93e8fea50dc33374a82a409cd7d6269bd1ccc8211"
+    },
+    {
+      "path": "reject-checksum/data/foreign.sentinel",
+      "sha256": "f17f5d1cfdb6d38a4e5b10d93e8fea50dc33374a82a409cd7d6269bd1ccc8211"
+    },
+    {
+      "path": "tampered-binary/GIT_SHA",
+      "sha256": "9d7e7a052e33ca696a3fb131f481f8a36133dd1b9e12efa0336342e2e200536a"
+    },
+    {
+      "path": "tampered-binary/SHA256SUMS",
+      "sha256": "02430dad42d3337f34a1a68984c17b6c7b605886904219894eaf4cd836cac87b"
+    },
+    {
+      "path": "tampered-binary/dil",
+      "sha256": "298373d39fb90b227fc6131c891efa5711701f12f703dff3576264824931c057"
+    },
+    {
+      "path": "tampered-binary/dillsp",
+      "sha256": "a03456d930288d0c09a6328bae67901fe10d5fcb73f527256d6a2c559b4dcf5c"
+    },
+    {
+      "path": "tampered-binary/provenance.intoto.json",
+      "sha256": "833b3e4d59fd1f1a65036fff4555771f07cf09ce698652ec1b0369cc837fe717"
+    },
+    {
+      "path": "tampered-binary/sbom.spdx.json",
+      "sha256": "f7daa7da5f2280fd4bca5ba3a0d3d1cf2d4b28610fb35fe888838e833f511282"
+    },
+    {
+      "path": "tampered-checksum/GIT_SHA",
+      "sha256": "9d7e7a052e33ca696a3fb131f481f8a36133dd1b9e12efa0336342e2e200536a"
+    },
+    {
+      "path": "tampered-checksum/SHA256SUMS",
+      "sha256": "346613e48af28de7fa6c6997c2b778d96c02870c3a62c6713d27ed4d5ec8727d"
+    },
+    {
+      "path": "tampered-checksum/dil",
+      "sha256": "f47fcf76020c232ff97917d73c71b4225030ec00d3ff402247fce3b655ca0963"
+    },
+    {
+      "path": "tampered-checksum/dillsp",
+      "sha256": "a03456d930288d0c09a6328bae67901fe10d5fcb73f527256d6a2c559b4dcf5c"
+    },
+    {
+      "path": "tampered-checksum/provenance.intoto.json",
+      "sha256": "833b3e4d59fd1f1a65036fff4555771f07cf09ce698652ec1b0369cc837fe717"
+    },
+    {
+      "path": "tampered-checksum/sbom.spdx.json",
+      "sha256": "f7daa7da5f2280fd4bca5ba3a0d3d1cf2d4b28610fb35fe888838e833f511282"
+    },
+    {
+      "path": "valid/bin/foreign.sentinel",
+      "sha256": "f17f5d1cfdb6d38a4e5b10d93e8fea50dc33374a82a409cd7d6269bd1ccc8211"
+    },
+    {
+      "path": "valid/data/foreign.sentinel",
+      "sha256": "f17f5d1cfdb6d38a4e5b10d93e8fea50dc33374a82a409cd7d6269bd1ccc8211"
+    }
+  ]
+}

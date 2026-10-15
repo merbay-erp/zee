@@ -42,3 +42,7 @@ alındı. [JetBrains TextMate
 rehberi](https://www.jetbrains.com/help/idea/textmate.html) bundle import'unu
 anlatır. `upstream.json` belge hashlerini kaydeder; kurulmuş bir IDE/plugin
 sürümü veya güvenli plugin indirme kanıtı değildir.
+
+## 15 Ekim 2026 — temiz S yerel kanıt güncellemesi
+
+IntelliJ IDEA2025.3.1/LSP4IJ0.21.0 izole profilinde `Import template...` ile bu klasör, TextMate Bundles’a mevcut VS Code klasörü alındı; yeniden açılış sonrasında gerçek sunucu başlatıldı. Boşluk içeren `$PROJECT_DIR$` önizlemesi ve tanı/düzeltme, hover, tanıma git, rename görüldü. Tamamlama ve düzenli UI/LSP kapanışı doğrulanamadı; OS kısayol çakışması ve CUA timeout retleri korunur. [Son rapor](../../docs/urunlesme-final-kabul-20261015.md). Bu dar kısmi kabul tam P19 veya Windows kabulü değildir.

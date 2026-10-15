@@ -1,0 +1,10 @@
+[Unit]
+Description=Zee owned SQL-only finite dispatcher timer
+[Timer]
+OnActiveSec=30s
+OnUnitInactiveSec=60s
+AccuracySec=1s
+Persistent=false
+Unit=zee-sql-intent.service
+[Install]
+WantedBy=timers.target

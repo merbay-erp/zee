@@ -1,0 +1,1 @@
+{"manifest_sha256": "5e174eb9179e79e75b5127e12c1760b65d448704256ad69dbfa3abd5b343805c", "miri_groups": 2, "origin": "owned-local-reviewed-not-authenticated", "schema": "zee-rc-evidence-check-1", "source": {"clean": true, "sha": "8b49113c413f62b35d4b251ed31068524d2fe26c", "tree": "09fa6e764bb317b4aa5b32b6ca15ce02f4cf389d"}, "status": "validated-integrity-and-policy", "targets": 4}

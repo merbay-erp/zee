@@ -1,0 +1,36 @@
+{
+  "schema": "zee-k277-common-hook-1",
+  "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "runner": "scripts/tests/effect-dispatcher-native-test.py",
+  "runner_sha256": "a245cd733969974e5aeb4b178d17a7b99636d74f4836a032aae53716cef97c66",
+  "receipt": "proof.json",
+  "case_names": [
+    "native_mime_then_durable_SQL_ack",
+    "DATA_accepted_ACK_lost_manual_pause",
+    "native_before_DATA_failure_still_no_auto_retry",
+    "three_known_pre_effect_SQL_rejects_only_backoff",
+    "kill_after_committed_latch_no_delivery_no_replay",
+    "TERM_during_native_SMTP_pauses_and_owned_cleanup",
+    "expired_owner_token_generation_cannot_send_or_ack",
+    "prepare_COMMIT_before_manual_no_replay",
+    "prepare_COMMIT_after_manual_no_replay",
+    "ack_COMMIT_before_manual_no_replay",
+    "ack_COMMIT_after_manual_no_replay"
+  ],
+  "source_paths": [
+    "compiler/tests/fixtures/native-effect-consumer/ana.dil",
+    "compiler/tests/fixtures/native-effect-consumer/catalog.pdf",
+    "compiler/tests/fixtures/native-effect-consumer/gocler/0001_effect.sql",
+    "compiler/tests/fixtures/native-effect-consumer/proje.dil",
+    "docs/native-effect-consumer.md",
+    "scripts/credential-baslat.py",
+    "scripts/effect-dispatcher.py",
+    "scripts/lifecycle_core.py",
+    "scripts/native-capabilities.py",
+    "scripts/native-metrics.py",
+    "scripts/postgresql-commit-proxy.py",
+    "scripts/tests/effect-dispatcher-native-test.py",
+    "scripts/tests/effect-dispatcher-test.py",
+    "scripts/worker-supervisor.py"
+  ]
+}

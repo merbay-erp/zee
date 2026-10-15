@@ -1,0 +1,2138 @@
+== Güvenlik kapısı (--surum-adayi)
+-- RustSec/lisans/ban/kaynak (compiler + fuzz)
+advisories ok, bans ok, licenses ok, sources ok
+advisories ok, bans ok, licenses ok, sources ok
+-- Fuzz hedefleri stable araç zincirinde derlenir
+   Compiling libc v0.2.189
+    Checking cfg-if v1.0.4
+    Checking typenum v1.20.1
+    Checking hybrid-array v0.4.14
+    Checking crypto-common v0.2.2
+    Checking block-buffer v0.12.1
+    Checking cmov v0.5.4
+    Checking ctutils v0.4.2
+    Checking zeroize v1.9.0
+    Checking rand_core v0.10.1
+   Compiling getrandom v0.4.3
+    Checking bitflags v2.13.1
+    Checking const-oid v0.10.2
+    Checking digest v0.11.3
+    Checking inout v0.2.2
+    Checking bytes v1.12.1
+   Compiling jobserver v0.1.35
+    Checking cipher v0.5.2
+   Compiling find-msvc-tools v0.1.11
+   Compiling shlex v2.0.1
+   Compiling proc-macro2 v1.0.107
+   Compiling cc v1.4.4
+   Compiling unicode-ident v1.0.24
+   Compiling quote v1.0.47
+    Checking tinyvec_macros v0.1.1
+   Compiling parking_lot_core v0.9.12
+    Checking tinyvec v1.12.0
+    Checking chacha20 v0.10.2
+    Checking cpufeatures v0.3.1
+    Checking log v0.4.34
+    Checking scopeguard v1.2.0
+    Checking smallvec v1.16.0
+    Checking pin-project-lite v0.2.17
+    Checking byteorder v1.5.0
+    Checking lock_api v0.4.14
+    Checking sha2 v0.11.0
+   Compiling syn v3.0.4
+    Checking unicode-normalization v0.1.25
+    Checking socket2 v0.6.5
+    Checking mio v1.2.3
+    Checking futures-sink v0.3.34
+    Checking unicode-properties v0.1.4
+    Checking unicode-bidi v0.3.18
+    Checking memchr v2.8.3
+    Checking futures-core v0.3.34
+   Compiling autocfg v1.5.1
+   Compiling num-traits v0.2.19
+    Checking stringprep v0.1.5
+    Checking tokio v1.53.1
+    Checking parking_lot v0.12.5
+    Checking rand v0.10.2
+   Compiling ring v0.17.14
+    Checking hmac v0.13.0
+    Checking md-5 v0.11.0
+    Checking objc2-core-foundation v0.3.2
+   Compiling rustix v1.1.4
+    Checking siphasher v1.0.3
+    Checking fallible-iterator v0.2.0
+    Checking core-foundation-sys v0.8.7
+    Checking base64 v0.22.1
+    Checking once_cell v1.21.4
+    Checking postgres-protocol v0.6.12+zee.2 (/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/rc-final-8b49113c-recovery-caffeinated-20261015/campaign/checkout/compiler/third_party/postgres-protocol)
+    Checking phf_shared v0.13.1
+    Checking objc2-system-configuration v0.3.2
+    Checking errno v0.3.14
+    Checking futures-task v0.3.34
+    Checking simd-adler32 v0.3.10
+   Compiling semver v1.0.28
+    Checking percent-encoding v2.3.2
+    Checking subtle v2.6.1
+   Compiling crc32fast v1.5.2
+   Compiling rustc_version v0.4.1
+    Checking futures-util v0.3.34
+    Checking whoami v2.1.3
+    Checking phf v0.13.1
+    Checking postgres-types v0.2.14
+    Checking security-framework-sys v2.17.0
+    Checking core-foundation v0.10.1
+    Checking tokio-util v0.7.19
+    Checking futures-channel v0.3.34
+   Compiling async-trait v0.1.92
+    Checking rustls-pki-types v1.15.1
+    Checking getrandom v0.2.17
+    Checking untrusted v0.9.0
+    Checking fastrand v2.5.0
+    Checking itoa v1.0.18
+   Compiling native-tls v0.2.18
+   Compiling serde_core v1.0.229
+   Compiling httparse v1.10.1
+    Checking adler2 v2.0.1
+    Checking miniz_oxide v0.8.9
+    Checking tempfile v3.27.0
+    Checking tokio-postgres v0.7.18
+    Checking security-framework v3.7.0
+   Compiling curve25519-dalek v5.0.0
+   Compiling rustls v0.23.46
+    Checking base64ct v1.8.3
+   Compiling zmij v1.0.23
+    Checking base64 v0.23.1
+    Checking phc v0.6.1
+    Checking flate2 v1.1.9
+    Checking rustls-webpki v0.103.15
+    Checking http v1.5.0
+    Checking fdeflate v0.3.7
+    Checking scheduled-thread-pool v0.2.7
+    Checking universal-hash v0.6.1
+    Checking byteorder-lite v0.1.0
+    Checking pxfm v0.1.30
+    Checking zune-core v0.5.3
+   Compiling serde_json v1.0.151
+    Checking quick-error v2.0.1
+   Compiling serde v1.0.229
+    Checking signature v3.0.0
+    Checking ed25519 v3.0.0
+    Checking image-webp v0.2.4
+    Checking zune-jpeg v0.5.15
+    Checking moxcms v0.8.1
+    Checking poly1305 v0.9.1
+    Checking r2d2 v0.8.10
+    Checking png v0.18.1
+    Checking ureq-proto v0.6.1
+    Checking tokio-native-tls v0.3.1
+    Checking password-hash v0.6.1
+    Checking postgres v0.19.14
+    Checking webpki-roots v1.0.9
+    Checking num-integer v0.1.47
+   Compiling serde_derive v1.0.229
+    Checking blowfish v0.10.0
+   Compiling libfuzzer-sys v0.4.13
+    Checking aead v0.6.1
+    Checking blake2 v0.11.0
+    Checking rtoolbox v0.0.6
+   Compiling dil v0.8.0-dev (/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/rc-final-8b49113c-recovery-caffeinated-20261015/campaign/checkout/compiler)
+    Checking bytemuck v1.25.2
+    Checking utf8-zero v0.8.1
+    Checking ureq v3.4.0
+    Checking image v0.25.10
+    Checking rpassword v7.5.4
+    Checking argon2 v0.6.0
+    Checking chacha20poly1305 v0.11.0
+    Checking bcrypt v0.19.3
+    Checking num-bigint v0.5.1
+    Checking r2d2_postgres v0.18.2
+    Checking ed25519-dalek v3.0.0
+    Checking postgres-native-tls v0.5.3
+    Checking arbitrary v1.4.2
+    Checking dil-fuzz v0.0.0 (/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/rc-final-8b49113c-recovery-caffeinated-20261015/campaign/checkout/compiler/fuzz)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 46.03s
+-- Bulgu kaydı, açık kritik/yüksek sıfır ve tedarik kapısı
+   Compiling libc v0.2.189
+   Compiling cfg-if v1.0.4
+   Compiling typenum v1.20.1
+   Compiling hybrid-array v0.4.14
+   Compiling crypto-common v0.2.2
+   Compiling block-buffer v0.12.1
+   Compiling cmov v0.5.4
+   Compiling ctutils v0.4.2
+   Compiling zeroize v1.9.0
+   Compiling rand_core v0.10.1
+   Compiling getrandom v0.4.3
+   Compiling bitflags v2.13.1
+   Compiling const-oid v0.10.2
+   Compiling digest v0.11.3
+   Compiling inout v0.2.2
+   Compiling bytes v1.12.1
+   Compiling cipher v0.5.2
+   Compiling proc-macro2 v1.0.107
+   Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.24
+   Compiling parking_lot_core v0.9.12
+   Compiling tinyvec_macros v0.1.1
+   Compiling tinyvec v1.12.0
+   Compiling chacha20 v0.10.2
+   Compiling cpufeatures v0.3.1
+   Compiling pin-project-lite v0.2.17
+   Compiling smallvec v1.16.0
+   Compiling byteorder v1.5.0
+   Compiling shlex v2.0.1
+   Compiling scopeguard v1.2.0
+   Compiling find-msvc-tools v0.1.11
+   Compiling log v0.4.34
+   Compiling cc v1.4.4
+   Compiling lock_api v0.4.14
+   Compiling sha2 v0.11.0
+   Compiling syn v3.0.4
+   Compiling unicode-normalization v0.1.25
+   Compiling socket2 v0.6.5
+   Compiling mio v1.2.3
+   Compiling autocfg v1.5.1
+   Compiling unicode-bidi v0.3.18
+   Compiling futures-core v0.3.34
+   Compiling futures-sink v0.3.34
+   Compiling memchr v2.8.3
+   Compiling unicode-properties v0.1.4
+   Compiling stringprep v0.1.5
+   Compiling num-traits v0.2.19
+   Compiling tokio v1.53.1
+   Compiling parking_lot v0.12.5
+   Compiling ring v0.17.14
+   Compiling rand v0.10.2
+   Compiling md-5 v0.11.0
+   Compiling hmac v0.13.0
+   Compiling objc2-core-foundation v0.3.2
+   Compiling rustix v1.1.4
+   Compiling base64 v0.22.1
+   Compiling fallible-iterator v0.2.0
+   Compiling core-foundation-sys v0.8.7
+   Compiling once_cell v1.21.4
+   Compiling siphasher v1.0.3
+   Compiling phf_shared v0.13.1
+   Compiling postgres-protocol v0.6.12+zee.2 (/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/rc-final-8b49113c-recovery-caffeinated-20261015/campaign/checkout/compiler/third_party/postgres-protocol)
+   Compiling objc2-system-configuration v0.3.2
+   Compiling errno v0.3.14
+   Compiling crc32fast v1.5.2
+   Compiling futures-task v0.3.34
+   Compiling percent-encoding v2.3.2
+   Compiling subtle v2.6.1
+   Compiling semver v1.0.28
+   Compiling simd-adler32 v0.3.10
+   Compiling rustc_version v0.4.1
+   Compiling futures-util v0.3.34
+   Compiling whoami v2.1.3
+   Compiling postgres-types v0.2.14
+   Compiling phf v0.13.1
+   Compiling security-framework-sys v2.17.0
+   Compiling core-foundation v0.10.1
+   Compiling tokio-util v0.7.19
+   Compiling futures-channel v0.3.34
+   Compiling async-trait v0.1.92
+   Compiling rustls-pki-types v1.15.1
+   Compiling getrandom v0.2.17
+   Compiling untrusted v0.9.0
+   Compiling serde_core v1.0.229
+   Compiling fastrand v2.5.0
+   Compiling native-tls v0.2.18
+   Compiling httparse v1.10.1
+   Compiling adler2 v2.0.1
+   Compiling itoa v1.0.18
+   Compiling miniz_oxide v0.8.9
+   Compiling tempfile v3.27.0
+   Compiling tokio-postgres v0.7.18
+   Compiling security-framework v3.7.0
+   Compiling curve25519-dalek v5.0.0
+   Compiling rustls v0.23.46
+   Compiling base64ct v1.8.3
+   Compiling base64 v0.23.1
+   Compiling zmij v1.0.23
+   Compiling phc v0.6.1
+   Compiling flate2 v1.1.9
+   Compiling rustls-webpki v0.103.15
+   Compiling http v1.5.0
+   Compiling fdeflate v0.3.7
+   Compiling scheduled-thread-pool v0.2.7
+   Compiling universal-hash v0.6.1
+   Compiling serde_json v1.0.151
+   Compiling pxfm v0.1.30
+   Compiling byteorder-lite v0.1.0
+   Compiling quick-error v2.0.1
+   Compiling zune-core v0.5.3
+   Compiling serde v1.0.229
+   Compiling signature v3.0.0
+   Compiling ed25519 v3.0.0
+   Compiling zune-jpeg v0.5.15
+   Compiling image-webp v0.2.4
+   Compiling moxcms v0.8.1
+   Compiling poly1305 v0.9.1
+   Compiling r2d2 v0.8.10
+   Compiling png v0.18.1
+   Compiling ureq-proto v0.6.1
+   Compiling tokio-native-tls v0.3.1
+   Compiling password-hash v0.6.1
+   Compiling postgres v0.19.14
+   Compiling webpki-roots v1.0.9
+   Compiling num-integer v0.1.47
+   Compiling serde_derive v1.0.229
+   Compiling blowfish v0.10.0
+   Compiling aead v0.6.1
+   Compiling blake2 v0.11.0
+   Compiling rtoolbox v0.0.6
+   Compiling dil v0.8.0-dev (/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/rc-final-8b49113c-recovery-caffeinated-20261015/campaign/checkout/compiler)
+   Compiling bytemuck v1.25.2
+   Compiling utf8-zero v0.8.1
+   Compiling ureq v3.4.0
+   Compiling image v0.25.10
+   Compiling rpassword v7.5.4
+   Compiling argon2 v0.6.0
+   Compiling chacha20poly1305 v0.11.0
+   Compiling bcrypt v0.19.3
+   Compiling num-bigint v0.5.1
+   Compiling r2d2_postgres v0.18.2
+   Compiling ed25519-dalek v3.0.0
+   Compiling postgres-native-tls v0.5.3
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 59.91s
+     Running tests/guvenlik_kapisi_testi.rs (target/debug/deps/guvenlik_kapisi_testi-0e57701aed4c7f15)
+
+running 5 tests
+test kayit_semasi_bozuk_ve_acik_agir_bulguyu_reddeder ... ok
+test guvenlik_kapisi_betigi_ci_ve_surum_adayi_adimlarini_tasir ... ok
+test bulgu_kaydi_gecerli_ve_acik_kritik_yuksek_bulgu_yoktur ... ok
+test acik_depo_kapisi_anonim_politikayi_ve_ci_kablosunu_korur ... ok
+test rc_kaniti_exact_kaynak_ve_kosucu_sahipligi ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 8.18s
+
+     Running tests/tedarik_kapisi_testi.rs (target/debug/deps/tedarik_kapisi_testi-8ed53d6dcc9b6d06)
+
+running 11 tests
+test cargo_deny_politikasi_fail_closed_ve_istisnalari_gerekcelidir ... ok
+test forgejo_akisi_exact_pin_ve_prsiz_kaynak_siniri_tasir ... ok
+test ci_sabit_aracla_guncel_advisory_ve_offline_vendor_kapisi_kosar ... ok
+test surum_artefakti_iki_temiz_klon_sbom_provenance_ve_imza_kablosunu_tasir ... ok
+test public_github_akislari_kurum_kosucusuna_yonlenemez ... ok
+test github_actionlari_incelenmis_immutable_commitlere_sabitlidir ... ok
+test registry_lock_girdilerinin_sha256_ozeti_zorunludur ... ok
+test surum_klon_koku_sembolik_yoldan_kanoniklesir ... ok
+test forgejo_kapisi_ozel_exact_metadata_ister_public_ve_bozuk_veriyi_reddeder ... ok
+test forgejo_fetch_tam_secilen_gecmisi_alir_ozel_dal_ve_kimlik_almaz ... ok
+test vendor_kaniti_iki_uretimi_ve_bos_cargo_home_offline_derlemeyi_ister ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 7.58s
+
+{"manifest_sha256": "5e174eb9179e79e75b5127e12c1760b65d448704256ad69dbfa3abd5b343805c", "miri_groups": 2, "origin": "owned-local-reviewed-not-authenticated", "schema": "zee-rc-evidence-check-1", "source": {"clean": true, "sha": "8b49113c413f62b35d4b251ed31068524d2fe26c", "tree": "09fa6e764bb317b4aa5b32b6ca15ce02f4cf389d"}, "status": "validated-integrity-and-policy", "targets": 4}
+-- Clippy ve tam test paketi
+    Checking libc v0.2.189
+    Checking cfg-if v1.0.4
+    Checking typenum v1.20.1
+    Checking hybrid-array v0.4.14
+    Checking crypto-common v0.2.2
+    Checking block-buffer v0.12.1
+    Checking cmov v0.5.4
+    Checking ctutils v0.4.2
+    Checking zeroize v1.9.0
+    Checking rand_core v0.10.1
+    Checking getrandom v0.4.3
+    Checking const-oid v0.10.2
+    Checking bitflags v2.13.1
+    Checking digest v0.11.3
+    Checking inout v0.2.2
+    Checking bytes v1.12.1
+    Checking cipher v0.5.2
+    Checking tinyvec_macros v0.1.1
+    Checking tinyvec v1.12.0
+    Checking chacha20 v0.10.2
+    Checking cpufeatures v0.3.1
+    Checking scopeguard v1.2.0
+    Checking log v0.4.34
+    Checking byteorder v1.5.0
+    Checking smallvec v1.16.0
+    Checking pin-project-lite v0.2.17
+    Checking parking_lot_core v0.9.12
+    Checking lock_api v0.4.14
+    Checking sha2 v0.11.0
+    Checking unicode-normalization v0.1.25
+    Checking mio v1.2.3
+    Checking socket2 v0.6.5
+    Checking futures-sink v0.3.34
+    Checking memchr v2.8.3
+    Checking futures-core v0.3.34
+    Checking unicode-properties v0.1.4
+    Checking unicode-bidi v0.3.18
+    Checking stringprep v0.1.5
+    Checking tokio v1.53.1
+    Checking parking_lot v0.12.5
+    Checking rand v0.10.2
+    Checking hmac v0.13.0
+    Checking md-5 v0.11.0
+    Checking objc2-core-foundation v0.3.2
+    Checking siphasher v1.0.3
+    Checking once_cell v1.21.4
+    Checking base64 v0.22.1
+    Checking fallible-iterator v0.2.0
+    Checking core-foundation-sys v0.8.7
+    Checking postgres-protocol v0.6.12+zee.2 (/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/rc-final-8b49113c-recovery-caffeinated-20261015/campaign/checkout/compiler/third_party/postgres-protocol)
+    Checking phf_shared v0.13.1
+    Checking objc2-system-configuration v0.3.2
+    Checking errno v0.3.14
+    Checking futures-task v0.3.34
+    Checking simd-adler32 v0.3.10
+    Checking subtle v2.6.1
+    Checking percent-encoding v2.3.2
+    Checking futures-util v0.3.34
+    Checking rustix v1.1.4
+    Checking num-traits v0.2.19
+    Checking whoami v2.1.3
+    Checking phf v0.13.1
+    Checking postgres-types v0.2.14
+    Checking security-framework-sys v2.17.0
+    Checking core-foundation v0.10.1
+    Checking tokio-util v0.7.19
+    Checking futures-channel v0.3.34
+    Checking rustls-pki-types v1.15.1
+    Checking getrandom v0.2.17
+    Checking itoa v1.0.18
+    Checking fastrand v2.5.0
+    Checking adler2 v2.0.1
+    Checking untrusted v0.9.0
+    Checking ring v0.17.14
+    Checking miniz_oxide v0.8.9
+    Checking tempfile v3.27.0
+    Checking tokio-postgres v0.7.18
+    Checking security-framework v3.7.0
+    Checking crc32fast v1.5.2
+    Checking base64ct v1.8.3
+    Checking base64 v0.23.1
+    Checking phc v0.6.1
+    Checking flate2 v1.1.9
+    Checking native-tls v0.2.18
+    Checking httparse v1.10.1
+    Checking serde_core v1.0.229
+    Checking rustls-webpki v0.103.15
+    Checking http v1.5.0
+    Checking fdeflate v0.3.7
+    Checking scheduled-thread-pool v0.2.7
+    Checking universal-hash v0.6.1
+    Checking zune-core v0.5.3
+    Checking byteorder-lite v0.1.0
+    Checking pxfm v0.1.30
+    Checking quick-error v2.0.1
+    Checking signature v3.0.0
+    Checking ed25519 v3.0.0
+    Checking image-webp v0.2.4
+    Checking moxcms v0.8.1
+    Checking zune-jpeg v0.5.15
+    Checking poly1305 v0.9.1
+    Checking r2d2 v0.8.10
+    Checking png v0.18.1
+    Checking ureq-proto v0.6.1
+    Checking rustls v0.23.46
+    Checking tokio-native-tls v0.3.1
+    Checking curve25519-dalek v5.0.0
+    Checking password-hash v0.6.1
+    Checking zmij v1.0.23
+    Checking postgres v0.19.14
+    Checking webpki-roots v1.0.9
+    Checking num-integer v0.1.47
+    Checking blowfish v0.10.0
+    Checking aead v0.6.1
+    Checking blake2 v0.11.0
+    Checking rtoolbox v0.0.6
+    Checking utf8-zero v0.8.1
+   Compiling dil v0.8.0-dev (/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/rc-final-8b49113c-recovery-caffeinated-20261015/campaign/checkout/compiler)
+    Checking bytemuck v1.25.2
+    Checking image v0.25.10
+    Checking ureq v3.4.0
+    Checking rpassword v7.5.4
+    Checking argon2 v0.6.0
+    Checking chacha20poly1305 v0.11.0
+    Checking bcrypt v0.19.3
+    Checking serde v1.0.229
+    Checking num-bigint v0.5.1
+    Checking r2d2_postgres v0.18.2
+    Checking serde_json v1.0.151
+    Checking ed25519-dalek v3.0.0
+    Checking postgres-native-tls v0.5.3
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 30.85s
+   Compiling dil v0.8.0-dev (/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/rc-final-8b49113c-recovery-caffeinated-20261015/campaign/checkout/compiler)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 37.19s
+     Running unittests src/lib.rs (target/debug/deps/dil-33b3c5bad940d43f)
+
+running 132 tests
+test artefakt_dogrulama::testler::bozuk_arsiv_yolu_ve_fazladan_byte_reddedilir ... ok
+test artefakt_dogrulama::testler::sha_kimligi_ve_utc_zamani_kararlidir ... ok
+test eposta::mime::tests::baslik_kimlik_ve_ek_adinda_injection_reddedilir ... ok
+test eposta::mime::tests::ek_adet_tek_ve_toplam_boyut_ile_metin_sinirlidir ... ok
+test eposta::mime::tests::ek_loader_kok_disina_cikis_ve_symlink_icin_host_reddini_asamaz ... ok
+test artefakt_dogrulama::testler::kalici_saldiri_korpusu_butun_unicode_yol_saldirilarini_reddeder ... ok
+test artefakt_dogrulama::testler::dosya_sistemi_yolu_nfcye_kanoniklenir_arsiv_nfd_yolu_reddeder ... ok
+test eposta::mime::tests::bos_mime_secenegi_plaintext_iletiyi_bayt_bayt_korur ... ok
+test eposta::mime::tests::smtp_dotstuffing_durumunda_terminator_enjekte_edilemez ... ok
+test artefakt_dogrulama::testler::arsiv_sayi_yol_ve_tekillik_sinirlarini_ayirmadan_denetler ... ok
+test eposta::mime::tests::mime_metin_satirlari_crlfdir_legacy_plain_baytlari_degismez ... ok
+test eposta::mime::tests::alternative_mixed_reply_to_ve_unicode_dosya_adi_kodlanir ... ok
+test eposta::mime::tests::uzun_unicode_basliklar_75_sozcuk_ve_998_smtp_satir_sinirinda_katlanir ... ok
+test ag_istemcisi::istek::tests::baslik_degerleri_debugde_sensitivedir ... ok
+test eposta::tests::baglanti_urlsi_cozulur ... ok
+test eposta::tests::smtp_gecersiz_butce_dns_ve_agdan_once_reddedilir ... ok
+test eposta::tests::ileti_rfc2047_ve_base64 ... ok
+test ag_istemcisi::testler::yanit_govdesi_bellek_sinirini_asamaz ... ok
+test eposta::mime::tests::smtp_sunucu_echo_hatasi_credential_ve_govdeyi_sizdirmaz ... ok
+test eposta::mime::tests::ek_loader_yetkisiz_ve_buyuk_boyutu_reddeder_izin_mtime_yazmaz ... ok
+test eposta::mime::tests::gercek_loopback_smtp_mime_ve_binary_eki_tek_data_ile_gonderir ... ok
+test ag_istemcisi::istek::tests::https_yontem_sure_baslik_tekrar_framing_ve_boyut_kapilari ... ok
+test ag_istemcisi::testler::yerel_hedef_acik_izin_ister_ve_redirect_izlenmez ... ok
+test guvenlik::gizli::testler::base64_dongusu ... ok
+test guvenlik::gizli::testler::sifrele_coz_dongusu_ve_bozulma ... ok
+test eposta::tests::smtp_yanit_tek_bayt_sel_timeout_ve_bos_eof_buyumeden_durur ... ok
+test eposta::tests::smtp_yanit_parcali_utf8_ve_tasma_kesigini_dogru_tanilar ... ok
+test eposta::tests::smtp_yanit_tam_sinir_lf_ve_eof_baytlarini_aynen_korur ... ok
+test eposta::tests::smtp_yanit_cok_satir_toplamini_ve_ardisik_yanitlari_korur ... ok
+test guvenlik::tests::guvenli_belirtecler_256_bit_ve_farklidir ... ok
+test guvenlik::tests::sabit_zamanli_karsilastirma_uzunlugu_da_denetler ... ok
+test guvenlik::tests::sha256_bilinen_vektor ... ok
+test guvenlik::totp::totp_tests::base32_gidis_donus ... ok
+test guvenlik::totp::totp_tests::sha1_ve_hmac_bilinen_vektorler ... ok
+test guvenlik::legacy_bcrypt::tests::bcrypt_72_bayt_utf8_siniri_kirpma_yapmaz ... ok
+test guvenlik::totp::totp_tests::totp_rfc6238_sha1_vektorleri ... ok
+test hir::testler::bagli_runtime_degisken_icin_kaynak_adini_yeniden_cozmez ... ok
+test hir::testler::bagli_runtime_islem_ve_yapi_kaynak_adini_yeniden_cozmez ... ok
+test hir::testler::invariant_dogrulayici_cozulmus_ad_ve_symbol_id_bagini_korur ... ok
+test hir::testler::invariant_dogrulayici_yapi_ve_islem_kimliklerini_korur ... ok
+test eposta::tests::smtp_yanit_lfsiz_mebibayt_ve_bitmeyen_akista_sinirda_durur ... ok
+
+running 1 test
+test kalici_dosya::tests::degisim_hatasi_eski_veriyi_korur_ve_geciciyi_siler ... ok
+test kalici_dosya::tests::aniden_biten_surecin_kilidi_isletim_sistemi_birakir ... ok
+test cozumleyici::sembol::testler::sira_checkpoint_nested_kapsam_ve_atamalari_korur ... ok
+test kalici_dosya::tests::geri_alma_araya_giren_yazari_ezmez ... ok
+test gorsel::tests::png_kucultulur_ve_jpeg_yazilir ... ok
+test kalici_dosya::tests::karsilastir_ve_yaz_bayat_registry_durumunu_ezmez ... ok
+test kalici_dosya::tests::replace_genisletilmis_ozniteligi_korur ... ok
+test eposta::mime::tests::yavas_karsilama_ve_tls_el_sikismasi_tek_son_tarihte_kesilir ... ok
+test kalici_dosya::tests::replace_macos_acl_kuralini_korur ... ok
+test eposta::tests::smtp_yavas_yanit_mutlak_butceyi_yenileyemez ... ok
+test kalici_dosya::tests::sembolik_bag_hedefi_sessizce_normal_dosyaya_donusmez ... ok
+test kalici_dosya::tests::replace_mod_sahip_ve_grubu_korur ... ok
+test kaynak_sinirlari::testler::buyuk_bellek_kaynagi_s045_ile_reddedilir ... ok
+test kaynak_sinirlari::testler::varsayilan_profil_kritik_limitleri_sifira_birakmaz ... ok
+test lsp::cikti::testler::ham_parca_tahsis_edilmeden_once_reddedilir ... ok
+test lsp::cikti::testler::json_kacisi_genislerken_butceyi_gecemez ... ok
+test lsp::kaynak_siniri_testleri::acik_belge_sayisi_sinirli_ve_reddedilen_belge_saklanmaz ... ok
+test lsp::kaynak_siniri_testleri::uretim_sirasinda_tasan_lsp_yaniti_json_rpc_hatasina_donusur ... ok
+test lsp::uri_testleri::uri_eksik_hex_ve_gecersiz_utf8_kacisini_reddeder ... ok
+test lsp::uri_testleri::uri_yuzde_kacislari_utf8_baytlari_olarak_cozulur ... ok
+test ondalik::testler::keyfi_katsayi_tam_islemleri_korur ... ok
+test ondalik::testler::sonlu_ve_sonsuz_bolum_ayrilir ... ok
+test paket::uzak::politika::testler::kritik_kabul_anahtari_duyuru_kumesine_baglidir ... ok
+test postgresql::havuz::testler::havuz_hata_ayrintisi_neden_ve_karakter_butcesini_asmaz ... ok
+test kalici_dosya::yasam_dongusu::tests::atomik_silme_bulunmayan_hedefte_idempotenttir ... ok
+test postgresql::havuz::testler::izole_pg_pool_metrikleri_wait_timeout_ve_donus_gercek_sinirlar ... ignored, scripts/tests/native-metrics-test.py owns actual loopback PostgreSQL TLS fixture
+test postgresql::havuz::testler::saha_profili_gercek_tls_exhaustion_ve_stale_recoveryyi_olcer ... ok
+test postgresql::havuz::testler::son_kira_birakilinca_kontrollu_kapanis_baglantiyi_kapatir ... ok
+test postgresql::havuz::testler::tls_profili_plaintext_uzak_hedefi_preferi_ve_koksuz_requirei_reddeder ... ok
+test postgresql::sonuc::testler::hata_sonrasi_kopyalama_durur_ve_satir_siniri_onceliklidir ... ok
+test postgresql::sonuc::testler::izole_saha_eski_vec_ile_stream_hatalari_ve_transaction_sagligi_aynidir ... ok
+test postgresql::sonuc::testler::sinira_kadar_satir_ve_sutun_sirasi_korunur ... ok
+test postgresql::testler::baglanti_tam_bildirim_hedefi_ve_guvensiz_profilde_kilitlidir ... ok
+test postgresql::testler::goc_plani_degismis_ad_ozet_ve_kayip_dosyayi_reddeder ... ok
+test postgresql::testler::goc_plani_uygulanmis_ve_bekleyeni_ayni_sirali_kaynaktan_ayirir ... ok
+test postgresql::testler::izole_wire_siniri_retry_transaction_rls_ve_commit_sinirini_korur ... ok
+test postgresql::testler::migration_islev_govdesini_transaction_komutu_sanmaz ... ok
+test postgresql::testler::migration_kendi_transaction_sinirini_tasiyamaz ... ok
+test postgresql::testler::yalniz_transaction_disindaki_okuma_bir_kez_yeniden_baglanabilir ... ok
+test postgresql::havuz::testler::havuz_siniri_exhaustion_recovery_ve_stale_atimini_korur ... ok
+test kalici_dosya::tests::yaz_ve_ekle_semantigi_korunur ... ok
+test kalici_dosya::yasam_dongusu::tests::hazirlanmis_dosya_atomik_yayinlanir_ve_hedef_ezilmez ... ok
+test registry::istemci::testler::gercek_tasiyici_yalniz_https_origin_ve_guvenli_statik_yol_kabul_eder ... ok
+test registry::istemci::testler::cevrimici_zincir_dogrulanmadan_cache_ve_durum_yayimlanmaz ... ok
+test guvenlik::tests::argon2id_ozeti_dogru_parolayi_ayirir ... ok
+test registry::testler::expiry_mix_and_match_ve_kanonik_olmayan_metadata_reddedilir ... ok
+test registry::testler::metadata_boyut_limiti_ayirmadan_reddedilir ... ok
+test registry::testler::rfc3339_utc_takvim_sinirlarini_dogrular ... ok
+test registry::testler::rollback_ve_gecersiz_zincir_fast_forward_durumunu_zehirlemez ... ok
+test registry::istemci::testler::rollback_kalici_durumu_ve_offline_miss_sessizce_gecemez ... ok
+test registry::testler::root_sabitleme_esik_ve_cift_esikli_ardisik_rotasyon_ister ... ok
+test registry::testler::yanked_ve_kritik_duyuru_acik_politika_ister ... ok
+test registry::testler::yanlis_yayinci_targets_yetkisini_gecemez ... ok
+test registry::testler::tam_rol_zinciri_dogrulanir_ve_durum_acikca_uygulanir ... ok
+test web_guvenligi::oran_bellek::tests::ayarli_clone_yarisi_kotayi_deldirmez ... ok
+test registry::istemci::testler::dogrulanmis_cache_offline_acilir_ve_bozuk_nesne_fail_closed_kalir ... ok
+test web_guvenligi::oran_bellek::tests::en_eski_pencere_tahliye_edilir_erisim_omru_uzatmaz ... ok
+test web_guvenligi::oran_bellek::tests::oran_ayari_sifir_tasma_ve_sinirsiz_kapasiteyi_reddeder ... ok
+test web_guvenligi::tests::anonim_kota_en_uzun_suredir_kullanilmayani_tahliye_eder ... ok
+test web_guvenligi::tests::baslik_degerleri_enjeksiyona_kapali ... ok
+test web_guvenligi::oran_bellek::tests::anahtar_churn_giris_ve_csrf_kotasini_sifirlayamaz ... ok
+test web_guvenligi::tests::bozuk_kalici_depo_fail_closed_kalir ... ok
+test web_guvenligi::tests::csrf_anonim_oturuma_baglanir_ve_sahte_deger_reddedilir ... ok
+test web_guvenligi::tests::erisim_mutlak_oturum_omrunu_uzatmaz ... ok
+test web_guvenligi::tests::giris_kimligi_dondurur_rolu_ayirir_ve_cikis_iptal_eder ... ok
+test kalici_dosya::tests::okuyucu_yalniz_eski_ya_da_yeni_butunu_gorur ... ok
+test registry::istemci::testler::tasinan_cift_esikli_root_kalici_duruma_ve_offline_dogrulamaya_gecer ... ok
+test web_guvenligi::oran_bellek::tests::bellek_oran_kapasitesi_canli_kotayi_dusurmez_ve_sonlar_sinirli_kalir ... ok
+test web_guvenligi::tests::kalici_depo_sembolik_bagi_reddeder ... ok
+test web_guvenligi::tests::kullanici_oturumlarini_sirsiz_listeler_ve_ozet_kimlikle_iptal_eder ... ok
+test web_guvenligi::tests::toplam_kota_doluyken_anonim_once_tahliye_edilir ... ok
+test web_guvenligi::tests::ucnokta_csrf_ve_giris_pencereleri_ayri_ve_sureli_kalir ... ok
+test web_guvenligi::tests::yalniz_kimlikli_kayitlarla_dolu_depo_yeni_girisi_reddeder ... ok
+test yetkinlik::testler::ag_adresi_kullanici_parca_ters_bolu_ve_gecersiz_portu_reddeder ... ok
+test yetkinlik::testler::ag_hedefi_origini_kanonikler_ve_yolu_ayirir ... ok
+test yetkinlik::testler::dns_sonrasi_private_ve_metadata_fail_closed_kalir ... ok
+test yetkinlik::testler::proje_ag_izni_tam_originle_eslesir ... ok
+test zaman::testler::epoch_ve_artık_gun_cift_yonlu_aynidir ... ok
+test web_guvenligi::tests::bellek_oran_clone_atomik_yeniden_baslatma_ayri_ve_dosyaya_yazmaz ... ok
+test eposta::mime::tests::starttls_yeniden_ehlo_ve_auth_oncesinde_gercek_tls_kullanir ... ok
+test eposta::mime::tests::trusted_localhost_tls_gercek_mime_data_yolunu_tasir_untrusted_reddedilir ... ok
+test web_guvenligi::tests::kalici_oturum_commiti_yanit_hatasinda_kosullu_geri_alinir ... ok
+test ag_istemcisi::istek::tests::tls_post_baslik_govde_json_ve_non2xx_durum_kayipsizdir ... ok
+test web_guvenligi::tests::kalici_depo_iki_worker_login_logout_restart_ve_expiry_paylasir ... ok
+test registry::istemci::testler::exact_registry_paketi_proje_grafigi_kilit_ve_offline_derlemeye_baglanir ... ok
+test ag_istemcisi::istek::tests::tls_dogrulamasi_kapatilmaz_ve_yanit_timeout_sirri_gostermez ... ok
+test web_guvenligi::tests::kalici_rate_limit_paralel_artisla_esigi_deldirmez ... ok
+test kalici_dosya::tests::iki_yazar_satir_kaybetmez ... ok
+test guvenlik::legacy_bcrypt::tests::bcrypt_node_legacy_surumleri_yalniz_dogru_parolayi_dogrular ... ok
+test kalici_dosya::tests::kilidi_ardisik_yeniden_alan_yazar_bekleyeni_ac_birakmaz ... ok
+test guvenlik::legacy_bcrypt::tests::bcrypt_maliyet_ve_bozuk_bicim_is_yapmadan_reddedilir ... ok
+
+test result: ok. 131 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 2.78s
+
+     Running unittests src/bin/depo_sayilari.rs (target/debug/deps/depo_sayilari-5f36fb2ea8ae457c)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/debug/deps/dil-871ce27d760a03f1)
+
+running 36 tests
+test web_kapanis::tests::poll_gecersiz_descriptor_ve_negatif_fd_reddedilir ... ok
+test web_kapanis::tests::disposition_sahipligi_ve_onceki_handler_tam_geri_yuklenir ... ok
+test dil_registry::testler::paketler_yenile_ve_cevrimdisi_birlikte_reddedilir ... ok
+test web_metrikleri::tests::partial_zero_closed_and_interrupted_writes_have_fixed_decisions ... ok
+test web_metrikleri::tests::wrong_descriptor_type_mode_and_blocking_pipe_rejected ... ok
+test web_profili_testleri::base64_kodlama_rfc_4648_ve_padding_kurallarina_uyar ... ok
+test web_metrikleri::tests::finite_maximum_snapshot_fits_posix_minimum_pipe_buf ... ok
+test web_metrikleri::tests::pool_replacements_keep_cumulative_totals_and_current_boundary_gauges ... ok
+test dil_ayar::tests::yol_bayt_ve_bilesen_sinirlari_dosya_acmadan_ret_edilir ... ok
+test web_metrikleri::tests::closed_real_reader_disables_metrics_without_sigpipe ... ok
+test web_metrikleri::tests::full_real_pipe_drops_without_request_blocking ... ok
+test web_profili_testleri::guvenilir_proxy_yalniz_loopback_bind_ve_es_kabul_eder ... ok
+test web_metrikleri::tests::cli_metric_descriptor_preserves_application_arguments ... ok
+test dil_registry::testler::uzak_ekle_secenekleri_exact_pin_ve_gerekceleri_ayirir ... ok
+test web_profili_testleri::bellek_oran_cli_yalniz_explicit_proxy_ile_ve_tek_degerle_acilir ... ok
+test dil_ayar::tests::mevcut_bayraklara_esleme_ve_sinir_degerleri_exact ... ok
+test web_profili_testleri::https_profili_hsts_ve_tarayici_korkuluklarini_tasir ... ok
+test web_metrikleri::tests::observer_is_metadata_only_and_saturates ... ok
+test dil_ayar::tests::guvenlik_tek_exact_allowlist_ve_kapali_varsayilan ... ok
+test web_profili_testleri::bellek_oran_ayarlari_sinirli_tekil_ve_proxyye_ozgudur ... ok
+test dil_ayar::tests::bilinen_guvenlik_alaninda_null_ve_yanlis_tur_ret_edilir ... ok
+test web_profili_testleri::guvenli_origin_ortak_ag_hedefiyle_kanoniklenir ... ok
+test dil_ayar::tests::cli_onceligi_gercek_loader_ve_web_parser_son_degerlerini_korur ... ok
+test web_profili_testleri::html_scriptleri_icerige_bagli_csp_ozetiyle_calisir ... ok
+test web_profili_testleri::web_modu_bayragi_tekrarlanamaz_ve_origin_argumandan_ayiklanir ... ok
+test web_profili_testleri::soket_okumasi_mutlak_son_tarihi_gecemez ... ok
+test web_profili_testleri::proxy_host_proto_ve_unsafe_origini_birlikte_dogrular ... ok
+test web_profili_testleri::proxy_profili_host_cerezini_tam_niteliklerle_ve_domainsiz_yazar ... ok
+test web_profili_testleri::worker_yanit_basligi_cli_ile_ayni_build_jsonunu_tasir ... ok
+test web_profili_testleri::http_istemcisi_acik_yerel_ag_izniyle_varsayilan_sureyi_kullanir ... ok
+test web_profili_testleri::binary_yukleme_x_zee_csrf_basligini_tasir_ve_cift_content_type_400_olur ... ok
+test web_yukleme::tests::utf8_olmayan_parcalari_akista_ozetler ... ok
+test web_profili_testleri::gercek_web_yaniti_commit_oncesi_yayimlanmaz_rollback_oturumu_siler ... ok
+test web_profili_testleri::web_yaniti_yazilamazsa_oturum_commit_edilmez ... ok
+test web_profili_testleri::inherited_accept_basarisindan_sonra_term_akis_tamamlanir ... ok
+test web_kapanis::tests::poll_hazir_dinleyici_ve_idle_timeout_siniri ... ok
+
+test result: ok. 36 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running unittests src/bin/dillsp.rs (target/debug/deps/dillsp-47caa1338a73c421)
+
+running 4 tests
+test testler::kucuk_content_length_cercevesini_okur ... ok
+test testler::eksik_tekrarli_ve_gecersiz_content_length_reddedilir ... ok
+test testler::baslik_ve_govde_sinirini_tahsis_oncesi_uygular ... ok
+test testler::utf8_disini_cerceveler_ve_sonraki_mesaja_devam_eder ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/bin/faz_test_matrisi.rs (target/debug/deps/faz_test_matrisi-a6f6cd606fcf3dcc)
+
+running 7 tests
+test testler::iliski_listesi_markdown_hucresinde_kodlanir ... ok
+test testler::libtest_ozeti_gecen_kalan_ve_atlanani_ayirir ... ok
+test testler::secici_turleri_kesin_ayristirilir ... ok
+test testler::yinelenen_faz_ve_secici_reddedilir ... ok
+test testler::her_test_tam_bir_faz_sahibi_ister ... ok
+test testler::zorunlu_fazlardan_biri_sessizce_dusurulemez ... ok
+test testler::ek_kapsam_sahipli_secici_ve_bilinen_faz_ister ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/bin/islev_egilimi.rs (target/debug/deps/islev_egilimi-fe2383c6d82b85e7)
+
+running 5 tests
+test testler::artis_payi_oransal_ama_alt_ve_ust_sinirlidir ... ok
+test testler::yeni_ve_kayip_kritik_islev_inceleme_ister ... ok
+test testler::esik_icindeki_artis_ile_asim_ayrilir ... ok
+test testler::closure_ve_arac_binarysi_uretim_olcumune_girmez ... ok
+test testler::clippy_olcumleri_yol_ve_ayni_ad_sirasiyla_kimliklenir ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/bin/olcum.rs (target/debug/deps/olcum-c5844823af305420)
+
+running 8 tests
+test testler::gecmis_satiri_metadata_satir_sizmasini_reddeder ... ok
+test testler::lsp_olcek_raporu_esikleri_p95_uzerinden_bulur ... ok
+test testler::yuzdelikler_nearest_rank_ile_kararlidir ... ok
+test testler::rapor_p50_p95_ve_shared_ci_politikasini_aciklar ... ok
+test testler::shared_ci_esiksizdir_adanmis_kosu_acikca_ihlal_uretir ... ok
+test testler::gecmis_son_ayni_platform_kaydini_secer ... ok
+test testler::gecmis_semasi_yinelenen_ve_tutarsiz_satiri_reddeder ... ok
+test testler::izlenen_k148_k153_ve_k154_gecmisi_exact_kaynaklari_tasir ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/bin/soak.rs (target/debug/deps/soak-7658b33605136a64)
+
+running 4 tests
+test testler::buyume_yuzdesi_ve_medyan_kararlidir ... ok
+test testler::sabit_rss_gecer_isinma_penceresi_atilir ... ok
+test testler::yuzde_ve_mutlak_tavani_birlikte_asan_buyume_kalir ... ok
+test testler::tarihce_satiri_semayi_ve_provenance_alanlarini_tasir ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/bin/spec_drift.rs (target/debug/deps/spec_drift-02b5ad725a6c0090)
+
+running 3 tests
+test testler::harita_semasi_durum_ve_secici_kurallarini_fail_closed_uygular ... ok
+test testler::maddeler_baslik_paragraf_ve_liste_ogesinden_cikar_kod_ve_tabloyu_atlar ... ok
+test testler::drift_kayitsiz_bayat_ozet_acik_ve_kayip_isleve_karsi_fail_closed ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/bin/surum_artefakti.rs (target/debug/deps/surum_artefakti-984722453da58ca6)
+
+running 9 tests
+test testler::rfc3339_utc_donusumu_bilinen_anlari_verir ... ok
+test testler::kilit_paketleri_sirali_ve_kok_dahil_okunur ... ok
+test testler::yama_agaci_symlink_icerigini_hashlemeden_reddeder ... ok
+test testler::ozet_metni_adlari_siralar_ve_yol_ayracini_reddeder ... ok
+test testler::sbom_ve_provenance_ayni_girdide_byte_byte_ayni_ve_ozetleri_tasir ... ok
+test testler::yama_agaci_konumdan_bagimsiz_ve_bayt_degisimine_duyarlidir ... ok
+test testler::sbom_kayitsiz_kaynagi_bozuk_checksum_ve_yanlis_koku_reddeder ... ok
+test testler::imza_gidis_donus_ve_oynama_reddi ... ok
+test testler::yerel_yama_sbomda_exact_repo_kaynagi_ve_hash_tasir ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.20s
+
+     Running unittests src/bin/tani_kalitesi.rs (target/debug/deps/tani_kalitesi-d689d8e2bcc23311)
+
+running 3 tests
+test testler::siniflar_frekansa_gore_siralanir_ve_esikler_ihlali_adlandirir ... ok
+test testler::istisna_dosyasi_fail_closed_cozulur ... ok
+test testler::mutasyonlar_deterministik_ve_beklenen_satiri_tasir ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/acik_imza_testi.rs (target/debug/deps/acik_imza_testi-3c247e86894a1be9)
+
+running 13 tests
+test bildirilen_ve_gercek_donus_turu_uyusmalidir ... ok
+test bilinmeyen_donus_turu_t040tir ... ok
+test deger_dondurmeyen_sozlesme_deger_donduremez ... ok
+test acik_ve_cikarimli_parametre_karistirilamaz ... ok
+test bilinmeyen_acik_tur_reddedilir ... ok
+test acik_donus_cikarimli_parametreyle_karistirilamaz ... ok
+test acik_deger_donusu_butun_yollari_kapatir ... ok
+test acik_imzali_islem_cagrilmasa_da_govdesi_denetlenir ... ok
+test acik_imzaya_uymayan_cagri_t017dir ... ok
+test acik_donus_turu_govdeyle_uyusur ... ok
+test yapi_turu_acik_parametre_olabilir ... ok
+test acik_ondalik_listesi_runtime_degerlerini_de_genisletir ... ok
+test acik_ondalik_imza_cagri_sirasindan_bagimsizdir ... ok
+
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/ad_cozumleme_uyumlulugu_testi.rs (target/debug/deps/ad_cozumleme_uyumlulugu_testi-be2070556e31714e)
+
+running 1 test
+test karar_tani_span_ve_oneri_onceki_algoritmayla_ayni_kalir ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.29s
+
+     Running tests/ag_ve_esz_testi.rs (target/debug/deps/ag_ve_esz_testi-e24ffd0bf906e070)
+
+running 22 tests
+test coklu_tani_gecisi_gecerli_gorev_grubunu_tek_kapsam_sayar ... ok
+test bekle_oncesi_erisim_derleme_hatasi ... ok
+test golden_27_zaman_asimi ... ok
+test golden_29_esp32_simulatoru ... ok
+test dis_son_tarih_gorev_agacini_birlikte_iptal_eder ... ok
+test golden_24_http_istemcisi ... ok
+test gorev_grubu_ayni_sozcuksel_kapsamda_join_edilmelidir ... ok
+test eylem_gorevde_atomik_dilimdir_ve_hatasinda_geri_alinir ... ok
+test gorev_httpden_once_sira_verince_son_tarihi_eski_sureyle_kullanmaz ... ok
+test gorev_hatasi_bekleyen_kardesi_iptal_eder ... ok
+test golden_25_web_sunucusu ... ok
+test http_baglanti_hatasi_turkce ... ok
+test gorevde_programi_bitir_koku_koduyla_iptal_eder ... ok
+test zaman_asimi_beklemeyi_keser_ve_sonraki_yan_etkiyi_engeller ... ok
+test son_tarih_dosya_yazma_etkisinin_hemen_onunde_yeniden_denetlenir ... ok
+test golden_26_paralel_gorevler ... ok
+test golden_32_ondalik_market ... ok
+test ic_ve_dis_son_tarihlerin_sahibi_karistirilmaz ... ok
+test golden_31_birimler ... ok
+test scheduler_bekleme_noktalarinda_kaynak_sirasiyla_ilerler ... ok
+test join_gorevleri_baslatir_ve_esit_uyanis_kaynak_sirasidir ... ok
+test ic_gorev_agacinin_beklemesi_dis_kardese_yol_verir ... ok
+
+test result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/bagimlilik_cevrimi_testi.rs (target/debug/deps/bagimlilik_cevrimi_testi-b4ca69cd7374643e)
+
+running 3 tests
+test scc_hesabi_yeni_cevrimi_ve_oz_cevrimi_yakalar ... ok
+test production_graphinda_aciklamasiz_ve_suresiz_cevrim_yoktur ... ok
+test k160_saf_model_dogrulama_tasima_ve_cozum_sahipligini_korur ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/baslangic_sablonlari_testi.rs (target/debug/deps/baslangic_sablonlari_testi-a6321962f7af039e)
+
+running 1 test
+test site_ve_panel_sablonlari_gercek_cli_http_ile_korunur ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.33s
+
+     Running tests/bicimleyici_testi.rs (target/debug/deps/bicimleyici_testi-dd503856847ada05)
+
+running 8 tests
+test girinti_dort_bosluga_cekilir ... ok
+test dagitik_bosluklar_toparlanir ... ok
+test parser_izi_satir_sinirini_semantik_sayar ... ok
+test bicim_tokenlara_dokunmaz ... ok
+test yorumlar_korunur_ve_hizalanir ... ok
+test golden_korpus_idempotent ... ok
+test golden_korpus_parse_esdegerligini_korur ... ok
+test projeler_ve_kitaplik_bicimli ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/birim_testi.rs (target/debug/deps/birim_testi-ef1814d867d844ea)
+
+running 25 tests
+test dongusel_kullanim_reddedilir ... ok
+test bulunamayan_birim ... ok
+test birim_ayristirma_tanisi_birim_kokenini_ve_satirini_tasir ... ok
+test disari_acik_islem_tam_sozlesme_ister ... ok
+test ad_cakismasi_sessiz_golgelenmez ... ok
+test farkli_kokenli_ayni_ad_elmas_sayilmaz_a008_kalir ... ok
+test birimin_ust_duzey_cumleleri_calismaz ... ok
+test birim_testinin_tanisi_birim_kokenini_tasir ... ok
+test birimin_aldigi_islem_ortuk_yeniden_acilmaz ... ok
+test elmas_ice_alimda_birim_testleri_bir_kez_alinir ... ok
+test birim_zinciri ... ok
+test birimden_islem_kullanma ... ok
+test birimden_yapi_kullanma ... ok
+test birim_govdesindeki_tur_tanisi_birim_kokenini_tasir ... ok
+test elmas_ice_alim_ayni_kokenli_tanimi_cakisma_saymaz ... ok
+test birim_testleri_dene_kapsaminda ... ok
+test birim_govdesindeki_calisma_tanisi_birim_kokenini_tasir ... ok
+test kokenli_tani_raporu_ana_kaynaktan_alinti_yapmaz_birim_metniyle_yapar ... ok
+test kullan_islem_icinde_yasak ... ok
+test farkli_rota_birimlerinin_ayni_satiri_ayri_hir_kapsamidir ... ok
+test parametresiz_public_islem_donus_bildirimi_yoksa_t039dur ... ok
+test rota_birimi_rotalari_kullan_satirinin_yerine_sirayla_katilir ... ok
+test elmas_ice_alimda_gorunurluk_sira_bagimsizdir_ve_denetim_yolu_rotalari_katar ... ok
+test elmas_ice_alim_aracinin_gizli_kopyasi_dogrudan_tanimi_dusurmez ... ok
+test public_kapsayici_ve_ozyineleme_cagri_sirasindan_bagimsizdir ... ok
+
+test result: ok. 25 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/build_kimligi_testi.rs (target/debug/deps/build_kimligi_testi-6ee35dee8da4f9f2)
+
+running 1 test
+test cli_json_lsp_ve_sbom_ayni_kaynak_kimligini_tasir ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.51s
+
+     Running tests/cagri_cikarimi_testi.rs (target/debug/deps/cagri_cikarimi_testi-ccf691be234969cd)
+
+running 7 tests
+test birlesmeyen_cagri_turleri_iki_sirada_da_t017dir ... ok
+test butun_cagri_kisitlari_ilk_sonuc_turlenmeden_once_birlestirilir ... ok
+test cikarimli_cagrida_eksik_ve_fazla_arguman_t015tir ... ok
+test ic_bloktaki_sonraki_kisit_onceki_dar_sonuc_hatasina_takilmaz ... ok
+test liste_kapsayicisi_da_cagri_sirasindan_bagimsiz_genisler ... ok
+test her_parametre_kendi_kisit_kumesini_siradan_bagimsiz_birlestirir ... ok
+test nihai_tur_ic_ice_cagri_grafigine_de_sira_bagimsiz_yayilir ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/cli_ayar_testi.rs (target/debug/deps/cli_ayar_testi-b03d39eceaf2e3a4)
+
+running 12 tests
+test simulated_schema1_consumer_gelecek_olagan_alani_varsayilanla_atlar ... ok
+test capability_probe_build_jsonu_degistirmez_ve_selector_once_destek_ister ... ok
+test program_argumanlari_ayar_yolu_sayilmaz_ve_ust_yol_ret_edilir ... ok
+test yalniz_acik_proje_koku_okunur_ust_dizin_ve_standalone_aranmaz ... ok
+test cocuk_modu_ve_birlesim_cakismasi_korunur ... ok
+test ayarsiz_ve_kapali_varsayilan_gercek_cli_ayni_ciktilidir ... ok
+test sinirli_boyut_ve_derinlik_guvenle_reddedilir ... ok
+test bilinmeyen_guvenlik_ve_ust_zarf_alanlari_deger_yazmadan_reddedilir ... ok
+test ayar_ve_proje_yolu_sembolik_baglari_ve_normal_olmayan_dosya_ret_edilir ... ok
+test mevcut_web_ayar_eslemesi_ve_cli_alana_gore_onceligi ... ok
+test guvenlik_tur_aralik_ve_ic_bagimlilikler_cli_override_ile_asillamaz ... ok
+test bos_invalid_future_ve_cift_anahtar_json_fail_closed ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s
+
+     Running tests/cli_bicim_denetle_testi.rs (target/debug/deps/cli_bicim_denetle_testi-f942cc73beabbf51)
+
+running 8 tests
+test bicim_farki_salt_okunur_dosyada_bir_ve_ayni_icerik_izin_mtime_verir ... ok
+test butun_proje_farklari_sirali_raporlanir_hicbir_kaynak_yazilmaz ... ok
+test kanonik_proje_sifir_donerek_butun_dosyalari_korur ... ok
+test proje_denetimi_symlink_gizli_ve_hedef_dizinlerini_izlemez ... ok
+test kanonik_dosya_iki_bayrak_konumunda_yazmadan_basarilidir ... ok
+test dosya_ve_proje_parse_hatasi_onceki_bicim_farkini_da_yazmaz ... ok
+test normal_bicimle_yazma_davranisini_korur ... ok
+test json_bilinmeyen_kalir_yol_eksikligi_ve_fazla_yol_yazmadan_iki_verir ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/cli_goc_plani_testi.rs (target/debug/deps/cli_goc_plani_testi-9805b2411febd446)
+
+running 2 tests
+test goc_plan_kipleri_birlikte_tekrarla_ve_fazla_yolla_reddedilir ... ok
+test goc_plan_secimi_yol_olmayan_secenek_gibi_islenir ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+     Running tests/cli_secenek_testi.rs (target/debug/deps/cli_secenek_testi-b9042b1fd9e57ae7)
+
+running 5 tests
+test mevcut_json_secimi_gecerli_kalmali ... ok
+test kaynak_yolundan_sonraki_program_bayragi_korunur ... ok
+test kaynak_sonrasi_oran_argumanlari_ve_eski_global_proxy_secimi_korunur ... ok
+test web_oran_degerleri_kaynak_oncesinde_program_argumani_olmaz ... ok
+test bilinmeyen_secenek_dosya_hatasi_olmayan_acik_ret_verir ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/core_freeze_korugu_testi.rs (target/debug/deps/core_freeze_korugu_testi-d437ea90210bd289)
+
+running 2 tests
+test koruk_betigi_sinif_dallarini_ve_dogfood_kaydini_kabloluyor ... ok
+test feature_gercek_dogfood_kaniti_olmadan_freeze_kapisini_gecemez ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.10s
+
+     Running tests/credential_baslat_testi.rs (target/debug/deps/credential_baslat_testi-fa10a932238c3a36)
+
+running 1 test
+test credential_host_kampanyasi_native_izin_ve_smtp_dahil_atlanamaz ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.58s
+
+     Running tests/credential_listener_kopru_testi.rs (target/debug/deps/credential_listener_kopru_testi-1ed54cd93f3b9b4f)
+
+running 2 tests
+test credential_listener_bes_gercek_native_crypto_ve_nesil_kampanyasi ... ok
+test credential_listener_bes_capability_ve_presecret_siniri ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.47s
+
+     Running tests/credential_metrik_kopru_testi.rs (target/debug/deps/credential_metrik_kopru_testi-3b55f457fdb718a4)
+
+running 2 tests
+test credential_metrik_kopru_yedi_owned_fd_siniri ... ok
+test credential_metrik_native_worker_hup_ve_grup_temizligi ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 8.76s
+
+     Running tests/daraltma_testi.rs (target/debug/deps/daraltma_testi-78b9cad506d09326)
+
+running 6 tests
+test sonuc_hatasi_ancak_basarisizsa_dalinda ... ok
+test korumasiz_erisim_t036 ... ok
+test dal_disina_cikinca_koruma_biter ... ok
+test basarisizsa_dalinda_hata_guvenli ... ok
+test varsa_dalinda_deger_guvenli ... ok
+test yoksa_nin_degilse_dali_da_guvenli ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/db_hazirlik_testi.rs (target/debug/deps/db_hazirlik_testi-7cc3889d8dbbdec9)
+
+running 1 test
+test db_hazirlik_host_kapisi_sahiplik_ve_child_sinirlari ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.19s
+
+     Running tests/dene_ve_sure_testi.rs (target/debug/deps/dene_ve_sure_testi-ef21d95808092648)
+
+running 7 tests
+test sure_carpilamaz ... ok
+test sure_sayiyla_toplanamaz ... ok
+test sure_toplama_ve_karsilastirma ... ok
+test sure_sabitleri_ve_basim ... ok
+test etkilesimsiz_girdi_bitisinde_c005_sonraki_cumleyi_calistirmaz ... ok
+test sayiyi_almayi_dene_cokme_yerine_sonuc ... ok
+test ondaligi_almayi_dene ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/derleyici_secici_testi.rs (target/debug/deps/derleyici_secici_testi-fc9be9a07075dbe0)
+
+running 1 test
+test signed_pilot_secici_exact_kripto_ve_proje_kapsamini_korur ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 19.15s
+
+     Running tests/derleyici_yerel_testi.rs (target/debug/deps/derleyici_yerel_testi-41956aad9ee4aaf7)
+
+running 1 test
+test yerel_bundle_import_ve_proje_launcher_kilit_sinirlarini_korur ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 16.96s
+
+     Running tests/deterministik_io_profili_testi.rs (target/debug/deps/deterministik_io_profili_testi-1e9271dd891747c6)
+
+running 5 tests
+test profil_kimligi_ve_tohumlu_dizi_snapshot_ile_sabitlenir ... ok
+test rastgele_araligi_uclari_ve_tam_i64_uzayini_tasmadan_korur ... ok
+test toplayan_io_rastgele_kuyrugunu_araliga_kirpar_ve_alt_uca_duser ... ok
+test sanal_saat_geriye_gitmez_ve_takvim_saatinden_ayridir ... ok
+test hermetik_io_ve_playground_ayni_gozlenebilir_profili_korur ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/dogfood_karsilastirma_testi.rs (target/debug/deps/dogfood_karsilastirma_testi-fd51385aa997f9b6)
+
+running 4 tests
+test karsilastirma_tarihcesi_exact_sha_ve_tekrar_hesaplanabilir_olculerle_tutarlidir ... ok
+test tarihsel_kanit_anonim_ata_ister_eski_nesne_ve_rastgele_esleme_kabul_etmez ... ok
+test go_esdegeri_varsa_zee_sayfasini_bayt_bayt_uretir ... ok
+test rust_esdegeri_zee_sayfasini_bayt_bayt_uretir ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.42s
+
+     Running tests/dogfood_korpusu_testi.rs (target/debug/deps/dogfood_korpusu_testi-4ea972c61279c609)
+
+running 3 tests
+test kaynak_isi_bicimi_fail_closed_dogrulanir ... ok
+test dogfood_korpusu_manifesti_tam_tekil_ve_urune_baglidir ... ok
+test dogfood_korpusu_basari_ve_basarisizlik_beklentilerini_korur ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.51s
+
+     Running tests/dokuman_tazelik_testi.rs (target/debug/deps/dokuman_tazelik_testi-da5c716d58f818ab)
+
+running 6 tests
+test rfc_adr_ve_spec_numaralari_benzersizdir ... ok
+test rfc_adr_ve_spec_dosyalari_indeksli ... ok
+test her_normatif_belge_makine_okunur_test_kaniti_tasir ... ok
+test yerel_markdown_baglantilari_bayat_degil ... ok
+test readme_canli_depo_sayilari_ureticisiyle_gunceldir ... ok
+test kaynak_arsivi_build_ve_kisisel_artifaktlari_disarida_tutar ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 8.52s
+
+     Running tests/dosya_yasam_dongusu_testi.rs (target/debug/deps/dosya_yasam_dongusu_testi-828ce25e3de0649d)
+
+running 2 tests
+test var_olan_hedef_ezilmez_ve_kaynak_korunur ... ok
+test atomik_yayin_silme_ve_orphan_listesi_sonuc_tasir ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/eszamanlilik_conformance_testi.rs (target/debug/deps/eszamanlilik_conformance_testi-4b6f1bf66935a9eb)
+
+running 1 test
+test bagimsiz_korpus_schedulerin_gozlenebilir_v1_sozunu_sabitler ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/faz_modeli_testi.rs (target/debug/deps/faz_modeli_testi-6e1c51896f7ac714)
+
+running 2 tests
+test kaynak_token_ast_ve_baglanmis_program_ayri_turlerdir ... ok
+test eski_program_api_fazli_hattan_sonra_uyumluluk_adaptorudur ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/ffi_sinir_testi.rs (target/debug/deps/ffi_sinir_testi-4c1d355488eb6133)
+
+running 1 test
+test ondalik_binary_floata_ortuk_eslenemez ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/fuzz_korpusu_testi.rs (target/debug/deps/fuzz_korpusu_testi-d0be7e71d570bbe2)
+
+running 5 tests
+test rc_kampanyasi_dort_hedefi_address_sanitizer_ve_miriyle_korur ... ok
+test saldiri_korpusu_lexer_ve_iki_parser_yolunda_panik_uretmez ... ok
+test deterministik_utf8_uretimi_panik_uretmez ... ok
+test dev_sayi_virgul_ve_girinti_girdileri_panik_uretmez ... ok
+test nightly_ogrenimi_cache_disinda_provenanceli_artefaktta_kalir ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+     Running tests/golden_testi.rs (target/debug/deps/golden_testi-c59da65d4fd3523a)
+
+running 62 tests
+test birlestirici_im_reddedilir ... ok
+test a06_parantezli_blok_reddedilir ... ok
+test a08_homoglyph_reddedilir ... ok
+test coklu_tani_temiz_dosyada_bos ... ok
+test dondurmeyen_islem_ifadede_reddedilir ... ok
+test bos_liste_ilki_derleme_hatasi ... ok
+test belirsiz_ad_reddedilir ... ok
+test golden_01_merhaba_dunya ... ok
+test calistir_testleri_atlar ... ok
+test coklu_tani_toplanir ... ok
+test csv_sutun_uyusmazligi_c015 ... ok
+test ek_ayiklama_unsuz_yumusamasi ... ok
+test golden_02_degiskenler ... ok
+test a03_dogrusu_calisir ... ok
+test golden_03_girdi_alma ... ok
+test csv_metin_hucreler_okunur ... ok
+test golden_05_kosullar ... ok
+test golden_07_sayi_tahmini ... ok
+test golden_18_dosya_yazma ... ok
+test golden_17_dosya_okuma ... ok
+test golden_04_hesap_makinesi ... ok
+test golden_16_sonuc_ve_hata ... ok
+test golden_13_islem_parametreleri ... ok
+test golden_12_islem_tanimi ... ok
+test golden_08_listeler ... ok
+test golden_15_secenek_turu ... ok
+test golden_10_sozlukler ... ok
+test golden_21_tarih_ve_saat ... ok
+test golden_19_csv_analizi ... ok
+test kalan_test_beklenen_bulunan_gosterir ... ok
+test golden_23_desen_eslestirme ... ok
+test golden_28_cli_araci ... ok
+test mantiksal_degerin_olumsuzu ... ok
+test ortuk_cogul_bulunamazsa_hata ... ok
+test olmayan_dosyanin_satirlari_turkce_hata ... ok
+test kosullu_bos_kalan_listenin_ilki_c007 ... ok
+test sekme_girinti_reddedilir ... ok
+test korumasiz_secenek_erisimi_derleme_hatasi ... ok
+test rapor_ayrinti_satiri_icerir ... ok
+test sapkali_unluler_kabul_edilir ... ok
+test golden_20_json_verisi ... ok
+test golden_22_yapilar ... ok
+test sifira_bolme_calisma_hatasi ... ok
+test sayiya_cevrilemeyen_girdi ... ok
+test tur_degisimi_reddedilir ... ok
+test tani_json_cikti_ve_kacis ... ok
+test tanimsiz_ad_hatasi ... ok
+test golden_30_testler ... ok
+test golden_06_donguler ... ok
+test temel_durumsuz_ozyineleme_reddedilir ... ok
+test ve_veya_karisimi_reddedilir ... ok
+test unlu_dusmesi_geri_cevrimi ... ok
+test tur_hatasi_turkce_ve_kodlu ... ok
+test ve_zinciri_ve_kisa_devre ... ok
+test yapida_olmayan_alan_turkce_hata ... ok
+test veya_zinciri ... ok
+test golden_11_metin_islemleri ... ok
+test golden_09_liste_isleme ... ok
+test turkce_buyuk_kucuk_harf_i_kurali ... ok
+test golden_33_acik_islem_imzasi ... ok
+test golden_14_not_ortalamasi ... ok
+test yil_donumu_gecisi ... ok
+
+test result: ok. 62 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/gorunum_testi.rs (target/debug/deps/gorunum_testi-61acfc61aa3379ac)
+
+running 4 tests
+test gorunum_bicim_ve_tur_tanilari ... ok
+test gorunum_tanimi_hir_definition_ve_yeniden_atama_kaydini_korur ... ok
+test gorunum_html_agacini_kacisli_yazar ... ok
+test gorunum_islem_icinde_ve_tirnakli_oznitelik_adiyla_calisir ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/guvenli_testi.rs (target/debug/deps/guvenli_testi-e43467da2987c159)
+
+running 6 tests
+test yerel_yol_icteki_ioya_gecer ... ok
+test sunucu_kapali ... ok
+test ag_kapali ... ok
+test mutlak_yol_engellenir ... ok
+test normal_isler_aynen_calisir ... ok
+test ust_dizin_engellenir ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/guvenlik_kapisi_testi.rs (target/debug/deps/guvenlik_kapisi_testi-0e57701aed4c7f15)
+
+running 5 tests
+test kayit_semasi_bozuk_ve_acik_agir_bulguyu_reddeder ... ok
+test guvenlik_kapisi_betigi_ci_ve_surum_adayi_adimlarini_tasir ... ok
+test bulgu_kaydi_gecerli_ve_acik_kritik_yuksek_bulgu_yoktur ... ok
+test acik_depo_kapisi_anonim_politikayi_ve_ci_kablosunu_korur ... ok
+test rc_kaniti_exact_kaynak_ve_kosucu_sahipligi ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 8.38s
+
+     Running tests/hir_modeli_testi.rs (target/debug/deps/hir_modeli_testi-0fc0f9047b669c40)
+
+running 8 tests
+test checker_tanisi_satir_zarfi_yerine_ast_ifadesini_isaretler ... ok
+test ast_bilesik_ve_yaprak_ifadelerin_ayri_kesin_araliklarini_korur ... ok
+test deger_dondurmeyen_cagri_cumlesi_hirda_acik_tur_tasir ... ok
+test her_hir_ifadesi_astden_gelen_kesin_kaynak_araligi_tasir ... ok
+test hir_ifade_turunu_ve_symbol_id_bagini_ast_disinda_tasir ... ok
+test hir_islem_ve_yapi_baglarini_kaynak_adindan_bagimsiz_dizinler ... ok
+test ortuk_cogul_ifadesi_uydurma_bir_bir_yerine_dongu_adina_baglanir ... ok
+test hir_sembol_tanimini_ve_butun_yazimlarini_symbolid_ile_tasir ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/http_istegi_testi.rs (target/debug/deps/http_istegi_testi-6d2471c01c53ae01)
+
+running 7 tests
+test bare_lf_bare_cr_obs_fold_ve_nul_fail_closed_reddedilir ... ok
+test absolute_authority_asterisk_ve_bozuk_request_line_reddedilir ... ok
+test transfer_encoding_duplicate_ve_kuralsiz_content_length_reddedilir ... ok
+test baslik_parseri_ilk_govde_baytlarini_basliktan_ayirir ... ok
+test kalici_http_fuzz_korpusu_her_ana_testte_yeniden_oynatilir ... ok
+test origin_formu_crlf_ve_exact_govde_uzunluguyla_cozulur ... ok
+test gecersiz_utf8_nul_eksik_ve_fazla_govde_reddedilir ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/http_post_testi.rs (target/debug/deps/http_post_testi-a39e7c90cf58141b)
+
+running 11 tests
+test http_post_eylem_transactioninda_geri_alinabilir_sayilamaz ... ok
+test http_transport_hatasi_sonuctur_ve_adaptor_sirri_sizmaz ... ok
+test gizli_ortam_da_iz_kaydinda_okunmaz ... ok
+test http_post_baslik_govde_durum_ve_metin_sozluk_sonucu_tasinir ... ok
+test http_iz_kaydinda_yurutulmez_ve_iz_disari_verilmez ... ok
+test http_yanlis_baslik_turu_derlemede_reddedilir_ve_bos_sozluk_kabul_edilir ... ok
+test http_gizli_ortam_listesi_sinirli_tekil_ve_ag_izinlidir ... ok
+test http_json_tipleri_kanonik_metinle_korur_ve_taklit_true_kabul_edilmez ... ok
+test gercek_turnstile_helper_basari_gecersiz_ve_yanlis_hostta_kapali_kalir ... ok
+test cli_ortam_sirri_yalniz_ana_projenin_izin_listesiyle_okur ... ok
+test http_json_tekrar_alan_dizi_trailing_derinlik_ve_boyut_hatasi_sonuctur ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+     Running tests/ifade_grameri_testi.rs (target/debug/deps/ifade_grameri_testi-3c24aeae83166fc2)
+
+running 8 tests
+test tanimsiz_katman_bilesimi_sessizce_yorumlanmaz ... ok
+test ve_veya_icin_ortuk_oncelik_uydurulmaz ... ok
+test erisim_postfix_aritmetikten_daha_siki_baglanir ... ok
+test karsilastirmalar_boolean_zincirden_once_kurulur ... ok
+test postfix_gorunur_islem_adi_tarafindan_golgelenmez ... ok
+test cagri_aritmetikten_daha_siki_baglanir ... ok
+test tam_islem_adi_sifir_argumanli_cagriyi_korur ... ok
+test en_uzun_islem_adi_cagri_katmaninda_kazanir ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/intrinsic_lowering_testi.rs (target/debug/deps/intrinsic_lowering_testi-b22714662fb3fb29)
+
+running 8 tests
+test intrinsic_kaydi_kimlik_yetkinlik_ve_etkiyi_tekillestirir ... ok
+test merkezi_http_imzasi_yanlis_arguman_turunu_reddeder ... ok
+test http_yuzeyi_generic_intrinsice_indirilir ... ok
+test sensor_yuzeyi_tek_intrinsic_ve_genel_olumsuzlama_kullanir ... ok
+test csrf_yuzeyi_argumansiz_generic_intrinsice_indirilir ... ok
+test parola_yuzeyi_iki_argumanli_generic_intrinsice_indirilir ... ok
+test postgresql_yuzeyi_sorgu_ve_parametreleri_ayri_intrinsice_indirir ... ok
+test merkezi_parola_imzasi_yanlis_arguman_turunu_reddeder ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/invariant_testi.rs (target/debug/deps/invariant_testi-a01ccbd0574f70b5)
+
+running 4 tests
+test parser_astsi_kesin_kaynak_zarfi_olmadan_ifade_kabul_etmez ... ok
+test imkansiz_ifade_ve_cagri_cumlesi_durumlari_reddedilir ... ok
+test parser_astsi_checker_semantik_bagi_tasiyamaz ... ok
+test gecerli_parser_astsi_ve_bagli_hir_invariantlerden_gecer ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/io_izi_cli_testi.rs (target/debug/deps/io_izi_cli_testi-e4c5ffcc3018405b)
+
+running 6 tests
+test cli_iz_symlink_hedefini_ezmez ... ok
+test cli_kaydi_dis_dunyasiz_ayni_ciktiyla_oynatir ... ok
+test cli_kaynak_degisimini_ve_kaynak_uzerine_izi_reddeder ... ok
+test cli_gecersiz_utf8_kaynagi_derlemeden_ve_calistirmadan_reddeder ... ok
+test cli_iz_miras_acl_yetkilerini_tasimaz ... ok
+test cli_iz_izni_acik_umask_ve_eski_dosyada_ozeldir ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s
+
+     Running tests/io_izi_testi.rs (target/debug/deps/io_izi_testi-1b12161f53797cbb)
+
+running 10 tests
+test iz_byte_bicimi_surumlu_ve_kanoniktir ... ok
+test commit_sonucu_belirsiz_sinifi_io_izinde_korunur ... ok
+test replay_sira_arguman_ve_tam_tuketimde_fail_closed_durur ... ok
+test bozuk_ve_kanonik_olmayan_izler_yurutulmeden_reddedilir ... ok
+test parola_ve_ozet_ham_ya_da_hexlenmis_halde_ize_sizmaz ... ok
+test dosya_yasam_dongusu_izi_fiziksel_etki_yapmadan_oynatilir ... ok
+test postgresql_okuma_yazma_ve_yapilandirilmis_hata_izden_aynen_oynatilir ... ok
+test istemci_adresi_izi_sirali_ve_kanonik_ip_olarak_oynatilir ... ok
+test program_gercek_io_izinden_dis_dunyasiz_aynen_oynatilir ... ok
+test urun_e_kriptografi_olaylari_kanonik_izde_tam_oynatilir ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/is_kuyrugu_kapisi_testi.rs (target/debug/deps/is_kuyrugu_kapisi_testi-d168e88297fe3052)
+
+running 1 test
+test is_kuyrugu_native_skor_karti_eksik_sahte_ve_tekrari_reddeder ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running tests/job_dispatcher_testi.rs (target/debug/deps/job_dispatcher_testi-4d38f40b61f0594c)
+
+running 2 tests
+test dispatcher_owned_pg_heartbeat_commit_ve_grup_sahipligi ... ignored, owned PostgreSQL TLS runtime; set ZEE_JOB_DISPATCHER_PG_BIN for the dedicated campaign
+test dispatcher_arguman_tanisi_ozel_degeri_sizdirmaz ... ok
+
+test result: ok. 1 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.15s
+
+     Running tests/kacis_ve_negatif_testi.rs (target/debug/deps/kacis_ve_negatif_testi-49238ae54daa8ff1)
+
+running 8 tests
+test eksi_isareti_tek_basina_hala_hata ... ok
+test bilinmeyen_kacis_reddedilir ... ok
+test bicimleyici_kacisli_metni_korur ... ok
+test tirnak_kacisi ... ok
+test ters_bolu_ve_yeni_satir ... ok
+test negatif_tam_sayi ... ok
+test acik_blok_hizasina_inmeyen_girinti_s005_kesin_span_verir ... ok
+test negatif_ondalik_isaret_dogru ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/kanit_ozeti_testi.rs (target/debug/deps/kanit_ozeti_testi-a04861920c05eefb)
+
+running 3 tests
+test kanit_ozeti_sayilari_bagimsiz_sayimla_tutar ... ok
+test kanit_ozeti_urunu_derlenir_ve_butun_testleri_gecer ... ok
+test kanit_ozeti_sayfasi_depodakiyle_bayt_bayt_aynidir ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.53s
+
+     Running tests/kapsam_testi.rs (target/debug/deps/kapsam_testi-8e9a1ddffe8972ff)
+
+running 5 tests
+test blokta_dogan_ad_disari_sizmaz ... ok
+test golge_yoktur_tur_korunur ... ok
+test ise_dallari_ayri_kapsam ... ok
+test dongu_degiskeni_govdeyle_olur ... ok
+test distaki_ada_atama_kalicidir ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/katalog_testi.rs (target/debug/deps/katalog_testi-0207bd4e3d0e28e1)
+
+running 1 test
+test katalog_kaynakla_birebir ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+     Running tests/katman_mimarisi_testi.rs (target/debug/deps/katman_mimarisi_testi-ccfd7e03f6987bd8)
+
+running 3 tests
+test cekirdek_katmanlar_yukari_dogru_bagimlanamaz ... ok
+test tarayici_yorum_metin_ham_metin_ve_test_kodunu_bagimlilik_saymaz ... ok
+test production_modulleri_ve_bagimliliklari_incelenmis_tabanla_birebir ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.16s
+
+     Running tests/kaynak_sinirlari_testi.rs (target/debug/deps/kaynak_sinirlari_testi-c9d6ffbcf068a3d4)
+
+running 7 tests
+test surec_geneli_baglanti_izinleri_sinirli_ve_iade_edilir ... ok
+test buyuk_veri_dosyasi_tahsis_oncesi_reddedilir ... ok
+test gorev_ortami_klonlari_kurulmadan_heap_butcesine_girer ... ok
+test saklanan_degerler_calisma_heap_butcesini_asamaz ... ok
+test metin_buyumesi_tahsis_oncesi_kesilir ... ok
+test eszamanli_gorev_grubu_tahsis_oncesi_sinirlanir ... ok
+test runtime_cikti_olay_butcesini_kontrollu_taniyla_keser ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s
+
+     Running tests/kelime_avi_testi.rs (target/debug/deps/kelime_avi_testi-f47092200b91b098)
+
+running 6 tests
+test sozluk_bes_harfli_kelimeler_tasir_ve_ucuncu_kelime_kitaptir ... ok
+test bos_sozluk_acik_mesajla_ikinci_cikis_kodunu_verir ... ok
+test urun_derlenir_ve_birim_testleri_gecer ... ok
+test onceki_skorlar_ozete_girer_ve_en_kucuk_deneme_kazanir ... ok
+test kaybeden_oyun_kelimeyi_soyler_ve_kisa_tahmin_hak_yakmaz ... ok
+test kazanan_oyun_ipucu_verir_skoru_ekler_ve_en_iyileri_gosterir ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/kitaplik_testi.rs (target/debug/deps/kitaplik_testi-372d7854d55c7550)
+
+running 11 tests
+test depodaki_kaynak_gomuluyle_ayni ... ok
+test bilinmeyen_birim_gomulu_listeyle_reddedilir ... ok
+test birim_ozeti_islemleri_listeler ... ok
+test en_cok_geceni_bulur ... ok
+test playgroundda_gomulu_birim_calisir ... ok
+test matematik_ussu_dogal_adla_cagrilir ... ok
+test matematik_birimi_kullanilir ... ok
+test liste_araclari_birimi_kullanilir ... ok
+test medyan_iki_tiple_calisir ... ok
+test toplam_iki_tiple_ondalik_doner ... ok
+test gomulu_birimlerin_kendi_testleri_gecer ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/koleksiyon_testi.rs (target/debug/deps/koleksiyon_testi-e3d94974e577ad3c)
+
+running 26 tests
+test aralik_geri_sayar ... ok
+test gezmede_yeniden_baglama_listeye_yansir ... ok
+test cikis_kodu_tasinir ... ok
+test bos_ve_somut_liste_uzlasir ... ok
+test mantiksal_olmayan_ad_kosul_olamaz ... ok
+test mantiksal_ad_tek_basina_kosuldur ... ok
+test cikarimdan_sonra_karisik_tur_reddedilir ... ok
+test belirsiz_koleksiyon_okumalari_derleme_hatasi ... ok
+test kalan_kalibi_okul_kurali ... ok
+test binlikli_kuruslusu_turk_yazimi ... ok
+test metin_listesi_ilk_eklemeden_cikarilir ... ok
+test ikizlesme_geri_cevrimi ... ok
+test metin_sozlugu_ilk_atamadan_cikarilir ... ok
+test ozellik_kelimesiyle_cakisan_alan_okunur ... ok
+test gezmede_deger_kopyalari_alias_olusturmaz ... ok
+test islemden_liste_donusu ... ok
+test gezilen_koleksiyonun_bicimi_sabittir ... ok
+test gezmede_oge_degisikligi_listeye_yansir ... ok
+test silme_tur_bekcileri ... ok
+test roket_geri_sayar ... ok
+test ondalik_degerli_sozluk ... ok
+test yapi_listesine_yanlis_yapi_giremez ... ok
+test silme_liste_ve_sozluk ... ok
+test yeni_dogrulamalar_icermeli_olmamali ... ok
+test yapi_listesi_kayit_tablosu ... ok
+test gezmede_deger_sonuc_ozelligi_uzunluktan_bagimsizdir ... ok
+
+test result: ok. 26 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/kurulum_testi.rs (target/debug/deps/kurulum_testi-412fa04f00d0827b)
+
+running 3 tests
+test kurulum_betikleri_ve_tatbikat_workflowu_sozlesmeyi_tasir ... ok
+test calisma_ortami_kaydi_exact_kaynak_ve_ikili_hashleriyle_program_lsp_kaniti_tasir ... ok
+test gercek_ikililer_kurulur_calisir_kaldirilir_ve_oynanmis_artefakt_reddedilir ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.88s
+
+     Running tests/linux_paket_testi.rs (target/debug/deps/linux_paket_testi-93e7bfc05dc139e3)
+
+running 1 test
+test linux_paket_hazirligi_sonlu_girdi_ve_tasiyici_sinirlarini_korur ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.17s
+
+     Running tests/lsp_testi.rs (target/debug/deps/lsp_testi-0a92a18d6ef34f7d)
+
+running 39 tests
+test json_derinlik_butcesini_asmadan_durur ... ok
+test json_ayristirici_temel ... ok
+test exit_dongusu_durdurur ... ok
+test initialize_yaniti ... ok
+test json_gecersiz_vekil_ciftlerini_reddeder ... ok
+test json_metin_icinde_kacissiz_kontrol_karakterini_reddeder ... ok
+test completion_kalip_kelimeleri ... ok
+test json_rpc_parse_error_ile_invalid_request_ayrilir ... ok
+test json_rpc_bildirimine_yanit_vermez_ve_gecersiz_parametreyi_ayirir ... ok
+test json_rpc_kimligi_kayipsiz_doner_ve_bilinmeyen_yontem_ayrilir ... ok
+test json_unicode_kacislari ... ok
+test json_yinelenen_ve_kacisla_esdeger_nesne_anahtarini_reddeder ... ok
+test json_sayisi_rfc_8259_durum_makinesinden_gecer ... ok
+test json_sayi_korpusu_serde_json_ile_ayni_karari_verir ... ok
+test lsp_girinti_sinirinda_kurtarip_bagimsiz_tanilari_sirayla_yayinlar ... ok
+test hover_bilinmeyen_konumda_null ... ok
+test didopen_tanilari_yayinlar ... ok
+test hover_kalip_kelimesini_aciklar ... ok
+test didchange_temiz_metinle_tanilari_sifirlar ... ok
+test hover_kullanici_tanimini_gosterir ... ok
+test semantic_olarak_belirsiz_belgede_rename_tahmin_yapmaz ... ok
+test tanima_git_ekli_degiskeni_cozer ... ok
+test utf8_olmayan_govde_parse_error_uretir_ve_sunucuyu_durdurmaz ... ok
+test birim_dosyasindaki_tani_kullan_satirina_tasinir_ve_birimi_soyler ... ok
+test tanima_git_ayni_yazimli_ayri_kapsami_symbolid_ile_ayirir ... ok
+test islem_adi_argumanla_ayni_yazilsa_da_kesin_cagri_kuyrugu_secilir ... ok
+test yeniden_adlandirma_ayni_symbolid_yeniden_atamalarini_kapsar ... ok
+test yapi_definition_ve_rename_yapiid_ile_baglanir ... ok
+test yeniden_adlandirma_iki_katmanli_iyelik_zincirini_korur ... ok
+test yeniden_adlandirma_unluyle_bitene_tampon ... ok
+test yeniden_adlandirma_yumusama_uretir ... ok
+test yeniden_adlandirma_ekleri_giydirir ... ok
+test yeniden_adlandirma_yalniz_secilen_symbolid_kapsamini_degistirir ... ok
+test tanima_git_islem_basligina_gider ... ok
+test yeniden_adlandirma_islemid_ile_tam_islem_adini_degistirir ... ok
+test butun_uretim_yollari_gecerli_ve_butceli_json_verir ... ok
+test baska_birimdeki_tanim_ayni_satira_dusse_de_eksik_rename_uretilmez ... ok
+test json_dugum_butcesini_asmadan_durur ... ok
+test uri_yuzde_utf8_gercek_stdio_birim_cozumunu_korur ... ok
+
+test result: ok. 39 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.55s
+
+     Running tests/metin_testi.rs (target/debug/deps/metin_testi-008818d570e35afa)
+
+running 11 tests
+test degistir_ve_kirp ... ok
+test bos_ayracla_parcalama_harflere_boler ... ok
+test bos_eski_degistirilemez ... ok
+test harfler_turkce_dogru ... ok
+test baslar_biter_kosullari ... ok
+test parcala_ve_birlestir ... ok
+test json_okuma_sayi_bool_metin_gelir ... ok
+test metin_dalgasinin_tur_bekcileri ... ok
+test json_metni_serilestirir ... ok
+test metni_ozelligi_evrensel ... ok
+test kuruslusu_para_bicimi ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/mimari_sinir_testi.rs (target/debug/deps/mimari_sinir_testi-b7c05fa1bc509b40)
+
+running 23 tests
+test checker_public_api_katmanlasmada_korunur ... ok
+test baglanmis_program_typed_hir_olmadan_uretilemez ... ok
+test faz_test_matrisi_tier1_ci_raporundan_kopamaz ... ok
+test core_freeze_gercek_dogfood_kaniti_olmadan_acilamaz ... ok
+test http_istek_framingi_byte_parserinda_tek_sahiplidir ... ok
+test standart_hat_faz_turlerini_atlayamaz ... ok
+test semantic_regresyon_korpusu_gecmisten_sessizce_silinemez ... ok
+test kritik_islevler_kor_bir_hard_limit_yerine_incelenmis_egilim_tasir ... ok
+test standart_runtime_semantic_kararlari_hir_bagindan_alir ... ok
+test semantic_kimlikler_depolama_indeksine_geri_donmez ... ok
+test lsp_json_ayristirma_ve_cikti_sahipleri_ayridir ... ok
+test kok_dosyalar_mega_handlerlari_yeniden_yutmaz ... ok
+test checker_katmanlari_tek_sorumlulukla_sahiplenilir ... ok
+test kok_faz_dosyalari_yeniden_sismez ... ok
+test performans_gozlemi_shared_ci_esigine_donusmez ... ok
+test domain_kaynak_limitleri_tek_profilden_beslenir ... ok
+test spec_maddeleri_exact_test_kanitindan_kopamaz ... ok
+test playground_girdisi_koleksiyondan_once_tek_profilden_sinirlanir ... ok
+test uzun_soak_kapisi_rss_egilimini_ve_provenance_tarihcesini_tasir ... ok
+test tani_kalitesi_kapisi_mutasyon_korpusunu_ve_esikleri_tasir ... ok
+test web_proxy_origin_tek_ag_hedefi_parserini_kullanir ... ok
+test wasm_abi_kayitli_tampon_sahipligini_atlayamaz ... ok
+test handler_modulleri_yeni_domain_icin_sinir_tasir ... ok
+
+test result: ok. 23 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/morfoloji_conformance_testi.rs (target/debug/deps/morfoloji_conformance_testi-ea543edfd7ba1fb5)
+
+running 1 test
+test bagimsiz_json_korpusu_profil_cozum_karar_ve_uretimi_birebir_tanimlar ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.19s
+
+     Running tests/morfoloji_testi.rs (target/debug/deps/morfoloji_testi-21b8bc0c80693842)
+
+running 13 tests
+test gecersiz_ve_uc_katmanli_zincir_uretilmez ... ok
+test profil_surumu_ve_ek_tablosu_snapshot_ile_kilitlidir ... ok
+test unicode_normalizasyon_varyantlari_lexer_sinirinda_fail_closed_kalir ... ok
+test kanonik_uretim_ornekleri_profil_icinde_degismez ... ok
+test belirsizlik_korpusu_tahmin_edilmeden_a002_olur ... ok
+test ters_ses_degisimi_korpusu_koku_korur ... ok
+test uretilen_her_tek_ek_ayni_koke_ve_ek_kimligine_cozulur ... ok
+test ek_tablosundaki_her_yapisal_sonek_cakismasi_a002_olabilir ... ok
+test uretilen_her_iyelik_zinciri_iki_katmanla_geri_cozulur ... ok
+test uretilen_yuzeylerin_tum_adaylari_belirsizlikte_fail_closed_kalir ... ok
+test genis_deterministik_kok_uzayinda_uretim_cozumu_korur ... ok
+test zee_tr_1_semantik_parmak_izi_immutable_fixture_ile_ayni_kalir ... ok
+test cli_profili_ve_belirsiz_cozumleri_gorunur_kilar ... ok
+
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.21s
+
+     Running tests/native_effect_consumer_testi.rs (target/debug/deps/native_effect_consumer_testi-0eac67c6e25f43c2)
+
+running 2 tests
+test native_effect_onbir_sql_smtp_no_replay_vakasi ... ignored, actual Unix owned PG16.15; set ZEE_EFFECT_PG_BIN for dedicated native11
+test native_effect_sekiz_host_hazirlik_vakasi ... ok
+
+test result: ok. 1 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 1.30s
+
+     Running tests/native_listener_testi.rs (target/debug/deps/native_listener_testi-3e7927b20c1f3cdc)
+
+running 3 tests
+test native_listener_quiet_fd_ve_config_siniri ... ok
+test native_listener_gec_eof_mutlak_butceden_sonra_admission_acmaz ... ok
+test native_listener_nesil_admission_kota_ve_metrik_kompozisyonu ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 32.63s
+
+     Running tests/native_metrik_host_testi.rs (target/debug/deps/native_metrik_host_testi-46546a042464a539)
+
+running 2 tests
+test native_metrik_http_pg_ve_fd_sahipligi ... ignored, owned PostgreSQL TLS runtime; set ZEE_NATIVE_METRIK_PG_BIN and run this dedicated case
+test native_metrik_host_counter_ve_rollup_kapisi ... ok
+
+test result: ok. 1 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+     Running tests/olcum_lsp_process_testi.rs (target/debug/deps/olcum_lsp_process_testi-11b6407e2d3045d2)
+
+running 1 test
+test olcum_dillsp_process_spawn_stdio_ve_capabilities_yolunu_olcer ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.82s
+
+     Running tests/onceki_kucuk_surum_testi.rs (target/debug/deps/onceki_kucuk_surum_testi-b0d0aac4afe5713b)
+
+running 2 tests
+test onceki_surum_fixture_bozuklugu_native_baslamadan_reddedilir ... ok
+test onceki_kucuk_surum_korpusu_ve_bilinen_goc_gercek_cli_ile_korunur ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.76s
+
+     Running tests/ondalik_testi.rs (target/debug/deps/ondalik_testi-c25df7be6fffcafa)
+
+running 22 tests
+test bosluk_virgul_rakam_belirsizligi ... ok
+test nokta_ondalik_yonlendirmesi ... ok
+test bicimleyici_ondaligi_bolmez ... ok
+test sifir_bir_arti_sifir_iki_tam_olarak_sifir_uc ... ok
+test ondalik_sabit_ve_basim ... ok
+test bitisik_virgul_liste_ayraci_karismaz ... ok
+test artir_azalt_ondalik ... ok
+test buyuk_katsayi_ve_sonlu_bolum_tamdir ... ok
+test keyfi_hassasiyetli_sabit_kayipsizdir ... ok
+test buyuk_ondaligi_tam_sayiya_daraltma_tasma_verir ... ok
+test sayisal_karisim_listede_genisler ... ok
+test ondalik_bolme_yuvarlama ... ok
+test cok_kucuk_deger_karsilastirma_ve_jsonda_korunur ... ok
+test karisik_aritmetik_ve_bolme ... ok
+test ondalik_yapi_alani ... ok
+test karsilastirma_deger_uzerinden ... ok
+test tam_bolme_degismedi ... ok
+test secenek_ondalik_tasiyabilir ... ok
+test tam_hedefe_ondalik_artis_reddedilir ... ok
+test yanitin_ondaligi ... ok
+test tam_kismi_ve_yuvarlanmisi ... ok
+test uzun_negatif_girdi_ondaliga_kayipsiz_cevrilir ... ok
+
+test result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/owned_web_kit_testi.rs (target/debug/deps/owned_web_kit_testi-820599c95db473d9)
+
+running 2 tests
+test owned_web_kit_dort_native_http_pg_izolasyon_vakasi ... ignored, requires actual Unix owned PG16.15; set ZEE_OWNED_WEB_KIT_PG_BIN and run dedicated case
+test owned_web_kit_yirmi_contract_ve_bounded_helper_vakasi ... ok
+
+test result: ok. 1 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.69s
+
+     Running tests/ozyineleme_testi.rs (target/debug/deps/ozyineleme_testi-27f524b2324c21ab)
+
+running 7 tests
+test ozyinelemeli_tur_uyusmazligi ... ok
+test cok_tokenli_cagri_argumanlari ... ok
+test faktoriyel_calisir ... ok
+test karsilikli_ozyineleme ... ok
+test fibonacci_cift_ozyineleme ... ok
+test derinlik_korkulugu ... ok
+test c019_sinirinin_altindaki_derinlik_resmi_yiginda_her_profilde_sigar ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+     Running tests/panic_guvenligi_testi.rs (target/debug/deps/panic_guvenligi_testi-afba4a53970755f9)
+
+running 2 tests
+test elle_kurulmus_gecersiz_ast_panik_yerine_tani_uretir ... ok
+test production_crate_kokleri_panic_lint_kapisini_tasir ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/parola_goc_kapisi_testi.rs (target/debug/deps/parola_goc_kapisi_testi-13575adbfe5e4c0e)
+
+running 1 test
+test parola_goc_kapisi_ve_commit_proxy_negatifleri_atlanamaz ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.65s
+
+     Running tests/parser_kurtarma_testi.rs (target/debug/deps/parser_kurtarma_testi-920adcc9dd2733dc)
+
+running 11 tests
+test girintisiz_blok_basliklari_s007_ve_oneri_tasir ... ok
+test govde_disina_dusen_parametre_satiri_oturum_kalibiyla_karistirilmaz ... ok
+test bozuk_yapi_alani_sonraki_alani_ve_ust_cumleyi_yutmaz ... ok
+test bozuk_eszamanli_gorev_sonraki_gecerli_gorevi_korur ... ok
+test ic_blok_hatasi_gecerli_kardes_cumleyi_bloktan_disari_sizdirmaz ... ok
+test ic_hata_derinligi_sizdirip_sonraki_ust_tanimi_bozmaz ... ok
+test bozuk_gore_kolu_kendi_govdesini_atlayip_sonraki_kolu_korur ... ok
+test tani_seli_kaynak_sirasinda_yirmi_kayitla_sinirlanir ... ok
+test basarisiz_tanimin_kullanimlari_kok_nedeni_tekrar_etmez ... ok
+test ayni_tanimsiz_ad_coklu_tani_hattinda_bir_kez_raporlanir ... ok
+test ekli_bicimler_ortuk_cogul_ve_bozuk_islem_cagrilari_kok_nedene_baglanir ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/pdf_host_testi.rs (target/debug/deps/pdf_host_testi-fcaa6d2016d7b463)
+
+running 2 tests
+test pdf_sabit_owned_backend_kabulu ... ignored, operator-selected exact PDF backend dependencies; explicit owned campaign
+test pdf_job_stdlib_sozlesme_modelleri ... ok
+
+test result: ok. 1 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.13s
+
+     Running tests/playground_testi.rs (target/debug/deps/playground_testi-4e3a487ee7b3011e)
+
+running 15 tests
+test cabi_yanlis_ve_cift_birakmada_sahipligi_korur ... ok
+test cabi_gecersiz_utf8i_sessizce_bos_metne_cevirmez ... ok
+test hata_raporu_turkce ... ok
+test merhaba_calisir ... ok
+test son_tarih_sanal_beklemeleri_biriktirir ... ok
+test testler_de_kosulur ... ok
+test girdiler_satir_satir ... ok
+test scheduler_playgroundda_da_ayni_izi_verir ... ok
+test tohum_deterministik ... ok
+test cabi_bozuk_cagridan_sonra_tekrar_kullanilabilir ... ok
+test cabi_kayit_disi_pointer_uzunluk_ve_tasmayi_reddeder ... ok
+test playground_soru_girdisini_satir_toplamadan_once_sinirlar ... ok
+test cabi_playground_limitlerini_hosta_bildirir_ve_kopyalamadan_reddeder ... ok
+test cabi_katmani_gidis_donus ... ok
+test playground_kaynagi_derlemeden_once_kendi_butcesinde_reddeder ... ok
+
+test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.11s
+
+     Running tests/postgresql_goc_plani_testi.rs (target/debug/deps/postgresql_goc_plani_testi-908809428d2a121a)
+
+running 1 test
+test izole_goc_durum_kuru_checksum_rol_ve_atomik_uygulama_sinirini_korur ... ignored, scripts/postgresql-goc-ci.py creates its own empty database and roles
+
+test result: ok. 0 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/postgresql_testi.rs (target/debug/deps/postgresql_testi-0f1302d0204359fa)
+
+running 10 tests
+test izole_tls_11_erisilebilir_legacy_sunucuyu_reddeder ... ignored, scripts/postgresql-tls-ci.py gerçek TLS1.1 capable-positive fixture sağlar
+test izole_tls_baska_ca_gercek_sunucuyu_reddeder ... ignored, scripts/postgresql-tls-ci.py geçici gerçek TLS sunucusunu sağlar
+test izole_tls_deadlock_40p01_tekrarsiz_rollback_ve_yeni_oturum_sagligi ... ignored, scripts/postgresql-tls-ci.py creates the owned TLS statement-fault fixture
+test izole_tls_dogru_ca_hostname_ve_tls12_ile_baglanir ... ignored, scripts/postgresql-tls-ci.py geçici gerçek TLS sunucusunu sağlar
+test izole_tls_null_ve_metin_disini_reddeder_transaction_sagligi_korunur ... ignored, scripts/postgresql-tls-ci.py geçici gerçek TLS sunucusunu sağlar
+test izole_tls_san_disindaki_ip_hostnameini_reddeder ... ignored, scripts/postgresql-tls-ci.py geçici gerçek TLS sunucusunu sağlar
+test izole_tls_serialization_40001_tekrarsiz_rollback_ve_yeni_oturum_sagligi ... ignored, scripts/postgresql-tls-ci.py creates the owned TLS statement-fault fixture
+test izole_tls_sorgu_parametre_sonuc_ve_goc_sinirlarini_bir_fazlasinda_reddeder ... ignored, scripts/postgresql-tls-ci.py geçici gerçek TLS sunucusunu sağlar
+test okuma_parametreyi_sql_metininden_ayri_tasir ... ok
+test veritabani_hatasi_yapilandirilmis_sonuc_verisine_donusur ... ok
+
+test result: ok. 2 passed; 0 failed; 8 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/postgresql_tls_kapisi_testi.rs (target/debug/deps/postgresql_tls_kapisi_testi-efb9e35dade7836b)
+
+running 1 test
+test tls_ve_capable_positive_kapisi_tam_on_dort_vakayi_yurutur ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s
+
+     Running tests/proje_testi.rs (target/debug/deps/proje_testi-e5fcd3e9abfb9d20)
+
+running 26 tests
+test bildirim_yalniz_tanimli_alanlari_kabul_eder ... ok
+test eksik_alan_ogretici_tanidir ... ok
+test bildirim_gecerli_zee_kaynagidir ... ok
+test bildirim_morfoloji_profilini_sabitler_ve_bilinmeyeni_reddeder ... ok
+test bildirim_yerel_bagimliliklari_tek_gercek_kaynaktan_alir ... ok
+test bildirim_yetkinlikleri_ve_tam_ag_originlerini_dogrular ... ok
+test bagimlilik_guncellemesi_yorumlari_korur_ve_yollari_siralar ... ok
+test surum_uc_sayili_ve_giris_guvenli_olmali ... ok
+test paket_ana_projenin_vermedigi_yetkinligi_genisletemez ... ok
+test postgresql_bildirimi_sirri_kaynaga_almadan_kesin_hedefi_kilitler ... ok
+test uzak_bagimlilik_guncellemesi_yorumu_korur_siralar_ve_surumu_degistirir ... ok
+test uzak_bagimlilik_exact_registry_root_kimligine_baglanir ... ok
+test surum_komutu_etkin_morfoloji_profilini_gosterir ... ok
+test guvenli_bayragi_program_argumanlarina_sizmaz ... ok
+test gercek_web_sunucusu_acik_opt_in_ister ... ok
+test proje_dosya_siniri_sembolik_bag_kacisini_reddeder ... ok
+test paket_islemi_eksik_public_sozlesmeyle_alinamaz ... ok
+test cli_proje_klasorunu_calistirir_denetler_ve_dener ... ok
+test yerel_bagimlilik_dongusu_kilitlenmez ... ok
+test gercek_io_eylem_hatasinda_dosyalari_geri_alir ... ok
+test yeni_komutu_proje_bildirimi_uretir ... ok
+test bicimle_komutu_projenin_butun_kaynaklarini_bicimler ... ok
+test ekle_komutu_once_dogrular_sonra_bildirimi_ve_kilidi_gunceller ... ok
+test yerel_paketler_kokenli_yuklenir_ve_icerikle_kilitlenir ... ok
+test gercek_io_iki_surecte_ekleme_kaybetmez ... ok
+test parola_ozeti_komutu_argon2id_phc_uretir ... ok
+
+test result: ok. 26 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.84s
+
+     Running tests/projeler_testi.rs (target/debug/deps/projeler_testi-06a35ab44a552a34)
+
+running 14 tests
+test zamir_nsi_cozulur ... ok
+test hikaye_cevaplari_dokur ... ok
+test gun_sayar_sahte_takvimle ... ok
+test kumbara_hedefe_ulasir ... ok
+test gizli_dil_kelime_cevirir ... ok
+test kelime_sayaci_dogru_sayar ... ok
+test quiz_puani_dogru_sayar ... ok
+test zar_oyunu_tutarli_biter ... ok
+test market_hesabi_ve_testi ... ok
+test carpim_tablosu_tam ... ok
+test envanter_stok_defteri ... ok
+test envanter_json_yedegi_yazilir ... ok
+test mini_site_html_uretir ... ok
+test asal_avcisi_dogru_sayar ... ok
+
+test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/public_api_testi.rs (target/debug/deps/public_api_testi-b8783e1a4686f0e6)
+
+running 3 tests
+test kokte_yalniz_api_modulu_desteklenen_yuzeydir ... ok
+test v1_facade_exact_allowlist_disinda_yeni_ihracat_kabul_etmez ... ok
+test v1_facade_derleme_calistirma_tani_ve_bicim_yuzeyini_sunar ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/semantic_kimlik_testi.rs (target/debug/deps/semantic_kimlik_testi-cc0264b909ee68e3)
+
+running 3 tests
+test cozulmus_degisken_symbol_id_tasir ... ok
+test yapi_kimligi_depolama_sirasindan_bagimsizdir ... ok
+test islem_kimligi_hashmap_ve_cagri_sirasindan_bagimsizdir ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/semantic_regresyon_korpusu_testi.rs (target/debug/deps/semantic_regresyon_korpusu_testi-53937da04bc16283)
+
+running 7 tests
+test native_deadline_kipi_yalniz_security_fazina_aittir ... ok
+test native_deadline_manifesti_sadece_terminal0_bos_http_gozlemini_kabul_eder ... ok
+test cli_stdout_alt_turu_gercek_basariyi_stderr_startup_metadatasindan_ayirir ... ok
+test smtp_yavas_yanit_fixture_native_butce_ve_maskeyi_korur ... ok
+test duzeltilmis_semantic_buglar_tani_span_cikis_ve_ciktiyi_korur ... ok
+test semantic_regresyon_manifesti_tam_tekil_ve_minimaldir ... ok
+test native_listener_deadline_regresyonu_gercek_owned_host_ile_korunur ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 11.37s
+
+     Running tests/semantic_regresyon_korugu_testi.rs (target/debug/deps/semantic_regresyon_korugu_testi-2feab7cf162786d8)
+
+running 3 tests
+test koruk_betigi_beyan_siniflarini_ve_fail_closed_mesajlarini_kabloluyor ... ok
+test commit_mesajindan_bagimsiz_beyan_ve_fixture_zorunludur ... ok
+test iki_kaynak_dalinin_merge_sha_beyani_iki_korukte_de_zorunludur ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.17s
+
+     Running tests/siralama_testi.rs (target/debug/deps/siralama_testi-6d1f3222ee725828)
+
+running 6 tests
+test sayilari_siralar_ve_ters_cevirir ... ok
+test csv_metni_tablo_yazar ... ok
+test arasindaki_gunler_isaretli ... ok
+test turk_alfabesiyle_siralar ... ok
+test liste_uyeligi_ve_bekci ... ok
+test ondalik_siralama_dogru ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/smtp_hata_maskelemesi_testi.rs (target/debug/deps/smtp_hata_maskelemesi_testi-2dbd3e827fe28a5d)
+
+running 3 tests
+test native_legacy_auth535_echo_sirri_ve_base64_credentiali_gizler ... ok
+test runtime_explicit_url_ayristirma_hatasi_c029_ile_sirsizdir ... ok
+test cli_legacy_auth_echo_regression_sonuc_metni_sirsizdir ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/smtp_mime_testi.rs (target/debug/deps/smtp_mime_testi-b4f10d6120ca8db2)
+
+running 12 tests
+test geri_alinamaz_mime_eylemde_t048_ile_reddedilir ... ok
+test typed_kalip_merkezi_intrinsic_kaydi_ve_sonuc_turuyle_baglanir ... ok
+test dis_son_tarih_mime_butcesini_kisaltir_ve_sinir_merkezi_sahiptir ... ok
+test runtime_hata_siri_icerigi_hedefi_ve_yolu_gizler_tekrar_yapmaz ... ok
+test kayit_yurutme_export_ve_replay_mimeyi_sirsiz_reddeder ... ok
+test playground_ve_varsayilan_io_native_mime_basarisi_uydurmaz ... ok
+test politika_ag_dosya_okuma_ve_goreli_yolu_ic_adaptorden_once_denetler ... ok
+test typed_alan_ve_ek_listesi_yanlis_turleri_reddeder ... ok
+test cli_sembolik_bagla_proje_disindaki_pdfi_okumaz ... ok
+test cli_gercek_smtp_pdf_alternative_reply_to_ve_dosya_yazmadan_kabul_eder ... ok
+test cli_writer_yok_fifo_pdfde_bloklanmaz_smtp_etkisi_baslatmaz ... ok
+test cli_ortam_hedef_dosya_izni_ve_kokten_kacisi_dial_oncesi_reddeder ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running tests/sonlu_dispatcher_timer_testi.rs (target/debug/deps/sonlu_dispatcher_timer_testi-33ee7d0a5fcb6598)
+
+running 1 test
+test sonlu_timer_latch_snapshot_ve_sahipli_surec_sinirlarini_korur ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.62s
+
+     Running tests/sonuc_donusu_testi.rs (target/debug/deps/sonuc_donusu_testi-79762b4d13e00e44)
+
+running 10 tests
+test islem_disinda_hata_dondurulemez ... ok
+test yalniz_hata_donduren_islem_reddedilir ... ok
+test hata_mesaji_metin_olmali ... ok
+test yok_ile_hata_karisimi_reddedilir ... ok
+test hata_dali_yakalanir ... ok
+test sonuc_gecisi_cift_sarilmaz ... ok
+test basari_dali_sonuca_sarilir ... ok
+test hata_donusu_test_dogrulamasiyla ... ok
+test sonuc_degeri_turu_korunur ... ok
+test yanlis_tarafa_erisim_derleme_hatasi ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/supervisor_cleanup_testi.rs (target/debug/deps/supervisor_cleanup_testi-fc3ace9d3fe87655)
+
+running 1 test
+test supervisor_cleanup_sekiz_sahiplik_ve_mutlak_butce_vakasi ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.86s
+
+     Running tests/sureli_hazirlik_testi.rs (target/debug/deps/sureli_hazirlik_testi-6f68fdbd2d5ce0c1)
+
+running 3 tests
+test native_pg_tekrarlanan_hazirlik_ve_sigkill_ttl ... ignored, actual Unix owned PG16.15 + exact clean native binary; explicit final campaign
+test sureli_hazirlik_ve_db_watch_sinirlari ... ok
+test native_iki_worker_ttl_ve_config_hup_yenileme ... ok
+
+test result: ok. 2 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 16.92s
+
+     Running tests/tani_kimligi_testi.rs (target/debug/deps/tani_kimligi_testi-55ff9274317bc325)
+
+running 1 test
+test tani_kodlari_surumler_arasi_kimligini_korur ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/tedarik_kapisi_testi.rs (target/debug/deps/tedarik_kapisi_testi-8ed53d6dcc9b6d06)
+
+running 11 tests
+test cargo_deny_politikasi_fail_closed_ve_istisnalari_gerekcelidir ... ok
+test forgejo_akisi_exact_pin_ve_prsiz_kaynak_siniri_tasir ... ok
+test surum_artefakti_iki_temiz_klon_sbom_provenance_ve_imza_kablosunu_tasir ... ok
+test ci_sabit_aracla_guncel_advisory_ve_offline_vendor_kapisi_kosar ... ok
+test public_github_akislari_kurum_kosucusuna_yonlenemez ... ok
+test registry_lock_girdilerinin_sha256_ozeti_zorunludur ... ok
+test github_actionlari_incelenmis_immutable_commitlere_sabitlidir ... ok
+test surum_klon_koku_sembolik_yoldan_kanoniklesir ... ok
+test forgejo_kapisi_ozel_exact_metadata_ister_public_ve_bozuk_veriyi_reddeder ... ok
+test forgejo_fetch_tam_secilen_gecmisi_alir_ozel_dal_ve_kimlik_almaz ... ok
+test vendor_kaniti_iki_uretimi_ve_bos_cargo_home_offline_derlemeyi_ister ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 6.66s
+
+     Running tests/tedarik_testi.rs (target/debug/deps/tedarik_testi-e71f996ec80c81fb)
+
+running 6 tests
+test derlenmeyen_ve_girisi_eksik_proje_yayin_ciktisi_birakmaz ... ok
+test anahtar_ezilmez_yerel_bagimlilik_ve_sembolik_bag_yayinlanmaz ... ok
+test kanonik_zep_fixture_i_butun_tier1_platformlarda_ayni_bayttir ... ok
+test imza_arsiv_sbom_ve_provenance_oynamalari_fail_closed_reddedilir ... ok
+test cli_anahtar_ve_paketle_akisini_turkce_sunar ... ok
+test kaynak_paketi_sbom_provenance_ve_imza_byte_byte_tekrar_uretilir ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.18s
+
+     Running tests/tr_en_list_detail_testi.rs (target/debug/deps/tr_en_list_detail_testi-a9c417d9b97183b6)
+
+running 1 test
+test tam_tr_en_liste_detay_http_golden_ve_eski_fragment_korunur ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.70s
+
+     Running tests/tr_en_sayfa_testi.rs (target/debug/deps/tr_en_sayfa_testi-4da52437ebb37651)
+
+running 1 test
+test tr_en_anonim_sayfa_native_cli_kampanyasi_atlanamaz ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.81s
+
+     Running tests/urun_e_yetkinlik_testi.rs (target/debug/deps/urun_e_yetkinlik_testi-cc8e27cb8e9678ab)
+
+running 10 tests
+test ag_hedefi_smtp_semalarini_tanir ... ok
+test argon2_ozeti_kalibi_kriptografi_intrinsicine_iner ... ok
+test argon2_ozeti_sayiya_uygulanamaz ... ok
+test kriptografi_yetkinligi_kapaliyken_totp_ve_ozet_reddedilir ... ok
+test gorsel_kucultme_hermetik_dosya_sisteminde_calisir ... ok
+test baglantili_eposta_gonderimi_baglantiyi_dogrular_ve_kutuya_duser ... ok
+test eposta_gonderimi_hermetik_kutuya_duser_ve_eylemde_yasaktir ... ok
+test totp_anahtari_ve_dogrulama_hermetik_saatle_calisir ... ok
+test gizli_deger_sifreleme_hermetikte_deterministik_ve_dogrulamali ... ok
+test argon2_ozeti_hermetik_profilde_deterministik_ve_dogrulanabilir ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.61s
+
+     Running tests/uyumluluk_testi.rs (target/debug/deps/uyumluluk_testi-e2909dfd123addbe)
+
+running 6 tests
+test kapi_bozuk_fixture_ve_sureli_olmayan_kaldirmayi_reddeder ... ok
+test kapi_kayitsiz_kaldirma_ve_kayitsiz_mezar_tasini_reddeder ... ok
+test v1_syntax_freeze_penceresinde_kalip_kosul_komut_yuzeyi_degismez ... ok
+test deprecation_kayitlari_gecerli_ve_kaynakla_tutarli ... ok
+test dondurulmus_yuzey_envanteri_kaynakla_birebir ... ok
+test surum_kimligi_gelistirme_serisini_yayimlanmis_sanmaz ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/web_cok_surec_testi.rs (target/debug/deps/web_cok_surec_testi-7f92985a0573008e)
+
+running 4 tests
+test ayarli_bellek_worker_kapasiteyi_asinca_hizmet_eder_ve_kotayi_uygular ... ok
+test istemci_adresi_proxy_ve_socketten_gelir_xff_ve_form_alanindan_gelmez ... ok
+test iki_worker_oturumu_iptali_restarti_ve_giris_limitini_paylasir ... ok
+test bellek_oran_iki_worker_oturum_revoke_restart_paylasir_kota_yereldir ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.79s
+
+     Running tests/web_drain_testi.rs (target/debug/deps/web_drain_testi-00923ee23c811784)
+
+running 1 test
+test native_sigterm_current_handleri_bitirir_yeni_handler_almaz ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 6.29s
+
+     Running tests/web_testi.rs (target/debug/deps/web_testi-fe11717320edcc25)
+
+running 43 tests
+test eylem_geri_alinamayan_ciktiyi_tasimaz ... ok
+test eylem_acik_imza_ister ... ok
+test ayni_yontem_ve_yol_iki_kez_baglanamaz ... ok
+test eylem_http_adaptorune_baglanamaz ... ok
+test bozuk_yuzde_kodlamasi_ve_utf8_formu_400_ile_reddedilir ... ok
+test commit_sonucu_belirsiz_cli_yolunda_c027_olur ... ok
+test eylem_calisma_hatasinda_tum_dosyalari_geri_alir ... ok
+test fazla_govde_ve_alan_413_doner ... ok
+test eylem_ayni_is_kuralini_cli_ve_webden_calistirir ... ok
+test basarisiz_sonuc_ic_savepointi_geri_alir ... ok
+test commit_sonucu_belirsizse_retry_yapilmaz_worker_ve_sonraki_istek_yasar ... ok
+test dosya_yazma_hatasi_503_olur_ve_sonraki_istekler_calisir ... ok
+test cerez_silme_kaydedilir ... ok
+test csrf_form_rotasindan_durum_degistiren_rotaya_tasinir ... ok
+test istek_parcala_sorgu_ve_govde ... ok
+test html_guvenlisi_kacislar ... ok
+test istek_sozlugu_yalniz_rotada_var ... ok
+test oturum_sozlugu_rota_disina_sizmaz ... ok
+test istek_son_tarihi_504_doner ... ok
+test istemci_adresi_web_disinda_bostur_ve_islem_etkisi_korunur ... ok
+test form_govdesi_post_ile_gelir ... ok
+test get_dogrudan_ve_dolayli_yazmayi_reddeder ... ok
+test http_durumlu_yanit_sabit_100_599_araligini_ister ... ok
+test sabit_http_durumlu_yanit_readinessi_503_yaparken_liveness_200_kalir ... ok
+test sorgu_verisi_rotada_okunur ... ok
+test onekli_rota_kuyrugu_yakalar ... ok
+test csrf_ve_zorunlu_alan_kapilari_403_400_ve_200_ayirir ... ok
+test toplayan_io_anonim_oturumu_sonraki_istege_tasir ... ok
+test eylem_transaction_hatasi_503_olur_ve_sonraki_istekler_calisir ... ok
+test unsafe_rota_politikasiz_derlenmez_ve_onsoz_sirasi_sabittir ... ok
+test yonlendirme_bicim_hatasi_s041 ... ok
+test yanlis_yontem_405_olmayan_yol_404_doner ... ok
+test dogrulanmis_oturum_kullanici_ve_rolu_rota_ortamina_tasir ... ok
+test put_patch_delete_govdeleri_cozulur ... ok
+test yazan_post_rotasi_mutlaka_eylem_cagirir ... ok
+test yonlendirme_kaydedilir ... ok
+test web_oturumu_listeleme_ve_iptal_intrinsicleri_derlenir ... ok
+test yonlendirme_baslik_enjeksiyonu_c022_ile_reddedilir ... ok
+test rota_hatasi_tamponlu_yaniti_cerezi_ve_oturum_mutasyonunu_geri_alir ... ok
+test zaman_asimi_tamponlu_yaniti_cerezi_ve_oturum_mutasyonunu_birlikte_geri_alir ... ok
+test panel_not_defteri_tam_dongu ... ok
+test girisli_panel_not_siler ... ok
+test girisli_panel_oturum_dongusu ... ok
+
+test result: ok. 43 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.57s
+
+     Running tests/worker_supervisor_testi.rs (target/debug/deps/worker_supervisor_testi-39550deb75cfdab5)
+
+running 1 test
+test worker_host_native_credential_ve_launcher_kampanyasi_atlanamaz has been running for over 60 seconds
+test worker_host_native_credential_ve_launcher_kampanyasi_atlanamaz ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 77.39s
+
+     Running tests/yapilandirilmis_hata_testi.rs (target/debug/deps/yapilandirilmis_hata_testi-23e588eefc640dbf)
+
+running 7 tests
+test hata_kodu_kanonik_olmali ... ok
+test neden_ve_veri_turleri_derlemede_korunur ... ok
+test eski_metin_hatasi_genel_koduyla_geriye_uyumludur ... ok
+test dene_yerlesikleri_kararli_kodlar_uretir ... ok
+test hata_jsonu_neden_zincirini_ve_veriyi_korur ... ok
+test hata_yeniden_yayilirken_yapi_korunur ... ok
+test kod_mesaj_neden_veri_ve_esleme_birlikte_calisir ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/yetkinlik_testi.rs (target/debug/deps/yetkinlik_testi-7417b27b2c0dc79f)
+
+running 3 tests
+test derleme_oncesi_kullanilan_yetkinligi_kesin_kaynakta_reddeder ... ok
+test sabit_outbound_hedefi_proje_allowlistine_baglanir ... ok
+test kullanilmayan_islem_de_yetkinligi_gizleyemez ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/yonetilen_modul_testi.rs (target/debug/deps/yonetilen_modul_testi-69ff934f718c3713)
+
+running 1 test
+test yonetilen_modul_yirmi_uc_actual_ve_kontrollu_fault_vakasi ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.00s
+
+     Running tests/zee_cekirdek_modul_kabulu_testi.rs (target/debug/deps/zee_cekirdek_modul_kabulu_testi-a271fc4b313e59b8)
+
+running 2 tests
+test eksik_ve_bayat_katalog_paketi_sessiz_kirilma_yerine_reddedilir ... ok
+test katalog_paketi_ve_rota_birimi_metin_yamasi_olmadan_kurulur_kaldirilir ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.13s
+
+     Running tests/zee_cekirdek_urun_kabulu_testi.rs (target/debug/deps/zee_cekirdek_urun_kabulu_testi-b481885b5782d38d)
+
+running 10 tests
+test csrf_eksik_jeton_ve_bal_kupu_http_ve_kayittan_once_reddedilir ... ok
+test form_sql_commit_hatasi_bildirim_yapmaz_smtp_hatasi_kaydi_kaybetmez ... ok
+test turnstile_gecersiz_tip_host_timeout_ve_sir_yoklugunda_hicbir_yan_etki_yoktur ... ok
+test alti_form_gecerli_turnstile_ile_bir_kayit_bir_bildirim_ve_yonlendirme_verir ... ok
+test yanlis_bozuk_ve_uzun_parola_hicbir_ozet_ve_sql_uretmez ... ok
+test ozet_uretimi_ve_commit_hatasi_girisi_basari_gibi_gostermez ... ok
+test commit_belirsizliginde_iki_db_sonucu_ayni_c027dir_otomatik_tekrar_yoktur ... ok
+test sql_ve_oturum_baglama_hatasi_tum_dis_eylemi_geri_alir ... ok
+test iki_eski_snapshot_ve_parola_degisim_yarisi_yeni_ozeti_ezmez ... ok
+test legacy_ilk_giriste_argon2ye_gecer_ikinci_giriste_bcrypt_ve_update_yoktur ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.45s
+
+   Doc-tests dil
+
+running 1 test
+test src/faz.rs - faz (line 3) - compile fail ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.31s
+
+-- Yayımlanmış kanıt korukları
+Yayımlanmış conformance artefaktları değişmedi.
+Semantic regresyon provenance'ı ve bütün compiler/src değişiklik beyanları korunuyor.
+CORE FREEZE bütün compiler kaynak commit'lerinde yürütülüyor.
+{"manifest_sha256": "5e174eb9179e79e75b5127e12c1760b65d448704256ad69dbfa3abd5b343805c", "miri_groups": 2, "origin": "owned-local-reviewed-not-authenticated", "schema": "zee-rc-evidence-check-1", "source": {"clean": true, "sha": "8b49113c413f62b35d4b251ed31068524d2fe26c", "tree": "09fa6e764bb317b4aa5b32b6ca15ce02f4cf389d"}, "status": "validated-integrity-and-policy", "targets": 4}
+Güvenlik kapısı geçti (--surum-adayi).

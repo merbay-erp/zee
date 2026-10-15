@@ -1,0 +1,45 @@
+[
+  {
+    "directory": "k276-finalS-linux-delivery-v2",
+    "files_verified": 21,
+    "ready": {
+      "status": "passed",
+      "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+      "manifest_sha256": "bf6e178cab7d4bff74ee503d071e98ed87a4ab711798429c37f71e7fe4bf812a",
+      "DELIVERY_sha256": "3edc90e19a73856312720551fe05abcde70c883a916d0523258accd1709a4f86",
+      "two_clean_binary_builds_equal": true,
+      "two_source_zip_equal": true,
+      "bundle_restoration_fsck": true,
+      "signed": false,
+      "published": false
+    }
+  },
+  {
+    "directory": "k276-finalS-Linux-native-install",
+    "files_verified": 34,
+    "ready": {
+      "status": "passed",
+      "scope": "actual owned Linux K266v2 canonical userprefix installation only",
+      "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+      "cases": 8,
+      "PROOF_sha256": "47a496f1fa880e08c2353fb9f75a4fdef73eaae5645fadf53f7bf885d2bf7096",
+      "manifest_sha256": "09ccff3bdbba3cbe5557e1773b9bdf76ec6fa66d60bfe366e8d8b5a64c6a279b"
+    }
+  },
+  {
+    "directory": "k276-finalS-Linux-carrier-native-revision2",
+    "files_verified": 17,
+    "ready": {
+      "status": "passed",
+      "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+      "cases": 4,
+      "manifest_sha256": "5948a66a757780e76daa2e78d612a990738833913f29021e58adfa1b9c03ebef",
+      "PROOF_sha256": "47c4915694945280b7ce84d23e8997370245ab18952ff60446ba2b5e448d0c0e",
+      "installed_carrier_removed": true,
+      "canonical_activation_removed": true,
+      "foreign_preserved": true,
+      "apt_autoactivation": false,
+      "public_distribution": false
+    }
+  }
+]

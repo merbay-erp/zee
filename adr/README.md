@@ -133,19 +133,19 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-121 | [Web oran CLI program argümanları](121-web-oran-cli-program-argumanlari.md) | **kabul, exact source/provenance bugfix** (K-262) |
 | ADR-122 | [Supervisor sahipli EPERM geçişi](122-supervisor-sahipli-eperm-gecisi.md) | **kabul, dar POSIX host correctness adayı** (K-263/GB-077) |
 | ADR-123 | [Kritik işlev seçici taban incelemesi](123-kritik-islev-secici-taban-incelemesi.md) | **kabul, dar bakım incelemesi** (K-264) |
-| ADR-124 | [Exact kaynakta dış RC kanıtı](124-exact-kaynak-dis-rc-kaniti.md) | **kabul, kısa doğruluk dilimi; gerçek RC kampanyası açık** (K-265) |
+| ADR-124 | [Exact kaynakta dış RC kanıtı](124-exact-kaynak-dis-rc-kaniti.md) | **kabul; cleanS canonicalexport+sameS RC gate geçti; GB082 dar kapalı** (K-265) |
 
-| ADR-125 | [Typed credential native listener bileşimi](125-credential-native-listener-kompozisyonu.md) | **kabul, dar Unix host; finalclean/live açık** (K-267/GB-083) |
-| ADR-126 | [Sonlu SQL dispatcher timer ve belirsizlik kilidi](126-sonlu-sql-dispatcher-timer.md) | **kabul, hazırlık; native Linux/systemd açık** (K-268/GB-084) |
-| ADR-127 | [Kopyalanabilir site ve panel başlangıcı](127-kopyalanabilir-site-panel-baslangici.md) | **kabul, dar pilot; finalclean/kullanıcı açık** (K-269/GB-085) |
+| ADR-125 | [Typed credential native listener bileşimi](125-credential-native-listener-kompozisyonu.md) | **kabul; temiz S typedcredential/listener model5+native5 dar Unix kabulü; fullP25/ürün/platform açık** (K-267/GB-083) |
+| ADR-126 | [Sonlu SQL dispatcher timer ve belirsizlik kilidi](126-sonlu-sql-dispatcher-timer.md) | **kabul; S actual ownedLinux timer2, fullP09/ürün açık** (K-268/GB-084) |
+| ADR-127 | [Kopyalanabilir site ve panel başlangıcı](127-kopyalanabilir-site-panel-baslangici.md) | **kabul; temiz S site/panel CLI+nativeHTTP dar kabulü; gerçek kullanıcı/fullP23/platform açık** (K-269/GB-085) |
 | ADR-128 | [Yerel compiler import ve proje launcher](128-yerel-compiler-import-ve-proje-launcher.md) | **kabul, yerel pilot; publisher/platform/live açık** (K-270/GB-086) |
-| ADR-129 | [Owned native web test kiti](129-owned-native-web-test-kiti.md) | **kabul, dar Unix profil; finalclean/ürün açık** (K-271/GB-087) |
-| ADR-130 | [Sabit TR/EN liste-detay HTTP golden](130-sabit-tr-en-liste-detay-http-golden.md) | **kabul, dar Unix profil; finalclean/ürün açık** (K-272/GB-088) |
-| ADR-131 | [Yönetilen proje modül kompozisyonu](131-yonetilen-modul-kompozisyonu.md) | **kabul, dar Unix profil; finalclean/ürün açık** (K-273/GB-089) |
-| ADR-132 | [Süreli hazırlık ve kontrollü config yenileme](132-sureli-hazirlik-ve-kontrollu-config-yenileme.md) | **kabul, dar Unix profil; finalclean/ürün açık** (K-274/GB-090) |
+| ADR-129 | [Owned native web test kiti](129-owned-native-web-test-kiti.md) | **kabul; temiz S normal Cargo+dedicated ownedwebPG4 kabulü; fullP22/ürün/platform açık** (K-271/GB-087) |
+| ADR-130 | [Sabit TR/EN liste-detay HTTP golden](130-sabit-tr-en-liste-detay-http-golden.md) | **kabul; temiz S Python3.9/3.13 fixed TR/EN HTTPgolden kabulü; ürün/platform/fullP21 açık** (K-272/GB-088) |
+| ADR-131 | [Yönetilen proje modül kompozisyonu](131-yonetilen-modul-kompozisyonu.md) | **kabul; temiz S normal Cargo managedscaffold dar kabulü; DB lifecycle/adoption/platform açık** (K-273/GB-089) |
+| ADR-132 | [Süreli hazırlık ve kontrollü config yenileme](132-sureli-hazirlik-ve-kontrollu-config-yenileme.md) | **kabul; temiz S readinessPG15+TTL5 dar Unix kabulü; sürekli hizmet/adoption/platform açık** (K-274/GB-090) |
 
-| ADR-133 | [Sabit owned host PDF backend](133-sabit-host-pdf-backend.md) | **kabul, dar host; P11/ürün/finalclean açık** (K-275/GB-091) |
-| ADR-134 | [Linux özel paket taşıyıcısı](134-linux-ozel-paket-tasiyicisi.md) | **kabul, dar hazırlık; final Linux install/container açık** (K-276/GB-092) |
-| ADR-135 | [Sabit native dış etki tüketicisi](135-sabit-native-dis-etki-tuketicisi.md) | **kabul, dar owned loopback; P09/ürün/finalclean açık** (K-277/GB-093) |
-| ADR-136 | [JetBrains yerel LSP şablonu](136-jetbrains-yerel-lsp-sablonu.md) | **kabul, dar POSIX veri şablonu; IDE kabulü açık** (K-278/GB-094) |
-| ADR-137 | [Önceki küçük sürüm korpusu](137-onceki-kucuk-surum-korpusu.md) | **kabul, dar POSIX korpus/göç; tam P04/P05 açık** (K-279/GB-095) |
+| ADR-133 | [Sabit owned host PDF backend](133-sabit-host-pdf-backend.md) | **kabul; S nativeemitter+hostPDF8, fullP11/ürün açık** (K-275/GB-091) |
+| ADR-134 | [Linux özel paket taşıyıcısı](134-linux-ozel-paket-tasiyicisi.md) | **kabul; S ownedLinux delivery/install8/carrier4/container6, GB092 dar kapalı** (K-276/GB-092) |
+| ADR-135 | [Sabit native dış etki tüketicisi](135-sabit-native-dis-etki-tuketicisi.md) | **kabul; S ownedloopback11, fullP09/ürün açık** (K-277/GB-093) |
+| ADR-136 | [JetBrains yerel LSP şablonu](136-jetbrains-yerel-lsp-sablonu.md) | **kabul; actualIDE kısmi, completion/orderlyshutdown açık** (K-278/GB-094) |
+| ADR-137 | [Önceki küçük sürüm korpusu](137-onceki-kucuk-surum-korpusu.md) | **kabul; S Mac/Linux modern49+preflight5, fullP04P05 açık** (K-279/GB-095) |

@@ -48,3 +48,7 @@ nonroot USER65532, kapalı ağ CLI/LSP ve sahipli runtime cleanup gerçek kanıt
 ister. Rootless namespace prerequisite veya base manifest/config doğrulaması,
 Zee container kabulü değildir. Hiçbir privileged container/sysctl/host mount
 veya host Docker/global service kurulumu bu recipe'nin parçası değildir.
+
+## 15 Ekim 2026 — temiz S yerel kanıt güncellemesi
+
+S’de iki temiz klondan kanonik Linux teslimi, user-prefix kurulum8, inert .deb build ve fresh audited native taşıyıcı4 ile rootless kanonik konteyner6 kabul edildi. [Son rapor](urunlesme-final-kabul-20261015.md) gerçek ABI yürütme ortamını ve exact hashleri taşır. Genel apt repository, otomatik etkinleştirme, imza/yayın, fiziksel/minOS/Windows kabulü değildir.

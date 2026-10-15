@@ -1,0 +1,7 @@
+{
+  "actual_source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "actual_compiler_dirty": false,
+  "exact_Git_blob_source_files_verified": 13,
+  "legacy_descriptive_source_identity_field_preserved": "external uncommitted candidate; actual existing compiler identity recorded",
+  "note": "Legacy static fixture label is not current commit state; all consumed source file bytes match exact committed S."
+}

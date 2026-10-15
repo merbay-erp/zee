@@ -1,0 +1,19 @@
+{
+  "status": "reviewable-unpublished-derived-metadata",
+  "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "manifest_sha256": "a09428a306294ae6b60bc03aca4cced4aa7a40d02d726711454d17af71877bc3",
+  "manifest_leaves": 189,
+  "mapping_sha256": "8846cc7368f5f60c43d39e1c43919650a6859fc9760eaf88adb98c00039617fe",
+  "raw_external_v1_preserved": true,
+  "raw_full_linux_411_preserved": true,
+  "original_findings": 44,
+  "unique_verified_Git_S_SHA256_values": 7,
+  "derived_files": 11,
+  "moved_bindings": 51,
+  "inverse_parsed_JSON_equal": true,
+  "unchanged_byte_copies": 175,
+  "external_review_root": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/root-final-S-archive-normalization-review",
+  "classification_sha256": "85dfe7683bd34e4195d2038be70dc696963f2016f1882a257c491e351f638469",
+  "replay_check_sha256": "c8439f2c4c0888c00509800bb3f7c4c517088d4319b7d242e6c4872677dd0dd2",
+  "boundary": "Derived JSON parsed equality, never raw byte identity; full411 Linux manifest remains external authority. No source commit/publication."
+}

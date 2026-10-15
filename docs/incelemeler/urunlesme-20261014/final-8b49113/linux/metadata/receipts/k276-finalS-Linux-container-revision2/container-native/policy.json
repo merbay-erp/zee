@@ -1,0 +1,1 @@
+{"default": [{"type": "reject"}], "transports": {"docker": {"docker.io/library/debian": [{"type": "insecureAcceptAnything"}]}, "containers-storage": {"": [{"type": "insecureAcceptAnything"}]}}}

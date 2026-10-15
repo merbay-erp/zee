@@ -1,0 +1,138 @@
+{
+  "schema": "zee-upstream-readonly-review-1",
+  "timestamp": "2026-10-15T07:23:04.869524+03:00",
+  "upstream_commit": "12703a3301557acd6d57bc903fed07cd826f632f",
+  "scope": "Primary-source read-only investigation only; no IDE, process, production source, or independent completion campaign interaction. Root reports IntelliJ locked; no unlock attempt.",
+  "observed_by_root": {
+    "ide": "IntelliJ IDEA Ultimate 2025.3.1 IU253.29346.138",
+    "lsp4ij": "0.21.0",
+    "working": [
+      "diagnostics/error repair",
+      "hover",
+      "definition",
+      "rename"
+    ],
+    "completion": "Manual Basic Completion, prefix ol: no popup. Completion remains OPEN."
+  },
+  "established": [
+    {
+      "finding": "completionProvider:{} is sufficient for static completion support. resolveProvider is a separate predicate used for resolve only. No compiler capability workaround warranted.",
+      "source": "CompletionCapabilityRegistry.java",
+      "anchor": "SERVER_CAPABILITIES_PREDICATE; RESOLVE_SERVER_CAPABILITIES_PREDICATE"
+    },
+    {
+      "finding": "Manual invocation uses CompletionTriggerKind.Invoked. Trigger-character support affects automatic invocation context only, not manual eligibility.",
+      "source": "LSPCompletionSupport.java",
+      "anchor": "createCompletionContext"
+    },
+    {
+      "finding": "Contributor is registered for language=any, order first,before wordCompletion. TextMate presence is not a prerequisite or blanket exclusion. Contributor can return before request when virtualFile absent or ProjectIndexingManager result not NOW.",
+      "source": "plugin.xml; LSPCompletionContributor.java",
+      "anchor": "completion.contributor; fillCompletionVariants"
+    },
+    {
+      "finding": "Default completion feature isEnabled returns true. User-defined completion subclass only customizes context-aware sorting (default false) and invocation-only snippet templates (default true), not a completion-enabled switch. No verified completion enable checkbox should be invented.",
+      "source": "AbstractLSPDocumentFeature.java; UserDefinedCompletionFeature.java; ClientConfigurationSettings.java"
+    },
+    {
+      "finding": "Completion future cancellation returns without items; successful results require normal completion. Blank labels are ignored. Prefix matching follows textEdit-derived prefix when present, otherwise existing IntelliJ prefix matcher.",
+      "source": "LSPCompletionContributor.java; LSPCompletionFeature.java; CompletionPrefix.java"
+    },
+    {
+      "finding": "Official UserGuide documents verbose LSP console tracing and Preferences | Languages & Frameworks | Language Servers | Debug tracing configuration.",
+      "source": "docs/UserGuide.md",
+      "anchor": "LSP console; Language Servers preferences"
+    }
+  ],
+  "inference": "With reported working per-file features and indexing NOW, empty completion options/triggerChars/resolve are eliminated as explanations. The remaining client request-dispatch/cancellation/prefix-filter path needs trace evidence; no exact cause established and no compatibility defect or completion pass claimed.",
+  "root_check_after_manual_unlock": [
+    {
+      "step": 1,
+      "action": "Enable verbose tracing in LSP Console (or Language Servers preferences Debug); retain initialize response and active-file URI. Observe one manual Basic Completion at fixed caret after ol without typing/moving caret while waiting.",
+      "oracle": "Whether textDocument/completion is sent; context.triggerKind should be Invoked=1."
+    },
+    {
+      "step": 2,
+      "action": "If absent, verify correct editor/caret focus and exact file mapping/language server association in Mappings; inspect existing indexing state and client exceptions.",
+      "oracle": "No server/compiler alteration; distinguish contributor dispatch failure from capability filtering. Existing hover/rename success alone does not prove completion contributor execution."
+    },
+    {
+      "step": 3,
+      "action": "If sent, inspect same request ID reply or $/cancelRequest/error, URI/position, array vs CompletionList/items and nonblank olsun label.",
+      "oracle": "111 items in a separate harness are not evidence that this IDE request returned them."
+    },
+    {
+      "step": 4,
+      "action": "If valid response reaches the IDE, compare manual completion at empty line prefix versus ol, retaining raw request/reply and popup observation; inspect any textEdit/filterText vs actual caret prefix. Keep useContextAwareSorting false/default unless a controlled client-only comparison is needed.",
+      "oracle": "Separate result filtering/prefix mismatch from request absence. This is a proposed UI diagnostic, not a completed test."
+    }
+  ],
+  "boundaries": [
+    "No source changes or runtime process control.",
+    "No completion acceptance before actual UI/trace evidence.",
+    "UI shutdown remains root-owned/open while locked.",
+    "Pinned upstream review does not prove installed plugin bytes equal this commit; retain installed 0.21.0 artifact binding separately."
+  ],
+  "source_files": [
+    {
+      "path": "src/main/java/com/redhat/devtools/lsp4ij/server/capabilities/CompletionCapabilityRegistry.java",
+      "url": "https://raw.githubusercontent.com/redhat-developer/lsp4ij/12703a3301557acd6d57bc903fed07cd826f632f/src/main/java/com/redhat/devtools/lsp4ij/server/capabilities/CompletionCapabilityRegistry.java",
+      "sha256": "238b1a5f52dec1eaa287e48aef1f986461918a0a18cf9ac0c4e53ce0f29614c7",
+      "bytes": 5187
+    },
+    {
+      "path": "src/main/java/com/redhat/devtools/lsp4ij/features/completion/LSPCompletionSupport.java",
+      "url": "https://raw.githubusercontent.com/redhat-developer/lsp4ij/12703a3301557acd6d57bc903fed07cd826f632f/src/main/java/com/redhat/devtools/lsp4ij/features/completion/LSPCompletionSupport.java",
+      "sha256": "25ab0e8f6d3a2a1366de55c0111bc96c96c553e00b2078a5858bd9827403fbc6",
+      "bytes": 5763
+    },
+    {
+      "path": "src/main/java/com/redhat/devtools/lsp4ij/features/completion/LSPCompletionContributor.java",
+      "url": "https://raw.githubusercontent.com/redhat-developer/lsp4ij/12703a3301557acd6d57bc903fed07cd826f632f/src/main/java/com/redhat/devtools/lsp4ij/features/completion/LSPCompletionContributor.java",
+      "sha256": "64cc0676f0306f6f53040c56e9350195aad8bac79d2afc739110dc4821f5f736",
+      "bytes": 14554
+    },
+    {
+      "path": "src/main/java/com/redhat/devtools/lsp4ij/client/features/LSPCompletionFeature.java",
+      "url": "https://raw.githubusercontent.com/redhat-developer/lsp4ij/12703a3301557acd6d57bc903fed07cd826f632f/src/main/java/com/redhat/devtools/lsp4ij/client/features/LSPCompletionFeature.java",
+      "sha256": "cdd54a8f3c299f6fb0cfb15f5d95f4c813469f8a8b69f65ddf1adae2247e287f",
+      "bytes": 13818
+    },
+    {
+      "path": "src/main/java/com/redhat/devtools/lsp4ij/client/features/AbstractLSPDocumentFeature.java",
+      "url": "https://raw.githubusercontent.com/redhat-developer/lsp4ij/12703a3301557acd6d57bc903fed07cd826f632f/src/main/java/com/redhat/devtools/lsp4ij/client/features/AbstractLSPDocumentFeature.java",
+      "sha256": "b0c4b61067d6087a75155c3233169b5d7f9e7f63d58d087de98df52d617482ff",
+      "bytes": 1829
+    },
+    {
+      "path": "src/main/java/com/redhat/devtools/lsp4ij/server/definition/launching/UserDefinedCompletionFeature.java",
+      "url": "https://raw.githubusercontent.com/redhat-developer/lsp4ij/12703a3301557acd6d57bc903fed07cd826f632f/src/main/java/com/redhat/devtools/lsp4ij/server/definition/launching/UserDefinedCompletionFeature.java",
+      "sha256": "140d07b745b1e7a26ff9f5b66949e1b091d8eeebf9d50254e6f4eaa560a0148e",
+      "bytes": 2115
+    },
+    {
+      "path": "src/main/java/com/redhat/devtools/lsp4ij/server/definition/launching/ClientConfigurationSettings.java",
+      "url": "https://raw.githubusercontent.com/redhat-developer/lsp4ij/12703a3301557acd6d57bc903fed07cd826f632f/src/main/java/com/redhat/devtools/lsp4ij/server/definition/launching/ClientConfigurationSettings.java",
+      "sha256": "5e1b2edf08aba8c78c65a0250be696a23129da064276072a8aa8ffefa0ae80de",
+      "bytes": 10261
+    },
+    {
+      "path": "src/main/java/com/redhat/devtools/lsp4ij/features/completion/CompletionPrefix.java",
+      "url": "https://raw.githubusercontent.com/redhat-developer/lsp4ij/12703a3301557acd6d57bc903fed07cd826f632f/src/main/java/com/redhat/devtools/lsp4ij/features/completion/CompletionPrefix.java",
+      "sha256": "a0c12e4e2a9dedccd25f94a369a1664d9aa2e6a9877397e7c947ab8341bc2ee3",
+      "bytes": 4589
+    },
+    {
+      "path": "src/main/resources/META-INF/plugin.xml",
+      "url": "https://raw.githubusercontent.com/redhat-developer/lsp4ij/12703a3301557acd6d57bc903fed07cd826f632f/src/main/resources/META-INF/plugin.xml",
+      "sha256": "1ede17cc5c88321bdcc8bb2b788c3a7ef8f40344ea6542a73c9f67189107d041",
+      "bytes": 65610
+    },
+    {
+      "path": "docs/UserGuide.md",
+      "url": "https://raw.githubusercontent.com/redhat-developer/lsp4ij/12703a3301557acd6d57bc903fed07cd826f632f/docs/UserGuide.md",
+      "sha256": "ba9041dd9ad56fd4dabc6ae6ab6eb247f69a43b8c2c822700dc9f88c444b7418",
+      "bytes": 7260
+    }
+  ]
+}

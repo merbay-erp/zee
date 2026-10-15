@@ -1,0 +1,15 @@
+[Unit]
+Description=Zee owned SQL-only finite dispatcher
+[Service]
+Type=oneshot
+UMask=0077
+ExecStart=/usr/bin/python3.11 -I -B /home/mustafaerbay.guest/zee-k276/final-source/scripts/finite_timer.py --config /home/mustafaerbay.guest/zee-k276/final-acceptance/timer-native-audited/paused-config.json --state /home/mustafaerbay.guest/zee-k276/final-acceptance/timer-native-audited/paused-state --run
+Restart=no
+KillMode=mixed
+TimeoutStartSec=180
+TimeoutStopSec=10
+SendSIGKILL=yes
+StandardInput=null
+StandardOutput=null
+StandardError=null
+NoNewPrivileges=yes

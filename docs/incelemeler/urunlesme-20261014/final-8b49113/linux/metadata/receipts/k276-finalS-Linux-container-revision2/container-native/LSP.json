@@ -1,0 +1,11 @@
+{
+  "schema": "zee-owned-installed-lsp-smoke-1",
+  "passed": true,
+  "binary_sha256": "24b0c4690a282a0028ed32bc69da5cca9779e163b8aabaddde525e39376da0d5",
+  "exit": 0,
+  "stderr_bytes": 0,
+  "response_ids": [
+    1,
+    2
+  ]
+}

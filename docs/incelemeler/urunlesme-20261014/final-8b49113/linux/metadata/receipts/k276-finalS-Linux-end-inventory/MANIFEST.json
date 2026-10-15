@@ -1,0 +1,124 @@
+{
+  "files": [
+    {
+      "path": "END-INVENTORY.json",
+      "sha256": "6067a0e4d9f64077aea96b5dc3f7c591731393e7dedf78f1812f316ae19f9de3"
+    },
+    {
+      "path": "FINAL-END-CHECK-V2.json",
+      "sha256": "02d33016b55894af3533e5f4c8d3ec32776f504049e35dd5c9dc1889f69a58d1"
+    },
+    {
+      "path": "FINAL-END-CHECK.json",
+      "sha256": "d95add1d63c0025b05b79f09b9a5312824731195c5e8fcc6efca90a47fbff96f"
+    },
+    {
+      "path": "FINAL-END-INVENTORY.json",
+      "sha256": "8b60d30475f8310211ffaae7a2bfcb18a02663d2c2d864d96dd06a96073839d7"
+    },
+    {
+      "path": "GUEST-END-INVENTORY.json",
+      "sha256": "3de6a42dc80fb6c13c7c08b2d74178ddd96d85592487179e6d8dc8048665fde1"
+    },
+    {
+      "path": "OWNED-LIMA-END.json",
+      "sha256": "44f3a2ad54a1636fe62c9f8ee68db9edc901cd396355c195db3a7b92dab7303d"
+    },
+    {
+      "path": "TOOL-VERSIONS.json",
+      "sha256": "22ee6538abd84777e29f7ae12fdd6f92074c6204deaeff424578697c9d189368"
+    },
+    {
+      "path": "USER-MANAGER-END.json",
+      "sha256": "89dc9064971782ad239a17472d2d4b09f4be5b9eaf20644e202fc96afb3fdece"
+    },
+    {
+      "path": "collect-end.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "collect-final-end.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "collect-tool-versions.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "copy-final-inventory.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "final_end_inventory.py",
+      "sha256": "8a44257dcf865b099966919696bed526b53e8b1a58ae9092845cbb78714ff5ea"
+    },
+    {
+      "path": "tool-versions/Git.log",
+      "sha256": "c9e40977101870d17ec3a0ac1e444ceb5e268d1c0a37d6edd8a5ed477734a53c"
+    },
+    {
+      "path": "tool-versions/Go.log",
+      "sha256": "55937b4033659aab490e61cf38cf861d82e9aa1bfe4cf1379488925cf5735fa9"
+    },
+    {
+      "path": "tool-versions/Node.log",
+      "sha256": "593764ae7aa0b416ad8ca2dad0d87bde031426b40b5eb7563eb95a15b4b47b64"
+    },
+    {
+      "path": "tool-versions/Podman.log",
+      "sha256": "8abe7fd782bdad416674bd06e0e670a00ba04794a61f975a7499f46844087d7d"
+    },
+    {
+      "path": "tool-versions/PostgreSQL.log",
+      "sha256": "4bbf9e40bb4cab414db862e0f93affb1d83c24ec83285eea9e7c2efbbc84d9fa"
+    },
+    {
+      "path": "tool-versions/Skopeo.log",
+      "sha256": "52960d7e69829ff2bbc85bfbbca657b9c0b5550c0c7dc6d6115ff5ded9b62775"
+    },
+    {
+      "path": "tool-versions/VERSIONS.json",
+      "sha256": "878ceffaacc8129b3779025712620cee8a611df802d58ddc9fabbc12c4044a3f"
+    },
+    {
+      "path": "tool-versions/cargo.log",
+      "sha256": "57d704d9ad73ec7cc1b1a79aed6703333615865be6e3dc1ce269ea4ca7068227"
+    },
+    {
+      "path": "tool-versions/conmon.log",
+      "sha256": "38a4455706a2d60b0033836d05449ab4a0e3c8eab05145817232550d8e5cf5af"
+    },
+    {
+      "path": "tool-versions/crun.log",
+      "sha256": "1f8df55a56fb21f1dbbe7dd05b7aee8fde885a38e287fb79fbfddd6e98f84586"
+    },
+    {
+      "path": "tool-versions/dpkg-deb.log",
+      "sha256": "4543b1a1e16429d923366af5dc254e859d8d379ee47fbd761ba2fc7521622e9e"
+    },
+    {
+      "path": "tool-versions/gcc.log",
+      "sha256": "8c59c3b7b9051484db9a6b6576edf12a3aca7381a06a174a2d4dbfd6ce08681f"
+    },
+    {
+      "path": "tool-versions/gitleaks.log",
+      "sha256": "c9fd9ccb6682c54b5fcb0363757b6c6873564e7c067f70b3b5581b611528b9f4"
+    },
+    {
+      "path": "tool-versions/glibc.log",
+      "sha256": "747a81a36c49d3ef737ba15d36365d789c08b385fae9af3627994939143935f1"
+    },
+    {
+      "path": "tool-versions/readelf.log",
+      "sha256": "8c89fd273e68458c498923fdab390f8216609db2baf639922d8c53b402d5b342"
+    },
+    {
+      "path": "tool-versions/rustc.log",
+      "sha256": "a20a14f978c7adba215e1dc7337e438197b29baa71ba4b2ddfa0ee8a83e84bd0"
+    },
+    {
+      "path": "tool-versions/rustup.log",
+      "sha256": "72da6449f4406a070f10b32f86c62515473e66cbe3324bb133fda071dd1fae7b"
+    }
+  ]
+}

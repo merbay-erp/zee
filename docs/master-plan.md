@@ -1623,3 +1623,9 @@ kampanyasında ayrıca yürütülmelidir; bu sonuç final temiz kaynak/native,
 900 saniye işletim, 1800 saniye soak, ASan/Miri, paket/kurulum veya gerçek
 ürün/platform/IDE/insan kabulü değildir. Yeni compiler/src, grammar, spec
 normu, public Rust API veya production bağımlılık değişikliği yoktur.
+
+## 15 Ekim 2026 — temiz S yerel kanıt güncellemesi
+
+[15 Ekim S raporu](urunlesme-final-kabul-20261015.md) tamamlanmış dar S profillerini ve aynıS RC kabulünü kaydeder. Temiz S üzerinde dört ASAN hedefi ayrı ayrı1801sn geçti; lexer_parser7.117.460, morfoloji8.265.144, http_istegi11.194.063 ve wasm_abi9.011.299 yürütme kaydedildi. İki seçili Miri grubunda toplam3test(ondalık2,zaman1) geçti. Kanonik export/check ve aynı S güvenlik kapısı510.198758sn exit0 ile geçti; kapının118 Cargo/libtest grubunda943passed/0failed/16ignored vardır. GB082 yalnız bu exactS yerel protokol ve kanıt kapısı için kapalıdır; E kaynakS gibi kabul edilmez. Gerçek ürün/adoption/P08, katılımcı, fizikselWindows/minOS, signedPDFinvocation/generikdaemon/sourcebranchcoverage ve tamIDE açık kalır.
+
+[RC sonuç makbuzu](incelemeler/urunlesme-20261014/final-8b49113/rc/FINAL-RESULT.json), [aynı-S kapı makbuzunun türetilmiş temsili](incelemeler/urunlesme-20261014/final-8b49113/rc/POST-GATE-RECEIPT.derived.json), [bağımsız kök incelemesi](incelemeler/urunlesme-20261014/final-8b49113/rc/root-independent-review.json).

@@ -1,0 +1,350 @@
+{
+  "schema": "zee-is-kuyrugu-ci-1",
+  "status": "passed",
+  "phase": "completed",
+  "started_utc": "2026-10-15T03:53:25.696003+00:00",
+  "cases": [
+    {
+      "name": "ayni_onay_tek_is_icerik_farki_reddedilir",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "jobs": 1,
+        "same_id": true,
+        "changed_payload_rejected": true,
+        "payload_is_data": true
+      }
+    },
+    {
+      "name": "iki_worker_sirasiz_ayri_kira_tek_sahip_ve_limit",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "waiting_workers": 2,
+        "distinct_jobs": 2,
+        "active_leases": 2,
+        "third_worker_empty": true,
+        "same_owner_empty": true
+      }
+    },
+    {
+      "name": "suresi_dolan_kira_eski_nesli_reddeder_tek_etki",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "expired_token_reuse_selects_current_job": true,
+        "generation_increased": true,
+        "stale_rejected": true,
+        "effects_before": 0,
+        "effects_after": 1,
+        "repeat_rejected": true,
+        "state_done": true
+      }
+    },
+    {
+      "name": "iki_ret_sonrasi_ucuncu_deneme_bir_etki",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "attempts": 3,
+        "handler_statements": 3,
+        "effects": 1,
+        "first_backoff": 1,
+        "second_backoff": 2,
+        "early_claim_empty": true,
+        "state_done": true
+      }
+    },
+    {
+      "name": "uc_ret_olu_mektup_dorduncu_deneme_yok",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "attempts": 3,
+        "handler_statements": 3,
+        "effects": 0,
+        "dead_letter": true,
+        "fourth_claim_empty": true
+      }
+    },
+    {
+      "name": "sigkill_commit_oncesi_yeniden_kira_tek_etki",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "actual_lock_wait": true,
+        "uncommitted_invisible": true,
+        "killed": true,
+        "effects_after_kill": 0,
+        "effects_after_recovery": 1,
+        "attempts": 2,
+        "state_done": true
+      }
+    },
+    {
+      "name": "sigkill_commit_sonrasi_uzlastirma_tekrar_yok",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "ack_observed": true,
+        "killed": true,
+        "reconciled_done": true,
+        "effects": 1,
+        "handler_statements": 1
+      }
+    },
+    {
+      "name": "handler_commit_iletilmeden_c027_uzlastirma",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "c027": true,
+        "stdout_empty": true,
+        "commits_seen": 1,
+        "commit_forwarded": false,
+        "commit_complete": false,
+        "commit_ready": false,
+        "effects": 0,
+        "reconcile_no_replay": true,
+        "state_leased": true
+      }
+    },
+    {
+      "name": "handler_commit_yanit_kayip_c027_uzlastirma",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "c027": true,
+        "stdout_empty": true,
+        "commits_seen": 1,
+        "commit_forwarded": true,
+        "commit_complete": true,
+        "commit_ready": true,
+        "effects": 1,
+        "reconcile_no_replay": true,
+        "state_done": true
+      }
+    },
+    {
+      "name": "enqueue_commit_iletilmeden_c027_anahtar_uzlastirma",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "c027": true,
+        "stdout_empty": true,
+        "jobs_before_reconcile": 0,
+        "reconciled_missing": true,
+        "jobs_after_explicit_decision": 1
+      }
+    },
+    {
+      "name": "enqueue_commit_yanit_kayip_c027_anahtar_uzlastirma",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "c027": true,
+        "stdout_empty": true,
+        "jobs_before_reconcile": 1,
+        "reconciled_ready": true,
+        "jobs_after_reconcile": 1
+      }
+    },
+    {
+      "name": "separate_lease_heartbeat_commits_while_handler_row_locked",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "handler_still_blocked_at_renewal_ack": true,
+        "renewals_before": 0,
+        "renewals_after": 7,
+        "heartbeat_acks": 7,
+        "held_seconds": 35.129,
+        "original30s_expired": true,
+        "effects": 1,
+        "done": true
+      }
+    },
+    {
+      "name": "done_job_renewal_rejected",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "renewals": 7
+      }
+    },
+    {
+      "name": "early_revoked_lease_reused_token_does_not_resurrect_old_row",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "old_authoritative_expired": true,
+        "old_compatibility_deadline_future": true,
+        "returned_current_job": true,
+        "active_leases": 1
+      }
+    },
+    {
+      "name": "wrong_token_generation_owner_no_mutation",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "rejections": 3,
+        "renewals": 0
+      }
+    },
+    {
+      "name": "renewal_keeps_120second_server_clock_cap",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "renew_until_unchanged": true,
+        "renewals": 1,
+        "renew_window_seconds": 120
+      }
+    },
+    {
+      "name": "expired_old_generation_no_resurrection_or_replacement_mutation",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "generation_increased": true,
+        "new_renewals": 0
+      }
+    },
+    {
+      "name": "absolute_lifetime_cap_rejected",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "renewals": 0
+      }
+    },
+    {
+      "name": "expired_locked_dead_worker_skiplocked_reaper_then_fenced_replacement",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "natural_lease_expiry": true,
+        "reaper_while_locked": 0,
+        "reaper_after_backend_gone": 1,
+        "old_generation_rejected": true,
+        "effects": 1,
+        "attempts": 2,
+        "no_heartbeat_resurrection": true,
+        "backend_gone": true,
+        "killed": true
+      }
+    },
+    {
+      "name": "heartbeat_commit_before_c027_no_replay",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "c027": true,
+        "renewals": 0,
+        "effects": 0,
+        "commits_seen": 1,
+        "commit_forwarded": false,
+        "commit_complete": false,
+        "commit_ready": false
+      }
+    },
+    {
+      "name": "heartbeat_commit_after_c027_no_replay",
+      "status": "passed",
+      "ignored": false,
+      "observations": {
+        "c027": true,
+        "renewals": 1,
+        "effects": 0,
+        "commits_seen": 1,
+        "commit_forwarded": true,
+        "commit_complete": true,
+        "commit_ready": true
+      }
+    }
+  ],
+  "ignored": 0,
+  "host": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "boundary": "Owned anonymous SQL-only queue; generated fixed counter is a test instrument. No SMTP retry, customer cluster, cron grammar, new CLI command, product adoption, Python removal or live deployment acceptance.",
+  "source_start_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "source_clean_start": true,
+  "fixture_hashes": [
+    {
+      "path": "dogfood/zee-cekirdek/is-kuyrugu/README.md",
+      "sha256": "5074c269233b7942b86fb61a1dbf253b684977ea2a729f41d475fa5830760fa8"
+    },
+    {
+      "path": "dogfood/zee-cekirdek/is-kuyrugu/gocler/0001_kuyruk.sql",
+      "sha256": "34b6eb8fa760c65c47c89bdc139d0696ff44a348324b204f165d0039bd7537e5"
+    },
+    {
+      "path": "dogfood/zee-cekirdek/is-kuyrugu/gocler/0002_kira_sahibi.sql",
+      "sha256": "926de3f9db7e4310e65be111588fddc6a78dbbb213db5c242148f0d9a182df5a"
+    },
+    {
+      "path": "dogfood/zee-cekirdek/is-kuyrugu/kaynak/kuyruk.dil",
+      "sha256": "4547249cba65f9866936ea6e173ba04337f8d3fa3a1dc03afe9a6a4eb7264645"
+    },
+    {
+      "path": "dogfood/zee-cekirdek/is-kuyrugu/proje.dil",
+      "sha256": "af34bd315194c6099b6c5702b92e6cd21631c32127daf7404ac262e00ffdf05e"
+    },
+    {
+      "path": "scripts/is-kuyrugu-ci.py",
+      "sha256": "612f71f03150d7506939b89baa5c7d2e7e8e9c7f3913db91f84d7f1207e6551f"
+    },
+    {
+      "path": "scripts/parola-goc-ci.py",
+      "sha256": "cdced5a360ccc5b1ca9293f247d0dd96b41353997483fb2acd8119581f0e7309"
+    },
+    {
+      "path": "scripts/postgresql-commit-proxy.py",
+      "sha256": "3c8a0de39e838d12db431803d69271805ad297730338e527053a51b012da1454"
+    },
+    {
+      "path": "scripts/postgresql-tls-ci.py",
+      "sha256": "8ef71f0070b9e954b70d0ec24c50c0285b4bfb76de4ed40490efd9eac78cad77"
+    },
+    {
+      "path": "scripts/tests/is-kuyrugu-ci-test.py",
+      "sha256": "98f65aff39386f3c958639062360acd11b4856758bab47f18b59e93da82d2013"
+    }
+  ],
+  "build_identity": {
+    "schema": "zee-build-v1",
+    "version": "0.8.0-dev",
+    "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+    "source_date": "2026-10-15",
+    "channel": "development",
+    "dirty": false
+  },
+  "binary_sha256": "fb21485fa46422844f5de9b4510a8957c957ac9f281e47df3907cb93eeb8ae4e",
+  "server": "postgres (PostgreSQL) 16.15",
+  "engine": "local",
+  "runtime_hashes": [
+    {
+      "path": "postgres",
+      "sha256": "9b89cfcd7b54a581c50c2fc5c3010f3ae0755635958d5789886718da22052fbd"
+    },
+    {
+      "path": "initdb",
+      "sha256": "c960be8780e673d65c97f78c54bd3438525e1de6f2822257b189effc8b48b740"
+    },
+    {
+      "path": "pg_ctl",
+      "sha256": "7c052138b54426bb3666814f25374a84cc4789bc0400ebf50dedca627e8563da"
+    },
+    {
+      "path": "psql",
+      "sha256": "c63479d6b17829552f52ac8f083b3bc4d6564dbea39eb64ffa01c150dc43d2af"
+    }
+  ],
+  "owned_cluster_closed": true,
+  "source_end_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "source_clean_end": true,
+  "source_unchanged": true,
+  "fixture_unchanged": true,
+  "source_acceptance": "clean-exact",
+  "elapsed_seconds": 70.176
+}

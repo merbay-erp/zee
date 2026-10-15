@@ -1,0 +1,24 @@
+{
+  "schema": "owned-campaign-external-source-start-1",
+  "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "tree_sha": "09fa6e764bb317b4aa5b32b6ca15ce02f4cf389d",
+  "reviewed_manifest_sha256": "01bc2a3d4e4356d2dc1990b2c1cebb1a83caa6c0e931fb3c578fc7312b421a1d",
+  "source_file_sha256": {
+    "/home/mustafaerbay.guest/zee-k276/final-drivers-v2/CONTRACT.md": "53b69526a357a9bc427d9395afdb1c14f4ba4db8b011f1215e248ddaa1276ac1",
+    "/home/mustafaerbay.guest/zee-k276/final-drivers-v2/external/delivery/deliverable.py": "509106d70e5e35c1142594c98df022b01e689966415bdd94a8f67feecb8587d8",
+    "/home/mustafaerbay.guest/zee-k276/final-drivers-v2/external/install/install_acceptance.py": "c5143d1105a52bb0e3b232e5af5b765bb78ae34de814c660776a4e584e1f8af0",
+    "/home/mustafaerbay.guest/zee-k276/final-drivers-v2/external/install/lsp_smoke.py": "58afb02c9869a48b2cd3315b108dfd483b4e1b40872fe189705359816a00dfb5",
+    "/home/mustafaerbay.guest/zee-k276/final-drivers-v2/external/install/owned_helper.py": "509106d70e5e35c1142594c98df022b01e689966415bdd94a8f67feecb8587d8",
+    "/home/mustafaerbay.guest/zee-k276/final-drivers-v2/linux_carrier_native.py": "d0116847430a4342131e4b090f4b24e97b3a084f39f2caa6149bd96c517fb863",
+    "/home/mustafaerbay.guest/zee-k276/final-drivers-v2/linux_protocol.py": "4783fc83e6a9dd9c622e75ef88459796abde084bd7cad91a51f0afe4008e01c7",
+    "/home/mustafaerbay.guest/zee-k276/final-drivers-v2/linux_step.py": "af568bdd40da014cc3d0ed23df1f88dac5d442bece37a9c0fd1440db0a94ab04",
+    "/home/mustafaerbay.guest/zee-k276/final-drivers-v2/linux_timer_native.py": "386103e27a974372d3920ba687fef67428333568c19f10ca23f50315562b33a5",
+    "/home/mustafaerbay.guest/zee-k276/final-drivers-v2/preparation26.log": "1eac01d9277424e7d268cfa40a47783605801b0c46ca81acf0f386546df3106e",
+    "/home/mustafaerbay.guest/zee-k276/final-drivers-v2/test_linux_preparation.py": "9bad417c492445de8658918d6e869c16bcd7ca2cdd2471d64fb18c14aaf43964",
+    "/home/mustafaerbay.guest/zee-k276/final-source/scripts/lifecycle_core.py": "e76fe65b6103fc4732aafc4468afc5bbf3d0699a0f79d7f74879165636ebb1a9",
+    "/home/mustafaerbay.guest/zee-k276/final-source/scripts/kur.sh": "1bea4701e9ac0cf8bdca5dd1ec6c4da424cfe03bcdf6bf1f33cc70ecee80a21f",
+    "/home/mustafaerbay.guest/zee-k276/final-source/scripts/kaldir.sh": "8f2351745c588687434d1a2a194af2b3299231e52bbc080a36698ca454e1e43d"
+  },
+  "python_version": "3.11.2 (main, May 12 2026, 05:17:27) [GCC 12.2.0]",
+  "source_start_clean": true
+}

@@ -1,0 +1,13 @@
+{
+  "status": "passed-input-plan-bindings",
+  "utc": "2026-10-15T05:21:58.040434+00:00",
+  "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "source_clean": true,
+  "payload_operations": 230,
+  "existing_source_docs": 36,
+  "plan_rows": 39,
+  "current_replaced_rows": 19,
+  "all_ID_status_K_dependency_columns_preserved": true,
+  "RC": "PENDING",
+  "GB082": "OPEN"
+}

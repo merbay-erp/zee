@@ -1,0 +1,116 @@
+{
+  "files": [
+    {
+      "path": "actual-carrier-build.log",
+      "sha256": "76ff4ae3cf23045fdcc50126c56f5016dd671a29e44f36df5b5333aed184095b"
+    },
+    {
+      "path": "carrier/BUILD.json",
+      "sha256": "d1c077d7961f13c9406a16ba05bb98d35ebdcdac42960c3e790372c1db8dd0a4"
+    },
+    {
+      "path": "carrier/inspected/DEBIAN/control",
+      "sha256": "9c97b30b030f78f7ae97ae4fc83dcae8c9e7fc72bdb7a94d5abc02b4b3a2fa28"
+    },
+    {
+      "path": "carrier/inspected/usr/share/zee-private-carrier/8b49113c413f62b35d4b251ed31068524d2fe26c/CARRIER.json",
+      "sha256": "bcd6995e1430f5df906662d063b917a89369ac5cf350c7f0df8a139e29e6fb0c"
+    },
+    {
+      "path": "carrier/inspected/usr/share/zee-private-carrier/8b49113c413f62b35d4b251ed31068524d2fe26c/binaries/GIT_SHA",
+      "sha256": "9d7e7a052e33ca696a3fb131f481f8a36133dd1b9e12efa0336342e2e200536a"
+    },
+    {
+      "path": "carrier/inspected/usr/share/zee-private-carrier/8b49113c413f62b35d4b251ed31068524d2fe26c/binaries/SHA256SUMS",
+      "sha256": "55d6cde77cc6eb417b01072eb3968ebd095094b195066cc81fb2e37b728cc213"
+    },
+    {
+      "path": "carrier/inspected/usr/share/zee-private-carrier/8b49113c413f62b35d4b251ed31068524d2fe26c/binaries/dil",
+      "sha256": "80cc4b162211b352e97dd8f3d54697e53d92f5d3dd40b03fe73f78963d37e739"
+    },
+    {
+      "path": "carrier/inspected/usr/share/zee-private-carrier/8b49113c413f62b35d4b251ed31068524d2fe26c/binaries/dillsp",
+      "sha256": "b2490655662939b7f2821c9707312c5c1631d83e60240c3a5aaae82bdd71edaa"
+    },
+    {
+      "path": "carrier/inspected/usr/share/zee-private-carrier/8b49113c413f62b35d4b251ed31068524d2fe26c/binaries/provenance.intoto.json",
+      "sha256": "b688c3b3710e2013510d5fdd220f5776e623a754548b0b462402d0f464b25c32"
+    },
+    {
+      "path": "carrier/inspected/usr/share/zee-private-carrier/8b49113c413f62b35d4b251ed31068524d2fe26c/binaries/sbom.spdx.json",
+      "sha256": "d154e31f15895c3dd3ecab2d0e55ac490d41187ab9a4ab686eb321847b08a317"
+    },
+    {
+      "path": "carrier/inspected/usr/share/zee-private-carrier/8b49113c413f62b35d4b251ed31068524d2fe26c/scripts/kaldir.sh",
+      "sha256": "8f2351745c588687434d1a2a194af2b3299231e52bbc080a36698ca454e1e43d"
+    },
+    {
+      "path": "carrier/inspected/usr/share/zee-private-carrier/8b49113c413f62b35d4b251ed31068524d2fe26c/scripts/kur.sh",
+      "sha256": "1bea4701e9ac0cf8bdca5dd1ec6c4da424cfe03bcdf6bf1f33cc70ecee80a21f"
+    },
+    {
+      "path": "carrier/logs/build.log",
+      "sha256": "eae1d07a2c0782529b9ae30337e5c14f86b59e12722ca171d221719526147e3f"
+    },
+    {
+      "path": "carrier/logs/contents.log",
+      "sha256": "6c0fef5d8c160273dbcb49e3341e709a2dc8ba13f488b6ca5143c7c34894d3fb"
+    },
+    {
+      "path": "carrier/logs/extract.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "carrier/logs/info.log",
+      "sha256": "9f7f914052539d5ac9bc7fa53c5c59e36bf1e3772ce8987cbda6fda9845e5b43"
+    },
+    {
+      "path": "carrier/package-tree/DEBIAN/control",
+      "sha256": "9c97b30b030f78f7ae97ae4fc83dcae8c9e7fc72bdb7a94d5abc02b4b3a2fa28"
+    },
+    {
+      "path": "carrier/package-tree/usr/share/zee-private-carrier/8b49113c413f62b35d4b251ed31068524d2fe26c/CARRIER.json",
+      "sha256": "bcd6995e1430f5df906662d063b917a89369ac5cf350c7f0df8a139e29e6fb0c"
+    },
+    {
+      "path": "carrier/package-tree/usr/share/zee-private-carrier/8b49113c413f62b35d4b251ed31068524d2fe26c/binaries/GIT_SHA",
+      "sha256": "9d7e7a052e33ca696a3fb131f481f8a36133dd1b9e12efa0336342e2e200536a"
+    },
+    {
+      "path": "carrier/package-tree/usr/share/zee-private-carrier/8b49113c413f62b35d4b251ed31068524d2fe26c/binaries/SHA256SUMS",
+      "sha256": "55d6cde77cc6eb417b01072eb3968ebd095094b195066cc81fb2e37b728cc213"
+    },
+    {
+      "path": "carrier/package-tree/usr/share/zee-private-carrier/8b49113c413f62b35d4b251ed31068524d2fe26c/binaries/dil",
+      "sha256": "80cc4b162211b352e97dd8f3d54697e53d92f5d3dd40b03fe73f78963d37e739"
+    },
+    {
+      "path": "carrier/package-tree/usr/share/zee-private-carrier/8b49113c413f62b35d4b251ed31068524d2fe26c/binaries/dillsp",
+      "sha256": "b2490655662939b7f2821c9707312c5c1631d83e60240c3a5aaae82bdd71edaa"
+    },
+    {
+      "path": "carrier/package-tree/usr/share/zee-private-carrier/8b49113c413f62b35d4b251ed31068524d2fe26c/binaries/provenance.intoto.json",
+      "sha256": "b688c3b3710e2013510d5fdd220f5776e623a754548b0b462402d0f464b25c32"
+    },
+    {
+      "path": "carrier/package-tree/usr/share/zee-private-carrier/8b49113c413f62b35d4b251ed31068524d2fe26c/binaries/sbom.spdx.json",
+      "sha256": "d154e31f15895c3dd3ecab2d0e55ac490d41187ab9a4ab686eb321847b08a317"
+    },
+    {
+      "path": "carrier/package-tree/usr/share/zee-private-carrier/8b49113c413f62b35d4b251ed31068524d2fe26c/scripts/kaldir.sh",
+      "sha256": "8f2351745c588687434d1a2a194af2b3299231e52bbc080a36698ca454e1e43d"
+    },
+    {
+      "path": "carrier/package-tree/usr/share/zee-private-carrier/8b49113c413f62b35d4b251ed31068524d2fe26c/scripts/kur.sh",
+      "sha256": "1bea4701e9ac0cf8bdca5dd1ec6c4da424cfe03bcdf6bf1f33cc70ecee80a21f"
+    },
+    {
+      "path": "carrier/zee-private-carrier-8b49113c413f62b35d4b251ed31068524d2fe26c.deb",
+      "sha256": "26cddc16cc85838847420c782a419210721eebffb6a61dc9ddc78f07f65c4deb"
+    },
+    {
+      "path": "collect-carrier.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

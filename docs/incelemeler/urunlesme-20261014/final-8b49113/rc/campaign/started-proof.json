@@ -1,0 +1,46 @@
+{
+  "schema": "zee-local-asan-miri-campaign-1",
+  "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "source_start": {
+    "sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+    "tree": "09fa6e764bb317b4aa5b32b6ca15ce02f4cf389d",
+    "clean": true
+  },
+  "original_source_start": {
+    "sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+    "tree": "09fa6e764bb317b4aa5b32b6ca15ce02f4cf389d",
+    "clean": true
+  },
+  "run_origin": "local",
+  "run_id": "1792040670788159000",
+  "run_attempt": 1,
+  "tools": {
+    "toolchain": "nightly-2026-08-31",
+    "rustc": "rustc 1.100.0-nightly (908501772 2026-08-30)\nbinary: rustc\ncommit-hash: 90850177249efe0321573c569aec5d12b257f8d6\ncommit-date: 2026-08-30\nhost: aarch64-apple-darwin\nrelease: 1.100.0-nightly\nLLVM version: 23.1.0",
+    "cargo_fuzz": "cargo-fuzz 0.13.2",
+    "miri": "miri 0.1.0 (9085017724 2026-08-30)"
+  },
+  "producer_sha256": "f401406d8097479c5545597fc09ae81791e20043adccd8b9abb8ad650cf86752",
+  "producer_path": "scripts/rc-kampanyasi.py",
+  "host_target": "aarch64-apple-darwin",
+  "platform": {
+    "system": "Darwin",
+    "release": "25.6.0",
+    "os_version": "26.6.2",
+    "machine": "arm64",
+    "processor": "Apple M4 Pro",
+    "ram_bytes": 25769803776
+  },
+  "started_utc": "2026-10-15T05:04:30.800537+00:00",
+  "maximum_concurrent_fuzz_targets": 2,
+  "targets": [],
+  "miri": [],
+  "result": "incomplete",
+  "remote_ci": null,
+  "signing": false,
+  "publication": false,
+  "release_gate_closed": false,
+  "seed_imported": false,
+  "workflow_retention_days": 90,
+  "local_artifact_uploaded": false
+}

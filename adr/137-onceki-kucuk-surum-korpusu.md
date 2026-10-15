@@ -1,6 +1,6 @@
 # ADR-137 — Gerçek önceki küçük sürüm korpusu ve açık göç (K-279)
 
-- **Durum:** kabul, dar POSIX korpus/göç kanıtı; tam P04/P05/ürün kabulü açık.
+- **Durum:** kabul; temiz S Mac/Linux modern49+preflight5 ve açıkK086 göçü; fullP04P05/ürün/platform açık
 
 P04/P05 için sentetik eski-consumer modeli yerine mevcut v0.7.0 exact
 kaynağı d08a947713ddc38d2163360c17d07fbffcb1213d ayrı temiz klonda derlenir.
@@ -35,3 +35,9 @@ kalır ve mevcut üç saniye grace süresi biter. Bu testte 52 komut vardır;
 toplam test kampanya bütçesi bu nedenle 240 saniyedir. Komut başına sekiz
 saniye ve sahipli temizlik davranışı değişmez; production timeout, SLA veya
 benchmark eşiği gevşetilmez. Bu ölçüm tam Linux korpus kabulü değildir.
+
+## 15 Ekim 2026 — temiz S yerel kanıt güncellemesi
+
+S common Mac ve actual Linux aynı modern49+preflight5 dar kabulünü geçti.49=33check+15safruntime+1explicitK086migration; direct32/33,31-birimler T039 ve yalnız iki annotation göçü korunur. Old0.7 nonJSONcapability legacyrollback açmaz. Fixture/helper/binary before-end producer assertions korunur; archival DERIVED açıklama bağımsız tarihsel START receipt değildir. Ürün/kanal/fullP04P05/physicalplatform açık.
+
+[Güncel dar kaynak kanıtı](../docs/urunlesme-final-kabul-20261015.md).

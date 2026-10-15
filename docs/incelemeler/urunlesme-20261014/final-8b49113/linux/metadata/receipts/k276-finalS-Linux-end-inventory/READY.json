@@ -1,0 +1,8 @@
+{
+  "status": "passed",
+  "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "manifest_sha256": "fc0a112b193c919a6b8e36aab0e7c218c39b04d00d9220df5c173f6c5484a9e1",
+  "source_helpers_unchanged": true,
+  "owned_units_carrier_absent": true,
+  "VM_retained": true
+}

@@ -50,3 +50,7 @@ python3 -I scripts/tests/derleyici-yerel-test.py --compiler-dir compiler/target/
 Existing25 crypto/privatebyte/pin/config davranışı değiştirilmeden korunur. Yeni14 vaka actual process publish yarışı, foreign lock replacement, pre/post publication IO arızası, source swap, exact inventory/owned path, launcher current pin/project scope, missing/corrupt bootstrap helper quiet exit2, duplicate-iterator bounded ret ve masked input retlerini kapsar. Gerçek dil+dillsp byte çiftine ephemeral test anahtarıyla signed fixture hazırlanır; LSP initialize/shutdown/exit yanıtları ve aynı actual BuildJSON doğrulanır. Gerçek proje komutunda bağımlılıksız eksik lock kabulü, bağımlı eksik lock P008, geçerli lock kabulü ve dependency kaynak değişince P008 ile pin/lock/app-source byte eşliği sınanır. Test anahtarı/sentetik sidecar gerçek publisher veya two-clean-clone release doğruluğunu kanıtlamaz.
 
 Aday dış stage test kabulü root ortak Cargo/fullphase kabulü yerine geçmez. Native Windows/minOS, gerçek ürün adoption/önceki minor rollback, production keys, download/update ve global install/PATH açık kalır; P07 bütünü kapanmış sayılmaz.
+
+## 15 Ekim 2026 — temiz S yerel kanıt güncellemesi
+
+S macOS/Linux kanonik teslim/kurulum kabulü ve IntelliJ’de boşluk içeren owned proje yolunda gerçek launcher sunucu açılışı kaydedildi. Katalog yalnız geçici sentetik test anahtarıyla imzalandı, özel anahtar silindi; production publisher veya public release değildir. [Son rapor](urunlesme-final-kabul-20261015.md).

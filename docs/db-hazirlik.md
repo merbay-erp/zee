@@ -107,3 +107,7 @@ Bu daemon/cron veya SMTP/DB migration handler'ı değildir. SIGKILL helper'a fin
 Normal modelsTTL6/watch10 ile eski strict10 korunur. Dedicated PG15, eski13'e iki
 tekrarlanan actual drift/recovery/SIGKILL sınırını ekler; currentclean/live/systemd
 ve uzun kampanya yerine geçmez. [ADR-132](../adr/132-sureli-hazirlik-ve-kontrollu-config-yenileme.md).
+
+## 15 Ekim 2026 — temiz S yerel kanıt güncellemesi
+
+S common ve gerçek Linux VM’de dedicated PG15 geçti; opt-in TTL5 ayrıca kabul edildi. [Son rapor](urunlesme-final-kabul-20261015.md) kaynak/binary pinlerini ve sınırlı config HUP davranışını korur; genel canlı reload/production hizmeti değildir.

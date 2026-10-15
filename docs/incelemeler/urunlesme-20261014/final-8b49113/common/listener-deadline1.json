@@ -1,0 +1,39 @@
+{
+  "schema": "zee-native-listener-deadline-1",
+  "scope": "owned single generation activation EOF boundary; no longcampaign",
+  "binary_sha256": "fb21485fa46422844f5de9b4510a8957c957ac9f281e47df3907cb93eeb8ae4e",
+  "single_generation_only": true,
+  "owner_source_sha256": "560bec4e4e36d2aa856936d9d32412bb9106b61b25a871495287e2287e3c6642",
+  "runner_sha256": "ae66aca5c58e53969c0382b01492dce8713488164d8a325cbc8ba493c7623268",
+  "fixture_hashes": {
+    "ana.dil": "f69668d73dcd9ab05b18c9c42d180f46fd0fc0388c8a0101029d54fb5f9348b2",
+    "proje.dil": "9ceb941ff88a1d200f115ee06e65344bea4f5f1a2e72a9c3403817f840e6f59f"
+  },
+  "build": {
+    "schema": "zee-build-v1",
+    "version": "0.8.0-dev",
+    "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+    "source_date": "2026-10-15",
+    "channel": "development",
+    "dirty": false
+  },
+  "prefix_consumed_elapsed": 0.001276999944821,
+  "deadline_latest_upper_bound": 10.001276999944821,
+  "remaining_frame_sent_elapsed": 9.97377558297012,
+  "EOF_elapsed": 10.03991416702047,
+  "late_activation_HTTP200": false,
+  "WNOWAIT_status": 0,
+  "response_bytes": 0,
+  "parent_listener_retained_during_probe": true,
+  "owned_handles_reaped": true,
+  "closure_contract": "control failure maps to None and normalCLI0; no admission, terminal leader",
+  "expected": "rejected",
+  "passed": true,
+  "fixture_source_sha256": "f69668d73dcd9ab05b18c9c42d180f46fd0fc0388c8a0101029d54fb5f9348b2",
+  "sources": {
+    "scripts/worker-supervisor.py": "560bec4e4e36d2aa856936d9d32412bb9106b61b25a871495287e2287e3c6642",
+    "scripts/tests/native-listener-deadline-test.py": "ae66aca5c58e53969c0382b01492dce8713488164d8a325cbc8ba493c7623268",
+    "compiler/src/web_listener.rs": "90ad46b31b7843d6ea57dddf0de25a764af56c81bf09719e1feba856c7d9dbcb",
+    "compiler/src/main.rs": "12228594efe698aeedeb8d757697bb71e37dfa824fbbd771e48ad0fc3fad2330"
+  }
+}

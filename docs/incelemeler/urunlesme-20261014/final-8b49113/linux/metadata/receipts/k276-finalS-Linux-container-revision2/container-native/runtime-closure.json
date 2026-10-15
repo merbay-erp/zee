@@ -1,0 +1,63 @@
+[
+  {
+    "guest_logical": "/usr/lib/aarch64-linux-gnu/libssl.so.3",
+    "resolved": "/usr/lib/aarch64-linux-gnu/libssl.so.3",
+    "sha256": "09fe45f6e578f6a598b3f67a193d7dc56f679c2259933d90e78a368d594bc8b0",
+    "container": "/usr/lib/aarch64-linux-gnu/libssl.so.3"
+  },
+  {
+    "guest_logical": "/usr/lib/aarch64-linux-gnu/libcrypto.so.3",
+    "resolved": "/usr/lib/aarch64-linux-gnu/libcrypto.so.3",
+    "sha256": "908bfe9966f80a31cec61ec4cbd0661d9fe9673edcca1848e038351e122eff74",
+    "container": "/usr/lib/aarch64-linux-gnu/libcrypto.so.3"
+  },
+  {
+    "guest_logical": "/usr/lib/aarch64-linux-gnu/libgcc_s.so.1",
+    "resolved": "/usr/lib/aarch64-linux-gnu/libgcc_s.so.1",
+    "sha256": "046856f95f4636f1fc7c3a12bf4f3cd5634c2fc5145c3fdf7395d4f349fa69c7",
+    "container": "/usr/lib/aarch64-linux-gnu/libgcc_s.so.1"
+  },
+  {
+    "guest_logical": "/usr/lib/aarch64-linux-gnu/libm.so.6",
+    "resolved": "/usr/lib/aarch64-linux-gnu/libm.so.6",
+    "sha256": "3c4cb3be0b974edf05f023f85ab15107fb5afc2687163593d0d4cf8e80c17b39",
+    "container": "/usr/lib/aarch64-linux-gnu/libm.so.6"
+  },
+  {
+    "guest_logical": "/usr/lib/aarch64-linux-gnu/libc.so.6",
+    "resolved": "/usr/lib/aarch64-linux-gnu/libc.so.6",
+    "sha256": "e4ac8ae1d81e4865e3aadedb962879cf9415903b3f2ba81ec75e9962b86ab8b0",
+    "container": "/usr/lib/aarch64-linux-gnu/libc.so.6"
+  },
+  {
+    "guest_logical": "/usr/lib/aarch64-linux-gnu/ld-linux-aarch64.so.1",
+    "resolved": "/usr/lib/aarch64-linux-gnu/ld-linux-aarch64.so.1",
+    "sha256": "17538b8f9889a470c061f69a8fea8124da89627311cd16546c133a89f09056df",
+    "container": "/usr/lib/aarch64-linux-gnu/ld-linux-aarch64.so.1"
+  },
+  {
+    "guest_logical": "/etc/ssl/certs/ca-certificates.crt",
+    "sha256": "4e3df1b7cefec516bc6dcc615565455a6658f6ae9da64989b8959827e87161dc",
+    "container": "/etc/ssl/certs/ca-certificates.crt"
+  },
+  {
+    "guest_logical": "/usr/share/doc/libc6/copyright",
+    "sha256": "40c7e1f2118531f038ca22999bd976901254e1bc5cd1b0f0211bdd064c599987",
+    "container": "/usr/share/doc/libc6/copyright"
+  },
+  {
+    "guest_logical": "/usr/share/doc/libssl3/copyright",
+    "sha256": "6a7da622fe0637a334d2a8fc470852d2ffb77d9a2b2f930f854e32a41ad6ef35",
+    "container": "/usr/share/doc/libssl3/copyright"
+  },
+  {
+    "guest_logical": "/usr/share/doc/libgcc-s1/copyright",
+    "sha256": "da8191658b3452ce9caf31638ba61dab31a38c619fa39df119812e050f592fd3",
+    "container": "/usr/share/doc/libgcc-s1/copyright"
+  },
+  {
+    "guest_logical": "/usr/share/doc/ca-certificates/copyright",
+    "sha256": "e85e1bcad3a915dc7e6f41412bc5bdeba275cadd817896ea0451f2140a93967c",
+    "container": "/usr/share/doc/ca-certificates/copyright"
+  }
+]

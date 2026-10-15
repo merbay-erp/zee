@@ -1,0 +1,430 @@
+{
+  "schema": "zee-k251-native-candidate-1",
+  "status": "passed",
+  "cases": [
+    {
+      "name": "missing-ledger",
+      "status": "passed",
+      "ready": false,
+      "reason": "migration",
+      "exit": 1,
+      "elapsed_seconds": 0.478
+    },
+    {
+      "name": "applied-before-start-stale",
+      "status": "passed",
+      "ready": true,
+      "reason": "ready",
+      "exit": 0,
+      "elapsed_seconds": 0.508
+    },
+    {
+      "name": "applied-ready-two-workers",
+      "status": "passed",
+      "ready": true,
+      "reason": "ready",
+      "exit": 0,
+      "elapsed_seconds": 0.496
+    },
+    {
+      "name": "pending-migration",
+      "status": "passed",
+      "ready": false,
+      "reason": "migration",
+      "exit": 1,
+      "elapsed_seconds": 0.459
+    },
+    {
+      "name": "restored-after-pending",
+      "status": "passed",
+      "ready": true,
+      "reason": "ready",
+      "exit": 0,
+      "elapsed_seconds": 0.502
+    },
+    {
+      "name": "ledger-checksum-drift",
+      "status": "passed",
+      "ready": false,
+      "reason": "migration",
+      "exit": 1,
+      "elapsed_seconds": 0.458
+    },
+    {
+      "name": "actual-schema-drift",
+      "status": "passed",
+      "ready": false,
+      "reason": "schema",
+      "exit": 1,
+      "elapsed_seconds": 0.482
+    },
+    {
+      "name": "revision-mismatch",
+      "status": "passed",
+      "ready": false,
+      "reason": "schema",
+      "exit": 1,
+      "elapsed_seconds": 0.47
+    },
+    {
+      "name": "schema-restored",
+      "status": "passed",
+      "ready": true,
+      "reason": "ready",
+      "exit": 0,
+      "elapsed_seconds": 0.491
+    },
+    {
+      "name": "pg-stopped",
+      "status": "passed",
+      "ready": false,
+      "reason": "migration",
+      "exit": 1,
+      "elapsed_seconds": 2.459
+    },
+    {
+      "name": "fresh-logical-restore-ready",
+      "status": "passed",
+      "ready": true,
+      "reason": "ready",
+      "exit": 0,
+      "elapsed_seconds": 0.504
+    },
+    {
+      "name": "restart-fresh-app-gate",
+      "status": "passed",
+      "ready": true,
+      "reason": "ready",
+      "exit": 0,
+      "elapsed_seconds": 0.5
+    },
+    {
+      "name": "watcher-sigkill-expired-ttl-live200",
+      "status": "passed",
+      "ready": false,
+      "exit": -9
+    },
+    {
+      "name": "actual-repeated-db-good-drift-restored-sigterm",
+      "status": "passed",
+      "ready": false,
+      "reason": "cancelled",
+      "exit": 2
+    },
+    {
+      "name": "sql-error-masked-unready",
+      "status": "passed",
+      "ready": false,
+      "reason": "schema",
+      "exit": 1,
+      "elapsed_seconds": 0.496
+    }
+  ],
+  "source_identity": "external uncommitted candidate; actual existing compiler identity recorded",
+  "started_utc": "2026-10-15T03:58:31.518278+00:00",
+  "boundaries": [
+    "finite repeated DB probe preparation; abrupt death bounded by opt-in supervisor TTL",
+    "receipt alone does not prove actual DDL",
+    "no full P13/P14/drain/zero downtime",
+    "owned local anonymous fixtures, no live product or platform acceptance"
+  ],
+  "compiler_identity": {
+    "schema": "zee-build-v1",
+    "version": "0.8.0-dev",
+    "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+    "source_date": "2026-10-15",
+    "channel": "development",
+    "dirty": false
+  },
+  "compiler_binary_sha256": "fb21485fa46422844f5de9b4510a8957c957ac9f281e47df3907cb93eeb8ae4e",
+  "source_files": [
+    {
+      "path": "scripts/db-hazirlik.py",
+      "sha256": "37b554ba3bfbbd848b876c5a069e6a96f87804aca5bdb6024351d68c83cd847b"
+    },
+    {
+      "path": "scripts/tests/db-readiness-watch-native.py",
+      "sha256": "3ff5da8666334e05169e3c599f060b193d0346b84e68c0556ec844530fe72d1c"
+    },
+    {
+      "path": "scripts/worker-supervisor.py",
+      "sha256": "560bec4e4e36d2aa856936d9d32412bb9106b61b25a871495287e2287e3c6642"
+    },
+    {
+      "path": "scripts/native-capabilities.py",
+      "sha256": "0a336d915e6618b7bc9134598337c0e442a7d455008fa937a0e49771fe7d94fc"
+    },
+    {
+      "path": "scripts/native-metrics.py",
+      "sha256": "d5d12902358591365ff201c13c44b255d265c49c71befabcdef0575fe7e854c4"
+    },
+    {
+      "path": "scripts/tests/worker-supervisor-test.py",
+      "sha256": "447525fd38503c150d6488e394e2ff13e51b5db70bbf9a9517daacadd1e59fe1"
+    },
+    {
+      "path": "scripts/postgresql-tls-ci.py",
+      "sha256": "8ef71f0070b9e954b70d0ec24c50c0285b4bfb76de4ed40490efd9eac78cad77"
+    },
+    {
+      "path": "scripts/postgresql-tls11-control.py",
+      "sha256": "cdf477d154f9fe11086c4829b34b9a412156feabdee1404b5bd863026f2ba639"
+    },
+    {
+      "path": "compiler/tests/fixtures/db-readiness/probe/kaynak/hazirlik.dil",
+      "sha256": "269ad7683f65b1a6e3dd6596cbc019958fea1ee55589782bef728a94f9471aff"
+    },
+    {
+      "path": "compiler/tests/fixtures/db-readiness/probe/proje.dil",
+      "sha256": "8d66faf93f54d78eeb8ac241ed9ebfe6d08c1a140362999617cf12d38a5b1fdf"
+    },
+    {
+      "path": "compiler/tests/fixtures/db-readiness/worker/ana.dil",
+      "sha256": "b3d1899ca7590f80ddb133d9ef2db01627b742a6250d48e02d6af98f5652858f"
+    },
+    {
+      "path": "compiler/tests/fixtures/db-readiness/worker/proje.dil",
+      "sha256": "4ee182bb763bdde74c95d28f628bc83ebf7e35ac630f3feddb52c620e833f9cb"
+    },
+    {
+      "path": "compiler/tests/fixtures/db-readiness/probe/gocler/0001_hazirlik.sql",
+      "sha256": "b3cf7ad04df12896f1131090ff1abdacd5baf3e501fd022eecef727b8a9c905a"
+    }
+  ],
+  "postgres_version": "postgres (PostgreSQL) 16.15",
+  "supervisor_events": [
+    {
+      "schema": "zee-worker-supervisor-1",
+      "event": "build",
+      "elapsed_ms": 8,
+      "build": {
+        "schema": "zee-build-v1",
+        "version": "0.8.0-dev",
+        "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+        "source_date": "2026-10-15",
+        "channel": "development",
+        "dirty": false
+      }
+    },
+    {
+      "schema": "zee-worker-supervisor-1",
+      "event": "worker_started",
+      "elapsed_ms": 9,
+      "worker": 0,
+      "pid": 69494
+    },
+    {
+      "schema": "zee-worker-supervisor-1",
+      "event": "worker_started",
+      "elapsed_ms": 10,
+      "worker": 1,
+      "pid": 69495
+    },
+    {
+      "schema": "zee-worker-supervisor-1",
+      "event": "state",
+      "elapsed_ms": 12,
+      "state": "unready",
+      "ready": false,
+      "workers": 2,
+      "application_ready": false,
+      "healthy_workers": 0
+    },
+    {
+      "schema": "zee-worker-supervisor-1",
+      "event": "metrics",
+      "elapsed_ms": 12,
+      "probe_total": 2,
+      "probe_failures": 2,
+      "probe_ms_total": 1,
+      "restart_total": 0,
+      "forced_kills": 0,
+      "log_drops": 0,
+      "managed_workers": 2
+    },
+    {
+      "schema": "zee-worker-supervisor-1",
+      "event": "state",
+      "elapsed_ms": 2066,
+      "state": "ready",
+      "ready": true,
+      "workers": 2,
+      "application_ready": true,
+      "healthy_workers": 2
+    },
+    {
+      "schema": "zee-worker-supervisor-1",
+      "event": "metrics",
+      "elapsed_ms": 2066,
+      "probe_total": 4,
+      "probe_failures": 2,
+      "probe_ms_total": 45,
+      "restart_total": 0,
+      "forced_kills": 0,
+      "log_drops": 0,
+      "managed_workers": 2
+    },
+    {
+      "schema": "zee-worker-supervisor-1",
+      "event": "state",
+      "elapsed_ms": 4106,
+      "state": "unready",
+      "ready": false,
+      "workers": 2,
+      "application_ready": false,
+      "healthy_workers": 2
+    },
+    {
+      "schema": "zee-worker-supervisor-1",
+      "event": "metrics",
+      "elapsed_ms": 4106,
+      "probe_total": 6,
+      "probe_failures": 2,
+      "probe_ms_total": 82,
+      "restart_total": 0,
+      "forced_kills": 0,
+      "log_drops": 0,
+      "managed_workers": 2
+    }
+  ],
+  "case_count": 15,
+  "failed": 0,
+  "ignored": 0,
+  "owned_clusters_closed": true,
+  "owned_workers_closed": true,
+  "owned_watcher_groups_closed": true,
+  "source_unchanged": true,
+  "binary_unchanged": true,
+  "readonly_probe_state_unchanged": true,
+  "finished_utc": "2026-10-15T03:58:56.971247+00:00",
+  "raw_files": [
+    {
+      "path": "actual-schema-drift-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "actual-schema-drift-stdout.json",
+      "sha256": "464429e88961e3e0cbbf97f0e6c78142951bde60e683f04061f4486798f519a0"
+    },
+    {
+      "path": "applied-before-start-stale-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "applied-before-start-stale-stdout.json",
+      "sha256": "048c87044c57ca1056b5f8f749dba9eb8056e35607356acd38531ba1b801d2e0"
+    },
+    {
+      "path": "applied-ready-two-workers-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "applied-ready-two-workers-stdout.json",
+      "sha256": "048c87044c57ca1056b5f8f749dba9eb8056e35607356acd38531ba1b801d2e0"
+    },
+    {
+      "path": "fresh-logical-restore-ready-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "fresh-logical-restore-ready-stdout.json",
+      "sha256": "048c87044c57ca1056b5f8f749dba9eb8056e35607356acd38531ba1b801d2e0"
+    },
+    {
+      "path": "health-61850.log",
+      "sha256": "a2b7323277b02f29907c7699c83544ac3a08d4286fab7a2c089d55fe7ff9df01"
+    },
+    {
+      "path": "health-61851.log",
+      "sha256": "a2b7323277b02f29907c7699c83544ac3a08d4286fab7a2c089d55fe7ff9df01"
+    },
+    {
+      "path": "ledger-checksum-drift-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ledger-checksum-drift-stdout.json",
+      "sha256": "6b2fc84dedd54c9ff6ceeb7dfc92eab362f1ebeeae2128dac233678c145d7152"
+    },
+    {
+      "path": "legacy-supervisor-events.json",
+      "sha256": "29e4f068b84eedb3165747f66e39f295b136d090faa5193627ae67e04ee42985"
+    },
+    {
+      "path": "missing-ledger-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "missing-ledger-stdout.json",
+      "sha256": "6b2fc84dedd54c9ff6ceeb7dfc92eab362f1ebeeae2128dac233678c145d7152"
+    },
+    {
+      "path": "pending-migration-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "pending-migration-stdout.json",
+      "sha256": "6b2fc84dedd54c9ff6ceeb7dfc92eab362f1ebeeae2128dac233678c145d7152"
+    },
+    {
+      "path": "pg-stopped-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "pg-stopped-stdout.json",
+      "sha256": "6b2fc84dedd54c9ff6ceeb7dfc92eab362f1ebeeae2128dac233678c145d7152"
+    },
+    {
+      "path": "restart-fresh-app-gate-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "restart-fresh-app-gate-stdout.json",
+      "sha256": "048c87044c57ca1056b5f8f749dba9eb8056e35607356acd38531ba1b801d2e0"
+    },
+    {
+      "path": "restored-after-pending-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "restored-after-pending-stdout.json",
+      "sha256": "048c87044c57ca1056b5f8f749dba9eb8056e35607356acd38531ba1b801d2e0"
+    },
+    {
+      "path": "revision-mismatch-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "revision-mismatch-stdout.json",
+      "sha256": "464429e88961e3e0cbbf97f0e6c78142951bde60e683f04061f4486798f519a0"
+    },
+    {
+      "path": "schema-restored-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "schema-restored-stdout.json",
+      "sha256": "048c87044c57ca1056b5f8f749dba9eb8056e35607356acd38531ba1b801d2e0"
+    },
+    {
+      "path": "sql-error-masked-unready-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "sql-error-masked-unready-stdout.json",
+      "sha256": "464429e88961e3e0cbbf97f0e6c78142951bde60e683f04061f4486798f519a0"
+    },
+    {
+      "path": "supervisor-events.json",
+      "sha256": "aec6d00b2f76f3a1725902ad29ddc2ee146526141613b1f3dc5448351966abed"
+    },
+    {
+      "path": "watch-stop-result.json",
+      "sha256": "708e0739df27024e5462d6afbf2966a9f30db365351f40fcd498a4f061f2b92c"
+    },
+    {
+      "path": "watch-stop-stdout.json",
+      "sha256": "40a4dacfe05e0203561a9957ee30afc93ab4e7b22574317a7f7c7e55ce2d6746"
+    }
+  ]
+}

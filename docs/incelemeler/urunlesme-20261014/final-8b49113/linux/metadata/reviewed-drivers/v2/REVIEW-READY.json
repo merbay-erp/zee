@@ -1,0 +1,7 @@
+{
+  "scope": "preparation-only-partial-container-explicitly-refuses",
+  "manifest_sha256": "01bc2a3d4e4356d2dc1990b2c1cebb1a83caa6c0e931fb3c578fc7312b421a1d",
+  "tests": 26,
+  "native_acceptance": 0,
+  "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c"
+}

@@ -1,6 +1,6 @@
 # ADR-127 — Kopyalanabilir site ve panel başlangıcı
 
-- **Durum:** kabul; K-269 kopyalanabilir pilot; final temiz kaynak ve gerçek kullanıcı kabulü açık
+- **Durum:** kabul; temiz S site/panel CLI+nativeHTTP dar kabulü; gerçek kullanıcı/fullP23/platform açık
 - **Tarih:** 15 Ekim 2026
 - **İlgili:** P23/C6, K-203, GB-085, ADR-089/094
 
@@ -44,3 +44,9 @@ ADR-045/049 performans tarihçesine kısa test süreleri taban olarak yazılmaz;
 compiler/LSP cache veya yeni kalıcı buffer eklenmez. Gerçek yeni kullanıcı,
 Windows/minOS, HTTPS/production dağıtımı, P25 file-native sır aktarımı ve tam
 P23 ürün kabulü açıktır. Şablon varlığı insan veya canlı ürün kapısını kapatmaz.
+
+## 15 Ekim 2026 — temiz S yerel kanıt güncellemesi
+
+S normal Cargo fazında geçici kopyalarda actual kilitle/denetle/dene ve site/panel nativeHTTP dalı çalıştı. Eski dirtyprototype2 finalkanıt yerine geçirilmez; S normalfazının wrapper kaydı actual kabul sahibidir. Missing/badPHC,session/CSRF/XSS/logout dar oracles korunur. Gerçek yeni kullanıcı/P08/live/Windows/minOS/fullP23 açık.
+
+[Güncel dar S raporu](../docs/urunlesme-final-kabul-20261015.md).

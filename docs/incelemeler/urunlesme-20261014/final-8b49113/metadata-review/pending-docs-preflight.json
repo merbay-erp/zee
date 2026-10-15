@@ -1,0 +1,34 @@
+{
+  "status": "passed-pending-E-docs-preflight-only",
+  "finished_utc": "2026-10-15T05:24:22.864332+00:00",
+  "base_S": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "pending_payload_operations": 230,
+  "docs_tests": 6,
+  "catalog_tests": 1,
+  "dogfood_equivalence_tests": 4,
+  "go_runtime": "go version go1.26.1 darwin/arm64",
+  "spec_records": 214,
+  "generated_kanit_changed_from_GB092_only": true,
+  "generated_kanit_sha256": "887f059f8a0b53b102f5833fc9d87caf478cdfcf8dcd8ab111973d4a5feaa771",
+  "logs": {
+    "doc-preflight.log": {
+      "sha256": "0aa255a861cd9f50653e251babe7ebd8f635106c44944bfd66d7e734c651e797",
+      "bytes": 5568
+    },
+    "kanit-run.log": {
+      "sha256": "f41aaf953bce38e551e354892257d2d8e0b46f0e7834ae37ec98507e7667f8ad",
+      "bytes": 333
+    },
+    "dogfood-preflight.log": {
+      "sha256": "3ff026cb59bd3d12178e2c60d8780151d1e96d9a2d302b1c9d02dade3f1daa18",
+      "bytes": 731
+    },
+    "spec-preflight.log": {
+      "sha256": "56e34dd02767a8d982906e3ed235d5424ecd51a3de49b9021eb591185336b208",
+      "bytes": 175
+    }
+  },
+  "shared_S_source_clean": true,
+  "RC_not_accepted_by_this_preflight": true,
+  "no_performance_history_written": true
+}

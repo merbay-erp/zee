@@ -1,0 +1,240 @@
+{
+  "files": [
+    {
+      "path": "OUTER-METADATA-END-RAW.json",
+      "sha256": "ac2d9cac45c4a6a8f93148b4e6872a34542e436b68d6f0554c1eae32bd1f9e31"
+    },
+    {
+      "path": "OUTER-METADATA-END.json",
+      "sha256": "b05801af4479b7f8cabf907470b032985d978216d139c26df69fb2ac920b9b72"
+    },
+    {
+      "path": "OUTER-METADATA-START.json",
+      "sha256": "f79f4b2ab462c065297fd815e3eecda16bc1d78c88937e87d8a9f0f8c8ec6536"
+    },
+    {
+      "path": "actual-container.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "collect-OUTER-METADATA-END-RAW.json.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "collect-OUTER-METADATA-START.json.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "collect-container-native.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "container-native/LSP.json",
+      "sha256": "adb45be7df7a7e7211e7dccd68ceb68e077ad6600feccc60e28f9bd14ee04b40"
+    },
+    {
+      "path": "container-native/PROOF.json",
+      "sha256": "e945cc54567f5ae06369e1f1f572d7d371e0550ac6c4305897c48c2fc561f2ec"
+    },
+    {
+      "path": "container-native/actual-65532-CLI.log",
+      "sha256": "dd05eea2a45a239105031ea3a070578ee077c457a8dadbf18f76d14d9b632f9a"
+    },
+    {
+      "path": "container-native/actual-65532-LSP.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "container-native/actual-65532-calistir.log",
+      "sha256": "de3de069580b139daafeb00d17568851c2fec6da20c6345eb380292979cefb62"
+    },
+    {
+      "path": "container-native/actual-65532-denetle.log",
+      "sha256": "e4e2970aee5d202bc2b3001c04b18f342a657a5683f8fd21c0769678980ee1d0"
+    },
+    {
+      "path": "container-native/actual-UID65532.log",
+      "sha256": "3f50af375a89507fc437906df9ed9b275e4251080c0a5d63e697ccf2a5738a2d"
+    },
+    {
+      "path": "container-native/baked-source-hash.log",
+      "sha256": "7903a5c4b70b55ee11574b77512337b2e3cdcbd0f2ade646bfb6ef99ea470d2d"
+    },
+    {
+      "path": "container-native/base-inspect.log",
+      "sha256": "d318a42b2504c1421b6ec72b2631858fd4f71e2f2a28f8924badf3dc6a6bf873"
+    },
+    {
+      "path": "container-native/build-offline.log",
+      "sha256": "eb3505e1eed82f228f52c48bb5dc76fd6c62fe851d517f34e6ce5b82b522064f"
+    },
+    {
+      "path": "container-native/calistir.cid",
+      "sha256": "6139ad5743845d9fcd17ecc0ede9ef1c46615778f190f9d5b9153bfcf0e45b5f"
+    },
+    {
+      "path": "container-native/cleanup-calistir.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "container-native/cleanup-cli.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "container-native/cleanup-denetle.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "container-native/cleanup-lsp.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "container-native/cleanup-source.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "container-native/cleanup-uid.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "container-native/cli.cid",
+      "sha256": "af1e2a603d67b33d225be679ee1384f6df05565b987cd2cc3dfe024083506978"
+    },
+    {
+      "path": "container-native/context/Dockerfile",
+      "sha256": "b9c0c167059d2b5a1bd012b1ee11c85b91d1edd24367f3a0b3805a669409e859"
+    },
+    {
+      "path": "container-native/context/artifact/GIT_SHA",
+      "sha256": "9d7e7a052e33ca696a3fb131f481f8a36133dd1b9e12efa0336342e2e200536a"
+    },
+    {
+      "path": "container-native/context/artifact/SHA256SUMS",
+      "sha256": "55d6cde77cc6eb417b01072eb3968ebd095094b195066cc81fb2e37b728cc213"
+    },
+    {
+      "path": "container-native/context/artifact/dil",
+      "sha256": "80cc4b162211b352e97dd8f3d54697e53d92f5d3dd40b03fe73f78963d37e739"
+    },
+    {
+      "path": "container-native/context/artifact/dillsp",
+      "sha256": "b2490655662939b7f2821c9707312c5c1631d83e60240c3a5aaae82bdd71edaa"
+    },
+    {
+      "path": "container-native/context/artifact/provenance.intoto.json",
+      "sha256": "b688c3b3710e2013510d5fdd220f5776e623a754548b0b462402d0f464b25c32"
+    },
+    {
+      "path": "container-native/context/artifact/sbom.spdx.json",
+      "sha256": "d154e31f15895c3dd3ecab2d0e55ac490d41187ab9a4ab686eb321847b08a317"
+    },
+    {
+      "path": "container-native/context/runtime-rootfs/etc/ssl/certs/ca-certificates.crt",
+      "sha256": "4e3df1b7cefec516bc6dcc615565455a6658f6ae9da64989b8959827e87161dc"
+    },
+    {
+      "path": "container-native/context/runtime-rootfs/usr/lib/aarch64-linux-gnu/ld-linux-aarch64.so.1",
+      "sha256": "17538b8f9889a470c061f69a8fea8124da89627311cd16546c133a89f09056df"
+    },
+    {
+      "path": "container-native/context/runtime-rootfs/usr/lib/aarch64-linux-gnu/libc.so.6",
+      "sha256": "e4ac8ae1d81e4865e3aadedb962879cf9415903b3f2ba81ec75e9962b86ab8b0"
+    },
+    {
+      "path": "container-native/context/runtime-rootfs/usr/lib/aarch64-linux-gnu/libcrypto.so.3",
+      "sha256": "908bfe9966f80a31cec61ec4cbd0661d9fe9673edcca1848e038351e122eff74"
+    },
+    {
+      "path": "container-native/context/runtime-rootfs/usr/lib/aarch64-linux-gnu/libgcc_s.so.1",
+      "sha256": "046856f95f4636f1fc7c3a12bf4f3cd5634c2fc5145c3fdf7395d4f349fa69c7"
+    },
+    {
+      "path": "container-native/context/runtime-rootfs/usr/lib/aarch64-linux-gnu/libm.so.6",
+      "sha256": "3c4cb3be0b974edf05f023f85ab15107fb5afc2687163593d0d4cf8e80c17b39"
+    },
+    {
+      "path": "container-native/context/runtime-rootfs/usr/lib/aarch64-linux-gnu/libssl.so.3",
+      "sha256": "09fe45f6e578f6a598b3f67a193d7dc56f679c2259933d90e78a368d594bc8b0"
+    },
+    {
+      "path": "container-native/context/runtime-rootfs/usr/share/doc/ca-certificates/copyright",
+      "sha256": "e85e1bcad3a915dc7e6f41412bc5bdeba275cadd817896ea0451f2140a93967c"
+    },
+    {
+      "path": "container-native/context/runtime-rootfs/usr/share/doc/libc6/copyright",
+      "sha256": "40c7e1f2118531f038ca22999bd976901254e1bc5cd1b0f0211bdd064c599987"
+    },
+    {
+      "path": "container-native/context/runtime-rootfs/usr/share/doc/libgcc-s1/copyright",
+      "sha256": "da8191658b3452ce9caf31638ba61dab31a38c619fa39df119812e050f592fd3"
+    },
+    {
+      "path": "container-native/context/runtime-rootfs/usr/share/doc/libssl3/copyright",
+      "sha256": "6a7da622fe0637a334d2a8fc470852d2ffb77d9a2b2f930f854e32a41ad6ef35"
+    },
+    {
+      "path": "container-native/context/runtime-rootfs/work/ana.dil",
+      "sha256": "b3c2ad04fc5b665ee7f1ada5168da7a7b95fb1af5c0947b22c83ddd39581dff3"
+    },
+    {
+      "path": "container-native/context/scripts/kaldir.sh",
+      "sha256": "8f2351745c588687434d1a2a194af2b3299231e52bbc080a36698ca454e1e43d"
+    },
+    {
+      "path": "container-native/context/scripts/kur.sh",
+      "sha256": "1bea4701e9ac0cf8bdca5dd1ec6c4da424cfe03bcdf6bf1f33cc70ecee80a21f"
+    },
+    {
+      "path": "container-native/denetle.cid",
+      "sha256": "ff9c758b9a49b29d9a7ed8fc1bc0b2e85f0eba0fe0f15d0168140d3c0e92cbbb"
+    },
+    {
+      "path": "container-native/image-id",
+      "sha256": "7eeff02f75ff8613e8cbfa7339ef633b333155707afdfbc40b8968454e11a23c"
+    },
+    {
+      "path": "container-native/lsp.cid",
+      "sha256": "c1b3bf1a20d554765d8839a63f21f7afd1b2375eee93ee6c4184fc9d0603108b"
+    },
+    {
+      "path": "container-native/owned-lsp-launcher",
+      "sha256": "24b0c4690a282a0028ed32bc69da5cca9779e163b8aabaddde525e39376da0d5"
+    },
+    {
+      "path": "container-native/owned-pause-cleanup.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "container-native/policy.json",
+      "sha256": "f146bb5a5d24f5c7ac104f8078e8f1f6fef3dab6a17ccd6e44005c8ef7b97d9d"
+    },
+    {
+      "path": "container-native/pull-exact-official-base.log",
+      "sha256": "846323a056ffe3cb0137338e6b50dc2c4feb6528ef14a2f2232f39cd752a7f87"
+    },
+    {
+      "path": "container-native/readelf-dil.log",
+      "sha256": "b26bb8092efd5f1a78226290ee7317c692dfc26cf70e12dda4501269fd49b321"
+    },
+    {
+      "path": "container-native/readelf-dillsp.log",
+      "sha256": "9fc2096469d2c73c42e29abb1247abca75b8fb7246e319b8ff41bfb570fbc7d2"
+    },
+    {
+      "path": "container-native/remaining-owned-store-containers.log",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    {
+      "path": "container-native/runtime-closure.json",
+      "sha256": "e74b2fcf919d4ae1cdf771f5391f64c94fe95c752e4de3109f858a93da1f2bd8"
+    },
+    {
+      "path": "container-native/source.cid",
+      "sha256": "61db834392a43ddac9e910176113d53ac4474a5c589bfba3a9bff4e4fdaf646a"
+    },
+    {
+      "path": "container-native/uid.cid",
+      "sha256": "8036f53f64408d192ac4b1bb4ae325f3c4db942c9fb7c965acc972bac49819b2"
+    }
+  ]
+}

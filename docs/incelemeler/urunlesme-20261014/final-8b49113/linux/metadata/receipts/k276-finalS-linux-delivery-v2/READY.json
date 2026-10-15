@@ -1,0 +1,11 @@
+{
+  "status": "passed",
+  "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "manifest_sha256": "bf6e178cab7d4bff74ee503d071e98ed87a4ab711798429c37f71e7fe4bf812a",
+  "DELIVERY_sha256": "3edc90e19a73856312720551fe05abcde70c883a916d0523258accd1709a4f86",
+  "two_clean_binary_builds_equal": true,
+  "two_source_zip_equal": true,
+  "bundle_restoration_fsck": true,
+  "signed": false,
+  "published": false
+}

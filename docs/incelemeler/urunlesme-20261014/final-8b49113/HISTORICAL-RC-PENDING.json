@@ -1,0 +1,10 @@
+{
+  "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "status": "PENDING",
+  "GB082": "acik",
+  "first_export_rejection": "elapsed duration mismatch; not corpus count",
+  "new_valid_bundle_sha256": null,
+  "same_S_gate_receipt_sha256": null,
+  "automatic_pending_to_pass": false,
+  "fuzz_history_update": "not proposed until valid export and same-S gate"
+}

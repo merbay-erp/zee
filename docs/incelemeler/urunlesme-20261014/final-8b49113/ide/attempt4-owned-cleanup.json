@@ -1,0 +1,18 @@
+{
+  "schema": "zee-owned-ide-process-1",
+  "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "status": "closed-owned-process",
+  "source_clean_start": true,
+  "profile": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-owned-ide",
+  "app": "/Applications/IntelliJ IDEA.app/Contents/MacOS/idea",
+  "owned_paths_requested": "idea.config.path=/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-owned-ide/config\nidea.system.path=/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-owned-ide/system\nidea.plugins.path=/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-owned-ide/plugins\nidea.log.path=/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-owned-ide/logs\n",
+  "acceptance": false,
+  "agent_direct_existing_profile_reads_or_edits": false,
+  "application_global_OS_access_not_audited": true,
+  "issued_child_pid": 96334,
+  "elapsed_seconds": 172.565,
+  "owned_idea_log_exists": true,
+  "owned_group_cleanup_and_reap": true,
+  "exit": 143,
+  "source_clean_end": true
+}

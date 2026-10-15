@@ -1,0 +1,182 @@
+{
+  "schema": "zee-derived-metadata-sha256-bindings-v1",
+  "boundary": "Derived parsed JSON; not raw byte identity. Original external receipt remains authoritative and unchanged.",
+  "raw_external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/root-final-S-archive-stage/final-8b49113/linux/metadata/receipts/k276-finalS-Linux-timer-native-audited/OUTER-SOURCE-END.json",
+  "raw_sha256": "25b83f1f662a3a4ab0092e82bf74c17e9bb3e427c3d2ebd38b19a036344ed32e",
+  "metadata": {
+    "schema": "owned-campaign-external-source-end-1",
+    "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+    "start_receipt_sha256": "e2b953808c8d4ce14107438aee8d914a6adafea853a1c2f492b4e58a4b4b8cb0",
+    "end_source_file_sha256": {
+      "/home/mustafaerbay.guest/zee-k276/final-drivers-v2/CONTRACT.md": "53b69526a357a9bc427d9395afdb1c14f4ba4db8b011f1215e248ddaa1276ac1",
+      "/home/mustafaerbay.guest/zee-k276/final-drivers-v2/external/delivery/deliverable.py": "509106d70e5e35c1142594c98df022b01e689966415bdd94a8f67feecb8587d8",
+      "/home/mustafaerbay.guest/zee-k276/final-drivers-v2/external/install/install_acceptance.py": "c5143d1105a52bb0e3b232e5af5b765bb78ae34de814c660776a4e584e1f8af0",
+      "/home/mustafaerbay.guest/zee-k276/final-drivers-v2/external/install/lsp_smoke.py": "58afb02c9869a48b2cd3315b108dfd483b4e1b40872fe189705359816a00dfb5",
+      "/home/mustafaerbay.guest/zee-k276/final-drivers-v2/external/install/owned_helper.py": "509106d70e5e35c1142594c98df022b01e689966415bdd94a8f67feecb8587d8",
+      "/home/mustafaerbay.guest/zee-k276/final-drivers-v2/linux_carrier_native.py": "d0116847430a4342131e4b090f4b24e97b3a084f39f2caa6149bd96c517fb863",
+      "/home/mustafaerbay.guest/zee-k276/final-drivers-v2/linux_protocol.py": "4783fc83e6a9dd9c622e75ef88459796abde084bd7cad91a51f0afe4008e01c7",
+      "/home/mustafaerbay.guest/zee-k276/final-drivers-v2/linux_step.py": "af568bdd40da014cc3d0ed23df1f88dac5d442bece37a9c0fd1440db0a94ab04",
+      "/home/mustafaerbay.guest/zee-k276/final-drivers-v2/linux_timer_native.py": "386103e27a974372d3920ba687fef67428333568c19f10ca23f50315562b33a5",
+      "/home/mustafaerbay.guest/zee-k276/final-drivers-v2/preparation26.log": "1eac01d9277424e7d268cfa40a47783605801b0c46ca81acf0f386546df3106e",
+      "/home/mustafaerbay.guest/zee-k276/final-drivers-v2/test_linux_preparation.py": "9bad417c492445de8658918d6e869c16bcd7ca2cdd2471d64fb18c14aaf43964",
+      "/home/mustafaerbay.guest/zee-k276/final-source/dogfood/zee-cekirdek/is-kuyrugu-dispatcher/README.md": "8e21d84b2ea948d0b033c25174643ffeb9ba8f0f6e2a77b731fddf89c0954807",
+      "/home/mustafaerbay.guest/zee-k276/final-source/dogfood/zee-cekirdek/is-kuyrugu-dispatcher/ana.dil": "c664502abf51f6ca6c48e85aaa55ab5da8a0a6bf25954b8640a054b44adb6b9b",
+      "/home/mustafaerbay.guest/zee-k276/final-source/dogfood/zee-cekirdek/is-kuyrugu-dispatcher/gocler/0001_kuyruk.sql": "34b6eb8fa760c65c47c89bdc139d0696ff44a348324b204f165d0039bd7537e5",
+      "/home/mustafaerbay.guest/zee-k276/final-source/dogfood/zee-cekirdek/is-kuyrugu-dispatcher/gocler/0002_kira_sahibi.sql": "926de3f9db7e4310e65be111588fddc6a78dbbb213db5c242148f0d9a182df5a",
+      "/home/mustafaerbay.guest/zee-k276/final-source/dogfood/zee-cekirdek/is-kuyrugu-dispatcher/gocler/0003_sabit_niyet.sql": "1c5fc4e562f2d7d046968953f95af4d10de58294fc315b715011977f3801e156",
+      "/home/mustafaerbay.guest/zee-k276/final-source/dogfood/zee-cekirdek/is-kuyrugu-dispatcher/proje.dil": "b5d5a964926b55c363ed5e869512c23655fc3822b6434b35ac7235fdfeaca26d",
+      "/home/mustafaerbay.guest/zee-k276/final-source/dogfood/zee-cekirdek/is-kuyrugu/README.md": "5074c269233b7942b86fb61a1dbf253b684977ea2a729f41d475fa5830760fa8",
+      "/home/mustafaerbay.guest/zee-k276/final-source/dogfood/zee-cekirdek/is-kuyrugu/gocler/0001_kuyruk.sql": "34b6eb8fa760c65c47c89bdc139d0696ff44a348324b204f165d0039bd7537e5",
+      "/home/mustafaerbay.guest/zee-k276/final-source/dogfood/zee-cekirdek/is-kuyrugu/gocler/0002_kira_sahibi.sql": "926de3f9db7e4310e65be111588fddc6a78dbbb213db5c242148f0d9a182df5a",
+      "/home/mustafaerbay.guest/zee-k276/final-source/dogfood/zee-cekirdek/is-kuyrugu/kaynak/kuyruk.dil": "4547249cba65f9866936ea6e173ba04337f8d3fa3a1dc03afe9a6a4eb7264645",
+      "/home/mustafaerbay.guest/zee-k276/final-source/dogfood/zee-cekirdek/is-kuyrugu/proje.dil": "af34bd315194c6099b6c5702b92e6cd21631c32127daf7404ac262e00ffdf05e",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/acik-depo-denetle.py": "3fd4b4039d83b00e2535e3e8c8fd6af61112940af0a0a67ab24d6f4122c434ce",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/calisma-ortami-denetle.py": "c87acfc5606919a8fb669f379ad86405f13b69214eaa65f5715ec4d40c62ba30",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/ci-taban-kimligi.py": "caa8ca67bae2c652f48b5b1385798d9b215ea38797fd7b1c1bcc502290902998",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/credential-baslat.py": {
+        "sha256_binding": 0
+      },
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/db-hazirlik.py": "37b554ba3bfbbd848b876c5a069e6a96f87804aca5bdb6024351d68c83cd847b",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/derleme-ortami-kaydet.py": "85f03dc9f08eb38ee1e9bd235d0173808e2bb19969c339cc3755a35ae45fddbd",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/derleyici-secici.py": "b2103253fc59be2eeb27e6861e593d56202697f69519a2b158f9232326c07692",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/derleyici-yerel.py": "5f017ae9cd86f0e22bfd035eb7a79f6c275012b16d05e43b8d086630f87bf4aa",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/effect-dispatcher.py": "e28732303c27d0bc0bfcfe3dd4fb61b5490bd2905532e786f1bf18ab63dfba80",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/finite_timer.py": "b75dc1af6da8505e7a3f984868b64da72f44e015842f0704aaaa4f2726cc7a88",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/is-kuyrugu-ci.py": "612f71f03150d7506939b89baa5c7d2e7e8e9c7f3913db91f84d7f1207e6551f",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/job-dispatcher.py": "06bc1f67f87a07b1ffdeb1547ff83a4d05cc926f2825df73b94cc36f86caba0e",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/kaynak-ci-esleme.py": "d9d7ef6031da841d0fa87515de7ceb90cda14f3d253b691041fba35c149a8058",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/lifecycle_core.py": "e76fe65b6103fc4732aafc4468afc5bbf3d0699a0f79d7f74879165636ebb1a9",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/linux-package-preflight.py": "3b1e487235987b53a8ef63811b72a98878816295be1d7cfb0d972794cd671b4d",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/linux-private-carrier.py": "6cb5974f99bcc495ebaf78d4ded91dd1a0a845d081764f86cdfbab885c793b6f",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/modul-yoneticisi.py": "84752ef56d5c1d347f2e211ebe721def648aa5e496df1bd8bfec2375933237b6",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/native-capabilities.py": "0a336d915e6618b7bc9134598337c0e442a7d455008fa937a0e49771fe7d94fc",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/native-deployment-denetle.py": "3b12db3eee0ef63a17b5931e54d8df5bc5c3659015654da9fba565331c0cd1e1",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/native-listener-host.py": "8e1cda6dec7ba15c851d444509eea6b846edca9a6ad87592ca5d39b7e23287f4",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/native-metrics.py": "d5d12902358591365ff201c13c44b255d265c49c71befabcdef0575fe7e854c4",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/owned-web-tests.py": "a1a7e617789847ba2bb0f1774e16dd4f1b0ee8639ace4e4c9921c87142c0ecd3",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/parola-goc-ci.py": "cdced5a360ccc5b1ca9293f247d0dd96b41353997483fb2acd8119581f0e7309",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/pdf-katalog-host.py": "7ef40302bc3a079a129376a8002c1485fdd905bb860c5fda7b4cfb0ec3b5f9f6",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/postgresql-commit-proxy.py": "3c8a0de39e838d12db431803d69271805ad297730338e527053a51b012da1454",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/postgresql-goc-ci.py": "54908b680ee5a7fe8f53dfe974a8d5f6508a59ad537a8975823d0cb55907e8b3",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/postgresql-tls-ci.py": "8ef71f0070b9e954b70d0ec24c50c0285b4bfb76de4ed40490efd9eac78cad77",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/postgresql-tls11-control.py": "cdf477d154f9fe11086c4829b34b9a412156feabdee1404b5bd863026f2ba639",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/rc-kampanyasi.py": "f401406d8097479c5545597fc09ae81791e20043adccd8b9abb8ad650cf86752",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/rc-kaniti.py": "c0266630054eaba1a9f86ff23cf11edaf22a28915c13c59ccf547a6f2f302554",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/sir-yanlis-pozitif-denetle.py": "41ec789faabcb2e6802d53c079cd786678a4d8ce0b477a5b988dc86fbcf6e369",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/temiz-windows-kurulum-prova.py": "4b743cf4208a5d8c4ccb55c4a9a8cd78cce6c4096b3a77e781c133a4a95e6b66",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/temiz-windows-prova.py": "79e6b3fedb510a9ba5a105264e4b3a8a323232bf81900e605ed049070d716d8d",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/acik-depo-test.py": "6eed21a70411bb79ca7fb29c31dee6b5fa53ee7ac4179e010d0c35f73d1b7c6c",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/baslangic-sablonlari-test.py": "bb1dbb6e11b0e9f77b6525534df50cd73a008a79e2813750ce5a2b7a95a20348",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/build-kimligi-test.py": "fef8f8505496876b20f3c7979953f043e18df5b28bac0d26453ec613c14e89d7",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/calisma-ortami-test.py": "c11b3ef734b87ca416abf7f9005ec7aecc520c7a93487c327495c4dfb72f6647",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/credential-baslat-test.py": {
+        "sha256_binding": 1
+      },
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/credential-listener-native.py": {
+        "sha256_binding": 2
+      },
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/credential-listener-test.py": {
+        "sha256_binding": 3
+      },
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/credential-metrics-native.py": {
+        "sha256_binding": 4
+      },
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/credential-metrics-test.py": {
+        "sha256_binding": 5
+      },
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/db-hazirlik-strict-test.py": "75eb02da0f973a5afd00ca27e14d827c2f5219056007d4077f4e781bcc1898bc",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/db-hazirlik-test.py": "411b01d993f872784167625ca7e8ad5db967aa42ddc75d8b6d683a9ccf1475dd",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/db-readiness-watch-native.py": "3ff5da8666334e05169e3c599f060b193d0346b84e68c0556ec844530fe72d1c",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/db-readiness-watch-test.py": "972a23532fe7a64c7d7b8ce41187f1d3a6a8045e4db5a97539ba266eb47b4d9f",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/derleme-ortami-test.py": "2441a13851439dcb103eff808273c9e2850063d5f3b14f7d0486d423175cebc6",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/derleyici-secici-test.py": "d13bc77012e66716c20d8ae7147a9c37e0726255ca1af64b95f0cd3de36b7df4",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/derleyici-yerel-test.py": "9bf7f2b4ed604af73a58d27f03e851f575150b1997182d629ab5b01c3f9dd5df",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/effect-dispatcher-native-test.py": "a245cd733969974e5aeb4b178d17a7b99636d74f4836a032aae53716cef97c66",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/effect-dispatcher-test.py": "6b707f5ab85dc4b2986c7fb6ed9ba045e71f334aead1de8e068b538d7780141d",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/finite-timer-test.py": "420d57bc55d8af158d8bcff9678ea23b12d953c91d1b379ae3808577746b982a",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/fixtures/job-dispatcher/backpressure-driver.py": "dd339e798d981c0f464c51a64e539956b674f91cad398a410f5ff0da1639b33d",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/fixtures/job-dispatcher/leader-driver.py": "b09fcea3ec8d1240dbe2919b4527936d6c3e338c3430bf99185517825fd6f975",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/fixtures/native-listener/leader-native-fixture.py": "5e59bf2df038f9e7afa0793f863fb23f2dcd2995581dbd111705d6adf8825926",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/is-kuyrugu-ci-test.py": "98f65aff39386f3c958639062360acd11b4856758bab47f18b59e93da82d2013",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/job-dispatcher-mask-test.py": "097a51aada932f38d6c79a9703833ee2730fff6b2b770972e39ff4a19909c522",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/job-dispatcher-native-test.py": "55ece6a92b3b9b8fb1cb242dc682a27cbcedc10d1b90e5c640effeedf50f7552",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/kaynak-ci-esleme-test.py": "9ad1019a924c8f924e46c1cd9f501cd43aaeda553ae2dcba49bcdd205629d53f",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/linux-package-preflight-test.py": "ad9f169cb47820ace0bab2245970529f7a8c0db425b00023e9ca29eefdcdec8d",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/linux-private-carrier-test.py": "acdefb8a31b8b07d7354cfa83d6d1f3721178250348aa100cfa1fb910a83a98b",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/modul-yoneticisi-test.py": "031bf796d7979c98b39355ce7758edc9c84597fa33f791622760535bd796c0b8",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/native-deployment-test.py": "7a8d583ef6006a2332bd7ec7311cfc44d73b06255e42da979e96f0080aed5ca3",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/native-listener-deadline-test.py": "ae66aca5c58e53969c0382b01492dce8713488164d8a325cbc8ba493c7623268",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/native-listener-preflight-test.py": "ccabb088a8c06591b2d2d21a7c01b616d719782a2a36df37ad72d0db20fb4d16",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/native-listener-test.py": "4c6045865c1d2d1f2dc883a1e47d3e0ab14393ef536d85f1f338d8fe7fdc9943",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/native-metrics-model-test.py": "7d505223d9376f4bdde8a017ccfdc3a01a335eba018b8546fd215558ee1c176f",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/native-metrics-test.py": "37eb0c38ccd0804bff47c388ce62a299b0be526f10be7f33ad0c2581657006e2",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/native-web-drain-test.py": "e4272cd53016b7d394de854edebfbf6f5102704cf263e10731958965dcf555fe",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/onceki-kucuk-surum-preflight-test.py": "e9d16d3adfb9a202dd2d384546eeec277d01a629edcddcff8c5964d90fc6b1c4",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/onceki-kucuk-surum-test.py": "280b4177b41c2d318c966aa9de92b7b0f652919f0dcdc6072c6a05c800f35db6",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/owned-web-kit-test.py": "bc6406af9cac84f049c816207321fa42d2ca263acc33d092d2187c2ac4266f22",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/parola-goc-ci-test.py": "5945dfb44cf46bc5ecac37772b4d5638e32ae37967262dd268816d516437f1c8",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/pdf-backend-acceptance.py": "c508463332ed9be33ec669ccf76b0c78620a4cee3def02d5299b864fbc89dd9f",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/pdf-job-validation-test.py": "faf36486e7fa4fff5b0ed1e6c7b7479a4749b553c2de5c9efabe0c216591ea9d",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/postgresql-commit-proxy-test.py": "ca8c7ec5968073d0dfc718c2fdcf542a4adec021fc7cf4d0ced2065f0d3acd95",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/postgresql-tls-ci-test.py": "9318665bc9edec6281b3b8762d86a41b9bf9531bdedb884d58626984482afce3",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/rc-kampanyasi-test.py": "a0fe35cc31680b33092722e842fc28f96c2fb830839be540e270e63606d343ab",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/rc-kaniti-test.py": "b6f41c63346c8a82864f663c6db7a54b63dba36527b43e5daf1dbcd25d61982c",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/readiness-ttl-native.py": "3205e4d1e9b6c3214ab61766b8dd2e1aca0988fff29f0e2cdf1ef38d1b6eb28e",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/readiness-ttl-test.py": "5d4f50b2ecd55480e7680fdd507761e4afe6b4fbd2777d203e694469cdb124d4",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/sir-yanlis-pozitif-test.py": "7eec6e93cdfc3b36e8857a060b02b09630b332575059f666f4da71155aa257de",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/supervisor-cleanup-test.py": "f05e20f83e4613e57ac62ef6a64f3fc54dc27d62b0a12e30fd24267cca76fca4",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/temiz-windows-kurulum-test.py": "5c4875900db378000a20197a8e3d2aaf3cc0f720aaf6eea001cf3eae5788cdb6",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/temiz-windows-test.py": "a087ee638fb2eca3f826a3edb55cf324089bd2e45a38c44c8dd5bb9c0b0ce3ec",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/tr-en-list-detail-test.py": "d0d5e6fb7e696e7593ca8fc67baec8d2028db5ee7183c24a4aca6db5f8fcb978",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/tr-en-sayfa-test.py": "9f967fe58124081ee96890f66a8534331640951926c910ec56a6f7695f7132d2",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/worker-supervisor-test.py": "447525fd38503c150d6488e394e2ff13e51b5db70bbf9a9517daacadd1e59fe1",
+      "/home/mustafaerbay.guest/zee-k276/final-source/scripts/worker-supervisor.py": "560bec4e4e36d2aa856936d9d32412bb9106b61b25a871495287e2287e3c6642"
+    },
+    "all_start_end_equal": true,
+    "source_end_clean": true
+  },
+  "bindings": [
+    {
+      "original_field": [
+        "end_source_file_sha256",
+        "/home/mustafaerbay.guest/zee-k276/final-source/scripts/credential-baslat.py"
+      ],
+      "sha256": "6894667f5d2d529434c235c9ae54aec64d4fb3c1c25712c25fb7f710eee9961f"
+    },
+    {
+      "original_field": [
+        "end_source_file_sha256",
+        "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/credential-baslat-test.py"
+      ],
+      "sha256": "7a630e884d459b682ee39543bdc0b1ae2b80447be48e239ca0db0f13b60c26ec"
+    },
+    {
+      "original_field": [
+        "end_source_file_sha256",
+        "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/credential-listener-native.py"
+      ],
+      "sha256": "c0f2ff2cde0e00d71656f48e7ffc723ae3ba0e2edcad0b73c758b79d06ffb7b3"
+    },
+    {
+      "original_field": [
+        "end_source_file_sha256",
+        "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/credential-listener-test.py"
+      ],
+      "sha256": "7383ee4dac0ddd6623afa281fc401e08b951d8feebd3c7d98aaed59ca33a5fc8"
+    },
+    {
+      "original_field": [
+        "end_source_file_sha256",
+        "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/credential-metrics-native.py"
+      ],
+      "sha256": "f217ba16d86c69697b2cdb44ed96ae7fbd79fa16f9a59cb2979259caeefdca1f"
+    },
+    {
+      "original_field": [
+        "end_source_file_sha256",
+        "/home/mustafaerbay.guest/zee-k276/final-source/scripts/tests/credential-metrics-test.py"
+      ],
+      "sha256": "0e31097b7f23de134ed5837292eb8871f971cef4cf9e1cab81d6d722d77867f9"
+    }
+  ]
+}

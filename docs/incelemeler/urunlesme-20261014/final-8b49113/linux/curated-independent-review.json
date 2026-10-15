@@ -1,0 +1,96 @@
+{
+  "schema": "root-independent-linux-curated-final-audit-1",
+  "at": "2026-10-15T08:00:15.492814+03:00",
+  "status": "SCOPED_PASSED",
+  "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "tree_sha": "09fa6e764bb317b4aa5b32b6ca15ce02f4cf389d",
+  "curated_READY_sha256": "0ce727b3ce7a54301130de772a15e42b48253915f28f8475c73018f30ba26fb5",
+  "curated_manifest_sha256": "53751c60d4c8d012df4ea60a8fc6edaa99dfce7e35f9ab5fa5d7ea1f3f0ac174",
+  "SHA256SUMS_sha256": "e76cbb144cf711fb569464b600fe1be715502f8821be66164858435cf6e8f32b",
+  "manifest_leaves_rehashed": 411,
+  "sha256sums_entries_rehashed": 410,
+  "exact_inventory_no_extra_files": true,
+  "primary_receipts_verified": [
+    {
+      "role": "canonical_delivery",
+      "count": null,
+      "ready_sha256": "b4d2241752a4379f92429629244565ce9ff1d5e0cba6a7b008f0f40356cd6019",
+      "manifest_sha256": "bf6e178cab7d4bff74ee503d071e98ed87a4ab711798429c37f71e7fe4bf812a"
+    },
+    {
+      "role": "canonical_install",
+      "count": 8,
+      "ready_sha256": "0a84f4c45e4a3d0e33828bc10153bf0645f6da5d7106cc2fe9bf347c38e9b67a",
+      "manifest_sha256": "09ccff3bdbba3cbe5557e1773b9bdf76ec6fa66d60bfe366e8d8b5a64c6a279b"
+    },
+    {
+      "role": "private_carrier_build_inspection",
+      "count": null,
+      "ready_sha256": "36887374d29f2a67e4c53eb94d199b59c6e00d337fdbc00b96ded822558bb932",
+      "manifest_sha256": "ab1fce44fb41f4ac29101ae9d92167a7d89ae8d163c00f9303759f796ced4125"
+    },
+    {
+      "role": "private_carrier_install_activation_remove",
+      "count": 4,
+      "ready_sha256": "a704b07c855b194db199a161eea21f6e137521fa4cc9f6b171677f15adca243d",
+      "manifest_sha256": "57ac0dbd69ccdd5a77e4fab808aeaa6bb5e917e0c9f7e3c00fb97461757fd68b"
+    },
+    {
+      "role": "rootless_container_payload_runs",
+      "count": 6,
+      "ready_sha256": "0d85100237cfdeae0af9ebcd107894fe28c9b916cc16f2b63588cf2f8d45c3d7",
+      "manifest_sha256": "79cf8fc23fabfaf75591fb540b30c38c8cd53bd0a65b894c9639a251c25cf54d"
+    },
+    {
+      "role": "rendered_user_timer_proc_SQL",
+      "count": 2,
+      "ready_sha256": "78e340a5e976cabb524b093e25ebe87c4cf4f64077f880bff67b5156f3a91fb0",
+      "manifest_sha256": "af5c0d2b9df2215122c45bfd9990bf258cebcc3ed4d222d31ea425762e29f1e8"
+    },
+    {
+      "role": "PG_readiness_watch",
+      "count": 15,
+      "ready_sha256": "45d1d40f873f2805635f38565954d41e7780cbe9ada9ff8e51f99129d73c4087",
+      "manifest_sha256": "27cf121c99f1f89c8535556c49223b5ca488882733515a20bfd9319a8e5a3cb3"
+    },
+    {
+      "role": "previous_minor_native",
+      "count": 49,
+      "ready_sha256": "2a12890c16829c2e8bbc67d76d8588f1fa51b9a2fcf299376f8cd6a83a6923d0",
+      "manifest_sha256": "d750e35f4ffadbcdc5ea3ab722b6dab6eb798155490566a4f98be3e078e343da"
+    },
+    {
+      "role": "final_inventory",
+      "count": null,
+      "ready_sha256": "f7e2f3b04139baadefd1d35e61775d5b9886c0d63890b15c6c2057537548b90a",
+      "manifest_sha256": "fc0a112b193c919a6b8e36aab0e7c218c39b04d00d9220df5c173f6c5484a9e1"
+    }
+  ],
+  "original_to_curated_manifest_file_pairs_checked": 332,
+  "preserved_failure_pairs_checked": 6,
+  "reviewed_drivers": "v2/v4 manifests and every retained leaf byte-identical to reviewed originals",
+  "stable_campaign_review_sha256": "96200a96816f988399865413617d0d7363025de2af8a7207e18868b25de8b7a8",
+  "final_inventory": {
+    "raw_end_sha256": "8b60d30475f8310211ffaae7a2bfcb18a02663d2c2d864d96dd06a96073839d7",
+    "source_GitS_files_checked": 15,
+    "source_runtime_pins": 18,
+    "clean_S": true,
+    "issued_units_links_absent": true,
+    "carrier_absent": true,
+    "Linger": "no",
+    "retained_latches": 2,
+    "no_9p_virtiofs_mount_types": true,
+    "VM_retained": true,
+    "first_command": "SyntaxError record retained; corrected saved read-only script/result is separate, no first-command pass inferred."
+  },
+  "provenance_scope": "Carrier14/timer111 explicit before-exec/end receipts; PG15/K279 producer-derived explanations retain their different evidentiary status and no synthetic historical START claim. Host controller transitive collection bootstrap is not fully self-contained/authenticated; primary frozen guest argv/source/pin integrity verified.",
+  "cleanup_scope": "Campaign issued units/cgroups/clusters/packages/container IDs reviewed; two unknown-result negative timer latches deliberately remain, no automatic reconcile/retry. Final inventory is a recorded observation, not independent current guest process control.",
+  "count_scope": "Per-cohort counts only; no summed unique total. K27949 includes33 checks+15 pure runtime+1 required K086 migration; prep5 separate; 31-birimler direct T039 remains expected.",
+  "boundaries": [
+    "Owned local Debian12/aarch64 VM only; no generic Linux/minOS/AMD64/public package/provider/P08 promise.",
+    "No signing/publication/authenticated third-party attestation.",
+    "No guest control, campaign repeats, Cargo or shared source writes by this audit.",
+    "Earlier receipt/failure artifacts preserved; no retrospective closure.",
+    "This final companion supersedes only prior curated-not-ready status; frozen prior audit bytes remain unchanged."
+  ]
+}

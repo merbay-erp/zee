@@ -1,0 +1,13 @@
+{
+  "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "raw_external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/rc-final-8b49113c-recovery-caffeinated-20261015/POST-GATE-RECEIPT.json",
+  "raw_sha256": "13e3130aba5b1c91b5f69d50a6429ab92622522812d4cdd2abe5613b09237c0e",
+  "derived_path": "POST-GATE-RECEIPT.derived.json",
+  "derived_sha256": "ac8f4b8e53717ea74835d09c0f29b39eb2030c6d0777f8278e5d8309732353de",
+  "bindings": 2,
+  "default_rule_findings": 2,
+  "all_findings_equal_actual_exact_Git_S_source_sha256": true,
+  "source_file": "scripts/guvenlik-kapisi.sh",
+  "inverse_entire_parsed_JSON_equal": true,
+  "policy_or_allowlist_changed": false
+}

@@ -111,3 +111,7 @@ hazırlık20 ve explicit `ZEE_OWNED_WEB_KIT_PG_BIN` isteyen ignored gerçek4 kam
 Windows'ta native vaka manuel zorlanırsa dürüstçe reddeder; fiziksel Windows/minOS
 kabulü ileri sürülmez. [ADR-129](../adr/129-owned-native-web-test-kiti.md)/GB-087
 aynı atomik entegrasyonda bağlanmalıdır.
+
+## 15 Ekim 2026 — temiz S yerel kanıt güncellemesi
+
+S common içindeki dört gerçek native HTTP+fresh PostgreSQL vakası kabul edildi. [Son rapor](urunlesme-final-kabul-20261015.md) readonly observer ile COMMIT1/actionrollback0/freshcase0 ayrımını ve owned cleanup sınırını kaydeder. Source branch coverage ve gerçek ürün/P08 ayrıca açıktır.

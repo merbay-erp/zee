@@ -1,0 +1,104 @@
+{
+  "scope": "official-base-infrastructure-only-NOT-Zee-finalS",
+  "official_reference": "docker.io/library/debian@sha256:1d15be465c9ea7b37b464055c5de38319523de9d3f070fcc76c0d0230ebe9669",
+  "owned_state": "/home/mustafaerbay.guest/zee-k276/p7",
+  "Zee_executed": false,
+  "image_published": false,
+  "host_mounts": false,
+  "privileged": false,
+  "kernel_settings_changed": false,
+  "status": "passed-official-base-nonroot-infrastructure",
+  "container_uid": 65532,
+  "actual_architecture": "arm64",
+  "image_id": "4105e2bb7b57b01eaf420afd4f7970386183f64f4d244bca3d684fa9737e0670",
+  "elapsed_seconds": 19.198900351000248,
+  "owned_CID_cleanup": true,
+  "owned_pause_cleanup": true,
+  "commands": [
+    {
+      "name": "empty-store",
+      "args": [
+        "ps",
+        "--all",
+        "--format=json"
+      ],
+      "log_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    {
+      "name": "pull-only-official-digest",
+      "args": [
+        "unshare",
+        "/home/mustafaerbay.guest/zee-k276/tools/skopeo-owned/usr/bin/skopeo",
+        "--policy",
+        "/home/mustafaerbay.guest/zee-k276/p7/config/containers/policy.json",
+        "--override-arch=arm64",
+        "copy",
+        "--preserve-digests",
+        "--src-tls-verify=true",
+        "--authfile",
+        "/home/mustafaerbay.guest/zee-k276/p7/auth.json",
+        "docker://docker.io/library/debian@sha256:1d15be465c9ea7b37b464055c5de38319523de9d3f070fcc76c0d0230ebe9669",
+        "containers-storage:localhost/k276-official-base:bookworm-20261005"
+      ],
+      "log_sha256": "846323a056ffe3cb0137338e6b50dc2c4feb6528ef14a2f2232f39cd752a7f87"
+    },
+    {
+      "name": "inspect-official",
+      "args": [
+        "image",
+        "inspect",
+        "localhost/k276-official-base:bookworm-20261005"
+      ],
+      "log_sha256": "139c6cc4707112827de04a3387c32c71d67af69eee6e43df95952d5180333c0e"
+    },
+    {
+      "name": "nonroot-base-id",
+      "args": [
+        "run",
+        "--rm",
+        "--cidfile",
+        "/home/mustafaerbay.guest/zee-k276/base-infrastructure-v2/owned.cid",
+        "--name",
+        "k276-base-23745",
+        "--pull=never",
+        "--network=none",
+        "--read-only",
+        "--cap-drop=ALL",
+        "--security-opt=no-new-privileges",
+        "--security-opt=seccomp=/home/mustafaerbay.guest/zee-k276/tools/podman-owned/usr/share/containers/seccomp.json",
+        "--user=65532:65532",
+        "4105e2bb7b57b01eaf420afd4f7970386183f64f4d244bca3d684fa9737e0670",
+        "/usr/bin/id",
+        "-u"
+      ],
+      "log_sha256": "3f50af375a89507fc437906df9ed9b275e4251080c0a5d63e697ccf2a5738a2d"
+    },
+    {
+      "name": "empty-after",
+      "args": [
+        "ps",
+        "--all",
+        "--format=json"
+      ],
+      "log_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    {
+      "name": "owned-cid-cleanup",
+      "args": [
+        "rm",
+        "--force",
+        "--ignore",
+        "64e77ffb31c2032e01f4110d3683deaec9bca8fd3ea5a05a48ec8f0fbd190afb"
+      ],
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "owned-pause-cleanup",
+      "args": [
+        "system",
+        "migrate"
+      ],
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

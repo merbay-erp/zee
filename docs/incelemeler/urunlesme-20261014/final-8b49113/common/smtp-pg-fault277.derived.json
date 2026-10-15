@@ -1,0 +1,482 @@
+{
+  "schema": "zee-derived-metadata-sha256-bindings-v1",
+  "boundary": "Derived parsed JSON; not raw byte identity. Original external receipt remains authoritative and unchanged.",
+  "raw_external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/root-final-S-archive-stage/final-8b49113/common/smtp-pg-fault277.json",
+  "raw_sha256": "d4f2b084f7969c83da1853a17590dc86aa676dabd91cc0a926eaf73978dfcff3",
+  "metadata": {
+    "schema": "zee-native-effect-campaign-1",
+    "status": "passed",
+    "cases": [
+      {
+        "name": "native_mime_then_durable_SQL_ack",
+        "passed": true,
+        "smtp_connections": 1,
+        "SMTP_DATA_accepted": 1,
+        "native_MIME_attachment": true,
+        "PG_readonly_observer": {
+          "state": "done",
+          "attempts": 1,
+          "latches": 1,
+          "acknowledged": 1
+        },
+        "host_exit": 0,
+        "native_invocations": 1
+      },
+      {
+        "name": "DATA_accepted_ACK_lost_manual_pause",
+        "passed": true,
+        "smtp_connections": 1,
+        "SMTP_DATA_accepted": 1,
+        "native_MIME_attachment": true,
+        "PG_readonly_observer": {
+          "state": "effect_started",
+          "attempts": 1,
+          "latches": 1,
+          "acknowledged": 0
+        },
+        "host_exit": 3,
+        "native_invocations": 1
+      },
+      {
+        "name": "native_before_DATA_failure_still_no_auto_retry",
+        "passed": true,
+        "smtp_connections": 1,
+        "SMTP_DATA_accepted": 0,
+        "native_MIME_attachment": false,
+        "PG_readonly_observer": {
+          "state": "effect_started",
+          "attempts": 1,
+          "latches": 1,
+          "acknowledged": 0
+        },
+        "host_exit": 3,
+        "native_invocations": 1
+      },
+      {
+        "name": "three_known_pre_effect_SQL_rejects_only_backoff",
+        "passed": true,
+        "smtp_connections": 0,
+        "SMTP_DATA_accepted": 0,
+        "native_MIME_attachment": false,
+        "PG_readonly_observer": {
+          "state": "dead_letter",
+          "attempts": 3,
+          "latches": 0,
+          "acknowledged": 0
+        }
+      },
+      {
+        "name": "kill_after_committed_latch_no_delivery_no_replay",
+        "passed": true,
+        "smtp_connections": 1,
+        "SMTP_DATA_accepted": 0,
+        "native_MIME_attachment": false,
+        "PG_readonly_observer": {
+          "state": "effect_started",
+          "attempts": 1,
+          "latches": 1,
+          "acknowledged": 0
+        },
+        "signal": 9,
+        "host_exit": -9,
+        "outer_held_group_cleanup": true
+      },
+      {
+        "name": "TERM_during_native_SMTP_pauses_and_owned_cleanup",
+        "passed": true,
+        "smtp_connections": 1,
+        "SMTP_DATA_accepted": 0,
+        "native_MIME_attachment": false,
+        "PG_readonly_observer": {
+          "state": "effect_started",
+          "attempts": 1,
+          "latches": 1,
+          "acknowledged": 0
+        },
+        "signal": 15,
+        "host_exit": 3,
+        "outer_held_group_cleanup": true
+      },
+      {
+        "name": "expired_owner_token_generation_cannot_send_or_ack",
+        "passed": true,
+        "smtp_connections": 1,
+        "SMTP_DATA_accepted": 1,
+        "native_MIME_attachment": true,
+        "PG_readonly_observer": {
+          "state": "done",
+          "attempts": 2,
+          "latches": 1,
+          "acknowledged": 1
+        }
+      },
+      {
+        "name": "prepare_COMMIT_before_manual_no_replay",
+        "passed": true,
+        "smtp_connections": 0,
+        "SMTP_DATA_accepted": 0,
+        "native_MIME_attachment": false,
+        "PG_readonly_observer": {
+          "state": "leased",
+          "attempts": 1,
+          "latches": 0,
+          "acknowledged": 0
+        },
+        "wire": {
+          "mode": "before",
+          "commit_seen": true,
+          "commit_forwarded": false,
+          "commit_ready": false,
+          "commit_complete": false,
+          "commit_error": null,
+          "commits_seen": 1,
+          "completion_delivered": false,
+          "error_delivered": false,
+          "router_connections": 2,
+          "target_operation_connections": 1
+        },
+        "host_exit": 3
+      },
+      {
+        "name": "prepare_COMMIT_after_manual_no_replay",
+        "passed": true,
+        "smtp_connections": 0,
+        "SMTP_DATA_accepted": 0,
+        "native_MIME_attachment": false,
+        "PG_readonly_observer": {
+          "state": "effect_started",
+          "attempts": 1,
+          "latches": 1,
+          "acknowledged": 0
+        },
+        "wire": {
+          "mode": "after",
+          "commit_seen": true,
+          "commit_forwarded": true,
+          "commit_ready": true,
+          "commit_complete": true,
+          "commit_error": null,
+          "commits_seen": 1,
+          "completion_delivered": false,
+          "error_delivered": false,
+          "router_connections": 2,
+          "target_operation_connections": 1
+        },
+        "host_exit": 3
+      },
+      {
+        "name": "ack_COMMIT_before_manual_no_replay",
+        "passed": true,
+        "smtp_connections": 1,
+        "SMTP_DATA_accepted": 1,
+        "native_MIME_attachment": true,
+        "PG_readonly_observer": {
+          "state": "effect_started",
+          "attempts": 1,
+          "latches": 1,
+          "acknowledged": 0
+        },
+        "wire": {
+          "mode": "before",
+          "commit_seen": true,
+          "commit_forwarded": false,
+          "commit_ready": false,
+          "commit_complete": false,
+          "commit_error": null,
+          "commits_seen": 1,
+          "completion_delivered": false,
+          "error_delivered": false,
+          "router_connections": 4,
+          "target_operation_connections": 1
+        },
+        "host_exit": 3
+      },
+      {
+        "name": "ack_COMMIT_after_manual_no_replay",
+        "passed": true,
+        "smtp_connections": 1,
+        "SMTP_DATA_accepted": 1,
+        "native_MIME_attachment": true,
+        "PG_readonly_observer": {
+          "state": "done",
+          "attempts": 1,
+          "latches": 1,
+          "acknowledged": 1
+        },
+        "wire": {
+          "mode": "after",
+          "commit_seen": true,
+          "commit_forwarded": true,
+          "commit_ready": true,
+          "commit_complete": true,
+          "commit_error": null,
+          "commits_seen": 1,
+          "completion_delivered": false,
+          "error_delivered": false,
+          "router_connections": 4,
+          "target_operation_connections": 1
+        },
+        "host_exit": 3
+      }
+    ],
+    "source_pins": {
+      "compiler/tests/fixtures/native-effect-consumer/ana.dil": "179d177e10b3c5cae09baf9ce814b51e5887b7cbc6302e4b03f4b0c9ddc4c7c4",
+      "compiler/tests/fixtures/native-effect-consumer/catalog.pdf": "6c48cfc8780ccf55784d4d25dd9a3cbe947c31f4dd781a23c62f8a5325f56288",
+      "compiler/tests/fixtures/native-effect-consumer/gocler/0001_effect.sql": "e62cb51dd88c3c37ea9d34aa545c97cd507f2063f35be6ac7c91ad92e4d7ec8d",
+      "compiler/tests/fixtures/native-effect-consumer/proje.dil": "332e3b23c858b023f653f7af5a9c48aca4ab2700b9ac4397e9e96789e9693a82",
+      "docs/native-effect-consumer.md": "7c5a8114d782c746ce2bdc536336b55d199c0e83280e9c52a7fad46be1445ba9",
+      "scripts/credential-baslat.py": {
+        "sha256_binding": 0
+      },
+      "scripts/effect-dispatcher.py": "e28732303c27d0bc0bfcfe3dd4fb61b5490bd2905532e786f1bf18ab63dfba80",
+      "scripts/lifecycle_core.py": "e76fe65b6103fc4732aafc4468afc5bbf3d0699a0f79d7f74879165636ebb1a9",
+      "scripts/native-capabilities.py": "0a336d915e6618b7bc9134598337c0e442a7d455008fa937a0e49771fe7d94fc",
+      "scripts/native-metrics.py": "d5d12902358591365ff201c13c44b255d265c49c71befabcdef0575fe7e854c4",
+      "scripts/postgresql-commit-proxy.py": "3c8a0de39e838d12db431803d69271805ad297730338e527053a51b012da1454",
+      "scripts/tests/effect-dispatcher-native-test.py": "a245cd733969974e5aeb4b178d17a7b99636d74f4836a032aae53716cef97c66",
+      "scripts/tests/effect-dispatcher-test.py": "6b707f5ab85dc4b2986c7fb6ed9ba045e71f334aead1de8e068b538d7780141d",
+      "scripts/worker-supervisor.py": "560bec4e4e36d2aa856936d9d32412bb9106b61b25a871495287e2287e3c6642"
+    },
+    "executables": {
+      "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S-8b491-common-actual/binary/dil": "fb21485fa46422844f5de9b4510a8957c957ac9f281e47df3907cb93eeb8ae4e",
+      "/private/tmp/zee-plan-evidence/pg16-runtime/install/bin/initdb": "c960be8780e673d65c97f78c54bd3438525e1de6f2822257b189effc8b48b740",
+      "/private/tmp/zee-plan-evidence/pg16-runtime/install/bin/postgres": "9b89cfcd7b54a581c50c2fc5c3010f3ae0755635958d5789886718da22052fbd",
+      "/private/tmp/zee-plan-evidence/pg16-runtime/install/bin/psql": "c63479d6b17829552f52ac8f083b3bc4d6564dbea39eb64ffa01c150dc43d2af"
+    },
+    "profile": "owned-loopback-plaintext-only; no production/provider acceptance",
+    "exactly_once_claim": false,
+    "build": {
+      "schema": "zee-build-v1",
+      "version": "0.8.0-dev",
+      "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+      "source_date": "2026-10-15",
+      "channel": "development",
+      "dirty": false
+    },
+    "fault_diagnostics": [
+      {
+        "operation": "prepare",
+        "mode": "before",
+        "host_exit": 3,
+        "host_result": {
+          "binary_sha256": "fb21485fa46422844f5de9b4510a8957c957ac9f281e47df3907cb93eeb8ae4e",
+          "build": {
+            "channel": "development",
+            "dirty": false,
+            "schema": "zee-build-v1",
+            "source_date": "2026-10-15",
+            "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+            "version": "0.8.0-dev"
+          },
+          "direct_children_reaped": false,
+          "failure_type": "Paused",
+          "native_send_commands": 0,
+          "project_sha256": "386a7a16e9ef179839eb69cc1c07bf1cd346a6b9cf83f9007db0abe308b654a7",
+          "safe_preflight_rejections": 0,
+          "schema": "zee-native-effect-result-1",
+          "sources": {
+            "credential-baslat.py": {
+              "sha256_binding": 1
+            },
+            "effect-dispatcher.py": "e28732303c27d0bc0bfcfe3dd4fb61b5490bd2905532e786f1bf18ab63dfba80",
+            "native-capabilities.py": "0a336d915e6618b7bc9134598337c0e442a7d455008fa937a0e49771fe7d94fc"
+          },
+          "stage": "prepare",
+          "status": "paused_manual"
+        },
+        "proxy_state_before_finish": {
+          "mode": "before",
+          "commit_seen": true,
+          "commit_forwarded": false,
+          "commit_ready": false,
+          "commit_complete": false,
+          "commit_error": null,
+          "commits_seen": 1,
+          "completion_delivered": false,
+          "error_delivered": false
+        }
+      },
+      {
+        "operation": "prepare",
+        "mode": "after",
+        "host_exit": 3,
+        "host_result": {
+          "binary_sha256": "fb21485fa46422844f5de9b4510a8957c957ac9f281e47df3907cb93eeb8ae4e",
+          "build": {
+            "channel": "development",
+            "dirty": false,
+            "schema": "zee-build-v1",
+            "source_date": "2026-10-15",
+            "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+            "version": "0.8.0-dev"
+          },
+          "direct_children_reaped": false,
+          "failure_type": "Paused",
+          "native_send_commands": 0,
+          "project_sha256": "54e46acf3053bb291a5420f45a6ca2f54b35586aa119a81d1eecd4c78bd4d699",
+          "safe_preflight_rejections": 0,
+          "schema": "zee-native-effect-result-1",
+          "sources": {
+            "credential-baslat.py": {
+              "sha256_binding": 2
+            },
+            "effect-dispatcher.py": "e28732303c27d0bc0bfcfe3dd4fb61b5490bd2905532e786f1bf18ab63dfba80",
+            "native-capabilities.py": "0a336d915e6618b7bc9134598337c0e442a7d455008fa937a0e49771fe7d94fc"
+          },
+          "stage": "prepare",
+          "status": "paused_manual"
+        },
+        "proxy_state_before_finish": {
+          "mode": "after",
+          "commit_seen": true,
+          "commit_forwarded": true,
+          "commit_ready": true,
+          "commit_complete": true,
+          "commit_error": null,
+          "commits_seen": 1,
+          "completion_delivered": false,
+          "error_delivered": false
+        }
+      },
+      {
+        "operation": "ack",
+        "mode": "before",
+        "host_exit": 3,
+        "host_result": {
+          "binary_sha256": "fb21485fa46422844f5de9b4510a8957c957ac9f281e47df3907cb93eeb8ae4e",
+          "build": {
+            "channel": "development",
+            "dirty": false,
+            "schema": "zee-build-v1",
+            "source_date": "2026-10-15",
+            "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+            "version": "0.8.0-dev"
+          },
+          "direct_children_reaped": false,
+          "failure_type": "Paused",
+          "native_send_commands": 1,
+          "project_sha256": "009cd437aef34aacdb18c75e51cad8095c35afec58894a75e763e04117aa1662",
+          "safe_preflight_rejections": 0,
+          "schema": "zee-native-effect-result-1",
+          "sources": {
+            "credential-baslat.py": {
+              "sha256_binding": 3
+            },
+            "effect-dispatcher.py": "e28732303c27d0bc0bfcfe3dd4fb61b5490bd2905532e786f1bf18ab63dfba80",
+            "native-capabilities.py": "0a336d915e6618b7bc9134598337c0e442a7d455008fa937a0e49771fe7d94fc"
+          },
+          "stage": "ack",
+          "status": "paused_manual"
+        },
+        "proxy_state_before_finish": {
+          "mode": "before",
+          "commit_seen": true,
+          "commit_forwarded": false,
+          "commit_ready": false,
+          "commit_complete": false,
+          "commit_error": null,
+          "commits_seen": 1,
+          "completion_delivered": false,
+          "error_delivered": false
+        }
+      },
+      {
+        "operation": "ack",
+        "mode": "after",
+        "host_exit": 3,
+        "host_result": {
+          "binary_sha256": "fb21485fa46422844f5de9b4510a8957c957ac9f281e47df3907cb93eeb8ae4e",
+          "build": {
+            "channel": "development",
+            "dirty": false,
+            "schema": "zee-build-v1",
+            "source_date": "2026-10-15",
+            "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+            "version": "0.8.0-dev"
+          },
+          "direct_children_reaped": false,
+          "failure_type": "Paused",
+          "native_send_commands": 1,
+          "project_sha256": "fb5e7e6c97864e255b61b4733b0d7d589a3ad79ddc3ee57f5205c37edadd2a99",
+          "safe_preflight_rejections": 0,
+          "schema": "zee-native-effect-result-1",
+          "sources": {
+            "credential-baslat.py": {
+              "sha256_binding": 4
+            },
+            "effect-dispatcher.py": "e28732303c27d0bc0bfcfe3dd4fb61b5490bd2905532e786f1bf18ab63dfba80",
+            "native-capabilities.py": "0a336d915e6618b7bc9134598337c0e442a7d455008fa937a0e49771fe7d94fc"
+          },
+          "stage": "ack",
+          "status": "paused_manual"
+        },
+        "proxy_state_before_finish": {
+          "mode": "after",
+          "commit_seen": true,
+          "commit_forwarded": true,
+          "commit_ready": true,
+          "commit_complete": true,
+          "commit_error": null,
+          "commits_seen": 1,
+          "completion_delivered": false,
+          "error_delivered": false
+        }
+      }
+    ],
+    "case_count": 11,
+    "sources_unchanged": true,
+    "binaries_unchanged": true,
+    "owned_groups_closed": true,
+    "foreign_survived": true,
+    "raw_proof_sha256": "8ffa573633ca301282b0983c94ffc9670331e9ecb8cc9d841f3a9576f5dac5ba"
+  },
+  "bindings": [
+    {
+      "original_field": [
+        "source_pins",
+        "scripts/credential-baslat.py"
+      ],
+      "sha256": "6894667f5d2d529434c235c9ae54aec64d4fb3c1c25712c25fb7f710eee9961f"
+    },
+    {
+      "original_field": [
+        "fault_diagnostics",
+        0,
+        "host_result",
+        "sources",
+        "credential-baslat.py"
+      ],
+      "sha256": "6894667f5d2d529434c235c9ae54aec64d4fb3c1c25712c25fb7f710eee9961f"
+    },
+    {
+      "original_field": [
+        "fault_diagnostics",
+        1,
+        "host_result",
+        "sources",
+        "credential-baslat.py"
+      ],
+      "sha256": "6894667f5d2d529434c235c9ae54aec64d4fb3c1c25712c25fb7f710eee9961f"
+    },
+    {
+      "original_field": [
+        "fault_diagnostics",
+        2,
+        "host_result",
+        "sources",
+        "credential-baslat.py"
+      ],
+      "sha256": "6894667f5d2d529434c235c9ae54aec64d4fb3c1c25712c25fb7f710eee9961f"
+    },
+    {
+      "original_field": [
+        "fault_diagnostics",
+        3,
+        "host_result",
+        "sources",
+        "credential-baslat.py"
+      ],
+      "sha256": "6894667f5d2d529434c235c9ae54aec64d4fb3c1c25712c25fb7f710eee9961f"
+    }
+  ]
+}

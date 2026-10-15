@@ -1,6 +1,6 @@
 # ADR-134 — Linux özel değerlendirme paket taşıyıcısı
 
-- **Durum:** kabul, K-276/P06 dar hazırlık; final exact kaynak kabulü açık
+- **Durum:** kabul; temiz S owned Debian12 ARM64 delivery/install8/carrier4/container6 var; GB092 yalnız bu dar teknik profilde kapalı
 - **Tarih:** 15 Ekim 2026
 - **İlgili kayıt:** K-276, GB-092; halka yayın/üretici/lisans kararı değildir
 
@@ -48,3 +48,9 @@ BuildJSON/LSP/repeat/tamper/foreign-sentinel kanıtları ayrı çalışır. Root
 container için exact image digest, audited runtime closure, owned storage,
 subordinate mapping ve gerçek namespace/nonroot testi gerekir. Hiçbir ürün
 benimsemesi, fiziksel sunucu veya final P06 kapanışı hazırlıkla iddia edilmez.
+
+## 15 Ekim 2026 — temiz S yerel kanıt güncellemesi
+
+S’de actual Linux iki-klon canonical CLI/LSP release+sourceZIP+bundle restore; user-prefix install8; inert.deb build/inspection+fresh audited install/activation/refusal/remove4 ve canonical rootless container6 geçti. Carrier START/END14 ve frozen argv, timer111, source GitS/BuildJSON pinleri korunur. Full external411 arşiv ile127 Gitmetadata(120raw+7derived) ayrıdır. GB092 yalnız bu owned Debian12 ARM64 dar yerel teknik eksikliği için kapanır; aptrepo/autoactivation/signing/publisher/genericABI/minOS/physical/adoption açık.
+
+[Güncel dar kaynak kanıtı](../docs/urunlesme-final-kabul-20261015.md).

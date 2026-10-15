@@ -16,3 +16,8 @@ compiler/tests/fixtures/calisma-ortami-v1/*/*.json binary
 # K-275 PDF ve özgün font lisansı exact kaynak baytlarıyla taşınır.
 golden/pdf-host/assets/base.pdf binary
 golden/pdf-host/assets/LICENSE-DejaVu.txt -text whitespace=-blank-at-eol
+
+# Immutable acceptance logs retain original terminal blank lines.
+docs/incelemeler/urunlesme-20261014/final-8b49113/e-archive-checks/E-doc-gates.log whitespace=-blank-at-eof
+docs/incelemeler/urunlesme-20261014/final-8b49113/rc/campaign/logs/miri-ondalik.log whitespace=-blank-at-eof
+docs/incelemeler/urunlesme-20261014/final-8b49113/rc/campaign/logs/miri-zaman.log whitespace=-blank-at-eof

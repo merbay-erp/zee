@@ -1,0 +1,13 @@
+{
+  "status": "passed",
+  "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "manifest_leaves": 189,
+  "all_manifest_bytes_checked": true,
+  "inverse_JSON_files": 11,
+  "exact_typed_bindings": 51,
+  "findings_independently_bound_to_Git_S": 44,
+  "secret_values_printed": false,
+  "v2_selected_as_metadata_input_only": true,
+  "publication_requires_fresh_current_manifest": true,
+  "raw_external_and_v1_unchanged": true
+}

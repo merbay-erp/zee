@@ -1,0 +1,8 @@
+{
+  "status": "approved for actual recovery dispatch",
+  "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "manifest_sha256": "2dbd9ed6538ee501b09162aa4628c948c3d50ec19161c2e93b7bbd2e6cc17fcb",
+  "wrapper_sha256": "0c12a6731533d4db85dcd7710aa74cdd8f608b0fb13b45c67c26a4c7cf8f28fc",
+  "review": "Full53line wrapper/contract/14fixedargv read; root module-load without main/manifest preend/GitS producer-verifier-lifecycle/Python/caffeinate pins independently checked. Official caffeinate signature verified and local man confirms -i/-s owned utility-lifetime assertions; no display/auth/global power changes. Fresh out, retained original Popen+WNOWAIT/group, bounded6h/120s cleanup,10GiBfloor,30s realclock telemetry. No clocks/results/oracles rewritten. Failed firstcampaign retained; canonical noresume requires fresh all4+Miri.",
+  "source_writes": false
+}

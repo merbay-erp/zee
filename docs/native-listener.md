@@ -123,3 +123,7 @@ Gerçek kısa d53 aday koşusu Build dirty=true ile kaydedilmiştir; temiz final
 source/normal faz/ortak kampanya kabulü değildir. Internal P25 bridge dar dilimi
 kanıtlı adaydır; Windows/systemd/file-native sır gizliliği ve live adoption
 açık kalır. [ADR-125](../adr/125-credential-native-listener-kompozisyonu.md)/GB-083 aynı atomik kaynakta bağlanır; normal Cargo/faz ve final temiz kaynak kabulü ayrıca yürütülür.
+
+## 15 Ekim 2026 — temiz S yerel kanıt güncellemesi
+
+S common native listener17, quiet FD16 ve deadline1 geçti. [Son rapor](urunlesme-final-kabul-20261015.md) bunları 900/1800/RC kanıtlarından ayrı sayar; genel kesintisiz deployment veya platform SLA’sı kurulmaz.

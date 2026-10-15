@@ -1,0 +1,128 @@
+{
+  "schema": "root-independent-linux-final-audit-1",
+  "at": "2026-10-15T07:57:31.164430+03:00",
+  "status": "SCOPED_PASSED_CURATED_NOT_YET_READY",
+  "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "tree_sha": "09fa6e764bb317b4aa5b32b6ca15ce02f4cf389d",
+  "manifest_checks": [
+    {
+      "package": "k276-finalS-Linux-carrier-native-audited",
+      "manifest_sha256": "57ac0dbd69ccdd5a77e4fab808aeaa6bb5e917e0c9f7e3c00fb97461757fd68b",
+      "verified_file_count": 23
+    },
+    {
+      "package": "k276-finalS-Linux-timer-native-audited",
+      "manifest_sha256": "af5c0d2b9df2215122c45bfd9990bf258cebcc3ed4d222d31ea425762e29f1e8",
+      "verified_file_count": 44
+    },
+    {
+      "package": "k276-finalS-Linux-PG-native",
+      "manifest_sha256": "27cf121c99f1f89c8535556c49223b5ca488882733515a20bfd9319a8e5a3cb3",
+      "verified_file_count": 36
+    },
+    {
+      "package": "k279-finalS-Linux-acceptance",
+      "manifest_sha256": "d750e35f4ffadbcdc5ea3ab722b6dab6eb798155490566a4f98be3e078e343da",
+      "verified_file_count": 57
+    },
+    {
+      "package": "k276-linux-drivers-review-v2",
+      "manifest_sha256": "01bc2a3d4e4356d2dc1990b2c1cebb1a83caa6c0e931fb3c578fc7312b421a1d",
+      "verified_file_count": 11
+    }
+  ],
+  "explicit_endpoint_campaigns": [
+    {
+      "package": "k276-finalS-Linux-carrier-native-audited",
+      "start_sha256": "b83713638fef928d55de0fd31a5fe57ee6f81d237ceb62fbb095810550716b0d",
+      "end_sha256": "c0539f63b086f7935ac84fed679feeaab0f3196fce2946de87a60420ccf21e32",
+      "controller_sha256": "56aeabe53fe3845669b0444881ed3643001280370fc3c4f6c24ecfe7b8268e8f",
+      "guest_exec_sha256": "a421384752fbc796ddfe3a24da16e1001fd6c3a7e6940e0c0b3440413b608536",
+      "proof_sha256": "6a786de6cba6104425181565f73ba5ca74f506badd750b9ab18fb8ffdb077352",
+      "binding_counts": {
+        "gitS": 3,
+        "reviewed_external": 11
+      },
+      "scope": "Recorded clean S and reviewed external driver pins equal at explicit pre-exec and post-campaign endpoints; frozen guest argv/controller retained. Top-level controller imports an external collection helper; its transitive bootstrap is not fully self-contained/authenticated by this receipt."
+    },
+    {
+      "package": "k276-finalS-Linux-timer-native-audited",
+      "start_sha256": "e2b953808c8d4ce14107438aee8d914a6adafea853a1c2f492b4e58a4b4b8cb0",
+      "end_sha256": "2626eec49f838593662ba0752d5ea290a591889ef6b501439a60de37faf9f038",
+      "controller_sha256": "c19159dfbf807e30e26e245ad9cfa7277d0174e524721d2f6092e5af0d671c6e",
+      "guest_exec_sha256": "75edbe5f594c337248cf3ae469240cdd21353a7a51217777ac9db235cf270e9e",
+      "proof_sha256": "230f6fe99df4d79c3736e51b3796e99d2c75b47af4cea54061f4e9e435e80c11",
+      "binding_counts": {
+        "gitS": 100,
+        "reviewed_external": 11
+      },
+      "scope": "Recorded clean S and reviewed external driver pins equal at explicit pre-exec and post-campaign endpoints; frozen guest argv/controller retained. Top-level controller imports an external collection helper; its transitive bootstrap is not fully self-contained/authenticated by this receipt."
+    }
+  ],
+  "carrier4": {
+    "cases": 4,
+    "raw_command_exit_and_hash_checks": [
+      "package-absent",
+      "install-owned-carrier",
+      "activate-embedded-canonical-installer",
+      "activated-buildJSON",
+      "activated-LSP",
+      "repeat-activation-refuse",
+      "canonical-manifest-uninstall",
+      "remove-owned-carrier",
+      "package-absent-after"
+    ],
+    "prior_revision2_provenance_gap": "Closed only for this separate fresh audited campaign; original revision2 remains historical with missing outer per-run start/end binding."
+  },
+  "timer2": {
+    "cases": 2,
+    "known_attempts_intents": [
+      1,
+      1
+    ],
+    "cancelled_unknown_attempts_intents": [
+      1,
+      0
+    ],
+    "runtime_cleanup": "Issued user service/timer cgroups closed; owned PG cluster closed; empty cleanup_errors.",
+    "preserved_state": "paused-state/inflight.json intentionally retained and its exact source/binary/created_ns/hash checked. This is a safety latch, not a leaked running process; no automatic retry/reconcile accepted."
+  },
+  "PG15": {
+    "cases": 15,
+    "source_GitS_files_checked": 13,
+    "raw_files_checked": 32,
+    "before_end": "Producer embeds initial 13 source hashes and binary identity, then checks unchanged after cases before status passed. Archival SOURCE-BINDING/DERIVED companions do not create historical standalone START receipts.",
+    "legacy_label": "Static external uncommitted candidate description retained; actual BuildJSON S/dirty=false and 13 exact GitS hashes establish current source; label is not rewritten."
+  },
+  "K279": {
+    "cases": 49,
+    "decomposition": {
+      "checks": 33,
+      "pure_runtime": 15,
+      "known_K086_migration": 1
+    },
+    "preflight_models": 5,
+    "raw_oracles": "All33 expected exits, known T039 diagnostic,15 exact output hashes, migration check/runtime output hash independently verified.",
+    "boundary": "32/33 unmodified check success, one known K086 migration; no unmodified-all compatibility or old rollback acceptance. Counts are campaign-local and not a global unique-case total."
+  },
+  "derived_bindings": [
+    {
+      "name": "PG15",
+      "sha256": "55a0efc28540f296c3c57abc31abf70aea33efa1c7d45e1e90762c203b4a834f",
+      "classification": "Post-campaign derived source-contract explanation; not independent historical standalone source-start/end receipt. Producer code and embedded proof assertions are independently checked."
+    },
+    {
+      "name": "K279",
+      "sha256": "ab9bbcacda5ef134ed621327f3c157b840ee7f48557f87fed635f375c5edab52",
+      "classification": "Post-campaign derived source-contract explanation; not independent historical standalone source-start/end receipt. Producer code and embedded proof assertions are independently checked."
+    }
+  ],
+  "curated_status": "Directory exists and is under assembly, but no top-level READY/MANIFEST at this audit instant. Do not claim curated package frozen/verified; final companion follows READY.",
+  "limitations": [
+    "Read-only local copied evidence audit only; no guest/process control/campaign replay/Cargo/shared writes.",
+    "Same owned Linux aarch64 guest, not minOS/AMD64/public package/provider/P08 acceptance.",
+    "Manifest hashes provide integrity against retained bytes, not authenticated provenance or replay.",
+    "Cleanup statements apply to issued resources recorded by these campaigns, not a global current process scan or removal of deliberate negative-state latch.",
+    "All older failures and revisions retained; fresh successful repeats do not retrospectively repair historical receipts."
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "status": "SCOPED_EVIDENCE_AUDIT_PASSED_WITH_CARRIER_PROVENANCE_LIMITATION",
+  "audited_utc": "2026-10-15T04:17:18.975872+00:00",
+  "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "hash_base_audit_sha256": "7830b0143ccecbef1ee45d8945859540f699f1677026dc76b2e3181eaf7c9af6",
+  "manifest_files_verified": 159,
+  "delivery": {
+    "proof_sha256": "3edc90e19a73856312720551fe05abcde70c883a916d0523258accd1709a4f86",
+    "artifacts": 12,
+    "actual_two_clean_linux_builds_equal": true,
+    "source_zip_equal": true,
+    "bundle_fsck_reported_passed": true,
+    "unsigned_unpublished": true
+  },
+  "native_install": {
+    "proof_sha256": "47a496f1fa880e08c2353fb9f75a4fdef73eaae5645fadf53f7bf885d2bf7096",
+    "cases": 8,
+    "external_start_end_pins_equal": true,
+    "raw_expected_rejects_exit1_and_positives_exit0": true,
+    "foreign_sentinels_retained": true
+  },
+  "carrier": {
+    "proof_sha256": "47c4915694945280b7ce84d23e8997370245ab18952ff60446ba2b5e448d0c0e",
+    "cases": 4,
+    "build_and_deb_link_verified": true,
+    "archive_audit_sha256": "45a6b11fc1b9c7f9e9707328c75a301cfda383d0776c9d0199fef63165d72212",
+    "exact_owned_activation_and_package_absence_checked_by_driver": true,
+    "per_run_external_driver_start_end_pins_in_record": false
+  },
+  "container": {
+    "proof_sha256": "e945cc54567f5ae06369e1f1f572d7d371e0550ac6c4305897c48c2fc561f2ec",
+    "actual_payload_commands": [
+      "UID65532",
+      "BuildJSON",
+      "denetle",
+      "calistir",
+      "sourceSHA",
+      "LSP1,2"
+    ],
+    "external_driver_protocol_smoke_hashes_match_reviewed_bytes": true,
+    "context_dockerfile_and_kur_kaldir_match_sourceS_git": true,
+    "artifact_and_runtime_closure_copied_bytes_verified": true,
+    "issued_six_CIDs_cleanup_argv_exact_and_owned_store_ps_empty": true,
+    "pause_migrate_command_passed": true,
+    "raw_LSP_binaryhash_is_issued_launcher_not_dillsp": true,
+    "source_end_clean_reported": true
+  },
+  "concerns": [
+    {
+      "id": "carrier-external-start-end-evidence",
+      "scope": "evidence provenance limitation, not observed artifact/runtime failure",
+      "detail": "Carrierrevision2 records exactS/BUILD/deb/raw4case outcomes, but no independently frozen per-run driver/protocol/smoke begin/end receipt. Author confirms preexec11leaf check occurred but genericcontroller source snapshot was not frozen. Current/end observation cannot retrospectively establish begin.",
+      "owner_followup": "k251 plans separately labeled sameS fresh4case repeat with frozenGUEST-EXEC/source-start/end; this audit does not run it or mark limitation closed."
+    }
+  ],
+  "notes": [
+    "OUTER END/RAW source/tool/vendor hashes agree; RAW descriptive readelf multiline version text uses literal escaped newlines versus normalized END. No byte-identical whole JSON claim."
+  ],
+  "counting": "8install/4carrier/6container commands overlap BuildJSON/LSP; no aggregate unique test total claimed. 159 counts stored manifest files incl28linkedcarrierbuild, not scenarios.",
+  "cleanup_scope": "Reviewed recorded issued-prefix/package/CID/private-store cleanup at campaign time only; no assertion about current/all guest processes or active timer/PG. Image/cache retained owned state is not claimed removed.",
+  "trust_scope": "Hashes establish integrity not authenticated execution provenance. Scoped owned-local Linuxarm64 guest; no minOS/physicalserver/amd64/publicapt/signing/license/P08 closure.",
+  "no_guest_control_rerun_cargo_or_shared_source_write": true
+}

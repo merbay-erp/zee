@@ -1,0 +1,6 @@
+{
+  "correction": "The approval prose included an incorrect manual line-count53. The full recovery.py was read; actual line count is computed here. This changes neither approval scope, executable bytes, hashes nor oracles.",
+  "actual_wrapper_lines": 72,
+  "original_review_preserved": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/root-rc-recovery-review.json",
+  "reviewed_wrapper_sha256": "0c12a6731533d4db85dcd7710aa74cdd8f608b0fb13b45c67c26a4c7cf8f28fc"
+}

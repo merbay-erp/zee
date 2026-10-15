@@ -230,3 +230,7 @@ latch model exposed validation of only two identity keys; v3 validates the
 entire typed record. These are wrapper contract corrections, not compiler bugs,
 provider duplicates or real Linux/native/systemd acceptance. Explicit CLI exit4
 handler models and owned short Python fault tests are counted only as preparation.
+
+## 15 Ekim 2026 — temiz S yerel kanıt güncellemesi
+
+S için gerçek Debian12 ARM64 Linux/proc ve değişmeyen kanonik user-unit dosyalarıyla iki PG vakası geçti. Audited tekrar açık başlangıç/bitiş pinleri taşır: normal tick bir SQL intent tamamlar, advisory-lock altında TERM bilinmeyen sonucu leased/no-intent ve retained inflight latch ile durdurur. Unit/cgroup/PG temizliği latch silme veya otomatik replay değildir. [Son rapor](urunlesme-final-kabul-20261015.md).

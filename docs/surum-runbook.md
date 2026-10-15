@@ -197,3 +197,15 @@ kimlik veya değiştirilmiş klon sürüm kümesi yaratmadan reddedilir;
 ## K-265 explicit dış RC kanıtı
 
 [Exact kaynak dış kanıt rehberi](rc-kaniti.md) ve [ADR-124](../adr/124-exact-kaynak-dis-rc-kaniti.md) temiz S’ye bağlı dış paketi tanımlar. Explicit geçersiz paket fallback yapmaz; etiket/build S’de, append-only arşiv commit’i E’de S kimliğini korur. Default tracked yolun self-reference sınırı açıkça korunur. Gerçek uzun kampanya henüz bu kısa entegrasyon testlerinden tamamlanmış sayılamaz.
+
+## 15 Ekim 2026 — S kanıtı ve E arşivi
+
+Kaynak S=`8b49113c413f62b35d4b251ed31068524d2fe26c`, sonraki belge/kanıt commit’i E’dir. Temiz S üzerinde dört ASAN hedefi ayrı ayrı1801sn geçti; lexer_parser7.117.460, morfoloji8.265.144, http_istegi11.194.063 ve wasm_abi9.011.299 yürütme kaydedildi. İki seçili Miri grubunda toplam3test(ondalık2,zaman1) geçti. Kanonik export/check ve aynı S güvenlik kapısı510.198758sn exit0 ile geçti; kapının118 Cargo/libtest grubunda943passed/0failed/16ignored vardır. GB082 yalnız bu exactS yerel protokol ve kanıt kapısı için kapalıdır; E kaynakS gibi kabul edilmez.
+
+İlk producer PASS paketinin HTTP dış702.404sn/raw1921sn ve WASM dış695.844sn/raw1914sn süre uyuşmazlığı nedeniyle export reddi korunur. Recovery ayrı kampanyadır; eski dalganın sonuçlarıyla birleştirilmez. Duvar saati ve monotonik saat kayıtları ayrıdır.
+
+[RC sonuç makbuzu](incelemeler/urunlesme-20261014/final-8b49113/rc/FINAL-RESULT.json), [aynı-S kapı makbuzunun türetilmiş temsili](incelemeler/urunlesme-20261014/final-8b49113/rc/POST-GATE-RECEIPT.derived.json), [bağımsız kök incelemesi](incelemeler/urunlesme-20261014/final-8b49113/rc/root-independent-review.json). Gate `--surum-adayi --rc-kanit PATH --rc-kanit-sha256 HASH` ile aynı temiz S’de gerçekten exit0 verdi; bundle SHA256 `5e174eb9179e79e75b5127e12c1760b65d448704256ad69dbfa3abd5b343805c`. S source/runtime before/end pinleri değişmedi.
+
+Tracked fuzz ve soak geçmişine root yalnız doğrulanmış actual S satırlarını append eder; eski koşular değiştirilmez. E S gibi test edilmiş/etiketlenebilir kabul edilmez; S için üretilmiş releaseartefaktı ve tag kimliği S kalır. İmza/yayın/tag/push yapılmadı. Bütün ürün/insan/platform/IDE kapıları bu dar kabulden çıkarılmaz.
+
+Linux411external/127metadata(120raw+7derived) ayrımı korunur; final RC metadata assembly sonrasında root current arşiv manifestini tamamlar. [Güncel dar S raporu](urunlesme-final-kabul-20261015.md).

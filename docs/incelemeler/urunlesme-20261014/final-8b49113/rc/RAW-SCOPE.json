@@ -1,0 +1,109 @@
+{
+  "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "bundle_external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/rc-final-8b49113c-recovery-caffeinated-20261015/bundle",
+  "bundle_manifest_sha256": "5e174eb9179e79e75b5127e12c1760b65d448704256ad69dbfa3abd5b343805c",
+  "bundle_files": 7483,
+  "full_bundle_and_raw_fuzz_corpora_retained_externally": true,
+  "seed_imported": false,
+  "tracked_metadata_and_selected_logs_only": true,
+  "files": [
+    {
+      "path": "FINAL-RESULT.json",
+      "sha256": "d70b326f991b49efc78128f3b0620b6096d00fcba671f148a261c55516474b6e",
+      "external_origin": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/rc-final-8b49113c-recovery-caffeinated-20261015/FINAL-RESULT.json",
+      "bytes": 13603
+    },
+    {
+      "path": "POST-GATE-RECEIPT.derived.json",
+      "sha256": "ac8f4b8e53717ea74835d09c0f29b39eb2030c6d0777f8278e5d8309732353de",
+      "external_origin": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/rc-final-8b49113c-recovery-caffeinated-20261015/POST-GATE-RECEIPT.json",
+      "bytes": 7748,
+      "raw_sha256": "13e3130aba5b1c91b5f69d50a6429ab92622522812d4cdd2abe5613b09237c0e",
+      "representation": "reversible-derived-parsed-JSON"
+    },
+    {
+      "path": "wrapper-start.json",
+      "sha256": "7542e780d488d30d044a33d479cace939f8f0f8a0d448e38bb20284801618659",
+      "external_origin": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/rc-final-8b49113c-recovery-caffeinated-20261015/wrapper-start.json",
+      "bytes": 2020
+    },
+    {
+      "path": "wrapper-result.json",
+      "sha256": "6e0708b8d6dc0c0d79162f56a1beb0a560c6ebe4cc3ff54785434c557876013d",
+      "external_origin": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/rc-final-8b49113c-recovery-caffeinated-20261015/wrapper-result.json",
+      "bytes": 3316
+    },
+    {
+      "path": "clock-samples.jsonl",
+      "sha256": "77e8fa7f7ded9a806b119c738716d089734e46a258e53bd9ac2fac155e3dd1e4",
+      "external_origin": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/rc-final-8b49113c-recovery-caffeinated-20261015/clock-samples.jsonl",
+      "bytes": 17673
+    },
+    {
+      "path": "export.log",
+      "sha256": "60ef9c1ee4db943b0619e833326375bc7b6f7d44adf4d9beabe1ff540f45ef06",
+      "external_origin": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/rc-final-8b49113c-recovery-caffeinated-20261015/export.log",
+      "bytes": 262
+    },
+    {
+      "path": "bundle-check.log",
+      "sha256": "0c24fd130b98604f711585f5279857f9db038c8a35c0ae6d05a0c6e324b9ff69",
+      "external_origin": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/rc-final-8b49113c-recovery-caffeinated-20261015/bundle-check.log",
+      "bytes": 383
+    },
+    {
+      "path": "gate.log",
+      "sha256": "8d3bdd40cd1bd278a191b71528a63b3d48ec84b7cdfd5f574f1eeb4c95e704c5",
+      "external_origin": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/rc-final-8b49113c-recovery-caffeinated-20261015/gate.log",
+      "bytes": 103645
+    },
+    {
+      "path": "campaign/campaign-proof.json",
+      "sha256": "fa6771d9e1e439ea183922173dc047a5d425f13314484948c172d56952701265",
+      "external_origin": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/rc-final-8b49113c-recovery-caffeinated-20261015/campaign/campaign-proof.json",
+      "bytes": 13731
+    },
+    {
+      "path": "campaign/started-proof.json",
+      "sha256": "3677d5f6480aff65b9fad619d0d64d7a1343141a5897d0c61586f27530f56cab",
+      "external_origin": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/rc-final-8b49113c-recovery-caffeinated-20261015/campaign/started-proof.json",
+      "bytes": 1586
+    },
+    {
+      "path": "campaign/logs/miri-ondalik.log",
+      "sha256": "08ec55fac33eba4772ee3c3eb9aee2a1e375300bd30ba2121ca7026e1186996a",
+      "external_origin": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/rc-final-8b49113c-recovery-caffeinated-20261015/campaign/logs/miri-ondalik.log",
+      "bytes": 6514
+    },
+    {
+      "path": "campaign/logs/miri-zaman.log",
+      "sha256": "66b4e2d156ea9cd5f47de36f73d935cc129e29cc5673527391cfb2918b8af20d",
+      "external_origin": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/rc-final-8b49113c-recovery-caffeinated-20261015/campaign/logs/miri-zaman.log",
+      "bytes": 1696
+    },
+    {
+      "path": "targets/lexer_parser/result.json",
+      "sha256": "74e241d46eb4e0c998abc31c7daa1015ddaac3b5d42e2221fc4cfc729bbc02db",
+      "external_origin": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/rc-final-8b49113c-recovery-caffeinated-20261015/campaign/targets/lexer_parser/result.json",
+      "bytes": 1818
+    },
+    {
+      "path": "targets/morfoloji/result.json",
+      "sha256": "bb2e7954902425763dff547c7869de742b4acef02da1e958fed1db4025ed9683",
+      "external_origin": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/rc-final-8b49113c-recovery-caffeinated-20261015/campaign/targets/morfoloji/result.json",
+      "bytes": 1798
+    },
+    {
+      "path": "targets/http_istegi/result.json",
+      "sha256": "ceb22c75115eb1d1bdefdce0225bab9607061c2260109e7ec3cb2c42dfed1090",
+      "external_origin": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/rc-final-8b49113c-recovery-caffeinated-20261015/campaign/targets/http_istegi/result.json",
+      "bytes": 1813
+    },
+    {
+      "path": "targets/wasm_abi/result.json",
+      "sha256": "1dc318fec53744dd72606b855d0d137c0a27746be35e09e514d78821438d6d71",
+      "external_origin": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/rc-final-8b49113c-recovery-caffeinated-20261015/campaign/targets/wasm_abi/result.json",
+      "bytes": 1796
+    }
+  ]
+}

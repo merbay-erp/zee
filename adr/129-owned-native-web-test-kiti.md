@@ -1,6 +1,6 @@
 # ADR-129 — Owned native web test kiti (K-271/P22)
 
-- **Durum:** kabul; dar Unix fixture kiti; ortak Cargo/final temiz kaynak kabulü ayrıca açık
+- **Durum:** kabul; temiz S normal Cargo+dedicated ownedwebPG4 kabulü; fullP22/ürün/platform açık
 - **Tarih:** 15 Ekim 2026
 - **İlgili:** ADR-118/125/127; GB-087
 
@@ -17,3 +17,9 @@ Inventory/JSON/cases/steps/HTTP/process output ve monotonic süreler sınırlıd
 İlk Python aday incelemesinde generic argparse hata yolu argümanları echo edebiliyordu; ilk kaynak öncesi MaskedParser fixed ret ve actual unknown-argument canary alt-senaryosuyla kapatıldı. Son cleanup başarısızlığı her durumda failed makbuz üretir. Bu yeni host aracının aday düzeltmesidir; tarihsel compiler bug/regression SHA uydurulmaz.
 
 Bağımsız ilk aday incelemesi suite hashinin sınırlı JSON okumasından önce FIFO üzerinde bloklanabildiğini buldu. İlk kaynak öncesi R1 düzeltmesi nofollow normal-dosya/64KiB snapshotını hem hash hem decode için aynı baytlara bağlar; identity başlangıç/FD/bitişte doğrulanır. Binary/PG executable hashleri64MiB, runtime yardımcı hashleri1MiB rol sınırında streamingdir. Global cancel/deadline preflight öncesindedir. Gerçek FIFO/oversize/symlink/dizin negatifleri dosyayı açmadan masked exit2 ve yeni çıktı oluşturmamayı doğrular; bu preflight kanıtı native uygulama kabulü değildir. Tarihsel compiler fixed_by/introduced_by kaydı uydurulmaz.
+
+## 15 Ekim 2026 — temiz S yerel kanıt güncellemesi
+
+S common explicitignored ownedwebPG4 actual freshcluster/nativeHTTP ile geçti. Bağımsız readonly observer committed1,actionrollback0,freshcase0 ayrımını korur; fixture/helper/binary begin/end ve ownedcleanup recorded. Bu sourcebranchcoverage/publicHTTPinject/genericrollback/realproduct/P08/platform kabulü değildir.
+
+[Güncel dar S raporu](../docs/urunlesme-final-kabul-20261015.md).
