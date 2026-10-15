@@ -1,6 +1,6 @@
 # ADR-152 — Metric-only stdio alias için erken sessiz ret
 
-- **Durum:** uygulanmış correctness düzeltmesi; exact source/fixed_by follow-up ve
+- **Durum:** uygulanmış correctness düzeltmesi; exact source/fixed_by follow-up kaydedildi;
 final temiz kaynak kapıları beklenir. İş: K-294, güvenlik sınırı GB-110.
 
 ## Gerçek bulgu
@@ -49,3 +49,8 @@ kontrol/diagnostic baytı ister. Diğer metrics8 kabul ölçütleri değiştiril
 Grammar, façade, normal uygulama stdout'u, hata kodları, performans eşikleri
 ve public API değişmez. Yeni compiler bug manifest follow-up'ı olmadan iş
 kapanmış sayılmaz.
+
+Kaynak düzeltme SHA: `382beed1d01440f6f9df28b5ac7a111fbe1f75ee`.
+`regression/v2.tsv` exact `fixed_by` ve gerçek minimal kaynak taşır; dedicated
+native test boş manifestle geçemez. GB-110 temiz kaynak kabulü tamamlanana
+kadar açık tutulur.

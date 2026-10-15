@@ -214,3 +214,8 @@ birlikte ekler; Windows için görünür ignored vaka vardır, native başarı
 uydurulmaz. Bu ilk support commit'inde manifestte K-294 satırı/placeholder
 ve regression altında sahipsiz `.dil` bulunmaz. Mevcut vaka kimlikleri ve
 provenance alanları değiştirilmez.
+
+K-294 takip kaydı artık `native-metric-stdio-alias` fixture ve exact
+`fixed_by=382beed1d01440f6f9df28b5ac7a111fbe1f75ee` taşır.
+Nonempty dedicated Unix libtest gerçek kaynağı ve observed exit2/boş kanal
+sonucunu yürütür; kaynak commitinden sonraki provenance diliminde eklenmiştir.
