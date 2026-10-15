@@ -21,7 +21,7 @@ kabulü değildir. Aşağıdaki aday testler temiz exact kampanya yerine geçmez
 | K-291 / P14 | Farklı kod sürümlerinin devir hazırlığı8 | Native9,160istek/dört dalga; genel SLA/DBşema geçişi değil |
 | K-292 / P34 | Worker fault ve kontrollü Python resolver hazırlığı7 | Native2; native DNS iptali kanıtı yok |
 | K-293 / P33 | Beş alan/20işlev salt okunur matris | Koordineli reproducer çalışmadı; araç incelemesi reddetti, gözlenmiş istismar yok |
-| K-294 / GB-110 | Kontrol FD alias tanı sızıntısı düzeltildi; actual26 geçti | Kaynak commitinden sonra exact fixed_by ve minimal regression follow-up |
+| K-294 / GB-110 | Kontrol FD alias tanı sızıntısı düzeltildi; actual26 geçti | Exact fixed_by ve minimal regression kaydedildi; temiz kaynak kabulü bekleniyor |
 
 ## Kapanma sırası
 
@@ -56,3 +56,14 @@ tazelik testi ve sürekli güvenlik kapısı da geçti. Sürekli kapı compiler
 ve fuzz bağımlılıkları için advisory/lisans/ban/kaynak denetimini, stable
 fuzz derlemesini ve güvenlik/tedarik testlerini kapsar. Bu sonuçlar kirli kaynak kapısıdır;
 clean exact RC, soak, native veya IDE kabulü sayılmaz.
+
+İlk kaynak commit: `382beed1d01440f6f9df28b5ac7a111fbe1f75ee`. K-294 exact
+regression/fixed_by ve compiler/core-freeze beyanları izleyen dilimdedir.
+
+Takip diliminin tam faz kapısı **989/1014 başarılı, 0 başarısız,
+25 atlanan** vaka ile 540,935 saniyede geçti. İlk takip koşusu 984/1014,
+beş hata ile korunur: üretilmiş kanıt özeti yenilenmemişti (dört vaka) ve
+başka Cargo işi test sırasında ikiliyi değiştirdiği için native listener
+hash koruması reddetti (bir vaka). Özet kanonik Zee ürünüyle yenilendi;
+üç ilgili test grubu, ardından başka Cargo işi olmadan tam matris geçti.
+Son Clippy, biçim, katalog/tazelik ve semantic/core-freeze korukları temizdir.
