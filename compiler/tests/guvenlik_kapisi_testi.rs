@@ -318,3 +318,29 @@ fn acik_depo_kapisi_anonim_politikayi_ve_ci_kablosunu_korur() {
         String::from_utf8_lossy(&result.stderr)
     );
 }
+// K-265 / ADR-124: actual owned-process and synthetic identity-protocol regressions.
+#[test]
+#[cfg_attr(
+    not(unix),
+    ignore = "actual POSIX dirfd/process capability unavailable"
+)]
+fn rc_kaniti_exact_kaynak_ve_kosucu_sahipligi() {
+    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .parent()
+        .unwrap();
+    for (script, count) in [("rc-kaniti-test.py", 25), ("rc-kampanyasi-test.py", 9)] {
+        let result = std::process::Command::new("python3")
+            .args(["-I", "-B"])
+            .arg(root.join("scripts/tests").join(script))
+            .output()
+            .expect("RC evidence protocol regression runner");
+        let report = String::from_utf8_lossy(&result.stderr);
+        assert!(result.status.success(), "{script}: {report}");
+        assert!(
+            report.contains(&format!("Ran {count} tests"))
+                && report.contains("OK")
+                && !report.contains("skipped"),
+            "all protocol cases required: {report}"
+        );
+    }
+}

@@ -4558,3 +4558,7 @@ K-257–260 kaynak commit `54a8d6dc0efb060ae5644b37546da40ad03ee035` öncesi tam
 Provenance adayının ilk tam fazı test-only çıktı adı yarışını yakaladı: aynı PID ve eş SystemTime nanos ile paralel native/preflight aynı fresh dizini seçti; 16-vaka makbuzu mevcutken native17 reddedildi. Wrapper yoluna exact vaka rolü eklendi; üretim compiler/host davranışı değişmez. Başarısız926/939 koşu ayrı dış makbuzda korunur, geçer kabul edilmez.
 
 Son kapsam incelemesi semantic regression grubuna yalnız `proje` ekler: actual DIRECTORY çalıştırması ProjeGrafigi çözümü/kilit/giriş/politikayı yürütür. Deadline sonrası client TCP baytları native HTTP parser tarafından kabul edilmediğinden `http` eklenmez. Vaka rolüyle ayrılan output düzeltmesi sonrası927/939 geçti, başarısız0/atlanan12; son `proje` kapsam metadatasıyla tam kapı da 927/939 geçti, başarısız0/atlanan12.
+
+## K-265 — Exact kaynak dış RC kanıtı
+
+[ADR-124](../adr/124-exact-kaynak-dis-rc-kaniti.md) sourceS/historyE self-reference doğruluk boşluğunu explicit dış immutable paketle ele alır; kaynak eşdeğerliği/bypass yoktur. İzole25 sentetik protokol+9 kısa ownedprocess test dilimi, tam4ASAN2Miri/rawhash/initialsourcecorpus/erkenHEADpin/streamingdizinbütçesi negatiflerini kapsar. Ortak atomik kaynak ve final gerçek cleanS uzunASAN/Miri kampanyası henüz açıktır;900/1800/release/ürün adoption kapıları kapanmaz. Kullanıcı AGENTS değiştirilmez, exactsourceS ve append-only arşivE ayrımı açık tutulur.
