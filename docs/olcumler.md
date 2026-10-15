@@ -430,3 +430,14 @@ belge p95 19,754 ms (max19,926; ilk29,627),41 açık belge p95 126,164 ms
 Ölçüm taze grafik/kilit/yükleme/tür analizi ve tanı serileştirmesini içerir;
 editör taşıması, UI ve lint açık kipi kapsamaz. Ham başarısız ilk adaylar
 korundu; kalıcı performans tarihçesine kirli kaynak sonucu yazılmadı.
+
+### K-295/K-296 kabul yordamı etkisi
+
+K-295 generated dispatcher unit'ini check-only yerine mevcut explicit çalışma
+koluna bağlar; önceki S2 boş daemon çalışması performans kanıtı sayılmaz.
+K-296 stale-gate kabulüne mevcut bounded, Build-validated HTTP probe'un
+doğrudan gözlemini ekler; yeni latency/RSS/throughput eşiği veya production
+Supervisor log sıklığı tanımlamaz. ADR-045/049 ve izlenen performans tarihçesi
+etkisi incelendi: compiler Rust kaynağı, kanonik benchmark programları,
+sample/warmup sözleşmesi ve hard eşik politikası değişmemiştir. Bu yüzden
+`performans-gecmisi-v2.tsv` yenilenmez; yeni temiz kaynak ölçümü ayrı yapılır.

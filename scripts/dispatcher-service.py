@@ -177,7 +177,7 @@ def run(c, once=False):
 def render(config, directory, calendar=None):
     values=[Path(sys.executable).resolve(),Path(__file__).resolve(),T.canonical(config)]
     need(all(re.fullmatch('/[A-Za-z0-9_./-]+',str(p)) for p in values))
-    service='[Unit]\nDescription=Zee owned dispatcher service\n[Service]\nType=simple\nUMask=0077\nExecStart='+str(values[0])+' -I -B '+str(values[1])+' --config '+str(values[2])+(' --once' if calendar else '')+'\nRestart=on-failure\nRestartPreventExitStatus=2 3 4 75\nRestartSec=5\nKillMode=mixed\nTimeoutStopSec=10\nSendSIGKILL=yes\nNoNewPrivileges=yes\nStandardInput=null\nStandardOutput=null\nStandardError=null\n'
+    service='[Unit]\nDescription=Zee owned dispatcher service\n[Service]\nType=simple\nUMask=0077\nExecStart='+str(values[0])+' -I -B '+str(values[1])+' --config '+str(values[2])+(' --once' if calendar else ' --run')+'\nRestart=on-failure\nRestartPreventExitStatus=2 3 4 75\nRestartSec=5\nKillMode=mixed\nTimeoutStopSec=10\nSendSIGKILL=yes\nNoNewPrivileges=yes\nStandardInput=null\nStandardOutput=null\nStandardError=null\n'
     files={'zee-dispatch.service':service}
     if calendar is not None:
         need(type(calendar) is str and 1<=len(calendar)<=128 and re.fullmatch('[A-Za-z0-9*,:./ +~-]+',calendar) is not None)

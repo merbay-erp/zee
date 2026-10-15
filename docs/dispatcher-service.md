@@ -98,7 +98,7 @@ Restart=on-failure yalnız2/3/4/75 dışındaki crash'ler için; crash sonrası 
 latch yeniden admission'ı kapatır. KillMode=mixed, stop10s ve son cgroup KILL
 vardır; SIGKILL sırasında Python finally çalışacağı iddia edilmez.
 
-Hazırlık testleri gerçek kısa Python çocuklarıyla21 vaka çalıştırır; Mac `/proc`
+Hazırlık testleri gerçek kısa Python çocuklarıyla22 vaka çalıştırır; Mac `/proc`
 çözümlemesi açıkça modellenir. Ayrı native koşucu, temiz exactS+native binary+
 PG16.15+Linux user manager ister: iki native SQL tick, gerçek calendar tick,
 TERM/unknown sonrasında explicit restart/no replay ve gerçek Zee yorumlayıcısını
@@ -110,3 +110,14 @@ sahipli zaman ve çıktı bütçesine alındı. Fixture dosyaları açık kaynak
 kopyalanıp başlangıç/son SHA ile doğrulanır; her komut ayrı artan kimlikli
 kayıt taşır. Kapanmayan PG durumunda kanıt dizini korunur. Bu hazırlık
 sonuçları Linux native4 kabulünün yerine geçmez.
+
+## K-295 — daemon unit'in explicit yürütme düzeltmesi
+
+S2 `e35b617095e6a9d00915794d6adee90842238a5f` gerçek Linux koşusunda
+daemon ExecStart yalnız --config taşıdığı için check-only kipinde exit0 dönmüş,
+hiç SQL tick başlamamıştır (0/4; cleanup_errors boş, owned_units_released true).
+Üretilen daemon artık explicit --run, OnCalendar hizmeti yalnız --once taşır.
+Doğrudan CLI varsayılan preflight ve render'ın servis başlatmama sınırı değişmez.
+Eski unit dosyaları yeniden --render ile üretilmelidir. Exact S2 kaynağına karşı
+yeni regresyon kırmızı, düzeltmeyle hazırlık22 yeşildir; yeni temiz Linux kabulü
+beklenir. Host correctness düzeltmesidir; compiler bug/grammar/tanı/API değişmez.

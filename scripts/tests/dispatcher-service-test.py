@@ -147,7 +147,16 @@ class Cases(unittest.TestCase):
         with mock.patch.object(M,'configuration',return_value={}),mock.patch.object(M,'pins'),mock.patch.object(M,'run',side_effect=AssertionError('check only')):self.assertEqual(M.main(['--config',str(self.path)]),0)
     def test_calendar_render_fixed_names_no_persistent_backfill(self):
         M.render(self.path,self.root/'units','*-*-* *:*:00');text=(self.root/'units/zee-dispatch.timer').read_text();self.assertIn('Persistent=false',text);self.assertIn('OnCalendar=*-*-* *:*:00',text)
+        service=(self.root/'units/zee-dispatch.service').read_text();self.assertIn(' --once\n',service);self.assertNotIn(' --run',service)
         with self.assertRaises(ValueError):M.render(self.path,self.root/'evil','daily\nExecStart=/bad')
+    def test_daemon_render_enters_explicit_run_instead_of_check_only(self):
+        M.render(self.path,self.root/'daemon-units');text=(self.root/'daemon-units/zee-dispatch.service').read_text()
+        import shlex
+        command=shlex.split(next(line.removeprefix('ExecStart=')for line in text.splitlines()if line.startswith('ExecStart=')))
+        self.assertIn('--run',command);self.assertNotIn('--once',command)
+        with mock.patch.object(M,'configuration',return_value={}),mock.patch.object(M,'pins'),mock.patch.object(M.T,'runtime_supported',return_value=True),mock.patch.object(M,'run',return_value=0)as run:
+            self.assertEqual(M.main(command[4:]),0)
+        run.assert_called_once_with({},False)
     def test_stopped_wait_never_starts_an_extra_tick(self):
         c=self.config()
         def once(c):M.STOP=True;return 0
