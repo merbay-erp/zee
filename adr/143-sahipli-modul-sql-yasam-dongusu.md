@@ -1,6 +1,6 @@
 # ADR-143: Sahipli modül SQL yaşam döngüsü
 
-- **Durum:** K-285 aday; uygulama/native doğrulamaü ve ortak kapılar tamamlanana kadar açık.
+- **Durum:** [S3](../docs/urunlesme-s3-kabul-20261015.md) (`66e4149e53451111d153f47283c219079a8d1cab`): dokuz Mac PostgreSQL vakası ile dar yerel kabul; DB+FS atomikliği, pending/manual review ve ürün benimsenmesi açık.
 - İş: K-285; güvenlik sınırı GB-101.
 - İlgili: [ADR-131](131-yonetilen-modul-kompozisyonu.md), [rehber](../docs/module-sql-lifecycle.md).
 

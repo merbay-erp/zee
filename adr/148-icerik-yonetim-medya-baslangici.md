@@ -1,6 +1,6 @@
 # ADR-148: İçerik, yönetim ve medya başlangıcı
 
-- **Durum:** K-290 uygulandı; owned dirty-candidate native14 ve stdlib8 geçti; bağımsız inceleme/ortak clean-source kapısı bekleniyor.
+- **Durum:** [S3](../docs/urunlesme-s3-kabul-20261015.md) (`66e4149e53451111d153f47283c219079a8d1cab`): 14 gerçek PostgreSQL/HTTPS vakası ile dar yerel kabul; insan rehber kabulü, üretim/platform ve ürün benimsenmesi açık.
 - İş/sınır: K-290, GB-106, P23/C6.
 - Rehber: [Zee0.8 başlangıcı](../docs/versioned/0.8/icerik-paneli.md),
   [host API](../docs/versioned/0.8/starter-api.md), [cookbook](../docs/versioned/0.8/cookbook.md).

@@ -13,6 +13,9 @@ mod smtp_fixture;
 #[path = "semantic_regresyon/lsp_uri.rs"]
 mod lsp_uri_fixture;
 
+#[path = "semantic_regresyon/lsp_utf16.rs"]
+mod lsp_utf16_fixture;
+
 #[path = "semantic_regresyon/native_listener_deadline.rs"]
 mod native_listener_deadline_fixture;
 #[path = "semantic_regresyon/native_metric_stdio.rs"]
@@ -43,6 +46,7 @@ const KIPLER: &[&str] = &[
     "smtp",
     "cli",
     "lsp-uri",
+    "lsp-utf16",
     "native-listener-deadline",
     "native-metric-stdio",
 ];
@@ -209,7 +213,7 @@ fn faz_kipi_kabul_eder(faz: &str, kip: &str) -> bool {
             "capability" | "web" | "smtp" | "native-listener-deadline"
         ),
         "cli" => matches!(kip, "cli" | "native-metric-stdio"),
-        "lsp" => kip == "lsp-uri",
+        "lsp" => matches!(kip, "lsp-uri" | "lsp-utf16"),
         _ => false,
     }
 }
@@ -256,6 +260,14 @@ fn cli_gozle(kaynak: &str) -> Gozlem {
 }
 
 fn vakayi_calistir(vaka: &Vaka, kaynak: &str) -> Gozlem {
+    if vaka.kip == "lsp-utf16" {
+        let (cikis, cikti) = lsp_utf16_fixture::calistir(kaynak);
+        return Gozlem {
+            tani: None,
+            cikis,
+            cikti,
+        };
+    }
     if vaka.kip == "lsp-uri" {
         let birim = depo()
             .join(&vaka.dosya)

@@ -1,6 +1,6 @@
 # ADR-144 — dene içinde sabit native web test köprüsü
 
-- **Durum:** dar Unix uygulaması; final temiz kaynak kapıları beklenir.
+- **Durum:** [S3](../docs/urunlesme-s3-kabul-20261015.md) (`66e4149e53451111d153f47283c219079a8d1cab`): dört native vaka/19 HTTP, iki fresh PostgreSQL ve altı admission ret vakası ile dar yerel kabul; fresh DB bütün HTTP commitlerini geri almaz, genel ürün/platform kabulü açık.
 İş: K-286. Ürün gereksinimi ADR-142'de exact kaydedilen etkin `zee-cekirdek`
 C5 talebidir. Genel kullanıcı betiği/SQL sandbox'ı değildir.
 

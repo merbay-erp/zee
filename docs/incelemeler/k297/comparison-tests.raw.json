@@ -1,0 +1,6 @@
+{
+  "schema": "zee-raw-text-evidence-1",
+  "name": "comparison-tests.txt",
+  "sha256": "12cd2891df9cd10a60b068625584e687b9fc656f0beedee8fb4e669ea10850a7",
+  "text": "   Compiling dil v0.8.0-dev (/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/compiler)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.66s\n     Running tests/dogfood_karsilastirma_testi.rs (target/debug/deps/dogfood_karsilastirma_testi-dd563c991d2d79f3)\n\nrunning 4 tests\ntest go_esdegeri_varsa_zee_sayfasini_bayt_bayt_uretir ... ok\ntest karsilastirma_tarihcesi_exact_sha_ve_tekrar_hesaplanabilir_olculerle_tutarlidir ... ok\ntest rust_esdegeri_zee_sayfasini_bayt_bayt_uretir ... ok\ntest tarihsel_kanit_anonim_ata_ister_eski_nesne_ve_rastgele_esleme_kabul_etmez ... ok\n\ntest result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.49s\n\n"
+}

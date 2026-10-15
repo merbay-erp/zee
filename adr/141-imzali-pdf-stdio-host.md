@@ -1,6 +1,6 @@
 # ADR-141 — Purpose-bound imzalı PDF stdio host (K-281/P11)
 
-- **Durum:** doğrulama önerisi; mevcut dil ile gerçek signed request/reply, genel FFI değil
+- **Durum:** [S3](../docs/urunlesme-s3-kabul-20261015.md) (`66e4149e53451111d153f47283c219079a8d1cab`): amaç bağlı imzalı PDF stdio dokuz vaka ile dar yerel kabul; gerçek katalog/sağlayıcı, genel FFI, hostile PDF sandbox ve yayın açık.
 - **Tarih:** 15 Ekim 2026
 - **İlgili:** ADR-133/128, RFC-0012 taslak; GB-099
 

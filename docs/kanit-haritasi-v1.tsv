@@ -196,18 +196,19 @@ adr/134-linux-ozel-paket-tasiyicisi.md	kismi	compiler/tests/linux_paket_testi.rs
 adr/135-sabit-native-dis-etki-tuketicisi.md	kismi	compiler/tests/native_effect_consumer_testi.rs	K277 normalhost8 ve ignoredactual11 SQL/SMTP/latch/COMMIT. Dirty tarihsel fixture finalclean değildir; provider/adoption açık.
 adr/136-jetbrains-yerel-lsp-sablonu.md	kismi	compiler/tests/derleyici_yerel_testi.rs,compiler/tests/lsp_testi.rs	K278 descriptor/data peer review; mevcut launcher/LSP protokol testleri ayrı. Gerçek IDE/plugin/macro/Windows etkileşim kabulü açık.
 adr/137-onceki-kucuk-surum-korpusu.md	kanitli	compiler/tests/onceki_kucuk_surum_testi.rs	K27949 modern CLI altkontrol+5 bootstrap;33 historical blob lineage/15 pure/explicitK086 migration; tam rollback/ürün/platform açık.
-adr/145-artimli-editor-analizi-ve-lint.md	kanitli	compiler/tests/lsp_artimli_testi.rs,compiler/tests/lint_testi.rs,compiler/src/faz/oturum.rs	K-287 UTF16 atomik edit, bounded token/yaprak AST, overlay-kilit, opt-in semantic lint; clean exact performans/soak kabulü açık
+adr/145-artimli-editor-analizi-ve-lint.md	kanitli	compiler/tests/lsp_artimli_testi.rs,compiler/tests/lint_testi.rs,compiler/src/faz/oturum.rs	K-287 UTF16 atomik edit, bounded token/yaprak AST, overlay-kilit, opt-in semantic lint; S3 exact performans/soak kayıtlı; yeni kaynak ve gerçek ürün kabulü ayrı
 spec/30-editor-analizi-ve-lint.md	kanitli	compiler/tests/lsp_artimli_testi.rs,compiler/tests/lint_testi.rs,compiler/src/faz/oturum.rs	K-287 araç profili; kısmi artımlı analiz ve performans sınırları açık
 adr/138-jetbrains-tamamlama-ve-duzenli-kapanis.md	kismi	compiler/tests/lsp_testi.rs	K-280: test ve aday uygulama; dedicated/temiz exact kaynak kabulü ilgili kararda ayrı tutulur.
 adr/139-surekli-dispatcher-ve-uygulama-adaptoru.md	kismi	compiler/tests/dispatcher_service_testi.rs	K-282: test ve aday uygulama; dedicated/temiz exact kaynak kabulü ilgili kararda ayrı tutulur.
-adr/140-surekli-http-user-service.md	kismi	compiler/tests/http_service_testi.rs	K-283: test ve aday uygulama; dedicated/temiz exact kaynak kabulü ilgili kararda ayrı tutulur.
-adr/141-imzali-pdf-stdio-host.md	kismi	compiler/tests/pdf_plugin_testi.rs	K-281: test ve aday uygulama; dedicated/temiz exact kaynak kabulü ilgili kararda ayrı tutulur.
-adr/142-zee-kaynak-dal-kapsami.md	kismi	compiler/tests/kaynak_kapsami_testi.rs	K-284: test ve aday uygulama; dedicated/temiz exact kaynak kabulü ilgili kararda ayrı tutulur.
-adr/143-sahipli-modul-sql-yasam-dongusu.md	kismi	compiler/tests/modul_sql_testi.rs	K-285: test ve aday uygulama; dedicated/temiz exact kaynak kabulü ilgili kararda ayrı tutulur.
-adr/144-dene-native-web-test-koprusu.md	kismi	compiler/tests/web_test_koprusu_testi.rs	K-286: test ve aday uygulama; dedicated/temiz exact kaynak kabulü ilgili kararda ayrı tutulur.
-adr/147-composed-tr-en.md	kismi	compiler/tests/composed_tr_en_testi.rs	K-289: test ve aday uygulama; dedicated/temiz exact kaynak kabulü ilgili kararda ayrı tutulur.
-adr/148-icerik-yonetim-medya-baslangici.md	kismi	compiler/tests/starter_content_testi.rs	K-290: test ve aday uygulama; dedicated/temiz exact kaynak kabulü ilgili kararda ayrı tutulur.
-adr/149-mixed-revision-owned-wave.md	kismi	compiler/tests/mixed_revision_testi.rs	K-291: test ve aday uygulama; dedicated/temiz exact kaynak kabulü ilgili kararda ayrı tutulur.
-adr/150-native-worker-fault-ve-kontrollu-resolver.md	kismi	compiler/tests/service_fault_testi.rs	K-292: test ve aday uygulama; dedicated/temiz exact kaynak kabulü ilgili kararda ayrı tutulur.
-adr/152-native-metrik-stdio-sessiz-ret.md	kismi	compiler/tests/native_metric_stdio_testi.rs	K-294: test ve aday uygulama; dedicated/temiz exact kaynak kabulü ilgili kararda ayrı tutulur.
-spec/29-test-kapsami.md	kismi	compiler/tests/kaynak_kapsami_testi.rs	K-284 gerçek kaynak sonuç/payda ve rapor sınırları; exact temiz kabul ayrı.
+adr/140-surekli-http-user-service.md	kismi	compiler/tests/http_service_testi.rs	K-283: S3 exact dar yerel kabul ilgili ADR ve urunlesme-s3-kabul-20261015.md içinde kayıtlı; ürün/platform/genel kapsam açık.
+adr/141-imzali-pdf-stdio-host.md	kismi	compiler/tests/pdf_plugin_testi.rs	K-281: S3 exact dar yerel kabul ilgili ADR ve urunlesme-s3-kabul-20261015.md içinde kayıtlı; ürün/platform/genel kapsam açık.
+adr/142-zee-kaynak-dal-kapsami.md	kismi	compiler/tests/kaynak_kapsami_testi.rs	K-284: S3 exact dar yerel kabul ilgili ADR ve urunlesme-s3-kabul-20261015.md içinde kayıtlı; ürün/platform/genel kapsam açık.
+adr/143-sahipli-modul-sql-yasam-dongusu.md	kismi	compiler/tests/modul_sql_testi.rs	K-285: S3 exact dar yerel kabul ilgili ADR ve urunlesme-s3-kabul-20261015.md içinde kayıtlı; ürün/platform/genel kapsam açık.
+adr/144-dene-native-web-test-koprusu.md	kismi	compiler/tests/web_test_koprusu_testi.rs	K-286: S3 exact dar yerel kabul ilgili ADR ve urunlesme-s3-kabul-20261015.md içinde kayıtlı; ürün/platform/genel kapsam açık.
+adr/147-composed-tr-en.md	kismi	compiler/tests/composed_tr_en_testi.rs	K-289: S3 exact dar yerel kabul ilgili ADR ve urunlesme-s3-kabul-20261015.md içinde kayıtlı; ürün/platform/genel kapsam açık.
+adr/148-icerik-yonetim-medya-baslangici.md	kismi	compiler/tests/starter_content_testi.rs	K-290: S3 exact dar yerel kabul ilgili ADR ve urunlesme-s3-kabul-20261015.md içinde kayıtlı; ürün/platform/genel kapsam açık.
+adr/149-mixed-revision-owned-wave.md	kismi	compiler/tests/mixed_revision_testi.rs	K-291: S3 exact dar yerel kabul ilgili ADR ve urunlesme-s3-kabul-20261015.md içinde kayıtlı; ürün/platform/genel kapsam açık.
+adr/150-native-worker-fault-ve-kontrollu-resolver.md	kismi	compiler/tests/service_fault_testi.rs	K-292: S3 exact dar yerel kabul ilgili ADR ve urunlesme-s3-kabul-20261015.md içinde kayıtlı; ürün/platform/genel kapsam açık.
+adr/152-native-metrik-stdio-sessiz-ret.md	kismi	compiler/tests/native_metric_stdio_testi.rs	K-294: S3 exact dar yerel kabul ilgili ADR ve urunlesme-s3-kabul-20261015.md içinde kayıtlı; ürün/platform/genel kapsam açık.
+spec/29-test-kapsami.md	kismi	compiler/tests/kaynak_kapsami_testi.rs	K-284 kaynak sonuç/payda ve rapor sınırları; S3 dar yerel kabul kayıtlı, genel kapsam/gerçek ürün açık.
+adr/153-lsp-utf16-konum-siniri.md	kanitli	compiler/tests/lsp_artimli_testi.rs,compiler/tests/semantic_regresyon_korpusu_testi.rs	K-297 ordinary LSP UTF-16 imleç ve yanıt düzeltmesi; C1/P33 kapsam dışı

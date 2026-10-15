@@ -1,0 +1,6 @@
+{
+  "schema": "zee-raw-text-evidence-1",
+  "name": "summary-tests.txt",
+  "sha256": "92b8aefb62b3057d1e482735036532f379509a4a6d8113b22b69e6c8f46e6a2f",
+  "text": "   Compiling dil v0.8.0-dev (/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/compiler)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 6.78s\n     Running tests/dogfood_korpusu_testi.rs (target/debug/deps/dogfood_korpusu_testi-bdabf53bb61c654e)\n\nrunning 3 tests\ntest dogfood_korpusu_basari_ve_basarisizlik_beklentilerini_korur ... ok\ntest dogfood_korpusu_manifesti_tam_tekil_ve_urune_baglidir ... ok\ntest kaynak_isi_bicimi_fail_closed_dogrulanir ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.57s\n\n     Running tests/kanit_ozeti_testi.rs (target/debug/deps/kanit_ozeti_testi-a0ebd5ec555f646b)\n\nrunning 3 tests\ntest kanit_ozeti_sayfasi_depodakiyle_bayt_bayt_aynidir ... ok\ntest kanit_ozeti_sayilari_bagimsiz_sayimla_tutar ... ok\ntest kanit_ozeti_urunu_derlenir_ve_butun_testleri_gecer ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.74s\n\n"
+}

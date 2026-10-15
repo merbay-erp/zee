@@ -1,0 +1,6 @@
+{
+  "schema": "zee-raw-text-evidence-1",
+  "name": "diagnostic-check.txt",
+  "sha256": "4757c860527acdbb206aa962ec1cf054048054d47f7d0e5bba5a24e0f31d1c61",
+  "text": "    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.06s\n     Running `target/debug/tani_kalitesi --denetle`\nTanı kalitesi temiz: 244 vaka, 14 sınıf, rapor güncel.\n"
+}

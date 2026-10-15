@@ -1,0 +1,15 @@
+{
+  "scope": "K-297 ordinary LSP UTF-16 boundary",
+  "review": "read-only independent source, tests and documentation review",
+  "findings_resolved": [
+    "negative query helper validates actual JSON-RPC result:null instead of accepting absent result",
+    "standalone CR is content unless followed by LF; diagnostic and didChange deletion tested"
+  ],
+  "remaining_confirmed_findings": [],
+  "excluded": [
+    "C1/K-288",
+    "P33/K-293",
+    "new HIR/type cache",
+    "S3 proof transfer"
+  ]
+}
