@@ -1,0 +1,50 @@
+[
+  {
+    "name": "provenance-summary",
+    "argv": [
+      "cargo",
+      "run",
+      "--locked",
+      "--",
+      "\u00e7al\u0131\u015ft\u0131r",
+      "../dogfood/kanit-ozeti/kaynak/ana.dil"
+    ],
+    "passed": true,
+    "seconds": 5.181240417063236,
+    "sha256": "7d5df7c302ff9b3216e65d01478b5450a6cc7e9a43327f384ea2bee6fe6ba687"
+  },
+  {
+    "name": "provenance-focused",
+    "argv": [
+      "cargo",
+      "test",
+      "--locked",
+      "--test",
+      "semantic_regresyon_korpusu_testi",
+      "--test",
+      "kanit_ozeti_testi",
+      "--test",
+      "dogfood_karsilastirma_testi"
+    ],
+    "passed": true,
+    "seconds": 31.173723457963206,
+    "sha256": "5f4a5716c3f261667c7cd1384b980a0475a0cf22e1cc44e11eb47d78a2be1434"
+  },
+  {
+    "name": "provenance-full-phase",
+    "argv": [
+      "cargo",
+      "run",
+      "--locked",
+      "--bin",
+      "faz_test_matrisi",
+      "--",
+      "--denetle",
+      "--rapor",
+      "target/faz-test-matrisi.md"
+    ],
+    "passed": true,
+    "seconds": 713.0296977079706,
+    "sha256": "a1abbfe155bdacac5adf719a7929e9f9eea0cddeaa282a497d47a2e0584f9cac"
+  }
+]
