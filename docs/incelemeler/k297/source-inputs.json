@@ -1,0 +1,13 @@
+{
+  "base": "cf2784e260c3b800e3d14482abc6891bcd1163a8",
+  "source_and_tests": {
+    "compiler/src/lsp.rs": "9b722c67abdd6479591d55720ad3132b68932cf9df1fe7d3afd5dd96deef8e01",
+    "compiler/src/lsp/analiz.rs": "9c4288241f3a54d6e74cbf4ece626c2eefbf7aca76f76e838ee6d43357007e91",
+    "compiler/src/lsp/esitleme.rs": "364a44fc3817710ea22d89aceefb551b311338d924afc96956b97615c9554d8e",
+    "compiler/tests/lsp_artimli_testi.rs": "4c08052517c84c078ebad6b5f5300cde71b6e2be3943da5dcf609eaaf419845a",
+    "compiler/tests/semantic_regresyon/lsp_utf16.rs": "11d371247dbb648c16b33f1e323d4fc4c2bd2deb9edd6dd37cfcc671f6aeb0a1",
+    "compiler/tests/semantic_regresyon_korpusu_testi.rs": "7357da672c1170624a5d4f973d8134862f12fe78153a7d0b6d12bf37b5f697bd"
+  },
+  "scope": "ordinary LSP UTF-16 correctness; no C1/P33 execution; no new cache",
+  "red_limit": "hover and rename failed before fix; initial diagnostic test used wrong code and is not diagnostic-position red proof"
+}

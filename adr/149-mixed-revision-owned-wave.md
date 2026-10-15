@@ -1,6 +1,6 @@
 # ADR-149 — K-291 mixed-code revision için ayrı gerçek kanıt
 
-- **Durum:** test/host doğrulama adayı; yeni native kampanya henüz yürütülmedi.
+- **Durum:** [S3](../docs/urunlesme-s3-kabul-20261015.md) (`66e4149e53451111d153f47283c219079a8d1cab`): dokuz native vaka/160 istek/dört dalga ile dar yerel kabul; genel SLA, DB şema devri ve ürün/platform kapsamı açık.
 P14/B6'da inherited listener17 sabit application revision üzerinde kanıttı;
 mixed-code yayınını veya evrensel kesintisizlik/SLA'yı kanıtlamıyordu.
 

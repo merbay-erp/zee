@@ -903,3 +903,16 @@ değişmedi; C1/P33 araç retleri ve insan/platform/ürün kabulü açık kalır
 Kaynak `66e4149e53451111d153f47283c219079a8d1cab` üzerinde ikinci dalganın native senaryoları, macOS/Linux için iki temiz klondan teslim ve sekizer kurulum testi, gerçek JetBrains tamamlama/biçimlendirme/tanı/kapanış akışı, 1.800 saniyelik soak, 1 ve 41 açık belge ölçümü, dört ASan hedefi ve seçili Miri testleri geçti. Kanonik kanıt dışa aktarımı ve denetimi ile aynı kaynakta güvenlik kapısı geçti: tam Cargo koşusunda 989 başarılı, 0 başarısız, 25 varsayılan dışı vaka. Bu 25 vaka ayrıca çalıştırılan kampanyalara eşlendi; alt senaryolar Cargo toplamına eklenmez. GB-110 exact regression/native26/RC zinciriyle kapalıdır.
 
 [S3 teknik kabulü](urunlesme-s3-kabul-20261015.md), sonuçları ve önceki başarısız denemeleri ayrı kaydeder. E commitleri belge ve kanıtları kaydeder. C1/K-288 ve P33/K-293 araç retleri; artımlı HIR/type, gerçek ürün/provenance/adoption, insan/takvim, fiziksel Windows/minOS ve yayın/lisans/destek kapıları açıktır. Bu kayıt tam V1 ya da public signed release kabulü değildir.
+
+## K-297 — ordinary LSP UTF-16 konum düzeltmesi
+
+S3 raporundaki BMP dışı karakter sonrası hover/definition/rename ve tanı
+konumu sınırı [ADR-153](../adr/153-lsp-utf16-konum-siniri.md) ile ele alındı.
+İç kaynak aralıkları korunur, dönüşüm yalnız LSP sınırındadır. Yeni
+olumlu/olumsuz LF/CRLF testleri ve minimal lsp-utf16 regression kipi eklendi;
+exact kaynak/provenance kapanışı doğrulama sonrası kaydedilir. Yeni cache,
+grammar veya feature yoktur. S3 kampanyaları yeni kaynağın RC/soak/IDE kabulü
+sayılmaz; tam P19 ve V1 açık kalır.
+
+Dış girdiler [kullanıcı teslim listesinde](urunlesme-kullanici-girdileri.md)
+ayrıldı. Beş tam proje hazır değil, fiziksel cihaz yok; bu kapılar bekliyor.

@@ -1,0 +1,6 @@
+{
+  "schema": "zee-raw-text-evidence-1",
+  "name": "summary-refresh.txt",
+  "sha256": "a49bb8b173d4f935484da94db418412e8b67b9368431593f8e6eeea24b0e9ec5",
+  "text": "   Compiling dil v0.8.0-dev (/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/compiler)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.65s\n     Running `target/debug/dil 'çalıştır' ../dogfood/kanit-ozeti/kaynak/ana.dil`\ndocs/kanit-ozeti.md yazıldı: 156 satır\n"
+}

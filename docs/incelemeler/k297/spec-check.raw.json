@@ -1,0 +1,6 @@
+{
+  "schema": "zee-raw-text-evidence-1",
+  "name": "spec-check.txt",
+  "sha256": "4c904e4af5fdc407570236f7441deaa5498ebf3aa91a9941fedb03a028338345",
+  "text": "    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.06s\n     Running `target/debug/spec_drift --denetle`\nSpec drift yok: 232 madde, 232 kayıt, rapor güncel.\n"
+}

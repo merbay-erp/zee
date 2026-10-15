@@ -122,7 +122,7 @@ impl Sunucu {
                 tanilar = program.hir().uyarilari(koken.as_deref());
             }
         }
-        tanilari_yaz(uri, &tanilar)
+        tanilari_yaz(uri, Some(&metin), &tanilar)
     }
 }
 

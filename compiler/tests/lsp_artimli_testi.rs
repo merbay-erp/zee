@@ -405,3 +405,196 @@ fn yirmi_bin_satir_proje_duzenleme_olcumu() {
         );
     }
 }
+
+fn konum_istegi(s: &mut Sunucu, method: &str, line: usize, character: usize) -> Value {
+    let yanitlar = gonder(
+        s,
+        method,
+        json!({"textDocument":{"uri":"untitled:k287"},
+        "position":{"line":line,"character":character},"newName":"ad"}),
+    );
+    assert_eq!(yanitlar.len(), 1);
+    let yanit = &yanitlar[0];
+    assert_eq!(yanit["id"], 9);
+    assert!(yanit.get("error").is_none(), "{yanit}");
+    yanit.get("result").expect("result alanı bulunmalı").clone()
+}
+
+#[test]
+fn utf16_hover_definition_ve_rename_imleci_bmp_disini_sayar() {
+    for eol in ["\n", "\r\n"] {
+        let mut s = Sunucu::yeni();
+        ac(
+            &mut s,
+            &format!("isim \"Ayşe\" olsun{eol}\"😀\" ile isim yaz{eol}"),
+        );
+        assert!(
+            konum_istegi(&mut s, "textDocument/hover", 1, 12)["contents"]["value"]
+                .as_str()
+                .unwrap()
+                .contains("isim")
+        );
+        assert_eq!(
+            konum_istegi(&mut s, "textDocument/definition", 1, 12)["range"],
+            json!({"start":{"line":0,"character":0},"end":{"line":0,"character":4}})
+        );
+        let kullanim = konum_istegi(&mut s, "textDocument/rename", 1, 12);
+        let tanim = konum_istegi(&mut s, "textDocument/rename", 0, 2);
+        assert!(!kullanim.is_null());
+        assert_eq!(kullanim, tanim);
+    }
+}
+
+#[test]
+fn utf16_rename_araliklari_bagimsiz_uygulamada_ayni_kaynagi_degistirir() {
+    for eol in ["\n", "\r\n"] {
+        let kaynak = format!("isim \"Ayşe\" olsun{eol}\"😀😀\" ile isim yaz{eol}");
+        let mut s = Sunucu::yeni();
+        ac(&mut s, &kaynak);
+        let sonuc = konum_istegi(&mut s, "textDocument/rename", 0, 2);
+        let edits = sonuc["changes"]["untitled:k287"].as_array().unwrap();
+        assert_eq!(edits.len(), 2);
+        assert_eq!(
+            edits[1]["range"],
+            json!({"start":{"line":1,"character":11},"end":{"line":1,"character":15}})
+        );
+        // İstemci oracle'ı doğrudan UTF-16 vektöründe çalışır; sunucu dönüşümü paylaşılmaz.
+        let mut satirlar: Vec<Vec<u16>> = kaynak
+            .split('\n')
+            .map(|x| x.encode_utf16().collect())
+            .collect();
+        for edit in edits.iter().rev() {
+            let start = &edit["range"]["start"];
+            let end = &edit["range"]["end"];
+            assert_eq!(start["line"], end["line"]);
+            let line = start["line"].as_u64().unwrap() as usize;
+            let a = start["character"].as_u64().unwrap() as usize;
+            let b = end["character"].as_u64().unwrap() as usize;
+            satirlar[line].splice(a..b, edit["newText"].as_str().unwrap().encode_utf16());
+        }
+        let sonuc = satirlar
+            .iter()
+            .map(|x| String::from_utf16(x).unwrap())
+            .collect::<Vec<_>>()
+            .join("\n");
+        assert_eq!(
+            sonuc,
+            format!("ad \"Ayşe\" olsun{eol}\"😀😀\" ile ad yaz{eol}")
+        );
+        // Aynı WorkspaceEdit gerçek didChange yolunda da uygulanabilir.
+        let changes: Vec<Value> = edits
+            .iter()
+            .rev()
+            .map(|x| json!({"range":x["range"],"text":x["newText"]}))
+            .collect();
+        let out = degistir(&mut s, json!(changes));
+        assert!(out.iter().any(|x| x["params"]["diagnostics"] == json!([])));
+        assert!(
+            konum_istegi(&mut s, "textDocument/hover", 1, 12)["contents"]["value"]
+                .as_str()
+                .unwrap()
+                .contains("ad")
+        );
+    }
+}
+
+#[test]
+fn utf16_tani_bmp_disi_on_ekinden_sonra_exact_araligi_yayimlar() {
+    for eol in ["\n", "\r\n"] {
+        let mut s = Sunucu::yeni();
+        let kaynak = format!("\"😀😀\" ile eksik yaz{eol}");
+        let out = gonder(
+            &mut s,
+            "textDocument/didOpen",
+            json!({"textDocument":{"uri":"untitled:k287","text":kaynak}}),
+        );
+        let tanilar = out
+            .iter()
+            .find_map(|x| x["params"]["diagnostics"].as_array())
+            .unwrap();
+        assert_eq!(tanilar.len(), 1, "{tanilar:?}");
+        let tani = &tanilar[0];
+        let core = dil::kaynagi_derle(&kaynak).unwrap_err();
+        assert_eq!(
+            (core.satir, core.sutun, core.uzunluk),
+            (1, 10, 5),
+            "{core:?}"
+        );
+        assert_eq!(tani["code"], core.kod);
+        assert_eq!(
+            tani["range"],
+            json!({"start":{"line":0,"character":11},"end":{"line":0,"character":16}})
+        );
+    }
+}
+
+#[test]
+fn utf16_sorgu_surrogate_ortasi_ve_belge_disi_konumda_tahmin_yapmaz() {
+    let mut s = Sunucu::yeni();
+    ac(&mut s, "isim \"Ayşe\" olsun\n\"😀\" ile isim yaz\n");
+    for method in [
+        "textDocument/hover",
+        "textDocument/definition",
+        "textDocument/rename",
+    ] {
+        for (line, character) in [(1, 2), (1, 100), (3, 0), (2, 0)] {
+            assert_eq!(
+                konum_istegi(&mut s, method, line, character),
+                Value::Null,
+                "{method} {line}:{character}"
+            );
+        }
+    }
+}
+
+#[path = "semantic_regresyon/lsp_utf16.rs"]
+mod utf16_regresyon;
+
+#[test]
+fn utf16_minimal_regresyon_hover_definition_rename_birlikte_gecer() {
+    let (exit, cikti) = utf16_regresyon::calistir("isim \"Ayşe\" olsun\n\"😀\" ile isim yaz\n");
+    assert_eq!(exit, 0);
+    assert_eq!(cikti, ["hover=true;definition=0:0-4;rename=0:0-4,1:9-13"]);
+}
+
+#[test]
+fn utf16_tani_uzunlugu_bmp_disi_karakterleri_tam_kapsar() {
+    let mut s = Sunucu::yeni();
+    let out = gonder(
+        &mut s,
+        "textDocument/didOpen",
+        json!({"textDocument":{"uri":"untitled:k287","text":"\"😀😀"}}),
+    );
+    let tanilar = out
+        .iter()
+        .find_map(|x| x["params"]["diagnostics"].as_array())
+        .unwrap();
+    assert_eq!(tanilar.len(), 1);
+    assert_eq!(
+        tanilar[0]["range"],
+        json!({"start":{"line":0,"character":0},"end":{"line":0,"character":5}})
+    );
+}
+
+#[test]
+fn utf16_tek_cr_sessizce_satir_sonu_sayilmaz() {
+    let mut s = Sunucu::yeni();
+    let out = gonder(
+        &mut s,
+        "textDocument/didOpen",
+        json!({"textDocument":{"uri":"untitled:k287","text":"\"😀\" yaz\r"}}),
+    );
+    let tanilar = out
+        .iter()
+        .find_map(|x| x["params"]["diagnostics"].as_array())
+        .unwrap();
+    assert_eq!(tanilar.len(), 1);
+    assert_eq!(tanilar[0]["code"], "S001");
+    assert_eq!(
+        tanilar[0]["range"],
+        json!({"start":{"line":0,"character":8},"end":{"line":0,"character":9}})
+    );
+    // CR içerik olarak sayılır, LF olmadan satır sonuna dönüştürülmez.
+    let out = degistir(&mut s, json!([aralik(0, 8, 9, "")]));
+    assert!(out.iter().any(|x| x["params"]["diagnostics"] == json!([])));
+}

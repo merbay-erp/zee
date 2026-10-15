@@ -1,6 +1,6 @@
 # ADR-140 — K-283 sürekli HTTP user service
 
-- **Durum:** uygulanmış host adayı; hazırlık ile yeni exact-clean native doğrulama ayrıdır.
+- **Durum:** [S3](../docs/urunlesme-s3-kabul-20261015.md) (`66e4149e53451111d153f47283c219079a8d1cab`): Linux native yedi vaka ile dar yerel kabul; üretim/ürün benimsenmesi ve diğer platform kabulü açık.
 P13/B5'in sürekli service ihtiyacı mevcut Supervisor+DB watcher ile karşılanır;
 compiler grammar/API/endpoint veya request transaction semantiği değiştirilmez.
 

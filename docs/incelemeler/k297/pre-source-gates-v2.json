@@ -1,0 +1,89 @@
+[
+  {
+    "name": "document-gates-v2",
+    "argv": [
+      "cargo",
+      "test",
+      "--locked",
+      "--test",
+      "katalog_testi",
+      "--test",
+      "dokuman_tazelik_testi",
+      "--test",
+      "katman_mimarisi_testi",
+      "--test",
+      "bagimlilik_cevrimi_testi",
+      "--test",
+      "uyumluluk_testi",
+      "--test",
+      "tedarik_kapisi_testi",
+      "--test",
+      "public_api_testi"
+    ],
+    "passed": true,
+    "seconds": 26.926685541984625,
+    "log_sha256": "fee6d852a793b0416d9e3d83b7b68cf046be9c3706eddb8ea245ff8155e1b90d"
+  },
+  {
+    "name": "spec-check",
+    "argv": [
+      "cargo",
+      "run",
+      "--locked",
+      "--bin",
+      "spec_drift",
+      "--",
+      "--denetle"
+    ],
+    "passed": true,
+    "seconds": 0.30497520801145583,
+    "log_sha256": "4c904e4af5fdc407570236f7441deaa5498ebf3aa91a9941fedb03a028338345"
+  },
+  {
+    "name": "diagnostic-check",
+    "argv": [
+      "cargo",
+      "run",
+      "--locked",
+      "--bin",
+      "tani_kalitesi",
+      "--",
+      "--denetle"
+    ],
+    "passed": true,
+    "seconds": 0.32185037492308766,
+    "log_sha256": "4757c860527acdbb206aa962ec1cf054048054d47f7d0e5bba5a24e0f31d1c61"
+  },
+  {
+    "name": "clippy",
+    "argv": [
+      "cargo",
+      "clippy",
+      "--locked",
+      "--all-targets",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "passed": true,
+    "seconds": 72.36152750009205,
+    "log_sha256": "8e591325e302bd413613071c65379162c4ac40ff5deee954446e7665dde717be"
+  },
+  {
+    "name": "full-phase",
+    "argv": [
+      "cargo",
+      "run",
+      "--locked",
+      "--bin",
+      "faz_test_matrisi",
+      "--",
+      "--denetle",
+      "--rapor",
+      "target/faz-test-matrisi.md"
+    ],
+    "passed": false,
+    "seconds": 722.8397634580033,
+    "log_sha256": "4bd754248b44859926b45a58bc390ae3a923798c7646abe46ea785c897652257"
+  }
+]

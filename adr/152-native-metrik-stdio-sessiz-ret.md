@@ -1,7 +1,6 @@
 # ADR-152 — Metric-only stdio alias için erken sessiz ret
 
-- **Durum:** uygulanmış correctness düzeltmesi; exact source/fixed_by follow-up kaydedildi;
-final temiz kaynak kapıları beklenir. İş: K-294, güvenlik sınırı GB-110.
+- **Durum:** [S3](../docs/urunlesme-s3-kabul-20261015.md) (`66e4149e53451111d153f47283c219079a8d1cab`): 26 native stdio vakası, exact regression/fixed_by ve RC kanıtıyla dar yerel kabul; K-294/GB-110 bu kapsamda kapalı.
 
 ## Gerçek bulgu
 

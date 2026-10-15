@@ -14,6 +14,11 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **LSP UTF-16 konumları (K-297, ADR-153):** emoji gibi BMP dışı karakterlerin
+  ardından hover/definition/rename imleci ve tanı/düzenleme aralıkları doğru
+  UTF-16 sütununu kullanır. Core scalar tanılar ve Zee kaynağı değişmez;
+  kullanıcı göçü gerekmez, güncellenmiş dillsp yeniden başlatılır.
+
 - **LSP Türkçe dosya yolu (K-248, ADR-108):** yüzde kodlu UTF-8 klasör
   yolunun yanlış çözümlenmesi giderildi; yan birimler doğru klasörden
   yüklenir. Yeni URI platform sözleşmesi veya dil özelliği eklenmedi.

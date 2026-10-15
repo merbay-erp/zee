@@ -1,0 +1,6 @@
+{
+  "schema": "zee-raw-text-evidence-1",
+  "name": "clippy.txt",
+  "sha256": "8e591325e302bd413613071c65379162c4ac40ff5deee954446e7665dde717be",
+  "text": "   Compiling dil v0.8.0-dev (/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/compiler)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1m 12s\n"
+}
