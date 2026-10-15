@@ -4767,7 +4767,9 @@ S3 raporundaki BMP dışı karakter sonrası hover/definition/rename ve tanı
 konumu sınırı [ADR-153](../adr/153-lsp-utf16-konum-siniri.md) ile ele alındı.
 İç kaynak aralıkları korunur, dönüşüm yalnız LSP sınırındadır. Yeni
 olumlu/olumsuz LF/CRLF testleri ve minimal lsp-utf16 regression kipi eklendi;
-exact kaynak/provenance kapanışı doğrulama sonrası kaydedilir. Yeni cache,
+exact kaynak `5b910fccad8e694fd26fabb58e1cc39adbfd65ea` ve `bmp-disi-konum`
+fixed_by kaydıyla dar K-297 kapandı. Son tam faz 996 başarılı, 0 başarısız,
+25 varsayılan dışı vaka; [kabul kaydı](../docs/lsp-utf16-kabul-20261015.md). Yeni cache,
 grammar veya feature yoktur. S3 kampanyaları yeni kaynağın RC/soak/IDE kabulü
 sayılmaz; tam P19 ve V1 açık kalır.
 

@@ -1,6 +1,6 @@
 # ADR-153 — LSP sınırında UTF-16 konumları
 
-- **Durum:** uygulanmış; yerel doğrulama ve exact kaynak/provenance kapanışı izleniyor.
+- **Durum:** kabul; K-297 dar correctness dilimi exact source/fixed_by ve 996/1021 tam faz (0 hata, 25 ignored) ile kapalı.
 - İş: K-297; P19 ordinary LSP correctness dilimi. İlgili: ADR-019/035/145, RFC-0010, spec/30.
 
 ## Bulgu ve karar
@@ -56,3 +56,8 @@ Rust/Go byte eşliği testleri aynı değerleri doğrular. RFC-0010'un editör n
 korunur; yeni RFC ve öğretici komut değişikliği gerekmez. README canlı
 sayıları kanonik araçla yenilenir. C1/K-288 ve P33/K-293 yeniden denenmez;
 artımlı HIR/type, gerçek ürün ve UI/taşıma/lint gecikme kabulü açık kalır.
+
+Kaynak düzeltme SHA: `5b910fccad8e694fd26fabb58e1cc39adbfd65ea`.
+Minimal `bmp-disi-konum` fixture/manifesti ve compiler/core-freeze beyanları
+izleyen değişikliktedir; [kabul raporu](../docs/lsp-utf16-kabul-20261015.md)
+son tam faz başarısını ve yeni RC/soak/IDE yapılmadığı sınırını kaydeder.

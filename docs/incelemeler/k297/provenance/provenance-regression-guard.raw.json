@@ -1,0 +1,6 @@
+{
+  "schema": "zee-raw-text-evidence-1",
+  "name": "provenance-regression-guard.txt",
+  "sha256": "12dd9c1087653bda006c1223a9ae47a8baee8df99cb49e1146bfcfbf1e45e4c9",
+  "text": "Semantic regresyon provenance'ı ve bütün compiler/src değişiklik beyanları korunuyor.\n"
+}
