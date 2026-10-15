@@ -4530,7 +4530,7 @@ Güncel ek sınır: K263 owned-host cleanup dar düzeltmesi ac077e31 ile commitl
 aday makbuzları birleşik finalclean özellik kabulü değildir.
 K262 dar source/argv düzeltmesi 7c56518c ve exact provenance4d8edeb2 ile kapalıdır; ortak özellik kabulü açıktır.
 
-Kanonik güvenlik sırası: atomik K-263 owned-host cleanup düzeltmesi GB-077 ile ac077e31 kaynak commitinde kapandı; K262 exact provenance4d8edeb2 ile kapalıdır. Ortak finalclean özellik kabulü beklenmektedir. Henüz commitlenmemiş özellik dilimlerinin kayıtları K-257/GB-078, K-258/GB-079, K-259/GB-080 ve K-260/GB-081’dir; ADR-116–119 numaraları korunur. Önceki immutable dış-stage makbuzlarının geçici GB etiketleri tarihsel kanıttır, kanonik yeni kayıt kimliği değildir. Finalclean/900sn host/1800sn soak/RC kabulü bu revizyonda ileri sürülmez.
+Kanonik güvenlik sırası: atomik K-263 owned-host cleanup düzeltmesi GB-077 ile ac077e31 kaynak commitinde kapandı; K262 exact provenance4d8edeb2 ile kapalıdır. Ortak finalclean özellik kabulü beklenmektedir. Kaynak `54a8d6dc0efb060ae5644b37546da40ad03ee035` ile commitlenen özellik dilimlerinin kayıtları K-257/GB-078, K-258/GB-079, K-259/GB-080 ve K-260/GB-081’dir; ADR-116–119 numaraları korunur. Önceki immutable dış-stage makbuzlarının geçici GB etiketleri tarihsel kanıttır, kanonik yeni kayıt kimliği değildir. Finalclean/900sn host/1800sn soak/RC kabulü bu revizyonda ileri sürülmez.
 
 ## K-263 — Sahipli supervisor EPERM geçişi
 
@@ -4552,3 +4552,9 @@ sonrası admission gözledi; GB-080/ADR-118 aynı ilk özellik diliminde düzelt
 `native-listener-deadline` semantic kipinin minimal security kaynağı gerçek native
 helper ile tekrar oynatılır; `introduced_by=-` korunur, `fixed_by` ilk özellik
 kaynak commit'inin exact SHA'sıyla izleyen provenance kaydında bağlanır.
+
+K-257–260 kaynak commit `54a8d6dc0efb060ae5644b37546da40ad03ee035` öncesi tam faz926/938 geçti, başarısız0/atlanan12; dondurulan97 kaynak+belge aynı kaldı. K-259 minimal `native-listener-late-eof` vakası introduced_by=- ve exact fixed_by bu SHA ile takip provenance dalgasında kaydedilir; gerçek Unix replay ayrı nonempty testtedir, Unix dışı native vaka açıkça ignored kalır. Semantic-change/dogfood-change beyanları K-259/ADR-118 ve gerçek B5/B6 provenance zincirine bağlanır. Bu kaynak/provenance kapanışı finalclean/native900/soak1800/RC veya ürün adoption kapanışı değildir.
+
+Provenance adayının ilk tam fazı test-only çıktı adı yarışını yakaladı: aynı PID ve eş SystemTime nanos ile paralel native/preflight aynı fresh dizini seçti; 16-vaka makbuzu mevcutken native17 reddedildi. Wrapper yoluna exact vaka rolü eklendi; üretim compiler/host davranışı değişmez. Başarısız926/939 koşu ayrı dış makbuzda korunur, geçer kabul edilmez.
+
+Son kapsam incelemesi semantic regression grubuna yalnız `proje` ekler: actual DIRECTORY çalıştırması ProjeGrafigi çözümü/kilit/giriş/politikayı yürütür. Deadline sonrası client TCP baytları native HTTP parser tarafından kabul edilmediğinden `http` eklenmez. Vaka rolüyle ayrılan output düzeltmesi sonrası927/939 geçti, başarısız0/atlanan12; son `proje` kapsam metadatasıyla tam kapı da 927/939 geçti, başarısız0/atlanan12.
