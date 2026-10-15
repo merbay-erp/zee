@@ -1,0 +1,33 @@
+{
+  "scope": "original inspection hash values retained; presentation changed from keyed map to path/hash records to prevent API-key false positive",
+  "files": [
+    {
+      "path": "adr/041-kritik-islev-egilim-kapisi.md",
+      "sha256": "c4140e9ff788c438e2889a20224c683a385fffb29dc3ea6e84ca1160d333101a"
+    },
+    {
+      "path": "compiler/tests/fixtures/islev-egilimi-v1.tsv",
+      "sha256": "59acb174430a02db3c784b27a8f1873f81c28c82ef2c41b8e16a96950ed70da9"
+    },
+    {
+      "path": "docs/islev-egilimi.md",
+      "sha256": "0d446f720543b6fd326b5ee34dcf740bd587dfb8f09f41a7624129a680bebb2d"
+    },
+    {
+      "path": "compiler/src/main.rs",
+      "sha256": "12228594efe698aeedeb8d757697bb71e37dfa824fbbd771e48ad0fc3fad2330"
+    },
+    {
+      "path": "compiler/src/eposta.rs",
+      "sha256": "44896dddf28d8e6b49d119ff3f0a12670295d1c9f21600d22fc249fc7d83bf5b"
+    },
+    {
+      "path": "compiler/src/eposta/testler.rs",
+      "sha256": "65e1e1404db28e8e5d144383df3f1c826127b440526761297f53d9e6569b8619"
+    },
+    {
+      "path": "compiler/src/web_listener.rs",
+      "sha256": "5fd99b9d7270b210f2636fba41c60344764961ccd987c01a70ebeac04055d730"
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "status": "passed-keyed-value-comparison",
+  "before_rows": 60,
+  "after_rows": 64,
+  "delta": [
+    {
+      "path": "src/eposta.rs",
+      "id": "gonder_ic#1",
+      "old": null,
+      "new": [
+        "87",
+        "7"
+      ]
+    },
+    {
+      "path": "src/main.rs",
+      "id": "govde#1",
+      "old": [
+        "103",
+        "10"
+      ],
+      "new": [
+        "150",
+        "17"
+      ]
+    },
+    {
+      "path": "src/main.rs",
+      "id": "istek_al#1",
+      "old": null,
+      "new": [
+        "113",
+        "12"
+      ]
+    },
+    {
+      "path": "src/main.rs",
+      "id": "web_modunu_ayikla_temel#1",
+      "old": null,
+      "new": [
+        "90",
+        "4"
+      ]
+    },
+    {
+      "path": "src/web_listener.rs",
+      "id": "extract#1",
+      "old": null,
+      "new": [
+        "104",
+        "8"
+      ]
+    }
+  ],
+  "removed": [],
+  "other_values_unchanged": true,
+  "global_threshold_source_equals_HEAD": true
+}

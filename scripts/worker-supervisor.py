@@ -122,6 +122,7 @@ def arguments(argv):
     p.add_argument("--health-path", required=True)
     p.add_argument("--health-body", required=True)
     p.add_argument("--pilot", action="store_true")
+    p.add_argument("--runtime-metrics", action="store_true")
     p.add_argument("--poll-seconds", type=float, default=2)
     p.add_argument("--probe-timeout", type=float, default=1)
     p.add_argument("--startup-timeout", type=float, default=15)
@@ -231,6 +232,20 @@ class Supervisor:
         self.gate_epoch_ns = time.time_ns()
         self.metrics = {"probe_total": 0, "probe_failures": 0, "probe_ms_total": 0,
                         "restart_total": 0, "forced_kills": 0}
+        self.native_metrics = None
+        if getattr(a, "runtime_metrics", False):
+            import runpy
+            collector = runpy.run_path(str(Path(__file__).with_name("native-metrics.py")))["Collector"]
+            self.native_metrics = collector()
+
+    def publish_native_metrics(self):
+        if self.native_metrics is None:return
+        v=self.native_metrics.snapshot()
+        # Keep every host JSON record <=512 bytes even at saturated counters.
+        for kind,row in [(0,v['native_request'][:11]),(1,v['native_request'][11:]),(2,v['native_pool'])]:
+            self.log.emit("native_metrics",kind=kind,v=row,dropped=v['native_snapshot_drops'],
+                          unavailable=v['native_metric_unavailable'],rejected=v['native_metric_rejected_total'],
+                          channels=v['native_metric_channels'],age_ms=v['native_request_age_ms' if kind<2 else 'native_pool_age_ms'])
 
     def signal(self, number, frame):
         if number == signal.SIGHUP:
@@ -242,11 +257,11 @@ class Supervisor:
     def increment(self, key, value=1):
         self.metrics[key] = min(2147483647, self.metrics[key] + value)
 
-    def spawn(self, argv, capture=False, environment=None, visible=False):
+    def spawn(self, argv, capture=False, environment=None, visible=False, passed_fds=()):
         # Signal handlers only set flags; even a signal during Popen cannot skip registration.
         child = subprocess.Popen(argv, cwd=self.a.project, env=safe_environment() if environment is None else environment,
                                  stdin=subprocess.DEVNULL, stdout=subprocess.PIPE if capture else (None if visible else subprocess.DEVNULL),
-                                 stderr=None if visible else subprocess.DEVNULL, close_fds=True, start_new_session=True)
+                                 stderr=None if visible else subprocess.DEVNULL, close_fds=True, start_new_session=True, pass_fds=passed_fds)
         self.children.append(child)
         return child
 
@@ -299,6 +314,9 @@ class Supervisor:
         if child.stdout is not None:
             child.stdout.close()
         self.children.remove(child)
+
+        if self.native_metrics is not None:
+            self.native_metrics.finish(child.pid)
 
     def exit_status(self, child):
         # Never poll/reap leaders until their owned group has been cleaned. This
@@ -420,9 +438,24 @@ class Supervisor:
             argv.extend(["--dil", str(self.a.dil), "--"] + command)
         else:
             argv = [str(self.a.dil)] + command
-        child = self.spawn(argv)
-        self.log.emit("worker_started", worker=index, pid=child.pid)
-        return child
+        read_fd, write_fd = None, None
+        try:
+            if self.native_metrics is not None:
+                read_fd, write_fd = os.pipe()
+                os.set_blocking(read_fd, False); os.set_blocking(write_fd, False)
+                require(3 <= write_fd <= 255, "metrics_descriptor")
+                argv[-1:-1] = ["--web-metrik-fd",str(write_fd)]
+                if self.a.credential_root:
+                    separator = argv.index("--")
+                    argv[separator:separator] = ["--native-metrics-fd",str(write_fd)]
+            child = self.spawn(argv, passed_fds=() if write_fd is None else (write_fd,))
+            if read_fd is not None:
+                self.native_metrics.attach(child.pid, read_fd); read_fd = None
+            self.log.emit("worker_started", worker=index, pid=child.pid)
+            return child
+        finally:
+            if write_fd is not None: os.close(write_fd)
+            if read_fd is not None: os.close(read_fd)
 
     def live(self, workers):
         for index, child in enumerate(workers):
@@ -493,12 +526,14 @@ class Supervisor:
                 had_ready = had_ready or ready
                 require(had_ready or time.monotonic() < startup, "startup")
                 self.log.emit("metrics", **self.metrics, log_drops=self.log.dropped, managed_workers=2)
+                self.publish_native_metrics()
                 self.wakeup.wait(self.a.poll_seconds if had_ready else min(self.a.poll_seconds, max(0, startup - time.monotonic())))
                 self.wakeup.clear()
         finally:
             self.log.emit("state", state="stopping", ready=False, workers=len(self.children))
             self.cleanup()
             self.log.emit("metrics", **self.metrics, log_drops=self.log.dropped, managed_workers=0)
+            self.publish_native_metrics()
             self.log.emit("state", state="stopped", ready=False, workers=0)
 
 

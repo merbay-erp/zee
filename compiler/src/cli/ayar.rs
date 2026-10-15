@@ -215,6 +215,11 @@ fn kaynak_yeri(a: &[String]) -> Option<usize> {
         }
         i += match s.as_str() {
             "--web-proxy"
+            | "--web-metrik-fd"
+            | "--web-listener-fd"
+            | "--web-ready-fd"
+            | "--web-activate-fd"
+            | "--web-generation"
             | "--güvenli-web-proxy"
             | "--web-worker-port"
             | "--web-oran-deposu"
@@ -488,6 +493,7 @@ mod tests {
             super::super::WebModu::GuvenliProxy {
                 origin: dil::yetkinlik::AgHedefi::https_origininden("https://cli.invalid").unwrap(),
                 worker_kapi: Some(18124),
+                listener_profile: None,
                 oran_ayari: Some(
                     dil::web_guvenligi::BellekOranAyari::yeni(
                         20,

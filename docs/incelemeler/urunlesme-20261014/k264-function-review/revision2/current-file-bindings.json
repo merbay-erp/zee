@@ -1,0 +1,10 @@
+{
+  "docs/incelemeler/urunlesme-20261014/k264-function-review/README.md": "df6b25ad447ff3a0bd1ab8315e2817f0dcd91690fc07b8c29dfd8d600cdad788",
+  "adr/123-kritik-islev-secici-taban-incelemesi.md": "1dc4f4adf3425a23ec999260716fae80a51bafae8173c73a894135b2be9d9f77",
+  "compiler/tests/fixtures/islev-egilimi-v1.tsv": "454777f5e0bef98d32d935233b8d2e9a7d0d0cad25f82170fd0cec7fe7646f5e",
+  "docs/islev-egilimi.md": "ca9bbb710e4f2fc8462398a4e73f2c6eae89bbbb73371db911cd658cccb23137",
+  "compiler/src/bin/islev_egilimi.rs": "01cf3e68d6a3f28314ed7b9d7e60a3271282343e01626a2133dc79865a4ec5a2",
+  "compiler/src/main.rs": "12228594efe698aeedeb8d757697bb71e37dfa824fbbd771e48ad0fc3fad2330",
+  "compiler/src/web_listener.rs": "90ad46b31b7843d6ea57dddf0de25a764af56c81bf09719e1feba856c7d9dbcb",
+  "compiler/src/eposta.rs": "44896dddf28d8e6b49d119ff3f0a12670295d1c9f21600d22fc249fc7d83bf5b"
+}

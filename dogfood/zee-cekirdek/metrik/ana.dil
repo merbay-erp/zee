@@ -1,0 +1,13 @@
+# K-257/B5: anonymous native metadata-only request and pool observer fixture.
+8080 kapısında sunucu başlat
+GET "/hazir" adresine istek geldiğinde
+    "ok" yanıtını gönder
+GET "/ok" adresine istek geldiğinde
+    "ZEE_K257_PRIVATE_SENTINEL" yanıtını gönder
+GET "/db" adresine istek geldiğinde
+    parametreler boş liste olsun
+    sonuc "SELECT 'ok'::text AS durum FROM pg_sleep(0.05)" sorgusunu parametreler ile okumayı dene olsun
+    sonuc başarılıysa
+        "db-ok" yanıtını gönder
+    değilse
+        "failed" yanıtını gönder

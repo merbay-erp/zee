@@ -1,0 +1,8 @@
+proje "anonymous-metrics" olsun
+sürüm "0.1.0" olsun
+morfoloji "zee-tr-1" olsun
+giriş "ana.dil" olsun
+yetkinlikler "ağ-sunucusu", "veritabanı" listesi olsun
+veritabanı_hedefi "postgresql://localhost:5432/postgres" olsun
+veritabanı_bağlantı_değişkeni "ZEE_K257_FIXTURE_URL" olsun
+veritabanı_göçleri "gocler" olsun

@@ -1,0 +1,34 @@
+{
+  "scope": "current integrated source and exact five-keyed-delta fixture after original order restoration; historical reviewer manifests preserved",
+  "source_hashes": [
+    {
+      "path": "adr/041-kritik-islev-egilim-kapisi.md",
+      "sha256": "77459ea35c100f51778d0fb9faf8093f19961dcff4956376cc8c042a6470f05a"
+    },
+    {
+      "path": "compiler/tests/fixtures/islev-egilimi-v1.tsv",
+      "sha256": "195462237ce033e957018c5b7d74cac8580f23125b582bb7c9ecfebc6e13aeb8"
+    },
+    {
+      "path": "docs/islev-egilimi.md",
+      "sha256": "ca9bbb710e4f2fc8462398a4e73f2c6eae89bbbb73371db911cd658cccb23137"
+    },
+    {
+      "path": "compiler/src/main.rs",
+      "sha256": "12228594efe698aeedeb8d757697bb71e37dfa824fbbd771e48ad0fc3fad2330"
+    },
+    {
+      "path": "compiler/src/eposta.rs",
+      "sha256": "44896dddf28d8e6b49d119ff3f0a12670295d1c9f21600d22fc249fc7d83bf5b"
+    },
+    {
+      "path": "compiler/src/eposta/testler.rs",
+      "sha256": "65e1e1404db28e8e5d144383df3f1c826127b440526761297f53d9e6569b8619"
+    },
+    {
+      "path": "compiler/src/web_listener.rs",
+      "sha256": "90ad46b31b7843d6ea57dddf0de25a764af56c81bf09719e1feba856c7d9dbcb"
+    }
+  ],
+  "actual_gate": "islev_egilimi --denetle:64 clean; fmt passed"
+}

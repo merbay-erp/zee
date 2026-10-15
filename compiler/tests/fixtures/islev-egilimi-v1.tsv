@@ -56,7 +56,7 @@ src/yorumlayici/web_istek.rs	web_istegini_calistir#1	113	9
 src/ayristirici.rs	kullanilan_birimler#1	46	12
 src/ayristirici/cumle/gorunum.rs	gorunum_dugumu_kur#1	91	2
 src/gorsel.rs	kucult#1	82	2
-src/main.rs	govde#1	103	10
+src/main.rs	govde#1	150	17
 src/yorumlayici/kimlik_iletisim.rs	intrinsic_degerlendir#1	125	4
 # K-218 inceleme: web_modunu_ayikla explicit bellek bayrağı doğrulamasını taşır; tek değer/tekrar/proxy zorunluluğu testle korunur, grammar ya da genel parser değişmez.
 src/main.rs	web_modunu_ayikla#1	88	4
@@ -64,3 +64,8 @@ src/main.rs	web_modunu_ayikla#1	88	4
 src/ayristirici/kimlik_iletisim.rs	yapili_kalip#1	92	0
 src/cli/ayar.rs	cozumle#1	94	8
 src/eposta/mime.rs	ileti_kur#1	93	8
+# K-264/ADR-123: yalnız gonder_ic, govde, istek_al, web_modunu_ayikla_temel ve web_listener::extract sorumluluk incelemesi; dört yeni kayıt/bir güncelleme, diğer kayıtlar ve küresel paylar aynı
+src/eposta.rs	gonder_ic#1	87	7
+src/main.rs	istek_al#1	113	12
+src/main.rs	web_modunu_ayikla_temel#1	90	4
+src/web_listener.rs	extract#1	104	8

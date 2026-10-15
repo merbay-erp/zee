@@ -1,0 +1,9 @@
+{
+  "status": "READY_READ_ONLY_TRUTH_CORRECTED_REVIEW",
+  "revision": 2,
+  "supersedes_truth_claims_only": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/k264-function-responsibility-review",
+  "source_mutations": false,
+  "shared_edits": false,
+  "root_docs_truth_corrected": true,
+  "current_hash_scope_explicit": true
+}
