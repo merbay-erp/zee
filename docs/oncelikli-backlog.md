@@ -1903,3 +1903,19 @@ gecikme gözlemini kaydeder; artımlı HIR/type, gerçek ürün/UI/SLA ve tam P1
 
 Dış girdiler [kullanıcı teslim listesinde](urunlesme-kullanici-girdileri.md)
 ayrıldı. Beş tam proje hazır değil, fiziksel cihaz yok; bu kapılar bekliyor.
+
+## K-298 — P19 bildirim ömürlü açık metin dizini bakımı
+
+**AÇIK — kaynak adayı ve temiz ölçüm/kabul bekliyor.** S4'te lint açık/41 belge
+stdio p95 223,698 ms ile 200 ms hedefi karşılanmadı. Mevcut açık URI envanterinin
+gerçek yol/tutarlı ödünç metin dizini bir bildirim boyunca ortak kullanılarak
+tekrarlı kanonikleştirme azaltılır; kaynak metinleri ödünç alınır. Çelişen alias, disk/paket/kilit
+kontrolü, tanı ve yayın sırası korunur; yeni kalıcı cache veya HIR/type kapasitesi
+eklenmez. Üç alias'tan her birinin çatışması/iki lint kipi ve sonraki bildirimde Unix
+symlink hedefinin yenilenmesi iki dar testle izlenir.
+
+[ADR-145](../adr/145-artimli-editor-analizi-ve-lint.md) kararı ve etki incelemesi,
+[ölçüm sözleşmesi](olcumler.md) ile aynı dilimdedir. Exact semantic/core-freeze
+`maintenance` kayıtları kaynak commit'ini izler. Başarılı test, yeni temiz stdio
+ölçümü ve gerekli kaynak kabulü kaydedilmeden K-298 kapandı denmez. Gerçek ürün,
+UI, platform ve tam P19; C1/K-288 ve P33/K-293 retleri ayrıca açık kalır.

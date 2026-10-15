@@ -149,7 +149,7 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-142 | [Opt-in Zee kaynak karar kapsamı](142-zee-kaynak-dal-kapsami.md) | **S3 dar yerel kabul; genel kapsam/ürün kabulü açık** (K-284) |
 | ADR-143 | [Sahipli modül SQL yaşam döngüsü](143-sahipli-modul-sql-yasam-dongusu.md) | **S3 dar yerel kabul; DB+FS atomikliği/ürün kapsamı açık** (K-285) |
 | ADR-144 | [dene içinde sabit native web test köprüsü](144-dene-native-web-test-koprusu.md) | **S3 dar yerel kabul; genel rollback/ürün/platform kapsamı açık** (K-286) |
-| ADR-145 | [Artımlı editör analizi ve lint](145-artimli-editor-analizi-ve-lint.md) | **S3 tarihsel; S4 dar IDE/stdio/soak gözlemi; HIR/type ve ürün açık** (K-287/GB-103) |
+| ADR-145 | [Artımlı editör analizi ve lint](145-artimli-editor-analizi-ve-lint.md) | **S3/S4 tarihsel kabul; K-298 bildirim ömürlü yol dizini, yeni ölçüm bekliyor; HIR/type ve ürün açık** (K-287/K-298/GB-103) |
 | ADR-147 | [Uygulamaya ait kapalı bileşen ve TR/EN katalog bileşimi](147-composed-tr-en.md) | **S3 dar yerel kabul; gerçek ürün benimsenmesi açık** (K-289) |
 | ADR-148 | [İçerik, yönetim ve medya başlangıcı](148-icerik-yonetim-medya-baslangici.md) | **S3 dar yerel kabul; insan/üretim/platform/ürün kapsamı açık** (K-290) |
 | ADR-149 | [K-291 mixed-code revision için ayrı gerçek kanıt](149-mixed-revision-owned-wave.md) | **S3 dar yerel kabul; SLA/DB şeması/ürün/platform kapsamı açık** (K-291) |

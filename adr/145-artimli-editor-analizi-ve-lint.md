@@ -1,7 +1,7 @@
 # ADR-145 — Artımlı editör eşitlemesi, ayrıştırma önbelleği ve lint
 
-- **Durum:** S3 tarihsel dar kabulüne ek olarak S4 exact kaynakta IDE/stdio, gözlemsel stdio gecikmesi ve soak kaydı vardır; artımlı HIR/type, UI/gerçek ürün/SLA kabulü açık.
-- İş: K-287; ürün talebi: zee-cekirdek C2/P19.
+- **Durum:** S3 ve S4 kendi exact kaynaklarında dar kabul taşır; K-298 bildirim ömürlü dizin bakımının yeni kaynak ölçümü ve kabulü açık. Artımlı HIR/type, UI/gerçek ürün/SLA kabulü açık.
+- İş: K-287; K-298 semantic davranışı koruyan performans bakımı; ürün talebi: zee-cekirdek C2/P19.
 - İlişkili kararlar: ADR-019/035/069; RFC-0010; spec/30.
 
 ## Gereksinim ve karar
@@ -99,3 +99,33 @@ K-297 ordinary LSP sorgu/yanıt UTF-16 düzeltmesi [ADR-153](153-lsp-utf16-konum
 [S4](../docs/urunlesme-s4-kabul-20261015.md) yeni exact kaynağın dört stdio
 ölçüm kohortunu ve 1800 saniyelik RSS kabulünü ayrı tutar. Taşıma ölçümü
 UI gecikmesi veya adanmış koşucu performans tabanı değildir.
+
+## K-298 — bildirim ömürlü açık metin dizini
+
+S4'te lint açık/41 belge stdio kohortu p95 223,698 ms ile 200 ms hedefinin
+üzerinde kaldı. K-298, mevcut açık belgelerin gerçek dosya yolu ile tutarlı
+kaydedilmemiş metnini bir bildirim boyunca paylaşan ödünç metin dizini kurar.
+Her tüketici analizi için aynı URI envanterini yeniden kanonikleştirme maliyeti azaltılır; kaynak metinleri ödünç alınır. Dizin bir sonraki bildirime saklanmaz;
+kalıcı durum, yeni cache, artımlı HIR/type veya yeni compiler kapasitesi yoktur.
+
+Aynı gerçek yola gelen alias metinleri çelişirse o yolun overlay'i kullanılamaz;
+sonraki bir alias aynı metni getirse de çatışma bildirim içinde unutulmaz.
+Diskten proje/paket/kilit doğrulaması korunur; kilitli paket metni açık belgeyle
+örtülmez. Bildirimler arasında symlink hedefi yeniden çözülür. Tanı sırası,
+span'ler, lint kipleri, yayın ve kaynak bütçeleri değişmez.
+
+İki dar LSP testinin kapsamı üç URI alias'ından her birinin çatışması ve iki lint kipi
+ile Unix'te symlink hedefinin sonraki bildirimde yeniden çözülmesidir. Testlerin
+başarısı ve yeni exact kaynak stdio ölçümü ayrıca kaydedilecektir;
+S4'ün eski ölçüm ve RC/soak sonuçları bu adaya taşınmaz. Hedef, aynı dört
+stdio kohortunun 5 ısınma/20 ölçüm sözleşmesiyle karşılaştırılmasıdır; ölçüm
+öncesinde 200 ms hedefi ya da tam P19 kapanışı ileri sürülmez.
+
+Etki incelemesi: grammar, API, tanı, bağımlılık ve normatif spec davranışı
+korunur; bu nedenle yeni RFC/ADR normu veya hata kataloğu girdisi gerekmez.
+Production katman/çevrim, API ve uyumluluk kapıları, test faz sahipliği ve
+belge tazeliği değişikliğin aynı diliminde doğrulanır. ADR-045/049 ile
+`docs/performans-gecmisi-v2.tsv` etkisi incelenir; paylaşımlı stdio gözlemi
+adanmış sabit taban veya hard eşik sayılmaz. Exact kaynak SHA'sı alındıktan
+sonra semantic ve core-freeze kayıtları `maintenance` olarak bağlanır;
+bugfix reproducer/fixed_by kaydı icat edilmez.

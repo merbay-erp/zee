@@ -479,3 +479,21 @@ yürütmez. [S4 yerel kabulü](urunlesme-s4-kabul-20261015.md) ham ölçüm ve k
 Soak 1800,946 sn/360 örnek: compiler 20112→20032 KiB, LSP 22496→20096 KiB. Isınma sonrası 60 sn
 pencere medyanları; %10 ve 32 MiB birlikte aşılmadı. S3 ölçümleri kendi
 kaynak kimliğiyle yukarıda korunur.
+
+## K-298 — aynı stdio iş yükünde karşılaştırma bekliyor
+
+K-298 bildirim ömürlü açık metin dizini bakımının ölçüm sonucu henüz yoktur.
+Karşılaştırma kaynağı S4 `4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2` ve yukarıdaki
+dört gerçek stdio kohortudur; lint açık/41 belgede p95 223,698 ms gözlenmiştir.
+Yeni temiz exact kaynak ve release ikilisiyle aynı 20.081 satır/40 birim,
+1/41 açık belge × lint kapalı/açık, her kohortta yeni süreç ve 5 ısınma/20 ölçüm
+kullanılır. İlk başarılı yazma→son tam tanı çerçevesi aralığı, completion bariyeri,
+p50/p95 hesaplaması ve ham çerçeve/örnek kaydı değiştirilmez.
+
+Önce/sonra kaynak, ikili ve araç zinciri kimliği, gerçek makine bilgisi ve
+ham dağılımlar ayrıca bağlanır. Kirli geliştirme ölçümü aday gözlemdir;
+temiz kaynak sonucu yerine yazılamaz. ADR-045/049 gereği shared ölçümde hard
+200 ms kapısı açılmaz; `performans-gecmisi-v2.tsv` yeni adanmış taban almaz.
+K-298 yeni kalıcı durum eklemez; yeni kaynağın RSS, RC ve dar IDE/stdio
+kabulleri önceki S4 makbuzlarından devralınmaz. P19 hedefi ve kapsamı yeni
+sonuç doğrulanana kadar açık tutulur.
