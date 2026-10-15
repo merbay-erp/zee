@@ -1,6 +1,6 @@
 TÜRKÇE PROGRAMLAMA DİLİ
 
-> Güncel kaynak [S4 yerel kabulü](urunlesme-s4-kabul-20261015.md) ile RC, soak, macOS teslim/kurulum ve dar IDE/stdio ölçüm kanıtı taşır. [S3](urunlesme-s3-kabul-20261015.md) native kabulü tarihsel kaynağında kalır; ürün, insan, fiziksel platform ve yayın kapıları açıktır.
+> Son kabul edilen kaynak `4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2` için [S4 yerel kabulü](urunlesme-s4-kabul-20261015.md) korunur. K-298 P19 bakım adayının yeni exact kaynak ölçümü ve kabulü beklenir; 200 ms hedefi açıktır. [S3](urunlesme-s3-kabul-20261015.md) native kabulü tarihsel kaynağında kalır; ürün, insan, fiziksel platform ve yayın kapıları açıktır.
 
 Uçtan Uca Master Proje Dokümanı
 Dil • Derleyici • Runtime • Standart Kütüphane • Paket Ekosistemi • Tooling • Eğitim

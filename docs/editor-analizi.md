@@ -58,3 +58,15 @@ ayrımının olumlu/olumsuz kanıtıdır. İnceleme sonucu test çalıştırma v
 [S4 ayrı kaynak kaydı](urunlesme-s4-kabul-20261015.md) `4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2`
 üzerindeki güncel yerel kanıtı ve açık sınırları gösterir. Önceki S3 sonuçları
 tarihsel kalır; genel ürün/platform/yayın veya tam P19 kabulü değildir.
+
+## K-298 — açık metin dizini bakımı (kabul bekliyor)
+
+Açık belgelerin gerçek dosya yolları ve tutarlı kaydedilmemiş metinleri bir
+bildirim boyunca ortak dizinde paylaşılır. Çelişen URI alias'ı disk metnini
+örtmez; proje/paket/kilit doğrulaması ve tanı sırası korunur. Dizin bildirimin
+sonunda bırakılır; sonraki bildirim symlink hedeflerini yeniden çözer.
+
+Bu bakım yeni kullanıcı ayarı veya kaynak göçü gerektirmez. Aynı stdio iş
+yükünde yeni exact kaynak ölçümü ve kabulü beklenir; S4'ün lint açık/41 belge
+p95 223,698 ms değeri tarihsel başlangıç gözlemidir. 200 ms hedefi, gerçek ürün/UI
+gecikmesi ve tam P19 açık kalır. [Karar ve etki incelemesi](../adr/145-artimli-editor-analizi-ve-lint.md#k-298--bildirim-ömürlü-açık-metin-dizini).

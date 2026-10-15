@@ -45,8 +45,10 @@ Ayrıntılar: [Derleme ve bağımlılıklar](docs/derleme-ve-bagimliliklar.md) �
 [V1 sürüm kapıları](docs/v1-surum-kapilari.md) ·
 [Öncelikli backlog](docs/oncelikli-backlog.md).
 
-[S4 yerel kabulü](docs/urunlesme-s4-kabul-20261015.md) güncel kaynağın RC,
-soak, macOS teslim/kurulum, gerçek IDE ve stdio gecikme gözlemini kaydeder.
+[S4 yerel kabulü](docs/urunlesme-s4-kabul-20261015.md) `4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2`
+kaynağının RC, soak, macOS teslim/kurulum, gerçek IDE ve stdio gözlemini kaydeder.
+K-298 açık belge bakımının yeni temiz kaynak ölçümü ve kabulü beklenir;
+[P19 200 ms hedefi](docs/olcumler.md) açıktır.
 [39 maddelik plan](docs/urunlesme-plani.md) ürün, insan ve fiziksel platform
 açıklarını korur; [14 Ekim teslimi](docs/urunlesme-sonucu-20261014.md) tarihseldir.
 [Devam dalgası](docs/urunlesme-devam-20261014.md) native COMMIT hata kanıtını
@@ -157,7 +159,7 @@ Değişikliğe özel test, belge ve güvenlik kapıları [AGENTS.md](AGENTS.md) 
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **1023** |
+| Rust + doctest vakası | **1025** |
 | Tanı kimliği | **162 etkin + 3 ayrılmış** |
 | RFC | **34** (2 kabul, 29 geçici kabul, 3 taslak) |
 | ADR | **148** (148 kabul) |
