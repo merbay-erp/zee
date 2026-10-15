@@ -1,0 +1,285 @@
+{
+  "schema": "zee-owned-web-tests-1",
+  "inventory": {
+    "README.md": "a6359cad0b792f6ab596c07c549455b9a74127f7082684db00b8d580d97ca6e6",
+    "db/ana.dil": "cbb1acea186c841610e7b644a6c6196475fb22dc729c75c5067f9af663c57d7f",
+    "db/gocler/0001_notes.sql": "1a0a71fac1716ecc42a0bd07199609a81132f761415488f20fb9e896386f9d9b",
+    "db/proje.dil": "f5c23e473b620b24171f89195e2ffd3cc4856be451ef61a761ddd92bc942d514",
+    "db-bootstrap.sql": "1a0a71fac1716ecc42a0bd07199609a81132f761415488f20fb9e896386f9d9b",
+    "db-home.snapshot": "cf8a7258939ec2fdd95d66144a63430ce80116bf1939ad7aacfd1a1cc273fce0",
+    "db-observers.json": "48c6556cf641a70afdbdf23bbf2953bc15b3f5d5a45195615b99470e44907774",
+    "panel/.gitignore": "8ba05cebd9fc8b1be9529395a983442c85d4252603caa7df135d2483fb483614",
+    "panel/ana.dil": "693355e890f0b7db4d259d9f5e5be17f6f5ada12cb2e578fd5b21e2db1988a08",
+    "panel/proje.dil": "cf3ef9a3196d744c78157687df11de2874b7e90412f79d7060878c633f88ed90",
+    "site/.gitignore": "8ba05cebd9fc8b1be9529395a983442c85d4252603caa7df135d2483fb483614",
+    "site/ana.dil": "f7831c45942128ae371482b031057bda2cd667014510d36fb291f2774338b7e1",
+    "site/proje.dil": "f7bc1c937fb96302fa93dc1ec4407231144b73e7f7d6a2ecf8a85bc3eae63049",
+    "site-about.snapshot": "bbfaac0b78c30aa6003df333a7902a8e0ef4d9e522c43ac0d7dd65aad96c8b3f"
+  },
+  "cases": [
+    {
+      "id": "site_snapshot",
+      "project": "site",
+      "steps": [
+        {
+          "method": "GET",
+          "path": "/hakkinda",
+          "jar": "guest",
+          "expect": {
+            "status": 200,
+            "snapshot": "site-about.snapshot"
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/missing",
+          "jar": "guest",
+          "expect": {
+            "status": 404
+          }
+        }
+      ]
+    },
+    {
+      "id": "panel_session_csrf",
+      "project": "panel",
+      "seed": "panel_synthetic_phc",
+      "steps": [
+        {
+          "method": "GET",
+          "path": "/yonet",
+          "jar": "guest",
+          "expect": {
+            "status": 401
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/giris",
+          "jar": "guest",
+          "expect": {
+            "status": 200
+          },
+          "capture_csrf": "login"
+        },
+        {
+          "method": "GET",
+          "path": "/giris",
+          "jar": "other",
+          "expect": {
+            "status": 200
+          },
+          "capture_csrf": "other"
+        },
+        {
+          "method": "POST",
+          "path": "/giris-yap",
+          "jar": "other",
+          "expect": {
+            "status": 403
+          },
+          "form": {
+            "parola": {
+              "secret": "panel_password"
+            },
+            "_csrf": {
+              "csrf": "login"
+            }
+          }
+        },
+        {
+          "method": "POST",
+          "path": "/giris-yap",
+          "jar": "guest",
+          "expect": {
+            "status": 403
+          },
+          "form": {
+            "parola": {
+              "secret": "panel_password"
+            }
+          }
+        },
+        {
+          "method": "POST",
+          "path": "/giris-yap",
+          "jar": "guest",
+          "expect": {
+            "status": 303
+          },
+          "form": {
+            "parola": "incorrect",
+            "_csrf": {
+              "csrf": "login"
+            }
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/yonet",
+          "jar": "guest",
+          "expect": {
+            "status": 401
+          }
+        },
+        {
+          "method": "POST",
+          "path": "/giris-yap",
+          "jar": "guest",
+          "expect": {
+            "status": 303,
+            "rotated": true
+          },
+          "form": {
+            "parola": {
+              "secret": "panel_password"
+            },
+            "_csrf": {
+              "csrf": "login"
+            }
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/yonet",
+          "jar": "guest",
+          "expect": {
+            "status": 200
+          },
+          "capture_csrf": "admin"
+        },
+        {
+          "method": "POST",
+          "path": "/cikis",
+          "jar": "guest",
+          "expect": {
+            "status": 303
+          },
+          "form": {
+            "_csrf": {
+              "csrf": "admin"
+            }
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/yonet",
+          "jar": "guest",
+          "expect": {
+            "status": 401
+          }
+        }
+      ]
+    },
+    {
+      "id": "db_committed_and_request_rollback",
+      "project": "db",
+      "database": {
+        "bootstrap": "db-bootstrap.sql",
+        "observers": "db-observers.json"
+      },
+      "steps": [
+        {
+          "observe": "total",
+          "equals": 0
+        },
+        {
+          "method": "GET",
+          "path": "/",
+          "jar": "guest",
+          "expect": {
+            "status": 200,
+            "snapshot": "db-home.snapshot"
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/form",
+          "jar": "guest",
+          "expect": {
+            "status": 200
+          },
+          "capture_csrf": "form"
+        },
+        {
+          "method": "POST",
+          "path": "/commit",
+          "jar": "guest",
+          "expect": {
+            "status": 200
+          },
+          "form": {
+            "_csrf": {
+              "csrf": "form"
+            }
+          }
+        },
+        {
+          "observe": "committed",
+          "equals": 1
+        },
+        {
+          "method": "POST",
+          "path": "/fail",
+          "jar": "guest",
+          "expect": {
+            "status": 503
+          },
+          "form": {
+            "_csrf": {
+              "csrf": "form"
+            }
+          }
+        },
+        {
+          "observe": "committed",
+          "equals": 1
+        },
+        {
+          "observe": "rolled_back",
+          "equals": 0
+        }
+      ]
+    },
+    {
+      "id": "db_fresh_case_isolation",
+      "project": "db",
+      "database": {
+        "bootstrap": "db-bootstrap.sql",
+        "observers": "db-observers.json"
+      },
+      "steps": [
+        {
+          "observe": "total",
+          "equals": 0
+        },
+        {
+          "method": "GET",
+          "path": "/form",
+          "jar": "guest",
+          "expect": {
+            "status": 200
+          },
+          "capture_csrf": "form"
+        },
+        {
+          "method": "POST",
+          "path": "/commit",
+          "jar": "guest",
+          "expect": {
+            "status": 200
+          },
+          "form": {
+            "_csrf": {
+              "csrf": "form"
+            }
+          }
+        },
+        {
+          "observe": "committed",
+          "equals": 1
+        }
+      ]
+    }
+  ]
+}

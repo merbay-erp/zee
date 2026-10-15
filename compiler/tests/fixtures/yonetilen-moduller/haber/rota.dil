@@ -1,0 +1,5 @@
+haber paketini kullan
+
+GET "/haber" adresine istek geldiğinde
+    sayfa haberSayfasi olsun
+    sayfa yanıtını gönder

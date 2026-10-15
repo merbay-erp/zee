@@ -1,0 +1,15 @@
+# 13 — Parametreli işlem
+# Sınanan: birden çok parametre ("adı al" / "yaşı al"), değer döndürmeyen işlem,
+# çok argümanlı çağrı — AÇIK (K-016).
+
+işlem selamla
+    adı al
+    yaşı al
+
+    yaş 18 den küçükse
+        "Merhaba genç " ile ad yaz
+    değilse
+        "Merhaba " ile ad yaz
+
+"Ayşe" ve 10 ile selamla
+"Mustafa" ve 35 ile selamla

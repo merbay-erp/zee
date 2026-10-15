@@ -1,0 +1,38 @@
+{
+  "font_name": "DejaVu Sans",
+  "style": "Book",
+  "version": "Version 2.37",
+  "bytes": 757076,
+  "sha256": "7da195a74c55bef988d0d48f9508bd5d849425c1770dba5d7bfc6ce9ed848954",
+  "package_name": "font-ttf-dejavu-sans-mono",
+  "package_version": "2.37",
+  "package_url": "https://conda.anaconda.org/conda-forge/noarch/font-ttf-dejavu-sans-mono-2.37-hab24e00_0.tar.bz2",
+  "package_sha256": "58d7f40d2940dd0a8aa28651239adbf5613254df0f75789919c4e6762054403b",
+  "package_metadata_license_label": "BSD-3-Clause",
+  "authority_note": "Package BSD label is metadata only, not a replacement for full embedded notice. Full original font name-table nameIDs0/13 preserved exactly as Unicode text encoded UTF8; font binary unmodified. No standalone matching license file found in installed prefix.",
+  "notice_extraction": {
+    "table": "name",
+    "platform_id": 3,
+    "language_id": 1033,
+    "source_encoding": "UTF16BE",
+    "output_encoding": "UTF8",
+    "copyright_name_id": 0,
+    "license_name_id": 13,
+    "trailing_newline_added": false
+  },
+  "notice_files": [
+    {
+      "path": "assets/COPYRIGHT-DejaVu.txt",
+      "sha256": "35397e5e2ff231cc777b97c3e18756cc21f4a451f5ade9bf315d552a9a74d25d"
+    },
+    {
+      "path": "assets/LICENSE-DejaVu.txt",
+      "sha256": "f1d7e97481cf4ac81f2d3ab8b14a483fb34b0b4824a3f8d2b1c70a6fa86a3b08"
+    }
+  ],
+  "official_reference": "https://dejavu-fonts.github.io/License.html",
+  "project_license_decision": "deferred, separate from retaining third-party notices",
+  "font_modified": false,
+  "portable_asset": "assets/font.ttf",
+  "installed_metadata_source": "FONT-CONDA-METADATA.json in external immutable evidence; machine paths are observational, never runtime dependencies"
+}

@@ -1,0 +1,10 @@
+# 17 — Dosya okuma
+# Sınanan: dosyanın satırları üzerinde gezinme. Hata durumunda varsayılan
+# davranış (panic mi Sonuç mu?) AÇIK — bkz. günlük K-018.
+
+satırlar "siir.txt" dosyasının satırları olsun
+
+her satır için
+    satırı yaz
+
+"Toplam " ile satırların adedi ile " satır" yaz

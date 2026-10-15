@@ -1,0 +1,17 @@
+# 09 — Liste işleme: süzme ve toplam
+# Sınanan: boş liste, döngü içinde biriktirme ("toplamı notla artır"),
+# koşulla süzüp başka listeye ekleme.
+# NOT: "not" tanımlayıcısı ile mantıksal değilleme çakışabilir — bkz. günlük K-014.
+
+notlar 45, 90, 72, 38, 100 listesi olsun
+
+geçenler boş liste olsun
+toplam 0 olsun
+
+her not için
+    toplamı notla artır
+    not 50 veya daha büyükse
+        geçenlere notu ekle
+
+"Toplam: " ile toplam yaz
+"Geçen sayısı: " ile geçenlerin adedi yaz

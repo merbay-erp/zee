@@ -90,3 +90,20 @@ ayrıca doğrulanır. Strict10 test atomic false/true, symlink/hardlink/public
 write/parent replacement/lock, child deadline ve bounded-output retlerini
 sınar. Yerel geliştirici Mac kanıtı fiziksel platform/ürün adoption kabulü
 değildir; yeni exact temiz kaynak kabulü ayrıca alınır.
+
+## K-274 finite tekrar ve terminal false
+
+`--rounds` default1 eski tek-check/true davranışını korur. Explicit2–1000 tur,
+`--interval`2–60s monotonic bekleme ve aynı gate lock ile her tur exact source,
+binary, contract ve readonly şemayı yeniden gözler. Migration/schema/timeout
+retleri false yazar, sonraki bounded tur tekrar bakabilir; input/identity/gate/
+output retleri terminaldir. Native stdout/stderr stream capture64KiB ve aynı
+mutlak timeout EOF/terminal beklemede de sürer; selector kurulum/close hatası
+kill/wait/pipe-close finally'sini atlayamaz. SIGTERM/SIGINT flag kurar; child
+cleanup sonrası false yazılır. Normal finite bitiş de false bırakır.
+
+Bu daemon/cron veya SMTP/DB migration handler'ı değildir. SIGKILL helper'a finally
+çalıştırmaz; retained outer owner grubu kapatır ve host TTL eski ready'yi düşürür.
+Normal modelsTTL6/watch10 ile eski strict10 korunur. Dedicated PG15, eski13'e iki
+tekrarlanan actual drift/recovery/SIGKILL sınırını ekler; currentclean/live/systemd
+ve uzun kampanya yerine geçmez. [ADR-132](../adr/132-sureli-hazirlik-ve-kontrollu-config-yenileme.md).

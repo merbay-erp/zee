@@ -1,0 +1,14 @@
+# 08 — Listeler
+# Sınanan: liste sabiti "3, 7, 1, 9 listesi" (K-012), "ekle",
+# "adedi/ilki/sonu" erişimleri, çoğuldan tekile gezinme:
+# "her sayı için" → gezilen koleksiyon "sayılar" (K-013).
+
+sayılar 3, 7, 1, 9 listesi olsun
+sayılara 5 ekle
+
+"Adet: " ile sayıların adedi yaz
+"İlk: " ile sayıların ilki yaz
+"Son: " ile sayıların sonu yaz
+
+her sayı için
+    sayıyı yaz

@@ -1,0 +1,14 @@
+# 05 — Koşullar ve zincirleme
+# Sınanan: "... ise / değilse" (K-005), zincir: "değilse <koşul> ise",
+# karşılaştırma kalıpları: "veya daha büyükse" = >= (K-010).
+
+puan 85 olsun
+
+puan 90 veya daha büyükse
+    "Pekiyi" yaz
+değilse puan 70 veya daha büyükse
+    "İyi" yaz
+değilse puan 50 veya daha büyükse
+    "Orta" yaz
+değilse
+    "Geçmedi" yaz

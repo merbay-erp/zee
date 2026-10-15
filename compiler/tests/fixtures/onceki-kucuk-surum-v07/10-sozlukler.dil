@@ -1,0 +1,14 @@
+# 10 — Sözlükler
+# Sınanan: "boş sözlük", anahtar-değer atama/okuma: "yaşların X değeri" (K-015),
+# üyelik: "yaşlarda X varsa", sözlük üzerinde gezinme: "yaşlardaki her ad için".
+
+yaşlar boş sözlük olsun
+
+yaşların "Ayşe" değeri 10 olsun
+yaşların "Ali" değeri 12 olsun
+
+yaşlarda "Ayşe" varsa
+    "Ayşe " ile yaşların "Ayşe" değeri ile " yaşında" yaz
+
+yaşlardaki her ad için
+    ad ile ": " ile yaşların ad değeri yaz
