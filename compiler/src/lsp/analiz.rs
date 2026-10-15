@@ -25,8 +25,17 @@ impl Sunucu {
             cikti_ekle(cikti, kimlik, Err(cikti::CiktiTasmasi));
             return false;
         }
+        // Yalnız bu bildirimin ömründe yolları bir kez çöz; metinleri kopyalama.
+        let acik_belgeler = AcikBelgeler::yeni(&self.belgeler);
         for uri in uriler {
-            let sonuc = self.tanilari_yayinla(&uri).and_then(|govde| {
+            let sonuc = Self::tanilari_yayinla(
+                &uri,
+                &self.belgeler,
+                &acik_belgeler,
+                &mut self.sozcukleme,
+                self.lint,
+            )
+            .and_then(|govde| {
                 toplam = toplam.checked_add(govde.len()).ok_or(cikti::CiktiTasmasi)?;
                 if toplam > azami {
                     return Err(cikti::CiktiTasmasi);
@@ -42,14 +51,18 @@ impl Sunucu {
         true
     }
 
-    pub(super) fn tanilari_yayinla(&mut self, uri: &str) -> CiktiSonucu<String> {
-        let metin = self.belgeler.get(uri).cloned().unwrap_or_default();
+    fn tanilari_yayinla(
+        uri: &str,
+        belgeler: &HashMap<String, String>,
+        acik_belgeler: &AcikBelgeler<'_>,
+        oturum: &mut crate::faz::AnalizOturumu,
+        lint: bool,
+    ) -> CiktiSonucu<String> {
+        let metin = belgeler.get(uri).cloned().unwrap_or_default();
         let belge_yolu = uri_yolu(uri).and_then(|yol| std::fs::canonicalize(yol).ok());
 
         // Bir proje içindeyse CLI ile aynı kökenli paket grafiğini kullan.
         // Böylece editörde temiz görünen kaynak komut satırında kırılmaz.
-        let oturum = &mut self.sozcukleme;
-        let belgeler = &self.belgeler;
         let proje_tanilari = belge_yolu.as_ref().and_then(|belge_yolu| {
             let kok = proje_kokunu_bul(belge_yolu)?;
             let grafik = match crate::paket::ProjeGrafigi::cozumle(&kok) {
@@ -65,9 +78,7 @@ impl Sunucu {
                 // Paket doğrulaması önce disk üzerinde yapılır. Yalnız aktif proje
                 // kökünün editörde açık yerel kaynakları analiz overlay'i olabilir.
                 if grafik.ana_kaynagi_mi(std::path::Path::new(&birim.koken)) {
-                    if let Some(kaynak) =
-                        acik_belge_kaynagi(belgeler, std::path::Path::new(&birim.koken))
-                    {
+                    if let Some(kaynak) = acik_belgeler.kaynak(std::path::Path::new(&birim.koken)) {
                         birim.kaynak = kaynak.to_string();
                     }
                 }
@@ -95,9 +106,7 @@ impl Sunucu {
                 let yol = klasor.join(format!("{}.dil", ad));
                 match crate::kaynak_sinirlari::kaynak_dosyasi_oku(&yol) {
                     Ok(kaynak) => Ok(crate::YuklenenBirim {
-                        kaynak: acik_belge_kaynagi(belgeler, &yol)
-                            .unwrap_or(&kaynak)
-                            .to_string(),
+                        kaynak: acik_belgeler.kaynak(&yol).unwrap_or(&kaynak).to_string(),
                         // Önceki köken sözleşmesi korunur; cache anahtarı kaynakla da bağlıdır.
                         koken: ad.to_string(),
                     }),
@@ -113,9 +122,10 @@ impl Sunucu {
             crate::kaynagi_tanilari_oturumlu(&metin, None, &mut yukleyici, Some(oturum))
         });
         let mut tanilar = birim_tanilarini_konumla(&metin, tanilar);
-        if self.lint && tanilar.is_empty() {
+        if lint && tanilar.is_empty() {
             let _kokenler = crate::agac::kaynak_kokenlerini_izle(true);
-            if let Some(program) = semantik_program_derle_belgeler(uri, &metin, Some(belgeler)) {
+            if let Some(program) = semantik_program_derle_belgeler(uri, &metin, Some(acik_belgeler))
+            {
                 let koken = belge_yolu
                     .as_ref()
                     .map(|p| p.to_string_lossy().into_owned());
@@ -126,21 +136,35 @@ impl Sunucu {
     }
 }
 
-pub(super) fn acik_belge_kaynagi<'a>(
-    belgeler: &'a HashMap<String, String>,
-    yol: &std::path::Path,
-) -> Option<&'a str> {
-    let yol = std::fs::canonicalize(yol).ok()?;
-    let mut adaylar = belgeler.iter().filter_map(|(uri, metin)| {
-        (uri_yolu(uri)
-            .and_then(|p| std::fs::canonicalize(p).ok())
-            .as_ref()
-            == Some(&yol))
-        .then_some(metin.as_str())
-    });
-    let ilk = adaylar.next()?;
-    // Aynı gerçek dosyanın çelişen URI alias'ları HashMap sırasına göre seçilemez.
-    adaylar.all(|diger| diger == ilk).then_some(ilk)
+/// Bildirim ömürlü yol dizini; oturumda saklanmaz, kaynak metni ödünç alır.
+/// Çelişen alias'lar bütün yükleyiciler için aynı biçimde disk kaynağına düşer.
+pub(super) struct AcikBelgeler<'a> {
+    kaynaklar: HashMap<std::path::PathBuf, Option<&'a str>>,
+}
+
+impl<'a> AcikBelgeler<'a> {
+    fn yeni(belgeler: &'a HashMap<String, String>) -> Self {
+        let mut kaynaklar = HashMap::new();
+        for (uri, metin) in belgeler {
+            let Some(yol) = uri_yolu(uri).and_then(|p| std::fs::canonicalize(p).ok()) else {
+                continue;
+            };
+            kaynaklar
+                .entry(yol)
+                .and_modify(|onceki| {
+                    if *onceki != Some(metin.as_str()) {
+                        *onceki = None;
+                    }
+                })
+                .or_insert(Some(metin.as_str()));
+        }
+        Self { kaynaklar }
+    }
+
+    pub(super) fn kaynak(&self, yol: &std::path::Path) -> Option<&'a str> {
+        let yol = std::fs::canonicalize(yol).ok()?;
+        self.kaynaklar.get(&yol).copied().flatten()
+    }
 }
 
 /// Kökendeki birim adı: dosya yolunun gövdesi ya da `gömülü:` sonrası.

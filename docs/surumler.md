@@ -1,6 +1,6 @@
 # Sürüm notları
 
-> Güncel kaynak [S4 yerel kabulü](urunlesme-s4-kabul-20261015.md) ile RC, soak, macOS teslim/kurulum ve dar IDE/stdio ölçüm kanıtı taşır. [S3](urunlesme-s3-kabul-20261015.md) native kabulü tarihsel kaynağında kalır; ürün, insan, fiziksel platform ve yayın kapıları açıktır.
+> Son kabul edilen kaynak `4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2` için [S4 yerel kabulü](urunlesme-s4-kabul-20261015.md) korunur. K-298 P19 bakım adayının yeni exact kaynak ölçümü ve kabulü beklenir; 200 ms hedefi açıktır. [S3](urunlesme-s3-kabul-20261015.md) native kabulü tarihsel kaynağında kalır; ürün, insan, fiziksel platform ve yayın kapıları açıktır.
 
 Her sürüm: ne eklendi, ne değişti, neyin sözü verildi. Kırıcı değişiklik
 sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
@@ -13,6 +13,12 @@ sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
+
+- **LSP açık belge maliyeti (K-298, ADR-145; kabul bekliyor):** aynı bildirimde
+  açık dosyaların gerçek yol/tutarlı metin dizini paylaşılır; yinelenen yol
+  çözümleme azaltılır; kaynak metinleri ödünç alınır. Alias çatışması, disk/paket doğrulaması ve
+  tanı davranışı korunur. Yeni ayar veya kaynak göçü yoktur; yeni temiz kaynak
+  ölçümü öncesinde 200 ms hedefi karşılandı denmez.
 
 - **LSP UTF-16 konumları (K-297, ADR-153):** emoji gibi BMP dışı karakterlerin
   ardından hover/definition/rename imleci ve tanı/düzenleme aralıkları doğru

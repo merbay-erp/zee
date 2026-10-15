@@ -598,3 +598,76 @@ fn utf16_tek_cr_sessizce_satir_sonu_sayilmaz() {
     let out = degistir(&mut s, json!([aralik(0, 8, 9, "")]));
     assert!(out.iter().any(|x| x["params"]["diagnostics"] == json!([])));
 }
+
+#[test]
+fn yol_dizini_ayni_ve_celisen_uc_alias_icin_lint_esligini_korur() {
+    for lint in [false, true] {
+        for farkli in 0..3 {
+            let p = Proje::yeni();
+            p.yaz("yardimci.dil", YARDIMCI);
+            let mut s = Sunucu::yeni();
+            gonder(
+                &mut s,
+                "initialize",
+                json!({"initializationOptions":{"lint":lint}}),
+            );
+            let adlar = ["yardimci.dil", "%79ardimci.dil", "y%61rdimci.dil"];
+            for ad in adlar {
+                p.ac(&mut s, ad, "\"kapanmayan");
+            }
+            assert!(!p.ac(&mut s, "ana.dil", ANA).as_array().unwrap().is_empty());
+            p.ac(&mut s, adlar[farkli], YARDIMCI);
+            // Üç alias'tan ikisi aynı bozuk metni taşısa da çatışma kalıcıdır.
+            assert_eq!(p.ac(&mut s, "ana.dil", ANA), json!([]));
+            gonder(
+                &mut s,
+                "textDocument/didClose",
+                json!({"textDocument":{"uri":p.uri(adlar[farkli])}}),
+            );
+            assert!(!p.ac(&mut s, "ana.dil", ANA).as_array().unwrap().is_empty());
+            // Başarılı strict lint de geçerli overlay'i kullanmalı; disk bozuk.
+            p.yaz("yardimci.dil", "\"diskte bozuk");
+            for ad in adlar {
+                p.ac(&mut s, ad, YARDIMCI);
+            }
+            let tanilar = p.ac(&mut s, "ana.dil", &format!("{ANA}bos 1 olsun\n"));
+            let kodlar: Vec<_> = tanilar
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|t| t["code"].as_str().unwrap())
+                .collect();
+            assert_eq!(kodlar, if lint { vec!["A012"] } else { vec![] });
+        }
+    }
+}
+
+#[cfg(unix)]
+#[test]
+fn yol_dizini_sonraki_bildirimde_degisen_sembolik_yolu_yeniden_cozer() {
+    for lint in [false, true] {
+        let p = Proje::yeni();
+        p.yaz("hedef_a.dil", YARDIMCI);
+        p.yaz("hedef_b.dil", YARDIMCI);
+        let yol = p.0.join("yardimci.dil");
+        std::os::unix::fs::symlink(p.0.join("hedef_a.dil"), &yol).unwrap();
+        let mut s = Sunucu::yeni();
+        gonder(
+            &mut s,
+            "initialize",
+            json!({"initializationOptions":{"lint":lint}}),
+        );
+        p.ac(&mut s, "yardimci.dil", "\"kapanmayan");
+        assert!(!p.ac(&mut s, "ana.dil", ANA).as_array().unwrap().is_empty());
+        std::fs::remove_file(&yol).unwrap();
+        std::os::unix::fs::symlink(p.0.join("hedef_b.dil"), &yol).unwrap();
+        // Aynı açık URI yeni gerçek yola bağlanır; eski dizin saklanamaz.
+        assert!(!p.ac(&mut s, "ana.dil", ANA).as_array().unwrap().is_empty());
+        gonder(
+            &mut s,
+            "textDocument/didClose",
+            json!({"textDocument":{"uri":p.uri("yardimci.dil")}}),
+        );
+        assert_eq!(p.ac(&mut s, "ana.dil", ANA), json!([]));
+    }
+}

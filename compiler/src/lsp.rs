@@ -13,7 +13,7 @@ mod analiz;
 mod cikti;
 mod esitleme;
 mod json;
-use analiz::acik_belge_kaynagi;
+use analiz::AcikBelgeler;
 use cikti::{CiktiSonucu, SinirliJson};
 pub use json::{json_coz, Json, JsonSayisi};
 
@@ -790,7 +790,7 @@ fn semantik_program_derle(uri: &str, metin: &str) -> Option<crate::faz::Baglanmi
 fn semantik_program_derle_belgeler(
     uri: &str,
     metin: &str,
-    belgeler: Option<&HashMap<String, String>>,
+    belgeler: Option<&AcikBelgeler<'_>>,
 ) -> Option<crate::faz::BaglanmisProgram> {
     let belge_yolu = uri_yolu(uri).and_then(|yol| std::fs::canonicalize(yol).ok());
     if let Some((belge_yolu, kok)) = belge_yolu
@@ -804,7 +804,7 @@ fn semantik_program_derle_belgeler(
             let mut birim = grafik.yukle(istek)?;
             let yol = std::path::Path::new(&birim.koken);
             if grafik.ana_kaynagi_mi(yol) {
-                if let Some(kaynak) = belgeler.and_then(|b| acik_belge_kaynagi(b, yol)) {
+                if let Some(kaynak) = belgeler.and_then(|b| b.kaynak(yol)) {
                     birim.kaynak = kaynak.to_string();
                 }
             }
@@ -822,7 +822,7 @@ fn semantik_program_derle_belgeler(
         let yol = klasor.join(format!("{}.dil", ad));
         match crate::kaynak_sinirlari::kaynak_dosyasi_oku(&yol) {
             Ok(kaynak) => Ok(belgeler
-                .and_then(|b| acik_belge_kaynagi(b, &yol))
+                .and_then(|b| b.kaynak(&yol))
                 .unwrap_or(&kaynak)
                 .to_string()),
             Err(hata) => crate::gomulu_birim(ad)
