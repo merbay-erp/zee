@@ -28,11 +28,18 @@ bicim	zee-credential-baslat-1	aktif	0.8.0-dev	scripts/credential-baslat.py	zee-c
 bicim	zee-credential-native-start-1	aktif	0.8.0-dev	scripts/native-capabilities.py	zee-credential-native-start-1
 bicim	zee-local-asan-miri-campaign-1	aktif	0.8.0-dev	scripts/rc-kampanyasi.py	zee-local-asan-miri-campaign-1
 bicim	zee-local-asan-miri-driver-failure-1	aktif	0.8.0-dev	scripts/rc-kampanyasi.py	zee-local-asan-miri-driver-failure-1
+bicim	zee-local-publication-1	aktif	0.8.0-dev	scripts/derleyici-yerel.py	zee-local-publication-1
 bicim	zee-native-listener-ready-1	aktif	0.8.0-dev	compiler/src/web_listener.rs	zee-native-listener-ready-1
 bicim	zee-native-metrics-1	aktif	0.8.0-dev	compiler/src/web_metrikleri.rs	"zee-native-metrics-1"
+bicim	zee-project-launcher-1	aktif	0.8.0-dev	scripts/derleyici-yerel.py	zee-project-launcher-1
 bicim	zee-rc-evidence-1	aktif	0.8.0-dev	scripts/rc-kaniti.py	SCHEMA = 'zee-rc-evidence-1'
 bicim	zee-rc-evidence-check-1	aktif	0.8.0-dev	scripts/rc-kaniti.py	zee-rc-evidence-check-1
 bicim	zee-sql-intent-dispatcher-1	aktif	0.8.0-dev	scripts/job-dispatcher.py	zee-sql-intent-dispatcher-1
+bicim	zee-sql-timer-clear-publication-1	aktif	0.8.0-dev	scripts/finite_timer.py	zee-sql-timer-clear-publication-1
+bicim	zee-sql-timer-config-1	aktif	0.8.0-dev	scripts/finite_timer.py	zee-sql-timer-config-1
+bicim	zee-sql-timer-inflight-1	aktif	0.8.0-dev	scripts/finite_timer.py	zee-sql-timer-inflight-1
+bicim	zee-sql-timer-reconcile-1	aktif	0.8.0-dev	scripts/finite_timer.py	zee-sql-timer-reconcile-1
+bicim	zee-sql-timer-result-1	aktif	0.8.0-dev	scripts/finite_timer.py	zee-sql-timer-result-1
 bicim	zee-worker-readiness-1	aktif	0.8.0-dev	scripts/worker-supervisor.py	zee-worker-readiness-1
 bicim	zee-worker-supervisor-1	aktif	0.8.0-dev	scripts/worker-supervisor.py	zee-worker-supervisor-1
 bicim	zep	aktif	0.8.0-dev	compiler/src/artefakt_dogrulama.rs	const PAKET_SIHRI: &[u8; 8] = b"ZEEZEP\0\x01";
@@ -195,6 +202,8 @@ profil	cli-goc-durum	aktif	0.8.0-dev	compiler/src/main.rs	"--durum"
 profil	cli-goc-kuru	aktif	0.8.0-dev	compiler/src/main.rs	"--kuru"
 profil	credential-native-listener-fd	aktif	0.8.0-dev	scripts/native-capabilities.py	--native-listener-fd
 profil	credential-native-metrics-fd	aktif	0.8.0-dev	scripts/credential-baslat.py	--native-metrics-fd
+profil	derleyici-yerel-import	aktif	0.8.0-dev	scripts/derleyici-yerel.py	'import'
+profil	derleyici-yerel-launcher	aktif	0.8.0-dev	scripts/derleyici-yerel.py	'launcher'
 profil	eszamanlilik	aktif	0.8.0-dev	conformance/eszamanlilik/zee-esz-1.json	"kimlik": "zee-esz-1"
 profil	http-gizli-ortam-v1	aktif	0.8.0-dev	compiler/src/proje.rs	"http_gizli_değişkenleri"
 profil	http-istek-v1	aktif	0.8.0-dev	compiler/src/ag_istemcisi/istek.rs	pub fn istek(
@@ -215,5 +224,6 @@ profil	web-oran-doluluk.reddet	aktif	0.8.0-dev	compiler/src/main.rs	"--web-oran-
 profil	web-oran-kapasitesi	aktif	0.8.0-dev	compiler/src/main.rs	"--web-oran-kapasitesi"
 profil	web-oran-siniri	aktif	0.8.0-dev	compiler/src/main.rs	"--web-oran-siniri"
 profil	web-ready-fd	aktif	0.8.0-dev	compiler/src/web_listener.rs	"--web-ready-fd"
+profil	zee-local-compiler-tools-posix-1	aktif	0.8.0-dev	scripts/derleyici-yerel.py	zee-local-compiler-tools-posix-1
 profil	zee-smtp-mime-1	aktif	0.8.0-dev	compiler/src/eposta/mime.rs	pub const MIME_PROFILI: &str = "zee-smtp-mime-1";
 tani	kimlik-semasi	aktif	0.8.0-dev	compiler/tests/fixtures/tani-kimlikleri-v1.tsv	# Zee tanı kimliği fixture'ı — şema 1

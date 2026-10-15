@@ -1713,3 +1713,9 @@ K-257–260 kaynak commit `54a8d6dc0efb060ae5644b37546da40ad03ee035` öncesi tam
 ## K-267 — Typed credential/native listener bileşimi
 
 [ADR-125](../adr/125-credential-native-listener-kompozisyonu.md) mevcut D3/P25 ve B5/B6 ürün ihtiyacını dar Unix host profilinde birleştirir. Credential okumadan all-or-none FD/rol/socket/port/argv doğrulaması, native child tarafından devralınmayan ayrı startup FIFO ile PID/generation/binary kimliği ve varsayılan noinherit korunur. İki normal Cargo vakası model/subprocess5 ile gerçek native crypto/overlap/metrics/admission/cleanup5 kampanyalarını ayırır; alt-senaryolar eşsiz toplam diye sayılmaz. İzole dirty d53 kısa aday kanıtı final temiz kaynak kabulü değildir. P25 bütünü, Windows/systemd/file-native sır aktarımı, canlı benimseme ve 900/1800/RC kapıları açıktır. GB-083 bilinçli capability sınırını kaydeder; yeni grammar/compiler/public Rust API eklenmez.
+
+## K-268–K-270 — Sonlu timer, başlangıç projeleri ve yerel araçlar
+
+K-268/ADR-126/GB-084 sonlu timer37 hazırlığı; K-269/ADR-127/GB-085 kopyalanabilir site/panel2 mevcut CLI/HTTP pilotu; K-270/ADR-128/GB-086 yerel import/proje launcher14 ve korunmuş selector25. Yeni üç normal Cargo vakası gerçek alt-senaryolarıyla ayrı sayılır. Native Linux/systemd/SQL timer, gerçek kullanıcı/live ürün, production publisher/platform ve final temiz kaynak kampanyaları açık; P09/P23/P07 kısmi kalır. Yeni compiler/src/grammar/facade/dependency veya spec normatif madde yoktur; spec214 ve önceki source54/c86 maintenance/provenance, K267 kayıtları korunur.
+
+[Timer](../docs/sonlu-dispatcher-timer.md), [başlangıç](../sablonlar/README.md), [yerel araç](../docs/derleyici-yerel.md).

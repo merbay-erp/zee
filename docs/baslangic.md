@@ -189,3 +189,7 @@ internet gerekmez, katalog `dil`in içindedir.
 Üretim host bayraklarını proje kökündeki [sürümlü zee.ayar](zee-ayar.md)
 ile taşıyabilirsiniz; ayrı capability sorgusu olmayan eski ikiliye
 rollback bu profil için kabul edilmez.
+
+## K-269 — Kopyalanabilir site/panel projeleri
+
+[`sablonlar/`](../sablonlar/README.md) altında mevcut CLI ile açılan site ve panel proje iskeletleri vardır. Panel sabit demo PHC kullanmaz; operatörün hazırladığı sıradan proje-local `panel-phc` dosyası eksik/bozuksa giriş reddedilir. Bu dosya okuması credential launcher nofollow/redaction sözleşmesi değildir. Gerçek CLI/owned HTTP2 kısa pilotu yeni kullanıcı, production HTTPS, çokworker veri veya tam P23/P25 kabulü değildir. [ADR-127](../adr/127-kopyalanabilir-site-panel-baslangici.md).
