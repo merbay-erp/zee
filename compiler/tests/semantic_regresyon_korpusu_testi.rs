@@ -778,3 +778,25 @@ fn native_metric_manifest_cli_owned_ve_sessiz_exit2_ile_sinirlidir() {
     v.span = Some((1, 1, 1));
     assert!(!native_metric_manifest_sozlesmesi(&v));
 }
+
+// Append only with actual .dil fixture and exact fixed_by manifest row.
+#[test]
+#[cfg_attr(not(unix), ignore = "actual Unix owned FD capability unavailable")]
+fn native_metric_stdio_regresyonu_gercek_owned_host_ile_korunur() {
+    let vakalar: Vec<_> = vakalari_oku()
+        .into_iter()
+        .filter(|v| v.kip == "native-metric-stdio")
+        .collect();
+    assert!(
+        !vakalar.is_empty(),
+        "dedicated native regression requires real manifest case"
+    );
+    for vaka in vakalar {
+        assert!(native_metric_manifest_sozlesmesi(&vaka));
+        let kaynak = std::fs::read_to_string(depo().join(&vaka.dosya)).unwrap();
+        let gozlem = vakayi_calistir(&vaka, &kaynak);
+        assert_eq!(gozlem.cikis, vaka.cikis);
+        assert_eq!(gozlem.cikti, vaka.cikti);
+        assert!(gozlem.tani.is_none());
+    }
+}

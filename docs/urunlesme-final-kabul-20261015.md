@@ -116,3 +116,10 @@ Güncel kaynak/aday test/eksik kabul ayrımı [ikinci dalga kaydındadır](urunl
 başlangıcı eklendi. Önceki S1/E1 kabulü bu yeni kaynağa aktarılmaz. K-294
 regression follow-up ve temiz exact normal/dedicated/RC/Miri/soak kapıları
 bitmeden dalga tamamlandı sayılmaz; C1/P33 araç retleri açık tutulur.
+
+K-294 kaynak/provenance takibi: `382beed1d01440f6f9df28b5ac7a111fbe1f75ee`
+exact `fixed_by` ile `native-metric-stdio-alias` minimal regresyonuna
+bağlandı. Gerçek owned host ile nonempty native korpus testi dahil dokuz
+semantic regresyon testi geçti; compiler/core-freeze beyanları kaydedildi.
+GB-110 temiz exact kabul tamamlanana kadar açıktır; RC/Miri/soak, native
+ve yeni JetBrains kaynağı kabulünün yerine bu sonuçlar kullanılamaz.

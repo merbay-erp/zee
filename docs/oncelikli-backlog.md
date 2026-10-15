@@ -1837,3 +1837,10 @@ K-284/C5 ve K-287/C2 exact cd5d12f0008620819e6167af5146e83503fd2b38
 zee-cekirdek talebinin minimal araç yüzeyleridir; grammar genişletilmez.
 K-294 mevcut control-FD correctness düzeltmesi, kaynak SHA + regression
 follow-up olmadan kapanamaz. K-288 ve K-293 araç retleri nedeniyle açıktır.
+
+K-294 kaynak/provenance takibi: `382beed1d01440f6f9df28b5ac7a111fbe1f75ee`
+exact `fixed_by` ile `native-metric-stdio-alias` minimal regresyonuna
+bağlandı. Gerçek owned host ile nonempty native korpus testi dahil dokuz
+semantic regresyon testi geçti; compiler/core-freeze beyanları kaydedildi.
+GB-110 temiz exact kabul tamamlanana kadar açıktır; RC/Miri/soak, native
+ve yeni JetBrains kaynağı kabulünün yerine bu sonuçlar kullanılamaz.

@@ -4718,3 +4718,10 @@ gözlenmiş istismar veya kapanmış yarış koşulu iddiası verilmez.
 
 Mevcut stderr alias tanı sızıntısı actual26 ile giderildi; GB-110 düşük
 önemle exact kaynak SHA ve minimal regression follow-up kaydını bekler.
+
+K-294 kaynak/provenance takibi: `382beed1d01440f6f9df28b5ac7a111fbe1f75ee`
+exact `fixed_by` ile `native-metric-stdio-alias` minimal regresyonuna
+bağlandı. Gerçek owned host ile nonempty native korpus testi dahil dokuz
+semantic regresyon testi geçti; compiler/core-freeze beyanları kaydedildi.
+GB-110 temiz exact kabul tamamlanana kadar açıktır; RC/Miri/soak, native
+ve yeni JetBrains kaynağı kabulünün yerine bu sonuçlar kullanılamaz.
