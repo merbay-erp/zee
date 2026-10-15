@@ -27,9 +27,13 @@ class Capability(unittest.TestCase):
         return subprocess.run(argv,env=env,stdin=subprocess.DEVNULL,stdout=kw.pop('stdout',subprocess.PIPE),stderr=kw.pop('stderr',subprocess.PIPE),pass_fds=passed,timeout=5,**kw)
     def ambient_pipe(self):
         rd,self.ambient=self.pipe();os.set_inheritable(self.ambient,True)
-    def rejected(self,result,typed=True):
-        self.assertEqual(result.returncode,2);self.assertFalse(self.marker.exists());metadata=json.loads(result.stdout);self.assertEqual(metadata['source'],'launcher');self.assertEqual(metadata['exit'],2)
-        if typed:self.assertEqual(metadata['reason'],'native_metrics_capability')
+    def rejected(self,result,typed=True,quiet=False):
+        self.assertEqual(result.returncode,2);self.assertFalse(self.marker.exists())
+        if quiet:
+            self.assertEqual(result.stdout or b'',b'');self.assertEqual(result.stderr or b'',b'')
+        else:
+            metadata=json.loads(result.stdout);self.assertEqual(metadata['source'],'launcher');self.assertEqual(metadata['exit'],2)
+            if typed:self.assertEqual(metadata['reason'],'native_metrics_capability')
         self.assertNotIn(b'CANARY',(result.stdout or b'')+(result.stderr or b''))
     def test_designated_fd_actual_child_only_and_default_noinherit(self):
         self.ambient_pipe();rd,wr=self.pipe();r=self.launch(self.command(wr),passed=(wr,self.ambient));self.assertEqual(r.returncode,0);self.assertEqual(json.loads(r.stdout),{'schema':'zee-credential-baslat-1','source':'child','exit':0});raw=os.read(rd,512);self.assertEqual(json.loads(raw),{'schema':'zee-k260-capability-proof-1','credential_consumed':True,'ambient_absent':True});self.assertNotIn(b'CANARY',raw+r.stdout+r.stderr)
@@ -38,7 +42,7 @@ class Capability(unittest.TestCase):
         with self.assertRaises(BlockingIOError):os.read(rd,512)
     def test_closed_negative_and_wrong_mode_and_file(self):
         self.ambient_pipe();rd,wr=self.pipe()
-        for fd,passed in [(wr,()),(rd,(rd,)),(2,()),(-1,()),(256,()),('bad',()),('3.0',())]:self.rejected(self.launch(self.command(fd),passed=passed))
+        for fd,passed in [(wr,()),(rd,(rd,)),(2,()),(-1,()),(256,()),('bad',()),('3.0',())]:self.rejected(self.launch(self.command(fd),passed=passed),quiet=(fd==2))
         fd=os.open(self.key,os.O_RDONLY);self.fds.append(fd);self.rejected(self.launch(self.command(fd),passed=(fd,)))
     def test_blocking_pipe_rejected(self):
         self.ambient_pipe();rd,wr=self.pipe();os.set_blocking(wr,True);self.rejected(self.launch(self.command(wr),passed=(wr,)))
@@ -47,11 +51,12 @@ class Capability(unittest.TestCase):
         a=self.command(wr);a[a.index('--web-metrik-fd')+1]=str(wr+1);self.rejected(self.launch(a,passed=(wr,)))
         a=self.command(wr);at=a.index('--web-metrik-fd');pair=a[at:at+2];del a[at:at+2];a+=pair;self.rejected(self.launch(a,passed=(wr,)))
     def test_stdio_alias_rejected_before_private_source(self):
-        self.ambient_pipe();rd,wr=self.pipe();r=self.launch(self.command(wr),passed=(wr,),stderr=wr);self.rejected(r);raw=b''
-        try:raw=os.read(rd,512)
-        except BlockingIOError:pass
-        self.assertNotIn(b'CANARY',raw);self.assertFalse(self.marker.exists())
-        r=self.launch(self.command(wr),passed=(wr,),stdout=wr);self.assertEqual(r.returncode,2);raw=os.read(rd,512);self.assertEqual(json.loads(raw)['reason'],'native_metrics_capability');self.assertNotIn(b'CANARY',raw);self.assertFalse(self.marker.exists())
+        self.ambient_pipe();rd,wr=self.pipe()
+        for standard in ('stderr','stdout'):
+            with self.subTest(standard=standard):
+                r=self.launch(self.command(wr),passed=(wr,),**{standard:wr});self.rejected(r,quiet=True)
+                with self.assertRaises(BlockingIOError):os.read(rd,512)
+                self.assertFalse(self.marker.exists())
     def test_sigpipe_disposition_rejected_without_restoration_change(self):
         self.ambient_pipe();rd,wr=self.pipe();old=signal.signal(signal.SIGPIPE,signal.SIG_DFL)
         try:

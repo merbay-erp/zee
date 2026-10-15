@@ -1852,4 +1852,14 @@ K-257–260 kaynak commit `54a8d6dc0efb060ae5644b37546da40ad03ee035` öncesi tam
 
 ## K-265 — Exact kaynak dış RC kanıtı
 
-[ADR-124](../adr/124-exact-kaynak-dis-rc-kaniti.md) sourceS/historyE self-reference doğruluk boşluğunu explicit dış immutable paketle ele alır; kaynak eşdeğerliği/bypass yoktur. İzole25 sentetik protokol+9 kısa ownedprocess test dilimi, tam4ASAN2Miri/rawhash/initialsourcecorpus/erkenHEADpin/streamingdizinbütçesi negatiflerini kapsar. Ortak atomik kaynak ve final gerçek cleanS uzunASAN/Miri kampanyası henüz açıktır;900/1800/release/ürün adoption kapıları kapanmaz. Kullanıcı AGENTS değiştirilmez, exactsourceS ve append-only arşivE ayrımı açık tutulur.
+[ADR-124](../adr/124-exact-kaynak-dis-rc-kaniti.md) sourceS/historyE self-reference doğruluk boşluğunu explicit dış immutable paketle ele alır; kaynak eşdeğerliği/bypass yoktur. İzole25 sentetik protokol+9 kısa ownedprocess test dilimi, tam4ASAN2Miri/rawhash/initialsourcecorpus/erkenHEADpin/streamingdizinbütçesi negatiflerini kapsar. K-265 kaynak commit’i `1367ce1a7d0281d8a7f3d9307021afbc452da15f` ile kayıtlıdır: kaynak öncesi tam faz928/940 geçti, başarısız0/atlanan12; son EOF boşluğu düzeltmesi sonrası25 protokol testi yeniden geçti. Final gerçek cleanS uzunASAN/Miri kampanyası,900/1800/release/ürün adoption kapıları açıktır. Kullanıcı AGENTS değiştirilmez, exactsourceS ve append-only arşivE ayrımı açık tutulur.
+
+## K-267 — Typed credential/native listener bileşimi
+
+[ADR-125](../adr/125-credential-native-listener-kompozisyonu.md) mevcut D3/P25 ve B5/B6 ürün ihtiyacını dar Unix host profilinde birleştirir. Credential okumadan all-or-none FD/rol/socket/port/argv doğrulaması, native child tarafından devralınmayan ayrı startup FIFO ile PID/generation/binary kimliği ve varsayılan noinherit korunur. İki normal Cargo vakası model/subprocess5 ile gerçek native crypto/overlap/metrics/admission/cleanup5 kampanyalarını ayırır; alt-senaryolar eşsiz toplam diye sayılmaz. İzole dirty d53 kısa aday kanıtı final temiz kaynak kabulü değildir. P25 bütünü, Windows/systemd/file-native sır aktarımı, canlı benimseme ve 900/1800/RC kapıları açıktır. GB-083 bilinçli capability sınırını kaydeder; yeni grammar/compiler/public Rust API eklenmez.
+
+K-267 doğrulama bakımı: macOS nativeTLS platform hazırlığı, mevcut SMTP IO
+iptal testinin ölçülen kısmından önce tamamlanır; 60 ms IO bütçesi, iki saniye
+takılma koruması ve sessiz peer değişmez. Production davranışı, tanı, test
+sayısı ve normatif sözleşme değişmedi. Önceki iki tam matrisin aynı SMTP
+korumasında kalması korunur; K-267 son tam faz koşusu 930/942 geçti, 0 kaldı, 12 atlandı; koşu boyunca 40 kaynak dosyası değişmedi. Final temiz kaynak ve uzun kabul kampanyaları ayrı kalır.

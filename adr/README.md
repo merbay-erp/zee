@@ -134,3 +134,5 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-122 | [Supervisor sahipli EPERM geçişi](122-supervisor-sahipli-eperm-gecisi.md) | **kabul, dar POSIX host correctness adayı** (K-263/GB-077) |
 | ADR-123 | [Kritik işlev seçici taban incelemesi](123-kritik-islev-secici-taban-incelemesi.md) | **kabul, dar bakım incelemesi** (K-264) |
 | ADR-124 | [Exact kaynakta dış RC kanıtı](124-exact-kaynak-dis-rc-kaniti.md) | **kabul, kısa doğruluk dilimi; gerçek RC kampanyası açık** (K-265) |
+
+| ADR-125 | [Typed credential native listener bileşimi](125-credential-native-listener-kompozisyonu.md) | **kabul, dar Unix host; finalclean/live açık** (K-267/GB-083) |

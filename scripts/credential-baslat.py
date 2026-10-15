@@ -5,6 +5,9 @@ Compiler API'si değildir. Çocuk stdio'su kapalıdır; yalnız sabit şemalı
 source/exit metadata üretilir. Yollar/sırlar/hata ayrıntıları yazılmaz.
 """
 import argparse
+import hashlib
+import importlib.util
+from pathlib import Path
 try:
     import fcntl
 except ImportError:
@@ -16,6 +19,9 @@ import re
 import stat
 import subprocess
 import sys
+
+_spec=importlib.util.spec_from_file_location('named_native_capabilities',Path(__file__).with_name('native-capabilities.py'))
+N=importlib.util.module_from_spec(_spec);_spec.loader.exec_module(N)
 
 MAX_BINDINGS = 16
 MAX_FILE_BYTES = 65_536
@@ -52,7 +58,7 @@ class MaskedParser(argparse.ArgumentParser):
 
 
 def supported_platform():
-    return os.name == "posix" and all(hasattr(os, name) for name in
+    return fcntl is not None and N.supported() and os.name == "posix" and all(hasattr(os, name) for name in
         ("O_DIRECTORY", "O_NOFOLLOW", "O_NONBLOCK", "O_CLOEXEC"))
 
 
@@ -168,24 +174,10 @@ def metrics_capability(argv):
         argv = argv[:index] + argv[index + 2:]
         command = argv[argv.index("--") + 1:]
         # Host options precede source. Application argv never grants a capability.
-        position = None
-        i = 1
-        proxy = False
-        while i < len(command):
-            arg = command[i]
-            if arg == "--web-metrik-fd":
-                require(position is None and i + 1 < len(command) and command[i + 1] == text)
-                position = i; i += 2
-            elif arg in ("--web-proxy", "--güvenli-web-proxy", "--web-worker-port", "--web-oran-deposu", "--web-oran-siniri", "--web-oran-kapasitesi", "--web-oran-doluluk"):
-                proxy = proxy or arg in ("--web-proxy", "--güvenli-web-proxy")
-                i += 2
-            elif arg.startswith("--"):
-                i += 1
-            else:
-                break
-        require(position is not None and proxy and i < len(command))
+        values=N.command_values(command)
+        require(values.get('--web-metrik-fd')==text and any(k in values for k in ('--web-proxy','--güvenli-web-proxy')))
         return argv, fd
-    except (Rejected, OSError, ValueError, OverflowError):
+    except (Rejected, N.Rejected, OSError, ValueError, OverflowError):
         raise MetricsRejected() from None
 
 
@@ -253,13 +245,20 @@ def child_environment(root, bindings):
         os.close(root_fd)
 
 
-def run_child(command, environment, native_metrics_fd=None):
+def run_child(command, environment, native_metrics_fd=None, native_listener=None):
     # Aynı process group; restart/grup sonlandırma dış host supervisor'a aittir.
     child = None
     try:
+        if native_listener is not None:
+            N.borrowed(native_listener)
+            N.require(hashlib.sha256(Path(command[0]).read_bytes()).hexdigest()==native_listener.binary_sha256)
         child = subprocess.Popen(command, env=environment, stdin=subprocess.DEVNULL,
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, close_fds=True,
-            pass_fds=() if native_metrics_fd is None else (native_metrics_fd,))
+            pass_fds=native_listener.native_fds() if native_listener is not None else (() if native_metrics_fd is None else (native_metrics_fd,)))
+        if native_listener is not None:
+            N.announce(native_listener,child.pid)
+            for descriptor in native_listener.native_fds()+(native_listener.startup,):os.close(descriptor)
+            native_listener=None;native_metrics_fd=None
         if native_metrics_fd is not None:
             os.close(native_metrics_fd); native_metrics_fd = None
         environment.clear()
@@ -275,6 +274,11 @@ def run_child(command, environment, native_metrics_fd=None):
                 child.wait()
         raise
     finally:
+        if native_listener is not None:
+            for descriptor in native_listener.native_fds()+(native_listener.startup,):
+                try:os.close(descriptor)
+                except OSError:pass
+            native_metrics_fd=None
         if native_metrics_fd is not None:
             os.close(native_metrics_fd)
         environment.clear()
@@ -283,15 +287,24 @@ def run_child(command, environment, native_metrics_fd=None):
 def main(argv=None):
     source, code = "launcher", 2
     metrics_fd, reason = None, None
+    listener=None
+    quiet=False
     try:
         require(supported_platform())
         actual = list(sys.argv[1:] if argv is None else argv)
+        quiet=N.quiet_stdio_alias(actual)
         actual, metrics_fd = metrics_capability(actual)
+        try:actual,listener=N.extract(actual,metrics_fd)
+        except (N.Rejected,OSError,ValueError):raise N.Rejected() from None
         root, bindings, command = parse_arguments(actual)
+        if listener is not None:N.require(hashlib.sha256(Path(command[0]).read_bytes()).hexdigest()==listener.binary_sha256)
         environment = child_environment(root, bindings)
         owned, metrics_fd = metrics_fd, None
-        code = run_child(command, environment, owned)
+        selected,listener=listener,None
+        code = run_child(command, environment, owned, selected)
         source = "child"
+    except N.Rejected:
+        reason = "native_listener_capability"
     except MetricsRejected:
         reason = "native_metrics_capability"
     except KeyboardInterrupt:
@@ -299,11 +312,16 @@ def main(argv=None):
     except Exception:
         pass
     # Hatalar, child argv, credential ad/yol/değerleri ve stream'ler yazılmaz.
+    if listener is not None:
+        for descriptor in listener.native_fds()+(listener.startup,):
+            try:os.close(descriptor)
+            except OSError:pass
+        metrics_fd=None
     if metrics_fd is not None:
         os.close(metrics_fd)
     metadata = {"schema": "zee-credential-baslat-1", "source": source, "exit": code}
     if reason is not None: metadata["reason"] = reason
-    print(json.dumps(metadata, separators=(",", ":")))
+    if not quiet:print(json.dumps(metadata, separators=(",", ":")))
     return code
 
 

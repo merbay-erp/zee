@@ -38,3 +38,8 @@ dogfood/kelime-avi/kaynak/skorlar.txt
 
 # K-232: exact public-password localhost SMTP test identity only.
 !compiler/tests/fixtures/smtp-mime/server.p12
+
+# K-267: Python çalışma zamanı önbellekleri kaynak/kanıt değildir.
+__pycache__/
+*.pyc
+*.pyo

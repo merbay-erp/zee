@@ -8,7 +8,7 @@ def require(v,m):
     if not v:raise AssertionError(m)
 def main():
     a=argparse.ArgumentParser();a.add_argument('--dil',type=Path,required=True);a.add_argument('--output',type=Path,required=True);args=a.parse_args();root=Path(__file__).resolve().parents[2];binary=args.dil.resolve(strict=True);out=args.output.resolve();require(not out.exists(),'fresh proof');out.mkdir(mode=0o700,parents=True)
-    sources=[root/'scripts/credential-baslat.py',root/'scripts/worker-supervisor.py',root/'scripts/native-metrics.py',root/'scripts/tests/worker-supervisor-test.py',Path(__file__).resolve(),root/'scripts/tests/credential-metrics-test.py'];hashes=[{'path':str(p.relative_to(root)),'sha256':sha(p)} for p in sources];binary_sha=sha(binary)
+    sources=[root/'scripts/credential-baslat.py',root/'scripts/worker-supervisor.py',root/'scripts/native-metrics.py',root/'scripts/native-capabilities.py',root/'scripts/tests/worker-supervisor-test.py',Path(__file__).resolve(),root/'scripts/tests/credential-metrics-test.py'];hashes=[{'path':str(p.relative_to(root)),'sha256':sha(p)} for p in sources];binary_sha=sha(binary)
     W=runpy.run_path(str(root/'scripts/tests/worker-supervisor-test.py'));W['Fixture'].__init__.__globals__['NATIVE']=binary
     identity=json.loads(subprocess.check_output([str(binary),'sürüm','--json'],timeout=5))
     f=None;r=None;proof={'schema':'zee-k260-native-capability-1','status':'running','compiler_identity':identity,'binary_sha256':binary_sha,'sources':hashes,'cases':[]}

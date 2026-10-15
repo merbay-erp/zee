@@ -155,10 +155,10 @@ Değişikliğe özel test, belge ve güvenlik kapıları [AGENTS.md](AGENTS.md) 
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **942** |
+| Rust + doctest vakası | **944** |
 | Tanı kimliği | **159 etkin + 3 ayrılmış** |
 | RFC | **34** (2 kabul, 29 geçici kabul, 3 taslak) |
-| ADR | **121** (121 kabul) |
+| ADR | **122** (122 kabul) |
 | Normatif spec bölümü | **28** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
@@ -264,3 +264,5 @@ credential/worker, dar SQL queue, TR–EN yardımcı ve LSP UTF-8 regresyonu.
 Tam ürün ve sürüm kapıları raporda açık sınırlarıyla izlenir.
 
 K-265 [exact kaynak dış RC kanıtı](docs/rc-kaniti.md) release kapısındaki tarihçe self-reference sınırını açık dış paketle ele alan kısa doğruluk dilimidir; gerçek final kaynak ASAN/Miri/soak kampanyası yerine geçmez.
+
+K-267: dar Unix credential/native listener bileşimi ve ayrı host-only startup capability için [ADR-125](adr/125-credential-native-listener-kompozisyonu.md). Varsayılan noinherit korunur; P25, final temiz kaynak/uzun kampanyalar ve canlı/platform benimsemesi kısmi kalır.

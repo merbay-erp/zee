@@ -64,8 +64,9 @@ Before/after listener seçenek sırası ve reader preclosed EPIPE ile birleşim
 sınanır. Telemetry kaybı geçerli listener'ı durdurmaz; metric sink sahipliğinden
 sonra kapalı writer FD yeniden listener ownership'e alınmaz. Control pipe'ları
 aynı best-effort politika değildir. [Credential capability](../adr/119-credential-native-metrics-capability.md)
-yalnız metadata pipe'ını aktarır; listener/ready/activate launcher transferi
-bu profilde desteklenmez. Doğrudan native owned host kullanılır.
+tek metrik profiliyle yalnız metadata pipe'ını aktarır. Ayrı K-267 typed
+credential listener route aşağıdaki dar stage adayıdır; varsayılan doğrudan
+native owned host ve noinherit sözleşmesi değişmez.
 
 ## Tekrarlanabilir sınırlı kabul
 
@@ -104,3 +105,21 @@ Kanonik güvenlik sırası: atomik K-263 owned-host cleanup düzeltmesi GB-077 i
 Commitlenmemiş ilk aday son poll turunda on saniyelik bütçe sonrasındaki EOF ile HTTP200 verebiliyordu. Poll artık yalnız kalan bütçeyi bekler; exact frame ve EOF sonrasında deadline/sinyal yeniden denetlenir. [Ayrı owned test](../scripts/tests/native-listener-deadline-test.py) EOF zamanını ilk byte tüketiminden hesaplanan üst sınırın sonrasına koyar; düzeltmede HTTP byte0, normal terminal0, tüm owned child reaped ve parent listener korunmuş olmalıdır. Bu tek vaka native17 veya FD16 toplamına eklenmez. Kaynak commitine girmemiş aday için tarihsel introduced_by/fixed_by SHA üretilmez; bulgu GB-080 altında ilk özellik değişikliğiyle birlikte kapanır.
 
 Kalıcı vaka [native-listener-late-eof](../regression/security/native-listener-late-eof.dil), ilk özellik kaynak commit `54a8d6dc0efb060ae5644b37546da40ad03ee035` için exact fixed_by taşır; introduced_by=-, çünkü eski2caa bir Git commit değildi. Ayrı semantic test gerçek source bytes/helper/HTTP0/terminal0/owned cleanup doğrular. Native17, FD16 ve deadline1 kampanyaları ile Rust/corpus sayıları toplanmaz.
+
+
+## K-267/P25 typed native listener bileşimi — dar Unix profil
+
+Yeni `CredentialRoute` ctor listener/ready/activate ve host-only startup FIFO ile
+fresh generation, explicit port/binary hash'i bağlar; optional designated metrik
+kanalı korunur. Host+launcher ortak borrowed rol/alias denetimini secret okumadan
+ve Popen öncesi kullanır. Launcher actual child PID/gen/hash makbuzunu yalnız
+startup FIFO'ya tek sınırlı yazımla bırakır; native child bu FD'yi almaz. Native
+ready bu trusted kayda ve app receipt'e bağlanır; host yalnız launcher Popen
+ve WNOWAIT process group'unu sahiplenir, native PID edinmez. Varsayılan noinherit
+ve native stdout/stderr secret-masking korunur. Yeni typed rol STDIO alias
+retlerinde quiet olur. source sonrası argv yeni FD capability açmaz.
+
+Gerçek kısa d53 aday koşusu Build dirty=true ile kaydedilmiştir; temiz final
+source/normal faz/ortak kampanya kabulü değildir. Internal P25 bridge dar dilimi
+kanıtlı adaydır; Windows/systemd/file-native sır gizliliği ve live adoption
+açık kalır. [ADR-125](../adr/125-credential-native-listener-kompozisyonu.md)/GB-083 aynı atomik kaynakta bağlanır; normal Cargo/faz ve final temiz kaynak kabulü ayrıca yürütülür.

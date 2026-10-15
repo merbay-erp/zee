@@ -38,3 +38,10 @@ aynı dalgada güncellenir. RFC kararı/indeksi, hata kataloğu, API ve uyumlulu
 yüzeyi, öğretici komutlar değişmez; yeni tanı ya da özellik yoktur. Tanı
 kalitesi ve performans tarihçesi yeni sonuç gerektirmez; parser kurtarması
 ve sabit ölçüm iş yükü değişmedi. README sayıları araçla yenilenir.
+
+Ölçüm notu (K-267 test hazırlığı): macOS nativeTLS bağlam hazırlığı ile native
+hata metninin oluşturulması eşzamanlı platform servislerini çağırabilir. Bunlar
+Read/Write öncesinde veya ağ hatasından sonra süre tüketebilir; TCP
+okuma/yazmaları tek kalan monoton son tarihi korur. IO iptal testi bu platform
+hazırlığını ölçülen sessiz peer sınamasından önce tamamlar. Bu gözlem toplam
+çağrı wall-time sınırı veya benchmark tarihçesi değildir.

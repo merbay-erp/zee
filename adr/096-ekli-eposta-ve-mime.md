@@ -112,3 +112,10 @@ K-232’de korunur; bulunan legacy AUTH echo açığı ayrı güvenlik işidir.
 P09 kuyruk/outbox/retry/cron, M365/Gmail canlı SMTP doğrulaması, özel ürün rota
 değişikliği ve staging kabulü açık kalır. K-174 syntax gözlem penceresi
 14.10.2026–11.11.2026 olarak bilinçli yeniden hesaplanır; V1 kapısı kapanmaz.
+
+Ölçüm notu (K-267 test hazırlığı): macOS nativeTLS bağlam hazırlığı ile native
+hata metninin oluşturulması eşzamanlı platform servislerini çağırabilir. Bunlar
+Read/Write öncesinde veya ağ hatasından sonra süre tüketebilir; TCP
+okuma/yazmaları tek kalan monoton son tarihi korur. IO iptal testi bu platform
+hazırlığını ölçülen sessiz peer sınamasından önce tamamlar. Bu gözlem toplam
+çağrı wall-time sınırı veya benchmark tarihçesi değildir.
