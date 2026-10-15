@@ -1,0 +1,320 @@
+{
+  "source_sha": "66e4149e53451111d153f47283c219079a8d1cab",
+  "binary_sha256": "398a706f588fba06b5cadacb32af01714c7dd875a4c40a86b35137a1c7227e87",
+  "status": "passed",
+  "steps": [
+    {
+      "name": "identity-start",
+      "argv": [
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-macos-delivery/binaries/dil",
+        "s\u00fcr\u00fcm",
+        "--json"
+      ],
+      "timeout": 20,
+      "started_ns": 1792057593639297000,
+      "exit": 0,
+      "finished_ns": 1792057593645879000
+    },
+    {
+      "name": "composed-tr-en",
+      "argv": [
+        "python3",
+        "-I",
+        "-B",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/scripts/tests/composed-tr-en-test.py",
+        "--framework-root",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+        "--dil",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-macos-delivery/binaries/dil",
+        "--output",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-mac-native/composed-tr-en"
+      ],
+      "timeout": 180,
+      "started_ns": 1792057593679881000,
+      "exit": 0,
+      "finished_ns": 1792057595042060000
+    },
+    {
+      "name": "signed-pdf",
+      "argv": [
+        "python3",
+        "-I",
+        "-B",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/scripts/tests/pdf-plugin-native.py",
+        "--framework-root",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+        "--dil",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-macos-delivery/binaries/dil",
+        "--verifier",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-common/surum_artefakti",
+        "--python",
+        "/Users/mustafaerbay/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "--output",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-mac-native/signed-pdf"
+      ],
+      "timeout": 240,
+      "started_ns": 1792057595065014000,
+      "exit": 0,
+      "finished_ns": 1792057600348466000
+    },
+    {
+      "name": "module-sql",
+      "argv": [
+        "python3",
+        "-I",
+        "-B",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/scripts/tests/modul-sql-native.py",
+        "--framework-root",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+        "--dil",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-macos-delivery/binaries/dil",
+        "--postgres-bin-dir",
+        "/private/tmp/zee-plan-evidence/pg16-runtime/install/bin",
+        "--output",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-mac-native/module-sql",
+        "--sha",
+        "66e4149e53451111d153f47283c219079a8d1cab",
+        "--binary-sha256",
+        "398a706f588fba06b5cadacb32af01714c7dd875a4c40a86b35137a1c7227e87"
+      ],
+      "timeout": 660,
+      "started_ns": 1792057600371779000,
+      "exit": 0,
+      "finished_ns": 1792057604296840000
+    },
+    {
+      "name": "content-starter",
+      "argv": [
+        "python3",
+        "-I",
+        "-B",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/scripts/tests/starter-content-native.py",
+        "--framework-root",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+        "--dil",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-macos-delivery/binaries/dil",
+        "--postgres-bin-dir",
+        "/private/tmp/zee-plan-evidence/pg16-runtime/install/bin",
+        "--output",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-mac-native/content-starter",
+        "--sha",
+        "66e4149e53451111d153f47283c219079a8d1cab",
+        "--binary-sha256",
+        "398a706f588fba06b5cadacb32af01714c7dd875a4c40a86b35137a1c7227e87"
+      ],
+      "timeout": 660,
+      "started_ns": 1792057604319823000,
+      "exit": 0,
+      "finished_ns": 1792057609297907000
+    },
+    {
+      "name": "source-coverage",
+      "argv": [
+        "python3",
+        "-I",
+        "-B",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/compiler/tests/fixtures/kaynak-kapsami-native.py",
+        "--framework-root",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+        "--dil",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-macos-delivery/binaries/dil",
+        "--output",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-mac-native/source-coverage"
+      ],
+      "timeout": 180,
+      "started_ns": 1792057609320385000,
+      "exit": 0,
+      "finished_ns": 1792057610036142000
+    },
+    {
+      "name": "web-bridge",
+      "argv": [
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-macos-delivery/binaries/dil",
+        "dene",
+        "--kapsam",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-mac-native/unit-coverage.json",
+        "--web-suite",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/compiler/tests/fixtures/owned-web-kit-suite.json",
+        "--web-suite-sha256",
+        "571b2077767ac7a7622c06443ccded8b80a6522f991e4a074684251e4774e0d3",
+        "--web-fixtures",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/compiler/tests/fixtures/owned-web-kit",
+        "--test-python",
+        "/Library/Frameworks/Python.framework/Versions/3.13/bin/python3.13",
+        "--test-postgres-bin",
+        "/private/tmp/zee-plan-evidence/pg16-runtime/install/bin",
+        "--test-output",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-mac-native/web-bridge",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/dogfood/zee-cekirdek/test-kapsami"
+      ],
+      "timeout": 660,
+      "started_ns": 1792057610071725000,
+      "exit": 0,
+      "finished_ns": 1792057612900581000
+    },
+    {
+      "name": "bridge-negatives",
+      "argv": [
+        "python3",
+        "-I",
+        "-B",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/scripts/tests/web-test-bridge-test.py",
+        "--framework-root",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+        "--dil",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-macos-delivery/binaries/dil",
+        "--postgres-bin-dir",
+        "/private/tmp/zee-plan-evidence/pg16-runtime/install/bin",
+        "--output",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-mac-native/bridge-negatives"
+      ],
+      "timeout": 240,
+      "started_ns": 1792057612929387000,
+      "exit": 0,
+      "finished_ns": 1792057613036541000
+    },
+    {
+      "name": "mixed-revision",
+      "argv": [
+        "python3",
+        "-I",
+        "-B",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/scripts/tests/mixed-revision-native.py",
+        "--repo",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+        "--sha",
+        "66e4149e53451111d153f47283c219079a8d1cab",
+        "--dil",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-macos-delivery/binaries/dil",
+        "--binary-sha256",
+        "398a706f588fba06b5cadacb32af01714c7dd875a4c40a86b35137a1c7227e87",
+        "--out",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-mac-native/mixed-revision"
+      ],
+      "timeout": 360,
+      "started_ns": 1792057613063790000,
+      "exit": 0,
+      "finished_ns": 1792057638717419000
+    },
+    {
+      "name": "service-fault",
+      "argv": [
+        "python3",
+        "-I",
+        "-B",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/scripts/tests/service-fault-native.py",
+        "--repo",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+        "--sha",
+        "66e4149e53451111d153f47283c219079a8d1cab",
+        "--dil",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-macos-delivery/binaries/dil",
+        "--binary-sha256",
+        "398a706f588fba06b5cadacb32af01714c7dd875a4c40a86b35137a1c7227e87",
+        "--out",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-mac-native/service-fault"
+      ],
+      "timeout": 180,
+      "started_ns": 1792057638750125000,
+      "exit": 0,
+      "finished_ns": 1792057644294445000
+    },
+    {
+      "name": "native-metric-stdio",
+      "argv": [
+        "python3",
+        "-I",
+        "-B",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/scripts/tests/native-metric-stdio-test.py",
+        "--framework-root",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+        "--dil",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-macos-delivery/binaries/dil",
+        "--output",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-mac-native/native-metric-stdio",
+        "--fixture-source",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/regression/cli/native-metric-stdio-alias.dil"
+      ],
+      "timeout": 180,
+      "started_ns": 1792057644329256000,
+      "exit": 0,
+      "finished_ns": 1792057645104329000
+    },
+    {
+      "name": "identity-end",
+      "argv": [
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-macos-delivery/binaries/dil",
+        "s\u00fcr\u00fcm",
+        "--json"
+      ],
+      "timeout": 20,
+      "started_ns": 1792057645139522000,
+      "exit": 0,
+      "finished_ns": 1792057645151223000
+    }
+  ],
+  "delivery_sha256": "b67ca95afb7829353e03638b4bc08a78f35c62073ad4e1874be5c7b7bb072607",
+  "build": {
+    "schema": "zee-build-v1",
+    "version": "0.8.0-dev",
+    "source_sha": "66e4149e53451111d153f47283c219079a8d1cab",
+    "source_date": "2026-10-15",
+    "channel": "development",
+    "dirty": false
+  },
+  "verifier_sha256": "914dd2f49a3a69ca7d3b8f6746e8bc1942c065ac033147f02420123fee7b2d90",
+  "composed-tr-en": {
+    "status": "passed",
+    "http_requests": 10,
+    "source_tests": 4,
+    "proof_sha256": "d870492fb0c5856ce5a6c6ae4fb5740aa802f1c287498661fd7d00abc3999dd7"
+  },
+  "signed-pdf": {
+    "status": "passed",
+    "cases": 9,
+    "proof_sha256": "e37325168d17f075cb059d9fb9297cc67ba1a7af72edefa2c2e86e923b04dfb8"
+  },
+  "module-sql": {
+    "status": "passed",
+    "cases": 9,
+    "proof_sha256": "3dfa46df7c05337f3ecc8031c8d56e505d17f61a16d691fa258f5e2f71c883ef"
+  },
+  "content-starter": {
+    "status": "passed",
+    "cases": 14,
+    "proof_sha256": "7f269184ae9380304b754ce249b0ca2a9004d495c96582afc4351d84a2d35546"
+  },
+  "source-coverage": {
+    "status": "passed",
+    "proof_sha256": "df828300f1cc748f3798d05f76ab1991b730c91e8af708202433eb337a170a3f",
+    "driver_candidate_only_flag_preserved": true,
+    "wrapper_source_clean_exact": true
+  },
+  "web-bridge": {
+    "status": "passed",
+    "cases": 4,
+    "http_requests": 19,
+    "proof_sha256": "6a41b660c08f4ff5354c2024104396637685dda6448c5924887c81d783574d0d"
+  },
+  "bridge-negatives": {
+    "status": "passed",
+    "cases": 6,
+    "proof_sha256": "e8a82e94d41febac38443923f83e1a8ecf2c4baff680191c8b7d5b337fe409f1"
+  },
+  "mixed-revision": {
+    "status": "passed",
+    "cases": 9,
+    "proof_sha256": "8d7b323bf39467614008e04eb4b4eb9aba6a97045f26b9812b83185b2b940c90"
+  },
+  "service-fault": {
+    "status": "passed",
+    "cases": 2,
+    "proof_sha256": "a2b8994e204ad72d1d85161e140b3a5b87ce4fefa2a71de6cdf3b5d9764b42e3"
+  },
+  "native-metric-stdio": {
+    "status": "passed",
+    "cases": 26,
+    "proof_sha256": "2aca331c6e219af0503eaa48aff74951e5c91694e5912f6a698a86a612aa9a6f"
+  },
+  "finished_ns": 1792057645199212000
+}

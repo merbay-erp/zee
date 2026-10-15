@@ -1,0 +1,203 @@
+{
+  "schema": "zee-native-metric-stdio-1",
+  "status": "passed",
+  "expected": "quiet",
+  "fixture_source_sha256": "65b5ba8204e9dedfb040e7ad3315c31678ba57c94e5b924c0fa63ff42a354a35",
+  "binary_sha256": "398a706f588fba06b5cadacb32af01714c7dd875a4c40a86b35137a1c7227e87",
+  "sources": {
+    "scripts/worker-supervisor.py": "560bec4e4e36d2aa856936d9d32412bb9106b61b25a871495287e2287e3c6642",
+    "scripts/tests/native-metric-stdio-test.py": "bfa82fc4d2cb0318dbdd76805538723fa75f351a4d3fc7ee2e087ddb7ba73a97",
+    "compiler/src/main.rs": "5eaf672be451213e79158dc01d7744e0363582d79d2393e7ddcf8db9f0dd2270",
+    "compiler/src/web_listener.rs": "35cd5994a012174fe8bc3f0e2b6a939d24d2a5c1616ca4388ebc1d95531dec03",
+    "compiler/src/web_metrikleri.rs": "3aadbf16d56004b5a72958cea0262d746f54f61000520f1fb58b0e6315ccfc91"
+  },
+  "cases": [
+    {
+      "name": "valid_metric_role_executes_actual_source",
+      "passed": true,
+      "exit": 0
+    },
+    {
+      "name": "--web-listener-fd-stdout-spaced",
+      "passed": true,
+      "exit": 2,
+      "control_bytes": 0,
+      "control_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "--web-listener-fd-stdout-equals",
+      "passed": true,
+      "exit": 2,
+      "control_bytes": 0,
+      "control_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "--web-listener-fd-stdout-invalid-lateral",
+      "passed": true,
+      "exit": 2,
+      "control_bytes": 0,
+      "control_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "--web-listener-fd-stderr-spaced",
+      "passed": true,
+      "exit": 2,
+      "control_bytes": 0,
+      "control_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "--web-listener-fd-stderr-equals",
+      "passed": true,
+      "exit": 2,
+      "control_bytes": 0,
+      "control_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "--web-listener-fd-stderr-invalid-lateral",
+      "passed": true,
+      "exit": 2,
+      "control_bytes": 0,
+      "control_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "--web-ready-fd-stdout-spaced",
+      "passed": true,
+      "exit": 2,
+      "control_bytes": 0,
+      "control_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "--web-ready-fd-stdout-equals",
+      "passed": true,
+      "exit": 2,
+      "control_bytes": 0,
+      "control_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "--web-ready-fd-stdout-invalid-lateral",
+      "passed": true,
+      "exit": 2,
+      "control_bytes": 0,
+      "control_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "--web-ready-fd-stderr-spaced",
+      "passed": true,
+      "exit": 2,
+      "control_bytes": 0,
+      "control_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "--web-ready-fd-stderr-equals",
+      "passed": true,
+      "exit": 2,
+      "control_bytes": 0,
+      "control_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "--web-ready-fd-stderr-invalid-lateral",
+      "passed": true,
+      "exit": 2,
+      "control_bytes": 0,
+      "control_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "--web-activate-fd-stdout-spaced",
+      "passed": true,
+      "exit": 2,
+      "control_bytes": 0,
+      "control_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "--web-activate-fd-stdout-equals",
+      "passed": true,
+      "exit": 2,
+      "control_bytes": 0,
+      "control_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "--web-activate-fd-stdout-invalid-lateral",
+      "passed": true,
+      "exit": 2,
+      "control_bytes": 0,
+      "control_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "--web-activate-fd-stderr-spaced",
+      "passed": true,
+      "exit": 2,
+      "control_bytes": 0,
+      "control_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "--web-activate-fd-stderr-equals",
+      "passed": true,
+      "exit": 2,
+      "control_bytes": 0,
+      "control_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "--web-activate-fd-stderr-invalid-lateral",
+      "passed": true,
+      "exit": 2,
+      "control_bytes": 0,
+      "control_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "--web-metrik-fd-stdout-spaced",
+      "passed": true,
+      "exit": 2,
+      "control_bytes": 0,
+      "control_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "--web-metrik-fd-stdout-equals",
+      "passed": true,
+      "exit": 2,
+      "control_bytes": 0,
+      "control_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "--web-metrik-fd-stdout-invalid-lateral",
+      "passed": true,
+      "exit": 2,
+      "control_bytes": 0,
+      "control_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "--web-metrik-fd-stderr-spaced",
+      "passed": true,
+      "exit": 2,
+      "control_bytes": 0,
+      "control_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "--web-metrik-fd-stderr-equals",
+      "passed": true,
+      "exit": 2,
+      "control_bytes": 0,
+      "control_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "--web-metrik-fd-stderr-invalid-lateral",
+      "passed": true,
+      "exit": 2,
+      "control_bytes": 0,
+      "control_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "ordinary_cli_error_remains_diagnostic",
+      "passed": true
+    }
+  ],
+  "build": {
+    "schema": "zee-build-v1",
+    "version": "0.8.0-dev",
+    "source_sha": "66e4149e53451111d153f47283c219079a8d1cab",
+    "source_date": "2026-10-15",
+    "channel": "development",
+    "dirty": false
+  },
+  "source_pins_unchanged": true,
+  "owned_handles_reaped": true
+}

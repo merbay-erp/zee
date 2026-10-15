@@ -1,0 +1,15 @@
+{
+  "source_sha": "66e4149e53451111d153f47283c219079a8d1cab",
+  "source_clean": true,
+  "profile": {
+    "opt_level": "3",
+    "debuginfo": 0,
+    "debug_assertions": false,
+    "overflow_checks": false,
+    "test": true
+  },
+  "binary": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-common/lsp_artimli_testi-release",
+  "binary_sha256": "a5a1aaf17ee6bd4d48169b3c8e948961ac4df62e412598a380cd6040311d118a",
+  "cargo_build_log_sha256": "85ce2f118516fae3a9c396d54fe6d1ce825afc77a98448956f24827b7783c0fc",
+  "measurement_executed": false
+}

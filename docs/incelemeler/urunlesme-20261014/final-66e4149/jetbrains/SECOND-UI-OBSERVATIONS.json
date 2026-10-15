@@ -1,0 +1,73 @@
+{
+  "schema": "zee-curated-native-ui-observation-1",
+  "source_sha": "66e4149e53451111d153f47283c219079a8d1cab",
+  "interface": "CUA native accessibility and screenshot",
+  "raw_capture_available_in_tool_history": true,
+  "not_full_raw_trace_export": true,
+  "profile_reused_from_first_fresh_S3_session": true,
+  "launcher_command_unchanged": "\"${PROJECT_DIR}/.zee-araclar/zee\" lsp",
+  "input": "isim \"Ayşe\" ols",
+  "completion": {
+    "time": "2026-10-15 13:05:28 Europe/Istanbul",
+    "request": "textDocument/completion",
+    "id": 2,
+    "position": {
+      "line": 0,
+      "character": 15
+    },
+    "triggerKind": 1,
+    "response_ms": 0,
+    "candidate_count_observed_by_AX_regex": 111,
+    "selected": "olsun",
+    "didChange_insert": "un",
+    "result": "isim \"Ayşe\" olsun"
+  },
+  "diagnostics": [
+    {
+      "time": "13:05:19",
+      "code": "S004",
+      "severity": 1
+    },
+    {
+      "time": "13:05:28",
+      "code": "A012",
+      "severity": 2
+    },
+    {
+      "time": "13:05:37",
+      "diagnostics": []
+    },
+    {
+      "time": "13:05:41",
+      "diagnostics": []
+    }
+  ],
+  "formatting": {
+    "time": "13:05:41",
+    "request": "textDocument/formatting",
+    "id": 3,
+    "response_ms": 1,
+    "tabSize": 4,
+    "insertSpaces": true,
+    "input": "isim    \"Ayşe\"    olsun\nisim yaz",
+    "range": {
+      "start": {
+        "line": 0,
+        "character": 0
+      },
+      "end": {
+        "line": 1,
+        "character": 8
+      }
+    },
+    "newText": "isim \"Ayşe\" olsun\nisim yaz\n",
+    "editor_result_equal": true
+  },
+  "shutdown_trace_excerpt": "[Trace - 13:06:03] Sending request 'shutdown - (4)'.\nParams: null\n\n[Trace - 13:06:03] Received response 'shutdown - (4)' in 0ms.\nNo response returned.\n\n[Trace - 13:06:03] Sending notification 'exit'\nParams: null",
+  "server_ui_state_after_stop": "disabled",
+  "normal_ide_quit": "Cmd+Q, Confirm Exit, Exit; native app quit; original owned controller exit 0 and reaped",
+  "compiler_diagnostics_empty_after_format": true,
+  "IDE_spelling_inspections_remaining": 4,
+  "special_C1_quickfix_claim": false,
+  "controller_closed_sha256": "7d068afb8e475875f22c4c0f573463f121cd6ba20e6478f9dc28c608e68e117c"
+}

@@ -72,3 +72,7 @@ Driver ham Cookie/CSRF değerini loglamaz. Native uygulamanın private `.zee`
 runtime state'i synthetic oturum anahtarları/özetleri içerebilir; state korunması
 bu testin amacı olsa da raw runtime dosyaları Git'e/evidence metadata alt kümesine
 kopyalanmaz. Yalnız hash/fixed sonuçlar arşivlenir; output parent0700 kalır.
+
+## S3 yerel kabul kanıtı
+
+[Exact S3 kabulü ve açık sınırlar](urunlesme-s3-kabul-20261015.md) gerçek canonical/native/IDE ve ortak kapıları bağlar; genel ürün/platform/yayın kabulü değildir.

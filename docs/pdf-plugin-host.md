@@ -106,3 +106,7 @@ K-275 fixed trusted PDF/asset sınırı korunur. Keyfi saldırgan PDF, form/imza
 PDF koruma, genel extension ABI, gerçek ürün/catalog entegrasyonu, publisher
 kararı, P08 ve fiziksel/diğer platform kabulü açık kalır. Kaynak değişmiş yeni
 K-281 için önceki clean-S kampanyaları yeni finalclean kabulü değildir.
+
+## S3 yerel kabul kanıtı
+
+[Exact S3 kabulü ve açık sınırlar](urunlesme-s3-kabul-20261015.md) gerçek canonical/native/IDE ve ortak kapıları bağlar; genel ürün/platform/yayın kabulü değildir.

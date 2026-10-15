@@ -1,0 +1,116 @@
+{
+  "schema": "zee-module-sql-native-tests-1",
+  "status": "passed",
+  "cases": [
+    {
+      "name": "two-generic-schemas-native-DDL-and-project-registry",
+      "passed": true
+    },
+    {
+      "name": "actual-parameterized-create-read-list-two-types-and-injection-data",
+      "passed": true
+    },
+    {
+      "name": "actual-update-delete-independent-readonly-observer",
+      "passed": true
+    },
+    {
+      "name": "actual-HTTP-module-list-and-live-host-transition-lock",
+      "passed": true
+    },
+    {
+      "name": "real-down-archive-up-reapply-data-preserved-ledger-four",
+      "passed": true
+    },
+    {
+      "name": "repeat-namespace-applied-noop-and-source-drift-reject-without-mutation",
+      "passed": true
+    },
+    {
+      "name": "actual-committed-write-lost-receipt-persistent-block-readonly-reviewed-no-replay",
+      "passed": true
+    },
+    {
+      "name": "actual-migration-committed-filesystem-fault-readonly-ledger-reconcile",
+      "passed": true
+    },
+    {
+      "name": "real-DDL-collision-rollback-ledger-unchanged-pending-retained-no-adoption",
+      "passed": true
+    }
+  ],
+  "source_files": [
+    {
+      "path": "scripts/modul-sql-yoneticisi.py",
+      "sha256": "643400031995305b6078439d74583c438f1e4c329615a6fd3df6c2d2a6bb1da5"
+    },
+    {
+      "path": "scripts/modul-yoneticisi.py",
+      "sha256": "84752ef56d5c1d347f2e211ebe721def648aa5e496df1bd8bfec2375933237b6"
+    },
+    {
+      "path": "scripts/lifecycle_core.py",
+      "sha256": "e76fe65b6103fc4732aafc4468afc5bbf3d0699a0f79d7f74879165636ebb1a9"
+    },
+    {
+      "path": "scripts/tests/modul-sql-native.py",
+      "sha256": "b99204339e7e34a8188ecd647db23e477d60bd7f848ad3f3661b18ff784367a3"
+    },
+    {
+      "path": "scripts/tests/modul-sql-test.py",
+      "sha256": "696ba09e70770cef4b2244b8afb8d7138f546e87ff68681a85b0f1f709fce6ae"
+    },
+    {
+      "path": "scripts/postgresql-tls-ci.py",
+      "sha256": "8ef71f0070b9e954b70d0ec24c50c0285b4bfb76de4ed40490efd9eac78cad77"
+    },
+    {
+      "path": "scripts/postgresql-tls11-control.py",
+      "sha256": "cdf477d154f9fe11086c4829b34b9a412156feabdee1404b5bd863026f2ba639"
+    },
+    {
+      "path": "golden/module-sql/news.json",
+      "sha256": "aa10848e2b134c0556afe8ced867891c4959fc4ba582b4a4401b747c9857b363"
+    },
+    {
+      "path": "golden/module-sql/stock.json",
+      "sha256": "fd9dd2ad5ba17fb6fd9237cf8c39a34d15c55823052b10a722dec7598def69b8"
+    }
+  ],
+  "postgres_binary_pins": {
+    "postgres": "9b89cfcd7b54a581c50c2fc5c3010f3ae0755635958d5789886718da22052fbd",
+    "initdb": "c960be8780e673d65c97f78c54bd3438525e1de6f2822257b189effc8b48b740",
+    "pg_ctl": "7c052138b54426bb3666814f25374a84cc4789bc0400ebf50dedca627e8563da",
+    "psql": "c63479d6b17829552f52ac8f083b3bc4d6564dbea39eb64ffa01c150dc43d2af"
+  },
+  "mode": "clean-exact",
+  "build": {
+    "schema": "zee-build-v1",
+    "version": "0.8.0-dev",
+    "source_sha": "66e4149e53451111d153f47283c219079a8d1cab",
+    "source_date": "2026-10-15",
+    "channel": "development",
+    "dirty": false
+  },
+  "binary_sha256": "398a706f588fba06b5cadacb32af01714c7dd875a4c40a86b35137a1c7227e87",
+  "source_start": {
+    "head": "66e4149e53451111d153f47283c219079a8d1cab",
+    "clean": true
+  },
+  "framework_head": "66e4149e53451111d153f47283c219079a8d1cab",
+  "postgres_version": "postgres (PostgreSQL) 16.15",
+  "source_end": {
+    "head": "66e4149e53451111d153f47283c219079a8d1cab",
+    "clean": true
+  },
+  "case_count": 9,
+  "failed": 0,
+  "source_end_unchanged": true,
+  "binary_end_unchanged": true,
+  "unknown_write_replay_count": 0,
+  "elapsed_seconds": 3.817335500032641,
+  "cleanup": [
+    "owned-pg-closed"
+  ],
+  "temporary_private_root_removed": true
+}

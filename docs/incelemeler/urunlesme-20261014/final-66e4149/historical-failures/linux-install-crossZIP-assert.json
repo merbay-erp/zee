@@ -1,0 +1,8 @@
+{
+  "source_sha": "66e4149e53451111d153f47283c219079a8d1cab",
+  "status": "failed",
+  "guest_leaf": "/home/mustafaerbay.guest/zee-k276/service-acceptance-66e4149e5345-1792057016809668000",
+  "started_ns": 1792060129813676000,
+  "failure_type": "Reject",
+  "finished_ns": 1792060130271340000
+}

@@ -1,0 +1,12 @@
+{
+  "schema": "zee-evidence-raw-scope-1",
+  "source_sha": "66e4149e53451111d153f47283c219079a8d1cab",
+  "full_external_bundle": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-rc-bundle",
+  "manifest_sha256": "1dba993afeaccbe11b9daabffba5c477d1371f044c9ea27dbc44aafe392c6fa0",
+  "files": 7506,
+  "indexed_raw_bytes": 10239777,
+  "all_raw_hashes_independently_rechecked": true,
+  "source_seed_imported": false,
+  "remote_uploaded": false,
+  "tracked_subset": "Selected result/provenance/manifest records and reversible Miri logs only; complete corpus, ASan build/run logs and exact-S3 gate text stay external."
+}

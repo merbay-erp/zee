@@ -1,0 +1,194 @@
+{
+  "source_sha": "66e4149e53451111d153f47283c219079a8d1cab",
+  "status": "failed",
+  "commands": [
+    {
+      "label": "vm-list",
+      "argv": [
+        "/opt/homebrew/bin/limactl",
+        "list",
+        "k276",
+        "--json"
+      ],
+      "timeout": 30
+    },
+    {
+      "label": "bundle",
+      "argv": [
+        "git",
+        "-C",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+        "bundle",
+        "create",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-linux-native/source.bundle",
+        "HEAD"
+      ],
+      "timeout": 120
+    },
+    {
+      "label": "mkdir",
+      "argv": [
+        "/opt/homebrew/bin/limactl",
+        "shell",
+        "--workdir=/tmp",
+        "k276",
+        "--",
+        "python3",
+        "-I",
+        "-B",
+        "-c",
+        "from pathlib import Path; import os; p=Path('/home/mustafaerbay.guest/zee-k276/service-acceptance-66e4149e5345-1792057016809668000'); assert p.parent.resolve()==p.parent and p.parent.stat().st_uid==os.geteuid()==501; p.mkdir(mode=0o700)"
+      ],
+      "timeout": 30
+    },
+    {
+      "label": "copy-source.bundle",
+      "argv": [
+        "/opt/homebrew/bin/limactl",
+        "copy",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-linux-native/source.bundle",
+        "k276:/home/mustafaerbay.guest/zee-k276/service-acceptance-66e4149e5345-1792057016809668000/source.bundle"
+      ],
+      "timeout": 180
+    },
+    {
+      "label": "copy-guest.py",
+      "argv": [
+        "/opt/homebrew/bin/limactl",
+        "copy",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-acceptance-drivers/guest.py",
+        "k276:/home/mustafaerbay.guest/zee-k276/service-acceptance-66e4149e5345-1792057016809668000/guest.py"
+      ],
+      "timeout": 180
+    },
+    {
+      "label": "verify-guest-driver",
+      "argv": [
+        "/opt/homebrew/bin/limactl",
+        "shell",
+        "--workdir=/tmp",
+        "k276",
+        "--",
+        "python3",
+        "-I",
+        "-B",
+        "-c",
+        "from pathlib import Path; import hashlib; assert hashlib.sha256(Path('/home/mustafaerbay.guest/zee-k276/service-acceptance-66e4149e5345-1792057016809668000/guest.py').read_bytes()).hexdigest()=='a21264d763e275f778325b4af717ba8cc8556bab9f08ecba1f5f7664feac6be3'"
+      ],
+      "timeout": 30
+    },
+    {
+      "label": "build",
+      "argv": [
+        "/opt/homebrew/bin/limactl",
+        "shell",
+        "--workdir=/tmp",
+        "k276",
+        "--",
+        "python3",
+        "-I",
+        "-B",
+        "/home/mustafaerbay.guest/zee-k276/service-acceptance-66e4149e5345-1792057016809668000/guest.py",
+        "build",
+        "--sha",
+        "66e4149e53451111d153f47283c219079a8d1cab",
+        "--leaf",
+        "/home/mustafaerbay.guest/zee-k276/service-acceptance-66e4149e5345-1792057016809668000",
+        "--bundle-sha256",
+        "e49250c7fa7e7e15f940ad36f21f3bcea2dae4363d2ab4fbfc7652d0866d6b41"
+      ],
+      "timeout": 2100
+    },
+    {
+      "label": "receipt-build",
+      "argv": [
+        "/opt/homebrew/bin/limactl",
+        "shell",
+        "--workdir=/tmp",
+        "k276",
+        "--",
+        "python3",
+        "-I",
+        "-B",
+        "-c",
+        "from pathlib import Path; print(Path('/home/mustafaerbay.guest/zee-k276/service-acceptance-66e4149e5345-1792057016809668000/build-RECEIPT.json').read_text())"
+      ],
+      "timeout": 30
+    },
+    {
+      "label": "K282",
+      "argv": [
+        "/opt/homebrew/bin/limactl",
+        "shell",
+        "--workdir=/tmp",
+        "k276",
+        "--",
+        "python3",
+        "-I",
+        "-B",
+        "/home/mustafaerbay.guest/zee-k276/service-acceptance-66e4149e5345-1792057016809668000/guest.py",
+        "K282",
+        "--sha",
+        "66e4149e53451111d153f47283c219079a8d1cab",
+        "--leaf",
+        "/home/mustafaerbay.guest/zee-k276/service-acceptance-66e4149e5345-1792057016809668000",
+        "--bundle-sha256",
+        "e49250c7fa7e7e15f940ad36f21f3bcea2dae4363d2ab4fbfc7652d0866d6b41"
+      ],
+      "timeout": 2100
+    },
+    {
+      "label": "receipt-K282",
+      "argv": [
+        "/opt/homebrew/bin/limactl",
+        "shell",
+        "--workdir=/tmp",
+        "k276",
+        "--",
+        "python3",
+        "-I",
+        "-B",
+        "-c",
+        "from pathlib import Path; print(Path('/home/mustafaerbay.guest/zee-k276/service-acceptance-66e4149e5345-1792057016809668000/K282-RECEIPT.json').read_text())"
+      ],
+      "timeout": 30
+    },
+    {
+      "label": "proof-K282",
+      "argv": [
+        "/opt/homebrew/bin/limactl",
+        "copy",
+        "k276:/home/mustafaerbay.guest/zee-k276/service-acceptance-66e4149e5345-1792057016809668000/k282-native/proof.json",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-linux-native/K282-proof.json"
+      ],
+      "timeout": 60
+    },
+    {
+      "label": "K283",
+      "argv": [
+        "/opt/homebrew/bin/limactl",
+        "shell",
+        "--workdir=/tmp",
+        "k276",
+        "--",
+        "python3",
+        "-I",
+        "-B",
+        "/home/mustafaerbay.guest/zee-k276/service-acceptance-66e4149e5345-1792057016809668000/guest.py",
+        "K283",
+        "--sha",
+        "66e4149e53451111d153f47283c219079a8d1cab",
+        "--leaf",
+        "/home/mustafaerbay.guest/zee-k276/service-acceptance-66e4149e5345-1792057016809668000",
+        "--bundle-sha256",
+        "e49250c7fa7e7e15f940ad36f21f3bcea2dae4363d2ab4fbfc7652d0866d6b41"
+      ],
+      "timeout": 2100
+    }
+  ],
+  "guest_leaf": "/home/mustafaerbay.guest/zee-k276/service-acceptance-66e4149e5345-1792057016809668000",
+  "bundle_sha256": "e49250c7fa7e7e15f940ad36f21f3bcea2dae4363d2ab4fbfc7652d0866d6b41",
+  "guest_driver_sha256": "a21264d763e275f778325b4af717ba8cc8556bab9f08ecba1f5f7664feac6be3",
+  "failure_type": "Reject",
+  "finished_ns": 1792057682835409000
+}

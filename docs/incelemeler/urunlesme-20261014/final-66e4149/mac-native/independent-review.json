@@ -1,0 +1,85 @@
+{
+  "schema": "zee-root-independent-native-review-1",
+  "status": "passed",
+  "source_sha": "66e4149e53451111d153f47283c219079a8d1cab",
+  "canonical_delivery_files_checked": 12,
+  "proofs": {
+    "composed-tr-en": {
+      "proof_sha256": "d870492fb0c5856ce5a6c6ae4fb5740aa802f1c287498661fd7d00abc3999dd7",
+      "cases": 10,
+      "producer_status": "passed"
+    },
+    "signed-pdf": {
+      "proof_sha256": "e37325168d17f075cb059d9fb9297cc67ba1a7af72edefa2c2e86e923b04dfb8",
+      "cases": 9,
+      "producer_status": "passed"
+    },
+    "module-sql": {
+      "proof_sha256": "3dfa46df7c05337f3ecc8031c8d56e505d17f61a16d691fa258f5e2f71c883ef",
+      "cases": 9,
+      "producer_status": "passed"
+    },
+    "content-starter": {
+      "proof_sha256": "7f269184ae9380304b754ce249b0ca2a9004d495c96582afc4351d84a2d35546",
+      "cases": 14,
+      "producer_status": "passed"
+    },
+    "source-coverage": {
+      "proof_sha256": "df828300f1cc748f3798d05f76ab1991b730c91e8af708202433eb337a170a3f",
+      "cases": 3,
+      "producer_status": "passed-short-candidate"
+    },
+    "bridge-negatives": {
+      "proof_sha256": "e8a82e94d41febac38443923f83e1a8ecf2c4baff680191c8b7d5b337fe409f1",
+      "cases": 6,
+      "producer_status": "passed"
+    },
+    "mixed-revision": {
+      "proof_sha256": "8d7b323bf39467614008e04eb4b4eb9aba6a97045f26b9812b83185b2b940c90",
+      "cases": 9,
+      "producer_status": "passed"
+    },
+    "service-fault": {
+      "proof_sha256": "a2b8994e204ad72d1d85161e140b3a5b87ce4fefa2a71de6cdf3b5d9764b42e3",
+      "cases": 2,
+      "producer_status": "passed"
+    },
+    "native-metric-stdio": {
+      "proof_sha256": "2aca331c6e219af0503eaa48aff74951e5c91694e5912f6a698a86a612aa9a6f",
+      "cases": 26,
+      "producer_status": "passed"
+    },
+    "web-bridge": {
+      "proof_sha256": "6a41b660c08f4ff5354c2024104396637685dda6448c5924887c81d783574d0d",
+      "cases": 4,
+      "producer_status": "passed"
+    }
+  },
+  "checked_files": [
+    "s3-66e4149-macos-delivery/binaries/GIT_SHA",
+    "s3-66e4149-macos-delivery/binaries/SHA256SUMS",
+    "s3-66e4149-macos-delivery/binaries/dil",
+    "s3-66e4149-macos-delivery/binaries/dillsp",
+    "s3-66e4149-macos-delivery/binaries/provenance.intoto.json",
+    "s3-66e4149-macos-delivery/binaries/sbom.spdx.json",
+    "s3-66e4149-macos-delivery/build.log",
+    "s3-66e4149-macos-delivery/bundle-verify.log",
+    "s3-66e4149-macos-delivery/fsck.log",
+    "s3-66e4149-macos-delivery/zee-kaynak-66e4149e53451111d153f47283c219079a8d1cab.zip",
+    "s3-66e4149-macos-delivery/zee-kaynak-66e4149e53451111d153f47283c219079a8d1cab.zip.sha256",
+    "s3-66e4149-macos-delivery/zee.bundle",
+    "s3-66e4149-mac-native/composed-tr-en/proof.json",
+    "s3-66e4149-mac-native/signed-pdf/proof.json",
+    "s3-66e4149-mac-native/module-sql/proof.json",
+    "s3-66e4149-mac-native/content-starter/proof.json",
+    "s3-66e4149-mac-native/source-coverage/proof.json",
+    "s3-66e4149-mac-native/bridge-negatives/proof.json",
+    "s3-66e4149-mac-native/mixed-revision/proof.json",
+    "s3-66e4149-mac-native/service-fault/proof.json",
+    "s3-66e4149-mac-native/native-metric-stdio/proof.json",
+    "s3-66e4149-mac-native/web-bridge/results/proof.json",
+    "s3-66e4149-dependency-probe/EXACT-SOURCE.json",
+    "s3-66e4149-budget-probe/EXACT-SOURCE.json"
+  ],
+  "scope": "Second-wave exact-S3 native cohorts and canonical macOS delivery. Producer source-coverage candidate flag preserved; clean source and canonical binary independently bound. No physical-host, live-provider or product adoption claim."
+}

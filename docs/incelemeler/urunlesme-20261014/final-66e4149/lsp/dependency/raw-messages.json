@@ -1,0 +1,341 @@
+[
+  {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {
+      "capabilities": {
+        "textDocumentSync": 2,
+        "completionProvider": {},
+        "hoverProvider": true,
+        "documentFormattingProvider": true,
+        "definitionProvider": true,
+        "renameProvider": true
+      },
+      "serverInfo": {
+        "name": "dillsp",
+        "version": "0.8.0-dev",
+        "zeeBuild": {
+          "schema": "zee-build-v1",
+          "version": "0.8.0-dev",
+          "source_sha": "66e4149e53451111d153f47283c219079a8d1cab",
+          "source_date": "2026-10-15",
+          "channel": "development",
+          "dirty": false
+        }
+      }
+    }
+  },
+  {
+    "jsonrpc": "2.0",
+    "method": "textDocument/publishDiagnostics",
+    "params": {
+      "uri": "file:///Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-dependency-probe/project/ana.dil",
+      "diagnostics": []
+    }
+  },
+  {
+    "jsonrpc": "2.0",
+    "id": 11,
+    "result": {
+      "contents": {
+        "kind": "markdown",
+        "value": "Tan\u0131m (sat\u0131r 2):\n```\nsonu\u00e7 de\u011fer ver olsun\n```"
+      }
+    }
+  },
+  {
+    "jsonrpc": "2.0",
+    "method": "textDocument/publishDiagnostics",
+    "params": {
+      "uri": "file:///Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-dependency-probe/project/yardimci.dil",
+      "diagnostics": [
+        {
+          "range": {
+            "start": {
+              "line": 0,
+              "character": 0
+            },
+            "end": {
+              "line": 0,
+              "character": 11
+            }
+          },
+          "severity": 1,
+          "code": "S002",
+          "source": "dil",
+          "message": "Metin sabiti kapanmadan sat\u0131r bitti.\n\u00d6neri: Metnin sonuna kapatan \" i\u015faretini ekle."
+        }
+      ]
+    }
+  },
+  {
+    "jsonrpc": "2.0",
+    "method": "textDocument/publishDiagnostics",
+    "params": {
+      "uri": "file:///Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-dependency-probe/project/ana.dil",
+      "diagnostics": [
+        {
+          "range": {
+            "start": {
+              "line": 0,
+              "character": 0
+            },
+            "end": {
+              "line": 0,
+              "character": 24
+            }
+          },
+          "severity": 1,
+          "code": "S002",
+          "source": "dil",
+          "message": "yardimci birimi, sat\u0131r 1: Metin sabiti kapanmadan sat\u0131r bitti.\n\u00d6neri: Metnin sonuna kapatan \" i\u015faretini ekle."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 1,
+              "character": 12
+            },
+            "end": {
+              "line": 1,
+              "character": 15
+            }
+          },
+          "severity": 1,
+          "code": "S015",
+          "source": "dil",
+          "message": "\u0130ki de\u011fer yan yana geldi; aralar\u0131na \"ile\" koy ya da bilinen bir kal\u0131p kullan.\n\u00d6neri: \u00d6rnek: de\u011fer ile ver \u2014 ya da: say\u0131lar\u0131n adedi, a ile b nin toplam\u0131"
+        }
+      ]
+    }
+  },
+  {
+    "jsonrpc": "2.0",
+    "id": 12,
+    "result": {
+      "contents": {
+        "kind": "markdown",
+        "value": "Tan\u0131m (sat\u0131r 2):\n```\nsonu\u00e7 de\u011fer ver olsun\n```"
+      }
+    }
+  },
+  {
+    "jsonrpc": "2.0",
+    "method": "textDocument/publishDiagnostics",
+    "params": {
+      "uri": "file:///Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-dependency-probe/project/yardimci.dil",
+      "diagnostics": []
+    }
+  },
+  {
+    "jsonrpc": "2.0",
+    "method": "textDocument/publishDiagnostics",
+    "params": {
+      "uri": "file:///Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-dependency-probe/project/ana.dil",
+      "diagnostics": []
+    }
+  },
+  {
+    "jsonrpc": "2.0",
+    "id": 13,
+    "result": {
+      "contents": {
+        "kind": "markdown",
+        "value": "Tan\u0131m (sat\u0131r 2):\n```\nsonu\u00e7 de\u011fer ver olsun\n```"
+      }
+    }
+  },
+  {
+    "jsonrpc": "2.0",
+    "method": "textDocument/publishDiagnostics",
+    "params": {
+      "uri": "file:///Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-dependency-probe/project/yardimci.dil",
+      "diagnostics": [
+        {
+          "range": {
+            "start": {
+              "line": 0,
+              "character": 0
+            },
+            "end": {
+              "line": 0,
+              "character": 11
+            }
+          },
+          "severity": 1,
+          "code": "S002",
+          "source": "dil",
+          "message": "Metin sabiti kapanmadan sat\u0131r bitti.\n\u00d6neri: Metnin sonuna kapatan \" i\u015faretini ekle."
+        }
+      ]
+    }
+  },
+  {
+    "jsonrpc": "2.0",
+    "method": "textDocument/publishDiagnostics",
+    "params": {
+      "uri": "file:///Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-dependency-probe/project/ana.dil",
+      "diagnostics": [
+        {
+          "range": {
+            "start": {
+              "line": 0,
+              "character": 0
+            },
+            "end": {
+              "line": 0,
+              "character": 24
+            }
+          },
+          "severity": 1,
+          "code": "S002",
+          "source": "dil",
+          "message": "yardimci birimi, sat\u0131r 1: Metin sabiti kapanmadan sat\u0131r bitti.\n\u00d6neri: Metnin sonuna kapatan \" i\u015faretini ekle."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 1,
+              "character": 12
+            },
+            "end": {
+              "line": 1,
+              "character": 15
+            }
+          },
+          "severity": 1,
+          "code": "S015",
+          "source": "dil",
+          "message": "\u0130ki de\u011fer yan yana geldi; aralar\u0131na \"ile\" koy ya da bilinen bir kal\u0131p kullan.\n\u00d6neri: \u00d6rnek: de\u011fer ile ver \u2014 ya da: say\u0131lar\u0131n adedi, a ile b nin toplam\u0131"
+        }
+      ]
+    }
+  },
+  {
+    "jsonrpc": "2.0",
+    "id": 14,
+    "result": {
+      "contents": {
+        "kind": "markdown",
+        "value": "Tan\u0131m (sat\u0131r 2):\n```\nsonu\u00e7 de\u011fer ver olsun\n```"
+      }
+    }
+  },
+  {
+    "jsonrpc": "2.0",
+    "id": 15,
+    "result": {
+      "contents": {
+        "kind": "markdown",
+        "value": "Tan\u0131m (sat\u0131r 2):\n```\nsonu\u00e7 de\u011fer ver olsun\n```"
+      }
+    }
+  },
+  {
+    "jsonrpc": "2.0",
+    "method": "textDocument/publishDiagnostics",
+    "params": {
+      "uri": "file:///Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-dependency-probe/project/ana.dil",
+      "diagnostics": [
+        {
+          "range": {
+            "start": {
+              "line": 0,
+              "character": 0
+            },
+            "end": {
+              "line": 0,
+              "character": 24
+            }
+          },
+          "severity": 1,
+          "code": "S002",
+          "source": "dil",
+          "message": "yardimci birimi, sat\u0131r 1: Metin sabiti kapanmadan sat\u0131r bitti.\n\u00d6neri: Metnin sonuna kapatan \" i\u015faretini ekle."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 1,
+              "character": 12
+            },
+            "end": {
+              "line": 1,
+              "character": 15
+            }
+          },
+          "severity": 1,
+          "code": "S015",
+          "source": "dil",
+          "message": "\u0130ki de\u011fer yan yana geldi; aralar\u0131na \"ile\" koy ya da bilinen bir kal\u0131p kullan.\n\u00d6neri: \u00d6rnek: de\u011fer ile ver \u2014 ya da: say\u0131lar\u0131n adedi, a ile b nin toplam\u0131"
+        }
+      ]
+    }
+  },
+  {
+    "jsonrpc": "2.0",
+    "method": "textDocument/publishDiagnostics",
+    "params": {
+      "uri": "file:///Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-dependency-probe/project/yardimci.dil",
+      "diagnostics": [
+        {
+          "range": {
+            "start": {
+              "line": 0,
+              "character": 0
+            },
+            "end": {
+              "line": 0,
+              "character": 11
+            }
+          },
+          "severity": 1,
+          "code": "S002",
+          "source": "dil",
+          "message": "Metin sabiti kapanmadan sat\u0131r bitti.\n\u00d6neri: Metnin sonuna kapatan \" i\u015faretini ekle."
+        }
+      ]
+    }
+  },
+  {
+    "jsonrpc": "2.0",
+    "id": 16,
+    "result": {
+      "contents": {
+        "kind": "markdown",
+        "value": "Tan\u0131m (sat\u0131r 2):\n```\nsonu\u00e7 de\u011fer ver olsun\n```"
+      }
+    }
+  },
+  {
+    "jsonrpc": "2.0",
+    "method": "textDocument/publishDiagnostics",
+    "params": {
+      "uri": "file:///Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-dependency-probe/project/yardimci.dil",
+      "diagnostics": []
+    }
+  },
+  {
+    "jsonrpc": "2.0",
+    "method": "textDocument/publishDiagnostics",
+    "params": {
+      "uri": "file:///Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-dependency-probe/project/ana.dil",
+      "diagnostics": []
+    }
+  },
+  {
+    "jsonrpc": "2.0",
+    "id": 17,
+    "result": {
+      "contents": {
+        "kind": "markdown",
+        "value": "Tan\u0131m (sat\u0131r 2):\n```\nsonu\u00e7 de\u011fer ver olsun\n```"
+      }
+    }
+  },
+  {
+    "jsonrpc": "2.0",
+    "id": 100,
+    "result": null
+  }
+]

@@ -1,0 +1,857 @@
+{
+  "status": "passed",
+  "source_sha": "66e4149e53451111d153f47283c219079a8d1cab",
+  "roles": [
+    {
+      "role": "K282",
+      "commands": 134,
+      "cases": 4,
+      "proof_sha256": "ab5d62533f240d098f2340150f1a7fb6a6e9308520304395a6ea0df7a180e658"
+    },
+    {
+      "role": "K283",
+      "commands": 30,
+      "cases": 7,
+      "proof_sha256": "804adc745d98a7fda7c75621c45b35d855b11b8b1e81c098196cd8b9ac063b21"
+    }
+  ],
+  "files": [
+    {
+      "path": "k282-native/proof.json",
+      "sha256": "ab5d62533f240d098f2340150f1a7fb6a6e9308520304395a6ea0df7a180e658",
+      "bytes": 36550
+    },
+    {
+      "path": "k282-native/0001-tracked-consumed-files.log",
+      "sha256": "1c6387befe43abf99f236fab24cfc1f355c614cbaa159865e52c238248dcf182",
+      "bytes": 816
+    },
+    {
+      "path": "k282-native/0002-build.log",
+      "sha256": "b93f1fe3382d9f14a4fd468b2c346388c3e2552fb9e4633da32b70eee3da3b76",
+      "bytes": 169
+    },
+    {
+      "path": "k282-native/0003-manager.log",
+      "sha256": "a4ecc5c87d811bbff7a118c17ef8cf83318cb623a103c15b8549089aa2a7f0ac",
+      "bytes": 8
+    },
+    {
+      "path": "k282-native/0004-owned-PG-tool.log",
+      "sha256": "6c53bcd83bf97a87c9e988a5df37c5959e3e0b9b7322a258f886123029b53843",
+      "bytes": 1134
+    },
+    {
+      "path": "k282-native/0005-owned-PG-tool.log",
+      "sha256": "d85574d6f20d5ea1196036f6bf773aff19e3195a79effa0734cc36a3932cc776",
+      "bytes": 1063
+    },
+    {
+      "path": "k282-native/0006-owned-PG-tool.log",
+      "sha256": "602de092c7c78ff0eb5d6877928bcbdaf5a149dd73b25518de2cf11d368169b3",
+      "bytes": 2128
+    },
+    {
+      "path": "k282-native/0007-owned-PG-tool.log",
+      "sha256": "f08ddac3de021da3a1b364489940aae250c85bafaae29a600c0e67d54e61cc6a",
+      "bytes": 61
+    },
+    {
+      "path": "k282-native/0008-owned-PG-tool.log",
+      "sha256": "74ee8a8659cc5d1be431958f3dbba6a76329d19227b09f13d32e86a4371a1b48",
+      "bytes": 865
+    },
+    {
+      "path": "k282-native/0009-owned-PG-tool.log",
+      "sha256": "66afd0411ccc09366e99fdd99b85f21899c8d2d064f5835126859618802153ad",
+      "bytes": 52
+    },
+    {
+      "path": "k282-native/0010-owned-PG-tool.log",
+      "sha256": "4bbf9e40bb4cab414db862e0f93affb1d83c24ec83285eea9e7c2efbbc84d9fa",
+      "bytes": 28
+    },
+    {
+      "path": "k282-native/0011-SQL-observer.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "k282-native/0012-SQL-observer.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "k282-native/0013-SQL-observer.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "k282-native/0014-native-queue-operation.log",
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+      "bytes": 2
+    },
+    {
+      "path": "k282-native/0015-native-queue-operation.log",
+      "sha256": "53c234e5e8472b6ac51c1ae1cab3fe06fad053beb8ebfd8977b010655bfdd3c3",
+      "bytes": 2
+    },
+    {
+      "path": "k282-native/0016-render-daemon.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "k282-native/0017-verify-daemon.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "k282-native/0018-absent-zee-dispatch.service.log",
+      "sha256": "391bc413c3044926b4afa41806bf4a5c4fad68a3165b8563fe1bffec0792fc76",
+      "bytes": 10
+    },
+    {
+      "path": "k282-native/0019-link-zee-dispatch.service.log",
+      "sha256": "cc0884ee817f586984f6556fa71bd360aa9839756250710f3cd7b0304e1e49ec",
+      "bytes": 201
+    },
+    {
+      "path": "k282-native/0020-start-zee-dispatch.service.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "k282-native/0021-SQL-observer.log",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "bytes": 2
+    },
+    {
+      "path": "k282-native/0022-SQL-observer.log",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "bytes": 2
+    },
+    {
+      "path": "k282-native/0023-SQL-observer.log",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "bytes": 2
+    },
+    {
+      "path": "k282-native/0024-SQL-observer.log",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "bytes": 2
+    },
+    {
+      "path": "k282-native/0025-SQL-observer.log",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "bytes": 2
+    },
+    {
+      "path": "k282-native/0026-SQL-observer.log",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "bytes": 2
+    },
+    {
+      "path": "k282-native/0027-SQL-observer.log",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "bytes": 2
+    },
+    {
+      "path": "k282-native/0028-SQL-observer.log",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "bytes": 2
+    },
+    {
+      "path": "k282-native/0029-SQL-observer.log",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "bytes": 2
+    },
+    {
+      "path": "k282-native/0030-SQL-observer.log",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "bytes": 2
+    },
+    {
+      "path": "k282-native/0031-SQL-observer.log",
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+      "bytes": 2
+    },
+    {
+      "path": "k282-native/0032-SQL-observer.log",
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+      "bytes": 2
+    },
+    {
+      "path": "k282-native/0033-SQL-observer.log",
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+      "bytes": 2
+    },
+    {
+      "path": "k282-native/0034-SQL-observer.log",
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+      "bytes": 2
+    },
+    {
+      "path": "k282-native/0035-SQL-observer.log",
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+      "bytes": 2
+    },
+    {
+      "path": "k282-native/0036-SQL-observer.log",
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+      "bytes": 2
+    },
+    {
+      "path": "k282-native/0037-SQL-observer.log",
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+      "bytes": 2
+    },
+    {
+      "path": "k282-native/0038-SQL-observer.log",
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+      "bytes": 2
+    },
+    {
+      "path": "k282-native/0039-SQL-observer.log",
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+      "bytes": 2
+    },
+    {
+      "path": "k282-native/0040-SQL-observer.log",
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+      "bytes": 2
+    },
+    {
+      "path": "k282-native/0041-SQL-observer.log",
+      "sha256": "53c234e5e8472b6ac51c1ae1cab3fe06fad053beb8ebfd8977b010655bfdd3c3",
+      "bytes": 2
+    },
+    {
+      "path": "k282-native/0042-stop-zee-dispatch.service.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "k282-native/0043-cgroup-zee-dispatch.service.log",
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "bytes": 1
+    },
+    {
+      "path": "k282-native/0044-SQL-observer.log",
+      "sha256": "d117fa006ba9208500b2930ce69cbde436c647afa917cb7396a9bc9111a46dd2",
+      "bytes": 5
+    },
+    {
+      "path": "k282-native/0045-SQL-observer.log",
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+      "bytes": 2
+    },
+    {
+      "path": "k282-native/0046-SQL-observer.log",
+      "sha256": "d117fa006ba9208500b2930ce69cbde436c647afa917cb7396a9bc9111a46dd2",
+      "bytes": 5
+    },
+    {
+      "path": "k282-native/0047-SQL-observer.log",
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+      "bytes": 2
+    },
+    {
+      "path": "k282-native/0048-stop-zee-dispatch.service.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "k282-native/0049-cgroup-zee-dispatch.service.log",
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "bytes": 1
+    },
+    {
+      "path": "k282-native/0050-reload.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "k282-native/0051-released-zee-dispatch.service.log",
+      "sha256": "391bc413c3044926b4afa41806bf4a5c4fad68a3165b8563fe1bffec0792fc76",
+      "bytes": 10
+    },
+    {
+      "path": "k282-native/0052-SQL-observer.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "k282-native/0053-native-queue-operation.log",
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+      "bytes": 2
+    },
+    {
+      "path": "k282-native/0054-render-calendar.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "k282-native/0055-verify-calendar.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "k282-native/0056-calendar-check.log",
+      "sha256": "2682f135589738536c1a9e41d6a22847cebe1e474c6b3af885bb2eb8f3b23b52",
+      "bytes": 101
+    },
+    {
+      "path": "k282-native/0057-absent-zee-dispatch.service.log",
+      "sha256": "391bc413c3044926b4afa41806bf4a5c4fad68a3165b8563fe1bffec0792fc76",
+      "bytes": 10
+    },
+    {
+      "path": "k282-native/0058-absent-zee-dispatch.timer.log",
+      "sha256": "391bc413c3044926b4afa41806bf4a5c4fad68a3165b8563fe1bffec0792fc76",
+      "bytes": 10
+    },
+    {
+      "path": "k282-native/0059-link-zee-dispatch.service.log",
+      "sha256": "39059aff7221367ea24912d49de081e6a98d0afa44a1dc257e58bfe1b28cf0b8",
+      "bytes": 203
+    },
+    {
+      "path": "k282-native/0060-link-zee-dispatch.timer.log",
+      "sha256": "fb9099215cc589804fde33b058e8ebf3d4577943d5c8d0c43a7687e207ea93da",
+      "bytes": 199
+    },
+    {
+      "path": "k282-native/0061-start-zee-dispatch.timer.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "k282-native/0062-SQL-observer.log",
+      "sha256": "ed1a545bb85e55816bbf9566b028b2a0bc456b88f49f6f266c0401048824194b",
+      "bytes": 6
+    },
+    {
+      "path": "k282-native/0063-SQL-observer.log",
+      "sha256": "ed1a545bb85e55816bbf9566b028b2a0bc456b88f49f6f266c0401048824194b",
+      "bytes": 6
+    },
+    {
+      "path": "k282-native/0064-SQL-observer.log",
+      "sha256": "ed1a545bb85e55816bbf9566b028b2a0bc456b88f49f6f266c0401048824194b",
+      "bytes": 6
+    },
+    {
+      "path": "k282-native/0065-SQL-observer.log",
+      "sha256": "ed1a545bb85e55816bbf9566b028b2a0bc456b88f49f6f266c0401048824194b",
+      "bytes": 6
+    },
+    {
+      "path": "k282-native/0066-SQL-observer.log",
+      "sha256": "ed1a545bb85e55816bbf9566b028b2a0bc456b88f49f6f266c0401048824194b",
+      "bytes": 6
+    },
+    {
+      "path": "k282-native/0067-SQL-observer.log",
+      "sha256": "ed1a545bb85e55816bbf9566b028b2a0bc456b88f49f6f266c0401048824194b",
+      "bytes": 6
+    },
+    {
+      "path": "k282-native/0068-SQL-observer.log",
+      "sha256": "ed1a545bb85e55816bbf9566b028b2a0bc456b88f49f6f266c0401048824194b",
+      "bytes": 6
+    },
+    {
+      "path": "k282-native/0069-SQL-observer.log",
+      "sha256": "ed1a545bb85e55816bbf9566b028b2a0bc456b88f49f6f266c0401048824194b",
+      "bytes": 6
+    },
+    {
+      "path": "k282-native/0070-SQL-observer.log",
+      "sha256": "ed1a545bb85e55816bbf9566b028b2a0bc456b88f49f6f266c0401048824194b",
+      "bytes": 6
+    },
+    {
+      "path": "k282-native/0071-SQL-observer.log",
+      "sha256": "ed1a545bb85e55816bbf9566b028b2a0bc456b88f49f6f266c0401048824194b",
+      "bytes": 6
+    },
+    {
+      "path": "k282-native/0072-SQL-observer.log",
+      "sha256": "ed1a545bb85e55816bbf9566b028b2a0bc456b88f49f6f266c0401048824194b",
+      "bytes": 6
+    },
+    {
+      "path": "k282-native/0073-SQL-observer.log",
+      "sha256": "ed1a545bb85e55816bbf9566b028b2a0bc456b88f49f6f266c0401048824194b",
+      "bytes": 6
+    },
+    {
+      "path": "k282-native/0074-SQL-observer.log",
+      "sha256": "ed1a545bb85e55816bbf9566b028b2a0bc456b88f49f6f266c0401048824194b",
+      "bytes": 6
+    },
+    {
+      "path": "k282-native/0075-SQL-observer.log",
+      "sha256": "ed1a545bb85e55816bbf9566b028b2a0bc456b88f49f6f266c0401048824194b",
+      "bytes": 6
+    },
+    {
+      "path": "k282-native/0076-SQL-observer.log",
+      "sha256": "ed1a545bb85e55816bbf9566b028b2a0bc456b88f49f6f266c0401048824194b",
+      "bytes": 6
+    },
+    {
+      "path": "k282-native/0077-SQL-observer.log",
+      "sha256": "ed1a545bb85e55816bbf9566b028b2a0bc456b88f49f6f266c0401048824194b",
+      "bytes": 6
+    },
+    {
+      "path": "k282-native/0078-SQL-observer.log",
+      "sha256": "ed1a545bb85e55816bbf9566b028b2a0bc456b88f49f6f266c0401048824194b",
+      "bytes": 6
+    },
+    {
+      "path": "k282-native/0079-SQL-observer.log",
+      "sha256": "ed1a545bb85e55816bbf9566b028b2a0bc456b88f49f6f266c0401048824194b",
+      "bytes": 6
+    },
+    {
+      "path": "k282-native/0080-SQL-observer.log",
+      "sha256": "2fab15fb1a3d16d011b309eef3ba2e32db1cabf25a1e60264d31ca72e2c8aae3",
+      "bytes": 7
+    },
+    {
+      "path": "k282-native/0081-SQL-observer.log",
+      "sha256": "d117fa006ba9208500b2930ce69cbde436c647afa917cb7396a9bc9111a46dd2",
+      "bytes": 5
+    },
+    {
+      "path": "k282-native/0082-stop-zee-dispatch.timer.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "k282-native/0083-cgroup-zee-dispatch.timer.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "k282-native/0084-stop-zee-dispatch.service.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "k282-native/0085-cgroup-zee-dispatch.service.log",
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "bytes": 1
+    },
+    {
+      "path": "k282-native/0086-SQL-observer.log",
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+      "bytes": 2
+    },
+    {
+      "path": "k282-native/0087-stop-zee-dispatch.timer.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "k282-native/0088-cgroup-zee-dispatch.timer.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "k282-native/0089-stop-zee-dispatch.service.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "k282-native/0090-cgroup-zee-dispatch.service.log",
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "bytes": 1
+    },
+    {
+      "path": "k282-native/0091-reload.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "k282-native/0092-released-zee-dispatch.service.log",
+      "sha256": "391bc413c3044926b4afa41806bf4a5c4fad68a3165b8563fe1bffec0792fc76",
+      "bytes": 10
+    },
+    {
+      "path": "k282-native/0093-released-zee-dispatch.timer.log",
+      "sha256": "391bc413c3044926b4afa41806bf4a5c4fad68a3165b8563fe1bffec0792fc76",
+      "bytes": 10
+    },
+    {
+      "path": "k282-native/0094-SQL-observer.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "k282-native/0095-native-queue-operation.log",
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+      "bytes": 2
+    },
+    {
+      "path": "k282-native/0096-SQL-observer.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "k282-native/0097-render-unknown.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "k282-native/0098-verify-unknown.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "k282-native/0099-absent-zee-dispatch.service.log",
+      "sha256": "391bc413c3044926b4afa41806bf4a5c4fad68a3165b8563fe1bffec0792fc76",
+      "bytes": 10
+    },
+    {
+      "path": "k282-native/0100-link-zee-dispatch.service.log",
+      "sha256": "6798a7f5b4637a4938e7839a229132de40d9cb76fdc0ba5fff1507999f72818b",
+      "bytes": 202
+    },
+    {
+      "path": "k282-native/0101-start-zee-dispatch.service.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "k282-native/0102-SQL-observer.log",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "bytes": 2
+    },
+    {
+      "path": "k282-native/0103-SQL-observer.log",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "bytes": 2
+    },
+    {
+      "path": "k282-native/0104-SQL-observer.log",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "bytes": 2
+    },
+    {
+      "path": "k282-native/0105-SQL-observer.log",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "bytes": 2
+    },
+    {
+      "path": "k282-native/0106-SQL-observer.log",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "bytes": 2
+    },
+    {
+      "path": "k282-native/0107-SQL-observer.log",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "bytes": 2
+    },
+    {
+      "path": "k282-native/0108-SQL-observer.log",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "bytes": 2
+    },
+    {
+      "path": "k282-native/0109-SQL-observer.log",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "bytes": 2
+    },
+    {
+      "path": "k282-native/0110-SQL-observer.log",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "bytes": 2
+    },
+    {
+      "path": "k282-native/0111-SQL-observer.log",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "bytes": 2
+    },
+    {
+      "path": "k282-native/0112-SQL-observer.log",
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+      "bytes": 2
+    },
+    {
+      "path": "k282-native/0113-stop-zee-dispatch.service.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "k282-native/0114-cgroup-zee-dispatch.service.log",
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "bytes": 1
+    },
+    {
+      "path": "k282-native/0115-SQL-observer.log",
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+      "bytes": 2
+    },
+    {
+      "path": "k282-native/0116-start-zee-dispatch.service.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "k282-native/0117-failed-paused.log",
+      "sha256": "45df5ad5e0ecfa54d3226343e0e6857337494ba6e32f189d1174070665d8c659",
+      "bytes": 7
+    },
+    {
+      "path": "k282-native/0118-failed-paused.log",
+      "sha256": "45df5ad5e0ecfa54d3226343e0e6857337494ba6e32f189d1174070665d8c659",
+      "bytes": 7
+    },
+    {
+      "path": "k282-native/0119-failed-paused.log",
+      "sha256": "45df5ad5e0ecfa54d3226343e0e6857337494ba6e32f189d1174070665d8c659",
+      "bytes": 7
+    },
+    {
+      "path": "k282-native/0120-failed-paused.log",
+      "sha256": "45df5ad5e0ecfa54d3226343e0e6857337494ba6e32f189d1174070665d8c659",
+      "bytes": 7
+    },
+    {
+      "path": "k282-native/0121-failed-paused.log",
+      "sha256": "45df5ad5e0ecfa54d3226343e0e6857337494ba6e32f189d1174070665d8c659",
+      "bytes": 7
+    },
+    {
+      "path": "k282-native/0122-failed-paused.log",
+      "sha256": "45df5ad5e0ecfa54d3226343e0e6857337494ba6e32f189d1174070665d8c659",
+      "bytes": 7
+    },
+    {
+      "path": "k282-native/0123-failed-paused.log",
+      "sha256": "45df5ad5e0ecfa54d3226343e0e6857337494ba6e32f189d1174070665d8c659",
+      "bytes": 7
+    },
+    {
+      "path": "k282-native/0124-failed-paused.log",
+      "sha256": "45df5ad5e0ecfa54d3226343e0e6857337494ba6e32f189d1174070665d8c659",
+      "bytes": 7
+    },
+    {
+      "path": "k282-native/0125-failed-paused.log",
+      "sha256": "45df5ad5e0ecfa54d3226343e0e6857337494ba6e32f189d1174070665d8c659",
+      "bytes": 7
+    },
+    {
+      "path": "k282-native/0126-failed-paused.log",
+      "sha256": "6da5b18878e110928643ebcc38dbb7552cf3a296eea56493e23edc2b93eecff8",
+      "bytes": 7
+    },
+    {
+      "path": "k282-native/0127-SQL-observer.log",
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+      "bytes": 2
+    },
+    {
+      "path": "k282-native/0128-SQL-observer.log",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "bytes": 2
+    },
+    {
+      "path": "k282-native/0129-stop-zee-dispatch.service.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "k282-native/0130-cgroup-zee-dispatch.service.log",
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "bytes": 1
+    },
+    {
+      "path": "k282-native/0131-reload.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "k282-native/0132-released-zee-dispatch.service.log",
+      "sha256": "391bc413c3044926b4afa41806bf4a5c4fad68a3165b8563fe1bffec0792fc76",
+      "bytes": 10
+    },
+    {
+      "path": "k282-native/0133-application-adapter.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "k282-native/0134-owned-PG-tool.log",
+      "sha256": "ca19178a35ab4153b75b494963b66ce8243e1b94c173107c87b44d09db23652d",
+      "bytes": 56
+    },
+    {
+      "path": "k283-native-retry-manager-clean/proof.json",
+      "sha256": "804adc745d98a7fda7c75621c45b35d855b11b8b1e81c098196cd8b9ac063b21",
+      "bytes": 11697
+    },
+    {
+      "path": "k283-native-retry-manager-clean/0001-tracked-consumed-files.log",
+      "sha256": "0241c53c38fe3d6a61a99d8c40056738e54e74b9d95d97044d1de1f13aaa3b66",
+      "bytes": 674
+    },
+    {
+      "path": "k283-native-retry-manager-clean/0002-build.log",
+      "sha256": "b93f1fe3382d9f14a4fd468b2c346388c3e2552fb9e4633da32b70eee3da3b76",
+      "bytes": 169
+    },
+    {
+      "path": "k283-native-retry-manager-clean/0003-manager.log",
+      "sha256": "a4ecc5c87d811bbff7a118c17ef8cf83318cb623a103c15b8549089aa2a7f0ac",
+      "bytes": 8
+    },
+    {
+      "path": "k283-native-retry-manager-clean/0004-owned-PG-tool.log",
+      "sha256": "b37ea828083415addfd3a66b4c6277bfd2c4202e7230dfe40eda0bb93f4eb39d",
+      "bytes": 697
+    },
+    {
+      "path": "k283-native-retry-manager-clean/0005-owned-PG-tool.log",
+      "sha256": "3c0c5036a0427d7624a139fd3e868eb4b6da634b3db1a27e2734664f4afd1ff3",
+      "bytes": 1369
+    },
+    {
+      "path": "k283-native-retry-manager-clean/0006-owned-PG-tool.log",
+      "sha256": "2e061e1d965ea972f4ea0e8ac3988ad934cc423626b8b8752971480da43f5688",
+      "bytes": 2337
+    },
+    {
+      "path": "k283-native-retry-manager-clean/0007-owned-PG-tool.log",
+      "sha256": "f08ddac3de021da3a1b364489940aae250c85bafaae29a600c0e67d54e61cc6a",
+      "bytes": 61
+    },
+    {
+      "path": "k283-native-retry-manager-clean/0008-owned-PG-tool.log",
+      "sha256": "d3eaa77fd477492555daece3ce15f66028f66d197006187a029e8c2790b84623",
+      "bytes": 865
+    },
+    {
+      "path": "k283-native-retry-manager-clean/0009-owned-PG-tool.log",
+      "sha256": "66afd0411ccc09366e99fdd99b85f21899c8d2d064f5835126859618802153ad",
+      "bytes": 52
+    },
+    {
+      "path": "k283-native-retry-manager-clean/0010-owned-PG-tool.log",
+      "sha256": "4bbf9e40bb4cab414db862e0f93affb1d83c24ec83285eea9e7c2efbbc84d9fa",
+      "bytes": 28
+    },
+    {
+      "path": "k283-native-retry-manager-clean/0011-sql-observer.log",
+      "sha256": "cd98805f2d87537d5e03292230d857dcfdc09b5a415bec562055585405d8dc76",
+      "bytes": 23
+    },
+    {
+      "path": "k283-native-retry-manager-clean/0012-sql-observer.log",
+      "sha256": "691e4b64d448c6cffd680247056c2f445e4fbf2dcbc9be821934064e906d1ce7",
+      "bytes": 16
+    },
+    {
+      "path": "k283-native-retry-manager-clean/0013-native-readiness-migration.log",
+      "sha256": "4e0e348f7870e64a9f65a71c09087fa3a8fac18f9a9080e35829c2d173494786",
+      "bytes": 56
+    },
+    {
+      "path": "k283-native-retry-manager-clean/0014-sql-observer.log",
+      "sha256": "ac5edd8ccc256e797590beae03179d7b9951c07f5e759f67d15b2259b87c49ce",
+      "bytes": 6
+    },
+    {
+      "path": "k283-native-retry-manager-clean/0015-render.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "k283-native-retry-manager-clean/0016-verify.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "k283-native-retry-manager-clean/0017-absent-zee-http.service.log",
+      "sha256": "391bc413c3044926b4afa41806bf4a5c4fad68a3165b8563fe1bffec0792fc76",
+      "bytes": 10
+    },
+    {
+      "path": "k283-native-retry-manager-clean/0018-link-zee-http.service.log",
+      "sha256": "29b1917852a232f4bb82723099dea677b75a1b4c56fce1b34630d0b364886458",
+      "bytes": 206
+    },
+    {
+      "path": "k283-native-retry-manager-clean/0019-start-zee-http.service.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "k283-native-retry-manager-clean/0020-sql-observer.log",
+      "sha256": "f6657a32f2006e23f508c8f6a079ff930462fe497f786b05d96611c0e573f0f6",
+      "bytes": 9
+    },
+    {
+      "path": "k283-native-retry-manager-clean/0021-sql-observer.log",
+      "sha256": "f6657a32f2006e23f508c8f6a079ff930462fe497f786b05d96611c0e573f0f6",
+      "bytes": 9
+    },
+    {
+      "path": "k283-native-retry-manager-clean/0022-reload-http.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "k283-native-retry-manager-clean/0023-kill-owned-http.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "k283-native-retry-manager-clean/0024-stop-zee-http.service.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "k283-native-retry-manager-clean/0025-cgroup-zee-http.service.log",
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "bytes": 1
+    },
+    {
+      "path": "k283-native-retry-manager-clean/0026-stop-zee-http.service.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "k283-native-retry-manager-clean/0027-cgroup-zee-http.service.log",
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "bytes": 1
+    },
+    {
+      "path": "k283-native-retry-manager-clean/0028-reload.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "k283-native-retry-manager-clean/0029-released-zee-http.service.log",
+      "sha256": "391bc413c3044926b4afa41806bf4a5c4fad68a3165b8563fe1bffec0792fc76",
+      "bytes": 10
+    },
+    {
+      "path": "k283-native-retry-manager-clean/0030-owned-PG-tool.log",
+      "sha256": "ca19178a35ab4153b75b494963b66ce8243e1b94c173107c87b44d09db23652d",
+      "bytes": 56
+    },
+    {
+      "path": "k282-native/unknown-state/inflight.json",
+      "sha256": "9390eaecfc326878a771e4c18441303e130163e5ed1718353c95cb01103440c4",
+      "bytes": 210
+    }
+  ],
+  "archive_sha256": "1fae7c859b16340bb2028a35e42b4e7738d082f09910f5b23d3c09e6d1524239",
+  "latch_preserved": true
+}

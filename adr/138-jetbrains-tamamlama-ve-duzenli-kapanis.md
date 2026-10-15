@@ -36,3 +36,7 @@ RFC/spec, tanı ve faz sayıları bu belge/kanıt işi nedeniyle değişmez.
 [Kabul kaydı](../docs/incelemeler/urunlesme-20261014/k280-jetbrains/ACCEPTANCE.json)
 ve [dosya manifesti](../docs/incelemeler/urunlesme-20261014/k280-jetbrains/MANIFEST.json)
 ham UI/protokol kanıtlarına bağlanır. Önceki başarısız denemeler korunur.
+
+## S3 kanıtı
+
+[İkinci dalga exact S3 kabulü](../docs/urunlesme-s3-kabul-20261015.md) bu kararla ilgili actual kohortu ve açık sınırları kaydeder. C1/P33 retleri ve ürün/insan/platform kapıları bu bağlantıyla kapanmaz.

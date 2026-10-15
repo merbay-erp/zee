@@ -1,0 +1,50 @@
+{
+  "target": "morfoloji",
+  "max_len": 128,
+  "command": {
+    "name": "morfoloji",
+    "argv": [
+      "cargo",
+      "+nightly-2026-08-31",
+      "fuzz",
+      "run",
+      "--sanitizer",
+      "address",
+      "--target",
+      "aarch64-apple-darwin",
+      "--target-dir",
+      "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-rc/fuzz-target",
+      "morfoloji",
+      "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-rc/targets/morfoloji/corpus",
+      "--",
+      "-dict=/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-rc/checkout/compiler/fuzz/dictionaries/zee.dict",
+      "-max_total_time=1800",
+      "-max_len=128",
+      "-timeout=5",
+      "-print_final_stats=1",
+      "-artifact_prefix=/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-rc/targets/morfoloji/crashes/"
+    ],
+    "exit": 0,
+    "elapsed_seconds": 1804.549,
+    "supervisor_failure": null,
+    "log_sha256": "9227ac356b160c8a366022010956ddfa7133367ee557b938eef5cbaa811f2d39",
+    "passed": true
+  },
+  "stats": {
+    "requested_seconds": 1800,
+    "actual_seconds": 1801,
+    "executions": 6892578,
+    "sanitizer": "address",
+    "sanitizer_finding": false,
+    "libfuzzer_failure": false,
+    "input_timeout": false,
+    "crash_artifacts": [],
+    "passed": true
+  },
+  "binary_sha256": "3816c50f951b140e04a7b466e82339ee1aa1c7b89718c819ce4ee7835d5d56dd",
+  "asan_runtime_marker": true,
+  "initial_seeds": 4,
+  "final_seeds": 292,
+  "manifest_verified": true,
+  "manifest_sha256": "42aefdf35c43b3b6d5fec0cb3e6172594b166a03deabc55bc8479f146f94c5a1"
+}

@@ -1,0 +1,15 @@
+# zee-fuzz-corpus-artifact-1
+# target	http_istegi
+# corpus	http_istegi
+# source_commit	66e4149e53451111d153f47283c219079a8d1cab
+# run_id	1792057018409502000
+# run_attempt	1
+# toolchain	nightly-2026-08-31
+# cargo_fuzz	0.13.2
+# run_origin	local
+# seed_sha256	relative_path
+d310db2464ce9dd54c5601e41e68e1de324b2b2931265e3ef8d0907b010a74b0	absolute-form.http
+cecbe9dc261d289557a3b69b911595c9d631b14c84a57244195273d411b91c66	bare-lf.http
+9831c09a8a9b40ecdaff1f57d810194b72ed9dd0242de3114fb4c9b1625a4099	duplicate-content-length.http
+09ead6017557f27edee899c3b2102d9e23530764947ba62e58d8fa4c63265cc7	valid-get.http
+7bd375c08547b2a0c620509cfe0ed739e3f464c7cc60ca57c853ccc30083c869	valid-post.http

@@ -1,0 +1,20 @@
+{
+  "schema": "zee-S3-gate-v2-failure-review-1",
+  "source_sha": "66e4149e53451111d153f47283c219079a8d1cab",
+  "full_cargo_passed": 987,
+  "full_cargo_failed": 2,
+  "full_cargo_ignored": 25,
+  "raw_details": [
+    {
+      "original": "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/compiler/target/native-listener-native-99451-1792062590097755000/proof.json",
+      "sha256": "888a9d8edd2b497404ed37d6db6474b98ec01881e8a7d52b39bbd16dd26ab6d1"
+    },
+    {
+      "original": "/var/folders/nn/fmy2b8m575143sfsvs3wrfz40000gn/T/zee-k246-failure-3698.json",
+      "sha256": "f2f4d305ff107147d7812dffdc0a76eb618465b4863b067d8670d94141dbf66c"
+    }
+  ],
+  "listener_observation": "1000 native requests/four rollovers passed in57.347s; preceding slow drain3.079s. Foreign fixture was created before both and has a60s natural lifetime. The later combined cleanup/foreign-alive assertion failed; owned_workers_closed istrue. No recorded foreign returncode, so do not assert exact exitcause.",
+  "worker_observation": "Both failures were startup rejection around3020ms before ready; original3s startup deadline unchanged. Six other native worker cases passed.",
+  "next": "Run unchanged failing groups serially with same deadlines/source/binary, preserving failures. No source fix or oracle weakening inferred from environmental timing."
+}

@@ -42,3 +42,7 @@ K-207 KISMEN; full didChange ve incremental/cache kapasitesi açıktır.
 K-214 geçmiş düzeltmesi: yukarıdaki kaynak referansları anonim dal kimliğine
 eşlenmiştir. Ham ölçüm/log/ikili/provenance kayıtları ölçülen özgün SHA
 kimliğini korur; bu eşleme yeni ölçüm veya yeni ikili kabulü değildir.
+
+## S3 yerel kabul kanıtı
+
+[Exact S3 kabulü ve açık sınırlar](urunlesme-s3-kabul-20261015.md) gerçek canonical/native/IDE ve ortak kapıları bağlar; genel ürün/platform/yayın kabulü değildir.

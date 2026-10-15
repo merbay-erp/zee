@@ -52,5 +52,8 @@ kapanmış sayılmaz.
 
 Kaynak düzeltme SHA: `382beed1d01440f6f9df28b5ac7a111fbe1f75ee`.
 `regression/v2.tsv` exact `fixed_by` ve gerçek minimal kaynak taşır; dedicated
-native test boş manifestle geçemez. GB-110 temiz kaynak kabulü tamamlanana
-kadar açık tutulur.
+native test boş manifestle geçemez. GB-110 exact regression/nonempty replay ve temiz S3 canonicalnative26/RC ile dar kapsamda kapandı.
+
+## S3 kanıtı
+
+[İkinci dalga exact S3 kabulü](../docs/urunlesme-s3-kabul-20261015.md) bu kararla ilgili actual kohortu ve açık sınırları kaydeder. C1/P33 retleri ve ürün/insan/platform kapıları bu bağlantıyla kapanmaz.

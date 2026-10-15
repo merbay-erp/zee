@@ -38,3 +38,7 @@ observer request içi rollback'i ve commit'i ayrı doğrular. Ayrı HTTP
 isteklerinin commit'leri sonradan toplu rollback edilmiş gösterilmez.
 Genel P08 ürün adoptionı, Windows native ownership, arbitrary suite execution
 ve kaynak dışı Rust/HTTP guard branch coverage bu işin kapanış iddiası değildir.
+
+## S3 kanıtı
+
+[İkinci dalga exact S3 kabulü](../docs/urunlesme-s3-kabul-20261015.md) bu kararla ilgili actual kohortu ve açık sınırları kaydeder. C1/P33 retleri ve ürün/insan/platform kapıları bu bağlantıyla kapanmaz.

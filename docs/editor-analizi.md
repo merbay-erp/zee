@@ -48,3 +48,7 @@ büyümesi ortak yayın ve biçim/test-köprü yardımcılarına ayrılarak sın
 tutuldu. Kapsam, lint, LSP, native bridge ve mimari testleri bu sorumluluk
 ayrımının olumlu/olumsuz kanıtıdır. İnceleme sonucu test çalıştırma veya
 1800sRSS kabulü yerine geçmez.
+
+## S3 yerel kabul kanıtı
+
+[Exact S3 kabulü ve açık sınırlar](urunlesme-s3-kabul-20261015.md) gerçek canonical/native/IDE ve ortak kapıları bağlar; genel ürün/platform/yayın kabulü değildir.

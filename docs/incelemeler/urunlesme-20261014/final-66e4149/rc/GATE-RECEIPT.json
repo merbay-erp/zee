@@ -1,0 +1,63 @@
+{
+  "schema": "zee-exact-source-post-RC-gate-3",
+  "source_sha": "66e4149e53451111d153f47283c219079a8d1cab",
+  "status": "passed",
+  "started_ns": 1792063609251742000,
+  "source_begin_clean": true,
+  "commands": [
+    {
+      "name": "check-before",
+      "argv": [
+        "python3",
+        "-I",
+        "-B",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/scripts/rc-kaniti.py",
+        "check",
+        "--framework-root",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+        "--bundle",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-rc-bundle",
+        "--sha256",
+        "1dba993afeaccbe11b9daabffba5c477d1371f044c9ea27dbc44aafe392c6fa0"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 1.503166750073433,
+      "log_sha256": "c9ff1a2d41270e430ab15b4c81150e0fb04a9e8181b8d515e28bc9c80c81c0fc"
+    },
+    {
+      "name": "security-RC",
+      "argv": [
+        "bash",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/scripts/guvenlik-kapisi.sh",
+        "--surum-adayi",
+        "--rc-kanit",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-rc-bundle",
+        "--rc-kanit-sha256",
+        "1dba993afeaccbe11b9daabffba5c477d1371f044c9ea27dbc44aafe392c6fa0"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 390.0580345829949,
+      "log_sha256": "08c9453940ec71804d24f76464ad900cd58f4b2d3599a32bf408e7ebb73027b1"
+    }
+  ],
+  "prior_attempt": "s3-66e4149-rc-gate/CANCELLATION-REVIEW.json",
+  "bundle_reused_unchanged": true,
+  "export_attempt": "s3-66e4149-rc-gate/export.txt",
+  "cooperative_cancellation_test": "s3-gate-v2-cancel-self-test/PROOF.json",
+  "runtime_test_threads": 1,
+  "prior_full_gate": "s3-66e4149-rc-gate-v2/GATE-RECEIPT.json",
+  "focused_unchanged_replay": "s3-66e4149-focused-post-cleanup/PROOF.json",
+  "source_or_deadlines_changed": false,
+  "source_end_clean": true,
+  "source_end_sha": "66e4149e53451111d153f47283c219079a8d1cab",
+  "bundle_manifest_sha256": "1dba993afeaccbe11b9daabffba5c477d1371f044c9ea27dbc44aafe392c6fa0",
+  "bundle_files": 7505,
+  "full_cargo_groups": 131,
+  "full_cargo_passed": 989,
+  "full_cargo_failed": 0,
+  "full_cargo_ignored": 25,
+  "export_check_source_exact": true,
+  "finished_ns": 1792064000837100000
+}

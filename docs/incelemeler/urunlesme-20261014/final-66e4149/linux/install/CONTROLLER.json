@@ -1,0 +1,12 @@
+{
+  "source_sha": "66e4149e53451111d153f47283c219079a8d1cab",
+  "status": "passed",
+  "guest_leaf": "/home/mustafaerbay.guest/zee-k276/service-acceptance-66e4149e5345-1792057016809668000",
+  "started_ns": 1792060188846525000,
+  "proof_sha256": "14979c961442e5e113639877bf320c9f998b189823ab8851222659630813b895",
+  "delivery_all_raw_files_verified": true,
+  "installation_all_raw_files_verified": true,
+  "source_zip_equal_mac": false,
+  "source_zip_content_equal_mac": true,
+  "finished_ns": 1792060256364729000
+}

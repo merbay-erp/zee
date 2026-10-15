@@ -87,3 +87,7 @@ belge p95 19,754 ms (max19,926; ilk29,627),41 açık belge p95 126,164 ms
 Ölçüm taze grafik/kilit/yükleme/tür analizi ve tanı serileştirmesini içerir;
 editör taşıması, UI ve lint açık kipi kapsamaz. Ham başarısız ilk adaylar
 korundu; kalıcı performans tarihçesine kirli kaynak sonucu yazılmadı.
+
+## S3 kanıtı
+
+[İkinci dalga exact S3 kabulü](../docs/urunlesme-s3-kabul-20261015.md) bu kararla ilgili actual kohortu ve açık sınırları kaydeder. C1/P33 retleri ve ürün/insan/platform kapıları bu bağlantıyla kapanmaz.
