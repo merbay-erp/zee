@@ -1,0 +1,8 @@
+# 18 — Dosya yazma
+# Sınanan: "yaz" eyleminin hedef alması — "X dosyasına yaz" (K-019).
+# Hedefsiz "yaz" ekrana yazar; "ekle" dosyanın sonuna ekler.
+
+"günlük.txt" dosyasına "Bugün hava güzeldi" yaz
+"günlük.txt" dosyasına "Yarın da güzel olsun" ekle
+
+"Günlük kaydedildi" yaz

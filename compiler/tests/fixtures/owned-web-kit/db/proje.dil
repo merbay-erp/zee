@@ -1,0 +1,8 @@
+proje "owned-web-db-fixture" olsun
+sürüm "0.1.0" olsun
+morfoloji "zee-tr-1" olsun
+giriş "ana.dil" olsun
+yetkinlikler "ağ-sunucusu", "veritabanı", "web-oturumu" listesi olsun
+veritabanı_hedefi "postgresql://127.0.0.1:5432/owned_case" olsun
+veritabanı_bağlantı_değişkeni "ZEE_K271_DATABASE_URL" olsun
+veritabanı_göçleri "gocler" olsun

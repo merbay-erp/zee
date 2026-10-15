@@ -1,0 +1,10 @@
+# Anonymous B3 typed Metin dictionary; existing JSON serialization only.
+is boş sözlük olsun
+isin "schema" değeri "zee-pdf-job-1" olsun
+isin "locale" değeri "tr" olsun
+isin "title" değeri "Anonim ürün kataloğu" olsun
+isin "product" değeri "Örnek ürün - ŞĞİıÇÖÜ" olsun
+isin "description" değeri "Görsel, gömülü font ve mevcut sayfalara ekleme sınaması." olsun
+isin "selection" değeri "cover-back" olsun
+isin "placement" değeri "after-cover" olsun
+isin json metni yaz

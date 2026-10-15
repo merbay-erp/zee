@@ -1,0 +1,19 @@
+# 15 — Seçenek türü: değer var ya da yok
+# Sınanan: null yerine Seçenek<T> — "yok döndür", "varsa/yoksa" kontrolü,
+# "bulunanın değeri" ile içteki değere erişim (K-017).
+
+işlem ilk çift sayıyı bul
+    sayıları al
+
+    her sayı için
+        sayı çiftse
+            sayıyı döndür
+    yok döndür
+
+sayılar 3, 7, 8, 11 listesi olsun
+bulunan sayılar için ilk çift sayıyı bul olsun
+
+bulunan varsa
+    "Bulundu: " ile bulunanın değeri yaz
+değilse
+    "Çift sayı yok" yaz

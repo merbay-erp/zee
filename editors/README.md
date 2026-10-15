@@ -54,6 +54,13 @@ vim.api.nvim_create_autocmd("FileType", {
 
 ### VS Code
 
-[vscode/](vscode/) sözdizimi renklendirmesi verir (symlink kurulumu kendi
-README'sinde). LSP istemcisi `vscode-languageclient` paketi ister; npm'siz
-sürümde tanılar için şimdilik: `dil denetle --json dosya.dil`.
+[vscode/](vscode/) sözdizimi renklendirmesi ve elle yazılmış LSP istemcisi verir;
+npm bağımlılığı yoktur. Owned `dillsp` ikilisinin mutlak yolunu `dil.lspYolu`
+ayarında belirt; kurulum ve protokol kapsamı kendi README'sindedir.
+
+### JetBrains
+
+[jetbrains/](jetbrains/) mevcut K-270 proje launcher'ına bağlanan dar POSIX
+LSP4IJ kullanıcı şablonudur. Sözdizimi mevcut VS Code TextMate bundle'ından
+alınır; yeni grammar/plugin indirme yoktur. IDE/plugin kurulum ve etkileşim,
+boşluklu macro önizlemesi ve Windows kabulü henüz açıktır.

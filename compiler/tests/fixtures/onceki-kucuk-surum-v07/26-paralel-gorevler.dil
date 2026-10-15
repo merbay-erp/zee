@@ -1,0 +1,23 @@
+# 26 — Paralel görevler (RFC-0011 gerçeklemesi)
+# Revizyon (31 Ağu): master plandaki örnekte "sonucu döndür" tanımsızdı
+# (K-023). RFC-0011 §1 kuralı: eşzamanlı bloktaki her satır bir görev
+# bağlamasıdır; adlar "hepsini bekle"den SONRA sıradan değerdir, önce
+# erişim derleme hatasıdır (T033).
+
+işlem profili getir
+    kimi al
+    birleşik kim ile " profili" olsun
+    birleşiği döndür
+
+işlem faturaları getir
+    kimi al
+    birleşik kim ile " faturaları" olsun
+    birleşiği döndür
+
+eşzamanlı olarak
+    profil "Ayşe" için profili getir
+    faturalar "Ayşe" için faturaları getir
+
+hepsini bekle
+profil yaz
+faturalar yaz

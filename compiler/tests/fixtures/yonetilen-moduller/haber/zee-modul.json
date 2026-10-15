@@ -1,0 +1,26 @@
+{
+  "schema": "zee-modul-1",
+  "id": "haber",
+  "version": "0.1.0",
+  "core_min": "0.1.0",
+  "core_max_exclusive": "1.0.0",
+  "package_name": "haber",
+  "package_root": "paket",
+  "route_adapter": "rota.dil",
+  "menu": {
+    "slug": "haber",
+    "label": "Anonim Haber",
+    "path": "/haber"
+  },
+  "content_type": "haber_sayfasi",
+  "migration_range": [
+    1100,
+    1199
+  ],
+  "files": {
+    "paket/ana.dil": "928e286ff60b7e1417cf583d59e49d866c9e8dfd170ab06bedf9d24f4e81d2bf",
+    "paket/proje.dil": "8bdf687c7902e4577d809f159f8beb1ac695114acec2912c122fc5db191dc580",
+    "rota.dil": "c8ca31ba7f2a22a9a93528a3cec9e8c079794e386bf0e2b74e2a673030745e18",
+    "sql/001100.sql": "c92a401e010fecdbb4d95907d7a9fde98090f4385f7e0974a33fae090acc8e10"
+  }
+}

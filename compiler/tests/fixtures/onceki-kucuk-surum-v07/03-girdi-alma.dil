@@ -1,0 +1,8 @@
+# 03 — Kullanıcıdan girdi alma
+# Sınanan: "diye sor" ve son yanıtı taşıyan "yanıt" değeri (K-007).
+# AÇIK: "yanıt" adı 24-http-istemcisi ile çakışıyor — bkz. günlük K-007.
+
+"Adın ne?" diye sor
+ad yanıt olsun
+
+"Merhaba " ile ad yaz

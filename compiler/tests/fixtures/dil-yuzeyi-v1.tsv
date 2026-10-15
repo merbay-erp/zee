@@ -23,14 +23,30 @@ api	rust	aktif	0.8.0-dev	compiler/src/api.rs	pub mod v1 {
 api	web.istemci_adresi	aktif	0.8.0-dev	compiler/src/intrinsic.rs	pub const ISTEMCI_ADRESI: &str = "web.istemci_adresi";
 bicim	proje.kilit	aktif	0.8.0-dev	compiler/src/paket.rs	kilit_sürümü 3
 bicim	yayin-zarfi	aktif	0.8.0-dev	compiler/src/artefakt_dogrulama.rs	const IMZA_ALANI: &[u8] = b"zee-yayin-v1\0";
+bicim	zee-active-1	aktif	0.8.0-dev	scripts/modul-yoneticisi.py	zee-active-1
 bicim	zee-build-v1	aktif	0.8.0-dev	compiler/src/surum.rs	zee-build-v1
 bicim	zee-credential-baslat-1	aktif	0.8.0-dev	scripts/credential-baslat.py	zee-credential-baslat-1
 bicim	zee-credential-native-start-1	aktif	0.8.0-dev	scripts/native-capabilities.py	zee-credential-native-start-1
+bicim	zee-editor-template-source-1	aktif	0.8.0-dev	editors/jetbrains/upstream.json	zee-editor-template-source-1
+bicim	zee-linux-packaging-preflight-1	aktif	0.8.0-dev	scripts/linux-package-preflight.py	zee-linux-packaging-preflight-1
 bicim	zee-local-asan-miri-campaign-1	aktif	0.8.0-dev	scripts/rc-kampanyasi.py	zee-local-asan-miri-campaign-1
 bicim	zee-local-asan-miri-driver-failure-1	aktif	0.8.0-dev	scripts/rc-kampanyasi.py	zee-local-asan-miri-driver-failure-1
 bicim	zee-local-publication-1	aktif	0.8.0-dev	scripts/derleyici-yerel.py	zee-local-publication-1
+bicim	zee-managed-1	aktif	0.8.0-dev	scripts/modul-yoneticisi.py	zee-managed-1
+bicim	zee-modul-1	aktif	0.8.0-dev	scripts/modul-yoneticisi.py	zee-modul-1
+bicim	zee-module-journal-1	aktif	0.8.0-dev	scripts/modul-yoneticisi.py	zee-module-journal-1
+bicim	zee-module-offline-review-1	aktif	0.8.0-dev	scripts/modul-yoneticisi.py	zee-module-offline-review-1
+bicim	zee-native-effect-pending-1	aktif	0.8.0-dev	scripts/effect-dispatcher.py	zee-native-effect-pending-1
+bicim	zee-native-effect-result-1	aktif	0.8.0-dev	scripts/effect-dispatcher.py	zee-native-effect-result-1
 bicim	zee-native-listener-ready-1	aktif	0.8.0-dev	compiler/src/web_listener.rs	zee-native-listener-ready-1
 bicim	zee-native-metrics-1	aktif	0.8.0-dev	compiler/src/web_metrikleri.rs	"zee-native-metrics-1"
+bicim	zee-owned-pdf-receipt-1	aktif	0.8.0-dev	scripts/pdf-katalog-host.py	zee-owned-pdf-receipt-1
+bicim	zee-owned-web-tests-1	aktif	0.8.0-dev	scripts/owned-web-tests.py	zee-owned-web-tests-1
+bicim	zee-pdf-job-1	aktif	0.8.0-dev	scripts/pdf-katalog-host.py	zee-pdf-job-1
+bicim	zee-previous-minor-corpus-1	aktif	0.8.0-dev	scripts/tests/onceki-kucuk-surum-test.py	zee-previous-minor-corpus-1
+bicim	zee-previous-minor-tests-1	aktif	0.8.0-dev	scripts/tests/onceki-kucuk-surum-test.py	zee-previous-minor-tests-1
+bicim	zee-private-carrier-build-1	aktif	0.8.0-dev	scripts/linux-private-carrier.py	zee-private-carrier-build-1
+bicim	zee-private-carrier-payload-1	aktif	0.8.0-dev	scripts/linux-private-carrier.py	zee-private-carrier-payload-1
 bicim	zee-project-launcher-1	aktif	0.8.0-dev	scripts/derleyici-yerel.py	zee-project-launcher-1
 bicim	zee-rc-evidence-1	aktif	0.8.0-dev	scripts/rc-kaniti.py	SCHEMA = 'zee-rc-evidence-1'
 bicim	zee-rc-evidence-check-1	aktif	0.8.0-dev	scripts/rc-kaniti.py	zee-rc-evidence-check-1
@@ -202,6 +218,8 @@ profil	cli-goc-durum	aktif	0.8.0-dev	compiler/src/main.rs	"--durum"
 profil	cli-goc-kuru	aktif	0.8.0-dev	compiler/src/main.rs	"--kuru"
 profil	credential-native-listener-fd	aktif	0.8.0-dev	scripts/native-capabilities.py	--native-listener-fd
 profil	credential-native-metrics-fd	aktif	0.8.0-dev	scripts/credential-baslat.py	--native-metrics-fd
+profil	db-readiness-interval	aktif	0.8.0-dev	scripts/db-hazirlik.py	--interval
+profil	db-readiness-rounds	aktif	0.8.0-dev	scripts/db-hazirlik.py	--rounds
 profil	derleyici-yerel-import	aktif	0.8.0-dev	scripts/derleyici-yerel.py	'import'
 profil	derleyici-yerel-launcher	aktif	0.8.0-dev	scripts/derleyici-yerel.py	'launcher'
 profil	eszamanlilik	aktif	0.8.0-dev	conformance/eszamanlilik/zee-esz-1.json	"kimlik": "zee-esz-1"
@@ -209,9 +227,14 @@ profil	http-gizli-ortam-v1	aktif	0.8.0-dev	compiler/src/proje.rs	"http_gizli_de�
 profil	http-istek-v1	aktif	0.8.0-dev	compiler/src/ag_istemcisi/istek.rs	pub fn istek(
 profil	http-json-v1	aktif	0.8.0-dev	compiler/src/intrinsic.rs	"ag.http_json"
 profil	io	aktif	0.8.0-dev	compiler/src/yorumlayici/io_profili.rs	pub const DETERMINISTIK_IO_PROFILI: &str = "zee-io-1";
+profil	jetbrains-zee-local-posix	aktif	0.8.0-dev	editors/jetbrains/template.json	"id": "zee-local-posix"
+profil	managed-owned-module-scaffold-posix-1	aktif	0.8.0-dev	scripts/modul-yoneticisi.py	Managed scaffold pilot
 profil	morfoloji	aktif	0.7.0	compiler/src/morfoloji.rs	pub const MORFOLOJI_PROFILI: &str = "zee-tr-1";
+profil	owned-pdf-backend-acceptance	aktif	0.8.0-dev	scripts/tests/pdf-backend-acceptance.py	owned-pdf-backend-acceptance
+profil	owned-pdf-prototype	aktif	0.8.0-dev	scripts/pdf-katalog-host.py	owned-pdf-prototype
 profil	rc-kanit	aktif	0.8.0-dev	scripts/guvenlik-kapisi.sh	--rc-kanit)
 profil	rc-kanit-sha256	aktif	0.8.0-dev	scripts/guvenlik-kapisi.sh	--rc-kanit-sha256)
+profil	readiness-ttl-seconds	aktif	0.8.0-dev	scripts/worker-supervisor.py	--readiness-ttl-seconds
 profil	runtime-ayar-v1	aktif	0.8.0-dev	compiler/src/cli/ayar.rs	pub(super) const SEMA: &str = "zee-ayar-1";
 profil	runtime-metrics	aktif	0.8.0-dev	scripts/worker-supervisor.py	--runtime-metrics
 profil	web-activate-fd	aktif	0.8.0-dev	compiler/src/web_listener.rs	"--web-activate-fd"
@@ -225,5 +248,6 @@ profil	web-oran-kapasitesi	aktif	0.8.0-dev	compiler/src/main.rs	"--web-oran-kapa
 profil	web-oran-siniri	aktif	0.8.0-dev	compiler/src/main.rs	"--web-oran-siniri"
 profil	web-ready-fd	aktif	0.8.0-dev	compiler/src/web_listener.rs	"--web-ready-fd"
 profil	zee-local-compiler-tools-posix-1	aktif	0.8.0-dev	scripts/derleyici-yerel.py	zee-local-compiler-tools-posix-1
+profil	zee-native-effect-owned-loopback-1	aktif	0.8.0-dev	scripts/effect-dispatcher.py	Finite fixed native SMTP effect pilot
 profil	zee-smtp-mime-1	aktif	0.8.0-dev	compiler/src/eposta/mime.rs	pub const MIME_PROFILI: &str = "zee-smtp-mime-1";
 tani	kimlik-semasi	aktif	0.8.0-dev	compiler/tests/fixtures/tani-kimlikleri-v1.tsv	# Zee tanı kimliği fixture'ı — şema 1
