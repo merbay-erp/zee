@@ -4561,4 +4561,26 @@ Son kapsam incelemesi semantic regression grubuna yalnız `proje` ekler: actual 
 
 ## K-265 — Exact kaynak dış RC kanıtı
 
-[ADR-124](../adr/124-exact-kaynak-dis-rc-kaniti.md) sourceS/historyE self-reference doğruluk boşluğunu explicit dış immutable paketle ele alır; kaynak eşdeğerliği/bypass yoktur. İzole25 sentetik protokol+9 kısa ownedprocess test dilimi, tam4ASAN2Miri/rawhash/initialsourcecorpus/erkenHEADpin/streamingdizinbütçesi negatiflerini kapsar. Ortak atomik kaynak ve final gerçek cleanS uzunASAN/Miri kampanyası henüz açıktır;900/1800/release/ürün adoption kapıları kapanmaz. Kullanıcı AGENTS değiştirilmez, exactsourceS ve append-only arşivE ayrımı açık tutulur.
+[ADR-124](../adr/124-exact-kaynak-dis-rc-kaniti.md) sourceS/historyE self-reference doğruluk boşluğunu explicit dış immutable paketle ele alır; kaynak eşdeğerliği/bypass yoktur. İzole25 sentetik protokol+9 kısa ownedprocess test dilimi, tam4ASAN2Miri/rawhash/initialsourcecorpus/erkenHEADpin/streamingdizinbütçesi negatiflerini kapsar. K-265 kaynak commit’i `1367ce1a7d0281d8a7f3d9307021afbc452da15f` ile kayıtlıdır: kaynak öncesi tam faz928/940 geçti, başarısız0/atlanan12; son EOF boşluğu düzeltmesi sonrası25 protokol testi yeniden geçti. Final gerçek cleanS uzunASAN/Miri kampanyası,900/1800/release/ürün adoption kapıları açıktır. Kullanıcı AGENTS değiştirilmez, exactsourceS ve append-only arşivE ayrımı açık tutulur.
+
+
+## 15 Ekim 2026 — K-267 typed credential/listener ve quiet ret
+
+[ADR-125](../adr/125-credential-native-listener-kompozisyonu.md)/GB-083 mevcut B5/B6/D3 ihtiyacını named listener/ready/activate/startup ve optional metric rolleriyle birleştirir. Actual native child PID startup FIFO üzerinden gelir; host yalnız kendi launcher Popen/grubunu tutar, child startup FD almaz. Kaynak/config/credential öncesi borrowedrol kontrolü, default noinherit ve sabit secret-masked metadata sürer. İlk adayda reddedilen `=değer` FD yazımı stdout alias pipe'ına66baytmetadata bırakıyordu; quiet tarayıcı beşrolü ve her occurrence'ı bağımsız inceler, yazımı grant etmeden sıfırbyte ret sağlar. Model5 içinde90 gerçek alt-süreç alt-senaryosu vardır; ayrı vaka toplamı diye toplanmaz.
+
+İlk tam faz929/942 geçti, başarısız1/atlanan12; frozen33 dosya değişmedi. Tek hata eski K-260 model7'nin stdout/stderr alias retlerinde JSON beklemesiydi. Yalnız açık alias oracle'ları sıfırbyte+boş kontrolpipe olarak güncellendi, diğer ret JSON sözleşmesi sıkı kaldı. Düzeltilen model7 ve odaklı normal Cargo4 (model5/native5+model7/native2 kampanyaları) geçti; son tam faz yeniden yürütülür. Bu kaynak/protokol kabulü final temiz kampanya, Linux/systemd/Windows/file-native sır veya canlı ürün kabulü değildir.
+
+İkinci tam turda K267/K260 köprüleri geçti; toplam929/942, başarısız1/atlanan12 oldu. Mevcut semantic koruk testinin iki paralel vakası aynı PID+duvar saati damgasıyla aynı geçici Git deposunu oluşturdu; git init info/exclude File exists verdi. Test helper'ına süreç içi atomik sıra ve exclusive dizin creation eklendi; production Rust/katman/semantic davranış değişmedi, test sayısı aynı kaldı. Yeni Python importunun legacy -B'siz çağrıda ürettiği __pycache__ kaynak olarak alınmaz; .gitignore Python bytecode'u hariç tutar. İlk35-sayım preflight'ı bu artefaktı36.satır gördüğünden snapshot launch sonrası alınmıştı; zamanlama istisnası ve iki başarısız rapor korunur. Son tekrar yeni kaynak listesiyle koşu öncesi dondurulur.
+
+K-267 son doğrulama notu: ilk iki başarısız koşunun ardından v3/v4 de mevcut
+SMTP testinin iki saniyelik korumasında 929/942 geçti, 1 kaldı, 12 atlandı.
+Her iki koşuda sabitlenen 37 kaynak dosyası değişmedi. Exact/focused14 geçti;
+bağımsız owned sekiz eşzamanlı koşu problemi üretti. Dış tanı kopyası nativeTLS
+ilk I/O öncesi platform kurulumu ve hata metni süresini ayırdı. Yalnız testte
+25 satır tam TLS hazırlığı eklendi; production Rust, 60 ms/2 sn, silent peer,
+ikili plain/TLS sınaması ve 132 lib/14 MIME sayısı değişmedi. Sabitlenmiş
+uninstrumented aday tekil, sekiz eşzamanlı ve önceki IO lib seçicileriyle geçti.
+Ham v3/v4 ve dış tanı/aday kanıtları korunur; yeni tam faz v5 koşusu 930/942 geçti, 0 kaldı, 12 atlandı (380.442 sn); sabitlenen 40 dosya koşu boyunca değişmedi. Sonrasında yalnız bu sonuç notları güncellendi; katalog/tazelik kapıları yeniden alınır.
+Bu compiler/src değişikliği semantic davranış değiştirmeyen maintenance'tır;
+kaynak commit'inin exact maintenance/compiler-freeze beyanı takip commit'inde
+kaydedilir. Yeni compiler özelliği, güvenlik bulgusu ya da regression iddiası yok.

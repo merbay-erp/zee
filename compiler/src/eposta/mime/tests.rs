@@ -356,6 +356,31 @@ fn yavas_karsilama_ve_tls_el_sikismasi_tek_son_tarihte_kesilir() {
     // open and sends no response until the call returns; EOF cannot pass it.
     // The two-second channel timeout is a hang guard, not a latency benchmark.
     let connector = native_tls::TlsConnector::builder().build().unwrap();
+    // macOS nativeTLS context creation and error text may initialize platform
+    // services synchronously. Warm the complete path before the IO hang guard.
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    let port = listener.local_addr().unwrap().port();
+    let (release, hold) = std::sync::mpsc::channel();
+    let warm_peer = thread::spawn(move || {
+        let (_stream, _) = listener.accept().unwrap();
+        let _ = hold.recv_timeout(Duration::from_secs(15));
+    });
+    let mut warm_ayar = ayar();
+    warm_ayar.konak = "127.0.0.1".into();
+    warm_ayar.kapi = port;
+    warm_ayar.implicit_tls = true;
+    let warm_wire = ileti_kur(&warm_ayar, &ileti(), &MimeSecenekleri::default()).unwrap();
+    assert!(gonder_ic(
+        &warm_ayar,
+        ileti().alici,
+        &warm_wire,
+        Duration::from_millis(60),
+        &|_| Ok(()),
+        &connector,
+    )
+    .is_err());
+    release.send(()).unwrap();
+    warm_peer.join().unwrap();
     for tls in [false, true] {
         let listener = TcpListener::bind("127.0.0.1:0").unwrap();
         let port = listener.local_addr().unwrap().port();

@@ -488,7 +488,7 @@ def main():
     parser.add_argument('--dil',required=True)
     args=parser.parse_args()
     original=Path(args.dil).resolve(strict=True)
-    sources=[TOOL,Path(__file__).resolve(),LAUNCHER,ROOT/'scripts/credential-baslat.py']
+    sources=[TOOL,Path(__file__).resolve(),LAUNCHER,ROOT/'scripts/credential-baslat.py',ROOT/'scripts/native-capabilities.py']
     source_hashes=[{'path':str(p.relative_to(ROOT)),'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in sources]
     if os.name != 'posix':
         raise SystemExit('POSIX native campaign required; no ignored acceptance')
