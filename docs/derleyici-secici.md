@@ -112,3 +112,7 @@ olarak gösterilmez.
 Cargo faz kapısında `derleyici_secici_testi` aynı build araçlarıyla 25
 Python vakasını izolasyonlu interpreter (`-I`) ile sıfır atlamalı çalıştırır. Windows'ta bu Cargo vakası
 explicit ignored raporlanır; native Windows pilot fixture kabulü açıktır.
+
+## K-270 — Yerel import ve proje launcher
+
+[Yerel araç rehberi](derleyici-yerel.md) mevcut signed selector kabulüne explicit owned bundle import ve `.zee-araclar/zee` launcher ekler. Compiler pin `derleyici.kilit.json`, gerçek paket graph kilidi `proje.kilit` v3 olarak ayrı kalır. Eski25 ve yeni14 vaka aynı Rust testi sayısı olarak toplanmaz; yeni14 gerçek P008 ve framed LSP içerir. Global PATH/download, production key/release trust ve Windows/minOS/live adoption kabulü açık kalır. [ADR-128](../adr/128-yerel-compiler-import-ve-proje-launcher.md).
