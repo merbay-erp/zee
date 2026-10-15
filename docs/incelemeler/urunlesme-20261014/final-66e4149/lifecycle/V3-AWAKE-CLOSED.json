@@ -1,0 +1,16 @@
+{
+  "schema": "zee-temporary-owned-awake-1",
+  "source_sha": "66e4149e53451111d153f47283c219079a8d1cab",
+  "status": "closed-owned-utility",
+  "utility": "/usr/bin/caffeinate",
+  "argv": [
+    "-i",
+    "-t",
+    "2400"
+  ],
+  "bounded_seconds": 2400,
+  "reason": "gate-terminal",
+  "elapsed_seconds": 387.4185035000555,
+  "owned_original_Popen_reaped": true,
+  "permanent_preference_changed": false
+}

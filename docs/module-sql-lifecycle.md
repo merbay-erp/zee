@@ -82,3 +82,7 @@ ile readonly recovery'yi ölçer. Alt senaryolar Cargo test toplamını çoğalt
 Örnekler golden tasarım fixture'ıdır; gerçek ürün P08/adoption veya müşteri
 migration'ı diye dogfood korpusuna kayıt edilmez. Yeni exact source için clean-S
 kampanyası ve root gate'leri ayrıca gerekir.
+
+## S3 yerel kabul kanıtı
+
+[Exact S3 kabulü ve açık sınırlar](urunlesme-s3-kabul-20261015.md) gerçek canonical/native/IDE ve ortak kapıları bağlar; genel ürün/platform/yayın kabulü değildir.

@@ -1,0 +1,1173 @@
+{
+  "schema": "zee-reversible-metadata-representation-1",
+  "original_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-linux-native/K282-proof.json",
+  "original_sha256": "ab5d62533f240d098f2340150f1a7fb6a6e9308520304395a6ea0df7a180e658",
+  "metadata": {
+    "schema": "zee-owned-continuous-service-native-1",
+    "role": "K282",
+    "source_sha": "66e4149e53451111d153f47283c219079a8d1cab",
+    "binary_sha256": "9e949559ddd89bc9123490c25352e86e9f03e7e69457bcdec0ae3588a25fac47",
+    "cases": [
+      {
+        "name": "continuous-native-SQL-two-ticks-no-overlap",
+        "passed": true,
+        "jobs": 2,
+        "intents": 2,
+        "attempts_each": 1
+      },
+      {
+        "name": "actual-canonical-OnCalendar-unit-native-SQL",
+        "passed": true,
+        "persistent_backfill": false,
+        "attempts": 1
+      },
+      {
+        "name": "actual-TERM-unknown-explicit-restart-no-replay",
+        "passed": true,
+        "attempts": 1,
+        "intents": 0,
+        "latch_retained": true
+      },
+      {
+        "name": "actual-native-application-owned-adapter-ack",
+        "passed": true,
+        "provider_delivery_claim": false
+      }
+    ],
+    "status": "passed",
+    "boundaries": [
+      "owned Linux user-manager and synthetic local PG/application only",
+      "no real product adoption/provider exactly-once/physical-host acceptance"
+    ],
+    "postgres_binary_pins_start": {
+      "/home/mustafaerbay.guest/zee-k276/tools/postgresql-16.15/bin/postgres": "0fcd480e0a3eada995ea3e8c898f2eb2747eb5d5755ff339878e68f8c72735f9",
+      "/home/mustafaerbay.guest/zee-k276/tools/postgresql-16.15/bin/initdb": "08ab0df4955c326a09e2b36b1c3aeecb990b654baf7f0936a1152f786aff521a",
+      "/home/mustafaerbay.guest/zee-k276/tools/postgresql-16.15/bin/pg_ctl": "f608d0dbe8d700c1cf42239b53a70516e1bb27d46b95e6342ddd96903f7a60e6",
+      "/home/mustafaerbay.guest/zee-k276/tools/postgresql-16.15/bin/psql": "cb031d6cddf04597094b6a30e82fdc7c1ac5f80f9371f38b7b0641ae2cfe68d6"
+    },
+    "source_pins_start": {
+      "scripts/dispatcher-service.py": "cd70cdce028c88afb4bb8e741a034c34f82b080aafa5511b049b06f220342f0e",
+      "scripts/finite_timer.py": "b75dc1af6da8505e7a3f984868b64da72f44e015842f0704aaaa4f2726cc7a88",
+      "scripts/lifecycle_core.py": "e76fe65b6103fc4732aafc4468afc5bbf3d0699a0f79d7f74879165636ebb1a9",
+      "scripts/worker-supervisor.py": "560bec4e4e36d2aa856936d9d32412bb9106b61b25a871495287e2287e3c6642",
+      "scripts/credential-baslat.py": {
+        "sha256_binding": 0
+      },
+      "scripts/native-capabilities.py": "0a336d915e6618b7bc9134598337c0e442a7d455008fa937a0e49771fe7d94fc",
+      "scripts/native-metrics.py": "d5d12902358591365ff201c13c44b255d265c49c71befabcdef0575fe7e854c4",
+      "scripts/postgresql-tls-ci.py": "8ef71f0070b9e954b70d0ec24c50c0285b4bfb76de4ed40490efd9eac78cad77",
+      "scripts/postgresql-tls11-control.py": "cdf477d154f9fe11086c4829b34b9a412156feabdee1404b5bd863026f2ba639",
+      "scripts/tests/service-native-support.py": "799ff1cd397e96897d7f47941146eb3e1606c814f234390cbe13f8703d5e8bf9",
+      "scripts/job-dispatcher.py": "06bc1f67f87a07b1ffdeb1547ff83a4d05cc926f2825df73b94cc36f86caba0e",
+      "scripts/is-kuyrugu-ci.py": "612f71f03150d7506939b89baa5c7d2e7e8e9c7f3913db91f84d7f1207e6551f",
+      "scripts/parola-goc-ci.py": "cdced5a360ccc5b1ca9293f247d0dd96b41353997483fb2acd8119581f0e7309",
+      "scripts/postgresql-commit-proxy.py": "3c8a0de39e838d12db431803d69271805ad297730338e527053a51b012da1454",
+      "scripts/tests/dispatcher-service-native.py": "0d8cd4085712142acbe0167097106bacff31becafc1bafaf3217d5ddd0de0806",
+      "dogfood/zee-cekirdek/is-kuyrugu/kaynak/kuyruk.dil": "4547249cba65f9866936ea6e173ba04337f8d3fa3a1dc03afe9a6a4eb7264645",
+      "dogfood/zee-cekirdek/is-kuyrugu-dispatcher/ana.dil": "c664502abf51f6ca6c48e85aaa55ab5da8a0a6bf25954b8640a054b44adb6b9b",
+      "dogfood/zee-cekirdek/is-kuyrugu-dispatcher/proje.dil": "b5d5a964926b55c363ed5e869512c23655fc3822b6434b35ac7235fdfeaca26d",
+      "dogfood/zee-cekirdek/is-kuyrugu-dispatcher/gocler/0001_kuyruk.sql": "34b6eb8fa760c65c47c89bdc139d0696ff44a348324b204f165d0039bd7537e5",
+      "dogfood/zee-cekirdek/is-kuyrugu-dispatcher/gocler/0002_kira_sahibi.sql": "926de3f9db7e4310e65be111588fddc6a78dbbb213db5c242148f0d9a182df5a",
+      "dogfood/zee-cekirdek/is-kuyrugu-dispatcher/gocler/0003_sabit_niyet.sql": "1c5fc4e562f2d7d046968953f95af4d10de58294fc315b715011977f3801e156"
+    },
+    "commands": [
+      {
+        "sequence": 1,
+        "role": "tracked-consumed-files",
+        "log": "0001-tracked-consumed-files.log",
+        "status": "passed",
+        "bytes": 816,
+        "sha256": "1c6387befe43abf99f236fab24cfc1f355c614cbaa159865e52c238248dcf182"
+      },
+      {
+        "sequence": 2,
+        "role": "build",
+        "log": "0002-build.log",
+        "status": "passed",
+        "bytes": 169,
+        "sha256": "b93f1fe3382d9f14a4fd468b2c346388c3e2552fb9e4633da32b70eee3da3b76"
+      },
+      {
+        "sequence": 3,
+        "role": "manager",
+        "log": "0003-manager.log",
+        "status": "passed",
+        "bytes": 8,
+        "sha256": "a4ecc5c87d811bbff7a118c17ef8cf83318cb623a103c15b8549089aa2a7f0ac"
+      },
+      {
+        "sequence": 4,
+        "role": "owned-PG-tool",
+        "log": "0004-owned-PG-tool.log",
+        "status": "passed",
+        "bytes": 1134,
+        "sha256": "6c53bcd83bf97a87c9e988a5df37c5959e3e0b9b7322a258f886123029b53843"
+      },
+      {
+        "sequence": 5,
+        "role": "owned-PG-tool",
+        "log": "0005-owned-PG-tool.log",
+        "status": "passed",
+        "bytes": 1063,
+        "sha256": "d85574d6f20d5ea1196036f6bf773aff19e3195a79effa0734cc36a3932cc776"
+      },
+      {
+        "sequence": 6,
+        "role": "owned-PG-tool",
+        "log": "0006-owned-PG-tool.log",
+        "status": "passed",
+        "bytes": 2128,
+        "sha256": "602de092c7c78ff0eb5d6877928bcbdaf5a149dd73b25518de2cf11d368169b3"
+      },
+      {
+        "sequence": 7,
+        "role": "owned-PG-tool",
+        "log": "0007-owned-PG-tool.log",
+        "status": "passed",
+        "bytes": 61,
+        "sha256": "f08ddac3de021da3a1b364489940aae250c85bafaae29a600c0e67d54e61cc6a"
+      },
+      {
+        "sequence": 8,
+        "role": "owned-PG-tool",
+        "log": "0008-owned-PG-tool.log",
+        "status": "passed",
+        "bytes": 865,
+        "sha256": "74ee8a8659cc5d1be431958f3dbba6a76329d19227b09f13d32e86a4371a1b48"
+      },
+      {
+        "sequence": 9,
+        "role": "owned-PG-tool",
+        "log": "0009-owned-PG-tool.log",
+        "status": "passed",
+        "bytes": 52,
+        "sha256": "66afd0411ccc09366e99fdd99b85f21899c8d2d064f5835126859618802153ad"
+      },
+      {
+        "sequence": 10,
+        "role": "owned-PG-tool",
+        "log": "0010-owned-PG-tool.log",
+        "status": "passed",
+        "bytes": 28,
+        "sha256": "4bbf9e40bb4cab414db862e0f93affb1d83c24ec83285eea9e7c2efbbc84d9fa"
+      },
+      {
+        "sequence": 11,
+        "role": "SQL-observer",
+        "log": "0011-SQL-observer.log",
+        "status": "passed",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "sequence": 12,
+        "role": "SQL-observer",
+        "log": "0012-SQL-observer.log",
+        "status": "passed",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "sequence": 13,
+        "role": "SQL-observer",
+        "log": "0013-SQL-observer.log",
+        "status": "passed",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "sequence": 14,
+        "role": "native-queue-operation",
+        "log": "0014-native-queue-operation.log",
+        "status": "passed",
+        "bytes": 2,
+        "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+      },
+      {
+        "sequence": 15,
+        "role": "native-queue-operation",
+        "log": "0015-native-queue-operation.log",
+        "status": "passed",
+        "bytes": 2,
+        "sha256": "53c234e5e8472b6ac51c1ae1cab3fe06fad053beb8ebfd8977b010655bfdd3c3"
+      },
+      {
+        "sequence": 16,
+        "role": "render-daemon",
+        "log": "0016-render-daemon.log",
+        "status": "passed",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "sequence": 17,
+        "role": "verify-daemon",
+        "log": "0017-verify-daemon.log",
+        "status": "passed",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "sequence": 18,
+        "role": "absent-zee-dispatch.service",
+        "log": "0018-absent-zee-dispatch.service.log",
+        "status": "passed",
+        "bytes": 10,
+        "sha256": "391bc413c3044926b4afa41806bf4a5c4fad68a3165b8563fe1bffec0792fc76"
+      },
+      {
+        "sequence": 19,
+        "role": "link-zee-dispatch.service",
+        "log": "0019-link-zee-dispatch.service.log",
+        "status": "passed",
+        "bytes": 201,
+        "sha256": "cc0884ee817f586984f6556fa71bd360aa9839756250710f3cd7b0304e1e49ec"
+      },
+      {
+        "sequence": 20,
+        "role": "start-zee-dispatch.service",
+        "log": "0020-start-zee-dispatch.service.log",
+        "status": "passed",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "sequence": 21,
+        "role": "SQL-observer",
+        "log": "0021-SQL-observer.log",
+        "status": "passed",
+        "bytes": 2,
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "sequence": 22,
+        "role": "SQL-observer",
+        "log": "0022-SQL-observer.log",
+        "status": "passed",
+        "bytes": 2,
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "sequence": 23,
+        "role": "SQL-observer",
+        "log": "0023-SQL-observer.log",
+        "status": "passed",
+        "bytes": 2,
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "sequence": 24,
+        "role": "SQL-observer",
+        "log": "0024-SQL-observer.log",
+        "status": "passed",
+        "bytes": 2,
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "sequence": 25,
+        "role": "SQL-observer",
+        "log": "0025-SQL-observer.log",
+        "status": "passed",
+        "bytes": 2,
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "sequence": 26,
+        "role": "SQL-observer",
+        "log": "0026-SQL-observer.log",
+        "status": "passed",
+        "bytes": 2,
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "sequence": 27,
+        "role": "SQL-observer",
+        "log": "0027-SQL-observer.log",
+        "status": "passed",
+        "bytes": 2,
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "sequence": 28,
+        "role": "SQL-observer",
+        "log": "0028-SQL-observer.log",
+        "status": "passed",
+        "bytes": 2,
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "sequence": 29,
+        "role": "SQL-observer",
+        "log": "0029-SQL-observer.log",
+        "status": "passed",
+        "bytes": 2,
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "sequence": 30,
+        "role": "SQL-observer",
+        "log": "0030-SQL-observer.log",
+        "status": "passed",
+        "bytes": 2,
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "sequence": 31,
+        "role": "SQL-observer",
+        "log": "0031-SQL-observer.log",
+        "status": "passed",
+        "bytes": 2,
+        "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+      },
+      {
+        "sequence": 32,
+        "role": "SQL-observer",
+        "log": "0032-SQL-observer.log",
+        "status": "passed",
+        "bytes": 2,
+        "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+      },
+      {
+        "sequence": 33,
+        "role": "SQL-observer",
+        "log": "0033-SQL-observer.log",
+        "status": "passed",
+        "bytes": 2,
+        "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+      },
+      {
+        "sequence": 34,
+        "role": "SQL-observer",
+        "log": "0034-SQL-observer.log",
+        "status": "passed",
+        "bytes": 2,
+        "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+      },
+      {
+        "sequence": 35,
+        "role": "SQL-observer",
+        "log": "0035-SQL-observer.log",
+        "status": "passed",
+        "bytes": 2,
+        "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+      },
+      {
+        "sequence": 36,
+        "role": "SQL-observer",
+        "log": "0036-SQL-observer.log",
+        "status": "passed",
+        "bytes": 2,
+        "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+      },
+      {
+        "sequence": 37,
+        "role": "SQL-observer",
+        "log": "0037-SQL-observer.log",
+        "status": "passed",
+        "bytes": 2,
+        "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+      },
+      {
+        "sequence": 38,
+        "role": "SQL-observer",
+        "log": "0038-SQL-observer.log",
+        "status": "passed",
+        "bytes": 2,
+        "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+      },
+      {
+        "sequence": 39,
+        "role": "SQL-observer",
+        "log": "0039-SQL-observer.log",
+        "status": "passed",
+        "bytes": 2,
+        "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+      },
+      {
+        "sequence": 40,
+        "role": "SQL-observer",
+        "log": "0040-SQL-observer.log",
+        "status": "passed",
+        "bytes": 2,
+        "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+      },
+      {
+        "sequence": 41,
+        "role": "SQL-observer",
+        "log": "0041-SQL-observer.log",
+        "status": "passed",
+        "bytes": 2,
+        "sha256": "53c234e5e8472b6ac51c1ae1cab3fe06fad053beb8ebfd8977b010655bfdd3c3"
+      },
+      {
+        "sequence": 42,
+        "role": "stop-zee-dispatch.service",
+        "log": "0042-stop-zee-dispatch.service.log",
+        "status": "passed",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "sequence": 43,
+        "role": "cgroup-zee-dispatch.service",
+        "log": "0043-cgroup-zee-dispatch.service.log",
+        "status": "passed",
+        "bytes": 1,
+        "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+      },
+      {
+        "sequence": 44,
+        "role": "SQL-observer",
+        "log": "0044-SQL-observer.log",
+        "status": "passed",
+        "bytes": 5,
+        "sha256": "d117fa006ba9208500b2930ce69cbde436c647afa917cb7396a9bc9111a46dd2"
+      },
+      {
+        "sequence": 45,
+        "role": "SQL-observer",
+        "log": "0045-SQL-observer.log",
+        "status": "passed",
+        "bytes": 2,
+        "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+      },
+      {
+        "sequence": 46,
+        "role": "SQL-observer",
+        "log": "0046-SQL-observer.log",
+        "status": "passed",
+        "bytes": 5,
+        "sha256": "d117fa006ba9208500b2930ce69cbde436c647afa917cb7396a9bc9111a46dd2"
+      },
+      {
+        "sequence": 47,
+        "role": "SQL-observer",
+        "log": "0047-SQL-observer.log",
+        "status": "passed",
+        "bytes": 2,
+        "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+      },
+      {
+        "sequence": 48,
+        "role": "stop-zee-dispatch.service",
+        "log": "0048-stop-zee-dispatch.service.log",
+        "status": "passed",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "sequence": 49,
+        "role": "cgroup-zee-dispatch.service",
+        "log": "0049-cgroup-zee-dispatch.service.log",
+        "status": "passed",
+        "bytes": 1,
+        "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+      },
+      {
+        "sequence": 50,
+        "role": "reload",
+        "log": "0050-reload.log",
+        "status": "passed",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "sequence": 51,
+        "role": "released-zee-dispatch.service",
+        "log": "0051-released-zee-dispatch.service.log",
+        "status": "passed",
+        "bytes": 10,
+        "sha256": "391bc413c3044926b4afa41806bf4a5c4fad68a3165b8563fe1bffec0792fc76"
+      },
+      {
+        "sequence": 52,
+        "role": "SQL-observer",
+        "log": "0052-SQL-observer.log",
+        "status": "passed",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "sequence": 53,
+        "role": "native-queue-operation",
+        "log": "0053-native-queue-operation.log",
+        "status": "passed",
+        "bytes": 2,
+        "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+      },
+      {
+        "sequence": 54,
+        "role": "render-calendar",
+        "log": "0054-render-calendar.log",
+        "status": "passed",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "sequence": 55,
+        "role": "verify-calendar",
+        "log": "0055-verify-calendar.log",
+        "status": "passed",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "sequence": 56,
+        "role": "calendar-check",
+        "log": "0056-calendar-check.log",
+        "status": "passed",
+        "bytes": 101,
+        "sha256": "2682f135589738536c1a9e41d6a22847cebe1e474c6b3af885bb2eb8f3b23b52"
+      },
+      {
+        "sequence": 57,
+        "role": "absent-zee-dispatch.service",
+        "log": "0057-absent-zee-dispatch.service.log",
+        "status": "passed",
+        "bytes": 10,
+        "sha256": "391bc413c3044926b4afa41806bf4a5c4fad68a3165b8563fe1bffec0792fc76"
+      },
+      {
+        "sequence": 58,
+        "role": "absent-zee-dispatch.timer",
+        "log": "0058-absent-zee-dispatch.timer.log",
+        "status": "passed",
+        "bytes": 10,
+        "sha256": "391bc413c3044926b4afa41806bf4a5c4fad68a3165b8563fe1bffec0792fc76"
+      },
+      {
+        "sequence": 59,
+        "role": "link-zee-dispatch.service",
+        "log": "0059-link-zee-dispatch.service.log",
+        "status": "passed",
+        "bytes": 203,
+        "sha256": "39059aff7221367ea24912d49de081e6a98d0afa44a1dc257e58bfe1b28cf0b8"
+      },
+      {
+        "sequence": 60,
+        "role": "link-zee-dispatch.timer",
+        "log": "0060-link-zee-dispatch.timer.log",
+        "status": "passed",
+        "bytes": 199,
+        "sha256": "fb9099215cc589804fde33b058e8ebf3d4577943d5c8d0c43a7687e207ea93da"
+      },
+      {
+        "sequence": 61,
+        "role": "start-zee-dispatch.timer",
+        "log": "0061-start-zee-dispatch.timer.log",
+        "status": "passed",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "sequence": 62,
+        "role": "SQL-observer",
+        "log": "0062-SQL-observer.log",
+        "status": "passed",
+        "bytes": 6,
+        "sha256": "ed1a545bb85e55816bbf9566b028b2a0bc456b88f49f6f266c0401048824194b"
+      },
+      {
+        "sequence": 63,
+        "role": "SQL-observer",
+        "log": "0063-SQL-observer.log",
+        "status": "passed",
+        "bytes": 6,
+        "sha256": "ed1a545bb85e55816bbf9566b028b2a0bc456b88f49f6f266c0401048824194b"
+      },
+      {
+        "sequence": 64,
+        "role": "SQL-observer",
+        "log": "0064-SQL-observer.log",
+        "status": "passed",
+        "bytes": 6,
+        "sha256": "ed1a545bb85e55816bbf9566b028b2a0bc456b88f49f6f266c0401048824194b"
+      },
+      {
+        "sequence": 65,
+        "role": "SQL-observer",
+        "log": "0065-SQL-observer.log",
+        "status": "passed",
+        "bytes": 6,
+        "sha256": "ed1a545bb85e55816bbf9566b028b2a0bc456b88f49f6f266c0401048824194b"
+      },
+      {
+        "sequence": 66,
+        "role": "SQL-observer",
+        "log": "0066-SQL-observer.log",
+        "status": "passed",
+        "bytes": 6,
+        "sha256": "ed1a545bb85e55816bbf9566b028b2a0bc456b88f49f6f266c0401048824194b"
+      },
+      {
+        "sequence": 67,
+        "role": "SQL-observer",
+        "log": "0067-SQL-observer.log",
+        "status": "passed",
+        "bytes": 6,
+        "sha256": "ed1a545bb85e55816bbf9566b028b2a0bc456b88f49f6f266c0401048824194b"
+      },
+      {
+        "sequence": 68,
+        "role": "SQL-observer",
+        "log": "0068-SQL-observer.log",
+        "status": "passed",
+        "bytes": 6,
+        "sha256": "ed1a545bb85e55816bbf9566b028b2a0bc456b88f49f6f266c0401048824194b"
+      },
+      {
+        "sequence": 69,
+        "role": "SQL-observer",
+        "log": "0069-SQL-observer.log",
+        "status": "passed",
+        "bytes": 6,
+        "sha256": "ed1a545bb85e55816bbf9566b028b2a0bc456b88f49f6f266c0401048824194b"
+      },
+      {
+        "sequence": 70,
+        "role": "SQL-observer",
+        "log": "0070-SQL-observer.log",
+        "status": "passed",
+        "bytes": 6,
+        "sha256": "ed1a545bb85e55816bbf9566b028b2a0bc456b88f49f6f266c0401048824194b"
+      },
+      {
+        "sequence": 71,
+        "role": "SQL-observer",
+        "log": "0071-SQL-observer.log",
+        "status": "passed",
+        "bytes": 6,
+        "sha256": "ed1a545bb85e55816bbf9566b028b2a0bc456b88f49f6f266c0401048824194b"
+      },
+      {
+        "sequence": 72,
+        "role": "SQL-observer",
+        "log": "0072-SQL-observer.log",
+        "status": "passed",
+        "bytes": 6,
+        "sha256": "ed1a545bb85e55816bbf9566b028b2a0bc456b88f49f6f266c0401048824194b"
+      },
+      {
+        "sequence": 73,
+        "role": "SQL-observer",
+        "log": "0073-SQL-observer.log",
+        "status": "passed",
+        "bytes": 6,
+        "sha256": "ed1a545bb85e55816bbf9566b028b2a0bc456b88f49f6f266c0401048824194b"
+      },
+      {
+        "sequence": 74,
+        "role": "SQL-observer",
+        "log": "0074-SQL-observer.log",
+        "status": "passed",
+        "bytes": 6,
+        "sha256": "ed1a545bb85e55816bbf9566b028b2a0bc456b88f49f6f266c0401048824194b"
+      },
+      {
+        "sequence": 75,
+        "role": "SQL-observer",
+        "log": "0075-SQL-observer.log",
+        "status": "passed",
+        "bytes": 6,
+        "sha256": "ed1a545bb85e55816bbf9566b028b2a0bc456b88f49f6f266c0401048824194b"
+      },
+      {
+        "sequence": 76,
+        "role": "SQL-observer",
+        "log": "0076-SQL-observer.log",
+        "status": "passed",
+        "bytes": 6,
+        "sha256": "ed1a545bb85e55816bbf9566b028b2a0bc456b88f49f6f266c0401048824194b"
+      },
+      {
+        "sequence": 77,
+        "role": "SQL-observer",
+        "log": "0077-SQL-observer.log",
+        "status": "passed",
+        "bytes": 6,
+        "sha256": "ed1a545bb85e55816bbf9566b028b2a0bc456b88f49f6f266c0401048824194b"
+      },
+      {
+        "sequence": 78,
+        "role": "SQL-observer",
+        "log": "0078-SQL-observer.log",
+        "status": "passed",
+        "bytes": 6,
+        "sha256": "ed1a545bb85e55816bbf9566b028b2a0bc456b88f49f6f266c0401048824194b"
+      },
+      {
+        "sequence": 79,
+        "role": "SQL-observer",
+        "log": "0079-SQL-observer.log",
+        "status": "passed",
+        "bytes": 6,
+        "sha256": "ed1a545bb85e55816bbf9566b028b2a0bc456b88f49f6f266c0401048824194b"
+      },
+      {
+        "sequence": 80,
+        "role": "SQL-observer",
+        "log": "0080-SQL-observer.log",
+        "status": "passed",
+        "bytes": 7,
+        "sha256": "2fab15fb1a3d16d011b309eef3ba2e32db1cabf25a1e60264d31ca72e2c8aae3"
+      },
+      {
+        "sequence": 81,
+        "role": "SQL-observer",
+        "log": "0081-SQL-observer.log",
+        "status": "passed",
+        "bytes": 5,
+        "sha256": "d117fa006ba9208500b2930ce69cbde436c647afa917cb7396a9bc9111a46dd2"
+      },
+      {
+        "sequence": 82,
+        "role": "stop-zee-dispatch.timer",
+        "log": "0082-stop-zee-dispatch.timer.log",
+        "status": "passed",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "sequence": 83,
+        "role": "cgroup-zee-dispatch.timer",
+        "log": "0083-cgroup-zee-dispatch.timer.log",
+        "status": "passed",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "sequence": 84,
+        "role": "stop-zee-dispatch.service",
+        "log": "0084-stop-zee-dispatch.service.log",
+        "status": "passed",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "sequence": 85,
+        "role": "cgroup-zee-dispatch.service",
+        "log": "0085-cgroup-zee-dispatch.service.log",
+        "status": "passed",
+        "bytes": 1,
+        "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+      },
+      {
+        "sequence": 86,
+        "role": "SQL-observer",
+        "log": "0086-SQL-observer.log",
+        "status": "passed",
+        "bytes": 2,
+        "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+      },
+      {
+        "sequence": 87,
+        "role": "stop-zee-dispatch.timer",
+        "log": "0087-stop-zee-dispatch.timer.log",
+        "status": "passed",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "sequence": 88,
+        "role": "cgroup-zee-dispatch.timer",
+        "log": "0088-cgroup-zee-dispatch.timer.log",
+        "status": "passed",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "sequence": 89,
+        "role": "stop-zee-dispatch.service",
+        "log": "0089-stop-zee-dispatch.service.log",
+        "status": "passed",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "sequence": 90,
+        "role": "cgroup-zee-dispatch.service",
+        "log": "0090-cgroup-zee-dispatch.service.log",
+        "status": "passed",
+        "bytes": 1,
+        "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+      },
+      {
+        "sequence": 91,
+        "role": "reload",
+        "log": "0091-reload.log",
+        "status": "passed",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "sequence": 92,
+        "role": "released-zee-dispatch.service",
+        "log": "0092-released-zee-dispatch.service.log",
+        "status": "passed",
+        "bytes": 10,
+        "sha256": "391bc413c3044926b4afa41806bf4a5c4fad68a3165b8563fe1bffec0792fc76"
+      },
+      {
+        "sequence": 93,
+        "role": "released-zee-dispatch.timer",
+        "log": "0093-released-zee-dispatch.timer.log",
+        "status": "passed",
+        "bytes": 10,
+        "sha256": "391bc413c3044926b4afa41806bf4a5c4fad68a3165b8563fe1bffec0792fc76"
+      },
+      {
+        "sequence": 94,
+        "role": "SQL-observer",
+        "log": "0094-SQL-observer.log",
+        "status": "passed",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "sequence": 95,
+        "role": "native-queue-operation",
+        "log": "0095-native-queue-operation.log",
+        "status": "passed",
+        "bytes": 2,
+        "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+      },
+      {
+        "sequence": 96,
+        "role": "SQL-observer",
+        "log": "0096-SQL-observer.log",
+        "status": "passed",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "sequence": 97,
+        "role": "render-unknown",
+        "log": "0097-render-unknown.log",
+        "status": "passed",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "sequence": 98,
+        "role": "verify-unknown",
+        "log": "0098-verify-unknown.log",
+        "status": "passed",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "sequence": 99,
+        "role": "absent-zee-dispatch.service",
+        "log": "0099-absent-zee-dispatch.service.log",
+        "status": "passed",
+        "bytes": 10,
+        "sha256": "391bc413c3044926b4afa41806bf4a5c4fad68a3165b8563fe1bffec0792fc76"
+      },
+      {
+        "sequence": 100,
+        "role": "link-zee-dispatch.service",
+        "log": "0100-link-zee-dispatch.service.log",
+        "status": "passed",
+        "bytes": 202,
+        "sha256": "6798a7f5b4637a4938e7839a229132de40d9cb76fdc0ba5fff1507999f72818b"
+      },
+      {
+        "sequence": 101,
+        "role": "start-zee-dispatch.service",
+        "log": "0101-start-zee-dispatch.service.log",
+        "status": "passed",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "sequence": 102,
+        "role": "SQL-observer",
+        "log": "0102-SQL-observer.log",
+        "status": "passed",
+        "bytes": 2,
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "sequence": 103,
+        "role": "SQL-observer",
+        "log": "0103-SQL-observer.log",
+        "status": "passed",
+        "bytes": 2,
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "sequence": 104,
+        "role": "SQL-observer",
+        "log": "0104-SQL-observer.log",
+        "status": "passed",
+        "bytes": 2,
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "sequence": 105,
+        "role": "SQL-observer",
+        "log": "0105-SQL-observer.log",
+        "status": "passed",
+        "bytes": 2,
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "sequence": 106,
+        "role": "SQL-observer",
+        "log": "0106-SQL-observer.log",
+        "status": "passed",
+        "bytes": 2,
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "sequence": 107,
+        "role": "SQL-observer",
+        "log": "0107-SQL-observer.log",
+        "status": "passed",
+        "bytes": 2,
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "sequence": 108,
+        "role": "SQL-observer",
+        "log": "0108-SQL-observer.log",
+        "status": "passed",
+        "bytes": 2,
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "sequence": 109,
+        "role": "SQL-observer",
+        "log": "0109-SQL-observer.log",
+        "status": "passed",
+        "bytes": 2,
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "sequence": 110,
+        "role": "SQL-observer",
+        "log": "0110-SQL-observer.log",
+        "status": "passed",
+        "bytes": 2,
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "sequence": 111,
+        "role": "SQL-observer",
+        "log": "0111-SQL-observer.log",
+        "status": "passed",
+        "bytes": 2,
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "sequence": 112,
+        "role": "SQL-observer",
+        "log": "0112-SQL-observer.log",
+        "status": "passed",
+        "bytes": 2,
+        "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+      },
+      {
+        "sequence": 113,
+        "role": "stop-zee-dispatch.service",
+        "log": "0113-stop-zee-dispatch.service.log",
+        "status": "passed",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "sequence": 114,
+        "role": "cgroup-zee-dispatch.service",
+        "log": "0114-cgroup-zee-dispatch.service.log",
+        "status": "passed",
+        "bytes": 1,
+        "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+      },
+      {
+        "sequence": 115,
+        "role": "SQL-observer",
+        "log": "0115-SQL-observer.log",
+        "status": "passed",
+        "bytes": 2,
+        "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+      },
+      {
+        "sequence": 116,
+        "role": "start-zee-dispatch.service",
+        "log": "0116-start-zee-dispatch.service.log",
+        "status": "passed",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "sequence": 117,
+        "role": "failed-paused",
+        "log": "0117-failed-paused.log",
+        "status": "passed",
+        "bytes": 7,
+        "sha256": "45df5ad5e0ecfa54d3226343e0e6857337494ba6e32f189d1174070665d8c659"
+      },
+      {
+        "sequence": 118,
+        "role": "failed-paused",
+        "log": "0118-failed-paused.log",
+        "status": "passed",
+        "bytes": 7,
+        "sha256": "45df5ad5e0ecfa54d3226343e0e6857337494ba6e32f189d1174070665d8c659"
+      },
+      {
+        "sequence": 119,
+        "role": "failed-paused",
+        "log": "0119-failed-paused.log",
+        "status": "passed",
+        "bytes": 7,
+        "sha256": "45df5ad5e0ecfa54d3226343e0e6857337494ba6e32f189d1174070665d8c659"
+      },
+      {
+        "sequence": 120,
+        "role": "failed-paused",
+        "log": "0120-failed-paused.log",
+        "status": "passed",
+        "bytes": 7,
+        "sha256": "45df5ad5e0ecfa54d3226343e0e6857337494ba6e32f189d1174070665d8c659"
+      },
+      {
+        "sequence": 121,
+        "role": "failed-paused",
+        "log": "0121-failed-paused.log",
+        "status": "passed",
+        "bytes": 7,
+        "sha256": "45df5ad5e0ecfa54d3226343e0e6857337494ba6e32f189d1174070665d8c659"
+      },
+      {
+        "sequence": 122,
+        "role": "failed-paused",
+        "log": "0122-failed-paused.log",
+        "status": "passed",
+        "bytes": 7,
+        "sha256": "45df5ad5e0ecfa54d3226343e0e6857337494ba6e32f189d1174070665d8c659"
+      },
+      {
+        "sequence": 123,
+        "role": "failed-paused",
+        "log": "0123-failed-paused.log",
+        "status": "passed",
+        "bytes": 7,
+        "sha256": "45df5ad5e0ecfa54d3226343e0e6857337494ba6e32f189d1174070665d8c659"
+      },
+      {
+        "sequence": 124,
+        "role": "failed-paused",
+        "log": "0124-failed-paused.log",
+        "status": "passed",
+        "bytes": 7,
+        "sha256": "45df5ad5e0ecfa54d3226343e0e6857337494ba6e32f189d1174070665d8c659"
+      },
+      {
+        "sequence": 125,
+        "role": "failed-paused",
+        "log": "0125-failed-paused.log",
+        "status": "passed",
+        "bytes": 7,
+        "sha256": "45df5ad5e0ecfa54d3226343e0e6857337494ba6e32f189d1174070665d8c659"
+      },
+      {
+        "sequence": 126,
+        "role": "failed-paused",
+        "log": "0126-failed-paused.log",
+        "status": "passed",
+        "bytes": 7,
+        "sha256": "6da5b18878e110928643ebcc38dbb7552cf3a296eea56493e23edc2b93eecff8"
+      },
+      {
+        "sequence": 127,
+        "role": "SQL-observer",
+        "log": "0127-SQL-observer.log",
+        "status": "passed",
+        "bytes": 2,
+        "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+      },
+      {
+        "sequence": 128,
+        "role": "SQL-observer",
+        "log": "0128-SQL-observer.log",
+        "status": "passed",
+        "bytes": 2,
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "sequence": 129,
+        "role": "stop-zee-dispatch.service",
+        "log": "0129-stop-zee-dispatch.service.log",
+        "status": "passed",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "sequence": 130,
+        "role": "cgroup-zee-dispatch.service",
+        "log": "0130-cgroup-zee-dispatch.service.log",
+        "status": "passed",
+        "bytes": 1,
+        "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+      },
+      {
+        "sequence": 131,
+        "role": "reload",
+        "log": "0131-reload.log",
+        "status": "passed",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "sequence": 132,
+        "role": "released-zee-dispatch.service",
+        "log": "0132-released-zee-dispatch.service.log",
+        "status": "passed",
+        "bytes": 10,
+        "sha256": "391bc413c3044926b4afa41806bf4a5c4fad68a3165b8563fe1bffec0792fc76"
+      },
+      {
+        "sequence": 133,
+        "role": "application-adapter",
+        "log": "0133-application-adapter.log",
+        "status": "passed",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "sequence": 134,
+        "role": "owned-PG-tool",
+        "log": "0134-owned-PG-tool.log",
+        "status": "passed",
+        "bytes": 56,
+        "sha256": "ca19178a35ab4153b75b494963b66ce8243e1b94c173107c87b44d09db23652d"
+      }
+    ],
+    "build": {
+      "schema": "zee-build-v1",
+      "version": "0.8.0-dev",
+      "source_sha": "66e4149e53451111d153f47283c219079a8d1cab",
+      "source_date": "2026-10-15",
+      "channel": "development",
+      "dirty": false
+    },
+    "postgres_version": "postgres (PostgreSQL) 16.15",
+    "retained_latch_sha256": "9390eaecfc326878a771e4c18441303e130163e5ed1718353c95cb01103440c4",
+    "postgres_binary_pins_end_equal": true,
+    "source_pins_end_equal": true,
+    "binary_end_equal": true,
+    "temporary_cleanup_complete": true,
+    "cleanup_errors": [],
+    "owned_units_released": true
+  },
+  "bindings": [
+    {
+      "original_field": [
+        "source_pins_start",
+        "scripts/credential-baslat.py"
+      ],
+      "sha256": "6894667f5d2d529434c235c9ae54aec64d4fb3c1c25712c25fb7f710eee9961f"
+    }
+  ]
+}

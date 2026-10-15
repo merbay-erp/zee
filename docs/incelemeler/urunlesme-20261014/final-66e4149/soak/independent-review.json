@@ -1,0 +1,31 @@
+{
+  "status": "passed",
+  "source_sha": "66e4149e53451111d153f47283c219079a8d1cab",
+  "tree": "936eb74d6ce14b1bf9709f03756e0184d7428fa2",
+  "proof_sha256": "4070ae68168a4434e30f2119269e7d2cc2d1d7adc2c91716e9ec0361e13901dd",
+  "actual_seconds": 1800.8595792499837,
+  "requested_seconds": 1800,
+  "window_seconds": 60,
+  "actual_raw_samples": 360,
+  "compiler": {
+    "first_kib": 20112,
+    "last_kib": 20144,
+    "growth_percent": 1,
+    "growth_kib": 32
+  },
+  "dillsp": {
+    "first_kib": 17856,
+    "last_kib": 19456,
+    "growth_percent": 9,
+    "growth_kib": 1600
+  },
+  "compiler_periods": 20728,
+  "lsp_periods": 20728,
+  "raw_sample_median_threshold_recomputed": true,
+  "history_sha256": "6272b9084d988d394288dad88b114ae2d0bb65f7d95f4c2959ca7aac08a756e3",
+  "report_sha256": "cafc9d0d3c5196df4253e581bc8e1d02b76298abda5f8a7f15b321ed74b8a3e4",
+  "binary_pins_unchanged": true,
+  "original_and_clone_end_clean": true,
+  "threshold": "both >10percent AND >32768KiB rejects, unchanged",
+  "boundaries": "Actual exactS local1800 soak only, not RC/900/canonicaldelivery/install/Linux/P08/human/platform/release acceptance"
+}

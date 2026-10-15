@@ -47,3 +47,7 @@ bug regression kaydı yoktur. Yeni named host schemas/profil ve CLI yüzeyi
 ADR-064 fixture'a; GB-099 bilinçli güven sınırı ledger'a aynı atomik dalgada
 kaydedilir. RFC/spec norm/FNV, tanı kataloğu, benchmark ADR045/049 geçmişi
 bilinçli değişmez. Gerçek ürün/adoption/P08/publisher/lisans/platform ayrıca açıktır.
+
+## S3 kanıtı
+
+[İkinci dalga exact S3 kabulü](../docs/urunlesme-s3-kabul-20261015.md) bu kararla ilgili actual kohortu ve açık sınırları kaydeder. C1/P33 retleri ve ürün/insan/platform kapıları bu bağlantıyla kapanmaz.

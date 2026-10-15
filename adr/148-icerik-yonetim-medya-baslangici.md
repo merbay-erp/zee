@@ -42,3 +42,7 @@ Host biçimleri uyumluluk fixture kaydına eklendi. Benchmark
 ve compiler/LSP kalıcı cache yoktur; kısa prototype süreleri performans tabanı
 olmaz. Gerçek novice30min, P08/adoption, fiziksel/diğer platform, remote CI ve
 canlı production deployment ayrı kapılardır; teknik starter bu kanıtları üretmez.
+
+## S3 kanıtı
+
+[İkinci dalga exact S3 kabulü](../docs/urunlesme-s3-kabul-20261015.md) bu kararla ilgili actual kohortu ve açık sınırları kaydeder. C1/P33 retleri ve ürün/insan/platform kapıları bu bağlantıyla kapanmaz.

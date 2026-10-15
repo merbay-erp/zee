@@ -1,0 +1,212 @@
+{
+  "schema": "zee-exact-source-ignored-owner-review-1",
+  "status": "passed",
+  "source_sha": "66e4149e53451111d153f47283c219079a8d1cab",
+  "inventory_sha256": "b30e92444392a3b9ac685e03be41b0d51b0008322f4088c542733de41202abfc",
+  "actual_test_binaries": 130,
+  "actual_ignored_cases": 25,
+  "all_25_owners_executed": true,
+  "rows": [
+    {
+      "target": "lib:dil",
+      "test": "postgresql::havuz::testler::izole_pg_pool_metrikleri_wait_timeout_ve_donus_gercek_sinirlar",
+      "covered_by": "metrics8",
+      "executed": true,
+      "evidence_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-retained-native/metrics8/proof.json",
+      "evidence_sha256": "7ade96a0ac3f37559f8735de90a273e45683ef741ab1bece92351b7eb06150be"
+    },
+    {
+      "target": "test:dispatcher_service_testi",
+      "test": "dispatcher_service_native_linux",
+      "covered_by": "linux/dispatcher4",
+      "executed": true,
+      "evidence_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-linux-native/K282-proof.json",
+      "evidence_sha256": "ab5d62533f240d098f2340150f1a7fb6a6e9308520304395a6ea0df7a180e658"
+    },
+    {
+      "target": "test:http_service_testi",
+      "test": "http_service_native_linux",
+      "covered_by": "linux/http7",
+      "executed": true,
+      "evidence_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-linux-http-retry/K283-proof.json",
+      "evidence_sha256": "804adc745d98a7fda7c75621c45b35d855b11b8b1e81c098196cd8b9ac063b21"
+    },
+    {
+      "target": "test:job_dispatcher_testi",
+      "test": "dispatcher_owned_pg_heartbeat_commit_ve_grup_sahipligi",
+      "covered_by": "job-native11",
+      "executed": true,
+      "evidence_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-retained-native/job-native11/proof.json",
+      "evidence_sha256": "c1805c58d8440375cf74f877f54c4fb5897d6143ca29da9c784ee5323a17264e"
+    },
+    {
+      "target": "test:lsp_artimli_testi",
+      "test": "yirmi_bin_satir_proje_duzenleme_olcumu",
+      "covered_by": "release-LSP1/41-observation",
+      "executed": true,
+      "evidence_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-lsp-measurement/MEASUREMENT.json",
+      "evidence_sha256": "0e163b749ef3bca25daf0f99f9cd6db1523054b4ce9db177935519914587ece3"
+    },
+    {
+      "target": "test:mixed_revision_testi",
+      "test": "mixed_revision_native",
+      "covered_by": "mac-native/mixed-revision9",
+      "executed": true,
+      "evidence_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-mac-native/mixed-revision/proof.json",
+      "evidence_sha256": "8d7b323bf39467614008e04eb4b4eb9aba6a97045f26b9812b83185b2b940c90"
+    },
+    {
+      "target": "test:modul_sql_testi",
+      "test": "modul_sql_native_crud_goc_yasam_dongusu",
+      "covered_by": "mac-native/module-sql9",
+      "executed": true,
+      "evidence_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-mac-native/module-sql/proof.json",
+      "evidence_sha256": "3dfa46df7c05337f3ecc8031c8d56e505d17f61a16d691fa258f5e2f71c883ef"
+    },
+    {
+      "target": "test:native_effect_consumer_testi",
+      "test": "native_effect_onbir_sql_smtp_no_replay_vakasi",
+      "covered_by": "smtp-pg-fault277",
+      "executed": true,
+      "evidence_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-retained-native/smtp-pg-fault11/proof.json",
+      "evidence_sha256": "5d257f639a88e0ab134ea8afc5fda31b2263ac362bdb504fb3645c6d92fb26f8"
+    },
+    {
+      "target": "test:native_metrik_host_testi",
+      "test": "native_metrik_http_pg_ve_fd_sahipligi",
+      "covered_by": "metrics8",
+      "executed": true,
+      "evidence_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-retained-native/metrics8/proof.json",
+      "evidence_sha256": "7ade96a0ac3f37559f8735de90a273e45683ef741ab1bece92351b7eb06150be"
+    },
+    {
+      "target": "test:owned_web_kit_testi",
+      "test": "owned_web_kit_dort_native_http_pg_izolasyon_vakasi",
+      "covered_by": "owned-web-pg4",
+      "executed": true,
+      "evidence_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-retained-native/owned-web-pg4/proof.json",
+      "evidence_sha256": "4f71337de622561da2a456b2dd5955a80ee5b1529d53511cc48456f8f1e65c71"
+    },
+    {
+      "target": "test:pdf_host_testi",
+      "test": "pdf_sabit_owned_backend_kabulu",
+      "covered_by": "pdf-backend8",
+      "executed": true,
+      "evidence_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-retained-native/PROOF.json",
+      "evidence_sha256": "3a895dfcaa7e112fdefe0c108fe68c190d4eb0f8d58ef69bd018001c73075401"
+    },
+    {
+      "target": "test:pdf_plugin_testi",
+      "test": "imzali_pdf_zee_native_istek_yanit_kabulu",
+      "covered_by": "mac-native/signed-pdf9",
+      "executed": true,
+      "evidence_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-mac-native/signed-pdf/proof.json",
+      "evidence_sha256": "e37325168d17f075cb059d9fb9297cc67ba1a7af72edefa2c2e86e923b04dfb8"
+    },
+    {
+      "target": "test:postgresql_goc_plani_testi",
+      "test": "izole_goc_durum_kuru_checksum_rol_ve_atomik_uygulama_sinirini_korur",
+      "covered_by": "goc1",
+      "executed": true,
+      "evidence_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-retained-native/postgresql-goc-ci.json",
+      "evidence_sha256": "371722efc66eaece24522679cbad0b521557c27272f69de060b511715e418d38"
+    },
+    {
+      "target": "test:postgresql_testi",
+      "test": "izole_tls_11_erisilebilir_legacy_sunucuyu_reddeder",
+      "covered_by": "pg8",
+      "executed": true,
+      "evidence_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-retained-native/postgresql-tls-ci.json",
+      "evidence_sha256": "be6a7b5d1382dfa48066b5a242a8f4f10970f8edf9f82b827f450a2013263380"
+    },
+    {
+      "target": "test:postgresql_testi",
+      "test": "izole_tls_baska_ca_gercek_sunucuyu_reddeder",
+      "covered_by": "pg8",
+      "executed": true,
+      "evidence_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-retained-native/postgresql-tls-ci.json",
+      "evidence_sha256": "be6a7b5d1382dfa48066b5a242a8f4f10970f8edf9f82b827f450a2013263380"
+    },
+    {
+      "target": "test:postgresql_testi",
+      "test": "izole_tls_deadlock_40p01_tekrarsiz_rollback_ve_yeni_oturum_sagligi",
+      "covered_by": "pg8",
+      "executed": true,
+      "evidence_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-retained-native/postgresql-tls-ci.json",
+      "evidence_sha256": "be6a7b5d1382dfa48066b5a242a8f4f10970f8edf9f82b827f450a2013263380"
+    },
+    {
+      "target": "test:postgresql_testi",
+      "test": "izole_tls_dogru_ca_hostname_ve_tls12_ile_baglanir",
+      "covered_by": "pg8",
+      "executed": true,
+      "evidence_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-retained-native/postgresql-tls-ci.json",
+      "evidence_sha256": "be6a7b5d1382dfa48066b5a242a8f4f10970f8edf9f82b827f450a2013263380"
+    },
+    {
+      "target": "test:postgresql_testi",
+      "test": "izole_tls_null_ve_metin_disini_reddeder_transaction_sagligi_korunur",
+      "covered_by": "pg8",
+      "executed": true,
+      "evidence_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-retained-native/postgresql-tls-ci.json",
+      "evidence_sha256": "be6a7b5d1382dfa48066b5a242a8f4f10970f8edf9f82b827f450a2013263380"
+    },
+    {
+      "target": "test:postgresql_testi",
+      "test": "izole_tls_san_disindaki_ip_hostnameini_reddeder",
+      "covered_by": "pg8",
+      "executed": true,
+      "evidence_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-retained-native/postgresql-tls-ci.json",
+      "evidence_sha256": "be6a7b5d1382dfa48066b5a242a8f4f10970f8edf9f82b827f450a2013263380"
+    },
+    {
+      "target": "test:postgresql_testi",
+      "test": "izole_tls_serialization_40001_tekrarsiz_rollback_ve_yeni_oturum_sagligi",
+      "covered_by": "pg8",
+      "executed": true,
+      "evidence_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-retained-native/postgresql-tls-ci.json",
+      "evidence_sha256": "be6a7b5d1382dfa48066b5a242a8f4f10970f8edf9f82b827f450a2013263380"
+    },
+    {
+      "target": "test:postgresql_testi",
+      "test": "izole_tls_sorgu_parametre_sonuc_ve_goc_sinirlarini_bir_fazlasinda_reddeder",
+      "covered_by": "pg8",
+      "executed": true,
+      "evidence_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-retained-native/postgresql-tls-ci.json",
+      "evidence_sha256": "be6a7b5d1382dfa48066b5a242a8f4f10970f8edf9f82b827f450a2013263380"
+    },
+    {
+      "target": "test:service_fault_testi",
+      "test": "service_fault_native",
+      "covered_by": "mac-native/service-fault2",
+      "executed": true,
+      "evidence_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-mac-native/service-fault/proof.json",
+      "evidence_sha256": "a2b8994e204ad72d1d85161e140b3a5b87ce4fefa2a71de6cdf3b5d9764b42e3"
+    },
+    {
+      "target": "test:starter_content_testi",
+      "test": "icerik_baslangici_native_crud_medya_yonetim",
+      "covered_by": "mac-native/content-starter14",
+      "executed": true,
+      "evidence_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-mac-native/content-starter/proof.json",
+      "evidence_sha256": "7f269184ae9380304b754ce249b0ca2a9004d495c96582afc4351d84a2d35546"
+    },
+    {
+      "target": "test:sureli_hazirlik_testi",
+      "test": "native_pg_tekrarlanan_hazirlik_ve_sigkill_ttl",
+      "covered_by": "readiness-watch-pg15",
+      "executed": true,
+      "evidence_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-retained-native/readiness-watch-pg15/proof.json",
+      "evidence_sha256": "bd0a9b1052d54a5db7e463014f839329af36b369a1ca523043aafd35697384fe"
+    },
+    {
+      "target": "test:web_test_koprusu_testi",
+      "test": "web_test_koprusu_unit_native_http_pg_ve_kaynak_kapsami_birlikte",
+      "covered_by": "mac-native/web-bridge4",
+      "executed": true,
+      "evidence_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-mac-native/web-bridge/results/proof.json",
+      "evidence_sha256": "6a41b660c08f4ff5354c2024104396637685dda6448c5924887c81d783574d0d"
+    }
+  ],
+  "accounting": "Each actual ignored libtest case has one executed primary native/measurement owner; cohort internal scenarios are not added as unique Cargo tests. Two metrics owners intentionally point at one metrics8 cohort."
+}

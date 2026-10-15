@@ -1,0 +1,13 @@
+{
+  "schema": "zee-web-test-bridge-negatives-1",
+  "status": "passed",
+  "cases": [
+    "all_or_none",
+    "suite_exact_hash_before_units",
+    "suite_fifo_no_open",
+    "duplicate_role_rejected",
+    "unit_failure_never_native",
+    "operator_python_role_no_shell"
+  ],
+  "owned_groups_closed": true
+}

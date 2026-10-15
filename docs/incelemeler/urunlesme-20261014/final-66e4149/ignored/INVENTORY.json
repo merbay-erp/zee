@@ -1,0 +1,857 @@
+{
+  "schema": "zee-exact-source-ignored-owner-inventory-1",
+  "source_sha": "66e4149e53451111d153f47283c219079a8d1cab",
+  "status": "inventory-verified-measurement-pending",
+  "actual_test_binaries": 130,
+  "actual_ignored_cases": 25,
+  "executed_owner_cases": 24,
+  "rows": [
+    {
+      "target": "lib:dil",
+      "test": "postgresql::havuz::testler::izole_pg_pool_metrikleri_wait_timeout_ve_donus_gercek_sinirlar",
+      "covered_by": "metrics8",
+      "executed": true
+    },
+    {
+      "target": "test:dispatcher_service_testi",
+      "test": "dispatcher_service_native_linux",
+      "covered_by": "linux/dispatcher4",
+      "executed": true
+    },
+    {
+      "target": "test:http_service_testi",
+      "test": "http_service_native_linux",
+      "covered_by": "linux/http7",
+      "executed": true
+    },
+    {
+      "target": "test:job_dispatcher_testi",
+      "test": "dispatcher_owned_pg_heartbeat_commit_ve_grup_sahipligi",
+      "covered_by": "job-native11",
+      "executed": true
+    },
+    {
+      "target": "test:lsp_artimli_testi",
+      "test": "yirmi_bin_satir_proje_duzenleme_olcumu",
+      "covered_by": "pending-release-measurement",
+      "executed": false
+    },
+    {
+      "target": "test:mixed_revision_testi",
+      "test": "mixed_revision_native",
+      "covered_by": "mac-native/mixed-revision9",
+      "executed": true
+    },
+    {
+      "target": "test:modul_sql_testi",
+      "test": "modul_sql_native_crud_goc_yasam_dongusu",
+      "covered_by": "mac-native/module-sql9",
+      "executed": true
+    },
+    {
+      "target": "test:native_effect_consumer_testi",
+      "test": "native_effect_onbir_sql_smtp_no_replay_vakasi",
+      "covered_by": "smtp-pg-fault277",
+      "executed": true
+    },
+    {
+      "target": "test:native_metrik_host_testi",
+      "test": "native_metrik_http_pg_ve_fd_sahipligi",
+      "covered_by": "metrics8",
+      "executed": true
+    },
+    {
+      "target": "test:owned_web_kit_testi",
+      "test": "owned_web_kit_dort_native_http_pg_izolasyon_vakasi",
+      "covered_by": "owned-web-pg4",
+      "executed": true
+    },
+    {
+      "target": "test:pdf_host_testi",
+      "test": "pdf_sabit_owned_backend_kabulu",
+      "covered_by": "pdf-backend8",
+      "executed": true
+    },
+    {
+      "target": "test:pdf_plugin_testi",
+      "test": "imzali_pdf_zee_native_istek_yanit_kabulu",
+      "covered_by": "mac-native/signed-pdf9",
+      "executed": true
+    },
+    {
+      "target": "test:postgresql_goc_plani_testi",
+      "test": "izole_goc_durum_kuru_checksum_rol_ve_atomik_uygulama_sinirini_korur",
+      "covered_by": "goc1",
+      "executed": true
+    },
+    {
+      "target": "test:postgresql_testi",
+      "test": "izole_tls_11_erisilebilir_legacy_sunucuyu_reddeder",
+      "covered_by": "pg8",
+      "executed": true
+    },
+    {
+      "target": "test:postgresql_testi",
+      "test": "izole_tls_baska_ca_gercek_sunucuyu_reddeder",
+      "covered_by": "pg8",
+      "executed": true
+    },
+    {
+      "target": "test:postgresql_testi",
+      "test": "izole_tls_deadlock_40p01_tekrarsiz_rollback_ve_yeni_oturum_sagligi",
+      "covered_by": "pg8",
+      "executed": true
+    },
+    {
+      "target": "test:postgresql_testi",
+      "test": "izole_tls_dogru_ca_hostname_ve_tls12_ile_baglanir",
+      "covered_by": "pg8",
+      "executed": true
+    },
+    {
+      "target": "test:postgresql_testi",
+      "test": "izole_tls_null_ve_metin_disini_reddeder_transaction_sagligi_korunur",
+      "covered_by": "pg8",
+      "executed": true
+    },
+    {
+      "target": "test:postgresql_testi",
+      "test": "izole_tls_san_disindaki_ip_hostnameini_reddeder",
+      "covered_by": "pg8",
+      "executed": true
+    },
+    {
+      "target": "test:postgresql_testi",
+      "test": "izole_tls_serialization_40001_tekrarsiz_rollback_ve_yeni_oturum_sagligi",
+      "covered_by": "pg8",
+      "executed": true
+    },
+    {
+      "target": "test:postgresql_testi",
+      "test": "izole_tls_sorgu_parametre_sonuc_ve_goc_sinirlarini_bir_fazlasinda_reddeder",
+      "covered_by": "pg8",
+      "executed": true
+    },
+    {
+      "target": "test:service_fault_testi",
+      "test": "service_fault_native",
+      "covered_by": "mac-native/service-fault2",
+      "executed": true
+    },
+    {
+      "target": "test:starter_content_testi",
+      "test": "icerik_baslangici_native_crud_medya_yonetim",
+      "covered_by": "mac-native/content-starter14",
+      "executed": true
+    },
+    {
+      "target": "test:sureli_hazirlik_testi",
+      "test": "native_pg_tekrarlanan_hazirlik_ve_sigkill_ttl",
+      "covered_by": "readiness-watch-pg15",
+      "executed": true
+    },
+    {
+      "target": "test:web_test_koprusu_testi",
+      "test": "web_test_koprusu_unit_native_http_pg_ve_kaynak_kapsami_birlikte",
+      "covered_by": "mac-native/web-bridge4",
+      "executed": true
+    }
+  ],
+  "binary_inventory": [
+    {
+      "target": "bin:depo_sayilari",
+      "binary_sha256": "69cd24797f4639e9e039e37f5a19aa5761e957453dc750ba446b0ebe9c60ca18",
+      "ignored_tests": []
+    },
+    {
+      "target": "bin:dil",
+      "binary_sha256": "691abc454bd703b5a23afb38ba6ad7fa7e2780f850c4dedf15d2115ddef9cfc6",
+      "ignored_tests": []
+    },
+    {
+      "target": "bin:dillsp",
+      "binary_sha256": "00c8931a47c16ad858f5a23e3ad3fd86b2821bf52f598704b26480e8bc8673c9",
+      "ignored_tests": []
+    },
+    {
+      "target": "bin:faz_test_matrisi",
+      "binary_sha256": "0c78a2dab6c1adc74948a9d33c87d4013bbfb53481b0e05bee06b4ab1e43537f",
+      "ignored_tests": []
+    },
+    {
+      "target": "bin:islev_egilimi",
+      "binary_sha256": "58997b15a35e98c1129b6c46f842055d566b444176d98fee0fdb9932f4c24424",
+      "ignored_tests": []
+    },
+    {
+      "target": "bin:olcum",
+      "binary_sha256": "04d2b574ed72d6c11cf2516d9d9193f2d7e38e63fb87b8459a75efa987f7ddb5",
+      "ignored_tests": []
+    },
+    {
+      "target": "bin:soak",
+      "binary_sha256": "c053572ab86d8cdbadbaf3460646267a08a8c6ea88994d1c3ede499a31b4847b",
+      "ignored_tests": []
+    },
+    {
+      "target": "bin:spec_drift",
+      "binary_sha256": "5a699a47ccf8e112ef53c3e5a181c1669f3313df8ba86ea2926d19f5c482c0a2",
+      "ignored_tests": []
+    },
+    {
+      "target": "bin:surum_artefakti",
+      "binary_sha256": "e9f018444367bbb6b7b71f03524a230649629f0a7706b452c2f7f7103e07b802",
+      "ignored_tests": []
+    },
+    {
+      "target": "bin:tani_kalitesi",
+      "binary_sha256": "71cc728a2ffe6d9d70c5800040d8a847b605454c82aa68962a52581fee020be2",
+      "ignored_tests": []
+    },
+    {
+      "target": "lib:dil",
+      "binary_sha256": "5873590d82b4ba43fa3b1f308a47355c1f05e16727a463abd56c5e82da1bdd57",
+      "ignored_tests": [
+        "postgresql::havuz::testler::izole_pg_pool_metrikleri_wait_timeout_ve_donus_gercek_sinirlar"
+      ]
+    },
+    {
+      "target": "test:acik_imza_testi",
+      "binary_sha256": "db5a88688a9c7cdec18b4eecab601fdfd612247159567a2dda47e75c8dbb4791",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:ad_cozumleme_uyumlulugu_testi",
+      "binary_sha256": "eeb8a2c48bf55ea5033fa3ef1e468d6f3af4000bcb6e413393609c19e07e33d1",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:ag_ve_esz_testi",
+      "binary_sha256": "4414dab669ca1673b092ce277e0beb69b55be1880516c70ba829722ff42a8e8a",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:bagimlilik_cevrimi_testi",
+      "binary_sha256": "0c1d0854bca222bb3667a0cfd58a7a109a64a6194042c95659927e21263206dc",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:baslangic_sablonlari_testi",
+      "binary_sha256": "8854b16209350d09df629a029c3298df33f6d2b5ca93c39990b1d040a8b1213e",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:bicimleyici_testi",
+      "binary_sha256": "70d346ce9cf3b8a32bf77959fc42d8c0e6567ee2136adf356b902542d744b0c9",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:birim_testi",
+      "binary_sha256": "749194eae2f9b2ca03d1bf676ba7b29744f274b381742fa30e22f70d83cae68a",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:build_kimligi_testi",
+      "binary_sha256": "55a7a6916ea7a58982f32f2154d26d391e665d79fe03fc8fdc08084c2be813ad",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:cagri_cikarimi_testi",
+      "binary_sha256": "ee263769e92d834844507561b587bdd9bc1609cf268e6a8c572fa4bcf73b7808",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:cli_ayar_testi",
+      "binary_sha256": "61e1210503253f67fcd2ccb24809fa6a7fc7d12eac810941ce85e5ebfd537ba4",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:cli_bicim_denetle_testi",
+      "binary_sha256": "8b0e81eb82dbc33394370de6585b5500dc9c0fc9690e59da103e8651c85e268b",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:cli_goc_plani_testi",
+      "binary_sha256": "572d97c200e716cd99c0ac8198910d41bf2cce288a0a0fbcebb57d10acfc8192",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:cli_secenek_testi",
+      "binary_sha256": "8d3008a5473d8f627b90443aec5010a9f70fc5d75cf63be5235d9ebf99304a33",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:composed_tr_en_testi",
+      "binary_sha256": "dfc6670b4b2ab0be5b19b10506f51ed5c2e1389bb50f9f65f64ff50ef618db6e",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:core_freeze_korugu_testi",
+      "binary_sha256": "43527f26a5f27e82121215b230f8a18f2c49c42586bf0fffb507d6456a173531",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:credential_baslat_testi",
+      "binary_sha256": "198f58848eaaab2f12669b2bbe616b9ae244d52154bb9ad67fe78ba88a355243",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:credential_listener_kopru_testi",
+      "binary_sha256": "211a2f5c972dad279504bd72922cda72689babd412d57eff5be08bf6e153403c",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:credential_metrik_kopru_testi",
+      "binary_sha256": "660223a84520c74ab9866a07f6708dab56cd2f46880473c0bb325c64fe59c4c0",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:daraltma_testi",
+      "binary_sha256": "28ada55f4b1fa9bcc937fcc4e10edd9fedbe0baf51cdc30b3f2966fbba63d0f4",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:db_hazirlik_testi",
+      "binary_sha256": "bb15ec7553d2622d7d08dc581326a229d7be266140604135cb4ea5ee571e6403",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:dene_ve_sure_testi",
+      "binary_sha256": "439bcf1cad6c919bfffbbf135925e52fc3830986a5eee182f7692f5f2ff8b413",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:derleyici_secici_testi",
+      "binary_sha256": "4fc85419b4c419053de9ccb3439617eef57209d4f15ddadba6216f9b19380d31",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:derleyici_yerel_testi",
+      "binary_sha256": "923cd3410b53711f7db91c18595bc9810577003af24cbc67e94f6c63f4e7894a",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:deterministik_io_profili_testi",
+      "binary_sha256": "ef40a6f3fb13dda25dc192f2cd2a7ccf38eabc00571f95745e42393ab7bae442",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:dispatcher_service_testi",
+      "binary_sha256": "d5ed20fd6ebe4847b2c0e08dc3dc5ac715a143bbd6954af63eb6f9688d08e0dd",
+      "ignored_tests": [
+        "dispatcher_service_native_linux"
+      ]
+    },
+    {
+      "target": "test:dogfood_karsilastirma_testi",
+      "binary_sha256": "5c126b6bd4ac17a45669db591023f85e5558182a43355c3d06ce9888f78cd0ca",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:dogfood_korpusu_testi",
+      "binary_sha256": "ac52e6262e59f521e11f1ea122c5370bb3f23fd2bb28e8d459edf2f4598f8856",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:dokuman_tazelik_testi",
+      "binary_sha256": "e7ef7f88ae3a25fdd609b9709ebe7aceab5a3d965edd0800488a86822c741439",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:dosya_yasam_dongusu_testi",
+      "binary_sha256": "bc485e55e2e6cc2d96d1583c0bff43ec372aab8aed103cc345f4d7155fd263fe",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:eszamanlilik_conformance_testi",
+      "binary_sha256": "385ffed8ef10ca4ed4bfc55d652cdd5ab25dd616e8a085f79a56158b7680292f",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:faz_modeli_testi",
+      "binary_sha256": "baa143c9675b10190376e87b1c3bf9a7564ea6b4f68620d066bc5fc73d4bd1c1",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:ffi_sinir_testi",
+      "binary_sha256": "c280b96efcdba65a0b79bfbdc5361f77f6890a5b63a08d6b6f38c9ce1c17307f",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:fuzz_korpusu_testi",
+      "binary_sha256": "e89193dc3fc12a6fab7428e0c9c36f10b0f62a0f4d55647c02d62d36ebfa4b46",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:golden_testi",
+      "binary_sha256": "c2dcf25a6f581b34b13841d335e5b47908c220b8f129e4154c1540f549931b82",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:gorunum_testi",
+      "binary_sha256": "4266b36a3363f58406f7608e779651957c8d2cf8fcf1883303400c5b45f814ad",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:guvenli_testi",
+      "binary_sha256": "37ae04624cfdc65aed88aeac3d57b5e42879b9a79a403ef842529d171691c47a",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:guvenlik_kapisi_testi",
+      "binary_sha256": "0914d8c3829c9dfe56263f822362df09e04763620418ab1be69f933cbc7056da",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:hir_modeli_testi",
+      "binary_sha256": "eac0f0520989723f56a4ec2d9f9c2f877ee0dc1e0a6274ca42e05beb7a69bfcf",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:http_istegi_testi",
+      "binary_sha256": "443b0e837b34ff9129ecc81bea95643baed7b5748419c2aa34b6268f8bb102bd",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:http_post_testi",
+      "binary_sha256": "ba8d3bb6c36a04e97d7b8adac882647315b716d7ecfcdc21c4cde5a67025cb09",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:http_service_testi",
+      "binary_sha256": "dda9deccca13133e42ede9a16c098ee737a0bdb3aa4c578a6192b810d1a8f82b",
+      "ignored_tests": [
+        "http_service_native_linux"
+      ]
+    },
+    {
+      "target": "test:ifade_grameri_testi",
+      "binary_sha256": "853264b9ca55fcf3dedf2ec667a1719b182f0e64437016afbaf834dc94d5b71a",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:intrinsic_lowering_testi",
+      "binary_sha256": "74c4ee4d09ab079530133c734a610aea6e8196d10a0164ad75f495aa3b0a9c7e",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:invariant_testi",
+      "binary_sha256": "d9d2bdc7b68be29669d406391ee4510a3dcd359d19f187210b826ede6fd27293",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:io_izi_cli_testi",
+      "binary_sha256": "315344dc962d629d4ec6a62461b49e46658fc37071b8af2eeb7dc79aa805f225",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:io_izi_testi",
+      "binary_sha256": "5c39c17426a6ed81937c9802ae45332876ec36af9a786358ebc62c3512f44cfc",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:is_kuyrugu_kapisi_testi",
+      "binary_sha256": "794f25c82fabd7869ab0d5744c0cc1498c0532f22f8f6dedcddedd40ca0ad2c4",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:job_dispatcher_testi",
+      "binary_sha256": "7def3033fa0ed8a82394be36d0b73d5f9770f114ffbe6aa203c61d2ff3dbfc1e",
+      "ignored_tests": [
+        "dispatcher_owned_pg_heartbeat_commit_ve_grup_sahipligi"
+      ]
+    },
+    {
+      "target": "test:kacis_ve_negatif_testi",
+      "binary_sha256": "fbf17d0551717e49d10beb6e1fa96ad7542b0dbe93074e6e5a99366d36774a83",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:kanit_ozeti_testi",
+      "binary_sha256": "59f6775728b583d16194c08ef187f69ac2e380c2f83ef595e0df808e7488df09",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:kapsam_testi",
+      "binary_sha256": "1b18037cd54652e515a9ea946121fbbcab94cf442418552f6e8188f1a309f6fb",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:katalog_testi",
+      "binary_sha256": "8aabe61f4a6eac6d2fbb502236093964cd620cccc60208071744c48420b4ea71",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:katman_mimarisi_testi",
+      "binary_sha256": "db45348ea4a340ab07039431b06657c713f59aac0a2656613f0df8a9a9d0681e",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:kaynak_kapsami_testi",
+      "binary_sha256": "4afd9dcf5902c631b2516f6f72eceeb953a0174856de95000b11b8d75db945ac",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:kaynak_sinirlari_testi",
+      "binary_sha256": "59805edff4345598df8fe9b466445945a1497e02886b945477f1f079fc821f41",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:kelime_avi_testi",
+      "binary_sha256": "4a5a035a35453e9571be734bd42570ab801fe1e70897e22aefde322b89c9933c",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:kitaplik_testi",
+      "binary_sha256": "73dcd4998a1a7f01ea7e618f126135d1e61756618016acc9f7145eda4601c97e",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:koleksiyon_testi",
+      "binary_sha256": "4fe7c29650cce99b6ec1ee61c05c4298945029a9512fe19758068daef34d2f72",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:kurulum_testi",
+      "binary_sha256": "3ffbb542630003344687d7bdd0b7cd38ba254bd6065c6ef8b90ea99bfa15b830",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:lint_testi",
+      "binary_sha256": "f8a01e2774addcaf8efeb009a7e0f564a96b9082397acd716c934c978060961b",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:linux_paket_testi",
+      "binary_sha256": "8fc292d7fb804400222e78ac0a1306539bc5f804b9a404fbd44a1ba5cb63f2d7",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:lsp_artimli_testi",
+      "binary_sha256": "fc5736a16b16f87cc839046a900bf426bea5e5d378ba13950c30a99ee2b8b592",
+      "ignored_tests": [
+        "yirmi_bin_satir_proje_duzenleme_olcumu"
+      ]
+    },
+    {
+      "target": "test:lsp_testi",
+      "binary_sha256": "6e207a0ff7d9b24e99085ff19546e5ee90fb9020081b5232e7f9c2847b42e423",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:metin_testi",
+      "binary_sha256": "548f280593f453e2cb49845626ffa4ee13cd46a7cca00304196c745461fe17e2",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:mimari_sinir_testi",
+      "binary_sha256": "724207a417f567d584d1b9cf48e3cd9beb5951f2610a35389b8935fc5df66714",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:mixed_revision_testi",
+      "binary_sha256": "2cd0b00bba002f475dc3dad7565c926c09b768cffd23846b23cd073488bac3d5",
+      "ignored_tests": [
+        "mixed_revision_native"
+      ]
+    },
+    {
+      "target": "test:modul_sql_testi",
+      "binary_sha256": "822fcf18b90e4aed0b8d40afebacb89295fd1dadf58164e6fe5e9d5d4895918a",
+      "ignored_tests": [
+        "modul_sql_native_crud_goc_yasam_dongusu"
+      ]
+    },
+    {
+      "target": "test:morfoloji_conformance_testi",
+      "binary_sha256": "77e374ae511d65c6ab5b5e5b260c40eae82ad8652e3224a7cd546ea3a00fd655",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:morfoloji_testi",
+      "binary_sha256": "700941d94e83c17e32fe8b9fd66958f5bc8f564d46efceaae1c193340f6c8fc3",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:native_effect_consumer_testi",
+      "binary_sha256": "f6cd3c84cf7dadc733e2b4c8b1cd43095501233153fcd8ccc870aee402e426b8",
+      "ignored_tests": [
+        "native_effect_onbir_sql_smtp_no_replay_vakasi"
+      ]
+    },
+    {
+      "target": "test:native_listener_testi",
+      "binary_sha256": "0aed171d876e6e3e436d0e5fe06b0cd53842931ff8b393319cd25bbf9b87afcd",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:native_metric_stdio_testi",
+      "binary_sha256": "135cc30f0f3027bdb3ec6230983345f79df72687f1b2b4d8eb3c1006a49de2f3",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:native_metrik_host_testi",
+      "binary_sha256": "eba1fec7287203e57d08741ecb7ef025379e6e27847dd932ecd2a8483069eaff",
+      "ignored_tests": [
+        "native_metrik_http_pg_ve_fd_sahipligi"
+      ]
+    },
+    {
+      "target": "test:olcum_lsp_process_testi",
+      "binary_sha256": "1998f55daa5152b079962f8c46046b36c9b1984363c1f449a6261bf67182a8ad",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:onceki_kucuk_surum_testi",
+      "binary_sha256": "2df8631be6be52d238334ce0d31bce2a26a2c4b1eb4c51cf63276d77d0e08b1b",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:ondalik_testi",
+      "binary_sha256": "46ab6665a38152a6bcc24294015599299ec8a8b1b38fb97309daf5fb45333e20",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:owned_web_kit_testi",
+      "binary_sha256": "566489a385fb77b7f3d72ad2a20ab0e24bec4c36389301abe82faa828158c95a",
+      "ignored_tests": [
+        "owned_web_kit_dort_native_http_pg_izolasyon_vakasi"
+      ]
+    },
+    {
+      "target": "test:ozyineleme_testi",
+      "binary_sha256": "04a037085bbd6d4a21a8b0c351db0312187cffae5aa307f652ab0f874698b6f3",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:panic_guvenligi_testi",
+      "binary_sha256": "a9fb8cf8be65b94795e3c33ad952253c87594df55be507e339edf05d6bb06ea0",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:parola_goc_kapisi_testi",
+      "binary_sha256": "11ad7c51dd49610eaba0c1c719e73a162d9846a1ee34cfe86702133af2a88342",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:parser_kurtarma_testi",
+      "binary_sha256": "144dae2eefaca707ca765621d5be21c8079d155b93ae543221c9e88f3a47522d",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:pdf_host_testi",
+      "binary_sha256": "cf2f61cc4bc3cd035dd9dfb2188bff4fa6e6e67d1f6c9999c493b5d6fd9fc5ef",
+      "ignored_tests": [
+        "pdf_sabit_owned_backend_kabulu"
+      ]
+    },
+    {
+      "target": "test:pdf_plugin_testi",
+      "binary_sha256": "71b46609c5b2d5711e2df9e1936d0c552dda1e6e63f790bcdc839f5374de6fe7",
+      "ignored_tests": [
+        "imzali_pdf_zee_native_istek_yanit_kabulu"
+      ]
+    },
+    {
+      "target": "test:playground_testi",
+      "binary_sha256": "7c69fa8558cdfd8ed72c3f3ef98f472bb47d75162df18532c492a0a4b08af25f",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:postgresql_goc_plani_testi",
+      "binary_sha256": "b624e1a7f2aeea896fed799f7851bf9d6ffc7c7ed4ab8a7cb1e23f1a055778e2",
+      "ignored_tests": [
+        "izole_goc_durum_kuru_checksum_rol_ve_atomik_uygulama_sinirini_korur"
+      ]
+    },
+    {
+      "target": "test:postgresql_testi",
+      "binary_sha256": "a48eec8743752af682ad8041ab41f4565a398e85570e03bfb37069cb296b6d34",
+      "ignored_tests": [
+        "izole_tls_11_erisilebilir_legacy_sunucuyu_reddeder",
+        "izole_tls_baska_ca_gercek_sunucuyu_reddeder",
+        "izole_tls_deadlock_40p01_tekrarsiz_rollback_ve_yeni_oturum_sagligi",
+        "izole_tls_dogru_ca_hostname_ve_tls12_ile_baglanir",
+        "izole_tls_null_ve_metin_disini_reddeder_transaction_sagligi_korunur",
+        "izole_tls_san_disindaki_ip_hostnameini_reddeder",
+        "izole_tls_serialization_40001_tekrarsiz_rollback_ve_yeni_oturum_sagligi",
+        "izole_tls_sorgu_parametre_sonuc_ve_goc_sinirlarini_bir_fazlasinda_reddeder"
+      ]
+    },
+    {
+      "target": "test:postgresql_tls_kapisi_testi",
+      "binary_sha256": "503c37ec3c16e376090e9fcc0b4934c7a41b3b9a0327bd8396f9338faf6a55b6",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:proje_testi",
+      "binary_sha256": "0d4716b3dfb7360733c5b8dbe39e7c27a14d22ad0c4ad93dcb4703b1a93d6988",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:projeler_testi",
+      "binary_sha256": "1c9cf1e21d23bf0aef4161119cd9e7389c671ce963fe3ca5fea415296e10fd99",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:public_api_testi",
+      "binary_sha256": "bb24fbb0cd49b3ba88dbba694465f0f1867243cb8acc94124e35d6d9308bf5e4",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:semantic_kimlik_testi",
+      "binary_sha256": "61bfade275155429119f9900ae472355d667af850e76717981292e9729de1291",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:semantic_regresyon_korpusu_testi",
+      "binary_sha256": "baa42304cef3c16426bd3fb909e266f679e1462c52b2dfc13652abc65cfc601c",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:semantic_regresyon_korugu_testi",
+      "binary_sha256": "6796118f2c74fe75ef49df2ef94495b3f3be2fcb0f795cbdc31fe0b8be535f61",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:service_fault_testi",
+      "binary_sha256": "d29f0b5a6bce09fd4422b1d07893e9f320005c6e8a4ff464ced28d5d57a5a9c4",
+      "ignored_tests": [
+        "service_fault_native"
+      ]
+    },
+    {
+      "target": "test:siralama_testi",
+      "binary_sha256": "b3eb0bce74d6dad0f846808390483f3f2f88a1c132f7d6d8c530a23aae339289",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:smtp_hata_maskelemesi_testi",
+      "binary_sha256": "eb171658356ed62f3878650e34ed08211eda837539313933f2dd7e5b2297824a",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:smtp_mime_testi",
+      "binary_sha256": "24bceec6b695a1c4a4c88719404d805f9a1f8d194975ff11fac9c3b7a920238c",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:sonlu_dispatcher_timer_testi",
+      "binary_sha256": "c05c0606abf66476c882a19621e8a8f1031b13fd57bd270fd661445cbcc4626a",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:sonuc_donusu_testi",
+      "binary_sha256": "35caf0d10e7c9801184e82c8874372aad2e97df1e461a3af53126236811c86a8",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:starter_content_testi",
+      "binary_sha256": "1b3930b452b7712a006cb3231d18ac89fa0f25df6e76204ec323dcd2210fc3ab",
+      "ignored_tests": [
+        "icerik_baslangici_native_crud_medya_yonetim"
+      ]
+    },
+    {
+      "target": "test:supervisor_cleanup_testi",
+      "binary_sha256": "632089eca5412936226378f0a77d379ca670c090ac3c9d3051e8237919be2aee",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:sureli_hazirlik_testi",
+      "binary_sha256": "13fe45d4d695ba0c38869fd420e3dbb5551ed429a9d7026384a34a2596eef89b",
+      "ignored_tests": [
+        "native_pg_tekrarlanan_hazirlik_ve_sigkill_ttl"
+      ]
+    },
+    {
+      "target": "test:tani_kimligi_testi",
+      "binary_sha256": "e2f954db9604baee148ca7b9cbfa3f72f29c9d85df306a22032b378a8c2fb9fb",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:tedarik_kapisi_testi",
+      "binary_sha256": "d0a6f6cd36b30b4f04e224c414ce9bd90af836bd2b9d7905088d0dbfe16c8363",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:tedarik_testi",
+      "binary_sha256": "d85ec804f5262e9c9e4005caa69cc2badbd1611f32c72c5e6291bf6e0b5665d9",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:tr_en_list_detail_testi",
+      "binary_sha256": "3e4c15c4d8051d90c7d70ec6cae3fc37668e962eeb92400bbd5f84ecd08100b1",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:tr_en_sayfa_testi",
+      "binary_sha256": "2ba2849c6977d6f251f4d20d3ed52926cec12e55163f6f3deaacfbdc0842a3e4",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:urun_e_yetkinlik_testi",
+      "binary_sha256": "1341a93fb4c84163f0927861df80c9060cb6d566c1e9fb5b320d5288b7ca07c6",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:uyumluluk_testi",
+      "binary_sha256": "ec06ecf7cd6f037b829e38900d06120e21dfbb7a8cb99ec257f560aef4c775f8",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:web_cok_surec_testi",
+      "binary_sha256": "00baed30ae826f4f51ee368270195c8707681c6368f945d6c175a370cdd2bb5e",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:web_drain_testi",
+      "binary_sha256": "4998325e00b3473f80a9449e197f347176c5d494825657ddb88a93e8d10570d0",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:web_test_koprusu_testi",
+      "binary_sha256": "dc599160b5977b485baac24b437ef23444ee473d16e7f60e7bff1a29ca83df16",
+      "ignored_tests": [
+        "web_test_koprusu_unit_native_http_pg_ve_kaynak_kapsami_birlikte"
+      ]
+    },
+    {
+      "target": "test:web_testi",
+      "binary_sha256": "5b12c09bae1c075e8b4b7d70290ab973af7312d32b4071cf9aafd96a24ba866f",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:worker_supervisor_testi",
+      "binary_sha256": "2d4277f14b7af911a3965fec44223114c44869d39470f36566f111da6bf5da1d",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:yapilandirilmis_hata_testi",
+      "binary_sha256": "a43921411e0ec42172fdae95fd44a852a526dcec916bb52c848fec5c4fbaee5a",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:yetkinlik_testi",
+      "binary_sha256": "7a67b6fc22b4f20cc4cfb22dea4ae21c9644cb1d4df5fa1941eb29ec73d5fd2e",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:yonetilen_modul_testi",
+      "binary_sha256": "cf28ad4d221e9a8a908d394e69fc5a71e5a077222a1a4ed07f95c45e88284633",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:zee_cekirdek_modul_kabulu_testi",
+      "binary_sha256": "fe12030a6a8213d3f81c2d302a903332da9de2d7b42e1a2f886c102ad9548cf7",
+      "ignored_tests": []
+    },
+    {
+      "target": "test:zee_cekirdek_urun_kabulu_testi",
+      "binary_sha256": "93967908515f88bdc74119765e90361f906058b8a602a292da3e78e6ea96562a",
+      "ignored_tests": []
+    }
+  ],
+  "old_contract_sha256": "e9e4287cb7d9e60fa72318b08b46a8295ccbd0a39052a6aeffde9f66ebb5514f",
+  "case_accounting": "Actual libtest cases map to dedicated native cohorts; their internal assertions are not additional libtest cases."
+}

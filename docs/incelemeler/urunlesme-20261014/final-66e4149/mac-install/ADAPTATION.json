@@ -1,0 +1,11 @@
+{
+  "schema": "zee-external-test-adaptation-1",
+  "source_changed": false,
+  "original_failure_preserved": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-macos-install/PROOF.json",
+  "reason": "Old smoke supplied null params, rejected by structured JSON-RPC request validator. New smoke omits absent params; response IDs, result capabilities, shutdown null result, exit0, stderr0 and binary pin assertions unchanged. Raw replies now recorded.",
+  "files": {
+    "install_acceptance.py": "c5143d1105a52bb0e3b232e5af5b765bb78ae34de814c660776a4e584e1f8af0",
+    "owned_helper.py": "509106d70e5e35c1142594c98df022b01e689966415bdd94a8f67feecb8587d8",
+    "lsp_smoke.py": "8226766b5e94721b0e7e650717ca3cd715a8ef231b2a5e401a63f217236b1a92"
+  }
+}

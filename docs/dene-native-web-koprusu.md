@@ -32,3 +32,7 @@ isteklerine ortak transaction rollback desteği değildir.
 [ADR-144](../adr/144-dene-native-web-test-koprusu.md),
 [kaynak kapsamı](kaynak-kapsami.md) ve
 [ADR-142](../adr/142-zee-kaynak-dal-kapsami.md) güven sınırlarını açıklar.
+
+## S3 yerel kabul kanıtı
+
+[Exact S3 kabulü ve açık sınırlar](urunlesme-s3-kabul-20261015.md) gerçek canonical/native/IDE ve ortak kapıları bağlar; genel ürün/platform/yayın kabulü değildir.

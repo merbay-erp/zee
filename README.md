@@ -362,4 +362,10 @@ Temiz `8b49113c413f62b35d4b251ed31068524d2fe26c` kaynağında943/959normalfaz,16
 Editörün UTF-16 eşitlemesi, biçim ve opt-in uyarıları [editör analizi](docs/editor-analizi.md);
 `dene` içindeki pinli HTTP/DB araçları [native test köprüsü](docs/dene-native-web-koprusu.md);
 mevcut adayların kabul sınırları [ikinci teknik dalga](docs/urunlesme-ikinci-dalga-20261015.md)
-belgelerinde tutulur. Yeni kaynak henüz final temiz sürüm kabulü değildir.
+belgelerinde tutulur. Dar yerel S3 kabulü tamamlandı; resmî sürüm ve açık ürün/insan/platform kapıları ayrıdır.
+
+## S3 ikinci dalga yerel teknik kabulü
+
+Kaynak `66e4149e53451111d153f47283c219079a8d1cab` üzerinde ikinci dalganın native senaryoları, macOS/Linux için iki temiz klondan teslim ve sekizer kurulum testi, gerçek JetBrains tamamlama/biçimlendirme/tanı/kapanış akışı, 1.800 saniyelik soak, 1 ve 41 açık belge ölçümü, dört ASan hedefi ve seçili Miri testleri geçti. Kanonik kanıt dışa aktarımı ve denetimi ile aynı kaynakta güvenlik kapısı geçti: tam Cargo koşusunda 989 başarılı, 0 başarısız, 25 varsayılan dışı vaka. Bu 25 vaka ayrıca çalıştırılan kampanyalara eşlendi; alt senaryolar Cargo toplamına eklenmez. GB-110 exact regression/native26/RC zinciriyle kapalıdır.
+
+[S3 teknik kabulü](docs/urunlesme-s3-kabul-20261015.md), sonuçları ve önceki başarısız denemeleri ayrı kaydeder. E commitleri belge ve kanıtları kaydeder. C1/K-288 ve P33/K-293 araç retleri; artımlı HIR/type, gerçek ürün/provenance/adoption, insan/takvim, fiziksel Windows/minOS ve yayın/lisans/destek kapıları açıktır. Bu kayıt tam V1 ya da public signed release kabulü değildir.

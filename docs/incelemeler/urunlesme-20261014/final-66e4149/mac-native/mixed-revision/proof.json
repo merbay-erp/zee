@@ -1,0 +1,191 @@
+{
+  "schema": "zee-mixed-revision-native-1",
+  "source_sha": "66e4149e53451111d153f47283c219079a8d1cab",
+  "binary_sha256": "398a706f588fba06b5cadacb32af01714c7dd875a4c40a86b35137a1c7227e87",
+  "cases": [
+    {
+      "name": "mixed-code-wave-1",
+      "passed": true,
+      "old_inflight_complete_after_TERM": true,
+      "old_marker": "revision-0",
+      "new_marker": "revision-1",
+      "new_generation_session200": true,
+      "listener_inode_unchanged": true
+    },
+    {
+      "name": "mixed-code-wave-2",
+      "passed": true,
+      "old_inflight_complete_after_TERM": true,
+      "old_marker": "revision-1",
+      "new_marker": "revision-2",
+      "new_generation_session200": true,
+      "listener_inode_unchanged": true
+    },
+    {
+      "name": "mixed-code-wave-3",
+      "passed": true,
+      "old_inflight_complete_after_TERM": true,
+      "old_marker": "revision-2",
+      "new_marker": "revision-3",
+      "new_generation_session200": true,
+      "listener_inode_unchanged": true
+    },
+    {
+      "name": "mixed-code-wave-4",
+      "passed": true,
+      "old_inflight_complete_after_TERM": true,
+      "old_marker": "revision-3",
+      "new_marker": "revision-4",
+      "new_generation_session200": true,
+      "listener_inode_unchanged": true
+    },
+    {
+      "name": "mixed-revision-shared-revoke-and-quota",
+      "passed": true,
+      "revoked401": true,
+      "quota429": true,
+      "state_reset": false
+    },
+    {
+      "name": "wrong-app-revision-no-admission-old-still-usable",
+      "passed": true
+    },
+    {
+      "name": "wrong-activation-no-admission-old-still-usable",
+      "passed": true
+    },
+    {
+      "name": "new-invalid-source-never-replaces-active-revision",
+      "passed": true,
+      "private_diagnostic_forwarded": false,
+      "boundary": "host stderr is DEVNULL; existing quietFD gate remains separate"
+    },
+    {
+      "name": "same-source-activation-deadline-single-generation-control",
+      "passed": true,
+      "separate_from_mixed_load": true
+    }
+  ],
+  "revisions": [
+    {
+      "application_revision": "bf22048ff7171856fe3af17d809fadcb32760bc4",
+      "response_marker": "revision-0",
+      "source_sha256": "5d828c6c5b79f0df4b48cc870b850f8ac6719dcc8c2628c00d95bd83f6f77771",
+      "manifest_sha256": "56fb2044d780da2420ff636d2148c15a8e48261de633ce17cc9af8b7f6a87c4a"
+    },
+    {
+      "application_revision": "08d3a6b824033763e34cb7a0b2fa47254b864aea",
+      "response_marker": "revision-1",
+      "source_sha256": "a860e6728a8895e662a1ce5ac39b5b4e51170f24b68dfc9dbcc51fce9912f98b",
+      "manifest_sha256": "56fb2044d780da2420ff636d2148c15a8e48261de633ce17cc9af8b7f6a87c4a"
+    },
+    {
+      "application_revision": "2137e7c2e51ea44c94564846754b147caadf5603",
+      "response_marker": "revision-2",
+      "source_sha256": "6d3c4e1ab1605552524db39ce430a565d181c8219c8baf1dec6d604f37d22090",
+      "manifest_sha256": "56fb2044d780da2420ff636d2148c15a8e48261de633ce17cc9af8b7f6a87c4a"
+    },
+    {
+      "application_revision": "f95b6ae41d1650c642a39cf6a9391b475a4181db",
+      "response_marker": "revision-3",
+      "source_sha256": "ea70815501b201d8d7e75e9871739c074d188e60f998bccd64cd6e19b0bdf3d7",
+      "manifest_sha256": "56fb2044d780da2420ff636d2148c15a8e48261de633ce17cc9af8b7f6a87c4a"
+    },
+    {
+      "application_revision": "02506baa8f1b6c8377035e4e1821d4451f71f186",
+      "response_marker": "revision-4",
+      "source_sha256": "3fc53f5de1e19117ec4323ce2d1534d0482637cdf8f5555756b46ff0ef2387d0",
+      "manifest_sha256": "56fb2044d780da2420ff636d2148c15a8e48261de633ce17cc9af8b7f6a87c4a"
+    },
+    {
+      "application_revision": "a583bac586a6820ad3b05d63c4b78f59c09f84c8",
+      "response_marker": "revision-5",
+      "source_sha256": "c8ce5084dc35e98e0fcc33f13f049ab59634adb19878a358806cd2fe888f5ae7",
+      "manifest_sha256": "56fb2044d780da2420ff636d2148c15a8e48261de633ce17cc9af8b7f6a87c4a"
+    }
+  ],
+  "status": "passed",
+  "boundaries": [
+    "anonymous same-contract code revisions only",
+    "not universal artifact/schema deployment, saturation or zero-downtime SLA",
+    "cookie/CSRF/argv/source values not logged"
+  ],
+  "source_pins_start": {
+    "scripts/tests/mixed-revision-native.py": "f5c10b2e33bacc7f1093a5f68dd5009904f95164567c8d2c29abb11f62cec19c",
+    "scripts/native-listener-host.py": "8e1cda6dec7ba15c851d444509eea6b846edca9a6ad87592ca5d39b7e23287f4",
+    "scripts/worker-supervisor.py": "560bec4e4e36d2aa856936d9d32412bb9106b61b25a871495287e2287e3c6642",
+    "scripts/native-capabilities.py": "0a336d915e6618b7bc9134598337c0e442a7d455008fa937a0e49771fe7d94fc",
+    "scripts/lifecycle_core.py": "e76fe65b6103fc4732aafc4468afc5bbf3d0699a0f79d7f74879165636ebb1a9",
+    "scripts/tests/native-listener-deadline-test.py": "ae66aca5c58e53969c0382b01492dce8713488164d8a325cbc8ba493c7623268"
+  },
+  "build": {
+    "schema": "zee-build-v1",
+    "version": "0.8.0-dev",
+    "source_sha": "66e4149e53451111d153f47283c219079a8d1cab",
+    "source_date": "2026-10-15",
+    "channel": "development",
+    "dirty": false
+  },
+  "shared_state_path": "project/.zee/web-durumu-v1.json",
+  "bounded_load": {
+    "requests": 160,
+    "concurrency": 2,
+    "additional_old_admitted_request": 1,
+    "additional_revision_probe": 1,
+    "rollovers": 4,
+    "status200": 160,
+    "status5xx": 0,
+    "failures": {},
+    "retries": 0,
+    "quota_profile": "distinct synthetic loopback client identities; no state reset or quota increase",
+    "max_request_seconds": 5,
+    "body_mismatches": 0
+  },
+  "wave_ingress": [
+    {
+      "wave": 1,
+      "queued_before_ACTIVATE": 2,
+      "responses_completed_after_old_TERM": 38,
+      "requests": 40,
+      "load_clients": 2,
+      "additional_old_admitted_request": 1,
+      "additional_new_revision_probe": 1
+    },
+    {
+      "wave": 2,
+      "queued_before_ACTIVATE": 2,
+      "responses_completed_after_old_TERM": 38,
+      "requests": 40,
+      "load_clients": 2,
+      "additional_old_admitted_request": 1,
+      "additional_new_revision_probe": 1
+    },
+    {
+      "wave": 3,
+      "queued_before_ACTIVATE": 2,
+      "responses_completed_after_old_TERM": 38,
+      "requests": 40,
+      "load_clients": 2,
+      "additional_old_admitted_request": 1,
+      "additional_new_revision_probe": 1
+    },
+    {
+      "wave": 4,
+      "queued_before_ACTIVATE": 2,
+      "responses_completed_after_old_TERM": 38,
+      "requests": 40,
+      "load_clients": 2,
+      "additional_old_admitted_request": 1,
+      "additional_new_revision_probe": 1
+    }
+  ],
+  "published_final_source_hashes": {
+    "ana.dil": "c8ce5084dc35e98e0fcc33f13f049ab59634adb19878a358806cd2fe888f5ae7",
+    "proje.dil": "56fb2044d780da2420ff636d2148c15a8e48261de633ce17cc9af8b7f6a87c4a"
+  },
+  "owned_native_generations_reaped": true,
+  "source_pins_end_equal": true,
+  "binary_end_equal": true,
+  "cleanup_errors": [],
+  "foreign_owned_sentinel_reaped": true
+}

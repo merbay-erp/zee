@@ -39,3 +39,7 @@ Bu anonim uygulama bileşimi C4'ün mevcut grammar ile uygulanabilen somut
 liste/detay dilimidir. Özel ürünün gerçek sayfasına aktarım, genel yerleşim
 kütüphanesi ve dilde yerleşik çeviri/safeHTML yüzeyi ayrı açık sınırlardır.
 Geliştirme ağacındaki ikiliyle prova, yeni temiz SHA kabulünün yerine geçmez.
+
+## S3 yerel kabul kanıtı
+
+[Exact S3 kabulü ve açık sınırlar](urunlesme-s3-kabul-20261015.md) gerçek canonical/native/IDE ve ortak kapıları bağlar; genel ürün/platform/yayın kabulü değildir.

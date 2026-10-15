@@ -1,0 +1,349 @@
+{
+  "schema": "zee-k257-actual-native-1",
+  "status": "passed",
+  "cases": [
+    {
+      "name": "actual-pg-pool-four-leases-wait-timeout-recovery",
+      "status": "passed",
+      "snapshots": [
+        [
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          1,
+          0,
+          1,
+          0,
+          17851,
+          0
+        ],
+        [
+          1,
+          0,
+          1,
+          1,
+          1,
+          0,
+          17851,
+          0
+        ],
+        [
+          2,
+          0,
+          2,
+          0,
+          2,
+          0,
+          22646,
+          0
+        ],
+        [
+          2,
+          0,
+          2,
+          1,
+          2,
+          0,
+          22646,
+          0
+        ],
+        [
+          3,
+          0,
+          3,
+          0,
+          3,
+          0,
+          26988,
+          0
+        ],
+        [
+          3,
+          0,
+          3,
+          1,
+          3,
+          0,
+          26988,
+          0
+        ],
+        [
+          4,
+          0,
+          4,
+          0,
+          4,
+          0,
+          31346,
+          0
+        ],
+        [
+          4,
+          0,
+          4,
+          1,
+          4,
+          0,
+          31346,
+          0
+        ],
+        [
+          4,
+          0,
+          4,
+          0,
+          5,
+          0,
+          32749,
+          1341
+        ],
+        [
+          4,
+          1,
+          3,
+          0,
+          5,
+          0,
+          32749,
+          4229
+        ],
+        [
+          4,
+          1,
+          3,
+          1,
+          5,
+          0,
+          32749,
+          4229
+        ],
+        [
+          4,
+          0,
+          4,
+          0,
+          6,
+          0,
+          32875,
+          4229
+        ],
+        [
+          4,
+          0,
+          4,
+          1,
+          6,
+          0,
+          32875,
+          4229
+        ],
+        [
+          4,
+          0,
+          4,
+          0,
+          6,
+          1,
+          2037901,
+          4229
+        ],
+        [
+          4,
+          4,
+          0,
+          0,
+          6,
+          1,
+          2037901,
+          8064747
+        ]
+      ]
+    },
+    {
+      "name": "native-request-status-rate429-db-boundary-no-content",
+      "status": "passed",
+      "request": [
+        7,
+        7,
+        63916,
+        0,
+        1,
+        1,
+        3,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "pool": [
+        1,
+        1,
+        0,
+        0,
+        2,
+        0,
+        7941,
+        52938
+      ],
+      "body_path_sql_absent": true
+    },
+    {
+      "name": "actual-native-pipe-backpressure-recovery",
+      "status": "passed",
+      "codes": [
+        200,
+        200
+      ],
+      "dropped": 7
+    },
+    {
+      "name": "actual-native-closed-reader-no-sigpipe",
+      "status": "passed"
+    },
+    {
+      "name": "actual-native-malformed-source-alias-early-rejection",
+      "status": "passed",
+      "private_source_canary_absent": true
+    },
+    {
+      "name": "actual-native-malformed-source-stderr-alias-early-rejection",
+      "status": "passed",
+      "private_source_canary_absent": true
+    },
+    {
+      "name": "actual-two-worker-supervisor-collector",
+      "status": "passed",
+      "request_prefix": [
+        6,
+        6,
+        141654,
+        0,
+        0,
+        0,
+        6,
+        0,
+        0,
+        0,
+        0
+      ],
+      "channels": 2
+    },
+    {
+      "name": "credential-designated-metadata-composition-two-workers",
+      "status": "passed",
+      "channels": 2
+    }
+  ],
+  "compiler_identity": {
+    "schema": "zee-build-v1",
+    "version": "0.8.0-dev",
+    "source_sha": "66e4149e53451111d153f47283c219079a8d1cab",
+    "source_date": "2026-10-15",
+    "channel": "development",
+    "dirty": false
+  },
+  "binary_sha256": "398a706f588fba06b5cadacb32af01714c7dd875a4c40a86b35137a1c7227e87",
+  "sources": [
+    {
+      "path": "scripts/native-metrics.py",
+      "sha256": "d5d12902358591365ff201c13c44b255d265c49c71befabcdef0575fe7e854c4"
+    },
+    {
+      "path": "scripts/native-capabilities.py",
+      "sha256": "0a336d915e6618b7bc9134598337c0e442a7d455008fa937a0e49771fe7d94fc"
+    },
+    {
+      "path": "scripts/worker-supervisor.py",
+      "sha256": "560bec4e4e36d2aa856936d9d32412bb9106b61b25a871495287e2287e3c6642"
+    },
+    {
+      "path": "scripts/postgresql-tls-ci.py",
+      "sha256": "8ef71f0070b9e954b70d0ec24c50c0285b4bfb76de4ed40490efd9eac78cad77"
+    },
+    {
+      "path": "scripts/postgresql-tls11-control.py",
+      "sha256": "cdf477d154f9fe11086c4829b34b9a412156feabdee1404b5bd863026f2ba639"
+    },
+    {
+      "path": "scripts/credential-baslat.py",
+      "sha256": "6894667f5d2d529434c235c9ae54aec64d4fb3c1c25712c25fb7f710eee9961f"
+    },
+    {
+      "path": "scripts/tests/worker-supervisor-test.py",
+      "sha256": "447525fd38503c150d6488e394e2ff13e51b5db70bbf9a9517daacadd1e59fe1"
+    },
+    {
+      "path": "scripts/tests/native-metrics-test.py",
+      "sha256": "8cb245ca005ef6bc670863d45eec2d88bb8354eb9101ab62e5231d99f0764d7d"
+    },
+    {
+      "path": "compiler/src/web_metrikleri.rs",
+      "sha256": "3aadbf16d56004b5a72958cea0262d746f54f61000520f1fb58b0e6315ccfc91"
+    },
+    {
+      "path": "compiler/src/postgresql/havuz.rs",
+      "sha256": "42ba0aee96bf414e7cc9b9b29e8535d942705cc6cb502b881b3a62fea2237089"
+    },
+    {
+      "path": "compiler/src/postgresql/havuz/metrik.rs",
+      "sha256": "cb890c16377705e91c335c4c8f1285a5bc14bb9aa66efb143f46575d4f132ebb"
+    },
+    {
+      "path": "compiler/src/postgresql.rs",
+      "sha256": "219e4ea7ac2a5fb5cf6d637f6d127f5bb2476050582e443321a58d1ff90186eb"
+    },
+    {
+      "path": "compiler/src/main.rs",
+      "sha256": "5eaf672be451213e79158dc01d7744e0363582d79d2393e7ddcf8db9f0dd2270"
+    },
+    {
+      "path": "dogfood/zee-cekirdek/metrik/ana.dil",
+      "sha256": "dcde951cebbbeaf4dcde3643058b74843b036f661934fc69e8cb0c9b7ec4fa6e"
+    },
+    {
+      "path": "dogfood/zee-cekirdek/metrik/proje.dil",
+      "sha256": "a72053519a225c3e6bea9de2444774132cf3f825f688d0e0b59d702d3895beef"
+    }
+  ],
+  "scope": "native exact transport/status/rate decisions and pool boundary samples; no Prometheus endpoint/clientdelivery/fullP13 acceptance",
+  "postgres_version": "postgres (PostgreSQL) 16.15",
+  "case_count": 8,
+  "failed": 0,
+  "ignored": 0,
+  "owned_workers_closed": true,
+  "owned_pg_closed": true,
+  "raw_files": [
+    {
+      "path": "native-metadata.jsonl",
+      "sha256": "22ef3dde7afc61cf3abf11f43ff954110e35b5d1f4d0d0d6ab4e9dd8aaa4d514"
+    },
+    {
+      "path": "owned-pg-pool-stderr.log",
+      "sha256": "b33c2cf5b9fdec65b6c16ff18297040d79f6a7590fc16d8f4136c1c4d0272542"
+    },
+    {
+      "path": "owned-pg-pool-stdout.log",
+      "sha256": "ed0cf7089104ad18d485ea9909b7c85e0bd8e52a4d3363ae190b37afbbd7742b"
+    }
+  ]
+}

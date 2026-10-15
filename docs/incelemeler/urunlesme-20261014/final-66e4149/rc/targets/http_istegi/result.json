@@ -1,0 +1,50 @@
+{
+  "target": "http_istegi",
+  "max_len": 81920,
+  "command": {
+    "name": "http_istegi",
+    "argv": [
+      "cargo",
+      "+nightly-2026-08-31",
+      "fuzz",
+      "run",
+      "--sanitizer",
+      "address",
+      "--target",
+      "aarch64-apple-darwin",
+      "--target-dir",
+      "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-rc/fuzz-target",
+      "http_istegi",
+      "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-rc/targets/http_istegi/corpus",
+      "--",
+      "-dict=/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-rc/checkout/compiler/fuzz/dictionaries/zee.dict",
+      "-max_total_time=1800",
+      "-max_len=81920",
+      "-timeout=5",
+      "-print_final_stats=1",
+      "-artifact_prefix=/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-rc/targets/http_istegi/crashes/"
+    ],
+    "exit": 0,
+    "elapsed_seconds": 1804.031,
+    "supervisor_failure": null,
+    "log_sha256": "cbe42232d7d8eb7835956333c0cfbbf57de4419f8b677f5e60b1113b9e1c112c",
+    "passed": true
+  },
+  "stats": {
+    "requested_seconds": 1800,
+    "actual_seconds": 1801,
+    "executions": 10126502,
+    "sanitizer": "address",
+    "sanitizer_finding": false,
+    "libfuzzer_failure": false,
+    "input_timeout": false,
+    "crash_artifacts": [],
+    "passed": true
+  },
+  "binary_sha256": "d6201ed66f7ab8e592cf30bb505e5c6842a0ce7ad2fe603fff5ffe162b427ba8",
+  "asan_runtime_marker": true,
+  "initial_seeds": 5,
+  "final_seeds": 477,
+  "manifest_verified": true,
+  "manifest_sha256": "dd925934b0bb0eaaef4db911571bf849a08595e2c906e2aa0ae6cf0d00f24649"
+}

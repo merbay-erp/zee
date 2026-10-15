@@ -1,0 +1,28 @@
+{
+  "status": "passed",
+  "source_sha": "66e4149e53451111d153f47283c219079a8d1cab",
+  "state": "Stopped",
+  "issued_LIMA_HOME": "/private/tmp/zk276-hih4chab/lima",
+  "issued_name": "k276",
+  "instance_device_inode": [
+    16777232,
+    422274626
+  ],
+  "disk_device_inode_size": [
+    16777232,
+    422274644,
+    17179869184
+  ],
+  "disk_and_latch_retained": true,
+  "guest_end_sha256": "b803ebfbc87d06d674a7b3b267b64b1afb6a9aeb57ebb12cf4ed8511e9c65809",
+  "original_owned_guest_campaigns_closed": true,
+  "normal_namespace_shutdown": true,
+  "PID_adoption": false,
+  "stop_seconds": 2.156463416060433,
+  "commands": {
+    "guest-end.log": "be6f700f9ab5304780c285c0a2beb5127793744cfee283d2000f5cdb75f709dc",
+    "before.log": "473cf1fc878f8152ece4aeb6d7f1e2cd02c6a85fc8f21316d20a1d68527071b5",
+    "stop.log": "88d9cb22e9204726cfa765ba78a98ef50288df8a90feb9b9894eeb3e8f0b064a",
+    "after.log": "2bab65fa822d458effc1dc7e1a24cd928144e18162854ff2f594b781438d6ba9"
+  }
+}

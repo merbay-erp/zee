@@ -441,3 +441,9 @@ Supervisor log sıklığı tanımlamaz. ADR-045/049 ve izlenen performans tarih�
 etkisi incelendi: compiler Rust kaynağı, kanonik benchmark programları,
 sample/warmup sözleşmesi ve hard eşik politikası değişmemiştir. Bu yüzden
 `performans-gecmisi-v2.tsv` yenilenmez; yeni temiz kaynak ölçümü ayrı yapılır.
+
+## S3 gözlemsel editör ve RSS kabulü
+
+Temiz `66e4149e53451111d153f47283c219079a8d1cab`, Apple M4 Pro/24GiB/macOS26.6.2/Rust1.93.1 release;20.081satır/40birim,5ısınma+20ölçüm:1açıkbelge p95 19,208ms/max20,393,41açıkbelge p95 122,649ms/max125,044. P95 index18 ve max ham20örnekten yeniden hesaplandı. İlk açılış 29,895/2697,012ms;41belge değeri sıralı toplam açılıştır. Fuzz/build sonrası paylaşımlı makine gözlemidir;200ms hard gate, UI/transport/lint veya gerçek ürün SLA'sı değildir.
+
+1800.859579sn soak360örnekte compiler20112→20144KiB,LSP17856→19456KiB; 60sn pencereler ve ısınma sonrası medyanlar bağımsız doğrulandı. ADR045/049 ve performans-gecmisi-v2.tsv incelendi; yeni sabit adanmış koşucu tabanı yazılmadı. [Kanıt](urunlesme-s3-kabul-20261015.md).

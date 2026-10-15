@@ -1,0 +1,68 @@
+{
+  "schema": "zee-k287-independent-budget-probe-1",
+  "batches": [
+    {
+      "i": 0,
+      "same_id_responses": [
+        {
+          "id": 20,
+          "error": null,
+          "body_bytes": 39
+        }
+      ],
+      "notification_count": 1
+    },
+    {
+      "i": 1,
+      "same_id_responses": [
+        {
+          "id": 21,
+          "error": null,
+          "body_bytes": 39
+        }
+      ],
+      "notification_count": 2
+    },
+    {
+      "i": 2,
+      "same_id_responses": [
+        {
+          "id": 22,
+          "error": null,
+          "body_bytes": 39
+        }
+      ],
+      "notification_count": 3
+    },
+    {
+      "i": 3,
+      "same_id_responses": [
+        {
+          "id": 23,
+          "error": {
+            "code": -32001,
+            "message": "LSP yan\u0131t\u0131 g\u00fcvenli profil 8 MiB s\u0131n\u0131r\u0131n\u0131 a\u015f\u0131yor."
+          },
+          "body_bytes": 119
+        }
+      ],
+      "notification_count": 0
+    },
+    {
+      "i": 4,
+      "same_id_responses": [
+        {
+          "id": 24,
+          "error": {
+            "code": -32001,
+            "message": "LSP yan\u0131t\u0131 g\u00fcvenli profil 8 MiB s\u0131n\u0131r\u0131n\u0131 a\u015f\u0131yor."
+          },
+          "body_bytes": 119
+        }
+      ],
+      "notification_count": 0
+    }
+  ],
+  "exit": 0,
+  "owned_reaped": true
+}

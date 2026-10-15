@@ -1,0 +1,12 @@
+{
+  "source_sha": "66e4149e53451111d153f47283c219079a8d1cab",
+  "status": "failed",
+  "source_begin_clean": true,
+  "binary_begin_sha256": "fcd675a5b54d2d2571fea0460a1387032dbcf03dc17c972d99ef05b672fa020e",
+  "test_threads": 1,
+  "source_or_deadline_modified": false,
+  "started_ns": 1792063038708296000,
+  "failure_type": "Reject",
+  "finished_ns": 1792063166964465000,
+  "log_sha256": "0158e52f97ce303751faf97b682f0efe98f782f085919f463125b03279045b77"
+}

@@ -1,0 +1,21 @@
+{
+  "schema": "zee-S3-RC-gate-cancellation-review-1",
+  "recorded_at": "2026-10-15T10:59:22.695868+00:00",
+  "source_sha": "66e4149e53451111d153f47283c219079a8d1cab",
+  "source_clean": true,
+  "status": "incomplete-disk-floor",
+  "minimum_free_bytes": 10338369536,
+  "required_free_bytes": 10737418240,
+  "current_free_bytes": 577908736,
+  "controller_sha256": "2b9f63ab59460d3ca8231daa74149a0d615207a44bfbd73f02ce68d8e8b60f57",
+  "controller_exit": -15,
+  "controller_closed_and_reaped": true,
+  "export_check": "passed before interruption",
+  "security_RC_result": "unknown; no completed security-RC.txt or passed gate receipt",
+  "original_running_receipt_preserved": true,
+  "read_only_process_checks": "No matching root-worktree/gate/Cargo processes in command-scoped check; no Cargo/Rustc process names in subsequent read-only check. No PID adoption or signals.",
+  "awake_utility_closed": true,
+  "disk_growth_cause": "not established",
+  "no_build_cache_or_evidence_deleted": true,
+  "acceptance_not_published": true
+}

@@ -18,3 +18,7 @@ single-generation deadline kontrolü load sayısına katılmaz.
 kaynak dilimindedir. Eski sabit-revision17 yeni kabul yerine geçmez. GB-107,
 backlog, faz, uyumluluk ve makine planı ortak kayıtları güncellendi; compiler source/cache/API/grammar veya core soak semantiği
 bu test diliminde değişmez. P14 gerçek ürün/şema/platform ve genel SLA açıktır.
+
+## S3 kanıtı
+
+[İkinci dalga exact S3 kabulü](../docs/urunlesme-s3-kabul-20261015.md) bu kararla ilgili actual kohortu ve açık sınırları kaydeder. C1/P33 retleri ve ürün/insan/platform kapıları bu bağlantıyla kapanmaz.

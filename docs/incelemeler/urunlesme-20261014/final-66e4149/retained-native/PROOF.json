@@ -1,0 +1,319 @@
+{
+  "schema": "zee-retained-native-exact-source-1",
+  "source_sha": "66e4149e53451111d153f47283c219079a8d1cab",
+  "binary_sha256": "398a706f588fba06b5cadacb32af01714c7dd875a4c40a86b35137a1c7227e87",
+  "status": "passed",
+  "steps": [
+    {
+      "name": "build-before",
+      "argv": [
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-macos-delivery/binaries/dil",
+        "s\u00fcr\u00fcm",
+        "--json"
+      ],
+      "source_pins": {},
+      "status": "passed",
+      "exit": 0,
+      "seconds": 0.036632000003010035,
+      "log_sha256": "b93f1fe3382d9f14a4fd468b2c346388c3e2552fb9e4633da32b70eee3da3b76"
+    },
+    {
+      "name": "pg8",
+      "argv": [
+        "python3",
+        "-I",
+        "-B",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/scripts/postgresql-tls-ci.py",
+        "--engine",
+        "local",
+        "--postgres-bin-dir",
+        "/private/tmp/zee-plan-evidence/pg16-runtime/install/bin",
+        "--output",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-retained-native/postgresql-tls-ci.json"
+      ],
+      "source_pins": {
+        "scripts/postgresql-tls-ci.py": "8ef71f0070b9e954b70d0ec24c50c0285b4bfb76de4ed40490efd9eac78cad77"
+      },
+      "status": "passed",
+      "exit": 0,
+      "seconds": 27.342974417028017,
+      "log_sha256": "143ad0b7a0814fa62869ddebba592eba3dd501438552dc0b6ad7f8395cf0eb86"
+    },
+    {
+      "name": "goc1",
+      "argv": [
+        "python3",
+        "-I",
+        "-B",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/scripts/postgresql-goc-ci.py",
+        "--engine",
+        "local",
+        "--postgres-bin-dir",
+        "/private/tmp/zee-plan-evidence/pg16-runtime/install/bin"
+      ],
+      "source_pins": {
+        "scripts/postgresql-goc-ci.py": "54908b680ee5a7fe8f53dfe974a8d5f6508a59ad537a8975823d0cb55907e8b3"
+      },
+      "status": "passed",
+      "exit": 0,
+      "seconds": 4.539330709027126,
+      "log_sha256": "7d87c2d4adcff3fe407cc5380c56d04290e70234ffac0e6a4dfb1bca90aee7cf"
+    },
+    {
+      "name": "parola11",
+      "argv": [
+        "python3",
+        "-I",
+        "-B",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/scripts/parola-goc-ci.py",
+        "--engine",
+        "local",
+        "--postgres-bin-dir",
+        "/private/tmp/zee-plan-evidence/pg16-runtime/install/bin",
+        "--dil",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-macos-delivery/binaries/dil",
+        "--output",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-retained-native/parola11.json"
+      ],
+      "source_pins": {
+        "scripts/parola-goc-ci.py": "cdced5a360ccc5b1ca9293f247d0dd96b41353997483fb2acd8119581f0e7309"
+      },
+      "status": "passed",
+      "exit": 0,
+      "seconds": 4.627367791021243,
+      "log_sha256": "3fce22a729a56810571e63b84b6692a4e7886129518477937808caf741cda33a"
+    },
+    {
+      "name": "queue21",
+      "argv": [
+        "python3",
+        "-I",
+        "-B",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/scripts/is-kuyrugu-ci.py",
+        "--engine",
+        "local",
+        "--postgres-bin-dir",
+        "/private/tmp/zee-plan-evidence/pg16-runtime/install/bin",
+        "--dil",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-macos-delivery/binaries/dil",
+        "--output",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-retained-native/queue21.json"
+      ],
+      "source_pins": {
+        "scripts/is-kuyrugu-ci.py": "612f71f03150d7506939b89baa5c7d2e7e8e9c7f3913db91f84d7f1207e6551f"
+      },
+      "status": "passed",
+      "exit": 0,
+      "seconds": 70.24831691698637,
+      "log_sha256": "c6521e04febe011fce54eb231ee6bf54546069088b1e6dac79325d9785e3bf8a"
+    },
+    {
+      "name": "metrics8",
+      "argv": [
+        "python3",
+        "-I",
+        "-B",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/scripts/tests/native-metrics-test.py",
+        "--dil",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-macos-delivery/binaries/dil",
+        "--output",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-retained-native/metrics8",
+        "--framework-root",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+        "--postgres-bin-dir",
+        "/private/tmp/zee-plan-evidence/pg16-runtime/install/bin"
+      ],
+      "source_pins": {
+        "scripts/tests/native-metrics-test.py": "8cb245ca005ef6bc670863d45eec2d88bb8354eb9101ab62e5231d99f0764d7d"
+      },
+      "status": "passed",
+      "exit": 0,
+      "seconds": 21.5508581250906,
+      "log_sha256": "9b2250aef078d7eefa1402dd5c9489440ade8e0c30936263c378e60b5479f765"
+    },
+    {
+      "name": "job-native11",
+      "argv": [
+        "python3",
+        "-I",
+        "-B",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/scripts/tests/job-dispatcher-native-test.py",
+        "--dil",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-macos-delivery/binaries/dil",
+        "--output",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-retained-native/job-native11",
+        "--framework-root",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+        "--postgres-bin-dir",
+        "/private/tmp/zee-plan-evidence/pg16-runtime/install/bin"
+      ],
+      "source_pins": {
+        "scripts/tests/job-dispatcher-native-test.py": "55ece6a92b3b9b8fb1cb242dc682a27cbcedc10d1b90e5c640effeedf50f7552"
+      },
+      "status": "passed",
+      "exit": 0,
+      "seconds": 50.039474541088566,
+      "log_sha256": "09049d52635494fd9e537ad66f540effb92a08a5c7ca946d4a4737c08e29144e"
+    },
+    {
+      "name": "smtp-pg-fault11",
+      "argv": [
+        "python3",
+        "-I",
+        "-B",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/scripts/tests/effect-dispatcher-native-test.py",
+        "--dil",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-macos-delivery/binaries/dil",
+        "--output",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-retained-native/smtp-pg-fault11",
+        "--postgres-bin-dir",
+        "/private/tmp/zee-plan-evidence/pg16-runtime/install/bin"
+      ],
+      "source_pins": {
+        "scripts/tests/effect-dispatcher-native-test.py": "a245cd733969974e5aeb4b178d17a7b99636d74f4836a032aae53716cef97c66"
+      },
+      "status": "passed",
+      "exit": 0,
+      "seconds": 7.3787764579756185,
+      "log_sha256": "38762c26440f9746b969209785672ac8b131730daab9618f708c7f8a9c9341ea"
+    },
+    {
+      "name": "readiness-watch-pg15",
+      "argv": [
+        "python3",
+        "-I",
+        "-B",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/scripts/tests/db-readiness-watch-native.py",
+        "--dil",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-macos-delivery/binaries/dil",
+        "--output",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-retained-native/readiness-watch-pg15",
+        "--framework-root",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+        "--postgres-bin-dir",
+        "/private/tmp/zee-plan-evidence/pg16-runtime/install/bin"
+      ],
+      "source_pins": {
+        "scripts/tests/db-readiness-watch-native.py": "3ff5da8666334e05169e3c599f060b193d0346b84e68c0556ec844530fe72d1c"
+      },
+      "status": "passed",
+      "exit": 0,
+      "seconds": 24.822379374993034,
+      "log_sha256": "3350bca10551284f6c58a220cd92a3ef73940dbc511df5d2563f8704ad749940"
+    },
+    {
+      "name": "readiness-ttl5",
+      "argv": [
+        "python3",
+        "-I",
+        "-B",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/scripts/tests/readiness-ttl-native.py",
+        "--dil",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-macos-delivery/binaries/dil",
+        "--output",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-retained-native/readiness-ttl5"
+      ],
+      "source_pins": {
+        "scripts/tests/readiness-ttl-native.py": "3205e4d1e9b6c3214ab61766b8dd2e1aca0988fff29f0e2cdf1ef38d1b6eb28e"
+      },
+      "status": "passed",
+      "exit": 0,
+      "seconds": 16.974375457968563,
+      "log_sha256": "7edf9ff91c54a4081b214b6b80176a633ab5b100209ea18c16da4072c1149e5e"
+    },
+    {
+      "name": "owned-web-pg4",
+      "argv": [
+        "python3",
+        "-I",
+        "-B",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/scripts/owned-web-tests.py",
+        "--fixture-root",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/compiler/tests/fixtures/owned-web-kit",
+        "--suite",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/compiler/tests/fixtures/owned-web-kit-suite.json",
+        "--suite-sha256",
+        "571b2077767ac7a7622c06443ccded8b80a6522f991e4a074684251e4774e0d3",
+        "--dil",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-macos-delivery/binaries/dil",
+        "--binary-sha256",
+        "398a706f588fba06b5cadacb32af01714c7dd875a4c40a86b35137a1c7227e87",
+        "--expected-source",
+        "66e4149e53451111d153f47283c219079a8d1cab",
+        "--postgres-bin-dir",
+        "/private/tmp/zee-plan-evidence/pg16-runtime/install/bin",
+        "--output",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-retained-native/owned-web-pg4"
+      ],
+      "source_pins": {
+        "scripts/owned-web-tests.py": "0614a892c7af7eaba6d9c2c0ea5485f2af8d08b4eb34b83c8ac0763191b99982",
+        "compiler/tests/fixtures/owned-web-kit-suite.json": "571b2077767ac7a7622c06443ccded8b80a6522f991e4a074684251e4774e0d3"
+      },
+      "status": "passed",
+      "exit": 0,
+      "seconds": 3.1420599999837577,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "pdf-native-job",
+      "argv": [
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-macos-delivery/binaries/dil",
+        "\u00e7al\u0131\u015ft\u0131r",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/golden/pdf-host/ana.dil"
+      ],
+      "source_pins": {
+        "golden/pdf-host/ana.dil": "0a9d57fb8e0d504be8dec3e6cafd06b2e3ef545c57e9bb66a2fe4490cc90303b"
+      },
+      "status": "passed",
+      "exit": 0,
+      "seconds": 0.031663957983255386,
+      "log_sha256": "a65e73490ab638fef6c16ce6d8f6ee0643e37cfcd700a81442b4e659046238ae"
+    },
+    {
+      "name": "pdf-backend8",
+      "argv": [
+        "/Users/mustafaerbay/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-I",
+        "-B",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/scripts/tests/pdf-backend-acceptance.py",
+        "--framework-root",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+        "--output",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-retained-native/pdf-backend8"
+      ],
+      "source_pins": {
+        "scripts/tests/pdf-backend-acceptance.py": "c508463332ed9be33ec669ccf76b0c78620a4cee3def02d5299b864fbc89dd9f"
+      },
+      "status": "passed",
+      "exit": 0,
+      "seconds": 0.9405039169359952,
+      "log_sha256": "2aff32224091afae8802d3e2608ecb8bd5da988e3d7078d1bee4d1be8fff2989"
+    },
+    {
+      "name": "build-after",
+      "argv": [
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-macos-delivery/binaries/dil",
+        "s\u00fcr\u00fcm",
+        "--json"
+      ],
+      "source_pins": {},
+      "status": "passed",
+      "exit": 0,
+      "seconds": 0.060926917009055614,
+      "log_sha256": "b93f1fe3382d9f14a4fd468b2c346388c3e2552fb9e4633da32b70eee3da3b76"
+    }
+  ],
+  "started_ns": 1792059162188104000,
+  "boundary": "Explicit retained dedicated cohorts, not counted again in unique libtest total.",
+  "build": {
+    "schema": "zee-build-v1",
+    "version": "0.8.0-dev",
+    "source_sha": "66e4149e53451111d153f47283c219079a8d1cab",
+    "source_date": "2026-10-15",
+    "channel": "development",
+    "dirty": false
+  },
+  "source_end_clean": true,
+  "binary_end_unchanged": true,
+  "finished_ns": 1792059394512840000
+}

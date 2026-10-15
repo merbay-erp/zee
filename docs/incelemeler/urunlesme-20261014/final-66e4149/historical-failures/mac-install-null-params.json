@@ -1,0 +1,82 @@
+{
+  "schema": "zee-owned-prefix-install-acceptance-1",
+  "K": "K-266",
+  "source_sha": "66e4149e53451111d153f47283c219079a8d1cab",
+  "status": "failed",
+  "acceptance": false,
+  "delivery_report_sha256": "b67ca95afb7829353e03638b4bc08a78f35c62073ad4e1874be5c7b7bb072607",
+  "binary_sha256": {
+    "dil": "398a706f588fba06b5cadacb32af01714c7dd875a4c40a86b35137a1c7227e87",
+    "dillsp": "e4bd8625067a79e9dad5b20022ba28ad0e004e5ce19b6bd746a6370b19526ca9"
+  },
+  "source_helpers": {
+    "scripts/surum-artefakti.sh": "8a93e67c4285e182a056a59895d04a28aea7d0019cb2df023d7e64131dbbcbe6",
+    "scripts/temiz-kaynak-arsivi.sh": "268a7e0b2541224b2d85216d2ce14481976011ab4f275b90ceb4739abc45558f",
+    "scripts/kaynak-ci-esleme.py": "d9d7ef6031da841d0fa87515de7ceb90cda14f3d253b691041fba35c149a8058",
+    "scripts/rust-arac-zinciri.sh": "b634e533a312fa81f2e0cdadd5082def6ff6dff8d4b434d452d651e320a6f478",
+    "compiler/rust-toolchain.toml": "3260f10937490e272267a11d1bca85ee76b0ef972022ab8fba8a1df0dbb3b397",
+    "scripts/kur.sh": "1bea4701e9ac0cf8bdca5dd1ec6c4da424cfe03bcdf6bf1f33cc70ecee80a21f",
+    "scripts/kaldir.sh": "8f2351745c588687434d1a2a194af2b3299231e52bbc080a36698ca454e1e43d"
+  },
+  "external_start_sha256": {
+    "driver": "c5143d1105a52bb0e3b232e5af5b765bb78ae34de814c660776a4e584e1f8af0",
+    "helper": "509106d70e5e35c1142594c98df022b01e689966415bdd94a8f67feecb8587d8",
+    "smoke": "45b9c2fc48ff7bd38545ab566bef84a7c0a337d0ad3e26652767a4b2e9c08e61"
+  },
+  "cases": [],
+  "commands": [
+    {
+      "name": "valid-install",
+      "argv": [
+        "bash",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/scripts/kur.sh",
+        "--artefakt",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-macos-delivery/binaries",
+        "--hedef",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-macos-install/valid/bin",
+        "--veri",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-macos-install/valid/data"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.10278420802205801,
+      "log": "logs/valid-install.log",
+      "log_sha256": "bdd98e6df5158b07311faf5238fb4e3807275a32701caf8b0992e47469e132ec"
+    }
+  ],
+  "scope": "Actual unsigned local canonical artifact, owned prefixes only; no HOME/PATH/global install, network, keys or publication.",
+  "failure_type": "Reject",
+  "files": [
+    {
+      "path": "logs/installed-build-json.log",
+      "sha256": "b93f1fe3382d9f14a4fd468b2c346388c3e2552fb9e4633da32b70eee3da3b76"
+    },
+    {
+      "path": "logs/lsp-smoke.log",
+      "sha256": "8573effd5180d71435afba988ae6f06c6e273ec9ffefd735c5d249919d670334"
+    },
+    {
+      "path": "logs/valid-install.log",
+      "sha256": "bdd98e6df5158b07311faf5238fb4e3807275a32701caf8b0992e47469e132ec"
+    },
+    {
+      "path": "valid/bin/dil",
+      "sha256": "398a706f588fba06b5cadacb32af01714c7dd875a4c40a86b35137a1c7227e87"
+    },
+    {
+      "path": "valid/bin/dillsp",
+      "sha256": "e4bd8625067a79e9dad5b20022ba28ad0e004e5ce19b6bd746a6370b19526ca9"
+    },
+    {
+      "path": "valid/bin/foreign.sentinel",
+      "sha256": "f17f5d1cfdb6d38a4e5b10d93e8fea50dc33374a82a409cd7d6269bd1ccc8211"
+    },
+    {
+      "path": "valid/data/foreign.sentinel",
+      "sha256": "f17f5d1cfdb6d38a4e5b10d93e8fea50dc33374a82a409cd7d6269bd1ccc8211"
+    },
+    {
+      "path": "valid/data/kurulum-v1.tsv",
+      "sha256": "65e7b9e29c73459799fd6e9528ef8e376bb53593a5bb866313b4e30b3abf59dc"
+    }
+  ]
+}

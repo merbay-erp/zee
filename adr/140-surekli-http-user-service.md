@@ -29,3 +29,7 @@ mevcut worker --pilot seçeneğini açar; identity query ayrıca dirty=false ve 
 source SHA ister, binary hash kontrolü korunur. Native anonymous kampanya bunu
 açık true kaydeder; production trust veya dirty binary kabulü değildir. Frozenv1
 development-channel precondition eksikliği ve eski hashleri dış kanıtta korunur.
+
+## S3 kanıtı
+
+[İkinci dalga exact S3 kabulü](../docs/urunlesme-s3-kabul-20261015.md) bu kararla ilgili actual kohortu ve açık sınırları kaydeder. C1/P33 retleri ve ürün/insan/platform kapıları bu bağlantıyla kapanmaz.

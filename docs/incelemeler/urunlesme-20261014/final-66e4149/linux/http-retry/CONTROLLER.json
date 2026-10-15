@@ -1,0 +1,7 @@
+{
+  "source_sha": "66e4149e53451111d153f47283c219079a8d1cab",
+  "guest_leaf": "/home/mustafaerbay.guest/zee-k276/service-acceptance-66e4149e5345-1792057016809668000",
+  "driver_sha256": "5da59a007aa57af9528b309dcdde186b9f907b42c74cd19186f90e578be542e5",
+  "status": "passed",
+  "reason": "own K282 expected failed unit reset; SQL latch unchanged; failed K283 before case0 preserved"
+}

@@ -1,0 +1,15 @@
+# zee-fuzz-corpus-artifact-1
+# target	wasm_abi
+# corpus	wasm_abi
+# source_commit	66e4149e53451111d153f47283c219079a8d1cab
+# run_id	1792057018409502000
+# run_attempt	1
+# toolchain	nightly-2026-08-31
+# cargo_fuzz	0.13.2
+# run_origin	local
+# seed_sha256	relative_path
+01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b	bos
+753d42f511abb94eb4b0fed6d865801bebb439d4874ffe6c7582fa8b54c1b060	gecerli.dil
+6be085f65d6530bffcafd1e2e5d5053ebcd37024e112d822a9d0b78b68650d6b	soru
+26fb98de69b777c3e8024571585eaef1ecdb0a81ff24b8346f9d3fbcd4a913ab	unicode.dil
+6ed4a5de862ab1964cffd8aabc01bfa322a602671fe4fa13b864f0902bc3fca3	uzunluk

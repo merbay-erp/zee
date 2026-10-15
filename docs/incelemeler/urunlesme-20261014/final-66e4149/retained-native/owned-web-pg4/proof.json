@@ -1,0 +1,141 @@
+{
+  "schema": "zee-owned-web-tests-1",
+  "status": "passed",
+  "cases": [
+    {
+      "id": "site_snapshot",
+      "passed": true,
+      "requests": 2,
+      "observations": [],
+      "cluster_system_identifier": null,
+      "observer_readonly": false
+    },
+    {
+      "id": "panel_session_csrf",
+      "passed": true,
+      "requests": 11,
+      "observations": [],
+      "cluster_system_identifier": null,
+      "observer_readonly": false
+    },
+    {
+      "id": "db_committed_and_request_rollback",
+      "passed": true,
+      "requests": 4,
+      "observations": [
+        {
+          "name": "total",
+          "value": 0
+        },
+        {
+          "name": "committed",
+          "value": 1
+        },
+        {
+          "name": "committed",
+          "value": 1
+        },
+        {
+          "name": "rolled_back",
+          "value": 0
+        }
+      ],
+      "cluster_system_identifier": "7696836477836222545",
+      "observer_readonly": true
+    },
+    {
+      "id": "db_fresh_case_isolation",
+      "passed": true,
+      "requests": 2,
+      "observations": [
+        {
+          "name": "total",
+          "value": 0
+        },
+        {
+          "name": "committed",
+          "value": 1
+        }
+      ],
+      "cluster_system_identifier": "7696836481940861061",
+      "observer_readonly": true
+    }
+  ],
+  "cleanup": [
+    {
+      "id": "site_snapshot",
+      "worker_groups_empty": true,
+      "pg_groups_empty": true
+    },
+    {
+      "id": "panel_session_csrf",
+      "worker_groups_empty": true,
+      "pg_groups_empty": true
+    },
+    {
+      "id": "db_committed_and_request_rollback",
+      "worker_groups_empty": true,
+      "pg_groups_empty": true
+    },
+    {
+      "id": "db_fresh_case_isolation",
+      "worker_groups_empty": true,
+      "pg_groups_empty": true
+    }
+  ],
+  "sources": {
+    "scripts/owned-web-tests.py": "0614a892c7af7eaba6d9c2c0ea5485f2af8d08b4eb34b83c8ac0763191b99982",
+    "scripts/worker-supervisor.py": "560bec4e4e36d2aa856936d9d32412bb9106b61b25a871495287e2287e3c6642"
+  },
+  "executables": {
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-macos-delivery/binaries/dil": "398a706f588fba06b5cadacb32af01714c7dd875a4c40a86b35137a1c7227e87",
+    "/private/tmp/zee-plan-evidence/pg16-runtime/install/bin/initdb": "c960be8780e673d65c97f78c54bd3438525e1de6f2822257b189effc8b48b740",
+    "/private/tmp/zee-plan-evidence/pg16-runtime/install/bin/postgres": "9b89cfcd7b54a581c50c2fc5c3010f3ae0755635958d5789886718da22052fbd",
+    "/private/tmp/zee-plan-evidence/pg16-runtime/install/bin/psql": "c63479d6b17829552f52ac8f083b3bc4d6564dbea39eb64ffa01c150dc43d2af"
+  },
+  "suite_sha256": "571b2077767ac7a7622c06443ccded8b80a6522f991e4a074684251e4774e0d3",
+  "fixture_inventory": {
+    "README.md": "a6359cad0b792f6ab596c07c549455b9a74127f7082684db00b8d580d97ca6e6",
+    "db/ana.dil": "cbb1acea186c841610e7b644a6c6196475fb22dc729c75c5067f9af663c57d7f",
+    "db/gocler/0001_notes.sql": "1a0a71fac1716ecc42a0bd07199609a81132f761415488f20fb9e896386f9d9b",
+    "db/proje.dil": "f5c23e473b620b24171f89195e2ffd3cc4856be451ef61a761ddd92bc942d514",
+    "db-bootstrap.sql": "1a0a71fac1716ecc42a0bd07199609a81132f761415488f20fb9e896386f9d9b",
+    "db-home.snapshot": "cf8a7258939ec2fdd95d66144a63430ce80116bf1939ad7aacfd1a1cc273fce0",
+    "db-observers.json": "48c6556cf641a70afdbdf23bbf2953bc15b3f5d5a45195615b99470e44907774",
+    "panel/.gitignore": "8ba05cebd9fc8b1be9529395a983442c85d4252603caa7df135d2483fb483614",
+    "panel/ana.dil": "693355e890f0b7db4d259d9f5e5be17f6f5ada12cb2e578fd5b21e2db1988a08",
+    "panel/proje.dil": "cf3ef9a3196d744c78157687df11de2874b7e90412f79d7060878c633f88ed90",
+    "site/.gitignore": "8ba05cebd9fc8b1be9529395a983442c85d4252603caa7df135d2483fb483614",
+    "site/ana.dil": "f7831c45942128ae371482b031057bda2cd667014510d36fb291f2774338b7e1",
+    "site/proje.dil": "f7bc1c937fb96302fa93dc1ec4407231144b73e7f7d6a2ecf8a85bc3eae63049",
+    "site-about.snapshot": "bbfaac0b78c30aa6003df333a7902a8e0ef4d9e522c43ac0d7dd65aad96c8b3f"
+  },
+  "candidate": false,
+  "current_operation": "s\u00fcr\u00fcm",
+  "build": {
+    "schema": "zee-build-v1",
+    "version": "0.8.0-dev",
+    "source_sha": "66e4149e53451111d153f47283c219079a8d1cab",
+    "source_date": "2026-10-15",
+    "channel": "development",
+    "dirty": false
+  },
+  "postgres_version": "postgres (PostgreSQL) 16.15",
+  "current_case": "db_fresh_case_isolation",
+  "current_step": 3,
+  "owned_project_bindings": [
+    {
+      "id": "db_committed_and_request_rollback",
+      "declaration_sha256": "4ef67ac222525ecc11c34c05238d025e2946f1a858759fd3fcfa0d34907777d6",
+      "binding": "owned_loopback_port_only"
+    },
+    {
+      "id": "db_fresh_case_isolation",
+      "declaration_sha256": "f224372f54133be9ebf6988f214e9bca2b00c6284dff1e13b3e7ee0f59ca0e40",
+      "binding": "owned_loopback_port_only"
+    }
+  ],
+  "source_pins_unchanged": true,
+  "owned_cleanup": true,
+  "command_groups_empty": true
+}

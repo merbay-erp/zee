@@ -1,0 +1,23 @@
+{
+  "source_sha": "66e4149e53451111d153f47283c219079a8d1cab",
+  "status": "passed",
+  "source_begin_clean": true,
+  "binary_begin_sha256": "fcd675a5b54d2d2571fea0460a1387032dbcf03dc17c972d99ef05b672fa020e",
+  "test_threads": 1,
+  "source_or_deadline_modified": false,
+  "started_ns": 1792063465278083000,
+  "environment_change": "User confirmed other-session cleanup completed before this attempt",
+  "free_bytes": 73207111680,
+  "load_average": [
+    3.794921875,
+    3.8505859375,
+    4.9912109375
+  ],
+  "passed": 4,
+  "failed": 0,
+  "ignored": 0,
+  "binary_unchanged": true,
+  "source_end_clean": true,
+  "finished_ns": 1792063590857293000,
+  "log_sha256": "e37657528b96759c1336c30e15fe47dbfc908a1cfa39301f1b69d4c6c34b5c6d"
+}

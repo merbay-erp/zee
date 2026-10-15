@@ -62,3 +62,7 @@ owned süreç grubu kapanışı doğrulandı. Final Quit konsolu dışa aktarıl
 ve [kanıt](../../docs/incelemeler/urunlesme-20261014/k280-jetbrains/ACCEPTANCE.json).
 Bu mevcut keyword desteğinin S1 kanıtıdır. K-287 yeni eşitleme/cache/lint
 kaynağının temiz IDE kabulü ayrıca yapılır; Windows/marketplace yayını açıktır.
+
+## S3 yerel kabul kanıtı
+
+[Exact S3 kabulü ve açık sınırlar](../../docs/urunlesme-s3-kabul-20261015.md) gerçek canonical/native/IDE ve ortak kapıları bağlar; genel ürün/platform/yayın kabulü değildir.

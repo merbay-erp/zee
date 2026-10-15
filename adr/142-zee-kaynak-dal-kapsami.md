@@ -59,3 +59,7 @@ PG vaka izolasyonu tüm HTTP isteklerini tek transaction'da rollback etmez.
 Geçici, bounded ve test ömrüyle sınırlı durum eklenmiştir; ADR-069/soak etkisi
 final kaynak kapılarında incelenir. Public facade genişlemesi ve kalıcı cache
 yoktur. Katman yönü yorumlayıcı→test_kapsami→agac/tani; ters kenar gerekmez.
+
+## S3 kanıtı
+
+[İkinci dalga exact S3 kabulü](../docs/urunlesme-s3-kabul-20261015.md) bu kararla ilgili actual kohortu ve açık sınırları kaydeder. C1/P33 retleri ve ürün/insan/platform kapıları bu bağlantıyla kapanmaz.

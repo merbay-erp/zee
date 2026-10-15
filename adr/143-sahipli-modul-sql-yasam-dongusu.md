@@ -31,3 +31,7 @@ Production Rust modülü/kenarı yoktur; ADR-046/katman ve public facade değiş
 Benchmark iş yükü veya kalıcı compiler/LSP durumu eklenmez. K-273 testleri ve
 helper hash'i korunur. Gerçek ürün/adoption, yetkilendirme, diğer platformlar ve
 nihai clean-source kabulü ayrı kapılardır.
+
+## S3 kanıtı
+
+[İkinci dalga exact S3 kabulü](../docs/urunlesme-s3-kabul-20261015.md) bu kararla ilgili actual kohortu ve açık sınırları kaydeder. C1/P33 retleri ve ürün/insan/platform kapıları bu bağlantıyla kapanmaz.

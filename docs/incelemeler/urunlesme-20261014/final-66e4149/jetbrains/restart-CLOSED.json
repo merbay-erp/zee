@@ -1,0 +1,13 @@
+{
+  "schema": "zee-owned-IDE-k280-1",
+  "actual_launcher_source": "66e4149e53451111d153f47283c219079a8d1cab",
+  "status": "closed-owned-process",
+  "profile": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-owned-ide",
+  "canonical_command_unchanged": true,
+  "acceptance": false,
+  "issued_child_pid": 9728,
+  "elapsed_seconds": 223.078,
+  "observed_exit": 0,
+  "owned_group_closed_and_reaped": true,
+  "exit": 0
+}

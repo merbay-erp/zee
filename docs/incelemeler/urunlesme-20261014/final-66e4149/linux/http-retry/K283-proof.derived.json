@@ -1,0 +1,348 @@
+{
+  "schema": "zee-reversible-metadata-representation-1",
+  "original_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-linux-http-retry/K283-proof.json",
+  "original_sha256": "804adc745d98a7fda7c75621c45b35d855b11b8b1e81c098196cd8b9ac063b21",
+  "metadata": {
+    "schema": "zee-owned-continuous-service-native-1",
+    "role": "K283",
+    "source_sha": "66e4149e53451111d153f47283c219079a8d1cab",
+    "binary_sha256": "9e949559ddd89bc9123490c25352e86e9f03e7e69457bcdec0ae3588a25fac47",
+    "cases": [
+      {
+        "name": "actual-rendered-continuous-user-service-nativeHTTP-PG",
+        "passed": true,
+        "workers": 2
+      },
+      {
+        "name": "actual-DB-drift-unready-liveness-still200",
+        "passed": true,
+        "ingress_rejection_claim": false
+      },
+      {
+        "name": "actual-DB-restore-ready",
+        "passed": true
+      },
+      {
+        "name": "actual-HUP-config100-to101-native-quota",
+        "passed": true,
+        "zero_downtime_claim": false
+      },
+      {
+        "name": "actual-owned-unit-failure-systemd-restart",
+        "passed": true,
+        "pid_adoption": false
+      },
+      {
+        "name": "actual-unit-TERM-finishes-inflight-and-final-false",
+        "passed": true,
+        "client_response_received": true
+      },
+      {
+        "name": "actual-native-host-component-owned-watcher-loss-cleans-workers",
+        "passed": true,
+        "userunit_case": false
+      }
+    ],
+    "status": "passed",
+    "boundaries": [
+      "owned Linux user-manager and synthetic local PG/application only",
+      "no real product adoption/provider exactly-once/physical-host acceptance"
+    ],
+    "postgres_binary_pins_start": {
+      "/home/mustafaerbay.guest/zee-k276/tools/postgresql-16.15/bin/postgres": "0fcd480e0a3eada995ea3e8c898f2eb2747eb5d5755ff339878e68f8c72735f9",
+      "/home/mustafaerbay.guest/zee-k276/tools/postgresql-16.15/bin/initdb": "08ab0df4955c326a09e2b36b1c3aeecb990b654baf7f0936a1152f786aff521a",
+      "/home/mustafaerbay.guest/zee-k276/tools/postgresql-16.15/bin/pg_ctl": "f608d0dbe8d700c1cf42239b53a70516e1bb27d46b95e6342ddd96903f7a60e6",
+      "/home/mustafaerbay.guest/zee-k276/tools/postgresql-16.15/bin/psql": "cb031d6cddf04597094b6a30e82fdc7c1ac5f80f9371f38b7b0641ae2cfe68d6"
+    },
+    "source_pins_start": {
+      "scripts/dispatcher-service.py": "cd70cdce028c88afb4bb8e741a034c34f82b080aafa5511b049b06f220342f0e",
+      "scripts/finite_timer.py": "b75dc1af6da8505e7a3f984868b64da72f44e015842f0704aaaa4f2726cc7a88",
+      "scripts/lifecycle_core.py": "e76fe65b6103fc4732aafc4468afc5bbf3d0699a0f79d7f74879165636ebb1a9",
+      "scripts/worker-supervisor.py": "560bec4e4e36d2aa856936d9d32412bb9106b61b25a871495287e2287e3c6642",
+      "scripts/credential-baslat.py": {
+        "sha256_binding": 0
+      },
+      "scripts/native-capabilities.py": "0a336d915e6618b7bc9134598337c0e442a7d455008fa937a0e49771fe7d94fc",
+      "scripts/native-metrics.py": "d5d12902358591365ff201c13c44b255d265c49c71befabcdef0575fe7e854c4",
+      "scripts/postgresql-tls-ci.py": "8ef71f0070b9e954b70d0ec24c50c0285b4bfb76de4ed40490efd9eac78cad77",
+      "scripts/postgresql-tls11-control.py": "cdf477d154f9fe11086c4829b34b9a412156feabdee1404b5bd863026f2ba639",
+      "scripts/tests/service-native-support.py": "799ff1cd397e96897d7f47941146eb3e1606c814f234390cbe13f8703d5e8bf9",
+      "scripts/http-service.py": "fd846e854ba4b5581d00fee8d9c4c81d40fa997cccfa652c1a1573c728265e4f",
+      "scripts/db-hazirlik.py": "6e5717daff78557ea2e6bf3719e8e5eb3ca4df6741f8abaf27b0702b3290ccb6",
+      "scripts/tests/http-service-native.py": "fa5e82817bac9dac89b82b3d4bdc2edececc162ac1ac8472c7307d3953c9d896",
+      "compiler/tests/fixtures/db-readiness/worker/ana.dil": "b3d1899ca7590f80ddb133d9ef2db01627b742a6250d48e02d6af98f5652858f",
+      "compiler/tests/fixtures/db-readiness/worker/proje.dil": "4ee182bb763bdde74c95d28f628bc83ebf7e35ac630f3feddb52c620e833f9cb",
+      "compiler/tests/fixtures/db-readiness/probe/proje.dil": "8d66faf93f54d78eeb8ac241ed9ebfe6d08c1a140362999617cf12d38a5b1fdf",
+      "compiler/tests/fixtures/db-readiness/probe/kaynak/hazirlik.dil": "269ad7683f65b1a6e3dd6596cbc019958fea1ee55589782bef728a94f9471aff",
+      "compiler/tests/fixtures/db-readiness/probe/gocler/0001_hazirlik.sql": "b3cf7ad04df12896f1131090ff1abdacd5baf3e501fd022eecef727b8a9c905a"
+    },
+    "commands": [
+      {
+        "sequence": 1,
+        "role": "tracked-consumed-files",
+        "log": "0001-tracked-consumed-files.log",
+        "status": "passed",
+        "bytes": 674,
+        "sha256": "0241c53c38fe3d6a61a99d8c40056738e54e74b9d95d97044d1de1f13aaa3b66"
+      },
+      {
+        "sequence": 2,
+        "role": "build",
+        "log": "0002-build.log",
+        "status": "passed",
+        "bytes": 169,
+        "sha256": "b93f1fe3382d9f14a4fd468b2c346388c3e2552fb9e4633da32b70eee3da3b76"
+      },
+      {
+        "sequence": 3,
+        "role": "manager",
+        "log": "0003-manager.log",
+        "status": "passed",
+        "bytes": 8,
+        "sha256": "a4ecc5c87d811bbff7a118c17ef8cf83318cb623a103c15b8549089aa2a7f0ac"
+      },
+      {
+        "sequence": 4,
+        "role": "owned-PG-tool",
+        "log": "0004-owned-PG-tool.log",
+        "status": "passed",
+        "bytes": 697,
+        "sha256": "b37ea828083415addfd3a66b4c6277bfd2c4202e7230dfe40eda0bb93f4eb39d"
+      },
+      {
+        "sequence": 5,
+        "role": "owned-PG-tool",
+        "log": "0005-owned-PG-tool.log",
+        "status": "passed",
+        "bytes": 1369,
+        "sha256": "3c0c5036a0427d7624a139fd3e868eb4b6da634b3db1a27e2734664f4afd1ff3"
+      },
+      {
+        "sequence": 6,
+        "role": "owned-PG-tool",
+        "log": "0006-owned-PG-tool.log",
+        "status": "passed",
+        "bytes": 2337,
+        "sha256": "2e061e1d965ea972f4ea0e8ac3988ad934cc423626b8b8752971480da43f5688"
+      },
+      {
+        "sequence": 7,
+        "role": "owned-PG-tool",
+        "log": "0007-owned-PG-tool.log",
+        "status": "passed",
+        "bytes": 61,
+        "sha256": "f08ddac3de021da3a1b364489940aae250c85bafaae29a600c0e67d54e61cc6a"
+      },
+      {
+        "sequence": 8,
+        "role": "owned-PG-tool",
+        "log": "0008-owned-PG-tool.log",
+        "status": "passed",
+        "bytes": 865,
+        "sha256": "d3eaa77fd477492555daece3ce15f66028f66d197006187a029e8c2790b84623"
+      },
+      {
+        "sequence": 9,
+        "role": "owned-PG-tool",
+        "log": "0009-owned-PG-tool.log",
+        "status": "passed",
+        "bytes": 52,
+        "sha256": "66afd0411ccc09366e99fdd99b85f21899c8d2d064f5835126859618802153ad"
+      },
+      {
+        "sequence": 10,
+        "role": "owned-PG-tool",
+        "log": "0010-owned-PG-tool.log",
+        "status": "passed",
+        "bytes": 28,
+        "sha256": "4bbf9e40bb4cab414db862e0f93affb1d83c24ec83285eea9e7c2efbbc84d9fa"
+      },
+      {
+        "sequence": 11,
+        "role": "sql-observer",
+        "log": "0011-sql-observer.log",
+        "status": "passed",
+        "bytes": 23,
+        "sha256": "cd98805f2d87537d5e03292230d857dcfdc09b5a415bec562055585405d8dc76"
+      },
+      {
+        "sequence": 12,
+        "role": "sql-observer",
+        "log": "0012-sql-observer.log",
+        "status": "passed",
+        "bytes": 16,
+        "sha256": "691e4b64d448c6cffd680247056c2f445e4fbf2dcbc9be821934064e906d1ce7"
+      },
+      {
+        "sequence": 13,
+        "role": "native-readiness-migration",
+        "log": "0013-native-readiness-migration.log",
+        "status": "passed",
+        "bytes": 56,
+        "sha256": "4e0e348f7870e64a9f65a71c09087fa3a8fac18f9a9080e35829c2d173494786"
+      },
+      {
+        "sequence": 14,
+        "role": "sql-observer",
+        "log": "0014-sql-observer.log",
+        "status": "passed",
+        "bytes": 6,
+        "sha256": "ac5edd8ccc256e797590beae03179d7b9951c07f5e759f67d15b2259b87c49ce"
+      },
+      {
+        "sequence": 15,
+        "role": "render",
+        "log": "0015-render.log",
+        "status": "passed",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "sequence": 16,
+        "role": "verify",
+        "log": "0016-verify.log",
+        "status": "passed",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "sequence": 17,
+        "role": "absent-zee-http.service",
+        "log": "0017-absent-zee-http.service.log",
+        "status": "passed",
+        "bytes": 10,
+        "sha256": "391bc413c3044926b4afa41806bf4a5c4fad68a3165b8563fe1bffec0792fc76"
+      },
+      {
+        "sequence": 18,
+        "role": "link-zee-http.service",
+        "log": "0018-link-zee-http.service.log",
+        "status": "passed",
+        "bytes": 206,
+        "sha256": "29b1917852a232f4bb82723099dea677b75a1b4c56fce1b34630d0b364886458"
+      },
+      {
+        "sequence": 19,
+        "role": "start-zee-http.service",
+        "log": "0019-start-zee-http.service.log",
+        "status": "passed",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "sequence": 20,
+        "role": "sql-observer",
+        "log": "0020-sql-observer.log",
+        "status": "passed",
+        "bytes": 9,
+        "sha256": "f6657a32f2006e23f508c8f6a079ff930462fe497f786b05d96611c0e573f0f6"
+      },
+      {
+        "sequence": 21,
+        "role": "sql-observer",
+        "log": "0021-sql-observer.log",
+        "status": "passed",
+        "bytes": 9,
+        "sha256": "f6657a32f2006e23f508c8f6a079ff930462fe497f786b05d96611c0e573f0f6"
+      },
+      {
+        "sequence": 22,
+        "role": "reload-http",
+        "log": "0022-reload-http.log",
+        "status": "passed",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "sequence": 23,
+        "role": "kill-owned-http",
+        "log": "0023-kill-owned-http.log",
+        "status": "passed",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "sequence": 24,
+        "role": "stop-zee-http.service",
+        "log": "0024-stop-zee-http.service.log",
+        "status": "passed",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "sequence": 25,
+        "role": "cgroup-zee-http.service",
+        "log": "0025-cgroup-zee-http.service.log",
+        "status": "passed",
+        "bytes": 1,
+        "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+      },
+      {
+        "sequence": 26,
+        "role": "stop-zee-http.service",
+        "log": "0026-stop-zee-http.service.log",
+        "status": "passed",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "sequence": 27,
+        "role": "cgroup-zee-http.service",
+        "log": "0027-cgroup-zee-http.service.log",
+        "status": "passed",
+        "bytes": 1,
+        "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+      },
+      {
+        "sequence": 28,
+        "role": "reload",
+        "log": "0028-reload.log",
+        "status": "passed",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "sequence": 29,
+        "role": "released-zee-http.service",
+        "log": "0029-released-zee-http.service.log",
+        "status": "passed",
+        "bytes": 10,
+        "sha256": "391bc413c3044926b4afa41806bf4a5c4fad68a3165b8563fe1bffec0792fc76"
+      },
+      {
+        "sequence": 30,
+        "role": "owned-PG-tool",
+        "log": "0030-owned-PG-tool.log",
+        "status": "passed",
+        "bytes": 56,
+        "sha256": "ca19178a35ab4153b75b494963b66ce8243e1b94c173107c87b44d09db23652d"
+      }
+    ],
+    "build": {
+      "schema": "zee-build-v1",
+      "version": "0.8.0-dev",
+      "source_sha": "66e4149e53451111d153f47283c219079a8d1cab",
+      "source_date": "2026-10-15",
+      "channel": "development",
+      "dirty": false
+    },
+    "postgres_version": "postgres (PostgreSQL) 16.15",
+    "allow_development": true,
+    "development_boundary": "explicit pilot development channel only; dirtyfalse/exactSHA/hash still independently required",
+    "postgres_binary_pins_end_equal": true,
+    "source_pins_end_equal": true,
+    "binary_end_equal": true,
+    "temporary_cleanup_complete": true,
+    "cleanup_errors": [],
+    "owned_units_released": true
+  },
+  "bindings": [
+    {
+      "original_field": [
+        "source_pins_start",
+        "scripts/credential-baslat.py"
+      ],
+      "sha256": "6894667f5d2d529434c235c9ae54aec64d4fb3c1c25712c25fb7f710eee9961f"
+    }
+  ]
+}

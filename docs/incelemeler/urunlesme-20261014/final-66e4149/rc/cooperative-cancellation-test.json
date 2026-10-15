@@ -1,0 +1,9 @@
+{
+  "schema": "zee-owned-gate-cooperative-cancellation-test-1",
+  "cancellation_signal": 15,
+  "original_child_reaped": true,
+  "original_child_exit": 0,
+  "status": "passed",
+  "partial_log_preserved": true,
+  "original_handle_only": true
+}

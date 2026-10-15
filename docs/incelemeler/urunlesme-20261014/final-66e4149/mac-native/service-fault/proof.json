@@ -1,0 +1,53 @@
+{
+  "schema": "zee-service-fault-native-1",
+  "status": "passed",
+  "source_sha": "66e4149e53451111d153f47283c219079a8d1cab",
+  "binary_sha256": "398a706f588fba06b5cadacb32af01714c7dd875a4c40a86b35137a1c7227e87",
+  "cases": [
+    {
+      "name": "actual-one-native-worker-SIGKILL-sibling-cleanup-foreign-survival",
+      "passed": true,
+      "native_workers": 2,
+      "victim_exit": -9,
+      "all_owned_reaped": true,
+      "foreign_alive": true,
+      "no_PID_discovery": true
+    },
+    {
+      "name": "actual-two-native-liveness200-stale-true-gate-refused",
+      "passed": true,
+      "healthy_workers": 2,
+      "healthy_observation": "build-validated-direct-probe",
+      "ready_true_events": 0,
+      "old_gate_unchanged": true,
+      "owned_reaped": true
+    }
+  ],
+  "native_DNS_cancellation_claim": false,
+  "boundary": "own Popen/native worker and readiness boundaries only; not systemd or provider/global fault matrix",
+  "source_pins_start": {
+    "scripts/tests/service-fault-native.py": "963ced2b11216cbb77cfbc63072e072b530c9b842d149a5b310c5e30335b788d",
+    "scripts/tests/mixed-revision-native.py": "f5c10b2e33bacc7f1093a5f68dd5009904f95164567c8d2c29abb11f62cec19c",
+    "scripts/worker-supervisor.py": "560bec4e4e36d2aa856936d9d32412bb9106b61b25a871495287e2287e3c6642",
+    "scripts/lifecycle_core.py": "e76fe65b6103fc4732aafc4468afc5bbf3d0699a0f79d7f74879165636ebb1a9",
+    "scripts/tests/worker-supervisor-test.py": "447525fd38503c150d6488e394e2ff13e51b5db70bbf9a9517daacadd1e59fe1"
+  },
+  "generated_fixture_sha256": {
+    "loss-program.dil": "adc81cc184bb4e0e7ef8ed130b828a653e9e87bb733aa656df7a1b956aeb86f6",
+    "loss-proje.dil": "5b2e1df569b59d3c817e4753b74a37ab544b246e22e6a1e208be8875181efde6",
+    "stale-program.dil": "211e35574340408563a3391f3f4ac1d2ee88c8a72b7e68750313b0cfd6e2621d",
+    "stale-proje.dil": "d6444335117d15ae83281818c79092ebb2482da11a604977afccc72896864403"
+  },
+  "build": {
+    "schema": "zee-build-v1",
+    "version": "0.8.0-dev",
+    "source_sha": "66e4149e53451111d153f47283c219079a8d1cab",
+    "source_date": "2026-10-15",
+    "channel": "development",
+    "dirty": false
+  },
+  "source_pins_end_equal": true,
+  "binary_end_equal": true,
+  "cleanup_errors": [],
+  "foreign_owned_sentinel_reaped": true
+}

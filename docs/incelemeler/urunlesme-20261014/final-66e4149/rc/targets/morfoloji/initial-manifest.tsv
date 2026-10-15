@@ -1,0 +1,14 @@
+# zee-fuzz-corpus-artifact-1
+# target	morfoloji
+# corpus	morfoloji
+# source_commit	66e4149e53451111d153f47283c219079a8d1cab
+# run_id	1792057018409502000
+# run_attempt	1
+# toolchain	nightly-2026-08-31
+# cargo_fuzz	0.13.2
+# run_origin	local
+# seed_sha256	relative_path
+ee75f2af202ab4ef0b08fca43f7263bc05761170f56dd61913b1410e9f614ce8	duz
+c202c23d2340c0c6747a33b8255933c7392ffef3bb2676dc7ead8141d7992980	turkce
+4558a11ecce6f366b675416f59dd5f8d707e9a7064ce1b556882a2849daeb3ba	uzun
+a7a6a14ac8b7f2d7ddf8d3fda74bb0e675db3e13f8232a9134e608d1c446ff05	yumusama

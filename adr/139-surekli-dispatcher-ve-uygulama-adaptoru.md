@@ -34,5 +34,8 @@ hiç SQL tick başlamamıştır (0/4; cleanup_errors boş, owned_units_released 
 Üretilen daemon artık explicit --run, OnCalendar hizmeti yalnız --once taşır.
 Doğrudan CLI varsayılan preflight ve render'ın servis başlatmama sınırı değişmez.
 Eski unit dosyaları yeniden --render ile üretilmelidir. Exact S2 kaynağına karşı
-yeni regresyon kırmızı, düzeltmeyle hazırlık22 yeşildir; yeni temiz Linux kabulü
-beklenir. Host correctness düzeltmesidir; compiler bug/grammar/tanı/API değişmez.
+yeni regresyon kırmızı, düzeltmeyle hazırlık22 yeşildir; S3 temiz Linux kabulünde dört vaka geçti. Host correctness düzeltmesidir; compiler bug/grammar/tanı/API değişmez.
+
+## S3 kanıtı
+
+[İkinci dalga exact S3 kabulü](../docs/urunlesme-s3-kabul-20261015.md) bu kararla ilgili actual kohortu ve açık sınırları kaydeder. C1/P33 retleri ve ürün/insan/platform kapıları bu bağlantıyla kapanmaz.

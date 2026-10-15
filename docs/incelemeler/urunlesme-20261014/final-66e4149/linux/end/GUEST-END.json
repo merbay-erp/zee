@@ -1,0 +1,32 @@
+{
+  "status": "passed",
+  "source_sha": "66e4149e53451111d153f47283c219079a8d1cab",
+  "source_end_clean": true,
+  "owned_units": {
+    "zee-dispatch.service": {
+      "ControlGroup": "",
+      "LoadState": "not-found",
+      "ActiveState": "inactive",
+      "ControlGroup_reported": true
+    },
+    "zee-dispatch.timer": {
+      "LoadState": "not-found",
+      "ActiveState": "inactive",
+      "ControlGroup_reported": false
+    },
+    "zee-http.service": {
+      "ControlGroup": "",
+      "LoadState": "not-found",
+      "ActiveState": "inactive",
+      "ControlGroup_reported": true
+    }
+  },
+  "unknown_inflight_latch_sha256": "9390eaecfc326878a771e4c18441303e130163e5ed1718353c95cb01103440c4",
+  "latch_retained": true,
+  "sql_replayed": false,
+  "guest_free_bytes": 4972339200,
+  "debug_binary_sha256": "9e949559ddd89bc9123490c25352e86e9f03e7e69457bcdec0ae3588a25fac47",
+  "release_binary_sha256": "0a84ec627c7cc110cc490ad1ce01f8bf66fab0a2295a4a60d22e3efa0f833390",
+  "PID_adoption": false,
+  "foreign_unit_reset": false
+}

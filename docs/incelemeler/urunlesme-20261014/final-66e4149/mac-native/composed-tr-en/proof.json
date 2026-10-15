@@ -1,0 +1,126 @@
+{
+  "schema": "zee-composed-tr-en-1",
+  "result": "passed",
+  "product_adoption": false,
+  "builtin_translation": false,
+  "typed_html_capability": false,
+  "build": {
+    "schema": "zee-build-v1",
+    "version": "0.8.0-dev",
+    "source_sha": "66e4149e53451111d153f47283c219079a8d1cab",
+    "source_date": "2026-10-15",
+    "channel": "development",
+    "dirty": false
+  },
+  "binary_sha256": "398a706f588fba06b5cadacb32af01714c7dd875a4c40a86b35137a1c7227e87",
+  "http_requests": 10,
+  "source_tests": 4,
+  "cases": [
+    {
+      "name": "/tr/bildirimler",
+      "status": 200,
+      "body_sha256": "c4246946ec78fc1aae006661a6beb684c6042744e43816ba11e4a418a44a5902",
+      "passed": true
+    },
+    {
+      "name": "/tr/bildirimler/eposta",
+      "status": 200,
+      "body_sha256": "90a3b74e08eac19b2e8fffeeef2d3c67b34a5d4aa873a7c697f043b65d59793a",
+      "passed": true
+    },
+    {
+      "name": "/tr/bildirimler/ozet",
+      "status": 200,
+      "body_sha256": "67769d9a44c23ed89d8cd8dad341d29c80e982cb72258869818b0f0c44d69d91",
+      "passed": true
+    },
+    {
+      "name": "/en/notifications",
+      "status": 200,
+      "body_sha256": "528aa03b719628570dd4a65341ae1b65d0bd0b42882ec1be8763e98a7d53dea8",
+      "passed": true
+    },
+    {
+      "name": "/en/notifications/email",
+      "status": 200,
+      "body_sha256": "fee4f015c9de0073536179e16dd29c26ea922a0abd888a540c36e420a63e3531",
+      "passed": true
+    },
+    {
+      "name": "/en/notifications/digest",
+      "status": 200,
+      "body_sha256": "7b4f09f7c501ce0bc2f78bbdaa0262dcfadd3e0fa5c0a6a409629dbc32fd0f7c",
+      "passed": true
+    },
+    {
+      "name": "/de/bildirimler",
+      "status": 404,
+      "passed": true
+    },
+    {
+      "name": "/tr/bildirimler/missing",
+      "status": 404,
+      "passed": true
+    },
+    {
+      "name": "hostile:/tr/bildirimler",
+      "status": 200,
+      "body_sha256": "5aff56b99eb85be0f478e640c5e05227494faf49ad9ec288a35476a11cc7679a",
+      "passed": true
+    },
+    {
+      "name": "hostile:/tr/bildirimler/eposta",
+      "status": 200,
+      "body_sha256": "f93968b84e5c22782a17fdd71e7ac3fd3022111b78d44988324b0bb1d9e0f377",
+      "passed": true
+    }
+  ],
+  "foreign_survived": true,
+  "bindings": [
+    {
+      "path": "golden/composed-tr-en/ana.dil",
+      "sha256": "25ae78675b79d247ffbe71cf11bac59dee962ce7e4600e116584e00375b9d2d8"
+    },
+    {
+      "path": "golden/composed-tr-en/catalog.dil",
+      "sha256": "c5743cf1413fcbd236209d3b503c4bc4389eed42a8360ffc1f36954e3600f347"
+    },
+    {
+      "path": "golden/composed-tr-en/components.dil",
+      "sha256": "5e571dc804f2fade9862a1cef35d30c1688aa0dfd047c21e01d878eff813faa7"
+    },
+    {
+      "path": "golden/composed-tr-en/layout.dil",
+      "sha256": "1fbbe11b88bdce0e7106c5001406b878706f7a4bbc121256a1970dd0ae3e1663"
+    },
+    {
+      "path": "golden/composed-tr-en/routes.dil",
+      "sha256": "4c6e7a87c866206143bfa6d0fdefa9bd2173ca19dc6774a77f67a12d340a820c"
+    },
+    {
+      "path": "golden/composed-tr-en/proje.dil",
+      "sha256": "74172268328f8d4fd3d62345ecb2ce077c271cfa11c0d1a4cb13c81e667f3b9c"
+    },
+    {
+      "path": "scripts/native-listener-host.py",
+      "sha256": "8e1cda6dec7ba15c851d444509eea6b846edca9a6ad87592ca5d39b7e23287f4"
+    },
+    {
+      "path": "scripts/worker-supervisor.py",
+      "sha256": "560bec4e4e36d2aa856936d9d32412bb9106b61b25a871495287e2287e3c6642"
+    },
+    {
+      "path": "scripts/native-capabilities.py",
+      "sha256": "0a336d915e6618b7bc9134598337c0e442a7d455008fa937a0e49771fe7d94fc"
+    },
+    {
+      "path": "scripts/tests/tr-en-list-detail-test.py",
+      "sha256": "d0d5e6fb7e696e7593ca8fc67baec8d2028db5ee7183c24a4aca6db5f8fcb978"
+    },
+    {
+      "path": "scripts/tests/composed-tr-en-test.py",
+      "sha256": "dd8f5177e7096b660643b81ac6ae258e4398e289d30497eb806b582a9534bd84"
+    }
+  ],
+  "owned_cleanup": true
+}
