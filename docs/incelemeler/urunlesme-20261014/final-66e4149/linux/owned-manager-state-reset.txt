@@ -1,0 +1,1 @@
+{"status": "own-failed-unit-status-reset", "unit": "zee-dispatch.service", "manager": "running", "K282_proof_unchanged": "ab5d62533f240d098f2340150f1a7fb6a6e9308520304395a6ea0df7a180e658", "SQL_latch_preserved_sha256": "9390eaecfc326878a771e4c18441303e130163e5ed1718353c95cb01103440c4", "service_start_or_SQL_replay": false, "foreign_units_touched": false}

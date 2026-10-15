@@ -1,0 +1,33 @@
+{
+  "schema": "zee-preserved-focused-failure-review-1",
+  "source_sha": "66e4149e53451111d153f47283c219079a8d1cab",
+  "status": "historical-failure-preserved",
+  "native_listener_cargo": {
+    "passed": 3,
+    "failed": 0,
+    "seconds": 48.62
+  },
+  "worker_subcases": {
+    "passed": 24,
+    "failed": 1
+  },
+  "observation": "Credential leader-crash case failed during initial readiness before crash action; original 3s startup deadline. Previously failed two cases passed. Cleanup completion was reported only after this attempt. No root cause inferred.",
+  "files": [
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-focused-after-v2/PROOF.json",
+      "sha256": "f18df32689a9b3646c6f967ba2c0a5b0f17ebfcd5eaecef09002c4c2abc1fc29"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-focused-after-v2/focused.txt",
+      "sha256": "0158e52f97ce303751faf97b682f0efe98f782f085919f463125b03279045b77"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-focused-after-v2/worker-failure.json",
+      "sha256": "d7fefb59a37f9b1fc02756df2e3cba910e9bba2e5305face135670b05803e17d"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-focused-after-v2/native-listener-passed.json",
+      "sha256": "a4d7280ca432b9be9607ec31c8ec5e91047bc577d9bf4f3d3671b69fd31bfa31"
+    }
+  ]
+}

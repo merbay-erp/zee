@@ -1,0 +1,15 @@
+{
+  "actual_launcher_source": "66e4149e53451111d153f47283c219079a8d1cab",
+  "source_archive_base": "66e4149e53451111d153f47283c219079a8d1cab",
+  "project": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-owned-ide/project with spaces",
+  "profile_is_fresh": true,
+  "properties": "idea.config.path=/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-owned-ide/config\nidea.system.path=/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-owned-ide/system\nidea.plugins.path=/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-owned-ide/plugins\nidea.log.path=/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-owned-ide/logs\n",
+  "plugin_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-owned-ide/plugins",
+  "lint_initialization": true,
+  "settings_sha256": {
+    "LanguageServersSettings.xml": "6fcf35a65f89b484da11c6310654900a074b340958554136515a39acf7e792a5",
+    "UserDefinedLanguageServerSettings.xml": "c1bf7d7c82140de4875b744e7700727ae4a798f228df6b3acae63c21f4cd6526",
+    "textmate.xml": "cd4fbb2d247e0ecea4e6364ed7240508bcebeca17a9e36bb2365bf154f5d5983",
+    "trusted-paths.xml": "952a9ca76d413fc8eb25205742a4f0fe71eb0168282bedf760aa1dccc16bf5de"
+  }
+}

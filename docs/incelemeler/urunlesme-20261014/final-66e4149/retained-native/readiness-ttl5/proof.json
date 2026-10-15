@@ -1,0 +1,35 @@
+{
+  "schema": "zee-k274-native-1",
+  "status": "passed",
+  "cases": [
+    "fresh-receipt-two-workers-ready",
+    "expired-receipt-unready-with-two-live-200-workers",
+    "fresh-receipt-restores-readiness",
+    "actual-config-initial-limit100",
+    "actual-config-replacement-hup-new-workers-limit101"
+  ],
+  "boundaries": [
+    "short owned fixture, not 900s/clean final acceptance",
+    "memory rate counters reset on restart; no zero downtime promise"
+  ],
+  "source_hashes": {
+    "scripts/tests/readiness-ttl-native.py": "3205e4d1e9b6c3214ab61766b8dd2e1aca0988fff29f0e2cdf1ef38d1b6eb28e",
+    "scripts/worker-supervisor.py": "560bec4e4e36d2aa856936d9d32412bb9106b61b25a871495287e2287e3c6642",
+    "scripts/tests/worker-supervisor-test.py": "447525fd38503c150d6488e394e2ff13e51b5db70bbf9a9517daacadd1e59fe1",
+    "scripts/native-capabilities.py": "0a336d915e6618b7bc9134598337c0e442a7d455008fa937a0e49771fe7d94fc",
+    "scripts/native-metrics.py": "d5d12902358591365ff201c13c44b255d265c49c71befabcdef0575fe7e854c4"
+  },
+  "binary_sha256": "398a706f588fba06b5cadacb32af01714c7dd875a4c40a86b35137a1c7227e87",
+  "compiler_identity": {
+    "schema": "zee-build-v1",
+    "version": "0.8.0-dev",
+    "source_sha": "66e4149e53451111d153f47283c219079a8d1cab",
+    "source_date": "2026-10-15",
+    "channel": "development",
+    "dirty": false
+  },
+  "case_count": 5,
+  "source_unchanged": true,
+  "binary_unchanged": true,
+  "owned_workers_closed": true
+}

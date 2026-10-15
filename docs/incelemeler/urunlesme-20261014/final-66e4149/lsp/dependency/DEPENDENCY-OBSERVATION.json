@@ -1,0 +1,35 @@
+{
+  "schema": "zee-k287-independent-dependency-observation-1",
+  "dependency_open": {
+    "ordered_uris": [
+      "yardimci.dil",
+      "ana.dil"
+    ],
+    "consumer_error": true
+  },
+  "dependency_repair": {
+    "ordered_uris": [
+      "yardimci.dil",
+      "ana.dil"
+    ],
+    "consumer_error": false
+  },
+  "dependency_break": {
+    "ordered_uris": [
+      "yardimci.dil",
+      "ana.dil"
+    ],
+    "consumer_error": true
+  },
+  "invalid_range_no_publication": true,
+  "invalid_range_preserved_broken_overlay": true,
+  "dependency_close_disk_restored": {
+    "ordered_uris": [
+      "yardimci.dil",
+      "ana.dil"
+    ],
+    "consumer_error": false
+  },
+  "lsp_exit": 0,
+  "owned_reaped": true
+}

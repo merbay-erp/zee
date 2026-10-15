@@ -1,5 +1,7 @@
 # Sürüm notları
 
+> 15 Ekim 2026 güncel teknik kabul: [S3 teknik kabulü](urunlesme-s3-kabul-20261015.md). Önceki kaynaklara ait koşu kayıtları kendi tarihsel kapsamlarını korur; açık ürün, insan, platform ve yayın kapıları raporda ayrı gösterilir.
+
 Her sürüm: ne eklendi, ne değişti, neyin sözü verildi. Kırıcı değişiklik
 sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 
@@ -1996,8 +1998,7 @@ hiç SQL tick başlamamıştır (0/4; cleanup_errors boş, owned_units_released 
 Üretilen daemon artık explicit --run, OnCalendar hizmeti yalnız --once taşır.
 Doğrudan CLI varsayılan preflight ve render'ın servis başlatmama sınırı değişmez.
 Eski unit dosyaları yeniden --render ile üretilmelidir. Exact S2 kaynağına karşı
-yeni regresyon kırmızı, düzeltmeyle hazırlık22 yeşildir; yeni temiz Linux kabulü
-beklenir. Host correctness düzeltmesidir; compiler bug/grammar/tanı/API değişmez.
+yeni regresyon kırmızı, düzeltmeyle hazırlık22 yeşildir; S3 gerçek Linux dört vaka kabulü geçti. Host correctness düzeltmesidir; compiler bug/grammar/tanı/API değişmez.
 
 ## K-296 — deduplikasyonlu state olayı yerine gerçek liveness oracle
 
@@ -2008,4 +2009,10 @@ Build kimliği doğrulanmış HTTP200 liveness'ını doğrudan owned Supervisor 
 ile gözler. Startup reddi, hiç ready=true olayı olmaması, eski gate bayt/mtime
 değişmezliği ve bütün owned handle kapanışları birlikte zorunlu kalır. Yalnız
 test oracle düzeltilmiştir; native DNS veya production lifecycle genişlemez.
-Yeni temiz native kabulü beklenir.
+S3 gerçek native iki vaka kabulü geçti.
+
+## S3 — ikinci dalga temiz kaynak kabulü
+
+Kaynak `66e4149e53451111d153f47283c219079a8d1cab` üzerinde ikinci dalganın native senaryoları, macOS/Linux için iki temiz klondan teslim ve sekizer kurulum testi, gerçek JetBrains tamamlama/biçimlendirme/tanı/kapanış akışı, 1.800 saniyelik soak, 1 ve 41 açık belge ölçümü, dört ASan hedefi ve seçili Miri testleri geçti. Kanonik kanıt dışa aktarımı ve denetimi ile aynı kaynakta güvenlik kapısı geçti: tam Cargo koşusunda 989 başarılı, 0 başarısız, 25 varsayılan dışı vaka. Bu 25 vaka ayrıca çalıştırılan kampanyalara eşlendi; alt senaryolar Cargo toplamına eklenmez. GB-110 exact regression/native26/RC zinciriyle kapalıdır.
+
+[S3 teknik kabulü](urunlesme-s3-kabul-20261015.md), sonuçları ve önceki başarısız denemeleri ayrı kaydeder. E commitleri belge ve kanıtları kaydeder. C1/K-288 ve P33/K-293 araç retleri; artımlı HIR/type, gerçek ürün/provenance/adoption, insan/takvim, fiziksel Windows/minOS ve yayın/lisans/destek kapıları açıktır. Bu kayıt tam V1 ya da public signed release kabulü değildir.

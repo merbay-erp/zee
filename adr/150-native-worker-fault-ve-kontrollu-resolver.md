@@ -27,4 +27,8 @@ Build kimliği doğrulanmış HTTP200 liveness'ını doğrudan owned Supervisor 
 ile gözler. Startup reddi, hiç ready=true olayı olmaması, eski gate bayt/mtime
 değişmezliği ve bütün owned handle kapanışları birlikte zorunlu kalır. Yalnız
 test oracle düzeltilmiştir; native DNS veya production lifecycle genişlemez.
-Yeni temiz native kabulü beklenir.
+S3 temiz native kabulünde iki vaka geçti.
+
+## S3 kanıtı
+
+[İkinci dalga exact S3 kabulü](../docs/urunlesme-s3-kabul-20261015.md) bu kararla ilgili actual kohortu ve açık sınırları kaydeder. C1/P33 retleri ve ürün/insan/platform kapıları bu bağlantıyla kapanmaz.

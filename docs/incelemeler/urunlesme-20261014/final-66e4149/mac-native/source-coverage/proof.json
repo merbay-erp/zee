@@ -1,0 +1,110 @@
+{
+  "schema": "zee-source-coverage-native-1",
+  "status": "passed-short-candidate",
+  "cases": [
+    {
+      "name": "actual_dene_product_missing_denominator",
+      "passed": true,
+      "denominator": 14,
+      "hit": 4,
+      "missing": 10
+    },
+    {
+      "name": "actual_native_http_session_csrf_source_branches",
+      "passed": true,
+      "requests": 11,
+      "statuses": [
+        200,
+        200,
+        401,
+        200,
+        403,
+        403,
+        200,
+        200,
+        200,
+        200,
+        401
+      ],
+      "denominator": 14,
+      "hit": 6,
+      "missing": 8,
+      "login_true_false_hits": [
+        1,
+        1
+      ],
+      "imported_same_line_origins": [
+        "rota_a.dil",
+        "rota_b.dil"
+      ],
+      "no_tokens_or_bodies_recorded": true
+    },
+    {
+      "name": "actual_report_ownership_config_order_and_quiet_guards",
+      "passed": true,
+      "guards": [
+        "fifo_no_open",
+        "duplicate",
+        "symlink",
+        "auto_config_both_orders",
+        "ready_metric_stdio_aliases",
+        "nonzero_failed_test_parse_not_green"
+      ],
+      "elapsed_seconds": 0.177
+    }
+  ],
+  "candidate_only": true,
+  "sources": {
+    "scripts/worker-supervisor.py": "560bec4e4e36d2aa856936d9d32412bb9106b61b25a871495287e2287e3c6642",
+    "compiler/tests/fixtures/kaynak-kapsami-native.py": "adaca57de277b2ff6a0d55e2308175630476d1f9bab6416e38fef995e9ef56ff",
+    "dogfood/zee-cekirdek/test-kapsami/ana.dil": "593c4aa422e5950e9b19213cdf81c8efbdea7e2b39f5f944ea588229e55c3d06",
+    "dogfood/zee-cekirdek/test-kapsami/karar.dil": "b2e755dbe45f7a3825b5c1c3e870425d9490a57bba6c3ca6f41bf08f7cbdcd4e",
+    "dogfood/zee-cekirdek/test-kapsami/proje.dil": "b090e38cc626f22035f984d06bfdb86534be05a576548527be5de3d3e4f5c471",
+    "dogfood/zee-cekirdek/test-kapsami/rota_a.dil": "62866e1565f54feebec2b53b586938404a36a099bfaf479880054cbdf1d8a578",
+    "dogfood/zee-cekirdek/test-kapsami/rota_b.dil": "c3a2afab06504de2d86a599c998ba9414f761ea917beff2a6fc61cfee3f8e18a",
+    "compiler/src/main.rs": "5eaf672be451213e79158dc01d7744e0363582d79d2393e7ddcf8db9f0dd2270",
+    "compiler/src/lib.rs": "94cbbf6bd5f170f1e2b355599d77fd08434259c40313b1ef5846d8afd999419c",
+    "compiler/src/cli/kapsam.rs": "1e2c29da2141d6d13f0631c332d0287d609d2b96f49af84ef5318c2d937a55b0",
+    "compiler/src/test_kapsami.rs": "445dc79afec257705e0f7462c84a7f45f0173f8b665f49436200b8546b8deb72",
+    "compiler/src/test_kapsami/envanter.rs": "8b31f3ca15c6ee79fe22e8d895aced8ee4ffbc657820773f18b0d0cbd3538a62",
+    "compiler/src/yorumlayici/cumle.rs": "cc0d41a037fa2df971e7a22b6f7921aa09a4a456860378378c3d9ec8aa7eeaf4",
+    "compiler/src/yorumlayici/ifade.rs": "7d8648df52ea21b4c3b8b783f45f59f326907d8738ecc0c0aa2f164a0771fa12",
+    "compiler/src/yorumlayici/web_istek.rs": "d4d0278bb808849ae4f03da2a56ba4d4991c584ba3e96bb1c1be227757c9d709",
+    "compiler/src/yorumlayici/hir_gecisi.rs": "bb6318ad79449e5266b8e741a2164324e120aa0ecb2952e13c01aa113cdd69f6"
+  },
+  "binary_sha256": "398a706f588fba06b5cadacb32af01714c7dd875a4c40a86b35137a1c7227e87",
+  "build": {
+    "schema": "zee-build-v1",
+    "version": "0.8.0-dev",
+    "source_sha": "66e4149e53451111d153f47283c219079a8d1cab",
+    "source_date": "2026-10-15",
+    "channel": "development",
+    "dirty": false
+  },
+  "current_guard": "--web-metrik-fd-stderr",
+  "quiet_control_bytes": 0,
+  "quiet_control_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "binary_sha256_end": "398a706f588fba06b5cadacb32af01714c7dd875a4c40a86b35137a1c7227e87",
+  "sources_end": {
+    "scripts/worker-supervisor.py": "560bec4e4e36d2aa856936d9d32412bb9106b61b25a871495287e2287e3c6642",
+    "compiler/tests/fixtures/kaynak-kapsami-native.py": "adaca57de277b2ff6a0d55e2308175630476d1f9bab6416e38fef995e9ef56ff",
+    "dogfood/zee-cekirdek/test-kapsami/ana.dil": "593c4aa422e5950e9b19213cdf81c8efbdea7e2b39f5f944ea588229e55c3d06",
+    "dogfood/zee-cekirdek/test-kapsami/karar.dil": "b2e755dbe45f7a3825b5c1c3e870425d9490a57bba6c3ca6f41bf08f7cbdcd4e",
+    "dogfood/zee-cekirdek/test-kapsami/proje.dil": "b090e38cc626f22035f984d06bfdb86534be05a576548527be5de3d3e4f5c471",
+    "dogfood/zee-cekirdek/test-kapsami/rota_a.dil": "62866e1565f54feebec2b53b586938404a36a099bfaf479880054cbdf1d8a578",
+    "dogfood/zee-cekirdek/test-kapsami/rota_b.dil": "c3a2afab06504de2d86a599c998ba9414f761ea917beff2a6fc61cfee3f8e18a",
+    "compiler/src/main.rs": "5eaf672be451213e79158dc01d7744e0363582d79d2393e7ddcf8db9f0dd2270",
+    "compiler/src/lib.rs": "94cbbf6bd5f170f1e2b355599d77fd08434259c40313b1ef5846d8afd999419c",
+    "compiler/src/cli/kapsam.rs": "1e2c29da2141d6d13f0631c332d0287d609d2b96f49af84ef5318c2d937a55b0",
+    "compiler/src/test_kapsami.rs": "445dc79afec257705e0f7462c84a7f45f0173f8b665f49436200b8546b8deb72",
+    "compiler/src/test_kapsami/envanter.rs": "8b31f3ca15c6ee79fe22e8d895aced8ee4ffbc657820773f18b0d0cbd3538a62",
+    "compiler/src/yorumlayici/cumle.rs": "cc0d41a037fa2df971e7a22b6f7921aa09a4a456860378378c3d9ec8aa7eeaf4",
+    "compiler/src/yorumlayici/ifade.rs": "7d8648df52ea21b4c3b8b783f45f59f326907d8738ecc0c0aa2f164a0771fa12",
+    "compiler/src/yorumlayici/web_istek.rs": "d4d0278bb808849ae4f03da2a56ba4d4991c584ba3e96bb1c1be227757c9d709",
+    "compiler/src/yorumlayici/hir_gecisi.rs": "bb6318ad79449e5266b8e741a2164324e120aa0ecb2952e13c01aa113cdd69f6"
+  },
+  "owned_groups_closed": true,
+  "cleanup_groups": [
+    true
+  ]
+}

@@ -91,8 +91,12 @@ powerloss/host kaybı aynı garantiyi vermez. Kaybolmuş PID üzerinden adoption
 
 ## Açık sınırlar
 
-Bu kaynak candidate teknik kabulü, gerçek novice30min ölçümü değildir. Gerçek
+Bu kaynak S3 yerel teknik kabulü, gerçek novice30min ölçümü değildir. Gerçek
 ürün/P08/adoption, physical Windows/minOS, remote CI, production deployment,
 media AV/hostile same-UID sandbox, arbitrary HTML importer ve multi-worker
 reconciliation ayrı açıktır. Önceki temiz S sonuçları yeni kaynak kabulü olmaz.
 Eski site/panel şablonları ve RFC-0012 genel FFI taslağı aynı kalır.
+
+## S3 yerel kabul kanıtı
+
+[Exact S3 kabulü ve açık sınırlar](../../urunlesme-s3-kabul-20261015.md) gerçek canonical/native/IDE ve ortak kapıları bağlar; genel ürün/platform/yayın kabulü değildir.

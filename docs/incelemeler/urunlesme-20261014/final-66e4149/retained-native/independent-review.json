@@ -1,0 +1,44 @@
+{
+  "schema": "zee-retained-native-independent-review-1",
+  "status": "passed",
+  "source_sha": "66e4149e53451111d153f47283c219079a8d1cab",
+  "proof_sha256": "3a895dfcaa7e112fdefe0c108fe68c190d4eb0f8d58ef69bd018001c73075401",
+  "steps": 14,
+  "native_cohorts": {
+    "metrics8": {
+      "proof_sha256": "7ade96a0ac3f37559f8735de90a273e45683ef741ab1bece92351b7eb06150be",
+      "cases": 8,
+      "status": "passed"
+    },
+    "job-native11": {
+      "proof_sha256": "c1805c58d8440375cf74f877f54c4fb5897d6143ca29da9c784ee5323a17264e",
+      "cases": 11,
+      "status": "passed"
+    },
+    "smtp-pg-fault11": {
+      "proof_sha256": "5d257f639a88e0ab134ea8afc5fda31b2263ac362bdb504fb3645c6d92fb26f8",
+      "cases": 11,
+      "status": "passed"
+    },
+    "readiness-watch-pg15": {
+      "proof_sha256": "bd0a9b1052d54a5db7e463014f839329af36b369a1ca523043aafd35697384fe",
+      "cases": 15,
+      "status": "passed"
+    },
+    "readiness-ttl5": {
+      "proof_sha256": "c229585fb6718b3d6e83a21ff534edd1d40546c0236c7216208673efd99f13b2",
+      "cases": 5,
+      "status": "passed"
+    },
+    "owned-web-pg4": {
+      "proof_sha256": "4f71337de622561da2a456b2dd5955a80ee5b1529d53511cc48456f8f1e65c71",
+      "cases": 4,
+      "status": "passed"
+    }
+  },
+  "postgres_build_proof_sha256": "ac0377a5ae794732f2a6d6cd6962bec2cc90d4dd2a9fc03cc57b64e7e53ec6d6",
+  "postgres_binaries_end_match_original_build": true,
+  "raw_command_hashes_verified": true,
+  "actual_original_controller_closed": true,
+  "case_accounting": "Internal native assertions and Cargo ignored owners are separate; not a unique test total."
+}

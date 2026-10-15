@@ -1,0 +1,18 @@
+# zee-fuzz-corpus-artifact-1
+# target	lexer_parser
+# corpus	lexer_parser
+# source_commit	66e4149e53451111d153f47283c219079a8d1cab
+# run_id	1792057018409502000
+# run_attempt	1
+# toolchain	nightly-2026-08-31
+# cargo_fuzz	0.13.2
+# run_origin	local
+# seed_sha256	relative_path
+43eda6ee7aff9e81ad64a1bfb35ffb86fdcd6f547483c870b9b29751fccd5ed9	bloklar.dil
+01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b	bos.dil
+5dce7bba3a4e0e1646ec699b901b9b258928aca871d9073f734f537fab180b1e	girinti.dil
+d1cae5be7ff8aa3e86038846a488f49ed91a04617f0ea76a12f71edd3f102bec	metinler.dil
+368b72a3a4935b2e89b79903a629258552866ee3831eb837fa70c0a85a363a34	sayilar.dil
+48d1f48ed62523d8297b23b991002f9d3f19388213eb82573252cfacaa640fd1	temel.dil
+620e1a13041620075d3694c92d71b0bc2be8e45fa243855a77f79a0972ec6b61	unicode.dil
+869a5b4d7eed90d2aa497922e8dafccfd7152bd14be3785ccb77ad089d75f1de	virguller.dil

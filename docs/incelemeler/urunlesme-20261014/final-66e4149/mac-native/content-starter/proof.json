@@ -1,0 +1,153 @@
+{
+  "schema": "zee-content-starter-native-tests-1",
+  "status": "passed",
+  "mode": "clean-exact",
+  "cases": [
+    {
+      "name": "creator-real-kilitle-denetle-dene-and-explicit-PG-migration",
+      "passed": true
+    },
+    {
+      "name": "missing-PHC-fixed-preflight-rejection",
+      "passed": true
+    },
+    {
+      "name": "malformed-PHC-fixed-preflight-rejection",
+      "passed": true
+    },
+    {
+      "name": "actual-HTTPS-owned-inherited-listener-ready-and-native-list",
+      "passed": true
+    },
+    {
+      "name": "anonymous-wrong-password-origin-denied",
+      "passed": true
+    },
+    {
+      "name": "actual-login-session-rotation-and-admin-CSRF",
+      "passed": true
+    },
+    {
+      "name": "actual-parameterized-content-create-detail-and-context-XSS",
+      "passed": true
+    },
+    {
+      "name": "actual-content-update-independent-readonly-observer",
+      "passed": true
+    },
+    {
+      "name": "actual-upload-image-conversion-immutable-binary-PNG-and-detail-wiring",
+      "passed": true
+    },
+    {
+      "name": "duplicate-upload-no-clobber-persistent-admission-close-explicit-no-replay-review",
+      "passed": true
+    },
+    {
+      "name": "actual-encoded-path-traversal-host-duplicate-and-form-boundary-negatives",
+      "passed": true
+    },
+    {
+      "name": "actual-bad-image-preparing-retained-explicit-metadata-only-review",
+      "passed": true
+    },
+    {
+      "name": "actual-media-delete-separate-SQL-finalization-then-content-delete",
+      "passed": true
+    },
+    {
+      "name": "actual-logout-revoke",
+      "passed": true
+    }
+  ],
+  "source_files": [
+    {
+      "path": "scripts/starter-content-host.py",
+      "sha256": "06e92e47c250b7083619e08a203627675db15004af6ca63971b4600822c03443"
+    },
+    {
+      "path": "scripts/starter-content-reconcile.py",
+      "sha256": "5b5b94d2e4e3a018efb76b22262bb8da0608830324697e423edb3ceb4d3509b1"
+    },
+    {
+      "path": "scripts/icerik-paneli-olustur.py",
+      "sha256": "df0b0cd97627f22da65980b82e2d370d431b3be0febb635df9da8e531b19e582"
+    },
+    {
+      "path": "scripts/tests/starter-content-test.py",
+      "sha256": "276c8c9ef3ae9c19f6c5dff4766a44675bbe81e9a00e6e07e6ae97db07ab2c33"
+    },
+    {
+      "path": "scripts/tests/starter-content-native.py",
+      "sha256": "6ec93e5db3d2a3bef0315c181e904d231367a4bbd26be45fd63013f87841ae02"
+    },
+    {
+      "path": "scripts/lifecycle_core.py",
+      "sha256": "e76fe65b6103fc4732aafc4468afc5bbf3d0699a0f79d7f74879165636ebb1a9"
+    },
+    {
+      "path": "scripts/postgresql-tls-ci.py",
+      "sha256": "8ef71f0070b9e954b70d0ec24c50c0285b4bfb76de4ed40490efd9eac78cad77"
+    },
+    {
+      "path": "scripts/postgresql-tls11-control.py",
+      "sha256": "cdf477d154f9fe11086c4829b34b9a412156feabdee1404b5bd863026f2ba639"
+    },
+    {
+      "path": "sablonlar/icerik-paneli/ana.dil",
+      "sha256": "a2507b2d26dcd908f3a85026c6d51c7c4f6578ce8e83bd49121800cf3c0f337f"
+    },
+    {
+      "path": "sablonlar/icerik-paneli/alan.dil",
+      "sha256": "e7f0e163dcfd8737328cfd062a539482e3c7c3a9e0fd205a8d61d14d4c45e2a6"
+    },
+    {
+      "path": "sablonlar/icerik-paneli/proje.dil",
+      "sha256": "46e4bc2c802722140fb4624847b15bb4431731702d071bb1eb35a5d7c8390a02"
+    },
+    {
+      "path": "sablonlar/icerik-paneli/gocler/0001_content.sql",
+      "sha256": "cb5e89a24e6646a0ddbdf619335633839e672f323269727733a5fd6b896580ab"
+    },
+    {
+      "path": "sablonlar/icerik-paneli/.gitignore",
+      "sha256": "d500112f4c941406d10a5c6ffc1c9b3d3d08776efbb38e1f027e3ffef998196d"
+    },
+    {
+      "path": "docs/versioned/0.8/icerik-paneli.md",
+      "sha256": "bc6f6b035b0fe6fff3c3c88b293b8c6a4a78d11c57df29c5134d575e66daf21e"
+    }
+  ],
+  "postgres_pins": {
+    "postgres": "9b89cfcd7b54a581c50c2fc5c3010f3ae0755635958d5789886718da22052fbd",
+    "initdb": "c960be8780e673d65c97f78c54bd3438525e1de6f2822257b189effc8b48b740",
+    "pg_ctl": "7c052138b54426bb3666814f25374a84cc4789bc0400ebf50dedca627e8563da",
+    "psql": "c63479d6b17829552f52ac8f083b3bc4d6564dbea39eb64ffa01c150dc43d2af"
+  },
+  "build": {
+    "schema": "zee-build-v1",
+    "version": "0.8.0-dev",
+    "source_sha": "66e4149e53451111d153f47283c219079a8d1cab",
+    "source_date": "2026-10-15",
+    "channel": "development",
+    "dirty": false
+  },
+  "binary_sha256": "398a706f588fba06b5cadacb32af01714c7dd875a4c40a86b35137a1c7227e87",
+  "framework_head": "66e4149e53451111d153f47283c219079a8d1cab",
+  "front_terminal": {
+    "exit": 0,
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "orphan_boundary": "owned upload temporary artifacts retained until operator GC; not falsely allfiles-clean",
+  "case_count": 14,
+  "failed": 0,
+  "source_end_unchanged": true,
+  "binary_end_unchanged": true,
+  "cleanup": [
+    "owned-front-and-native-closed",
+    "owned-pg-closed"
+  ],
+  "elapsed_seconds": 4.887951209093444,
+  "private_root_removed": true
+}

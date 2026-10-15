@@ -1,0 +1,215 @@
+{
+  "schema": "zee-reversible-metadata-representation-1",
+  "original_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-66e4149-retained-native/job-native11/proof.json",
+  "original_sha256": "c1805c58d8440375cf74f877f54c4fb5897d6143ca29da9c784ee5323a17264e",
+  "metadata": {
+    "schema": "zee-sql-intent-dispatcher-native-1",
+    "started_utc": "2026-10-15T10:14:50.902405+00:00",
+    "source_acceptance": "actual-given-binary-and-candidate-fixture",
+    "cases": [
+      {
+        "name": "two_owned_dispatchers_fixed_sql_intents_once",
+        "passed": true,
+        "ignored": false,
+        "observations": {
+          "actors": 2,
+          "intents": 4,
+          "done": 4,
+          "attempts": 4,
+          "finished_events": 2,
+          "payload_data_preserved": true
+        }
+      },
+      {
+        "name": "actual_dispatcher_35second_fixed_handler_with_independent_heartbeats",
+        "passed": true,
+        "ignored": false,
+        "observations": {
+          "held_seconds": 35.267,
+          "renewals": 6,
+          "heartbeat_acks": 6,
+          "original30s_expired": true,
+          "attempts": 1,
+          "intents": 1,
+          "done": true
+        }
+      },
+      {
+        "name": "actual_term_pauses_admission_no_retry_or_uncertain_effect",
+        "passed": true,
+        "ignored": false,
+        "observations": {
+          "exit": 3,
+          "backend_gone": true,
+          "attempts": 1,
+          "state_leased": true,
+          "intents": 0
+        }
+      },
+      {
+        "name": "known_sql_refusals_three_attempts_deadletter",
+        "passed": true,
+        "ignored": false,
+        "observations": {
+          "attempts": 3,
+          "known_failures": 3,
+          "intents": 0,
+          "dead_letter": true
+        }
+      },
+      {
+        "name": "actual_commit_before_pauses_host_without_replay",
+        "passed": true,
+        "ignored": false,
+        "observations": {
+          "paused": true,
+          "commits_seen": 1,
+          "commit_forwarded": false,
+          "commit_complete": false,
+          "attempts": 0,
+          "intents": 0,
+          "owned_children_remaining": 0
+        }
+      },
+      {
+        "name": "actual_commit_after_pauses_host_without_replay",
+        "passed": true,
+        "ignored": false,
+        "observations": {
+          "paused": true,
+          "commits_seen": 1,
+          "commit_forwarded": true,
+          "commit_complete": true,
+          "attempts": 0,
+          "intents": 0,
+          "owned_children_remaining": 0
+        }
+      },
+      {
+        "name": "ambient_credential_rejected_no_fallback_or_secret_log",
+        "passed": true,
+        "ignored": false,
+        "observations": {
+          "exit": 2,
+          "attempts": 0,
+          "intents": 0,
+          "secret_in_log": false
+        }
+      },
+      {
+        "name": "unread_full_log_pipe_drops_records_actual_sql_still_completes",
+        "passed": true,
+        "ignored": false,
+        "observations": {
+          "dropped_before_sql": 99229,
+          "dropped_after_sql": 99230,
+          "applied": 1,
+          "owned_children_remaining": 0,
+          "elapsed_seconds": 0.36302074999548495,
+          "log_records_received": 771,
+          "intents": 1,
+          "attempts": 1,
+          "done": true,
+          "stdout_unread_until_child_exit": true
+        }
+      },
+      {
+        "name": "killed_owned_leader_native_descendant_group_cleanup_no_foreign_adoption",
+        "passed": true,
+        "ignored": false,
+        "observations": {
+          "paused": true,
+          "pause_cleanup_seconds": 0.076,
+          "native_same_owned_group": true,
+          "backend_gone": true,
+          "owned_children_remaining": 0,
+          "foreign_process_survived": true,
+          "attempts": 1,
+          "intents": 0,
+          "renewals": 0
+        }
+      },
+      {
+        "name": "fifo_credential_rejected_without_blocking_or_sql_effect",
+        "passed": true,
+        "ignored": false,
+        "observations": {
+          "exit": 2,
+          "attempts": 0
+        }
+      },
+      {
+        "name": "invalid_argument_canary_masked_no_argv_usage_stderr_leak",
+        "passed": true,
+        "ignored": false,
+        "observations": {
+          "variants": 2,
+          "exit": 2,
+          "stderr_bytes": 0,
+          "canary_in_output": false,
+          "fixed_json_only": true
+        }
+      }
+    ],
+    "boundaries": [
+      "SQL durable intent only; not catalog SMTP/PDF service",
+      "finite100tick maximum prototype; K246 ownedgroups/nonblockinglog reused",
+      "no calendar cron or live product adoption; K245 credential reader reused inline for fixed stdout protocol, not CLIrun_child",
+      "no clean final-source acceptance",
+      "COMMIT proxy tests invoke host component only with scoped owned plaintext fixture; CLI default stays TLSrequire"
+    ],
+    "binary_sha256": "398a706f588fba06b5cadacb32af01714c7dd875a4c40a86b35137a1c7227e87",
+    "build_identity": {
+      "schema": "zee-build-v1",
+      "version": "0.8.0-dev",
+      "source_sha": "66e4149e53451111d153f47283c219079a8d1cab",
+      "source_date": "2026-10-15",
+      "channel": "development",
+      "dirty": false
+    },
+    "fixture_hashes": {
+      "dogfood/zee-cekirdek/is-kuyrugu-dispatcher/ana.dil": "c664502abf51f6ca6c48e85aaa55ab5da8a0a6bf25954b8640a054b44adb6b9b",
+      "dogfood/zee-cekirdek/is-kuyrugu-dispatcher/proje.dil": "b5d5a964926b55c363ed5e869512c23655fc3822b6434b35ac7235fdfeaca26d",
+      "dogfood/zee-cekirdek/is-kuyrugu-dispatcher/gocler/0002_kira_sahibi.sql": "926de3f9db7e4310e65be111588fddc6a78dbbb213db5c242148f0d9a182df5a",
+      "dogfood/zee-cekirdek/is-kuyrugu-dispatcher/gocler/0003_sabit_niyet.sql": "1c5fc4e562f2d7d046968953f95af4d10de58294fc315b715011977f3801e156",
+      "dogfood/zee-cekirdek/is-kuyrugu-dispatcher/gocler/0001_kuyruk.sql": "34b6eb8fa760c65c47c89bdc139d0696ff44a348324b204f165d0039bd7537e5",
+      "scripts/job-dispatcher.py": "06bc1f67f87a07b1ffdeb1547ff83a4d05cc926f2825df73b94cc36f86caba0e",
+      "scripts/tests/fixtures/job-dispatcher/backpressure-driver.py": "dd339e798d981c0f464c51a64e539956b674f91cad398a410f5ff0da1639b33d",
+      "scripts/tests/fixtures/job-dispatcher/leader-driver.py": "b09fcea3ec8d1240dbe2919b4527936d6c3e338c3430bf99185517825fd6f975",
+      "scripts/worker-supervisor.py": "560bec4e4e36d2aa856936d9d32412bb9106b61b25a871495287e2287e3c6642",
+      "scripts/credential-baslat.py": {
+        "sha256_binding": 0
+      },
+      "scripts/native-capabilities.py": "0a336d915e6618b7bc9134598337c0e442a7d455008fa937a0e49771fe7d94fc",
+      "scripts/is-kuyrugu-ci.py": "612f71f03150d7506939b89baa5c7d2e7e8e9c7f3913db91f84d7f1207e6551f",
+      "scripts/postgresql-tls-ci.py": "8ef71f0070b9e954b70d0ec24c50c0285b4bfb76de4ed40490efd9eac78cad77",
+      "scripts/postgresql-tls11-control.py": "cdf477d154f9fe11086c4829b34b9a412156feabdee1404b5bd863026f2ba639",
+      "scripts/tests/job-dispatcher-native-test.py": "55ece6a92b3b9b8fb1cb242dc682a27cbcedc10d1b90e5c640effeedf50f7552"
+    },
+    "server": "postgres (PostgreSQL) 16.15",
+    "actor_failure_metadata": [
+      {
+        "exit": 0,
+        "out": "{\"schema\":\"zee-sql-intent-dispatcher-1\",\"event\":\"done\",\"elapsed_ms\":502,\"applied\":1}\n{\"schema\":\"zee-sql-intent-dispatcher-1\",\"event\":\"empty\",\"elapsed_ms\":647}\n{\"schema\":\"zee-sql-intent-dispatcher-1\",\"event\":\"empty\",\"elapsed_ms\":840}\n{\"schema\":\"zee-sql-intent-dispatcher-1\",\"event\":\"empty\",\"elapsed_ms\":980}\n{\"schema\":\"zee-sql-intent-dispatcher-1\",\"event\":\"empty\",\"elapsed_ms\":1123}\n{\"schema\":\"zee-sql-intent-dispatcher-1\",\"event\":\"empty\",\"elapsed_ms\":1263}\n{\"schema\":\"zee-sql-intent-dispatcher-1\",\"event\":\"empty\",\"elapsed_ms\":1407}\n{\"schema\":\"zee-sql-intent-dispatcher-1\",\"event\":\"empty\",\"elapsed_ms\":1550}\n{\"schema\":\"zee-sql-intent-dispatcher-1\",\"event\":\"empty\",\"elapsed_ms\":1691}\n{\"schema\":\"zee-sql-intent-dispatcher-1\",\"event\":\"empty\",\"elapsed_ms\":1832}\n{\"schema\":\"zee-sql-intent-dispatcher-1\",\"event\":\"empty\",\"elapsed_ms\":2030}\n{\"schema\":\"zee-sql-intent-dispatcher-1\",\"event\":\"empty\",\"elapsed_ms\":2230}\n{\"schema\":\"zee-sql-intent-dispatcher-1\",\"event\":\"finished\",\"elapsed_ms\":2335,\"applied\":1,\"heartbeat_acks\":0,\"log_drops\":0,\"forced_kills\":0}\n",
+        "err": ""
+      },
+      {
+        "exit": 0,
+        "out": "{\"schema\":\"zee-sql-intent-dispatcher-1\",\"event\":\"done\",\"elapsed_ms\":313,\"applied\":1}\n{\"schema\":\"zee-sql-intent-dispatcher-1\",\"event\":\"done\",\"elapsed_ms\":496,\"applied\":2}\n{\"schema\":\"zee-sql-intent-dispatcher-1\",\"event\":\"done\",\"elapsed_ms\":729,\"applied\":3}\n{\"schema\":\"zee-sql-intent-dispatcher-1\",\"event\":\"empty\",\"elapsed_ms\":873}\n{\"schema\":\"zee-sql-intent-dispatcher-1\",\"event\":\"empty\",\"elapsed_ms\":1067}\n{\"schema\":\"zee-sql-intent-dispatcher-1\",\"event\":\"empty\",\"elapsed_ms\":1264}\n{\"schema\":\"zee-sql-intent-dispatcher-1\",\"event\":\"empty\",\"elapsed_ms\":1460}\n{\"schema\":\"zee-sql-intent-dispatcher-1\",\"event\":\"empty\",\"elapsed_ms\":1604}\n{\"schema\":\"zee-sql-intent-dispatcher-1\",\"event\":\"empty\",\"elapsed_ms\":1794}\n{\"schema\":\"zee-sql-intent-dispatcher-1\",\"event\":\"empty\",\"elapsed_ms\":2035}\n{\"schema\":\"zee-sql-intent-dispatcher-1\",\"event\":\"empty\",\"elapsed_ms\":2177}\n{\"schema\":\"zee-sql-intent-dispatcher-1\",\"event\":\"empty\",\"elapsed_ms\":2323}\n{\"schema\":\"zee-sql-intent-dispatcher-1\",\"event\":\"finished\",\"elapsed_ms\":2428,\"applied\":3,\"heartbeat_acks\":0,\"log_drops\":0,\"forced_kills\":0}\n",
+        "err": ""
+      }
+    ],
+    "status": "passed",
+    "owned_cluster_closed": true,
+    "finished_utc": "2026-10-15T10:15:40.648589+00:00"
+  },
+  "bindings": [
+    {
+      "original_field": [
+        "fixture_hashes",
+        "scripts/credential-baslat.py"
+      ],
+      "sha256": "6894667f5d2d529434c235c9ae54aec64d4fb3c1c25712c25fb7f710eee9961f"
+    }
+  ]
+}

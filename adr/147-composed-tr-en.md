@@ -36,3 +36,7 @@ iki404, iki düşman katalog HTTP200 ile bağımsız exact byte/ağaç oracle'ı
 CLI/proje/frontend/runtime/web/IO yürütür. Eski K272/K249 değiştirilmez.
 Son temiz SHA ikilisiyle platform kabulü ayrıca kaydedilmelidir; dirty prova
 ve anonim uygulama özel ürün benimsemesi veya genel güvenlik audit'i değildir.
+
+## S3 kanıtı
+
+[İkinci dalga exact S3 kabulü](../docs/urunlesme-s3-kabul-20261015.md) bu kararla ilgili actual kohortu ve açık sınırları kaydeder. C1/P33 retleri ve ürün/insan/platform kapıları bu bağlantıyla kapanmaz.

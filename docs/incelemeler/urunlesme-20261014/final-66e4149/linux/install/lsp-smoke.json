@@ -1,0 +1,45 @@
+{
+  "schema": "zee-owned-installed-lsp-smoke-1",
+  "passed": true,
+  "binary_sha256": "0a6b5847fbf639a7780a4450110b083c206c7df52a7fe681a2d2f5b321275ee0",
+  "exit": 0,
+  "stderr_bytes": 0,
+  "response_ids": [
+    1,
+    2
+  ],
+  "raw_replies": [
+    {
+      "jsonrpc": "2.0",
+      "id": 1,
+      "result": {
+        "capabilities": {
+          "textDocumentSync": 2,
+          "completionProvider": {},
+          "hoverProvider": true,
+          "documentFormattingProvider": true,
+          "definitionProvider": true,
+          "renameProvider": true
+        },
+        "serverInfo": {
+          "name": "dillsp",
+          "version": "0.8.0-dev",
+          "zeeBuild": {
+            "schema": "zee-build-v1",
+            "version": "0.8.0-dev",
+            "source_sha": "66e4149e53451111d153f47283c219079a8d1cab",
+            "source_date": "2026-10-15",
+            "channel": "development",
+            "dirty": false
+          }
+        }
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "id": 2,
+      "result": null
+    }
+  ],
+  "request_boundary": "shutdown and exit omit absent params; null is not structured JSON-RPC params"
+}

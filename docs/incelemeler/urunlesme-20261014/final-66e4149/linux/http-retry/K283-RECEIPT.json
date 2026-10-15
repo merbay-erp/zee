@@ -1,0 +1,20 @@
+{
+  "mode": "K283",
+  "source_sha": "66e4149e53451111d153f47283c219079a8d1cab",
+  "status": "passed",
+  "started_ns": 1792058079760865799,
+  "build_identity": {
+    "schema": "zee-build-v1",
+    "version": "0.8.0-dev",
+    "source_sha": "66e4149e53451111d153f47283c219079a8d1cab",
+    "source_date": "2026-10-15",
+    "channel": "development",
+    "dirty": false
+  },
+  "binary_sha256": "9e949559ddd89bc9123490c25352e86e9f03e7e69457bcdec0ae3588a25fac47",
+  "source_tree": "936eb74d6ce14b1bf9709f03756e0184d7428fa2",
+  "campaign_exit": 0,
+  "outer_owned_handles_closed": true,
+  "proof_sha256": "804adc745d98a7fda7c75621c45b35d855b11b8b1e81c098196cd8b9ac063b21",
+  "finished_ns": 1792058711589376863
+}

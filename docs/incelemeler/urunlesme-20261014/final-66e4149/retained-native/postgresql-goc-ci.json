@@ -1,0 +1,20 @@
+{
+  "schema": "zee-postgresql-goc-ci-1",
+  "server": "postgres (PostgreSQL) 16.15",
+  "engine": "local",
+  "source_sha": "66e4149e53451111d153f47283c219079a8d1cab",
+  "source_clean": true,
+  "fixture_hashes": {
+    "compiler/src/postgresql.rs": "219e4ea7ac2a5fb5cf6d637f6d127f5bb2476050582e443321a58d1ff90186eb",
+    "compiler/tests/postgresql_goc_plani_testi.rs": "8d84c7b431dcfe88a8da1ebdadca58a1fbb794e3e6c262517911c2a2347211d8",
+    "scripts/postgresql-goc-ci.py": "54908b680ee5a7fe8f53dfe974a8d5f6508a59ad537a8975823d0cb55907e8b3"
+  },
+  "started_utc": "2026-10-15T10:13:09.791191+00:00",
+  "host": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "rustc": "rustc 1.93.1 (01f6ddf75 2026-02-11)",
+  "image": null,
+  "test": "izole_goc_durum_kuru_checksum_rol_ve_atomik_uygulama_sinirini_korur",
+  "exit": 0,
+  "elapsed_seconds": 4.263,
+  "boundary": "own empty loopback database and synthetic owner/runtime roles; no customer cluster or TLS claim"
+}
