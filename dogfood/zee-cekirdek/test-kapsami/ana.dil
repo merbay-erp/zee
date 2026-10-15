@@ -1,0 +1,30 @@
+# K-284/C5: gerçek native HTTP kaynak dalı kanıtı için anonim owned fixture.
+karar birimini kullan
+rota_a rotalarını kullan
+rota_b rotalarını kullan
+8080 kapısında sunucu başlat
+GET "/hazir" adresine istek geldiğinde
+    "ok" yanıtını gönder
+GET "/csrf" adresine istek geldiğinde
+    csrf belirteci yanıtını gönder
+POST "/giris" adresine istek geldiğinde
+    herkese açık
+    jeton isteğin "jeton" değeri olsun
+    jeton "owned-fixture" e eşitse
+        "sentetik" kullanıcısını "yonetici" rolüyle oturuma al
+        "girdi" yanıtını gönder
+    değilse
+        "reddedildi" yanıtını 403 durumuyla gönder
+GET "/panel" adresine istek geldiğinde
+    oturum gerekli
+    kullanici oturumun "kullanıcı" değeri olsun
+    rol oturumun "rol" değeri olsun
+    sonuc kullanici ve rol ile panelKarari olsun
+    sonuc yanıtını gönder
+POST "/cikis" adresine istek geldiğinde
+    oturum gerekli
+    oturumu kapat
+    "cikti" yanıtını gönder
+GET "/sinanmayan" adresine istek geldiğinde
+    1 2 den küçükse
+        "çağrılmadı" yanıtını gönder

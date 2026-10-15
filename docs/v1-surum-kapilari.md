@@ -851,3 +851,27 @@ normu, public Rust API veya production bağımlılık değişikliği yoktur.
 [15 Ekim S raporu](urunlesme-final-kabul-20261015.md)943/959normalfaz,16exactdedicatedowner/25kohort,900/1800sn ve yerelmacOS/Linux teslim/kurulumu aynıS ASAN/Miri/export/securitygate kanıtıyla birleştirir. Temiz S üzerinde dört ASAN hedefi ayrı ayrı1801sn geçti; lexer_parser7.117.460, morfoloji8.265.144, http_istegi11.194.063 ve wasm_abi9.011.299 yürütme kaydedildi. İki seçili Miri grubunda toplam3test(ondalık2,zaman1) geçti. Kanonik export/check ve aynı S güvenlik kapısı510.198758sn exit0 ile geçti; kapının118 Cargo/libtest grubunda943passed/0failed/16ignored vardır. GB082 yalnız bu exactS yerel protokol ve kanıt kapısı için kapalıdır; E kaynakS gibi kabul edilmez. Bu S kabulü E exactHEAD kabulü, signedpublication veya bütün V1 kapılarının kapanması değildir. P08/insan/fizikselplatform/dışdestek/syntax takvimi açıktır.
 
 [RC sonuç makbuzu](incelemeler/urunlesme-20261014/final-8b49113/rc/FINAL-RESULT.json), [aynı-S kapı makbuzunun türetilmiş temsili](incelemeler/urunlesme-20261014/final-8b49113/rc/POST-GATE-RECEIPT.derived.json), [bağımsız kök incelemesi](incelemeler/urunlesme-20261014/final-8b49113/rc/root-independent-review.json).
+
+
+### K-280: JetBrains tamamlama ve normal çıkış
+
+15 Ekim 2026 owned IntelliJ IDEA2025.3.1/LSP4IJ0.21.0 POSIX profilinde
+mevcut S8b49113 launcher ile gerçek completion isteği7, `sayi 7 ols` →
+`sayi 7 olsun` uygulaması ve ardından boş LSP tanısı doğrulandı. Trace ayarı
+uygulanırken shutdown5/yanıt/exit ayrıca görüldü. Normal Quit/Confirm Exit
+sonrasında original süreç sahibi exit0 ve kapalı/toplanmış grubu kaydetti;
+zorunlu sonlandırma gerekmedi. Son Quit protokol konsolu dışa aktarılmadı;
+popup görünürlüğü ayrıca kanıtlanmadı. Önceki retler korunur. Dar IDE
+etkileşim eksikliği kapalı; Windows/eklenti yayın kanalı/incremental/lint/
+20k satır200ms ve tam P19 açık. [ADR-138](../adr/138-jetbrains-tamamlama-ve-duzenli-kapanis.md),
+[kabul kaydı](incelemeler/urunlesme-20261014/k280-jetbrains/ACCEPTANCE.json).
+Yeni kaynak dalgası bu S kanıtını kendi derleyici kabulü sayamaz.
+
+## K-281–K-294 yeni teknik aday dalgası
+
+Güncel kaynak/aday test/eksik kabul ayrımı [ikinci dalga kaydındadır](urunlesme-ikinci-dalga-20261015.md).
+İmzalı PDF hostu, sürekli hizmetler, SQL modül yaşam döngüsü, kaynak kapsamı,
+`dene` HTTP/DB köprüsü, editör eşitleme/cache/lint, TR–EN bileşimi ve içerik/medya
+başlangıcı eklendi. Önceki S1/E1 kabulü bu yeni kaynağa aktarılmaz. K-294
+regression follow-up ve temiz exact normal/dedicated/RC/Miri/soak kapıları
+bitmeden dalga tamamlandı sayılmaz; C1/P33 araç retleri açık tutulur.

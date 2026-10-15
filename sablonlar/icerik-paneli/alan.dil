@@ -1,0 +1,64 @@
+# K290: SQL domain actions; values are bound parameters, not SQL source.
+eylem icerikEkle
+    kimlik Metin olarak al
+    baslik Metin olarak al
+    govde Metin olarak al
+    TamSayı sonucu döndürür
+    parametreler kimlik, baslik, govde listesi olsun
+    "INSERT INTO zee_starter_content(id,title,body) VALUES($1,$2,$3)" sorgusunu parametreler ile değiştirmeyi dene döndür
+eylem icerikGuncelle
+    kimlik Metin olarak al
+    baslik Metin olarak al
+    govde Metin olarak al
+    TamSayı sonucu döndürür
+    parametreler kimlik, baslik, govde listesi olsun
+    "UPDATE zee_starter_content SET title=$2,body=$3 WHERE id=$1" sorgusunu parametreler ile değiştirmeyi dene döndür
+eylem icerikSil
+    kimlik Metin olarak al
+    TamSayı sonucu döndürür
+    parametreler kimlik listesi olsun
+    "DELETE FROM zee_starter_content WHERE id=$1 AND NOT EXISTS(SELECT 1 FROM zee_starter_media WHERE content_id=$1)" sorgusunu parametreler ile değiştirmeyi dene döndür
+eylem medyaBaslat
+    kimlik Metin olarak al
+    kaynak Metin olarak al
+    TamSayı sonucu döndürür
+    parametreler kimlik, kaynak listesi olsun
+    "INSERT INTO zee_starter_media(source_hash,content_id,state) VALUES($2,$1,'preparing')" sorgusunu parametreler ile değiştirmeyi dene döndür
+eylem medyaHazir
+    kaynak Metin olarak al
+    png Metin olarak al
+    TamSayı sonucu döndürür
+    parametreler kaynak, png listesi olsun
+    "UPDATE zee_starter_media SET png_hash=$2,state='ready' WHERE source_hash=$1 AND state='preparing'" sorgusunu parametreler ile değiştirmeyi dene döndür
+eylem medyaSiliniyor
+    kaynak Metin olarak al
+    png Metin olarak al
+    TamSayı sonucu döndürür
+    parametreler kaynak, png listesi olsun
+    "UPDATE zee_starter_media SET state='deleting' WHERE source_hash=$1 AND png_hash=$2 AND state='ready'" sorgusunu parametreler ile değiştirmeyi dene döndür
+eylem medyaKaldir
+    kaynak Metin olarak al
+    TamSayı sonucu döndürür
+    parametreler kaynak listesi olsun
+    "DELETE FROM zee_starter_media WHERE source_hash=$1 AND state='deleting'" sorgusunu parametreler ile değiştirmeyi dene döndür
+
+eylem medyaDosyasi
+    kaynak Metin olarak al
+    Metin sonucu döndürür
+    isleme kaynak ile ".png" olsun
+    kucult kaynak görselini isleme dosyasına 320 piksele küçültmeyi dene olsun
+    kucult başarılıysa
+        ozetSonuc isleme dosyasının sha256 özetini almayı dene olsun
+        ozetSonuc başarılıysa
+            png ozetSonucun değeri olsun
+            hedef "media/" ile png ile ".png" olsun
+            tasi isleme dosyasını hedef yoluna atomik taşımayı dene olsun
+            tasi başarılıysa
+                png döndür
+    "media-file-rejected" hatasını döndür
+
+eylem medyaDosyasiniSil
+    png Metin olarak al
+    TamSayı sonucu döndürür
+    hedef "media/" ile png ile ".png" olsun
+    hedef dosyasını silmeyi dene döndür

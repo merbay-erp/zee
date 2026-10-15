@@ -1,0 +1,17 @@
+{
+  "source_archive_base": "9214a3e676bc1940ae9c3b82af4fafadb5f9f0fd",
+  "actual_launcher_source": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "old_owned_profile_preserved": true,
+  "project": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-owned-ide/project with spaces",
+  "plugin_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-owned-ide/plugins",
+  "properties": "idea.config.path=/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/k280-owned-jetbrains-trace/config\nidea.system.path=/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/k280-owned-jetbrains-trace/system\nidea.plugins.path=/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-owned-ide/plugins\nidea.log.path=/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/k280-owned-jetbrains-trace/logs\n",
+  "vmoptions_sha256": "a961d9d31482b703f3502149b09d1855eabd19f1c03f334b0e2a6cff960b54a7",
+  "serverTrace_enum_verified_in_actual_official_plugin": "verbose",
+  "settings_sha256": {
+    "LanguageServersSettings.xml": "4ab78670bde277b3e656840bf910b9c6f179e94c8d9b8c6a4e6217ca16218a0c",
+    "UserDefinedLanguageServerSettings.xml": "49c5fd5b0183b767708fea65ef54855af8f3c1e85d126fe19ae58d1879a09745",
+    "trusted-paths.xml": "26c77937edd841b23bad64b3830d81b5287c4cb23c4e6c04c55b199be3145aa4",
+    "textmate.xml": "cd4fbb2d247e0ecea4e6364ed7240508bcebeca17a9e36bb2365bf154f5d5983"
+  },
+  "instrumentation": "built-in LSP4IJ trace, canonical project launcher command unchanged"
+}

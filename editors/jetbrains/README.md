@@ -1,9 +1,9 @@
 # JetBrains — mevcut dillsp için yerel POSIX şablonu
 
 Bu dizin, LSP4IJ ile içe alınan bir kullanıcı şablonudur. Yeni compiler
-özelliği veya dağıtılmış JetBrains eklentisi değildir. Şablonun IDE içinde
-kurulum ve etkileşim kabulü henüz açık; gerçek stdio sunucusu mevcut LSP
-ve K-270 launcher testleriyle ayrıca korunur.
+özelliği veya dağıtılmış JetBrains eklentisi değildir. Şablonun macOS IntelliJ/LSP4IJ etkileşimi K-280 ile tarihsel S1 kaynağında
+doğrulandı. Yeni kaynak ve diğer platformlar ayrıca sınanır; proje pininin
+seçtiği compiler sürümü gerçek sunucu yeteneklerini belirler.
 
 1. [Yerel araç rehberindeki](../../docs/derleyici-yerel.md) signed bundle
    import ve proje launcher kurulumunu tamamla. Proje kökünde
@@ -17,8 +17,10 @@ ve K-270 launcher testleriyle ayrıca korunur.
 3. Mappings içinde `*.dil` ve language ID `dil` seçili olmalı.
    Bir `.dil` belgesi aç, initialize sonrasında tanılar, completion,
    hover, tanıma git ve rename işlevlerini dene; shutdown/exit ile kapat.
-   Sunucu tam metin eşitlemesi kullanır. Incremental cache, LSP format/lint
-   sağlayıcısı ve <200 ms bütün-proje garantisi bu şablonla eklenmez.
+   Tarihsel S1 pininde tam metin eşitlemesi vardır. K-287 adayı UTF-16
+   aralıklı eşitleme, biçim ve opt-in lint ekler; güncel sınırlar
+   [editör rehberindedir](../../docs/editor-analizi.md). Şablon bu compiler
+   güncellemesini kendiliğinden kurmaz.
 
 Sözdizimi rengi için IDE'nin TextMate Bundles ayarına mevcut
 [VS Code dizinini](../vscode/) ekle. JetBrains, `package.json` taşıyan VS Code
@@ -46,3 +48,17 @@ sürümü veya güvenli plugin indirme kanıtı değildir.
 ## 15 Ekim 2026 — temiz S yerel kanıt güncellemesi
 
 IntelliJ IDEA2025.3.1/LSP4IJ0.21.0 izole profilinde `Import template...` ile bu klasör, TextMate Bundles’a mevcut VS Code klasörü alındı; yeniden açılış sonrasında gerçek sunucu başlatıldı. Boşluk içeren `$PROJECT_DIR$` önizlemesi ve tanı/düzeltme, hover, tanıma git, rename görüldü. Tamamlama ve düzenli UI/LSP kapanışı doğrulanamadı; OS kısayol çakışması ve CUA timeout retleri korunur. [Son rapor](../../docs/urunlesme-final-kabul-20261015.md). Bu dar kısmi kabul tam P19 veya Windows kabulü değildir.
+
+
+## K-280 — açık kalan etkileşimin tamamlanması
+
+15 Ekim ayrı owned profilde mevcut S8b49113 launcher ile Basic tamamlama
+`sayi 7 ols` → `sayi 7 olsun` uygulandı ve LSP tanısı boşaldı. macOS Ctrl+Space
+çakışmasında Find Action → Basic eylemi kullanılabilir; benzersiz aday doğrudan
+uygulanır. Debug → verbose trace gerçek completion trafiğini gösterdi. Trace
+uygulamasında shutdown/yanıt/exit, normal Quit/Confirm Exit sonrasında exit0 ve
+owned süreç grubu kapanışı doğrulandı. Final Quit konsolu dışa aktarılmadı;
+önceki başarısız denemeler silinmedi. [ADR-138](../../adr/138-jetbrains-tamamlama-ve-duzenli-kapanis.md)
+ve [kanıt](../../docs/incelemeler/urunlesme-20261014/k280-jetbrains/ACCEPTANCE.json).
+Bu mevcut keyword desteğinin S1 kanıtıdır. K-287 yeni eşitleme/cache/lint
+kaynağının temiz IDE kabulü ayrıca yapılır; Windows/marketplace yayını açıktır.

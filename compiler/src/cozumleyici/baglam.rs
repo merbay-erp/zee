@@ -36,6 +36,8 @@ pub(super) struct Baglam {
     hir_sembol_adlari: HashMap<SymbolId, String>,
     hir_sembol_tanimlari: HashMap<SymbolId, crate::hir::HirKaynakAraligi>,
     hir_sembol_yazimlari: Vec<crate::hir::HirSembolKullanimi>,
+    // Sonuç sırası Vec'tedir; küme yalnız tekrar üyeliğini doğrusal taramadan ayırır.
+    hir_sembol_yazim_kumesi: std::collections::HashSet<crate::hir::HirSembolKullanimi>,
 }
 
 impl Baglam {
@@ -82,6 +84,7 @@ impl Baglam {
             hir_sembol_adlari: HashMap::new(),
             hir_sembol_tanimlari: HashMap::new(),
             hir_sembol_yazimlari: Vec::new(),
+            hir_sembol_yazim_kumesi: std::collections::HashSet::new(),
         }
     }
 
@@ -111,7 +114,7 @@ impl Baglam {
             .entry(kimlik)
             .or_insert(kaynak_araligi);
         let kullanim = crate::hir::HirSembolKullanimi::yeni(kimlik, kaynak_araligi);
-        if !self.hir_sembol_yazimlari.contains(&kullanim) {
+        if self.hir_sembol_yazim_kumesi.insert(kullanim) {
             self.hir_sembol_yazimlari.push(kullanim);
         }
     }

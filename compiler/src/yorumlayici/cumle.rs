@@ -1,5 +1,6 @@
 use super::ifade::html_kacisla;
 use super::*;
+mod dosya;
 mod gorunum;
 use gorunum::gorunum_yaz_async;
 
@@ -70,12 +71,14 @@ pub(super) fn blok_calistir_async<'a>(
                     )?;
                     let kapsam = kapsam_baslat(ortam);
                     for _ in 0..adet.max(0) {
+                        crate::test_kapsami::cumle(cumle, 0, true, *satir)?;
                         if let Akis::Don(d) =
                             blok_calistir_async(govde, ortam, program, cikti, derinlik).await?
                         {
                             return Ok(Akis::Don(d));
                         }
                     }
+                    crate::test_kapsami::cumle(cumle, 0, false, *satir)?;
                     kapsam_bitir(ortam, &kapsam);
                 }
                 Cumle::AralikDongusu {
@@ -97,6 +100,7 @@ pub(super) fn blok_calistir_async<'a>(
                     // K-068: aralık iki yönde çalışır — "5 ten 1 e kadar" geri sayar.
                     if bastan <= sona {
                         for deger in bastan..=sona {
+                            crate::test_kapsami::cumle(cumle, 0, true, *satir)?;
                             ortam.insert(ad.clone(), Deger::TamSayi(deger));
                             if let Akis::Don(d) =
                                 blok_calistir_async(govde, ortam, program, cikti, derinlik).await?
@@ -106,6 +110,7 @@ pub(super) fn blok_calistir_async<'a>(
                         }
                     } else {
                         for deger in (sona..=bastan).rev() {
+                            crate::test_kapsami::cumle(cumle, 0, true, *satir)?;
                             ortam.insert(ad.clone(), Deger::TamSayi(deger));
                             if let Akis::Don(d) =
                                 blok_calistir_async(govde, ortam, program, cikti, derinlik).await?
@@ -114,6 +119,7 @@ pub(super) fn blok_calistir_async<'a>(
                             }
                         }
                     }
+                    crate::test_kapsami::cumle(cumle, 0, false, *satir)?;
                     kapsam_bitir(ortam, &kapsam);
                 }
                 Cumle::OlduguSurece {
@@ -128,6 +134,7 @@ pub(super) fn blok_calistir_async<'a>(
                                 .await?,
                             *satir,
                         )?;
+                        crate::test_kapsami::cumle(cumle, 0, devam, *satir)?;
                         if !devam {
                             break;
                         }
@@ -151,6 +158,7 @@ pub(super) fn blok_calistir_async<'a>(
                                 .await?,
                             *satir,
                         )?;
+                        crate::test_kapsami::cumle(cumle, 0, !bitti, *satir)?;
                         if bitti {
                             break;
                         }
@@ -168,12 +176,14 @@ pub(super) fn blok_calistir_async<'a>(
                     satir,
                 } => {
                     let mut islendi = false;
-                    for kol in kollar {
-                        if mantiksal(
+                    for (kapsam_sira, kol) in kollar.iter().enumerate() {
+                        let kapsam_sonuc = mantiksal(
                             degerlendir_async(&kol.kosul, ortam, program, cikti, derinlik, *satir)
                                 .await?,
                             *satir,
-                        )? {
+                        )?;
+                        crate::test_kapsami::cumle(cumle, kapsam_sira, kapsam_sonuc, *satir)?;
+                        if kapsam_sonuc {
                             let kapsam = kapsam_baslat(ortam);
                             if let Akis::Don(d) =
                                 blok_calistir_async(&kol.govde, ortam, program, cikti, derinlik)
@@ -280,6 +290,7 @@ pub(super) fn blok_calistir_async<'a>(
                     );
                     let kapsam = kapsam_baslat(ortam);
                     for (sira, oge) in ogeler.into_iter().enumerate() {
+                        crate::test_kapsami::cumle(cumle, 0, true, *satir)?;
                         ortama_yazma_butcesini_tuket(ortam, ad, &oge, *satir)?;
                         ortam.insert(ad.clone(), oge);
                         let akis =
@@ -291,6 +302,7 @@ pub(super) fn blok_calistir_async<'a>(
                             return Ok(Akis::Don(d));
                         }
                     }
+                    crate::test_kapsami::cumle(cumle, 0, false, *satir)?;
                     kapsam_bitir(ortam, &kapsam);
                 }
                 Cumle::Artir {
@@ -316,11 +328,13 @@ pub(super) fn blok_calistir_async<'a>(
                     let konu =
                         degerlendir_async(konu, ortam, program, cikti, derinlik, *satir).await?;
                     let mut eslesti = false;
-                    for (deger, govde) in kollar {
+                    for (kapsam_sira, (deger, govde)) in kollar.iter().enumerate() {
                         let deger =
                             degerlendir_async(deger, ortam, program, cikti, derinlik, *satir)
                                 .await?;
-                        if deger == konu {
+                        let kapsam_sonuc = deger == konu;
+                        crate::test_kapsami::cumle(cumle, kapsam_sira, kapsam_sonuc, *satir)?;
+                        if kapsam_sonuc {
                             let kapsam = kapsam_baslat(ortam);
                             if let Akis::Don(d) =
                                 blok_calistir_async(govde, ortam, program, cikti, derinlik).await?
@@ -512,9 +526,15 @@ pub(super) fn blok_calistir_async<'a>(
                     kapsam_bitir(ortam, &kapsam);
                     drop(nobetci);
                     match sonuc {
-                        Ok(Akis::Don(d)) => return Ok(Akis::Don(d)),
-                        Ok(Akis::Devam) => {}
+                        Ok(Akis::Don(d)) => {
+                            crate::test_kapsami::cumle(cumle, 0, false, *satir)?;
+                            return Ok(Akis::Don(d));
+                        }
+                        Ok(Akis::Devam) => {
+                            crate::test_kapsami::cumle(cumle, 0, false, *satir)?;
+                        }
                         Err(tani) if bu_son_tarihin_iptali(&tani, kimlik) => {
+                            crate::test_kapsami::cumle(cumle, 0, true, *satir)?;
                             if let Some(blok) = yetismezse {
                                 let kapsam = kapsam_baslat(ortam);
                                 if let Akis::Don(d) =
@@ -768,31 +788,8 @@ pub(super) fn blok_calistir_async<'a>(
                         return Err(ic_hata(*satir));
                     }
                 }
-                Cumle::DosyayaYaz {
-                    yol,
-                    icerik,
-                    ekleme,
-                    satir,
-                } => {
-                    let yol = match degerlendir_async(yol, ortam, program, cikti, derinlik, *satir)
-                        .await?
-                    {
-                        Deger::Metin(m) => m,
-                        _ => return Err(ic_hata(*satir)),
-                    };
-                    let icerik_degeri =
-                        degerlendir_async(icerik, ortam, program, cikti, derinlik, *satir).await?;
-                    let icerik = metne_sinirli(&icerik_degeri, *satir)?;
-                    son_tarihi_denetle(cikti, *satir)?;
-                    cikti.dosya_yaz(&yol, &icerik, *ekleme).map_err(|hata| {
-                        Tani::yeni(
-                            "C013",
-                            format!("Dosyaya yazılamadı: {}.", hata),
-                            *satir,
-                            1,
-                            1,
-                        )
-                    })?;
+                Cumle::DosyayaYaz { .. } => {
+                    dosya::yaz_async(cumle, ortam, program, cikti, derinlik).await?;
                 }
                 Cumle::SozlukAta {
                     sozluk,

@@ -154,7 +154,7 @@ fn initialize_yaniti() {
     let cikti = sunucu.mesaj_isle(r#"{"jsonrpc":"2.0","id":1,"method":"initialize","params":{}}"#);
     assert!(cikti.devam);
     assert_eq!(cikti.govdeler.len(), 1);
-    assert!(cikti.govdeler[0].contains("\"textDocumentSync\":1"));
+    assert!(cikti.govdeler[0].contains("\"textDocumentSync\":2"));
     assert!(cikti.govdeler[0].contains("dillsp"));
 }
 

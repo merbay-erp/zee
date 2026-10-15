@@ -1,0 +1,23 @@
+# K-284/C5: anonim panel kararları; özel ürün/kimlik verisi içermez.
+işlem panelKarari
+    kullanici Metin olarak al
+    rol Metin olarak al
+    Metin döndürür
+    kullanici boşsa
+        "oturum-yok" döndür
+    rol "yonetici" ye eşitse
+        "panel" döndür
+    "yetki-yok" döndür
+
+işlem henuzSinanmayan
+    değer döndürmez
+    1 2 den küçükse
+        "eksik-dal" yaz
+
+test "C5 anonim panelin üç kararı gerçek kaynakta sınanır"
+    bos "" ve "yonetici" ile panelKarari olsun
+    izinli "sentetik" ve "yonetici" ile panelKarari olsun
+    yetkisiz "sentetik" ve "misafir" ile panelKarari olsun
+    bos "oturum-yok" a eşit olmalı
+    izinli "panel" e eşit olmalı
+    yetkisiz "yetki-yok" a eşit olmalı

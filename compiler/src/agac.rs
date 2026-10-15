@@ -1,5 +1,9 @@
 //! Soyut sözdizimi ağacı (AST).
 
+mod koken;
+pub(crate) use koken::rota_kokenlerini_isaretle;
+pub use koken::{kaynak_kokenlerini_izle, KaynakKokenNobetcisi};
+
 use std::collections::HashMap;
 use std::num::NonZeroUsize;
 
@@ -686,6 +690,8 @@ pub enum Cumle {
     /// Yöntemsiz eski yazım yalnız GET'e bağlanır (K-087).
     /// onekli=true → yol bir ÖNEKtir: "/yazi/" önekli adrese... (K-055).
     IstekGeldiginde {
+        /// Opt-in source coverage provenance; None outside that compile scope.
+        koken: Option<String>,
         yontem: Option<HttpYontemi>,
         yol: Ifade,
         onekli: bool,

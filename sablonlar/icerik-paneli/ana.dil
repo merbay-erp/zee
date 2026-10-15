@@ -1,0 +1,193 @@
+# K290: complete local content/admin/media routes, existing grammar only.
+alan birimini kullan
+8094 kapısında sunucu başlat
+
+GET "/" adresine istek geldiğinde
+    parametreler boş liste olsun
+    okuma "SELECT id::text AS id,title::text AS title FROM zee_starter_content ORDER BY id LIMIT 50" sorgusunu parametreler ile okumayı dene olsun
+    okuma başarılıysa
+        kayitlar okumanın değeri olsun
+        liste "<h1>İçerikler</h1>" olsun
+        her kayit için
+            kimlik kayidin "id" değeri olsun
+            baslik kayidin "title" değeri olsun
+            liste liste ile "<article><h2>" ile basligin html güvenlisi ile "</h2><form action=/icerik method=get><input type=hidden name=id value=\"" ile kimligin html güvenlisi ile "\"><button>Görüntüle</button></form></article>" olsun
+        sayfa "<!doctype html><html lang=\"tr\"><head><meta charset=\"utf-8\"><title>İçerik paneli</title><style>body{font:18px system-ui;max-width:850px;margin:2rem auto;padding:1rem}input,textarea,button{font:inherit;margin:.3rem}img{max-width:320px}article{border-bottom:1px solid #ddd;padding:1rem}textarea{width:90%;min-height:6rem}</style></head><body><nav><a href=\"/\">İçerikler</a> | <a href=\"/admin\">Yönetim</a></nav>" ile liste ile "<footer>İçerik paneli · Zee 0.8 owned starter</footer></body></html>" olsun
+        sayfa yanıtını gönder
+    değilse
+        "Veritabanı hazır değil" yanıtını 503 durumuyla gönder
+
+GET "/icerik" adresine istek geldiğinde
+    kimlik isteğin "id" değeri olsun
+    parametreler kimlik listesi olsun
+    okuma "SELECT title::text AS title,body::text AS body FROM zee_starter_content WHERE id=$1" sorgusunu parametreler ile okumayı dene olsun
+    okuma başarılıysa
+        kayitlar okumanın değeri olsun
+        kayitlar boşsa
+            "İçerik yok" yanıtını 404 durumuyla gönder
+        değilse
+            kayit kayitların ilki olsun
+            baslik kayidin "title" değeri olsun
+            govde kayidin "body" değeri olsun
+            parca "<h1>" ile basligin html güvenlisi ile "</h1><pre>" ile govdenin html güvenlisi ile "</pre>" olsun
+            medyaOkuma "SELECT png_hash::text AS png_hash FROM zee_starter_media WHERE content_id=$1 AND state='ready' ORDER BY source_hash LIMIT 8" sorgusunu parametreler ile okumayı dene olsun
+            medyaOkuma başarılıysa
+                gorseller medyaOkumanın değeri olsun
+                her gorsel için
+                    ozet gorselin "png_hash" değeri olsun
+                    parca parca ile "<img alt=\"İçerik görseli\" src=\"/media/" ile ozetin html güvenlisi ile ".png\">" olsun
+            sayfa "<!doctype html><html lang=\"tr\"><head><meta charset=\"utf-8\"><title>İçerik paneli</title><style>body{font:18px system-ui;max-width:850px;margin:2rem auto;padding:1rem}input,textarea,button{font:inherit;margin:.3rem}img{max-width:320px}article{border-bottom:1px solid #ddd;padding:1rem}textarea{width:90%;min-height:6rem}</style></head><body><nav><a href=\"/\">İçerikler</a> | <a href=\"/admin\">Yönetim</a></nav>" ile parca ile "<footer>İçerik paneli · Zee 0.8 owned starter</footer></body></html>" olsun
+            sayfa yanıtını gönder
+    değilse
+        "İçerik okunamadı" yanıtını 503 durumuyla gönder
+
+GET "/giris" adresine istek geldiğinde
+    csrf csrf belirteci olsun
+    form "<h1>Yönetici girişi</h1><form method=post action=/giris-yap><input name=parola type=password autocomplete=current-password><input name=_csrf type=hidden value=\"" ile csrf ile "\"><button>Gir</button></form>" olsun
+    sayfa "<!doctype html><html lang=\"tr\"><head><meta charset=\"utf-8\"><title>İçerik paneli</title><style>body{font:18px system-ui;max-width:850px;margin:2rem auto;padding:1rem}input,textarea,button{font:inherit;margin:.3rem}img{max-width:320px}article{border-bottom:1px solid #ddd;padding:1rem}textarea{width:90%;min-height:6rem}</style></head><body><nav><a href=\"/\">İçerikler</a> | <a href=\"/admin\">Yönetim</a></nav>" ile form ile "<footer>İçerik paneli · Zee 0.8 owned starter</footer></body></html>" olsun
+    sayfa yanıtını gönder
+
+POST "/giris-yap" adresine istek geldiğinde
+    herkese açık
+    "parola" alanı gerekli
+    verilen isteğin "parola" değeri olsun
+    dosya "panel-phc" dosyasını okumayı dene olsun
+    dosya başarılıysa
+        phc dosyanın değeri olsun
+        verilen phc ile doğrulanıyorsa
+            "Yönetici" kullanıcısını "yönetici" rolüyle oturuma al
+            "/admin" adresine yönlendir
+        değilse
+            "/giris" adresine yönlendir
+    değilse
+        "/giris" adresine yönlendir
+
+GET "/admin" adresine istek geldiğinde
+    "yönetici" yetkisi gerekli
+    csrf csrf belirteci olsun
+    parametreler boş liste olsun
+    okuma "SELECT id::text AS id,title::text AS title,body::text AS body FROM zee_starter_content ORDER BY id LIMIT 50" sorgusunu parametreler ile okumayı dene olsun
+    okuma başarılıysa
+        kayitlar okumanın değeri olsun
+        liste "<h1>İçerik yönetimi</h1>" olsun
+        her kayit için
+            kimlik kayidin "id" değeri olsun
+            baslik kayidin "title" değeri olsun
+            govde kayidin "body" değeri olsun
+            liste liste ile "<article><form action=/guncelle method=post><input type=hidden name=_csrf value=\"" ile csrf ile "\"><input name=id readonly value=\"" ile kimligin html güvenlisi ile "\"><input name=title value=\"" ile basligin html güvenlisi ile "\"><textarea name=body>" ile govdenin html güvenlisi ile "</textarea><button>Güncelle</button></form><form action=/sil method=post><input type=hidden name=_csrf value=\"" ile csrf ile "\"><input type=hidden name=id value=\"" ile kimligin html güvenlisi ile "\"><button>Sil</button></form></article>" olsun
+        yeni "<h2>Yeni içerik</h2><form action=/ekle method=post><input type=hidden name=_csrf value=\"" ile csrf ile "\"><input name=id placeholder=kimlik pattern=\"[a-z][a-z0-9_]{0,31}\" required><input name=title placeholder=başlık required maxlength=128><textarea name=body></textarea><button>Ekle</button></form>" olsun
+        yukleme "<h2>Görsel ekle</h2><p>PNG/JPEG/WebP girdisi PNG küçük görsele dönüştürülür. İçerik kimliğini yaz.</p><form id=mediaform><input id=mediaid placeholder=içerik-kimliği required><input id=mediafile type=file accept=\"image/png,image/jpeg,image/webp\" required><input id=mediacsrf type=hidden value=\"" ile csrf ile "\"><button>Yükle</button></form><p id=mediastatus></p><script>document.getElementById('mediaform').addEventListener('submit',async(e)=>{e.preventDefault();const f=document.getElementById('mediafile').files[0];if(!f||f.size>1048576){document.getElementById('mediastatus').textContent='En çok 1 MiB görsel seç';return;}const r=await fetch('/medya-yukle?id='+encodeURIComponent(document.getElementById('mediaid').value),{method:'POST',headers:{'Content-Type':'application/octet-stream','X-Zee-CSRF':document.getElementById('mediacsrf').value},body:f});document.getElementById('mediastatus').textContent=r.ok?'Yüklendi':'Tamamlanamadı; yönetici incelemesi gerekli';});</script>" olsun
+        cikis "<form action=/cikis method=post><input type=hidden name=_csrf value=\"" ile csrf ile "\"><button>Çıkış</button></form>" olsun
+        medyaOkuma "SELECT source_hash::text AS source_hash,png_hash::text AS png_hash,state::text AS state FROM zee_starter_media ORDER BY source_hash LIMIT 50" sorgusunu parametreler ile okumayı dene olsun
+        medyaListe "<h2>Medya durumu</h2>" olsun
+        medyaOkuma başarılıysa
+            medyalar medyaOkumanın değeri olsun
+            her medya için
+                kaynak medyanın "source_hash" değeri olsun
+                png medyanın "png_hash" değeri olsun
+                durum medyanın "state" değeri olsun
+                medyaListe medyaListe ile "<article><p>" ile durumun html güvenlisi ile " / " ile kaynagin html güvenlisi ile "</p><form method=post action=/medya-sil><input name=_csrf type=hidden value=\"" ile csrf ile "\"><input type=hidden name=source value=\"" ile kaynagin html güvenlisi ile "\"><input type=hidden name=png value=\"" ile pngnin html güvenlisi ile "\"><button>Medyayı sil</button></form></article>" olsun
+        sayfa "<!doctype html><html lang=\"tr\"><head><meta charset=\"utf-8\"><title>İçerik paneli</title><style>body{font:18px system-ui;max-width:850px;margin:2rem auto;padding:1rem}input,textarea,button{font:inherit;margin:.3rem}img{max-width:320px}article{border-bottom:1px solid #ddd;padding:1rem}textarea{width:90%;min-height:6rem}</style></head><body><nav><a href=\"/\">İçerikler</a> | <a href=\"/admin\">Yönetim</a></nav>" ile liste ile yeni ile yukleme ile medyaListe ile cikis ile "<footer>İçerik paneli · Zee 0.8 owned starter</footer></body></html>" olsun
+        sayfa yanıtını gönder
+    değilse
+        "Yönetim verisi okunamadı" yanıtını 503 durumuyla gönder
+
+POST "/ekle" adresine istek geldiğinde
+    "yönetici" yetkisi gerekli
+    "id" alanı gerekli
+    "title" alanı gerekli
+    kimlik isteğin "id" değeri olsun
+    baslik isteğin "title" değeri olsun
+    govde isteğin "body" değeri olsun
+    sonuc kimlik ve baslik ve govde ile icerikEkle olsun
+    sonuc başarılıysa
+        "/admin" adresine yönlendir
+    değilse
+        "İçerik yazısı tamamlanamadı; yeniden denemeden önce incele" yanıtını 503 durumuyla gönder
+
+POST "/guncelle" adresine istek geldiğinde
+    "yönetici" yetkisi gerekli
+    "id" alanı gerekli
+    "title" alanı gerekli
+    kimlik isteğin "id" değeri olsun
+    baslik isteğin "title" değeri olsun
+    govde isteğin "body" değeri olsun
+    sonuc kimlik ve baslik ve govde ile icerikGuncelle olsun
+    sonuc başarılıysa
+        "/admin" adresine yönlendir
+    değilse
+        "İçerik yazısı tamamlanamadı; yeniden denemeden önce incele" yanıtını 503 durumuyla gönder
+
+POST "/sil" adresine istek geldiğinde
+    "yönetici" yetkisi gerekli
+    "id" alanı gerekli
+    kimlik isteğin "id" değeri olsun
+    sonuc kimlik ile icerikSil olsun
+    sonuc başarılıysa
+        adet sonucun değeri olsun
+        adet 1 e eşitse
+            "/admin" adresine yönlendir
+        değilse
+            "İçerik yok veya önce medya temizlenmeli" yanıtını 409 durumuyla gönder
+    değilse
+        "Silme tamamlanamadı; incele" yanıtını 503 durumuyla gönder
+
+POST "/medya-yukle" adresine istek geldiğinde
+    "yönetici" yetkisi gerekli
+    kimlik isteğin "id" değeri olsun
+    kaynak isteğin "yukleme_gecici_yolu" değeri olsun
+    ozet isteğin "yukleme_sha256" değeri olsun
+    baslat kimlik ve ozet ile medyaBaslat olsun
+    baslat başarılıysa
+        dosyaSonuc kaynak ile medyaDosyasi olsun
+        dosyaSonuc başarılıysa
+            png dosyaSonucun değeri olsun
+            hazir ozet ve png ile medyaHazir olsun
+            hazir başarılıysa
+                hazirAdet hazirin değeri olsun
+                hazirAdet 1 e eşitse
+                    "Görsel hazır" yanıtını gönder
+                değilse
+                    "Hazır metadata eşleşmedi; incele" yanıtını 503 durumuyla gönder
+            değilse
+                "Dosya var; DB sonucu belirsiz, incele" yanıtını 503 durumuyla gönder
+        değilse
+            "Görsel reddedildi; hazırlık kaydı korundu" yanıtını 422 durumuyla gönder
+    değilse
+        "Medya kaydı tamamlanamadı; tekrar oynatma" yanıtını 409 durumuyla gönder
+
+POST "/cikis" adresine istek geldiğinde
+    oturum gerekli
+    oturumu kapat
+    "/" adresine yönlendir
+
+POST "/medya-sil" adresine istek geldiğinde
+    "yönetici" yetkisi gerekli
+    kaynak isteğin "source" değeri olsun
+    png isteğin "png" değeri olsun
+    baslat kaynak ve png ile medyaSiliniyor olsun
+    baslat başarılıysa
+        adet baslatin değeri olsun
+        adet 1 e eşitse
+            dosyaSonuc png ile medyaDosyasiniSil olsun
+            dosyaSonuc başarılıysa
+                bitir kaynak ile medyaKaldir olsun
+                bitir başarılıysa
+                    bitenAdet bitirin değeri olsun
+                    bitenAdet 1 e eşitse
+                        "/admin" adresine yönlendir
+                    değilse
+                        "Silme metadata eşleşmedi; incele" yanıtını 503 durumuyla gönder
+                değilse
+                    "Silinen dosyanın DB sonucu belirsiz; incele" yanıtını 503 durumuyla gönder
+            değilse
+                "Siliniyor kaydı korundu; incele" yanıtını 503 durumuyla gönder
+        değilse
+            "Eşleşen hazır medya yok" yanıtını 409 durumuyla gönder
+    değilse
+        "Medya silme başlatılamadı; incele" yanıtını 503 durumuyla gönder
+
+test "icerik metni HTML olarak calismaz"
+    metin "<script>örnek</script>" olsun
+    temiz metnin html güvenlisi olsun
+    temiz "&lt;script&gt;" içermeli

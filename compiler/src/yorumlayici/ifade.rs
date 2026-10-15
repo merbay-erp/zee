@@ -715,11 +715,12 @@ pub(super) fn degerlendir_async<'a>(
             }
             Ifade::MantiksalZincir { hepsi, parcalar } => {
                 // Kısa devre: VE ilk yanlışta, VEYA ilk doğruda durur.
-                for parca in parcalar {
+                for (kapsam_sira, parca) in parcalar.iter().enumerate() {
                     let deger = mantiksal(
                         degerlendir_async(parca, ortam, program, io, derinlik, satir).await?,
                         satir,
                     )?;
+                    crate::test_kapsami::ifade(ifade, kapsam_sira, deger, satir)?;
                     if deger != *hepsi {
                         return Ok(Deger::Mantiksal(deger));
                     }

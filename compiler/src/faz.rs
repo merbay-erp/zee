@@ -11,6 +11,9 @@
 //! calistir_baglanmis_io(&ast, &mut io).unwrap();
 //! ```
 
+mod oturum;
+pub(crate) use oturum::AnalizOturumu;
+
 use std::ops::Deref;
 
 use crate::agac::{Cumle, Program};

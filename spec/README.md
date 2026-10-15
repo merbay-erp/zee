@@ -50,6 +50,8 @@ Kırıcı değişiklik sessizce yapılamaz: davranış değişikliği RFC'den ge
 | [26 — Binary yükleme ve dosya yaşam döngüsü](26-binary-yukleme-ve-dosya-yasam-dongusu.md) | akışlı octet-stream, SHA-256, no-clobber publish, silme ve orphan tarama primitive'leri | RFC-0027, ADR-061, K-163/F030 |
 | [27 — Uyumluluk ve sürümleme](27-uyumluluk-ve-surumleme.md) | sürüm kimliği, sekiz dondurulmuş yüzey, süreli deprecation kaydı ve 1.0/edition çerçevesi | RFC-0028, ADR-064, K-167 |
 | [28 — Görünüm bloğu](28-gorunum-blogu.md) | `<ad> görünüm olsun` tipli HTML ağacı: varsayılan kaçış, bayrak öznitelik, boş öğe, `ham` parça; S046/T055 | ADR-085, K-212 |
+| [29 — Kaynak karar kapsamı](29-test-kapsami.md) | Opt-in gerçek kaynak karar sonuçları, kaynak hashleri, ürün/test paydası ve rapor sınırları | ADR-142, K-284 |
+| [30 — Editör analizi ve lint](30-editor-analizi-ve-lint.md) | UTF-16 aralıklı eşitleme, biçim, sınırlı analiz oturumu, opt-in uyarı ve açık performans kapsamı | RFC-0010, ADR-145, K-287 |
 
 ## Faza bağlı — henüz spec dışı
 

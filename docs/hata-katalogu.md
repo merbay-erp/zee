@@ -61,6 +61,8 @@ kalır (ADR-025).
 | S044 | Yapılandırılmış hata biçimi/kodu geçersiz | `"DOSYA_YOK" kodlu "Dosya bulunamadı" hatasını döndür`; neden önce, veri sonra yazılır |
 | S045 | Kaynak metni ya da token akışı güvenli profil sınırını aştı | Kaynağı sorumluluğu açık daha küçük birimlere böl |
 | S046 | Görünüm bloğu satırı biçimi geçersiz | Satır `etiket ad değer …`, `"sabit"`, `metin ifade` ya da `ham ifade` olmalı; öznitelikler çift, çocuklar öğe altında (K-212) |
+| S047 | Lint: erişilemeyen cümle veya sabit koşul dalı | Kesin `döndür`/`programı bitir` sonrasını ya da literal yanlış dalı gözden geçir; uygun dala taşı veya kaldır. `yanıtını gönder` bloğu sonlandırmaz. Yalnız isteğe bağlı uyarıdır |
+| S048 | Lint: rotanın yanıt üretmeyen yolu olabilir | Her dala yanıt veya yönlendirme ekle. Örnek: `değilse` altında `"Geçersiz istek" yanıtını 400 durumuyla gönder`. Belirsiz çağrı etkisinde tahmin yapılmaz; yalnız isteğe bağlı uyarıdır |
 
 ## A — Ad çözümleme
 
@@ -77,6 +79,7 @@ kalır (ADR-025).
 | A009 | Birimler döngüsel kullanıyor | Ortak tanımları üçüncü bir birime taşı |
 | A010 | Birim yüklenemedi | Aynı klasörde `<ad>.dil` dosyası olmalı (RFC-0009 §4) |
 | A011 | Paket yüklenemedi | Paketi `yerel_bağımlılıklar` listesine ekle, ardından `dil kilitle .` çalıştır |
+| A012 | Lint: ad tanımlanıyor ama okunmuyor | Adı kullan veya gereksiz bağlamayı kaldır; değer ifadesinin etkisini incelemeden satırı silme. Örnek: `adet 3 olsun` ardından `adedi yaz`. Yalnız `--lint`/LSP lint açıkken uyarıdır |
 
 ## T — Tür denetimi
 

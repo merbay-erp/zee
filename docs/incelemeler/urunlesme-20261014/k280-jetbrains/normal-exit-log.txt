@@ -1,0 +1,35 @@
+2026-10-15 09:59:29,345 [1049999]   INFO - sun.awt.AWTThreading - InvocationEvent was disposed (awaiting 1 ms). Originated at java.desktop/sun.lwawt.macosx.CAccessibility.getAccessibleIndexInParent(CAccessibility.java:332)
+2026-10-15 09:59:29,354 [1050008]   INFO - #c.i.o.u.r.RegistryValue - Registry value 'i18n.locale' has changed to '' by SYSTEM
+2026-10-15 09:59:29,385 [1050039]   INFO - #c.i.w.i.i.j.s.JpsGlobalModelSynchronizerImpl - Saving global entities com.intellij.platform.workspace.jps.entities.SdkEntity to files
+2026-10-15 09:59:29,387 [1050041]   INFO - #c.i.w.i.i.j.s.JpsGlobalModelSynchronizerImpl - Saving global entities com.intellij.platform.workspace.jps.entities.LibraryEntity to files
+2026-10-15 09:59:29,428 [1050082]   INFO - #c.i.a.o.PathMacrosImpl - Saved path macros: {MAVEN_REPOSITORY=/Users/mustafaerbay/.m2/repository}
+2026-10-15 09:59:29,471 [1050125]   INFO - #c.i.i.s.EventLogApplicationLifecycleListener - Statistics. Don't start external uploader because there are no enabled logger providers
+2026-10-15 09:59:29,472 [1050126]   INFO - #c.i.i.s.e.u.EventLogExternalUploader - Statistics. Don't start external uploader because sending logs is disabled for all recorders
+2026-10-15 09:59:29,539 [1050193]   INFO - #c.i.u.i.PersistentDirtyFilesQueue - Dirty file ids stored. Size: 1. Index: 0 Path: /Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/k280-owned-jetbrains-trace/system/index/dirty-file-queues/d3391796
+2026-10-15 09:59:29,617 [1050271]   INFO - #c.i.p.p.ProjectEntitiesStorage - Project ProjectId(id=ivml686ucjm8mmqc35gj) is disposed, removing entity
+2026-10-15 09:59:29,619 [1050273]   INFO - #c.i.p.d.i.f.FrontendXBreakpointManager - Breakpoint removed for XBreakpointId(uid=1)
+2026-10-15 09:59:29,622 [1050276]   INFO - #c.i.u.i.c.ManagedPersistentCache - closing graved-parameter-hints-project with spaces-d3391796 with 1 elements
+2026-10-15 09:59:29,622 [1050276]   INFO - #c.i.u.i.c.ManagedPersistentCache - closing graved-highlighting-project with spaces-d3391796 with 1 elements
+2026-10-15 09:59:29,622 [1050276]   INFO - #c.i.u.i.c.ManagedPersistentCache - closing graved-doc-render-project with spaces-d3391796 with 1 elements
+2026-10-15 09:59:29,622 [1050276]   INFO - #c.i.u.i.c.ManagedPersistentCache - closing graved-code-vision-project with spaces-d3391796 with 1 elements
+2026-10-15 09:59:29,622 [1050276]   INFO - #c.i.u.i.c.ManagedPersistentCache - closing graved-declarative-hints-project with spaces-d3391796 with 1 elements
+2026-10-15 09:59:29,622 [1050276]   INFO - #c.i.u.i.c.ManagedPersistentCache - closing graved-code-folding-project with spaces-d3391796 with 1 elements
+2026-10-15 09:59:29,626 [1050280]   INFO - #c.i.o.v.i.l.NativeFileWatcherImpl - Watcher terminated with exit code 0
+2026-10-15 09:59:29,633 [1050287]   INFO - #c.i.w.i.i.GlobalWorkspaceModel - Project project with spaces is removed from the list of initializing and open projects. Project was disposed.
+2026-10-15 09:59:29,634 [1050288]   INFO - #c.i.o.w.i.WindowManagerImpl - === Release(true) frame on closed project ===
+2026-10-15 09:59:29,667 [1050321]   INFO - #c.i.c.b.CompilerReferenceServiceBase - backward reference index reader is closed (didn't exist)
+2026-10-15 09:59:29,668 [1050322]   INFO - #o.j.k.i.s.r.KotlinCompilerReferenceIndexStorage - KCRI storage is closed (didn't exist)
+2026-10-15 09:59:29,682 [1050336]   INFO - #c.i.o.f.i.FileTypeDetectionService - 202 auto-detected files. Detection took 172 ms
+2026-10-15 09:59:29,685 [1050339]   INFO - #o.j.i.BuiltInServer - web server stopped
+2026-10-15 09:59:29,687 [1050341]   INFO - #c.i.d.JVMResponsivenessMonitor - Sampling thread interrupted -> stop sampling
+2026-10-15 09:59:29,687 [1050341]   INFO - #c.i.d.JVMResponsivenessMonitor - Sampling thread exiting normally
+2026-10-15 09:59:29,689 [1050343]   INFO - #c.i.u.i.FileBasedIndexImpl - Index dispose started
+2026-10-15 09:59:29,693 [1050347]   INFO - #c.i.u.i.PersistentDirtyFilesQueue - Dirty file ids stored. Size: 2. Index: 2 Path: /Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/k280-owned-jetbrains-trace/system/index/dirty-file-ids
+2026-10-15 09:59:29,699 [1050353]   INFO - #c.i.p.s.StubIndexImpl - StubIndexExtension-s were unloaded
+2026-10-15 09:59:29,699 [1050353]   INFO - #c.i.p.s.SerializationManagerImpl - Start shutting down /Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/k280-owned-jetbrains-trace/system/index/rep.names
+2026-10-15 09:59:29,699 [1050353]   INFO - #c.i.p.s.SerializationManagerImpl - Finished shutting down /Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/k280-owned-jetbrains-trace/system/index/rep.names
+2026-10-15 09:59:29,700 [1050354]   INFO - #c.i.u.i.FileBasedIndexImpl - Index dispose completed in 11ms.
+2026-10-15 09:59:29,706 [1050360]   INFO - #c.i.o.v.n.p.PersistentFSImpl - VFS dispose started
+2026-10-15 09:59:29,706 [1050360]   INFO - #c.i.o.v.n.p.FSRecordsImpl - VFS closing
+2026-10-15 09:59:29,707 [1050361]   INFO - #c.i.o.v.n.p.PersistentFSImpl - VFS dispose completed in 1 ms.
+2026-10-15 09:59:29,724 [1050378]   INFO - #c.i.p.i.b.AppStarter - ------------------------------------------------------ IDE SHUTDOWN ------------------------------------------------------

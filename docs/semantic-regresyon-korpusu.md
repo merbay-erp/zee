@@ -198,3 +198,19 @@ Unix'te tüm native kayıtları seçer ve boş listeyi reddeder. Unix dışında
 tek test `actual Unix owned FD capability unavailable` gerekçesiyle görünür
 ignored durumundadır; eski toplu test ignored yapılmaz. `--ignored` ile
 zorlandığında adaptör desteklenmeyen platformda panic eder; sahte başarı yoktur.
+
+## Native metric stdio ret kipi (K-294)
+
+`native-metric-stdio` yalnız `cli` fazında kullanılabilir. Manifest uygulama
+exit2, boş çıktı ve tanı/span yokluğu ister. Kaydedilmiş minimal `.dil`,
+`--fixture-source` ile gerçek owned FD helper'ına verilir ve aynı baytların
+SHA256 kaydı doğrulanır. Olumlu metric FD ile kaynak gerçekten çalıştırılır;
+stderr/stdout pipe alias'ları ise kaynak yürütülmeden sessiz reddedilir.
+Ayrı CLI hata kontrolü olağan tanıların susturulmadığını doğrular.
+
+Portable aggregate bu native kipi atlar. Exact kaynak düzeltme SHA'sını
+izleyen gerçek fixture/manifest commit'i nonempty dedicated Unix testini
+birlikte ekler; Windows için görünür ignored vaka vardır, native başarı
+uydurulmaz. Bu ilk support commit'inde manifestte K-294 satırı/placeholder
+ve regression altında sahipsiz `.dil` bulunmaz. Mevcut vaka kimlikleri ve
+provenance alanları değiştirilmez.
