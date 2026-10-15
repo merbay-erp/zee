@@ -1,6 +1,6 @@
 # ADR-142 — Opt-in Zee kaynak karar kapsamı
 
-- **Durum:** doğrulama edilen dar uygulama; son temiz kaynak doğrulama koşusu beklenir.
+- **Durum:** [S3](../docs/urunlesme-s3-kabul-20261015.md) (`66e4149e53451111d153f47283c219079a8d1cab`): üç CLI/native kohort ile dar yerel kabul; üretici candidate etiketi korunur, temiz kaynak/kanonik ikili bağı dışarıdan doğrulandı; genel kapsama/ürün kabulü açık.
 İş: K-284. Ürün: etkin `zee-cekirdek`; özgün C5 talebi
 `cd5d12f0008620819e6167af5146e83503fd2b38` commit'indeki
 `docs/dil-talepleri/2026-10-14-zee-urunlesme.md:163–167`.

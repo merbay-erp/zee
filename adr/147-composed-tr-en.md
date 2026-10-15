@@ -1,6 +1,6 @@
 # ADR-147 — Uygulamaya ait kapalı bileşen ve TR/EN katalog bileşimi
 
-- **Durum:** uygulandı; son temiz kaynak doğrulaması ve ürün aktarımı açık
+- **Durum:** [S3](../docs/urunlesme-s3-kabul-20261015.md) (`66e4149e53451111d153f47283c219079a8d1cab`): 10 HTTP ve dört Zee vakası ile dar yerel kabul; yeni çeviri builtin veya gerçek ürün benimsenmesi kabulü yok.
 - İş: K-289; güvenlik sınırı GB-105
 
 ## İhtiyaç ve mevcut fark

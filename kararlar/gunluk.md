@@ -4760,3 +4760,16 @@ ile gözler. Startup reddi, hiç ready=true olayı olmaması, eski gate bayt/mti
 değişmezliği ve bütün owned handle kapanışları birlikte zorunlu kalır. Yalnız
 test oracle düzeltilmiştir; native DNS veya production lifecycle genişlemez.
 Yeni temiz native kabulü beklenir.
+
+## K-297 — ordinary LSP UTF-16 konum düzeltmesi
+
+S3 raporundaki BMP dışı karakter sonrası hover/definition/rename ve tanı
+konumu sınırı [ADR-153](../adr/153-lsp-utf16-konum-siniri.md) ile ele alındı.
+İç kaynak aralıkları korunur, dönüşüm yalnız LSP sınırındadır. Yeni
+olumlu/olumsuz LF/CRLF testleri ve minimal lsp-utf16 regression kipi eklendi;
+exact kaynak/provenance kapanışı doğrulama sonrası kaydedilir. Yeni cache,
+grammar veya feature yoktur. S3 kampanyaları yeni kaynağın RC/soak/IDE kabulü
+sayılmaz; tam P19 ve V1 açık kalır.
+
+Dış girdiler [kullanıcı teslim listesinde](../docs/urunlesme-kullanici-girdileri.md)
+ayrıldı. Beş tam proje hazır değil, fiziksel cihaz yok; bu kapılar bekliyor.

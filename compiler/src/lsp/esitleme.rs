@@ -9,19 +9,22 @@ fn sayi(deger: &Json) -> Option<usize> {
 }
 
 /// CRLF tek satır sonudur. Surrogate çiftinin ortasına konum kabul edilmez.
-fn konum(metin: &str, deger: &Json) -> Option<usize> {
-    let satir = sayi(deger.alan("line")?)?;
-    let sutun = sayi(deger.alan("character")?)?;
+fn satir_araligi(metin: &str, satir: usize) -> Option<(usize, usize)> {
     let mut bas = 0;
     for _ in 0..satir {
         bas += metin.get(bas..)?.find('\n')? + 1;
     }
     let son = metin[bas..].find('\n').map_or(metin.len(), |n| bas + n);
-    let son = if son > bas && metin.as_bytes()[son - 1] == b'\r' {
+    let son = if son < metin.len() && son > bas && metin.as_bytes()[son - 1] == b'\r' {
         son - 1
     } else {
         son
     };
+    Some((bas, son))
+}
+
+fn utf16_bayti(metin: &str, satir: usize, sutun: usize) -> Option<usize> {
+    let (bas, son) = satir_araligi(metin, satir)?;
     let mut birim = 0;
     for (bayt, harf) in metin[bas..son].char_indices() {
         if birim == sutun {
@@ -33,6 +36,32 @@ fn konum(metin: &str, deger: &Json) -> Option<usize> {
         }
     }
     (birim == sutun).then_some(son)
+}
+
+fn konum(metin: &str, deger: &Json) -> Option<usize> {
+    utf16_bayti(
+        metin,
+        sayi(deger.alan("line")?)?,
+        sayi(deger.alan("character")?)?,
+    )
+}
+
+/// Gelen UTF-16 imlecini HIR/lexer'ın scalar sütununa çevirir.
+pub(super) fn skaler_sutun(metin: &str, satir: usize, sutun: usize) -> Option<usize> {
+    let bayt = utf16_bayti(metin, satir, sutun)?;
+    Some(metin[..bayt].rsplit('\n').next()?.chars().count())
+}
+
+/// Çıkış konumu satır sonunu aşamaz; EOF tanısı sıfır uzunluklu olabilir.
+pub(super) fn utf16_sutun(metin: &str, satir: usize, sutun: usize) -> usize {
+    let Some((bas, son)) = satir_araligi(metin, satir) else {
+        return 0;
+    };
+    metin[bas..son]
+        .chars()
+        .take(sutun)
+        .map(char::len_utf16)
+        .sum()
 }
 
 pub(super) fn degisim_parametreleri(

@@ -53,9 +53,10 @@ kesitleridir; tam ham konsol dışa aktarımı veya yeni screenshot dosyası de�
 
 ## Açık işler
 
-UTF-16 eşitleme kabulü, BMP dışı karakterlerde hover/rename ve tanı sütunu
-sınırlarını kapatmaz. Artımlı HIR/tür analizi ve taşıma/UI/lint gecikme kabulü
-ayrı açık işlerdir.
+S3 UTF-16 eşitleme kabulü, BMP dışı karakterlerde hover/definition/rename
+ve tanı sütunu sınırlarını kapatmaz. Sonraki kaynak düzeltmesi
+[K-297 ayrı takip kaydında](lsp-utf16-kabul-20261015.md) izlenir. Artımlı
+HIR/tür analizi ve taşıma/UI/lint gecikme kabulü ayrı açık işlerdir.
 
 K-288/C1 özel beş tanı+hızlı düzeltme zinciri ve K-293/P33 koordineli reproducer
 araç incelemesi retleri nedeniyle açıktır. Bu iki iş dış girdiye indirgenmez
@@ -66,6 +67,10 @@ P08 beş anonim gerçek site ve exact ürün provenance'ı; gerçek katılımcı
 14 Ekim–11 Kasım; lisans/destek/publisher ve canlı sağlayıcı kararları açık kalır.
 Bu yerel teknik kanıt tam V1, signed release, ürün adoptionı veya üretim SLA'sı
 değildir.
+
+Kullanıcıdan gereken somut teslimler, hazır şablonlar ve öncelik sırası
+[kullanıcı girdileri listesinde](urunlesme-kullanici-girdileri.md) bulunur.
+Bu liste S3 kaynak kabulünü veya açık kapıların durumunu değiştirmez.
 
 ## Belge etkisi
 

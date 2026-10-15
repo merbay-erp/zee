@@ -1,6 +1,6 @@
 # ADR-150 — K-292 native worker fault ve kontrollü resolver-call hazırlığı
 
-- **Durum:** hazırlık7 ve dedicated native2 adayı; yeni native doğrulama bekleniyor.
+- **Durum:** [S3](../docs/urunlesme-s3-kabul-20261015.md) (`66e4149e53451111d153f47283c219079a8d1cab`): iki native worker-loss/stale-gate vakası ile dar yerel kabul; kontrollü Python resolver native DNS iptali veya tam fault kabulü değildir.
 P34 genel fault matrisi ile P13 whole-unit crash dar kanıtı ayrılır. Tek owned
 native worker SIGKILL olduğunda diğer native worker'ın aynı retained Supervisor
 owner'ıyla kapanması, foreign survival ve yeni liveness200 worker'ların eski true

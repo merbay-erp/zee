@@ -73,6 +73,7 @@ hatası kaynak tanısı üretmediği için tanı/span alanı `-` kalır.
 | `run` | Invariantı geçmiş typed HIR ile runtime; stdout ve program exit'i korunur |
 | `capability` | Compile sonrası kapalı yetkinlik politikası |
 | `smtp` | Security fazında typed runtime → gerçek native SMTP; yalnız sabit loopback fixture |
+| `lsp-utf16` | LSP mesaj işleyicisinde BMP dışı önek sonrası hover, definition ve iki imleçten aynı rename aralıkları; süreç/taşıma kabulü değildir |
 | `lsp-uri` | LSP fazında gerçek stdio ikilisi, yüzde UTF-8 dosya URI'si ve hermetik disk birimi |
 
 K-248 `lsp-uri`, iki satırlık kaynağı ve aynı dizindeki `yardimci.birim`

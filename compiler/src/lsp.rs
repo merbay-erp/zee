@@ -437,8 +437,9 @@ impl Sunucu {
                     return cikti;
                 };
                 let tanim = self.belgeler.get(&uri).and_then(|metin| {
+                    let sutun = esitleme::skaler_sutun(metin, satir, sutun)?;
                     match semantik_tanim_sorgula(&uri, metin, satir, sutun) {
-                        Some(Some(aralik)) => Some((uri, aralik)),
+                        Some(Some(aralik)) => Some((uri, aralik.utf16(metin))),
                         // Bağsız konumda ya da hatalı belgede metin tahmini
                         // yapılmaz; tanılar didOpen/didChange ile yayımlanır.
                         Some(None) | None => None,
@@ -543,9 +544,9 @@ fn konum_parametreleri(mesaj: &Json) -> Option<(String, usize, usize)> {
     Some((uri, sayi("line")?, sayi("character")?))
 }
 
-/// Konumdaki kelimeyi döner. Sütun UTF-16 birimidir; dilin alfabesi BMP
-/// içinde kaldığından karakter sayımıyla birebirdir.
+/// Konumdaki kelimeyi döner; protokol sütunu önce scalar indekse çevrilir.
 fn konumdaki_kelime(metin: &str, satir: usize, sutun: usize) -> Option<String> {
+    let sutun = esitleme::skaler_sutun(metin, satir, sutun)?;
     let satir_metni = metin.lines().nth(satir)?;
     let karakterler: Vec<char> = satir_metni.chars().collect();
     let kelime_harfi = |k: char| k.is_alphanumeric() || k == '_';
@@ -571,6 +572,16 @@ struct LspKaynakAraligi {
 }
 
 impl LspKaynakAraligi {
+    fn utf16(self, metin: &str) -> Self {
+        let bas = esitleme::utf16_sutun(metin, self.satir, self.bas);
+        let son = esitleme::utf16_sutun(metin, self.satir, self.bas.saturating_add(self.uzunluk));
+        Self {
+            satir: self.satir,
+            bas,
+            uzunluk: son.saturating_sub(bas),
+        }
+    }
+
     fn icerir(self, satir: usize, sutun: usize) -> bool {
         self.satir == satir && self.bas <= sutun && sutun < self.bas + self.uzunluk
     }
@@ -1017,6 +1028,7 @@ fn yeniden_adlandirma_plani(
     let (uri, satir, sutun) = konum_parametreleri(mesaj)?;
     let yeni_ad = mesaj.alan("params")?.alan("newName")?.metin()?.to_string();
     let metin = belgeler.get(&uri)?;
+    let sutun = esitleme::skaler_sutun(metin, satir, sutun)?;
     let program = semantik_program_derle(&uri, metin)?;
     let varlik = semantik_varlik_bul(&program, metin, satir, sutun)?;
     let hir = program.hir();
@@ -1165,7 +1177,7 @@ fn yeniden_adlandir(
         if yazilan > 0 {
             yazici.ham(",")?;
         }
-        yeniden_adlandirma_duzenlemesi_yaz(yazici, *aralik, &yeni)?;
+        yeniden_adlandirma_duzenlemesi_yaz(yazici, aralik.utf16(metin), &yeni)?;
         yazilan += 1;
     }
     yazici.ham("]}}")?;
@@ -1262,14 +1274,14 @@ fn rpc_parametre_hatasi(ciktilar: &mut Ciktilar, kimlik: Option<&Json>) {
 fn kaynak_siniri_bildirimi(uri: &str, mesaj: &str) -> CiktiSonucu<String> {
     let tani = Tani::yeni("S045", mesaj.into(), 1, 1, 1)
         .onerili("Kullanılmayan belgeleri kapat veya kaynağı daha küçük birimlere böl.".into());
-    tanilari_yaz(uri, &[tani])
+    tanilari_yaz(uri, None, &[tani])
 }
 
 fn bos_tanilar(uri: &str) -> CiktiSonucu<String> {
-    tanilari_yaz(uri, &[])
+    tanilari_yaz(uri, None, &[])
 }
 
-fn tanilari_yaz(uri: &str, tanilar: &[Tani]) -> CiktiSonucu<String> {
+fn tanilari_yaz(uri: &str, metin: Option<&str>, tanilar: &[Tani]) -> CiktiSonucu<String> {
     let mut yazici = SinirliJson::yeni();
     yazici.ham(
         "{\"jsonrpc\":\"2.0\",\"method\":\"textDocument/publishDiagnostics\",\
@@ -1281,18 +1293,23 @@ fn tanilari_yaz(uri: &str, tanilar: &[Tani]) -> CiktiSonucu<String> {
         if sira > 0 {
             yazici.ham(",")?;
         }
-        lsp_tanisi_yaz(&mut yazici, tani)?;
+        lsp_tanisi_yaz(&mut yazici, metin, tani)?;
     }
     yazici.ham("]}}")?;
     Ok(yazici.bitir())
 }
 
-fn lsp_tanisi_yaz(yazici: &mut SinirliJson, tani: &Tani) -> CiktiSonucu<()> {
-    // Tani 1 tabanlı karakter konumu; LSP 0 tabanlı (UTF-16 — Türkçe harfler
-    // BMP'de tek birim olduğundan karakter sayımıyla örtüşür).
+fn lsp_tanisi_yaz(yazici: &mut SinirliJson, metin: Option<&str>, tani: &Tani) -> CiktiSonucu<()> {
+    // Core Tani scalar kalır; yalnız açık belgeye ait wire konumu çevrilir.
     let satir = tani.satir.saturating_sub(1);
     let bas = tani.sutun.saturating_sub(1);
-    let son = bas + tani.uzunluk;
+    let son = bas.saturating_add(tani.uzunluk);
+    let (bas, son) = metin.map_or((bas, son), |metin| {
+        (
+            esitleme::utf16_sutun(metin, satir, bas),
+            esitleme::utf16_sutun(metin, satir, son),
+        )
+    });
     let siddet = if matches!(tani.kod.as_str(), "A012" | "S047" | "S048") {
         2
     } else {

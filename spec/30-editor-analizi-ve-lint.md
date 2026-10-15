@@ -9,6 +9,15 @@ yorumlanır; CRLF tek satır sonudur. Surrogate çiftinin ortası, ters veya bel
 dışı aralık reddedilir. Bir paketteki değişiklikler sırayla özel aday üzerinde
 uygulanır; herhangi biri geçersizse belgenin önceki metni korunmak ZORUNDADIR.
 
+## Sorgu ve yanıt konumları (TANIMLI)
+
+Hover, definition ve rename imleçleri ile definition/rename/tanı aralıkları
+UTF-16 kod birimiyle yorumlanmak ZORUNDADIR. LF/CRLF satırlarında BMP dışı
+karakterler iki birimdir; core/HIR tanı sütunları scalar kalır. Surrogate
+ortası veya belge dışı sorgu null döndürür. Kaynağa bağlı tanı aralığı satır
+sonunu aşamaz; kaynağı kabul edilmeyen sentetik S045 bildirimi mevcut [0,1)
+aralığını korur.
+
 ## Biçimlendirme (TANIMLI)
 
 `textDocument/formatting` açık ve geçerli belge için kanonik biçimleyicinin
