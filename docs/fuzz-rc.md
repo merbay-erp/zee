@@ -55,3 +55,7 @@ hedefin her biri 1.801 saniye AddressSanitizer altında çalıştı. Toplam
 19.622.858, 85.659.451 ve 18.472.853 yürütme yaptı. Seçili ondalık ve zaman
 Miri testleri 3/3 geçti. Donanım ve araç zincirinin exact kaydı tarihçe
 dosyasındadır; bu taban farklı bir commit'in RC kanıtı yerine kullanılamaz.
+
+## K-265 explicit dış RC kanıtı
+
+[Exact kaynak dış kanıt rehberi](rc-kaniti.md) ve [ADR-124](../adr/124-exact-kaynak-dis-rc-kaniti.md) temiz S’ye bağlı dış paketi tanımlar. Explicit geçersiz paket fallback yapmaz; etiket/build S’de, append-only arşiv commit’i E’de S kimliğini korur. Default tracked yolun self-reference sınırı açıkça korunur. Gerçek uzun kampanya henüz bu kısa entegrasyon testlerinden tamamlanmış sayılamaz.

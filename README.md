@@ -155,10 +155,10 @@ Değişikliğe özel test, belge ve güvenlik kapıları [AGENTS.md](AGENTS.md) 
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **941** |
+| Rust + doctest vakası | **942** |
 | Tanı kimliği | **159 etkin + 3 ayrılmış** |
 | RFC | **34** (2 kabul, 29 geçici kabul, 3 taslak) |
-| ADR | **120** (120 kabul) |
+| ADR | **121** (121 kabul) |
 | Normatif spec bölümü | **28** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
@@ -262,3 +262,5 @@ layout/i18n ve gerçek ürün kabulü P21 kapsamında açık kalır.
 [K-245–K-249 temiz pilot kabulü](docs/urunlesme-pilot-k245-k249.md): POSIX
 credential/worker, dar SQL queue, TR–EN yardımcı ve LSP UTF-8 regresyonu.
 Tam ürün ve sürüm kapıları raporda açık sınırlarıyla izlenir.
+
+K-265 [exact kaynak dış RC kanıtı](docs/rc-kaniti.md) release kapısındaki tarihçe self-reference sınırını açık dış paketle ele alan kısa doğruluk dilimidir; gerçek final kaynak ASAN/Miri/soak kampanyası yerine geçmez.

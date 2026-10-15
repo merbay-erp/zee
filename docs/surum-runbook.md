@@ -3,12 +3,15 @@
 K-169/ADR-071'in bağlayıcı sürüm günü sırası. Her adım makine kapısıdır;
 atlanmaz.
 
-1. **Temiz ağaç ve kapılar.** `bash scripts/guvenlik-kapisi.sh --surum-adayi`
-   (exact HEAD için RC fuzz kanıtı, clippy, tam test, koruklar). Ayrıca
-   `tani_kalitesi`, `spec_drift`, `islev_egilimi` ve faz matrisi yeşil.
-2. **Uyumluluk kaydı.** `docs/deprecation-kayitlari-v1.tsv` ve
-   `dil-yuzeyi-v1.tsv` bu sürümde giren/kaldırılan yüzeyi taşır; sürüm notu
-   `docs/surumler.md` içinde “Yolda” bölümünden sürüm başlığına taşınır.
+1. **Uyumluluk ve sürüm kaydını önce hazırla.** `docs/deprecation-kayitlari-v1.tsv`
+   ve `dil-yuzeyi-v1.tsv` bu sürümde giren/kaldırılan yüzeyi taşır; sürüm notu
+   `docs/surumler.md` içinde “Yolda” bölümünden sürüm başlığına taşınır. Bu
+   değişiklikler kaynak S dondurulmadan önce commitlenir.
+2. **Temiz exact kaynak ve kapılar.** `bash scripts/guvenlik-kapisi.sh --surum-adayi`
+   (exact HEAD için RC fuzz kanıtı, clippy, tam test, koruklar; explicit dış paket
+   seçimi aşağıdaki K-265 akışındadır). Ayrıca `tani_kalitesi`, `spec_drift`,
+   `islev_egilimi` ve faz matrisi yeşil. Başarılı gate ile etiket arasında S
+   değişmez; yeni commit yeni kaynak/gate kabulü ister.
 3. **Etiket.** `git tag vX.Y.Z` → `surum-adayi`, `kurulum-tatbikati` ve
    `soak` workflow'ları tetiklenir. Etiket sonrası Cargo sürümü
    `X.(Y+1).0-dev` serisine çekilir (`uyumluluk_testi` bunu ister).
@@ -190,3 +193,7 @@ gerçek ikililerin exact SHA/`dirty: false` kimliği ayrıca zorunludur.
 Build logu/native raporu kaynak klonuna yazılmaz. Eş hash'e rağmen kirli
 kimlik veya değiştirilmiş klon sürüm kümesi yaratmadan reddedilir;
 `--kirli-kabul` yalnız caller'ın HEAD'ini üretir. [ADR-102](../adr/102-surum-klonu-ve-build-kimligi.md).
+
+## K-265 explicit dış RC kanıtı
+
+[Exact kaynak dış kanıt rehberi](rc-kaniti.md) ve [ADR-124](../adr/124-exact-kaynak-dis-rc-kaniti.md) temiz S’ye bağlı dış paketi tanımlar. Explicit geçersiz paket fallback yapmaz; etiket/build S’de, append-only arşiv commit’i E’de S kimliğini korur. Default tracked yolun self-reference sınırı açıkça korunur. Gerçek uzun kampanya henüz bu kısa entegrasyon testlerinden tamamlanmış sayılamaz.
