@@ -67,13 +67,18 @@ class Campaign:
         self.fixture=self.fixture_owned(fixture_module,native=True,ready=False);fixture_module['gate'](self.fixture.gate,True);old=self.fixture.gate.read_bytes();old_ns=self.fixture.gate.stat().st_mtime_ns
         for n in ('program.dil','proje.dil'):
             (self.out/('stale-'+n)).write_bytes((self.fixture.project/n).read_bytes());self.proof['generated_fixture_sha256']['stale-'+n]=P.snapshot(self.fixture.project/n)
-        self.events.clear();self.owner=Base(self.W.arguments(self.fixture.args[4:]),Log());reason=None
+        class Stale(Base):
+            def __init__(self,a,log):super().__init__(a,log);self.healthy_workers_seen=0
+            def live(self,workers):
+                super().live(workers)
+                if len(workers)==2 and all(self.probe(port)for port in self.a.worker_port):self.healthy_workers_seen=2
+        self.events.clear();self.owner=Stale(self.W.arguments(self.fixture.args[4:]),Log());reason=None
         try:self.owner.run()
         except self.W.Reject as e:reason=e.code
         finally:self.owner.cleanup()
-        P.need(reason=='startup'and not any(e.get('ready')is True for e in self.events)and any(e.get('healthy_workers')==2 for e in self.events))
+        P.need(reason=='startup'and not any(e.get('ready')is True for e in self.events)and self.owner.healthy_workers_seen==2)
         P.need(self.fixture.gate.read_bytes()==old and self.fixture.gate.stat().st_mtime_ns==old_ns and not self.owner.children and self.H.held_status(self.foreign)is None)
-        self.cases.append({'name':'actual-two-native-liveness200-stale-true-gate-refused','passed':True,'healthy_workers':2,'ready_true_events':0,'old_gate_unchanged':True,'owned_reaped':True})
+        self.cases.append({'name':'actual-two-native-liveness200-stale-true-gate-refused','passed':True,'healthy_workers':2,'healthy_observation':'build-validated-direct-probe','ready_true_events':0,'old_gate_unchanged':True,'owned_reaped':True})
         P.need(all(P.snapshot(self.fixture.project/n)==self.proof['generated_fixture_sha256']['stale-'+n]for n in ('program.dil','proje.dil')))
         self.fixture.close();self.fixture=None;self.owner=None
         self.H.clean_exact(self.repo,self.a.sha);P.need(P.snapshot(self.binary)==self.a.binary_sha256 and all(P.snapshot(self.repo/n,262144)==v for n,v in self.sources.items()));self.proof.update(status='cases-passed-pending-cleanup',source_pins_end_equal=True,binary_end_equal=True)

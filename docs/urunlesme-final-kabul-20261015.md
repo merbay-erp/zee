@@ -123,3 +123,16 @@ bağlandı. Gerçek owned host ile nonempty native korpus testi dahil dokuz
 semantic regresyon testi geçti; compiler/core-freeze beyanları kaydedildi.
 GB-110 temiz exact kabul tamamlanana kadar açıktır; RC/Miri/soak, native
 ve yeni JetBrains kaynağı kabulünün yerine bu sonuçlar kullanılamaz.
+
+## K-295/K-296 — S2 kabulünün ardından yeni kaynak gereği
+
+S2 `e35b617095e6a9d00915794d6adee90842238a5f` final kabul değildir.
+macOS iki-klon paketi, canonical stdio probe'ları, TR/EN, signed-PDF9, SQL9,
+starter14, kapsam, bridge4/19HTTP+negatif6 ve mixed-revision9 kanıtı korunur.
+Linux dispatcher0/4 ve fault stale-gate oracle başarısızlığı K-295/K-296 olarak
+ayrıldı. İlk worker-loss geçti; her iki başarısız native koşunun cleanup'ı temizdir.
+S2 ASan/soak kampanyaları sahipli cancel-file ile erken kapatılmış, outer
+handle'lar reaped olarak kaydedilmiştir; 30 dakika/1800 saniye kabulü sayılmaz.
+İki düzeltme uygulanmış adaydır; yeni temiz kaynakta ortak/native/RC/Miri/soak
+ve JetBrains kabulü beklenir. Compiler/grammar/tanı/yüzey/API/katman/bağımlılık
+değişmedi; C1/P33 araç retleri ve insan/platform/ürün kabulü açık kalır.
