@@ -2,7 +2,7 @@
 
 - **Durum:** kabul, K-263 dar POSIX host correctness adayı
 - **Tarih:** 15 Ekim 2026
-- **İlgili kayıt:** K-263/P13, GB-077; root source commit/finalgate bekleniyor
+- **İlgili kayıt:** K-263/P13, GB-077; source ac077e31 tamamlandı; birleşik finalclean gate bekleniyor
 
 ## Gerçek arıza
 

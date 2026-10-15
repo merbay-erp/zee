@@ -210,3 +210,25 @@ yazılır.
 ## Native Unix SIGTERM yaşam döngüsü — K-253
 
 TANIMLI: Native Unix CLI web adaptörü SIGTERM alındığında yeni handler kabulünü durdurur; önceden kabul edilmiş tek isteğin okuma, handler, transaction ve yanıtı mevcut bütçelerle tamamlanır. Idle listener en çok 100 ms poll aralığında kapanış isteğini görür; incoming bağlantı poll beklemesini hemen uyandırır. Bu davranış dış stop-grace bütçesiyle sınırlıdır; KILL, kesilemeyen IO, bütün backlog drain, Windows signal drain ve socket devri garantisi yoktur. Önceki süreç SIGTERM disposition sahibi guard bırakıldığında geri yüklenir.
+
+## Native metadata profili — K-257
+
+TANIMLI: --web-metrik-fd opt-in native proxy profili zee-native-metrics-1 şemasında request22 ve pool8 doyumlu sayısal metadata dizileri üretir. Accepted/completed ve kabulden akış kapanışına duration toplamı, nihai attempted server status, final write sonucu ve gerçek rate kararı ayrı sayılır; client receipt veya audit garantisi yoktur. Varsayılan kapalı yolda süre ölçümü ve metrik IO yapılmaz.
+
+ZORUNLU: Metrik FD kaynak/config tanısından önce stdio dev/inode alias, FIFO, O_WRONLY, O_NONBLOCK, current uid/root, SIGPIPE_IGN ve PIPE_BUF açısından doğrulanır; ownership constructor tekrar denetler. Başarıda tek File sahibi FD_CLOEXEC koyar; yanlış descriptor üzerinden özel kaynak, argüman veya gövde yazılmaz.
+
+ZORUNLU: Her metrik frame en çok512byte ve actual PIPE_BUF içindedir; tek nonblocking write retry yapmaz. EAGAIN/EINTR drop, partial/zero/EPIPE ve diğer hata kanal disable üretir; hizmet isteğini durdurmaz. Host iki worker ve kind başına sınırlı snapshot taşır, bozuk stream payload olarak yayımlanmaz.
+
+YASAK: PostgreSQL HandleEvent metrik callback içinde IO veya pool.state() çağrısı yapılmaz. Actual connections/idle/busy ve waiter snapshot checkout ve query/commit/rollback dönüş sınırlarında callback dışında alınır; sürekli taze gauge değildir. Checkin süre toplamı henüz dönmeyen lease süresini kapsamaz.
+
+TANIMLI: Credential launcher --native-metrics-fd ile yalnız tek designated write-only metrik FIFO capability aktarır. Native --web-metrik-fd kaynak öncesi aynı descriptor rolünü belirtir; launcher credential/source okumadan doğrular ve spawn sonrası kendi kopyasını kapatır. Ambient FD ve varsayılan noinherit korunur; bu profil Windows/systemd veya tam P13/P25 ürün kabulü değildir.
+
+## Sahipli Unix listener ve nesil hazırlığı — K-259
+
+TANIMLI: Unix native --web-listener-fd, --web-ready-fd, --web-activate-fd ve --web-generation birlikte sahipli inherited listener profilidir. Listener exact loopback IPv4 TCP LISTEN port ve nonblocking rol taşır; native yalnız kendi duplicate sahibidir, fallback bind yapmaz. Kaynak/config tanısından önce quiet preflight stdio ve roller arası aliası reddeder; Darwin pipe peer karşılaştırması yalnız kendi PID descriptor metadata sınırındadır.
+
+ZORUNLU: Ready kaydı zee-native-listener-ready-1 şemasında exact native PID, fresh generation, build kimliği ve port taşır. Host ayrı generation-owned application receipt doğrular; exact ACTIVATE generation ve EOF gelmeden accept başlamaz. Activation okuması nonblocking ve süre sınırlıdır; EOF veya hata admission açmaz. Host leader rezervasyonunu süreç grubu cleanup bitene dek tutar.
+
+TANIMLI: Inherited listener profilinde successful accept admission noktasıdır; accept sonrasındaki SIGTERM yarışı kabul edilen isteğin mevcut bütçelerle tamamlanmasını engellemez. Varsayılan direct bind profili K-253 kapanış sınırını korur. Ortak canonical atomic JSON quota/session/revoke durumu overlap ve restart boyunca kullanılır; süreç belleği kota deposu bu profilde reddedilir.
+
+TANIMLI: Inherited listener ile optional native metrik capability aynı kaynak öncesi çağrıda kompoze edilir. Metrik readerının önceden kapanması hizmeti durdurmaz; listener/ready/activate kontrol rolleri canlı peer ve exact rol ister. Mevcut credential launcher listener kontrol descriptorlarını taşımaz. Pilot aynı frozen uygulama revisionıyla sınırlıdır; genel deployment atomicity ve ürün adoptionı AÇIK kalır.

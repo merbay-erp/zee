@@ -176,3 +176,23 @@ disposition ve listener poll yaşam döngüsünü taşır. `dil_cli -> web_kapan
 exact kenarı bilinçli eklenir; helper yalnız std/libc kullanır, temel veya
 semantic modelden adapter'a ters geçiş ve yeni SCC yoktur. Domain handler,
 transaction ve desteklenen v1 facade sahipliği değişmez (ADR-113).
+
+## K-257–K-260 production sahipliği incelemesi
+
+Yeni private CLI `web_metrikleri` ve `web_listener` adaptör sahipleri eklendi.
+Exact ileri kenarlar `dil_cli -> web_metrikleri`, `dil_cli -> web_listener` ve
+`web_listener -> surum` olarak fixture'da bilinçli tanımlıdır. Metrik sahibi
+std/libc ve sınırlı numeric state taşır; PostgreSQL havuzunun callback/observer
+arayüzü sahiplik sınırıdır, `postgresql` temel/altyapıdan CLI adaptöre import
+etmez. Snapshot/state() callback dışında havuz sahibinde örneklenir; CLI sınırlı
+veri snapshotını tüketir. IO
+havuz callback'ine girmez. Yeni `postgresql/havuz/metrik.rs` mevcut PostgreSQL
+sahibinin alt dosyasıdır. `web_kapanis` K253 sahibinde kalır.
+
+K258/K260 Python host/credential kompozisyonu Rust graph'a hayali kenar eklemez;
+K246 exact Popen/group/WNOWAIT ve tek designated descriptor ownership korunur.
+Desteklenen `dil::api::v1` export/grammar aynı kalır. Katman/SCC fixture'ı yalnız
+snapshot susturmak için yenilenmez; kaynak graph, ters kenar ve public allowlist
+aynı root dalgasında kapılardan geçer. Clean final gate olmadan yeni source
+SCC/API kabulü tamamlanmış sayılmaz. K262 aynı base'deki correctness dokümanı
+bu append ile birleştirilir; eski full-file içerikle overwrite yapılmaz.

@@ -133,3 +133,23 @@ o çocuk alt süreçlerine aktarabilir. Python/env belleği için garantili
 zeroization yoktur. Bu nedenle P25 bütünü veya file-native compiler secret
 API'si tamamlanmış gösterilemez; bu dilim explicit host bridge ve restart
 sözleşmesidir. [Systemd güven sınırı](https://systemd.io/CREDENTIALS/).
+
+
+## K-260 designated native metrics capability
+
+K-260/ADR119/GB081 tamamlayıcı dış stage adayı, K257 pipe metrikleriyle credential kompozisyonunu sağlar. Supervisor `--runtime-metrics` ve credential seçenekleri beraber verildiğinde kendi oluşturduğu pipe write FD'sini launcher'a tek `--native-metrics-fd N` capability olarak, native komuta kaynak öncesinde eş `--web-metrik-fd N` olarak verir. Generic FD listesi veya ambient inheritance açılmaz. Sadece FD3..255 FIFO/O_WRONLY/O_NONBLOCK, uidroot/current, SIGPIPEignored, PIPE_BUF>=512 ve stdio inode alias olmayan descriptor kabul edilir; doğrulama credential veya source okunmadan yapılır. Native bağımsız preflight/ownership validation yeniden yürür. Başarılı spawn yalnız pass_fds=(N,) kullanır, launcher kopyasını hemen kapatır; varsayılan pass_fds=() korunur.
+
+Bridge yanlış yapılandırılırsa bounded launcher metadata'sına sabit reason native_metrics_capability eklenir; argv/FD/path/credential tanı ayrıntısı çıkmaz. Default schema source/exit metadata aynıdır. Descriptor geçerli olup credential doğrulaması sonra başarısızsa launcher sahipli kopyayı kapatır. Linux/macOS POSIX dışında mevcut unsupported platform sınırı sürer.
+
+Yeni7 capability testi actual subprocess inheritance/ambient noinherit ve role/mismatch/alias/SIGPIPE negatiflerini; mevcut14 native/SMTP kampanyası eski credential sözleşmesini; gerçek iki native crypto+credential worker ve HUP restart/rollup/TERM cleanup kampanyası native positive kompozisyonu doğrular. Secret plaintext/ciphertext metadata'da yoktur. Bu P13/P25 kompozisyon boşluğunu kapatan dar host dilimidir; canlı müşteri DB/SMTP ve staging kabulü değildir. K257 compiler kaynak/SHA/soak kapıları bağımlılık olarak ayrıca sürer.
+
+## K-260 tek native metric FD capability
+
+[ADR-119](../adr/119-credential-native-metrics-capability.md) ile launcher
+`--native-metrics-fd` yalnız designated FIFO/O_WRONLY/O_NONBLOCK metadata kanalını
+kaynak/credential okumasından önce doğrular. Native `--web-metrik-fd` kaynak
+öncesi exact eşleşir; constructor tekrar denetler.7 model/subprocess+2 gerçek
+native decrypt/HUP/TERM/grup cleanup adayı geçti; plaintext/ciphertext loga girmez.
+Default noinherit korunur; arbitrary descriptor/listener/ready/activate ve
+file-native secret inheritance açılmaz. Tam P25/live/systemd/Windows/finalclean
+kapıları açıktır. Native counters için [metrik rehberi](native-metrics.md) geçerlidir.

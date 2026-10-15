@@ -1,0 +1,22 @@
+{
+  "compiler/src/eposta.rs::fn gonder_ic(": {
+    "sha256": "2ecbc1f9822ab9119be9373350b734bf2f29646c8b791bd7f5e9b151474ff69f",
+    "current_file_sha256": "44896dddf28d8e6b49d119ff3f0a12670295d1c9f21600d22fc249fc7d83bf5b"
+  },
+  "compiler/src/main.rs::fn govde()": {
+    "sha256": "21e5ab773aa8490f6b035eb12db5a737b195f5c3c11b1b1fd7f1a8b568d27638",
+    "current_file_sha256": "12228594efe698aeedeb8d757697bb71e37dfa824fbbd771e48ad0fc3fad2330"
+  },
+  "compiler/src/main.rs::fn istek_al(": {
+    "sha256": "a71faad681792662a80954bb023b38adf270d9d8b1fafab8e7217d4147293062",
+    "current_file_sha256": "12228594efe698aeedeb8d757697bb71e37dfa824fbbd771e48ad0fc3fad2330"
+  },
+  "compiler/src/main.rs::fn web_modunu_ayikla_temel(": {
+    "sha256": "d7682773e0b58be3664d38173cb82f29c9359dc4780b4e3283c5bc76e2fe3eef",
+    "current_file_sha256": "12228594efe698aeedeb8d757697bb71e37dfa824fbbd771e48ad0fc3fad2330"
+  },
+  "compiler/src/web_listener.rs::pub fn extract(": {
+    "sha256": "9f43cbd8d31c67350bb900153597fae8bb846d14f254a1795d4af8779318182b",
+    "current_file_sha256": "90ad46b31b7843d6ea57dddf0de25a764af56c81bf09719e1feba856c7d9dbcb"
+  }
+}

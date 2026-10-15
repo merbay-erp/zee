@@ -25,6 +25,9 @@ bicim	proje.kilit	aktif	0.8.0-dev	compiler/src/paket.rs	kilit_sürümü 3
 bicim	yayin-zarfi	aktif	0.8.0-dev	compiler/src/artefakt_dogrulama.rs	const IMZA_ALANI: &[u8] = b"zee-yayin-v1\0";
 bicim	zee-build-v1	aktif	0.8.0-dev	compiler/src/surum.rs	zee-build-v1
 bicim	zee-credential-baslat-1	aktif	0.8.0-dev	scripts/credential-baslat.py	zee-credential-baslat-1
+bicim	zee-native-listener-ready-1	aktif	0.8.0-dev	compiler/src/web_listener.rs	zee-native-listener-ready-1
+bicim	zee-native-metrics-1	aktif	0.8.0-dev	compiler/src/web_metrikleri.rs	"zee-native-metrics-1"
+bicim	zee-sql-intent-dispatcher-1	aktif	0.8.0-dev	scripts/job-dispatcher.py	zee-sql-intent-dispatcher-1
 bicim	zee-worker-readiness-1	aktif	0.8.0-dev	scripts/worker-supervisor.py	zee-worker-readiness-1
 bicim	zee-worker-supervisor-1	aktif	0.8.0-dev	scripts/worker-supervisor.py	zee-worker-supervisor-1
 bicim	zep	aktif	0.8.0-dev	compiler/src/artefakt_dogrulama.rs	const PAKET_SIHRI: &[u8; 8] = b"ZEEZEP\0\x01";
@@ -185,6 +188,7 @@ profil	cli-ayar-semasi	aktif	0.8.0-dev	compiler/src/main.rs	"--ayar-semasi"
 profil	cli-bicim-denetle	aktif	0.8.0-dev	compiler/src/main.rs	"--denetle"
 profil	cli-goc-durum	aktif	0.8.0-dev	compiler/src/main.rs	"--durum"
 profil	cli-goc-kuru	aktif	0.8.0-dev	compiler/src/main.rs	"--kuru"
+profil	credential-native-metrics-fd	aktif	0.8.0-dev	scripts/credential-baslat.py	--native-metrics-fd
 profil	eszamanlilik	aktif	0.8.0-dev	conformance/eszamanlilik/zee-esz-1.json	"kimlik": "zee-esz-1"
 profil	http-gizli-ortam-v1	aktif	0.8.0-dev	compiler/src/proje.rs	"http_gizli_değişkenleri"
 profil	http-istek-v1	aktif	0.8.0-dev	compiler/src/ag_istemcisi/istek.rs	pub fn istek(
@@ -192,10 +196,16 @@ profil	http-json-v1	aktif	0.8.0-dev	compiler/src/intrinsic.rs	"ag.http_json"
 profil	io	aktif	0.8.0-dev	compiler/src/yorumlayici/io_profili.rs	pub const DETERMINISTIK_IO_PROFILI: &str = "zee-io-1";
 profil	morfoloji	aktif	0.7.0	compiler/src/morfoloji.rs	pub const MORFOLOJI_PROFILI: &str = "zee-tr-1";
 profil	runtime-ayar-v1	aktif	0.8.0-dev	compiler/src/cli/ayar.rs	pub(super) const SEMA: &str = "zee-ayar-1";
+profil	runtime-metrics	aktif	0.8.0-dev	scripts/worker-supervisor.py	--runtime-metrics
+profil	web-activate-fd	aktif	0.8.0-dev	compiler/src/web_listener.rs	"--web-activate-fd"
+profil	web-generation	aktif	0.8.0-dev	compiler/src/web_listener.rs	"--web-generation"
+profil	web-listener-fd	aktif	0.8.0-dev	compiler/src/web_listener.rs	"--web-listener-fd"
+profil	web-metrik-fd	aktif	0.8.0-dev	compiler/src/main.rs	"--web-metrik-fd"
 profil	web-oran-deposu.bellek	aktif	0.8.0-dev	compiler/src/main.rs	"--web-oran-deposu"
 profil	web-oran-doluluk.en-eski	aktif	0.8.0-dev	compiler/src/main.rs	"--web-oran-doluluk"
 profil	web-oran-doluluk.reddet	aktif	0.8.0-dev	compiler/src/main.rs	"--web-oran-doluluk"
 profil	web-oran-kapasitesi	aktif	0.8.0-dev	compiler/src/main.rs	"--web-oran-kapasitesi"
 profil	web-oran-siniri	aktif	0.8.0-dev	compiler/src/main.rs	"--web-oran-siniri"
+profil	web-ready-fd	aktif	0.8.0-dev	compiler/src/web_listener.rs	"--web-ready-fd"
 profil	zee-smtp-mime-1	aktif	0.8.0-dev	compiler/src/eposta/mime.rs	pub const MIME_PROFILI: &str = "zee-smtp-mime-1";
 tani	kimlik-semasi	aktif	0.8.0-dev	compiler/tests/fixtures/tani-kimlikleri-v1.tsv	# Zee tanı kimliği fixture'ı — şema 1

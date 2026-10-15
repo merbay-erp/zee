@@ -25,7 +25,10 @@ mod dil_ayar;
 mod dil_registry;
 #[cfg(unix)]
 mod web_kapanis;
+mod web_listener;
+mod web_metrikleri;
 mod web_yukleme;
+use web_metrikleri::WebTasima;
 
 const HTTP_ISTEK_OKUMA_SURESI: std::time::Duration = std::time::Duration::from_secs(
     dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
@@ -42,6 +45,7 @@ enum WebModu {
         origin: AgHedefi,
         worker_kapi: Option<u16>,
         oran_ayari: Option<dil::web_guvenligi::BellekOranAyari>,
+        listener_profile: Option<web_listener::Profile>,
     },
 }
 
@@ -110,6 +114,24 @@ fn bellek_oran_ayarini_ayikla(
 }
 
 fn web_modunu_ayikla(argumanlar: &mut Vec<String>) -> Result<WebModu, String> {
+    let profile = web_listener::Profile::extract(argumanlar)?;
+    let mut mode = web_modunu_ayikla_temel(argumanlar)?;
+    if let Some(profile) = profile {
+        match &mut mode {
+            WebModu::GuvenliProxy {
+                worker_kapi: Some(_),
+                oran_ayari: None,
+                listener_profile,
+                ..
+            } => *listener_profile = Some(profile),
+            _ => {
+                return Err("native listener needs explicit proxy port and persistent quota".into())
+            }
+        }
+    }
+    Ok(mode)
+}
+fn web_modunu_ayikla_temel(argumanlar: &mut Vec<String>) -> Result<WebModu, String> {
     let oran_yerleri = argumanlar
         .iter()
         .enumerate()
@@ -185,6 +207,7 @@ fn web_modunu_ayikla(argumanlar: &mut Vec<String>) -> Result<WebModu, String> {
             origin,
             worker_kapi,
             oran_ayari,
+            listener_profile: None,
         });
     }
     if oran_bellekte {
@@ -226,10 +249,72 @@ fn main() -> ExitCode {
     }
 }
 
+fn metrik_fd_ayikla(args: &mut Vec<String>) -> Result<Option<i32>, String> {
+    // Program arguments after the source belong to the application.
+    let mut positions = Vec::new();
+    let mut i = 1;
+    while let Some(arg) = args.get(i) {
+        match arg.as_str() {
+            "--web-metrik-fd" => {
+                positions.push(i);
+                i += 2;
+            }
+            "--ayar"
+            | "--profil"
+            | "--web-listener-fd"
+            | "--web-ready-fd"
+            | "--web-activate-fd"
+            | "--web-generation"
+            | "--web-proxy"
+            | "--güvenli-web-proxy"
+            | "--web-worker-port"
+            | "--web-oran-deposu"
+            | "--web-oran-siniri"
+            | "--web-oran-kapasitesi"
+            | "--web-oran-doluluk" => i += 2,
+            arg if arg.starts_with("--") => i += 1,
+            _ => break,
+        }
+    }
+    if positions.is_empty() {
+        return Ok(None);
+    }
+    if positions.len() != 1 {
+        return Err("--web-metrik-fd must be specified once".into());
+    }
+    let index = positions[0];
+    let fd = args
+        .get(index + 1)
+        .and_then(|v| v.parse::<i32>().ok())
+        .filter(|fd| (3..=255).contains(fd))
+        .ok_or_else(|| "--web-metrik-fd requires a host-owned descriptor in 3..255".to_string())?;
+    args.drain(index..index + 2);
+    Ok(Some(fd))
+}
+
 fn govde() -> ExitCode {
     let mut argumanlar: Vec<String> = std::env::args().skip(1).collect();
+    if web_listener::quiet_preflight(&argumanlar).is_err() {
+        return ExitCode::from(2);
+    }
+    let metrik_fd = match metrik_fd_ayikla(&mut argumanlar) {
+        Ok(fd) => fd,
+        Err(e) => {
+            eprintln!("{e}");
+            return ExitCode::from(2);
+        }
+    };
+    if let Some(fd) = metrik_fd {
+        if let Err(hata) = web_metrikleri::Sink::preflight(fd) {
+            eprintln!("{hata}");
+            return ExitCode::from(2);
+        }
+    }
     if let Err(hata) = dil_ayar::uygula(&mut argumanlar) {
         eprintln!("{hata}");
+        return ExitCode::from(2);
+    }
+    if web_listener::quiet_preflight(&argumanlar).is_err() {
         return ExitCode::from(2);
     }
     // Çocuk modu (K-047): --güvenli bayrağı komuttan bağımsız yakalanır.
@@ -262,6 +347,26 @@ fn govde() -> ExitCode {
         return ExitCode::from(2);
     }
 
+    let metrik = if let Some(fd) = metrik_fd {
+        if !matches!(web_modu, WebModu::GuvenliProxy { .. })
+            || !matches!(
+                argumanlar.first().map(String::as_str),
+                Some("çalıştır" | "calistir")
+            )
+        {
+            eprintln!("--web-metrik-fd requires native web-proxy execution");
+            return ExitCode::from(2);
+        }
+        match web_metrikleri::Sink::inherited(fd) {
+            Ok(sink) => Some(sink),
+            Err(e) => {
+                eprintln!("{e}");
+                return ExitCode::from(2);
+            }
+        }
+    } else {
+        None
+    };
     match argumanlar.first().map(|s| s.as_str()) {
         Some("çalıştır") | Some("calistir") => {
             if guvenli {
@@ -274,8 +379,16 @@ fn govde() -> ExitCode {
                         origin,
                         worker_kapi,
                         oran_ayari,
+                        listener_profile,
                     } => dosya_ile(&argumanlar, |girdi| {
-                        calistir_guvenli_web_komutu(girdi, origin, worker_kapi, oran_ayari)
+                        calistir_guvenli_web_komutu(
+                            girdi,
+                            origin,
+                            worker_kapi,
+                            oran_ayari,
+                            metrik.clone(),
+                            listener_profile,
+                        )
                     }),
                 }
             }
@@ -1615,8 +1728,15 @@ struct GercekIo {
     web_modu: WebModu,
     dinleyici: Option<std::net::TcpListener>,
     #[cfg(unix)]
+    native_control: Option<web_listener::Control>,
+    #[cfg(unix)]
+    native_taken: bool,
+    #[cfg(all(test, unix))]
+    test_accept_term: bool,
+    #[cfg(unix)]
     web_kapanis: Option<web_kapanis::WebKapanis>,
-    bekleyen_akis: Option<std::net::TcpStream>,
+    bekleyen_akis: Option<web_metrikleri::Akis>,
+    metrik: Option<std::sync::Arc<web_metrikleri::Sink>>,
     bekleyen_baglanti_izni: Option<dil::kaynak_sinirlari::BaglantiIzni>,
     bekleyen_head: bool,
     /// İç içe eylemler için dosya savepoint'leri: yol → çağrı başındaki içerik.
@@ -1732,8 +1852,15 @@ impl GercekIo {
             web_modu,
             dinleyici: None,
             #[cfg(unix)]
+            native_control: None,
+            #[cfg(unix)]
+            native_taken: false,
+            #[cfg(all(test, unix))]
+            test_accept_term: false,
+            #[cfg(unix)]
             web_kapanis: None,
             bekleyen_akis: None,
+            metrik: None,
             bekleyen_baglanti_izni: None,
             bekleyen_head: false,
             eylem_yedekleri: Vec::new(),
@@ -1762,10 +1889,15 @@ impl GercekIo {
                     veri: Vec::new(),
                 }
             })?;
-            self.postgresql = Some(dil::postgresql::PostgresqlOturumu::baglan(
-                bildirim,
-                self.eylem_yedekleri.len(),
-            )?);
+            self.postgresql = Some(if let Some(sink) = &self.metrik {
+                dil::postgresql::PostgresqlOturumu::baglan_gozlemli(
+                    bildirim,
+                    self.eylem_yedekleri.len(),
+                    sink.pool_observer(),
+                )?
+            } else {
+                dil::postgresql::PostgresqlOturumu::baglan(bildirim, self.eylem_yedekleri.len())?
+            });
         }
         self.postgresql
             .as_mut()
@@ -1910,6 +2042,11 @@ impl GercekIo {
             .ok_or_else(|| "yanıt bekleyen web bağlantısı yok".to_string())?;
         let _baglanti_izni = self.bekleyen_baglanti_izni.take();
         let head = std::mem::take(&mut self.bekleyen_head);
+        let status = match &taslak {
+            WebYanitTaslagi::Govde(_) => 200,
+            WebYanitTaslagi::Durum(status, _) => *status,
+            WebYanitTaslagi::Yonlendirme(_) => 303,
+        };
         let (baslik, govde) = match taslak {
             WebYanitTaslagi::Govde(govde) => {
                 let tur = if govde.trim_start().starts_with('<') {
@@ -1966,15 +2103,16 @@ impl GercekIo {
         if !head {
             yanit.extend_from_slice(govde.as_bytes());
         }
-        akis.write_all(&yanit)
-            .map_err(|hata| format!("HTTP yanıtı yazılamadı: {}", hata))
+        let result = akis.write_all(&yanit);
+        akis.metrik_yanit(status, result.is_ok());
+        result.map_err(|hata| format!("HTTP yanıtı yazılamadı: {}", hata))
     }
     /// İstemci kimliği, oturum ve uç nokta oran sınırı kapısı. Başarıda
     /// `çerez ...` satırını (boşsa boş metin) döndürür; hata yanıtı
     /// gönderildiyse web transaction taslağını geri alıp `None` döner.
     fn web_istegini_baslat(
         &mut self,
-        akis: &mut std::net::TcpStream,
+        akis: &mut impl WebTasima,
         baslik: &HttpIstekBasligi<'_>,
         es: std::net::SocketAddr,
         https: bool,
@@ -2042,6 +2180,9 @@ impl GercekIo {
         ) {
             Ok(karar) if karar.izinli => {}
             Ok(_) => {
+                if let Some(sink) = &self.metrik {
+                    sink.rate_reject();
+                }
                 ham_http_hatasi_gonder(akis, 429, "uç nokta oran sınırı aşıldı", head, https);
                 self.web_guvenligi.istegi_geri_al();
                 self.web_istek_yedegi = None;
@@ -2216,27 +2357,25 @@ fn guvenli_proxy_istegini_denetle(
 }
 
 fn ham_http_hatasi_gonder(
-    akis: &mut std::net::TcpStream,
+    akis: &mut impl WebTasima,
     durum: u16,
     mesaj: &str,
     head: bool,
     https: bool,
 ) {
-    use std::io::Write;
     let aciklama = http_durum_aciklamasi(durum);
     let govde = mesaj.as_bytes();
     let basliklar = guvenlik_basliklari(https);
-    let _ = write!(
+    let header_ok = write!(
         akis,
         "HTTP/1.1 {} {}\r\nContent-Type: text/plain; charset=utf-8\r\nContent-Length: {}\r\n{}Connection: close\r\n\r\n",
         durum,
         aciklama,
         govde.len(),
         basliklar
-    );
-    if !head {
-        let _ = akis.write_all(govde);
-    }
+    ).is_ok();
+    let body_ok = head || akis.write_all(govde).is_ok();
+    akis.metrik_yanit(durum, header_ok && body_ok);
 }
 
 fn http_durum_aciklamasi(durum: u16) -> &'static str {
@@ -2259,11 +2398,10 @@ fn http_durum_aciklamasi(durum: u16) -> &'static str {
 }
 
 fn son_tarihli_soket_oku(
-    akis: &mut std::net::TcpStream,
+    akis: &mut impl WebTasima,
     tampon: &mut [u8],
     son_tarih: std::time::Instant,
 ) -> std::io::Result<usize> {
-    use std::io::Read;
     loop {
         let kalan = son_tarih
             .checked_duration_since(std::time::Instant::now())
@@ -2284,7 +2422,7 @@ fn zaman_asimi_mi(hata: &std::io::Error) -> bool {
     )
 }
 
-fn istek_zaman_asimi_gonder(akis: &mut std::net::TcpStream, https: bool) {
+fn istek_zaman_asimi_gonder(akis: &mut impl WebTasima, https: bool) {
     ham_http_hatasi_gonder(
         akis,
         408,
@@ -2301,7 +2439,7 @@ fn istek_zaman_asimi_gonder(akis: &mut std::net::TcpStream, https: bool) {
 /// Başarıda okunan tamponu ve gövdenin başladığı konumu döndürür; hata yanıtı
 /// gönderildiyse ya da bağlantı sessizce düştüyse `None` döner.
 fn istek_basliklarini_oku(
-    akis: &mut std::net::TcpStream,
+    akis: &mut impl WebTasima,
     son_tarih: std::time::Instant,
     https: bool,
 ) -> Option<(Vec<u8>, usize)> {
@@ -2348,7 +2486,7 @@ fn istek_basliklarini_oku(
 /// Content-Type ve Content-Length zarfını doğrular. Başarıda gövdenin binary
 /// yükleme olup olmadığını ve beklenen byte sayısını döndürür.
 fn govde_zarfini_denetle(
-    akis: &mut std::net::TcpStream,
+    akis: &mut impl WebTasima,
     baslik: &HttpIstekBasligi<'_>,
     ilk_govde_uzunlugu: usize,
     https: bool,
@@ -2403,7 +2541,7 @@ fn govde_zarfini_denetle(
 /// verilir; metin gövdesi exact UTF-8 olarak döner. Hata yanıtı
 /// gönderildiyse `None` döner.
 fn istek_govdesini_oku(
-    akis: &mut std::net::TcpStream,
+    akis: &mut impl WebTasima,
     kok: &std::path::Path,
     baslik: &HttpIstekBasligi<'_>,
     ilk_govde: &[u8],
@@ -2511,7 +2649,14 @@ fn program_argumanlari() -> Vec<String> {
             if (!kaynak_goruldu
                 && matches!(
                     arguman.as_str(),
-                    "--web-oran-deposu"
+                    "--web-listener-fd"
+                        | "--web-ready-fd"
+                        | "--web-activate-fd"
+                        | "--web-generation"
+                        | "--web-metrik-fd"
+                        | "--ayar"
+                        | "--profil"
+                        | "--web-oran-deposu"
                         | "--web-oran-siniri"
                         | "--web-oran-kapasitesi"
                         | "--web-oran-doluluk"
@@ -2746,7 +2891,10 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         sorgu: &str,
         parametreler: &[String],
     ) -> Result<Vec<Vec<(String, String)>>, dil::yorumlayici::VeritabaniHatasi> {
-        self.postgresql_oturumunu_al()?.oku(sorgu, parametreler)
+        let db = self.postgresql_oturumunu_al()?;
+        let result = db.oku(sorgu, parametreler);
+        db.metrik_ozetini_yayinla();
+        result
     }
     fn postgresql_degistir(
         &mut self,
@@ -2768,8 +2916,10 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         self.postgresql_yazma_eylemleri
             .iter_mut()
             .for_each(|kullandi| *kullandi = true);
-        self.postgresql_oturumunu_al()?
-            .degistir(sorgu, parametreler)
+        let db = self.postgresql_oturumunu_al()?;
+        let result = db.degistir(sorgu, parametreler);
+        db.metrik_ozetini_yayinla();
+        result
     }
     fn sunucu_kur(&mut self, kapi: i64) -> Result<(), String> {
         self.politika
@@ -2778,8 +2928,30 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             return Err("web yüzeyi kapalı; prototip için `--deneysel-web`, üretim için `--web-proxy https://host` kullan".into());
         }
         let gercek_kapi = self.web_worker_kapisi().map(i64::from).unwrap_or(kapi);
-        let dinleyici = std::net::TcpListener::bind((WEB_BIND_IP, gercek_kapi as u16))
-            .map_err(|e| e.to_string())?;
+        #[cfg(unix)]
+        let inherited = if let WebModu::GuvenliProxy {
+            listener_profile: Some(profile),
+            ..
+        } = &self.web_modu
+        {
+            if self.native_taken {
+                return Err("native listener already consumed".into());
+            }
+            let (listener, control) = web_listener::install(profile, gercek_kapi as u16)?;
+            self.native_taken = true;
+            self.native_control = Some(control);
+            Some(listener)
+        } else {
+            None
+        };
+        #[cfg(not(unix))]
+        let inherited: Option<std::net::TcpListener> = None;
+        let dinleyici = if let Some(listener) = inherited {
+            listener
+        } else {
+            std::net::TcpListener::bind((WEB_BIND_IP, gercek_kapi as u16))
+                .map_err(|e| e.to_string())?
+        };
         #[cfg(unix)]
         {
             dinleyici.set_nonblocking(true).map_err(|e| e.to_string())?;
@@ -2799,9 +2971,23 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             }
         }
         self.dinleyici = Some(dinleyici);
+        #[cfg(unix)]
+        if let Some(control) = &mut self.native_control {
+            control.announce()?;
+        }
         Ok(())
     }
     fn istek_al(&mut self) -> Option<String> {
+        #[cfg(unix)]
+        if let Some(control) = &mut self.native_control {
+            if control
+                .wait(|| self.web_kapanis.as_ref().is_some_and(|k| k.istendi()))
+                .is_err()
+            {
+                self.dinleyici = None;
+                return None;
+            }
+        }
         loop {
             #[cfg(unix)]
             if self.web_kapanis.as_ref().is_some_and(|k| k.istendi()) {
@@ -2810,7 +2996,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                 self.dinleyici = None;
                 return None;
             }
-            let (mut akis, es) = match self.dinleyici.as_ref()?.accept() {
+            let (akis, es) = match self.dinleyici.as_ref()?.accept() {
                 Ok(accepted) => accepted,
                 #[cfg(unix)]
                 Err(e) if e.kind() == std::io::ErrorKind::WouldBlock => {
@@ -2820,8 +3006,16 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                 Err(e) if e.kind() == std::io::ErrorKind::Interrupted => continue,
                 Err(_) => return None,
             };
+            #[cfg(all(test, unix))]
+            if self.test_accept_term {
+                self.test_accept_term = false;
+                // Test-only forced race: real TERM after successful accept, before postcheck.
+                unsafe {
+                    libc::raise(libc::SIGTERM);
+                }
+            }
             #[cfg(unix)]
-            if self.web_kapanis.as_ref().is_some_and(|k| k.istendi()) {
+            if !self.native_taken && self.web_kapanis.as_ref().is_some_and(|k| k.istendi()) {
                 // A signal racing with nonblocking accept must not admit a new
                 // handler; dropping this stream and listener closes its backlog.
                 self.dinleyici = None;
@@ -2831,6 +3025,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             if akis.set_nonblocking(false).is_err() {
                 continue;
             }
+            let mut akis = web_metrikleri::Akis::new(akis, self.metrik.clone());
             let https = self.guvenli_proxy_origin().is_some();
             if https && !guvenilir_proxy_esi_mi(es) {
                 ham_http_hatasi_gonder(
@@ -2909,7 +3104,9 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         };
         let Some(taslak) = self.bekleyen_web_yaniti.take() else {
             if let Some(postgresql) = self.postgresql.as_mut() {
-                if let Err(hata) = postgresql.istek_baglamini_geri_al() {
+                let sonuc = postgresql.istek_baglamini_geri_al();
+                postgresql.metrik_ozetini_yayinla();
+                if let Err(hata) = sonuc {
                     eprintln!(
                         "PostgreSQL istek transaction'ı geri alınamadı: {}",
                         hata.mesaj
@@ -2938,7 +3135,9 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             }
         };
         if let Some(postgresql) = self.postgresql.as_mut() {
-            if let Err(hata) = postgresql.istek_baglamini_tamamla() {
+            let sonuc = postgresql.istek_baglamini_tamamla();
+            postgresql.metrik_ozetini_yayinla();
+            if let Err(hata) = sonuc {
                 eprintln!(
                     "PostgreSQL istek transaction'ı tamamlanamadı: {}",
                     hata.mesaj
@@ -2971,7 +3170,9 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
     }
     fn istek_islemini_geri_al(&mut self) {
         if let Some(postgresql) = self.postgresql.as_mut() {
-            if let Err(hata) = postgresql.istek_baglamini_geri_al() {
+            let sonuc = postgresql.istek_baglamini_geri_al();
+            postgresql.metrik_ozetini_yayinla();
+            if let Err(hata) = sonuc {
                 eprintln!(
                     "PostgreSQL istek transaction'ı geri alınamadı: {}",
                     hata.mesaj
@@ -3007,7 +3208,9 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
     }
     fn eylem_baslat(&mut self) -> Result<(), dil::yorumlayici::EylemHatasi> {
         if let Some(mut postgresql) = self.postgresql.take() {
-            match postgresql.eylem_baslat() {
+            let sonuc = postgresql.eylem_baslat();
+            postgresql.metrik_ozetini_yayinla();
+            match sonuc {
                 Ok(()) => self.postgresql = Some(postgresql),
                 Err(hata) => return Err(dil::yorumlayici::EylemHatasi::genel(hata.mesaj)),
             }
@@ -3018,7 +3221,9 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
     }
     fn eylem_tamamla(&mut self) -> Result<(), dil::yorumlayici::EylemHatasi> {
         let postgresql_sonucu = if let Some(mut postgresql) = self.postgresql.take() {
-            match postgresql.eylem_tamamla() {
+            let sonuc = postgresql.eylem_tamamla();
+            postgresql.metrik_ozetini_yayinla();
+            match sonuc {
                 Ok(()) => {
                     self.postgresql = Some(postgresql);
                     Ok(())
@@ -3058,7 +3263,9 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
     }
     fn eylem_geri_al(&mut self) -> Result<(), dil::yorumlayici::EylemHatasi> {
         let postgresql_sonucu = if let Some(mut postgresql) = self.postgresql.take() {
-            match postgresql.eylem_geri_al() {
+            let sonuc = postgresql.eylem_geri_al();
+            postgresql.metrik_ozetini_yayinla();
+            match sonuc {
                 Ok(()) => {
                     self.postgresql = Some(postgresql);
                     Ok(())
@@ -3134,6 +3341,9 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                     mesaj: "CSRF oran sınırı deposuna erişilemedi",
                 })?;
             if !karar.izinli {
+                if let Some(sink) = &self.metrik {
+                    sink.rate_reject();
+                }
                 return Err(dil::web_guvenligi::WebReddi {
                     durum: 429,
                     mesaj: "çok fazla CSRF doğrulama isteği",
@@ -3452,6 +3662,9 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         match karar {
             Ok(karar) if karar.izinli => dil::guvenlik::parola_dogrula(parola, ozet),
             Ok(_) => {
+                if let Some(sink) = &self.metrik {
+                    sink.rate_reject();
+                }
                 self.durum_yaniti_gonder(429, "çok fazla giriş denemesi");
                 false
             }
@@ -3482,7 +3695,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
 }
 
 fn calistir_komutu(girdi: &KaynakGirdisi) -> ExitCode {
-    calistir_gercek_io_ile(girdi, WebModu::Kapali, girdi.politikasi())
+    calistir_gercek_io_ile(girdi, WebModu::Kapali, girdi.politikasi(), None)
 }
 
 /// K-082: localhost web prototipi üretim korkuluğunu yalnız açık opt-in'le geçer.
@@ -3490,7 +3703,7 @@ fn calistir_deneysel_web_komutu(girdi: &KaynakGirdisi) -> ExitCode {
     eprintln!(
         "UYARI: deneysel web yüzeyi yalnız localhost eğitim/prototipi içindir; üretim güvenlik sözleşmesi değildir."
     );
-    calistir_gercek_io_ile(girdi, WebModu::Deneysel, girdi.politikasi())
+    calistir_gercek_io_ile(girdi, WebModu::Deneysel, girdi.politikasi(), None)
 }
 
 fn calistir_guvenli_web_komutu(
@@ -3498,6 +3711,8 @@ fn calistir_guvenli_web_komutu(
     origin: AgHedefi,
     worker_kapi: Option<u16>,
     oran_ayari: Option<dil::web_guvenligi::BellekOranAyari>,
+    metrik: Option<std::sync::Arc<web_metrikleri::Sink>>,
+    listener_profile: Option<web_listener::Profile>,
 ) -> ExitCode {
     eprintln!("Zee worker build: {}", dil::surum::json());
     eprintln!(
@@ -3516,8 +3731,10 @@ fn calistir_guvenli_web_komutu(
             origin,
             worker_kapi,
             oran_ayari,
+            listener_profile,
         },
         girdi.politikasi(),
+        metrik,
     )
 }
 
@@ -3527,6 +3744,7 @@ fn calistir_guvenli_komutu(girdi: &KaynakGirdisi) -> ExitCode {
         girdi,
         WebModu::Kapali,
         dil::yetkinlik::YetkinlikPolitikasi::cocuk(),
+        None,
     )
 }
 
@@ -3534,8 +3752,10 @@ fn calistir_gercek_io_ile(
     girdi: &KaynakGirdisi,
     web_modu: WebModu,
     politika: dil::yetkinlik::YetkinlikPolitikasi,
+    metrik: Option<std::sync::Arc<web_metrikleri::Sink>>,
 ) -> ExitCode {
-    let taban = girdi.gercek_io(web_modu, program_argumanlari(), politika.clone());
+    let mut taban = girdi.gercek_io(web_modu, program_argumanlari(), politika.clone());
+    taban.metrik = metrik;
     let mut io = dil::yorumlayici::PolitikaliIo::politikali(taban, politika.clone());
     calistir_io_ile(girdi, &politika, &mut io)
 }
@@ -4026,6 +4246,7 @@ mod web_profili_testleri {
                 origin: AgHedefi::https_origininden("https://panel.example").unwrap(),
                 worker_kapi: None,
                 oran_ayari: None,
+                listener_profile: None,
             },
             Vec::new(),
             dil::yetkinlik::YetkinlikPolitikasi::gelistirici(),
@@ -4110,7 +4331,7 @@ mod web_profili_testleri {
             None,
             None,
         );
-        io.bekleyen_akis = Some(sunucu);
+        io.bekleyen_akis = Some(sunucu.into());
         io.web_istek_yedegi = Some(WebIstekYedegi {
             bekleyen_cerezler: Vec::new(),
             bekleyen_silinen_cerezler: Vec::new(),
@@ -4155,7 +4376,8 @@ mod web_profili_testleri {
             None,
             None,
         );
-        io.bekleyen_akis = Some(sunucu);
+        let observed = web_metrikleri::Sink::counters_only_for_test();
+        io.bekleyen_akis = Some(web_metrikleri::Akis::new(sunucu, Some(observed.clone())));
         io.web_istek_yedegi = Some(WebIstekYedegi {
             bekleyen_cerezler: Vec::new(),
             bekleyen_silinen_cerezler: Vec::new(),
@@ -4164,6 +4386,10 @@ mod web_profili_testleri {
         io.yanit_gonder("başarı");
 
         assert!(io.istek_islemini_tamamla().is_err());
+        let metadata = observed.request_test_state();
+        assert_eq!(metadata[1], 1);
+        assert_eq!(metadata[3], 1);
+        assert_eq!(metadata[6], 1);
         assert_eq!(io.web_guvenligi.oturum_sayisi().unwrap(), 0);
         assert!(io.bekleyen_cerezler.is_empty());
 
@@ -4184,6 +4410,7 @@ mod web_profili_testleri {
                 origin,
                 worker_kapi: None,
                 oran_ayari: None,
+                listener_profile: None,
             },
             Vec::new(),
             dil::yetkinlik::YetkinlikPolitikasi::gelistirici(),
@@ -4198,7 +4425,8 @@ mod web_profili_testleri {
         let adres = dinleyici.local_addr().unwrap();
         let mut istemci = std::net::TcpStream::connect(adres).unwrap();
         let (sunucu, _) = dinleyici.accept().unwrap();
-        io.bekleyen_akis = Some(sunucu);
+        let observed = web_metrikleri::Sink::counters_only_for_test();
+        io.bekleyen_akis = Some(web_metrikleri::Akis::new(sunucu, Some(observed.clone())));
         io.web_istek_yedegi = Some(WebIstekYedegi {
             bekleyen_cerezler: Vec::new(),
             bekleyen_silinen_cerezler: Vec::new(),
@@ -4212,6 +4440,11 @@ mod web_profili_testleri {
         istemci.read_to_string(&mut yanit).unwrap();
         assert!(yanit.starts_with("HTTP/1.1 503 Service Unavailable"));
         assert!(!yanit.contains("commit edilmemeli"));
+        let metadata = observed.request_test_state();
+        assert_eq!(metadata[1], 1);
+        assert_eq!(metadata[19], 1);
+        assert_eq!(metadata[6], 0);
+        assert_eq!(metadata[3], 0);
         std::fs::remove_dir_all(&gecici).unwrap();
     }
 
@@ -4283,7 +4516,7 @@ mod web_profili_testleri {
         let dinleyici = std::net::TcpListener::bind(("127.0.0.1", 0)).unwrap();
         let mut istemci = std::net::TcpStream::connect(dinleyici.local_addr().unwrap()).unwrap();
         let (sunucu, _) = dinleyici.accept().unwrap();
-        io.bekleyen_akis = Some(sunucu);
+        io.bekleyen_akis = Some(sunucu.into());
         io.web_yanit_taslagini_yaz(WebYanitTaslagi::Govde("canlı".into()))
             .unwrap();
         let mut yanit = String::new();
@@ -4291,5 +4524,113 @@ mod web_profili_testleri {
         assert!(yanit.contains(&format!("X-Zee-Build: {}\r\n", dil::surum::json())));
         assert!(yanit.ends_with("\r\n\r\ncanlı"));
         std::fs::remove_dir_all(gecici).unwrap();
+    }
+    #[cfg(unix)]
+    #[test]
+    fn inherited_accept_basarisindan_sonra_term_akis_tamamlanir() {
+        if std::env::var_os("ZEE_K259_RACE_CHILD").is_none() {
+            let result = std::process::Command::new(std::env::current_exe().unwrap())
+                .args(["--exact", "web_profili_testleri::inherited_accept_basarisindan_sonra_term_akis_tamamlanir", "--nocapture"])
+                .env("ZEE_K259_RACE_CHILD", "1").output().unwrap();
+            assert!(
+                result.status.success(),
+                "{}",
+                String::from_utf8_lossy(&result.stderr)
+            );
+            assert!(String::from_utf8_lossy(&result.stdout)
+                .contains("forced-postaccept-TERM: direct=closed inherited=completed200"));
+            return;
+        }
+        use dil::yorumlayici::GirdiCikti;
+        use std::{
+            io::{Read, Write},
+            os::fd::{AsRawFd, FromRawFd},
+        };
+        let root =
+            std::env::temp_dir().join(format!("zee-native-accept-race-{}", std::process::id()));
+        std::fs::create_dir_all(&root).unwrap();
+        for inherited in [false, true] {
+            let listener = std::net::TcpListener::bind(("127.0.0.1", 0)).unwrap();
+            listener.set_nonblocking(true).unwrap();
+            let address = listener.local_addr().unwrap();
+            let mut ready = [0; 2];
+            let mut activate = [0; 2];
+            assert_eq!(unsafe { libc::pipe(ready.as_mut_ptr()) }, 0);
+            assert_eq!(unsafe { libc::pipe(activate.as_mut_ptr()) }, 0);
+            let profile = if inherited {
+                Some(web_listener::Profile {
+                    listener: unsafe { libc::dup(listener.as_raw_fd()) },
+                    ready: ready[1],
+                    activate: activate[0],
+                    generation: "a".repeat(32),
+                    metric: None,
+                    port: address.port(),
+                })
+            } else {
+                None
+            };
+            let mode = WebModu::GuvenliProxy {
+                origin: AgHedefi::https_origininden("https://fixture.example").unwrap(),
+                worker_kapi: Some(address.port()),
+                oran_ayari: None,
+                listener_profile: profile,
+            };
+            let mut io = GercekIo::yeni_argumanlarla(
+                &root,
+                &root,
+                mode,
+                Vec::new(),
+                dil::yetkinlik::YetkinlikPolitikasi::gelistirici(),
+                None,
+                None,
+                None,
+            );
+            if inherited {
+                io.sunucu_kur(address.port().into()).unwrap();
+                let mut record = String::new();
+                unsafe { std::fs::File::from_raw_fd(ready[0]) }
+                    .read_to_string(&mut record)
+                    .unwrap();
+                assert!(record.contains("zee-native-listener-ready-1"));
+                let mut writer = unsafe { std::fs::File::from_raw_fd(activate[1]) };
+                writer
+                    .write_all(format!("ACTIVATE {}\n", "a".repeat(32)).as_bytes())
+                    .unwrap();
+                drop(writer);
+            } else {
+                for fd in [ready[0], ready[1], activate[0], activate[1]] {
+                    unsafe {
+                        libc::close(fd);
+                    }
+                }
+                io.dinleyici = Some(listener.try_clone().unwrap());
+                io.web_kapanis = Some(web_kapanis::WebKapanis::kur().unwrap());
+            }
+            let mut client = std::net::TcpStream::connect(address).unwrap();
+            client
+                .set_read_timeout(Some(std::time::Duration::from_secs(2)))
+                .unwrap();
+            client.write_all(b"GET /hazir HTTP/1.1\r\nHost: fixture.example\r\nForwarded: for=127.0.0.1;proto=https;host=fixture.example\r\nConnection: close\r\n\r\n").unwrap();
+            io.test_accept_term = true;
+            let admitted = io.istek_al();
+            assert_eq!(admitted.is_some(), inherited);
+            if inherited {
+                io.web_yanit_taslagini_yaz(WebYanitTaslagi::Govde("admitted".into()))
+                    .unwrap();
+                assert!(io.istek_al().is_none());
+            }
+            drop(io);
+            let mut response = String::new();
+            let read = client.read_to_string(&mut response);
+            if inherited {
+                read.unwrap();
+                assert!(response.starts_with("HTTP/1.1 200 ") && response.ends_with("admitted"));
+            } else {
+                assert!(!response.starts_with("HTTP/1.1 200 "));
+            }
+            assert_eq!(listener.local_addr().unwrap(), address);
+        }
+        std::fs::remove_dir_all(&root).unwrap();
+        println!("forced-postaccept-TERM: direct=closed inherited=completed200");
     }
 }

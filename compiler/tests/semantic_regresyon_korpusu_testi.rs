@@ -13,6 +13,9 @@ mod smtp_fixture;
 #[path = "semantic_regresyon/lsp_uri.rs"]
 mod lsp_uri_fixture;
 
+#[path = "semantic_regresyon/native_listener_deadline.rs"]
+mod native_listener_deadline_fixture;
+
 const SEMA: &str = "# zee-semantic-regresyon-2";
 const FAZLAR: &[&str] = &[
     "parser",
@@ -38,6 +41,7 @@ const KIPLER: &[&str] = &[
     "smtp",
     "cli",
     "lsp-uri",
+    "native-listener-deadline",
 ];
 
 #[derive(Debug, Clone)]
@@ -197,11 +201,22 @@ fn faz_kipi_kabul_eder(faz: &str, kip: &str) -> bool {
         "hir" => matches!(kip, "hir" | "definition" | "run"),
         "runtime" => matches!(kip, "run" | "trace"),
         "concurrency" => kip == "run",
-        "security" => matches!(kip, "capability" | "web" | "smtp"),
+        "security" => matches!(
+            kip,
+            "capability" | "web" | "smtp" | "native-listener-deadline"
+        ),
         "cli" => kip == "cli",
         "lsp" => kip == "lsp-uri",
         _ => false,
     }
+}
+
+fn native_deadline_manifest_sozlesmesi(vaka: &Vaka) -> bool {
+    vaka.faz == "security"
+        && vaka.cikis == 0
+        && vaka.tani.is_none()
+        && vaka.span.is_none()
+        && vaka.cikti.is_empty()
 }
 
 fn cli_gozle(kaynak: &str) -> Gozlem {
@@ -253,6 +268,15 @@ fn vakayi_calistir(vaka: &Vaka, kaynak: &str) -> Gozlem {
     }
     if vaka.kip == "cli" {
         return cli_gozle(kaynak);
+    }
+    if vaka.kip == "native-listener-deadline" {
+        let (cikis, cikti) =
+            native_listener_deadline_fixture::calistir(&depo(), &depo().join(&vaka.dosya));
+        return Gozlem {
+            tani: None,
+            cikis,
+            cikti,
+        };
     }
     if vaka.kip == "parser" {
         return match KaynakMetni::yeni(kaynak)
@@ -483,6 +507,12 @@ fn semantic_regresyon_manifesti_tam_tekil_ve_minimaldir() {
             vaka.faz,
             vaka.kip
         );
+        if vaka.kip == "native-listener-deadline" {
+            assert!(
+                native_deadline_manifest_sozlesmesi(vaka),
+                "native deadline manifest exit0/empty HTTP/no diagnostic contract"
+            );
+        }
         gorulen_fazlar.insert(vaka.faz.as_str());
         assert_eq!(
             Path::new(&vaka.dosya).parent(),
@@ -569,7 +599,10 @@ fn semantic_regresyon_manifesti_tam_tekil_ve_minimaldir() {
 
 #[test]
 fn duzeltilmis_semantic_buglar_tani_span_cikis_ve_ciktiyi_korur() {
-    for vaka in vakalari_oku() {
+    for vaka in vakalari_oku()
+        .into_iter()
+        .filter(|vaka| vaka.kip != "native-listener-deadline")
+    {
         let kaynak = std::fs::read_to_string(depo().join(&vaka.dosya))
             .unwrap_or_else(|hata| panic!("{} okunamadı: {hata}", vaka.dosya));
         // K-178: vaka resmî CLI yığınında koşar; debug çerçevesi 2 MiB test iş
@@ -635,4 +668,36 @@ fn cli_stdout_alt_turu_gercek_basariyi_stderr_startup_metadatasindan_ayirir() {
     assert!(gozlem.tani.is_none());
     assert_eq!(gozlem.cikis, 0);
     assert_eq!(gozlem.cikti, vec!["Merhaba APP_ARG"]);
+}
+
+#[test]
+fn native_deadline_kipi_yalniz_security_fazina_aittir() {
+    assert!(KIPLER.contains(&"native-listener-deadline"));
+    assert!(faz_kipi_kabul_eder("security", "native-listener-deadline"));
+    for faz in FAZLAR.iter().filter(|faz| **faz != "security") {
+        assert!(!faz_kipi_kabul_eder(faz, "native-listener-deadline"));
+    }
+}
+
+#[test]
+fn native_deadline_manifesti_sadece_terminal0_bos_http_gozlemini_kabul_eder() {
+    let mut vaka = vakalari_oku().remove(0);
+    vaka.faz = "security".into();
+    vaka.kip = "native-listener-deadline".into();
+    vaka.cikis = 0;
+    vaka.tani = None;
+    vaka.span = None;
+    vaka.cikti.clear();
+    assert!(native_deadline_manifest_sozlesmesi(&vaka));
+    vaka.cikis = 1;
+    assert!(!native_deadline_manifest_sozlesmesi(&vaka));
+    vaka.cikis = 0;
+    vaka.cikti.push("HTTP/1.1 200 OK".into());
+    assert!(!native_deadline_manifest_sozlesmesi(&vaka));
+    vaka.cikti.clear();
+    vaka.tani = Some("C027".into());
+    assert!(!native_deadline_manifest_sozlesmesi(&vaka));
+    vaka.tani = None;
+    vaka.faz = "cli".into();
+    assert!(!native_deadline_manifest_sozlesmesi(&vaka));
 }

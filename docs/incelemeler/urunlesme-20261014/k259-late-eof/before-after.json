@@ -1,0 +1,24 @@
+{
+  "schema": "zee-uncommitted-native-activation-lateEOF-before-after-1",
+  "recorded_at_utc": "2026-10-14T23:56:13.743600+00:00",
+  "status": "actual_before_after_passed",
+  "single_generation_only": true,
+  "old_binary_sha256": "2caa26e55e50bf35b4220e4f6d16ac7273f337159243b6e97c8f2443581adbf8",
+  "fixed_binary_sha256": "d53b21ef61f3345843df8cd0ab991012cfe6c211383b064dea3675c8a677fd77",
+  "old_proof_sha256": "03a83ad710d92697025e144232086530d135c8910c9d503ed8ad7e750f86a164",
+  "fixed_proof_sha256": "d8b05cb22461efd17e16b13c0a02c06a43190b97c8dc77e803e12ae8232819b2",
+  "fixture_hashes_identical": {
+    "ana.dil": "f69668d73dcd9ab05b18c9c42d180f46fd0fc0388c8a0101029d54fb5f9348b2",
+    "proje.dil": "9ceb941ff88a1d200f115ee06e65344bea4f5f1a2e72a9c3403817f840e6f59f"
+  },
+  "old": "lateEOF admittedHTTP200, liveownedleader",
+  "fixed": "lateEOF noHTTP, terminalleader0 andownedcleanupreaped",
+  "deadline_proof": "ACTIVATE prefix consumed (FIONREAD=0 afterownwrite) proveswaitalreadyrunning, so10sdeadline<=prefixconsumed+10; EOFobservedstrictlylater",
+  "handler_after_Err": "main::istek_al setsdinleyici=None andreturnsNone; CLI0 normalend. Control.activate.take consumed; laterwaitOk cannotrestore absentlistener, native_taken rejectsreinstall.",
+  "original_fixed_failed_harness": "late-eof-pair-fixed.json preserveswrongexpectedexit2; notreportedproductionfailure",
+  "claim_boundary": "Old2caa andnewd53 areuncommittedcandidate snapshots; no historicalintroducedBy/fakefixedBy/cleanfinalacceptance",
+  "durable_case_runner_sha256": "686818e5d5916a0236d4fa77c7e10a8bbb05f1ee9c9d1652b30a05d30d845df9",
+  "timing_caveat": "fixednegative isexpiry/noadmission/terminal outcome; oldlate-admission reproduction canbecomeinconclusive under schedulingdelay, notCIperformance assertion",
+  "SIGSTOP_analysis": "Stoppedpoll mayreturnEINTR or timeoutbeforecontinuation: oldloop canreject already; cannotreliablyisolate missingfinalcheck thisway",
+  "deterministic_alternative": "Private actualpipe Rusttest withtest-only shorteneddeadline andafterpoll barrier/hook helduntilInstant>=deadline beforeEOFread; validframe queued first. Keep wait publicsignature unchanged, no publicfacade/CLIflag. Onold uncappedpoll body finalEOF returnsOk; newfinalguard Err. CancellationafterEOF canbe separatelycontrolled withstopped closurecallboundary, notclaimeddeadlineevidence."
+}

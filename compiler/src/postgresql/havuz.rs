@@ -1,5 +1,7 @@
 //! Production PostgreSQL TLS ve bounded connection-pool sahipliği.
 
+mod metrik;
+
 use super::{hata, VeritabaniBildirimi, VeritabaniHatasi, VeritabaniHedefi};
 use native_tls::{Certificate, Protocol, TlsConnector};
 use postgres::config::{Host, SslMode};
@@ -23,6 +25,7 @@ type Yonetici = PostgresConnectionManager<MakeTlsConnector>;
 pub(super) struct PostgresqlHavuzu {
     ic: r2d2::Pool<Yonetici>,
     son_hata: Arc<Mutex<Option<String>>>,
+    metrik: Option<Arc<metrik::Metrik>>,
 }
 pub(super) type PostgresqlKirasi = r2d2::PooledConnection<Yonetici>;
 
@@ -57,6 +60,12 @@ fn hata_ayrintisini_sinirla(zincir: Vec<String>) -> String {
 }
 
 pub(super) fn kur(bildirim: &VeritabaniBildirimi) -> Result<PostgresqlHavuzu, VeritabaniHatasi> {
+    kur_gozlemli(bildirim, None)
+}
+pub(super) fn kur_gozlemli(
+    bildirim: &VeritabaniBildirimi,
+    gozlem: Option<Arc<dyn Fn([u64; 8]) + Send + Sync>>,
+) -> Result<PostgresqlHavuzu, VeritabaniHatasi> {
     let baglanti = std::env::var(&bildirim.baglanti_degiskeni).map_err(|_| {
         hata(format!(
             "{} ortam değişkeninde PostgreSQL bağlantısı bulunamadı",
@@ -70,11 +79,20 @@ pub(super) fn kur(bildirim: &VeritabaniBildirimi) -> Result<PostgresqlHavuzu, Ve
     let tls = tls_baglayicisi(&ayar, bildirim)?;
     let yonetici = PostgresConnectionManager::new(ayar, tls);
     let son_hata = Arc::new(Mutex::new(None));
-    let ic = havuz_kurucusu()
-        .error_handler(Box::new(HavuzHataKaydi(Arc::clone(&son_hata))))
+    let metrik = gozlem.map(metrik::Metrik::new);
+    let mut kurucu =
+        havuz_kurucusu().error_handler(Box::new(HavuzHataKaydi(Arc::clone(&son_hata))));
+    if let Some(metrik) = &metrik {
+        kurucu = kurucu.event_handler(Box::new(metrik::Olaylar(Arc::clone(metrik))));
+    }
+    let ic = kurucu
         .build(yonetici)
         .map_err(|neden| hata(format!("PostgreSQL bağlantı havuzu kurulamadı: {}", neden)))?;
-    Ok(PostgresqlHavuzu { ic, son_hata })
+    Ok(PostgresqlHavuzu {
+        ic,
+        son_hata,
+        metrik,
+    })
 }
 
 fn havuz_kurucusu<M: ManageConnection>() -> r2d2::Builder<M> {
@@ -87,11 +105,27 @@ fn havuz_kurucusu<M: ManageConnection>() -> r2d2::Builder<M> {
         .max_lifetime(Some(BAGLANTI_AZAMI_OMRU))
 }
 
+pub(super) fn olcum_yayinla(havuz: &PostgresqlHavuzu) {
+    if let Some(metrik) = &havuz.metrik {
+        metrik.sample(havuz.ic.state());
+    }
+}
 pub(super) fn al(havuz: &PostgresqlHavuzu) -> Result<PostgresqlKirasi, VeritabaniHatasi> {
     if let Ok(mut son_hata) = havuz.son_hata.lock() {
         *son_hata = None;
     }
-    havuz.ic.get_timeout(CHECKOUT_ZAMAN_ASIMI).map_err(|neden| {
+    let start = havuz.metrik.as_ref().map(|_| std::time::Instant::now());
+    if let Some(metrik) = &havuz.metrik {
+        metrik.begin();
+        olcum_yayinla(havuz);
+    }
+    let sonuc = havuz.ic.get_timeout(CHECKOUT_ZAMAN_ASIMI);
+    // get_timeout's internal guard has been released on both success and error.
+    if let (Some(metrik), Some(start)) = (&havuz.metrik, start) {
+        metrik.end(start);
+        olcum_yayinla(havuz);
+    }
+    sonuc.map_err(|neden| {
         let ayrinti = havuz
             .son_hata
             .lock()
@@ -300,6 +334,74 @@ mod testler {
         )
         .unwrap();
         assert!(tls_baglayicisi(&require, &uzak).is_err());
+    }
+
+    #[test]
+    #[ignore = "scripts/tests/native-metrics-test.py owns actual loopback PostgreSQL TLS fixture"]
+    fn izole_pg_pool_metrikleri_wait_timeout_ve_donus_gercek_sinirlar() {
+        let hedef =
+            std::env::var("ZEE_K257_FIXTURE_HEDEFI").expect("owned loopback target required");
+        let hedef = VeritabaniHedefi::ayristir(&hedef).unwrap();
+        assert!(hedef.loopback_mi());
+        std::env::var("ZEE_K257_FIXTURE_URL_TLS_CA_PEM").expect("owned pinned TLS CA required");
+        let bildirim = VeritabaniBildirimi {
+            hedef,
+            baglanti_degiskeni: "ZEE_K257_FIXTURE_URL".into(),
+            gocler: "unused".into(),
+            istek_baglami_cozucusu: None,
+        };
+        let rows = Arc::new(Mutex::new(Vec::new()));
+        let observed = Arc::clone(&rows);
+        let havuz = Arc::new(
+            kur_gozlemli(
+                &bildirim,
+                Some(Arc::new(move |row| {
+                    let mut rows = observed.lock().unwrap();
+                    assert!(rows.len() < 64);
+                    rows.push(row);
+                })),
+            )
+            .unwrap(),
+        );
+        let mut kiralar = (0..BAGLANTI_SINIRI)
+            .map(|_| al(&havuz).unwrap())
+            .collect::<Vec<_>>();
+        assert_eq!(&rows.lock().unwrap().last().unwrap()[..4], &[4, 0, 4, 0]);
+        let cloned = Arc::clone(&havuz);
+        let worker = std::thread::spawn(move || al(&cloned).unwrap());
+        let deadline = std::time::Instant::now() + Duration::from_secs(1);
+        loop {
+            if rows.lock().unwrap().last().is_some_and(|r| r[3] == 1) {
+                break;
+            }
+            assert!(std::time::Instant::now() < deadline);
+            std::thread::sleep(Duration::from_millis(1));
+        }
+        drop(kiralar.pop());
+        let mut returned = worker.join().unwrap();
+        let actual = returned.query_one("SELECT 1::text", &[]).unwrap();
+        assert_eq!(actual.get::<_, String>(0), "1");
+        drop(returned);
+        olcum_yayinla(&havuz);
+        assert_eq!(&rows.lock().unwrap().last().unwrap()[..4], &[4, 1, 3, 0]);
+        kiralar.push(al(&havuz).unwrap());
+        let start = std::time::Instant::now();
+        assert!(al(&havuz).is_err());
+        assert!(start.elapsed() >= Duration::from_millis(1800));
+        let last = *rows.lock().unwrap().last().unwrap();
+        assert_eq!(&last[..4], &[4, 0, 4, 0]);
+        assert_eq!(last[5], 1);
+        assert!(last[6] >= 1_800_000);
+        drop(kiralar);
+        olcum_yayinla(&havuz);
+        let last = *rows.lock().unwrap().last().unwrap();
+        assert_eq!(&last[..4], &[4, 4, 0, 0]);
+        assert!(last[4] >= 6);
+        assert!(last[7] > 0);
+        println!(
+            "K257_OWNED_POOL_METRICS {}",
+            serde_json::to_string(&*rows.lock().unwrap()).unwrap()
+        );
     }
 
     #[test]

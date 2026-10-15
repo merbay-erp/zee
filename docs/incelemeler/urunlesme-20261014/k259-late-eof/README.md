@@ -1,0 +1,3 @@
+# K-259 / GB-080: first-candidate late EOF
+
+Actual single owned generation before/after receipts show HTTP200 on the first uncommitted candidate and HTTP byte0/normal terminal0/owned cleanup on the corrected candidate. [Receipt](before-after.json) pins both binaries and identical anonymous fixture hashes. These are candidate snapshots, not historical source bugfix SHAs or finalclean acceptance. The separate normal Cargo case `native_listener_gec_eof_mutlak_butceden_sonra_admission_acmaz` now retains the negative boundary. Under heavy scheduling delay the old positive reproduction can be inconclusive; this record is not a latency SLA. Original external raw proof hashes are retained; failed exit2 harness expectation is explicitly identified as a test mistake.

@@ -393,3 +393,21 @@ yükünde cache ihtiyacı kanıtlanmadı; gerçek P08 ürün korpusu ve kullanı
 200ms uçtan uca kabulü açık kalır. ADR-045/049 tedarik ve provenance sözleşmesi
 aynıdır. Tarihçe yalnız bu actual run için yeni satır taşır, eski kayıtlar
 silinmez. Sonraki kaynaklara bu checkpoint kabulü mal edilmez.
+
+## K-257–K-260 performans ve kaynak etkisi incelemesi
+
+K-257 opt-in request duration/counter ve actual pool observation durumunu sabit
+22/8 diziler, doyumlu sayaçlar ve en çok512byte atomic-size nonblocking FIFO
+snapshot ile ekler. K-259 kontrol/activation tamponları ve beklemeleri bounded;
+K-258 logu PIPE_BUF/nonblocking, tick ve lease lifetime sınırlıdır. Busy/idle/wait
+sayaçları veya1000 HTTP denemesi `olcum` bağımsız sample/warmup dağılımı değildir.
+Sentetik1000 concurrency1/dört rollover kabulü p95/RSS iyileşmesi ya da genel SLA
+kanıtı olarak yorumlanmaz; credential7+2 ve heartbeat35sn de benchmark değildir.
+
+Sabit `olcum` fixture/sample/warmup semantiği bu dalgada değiştirilmedi. Yeni
+makine/Rust/release/temiz exact kaynak ve raw dağılım kabulü olmadığından
+`performans-gecmisi-v2.tsv` eski satırları ve baseline'ı korunur. Shared CI'da
+`--esik-yuzde` kullanılmaz; yeni hard eşik açılmaz (ADR-045/049).
+Native counter state ve uzun ömürlü CLI/runtime worker etki incelemesi yeni
+exact source1800sn soak ister;900sn host işletim tatbikatı da ayrı bekler.
+Önceki kaynak soak veya LSP177.321ms checkpoint'i yeni kaynak adına taşınmaz.

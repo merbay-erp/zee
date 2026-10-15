@@ -1802,10 +1802,48 @@ adayı değil, bu exact kaynakta yerel kabuldür. Metrics/socket/dispatcher,
 gerçek ürün, insan/platform ve RC/release kapıları açık kalır. Kaynak
 kimliği daha sonraki belge veya özellik commit'lerine taşınmaz.
 
-## K-263 — Sahipli supervisor EPERM geçişi
-
-K-263/ADR122/GB077 dar host correctness adayıdır: gerçek sahipli worker EPERM/WNOWAITNone geçişi artık tek mutlakgrace deadline içinde heldleader üzerinde gözlenir. Persistent ambiguity/returncode-set/ECHILD failclosed, canlı descendant temizliği ve foreigngroup sınırı korunur. Ayrı8 lifecycle testi +Cargo wrapper1 mevcutworker25 sayısını değiştirmez. Compiler source/API/grammar, performans/soak ve K262/featurewave kapsamı değişmez. Sourcecommit ve finalfullphase gate root entegrasyonunda AÇIKTIR; tamamlanmış release/adoption iddiası yoktur.
-
 ## K-262 — Mevcut web oran CLI argüman kayması
 
 Temiz17b preexisting CLI bug kanıtlıdır: mevcut dört değerli oran seçeneği kaynak öncesi tüketilmediğinde APP_ARG yerine bellek görünür. K-262 dar kaynak öncesi skip onarımı, kaynak sonrası oran argümanları ve eski globalproxy sınırını korur. Yeni flag/grammar/export yoktur. Dar bugfix KAPALIDIR: kaynak commit `7c56518cbfc6f5c99ac56bfe7767b5bbdc106179`, olumlu/olumsuz gerçek CLI testleri, ADR-121 ve `regression/v2.tsv` içindeki `web-oran-program-argumani` exact fixed_by kaydı semantic-bugfix/core-freeze correctness zincirini tamamlar. Final exact RC ve birleşik özellik kabul kapıları AÇIKTIR; bu kayıt sürüm veya ürün adoption kapanışı değildir.
+
+## K-257–K-260 — v0.8.0-dev için sınırlı yerel aday profiller
+
+Native proxy worker için `--web-metrik-fd` içeriksiz request ve gerçek PG pool
+sayaçlarını inherited nonblocking FIFO'ya yollar; best effort'tür, endpoint veya
+v1 facade export açmaz. Credential launcher tek `--native-metrics-fd` capability
+ile bu metadata kanalını aktarır; default noinherit korunur. Socket control
+FD'leri credential launcher üzerinden desteklenmez.
+
+Native Unix host için dört kaynak-öncesi seçenek eklenir: `--web-listener-fd`,
+`--web-ready-fd`, `--web-activate-fd`, `--web-generation`. Bunlar explicit proxy
+origin/worker port, exact owned listening TCP socket ve fresh control/receipt
+ister; arbitrary descriptor/stdio/role aliases sessiz exit2 ile kaynak/config
+okunmadan reddedilir. Successful accept native inherited profile'da admission'dır;
+TERM sonrası admitted stream tamamlanır. Default direct bind değişmez.
+Süreç belleği quota seçimi inherited overlap'ta reddedilir; shared JSON resetlenmez.
+
+`scripts/job-dispatcher.py` sabit SQL niyetini1..100 tick pilotuyla yürütür.
+Belirsiz COMMIT/timeout/sinyal otomatik replay/fail yazımı yapmaz; üç bilinen
+rollback denemesi deadletter'da durur. Log pipe doluysa bounded kayıt düşer,
+SQL ilerlemesi bloklanmaz. Genel scheduler/cron veya dış SMTP/PDF effect açılmaz.
+
+Listener17/FD16, metrics8, credential7+2 ve dispatcher11 çalışma ağacı aday
+kanıtlarıdır. Finalclean/900sn/1800sn/ASAN RC ve gerçek ürün/platform kabulü bu
+sürüm notundan üretilmez. [Dar kullanım](job-dispatcher.md),
+[native listener](native-listener.md) ve ADR-116–119 açık kapsamı korur.
+
+Güncel ek sınır: K263 owned-host cleanup dar düzeltmesi ac077e31 ile commitlendi; yukarıdaki yerel
+aday makbuzları birleşik finalclean özellik kabulü değildir.
+K262 dar source/argv düzeltmesi 7c56518c ve exact provenance4d8edeb2 ile kapalıdır; ortak özellik kabulü açıktır.
+
+Kanonik güvenlik sırası: atomik K-263 owned-host cleanup düzeltmesi GB-077 ile `ac077e31e761e401eedc5140a8035fd02f2a19ba` kaynak commitinde tamamlandı; K-262 dar CLI bugfix `7c56518cbfc6f5c99ac56bfe7767b5bbdc106179` ve exact provenance `4d8edeb2a9f4453d2f28481ecd550bf8ba5f2032` ile kapandı. Ortak temiz özellik kabulü ayrıca beklenmektedir. Henüz commitlenmemiş özellik dilimlerinin kayıtları K-257/GB-078, K-258/GB-079, K-259/GB-080 ve K-260/GB-081’dir; ADR-116–119 numaraları korunur. Önceki immutable dış-stage makbuzlarının geçici GB etiketleri tarihsel kanıttır, kanonik yeni kayıt kimliği değildir. Finalclean/900sn host/1800sn soak/RC kabulü bu revizyonda ileri sürülmez.
+
+## K-263 — Sahipli supervisor EPERM geçişi
+
+K-263/ADR122/GB077 dar host correctness adayıdır: gerçek sahipli worker EPERM/WNOWAITNone geçişi artık tek mutlakgrace deadline içinde heldleader üzerinde gözlenir. Persistent ambiguity/returncode-set/ECHILD failclosed, canlı descendant temizliği ve foreigngroup sınırı korunur. Ayrı8 lifecycle testi +Cargo wrapper1 mevcutworker25 sayısını değiştirmez. Compiler source/API/grammar, performans/soak ve K262/featurewave kapsamı değişmez. Dar host source commit ac077e31e761e401eedc5140a8035fd02f2a19ba ve 905/914 faz kapısı tamamlandı; birleşik özellik finalclean gate AÇIKTIR; tamamlanmış release/adoption iddiası yoktur.
+
+## K-264 — Kritik işlevlerde dar sorumluluk incelemesi
+
+[ADR-123](../adr/123-kritik-islev-secici-taban-incelemesi.md) dört yeni kayıt ve yalnız govde tabanını gerekçeli kabul eder. Bütün diğer satır değerleri/eski kimlik/global paylar korunur; gerçek islev_egilimi denetimi64 kayıtla geçmiştir. Kaynak davranışı değişmez; fullclean/RC/soak/ürün kapıları ayrı açıktır. Mevcut olmayan parser/MIME kapsamı varmış gibi gösterilmez.
+
+K-257–260 birleşim adayında seri tam faz 924/936 geçti, başarısız0/atlanan12; kaynak+belge93 dosya koşu boyunca aynı hashte kaldı. Ayrı fmt/clippy, katalog1+tazelik6, spec214 ve işlev64 kapıları geçti; sırtaraması/sürekli güvenlik temizdir. İlk başarısız koşu (paralel Cargo binary-pin değişimi ve korpus ürün politikası receipt yetkisi eksikliği) dış immutable kayıtta korunur. Bu sonuç finalclean, dedicated DB/native, 900sn host,1800sn soak veya RC kabulü değildir.

@@ -65,3 +65,5 @@ K-240 yalnız üç yeni kritik işlevi ve büyüyen iki handler’ı bağımsız
 [sorumluluk/bütçe incelemesine](../docs/incelemeler/urunlesme-20261014/function-review/README.md)
 bağlar. Diğer 55 kayıt ve yüzde/min/max büyüme eşikleri korunur; toplu
 taban yazma yapılmaz. Kanonik rapor aynı değişiklikte yenilenir.
+
+K-264/ADR-123 yalnız dört yeni kritik kayıt ve `govde` güncellemesini [sorumluluk incelemesine](123-kritik-islev-secici-taban-incelemesi.md) bağlar. Diğer satırlar, eski kimlik ve büyüme payları korunur; gerçek 64 kayıt denetimi aynı dalgada çalışır.

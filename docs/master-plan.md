@@ -1455,10 +1455,57 @@ adayı değil, bu exact kaynakta yerel kabuldür. Metrics/socket/dispatcher,
 gerçek ürün, insan/platform ve RC/release kapıları açık kalır. Kaynak
 kimliği daha sonraki belge veya özellik commit'lerine taşınmaz.
 
-## K-263 — Sahipli supervisor EPERM geçişi
-
-K-263/ADR122/GB077 dar host correctness adayıdır: gerçek sahipli worker EPERM/WNOWAITNone geçişi artık tek mutlakgrace deadline içinde heldleader üzerinde gözlenir. Persistent ambiguity/returncode-set/ECHILD failclosed, canlı descendant temizliği ve foreigngroup sınırı korunur. Ayrı8 lifecycle testi +Cargo wrapper1 mevcutworker25 sayısını değiştirmez. Compiler source/API/grammar, performans/soak ve K262/featurewave kapsamı değişmez. Sourcecommit ve finalfullphase gate root entegrasyonunda AÇIKTIR; tamamlanmış release/adoption iddiası yoktur.
-
 ## K-262 — Mevcut web oran CLI argüman kayması
 
 Temiz17b preexisting CLI bug kanıtlıdır: mevcut dört değerli oran seçeneği kaynak öncesi tüketilmediğinde APP_ARG yerine bellek görünür. K-262 dar kaynak öncesi skip onarımı, kaynak sonrası oran argümanları ve eski globalproxy sınırını korur. Yeni flag/grammar/export yoktur. Dar bugfix KAPALIDIR: kaynak commit `7c56518cbfc6f5c99ac56bfe7767b5bbdc106179`, olumlu/olumsuz gerçek CLI testleri, ADR-121 ve `regression/v2.tsv` içindeki `web-oran-program-argumani` exact fixed_by kaydı semantic-bugfix/core-freeze correctness zincirini tamamlar. Final exact RC ve birleşik özellik kabul kapıları AÇIKTIR; bu kayıt sürüm veya ürün adoption kapanışı değildir.
+
+## K-257–K-260 — Yerel aday kapasitesi, ürün kabulünden ayrı
+
+Native request/PG pool metrikleri (dedicated8), SQL-only finite dispatcher
+(native11), inherited TCP listener ve nesil hazırlığı (native17/quietFD16),
+credential→tek metric FD köprüsü (7+2) aynı ürünleşme dalgasının dar kapasiteleridir.
+ADR-116–119 sınırlı kabul durumundadır. Listener17 içinde gerçek argv oracle,
+bozuk `zee.ayar`, metric seçenek sırası ve kapanmış metric reader kompozisyonu
+vardır; FD16 erken stdio/control/metric/config aliases'i reddeder. GB-078–081
+sınırları kaynak+test+kararla birlikte değerlendirilir.
+
+Bu dalga yerel çalışma ağacı/adayı kabulüdür. Listener17/FD16, metrik8 dedicated,
+credential7 model/subprocess+2 native ve dispatcher11 sayıları ayrı kampanyalara
+aittir; Cargo/libtest toplamına eklenmez. Listener birleşim kanıtı pinlenmiş
+`2caa26e55e50bf35b4220e4f6d16ac7273f337159243b6e97c8f2443581adbf8` ikilisinin
+actual BuildJSON'unda `17b29da1b8321fe6dcc4d34bd2027c4c969bf406` tabanı ve
+`dirty=true` taşır. Bu kimlik temiz kaynak kabulü değildir. Final exact temiz
+ortak faz/native, 900 sn host tatbikatı, 1800 sn soak, dört hedef explicit ASAN
+RC/Miri, imza/kurulum ve fiziksel platform kanıtı henüz bu yeni kaynağa alınmadı.
+Önceki d42f147 temiz kabulü kendi tarihsel kaynağında kalır.
+
+Native listener host tek kendi loopback TCP LISTEN socket'ini tutar; proxy,
+SO_REUSEPORT veya yabancı PID/port benimsemesi değildir. Native ready channel
+eski worker HTTP200'ünden ayrı, fresh generation receipt de ortak eski dosyadan
+ayrıdır.1000 istek concurrency1/dört owned rollover ve ayrı sentetik loopback
+istemcileriyle sınır içi kabul gördü; quota raise/reset/retry yapılmadı. Bu genel
+zero5xx/refusal SLA değildir. Kalıcı `.zee/web-durumu-v1.json` kota ve revoke
+paylaşımını korur; süreç belleği kota overlap profilinde reddedilir.
+
+P09 gerçek catalog/SMTP effect adoptionı; P13 continuous/TTL/config reload ve
+uzun işletim; P14 farklı kod/resource revision dağıtımı/live/platform; P25
+file-native secret ve listener credential kompozisyonu açıktır.39 plan satırı,
+insan/harici CI/fiziksel/RC kapıları ve frozen syntax takvimi kapanmış gösterilmez.
+[Dispatcher](job-dispatcher.md) ve [listener](native-listener.md) rehberleri bu
+kapsamın kullanım ve ret sınırlarını verir. K262 ayrı correctness dalgasıdır.
+
+Güncel ek sınır: K263 owned-host cleanup dar düzeltmesi ac077e31 ile commitlendi; yukarıdaki yerel
+aday makbuzları birleşik finalclean özellik kabulü değildir.
+K262 dar source/argv düzeltmesi 7c56518c ve exact provenance4d8edeb2 ile kapalıdır; ortak özellik kabulü açıktır.
+
+Kanonik güvenlik sırası: atomik K-263 owned-host cleanup düzeltmesi GB-077 ile `ac077e31e761e401eedc5140a8035fd02f2a19ba` kaynak commitinde tamamlandı; K-262 dar CLI bugfix `7c56518cbfc6f5c99ac56bfe7767b5bbdc106179` ve exact provenance `4d8edeb2a9f4453d2f28481ecd550bf8ba5f2032` ile kapandı. Ortak temiz özellik kabulü ayrıca beklenmektedir. Henüz commitlenmemiş özellik dilimlerinin kayıtları K-257/GB-078, K-258/GB-079, K-259/GB-080 ve K-260/GB-081’dir; ADR-116–119 numaraları korunur. Önceki immutable dış-stage makbuzlarının geçici GB etiketleri tarihsel kanıttır, kanonik yeni kayıt kimliği değildir. Finalclean/900sn host/1800sn soak/RC kabulü bu revizyonda ileri sürülmez.
+
+## K-263 — Sahipli supervisor EPERM geçişi
+
+K-263/ADR122/GB077 dar host correctness adayıdır: gerçek sahipli worker EPERM/WNOWAITNone geçişi artık tek mutlakgrace deadline içinde heldleader üzerinde gözlenir. Persistent ambiguity/returncode-set/ECHILD failclosed, canlı descendant temizliği ve foreigngroup sınırı korunur. Ayrı8 lifecycle testi +Cargo wrapper1 mevcutworker25 sayısını değiştirmez. Compiler source/API/grammar, performans/soak ve K262/featurewave kapsamı değişmez. Dar host source commit ac077e31e761e401eedc5140a8035fd02f2a19ba ve 905/914 faz kapısı tamamlandı; birleşik özellik finalclean gate AÇIKTIR; tamamlanmış release/adoption iddiası yoktur.
+
+## K-264 — Kritik işlevlerde dar sorumluluk incelemesi
+
+[ADR-123](../adr/123-kritik-islev-secici-taban-incelemesi.md) dört yeni kayıt ve yalnız govde tabanını gerekçeli kabul eder. Bütün diğer satır değerleri/eski kimlik/global paylar korunur; gerçek islev_egilimi denetimi64 kayıtla geçmiştir. Kaynak davranışı değişmez; fullclean/RC/soak/ürün kapıları ayrı açıktır. Mevcut olmayan parser/MIME kapsamı varmış gibi gösterilmez.
+
+K-257–260 birleşim adayında seri tam faz 924/936 geçti, başarısız0/atlanan12; kaynak+belge93 dosya koşu boyunca aynı hashte kaldı. Ayrı fmt/clippy, katalog1+tazelik6, spec214 ve işlev64 kapıları geçti; sırtaraması/sürekli güvenlik temizdir. İlk başarısız koşu (paralel Cargo binary-pin değişimi ve korpus ürün politikası receipt yetkisi eksikliği) dış immutable kayıtta korunur. Bu sonuç finalclean, dedicated DB/native, 900sn host,1800sn soak veya RC kabulü değildir.
