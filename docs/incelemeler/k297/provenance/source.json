@@ -1,0 +1,19 @@
+{
+  "source_commit": "5b910fccad8e694fd26fabb58e1cc39adbfd65ea",
+  "base": "cf2784e260c3b800e3d14482abc6891bcd1163a8",
+  "compiler_and_test_inputs": {
+    "compiler/src/lsp.rs": "9b722c67abdd6479591d55720ad3132b68932cf9df1fe7d3afd5dd96deef8e01",
+    "compiler/src/lsp/analiz.rs": "9c4288241f3a54d6e74cbf4ece626c2eefbf7aca76f76e838ee6d43357007e91",
+    "compiler/src/lsp/esitleme.rs": "364a44fc3817710ea22d89aceefb551b311338d924afc96956b97615c9554d8e",
+    "compiler/tests/lsp_artimli_testi.rs": "4c08052517c84c078ebad6b5f5300cde71b6e2be3943da5dcf609eaaf419845a",
+    "compiler/tests/semantic_regresyon/lsp_utf16.rs": "11d371247dbb648c16b33f1e323d4fc4c2bd2deb9edd6dd37cfcc671f6aeb0a1",
+    "compiler/tests/semantic_regresyon_korpusu_testi.rs": "7357da672c1170624a5d4f973d8134862f12fe78153a7d0b6d12bf37b5f697bd"
+  },
+  "rust": "1.93.1",
+  "cargo_build_jobs": 1,
+  "rust_test_threads": 1,
+  "passed": 996,
+  "failed": 0,
+  "ignored": 25,
+  "rc_soak_ide_repeated": false
+}

@@ -1,0 +1,6 @@
+{
+  "schema": "zee-raw-text-evidence-1",
+  "name": "provenance-freeze-guard.txt",
+  "sha256": "093ea0e89be978fa97a0627647be58889a23ec1a0324e65dceb07f27cc1600ff",
+  "text": "CORE FREEZE bütün compiler kaynak commit'lerinde yürütülüyor.\n"
+}

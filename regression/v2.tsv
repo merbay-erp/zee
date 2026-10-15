@@ -34,3 +34,4 @@ smtp-yavas-yanit	K-252	7ece1dedaf40f4637bcca1e7a59c857985fa87e3	cbacc4c09cf0534b
 web-oran-program-argumani	K-262	ebc9647a9f935bbe2ff0660d4deb3fa036671950	4e351d34de861425c8a35b6ad1ddda6cd3e42707	0.8.0-dev	cli	cli	-	-	0	APP_ARG	regression/cli/web-oran-program-argumani.dil
 native-listener-late-eof	K-259	c20ae6e742c642cf60d960e68a7e7cf472d3fef5	-	0.8.0-dev	security	native-listener-deadline	-	-	0	-	regression/security/native-listener-late-eof.dil
 native-metric-stdio-alias	K-294	0083d40c6bfec2c918cb221b59734cac356c7ddd	c20ae6e742c642cf60d960e68a7e7cf472d3fef5	0.8.0-dev	cli	native-metric-stdio	-	-	2	-	regression/cli/native-metric-stdio-alias.dil
+bmp-disi-konum	K-297	71337c0e451b1a653d045a32c652d913c315eebb	-	0.8.0-dev	lsp	lsp-utf16	-	-	0	hover=true;definition=0:0-4;rename=0:0-4,1:9-13	regression/lsp/bmp-disi-konum.dil
