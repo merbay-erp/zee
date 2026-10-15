@@ -1,0 +1,5 @@
+# K-257 B5 native metrik reproducer
+
+Kayıtlı anonim ürün zee-cekirdek; semantic-change/dogfood-change review adayıdır. Gerçek dış provenance commit cd5d12f0008620819e6167af5146e83503fd2b38; docs/dil-talepleri/2026-10-14-zee-urunlesme.md satır99–106 NFC/LF-sonLF normalize SHA256 0466b376c023f719b7788fae3655226577b490de1289c1010337f10a67422971. Etkilenen gerçek ürün dosyası cekirdek/kaynak/ana.dil SHA256 f0a65a0b1272a717728db4050fd450fd85900434ed6d5309bdcb9bbf9f138619 native listener'ı kullanır. Dış özel kaynak kopyalanmadı.
+
+ana.dil gerçek native HTTP handler ve SELECT/pg_sleep ile request/status/rate ve havuz sahibi sınırını küçültür. İzole test kendi TLS PostgreSQL portunu template'e yerleştirir; readiness,200,429,404,426,DB200 oracle ve dört actual lease/beşinci wait/timeout recovery çalışır. Sentineller yalnız sentetik negatif içerik kontrolüdür. Bu bir compiler bug reproducer/regression değildir; mevcut API ile karşılanamayan gerçek B5 ürün kapasite ihtiyacının minimalliği ve eşliği insan review'unda korunur. ADR116 ve docs/native-metrics.md anlam/sınır/test zinciridir.

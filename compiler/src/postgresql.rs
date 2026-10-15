@@ -53,7 +53,31 @@ impl PostgresqlOturumu {
         bildirim: &VeritabaniBildirimi,
         eylem_derinligi: usize,
     ) -> Result<Self, VeritabaniHatasi> {
-        let havuz = havuz::kur(bildirim)?;
+        Self::baglan_ic(bildirim, eylem_derinligi, None)
+    }
+
+    /// Private CLI telemetry bridge; not part of the supported Rust v1 facade.
+    #[doc(hidden)]
+    pub fn baglan_gozlemli(
+        bildirim: &VeritabaniBildirimi,
+        eylem_derinligi: usize,
+        gozlem: std::sync::Arc<dyn Fn([u64; 8]) + Send + Sync>,
+    ) -> Result<Self, VeritabaniHatasi> {
+        Self::baglan_ic(bildirim, eylem_derinligi, Some(gozlem))
+    }
+    #[doc(hidden)]
+    pub fn metrik_ozetini_yayinla(&self) {
+        havuz::olcum_yayinla(&self.havuz);
+    }
+    fn baglan_ic(
+        bildirim: &VeritabaniBildirimi,
+        eylem_derinligi: usize,
+        gozlem: Option<std::sync::Arc<dyn Fn([u64; 8]) + Send + Sync>>,
+    ) -> Result<Self, VeritabaniHatasi> {
+        let havuz = match gozlem {
+            Some(gozlem) => havuz::kur_gozlemli(bildirim, Some(gozlem))?,
+            None => havuz::kur(bildirim)?,
+        };
         // Yapılandırma hatası ilk sorguya kadar saklanmasın; başlangıçta bir
         // gerçek bağlantı checkout/health kontrolünden geçsin.
         drop(havuz::al(&havuz)?);

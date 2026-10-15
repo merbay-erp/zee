@@ -1,0 +1,29 @@
+{
+  "status": "approved-responsibility-baseline-with-explicit-coverage-limits",
+  "package_manifest_sha256": "a1334a5161fc534b9d7d4a9d86ff2ca3c593930f98bf0517c6e873f72e07ae06",
+  "package_files_verified": 5,
+  "current_bindings": {
+    "docs/incelemeler/urunlesme-20261014/k264-function-review/README.md": false,
+    "adr/123-kritik-islev-secici-taban-incelemesi.md": true,
+    "compiler/tests/fixtures/islev-egilimi-v1.tsv": true,
+    "docs/islev-egilimi.md": true,
+    "compiler/src/bin/islev_egilimi.rs": true,
+    "compiler/src/main.rs": true,
+    "compiler/src/web_listener.rs": true,
+    "compiler/src/eposta.rs": true
+  },
+  "scope": "Five responsibility rows only; deadline fix and actual proof independent. Parser branch coverage and legacy SMTP/MIME conflation corrected. No shared edits; no finalcampaign.",
+  "independent_fixture_delta": [
+    "src/main.rs::govde#1",
+    "src/eposta.rs::gonder_ic#1",
+    "src/main.rs::istek_al#1",
+    "src/main.rs::web_modunu_ayikla_temel#1",
+    "src/web_listener.rs::extract#1"
+  ],
+  "global_threshold_source_matches_HEAD": true,
+  "root_archival_README_changed": "An explicit historical-proposal context paragraph was added after frozen package; current text independently read, five responsibility/coverage corrections retained.",
+  "root_archival_README_current_sha256": "4e4ad89139db1c3163a755515f9885dc4ecfdb8dd88c03f603176ef453d873cd",
+  "source_file_bindings_verified": true,
+  "coverage_limits": "Profile.extract partial/repeat/nonnumeric/bad-generation branches source-reviewed only; ACTIVATE nonce tests Control.wait. MIME sender separate from legacy gonder_ic. No all-branch or direct legacy success claim.",
+  "responsibility_judgment": "Govde ordered security orchestration owns early borrowed quiet checks/config/mode validation/owning sink boundary; small helpers could move syntax but add diagnostic/control-return boundaries without eliminating decisions. Other four scoped adapters delegate protocol, HTTP evaluation and physical ownership. Exactly selective five rows accepted; future growth not preapproved."
+}

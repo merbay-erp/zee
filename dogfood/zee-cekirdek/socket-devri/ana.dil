@@ -1,0 +1,12 @@
+# K-259/B6: anonim inherited socket + hazır generation + admission drain reproducer.
+# İlk argüman yalnız owned host'un generation'a ayırdığı private receipt yoludur.
+argümanlar komut satırından gelenler olsun
+receipt argümanların ilki olsun
+receipt dosyasına "{\"schema\":\"zee-worker-readiness-1\",\"application_revision\":\"4444444444444444444444444444444444444444\",\"ready\":true}" yaz
+8080 kapısında sunucu başlat
+GET "/hazir" adresine istek geldiğinde
+    "ok" yanıtını gönder
+GET "/slow" adresine istek geldiğinde
+    "entered" yaz
+    3 saniye bekle
+    "completed" yanıtını gönder

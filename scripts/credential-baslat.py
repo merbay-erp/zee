@@ -5,6 +5,11 @@ Compiler API'si değildir. Çocuk stdio'su kapalıdır; yalnız sabit şemalı
 source/exit metadata üretilir. Yollar/sırlar/hata ayrıntıları yazılmaz.
 """
 import argparse
+try:
+    import fcntl
+except ImportError:
+    fcntl = None
+import signal
 import json
 import os
 import re
@@ -131,6 +136,59 @@ def read_credential(root_fd, name):
         os.close(fd)
 
 
+class MetricsRejected(Rejected):
+    """Fixed metadata-only capability failure; no descriptor details."""
+
+
+def metrics_capability(argv):
+    # Exactly one named channel, never an arbitrary inherited descriptor list.
+    options = argv[:argv.index("--")] if "--" in argv else argv
+    positions = [i for i, value in enumerate(options) if value == "--native-metrics-fd"]
+    if not positions:
+        return argv, None
+    try:
+        require(len(positions) == 1)
+        index = positions[0]
+        require(index + 1 < len(options))
+        text = options[index + 1]
+        require(text.isascii() and text.isdecimal())
+        fd = int(text)
+        require(3 <= fd <= 255)
+        info = os.fstat(fd)
+        flags = fcntl.fcntl(fd, fcntl.F_GETFL)
+        require(stat.S_ISFIFO(info.st_mode) and info.st_uid in (0, os.geteuid()))
+        require(flags & os.O_ACCMODE == os.O_WRONLY and flags & os.O_NONBLOCK)
+        require(os.fpathconf(fd, "PC_PIPE_BUF") >= 512 and signal.getsignal(signal.SIGPIPE) == signal.SIG_IGN)
+        for standard in range(3):
+            try:
+                other = os.fstat(standard)
+            except OSError:
+                continue
+            require((info.st_dev, info.st_ino) != (other.st_dev, other.st_ino))
+        argv = argv[:index] + argv[index + 2:]
+        command = argv[argv.index("--") + 1:]
+        # Host options precede source. Application argv never grants a capability.
+        position = None
+        i = 1
+        proxy = False
+        while i < len(command):
+            arg = command[i]
+            if arg == "--web-metrik-fd":
+                require(position is None and i + 1 < len(command) and command[i + 1] == text)
+                position = i; i += 2
+            elif arg in ("--web-proxy", "--güvenli-web-proxy", "--web-worker-port", "--web-oran-deposu", "--web-oran-siniri", "--web-oran-kapasitesi", "--web-oran-doluluk"):
+                proxy = proxy or arg in ("--web-proxy", "--güvenli-web-proxy")
+                i += 2
+            elif arg.startswith("--"):
+                i += 1
+            else:
+                break
+        require(position is not None and proxy and i < len(command))
+        return argv, fd
+    except (Rejected, OSError, ValueError, OverflowError):
+        raise MetricsRejected() from None
+
+
 def parse_arguments(argv):
     require("--" in argv)
     split = argv.index("--")
@@ -195,12 +253,15 @@ def child_environment(root, bindings):
         os.close(root_fd)
 
 
-def run_child(command, environment):
+def run_child(command, environment, native_metrics_fd=None):
     # Aynı process group; restart/grup sonlandırma dış host supervisor'a aittir.
     child = None
     try:
         child = subprocess.Popen(command, env=environment, stdin=subprocess.DEVNULL,
-            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, close_fds=True)
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, close_fds=True,
+            pass_fds=() if native_metrics_fd is None else (native_metrics_fd,))
+        if native_metrics_fd is not None:
+            os.close(native_metrics_fd); native_metrics_fd = None
         environment.clear()
         code = child.wait()
         return code if code >= 0 else min(255, 128 - code)
@@ -214,23 +275,35 @@ def run_child(command, environment):
                 child.wait()
         raise
     finally:
+        if native_metrics_fd is not None:
+            os.close(native_metrics_fd)
         environment.clear()
 
 
 def main(argv=None):
     source, code = "launcher", 2
+    metrics_fd, reason = None, None
     try:
         require(supported_platform())
-        root, bindings, command = parse_arguments(list(sys.argv[1:] if argv is None else argv))
+        actual = list(sys.argv[1:] if argv is None else argv)
+        actual, metrics_fd = metrics_capability(actual)
+        root, bindings, command = parse_arguments(actual)
         environment = child_environment(root, bindings)
-        code = run_child(command, environment)
+        owned, metrics_fd = metrics_fd, None
+        code = run_child(command, environment, owned)
         source = "child"
+    except MetricsRejected:
+        reason = "native_metrics_capability"
     except KeyboardInterrupt:
         code = 130
     except Exception:
         pass
     # Hatalar, child argv, credential ad/yol/değerleri ve stream'ler yazılmaz.
-    print(json.dumps({"schema": "zee-credential-baslat-1", "source": source, "exit": code}, separators=(",", ":")))
+    if metrics_fd is not None:
+        os.close(metrics_fd)
+    metadata = {"schema": "zee-credential-baslat-1", "source": source, "exit": code}
+    if reason is not None: metadata["reason"] = reason
+    print(json.dumps(metadata, separators=(",", ":")))
     return code
 
 

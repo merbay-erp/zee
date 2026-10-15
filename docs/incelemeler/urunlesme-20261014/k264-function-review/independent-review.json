@@ -1,0 +1,59 @@
+{
+  "schema": "zee-k264-independent-responsibility-review-1",
+  "recorded_at_utc": "2026-10-14T23:42:21.001085+00:00",
+  "status": "source_responsibility_baseline_supported_packet_truth_corrections_pending",
+  "proposal_manifest_sha256": "1a454724b79912a4aba22bc91b114dc0b7a4b85278c3033eb64310e6bfd55c33",
+  "source_bindings_verified": {
+    "adr/041-kritik-islev-egilim-kapisi.md": true,
+    "compiler/tests/fixtures/islev-egilimi-v1.tsv": true,
+    "docs/islev-egilimi.md": true,
+    "compiler/src/main.rs": true,
+    "compiler/src/eposta.rs": true,
+    "compiler/src/eposta/testler.rs": true,
+    "compiler/src/web_listener.rs": true
+  },
+  "selective_delta": "fournewcriticalidentities +govde103/10\u2192150/17; allotherrows/historycomments preserved inexternal simulation",
+  "old_wrapper_baseline_preserved": "web_modunu_ayikla88/4 remains; no automaticshrink",
+  "ADR041_policy": "80lines/12cc tracking threshold; +10%(min8max24)lines/+20%(min2max5)cc unchanged; reasonedbaseline allowed, notautorefactor bymetric",
+  "functions": [
+    {
+      "id": "eposta::gonder_ic",
+      "decision": "accept87/7",
+      "reason": "OneorderedlegacySMTPtransaction owns socket+absoluteInstant; responseframing/limits inOturum, textmessagecreationinileti_kur, transportdeadline inSonTarihliTcp; noretry/send-replay boundary",
+      "coverage_precision": "MIMEpathis separate eposta::mime::gonder. Legacybudget/responsebounds/cli_legacy_auth_echo test pertinent; MIMEsuite onlyadjacentintegration."
+    },
+    {
+      "id": "main::govde",
+      "decision": "accept150/17",
+      "reason": "OneCLIsecurityorchestrator rawquietpreflight\u2192metricborrowedpreflight\u2192config\u2192quietpreflight\u2192profile/modecompat\u2192Sinkownership\u2192dispatch. Protocol/config/parser/evaluator delegated. Optional helper split merelymovessequence/diagnostic ownership; no requiredrefactor identified.",
+      "future_guard": "Futuregrowth notautomaticallyapproved; sameordinaryADR041thresholds."
+    },
+    {
+      "id": "main::istek_al",
+      "decision": "accept113/12",
+      "reason": "Singleadmission\u2192boundedrequestadapter; activation/shutdown/accept/socket wrapper permit lifetime coherent. Header/body/sessionhelpers delegated; handlerexecution/commit/response separate."
+    },
+    {
+      "id": "main::web_modunu_ayikla_temel",
+      "decision": "accept90/4",
+      "reason": "Existingdefaultprofile parsermoved; listenercomposition separatewrapper; oldidentity baseline retained."
+    },
+    {
+      "id": "web_listener::Profile::extract",
+      "decision": "accept104/8",
+      "reason": "Onefiniteborrowed capabilityrecord/parser, noI/O/ownership; fstat/physicalaliases/install separate.",
+      "coverage_gap": "No observedunit/CLI cases explicitly proving partial/repeated/nonnumeric FD/badgeneration parsing. ACTIVATEwrongnonce/controlpayload cases testControl.wait, notProfile::extract. NativeFD16/17 proveotherphysical/ordering/config/argv behavior."
+    }
+  ],
+  "packet_required_corrections": [
+    "removeunsupportedProfileextract unit/CLI coverageclaim; exposeactualgap",
+    "distinguish legacygonder_ic testsfromMIMEbackend andcreation"
+  ],
+  "integration_required": [
+    "manually applyexact5keyeddelta+reviewprovenancecomment; allotherrowbytes/thresholds unchanged",
+    "deterministic reportfresh+actual islev_egilimi --denetle",
+    "finalsource/nativefullgates separate, notinferredfrombaselinepass"
+  ],
+  "source_or_tracked_fixture_edits": false,
+  "simulation_sha256": "8c756173f1410000a74ca01f4ec0d0d0a519f9ad0b43f38eff7515c8e27981e1"
+}

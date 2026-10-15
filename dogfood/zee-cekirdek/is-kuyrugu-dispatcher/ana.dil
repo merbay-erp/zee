@@ -1,0 +1,229 @@
+# K-247/B1: onay revizyonu başına tek kalıcı iş; mevcut SQL/eylem prototipi.
+# SMTP/dosya/HTTP handler'ı yok. İş verisi hiçbir kod/SQL/callback adı çalıştırmaz.
+# Native test sabit SQL handler'ını yalnız geçici projeye ekler.
+
+eylem isKuyrugaEkle
+    anahtar Metin olarak al
+    revizyon Metin olarak al
+    icerik Metin olarak al
+    Metin sonucu döndürür
+    parametreler anahtar, revizyon, icerik listesi olsun
+    ekleme "INSERT INTO zee_jobs(business_key,approval_revision,payload) VALUES($1,$2::bigint,$3) ON CONFLICT(business_key,approval_revision) DO NOTHING" sorgusunu parametreler ile değiştirmeyi dene olsun
+    ekleme başarılıysa
+        okuma "SELECT id::text AS id FROM zee_jobs WHERE business_key=$1 AND approval_revision=$2::bigint AND payload=$3" sorgusunu parametreler ile okumayı dene olsun
+        okuma başarılıysa
+            kayitlar okumanın değeri olsun
+            kayitlar boşsa
+                "idempotency-icerigi-degisti" hatasını döndür
+            kayit kayitların ilki olsun
+            kayidin "id" değeri döndür
+        "is-ekleme-okuma-hatasi" hatasını döndür
+    "is-ekleme-depo-hatasi" hatasını döndür
+
+eylem isKirala
+    sahip Metin olarak al
+    jeton Metin olarak al
+    Metin sonucu döndürür
+    kilitParametreleri boş liste olsun
+    kilit "UPDATE zee_job_limits SET gate=gate+1 WHERE singleton" sorgusunu kilitParametreleri ile değiştirmeyi dene olsun
+    kilit başarılıysa
+        parametreler sahip, jeton listesi olsun
+        kiralama "WITH aday AS (SELECT id FROM zee_jobs WHERE state IN ('ready','retry_wait') AND available_at<=clock_timestamp() AND attempts<3 AND (SELECT count(*) FROM zee_jobs j JOIN zee_job_leases l ON l.job_id=j.id AND l.generation=j.generation AND l.lease_token=j.lease_token AND l.lease_owner=j.lease_owner WHERE j.state='leased' AND l.expires_at>clock_timestamp())<(SELECT active_limit FROM zee_job_limits WHERE singleton) AND NOT EXISTS(SELECT 1 FROM zee_jobs j JOIN zee_job_leases l ON l.job_id=j.id AND l.generation=j.generation AND l.lease_token=j.lease_token WHERE j.state='leased' AND j.lease_owner=$1 AND l.expires_at>clock_timestamp()) ORDER BY available_at,id FOR UPDATE SKIP LOCKED LIMIT 1) UPDATE zee_jobs SET state='leased',phase='reserved',lease_token=$2,lease_owner=$1,generation=generation+1,lease_expires=clock_timestamp()+interval '30 seconds' FROM aday WHERE zee_jobs.id=aday.id" sorgusunu parametreler ile değiştirmeyi dene olsun
+        kiralama başarılıysa
+            adet kiralamanın değeri olsun
+            adet 0 a eşitse
+                "bos" döndür
+            kiraKaydi "INSERT INTO zee_job_leases(job_id,generation,lease_token,lease_owner,issued_at,expires_at,renew_until,renewals) SELECT id,generation,lease_token,lease_owner,clock_timestamp(),lease_expires,clock_timestamp()+interval '120 seconds',0 FROM zee_jobs WHERE state='leased' AND lease_owner=$1 AND lease_token=$2 AND phase='reserved' AND lease_expires>clock_timestamp() AND NOT EXISTS(SELECT 1 FROM zee_job_leases eski WHERE eski.job_id=zee_jobs.id AND eski.generation=zee_jobs.generation AND eski.lease_token=zee_jobs.lease_token AND eski.lease_owner=zee_jobs.lease_owner) ON CONFLICT(job_id) DO UPDATE SET generation=EXCLUDED.generation,lease_token=EXCLUDED.lease_token,lease_owner=EXCLUDED.lease_owner,issued_at=EXCLUDED.issued_at,expires_at=EXCLUDED.expires_at,renew_until=EXCLUDED.renew_until,renewals=0" sorgusunu parametreler ile değiştirmeyi dene olsun
+            kiraKaydi başarılıysa
+                okuma "SELECT id::text AS id,generation::text AS generation FROM zee_jobs WHERE state='leased' AND lease_owner=$1 AND lease_token=$2 AND EXISTS(SELECT 1 FROM zee_job_leases l WHERE l.job_id=zee_jobs.id AND l.generation=zee_jobs.generation AND l.lease_token=zee_jobs.lease_token AND l.lease_owner=zee_jobs.lease_owner AND l.expires_at>clock_timestamp()) AND phase='reserved'" sorgusunu parametreler ile okumayı dene olsun
+                okuma başarılıysa
+                    kayitlar okumanın değeri olsun
+                    kayitlar boşsa
+                        "kiralama-kaydi-yok" hatasını döndür
+                    kayit kayitların ilki olsun
+                    kimlik kayidin "id" değeri olsun
+                    nesil kayidin "generation" değeri olsun
+                    kimlik ile ":" ile nesil döndür
+                "kiralama-okuma-hatasi" hatasını döndür
+            "kiralama-kira-depo-hatasi" hatasını döndür
+        "kiralama-depo-hatasi" hatasını döndür
+    "kiralama-kilidi-hatasi" hatasını döndür
+
+eylem isDenemesiniBaslat
+    kimlik Metin olarak al
+    jeton Metin olarak al
+    nesil Metin olarak al
+    TamSayı sonucu döndürür
+    parametreler kimlik, jeton, nesil listesi olsun
+    degisim "UPDATE zee_jobs SET attempts=attempts+1,phase='started' WHERE id=$1::bigint AND state='leased' AND lease_token=$2 AND generation=$3::bigint AND EXISTS(SELECT 1 FROM zee_job_leases l WHERE l.job_id=zee_jobs.id AND l.generation=zee_jobs.generation AND l.lease_token=zee_jobs.lease_token AND l.lease_owner=zee_jobs.lease_owner AND l.expires_at>clock_timestamp()) AND phase='reserved' AND attempts<3" sorgusunu parametreler ile değiştirmeyi dene olsun
+    degisim başarılıysa
+        adet degisimin değeri olsun
+        adet 1 e eşit değilse
+            "is-kirasi-gecersiz" hatasını döndür
+        1 döndür
+    "is-gecisi-depo-hatasi" hatasını döndür
+
+eylem isHakkiniKilitle
+    kimlik Metin olarak al
+    jeton Metin olarak al
+    nesil Metin olarak al
+    TamSayı sonucu döndürür
+    parametreler kimlik, jeton, nesil listesi olsun
+    degisim "UPDATE zee_jobs SET generation=generation WHERE id=$1::bigint AND state='leased' AND lease_token=$2 AND generation=$3::bigint AND EXISTS(SELECT 1 FROM zee_job_leases l WHERE l.job_id=zee_jobs.id AND l.generation=zee_jobs.generation AND l.lease_token=zee_jobs.lease_token AND l.lease_owner=zee_jobs.lease_owner AND l.expires_at>clock_timestamp()) AND phase='started'" sorgusunu parametreler ile değiştirmeyi dene olsun
+    degisim başarılıysa
+        adet degisimin değeri olsun
+        adet 1 e eşit değilse
+            "is-kirasi-gecersiz" hatasını döndür
+        1 döndür
+    "is-gecisi-depo-hatasi" hatasını döndür
+
+eylem isiTamamla
+    kimlik Metin olarak al
+    jeton Metin olarak al
+    nesil Metin olarak al
+    TamSayı sonucu döndürür
+    parametreler kimlik, jeton, nesil listesi olsun
+    degisim "UPDATE zee_jobs SET state='done',phase='none',lease_expires=NULL,last_outcome='completed' WHERE id=$1::bigint AND state='leased' AND lease_token=$2 AND generation=$3::bigint AND EXISTS(SELECT 1 FROM zee_job_leases l WHERE l.job_id=zee_jobs.id AND l.generation=zee_jobs.generation AND l.lease_token=zee_jobs.lease_token AND l.lease_owner=zee_jobs.lease_owner AND l.expires_at>clock_timestamp()) AND phase='started'" sorgusunu parametreler ile değiştirmeyi dene olsun
+    degisim başarılıysa
+        adet degisimin değeri olsun
+        adet 1 e eşit değilse
+            "is-kirasi-gecersiz" hatasını döndür
+        1 döndür
+    "is-gecisi-depo-hatasi" hatasını döndür
+
+eylem isDenemesiniReddet
+    kimlik Metin olarak al
+    jeton Metin olarak al
+    nesil Metin olarak al
+    TamSayı sonucu döndürür
+    parametreler kimlik, jeton, nesil listesi olsun
+    degisim "WITH zaman AS (SELECT clock_timestamp() AS an) UPDATE zee_jobs SET state=CASE WHEN attempts=3 THEN 'dead_letter' ELSE 'retry_wait' END,phase='none',lease_expires=NULL,available_at=zaman.an+make_interval(secs=>power(2,attempts-1)::double precision),transitioned_at=zaman.an,last_outcome='idempotent-sql-attempt-failed' FROM zaman WHERE id=$1::bigint AND state='leased' AND lease_token=$2 AND generation=$3::bigint AND EXISTS(SELECT 1 FROM zee_job_leases l WHERE l.job_id=zee_jobs.id AND l.generation=zee_jobs.generation AND l.lease_token=zee_jobs.lease_token AND l.lease_owner=zee_jobs.lease_owner AND l.expires_at>clock_timestamp()) AND phase='started'" sorgusunu parametreler ile değiştirmeyi dene olsun
+    degisim başarılıysa
+        adet degisimin değeri olsun
+        adet 1 e eşit değilse
+            "is-kirasi-gecersiz" hatasını döndür
+        1 döndür
+    "is-gecisi-depo-hatasi" hatasını döndür
+
+eylem suresiDolanIsleriBirak
+    TamSayı sonucu döndürür
+    parametreler boş liste olsun
+    "WITH aday AS (SELECT j.id FROM zee_jobs j JOIN zee_job_leases l ON l.job_id=j.id AND l.generation=j.generation AND l.lease_token=j.lease_token AND l.lease_owner=j.lease_owner WHERE j.state='leased' AND l.expires_at<=clock_timestamp() FOR UPDATE OF j SKIP LOCKED) UPDATE zee_jobs SET state=CASE WHEN attempts=3 THEN 'dead_letter' ELSE 'ready' END,phase='none',lease_expires=NULL,lease_token='',lease_owner='',available_at=clock_timestamp(),last_outcome='expired-idempotent-sql-lease' FROM aday WHERE zee_jobs.id=aday.id" sorgusunu parametreler ile değiştirmeyi dene döndür
+
+# Uzlaştırma salt okur; C027 yazıyı/handler'ı burada tekrar çalıştırmaz.
+işlem isDurumunuOku
+    anahtar Metin olarak al
+    revizyon Metin olarak al
+    Metin sonucu döndürür
+    parametreler anahtar, revizyon listesi olsun
+    okuma "SELECT state::text AS state FROM zee_jobs WHERE business_key=$1 AND approval_revision=$2::bigint" sorgusunu parametreler ile okumayı dene olsun
+    okuma başarılıysa
+        kayitlar okumanın değeri olsun
+        kayitlar boşsa
+            "yok" döndür
+        kayit kayitların ilki olsun
+        kayidin "state" değeri döndür
+    "uzlastirma-depo-hatasi" hatasını döndür
+
+# Ayrı lease satırı jobs row-lock'u tutan SQL handler ile bağımsız yenilenebilir.
+# Deadline server-clock/120s capped; C027 runtime devamı durdurur, yazı replay yok.
+eylem isKirasiniYenile
+    kimlik Metin olarak al
+    jeton Metin olarak al
+    nesil Metin olarak al
+    sahip Metin olarak al
+    TamSayı sonucu döndürür
+    parametreler kimlik, jeton, nesil, sahip listesi olsun
+    yenileme "UPDATE zee_job_leases l SET expires_at=greatest(expires_at,least(clock_timestamp()+interval '30 seconds',renew_until)),renewals=renewals+1 WHERE l.job_id=$1::bigint AND l.lease_token=$2 AND l.generation=$3::bigint AND l.lease_owner=$4 AND l.expires_at>clock_timestamp() AND l.renew_until>clock_timestamp() AND l.renewals<24 AND EXISTS(SELECT 1 FROM zee_jobs j WHERE j.id=l.job_id AND j.state='leased' AND j.phase IN ('reserved','started') AND j.generation=l.generation AND j.lease_token=l.lease_token AND j.lease_owner=l.lease_owner)" sorgusunu parametreler ile değiştirmeyi dene olsun
+    yenileme başarılıysa
+        adet yenilemenin değeri olsun
+        adet 1 e eşit değilse
+            "is-kirasi-gecersiz" hatasını döndür
+        1 döndür
+    "is-gecisi-depo-hatasi" hatasını döndür
+
+# Fixed SQL-only durable intent; never SMTP/PDF/HTTP/file/callback execution.
+eylem sabitNiyetHandler
+    kimlik Metin olarak al
+    jeton Metin olarak al
+    nesil Metin olarak al
+    TamSayı sonucu döndürür
+    hak kimlik ve jeton ve nesil ile isHakkiniKilitle olsun
+    hak başarılıysa
+        parametreler kimlik listesi olsun
+        etki "INSERT INTO zee_job_intents(job_id,approval_revision,payload) SELECT id,approval_revision,payload FROM zee_jobs WHERE id=$1::bigint ON CONFLICT(job_id) DO NOTHING" sorgusunu parametreler ile değiştirmeyi dene olsun
+        etki başarılıysa
+            tamamlama kimlik ve jeton ve nesil ile isiTamamla olsun
+            tamamlama başarılıysa
+                tamamlamanın değeri döndür
+            "niyet-tamamlama-hatasi" hatasını döndür
+        "niyet-depo-hatasi" hatasını döndür
+    "niyet-kirasi-gecersiz" hatasını döndür
+
+gelenler komut satırından gelenler olsun
+ayarlar boş sözlük olsun
+konum 0 olsun
+artış 1 olsun
+her gelen için
+    konumu artışla artır
+    konum 1 e eşitse
+        ayarların "operation" değeri gelen olsun
+    konum 2 ye eşitse
+        ayarların "id" değeri gelen olsun
+    konum 3 e eşitse
+        ayarların "token" değeri gelen olsun
+    konum 4 e eşitse
+        ayarların "generation" değeri gelen olsun
+    konum 5 e eşitse
+        ayarların "owner" değeri gelen olsun
+konum 5 e eşit değilse
+    "reddedildi" yaz
+    programı bitir
+islemAdi ayarların "operation" değeri olsun
+kimlik ayarların "id" değeri olsun
+jeton ayarların "token" değeri olsun
+nesil ayarların "generation" değeri olsun
+sahip ayarların "owner" değeri olsun
+islemAdi "claim" a eşitse
+    sonuc sahip ve jeton ile isKirala olsun
+    sonuc başarılıysa
+        sonucun değeri yaz
+    değilse
+        "reddedildi" yaz
+    programı bitir
+islemAdi "begin" a eşitse
+    sonuc kimlik ve jeton ve nesil ile isDenemesiniBaslat olsun
+    sonuc başarılıysa
+        sonucun değeri yaz
+    değilse
+        "reddedildi" yaz
+    programı bitir
+islemAdi "apply" a eşitse
+    sonuc kimlik ve jeton ve nesil ile sabitNiyetHandler olsun
+    sonuc başarılıysa
+        sonucun değeri yaz
+    değilse
+        "reddedildi" yaz
+    programı bitir
+islemAdi "renew" a eşitse
+    sonuc kimlik ve jeton ve nesil ve sahip ile isKirasiniYenile olsun
+    sonuc başarılıysa
+        sonucun değeri yaz
+    değilse
+        "reddedildi" yaz
+    programı bitir
+islemAdi "fail" a eşitse
+    sonuc kimlik ve jeton ve nesil ile isDenemesiniReddet olsun
+    sonuc başarılıysa
+        sonucun değeri yaz
+    değilse
+        "reddedildi" yaz
+    programı bitir
+islemAdi "reap" a eşitse
+    sonuc suresiDolanIsleriBirak olsun
+    sonuc başarılıysa
+        sonucun değeri yaz
+    değilse
+        "reddedildi" yaz
+    programı bitir
+"reddedildi" yaz

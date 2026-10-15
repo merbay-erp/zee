@@ -177,3 +177,24 @@ LF-siz yanıt verir; bir saniye toleransı, tek gerçek bağlantı ve C029
 maskesini sınar. Eski idle-timeout yolunun gerçek3011ms önce-kaydı ve
 çalışma ağacı201ms sonrası [yerel kanıttadır](incelemeler/urunlesme-20261014/k252-smtp/README.md).
 Üç saniye bounded fixture cleanup'ı benchmark veya DNS iptali değildir.
+
+
+K-259 için `security` fazındaki `native-listener-deadline` kipi gerçek sahip olunan
+Unix listener/control pipe uçları ve native `dil` ikilisiyle geç EOF sınırını
+çalıştırır. Yardımcıya `--fixture-source` ile manifestin minimal `.dil` kaynağı
+verilir; parser-only taklit yoktur. Beklenen exit gerçek liderin WNOWAIT terminal
+kodudur (`0`); bu kipte çıktı kanalı HTTP yanıt baytlarıdır ve boş olmalıdır.
+Tek nesil, tüketilmiş prefix sonrası mutlak deadline üst sınırından geç EOF,
+ebeveyn listener korunumu ve sahip olunan süreçlerin reap edilmesi ayrıca
+doğrulanır. İlk henüz commitlenmemiş özellik adayındaki kusur için tarihsel
+`introduced_by` uydurulmaz (`-`); `fixed_by` ilk düzeltilmiş özellik kaynak
+commit'inin exact SHA'sıyla izleyen provenance commit'inde kaydedilir.
+Bu destek production CLI/API eklemez; Unix dışı native kanıt üretilmiş sayılmaz.
+
+Eski toplu semantic replay native-listener-deadline kayıtlarını çalıştırmaz;
+diğer eski vakaları bütün platformlarda korur. Gerçek fixture ve exact SHA
+kaydıyla aynı follow-up commit'inde eklenen ayrı native libtest vakası
+Unix'te tüm native kayıtları seçer ve boş listeyi reddeder. Unix dışında bu
+tek test `actual Unix owned FD capability unavailable` gerekçesiyle görünür
+ignored durumundadır; eski toplu test ignored yapılmaz. `--ignored` ile
+zorlandığında adaptör desteklenmeyen platformda panic eder; sahte başarı yoktur.

@@ -1,0 +1,8 @@
+proje "fixed-sql-intent-dispatcher-stage" olsun
+sürüm "0.1.0" olsun
+morfoloji "zee-tr-1" olsun
+giriş "ana.dil" olsun
+yetkinlikler "veritabanı" listesi olsun
+veritabanı_hedefi "postgresql://localhost:18093/postgres" olsun
+veritabanı_bağlantı_değişkeni "ZEE_JOB_CI_URL" olsun
+veritabanı_göçleri "gocler" olsun
