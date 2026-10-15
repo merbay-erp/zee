@@ -4584,3 +4584,13 @@ Ham v3/v4 ve dış tanı/aday kanıtları korunur; yeni tam faz v5 koşusu 930/9
 Bu compiler/src değişikliği semantic davranış değiştirmeyen maintenance'tır;
 kaynak commit'inin exact maintenance/compiler-freeze beyanı takip commit'inde
 kaydedilir. Yeni compiler özelliği, güvenlik bulgusu ya da regression iddiası yok.
+
+K-267 kaynak commit'i `c86c843f86d888cb53591da2b6b3b845de054113` olarak
+kaydedildi. Aynı 40 dosyalık adayın tam fazı 930/942 geçti, 0 kaldı, 12 atlandı;
+sonrasında yalnız dört durum paragrafı güncellendi ve katalog1/tazelik6 tekrar
+geçti. Compiler/src yalnız cfg(test) hazırlık bakımı taşıdığı için exact
+compiler/core-freeze maintenance satırları bu takip commit'inde korunur. Yeni
+compiler bugfix ya da semantic değişiklik yoktur; yeni regression kaydı
+gerekmez. Production modül/kenar, ADR-046 katman fixture'ı, SCC, API, normatif
+214 madde ve performans tarihçesi değişmedi. Final clean/900/1800/RC kabulü
+K-267 commit'i alınmış olmasından türetilmez.
