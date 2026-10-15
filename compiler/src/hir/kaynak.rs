@@ -9,7 +9,7 @@ use crate::agac::Ifade;
 /// sahte bir sütun/uzunluk üretmek yerine belirsizliğini tipte açıkça taşır.
 /// Her iki varyantta da satır sıfır olamaz; dolayısıyla HIR'da "konumsuz"
 /// semantic düğüm kurulamaz.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum HirKaynakAraligi {
     Satir {
         satir: NonZeroUsize,

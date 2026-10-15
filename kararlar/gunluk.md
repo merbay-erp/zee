@@ -4691,3 +4691,30 @@ kampanyasında ayrıca yürütülmelidir; bu sonuç final temiz kaynak/native,
 900 saniye işletim, 1800 saniye soak, ASan/Miri, paket/kurulum veya gerçek
 ürün/platform/IDE/insan kabulü değildir. Yeni compiler/src, grammar, spec
 normu, public Rust API veya production bağımlılık değişikliği yoktur.
+
+## K-281–K-294 — 15 Ekim ikinci teknik dalga
+
+Durum: uygulanmış adaylar ve açık araç retleri; clean exact kabul sürüyor.
+[İş bazında sonuç ve açık kapılar](../docs/urunlesme-ikinci-dalga-20261015.md) bağlayıcıdır.
+K-284/C5 ve K-287/C2 exact cd5d12f0008620819e6167af5146e83503fd2b38
+zee-cekirdek talebinin minimal araç yüzeyleridir; grammar genişletilmez.
+K-294 mevcut control-FD correctness düzeltmesi, kaynak SHA + regression
+follow-up olmadan kapanamaz. K-288 ve K-293 araç retleri nedeniyle açıktır.
+
+### K-285 — aday SQL HTTP çıktısının kaçış sınırı
+
+İlk kaynak commitinden önce v3 host, JSON metnini HTML bağlamında bütünüyle
+kaçışlayıp sabit pre öğesinde sunar. Model10 ve gerçek Mac PostgreSQL9
+olumlu/olumsuz test geçti; GB-101 kapandı. Tarihsel yayımlanmış sürüm
+veya tarayıcıda çalışmış istismar iddiası yoktur; temiz exact kabul bekler.
+
+### K-293 — P33 incelemesinin açık sınırı
+
+Salt okunur beş alan/20 test matrisi var; koordineli reproducer otomatik
+araç incelemesince reddedildi. GB-109 düşük önemle eksik kanıtı izler;
+gözlenmiş istismar veya kapanmış yarış koşulu iddiası verilmez.
+
+### K-294 — designated FD sessiz ret düzeltmesi
+
+Mevcut stderr alias tanı sızıntısı actual26 ile giderildi; GB-110 düşük
+önemle exact kaynak SHA ve minimal regression follow-up kaydını bekler.

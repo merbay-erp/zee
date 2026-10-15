@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""K271: trusted fixture scenarios over real owned CLI/HTTP/PG, not source coverage."""
+"""K271/K286: owned CLI/HTTP/PG; optional actual Zee source coverage."""
 import argparse
 import hashlib
 import importlib.util
@@ -205,6 +205,7 @@ class Kit:
         self.proof = None
         self.command_owner = owner.Supervisor(SimpleNamespace(project=work, stop_grace=1), None)
         self.commands = 0
+        self.coverage_output = None
 
     def command(self, argv, env=None, timeout=15, limit=512 * 1024, input_bytes=None):
         if self.proof is not None:
@@ -333,7 +334,13 @@ class Kit:
             with socket.socket() as sock:
                 sock.bind(('127.0.0.1', 0))
                 port = sock.getsockname()[1]
-            child = worker_owner.spawn([str(self.binary), 'çalıştır', '--web-proxy', 'https://fixture.example', '--web-worker-port', str(port), str(project)], environment=env)
+            worker_args = [str(self.binary), 'çalıştır']
+            coverage_path = None
+            if self.coverage_output is not None:
+                coverage_path = self.coverage_output / ('coverage-' + case['id'] + '.json')
+                worker_args += ['--kapsam', str(coverage_path)]
+            worker_args += ['--web-proxy', 'https://fixture.example', '--web-worker-port', str(port), str(project)]
+            child = worker_owner.spawn(worker_args, environment=env)
             until = min(END, time.monotonic() + 10)
             while True:
                 need(worker_owner.exit_status(child) is None and time.monotonic() < until, 'worker_start')
@@ -369,7 +376,29 @@ class Kit:
                     tokens[step['capture_csrf']] = next(iter(distinct))
                 if 'snapshot' in step['expect']:
                     need(body == local(root, step['expect']['snapshot']).read_bytes(), 'snapshot_mismatch')
-            return {'id': case['id'], 'passed': True, 'requests': sum('method' in x for x in case['steps']), 'observations': observations_done, 'cluster_system_identifier': cluster_identity, 'observer_readonly': cluster_identity is not None}
+            result = {'id': case['id'], 'passed': True, 'requests': sum('method' in x for x in case['steps']), 'observations': observations_done, 'cluster_system_identifier': cluster_identity, 'observer_readonly': cluster_identity is not None}
+            if coverage_path is not None:
+                child.send_signal(signal.SIGTERM)
+                until = min(END, time.monotonic() + 5)
+                while worker_owner.exit_status(child) is None:
+                    need(time.monotonic() < until, 'coverage_worker_exit')
+                    time.sleep(.01)
+                need(worker_owner.exit_status(child) == 0, 'coverage_worker_exit')
+                worker_owner.stop_child(child)
+                coverage = load(coverage_path, 2 * 1024 * 1024)
+                need(coverage.get('schema') == 'zee-source-coverage-1' and coverage.get('complete') is True and coverage.get('execution_success') is True and coverage.get('compiler_build') == build, 'coverage_identity')
+                snapshots = coverage.get('sources')
+                need(type(snapshots) is dict and 1 <= len(snapshots) <= 256, 'coverage_snapshots')
+                for name, pin in snapshots.items():
+                    if name.startswith('gömülü:'):
+                        need(proof.get('unit', {}).get('embedded_sources', {}).get(name) == pin, 'coverage_embedded_snapshot')
+                    else:
+                        path = Path(name)
+                        need(path.is_absolute() and project in path.parents and path.suffix == '.dil' and sha(path) == pin, 'coverage_snapshot')
+                        original = case['project'] + '/' + str(path.relative_to(project))
+                        need(proof['fixture_inventory'].get(original) == pin, 'coverage_fixture_binding')
+                result['source_coverage'] = {'path': str(coverage_path), 'sha256': sha(coverage_path), 'product': coverage['product'], 'tests': coverage['tests'], 'sources': snapshots}
+            return result
         finally:
             try:
                 worker_owner.cleanup()
@@ -446,7 +475,10 @@ def main(argv=None):
     for name in ('suite-sha256', 'binary-sha256', 'expected-source'):
         parser.add_argument('--' + name, required=True)
     parser.add_argument('--candidate', action='store_true')
+    parser.add_argument('--source-coverage', action='store_true')
+    parser.add_argument('--unit-receipt', type=Path)
     args = parser.parse_args(argv)
+    need(not args.source_coverage or args.unit_receipt is not None, 'coverage_requires_unit_bridge')
     root = args.fixture_root.resolve(strict=True)
     binary = args.dil.resolve(strict=True)
     pg = args.postgres_bin_dir.resolve(strict=True)
@@ -475,9 +507,18 @@ def main(argv=None):
         with tempfile.TemporaryDirectory(prefix='zee-kit-', dir='/private/tmp' if Path('/private/tmp').is_dir() else '/tmp') as temp:
             kit = Kit(owner, binary, pg, Path(temp).resolve(), executable_pins)
             kit.proof = proof
+            kit.coverage_output = output if args.source_coverage else None
+            if args.unit_receipt is not None:
+                unit = load(args.unit_receipt, 16384)
+                need(unit.get('schema') == 'zee-dene-unit-before-native-1' and unit.get('passed') is True, 'unit_receipt')
+                proof['unit'] = unit
+                proof['unit_receipt_sha256'] = sha(args.unit_receipt, 16384)
             build = json.loads(kit.command([binary, 'sürüm', '--json'], limit=4096))
             need(build.get('schema') == 'zee-build-v1' and build.get('source_sha') == args.expected_source and (args.candidate or build.get('dirty') is False), 'build_identity')
             proof['build'] = build
+            if args.unit_receipt is not None:
+                need(proof['unit'].get('compiler_build') == build and proof['unit'].get('python_sha256') == sha(Path(sys.executable).resolve()), 'unit_build_runtime')
+                proof['executables'][str(Path(sys.executable).resolve())] = proof['unit']['python_sha256']
             version = kit.command([pg / 'postgres', '--version'], limit=512).decode().strip()
             need(version == 'postgres (PostgreSQL) 16.15', 'pg_version')
             proof['postgres_version'] = version
@@ -492,6 +533,8 @@ def main(argv=None):
             need(suite_end == suite_bytes, 'suite_changed')
             validate(root, decode_json(suite_end))
             need(json.loads(kit.command([binary, 'sürüm', '--json'], limit=4096)) == build, 'end_identity')
+            if args.unit_receipt is not None:
+                need(sha(Path(sys.executable).resolve()) == proof['unit']['python_sha256'], 'python_changed')
             proof.update(status='passed', source_pins_unchanged=True, owned_cleanup=True)
     except BaseException as error:
         proof['status'] = 'failed'

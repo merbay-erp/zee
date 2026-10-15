@@ -49,22 +49,7 @@ impl Profile {
             if !args[i].starts_with('-') {
                 break;
             }
-            i += if matches!(
-                args[i].as_str(),
-                "--web-proxy"
-                    | "--güvenli-web-proxy"
-                    | "--web-worker-port"
-                    | "--web-oran-deposu"
-                    | "--web-oran-siniri"
-                    | "--web-oran-kapasitesi"
-                    | "--web-oran-doluluk"
-                    | "--ayar"
-                    | "--profil"
-            ) {
-                2
-            } else {
-                1
-            };
+            i += if option_has_value(&args[i]) { 2 } else { 1 };
         }
         if values.iter().all(Option::is_none) {
             return Ok(None);
@@ -116,6 +101,34 @@ impl Profile {
         Ok(Some(p))
     }
 }
+// Shared value walker: quiet detection does not grant an option/profile.
+fn option_has_value(option: &str) -> bool {
+    matches!(
+        option,
+        "--web-proxy"
+            | "--güvenli-web-proxy"
+            | "--web-worker-port"
+            | "--web-oran-deposu"
+            | "--web-oran-siniri"
+            | "--web-oran-kapasitesi"
+            | "--web-oran-doluluk"
+            | "--ayar"
+            | "--profil"
+            | "--kapsam"
+            | "--web-suite"
+            | "--web-suite-sha256"
+            | "--web-fixtures"
+            | "--test-python"
+            | "--test-postgres-bin"
+            | "--test-output"
+            | "--web-listener-fd"
+            | "--web-ready-fd"
+            | "--web-activate-fd"
+            | "--web-generation"
+            | "--web-metrik-fd"
+    )
+}
+
 #[cfg(unix)]
 mod unix {
     use super::Profile;
@@ -301,6 +314,21 @@ mod unix {
         }
         Ok(())
     }
+    pub(crate) fn aliases_stdio(fd: i32) -> bool {
+        if (0..=2).contains(&fd) {
+            return true;
+        }
+        let Ok(value) = identity(fd) else {
+            return false;
+        };
+        let pair = pipe_pair(fd, true).ok().flatten();
+        (0..=2).any(|stdio| {
+            identity(stdio).is_ok_and(|other| other == value)
+                || pair.is_some_and(|pair| {
+                    pipe_pair(stdio, true).is_ok_and(|other| other == Some(pair))
+                })
+        })
+    }
     pub(crate) fn preflight(p: &Profile) -> Result<(), String> {
         let mut roles = vec![p.listener, p.ready, p.activate];
         if let Some(metric) = p.metric {
@@ -467,6 +495,45 @@ mod unix {
 pub(crate) use unix::{install, preflight, Control};
 
 pub(crate) fn quiet_preflight(args: &[String]) -> Result<(), String> {
+    #[cfg(unix)]
+    {
+        // Borrow only; inspect every lateral FD before any parse/config diagnostic.
+        // '=' is recognized only to keep rejected malformed profiles quiet.
+        let roles = [
+            "--web-listener-fd",
+            "--web-ready-fd",
+            "--web-activate-fd",
+            "--web-metrik-fd",
+        ];
+        let mut i = 1;
+        while let Some(arg) = args.get(i) {
+            if !arg.starts_with('-') {
+                break;
+            }
+            let (name, inline) = arg
+                .split_once('=')
+                .map_or((arg.as_str(), None), |(n, v)| (n, Some(v)));
+            if roles.contains(&name) {
+                if let Some(fd) = inline
+                    .or_else(|| args.get(i + 1).map(String::as_str))
+                    .and_then(|s| s.parse::<i32>().ok())
+                    .filter(|fd| *fd >= 0)
+                {
+                    if unix::aliases_stdio(fd) {
+                        return Err("native control stdio alias rejected".into());
+                    }
+                }
+            }
+            i += if inline.is_none()
+                && option_has_value(name)
+                && args.get(i + 1).is_some_and(|v| !v.starts_with('-'))
+            {
+                2
+            } else {
+                1
+            };
+        }
+    }
     let mut borrowed = args.to_vec();
     if let Some(profile) = Profile::extract(&mut borrowed)? {
         #[cfg(unix)]

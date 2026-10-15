@@ -1,0 +1,1 @@
+{"schema":"zee-sql-module-1","id":"stock","label":"Anonim stok","fields":[{"name":"order","type":"text"},{"name":"quantity","type":"integer"},{"name":"enabled","type":"boolean"}]}

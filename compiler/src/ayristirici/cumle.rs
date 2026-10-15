@@ -295,6 +295,7 @@ impl Ayristirici {
                     let yol = tekil_ifade(t[bas].clone())?;
                     let govde = self.alt_blok(satir_no)?;
                     Ok(Cumle::IstekGeldiginde {
+                        koken: None,
                         yontem,
                         yol,
                         onekli: false,
@@ -310,6 +311,7 @@ impl Ayristirici {
                     let yol = tekil_ifade(t[bas].clone())?;
                     let govde = self.alt_blok(satir_no)?;
                     Ok(Cumle::IstekGeldiginde {
+                        koken: None,
                         yontem,
                         yol,
                         onekli: true,

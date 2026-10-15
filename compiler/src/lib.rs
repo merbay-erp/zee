@@ -80,6 +80,8 @@ pub mod surum;
 pub mod tani;
 mod tani_politikasi;
 #[doc(hidden)]
+pub mod test_kapsami;
+#[doc(hidden)]
 pub mod veritabani_modeli;
 #[doc(hidden)]
 pub mod wasm_api;
@@ -291,6 +293,16 @@ fn birim_kokeniyle(tani: Tani, koken: &str) -> Tani {
 
 /// Bir kaynak dosyayı çözer: birimlerini özyinelemeli yükler, kendi
 /// tanımlarını içe alınanlarla birleştirir. `birim_adi` None ise ana dosyadır.
+fn analiz_tokenlari(
+    kaynak: &str,
+    koken: Option<&str>,
+    oturum: &mut Option<&mut faz::AnalizOturumu>,
+) -> Result<faz::TokenAkisi, Tani> {
+    match oturum.as_deref_mut() {
+        Some(oturum) => oturum.sozcukle(kaynak, koken).map(faz::TokenAkisi::yeni),
+        None => KaynakMetni::yeni(kaynak).sozcukle(),
+    }
+}
 fn dosyayi_coz(
     kaynak: &str,
     kaynak_kokeni: Option<&str>,
@@ -298,7 +310,25 @@ fn dosyayi_coz(
     yukleyici: &mut KokenliBirimYukleyici,
     yigin: &mut Vec<String>,
 ) -> Result<CozulmusDosya, Tani> {
-    let tokenlar = KaynakMetni::yeni(kaynak).sozcukle()?;
+    dosyayi_coz_oturumlu(
+        kaynak,
+        kaynak_kokeni,
+        ana_kaynak,
+        yukleyici,
+        yigin,
+        &mut None,
+    )
+}
+
+fn dosyayi_coz_oturumlu(
+    kaynak: &str,
+    kaynak_kokeni: Option<&str>,
+    ana_kaynak: bool,
+    yukleyici: &mut KokenliBirimYukleyici,
+    yigin: &mut Vec<String>,
+    oturum: &mut Option<&mut faz::AnalizOturumu>,
+) -> Result<CozulmusDosya, Tani> {
+    let tokenlar = analiz_tokenlari(kaynak, kaynak_kokeni, oturum)?;
     let bu_koken = kaynak_kokeni.unwrap_or("").to_string();
 
     // 1) Birimleri önden yükle (çağrı tanıma için işlem adları gerekli).
@@ -313,7 +343,9 @@ fn dosyayi_coz(
     // K-211: `<ad> rotalarını kullan` ile alınan birimlerin üst düzey rotaları.
     let mut rota_birimleri: HashMap<String, Vec<Cumle>> = HashMap::new();
 
-    for (ad, tur, satir) in ayristirici::kullanilan_birimler(tokenlar.tokenlar()) {
+    let kullanilan_birimler = ayristirici::kullanilan_birimler(tokenlar.tokenlar());
+    let yaprak = kullanilan_birimler.is_empty();
+    for (ad, tur, satir) in kullanilan_birimler {
         let yuklenen = yukleyici(BirimIstegi {
             ad: &ad,
             tur,
@@ -337,12 +369,13 @@ fn dosyayi_coz(
             .onerili("Ortak tanımları üçüncü bir birime ya da pakete taşı.".into()));
         }
         yigin.push(yuklenen.koken.clone());
-        let birim = dosyayi_coz(
+        let birim = dosyayi_coz_oturumlu(
             &yuklenen.kaynak,
             Some(&yuklenen.koken),
             false,
             yukleyici,
             yigin,
+            oturum,
         )
         .map_err(|tani| birim_kokeniyle(tani, &yuklenen.koken));
         yigin.pop();
@@ -372,7 +405,15 @@ fn dosyayi_coz(
         .filter(|islem| islem.disari_acik)
         .map(|islem| islem.ad.clone())
         .collect();
-    let cumleler = tokenlar.ayristir(tohum)?.into_cumleler();
+    let mut cumleler = if yaprak {
+        match oturum.as_deref_mut() {
+            Some(oturum) => oturum.ayristir_yapragi(tokenlar, kaynak, kaynak_kokeni)?,
+            None => tokenlar.ayristir(tohum)?.into_cumleler(),
+        }
+    } else {
+        tokenlar.ayristir(tohum)?.into_cumleler()
+    };
+    agac::rota_kokenlerini_isaretle(&mut cumleler, kaynak_kokeni);
     // K-211: rota birimlerinin rotaları `rotalarını kullan` satırının yerine, kendi sırasıyla girer.
     let cumleler = rotalari_kat(cumleler, &mut rota_birimleri);
 
@@ -786,7 +827,16 @@ pub fn kaynagi_tanilari_kokenlerle(
     koken: Option<&str>,
     yukleyici: &mut KokenliBirimYukleyici,
 ) -> Vec<Tani> {
-    let tokenlar = match KaynakMetni::yeni(kaynak).sozcukle() {
+    kaynagi_tanilari_oturumlu(kaynak, koken, yukleyici, None)
+}
+
+pub(crate) fn kaynagi_tanilari_oturumlu(
+    kaynak: &str,
+    koken: Option<&str>,
+    yukleyici: &mut KokenliBirimYukleyici,
+    mut oturum: Option<&mut faz::AnalizOturumu>,
+) -> Vec<Tani> {
+    let tokenlar = match analiz_tokenlari(kaynak, koken, &mut oturum) {
         Ok(tokenlar) => tokenlar,
         Err(tani) => return vec![tani],
     };
@@ -807,12 +857,13 @@ pub fn kaynagi_tanilari_kokenlerle(
         }) {
             Ok(yuklenen) => {
                 yigin.push(yuklenen.koken.clone());
-                match dosyayi_coz(
+                match dosyayi_coz_oturumlu(
                     &yuklenen.kaynak,
                     Some(&yuklenen.koken),
                     false,
                     yukleyici,
                     &mut yigin,
+                    &mut oturum,
                 ) {
                     Ok(mut birim) => {
                         if tur == KullanimTuru::Rota {

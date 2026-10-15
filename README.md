@@ -155,11 +155,11 @@ Değişikliğe özel test, belge ve güvenlik kapıları [AGENTS.md](AGENTS.md) 
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **961** |
-| Tanı kimliği | **159 etkin + 3 ayrılmış** |
+| Rust + doctest vakası | **1015** |
+| Tanı kimliği | **162 etkin + 3 ayrılmış** |
 | RFC | **34** (2 kabul, 29 geçici kabul, 3 taslak) |
-| ADR | **134** (134 kabul) |
-| Normatif spec bölümü | **28** |
+| ADR | **147** (135 kabul) |
+| Normatif spec bölümü | **30** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
 </details>
@@ -358,3 +358,8 @@ normu, public Rust API veya production bağımlılık değişikliği yoktur.
 Temiz `8b49113c413f62b35d4b251ed31068524d2fe26c` kaynağında943/959normalfaz,16dedicatedowner/25ayrınativegrup, macOS/Linuxkanonik teslim/kurulum, Linuxcarrier/container/timer,900snownedyük ve1800sncompiler/LSPsoak tamamlandı. DörtASAN hedefi1801sn, ikiMiri grubunda3test ve aynıS RCkapısı510.198758sn geçti; GB082dar kapsamda kapalıdır. [Son rapor](docs/urunlesme-final-kabul-20261015.md) gerçek teknik/ürün/insan/platform ve IDEcompletion/orderlyshutdown açıklarını korur. E yalnız kanıt/belge arşividir; imza/releaseetiketi/yayın yapılmadı.
 
 [RC sonuç makbuzu](docs/incelemeler/urunlesme-20261014/final-8b49113/rc/FINAL-RESULT.json), [aynı-S kapı makbuzunun türetilmiş temsili](docs/incelemeler/urunlesme-20261014/final-8b49113/rc/POST-GATE-RECEIPT.derived.json), [bağımsız kök incelemesi](docs/incelemeler/urunlesme-20261014/final-8b49113/rc/root-independent-review.json).
+
+Editörün UTF-16 eşitlemesi, biçim ve opt-in uyarıları [editör analizi](docs/editor-analizi.md);
+`dene` içindeki pinli HTTP/DB araçları [native test köprüsü](docs/dene-native-web-koprusu.md);
+mevcut adayların kabul sınırları [ikinci teknik dalga](docs/urunlesme-ikinci-dalga-20261015.md)
+belgelerinde tutulur. Yeni kaynak henüz final temiz sürüm kabulü değildir.

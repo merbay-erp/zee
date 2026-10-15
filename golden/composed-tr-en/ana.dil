@@ -1,0 +1,42 @@
+# K289 composed anonymous application; not private product adoption.
+routes birimini kullan
+argümanlar komut satırından gelenler olsun
+receipt argümanların ilki olsun
+receipt dosyasına "{\"schema\":\"zee-worker-readiness-1\",\"application_revision\":\"4444444444444444444444444444444444444444\",\"ready\":true}" yaz
+8080 kapısında sunucu başlat
+GET "/tr/bildirimler" adresine istek geldiğinde
+    sonuc "/tr/bildirimler" için rotaSayfasiniKur olsun
+    sonuc başarılıysa
+        sonucun değeri yanıtını gönder
+    değilse
+        "sayfa-ret" yanıtını 500 durumuyla gönder
+GET "/tr/bildirimler/eposta" adresine istek geldiğinde
+    sonuc "/tr/bildirimler/eposta" için rotaSayfasiniKur olsun
+    sonuc başarılıysa
+        sonucun değeri yanıtını gönder
+    değilse
+        "sayfa-ret" yanıtını 500 durumuyla gönder
+GET "/tr/bildirimler/ozet" adresine istek geldiğinde
+    sonuc "/tr/bildirimler/ozet" için rotaSayfasiniKur olsun
+    sonuc başarılıysa
+        sonucun değeri yanıtını gönder
+    değilse
+        "sayfa-ret" yanıtını 500 durumuyla gönder
+GET "/en/notifications" adresine istek geldiğinde
+    sonuc "/en/notifications" için rotaSayfasiniKur olsun
+    sonuc başarılıysa
+        sonucun değeri yanıtını gönder
+    değilse
+        "sayfa-ret" yanıtını 500 durumuyla gönder
+GET "/en/notifications/email" adresine istek geldiğinde
+    sonuc "/en/notifications/email" için rotaSayfasiniKur olsun
+    sonuc başarılıysa
+        sonucun değeri yanıtını gönder
+    değilse
+        "sayfa-ret" yanıtını 500 durumuyla gönder
+GET "/en/notifications/digest" adresine istek geldiğinde
+    sonuc "/en/notifications/digest" için rotaSayfasiniKur olsun
+    sonuc başarılıysa
+        sonucun değeri yanıtını gönder
+    değilse
+        "sayfa-ret" yanıtını 500 durumuyla gönder

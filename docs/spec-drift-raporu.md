@@ -34,7 +34,9 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 | `spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md` | 2 | 2 | 0 | 0 |
 | `spec/27-uyumluluk-ve-surumleme.md` | 13 | 11 | 1 | 1 |
 | `spec/28-gorunum-blogu.md` | 2 | 2 | 0 | 0 |
-| **Toplam** | **214** | **207** | **5** | **2** |
+| `spec/29-test-kapsami.md` | 5 | 5 | 0 | 0 |
+| `spec/30-editor-analizi-ve-lint.md` | 11 | 10 | 0 | 1 |
+| **Toplam** | **230** | **222** | **5** | **3** |
 
 ## Kısmi kanıtlı maddeler
 
@@ -48,6 +50,7 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 
 - `spec/25-postgresql-veri-erisimi.md#f94f82cb0245cf0a` — Managed-provider sertifika rotasyonu, birden çok worker'ın toplam bütçe … — K-169/K-173 release tatbikatı ve çok-worker toplam bütçe provası bekliyor; async driver, PostgreSQL dışı DB ve ORM vaat edilmiyor.
 - `spec/27-uyumluluk-ve-surumleme.md#285d87941dc0c3ba` — 1.0 sonrasında dondurulmuş yüzeylerde kırıcı değişiklik yalnız yeni ana … — Edition alanının `proje.dil` sözdizimi ayrı RFC ister; 1.0 öncesi bağlayıcı yalnız RFC-0028 çerçevesidir.
+- `spec/30-editor-analizi-ve-lint.md#38480ce75d9537ab` — Kapsam ve performans (AÇIK) — K-287: artımlı HIR, genel gerçek ürün gecikmesi ve temiz exact uzun RSS kabulü açık; üretilen1/41açıkbelge gözlemi ayrı.
 
 ## Sürüklenme
 

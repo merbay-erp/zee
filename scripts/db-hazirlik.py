@@ -211,6 +211,7 @@ def main(argv=None):
     parser.add_argument('--deadline', type=float, default=8)
     parser.add_argument('--rounds', type=int, default=1)
     parser.add_argument('--interval', type=float, default=2)
+    parser.add_argument('--continuous', action='store_true')
     stopped, handlers = [False], {}
     def stop(signum, frame):
         stopped[0] = True
@@ -218,8 +219,8 @@ def main(argv=None):
     try:
         args = parser.parse_args(argv)
         require(os.name == 'posix' and HEX40.fullmatch(args.expected_source) and HEX40.fullmatch(args.application_revision) and HEX64.fullmatch(args.contract_sha256) and 0.1 <= args.deadline <= 15, 'input')
-        require(1 <= args.rounds <= 1000 and 2 <= args.interval <= 60, 'input')
-        if args.rounds > 1:
+        require(1 <= args.rounds <= 1000 and 2 <= args.interval <= 60 and (not args.continuous or args.rounds == 1), 'input')
+        if args.rounds > 1 or args.continuous:
             for number in (signal.SIGTERM, signal.SIGINT):
                 handlers[number] = signal.signal(number, stop)
         revision = args.application_revision
@@ -228,15 +229,17 @@ def main(argv=None):
         require(path.is_absolute(), 'gate')
         gate = Gate(worker, path, revision)
         gate.write(False)
-        for index in range(args.rounds):
+        index = 0
+        while args.continuous or index < args.rounds:
             require(not stopped[0], 'cancelled')
             try:
                 probe(args, gate, lambda: stopped[0])
             except Reject as error:
                 gate.write(False)
-                if args.rounds == 1 or error.code not in {'migration', 'schema', 'timeout'}:
+                if (args.rounds == 1 and not args.continuous) or error.code not in {'migration', 'schema', 'timeout'}:
                     raise
-            if index + 1 < args.rounds:
+            index += 1
+            if args.continuous or index < args.rounds:
                 end = time.monotonic() + args.interval
                 while time.monotonic() < end and not stopped[0]:
                     time.sleep(min(.05, max(0, end-time.monotonic())))
@@ -248,7 +251,7 @@ def main(argv=None):
     finally:
         if gate is not None:
             try:
-                if args.rounds > 1 or code != 0:
+                if args.rounds > 1 or args.continuous or code != 0:
                     gate.write(False)
             except (Reject, OSError, ValueError, TypeError):
                 reason, code = 'gate', 2

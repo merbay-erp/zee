@@ -15,6 +15,8 @@ mod lsp_uri_fixture;
 
 #[path = "semantic_regresyon/native_listener_deadline.rs"]
 mod native_listener_deadline_fixture;
+#[path = "semantic_regresyon/native_metric_stdio.rs"]
+mod native_metric_stdio_fixture;
 
 const SEMA: &str = "# zee-semantic-regresyon-2";
 const FAZLAR: &[&str] = &[
@@ -42,6 +44,7 @@ const KIPLER: &[&str] = &[
     "cli",
     "lsp-uri",
     "native-listener-deadline",
+    "native-metric-stdio",
 ];
 
 #[derive(Debug, Clone)]
@@ -205,7 +208,7 @@ fn faz_kipi_kabul_eder(faz: &str, kip: &str) -> bool {
             kip,
             "capability" | "web" | "smtp" | "native-listener-deadline"
         ),
-        "cli" => kip == "cli",
+        "cli" => matches!(kip, "cli" | "native-metric-stdio"),
         "lsp" => kip == "lsp-uri",
         _ => false,
     }
@@ -268,6 +271,15 @@ fn vakayi_calistir(vaka: &Vaka, kaynak: &str) -> Gozlem {
     }
     if vaka.kip == "cli" {
         return cli_gozle(kaynak);
+    }
+    if vaka.kip == "native-metric-stdio" {
+        let (cikis, cikti) =
+            native_metric_stdio_fixture::calistir(&depo(), &depo().join(&vaka.dosya));
+        return Gozlem {
+            tani: None,
+            cikis,
+            cikti,
+        };
     }
     if vaka.kip == "native-listener-deadline" {
         let (cikis, cikti) =
@@ -507,6 +519,12 @@ fn semantic_regresyon_manifesti_tam_tekil_ve_minimaldir() {
             vaka.faz,
             vaka.kip
         );
+        if vaka.kip == "native-metric-stdio" {
+            assert!(
+                native_metric_manifest_sozlesmesi(vaka),
+                "native metric manifest CLI exit2/empty/no diagnostic contract"
+            );
+        }
         if vaka.kip == "native-listener-deadline" {
             assert!(
                 native_deadline_manifest_sozlesmesi(vaka),
@@ -599,10 +617,12 @@ fn semantic_regresyon_manifesti_tam_tekil_ve_minimaldir() {
 
 #[test]
 fn duzeltilmis_semantic_buglar_tani_span_cikis_ve_ciktiyi_korur() {
-    for vaka in vakalari_oku()
-        .into_iter()
-        .filter(|vaka| vaka.kip != "native-listener-deadline")
-    {
+    for vaka in vakalari_oku().into_iter().filter(|vaka| {
+        !matches!(
+            vaka.kip.as_str(),
+            "native-listener-deadline" | "native-metric-stdio"
+        )
+    }) {
         let kaynak = std::fs::read_to_string(depo().join(&vaka.dosya))
             .unwrap_or_else(|hata| panic!("{} okunamadı: {hata}", vaka.dosya));
         // K-178: vaka resmî CLI yığınında koşar; debug çerçevesi 2 MiB test iş
@@ -723,4 +743,38 @@ fn native_listener_deadline_regresyonu_gercek_owned_host_ile_korunur() {
         assert_eq!(gozlem.cikis, vaka.cikis);
         assert_eq!(gozlem.cikti, vaka.cikti);
     }
+}
+
+fn native_metric_manifest_sozlesmesi(v: &Vaka) -> bool {
+    v.faz == "cli"
+        && v.kip == "native-metric-stdio"
+        && v.cikis == 2
+        && v.cikti.is_empty()
+        && v.tani.is_none()
+        && v.span.is_none()
+}
+#[test]
+fn native_metric_manifest_cli_owned_ve_sessiz_exit2_ile_sinirlidir() {
+    assert!(KIPLER.contains(&"native-metric-stdio"));
+    assert!(faz_kipi_kabul_eder("cli", "native-metric-stdio"));
+    for phase in FAZLAR.iter().filter(|p| **p != "cli") {
+        assert!(!faz_kipi_kabul_eder(phase, "native-metric-stdio"));
+    }
+    let mut v = vakalari_oku().into_iter().next().unwrap();
+    v.faz = "cli".into();
+    v.kip = "native-metric-stdio".into();
+    v.cikis = 2;
+    v.cikti.clear();
+    v.tani = None;
+    v.span = None;
+    assert!(native_metric_manifest_sozlesmesi(&v));
+    v.cikis = 0;
+    assert!(!native_metric_manifest_sozlesmesi(&v));
+    v.cikis = 2;
+    v.cikti.push("not quiet".into());
+    assert!(!native_metric_manifest_sozlesmesi(&v));
+    v.cikti.clear();
+    v.tani = Some("C000".into());
+    v.span = Some((1, 1, 1));
+    assert!(!native_metric_manifest_sozlesmesi(&v));
 }

@@ -1,0 +1,25 @@
+# Existing stdio invokes the separately authenticated, owned PDF plugin host.
+is boş sözlük olsun
+isin "schema" değeri "zee-pdf-job-1" olsun
+isin "locale" değeri "tr" olsun
+isin "title" değeri "Anonim ürün kataloğu" olsun
+isin "product" değeri "Örnek ürün - ŞĞİıÇÖÜ" olsun
+isin "description" değeri "Görsel, gömülü font ve mevcut sayfalara ekleme sınaması." olsun
+isin "selection" değeri "cover-back" olsun
+isin "placement" değeri "after-cover" olsun
+istek boş sözlük olsun
+istegin "schema" değeri "zee-pdf-plugin-request-1" olsun
+istegin "job" değeri isin json metni olsun
+cerceve istegin json metni olsun
+cerceve diye sor
+cevap yanıt olsun
+sonuç cevap HTTP JSON sözlüğünü okumayı dene olsun
+sonuç başarılıysa
+    veri sonucun değeri olsun
+    durum verinin "status" değeri olsun
+    durum "\"produced\"" e eşitse
+        "PDF_PLUGIN_DONE" yaz
+    değilse
+        "PDF_PLUGIN_REJECTED" yaz
+değilse
+    "PDF_PLUGIN_REJECTED" yaz

@@ -1,0 +1,2 @@
+CREATE TABLE zee_starter_content(id text PRIMARY KEY CHECK(id ~ '^[a-z][a-z0-9_]{0,31}$'),title text NOT NULL CHECK(octet_length(title) BETWEEN 1 AND 512),body text NOT NULL CHECK(octet_length(body)<=8192));
+CREATE TABLE zee_starter_media(source_hash text PRIMARY KEY CHECK(source_hash ~ '^[0-9a-f]{64}$'),content_id text NOT NULL REFERENCES zee_starter_content(id),png_hash text NOT NULL DEFAULT '',state text NOT NULL CHECK(state IN ('preparing','ready','deleting')),CHECK(png_hash='' OR png_hash ~ '^[0-9a-f]{64}$'));

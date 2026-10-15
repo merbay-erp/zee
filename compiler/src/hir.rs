@@ -12,6 +12,7 @@ use crate::semantic_model::Tur;
 
 mod gezinme;
 mod kaynak;
+mod lint;
 #[cfg(test)]
 mod testler;
 

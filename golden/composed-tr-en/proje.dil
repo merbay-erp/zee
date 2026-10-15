@@ -1,0 +1,6 @@
+proje "anonim-composed-tr-en" olsun
+sürüm "0.1.0" olsun
+morfoloji "zee-tr-1" olsun
+giriş "ana.dil" olsun
+yetkinlikler "ağ-sunucusu", "dosya-yazma", "web-oturumu" listesi olsun
+yerel_bağımlılıklar boş liste olsun

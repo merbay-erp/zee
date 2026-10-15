@@ -1,0 +1,102 @@
+components birimini kullan
+catalog birimini kullan
+
+işlem sayfa
+    dil Metin olarak al
+    secim TamSayı olarak al
+    Metin sonucu döndürür
+    secim 0 dan küçükse
+        "sayfa-yok" hatasını döndür
+    secim 2 den büyükse
+        "sayfa-yok" hatasını döndür
+    siteSonuc dil ve "site" ile cevir olsun
+    site "" olsun
+    siteSonuc başarılıysa
+        site siteSonucun değeri olsun
+    değilse
+        "katalog-ret" hatasını döndür
+    listSonuc dil ve "list" ile cevir olsun
+    list "" olsun
+    listSonuc başarılıysa
+        list listSonucun değeri olsun
+    değilse
+        "katalog-ret" hatasını döndür
+    emailSonuc dil ve "email" ile cevir olsun
+    email "" olsun
+    emailSonuc başarılıysa
+        email emailSonucun değeri olsun
+    değilse
+        "katalog-ret" hatasını döndür
+    digestSonuc dil ve "digest" ile cevir olsun
+    digest "" olsun
+    digestSonuc başarılıysa
+        digest digestSonucun değeri olsun
+    değilse
+        "katalog-ret" hatasını döndür
+    emailBodySonuc dil ve "emailBody" ile cevir olsun
+    emailBody "" olsun
+    emailBodySonuc başarılıysa
+        emailBody emailBodySonucun değeri olsun
+    değilse
+        "katalog-ret" hatasını döndür
+    digestBodySonuc dil ve "digestBody" ile cevir olsun
+    digestBody "" olsun
+    digestBodySonuc başarılıysa
+        digestBody digestBodySonucun değeri olsun
+    değilse
+        "katalog-ret" hatasını döndür
+    navSonuc dil ve "nav" ile cevir olsun
+    nav "" olsun
+    navSonuc başarılıysa
+        nav navSonucun değeri olsun
+    değilse
+        "katalog-ret" hatasını döndür
+    footerSonuc dil ve "footer" ile cevir olsun
+    footer "" olsun
+    footerSonuc başarılıysa
+        footer footerSonucun değeri olsun
+    değilse
+        "katalog-ret" hatasını döndür
+    ilkYol "/tr/bildirimler/eposta" olsun
+    ikinciYol "/tr/bildirimler/ozet" olsun
+    dil "en" e eşitse
+        ilkYol "/en/notifications/email" olsun
+        ikinciYol "/en/notifications/digest" olsun
+    baslik site olsun
+    mainSlot list ve ilkYol ve email ve ikinciYol ve digest ile liste olsun
+    secim 1 e eşitse
+        baslik email olsun
+        mainSlot email ve emailBody ile detay olsun
+    secim 2 ye eşitse
+        baslik digest olsun
+        mainSlot digest ve digestBody ile detay olsun
+    navigationSlot nav için gezinme olsun
+    footerSlot footer için altbilgi olsun
+    belge görünüm olsun
+        ham "<!doctype html>"
+        html lang dil
+            head
+                meta charset "utf-8"
+                title
+                    metin baslik
+            body
+                header
+                    h1
+                        metin baslik
+                    ham navigationSlot
+                main
+                    ham mainSlot
+                ham footerSlot
+    belge döndür
+
+test "Yerleşim bilinmeyen sayfayı ve dili reddeder"
+    sonuc "tr" ve 3 ile sayfa olsun
+    sonuc başarısızsa
+        1 1 e eşit olmalı
+    değilse
+        1 0 a eşit olmalı
+    sonuc "de" ve 0 ile sayfa olsun
+    sonuc başarısızsa
+        1 1 e eşit olmalı
+    değilse
+        1 0 a eşit olmalı

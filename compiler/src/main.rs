@@ -21,6 +21,11 @@ use std::process::ExitCode;
 #[path = "cli/ayar.rs"]
 mod dil_ayar;
 
+#[path = "cli/kapsam.rs"]
+mod dil_kapsam;
+#[path = "cli/web_test_kit.rs"]
+mod dil_web_test;
+
 #[path = "cli/registry.rs"]
 mod dil_registry;
 #[cfg(unix)]
@@ -271,7 +276,14 @@ fn metrik_fd_ayikla(args: &mut Vec<String>) -> Result<Option<i32>, String> {
             | "--web-oran-deposu"
             | "--web-oran-siniri"
             | "--web-oran-kapasitesi"
-            | "--web-oran-doluluk" => i += 2,
+            | "--web-oran-doluluk"
+            | "--kapsam"
+            | "--web-suite"
+            | "--web-suite-sha256"
+            | "--web-fixtures"
+            | "--test-python"
+            | "--test-postgres-bin"
+            | "--test-output" => i += 2,
             arg if arg.starts_with("--") => i += 1,
             _ => break,
         }
@@ -290,6 +302,14 @@ fn metrik_fd_ayikla(args: &mut Vec<String>) -> Result<Option<i32>, String> {
         .ok_or_else(|| "--web-metrik-fd requires a host-owned descriptor in 3..255".to_string())?;
     args.drain(index..index + 2);
     Ok(Some(fd))
+}
+
+fn test_araclarini_ayikla(
+    argumanlar: &mut Vec<String>,
+) -> Result<(Option<dil_web_test::Plan>, Option<dil_kapsam::Rapor>), String> {
+    let native_test = dil_web_test::ayikla(argumanlar)?;
+    let kapsam = dil_kapsam::ayikla(argumanlar)?;
+    Ok((native_test, kapsam))
 }
 
 fn govde() -> ExitCode {
@@ -317,6 +337,13 @@ fn govde() -> ExitCode {
     if web_listener::quiet_preflight(&argumanlar).is_err() {
         return ExitCode::from(2);
     }
+    let (native_test, kapsam) = match test_araclarini_ayikla(&mut argumanlar) {
+        Ok(planlar) => planlar,
+        Err(hata) => {
+            eprintln!("{hata}");
+            return ExitCode::from(2);
+        }
+    };
     // Çocuk modu (K-047): --güvenli bayrağı komuttan bağımsız yakalanır.
     let guvenli = argumanlar
         .iter()
@@ -370,17 +397,19 @@ fn govde() -> ExitCode {
     match argumanlar.first().map(|s| s.as_str()) {
         Some("çalıştır") | Some("calistir") => {
             if guvenli {
-                dosya_ile(&argumanlar, calistir_guvenli_komutu)
+                dosya_ile_kapsam(&argumanlar, kapsam, calistir_guvenli_komutu)
             } else {
                 match web_modu {
-                    WebModu::Kapali => dosya_ile(&argumanlar, calistir_komutu),
-                    WebModu::Deneysel => dosya_ile(&argumanlar, calistir_deneysel_web_komutu),
+                    WebModu::Kapali => dosya_ile_kapsam(&argumanlar, kapsam, calistir_komutu),
+                    WebModu::Deneysel => {
+                        dosya_ile_kapsam(&argumanlar, kapsam, calistir_deneysel_web_komutu)
+                    }
                     WebModu::GuvenliProxy {
                         origin,
                         worker_kapi,
                         oran_ayari,
                         listener_profile,
-                    } => dosya_ile(&argumanlar, |girdi| {
+                    } => dosya_ile_kapsam(&argumanlar, kapsam, |girdi| {
                         calistir_guvenli_web_komutu(
                             girdi,
                             origin,
@@ -395,7 +424,9 @@ fn govde() -> ExitCode {
         }
         Some("denetle") => denetle_yolu(&argumanlar),
         Some("biçimle") | Some("bicimle") => bicimle_komutu(&argumanlar),
-        Some("dene") => dosya_ile(&argumanlar, dene_komutu),
+        Some("dene") => dosya_ile_kapsam(&argumanlar, kapsam, |girdi| {
+            dene_kopru_komutu(girdi, native_test)
+        }),
         Some("çıkar") | Some("cikar") => cikar_komutu(&argumanlar),
         Some("ekle") => ekle_komutu(&argumanlar),
         Some("kilitle") => dil_registry::kilitle_komutu(&argumanlar),
@@ -453,7 +484,7 @@ fn govde() -> ExitCode {
 fn cli_seceneklerini_denetle(argumanlar: &[String]) -> Result<(), String> {
     let komut = argumanlar.first().map(String::as_str).unwrap_or("");
     let (bayraklar, degerli): (&[&str], &[&str]) = match komut {
-        "denetle" => (&["--json"], &[]),
+        "denetle" => (&["--json", "--lint"], &[]),
         "sürüm" | "surum" => (&["--json", "--ayar-semasi"], &[]),
         "biçimle" | "bicimle" => (&["--denetle"], &[]),
         "göçür" | "gocur" => (&["--durum", "--kuru"], &[]),
@@ -510,6 +541,7 @@ fn kullanim() {
     );
     eprintln!("  dil denetle <dosya|proje>  çalıştırmadan denetler (--json: makine çıktısı)");
     eprintln!("  dil dene <dosya|proje>     test bloklarını koşar");
+    eprintln!("      dene/çalıştır: --kapsam /abs/fresh.json kaynak dal sonuçlarını izler");
     eprintln!("  dil biçimle [--denetle] <dosya|proje> biçimler; --denetle yazmadan biçim farkını denetler");
     eprintln!("  dil ekle <yerel-yol|ad@X.Y.Z> [proje] paketi doğrulayıp ekler ve kilitler");
     eprintln!("      ilk uzak paket: --registry https://... --kök 1@sha256:<özet>");
@@ -944,6 +976,8 @@ fn yeni_komutu(argumanlar: &[String]) -> ExitCode {
 
 fn denetle_yolu(argumanlar: &[String]) -> ExitCode {
     let json = argumanlar.iter().any(|a| a == "--json");
+    let lint = argumanlar.iter().any(|a| a == "--lint");
+    let _kokenler = dil::agac::kaynak_kokenlerini_izle(lint);
     let yol = match argumanlar.iter().skip(1).find(|a| !a.starts_with("--")) {
         Some(yol) => yol,
         None => {
@@ -962,23 +996,40 @@ fn denetle_yolu(argumanlar: &[String]) -> ExitCode {
     // Denetim TÜM tanıları toplar (RFC-0010 §3.1) — çalıştır ilk hatada durur.
     let mut tanilar =
         dil::kaynagi_tanilari_kokenlerle(&girdi.kaynak, Some(&girdi.koken), &mut yukleyici);
+    let mut uyarilar = Vec::new();
     if tanilar.is_empty() {
         let mut yukleyici = |istek: dil::BirimIstegi<'_>| girdi.birim_yukle(istek);
         if let Ok(program) =
-            dil::kaynagi_derle_kokenlerle(&girdi.kaynak, Some(&girdi.koken), &mut yukleyici)
+            dil::kaynagi_fazli_derle_kokenlerle(&girdi.kaynak, Some(&girdi.koken), &mut yukleyici)
         {
             if let Err(tani) =
-                dil::cozumleyici::yetkinlikleri_denetle(&program, &girdi.politikasi())
+                dil::cozumleyici::yetkinlikleri_denetle(program.program(), &girdi.politikasi())
             {
                 tanilar.push(tani);
+            } else if lint {
+                uyarilar = program.hir().uyarilari(Some(&girdi.koken));
             }
         }
     }
     if tanilar.is_empty() {
         if json {
-            println!("{{\"durum\":\"temiz\",\"tanilar\":[]}}");
+            if lint {
+                let govde: Vec<String> = uyarilar.iter().map(|t| t.json()).collect();
+                println!(
+                    "{{\"durum\":\"temiz\",\"tanilar\":[],\"uyarilar\":[{}]}}",
+                    govde.join(",")
+                );
+            } else {
+                println!("{{\"durum\":\"temiz\",\"tanilar\":[]}}");
+            }
         } else {
             println!("Denetim temiz: sözdizimi ve türler geçerli.");
+            for uyari in &uyarilar {
+                eprint!(
+                    "{}",
+                    tani_raporu(uyari, &girdi.kaynak).replacen("HATA ", "UYARI ", 1)
+                );
+            }
         }
         ExitCode::SUCCESS
     } else {
@@ -1503,13 +1554,20 @@ fn dil_dosyalarini_topla(
     Ok(())
 }
 
-fn dosya_ile<F>(argumanlar: &[String], komut: F) -> ExitCode
+fn dosya_ile_kapsam<F>(
+    argumanlar: &[String],
+    kapsam: Option<dil_kapsam::Rapor>,
+    komut: F,
+) -> ExitCode
 where
     F: FnOnce(&KaynakGirdisi) -> ExitCode,
 {
     match argumanlar.get(1) {
         Some(yol) => match girdiyi_oku(std::path::Path::new(yol)) {
-            Ok(girdi) => komut(&girdi),
+            Ok(mut girdi) => {
+                girdi.kapsam = kapsam;
+                komut(&girdi)
+            }
             Err(hata) => {
                 hata.yazdir(false);
                 hata.cikis_kodu()
@@ -1523,6 +1581,7 @@ where
 }
 
 struct KaynakGirdisi {
+    kapsam: Option<dil_kapsam::Rapor>,
     kaynak: String,
     klasor: std::path::PathBuf,
     koken: String,
@@ -1687,6 +1746,7 @@ fn girdiyi_oku(yol: &std::path::Path) -> Result<KaynakGirdisi, GirdiHatasi> {
             .unwrap_or(yol)
             .to_path_buf();
         Ok(KaynakGirdisi {
+            kapsam: None,
             kaynak: giris.kaynak,
             klasor,
             koken: giris.koken,
@@ -1705,6 +1765,7 @@ fn girdiyi_oku(yol: &std::path::Path) -> Result<KaynakGirdisi, GirdiHatasi> {
             .unwrap_or_else(|| std::path::Path::new("."))
             .to_path_buf();
         Ok(KaynakGirdisi {
+            kapsam: None,
             kaynak,
             klasor,
             koken: kanonik.to_string_lossy().into_owned(),
@@ -2656,6 +2717,13 @@ fn program_argumanlari() -> Vec<String> {
                         | "--web-metrik-fd"
                         | "--ayar"
                         | "--profil"
+                        | "--kapsam"
+                        | "--web-suite"
+                        | "--web-suite-sha256"
+                        | "--web-fixtures"
+                        | "--test-python"
+                        | "--test-postgres-bin"
+                        | "--test-output"
                         | "--web-oran-deposu"
                         | "--web-oran-siniri"
                         | "--web-oran-kapasitesi"
@@ -3765,7 +3833,25 @@ fn calistir_io_ile(
     politika: &dil::yetkinlik::YetkinlikPolitikasi,
     io: &mut dyn dil::yorumlayici::GirdiCikti,
 ) -> ExitCode {
-    let mut yukleyici = |istek: dil::BirimIstegi<'_>| girdi.birim_yukle(istek);
+    let _derleme_kapsami = dil::test_kapsami::derleme_baslat(girdi.kapsam.is_some());
+    let mut kaynaklar = if girdi.kapsam.is_some() {
+        Some(std::collections::BTreeMap::new())
+    } else {
+        None
+    };
+    if let Some(m) = &mut kaynaklar {
+        if let Err(hata) = dil_kapsam::kaynak_ekle(m, &girdi.koken, &girdi.kaynak) {
+            eprintln!("{hata}");
+            return ExitCode::FAILURE;
+        }
+    }
+    let mut yukleyici = |istek: dil::BirimIstegi<'_>| {
+        let birim = girdi.birim_yukle(istek)?;
+        if let Some(m) = &mut kaynaklar {
+            dil_kapsam::kaynak_ekle(m, &birim.koken, &birim.kaynak)?;
+        }
+        Ok(birim)
+    };
     let program =
         match dil::kaynagi_derle_kokenlerle(&girdi.kaynak, Some(&girdi.koken), &mut yukleyici) {
             Ok(program) => program,
@@ -3778,7 +3864,27 @@ fn calistir_io_ile(
         eprint!("{}", tani_raporu(&tani, &girdi.kaynak));
         return ExitCode::FAILURE;
     }
-    match dil::yorumlayici::calistir_io_kodla(&program, io) {
+    let nobetci = match kaynaklar {
+        Some(m) => match dil::test_kapsami::baslat(&program, &girdi.koken, m) {
+            Ok(n) => Some(n),
+            Err(h) => {
+                eprintln!("{h}");
+                return ExitCode::FAILURE;
+            }
+        },
+        None => None,
+    };
+    let sonuc = dil::yorumlayici::calistir_io_kodla(&program, io);
+    if let (Some(n), Some(r)) = (nobetci, girdi.kapsam.as_ref()) {
+        if let Err(hata) = n
+            .bitir(sonuc.as_ref().is_ok_and(|code| *code == 0))
+            .and_then(|v| r.yaz(v))
+        {
+            eprintln!("{hata}");
+            return ExitCode::FAILURE;
+        }
+    }
+    match sonuc {
         // K-069: `programı N ile bitir` süreç çıkış kodu olur (0–255).
         Ok(kod) => ExitCode::from(kod.clamp(0, 255) as u8),
         Err(tani) => {
@@ -3788,8 +3894,42 @@ fn calistir_io_ile(
     }
 }
 
+fn dene_kopru_komutu(girdi: &KaynakGirdisi, native_test: Option<dil_web_test::Plan>) -> ExitCode {
+    let sonuc = dene_komutu(girdi);
+    if let Some(plan) = native_test {
+        if let Err(hata) = plan.calistir(
+            sonuc == ExitCode::SUCCESS,
+            &girdi.kaynak,
+            &girdi.koken,
+            girdi.kapsam.as_ref().and_then(dil_kapsam::Rapor::ozet),
+        ) {
+            eprintln!("{hata}");
+            return ExitCode::from(2);
+        }
+    }
+    sonuc
+}
+
 fn dene_komutu(girdi: &KaynakGirdisi) -> ExitCode {
-    let mut yukleyici = |istek: dil::BirimIstegi<'_>| girdi.birim_yukle(istek);
+    let _derleme_kapsami = dil::test_kapsami::derleme_baslat(girdi.kapsam.is_some());
+    let mut kaynaklar = if girdi.kapsam.is_some() {
+        Some(std::collections::BTreeMap::new())
+    } else {
+        None
+    };
+    if let Some(m) = &mut kaynaklar {
+        if let Err(hata) = dil_kapsam::kaynak_ekle(m, &girdi.koken, &girdi.kaynak) {
+            eprintln!("{hata}");
+            return ExitCode::FAILURE;
+        }
+    }
+    let mut yukleyici = |istek: dil::BirimIstegi<'_>| {
+        let birim = girdi.birim_yukle(istek)?;
+        if let Some(m) = &mut kaynaklar {
+            dil_kapsam::kaynak_ekle(m, &birim.koken, &birim.kaynak)?;
+        }
+        Ok(birim)
+    };
     let program =
         match dil::kaynagi_derle_kokenlerle(&girdi.kaynak, Some(&girdi.koken), &mut yukleyici) {
             Ok(program) => program,
@@ -3802,7 +3942,26 @@ fn dene_komutu(girdi: &KaynakGirdisi) -> ExitCode {
         eprint!("{}", tani_raporu(&tani, &girdi.kaynak));
         return ExitCode::FAILURE;
     }
+    let nobetci = match kaynaklar {
+        Some(m) => match dil::test_kapsami::baslat(&program, &girdi.koken, m) {
+            Ok(n) => Some(n),
+            Err(h) => {
+                eprintln!("{h}");
+                return ExitCode::FAILURE;
+            }
+        },
+        None => None,
+    };
     let sonuclar = dil::programi_dene(&program);
+    if let (Some(n), Some(r)) = (nobetci, girdi.kapsam.as_ref()) {
+        if let Err(hata) = n
+            .bitir(sonuclar.iter().all(|s| s.hata.is_none()))
+            .and_then(|v| r.yaz(v))
+        {
+            eprintln!("{hata}");
+            return ExitCode::FAILURE;
+        }
+    }
     if sonuclar.is_empty() {
         println!("Bu dosyada test yok. Test eklemek için: test \"açıklama\"");
         return ExitCode::SUCCESS;

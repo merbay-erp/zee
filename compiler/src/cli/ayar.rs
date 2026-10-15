@@ -225,7 +225,14 @@ fn kaynak_yeri(a: &[String]) -> Option<usize> {
             | "--web-oran-deposu"
             | "--web-oran-siniri"
             | "--web-oran-kapasitesi"
-            | "--web-oran-doluluk" => 2,
+            | "--web-oran-doluluk"
+            | "--kapsam"
+            | "--web-suite"
+            | "--web-suite-sha256"
+            | "--web-fixtures"
+            | "--test-python"
+            | "--test-postgres-bin"
+            | "--test-output" => 2,
             "--güvenli" | "--guvenli" | "--deneysel-web" => 1,
             _ => return None,
         };
