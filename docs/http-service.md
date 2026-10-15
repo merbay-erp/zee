@@ -81,8 +81,10 @@ foreign survival, cancellation, lock/paths/config, finalfalse ve signal restorat
 sınar. Mevcut watcher10 da tekrar çalıştırılır. Bunlar native HTTP/PG/systemd
 kabulü değildir. Ayrı koşucu actual rendered unit, native HTTP+PG drift/restore,
 quota100→101 HUP, owned unit crash/restart, inflight TERM response ve actual own
-Popen watcher kaybını ayrı gözlemlerle ister. Yeni koşucu henüz yürütülmemiştir;
-önce root review ve exact clean kaynak/ikili, sonra owned Linux kabulü gerekir.
+Popen watcher kaybını ayrı gözlemlerle ister. İlk hazırlıkta yürütülmemiş olan
+koşucu, tarihsel [S3 kaynağında](urunlesme-s3-kabul-20261015.md) yedi Linux
+vakasını geçti. Bu, sonraki kaynakların yeniden kabulü değildir; her yeni
+kabul exact temiz kaynak/ikili ve sahipli Linux koşusuna bağlanır.
 
 Revision2: optional `allow_development` gerçek boolean, yoksa false. True yalnız
 mevcut worker --pilot seçeneğini açar; identity query ayrıca dirty=false ve exact

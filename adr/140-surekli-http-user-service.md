@@ -18,8 +18,9 @@ uydurulmaz. Native55s grace ve üç sahipli cleanup için outer210s cgroup stop
 budget'i açıkça sözleşmelidir. Runtime1 restart edilebilir, config2/lock75 değildir.
 
 [Rehber](../docs/http-service.md), hazırlık18, korunmuş watcher10 ve dedicated
-Linux native koşucusu aynı dilimdedir. Yeni native/systemd kabul henüz koşulmadı;
-eski S900/PG15/TTL5 kanıtı yeni source için kabul sayılamaz. GB-098, faz/surface ve
+Linux native koşucusu aynı dilimdedir. İlk hazırlık aşamasında native/systemd
+kabul henüz koşulmamıştı; sonraki tarihsel S3 kaynağında yedi vaka geçti.
+Eski S900/PG15/TTL5 veya S3 kanıtı başka bir kaynak için kabul sayılamaz. GB-098, faz/surface ve
 ortak plan/backlog kayıtları aynı kaynak diliminde güncellendi. Compiler/LSP cache veya
 persistent buffer eklenmez; yeni host işi core soak yerine mevcut bütün kaynak
 ve gerçek native işletim kapılarıyla doğrulanır. Ürün/adoption/platform açıktır.

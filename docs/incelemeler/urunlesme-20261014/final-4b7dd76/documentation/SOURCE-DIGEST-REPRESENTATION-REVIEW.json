@@ -1,0 +1,15 @@
+{
+  "schema": "zee-s4-source-digest-representation-review-1",
+  "source_sha": "4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2",
+  "source_file": "scripts/guvenlik-kapisi.sh",
+  "source_blob_sha256": "ab3f6e6a67a631a709e94837638f082fc348ba31b3869a8bf3bf0de3c92690c0",
+  "source_blob_equals_current_file": true,
+  "original_receipt_sha256": "2d7881094cb2d8eaf87b0346f9412561c082c89e44727a4dc182e2899c3e7b00",
+  "represented_receipt": "docs/incelemeler/urunlesme-20261014/final-4b7dd76/rc/GATE-RECEIPT.derived.json",
+  "byte_exact_inverse": true,
+  "default_scan_failure_preserved": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-document-proposal-scan/PROOF.json",
+  "redacted_diagnostic_report": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-document-proposal-scan-diagnostic/report.json",
+  "custom_allowlist": false,
+  "rule_suppression": false,
+  "real_secret_found": false
+}

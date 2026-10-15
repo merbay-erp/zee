@@ -17,8 +17,9 @@ seçtiği compiler sürümü gerçek sunucu yeteneklerini belirler.
 3. Mappings içinde `*.dil` ve language ID `dil` seçili olmalı.
    Bir `.dil` belgesi aç, initialize sonrasında tanılar, completion,
    hover, tanıma git ve rename işlevlerini dene; shutdown/exit ile kapat.
-   Tarihsel S1 pininde tam metin eşitlemesi vardır. K-287 adayı UTF-16
-   aralıklı eşitleme, biçim ve opt-in lint ekler; güncel sınırlar
+   Tarihsel S1 pininde tam metin eşitlemesi vardır. K-287, tarihsel S3
+   kaynağında UTF-16 aralıklı eşitleme, biçim ve opt-in lint için dar yerel
+   kabul taşır; güncel sınırlar
    [editör rehberindedir](../../docs/editor-analizi.md). Şablon bu compiler
    güncellemesini kendiliğinden kurmaz.
 
@@ -60,9 +61,17 @@ uygulamasında shutdown/yanıt/exit, normal Quit/Confirm Exit sonrasında exit0 
 owned süreç grubu kapanışı doğrulandı. Final Quit konsolu dışa aktarılmadı;
 önceki başarısız denemeler silinmedi. [ADR-138](../../adr/138-jetbrains-tamamlama-ve-duzenli-kapanis.md)
 ve [kanıt](../../docs/incelemeler/urunlesme-20261014/k280-jetbrains/ACCEPTANCE.json).
-Bu mevcut keyword desteğinin S1 kanıtıdır. K-287 yeni eşitleme/cache/lint
-kaynağının temiz IDE kabulü ayrıca yapılır; Windows/marketplace yayını açıktır.
+Bu mevcut keyword desteğinin S1 kanıtıdır. Sonraki tarihsel S3 kaynağında
+completion/format/tanı/shutdown/exit ayrıca kabul edildi; aşağıdaki S3 raporu
+bu ayrı koşuyu kaydeder. Her iki tarihsel sonuç da başka kaynakta IDE
+kabulü sayılmaz; Windows/marketplace yayını açıktır.
 
 ## S3 yerel kabul kanıtı
 
 [Exact S3 kabulü ve açık sınırlar](../../docs/urunlesme-s3-kabul-20261015.md) gerçek canonical/native/IDE ve ortak kapıları bağlar; genel ürün/platform/yayın kabulü değildir.
+
+## S4 kaynak kabulü
+
+[S4 ayrı kaynak kaydı](../../docs/urunlesme-s4-kabul-20261015.md) `4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2`
+üzerindeki güncel yerel kanıtı ve açık sınırları gösterir. Önceki S3 sonuçları
+tarihsel kalır; genel ürün/platform/yayın veya tam P19 kabulü değildir.

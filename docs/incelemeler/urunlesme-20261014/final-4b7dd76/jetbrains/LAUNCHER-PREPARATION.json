@@ -1,0 +1,43 @@
+{
+  "status": "prepared-actual-project-launcher-not-IDE-acceptance",
+  "source_sha": "4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2",
+  "delivery_sha256": "792f45997e70ed602cbb7de1e7908ba837cdd2914944e0443b0c99e773f9c2f4",
+  "binary_sha256": {
+    "dil": "63d8bd1e2676600e3715979320415b4753680b894299e3c4daa73bb9c6eb6ec9",
+    "dillsp": "c9989583f8d25ce5dc81ed1aa804f85376022ed54cf635e1b701e3dcf6bfd288"
+  },
+  "verifier_sha256": "914dd2f49a3a69ca7d3b8f6746e8bc1942c065ac033147f02420123fee7b2d90",
+  "pin": {
+    "schema": "zee-derleyici-pin-1",
+    "version": "0.8.0-dev",
+    "source_sha": "4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2",
+    "channel": "development",
+    "platform": "aarch64-apple-darwin"
+  },
+  "publisher": "sha256:44145f73c8dd00e0d8b5ccb5e45984c3ef9a70cf37a5961876e08ea5be8cd80d",
+  "ephemeral_private_key_deleted": true,
+  "release_signed_or_published": false,
+  "synthetic_signature_only": true,
+  "actual_canonical_delivery_metadata_preserved": true,
+  "bundle_sha256": {
+    "GIT_SHA": "46a790db896732814d4d3c9aa7044683707035367e368e44309dfe61692d4d6b",
+    "dil": "63d8bd1e2676600e3715979320415b4753680b894299e3c4daa73bb9c6eb6ec9",
+    "sbom.spdx.json": "ed5a184b2b433d95b618d2015fb437cb74298b3477f947965a8211ce67ee4c44",
+    "SHA256SUMS.zee-imza": "838a1759e98a18039dfd4c962df5440d0d2f49607ef8105b46c9ee109ac09930",
+    "provenance.intoto.json": "5b960785452bd3dd19b9bb019f2a87911cb8f5eb93d55401d773eec917498750",
+    "SHA256SUMS": "030339e9bff0f05b2c094d7fb42b37ee3cb81a8f212e2ef20f42360ec955585a",
+    "dillsp": "c9989583f8d25ce5dc81ed1aa804f85376022ed54cf635e1b701e3dcf6bfd288"
+  },
+  "import": {
+    "schema": "zee-local-publication-1",
+    "published": true,
+    "existing_exact": false
+  },
+  "launcher": {
+    "schema": "zee-local-publication-1",
+    "published": true,
+    "existing_exact": false
+  },
+  "project": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-4b7dd76-owned-ide/project with spaces",
+  "source_clean_end": true
+}

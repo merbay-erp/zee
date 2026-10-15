@@ -1,0 +1,10 @@
+{
+  "source_sha": "4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2",
+  "prior_attempt": "s4-4b7dd76-rc-v2",
+  "producer_status": "passed-local-technical-campaign",
+  "accepted_for_final_RC": false,
+  "reason": "LibFuzzer durations 2019/2019/2746/2217s differ from owned monotonic 756.086/756.090/103.232/102.570s. No root cause inferred; 30-minute active-duration evidence is insufficient. Original evidence retained.",
+  "retry": "s4-4b7dd76-rc-v3",
+  "source_test_thresholds_unchanged": true,
+  "extra_evidence_requirement": "Each original owned command monotonic elapsed >=1800s in addition to canonical policy."
+}

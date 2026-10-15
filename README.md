@@ -45,8 +45,10 @@ Ayrıntılar: [Derleme ve bağımlılıklar](docs/derleme-ve-bagimliliklar.md) �
 [V1 sürüm kapıları](docs/v1-surum-kapilari.md) ·
 [Öncelikli backlog](docs/oncelikli-backlog.md).
 
-[14 Ekim teknik teslimi](docs/urunlesme-sonucu-20261014.md), güncel yerel
-kabulü ve 39 maddelik ürünleşme planının kalan işlerini birlikte gösterir.
+[S4 yerel kabulü](docs/urunlesme-s4-kabul-20261015.md) güncel kaynağın RC,
+soak, macOS teslim/kurulum, gerçek IDE ve stdio gecikme gözlemini kaydeder.
+[39 maddelik plan](docs/urunlesme-plani.md) ürün, insan ve fiziksel platform
+açıklarını korur; [14 Ekim teslimi](docs/urunlesme-sonucu-20261014.md) tarihseldir.
 [Devam dalgası](docs/urunlesme-devam-20261014.md) native COMMIT hata kanıtını
 ve kaynak arşivi sınırını ayrıca izler.
 
@@ -158,7 +160,7 @@ Değişikliğe özel test, belge ve güvenlik kapıları [AGENTS.md](AGENTS.md) 
 | Rust + doctest vakası | **1023** |
 | Tanı kimliği | **162 etkin + 3 ayrılmış** |
 | RFC | **34** (2 kabul, 29 geçici kabul, 3 taslak) |
-| ADR | **148** (147 kabul) |
+| ADR | **148** (148 kabul) |
 | Normatif spec bölümü | **30** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 

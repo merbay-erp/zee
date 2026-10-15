@@ -58,10 +58,12 @@ single-generation late-EOF/deadline1 kontrolü ayrıca çalışır; mixed-load i
 olarak sayılmaz. Toplam9 ayrı vaka kaydı beklenir; bunlar Rust toplamına9 diye eklenmez.
 
 Hazırlık8 actual short owned TCP/framing/refusal/snapshot ve expired-send
-negatifidir; native compiler çalıştırmaz. Dedicated native9 bu dilimde henüz
-çalıştırılmamıştır; eski S inheritedFD17/quiet16/deadline1 yeni mixedrevision
-kabulü yerine konmaz. Yalnız root review ve yeni clean source/binary sonrasında
-owned Linux/Mac koşusu yapılabilir. Listener ve tüm owned generation'lar finally
+negatifidir; native compiler çalıştırmaz. İlk hazırlıkta bekleyen dedicated
+native9, tarihsel [S3 kaynağında](urunlesme-s3-kabul-20261015.md) dört dalga ve
+160 istekle geçti. Eski inheritedFD17/quiet16/deadline1 bu mixed-revision
+kabulünün yerine konmaz. S3 sonucu başka bir kaynakta yeniden koşulmuş sayılmaz;
+yeni kabul root review ve exact temiz source/binary sonrasında sahipli
+Linux/Mac koşusuna bağlanır. Listener ve tüm owned generation'lar finally
 ile kapatılır; foreign sentinel yalnız kendi issued Popen yetkisiyle temizlenir.
 
 `application_revision`ler anonymous fixture'a ait sentetik40hex etiketlerdir;

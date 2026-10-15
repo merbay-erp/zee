@@ -1,0 +1,2728 @@
+{
+  "schema": "zee-s4-ordinary-lsp-stdio-latency-1",
+  "status": "passed",
+  "source_sha": "4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2",
+  "source_tree": "6c4982688f5105a67c025815cbbb72c07fcea7f8",
+  "source_begin_clean": true,
+  "input_sha256": {
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-rc-v3-controller.json": "3fce1167ebbcb5d4e21fcbe41657280ca595436729cad1f7c24fee82492bc3b6",
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-soak-controller.json": "951bc7ffd0e674aa43b9ca20b52c8606618cf61381a997d07d2ea770eb2775c1",
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-delivery-controller.json": "923f7adaa0f3d3e2cd4d15ebfd7a9ba6e67730feb6f0c0271a4a99d7c0f19603",
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-4b7dd76-rc-v3/campaign-proof.json": "2d9cc6b77cd27272a7430e41e8dbbf0c2c9dbb03a65fb37a597d5843e9503a6d",
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-4b7dd76-rc-gate-v3/GATE-RECEIPT.json": "2d7881094cb2d8eaf87b0346f9412561c082c89e44727a4dc182e2899c3e7b00",
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-4b7dd76-macos-delivery/DELIVERY.json": "792f45997e70ed602cbb7de1e7908ba837cdd2914944e0443b0c99e773f9c2f4",
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-acceptance-drivers/utf16-stdio.py": "b2e40aee992e01bfd37915166f9117cb7182ea2cd97782129e2a89cc1678ea5b",
+    "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/scripts/lifecycle_core.py": "e76fe65b6103fc4732aafc4468afc5bbf3d0699a0f79d7f74879165636ebb1a9",
+    "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/compiler/tests/lsp_artimli_testi.rs": "4c08052517c84c078ebad6b5f5300cde71b6e2be3943da5dcf609eaaf419845a",
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-acceptance-drivers/measure-lsp-stdio.py": "e918ab9f723466b577709e2a4ed22a1866beca3076ae527b4d3297164ca04cb0"
+  },
+  "delivery_sha256": "792f45997e70ed602cbb7de1e7908ba837cdd2914944e0443b0c99e773f9c2f4",
+  "binary_sha256": {
+    "dil": "63d8bd1e2676600e3715979320415b4753680b894299e3c4daa73bb9c6eb6ec9",
+    "dillsp": "c9989583f8d25ce5dc81ed1aa804f85376022ed54cf635e1b701e3dcf6bfd288"
+  },
+  "threshold_ms": null,
+  "hard_200ms_gate_applied": false,
+  "observation_acceptance_only": true,
+  "cohorts": [
+    {
+      "label": "lint-off-open1",
+      "lint": false,
+      "open_documents": 1,
+      "status": "passed",
+      "open_transactions": [
+        {
+          "file": "ana.dil",
+          "first_write_monotonic_ns": 579327463603791,
+          "complete_write_monotonic_ns": 579327463606583,
+          "last_diagnostic_frame_read_monotonic_ns": 579327487999250,
+          "elapsed_ms": 24.395459,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "c18b20c02d3330c577b212244ad951ffe00a824d7a16f1eedc1f23656fbbea57"
+        }
+      ],
+      "edits": [
+        {
+          "iteration": 0,
+          "warmup": true,
+          "first_write_monotonic_ns": 579327488239166,
+          "complete_write_monotonic_ns": 579327488243625,
+          "last_diagnostic_frame_read_monotonic_ns": 579327503751916,
+          "elapsed_ms": 15.51275,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "c18b20c02d3330c577b212244ad951ffe00a824d7a16f1eedc1f23656fbbea57"
+        },
+        {
+          "iteration": 1,
+          "warmup": true,
+          "first_write_monotonic_ns": 579327503958750,
+          "complete_write_monotonic_ns": 579327503961708,
+          "last_diagnostic_frame_read_monotonic_ns": 579327519575416,
+          "elapsed_ms": 15.616666,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "c18b20c02d3330c577b212244ad951ffe00a824d7a16f1eedc1f23656fbbea57"
+        },
+        {
+          "iteration": 2,
+          "warmup": true,
+          "first_write_monotonic_ns": 579327519785916,
+          "complete_write_monotonic_ns": 579327519787750,
+          "last_diagnostic_frame_read_monotonic_ns": 579327535001375,
+          "elapsed_ms": 15.215459,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "c18b20c02d3330c577b212244ad951ffe00a824d7a16f1eedc1f23656fbbea57"
+        },
+        {
+          "iteration": 3,
+          "warmup": true,
+          "first_write_monotonic_ns": 579327535188666,
+          "complete_write_monotonic_ns": 579327535190250,
+          "last_diagnostic_frame_read_monotonic_ns": 579327550370083,
+          "elapsed_ms": 15.181417,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "c18b20c02d3330c577b212244ad951ffe00a824d7a16f1eedc1f23656fbbea57"
+        },
+        {
+          "iteration": 4,
+          "warmup": true,
+          "first_write_monotonic_ns": 579327550590458,
+          "complete_write_monotonic_ns": 579327550592958,
+          "last_diagnostic_frame_read_monotonic_ns": 579327567297083,
+          "elapsed_ms": 16.706625,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "c18b20c02d3330c577b212244ad951ffe00a824d7a16f1eedc1f23656fbbea57"
+        },
+        {
+          "iteration": 5,
+          "warmup": false,
+          "first_write_monotonic_ns": 579327567504125,
+          "complete_write_monotonic_ns": 579327567506083,
+          "last_diagnostic_frame_read_monotonic_ns": 579327584067750,
+          "elapsed_ms": 16.563625,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "c18b20c02d3330c577b212244ad951ffe00a824d7a16f1eedc1f23656fbbea57"
+        },
+        {
+          "iteration": 6,
+          "warmup": false,
+          "first_write_monotonic_ns": 579327584275500,
+          "complete_write_monotonic_ns": 579327584278500,
+          "last_diagnostic_frame_read_monotonic_ns": 579327601451500,
+          "elapsed_ms": 17.176,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "c18b20c02d3330c577b212244ad951ffe00a824d7a16f1eedc1f23656fbbea57"
+        },
+        {
+          "iteration": 7,
+          "warmup": false,
+          "first_write_monotonic_ns": 579327601662291,
+          "complete_write_monotonic_ns": 579327601664708,
+          "last_diagnostic_frame_read_monotonic_ns": 579327618180750,
+          "elapsed_ms": 16.518459,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "c18b20c02d3330c577b212244ad951ffe00a824d7a16f1eedc1f23656fbbea57"
+        },
+        {
+          "iteration": 8,
+          "warmup": false,
+          "first_write_monotonic_ns": 579327618381708,
+          "complete_write_monotonic_ns": 579327618384083,
+          "last_diagnostic_frame_read_monotonic_ns": 579327634455583,
+          "elapsed_ms": 16.073875,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "c18b20c02d3330c577b212244ad951ffe00a824d7a16f1eedc1f23656fbbea57"
+        },
+        {
+          "iteration": 9,
+          "warmup": false,
+          "first_write_monotonic_ns": 579327634655458,
+          "complete_write_monotonic_ns": 579327634657541,
+          "last_diagnostic_frame_read_monotonic_ns": 579327650489041,
+          "elapsed_ms": 15.833583,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "c18b20c02d3330c577b212244ad951ffe00a824d7a16f1eedc1f23656fbbea57"
+        },
+        {
+          "iteration": 10,
+          "warmup": false,
+          "first_write_monotonic_ns": 579327650676541,
+          "complete_write_monotonic_ns": 579327650678541,
+          "last_diagnostic_frame_read_monotonic_ns": 579327666843125,
+          "elapsed_ms": 16.166584,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "c18b20c02d3330c577b212244ad951ffe00a824d7a16f1eedc1f23656fbbea57"
+        },
+        {
+          "iteration": 11,
+          "warmup": false,
+          "first_write_monotonic_ns": 579327667030250,
+          "complete_write_monotonic_ns": 579327667035916,
+          "last_diagnostic_frame_read_monotonic_ns": 579327683095416,
+          "elapsed_ms": 16.065166,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "c18b20c02d3330c577b212244ad951ffe00a824d7a16f1eedc1f23656fbbea57"
+        },
+        {
+          "iteration": 12,
+          "warmup": false,
+          "first_write_monotonic_ns": 579327683327458,
+          "complete_write_monotonic_ns": 579327683329750,
+          "last_diagnostic_frame_read_monotonic_ns": 579327699896333,
+          "elapsed_ms": 16.568875,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "c18b20c02d3330c577b212244ad951ffe00a824d7a16f1eedc1f23656fbbea57"
+        },
+        {
+          "iteration": 13,
+          "warmup": false,
+          "first_write_monotonic_ns": 579327700171000,
+          "complete_write_monotonic_ns": 579327700173041,
+          "last_diagnostic_frame_read_monotonic_ns": 579327716452375,
+          "elapsed_ms": 16.281375,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "c18b20c02d3330c577b212244ad951ffe00a824d7a16f1eedc1f23656fbbea57"
+        },
+        {
+          "iteration": 14,
+          "warmup": false,
+          "first_write_monotonic_ns": 579327716682375,
+          "complete_write_monotonic_ns": 579327716684083,
+          "last_diagnostic_frame_read_monotonic_ns": 579327733027833,
+          "elapsed_ms": 16.345458,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "c18b20c02d3330c577b212244ad951ffe00a824d7a16f1eedc1f23656fbbea57"
+        },
+        {
+          "iteration": 15,
+          "warmup": false,
+          "first_write_monotonic_ns": 579327733255375,
+          "complete_write_monotonic_ns": 579327733257666,
+          "last_diagnostic_frame_read_monotonic_ns": 579327750194000,
+          "elapsed_ms": 16.938625,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "c18b20c02d3330c577b212244ad951ffe00a824d7a16f1eedc1f23656fbbea57"
+        },
+        {
+          "iteration": 16,
+          "warmup": false,
+          "first_write_monotonic_ns": 579327750382750,
+          "complete_write_monotonic_ns": 579327750384583,
+          "last_diagnostic_frame_read_monotonic_ns": 579327766816458,
+          "elapsed_ms": 16.433708,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "c18b20c02d3330c577b212244ad951ffe00a824d7a16f1eedc1f23656fbbea57"
+        },
+        {
+          "iteration": 17,
+          "warmup": false,
+          "first_write_monotonic_ns": 579327767000666,
+          "complete_write_monotonic_ns": 579327767002458,
+          "last_diagnostic_frame_read_monotonic_ns": 579327783000291,
+          "elapsed_ms": 15.999625,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "c18b20c02d3330c577b212244ad951ffe00a824d7a16f1eedc1f23656fbbea57"
+        },
+        {
+          "iteration": 18,
+          "warmup": false,
+          "first_write_monotonic_ns": 579327783191708,
+          "complete_write_monotonic_ns": 579327783195083,
+          "last_diagnostic_frame_read_monotonic_ns": 579327799164625,
+          "elapsed_ms": 15.972917,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "c18b20c02d3330c577b212244ad951ffe00a824d7a16f1eedc1f23656fbbea57"
+        },
+        {
+          "iteration": 19,
+          "warmup": false,
+          "first_write_monotonic_ns": 579327799355583,
+          "complete_write_monotonic_ns": 579327799357166,
+          "last_diagnostic_frame_read_monotonic_ns": 579327815027541,
+          "elapsed_ms": 15.671958,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "c18b20c02d3330c577b212244ad951ffe00a824d7a16f1eedc1f23656fbbea57"
+        },
+        {
+          "iteration": 20,
+          "warmup": false,
+          "first_write_monotonic_ns": 579327815211708,
+          "complete_write_monotonic_ns": 579327815213458,
+          "last_diagnostic_frame_read_monotonic_ns": 579327830795625,
+          "elapsed_ms": 15.583917,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "c18b20c02d3330c577b212244ad951ffe00a824d7a16f1eedc1f23656fbbea57"
+        },
+        {
+          "iteration": 21,
+          "warmup": false,
+          "first_write_monotonic_ns": 579327830975333,
+          "complete_write_monotonic_ns": 579327830978250,
+          "last_diagnostic_frame_read_monotonic_ns": 579327846431416,
+          "elapsed_ms": 15.456083,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "c18b20c02d3330c577b212244ad951ffe00a824d7a16f1eedc1f23656fbbea57"
+        },
+        {
+          "iteration": 22,
+          "warmup": false,
+          "first_write_monotonic_ns": 579327846667708,
+          "complete_write_monotonic_ns": 579327846670000,
+          "last_diagnostic_frame_read_monotonic_ns": 579327863645416,
+          "elapsed_ms": 16.977708,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "c18b20c02d3330c577b212244ad951ffe00a824d7a16f1eedc1f23656fbbea57"
+        },
+        {
+          "iteration": 23,
+          "warmup": false,
+          "first_write_monotonic_ns": 579327863851708,
+          "complete_write_monotonic_ns": 579327863853791,
+          "last_diagnostic_frame_read_monotonic_ns": 579327879638583,
+          "elapsed_ms": 15.786875,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "c18b20c02d3330c577b212244ad951ffe00a824d7a16f1eedc1f23656fbbea57"
+        },
+        {
+          "iteration": 24,
+          "warmup": false,
+          "first_write_monotonic_ns": 579327879814541,
+          "complete_write_monotonic_ns": 579327879816208,
+          "last_diagnostic_frame_read_monotonic_ns": 579327895624916,
+          "elapsed_ms": 15.810375,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "c18b20c02d3330c577b212244ad951ffe00a824d7a16f1eedc1f23656fbbea57"
+        }
+      ],
+      "issued_child_pid": 81178,
+      "argv": [
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-4b7dd76-macos-delivery/binaries/dillsp"
+      ],
+      "initialize_result": {
+        "capabilities": {
+          "textDocumentSync": 2,
+          "completionProvider": {},
+          "hoverProvider": true,
+          "documentFormattingProvider": true,
+          "definitionProvider": true,
+          "renameProvider": true
+        },
+        "serverInfo": {
+          "name": "dillsp",
+          "version": "0.8.0-dev",
+          "zeeBuild": {
+            "schema": "zee-build-v1",
+            "version": "0.8.0-dev",
+            "source_sha": "4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2",
+            "source_date": "2026-10-15",
+            "channel": "development",
+            "dirty": false
+          }
+        }
+      },
+      "samples_ms": [
+        16.563625,
+        17.176,
+        16.518459,
+        16.073875,
+        15.833583,
+        16.166584,
+        16.065166,
+        16.568875,
+        16.281375,
+        16.345458,
+        16.938625,
+        16.433708,
+        15.999625,
+        15.972917,
+        15.671958,
+        15.583917,
+        15.456083,
+        16.977708,
+        15.786875,
+        15.810375
+      ],
+      "warmup_samples_ms": [
+        15.51275,
+        15.616666,
+        15.215459,
+        15.181417,
+        16.706625
+      ],
+      "p50_ms": 16.073875,
+      "p95_ms": 16.977708,
+      "max_ms": 17.176,
+      "p95_method": "nearest rank ceil(0.95*20), zero-based index18",
+      "open_publication_ms_sum": 24.395459,
+      "normal_exit_before_cleanup": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "message_count": 110,
+      "stderr_bytes": 0,
+      "elapsed_seconds": 0.4467873750254512
+    },
+    {
+      "label": "lint-off-open41",
+      "lint": false,
+      "open_documents": 41,
+      "status": "passed",
+      "open_transactions": [
+        {
+          "file": "ana.dil",
+          "first_write_monotonic_ns": 579327906785750,
+          "complete_write_monotonic_ns": 579327906788791,
+          "last_diagnostic_frame_read_monotonic_ns": 579327931642041,
+          "elapsed_ms": 24.856291,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "c18b20c02d3330c577b212244ad951ffe00a824d7a16f1eedc1f23656fbbea57"
+        },
+        {
+          "file": "birim0.dil",
+          "first_write_monotonic_ns": 579327931960500,
+          "complete_write_monotonic_ns": 579327931967875,
+          "last_diagnostic_frame_read_monotonic_ns": 579327949885583,
+          "elapsed_ms": 17.925083,
+          "diagnostic_notifications": 2,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "9ad1ac31b077cbb6dbaef557d51a17b051bed0279c2307e95bb7b0400f1b6f4e"
+        },
+        {
+          "file": "birim1.dil",
+          "first_write_monotonic_ns": 579327950289625,
+          "complete_write_monotonic_ns": 579327950299375,
+          "last_diagnostic_frame_read_monotonic_ns": 579327970611041,
+          "elapsed_ms": 20.321416,
+          "diagnostic_notifications": 3,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "e8fb76acb21055c76cb88f218b91462bdb7aba19417aa836694c80a1b9ccc048"
+        },
+        {
+          "file": "birim2.dil",
+          "first_write_monotonic_ns": 579327970840250,
+          "complete_write_monotonic_ns": 579327970846958,
+          "last_diagnostic_frame_read_monotonic_ns": 579327992884166,
+          "elapsed_ms": 22.043916,
+          "diagnostic_notifications": 4,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "08106264932e2e8bf231bc1713b5d3b301fdc4d0365afefd9ad3f3bbba23e214"
+        },
+        {
+          "file": "birim3.dil",
+          "first_write_monotonic_ns": 579327993110125,
+          "complete_write_monotonic_ns": 579327993116625,
+          "last_diagnostic_frame_read_monotonic_ns": 579328016894750,
+          "elapsed_ms": 23.784625,
+          "diagnostic_notifications": 5,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "ae723b2766baf3f1f72bded2dfae485a708e6dd4a29058775b1024bd4ac8912c"
+        },
+        {
+          "file": "birim4.dil",
+          "first_write_monotonic_ns": 579328017165375,
+          "complete_write_monotonic_ns": 579328017169583,
+          "last_diagnostic_frame_read_monotonic_ns": 579328043221791,
+          "elapsed_ms": 26.056416,
+          "diagnostic_notifications": 6,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "b84b7c54e060479848a5dfc9d2ad6a3684315267b8336d57204b8cb466d8907e"
+        },
+        {
+          "file": "birim5.dil",
+          "first_write_monotonic_ns": 579328043470041,
+          "complete_write_monotonic_ns": 579328043473250,
+          "last_diagnostic_frame_read_monotonic_ns": 579328072174083,
+          "elapsed_ms": 28.704042,
+          "diagnostic_notifications": 7,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "1f5f0000725f0cce153388147a3755b4f55a2d62a558395ea60dfe1be956f104"
+        },
+        {
+          "file": "birim6.dil",
+          "first_write_monotonic_ns": 579328072445791,
+          "complete_write_monotonic_ns": 579328072454208,
+          "last_diagnostic_frame_read_monotonic_ns": 579328104176750,
+          "elapsed_ms": 31.730959,
+          "diagnostic_notifications": 8,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "d906381902de73a5c7bcdea95ea9b2af740fd36f10515b1947aa3c6bb6704c88"
+        },
+        {
+          "file": "birim7.dil",
+          "first_write_monotonic_ns": 579328104447000,
+          "complete_write_monotonic_ns": 579328104450250,
+          "last_diagnostic_frame_read_monotonic_ns": 579328137757416,
+          "elapsed_ms": 33.310416,
+          "diagnostic_notifications": 9,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "6c0ca358b4157681d8cffbc1f40f5c19b125754165a61cb42990595414023649"
+        },
+        {
+          "file": "birim8.dil",
+          "first_write_monotonic_ns": 579328138014625,
+          "complete_write_monotonic_ns": 579328138020791,
+          "last_diagnostic_frame_read_monotonic_ns": 579328173255458,
+          "elapsed_ms": 35.240833,
+          "diagnostic_notifications": 10,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "02b9cdd2b11de6a700403640f3715cfc5ab52dabfed9d0124003ced6f96d9841"
+        },
+        {
+          "file": "birim9.dil",
+          "first_write_monotonic_ns": 579328173528041,
+          "complete_write_monotonic_ns": 579328173531458,
+          "last_diagnostic_frame_read_monotonic_ns": 579328210718791,
+          "elapsed_ms": 37.19075,
+          "diagnostic_notifications": 11,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "f53c91df6c4070aad46b741fd59cfba10501d6e6c22e08844ffc8d48a81ea5ea"
+        },
+        {
+          "file": "birim10.dil",
+          "first_write_monotonic_ns": 579328211009375,
+          "complete_write_monotonic_ns": 579328211014375,
+          "last_diagnostic_frame_read_monotonic_ns": 579328250250708,
+          "elapsed_ms": 39.241333,
+          "diagnostic_notifications": 12,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "477315d9f8a0ec67c08a26d4e48f2b4027d9689fb2942b71ca4a359c5c249450"
+        },
+        {
+          "file": "birim11.dil",
+          "first_write_monotonic_ns": 579328250533708,
+          "complete_write_monotonic_ns": 579328250537833,
+          "last_diagnostic_frame_read_monotonic_ns": 579328292624166,
+          "elapsed_ms": 42.090458,
+          "diagnostic_notifications": 13,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "0342c6156df75a9a22d4403098c67a98673f5f9c2cd65f821358f57d5849977c"
+        },
+        {
+          "file": "birim12.dil",
+          "first_write_monotonic_ns": 579328292911375,
+          "complete_write_monotonic_ns": 579328292916750,
+          "last_diagnostic_frame_read_monotonic_ns": 579328334877458,
+          "elapsed_ms": 41.966083,
+          "diagnostic_notifications": 14,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "fe53b932a2da4a72255fa4cfe01f7056018ec3f9124705957c8c01e4aaf3a04b"
+        },
+        {
+          "file": "birim13.dil",
+          "first_write_monotonic_ns": 579328336345583,
+          "complete_write_monotonic_ns": 579328336349291,
+          "last_diagnostic_frame_read_monotonic_ns": 579328381525250,
+          "elapsed_ms": 45.179667,
+          "diagnostic_notifications": 15,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "471eb696362ca0cb56c2bc4d6758da80391069f74cac73d3aca8e73200a0541b"
+        },
+        {
+          "file": "birim14.dil",
+          "first_write_monotonic_ns": 579328381848250,
+          "complete_write_monotonic_ns": 579328381853875,
+          "last_diagnostic_frame_read_monotonic_ns": 579328429148833,
+          "elapsed_ms": 47.300583,
+          "diagnostic_notifications": 16,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "a3411029a101fc61988192875234e273ea86c35cbdffa7fc437359e6c77c3182"
+        },
+        {
+          "file": "birim15.dil",
+          "first_write_monotonic_ns": 579328429443208,
+          "complete_write_monotonic_ns": 579328429447166,
+          "last_diagnostic_frame_read_monotonic_ns": 579328477641875,
+          "elapsed_ms": 48.198667,
+          "diagnostic_notifications": 17,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "6ce44005886aae78c05569f2d7d6a5adbf70781b485b5a36db16dbf6c6762d09"
+        },
+        {
+          "file": "birim16.dil",
+          "first_write_monotonic_ns": 579328477922000,
+          "complete_write_monotonic_ns": 579328477927166,
+          "last_diagnostic_frame_read_monotonic_ns": 579328528733333,
+          "elapsed_ms": 50.811333,
+          "diagnostic_notifications": 18,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "454710db29cf6b121599043560509bff0a9e38f0aed2e085adff071c3336b253"
+        },
+        {
+          "file": "birim17.dil",
+          "first_write_monotonic_ns": 579328528910666,
+          "complete_write_monotonic_ns": 579328528916541,
+          "last_diagnostic_frame_read_monotonic_ns": 579328581291250,
+          "elapsed_ms": 52.380584,
+          "diagnostic_notifications": 19,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "ae51e6d50dab1ff4013dde3a1bf6b1d1e87dffc473b59e27f0d5aebc5fe0a260"
+        },
+        {
+          "file": "birim18.dil",
+          "first_write_monotonic_ns": 579328581488291,
+          "complete_write_monotonic_ns": 579328581491125,
+          "last_diagnostic_frame_read_monotonic_ns": 579328639590958,
+          "elapsed_ms": 58.102667,
+          "diagnostic_notifications": 20,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "33e880718d96af37f3074745c6747d870076108b80647e3cad6803b3275c787c"
+        },
+        {
+          "file": "birim19.dil",
+          "first_write_monotonic_ns": 579328639840291,
+          "complete_write_monotonic_ns": 579328639845625,
+          "last_diagnostic_frame_read_monotonic_ns": 579328698990083,
+          "elapsed_ms": 59.149792,
+          "diagnostic_notifications": 21,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "d6ce367ecb5bd8421321eedb8025a8aa5e5f14864eb889914c70e53da81ed9f5"
+        },
+        {
+          "file": "birim20.dil",
+          "first_write_monotonic_ns": 579328699206750,
+          "complete_write_monotonic_ns": 579328699210291,
+          "last_diagnostic_frame_read_monotonic_ns": 579328760571416,
+          "elapsed_ms": 61.364666,
+          "diagnostic_notifications": 22,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "223feac0ef856a0d6d619e7bb37b925e7c5ccebdc321365963b1fa9ee774295f"
+        },
+        {
+          "file": "birim21.dil",
+          "first_write_monotonic_ns": 579328760803375,
+          "complete_write_monotonic_ns": 579328760811541,
+          "last_diagnostic_frame_read_monotonic_ns": 579328822508416,
+          "elapsed_ms": 61.705041,
+          "diagnostic_notifications": 23,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "ea77043a03343e6ef3d44a9213b721559b8c01d5f2c9b9edd4eed1405daee1de"
+        },
+        {
+          "file": "birim22.dil",
+          "first_write_monotonic_ns": 579328822721250,
+          "complete_write_monotonic_ns": 579328822724291,
+          "last_diagnostic_frame_read_monotonic_ns": 579328886246791,
+          "elapsed_ms": 63.525541,
+          "diagnostic_notifications": 24,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "7243b6ee2ae47a76a14eb56085939561089f325d3c30ce26795015effa36fdeb"
+        },
+        {
+          "file": "birim23.dil",
+          "first_write_monotonic_ns": 579328886522291,
+          "complete_write_monotonic_ns": 579328886529458,
+          "last_diagnostic_frame_read_monotonic_ns": 579328951466041,
+          "elapsed_ms": 64.94375,
+          "diagnostic_notifications": 25,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "3c3c2593fc170d047c5709f882568b7b1eb42f9029e1749544d5573766c2cb2b"
+        },
+        {
+          "file": "birim24.dil",
+          "first_write_monotonic_ns": 579328951738625,
+          "complete_write_monotonic_ns": 579328951742958,
+          "last_diagnostic_frame_read_monotonic_ns": 579329019188916,
+          "elapsed_ms": 67.450291,
+          "diagnostic_notifications": 26,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "cc6007ae6781803ff3ce24ce0db76f0eca081907b0ae2a9bbef37bc5096c7369"
+        },
+        {
+          "file": "birim25.dil",
+          "first_write_monotonic_ns": 579329019408166,
+          "complete_write_monotonic_ns": 579329019414708,
+          "last_diagnostic_frame_read_monotonic_ns": 579329088666041,
+          "elapsed_ms": 69.257875,
+          "diagnostic_notifications": 27,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "220a0d905d75826ee63f18d1ab56c80d2693fb5fb72d0e896041c0e4cd764388"
+        },
+        {
+          "file": "birim26.dil",
+          "first_write_monotonic_ns": 579329088930500,
+          "complete_write_monotonic_ns": 579329088936791,
+          "last_diagnostic_frame_read_monotonic_ns": 579329162787083,
+          "elapsed_ms": 73.856583,
+          "diagnostic_notifications": 28,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "095feb201abed6c0c6131889220287e852ba044aefe530e975073b8d2364ba3e"
+        },
+        {
+          "file": "birim27.dil",
+          "first_write_monotonic_ns": 579329163033416,
+          "complete_write_monotonic_ns": 579329163036791,
+          "last_diagnostic_frame_read_monotonic_ns": 579329239581875,
+          "elapsed_ms": 76.548459,
+          "diagnostic_notifications": 29,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "4c0112b7c1fbc34aa1684efdb82cca38510a31ed9a5de4ab80ac837a0e0db4ac"
+        },
+        {
+          "file": "birim28.dil",
+          "first_write_monotonic_ns": 579329239870583,
+          "complete_write_monotonic_ns": 579329239876750,
+          "last_diagnostic_frame_read_monotonic_ns": 579329317768375,
+          "elapsed_ms": 77.897792,
+          "diagnostic_notifications": 30,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "b902e3d0b083a127e10d328ac72dcfffe52eda42bfae020230482abae59eb1d6"
+        },
+        {
+          "file": "birim29.dil",
+          "first_write_monotonic_ns": 579329318027708,
+          "complete_write_monotonic_ns": 579329318031875,
+          "last_diagnostic_frame_read_monotonic_ns": 579329395238833,
+          "elapsed_ms": 77.211125,
+          "diagnostic_notifications": 31,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "c8cf28d9363c9f56c6c1975d2c127a9beab09def3f026f96f99e0a76d1cfecd2"
+        },
+        {
+          "file": "birim30.dil",
+          "first_write_monotonic_ns": 579329395498625,
+          "complete_write_monotonic_ns": 579329395504916,
+          "last_diagnostic_frame_read_monotonic_ns": 579329477664083,
+          "elapsed_ms": 82.165458,
+          "diagnostic_notifications": 32,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "b413e7b4e1e78121d444d71bc43bea53867ec151e3a124681903a6c5e6fb011a"
+        },
+        {
+          "file": "birim31.dil",
+          "first_write_monotonic_ns": 579329477939250,
+          "complete_write_monotonic_ns": 579329477942291,
+          "last_diagnostic_frame_read_monotonic_ns": 579329560551041,
+          "elapsed_ms": 82.611791,
+          "diagnostic_notifications": 33,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "e19b5133c75bd88b754d276f6eabbfb896b3931307943017834ee080bcc607f6"
+        },
+        {
+          "file": "birim32.dil",
+          "first_write_monotonic_ns": 579329560838958,
+          "complete_write_monotonic_ns": 579329560845208,
+          "last_diagnostic_frame_read_monotonic_ns": 579329647281291,
+          "elapsed_ms": 86.442333,
+          "diagnostic_notifications": 34,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "5ec00fbd40b1d9d27562f6cffa3e164f58ebc70808c30d736dec53eec8386957"
+        },
+        {
+          "file": "birim33.dil",
+          "first_write_monotonic_ns": 579329647594125,
+          "complete_write_monotonic_ns": 579329647598958,
+          "last_diagnostic_frame_read_monotonic_ns": 579329737962500,
+          "elapsed_ms": 90.368375,
+          "diagnostic_notifications": 35,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "c0a787c34a4ba71c53c9a2e7e4104208b8f8aee99dcd86186c0b824161d2d01e"
+        },
+        {
+          "file": "birim34.dil",
+          "first_write_monotonic_ns": 579329738291875,
+          "complete_write_monotonic_ns": 579329738301458,
+          "last_diagnostic_frame_read_monotonic_ns": 579329829558375,
+          "elapsed_ms": 91.2665,
+          "diagnostic_notifications": 36,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "2be70b4d32c13cdce0d6ac7e7056f58a8a73348d3abf5cd07d2fa85af1f9def9"
+        },
+        {
+          "file": "birim35.dil",
+          "first_write_monotonic_ns": 579329829788625,
+          "complete_write_monotonic_ns": 579329829795083,
+          "last_diagnostic_frame_read_monotonic_ns": 579329920523458,
+          "elapsed_ms": 90.734833,
+          "diagnostic_notifications": 37,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "2255bfb7135f852dcbcbf6807e2949fc53f4f9e63499cd14bb831d94d5aef0ab"
+        },
+        {
+          "file": "birim36.dil",
+          "first_write_monotonic_ns": 579329920792708,
+          "complete_write_monotonic_ns": 579329920796583,
+          "last_diagnostic_frame_read_monotonic_ns": 579330013543000,
+          "elapsed_ms": 92.750292,
+          "diagnostic_notifications": 38,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "3b9e42c666a04bb0dfbb2c8fd936cd087980449f543b1d5083e9006773d12d11"
+        },
+        {
+          "file": "birim37.dil",
+          "first_write_monotonic_ns": 579330013795208,
+          "complete_write_monotonic_ns": 579330013802208,
+          "last_diagnostic_frame_read_monotonic_ns": 579330111377750,
+          "elapsed_ms": 97.582542,
+          "diagnostic_notifications": 39,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "b30ff7372b76e9857513c3de3c9d3d38c0aad000e367f1c245f3e96d0a2394a2"
+        },
+        {
+          "file": "birim38.dil",
+          "first_write_monotonic_ns": 579330111612125,
+          "complete_write_monotonic_ns": 579330111615791,
+          "last_diagnostic_frame_read_monotonic_ns": 579330212188833,
+          "elapsed_ms": 100.576708,
+          "diagnostic_notifications": 40,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "cb62cf26488e384ca489a659a81434e2004477874cff0f2dca12f5ddc706d978"
+        },
+        {
+          "file": "birim39.dil",
+          "first_write_monotonic_ns": 579330212481000,
+          "complete_write_monotonic_ns": 579330212488125,
+          "last_diagnostic_frame_read_monotonic_ns": 579330311495208,
+          "elapsed_ms": 99.014208,
+          "diagnostic_notifications": 41,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "a03c847f31c09036127333a093955b6149c0d662f57e451817092550090cd975"
+        }
+      ],
+      "edits": [
+        {
+          "iteration": 0,
+          "warmup": true,
+          "first_write_monotonic_ns": 579330311707166,
+          "complete_write_monotonic_ns": 579330311709291,
+          "last_diagnostic_frame_read_monotonic_ns": 579330409186916,
+          "elapsed_ms": 97.47975,
+          "diagnostic_notifications": 41,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "9821ee7e5830e1f6284e623133011a24002f17355fc5d1c79110879e842ecc10"
+        },
+        {
+          "iteration": 1,
+          "warmup": true,
+          "first_write_monotonic_ns": 579330409378541,
+          "complete_write_monotonic_ns": 579330409380625,
+          "last_diagnostic_frame_read_monotonic_ns": 579330508273625,
+          "elapsed_ms": 98.895084,
+          "diagnostic_notifications": 41,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "9821ee7e5830e1f6284e623133011a24002f17355fc5d1c79110879e842ecc10"
+        },
+        {
+          "iteration": 2,
+          "warmup": true,
+          "first_write_monotonic_ns": 579330508459458,
+          "complete_write_monotonic_ns": 579330508461416,
+          "last_diagnostic_frame_read_monotonic_ns": 579330607464208,
+          "elapsed_ms": 99.00475,
+          "diagnostic_notifications": 41,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "9821ee7e5830e1f6284e623133011a24002f17355fc5d1c79110879e842ecc10"
+        },
+        {
+          "iteration": 3,
+          "warmup": true,
+          "first_write_monotonic_ns": 579330607636541,
+          "complete_write_monotonic_ns": 579330607638958,
+          "last_diagnostic_frame_read_monotonic_ns": 579330708580541,
+          "elapsed_ms": 100.944,
+          "diagnostic_notifications": 41,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "9821ee7e5830e1f6284e623133011a24002f17355fc5d1c79110879e842ecc10"
+        },
+        {
+          "iteration": 4,
+          "warmup": true,
+          "first_write_monotonic_ns": 579330708758958,
+          "complete_write_monotonic_ns": 579330708761166,
+          "last_diagnostic_frame_read_monotonic_ns": 579330810175000,
+          "elapsed_ms": 101.416042,
+          "diagnostic_notifications": 41,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "9821ee7e5830e1f6284e623133011a24002f17355fc5d1c79110879e842ecc10"
+        },
+        {
+          "iteration": 5,
+          "warmup": false,
+          "first_write_monotonic_ns": 579330810378166,
+          "complete_write_monotonic_ns": 579330810380583,
+          "last_diagnostic_frame_read_monotonic_ns": 579330908791041,
+          "elapsed_ms": 98.412875,
+          "diagnostic_notifications": 41,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "9821ee7e5830e1f6284e623133011a24002f17355fc5d1c79110879e842ecc10"
+        },
+        {
+          "iteration": 6,
+          "warmup": false,
+          "first_write_monotonic_ns": 579330909021250,
+          "complete_write_monotonic_ns": 579330909024208,
+          "last_diagnostic_frame_read_monotonic_ns": 579331008390041,
+          "elapsed_ms": 99.368791,
+          "diagnostic_notifications": 41,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "9821ee7e5830e1f6284e623133011a24002f17355fc5d1c79110879e842ecc10"
+        },
+        {
+          "iteration": 7,
+          "warmup": false,
+          "first_write_monotonic_ns": 579331008561791,
+          "complete_write_monotonic_ns": 579331008564083,
+          "last_diagnostic_frame_read_monotonic_ns": 579331107776583,
+          "elapsed_ms": 99.214792,
+          "diagnostic_notifications": 41,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "9821ee7e5830e1f6284e623133011a24002f17355fc5d1c79110879e842ecc10"
+        },
+        {
+          "iteration": 8,
+          "warmup": false,
+          "first_write_monotonic_ns": 579331107980291,
+          "complete_write_monotonic_ns": 579331107982208,
+          "last_diagnostic_frame_read_monotonic_ns": 579331209489458,
+          "elapsed_ms": 101.509167,
+          "diagnostic_notifications": 41,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "9821ee7e5830e1f6284e623133011a24002f17355fc5d1c79110879e842ecc10"
+        },
+        {
+          "iteration": 9,
+          "warmup": false,
+          "first_write_monotonic_ns": 579331209683083,
+          "complete_write_monotonic_ns": 579331209685125,
+          "last_diagnostic_frame_read_monotonic_ns": 579331309384625,
+          "elapsed_ms": 99.701542,
+          "diagnostic_notifications": 41,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "9821ee7e5830e1f6284e623133011a24002f17355fc5d1c79110879e842ecc10"
+        },
+        {
+          "iteration": 10,
+          "warmup": false,
+          "first_write_monotonic_ns": 579331309581666,
+          "complete_write_monotonic_ns": 579331309583958,
+          "last_diagnostic_frame_read_monotonic_ns": 579331408970625,
+          "elapsed_ms": 99.388959,
+          "diagnostic_notifications": 41,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "9821ee7e5830e1f6284e623133011a24002f17355fc5d1c79110879e842ecc10"
+        },
+        {
+          "iteration": 11,
+          "warmup": false,
+          "first_write_monotonic_ns": 579331409151541,
+          "complete_write_monotonic_ns": 579331409153625,
+          "last_diagnostic_frame_read_monotonic_ns": 579331509912583,
+          "elapsed_ms": 100.761042,
+          "diagnostic_notifications": 41,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "9821ee7e5830e1f6284e623133011a24002f17355fc5d1c79110879e842ecc10"
+        },
+        {
+          "iteration": 12,
+          "warmup": false,
+          "first_write_monotonic_ns": 579331510089041,
+          "complete_write_monotonic_ns": 579331510091000,
+          "last_diagnostic_frame_read_monotonic_ns": 579331610281375,
+          "elapsed_ms": 100.192334,
+          "diagnostic_notifications": 41,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "9821ee7e5830e1f6284e623133011a24002f17355fc5d1c79110879e842ecc10"
+        },
+        {
+          "iteration": 13,
+          "warmup": false,
+          "first_write_monotonic_ns": 579331610475083,
+          "complete_write_monotonic_ns": 579331610477000,
+          "last_diagnostic_frame_read_monotonic_ns": 579331710432208,
+          "elapsed_ms": 99.957125,
+          "diagnostic_notifications": 41,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "9821ee7e5830e1f6284e623133011a24002f17355fc5d1c79110879e842ecc10"
+        },
+        {
+          "iteration": 14,
+          "warmup": false,
+          "first_write_monotonic_ns": 579331710655333,
+          "complete_write_monotonic_ns": 579331710657416,
+          "last_diagnostic_frame_read_monotonic_ns": 579331811552291,
+          "elapsed_ms": 100.896958,
+          "diagnostic_notifications": 41,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "9821ee7e5830e1f6284e623133011a24002f17355fc5d1c79110879e842ecc10"
+        },
+        {
+          "iteration": 15,
+          "warmup": false,
+          "first_write_monotonic_ns": 579331811738916,
+          "complete_write_monotonic_ns": 579331811741250,
+          "last_diagnostic_frame_read_monotonic_ns": 579331911742000,
+          "elapsed_ms": 100.003084,
+          "diagnostic_notifications": 41,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "9821ee7e5830e1f6284e623133011a24002f17355fc5d1c79110879e842ecc10"
+        },
+        {
+          "iteration": 16,
+          "warmup": false,
+          "first_write_monotonic_ns": 579331911939125,
+          "complete_write_monotonic_ns": 579331911941416,
+          "last_diagnostic_frame_read_monotonic_ns": 579332013256333,
+          "elapsed_ms": 101.317208,
+          "diagnostic_notifications": 41,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "9821ee7e5830e1f6284e623133011a24002f17355fc5d1c79110879e842ecc10"
+        },
+        {
+          "iteration": 17,
+          "warmup": false,
+          "first_write_monotonic_ns": 579332013414291,
+          "complete_write_monotonic_ns": 579332013416125,
+          "last_diagnostic_frame_read_monotonic_ns": 579332112961416,
+          "elapsed_ms": 99.547125,
+          "diagnostic_notifications": 41,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "9821ee7e5830e1f6284e623133011a24002f17355fc5d1c79110879e842ecc10"
+        },
+        {
+          "iteration": 18,
+          "warmup": false,
+          "first_write_monotonic_ns": 579332113147250,
+          "complete_write_monotonic_ns": 579332113149166,
+          "last_diagnostic_frame_read_monotonic_ns": 579332213683583,
+          "elapsed_ms": 100.536333,
+          "diagnostic_notifications": 41,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "9821ee7e5830e1f6284e623133011a24002f17355fc5d1c79110879e842ecc10"
+        },
+        {
+          "iteration": 19,
+          "warmup": false,
+          "first_write_monotonic_ns": 579332213954666,
+          "complete_write_monotonic_ns": 579332213957541,
+          "last_diagnostic_frame_read_monotonic_ns": 579332314051500,
+          "elapsed_ms": 100.096834,
+          "diagnostic_notifications": 41,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "9821ee7e5830e1f6284e623133011a24002f17355fc5d1c79110879e842ecc10"
+        },
+        {
+          "iteration": 20,
+          "warmup": false,
+          "first_write_monotonic_ns": 579332314258750,
+          "complete_write_monotonic_ns": 579332314266041,
+          "last_diagnostic_frame_read_monotonic_ns": 579332413260541,
+          "elapsed_ms": 99.001791,
+          "diagnostic_notifications": 41,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "9821ee7e5830e1f6284e623133011a24002f17355fc5d1c79110879e842ecc10"
+        },
+        {
+          "iteration": 21,
+          "warmup": false,
+          "first_write_monotonic_ns": 579332413454083,
+          "complete_write_monotonic_ns": 579332413456208,
+          "last_diagnostic_frame_read_monotonic_ns": 579332512986208,
+          "elapsed_ms": 99.532125,
+          "diagnostic_notifications": 41,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "9821ee7e5830e1f6284e623133011a24002f17355fc5d1c79110879e842ecc10"
+        },
+        {
+          "iteration": 22,
+          "warmup": false,
+          "first_write_monotonic_ns": 579332513152708,
+          "complete_write_monotonic_ns": 579332513155416,
+          "last_diagnostic_frame_read_monotonic_ns": 579332612007000,
+          "elapsed_ms": 98.854292,
+          "diagnostic_notifications": 41,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "9821ee7e5830e1f6284e623133011a24002f17355fc5d1c79110879e842ecc10"
+        },
+        {
+          "iteration": 23,
+          "warmup": false,
+          "first_write_monotonic_ns": 579332612192083,
+          "complete_write_monotonic_ns": 579332612194458,
+          "last_diagnostic_frame_read_monotonic_ns": 579332713588333,
+          "elapsed_ms": 101.39625,
+          "diagnostic_notifications": 41,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "9821ee7e5830e1f6284e623133011a24002f17355fc5d1c79110879e842ecc10"
+        },
+        {
+          "iteration": 24,
+          "warmup": false,
+          "first_write_monotonic_ns": 579332713796541,
+          "complete_write_monotonic_ns": 579332713798666,
+          "last_diagnostic_frame_read_monotonic_ns": 579332815250166,
+          "elapsed_ms": 101.453625,
+          "diagnostic_notifications": 41,
+          "diagnostics_total": 0,
+          "diagnostics_sha256": "9821ee7e5830e1f6284e623133011a24002f17355fc5d1c79110879e842ecc10"
+        }
+      ],
+      "issued_child_pid": 81179,
+      "argv": [
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-4b7dd76-macos-delivery/binaries/dillsp"
+      ],
+      "initialize_result": {
+        "capabilities": {
+          "textDocumentSync": 2,
+          "completionProvider": {},
+          "hoverProvider": true,
+          "documentFormattingProvider": true,
+          "definitionProvider": true,
+          "renameProvider": true
+        },
+        "serverInfo": {
+          "name": "dillsp",
+          "version": "0.8.0-dev",
+          "zeeBuild": {
+            "schema": "zee-build-v1",
+            "version": "0.8.0-dev",
+            "source_sha": "4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2",
+            "source_date": "2026-10-15",
+            "channel": "development",
+            "dirty": false
+          }
+        }
+      },
+      "samples_ms": [
+        98.412875,
+        99.368791,
+        99.214792,
+        101.509167,
+        99.701542,
+        99.388959,
+        100.761042,
+        100.192334,
+        99.957125,
+        100.896958,
+        100.003084,
+        101.317208,
+        99.547125,
+        100.536333,
+        100.096834,
+        99.001791,
+        99.532125,
+        98.854292,
+        101.39625,
+        101.453625
+      ],
+      "warmup_samples_ms": [
+        97.47975,
+        98.895084,
+        99.00475,
+        100.944,
+        101.416042
+      ],
+      "p50_ms": 99.957125,
+      "p95_ms": 101.453625,
+      "max_ms": 101.509167,
+      "p95_method": "nearest rank ceil(0.95*20), zero-based index18",
+      "open_publication_ms_sum": 2392.860077,
+      "normal_exit_before_cleanup": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "message_count": 2090,
+      "stderr_bytes": 0,
+      "elapsed_seconds": 4.924799041007645
+    },
+    {
+      "label": "lint-on-open1",
+      "lint": true,
+      "open_documents": 1,
+      "status": "passed",
+      "open_transactions": [
+        {
+          "file": "ana.dil",
+          "first_write_monotonic_ns": 579332833666583,
+          "complete_write_monotonic_ns": 579332833669958,
+          "last_diagnostic_frame_read_monotonic_ns": 579332880880208,
+          "elapsed_ms": 47.213625,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "9089193e5ea30ed5acd8e32c23fa932f3226614b6dcda914c84b73ede7e91810"
+        }
+      ],
+      "edits": [
+        {
+          "iteration": 0,
+          "warmup": true,
+          "first_write_monotonic_ns": 579332881213166,
+          "complete_write_monotonic_ns": 579332881218458,
+          "last_diagnostic_frame_read_monotonic_ns": 579332919557125,
+          "elapsed_ms": 38.343959,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "9089193e5ea30ed5acd8e32c23fa932f3226614b6dcda914c84b73ede7e91810"
+        },
+        {
+          "iteration": 1,
+          "warmup": true,
+          "first_write_monotonic_ns": 579332919767000,
+          "complete_write_monotonic_ns": 579332919768916,
+          "last_diagnostic_frame_read_monotonic_ns": 579332957140791,
+          "elapsed_ms": 37.373791,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "9089193e5ea30ed5acd8e32c23fa932f3226614b6dcda914c84b73ede7e91810"
+        },
+        {
+          "iteration": 2,
+          "warmup": true,
+          "first_write_monotonic_ns": 579332957357000,
+          "complete_write_monotonic_ns": 579332957358791,
+          "last_diagnostic_frame_read_monotonic_ns": 579332995115416,
+          "elapsed_ms": 37.758416,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "9089193e5ea30ed5acd8e32c23fa932f3226614b6dcda914c84b73ede7e91810"
+        },
+        {
+          "iteration": 3,
+          "warmup": true,
+          "first_write_monotonic_ns": 579332995328208,
+          "complete_write_monotonic_ns": 579332995330125,
+          "last_diagnostic_frame_read_monotonic_ns": 579333032605166,
+          "elapsed_ms": 37.276958,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "9089193e5ea30ed5acd8e32c23fa932f3226614b6dcda914c84b73ede7e91810"
+        },
+        {
+          "iteration": 4,
+          "warmup": true,
+          "first_write_monotonic_ns": 579333032813958,
+          "complete_write_monotonic_ns": 579333032816333,
+          "last_diagnostic_frame_read_monotonic_ns": 579333070593125,
+          "elapsed_ms": 37.779167,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "9089193e5ea30ed5acd8e32c23fa932f3226614b6dcda914c84b73ede7e91810"
+        },
+        {
+          "iteration": 5,
+          "warmup": false,
+          "first_write_monotonic_ns": 579333070838166,
+          "complete_write_monotonic_ns": 579333070840500,
+          "last_diagnostic_frame_read_monotonic_ns": 579333109753916,
+          "elapsed_ms": 38.91575,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "9089193e5ea30ed5acd8e32c23fa932f3226614b6dcda914c84b73ede7e91810"
+        },
+        {
+          "iteration": 6,
+          "warmup": false,
+          "first_write_monotonic_ns": 579333109994666,
+          "complete_write_monotonic_ns": 579333110000666,
+          "last_diagnostic_frame_read_monotonic_ns": 579333148121541,
+          "elapsed_ms": 38.126875,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "9089193e5ea30ed5acd8e32c23fa932f3226614b6dcda914c84b73ede7e91810"
+        },
+        {
+          "iteration": 7,
+          "warmup": false,
+          "first_write_monotonic_ns": 579333148380000,
+          "complete_write_monotonic_ns": 579333148382125,
+          "last_diagnostic_frame_read_monotonic_ns": 579333186530208,
+          "elapsed_ms": 38.150208,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "9089193e5ea30ed5acd8e32c23fa932f3226614b6dcda914c84b73ede7e91810"
+        },
+        {
+          "iteration": 8,
+          "warmup": false,
+          "first_write_monotonic_ns": 579333186740083,
+          "complete_write_monotonic_ns": 579333186741708,
+          "last_diagnostic_frame_read_monotonic_ns": 579333225228333,
+          "elapsed_ms": 38.48825,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "9089193e5ea30ed5acd8e32c23fa932f3226614b6dcda914c84b73ede7e91810"
+        },
+        {
+          "iteration": 9,
+          "warmup": false,
+          "first_write_monotonic_ns": 579333225444291,
+          "complete_write_monotonic_ns": 579333225447500,
+          "last_diagnostic_frame_read_monotonic_ns": 579333264660125,
+          "elapsed_ms": 39.215834,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "9089193e5ea30ed5acd8e32c23fa932f3226614b6dcda914c84b73ede7e91810"
+        },
+        {
+          "iteration": 10,
+          "warmup": false,
+          "first_write_monotonic_ns": 579333264898541,
+          "complete_write_monotonic_ns": 579333264900583,
+          "last_diagnostic_frame_read_monotonic_ns": 579333301785000,
+          "elapsed_ms": 36.886459,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "9089193e5ea30ed5acd8e32c23fa932f3226614b6dcda914c84b73ede7e91810"
+        },
+        {
+          "iteration": 11,
+          "warmup": false,
+          "first_write_monotonic_ns": 579333302014083,
+          "complete_write_monotonic_ns": 579333302017833,
+          "last_diagnostic_frame_read_monotonic_ns": 579333338845208,
+          "elapsed_ms": 36.831125,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "9089193e5ea30ed5acd8e32c23fa932f3226614b6dcda914c84b73ede7e91810"
+        },
+        {
+          "iteration": 12,
+          "warmup": false,
+          "first_write_monotonic_ns": 579333339052041,
+          "complete_write_monotonic_ns": 579333339054125,
+          "last_diagnostic_frame_read_monotonic_ns": 579333376073791,
+          "elapsed_ms": 37.02175,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "9089193e5ea30ed5acd8e32c23fa932f3226614b6dcda914c84b73ede7e91810"
+        },
+        {
+          "iteration": 13,
+          "warmup": false,
+          "first_write_monotonic_ns": 579333376255958,
+          "complete_write_monotonic_ns": 579333376258125,
+          "last_diagnostic_frame_read_monotonic_ns": 579333413457333,
+          "elapsed_ms": 37.201375,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "9089193e5ea30ed5acd8e32c23fa932f3226614b6dcda914c84b73ede7e91810"
+        },
+        {
+          "iteration": 14,
+          "warmup": false,
+          "first_write_monotonic_ns": 579333413705416,
+          "complete_write_monotonic_ns": 579333413707583,
+          "last_diagnostic_frame_read_monotonic_ns": 579333453252041,
+          "elapsed_ms": 39.546625,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "9089193e5ea30ed5acd8e32c23fa932f3226614b6dcda914c84b73ede7e91810"
+        },
+        {
+          "iteration": 15,
+          "warmup": false,
+          "first_write_monotonic_ns": 579333453467458,
+          "complete_write_monotonic_ns": 579333453469666,
+          "last_diagnostic_frame_read_monotonic_ns": 579333491200666,
+          "elapsed_ms": 37.733208,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "9089193e5ea30ed5acd8e32c23fa932f3226614b6dcda914c84b73ede7e91810"
+        },
+        {
+          "iteration": 16,
+          "warmup": false,
+          "first_write_monotonic_ns": 579333491433041,
+          "complete_write_monotonic_ns": 579333491435750,
+          "last_diagnostic_frame_read_monotonic_ns": 579333529535708,
+          "elapsed_ms": 38.102667,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "9089193e5ea30ed5acd8e32c23fa932f3226614b6dcda914c84b73ede7e91810"
+        },
+        {
+          "iteration": 17,
+          "warmup": false,
+          "first_write_monotonic_ns": 579333529756208,
+          "complete_write_monotonic_ns": 579333529758708,
+          "last_diagnostic_frame_read_monotonic_ns": 579333568280583,
+          "elapsed_ms": 38.524375,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "9089193e5ea30ed5acd8e32c23fa932f3226614b6dcda914c84b73ede7e91810"
+        },
+        {
+          "iteration": 18,
+          "warmup": false,
+          "first_write_monotonic_ns": 579333568488416,
+          "complete_write_monotonic_ns": 579333568491416,
+          "last_diagnostic_frame_read_monotonic_ns": 579333607329750,
+          "elapsed_ms": 38.841334,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "9089193e5ea30ed5acd8e32c23fa932f3226614b6dcda914c84b73ede7e91810"
+        },
+        {
+          "iteration": 19,
+          "warmup": false,
+          "first_write_monotonic_ns": 579333607561875,
+          "complete_write_monotonic_ns": 579333607564291,
+          "last_diagnostic_frame_read_monotonic_ns": 579333648167000,
+          "elapsed_ms": 40.605125,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "9089193e5ea30ed5acd8e32c23fa932f3226614b6dcda914c84b73ede7e91810"
+        },
+        {
+          "iteration": 20,
+          "warmup": false,
+          "first_write_monotonic_ns": 579333648398625,
+          "complete_write_monotonic_ns": 579333648400541,
+          "last_diagnostic_frame_read_monotonic_ns": 579333688856833,
+          "elapsed_ms": 40.458208,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "9089193e5ea30ed5acd8e32c23fa932f3226614b6dcda914c84b73ede7e91810"
+        },
+        {
+          "iteration": 21,
+          "warmup": false,
+          "first_write_monotonic_ns": 579333689111375,
+          "complete_write_monotonic_ns": 579333689115041,
+          "last_diagnostic_frame_read_monotonic_ns": 579333729225875,
+          "elapsed_ms": 40.1145,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "9089193e5ea30ed5acd8e32c23fa932f3226614b6dcda914c84b73ede7e91810"
+        },
+        {
+          "iteration": 22,
+          "warmup": false,
+          "first_write_monotonic_ns": 579333729444916,
+          "complete_write_monotonic_ns": 579333729446958,
+          "last_diagnostic_frame_read_monotonic_ns": 579333769062208,
+          "elapsed_ms": 39.617292,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "9089193e5ea30ed5acd8e32c23fa932f3226614b6dcda914c84b73ede7e91810"
+        },
+        {
+          "iteration": 23,
+          "warmup": false,
+          "first_write_monotonic_ns": 579333769355708,
+          "complete_write_monotonic_ns": 579333769358208,
+          "last_diagnostic_frame_read_monotonic_ns": 579333807259375,
+          "elapsed_ms": 37.903667,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "9089193e5ea30ed5acd8e32c23fa932f3226614b6dcda914c84b73ede7e91810"
+        },
+        {
+          "iteration": 24,
+          "warmup": false,
+          "first_write_monotonic_ns": 579333807452833,
+          "complete_write_monotonic_ns": 579333807454833,
+          "last_diagnostic_frame_read_monotonic_ns": 579333846627875,
+          "elapsed_ms": 39.175042,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "9089193e5ea30ed5acd8e32c23fa932f3226614b6dcda914c84b73ede7e91810"
+        }
+      ],
+      "issued_child_pid": 81199,
+      "argv": [
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-4b7dd76-macos-delivery/binaries/dillsp"
+      ],
+      "initialize_result": {
+        "capabilities": {
+          "textDocumentSync": 2,
+          "completionProvider": {},
+          "hoverProvider": true,
+          "documentFormattingProvider": true,
+          "definitionProvider": true,
+          "renameProvider": true
+        },
+        "serverInfo": {
+          "name": "dillsp",
+          "version": "0.8.0-dev",
+          "zeeBuild": {
+            "schema": "zee-build-v1",
+            "version": "0.8.0-dev",
+            "source_sha": "4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2",
+            "source_date": "2026-10-15",
+            "channel": "development",
+            "dirty": false
+          }
+        }
+      },
+      "samples_ms": [
+        38.91575,
+        38.126875,
+        38.150208,
+        38.48825,
+        39.215834,
+        36.886459,
+        36.831125,
+        37.02175,
+        37.201375,
+        39.546625,
+        37.733208,
+        38.102667,
+        38.524375,
+        38.841334,
+        40.605125,
+        40.458208,
+        40.1145,
+        39.617292,
+        37.903667,
+        39.175042
+      ],
+      "warmup_samples_ms": [
+        38.343959,
+        37.373791,
+        37.758416,
+        37.276958,
+        37.779167
+      ],
+      "p50_ms": 38.48825,
+      "p95_ms": 40.458208,
+      "max_ms": 40.605125,
+      "p95_method": "nearest rank ceil(0.95*20), zero-based index18",
+      "open_publication_ms_sum": 47.213625,
+      "normal_exit_before_cleanup": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "message_count": 110,
+      "stderr_bytes": 0,
+      "elapsed_seconds": 1.024267291999422
+    },
+    {
+      "label": "lint-on-open41",
+      "lint": true,
+      "open_documents": 41,
+      "status": "passed",
+      "open_transactions": [
+        {
+          "file": "ana.dil",
+          "first_write_monotonic_ns": 579333860106333,
+          "complete_write_monotonic_ns": 579333860109958,
+          "last_diagnostic_frame_read_monotonic_ns": 579333906614000,
+          "elapsed_ms": 46.507667,
+          "diagnostic_notifications": 1,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "9089193e5ea30ed5acd8e32c23fa932f3226614b6dcda914c84b73ede7e91810"
+        },
+        {
+          "file": "birim0.dil",
+          "first_write_monotonic_ns": 579333906945000,
+          "complete_write_monotonic_ns": 579333906951625,
+          "last_diagnostic_frame_read_monotonic_ns": 579333949175458,
+          "elapsed_ms": 42.230458,
+          "diagnostic_notifications": 2,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "5c20c755465dfdad8130acca39d177f02cc6ffe106a7df3a825dc8d80f1774af"
+        },
+        {
+          "file": "birim1.dil",
+          "first_write_monotonic_ns": 579333949474083,
+          "complete_write_monotonic_ns": 579333949481083,
+          "last_diagnostic_frame_read_monotonic_ns": 579333996620333,
+          "elapsed_ms": 47.14625,
+          "diagnostic_notifications": 3,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "a3c00cc57d5e2f92829ba72b6b44c1270e58ee43fd01da54fe63d7740aefff80"
+        },
+        {
+          "file": "birim2.dil",
+          "first_write_monotonic_ns": 579333996870416,
+          "complete_write_monotonic_ns": 579333996877041,
+          "last_diagnostic_frame_read_monotonic_ns": 579334047073166,
+          "elapsed_ms": 50.20275,
+          "diagnostic_notifications": 4,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "e57b3a0b88ee5efbe1b5af35fda558834a8aa5bc7bcc814bf32218f5fed18c3a"
+        },
+        {
+          "file": "birim3.dil",
+          "first_write_monotonic_ns": 579334047371458,
+          "complete_write_monotonic_ns": 579334047377000,
+          "last_diagnostic_frame_read_monotonic_ns": 579334103207291,
+          "elapsed_ms": 55.835833,
+          "diagnostic_notifications": 5,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "f3ec013157b2a306d2e6c796c7bec948d85d9d02da06e4f0ccce9c6137eaec6d"
+        },
+        {
+          "file": "birim4.dil",
+          "first_write_monotonic_ns": 579334103472083,
+          "complete_write_monotonic_ns": 579334103475666,
+          "last_diagnostic_frame_read_monotonic_ns": 579334165628625,
+          "elapsed_ms": 62.156542,
+          "diagnostic_notifications": 6,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "5d75e0100aacc5dda7ba7608871dd63f068a6f61bdaf6625b20710a255a35b4b"
+        },
+        {
+          "file": "birim5.dil",
+          "first_write_monotonic_ns": 579334165904291,
+          "complete_write_monotonic_ns": 579334165907958,
+          "last_diagnostic_frame_read_monotonic_ns": 579334232967125,
+          "elapsed_ms": 67.062834,
+          "diagnostic_notifications": 7,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "64a635ab579fa4368c7a4efe37884dc0834cabc7277b23d218f356017c04abfc"
+        },
+        {
+          "file": "birim6.dil",
+          "first_write_monotonic_ns": 579334233282291,
+          "complete_write_monotonic_ns": 579334233291750,
+          "last_diagnostic_frame_read_monotonic_ns": 579334304673583,
+          "elapsed_ms": 71.391292,
+          "diagnostic_notifications": 8,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "9095d47eb9b64701ca57f4a60fbd1a5e361974d2e0523750c16ad11421ce1e08"
+        },
+        {
+          "file": "birim7.dil",
+          "first_write_monotonic_ns": 579334304952958,
+          "complete_write_monotonic_ns": 579334304956666,
+          "last_diagnostic_frame_read_monotonic_ns": 579334378687958,
+          "elapsed_ms": 73.735,
+          "diagnostic_notifications": 9,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "5ba5ac4403e3f0aad2af85fdc8c57b2992fcb05034febaa88f579b8e9854128e"
+        },
+        {
+          "file": "birim8.dil",
+          "first_write_monotonic_ns": 579334378989333,
+          "complete_write_monotonic_ns": 579334378994583,
+          "last_diagnostic_frame_read_monotonic_ns": 579334458674166,
+          "elapsed_ms": 79.684833,
+          "diagnostic_notifications": 10,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "bb8bafe77480922ca88ff99e206bde6b1a36cb7a77dece90ae841f1d26b71743"
+        },
+        {
+          "file": "birim9.dil",
+          "first_write_monotonic_ns": 579334458999916,
+          "complete_write_monotonic_ns": 579334459004541,
+          "last_diagnostic_frame_read_monotonic_ns": 579334542411833,
+          "elapsed_ms": 83.411917,
+          "diagnostic_notifications": 11,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "5ce710f1b10ed3f446f3bd76fac5d7eb698c2e942b79721437c13e18a9dcee65"
+        },
+        {
+          "file": "birim10.dil",
+          "first_write_monotonic_ns": 579334542736708,
+          "complete_write_monotonic_ns": 579334542742500,
+          "last_diagnostic_frame_read_monotonic_ns": 579334631252166,
+          "elapsed_ms": 88.515458,
+          "diagnostic_notifications": 12,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "d3a2ae772a1a765c7d14beb75b91218ee908b028fd0d2b49cce2a8281f3253c5"
+        },
+        {
+          "file": "birim11.dil",
+          "first_write_monotonic_ns": 579334631581250,
+          "complete_write_monotonic_ns": 579334631584833,
+          "last_diagnostic_frame_read_monotonic_ns": 579334724688791,
+          "elapsed_ms": 93.107541,
+          "diagnostic_notifications": 13,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "f9b755c4a314346fe5aa5fb890f1791b30a1ec9fd9dd61cd7ce656e2f1671ac4"
+        },
+        {
+          "file": "birim12.dil",
+          "first_write_monotonic_ns": 579334725029750,
+          "complete_write_monotonic_ns": 579334725036208,
+          "last_diagnostic_frame_read_monotonic_ns": 579334824821583,
+          "elapsed_ms": 99.791833,
+          "diagnostic_notifications": 14,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "8f604b01f0611c143f04fba52e235d9cf01f3b129524ef0348c27e2f1e9e0f82"
+        },
+        {
+          "file": "birim13.dil",
+          "first_write_monotonic_ns": 579334825162333,
+          "complete_write_monotonic_ns": 579334825165958,
+          "last_diagnostic_frame_read_monotonic_ns": 579334926515000,
+          "elapsed_ms": 101.352667,
+          "diagnostic_notifications": 15,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "71294f195941f7d86474dfe9c487e6e8f72f30a13cd6d8064bc169b8c7f0dd46"
+        },
+        {
+          "file": "birim14.dil",
+          "first_write_monotonic_ns": 579334926845750,
+          "complete_write_monotonic_ns": 579334926851458,
+          "last_diagnostic_frame_read_monotonic_ns": 579335031949416,
+          "elapsed_ms": 105.103666,
+          "diagnostic_notifications": 16,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "fba40d0fae608b91ebb2661e139d89bc91f916eef485175728805a77d1c0095a"
+        },
+        {
+          "file": "birim15.dil",
+          "first_write_monotonic_ns": 579335032275416,
+          "complete_write_monotonic_ns": 579335032279625,
+          "last_diagnostic_frame_read_monotonic_ns": 579335143409583,
+          "elapsed_ms": 111.134167,
+          "diagnostic_notifications": 17,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "1e07d33320e14b8aaa6b44646eb5cd36ae184175f68b9f0f47b77a2c8623025c"
+        },
+        {
+          "file": "birim16.dil",
+          "first_write_monotonic_ns": 579335143618833,
+          "complete_write_monotonic_ns": 579335143624541,
+          "last_diagnostic_frame_read_monotonic_ns": 579335261336833,
+          "elapsed_ms": 117.718,
+          "diagnostic_notifications": 18,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "1c14651975336905e52d345a48f71bda39732a9dd2f73739680fdafbccfbc552"
+        },
+        {
+          "file": "birim17.dil",
+          "first_write_monotonic_ns": 579335261546125,
+          "complete_write_monotonic_ns": 579335261551250,
+          "last_diagnostic_frame_read_monotonic_ns": 579335381226583,
+          "elapsed_ms": 119.680458,
+          "diagnostic_notifications": 19,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "1ac75d0788c94784edb5acde2406a095c6951997c3d755ee2364bce4352ab113"
+        },
+        {
+          "file": "birim18.dil",
+          "first_write_monotonic_ns": 579335381435166,
+          "complete_write_monotonic_ns": 579335381438250,
+          "last_diagnostic_frame_read_monotonic_ns": 579335505174458,
+          "elapsed_ms": 123.739292,
+          "diagnostic_notifications": 20,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "5f084d46cb7f73bd36582fcaa4e80251755b287202c6ba1c70f327d5a72ab09e"
+        },
+        {
+          "file": "birim19.dil",
+          "first_write_monotonic_ns": 579335505377041,
+          "complete_write_monotonic_ns": 579335505382666,
+          "last_diagnostic_frame_read_monotonic_ns": 579335634093291,
+          "elapsed_ms": 128.71625,
+          "diagnostic_notifications": 21,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "dd9734b227498a156fcb1b939cb0e23fa8ee3198fbdedd7e4ff1b9766282dc53"
+        },
+        {
+          "file": "birim20.dil",
+          "first_write_monotonic_ns": 579335634327083,
+          "complete_write_monotonic_ns": 579335634331541,
+          "last_diagnostic_frame_read_monotonic_ns": 579335771442333,
+          "elapsed_ms": 137.11525,
+          "diagnostic_notifications": 22,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "f11028fac7378b512f8a790c07d6bd646328002f9bfb14207eb85330e2137917"
+        },
+        {
+          "file": "birim21.dil",
+          "first_write_monotonic_ns": 579335771690541,
+          "complete_write_monotonic_ns": 579335771696208,
+          "last_diagnostic_frame_read_monotonic_ns": 579335908651833,
+          "elapsed_ms": 136.961292,
+          "diagnostic_notifications": 23,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "c9f93e91354aa804643dae33075f15f0b4373b7bd5dcfd3c84622615e2cba615"
+        },
+        {
+          "file": "birim22.dil",
+          "first_write_monotonic_ns": 579335908869291,
+          "complete_write_monotonic_ns": 579335908872583,
+          "last_diagnostic_frame_read_monotonic_ns": 579336051438000,
+          "elapsed_ms": 142.568709,
+          "diagnostic_notifications": 24,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "9b19918251e64ab2bf40c7346c6cac5cc923e36df7a00f8b6910df36e1344aa1"
+        },
+        {
+          "file": "birim23.dil",
+          "first_write_monotonic_ns": 579336051657291,
+          "complete_write_monotonic_ns": 579336051662583,
+          "last_diagnostic_frame_read_monotonic_ns": 579336203654875,
+          "elapsed_ms": 151.997584,
+          "diagnostic_notifications": 25,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "708f5801241a58c9cb2dac962f713a3d7f46c26b40567418eab8444be061e41d"
+        },
+        {
+          "file": "birim24.dil",
+          "first_write_monotonic_ns": 579336203916458,
+          "complete_write_monotonic_ns": 579336203920500,
+          "last_diagnostic_frame_read_monotonic_ns": 579336359322958,
+          "elapsed_ms": 155.4065,
+          "diagnostic_notifications": 26,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "fd73ee97961ef033f298803f13eaf93dd6f698cc118e1cfe115aad2195c2d6cf"
+        },
+        {
+          "file": "birim25.dil",
+          "first_write_monotonic_ns": 579336359595916,
+          "complete_write_monotonic_ns": 579336359602791,
+          "last_diagnostic_frame_read_monotonic_ns": 579336513116125,
+          "elapsed_ms": 153.520209,
+          "diagnostic_notifications": 27,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "f41ff2f13c99ac6c606a9d3afe8c74a9876e12bd90beacf8aec285469b970462"
+        },
+        {
+          "file": "birim26.dil",
+          "first_write_monotonic_ns": 579336513396625,
+          "complete_write_monotonic_ns": 579336513402000,
+          "last_diagnostic_frame_read_monotonic_ns": 579336676590458,
+          "elapsed_ms": 163.193833,
+          "diagnostic_notifications": 28,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "bb479f3ddbf253e2d0217b04ef881d818595c846aec1310e8a8705acd41d91c7"
+        },
+        {
+          "file": "birim27.dil",
+          "first_write_monotonic_ns": 579336676870708,
+          "complete_write_monotonic_ns": 579336676874291,
+          "last_diagnostic_frame_read_monotonic_ns": 579336844428541,
+          "elapsed_ms": 167.557833,
+          "diagnostic_notifications": 29,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "0fc327aad06b0776c145c7b7d0bae6e59dc387f9f548178138363b796e041d87"
+        },
+        {
+          "file": "birim28.dil",
+          "first_write_monotonic_ns": 579336844703041,
+          "complete_write_monotonic_ns": 579336844709250,
+          "last_diagnostic_frame_read_monotonic_ns": 579337012155958,
+          "elapsed_ms": 167.452917,
+          "diagnostic_notifications": 30,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "2ba3baab5d61f4b24152a45d53fb3582ab38b35b061e0c010f2e524da9fec879"
+        },
+        {
+          "file": "birim29.dil",
+          "first_write_monotonic_ns": 579337012415958,
+          "complete_write_monotonic_ns": 579337012419125,
+          "last_diagnostic_frame_read_monotonic_ns": 579337187515916,
+          "elapsed_ms": 175.099958,
+          "diagnostic_notifications": 31,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "59b6df903206fb94b528e386e9ee6239c6a5107d890fb85142b094f35f4c2724"
+        },
+        {
+          "file": "birim30.dil",
+          "first_write_monotonic_ns": 579337187779375,
+          "complete_write_monotonic_ns": 579337187785166,
+          "last_diagnostic_frame_read_monotonic_ns": 579337368373541,
+          "elapsed_ms": 180.594166,
+          "diagnostic_notifications": 32,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "730ef997eb9f19da624d4d9eb8e70dedc805aac2e1e7962244441077c2c89e18"
+        },
+        {
+          "file": "birim31.dil",
+          "first_write_monotonic_ns": 579337368688666,
+          "complete_write_monotonic_ns": 579337368692041,
+          "last_diagnostic_frame_read_monotonic_ns": 579337553543458,
+          "elapsed_ms": 184.854792,
+          "diagnostic_notifications": 33,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "75da2831ff9423debabd05b66246ed9597f865aead647b34002c6eb25e0cc760"
+        },
+        {
+          "file": "birim32.dil",
+          "first_write_monotonic_ns": 579337553841500,
+          "complete_write_monotonic_ns": 579337553847250,
+          "last_diagnostic_frame_read_monotonic_ns": 579337746493250,
+          "elapsed_ms": 192.65175,
+          "diagnostic_notifications": 34,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "16b44cdb9bb34a94940c516ab79d05e75e52358c5bb7863b2c11a04ec6d0cb4f"
+        },
+        {
+          "file": "birim33.dil",
+          "first_write_monotonic_ns": 579337746717708,
+          "complete_write_monotonic_ns": 579337746721750,
+          "last_diagnostic_frame_read_monotonic_ns": 579337939272833,
+          "elapsed_ms": 192.555125,
+          "diagnostic_notifications": 35,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "b301f548892069e3adaf0f1270b0a05336b4c7e97b84e87b32cd75c6276b3fd5"
+        },
+        {
+          "file": "birim34.dil",
+          "first_write_monotonic_ns": 579337939497583,
+          "complete_write_monotonic_ns": 579337939503958,
+          "last_diagnostic_frame_read_monotonic_ns": 579338142676125,
+          "elapsed_ms": 203.178542,
+          "diagnostic_notifications": 36,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "7c8bccabe5fd74c0a155a07216e961181346e8ed476e186dbb72c5d6bd40624e"
+        },
+        {
+          "file": "birim35.dil",
+          "first_write_monotonic_ns": 579338142922708,
+          "complete_write_monotonic_ns": 579338142928125,
+          "last_diagnostic_frame_read_monotonic_ns": 579338338659750,
+          "elapsed_ms": 195.737042,
+          "diagnostic_notifications": 37,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "580bd485bd164bbe2580dbd33b998b6b0e96429a085528fa32cbdaf3f62e34d8"
+        },
+        {
+          "file": "birim36.dil",
+          "first_write_monotonic_ns": 579338338907666,
+          "complete_write_monotonic_ns": 579338338911500,
+          "last_diagnostic_frame_read_monotonic_ns": 579338536687250,
+          "elapsed_ms": 197.779584,
+          "diagnostic_notifications": 38,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "4264ad7087daa23b89e4a4bca3aab4eb5c2f100bf4fb3556039eadde388e9b8f"
+        },
+        {
+          "file": "birim37.dil",
+          "first_write_monotonic_ns": 579338536944625,
+          "complete_write_monotonic_ns": 579338536950291,
+          "last_diagnostic_frame_read_monotonic_ns": 579338741146333,
+          "elapsed_ms": 204.201708,
+          "diagnostic_notifications": 39,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "774138796da04e2d663ff9b4f6829f41eb41daf867a36615c8bd4cf40c03b197"
+        },
+        {
+          "file": "birim38.dil",
+          "first_write_monotonic_ns": 579338741465791,
+          "complete_write_monotonic_ns": 579338741469666,
+          "last_diagnostic_frame_read_monotonic_ns": 579338945874291,
+          "elapsed_ms": 204.4085,
+          "diagnostic_notifications": 40,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "60afc76e5ebc6f0682615bf3b39d1284dc3f852511c0d6cb7dc39d1b7153b89e"
+        },
+        {
+          "file": "birim39.dil",
+          "first_write_monotonic_ns": 579338946123583,
+          "complete_write_monotonic_ns": 579338946129291,
+          "last_diagnostic_frame_read_monotonic_ns": 579339154962666,
+          "elapsed_ms": 208.839083,
+          "diagnostic_notifications": 41,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "4916eea60960cc307f14c65c772db6f0199c53ffaad0eb402d1273534845f09e"
+        }
+      ],
+      "edits": [
+        {
+          "iteration": 0,
+          "warmup": true,
+          "first_write_monotonic_ns": 579339155164458,
+          "complete_write_monotonic_ns": 579339155166541,
+          "last_diagnostic_frame_read_monotonic_ns": 579339364827000,
+          "elapsed_ms": 209.662542,
+          "diagnostic_notifications": 41,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "ba01a0b5a578b0efc07247c168d27fa094dfaf352e953ea3417b85590417dfe6"
+        },
+        {
+          "iteration": 1,
+          "warmup": true,
+          "first_write_monotonic_ns": 579339365022625,
+          "complete_write_monotonic_ns": 579339365024708,
+          "last_diagnostic_frame_read_monotonic_ns": 579339573658000,
+          "elapsed_ms": 208.635375,
+          "diagnostic_notifications": 41,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "ba01a0b5a578b0efc07247c168d27fa094dfaf352e953ea3417b85590417dfe6"
+        },
+        {
+          "iteration": 2,
+          "warmup": true,
+          "first_write_monotonic_ns": 579339573888750,
+          "complete_write_monotonic_ns": 579339573891083,
+          "last_diagnostic_frame_read_monotonic_ns": 579339789791250,
+          "elapsed_ms": 215.9025,
+          "diagnostic_notifications": 41,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "ba01a0b5a578b0efc07247c168d27fa094dfaf352e953ea3417b85590417dfe6"
+        },
+        {
+          "iteration": 3,
+          "warmup": true,
+          "first_write_monotonic_ns": 579339790007625,
+          "complete_write_monotonic_ns": 579339790009791,
+          "last_diagnostic_frame_read_monotonic_ns": 579339999845250,
+          "elapsed_ms": 209.837625,
+          "diagnostic_notifications": 41,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "ba01a0b5a578b0efc07247c168d27fa094dfaf352e953ea3417b85590417dfe6"
+        },
+        {
+          "iteration": 4,
+          "warmup": true,
+          "first_write_monotonic_ns": 579340000045333,
+          "complete_write_monotonic_ns": 579340000050875,
+          "last_diagnostic_frame_read_monotonic_ns": 579340210876166,
+          "elapsed_ms": 210.830833,
+          "diagnostic_notifications": 41,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "ba01a0b5a578b0efc07247c168d27fa094dfaf352e953ea3417b85590417dfe6"
+        },
+        {
+          "iteration": 5,
+          "warmup": false,
+          "first_write_monotonic_ns": 579340211326625,
+          "complete_write_monotonic_ns": 579340211329000,
+          "last_diagnostic_frame_read_monotonic_ns": 579340420730291,
+          "elapsed_ms": 209.403666,
+          "diagnostic_notifications": 41,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "ba01a0b5a578b0efc07247c168d27fa094dfaf352e953ea3417b85590417dfe6"
+        },
+        {
+          "iteration": 6,
+          "warmup": false,
+          "first_write_monotonic_ns": 579340420926250,
+          "complete_write_monotonic_ns": 579340420928500,
+          "last_diagnostic_frame_read_monotonic_ns": 579340628757375,
+          "elapsed_ms": 207.831125,
+          "diagnostic_notifications": 41,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "ba01a0b5a578b0efc07247c168d27fa094dfaf352e953ea3417b85590417dfe6"
+        },
+        {
+          "iteration": 7,
+          "warmup": false,
+          "first_write_monotonic_ns": 579340628971291,
+          "complete_write_monotonic_ns": 579340628974000,
+          "last_diagnostic_frame_read_monotonic_ns": 579340842547541,
+          "elapsed_ms": 213.57625,
+          "diagnostic_notifications": 41,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "ba01a0b5a578b0efc07247c168d27fa094dfaf352e953ea3417b85590417dfe6"
+        },
+        {
+          "iteration": 8,
+          "warmup": false,
+          "first_write_monotonic_ns": 579340842743708,
+          "complete_write_monotonic_ns": 579340842746166,
+          "last_diagnostic_frame_read_monotonic_ns": 579341050244541,
+          "elapsed_ms": 207.500833,
+          "diagnostic_notifications": 41,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "ba01a0b5a578b0efc07247c168d27fa094dfaf352e953ea3417b85590417dfe6"
+        },
+        {
+          "iteration": 9,
+          "warmup": false,
+          "first_write_monotonic_ns": 579341050442333,
+          "complete_write_monotonic_ns": 579341050444708,
+          "last_diagnostic_frame_read_monotonic_ns": 579341262400125,
+          "elapsed_ms": 211.957792,
+          "diagnostic_notifications": 41,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "ba01a0b5a578b0efc07247c168d27fa094dfaf352e953ea3417b85590417dfe6"
+        },
+        {
+          "iteration": 10,
+          "warmup": false,
+          "first_write_monotonic_ns": 579341262592583,
+          "complete_write_monotonic_ns": 579341262594625,
+          "last_diagnostic_frame_read_monotonic_ns": 579341469714833,
+          "elapsed_ms": 207.12225,
+          "diagnostic_notifications": 41,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "ba01a0b5a578b0efc07247c168d27fa094dfaf352e953ea3417b85590417dfe6"
+        },
+        {
+          "iteration": 11,
+          "warmup": false,
+          "first_write_monotonic_ns": 579341469926041,
+          "complete_write_monotonic_ns": 579341469928375,
+          "last_diagnostic_frame_read_monotonic_ns": 579341680859833,
+          "elapsed_ms": 210.933792,
+          "diagnostic_notifications": 41,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "ba01a0b5a578b0efc07247c168d27fa094dfaf352e953ea3417b85590417dfe6"
+        },
+        {
+          "iteration": 12,
+          "warmup": false,
+          "first_write_monotonic_ns": 579341681147750,
+          "complete_write_monotonic_ns": 579341681150416,
+          "last_diagnostic_frame_read_monotonic_ns": 579341893375000,
+          "elapsed_ms": 212.22725,
+          "diagnostic_notifications": 41,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "ba01a0b5a578b0efc07247c168d27fa094dfaf352e953ea3417b85590417dfe6"
+        },
+        {
+          "iteration": 13,
+          "warmup": false,
+          "first_write_monotonic_ns": 579341893597500,
+          "complete_write_monotonic_ns": 579341893599625,
+          "last_diagnostic_frame_read_monotonic_ns": 579342101373833,
+          "elapsed_ms": 207.776333,
+          "diagnostic_notifications": 41,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "ba01a0b5a578b0efc07247c168d27fa094dfaf352e953ea3417b85590417dfe6"
+        },
+        {
+          "iteration": 14,
+          "warmup": false,
+          "first_write_monotonic_ns": 579342101552416,
+          "complete_write_monotonic_ns": 579342101554458,
+          "last_diagnostic_frame_read_monotonic_ns": 579342315164416,
+          "elapsed_ms": 213.612,
+          "diagnostic_notifications": 41,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "ba01a0b5a578b0efc07247c168d27fa094dfaf352e953ea3417b85590417dfe6"
+        },
+        {
+          "iteration": 15,
+          "warmup": false,
+          "first_write_monotonic_ns": 579342315355416,
+          "complete_write_monotonic_ns": 579342315357333,
+          "last_diagnostic_frame_read_monotonic_ns": 579342523401833,
+          "elapsed_ms": 208.046417,
+          "diagnostic_notifications": 41,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "ba01a0b5a578b0efc07247c168d27fa094dfaf352e953ea3417b85590417dfe6"
+        },
+        {
+          "iteration": 16,
+          "warmup": false,
+          "first_write_monotonic_ns": 579342523608958,
+          "complete_write_monotonic_ns": 579342523611333,
+          "last_diagnostic_frame_read_monotonic_ns": 579342734036458,
+          "elapsed_ms": 210.4275,
+          "diagnostic_notifications": 41,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "ba01a0b5a578b0efc07247c168d27fa094dfaf352e953ea3417b85590417dfe6"
+        },
+        {
+          "iteration": 17,
+          "warmup": false,
+          "first_write_monotonic_ns": 579342734251333,
+          "complete_write_monotonic_ns": 579342734253500,
+          "last_diagnostic_frame_read_monotonic_ns": 579342943064833,
+          "elapsed_ms": 208.8135,
+          "diagnostic_notifications": 41,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "ba01a0b5a578b0efc07247c168d27fa094dfaf352e953ea3417b85590417dfe6"
+        },
+        {
+          "iteration": 18,
+          "warmup": false,
+          "first_write_monotonic_ns": 579342943275083,
+          "complete_write_monotonic_ns": 579342943277208,
+          "last_diagnostic_frame_read_monotonic_ns": 579343153153416,
+          "elapsed_ms": 209.878333,
+          "diagnostic_notifications": 41,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "ba01a0b5a578b0efc07247c168d27fa094dfaf352e953ea3417b85590417dfe6"
+        },
+        {
+          "iteration": 19,
+          "warmup": false,
+          "first_write_monotonic_ns": 579343153394500,
+          "complete_write_monotonic_ns": 579343153396833,
+          "last_diagnostic_frame_read_monotonic_ns": 579343376732500,
+          "elapsed_ms": 223.338,
+          "diagnostic_notifications": 41,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "ba01a0b5a578b0efc07247c168d27fa094dfaf352e953ea3417b85590417dfe6"
+        },
+        {
+          "iteration": 20,
+          "warmup": false,
+          "first_write_monotonic_ns": 579343376944416,
+          "complete_write_monotonic_ns": 579343376950791,
+          "last_diagnostic_frame_read_monotonic_ns": 579343599265958,
+          "elapsed_ms": 222.321542,
+          "diagnostic_notifications": 41,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "ba01a0b5a578b0efc07247c168d27fa094dfaf352e953ea3417b85590417dfe6"
+        },
+        {
+          "iteration": 21,
+          "warmup": false,
+          "first_write_monotonic_ns": 579343599472250,
+          "complete_write_monotonic_ns": 579343599475041,
+          "last_diagnostic_frame_read_monotonic_ns": 579343824878875,
+          "elapsed_ms": 225.406625,
+          "diagnostic_notifications": 41,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "ba01a0b5a578b0efc07247c168d27fa094dfaf352e953ea3417b85590417dfe6"
+        },
+        {
+          "iteration": 22,
+          "warmup": false,
+          "first_write_monotonic_ns": 579343825082541,
+          "complete_write_monotonic_ns": 579343825084541,
+          "last_diagnostic_frame_read_monotonic_ns": 579344046858833,
+          "elapsed_ms": 221.776292,
+          "diagnostic_notifications": 41,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "ba01a0b5a578b0efc07247c168d27fa094dfaf352e953ea3417b85590417dfe6"
+        },
+        {
+          "iteration": 23,
+          "warmup": false,
+          "first_write_monotonic_ns": 579344047070833,
+          "complete_write_monotonic_ns": 579344047072916,
+          "last_diagnostic_frame_read_monotonic_ns": 579344270768583,
+          "elapsed_ms": 223.69775,
+          "diagnostic_notifications": 41,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "ba01a0b5a578b0efc07247c168d27fa094dfaf352e953ea3417b85590417dfe6"
+        },
+        {
+          "iteration": 24,
+          "warmup": false,
+          "first_write_monotonic_ns": 579344270989583,
+          "complete_write_monotonic_ns": 579344270992041,
+          "last_diagnostic_frame_read_monotonic_ns": 579344492337166,
+          "elapsed_ms": 221.347583,
+          "diagnostic_notifications": 41,
+          "diagnostics_total": 1,
+          "diagnostics_sha256": "ba01a0b5a578b0efc07247c168d27fa094dfaf352e953ea3417b85590417dfe6"
+        }
+      ],
+      "issued_child_pid": 81204,
+      "argv": [
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-4b7dd76-macos-delivery/binaries/dillsp"
+      ],
+      "initialize_result": {
+        "capabilities": {
+          "textDocumentSync": 2,
+          "completionProvider": {},
+          "hoverProvider": true,
+          "documentFormattingProvider": true,
+          "definitionProvider": true,
+          "renameProvider": true
+        },
+        "serverInfo": {
+          "name": "dillsp",
+          "version": "0.8.0-dev",
+          "zeeBuild": {
+            "schema": "zee-build-v1",
+            "version": "0.8.0-dev",
+            "source_sha": "4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2",
+            "source_date": "2026-10-15",
+            "channel": "development",
+            "dirty": false
+          }
+        }
+      },
+      "samples_ms": [
+        209.403666,
+        207.831125,
+        213.57625,
+        207.500833,
+        211.957792,
+        207.12225,
+        210.933792,
+        212.22725,
+        207.776333,
+        213.612,
+        208.046417,
+        210.4275,
+        208.8135,
+        209.878333,
+        223.338,
+        222.321542,
+        225.406625,
+        221.776292,
+        223.69775,
+        221.347583
+      ],
+      "warmup_samples_ms": [
+        209.662542,
+        208.635375,
+        215.9025,
+        209.837625,
+        210.830833
+      ],
+      "p50_ms": 210.933792,
+      "p95_ms": 223.69775,
+      "max_ms": 225.406625,
+      "p95_method": "nearest rank ceil(0.95*20), zero-based index18",
+      "open_publication_ms_sum": 5283.899085,
+      "normal_exit_before_cleanup": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "message_count": 2090,
+      "stderr_bytes": 0,
+      "elapsed_seconds": 10.649950708029792
+    }
+  ],
+  "budgets": {
+    "minimum_free_bytes": 10737418240,
+    "max_output_bytes": 67108864,
+    "cohort_seconds": 240,
+    "campaign_seconds": 1200,
+    "operation_seconds": 10,
+    "max_messages_per_cohort": 4096,
+    "max_frame_bytes": 65536,
+    "max_raw_bytes_per_stream_per_cohort": 4194304
+  },
+  "scope": "Canonical native stdio; first successful write call to final complete publishDiagnostics frame read.",
+  "excluded_claims": [
+    "IDE/UI latency",
+    "real-product or production SLA",
+    "incremental HIR/type",
+    "dedicated benchmark baseline",
+    "C1/K-288",
+    "P33/K-293"
+  ],
+  "instrumentation": "Python client framing, selector scheduling and receive parsing are observational overhead. Static completion barriers occur after each drained transaction, outside timed samples. No source fixture, cache implementation or test threshold is changed.",
+  "machine": {
+    "os": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+    "macos": "26.6.2",
+    "machine": "arm64",
+    "cpu": "Apple M4 Pro",
+    "ram_bytes": 25769803776,
+    "cpu_count": 14,
+    "python": "3.13.3 (v3.13.3:6280bb54784, Apr  8 2025, 10:47:54) [Clang 15.0.0 (clang-1500.3.9.4)]",
+    "rustc_vV": "rustc 1.93.1 (01f6ddf75 2026-02-11)\nbinary: rustc\ncommit-hash: 01f6ddf7588f42ae2d7eb0a2f21d44e8e96674cf\ncommit-date: 2026-02-11\nhost: aarch64-apple-darwin\nrelease: 1.93.1\nLLVM version: 21.1.8",
+    "clock": {
+      "implementation": "mach_absolute_time()",
+      "monotonic": true,
+      "adjustable": false,
+      "resolution": 4.166666666666666e-08
+    },
+    "shared_machine": true,
+    "unowned_machine_work": "not-assessed"
+  },
+  "build_identity": {
+    "schema": "zee-build-v1",
+    "version": "0.8.0-dev",
+    "source_sha": "4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2",
+    "source_date": "2026-10-15",
+    "channel": "development",
+    "dirty": false
+  },
+  "build_profile": {
+    "cargoArgs": "cargo build --locked --release --bin dil --bin dillsp",
+    "gitCommit": "4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2",
+    "platform": "aarch64-apple-darwin",
+    "rustc": "rustc 1.93.1 (01f6ddf75 2026-02-11)",
+    "sourceDateEpoch": 1792068996,
+    "targetRustflags": [
+      "-C",
+      "link-arg=-v"
+    ],
+    "remapPathPrefix": [
+      "/zee",
+      "/cargo",
+      "/rust"
+    ],
+    "crtLinkage": "target-default"
+  },
+  "build_provenance_sha256": "5b960785452bd3dd19b9bb019f2a87911cb8f5eb93d55401d773eec917498750",
+  "workload": {
+    "source_test": "compiler/tests/lsp_artimli_testi.rs::yirmi_bin_satir_proje_duzenleme_olcumu",
+    "source_test_sha256": "4c08052517c84c078ebad6b5f5300cde71b6e2be3943da5dcf609eaaf419845a",
+    "lines": 20081,
+    "modules": 40,
+    "files_sha256": {
+      "ana.dil": "12cee2ad227f9c53925208f1aa83978502f146e63493836c4968af920a008c2c",
+      "birim0.dil": "aa39fb466717e7a9818318f89060f9f6b1e52ff4c40c5c1b42e46d8c3aef2d1c",
+      "birim1.dil": "98cd37f5e9897f3edada31ceab4f190c031f8a408621098142715fd10cbebb67",
+      "birim10.dil": "659be286b7fce624c117bd5af548d1df7ff0cdc44ae2a0df7d31ee8fae92f94a",
+      "birim11.dil": "a643c451ca81d249c90cad40a17824ca14b8c3170bbbc8c9b5fd4bde763f51ac",
+      "birim12.dil": "82199007fa7c97802d7e69c8273fb33193fb6fc4b5255c8233a9c07cf8b838e4",
+      "birim13.dil": "a366971d4ac4658e74e2214de9faf9b6b24ff8f0b1941281b8ac43ec3fd6c8af",
+      "birim14.dil": "accd615b950170711033f641fc0d64b4e4e31f1dd90a95967aa062c413ce2b3e",
+      "birim15.dil": "34607e61e6544f836d1bb2b10f2c2224eb1d857086379eb2c3b42306deafbb1a",
+      "birim16.dil": "c4e52367377e7fac639eadc19101845088025bc1153a2d5c794afe9d53b3c913",
+      "birim17.dil": "6393a28564b04d99eea663351466399a1d528305e4cb3221728b554cb752336f",
+      "birim18.dil": "a09df4811b0c75520d6a64df3ab748ddbb4ded8de7a04baec2a6ed9e28722ab0",
+      "birim19.dil": "ff9b4203ed41f3bbbe8ead68fe72390a7ca6804d3ff8440b41836da1ac428693",
+      "birim2.dil": "2d144ade74230d2b13d151e3fc2edd11a5fd7e0ca3a67dc2e8d7b17ca3640956",
+      "birim20.dil": "76579a55d272c8cec998ed77eb2b85a2000f083732080e1869aa0068489dc542",
+      "birim21.dil": "049e8c339e79a9b9a7d56796b2578a7cfda249afed6fd6000bef486b486a312f",
+      "birim22.dil": "4ab8955a7e19cd7cce8e109e8f99ef0f2c16678c3061c320cbe186c64d94c7c9",
+      "birim23.dil": "d3a2c2180006af5b95f05b3dec2eb3eb82ac7203c55dc98a152e23fa0372c998",
+      "birim24.dil": "4c78370dbe4cf8b4c38a3015a824617026d026d27e6c744bddf94f009f694008",
+      "birim25.dil": "4b1fe8da13b614f6c7cb42ad98dde842eb8fea9c25dbeb6daf9b4b1f85fa0bea",
+      "birim26.dil": "7b15ef0bfc4d40f365ca71163083a90b3f142471552e4cd694c7923c7201f8e0",
+      "birim27.dil": "0af46b7a1c00abcdeba2389591b9b8127c2b6423ca45a2cb58ad1bae57cad576",
+      "birim28.dil": "63bf99ac5b291286f7e352a335ad4f698298a265610b92eb8642e1fed2796a8f",
+      "birim29.dil": "9deb25cbbc51a854b27fe306954febf43cb7874c95b7213d4352a48963e6879a",
+      "birim3.dil": "bfe6deb385fee1fe9e67ccc6e6c61eb5723666f2a27b4b1620b8f1c00d0f9d05",
+      "birim30.dil": "c30a44884e46e52dc03112dbda9bf636da0279b993fa10face25a562ac30baac",
+      "birim31.dil": "484ac9fdaaef8843be58a72573bbd2904b32164ddf33f98d0b588cf740447d59",
+      "birim32.dil": "f1ce080d1ecc4ea018a19b5879087b27de1ad4ba8d7fd07a29dcba54fb07586a",
+      "birim33.dil": "c0756e56abb8dba069c5aaf138622dcbe143c5c7d9b036621ab3832056d1b3c1",
+      "birim34.dil": "c33106a0a0cc3d9847a8f776068064fb6b1ac43f5fe222ad6ed197831f42ee45",
+      "birim35.dil": "dc139cfd965edccf492c3d4d2f1ce0219a161e3c9ead4840daf360d937b873ba",
+      "birim36.dil": "a9da6bf345c3033242c62508eb33ccefe3250c0043256e937cc9e422850f816c",
+      "birim37.dil": "7d9668baa8605e9e4aad2a469b04ffe47e67f236ff2ac9ea42837e8975dde8cd",
+      "birim38.dil": "cbad8e3c2d6da751d6a4f7b00afa5146183d5ab58a0646cac3914905c2aca2f2",
+      "birim39.dil": "1209a3a11882816e473ea96d04bb877a07170ecb775f8abac400ac968831f7c3",
+      "birim4.dil": "9fe22c0f433c19e8494f2ecc2bb1c6b72fb7ea97f28a9732d61ebd6b5536079e",
+      "birim5.dil": "068acbe017c28a8586fbf36961d3424c2e4859ec64b84274dcaaa1c9b900f970",
+      "birim6.dil": "864abd163fb0df2a3c3d145c9eae0fa485f53fd35d55c71cce5ba07561b6ec51",
+      "birim7.dil": "b8d0ce3549aa0b57e0c6e0813dc2dd9882ff085607599917b57bf15724cd3089",
+      "birim8.dil": "c78eb360d6e03f7f4c7bee7282af285641c4475ec96df8fa3d2aef27828e2aea",
+      "birim9.dil": "f4816831e67df2adee9f1c6dabbfefd56d08709f47c29898f00c24edaaa7adc0",
+      "proje.dil": "4b9f81ce820b8d3f6cd16759591cc8681af5cfb14d4cb80099c59cc80f74bab3"
+    },
+    "edit": {
+      "line": 40,
+      "start_utf16": 6,
+      "end_utf16": 7,
+      "replacement": "1 on even zero-based iteration, 0 on odd"
+    },
+    "warmup_edits": 5,
+    "measured_edits": 20,
+    "cohort_order": [
+      "lint-off-open1",
+      "lint-off-open41",
+      "lint-on-open1",
+      "lint-on-open41"
+    ],
+    "fresh_process_per_cohort": true,
+    "OS_disk_cache_reset": false,
+    "source_disk_files_unchanged_during_edits": true
+  },
+  "source_end_clean": true,
+  "source_end_sha": "4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2",
+  "source_end_tree": "6c4982688f5105a67c025815cbbb72c07fcea7f8",
+  "binaries_unchanged": true,
+  "accepted_cohorts": 4,
+  "elapsed_seconds": 17.177852375083603,
+  "minimum_free_bytes": 75428294656,
+  "files": [
+    {
+      "path": "build-json.log",
+      "sha256": "383ace564d71348f51a018f7fd7e23d449195ba5d3677dea09bc588724135eca",
+      "bytes": 169
+    },
+    {
+      "path": "lint-off-open1/messages.json",
+      "sha256": "d5b6cebc0263e1844d9fe8176f7d603645701a758a3b5e7f6aa96d08496d8c18",
+      "bytes": 279455
+    },
+    {
+      "path": "lint-off-open1/stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "lint-off-open1/stdin.raw",
+      "sha256": "364c2801a2ab2b91fa19f6c5e018be5ba0d9b276e6535993bf3b2ba588e6ba4f",
+      "bytes": 17824
+    },
+    {
+      "path": "lint-off-open1/stdout-read-chunks.json",
+      "sha256": "5c4828fef738513ab6f2b88b16120c8a6e358c36dbad89092447cb87cac6ac70",
+      "bytes": 5491
+    },
+    {
+      "path": "lint-off-open1/stdout.raw",
+      "sha256": "7946d051bfc9024f332c3d21c8c550f24e1a444efbdd9043846dfad2f519dcda",
+      "bytes": 94915
+    },
+    {
+      "path": "lint-off-open41/messages.json",
+      "sha256": "d2c7d6477d06015b201406ae08f067d80627b0e5e03bc8b7440186960bd29e36",
+      "bytes": 2168011
+    },
+    {
+      "path": "lint-off-open41/stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "lint-off-open41/stdin.raw",
+      "sha256": "ec1dfb9a9122c04ac6c2b3d359f5a5f5c1467bfee4efae6bdb187702f2c63f88",
+      "bytes": 379724
+    },
+    {
+      "path": "lint-off-open41/stdout-read-chunks.json",
+      "sha256": "517a2ebcbdfe4f187b2817560d67f6b9cad0663bfbe46e4d796dcabdde2ad5df",
+      "bytes": 22268
+    },
+    {
+      "path": "lint-off-open41/stdout.raw",
+      "sha256": "5783c6f95183c916a5073d3ac2256decbaa9e0c2d7117358b0760e5d0dfe2a6a",
+      "bytes": 669070
+    },
+    {
+      "path": "lint-on-open1/messages.json",
+      "sha256": "d986f22b5e15fdf2721f2b097a9ff025e64407653cba987a375d280fdd886c13",
+      "bytes": 293328
+    },
+    {
+      "path": "lint-on-open1/stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "lint-on-open1/stdin.raw",
+      "sha256": "8cd6186772817013c80af20b8bf83c4ddeea19c97fceda8c741b671d3d9e5f43",
+      "bytes": 17823
+    },
+    {
+      "path": "lint-on-open1/stdout-read-chunks.json",
+      "sha256": "0746905d1dda1c8cb9203343b0fe5bcebac3defbf34c15c7fcaf0dd151e41843",
+      "bytes": 5494
+    },
+    {
+      "path": "lint-on-open1/stdout.raw",
+      "sha256": "2ec7e455272410f91a3bb7e61480da060790e1b94ca7e8481877dfbe1af3a9be",
+      "bytes": 102377
+    },
+    {
+      "path": "lint-on-open41/messages.json",
+      "sha256": "01ddfb59c5650839ac440118085cd0faf8e0d15d6065413b49bc01e33059a2c2",
+      "bytes": 2202694
+    },
+    {
+      "path": "lint-on-open41/stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "lint-on-open41/stdin.raw",
+      "sha256": "101a200f8042ee215a341c966db1cd6b718da6115e99552cf688b2db4e857796",
+      "bytes": 379723
+    },
+    {
+      "path": "lint-on-open41/stdout-read-chunks.json",
+      "sha256": "df3b7d4960f3f9d19f41c7f50de9bbad19eee3eed1f26ed9f8199528268b53db",
+      "bytes": 22478
+    },
+    {
+      "path": "lint-on-open41/stdout.raw",
+      "sha256": "38c5ef0db3950298a14561d147525b1ec739997ddbaf24b30039da2e511ff241",
+      "bytes": 688012
+    },
+    {
+      "path": "project/ana.dil",
+      "sha256": "12cee2ad227f9c53925208f1aa83978502f146e63493836c4968af920a008c2c",
+      "bytes": 1434
+    },
+    {
+      "path": "project/birim0.dil",
+      "sha256": "aa39fb466717e7a9818318f89060f9f6b1e52ff4c40c5c1b42e46d8c3aef2d1c",
+      "bytes": 8011
+    },
+    {
+      "path": "project/birim1.dil",
+      "sha256": "98cd37f5e9897f3edada31ceab4f190c031f8a408621098142715fd10cbebb67",
+      "bytes": 8011
+    },
+    {
+      "path": "project/birim10.dil",
+      "sha256": "659be286b7fce624c117bd5af548d1df7ff0cdc44ae2a0df7d31ee8fae92f94a",
+      "bytes": 8012
+    },
+    {
+      "path": "project/birim11.dil",
+      "sha256": "a643c451ca81d249c90cad40a17824ca14b8c3170bbbc8c9b5fd4bde763f51ac",
+      "bytes": 8012
+    },
+    {
+      "path": "project/birim12.dil",
+      "sha256": "82199007fa7c97802d7e69c8273fb33193fb6fc4b5255c8233a9c07cf8b838e4",
+      "bytes": 8012
+    },
+    {
+      "path": "project/birim13.dil",
+      "sha256": "a366971d4ac4658e74e2214de9faf9b6b24ff8f0b1941281b8ac43ec3fd6c8af",
+      "bytes": 8012
+    },
+    {
+      "path": "project/birim14.dil",
+      "sha256": "accd615b950170711033f641fc0d64b4e4e31f1dd90a95967aa062c413ce2b3e",
+      "bytes": 8012
+    },
+    {
+      "path": "project/birim15.dil",
+      "sha256": "34607e61e6544f836d1bb2b10f2c2224eb1d857086379eb2c3b42306deafbb1a",
+      "bytes": 8012
+    },
+    {
+      "path": "project/birim16.dil",
+      "sha256": "c4e52367377e7fac639eadc19101845088025bc1153a2d5c794afe9d53b3c913",
+      "bytes": 8012
+    },
+    {
+      "path": "project/birim17.dil",
+      "sha256": "6393a28564b04d99eea663351466399a1d528305e4cb3221728b554cb752336f",
+      "bytes": 8012
+    },
+    {
+      "path": "project/birim18.dil",
+      "sha256": "a09df4811b0c75520d6a64df3ab748ddbb4ded8de7a04baec2a6ed9e28722ab0",
+      "bytes": 8012
+    },
+    {
+      "path": "project/birim19.dil",
+      "sha256": "ff9b4203ed41f3bbbe8ead68fe72390a7ca6804d3ff8440b41836da1ac428693",
+      "bytes": 8012
+    },
+    {
+      "path": "project/birim2.dil",
+      "sha256": "2d144ade74230d2b13d151e3fc2edd11a5fd7e0ca3a67dc2e8d7b17ca3640956",
+      "bytes": 8011
+    },
+    {
+      "path": "project/birim20.dil",
+      "sha256": "76579a55d272c8cec998ed77eb2b85a2000f083732080e1869aa0068489dc542",
+      "bytes": 8012
+    },
+    {
+      "path": "project/birim21.dil",
+      "sha256": "049e8c339e79a9b9a7d56796b2578a7cfda249afed6fd6000bef486b486a312f",
+      "bytes": 8012
+    },
+    {
+      "path": "project/birim22.dil",
+      "sha256": "4ab8955a7e19cd7cce8e109e8f99ef0f2c16678c3061c320cbe186c64d94c7c9",
+      "bytes": 8012
+    },
+    {
+      "path": "project/birim23.dil",
+      "sha256": "d3a2c2180006af5b95f05b3dec2eb3eb82ac7203c55dc98a152e23fa0372c998",
+      "bytes": 8012
+    },
+    {
+      "path": "project/birim24.dil",
+      "sha256": "4c78370dbe4cf8b4c38a3015a824617026d026d27e6c744bddf94f009f694008",
+      "bytes": 8012
+    },
+    {
+      "path": "project/birim25.dil",
+      "sha256": "4b1fe8da13b614f6c7cb42ad98dde842eb8fea9c25dbeb6daf9b4b1f85fa0bea",
+      "bytes": 8012
+    },
+    {
+      "path": "project/birim26.dil",
+      "sha256": "7b15ef0bfc4d40f365ca71163083a90b3f142471552e4cd694c7923c7201f8e0",
+      "bytes": 8012
+    },
+    {
+      "path": "project/birim27.dil",
+      "sha256": "0af46b7a1c00abcdeba2389591b9b8127c2b6423ca45a2cb58ad1bae57cad576",
+      "bytes": 8012
+    },
+    {
+      "path": "project/birim28.dil",
+      "sha256": "63bf99ac5b291286f7e352a335ad4f698298a265610b92eb8642e1fed2796a8f",
+      "bytes": 8012
+    },
+    {
+      "path": "project/birim29.dil",
+      "sha256": "9deb25cbbc51a854b27fe306954febf43cb7874c95b7213d4352a48963e6879a",
+      "bytes": 8012
+    },
+    {
+      "path": "project/birim3.dil",
+      "sha256": "bfe6deb385fee1fe9e67ccc6e6c61eb5723666f2a27b4b1620b8f1c00d0f9d05",
+      "bytes": 8011
+    },
+    {
+      "path": "project/birim30.dil",
+      "sha256": "c30a44884e46e52dc03112dbda9bf636da0279b993fa10face25a562ac30baac",
+      "bytes": 8012
+    },
+    {
+      "path": "project/birim31.dil",
+      "sha256": "484ac9fdaaef8843be58a72573bbd2904b32164ddf33f98d0b588cf740447d59",
+      "bytes": 8012
+    },
+    {
+      "path": "project/birim32.dil",
+      "sha256": "f1ce080d1ecc4ea018a19b5879087b27de1ad4ba8d7fd07a29dcba54fb07586a",
+      "bytes": 8012
+    },
+    {
+      "path": "project/birim33.dil",
+      "sha256": "c0756e56abb8dba069c5aaf138622dcbe143c5c7d9b036621ab3832056d1b3c1",
+      "bytes": 8012
+    },
+    {
+      "path": "project/birim34.dil",
+      "sha256": "c33106a0a0cc3d9847a8f776068064fb6b1ac43f5fe222ad6ed197831f42ee45",
+      "bytes": 8012
+    },
+    {
+      "path": "project/birim35.dil",
+      "sha256": "dc139cfd965edccf492c3d4d2f1ce0219a161e3c9ead4840daf360d937b873ba",
+      "bytes": 8012
+    },
+    {
+      "path": "project/birim36.dil",
+      "sha256": "a9da6bf345c3033242c62508eb33ccefe3250c0043256e937cc9e422850f816c",
+      "bytes": 8012
+    },
+    {
+      "path": "project/birim37.dil",
+      "sha256": "7d9668baa8605e9e4aad2a469b04ffe47e67f236ff2ac9ea42837e8975dde8cd",
+      "bytes": 8012
+    },
+    {
+      "path": "project/birim38.dil",
+      "sha256": "cbad8e3c2d6da751d6a4f7b00afa5146183d5ab58a0646cac3914905c2aca2f2",
+      "bytes": 8012
+    },
+    {
+      "path": "project/birim39.dil",
+      "sha256": "1209a3a11882816e473ea96d04bb877a07170ecb775f8abac400ac968831f7c3",
+      "bytes": 8012
+    },
+    {
+      "path": "project/birim4.dil",
+      "sha256": "9fe22c0f433c19e8494f2ecc2bb1c6b72fb7ea97f28a9732d61ebd6b5536079e",
+      "bytes": 8011
+    },
+    {
+      "path": "project/birim5.dil",
+      "sha256": "068acbe017c28a8586fbf36961d3424c2e4859ec64b84274dcaaa1c9b900f970",
+      "bytes": 8011
+    },
+    {
+      "path": "project/birim6.dil",
+      "sha256": "864abd163fb0df2a3c3d145c9eae0fa485f53fd35d55c71cce5ba07561b6ec51",
+      "bytes": 8011
+    },
+    {
+      "path": "project/birim7.dil",
+      "sha256": "b8d0ce3549aa0b57e0c6e0813dc2dd9882ff085607599917b57bf15724cd3089",
+      "bytes": 8011
+    },
+    {
+      "path": "project/birim8.dil",
+      "sha256": "c78eb360d6e03f7f4c7bee7282af285641c4475ec96df8fa3d2aef27828e2aea",
+      "bytes": 8011
+    },
+    {
+      "path": "project/birim9.dil",
+      "sha256": "f4816831e67df2adee9f1c6dabbfefd56d08709f47c29898f00c24edaaa7adc0",
+      "bytes": 8011
+    },
+    {
+      "path": "project/proje.dil",
+      "sha256": "4b9f81ce820b8d3f6cd16759591cc8681af5cfb14d4cb80099c59cc80f74bab3",
+      "bytes": 66
+    }
+  ]
+}

@@ -43,7 +43,8 @@ Production modül/katman sahibi veya sahipler arası bağımlılık eklenmez;
 ADR-046 ve katman fixture'ı değişmez. Yeni cache/state/tampon yoktur;
 ADR-069 yeni soak gerektirmez. Satır taraması geçicidir, performans iddiası
 ve sabit benchmark iş yükü değişmez. ADR-045/049, ölçüm defteri ve kalıcı
-performans tarihçesi yeni exact ölçüm olmadığı için korunur. S3'ün RC/soak/
+performans tarihçesi ilk doğruluk diliminde yeni exact ölçüm olmadığı için
+korundu. İzleyen S4 gözlemi ayrı kabul raporundadır; sabit taban eklenmedi. S3'ün RC/soak/
 performans/IDE sonuçları yeni kaynak commit'ine taşınmaz.
 
 Tanı kimliği, önerisi, parser kurtarması, uyumluluk yüzeyi, bağımlılık ve
@@ -60,4 +61,6 @@ artımlı HIR/type, gerçek ürün ve UI/taşıma/lint gecikme kabulü açık ka
 Kaynak düzeltme SHA: `5b910fccad8e694fd26fabb58e1cc39adbfd65ea`.
 Minimal `bmp-disi-konum` fixture/manifesti ve compiler/core-freeze beyanları
 izleyen değişikliktedir; [kabul raporu](../docs/lsp-utf16-kabul-20261015.md)
-son tam faz başarısını ve yeni RC/soak/IDE yapılmadığı sınırını kaydeder.
+ilk kapanışın tam faz başarısını ve o aşamada RC/soak/IDE yapılmadığı sınırını
+kaydeder. İzleyen [S4 kabulü](../docs/urunlesme-s4-kabul-20261015.md) yeni exact
+kaynakta bu kampanyaları ayrıca doğrular; S3 tarihsel kanıtını taşımaz.

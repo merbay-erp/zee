@@ -1,7 +1,6 @@
 # ADR-139 — K-282 sürekli dispatcher ve application-owned adapter
 
-- **Durum:** uygulanmış aday; hazırlık testleri ve source review, yeni exact-clean Linux
-kampanyasından ayrıdır. P09/B1'in genel daemon ve uygulama-owned effect consumer
+- **Durum:** tarihsel [S3](../docs/urunlesme-s3-kabul-20261015.md) (`66e4149e53451111d153f47283c219079a8d1cab`) kaynağında dört Linux native vakasıyla dar yerel kabul; genel provider/exactly-once, ürün benimsenmesi ve diğer platformlar açık. Bu kanıt sonraki kaynaklarda yeniden koşulmuş sayılmaz. P09/B1'in genel daemon ve uygulama-owned effect consumer
 sürtünmesi mevcut host araçları üzerinde karşılanır; compiler/grammar/API açılmaz.
 
 K-268 SQL-only tick daemon içinde yeniden kullanılır; bilinen completion sonrası
@@ -20,8 +19,9 @@ cwd, WNOWAIT cleanup ve fixed metadata sınırı korunur. Unknown guard için bu
 sürüm otomatik/operator-asserted replay veya arbitrary deletion komutu sağlamaz.
 
 [Rehber](../docs/dispatcher-service.md), host hazırlık22 ve ayrı rendered-unit/
-SQL/calendar/adapter native koşucusu aynı dilimdedir. Yeni native kabul henüz
-üretilmemiştir; eski finite/SMTP kanıtı yeni source'a mal edilmez. GB-097 kaydı,
+SQL/calendar/adapter native koşucusu aynı dilimdedir. İlk hazırlık aşamasında
+native kabul henüz üretilmemişti; sonraki tarihsel S3 kaynağında dört vaka geçti.
+Eski finite/SMTP veya S3 kanıtı başka bir kaynakta yürütülmüş sayılmaz. GB-097 kaydı,
 backlog, plan, faz ve uyumluluk kayıtları aynı kaynak diliminde güncellendi.
 Kalıcı benchmark veya compiler/LSP persistent buffer/cache değişmediği için bu
 host işi tek başına core soak tetiklemez; bütün kaynak kapıları yine korunur.
