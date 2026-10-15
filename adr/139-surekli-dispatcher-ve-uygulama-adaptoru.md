@@ -19,9 +19,20 @@ Durable guard Popen öncesindedir; nofollow/bounded snapshot, held-directory/pro
 cwd, WNOWAIT cleanup ve fixed metadata sınırı korunur. Unknown guard için bu
 sürüm otomatik/operator-asserted replay veya arbitrary deletion komutu sağlamaz.
 
-[Rehber](../docs/dispatcher-service.md), host hazırlık21 ve ayrı rendered-unit/
+[Rehber](../docs/dispatcher-service.md), host hazırlık22 ve ayrı rendered-unit/
 SQL/calendar/adapter native koşucusu aynı dilimdedir. Yeni native kabul henüz
 üretilmemiştir; eski finite/SMTP kanıtı yeni source'a mal edilmez. GB-097 kaydı,
 backlog, plan, faz ve uyumluluk kayıtları aynı kaynak diliminde güncellendi.
 Kalıcı benchmark veya compiler/LSP persistent buffer/cache değişmediği için bu
 host işi tek başına core soak tetiklemez; bütün kaynak kapıları yine korunur.
+
+## K-295 — daemon unit'in explicit yürütme düzeltmesi
+
+S2 `e35b617095e6a9d00915794d6adee90842238a5f` gerçek Linux koşusunda
+daemon ExecStart yalnız --config taşıdığı için check-only kipinde exit0 dönmüş,
+hiç SQL tick başlamamıştır (0/4; cleanup_errors boş, owned_units_released true).
+Üretilen daemon artık explicit --run, OnCalendar hizmeti yalnız --once taşır.
+Doğrudan CLI varsayılan preflight ve render'ın servis başlatmama sınırı değişmez.
+Eski unit dosyaları yeniden --render ile üretilmelidir. Exact S2 kaynağına karşı
+yeni regresyon kırmızı, düzeltmeyle hazırlık22 yeşildir; yeni temiz Linux kabulü
+beklenir. Host correctness düzeltmesidir; compiler bug/grammar/tanı/API değişmez.

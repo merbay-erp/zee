@@ -67,3 +67,22 @@ başka Cargo işi test sırasında ikiliyi değiştirdiği için native listener
 hash koruması reddetti (bir vaka). Özet kanonik Zee ürünüyle yenilendi;
 üç ilgili test grubu, ardından başka Cargo işi olmadan tam matris geçti.
 Son Clippy, biçim, katalog/tazelik ve semantic/core-freeze korukları temizdir.
+
+## K-295/K-296 — S2 kabulünün ardından yeni kaynak gereği
+
+S2 `e35b617095e6a9d00915794d6adee90842238a5f` final kabul değildir.
+macOS iki-klon paketi, canonical stdio probe'ları, TR/EN, signed-PDF9, SQL9,
+starter14, kapsam, bridge4/19HTTP+negatif6 ve mixed-revision9 kanıtı korunur.
+Linux dispatcher0/4 ve fault stale-gate oracle başarısızlığı K-295/K-296 olarak
+ayrıldı. İlk worker-loss geçti; her iki başarısız native koşunun cleanup'ı temizdir.
+S2 ASan/soak kampanyaları sahipli cancel-file ile erken kapatılmış, outer
+handle'lar reaped olarak kaydedilmiştir; 30 dakika/1800 saniye kabulü sayılmaz.
+İki düzeltme uygulanmış adaydır; yeni temiz kaynakta ortak/native/RC/Miri/soak
+ve JetBrains kabulü beklenir. Compiler/grammar/tanı/yüzey/API/katman/bağımlılık
+değişmedi; C1/P33 araç retleri ve insan/platform/ürün kabulü açık kalır.
+
+K-295/K-296 kaynak öncesi kapılar: dispatcher22 ve fault7 hazırlık,
+Clippy all-target -D warnings, biçim, katalog/tazelik/güvenlik odak grupları
+ve tam faz **989/1014, 0 hata, 25 atlanan** geçti (527,915 sn).
+Semantic/core-freeze korukları temizdir. Compiler/src değişmediği için yeni
+compiler/core-freeze beyan satırı eklenmez; S3 temiz kabulü bundan ayrıdır.

@@ -1844,3 +1844,38 @@ bağlandı. Gerçek owned host ile nonempty native korpus testi dahil dokuz
 semantic regresyon testi geçti; compiler/core-freeze beyanları kaydedildi.
 GB-110 temiz exact kabul tamamlanana kadar açıktır; RC/Miri/soak, native
 ve yeni JetBrains kaynağı kabulünün yerine bu sonuçlar kullanılamaz.
+
+## K-295/K-296 — S2 kabulünün ardından yeni kaynak gereği
+
+S2 `e35b617095e6a9d00915794d6adee90842238a5f` final kabul değildir.
+macOS iki-klon paketi, canonical stdio probe'ları, TR/EN, signed-PDF9, SQL9,
+starter14, kapsam, bridge4/19HTTP+negatif6 ve mixed-revision9 kanıtı korunur.
+Linux dispatcher0/4 ve fault stale-gate oracle başarısızlığı K-295/K-296 olarak
+ayrıldı. İlk worker-loss geçti; her iki başarısız native koşunun cleanup'ı temizdir.
+S2 ASan/soak kampanyaları sahipli cancel-file ile erken kapatılmış, outer
+handle'lar reaped olarak kaydedilmiştir; 30 dakika/1800 saniye kabulü sayılmaz.
+İki düzeltme uygulanmış adaydır; yeni temiz kaynakta ortak/native/RC/Miri/soak
+ve JetBrains kabulü beklenir. Compiler/grammar/tanı/yüzey/API/katman/bağımlılık
+değişmedi; C1/P33 araç retleri ve insan/platform/ürün kabulü açık kalır.
+
+## K-295 — daemon unit'in explicit yürütme düzeltmesi
+
+S2 `e35b617095e6a9d00915794d6adee90842238a5f` gerçek Linux koşusunda
+daemon ExecStart yalnız --config taşıdığı için check-only kipinde exit0 dönmüş,
+hiç SQL tick başlamamıştır (0/4; cleanup_errors boş, owned_units_released true).
+Üretilen daemon artık explicit --run, OnCalendar hizmeti yalnız --once taşır.
+Doğrudan CLI varsayılan preflight ve render'ın servis başlatmama sınırı değişmez.
+Eski unit dosyaları yeniden --render ile üretilmelidir. Exact S2 kaynağına karşı
+yeni regresyon kırmızı, düzeltmeyle hazırlık22 yeşildir; yeni temiz Linux kabulü
+beklenir. Host correctness düzeltmesidir; compiler bug/grammar/tanı/API değişmez.
+
+## K-296 — deduplikasyonlu state olayı yerine gerçek liveness oracle
+
+S2 release kabulünde worker-loss vakası geçti; stale-gate vakası aynı ready=false
+durumunda yeni state olayı beklediği için kırıldı. Supervisor state'i yalnız
+readiness değişince yayımlar; üretim davranışı korunur. Native koşucu iki worker'ın
+Build kimliği doğrulanmış HTTP200 liveness'ını doğrudan owned Supervisor probe
+ile gözler. Startup reddi, hiç ready=true olayı olmaması, eski gate bayt/mtime
+değişmezliği ve bütün owned handle kapanışları birlikte zorunlu kalır. Yalnız
+test oracle düzeltilmiştir; native DNS veya production lifecycle genişlemez.
+Yeni temiz native kabulü beklenir.

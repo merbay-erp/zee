@@ -52,3 +52,14 @@ yeni clean kaynak ve aynı SHA ikili olmadan gerçek kampanya dispatch edilmez.
 Özel fixture BuildJSON kontrolü yalnız sahipli ve bütçeli komut adaptöründen
 geçer; genel helper değiştirilmez. Kaynak listesi exact SHA ile doğrulanır;
 kısmi load sayaçları bir oracle başarısız olduğunda da korunur.
+
+## K-296 — deduplikasyonlu state olayı yerine gerçek liveness oracle
+
+S2 release kabulünde worker-loss vakası geçti; stale-gate vakası aynı ready=false
+durumunda yeni state olayı beklediği için kırıldı. Supervisor state'i yalnız
+readiness değişince yayımlar; üretim davranışı korunur. Native koşucu iki worker'ın
+Build kimliği doğrulanmış HTTP200 liveness'ını doğrudan owned Supervisor probe
+ile gözler. Startup reddi, hiç ready=true olayı olmaması, eski gate bayt/mtime
+değişmezliği ve bütün owned handle kapanışları birlikte zorunlu kalır. Yalnız
+test oracle düzeltilmiştir; native DNS veya production lifecycle genişlemez.
+Yeni temiz native kabulü beklenir.
