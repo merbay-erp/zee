@@ -1,0 +1,95 @@
+# K-269: mevcut dilde kopyalanabilir başlangıç; yerel pilot.
+deneme "notlar.txt" dosyasını okumayı dene olsun
+deneme başarısızsa
+    "notlar.txt" dosyasına "Panel kuruldu — ilk notunu ekle!" yaz
+
+işlem sayfayı giydir
+    gövdeyi al
+
+    stil "<style>body{font-family:Georgia,serif;max-width:640px;margin:40px auto;padding:0 16px;color:#1c1c28;background:#fbfaf7}h1{color:#b0413e}a{color:#2e6e4e}li{margin:6px 0}input{font:inherit;padding:8px}button{font:inherit;padding:8px 18px}</style>" olsun
+    sayfa "<!doctype html><html lang=tr><meta charset=utf-8>" ile stil ile gövde olsun
+    sayfayı döndür
+
+eylem notu kaydet
+    notu Metin olarak al
+    değer döndürmez
+    "notlar.txt" dosyasına notu ekle
+
+eylem notu kaldır
+    hedefi Metin olarak al
+    değer döndürmez
+    kalanlar boş liste olsun
+    satırlar "notlar.txt" dosyasının satırları olsun
+    her satır için
+        satır hedefe eşit değilse
+            kalanlara satırı ekle
+    yenisi kalanların "\n" ile birleşmişi olsun
+    "notlar.txt" dosyasına yenisi yaz
+
+8092 kapısında sunucu başlat
+
+GET "/" adresine istek geldiğinde
+    liste "" olsun
+    satırlar "notlar.txt" dosyasının satırları olsun
+    her satır için
+        liste liste ile "<li>" ile satırın html güvenlisi ile "</li>" olsun
+
+    gövde "<h1>Not Defteri</h1><ul>" ile liste ile "</ul><p><a href=/yonet>yönetim</a></p>" olsun
+    sayfa gövde için sayfayı giydir olsun
+    sayfa yanıtını gönder
+
+GET "/giris" adresine istek geldiğinde
+    csrf csrf belirteci olsun
+    form "<h1>Giriş</h1><form method=post action=/giris-yap><input type=hidden name=_csrf value=\"" ile csrf ile "\"><input type=password name=parola placeholder=parola autofocus> <button>Gir</button></form>" olsun
+    sayfa form için sayfayı giydir olsun
+    sayfa yanıtını gönder
+
+POST "/giris-yap" adresine istek geldiğinde
+    herkese açık
+    "parola" alanı gerekli
+    verilen isteğin "parola" değeri olsun
+    ortam "panel-phc" dosyasını okumayı dene olsun
+    ortam başarılıysa
+        özet ortamın değeri olsun
+        verilen özet ile doğrulanıyorsa
+            "Yönetici" kullanıcısını "yönetici" rolüyle oturuma al
+            "/yonet" adresine yönlendir
+        değilse
+            "/giris" adresine yönlendir
+    değilse
+        "/giris" adresine yönlendir
+
+GET "/yonet" adresine istek geldiğinde
+    "yönetici" yetkisi gerekli
+    csrf csrf belirteci olsun
+    liste "" olsun
+    satırlar "notlar.txt" dosyasının satırları olsun
+    her satır için
+        güvenli satırın html güvenlisi olsun
+        liste liste ile "<li>" ile güvenli ile " <form method=post action=/sil style=\"display:inline\"><input type=hidden name=_csrf value=\"" ile csrf ile "\"><input type=hidden name=not value=\"" ile güvenli ile "\"><button>[sil]</button></form></li>" olsun
+
+    form "<h1>Yeni not</h1><form method=post action=/kaydet><input type=hidden name=_csrf value=\"" ile csrf ile "\"><input name=not placeholder=notunu-yaz autofocus> <button>Kaydet</button></form><ul>" ile liste ile "</ul><p><a href=/>listeye dön</a></p><form method=post action=/cikis><input type=hidden name=_csrf value=\"" ile csrf ile "\"><button>çıkış</button></form>" olsun
+    sayfa form için sayfayı giydir olsun
+    sayfa yanıtını gönder
+
+POST "/kaydet" adresine istek geldiğinde
+    "yönetici" yetkisi gerekli
+    "not" alanı gerekli
+    yeni isteğin "not" değeri olsun
+    yeni boşsa
+        "/yonet" adresine yönlendir
+    değilse
+        yeni ile notu kaydet
+        "/" adresine yönlendir
+
+POST "/sil" adresine istek geldiğinde
+    "yönetici" yetkisi gerekli
+    "not" alanı gerekli
+    hedef isteğin "not" değeri olsun
+    hedef ile notu kaldır
+    "/yonet" adresine yönlendir
+
+POST "/cikis" adresine istek geldiğinde
+    oturum gerekli
+    oturumu kapat
+    "/" adresine yönlendir

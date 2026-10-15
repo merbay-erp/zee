@@ -1,0 +1,26 @@
+{
+  "schema": "zee-modul-1",
+  "id": "katalog",
+  "version": "0.1.0",
+  "core_min": "0.1.0",
+  "core_max_exclusive": "1.0.0",
+  "package_name": "katalog",
+  "package_root": "paket",
+  "route_adapter": "rota.dil",
+  "menu": {
+    "slug": "katalog",
+    "label": "Anonim Katalog",
+    "path": "/katalog"
+  },
+  "content_type": "katalog_sayfasi",
+  "migration_range": [
+    1000,
+    1099
+  ],
+  "files": {
+    "paket/ana.dil": "be5e92292bcfa3857b563fafe50490f4fdfcd50d58b0191a84fd568fa9ed4950",
+    "paket/proje.dil": "9ea8d171c1b916627d873de42834212af7e124e3bd1b92be10df35873bb60a8f",
+    "rota.dil": "adf467e4654c67776702aed5e0bb0da1a11bd0ce154aa4c7b8504d5c511c7f61",
+    "sql/001000.sql": "2a65d362f6ef11dd06161aa1c17d8fe4e8cbc1a30730f88a6a7cb42f0c49b896"
+  }
+}

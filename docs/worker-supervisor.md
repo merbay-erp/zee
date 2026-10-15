@@ -155,3 +155,18 @@ zero downtime açık; [ADR-113](../adr/113-native-web-sigterm-drain.md).
 Dar host correctness adayı [ADR-122](../adr/122-supervisor-sahipli-eperm-gecisi.md), gerçek Darwin killpg0 EPERM/WNOWAITNone geçişini tek stop_grace budget içinde aynı heldleader üzerinde yeniden gözler. Deadline ilkprobe öncesinde başlar ve resetlenmez. Kalıcı ambiguouspermission ownership retlidir; Popen.returncode-set veya ECHILD signal öncesi reddedilir. Leader terminal olsa da group_alive True ise descendant grubu temizlenmeden wait/reap yapılmaz. TERM/KILL permissionretry aynı yetkidedir; SIGKILL grace sonunda ve başarılı dispatch sonrası mevcut2s wait korunur. Genel Unix/setuid containment veya foreignPID adoption sözü yoktur.
 
 Ayrı8 Python lifecycle vakası ve Cargo wrapper1 mevcut25 nativeworker kampanyasına eklenir; kampanya adı/sayısı değişmez. Kaynak/finalfullphase kabulü root entegrasyonuna bağlıdır.
+
+## K-274 opt-in süreli DB hazırlığı
+
+`--readiness-ttl-seconds` yoksa eski readiness davranışı kalır. Explicit1–3600s
+TTL, nesil tazeliği/source/build/health denetimlerine ek wall-age ve ilk gözlemden
+monotonic deadline uygular. Aynı mtime tekrar gözlenmesi veya clockrollback süreyi
+yenilemez; eski revision yeni kaydın yerine geçmez. Ready dosyası yetkili host
+yazarının girdisidir, imza veya kaynağın güvenilirliğinin yerine geçmez.
+
+[Finite DB watcher](db-hazirlik.md) explicit turlar arasında ready=true tutabilir;
+interval+probe bütçesi TTL ile uyumlu seçilmelidir. SIGKILL dosyayı temizleyemez:
+TTL dolunca admission kapanır, o anda probe grubu kaldıysa outer owned owner
+cleanup yapar. Anında failure/zero-error SLA veya PID adoption yoktur. ActualTTL/
+configHUP5 ve dedicatedPG15 tarihsel kısa kanıttır; root currentclean ve900/1800/RC
+ayrıca gerekir. [ADR-132](../adr/132-sureli-hazirlik-ve-kontrollu-config-yenileme.md).

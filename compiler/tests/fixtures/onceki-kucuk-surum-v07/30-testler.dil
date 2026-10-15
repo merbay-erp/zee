@@ -1,0 +1,17 @@
+# 30 — Test yazma
+# Sınanan: "test <açıklama>" bloğu, doğrulama kalıbı "... olmalı" (K-025).
+# NOT: işlem adında "al" kullanmaktan kaçınıldı ("karesini al" deseydik
+# parametre bildirimi "sayıyı al" ile çakışırdı — bkz. günlük K-014).
+
+işlem karesini hesapla
+    sayıyı al
+    sonucu sayı ile sayının çarpımı olsun
+    sonucu döndür
+
+test "kare doğru hesaplanır"
+    kare 4 için karesini hesapla olsun
+    kare 16 ya eşit olmalı
+
+test "sıfırın karesi sıfırdır"
+    kare 0 için karesini hesapla olsun
+    kare 0 a eşit olmalı

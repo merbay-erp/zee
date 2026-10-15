@@ -155,10 +155,10 @@ Değişikliğe özel test, belge ve güvenlik kapıları [AGENTS.md](AGENTS.md) 
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **947** |
+| Rust + doctest vakası | **961** |
 | Tanı kimliği | **159 etkin + 3 ayrılmış** |
 | RFC | **34** (2 kabul, 29 geçici kabul, 3 taslak) |
-| ADR | **125** (125 kabul) |
+| ADR | **134** (134 kabul) |
 | Normatif spec bölümü | **28** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
@@ -270,3 +270,85 @@ K-267: dar Unix credential/native listener bileşimi ve ayrı host-only startup 
 ### Yerel host/başlangıç araçları
 
 [Sonlu SQL timer](docs/sonlu-dispatcher-timer.md), [kopyalanabilir site/panel](sablonlar/README.md) ve [yerel compiler import/proje launcher](docs/derleyici-yerel.md) dar owned pilotlardır. Gerçek hizmet/platform/live benimseme ve final temiz kaynak kabulü ilgili rehberlerde açık tutulur.
+
+## Dar owned Unix geliştirme araçları
+
+[K-271 native web test kiti](docs/owned-web-test-kiti.md), gerçek CLI/HTTP session,
+CSRF ve public snapshot ile vaka başına fresh PG fixture'ını ayırır; source coverage
+ve public HTTP injection sözü değildir. [K-272 tam TR/EN golden](docs/tr-en-list-detail.md)
+sabit typed HTML6route/new9HTTP/5Zee ile önceki7HTTP/4Zee davranışını korur.
+[K-273 yönetilen iskelet](docs/yonetilen-moduller.md) yeni owned projede modül,
+menu/content metadata ve journal yaşam döngüsünü sınar; SQL arşivi yürütmez.
+[K-274 süreli hazırlık](docs/worker-supervisor.md) explicit default-off TTL,
+finite DB watcher ve config atomic replace/HUP profilidir. P22/P20 bütünü,
+gerçek ürün/P08/platform ve final exact clean/900/1800/RC kapıları ayrıca açıktır.
+
+### Sabit PDF host örneği
+
+[K-275 rehberi](docs/pdf-katalog-host.md) mevcut Zee JSON örneğini ayrı owned backend ile PDF üretme/sayfa seçmeye bağlar. PDF intrinsic/FFI/resmi eklenti değildir; P11 kısmi ve ürün/finalclean kabulü açıktır. Normal stdlib modelleri PDF paketleri istemez; exact backend kabulü explicitignored/operatör runtime ile ayrıdır.
+
+### K-276–278: Linux taşıyıcı hazırlığı, native dış etki ve editör şablonu
+
+K-276/[ADR-134](adr/134-linux-ozel-paket-tasiyicisi.md) özel inert Linux taşıyıcı hazırlığıdır: normal wrapper
+12 preflight +9 carrier model/negatifi yürütür. ELF header doğrulaması Linux
+ABI/çalıştırma kanıtı değildir. İki temiz klon kanonik teslimi, final kaynak S
+üzerinde gerçek .deb build/install/remove/user-prefix activation/container
+kabulü ve yayıncı/lisans/imza/apt repository ayrı açıktır. Namespace/image
+manifest önkoşulu tamamlanmış Zee container kabulüne dönüştürülmez.
+
+K-277/[ADR-135](adr/135-sabit-native-dis-etki-tuketicisi.md), mevcut SQL-only dispatcher'dan ayrı fixed owned
+loopback native SQL→MIME SMTP→ack profilidir. Effect-start latch bilinen committed
+olmadan SMTP başlatılmaz; owner/token/generation/lease korunur. Yalnız kanıtlı
+pre-effect SQL reddi, sıfır send invocation ile toplam3/1–2sn backoff yapabilir.
+C029/DATA/ackCOMMIT belirsizliği guard+exit3/manual incelemedir; SMTP otomatik
+replay/exactly-once sözü yoktur. Bilinen completion sonrası görünür guard unlink
+fakat final fsync hatası ayrı exit4'tür; olmayan guard yeni admission'ı engelliyor
+denmez. Normal hazırlık8 ve explicit ignored native11 ayrı kapılardır. Kaynak
+harness yalnız dört pinli fixture dosyasını kopyalar; ek SQL/.dil/FIFO alınmaz.
+Tarihsel dirty aday kanıtı finalclean değildir. Gerçek B1/B2 katalog, sağlayıcı
+Gmail/M365, K-275 PDF üretimiyle ürün entegrasyonu ve tam P09/P08 açıktır.
+
+K-278/[ADR-136](adr/136-jetbrains-yerel-lsp-sablonu.md) mevcut K-270 launcher'ını kullanan POSIX LSP4IJ veri
+şablonudur; TextMate mevcut VS Code bundle'ından gelir. Npm bağımlılığı olmayan
+elle yazılmış VS Code istemcisi için owned `dillsp` mutlak yolu açıkça seçilir;
+IDE macro/tokenizer/kurulum/etkileşim/Windows kabulü henüz açık kalır. Şablon
+installer/download/yeni grammar/capability/cache veya gerçek IDE kabulü eklemez.
+[PDF/SMTP'den ayrı editör rehberi](editors/jetbrains/README.md) bu sınırı korur.
+
+### K-279: gerçek önceki küçük sürüm korpusu ve açık göç
+
+[ADR-137](adr/137-onceki-kucuk-surum-korpusu.md) gerçek v0.7.0 exact
+`d08a947713ddc38d2163360c17d07fbffcb1213d` kaynağındaki33 golden girdisini
+değişmeyen blob/SHA ile korur.32 directcheck eşliği ve15 saf runtime çıktısı
+gerçek eski/yeni CLI'da sınandı; birim örneği K-086 publictype sözleşmesi için
+yalnız birimde iki annotation satırıyla göç ister. Ham33 kaynak gizlice
+yenilenmez. Normal iki Rust vakası49 modernCLI altkontrol+5 erken bootstrap
+reddini yürütür;54 libtest veya gerçek anonim ürün/P08 kanıtı sayılmaz.
+
+Eski CLI config capability JSON sunmadığı için mevcut BuildJSON/selector
+reddi korunur; yeni `zee.ayar` için otomatik legacy rollback açılmaz. Native
+çalışma altkümesi effect-free'dir; ağ/web/dosya/saat/rastgele/async/hardware
+runtime örnekleri çalıştırılmaz. Sabit33 kaynakta provenance olarak duran bu örnekler
+compiler bugfix/dogfood veya minOS/platform kabulü değildir.
+
+Linux'ta e76 retained leader cleanup ölçümü komut başına yaklaşık3.001s'dir.
+52 sınırlı komutun yaklaşık156s toplam bakım yükü için yalnız test harness
+aggregate bütçesi120→240s seçildi; her native çağrı8s, owned cleanup/deadline/
+capture, kaynak/output oracles ve production SLA/perf eşikleri değişmedi.
+Bağımsız Mac49+5 replay ayrı; gerçek tam Linux ve temiz finalS kabulü ayrıca
+gerekir. Tam P04/P05, ürün/kanal/platform/adoption açık kalır. [Rehber](docs/onceki-kucuk-surum-korpusu.md).
+
+K-271–K-279 commit öncesi birleşik kapısı (15 Ekim 2026): tam faz matrisi
+**943/959 geçti, 0 başarısız, 16 explicit ignored**; faz süreleri toplamı
+429.100 saniyedir. Koşu boyunca 1.477 kaynak/belge/fixture dosyası aynı hash'te
+kaldı. Fmt, tüm hedeflerde Clippy, işlev64, spec214, katalog/tazelik,
+katman/SCC/public API/uyumluluk/tedarik, gerçek Zee–Rust–Go çıktı eşliği,
+sürekli güvenlik, semantic/core-freeze ve kanonik sır taraması geçti.
+Üç yeni Rust test sarmalayıcısındaki sabit platform assertion'ı açık Unix
+koşullu gövde ve desteklenmeyen platform panic'iyle kanonik biçime taşındı;
+Unix vakaları ve üretim compiler davranışı değişmedi. İlk Clippy retleri
+ayrı dış kayıtta korunur. Normal fazdaki16 dedicated atlama temiz kaynak
+kampanyasında ayrıca yürütülmelidir; bu sonuç final temiz kaynak/native,
+900 saniye işletim, 1800 saniye soak, ASan/Miri, paket/kurulum veya gerçek
+ürün/platform/IDE/insan kabulü değildir. Yeni compiler/src, grammar, spec
+normu, public Rust API veya production bağımlılık değişikliği yoktur.

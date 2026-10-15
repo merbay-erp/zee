@@ -1,0 +1,15 @@
+# 06 — Döngüler
+# Sınanan: "N kez tekrarla", "1 den 100 e kadar her sayı için" (aralık),
+# "olduğu sürece" = while (K-006). Sayı sabitlerinde ekler ayrı yazılır: "1 den" (K-011).
+
+10 kez tekrarla
+    "Merhaba" yaz
+
+1 den 100 e kadar her sayı için
+    sayı çiftse
+        sayıyı yaz
+
+sayaç 3 olsun
+sayaç 0 dan büyük olduğu sürece
+    sayacı yaz
+    sayacı 1 azalt

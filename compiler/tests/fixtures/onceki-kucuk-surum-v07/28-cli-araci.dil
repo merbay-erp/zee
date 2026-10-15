@@ -1,0 +1,11 @@
+# 28 — CLI aracı
+# Sınanan: komut satırı argümanları, "boşsa" kontrolü, "programı bitir" (K-024).
+
+argümanlar komut satırından gelenler olsun
+
+argümanlar boşsa
+    "Kullanım: selamla <isim> <isim> ..." yaz
+    programı bitir
+
+her argüman için
+    "Merhaba " ile argüman yaz

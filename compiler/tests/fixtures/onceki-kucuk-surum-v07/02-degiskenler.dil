@@ -1,0 +1,11 @@
+# 02 — Değişkenler ve yazma
+# Sınanan: "olsun" ile değer bağlama (K-003), "ile" ile metin birleştirme (K-004),
+# Türkçe karakterli tanımlayıcılar (ç ğ ı İ ö ş ü).
+
+isim "Ayşe" olsun
+yaş 10 olsun
+şehir "İzmir" olsun
+
+"Benim adım " ile isim yaz
+isim ile " " ile yaş ile " yaşında" yaz
+isim ile " " ile şehir ile " şehrinde yaşıyor" yaz

@@ -1,0 +1,15 @@
+# TEMPLATE ONLY. The preflight does not build or run this image.
+# BASE must be a reviewed official per-architecture @sha256 reference.
+ARG BASE
+FROM ${BASE}
+# context runtime-rootfs is a separately reviewed, same-architecture Linux runtime
+# dependency closure with its own package versions/licenses/SHA inventory.
+# No network apt-get or mutable package fetch is permitted here.
+COPY runtime-rootfs/ /
+COPY artifact/ /opt/zee-artifact/
+COPY scripts/kur.sh scripts/kaldir.sh /opt/zee-installers/
+RUN ["bash", "/opt/zee-installers/kur.sh", "--artefakt", "/opt/zee-artifact", "--hedef", "/opt/zee/bin", "--veri", "/opt/zee/install-state"]
+USER 65532:65532
+WORKDIR /work
+ENTRYPOINT ["/opt/zee/bin/dil"]
+CMD ["sürüm", "--json"]

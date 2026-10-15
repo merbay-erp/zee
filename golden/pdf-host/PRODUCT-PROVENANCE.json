@@ -1,0 +1,28 @@
+{
+  "product": "zee-cekirdek",
+  "commit": "cd5d12f0008620819e6167af5146e83503fd2b38",
+  "request_section": "B3",
+  "request_lines": [
+    85,
+    90
+  ],
+  "section_normalization": "UTF8 lines85..90 joined LF no trailingLF",
+  "section_sha256": "6f55875cd6e8ba8d354088875f01895fd73fea5d156241b5266e9cfe2574f5bc",
+  "files": [
+    {
+      "path": "docs/dil-talepleri/2026-10-14-zee-urunlesme.md",
+      "sha256": "694c0b357c4ff22c16987a65dbcd8d68344553d345b8693a00ed1deba74eaed7"
+    },
+    {
+      "path": "sunucu/zee-katalog/katalog_pdf.py",
+      "sha256": "86c354d80a8cf74f24792fdeb9aae096ad19e3a871e466fa3fc85db08d28cefb"
+    },
+    {
+      "path": "moduller/pdf-katalog/kaynak/rota_sm_katalog.dil",
+      "sha256": "b8721f8044ee976c3f1770bfe43d4788e0e962ecd6196be7845367c54d29fb59"
+    }
+  ],
+  "private_body_copied": false,
+  "adoption": false,
+  "kind": "anonymous technical design example, not adoption/P08 acceptance"
+}

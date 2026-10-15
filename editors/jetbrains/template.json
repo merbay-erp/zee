@@ -1,0 +1,17 @@
+{
+  "id": "zee-local-posix",
+  "name": "Zee — local project launcher (POSIX)",
+  "programArgs": {
+    "default": "\"$PROJECT_DIR$/.zee-araclar/zee\" lsp"
+  },
+  "fileTypeMappings": [
+    {
+      "fileType": {
+        "patterns": [
+          "*.dil"
+        ]
+      },
+      "languageId": "dil"
+    }
+  ]
+}

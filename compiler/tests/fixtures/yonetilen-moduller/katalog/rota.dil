@@ -1,0 +1,5 @@
+katalog paketini kullan
+
+GET "/katalog" adresine istek geldiğinde
+    sayfa katalogSayfasi olsun
+    sayfa yanıtını gönder

@@ -1,0 +1,43 @@
+yerlesim birimini kullan
+
+işlem rotaSayfasiniKur
+    yol Metin olarak al
+    Metin sonucu döndürür
+    dil "" olsun
+    secim 0 olsun
+    yol "/tr/bildirimler" a eşitse
+        dil "tr" olsun
+        secim 0 olsun
+    yol "/tr/bildirimler/eposta" a eşitse
+        dil "tr" olsun
+        secim 1 olsun
+    yol "/tr/bildirimler/ozet" a eşitse
+        dil "tr" olsun
+        secim 2 olsun
+    yol "/en/notifications" a eşitse
+        dil "en" olsun
+        secim 0 olsun
+    yol "/en/notifications/email" a eşitse
+        dil "en" olsun
+        secim 1 olsun
+    yol "/en/notifications/digest" a eşitse
+        dil "en" olsun
+        secim 2 olsun
+    dil "" e eşitse
+        "rota-yok" hatasını döndür
+    sonuc dil ve secim ile uygulamaSayfasiniKur olsun
+    sonuc başarılıysa
+        sonucun değeri döndür
+    "sayfa-ret" hatasını döndür
+
+test "Bilinmeyen rota ve dil öneki reddedilir"
+    bilinmeyen "/tr/kayip" için rotaSayfasiniKur olsun
+    yabanci "/de/bildirimler" için rotaSayfasiniKur olsun
+    bilinmeyen başarısızsa
+        1 1 e eşit olmalı
+    değilse
+        1 0 a eşit olmalı
+    yabanci başarısızsa
+        1 1 e eşit olmalı
+    değilse
+        1 0 a eşit olmalı

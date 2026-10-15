@@ -1,0 +1,155 @@
+eylem kirala
+    sahip Metin olarak al
+    jeton Metin olarak al
+    Metin sonucu döndürür
+    parametreler sahip, jeton listesi olsun
+    degisim "WITH aday AS (SELECT id FROM effect_jobs WHERE attempts<3 AND available_at<=clock_timestamp() AND (state IN ('ready','retry_wait') OR (state='leased' AND expires<=clock_timestamp())) AND NOT EXISTS(SELECT 1 FROM effect_latches l WHERE l.job_id=effect_jobs.id) ORDER BY id FOR UPDATE SKIP LOCKED LIMIT 1) UPDATE effect_jobs SET state='leased',owner=$1,token=$2,generation=generation+1,attempts=attempts+1,expires=clock_timestamp()+interval '30 seconds' FROM aday WHERE effect_jobs.id=aday.id" sorgusunu parametreler ile değiştirmeyi dene olsun
+    degisim başarılıysa
+        adet degisimin değeri olsun
+        adet 0 a eşitse
+            "bos" döndür
+        okuma "SELECT id::text AS id,generation::text AS generation FROM effect_jobs WHERE state='leased' AND owner=$1 AND token=$2 AND expires>clock_timestamp()" sorgusunu parametreler ile okumayı dene olsun
+        okuma başarılıysa
+            kayitlar okumanın değeri olsun
+            kayit kayitların ilki olsun
+            kimlik kayidin "id" değeri olsun
+            nesil kayidin "generation" değeri olsun
+            kimlik ile ":" ile nesil döndür
+    "sql-ret" hatasını döndür
+
+eylem etkiBaslat
+    kimlik Metin olarak al
+    sahip Metin olarak al
+    jeton Metin olarak al
+    nesil Metin olarak al
+    Metin sonucu döndürür
+    parametreler kimlik, sahip, jeton, nesil listesi olsun
+    degisim "UPDATE effect_jobs SET state='effect_started' WHERE id=$1::bigint AND owner=$2 AND token=$3 AND generation=$4::bigint AND expires>clock_timestamp() AND state='leased' AND preflight_ok AND NOT EXISTS(SELECT 1 FROM effect_latches l WHERE l.job_id=effect_jobs.id)" sorgusunu parametreler ile değiştirmeyi dene olsun
+    degisim başarılıysa
+        adet degisimin değeri olsun
+        adet 0 a eşitse
+            "preflight" döndür
+        kilit "INSERT INTO effect_latches(job_id,owner,token,generation) VALUES($1::bigint,$2,$3,$4::bigint)" sorgusunu parametreler ile değiştirmeyi dene olsun
+        kilit başarılıysa
+            "started" döndür
+    "sql-ret" hatasını döndür
+
+eylem guvenliRet
+    kimlik Metin olarak al
+    sahip Metin olarak al
+    jeton Metin olarak al
+    nesil Metin olarak al
+    Metin sonucu döndürür
+    parametreler kimlik, sahip, jeton, nesil listesi olsun
+    degisim "UPDATE effect_jobs SET state=CASE WHEN attempts=3 THEN 'dead_letter' ELSE 'retry_wait' END,expires=NULL,available_at=clock_timestamp()+make_interval(secs=>power(2,attempts-1)::double precision) WHERE id=$1::bigint AND owner=$2 AND token=$3 AND generation=$4::bigint AND expires>clock_timestamp() AND state='leased' AND NOT preflight_ok AND NOT EXISTS(SELECT 1 FROM effect_latches l WHERE l.job_id=effect_jobs.id)" sorgusunu parametreler ile değiştirmeyi dene olsun
+    degisim başarılıysa
+        adet degisimin değeri olsun
+        adet 0 a eşitse
+            "denied" döndür
+        okuma "SELECT attempts::text AS attempts FROM effect_jobs WHERE id=$1::bigint AND owner=$2 AND token=$3 AND generation=$4::bigint" sorgusunu parametreler ile okumayı dene olsun
+        okuma başarılıysa
+            kayitlar okumanın değeri olsun
+            kayit kayitların ilki olsun
+            kayidin "attempts" değeri döndür
+    "sql-ret" hatasını döndür
+
+eylem onayla
+    kimlik Metin olarak al
+    sahip Metin olarak al
+    jeton Metin olarak al
+    nesil Metin olarak al
+    Metin sonucu döndürür
+    parametreler kimlik, sahip, jeton, nesil listesi olsun
+    degisim "UPDATE effect_jobs SET state='done' WHERE id=$1::bigint AND owner=$2 AND token=$3 AND generation=$4::bigint AND expires>clock_timestamp() AND state='effect_started' AND EXISTS(SELECT 1 FROM effect_latches l WHERE l.job_id=effect_jobs.id AND l.owner=$2 AND l.token=$3 AND l.generation=$4::bigint AND l.status='started')" sorgusunu parametreler ile değiştirmeyi dene olsun
+    degisim başarılıysa
+        adet degisimin değeri olsun
+        adet 0 a eşitse
+            "denied" döndür
+        kilit "UPDATE effect_latches SET status='done' WHERE job_id=$1::bigint AND owner=$2 AND token=$3 AND generation=$4::bigint AND status='started'" sorgusunu parametreler ile değiştirmeyi dene olsun
+        kilit başarılıysa
+            "done" döndür
+    "sql-ret" hatasını döndür
+
+işlem izinOku
+    kimlik Metin olarak al
+    sahip Metin olarak al
+    jeton Metin olarak al
+    nesil Metin olarak al
+    Metin sonucu döndürür
+    parametreler kimlik, sahip, jeton, nesil listesi olsun
+    okuma "SELECT count(*)::text AS allowed FROM effect_jobs j JOIN effect_latches l ON l.job_id=j.id AND l.owner=j.owner AND l.token=j.token AND l.generation=j.generation WHERE j.id=$1::bigint AND j.owner=$2 AND j.token=$3 AND j.generation=$4::bigint AND j.state='effect_started' AND l.status='started' AND j.expires>clock_timestamp()" sorgusunu parametreler ile okumayı dene olsun
+    okuma başarılıysa
+        kayitlar okumanın değeri olsun
+        kayit kayitların ilki olsun
+        kayidin "allowed" değeri döndür
+    "sql-ret" hatasını döndür
+
+gelenler komut satırından gelenler olsun
+ayarlar boş sözlük olsun
+konum 0 olsun
+artis 1 olsun
+her gelen için
+    konumu artisla artır
+    konum 1 e eşitse
+        ayarların "op" değeri gelen olsun
+    konum 2 ye eşitse
+        ayarların "id" değeri gelen olsun
+    konum 3 e eşitse
+        ayarların "owner" değeri gelen olsun
+    konum 4 e eşitse
+        ayarların "token" değeri gelen olsun
+    konum 5 e eşitse
+        ayarların "generation" değeri gelen olsun
+konum 5 e eşit değilse
+    "denied" yaz
+    programı bitir
+op ayarların "op" değeri olsun
+kimlik ayarların "id" değeri olsun
+sahip ayarların "owner" değeri olsun
+jeton ayarların "token" değeri olsun
+nesil ayarların "generation" değeri olsun
+op "send" a eşitse
+    izin kimlik ve sahip ve jeton ve nesil ile izinOku olsun
+    izin başarılıysa
+        izinDegeri iznin değeri olsun
+        izinDegeri "1" e eşit değilse
+            "denied" yaz
+            programı bitir
+        ekler "catalog.pdf" listesi olsun
+        sonuc "sink@example.invalid" "Synthetic catalog" "Synthetic body" "<p>Synthetic body</p>" "" ekler "" ile ekli ileti göndermeyi dene olsun
+        sonuc başarılıysa
+            "sent" yaz
+        değilse
+            "failed" yaz
+    değilse
+        "denied" yaz
+    programı bitir
+op "claim" a eşitse
+    sonuc sahip ve jeton ile kirala olsun
+    sonuc başarılıysa
+        sonucun değeri yaz
+    değilse
+        "denied" yaz
+    programı bitir
+op "prepare" a eşitse
+    sonuc kimlik ve sahip ve jeton ve nesil ile etkiBaslat olsun
+    sonuc başarılıysa
+        sonucun değeri yaz
+    değilse
+        "denied" yaz
+    programı bitir
+op "safe-fail" a eşitse
+    sonuc kimlik ve sahip ve jeton ve nesil ile guvenliRet olsun
+    sonuc başarılıysa
+        sonucun değeri yaz
+    değilse
+        "denied" yaz
+    programı bitir
+op "ack" a eşitse
+    sonuc kimlik ve sahip ve jeton ve nesil ile onayla olsun
+    sonuc başarılıysa
+        sonucun değeri yaz
+    değilse
+        "denied" yaz
+    programı bitir
+"denied" yaz

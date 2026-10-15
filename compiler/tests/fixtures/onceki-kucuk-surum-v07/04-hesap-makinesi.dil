@@ -1,0 +1,19 @@
+# 04 — Hesap makinesi (v0.1 kabul programı)
+# Sınanan: dört işlem kalıpları — genitif yapı (K-008),
+# metinden sayıya dönüşüm: "yanıtın sayısı" (K-009).
+
+"Birinci sayı?" diye sor
+birinci yanıtın sayısı olsun
+
+"İkinci sayı?" diye sor
+ikinci yanıtın sayısı olsun
+
+toplam birinci ile ikincinin toplamı olsun
+fark birinci ile ikincinin farkı olsun
+çarpım birinci ile ikincinin çarpımı olsun
+bölüm birincinin ikinciye bölümü olsun
+
+"Toplam: " ile toplam yaz
+"Fark: " ile fark yaz
+"Çarpım: " ile çarpım yaz
+"Bölüm: " ile bölüm yaz

@@ -1,0 +1,15 @@
+# 23 — Desen eşleştirme
+# Sınanan: "X e göre / ... ise" eşleştirme yüzeyi (K-021), varsayılan kol "değilse".
+# Exhaustiveness denetimi tür sistemine bağlanacak (master plan bölüm 8).
+
+şekil "kare" olsun
+
+şekle göre
+    "daire" ise
+        "Köşesi yok" yaz
+    "kare" ise
+        "4 köşesi var" yaz
+    "üçgen" ise
+        "3 köşesi var" yaz
+    değilse
+        "Bu şekli tanımıyorum" yaz

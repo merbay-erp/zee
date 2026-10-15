@@ -13,3 +13,6 @@ compiler/fuzz/corpus/wasm_abi/* binary
 
 # İndirilen çalışma ortamı raporlarının SHA-256 kanıtı ham byte'ları kapsar.
 compiler/tests/fixtures/calisma-ortami-v1/*/*.json binary
+# K-275 PDF ve özgün font lisansı exact kaynak baytlarıyla taşınır.
+golden/pdf-host/assets/base.pdf binary
+golden/pdf-host/assets/LICENSE-DejaVu.txt -text whitespace=-blank-at-eol

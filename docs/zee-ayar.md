@@ -119,3 +119,13 @@ vakalar proje/web/IO/runtime aşağı kapsamını taşır. Spec/27, uyumluluk bi
 profil kayıtları, faz fixture, canlı sayılar, sürümler/README/backlog/kapılar
 root tarafından aynı toplu değişiklikte güncellenir; temiz exact kaynak
 kabulü bu adayın kirli test koşusuyla tamamlanmış gösterilmez.
+
+## K-274 kontrollü config yenileme sınırı
+
+Mevcut `zee.ayar` başlangıç okuması, geçerli dosyanın atomic replace edilip HUP ile
+yeni worker nesli açılması halinde yeniden kullanılır. CLI override önceliği
+korunur. Bu yalnız config istisnasıdır: çalışan `.dil`/modül kaynaklarını genel
+sıcak mutation/reload sözleşmesine açmaz. Bellek oran sayaçları restart'ta sıfırlanır;
+state koruma/zero downtime sözü yoktur. İki owned worker ile config100→101 HUP
+kısa native5 cohort'unda gözlenir; platform/systemd/gerçek ürün ve finalclean
+kabulü ayrıca açıktır. [ADR-132](../adr/132-sureli-hazirlik-ve-kontrollu-config-yenileme.md).

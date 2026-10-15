@@ -1,0 +1,39 @@
+eylem kayitYaz
+    değer döndürmez
+    parametreler "committed" listesi olsun
+    sonuç "INSERT INTO owned_notes (name) VALUES ($1)" sorgusunu parametreler ile değiştirmeyi dene olsun
+
+eylem bozukKaydet
+    Metin sonucu döndürür
+    ilkParametreler "rollback-first" listesi olsun
+    ilkSonuç "INSERT INTO owned_notes (name) VALUES ($1)" sorgusunu ilkParametreler ile değiştirmeyi dene olsun
+    ilkSonuç başarılıysa
+        ikinciParametreler "committed" listesi olsun
+        ikinciSonuç "INSERT INTO owned_notes (name) VALUES ($1)" sorgusunu ikinciParametreler ile değiştirmeyi dene olsun
+        ikinciSonuç başarılıysa
+            "unexpected" döndür
+        "owned-sql-failure" hatasını döndür
+    "owned-first-write-failure" hatasını döndür
+
+8080 kapısında sunucu başlat
+
+GET "/" adresine istek geldiğinde
+    "owned db fixture" yanıtını gönder
+
+GET "/form" adresine istek geldiğinde
+    belirteç csrf belirteci olsun
+    form "<form><input type=hidden name=_csrf value=\"" ile belirteç ile "\"></form>" olsun
+    form yanıtını gönder
+
+POST "/commit" adresine istek geldiğinde
+    herkese açık
+    kayitYaz
+    "ok" yanıtını gönder
+
+POST "/fail" adresine istek geldiğinde
+    herkese açık
+    sonuç bozukKaydet olsun
+    sonuç başarısızsa
+        "failed" yanıtını 503 durumuyla gönder
+    değilse
+        "unreachable" yanıtını gönder

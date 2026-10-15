@@ -1,0 +1,130 @@
+# K272 fixed golden layout. Slots are plain Metin, never HTML fragments.
+ceviri birimini kullan
+
+işlem tamSayfayiKur
+    dil Metin olarak al
+    baslik Metin olarak al
+    navEtiketi Metin olarak al
+    listeBasligi Metin olarak al
+    ilkBaslik Metin olarak al
+    ikinciBaslik Metin olarak al
+    detayBasligi Metin olarak al
+    detayMetni Metin olarak al
+    altbilgi Metin olarak al
+    listeGizli Mantıksal olarak al
+    detayGizli Mantıksal olarak al
+    Metin sonucu döndürür
+    dil "tr" e eşit değilse
+        dil "en" e eşit değilse
+            "dil-desteklenmiyor" hatasını döndür
+    ilkYol "/tr/bildirimler/eposta" olsun
+    ikinciYol "/tr/bildirimler/ozet" olsun
+    dil "en" e eşitse
+        ilkYol "/en/notifications/email" olsun
+        ikinciYol "/en/notifications/digest" olsun
+    belge görünüm olsun
+        html lang dil
+            head
+                meta charset "utf-8"
+                meta name "viewport" content "width=device-width, initial-scale=1"
+                title
+                    metin baslik
+            body
+                header
+                    h1 title baslik
+                        metin baslik
+                    nav "aria-label" navEtiketi
+                        a href "/tr/bildirimler" lang "tr"
+                            "Türkçe"
+                        a href "/en/notifications" lang "en"
+                            "English"
+                main
+                    section id "liste" hidden listeGizli
+                        h2
+                            metin listeBasligi
+                        ul
+                            li
+                                a href ilkYol
+                                    metin ilkBaslik
+                            li
+                                a href ikinciYol
+                                    metin ikinciBaslik
+                    article id "detay" hidden detayGizli
+                        h2 title detayBasligi
+                            metin detayBasligi
+                        p
+                            metin detayMetni
+                footer
+                    p
+                        metin altbilgi
+    "<!doctype html>" ile belge döndür
+
+işlem uygulamaSayfasiniKur
+    dil Metin olarak al
+    secim TamSayı olarak al
+    Metin sonucu döndürür
+    secim 0 dan küçükse
+        "secim-yok" hatasını döndür
+    secim 2 den büyükse
+        "secim-yok" hatasını döndür
+    baslikSonucu dil ve "baslik" ile ceviriyiAl olsun
+    baslik "" olsun
+    baslikSonucu başarılıysa
+        baslik baslikSonucunun değeri olsun
+    değilse
+        "dil-desteklenmiyor" hatasını döndür
+    navEtiketi "Dil seçimi" olsun
+    listeBasligi "Bildirimler" olsun
+    ilkBaslik "E-posta bildirimleri" olsun
+    ikinciBaslik "Haftalık özet" olsun
+    ilkMetin "E-posta tercihlerini inceleyin." olsun
+    ikinciMetin "Özet tercihlerini inceleyin." olsun
+    altbilgi "Anonim örnek, işlem yapılmaz." olsun
+    dil "en" e eşitse
+        navEtiketi "Language selection" olsun
+        listeBasligi "Notifications" olsun
+        ilkBaslik "Email notifications" olsun
+        ikinciBaslik "Weekly digest" olsun
+        ilkMetin "Review email preferences." olsun
+        ikinciMetin "Review digest preferences." olsun
+        altbilgi "Anonymous fixture, no action performed." olsun
+    detayBasligi "" olsun
+    detayMetni "" olsun
+    listeGizli yanlış olsun
+    detayGizli doğru olsun
+    secim 1 e eşitse
+        baslik ilkBaslik olsun
+        detayBasligi ilkBaslik olsun
+        detayMetni ilkMetin olsun
+        listeGizli doğru olsun
+        detayGizli yanlış olsun
+    secim 2 ye eşitse
+        baslik ikinciBaslik olsun
+        detayBasligi ikinciBaslik olsun
+        detayMetni ikinciMetin olsun
+        listeGizli doğru olsun
+        detayGizli yanlış olsun
+    sonuc dil ve baslik ve navEtiketi ve listeBasligi ve ilkBaslik ve ikinciBaslik ve detayBasligi ve detayMetni ve altbilgi ve listeGizli ve detayGizli ile tamSayfayiKur olsun
+    sonuc başarılıysa
+        sonucun değeri döndür
+    "sayfa-ret" hatasını döndür
+
+test "Tam sayfa dil whitelistini korur"
+    sonuc "xx" ve "a" ve "b" ve "c" ve "d" ve "e" ve "f" ve "g" ve "h" ve yanlış ve doğru ile tamSayfayiKur olsun
+    sonuc başarısızsa
+        1 1 e eşit olmalı
+    değilse
+        1 0 a eşit olmalı
+
+    injection "tr\" onmouseover=\"alert(1)" ve "a" ve "b" ve "c" ve "d" ve "e" ve "f" ve "g" ve "h" ve yanlış ve doğru ile tamSayfayiKur olsun
+    injection başarısızsa
+        1 1 e eşit olmalı
+    değilse
+        1 0 a eşit olmalı
+
+test "Sabit seçim sınırı dışında detay yoktur"
+    sonuc "tr" ve 3 ile uygulamaSayfasiniKur olsun
+    sonuc başarısızsa
+        1 1 e eşit olmalı
+    değilse
+        1 0 a eşit olmalı

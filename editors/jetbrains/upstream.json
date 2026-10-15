@@ -1,0 +1,23 @@
+{
+  "schema": "zee-editor-template-source-1",
+  "upstream_commit": "12703a3301557acd6d57bc903fed07cd826f632f",
+  "references": [
+    {
+      "url": "https://raw.githubusercontent.com/redhat-developer/lsp4ij/12703a3301557acd6d57bc903fed07cd826f632f/docs/UserDefinedLanguageServerTemplate.md",
+      "sha256": "bca5cf0e44b6e4115593724dca2dd6189bfa6b778a6c634115c5e59f4be10765",
+      "bytes": 13035
+    },
+    {
+      "url": "https://raw.githubusercontent.com/redhat-developer/lsp4ij/12703a3301557acd6d57bc903fed07cd826f632f/docs/UserDefinedLanguageServer.md",
+      "sha256": "c7dd01bff2aec7b306db63b1b697cb9ebb6adc6a76d0c8ef885d0dfb49a2e5a4",
+      "bytes": 15739
+    },
+    {
+      "url": "https://raw.githubusercontent.com/redhat-developer/lsp4ij/12703a3301557acd6d57bc903fed07cd826f632f/src/main/resources/templates/lsp/harper-ls/template.json",
+      "sha256": "6c925aef5f8911884c957b533b9b69f4b918bd2d48e6c78f8bae45dacc41ebee",
+      "bytes": 7347,
+      "purpose": "pattern-only fileType mapping precedent; no upstream template copied"
+    }
+  ],
+  "boundary": "Descriptor documentation provenance only; not a bundled, installed, pinned or tested LSP4IJ plugin."
+}

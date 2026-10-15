@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""K-251: application-owned once probe, not a continuous health monitor."""
+"""K-251/K-274: owned once probe or explicitly finite repeated readiness checks."""
 import argparse
 import fcntl
 import hashlib
@@ -9,6 +9,7 @@ from pathlib import Path
 import re
 import runpy
 import selectors
+import signal
 import shutil
 import stat
 import subprocess
@@ -104,17 +105,20 @@ class Gate:
             self.fd = None
 
 
-def child(binary, arguments, directory, deadline):
+def child(binary, arguments, directory, deadline, cancelled=lambda: False):
+    require(not cancelled(), 'cancelled')
     require(time.monotonic() < deadline, 'timeout')
+    selector = None
+    buffers = {'stdout': bytearray(), 'stderr': bytearray()}
     process = subprocess.Popen([str(binary), *arguments], cwd=directory, stdin=subprocess.DEVNULL,
                                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    selector = selectors.DefaultSelector()
-    buffers = {'stdout': bytearray(), 'stderr': bytearray()}
     try:
+        selector = selectors.DefaultSelector()
         for name, pipe in [('stdout', process.stdout), ('stderr', process.stderr)]:
             os.set_blocking(pipe.fileno(), False)
             selector.register(pipe, selectors.EVENT_READ, name)
         while selector.get_map():
+            require(not cancelled(), 'cancelled')
             require(time.monotonic() < deadline, 'timeout')
             for key, _ in selector.select(min(.1, max(0, deadline-time.monotonic()))):
                 chunk = os.read(key.fileobj.fileno(), 4097)
@@ -123,18 +127,30 @@ def child(binary, arguments, directory, deadline):
                 else:
                     buffers[key.data].extend(chunk)
                     require(len(buffers[key.data]) <= 65536, 'output')
-        code = process.wait(timeout=max(.001, deadline-time.monotonic()))
-        return code, bytes(buffers['stdout']), bytes(buffers['stderr'])
+        while process.poll() is None:
+            require(not cancelled(), 'cancelled')
+            require(time.monotonic() < deadline, 'timeout')
+            time.sleep(min(.05, max(0, deadline-time.monotonic())))
+        require(not cancelled(), 'cancelled')
+        require(time.monotonic() < deadline, 'timeout')
+        return process.returncode, bytes(buffers['stdout']), bytes(buffers['stderr'])
     finally:
-        selector.close()
-        if process.poll() is None:
-            process.kill()
-        process.wait(timeout=5)
-        process.stdout.close()
-        process.stderr.close()
+        try:
+            if selector is not None:
+                selector.close()
+        finally:
+            try:
+                if process.poll() is None:
+                    process.kill()
+                process.wait(timeout=5)
+            finally:
+                try:
+                    process.stdout.close()
+                finally:
+                    process.stderr.close()
 
 
-def probe(args, gate):
+def probe(args, gate, cancelled=lambda: False):
     deadline = time.monotonic() + args.deadline
     project = canonical_directory(args.project)
     contract_path = Path(args.contract)
@@ -176,41 +192,71 @@ def probe(args, gate):
         for row, content in zip(rows, source_bytes):
             path = snapshot/row['path']; path.parent.mkdir(parents=True, exist_ok=True)
             path.write_bytes(content); path.chmod(0o400)
-        code, stdout, stderr = child(copy, ['sürüm','--json'], temporary, deadline)
+        code, stdout, stderr = child(copy, ['sürüm','--json'], temporary, deadline, cancelled)
         build = decode_json(stdout)
         require(code == 0 and not stderr and isinstance(build, dict) and build.get('schema') == 'zee-build-v1' and build.get('source_sha') == args.expected_source and build.get('dirty') is False, 'identity')
-        code, stdout, stderr = child(copy, ['göçür','--durum',str(snapshot)], temporary, deadline)
+        code, stdout, stderr = child(copy, ['göçür','--durum',str(snapshot)], temporary, deadline, cancelled)
         require(code == 0 and not stderr and stdout == expected, 'migration')
-        code, stdout, stderr = child(copy, ['çalıştır',str(snapshot)], temporary, deadline)
+        code, stdout, stderr = child(copy, ['çalıştır',str(snapshot)], temporary, deadline, cancelled)
         require(code == 0 and not stderr and stdout == b'zee-db-ready-1\n', 'schema')
         require(sha(copy) == binary_hash and file_key(binary) == binary_key and sha(binary) == binary_hash and all(file_key(path) == key for path,key in zip(paths, keys)), 'input')
+    require(not cancelled(), 'cancelled')
     gate.write(True)
 
 
-def main():
+def main(argv=None):
     parser = Parser(description=__doc__)
     for name in ['dil', 'project', 'worker-project', 'gate', 'expected-source', 'application-revision', 'contract', 'contract-sha256']:
         parser.add_argument('--'+name, required=True)
     parser.add_argument('--deadline', type=float, default=8)
+    parser.add_argument('--rounds', type=int, default=1)
+    parser.add_argument('--interval', type=float, default=2)
+    stopped, handlers = [False], {}
+    def stop(signum, frame):
+        stopped[0] = True
     gate, revision, reason, code = None, None, 'input', 2
     try:
-        args = parser.parse_args()
+        args = parser.parse_args(argv)
         require(os.name == 'posix' and HEX40.fullmatch(args.expected_source) and HEX40.fullmatch(args.application_revision) and HEX64.fullmatch(args.contract_sha256) and 0.1 <= args.deadline <= 15, 'input')
+        require(1 <= args.rounds <= 1000 and 2 <= args.interval <= 60, 'input')
+        if args.rounds > 1:
+            for number in (signal.SIGTERM, signal.SIGINT):
+                handlers[number] = signal.signal(number, stop)
         revision = args.application_revision
         worker = canonical_directory(args.worker_project)
         path = Path(args.gate)
         require(path.is_absolute(), 'gate')
         gate = Gate(worker, path, revision)
         gate.write(False)
-        probe(args, gate)
-        reason, code = 'ready', 0
+        for index in range(args.rounds):
+            require(not stopped[0], 'cancelled')
+            try:
+                probe(args, gate, lambda: stopped[0])
+            except Reject as error:
+                gate.write(False)
+                if args.rounds == 1 or error.code not in {'migration', 'schema', 'timeout'}:
+                    raise
+            if index + 1 < args.rounds:
+                end = time.monotonic() + args.interval
+                while time.monotonic() < end and not stopped[0]:
+                    time.sleep(min(.05, max(0, end-time.monotonic())))
+        require(not stopped[0], 'cancelled')
+        reason, code = ('ready' if args.rounds == 1 else 'completed'), 0
     except (Reject, OSError, ValueError, TypeError, RecursionError, subprocess.SubprocessError) as error:
-        reason = error.code if isinstance(error, Reject) and error.code in {'input','gate','identity','migration','schema','timeout','output'} else 'input'
+        reason = error.code if isinstance(error, Reject) and error.code in {'input','gate','identity','migration','schema','timeout','output','cancelled'} else 'input'
         code = 1 if reason in {'migration','schema','timeout','output'} else 2
     finally:
         if gate is not None:
-            gate.close()
-    print(json.dumps({'schema':'zee-db-readiness-host-1','application_revision':revision,'ready':code == 0,'reason':reason}, separators=(',',':')))
+            try:
+                if args.rounds > 1 or code != 0:
+                    gate.write(False)
+            except (Reject, OSError, ValueError, TypeError):
+                reason, code = 'gate', 2
+            finally:
+                gate.close()
+        for number, previous in handlers.items():
+            signal.signal(number, previous)
+    print(json.dumps({'schema':'zee-db-readiness-host-1','application_revision':revision,'ready':code == 0 and reason == 'ready','reason':reason}, separators=(',',':')))
     return code
 
 

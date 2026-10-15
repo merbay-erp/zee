@@ -639,3 +639,7 @@ performans gözlemi aynı kaynakta çalışır; raporlar 90 günlük özel artef
 olur. Uzak başarısızlık veya başlamamış iş geçiş sayılmaz. Windows runtime
 ve release candidate fuzz/Miri/kurulum kanıtları bu Linux CI'ın yerine
 geçmez; ilgili sürüm runbook kapıları ayrıca korunur. [ADR-088](../adr/088-git2-gitsrv-kosulari.md).
+
+## K-275 — Opsiyonel owned PDF backend
+
+Compiler Cargo.lock/production Rust bağımlılıkları değişmez. Normal PDF job model wrapper stdlib Python/POSIX kullanır; ReportLab/pypdf/Pillow normal Cargo için global veya Codex runtime bağımlılığı değildir. Explicitignored owned backend8 yalnız operatörün seçtiği mutlak Python executable ve exact ReportLab4.4.9/pypdf6.10.0/Pillow12.3.0 ile çalışır; araç kurulum/indirme/fallback yapmaz. [Rehber](pdf-katalog-host.md), fixed asset/font notice ve kısmi P11 sınırını açıklar. Fontun özgün üçüncü taraf bildirimleri saklanır; proje lisansı/bağımlılık dağıtım onayı ayrı karardır.

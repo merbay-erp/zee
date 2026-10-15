@@ -1,0 +1,14 @@
+# 32 — Ondalık market hesabı (korpus genişletmesi, RFC-0013)
+# Sınanan: bitişik virgül (3,14), onluk tam aritmetik (0,1+0,2=0,3 sözü),
+# tam kısmı / yuvarlanmışı, TamSayı→Ondalık örtük genişleme.
+
+kilo 2,5 olsun
+birim_fiyat 19,99 olsun
+tutar kilo ile birim_fiyatın çarpımı olsun
+
+"Tutar: " ile tutar ile " lira" yaz
+"Yuvarlak: " ile tutarın yuvarlanmışı ile " lira" yaz
+
+kontrol 0,1 ile 0,2 nin toplamı olsun
+kontrol 0,3 e eşitse
+    "Ondalıklar tam: sürpriz yok" yaz

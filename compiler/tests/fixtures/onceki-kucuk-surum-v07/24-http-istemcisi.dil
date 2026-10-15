@@ -1,0 +1,9 @@
+# 24 — HTTP istemcisi
+# Sınanan: ağ isteği ifadesi "adresinden gelen yanıt", durum kodu ve gövde erişimi.
+# NOT: "yanıt" adı girdi almadaki (03) örtük "yanıt" ile çakışıyor —
+# burada bilerek "cevap" kullanıldı; çözüm K-007'de tartışılıyor.
+
+cevap "https://ornek.dev/durum" adresinden gelen yanıt olsun
+
+"Durum: " ile cevabın durum kodu yaz
+cevabın gövdesini yaz

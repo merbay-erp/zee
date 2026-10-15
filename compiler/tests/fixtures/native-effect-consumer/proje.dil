@@ -1,0 +1,10 @@
+proje "owned-fixed-effect" olsun
+sürüm "0.1.0" olsun
+morfoloji "zee-tr-1" olsun
+giriş "ana.dil" olsun
+yetkinlikler "veritabanı", "ağ", "yerel-ağ", "dosya-okuma" listesi olsun
+ağ_hedefleri "smtp://127.0.0.1:18094" listesi olsun
+e_posta_bağlantı_değişkeni "ZEE_EFFECT_SMTP_URL" olsun
+veritabanı_hedefi "postgresql://127.0.0.1:18093/postgres" olsun
+veritabanı_bağlantı_değişkeni "ZEE_EFFECT_DB_URL" olsun
+veritabanı_göçleri "gocler" olsun

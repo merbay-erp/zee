@@ -1,0 +1,13 @@
+# 21 — Tarih ve saat
+# Sınanan: Tarih/Saat/Süre türleri, "bugünün yılı" gibi özellik erişimi,
+# tarih aritmetiği: "1 gün sonrası".
+
+bugün bugünün tarihi olsun
+şimdi şu anın saati olsun
+
+"Bugün: " ile bugün yaz
+"Yıl: " ile bugünün yılı yaz
+"Saat: " ile şimdi yaz
+
+yarın bugünün 1 gün sonrası olsun
+"Yarın: " ile yarın yaz

@@ -1,0 +1,278 @@
+{
+  "schema": "zee-previous-minor-corpus-1",
+  "historical_source": "d08a947713ddc38d2163360c17d07fbffcb1213d",
+  "historical_tag": "v0.7.0",
+  "source_count": 33,
+  "cases": [
+    {
+      "file": "01-merhaba-dunya.dil",
+      "sha256": "28a2bb1b97dbe2bdf6aa2f607cd09f0316313495a234e407e09c9ac66c613315",
+      "git_blob": "e21d7c03182a6925eded40eb87a5d52a3297991d",
+      "new_exit": 0
+    },
+    {
+      "file": "02-degiskenler.dil",
+      "sha256": "1ac8696b686cbbce99aa01873e82dc41928250c80ab796d3d53d06e253075f1b",
+      "git_blob": "f49860e2d7314b3d07bd853004e9b40f8503c503",
+      "new_exit": 0
+    },
+    {
+      "file": "03-girdi-alma.dil",
+      "sha256": "04946c389588e0a135f69b66fbeaa170f41f9ade22622d2d784c5e74d112b071",
+      "git_blob": "0a07af7eb8faffdbeeef79f59d797e2b54c2be66",
+      "new_exit": 0
+    },
+    {
+      "file": "04-hesap-makinesi.dil",
+      "sha256": "189f8269aa46ef23810c2febcd663f0e3a5ba3bf320b316cc0f0208bff8edd24",
+      "git_blob": "0068ba779e2d99beb08f2a7e7b71c9a882126af2",
+      "new_exit": 0
+    },
+    {
+      "file": "05-kosullar.dil",
+      "sha256": "146142b6fd14c907a1baee126221766b7453167e1cd20d09953b93477a545236",
+      "git_blob": "4e0b4dbce03d71d355f3b3e33b687ea30aac9a2e",
+      "new_exit": 0
+    },
+    {
+      "file": "06-donguler.dil",
+      "sha256": "62a4aef13e0cce8686d0b4b5ca9ca4232a6a0adcea4956e4cac6540d6b8fce58",
+      "git_blob": "2accd5ae5fa7dc9989556cde3b42dac3984f4600",
+      "new_exit": 0
+    },
+    {
+      "file": "07-sayi-tahmini.dil",
+      "sha256": "e6750a487fbfae11701aaae2b0dbc7f124dc6711db7f9842d3ffde6fbe6fc63c",
+      "git_blob": "24b604ee924df00db7c3cd1731fd1c3975cd89af",
+      "new_exit": 0
+    },
+    {
+      "file": "08-listeler.dil",
+      "sha256": "8cee3879750aea275f387f10bf19fa45443ee2b8cc8a3dc0308ce47276219cd5",
+      "git_blob": "9659552f065125305d251f3cad977bbd992c324e",
+      "new_exit": 0
+    },
+    {
+      "file": "09-liste-isleme.dil",
+      "sha256": "561102898a930fb98a1afa8b32b9a7485d58b29090e40e50189200c9bc42bae4",
+      "git_blob": "8be483bff0f95d964997408b8844e24853983993",
+      "new_exit": 0
+    },
+    {
+      "file": "10-sozlukler.dil",
+      "sha256": "fcd8bf8bf6410bdc08567f9c89dfc9921dfdc9f573fbe89cab81f60da07b546b",
+      "git_blob": "ecb3b7e9d247d473885dc2da0692cad98b66b67c",
+      "new_exit": 0
+    },
+    {
+      "file": "11-metin-islemleri.dil",
+      "sha256": "d720d8e8c56ef180f5394bd5927aaff30ea020f3212f9851df14c1b22d9247b0",
+      "git_blob": "bbeebf3bc961bcd6c6612f871cf96936e051ea63",
+      "new_exit": 0
+    },
+    {
+      "file": "12-islem-tanimi.dil",
+      "sha256": "5e428a778ed08bd09ff121cdade187483c4ad77f2976c728522640fb2aa92c8f",
+      "git_blob": "557c97cada2bb08d97dddb778415214a6557efaf",
+      "new_exit": 0
+    },
+    {
+      "file": "13-islem-parametreleri.dil",
+      "sha256": "e28eb26f953f00dcf92023210acc6c3b3af4eaf6a00b46b027dba9d9e2055c69",
+      "git_blob": "9f80e8fb5d44a9b7be0218d69445109fb5ee2e62",
+      "new_exit": 0
+    },
+    {
+      "file": "14-not-ortalamasi.dil",
+      "sha256": "7d65f8d6f3d810546a7bc05ca4bbd6397a83dd19144ba2ee388c734f7e894cfd",
+      "git_blob": "568d4f2bc94cf85e2bd4d7582b695d7eaf99d5d1",
+      "new_exit": 0
+    },
+    {
+      "file": "15-secenek-turu.dil",
+      "sha256": "70e4ec159e81ff50e5bad0adf9ce70ffafaef8d5a9e7a18b1c2012ad3c37426c",
+      "git_blob": "946f2999a041154e0614c8341ca759e9cdb780ae",
+      "new_exit": 0
+    },
+    {
+      "file": "16-sonuc-ve-hata.dil",
+      "sha256": "da4afd59d53f9c3e08f0f0171118106fbc9d15c7480d7b865834770f2555a694",
+      "git_blob": "75b20be54ef9e79918e837b5e038e456f1b5d5d3",
+      "new_exit": 0
+    },
+    {
+      "file": "17-dosya-okuma.dil",
+      "sha256": "f50a5bcc7e0e51cb298436b7c9c7fa81dfca8db2216b8363e2b6d81042261b2e",
+      "git_blob": "562a55e97a981110508cf9217d65cab680efe7c8",
+      "new_exit": 0
+    },
+    {
+      "file": "18-dosya-yazma.dil",
+      "sha256": "786f9d872ab9e191c27561e12914b4cf997ea02655fac5b2faf05d78a7485811",
+      "git_blob": "ee86c451a2ed7c17833c5118c5da12310d7f1659",
+      "new_exit": 0
+    },
+    {
+      "file": "19-csv-analizi.dil",
+      "sha256": "c27bb3dbe7b3a744e25eb5c60cc272dd612b59b8cb86be5b12bee0e20957f4a4",
+      "git_blob": "1d0942574b39a4d732897d0a3035d5120def432f",
+      "new_exit": 0
+    },
+    {
+      "file": "20-json-verisi.dil",
+      "sha256": "70c8811b0cf3a1f347ae6c7893fbd5cc8ae0dbf210a488cb6130a641909640b9",
+      "git_blob": "5c44792f52fb017eb8b1d27dbf4731b4b61b2745",
+      "new_exit": 0
+    },
+    {
+      "file": "21-tarih-ve-saat.dil",
+      "sha256": "79e89700407e0e4bf3cfe082dad638514c6e1c719cefa47a2d43fa9fdf0c1a06",
+      "git_blob": "69a38e715a2b118b097722ed811e0ec302b01c73",
+      "new_exit": 0
+    },
+    {
+      "file": "22-yapilar.dil",
+      "sha256": "6509ddaa817c411fbfc6908141e7284ea170b17b8c6ef02702a08fed866c4cee",
+      "git_blob": "107e95bedce983f1362b773e933d5b6869d0dfb2",
+      "new_exit": 0
+    },
+    {
+      "file": "23-desen-eslestirme.dil",
+      "sha256": "22a7f229dd3ef949127fda0e7c3f3fc097d44d6df19d4eb214a552d31bcb97b7",
+      "git_blob": "45dba8516dfdb9a9ec03aaa8dfe1a8da8e3cee32",
+      "new_exit": 0
+    },
+    {
+      "file": "24-http-istemcisi.dil",
+      "sha256": "59bb77e3fc74b888a0e159565902c5059331a31dc8b091b8e79433d440ceab28",
+      "git_blob": "56771b12e3bdd95a3a217cb767c1676b4900f2a7",
+      "new_exit": 0
+    },
+    {
+      "file": "25-web-sunucusu.dil",
+      "sha256": "11d7b8a1d22c3401f56bc285deb4fe41764023987f72c8e6a4e07a546ff75a7d",
+      "git_blob": "eeb061a04d87adceaa4bd4e0383e8c1b159c4a25",
+      "new_exit": 0
+    },
+    {
+      "file": "26-paralel-gorevler.dil",
+      "sha256": "231e5269c8371d5c6edcd4501c99d7cd0ab87d2345106e64e4caa3df0cc678e8",
+      "git_blob": "dd8e9eb0e69a9bc49b4a7e9da1299e1b33308d9a",
+      "new_exit": 0
+    },
+    {
+      "file": "27-zaman-asimi.dil",
+      "sha256": "edce97f99f8c197edc4fb7c44f9ad16ce1eeb0861b567810607f83934328937c",
+      "git_blob": "f848b4b81d679c529d410c35bd0f14cfd4265d75",
+      "new_exit": 0
+    },
+    {
+      "file": "28-cli-araci.dil",
+      "sha256": "78b843662225ae3e8a7acce424e187f799dfda6ae7274df10a5777b4492d0206",
+      "git_blob": "0e8fbd98ef28aa726b5392a2d7bfb103cd902302",
+      "new_exit": 0
+    },
+    {
+      "file": "29-esp32-led.dil",
+      "sha256": "3ef71949fbc30033372bd7b3b5066c1c91820eb3b0e098f55992beb6c785e9d4",
+      "git_blob": "fa26627081806c4ef14e6da7347a929be4ac5b63",
+      "new_exit": 0
+    },
+    {
+      "file": "30-testler.dil",
+      "sha256": "a99f86312f7025d988eb23999a16739014b495944cfa443937ba0f946b4c7d41",
+      "git_blob": "d330b0e1d97940df30ab39cc04a415f4020cc59e",
+      "new_exit": 0
+    },
+    {
+      "file": "31-birimler.dil",
+      "sha256": "cf7862d75f4c97af165acc22cc575d4de4b65cc017d68aab2ee365f75da2993b",
+      "git_blob": "74aff0f5db486b27af7b9136267ff1693a9429f5",
+      "new_exit": 1
+    },
+    {
+      "file": "32-ondalik-market.dil",
+      "sha256": "061faafe193051521fd2ac173c83564e91f68364b23da4a3fe6b4631936e56b2",
+      "git_blob": "c26c8e9678ce78c84e9b628a4a06196b3c005bb4",
+      "new_exit": 0
+    },
+    {
+      "file": "hesap_araclari.dil",
+      "sha256": "b9a4a998d6457c64b11417873bc2b4f0cbfa603c343a39c10ba2afaf154e6ae3",
+      "git_blob": "a0fdabb10ac9d424accfb3b08ff937bd75928fcc",
+      "new_exit": 0
+    }
+  ],
+  "pure_runtime": [
+    {
+      "file": "01-merhaba-dunya.dil",
+      "combined_output_sha256": "7e02b5889931a58b29c67720e98f0d71462ded9e76bafb7bd1a727a224f0a77c"
+    },
+    {
+      "file": "02-degiskenler.dil",
+      "combined_output_sha256": "44818ab214c576d6e0411194306d484dbc695ffd7f276fdf0d56a6b76fff9fd9"
+    },
+    {
+      "file": "05-kosullar.dil",
+      "combined_output_sha256": "68537bef9ba5df36b0a4feda1854e45e155feb1e63edf122b2ea8cd23611df46"
+    },
+    {
+      "file": "06-donguler.dil",
+      "combined_output_sha256": "8031c9d709f2720d0fe67027c7bcce23b9761a30405908af0c31aaa961e9d1ce"
+    },
+    {
+      "file": "08-listeler.dil",
+      "combined_output_sha256": "f018c93174d3b7faab6ecdf1184f6e61d7bec9f36e101462647cec8545b1a761"
+    },
+    {
+      "file": "09-liste-isleme.dil",
+      "combined_output_sha256": "2a153de806f1d9b7cc32b95133e75d87a2cf691e793641bb7a08183dec2db561"
+    },
+    {
+      "file": "10-sozlukler.dil",
+      "combined_output_sha256": "bfc5fe22c744e765d973fa46667da86ef1ca5e9cb5ef29cb8aa4e3f86d0f33ca"
+    },
+    {
+      "file": "11-metin-islemleri.dil",
+      "combined_output_sha256": "fb4b9746dcf465e0198ed73522a30f87997ad5cdab80c353a2ba1d7239866bab"
+    },
+    {
+      "file": "12-islem-tanimi.dil",
+      "combined_output_sha256": "4393447bd3c1d55ea7f97417ecb1b36a691ccaacaaf2ebd21c59a5acf825fb7b"
+    },
+    {
+      "file": "13-islem-parametreleri.dil",
+      "combined_output_sha256": "e0046d559662f4217b082c834f5c10ae1efe0cd22f47e6c6460592f53198fc1e"
+    },
+    {
+      "file": "14-not-ortalamasi.dil",
+      "combined_output_sha256": "e8c83539e6aa4a822a61f3bb3e35190ff6616e36d5ff7e52c56f63a066a73fa8"
+    },
+    {
+      "file": "15-secenek-turu.dil",
+      "combined_output_sha256": "ba10e40cb6e9feb1833e483faa2c93966f6d129fe5fe8aaa84e1700a6ff990f9"
+    },
+    {
+      "file": "22-yapilar.dil",
+      "combined_output_sha256": "220cd7347723bc739a810f1d64fda7e3d3c21d9fa51a2d0cfe5d717da3170e46"
+    },
+    {
+      "file": "23-desen-eslestirme.dil",
+      "combined_output_sha256": "0ddcb83cef8fd76ae0f44c594cc60e32fde6ce5a7533a07e781c34c7b1febeba"
+    },
+    {
+      "file": "32-ondalik-market.dil",
+      "combined_output_sha256": "492c5d5c29bd415250157d2054c2e11131e1af700aad0ac3e409c5020f296908"
+    }
+  ],
+  "migration": {
+    "file": "31-birimler.dil",
+    "unit": "hesap_araclari.dil",
+    "old_line": "    fiyatı al\n",
+    "new_lines": "    fiyatı Ondalık olarak al\n    Ondalık döndürür\n",
+    "expected_diagnostic": "T039",
+    "decision": "spec/10-disari-acik-islem-sozlesmesi.md",
+    "decision_source": "2a59b9e49a07f142efa2f65d34d76872c26f8479",
+    "combined_output_sha256": "2eefca892dd0abccf7cc4fc2a161d542f074d15b47056a0f9d047cf0dc3819e1"
+  }
+}

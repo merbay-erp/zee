@@ -1,0 +1,13 @@
+# 22 — Yapılar
+# Sınanan: "yapı" tanımı, açık tür bildirimi (public yüzeyde tür yazılır),
+# "yeni" ile oluşturma, iyelik ekiyle alan erişimi: "ayşenin adı" (K-020).
+
+yapı Öğrenci
+    ad Metin
+    yaş TamSayı
+
+ayşe yeni Öğrenci olsun
+ayşenin adı "Ayşe" olsun
+ayşenin yaşı 10 olsun
+
+ayşenin adı ile " " ile ayşenin yaşı ile " yaşında" yaz

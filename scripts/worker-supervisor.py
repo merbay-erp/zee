@@ -123,6 +123,7 @@ def arguments(argv):
     p.add_argument("--health-body", required=True)
     p.add_argument("--pilot", action="store_true")
     p.add_argument("--runtime-metrics", action="store_true")
+    p.add_argument("--readiness-ttl-seconds", type=float)
     p.add_argument("--poll-seconds", type=float, default=2)
     p.add_argument("--probe-timeout", type=float, default=1)
     p.add_argument("--startup-timeout", type=float, default=15)
@@ -140,6 +141,7 @@ def arguments(argv):
     for value, low, high in [(a.poll_seconds, 2, 60), (a.probe_timeout, .1, 5),
                              (a.startup_timeout, 1, 120), (a.stop_grace, .1, 60)]:
         require(math.isfinite(value) and low <= value <= high, "budgets")
+    require(a.readiness_ttl_seconds is None or (math.isfinite(a.readiness_ttl_seconds) and 1 <= a.readiness_ttl_seconds <= 3600), "budgets")
     require(re.fullmatch(r"/[A-Za-z0-9/_-]{0,127}", a.health_path) and
             not a.health_path.startswith("//"), "health_path")
     require(0 < len(a.health_body.encode("utf-8")) <= 256 and
@@ -230,6 +232,7 @@ class Supervisor:
         self.wakeup = threading.Event()
         self.build = None
         self.gate_epoch_ns = time.time_ns()
+        self.readiness_seen = None
         self.metrics = {"probe_total": 0, "probe_failures": 0, "probe_ms_total": 0,
                         "restart_total": 0, "forced_kills": 0}
         self.native_metrics = None
@@ -366,11 +369,23 @@ class Supervisor:
         try:
             data, written = regular_bytes(self.a.readiness_file)
             value = decode_json(data)
-            return (isinstance(value, dict) and set(value) == {"schema", "application_revision", "ready"}
-                    and value["schema"] == "zee-worker-readiness-1"
-                    and value["application_revision"] == self.a.application_revision
-                    and type(value["ready"]) is bool and value["ready"]
-                    and self.gate_epoch_ns <= written <= time.time_ns())
+            wall_now = time.time_ns()
+            valid = (isinstance(value, dict) and set(value) == {"schema", "application_revision", "ready"}
+                     and value["schema"] == "zee-worker-readiness-1"
+                     and value["application_revision"] == self.a.application_revision
+                     and type(value["ready"]) is bool and value["ready"]
+                     and self.gate_epoch_ns <= written <= wall_now)
+            if not valid:return False
+            ttl = getattr(self.a, "readiness_ttl_seconds", None)
+            if ttl is None:return True
+            age = (wall_now - written) / 1000000000
+            if not 0 <= age <= ttl:return False
+            key = (written,)
+            if self.readiness_seen is not None and written < self.readiness_seen[0][0]:return False
+            now = time.monotonic()
+            if self.readiness_seen is None or self.readiness_seen[0] != key:
+                self.readiness_seen = (key, now + ttl - age)
+            return now <= self.readiness_seen[1]
         except (Reject, OSError):
             return False
 

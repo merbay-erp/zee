@@ -19,13 +19,20 @@ karşı test edilmiştir.
 
 ## Kurulum (marketplace'e çıkmadan)
 
-1. Sunucuyu derle ve PATH'e koy:
+1. [Kanonik teslim/kurulum](../../docs/surum-runbook.md) ile sahipli prefix'e
+   kurulan `dillsp` ikilisinin mutlak yolunu VS Code ayarlarına açıkça ver:
 
-```bash
-cd compiler && cargo build --release && sudo cp target/release/dillsp /usr/local/bin/
+```json
+{
+  "dil.lspYolu": "/absolute/owned/prefix/bin/dillsp"
+}
 ```
 
-(PATH'e koymak istemezsen VS Code ayarlarında `dil.lspYolu`na tam yolu ver.)
+Örnekteki yolu kendi doğrulanmış kurulumuna göre değiştir. Geliştirme için ayrı
+owned checkout'ta `cd compiler && cargo build --locked --release --bin dillsp`
+sonrası `compiler/target/release/dillsp` mutlak yolu da seçilebilir; bu kanonik
+iki temiz klon teslim/kurulum kabulü yerine geçmez. Global PATH veya ayrıcalıklı
+kopyalama gerekmez. Eksik/bozuk seçimi başka bir compiler ile değiştirme.
 
 2. Eklentiyi bağla (bu klasörün içinde):
 
@@ -42,4 +49,5 @@ VS Code'u yeniden başlat; `.dil` dosyası aç.
   güncellenmelidir (kaynak: `compiler/src/ayristirici.rs`).
 - Belge eşitleme tam metindir (textDocumentSync: 1) — dosyalar küçükken
   (eğitim ölçeği) doğru ve basit olan bu.
-- Yeniden adlandırma ve biçimleme LSP'ye eklendikçe istemci de genişler.
+- Yeniden adlandırma mevcut semantic sözleşmeyle sunulur. LSP biçimleme/lint ve
+  incremental cache bu istemciye eklenmiş sayılmaz.
