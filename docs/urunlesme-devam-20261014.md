@@ -72,3 +72,7 @@ Microsoft'un [Remove-Item](https://learn.microsoft.com/en-us/powershell/module/m
 ve [Get-FileHash](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/get-filehash?view=powershell-7.5)
 belgelerindeki Path/LiteralPath farkı kaynak incelemesini destekler. Gerçek
 sonuçlar ayrı runtime/source/hash kanıtlarıyla kaydedilir.
+
+## K-267 — Dar credential/listener bileşimi
+
+Kayıtlı D3/P25 ile B5/B6 ihtiyacı için Unix owned launcher/native listener köprüsü, host-only startup FIFO ve typed presecret capability denetimi ADR-125/GB-083 ile kaynakta bütünleştirildi. Model5 ve dirty d53 native5 kısa kanıtı final temiz kabul değildir. Normal Cargo/faz, finalclean ortak kampanya ve uzun işletim/RC ayrı açıktır; Windows/systemd/file-native/live kapsamı kapanmaz.

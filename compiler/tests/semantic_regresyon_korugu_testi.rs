@@ -17,7 +17,14 @@ fn gecici_depo() -> PathBuf {
         .duration_since(UNIX_EPOCH)
         .expect("saat")
         .as_nanos();
-    std::env::temp_dir().join(format!("zee-semantic-koruk-{}-{damga}", std::process::id()))
+    static SIRA: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
+    let sira = SIRA.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+    let kok = std::env::temp_dir().join(format!(
+        "zee-semantic-koruk-{}-{damga}-{sira}",
+        std::process::id()
+    ));
+    std::fs::create_dir(&kok).expect("bu vakaya ait geçici depo oluşturulmalı");
+    kok
 }
 
 #[cfg(unix)]

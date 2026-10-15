@@ -150,6 +150,26 @@ Yeni7 capability testi actual subprocess inheritance/ambient noinherit ve role/m
 kaynak/credential okumasından önce doğrular. Native `--web-metrik-fd` kaynak
 öncesi exact eşleşir; constructor tekrar denetler.7 model/subprocess+2 gerçek
 native decrypt/HUP/TERM/grup cleanup adayı geçti; plaintext/ciphertext loga girmez.
-Default noinherit korunur; arbitrary descriptor/listener/ready/activate ve
+Default noinherit korunur; tek metrik profili arbitrary descriptor veya listener
+transferi açmaz. Ayrı K-267 typed listener route aşağıda sınırlandırılır;
 file-native secret inheritance açılmaz. Tam P25/live/systemd/Windows/finalclean
 kapıları açıktır. Native counters için [metrik rehberi](native-metrics.md) geçerlidir.
+
+
+## K-267/P25 typed native listener bileşimi — dar Unix profil
+
+Yeni `CredentialRoute` ctor listener/ready/activate ve host-only startup FIFO ile
+fresh generation, explicit port/binary hash'i bağlar; optional designated metrik
+kanalı korunur. Host+launcher ortak borrowed rol/alias denetimini secret okumadan
+ve Popen öncesi kullanır. Launcher actual child PID/gen/hash makbuzunu yalnız
+startup FIFO'ya tek sınırlı yazımla bırakır; native child bu FD'yi almaz. Native
+ready bu trusted kayda ve app receipt'e bağlanır; host yalnız launcher Popen
+ve WNOWAIT process group'unu sahiplenir, native PID edinmez. Varsayılan noinherit
+ve native stdout/stderr secret-masking korunur. Beş adlandırılmış FD rolünde STDIO alias retleri, yalnız metrik
+profilinde ve reddedilen `=değer` yazımında da, stdout/stderr üzerinde sıfır
+baytla quiet olur; olağan alias içermeyen retler sabit metadata üretir. source sonrası argv yeni FD capability açmaz.
+
+Gerçek kısa d53 aday koşusu Build dirty=true ile kaydedilmiştir; temiz final
+source/normal faz/ortak kampanya kabulü değildir. Internal P25 bridge dar dilimi
+kanıtlı adaydır; Windows/systemd/file-native sır gizliliği ve live adoption
+açık kalır. [ADR-125](../adr/125-credential-native-listener-kompozisyonu.md)/GB-083 aynı atomik kaynakta bağlanır; normal Cargo/faz ve final temiz kaynak kabulü ayrıca yürütülür.

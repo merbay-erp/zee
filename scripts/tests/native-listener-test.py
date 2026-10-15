@@ -16,7 +16,7 @@ def main():
  proof={'schema':'zee-native-inherited-listener-stage-1','status':'running','source_acceptance':'actual given binary; clean status derives from BuildJSON, not assumed','build':build,'binary_sha256':sha(binary),'cases':[]}
  proof['reproducer_hashes']={name:sha(REPRODUCER/name) for name in ['ana.dil','proje.dil']}
  repro=subprocess.run([str(binary),'denetle',str(REPRODUCER)],capture_output=True,timeout=10);require(repro.returncode==0,'canonical B6 reproducer denetle')
- proof['integration_sources']={str(f.relative_to(ROOT)):sha(f) for f in [HOST_PATH,LEADER,ROOT/'scripts/worker-supervisor.py']}
+ proof['integration_sources']={str(f.relative_to(ROOT)):sha(f) for f in [HOST_PATH,LEADER,ROOT/'scripts/worker-supervisor.py',ROOT/'scripts/native-capabilities.py']}
  proof['integration_sources']['scripts/tests/native-listener-test.py']=sha(Path(__file__).resolve())
 
  def passed(name,observation):proof['cases'].append({'name':name,'passed':True,'observations':observation});print(name+' ... passed',flush=True)
