@@ -1,6 +1,6 @@
 # Sürüm notları
 
-> 15 Ekim 2026 güncel teknik kabul: [S3 teknik kabulü](urunlesme-s3-kabul-20261015.md). Önceki kaynaklara ait koşu kayıtları kendi tarihsel kapsamlarını korur; açık ürün, insan, platform ve yayın kapıları raporda ayrı gösterilir.
+> Güncel kaynak [S4 yerel kabulü](urunlesme-s4-kabul-20261015.md) ile RC, soak, macOS teslim/kurulum ve dar IDE/stdio ölçüm kanıtı taşır. [S3](urunlesme-s3-kabul-20261015.md) native kabulü tarihsel kaynağında kalır; ürün, insan, fiziksel platform ve yayın kapıları açıktır.
 
 Her sürüm: ne eklendi, ne değişti, neyin sözü verildi. Kırıcı değişiklik
 sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
@@ -18,6 +18,8 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   ardından hover/definition/rename imleci ve tanı/düzenleme aralıkları doğru
   UTF-16 sütununu kullanır. Core scalar tanılar ve Zee kaynağı değişmez;
   kullanıcı göçü gerekmez, güncellenmiş dillsp yeniden başlatılır.
+  [S4 yerel kabulü](urunlesme-s4-kabul-20261015.md) yeni exact kaynağın
+  native stdio/IDE, RC/soak ve gözlemsel stdio gecikme kanıtını kaydeder.
 
 - **LSP Türkçe dosya yolu (K-248, ADR-108):** yüzde kodlu UTF-8 klasör
   yolunun yanlış çözümlenmesi giderildi; yan birimler doğru klasörden

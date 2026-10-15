@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "python3",
+    "-I",
+    "-B",
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-acceptance-drivers/rc-gate-v3.py"
+  ],
+  "started_ns": 1792093966666354000,
+  "status": "passed",
+  "minimum_free_bytes": 75377500160,
+  "required_free_bytes": 10737418240,
+  "observed_exit": 0,
+  "owned_group_closed_and_reaped": true,
+  "exit": 0,
+  "finished_ns": 1792094759417344000,
+  "elapsed_seconds": 792.7244628330227
+}

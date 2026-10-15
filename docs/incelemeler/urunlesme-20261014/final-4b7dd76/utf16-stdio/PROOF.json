@@ -1,0 +1,181 @@
+{
+  "schema": "zee-k297-utf16-stdio-acceptance-1",
+  "source_sha": "4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2",
+  "status": "passed",
+  "acceptance": true,
+  "scope": "Normal K-297 correctness via canonical native stdio; synthetic documents. Separate from actual IDE UI acceptance.",
+  "delivery_report_sha256": "792f45997e70ed602cbb7de1e7908ba837cdd2914944e0443b0c99e773f9c2f4",
+  "binary_sha256": {
+    "dil": "63d8bd1e2676600e3715979320415b4753680b894299e3c4daa73bb9c6eb6ec9",
+    "dillsp": "c9989583f8d25ce5dc81ed1aa804f85376022ed54cf635e1b701e3dcf6bfd288"
+  },
+  "lifecycle_core_sha256": "e76fe65b6103fc4732aafc4468afc5bbf3d0699a0f79d7f74879165636ebb1a9",
+  "driver_sha256": "b2e40aee992e01bfd37915166f9117cb7182ea2cd97782129e2a89cc1678ea5b",
+  "cases": [
+    {
+      "name": "lf-invalid-surrogate-and-outside-query",
+      "passed": true,
+      "null_results": 12
+    },
+    {
+      "name": "lf-1-emoji-hover-definition-rename-didChange",
+      "passed": true,
+      "query_column": 12,
+      "usage_range": {
+        "start": {
+          "line": 1,
+          "character": 9
+        },
+        "end": {
+          "line": 1,
+          "character": 13
+        }
+      },
+      "independent_result": "ad \"Ayşe\" olsun\n\"😀\" ile ad yaz\n"
+    },
+    {
+      "name": "lf-2-emoji-hover-definition-rename-didChange",
+      "passed": true,
+      "query_column": 14,
+      "usage_range": {
+        "start": {
+          "line": 1,
+          "character": 11
+        },
+        "end": {
+          "line": 1,
+          "character": 15
+        }
+      },
+      "independent_result": "ad \"Ayşe\" olsun\n\"😀😀\" ile ad yaz\n"
+    },
+    {
+      "name": "lf-ordinary-A001-after-multiple-emoji",
+      "passed": true,
+      "diagnostic": {
+        "range": {
+          "start": {
+            "line": 0,
+            "character": 11
+          },
+          "end": {
+            "line": 0,
+            "character": 16
+          }
+        },
+        "severity": 1,
+        "code": "A001",
+        "source": "dil",
+        "message": "\"eksik\" adı bu kapsamda tanımlı değil.\nÖneri: Bir değeri kullanmadan önce \"<ad> <değer> olsun\" ile tanımla."
+      }
+    },
+    {
+      "name": "lf-normal-incremental-surrogate-atomic-rollback",
+      "passed": true
+    },
+    {
+      "name": "crlf-invalid-surrogate-and-outside-query",
+      "passed": true,
+      "null_results": 12
+    },
+    {
+      "name": "crlf-1-emoji-hover-definition-rename-didChange",
+      "passed": true,
+      "query_column": 12,
+      "usage_range": {
+        "start": {
+          "line": 1,
+          "character": 9
+        },
+        "end": {
+          "line": 1,
+          "character": 13
+        }
+      },
+      "independent_result": "ad \"Ayşe\" olsun\r\n\"😀\" ile ad yaz\r\n"
+    },
+    {
+      "name": "crlf-2-emoji-hover-definition-rename-didChange",
+      "passed": true,
+      "query_column": 14,
+      "usage_range": {
+        "start": {
+          "line": 1,
+          "character": 11
+        },
+        "end": {
+          "line": 1,
+          "character": 15
+        }
+      },
+      "independent_result": "ad \"Ayşe\" olsun\r\n\"😀😀\" ile ad yaz\r\n"
+    },
+    {
+      "name": "crlf-ordinary-A001-after-multiple-emoji",
+      "passed": true,
+      "diagnostic": {
+        "range": {
+          "start": {
+            "line": 0,
+            "character": 11
+          },
+          "end": {
+            "line": 0,
+            "character": 16
+          }
+        },
+        "severity": 1,
+        "code": "A001",
+        "source": "dil",
+        "message": "\"eksik\" adı bu kapsamda tanımlı değil.\nÖneri: Bir değeri kullanmadan önce \"<ad> <değer> olsun\" ile tanımla."
+      }
+    },
+    {
+      "name": "crlf-normal-incremental-surrogate-atomic-rollback",
+      "passed": true
+    }
+  ],
+  "owned_group_closed_and_reaped": true,
+  "normal_exit_before_cleanup": 0,
+  "cleanup_exit": 0,
+  "shutdown_result": null,
+  "stderr_bytes": 0,
+  "source_end_clean": true,
+  "build_identity": {
+    "schema": "zee-build-v1",
+    "version": "0.8.0-dev",
+    "source_sha": "4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2",
+    "source_date": "2026-10-15",
+    "channel": "development",
+    "dirty": false
+  },
+  "cases_passed": 10,
+  "elapsed_seconds": 0.2196272909641266,
+  "files": [
+    {
+      "path": "build-json.log",
+      "sha256": "383ace564d71348f51a018f7fd7e23d449195ba5d3677dea09bc588724135eca",
+      "bytes": 169
+    },
+    {
+      "path": "messages.json",
+      "sha256": "ee4be4f081e85f54a700408b488a4f8a05ac5b142d332086c75b17efa3df4ce6",
+      "bytes": 69382
+    },
+    {
+      "path": "stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "stdin.frames.raw",
+      "sha256": "7b2e7109d66dfc4daf947d1d634b2dc15deb6f38da097ced52dd22d7d88cbaf4",
+      "bytes": 14844
+    },
+    {
+      "path": "stdout.frames.raw",
+      "sha256": "37a0b13bf6cf358578f446bb3e0dbc994a31854b2d920c361082ac8976d7e4b2",
+      "bytes": 10899
+    }
+  ]
+}

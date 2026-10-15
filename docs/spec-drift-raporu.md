@@ -50,7 +50,7 @@ Bu rapor K-171/ADR-065 kapısının güncel görünümüdür. Madde; `spec/` alt
 
 - `spec/25-postgresql-veri-erisimi.md#f94f82cb0245cf0a` — Managed-provider sertifika rotasyonu, birden çok worker'ın toplam bütçe … — K-169/K-173 release tatbikatı ve çok-worker toplam bütçe provası bekliyor; async driver, PostgreSQL dışı DB ve ORM vaat edilmiyor.
 - `spec/27-uyumluluk-ve-surumleme.md#285d87941dc0c3ba` — 1.0 sonrasında dondurulmuş yüzeylerde kırıcı değişiklik yalnız yeni ana … — Edition alanının `proje.dil` sözdizimi ayrı RFC ister; 1.0 öncesi bağlayıcı yalnız RFC-0028 çerçevesidir.
-- `spec/30-editor-analizi-ve-lint.md#38480ce75d9537ab` — Kapsam ve performans (AÇIK) — K-287: artımlı HIR, genel gerçek ürün gecikmesi ve temiz exact uzun RSS kabulü açık; üretilen1/41açıkbelge gözlemi ayrı.
+- `spec/30-editor-analizi-ve-lint.md#38480ce75d9537ab` — Kapsam ve performans (AÇIK) — K-287: artımlı HIR ve genel gerçek ürün gecikmesi açık; tarihsel S3 66e4149e53451111d153f47283c219079a8d1cab kaynağındaki kabul korunur. S4 4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2 kaynağında ayrı 1800sn RSS ve lint açık/kapalı 1/41 belge stdio gözlemi vardır; 41 belge lint açık p95 223,698ms ile 200ms hedefi açıktır, UI/ürün SLA'sı değildir.
 
 ## Sürüklenme
 

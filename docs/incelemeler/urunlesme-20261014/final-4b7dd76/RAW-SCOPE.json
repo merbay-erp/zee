@@ -1,0 +1,491 @@
+{
+  "schema": "zee-s4-selected-evidence-scope-1",
+  "source_sha": "4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2",
+  "source_tree": "6c4982688f5105a67c025815cbbb72c07fcea7f8",
+  "selected_files": [
+    {
+      "repository_path": "docs/incelemeler/urunlesme-20261014/final-4b7dd76/documentation/PREPARATION-REPAIR.json",
+      "external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-acceptance-drivers/DOCUMENT-PREPARATION-REPAIR.json",
+      "original_sha256": "15afdfaa05a0889763a1ed8d352d98ed88fa98a4d19f5a13a9ca063617d8e443",
+      "original_bytes": 697,
+      "representation_sha256": "15afdfaa05a0889763a1ed8d352d98ed88fa98a4d19f5a13a9ca063617d8e443",
+      "representation": "original-bytes"
+    },
+    {
+      "repository_path": "docs/incelemeler/urunlesme-20261014/final-4b7dd76/rc/campaign-proof.json",
+      "external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-4b7dd76-rc-v3/campaign-proof.json",
+      "original_sha256": "2d9cc6b77cd27272a7430e41e8dbbf0c2c9dbb03a65fb37a597d5843e9503a6d",
+      "original_bytes": 12929,
+      "representation_sha256": "2d9cc6b77cd27272a7430e41e8dbbf0c2c9dbb03a65fb37a597d5843e9503a6d",
+      "representation": "original-bytes"
+    },
+    {
+      "repository_path": "docs/incelemeler/urunlesme-20261014/final-4b7dd76/rc/GATE-RECEIPT.derived.json",
+      "external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-4b7dd76-rc-gate-v3/GATE-RECEIPT.json",
+      "original_sha256": "2d7881094cb2d8eaf87b0346f9412561c082c89e44727a4dc182e2899c3e7b00",
+      "original_bytes": 24217,
+      "representation_sha256": "f99706a8199118a250b1663441e9e5af6e191f3f8717d4c4bc177ceb408fbb8a",
+      "representation": "reversible-parsed-JSON-envelope",
+      "reason": "One generic-api-key finding equals exact clean source Git blob SHA256; byte-exact inverse is verified."
+    },
+    {
+      "repository_path": "docs/incelemeler/urunlesme-20261014/final-4b7dd76/rc/GATE-CONTROLLER.json",
+      "external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-rc-gate-v3-controller.json",
+      "original_sha256": "91f36e57f75683b8f4bbeb56e256fc3d755f2d65ad815f3711142b7be13efb93",
+      "original_bytes": 446,
+      "representation_sha256": "91f36e57f75683b8f4bbeb56e256fc3d755f2d65ad815f3711142b7be13efb93",
+      "representation": "original-bytes"
+    },
+    {
+      "repository_path": "docs/incelemeler/urunlesme-20261014/final-4b7dd76/rc/CONTROLLER.json",
+      "external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-rc-v3-controller.json",
+      "original_sha256": "3fce1167ebbcb5d4e21fcbe41657280ca595436729cad1f7c24fee82492bc3b6",
+      "original_bytes": 710,
+      "representation_sha256": "3fce1167ebbcb5d4e21fcbe41657280ca595436729cad1f7c24fee82492bc3b6",
+      "representation": "original-bytes"
+    },
+    {
+      "repository_path": "docs/incelemeler/urunlesme-20261014/final-4b7dd76/rc/RC-V2-TIMING-REVIEW.json",
+      "external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-acceptance-drivers/RC-V2-TIMING-REVIEW.json",
+      "original_sha256": "dddea2fbf2fb5fecd7c241019ae8539ecbb000ab93749fa26df69714f7a04c7b",
+      "original_bytes": 611,
+      "representation_sha256": "dddea2fbf2fb5fecd7c241019ae8539ecbb000ab93749fa26df69714f7a04c7b",
+      "representation": "original-bytes"
+    },
+    {
+      "repository_path": "docs/incelemeler/urunlesme-20261014/final-4b7dd76/rc/RC-PREFLIGHT-RECOVERY.json",
+      "external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-acceptance-drivers/RC-PREFLIGHT-RECOVERY.json",
+      "original_sha256": "9e8fde03a449dfeeeb711d2d67b7c62f52037d79567e6a33ef95fd922fdf23fd",
+      "original_bytes": 1063,
+      "representation_sha256": "9e8fde03a449dfeeeb711d2d67b7c62f52037d79567e6a33ef95fd922fdf23fd",
+      "representation": "original-bytes"
+    },
+    {
+      "repository_path": "docs/incelemeler/urunlesme-20261014/final-4b7dd76/rc/failed-preflight.json",
+      "external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-4b7dd76-rc/driver-failure.json",
+      "original_sha256": "ef8d5f82712f4f23a72a223175bbf34b382a58a3e4d875c4f983ad9a177d6abc",
+      "original_bytes": 175,
+      "representation_sha256": "ef8d5f82712f4f23a72a223175bbf34b382a58a3e4d875c4f983ad9a177d6abc",
+      "representation": "original-bytes"
+    },
+    {
+      "repository_path": "docs/incelemeler/urunlesme-20261014/final-4b7dd76/rc/failed-preflight-controller.json",
+      "external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-rc-controller.json",
+      "original_sha256": "802789e6aae0ebc8c28d0f85676901b5fa9e54b49bf1dbf3da4185968cb85c4a",
+      "original_bytes": 708,
+      "representation_sha256": "802789e6aae0ebc8c28d0f85676901b5fa9e54b49bf1dbf3da4185968cb85c4a",
+      "representation": "original-bytes"
+    },
+    {
+      "repository_path": "docs/incelemeler/urunlesme-20261014/final-4b7dd76/mac-delivery/CONTROLLER.json",
+      "external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-delivery-controller.json",
+      "original_sha256": "923f7adaa0f3d3e2cd4d15ebfd7a9ba6e67730feb6f0c0271a4a99d7c0f19603",
+      "original_bytes": 699,
+      "representation_sha256": "923f7adaa0f3d3e2cd4d15ebfd7a9ba6e67730feb6f0c0271a4a99d7c0f19603",
+      "representation": "original-bytes"
+    },
+    {
+      "repository_path": "docs/incelemeler/urunlesme-20261014/final-4b7dd76/mac-install/CONTROLLER.json",
+      "external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-common-controller.json",
+      "original_sha256": "7efa5f10ef9e91a41acc5fefaed3d2c8b62c0cad443fa9feade106a363924db1",
+      "original_bytes": 459,
+      "representation_sha256": "7efa5f10ef9e91a41acc5fefaed3d2c8b62c0cad443fa9feade106a363924db1",
+      "representation": "original-bytes"
+    },
+    {
+      "repository_path": "docs/incelemeler/urunlesme-20261014/final-4b7dd76/soak/CONTROLLER.json",
+      "external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-soak-controller.json",
+      "original_sha256": "951bc7ffd0e674aa43b9ca20b52c8606618cf61381a997d07d2ea770eb2775c1",
+      "original_bytes": 684,
+      "representation_sha256": "951bc7ffd0e674aa43b9ca20b52c8606618cf61381a997d07d2ea770eb2775c1",
+      "representation": "original-bytes"
+    },
+    {
+      "repository_path": "docs/incelemeler/urunlesme-20261014/final-4b7dd76/mac-delivery/DELIVERY.json",
+      "external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-4b7dd76-macos-delivery/DELIVERY.json",
+      "original_sha256": "792f45997e70ed602cbb7de1e7908ba837cdd2914944e0443b0c99e773f9c2f4",
+      "original_bytes": 3148,
+      "representation_sha256": "792f45997e70ed602cbb7de1e7908ba837cdd2914944e0443b0c99e773f9c2f4",
+      "representation": "original-bytes"
+    },
+    {
+      "repository_path": "docs/incelemeler/urunlesme-20261014/final-4b7dd76/mac-install/PROOF.json",
+      "external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-4b7dd76-macos-install/PROOF.json",
+      "original_sha256": "ffcb53e01925fb9aa25f9697d3ea8a740c978b4378eb77bc5e329666dec50436",
+      "original_bytes": 12750,
+      "representation_sha256": "ffcb53e01925fb9aa25f9697d3ea8a740c978b4378eb77bc5e329666dec50436",
+      "representation": "original-bytes"
+    },
+    {
+      "repository_path": "docs/incelemeler/urunlesme-20261014/final-4b7dd76/utf16-stdio/PROOF.json",
+      "external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-4b7dd76-utf16-stdio/PROOF.json",
+      "original_sha256": "8f2df546361b2bec85a83df281b0709c7bb53c6babdb9ec0c436daf75fc2d7a4",
+      "original_bytes": 5021,
+      "representation_sha256": "8f2df546361b2bec85a83df281b0709c7bb53c6babdb9ec0c436daf75fc2d7a4",
+      "representation": "original-bytes"
+    },
+    {
+      "repository_path": "docs/incelemeler/urunlesme-20261014/final-4b7dd76/soak/PROOF.json",
+      "external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-4b7dd76-soak/PROOF.json",
+      "original_sha256": "d336c03aa4b085377f2621e3da9f78da70c98f3cf8f24534db7c81a2339e68dc",
+      "original_bytes": 5139,
+      "representation_sha256": "d336c03aa4b085377f2621e3da9f78da70c98f3cf8f24534db7c81a2339e68dc",
+      "representation": "original-bytes"
+    },
+    {
+      "repository_path": "docs/incelemeler/urunlesme-20261014/final-4b7dd76/soak/independent-review.json",
+      "external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-acceptance-drivers/S4-SOAK-RESULT.json",
+      "original_sha256": "e4f6ac0484b45db606b33ecb22a58c5620d71de348f3e5a7a02fa98ed3e21576",
+      "original_bytes": 1304,
+      "representation_sha256": "e4f6ac0484b45db606b33ecb22a58c5620d71de348f3e5a7a02fa98ed3e21576",
+      "representation": "original-bytes"
+    },
+    {
+      "repository_path": "docs/incelemeler/urunlesme-20261014/final-4b7dd76/soak/report.raw.json",
+      "external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-4b7dd76-soak/soak-report.md",
+      "original_sha256": "2605f21343d3e58c5153b773a87d11df54a4fbb097e72b23b3eb93db12d09cee",
+      "original_bytes": 14752,
+      "representation_sha256": "c34948c455421142979069c3459e16a75312b66bdddc38a3d9c86b49012571fa",
+      "representation": "reversible-UTF8-text-envelope"
+    },
+    {
+      "repository_path": "docs/incelemeler/urunlesme-20261014/final-4b7dd76/soak/history.raw.json",
+      "external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-4b7dd76-soak/soak-history.tsv",
+      "original_sha256": "06809fd0a1ad3ce8c88e73fe9d4c5eb1da0b13a8342ca192ca2222d0e6c64086",
+      "original_bytes": 429,
+      "representation_sha256": "ccdea921783269f739c93932566935be39029ca15afa95111019f965a283bcee",
+      "representation": "reversible-UTF8-text-envelope"
+    },
+    {
+      "repository_path": "docs/incelemeler/urunlesme-20261014/final-4b7dd76/lsp/PROOF.json",
+      "external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-4b7dd76-lsp-stdio-latency/PROOF.json",
+      "original_sha256": "664ea5d721c5fb2888ec3cebb829d48f318b75850a58e21eba2d5ca4d5d5672a",
+      "original_bytes": 111459,
+      "representation_sha256": "664ea5d721c5fb2888ec3cebb829d48f318b75850a58e21eba2d5ca4d5d5672a",
+      "representation": "original-bytes"
+    },
+    {
+      "repository_path": "docs/incelemeler/urunlesme-20261014/final-4b7dd76/lsp/independent-review.json",
+      "external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-lsp-stdio-independent-review/PROOF.json",
+      "original_sha256": "711c6afc83d5c9d8ce3d3fe9183a06ebc1a463f3aeffab852605028a8464a69e",
+      "original_bytes": 87081,
+      "representation_sha256": "711c6afc83d5c9d8ce3d3fe9183a06ebc1a463f3aeffab852605028a8464a69e",
+      "representation": "original-bytes"
+    },
+    {
+      "repository_path": "docs/incelemeler/urunlesme-20261014/final-4b7dd76/jetbrains/ACCEPTANCE.json",
+      "external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-4b7dd76-owned-ide/ACCEPTANCE.json",
+      "original_sha256": "1b3fcc13777aeb9f918fa78afd85ebcbbaa43a8518bb60f4b164f9d18b65d06b",
+      "original_bytes": 1064,
+      "representation_sha256": "1b3fcc13777aeb9f918fa78afd85ebcbbaa43a8518bb60f4b164f9d18b65d06b",
+      "representation": "original-bytes"
+    },
+    {
+      "repository_path": "docs/incelemeler/urunlesme-20261014/final-4b7dd76/jetbrains/LAUNCHER-PREPARATION.json",
+      "external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-4b7dd76-owned-ide/LAUNCHER-PREPARATION.json",
+      "original_sha256": "9223d2dafbf56609d2b47d7701f61d1698348e0e4a2fe26e00d8798bade4d6f8",
+      "original_bytes": 1977,
+      "representation_sha256": "9223d2dafbf56609d2b47d7701f61d1698348e0e4a2fe26e00d8798bade4d6f8",
+      "representation": "original-bytes"
+    },
+    {
+      "repository_path": "docs/incelemeler/urunlesme-20261014/final-4b7dd76/jetbrains/PREPARATION.json",
+      "external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-4b7dd76-owned-ide/PREPARATION.json",
+      "original_sha256": "93fd5c61d4f09a5e0402a321fb6bb8c6a9ea5ad926390ef5e0f9a55af2315404",
+      "original_bytes": 1308,
+      "representation_sha256": "93fd5c61d4f09a5e0402a321fb6bb8c6a9ea5ad926390ef5e0f9a55af2315404",
+      "representation": "original-bytes"
+    },
+    {
+      "repository_path": "docs/incelemeler/urunlesme-20261014/final-4b7dd76/jetbrains/CLOSED.json",
+      "external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-4b7dd76-owned-ide/CLOSED.json",
+      "original_sha256": "bd57d663d19f6eba190d68d82d7cc58903cb9cb15775b810b20ae703bbbb94af",
+      "original_bytes": 443,
+      "representation_sha256": "bd57d663d19f6eba190d68d82d7cc58903cb9cb15775b810b20ae703bbbb94af",
+      "representation": "original-bytes"
+    },
+    {
+      "repository_path": "docs/incelemeler/urunlesme-20261014/final-4b7dd76/jetbrains/restart-CLOSED.json",
+      "external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-4b7dd76-owned-ide/restart-CLOSED.json",
+      "original_sha256": "f52808304b201e6846600374fb6b08c32f6e66ab98d47103fdf14ebd9daec242",
+      "original_bytes": 442,
+      "representation_sha256": "f52808304b201e6846600374fb6b08c32f6e66ab98d47103fdf14ebd9daec242",
+      "representation": "original-bytes"
+    },
+    {
+      "repository_path": "docs/incelemeler/urunlesme-20261014/final-4b7dd76/jetbrains/FIRST-UI-OBSERVATIONS.json",
+      "external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-4b7dd76-owned-ide/FIRST-UI-OBSERVATIONS.json",
+      "original_sha256": "fb87572d27540aab6e3399861fd9443e13ee4bbe846687ff240a134e7ba6a0fb",
+      "original_bytes": 1656,
+      "representation_sha256": "fb87572d27540aab6e3399861fd9443e13ee4bbe846687ff240a134e7ba6a0fb",
+      "representation": "original-bytes"
+    },
+    {
+      "repository_path": "docs/incelemeler/urunlesme-20261014/final-4b7dd76/jetbrains/SECOND-UI-OBSERVATIONS.json",
+      "external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-4b7dd76-owned-ide/SECOND-UI-OBSERVATIONS.json",
+      "original_sha256": "53980b60ef3ef42397573145cbb9e441b19aa76308ac1223e8b092f24de4a743",
+      "original_bytes": 2676,
+      "representation_sha256": "53980b60ef3ef42397573145cbb9e441b19aa76308ac1223e8b092f24de4a743",
+      "representation": "original-bytes"
+    },
+    {
+      "repository_path": "docs/incelemeler/urunlesme-20261014/final-4b7dd76/drivers/rc-gate-v3.py.raw.json",
+      "external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-acceptance-drivers/rc-gate-v3.py",
+      "original_sha256": "087d5cf70d5f17d37129d2414f9d8b26efc27cabea0ec43ac3c5280935c601e9",
+      "original_bytes": 8438,
+      "representation_sha256": "a349e729fcaba98b125258048a411ba81fc0e9949564460a995f368a3a8aba9a",
+      "representation": "reversible-UTF8-text-envelope"
+    },
+    {
+      "repository_path": "docs/incelemeler/urunlesme-20261014/final-4b7dd76/drivers/verify-soak.py.raw.json",
+      "external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-acceptance-drivers/verify-soak.py",
+      "original_sha256": "c8c157b759a7042035bd592686f1f5b1f15c72237a304360ed08bbefdf72b9a1",
+      "original_bytes": 4834,
+      "representation_sha256": "147f79ba18574f8dc8f0da8f503c3cd7e64ada49e4194acad0d5acfd24dd5415",
+      "representation": "reversible-UTF8-text-envelope"
+    },
+    {
+      "repository_path": "docs/incelemeler/urunlesme-20261014/final-4b7dd76/drivers/utf16-stdio.py.raw.json",
+      "external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-acceptance-drivers/utf16-stdio.py",
+      "original_sha256": "b2e40aee992e01bfd37915166f9117cb7182ea2cd97782129e2a89cc1678ea5b",
+      "original_bytes": 21935,
+      "representation_sha256": "ce5218fafa8e25ea7fffeaebf6f8fd1f85e7e59f92686f53f02bfb781537d1d1",
+      "representation": "reversible-UTF8-text-envelope"
+    },
+    {
+      "repository_path": "docs/incelemeler/urunlesme-20261014/final-4b7dd76/drivers/measure-lsp-stdio.py.raw.json",
+      "external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-acceptance-drivers/measure-lsp-stdio.py",
+      "original_sha256": "e918ab9f723466b577709e2a4ed22a1866beca3076ae527b4d3297164ca04cb0",
+      "original_bytes": 25589,
+      "representation_sha256": "1442d306e3b294ff7cce6545531e1d3a1fff0d9e5dd0ab2cb07c9a7ad4b8368d",
+      "representation": "reversible-UTF8-text-envelope"
+    },
+    {
+      "repository_path": "docs/incelemeler/urunlesme-20261014/final-4b7dd76/drivers/install-and-prepare-ide.py.raw.json",
+      "external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-acceptance-drivers/install-and-prepare-ide.py",
+      "original_sha256": "2ff738cc476e300a0fbdbb5c3a536ec398e92f680e13d0f2eaf13d9e029a2ce1",
+      "original_bytes": 2390,
+      "representation_sha256": "5f63dca9378a282c5f43dca6db0156f12e41f7c7fb5912a8e5c50c3928d82299",
+      "representation": "reversible-UTF8-text-envelope"
+    },
+    {
+      "repository_path": "docs/incelemeler/urunlesme-20261014/final-4b7dd76/drivers/prepare-s4-doc-update.py.raw.json",
+      "external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-acceptance-drivers/prepare-s4-doc-update.py",
+      "original_sha256": "51592a8790978937ecfd107513bd49a227d00974342bce9e64ed74a17ae1e9b8",
+      "original_bytes": 41263,
+      "representation_sha256": "0cc5aadefce19c9b7444d75e5103edbf3b43e32928ec8c7c4cf15528f74bea72",
+      "representation": "reversible-UTF8-text-envelope"
+    },
+    {
+      "repository_path": "docs/incelemeler/urunlesme-20261014/final-4b7dd76/drivers/verify-lsp-stdio-latency.py.raw.json",
+      "external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-acceptance-drivers/verify-lsp-stdio-latency.py",
+      "original_sha256": "a7207aed23ca19cc5b44f53912e8ad814ce0dcd143234a6abc4f0798af976d9d",
+      "original_bytes": 30317,
+      "representation_sha256": "e8e986577cb397af95785490effbb41ce54220a2d7ee81dd0977ab622700f7b5",
+      "representation": "reversible-UTF8-text-envelope"
+    },
+    {
+      "repository_path": "docs/incelemeler/urunlesme-20261014/final-4b7dd76/documentation/SOURCE-DIGEST-REPRESENTATION-REVIEW.json",
+      "external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-acceptance-drivers/SOURCE-DIGEST-REPRESENTATION-REVIEW.json",
+      "original_sha256": "b57aa7066c9e609973b2d7fb6254ec8f544697d2822bd6576a68713afa439437",
+      "original_bytes": 909,
+      "representation_sha256": "b57aa7066c9e609973b2d7fb6254ec8f544697d2822bd6576a68713afa439437",
+      "representation": "original-bytes"
+    },
+    {
+      "repository_path": "docs/incelemeler/urunlesme-20261014/final-4b7dd76/documentation/first-secret-scan.json",
+      "external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-document-proposal-scan/PROOF.json",
+      "original_sha256": "126fa4ebdff10a038d7ce470db8b4e15aec3ea7318d2e6b9ba2d5022f6b1cc39",
+      "original_bytes": 342,
+      "representation_sha256": "126fa4ebdff10a038d7ce470db8b4e15aec3ea7318d2e6b9ba2d5022f6b1cc39",
+      "representation": "original-bytes"
+    },
+    {
+      "repository_path": "docs/incelemeler/urunlesme-20261014/final-4b7dd76/documentation/FINAL-DOC-GATES.json",
+      "external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-final-doc-gates-prepare-1/PROOF.json",
+      "original_sha256": "2e18eb50f08fe0cb770d93d77dc54437032b2fee1f90ec166a8edda98c9c5dba",
+      "original_bytes": 6583,
+      "representation_sha256": "2e18eb50f08fe0cb770d93d77dc54437032b2fee1f90ec166a8edda98c9c5dba",
+      "representation": "original-bytes"
+    },
+    {
+      "repository_path": "docs/incelemeler/urunlesme-20261014/final-4b7dd76/documentation/FINAL-DOC-CONTROLLER.json",
+      "external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-final-doc-controller-1.json",
+      "original_sha256": "81f72e17d87bc0bf960518f3b622953fc4c2ece61ef01237e92a0264fd0fe118",
+      "original_bytes": 507,
+      "representation_sha256": "81f72e17d87bc0bf960518f3b622953fc4c2ece61ef01237e92a0264fd0fe118",
+      "representation": "original-bytes"
+    },
+    {
+      "repository_path": "docs/incelemeler/urunlesme-20261014/final-4b7dd76/documentation/PROPOSAL-SCAN.json",
+      "external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-document-proposal-scan-v2/PROOF.json",
+      "original_sha256": "86b329b133783cd7c2e0454638e02b473e66194a62c6c99b83264179715d18c5",
+      "original_bytes": 602,
+      "representation_sha256": "86b329b133783cd7c2e0454638e02b473e66194a62c6c99b83264179715d18c5",
+      "representation": "original-bytes"
+    },
+    {
+      "repository_path": "docs/incelemeler/urunlesme-20261014/final-4b7dd76/documentation/INTEGRATION.json",
+      "external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-document-integration/PROOF.json",
+      "original_sha256": "d541fe27131ff9a0eef9218e1f25d38ae8304ac14df345125cb760b557ac9a95",
+      "original_bytes": 4782,
+      "representation_sha256": "d541fe27131ff9a0eef9218e1f25d38ae8304ac14df345125cb760b557ac9a95",
+      "representation": "original-bytes"
+    },
+    {
+      "repository_path": "docs/incelemeler/urunlesme-20261014/final-4b7dd76/documentation/catalog-freshness-summary-security.raw.json",
+      "external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-final-doc-gates-prepare-1/catalog-freshness-summary-security.txt",
+      "original_sha256": "d6b74d9c80e357d3981e9705439e2a1c7ccc388b4edaa1e090bd0b0fc4fe6292",
+      "original_bytes": 3333,
+      "representation_sha256": "51dc44a631c0f1cbe0f80e87462aea1605c8ef25a2628393e4d5e9096698cfe0",
+      "representation": "reversible-UTF8-text-envelope"
+    },
+    {
+      "repository_path": "docs/incelemeler/urunlesme-20261014/final-4b7dd76/lsp/CONTROLLER.json",
+      "external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-lsp-latency-controller.json",
+      "original_sha256": "7db3b2750d0e809493819dccb92ff5a5661a88b7c27b5b8f1c8805dcb6d45681",
+      "original_bytes": 453,
+      "representation_sha256": "7db3b2750d0e809493819dccb92ff5a5661a88b7c27b5b8f1c8805dcb6d45681",
+      "representation": "original-bytes"
+    },
+    {
+      "repository_path": "docs/incelemeler/urunlesme-20261014/final-4b7dd76/lifecycle/RC-AWAKE.json",
+      "external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-v3-owned-awake.json",
+      "original_sha256": "a55e784b7dc9a6fb03f3b10d398346aabee7aa8aab4952d2218024cb1ea7704e",
+      "original_bytes": 424,
+      "representation_sha256": "a55e784b7dc9a6fb03f3b10d398346aabee7aa8aab4952d2218024cb1ea7704e",
+      "representation": "original-bytes"
+    },
+    {
+      "repository_path": "docs/incelemeler/urunlesme-20261014/final-4b7dd76/lifecycle/POST-RC-AWAKE.json",
+      "external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-post-rc-owned-awake.json",
+      "original_sha256": "e47658cf6c9fd673c29cb6558b2a9980efefcb0805b42de4ad8500a03af9005b",
+      "original_bytes": 425,
+      "representation_sha256": "e47658cf6c9fd673c29cb6558b2a9980efefcb0805b42de4ad8500a03af9005b",
+      "representation": "original-bytes"
+    },
+    {
+      "repository_path": "docs/incelemeler/urunlesme-20261014/final-4b7dd76/drivers/final-doc-gates.py.raw.json",
+      "external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-acceptance-drivers/final-doc-gates.py",
+      "original_sha256": "1b0284ee92aba82439e82f5c32ed261114c7f7114531f93681f837ea17c0b62e",
+      "original_bytes": 4804,
+      "representation_sha256": "a593c207f436b0a870b7092dfbaabe8f0e4069de2e96fd4f51b90c789073e6a0",
+      "representation": "reversible-UTF8-text-envelope"
+    },
+    {
+      "repository_path": "docs/incelemeler/urunlesme-20261014/final-4b7dd76/drivers/scan-document-proposal-v2.py.raw.json",
+      "external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-acceptance-drivers/scan-document-proposal-v2.py",
+      "original_sha256": "9fb51f1231bc9330a9cd8bba44f61cf3f44c2ad37f1eedc41c86556de35c290b",
+      "original_bytes": 4031,
+      "representation_sha256": "491a5a435a8bd3a3ceeecb1e2b6e666ccdd61b3c09313f1c073eb6c529d4e39b",
+      "representation": "reversible-UTF8-text-envelope"
+    },
+    {
+      "repository_path": "docs/incelemeler/urunlesme-20261014/final-4b7dd76/drivers/integrate-document-proposal.py.raw.json",
+      "external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-acceptance-drivers/integrate-document-proposal.py",
+      "original_sha256": "cbe9251b21110130bc85c50cd8bc4dddeb6505ddd7943c0807730492fb093047",
+      "original_bytes": 2607,
+      "representation_sha256": "adbc61aaf38caed6064eb27d2a4907a15effbb6da0066efe21db5a191949813d",
+      "representation": "reversible-UTF8-text-envelope"
+    },
+    {
+      "repository_path": "docs/incelemeler/urunlesme-20261014/final-4b7dd76/drivers/represent-gate-source-hash.py.raw.json",
+      "external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-acceptance-drivers/represent-gate-source-hash.py",
+      "original_sha256": "521ef5631b9bc6aa11874bd1316771d15a4a9e5360ddf17c985479e7eef59ec1",
+      "original_bytes": 5195,
+      "representation_sha256": "fb462c5a098c2bd83cfc486d9d0428731d4eedf29a6ae0c1fc1c0e695bfc00be",
+      "representation": "reversible-UTF8-text-envelope"
+    },
+    {
+      "repository_path": "docs/incelemeler/urunlesme-20261014/final-4b7dd76/drivers/keep-awake-post-rc.py.raw.json",
+      "external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-acceptance-drivers/keep-awake-post-rc.py",
+      "original_sha256": "cdad5d5ac2309284f05c54aa678bebb544cb4859e98204f41c94c6cea2fa810e",
+      "original_bytes": 1143,
+      "representation_sha256": "166313c539d4f859ac09f4db7c0efd10301083341b7317e1f8b68a457ca4f0d8",
+      "representation": "reversible-UTF8-text-envelope"
+    },
+    {
+      "repository_path": "docs/incelemeler/urunlesme-20261014/final-4b7dd76/drivers/finalize-archive.py.raw.json",
+      "external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-acceptance-drivers/finalize-archive.py",
+      "original_sha256": "61920b30e2190be26be67061ec083e5a60b1a53ab529745368995bda5c0f932b",
+      "original_bytes": 5743,
+      "representation_sha256": "a4e0f45af4f549cee3b1a9ebd96344b90339cfefdc0fb30175e75c0f3fd5513d",
+      "representation": "reversible-UTF8-text-envelope"
+    }
+  ],
+  "complete_external_bundles_copied": false,
+  "hash_is_authentication": false,
+  "excluded": [
+    "fuzz corpus and raw build/run logs",
+    "full RC gate logs",
+    "LSP stdio raw frame files",
+    "release binaries/source ZIP/bundle"
+  ],
+  "historical_native_source": "66e4149e53451111d153f47283c219079a8d1cab",
+  "temporary_awake_external": {
+    "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-v3-owned-awake.json",
+    "sha256": "a55e784b7dc9a6fb03f3b10d398346aabee7aa8aab4952d2218024cb1ea7704e",
+    "bytes": 424,
+    "status": "closed-owned-utility",
+    "owned_original_Popen_reaped": true,
+    "permanent_preference_changed": false,
+    "copied": true,
+    "repository_path": "lifecycle/RC-AWAKE.json"
+  },
+  "first_IDE_error_external": {
+    "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-4b7dd76-owned-ide/first-idea.log",
+    "sha256": "003d910c0e92bbf99ea33e8d9b7da81a1f3163b8e79f21129a683e49111c08bc",
+    "bytes": 178910,
+    "lines": [
+      903,
+      904
+    ],
+    "error_time": "22:17:53.127 Europe/Istanbul",
+    "copied": false
+  },
+  "timing_rejected_rc_v2_external": [
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-4b7dd76-rc-v2/campaign-proof.json",
+      "sha256": "94e2dc528b2fb9766188e72f02b0cafee4d94594314331c35f357407fd991120",
+      "bytes": 12921,
+      "accepted": false
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-rc-v2-controller.json",
+      "sha256": "c5d07f0d469b2aeaf801b6ba8d0c6b555148680da73113b5bb4ac9c3d227c8ae",
+      "bytes": 710,
+      "accepted": false
+    }
+  ],
+  "canonical_source_drivers": {
+    "scripts/rc-kampanyasi.py": {
+      "source_sha": "4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2",
+      "sha256": "f401406d8097479c5545597fc09ae81791e20043adccd8b9abb8ad650cf86752"
+    },
+    "scripts/rc-kaniti.py": {
+      "source_sha": "4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2",
+      "sha256": "c0266630054eaba1a9f86ff23cf11edaf22a28915c13c59ccf547a6f2f302554"
+    },
+    "scripts/lifecycle_core.py": {
+      "source_sha": "4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2",
+      "sha256": "e76fe65b6103fc4732aafc4468afc5bbf3d0699a0f79d7f74879165636ebb1a9"
+    },
+    "compiler/src/bin/soak.rs": {
+      "source_sha": "4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2",
+      "sha256": "5c61171e5a0f97f53d8195902dd0add0ee23807d1f36a22149cdcf560a376b22"
+    }
+  },
+  "post_acceptance_documents": {
+    "canonical_report_and_counts_regenerated": true,
+    "canonical_summary_regenerated": true,
+    "six_targeted_test_groups": [
+      30,
+      0,
+      0
+    ],
+    "go_present": "go1.26.1 darwin/arm64",
+    "compiler_source_changed": false,
+    "test_source_changed": false,
+    "temporary_owned_awake_utilities_closed": true
+  }
+}

@@ -1,6 +1,6 @@
 # ADR-136 — JetBrains için proje pinli yerel LSP şablonu (K-278/P19)
 
-- **Durum:** kabul; actual IntelliJ kısmi gözlemler var; completion/orderly UI shutdown/fullP19 açık
+- **Durum:** S3 tarihsel dar kabulüne ek olarak [S4](../docs/urunlesme-s4-kabul-20261015.md) exact kaynakta completion/UTF-16 gezinme/rename/tanı/format/shutdown ve iki normal Quit kabulü; popup, UI gecikmesi, Windows/yayın ve tam P19 açık. Önceki başarısız/kısmi kayıtlar korunur.
 
 P19 iç araç eksikliği mevcut dillsp sunucusunun JetBrains kullanıcısına
 bağlanmasıdır. Compiler freeze kapsamında yeni grammar, lint, cache veya
@@ -30,7 +30,7 @@ compiler/src, public Rust API, katman grafı, tanı kodu ve performans iş yük�
 bu değişiklikle değişmez. İlgili [şablon rehberi](../editors/jetbrains/README.md)
 ve [yerel araç rehberi](../docs/derleyici-yerel.md) aynı sınırı taşır.
 
-## 15 Ekim 2026 — temiz S yerel kanıt güncellemesi
+## 15 Ekim 2026 — tarihsel ilk temiz S oturumu
 
 Actual IntelliJ2025.3.1 IU253.29346.138/LSP4IJ0.21.0 isolatedprofile: template/spacedmacro/TextMate/serverstart, diagnosticrepair, hover, definition ve rename gözlemlendi. Completion ve orderly UI/LSP shutdown doğrulanmadı; CUA/OSshortcut sınırlamaları korunur. Sonradan original retained-owner cleanup orderly UI/protocol shutdown kabulü değildir. Empty completionProvider upstream için yeterlidir; compiler workaround yok. Windows/fullP19/200msincrementality açık.
 

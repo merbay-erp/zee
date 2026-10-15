@@ -1,0 +1,20 @@
+{
+  "schema": "zee-s4-document-proposal-scan-1",
+  "status": "passed",
+  "source_sha": "4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2",
+  "proposal_sha256": "b26f703bf76ca28a1e904fc156bd7d0ede9b329b6bc389c97cffa740ecf4f944",
+  "commands": [
+    {
+      "name": "default-gitleaks",
+      "exit": 0,
+      "log_sha256": "3ca608edab77bb6b46ff35c6acb5185a16fd865351814b03f8fa9806653b7e4a"
+    }
+  ],
+  "started_ns": 1792095109618566000,
+  "files": 67,
+  "archive_original_roundtrips": 37,
+  "default_policy": true,
+  "custom_allowlist": false,
+  "source_unchanged": true,
+  "finished_ns": 1792095109940691000
+}

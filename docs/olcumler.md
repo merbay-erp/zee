@@ -88,9 +88,11 @@ makineli adanmış bir koşucu kurulursa p95 sınırı bilinçli olarak örneği
 `--esik-yuzde 20` ile açılabilir. Aynı platformda karşılaştırılabilir geçmiş
 yoksa eşikli koşu başarı sayılmaz.
 
-## K-154 tam-metin değişiklik sınırı
+## K-154 ilk ölçümündeki tarihsel tam-metin değişiklik sınırı
 
-Bugünkü `didChange` yolu incremental değildir. LSP, gelen tam metinle saklanan
+K-154 ölçüm kaynağındaki `didChange` yolu incremental değildi. Aşağıdaki
+açıklama o tarihsel iş yüküne aittir; K-287/S3 token ve yaprak AST yeniden
+kullanımına ilişkin sonraki ölçümler aşağıda ayrı kaydedilir. LSP, gelen tam metinle saklanan
 belge `String`ini değiştirir; tanı yayını metni klonlar ve kaynağın tamamını
 yeniden lexer → parser → birim/isim çözümleme → checker → typed-HIR kanıtı
 hattından geçirir. Belge sürümleri arasında parse ağacı, semantic sonuç veya
@@ -447,3 +449,33 @@ sample/warmup sözleşmesi ve hard eşik politikası değişmemiştir. Bu yüzde
 Temiz `66e4149e53451111d153f47283c219079a8d1cab`, Apple M4 Pro/24GiB/macOS26.6.2/Rust1.93.1 release;20.081satır/40birim,5ısınma+20ölçüm:1açıkbelge p95 19,208ms/max20,393,41açıkbelge p95 122,649ms/max125,044. P95 index18 ve max ham20örnekten yeniden hesaplandı. İlk açılış 29,895/2697,012ms;41belge değeri sıralı toplam açılıştır. Fuzz/build sonrası paylaşımlı makine gözlemidir;200ms hard gate, UI/transport/lint veya gerçek ürün SLA'sı değildir.
 
 1800.859579sn soak360örnekte compiler20112→20144KiB,LSP17856→19456KiB; 60sn pencereler ve ısınma sonrası medyanlar bağımsız doğrulandı. ADR045/049 ve performans-gecmisi-v2.tsv incelendi; yeni sabit adanmış koşucu tabanı yazılmadı. [Kanıt](urunlesme-s3-kabul-20261015.md).
+
+## S4 gerçek stdio gecikmesi ve RSS
+
+Exact `4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2`, kanonik release `dillsp`;
+20.081 satır/40 birim, her kohortta yeni süreç, 5 ısınma+20 örnek. İlk
+başarılı `os.write` ile son tam `publishDiagnostics` çerçevesinin okunması
+arası ölçüldü; İstemci zamanlaması ve ara çerçeve ayrıştırması gözlemi etkiler; gönderim
+öncesi JSON/framing hazırlığı ve son çerçevenin sonraki doğrulaması aralık dışıdır.
+Ölçüm dışındaki static completion bariyeri önceki tanı kümesini tamamlar.
+
+| Lint | Açık belge | p50 ms | p95 ms | Max ms |
+|---|---:|---:|---:|---:|
+| kapalı | 1 | 16,074 | 16,978 | 17,176 |
+| kapalı | 41 | 99,957 | 101,454 | 101,509 |
+| açık | 1 | 38,488 | 40,458 | 40,605 |
+| açık | 41 | 210,934 | 223,698 | 225,407 |
+
+Lint açık/41 belge kohortunda p95 223,698 ms ile 200 ms hedefi açık kalır.
+
+P50=`sorted[9]`, p95=`sorted[18]`, max=`sorted[19]`; ham örneklerden
+yeniden hesaplandı. OS/disk cache sıfırlanmadı; paylaşımlı makinenin diğer
+yükü değerlendirilmedi. Açılış yayın süreleri toplamı cold-start değildir.
+Bu gözlem UI/gerçek ürün/SLA veya 200 ms hard gate değildir. ADR-045/049
+ve `performans-gecmisi-v2.tsv` incelendi; yeni sabit performans tabanı ya
+da kanonik benchmark metriği yazılmadı. Bu koşu Cargo ignored testini
+yürütmez. [S4 yerel kabulü](urunlesme-s4-kabul-20261015.md) ham ölçüm ve kaynak/ikili bağını taşır.
+
+Soak 1800,946 sn/360 örnek: compiler 20112→20032 KiB, LSP 22496→20096 KiB. Isınma sonrası 60 sn
+pencere medyanları; %10 ve 32 MiB birlikte aşılmadı. S3 ölçümleri kendi
+kaynak kimliğiyle yukarıda korunur.

@@ -3,8 +3,11 @@
 [ADR-118](../adr/118-native-listener-nesil-hazirligi.md) zee-cekirdek B6 talebini
 sınırlı Unix host profiliyle karşılar. [Anonim repo reproducer'ı](../dogfood/zee-cekirdek/socket-devri/README.md)
 gerçek talebin source/hash eşliğini taşır; özel ürün gövdesi veya müşteri verisi
-kopyalanmaz. Yerel birleşim adayı native17/quietFD16 ve ayrı geç EOF1 geçti. Tam P14 adoption,
-genel sıfır hata/SLA, mixed app revision dağıtımı ve final temiz kaynak kabulü açıktır.
+kopyalanmaz. İlk yerel birleşim adayı native17/quietFD16 ve ayrı geç EOF1
+kanıtını taşıdı. Tarihsel [S3 kabulü](urunlesme-s3-kabul-20261015.md) temiz
+kaynak kapısını ve ayrı K-291 mixed-code native9/160 istek dilimini kaydeder.
+Bu sonuçlar başka kaynağa aktarılmaz; tam P14 ürün benimsenmesi, genel sıfır
+hata/SLA ve üretim dağıtımı açık kalır.
 
 ## Tek gerçek listening socket
 
@@ -98,7 +101,7 @@ BuildJSON'u17b29da1 taban/dirtytrue taşır. Finalclean ortak faz/native,900sn h
 henüz bu sayılardan kapanmaz. [Ürünleşme planı](urunlesme-plani.md) ve
 [sürüm kapıları](v1-surum-kapilari.md) P13/P14/P25'i kısmi/açık sınırla izler.
 
-Kanonik güvenlik sırası: atomik K-263 owned-host cleanup düzeltmesi GB-077 ile `ac077e31e761e401eedc5140a8035fd02f2a19ba` kaynak commitinde tamamlandı; K-262 dar CLI bugfix `7c56518cbfc6f5c99ac56bfe7767b5bbdc106179` ve exact provenance `4d8edeb2a9f4453d2f28481ecd550bf8ba5f2032` ile kapandı. Ortak temiz özellik kabulü ayrıca beklenmektedir. Kaynak `54a8d6dc0efb060ae5644b37546da40ad03ee035` ile commitlenen özellik dilimlerinin kayıtları K-257/GB-078, K-258/GB-079, K-259/GB-080 ve K-260/GB-081’dir; ADR-116–119 numaraları korunur. Önceki immutable dış-stage makbuzlarının geçici GB etiketleri tarihsel kanıttır, kanonik yeni kayıt kimliği değildir. Finalclean/900sn host/1800sn soak/RC kabulü bu revizyonda ileri sürülmez.
+Kanonik güvenlik sırası: atomik K-263 owned-host cleanup düzeltmesi GB-077 ile `ac077e31e761e401eedc5140a8035fd02f2a19ba` kaynak commitinde tamamlandı; K-262 dar CLI bugfix `7c56518cbfc6f5c99ac56bfe7767b5bbdc106179` ve exact provenance `4d8edeb2a9f4453d2f28481ecd550bf8ba5f2032` ile kapandı. Bu ilk kaynak kaydında ortak temiz özellik kabulü bekleniyordu; sonraki tarihsel [S3 dar kabulü](urunlesme-s3-kabul-20261015.md) kendi kaynak kimliğiyle ayrı kaydedildi. S3 sonucu başka kaynakta yeniden koşulmuş sayılmaz. Kaynak `54a8d6dc0efb060ae5644b37546da40ad03ee035` ile commitlenen özellik dilimlerinin kayıtları K-257/GB-078, K-258/GB-079, K-259/GB-080 ve K-260/GB-081’dir; ADR-116–119 numaraları korunur. Önceki immutable dış-stage makbuzlarının geçici GB etiketleri tarihsel kanıttır, kanonik yeni kayıt kimliği değildir. Finalclean/900sn host/1800sn soak/RC kabulü bu revizyonda ileri sürülmez.
 
 ## Mutlak activation bütçesinin son EOF kontrolü
 

@@ -1,0 +1,42 @@
+{
+  "schema": "zee-curated-native-ui-observation-1",
+  "source_sha": "4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2",
+  "interface": "CUA native AX and screenshot",
+  "raw_capture_available_in_tool_history": true,
+  "not_full_raw_trace_export": true,
+  "completion": {
+    "input": "isim \"Ayşe\" ols",
+    "action": "Ctrl+Space",
+    "observed_result": "isim \"Ayşe\" olsun",
+    "popup_separately_observed": false
+  },
+  "utf16": {
+    "input": "isim \"Ayşe\" olsun\n\"😀\" ile isim yaz\n",
+    "cursor": "after usage isim then Left",
+    "definition_action": "Cmd+B",
+    "definition_editor_position": "1:1",
+    "hover_action": "F1",
+    "hover_observed": "Tanım (satır 1):\nisim \"Ayşe\" olsun",
+    "rename_action": "Shift+F6, ad, Refactor",
+    "rename_result": "ad \"Ayşe\" olsun\n\"😀\" ile ad yaz\n"
+  },
+  "diagnostic": {
+    "input": "\"😀😀\" ile eksik yaz\n",
+    "Problems_message": "\"eksik\" adı bu kapsamda tanımlı değil.",
+    "screenshot_observed_underline": "eksik",
+    "IDE_spelling_separate": true
+  },
+  "formatting": {
+    "input": "isim   \"Ayşe\"   olsun\n\"😀😀\"  ile  isim   yaz\n",
+    "action": "Cmd+Alt+L",
+    "observed_result": "isim \"Ayşe\" olsun\n\"😀😀\" ile isim yaz\n",
+    "remaining_problems": "4 IDE spelling Typo; compiler error removed"
+  },
+  "trace_initial_UI_value": "off despite prepared file verbose",
+  "trace_action": "Debug Trace verbose Apply",
+  "trace_apply_UI_error": "IDE error occurred",
+  "error_report_sent": false,
+  "quit": "Cmd+Q Confirm Exit Exit",
+  "normal_exit": 0,
+  "closed_receipt_sha256": "bd57d663d19f6eba190d68d82d7cc58903cb9cb15775b810b20ae703bbbb94af"
+}
