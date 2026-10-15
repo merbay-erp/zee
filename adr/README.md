@@ -136,3 +136,6 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-124 | [Exact kaynakta dış RC kanıtı](124-exact-kaynak-dis-rc-kaniti.md) | **kabul, kısa doğruluk dilimi; gerçek RC kampanyası açık** (K-265) |
 
 | ADR-125 | [Typed credential native listener bileşimi](125-credential-native-listener-kompozisyonu.md) | **kabul, dar Unix host; finalclean/live açık** (K-267/GB-083) |
+| ADR-126 | [Sonlu SQL dispatcher timer ve belirsizlik kilidi](126-sonlu-sql-dispatcher-timer.md) | **kabul, hazırlık; native Linux/systemd açık** (K-268/GB-084) |
+| ADR-127 | [Kopyalanabilir site ve panel başlangıcı](127-kopyalanabilir-site-panel-baslangici.md) | **kabul, dar pilot; finalclean/kullanıcı açık** (K-269/GB-085) |
+| ADR-128 | [Yerel compiler import ve proje launcher](128-yerel-compiler-import-ve-proje-launcher.md) | **kabul, yerel pilot; publisher/platform/live açık** (K-270/GB-086) |

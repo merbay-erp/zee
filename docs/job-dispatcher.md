@@ -81,3 +81,7 @@ aday makbuzları birleşik finalclean özellik kabulü değildir.
 K262 dar source/argv düzeltmesi 7c56518c ve exact provenance4d8edeb2 ile kapalıdır; ortak özellik kabulü açıktır.
 
 Kanonik güvenlik sırası: atomik K-263 owned-host cleanup düzeltmesi GB-077 ile `ac077e31e761e401eedc5140a8035fd02f2a19ba` kaynak commitinde tamamlandı; K-262 dar CLI bugfix `7c56518cbfc6f5c99ac56bfe7767b5bbdc106179` ve exact provenance `4d8edeb2a9f4453d2f28481ecd550bf8ba5f2032` ile kapandı. Ortak temiz özellik kabulü ayrıca beklenmektedir. Kaynak `54a8d6dc0efb060ae5644b37546da40ad03ee035` ile commitlenen özellik dilimlerinin kayıtları K-257/GB-078, K-258/GB-079, K-259/GB-080 ve K-260/GB-081’dir; ADR-116–119 numaraları korunur. Önceki immutable dış-stage makbuzlarının geçici GB etiketleri tarihsel kanıttır, kanonik yeni kayıt kimliği değildir. Finalclean/900sn host/1800sn soak/RC kabulü bu revizyonda ileri sürülmez.
+
+## K-268 — Sonlu user timer hazırlığı
+
+[Sonlu timer rehberi](sonlu-dispatcher-timer.md) tek mevcut SQL tick çağrısı, durable inflight latch, owned cleanup ve exact offline reconcile sağlar. Unknown COMMIT otomatik yeniden denenmez; bilinen completion/reconcile görünür fakat son fsync belirsizliği exit4, unknown/Paused exit3 ayrıdır. Normal Cargo wrapper37 Python/OS hazırlığını çalıştırır; gerçek native SQL/Linux/proc/systemd hizmet kabulü ve SMTP/PDF effect-consumer ayrı açıktır. Mevcut native dispatcher11 ve P09 kısmi durumu korunur. [ADR-126](../adr/126-sonlu-sql-dispatcher-timer.md).

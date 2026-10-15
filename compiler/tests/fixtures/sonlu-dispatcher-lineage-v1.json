@@ -1,0 +1,23 @@
+{
+  "schema": "zee-k268-lifecycle-lineage-1",
+  "source_sha256": "509106d70e5e35c1142594c98df022b01e689966415bdd94a8f67feecb8587d8",
+  "core_sha256": "e76fe65b6103fc4732aafc4468afc5bbf3d0699a0f79d7f74879165636ebb1a9",
+  "functions_exact_source_sha256": {
+    "Reject": "cc919f61824ceff49b035982b0641a93c758faaa871b98590cd824a0033adb28",
+    "require": "481d0494b942ed64c6e86e44dc7e436f69f586bb195dd9368785ca77bb1f1a3e",
+    "digest": "a7be032be410758009aac14edbfe54fa6b493815392e0fd5ad15467e77f603e9",
+    "held_status": "b6da8b4ea4c79dd556f0bf9a42060e2a100490b47fa30724906fa75e8698a950",
+    "stop_owned": "7463421e56de9ee2df555cffecfcf51a0dfa9bef6137bc14307f13c74084d7c8",
+    "controlled_env": "3bfaf49f18fca36454d4701ec14d34687d8d4825d02bde2bb017e4cd520cc2cc",
+    "run": "3bf79f163a92ffaa2c43548679bf40db8041dff8cad1f98ae5cab4d20e91b466",
+    "git": "e05bdaad91848820eb37c6650c7b5ecb74b34d8ab23fbbc607a41cc548371b02",
+    "clean_exact": "64c48d946272fe6536d33b1a3ef87d809a2dd9751b3d1cba1f0d0b989a188ec7"
+  },
+  "globals_unchanged": [
+    "MAX_CAPTURE=8*1024*1024",
+    "CANCELLED=False"
+  ],
+  "excluded": "all artifact/delivery/zip/bundle/toolchain/CLI code and tomllib",
+  "independent_review_required": true,
+  "historical_source_binding": "original SHA retained; historical file is external evidence, not a test runtime dependency"
+}

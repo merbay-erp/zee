@@ -1525,3 +1525,18 @@ iptal testinin ölçülen kısmından önce tamamlanır; 60 ms IO bütçesi, iki
 takılma koruması ve sessiz peer değişmez. Production davranışı, tanı, test
 sayısı ve normatif sözleşme değişmedi. Önceki iki tam matrisin aynı SMTP
 korumasında kalması korunur; K-267 son tam faz koşusu 930/942 geçti, 0 kaldı, 12 atlandı; koşu boyunca 40 kaynak dosyası değişmedi. Final temiz kaynak ve uzun kabul kampanyaları ayrı kalır.
+
+## K-268–K-270 — Dar host/araç/başlangıç dalgası
+
+K-268/ADR-126/GB-084 sonlu timer37 hazırlığı; K-269/ADR-127/GB-085 kopyalanabilir site/panel2 mevcut CLI/HTTP pilotu; K-270/ADR-128/GB-086 yerel import/proje launcher14 ve korunmuş selector25. Yeni üç normal Cargo vakası gerçek alt-senaryolarıyla ayrı sayılır. Native Linux/systemd/SQL timer, gerçek kullanıcı/live ürün, production publisher/platform ve final temiz kaynak kampanyaları açık; P09/P23/P07 kısmi kalır. Yeni compiler/src/grammar/facade/dependency veya spec normatif madde yoktur; spec214 ve önceki source54/c86 maintenance/provenance, K267 kayıtları korunur.
+
+[Timer](../docs/sonlu-dispatcher-timer.md), [başlangıç](../sablonlar/README.md), [yerel araç](../docs/derleyici-yerel.md).
+
+K-268–270 ortak çalışma ağacı kabulü: dondurulan 41 dosya koşu boyunca
+değişmeden tam faz matrisi **933/945 geçti, 0 başarısız, 12 explicit ignored**
+sonucunu verdi; faz süreleri toplamı 376.425 saniyedir. Timer37, kopyalanan
+site/panel2 ve yerel araç14 (eski seçici25 korunarak) normal Cargo kapısındadır.
+Fmt/clippy/işlev64/spec214/mimari/SCC/API/uyumluluk/katalog/tazelik/tedarik,
+sürekli güvenlik, kanonik sır taraması ve semantic/core-freeze korukları geçti.
+Bu kayıt temiz exact kaynak/native Linux/systemd, 900/1800 saniye, ASAN/Miri,
+kurulum veya sürüm kabulü değildir; ilgili açık sınırlar korunur.

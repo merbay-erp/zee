@@ -258,7 +258,7 @@ def verify_signed_bytes(data, signature_data, name, key, verifier_data):
 
 
 @contextmanager
-def authenticated_snapshot(pin, store, trust_file, trust_key, verifier, verifier_sha, pilot, project):
+def authenticated_snapshot(pin, store, trust_file, trust_key, verifier, verifier_sha, pilot, project, bundle_source=None):
     validate_pin(pin, pilot)
     require(isinstance(verifier_sha, str) and HEX64.fullmatch(verifier_sha), "trusted verifier SHA-256 gerekli")
     verifier_data = regular_bytes(Path(verifier), LIMITS["executable"])
@@ -268,8 +268,17 @@ def authenticated_snapshot(pin, store, trust_file, trust_key, verifier, verifier
     trust_data = regular_bytes(trust_path, LIMITS["catalog"])
     verify_signed_bytes(trust_data, regular_bytes(Path(str(trust_path) + ".zee-imza"), LIMITS["signature"]), trust_path.name, trust_key, verifier_data)
     release = trusted_release(load_json(trust_data), pin)
-    bundle = child_directory(child_directory(root_directory(store), pin["source_sha"]), pin["platform"])
-    require({item.name for item in bundle.iterdir()} == META | binary_names(pin), "bundle dosya kümesi exact olmalı")
+    bundle = (root_directory(bundle_source) if bundle_source is not None else
+              child_directory(child_directory(root_directory(store), pin["source_sha"]), pin["platform"]))
+    expected_names = META | binary_names(pin)
+    names = set()
+    observed = 0
+    with os.scandir(bundle) as entries:
+        for item in entries:
+            require(observed < len(expected_names) and item.name not in names, "bundle dosya kümesi exact olmalı")
+            observed += 1
+            names.add(item.name)
+    require(names == expected_names, "bundle dosya kümesi exact olmalı")
     files = {name: regular_bytes(bundle / name, META_LIMITS.get(name, LIMITS["executable"])) for name in META | binary_names(pin)}
     for name, sha in release["file_hashes"].items():
         require(digest(files[name]) == sha, f"trusted sidecar hash farklı: {name}")
