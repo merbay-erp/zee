@@ -1,0 +1,65 @@
+# All inputs are plain text. Only view-generated markup leaves a component.
+işlem baglanti
+    yol Metin olarak al
+    etiket Metin olarak al
+    Metin döndürür
+    parca görünüm olsun
+        a href yol title etiket
+            metin etiket
+    parca döndür
+
+işlem gezinme
+    etiket Metin olarak al
+    Metin döndürür
+    tr "/tr/bildirimler" ve "Türkçe" ile baglanti olsun
+    en "/en/notifications" ve "English" ile baglanti olsun
+    parca görünüm olsun
+        nav "aria-label" etiket
+            ham tr
+            ham en
+    parca döndür
+
+işlem liste
+    baslik Metin olarak al
+    ilkYol Metin olarak al
+    ilkEtiket Metin olarak al
+    ikinciYol Metin olarak al
+    ikinciEtiket Metin olarak al
+    Metin döndürür
+    ilk ilkYol ve ilkEtiket ile baglanti olsun
+    ikinci ikinciYol ve ikinciEtiket ile baglanti olsun
+    parca görünüm olsun
+        section id "liste"
+            h2
+                metin baslik
+            ul
+                li
+                    ham ilk
+                li
+                    ham ikinci
+    parca döndür
+
+işlem detay
+    baslik Metin olarak al
+    icerik Metin olarak al
+    Metin döndürür
+    parca görünüm olsun
+        article id "detay"
+            h2 title baslik
+                metin baslik
+            p
+                metin icerik
+    parca döndür
+
+işlem altbilgi
+    metinDegeri Metin olarak al
+    Metin döndürür
+    parca görünüm olsun
+        footer
+            p
+                metin metinDegeri
+    parca döndür
+
+test "Parça metni ve özniteliği bir kez kaçırır"
+    sonuc "/tr/a?x=1&y=2" ve "<b> & \"" ile baglanti olsun
+    sonuc "<a href=\"/tr/a?x=1&amp;y=2\" title=\"&lt;b&gt; &amp; &quot;\">&lt;b&gt; &amp; &quot;</a>" e eşit olmalı

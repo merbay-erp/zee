@@ -162,3 +162,6 @@ aktif	P016	proje.registry_tasima_cache	Registry HTTPS taşıması, içerik-adres
 aktif	P017	proje.uzak_bagimlilik_bildirimi	Uzak bağımlılık exact `ad@X.Y.Z` değil ya da HTTPS registry/root sabitlemesi eksik/geçersiz
 aktif	Ç000	ic.program_sonlandirma_nobetcisi	`programı bitir` iç nöbetçisi; çalıştırıcı yakalar, kullanıcı asla görmez
 aktif	Ç001	ic.son_tarih_iptal_nobetcisi	Son tarih iptal nöbetçisi; yalnız sahibi `içinde/yetişmezse` bloğu yakalar, kullanıcıya sızmaz
+aktif	A012	ad.lint_okunmayan_ad	Lint: ad tanımlanıyor ama okunmuyor
+aktif	S047	soz.lint_erisilemeyen_kod	Lint: erişilemeyen cümle veya sabit koşul dalı
+aktif	S048	soz.lint_eksik_rota_yaniti	Lint: rotanın yanıt üretmeyen yolu olabilir

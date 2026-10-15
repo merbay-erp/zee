@@ -110,3 +110,34 @@ snapshot susturmak için yenilenmez; kaynak graph, ters kenar ve public allowlis
 aynı root dalgasında kapılardan geçer. Clean final gate olmadan yeni source
 SCC/API kabulü tamamlanmış sayılmaz. K262 aynı base'deki correctness dokümanı
 bu append ile birleştirilir; eski full-file içerikle overwrite yapılmaz.
+
+## K-284/K-287 kaynak kapsamı ve editör sahipliği
+
+Yeni `test_kapsami` runtime sahibi yalnız `agac,tani` tüketir. Yorumlayıcı
+gerçek karar sonuçlarını bu sahibin opt-in thread-local gözlemine iletir;
+kapsam sahibi yorumlayıcıya geri bağlanmaz. `dil_cli -> test_kapsami` rapor
+yaşam döngüsüdür. CLI alt dosyaları yeni üst sahip sayılmaz.
+
+Ortak isteğe bağlı köken `agac/koken` içindedir; AST coverage veya lint
+adaptörlerine bağımlı değildir. Oturum cache'i `faz/oturum` içindedir; lexer
+parser'a bağımlı yapılmadı. Yeni `hir -> tani` yalnız opt-in uyarı değeri
+üretir. `lsp -> agac,bicimleyici,lib` kenarları köken, kanonik biçim ve
+mevcut strict derleme geçidini paylaşır; `lib` LSP'ye dönmez.
+
+HIR yazım üyeliği HashSet'i tek bağlama sırasında yaşar, sıralı Vec çıktısını
+korur. Temel→adaptör geçişi veya yeni SCC yoktur. Katman fixture'ındaki
+exact kenarlar bu sorumluluk incelemesiyle güncellenir; desteklenen
+`dil::api::v1` export listesi genişletilmez.
+
+K-284/K-287 birleşik kapısında dosya bütçeleri artırılmadı: LSP tanı yayını
+ve overlay çözümü `lsp/analiz.rs`, dosya yazma değerlendirmesi
+`yorumlayici/cumle/dosya.rs` alt sahiplerine taşındı. Üst sahipler, exact
+katman kenarları ve yürütme sırası korunur; iki yeni alt dosya ayrıca
+mimari boyut kapısına bağlıdır. Kanıt haritasının211belgesi ve165tanı
+kimliği yeni13ADR/2spec ve A012/S047/S048 ekleriyle bilinçli güncellendi.
+
+Kritik işlev incelemesinde `mesaj_isle` içindeki açma/değiştirme ortak
+yayın yolu birleştirildi, biçim yanıtı eşitleme sahibine taşındı. CLI
+`govde` içindeki birim-test/native-köprü sırası `dene_kopru_komutu`
+yardımcısına ayrıldı. Genel büyüme payı artırılmadı; hata, bütçe ve
+komut dispatch sırası aynı olumlu/olumsuz testlerle korunur.

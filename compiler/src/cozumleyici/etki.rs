@@ -91,6 +91,7 @@ pub(super) fn denetle(program: &Program) -> Result<(), Tani> {
             onekli,
             govde,
             satir,
+            ..
         } = cumle
         else {
             continue;

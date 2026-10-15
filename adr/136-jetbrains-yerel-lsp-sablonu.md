@@ -35,3 +35,9 @@ ve [yerel araç rehberi](../docs/derleyici-yerel.md) aynı sınırı taşır.
 Actual IntelliJ2025.3.1 IU253.29346.138/LSP4IJ0.21.0 isolatedprofile: template/spacedmacro/TextMate/serverstart, diagnosticrepair, hover, definition ve rename gözlemlendi. Completion ve orderly UI/LSP shutdown doğrulanmadı; CUA/OSshortcut sınırlamaları korunur. Sonradan original retained-owner cleanup orderly UI/protocol shutdown kabulü değildir. Empty completionProvider upstream için yeterlidir; compiler workaround yok. Windows/fullP19/200msincrementality açık.
 
 [Güncel dar kaynak kanıtı](../docs/urunlesme-final-kabul-20261015.md).
+
+
+K-280/ADR-138 takip denemesi POSIX macOS profilinde completion uygulamasını,
+trace-setting restart shutdown/exit ve normal IDE exit0'ı doğruladı. Yukarıdaki
+başarısız ilk deneme tarihsel kayıttır; [takip kararı](138-jetbrains-tamamlama-ve-duzenli-kapanis.md)
+dar IDE etkileşim eksikliğini kapatır. Tam C2/P19 kapsamı açık kalır.

@@ -97,3 +97,12 @@ tanısının `Tani.kod` alanından ayrı bir sözleşmedir.
 
 Doğal ✓ · Deterministik ✓ (kod sabit, biçim sabit) · Öğrenilebilir ✓ (hatanın
 kendisi ders) · Savunulabilir ✓ (JSON sözleşmesi + katalog bekçisi).
+
+## K-287 isteğe bağlı araç uyarıları
+
+[ADR-145](../adr/145-artimli-editor-analizi-ve-lint.md) ve
+[spec/30](../spec/30-editor-analizi-ve-lint.md), başarılı derleme üzerinde
+isteğe bağlı A012/S047/S048 uyarılarını ekler. Uyarı normal hata çıkışını
+değiştirmez; CLI JSON ayrı `uyarilar`, LSP severity 2 kullanır. Grammar ve
+desteklenen Rust facade genişlemez. Kararın kaynak/kimlik ve açık performans
+sınırı ilgili belgelerde korunur.

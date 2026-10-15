@@ -1,0 +1,6 @@
+# K-284/C5: aynı satırdaki iki anonim rota kökenini ayıran kapsam vakası.
+GET "/imported-a" adresine istek geldiğinde
+    1 2 den küçükse
+        "a" yanıtını gönder
+    değilse
+        "asla" yanıtını gönder

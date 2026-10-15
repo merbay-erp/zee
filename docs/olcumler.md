@@ -411,3 +411,22 @@ makine/Rust/release/temiz exact kaynak ve raw dağılım kabulü olmadığından
 Native counter state ve uzun ömürlü CLI/runtime worker etki incelemesi yeni
 exact source1800sn soak ister;900sn host işletim tatbikatı da ayrı bekler.
 Önceki kaynak soak veya LSP177.321ms checkpoint'i yeni kaynak adına taşınmaz.
+
+## K-287 editör adayı ölçümü
+
+20.081 satır/40 gerçek dosyalı üretilen proje ayrı bir iş yüküdür. Tek açık
+belgede5ısınma/20örnek ilk aday p95 233,586 ms, yaprak AST adayı273,285 ms;
+HIR üyeliği doğrusal taramadan sıralı Vec+HashSet'e alınınca19,963 ms oldu.
+Kirli aday sonuçları kalıcı benchmark tarihçesine yazılmadı; yeni clean exact
+SHA/makine/örnek dağılımı ayrıca gerekir. Açık belge tanılarının otomatik
+yenilenmesi sonrası1ve41açıkbelge ayrı ölçülür. ADR-045/049 hard eşik ve
+shared CI gözlemsellik politikası aynı kalır; [ADR-145](../adr/145-artimli-editor-analizi-ve-lint.md)
+uygulama ve açık artımlı HIR sınırını açıklar.
+
+Açık tüketici tanılarının otomatik yayını eklendikten sonraki kirli aday
+release tekrarında aynı20.081 satır/40 birim ve5ısınma/20örnekle tek açık
+belge p95 19,754 ms (max19,926; ilk29,627),41 açık belge p95 126,164 ms
+(max130,027; tüm belgelerin sırayla ilk açılışı2712,895 ms) gözlendi.
+Ölçüm taze grafik/kilit/yükleme/tür analizi ve tanı serileştirmesini içerir;
+editör taşıması, UI ve lint açık kipi kapsamaz. Ham başarısız ilk adaylar
+korundu; kalıcı performans tarihçesine kirli kaynak sonucu yazılmadı.

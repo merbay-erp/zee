@@ -1813,3 +1813,27 @@ normu, public Rust API veya production bağımlılık değişikliği yoktur.
 K-250–K-279 dar teknik profilleri ve K-265 exactS RC kapısı [15 Ekim S raporu](urunlesme-final-kabul-20261015.md) ile kaydedilir. Temiz S üzerinde dört ASAN hedefi ayrı ayrı1801sn geçti; lexer_parser7.117.460, morfoloji8.265.144, http_istegi11.194.063 ve wasm_abi9.011.299 yürütme kaydedildi. İki seçili Miri grubunda toplam3test(ondalık2,zaman1) geçti. Kanonik export/check ve aynı S güvenlik kapısı510.198758sn exit0 ile geçti; kapının118 Cargo/libtest grubunda943passed/0failed/16ignored vardır. GB082 yalnız bu exactS yerel protokol ve kanıt kapısı için kapalıdır; E kaynakS gibi kabul edilmez. K-276actualLinuxdar kabulü ve finiteSQLtimer, bütün teknik/ürün işlerinin tamamlanması değildir. P08/adoption/human/platform ve IDEcompletion/orderlyshutdown açık; yeni compilerözelliği için mevcut freeze kuralları aynıdır.
 
 [RC sonuç makbuzu](incelemeler/urunlesme-20261014/final-8b49113/rc/FINAL-RESULT.json), [aynı-S kapı makbuzunun türetilmiş temsili](incelemeler/urunlesme-20261014/final-8b49113/rc/POST-GATE-RECEIPT.derived.json), [bağımsız kök incelemesi](incelemeler/urunlesme-20261014/final-8b49113/rc/root-independent-review.json).
+
+
+### K-280: JetBrains tamamlama ve normal çıkış
+
+15 Ekim 2026 owned IntelliJ IDEA2025.3.1/LSP4IJ0.21.0 POSIX profilinde
+mevcut S8b49113 launcher ile gerçek completion isteği7, `sayi 7 ols` →
+`sayi 7 olsun` uygulaması ve ardından boş LSP tanısı doğrulandı. Trace ayarı
+uygulanırken shutdown5/yanıt/exit ayrıca görüldü. Normal Quit/Confirm Exit
+sonrasında original süreç sahibi exit0 ve kapalı/toplanmış grubu kaydetti;
+zorunlu sonlandırma gerekmedi. Son Quit protokol konsolu dışa aktarılmadı;
+popup görünürlüğü ayrıca kanıtlanmadı. Önceki retler korunur. Dar IDE
+etkileşim eksikliği kapalı; Windows/eklenti yayın kanalı/incremental/lint/
+20k satır200ms ve tam P19 açık. [ADR-138](../adr/138-jetbrains-tamamlama-ve-duzenli-kapanis.md),
+[kabul kaydı](incelemeler/urunlesme-20261014/k280-jetbrains/ACCEPTANCE.json).
+Yeni kaynak dalgası bu S kanıtını kendi derleyici kabulü sayamaz.
+
+## K-281–K-294 — 15 Ekim ikinci teknik dalga
+
+Durum: uygulanmış adaylar ve açık araç retleri; clean exact kabul sürüyor.
+[İş bazında sonuç ve açık kapılar](urunlesme-ikinci-dalga-20261015.md) bağlayıcıdır.
+K-284/C5 ve K-287/C2 exact cd5d12f0008620819e6167af5146e83503fd2b38
+zee-cekirdek talebinin minimal araç yüzeyleridir; grammar genişletilmez.
+K-294 mevcut control-FD correctness düzeltmesi, kaynak SHA + regression
+follow-up olmadan kapanamaz. K-288 ve K-293 araç retleri nedeniyle açıktır.

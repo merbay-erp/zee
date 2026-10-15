@@ -51,6 +51,8 @@ fn kok_faz_dosyalari_yeniden_sismez() {
 #[test]
 fn handler_modulleri_yeni_domain_icin_sinir_tasir() {
     for (goreli, butce) in [
+        ("src/lsp/analiz.rs", 260),
+        ("src/yorumlayici/cumle/dosya.rs", 80),
         ("src/ayristirici/cumle.rs", 540),
         ("src/ayristirici/cumle/web.rs", 80),
         ("src/ayristirici/cumle/gorunum.rs", 220),

@@ -1,0 +1,11 @@
+# K-284 — C5 gerçek Zee kaynak dalları
+
+Etkin `zee-cekirdek` ürününün C5 isteği exact `cd5d12f0008620819e6167af5146e83503fd2b38` kaynak talebinde `docs/dil-talepleri/2026-10-14-zee-urunlesme.md` satır163–167 içindedir. Tam talep SHA-256 `694c0b357c4ff22c16987a65dbcd8d68344553d345b8693a00ed1deba74eaed7`; C5 başlığından C6 öncesine kadar LF ile birleştirip son LF'yi kaldıran bölüm SHA-256 `ae17427ce6793bbe3871000f028900ba946da5b4ab3eadc8b4d8268413f4a0c9`.
+
+Özel ürün değişmedi; exact kökenler `cekirdek/scripts/test.sh` SHA `01795afaf5ddc1198a792969abe1465d5af84f6c1c00c66f680cb38ab58abfe6`, `cekirdek/kaynak/kimlik.dil` SHA `b63bb102fa3352919b55921156cbfa3fd50d06d6626798769b1034e93281c7e9`, `rota_kimlik.dil` SHA `78a236011ee459c62889a5decb81f499a882601bb6f5b69387e2d352b00aab4a`, `rota_pano.dil` SHA `f1fa1461d13d9c03ed803246c6c9f8c6ff5066dc7ee9331ed011c34ac05d258d` olup aynı talep commit'inden okunur. `test.sh` giriş/çıkış/panel dumanının C5'te belirtilen mevcut kabuk yüzeyidir; gerçek ürün acceptance'ı bu anonim kesitten çıkarılmaz.
+
+Kaynaklar özel ürün gövdelerinin kopyası değildir. Anonim `panelKarari`, oturum yok/izinli/yetkisiz ayrımını ve unutulmuş yardımcı dalını küçültür. Native fixture gerçek runtime oturum/CSRF kullanır; `owned-fixture` herkesçe bilinen sentetik form işaretidir, production parola doğrulaması değildir. Özel kullanıcı/parola/PHC/DSN, müşteri route'u veya veri yoktur. `/sinanmayan` ve `henuzSinanmayan` bilerek çağrılmaz: denominator'dan kaybolmamalı, missing olarak görünmelidir.
+
+`dil dene --kapsam /abs/owned/fresh.json <proje>` testlerin çağırdığı gerçek kaynak dallarını; `dil çalıştır --kapsam /abs/owned/fresh.json --web-proxy https://fixture.example --web-worker-port <owned-port> <proje>` actual HTTP kaynak dallarını izler. Normal çalıştırma aynı semantiği korur. Rapor fresh canonical owned Unix dosyası ister; JSON ham kaynak/istek/çerez/CSRF/değer taşımaz. Compiler Build kimliği ve loader'ın aynı kaynak snapshot hashleri raporda vardır.
+
+Bu yeni gözlenebilir test davranışı C5 talebiyle semantic-change/dogfood-change'dir; tarihsel compiler bug/fixed_by icat edilmez. Tam anonim beş site/P08, gerçek ürün adoptionı, fiziksel Windows/minOS ve source coverage dışındaki HTTP/DB test kiti sınırları ayrı kalır. [Kaynak kapsamı](../../../docs/kaynak-kapsami.md), [ADR-142](../../../adr/142-zee-kaynak-dal-kapsami.md).

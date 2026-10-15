@@ -1,0 +1,12 @@
+{
+  "ACCEPTANCE.json": "b9d3a0532169a63d01786e78a166b51fbcb63099b2471bc08b0e52b8420dbeae",
+  "CLOSED.json": "8b1807e7e532835f6181e4eb7b3ae4b533b67478b0ac510b80461444f790e6fd",
+  "PREPARATION.json": "1a86898c99e630972b1cd84b5354a91cf7bf30cf0d6d60bce10fffeac7111351",
+  "completion-applied.ax.txt": "f58ca6e2b8fac59170128df0f5bd278a24a68b612768f24f4f4b92514c7cbe62",
+  "completion-applied.png": "905e4e4e62835f5f79dcc6b07bb49e915eae95fdd150c60d07cc90a1f8e218fe",
+  "completion-valid.ax.txt": "2c7532d7709e657cf15b1db104c96a5d2783ec6e662a6624bb9b710e2f60d4a2",
+  "completion-valid.png": "3c6a749b6ae7238027a2e34df7a916a0cfafc1d0e0479303a68b14d5d3de7eb1",
+  "controller.py": "e8a1d43730f98e1455be8f6b9a56442ee078ad22fca9234a4565f78b8a8469fc",
+  "lsp-ui-trace.txt": "b731afcd876b9fe8fbcf58840902fc7c16ce774fbd767489a877ddab9810c4e3",
+  "normal-exit-log.txt": "4b25c2bc00ac6790b5da780983c070827f3cb8bc921e4bee71597b8823eb5cd4"
+}

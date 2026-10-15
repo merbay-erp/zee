@@ -10,7 +10,11 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-001 | [Bootstrap dili: Rust + küçük/kilitli bağımlılık yüzeyi](001-bootstrap-dili.md) | **kabul** (K-088/K-092/K-117/K-192 revizyonu) |
 | ADR-002 | [Parser: elle yazılmış, yüklem-sonlu dağıtım](002-parser-stratejisi.md) | **kabul** (K-097 katmanlar, K-119 formatter eşdeğerliği) |
 | ADR-003 | [İlk yürütme: ağaç-yürüyen yorumlayıcı + IO soyutlaması](003-ilk-yurutme-modeli.md) | **kabul** |
+| ADR-004 | Bellek yönetimi prototip kararı (GC / ARC benchmark) | bekliyor |
+| ADR-005 | Native backend seçimi (Cranelift / LLVM) | bekliyor — Faz 4 |
 | ADR-006 | [Paket registry güven modeli](006-paket-registry-guven-modeli.md) | **kabul/gerçeklenmiş** (K-094 yayın; K-095 metadata; K-117 kanonik yol; K-135 taşıma/cache/offline; K-136 exact proje/kilit/CLI) |
+| ADR-007 | [Telemetri ve gizlilik: araçlar veri toplamaz](007-telemetri-ve-gizlilik.md) | **kabul** |
+| ADR-008 | [Self-hosting aşamaları ve geçiş kapıları](008-self-hosting-asamalari.md) | **kabul** |
 | ADR-009 | [Dilin adı: zee](009-dil-adi.md) | **kabul** (kurucu yetki devriyle) |
 | ADR-010 | [Normatif otorite ve değişiklik bütünlüğü](010-normatif-otorite-ve-degisiklik-butunlugu.md) | **kabul** (K-118 kanıt/sayı tazelik kapısı) |
 | ADR-011 | [Core AST intrinsic/yetkinlik sınırı](011-intrinsic-yetkinlik-siniri.md) | **kabul** (K-098/B-004) |
@@ -82,12 +86,7 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-077 | [Request-bound PostgreSQL tenant bağlamı](077-request-bound-postgresql-tenant-baglami.md) | **kabul** (K-186/GB-027) |
 | ADR-078 | [Migration SQL seviye ayrıştırması](078-migration-sql-seviye-ayristirma.md) | **kabul** (K-187) |
 | ADR-079 | [ERP için güvenli oturum listeleme ve tekil iptal](079-erp-oturum-listeleme-ve-iptal.md) | **kabul** (K-188/GB-028) |
-| [080 — Özel Gitsrv CI ve Tier-1 kanıt sınırı](080-tier1-kanit-kaynaklari.md) | kabul | K-217 özel CI ve çapraz/gerçek runtime ayrımı |
 | ADR-081 | [Resmî site ve üretim sınırı](081-resmi-site-ve-uretim-siniri.md) | **kabul** (K-203/GB-038) |
-| ADR-004 | Bellek yönetimi prototip kararı (GC / ARC benchmark) | bekliyor |
-| ADR-005 | Native backend seçimi (Cranelift / LLVM) | bekliyor — Faz 4 |
-| ADR-007 | [Telemetri ve gizlilik: araçlar veri toplamaz](007-telemetri-ve-gizlilik.md) | **kabul** |
-| ADR-008 | [Self-hosting aşamaları ve geçiş kapıları](008-self-hosting-asamalari.md) | **kabul** |
 | ADR-082 | [Legacy giriş ve kanonik istemci kimliği](082-legacy-giris-ve-kanonik-istemci-kimligi.md) | **kabul** (K-208/K-209) |
 | ADR-083 | [Site E dogfood'u: parola özeti, TOTP, SMTP ve görsel küçültme](083-urun-e-kriptografi-iletisim-gorsel.md) | **kabul** |
 | ADR-084 | [Rota birimleri: `<ad> rotalarını kullan` (K-211)](084-rota-birimleri.md) | **kabul** |
@@ -102,17 +101,13 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-093 | [Deterministik compiler build kimliği](093-deterministik-build-kimligi.md) | **kabul** (K-226) |
 | ADR-094 | [Yazmadan biçim denetimi](094-bicimleyici-yazmadan-denetim.md) | **kabul** (K-229) |
 | ADR-095 | [PostgreSQL göç durum/kuru planı](095-postgresql-goc-plani.md) | **kabul** (K-228) |
-| ADR-097 | [Sürümlü runtime ayarları](097-surumlu-runtime-ayarlari.md) | **kabul** (K-234) |
 | ADR-096 | [Ekli e-posta ve MIME sınırı](096-ekli-eposta-ve-mime.md) | **kabul** (K-232) |
+| ADR-097 | [Sürümlü runtime ayarları](097-surumlu-runtime-ayarlari.md) | **kabul** (K-234) |
 | ADR-098 | [Yerel exact compiler seçici](098-yerel-derleyici-secici.md) | **kabul** (K-233) |
 | ADR-099 | [SMTP hata maskelemesi](099-smtp-hata-maskelemesi.md) | **kabul** (K-236/GB-060) |
-
 | ADR-100 | [SMTP yanıt okuma sınırı](100-smtp-yanit-okuma-siniri.md) | **kabul** (K-237/GB-061) |
-
 | ADR-101 | [rustls advisory güvenlik yaması](101-rustls-advisory-yamasi.md) | **kabul** (K-238/GB-062) |
-
 | ADR-102 | [Sürüm klonu ve build kimliği](102-surum-klonu-ve-build-kimligi.md) | **kabul** (K-241/GB-064) |
-
 | ADR-103 | [Native COMMIT belirsizliği kanıtı](103-native-commit-belirsizligi-kaniti.md) | **kabul** (K-242/GB-065) |
 | ADR-104 | [Exact kaynak arşivi sınırı](104-exact-kaynak-arsivi-siniri.md) | **kabul** (K-243/GB-066) |
 | ADR-105 | [Credential host köprüsü](105-credential-host-koprusu.md) | **kabul, sınırlı POSIX pilot** (K-245/GB-068) |
@@ -134,7 +129,6 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-122 | [Supervisor sahipli EPERM geçişi](122-supervisor-sahipli-eperm-gecisi.md) | **kabul, dar POSIX host correctness adayı** (K-263/GB-077) |
 | ADR-123 | [Kritik işlev seçici taban incelemesi](123-kritik-islev-secici-taban-incelemesi.md) | **kabul, dar bakım incelemesi** (K-264) |
 | ADR-124 | [Exact kaynakta dış RC kanıtı](124-exact-kaynak-dis-rc-kaniti.md) | **kabul; cleanS canonicalexport+sameS RC gate geçti; GB082 dar kapalı** (K-265) |
-
 | ADR-125 | [Typed credential native listener bileşimi](125-credential-native-listener-kompozisyonu.md) | **kabul; temiz S typedcredential/listener model5+native5 dar Unix kabulü; fullP25/ürün/platform açık** (K-267/GB-083) |
 | ADR-126 | [Sonlu SQL dispatcher timer ve belirsizlik kilidi](126-sonlu-sql-dispatcher-timer.md) | **kabul; S actual ownedLinux timer2, fullP09/ürün açık** (K-268/GB-084) |
 | ADR-127 | [Kopyalanabilir site ve panel başlangıcı](127-kopyalanabilir-site-panel-baslangici.md) | **kabul; temiz S site/panel CLI+nativeHTTP dar kabulü; gerçek kullanıcı/fullP23/platform açık** (K-269/GB-085) |
@@ -143,9 +137,22 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-130 | [Sabit TR/EN liste-detay HTTP golden](130-sabit-tr-en-liste-detay-http-golden.md) | **kabul; temiz S Python3.9/3.13 fixed TR/EN HTTPgolden kabulü; ürün/platform/fullP21 açık** (K-272/GB-088) |
 | ADR-131 | [Yönetilen proje modül kompozisyonu](131-yonetilen-modul-kompozisyonu.md) | **kabul; temiz S normal Cargo managedscaffold dar kabulü; DB lifecycle/adoption/platform açık** (K-273/GB-089) |
 | ADR-132 | [Süreli hazırlık ve kontrollü config yenileme](132-sureli-hazirlik-ve-kontrollu-config-yenileme.md) | **kabul; temiz S readinessPG15+TTL5 dar Unix kabulü; sürekli hizmet/adoption/platform açık** (K-274/GB-090) |
-
 | ADR-133 | [Sabit owned host PDF backend](133-sabit-host-pdf-backend.md) | **kabul; S nativeemitter+hostPDF8, fullP11/ürün açık** (K-275/GB-091) |
 | ADR-134 | [Linux özel paket taşıyıcısı](134-linux-ozel-paket-tasiyicisi.md) | **kabul; S ownedLinux delivery/install8/carrier4/container6, GB092 dar kapalı** (K-276/GB-092) |
 | ADR-135 | [Sabit native dış etki tüketicisi](135-sabit-native-dis-etki-tuketicisi.md) | **kabul; S ownedloopback11, fullP09/ürün açık** (K-277/GB-093) |
 | ADR-136 | [JetBrains yerel LSP şablonu](136-jetbrains-yerel-lsp-sablonu.md) | **kabul; actualIDE kısmi, completion/orderlyshutdown açık** (K-278/GB-094) |
 | ADR-137 | [Önceki küçük sürüm korpusu](137-onceki-kucuk-surum-korpusu.md) | **kabul; S Mac/Linux modern49+preflight5, fullP04P05 açık** (K-279/GB-095) |
+| ADR-138 | [JetBrains tamamlama ve düzenli kapanış](138-jetbrains-tamamlama-ve-duzenli-kapanis.md) | **kabul; POSIX macOS dar profil, tam P19 açık** (K-280/GB-096) |
+| ADR-139 | [K-282 sürekli dispatcher ve application-owned adapter](139-surekli-dispatcher-ve-uygulama-adaptoru.md) | **aday; temiz kaynak kabulü açık** (K-282) |
+| ADR-140 | [K-283 sürekli HTTP user service](140-surekli-http-user-service.md) | **aday; temiz kaynak kabulü açık** (K-283) |
+| ADR-141 | [Purpose-bound imzalı PDF stdio host (K-281/P11)](141-imzali-pdf-stdio-host.md) | **aday; temiz kaynak kabulü açık** (K-281) |
+| ADR-142 | [Opt-in Zee kaynak karar kapsamı](142-zee-kaynak-dal-kapsami.md) | **aday; temiz kaynak kabulü açık** (K-284) |
+| ADR-143 | [Sahipli modül SQL yaşam döngüsü](143-sahipli-modul-sql-yasam-dongusu.md) | **aday; temiz kaynak kabulü açık** (K-285) |
+| ADR-144 | [dene içinde sabit native web test köprüsü](144-dene-native-web-test-koprusu.md) | **aday; temiz kaynak kabulü açık** (K-286) |
+| ADR-145 | [Artımlı editör analizi ve lint](145-artimli-editor-analizi-ve-lint.md) | **uygulanıyor; temiz exact kabul/soak açık** (K-287/GB-103) |
+| ADR-147 | [Uygulamaya ait kapalı bileşen ve TR/EN katalog bileşimi](147-composed-tr-en.md) | **aday; temiz kaynak kabulü açık** (K-289) |
+| ADR-148 | [İçerik, yönetim ve medya başlangıcı](148-icerik-yonetim-medya-baslangici.md) | **aday; temiz kaynak kabulü açık** (K-290) |
+| ADR-149 | [K-291 mixed-code revision için ayrı gerçek kanıt](149-mixed-revision-owned-wave.md) | **aday; temiz kaynak kabulü açık** (K-291) |
+| ADR-150 | [K-292 native worker fault ve kontrollü resolver-call hazırlığı](150-native-worker-fault-ve-kontrollu-resolver.md) | **aday; temiz kaynak kabulü açık** (K-292) |
+| ADR-152 | [Metric-only stdio alias için erken sessiz ret](152-native-metrik-stdio-sessiz-ret.md) | **aday; temiz kaynak kabulü açık** (K-294) |
+| [080 — Özel Gitsrv CI ve Tier-1 kanıt sınırı](080-tier1-kanit-kaynaklari.md) | kabul | K-217 özel CI ve çapraz/gerçek runtime ayrımı |

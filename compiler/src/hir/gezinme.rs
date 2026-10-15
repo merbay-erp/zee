@@ -6,7 +6,7 @@ use super::{HirBagi, HirKaynakAraligi, HirProgram};
 
 /// LSP ve diğer semantic araçların kaynak metin tahmini yapmadan tükettiği
 /// yerel sembol kullanımı. Tanım/yeniden atama yazımları da bu akışa dahildir.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct HirSembolKullanimi {
     kimlik: SymbolId,
     kaynak_araligi: HirKaynakAraligi,

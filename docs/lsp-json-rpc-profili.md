@@ -40,3 +40,11 @@ Normatif karar ADR-019 ve ADR-035, ortak kaynak zarfı spec/24'tür.
   bütçesini koru.
 - `cargo test --test lsp_testi --test mimari_sinir_testi --bin dillsp` ve
   `cargo clippy --all-targets --all-features -- -D warnings` kapılarını geçir.
+
+## K-287 editör analizi
+
+UTF-16 `contentChanges` aralıkları bütün paket doğrulandıktan sonra uygulanır.
+`textDocument/formatting` tek kanonik tam belge düzenlemesi önerir.
+`initializationOptions.lint` boolean true olduğunda başarılı kaynakta isteğe
+bağlı uyarılar severity 2 ile gelir. Kaynak/paket önbelleği ve açık sınırlar
+[editör rehberinde](editor-analizi.md), normatif maddeler [spec/30](../spec/30-editor-analizi-ve-lint.md) içindedir.

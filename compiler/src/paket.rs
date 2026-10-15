@@ -119,6 +119,16 @@ impl ProjeGrafigi {
         &self.ana_kok
     }
 
+    /// Editör overlay'i yalnız grafiğin ana projeye atadığı kaynağı değiştirebilir.
+    /// Alt klasördeki ayrı paketler de bağımlılıktır; salt yol öneki yeterli değildir.
+    pub(crate) fn ana_kaynagi_mi(&self, yol: &Path) -> bool {
+        self.ana_dugum().kaynaklar.contains_key(yol)
+            && !self
+                .dugumler
+                .values()
+                .any(|dugum| dugum.kok != self.ana_kok && dugum.kaynaklar.contains_key(yol))
+    }
+
     pub fn ana_giris_yolu(&self) -> &Path {
         &self.ana_dugum().giris_yolu
     }

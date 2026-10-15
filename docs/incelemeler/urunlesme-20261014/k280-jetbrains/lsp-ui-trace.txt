@@ -1,0 +1,3445 @@
+[Trace - 09:50:44] Sending request 'shutdown - (5)'.
+Params: null
+
+
+[Trace - 09:50:44] Received response 'shutdown - (5)' in 0ms.
+No response returned.
+
+
+[Trace - 09:50:44] Sending notification 'exit'
+Params: null
+
+
+[Trace - 09:50:44] Sending request 'initialize - (1)'.
+Params: {
+  "processId": 11159,
+  "rootPath": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-owned-ide/project with spaces",
+  "rootUri": "file:///Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-owned-ide/project%20with%20spaces",
+  "initializationOptions": {},
+  "capabilities": {
+    "workspace": {
+      "applyEdit": true,
+      "workspaceEdit": {
+        "documentChanges": true,
+        "resourceOperations": [
+          "create",
+          "delete",
+          "rename"
+        ]
+      },
+      "didChangeConfiguration": {
+        "dynamicRegistration": true
+      },
+      "didChangeWatchedFiles": {
+        "dynamicRegistration": true
+      },
+      "symbol": {},
+      "executeCommand": {
+        "dynamicRegistration": true
+      },
+      "workspaceFolders": true,
+      "configuration": true,
+      "semanticTokens": {
+        "refreshSupport": true
+      },
+      "codeLens": {
+        "refreshSupport": true
+      },
+      "fileOperations": {
+        "didCreate": true,
+        "didRename": true,
+        "willRename": true,
+        "didDelete": true,
+        "dynamicRegistration": true
+      },
+      "inlayHint": {
+        "refreshSupport": true
+      },
+      "diagnostics": {
+        "refreshSupport": true
+      }
+    },
+    "textDocument": {
+      "synchronization": {
+        "willSave": true,
+        "willSaveWaitUntil": true,
+        "didSave": true
+      },
+      "completion": {
+        "completionItem": {
+          "snippetSupport": true,
+          "documentationFormat": [
+            "markdown",
+            "plaintext"
+          ],
+          "deprecatedSupport": true,
+          "resolveSupport": {
+            "properties": [
+              "documentation",
+              "detail",
+              "additionalTextEdits"
+            ]
+          },
+          "insertTextModeSupport": {
+            "valueSet": [
+              1,
+              2
+            ]
+          },
+          "labelDetailsSupport": true
+        },
+        "completionList": {
+          "itemDefaults": [
+            "editRange"
+          ]
+        },
+        "dynamicRegistration": true
+      },
+      "hover": {
+        "contentFormat": [
+          "markdown",
+          "plaintext"
+        ],
+        "dynamicRegistration": true
+      },
+      "signatureHelp": {
+        "signatureInformation": {
+          "parameterInformation": {
+            "labelOffsetSupport": true
+          }
+        },
+        "dynamicRegistration": true
+      },
+      "references": {
+        "dynamicRegistration": true
+      },
+      "documentHighlight": {
+        "dynamicRegistration": true
+      },
+      "documentSymbol": {
+        "symbolKind": {
+          "valueSet": [
+            18,
+            17,
+            5,
+            14,
+            9,
+            10,
+            22,
+            24,
+            8,
+            1,
+            12,
+            11,
+            20,
+            6,
+            2,
+            3,
+            21,
+            16,
+            19,
+            25,
+            4,
+            7,
+            15,
+            23,
+            26,
+            13
+          ]
+        },
+        "hierarchicalDocumentSymbolSupport": true,
+        "dynamicRegistration": true
+      },
+      "formatting": {
+        "dynamicRegistration": true
+      },
+      "rangeFormatting": {
+        "dynamicRegistration": true
+      },
+      "declaration": {
+        "linkSupport": true,
+        "dynamicRegistration": true
+      },
+      "definition": {
+        "linkSupport": true,
+        "dynamicRegistration": true
+      },
+      "typeDefinition": {
+        "linkSupport": true,
+        "dynamicRegistration": true
+      },
+      "implementation": {
+        "linkSupport": true,
+        "dynamicRegistration": true
+      },
+      "codeAction": {
+        "codeActionLiteralSupport": {
+          "codeActionKind": {
+            "valueSet": [
+              "quickfix",
+              "refactor",
+              "refactor.extract",
+              "refactor.inline",
+              "refactor.rewrite",
+              "source",
+              "source.organizeImports"
+            ]
+          }
+        },
+        "dataSupport": true,
+        "resolveSupport": {
+          "properties": [
+            "edit"
+          ]
+        },
+        "dynamicRegistration": true
+      },
+      "codeLens": {
+        "dynamicRegistration": true
+      },
+      "documentLink": {
+        "dynamicRegistration": true
+      },
+      "colorProvider": {
+        "dynamicRegistration": true
+      },
+      "rename": {
+        "prepareSupport": true,
+        "dynamicRegistration": true
+      },
+      "publishDiagnostics": {
+        "relatedInformation": true,
+        "tagSupport": {
+          "valueSet": [
+            1,
+            2
+          ]
+        },
+        "codeDescriptionSupport": true,
+        "dataSupport": true
+      },
+      "foldingRange": {
+        "dynamicRegistration": true
+      },
+      "typeHierarchy": {
+        "dynamicRegistration": true
+      },
+      "callHierarchy": {
+        "dynamicRegistration": true
+      },
+      "semanticTokens": {
+        "requests": {
+          "range": false,
+          "full": true
+        },
+        "tokenTypes": [
+          "namespace",
+          "type",
+          "class",
+          "enum",
+          "interface",
+          "struct",
+          "typeParameter",
+          "parameter",
+          "variable",
+          "property",
+          "enumMember",
+          "event",
+          "function",
+          "method",
+          "macro",
+          "keyword",
+          "modifier",
+          "comment",
+          "string",
+          "number",
+          "regexp",
+          "operator",
+          "decorator",
+          "label"
+        ],
+        "tokenModifiers": [
+          "declaration",
+          "definition",
+          "readonly",
+          "static"
+        ],
+        "formats": [
+          "relative"
+        ],
+        "multilineTokenSupport": true,
+        "serverCancelSupport": true,
+        "dynamicRegistration": true
+      },
+      "inlayHint": {
+        "dynamicRegistration": true
+      },
+      "diagnostic": {
+        "relatedDocumentSupport": true,
+        "dynamicRegistration": true
+      },
+      "inlineCompletion": {
+        "dynamicRegistration": true
+      }
+    },
+    "window": {
+      "workDoneProgress": true,
+      "showMessage": {
+        "messageActionItem": {
+          "additionalPropertiesSupport": false
+        }
+      },
+      "showDocument": {
+        "support": true
+      }
+    },
+    "general": {
+      "staleRequestSupport": {
+        "cancel": true,
+        "retryOnContentModified": []
+      },
+      "positionEncodings": [
+        "utf-16"
+      ]
+    },
+    "experimental": {}
+  },
+  "clientInfo": {
+    "name": "IntelliJ IDEA 2025.3.1",
+    "version": "IntelliJ IDEA (build IU-253.29346.138)"
+  },
+  "trace": "off",
+  "workspaceFolders": [
+    {
+      "uri": "file:///Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-owned-ide/project%20with%20spaces",
+      "name": "project with spaces"
+    }
+  ]
+}
+
+
+[Trace - 09:50:45] Received response 'initialize - (1)' in 1230ms.
+Result: {
+  "capabilities": {
+    "textDocumentSync": 1,
+    "hoverProvider": true,
+    "completionProvider": {},
+    "definitionProvider": true,
+    "renameProvider": true
+  },
+  "serverInfo": {
+    "name": "dillsp",
+    "version": "0.8.0-dev"
+  }
+}
+
+
+[Trace - 09:50:45] Sending notification 'initialized'
+Params: {}
+
+
+[Trace - 09:50:45] Sending notification 'workspace/didChangeConfiguration'
+Params: {
+  "settings": {}
+}
+
+
+[Trace - 09:50:45] Sending notification 'textDocument/didOpen'
+Params: {
+  "textDocument": {
+    "uri": "file:///Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-owned-ide/project%20with%20spaces/ana.dil",
+    "languageId": "dil",
+    "version": 1,
+    "text": "isim \"Ayşe\" olsun\nisim yaz\nol"
+  }
+}
+
+
+[Trace - 09:50:45] Received notification 'textDocument/publishDiagnostics'
+Params: {
+  "uri": "file:///Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-owned-ide/project%20with%20spaces/ana.dil",
+  "diagnostics": [
+    {
+      "range": {
+        "start": {
+          "line": 2,
+          "character": 0
+        },
+        "end": {
+          "line": 2,
+          "character": 2
+        }
+      },
+      "severity": 1,
+      "code": "S004",
+      "source": "dil",
+      "message": "Bu cümle tanınmadı: cümleler eylemle biter.\nÖneri: Desteklenen kalıplar: \"... yaz\", \"\u003cad\u003e ... olsun\", \"\u003cn\u003e kez tekrarla\", \"\u003ca\u003e den \u003cb\u003e e kadar her \u003cad\u003e için\", \"... olduğu sürece\", \"... ise / değilse\", \"\u003cad\u003e \u003cn\u003e artır/azalt\", \"işlem \u003cad\u003e\", \"... döndür\", işlem çağrısı. Çağrılan işlem bu dosyada (ya da kullanılan bir birimde) tanımlı olmalı."
+    }
+  ]
+}
+
+
+[Trace - 09:55:22] Sending request 'textDocument/completion - (2)'.
+Params: {
+  "context": {
+    "triggerKind": 1
+  },
+  "textDocument": {
+    "uri": "file:///Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-owned-ide/project%20with%20spaces/ana.dil"
+  },
+  "position": {
+    "line": 2,
+    "character": 2
+  }
+}
+
+
+[Trace - 09:55:22] Received response 'textDocument/completion - (2)' in 1ms.
+Result: [
+  {
+    "label": "yaz",
+    "kind": 14
+  },
+  {
+    "label": "olsun",
+    "kind": 14
+  },
+  {
+    "label": "ise",
+    "kind": 14
+  },
+  {
+    "label": "değilse",
+    "kind": 14
+  },
+  {
+    "label": "tekrarla",
+    "kind": 14
+  },
+  {
+    "label": "için",
+    "kind": 14
+  },
+  {
+    "label": "kez",
+    "kind": 14
+  },
+  {
+    "label": "her",
+    "kind": 14
+  },
+  {
+    "label": "kadar",
+    "kind": 14
+  },
+  {
+    "label": "sürece",
+    "kind": 14
+  },
+  {
+    "label": "olduğu",
+    "kind": 14
+  },
+  {
+    "label": "olana",
+    "kind": 14,
+    "detail": ""
+  },
+  {
+    "label": "ile",
+    "kind": 14
+  },
+  {
+    "label": "ve",
+    "kind": 14
+  },
+  {
+    "label": "veya",
+    "kind": 14
+  },
+  {
+    "label": "diye",
+    "kind": 14
+  },
+  {
+    "label": "sor",
+    "kind": 14
+  },
+  {
+    "label": "yanıt",
+    "kind": 14
+  },
+  {
+    "label": "işlem",
+    "kind": 14
+  },
+  {
+    "label": "eylem",
+    "kind": 14
+  },
+  {
+    "label": "al",
+    "kind": 14
+  },
+  {
+    "label": "döndür",
+    "kind": 14
+  },
+  {
+    "label": "yapı",
+    "kind": 14
+  },
+  {
+    "label": "test",
+    "kind": 14
+  },
+  {
+    "label": "olmalı",
+    "kind": 14
+  },
+  {
+    "label": "ekle",
+    "kind": 14
+  },
+  {
+    "label": "artır",
+    "kind": 14
+  },
+  {
+    "label": "azalt",
+    "kind": 14
+  },
+  {
+    "label": "böl",
+    "kind": 14
+  },
+  {
+    "label": "göre",
+    "kind": 14
+  },
+  {
+    "label": "kullan",
+    "kind": 14
+  },
+  {
+    "label": "birimini",
+    "kind": 14
+  },
+  {
+    "label": "paketini",
+    "kind": 14
+  },
+  {
+    "label": "rotalarını",
+    "kind": 14
+  },
+  {
+    "label": "doğru",
+    "kind": 14
+  },
+  {
+    "label": "yanlış",
+    "kind": 14
+  },
+  {
+    "label": "yok",
+    "kind": 14
+  },
+  {
+    "label": "yeni",
+    "kind": 14
+  },
+  {
+    "label": "dene",
+    "kind": 14
+  },
+  {
+    "label": "bitir",
+    "kind": 14
+  },
+  {
+    "label": "saniye",
+    "kind": 14
+  },
+  {
+    "label": "dakika",
+    "kind": 14
+  },
+  {
+    "label": "hatasını",
+    "kind": 14
+  },
+  {
+    "label": "kodlu",
+    "kind": 14
+  },
+  {
+    "label": "nedeniyle",
+    "kind": 14
+  },
+  {
+    "label": "verisiyle",
+    "kind": 14
+  },
+  {
+    "label": "kodu",
+    "kind": 14
+  },
+  {
+    "label": "mesajı",
+    "kind": 14
+  },
+  {
+    "label": "nedeni",
+    "kind": 14
+  },
+  {
+    "label": "verisi",
+    "kind": 14
+  },
+  {
+    "label": "varsa",
+    "kind": 14
+  },
+  {
+    "label": "yoksa",
+    "kind": 14
+  },
+  {
+    "label": "başarılıysa",
+    "kind": 14
+  },
+  {
+    "label": "başarısızsa",
+    "kind": 14
+  },
+  {
+    "label": "sil",
+    "kind": 14
+  },
+  {
+    "label": "yönlendir",
+    "kind": 14
+  },
+  {
+    "label": "adresine",
+    "kind": 14
+  },
+  {
+    "label": "istemci",
+    "kind": 14
+  },
+  {
+    "label": "adresi",
+    "kind": 14
+  },
+  {
+    "label": "çerezine",
+    "kind": 14
+  },
+  {
+    "label": "sıralanmışı",
+    "kind": 14
+  },
+  {
+    "label": "parçaları",
+    "kind": 14
+  },
+  {
+    "label": "birleşmişi",
+    "kind": 14
+  },
+  {
+    "label": "değişmişi",
+    "kind": 14
+  },
+  {
+    "label": "içermeli",
+    "kind": 14
+  },
+  {
+    "label": "olmamalı",
+    "kind": 14
+  },
+  {
+    "label": "kuruşlusu",
+    "kind": 14
+  },
+  {
+    "label": "metni",
+    "kind": 14
+  },
+  {
+    "label": "harfleri",
+    "kind": 14
+  },
+  {
+    "label": "kırpılmışı",
+    "kind": 14
+  },
+  {
+    "label": "arasındaki",
+    "kind": 14
+  },
+  {
+    "label": "günler",
+    "kind": 14
+  },
+  {
+    "label": "önekli",
+    "kind": 14
+  },
+  {
+    "label": "kalanı",
+    "kind": 14
+  },
+  {
+    "label": "GET",
+    "kind": 14
+  },
+  {
+    "label": "HEAD",
+    "kind": 14
+  },
+  {
+    "label": "POST",
+    "kind": 14
+  },
+  {
+    "label": "PUT",
+    "kind": 14
+  },
+  {
+    "label": "PATCH",
+    "kind": 14
+  },
+  {
+    "label": "DELETE",
+    "kind": 14
+  },
+  {
+    "label": "herkese",
+    "kind": 14
+  },
+  {
+    "label": "açık",
+    "kind": 14
+  },
+  {
+    "label": "oturum",
+    "kind": 14
+  },
+  {
+    "label": "gerekli",
+    "kind": 14
+  },
+  {
+    "label": "yetkisi",
+    "kind": 14
+  },
+  {
+    "label": "rolüyle",
+    "kind": 14
+  },
+  {
+    "label": "alanı",
+    "kind": 14
+  },
+  {
+    "label": "belirteci",
+    "kind": 14
+  },
+  {
+    "label": "doğrulanıyorsa",
+    "kind": 14
+  },
+  {
+    "label": "kullanıcısını",
+    "kind": 14
+  },
+  {
+    "label": "listelemeyi",
+    "kind": 14
+  },
+  {
+    "label": "iptal",
+    "kind": 14
+  },
+  {
+    "label": "HTTP",
+    "kind": 14
+  },
+  {
+    "label": "JSON",
+    "kind": 14
+  },
+  {
+    "label": "ortam",
+    "kind": 14
+  },
+  {
+    "label": "isteğini",
+    "kind": 14
+  },
+  {
+    "label": "sözlüğünü",
+    "kind": 14
+  },
+  {
+    "label": "argon2",
+    "kind": 14
+  },
+  {
+    "label": "totp",
+    "kind": 14
+  },
+  {
+    "label": "anahtarı",
+    "kind": 14
+  },
+  {
+    "label": "anahtarıyla",
+    "kind": 14
+  },
+  {
+    "label": "ileti",
+    "kind": 14
+  },
+  {
+    "label": "ekli",
+    "kind": 14
+  },
+  {
+    "label": "göndermeyi",
+    "kind": 14
+  },
+  {
+    "label": "üzerinden",
+    "kind": 14
+  },
+  {
+    "label": "görünüm",
+    "kind": 14
+  },
+  {
+    "label": "şifrelenmişi",
+    "kind": 14
+  },
+  {
+    "label": "çözmeyi",
+    "kind": 14
+  },
+  {
+    "label": "görselini",
+    "kind": 14
+  },
+  {
+    "label": "piksele",
+    "kind": 14
+  },
+  {
+    "label": "küçültmeyi",
+    "kind": 14
+  }
+]
+
+
+[Trace - 09:55:47] Sending notification 'textDocument/didChange'
+Params: {
+  "textDocument": {
+    "version": 2,
+    "uri": "file:///Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-owned-ide/project%20with%20spaces/ana.dil"
+  },
+  "contentChanges": [
+    {
+      "text": "isim \"Ayşe\" olsun\nisim yaz\no"
+    }
+  ]
+}
+
+
+[Trace - 09:55:47] Received notification 'textDocument/publishDiagnostics'
+Params: {
+  "uri": "file:///Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-owned-ide/project%20with%20spaces/ana.dil",
+  "diagnostics": [
+    {
+      "range": {
+        "start": {
+          "line": 2,
+          "character": 0
+        },
+        "end": {
+          "line": 2,
+          "character": 1
+        }
+      },
+      "severity": 1,
+      "code": "S004",
+      "source": "dil",
+      "message": "Bu cümle tanınmadı: cümleler eylemle biter.\nÖneri: Desteklenen kalıplar: \"... yaz\", \"\u003cad\u003e ... olsun\", \"\u003cn\u003e kez tekrarla\", \"\u003ca\u003e den \u003cb\u003e e kadar her \u003cad\u003e için\", \"... olduğu sürece\", \"... ise / değilse\", \"\u003cad\u003e \u003cn\u003e artır/azalt\", \"işlem \u003cad\u003e\", \"... döndür\", işlem çağrısı. Çağrılan işlem bu dosyada (ya da kullanılan bir birimde) tanımlı olmalı."
+    }
+  ]
+}
+
+
+[Trace - 09:55:47] Sending notification 'textDocument/didChange'
+Params: {
+  "textDocument": {
+    "version": 3,
+    "uri": "file:///Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-owned-ide/project%20with%20spaces/ana.dil"
+  },
+  "contentChanges": [
+    {
+      "text": "isim \"Ayşe\" olsun\nisim yaz\nol"
+    }
+  ]
+}
+
+
+[Trace - 09:55:47] Received notification 'textDocument/publishDiagnostics'
+Params: {
+  "uri": "file:///Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-owned-ide/project%20with%20spaces/ana.dil",
+  "diagnostics": [
+    {
+      "range": {
+        "start": {
+          "line": 2,
+          "character": 0
+        },
+        "end": {
+          "line": 2,
+          "character": 2
+        }
+      },
+      "severity": 1,
+      "code": "S004",
+      "source": "dil",
+      "message": "Bu cümle tanınmadı: cümleler eylemle biter.\nÖneri: Desteklenen kalıplar: \"... yaz\", \"\u003cad\u003e ... olsun\", \"\u003cn\u003e kez tekrarla\", \"\u003ca\u003e den \u003cb\u003e e kadar her \u003cad\u003e için\", \"... olduğu sürece\", \"... ise / değilse\", \"\u003cad\u003e \u003cn\u003e artır/azalt\", \"işlem \u003cad\u003e\", \"... döndür\", işlem çağrısı. Çağrılan işlem bu dosyada (ya da kullanılan bir birimde) tanımlı olmalı."
+    }
+  ]
+}
+
+
+[Trace - 09:55:47] Sending request 'textDocument/completion - (3)'.
+Params: {
+  "context": {
+    "triggerKind": 1
+  },
+  "textDocument": {
+    "uri": "file:///Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-owned-ide/project%20with%20spaces/ana.dil"
+  },
+  "position": {
+    "line": 2,
+    "character": 2
+  }
+}
+
+
+[Trace - 09:55:47] Received response 'textDocument/completion - (3)' in 0ms.
+Result: [
+  {
+    "label": "yaz",
+    "kind": 14
+  },
+  {
+    "label": "olsun",
+    "kind": 14
+  },
+  {
+    "label": "ise",
+    "kind": 14
+  },
+  {
+    "label": "değilse",
+    "kind": 14
+  },
+  {
+    "label": "tekrarla",
+    "kind": 14
+  },
+  {
+    "label": "için",
+    "kind": 14
+  },
+  {
+    "label": "kez",
+    "kind": 14
+  },
+  {
+    "label": "her",
+    "kind": 14
+  },
+  {
+    "label": "kadar",
+    "kind": 14
+  },
+  {
+    "label": "sürece",
+    "kind": 14
+  },
+  {
+    "label": "olduğu",
+    "kind": 14
+  },
+  {
+    "label": "olana",
+    "kind": 14,
+    "detail": ""
+  },
+  {
+    "label": "ile",
+    "kind": 14
+  },
+  {
+    "label": "ve",
+    "kind": 14
+  },
+  {
+    "label": "veya",
+    "kind": 14
+  },
+  {
+    "label": "diye",
+    "kind": 14
+  },
+  {
+    "label": "sor",
+    "kind": 14
+  },
+  {
+    "label": "yanıt",
+    "kind": 14
+  },
+  {
+    "label": "işlem",
+    "kind": 14
+  },
+  {
+    "label": "eylem",
+    "kind": 14
+  },
+  {
+    "label": "al",
+    "kind": 14
+  },
+  {
+    "label": "döndür",
+    "kind": 14
+  },
+  {
+    "label": "yapı",
+    "kind": 14
+  },
+  {
+    "label": "test",
+    "kind": 14
+  },
+  {
+    "label": "olmalı",
+    "kind": 14
+  },
+  {
+    "label": "ekle",
+    "kind": 14
+  },
+  {
+    "label": "artır",
+    "kind": 14
+  },
+  {
+    "label": "azalt",
+    "kind": 14
+  },
+  {
+    "label": "böl",
+    "kind": 14
+  },
+  {
+    "label": "göre",
+    "kind": 14
+  },
+  {
+    "label": "kullan",
+    "kind": 14
+  },
+  {
+    "label": "birimini",
+    "kind": 14
+  },
+  {
+    "label": "paketini",
+    "kind": 14
+  },
+  {
+    "label": "rotalarını",
+    "kind": 14
+  },
+  {
+    "label": "doğru",
+    "kind": 14
+  },
+  {
+    "label": "yanlış",
+    "kind": 14
+  },
+  {
+    "label": "yok",
+    "kind": 14
+  },
+  {
+    "label": "yeni",
+    "kind": 14
+  },
+  {
+    "label": "dene",
+    "kind": 14
+  },
+  {
+    "label": "bitir",
+    "kind": 14
+  },
+  {
+    "label": "saniye",
+    "kind": 14
+  },
+  {
+    "label": "dakika",
+    "kind": 14
+  },
+  {
+    "label": "hatasını",
+    "kind": 14
+  },
+  {
+    "label": "kodlu",
+    "kind": 14
+  },
+  {
+    "label": "nedeniyle",
+    "kind": 14
+  },
+  {
+    "label": "verisiyle",
+    "kind": 14
+  },
+  {
+    "label": "kodu",
+    "kind": 14
+  },
+  {
+    "label": "mesajı",
+    "kind": 14
+  },
+  {
+    "label": "nedeni",
+    "kind": 14
+  },
+  {
+    "label": "verisi",
+    "kind": 14
+  },
+  {
+    "label": "varsa",
+    "kind": 14
+  },
+  {
+    "label": "yoksa",
+    "kind": 14
+  },
+  {
+    "label": "başarılıysa",
+    "kind": 14
+  },
+  {
+    "label": "başarısızsa",
+    "kind": 14
+  },
+  {
+    "label": "sil",
+    "kind": 14
+  },
+  {
+    "label": "yönlendir",
+    "kind": 14
+  },
+  {
+    "label": "adresine",
+    "kind": 14
+  },
+  {
+    "label": "istemci",
+    "kind": 14
+  },
+  {
+    "label": "adresi",
+    "kind": 14
+  },
+  {
+    "label": "çerezine",
+    "kind": 14
+  },
+  {
+    "label": "sıralanmışı",
+    "kind": 14
+  },
+  {
+    "label": "parçaları",
+    "kind": 14
+  },
+  {
+    "label": "birleşmişi",
+    "kind": 14
+  },
+  {
+    "label": "değişmişi",
+    "kind": 14
+  },
+  {
+    "label": "içermeli",
+    "kind": 14
+  },
+  {
+    "label": "olmamalı",
+    "kind": 14
+  },
+  {
+    "label": "kuruşlusu",
+    "kind": 14
+  },
+  {
+    "label": "metni",
+    "kind": 14
+  },
+  {
+    "label": "harfleri",
+    "kind": 14
+  },
+  {
+    "label": "kırpılmışı",
+    "kind": 14
+  },
+  {
+    "label": "arasındaki",
+    "kind": 14
+  },
+  {
+    "label": "günler",
+    "kind": 14
+  },
+  {
+    "label": "önekli",
+    "kind": 14
+  },
+  {
+    "label": "kalanı",
+    "kind": 14
+  },
+  {
+    "label": "GET",
+    "kind": 14
+  },
+  {
+    "label": "HEAD",
+    "kind": 14
+  },
+  {
+    "label": "POST",
+    "kind": 14
+  },
+  {
+    "label": "PUT",
+    "kind": 14
+  },
+  {
+    "label": "PATCH",
+    "kind": 14
+  },
+  {
+    "label": "DELETE",
+    "kind": 14
+  },
+  {
+    "label": "herkese",
+    "kind": 14
+  },
+  {
+    "label": "açık",
+    "kind": 14
+  },
+  {
+    "label": "oturum",
+    "kind": 14
+  },
+  {
+    "label": "gerekli",
+    "kind": 14
+  },
+  {
+    "label": "yetkisi",
+    "kind": 14
+  },
+  {
+    "label": "rolüyle",
+    "kind": 14
+  },
+  {
+    "label": "alanı",
+    "kind": 14
+  },
+  {
+    "label": "belirteci",
+    "kind": 14
+  },
+  {
+    "label": "doğrulanıyorsa",
+    "kind": 14
+  },
+  {
+    "label": "kullanıcısını",
+    "kind": 14
+  },
+  {
+    "label": "listelemeyi",
+    "kind": 14
+  },
+  {
+    "label": "iptal",
+    "kind": 14
+  },
+  {
+    "label": "HTTP",
+    "kind": 14
+  },
+  {
+    "label": "JSON",
+    "kind": 14
+  },
+  {
+    "label": "ortam",
+    "kind": 14
+  },
+  {
+    "label": "isteğini",
+    "kind": 14
+  },
+  {
+    "label": "sözlüğünü",
+    "kind": 14
+  },
+  {
+    "label": "argon2",
+    "kind": 14
+  },
+  {
+    "label": "totp",
+    "kind": 14
+  },
+  {
+    "label": "anahtarı",
+    "kind": 14
+  },
+  {
+    "label": "anahtarıyla",
+    "kind": 14
+  },
+  {
+    "label": "ileti",
+    "kind": 14
+  },
+  {
+    "label": "ekli",
+    "kind": 14
+  },
+  {
+    "label": "göndermeyi",
+    "kind": 14
+  },
+  {
+    "label": "üzerinden",
+    "kind": 14
+  },
+  {
+    "label": "görünüm",
+    "kind": 14
+  },
+  {
+    "label": "şifrelenmişi",
+    "kind": 14
+  },
+  {
+    "label": "çözmeyi",
+    "kind": 14
+  },
+  {
+    "label": "görselini",
+    "kind": 14
+  },
+  {
+    "label": "piksele",
+    "kind": 14
+  },
+  {
+    "label": "küçültmeyi",
+    "kind": 14
+  }
+]
+
+
+[Trace - 09:56:03] Sending notification 'textDocument/didChange'
+Params: {
+  "textDocument": {
+    "version": 4,
+    "uri": "file:///Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-owned-ide/project%20with%20spaces/ana.dil"
+  },
+  "contentChanges": [
+    {
+      "text": "isim \"Ayşe\" olsun\nisim yaz\no"
+    }
+  ]
+}
+
+
+[Trace - 09:56:03] Received notification 'textDocument/publishDiagnostics'
+Params: {
+  "uri": "file:///Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-owned-ide/project%20with%20spaces/ana.dil",
+  "diagnostics": [
+    {
+      "range": {
+        "start": {
+          "line": 2,
+          "character": 0
+        },
+        "end": {
+          "line": 2,
+          "character": 1
+        }
+      },
+      "severity": 1,
+      "code": "S004",
+      "source": "dil",
+      "message": "Bu cümle tanınmadı: cümleler eylemle biter.\nÖneri: Desteklenen kalıplar: \"... yaz\", \"\u003cad\u003e ... olsun\", \"\u003cn\u003e kez tekrarla\", \"\u003ca\u003e den \u003cb\u003e e kadar her \u003cad\u003e için\", \"... olduğu sürece\", \"... ise / değilse\", \"\u003cad\u003e \u003cn\u003e artır/azalt\", \"işlem \u003cad\u003e\", \"... döndür\", işlem çağrısı. Çağrılan işlem bu dosyada (ya da kullanılan bir birimde) tanımlı olmalı."
+    }
+  ]
+}
+
+
+[Trace - 09:56:03] Sending request 'textDocument/completion - (4)'.
+Params: {
+  "context": {
+    "triggerKind": 1
+  },
+  "textDocument": {
+    "uri": "file:///Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-owned-ide/project%20with%20spaces/ana.dil"
+  },
+  "position": {
+    "line": 2,
+    "character": 1
+  }
+}
+
+
+[Trace - 09:56:03] Received response 'textDocument/completion - (4)' in 0ms.
+Result: [
+  {
+    "label": "yaz",
+    "kind": 14
+  },
+  {
+    "label": "olsun",
+    "kind": 14
+  },
+  {
+    "label": "ise",
+    "kind": 14
+  },
+  {
+    "label": "değilse",
+    "kind": 14
+  },
+  {
+    "label": "tekrarla",
+    "kind": 14
+  },
+  {
+    "label": "için",
+    "kind": 14
+  },
+  {
+    "label": "kez",
+    "kind": 14
+  },
+  {
+    "label": "her",
+    "kind": 14
+  },
+  {
+    "label": "kadar",
+    "kind": 14
+  },
+  {
+    "label": "sürece",
+    "kind": 14
+  },
+  {
+    "label": "olduğu",
+    "kind": 14
+  },
+  {
+    "label": "olana",
+    "kind": 14
+  },
+  {
+    "label": "ile",
+    "kind": 14
+  },
+  {
+    "label": "ve",
+    "kind": 14
+  },
+  {
+    "label": "veya",
+    "kind": 14
+  },
+  {
+    "label": "diye",
+    "kind": 14
+  },
+  {
+    "label": "sor",
+    "kind": 14
+  },
+  {
+    "label": "yanıt",
+    "kind": 14
+  },
+  {
+    "label": "işlem",
+    "kind": 14
+  },
+  {
+    "label": "eylem",
+    "kind": 14
+  },
+  {
+    "label": "al",
+    "kind": 14
+  },
+  {
+    "label": "döndür",
+    "kind": 14
+  },
+  {
+    "label": "yapı",
+    "kind": 14
+  },
+  {
+    "label": "test",
+    "kind": 14
+  },
+  {
+    "label": "olmalı",
+    "kind": 14
+  },
+  {
+    "label": "ekle",
+    "kind": 14
+  },
+  {
+    "label": "artır",
+    "kind": 14
+  },
+  {
+    "label": "azalt",
+    "kind": 14
+  },
+  {
+    "label": "böl",
+    "kind": 14
+  },
+  {
+    "label": "göre",
+    "kind": 14
+  },
+  {
+    "label": "kullan",
+    "kind": 14
+  },
+  {
+    "label": "birimini",
+    "kind": 14
+  },
+  {
+    "label": "paketini",
+    "kind": 14
+  },
+  {
+    "label": "rotalarını",
+    "kind": 14
+  },
+  {
+    "label": "doğru",
+    "kind": 14
+  },
+  {
+    "label": "yanlış",
+    "kind": 14
+  },
+  {
+    "label": "yok",
+    "kind": 14
+  },
+  {
+    "label": "yeni",
+    "kind": 14
+  },
+  {
+    "label": "dene",
+    "kind": 14
+  },
+  {
+    "label": "bitir",
+    "kind": 14
+  },
+  {
+    "label": "saniye",
+    "kind": 14
+  },
+  {
+    "label": "dakika",
+    "kind": 14
+  },
+  {
+    "label": "hatasını",
+    "kind": 14
+  },
+  {
+    "label": "kodlu",
+    "kind": 14
+  },
+  {
+    "label": "nedeniyle",
+    "kind": 14
+  },
+  {
+    "label": "verisiyle",
+    "kind": 14
+  },
+  {
+    "label": "kodu",
+    "kind": 14
+  },
+  {
+    "label": "mesajı",
+    "kind": 14
+  },
+  {
+    "label": "nedeni",
+    "kind": 14
+  },
+  {
+    "label": "verisi",
+    "kind": 14
+  },
+  {
+    "label": "varsa",
+    "kind": 14
+  },
+  {
+    "label": "yoksa",
+    "kind": 14
+  },
+  {
+    "label": "başarılıysa",
+    "kind": 14
+  },
+  {
+    "label": "başarısızsa",
+    "kind": 14
+  },
+  {
+    "label": "sil",
+    "kind": 14
+  },
+  {
+    "label": "yönlendir",
+    "kind": 14
+  },
+  {
+    "label": "adresine",
+    "kind": 14
+  },
+  {
+    "label": "istemci",
+    "kind": 14
+  },
+  {
+    "label": "adresi",
+    "kind": 14
+  },
+  {
+    "label": "çerezine",
+    "kind": 14
+  },
+  {
+    "label": "sıralanmışı",
+    "kind": 14
+  },
+  {
+    "label": "parçaları",
+    "kind": 14
+  },
+  {
+    "label": "birleşmişi",
+    "kind": 14
+  },
+  {
+    "label": "değişmişi",
+    "kind": 14
+  },
+  {
+    "label": "içermeli",
+    "kind": 14
+  },
+  {
+    "label": "olmamalı",
+    "kind": 14
+  },
+  {
+    "label": "kuruşlusu",
+    "kind": 14
+  },
+  {
+    "label": "metni",
+    "kind": 14
+  },
+  {
+    "label": "harfleri",
+    "kind": 14
+  },
+  {
+    "label": "kırpılmışı",
+    "kind": 14
+  },
+  {
+    "label": "arasındaki",
+    "kind": 14
+  },
+  {
+    "label": "günler",
+    "kind": 14
+  },
+  {
+    "label": "önekli",
+    "kind": 14
+  },
+  {
+    "label": "kalanı",
+    "kind": 14
+  },
+  {
+    "label": "GET",
+    "kind": 14
+  },
+  {
+    "label": "HEAD",
+    "kind": 14
+  },
+  {
+    "label": "POST",
+    "kind": 14
+  },
+  {
+    "label": "PUT",
+    "kind": 14
+  },
+  {
+    "label": "PATCH",
+    "kind": 14
+  },
+  {
+    "label": "DELETE",
+    "kind": 14
+  },
+  {
+    "label": "herkese",
+    "kind": 14
+  },
+  {
+    "label": "açık",
+    "kind": 14
+  },
+  {
+    "label": "oturum",
+    "kind": 14
+  },
+  {
+    "label": "gerekli",
+    "kind": 14
+  },
+  {
+    "label": "yetkisi",
+    "kind": 14
+  },
+  {
+    "label": "rolüyle",
+    "kind": 14
+  },
+  {
+    "label": "alanı",
+    "kind": 14
+  },
+  {
+    "label": "belirteci",
+    "kind": 14
+  },
+  {
+    "label": "doğrulanıyorsa",
+    "kind": 14
+  },
+  {
+    "label": "kullanıcısını",
+    "kind": 14
+  },
+  {
+    "label": "listelemeyi",
+    "kind": 14
+  },
+  {
+    "label": "iptal",
+    "kind": 14
+  },
+  {
+    "label": "HTTP",
+    "kind": 14
+  },
+  {
+    "label": "JSON",
+    "kind": 14
+  },
+  {
+    "label": "ortam",
+    "kind": 14
+  },
+  {
+    "label": "isteğini",
+    "kind": 14
+  },
+  {
+    "label": "sözlüğünü",
+    "kind": 14
+  },
+  {
+    "label": "argon2",
+    "kind": 14
+  },
+  {
+    "label": "totp",
+    "kind": 14
+  },
+  {
+    "label": "anahtarı",
+    "kind": 14
+  },
+  {
+    "label": "anahtarıyla",
+    "kind": 14
+  },
+  {
+    "label": "ileti",
+    "kind": 14
+  },
+  {
+    "label": "ekli",
+    "kind": 14
+  },
+  {
+    "label": "göndermeyi",
+    "kind": 14
+  },
+  {
+    "label": "üzerinden",
+    "kind": 14
+  },
+  {
+    "label": "görünüm",
+    "kind": 14
+  },
+  {
+    "label": "şifrelenmişi",
+    "kind": 14
+  },
+  {
+    "label": "çözmeyi",
+    "kind": 14
+  },
+  {
+    "label": "görselini",
+    "kind": 14
+  },
+  {
+    "label": "piksele",
+    "kind": 14
+  },
+  {
+    "label": "küçültmeyi",
+    "kind": 14
+  }
+]
+
+
+[Trace - 09:56:03] Sending notification 'textDocument/didChange'
+Params: {
+  "textDocument": {
+    "version": 5,
+    "uri": "file:///Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-owned-ide/project%20with%20spaces/ana.dil"
+  },
+  "contentChanges": [
+    {
+      "text": "isim \"Ayşe\" olsun\nisim yaz\n"
+    }
+  ]
+}
+
+
+[Trace - 09:56:03] Received notification 'textDocument/publishDiagnostics'
+Params: {
+  "uri": "file:///Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-owned-ide/project%20with%20spaces/ana.dil",
+  "diagnostics": []
+}
+
+
+[Trace - 09:56:08] Sending request 'textDocument/completion - (5)'.
+Params: {
+  "context": {
+    "triggerKind": 1
+  },
+  "textDocument": {
+    "uri": "file:///Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-owned-ide/project%20with%20spaces/ana.dil"
+  },
+  "position": {
+    "line": 2,
+    "character": 0
+  }
+}
+
+
+[Trace - 09:56:08] Received response 'textDocument/completion - (5)' in 0ms.
+Result: [
+  {
+    "label": "yaz",
+    "kind": 14
+  },
+  {
+    "label": "olsun",
+    "kind": 14
+  },
+  {
+    "label": "ise",
+    "kind": 14
+  },
+  {
+    "label": "değilse",
+    "kind": 14
+  },
+  {
+    "label": "tekrarla",
+    "kind": 14
+  },
+  {
+    "label": "için",
+    "kind": 14
+  },
+  {
+    "label": "kez",
+    "kind": 14
+  },
+  {
+    "label": "her",
+    "kind": 14
+  },
+  {
+    "label": "kadar",
+    "kind": 14
+  },
+  {
+    "label": "sürece",
+    "kind": 14
+  },
+  {
+    "label": "olduğu",
+    "kind": 14
+  },
+  {
+    "label": "olana",
+    "kind": 14
+  },
+  {
+    "label": "ile",
+    "kind": 14
+  },
+  {
+    "label": "ve",
+    "kind": 14
+  },
+  {
+    "label": "veya",
+    "kind": 14
+  },
+  {
+    "label": "diye",
+    "kind": 14
+  },
+  {
+    "label": "sor",
+    "kind": 14
+  },
+  {
+    "label": "yanıt",
+    "kind": 14
+  },
+  {
+    "label": "işlem",
+    "kind": 14
+  },
+  {
+    "label": "eylem",
+    "kind": 14
+  },
+  {
+    "label": "al",
+    "kind": 14
+  },
+  {
+    "label": "döndür",
+    "kind": 14
+  },
+  {
+    "label": "yapı",
+    "kind": 14
+  },
+  {
+    "label": "test",
+    "kind": 14
+  },
+  {
+    "label": "olmalı",
+    "kind": 14
+  },
+  {
+    "label": "ekle",
+    "kind": 14
+  },
+  {
+    "label": "artır",
+    "kind": 14
+  },
+  {
+    "label": "azalt",
+    "kind": 14
+  },
+  {
+    "label": "böl",
+    "kind": 14
+  },
+  {
+    "label": "göre",
+    "kind": 14
+  },
+  {
+    "label": "kullan",
+    "kind": 14
+  },
+  {
+    "label": "birimini",
+    "kind": 14
+  },
+  {
+    "label": "paketini",
+    "kind": 14
+  },
+  {
+    "label": "rotalarını",
+    "kind": 14
+  },
+  {
+    "label": "doğru",
+    "kind": 14
+  },
+  {
+    "label": "yanlış",
+    "kind": 14
+  },
+  {
+    "label": "yok",
+    "kind": 14
+  },
+  {
+    "label": "yeni",
+    "kind": 14
+  },
+  {
+    "label": "dene",
+    "kind": 14
+  },
+  {
+    "label": "bitir",
+    "kind": 14
+  },
+  {
+    "label": "saniye",
+    "kind": 14
+  },
+  {
+    "label": "dakika",
+    "kind": 14
+  },
+  {
+    "label": "hatasını",
+    "kind": 14
+  },
+  {
+    "label": "kodlu",
+    "kind": 14
+  },
+  {
+    "label": "nedeniyle",
+    "kind": 14
+  },
+  {
+    "label": "verisiyle",
+    "kind": 14
+  },
+  {
+    "label": "kodu",
+    "kind": 14
+  },
+  {
+    "label": "mesajı",
+    "kind": 14
+  },
+  {
+    "label": "nedeni",
+    "kind": 14
+  },
+  {
+    "label": "verisi",
+    "kind": 14
+  },
+  {
+    "label": "varsa",
+    "kind": 14
+  },
+  {
+    "label": "yoksa",
+    "kind": 14
+  },
+  {
+    "label": "başarılıysa",
+    "kind": 14
+  },
+  {
+    "label": "başarısızsa",
+    "kind": 14
+  },
+  {
+    "label": "sil",
+    "kind": 14
+  },
+  {
+    "label": "yönlendir",
+    "kind": 14
+  },
+  {
+    "label": "adresine",
+    "kind": 14
+  },
+  {
+    "label": "istemci",
+    "kind": 14
+  },
+  {
+    "label": "adresi",
+    "kind": 14,
+    "detail": ""
+  },
+  {
+    "label": "çerezine",
+    "kind": 14
+  },
+  {
+    "label": "sıralanmışı",
+    "kind": 14
+  },
+  {
+    "label": "parçaları",
+    "kind": 14
+  },
+  {
+    "label": "birleşmişi",
+    "kind": 14
+  },
+  {
+    "label": "değişmişi",
+    "kind": 14
+  },
+  {
+    "label": "içermeli",
+    "kind": 14
+  },
+  {
+    "label": "olmamalı",
+    "kind": 14
+  },
+  {
+    "label": "kuruşlusu",
+    "kind": 14
+  },
+  {
+    "label": "metni",
+    "kind": 14
+  },
+  {
+    "label": "harfleri",
+    "kind": 14
+  },
+  {
+    "label": "kırpılmışı",
+    "kind": 14
+  },
+  {
+    "label": "arasındaki",
+    "kind": 14
+  },
+  {
+    "label": "günler",
+    "kind": 14
+  },
+  {
+    "label": "önekli",
+    "kind": 14
+  },
+  {
+    "label": "kalanı",
+    "kind": 14
+  },
+  {
+    "label": "GET",
+    "kind": 14
+  },
+  {
+    "label": "HEAD",
+    "kind": 14
+  },
+  {
+    "label": "POST",
+    "kind": 14
+  },
+  {
+    "label": "PUT",
+    "kind": 14
+  },
+  {
+    "label": "PATCH",
+    "kind": 14
+  },
+  {
+    "label": "DELETE",
+    "kind": 14
+  },
+  {
+    "label": "herkese",
+    "kind": 14
+  },
+  {
+    "label": "açık",
+    "kind": 14
+  },
+  {
+    "label": "oturum",
+    "kind": 14
+  },
+  {
+    "label": "gerekli",
+    "kind": 14
+  },
+  {
+    "label": "yetkisi",
+    "kind": 14
+  },
+  {
+    "label": "rolüyle",
+    "kind": 14
+  },
+  {
+    "label": "alanı",
+    "kind": 14
+  },
+  {
+    "label": "belirteci",
+    "kind": 14
+  },
+  {
+    "label": "doğrulanıyorsa",
+    "kind": 14
+  },
+  {
+    "label": "kullanıcısını",
+    "kind": 14
+  },
+  {
+    "label": "listelemeyi",
+    "kind": 14
+  },
+  {
+    "label": "iptal",
+    "kind": 14
+  },
+  {
+    "label": "HTTP",
+    "kind": 14
+  },
+  {
+    "label": "JSON",
+    "kind": 14
+  },
+  {
+    "label": "ortam",
+    "kind": 14
+  },
+  {
+    "label": "isteğini",
+    "kind": 14
+  },
+  {
+    "label": "sözlüğünü",
+    "kind": 14
+  },
+  {
+    "label": "argon2",
+    "kind": 14
+  },
+  {
+    "label": "totp",
+    "kind": 14
+  },
+  {
+    "label": "anahtarı",
+    "kind": 14
+  },
+  {
+    "label": "anahtarıyla",
+    "kind": 14
+  },
+  {
+    "label": "ileti",
+    "kind": 14
+  },
+  {
+    "label": "ekli",
+    "kind": 14
+  },
+  {
+    "label": "göndermeyi",
+    "kind": 14
+  },
+  {
+    "label": "üzerinden",
+    "kind": 14
+  },
+  {
+    "label": "görünüm",
+    "kind": 14
+  },
+  {
+    "label": "şifrelenmişi",
+    "kind": 14
+  },
+  {
+    "label": "çözmeyi",
+    "kind": 14
+  },
+  {
+    "label": "görselini",
+    "kind": 14
+  },
+  {
+    "label": "piksele",
+    "kind": 14
+  },
+  {
+    "label": "küçültmeyi",
+    "kind": 14
+  }
+]
+
+
+[Trace - 09:57:11] Sending notification 'textDocument/didChange'
+Params: {
+  "textDocument": {
+    "version": 6,
+    "uri": "file:///Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-owned-ide/project%20with%20spaces/ana.dil"
+  },
+  "contentChanges": [
+    {
+      "text": "isim \"Ayşe\" olsun\nisim yaz\nol"
+    }
+  ]
+}
+
+
+[Trace - 09:57:11] Received notification 'textDocument/publishDiagnostics'
+Params: {
+  "uri": "file:///Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-owned-ide/project%20with%20spaces/ana.dil",
+  "diagnostics": [
+    {
+      "range": {
+        "start": {
+          "line": 2,
+          "character": 0
+        },
+        "end": {
+          "line": 2,
+          "character": 2
+        }
+      },
+      "severity": 1,
+      "code": "S004",
+      "source": "dil",
+      "message": "Bu cümle tanınmadı: cümleler eylemle biter.\nÖneri: Desteklenen kalıplar: \"... yaz\", \"\u003cad\u003e ... olsun\", \"\u003cn\u003e kez tekrarla\", \"\u003ca\u003e den \u003cb\u003e e kadar her \u003cad\u003e için\", \"... olduğu sürece\", \"... ise / değilse\", \"\u003cad\u003e \u003cn\u003e artır/azalt\", \"işlem \u003cad\u003e\", \"... döndür\", işlem çağrısı. Çağrılan işlem bu dosyada (ya da kullanılan bir birimde) tanımlı olmalı."
+    }
+  ]
+}
+
+
+[Trace - 09:57:11] Sending request 'textDocument/completion - (6)'.
+Params: {
+  "context": {
+    "triggerKind": 1
+  },
+  "textDocument": {
+    "uri": "file:///Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-owned-ide/project%20with%20spaces/ana.dil"
+  },
+  "position": {
+    "line": 2,
+    "character": 2
+  }
+}
+
+
+[Trace - 09:57:11] Received response 'textDocument/completion - (6)' in 0ms.
+Result: [
+  {
+    "label": "yaz",
+    "kind": 14
+  },
+  {
+    "label": "olsun",
+    "kind": 14
+  },
+  {
+    "label": "ise",
+    "kind": 14
+  },
+  {
+    "label": "değilse",
+    "kind": 14
+  },
+  {
+    "label": "tekrarla",
+    "kind": 14
+  },
+  {
+    "label": "için",
+    "kind": 14
+  },
+  {
+    "label": "kez",
+    "kind": 14
+  },
+  {
+    "label": "her",
+    "kind": 14
+  },
+  {
+    "label": "kadar",
+    "kind": 14
+  },
+  {
+    "label": "sürece",
+    "kind": 14
+  },
+  {
+    "label": "olduğu",
+    "kind": 14
+  },
+  {
+    "label": "olana",
+    "kind": 14,
+    "detail": ""
+  },
+  {
+    "label": "ile",
+    "kind": 14
+  },
+  {
+    "label": "ve",
+    "kind": 14
+  },
+  {
+    "label": "veya",
+    "kind": 14
+  },
+  {
+    "label": "diye",
+    "kind": 14
+  },
+  {
+    "label": "sor",
+    "kind": 14
+  },
+  {
+    "label": "yanıt",
+    "kind": 14
+  },
+  {
+    "label": "işlem",
+    "kind": 14
+  },
+  {
+    "label": "eylem",
+    "kind": 14
+  },
+  {
+    "label": "al",
+    "kind": 14
+  },
+  {
+    "label": "döndür",
+    "kind": 14
+  },
+  {
+    "label": "yapı",
+    "kind": 14
+  },
+  {
+    "label": "test",
+    "kind": 14
+  },
+  {
+    "label": "olmalı",
+    "kind": 14
+  },
+  {
+    "label": "ekle",
+    "kind": 14
+  },
+  {
+    "label": "artır",
+    "kind": 14
+  },
+  {
+    "label": "azalt",
+    "kind": 14
+  },
+  {
+    "label": "böl",
+    "kind": 14
+  },
+  {
+    "label": "göre",
+    "kind": 14
+  },
+  {
+    "label": "kullan",
+    "kind": 14
+  },
+  {
+    "label": "birimini",
+    "kind": 14
+  },
+  {
+    "label": "paketini",
+    "kind": 14
+  },
+  {
+    "label": "rotalarını",
+    "kind": 14
+  },
+  {
+    "label": "doğru",
+    "kind": 14
+  },
+  {
+    "label": "yanlış",
+    "kind": 14
+  },
+  {
+    "label": "yok",
+    "kind": 14
+  },
+  {
+    "label": "yeni",
+    "kind": 14
+  },
+  {
+    "label": "dene",
+    "kind": 14
+  },
+  {
+    "label": "bitir",
+    "kind": 14
+  },
+  {
+    "label": "saniye",
+    "kind": 14
+  },
+  {
+    "label": "dakika",
+    "kind": 14
+  },
+  {
+    "label": "hatasını",
+    "kind": 14
+  },
+  {
+    "label": "kodlu",
+    "kind": 14
+  },
+  {
+    "label": "nedeniyle",
+    "kind": 14
+  },
+  {
+    "label": "verisiyle",
+    "kind": 14
+  },
+  {
+    "label": "kodu",
+    "kind": 14
+  },
+  {
+    "label": "mesajı",
+    "kind": 14
+  },
+  {
+    "label": "nedeni",
+    "kind": 14
+  },
+  {
+    "label": "verisi",
+    "kind": 14
+  },
+  {
+    "label": "varsa",
+    "kind": 14
+  },
+  {
+    "label": "yoksa",
+    "kind": 14
+  },
+  {
+    "label": "başarılıysa",
+    "kind": 14
+  },
+  {
+    "label": "başarısızsa",
+    "kind": 14
+  },
+  {
+    "label": "sil",
+    "kind": 14
+  },
+  {
+    "label": "yönlendir",
+    "kind": 14
+  },
+  {
+    "label": "adresine",
+    "kind": 14
+  },
+  {
+    "label": "istemci",
+    "kind": 14
+  },
+  {
+    "label": "adresi",
+    "kind": 14
+  },
+  {
+    "label": "çerezine",
+    "kind": 14
+  },
+  {
+    "label": "sıralanmışı",
+    "kind": 14
+  },
+  {
+    "label": "parçaları",
+    "kind": 14
+  },
+  {
+    "label": "birleşmişi",
+    "kind": 14
+  },
+  {
+    "label": "değişmişi",
+    "kind": 14
+  },
+  {
+    "label": "içermeli",
+    "kind": 14
+  },
+  {
+    "label": "olmamalı",
+    "kind": 14
+  },
+  {
+    "label": "kuruşlusu",
+    "kind": 14
+  },
+  {
+    "label": "metni",
+    "kind": 14
+  },
+  {
+    "label": "harfleri",
+    "kind": 14
+  },
+  {
+    "label": "kırpılmışı",
+    "kind": 14
+  },
+  {
+    "label": "arasındaki",
+    "kind": 14
+  },
+  {
+    "label": "günler",
+    "kind": 14
+  },
+  {
+    "label": "önekli",
+    "kind": 14
+  },
+  {
+    "label": "kalanı",
+    "kind": 14
+  },
+  {
+    "label": "GET",
+    "kind": 14
+  },
+  {
+    "label": "HEAD",
+    "kind": 14
+  },
+  {
+    "label": "POST",
+    "kind": 14
+  },
+  {
+    "label": "PUT",
+    "kind": 14
+  },
+  {
+    "label": "PATCH",
+    "kind": 14
+  },
+  {
+    "label": "DELETE",
+    "kind": 14
+  },
+  {
+    "label": "herkese",
+    "kind": 14
+  },
+  {
+    "label": "açık",
+    "kind": 14
+  },
+  {
+    "label": "oturum",
+    "kind": 14
+  },
+  {
+    "label": "gerekli",
+    "kind": 14
+  },
+  {
+    "label": "yetkisi",
+    "kind": 14
+  },
+  {
+    "label": "rolüyle",
+    "kind": 14
+  },
+  {
+    "label": "alanı",
+    "kind": 14
+  },
+  {
+    "label": "belirteci",
+    "kind": 14
+  },
+  {
+    "label": "doğrulanıyorsa",
+    "kind": 14
+  },
+  {
+    "label": "kullanıcısını",
+    "kind": 14
+  },
+  {
+    "label": "listelemeyi",
+    "kind": 14
+  },
+  {
+    "label": "iptal",
+    "kind": 14
+  },
+  {
+    "label": "HTTP",
+    "kind": 14
+  },
+  {
+    "label": "JSON",
+    "kind": 14
+  },
+  {
+    "label": "ortam",
+    "kind": 14
+  },
+  {
+    "label": "isteğini",
+    "kind": 14
+  },
+  {
+    "label": "sözlüğünü",
+    "kind": 14
+  },
+  {
+    "label": "argon2",
+    "kind": 14
+  },
+  {
+    "label": "totp",
+    "kind": 14
+  },
+  {
+    "label": "anahtarı",
+    "kind": 14
+  },
+  {
+    "label": "anahtarıyla",
+    "kind": 14
+  },
+  {
+    "label": "ileti",
+    "kind": 14
+  },
+  {
+    "label": "ekli",
+    "kind": 14
+  },
+  {
+    "label": "göndermeyi",
+    "kind": 14
+  },
+  {
+    "label": "üzerinden",
+    "kind": 14
+  },
+  {
+    "label": "görünüm",
+    "kind": 14
+  },
+  {
+    "label": "şifrelenmişi",
+    "kind": 14
+  },
+  {
+    "label": "çözmeyi",
+    "kind": 14
+  },
+  {
+    "label": "görselini",
+    "kind": 14
+  },
+  {
+    "label": "piksele",
+    "kind": 14
+  },
+  {
+    "label": "küçültmeyi",
+    "kind": 14
+  }
+]
+
+
+[Trace - 09:57:21] Sending notification 'textDocument/didChange'
+Params: {
+  "textDocument": {
+    "version": 7,
+    "uri": "file:///Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-owned-ide/project%20with%20spaces/ana.dil"
+  },
+  "contentChanges": [
+    {
+      "text": "isim \"Ayşe\" olsun\nisim yaz\nolduğu"
+    }
+  ]
+}
+
+
+[Trace - 09:57:21] Received notification 'textDocument/publishDiagnostics'
+Params: {
+  "uri": "file:///Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-owned-ide/project%20with%20spaces/ana.dil",
+  "diagnostics": [
+    {
+      "range": {
+        "start": {
+          "line": 2,
+          "character": 0
+        },
+        "end": {
+          "line": 2,
+          "character": 6
+        }
+      },
+      "severity": 1,
+      "code": "S004",
+      "source": "dil",
+      "message": "Bu cümle tanınmadı: cümleler eylemle biter.\nÖneri: Desteklenen kalıplar: \"... yaz\", \"\u003cad\u003e ... olsun\", \"\u003cn\u003e kez tekrarla\", \"\u003ca\u003e den \u003cb\u003e e kadar her \u003cad\u003e için\", \"... olduğu sürece\", \"... ise / değilse\", \"\u003cad\u003e \u003cn\u003e artır/azalt\", \"işlem \u003cad\u003e\", \"... döndür\", işlem çağrısı. Çağrılan işlem bu dosyada (ya da kullanılan bir birimde) tanımlı olmalı."
+    }
+  ]
+}
+
+
+[Trace - 09:58:02] Sending notification 'textDocument/didChange'
+Params: {
+  "textDocument": {
+    "version": 8,
+    "uri": "file:///Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-owned-ide/project%20with%20spaces/ana.dil"
+  },
+  "contentChanges": [
+    {
+      "text": "isim \"Ayşe\" olsun\nisim yaz\nsayi 7 ols"
+    }
+  ]
+}
+
+
+[Trace - 09:58:02] Received notification 'textDocument/publishDiagnostics'
+Params: {
+  "uri": "file:///Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-owned-ide/project%20with%20spaces/ana.dil",
+  "diagnostics": [
+    {
+      "range": {
+        "start": {
+          "line": 2,
+          "character": 0
+        },
+        "end": {
+          "line": 2,
+          "character": 4
+        }
+      },
+      "severity": 1,
+      "code": "S004",
+      "source": "dil",
+      "message": "Bu cümle tanınmadı: cümleler eylemle biter.\nÖneri: Desteklenen kalıplar: \"... yaz\", \"\u003cad\u003e ... olsun\", \"\u003cn\u003e kez tekrarla\", \"\u003ca\u003e den \u003cb\u003e e kadar her \u003cad\u003e için\", \"... olduğu sürece\", \"... ise / değilse\", \"\u003cad\u003e \u003cn\u003e artır/azalt\", \"işlem \u003cad\u003e\", \"... döndür\", işlem çağrısı. Çağrılan işlem bu dosyada (ya da kullanılan bir birimde) tanımlı olmalı."
+    }
+  ]
+}
+
+
+[Trace - 09:58:10] Sending request 'textDocument/completion - (7)'.
+Params: {
+  "context": {
+    "triggerKind": 1
+  },
+  "textDocument": {
+    "uri": "file:///Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-owned-ide/project%20with%20spaces/ana.dil"
+  },
+  "position": {
+    "line": 2,
+    "character": 10
+  }
+}
+
+
+[Trace - 09:58:10] Received response 'textDocument/completion - (7)' in 0ms.
+Result: [
+  {
+    "label": "yaz",
+    "kind": 14
+  },
+  {
+    "label": "olsun",
+    "kind": 14
+  },
+  {
+    "label": "ise",
+    "kind": 14
+  },
+  {
+    "label": "değilse",
+    "kind": 14
+  },
+  {
+    "label": "tekrarla",
+    "kind": 14
+  },
+  {
+    "label": "için",
+    "kind": 14
+  },
+  {
+    "label": "kez",
+    "kind": 14
+  },
+  {
+    "label": "her",
+    "kind": 14
+  },
+  {
+    "label": "kadar",
+    "kind": 14
+  },
+  {
+    "label": "sürece",
+    "kind": 14
+  },
+  {
+    "label": "olduğu",
+    "kind": 14
+  },
+  {
+    "label": "olana",
+    "kind": 14
+  },
+  {
+    "label": "ile",
+    "kind": 14
+  },
+  {
+    "label": "ve",
+    "kind": 14
+  },
+  {
+    "label": "veya",
+    "kind": 14
+  },
+  {
+    "label": "diye",
+    "kind": 14
+  },
+  {
+    "label": "sor",
+    "kind": 14
+  },
+  {
+    "label": "yanıt",
+    "kind": 14
+  },
+  {
+    "label": "işlem",
+    "kind": 14
+  },
+  {
+    "label": "eylem",
+    "kind": 14
+  },
+  {
+    "label": "al",
+    "kind": 14
+  },
+  {
+    "label": "döndür",
+    "kind": 14
+  },
+  {
+    "label": "yapı",
+    "kind": 14
+  },
+  {
+    "label": "test",
+    "kind": 14
+  },
+  {
+    "label": "olmalı",
+    "kind": 14
+  },
+  {
+    "label": "ekle",
+    "kind": 14
+  },
+  {
+    "label": "artır",
+    "kind": 14
+  },
+  {
+    "label": "azalt",
+    "kind": 14
+  },
+  {
+    "label": "böl",
+    "kind": 14
+  },
+  {
+    "label": "göre",
+    "kind": 14
+  },
+  {
+    "label": "kullan",
+    "kind": 14
+  },
+  {
+    "label": "birimini",
+    "kind": 14
+  },
+  {
+    "label": "paketini",
+    "kind": 14
+  },
+  {
+    "label": "rotalarını",
+    "kind": 14
+  },
+  {
+    "label": "doğru",
+    "kind": 14
+  },
+  {
+    "label": "yanlış",
+    "kind": 14
+  },
+  {
+    "label": "yok",
+    "kind": 14
+  },
+  {
+    "label": "yeni",
+    "kind": 14
+  },
+  {
+    "label": "dene",
+    "kind": 14
+  },
+  {
+    "label": "bitir",
+    "kind": 14
+  },
+  {
+    "label": "saniye",
+    "kind": 14
+  },
+  {
+    "label": "dakika",
+    "kind": 14
+  },
+  {
+    "label": "hatasını",
+    "kind": 14
+  },
+  {
+    "label": "kodlu",
+    "kind": 14
+  },
+  {
+    "label": "nedeniyle",
+    "kind": 14
+  },
+  {
+    "label": "verisiyle",
+    "kind": 14
+  },
+  {
+    "label": "kodu",
+    "kind": 14
+  },
+  {
+    "label": "mesajı",
+    "kind": 14
+  },
+  {
+    "label": "nedeni",
+    "kind": 14
+  },
+  {
+    "label": "verisi",
+    "kind": 14
+  },
+  {
+    "label": "varsa",
+    "kind": 14
+  },
+  {
+    "label": "yoksa",
+    "kind": 14
+  },
+  {
+    "label": "başarılıysa",
+    "kind": 14
+  },
+  {
+    "label": "başarısızsa",
+    "kind": 14
+  },
+  {
+    "label": "sil",
+    "kind": 14
+  },
+  {
+    "label": "yönlendir",
+    "kind": 14
+  },
+  {
+    "label": "adresine",
+    "kind": 14
+  },
+  {
+    "label": "istemci",
+    "kind": 14
+  },
+  {
+    "label": "adresi",
+    "kind": 14
+  },
+  {
+    "label": "çerezine",
+    "kind": 14
+  },
+  {
+    "label": "sıralanmışı",
+    "kind": 14
+  },
+  {
+    "label": "parçaları",
+    "kind": 14
+  },
+  {
+    "label": "birleşmişi",
+    "kind": 14
+  },
+  {
+    "label": "değişmişi",
+    "kind": 14
+  },
+  {
+    "label": "içermeli",
+    "kind": 14
+  },
+  {
+    "label": "olmamalı",
+    "kind": 14
+  },
+  {
+    "label": "kuruşlusu",
+    "kind": 14
+  },
+  {
+    "label": "metni",
+    "kind": 14
+  },
+  {
+    "label": "harfleri",
+    "kind": 14
+  },
+  {
+    "label": "kırpılmışı",
+    "kind": 14
+  },
+  {
+    "label": "arasındaki",
+    "kind": 14
+  },
+  {
+    "label": "günler",
+    "kind": 14
+  },
+  {
+    "label": "önekli",
+    "kind": 14
+  },
+  {
+    "label": "kalanı",
+    "kind": 14
+  },
+  {
+    "label": "GET",
+    "kind": 14
+  },
+  {
+    "label": "HEAD",
+    "kind": 14
+  },
+  {
+    "label": "POST",
+    "kind": 14
+  },
+  {
+    "label": "PUT",
+    "kind": 14
+  },
+  {
+    "label": "PATCH",
+    "kind": 14
+  },
+  {
+    "label": "DELETE",
+    "kind": 14
+  },
+  {
+    "label": "herkese",
+    "kind": 14
+  },
+  {
+    "label": "açık",
+    "kind": 14
+  },
+  {
+    "label": "oturum",
+    "kind": 14
+  },
+  {
+    "label": "gerekli",
+    "kind": 14
+  },
+  {
+    "label": "yetkisi",
+    "kind": 14
+  },
+  {
+    "label": "rolüyle",
+    "kind": 14
+  },
+  {
+    "label": "alanı",
+    "kind": 14
+  },
+  {
+    "label": "belirteci",
+    "kind": 14
+  },
+  {
+    "label": "doğrulanıyorsa",
+    "kind": 14
+  },
+  {
+    "label": "kullanıcısını",
+    "kind": 14
+  },
+  {
+    "label": "listelemeyi",
+    "kind": 14
+  },
+  {
+    "label": "iptal",
+    "kind": 14
+  },
+  {
+    "label": "HTTP",
+    "kind": 14
+  },
+  {
+    "label": "JSON",
+    "kind": 14
+  },
+  {
+    "label": "ortam",
+    "kind": 14
+  },
+  {
+    "label": "isteğini",
+    "kind": 14
+  },
+  {
+    "label": "sözlüğünü",
+    "kind": 14
+  },
+  {
+    "label": "argon2",
+    "kind": 14
+  },
+  {
+    "label": "totp",
+    "kind": 14
+  },
+  {
+    "label": "anahtarı",
+    "kind": 14
+  },
+  {
+    "label": "anahtarıyla",
+    "kind": 14
+  },
+  {
+    "label": "ileti",
+    "kind": 14
+  },
+  {
+    "label": "ekli",
+    "kind": 14
+  },
+  {
+    "label": "göndermeyi",
+    "kind": 14
+  },
+  {
+    "label": "üzerinden",
+    "kind": 14
+  },
+  {
+    "label": "görünüm",
+    "kind": 14
+  },
+  {
+    "label": "şifrelenmişi",
+    "kind": 14
+  },
+  {
+    "label": "çözmeyi",
+    "kind": 14
+  },
+  {
+    "label": "görselini",
+    "kind": 14
+  },
+  {
+    "label": "piksele",
+    "kind": 14
+  },
+  {
+    "label": "küçültmeyi",
+    "kind": 14
+  }
+]
+
+
+[Trace - 09:58:10] Sending notification 'textDocument/didChange'
+Params: {
+  "textDocument": {
+    "version": 9,
+    "uri": "file:///Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-owned-ide/project%20with%20spaces/ana.dil"
+  },
+  "contentChanges": [
+    {
+      "text": "isim \"Ayşe\" olsun\nisim yaz\nsayi 7 olsun"
+    }
+  ]
+}
+
+
+[Trace - 09:58:10] Received notification 'textDocument/publishDiagnostics'
+Params: {
+  "uri": "file:///Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-owned-ide/project%20with%20spaces/ana.dil",
+  "diagnostics": []
+}
+
+
+[Trace - 09:58:17] Sending notification 'textDocument/didSave'
+Params: {
+  "textDocument": {
+    "uri": "file:///Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-owned-ide/project%20with%20spaces/ana.dil"
+  }
+}

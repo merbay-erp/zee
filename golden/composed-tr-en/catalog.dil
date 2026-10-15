@@ -1,0 +1,41 @@
+# K289: application-owned text catalogue; no HTML or builtin translation API.
+işlem cevir
+    dil Metin olarak al
+    anahtar Metin olarak al
+    Metin sonucu döndürür
+    dil "tr" e eşit değilse
+        dil "en" e eşit değilse
+            "dil-yok" hatasını döndür
+    sozluk boş sözlük olsun
+    sozlugun "tr.site" değeri "Tercihler" olsun
+    sozlugun "en.site" değeri "Preferences" olsun
+    sozlugun "tr.list" değeri "Bildirimler" olsun
+    sozlugun "en.list" değeri "Notifications" olsun
+    sozlugun "tr.email" değeri "E-posta bildirimleri" olsun
+    sozlugun "en.email" değeri "Email notifications" olsun
+    sozlugun "tr.digest" değeri "Haftalık özet" olsun
+    sozlugun "en.digest" değeri "Weekly digest" olsun
+    sozlugun "tr.emailBody" değeri "E-posta tercihlerini inceleyin." olsun
+    sozlugun "en.emailBody" değeri "Review email preferences." olsun
+    sozlugun "tr.digestBody" değeri "Özet tercihlerini inceleyin." olsun
+    sozlugun "en.digestBody" değeri "Review digest preferences." olsun
+    sozlugun "tr.nav" değeri "Dil seçimi" olsun
+    sozlugun "en.nav" değeri "Language selection" olsun
+    sozlugun "tr.footer" değeri "Anonim uygulama, işlem yapılmaz." olsun
+    sozlugun "en.footer" değeri "Anonymous application, no action performed." olsun
+    tamAnahtar dil ile "." ile anahtar olsun
+    sozlukta tamAnahtar varsa
+        sozlugun tamAnahtar değeri döndür
+    "anahtar-yok" hatasını döndür
+
+test "Katalog eksik anahtarı ve desteklenmeyen dili reddeder"
+    sonuc "tr" ve "missing" ile cevir olsun
+    sonuc başarısızsa
+        1 1 e eşit olmalı
+    değilse
+        1 0 a eşit olmalı
+    sonuc "de" ve "site" ile cevir olsun
+    sonuc başarısızsa
+        1 1 e eşit olmalı
+    değilse
+        1 0 a eşit olmalı

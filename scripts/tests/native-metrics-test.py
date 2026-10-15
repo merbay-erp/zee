@@ -57,7 +57,7 @@ def main():
                 if mode in ('alias','stderr-alias'):
                     code=child.wait(timeout=10);error=child.stderr.read() if child.stderr else b''
                     channel=os.read(rd,4096)
-                    require(code==2 and b'owned nonblocking write-only pipe' in error+channel,'stdio alias typed rejection')
+                    require(code==2 and error==b'' and channel==b'','stdio alias quiet rejection')
                     require(b'ZEE_K257_PRIVATE_SOURCE_CANARY' not in channel and b'zee-native-metrics-1' not in channel,'early alias rejection before private source diagnostics')
                     return child,port,rd
                 deadline=time.monotonic()+5

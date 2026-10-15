@@ -61,6 +61,7 @@ pub(super) fn web_istegini_calistir(
             onekli,
             govde,
             satir,
+            ..
         } = cumle
         else {
             continue;

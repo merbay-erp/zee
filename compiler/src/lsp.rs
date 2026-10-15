@@ -9,8 +9,11 @@
 use crate::tani::Tani;
 use std::collections::HashMap;
 
+mod analiz;
 mod cikti;
+mod esitleme;
 mod json;
+use analiz::acik_belge_kaynagi;
 use cikti::{CiktiSonucu, SinirliJson};
 pub use json::{json_coz, Json, JsonSayisi};
 
@@ -215,6 +218,8 @@ const KELIME_ACIKLAMALARI: [(&str, &str); 61] = [
 pub struct Sunucu {
     belgeler: HashMap<String, String>,
     toplam_belge_bayti: usize,
+    sozcukleme: crate::faz::AnalizOturumu,
+    lint: bool,
 }
 
 /// mesaj_isle çıktısı: gönderilecek gövdeler + sunucu devam edecek mi.
@@ -282,11 +287,24 @@ impl Sunucu {
                     rpc_parametre_hatasi(&mut cikti, kimlik);
                     return cikti;
                 }
+                self.lint = match mesaj
+                    .alan("params")
+                    .and_then(|p| p.alan("initializationOptions"))
+                    .and_then(|o| o.alan("lint"))
+                {
+                    None => false,
+                    Some(Json::Mantik(lint)) => *lint,
+                    _ => {
+                        rpc_parametre_hatasi(&mut cikti, kimlik);
+                        return cikti;
+                    }
+                };
                 let yanit = yanit_uret(kimlik, |yazici| {
                     yazici.ham(
-                        "{\"capabilities\":{\"textDocumentSync\":1,\
+                        "{\"capabilities\":{\"textDocumentSync\":2,\
                          \"completionProvider\":{},\
                          \"hoverProvider\":true,\
+                         \"documentFormattingProvider\":true,\
                          \"definitionProvider\":true,\
                          \"renameProvider\":true},\
                          \"serverInfo\":{\"name\":\"dillsp\",\"version\":",
@@ -298,33 +316,18 @@ impl Sunucu {
                 });
                 rpc_yaniti_ekle(&mut cikti, kimlik, yanit);
             }
-            "textDocument/didOpen" => {
-                if let Some((uri, metin)) = ac_parametreleri(&mesaj) {
-                    match self.belgeyi_guncelle(uri.clone(), metin) {
-                        Ok(()) => {
-                            let bildirim = self.tanilari_yayinla(&uri);
-                            cikti_ekle(&mut cikti, kimlik, bildirim);
-                        }
-                        Err(hata) => {
-                            let bildirim = kaynak_siniri_bildirimi(&uri, &hata);
-                            cikti_ekle(&mut cikti, kimlik, bildirim);
-                        }
-                    }
-                    rpc_yaniti_ekle(
-                        &mut cikti,
-                        kimlik,
-                        yanit_uret(kimlik, |yazici| yazici.ham("null")),
-                    );
+            "textDocument/didOpen" | "textDocument/didChange" => {
+                let parametreler = if yontem == "textDocument/didOpen" {
+                    ac_parametreleri(&mesaj)
                 } else {
-                    rpc_parametre_hatasi(&mut cikti, kimlik);
-                }
-            }
-            "textDocument/didChange" => {
-                if let Some((uri, metin)) = degisim_parametreleri(&mesaj) {
+                    esitleme::degisim_parametreleri(&mesaj, &self.belgeler)
+                };
+                if let Some((uri, metin)) = parametreler {
                     match self.belgeyi_guncelle(uri.clone(), metin) {
                         Ok(()) => {
-                            let bildirim = self.tanilari_yayinla(&uri);
-                            cikti_ekle(&mut cikti, kimlik, bildirim);
+                            if !self.acik_tanilari_yenile(&uri, &mut cikti, kimlik) {
+                                return cikti;
+                            }
                         }
                         Err(hata) => {
                             let bildirim = kaynak_siniri_bildirimi(&uri, &hata);
@@ -346,8 +349,12 @@ impl Sunucu {
                         self.toplam_belge_bayti =
                             self.toplam_belge_bayti.saturating_sub(eski.len());
                     }
+                    self.sozcukleme.temizle();
                     let bildirim = bos_tanilar(&uri);
                     cikti_ekle(&mut cikti, kimlik, bildirim);
+                    if !self.acik_tanilari_yenile(&uri, &mut cikti, kimlik) {
+                        return cikti;
+                    }
                     rpc_yaniti_ekle(
                         &mut cikti,
                         kimlik,
@@ -374,6 +381,15 @@ impl Sunucu {
                     }
                     yazici.ham("]")
                 });
+                rpc_yaniti_ekle(&mut cikti, kimlik, yanit);
+            }
+            "textDocument/formatting" => {
+                let Some(uri) = belge_uri(&mesaj) else {
+                    rpc_parametre_hatasi(&mut cikti, kimlik);
+                    return cikti;
+                };
+                let yanit =
+                    esitleme::bicim_yaniti(kimlik, self.belgeler.get(&uri).map(String::as_str));
                 rpc_yaniti_ekle(&mut cikti, kimlik, yanit);
             }
             "textDocument/hover" => {
@@ -507,105 +523,6 @@ impl Sunucu {
         self.toplam_belge_bayti = yeni_toplam;
         Ok(())
     }
-
-    fn tanilari_yayinla(&self, uri: &str) -> CiktiSonucu<String> {
-        let metin = self.belgeler.get(uri).cloned().unwrap_or_default();
-        let belge_yolu = uri_yolu(uri).and_then(|yol| std::fs::canonicalize(yol).ok());
-
-        // Bir proje içindeyse CLI ile aynı kökenli paket grafiğini kullan.
-        // Böylece editörde temiz görünen kaynak komut satırında kırılmaz.
-        let proje_tanilari = belge_yolu.as_ref().and_then(|belge_yolu| {
-            let kok = proje_kokunu_bul(belge_yolu)?;
-            let grafik = match crate::paket::ProjeGrafigi::cozumle(&kok) {
-                Ok(grafik) => grafik,
-                Err(hata) => return Some(vec![*hata.tani]),
-            };
-            if let Err(hata) = grafik.kilidi_denetle() {
-                return Some(vec![*hata.tani]);
-            }
-            let koken = belge_yolu.to_string_lossy().into_owned();
-            let mut yukleyici = |istek: crate::BirimIstegi<'_>| grafik.yukle(istek);
-            Some(crate::kaynagi_tanilari_kokenlerle(
-                &metin,
-                Some(&koken),
-                &mut yukleyici,
-            ))
-        });
-
-        let klasor = uri_klasoru(uri);
-        let mut yukleyici = move |ad: &str| -> Result<String, String> {
-            let klasor = klasor.clone().ok_or("birim yolu çözülemedi")?;
-            if ad.contains(['/', '\\', '.']) {
-                return Err("birim adı yol içeremez".into());
-            }
-            match crate::kaynak_sinirlari::kaynak_dosyasi_oku(&klasor.join(format!("{}.dil", ad))) {
-                Ok(kaynak) => Ok(kaynak),
-                Err(hata) => crate::gomulu_birim(ad)
-                    .map(str::to_string)
-                    .ok_or_else(|| hata.to_string()),
-            }
-        };
-        let tanilar =
-            proje_tanilari.unwrap_or_else(|| crate::kaynagi_tanilari(&metin, &mut yukleyici));
-        let tanilar = birim_tanilarini_konumla(&metin, tanilar);
-        tanilari_yaz(uri, &tanilar)
-    }
-}
-
-/// Kökendeki birim adı: dosya yolunun gövdesi ya da `gömülü:` sonrası.
-fn koken_birim_adi(koken: &str) -> String {
-    if let Some(ad) = koken.strip_prefix("gömülü:") {
-        return ad.to_string();
-    }
-    std::path::Path::new(koken)
-        .file_stem()
-        .and_then(|ad| ad.to_str())
-        .unwrap_or(koken)
-        .to_string()
-}
-
-/// Birim kökenli tanının satırı birimin metnine aittir; açık belgede
-/// işaretlenemez. Tanı, o birimin `kullan` satırına taşınır ve mesaj birim
-/// adı ile özgün satırı söyler (K-164/ADR-072). Kökensiz tanılar değişmez.
-fn birim_tanilarini_konumla(metin: &str, tanilar: Vec<Tani>) -> Vec<Tani> {
-    if tanilar.iter().all(|tani| tani.koken.is_none()) {
-        return tanilar;
-    }
-    let kullanimlar = crate::faz::KaynakMetni::yeni(metin)
-        .sozcukle()
-        .map(|tokenlar: crate::faz::TokenAkisi| {
-            crate::ayristirici::kullanilan_birimler(tokenlar.tokenlar())
-        })
-        .unwrap_or_default();
-    tanilar
-        .into_iter()
-        .map(|tani| {
-            let Some(koken) = tani.koken.clone() else {
-                return tani;
-            };
-            let birim_adi = koken_birim_adi(&koken);
-            let satir = kullanimlar
-                .iter()
-                .find(|(ad, _, _)| *ad == birim_adi)
-                .map(|(_, _, satir)| *satir)
-                .unwrap_or(1);
-            let uzunluk = metin
-                .lines()
-                .nth(satir.saturating_sub(1))
-                .map(|satir_metni| satir_metni.chars().count())
-                .unwrap_or(1)
-                .max(1);
-            Tani {
-                kod: tani.kod,
-                mesaj: format!("{} birimi, satır {}: {}", birim_adi, tani.satir, tani.mesaj),
-                satir,
-                sutun: 1,
-                uzunluk,
-                oneri: tani.oneri,
-                koken: tani.koken,
-            }
-        })
-        .collect()
 }
 
 /// textDocument + position parametrelerini söker (satır/sütun 0 tabanlı).
@@ -856,6 +773,14 @@ fn hir_satir_ifadelerini_coz(
 }
 
 fn semantik_program_derle(uri: &str, metin: &str) -> Option<crate::faz::BaglanmisProgram> {
+    semantik_program_derle_belgeler(uri, metin, None)
+}
+
+fn semantik_program_derle_belgeler(
+    uri: &str,
+    metin: &str,
+    belgeler: Option<&HashMap<String, String>>,
+) -> Option<crate::faz::BaglanmisProgram> {
     let belge_yolu = uri_yolu(uri).and_then(|yol| std::fs::canonicalize(yol).ok());
     if let Some((belge_yolu, kok)) = belge_yolu
         .as_ref()
@@ -864,7 +789,16 @@ fn semantik_program_derle(uri: &str, metin: &str) -> Option<crate::faz::Baglanmi
         let grafik = crate::paket::ProjeGrafigi::cozumle(&kok).ok()?;
         grafik.kilidi_denetle().ok()?;
         let koken = belge_yolu.to_string_lossy().into_owned();
-        let mut yukleyici = |istek: crate::BirimIstegi<'_>| grafik.yukle(istek);
+        let mut yukleyici = |istek: crate::BirimIstegi<'_>| {
+            let mut birim = grafik.yukle(istek)?;
+            let yol = std::path::Path::new(&birim.koken);
+            if grafik.ana_kaynagi_mi(yol) {
+                if let Some(kaynak) = belgeler.and_then(|b| acik_belge_kaynagi(b, yol)) {
+                    birim.kaynak = kaynak.to_string();
+                }
+            }
+            Ok(birim)
+        };
         return crate::kaynagi_fazli_derle_kokenlerle(metin, Some(&koken), &mut yukleyici).ok();
     }
 
@@ -874,8 +808,12 @@ fn semantik_program_derle(uri: &str, metin: &str) -> Option<crate::faz::Baglanmi
         if ad.contains(['/', '\\', '.']) {
             return Err("birim adı yol içeremez".into());
         }
-        match crate::kaynak_sinirlari::kaynak_dosyasi_oku(&klasor.join(format!("{}.dil", ad))) {
-            Ok(kaynak) => Ok(kaynak),
+        let yol = klasor.join(format!("{}.dil", ad));
+        match crate::kaynak_sinirlari::kaynak_dosyasi_oku(&yol) {
+            Ok(kaynak) => Ok(belgeler
+                .and_then(|b| acik_belge_kaynagi(b, &yol))
+                .unwrap_or(&kaynak)
+                .to_string()),
             Err(hata) => crate::gomulu_birim(ad)
                 .map(str::to_string)
                 .ok_or_else(|| hata.to_string()),
@@ -1355,15 +1293,20 @@ fn lsp_tanisi_yaz(yazici: &mut SinirliJson, tani: &Tani) -> CiktiSonucu<()> {
     let satir = tani.satir.saturating_sub(1);
     let bas = tani.sutun.saturating_sub(1);
     let son = bas + tani.uzunluk;
+    let siddet = if matches!(tani.kod.as_str(), "A012" | "S047" | "S048") {
+        2
+    } else {
+        1
+    };
     let mesaj = match &tani.oneri {
         Some(oneri) => format!("{}\nÖneri: {}", tani.mesaj, oneri),
         None => tani.mesaj.clone(),
     };
     yazici.bicimle(format_args!(
         "{{\"range\":{{\"start\":{{\"line\":{},\"character\":{}}},\
-         \"end\":{{\"line\":{},\"character\":{}}}}},\"severity\":1,\
+         \"end\":{{\"line\":{},\"character\":{}}}}},\"severity\":{},\
          \"code\":",
-        satir, bas, satir, son
+        satir, bas, satir, son, siddet
     ))?;
     yazici.metin(&tani.kod)?;
     yazici.ham(",\"source\":\"dil\",\"message\":")?;
@@ -1386,17 +1329,6 @@ fn ac_parametreleri(mesaj: &Json) -> Option<(String, String)> {
         belge.alan("uri")?.metin()?.to_string(),
         belge.alan("text")?.metin()?.to_string(),
     ))
-}
-
-fn degisim_parametreleri(mesaj: &Json) -> Option<(String, String)> {
-    let uri = belge_uri(mesaj)?;
-    let degisimler = mesaj.alan("params")?.alan("contentChanges")?;
-    let Json::Dizi(ogeler) = degisimler else {
-        return None;
-    };
-    // Tam eşitleme (textDocumentSync: 1): son değişiklik tüm metindir.
-    let metin = ogeler.last()?.alan("text")?.metin()?.to_string();
-    Some((uri, metin))
 }
 
 /// file:// URI'sinden klasörü çıkarır (yüzde-kaçışları çözerek).

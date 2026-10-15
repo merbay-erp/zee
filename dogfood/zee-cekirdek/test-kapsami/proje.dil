@@ -1,0 +1,5 @@
+proje "zee-cekirdek-c5-kapsam" olsun
+sürüm "0.1.0" olsun
+morfoloji "zee-tr-1" olsun
+giriş "ana.dil" olsun
+yetkinlikler "ağ-sunucusu", "dosya-yazma", "web-oturumu" listesi olsun
