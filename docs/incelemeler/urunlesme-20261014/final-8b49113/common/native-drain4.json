@@ -1,0 +1,51 @@
+{
+  "schema": "zee-native-sigterm-drain-1",
+  "status": "passed",
+  "compiler_identity": {
+    "schema": "zee-build-v1",
+    "version": "0.8.0-dev",
+    "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+    "source_date": "2026-10-15",
+    "channel": "development",
+    "dirty": false
+  },
+  "binary_sha256": "fb21485fa46422844f5de9b4510a8957c957ac9f281e47df3907cb93eeb8ae4e",
+  "source_sha256": "e4272cd53016b7d394de854edebfbf6f5102704cf263e10731958965dcf555fe",
+  "expected_drain": true,
+  "cases": [
+    {
+      "name": "baseline-actual-handler-completed",
+      "http_status": 200,
+      "elapsed_seconds": 3.002
+    },
+    {
+      "name": "sigterm-after-actual-entry",
+      "http200_completed": true,
+      "response_bytes": 667,
+      "exit": 0,
+      "elapsed_seconds": 3.012
+    },
+    {
+      "name": "no-new-handler-after-sigterm",
+      "http200_completed": false,
+      "response_bytes": 0
+    },
+    {
+      "name": "idle-accept-bounded-stop",
+      "exit": 0,
+      "elapsed_seconds": 0.149
+    }
+  ],
+  "scope": "single admitted native handler; no queued/backlog drain, socket transfer or full P14 acceptance",
+  "fixture_sources": [
+    {
+      "path": "proje.dil",
+      "sha256": "64ef4efabe19ddf506e6dca50cd1867ac785bbb95ad24d99ff41835b1cfa20ce"
+    },
+    {
+      "path": "ana.dil",
+      "sha256": "131fe6e4a28a41275389dbccbaa70af6f107849decd2635d0819937e164bc377"
+    }
+  ],
+  "owned_worker_closed": true
+}

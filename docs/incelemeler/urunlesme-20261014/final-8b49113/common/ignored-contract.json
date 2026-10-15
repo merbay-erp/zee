@@ -1,0 +1,86 @@
+{
+  "schema": "zee-common-ignored-contract-1",
+  "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "entries": [
+    {
+      "target": "lib:dil",
+      "test": "postgresql::havuz::testler::izole_pg_pool_metrikleri_wait_timeout_ve_donus_gercek_sinirlar",
+      "covered_by": "metrics8"
+    },
+    {
+      "target": "test:job_dispatcher_testi",
+      "test": "dispatcher_owned_pg_heartbeat_commit_ve_grup_sahipligi",
+      "covered_by": "job-native11"
+    },
+    {
+      "target": "test:native_effect_consumer_testi",
+      "test": "native_effect_onbir_sql_smtp_no_replay_vakasi",
+      "covered_by": "smtp-pg-fault277"
+    },
+    {
+      "target": "test:native_metrik_host_testi",
+      "test": "native_metrik_http_pg_ve_fd_sahipligi",
+      "covered_by": "metrics8"
+    },
+    {
+      "target": "test:owned_web_kit_testi",
+      "test": "owned_web_kit_dort_native_http_pg_izolasyon_vakasi",
+      "covered_by": "owned-web-pg4"
+    },
+    {
+      "target": "test:pdf_host_testi",
+      "test": "pdf_sabit_owned_backend_kabulu",
+      "covered_by": "pdf-backend8"
+    },
+    {
+      "target": "test:postgresql_goc_plani_testi",
+      "test": "izole_goc_durum_kuru_checksum_rol_ve_atomik_uygulama_sinirini_korur",
+      "covered_by": "goc1"
+    },
+    {
+      "target": "test:postgresql_testi",
+      "test": "izole_tls_11_erisilebilir_legacy_sunucuyu_reddeder",
+      "covered_by": "pg8"
+    },
+    {
+      "target": "test:postgresql_testi",
+      "test": "izole_tls_baska_ca_gercek_sunucuyu_reddeder",
+      "covered_by": "pg8"
+    },
+    {
+      "target": "test:postgresql_testi",
+      "test": "izole_tls_deadlock_40p01_tekrarsiz_rollback_ve_yeni_oturum_sagligi",
+      "covered_by": "pg8"
+    },
+    {
+      "target": "test:postgresql_testi",
+      "test": "izole_tls_dogru_ca_hostname_ve_tls12_ile_baglanir",
+      "covered_by": "pg8"
+    },
+    {
+      "target": "test:postgresql_testi",
+      "test": "izole_tls_null_ve_metin_disini_reddeder_transaction_sagligi_korunur",
+      "covered_by": "pg8"
+    },
+    {
+      "target": "test:postgresql_testi",
+      "test": "izole_tls_san_disindaki_ip_hostnameini_reddeder",
+      "covered_by": "pg8"
+    },
+    {
+      "target": "test:postgresql_testi",
+      "test": "izole_tls_serialization_40001_tekrarsiz_rollback_ve_yeni_oturum_sagligi",
+      "covered_by": "pg8"
+    },
+    {
+      "target": "test:postgresql_testi",
+      "test": "izole_tls_sorgu_parametre_sonuc_ve_goc_sinirlarini_bir_fazlasinda_reddeder",
+      "covered_by": "pg8"
+    },
+    {
+      "target": "test:sureli_hazirlik_testi",
+      "test": "native_pg_tekrarlanan_hazirlik_ve_sigkill_ttl",
+      "covered_by": "readiness-watch-pg15"
+    }
+  ]
+}

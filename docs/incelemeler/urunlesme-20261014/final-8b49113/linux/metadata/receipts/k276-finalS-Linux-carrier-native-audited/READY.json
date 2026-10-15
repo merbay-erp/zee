@@ -1,0 +1,9 @@
+{
+  "status": "passed",
+  "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "manifest_sha256": "57ac0dbd69ccdd5a77e4fab808aeaa6bb5e917e0c9f7e3c00fb97461757fd68b",
+  "PROOF_sha256": "6a786de6cba6104425181565f73ba5ca74f506badd750b9ab18fb8ffdb077352",
+  "actual_cases": 4,
+  "source_begin_end_receipts": true,
+  "preflight5": false
+}

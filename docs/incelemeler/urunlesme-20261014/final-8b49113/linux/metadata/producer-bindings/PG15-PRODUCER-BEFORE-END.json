@@ -1,0 +1,71 @@
+{
+  "schema": "producer-derived-before-end-binding-1",
+  "derived_at": "archival assembly after actual campaign; no historical standalone START file is claimed",
+  "proof_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/k276-finalS-Linux-PG-native/PG-native/proof.json",
+  "proof_sha256": "4ccb228eed0d0ad4ab043ee314418d2cfa77c5b058f964985b1de80fe9661252",
+  "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "producer_path": "scripts/tests/db-readiness-watch-native.py",
+  "producer_Git_blob_sha256": "3ff5da8666334e05169e3c599f060b193d0346b84e68c0556ec844530fe72d1c",
+  "recorded_before_source_files": [
+    {
+      "path": "scripts/db-hazirlik.py",
+      "sha256": "37b554ba3bfbbd848b876c5a069e6a96f87804aca5bdb6024351d68c83cd847b"
+    },
+    {
+      "path": "scripts/tests/db-readiness-watch-native.py",
+      "sha256": "3ff5da8666334e05169e3c599f060b193d0346b84e68c0556ec844530fe72d1c"
+    },
+    {
+      "path": "scripts/worker-supervisor.py",
+      "sha256": "560bec4e4e36d2aa856936d9d32412bb9106b61b25a871495287e2287e3c6642"
+    },
+    {
+      "path": "scripts/native-capabilities.py",
+      "sha256": "0a336d915e6618b7bc9134598337c0e442a7d455008fa937a0e49771fe7d94fc"
+    },
+    {
+      "path": "scripts/native-metrics.py",
+      "sha256": "d5d12902358591365ff201c13c44b255d265c49c71befabcdef0575fe7e854c4"
+    },
+    {
+      "path": "scripts/tests/worker-supervisor-test.py",
+      "sha256": "447525fd38503c150d6488e394e2ff13e51b5db70bbf9a9517daacadd1e59fe1"
+    },
+    {
+      "path": "scripts/postgresql-tls-ci.py",
+      "sha256": "8ef71f0070b9e954b70d0ec24c50c0285b4bfb76de4ed40490efd9eac78cad77"
+    },
+    {
+      "path": "scripts/postgresql-tls11-control.py",
+      "sha256": "cdf477d154f9fe11086c4829b34b9a412156feabdee1404b5bd863026f2ba639"
+    },
+    {
+      "path": "compiler/tests/fixtures/db-readiness/probe/kaynak/hazirlik.dil",
+      "sha256": "269ad7683f65b1a6e3dd6596cbc019958fea1ee55589782bef728a94f9471aff"
+    },
+    {
+      "path": "compiler/tests/fixtures/db-readiness/probe/proje.dil",
+      "sha256": "8d66faf93f54d78eeb8ac241ed9ebfe6d08c1a140362999617cf12d38a5b1fdf"
+    },
+    {
+      "path": "compiler/tests/fixtures/db-readiness/worker/ana.dil",
+      "sha256": "b3d1899ca7590f80ddb133d9ef2db01627b742a6250d48e02d6af98f5652858f"
+    },
+    {
+      "path": "compiler/tests/fixtures/db-readiness/worker/proje.dil",
+      "sha256": "4ee182bb763bdde74c95d28f628bc83ebf7e35ac630f3feddb52c620e833f9cb"
+    },
+    {
+      "path": "compiler/tests/fixtures/db-readiness/probe/gocler/0001_hazirlik.sql",
+      "sha256": "b3cf7ad04df12896f1131090ff1abdacd5baf3e501fd022eecef727b8a9c905a"
+    }
+  ],
+  "producer_asserted_same_after": true,
+  "binary_before_sha256": "80cc4b162211b352e97dd8f3d54697e53d92f5d3dd40b03fe73f78963d37e739",
+  "producer_asserted_binary_same_after": true,
+  "source_clauses": [
+    "source_hashes initialized before native cases and stored in proof source_files",
+    "source_hashes recomputed after all15 cases; mismatch rejects before status passed"
+  ],
+  "actual_cases": 15
+}

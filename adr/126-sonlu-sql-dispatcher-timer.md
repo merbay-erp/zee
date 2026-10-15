@@ -1,6 +1,6 @@
 # ADR-126 — Sonlu SQL dispatcher user timer ve belirsizlik kilidi (K-268/P09)
 
-- **Durum:** kabul, dar owned host hazırlığı; gerçek Linux/systemd/native kabulü açık.
+- **Durum:** kabul; temiz S owned Linux/proc/user-timer2 kabulü var; genel daemon/provider/fullP09 açık
 Güvenlik kaydı: GB-084 bilinçli admission/unknown-outcome sınırı.
 
 54a8d6dc0efb060ae5644b37546da40ad03ee035 K258 mevcut --ticks1..100 SQL-only
@@ -59,3 +59,9 @@ clear öncesi kalır ve latch+exit3 admission'ı kapatır. Best-effort restore v
 IO arızasında dayanıklılık garantisi uydurulmaz. Reconcile yalnız exact schema,
 matching SHA alanları ve positive bounded int created_ns kaydını kabul eder;
 bozuk/ek/eksik/duplicate/nonfinite/type yanlış kayıtları silmeden reddeder.
+
+## 15 Ekim 2026 — temiz S yerel kanıt güncellemesi
+
+Temiz S üzerinde actual Debian12 ARM64/Linux-proc ve kanonik değişmeyen user-unit dosyalarıyla audited2 geçti: normal tick job=done/attempts1/intents1; advisory-lock altında TERM job=leased/attempts1/intents0, inflight latch korunur ve otomatik replay yapılmaz. Frozen guest argv+actual START/END111pin eşitliği, cgroup/unit ve owned PG temizliği kaydedildi. Latch temizlenmiş gibi sunulmaz. Genel daemon/provider/cron/fullP09 açık.
+
+[Güncel dar kaynak kanıtı](../docs/urunlesme-final-kabul-20261015.md).

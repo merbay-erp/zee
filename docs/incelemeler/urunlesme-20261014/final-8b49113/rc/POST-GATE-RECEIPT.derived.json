@@ -1,0 +1,166 @@
+{
+  "schema": "zee-derived-metadata-sha256-bindings-v1",
+  "boundary": "Derived parsed JSON, not raw byte identity. Two public Git-S source hashes represented as explicit bindings. Raw receipt remains authoritative outside Git.",
+  "raw_external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/rc-final-8b49113c-recovery-caffeinated-20261015/POST-GATE-RECEIPT.json",
+  "raw_sha256": "13e3130aba5b1c91b5f69d50a6429ab92622522812d4cdd2abe5613b09237c0e",
+  "metadata": {
+    "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+    "tree": "09fa6e764bb317b4aa5b32b6ca15ce02f4cf389d",
+    "original_start": {
+      "sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+      "tree": "09fa6e764bb317b4aa5b32b6ca15ce02f4cf389d",
+      "clean": true
+    },
+    "clone_start": {
+      "sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+      "tree": "09fa6e764bb317b4aa5b32b6ca15ce02f4cf389d",
+      "clean": true
+    },
+    "script_pins_before": {
+      "scripts/rc-kampanyasi.py": "f401406d8097479c5545597fc09ae81791e20043adccd8b9abb8ad650cf86752",
+      "scripts/rc-kaniti.py": "c0266630054eaba1a9f86ff23cf11edaf22a28915c13c59ccf547a6f2f302554",
+      "scripts/lifecycle_core.py": "e76fe65b6103fc4732aafc4468afc5bbf3d0699a0f79d7f74879165636ebb1a9",
+      "scripts/guvenlik-kapisi.sh": {
+        "sha256_binding": 0
+      }
+    },
+    "post_wrapper_sha256_before": "cd8ef7bda702930f2b0fdc11296827165a8da8586323c45fa668574de771b555",
+    "python_realfile_sha256_before": "f5d584368bd127649722baa482517054d3c941ea5fbd29a669a8c5323dd21be5",
+    "commands": [
+      {
+        "name": "export",
+        "argv": [
+          "/Library/Frameworks/Python.framework/Versions/3.13/bin/python3.13",
+          "-I",
+          "-B",
+          "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/scripts/rc-kaniti.py",
+          "export",
+          "--framework-root",
+          "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+          "--campaign",
+          "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/rc-final-8b49113c-recovery-caffeinated-20261015/campaign",
+          "--output",
+          "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/rc-final-8b49113c-recovery-caffeinated-20261015/bundle"
+        ],
+        "cwd": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/rc-final-8b49113c-recovery-caffeinated-20261015/campaign/checkout",
+        "exit": 0,
+        "start_wall_ns": 1792044633207478000,
+        "end_wall_ns": 1792044635606531000,
+        "elapsed_monotonic_seconds": 2.3990505000110716,
+        "raw_log": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/rc-final-8b49113c-recovery-caffeinated-20261015/export.log",
+        "log_sha256": "60ef9c1ee4db943b0619e833326375bc7b6f7d44adf4d9beabe1ff540f45ef06",
+        "log_bytes": 262,
+        "owned_group_closed": true,
+        "error": null
+      },
+      {
+        "name": "bundle-check",
+        "argv": [
+          "/Library/Frameworks/Python.framework/Versions/3.13/bin/python3.13",
+          "-I",
+          "-B",
+          "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/scripts/rc-kaniti.py",
+          "check",
+          "--framework-root",
+          "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+          "--bundle",
+          "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/rc-final-8b49113c-recovery-caffeinated-20261015/bundle",
+          "--sha256",
+          "5e174eb9179e79e75b5127e12c1760b65d448704256ad69dbfa3abd5b343805c"
+        ],
+        "cwd": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/rc-final-8b49113c-recovery-caffeinated-20261015/campaign/checkout",
+        "exit": 0,
+        "start_wall_ns": 1792044635607461000,
+        "end_wall_ns": 1792044636562449000,
+        "elapsed_monotonic_seconds": 0.9549873329233378,
+        "raw_log": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/rc-final-8b49113c-recovery-caffeinated-20261015/bundle-check.log",
+        "log_sha256": "0c24fd130b98604f711585f5279857f9db038c8a35c0ae6d05a0c6e324b9ff69",
+        "log_bytes": 383,
+        "owned_group_closed": true,
+        "error": null
+      },
+      {
+        "name": "gate",
+        "argv": [
+          "/bin/bash",
+          "scripts/guvenlik-kapisi.sh",
+          "--surum-adayi",
+          "--rc-kanit",
+          "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/rc-final-8b49113c-recovery-caffeinated-20261015/bundle",
+          "--rc-kanit-sha256",
+          "5e174eb9179e79e75b5127e12c1760b65d448704256ad69dbfa3abd5b343805c"
+        ],
+        "cwd": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/rc-final-8b49113c-recovery-caffeinated-20261015/campaign/checkout",
+        "exit": 0,
+        "start_wall_ns": 1792044636607192000,
+        "end_wall_ns": 1792045146806810000,
+        "elapsed_monotonic_seconds": 510.1987582910806,
+        "raw_log": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/rc-final-8b49113c-recovery-caffeinated-20261015/gate.log",
+        "log_sha256": "8d3bdd40cd1bd278a191b71528a63b3d48ec84b7cdfd5f574f1eeb4c95e704c5",
+        "log_bytes": 103645,
+        "owned_group_closed": true,
+        "error": null
+      }
+    ],
+    "status": "same-S-release-candidate-gate-passed",
+    "environment": {
+      "USER": "mustafaerbay",
+      "LOGNAME": "mustafaerbay",
+      "TMPDIR": "/private/tmp/zee-rcgate-r4r8v6sk",
+      "RUSTUP_TOOLCHAIN": "1.93.1",
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "CARGO_NET_OFFLINE": "true"
+    },
+    "tmpdir_disposition": "retained owned short temporary directory for raw diagnostics; no blanket resource-removal claim",
+    "network_note": "Cargo offline requested; cargo-deny advisory behavior is not asserted offline. No CI/corpus download/import.",
+    "bundle": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/rc-final-8b49113c-recovery-caffeinated-20261015/bundle",
+    "bundle_manifest_sha256": "5e174eb9179e79e75b5127e12c1760b65d448704256ad69dbfa3abd5b343805c",
+    "gate_start_original": {
+      "sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+      "tree": "09fa6e764bb317b4aa5b32b6ca15ce02f4cf389d",
+      "clean": true
+    },
+    "gate_start_clone": {
+      "sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+      "tree": "09fa6e764bb317b4aa5b32b6ca15ce02f4cf389d",
+      "clean": true
+    },
+    "original_end": {
+      "sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+      "tree": "09fa6e764bb317b4aa5b32b6ca15ce02f4cf389d",
+      "clean": true
+    },
+    "clone_end": {
+      "sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+      "tree": "09fa6e764bb317b4aa5b32b6ca15ce02f4cf389d",
+      "clean": true
+    },
+    "python_realfile_sha256_after": "f5d584368bd127649722baa482517054d3c941ea5fbd29a669a8c5323dd21be5",
+    "post_wrapper_sha256_after": "cd8ef7bda702930f2b0fdc11296827165a8da8586323c45fa668574de771b555",
+    "script_pins_after": {
+      "scripts/rc-kampanyasi.py": "f401406d8097479c5545597fc09ae81791e20043adccd8b9abb8ad650cf86752",
+      "scripts/rc-kaniti.py": "c0266630054eaba1a9f86ff23cf11edaf22a28915c13c59ccf547a6f2f302554",
+      "scripts/lifecycle_core.py": "e76fe65b6103fc4732aafc4468afc5bbf3d0699a0f79d7f74879165636ebb1a9",
+      "scripts/guvenlik-kapisi.sh": {
+        "sha256_binding": 1
+      }
+    }
+  },
+  "bindings": [
+    {
+      "original_field": [
+        "script_pins_before",
+        "scripts/guvenlik-kapisi.sh"
+      ],
+      "sha256": "ab3f6e6a67a631a709e94837638f082fc348ba31b3869a8bf3bf0de3c92690c0"
+    },
+    {
+      "original_field": [
+        "script_pins_after",
+        "scripts/guvenlik-kapisi.sh"
+      ],
+      "sha256": "ab3f6e6a67a631a709e94837638f082fc348ba31b3869a8bf3bf0de3c92690c0"
+    }
+  ]
+}

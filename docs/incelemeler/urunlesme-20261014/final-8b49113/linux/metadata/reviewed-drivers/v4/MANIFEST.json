@@ -1,0 +1,89 @@
+{
+  "schema": "external-preparation-manifest-1",
+  "files": [
+    {
+      "path": "CONTRACT.md",
+      "sha256": "efef7f0747a67f6a7af787781a64c7f054c541c153e218c07811bbcce14cf3fe"
+    },
+    {
+      "path": "canonical-linux-runtime.Dockerfile.in",
+      "sha256": "b9c0c167059d2b5a1bd012b1ee11c85b91d1edd24367f3a0b3805a669409e859"
+    },
+    {
+      "path": "external/delivery/deliverable.py",
+      "sha256": "509106d70e5e35c1142594c98df022b01e689966415bdd94a8f67feecb8587d8"
+    },
+    {
+      "path": "external/install/install_acceptance.py",
+      "sha256": "c5143d1105a52bb0e3b232e5af5b765bb78ae34de814c660776a4e584e1f8af0"
+    },
+    {
+      "path": "external/install/lsp_smoke.py",
+      "sha256": "58afb02c9869a48b2cd3315b108dfd483b4e1b40872fe189705359816a00dfb5"
+    },
+    {
+      "path": "external/install/owned_helper.py",
+      "sha256": "509106d70e5e35c1142594c98df022b01e689966415bdd94a8f67feecb8587d8"
+    },
+    {
+      "path": "finalS-partial-ELF-readelf.json",
+      "sha256": "88a3cbc31ebd793602187adbf77ce4a6a835e9aee4541f84d9eeb52b6832b4ee"
+    },
+    {
+      "path": "linux_carrier_native.py",
+      "sha256": "d0116847430a4342131e4b090f4b24e97b3a084f39f2caa6149bd96c517fb863"
+    },
+    {
+      "path": "linux_container_native.py",
+      "sha256": "f16e0834d46bb3248e85b5e94b634559370bdf6facfc9652ee5bd8e6a2698d83"
+    },
+    {
+      "path": "linux_protocol.py",
+      "sha256": "4783fc83e6a9dd9c622e75ef88459796abde084bd7cad91a51f0afe4008e01c7"
+    },
+    {
+      "path": "linux_step.py",
+      "sha256": "ee69eaa560b94788a4cfd77a5e9923d1c9a2842bdb9a8db232beb10112dd56b0"
+    },
+    {
+      "path": "linux_timer_native.py",
+      "sha256": "386103e27a974372d3920ba687fef67428333568c19f10ca23f50315562b33a5"
+    },
+    {
+      "path": "non-Zee-offline-base-probe/RESULT.json",
+      "sha256": "def351f6fafc7fe791d622815e314187e58219a45a0de96c0b2f5745b2cfcf1a"
+    },
+    {
+      "path": "non-Zee-offline-base-probe/build.log",
+      "sha256": "d3af19e937c6d665eab47b53c3ae917dac2b10283ae2fae62a61d0a4f3928b7f"
+    },
+    {
+      "path": "non-Zee-offline-base-probe/cleanup.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "non-Zee-offline-base-probe/context/Dockerfile",
+      "sha256": "96d9caa4505b0cb18177f05650b060e34a2f63eda55df70d2faa532de8a1db2f"
+    },
+    {
+      "path": "non-Zee-offline-base-probe/image-id",
+      "sha256": "f0ce4a8a7ae2f12d611e3d73e3d24fa6d88930226687f13a497c6ba50a6e4bbb"
+    },
+    {
+      "path": "non-Zee-offline-base-probe/official-local-name.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "non-Zee-offline-base-probe/policy.json",
+      "sha256": "c157d861ca93c9ec2bb63e000ec51c52e8b4d2f39f1b09c678f925e786639a62"
+    },
+    {
+      "path": "preparation30.log",
+      "sha256": "137db54b8335f4567e4822085520f4ba22528043818abbf2fa094cf8179a3cb9"
+    },
+    {
+      "path": "test_linux_preparation.py",
+      "sha256": "e19d872d80d58c130dae4c5c2a5ea751ee3f29ebb9db8d7141fed9e028377b8e"
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+{
+  "initial_root_review_assertion": "unsupported expectation health_probe_failures==0 failed; actualcontroller itself PASSED",
+  "actual_raw_counter": 1,
+  "correction": "retainraw1; classifystartup by reviewedcontrolflow inference only; no source or proof modification and no rerun to hidecounter"
+}

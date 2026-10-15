@@ -1,0 +1,32 @@
+[
+  {
+    "component": "rustc",
+    "version": "1.93.1 (01f6ddf75 2026-02-11)",
+    "url": "https://static.rust-lang.org/dist/2026-02-12/rustc-1.93.1-aarch64-unknown-linux-gnu.tar.xz",
+    "sha256": "7c48ea79360f88145866ebee8dfe1c8971f008c69efe41d69c03ac72ad7ee0a7"
+  },
+  {
+    "component": "rust-std",
+    "version": "1.93.1 (01f6ddf75 2026-02-11)",
+    "url": "https://static.rust-lang.org/dist/2026-02-12/rust-std-1.93.1-aarch64-unknown-linux-gnu.tar.xz",
+    "sha256": "56f2cd66ad7167dd6924ff095063ffddfe731812a1909b9200bb0ee21982fc47"
+  },
+  {
+    "component": "cargo",
+    "version": "0.94.0 (083ac5135 2025-12-15)",
+    "url": "https://static.rust-lang.org/dist/2026-02-12/cargo-1.93.1-aarch64-unknown-linux-gnu.tar.xz",
+    "sha256": "0788df66f965bff56643661d30d42a52bf77423185a8081ef81aebc2ba7d6f05"
+  },
+  {
+    "component": "rustfmt-preview",
+    "version": "1.8.0",
+    "url": "https://static.rust-lang.org/dist/2026-02-12/rustfmt-1.93.1-aarch64-unknown-linux-gnu.tar.xz",
+    "sha256": "0a6caefdf4a6c1d2a24aae85d09ce38c6b744954048087d45507af3288f0b064"
+  },
+  {
+    "component": "clippy-preview",
+    "version": "0.1.93",
+    "url": "https://static.rust-lang.org/dist/2026-02-12/clippy-1.93.1-aarch64-unknown-linux-gnu.tar.xz",
+    "sha256": "7bd258012c517baf62f14674c84fc513224b4d8161fea129f7ad1ae44ee6895b"
+  }
+]

@@ -1,0 +1,775 @@
+{
+  "schema": "zee-p13-owned-duration-1",
+  "mode": "acceptance",
+  "acceptance": true,
+  "status": "passed",
+  "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "binary_sha256": "f47fcf76020c232ff97917d73c71b4225030ec00d3ff402247fce3b655ca0963",
+  "sources": [
+    {
+      "path": "runner",
+      "sha256": "61573fa0f4d61575ba4011999afd43da2ba9f311367827f47130db724134365f"
+    },
+    {
+      "path": "scripts/worker-supervisor.py",
+      "sha256": "560bec4e4e36d2aa856936d9d32412bb9106b61b25a871495287e2287e3c6642"
+    },
+    {
+      "path": "scripts/credential-baslat.py",
+      "sha256": "6894667f5d2d529434c235c9ae54aec64d4fb3c1c25712c25fb7f710eee9961f"
+    },
+    {
+      "path": "scripts/native-metrics.py",
+      "sha256": "d5d12902358591365ff201c13c44b255d265c49c71befabcdef0575fe7e854c4"
+    },
+    {
+      "path": "scripts/postgresql-tls-ci.py",
+      "sha256": "8ef71f0070b9e954b70d0ec24c50c0285b4bfb76de4ed40490efd9eac78cad77"
+    },
+    {
+      "path": "scripts/postgresql-tls11-control.py",
+      "sha256": "cdf477d154f9fe11086c4829b34b9a412156feabdee1404b5bd863026f2ba639"
+    },
+    {
+      "path": "dogfood/zee-cekirdek/metrik/ana.dil",
+      "sha256": "dcde951cebbbeaf4dcde3643058b74843b036f661934fc69e8cb0c9b7ec4fa6e"
+    },
+    {
+      "path": "dogfood/zee-cekirdek/metrik/proje.dil",
+      "sha256": "a72053519a225c3e6bea9de2444774132cf3f825f688d0e0b59d702d3895beef"
+    }
+  ],
+  "requested_seconds": 900,
+  "started_utc": "2026-10-15T03:42:30.750395+00:00",
+  "platform": {
+    "system": "Darwin",
+    "machine": "arm64",
+    "python": "3.13.3",
+    "cpu_count": 14
+  },
+  "scope": "owned local lowfixedload fixture duration; observational RSS/CPU; no physical server/product adoption/TLS/HUP/P14 or compiler-LSP-soak acceptance",
+  "postgres_version": "postgres (PostgreSQL) 16.15",
+  "build": {
+    "schema": "zee-build-v1",
+    "version": "0.8.0-dev",
+    "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+    "source_date": "2026-10-15",
+    "channel": "development",
+    "dirty": false
+  },
+  "elapsed_seconds": 900.0595662500709,
+  "driver_final": {
+    "schema": "zee-p13-duration-driver-1",
+    "elapsed_ms": 900010,
+    "requests": 360,
+    "status200": 360,
+    "client_observed_us_sum": 16927213,
+    "final": true
+  },
+  "native_snapshot": {
+    "native_request": [
+      1232,
+      1232,
+      35517787,
+      0,
+      0,
+      0,
+      1232,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "native_pool": [
+      2,
+      2,
+      0,
+      0,
+      182,
+      0,
+      55642,
+      9321682
+    ],
+    "native_snapshot_drops": 0,
+    "native_metric_channels": 2,
+    "native_metric_unavailable": 0,
+    "native_metric_rejected_total": 0,
+    "native_request_age_ms": 1935,
+    "native_pool_age_ms": 1935
+  },
+  "rss_samples": [
+    {
+      "elapsed_ms": 56,
+      "rss_kib": [
+        9232,
+        9200
+      ]
+    },
+    {
+      "elapsed_ms": 10103,
+      "rss_kib": [
+        9456,
+        9360
+      ]
+    },
+    {
+      "elapsed_ms": 20143,
+      "rss_kib": [
+        9120,
+        9088
+      ]
+    },
+    {
+      "elapsed_ms": 30141,
+      "rss_kib": [
+        9248,
+        9104
+      ]
+    },
+    {
+      "elapsed_ms": 40195,
+      "rss_kib": [
+        9280,
+        9216
+      ]
+    },
+    {
+      "elapsed_ms": 50209,
+      "rss_kib": [
+        9312,
+        9232
+      ]
+    },
+    {
+      "elapsed_ms": 60333,
+      "rss_kib": [
+        9344,
+        9520
+      ]
+    },
+    {
+      "elapsed_ms": 70388,
+      "rss_kib": [
+        9296,
+        9504
+      ]
+    },
+    {
+      "elapsed_ms": 80437,
+      "rss_kib": [
+        9232,
+        9216
+      ]
+    },
+    {
+      "elapsed_ms": 90467,
+      "rss_kib": [
+        9296,
+        9296
+      ]
+    },
+    {
+      "elapsed_ms": 100547,
+      "rss_kib": [
+        9328,
+        9328
+      ]
+    },
+    {
+      "elapsed_ms": 110586,
+      "rss_kib": [
+        9328,
+        9328
+      ]
+    },
+    {
+      "elapsed_ms": 120627,
+      "rss_kib": [
+        9504,
+        9456
+      ]
+    },
+    {
+      "elapsed_ms": 130632,
+      "rss_kib": [
+        9520,
+        9456
+      ]
+    },
+    {
+      "elapsed_ms": 140695,
+      "rss_kib": [
+        9456,
+        9376
+      ]
+    },
+    {
+      "elapsed_ms": 150751,
+      "rss_kib": [
+        9520,
+        9456
+      ]
+    },
+    {
+      "elapsed_ms": 160778,
+      "rss_kib": [
+        9520,
+        9456
+      ]
+    },
+    {
+      "elapsed_ms": 170840,
+      "rss_kib": [
+        9504,
+        9392
+      ]
+    },
+    {
+      "elapsed_ms": 180911,
+      "rss_kib": [
+        9344,
+        9296
+      ]
+    },
+    {
+      "elapsed_ms": 190965,
+      "rss_kib": [
+        9344,
+        9296
+      ]
+    },
+    {
+      "elapsed_ms": 201006,
+      "rss_kib": [
+        9344,
+        9296
+      ]
+    },
+    {
+      "elapsed_ms": 211063,
+      "rss_kib": [
+        9344,
+        9296
+      ]
+    },
+    {
+      "elapsed_ms": 221153,
+      "rss_kib": [
+        9312,
+        9296
+      ]
+    },
+    {
+      "elapsed_ms": 231221,
+      "rss_kib": [
+        9312,
+        9472
+      ]
+    },
+    {
+      "elapsed_ms": 241289,
+      "rss_kib": [
+        9312,
+        9472
+      ]
+    },
+    {
+      "elapsed_ms": 251302,
+      "rss_kib": [
+        9312,
+        9472
+      ]
+    },
+    {
+      "elapsed_ms": 261358,
+      "rss_kib": [
+        9312,
+        9472
+      ]
+    },
+    {
+      "elapsed_ms": 271434,
+      "rss_kib": [
+        9312,
+        9472
+      ]
+    },
+    {
+      "elapsed_ms": 281476,
+      "rss_kib": [
+        9312,
+        9472
+      ]
+    },
+    {
+      "elapsed_ms": 291490,
+      "rss_kib": [
+        9472,
+        9472
+      ]
+    },
+    {
+      "elapsed_ms": 301495,
+      "rss_kib": [
+        9488,
+        9648
+      ]
+    },
+    {
+      "elapsed_ms": 311505,
+      "rss_kib": [
+        9488,
+        9648
+      ]
+    },
+    {
+      "elapsed_ms": 321548,
+      "rss_kib": [
+        9488,
+        9648
+      ]
+    },
+    {
+      "elapsed_ms": 331672,
+      "rss_kib": [
+        9616,
+        9600
+      ]
+    },
+    {
+      "elapsed_ms": 341700,
+      "rss_kib": [
+        9616,
+        9600
+      ]
+    },
+    {
+      "elapsed_ms": 351706,
+      "rss_kib": [
+        9616,
+        9584
+      ]
+    },
+    {
+      "elapsed_ms": 361794,
+      "rss_kib": [
+        9616,
+        9504
+      ]
+    },
+    {
+      "elapsed_ms": 371809,
+      "rss_kib": [
+        9616,
+        9504
+      ]
+    },
+    {
+      "elapsed_ms": 381817,
+      "rss_kib": [
+        9616,
+        9504
+      ]
+    },
+    {
+      "elapsed_ms": 391886,
+      "rss_kib": [
+        9616,
+        9504
+      ]
+    },
+    {
+      "elapsed_ms": 401862,
+      "rss_kib": [
+        9616,
+        9568
+      ]
+    },
+    {
+      "elapsed_ms": 411950,
+      "rss_kib": [
+        8848,
+        9024
+      ]
+    },
+    {
+      "elapsed_ms": 421957,
+      "rss_kib": [
+        9360,
+        9264
+      ]
+    },
+    {
+      "elapsed_ms": 432036,
+      "rss_kib": [
+        9152,
+        9152
+      ]
+    },
+    {
+      "elapsed_ms": 442091,
+      "rss_kib": [
+        9296,
+        9184
+      ]
+    },
+    {
+      "elapsed_ms": 452175,
+      "rss_kib": [
+        9328,
+        9264
+      ]
+    },
+    {
+      "elapsed_ms": 462228,
+      "rss_kib": [
+        9328,
+        9264
+      ]
+    },
+    {
+      "elapsed_ms": 472327,
+      "rss_kib": [
+        9264,
+        9216
+      ]
+    },
+    {
+      "elapsed_ms": 482399,
+      "rss_kib": [
+        9328,
+        9264
+      ]
+    },
+    {
+      "elapsed_ms": 492474,
+      "rss_kib": [
+        9360,
+        9280
+      ]
+    },
+    {
+      "elapsed_ms": 502533,
+      "rss_kib": [
+        9360,
+        9280
+      ]
+    },
+    {
+      "elapsed_ms": 512545,
+      "rss_kib": [
+        9360,
+        9312
+      ]
+    },
+    {
+      "elapsed_ms": 522633,
+      "rss_kib": [
+        9360,
+        9312
+      ]
+    },
+    {
+      "elapsed_ms": 532740,
+      "rss_kib": [
+        9248,
+        9200
+      ]
+    },
+    {
+      "elapsed_ms": 542752,
+      "rss_kib": [
+        9360,
+        9264
+      ]
+    },
+    {
+      "elapsed_ms": 552825,
+      "rss_kib": [
+        9360,
+        9264
+      ]
+    },
+    {
+      "elapsed_ms": 562844,
+      "rss_kib": [
+        9360,
+        9296
+      ]
+    },
+    {
+      "elapsed_ms": 572858,
+      "rss_kib": [
+        9360,
+        9296
+      ]
+    },
+    {
+      "elapsed_ms": 582871,
+      "rss_kib": [
+        9360,
+        9440
+      ]
+    },
+    {
+      "elapsed_ms": 592915,
+      "rss_kib": [
+        9360,
+        9440
+      ]
+    },
+    {
+      "elapsed_ms": 602994,
+      "rss_kib": [
+        9360,
+        9440
+      ]
+    },
+    {
+      "elapsed_ms": 613030,
+      "rss_kib": [
+        9360,
+        9440
+      ]
+    },
+    {
+      "elapsed_ms": 623109,
+      "rss_kib": [
+        9360,
+        9472
+      ]
+    },
+    {
+      "elapsed_ms": 633137,
+      "rss_kib": [
+        9360,
+        9584
+      ]
+    },
+    {
+      "elapsed_ms": 643198,
+      "rss_kib": [
+        9360,
+        9584
+      ]
+    },
+    {
+      "elapsed_ms": 653297,
+      "rss_kib": [
+        9504,
+        9600
+      ]
+    },
+    {
+      "elapsed_ms": 663326,
+      "rss_kib": [
+        9632,
+        9600
+      ]
+    },
+    {
+      "elapsed_ms": 673397,
+      "rss_kib": [
+        9632,
+        9600
+      ]
+    },
+    {
+      "elapsed_ms": 683478,
+      "rss_kib": [
+        9632,
+        9600
+      ]
+    },
+    {
+      "elapsed_ms": 693550,
+      "rss_kib": [
+        9632,
+        9600
+      ]
+    },
+    {
+      "elapsed_ms": 703606,
+      "rss_kib": [
+        9632,
+        9600
+      ]
+    },
+    {
+      "elapsed_ms": 713676,
+      "rss_kib": [
+        9632,
+        9600
+      ]
+    },
+    {
+      "elapsed_ms": 723716,
+      "rss_kib": [
+        9632,
+        9600
+      ]
+    },
+    {
+      "elapsed_ms": 733804,
+      "rss_kib": [
+        9632,
+        9600
+      ]
+    },
+    {
+      "elapsed_ms": 743897,
+      "rss_kib": [
+        9632,
+        9600
+      ]
+    },
+    {
+      "elapsed_ms": 753899,
+      "rss_kib": [
+        9632,
+        9600
+      ]
+    },
+    {
+      "elapsed_ms": 763984,
+      "rss_kib": [
+        9632,
+        9600
+      ]
+    },
+    {
+      "elapsed_ms": 774113,
+      "rss_kib": [
+        9632,
+        9600
+      ]
+    },
+    {
+      "elapsed_ms": 784096,
+      "rss_kib": [
+        9648,
+        9600
+      ]
+    },
+    {
+      "elapsed_ms": 794163,
+      "rss_kib": [
+        9648,
+        9600
+      ]
+    },
+    {
+      "elapsed_ms": 804240,
+      "rss_kib": [
+        9648,
+        9600
+      ]
+    },
+    {
+      "elapsed_ms": 814276,
+      "rss_kib": [
+        9648,
+        9600
+      ]
+    },
+    {
+      "elapsed_ms": 824371,
+      "rss_kib": [
+        9648,
+        9600
+      ]
+    },
+    {
+      "elapsed_ms": 834454,
+      "rss_kib": [
+        9648,
+        9600
+      ]
+    },
+    {
+      "elapsed_ms": 844461,
+      "rss_kib": [
+        9648,
+        9600
+      ]
+    },
+    {
+      "elapsed_ms": 854583,
+      "rss_kib": [
+        9648,
+        9600
+      ]
+    },
+    {
+      "elapsed_ms": 864642,
+      "rss_kib": [
+        9632,
+        9376
+      ]
+    },
+    {
+      "elapsed_ms": 874711,
+      "rss_kib": [
+        9632,
+        9376
+      ]
+    },
+    {
+      "elapsed_ms": 884722,
+      "rss_kib": [
+        9440,
+        9376
+      ]
+    },
+    {
+      "elapsed_ms": 894804,
+      "rss_kib": [
+        9440,
+        9376
+      ]
+    },
+    {
+      "elapsed_ms": 900079,
+      "rss_kib": [
+        9392,
+        9312
+      ]
+    }
+  ],
+  "rss_peak_kib": [
+    9648,
+    9648
+  ],
+  "health_probe_failures": 1,
+  "cleanup": {
+    "owned_handles_reaped": true,
+    "helper_created": 8,
+    "helper_reaped": 8,
+    "errors": [],
+    "forced_kills": 0
+  },
+  "log_bytes": 275220,
+  "log_events": 1492,
+  "finished_utc": "2026-10-15T03:57:34.656233+00:00",
+  "sources_unchanged": true,
+  "binary_unchanged": true,
+  "framework_head_unchanged": true,
+  "framework_clean_at_end": true,
+  "files": [
+    {
+      "path": "metadata.jsonl",
+      "sha256": "d84f231fe53433beab11681ddd2c9b7af9a99a7a6a6622400e7967aa2c9345a7"
+    }
+  ]
+}

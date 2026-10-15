@@ -1,0 +1,8 @@
+{
+  "tests": 8,
+  "failed": 0,
+  "ignored": 0,
+  "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "script_sha256": "f05e20f83e4613e57ac62ef6a64f3fc54dc27d62b0a12e30fd24267cca76fca4",
+  "supervisor_sha256": "560bec4e4e36d2aa856936d9d32412bb9106b61b25a871495287e2287e3c6642"
+}

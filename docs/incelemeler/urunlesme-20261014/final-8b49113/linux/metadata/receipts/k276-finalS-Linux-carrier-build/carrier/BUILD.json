@@ -1,0 +1,76 @@
+{
+  "schema": "zee-private-carrier-build-1",
+  "status": "passed-build-inspection-only",
+  "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "delivery_sha256": "3edc90e19a73856312720551fe05abcde70c883a916d0523258accd1709a4f86",
+  "package": "zee-private-carrier-8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "architecture": "arm64",
+  "deb_sha256": "26cddc16cc85838847420c782a419210721eebffb6a61dc9ddc78f07f65c4deb",
+  "deb_path": "/home/mustafaerbay.guest/zee-k276/final-carrier/zee-private-carrier-8b49113c413f62b35d4b251ed31068524d2fe26c.deb",
+  "payload": {
+    "schema": "zee-private-carrier-payload-1",
+    "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+    "delivery_sha256": "3edc90e19a73856312720551fe05abcde70c883a916d0523258accd1709a4f86",
+    "files": [
+      {
+        "path": "binaries/GIT_SHA",
+        "sha256": "9d7e7a052e33ca696a3fb131f481f8a36133dd1b9e12efa0336342e2e200536a"
+      },
+      {
+        "path": "binaries/SHA256SUMS",
+        "sha256": "55d6cde77cc6eb417b01072eb3968ebd095094b195066cc81fb2e37b728cc213"
+      },
+      {
+        "path": "binaries/dil",
+        "sha256": "80cc4b162211b352e97dd8f3d54697e53d92f5d3dd40b03fe73f78963d37e739"
+      },
+      {
+        "path": "binaries/dillsp",
+        "sha256": "b2490655662939b7f2821c9707312c5c1631d83e60240c3a5aaae82bdd71edaa"
+      },
+      {
+        "path": "binaries/provenance.intoto.json",
+        "sha256": "b688c3b3710e2013510d5fdd220f5776e623a754548b0b462402d0f464b25c32"
+      },
+      {
+        "path": "binaries/sbom.spdx.json",
+        "sha256": "d154e31f15895c3dd3ecab2d0e55ac490d41187ab9a4ab686eb321847b08a317"
+      },
+      {
+        "path": "scripts/kaldir.sh",
+        "sha256": "8f2351745c588687434d1a2a194af2b3299231e52bbc080a36698ca454e1e43d"
+      },
+      {
+        "path": "scripts/kur.sh",
+        "sha256": "1bea4701e9ac0cf8bdca5dd1ec6c4da424cfe03bcdf6bf1f33cc70ecee80a21f"
+      }
+    ],
+    "private_evaluation_only": true,
+    "automatic_activation": false
+  },
+  "source_date_epoch": 1792035389,
+  "exact_extracted_inventory": true,
+  "no_maintainer_scripts": true,
+  "installed": false,
+  "activated": false,
+  "published": false,
+  "private_maintainer_placeholder": true,
+  "logs": [
+    {
+      "path": "logs/build.log",
+      "sha256": "eae1d07a2c0782529b9ae30337e5c14f86b59e12722ca171d221719526147e3f"
+    },
+    {
+      "path": "logs/contents.log",
+      "sha256": "6c0fef5d8c160273dbcb49e3341e709a2dc8ba13f488b6ca5143c7c34894d3fb"
+    },
+    {
+      "path": "logs/extract.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/info.log",
+      "sha256": "9f7f914052539d5ac9bc7fa53c5c59e36bf1e3772ce8987cbda6fda9845e5b43"
+    }
+  ]
+}

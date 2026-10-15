@@ -40,8 +40,8 @@ Kaynak: `docs/guvenlik-bulgulari-v1.tsv`
 | --- | --- | --- | --- | --- |
 | kritik | 1 | 0 | 0 | 1 |
 | yuksek | 16 | 0 | 0 | 16 |
-| orta | 27 | 12 | 2 | 41 |
-| dusuk | 14 | 22 | 1 | 37 |
+| orta | 28 | 12 | 1 | 41 |
+| dusuk | 15 | 22 | 0 | 37 |
 
 Kapı: açık kritik/yüksek bulgu 0 → **GEÇTİ** (ADR-066 sürekli kapı koşulu).
 Toplam bulgu: 95.
@@ -129,9 +129,9 @@ Kaynak: `docs/soak-gecmisi-v1.tsv`
 
 | Sonuç | Koşu |
 | --- | --- |
-| gecti | 4 |
+| gecti | 5 |
 
-Son koşu: `35955470fdb4fc8474f39326ae0f7aa771b5515b` (2026-10-14, macos-aarch64, 1800 sn): derleyici %0, dillsp %0 RSS büyümesi → gecti.
+Son koşu: `8b49113c413f62b35d4b251ed31068524d2fe26c` (2026-10-15, macos-aarch64, 1800 sn): derleyici %0, dillsp %4 RSS büyümesi → gecti.
 
 ## Compiler değişiklik ve core freeze beyanları
 

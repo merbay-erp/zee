@@ -1,0 +1,25 @@
+{
+  "status": "passed",
+  "exit": 0,
+  "findings": 0,
+  "seconds": 0.2901384170399979,
+  "argv": [
+    "/opt/homebrew/bin/gitleaks",
+    "dir",
+    "--redact",
+    "--no-banner",
+    "--ignore-gitleaks-allow",
+    "--gitleaks-ignore-path",
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/root-final-S-archive-stage-secret-precheck/ignore",
+    "--config",
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/root-final-S-archive-stage-secret-precheck/default.toml",
+    "--report-format",
+    "json",
+    "--report-path",
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/root-final-S-normalization-independent-review/findings-redacted.json",
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/root-final-S-archive-stage-v2"
+  ],
+  "default_config_sha256": "27630a96d6c55755cc37620f3933d5cab94b1eb78a726a32e11212972525d76e",
+  "ignore_bytes": 0,
+  "no_policy_relaxation": true
+}

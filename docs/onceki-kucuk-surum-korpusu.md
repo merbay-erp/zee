@@ -46,3 +46,7 @@ kalır ve mevcut üç saniye grace süresi biter. Bu testte 52 komut vardır;
 toplam test kampanya bütçesi bu nedenle 240 saniyedir. Komut başına sekiz
 saniye ve sahipli temizlik davranışı değişmez; production timeout, SLA veya
 benchmark eşiği gevşetilmez. Bu ölçüm tam Linux korpus kabulü değildir.
+
+## 15 Ekim 2026 — temiz S yerel kanıt güncellemesi
+
+S common macOS ve gerçek Debian12 ARM64 Linux replay’i modern49+bootstrap5 altkontrolü geçti. [Son rapor](urunlesme-final-kabul-20261015.md) eski33 kaynak/15 saf çıktı ve K-086 annotation göçünü korur. Eski capability non-JSON olduğu için selector legacy rollback açmaz; tam ürün/kanal kabulü değildir.

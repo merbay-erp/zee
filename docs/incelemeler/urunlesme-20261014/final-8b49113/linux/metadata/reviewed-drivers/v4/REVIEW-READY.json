@@ -1,0 +1,8 @@
+{
+  "scope": "preparation-only-container-v4-delta",
+  "manifest_sha256": "02354b9b30fc18b6678368aa83eaf87a1e924d60ccc420a22a07b33876d52ac3",
+  "tests": 30,
+  "container_actual_acceptance": 0,
+  "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "v2_carrier_timer_unchanged": true
+}

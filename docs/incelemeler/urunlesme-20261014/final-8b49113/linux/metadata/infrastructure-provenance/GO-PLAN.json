@@ -1,0 +1,11 @@
+{
+  "official_metadata_url": "https://go.dev/dl/?mode=json&include=all",
+  "archive_url": "https://go.dev/dl/go1.26.1.linux-arm64.tar.gz",
+  "filename": "go1.26.1.linux-arm64.tar.gz",
+  "os": "linux",
+  "arch": "arm64",
+  "version": "go1.26.1",
+  "sha256": "a290581cfe4fe28ddd737dde3095f3dbeb7f2e4065cab4eae44dfc53b760c2f7",
+  "size": 63690198,
+  "kind": "archive"
+}

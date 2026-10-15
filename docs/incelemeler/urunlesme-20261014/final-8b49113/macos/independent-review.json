@@ -1,0 +1,12 @@
+{
+  "status": "verified-actualMac-delivery-and-install8",
+  "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "DELIVERY_sha256": "db5eb394b8193b3d50a9fdafb3504df970e2505382e1d90fdb9f9afbb5b13820",
+  "install_PROOF_sha256": "1e746a7a4b60f3b7de447e0cb45920f22eebbf809fa3bc2c5da4407989007953",
+  "install_cases": 8,
+  "install_raw_files_verified": 30,
+  "raw_commands_verified": 9,
+  "all_source_helpers_exact_git_blobs": true,
+  "original_artifacts_unchanged": true,
+  "signed_published": false
+}

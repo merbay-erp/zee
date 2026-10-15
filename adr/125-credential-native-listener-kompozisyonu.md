@@ -1,6 +1,6 @@
 # ADR-125 — Typed credential/native listener bileşimi (K-267/P25)
 
-- **Durum:** kabul, sınırlı Unix owned host; final temiz kaynak kabulü açık
+- **Durum:** kabul; temiz S typedcredential/listener model5+native5 dar Unix kabulü; fullP25/ürün/platform açık
 - **İlgili güvenlik sınırı:** GB-083
 
 Kayıtlı zee-cekirdek D3/P25 credential ihtiyacı ve B6 native listener, B5
@@ -61,3 +61,9 @@ equals, metrik-only ve bozuk/taşan/tekrarlı önceki değerler için byte0/exit
 ister; subprocess audit hook secret/source open ve native Popen'u reddeder.
 Bu Python aday bulgusu GB-083 bilinçli sınır kaydındadır; tarihsel compiler
 bug SHA veya yeni regression.dil icat edilmez.
+
+## 15 Ekim 2026 — temiz S yerel kanıt güncellemesi
+
+S common dedicated credential-listener model5 ve actualnative5 aynı cleanS binary/source pinleriyle geçti; credential14 ve metric composition kendi ayrı kohortlarıdır, unique toplam yapılmaz. Actual owned overlap/startup/admission/generation ve metricbest-effort sınırları korundu. Genel secretstore/rotation/provider/liveadoption/Windows/fullP25 açık.
+
+[Güncel dar S raporu](../docs/urunlesme-final-kabul-20261015.md).

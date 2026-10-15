@@ -1,0 +1,117 @@
+[
+  {
+    "schema": "zee-worker-supervisor-1",
+    "event": "build",
+    "elapsed_ms": 206,
+    "build": {
+      "schema": "zee-build-v1",
+      "version": "0.8.0-dev",
+      "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+      "source_date": "2026-10-15",
+      "channel": "development",
+      "dirty": false
+    }
+  },
+  {
+    "schema": "zee-worker-supervisor-1",
+    "event": "worker_started",
+    "elapsed_ms": 206,
+    "worker": 0,
+    "pid": 70565
+  },
+  {
+    "schema": "zee-worker-supervisor-1",
+    "event": "worker_started",
+    "elapsed_ms": 206,
+    "worker": 1,
+    "pid": 70566
+  },
+  {
+    "schema": "zee-worker-supervisor-1",
+    "event": "state",
+    "elapsed_ms": 207,
+    "state": "unready",
+    "ready": false,
+    "workers": 2,
+    "application_ready": false,
+    "healthy_workers": 0
+  },
+  {
+    "schema": "zee-worker-supervisor-1",
+    "event": "metrics",
+    "elapsed_ms": 207,
+    "probe_total": 2,
+    "probe_failures": 2,
+    "probe_ms_total": 0,
+    "restart_total": 0,
+    "forced_kills": 1,
+    "log_drops": 0,
+    "managed_workers": 2
+  },
+  {
+    "schema": "zee-worker-supervisor-1",
+    "event": "state",
+    "elapsed_ms": 2214,
+    "state": "ready",
+    "ready": true,
+    "workers": 2,
+    "application_ready": true,
+    "healthy_workers": 2
+  },
+  {
+    "schema": "zee-worker-supervisor-1",
+    "event": "metrics",
+    "elapsed_ms": 2214,
+    "probe_total": 4,
+    "probe_failures": 2,
+    "probe_ms_total": 5,
+    "restart_total": 0,
+    "forced_kills": 1,
+    "log_drops": 0,
+    "managed_workers": 2
+  },
+  {
+    "schema": "zee-worker-supervisor-1",
+    "event": "state",
+    "elapsed_ms": 4225,
+    "state": "unready",
+    "ready": false,
+    "workers": 2,
+    "application_ready": false,
+    "healthy_workers": 2
+  },
+  {
+    "schema": "zee-worker-supervisor-1",
+    "event": "metrics",
+    "elapsed_ms": 4225,
+    "probe_total": 6,
+    "probe_failures": 2,
+    "probe_ms_total": 11,
+    "restart_total": 0,
+    "forced_kills": 1,
+    "log_drops": 0,
+    "managed_workers": 2
+  },
+  {
+    "schema": "zee-worker-supervisor-1",
+    "event": "state",
+    "elapsed_ms": 6236,
+    "state": "ready",
+    "ready": true,
+    "workers": 2,
+    "application_ready": true,
+    "healthy_workers": 2
+  },
+  {
+    "schema": "zee-worker-supervisor-1",
+    "event": "metrics",
+    "elapsed_ms": 6237,
+    "probe_total": 8,
+    "probe_failures": 2,
+    "probe_ms_total": 19,
+    "restart_total": 0,
+    "forced_kills": 1,
+    "log_drops": 0,
+    "managed_workers": 2
+  }
+]

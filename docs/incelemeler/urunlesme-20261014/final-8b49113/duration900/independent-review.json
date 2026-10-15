@@ -1,0 +1,27 @@
+{
+  "status": "verified-actual900-second-owned-fixture",
+  "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "proof_sha256": "9c78bad56b42fd6b3c3efed4960185bab0f88569739ce6f02b9d9bbf07908331",
+  "elapsed_seconds": 900.0595662500709,
+  "load_requests": 360,
+  "load_status200": 360,
+  "probe_failure_counter_including_startup": 1,
+  "steady_state_probe_failures_inferred": 0,
+  "inference_evidence": "Runner calls wait_worker before start; in 900s loop every probe False immediately rejects. Supervisor only increments probe_failures on False; cleanup does not probe. Passed full loop therefore assigns the one recorded failure to startup wait, not a measured steady-state failure. Raw total remains1, never rewritten.",
+  "rss_samples": 91,
+  "rss_peak_kib": [
+    9648,
+    9648
+  ],
+  "cleanup": {
+    "owned_handles_reaped": true,
+    "helper_created": 8,
+    "helper_reaped": 8,
+    "errors": [],
+    "forced_kills": 0
+  },
+  "raw_files_verified": 1,
+  "source_pins_verified": 8,
+  "binary_source_pins_unchanged": true,
+  "scope": "owned local lowfixedload fixture duration; observational RSS/CPU; no physical server/product adoption/TLS/HUP/P14 or compiler-LSP-soak acceptance"
+}

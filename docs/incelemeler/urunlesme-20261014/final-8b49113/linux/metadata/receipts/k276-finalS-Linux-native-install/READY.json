@@ -1,0 +1,8 @@
+{
+  "status": "passed",
+  "scope": "actual owned Linux K266v2 canonical userprefix installation only",
+  "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "cases": 8,
+  "PROOF_sha256": "47a496f1fa880e08c2353fb9f75a4fdef73eaae5645fadf53f7bf885d2bf7096",
+  "manifest_sha256": "09ccff3bdbba3cbe5557e1773b9bdf76ec6fa66d60bfe366e8d8b5a64c6a279b"
+}

@@ -1,0 +1,84 @@
+{
+  "schema": "zee-linux-private-carrier-native-1",
+  "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "delivery_sha256": "3edc90e19a73856312720551fe05abcde70c883a916d0523258accd1709a4f86",
+  "BUILD_sha256": "d1c077d7961f13c9406a16ba05bb98d35ebdcdac42960c3e790372c1db8dd0a4",
+  "deb_sha256": "26cddc16cc85838847420c782a419210721eebffb6a61dc9ddc78f07f65c4deb",
+  "package": "zee-private-carrier-8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "status": "passed",
+  "cases": [
+    {
+      "name": "owned-inert-dpkg-install-exact-source-payload",
+      "passed": true
+    },
+    {
+      "name": "embedded-canonical-activation-BuildJSON-LSP-manifest",
+      "passed": true
+    },
+    {
+      "name": "repeat-activation-preserves-existing-manifest",
+      "passed": true
+    },
+    {
+      "name": "manifest-uninstall-then-exact-carrier-remove-foreign-preserved",
+      "passed": true
+    }
+  ],
+  "public_distribution": false,
+  "apt_native_autoactivation": false,
+  "activation_removed": true,
+  "carrier_removed": true,
+  "source_end_clean": true,
+  "install_attempted": true,
+  "commands": [
+    {
+      "name": "package-absent",
+      "exit": 1,
+      "log_sha256": "d711b0aa749becaeb72cf08d13717b03175981e34e1f7ff5b34abce394175d39"
+    },
+    {
+      "name": "install-owned-carrier",
+      "exit": 0,
+      "log_sha256": "e405fc7a29c2983415f1dc1d2594381cc6c201538d28a1ce94f3cfa0d37b5201"
+    },
+    {
+      "name": "activate-embedded-canonical-installer",
+      "exit": 0,
+      "log_sha256": "858bd81aafbd44bad78619c1f7068c92b11307db38d523f158a11f2376b9af21"
+    },
+    {
+      "name": "activated-buildJSON",
+      "exit": 0,
+      "log_sha256": "d4f6faab6f4adc711bdfdf8a1b8cee08aa2417df16dc7b88dde018746ba8e078"
+    },
+    {
+      "name": "activated-LSP",
+      "exit": 0,
+      "log_sha256": "11279f09bfc84c2d6d886a72c9596d32901a47434b0b74197b87d6a79f11f819"
+    },
+    {
+      "name": "repeat-activation-refuse",
+      "exit": 1,
+      "log_sha256": "191e2e4610c8540353b4fa22ba6794606ca74529b1a38a9c909d7f6627733481"
+    },
+    {
+      "name": "canonical-manifest-uninstall",
+      "exit": 0,
+      "log_sha256": "d5e378bfd61c4b289da8dfcaa461ef63ae7bdbc6c6755573bec2e2383bfda11d"
+    },
+    {
+      "name": "remove-owned-carrier",
+      "exit": 0,
+      "log_sha256": "ebb4f1876efbc39d1239bf4c164ccccff41107a6961f1ebcd0f2ce4c9bbad19b"
+    },
+    {
+      "name": "package-absent-after",
+      "exit": 1,
+      "log_sha256": "d711b0aa749becaeb72cf08d13717b03175981e34e1f7ff5b34abce394175d39"
+    }
+  ],
+  "owned_activation_remaining": false,
+  "owned_carrier_remaining": false,
+  "cleanup_errors": [],
+  "manual_reconcile_required": false
+}

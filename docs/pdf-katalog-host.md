@@ -56,3 +56,7 @@ neden compiler genişlemesi yapılmadığını açıklar.
 LICENSE-DejaVu.txt -text olarak işaretlidir. Yalnız özgün lisans dosyasında
 blank-at-eol kontrolü kapalıdır; lisans metni biçimlendirilmez. Index blob
 SHA-256 ile disk SHA-256 eşliği commit öncesi ayrıca doğrulanır.
+
+## 15 Ekim 2026 — temiz S yerel kanıt güncellemesi
+
+S üzerinde native Zee örneği gerçekten bounded job JSON üretti; equality kontrolünden sonra fixed backend8 koşusu geçti. [Son rapor](urunlesme-final-kabul-20261015.md) exact paket/asset/font notice kimliğini korur. Bu host kabulü Zee içinden resmî signed plugin invocation, keyfi PDF sandbox veya gerçek katalog entegrasyonu değildir.

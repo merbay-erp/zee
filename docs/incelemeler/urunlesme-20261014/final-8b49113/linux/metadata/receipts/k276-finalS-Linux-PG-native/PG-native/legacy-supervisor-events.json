@@ -1,0 +1,245 @@
+[
+  {
+    "schema": "zee-worker-supervisor-1",
+    "event": "build",
+    "elapsed_ms": 204,
+    "build": {
+      "schema": "zee-build-v1",
+      "version": "0.8.0-dev",
+      "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+      "source_date": "2026-10-15",
+      "channel": "development",
+      "dirty": false
+    }
+  },
+  {
+    "schema": "zee-worker-supervisor-1",
+    "event": "worker_started",
+    "elapsed_ms": 204,
+    "worker": 0,
+    "pid": 70349
+  },
+  {
+    "schema": "zee-worker-supervisor-1",
+    "event": "worker_started",
+    "elapsed_ms": 205,
+    "worker": 1,
+    "pid": 70350
+  },
+  {
+    "schema": "zee-worker-supervisor-1",
+    "event": "state",
+    "elapsed_ms": 214,
+    "state": "unready",
+    "ready": false,
+    "workers": 2,
+    "application_ready": false,
+    "healthy_workers": 2
+  },
+  {
+    "schema": "zee-worker-supervisor-1",
+    "event": "metrics",
+    "elapsed_ms": 214,
+    "probe_total": 2,
+    "probe_failures": 0,
+    "probe_ms_total": 9,
+    "restart_total": 0,
+    "forced_kills": 1,
+    "log_drops": 0,
+    "managed_workers": 2
+  },
+  {
+    "schema": "zee-worker-supervisor-1",
+    "event": "state",
+    "elapsed_ms": 2220,
+    "state": "ready",
+    "ready": true,
+    "workers": 2,
+    "application_ready": true,
+    "healthy_workers": 2
+  },
+  {
+    "schema": "zee-worker-supervisor-1",
+    "event": "metrics",
+    "elapsed_ms": 2220,
+    "probe_total": 4,
+    "probe_failures": 0,
+    "probe_ms_total": 13,
+    "restart_total": 0,
+    "forced_kills": 1,
+    "log_drops": 0,
+    "managed_workers": 2
+  },
+  {
+    "schema": "zee-worker-supervisor-1",
+    "event": "state",
+    "elapsed_ms": 4231,
+    "state": "unready",
+    "ready": false,
+    "workers": 2,
+    "application_ready": false,
+    "healthy_workers": 2
+  },
+  {
+    "schema": "zee-worker-supervisor-1",
+    "event": "metrics",
+    "elapsed_ms": 4231,
+    "probe_total": 6,
+    "probe_failures": 0,
+    "probe_ms_total": 18,
+    "restart_total": 0,
+    "forced_kills": 1,
+    "log_drops": 0,
+    "managed_workers": 2
+  },
+  {
+    "schema": "zee-worker-supervisor-1",
+    "event": "state",
+    "elapsed_ms": 6243,
+    "state": "ready",
+    "ready": true,
+    "workers": 2,
+    "application_ready": true,
+    "healthy_workers": 2
+  },
+  {
+    "schema": "zee-worker-supervisor-1",
+    "event": "metrics",
+    "elapsed_ms": 6243,
+    "probe_total": 8,
+    "probe_failures": 0,
+    "probe_ms_total": 24,
+    "restart_total": 0,
+    "forced_kills": 1,
+    "log_drops": 0,
+    "managed_workers": 2
+  },
+  {
+    "schema": "zee-worker-supervisor-1",
+    "event": "state",
+    "elapsed_ms": 8272,
+    "state": "unready",
+    "ready": false,
+    "workers": 2,
+    "application_ready": false,
+    "healthy_workers": 2
+  },
+  {
+    "schema": "zee-worker-supervisor-1",
+    "event": "metrics",
+    "elapsed_ms": 8272,
+    "probe_total": 10,
+    "probe_failures": 0,
+    "probe_ms_total": 38,
+    "restart_total": 0,
+    "forced_kills": 1,
+    "log_drops": 0,
+    "managed_workers": 2
+  },
+  {
+    "schema": "zee-worker-supervisor-1",
+    "event": "metrics",
+    "elapsed_ms": 10281,
+    "probe_total": 12,
+    "probe_failures": 0,
+    "probe_ms_total": 45,
+    "restart_total": 0,
+    "forced_kills": 1,
+    "log_drops": 0,
+    "managed_workers": 2
+  },
+  {
+    "schema": "zee-worker-supervisor-1",
+    "event": "state",
+    "elapsed_ms": 12292,
+    "state": "ready",
+    "ready": true,
+    "workers": 2,
+    "application_ready": true,
+    "healthy_workers": 2
+  },
+  {
+    "schema": "zee-worker-supervisor-1",
+    "event": "metrics",
+    "elapsed_ms": 12292,
+    "probe_total": 14,
+    "probe_failures": 0,
+    "probe_ms_total": 51,
+    "restart_total": 0,
+    "forced_kills": 1,
+    "log_drops": 0,
+    "managed_workers": 2
+  },
+  {
+    "schema": "zee-worker-supervisor-1",
+    "event": "state",
+    "elapsed_ms": 12296,
+    "state": "restarting",
+    "ready": false,
+    "workers": 2
+  },
+  {
+    "schema": "zee-worker-supervisor-1",
+    "event": "worker_started",
+    "elapsed_ms": 12497,
+    "worker": 0,
+    "pid": 70558
+  },
+  {
+    "schema": "zee-worker-supervisor-1",
+    "event": "worker_started",
+    "elapsed_ms": 14708,
+    "worker": 1,
+    "pid": 70560
+  },
+  {
+    "schema": "zee-worker-supervisor-1",
+    "event": "state",
+    "elapsed_ms": 16722,
+    "state": "ready",
+    "ready": true,
+    "workers": 2,
+    "application_ready": true,
+    "healthy_workers": 2
+  },
+  {
+    "schema": "zee-worker-supervisor-1",
+    "event": "metrics",
+    "elapsed_ms": 16722,
+    "probe_total": 20,
+    "probe_failures": 2,
+    "probe_ms_total": 61,
+    "restart_total": 2,
+    "forced_kills": 3,
+    "log_drops": 0,
+    "managed_workers": 2
+  },
+  {
+    "schema": "zee-worker-supervisor-1",
+    "event": "state",
+    "elapsed_ms": 16722,
+    "state": "stopping",
+    "ready": false,
+    "workers": 2
+  },
+  {
+    "schema": "zee-worker-supervisor-1",
+    "event": "metrics",
+    "elapsed_ms": 17126,
+    "probe_total": 20,
+    "probe_failures": 2,
+    "probe_ms_total": 61,
+    "restart_total": 2,
+    "forced_kills": 5,
+    "log_drops": 0,
+    "managed_workers": 0
+  },
+  {
+    "schema": "zee-worker-supervisor-1",
+    "event": "state",
+    "elapsed_ms": 17126,
+    "state": "stopped",
+    "ready": false,
+    "workers": 0
+  }
+]

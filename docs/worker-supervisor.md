@@ -170,3 +170,7 @@ TTL dolunca admission kapanır, o anda probe grubu kaldıysa outer owned owner
 cleanup yapar. Anında failure/zero-error SLA veya PID adoption yoktur. ActualTTL/
 configHUP5 ve dedicatedPG15 tarihsel kısa kanıttır; root currentclean ve900/1800/RC
 ayrıca gerekir. [ADR-132](../adr/132-sureli-hazirlik-ve-kontrollu-config-yenileme.md).
+
+## 15 Ekim 2026 — temiz S yerel kanıt güncellemesi
+
+S common worker25, readiness PG15/TTL5, actual 900 saniye owned HTTP yükü ve 1800 saniye soak kabulü [kaynak raporuna](urunlesme-final-kabul-20261015.md) bağlandı. Linux finite SQL user-timer ayrı kabul edildi; sürekli production systemd HTTP hizmeti, temiz fiziksel sunucu ve Windows/ürün kabulü açık kalır.

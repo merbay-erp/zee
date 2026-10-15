@@ -1,6 +1,6 @@
 # ADR-135 — Sabit native dış etki tüketicisi (K-277/P09)
 
-- **Durum:** kabul önerisi — dar owned loopback host; finalclean/full P09/ürün/platform kabulü açık
+- **Durum:** kabul; temiz S owned loopback nativeeffect11 kabulü var; fullP09/ürün/platform açık
 - **Tarih:** 15 Ekim 2026
 - **İlgili:** ADR107/114/117, ADR096, GB-093
 
@@ -78,3 +78,9 @@ actual filesystem alt-vakası extraSQL/source/FIFO varlığında yalnız bu dör
 dosyanın tam beklenen bytes ile kurulduğunu sınar; SQL/SMTP kabulü değildir.
 Revision2 kaynak/kanıt/peer paketleri değişmez. R3 yalnız acceptance harness ve
 alt-vakadır; runtime host/compiler davranışı değişmez ve yeni native case sayılmaz.
+
+## 15 Ekim 2026 — temiz S yerel kanıt güncellemesi
+
+S common nativeSMTP/PGfault11 actual fixed sentetik loopback kabulü geçti;14canonical GitS source-role, source/binary begin-end ve readonly PG/SMTPcount oracle ayrı korundu. Known preeffectSQL sıfır-send sınırlı retry; C029/DATA/ackCOMMIT belirsizliği manualpause/no replay. Tarihsel ad-hoc authoritylost UNVERIFIED kaydı currentabsence veya yeni ownedcleanup ile geriye dönük kapanmaz. FullP09/provider/realcatalog/PDFgenerationintegration açık.
+
+[Güncel dar kaynak kanıtı](../docs/urunlesme-final-kabul-20261015.md).

@@ -1,0 +1,39 @@
+{
+  "schema": "zee-owned-caffeinated-rc-recovery-1",
+  "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "tree": "09fa6e764bb317b4aa5b32b6ca15ce02f4cf389d",
+  "argv": [
+    "/usr/bin/caffeinate",
+    "-i",
+    "-s",
+    "/Library/Frameworks/Python.framework/Versions/3.13/bin/python3.13",
+    "-I",
+    "-B",
+    "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/scripts/rc-kampanyasi.py",
+    "--repo",
+    "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+    "--source-sha",
+    "8b49113c413f62b35d4b251ed31068524d2fe26c",
+    "--out",
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/rc-final-8b49113c-recovery-caffeinated-20261015/campaign",
+    "--execute-approved-stable-sha"
+  ],
+  "begin": {
+    "wall_ns": 1792040669696978000,
+    "monotonic_ns": 533166684044458,
+    "free_bytes": 43915677696
+  },
+  "pins_before": {
+    "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/scripts/rc-kampanyasi.py": "f401406d8097479c5545597fc09ae81791e20043adccd8b9abb8ad650cf86752",
+    "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/scripts/rc-kaniti.py": "c0266630054eaba1a9f86ff23cf11edaf22a28915c13c59ccf547a6f2f302554",
+    "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/scripts/lifecycle_core.py": "e76fe65b6103fc4732aafc4468afc5bbf3d0699a0f79d7f74879165636ebb1a9",
+    "/usr/bin/caffeinate": "fdd1c163779f87d667b6a4049293e165f2d30b716ca8bff9bed3fe54bc6d1d07",
+    "/Library/Frameworks/Python.framework/Versions/3.13/bin/python3.13": "f5d584368bd127649722baa482517054d3c941ea5fbd29a669a8c5323dd21be5",
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/rc-caffeinate-recovery-preparation/recovery.py": "0c12a6731533d4db85dcd7710aa74cdd8f608b0fb13b45c67c26a4c7cf8f28fc"
+  },
+  "outer_timeout_seconds": 21600,
+  "cleanup_grace_seconds": 120,
+  "disk_floor_bytes": 10737418240,
+  "status": "starting",
+  "campaign": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/rc-final-8b49113c-recovery-caffeinated-20261015/campaign"
+}

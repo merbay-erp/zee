@@ -1,0 +1,59 @@
+   Compiling dil v0.8.0-dev (/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/compiler)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 4.78s
+     Running tests/dogfood_karsilastirma_testi.rs (target/debug/deps/dogfood_karsilastirma_testi-dd563c991d2d79f3)
+
+running 4 tests
+test karsilastirma_tarihcesi_exact_sha_ve_tekrar_hesaplanabilir_olculerle_tutarlidir ... ok
+test tarihsel_kanit_anonim_ata_ister_eski_nesne_ve_rastgele_esleme_kabul_etmez ... ok
+test go_esdegeri_varsa_zee_sayfasini_bayt_bayt_uretir ... ok
+test rust_esdegeri_zee_sayfasini_bayt_bayt_uretir ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.27s
+
+     Running tests/dokuman_tazelik_testi.rs (target/debug/deps/dokuman_tazelik_testi-9c12974b672ee24d)
+
+running 6 tests
+test rfc_adr_ve_spec_numaralari_benzersizdir ... ok
+test rfc_adr_ve_spec_dosyalari_indeksli ... ok
+test her_normatif_belge_makine_okunur_test_kaniti_tasir ... ok
+test yerel_markdown_baglantilari_bayat_degil ... ok
+test readme_canli_depo_sayilari_ureticisiyle_gunceldir ... ok
+test kaynak_arsivi_build_ve_kisisel_artifaktlari_disarida_tutar ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 8.29s
+
+     Running tests/guvenlik_kapisi_testi.rs (target/debug/deps/guvenlik_kapisi_testi-022047da138d7ac1)
+
+running 5 tests
+test kayit_semasi_bozuk_ve_acik_agir_bulguyu_reddeder ... ok
+test guvenlik_kapisi_betigi_ci_ve_surum_adayi_adimlarini_tasir ... ok
+test bulgu_kaydi_gecerli_ve_acik_kritik_yuksek_bulgu_yoktur ... ok
+test acik_depo_kapisi_anonim_politikayi_ve_ci_kablosunu_korur ... ok
+test rc_kaniti_exact_kaynak_ve_kosucu_sahipligi ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 10.66s
+
+     Running tests/katalog_testi.rs (target/debug/deps/katalog_testi-1f9e864ece059c5e)
+
+running 1 test
+test katalog_kaynakla_birebir ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+     Running tests/tedarik_kapisi_testi.rs (target/debug/deps/tedarik_kapisi_testi-991c9494f961d8c7)
+
+running 11 tests
+test cargo_deny_politikasi_fail_closed_ve_istisnalari_gerekcelidir ... ok
+test forgejo_akisi_exact_pin_ve_prsiz_kaynak_siniri_tasir ... ok
+test surum_artefakti_iki_temiz_klon_sbom_provenance_ve_imza_kablosunu_tasir ... ok
+test ci_sabit_aracla_guncel_advisory_ve_offline_vendor_kapisi_kosar ... ok
+test public_github_akislari_kurum_kosucusuna_yonlenemez ... ok
+test registry_lock_girdilerinin_sha256_ozeti_zorunludur ... ok
+test github_actionlari_incelenmis_immutable_commitlere_sabitlidir ... ok
+test surum_klon_koku_sembolik_yoldan_kanoniklesir ... ok
+test forgejo_kapisi_ozel_exact_metadata_ister_public_ve_bozuk_veriyi_reddeder ... ok
+test forgejo_fetch_tam_secilen_gecmisi_alir_ozel_dal_ve_kimlik_almaz ... ok
+test vendor_kaniti_iki_uretimi_ve_bos_cargo_home_offline_derlemeyi_ister ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 6.99s
+

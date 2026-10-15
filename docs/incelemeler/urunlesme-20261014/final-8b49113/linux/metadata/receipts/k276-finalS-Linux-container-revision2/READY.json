@@ -1,0 +1,18 @@
+{
+  "status": "passed",
+  "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "image_id": "0e47d22a39122e1dd5ead03666d778ff9c970ac1ab2a49fad4b2f83195291d90",
+  "manifest_sha256": "79cf8fc23fabfaf75591fb540b30c38c8cd53bd0a65b894c9639a251c25cf54d",
+  "PROOF_sha256": "e945cc54567f5ae06369e1f1f572d7d371e0550ac6c4305897c48c2fc561f2ec",
+  "actual_payload_runs": [
+    "UID65532",
+    "BuildJSON",
+    "denetle",
+    "calistir",
+    "sourceSHA",
+    "LSP1,2"
+  ],
+  "owned_CID_cleanup": true,
+  "network_in_payload": "none",
+  "public_distribution": false
+}

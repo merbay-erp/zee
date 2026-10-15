@@ -1,0 +1,33 @@
+{
+  "status": "passed-owned-extracted-unzip",
+  "package": "unzip",
+  "version": "6.0-28+deb12u1",
+  "archive_sha256": "28b082677d0da11106b7da9173a9359267d76c6fe1d26e86982c014b183ad3ec",
+  "metadata_sha256": "9f77b19949e699003b31b058963e15127973db12fe178a2775f485c58949709b",
+  "signed_distro_InRelease": [
+    {
+      "path": "/var/lib/apt/lists/_etc_apt_mirrors_debian-security.list_dists_bookworm-security_InRelease",
+      "sha256": "1e368420497cd437a35282b0666bdffae1a6cb408547d56fe4f5f9d2fae9a4a5"
+    },
+    {
+      "path": "/var/lib/apt/lists/_etc_apt_mirrors_debian.list_dists_bookworm-backports_InRelease",
+      "sha256": "18367fc66dc15f8f19430bd052ca8c5d1d60f99ac7c05d9493669888b56ed776"
+    },
+    {
+      "path": "/var/lib/apt/lists/_etc_apt_mirrors_debian.list_dists_bookworm-updates_InRelease",
+      "sha256": "a28c13790de1a0ed2c940b6cf6a0bbb75e05f87fb28cb9556da2829386c3ab40"
+    },
+    {
+      "path": "/var/lib/apt/lists/_etc_apt_mirrors_debian.list_dists_bookworm_InRelease",
+      "sha256": "77737fa4b34f2693e982cc9ee35736816c35a7778fc2d326cc1bbf5b301fe1aa"
+    }
+  ],
+  "hooks": {
+    "./postinst": "#!/bin/sh\nset -e\nif [ \"$1\" = \"configure\" ] && [ -x \"`which update-mime 2> /dev/null`\" ]; then\n  update-mime\nfi\n",
+    "./postrm": "#!/bin/sh\nset -e\nif which update-mime > /dev/null 2>&1; then\n  update-mime\nfi\n"
+  },
+  "hooks_executed": false,
+  "system_install": false,
+  "binary": "/home/mustafaerbay.guest/zee-k276/tools/unzip-owned/usr/bin/unzip",
+  "binary_sha256": "104cb83abadfb24c8cb09818021604b8d6ec17c3d5dad330268df4e985e2f65d"
+}

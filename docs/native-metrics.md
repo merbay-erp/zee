@@ -27,3 +27,7 @@ sırası, preclosed metric reader EPIPE, argv/config ve inherited listener sahip
 sınar. Yeni doğru makbuz çalışma ağacı/sabit aday ikili kimliği taşır; yukarıdaki
 eski stage965/binary35 tarihsel kayıt temiz final kaynak kabulü değildir.
 Finalclean/900sn/1800sn/ASAN RC, canlı ürün ve genel P13/P25 açıktır.
+
+## 15 Ekim 2026 — temiz S yerel kanıt güncellemesi
+
+S üzerinde common metrics8, credential capability7+native2 ve actual 900 saniye yük/1800 saniye soak geçti; exact kaynak, sayaç/RSS ve startup sınırları [son rapordadır](urunlesme-final-kabul-20261015.md). Genel delivery/audit veya production SLA eklenmez.

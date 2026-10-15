@@ -1,0 +1,18 @@
+{
+  "status": "passed",
+  "utc": "2026-10-15T05:22:09.820974+00:00",
+  "all_manifest_files_checked": 277,
+  "external_only_emitted_files": 230,
+  "argv": [
+    "python3",
+    "-I",
+    "-B",
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/root-final-S-publication-preparation-k250-v2/emit_publication.py",
+    "--framework-root",
+    "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+    "--output",
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/root-final-S-publication-emitted-review"
+  ],
+  "source_untouched": true,
+  "pending_RC_preserved": true
+}

@@ -1,6 +1,6 @@
 # ADR-133 — Sabit owned host PDF backend (K-275)
 
-- **Durum:** kabul — yalnız dar host profili; full P11/ürün/platform kabulü açık
+- **Durum:** kabul; temiz S native Zee emitter+fixed hostPDF8 kabulü var; fullP11/ürün/platform açık
 - **Tarih:** 15 Ekim 2026
 - **İlgili kayıt:** B3/P11, GB-091
 
@@ -100,3 +100,9 @@ K-275 Git taşıma sınırı: base.pdf binary, özgün LICENSE-DejaVu.txt ise
 -text ve yalnız bu dosyada blank-at-eol istisnasıyla tutulur. Lisansın
 özgün sondaki boşlukları silinmez; index blob ve disk SHA-256 eşliği ayrıca
 denetlenir. Bu dar metadata düzeltmesi runtime/fixture baytını değiştirmez.
+
+## 15 Ekim 2026 — temiz S yerel kanıt güncellemesi
+
+S common kohortunda gerçek cleanS Zee ikilisi golden ana.dil’den bounded job JSON üretti; fixedjob equality sonrasında exact ReportLab4.4.9/pypdf6.10.0/Pillow12.3.0 backend8 geçti. Font/notice/asset pinleri korundu; backend8 hostPDF kabulüdür, compiler wrapper’a çalıştırmadığı faz yazılmaz. Zee içinden signed plugin invocation/livecatalog/P08/physicalplatform/proje lisansı açık.
+
+[Güncel dar kaynak kanıtı](../docs/urunlesme-final-kabul-20261015.md).
