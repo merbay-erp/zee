@@ -1,6 +1,6 @@
 TÜRKÇE PROGRAMLAMA DİLİ
 
-> 15 Ekim 2026 güncel teknik kabul: [S3 teknik kabulü](urunlesme-s3-kabul-20261015.md). Önceki kaynaklara ait koşu kayıtları kendi tarihsel kapsamlarını korur; açık ürün, insan, platform ve yayın kapıları raporda ayrı gösterilir.
+> Güncel kaynak [S4 yerel kabulü](urunlesme-s4-kabul-20261015.md) ile RC, soak, macOS teslim/kurulum ve dar IDE/stdio ölçüm kanıtı taşır. [S3](urunlesme-s3-kabul-20261015.md) native kabulü tarihsel kaynağında kalır; ürün, insan, fiziksel platform ve yayın kapıları açıktır.
 
 Uçtan Uca Master Proje Dokümanı
 Dil • Derleyici • Runtime • Standart Kütüphane • Paket Ekosistemi • Tooling • Eğitim
@@ -1692,8 +1692,9 @@ olumlu/olumsuz LF/CRLF testleri ve minimal lsp-utf16 regression kipi eklendi;
 exact kaynak `5b910fccad8e694fd26fabb58e1cc39adbfd65ea` ve `bmp-disi-konum`
 fixed_by kaydıyla dar K-297 kapandı. Son tam faz 996 başarılı, 0 başarısız,
 25 varsayılan dışı vaka; [kabul kaydı](lsp-utf16-kabul-20261015.md). Yeni cache,
-grammar veya feature yoktur. S3 kampanyaları yeni kaynağın RC/soak/IDE kabulü
-sayılmaz; tam P19 ve V1 açık kalır.
+grammar veya feature yoktur. S3 kanıtı tarihsel kaynağında kalır. İzleyen
+[S4 yerel kabulü](urunlesme-s4-kabul-20261015.md) aynı yeni kaynakta ayrı RC/soak/IDE ve stdio
+gecikme gözlemini kaydeder; artımlı HIR/type, gerçek ürün/UI/SLA ve tam P19/V1 açıktır.
 
 Dış girdiler [kullanıcı teslim listesinde](urunlesme-kullanici-girdileri.md)
 ayrıldı. Beş tam proje hazır değil, fiziksel cihaz yok; bu kapılar bekliyor.

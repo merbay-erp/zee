@@ -1,6 +1,6 @@
 # ADR-145 — Artımlı editör eşitlemesi, ayrıştırma önbelleği ve lint
 
-- **Durum:** S3 exact kaynakta dar yerel kabul, performans ve soak kanıtı kayıtlı; artımlı HIR/type ve gerçek ürün kabulü açık.
+- **Durum:** S3 tarihsel dar kabulüne ek olarak S4 exact kaynakta IDE/stdio, gözlemsel stdio gecikmesi ve soak kaydı vardır; artımlı HIR/type, UI/gerçek ürün/SLA kabulü açık.
 - İş: K-287; ürün talebi: zee-cekirdek C2/P19.
 - İlişkili kararlar: ADR-019/035/069; RFC-0010; spec/30.
 
@@ -93,3 +93,9 @@ korundu; kalıcı performans tarihçesine kirli kaynak sonucu yazılmadı.
 [İkinci dalga exact S3 kabulü](../docs/urunlesme-s3-kabul-20261015.md) bu kararla ilgili actual kohortu ve açık sınırları kaydeder. C1/P33 retleri ve ürün/insan/platform kapıları bu bağlantıyla kapanmaz.
 
 K-297 ordinary LSP sorgu/yanıt UTF-16 düzeltmesi [ADR-153](153-lsp-utf16-konum-siniri.md) altında ayrıca izlenir; S3 ölçümleri yeni kaynağa otomatik taşınmaz.
+
+## S4 kaynak kabulü
+
+[S4](../docs/urunlesme-s4-kabul-20261015.md) yeni exact kaynağın dört stdio
+ölçüm kohortunu ve 1800 saniyelik RSS kabulünü ayrı tutar. Taşıma ölçümü
+UI gecikmesi veya adanmış koşucu performans tabanı değildir.

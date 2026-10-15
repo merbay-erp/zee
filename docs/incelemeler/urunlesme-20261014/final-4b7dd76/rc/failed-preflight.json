@@ -1,0 +1,6 @@
+{
+  "schema": "zee-local-asan-miri-driver-failure-1",
+  "result": "failed-driver",
+  "driver_error_type": "ValueError",
+  "finished_utc": "2026-10-15T13:02:41.163213+00:00"
+}

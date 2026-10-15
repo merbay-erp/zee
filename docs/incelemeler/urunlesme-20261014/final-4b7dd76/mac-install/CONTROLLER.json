@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "python3",
+    "-I",
+    "-B",
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-acceptance-drivers/install-and-prepare-ide.py"
+  ],
+  "started_ns": 1792089989569616000,
+  "status": "passed",
+  "minimum_free_bytes": 73403482112,
+  "required_free_bytes": 10737418240,
+  "observed_exit": 0,
+  "owned_group_closed_and_reaped": true,
+  "exit": 0,
+  "finished_ns": 1792089993587627000,
+  "elapsed_seconds": 4.018032749998383
+}

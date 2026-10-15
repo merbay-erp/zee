@@ -1,0 +1,11 @@
+{
+  "schema": "zee-s4-document-preparation-repair-1",
+  "observed_at_utc": "2026-10-15T20:08:19.651005+00:00",
+  "attempt_result": "failed-before-output-creation",
+  "original_driver_sha256": "44332b298335033bcaa937ebbf6ce97ceaf2b93a57196b04ba0684aa2e2f2bf6",
+  "failure": "original failed preflight binding",
+  "cause": "Historical recovery failure_receipt_sha256 binds the outer failed controller, not inner driver-failure.json. Both original receipts are unchanged.",
+  "controller_sha256": "802789e6aae0ebc8c28d0f85676901b5fa9e54b49bf1dbf3da4185968cb85c4a",
+  "driver_failure_sha256": "ef8d5f82712f4f23a72a223175bbf34b382a58a3e4d875c4f983ad9a177d6abc",
+  "source_repository_modified": false
+}

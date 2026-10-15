@@ -1,0 +1,22 @@
+{
+  "schema": "zee-s4-actual-IDE-acceptance-1",
+  "source_sha": "4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2",
+  "status": "passed-narrow-local-IDE",
+  "two_normal_sessions_reaped": true,
+  "canonical_bundle_unchanged": true,
+  "files": {
+    "LAUNCHER-PREPARATION.json": "9223d2dafbf56609d2b47d7701f61d1698348e0e4a2fe26e00d8798bade4d6f8",
+    "PREPARATION.json": "93fd5c61d4f09a5e0402a321fb6bb8c6a9ea5ad926390ef5e0f9a55af2315404",
+    "CLOSED.json": "bd57d663d19f6eba190d68d82d7cc58903cb9cb15775b810b20ae703bbbb94af",
+    "restart-CLOSED.json": "f52808304b201e6846600374fb6b08c32f6e66ab98d47103fdf14ebd9daec242",
+    "FIRST-UI-OBSERVATIONS.json": "fb87572d27540aab6e3399861fd9443e13ee4bbe846687ff240a134e7ba6a0fb",
+    "SECOND-UI-OBSERVATIONS.json": "53980b60ef3ef42397573145cbb9e441b19aa76308ac1223e8b092f24de4a743"
+  },
+  "limits": [
+    "first trace Apply showed IDE error; no report sent",
+    "curated UI trace, not full raw export",
+    "completion popup not separately captured",
+    "4 IDE spelling warnings remain",
+    "not Windows/minOS acceptance"
+  ]
+}

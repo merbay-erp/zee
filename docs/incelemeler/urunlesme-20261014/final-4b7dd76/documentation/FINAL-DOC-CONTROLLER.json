@@ -1,0 +1,21 @@
+{
+  "argv": [
+    "python3",
+    "-I",
+    "-B",
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-acceptance-drivers/final-doc-gates.py",
+    "--phase",
+    "prepare",
+    "--attempt",
+    "1"
+  ],
+  "started_ns": 1792095128671607000,
+  "status": "passed",
+  "minimum_free_bytes": 75228307456,
+  "required_free_bytes": 10737418240,
+  "observed_exit": 0,
+  "owned_group_closed_and_reaped": true,
+  "exit": 0,
+  "finished_ns": 1792095170984949000,
+  "elapsed_seconds": 42.31304491695482
+}

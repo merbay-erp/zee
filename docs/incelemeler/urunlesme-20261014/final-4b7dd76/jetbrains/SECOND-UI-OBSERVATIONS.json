@@ -1,0 +1,102 @@
+{
+  "schema": "zee-curated-native-ui-observation-1",
+  "source_sha": "4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2",
+  "interface": "CUA native accessibility and screenshot",
+  "raw_capture_available_in_tool_history": true,
+  "not_full_raw_trace_export": true,
+  "source_binding": "Canonical delivery, project pin, launcher and unchanged bundle hashes. IDE trace omits custom zeeBuild; separate native stdio confirms BuildJSON.",
+  "initialize": {
+    "id": 1,
+    "client": "IntelliJ IDEA 2025.3.1 / IU-253.29346.138",
+    "time": "22:18:41 Europe/Istanbul",
+    "lint": true,
+    "textDocumentSync": 2,
+    "serverInfo_visible": {
+      "name": "dillsp",
+      "version": "0.8.0-dev"
+    },
+    "positionEncodings": [
+      "utf-16"
+    ]
+  },
+  "completion": {
+    "time": "22:18:59",
+    "id": 2,
+    "query": [
+      0,
+      15
+    ],
+    "candidate_count": 111,
+    "input": "isim \"Ayşe\" ols",
+    "didChange_insert": "un",
+    "editor_result": "isim \"Ayşe\" olsun",
+    "popup_separately_observed": false
+  },
+  "definition": {
+    "id": 3,
+    "target": [
+      0,
+      0,
+      4
+    ],
+    "editor_position": "1:1"
+  },
+  "hover": {
+    "time": "22:19:19",
+    "id": 4,
+    "query": [
+      1,
+      12
+    ],
+    "text": "Tanım (satır 1):\nisim \"Ayşe\" olsun"
+  },
+  "rename": {
+    "time": "22:19:27",
+    "id": 6,
+    "query": [
+      1,
+      12
+    ],
+    "newName": "ad",
+    "exact_ranges": [
+      [
+        0,
+        0,
+        4
+      ],
+      [
+        1,
+        9,
+        13
+      ]
+    ],
+    "editor_result": "ad \"Ayşe\" olsun\n\"😀\" ile ad yaz\n",
+    "following_diagnostics": []
+  },
+  "diagnostic": {
+    "time": "22:19:36",
+    "code": "A001",
+    "range": [
+      0,
+      11,
+      16
+    ],
+    "input": "\"😀😀\" ile eksik yaz\n"
+  },
+  "formatting": {
+    "time": "22:19:40",
+    "id": 7,
+    "tabSize": 4,
+    "insertSpaces": true,
+    "input": "isim   \"Ayşe\"   olsun\n\"😀😀\"  ile  isim   yaz\n",
+    "newText": "isim \"Ayşe\" olsun\n\"😀😀\" ile isim yaz\n",
+    "editor_result_equal": true,
+    "following_diagnostics": []
+  },
+  "shutdown_trace_excerpt": "[Trace - 22:20:31] Sending request 'shutdown - (8)'.\nParams: null\n\n\n[Trace - 22:20:31] Received response 'shutdown - (8)' in 0ms.\nNo response returned.\n\n\n[Trace - 22:20:31] Sending notification 'exit'\nParams: null",
+  "server_ui_state_after_stop": "disabled",
+  "normal_ide_quit": "Cmd+Q Confirm Exit Exit; original controller observed_exit=exit=0 and reaped",
+  "IDE_spelling_inspections_remaining": 4,
+  "special_C1_quickfix_claim": false,
+  "controller_closed_sha256": "f52808304b201e6846600374fb6b08c32f6e66ab98d47103fdf14ebd9daec242"
+}

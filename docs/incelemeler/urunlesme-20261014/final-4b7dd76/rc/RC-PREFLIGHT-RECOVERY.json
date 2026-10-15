@@ -1,0 +1,34 @@
+{
+  "schema": "zee-rc-preflight-recovery-1",
+  "source_sha": "4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2",
+  "first_attempt": "s4-4b7dd76-rc",
+  "first_attempt_result": "failed-driver-before-started-proof",
+  "driver_error_type": "ValueError",
+  "diagnostic_observed_in_tool_history": "cargo-miri not installed for nightly-2026-08-31",
+  "fuzz_started": false,
+  "source_changed": false,
+  "repair": [
+    "rustup",
+    "component",
+    "add",
+    "--toolchain",
+    "nightly-2026-08-31",
+    "miri",
+    "rust-src"
+  ],
+  "repair_exit": 0,
+  "version": "miri 0.1.0 (9085017724 2026-08-30)",
+  "components": [
+    "cargo-aarch64-apple-darwin",
+    "clippy-aarch64-apple-darwin",
+    "miri-aarch64-apple-darwin",
+    "rust-docs-aarch64-apple-darwin",
+    "rust-src",
+    "rust-std-aarch64-apple-darwin",
+    "rustc-aarch64-apple-darwin",
+    "rustfmt-aarch64-apple-darwin"
+  ],
+  "new_attempt": "s4-4b7dd76-rc-v2",
+  "observed_utc": "2026-10-15T13:06:23.805884+00:00",
+  "failure_receipt_sha256": "802789e6aae0ebc8c28d0f85676901b5fa9e54b49bf1dbf3da4185968cb85c4a"
+}

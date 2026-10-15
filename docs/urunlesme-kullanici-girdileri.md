@@ -1,6 +1,7 @@
 # Ürünleşme: kullanıcı girdileri ve açık kapılar
 
-15 Ekim 2026. [S3 teknik kabulü](urunlesme-s3-kabul-20261015.md) ve
+15 Ekim 2026 başlayan çalışma. [S4 yerel kabulü](urunlesme-s4-kabul-20261015.md),
+[tarihsel S3 teknik kabulü](urunlesme-s3-kabul-20261015.md) ve
 [39 maddelik plan](urunlesme-plan-v1.tsv) için teslim listesi. Bu belge yeni
 ürün, yayın veya destek kararı vermez; eksik kanıtı tamamlanmış göstermez.
 
@@ -128,9 +129,13 @@ yükseltme/veri göçü/geri dönüş kabulünün sahibidir. Staging erişimi ge
   [açık incelemelerde](urunlesme-acik-incelemeler.md) kalır. Kullanıcıdan ek
   dosya veya tekrar izin istemekle çözülmüş sayılmaz; farklı araç/ajana
   yönlendirilerek ret aşılmaz.
-- **P19 teknik kapsam:** artımlı HIR/tür analizi, BMP dışı hover/rename/tanı
-  sütunu ve taşıma/UI/lint gecikme sınırları ayrı teknik işlerdir. Bunlar
-  yalnız “kullanıcı girdisi eksik” diye sınıflandırılmaz; gerçek ürün ölçümü
+- **P19 teknik kapsam:** BMP dışı hover/definition/rename/tanı konumu
+  [K-297](lsp-utf16-kabul-20261015.md) ile kapandı; [S4](urunlesme-s4-kabul-20261015.md)
+  yeni kaynakta native stdio ve gerçek IDE kanıtını, 1/41 belge ve lint
+  kapalı/açık gerçek stdio gecikme gözlemini kaydeder. Lint açık/41 belgede
+  p95 223,698 ms ölçüldü; 200 ms hedefi açıktır. Artımlı HIR/tür
+  analizi, UI/gerçek ürün gecikmesi ve genel SLA hâlâ ayrı açık teknik
+  işlerdir. Bunlar kullanıcı girdisi eksikliği sayılmaz; gerçek ürün ölçümü
   gereken alt kabul P08'e bağlıdır.
 - **Destek iddiaları:** genel FFI/hostile PDF sandbox, sağlayıcılar için genel
   exactly-once, DB+FS atomikliği, bütün HTTP işlemleri için rollback, genel

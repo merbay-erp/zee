@@ -1,0 +1,233 @@
+{
+  "schema": "zee-s4-final-doc-gates-1",
+  "phase": "prepare",
+  "attempt": 1,
+  "tested_source_sha": "4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2",
+  "head": "4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2",
+  "status": "passed",
+  "commands": [
+    {
+      "name": "production-unchanged",
+      "argv": [
+        "git",
+        "diff",
+        "--exit-code",
+        "4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2",
+        "--",
+        "compiler",
+        "scripts",
+        "dogfood",
+        "regression",
+        "golden",
+        ".github",
+        "editors",
+        ":(exclude)editors/**/README.md"
+      ],
+      "cwd": "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+      "status": "passed",
+      "exit": 0,
+      "seconds": 0.011353416950441897,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "log_bytes": 0
+    },
+    {
+      "name": "spec-report",
+      "argv": [
+        "cargo",
+        "run",
+        "--locked",
+        "--bin",
+        "spec_drift",
+        "--",
+        "--rapor-yaz"
+      ],
+      "cwd": "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/compiler",
+      "status": "passed",
+      "exit": 0,
+      "seconds": 0.7355058749672025,
+      "log_sha256": "1ad499718b31ff2515013b3cc2f4fca5f102c32e91200a604362d9b30252a441",
+      "log_bytes": 166
+    },
+    {
+      "name": "canonical-counts",
+      "argv": [
+        "cargo",
+        "run",
+        "--locked",
+        "--bin",
+        "depo_sayilari",
+        "--",
+        "--yaz"
+      ],
+      "cwd": "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/compiler",
+      "status": "passed",
+      "exit": 0,
+      "seconds": 0.49982429191004485,
+      "log_sha256": "9b57b807ca6ff0598a505731faf7075b59004dd1da70d2b177d141ebb505a5dc",
+      "log_bytes": 175
+    },
+    {
+      "name": "canonical-summary",
+      "argv": [
+        "cargo",
+        "run",
+        "--locked",
+        "--",
+        "\u00e7al\u0131\u015ft\u0131r",
+        "../dogfood/kanit-ozeti/kaynak/ana.dil"
+      ],
+      "cwd": "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/compiler",
+      "status": "passed",
+      "exit": 0,
+      "seconds": 1.5696644590934739,
+      "log_sha256": "c70f4a5624361f1cd8a1122d11f9b1df7a5823e0ac37afd3c82e4040b382a344",
+      "log_bytes": 199
+    },
+    {
+      "name": "fmt",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "cwd": "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/compiler",
+      "status": "passed",
+      "exit": 0,
+      "seconds": 0.5685684169875458,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "log_bytes": 0
+    },
+    {
+      "name": "catalog-freshness-summary-security",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "--test",
+        "katalog_testi",
+        "--test",
+        "dokuman_tazelik_testi",
+        "--test",
+        "kanit_ozeti_testi",
+        "--test",
+        "dogfood_karsilastirma_testi",
+        "--test",
+        "guvenlik_kapisi_testi",
+        "--test",
+        "tedarik_kapisi_testi"
+      ],
+      "cwd": "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/compiler",
+      "status": "passed",
+      "exit": 0,
+      "seconds": 21.96635779098142,
+      "log_sha256": "d6b74d9c80e357d3981e9705439e2a1c7ccc388b4edaa1e090bd0b0fc4fe6292",
+      "log_bytes": 3333
+    },
+    {
+      "name": "go-present",
+      "argv": [
+        "go",
+        "version"
+      ],
+      "cwd": "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+      "status": "passed",
+      "exit": 0,
+      "seconds": 0.0056693750666454434,
+      "log_sha256": "f8a6d01388733770328170efc30f53fe843ffc421b46755597094b3a7de9e54c",
+      "log_bytes": 33
+    },
+    {
+      "name": "spec-drift",
+      "argv": [
+        "cargo",
+        "run",
+        "--locked",
+        "--bin",
+        "spec_drift",
+        "--",
+        "--denetle"
+      ],
+      "cwd": "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/compiler",
+      "status": "passed",
+      "exit": 0,
+      "seconds": 0.3060038749827072,
+      "log_sha256": "1c9b50d5ad587d67c235fbfd5b588d0de3964abaa40e206831c0ad5fc06ac9e4",
+      "log_bytes": 175
+    },
+    {
+      "name": "conformance-guard",
+      "argv": [
+        "bash",
+        "scripts/conformance-korugu.sh",
+        "4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2"
+      ],
+      "cwd": "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+      "status": "passed",
+      "exit": 0,
+      "seconds": 0.04382766701746732,
+      "log_sha256": "17730abed0789c8f25de093a0f67ad168c28248ff056b3778f9ff3e880db7c02",
+      "log_bytes": 54
+    },
+    {
+      "name": "semantic-regresyon-guard",
+      "argv": [
+        "bash",
+        "scripts/semantic-regresyon-korugu.sh",
+        "4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2"
+      ],
+      "cwd": "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+      "status": "passed",
+      "exit": 0,
+      "seconds": 1.828491499996744,
+      "log_sha256": "12dd9c1087653bda006c1223a9ae47a8baee8df99cb49e1146bfcfbf1e45e4c9",
+      "log_bytes": 92
+    },
+    {
+      "name": "core-freeze-guard",
+      "argv": [
+        "bash",
+        "scripts/core-freeze-korugu.sh",
+        "4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2"
+      ],
+      "cwd": "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+      "status": "passed",
+      "exit": 0,
+      "seconds": 2.390419000061229,
+      "log_sha256": "093ea0e89be978fa97a0627647be58889a23ec1a0324e65dceb07f27cc1600ff",
+      "log_bytes": 68
+    },
+    {
+      "name": "diff-check",
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "cwd": "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+      "status": "passed",
+      "exit": 0,
+      "seconds": 0.025587832904420793,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "log_bytes": 0
+    },
+    {
+      "name": "secret-scan",
+      "argv": [
+        "bash",
+        "scripts/sir-taramasi.sh"
+      ],
+      "cwd": "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+      "status": "passed",
+      "exit": 0,
+      "seconds": 11.694379166001454,
+      "log_sha256": "ec36af83d89e26932a475e6735a05b888dc0bbe087aeebbf48de346556b4ff22",
+      "log_bytes": 284
+    }
+  ],
+  "started_ns": 1792095128710352000,
+  "driver_sha256": "1b0284ee92aba82439e82f5c32ed261114c7f7114531f93681f837ea17c0b62e",
+  "head_end": "4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2",
+  "finished_ns": 1792095170368889000
+}

@@ -1,0 +1,8 @@
+{
+  "schema": "zee-raw-text-envelope-1",
+  "original_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-acceptance-drivers/keep-awake-post-rc.py",
+  "original_sha256": "cdad5d5ac2309284f05c54aa678bebb544cb4859e98204f41c94c6cea2fa810e",
+  "original_bytes": 1143,
+  "encoding": "utf-8",
+  "raw_text": "import json,runpy,subprocess,time\nfrom pathlib import Path\nE=Path(__file__).resolve().parents[1]\nR=Path('/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014')\nH=runpy.run_path(str(R/'scripts/lifecycle_core.py'))\nout=E/'s4-post-rc-owned-awake.json'\nstop=E/'s4-post-rc-owned-awake.stop'\nassert not out.exists() and not stop.exists()\nstart=time.monotonic()\nchild=subprocess.Popen(['/usr/bin/caffeinate','-i','-m','-s','-t','3600'],stdin=subprocess.DEVNULL,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,start_new_session=True,close_fds=True)\nreason='deadline'\ntry:\n while H['held_status'](child) is None and time.monotonic()-start<3600:\n  if stop.exists(): reason='owned-stop-file';break\n  time.sleep(1)\nfinally:\n H['stop_owned'](child,grace=3)\n out.write_text(json.dumps({'schema':'zee-temporary-owned-awake-1','source_sha':'4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2','status':'closed-owned-utility','utility':'/usr/bin/caffeinate','argv':['-i','-m','-s','-t','3600'],'bounded_seconds':3600,'reason':reason,'elapsed_seconds':time.monotonic()-start,'owned_original_Popen_reaped':True,'permanent_preference_changed':False},indent=2)+'\\n')\n"
+}

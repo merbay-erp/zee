@@ -46,3 +46,9 @@ kimliğini korur; bu eşleme yeni ölçüm veya yeni ikili kabulü değildir.
 ## S3 yerel kabul kanıtı
 
 [Exact S3 kabulü ve açık sınırlar](urunlesme-s3-kabul-20261015.md) gerçek canonical/native/IDE ve ortak kapıları bağlar; genel ürün/platform/yayın kabulü değildir.
+
+## S4 kaynak kabulü
+
+[S4 ayrı kaynak kaydı](urunlesme-s4-kabul-20261015.md) `4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2`
+üzerindeki güncel yerel kanıtı ve açık sınırları gösterir. Önceki S3 sonuçları
+tarihsel kalır; genel ürün/platform/yayın veya tam P19 kabulü değildir.

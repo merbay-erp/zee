@@ -46,10 +46,12 @@ kapıları geçti. Zee/Rust/Go kanıt özeti çıktıları bayt bayt aynı kald�
 
 ## Kanıt sınırı
 
-Bu normal LSP correctness düzeltmesidir. S3 kaynak/RC/soak/performance/IDE
-kampanyası kendi exact SHA'sında kalır; yeni kaynakta uzun kampanya veya
-IDE kabulü iddia edilmez. Yeni cache, HIR/type artımlılığı, tanı kodu veya
-hızlı düzeltme eklenmez. Tam P19 ve V1 açık kalır.
+Bu normal LSP correctness düzeltmesidir. İlk kapanış uzun kampanya veya IDE
+kabulü içermiyordu. İzleyen [S4 yerel kabulü](urunlesme-s4-kabul-20261015.md) exact
+`4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2` üzerinde ayrı RC/soak, kanonik
+macOS teslim/kurulum, on native stdio vakası ve gerçek IDE UTF-16 akışını
+kaydeder. S3 sonuçları kendi kaynak kimliğinde kalır. Yeni cache, HIR/type
+artımlılığı, tanı kodu veya hızlı düzeltme eklenmez; tam P19/V1 açıktır.
 
 [S3 raporu](urunlesme-s3-kabul-20261015.md) tarihsel kaynak kanıtıdır.
 [Kullanıcı girdileri](urunlesme-kullanici-girdileri.md) beş tam anonim

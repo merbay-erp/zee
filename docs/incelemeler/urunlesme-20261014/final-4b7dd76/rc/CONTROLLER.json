@@ -1,0 +1,24 @@
+{
+  "argv": [
+    "python3",
+    "-I",
+    "-B",
+    "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/scripts/rc-kampanyasi.py",
+    "--repo",
+    "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+    "--source-sha",
+    "4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2",
+    "--out",
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s4-4b7dd76-rc-v3",
+    "--execute-approved-stable-sha"
+  ],
+  "started_ns": 1792090074883355000,
+  "status": "passed",
+  "minimum_free_bytes": 70047940608,
+  "required_free_bytes": 10737418240,
+  "observed_exit": 0,
+  "owned_group_closed_and_reaped": true,
+  "exit": 0,
+  "finished_ns": 1792093951928147000,
+  "elapsed_seconds": 3877.056498458027
+}

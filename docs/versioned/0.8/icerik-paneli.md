@@ -10,8 +10,10 @@ python3 -I -B scripts/icerik-paneli-olustur.py --framework-root "$PWD" --root /a
 
 Hedefin parent dizini kendi UID'ne ait0700 olmalı. Araç mevcut projeyi ezmez;
 başarısız fresh kopyayı silmez. Mevcut `dil yeni` komutuyla bizzat çıkardığı fresh proje üzerine exact declared dosyaları yerleştirir; mevcut CLI kilitle/denetle/dene komutlarını gerçekten çalıştırır. Var olan `dil yeni site` klasörünü dönüştürmez; creator için farklı fresh hedef seçilir. DSN veya parola üretmez,
-veritabanına bağlanmaz ve otomatik migration/install/download yapmaz. Yeni
-native temiz-source kabulü tamamlanana kadar bu kaynak adaydır.
+veritabanına bağlanmaz ve otomatik migration/install/download yapmaz. Tarihsel
+[S3 kaynağında](../../urunlesme-s3-kabul-20261015.md) 14 gerçek PostgreSQL/HTTPS
+vakasıyla dar yerel kabul vardır; başka kaynaklarda yeniden koşulmuş sayılmaz.
+Gerçek insan rehber kabulü, üretim/platform ve ürün benimsenmesi açıktır.
 
 ## Yerel operator hazırlığı
 

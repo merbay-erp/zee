@@ -1,0 +1,273 @@
+{
+  "schema": "zee-s4-selected-archive-manifest-1",
+  "source_sha": "4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2",
+  "manifest_self_excluded": true,
+  "complete_external_evidence": false,
+  "files": [
+    {
+      "path": "RAW-SCOPE.json",
+      "bytes": 29508,
+      "sha256": "c0760a03155c39f3ff0fc9776fd8aaee0e000ef1e04deca2e231bfd3b13de137"
+    },
+    {
+      "path": "README.md",
+      "bytes": 1212,
+      "sha256": "973c59c336964fce110dcb194a953e3a1fcce27a3a379606ea404d36a7919fa1"
+    },
+    {
+      "path": "documentation/FINAL-DOC-CONTROLLER.json",
+      "bytes": 507,
+      "sha256": "81f72e17d87bc0bf960518f3b622953fc4c2ece61ef01237e92a0264fd0fe118"
+    },
+    {
+      "path": "documentation/FINAL-DOC-GATES.json",
+      "bytes": 6583,
+      "sha256": "2e18eb50f08fe0cb770d93d77dc54437032b2fee1f90ec166a8edda98c9c5dba"
+    },
+    {
+      "path": "documentation/INTEGRATION.json",
+      "bytes": 4782,
+      "sha256": "d541fe27131ff9a0eef9218e1f25d38ae8304ac14df345125cb760b557ac9a95"
+    },
+    {
+      "path": "documentation/PREPARATION-REPAIR.json",
+      "bytes": 697,
+      "sha256": "15afdfaa05a0889763a1ed8d352d98ed88fa98a4d19f5a13a9ca063617d8e443"
+    },
+    {
+      "path": "documentation/PROPOSAL-SCAN.json",
+      "bytes": 602,
+      "sha256": "86b329b133783cd7c2e0454638e02b473e66194a62c6c99b83264179715d18c5"
+    },
+    {
+      "path": "documentation/SOURCE-DIGEST-REPRESENTATION-REVIEW.json",
+      "bytes": 909,
+      "sha256": "b57aa7066c9e609973b2d7fb6254ec8f544697d2822bd6576a68713afa439437"
+    },
+    {
+      "path": "documentation/catalog-freshness-summary-security.raw.json",
+      "bytes": 3749,
+      "sha256": "51dc44a631c0f1cbe0f80e87462aea1605c8ef25a2628393e4d5e9096698cfe0"
+    },
+    {
+      "path": "documentation/first-secret-scan.json",
+      "bytes": 342,
+      "sha256": "126fa4ebdff10a038d7ce470db8b4e15aec3ea7318d2e6b9ba2d5022f6b1cc39"
+    },
+    {
+      "path": "drivers/final-doc-gates.py.raw.json",
+      "bytes": 5221,
+      "sha256": "a593c207f436b0a870b7092dfbaabe8f0e4069de2e96fd4f51b90c789073e6a0"
+    },
+    {
+      "path": "drivers/finalize-archive.py.raw.json",
+      "bytes": 6140,
+      "sha256": "a4e0f45af4f549cee3b1a9ebd96344b90339cfefdc0fb30175e75c0f3fd5513d"
+    },
+    {
+      "path": "drivers/install-and-prepare-ide.py.raw.json",
+      "bytes": 2749,
+      "sha256": "5f63dca9378a282c5f43dca6db0156f12e41f7c7fb5912a8e5c50c3928d82299"
+    },
+    {
+      "path": "drivers/integrate-document-proposal.py.raw.json",
+      "bytes": 2994,
+      "sha256": "adbc61aaf38caed6064eb27d2a4907a15effbb6da0066efe21db5a191949813d"
+    },
+    {
+      "path": "drivers/keep-awake-post-rc.py.raw.json",
+      "bytes": 1487,
+      "sha256": "166313c539d4f859ac09f4db7c0efd10301083341b7317e1f8b68a457ca4f0d8"
+    },
+    {
+      "path": "drivers/measure-lsp-stdio.py.raw.json",
+      "bytes": 26384,
+      "sha256": "1442d306e3b294ff7cce6545531e1d3a1fff0d9e5dd0ab2cb07c9a7ad4b8368d"
+    },
+    {
+      "path": "drivers/prepare-s4-doc-update.py.raw.json",
+      "bytes": 42143,
+      "sha256": "0cc5aadefce19c9b7444d75e5103edbf3b43e32928ec8c7c4cf15528f74bea72"
+    },
+    {
+      "path": "drivers/rc-gate-v3.py.raw.json",
+      "bytes": 8935,
+      "sha256": "a349e729fcaba98b125258048a411ba81fc0e9949564460a995f368a3a8aba9a"
+    },
+    {
+      "path": "drivers/represent-gate-source-hash.py.raw.json",
+      "bytes": 5585,
+      "sha256": "fb462c5a098c2bd83cfc486d9d0428731d4eedf29a6ae0c1fc1c0e695bfc00be"
+    },
+    {
+      "path": "drivers/scan-document-proposal-v2.py.raw.json",
+      "bytes": 4439,
+      "sha256": "491a5a435a8bd3a3ceeecb1e2b6e666ccdd61b3c09313f1c073eb6c529d4e39b"
+    },
+    {
+      "path": "drivers/utf16-stdio.py.raw.json",
+      "bytes": 22687,
+      "sha256": "ce5218fafa8e25ea7fffeaebf6f8fd1f85e7e59f92686f53f02bfb781537d1d1"
+    },
+    {
+      "path": "drivers/verify-lsp-stdio-latency.py.raw.json",
+      "bytes": 31170,
+      "sha256": "e8e986577cb397af95785490effbb41ce54220a2d7ee81dd0977ab622700f7b5"
+    },
+    {
+      "path": "drivers/verify-soak.py.raw.json",
+      "bytes": 5208,
+      "sha256": "147f79ba18574f8dc8f0da8f503c3cd7e64ada49e4194acad0d5acfd24dd5415"
+    },
+    {
+      "path": "jetbrains/ACCEPTANCE.json",
+      "bytes": 1064,
+      "sha256": "1b3fcc13777aeb9f918fa78afd85ebcbbaa43a8518bb60f4b164f9d18b65d06b"
+    },
+    {
+      "path": "jetbrains/CLOSED.json",
+      "bytes": 443,
+      "sha256": "bd57d663d19f6eba190d68d82d7cc58903cb9cb15775b810b20ae703bbbb94af"
+    },
+    {
+      "path": "jetbrains/FIRST-UI-OBSERVATIONS.json",
+      "bytes": 1656,
+      "sha256": "fb87572d27540aab6e3399861fd9443e13ee4bbe846687ff240a134e7ba6a0fb"
+    },
+    {
+      "path": "jetbrains/LAUNCHER-PREPARATION.json",
+      "bytes": 1977,
+      "sha256": "9223d2dafbf56609d2b47d7701f61d1698348e0e4a2fe26e00d8798bade4d6f8"
+    },
+    {
+      "path": "jetbrains/PREPARATION.json",
+      "bytes": 1308,
+      "sha256": "93fd5c61d4f09a5e0402a321fb6bb8c6a9ea5ad926390ef5e0f9a55af2315404"
+    },
+    {
+      "path": "jetbrains/SECOND-UI-OBSERVATIONS.json",
+      "bytes": 2676,
+      "sha256": "53980b60ef3ef42397573145cbb9e441b19aa76308ac1223e8b092f24de4a743"
+    },
+    {
+      "path": "jetbrains/restart-CLOSED.json",
+      "bytes": 442,
+      "sha256": "f52808304b201e6846600374fb6b08c32f6e66ab98d47103fdf14ebd9daec242"
+    },
+    {
+      "path": "lifecycle/POST-RC-AWAKE.json",
+      "bytes": 425,
+      "sha256": "e47658cf6c9fd673c29cb6558b2a9980efefcb0805b42de4ad8500a03af9005b"
+    },
+    {
+      "path": "lifecycle/RC-AWAKE.json",
+      "bytes": 424,
+      "sha256": "a55e784b7dc9a6fb03f3b10d398346aabee7aa8aab4952d2218024cb1ea7704e"
+    },
+    {
+      "path": "lsp/CONTROLLER.json",
+      "bytes": 453,
+      "sha256": "7db3b2750d0e809493819dccb92ff5a5661a88b7c27b5b8f1c8805dcb6d45681"
+    },
+    {
+      "path": "lsp/PROOF.json",
+      "bytes": 111459,
+      "sha256": "664ea5d721c5fb2888ec3cebb829d48f318b75850a58e21eba2d5ca4d5d5672a"
+    },
+    {
+      "path": "lsp/independent-review.json",
+      "bytes": 87081,
+      "sha256": "711c6afc83d5c9d8ce3d3fe9183a06ebc1a463f3aeffab852605028a8464a69e"
+    },
+    {
+      "path": "mac-delivery/CONTROLLER.json",
+      "bytes": 699,
+      "sha256": "923f7adaa0f3d3e2cd4d15ebfd7a9ba6e67730feb6f0c0271a4a99d7c0f19603"
+    },
+    {
+      "path": "mac-delivery/DELIVERY.json",
+      "bytes": 3148,
+      "sha256": "792f45997e70ed602cbb7de1e7908ba837cdd2914944e0443b0c99e773f9c2f4"
+    },
+    {
+      "path": "mac-install/CONTROLLER.json",
+      "bytes": 459,
+      "sha256": "7efa5f10ef9e91a41acc5fefaed3d2c8b62c0cad443fa9feade106a363924db1"
+    },
+    {
+      "path": "mac-install/PROOF.json",
+      "bytes": 12750,
+      "sha256": "ffcb53e01925fb9aa25f9697d3ea8a740c978b4378eb77bc5e329666dec50436"
+    },
+    {
+      "path": "rc/CONTROLLER.json",
+      "bytes": 710,
+      "sha256": "3fce1167ebbcb5d4e21fcbe41657280ca595436729cad1f7c24fee82492bc3b6"
+    },
+    {
+      "path": "rc/GATE-CONTROLLER.json",
+      "bytes": 446,
+      "sha256": "91f36e57f75683b8f4bbeb56e256fc3d755f2d65ad815f3711142b7be13efb93"
+    },
+    {
+      "path": "rc/GATE-RECEIPT.derived.json",
+      "bytes": 27741,
+      "sha256": "f99706a8199118a250b1663441e9e5af6e191f3f8717d4c4bc177ceb408fbb8a"
+    },
+    {
+      "path": "rc/RC-PREFLIGHT-RECOVERY.json",
+      "bytes": 1063,
+      "sha256": "9e8fde03a449dfeeeb711d2d67b7c62f52037d79567e6a33ef95fd922fdf23fd"
+    },
+    {
+      "path": "rc/RC-V2-TIMING-REVIEW.json",
+      "bytes": 611,
+      "sha256": "dddea2fbf2fb5fecd7c241019ae8539ecbb000ab93749fa26df69714f7a04c7b"
+    },
+    {
+      "path": "rc/campaign-proof.json",
+      "bytes": 12929,
+      "sha256": "2d9cc6b77cd27272a7430e41e8dbbf0c2c9dbb03a65fb37a597d5843e9503a6d"
+    },
+    {
+      "path": "rc/failed-preflight-controller.json",
+      "bytes": 708,
+      "sha256": "802789e6aae0ebc8c28d0f85676901b5fa9e54b49bf1dbf3da4185968cb85c4a"
+    },
+    {
+      "path": "rc/failed-preflight.json",
+      "bytes": 175,
+      "sha256": "ef8d5f82712f4f23a72a223175bbf34b382a58a3e4d875c4f983ad9a177d6abc"
+    },
+    {
+      "path": "soak/CONTROLLER.json",
+      "bytes": 684,
+      "sha256": "951bc7ffd0e674aa43b9ca20b52c8606618cf61381a997d07d2ea770eb2775c1"
+    },
+    {
+      "path": "soak/PROOF.json",
+      "bytes": 5139,
+      "sha256": "d336c03aa4b085377f2621e3da9f78da70c98f3cf8f24534db7c81a2339e68dc"
+    },
+    {
+      "path": "soak/history.raw.json",
+      "bytes": 777,
+      "sha256": "ccdea921783269f739c93932566935be39029ca15afa95111019f965a283bcee"
+    },
+    {
+      "path": "soak/independent-review.json",
+      "bytes": 1304,
+      "sha256": "e4f6ac0484b45db606b33ecb22a58c5620d71de348f3e5a7a02fa98ed3e21576"
+    },
+    {
+      "path": "soak/report.raw.json",
+      "bytes": 15440,
+      "sha256": "c34948c455421142979069c3459e16a75312b66bdddc38a3d9c86b49012571fa"
+    },
+    {
+      "path": "utf16-stdio/PROOF.json",
+      "bytes": 5021,
+      "sha256": "8f2df546361b2bec85a83df281b0709c7bb53c6babdb9ec0c436daf75fc2d7a4"
+    }
+  ]
+}
