@@ -1,0 +1,6 @@
+{
+  "reason": "CUA observation remained bound to empty Processes floating window after native Hide/Window menu/project reselect/Quit attempts and unlock. Close request delegates cleanup only to original retained Popen controller3.",
+  "completion": "unverified",
+  "graceful_LSP_shutdown": "not inferred from process cleanup",
+  "method": "No PID adoption; same reviewed lifecycle_core helper"
+}

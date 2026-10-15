@@ -1,0 +1,26 @@
+{
+  "status": "passed-owned-local-Git",
+  "official_archive": "https://www.kernel.org/pub/software/scm/git/git-2.56.0.tar.xz",
+  "official_checksums": "https://www.kernel.org/pub/software/scm/git/sha256sums.asc",
+  "archive_sha256": "26c56c296b38c0695b26fa95f475f1d01704d2d38e73465ca30b0b2f5dc789d3",
+  "checksum_transport": "official HTTPS checksum document; PGP signature not independently authenticated",
+  "git_binary": "/home/mustafaerbay.guest/zee-k276/tools/git-2.56.0/bin/git",
+  "git_sha256": "92451e863b3ebdbdac7c5cd8d88e392edfc22d9b4529956d5336558f4cb956ac",
+  "actual_version": "git version 2.56.0",
+  "seconds": 54.47182607400009,
+  "build_argv": [
+    "make",
+    "-j2",
+    "prefix=/home/mustafaerbay.guest/zee-k276/tools/git-2.56.0",
+    "NO_RUST=1",
+    "NO_CURL=1",
+    "NO_EXPAT=1",
+    "NO_GETTEXT=1",
+    "NO_TCLTK=1",
+    "NO_PERL=1",
+    "NO_PYTHON=1"
+  ],
+  "global_replace": false,
+  "profile_modified": false,
+  "features": "local clone/archive/bundle; optional Rust/HTTP/Perl/Tcl/Python/gettext omitted"
+}

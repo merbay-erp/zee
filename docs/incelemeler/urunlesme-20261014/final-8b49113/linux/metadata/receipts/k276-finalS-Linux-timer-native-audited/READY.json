@@ -1,0 +1,12 @@
+{
+  "status": "passed",
+  "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "cases": 2,
+  "manifest_sha256": "af5c0d2b9df2215122c45bfd9990bf258cebcc3ed4d222d31ea425762e29f1e8",
+  "PROOF_sha256": "230f6fe99df4d79c3736e51b3796e99d2c75b47af4cea54061f4e9e435e80c11",
+  "source_begin_end_receipts": true,
+  "source_helper_pin_count": 111,
+  "paused_latch_retained": true,
+  "automatic_retry_reconcile": false,
+  "owned_units_and_cluster_closed": true
+}

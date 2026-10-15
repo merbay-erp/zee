@@ -1,0 +1,72 @@
+{
+  "schema": "zee-derived-metadata-sha256-bindings-v1",
+  "boundary": "Derived parsed JSON; not raw byte identity. Original external receipt remains authoritative and unchanged.",
+  "raw_external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/root-final-S-archive-stage/final-8b49113/linux/metadata/producer-bindings/K279-PRODUCER-BEFORE-END.json",
+  "raw_sha256": "ab9bbcacda5ef134ed621327f3c157b840ee7f48557f87fed635f375c5edab52",
+  "metadata": {
+    "schema": "producer-derived-before-end-binding-1",
+    "derived_at": "archival assembly after actual campaign; no historical standalone START file is claimed",
+    "proof_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/k279-finalS-Linux-acceptance/native49/proof.json",
+    "proof_sha256": "8788defa1c30fb7b490627bdcf35568b824731471b7f822e1d64d82dd115b840",
+    "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+    "producer_path": "scripts/tests/onceki-kucuk-surum-test.py",
+    "producer_Git_blob_sha256": "280b4177b41c2d318c966aa9de92b7b0f652919f0dcdc6072c6a05c800f35db6",
+    "Git_S_expected_fixture_helper_sha256": {
+      "compiler/tests/fixtures/onceki-kucuk-surum-v07/manifest.json": "0feff492ad273e38abc34412d1537abd37142b6e2ddf453807e7b7f993e4ceac",
+      "scripts/lifecycle_core.py": "e76fe65b6103fc4732aafc4468afc5bbf3d0699a0f79d7f74879165636ebb1a9",
+      "compiler/tests/fixtures/onceki-kucuk-surum-v07/01-merhaba-dunya.dil": "28a2bb1b97dbe2bdf6aa2f607cd09f0316313495a234e407e09c9ac66c613315",
+      "compiler/tests/fixtures/onceki-kucuk-surum-v07/02-degiskenler.dil": "1ac8696b686cbbce99aa01873e82dc41928250c80ab796d3d53d06e253075f1b",
+      "compiler/tests/fixtures/onceki-kucuk-surum-v07/03-girdi-alma.dil": "04946c389588e0a135f69b66fbeaa170f41f9ade22622d2d784c5e74d112b071",
+      "compiler/tests/fixtures/onceki-kucuk-surum-v07/04-hesap-makinesi.dil": "189f8269aa46ef23810c2febcd663f0e3a5ba3bf320b316cc0f0208bff8edd24",
+      "compiler/tests/fixtures/onceki-kucuk-surum-v07/05-kosullar.dil": "146142b6fd14c907a1baee126221766b7453167e1cd20d09953b93477a545236",
+      "compiler/tests/fixtures/onceki-kucuk-surum-v07/06-donguler.dil": "62a4aef13e0cce8686d0b4b5ca9ca4232a6a0adcea4956e4cac6540d6b8fce58",
+      "compiler/tests/fixtures/onceki-kucuk-surum-v07/07-sayi-tahmini.dil": "e6750a487fbfae11701aaae2b0dbc7f124dc6711db7f9842d3ffde6fbe6fc63c",
+      "compiler/tests/fixtures/onceki-kucuk-surum-v07/08-listeler.dil": "8cee3879750aea275f387f10bf19fa45443ee2b8cc8a3dc0308ce47276219cd5",
+      "compiler/tests/fixtures/onceki-kucuk-surum-v07/09-liste-isleme.dil": "561102898a930fb98a1afa8b32b9a7485d58b29090e40e50189200c9bc42bae4",
+      "compiler/tests/fixtures/onceki-kucuk-surum-v07/10-sozlukler.dil": "fcd8bf8bf6410bdc08567f9c89dfc9921dfdc9f573fbe89cab81f60da07b546b",
+      "compiler/tests/fixtures/onceki-kucuk-surum-v07/11-metin-islemleri.dil": "d720d8e8c56ef180f5394bd5927aaff30ea020f3212f9851df14c1b22d9247b0",
+      "compiler/tests/fixtures/onceki-kucuk-surum-v07/12-islem-tanimi.dil": "5e428a778ed08bd09ff121cdade187483c4ad77f2976c728522640fb2aa92c8f",
+      "compiler/tests/fixtures/onceki-kucuk-surum-v07/13-islem-parametreleri.dil": "e28eb26f953f00dcf92023210acc6c3b3af4eaf6a00b46b027dba9d9e2055c69",
+      "compiler/tests/fixtures/onceki-kucuk-surum-v07/14-not-ortalamasi.dil": "7d65f8d6f3d810546a7bc05ca4bbd6397a83dd19144ba2ee388c734f7e894cfd",
+      "compiler/tests/fixtures/onceki-kucuk-surum-v07/15-secenek-turu.dil": "70e4ec159e81ff50e5bad0adf9ce70ffafaef8d5a9e7a18b1c2012ad3c37426c",
+      "compiler/tests/fixtures/onceki-kucuk-surum-v07/16-sonuc-ve-hata.dil": "da4afd59d53f9c3e08f0f0171118106fbc9d15c7480d7b865834770f2555a694",
+      "compiler/tests/fixtures/onceki-kucuk-surum-v07/17-dosya-okuma.dil": "f50a5bcc7e0e51cb298436b7c9c7fa81dfca8db2216b8363e2b6d81042261b2e",
+      "compiler/tests/fixtures/onceki-kucuk-surum-v07/18-dosya-yazma.dil": "786f9d872ab9e191c27561e12914b4cf997ea02655fac5b2faf05d78a7485811",
+      "compiler/tests/fixtures/onceki-kucuk-surum-v07/19-csv-analizi.dil": "c27bb3dbe7b3a744e25eb5c60cc272dd612b59b8cb86be5b12bee0e20957f4a4",
+      "compiler/tests/fixtures/onceki-kucuk-surum-v07/20-json-verisi.dil": "70c8811b0cf3a1f347ae6c7893fbd5cc8ae0dbf210a488cb6130a641909640b9",
+      "compiler/tests/fixtures/onceki-kucuk-surum-v07/21-tarih-ve-saat.dil": "79e89700407e0e4bf3cfe082dad638514c6e1c719cefa47a2d43fa9fdf0c1a06",
+      "compiler/tests/fixtures/onceki-kucuk-surum-v07/22-yapilar.dil": {
+        "sha256_binding": 0
+      },
+      "compiler/tests/fixtures/onceki-kucuk-surum-v07/23-desen-eslestirme.dil": "22a7f229dd3ef949127fda0e7c3f3fc097d44d6df19d4eb214a552d31bcb97b7",
+      "compiler/tests/fixtures/onceki-kucuk-surum-v07/24-http-istemcisi.dil": "59bb77e3fc74b888a0e159565902c5059331a31dc8b091b8e79433d440ceab28",
+      "compiler/tests/fixtures/onceki-kucuk-surum-v07/25-web-sunucusu.dil": "11d7b8a1d22c3401f56bc285deb4fe41764023987f72c8e6a4e07a546ff75a7d",
+      "compiler/tests/fixtures/onceki-kucuk-surum-v07/26-paralel-gorevler.dil": "231e5269c8371d5c6edcd4501c99d7cd0ab87d2345106e64e4caa3df0cc678e8",
+      "compiler/tests/fixtures/onceki-kucuk-surum-v07/27-zaman-asimi.dil": "edce97f99f8c197edc4fb7c44f9ad16ce1eeb0861b567810607f83934328937c",
+      "compiler/tests/fixtures/onceki-kucuk-surum-v07/28-cli-araci.dil": "78b843662225ae3e8a7acce424e187f799dfda6ae7274df10a5777b4492d0206",
+      "compiler/tests/fixtures/onceki-kucuk-surum-v07/29-esp32-led.dil": "3ef71949fbc30033372bd7b3b5066c1c91820eb3b0e098f55992beb6c785e9d4",
+      "compiler/tests/fixtures/onceki-kucuk-surum-v07/30-testler.dil": "a99f86312f7025d988eb23999a16739014b495944cfa443937ba0f946b4c7d41",
+      "compiler/tests/fixtures/onceki-kucuk-surum-v07/31-birimler.dil": "cf7862d75f4c97af165acc22cc575d4de4b65cc017d68aab2ee365f75da2993b",
+      "compiler/tests/fixtures/onceki-kucuk-surum-v07/32-ondalik-market.dil": "061faafe193051521fd2ac173c83564e91f68364b23da4a3fe6b4631936e56b2",
+      "compiler/tests/fixtures/onceki-kucuk-surum-v07/hesap_araclari.dil": "b9a4a998d6457c64b11417873bc2b4f0cbfa603c343a39c10ba2afaf154e6ae3"
+    },
+    "producer_before_contract": "fixtures validates fixed manifest and33 source byte hashes; bounded e76 helper compared to literal HELPER_SHA before any native compiler command",
+    "producer_after_contract": "fixtures()[0]==manifest_raw and bounded(HELPER)==helper plus binary digest==pin required before status passed",
+    "producer_asserted_same_after": true,
+    "binary_sha256": "80cc4b162211b352e97dd8f3d54697e53d92f5d3dd40b03fe73f78963d37e739",
+    "actual_cases": 49,
+    "preflight_models": 5,
+    "known_K086_migration_required": true,
+    "unmodified_corpus_all_compatible": false,
+    "legacy_rollback_accepted": false
+  },
+  "bindings": [
+    {
+      "original_field": [
+        "Git_S_expected_fixture_helper_sha256",
+        "compiler/tests/fixtures/onceki-kucuk-surum-v07/22-yapilar.dil"
+      ],
+      "sha256": "6509ddaa817c411fbfc6908141e7284ea170b17b8c6ef02702a08fed866c4cee"
+    }
+  ]
+}

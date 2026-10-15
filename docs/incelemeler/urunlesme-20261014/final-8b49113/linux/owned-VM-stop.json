@@ -1,0 +1,73 @@
+{
+  "status": "stopped-owned-instance-retained",
+  "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "issued_LIMA_HOME": "/private/tmp/zk276-hih4chab/lima",
+  "issued_name": "k276",
+  "before_identity": {
+    "instance": {
+      "dev": 16777232,
+      "ino": 422274626,
+      "size": 608,
+      "mode": "0o700",
+      "uid": 501
+    },
+    "disk": {
+      "dev": 16777232,
+      "ino": 422274644,
+      "size": 17179869184,
+      "mode": "0o600",
+      "uid": 501
+    },
+    "lima_yaml_sha256": "ac827e1be51749d62ceefb0e9cb8bdce1257a10f96e0def065ad6506e85854f9",
+    "vz_identifier_sha256": "7c06343cce97d5b046f4862244d0c08b764fee1eece17077167e7d177bdf67ae"
+  },
+  "commands": [
+    {
+      "argv": [
+        "/opt/homebrew/bin/limactl",
+        "list",
+        "k276",
+        "--json"
+      ],
+      "exit": 0,
+      "wall_seconds": 0.025791916996240616,
+      "stdout_sha256": "44f3a2ad54a1636fe62c9f8ee68db9edc901cd396355c195db3a7b92dab7303d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/opt/homebrew/bin/limactl",
+        "stop",
+        "k276"
+      ],
+      "exit": 0,
+      "wall_seconds": 2.583573541021906,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "2d8f97a79671c360066d7bcf602ea1dcdbe03beffb55ba362b376d5adf9aff27"
+    },
+    {
+      "argv": [
+        "/opt/homebrew/bin/limactl",
+        "list",
+        "k276",
+        "--json"
+      ],
+      "exit": 0,
+      "wall_seconds": 0.05376845900900662,
+      "stdout_sha256": "4826dd2b346cc83263170594c347692ac64a8ba49ef18a5ecbf513d67513df62",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "end_status": "Stopped",
+  "end_disk": {
+    "dev": 16777232,
+    "ino": 422274644,
+    "size": 17179869184,
+    "mode": "0o600",
+    "uid": 501
+  },
+  "disk_deleted": false,
+  "proofs_or_latches_deleted": false,
+  "global_configuration_mutation_commands": [],
+  "scope": "Only previously issued private LIMA_HOME/name; no PID signalling/adoption, destroy, remove, cache deletion, or source writes."
+}

@@ -1,0 +1,19 @@
+{
+  "status": "accepted-root-independent",
+  "utc": "2026-10-15T06:27:58.498649+00:00",
+  "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "canonical_check_exit": 0,
+  "bundle_manifest_sha256": "5e174eb9179e79e75b5127e12c1760b65d448704256ad69dbfa3abd5b343805c",
+  "gate_receipt_sha256": "13e3130aba5b1c91b5f69d50a6429ab92622522812d4cdd2abe5613b09237c0e",
+  "gate_log_sha256": "8d3bdd40cd1bd278a191b71528a63b3d48ec84b7cdfd5f574f1eeb4c95e704c5",
+  "evidence_index_files_rehashed": 14,
+  "raw_full_Cargo_groups": 118,
+  "raw_full_Cargo_passed_failed_ignored": [
+    943,
+    0,
+    16
+  ],
+  "before_end_identity_and_runtime_pins_verified": true,
+  "first_rejected_campaign_not_accepted": true,
+  "S_not_E": true
+}

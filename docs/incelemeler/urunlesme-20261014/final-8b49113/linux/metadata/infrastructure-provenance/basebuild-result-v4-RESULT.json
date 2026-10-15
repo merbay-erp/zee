@@ -1,0 +1,10 @@
+{
+  "scope": "non-Zee officialbase build capability only",
+  "Zee_executed": false,
+  "network": "none",
+  "base_official_manifest_sha256": "1d15be465c9ea7b37b464055c5de38319523de9d3f070fcc76c0d0230ebe9669",
+  "base_resolved_config_id": "4105e2bb7b57b01eaf420afd4f7970386183f64f4d244bca3d684fa9737e0670",
+  "status": "passed-non-Zee-build-capability",
+  "derived_image_id": "sha256:34d78ba203cca44bea8e12c22579f8faa93922f38932c74fd878f78bdfdac4a2",
+  "owned_pause_cleanup": true
+}

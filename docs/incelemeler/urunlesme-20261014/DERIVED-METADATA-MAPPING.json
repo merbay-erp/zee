@@ -1,0 +1,113 @@
+{
+  "schema": "zee-archive-derived-metadata-map-v1",
+  "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "original_stage": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/root-final-S-archive-stage",
+  "original_stage_unchanged": true,
+  "flagged_findings": 44,
+  "unique_verified_source_hashes": 7,
+  "derived_file_count": 11,
+  "hash_bindings_moved": 51,
+  "linux_subset_raw_count": 120,
+  "linux_subset_derived_count": 7,
+  "files": [
+    {
+      "original_relative_path": "final-8b49113/common/credential-listener-native5.json",
+      "raw_external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/root-final-S-archive-stage/final-8b49113/common/credential-listener-native5.json",
+      "raw_sha256": "bcaa29366bf3d4c1f1c2eeb2d4f0ff00792108745e4dc41f061fb27aec2a9b24",
+      "derived_relative_path": "final-8b49113/common/credential-listener-native5.derived.json",
+      "derived_sha256": "84908e305c9a047698d3b613baca7d53c890c34fd468a5d4a9bcac3fada81f52",
+      "binding_count": 2,
+      "inverse_parsed_json_equal": true
+    },
+    {
+      "original_relative_path": "final-8b49113/common/job-native11.json",
+      "raw_external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/root-final-S-archive-stage/final-8b49113/common/job-native11.json",
+      "raw_sha256": "db1f6679f03bb68b25c5a1fc1381727dada08e46263d987dbf395af0d611a897",
+      "derived_relative_path": "final-8b49113/common/job-native11.derived.json",
+      "derived_sha256": "3d6ab9b64dbed52e2e37203e2e9b827b4dca358f3e0621a6669797f965509d61",
+      "binding_count": 1,
+      "inverse_parsed_json_equal": true
+    },
+    {
+      "original_relative_path": "final-8b49113/common/proof.json",
+      "raw_external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/root-final-S-archive-stage/final-8b49113/common/proof.json",
+      "raw_sha256": "c276df6a5dc42249675f24ad3639c41aba047d386d2e9a844873c990b5a1e96e",
+      "derived_relative_path": "final-8b49113/common/proof.derived.json",
+      "derived_sha256": "0836c4bf038ad9d442270c4d039ef2f7c3a04e800ad925b94db65a2fce39744e",
+      "binding_count": 15,
+      "inverse_parsed_json_equal": true
+    },
+    {
+      "original_relative_path": "final-8b49113/common/smtp-pg-fault277.json",
+      "raw_external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/root-final-S-archive-stage/final-8b49113/common/smtp-pg-fault277.json",
+      "raw_sha256": "d4f2b084f7969c83da1853a17590dc86aa676dabd91cc0a926eaf73978dfcff3",
+      "derived_relative_path": "final-8b49113/common/smtp-pg-fault277.derived.json",
+      "derived_sha256": "bec6afc036a7048d40d92a3c05afb06e98c30400e4a764668ace940eb8802910",
+      "binding_count": 5,
+      "inverse_parsed_json_equal": true
+    },
+    {
+      "original_relative_path": "final-8b49113/linux/metadata/producer-bindings/K279-PRODUCER-BEFORE-END.json",
+      "raw_external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/root-final-S-archive-stage/final-8b49113/linux/metadata/producer-bindings/K279-PRODUCER-BEFORE-END.json",
+      "raw_sha256": "ab9bbcacda5ef134ed621327f3c157b840ee7f48557f87fed635f375c5edab52",
+      "derived_relative_path": "final-8b49113/linux/metadata/producer-bindings/K279-PRODUCER-BEFORE-END.derived.json",
+      "derived_sha256": "3defb1e90799fb4b3d6bc5c4159bac3011f8cd3941d96cfabdff124daaf099d2",
+      "binding_count": 1,
+      "inverse_parsed_json_equal": true
+    },
+    {
+      "original_relative_path": "final-8b49113/linux/metadata/receipts/k276-finalS-Linux-end-inventory/END-INVENTORY.json",
+      "raw_external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/root-final-S-archive-stage/final-8b49113/linux/metadata/receipts/k276-finalS-Linux-end-inventory/END-INVENTORY.json",
+      "raw_sha256": "6067a0e4d9f64077aea96b5dc3f7c591731393e7dedf78f1812f316ae19f9de3",
+      "derived_relative_path": "final-8b49113/linux/metadata/receipts/k276-finalS-Linux-end-inventory/END-INVENTORY.derived.json",
+      "derived_sha256": "42def8c3ac0cc658d000a65f04b862c1b5a6a73cb5aef2a82307a16e341c7aad",
+      "binding_count": 1,
+      "inverse_parsed_json_equal": true
+    },
+    {
+      "original_relative_path": "final-8b49113/linux/metadata/receipts/k276-finalS-Linux-end-inventory/FINAL-END-INVENTORY.json",
+      "raw_external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/root-final-S-archive-stage/final-8b49113/linux/metadata/receipts/k276-finalS-Linux-end-inventory/FINAL-END-INVENTORY.json",
+      "raw_sha256": "8b60d30475f8310211ffaae7a2bfcb18a02663d2c2d864d96dd06a96073839d7",
+      "derived_relative_path": "final-8b49113/linux/metadata/receipts/k276-finalS-Linux-end-inventory/FINAL-END-INVENTORY.derived.json",
+      "derived_sha256": "c1d72ec1944f61830d86fca3bde93cdf978a49369865650002edd65292e20c68",
+      "binding_count": 7,
+      "inverse_parsed_json_equal": true
+    },
+    {
+      "original_relative_path": "final-8b49113/linux/metadata/receipts/k276-finalS-Linux-end-inventory/GUEST-END-INVENTORY.json",
+      "raw_external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/root-final-S-archive-stage/final-8b49113/linux/metadata/receipts/k276-finalS-Linux-end-inventory/GUEST-END-INVENTORY.json",
+      "raw_sha256": "3de6a42dc80fb6c13c7c08b2d74178ddd96d85592487179e6d8dc8048665fde1",
+      "derived_relative_path": "final-8b49113/linux/metadata/receipts/k276-finalS-Linux-end-inventory/GUEST-END-INVENTORY.derived.json",
+      "derived_sha256": "1d88a3a3125160aea70c45b51ebe64f91f8cbadfa327aa9e89a1a158a3f2dc65",
+      "binding_count": 1,
+      "inverse_parsed_json_equal": true
+    },
+    {
+      "original_relative_path": "final-8b49113/linux/metadata/receipts/k276-finalS-Linux-timer-native-audited/OUTER-SOURCE-END.json",
+      "raw_external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/root-final-S-archive-stage/final-8b49113/linux/metadata/receipts/k276-finalS-Linux-timer-native-audited/OUTER-SOURCE-END.json",
+      "raw_sha256": "25b83f1f662a3a4ab0092e82bf74c17e9bb3e427c3d2ebd38b19a036344ed32e",
+      "derived_relative_path": "final-8b49113/linux/metadata/receipts/k276-finalS-Linux-timer-native-audited/OUTER-SOURCE-END.derived.json",
+      "derived_sha256": "559a4fb21a82872551f8adad1aa48bc0fc5e779e81719579d3bd33c6cd02b666",
+      "binding_count": 6,
+      "inverse_parsed_json_equal": true
+    },
+    {
+      "original_relative_path": "final-8b49113/linux/metadata/receipts/k276-finalS-Linux-timer-native-audited/SOURCE-END.json",
+      "raw_external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/root-final-S-archive-stage/final-8b49113/linux/metadata/receipts/k276-finalS-Linux-timer-native-audited/SOURCE-END.json",
+      "raw_sha256": "2626eec49f838593662ba0752d5ea290a591889ef6b501439a60de37faf9f038",
+      "derived_relative_path": "final-8b49113/linux/metadata/receipts/k276-finalS-Linux-timer-native-audited/SOURCE-END.derived.json",
+      "derived_sha256": "f2f5999696f7ddbab4ceba9ccdb1a95ac87a6240fabcd47e8bfb7261de40c041",
+      "binding_count": 6,
+      "inverse_parsed_json_equal": true
+    },
+    {
+      "original_relative_path": "final-8b49113/linux/metadata/receipts/k276-finalS-Linux-timer-native-audited/SOURCE-START.json",
+      "raw_external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/root-final-S-archive-stage/final-8b49113/linux/metadata/receipts/k276-finalS-Linux-timer-native-audited/SOURCE-START.json",
+      "raw_sha256": "e2b953808c8d4ce14107438aee8d914a6adafea853a1c2f492b4e58a4b4b8cb0",
+      "derived_relative_path": "final-8b49113/linux/metadata/receipts/k276-finalS-Linux-timer-native-audited/SOURCE-START.derived.json",
+      "derived_sha256": "920fda76190801f03bfa55ec6d006ee8d4100d9a0de1fae75212a55b0e35cf9d",
+      "binding_count": 6,
+      "inverse_parsed_json_equal": true
+    }
+  ]
+}

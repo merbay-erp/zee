@@ -347,3 +347,7 @@ kampanyasında ayrıca yürütülmelidir; bu sonuç final temiz kaynak/native,
 900 saniye işletim, 1800 saniye soak, ASan/Miri, paket/kurulum veya gerçek
 ürün/platform/IDE/insan kabulü değildir. Yeni compiler/src, grammar, spec
 normu, public Rust API veya production bağımlılık değişikliği yoktur.
+
+## 15 Ekim 2026 — temiz S yerel kanıt güncellemesi
+
+[15 Ekim temiz S raporu](urunlesme-final-kabul-20261015.md) bu plandaki yerel teknik kanıtları günceller. P01/P02 teslimleri, P06 dar Linux/macOS kurulumları, P09 finite native dış etki/timer, P11 fixed host backend, P13 uzun owned koşu ve P19 kısmi IDE etkileşimleri gerçek kanıt taşır. Tam ürün ve süreç kapsamları ayrıca açık kalır; tablo dar kabulü genel tamamlanma olarak genişletmez.

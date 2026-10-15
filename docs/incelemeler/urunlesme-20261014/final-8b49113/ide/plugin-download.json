@@ -1,0 +1,18 @@
+{
+  "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "version": "0.21.0",
+  "update_id": 1157565,
+  "official_url": "https://plugins.jetbrains.com/files/23257/1157565/lsp4ij-0.21.0.zip",
+  "final_url": "https://downloads.marketplace.jetbrains.com/files/23257/1157565/lsp4ij-0.21.0.zip",
+  "archive_sha256": "2ed125cc36620545c226186587d36ca4a8fc7c3db85e1ee5dfe0946b973e6caa",
+  "bytes": 4449291,
+  "members": 26,
+  "expanded_bytes": 4935559,
+  "plugin_xml": [
+    {
+      "jar": "lsp4ij/lib/lsp4ij-0.21.0.jar",
+      "sha256": "1be28f40b53e6084b1f6a26769656b9425bdeaa9949983942b183ae7c629bb68"
+    }
+  ],
+  "installed_or_launched": false
+}

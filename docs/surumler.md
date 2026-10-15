@@ -1959,3 +1959,7 @@ kampanyasında ayrıca yürütülmelidir; bu sonuç final temiz kaynak/native,
 900 saniye işletim, 1800 saniye soak, ASan/Miri, paket/kurulum veya gerçek
 ürün/platform/IDE/insan kabulü değildir. Yeni compiler/src, grammar, spec
 normu, public Rust API veya production bağımlılık değişikliği yoktur.
+
+## 15 Ekim 2026 — temiz S yerel kanıt güncellemesi
+
+Geliştirme kaynağı S için [yerel teknik kabul](urunlesme-final-kabul-20261015.md) kaydedildi: gerçek native web/PDF/SMTP/PG profilleri, Linux taşıyıcı ve konteyner denemeleri, uzun koşular ve kaynak kimlikli teslimler. Kullanıcıya yeni production compiler davranışı veya yeni sürüm etiketi eklenmedi; önceki0.7 K-086 göçü ve legacy rollback reddi korunur.

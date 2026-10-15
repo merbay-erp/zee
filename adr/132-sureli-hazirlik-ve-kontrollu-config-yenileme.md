@@ -1,6 +1,6 @@
 # ADR-132 — Süreli hazırlık ve kontrollü config yenileme (K-274/P13)
 
-- **Durum:** kabul; dar owned Unix host profili, final exact temiz kaynak kabulü açık
+- **Durum:** kabul; temiz S readinessPG15+TTL5 dar Unix kabulü; sürekli hizmet/adoption/platform açık
 - **İlgili güvenlik sınırı:** GB-090
 
 K-251 DB hazırlık kaydı bir kez yazıldığında sonraki DB sapmasını kendiliğinden
@@ -51,3 +51,9 @@ negatifi bu sınırları kanıtlar. Native fixture izleyiciyi kendi yeni owned
 grubunda tutar, WNOWAIT ile lideri reap etmeden grubu temizler ve kalan
 çocuk/pipe EOF kontrolünü kaydeder. Bu, CLI helperın tek başına SIGKILL
 alınca cleanup yapabildiği anlamına gelmez.
+
+## 15 Ekim 2026 — temiz S yerel kanıt güncellemesi
+
+S common readiness-watch PG15 ve ayrı TTL5 geçti; actual Linux S PG15 ayrıca kaydedildi. 13sourceGitS/binary pinleri ve producer source-before/unchanged-after assertions korunur; sonradan DERIVED açıklama bağımsız tarihsel START değildir. Config atomicreplace+HUP yalnız yeni workerın okumasıdır, canlı source mutation/genelreload değildir. Sürekli productiondaemon/fullP13/ürün/platform açık.
+
+[Güncel dar S raporu](../docs/urunlesme-final-kabul-20261015.md).

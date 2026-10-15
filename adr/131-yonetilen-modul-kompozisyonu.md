@@ -1,6 +1,6 @@
 # ADR-131 — Yönetilen proje modül kompozisyonu (K-273)
 
-- **Durum:** kabul; dar owned scaffold profili, gerçek ürün adoption ve DB lifecycle açık
+- **Durum:** kabul; temiz S normal Cargo managedscaffold dar kabulü; DB lifecycle/adoption/platform açık
 - **Tarih:** 15 Ekim 2026
 - **İlgili güvenlik sınırı:** GB-089
 
@@ -37,3 +37,9 @@ Kontrollü IO/state testleri ayrı profildir; bu sonuçlar final clean kaynak,
 Linux service/cgroup, güç kaybı veya gerçek özel ürün benimsenmesi değildir.
 Bağımsız dar review ve keyed docs/compatibility/faz/security kayıtları bağlandı;
 ortak Cargo ve final temiz kaynak kabulü ayrıca doğrulanır. Yeni uzun ömürlü compiler/LSP state yoktur.
+
+## 15 Ekim 2026 — temiz S yerel kanıt güncellemesi
+
+S normal Cargo fazı mevcut managed-module wrapperını ve onun kontrollü model/native CLI/HTTP profillerini yürüttü; normalfaz kaydı bu actual kabulün sahibidir, ayrı Linux DBservice veya CRUD kabulü çıkarılmaz. Source/SHA pinleri ve core/appdata/SQLarchive/pendingjournal/active-marker sınırları korunur. Gerçek ürün adoption ve DBappliedhistory/downmigration/generalCRUD/platform açık.
+
+[Güncel dar S raporu](../docs/urunlesme-final-kabul-20261015.md).

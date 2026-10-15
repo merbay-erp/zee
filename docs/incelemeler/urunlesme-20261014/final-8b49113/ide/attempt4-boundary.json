@@ -1,0 +1,8 @@
+{
+  "recorded_utc": "2026-10-15T04:53:51.416630+00:00",
+  "reason": "After user manually unlocked Mac and fourth owned launch, CtrlSpace produced explicit OS shortcut-conflict notice and no accepted completion. Native Options click timed out; next clock reading advanced from04:24:45 to04:53:09UTC. No further UI calls; delegate cleanup only to original retained Popen controller4.",
+  "completion": "not accepted; root cause unresolved, empty completionProvider valid per independently pinned upstream investigation",
+  "graceful_LSP_shutdown": "not inferred from process cleanup",
+  "helper": "Unchanged lifecycle_core e76; no PID adoption",
+  "passed_scope": "Earlier actual template/macropath/TextMate/start/diagnosticrepair/hover/definition/rename UI observations retained; no all-IDE/fullP19 acceptance"
+}

@@ -1,0 +1,1 @@
+[{"argv": ["loginctl", "show-user", "501", "--property=Linger"], "exit": 0, "stdout": "Linger=no\n", "stderr": ""}, {"argv": ["systemctl", "--user", "is-system-running"], "exit": 0, "stdout": "running\n", "stderr": ""}]

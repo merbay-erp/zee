@@ -1,0 +1,143 @@
+{
+  "status": "passed",
+  "build": {
+    "schema": "zee-build-v1",
+    "version": "0.8.0-dev",
+    "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+    "source_date": "2026-10-15",
+    "channel": "development",
+    "dirty": false
+  },
+  "runner_sha256": "ccabb088a8c06591b2d2d21a7c01b616d719782a2a36df37ad72d0db20fb4d16",
+  "binary_sha256": "fb21485fa46422844f5de9b4510a8957c957ac9f281e47df3907cb93eeb8ae4e",
+  "cases": [
+    {
+      "name": "stderr_alias",
+      "exit": 2,
+      "control_bytes": 0,
+      "stderr_bytes": 0,
+      "canary_in_control": false,
+      "parent_listener_preserved": true
+    },
+    {
+      "name": "stdout_alias",
+      "exit": 2,
+      "control_bytes": 0,
+      "stderr_bytes": 0,
+      "canary_in_control": false,
+      "parent_listener_preserved": true
+    },
+    {
+      "name": "opposite_control_pipe_ends",
+      "exit": 2,
+      "control_bytes": 0,
+      "stderr_bytes": 0,
+      "canary_in_control": false,
+      "parent_listener_preserved": true
+    },
+    {
+      "name": "metric_ready_alias",
+      "exit": 2,
+      "control_bytes": 0,
+      "stderr_bytes": 0,
+      "canary_in_control": false,
+      "parent_listener_preserved": true
+    },
+    {
+      "name": "udp",
+      "exit": 2,
+      "control_bytes": 0,
+      "stderr_bytes": 0,
+      "canary_in_control": false,
+      "parent_listener_preserved": true
+    },
+    {
+      "name": "not_listening",
+      "exit": 2,
+      "control_bytes": 0,
+      "stderr_bytes": 0,
+      "canary_in_control": false,
+      "parent_listener_preserved": true
+    },
+    {
+      "name": "blocking_listener",
+      "exit": 2,
+      "control_bytes": 0,
+      "stderr_bytes": 0,
+      "canary_in_control": false,
+      "parent_listener_preserved": true
+    },
+    {
+      "name": "wildcard_listener",
+      "exit": 2,
+      "control_bytes": 0,
+      "stderr_bytes": 0,
+      "canary_in_control": false,
+      "parent_listener_preserved": true
+    },
+    {
+      "name": "wrong_port",
+      "exit": 2,
+      "control_bytes": 0,
+      "stderr_bytes": 0,
+      "canary_in_control": false,
+      "parent_listener_preserved": true
+    },
+    {
+      "name": "closed_listener",
+      "exit": 2,
+      "control_bytes": 0,
+      "stderr_bytes": 0,
+      "canary_in_control": false,
+      "parent_listener_preserved": true
+    },
+    {
+      "name": "stdio_listener",
+      "exit": 2,
+      "control_bytes": 0,
+      "stderr_bytes": 0,
+      "canary_in_control": false,
+      "parent_listener_preserved": true
+    },
+    {
+      "name": "wrong_ready_access",
+      "exit": 2,
+      "control_bytes": 0,
+      "stderr_bytes": 0,
+      "canary_in_control": false,
+      "parent_listener_preserved": true
+    },
+    {
+      "name": "wrong_activate_access",
+      "exit": 2,
+      "control_bytes": 0,
+      "stderr_bytes": 0,
+      "canary_in_control": false,
+      "parent_listener_preserved": true
+    },
+    {
+      "name": "ayar_before_stderr_alias",
+      "exit": 2,
+      "control_bytes": 0,
+      "stderr_bytes": 0,
+      "canary_in_control": false,
+      "parent_listener_preserved": true
+    },
+    {
+      "name": "profil_before_stdout_alias",
+      "exit": 2,
+      "control_bytes": 0,
+      "stderr_bytes": 0,
+      "canary_in_control": false,
+      "parent_listener_preserved": true
+    },
+    {
+      "name": "ayar_profil_before_role_alias",
+      "exit": 2,
+      "control_bytes": 0,
+      "stderr_bytes": 0,
+      "canary_in_control": false,
+      "parent_listener_preserved": true
+    }
+  ]
+}

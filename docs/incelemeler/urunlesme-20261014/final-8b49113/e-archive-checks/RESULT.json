@@ -1,0 +1,38 @@
+{
+  "status": "passed-document-and-evidence-archive-checks",
+  "finished_utc": "2026-10-15T06:34:26.618062+00:00",
+  "source_under_tested_profiles": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "archival_changes_have_no_compiler_or_tool_code": true,
+  "targeted_tests_passed": 27,
+  "failed": 0,
+  "ignored": 0,
+  "Rust_Go_equivalence_actual": true,
+  "Zee_summary_actual_regenerated": true,
+  "spec_records": 214,
+  "fmt_passed": true,
+  "diff_check_passed": true,
+  "semantic_and_core_freeze_base": "1367ce1a7d0281d8a7f3d9307021afbc452da15f",
+  "semantic_and_core_freeze_passed": true,
+  "continuous_security_gate_passed": true,
+  "Git_history_and_tree_scan_passed": true,
+  "logs": [
+    {
+      "path": "E-doc-gates.log",
+      "sha256": "d2a64401674c238dd704d4968c8db8d920fdc60975cce179c9ba7bd89dbaa1c3",
+      "bytes": 3040
+    },
+    {
+      "path": "E-security-gate.log",
+      "sha256": "5ae8efdbe4fa534ee75018454c9aca5a1ce8748b7b4c302ee52351360ba96071",
+      "bytes": 2223
+    },
+    {
+      "path": "E-secret-scan.log",
+      "sha256": "a1201f020affc0396ca4a9960fd4db49d7fbb6bbbdee428b988757cc401b359c",
+      "bytes": 278
+    }
+  ],
+  "boundary": "These are archive checks; S release-candidate acceptance is in rc/. E is not claimed as fuzz/soak tested.",
+  "three_exact_raw_log_EOF_attribute_rules": true,
+  "raw_acceptance_log_bytes_preserved": true
+}

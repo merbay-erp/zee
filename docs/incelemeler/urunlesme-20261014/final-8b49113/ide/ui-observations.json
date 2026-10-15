@@ -1,0 +1,55 @@
+{
+  "schema": "zee-owned-ide-observations-1",
+  "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "recorded_utc": "2026-10-15T04:21:45.048482+00:00",
+  "method": "Root observed native UI via cua_repl only; agent observation receipt, not a protocol trace or screenshot archive",
+  "ide": "IntelliJ IDEA2025.3.1 IU253.29346.138 ARM64",
+  "plugin": "official Marketplace LSP4IJ0.21.0",
+  "profile_scope": "Owned external config/system/plugins/logs/tmp and synthetic project with spaces; no direct prior user profile edits/reads, no OS sandbox claim",
+  "passed_observations": [
+    {
+      "step": "canonical template import",
+      "observed": "Name Zee — local project launcher (POSIX), Command quoted $PROJECT_DIR$/.zee-araclar/zee lsp; UI preview expanded exact spaced project path; actual saved fileNamePatterns *.dil/languageId dil"
+    },
+    {
+      "step": "TextMate import",
+      "observed": "Existing editors/vscode bundle imported as dil-vscode enabled=true; string/number syntax colours visible after restart"
+    },
+    {
+      "step": "server startup",
+      "observed": "Actual IDE tree started pid:93730 after owned process restart3; PID observation grants no adoption authority"
+    },
+    {
+      "step": "diagnostic and repair",
+      "observed": "Own ana.dil appended olmayan yaz plus is; red error count2. Replaced via editor with isim \"Ayşe\" olsun newline isim yaz newline; red errors cleared, generic spellcheck count4 remained"
+    },
+    {
+      "step": "hover",
+      "observed": "At use line2 column2 Quick Documentation UI returned Tanım (satır 1): isim \"Ayşe\" olsun"
+    },
+    {
+      "step": "definition",
+      "observed": "Cmd+B at same use moved caret from2:2 to1:1"
+    },
+    {
+      "step": "rename",
+      "observed": "ShiftF6 displayed Rename isim Symbol to; ad +Refactor changed both definition and use to ad \"Ayşe\" olsun / ad yaz"
+    }
+  ],
+  "open_observations": [
+    {
+      "step": "completion",
+      "observed": "Basic Completion via Find Action and CtrlSpace attempts on is/ol prefixes produced no observed popup; no completion acceptance yet; primary upstream read-only investigation delegated"
+    },
+    {
+      "step": "shutdown",
+      "observed": "Controller3 original Popen retained in root session72589; IDE3 still running. Empty Processes floating window currently captures CUA observation despite keyboard main-window interactions; no shutdown acceptance yet"
+    }
+  ],
+  "failures_preserved": [
+    "first owned IDE AX timeout with ownership cleanup receipt",
+    "second modal template import TransactionGuard write-unsafe plugin errors; later single import and restart resolved actual template/server functionality",
+    "controller3 first preparation refused before Popen because replace order required future receipt; corrected prelaunch companion preserved"
+  ],
+  "boundary": "No full P19, Windows, all IDE versions, anonymous product or latency acceptance; no compiler/source writes."
+}

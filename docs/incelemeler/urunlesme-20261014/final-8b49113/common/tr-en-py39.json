@@ -1,0 +1,123 @@
+{
+  "bytecode_disabled": true,
+  "case_count": 7,
+  "cases": [
+    {
+      "exit": 0,
+      "name": "denetle",
+      "status": "passed",
+      "stderr_empty": true,
+      "stdout_sha256": "e4e2970aee5d202bc2b3001c04b18f342a657a5683f8fd21c0769678980ee1d0"
+    },
+    {
+      "exit": 0,
+      "name": "tr-en",
+      "status": "passed",
+      "stderr_empty": true,
+      "stdout_sha256": "68e70b78795e3fd4ed0aa0800f9bc98a1b13a211ee43f925e35d283789fe4ce4"
+    },
+    {
+      "exit": 0,
+      "failed": 0,
+      "name": "dene",
+      "source_tests": 4,
+      "status": "passed",
+      "stderr_empty": true,
+      "stdout_sha256": "c8cb281a2cc476da5d5f4b5371d2d97613122bb4e86d54871e67c9922715f67a"
+    },
+    {
+      "exit": 0,
+      "name": "xss",
+      "status": "passed",
+      "stderr_empty": true,
+      "stdout_sha256": "9817a81284644fd54f4bb429567b21f12c6e86602b41f3b0b923ce8a324416ba"
+    },
+    {
+      "exit": 0,
+      "name": "unknown-language",
+      "status": "passed",
+      "stderr_empty": true,
+      "stdout_sha256": "0ee95b4716ba2de189fdf6aeb9222b55fee2cd1143904712e9cb1e503e5a5610"
+    },
+    {
+      "exit": 0,
+      "name": "unknown-key",
+      "status": "passed",
+      "stderr_empty": true,
+      "stdout_sha256": "881e1a49ad13736b1123323b8ff5cae96ec4a77e9150dc7e5bd3ba9f8b5cf404"
+    },
+    {
+      "exit": 0,
+      "name": "lang-attribute-injection",
+      "status": "passed",
+      "stderr_empty": true,
+      "stdout_sha256": "0ee95b4716ba2de189fdf6aeb9222b55fee2cd1143904712e9cb1e503e5a5610"
+    }
+  ],
+  "compiler_feature": false,
+  "host": {
+    "architecture": "arm64",
+    "python_version": "3.9.6",
+    "system": "Darwin"
+  },
+  "html_structure_checked": true,
+  "isolated_python": true,
+  "live_product_acceptance": false,
+  "native_binary_sha256": "fb21485fa46422844f5de9b4510a8957c957ac9f281e47df3907cb93eeb8ae4e",
+  "native_identity_end": {
+    "channel": "development",
+    "dirty": false,
+    "schema": "zee-build-v1",
+    "source_date": "2026-10-15",
+    "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+    "version": "0.8.0-dev"
+  },
+  "native_identity_start": {
+    "channel": "development",
+    "dirty": false,
+    "schema": "zee-build-v1",
+    "source_date": "2026-10-15",
+    "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+    "version": "0.8.0-dev"
+  },
+  "owned_temp_removed": true,
+  "physical_platform_acceptance": false,
+  "result": "passed",
+  "schema": "zee-tr-en-native-1",
+  "skip_count": 0,
+  "snapshots": [
+    {
+      "path": "en.html",
+      "sha256": "72d6a10cb61de89f4b478ed6ed3ea98f5548c65b95700e068c96afe3c25b7305"
+    },
+    {
+      "path": "tr.html",
+      "sha256": "dae9cfe7087f15d2ed0974944e4fb09f39f4b8953f8f535ab4b3aef0b0c62a02"
+    },
+    {
+      "path": "xss.html",
+      "sha256": "9817a81284644fd54f4bb429567b21f12c6e86602b41f3b0b923ce8a324416ba"
+    }
+  ],
+  "source_files": [
+    {
+      "path": "kaynak/ana.dil",
+      "sha256": "8053e480a86d01f50d3966f536a46d77e7639e87831ad84db1a71c89d2594154"
+    },
+    {
+      "path": "kaynak/ceviri.dil",
+      "sha256": "6fe1159af701fca50bff326f48115a07ad5e0c86cbdda13fa17b333adf087266"
+    },
+    {
+      "path": "kaynak/sayfa.dil",
+      "sha256": "0337f3e62d2076b4c1ca97c16ce0a2bcb27f0e749d77fac323eed3d6597c6994"
+    },
+    {
+      "path": "proje.dil",
+      "sha256": "490e75fd1b14673c4bbe452790a8de8e316511c92513a1116346b4b752064935"
+    }
+  ],
+  "source_test_count": 4,
+  "source_test_failed": 0,
+  "source_unchanged": true
+}

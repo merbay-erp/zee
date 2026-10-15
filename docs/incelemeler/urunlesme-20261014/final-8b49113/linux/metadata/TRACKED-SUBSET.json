@@ -1,0 +1,797 @@
+{
+  "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "full_external_manifest_sha256": "53751c60d4c8d012df4ea60a8fc6edaa99dfce7e35f9ab5fa5d7ea1f3f0ac174",
+  "full_external_root": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/Linux-FINAL-S-CURATED",
+  "full_manifest_leaves_verified": 411,
+  "full_manifest_bytes_verified": 138192679,
+  "subset_files": [
+    {
+      "path": "INDEX.json",
+      "sha256": "809fe01a77da56eba9eb1d691748417bc321ae3c0c45913fdeb0446c0de651de",
+      "bytes": 8291,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "MANIFEST.json",
+      "sha256": "53751c60d4c8d012df4ea60a8fc6edaa99dfce7e35f9ab5fa5d7ea1f3f0ac174",
+      "bytes": 76817,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "READY.json",
+      "sha256": "0ce727b3ce7a54301130de772a15e42b48253915f28f8475c73018f30ba26fb5",
+      "bytes": 484,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "SHA256SUMS",
+      "sha256": "e76cbb144cf711fb569464b600fe1be715502f8821be66164858435cf6e8f32b",
+      "bytes": 57352,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "VERSIONS.json",
+      "sha256": "878ceffaacc8129b3779025712620cee8a611df802d58ddc9fabbc12c4044a3f",
+      "bytes": 3904,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "infrastructure-provenance/GITLEAKS-PLAN.json",
+      "sha256": "bbcf5fb3eb344d023d86dce3fd481cda0cdc9a1c1e2e572433214ff7adfd7530",
+      "bytes": 330,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "infrastructure-provenance/GO-PLAN.json",
+      "sha256": "ae0d2f1e2adfe0c389ed819a2a45d372d94e51c3357e4802165d489b899544e8",
+      "bytes": 367,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "infrastructure-provenance/VM-PLAN.json",
+      "sha256": "e774c60a4ca7ae414dbddcb76e45ff3eb33c9d400da072d6e581d8c7f23a9258",
+      "bytes": 1135,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "infrastructure-provenance/base-v2-RESULT.json",
+      "sha256": "7a96118a737e984c47011ea05bc1b1fc903c55338cf327c9f6275631365420f3",
+      "bytes": 3349,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "infrastructure-provenance/basebuild-result-v4-RESULT.json",
+      "sha256": "def351f6fafc7fe791d622815e314187e58219a45a0de96c0b2f5745b2cfcf1a",
+      "bytes": 481,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "infrastructure-provenance/git-result.json",
+      "sha256": "e8d4a0715d6ca7c6c4ad52ce6ce1092e8ac4336a617c588ba385b70868fdc8d7",
+      "bytes": 1033,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "infrastructure-provenance/language-tools-result-RESULT.json",
+      "sha256": "a4ac826145a049722b452b1c15bb88c7d698b7e89a72436a93977d53bdb69740",
+      "bytes": 15490,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "infrastructure-provenance/rust-components.json",
+      "sha256": "60c9f4a92952a93559c0707812f2ff708d2d24554de530d03324c20bc8603338",
+      "bytes": 1329,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "infrastructure-provenance/unzip-result.json",
+      "sha256": "2634a89989a64e76f5db3cadbc7ea9a3cdce1e70ac581a467394ae90498bb615",
+      "bytes": 1578,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "peer-review/FINAL-LINUX-STABLE-RECEIPTS-AUDIT.json",
+      "sha256": "96200a96816f988399865413617d0d7363025de2af8a7207e18868b25de8b7a8",
+      "bytes": 6732,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "producer-bindings/K279-PRODUCER-BEFORE-END.derived.json",
+      "sha256": "3defb1e90799fb4b3d6bc5c4159bac3011f8cd3941d96cfabdff124daaf099d2",
+      "bytes": 6994,
+      "original_raw_path": "producer-bindings/K279-PRODUCER-BEFORE-END.json",
+      "original_raw_sha256": "ab9bbcacda5ef134ed621327f3c157b840ee7f48557f87fed635f375c5edab52",
+      "raw_external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/root-final-S-archive-stage/final-8b49113/linux/metadata/producer-bindings/K279-PRODUCER-BEFORE-END.json",
+      "representation": "derived-parsed-JSON-reversible"
+    },
+    {
+      "path": "producer-bindings/PG15-PRODUCER-BEFORE-END.json",
+      "sha256": "55a0efc28540f296c3c57abc31abf70aea33efa1c7d45e1e90762c203b4a834f",
+      "bytes": 3061,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-PG-native/MANIFEST.json",
+      "sha256": "27cf121c99f1f89c8535556c49223b5ca488882733515a20bfd9319a8e5a3cb3",
+      "bytes": 5461,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-PG-native/PG-native/actual-schema-drift-stdout.json",
+      "sha256": "464429e88961e3e0cbbf97f0e6c78142951bde60e683f04061f4486798f519a0",
+      "bytes": 135,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-PG-native/PG-native/applied-before-start-stale-stdout.json",
+      "sha256": "048c87044c57ca1056b5f8f749dba9eb8056e35607356acd38531ba1b801d2e0",
+      "bytes": 133,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-PG-native/PG-native/applied-ready-two-workers-stdout.json",
+      "sha256": "048c87044c57ca1056b5f8f749dba9eb8056e35607356acd38531ba1b801d2e0",
+      "bytes": 133,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-PG-native/PG-native/fresh-logical-restore-ready-stdout.json",
+      "sha256": "048c87044c57ca1056b5f8f749dba9eb8056e35607356acd38531ba1b801d2e0",
+      "bytes": 133,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-PG-native/PG-native/ledger-checksum-drift-stdout.json",
+      "sha256": "6b2fc84dedd54c9ff6ceeb7dfc92eab362f1ebeeae2128dac233678c145d7152",
+      "bytes": 138,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-PG-native/PG-native/legacy-supervisor-events.json",
+      "sha256": "c6193b9c3217bc1371e3bda1680c4e3635d6a5b2bd9e5f8ac6691009b9907300",
+      "bytes": 5231,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-PG-native/PG-native/missing-ledger-stdout.json",
+      "sha256": "6b2fc84dedd54c9ff6ceeb7dfc92eab362f1ebeeae2128dac233678c145d7152",
+      "bytes": 138,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-PG-native/PG-native/pending-migration-stdout.json",
+      "sha256": "6b2fc84dedd54c9ff6ceeb7dfc92eab362f1ebeeae2128dac233678c145d7152",
+      "bytes": 138,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-PG-native/PG-native/pg-stopped-stdout.json",
+      "sha256": "6b2fc84dedd54c9ff6ceeb7dfc92eab362f1ebeeae2128dac233678c145d7152",
+      "bytes": 138,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-PG-native/PG-native/proof.json",
+      "sha256": "4ccb228eed0d0ad4ab043ee314418d2cfa77c5b058f964985b1de80fe9661252",
+      "bytes": 13173,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-PG-native/PG-native/restart-fresh-app-gate-stdout.json",
+      "sha256": "048c87044c57ca1056b5f8f749dba9eb8056e35607356acd38531ba1b801d2e0",
+      "bytes": 133,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-PG-native/PG-native/restored-after-pending-stdout.json",
+      "sha256": "048c87044c57ca1056b5f8f749dba9eb8056e35607356acd38531ba1b801d2e0",
+      "bytes": 133,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-PG-native/PG-native/revision-mismatch-stdout.json",
+      "sha256": "464429e88961e3e0cbbf97f0e6c78142951bde60e683f04061f4486798f519a0",
+      "bytes": 135,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-PG-native/PG-native/schema-restored-stdout.json",
+      "sha256": "048c87044c57ca1056b5f8f749dba9eb8056e35607356acd38531ba1b801d2e0",
+      "bytes": 133,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-PG-native/PG-native/sql-error-masked-unready-stdout.json",
+      "sha256": "464429e88961e3e0cbbf97f0e6c78142951bde60e683f04061f4486798f519a0",
+      "bytes": 135,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-PG-native/PG-native/supervisor-events.json",
+      "sha256": "6f17523de819916939a2eefd27b784c771829b1c03647049a07cff7e89986ea6",
+      "bytes": 2509,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-PG-native/PG-native/watch-stop-result.json",
+      "sha256": "708e0739df27024e5462d6afbf2966a9f30db365351f40fcd498a4f061f2b92c",
+      "bytes": 51,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-PG-native/PG-native/watch-stop-stdout.json",
+      "sha256": "40a4dacfe05e0203561a9957ee30afc93ab4e7b22574317a7f7c7e55ce2d6746",
+      "bytes": 138,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-PG-native/READY.json",
+      "sha256": "45d1d40f873f2805635f38565954d41e7780cbe9ada9ff8e51f99129d73c4087",
+      "bytes": 391,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-PG-native/SOURCE-BINDING.json",
+      "sha256": "283e0fade94cdbf7d96b247070232e4033fe334ef0cd7aab1a5e94fbece80eb9",
+      "bytes": 410,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-carrier-build/MANIFEST.json",
+      "sha256": "ab1fce44fb41f4ac29101ae9d92167a7d89ae8d163c00f9303759f796ced4125",
+      "bytes": 5451,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-carrier-build/READY.json",
+      "sha256": "36887374d29f2a67e4c53eb94d199b59c6e00d337fdbc00b96ded822558bb932",
+      "bytes": 432,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-carrier-build/carrier/BUILD.json",
+      "sha256": "d1c077d7961f13c9406a16ba05bb98d35ebdcdac42960c3e790372c1db8dd0a4",
+      "bytes": 2737,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-carrier-build/carrier/inspected/usr/share/zee-private-carrier/8b49113c413f62b35d4b251ed31068524d2fe26c/CARRIER.json",
+      "sha256": "bcd6995e1430f5df906662d063b917a89369ac5cf350c7f0df8a139e29e6fb0c",
+      "bytes": 1341,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-carrier-build/carrier/inspected/usr/share/zee-private-carrier/8b49113c413f62b35d4b251ed31068524d2fe26c/binaries/GIT_SHA",
+      "sha256": "9d7e7a052e33ca696a3fb131f481f8a36133dd1b9e12efa0336342e2e200536a",
+      "bytes": 41,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-carrier-build/carrier/inspected/usr/share/zee-private-carrier/8b49113c413f62b35d4b251ed31068524d2fe26c/binaries/SHA256SUMS",
+      "sha256": "55d6cde77cc6eb417b01072eb3968ebd095094b195066cc81fb2e37b728cc213",
+      "bytes": 143,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-carrier-build/carrier/inspected/usr/share/zee-private-carrier/8b49113c413f62b35d4b251ed31068524d2fe26c/binaries/provenance.intoto.json",
+      "sha256": "b688c3b3710e2013510d5fdd220f5776e623a754548b0b462402d0f464b25c32",
+      "bytes": 285380,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-carrier-build/carrier/inspected/usr/share/zee-private-carrier/8b49113c413f62b35d4b251ed31068524d2fe26c/binaries/sbom.spdx.json",
+      "sha256": "d154e31f15895c3dd3ecab2d0e55ac490d41187ab9a4ab686eb321847b08a317",
+      "bytes": 223639,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-carrier-build/carrier/package-tree/usr/share/zee-private-carrier/8b49113c413f62b35d4b251ed31068524d2fe26c/CARRIER.json",
+      "sha256": "bcd6995e1430f5df906662d063b917a89369ac5cf350c7f0df8a139e29e6fb0c",
+      "bytes": 1341,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-carrier-build/carrier/package-tree/usr/share/zee-private-carrier/8b49113c413f62b35d4b251ed31068524d2fe26c/binaries/GIT_SHA",
+      "sha256": "9d7e7a052e33ca696a3fb131f481f8a36133dd1b9e12efa0336342e2e200536a",
+      "bytes": 41,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-carrier-build/carrier/package-tree/usr/share/zee-private-carrier/8b49113c413f62b35d4b251ed31068524d2fe26c/binaries/SHA256SUMS",
+      "sha256": "55d6cde77cc6eb417b01072eb3968ebd095094b195066cc81fb2e37b728cc213",
+      "bytes": 143,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-carrier-build/carrier/package-tree/usr/share/zee-private-carrier/8b49113c413f62b35d4b251ed31068524d2fe26c/binaries/provenance.intoto.json",
+      "sha256": "b688c3b3710e2013510d5fdd220f5776e623a754548b0b462402d0f464b25c32",
+      "bytes": 285380,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-carrier-build/carrier/package-tree/usr/share/zee-private-carrier/8b49113c413f62b35d4b251ed31068524d2fe26c/binaries/sbom.spdx.json",
+      "sha256": "d154e31f15895c3dd3ecab2d0e55ac490d41187ab9a4ab686eb321847b08a317",
+      "bytes": 223639,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-carrier-native-audited/MANIFEST.json",
+      "sha256": "57ac0dbd69ccdd5a77e4fab808aeaa6bb5e917e0c9f7e3c00fb97461757fd68b",
+      "bytes": 3355,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-carrier-native-audited/OUTER-SOURCE-END.json",
+      "sha256": "9083bcabcfd63b6b56a1353d65ef2bbded90051fb00f666ca30c263d2cf168da",
+      "bytes": 2308,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-carrier-native-audited/READY.json",
+      "sha256": "a704b07c855b194db199a161eea21f6e137521fa4cc9f6b171677f15adca243d",
+      "bytes": 341,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-carrier-native-audited/SOURCE-END.json",
+      "sha256": "c0539f63b086f7935ac84fed679feeaab0f3196fce2946de87a60420ccf21e32",
+      "bytes": 2382,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-carrier-native-audited/SOURCE-START.json",
+      "sha256": "b83713638fef928d55de0fd31a5fe57ee6f81d237ceb62fbb095810550716b0d",
+      "bytes": 2486,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-carrier-native-audited/carrier-native/LSP.json",
+      "sha256": "0111ce3bbfbf17edc10558dc37d4bd86652048dfc8c8599ea39001104628ea97",
+      "bytes": 227,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-carrier-native-audited/carrier-native/PROOF.json",
+      "sha256": "6a786de6cba6104425181565f73ba5ca74f506badd750b9ab18fb8ffdb077352",
+      "bytes": 2652,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-container-revision2/MANIFEST.json",
+      "sha256": "79cf8fc23fabfaf75591fb540b30c38c8cd53bd0a65b894c9639a251c25cf54d",
+      "bytes": 9257,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-container-revision2/OUTER-METADATA-END-RAW.json",
+      "sha256": "ac2d9cac45c4a6a8f93148b4e6872a34542e436b68d6f0554c1eae32bd1f9e31",
+      "bytes": 1689,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-container-revision2/OUTER-METADATA-END.json",
+      "sha256": "b05801af4479b7f8cabf907470b032985d978216d139c26df69fb2ac920b9b72",
+      "bytes": 1613,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-container-revision2/OUTER-METADATA-START.json",
+      "sha256": "f79f4b2ab462c065297fd815e3eecda16bc1d78c88937e87d8a9f0f8c8ec6536",
+      "bytes": 1021,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-container-revision2/READY.json",
+      "sha256": "0d85100237cfdeae0af9ebcd107894fe28c9b916cc16f2b63588cf2f8d45c3d7",
+      "bytes": 561,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-container-revision2/container-native/LSP.json",
+      "sha256": "adb45be7df7a7e7211e7dccd68ceb68e077ad6600feccc60e28f9bd14ee04b40",
+      "bytes": 227,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-container-revision2/container-native/PROOF.json",
+      "sha256": "e945cc54567f5ae06369e1f1f572d7d371e0550ac6c4305897c48c2fc561f2ec",
+      "bytes": 23390,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-container-revision2/container-native/context/artifact/GIT_SHA",
+      "sha256": "9d7e7a052e33ca696a3fb131f481f8a36133dd1b9e12efa0336342e2e200536a",
+      "bytes": 41,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-container-revision2/container-native/context/artifact/SHA256SUMS",
+      "sha256": "55d6cde77cc6eb417b01072eb3968ebd095094b195066cc81fb2e37b728cc213",
+      "bytes": 143,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-container-revision2/container-native/context/artifact/provenance.intoto.json",
+      "sha256": "b688c3b3710e2013510d5fdd220f5776e623a754548b0b462402d0f464b25c32",
+      "bytes": 285380,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-container-revision2/container-native/context/artifact/sbom.spdx.json",
+      "sha256": "d154e31f15895c3dd3ecab2d0e55ac490d41187ab9a4ab686eb321847b08a317",
+      "bytes": 223639,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-container-revision2/container-native/policy.json",
+      "sha256": "f146bb5a5d24f5c7ac104f8078e8f1f6fef3dab6a17ccd6e44005c8ef7b97d9d",
+      "bytes": 194,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-container-revision2/container-native/runtime-closure.json",
+      "sha256": "e74b2fcf919d4ae1cdf771f5391f64c94fe95c752e4de3109f858a93da1f2bd8",
+      "bytes": 2676,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-end-inventory/END-INVENTORY.derived.json",
+      "sha256": "42def8c3ac0cc658d000a65f04b862c1b5a6a73cb5aef2a82307a16e341c7aad",
+      "bytes": 5609,
+      "original_raw_path": "receipts/k276-finalS-Linux-end-inventory/END-INVENTORY.json",
+      "original_raw_sha256": "6067a0e4d9f64077aea96b5dc3f7c591731393e7dedf78f1812f316ae19f9de3",
+      "raw_external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/root-final-S-archive-stage/final-8b49113/linux/metadata/receipts/k276-finalS-Linux-end-inventory/END-INVENTORY.json",
+      "representation": "derived-parsed-JSON-reversible"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-end-inventory/FINAL-END-CHECK-V2.json",
+      "sha256": "02d33016b55894af3533e5f4c8d3ec32776f504049e35dd5c9dc1889f69a58d1",
+      "bytes": 400,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-end-inventory/FINAL-END-CHECK.json",
+      "sha256": "d95add1d63c0025b05b79f09b9a5312824731195c5e8fcc6efca90a47fbff96f",
+      "bytes": 366,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-end-inventory/FINAL-END-INVENTORY.derived.json",
+      "sha256": "c1d72ec1944f61830d86fca3bde93cdf978a49369865650002edd65292e20c68",
+      "bytes": 26913,
+      "original_raw_path": "receipts/k276-finalS-Linux-end-inventory/FINAL-END-INVENTORY.json",
+      "original_raw_sha256": "8b60d30475f8310211ffaae7a2bfcb18a02663d2c2d864d96dd06a96073839d7",
+      "raw_external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/root-final-S-archive-stage/final-8b49113/linux/metadata/receipts/k276-finalS-Linux-end-inventory/FINAL-END-INVENTORY.json",
+      "representation": "derived-parsed-JSON-reversible"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-end-inventory/GUEST-END-INVENTORY.derived.json",
+      "sha256": "1d88a3a3125160aea70c45b51ebe64f91f8cbadfa327aa9e89a1a158a3f2dc65",
+      "bytes": 5615,
+      "original_raw_path": "receipts/k276-finalS-Linux-end-inventory/GUEST-END-INVENTORY.json",
+      "original_raw_sha256": "3de6a42dc80fb6c13c7c08b2d74178ddd96d85592487179e6d8dc8048665fde1",
+      "raw_external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/root-final-S-archive-stage/final-8b49113/linux/metadata/receipts/k276-finalS-Linux-end-inventory/GUEST-END-INVENTORY.json",
+      "representation": "derived-parsed-JSON-reversible"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-end-inventory/MANIFEST.json",
+      "sha256": "fc0a112b193c919a6b8e36aab0e7c218c39b04d00d9220df5c173f6c5484a9e1",
+      "bytes": 4117,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-end-inventory/OWNED-LIMA-END.json",
+      "sha256": "44f3a2ad54a1636fe62c9f8ee68db9edc901cd396355c195db3a7b92dab7303d",
+      "bytes": 2227,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-end-inventory/READY.json",
+      "sha256": "f7e2f3b04139baadefd1d35e61775d5b9886c0d63890b15c6c2057537548b90a",
+      "bytes": 271,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-end-inventory/TOOL-VERSIONS.json",
+      "sha256": "22ee6538abd84777e29f7ae12fdd6f92074c6204deaeff424578697c9d189368",
+      "bytes": 2092,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-end-inventory/USER-MANAGER-END.json",
+      "sha256": "89dc9064971782ad239a17472d2d4b09f4be5b9eaf20644e202fc96afb3fdece",
+      "bytes": 220,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-end-inventory/tool-versions/VERSIONS.json",
+      "sha256": "878ceffaacc8129b3779025712620cee8a611df802d58ddc9fabbc12c4044a3f",
+      "bytes": 3904,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-native-install/MANIFEST.json",
+      "sha256": "09ccff3bdbba3cbe5557e1773b9bdf76ec6fa66d60bfe366e8d8b5a64c6a279b",
+      "bytes": 5277,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-native-install/READY.json",
+      "sha256": "0a84f4c45e4a3d0e33828bc10153bf0645f6da5d7106cc2fe9bf347c38e9b67a",
+      "bytes": 353,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-native-install/native-install/PROOF.json",
+      "sha256": "47a496f1fa880e08c2353fb9f75a4fdef73eaae5645fadf53f7bf885d2bf7096",
+      "bytes": 12100,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-native-install/native-install/lsp-smoke.json",
+      "sha256": "0111ce3bbfbf17edc10558dc37d4bd86652048dfc8c8599ea39001104628ea97",
+      "bytes": 227,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-native-install/native-install/tampered-binary/GIT_SHA",
+      "sha256": "9d7e7a052e33ca696a3fb131f481f8a36133dd1b9e12efa0336342e2e200536a",
+      "bytes": 41,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-native-install/native-install/tampered-binary/SHA256SUMS",
+      "sha256": "55d6cde77cc6eb417b01072eb3968ebd095094b195066cc81fb2e37b728cc213",
+      "bytes": 143,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-native-install/native-install/tampered-binary/provenance.intoto.json",
+      "sha256": "b688c3b3710e2013510d5fdd220f5776e623a754548b0b462402d0f464b25c32",
+      "bytes": 285380,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-native-install/native-install/tampered-binary/sbom.spdx.json",
+      "sha256": "d154e31f15895c3dd3ecab2d0e55ac490d41187ab9a4ab686eb321847b08a317",
+      "bytes": 223639,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-native-install/native-install/tampered-checksum/GIT_SHA",
+      "sha256": "9d7e7a052e33ca696a3fb131f481f8a36133dd1b9e12efa0336342e2e200536a",
+      "bytes": 41,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-native-install/native-install/tampered-checksum/SHA256SUMS",
+      "sha256": "c368a82be590df7aea83d35fc930629b162ce8a9f0c3c0150c01371339fcb5e9",
+      "bytes": 143,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-native-install/native-install/tampered-checksum/provenance.intoto.json",
+      "sha256": "b688c3b3710e2013510d5fdd220f5776e623a754548b0b462402d0f464b25c32",
+      "bytes": 285380,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-native-install/native-install/tampered-checksum/sbom.spdx.json",
+      "sha256": "d154e31f15895c3dd3ecab2d0e55ac490d41187ab9a4ab686eb321847b08a317",
+      "bytes": 223639,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-timer-native-audited/MANIFEST.json",
+      "sha256": "af5c0d2b9df2215122c45bfd9990bf258cebcc3ed4d222d31ea425762e29f1e8",
+      "bytes": 6496,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-timer-native-audited/OUTER-SOURCE-END.derived.json",
+      "sha256": "559a4fb21a82872551f8adad1aa48bc0fc5e779e81719579d3bd33c6cd02b666",
+      "bytes": 20187,
+      "original_raw_path": "receipts/k276-finalS-Linux-timer-native-audited/OUTER-SOURCE-END.json",
+      "original_raw_sha256": "25b83f1f662a3a4ab0092e82bf74c17e9bb3e427c3d2ebd38b19a036344ed32e",
+      "raw_external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/root-final-S-archive-stage/final-8b49113/linux/metadata/receipts/k276-finalS-Linux-timer-native-audited/OUTER-SOURCE-END.json",
+      "representation": "derived-parsed-JSON-reversible"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-timer-native-audited/READY.json",
+      "sha256": "78e340a5e976cabb524b093e25ebe87c4cf4f64077f880bff67b5156f3a91fb0",
+      "bytes": 458,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-timer-native-audited/SOURCE-END.derived.json",
+      "sha256": "f2f5999696f7ddbab4ceba9ccdb1a95ac87a6240fabcd47e8bfb7261de40c041",
+      "bytes": 20181,
+      "original_raw_path": "receipts/k276-finalS-Linux-timer-native-audited/SOURCE-END.json",
+      "original_raw_sha256": "2626eec49f838593662ba0752d5ea290a591889ef6b501439a60de37faf9f038",
+      "raw_external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/root-final-S-archive-stage/final-8b49113/linux/metadata/receipts/k276-finalS-Linux-timer-native-audited/SOURCE-END.json",
+      "representation": "derived-parsed-JSON-reversible"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-timer-native-audited/SOURCE-START.derived.json",
+      "sha256": "920fda76190801f03bfa55ec6d006ee8d4100d9a0de1fae75212a55b0e35cf9d",
+      "bytes": 20265,
+      "original_raw_path": "receipts/k276-finalS-Linux-timer-native-audited/SOURCE-START.json",
+      "original_raw_sha256": "e2b953808c8d4ce14107438aee8d914a6adafea853a1c2f492b4e58a4b4b8cb0",
+      "raw_external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/root-final-S-archive-stage/final-8b49113/linux/metadata/receipts/k276-finalS-Linux-timer-native-audited/SOURCE-START.json",
+      "representation": "derived-parsed-JSON-reversible"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-timer-native-audited/timer-native/known-config.json",
+      "sha256": "4f2ef2652e20a09861a8cd0dc5688e6f0ce08b1a51f7f8b0fd2012350fe484c4",
+      "bytes": 766,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-timer-native-audited/timer-native/known-rendered/zee-sql-intent.service",
+      "sha256": "d223a3059b1259e8ed695914c00f894b06b9eb80d41271477e22b0391b5b2d2f",
+      "bytes": 552,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-timer-native-audited/timer-native/known-rendered/zee-sql-intent.timer",
+      "sha256": "21da8a5e9d39b9d37078f6bde5fe6f1328f9e70346a71da0cc40b9febe4fc7b6",
+      "bytes": 201,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-timer-native-audited/timer-native/known-state/last.json",
+      "sha256": "7507844b75766aff981d649f4cb30346ac90b6d85d0e93ab3a017628faa6fecd",
+      "bytes": 234,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-timer-native-audited/timer-native/paused-config.json",
+      "sha256": "f2ed5268d240cf4d08a6b5946fade078182bb80075be9fe25d37ac7d387e12a1",
+      "bytes": 767,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-timer-native-audited/timer-native/paused-rendered/zee-sql-intent.service",
+      "sha256": "33df377058d2aa3dc9f90d9e0f639f61e472783341874e60baaa635095a67995",
+      "bytes": 554,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-timer-native-audited/timer-native/paused-rendered/zee-sql-intent.timer",
+      "sha256": "21da8a5e9d39b9d37078f6bde5fe6f1328f9e70346a71da0cc40b9febe4fc7b6",
+      "bytes": 201,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-timer-native-audited/timer-native/paused-state/inflight.json",
+      "sha256": "a8e2713a2e5dfbd8a744222d82d5e48f540fca20ea601b2131d47588ba5b15e8",
+      "bytes": 210,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-Linux-timer-native-audited/timer-native/proof.json",
+      "sha256": "230f6fe99df4d79c3736e51b3796e99d2c75b47af4cea54061f4e9e435e80c11",
+      "bytes": 2206,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-linux-delivery-v2/HOST-COPY-VERIFIED.json",
+      "sha256": "8490ba8ce2ef7e3298a42d4e134904f49725fe38b1252b7ed477699e43f2351b",
+      "bytes": 652,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-linux-delivery-v2/INPUT-PINS.json",
+      "sha256": "de28d4f172fc343cf74d5b68ce9e431f07aef3b9f9f3b5bb38a1797aa407307d",
+      "bytes": 3294,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-linux-delivery-v2/MANIFEST.json",
+      "sha256": "bf6e178cab7d4bff74ee503d071e98ed87a4ab711798429c37f71e7fe4bf812a",
+      "bytes": 3060,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-linux-delivery-v2/READY.json",
+      "sha256": "b4d2241752a4379f92429629244565ce9ff1d5e0cba6a7b008f0f40356cd6019",
+      "bytes": 412,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-linux-delivery-v2/delivery/DELIVERY.json",
+      "sha256": "3edc90e19a73856312720551fe05abcde70c883a916d0523258accd1709a4f86",
+      "bytes": 3148,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-linux-delivery-v2/delivery/binaries/GIT_SHA",
+      "sha256": "9d7e7a052e33ca696a3fb131f481f8a36133dd1b9e12efa0336342e2e200536a",
+      "bytes": 41,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-linux-delivery-v2/delivery/binaries/SHA256SUMS",
+      "sha256": "55d6cde77cc6eb417b01072eb3968ebd095094b195066cc81fb2e37b728cc213",
+      "bytes": 143,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-linux-delivery-v2/delivery/binaries/provenance.intoto.json",
+      "sha256": "b688c3b3710e2013510d5fdd220f5776e623a754548b0b462402d0f464b25c32",
+      "bytes": 285380,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k276-finalS-linux-delivery-v2/delivery/binaries/sbom.spdx.json",
+      "sha256": "d154e31f15895c3dd3ecab2d0e55ac490d41187ab9a4ab686eb321847b08a317",
+      "bytes": 223639,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k279-finalS-Linux-acceptance/MANIFEST.json",
+      "sha256": "d750e35f4ffadbcdc5ea3ab722b6dab6eb798155490566a4f98be3e078e343da",
+      "bytes": 7680,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k279-finalS-Linux-acceptance/READY.json",
+      "sha256": "2a12890c16829c2e8bbc67d76d8588f1fa51b9a2fcf299376f8cd6a83a6923d0",
+      "bytes": 394,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "receipts/k279-finalS-Linux-acceptance/native49/proof.json",
+      "sha256": "8788defa1c30fb7b490627bdcf35568b824731471b7f822e1d64d82dd115b840",
+      "bytes": 5892,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "reviewed-drivers/v2/MANIFEST.json",
+      "sha256": "01bc2a3d4e4356d2dc1990b2c1cebb1a83caa6c0e931fb3c578fc7312b421a1d",
+      "bytes": 1579,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "reviewed-drivers/v2/REVIEW-READY.json",
+      "sha256": "118643f3bf596a8d93074e5f9bdac4059fe3858e1ff7346516862128e9ad362f",
+      "bytes": 261,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "reviewed-drivers/v4/MANIFEST.json",
+      "sha256": "02354b9b30fc18b6678368aa83eaf87a1e924d60ccc420a22a07b33876d52ac3",
+      "bytes": 3092,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "reviewed-drivers/v4/REVIEW-READY.json",
+      "sha256": "0a6044e42fc82151639a8c9abdafeda8db60fe07812d2a80bec48c58d1dbbe52",
+      "bytes": 291,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "reviewed-drivers/v4/finalS-partial-ELF-readelf.json",
+      "sha256": "88a3cbc31ebd793602187adbf77ce4a6a835e9aee4541f84d9eeb52b6832b4ee",
+      "bytes": 17446,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "reviewed-drivers/v4/non-Zee-offline-base-probe/RESULT.json",
+      "sha256": "def351f6fafc7fe791d622815e314187e58219a45a0de96c0b2f5745b2cfcf1a",
+      "bytes": 481,
+      "representation": "raw-byte-copy"
+    },
+    {
+      "path": "reviewed-drivers/v4/non-Zee-offline-base-probe/policy.json",
+      "sha256": "c157d861ca93c9ec2bb63e000ec51c52e8b4d2f39f1b09c678f925e786639a62",
+      "bytes": 116,
+      "representation": "raw-byte-copy"
+    }
+  ],
+  "boundary": "This is a metadata subset, not the complete411-leaf external archive. Original full MANIFEST/SHA256SUMS remain unchanged and refer to files retained externally; source/binary/ZIP/deb/rawlog bytes are not all copied into Git.",
+  "tracked_raw_byte_copies": 120,
+  "tracked_derived_JSON_files": 7,
+  "tracked_total_subset_files": 127,
+  "normalization_boundary": "Raw authoritative full411 external Linux manifest unchanged. This subset contains explicitly identified reversible parsed-JSON derivatives, not all raw byte copies; full manifest paths remain external references."
+}

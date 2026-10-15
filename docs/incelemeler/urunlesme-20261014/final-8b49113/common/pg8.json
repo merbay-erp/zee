@@ -1,0 +1,56 @@
+{
+  "schema": "zee-postgresql-tls-ci-1",
+  "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "started_utc": "2026-10-15T03:53:03.586959+00:00",
+  "host": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "rustc": "rustc 1.93.1 (01f6ddf75 2026-02-11)",
+  "source_clean": true,
+  "fixture_hashes": {
+    "scripts/postgresql-tls-ci.py": "8ef71f0070b9e954b70d0ec24c50c0285b4bfb76de4ed40490efd9eac78cad77",
+    "compiler/tests/postgresql_testi.rs": "d60b108dca46f5b2cfa4df77c7e7428fdc67e46da156a204e7ac668a71a1a371",
+    "scripts/postgresql-tls11-control.py": "cdf477d154f9fe11086c4829b34b9a412156feabdee1404b5bd863026f2ba639"
+  },
+  "engine": "local",
+  "server": "postgres (PostgreSQL) 16.15",
+  "server_identity": {
+    "binaries": "/private/tmp/zee-plan-evidence/pg16-runtime/install/bin",
+    "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O"
+  },
+  "ca_sha256": "8e78124a9dd63672c995742399cc43aa43474346f739eb5e7b312b453a85ec6e",
+  "tls11_positive_control": {
+    "protocol": "TLSv1.1",
+    "server_protocol": "TLSv1.1",
+    "cipher": "ECDHE-RSA-AES256-SHA",
+    "hostname_verified": true,
+    "certificate_verified": true
+  },
+  "tests": [
+    "izole_tls_dogru_ca_hostname_ve_tls12_ile_baglanir",
+    "izole_tls_baska_ca_gercek_sunucuyu_reddeder",
+    "izole_tls_san_disindaki_ip_hostnameini_reddeder",
+    "izole_tls_null_ve_metin_disini_reddeder_transaction_sagligi_korunur",
+    "izole_tls_sorgu_parametre_sonuc_ve_goc_sinirlarini_bir_fazlasinda_reddeder",
+    "izole_tls_deadlock_40p01_tekrarsiz_rollback_ve_yeni_oturum_sagligi",
+    "izole_tls_serialization_40001_tekrarsiz_rollback_ve_yeni_oturum_sagligi",
+    "izole_tls_11_erisilebilir_legacy_sunucuyu_reddeder"
+  ],
+  "fault_observations": [
+    "K250 deadlock sqlstate=40P01 attempts=4 rejected=1 accepted=1 durable_sum=0 fresh_health=true",
+    "K250 serialization sqlstate=40001 attempts=2 other_value=1 victim_marker=0 fresh_health=true"
+  ],
+  "command": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "postgresql_testi",
+    "izole_tls_",
+    "--",
+    "--ignored",
+    "--test-threads=1",
+    "--nocapture"
+  ],
+  "exit": 0,
+  "elapsed_seconds": 9.111,
+  "boundary": "ephemeral loopback-only synthetic CA/key and cluster; TLS1.2 positive, wrong CA/SAN, real NULL/non-text, resource limits and two stock statement-time40P01/40001 fixtures with explicit rollback/no-replay/fresh health; no COMMIT outcome inference; capable TLS1.1 positive control plus native refusal; no provider rotation or production cluster evidence"
+}

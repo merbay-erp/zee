@@ -1,0 +1,600 @@
+{
+  "schema": "zee-owned-Linux-rootless-container-1",
+  "status": "passed",
+  "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "delivery_sha256": "3edc90e19a73856312720551fe05abcde70c883a916d0523258accd1709a4f86",
+  "binary_sha256": {
+    "dil": "80cc4b162211b352e97dd8f3d54697e53d92f5d3dd40b03fe73f78963d37e739",
+    "dillsp": "b2490655662939b7f2821c9707312c5c1631d83e60240c3a5aaae82bdd71edaa"
+  },
+  "owned_state": "/home/mustafaerbay.guest/zee-k276/c87f84c",
+  "official_manifest_sha256": "1d15be465c9ea7b37b464055c5de38319523de9d3f070fcc76c0d0230ebe9669",
+  "policy_authentication_claim": false,
+  "published": false,
+  "host_mounts": false,
+  "privileged": false,
+  "network_in_payload": "none",
+  "commands": [
+    {
+      "name": "pull-exact-official-base",
+      "argv": [
+        "/home/mustafaerbay.guest/zee-k276/tools/podman-owned/usr/bin/podman",
+        "--log-level=error",
+        "--root",
+        "/home/mustafaerbay.guest/zee-k276/c87f84c/root",
+        "--runroot",
+        "/home/mustafaerbay.guest/zee-k276/c87f84c/run",
+        "--tmpdir",
+        "/home/mustafaerbay.guest/zee-k276/c87f84c/tmp",
+        "--storage-driver=vfs",
+        "--cgroup-manager=cgroupfs",
+        "--events-backend=file",
+        "--runtime=/usr/bin/crun",
+        "--conmon=/usr/bin/conmon",
+        "unshare",
+        "/home/mustafaerbay.guest/zee-k276/tools/skopeo-owned/usr/bin/skopeo",
+        "--policy",
+        "/home/mustafaerbay.guest/zee-k276/final-acceptance/container-native-v4/policy.json",
+        "--override-arch=arm64",
+        "copy",
+        "--preserve-digests",
+        "--src-tls-verify=true",
+        "--authfile",
+        "/home/mustafaerbay.guest/zee-k276/c87f84c/auth.json",
+        "docker://docker.io/library/debian@sha256:1d15be465c9ea7b37b464055c5de38319523de9d3f070fcc76c0d0230ebe9669",
+        "containers-storage:docker.io/library/debian:bookworm-20261005"
+      ],
+      "log_sha256": "846323a056ffe3cb0137338e6b50dc2c4feb6528ef14a2f2232f39cd752a7f87"
+    },
+    {
+      "name": "base-inspect",
+      "argv": [
+        "/home/mustafaerbay.guest/zee-k276/tools/podman-owned/usr/bin/podman",
+        "--log-level=error",
+        "--root",
+        "/home/mustafaerbay.guest/zee-k276/c87f84c/root",
+        "--runroot",
+        "/home/mustafaerbay.guest/zee-k276/c87f84c/run",
+        "--tmpdir",
+        "/home/mustafaerbay.guest/zee-k276/c87f84c/tmp",
+        "--storage-driver=vfs",
+        "--cgroup-manager=cgroupfs",
+        "--events-backend=file",
+        "--runtime=/usr/bin/crun",
+        "--conmon=/usr/bin/conmon",
+        "image",
+        "inspect",
+        "4105e2bb7b57b01eaf420afd4f7970386183f64f4d244bca3d684fa9737e0670"
+      ],
+      "log_sha256": "d318a42b2504c1421b6ec72b2631858fd4f71e2f2a28f8924badf3dc6a6bf873"
+    },
+    {
+      "name": "readelf-dil",
+      "argv": [
+        "readelf",
+        "-l",
+        "-d",
+        "--version-info",
+        "/home/mustafaerbay.guest/zee-k276/final-acceptance/container-native-v4/context/artifact/dil"
+      ],
+      "log_sha256": "b26bb8092efd5f1a78226290ee7317c692dfc26cf70e12dda4501269fd49b321"
+    },
+    {
+      "name": "readelf-dillsp",
+      "argv": [
+        "readelf",
+        "-l",
+        "-d",
+        "--version-info",
+        "/home/mustafaerbay.guest/zee-k276/final-acceptance/container-native-v4/context/artifact/dillsp"
+      ],
+      "log_sha256": "9fc2096469d2c73c42e29abb1247abca75b8fb7246e319b8ff41bfb570fbc7d2"
+    },
+    {
+      "name": "build-offline",
+      "argv": [
+        "/home/mustafaerbay.guest/zee-k276/tools/podman-owned/usr/bin/podman",
+        "--log-level=error",
+        "--root",
+        "/home/mustafaerbay.guest/zee-k276/c87f84c/root",
+        "--runroot",
+        "/home/mustafaerbay.guest/zee-k276/c87f84c/run",
+        "--tmpdir",
+        "/home/mustafaerbay.guest/zee-k276/c87f84c/tmp",
+        "--storage-driver=vfs",
+        "--cgroup-manager=cgroupfs",
+        "--events-backend=file",
+        "--runtime=/usr/bin/crun",
+        "--conmon=/usr/bin/conmon",
+        "build",
+        "--signature-policy",
+        "/home/mustafaerbay.guest/zee-k276/final-acceptance/container-native-v4/policy.json",
+        "--build-arg",
+        "BASE=docker.io/library/debian@sha256:1d15be465c9ea7b37b464055c5de38319523de9d3f070fcc76c0d0230ebe9669",
+        "--network=none",
+        "--pull=never",
+        "--jobs=1",
+        "--force-rm=true",
+        "--iidfile",
+        "/home/mustafaerbay.guest/zee-k276/final-acceptance/container-native-v4/image-id",
+        "/home/mustafaerbay.guest/zee-k276/final-acceptance/container-native-v4/context"
+      ],
+      "log_sha256": "eb3505e1eed82f228f52c48bb5dc76fd6c62fe851d517f34e6ce5b82b522064f"
+    },
+    {
+      "name": "actual-UID65532",
+      "argv": [
+        "/home/mustafaerbay.guest/zee-k276/tools/podman-owned/usr/bin/podman",
+        "--log-level=error",
+        "--root",
+        "/home/mustafaerbay.guest/zee-k276/c87f84c/root",
+        "--runroot",
+        "/home/mustafaerbay.guest/zee-k276/c87f84c/run",
+        "--tmpdir",
+        "/home/mustafaerbay.guest/zee-k276/c87f84c/tmp",
+        "--storage-driver=vfs",
+        "--cgroup-manager=cgroupfs",
+        "--events-backend=file",
+        "--runtime=/usr/bin/crun",
+        "--conmon=/usr/bin/conmon",
+        "run",
+        "--rm",
+        "--network=none",
+        "--read-only",
+        "--cap-drop=ALL",
+        "--security-opt=no-new-privileges",
+        "--security-opt=seccomp=/home/mustafaerbay.guest/zee-k276/tools/podman-owned/usr/share/containers/seccomp.json",
+        "--user=65532:65532",
+        "--cidfile",
+        "/home/mustafaerbay.guest/zee-k276/final-acceptance/container-native-v4/uid.cid",
+        "--entrypoint=/usr/bin/id",
+        "0e47d22a39122e1dd5ead03666d778ff9c970ac1ab2a49fad4b2f83195291d90",
+        "-u"
+      ],
+      "log_sha256": "3f50af375a89507fc437906df9ed9b275e4251080c0a5d63e697ccf2a5738a2d"
+    },
+    {
+      "name": "actual-65532-CLI",
+      "argv": [
+        "/home/mustafaerbay.guest/zee-k276/tools/podman-owned/usr/bin/podman",
+        "--log-level=error",
+        "--root",
+        "/home/mustafaerbay.guest/zee-k276/c87f84c/root",
+        "--runroot",
+        "/home/mustafaerbay.guest/zee-k276/c87f84c/run",
+        "--tmpdir",
+        "/home/mustafaerbay.guest/zee-k276/c87f84c/tmp",
+        "--storage-driver=vfs",
+        "--cgroup-manager=cgroupfs",
+        "--events-backend=file",
+        "--runtime=/usr/bin/crun",
+        "--conmon=/usr/bin/conmon",
+        "run",
+        "--rm",
+        "--network=none",
+        "--read-only",
+        "--cap-drop=ALL",
+        "--security-opt=no-new-privileges",
+        "--security-opt=seccomp=/home/mustafaerbay.guest/zee-k276/tools/podman-owned/usr/share/containers/seccomp.json",
+        "--user=65532:65532",
+        "--cidfile",
+        "/home/mustafaerbay.guest/zee-k276/final-acceptance/container-native-v4/cli.cid",
+        "0e47d22a39122e1dd5ead03666d778ff9c970ac1ab2a49fad4b2f83195291d90"
+      ],
+      "log_sha256": "dd05eea2a45a239105031ea3a070578ee077c457a8dadbf18f76d14d9b632f9a"
+    },
+    {
+      "name": "actual-65532-denetle",
+      "argv": [
+        "/home/mustafaerbay.guest/zee-k276/tools/podman-owned/usr/bin/podman",
+        "--log-level=error",
+        "--root",
+        "/home/mustafaerbay.guest/zee-k276/c87f84c/root",
+        "--runroot",
+        "/home/mustafaerbay.guest/zee-k276/c87f84c/run",
+        "--tmpdir",
+        "/home/mustafaerbay.guest/zee-k276/c87f84c/tmp",
+        "--storage-driver=vfs",
+        "--cgroup-manager=cgroupfs",
+        "--events-backend=file",
+        "--runtime=/usr/bin/crun",
+        "--conmon=/usr/bin/conmon",
+        "run",
+        "--rm",
+        "--network=none",
+        "--read-only",
+        "--cap-drop=ALL",
+        "--security-opt=no-new-privileges",
+        "--security-opt=seccomp=/home/mustafaerbay.guest/zee-k276/tools/podman-owned/usr/share/containers/seccomp.json",
+        "--user=65532:65532",
+        "--cidfile",
+        "/home/mustafaerbay.guest/zee-k276/final-acceptance/container-native-v4/denetle.cid",
+        "0e47d22a39122e1dd5ead03666d778ff9c970ac1ab2a49fad4b2f83195291d90",
+        "denetle",
+        "/work/ana.dil"
+      ],
+      "log_sha256": "e4e2970aee5d202bc2b3001c04b18f342a657a5683f8fd21c0769678980ee1d0"
+    },
+    {
+      "name": "actual-65532-calistir",
+      "argv": [
+        "/home/mustafaerbay.guest/zee-k276/tools/podman-owned/usr/bin/podman",
+        "--log-level=error",
+        "--root",
+        "/home/mustafaerbay.guest/zee-k276/c87f84c/root",
+        "--runroot",
+        "/home/mustafaerbay.guest/zee-k276/c87f84c/run",
+        "--tmpdir",
+        "/home/mustafaerbay.guest/zee-k276/c87f84c/tmp",
+        "--storage-driver=vfs",
+        "--cgroup-manager=cgroupfs",
+        "--events-backend=file",
+        "--runtime=/usr/bin/crun",
+        "--conmon=/usr/bin/conmon",
+        "run",
+        "--rm",
+        "--network=none",
+        "--read-only",
+        "--cap-drop=ALL",
+        "--security-opt=no-new-privileges",
+        "--security-opt=seccomp=/home/mustafaerbay.guest/zee-k276/tools/podman-owned/usr/share/containers/seccomp.json",
+        "--user=65532:65532",
+        "--cidfile",
+        "/home/mustafaerbay.guest/zee-k276/final-acceptance/container-native-v4/calistir.cid",
+        "0e47d22a39122e1dd5ead03666d778ff9c970ac1ab2a49fad4b2f83195291d90",
+        "\u00e7al\u0131\u015ft\u0131r",
+        "/work/ana.dil"
+      ],
+      "log_sha256": "de3de069580b139daafeb00d17568851c2fec6da20c6345eb380292979cefb62"
+    },
+    {
+      "name": "baked-source-hash",
+      "argv": [
+        "/home/mustafaerbay.guest/zee-k276/tools/podman-owned/usr/bin/podman",
+        "--log-level=error",
+        "--root",
+        "/home/mustafaerbay.guest/zee-k276/c87f84c/root",
+        "--runroot",
+        "/home/mustafaerbay.guest/zee-k276/c87f84c/run",
+        "--tmpdir",
+        "/home/mustafaerbay.guest/zee-k276/c87f84c/tmp",
+        "--storage-driver=vfs",
+        "--cgroup-manager=cgroupfs",
+        "--events-backend=file",
+        "--runtime=/usr/bin/crun",
+        "--conmon=/usr/bin/conmon",
+        "run",
+        "--rm",
+        "--network=none",
+        "--read-only",
+        "--cap-drop=ALL",
+        "--security-opt=no-new-privileges",
+        "--security-opt=seccomp=/home/mustafaerbay.guest/zee-k276/tools/podman-owned/usr/share/containers/seccomp.json",
+        "--user=65532:65532",
+        "--cidfile",
+        "/home/mustafaerbay.guest/zee-k276/final-acceptance/container-native-v4/source.cid",
+        "--entrypoint=/usr/bin/sha256sum",
+        "0e47d22a39122e1dd5ead03666d778ff9c970ac1ab2a49fad4b2f83195291d90",
+        "/work/ana.dil"
+      ],
+      "log_sha256": "7903a5c4b70b55ee11574b77512337b2e3cdcbd0f2ade646bfb6ef99ea470d2d"
+    },
+    {
+      "name": "actual-65532-LSP",
+      "argv": [
+        "/usr/bin/python3",
+        "-I",
+        "-B",
+        "/home/mustafaerbay.guest/zee-k276/final-drivers-v4/external/install/lsp_smoke.py",
+        "--binary",
+        "/home/mustafaerbay.guest/zee-k276/final-acceptance/container-native-v4/owned-lsp-launcher",
+        "--output",
+        "/home/mustafaerbay.guest/zee-k276/final-acceptance/container-native-v4/LSP.json"
+      ],
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "cleanup-lsp",
+      "argv": [
+        "/home/mustafaerbay.guest/zee-k276/tools/podman-owned/usr/bin/podman",
+        "--log-level=error",
+        "--root",
+        "/home/mustafaerbay.guest/zee-k276/c87f84c/root",
+        "--runroot",
+        "/home/mustafaerbay.guest/zee-k276/c87f84c/run",
+        "--tmpdir",
+        "/home/mustafaerbay.guest/zee-k276/c87f84c/tmp",
+        "--storage-driver=vfs",
+        "--cgroup-manager=cgroupfs",
+        "--events-backend=file",
+        "--runtime=/usr/bin/crun",
+        "--conmon=/usr/bin/conmon",
+        "rm",
+        "--force",
+        "--ignore",
+        "775c2d7a62ce84f5dee48fd259baca70f1796bba121431ff9ce7946f86a2d55d"
+      ],
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "cleanup-source",
+      "argv": [
+        "/home/mustafaerbay.guest/zee-k276/tools/podman-owned/usr/bin/podman",
+        "--log-level=error",
+        "--root",
+        "/home/mustafaerbay.guest/zee-k276/c87f84c/root",
+        "--runroot",
+        "/home/mustafaerbay.guest/zee-k276/c87f84c/run",
+        "--tmpdir",
+        "/home/mustafaerbay.guest/zee-k276/c87f84c/tmp",
+        "--storage-driver=vfs",
+        "--cgroup-manager=cgroupfs",
+        "--events-backend=file",
+        "--runtime=/usr/bin/crun",
+        "--conmon=/usr/bin/conmon",
+        "rm",
+        "--force",
+        "--ignore",
+        "b6752ec8a0e2664e9c7140da8f788f9f3cb2af751751f4c52997caf70446d78a"
+      ],
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "cleanup-calistir",
+      "argv": [
+        "/home/mustafaerbay.guest/zee-k276/tools/podman-owned/usr/bin/podman",
+        "--log-level=error",
+        "--root",
+        "/home/mustafaerbay.guest/zee-k276/c87f84c/root",
+        "--runroot",
+        "/home/mustafaerbay.guest/zee-k276/c87f84c/run",
+        "--tmpdir",
+        "/home/mustafaerbay.guest/zee-k276/c87f84c/tmp",
+        "--storage-driver=vfs",
+        "--cgroup-manager=cgroupfs",
+        "--events-backend=file",
+        "--runtime=/usr/bin/crun",
+        "--conmon=/usr/bin/conmon",
+        "rm",
+        "--force",
+        "--ignore",
+        "d1b5c4a5effb598aefb0bd1571d2834be52ff4f9644704233255db1ea964ee91"
+      ],
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "cleanup-denetle",
+      "argv": [
+        "/home/mustafaerbay.guest/zee-k276/tools/podman-owned/usr/bin/podman",
+        "--log-level=error",
+        "--root",
+        "/home/mustafaerbay.guest/zee-k276/c87f84c/root",
+        "--runroot",
+        "/home/mustafaerbay.guest/zee-k276/c87f84c/run",
+        "--tmpdir",
+        "/home/mustafaerbay.guest/zee-k276/c87f84c/tmp",
+        "--storage-driver=vfs",
+        "--cgroup-manager=cgroupfs",
+        "--events-backend=file",
+        "--runtime=/usr/bin/crun",
+        "--conmon=/usr/bin/conmon",
+        "rm",
+        "--force",
+        "--ignore",
+        "bd11cbc3657ff03a74ba469c3311cb47f7a3c7165f8110b25334f872e095a901"
+      ],
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "cleanup-cli",
+      "argv": [
+        "/home/mustafaerbay.guest/zee-k276/tools/podman-owned/usr/bin/podman",
+        "--log-level=error",
+        "--root",
+        "/home/mustafaerbay.guest/zee-k276/c87f84c/root",
+        "--runroot",
+        "/home/mustafaerbay.guest/zee-k276/c87f84c/run",
+        "--tmpdir",
+        "/home/mustafaerbay.guest/zee-k276/c87f84c/tmp",
+        "--storage-driver=vfs",
+        "--cgroup-manager=cgroupfs",
+        "--events-backend=file",
+        "--runtime=/usr/bin/crun",
+        "--conmon=/usr/bin/conmon",
+        "rm",
+        "--force",
+        "--ignore",
+        "1d5861166b7757684e8100039ddc899934903eb311a8ddb84e384799b273c419"
+      ],
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "cleanup-uid",
+      "argv": [
+        "/home/mustafaerbay.guest/zee-k276/tools/podman-owned/usr/bin/podman",
+        "--log-level=error",
+        "--root",
+        "/home/mustafaerbay.guest/zee-k276/c87f84c/root",
+        "--runroot",
+        "/home/mustafaerbay.guest/zee-k276/c87f84c/run",
+        "--tmpdir",
+        "/home/mustafaerbay.guest/zee-k276/c87f84c/tmp",
+        "--storage-driver=vfs",
+        "--cgroup-manager=cgroupfs",
+        "--events-backend=file",
+        "--runtime=/usr/bin/crun",
+        "--conmon=/usr/bin/conmon",
+        "rm",
+        "--force",
+        "--ignore",
+        "c1a7dd25f4495d9d18fd743f80ade9281f05b4c27b4378eefa6d9139752af7c7"
+      ],
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "remaining-owned-store-containers",
+      "argv": [
+        "/home/mustafaerbay.guest/zee-k276/tools/podman-owned/usr/bin/podman",
+        "--log-level=error",
+        "--root",
+        "/home/mustafaerbay.guest/zee-k276/c87f84c/root",
+        "--runroot",
+        "/home/mustafaerbay.guest/zee-k276/c87f84c/run",
+        "--tmpdir",
+        "/home/mustafaerbay.guest/zee-k276/c87f84c/tmp",
+        "--storage-driver=vfs",
+        "--cgroup-manager=cgroupfs",
+        "--events-backend=file",
+        "--runtime=/usr/bin/crun",
+        "--conmon=/usr/bin/conmon",
+        "ps",
+        "--all",
+        "--format=json"
+      ],
+      "log_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    {
+      "name": "owned-pause-cleanup",
+      "argv": [
+        "/home/mustafaerbay.guest/zee-k276/tools/podman-owned/usr/bin/podman",
+        "--log-level=error",
+        "--root",
+        "/home/mustafaerbay.guest/zee-k276/c87f84c/root",
+        "--runroot",
+        "/home/mustafaerbay.guest/zee-k276/c87f84c/run",
+        "--tmpdir",
+        "/home/mustafaerbay.guest/zee-k276/c87f84c/tmp",
+        "--storage-driver=vfs",
+        "--cgroup-manager=cgroupfs",
+        "--events-backend=file",
+        "--runtime=/usr/bin/crun",
+        "--conmon=/usr/bin/conmon",
+        "system",
+        "migrate"
+      ],
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "tool_sha256": {
+    "/home/mustafaerbay.guest/zee-k276/tools/podman-owned/usr/bin/podman": "4dff3c01488bac975e2ae1cc614bd91c908af5151f2d6e6554370661e1615f73",
+    "/home/mustafaerbay.guest/zee-k276/tools/skopeo-owned/usr/bin/skopeo": "4bbf38d88b78a757bb0c2d75a3fcc7a0c8bbe52d8bb59e99215d2a369b7cfc8e",
+    "/usr/bin/crun": "3dcf0cef0a87c7a8c479ebebe43f7825e9eb5a46fbd2c87d44a3b0bee793da09",
+    "/usr/bin/conmon": "00809bc9e6729b437f938b646069d4d4f00a20fde2c845433fc72586cc59c838"
+  },
+  "driver_sha256": "f16e0834d46bb3248e85b5e94b634559370bdf6facfc9652ee5bd8e6a2698d83",
+  "protocol_sha256": "4783fc83e6a9dd9c622e75ef88459796abde084bd7cad91a51f0afe4008e01c7",
+  "lsp_smoke_sha256": "58afb02c9869a48b2cd3315b108dfd483b4e1b40872fe189705359816a00dfb5",
+  "consumed_start_sha256": {
+    "/home/mustafaerbay.guest/zee-k276/final-drivers-v4/linux_container_native.py": "f16e0834d46bb3248e85b5e94b634559370bdf6facfc9652ee5bd8e6a2698d83",
+    "/home/mustafaerbay.guest/zee-k276/final-drivers-v4/linux_protocol.py": "4783fc83e6a9dd9c622e75ef88459796abde084bd7cad91a51f0afe4008e01c7",
+    "/home/mustafaerbay.guest/zee-k276/final-drivers-v4/external/install/lsp_smoke.py": "58afb02c9869a48b2cd3315b108dfd483b4e1b40872fe189705359816a00dfb5",
+    "/home/mustafaerbay.guest/zee-k276/final-source/scripts/linux-runtime.Dockerfile.in": "b9c0c167059d2b5a1bd012b1ee11c85b91d1edd24367f3a0b3805a669409e859",
+    "/home/mustafaerbay.guest/zee-k276/final-source/scripts/kur.sh": "1bea4701e9ac0cf8bdca5dd1ec6c4da424cfe03bcdf6bf1f33cc70ecee80a21f",
+    "/home/mustafaerbay.guest/zee-k276/final-source/scripts/kaldir.sh": "8f2351745c588687434d1a2a194af2b3299231e52bbc080a36698ca454e1e43d"
+  },
+  "ELF_needed": {
+    "dil": [
+      "libc.so.6",
+      "libcrypto.so.3",
+      "libgcc_s.so.1",
+      "libm.so.6",
+      "libssl.so.3"
+    ],
+    "dillsp": [
+      "libc.so.6",
+      "libcrypto.so.3",
+      "libgcc_s.so.1",
+      "libm.so.6",
+      "libssl.so.3"
+    ]
+  },
+  "anonymous_source_sha256": "b3c2ad04fc5b665ee7f1ada5168da7a7b95fb1af5c0947b22c83ddd39581dff3",
+  "artifact_consumed_sha256": {
+    "dil": "80cc4b162211b352e97dd8f3d54697e53d92f5d3dd40b03fe73f78963d37e739",
+    "dillsp": "b2490655662939b7f2821c9707312c5c1631d83e60240c3a5aaae82bdd71edaa",
+    "SHA256SUMS": "55d6cde77cc6eb417b01072eb3968ebd095094b195066cc81fb2e37b728cc213",
+    "GIT_SHA": "9d7e7a052e33ca696a3fb131f481f8a36133dd1b9e12efa0336342e2e200536a",
+    "sbom.spdx.json": "d154e31f15895c3dd3ecab2d0e55ac490d41187ab9a4ab686eb321847b08a317",
+    "provenance.intoto.json": "b688c3b3710e2013510d5fdd220f5776e623a754548b0b462402d0f464b25c32"
+  },
+  "runtime_closure": [
+    {
+      "guest_logical": "/usr/lib/aarch64-linux-gnu/libssl.so.3",
+      "resolved": "/usr/lib/aarch64-linux-gnu/libssl.so.3",
+      "sha256": "09fe45f6e578f6a598b3f67a193d7dc56f679c2259933d90e78a368d594bc8b0",
+      "container": "/usr/lib/aarch64-linux-gnu/libssl.so.3"
+    },
+    {
+      "guest_logical": "/usr/lib/aarch64-linux-gnu/libcrypto.so.3",
+      "resolved": "/usr/lib/aarch64-linux-gnu/libcrypto.so.3",
+      "sha256": "908bfe9966f80a31cec61ec4cbd0661d9fe9673edcca1848e038351e122eff74",
+      "container": "/usr/lib/aarch64-linux-gnu/libcrypto.so.3"
+    },
+    {
+      "guest_logical": "/usr/lib/aarch64-linux-gnu/libgcc_s.so.1",
+      "resolved": "/usr/lib/aarch64-linux-gnu/libgcc_s.so.1",
+      "sha256": "046856f95f4636f1fc7c3a12bf4f3cd5634c2fc5145c3fdf7395d4f349fa69c7",
+      "container": "/usr/lib/aarch64-linux-gnu/libgcc_s.so.1"
+    },
+    {
+      "guest_logical": "/usr/lib/aarch64-linux-gnu/libm.so.6",
+      "resolved": "/usr/lib/aarch64-linux-gnu/libm.so.6",
+      "sha256": "3c4cb3be0b974edf05f023f85ab15107fb5afc2687163593d0d4cf8e80c17b39",
+      "container": "/usr/lib/aarch64-linux-gnu/libm.so.6"
+    },
+    {
+      "guest_logical": "/usr/lib/aarch64-linux-gnu/libc.so.6",
+      "resolved": "/usr/lib/aarch64-linux-gnu/libc.so.6",
+      "sha256": "e4ac8ae1d81e4865e3aadedb962879cf9415903b3f2ba81ec75e9962b86ab8b0",
+      "container": "/usr/lib/aarch64-linux-gnu/libc.so.6"
+    },
+    {
+      "guest_logical": "/usr/lib/aarch64-linux-gnu/ld-linux-aarch64.so.1",
+      "resolved": "/usr/lib/aarch64-linux-gnu/ld-linux-aarch64.so.1",
+      "sha256": "17538b8f9889a470c061f69a8fea8124da89627311cd16546c133a89f09056df",
+      "container": "/usr/lib/aarch64-linux-gnu/ld-linux-aarch64.so.1"
+    },
+    {
+      "guest_logical": "/etc/ssl/certs/ca-certificates.crt",
+      "sha256": "4e3df1b7cefec516bc6dcc615565455a6658f6ae9da64989b8959827e87161dc",
+      "container": "/etc/ssl/certs/ca-certificates.crt"
+    },
+    {
+      "guest_logical": "/usr/share/doc/libc6/copyright",
+      "sha256": "40c7e1f2118531f038ca22999bd976901254e1bc5cd1b0f0211bdd064c599987",
+      "container": "/usr/share/doc/libc6/copyright"
+    },
+    {
+      "guest_logical": "/usr/share/doc/libssl3/copyright",
+      "sha256": "6a7da622fe0637a334d2a8fc470852d2ffb77d9a2b2f930f854e32a41ad6ef35",
+      "container": "/usr/share/doc/libssl3/copyright"
+    },
+    {
+      "guest_logical": "/usr/share/doc/libgcc-s1/copyright",
+      "sha256": "da8191658b3452ce9caf31638ba61dab31a38c619fa39df119812e050f592fd3",
+      "container": "/usr/share/doc/libgcc-s1/copyright"
+    },
+    {
+      "guest_logical": "/usr/share/doc/ca-certificates/copyright",
+      "sha256": "e85e1bcad3a915dc7e6f41412bc5bdeba275cadd817896ea0451f2140a93967c",
+      "container": "/usr/share/doc/ca-certificates/copyright"
+    }
+  ],
+  "image_id": "0e47d22a39122e1dd5ead03666d778ff9c970ac1ab2a49fad4b2f83195291d90",
+  "consumed_end_unchanged": true,
+  "CLI_BuildJSON": {
+    "schema": "zee-build-v1",
+    "version": "0.8.0-dev",
+    "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+    "source_date": "2026-10-15",
+    "channel": "development",
+    "dirty": false
+  },
+  "LSP_response_ids": [
+    1,
+    2
+  ],
+  "source_end_clean": true,
+  "cleanup_errors": [],
+  "owned_CIDs_removed": true
+}

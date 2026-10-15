@@ -1,0 +1,10 @@
+{
+  "status": "passed-build-inspection-only",
+  "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "manifest_sha256": "ab1fce44fb41f4ac29101ae9d92167a7d89ae8d163c00f9303759f796ced4125",
+  "BUILD_sha256": "d1c077d7961f13c9406a16ba05bb98d35ebdcdac42960c3e790372c1db8dd0a4",
+  "deb_sha256": "26cddc16cc85838847420c782a419210721eebffb6a61dc9ddc78f07f65c4deb",
+  "installed": false,
+  "activated": false,
+  "published": false
+}

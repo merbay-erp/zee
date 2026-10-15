@@ -1,0 +1,7 @@
+{
+  "scope": "Historical v1 byte-exact manifest, not active v2 inventory; paths may refer to raw external files replaced by derived representations.",
+  "original_external_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/root-final-S-archive-stage-v2/final-8b49113/STAGE-MANIFEST.json",
+  "sha256": "1ab539198d4a2c0ea026fc6c828b206b8eb0be7a8a7141d1078becd3c0f039fd",
+  "authoritative_v2": "../DERIVATION-MANIFEST.json",
+  "final_current_manifest": "PENDING after RC metadata assembly"
+}

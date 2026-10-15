@@ -1,0 +1,215 @@
+{
+  "schema": "zee-native-inherited-listener-stage-1",
+  "status": "passed",
+  "source_acceptance": "actual given binary; clean status derives from BuildJSON, not assumed",
+  "build": {
+    "schema": "zee-build-v1",
+    "version": "0.8.0-dev",
+    "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+    "source_date": "2026-10-15",
+    "channel": "development",
+    "dirty": false
+  },
+  "binary_sha256": "fb21485fa46422844f5de9b4510a8957c957ac9f281e47df3907cb93eeb8ae4e",
+  "cases": [
+    {
+      "name": "owned_tcp_listener_no_accept_before_exact_activation",
+      "passed": true,
+      "observations": {
+        "pid_matched": true,
+        "nonce_matched": true,
+        "build_matched": true,
+        "fresh_generation_receipt": true,
+        "pre_activation_response": false,
+        "http200": true,
+        "stable_socket_inode": true
+      }
+    },
+    {
+      "name": "wrong_new_generation_nonce_does_not_activate_old_stays_serving",
+      "passed": true,
+      "observations": {
+        "old_http200": true,
+        "new_exited": true
+      }
+    },
+    {
+      "name": "actual_activation_emptyEOF_refused_without_old_generation_loss",
+      "passed": true,
+      "observations": {
+        "new_exited": true,
+        "old200": true,
+        "unreaped_until_group_cleanup": true
+      }
+    },
+    {
+      "name": "actual_activation_extra_bytes_refused_without_old_generation_loss",
+      "passed": true,
+      "observations": {
+        "new_exited": true,
+        "old200": true,
+        "unreaped_until_group_cleanup": true
+      }
+    },
+    {
+      "name": "actual_activation_duplicate_activation_refused_without_old_generation_loss",
+      "passed": true,
+      "observations": {
+        "new_exited": true,
+        "old200": true,
+        "unreaped_until_group_cleanup": true
+      }
+    },
+    {
+      "name": "actual_activation_oversize_refused_without_old_generation_loss",
+      "passed": true,
+      "observations": {
+        "new_exited": true,
+        "old200": true,
+        "unreaped_until_group_cleanup": true
+      }
+    },
+    {
+      "name": "ready_overlap_old_receipt_refused_admitted_stream_finishes_term",
+      "passed": true,
+      "observations": {
+        "old_receipt_rejected": true,
+        "completed200": true,
+        "elapsed_seconds": 3.057,
+        "foreign_survived": true,
+        "stable_socket_inode": true
+      }
+    },
+    {
+      "name": "bounded_20request_native_overlap_profile_no_retry",
+      "passed": true,
+      "observations": {
+        "requests": 20,
+        "http200": 20,
+        "5xx": 0,
+        "refused": 0,
+        "retry": 0
+      }
+    },
+    {
+      "name": "actual_native_session_revoke_shared_across_generation_restart",
+      "passed": true,
+      "observations": {
+        "login200": true,
+        "next_generation_panel200": true,
+        "revoked_overlap401": true,
+        "revoked_restart401": true,
+        "backend": "atomicJSONfile",
+        "state_mode": "0o600",
+        "no_cookie_recorded": true
+      }
+    },
+    {
+      "name": "actual_shared_json_quota_exhaustion_survives_overlap_restart",
+      "passed": true,
+      "observations": {
+        "requests_until_first429": 101,
+        "overlap429": true,
+        "new_generation429": true,
+        "quota_reset": false,
+        "backend": "atomicJSONfile"
+      }
+    },
+    {
+      "name": "actual_1000_requests_four_owned_rollovers_same_tcp_listener",
+      "passed": true,
+      "observations": {
+        "requests": 1000,
+        "http200": 1000,
+        "5xx": 0,
+        "refusals": 0,
+        "retries": 0,
+        "rollovers": 4,
+        "concurrency": 1,
+        "elapsed_seconds": 23.328,
+        "quota_profile": "1000 distinct synthetic loopback client identities; no quota raise/reset",
+        "stable_listener_inode": true
+      }
+    },
+    {
+      "name": "exited_owned_leader_real_native_descendant_cleanup_wnowait_foreign_survives",
+      "passed": true,
+      "observations": {
+        "leader_exit": 9,
+        "unreaped_until_cleanup": true,
+        "actual_native_descendant_pipe_persisted": true,
+        "owned_group_cleaned": true,
+        "foreign_survived": true,
+        "cleanup_seconds": 0.1
+      }
+    },
+    {
+      "name": "combined_metric_option_before_listener_options",
+      "passed": true,
+      "observations": {
+        "http200": true,
+        "native_metric_records": 3,
+        "source_build_matched": true,
+        "one_shared_listener": true
+      }
+    },
+    {
+      "name": "combined_metric_option_after_listener_options",
+      "passed": true,
+      "observations": {
+        "http200": true,
+        "native_metric_records": 3,
+        "source_build_matched": true,
+        "one_shared_listener": true
+      }
+    },
+    {
+      "name": "combined_metric_epipe_before_listener_constructor_no_stale_descriptor_recheck",
+      "passed": true,
+      "observations": {
+        "http200": true,
+        "metric_reader_closed_before_spawn": true,
+        "ready_build_matched": true,
+        "no_closed_metric_fd_adoption": true
+      }
+    },
+    {
+      "name": "actual_cli_application_argv_oracle_protocol_prefix_removed_data_suffix_preserved",
+      "passed": true,
+      "observations": {
+        "argv_count": 10,
+        "metric_order_variants": 2,
+        "exact_stdout_matched": true,
+        "no_rate_baseline_claim": true
+      }
+    },
+    {
+      "name": "malformed_project_zee_ayar_rejected_before_source_control_or_admission",
+      "passed": true,
+      "observations": {
+        "exit": 2,
+        "stdout_bytes": 0,
+        "control_bytes": 0,
+        "private_config_or_source_canary_leaked": false,
+        "app_source_executed": false
+      }
+    }
+  ],
+  "reproducer_hashes": {
+    "ana.dil": "c1dccc52f25ee7c9fecc8a8dba2e6b214684945dc6e2523f32c31f868f409ba9",
+    "proje.dil": "ff31d1abf1fa76501025cc667efd126aae84acdfabe83ee8263d2defcb645038"
+  },
+  "integration_sources": {
+    "scripts/native-listener-host.py": "8e1cda6dec7ba15c851d444509eea6b846edca9a6ad87592ca5d39b7e23287f4",
+    "scripts/tests/fixtures/native-listener/leader-native-fixture.py": "5e59bf2df038f9e7afa0793f863fb23f2dcd2995581dbd111705d6adf8825926",
+    "scripts/worker-supervisor.py": "560bec4e4e36d2aa856936d9d32412bb9106b61b25a871495287e2287e3c6642",
+    "scripts/native-capabilities.py": "0a336d915e6618b7bc9134598337c0e442a7d455008fa937a0e49771fe7d94fc",
+    "scripts/tests/native-listener-test.py": "4c6045865c1d2d1f2dc883a1e47d3e0ab14393ef536d85f1f338d8fe7fdc9943"
+  },
+  "fixture_hashes": {
+    "ana.dil": "78c1fd9fbdde8ff8f20962fd11d945398659242bf328b50466e37f18030438dc",
+    "proje.dil": "1bffc28be4f1cf1362c905d4821ff58e4694c94950696376284e6ea8133bea96"
+  },
+  "metrics_composition_required": true,
+  "owned_workers_closed": true
+}

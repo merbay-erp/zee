@@ -1,0 +1,84 @@
+{
+  "status": "EXPORT_REJECTED_VALIDATED_RC_ACCEPTANCE_INCOMPLETE",
+  "source_sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+  "original_producer_session": 43670,
+  "producer_exit": 0,
+  "producer_reported_result": "passed-local-technical-campaign",
+  "producer_report_sha256": "0d30ae565a552d3e5b39eac8c5db0856e70986705779ae18b0d7ea1bb92d645b",
+  "export_exit": 2,
+  "export_stderr_sha256": "e6cde236c769288c19b422b458afd00f82060fdc3ed6c1355fb78a19251803a6",
+  "verifier_reason": "duration argv/wall differs",
+  "verifier_source": "scripts/rc-kaniti.py::validate line251",
+  "fields": [
+    {
+      "target": "lexer_parser",
+      "requested_seconds": 1800,
+      "raw_libFuzzer_reported_seconds": 1801,
+      "producer_command_monotonic_elapsed_seconds": 1803.48,
+      "duration_relation_valid": true,
+      "executions": 6150398,
+      "log_sha256": "8e20332b232a20ac06a7c360ce422cfbb6ef4ddc016ced9e0559dea1e723eeb1",
+      "result_sha256": "a7361a18967bb835240a728fa9cc9fe2d964d956710102fd12443232f4dfeb12",
+      "producer_stats_passed": true
+    },
+    {
+      "target": "morfoloji",
+      "requested_seconds": 1800,
+      "raw_libFuzzer_reported_seconds": 1801,
+      "producer_command_monotonic_elapsed_seconds": 1804.413,
+      "duration_relation_valid": true,
+      "executions": 7795858,
+      "log_sha256": "f5d7da4d9e4071b0f33d16e9403f719701823dea7b1792f91887c64ff38b48ec",
+      "result_sha256": "c6cdd05752c2623a0a4e562142642cefa1ea291348c88bdb633eab4c6ad2e51d",
+      "producer_stats_passed": true
+    },
+    {
+      "target": "http_istegi",
+      "requested_seconds": 1800,
+      "raw_libFuzzer_reported_seconds": 1921,
+      "producer_command_monotonic_elapsed_seconds": 702.404,
+      "duration_relation_valid": false,
+      "executions": 4137756,
+      "log_sha256": "fbab9d2b0c6ed3e85b9b11eecbf77579361b33560e8549f4f25e4ea2a9517a9c",
+      "result_sha256": "4007a6b0f4909402d169fe81a71acb5da890d59526a5ccd9920d59b14af36f3c",
+      "producer_stats_passed": true
+    },
+    {
+      "target": "wasm_abi",
+      "requested_seconds": 1800,
+      "raw_libFuzzer_reported_seconds": 1914,
+      "producer_command_monotonic_elapsed_seconds": 695.844,
+      "duration_relation_valid": false,
+      "executions": 3573942,
+      "log_sha256": "5d3c0d6572fc7f3421cfc7d200df33246fa816bec2054ec5be41c512f3e7e155",
+      "result_sha256": "faae5a6ade53d84e860bf93e705f9785d0fb134b5df89a4aa579397b698a8ab1",
+      "producer_stats_passed": true
+    }
+  ],
+  "Miri_actual_groups": [
+    {
+      "name": "miri-ondalik",
+      "actual_tests": 2,
+      "elapsed_seconds": 53.101,
+      "passed": true
+    },
+    {
+      "name": "miri-zaman",
+      "actual_tests": 1,
+      "elapsed_seconds": 5.141,
+      "passed": true
+    }
+  ],
+  "source_end": {
+    "sha": "8b49113c413f62b35d4b251ed31068524d2fe26c",
+    "tree": "09fa6e764bb317b4aa5b32b6ca15ce02f4cf389d",
+    "clean": true
+  },
+  "bundle_created": false,
+  "security_RC_gate_started": false,
+  "cause": "Hostsleep/CUA interval clockdomain effect suspected only; no causal attribution established bycurrentrawmetadata",
+  "raw_evidence_mutated": false,
+  "source_mutated": false,
+  "replacement_or_rerun_started": false,
+  "next": "rootexplicitrecoverydecision required; do not editrawelapsed/manifests/producer or claimcompleteactual1800s basedontextalone"
+}
