@@ -9,6 +9,8 @@ import os
 from pathlib import Path
 import re
 import signal
+import shutil
+import stat
 import socket
 import ssl
 import struct
@@ -31,6 +33,8 @@ M.directory(a.output.parent);a.output.mkdir(mode=0o700)
 roles=['scripts/starter-content-host.py','scripts/starter-content-reconcile.py','scripts/icerik-paneli-olustur.py','scripts/tests/starter-content-test.py','scripts/tests/starter-content-native.py','scripts/lifecycle_core.py','scripts/postgresql-tls-ci.py','scripts/postgresql-tls11-control.py','sablonlar/icerik-paneli/ana.dil','sablonlar/icerik-paneli/alan.dil','sablonlar/icerik-paneli/proje.dil','sablonlar/icerik-paneli/gocler/0001_content.sql','sablonlar/icerik-paneli/.gitignore','docs/versioned/0.8/icerik-paneli.md']
 pins={n:M.sha(M.bounded(R/n,262144)) for n in roles}
 TLS=load('owned_pg',R/'scripts/postgresql-tls-ci.py')
+PG=load('starter_native_pg_owner',R/'scripts/tests/native-pg-owner.py')
+roles.append('scripts/tests/native-pg-owner.py');pins[roles[-1]]=M.sha(M.bounded(R/roles[-1],262144))
 start=time.monotonic();deadline=start+600;cleaning=False;original_run=H['run'];raw=[];cleanup=[];host=None;private=None;command_counter=0
 proof={'schema':'zee-content-starter-native-tests-1','status':'running','mode':'candidate' if a.candidate else 'clean-exact','cases':[],'source_files':[{'path':n,'sha256':v} for n,v in pins.items()]}
 def bounded_run(argv,**kwargs):
@@ -44,7 +48,19 @@ def command(argv,**kwargs):
     command_counter+=1
     sensitive_output=kwargs.pop('sensitive_output',False)
     if not sensitive_output:kwargs['log_path']=a.output/f'command-{command_counter:03d}.log'
-    out=H['run'](argv,timeout=kwargs.pop('timeout',30),limit=1048576,**kwargs)
+    try:
+        out=H['run'](argv,timeout=kwargs.pop('timeout',30),limit=1048576,**kwargs)
+    finally:
+        primary=sys.exc_info()[1]
+        if not sensitive_output:
+            try:
+                path=kwargs['log_path']
+                assert path.is_file(),'safe public command log missing'
+                payload=M.bounded(path,1048576)
+                proof.setdefault('command_logs',[]).append({'name':path.name,'sha256':M.sha(payload),'bytes':len(payload)})
+            except BaseException as error:
+                proof.setdefault('command_log_export_errors',[]).append(type(error).__name__)
+                if primary is None:raise
     # Never retain PHC/credential command output or request/cookie data.
     if not sensitive_output:raw.append({'tool':Path(str(argv[0])).name,'stdout_sha256':M.sha(out),'bytes':len(out)})
     return out
@@ -52,16 +68,125 @@ TLS.run=lambda argv,**kw:command(argv,**kw).decode()
 def record(name):
     proof['cases'].append({'name':name,'passed':True});(a.output/'progress.json').write_text(json.dumps({'status':'running','cases':proof['cases']},indent=2)+'\n')
 def pg_pin():return {n:M.sha(M.bounded(a.postgres_bin_dir/n,134217728)) for n in ['postgres','initdb','pg_ctl','psql']}
-pgpins=None
+pgpins=None;cluster=None;work=None;work_identity=None;oldsignals={}
+campaign_cancelled=False;campaign_deadline=deadline;campaign_started=start;cleanup_limit=None
+def cancel(*_):
+    global campaign_cancelled
+    campaign_cancelled=True
+    if not cleaning:H['CANCELLED']=True
+
+def cleanup_end():
+    global cleanup_limit
+    if cleanup_limit is None:cleanup_limit=time.monotonic()+90
+    return cleanup_limit
+
 
 def image():
     def chunk(name,data):return struct.pack('!I',len(data))+name+data+struct.pack('!I',zlib.crc32(name+data)&0xffffffff)
     return b'\x89PNG\r\n\x1a\n'+chunk(b'IHDR',struct.pack('!IIBBBBB',2,1,8,6,0,0,0))+chunk(b'IDAT',zlib.compress(b'\0\xff\0\0\xff\0\xff\0\xff'))+chunk(b'IEND',b'')
 
-def main():
-    global host,private,cleaning,pgpins
-    old={sig:signal.signal(sig,lambda *_:H.__setitem__('CANCELLED',True)) for sig in [signal.SIGTERM,signal.SIGINT]}
+class PrimaryExitStack(contextlib.ExitStack):
+    """Run every registered cleanup, preserving an earlier body exception."""
+    def __exit__(self, kind, value, traceback):
+        try:return super().__exit__(kind,value,traceback)
+        except BaseException:
+            if value is not None:raise value.with_traceback(traceback)
+            raise
+
+class StarterPgCampaign:
+    """Only the foreground owner's fixture protocol; no manager or unit actions."""
+    def __init__(self, directory):
+        self.out = a.output
+        self.deadline = campaign_deadline
+        self._cleanup_deadline = None
+        self.clusters = []
+        info = directory.stat()
+        self.tempdirs = [(directory, (info.st_dev, info.st_ino))]
+        self.proof = proof
+        self.pg_pins = {str(a.postgres_bin_dir / name): value for name, value in pgpins.items()}
+
+    @property
+    def stopped(self):
+        return campaign_cancelled or H['CANCELLED']
+
+    @property
+    def cleaning(self):
+        return cleaning
+
+    @property
+    def cleanup_deadline(self):
+        if cleaning and self._cleanup_deadline is None:
+            self._cleanup_deadline = cleanup_end()
+        return self._cleanup_deadline
+
+    def need(self, value):
+        end = self.cleanup_deadline if cleaning else self.deadline
+        if (not value or (not cleaning and self.stopped)
+                or time.monotonic() >= end):
+            raise ValueError('owned starter PostgreSQL fixture rejected')
+
+    def command(self, label, argv, budget=25, env=None):
+        self.need(True)
+        end = self.cleanup_deadline if cleaning else self.deadline
+        result = H['run'](argv, timeout=min(budget, 30, max(.001, end-time.monotonic())),
+                          limit=65536, env=env)
+        raw.append({'tool': str(Path(str(argv[0])).name),
+                    'stdout_sha256': M.sha(result), 'bytes': len(result)})
+        self.need(True)
+        return result
+
+def publish_proof():
+    # Cleanup may mask the command helper flag; the campaign ledger never resets.
+    primary_error=sys.exc_info()[1]
+    def verdict():
+        cancelled=campaign_cancelled or H['CANCELLED']
+        expired=time.monotonic()>=campaign_deadline
+        removed=work is not None and not work.exists()
+        proof.update(elapsed_seconds=time.monotonic()-campaign_started,cleanup=cleanup,
+                     private_root_removed=removed,cancelled=cancelled,deadline_expired=expired)
+        if cancelled or expired or not removed or cleanup!=['owned-front-and-native-closed','owned-pg-closed'] or not proof.get('front_terminal',{}).get('reaped',False) or proof.get('command_log_export_errors'):
+            proof['status']='failed'
+    def write_proof():
+        (a.output/'proof.json').write_text(json.dumps(proof,indent=2,ensure_ascii=False)+'\n')
+    def write_failed():
+        nonlocal primary_error
+        proof['status']='failed'
+        try:write_proof()
+        except BaseException as error:
+            proof.setdefault('failed_proof_write_errors',[]).append(type(error).__name__)
+            if primary_error is None:primary_error=error
     try:
+        verdict()
+        (a.output/'raw-metadata.json').write_text(json.dumps(raw,indent=2,ensure_ascii=False)+'\n')
+        verdict();write_proof();verdict()
+        if proof['status']!='passed':write_failed()
+    except BaseException as error:
+        proof.update(status='failed',publication_failure=type(error).__name__)
+        if primary_error is None:primary_error=error
+        write_failed()
+    finally:
+        # All successful-result writes finish while campaign handlers are active.
+        errors=[]
+        for sig,handler in oldsignals.items():
+            try:signal.signal(sig,handler)
+            except BaseException as error:
+                errors.append(type(error).__name__)
+                if primary_error is None:primary_error=error
+        if errors:proof.update(status='failed',handler_restore_errors=errors)
+    try:verdict()
+    except BaseException as error:
+        proof.update(status='failed',finalization_failure=type(error).__name__)
+        if primary_error is None:primary_error=error
+    # After restoration only a failed diagnostic may be written, never PASS.
+    if proof['status']!='passed':write_failed()
+    if primary_error is not None:raise primary_error
+    if proof['status']!='passed':raise ValueError('owned starter native acceptance failed')
+
+def main():
+    global host,private,cleaning,pgpins,cluster,work,work_identity
+    try:
+        for sig in [signal.SIGTERM,signal.SIGINT]:oldsignals[sig]=signal.signal(sig,cancel)
+        assert not campaign_cancelled and not H['CANCELLED']
         pgpins=pg_pin();proof['postgres_pins']=pgpins
         assert command(['git','-C',R,'rev-parse','HEAD']).decode().strip()==a.sha
         if not a.candidate:H['clean_exact'](R,a.sha)
@@ -69,20 +194,38 @@ def main():
         build=json.loads(command([a.dil,'sürüm','--json']));assert build['schema']=='zee-build-v1' and build['source_sha']==a.sha
         if not a.candidate:assert build['dirty'] is False
         proof.update(build=build,binary_sha256=a.binary_sha256,framework_head=a.sha)
-        with contextlib.ExitStack() as stack:
-            td=stack.enter_context(tempfile.TemporaryDirectory(prefix='zcs-',dir=Path('/tmp').resolve(strict=True)));private=Path(td).resolve();private.chmod(0o700)
+        with PrimaryExitStack() as stack:
+            work=Path(tempfile.mkdtemp(prefix='zcs-',dir=Path('/tmp').resolve(strict=True))).resolve(strict=True);private=work
+            PG.private_directory(work.lstat());info=work.lstat()
+            work_identity=(info.st_dev,info.st_ino,info.st_mode,info.st_uid,info.st_gid)
+            def close_work():
+                if host is not None or (cluster is not None and (not cluster.closed
+                        or (cluster.child is not None and cluster.child.returncode is None)
+                        or any(row['child'] is not None and row['child'].returncode is None for row in cluster.probes))):
+                    proof['temporary_private_root_preserved_after_uncertain_owner']=True
+                    raise ValueError('owned starter cleanup incomplete; private root retained')
+                current=work.lstat()
+                if work.resolve(strict=True)!=work or (current.st_dev,current.st_ino,current.st_mode,current.st_uid,current.st_gid)!=work_identity:
+                    proof['temporary_private_root_preserved_after_identity_change']=True
+                    raise ValueError('owned starter private root identity changed')
+                PG.private_directory(current)
+                if time.monotonic()>=cleanup_end():raise ValueError('owned starter cleanup deadline')
+                shutil.rmtree(work);assert not work.exists(),'owned starter private root remains'
+            stack.callback(close_work)
             directory=private/'pg';directory.mkdir(mode=0o700);ca,wrong,cert,key=TLS.certificates(directory)
             (directory/'pg_hba.conf').write_text('local all all trust\nhostssl all all 127.0.0.1/32 trust\nhostnossl all all 0.0.0.0/0 reject\n')
-            cluster=TLS.LocalCluster(directory,cert,key,a.postgres_bin_dir)
+            pg_campaign=StarterPgCampaign(directory)
+            cluster=PG.OwnedLocalCluster(pg_campaign,directory,cert,key,a.postgres_bin_dir,H)
+            pg_campaign.clusters.append(cluster)
             def close_pg():
                 global cleaning
-                cleaning=True;cancelled=H['CANCELLED'];H['CANCELLED']=False
-                handlers={sig:signal.signal(sig,lambda *_:None) for sig in [signal.SIGTERM,signal.SIGINT]}
-                try:cluster.close();cleanup.append('owned-pg-closed')
+                previous_cleaning=cleaning;cleaning=True
+                cancelled=H['CANCELLED'];H['CANCELLED']=False
+                try:cleanup_end();cluster.close();cleanup.append('owned-pg-closed')
+                except BaseException:cleanup.append('owned-pg-cleanup-failed');raise
                 finally:
-                    if (directory/'server.log').is_file():(a.output/'postgres.log').write_bytes(M.bounded(directory/'server.log',1048576))
-                    H['CANCELLED']=cancelled
-                    for sig,h in handlers.items():signal.signal(sig,h)
+                    cleaning=previous_cleaning
+                    H['CANCELLED']=cancelled or campaign_cancelled or H['CANCELLED']
             stack.callback(close_pg);cluster.start();assert cluster.version=='postgres (PostgreSQL) 16.15'
             def observer(sql):
                 out=command(cluster.psql+['--no-psqlrc','--dbname',f'host=127.0.0.1 port={cluster.port} dbname=postgres user=postgres sslmode=require','--no-align','--tuples-only','--set','ON_ERROR_STOP=1','--command','BEGIN READ ONLY; '+sql+'; COMMIT;'])
@@ -131,11 +274,21 @@ def main():
                     return status,content,cookies
                 host=H['subprocess'].Popen(argv,stdin=H['subprocess'].DEVNULL,stdout=H['subprocess'].DEVNULL,stderr=H['subprocess'].PIPE,start_new_session=True,close_fds=True)
                 def stop_host():
-                    global host
+                    global host,cleaning
                     if host is not None:
-                        result=H['stop_owned'](host,grace=8);error=host.stderr.read(4096);host.stderr.close();host=None
-                        proof['front_terminal']={'exit':result,'stderr_bytes':len(error),'stderr_sha256':M.sha(error)}
-                        assert result==0 and not error;cleanup.append('owned-front-and-native-closed')
+                        previous_cleaning=cleaning;cleaning=True
+                        cancelled=H['CANCELLED'];H['CANCELLED']=False
+                        try:
+                            end=cleanup_end();assert time.monotonic()<end,'owned starter cleanup deadline'
+                            result=H['stop_owned'](host,grace=min(8,end-time.monotonic()))
+                            error=host.stderr.read(4096);host.stderr.close()
+                            proof['front_terminal']={'exit':result,'observed_exit':result,'reaped':host.returncode is not None,'stderr_bytes':len(error),'stderr_sha256':M.sha(error)}
+                            assert result==0 and not error
+                            assert host.returncode==0
+                            host=None;cleanup.append('owned-front-and-native-closed')
+                        finally:
+                            cleaning=previous_cleaning
+                            H['CANCELLED']=cancelled or campaign_cancelled or H['CANCELLED']
                 stack.callback(stop_host)
                 ready=time.monotonic()+15
                 while True:
@@ -196,11 +349,9 @@ def main():
             assert pg_pin()==pgpins and M.sha(M.bounded(a.dil,134217728))==a.binary_sha256 and json.loads(command([a.dil,'sürüm','--json']))==build
             assert command(['git','-C',R,'rev-parse','HEAD']).decode().strip()==a.sha
             if not a.candidate:H['clean_exact'](R,a.sha)
-            proof.update(status='passed',case_count=len(proof['cases']),failed=0,source_end_unchanged=True,binary_end_unchanged=True)
+        proof.update(status='passed',case_count=len(proof['cases']),failed=0,source_end_unchanged=True,binary_end_unchanged=True)
     except BaseException as error:
         proof.update(status='failed',failure_type=type(error).__name__);raise
     finally:
-        for sig,h in old.items():signal.signal(sig,h)
-        proof.update(cleanup=cleanup,elapsed_seconds=time.monotonic()-start,private_root_removed=private is not None and not private.exists())
-        (a.output/'raw-metadata.json').write_text(json.dumps(raw,indent=2)+'\n');(a.output/'proof.json').write_text(json.dumps(proof,indent=2)+'\n')
+        publish_proof()
 if __name__=='__main__':main()
