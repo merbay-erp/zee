@@ -1,8 +1,8 @@
 # ADR-129 — Owned native web test kiti (K-271/P22)
 
-- **Durum:** kabul; temiz S normal Cargo+dedicated ownedwebPG4 kabulü; fullP22/ürün/platform açık
+- **Durum:** kabul; temiz S kanıtı tarihsel; K-304/GB-113 kaynak hazırlığı ve yeni temiz native4 kabulü açık; fullP22/ürün/platform açık
 - **Tarih:** 15 Ekim 2026
-- **İlgili:** ADR-118/125/127; GB-087
+- **İlgili:** ADR-118/125/127/144; GB-087; K-304/GB-113
 
 P22/C5 mevcut internal Rust ToplayanIo testlerinden geliştiricinin gerçek CLI/HTTP projesine taşınabilen dar test-kit eksikliğidir. JSON scenario native subprocess, named private cookie jar, gerçek HTML CSRF capture, exact public body snapshot ve named SQL observer tanımlar. Yeni grammar/compiler/api::v1 HTTP injection açılmaz. ToplayanIo supported public facade değildir. Python/Rust scenario başarılarından Zee source/branch coverage çıkarılmaz.
 
@@ -23,3 +23,26 @@ Bağımsız ilk aday incelemesi suite hashinin sınırlı JSON okumasından önc
 S common explicitignored ownedwebPG4 actual freshcluster/nativeHTTP ile geçti. Bağımsız readonly observer committed1,actionrollback0,freshcase0 ayrımını korur; fixture/helper/binary begin/end ve ownedcleanup recorded. Bu sourcebranchcoverage/publicHTTPinject/genericrollback/realproduct/P08/platform kabulü değildir.
 
 [Güncel dar S raporu](../docs/urunlesme-final-kabul-20261015.md).
+
+## K-304 — Finalizasyonda gözlenen iptal ve süre aşımı
+
+GB-113 düşük önemle açıktır. K-304 kaynak hazırlığı, son vaka başarısını
+cleanup bekleyen ara durum olarak tutar; geçici dizin ve command-owner
+kapanışından sonra iptal/deadline yeniden denetlenir. Proof yazımı sırasında
+gözlenen iptal veya süre aşımı başarısız makbuz ve nonzero sonuçta korunur.
+Süreç çıktıktan sonra teslim edilen sinyal için gözlem garantisi verilmez.
+
+Kontrollü karşı örnek dört finalizasyon noktası × iki durumdan oluşur: geçici
+dizin çıkışı, command-owner cleanup, proof yazımı ve son need kontrolü; cancel
+flag veya deadline.
+Gerçek main gövdesi, sahte Kit ve özel geçici dosyalarla yürütülür; PG/Zee/HTTP
+süreci başlamaz ve gerçek OS sinyal teslimi ölçülmez. Eski kaynak altı karşı
+örnekte yanlış passed üretti; ilk öneride son need için iki ek karşı örnek
+bulundu. V2 sekiz olumsuz alt vakayı ve normal kontrolü iki metot altında geçti.
+Bu dar mock kanıtı, normal hazırlık grubunun veya yeni native4 kabulünün yerine
+geçmez; bunların tamamı ve kaynak/belge kapıları henüz bekleniyor.
+
+Python hazırlığı 20→22 olur; iki mevcut Cargo sahibinin adı ve birincil fazı
+değişmez. GB-113 ancak yeni kaynakta hazırlık, kapılar ve temiz exact native4
+kabulü tamamlanınca kapatılır. Gömülü kiti kullanan ADR-144 köprüsünün yeni
+kaynak kabulü ayrıca değerlendirilir; tarihsel S/S3 kanıtı taşınmaz.

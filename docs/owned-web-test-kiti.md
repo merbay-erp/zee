@@ -105,9 +105,11 @@ TERM/KILL/reap edilir. Cleanup hatası passed makbuz bırakamaz.
 `proof.json` status/case/step/fixed failure type+reason, kaynak/ikili/hash kimliği,
 owned cleanup ve DB sayısal gözlemlerini taşır. Raw body, stderr, parola/PHC,
 Cookie/CSRF ve DSN yazılmaz. Yanlış snapshot, yetkisiz bootstrap ve gerçek SIGTERM
-kısa negatifleri ayrı kanıttır.20 hazırlık testinin TCP/process yardımcıları native
-Zee kabulü veya source coverage sayılmaz. İki Cargo vaka önerilmiştir: normal
-hazırlık20 ve explicit `ZEE_OWNED_WEB_KIT_PG_BIN` isteyen ignored gerçek4 kampanya.
+kısa negatifleri ayrı kanıttır. K-304 ile Python hazırlığı 20→22 olarak
+genişletilir; ek iki metot kontrollü finalizasyon karşı örnekleridir. Hazırlık
+TCP/process yardımcıları native Zee kabulü veya source coverage sayılmaz.
+İki mevcut Cargo sahibi korunur: normal hazırlık ve explicit
+`ZEE_OWNED_WEB_KIT_PG_BIN` isteyen ignored gerçek4 kampanya.
 Windows'ta native vaka manuel zorlanırsa dürüstçe reddeder; fiziksel Windows/minOS
 kabulü ileri sürülmez. [ADR-129](../adr/129-owned-native-web-test-kiti.md)/GB-087
 aynı atomik entegrasyonda bağlanmalıdır.
@@ -116,10 +118,32 @@ aynı atomik entegrasyonda bağlanmalıdır.
 
 S common içindeki dört gerçek native HTTP+fresh PostgreSQL vakası kabul edildi. [Son rapor](urunlesme-final-kabul-20261015.md) readonly observer ile COMMIT1/actionrollback0/freshcase0 ayrımını ve owned cleanup sınırını kaydeder. Source branch coverage ve gerçek ürün/P08 ayrıca açıktır.
 
-## K-304 — Açık finalization doğruluğu
+## K-304 — Kaynak hazırlığı; yeni native kabul açık
 
-GB-113 düşük önemle açıktır: son başarı atamasından sonraki geçici dizin
-kapanışı, final cleanup ve proof yazımı sırasında iptal/deadline guardı
-eksiktir. Tarihsel native sonuçların kapsamı korunur; güncel kaynak için
-geç iptal davranışı düzeltilip olumlu/olumsuz test ve yeni native kabul
-yapılmadan bu sınır kapalı gösterilmez.
+GB-113 düşük önemle açık kalır. Kaynak hazırlığı son vaka başarısını cleanup
+bekleyen ara durum olarak tutar; geçici dizin çıkışı ve command-owner cleanup
+sonrasında, proof yazımında ve son need kontrolünde gözlenen iptal/deadline sonucu `failed`
+makbuza ve nonzero çıkışa taşınır. Süreç çıktıktan sonraki sinyal için gözlem
+iddiası yoktur. HTTP/PG algoritması ve Supervisor sahipliği değişmez.
+
+Dört nokta × cancel/deadline karşı örnekleri gerçek main gövdesini sahte Kit ile
+çalıştırdı: eski kaynak altı alt senaryoda, ilk öneri son need kontrolünde
+iki ek alt senaryoda yanlış passed verdi. V2 sekiz olumsuz alt vaka ve normal
+kontrolü iki metot altında geçti. Popen/socket/connection çağrılmadığı ve özel
+geçici dizinin temizlendiği doğrulandı. Bu kontrollü mock, gerçek OS sinyal
+kabulü veya PG/Zee/HTTP çalışması değildir. Tüm 22 hazırlık metodu, mevcut
+normal Cargo sahibi, kaynak/belge/faz kapıları ve temiz exact native4 yeniden
+kabulü henüz bekleniyor. Yeni kaynak SHA'sı veya native başarı uydurulmaz.
+
+Faz fixture'ında yalnız hazırlık açıklaması güncellenir; owner/ek kapsam
+ilişkisi korunur ve iki Python metodu Cargo toplamına eklenmez. GB-113 kapanışı
+bu hazırlıkla yapılmaz. [Ortak rapor](urunlesme-k298-kabul-20261016.md) actual
+kaynak ve sonuçları; [ADR-129](../adr/129-owned-native-web-test-kiti.md) sınırı taşır.
+
+Etki incelemesi: yeni normatif grammar/spec/RFC, kullanıcı tanısı, public API,
+production Rust modülü/katman/bağımlılık veya sürüm artefaktı sözleşmesi yoktur.
+Yeni ADR yerine ADR-129 revize edilir; gömülü kit nedeniyle ADR-144 ve `dene`
+rehberi ayrı kabul taşımama notu alır. Test-kiti finalizasyonu sabit performans
+workload'unu, compiler/LSP kalıcı durumunu veya RSS davranışını değiştirmez;
+performans/soak tarihçesi yenilenmez. Önceki RC/soak/IDE ve S/S3 native kanıtı
+kendi exact kaynaklarında kalır. P22/P36 ve gerçek ürün/platform kapsamı açıktır.
