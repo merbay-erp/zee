@@ -34,3 +34,9 @@ development-channel precondition eksikliği ve eski hashleri dış kanıtta koru
 ## S3 kanıtı
 
 [İkinci dalga exact S3 kabulü](../docs/urunlesme-s3-kabul-20261015.md) bu kararla ilgili actual kohortu ve açık sınırları kaydeder. C1/P33 retleri ve ürün/insan/platform kapıları bu bağlantıyla kapanmaz.
+
+## K-306 — kabul koşucusu hazırlığı
+
+K-306 / GB-115 açık. İki Linux native kabul koşucusunda canonical repo kökü, ilk çocuk sorgusundan önce flag-only sinyal handler kurulumu, yapışkan iptal sonucu ve kısmi setup/cleanup sahipliği düzeltildi; foreground PG özgün Popen adaptörü yalnız bu iki test tüketicisine bağlandı. Üretim servis davranışı, compiler/API/grammar ve mevcut dispatcher4/HTTP7 oracle’ları değiştirilmiyor.
+
+Kontrollü Campaign sınıf modellerinde aynı 16 yöntem eski kaynakta 13 assertion failure/0 error, adayda 0 failure/0 error üretti; her iki ham günlük ve özgün dış owner exit0/reaped doğrulandı. Gerçek çocuk, OS sinyali, Linux, PostgreSQL veya systemd kabulü değildir. Birleşik kaynakta Campaign16 ve foreground PG18 yöntemi/31 kontrollü senaryo (29 davranış/iki statik kontrol) geçti; yeni Cargo sahibi eklenmedi. Tam kaynak/faz kapıları, yeni temiz exact kaynakta gerçek Linux4+7 ve son belge/güvenlik kapıları geçmeden GB-115 kapanmaz. Tarihsel S3 kabulü kendi kaynağında kalır; ürün/provider/platform kapsamı genişlemez. [Güncel hazırlık sınırı](../docs/http-service.md).

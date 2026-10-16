@@ -2059,3 +2059,9 @@ aktarılmaz. Unit/worker kapsamları birleştirilmez. P22/P36 ve ürün/platform
 kısmi kalır; C1/P33 reddi korunur.
 [Rehber](dene-native-web-koprusu.md), [karar](../adr/144-dene-native-web-test-koprusu.md),
 [ortak rapor](urunlesme-k298-kabul-20261016.md).
+
+## K-306 — Linux kabul koşucusu; açık
+
+Canonical Rust kökü, Campaign erken handler/iptal-latch/kısmi cleanup ve yalnız iki test tüketicisi için foreground PG özgün süreç sahipliği birleşik kaynakta hazırdır. Kontrollü Campaign sınıf modellerinde aynı 16 yöntem eski kaynakta 13 assertion failure/0 error, adayda 0 failure/0 error üretti; her iki ham günlük ve özgün dış owner exit0/reaped doğrulandı. Gerçek çocuk, OS sinyali, Linux, PostgreSQL veya systemd kabulü değildir.
+
+İmzalı manifestten altı araç zinciri payload’ı indirildi ve özetleri doğrulandı; public aktarım da 183 crate/178 sparse kayıt ve Rust girdileriyle 191.482.195 bayt olarak geçti. Guest kurulumu, tam kaynak kapıları ve temiz Linux dispatcher4/HTTP7 henüz açık. Birleşik kaynakta Campaign16 ve foreground PG18 yöntemi/31 senaryo (29 davranış ve iki tüketici için iki statik oracle kontrolü) 0 failure/0 error/0 skipped ile geçti; özgün dış owner exit0/reaped. Bu kontrollü sınıf modelleri gerçek PostgreSQL/Linux/sinyal kabulü değildir. `E/k306-combined-models-1/PROOF.json` SHA-256 `f249dafb4fb00021a5f9e2c1864ce68c5486c89f5a0ef61a03a08471587e3d91`; outer `d3613083eaf4bcc2c287cc8033aab6d7b82842e0e9872d089e13343356891540`. GB-115 düşük/açık; P09/P13/P36 kısmi, P37 sürekli kalır. B-001/B-002 dış girdileri ve core freeze korunur; yeni compiler özelliği açılmaz. K-305 son11/temiz C11 kapanışı korunur. [Dispatcher](dispatcher-service.md), [HTTP](http-service.md), [ortak rapor](urunlesme-k298-kabul-20261016.md).

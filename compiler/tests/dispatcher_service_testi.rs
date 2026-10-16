@@ -2,7 +2,10 @@ use std::path::PathBuf;
 use std::process::Command;
 
 fn root() -> PathBuf {
-    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("..")
+    PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("..")
+        .canonicalize()
+        .expect("canonical repository root")
 }
 
 #[test]
@@ -14,6 +17,19 @@ fn dispatcher_service_hazirlik() {
         .status()
         .expect("Python preparation runner");
     assert!(status.success());
+    for script in [
+        "service-native-campaign-preflight-test.py",
+        "service-native-pg-preflight-test.py",
+    ] {
+        let status = Command::new("python3")
+            .args(["-I", "-B"])
+            .arg(root().join("scripts/tests").join(script))
+            .arg("--target")
+            .arg(root().join("scripts/tests/service-native-support.py"))
+            .status()
+            .expect("controlled service ownership preparation");
+        assert!(status.success());
+    }
 }
 
 #[test]
