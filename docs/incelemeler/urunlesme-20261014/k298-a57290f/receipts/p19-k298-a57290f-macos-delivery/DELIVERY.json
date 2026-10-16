@@ -1,0 +1,82 @@
+{
+  "schema": "zee-local-owned-delivery-1",
+  "source_sha": "a57290f7a1c1fad07cda3f266b2a221f09aa6404",
+  "signed": false,
+  "published": false,
+  "status": "passed",
+  "source_helpers": {
+    "scripts/surum-artefakti.sh": "8a93e67c4285e182a056a59895d04a28aea7d0019cb2df023d7e64131dbbcbe6",
+    "scripts/temiz-kaynak-arsivi.sh": "268a7e0b2541224b2d85216d2ce14481976011ab4f275b90ceb4739abc45558f",
+    "scripts/kaynak-ci-esleme.py": "d9d7ef6031da841d0fa87515de7ceb90cda14f3d253b691041fba35c149a8058",
+    "scripts/rust-arac-zinciri.sh": "b634e533a312fa81f2e0cdadd5082def6ff6dff8d4b434d452d651e320a6f478",
+    "compiler/rust-toolchain.toml": "3260f10937490e272267a11d1bca85ee76b0ef972022ab8fba8a1df0dbb3b397"
+  },
+  "build_identity": {
+    "schema": "zee-build-v1",
+    "version": "0.8.0-dev",
+    "source_sha": "a57290f7a1c1fad07cda3f266b2a221f09aa6404",
+    "source_date": "2026-10-15",
+    "channel": "development",
+    "dirty": false
+  },
+  "binary_sha256": {
+    "dil": "c597b9c1d0ec11e59ab0b3cc4701f1e21a37bcec67b37d4d52f983ddf69d56e2",
+    "dillsp": "fc4391569ed45bccc11cb424f1aeb7abaea7133170d8d55f1df95420360302f1"
+  },
+  "source_zip_sha256": "73600ab278daf276702c67b97b6b48060936e8bf286783cd3c2db0a1c9bda114",
+  "two_source_zip_equal": true,
+  "bundle_head": "a57290f7a1c1fad07cda3f266b2a221f09aa6404",
+  "bundle_branch": "codex/local-deliverable-a57290f7a1c1",
+  "bundle_sha256": "1054641655a3b7e971e6e90987e754ea97fe8f8520118d512ee9ca254fed80ad",
+  "restoration_fsck": true,
+  "files": [
+    {
+      "path": "binaries/GIT_SHA",
+      "sha256": "d6fc6b0c6f41ff991dcdcb3f818366b31efb2e84e5cdf55953e39c2fdaca2f9d"
+    },
+    {
+      "path": "binaries/SHA256SUMS",
+      "sha256": "03b8dd1d63342219539304f20144cc5a5b442464612e109d5dbaf1782ace5643"
+    },
+    {
+      "path": "binaries/dil",
+      "sha256": "c597b9c1d0ec11e59ab0b3cc4701f1e21a37bcec67b37d4d52f983ddf69d56e2"
+    },
+    {
+      "path": "binaries/dillsp",
+      "sha256": "fc4391569ed45bccc11cb424f1aeb7abaea7133170d8d55f1df95420360302f1"
+    },
+    {
+      "path": "binaries/provenance.intoto.json",
+      "sha256": "85c516ab72377f5ecc5a6adb6142dce801c5eb54648e21d7fee9a76c7885b68f"
+    },
+    {
+      "path": "binaries/sbom.spdx.json",
+      "sha256": "810f913537e8fe4a0c48219697483d2db31acbc8918d751a83e1f863c9f772a6"
+    },
+    {
+      "path": "build.log",
+      "sha256": "ed7aee01c2a8ee5cf0af778b9b2fe598e2a4a6f7edf17a6e11bfacba579c73c5"
+    },
+    {
+      "path": "bundle-verify.log",
+      "sha256": "8958b29f6e3fa364fd4fb76cf5f8931607d8a36687546c31bd0e20d0ee0d5636"
+    },
+    {
+      "path": "fsck.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zee-kaynak-a57290f7a1c1fad07cda3f266b2a221f09aa6404.zip",
+      "sha256": "73600ab278daf276702c67b97b6b48060936e8bf286783cd3c2db0a1c9bda114"
+    },
+    {
+      "path": "zee-kaynak-a57290f7a1c1fad07cda3f266b2a221f09aa6404.zip.sha256",
+      "sha256": "fe2269ae15303adeef2bdcca2e7a4f93c9e317fa18b41f4cc65dc35e18cb14bc"
+    },
+    {
+      "path": "zee.bundle",
+      "sha256": "1054641655a3b7e971e6e90987e754ea97fe8f8520118d512ee9ca254fed80ad"
+    }
+  ]
+}

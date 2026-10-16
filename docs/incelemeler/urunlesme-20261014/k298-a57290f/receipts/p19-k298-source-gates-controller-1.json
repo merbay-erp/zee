@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "python3",
+    "-I",
+    "-B",
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-drivers/source-gates.py"
+  ],
+  "started_ns": 1792107674246816000,
+  "status": "failed",
+  "minimum_free_bytes": 70665486336,
+  "required_free_bytes": 10737418240,
+  "observed_exit": 1,
+  "owned_group_closed_and_reaped": true,
+  "exit": 1,
+  "finished_ns": 1792108527095740000,
+  "elapsed_seconds": 852.861250041984
+}

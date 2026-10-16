@@ -62,7 +62,9 @@ korunur, private key baytları veya hashleri kanıta alınmaz. Yalnız başarıs
 çağrısının dış grace'i10 saniyedir; normal komut1 saniye kalır. Dış kampanya
 sahibi nested cleanup için ayrıca yeterli pay ayırır.
 
-İki yeni bounded stdlib vaka ile toplam9 geçti; bunlar gerçek Ed25519/PDF native9
-kabulü değildir. GB-111 düşük/açık/K-299; yeni exact native9 ve ortak kapılar
-beklenir. [Kayıt ve dosya/koşu hashleri](../docs/kabul-kosuculari-yasam-dongusu-20261016.md)
-bu bekleyişi ve ayrı service-fault dilimini taşır. S3 kanıtı eski kaynağında kalır.
+İki yeni bounded stdlib vaka ile toplam9 geçti. Kaynak `8178920e03fed782a817d1864b8280fcb80812a3`
+üzerindeki ayrı native kampanya: temiz C2 üzerinde 9/9 iç vaka ve bağımsız PDF içerik/sayfa/font/görsel incelemesi geçti. C2 öncesi gate4: 13 adım geçti; tam faz 998/1023 geçti, 0 başarısız, 25 atlanan
+GB-111: kapalı; toplu commit öncesi son belge kapısı gerekli; yalnız K-299 kabul koşucusu kapsamı.
+[Kayıt ve dosya/koşu hashleri](../docs/kabul-kosuculari-yasam-dongusu-20261016.md)
+stdlib9 ile gerçek native9 ayrımını, önceki başarısız kapıları ve bağımsız incelemeyi
+korur. S3 kanıtı eski kaynağında kalır; genel ürün/FFI/yayın kapsamı açık kalır.

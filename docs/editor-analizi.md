@@ -56,17 +56,27 @@ ayrımının olumlu/olumsuz kanıtıdır. İnceleme sonucu test çalıştırma v
 ## S4 kaynak kabulü
 
 [S4 ayrı kaynak kaydı](urunlesme-s4-kabul-20261015.md) `4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2`
-üzerindeki güncel yerel kanıtı ve açık sınırları gösterir. Önceki S3 sonuçları
+üzerindeki tarihsel yerel kanıtı ve açık sınırları gösterir. Önceki S3 sonuçları
 tarihsel kalır; genel ürün/platform/yayın veya tam P19 kabulü değildir.
 
-## K-298 — açık metin dizini bakımı (kabul bekliyor)
+## K-298 — açık metin dizini ve yerel gözlem
 
 Açık belgelerin gerçek dosya yolları ve tutarlı kaydedilmemiş metinleri bir
 bildirim boyunca ortak dizinde paylaşılır. Çelişen URI alias'ı disk metnini
 örtmez; proje/paket/kilit doğrulaması ve tanı sırası korunur. Dizin bildirimin
 sonunda bırakılır; sonraki bildirim symlink hedeflerini yeniden çözer.
 
-Bu bakım yeni kullanıcı ayarı veya kaynak göçü gerektirmez. Aynı stdio iş
-yükünde yeni exact kaynak ölçümü ve kabulü beklenir; S4'ün lint açık/41 belge
-p95 223,698 ms değeri tarihsel başlangıç gözlemidir. 200 ms hedefi, gerçek ürün/UI
-gecikmesi ve tam P19 açık kalır. [Karar ve etki incelemesi](../adr/145-artimli-editor-analizi-ve-lint.md#k-298--bildirim-ömürlü-açık-metin-dizini).
+Kabul kaynağı `a57290f7a1c1fad07cda3f266b2a221f09aa6404` üzerinde dört stdio kohortunun p95'i 200 ms
+hedefini gözlemsel olarak karşıladı. Lint açık/41 belgede fresh eski kaynak
+204,880125 ms, yeni kaynak 189,885667 ms; max 190,114958 ms (%7,32 p95 düşüş).
+Her kohort yeni süreç ve 5 ısınma/20 örnektir; UI gecikmesi veya hard gate değildir.
+Aynı kaynakta ordinary UTF-16 stdio10 ve dar gerçek IDE işlev kabulü yenilendi.
+İki normal IDE Quit doğrulandı; ayrı IDE shutdown trace'i yakalanmadı.
+
+Aynı temiz SHA'da ikinci 1800 saniyelik RSS koşusu geçti: compiler %0, LSP
++1024 KiB ve yukarı yuvarlanmış %6; birleşik eşik aşılmadı. Yeni ayar/göç yoktur.
+Aynı kaynağın RC dört ASan/Miri3 ve tam 998/0/25 kapısı da geçti; K-298 dar
+kabulü kapalıdır. Son belge kapısı takip commit’inin koşuludur; gerçek ürün/UI,
+artımlı HIR/tür ve genel P19 açık kalır. [Kabul kaydı](urunlesme-k298-kabul-20261016.md),
+[ölçüm sınırları](olcumler.md) ve
+[karar](../adr/145-artimli-editor-analizi-ve-lint.md#k-298--bildirim-ömürlü-açık-metin-dizini).

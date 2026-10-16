@@ -1,0 +1,25 @@
+{
+  "argv": [
+    "python3",
+    "-I",
+    "-B",
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k299-drivers/k299-native-two-v2.py",
+    "--repo",
+    "/private/tmp/zee-p19-k298/k299-validation",
+    "--sha",
+    "8178920e03fed782a817d1864b8280fcb80812a3",
+    "--tree",
+    "1eccf96d1a407880bf161c55bdd55c4d9a144866",
+    "--out",
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k299-native-2"
+  ],
+  "started_ns": 1792129123427336000,
+  "status": "passed",
+  "minimum_free_bytes": 62020898816,
+  "required_free_bytes": 10737418240,
+  "observed_exit": 0,
+  "owned_group_closed_and_reaped": true,
+  "exit": 0,
+  "finished_ns": 1792129200732564000,
+  "elapsed_seconds": 77.30414783302695
+}

@@ -1,0 +1,128 @@
+{
+  "status": "passed",
+  "source_commit": "bb4ed951ce5e8e9c1c21d2c58f75cd4ef51d6c59",
+  "base": "e9eafc32e7a64b62790960b7faf2822007b2a7d9",
+  "commands": [
+    {
+      "name": "summary",
+      "argv": [
+        "cargo",
+        "run",
+        "--locked",
+        "--",
+        "\u00e7al\u0131\u015ft\u0131r",
+        "../dogfood/kanit-ozeti/kaynak/ana.dil"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 4.620525791076943,
+      "log_sha256": "3a0ed2b78f126e29a9bd6066b2de3b06b3e460813b396318e1e3476cbaa5fb2b"
+    },
+    {
+      "name": "documentation",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "--test",
+        "katalog_testi",
+        "--test",
+        "dokuman_tazelik_testi"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 19.912425499991514,
+      "log_sha256": "51ea2642e918a836620760379801aa95bfbb1004dec2af3c91185a40501638fa"
+    },
+    {
+      "name": "spec-drift",
+      "argv": [
+        "cargo",
+        "run",
+        "--locked",
+        "--bin",
+        "spec_drift",
+        "--",
+        "--denetle"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 0.4189432499697432,
+      "log_sha256": "4c904e4af5fdc407570236f7441deaa5498ebf3aa91a9941fedb03a028338345"
+    },
+    {
+      "name": "fmt",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 0.4985180420335382,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "conformance-guard",
+      "argv": [
+        "bash",
+        "scripts/conformance-korugu.sh",
+        "e9eafc32e7a64b62790960b7faf2822007b2a7d9"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 0.04029458307195455,
+      "log_sha256": "17730abed0789c8f25de093a0f67ad168c28248ff056b3778f9ff3e880db7c02"
+    },
+    {
+      "name": "semantic-regresyon-guard",
+      "argv": [
+        "bash",
+        "scripts/semantic-regresyon-korugu.sh",
+        "e9eafc32e7a64b62790960b7faf2822007b2a7d9"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 2.0431195000419393,
+      "log_sha256": "12dd9c1087653bda006c1223a9ae47a8baee8df99cb49e1146bfcfbf1e45e4c9"
+    },
+    {
+      "name": "core-freeze-guard",
+      "argv": [
+        "bash",
+        "scripts/core-freeze-korugu.sh",
+        "e9eafc32e7a64b62790960b7faf2822007b2a7d9"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 2.4794728339184076,
+      "log_sha256": "093ea0e89be978fa97a0627647be58889a23ec1a0324e65dceb07f27cc1600ff"
+    },
+    {
+      "name": "diff-check",
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 0.008241583011113107,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "secret-scan",
+      "argv": [
+        "bash",
+        "scripts/sir-taramasi.sh"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 11.90781904105097,
+      "log_sha256": "d7b80dbb1d32e83e4231749bc167a342d1cd43a9f235af4ebf5b53a8040f73cd"
+    }
+  ],
+  "driver_sha256": "30a62dec846dbd6968767f0465364141109798ae8b9ca70a95937b52dcf1e301"
+}

@@ -1,6 +1,6 @@
 # zee — V1 öncesi öncelikli mühendislik backlog'u
 
-> Güncel kaynak [S4 yerel kabulü](urunlesme-s4-kabul-20261015.md) ile RC, soak, macOS teslim/kurulum ve dar IDE/stdio ölçüm kanıtı taşır. [S3](urunlesme-s3-kabul-20261015.md) native kabulü tarihsel kaynağında kalır; ürün, insan, fiziksel platform ve yayın kapıları açıktır.
+> `a57290f7a1c1fad07cda3f266b2a221f09aa6404` için [K-298 yerel kabulü](urunlesme-k298-kabul-20261016.md) dört stdio kohortunda gözlemsel p95 200 ms hedefini, macOS teslim/kurulum, ordinary UTF-16 ve dar IDE işlev kabulünü kaydeder. Aynı SHA'da ikinci RSS ve dört ASan/Miri3/tam RC kapısı geçti; K-298 dar kabulü kapalı, P19 kısmi kalır. Belge takip commit’i gerçek dış son kapı makbuzuna bağlıdır. [S4](urunlesme-s4-kabul-20261015.md) ve [S3](urunlesme-s3-kabul-20261015.md) kendi kaynaklarında tarihseldir; ürün, insan, fiziksel platform ve yayın kapıları açıktır.
 
 Bu belge 1 Eylül 2026 ayrıntılı incelemesi ile 2 Eylül'deki ikinci ve üçüncü
 dış incelemelerin depo içindeki kalıcı, sıralı iş karşılığıdır. Yeni dil
@@ -1906,26 +1906,33 @@ ayrıldı. Beş tam proje hazır değil, fiziksel cihaz yok; bu kapılar bekliyo
 
 ## K-298 — P19 bildirim ömürlü açık metin dizini bakımı
 
-**AÇIK — kaynak adayı ve temiz ölçüm/kabul bekliyor.** S4'te lint açık/41 belge
-stdio p95 223,698 ms ile 200 ms hedefi karşılanmadı. Mevcut açık URI envanterinin
-gerçek yol/tutarlı ödünç metin dizini bir bildirim boyunca ortak kullanılarak
-tekrarlı kanonikleştirme azaltılır; kaynak metinleri ödünç alınır. Çelişen alias, disk/paket/kilit
-kontrolü, tanı ve yayın sırası korunur; yeni kalıcı cache veya HIR/type kapasitesi
-eklenmez. Üç alias'tan her birinin çatışması/iki lint kipi ve sonraki bildirimde Unix
-symlink hedefinin yenilenmesi iki dar testle izlenir.
+**KAPALI — dar bakım/ölçüm, teslim/kurulum, UTF-16/IDE, ikinci RSS ve RC kabulü geçti.** Son belge kapısının gerçek dış makbuzu toplu commit önkoşuludur; genel P19 kısmi kalır.
+Compiler bakım commit'i `bb4ed951ce5e8e9c1c21d2c58f75cd4ef51d6c59`; semantic/core-freeze `maintenance`
+beyanlarını taşıyan kabul kaynağı `a57290f7a1c1fad07cda3f266b2a221f09aa6404`.
+Bildirim ömürlü gerçek yol/tutarlı ödünç metin dizini yinelenen
+kanonikleştirmeyi azaltır; alias çelişkisi, disk/paket/kilit kontrolü ve tanı
+sırası korunur. Yeni kalıcı cache veya HIR/type kapasitesi eklenmez. Üç alias,
+iki lint kipi ve sonraki bildirimde Unix symlink yenilenmesi iki dar testle
+korunur. Kaynak hazırlık fazı 998/0/25 ve clippy geçti; bayat üretilmiş rapor
+nedeniyle ilk toplam makbuz failed olarak saklandı, kalan kapılar ve provenance
+ayrı geçti. Bu kaynak hazırlık sayısı ile aşağıdaki actual RC sonucu ayrı koşulardır; toplanmaz.
 
-[ADR-145](../adr/145-artimli-editor-analizi-ve-lint.md) kararı ve etki incelemesi,
-[ölçüm sözleşmesi](olcumler.md) ile aynı dilimdedir. Exact semantic/core-freeze
-`maintenance` kayıtları kaynak commit'ini izler. Başarılı test, yeni temiz stdio
-ölçümü ve gerekli kaynak kabulü kaydedilmeden K-298 kapandı denmez. Gerçek ürün,
-UI, platform ve tam P19; C1/K-288 ve P33/K-293 retleri ayrıca açık kalır.
+[Actual kabul](urunlesme-k298-kabul-20261016.md) dört stdio kohortunun p95'ini 200 ms altında,
+en ağırını 189,885667 ms ölçtü; fresh eski kaynak 204,880125 ms'ye göre
+%7,32 düşüş gözlendi. Shared ölçüm hard gate değildir. macOS teslim/kurulum8,
+ordinary UTF-16 stdio10 ve küratörlü gerçek IDE işlev kabulü ayrı makbuzludur;
+IDE shutdown trace'i yakalanmadı, iki normal Quit/exit0/reap doğrulandı.
+
+[ADR-145](../adr/145-artimli-editor-analizi-ve-lint.md) ve [ölçümler](olcumler.md)
+aynı dar kapsamı taşır. Eski S4 RC/soak makbuzları bu kaynağa aktarılmaz.
+Aynı temiz SHA'da ikinci RSS koşusu 1801,116786 saniye/360 örnekle geçti: compiler büyümesi %0, LSP +1024 KiB ve yukarı yuvarlanmış %6; birleşik eşik aşılmadı. İlk saat ayrışmalı koşu kendi durumuyla korunur. Aynı kaynak RC2 dört explicit ASan hedefinde 1801’er saniye ve toplam 33.017.247 çalıştırma, Miri2+1, kanonik export/check ve tam RC güvenlik kapısıyla geçti: 131 Cargo grubunda 998 başarılı/0 başarısız/25 atlanan. Kampanya ve son kapı normal exit0/reaped; ek saat denetimi passed/0 sorun. Küçük arşiv 137 dosya/2.101.349 baytla bağlıdır; takip belge commit’i ayrıca gerçek dış son kapı makbuzunu gerektirir.
+Gerçek ürün/UI, artımlı HIR/tür, platform ve tam P19; C1/K-288 ve P33/K-293
+retleri ayrıca açık kalır.
 
 ## K-299 — Kabul koşucularında erken iptal ve kısmi setup temizliği
 
-**AÇIK — stdlib PDF9/service10 geçti; ilk C native kampanyası başarısız.**
-PDF9 ayrı geçti; service-fault kanonik olmayan depo kökünü iç kampanya öncesi
-reddetti. Cargo test wrapper `root()` kanonikleştirmesi takip adayındadır;
-yeni source/tree ve gerekli kapılar/native9/2 yeniden kabul beklenir. PDF kabul betiği ilk owned komuttan önce handler kurar;
+**dar kaynak/native/arşiv kapsamı kapalı; toplu commit öncesi son belge kapısı gerekli — stdlib PDF9/service10 ayrı; kaynak
+`8178920e03fed782a817d1864b8280fcb80812a3`: temiz C2 native2 iki Cargo sahibiyle geçti: signed PDF9 ve service-fault2; alt vakalar Cargo owner sayısına eklenmez; C2 öncesi gate4: 13 adım geçti; tam faz 998/1023 geçti, 0 başarısız, 25 atlanan.** PDF kabul betiği ilk owned komuttan önce handler kurar;
 setup/keygen finally kapsamına alınır, fresh held dirfd'deki iki exact sentetik
 key temizlenir. Başarısız nested host komutunun grace'i10 saniye olur. Service
 prepare handler-before-H.run, kısmi Fixture temizliği ve cleanup sırasında iptal
@@ -1933,8 +1940,10 @@ bayrağının korunması aynı dar işi tamamlar. Üretim host zaten cooperative
 compiler/Supervisor/lifecycle veya native oracle değişmez.
 
 [ADR-141](../adr/141-imzali-pdf-stdio-host.md), [ADR-150](../adr/150-native-worker-fault-ve-kontrollu-resolver.md),
-[GB-111 ve actual kısa test kaydı](kabul-kosuculari-yasam-dongusu-20261016.md)
-aynı kaynak dilimindedir. Beş yeni Python iç vaka yeni Cargo owner değildir.
-Sonraki temiz SHA'da iki native seçicinin proof/BuildJSON/hash/owned-close zinciri
-ve ortak kapılar doğrulanmadan kapalı olmaz. K-298 RC/soak/IDE kanıtı kendi
-kaynağında kalır; ürün/FFI/DNS/fault, C1/P33 ve dış kabul açıklarını kapatmaz.
+[GB-111 ve actual kabul kaydı](kabul-kosuculari-yasam-dongusu-20261016.md)
+aynı kaynak dilimini bağlar. Beş yeni Python iç vaka yeni Cargo owner değildir.
+C2 source/tree/BuildJSON/binary/hash/özgün-owner kapanışı ve bağımsız inceleme
+kaydının sonucu: Birleşik bağımsız inceleme C2 kaynak/gate4/security2/commit/native2 zincirini doğruladı; küçük public arşiv hashleri doğrulandı; toplu commit öncesi son belge kapısı ayrıca gerekli; GB-111: kapalı; toplu commit öncesi son belge kapısı gerekli.
+İlk gate1 996/1023, 2 başarısız, 25 atlanan; gate2 997/1023, 1 başarısız,
+25 atlanan geçmişte korunur. K-298 RC/soak/IDE/stdio kanıtı kendi kaynağında
+kalır; ürün/FFI/DNS/fault, C1/P33 ve dış kabul açıklarını kapatmaz.

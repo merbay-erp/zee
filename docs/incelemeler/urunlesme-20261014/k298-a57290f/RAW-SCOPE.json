@@ -1,0 +1,98 @@
+{
+  "schema": "zee-public-evidence-reference-view-scope-1",
+  "representation": "transparent-public-evidence-view",
+  "candidate_source_sha": "a57290f7a1c1fad07cda3f266b2a221f09aa6404",
+  "candidate_source_tree": "20644b4b6dc735a8cda8a24b7c064d28f12498d4",
+  "compiler_source_commit": "bb4ed951ce5e8e9c1c21d2c58f75cd4ef51d6c59",
+  "original_public_archive": {
+    "directory": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive",
+    "manifest": {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/CURRENT-ARCHIVE-MANIFEST.json",
+      "sha256": "6e13b044becd1aee8c4d021bc47e3141c132b295c9e3aec8f6a2679016a1c265",
+      "bytes": 25157
+    },
+    "file_count_including_manifest": 137,
+    "total_bytes_including_manifest": 2101349,
+    "preservation": "Every file copied byte-exact, including the original four metadata files."
+  },
+  "original_scope": {
+    "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/RAW-SCOPE.json",
+    "sha256": "72b6eead494587198c8e21fb7ed1b9d41d4682db1379bbfcdb9d7220b5c11374",
+    "bytes": 104215
+  },
+  "original_selection": {
+    "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/SELECTION.json",
+    "sha256": "6f8e3b3ee85e1cb131d60e74f3c8870adab405ab611fe164cdd5a8a420ccc3bb",
+    "bytes": 294193
+  },
+  "view_selection_sha256": "5eb8f352fad55fb14b209295f3a70ccced22ea8ce6be1a5b9c80af3429acbf25",
+  "classification": {
+    "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-archive-false-positive-classification.json",
+    "sha256": "06e9e0393653bffd819e5778f9e5913c9db37e0da130598c296a9241e398bf0f",
+    "schema": "zee-public-archive-hash-findings-classification-1",
+    "status": "passed-public-sha256-metadata-only",
+    "findings": 25,
+    "distinct_files": 13,
+    "matched_values_are_verified_public_SHA256_metadata": true
+  },
+  "reference_file_count": 13,
+  "metadata_file_count": 4,
+  "unchanged_file_count": 120,
+  "reference_paths": [
+    "drivers/p19-k298-drivers/verify-rc2-final-text.json",
+    "receipts/k299/c1/gates3-proof.json",
+    "receipts/k299/c1/security1-proof.json",
+    "receipts/k299/c1/source-commit.json",
+    "receipts/k299/c2/gates4-proof.json",
+    "receipts/k299/c2/security2-proof.json",
+    "receipts/k299/c2/source-commit2.json",
+    "receipts/p19-k298-a57290f-rc-2/GATE-RECEIPT.json",
+    "receipts/p19-k298-a57290f-rc-2/independent-raw-review.json",
+    "receipts/p19-k298-source-commit.json",
+    "reviews/k299/c1/gate3-independent-review.json",
+    "reviews/k299/c2/gate4-independent-review.json",
+    "reviews/k299/c2/source2-security-review.json"
+  ],
+  "rewritten_metadata_paths": [
+    "CURRENT-ARCHIVE-MANIFEST.json",
+    "RAW-SCOPE.json",
+    "README.md",
+    "SELECTION.json"
+  ],
+  "all_original_bindings_self_contained_in_this_view": false,
+  "original_records_rewritten": false,
+  "original_records_preserved_byte_exact_externally": true,
+  "private_keys_or_large_payloads_read_or_copied": false,
+  "scanner_exceptions_or_ignore_rules_added": false,
+  "encoded_or_obfuscated_original_payloads_created": false,
+  "scanner_executed_by_this_driver": false,
+  "new_scan_pass_claim": false,
+  "original_accepted_S_phases_recorded": [
+    "source",
+    "delivery",
+    "install",
+    "utf16",
+    "stdio",
+    "extra",
+    "ide",
+    "soak",
+    "rc"
+  ],
+  "acceptance_decisions_recomputed": false,
+  "prior_failed_document_gate_preserved": {
+    "proof_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-final-docs-1/PROOF.json",
+    "controller_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-final-docs-controller-1.json",
+    "action": "untouched external historical evidence; no failure is replaced or reclassified as passed"
+  },
+  "followup": "The unchanged scanner must inspect this new view, then the final document gate must validate the resulting tracked documentation. Those results do not yet exist in this preparation.",
+  "omitted": [
+    "release/test binaries",
+    "source ZIP and Git bundle",
+    "fuzz corpus",
+    "raw stdio streams and read chunks",
+    "Cargo logs",
+    "PDF artifacts",
+    "IDE full log/trace export",
+    "private keys and secret-bearing files"
+  ]
+}

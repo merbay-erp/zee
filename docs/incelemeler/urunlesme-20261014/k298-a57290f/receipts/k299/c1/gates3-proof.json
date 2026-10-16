@@ -1,0 +1,34 @@
+{
+  "schema": "zee-public-evidence-external-reference-1",
+  "representation": "readable-external-reference",
+  "is_original_receipt": false,
+  "archive_relative_path": "receipts/k299/c1/gates3-proof.json",
+  "original_public_file": {
+    "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/k299/c1/gates3-proof.json",
+    "sha256": "d4258bce3c365d1690b6ed3c9fe3befacf50caeec09c188580a4282de7d065d4",
+    "bytes": 9189
+  },
+  "original_public_archive": {
+    "directory": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive",
+    "manifest": {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/CURRENT-ARCHIVE-MANIFEST.json",
+      "sha256": "6e13b044becd1aee8c4d021bc47e3141c132b295c9e3aec8f6a2679016a1c265",
+      "bytes": 25157
+    },
+    "file_count_including_manifest": 137,
+    "total_bytes_including_manifest": 2101349,
+    "preservation": "Every file copied byte-exact, including the original four metadata files."
+  },
+  "reason": "Verified public SHA-256 metadata matched the unchanged generic-api-key rule. This file is a readable external reference, not the original receipt or verifier text. The complete original remains byte-exact at the explicit snapshot path.",
+  "classified_finding_count": 1,
+  "classification": {
+    "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-archive-false-positive-classification.json",
+    "sha256": "06e9e0393653bffd819e5778f9e5913c9db37e0da130598c296a9241e398bf0f",
+    "schema": "zee-public-archive-hash-findings-classification-1",
+    "status": "passed-public-sha256-metadata-only",
+    "findings": 25,
+    "distinct_files": 13,
+    "matched_values_are_verified_public_SHA256_metadata": true
+  },
+  "verification_instruction": "Read the referenced original file and compare its SHA-256 and byte count; do not interpret this reference as a passed test receipt."
+}

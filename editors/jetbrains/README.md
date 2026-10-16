@@ -73,5 +73,14 @@ kabulü sayılmaz; Windows/marketplace yayını açıktır.
 ## S4 kaynak kabulü
 
 [S4 ayrı kaynak kaydı](../../docs/urunlesme-s4-kabul-20261015.md) `4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2`
-üzerindeki güncel yerel kanıtı ve açık sınırları gösterir. Önceki S3 sonuçları
+üzerindeki tarihsel yerel kanıtı ve açık sınırları gösterir. Önceki S3 sonuçları
 tarihsel kalır; genel ürün/platform/yayın veya tam P19 kabulü değildir.
+
+## K-298 kaynak kabulü
+
+[K-298](../../docs/urunlesme-k298-kabul-20261016.md) a57290f kanonik proje launcher'ıyla actual
+completion 111/uygulama, UTF-16 hover/definition/rename/A001 ve formatı yeniledi.
+İlk trace Apply hatası ve kısmi deneme korundu; iki normal Quit/exit0/reap geçti.
+Bu dalgada ayrı IDE shutdown/exit trace'i yakalanmadı; native stdio kapanışı
+ayrı kanıttır. Completion popup ayrıca kaydedilmedi. Küratörlü UI gözlemi,
+UI gecikmesi, fiziksel Windows/minimum OS veya yayın kabulü sayılmaz.

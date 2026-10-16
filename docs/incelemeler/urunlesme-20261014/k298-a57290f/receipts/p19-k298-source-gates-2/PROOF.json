@@ -1,0 +1,259 @@
+{
+  "prior_proof_sha256": "6dc8cfd667035af5a516e51c97520274fc602930c4a51f0933e88945cc074a78",
+  "prior_passed_commands": [
+    {
+      "name": "fmt",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 0.5116822079289705,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "lsp-tests",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "--test",
+        "lsp_artimli_testi"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 5.24406000005547,
+      "log_sha256": "6a20f69a56b77348d6a5d0b53c6827fcc2e6b0c78e1aae19d94e11da8ede2539"
+    },
+    {
+      "name": "counts",
+      "argv": [
+        "cargo",
+        "run",
+        "--locked",
+        "--bin",
+        "depo_sayilari",
+        "--",
+        "--yaz"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 0.48520495800767094,
+      "log_sha256": "166a19e7ac23109ebbbc5d1b72da8f962982f6c77724b90ed229ec333bcc451a"
+    },
+    {
+      "name": "summary",
+      "argv": [
+        "cargo",
+        "run",
+        "--locked",
+        "--",
+        "\u00e7al\u0131\u015ft\u0131r",
+        "../dogfood/kanit-ozeti/kaynak/ana.dil"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 1.4427127500530332,
+      "log_sha256": "1af13475400ff3a1e3a3a3a72d3f6073a78d259c5c2b4c2a3e312e914dacbbb2"
+    },
+    {
+      "name": "diagnostic-report",
+      "argv": [
+        "cargo",
+        "run",
+        "--locked",
+        "--bin",
+        "tani_kalitesi",
+        "--",
+        "--rapor-yaz"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 0.45213629107456654,
+      "log_sha256": "4578b1ba9a21326d48c13bb03be5fe980be31cf978fb0d506c92a4f0b982aa97"
+    },
+    {
+      "name": "phase-matrix",
+      "argv": [
+        "cargo",
+        "run",
+        "--locked",
+        "--bin",
+        "faz_test_matrisi",
+        "--",
+        "--denetle",
+        "--rapor",
+        "target/faz-test-matrisi-k298.md"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 741.7625347910216,
+      "log_sha256": "5953e1a85a02f5a7c6f1e0f37e9997ded238ca8d60b266c4232b2eb0b522be29"
+    },
+    {
+      "name": "clippy",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 81.59564729197882,
+      "log_sha256": "8b541c981d795eb0c680cd5de96b2fc006a806cc4ad53940a934f27e7902e6cc"
+    }
+  ],
+  "source_pins": {
+    "compiler/src/lsp.rs": "0d43abc3a84663ebb640fcbc4501423ead122d576b31ec12422e0ca6d38b76d0",
+    "compiler/src/lsp/analiz.rs": "1c268277240f8d47c4c4f13e85f583216ecb739c9989baad80935ad2583438e6",
+    "compiler/tests/lsp_artimli_testi.rs": "0dc4af313e919769e6650ed1c725ac659cd144bab69e8dcc3a55fcee81d00bf8"
+  },
+  "status": "passed",
+  "source_parent": "e9eafc32e7a64b62790960b7faf2822007b2a7d9",
+  "commands": [
+    {
+      "name": "function-report",
+      "argv": [
+        "cargo",
+        "run",
+        "--locked",
+        "--bin",
+        "islev_egilimi",
+        "--",
+        "--rapor-yaz"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 19.236304125050083,
+      "log_sha256": "1ba76dce07f4c83725a5640fd78db4e633d3a1ba51dbc29813c5676150ae5fd3"
+    },
+    {
+      "name": "documentation",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "--test",
+        "katalog_testi",
+        "--test",
+        "dokuman_tazelik_testi"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 29.33443545899354,
+      "log_sha256": "c3ac58ac17d9d875711944b9bbe5290ef0818eb57f718b4369c14683985a3ef9"
+    },
+    {
+      "name": "function-trend",
+      "argv": [
+        "cargo",
+        "run",
+        "--locked",
+        "--bin",
+        "islev_egilimi",
+        "--",
+        "--denetle"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 9.100121375056915,
+      "log_sha256": "bc260016a5be5935194578febaf33dd85f1217394ce9f551b44be7e36794fe6e"
+    },
+    {
+      "name": "spec-drift",
+      "argv": [
+        "cargo",
+        "run",
+        "--locked",
+        "--bin",
+        "spec_drift",
+        "--",
+        "--denetle"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 10.414833332994021,
+      "log_sha256": "5258ecea56bc33e55e3ef1de810f673abe424fd581e49f6e6dc07f54cd7bba3c"
+    },
+    {
+      "name": "fmt-check",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 0.5280882919905707,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "conformance-guard",
+      "argv": [
+        "bash",
+        "scripts/conformance-korugu.sh",
+        "e9eafc32e7a64b62790960b7faf2822007b2a7d9"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 0.05075083300471306,
+      "log_sha256": "17730abed0789c8f25de093a0f67ad168c28248ff056b3778f9ff3e880db7c02"
+    },
+    {
+      "name": "semantic-regresyon-guard",
+      "argv": [
+        "bash",
+        "scripts/semantic-regresyon-korugu.sh",
+        "e9eafc32e7a64b62790960b7faf2822007b2a7d9"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 1.9140214580111206,
+      "log_sha256": "12dd9c1087653bda006c1223a9ae47a8baee8df99cb49e1146bfcfbf1e45e4c9"
+    },
+    {
+      "name": "core-freeze-guard",
+      "argv": [
+        "bash",
+        "scripts/core-freeze-korugu.sh",
+        "e9eafc32e7a64b62790960b7faf2822007b2a7d9"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 2.445416208007373,
+      "log_sha256": "093ea0e89be978fa97a0627647be58889a23ec1a0324e65dceb07f27cc1600ff"
+    },
+    {
+      "name": "diff-check",
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 0.018566375016234815,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "secret-scan",
+      "argv": [
+        "bash",
+        "scripts/sir-taramasi.sh"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 11.704448167001829,
+      "log_sha256": "4d2e2f89333aaeeb683c40dd96075e4ad3daec8dcbffe5a5048553dd2e3896b9"
+    }
+  ],
+  "driver_sha256": "0cdd9a5acb8b3954b34b570de873d134b3cac95025a01f328e1ba19c9ef96e8f"
+}

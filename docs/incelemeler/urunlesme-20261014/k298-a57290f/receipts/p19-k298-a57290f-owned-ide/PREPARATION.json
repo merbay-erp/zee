@@ -1,0 +1,21 @@
+{
+  "actual_launcher_source": "a57290f7a1c1fad07cda3f266b2a221f09aa6404",
+  "source_archive_base": "a57290f7a1c1fad07cda3f266b2a221f09aa6404",
+  "source_tree": "20644b4b6dc735a8cda8a24b7c064d28f12498d4",
+  "repo": "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+  "controller_sha256": "20e593f4b68973bd49543a45a9e79b11d3173cb337c691348d075ffa1d57c62f",
+  "restart_controller_sha256": "a112754bff19e0dd4c7927baf7f1a5b8b5a70de3667b249cbc97456cf2993207",
+  "normal_quit_required": true,
+  "cooperative_preparation_only": true,
+  "project": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-owned-ide/project with spaces",
+  "profile_is_fresh": true,
+  "properties": "idea.config.path=/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-owned-ide/config\nidea.system.path=/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-owned-ide/system\nidea.plugins.path=/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-owned-ide/plugins\nidea.log.path=/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-owned-ide/logs\n",
+  "plugin_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/final-S8b49113-owned-ide/plugins",
+  "lint_initialization": true,
+  "settings_sha256": {
+    "LanguageServersSettings.xml": "6fcf35a65f89b484da11c6310654900a074b340958554136515a39acf7e792a5",
+    "UserDefinedLanguageServerSettings.xml": "c1bf7d7c82140de4875b744e7700727ae4a798f228df6b3acae63c21f4cd6526",
+    "textmate.xml": "cd4fbb2d247e0ecea4e6364ed7240508bcebeca17a9e36bb2365bf154f5d5983",
+    "trusted-paths.xml": "1d9383eeeca64714e4281b388d83f4971407f9a09b3c48ce6d49dd9a2c39269a"
+  }
+}

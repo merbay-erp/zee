@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "python3",
+    "-I",
+    "-B",
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-drivers/source-gates-resume.py"
+  ],
+  "started_ns": 1792108566730623000,
+  "status": "passed",
+  "minimum_free_bytes": 71385694208,
+  "required_free_bytes": 10737418240,
+  "observed_exit": 0,
+  "owned_group_closed_and_reaped": true,
+  "exit": 0,
+  "finished_ns": 1792108652411629000,
+  "elapsed_seconds": 85.68158170802053
+}

@@ -1,0 +1,60 @@
+{
+  "schema": "zee-k299-c2-drivers-static-review-1",
+  "status": "review-complete-no-new-blocker",
+  "timestamp": "2026-10-16 08:29:24 Europe/Istanbul",
+  "source_parent": "90fe778e86b9de28046f0f7bd77b47df138a2212",
+  "source_parent_tree": "3bb1340d68a1073bb9cbda71ce943c222959db24",
+  "files_sha256": {
+    "k299-gates-v5.py": "7bfc896c9f6fcc01cb902079019c760ce7c1f8b45ff081c8842c00579b4f1cf7",
+    "k299-security-v2.py": "4d551c9a4a86be9483dfac3dceaf9285d7677b9ce00ebb64405c525c78744b1e",
+    "commit-k299-v2.py": "a2fe77fa3d034b8cd6e24d1eac60d3c17e2d4063bbef0498474f5f9db555bdde",
+    "k299-gates-v4.py": "c9d75400542024cd8e6578c6c15b9c525e5836265e4bea6f31ca78745be1eb87",
+    "k299-security-v1.py": "0693477ea1a55702dea45e2f8b404afdb404b284f0580024d40694e1fcc295db",
+    "commit-k299-strengthened.py": "dec77a1093d5de6498fe43093bab86a07febd75d9021a0f1bb8fefa17b9f9075"
+  },
+  "wrapper_path": "compiler/tests/service_fault_testi.rs",
+  "wrapper_sha256": "fecfea8a085ce76be25531ff1664ec34499cad1aaf536bfe485ad945538bada6",
+  "normalized_ast_equal": {
+    "k299-gates-v5.py_vs_v4": true,
+    "k299-security-v2.py_vs_v1": true,
+    "commit-k299-v2.py_vs_strengthened": true
+  },
+  "normalization_scope": [
+    "exact parent SHA and tree",
+    "exact immutable gate/security driver hashes",
+    "gate4/security2/source-commit2 paths and explanatory strings",
+    "add service_fault_testi.rs to PINNED"
+  ],
+  "preserved_checks": [
+    "controlled_env removes CARGO_TARGET_DIR and records null",
+    "gate13 exact command list and original Popen terminal/reap/log bounds",
+    "source parent/tree/branch and unstaged overlay snapshot matching",
+    "gate controller exact argv/exits/reap and driver pin",
+    "all13 original gate log hashes before and after security",
+    "security source_begin=source_end=gate overlay",
+    "security input start=end hash map",
+    "security single exact --surekli argv and own closure",
+    "commit exact gate/security controller argv and both receipts/hashes",
+    "commit current source pins=gate pins and full overlay path/hash/diff equality",
+    "commit empty index before add, exact index set, no unstaged tracked difference after add",
+    "commit source clean_exact and expected parent after actual commit",
+    "fresh source-commit2 receipt; native acceptance remains pending"
+  ],
+  "running_gate_snapshot": {
+    "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k299-gates-4/PROOF.json",
+    "observed_at": "2026-10-16 08:28:44 Europe/Istanbul",
+    "status": "running",
+    "source_parent": "90fe778e86b9de28046f0f7bd77b47df138a2212",
+    "source_tree": "3bb1340d68a1073bb9cbda71ce943c222959db24",
+    "wrapper_pin": "fecfea8a085ce76be25531ff1664ec34499cad1aaf536bfe485ad945538bada6",
+    "driver_sha256": "7bfc896c9f6fcc01cb902079019c760ce7c1f8b45ff081c8842c00579b4f1cf7",
+    "CARGO_TARGET_DIR": null,
+    "not_final_evidence": true
+  },
+  "notes": [
+    "The wrapper hash is captured at gate start and carried through exact gate/security/commit snapshots; it is not a new literal expected hash in generic gate code. The observed gate4 start pin equals the reviewed wrapper bytes.",
+    "Parent HEAD/tree remain C1 during the C2 overlay gates; this is not a false clean-C2 claim. Commit driver requires exact overlay and emits the resulting new clean C2 only after commit.",
+    "AST equality proves no new behavioral change beyond the listed configuration changes; it does not certify all inherited code or replace actual gate/security results.",
+    "Static review only. No test/build/native/security/commit driver import or execution, no R/V/E write, no process inspection."
+  ]
+}

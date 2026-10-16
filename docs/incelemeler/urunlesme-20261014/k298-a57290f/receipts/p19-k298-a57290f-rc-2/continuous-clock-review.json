@@ -1,0 +1,162 @@
+{
+  "schema": "zee-continuous-clock-review-1",
+  "role": "supplemental-endpoint-clock-consistency-review",
+  "source_sha": "a57290f7a1c1fad07cda3f266b2a221f09aa6404",
+  "source_tree": "20644b4b6dc735a8cda8a24b7c064d28f12498d4",
+  "scope": "rc",
+  "mode": "acceptance",
+  "reviewed_utc": "2026-10-16T06:21:41.886909+00:00",
+  "status": "passed",
+  "continuous_acceptance_supported": true,
+  "tolerance_seconds": 5.0,
+  "tolerance_rationale": "Absolute5s permits small clock slew, timestamp rounding and observer bookkeeping over30–90min campaigns; it rejects the observed15201s discontinuity. This practical receipt-review tolerance is not a CPU-activity, performance or product SLA gate.",
+  "producer_statuses_unchanged": true,
+  "target_processes_started": false,
+  "source_or_evidence_modified": false,
+  "driver_sha256": "23a79596ea702e6daae790717b5c7190651cae7a61d33da0b492c0a815ce1942",
+  "original_statuses": {
+    "rc-proof": {
+      "status": null,
+      "result": "passed-local-technical-campaign",
+      "acceptance": null
+    },
+    "rc-controller": {
+      "status": "passed",
+      "result": null,
+      "acceptance": null
+    },
+    "gate-proof": {
+      "status": "passed",
+      "result": null,
+      "acceptance": null
+    },
+    "gate-controller": {
+      "status": "passed",
+      "result": null,
+      "acceptance": null
+    }
+  },
+  "timings": [
+    {
+      "location": "rc-controller",
+      "clock_pair": "wall-nanoseconds",
+      "wall_seconds": 3985.942444,
+      "monotonic_seconds": 3985.8386915000156,
+      "wall_minus_monotonic_seconds": 0.10375249998423897,
+      "absolute_difference_seconds": 0.10375249998423897,
+      "tolerance_seconds": 5.0,
+      "clock_consistent": true
+    },
+    {
+      "location": "gate-controller",
+      "clock_pair": "wall-nanoseconds",
+      "wall_seconds": 898.973974,
+      "monotonic_seconds": 898.9699377920479,
+      "wall_minus_monotonic_seconds": 0.004036207952140103,
+      "absolute_difference_seconds": 0.004036207952140103,
+      "tolerance_seconds": 5.0,
+      "clock_consistent": true
+    }
+  ],
+  "timing_coverage_limits": [
+    {
+      "location": "rc-proof",
+      "reason": "No same-command complete wall pair plus elapsed_seconds; no invented pairing."
+    },
+    {
+      "location": "rc-proof.targets[0].command",
+      "reason": "Monotonic duration exists without per-command wall endpoints."
+    },
+    {
+      "location": "rc-proof.targets[1].command",
+      "reason": "Monotonic duration exists without per-command wall endpoints."
+    },
+    {
+      "location": "rc-proof.targets[2].command",
+      "reason": "Monotonic duration exists without per-command wall endpoints."
+    },
+    {
+      "location": "rc-proof.targets[3].command",
+      "reason": "Monotonic duration exists without per-command wall endpoints."
+    },
+    {
+      "location": "rc-proof.miri[0]",
+      "reason": "Monotonic duration exists without per-command wall endpoints."
+    },
+    {
+      "location": "rc-proof.miri[1]",
+      "reason": "Monotonic duration exists without per-command wall endpoints."
+    },
+    {
+      "location": "rc-proof.builds.lexer_parser",
+      "reason": "Monotonic duration exists without per-command wall endpoints."
+    },
+    {
+      "location": "rc-proof.builds.morfoloji",
+      "reason": "Monotonic duration exists without per-command wall endpoints."
+    },
+    {
+      "location": "rc-proof.builds.http_istegi",
+      "reason": "Monotonic duration exists without per-command wall endpoints."
+    },
+    {
+      "location": "rc-proof.builds.wasm_abi",
+      "reason": "Monotonic duration exists without per-command wall endpoints."
+    },
+    {
+      "location": "gate-proof",
+      "reason": "No same-command complete wall pair plus elapsed_seconds; no invented pairing."
+    },
+    {
+      "location": "gate-proof.commands[0]",
+      "reason": "Monotonic duration exists without per-command wall endpoints."
+    },
+    {
+      "location": "gate-proof.commands[1]",
+      "reason": "Monotonic duration exists without per-command wall endpoints."
+    },
+    {
+      "location": "gate-proof.commands[2]",
+      "reason": "Monotonic duration exists without per-command wall endpoints."
+    },
+    {
+      "location": "gate-proof.commands[3]",
+      "reason": "Monotonic duration exists without per-command wall endpoints."
+    }
+  ],
+  "input_files": [
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-rc-2/campaign-proof.json",
+      "label": "rc-proof",
+      "sha256": "bcaf0afd691c78a482aed20ede1cd7e30a49229f9a454a7cc75db83e2e5f7587",
+      "bytes": 13031
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-rc-controller-2.json",
+      "label": "rc-controller",
+      "sha256": "d6192a360d4f80e46730a6f59b27a7bc3575f4a9fb7c16fec86648915bbf57f4",
+      "bytes": 716
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-rc-gate-2/GATE-RECEIPT.json",
+      "label": "gate-proof",
+      "sha256": "7e9978cc8b160323bc77fb00d647753764ef0ef2f6d1c480e5e4d11205c9676c",
+      "bytes": 25790
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-rc-gate-controller-2.json",
+      "label": "gate-controller",
+      "sha256": "3d50df1731c17bc6d27a763111e98b45d8ca048365e3f9c53d789f6adb582e18",
+      "bytes": 1468
+    }
+  ],
+  "issues": [],
+  "limitations": [
+    "RC per-target and post-gate command receipts lack wall endpoints; their individual clock consistency is not reconstructed. Outer controllers cover these intervals only in aggregate.",
+    "The soak wrapper top-level actual_elapsed_seconds covers only the soak command and is never paired with build+soak top-level UTC endpoints.",
+    "Matching endpoint clocks cannot rule out short pauses, compensated clock changes, CPU contention, or all system suspension mechanisms; no OS power log was read.",
+    "Soak wrapper receipts contain exact source SHA but no tree field; the declared expected tree is not independently recovered in soak-only scope.",
+    "This verifier does not rerun tests or replace canonical RC artifact/hash/security or raw-soak acceptance checks.",
+    "Observation mode never grants acceptance, including when producer receipts originally say passed. Missing, failed or running final inputs cannot become passed."
+  ]
+}

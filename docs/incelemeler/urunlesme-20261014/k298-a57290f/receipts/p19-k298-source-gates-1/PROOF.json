@@ -1,0 +1,130 @@
+{
+  "status": "failed",
+  "source_parent": "e9eafc32e7a64b62790960b7faf2822007b2a7d9",
+  "commands": [
+    {
+      "name": "fmt",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 0.5116822079289705,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "lsp-tests",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "--test",
+        "lsp_artimli_testi"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 5.24406000005547,
+      "log_sha256": "6a20f69a56b77348d6a5d0b53c6827fcc2e6b0c78e1aae19d94e11da8ede2539"
+    },
+    {
+      "name": "counts",
+      "argv": [
+        "cargo",
+        "run",
+        "--locked",
+        "--bin",
+        "depo_sayilari",
+        "--",
+        "--yaz"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 0.48520495800767094,
+      "log_sha256": "166a19e7ac23109ebbbc5d1b72da8f962982f6c77724b90ed229ec333bcc451a"
+    },
+    {
+      "name": "summary",
+      "argv": [
+        "cargo",
+        "run",
+        "--locked",
+        "--",
+        "\u00e7al\u0131\u015ft\u0131r",
+        "../dogfood/kanit-ozeti/kaynak/ana.dil"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 1.4427127500530332,
+      "log_sha256": "1af13475400ff3a1e3a3a3a72d3f6073a78d259c5c2b4c2a3e312e914dacbbb2"
+    },
+    {
+      "name": "diagnostic-report",
+      "argv": [
+        "cargo",
+        "run",
+        "--locked",
+        "--bin",
+        "tani_kalitesi",
+        "--",
+        "--rapor-yaz"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 0.45213629107456654,
+      "log_sha256": "4578b1ba9a21326d48c13bb03be5fe980be31cf978fb0d506c92a4f0b982aa97"
+    },
+    {
+      "name": "phase-matrix",
+      "argv": [
+        "cargo",
+        "run",
+        "--locked",
+        "--bin",
+        "faz_test_matrisi",
+        "--",
+        "--denetle",
+        "--rapor",
+        "target/faz-test-matrisi-k298.md"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 741.7625347910216,
+      "log_sha256": "5953e1a85a02f5a7c6f1e0f37e9997ded238ca8d60b266c4232b2eb0b522be29"
+    },
+    {
+      "name": "clippy",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "passed",
+      "exit": 0,
+      "seconds": 81.59564729197882,
+      "log_sha256": "8b541c981d795eb0c680cd5de96b2fc006a806cc4ad53940a934f27e7902e6cc"
+    },
+    {
+      "name": "function-trend",
+      "argv": [
+        "cargo",
+        "run",
+        "--locked",
+        "--bin",
+        "islev_egilimi",
+        "--",
+        "--denetle"
+      ],
+      "status": "running",
+      "seconds": 20.564031458925456,
+      "log_sha256": "f4fe715c8ea520fdcdd6962174d0c8a4217a83e029ec52b53b21306b31e0c2fe"
+    }
+  ],
+  "driver_sha256": "5936c12dbacca49bbbf8e86d8fb4aa1d86bf94a0725de2adf250a81375a2104d",
+  "failure_type": "Reject"
+}

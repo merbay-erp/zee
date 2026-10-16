@@ -1,0 +1,1510 @@
+{
+  "schema": "zee-public-evidence-reference-view-selection-1",
+  "representation": "presentation-view-selection-not-original-selection",
+  "source_sha": "a57290f7a1c1fad07cda3f266b2a221f09aa6404",
+  "source_tree": "20644b4b6dc735a8cda8a24b7c064d28f12498d4",
+  "compiler_source_commit": "bb4ed951ce5e8e9c1c21d2c58f75cd4ef51d6c59",
+  "original_public_archive": {
+    "directory": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive",
+    "manifest": {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/CURRENT-ARCHIVE-MANIFEST.json",
+      "sha256": "6e13b044becd1aee8c4d021bc47e3141c132b295c9e3aec8f6a2679016a1c265",
+      "bytes": 25157
+    },
+    "file_count_including_manifest": 137,
+    "total_bytes_including_manifest": 2101349,
+    "preservation": "Every file copied byte-exact, including the original four metadata files."
+  },
+  "original_selection": {
+    "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/SELECTION.json",
+    "sha256": "6f8e3b3ee85e1cb131d60e74f3c8870adab405ab611fe164cdd5a8a420ccc3bb",
+    "bytes": 294193
+  },
+  "original_selected_record_count": 133,
+  "original_hash_binding_count": 270,
+  "original_selection_and_bindings_preserved_byte_exact_externally": true,
+  "original_binding_evaluation_requires_external_originals": true,
+  "all_original_bindings_self_contained_in_this_view": false,
+  "original_accepted_S_phases_recorded": [
+    "source",
+    "delivery",
+    "install",
+    "utf16",
+    "stdio",
+    "extra",
+    "ide",
+    "soak",
+    "rc"
+  ],
+  "original_pending_phases_recorded": [
+    "final-document-gates"
+  ],
+  "new_acceptance_claim_added": false,
+  "K299_acceptance_transferred_to_S": false,
+  "view_records": [
+    {
+      "archive_path": "drivers/exact-clean-soak-stage/owned-helper-text.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "d4e418c34df4b92ab49d05b61ae5a03038b8f85f570397bee4c621d16891b3e5",
+      "view_bytes": 13564,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/drivers/exact-clean-soak-stage/owned-helper-text.json",
+        "sha256": "d4e418c34df4b92ab49d05b61ae5a03038b8f85f570397bee4c621d16891b3e5",
+        "bytes": 13564
+      }
+    },
+    {
+      "archive_path": "drivers/exact-clean-soak-stage/soak-runner-text.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "a48578fcb069e89386b190d35f69dd8557049e4a67866597b4a956e1d5043fe2",
+      "view_bytes": 8149,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/drivers/exact-clean-soak-stage/soak-runner-text.json",
+        "sha256": "a48578fcb069e89386b190d35f69dd8557049e4a67866597b4a956e1d5043fe2",
+        "bytes": 8149
+      }
+    },
+    {
+      "archive_path": "drivers/k299/c1/commit-text.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "c2497413efb804152aa9081b81ddf332b0c6d54a62f8a90cb8cae8116314138f",
+      "view_bytes": 9338,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/drivers/k299/c1/commit-text.json",
+        "sha256": "c2497413efb804152aa9081b81ddf332b0c6d54a62f8a90cb8cae8116314138f",
+        "bytes": 9338
+      }
+    },
+    {
+      "archive_path": "drivers/k299/c1/native-two-text.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "fa4b06ddc258f7678a613a7fb44db2fdfedbe81e6358a73e34b18fe78b4cb0be",
+      "view_bytes": 41993,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/drivers/k299/c1/native-two-text.json",
+        "sha256": "fa4b06ddc258f7678a613a7fb44db2fdfedbe81e6358a73e34b18fe78b4cb0be",
+        "bytes": 41993
+      }
+    },
+    {
+      "archive_path": "drivers/k299/c1/security-v1-text.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "e5f0666d747d0fadcba89d9abec24ef34be9ae529a43a27d2bff43c896310a76",
+      "view_bytes": 15459,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/drivers/k299/c1/security-v1-text.json",
+        "sha256": "e5f0666d747d0fadcba89d9abec24ef34be9ae529a43a27d2bff43c896310a76",
+        "bytes": 15459
+      }
+    },
+    {
+      "archive_path": "drivers/k299/c2/commit-canonical-text.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "f611d160b8b77b501d255b50dca120b90c380c4d89e4b72f2bcd696871f850a3",
+      "view_bytes": 9394,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/drivers/k299/c2/commit-canonical-text.json",
+        "sha256": "f611d160b8b77b501d255b50dca120b90c380c4d89e4b72f2bcd696871f850a3",
+        "bytes": 9394
+      }
+    },
+    {
+      "archive_path": "drivers/k299/c2/gates-v5-text.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "4c8ecba458f08e51899629b7b5046049e9ebfb9e1802dffa9ea2428ae65d6231",
+      "view_bytes": 5643,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/drivers/k299/c2/gates-v5-text.json",
+        "sha256": "4c8ecba458f08e51899629b7b5046049e9ebfb9e1802dffa9ea2428ae65d6231",
+        "bytes": 5643
+      }
+    },
+    {
+      "archive_path": "drivers/k299/c2/native-two-v2-text.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "9e3db151ec1bba0b79843cf127b6eae8a8a4a5d1caab1cfd73684d17466883b5",
+      "view_bytes": 42110,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/drivers/k299/c2/native-two-v2-text.json",
+        "sha256": "9e3db151ec1bba0b79843cf127b6eae8a8a4a5d1caab1cfd73684d17466883b5",
+        "bytes": 42110
+      }
+    },
+    {
+      "archive_path": "drivers/k299/c2/security-v2-text.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "92b79117cee7cd083de5d00f20f92c1ea236c0fef95de03e0823d75900227fc0",
+      "view_bytes": 15500,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/drivers/k299/c2/security-v2-text.json",
+        "sha256": "92b79117cee7cd083de5d00f20f92c1ea236c0fef95de03e0823d75900227fc0",
+        "bytes": 15500
+      }
+    },
+    {
+      "archive_path": "drivers/k299/c2/verify-native-v2-text.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "a28ef0641b6c7e8c3789851080bdcb14ea50e366728d5f4edb42ba141bdea0d9",
+      "view_bytes": 42403,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/drivers/k299/c2/verify-native-v2-text.json",
+        "sha256": "a28ef0641b6c7e8c3789851080bdcb14ea50e366728d5f4edb42ba141bdea0d9",
+        "bytes": 42403
+      }
+    },
+    {
+      "archive_path": "drivers/k299/gates-v4-text.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "4fc7bafd37a0da0c38212b4f50f559549e001bd0f51148179f22ace46bda28e0",
+      "view_bytes": 5603,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/drivers/k299/gates-v4-text.json",
+        "sha256": "4fc7bafd37a0da0c38212b4f50f559549e001bd0f51148179f22ace46bda28e0",
+        "bytes": 5603
+      }
+    },
+    {
+      "archive_path": "drivers/local-deliverable-plan-stage/deliverable.py.utf8.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "825301c71ac713403b4c54ee708bcd631285f649144c60f6fa5b7a833adb31ca",
+      "view_bytes": 13560,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/drivers/local-deliverable-plan-stage/deliverable.py.utf8.json",
+        "sha256": "825301c71ac713403b4c54ee708bcd631285f649144c60f6fa5b7a833adb31ca",
+        "bytes": 13560
+      }
+    },
+    {
+      "archive_path": "drivers/p19-k298-a57290f-owned-ide/controller-restart.py.utf8.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "22de892f4fb28928d1e75465505a22ba246c29bf18b3588a4e612439942c1362",
+      "view_bytes": 3033,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/drivers/p19-k298-a57290f-owned-ide/controller-restart.py.utf8.json",
+        "sha256": "22de892f4fb28928d1e75465505a22ba246c29bf18b3588a4e612439942c1362",
+        "bytes": 3033
+      }
+    },
+    {
+      "archive_path": "drivers/p19-k298-a57290f-owned-ide/controller.py.utf8.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "942f2ddcf819a84a14a6b5007ec5bbf7f5ecf10c9720391fc013ab9402e33a07",
+      "view_bytes": 2977,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/drivers/p19-k298-a57290f-owned-ide/controller.py.utf8.json",
+        "sha256": "942f2ddcf819a84a14a6b5007ec5bbf7f5ecf10c9720391fc013ab9402e33a07",
+        "bytes": 2977
+      }
+    },
+    {
+      "archive_path": "drivers/p19-k298-drivers/commit-source-v2.py.utf8.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "cc6f3cdbcd35a523101f7d5fa3a12c0f816c88927d6c5271e72dcf1cb49b3b8a",
+      "view_bytes": 4010,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/drivers/p19-k298-drivers/commit-source-v2.py.utf8.json",
+        "sha256": "cc6f3cdbcd35a523101f7d5fa3a12c0f816c88927d6c5271e72dcf1cb49b3b8a",
+        "bytes": 4010
+      }
+    },
+    {
+      "archive_path": "drivers/p19-k298-drivers/extra-acceptance-two.py.utf8.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "d1db03f68dd5f889d888fa9957818ea8d464db34e7d10b3cb28c298e18c88e7f",
+      "view_bytes": 26863,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/drivers/p19-k298-drivers/extra-acceptance-two.py.utf8.json",
+        "sha256": "d1db03f68dd5f889d888fa9957818ea8d464db34e7d10b3cb28c298e18c88e7f",
+        "bytes": 26863
+      }
+    },
+    {
+      "archive_path": "drivers/p19-k298-drivers/measurement/measure-lsp-stdio.py.utf8.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "d55e4fdd4664c72c93f7d79c5b8ca0a4632b2ad56e261fd1c200eca4e36ffe27",
+      "view_bytes": 27401,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/drivers/p19-k298-drivers/measurement/measure-lsp-stdio.py.utf8.json",
+        "sha256": "d55e4fdd4664c72c93f7d79c5b8ca0a4632b2ad56e261fd1c200eca4e36ffe27",
+        "bytes": 27401
+      }
+    },
+    {
+      "archive_path": "drivers/p19-k298-drivers/measurement/p19-config.py.utf8.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "8c5173dd93890cf8478cfa4253d68ea0af7c042565d5c515ff47b466f6da477d",
+      "view_bytes": 4622,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/drivers/p19-k298-drivers/measurement/p19-config.py.utf8.json",
+        "sha256": "8c5173dd93890cf8478cfa4253d68ea0af7c042565d5c515ff47b466f6da477d",
+        "bytes": 4622
+      }
+    },
+    {
+      "archive_path": "drivers/p19-k298-drivers/measurement/utf16-transport.py.utf8.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "e1b461735bb70339a2e742060fb659340dac2670ec1da480c84a4d1488a99be0",
+      "view_bytes": 12922,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/drivers/p19-k298-drivers/measurement/utf16-transport.py.utf8.json",
+        "sha256": "e1b461735bb70339a2e742060fb659340dac2670ec1da480c84a4d1488a99be0",
+        "bytes": 12922
+      }
+    },
+    {
+      "archive_path": "drivers/p19-k298-drivers/measurement/verify-lsp-stdio-latency.py.utf8.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "454af21bd67e1689a14d4411c13d730978473b8f1126f656ba2f00a78a43ce9f",
+      "view_bytes": 32202,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/drivers/p19-k298-drivers/measurement/verify-lsp-stdio-latency.py.utf8.json",
+        "sha256": "454af21bd67e1689a14d4411c13d730978473b8f1126f656ba2f00a78a43ce9f",
+        "bytes": 32202
+      }
+    },
+    {
+      "archive_path": "drivers/p19-k298-drivers/prepare-ide-cooperative.py.utf8.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "fb2a873fab7c85e8aa729987b32eab2cabd71a21767c83940d23c97a8cf4222d",
+      "view_bytes": 12219,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/drivers/p19-k298-drivers/prepare-ide-cooperative.py.utf8.json",
+        "sha256": "fb2a873fab7c85e8aa729987b32eab2cabd71a21767c83940d23c97a8cf4222d",
+        "bytes": 12219
+      }
+    },
+    {
+      "archive_path": "drivers/p19-k298-drivers/provenance-gates.py.utf8.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "66f4bb3247a80a7f4cede5d547e94605d86b8130e94fac6cf3ba0ba77ed146c3",
+      "view_bytes": 2778,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/drivers/p19-k298-drivers/provenance-gates.py.utf8.json",
+        "sha256": "66f4bb3247a80a7f4cede5d547e94605d86b8130e94fac6cf3ba0ba77ed146c3",
+        "bytes": 2778
+      }
+    },
+    {
+      "archive_path": "drivers/p19-k298-drivers/rc-gate-text.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "9da6a102631cc8dcca46fd1902c6a41131ce021e0cdd923ced615fb73315a66c",
+      "view_bytes": 10413,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/drivers/p19-k298-drivers/rc-gate-text.json",
+        "sha256": "9da6a102631cc8dcca46fd1902c6a41131ce021e0cdd923ced615fb73315a66c",
+        "bytes": 10413
+      }
+    },
+    {
+      "archive_path": "drivers/p19-k298-drivers/source-gates-resume.py.utf8.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "d21956524fa7abc4e81adc335f31e65ede82e12d2cc022b68da7219a339c852f",
+      "view_bytes": 3086,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/drivers/p19-k298-drivers/source-gates-resume.py.utf8.json",
+        "sha256": "d21956524fa7abc4e81adc335f31e65ede82e12d2cc022b68da7219a339c852f",
+        "bytes": 3086
+      }
+    },
+    {
+      "archive_path": "drivers/p19-k298-drivers/source-gates.py.utf8.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "1ac2847432a1b232a6c15638838b9cc0ac2a48cb0ee7b55104d57ea1504381ec",
+      "view_bytes": 2843,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/drivers/p19-k298-drivers/source-gates.py.utf8.json",
+        "sha256": "1ac2847432a1b232a6c15638838b9cc0ac2a48cb0ee7b55104d57ea1504381ec",
+        "bytes": 2843
+      }
+    },
+    {
+      "archive_path": "drivers/p19-k298-drivers/utf16-stdio.py.utf8.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "b3dee8f1ecfe1f1d8e5d1f3e6b680b1e30772f39f53daaf55e3e5336124433c8",
+      "view_bytes": 23650,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/drivers/p19-k298-drivers/utf16-stdio.py.utf8.json",
+        "sha256": "b3dee8f1ecfe1f1d8e5d1f3e6b680b1e30772f39f53daaf55e3e5336124433c8",
+        "bytes": 23650
+      }
+    },
+    {
+      "archive_path": "drivers/p19-k298-drivers/verify-continuous-clock-text.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "2ae386f7b5a4e7984b2b94bd5ac37ff3bac39ec064b9b720ff1c133b6e13f016",
+      "view_bytes": 19596,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/drivers/p19-k298-drivers/verify-continuous-clock-text.json",
+        "sha256": "2ae386f7b5a4e7984b2b94bd5ac37ff3bac39ec064b9b720ff1c133b6e13f016",
+        "bytes": 19596
+      }
+    },
+    {
+      "archive_path": "drivers/p19-k298-drivers/verify-extra-result.py.utf8.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "eb166b0ef113f72a08e42287a6533283634424ce28ba6629d7a1ae6c6ab964a6",
+      "view_bytes": 17778,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/drivers/p19-k298-drivers/verify-extra-result.py.utf8.json",
+        "sha256": "eb166b0ef113f72a08e42287a6533283634424ce28ba6629d7a1ae6c6ab964a6",
+        "bytes": 17778
+      }
+    },
+    {
+      "archive_path": "drivers/p19-k298-drivers/verify-rc2-final-text.json",
+      "representation": "readable-external-reference",
+      "view_sha256": "207d98545f1dfd55d42ce29cd2030a061b16965f8457c51faed17bac42d44e74",
+      "view_bytes": 2056,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/drivers/p19-k298-drivers/verify-rc2-final-text.json",
+        "sha256": "bd64a2fb09a062f5690872a7617bcbc30152c4432472f06e6f4ee289e606fc29",
+        "bytes": 37688
+      }
+    },
+    {
+      "archive_path": "drivers/p19-k298-drivers/verify-soak-text.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "f32f94ea54274de8d89ef336375ce2a4b4152b35584e8118b03e697ddf1e2ee9",
+      "view_bytes": 12677,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/drivers/p19-k298-drivers/verify-soak-text.json",
+        "sha256": "f32f94ea54274de8d89ef336375ce2a4b4152b35584e8118b03e697ddf1e2ee9",
+        "bytes": 12677
+      }
+    },
+    {
+      "archive_path": "drivers/s3-acceptance-drivers/install-rpc-params/install_acceptance.py.utf8.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "cdc2b4991df66ab33d2c07100de2fa6eb170044e558230c9a7e09a6aa7e10b7b",
+      "view_bytes": 12098,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/drivers/s3-acceptance-drivers/install-rpc-params/install_acceptance.py.utf8.json",
+        "sha256": "cdc2b4991df66ab33d2c07100de2fa6eb170044e558230c9a7e09a6aa7e10b7b",
+        "bytes": 12098
+      }
+    },
+    {
+      "archive_path": "drivers/s3-acceptance-drivers/watch-owned.py.utf8.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "1cfb9f25623ef386b5efa51b915f26a3e2b8ecfd3e45587d32b74dd1c7b8e07b",
+      "view_bytes": 3186,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/drivers/s3-acceptance-drivers/watch-owned.py.utf8.json",
+        "sha256": "1cfb9f25623ef386b5efa51b915f26a3e2b8ecfd3e45587d32b74dd1c7b8e07b",
+        "bytes": 3186
+      }
+    },
+    {
+      "archive_path": "drivers/s4-acceptance-drivers/verify-soak-original-text.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "cb9de0e14ee7ed283fb5166228cdb8a0ffaf47a354dd139547fb9f06ab05ee17",
+      "view_bytes": 5216,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/drivers/s4-acceptance-drivers/verify-soak-original-text.json",
+        "sha256": "cb9de0e14ee7ed283fb5166228cdb8a0ffaf47a354dd139547fb9f06ab05ee17",
+        "bytes": 5216
+      }
+    },
+    {
+      "archive_path": "receipts/interrupted-attempt/campaign1-awake-closed.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "e442b00447a9575d798721ec752fabf64d375060a83c6ce061b6f2d9c2a6f23f",
+      "view_bytes": 390,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/interrupted-attempt/campaign1-awake-closed.json",
+        "sha256": "e442b00447a9575d798721ec752fabf64d375060a83c6ce061b6f2d9c2a6f23f",
+        "bytes": 390
+      }
+    },
+    {
+      "archive_path": "receipts/interrupted-attempt/campaign1-awake-stop-text.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "28738a0d3af6422627697325b7546618a08ae2a7d646b0722c48f9615de490e0",
+      "view_bytes": 393,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/interrupted-attempt/campaign1-awake-stop-text.json",
+        "sha256": "28738a0d3af6422627697325b7546618a08ae2a7d646b0722c48f9615de490e0",
+        "bytes": 393
+      }
+    },
+    {
+      "archive_path": "receipts/interrupted-attempt/rc1-campaign-proof.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "2b3a6cbbb0cc7337cbc89b7741868333712548c0d2b5ed36d2a475e9ec9fc24c",
+      "view_bytes": 12879,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/interrupted-attempt/rc1-campaign-proof.json",
+        "sha256": "2b3a6cbbb0cc7337cbc89b7741868333712548c0d2b5ed36d2a475e9ec9fc24c",
+        "bytes": 12879
+      }
+    },
+    {
+      "archive_path": "receipts/interrupted-attempt/rc1-cancel-text.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "0c8ee08eab1ef9bb19d921f28f3be51ee0ff4f642c56cc7080e029cf1d8aec86",
+      "view_bytes": 470,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/interrupted-attempt/rc1-cancel-text.json",
+        "sha256": "0c8ee08eab1ef9bb19d921f28f3be51ee0ff4f642c56cc7080e029cf1d8aec86",
+        "bytes": 470
+      }
+    },
+    {
+      "archive_path": "receipts/interrupted-attempt/rc1-controller.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "d7f573a7b05d8acf75005e206a07ab8074b21c4e7dd101a7ab4660101bfc8162",
+      "view_bytes": 763,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/interrupted-attempt/rc1-controller.json",
+        "sha256": "d7f573a7b05d8acf75005e206a07ab8074b21c4e7dd101a7ab4660101bfc8162",
+        "bytes": 763
+      }
+    },
+    {
+      "archive_path": "receipts/interrupted-attempt/replay1-controller.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "994c70138187b90ecad171ccb178022b8f0eb6b7125e938c90fb49ad881c482d",
+      "view_bytes": 965,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/interrupted-attempt/replay1-controller.json",
+        "sha256": "994c70138187b90ecad171ccb178022b8f0eb6b7125e938c90fb49ad881c482d",
+        "bytes": 965
+      }
+    },
+    {
+      "archive_path": "receipts/interrupted-attempt/replay1-log-text.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "e77888c88d9646249f0b8ddf0d1dac476fc07c363006f7085e51f340f9e60cc2",
+      "view_bytes": 356,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/interrupted-attempt/replay1-log-text.json",
+        "sha256": "e77888c88d9646249f0b8ddf0d1dac476fc07c363006f7085e51f340f9e60cc2",
+        "bytes": 356
+      }
+    },
+    {
+      "archive_path": "receipts/interrupted-attempt/replay2-controller.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "4ffa1b415f8bc502a515e1b2bd9d874578f4b69e5e4174965a9e538dcefcd15a",
+      "view_bytes": 1194,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/interrupted-attempt/replay2-controller.json",
+        "sha256": "4ffa1b415f8bc502a515e1b2bd9d874578f4b69e5e4174965a9e538dcefcd15a",
+        "bytes": 1194
+      }
+    },
+    {
+      "archive_path": "receipts/interrupted-attempt/replay2-log-text.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "39e9cb277716b5947ce3a9bbf8548ce04e621a2b0b3a115a3c28a8df3a61abf3",
+      "view_bytes": 4533,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/interrupted-attempt/replay2-log-text.json",
+        "sha256": "39e9cb277716b5947ce3a9bbf8548ce04e621a2b0b3a115a3c28a8df3a61abf3",
+        "bytes": 4533
+      }
+    },
+    {
+      "archive_path": "receipts/interrupted-attempt/soak1-controller.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "9b7acae72e1db3250f1ca6b6c97db47f427d65592d4b02db1426a9dd421f2e8c",
+      "view_bytes": 690,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/interrupted-attempt/soak1-controller.json",
+        "sha256": "9b7acae72e1db3250f1ca6b6c97db47f427d65592d4b02db1426a9dd421f2e8c",
+        "bytes": 690
+      }
+    },
+    {
+      "archive_path": "receipts/interrupted-attempt/soak1-history-text.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "3df3fbadefa7f122ba01190b38bf59080cce1618f560b29bd927c633ca0212c7",
+      "view_bytes": 791,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/interrupted-attempt/soak1-history-text.json",
+        "sha256": "3df3fbadefa7f122ba01190b38bf59080cce1618f560b29bd927c633ca0212c7",
+        "bytes": 791
+      }
+    },
+    {
+      "archive_path": "receipts/interrupted-attempt/soak1-proof.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "553c514e1326d12bcc311df2d169fc5e8a8dc0a7d293f76fc750c6c4b7a2bbd8",
+      "view_bytes": 5163,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/interrupted-attempt/soak1-proof.json",
+        "sha256": "553c514e1326d12bcc311df2d169fc5e8a8dc0a7d293f76fc750c6c4b7a2bbd8",
+        "bytes": 5163
+      }
+    },
+    {
+      "archive_path": "receipts/interrupted-attempt/soak1-report-text.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "fd89d7f34f6f3652865094d22111b74405853448f009a5567f197dde10f9d0b0",
+      "view_bytes": 15470,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/interrupted-attempt/soak1-report-text.json",
+        "sha256": "fd89d7f34f6f3652865094d22111b74405853448f009a5567f197dde10f9d0b0",
+        "bytes": 15470
+      }
+    },
+    {
+      "archive_path": "receipts/k299/c1/gates3-controller.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "f1c53a107cab0186d1dc26a540440a831967a55265c885cc13df2f968090ba9e",
+      "view_bytes": 659,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/k299/c1/gates3-controller.json",
+        "sha256": "f1c53a107cab0186d1dc26a540440a831967a55265c885cc13df2f968090ba9e",
+        "bytes": 659
+      }
+    },
+    {
+      "archive_path": "receipts/k299/c1/gates3-phase-matrix-text.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "eb23a38dd699950ef3d36a6016473f1696eadbeb08b9b0b2c322209b67f7fbcb",
+      "view_bytes": 38135,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/k299/c1/gates3-phase-matrix-text.json",
+        "sha256": "eb23a38dd699950ef3d36a6016473f1696eadbeb08b9b0b2c322209b67f7fbcb",
+        "bytes": 38135
+      }
+    },
+    {
+      "archive_path": "receipts/k299/c1/gates3-proof.json",
+      "representation": "readable-external-reference",
+      "view_sha256": "31745f7bc1243bead7e6a20874f811d28728bf097ad78999ddadde950e38ac29",
+      "view_bytes": 2021,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/k299/c1/gates3-proof.json",
+        "sha256": "d4258bce3c365d1690b6ed3c9fe3befacf50caeec09c188580a4282de7d065d4",
+        "bytes": 9189
+      }
+    },
+    {
+      "archive_path": "receipts/k299/c1/native1-failed-controller.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "b623c6a5269d7b1e04d1ac5b28158e566e4fc1e0699440d71856b41ad93cf717",
+      "view_bytes": 731,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/k299/c1/native1-failed-controller.json",
+        "sha256": "b623c6a5269d7b1e04d1ac5b28158e566e4fc1e0699440d71856b41ad93cf717",
+        "bytes": 731
+      }
+    },
+    {
+      "archive_path": "receipts/k299/c1/native1-failed-proof.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "3aaacce35041bc77132307459fe7ca01d2c5f3116998ed881888d998a9b2b7ae",
+      "view_bytes": 37858,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/k299/c1/native1-failed-proof.json",
+        "sha256": "3aaacce35041bc77132307459fe7ca01d2c5f3116998ed881888d998a9b2b7ae",
+        "bytes": 37858
+      }
+    },
+    {
+      "archive_path": "receipts/k299/c1/native1-pdf-inner-proof.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "e7adea437a5671027c282fafee20db2151e46a3e6ef5d9cce653bce078660fa8",
+      "view_bytes": 3504,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/k299/c1/native1-pdf-inner-proof.json",
+        "sha256": "e7adea437a5671027c282fafee20db2151e46a3e6ef5d9cce653bce078660fa8",
+        "bytes": 3504
+      }
+    },
+    {
+      "archive_path": "receipts/k299/c1/security1-controller.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "3b040681747437b2a84b19a9e2deb58ae6f07f7e9489daeb593c9a6b11356ab1",
+      "view_bytes": 1009,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/k299/c1/security1-controller.json",
+        "sha256": "3b040681747437b2a84b19a9e2deb58ae6f07f7e9489daeb593c9a6b11356ab1",
+        "bytes": 1009
+      }
+    },
+    {
+      "archive_path": "receipts/k299/c1/security1-proof.json",
+      "representation": "readable-external-reference",
+      "view_sha256": "fc5e48f531acc4b3da32441e90a249487888b08cf5b99b1dacca320302ac0b8f",
+      "view_bytes": 2028,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/k299/c1/security1-proof.json",
+        "sha256": "5118c948ea8b6a35f0b9779ce460496754a07714b9fa315b835c7f14449ae61b",
+        "bytes": 15283
+      }
+    },
+    {
+      "archive_path": "receipts/k299/c1/source-commit.json",
+      "representation": "readable-external-reference",
+      "view_sha256": "035617474fde438bf344480e1b9d6c1c8a93ed26b51bcaaa800e3779f6ba9834",
+      "view_bytes": 2023,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/k299/c1/source-commit.json",
+        "sha256": "88588f4dc0257522ca85aa460ffb297015e6eebca88e596ecf5d8fe73847ccdb",
+        "bytes": 6656
+      }
+    },
+    {
+      "archive_path": "receipts/k299/c2/gates4-controller.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "be2eacc748cd9da7cdb41440003a447e3c753980dd15e97fa009c3217a44b72e",
+      "view_bytes": 659,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/k299/c2/gates4-controller.json",
+        "sha256": "be2eacc748cd9da7cdb41440003a447e3c753980dd15e97fa009c3217a44b72e",
+        "bytes": 659
+      }
+    },
+    {
+      "archive_path": "receipts/k299/c2/gates4-phase-matrix-text.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "bd7b4e106905dd972c7c0a157152d3b7d23b62dacc7a3f9ef1be238eb6560958",
+      "view_bytes": 38135,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/k299/c2/gates4-phase-matrix-text.json",
+        "sha256": "bd7b4e106905dd972c7c0a157152d3b7d23b62dacc7a3f9ef1be238eb6560958",
+        "bytes": 38135
+      }
+    },
+    {
+      "archive_path": "receipts/k299/c2/gates4-proof.json",
+      "representation": "readable-external-reference",
+      "view_sha256": "7c68404ecf5958b0e2e6fb15c2fbc9d51b74bfc07a1d81bba04120ac08f65e68",
+      "view_bytes": 2021,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/k299/c2/gates4-proof.json",
+        "sha256": "0fdf7dc22b5eec715b83104f7d82bdcfcd19881d615f543d8088191e562bc964",
+        "bytes": 8370
+      }
+    },
+    {
+      "archive_path": "receipts/k299/c2/native2-controller.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "8bc6ed00260829577ba6a414adb0039f88c258855d8229b8d2c311255caff17c",
+      "view_bytes": 734,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/k299/c2/native2-controller.json",
+        "sha256": "8bc6ed00260829577ba6a414adb0039f88c258855d8229b8d2c311255caff17c",
+        "bytes": 734
+      }
+    },
+    {
+      "archive_path": "receipts/k299/c2/native2-pdf-inner-proof.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "0ee78c471f9a76f16640817ef1cf67ae32b7ebfbd6e76bb58934a21ce7404ca2",
+      "view_bytes": 3504,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/k299/c2/native2-pdf-inner-proof.json",
+        "sha256": "0ee78c471f9a76f16640817ef1cf67ae32b7ebfbd6e76bb58934a21ce7404ca2",
+        "bytes": 3504
+      }
+    },
+    {
+      "archive_path": "receipts/k299/c2/native2-proof.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "bfca13b42cabd6ff44e4b18b1888b96234644a6001b8bb871116943c1eb148e5",
+      "view_bytes": 44657,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/k299/c2/native2-proof.json",
+        "sha256": "bfca13b42cabd6ff44e4b18b1888b96234644a6001b8bb871116943c1eb148e5",
+        "bytes": 44657
+      }
+    },
+    {
+      "archive_path": "receipts/k299/c2/native2-service-inner-proof.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "1cc9dfadf5a6a4225faea66ba01deb10f3d09c0f66c7ec3acb9903731fa3ef52",
+      "view_bytes": 2283,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/k299/c2/native2-service-inner-proof.json",
+        "sha256": "1cc9dfadf5a6a4225faea66ba01deb10f3d09c0f66c7ec3acb9903731fa3ef52",
+        "bytes": 2283
+      }
+    },
+    {
+      "archive_path": "receipts/k299/c2/security2-controller.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "ab89441f37a5ba88f98051116ef17566f8b8b6a987f941369e3845c5c4080fef",
+      "view_bytes": 1009,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/k299/c2/security2-controller.json",
+        "sha256": "ab89441f37a5ba88f98051116ef17566f8b8b6a987f941369e3845c5c4080fef",
+        "bytes": 1009
+      }
+    },
+    {
+      "archive_path": "receipts/k299/c2/security2-proof.json",
+      "representation": "readable-external-reference",
+      "view_sha256": "75f4e188c108335c11ab798be36b65bb254ef0925633a8f6ad39ac1b5f5f51ed",
+      "view_bytes": 2028,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/k299/c2/security2-proof.json",
+        "sha256": "6e15fcab9834c13015ea306478699982c548da753cf540e7694112ca701abd56",
+        "bytes": 13615
+      }
+    },
+    {
+      "archive_path": "receipts/k299/c2/source-commit2.json",
+      "representation": "readable-external-reference",
+      "view_sha256": "525f9fc7da09e94c1deebf6840df523644e81ef157c6198b40ed09c85817919f",
+      "view_bytes": 2025,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/k299/c2/source-commit2.json",
+        "sha256": "cea3e9ebcddb5d75a9dfedaadb81e1dc5c02a2d24754f1d9cd0e6bd25bd8dc3a",
+        "bytes": 5724
+      }
+    },
+    {
+      "archive_path": "receipts/k299/gates-v4-preparation.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "e7bcbbbc1190f85ff80173779497d4f494a2bc694fa82ae7863cdbe9491ef485",
+      "view_bytes": 1148,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/k299/gates-v4-preparation.json",
+        "sha256": "e7bcbbbc1190f85ff80173779497d4f494a2bc694fa82ae7863cdbe9491ef485",
+        "bytes": 1148
+      }
+    },
+    {
+      "archive_path": "receipts/k299/gates1-controller.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "d2df07e58a73e66b6d36f6853e504f8efc02b0326aa863040526137e2b8b29d3",
+      "view_bytes": 678,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/k299/gates1-controller.json",
+        "sha256": "d2df07e58a73e66b6d36f6853e504f8efc02b0326aa863040526137e2b8b29d3",
+        "bytes": 678
+      }
+    },
+    {
+      "archive_path": "receipts/k299/gates1-failed-phase-report-text.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "2a5e91082579ec287ae5116924acf5c781cebdf5e74b1337752aa5f540f7a045",
+      "view_bytes": 43606,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/k299/gates1-failed-phase-report-text.json",
+        "sha256": "2a5e91082579ec287ae5116924acf5c781cebdf5e74b1337752aa5f540f7a045",
+        "bytes": 43606
+      }
+    },
+    {
+      "archive_path": "receipts/k299/gates1-proof.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "ef9139d4eafea2783bf4cb430bcacdfaae14ef13a41a9b2f87e92c784dc8ba6d",
+      "view_bytes": 3673,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/k299/gates1-proof.json",
+        "sha256": "ef9139d4eafea2783bf4cb430bcacdfaae14ef13a41a9b2f87e92c784dc8ba6d",
+        "bytes": 3673
+      }
+    },
+    {
+      "archive_path": "receipts/k299/gates2-controller.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "45a1de83e7fb5fa2eed72baaaa4d14a1bfa298e1a1762bc923367408d3d74048",
+      "view_bytes": 659,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/k299/gates2-controller.json",
+        "sha256": "45a1de83e7fb5fa2eed72baaaa4d14a1bfa298e1a1762bc923367408d3d74048",
+        "bytes": 659
+      }
+    },
+    {
+      "archive_path": "receipts/k299/gates2-failed-phase-report-text.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "930c26015e9b733db160f7ed74b34e7a10da723d2adbf7e652ea15ad20d5ffd0",
+      "view_bytes": 40280,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/k299/gates2-failed-phase-report-text.json",
+        "sha256": "930c26015e9b733db160f7ed74b34e7a10da723d2adbf7e652ea15ad20d5ffd0",
+        "bytes": 40280
+      }
+    },
+    {
+      "archive_path": "receipts/k299/gates2-proof.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "176fb8c5826f83093a69b19a2787fc08f4ecd7020fd0500e83813975d994aaef",
+      "view_bytes": 3616,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/k299/gates2-proof.json",
+        "sha256": "176fb8c5826f83093a69b19a2787fc08f4ecd7020fd0500e83813975d994aaef",
+        "bytes": 3616
+      }
+    },
+    {
+      "archive_path": "receipts/k299/target-relocation.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "02fc881fca182d2141e168a7878ca83f78f747a22ece2e16581f4ac04b90da9b",
+      "view_bytes": 536,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/k299/target-relocation.json",
+        "sha256": "02fc881fca182d2141e168a7878ca83f78f747a22ece2e16581f4ac04b90da9b",
+        "bytes": 536
+      }
+    },
+    {
+      "archive_path": "receipts/lifecycle/campaign2-awake-closed.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "c9c26d154568b2ef3785974e3b6853bf345230368c879807c5fcafc7aa3421c4",
+      "view_bytes": 390,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/lifecycle/campaign2-awake-closed.json",
+        "sha256": "c9c26d154568b2ef3785974e3b6853bf345230368c879807c5fcafc7aa3421c4",
+        "bytes": 390
+      }
+    },
+    {
+      "archive_path": "receipts/p19-k298-a57290f-macos-delivery/DELIVERY.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "30c3e97dd2ff1831cc9abc97d9b5197dc5f64021e4efd16afd9899f28671cdcb",
+      "view_bytes": 3148,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/p19-k298-a57290f-macos-delivery/DELIVERY.json",
+        "sha256": "30c3e97dd2ff1831cc9abc97d9b5197dc5f64021e4efd16afd9899f28671cdcb",
+        "bytes": 3148
+      }
+    },
+    {
+      "archive_path": "receipts/p19-k298-a57290f-macos-install/PROOF.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "aeb03c8dda60a52ee1dbfbe92702d5694da27b7c3aafc7451363366c68c1f17e",
+      "view_bytes": 12863,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/p19-k298-a57290f-macos-install/PROOF.json",
+        "sha256": "aeb03c8dda60a52ee1dbfbe92702d5694da27b7c3aafc7451363366c68c1f17e",
+        "bytes": 12863
+      }
+    },
+    {
+      "archive_path": "receipts/p19-k298-a57290f-owned-ide/ACCEPTANCE.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "ca7f4a6b66feda3dc29f2e5b6558364b2dae4cdd1239b3ca414325071d534cff",
+      "view_bytes": 1315,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/p19-k298-a57290f-owned-ide/ACCEPTANCE.json",
+        "sha256": "ca7f4a6b66feda3dc29f2e5b6558364b2dae4cdd1239b3ca414325071d534cff",
+        "bytes": 1315
+      }
+    },
+    {
+      "archive_path": "receipts/p19-k298-a57290f-owned-ide/CLOSED.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "539a6050047e5fc46f2adb6774869bd27d7c9134c1443d4483b99404a696684d",
+      "view_bytes": 447,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/p19-k298-a57290f-owned-ide/CLOSED.json",
+        "sha256": "539a6050047e5fc46f2adb6774869bd27d7c9134c1443d4483b99404a696684d",
+        "bytes": 447
+      }
+    },
+    {
+      "archive_path": "receipts/p19-k298-a57290f-owned-ide/LAUNCHER-PREPARATION.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "a7fa4f936267f0d90b9d6f42ac9b2856d1c5cde67e389615e134c825dbef7cf1",
+      "view_bytes": 1983,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/p19-k298-a57290f-owned-ide/LAUNCHER-PREPARATION.json",
+        "sha256": "a7fa4f936267f0d90b9d6f42ac9b2856d1c5cde67e389615e134c825dbef7cf1",
+        "bytes": 1983
+      }
+    },
+    {
+      "archive_path": "receipts/p19-k298-a57290f-owned-ide/PREPARATION.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "78f747adb481bb1028388dad06d91f0c6a7efefd206d3d59d505d4eba2b33972",
+      "view_bytes": 1724,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/p19-k298-a57290f-owned-ide/PREPARATION.json",
+        "sha256": "78f747adb481bb1028388dad06d91f0c6a7efefd206d3d59d505d4eba2b33972",
+        "bytes": 1724
+      }
+    },
+    {
+      "archive_path": "receipts/p19-k298-a57290f-owned-ide/UI-OBSERVATIONS.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "f673b12b93978f432481bd3357890d9eb60dba9dc19ce267fe79c5de3e29cb85",
+      "view_bytes": 3392,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/p19-k298-a57290f-owned-ide/UI-OBSERVATIONS.json",
+        "sha256": "f673b12b93978f432481bd3357890d9eb60dba9dc19ce267fe79c5de3e29cb85",
+        "bytes": 3392
+      }
+    },
+    {
+      "archive_path": "receipts/p19-k298-a57290f-owned-ide/restart-CLOSED.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "bc2d0cb8b3022c69f1d79b35b74d07aba0f97eef2ff67540db8d5b1534962950",
+      "view_bytes": 448,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/p19-k298-a57290f-owned-ide/restart-CLOSED.json",
+        "sha256": "bc2d0cb8b3022c69f1d79b35b74d07aba0f97eef2ff67540db8d5b1534962950",
+        "bytes": 448
+      }
+    },
+    {
+      "archive_path": "receipts/p19-k298-a57290f-rc-2/GATE-RECEIPT.json",
+      "representation": "readable-external-reference",
+      "view_sha256": "7dff052bea806c18f4e5a541b859c345ce401f7f76dce2c5f70be292a5aa3c33",
+      "view_bytes": 2050,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/p19-k298-a57290f-rc-2/GATE-RECEIPT.json",
+        "sha256": "7e9978cc8b160323bc77fb00d647753764ef0ef2f6d1c480e5e4d11205c9676c",
+        "bytes": 25790
+      }
+    },
+    {
+      "archive_path": "receipts/p19-k298-a57290f-rc-2/campaign-proof.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "bcaf0afd691c78a482aed20ede1cd7e30a49229f9a454a7cc75db83e2e5f7587",
+      "view_bytes": 13031,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/p19-k298-a57290f-rc-2/campaign-proof.json",
+        "sha256": "bcaf0afd691c78a482aed20ede1cd7e30a49229f9a454a7cc75db83e2e5f7587",
+        "bytes": 13031
+      }
+    },
+    {
+      "archive_path": "receipts/p19-k298-a57290f-rc-2/continuous-clock-review.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "e8189e917b54e1c7e6716cd9d5d0fd9680349c4783414a7cf55f64c2d0329a9f",
+      "view_bytes": 6392,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/p19-k298-a57290f-rc-2/continuous-clock-review.json",
+        "sha256": "e8189e917b54e1c7e6716cd9d5d0fd9680349c4783414a7cf55f64c2d0329a9f",
+        "bytes": 6392
+      }
+    },
+    {
+      "archive_path": "receipts/p19-k298-a57290f-rc-2/controller.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "d6192a360d4f80e46730a6f59b27a7bc3575f4a9fb7c16fec86648915bbf57f4",
+      "view_bytes": 716,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/p19-k298-a57290f-rc-2/controller.json",
+        "sha256": "d6192a360d4f80e46730a6f59b27a7bc3575f4a9fb7c16fec86648915bbf57f4",
+        "bytes": 716
+      }
+    },
+    {
+      "archive_path": "receipts/p19-k298-a57290f-rc-2/gate-controller.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "3d50df1731c17bc6d27a763111e98b45d8ca048365e3f9c53d789f6adb582e18",
+      "view_bytes": 1468,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/p19-k298-a57290f-rc-2/gate-controller.json",
+        "sha256": "3d50df1731c17bc6d27a763111e98b45d8ca048365e3f9c53d789f6adb582e18",
+        "bytes": 1468
+      }
+    },
+    {
+      "archive_path": "receipts/p19-k298-a57290f-rc-2/independent-raw-review.json",
+      "representation": "readable-external-reference",
+      "view_sha256": "b958de7bc47e0a14e3e1d88b39e2f29ffdeeb8271a713dfeacdcef3874d0f192",
+      "view_bytes": 2070,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/p19-k298-a57290f-rc-2/independent-raw-review.json",
+        "sha256": "adf6d1a436715d08bb88910d670a9ebe9da6c01b8446817fc4ab53a1ef54e38f",
+        "bytes": 27088
+      }
+    },
+    {
+      "archive_path": "receipts/p19-k298-a57290f-soak-2/PROOF.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "f333bdf3a7130b50d33f3a981a1074485c78e64d9507ab59b544b3f8dcb30a3c",
+      "view_bytes": 5171,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/p19-k298-a57290f-soak-2/PROOF.json",
+        "sha256": "f333bdf3a7130b50d33f3a981a1074485c78e64d9507ab59b544b3f8dcb30a3c",
+        "bytes": 5171
+      }
+    },
+    {
+      "archive_path": "receipts/p19-k298-a57290f-soak-2/continuous-clock-review.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "a12caec04e7b189ddebb3af83152b283aa130c3c8d1564aba2c2b4005a497b94",
+      "view_bytes": 3920,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/p19-k298-a57290f-soak-2/continuous-clock-review.json",
+        "sha256": "a12caec04e7b189ddebb3af83152b283aa130c3c8d1564aba2c2b4005a497b94",
+        "bytes": 3920
+      }
+    },
+    {
+      "archive_path": "receipts/p19-k298-a57290f-soak-2/controller.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "7989661a94812c9486b5de7b3709ae3f920ef001bbb63853fd6b62861fe3ea5d",
+      "view_bytes": 692,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/p19-k298-a57290f-soak-2/controller.json",
+        "sha256": "7989661a94812c9486b5de7b3709ae3f920ef001bbb63853fd6b62861fe3ea5d",
+        "bytes": 692
+      }
+    },
+    {
+      "archive_path": "receipts/p19-k298-a57290f-soak-2/history-text.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "6e6b44ec11af7b6f32cd3fb8d2b3327f97cc25df11e292f4c8fcc797b23f67ab",
+      "view_bytes": 793,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/p19-k298-a57290f-soak-2/history-text.json",
+        "sha256": "6e6b44ec11af7b6f32cd3fb8d2b3327f97cc25df11e292f4c8fcc797b23f67ab",
+        "bytes": 793
+      }
+    },
+    {
+      "archive_path": "receipts/p19-k298-a57290f-soak-2/independent-result.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "727f217adb019b15b652e7b8f997987f49455833fbdee2ab39886c33d32dae0b",
+      "view_bytes": 3636,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/p19-k298-a57290f-soak-2/independent-result.json",
+        "sha256": "727f217adb019b15b652e7b8f997987f49455833fbdee2ab39886c33d32dae0b",
+        "bytes": 3636
+      }
+    },
+    {
+      "archive_path": "receipts/p19-k298-a57290f-soak-2/report-text.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "e69a95605e78a143ac6f2e4b639fff89121aadd3fe2978d5b410edc31d3a8b75",
+      "view_bytes": 15440,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/p19-k298-a57290f-soak-2/report-text.json",
+        "sha256": "e69a95605e78a143ac6f2e4b639fff89121aadd3fe2978d5b410edc31d3a8b75",
+        "bytes": 15440
+      }
+    },
+    {
+      "archive_path": "receipts/p19-k298-a57290f-utf16-stdio/PROOF.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "7e0d18a483233ae09dca0aec0321abd223d90b975239f5c73acee0fa4b09fe92",
+      "view_bytes": 5345,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/p19-k298-a57290f-utf16-stdio/PROOF.json",
+        "sha256": "7e0d18a483233ae09dca0aec0321abd223d90b975239f5c73acee0fa4b09fe92",
+        "bytes": 5345
+      }
+    },
+    {
+      "archive_path": "receipts/p19-k298-accepted-source.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "2fc817b7d6fd87927b7ead01db6e3a8d08931138ce3164f5edb1bddf4e1276e1",
+      "view_bytes": 426,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/p19-k298-accepted-source.json",
+        "sha256": "2fc817b7d6fd87927b7ead01db6e3a8d08931138ce3164f5edb1bddf4e1276e1",
+        "bytes": 426
+      }
+    },
+    {
+      "archive_path": "receipts/p19-k298-baseline-stdio-1-independent-review/PROOF.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "11b04c7e182dcd7c155f4774e74ef8cef06c97f61eb112303d84ba9ecbce34ae",
+      "view_bytes": 87341,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/p19-k298-baseline-stdio-1-independent-review/PROOF.json",
+        "sha256": "11b04c7e182dcd7c155f4774e74ef8cef06c97f61eb112303d84ba9ecbce34ae",
+        "bytes": 87341
+      }
+    },
+    {
+      "archive_path": "receipts/p19-k298-baseline-stdio-1/PROOF.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "c21ede269e48dbceac2d471c38d639eedf4885b0a9c0946a06b44d31df9ae3fc",
+      "view_bytes": 112345,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/p19-k298-baseline-stdio-1/PROOF.json",
+        "sha256": "c21ede269e48dbceac2d471c38d639eedf4885b0a9c0946a06b44d31df9ae3fc",
+        "bytes": 112345
+      }
+    },
+    {
+      "archive_path": "receipts/p19-k298-baseline-stdio-controller-1.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "04744af6ab3d81333242f03f49c669c25abbb3c619b6057eef7a4b8cc724ba7e",
+      "view_bytes": 583,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/p19-k298-baseline-stdio-controller-1.json",
+        "sha256": "04744af6ab3d81333242f03f49c669c25abbb3c619b6057eef7a4b8cc724ba7e",
+        "bytes": 583
+      }
+    },
+    {
+      "archive_path": "receipts/p19-k298-candidate-stdio-1-independent-review/PROOF.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "e171fdec24a381581385724aee7a1ffffd16117976564003b7bce78d0c02b96e",
+      "view_bytes": 87329,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/p19-k298-candidate-stdio-1-independent-review/PROOF.json",
+        "sha256": "e171fdec24a381581385724aee7a1ffffd16117976564003b7bce78d0c02b96e",
+        "bytes": 87329
+      }
+    },
+    {
+      "archive_path": "receipts/p19-k298-candidate-stdio-1/PROOF.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "814ecdaef008475cd08e3b34e56cf1de8e25a08935566634de7a3c434c319aa7",
+      "view_bytes": 112299,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/p19-k298-candidate-stdio-1/PROOF.json",
+        "sha256": "814ecdaef008475cd08e3b34e56cf1de8e25a08935566634de7a3c434c319aa7",
+        "bytes": 112299
+      }
+    },
+    {
+      "archive_path": "receipts/p19-k298-candidate-stdio-controller-1.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "3c46f49c673402d460a0204be345dc495b2b010899fd2f7dea99b49fcd4e69f3",
+      "view_bytes": 583,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/p19-k298-candidate-stdio-controller-1.json",
+        "sha256": "3c46f49c673402d460a0204be345dc495b2b010899fd2f7dea99b49fcd4e69f3",
+        "bytes": 583
+      }
+    },
+    {
+      "archive_path": "receipts/p19-k298-delivery-controller-1.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "10772b80aeb6dc6e219667a6f726d8b1778e1646a90b052c7dc58ecd2d00be7e",
+      "view_bytes": 706,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/p19-k298-delivery-controller-1.json",
+        "sha256": "10772b80aeb6dc6e219667a6f726d8b1778e1646a90b052c7dc58ecd2d00be7e",
+        "bytes": 706
+      }
+    },
+    {
+      "archive_path": "receipts/p19-k298-drivers/baseline-config.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "cb5f71ce0a341a5a9d25f09bc8d2808ae94d95a5bb6eb35e99aafe0f9847843a",
+      "view_bytes": 755,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/p19-k298-drivers/baseline-config.json",
+        "sha256": "cb5f71ce0a341a5a9d25f09bc8d2808ae94d95a5bb6eb35e99aafe0f9847843a",
+        "bytes": 755
+      }
+    },
+    {
+      "archive_path": "receipts/p19-k298-drivers/candidate-config.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "b02b88fa0bfb688fe65868b01e6747f4d93d833447bf849599f2b0d412ec2164",
+      "view_bytes": 732,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/p19-k298-drivers/candidate-config.json",
+        "sha256": "b02b88fa0bfb688fe65868b01e6747f4d93d833447bf849599f2b0d412ec2164",
+        "bytes": 732
+      }
+    },
+    {
+      "archive_path": "receipts/p19-k298-extra-1/PROOF.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "41d5fad656de902c3532ab85afd10da4521cbaadce8231db81353b624a71ce47",
+      "view_bytes": 31827,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/p19-k298-extra-1/PROOF.json",
+        "sha256": "41d5fad656de902c3532ab85afd10da4521cbaadce8231db81353b624a71ce47",
+        "bytes": 31827
+      }
+    },
+    {
+      "archive_path": "receipts/p19-k298-extra-controller-1.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "1ec373fd5cf20f4462ff01a1bb685231394944ec73ef742628315cee85d4f150",
+      "view_bytes": 687,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/p19-k298-extra-controller-1.json",
+        "sha256": "1ec373fd5cf20f4462ff01a1bb685231394944ec73ef742628315cee85d4f150",
+        "bytes": 687
+      }
+    },
+    {
+      "archive_path": "receipts/p19-k298-extra-result.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "c0946c7c26044a4e03ba0c6c614f83c56af29a1ced8a6a5ccf7e098ae7fc9bbb",
+      "view_bytes": 3336,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/p19-k298-extra-result.json",
+        "sha256": "c0946c7c26044a4e03ba0c6c614f83c56af29a1ced8a6a5ccf7e098ae7fc9bbb",
+        "bytes": 3336
+      }
+    },
+    {
+      "archive_path": "receipts/p19-k298-ide-preparation-controller.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "ab240492c6109bf02765a38a50f878d332e2b41e5f02775fdaf1cf0cc21fe261",
+      "view_bytes": 1195,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/p19-k298-ide-preparation-controller.json",
+        "sha256": "ab240492c6109bf02765a38a50f878d332e2b41e5f02775fdaf1cf0cc21fe261",
+        "bytes": 1195
+      }
+    },
+    {
+      "archive_path": "receipts/p19-k298-macos-install-controller.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "f8cfeef77a84bfd285d7e893394750e186513fbd33b6b711cdb650aecd9ddd11",
+      "view_bytes": 1126,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/p19-k298-macos-install-controller.json",
+        "sha256": "f8cfeef77a84bfd285d7e893394750e186513fbd33b6b711cdb650aecd9ddd11",
+        "bytes": 1126
+      }
+    },
+    {
+      "archive_path": "receipts/p19-k298-measurement-ready.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "c5f2734438cfbc1c0acbe08d4054bcb152bbaec3e26e996842c4ebb21ee7a605",
+      "view_bytes": 843,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/p19-k298-measurement-ready.json",
+        "sha256": "c5f2734438cfbc1c0acbe08d4054bcb152bbaec3e26e996842c4ebb21ee7a605",
+        "bytes": 843
+      }
+    },
+    {
+      "archive_path": "receipts/p19-k298-provenance-controller-1.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "835d19e6529937234bf0aa672aafc71f7b2216e1526c8195574ca78f2fab26f6",
+      "view_bytes": 759,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/p19-k298-provenance-controller-1.json",
+        "sha256": "835d19e6529937234bf0aa672aafc71f7b2216e1526c8195574ca78f2fab26f6",
+        "bytes": 759
+      }
+    },
+    {
+      "archive_path": "receipts/p19-k298-provenance-gates-1/PROOF.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "8e52fdb957e23edb386b7ec99e6a6b1537e2ba965462a00f5ef7d03a05a127d3",
+      "view_bytes": 3305,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/p19-k298-provenance-gates-1/PROOF.json",
+        "sha256": "8e52fdb957e23edb386b7ec99e6a6b1537e2ba965462a00f5ef7d03a05a127d3",
+        "bytes": 3305
+      }
+    },
+    {
+      "archive_path": "receipts/p19-k298-source-commit.json",
+      "representation": "readable-external-reference",
+      "view_sha256": "53bb135db6af31992d74882ab118a587b61c977a4add1ffc7a8fd7fe482ad054",
+      "view_bytes": 2025,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/p19-k298-source-commit.json",
+        "sha256": "38e1effcbdf0acdd737b7195476375421df70873b15a5420e29309b4f59e00c5",
+        "bytes": 1871
+      }
+    },
+    {
+      "archive_path": "receipts/p19-k298-source-gates-1/PROOF.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "6dc8cfd667035af5a516e51c97520274fc602930c4a51f0933e88945cc074a78",
+      "view_bytes": 3066,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/p19-k298-source-gates-1/PROOF.json",
+        "sha256": "6dc8cfd667035af5a516e51c97520274fc602930c4a51f0933e88945cc074a78",
+        "bytes": 3066
+      }
+    },
+    {
+      "archive_path": "receipts/p19-k298-source-gates-2/PROOF.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "6144b5a628781b5be67a87ff876650e026e23e2bcc07f5f340c552cadb2a3ed7",
+      "view_bytes": 6555,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/p19-k298-source-gates-2/PROOF.json",
+        "sha256": "6144b5a628781b5be67a87ff876650e026e23e2bcc07f5f340c552cadb2a3ed7",
+        "bytes": 6555
+      }
+    },
+    {
+      "archive_path": "receipts/p19-k298-source-gates-controller-1.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "4617f0788e406d4b392c9cc6c930263a2c12b8748eeecb6f92e6d6c50a45150c",
+      "view_bytes": 442,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/p19-k298-source-gates-controller-1.json",
+        "sha256": "4617f0788e406d4b392c9cc6c930263a2c12b8748eeecb6f92e6d6c50a45150c",
+        "bytes": 442
+      }
+    },
+    {
+      "archive_path": "receipts/p19-k298-source-gates-controller-2.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "1b68fc83db961b966128275e407fc733e4a2bffd673db3a79f4b9d14bb9eac0d",
+      "view_bytes": 450,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/p19-k298-source-gates-controller-2.json",
+        "sha256": "1b68fc83db961b966128275e407fc733e4a2bffd673db3a79f4b9d14bb9eac0d",
+        "bytes": 450
+      }
+    },
+    {
+      "archive_path": "receipts/p19-k298-utf16-stdio-controller.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "78ec1e487a42548f6f22aae913eb7e9ac43bae93acbef2e292adc4f84740ef38",
+      "view_bytes": 1154,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/p19-k298-utf16-stdio-controller.json",
+        "sha256": "78ec1e487a42548f6f22aae913eb7e9ac43bae93acbef2e292adc4f84740ef38",
+        "bytes": 1154
+      }
+    },
+    {
+      "archive_path": "receipts/s4-4b7dd76-macos-delivery/DELIVERY.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "792f45997e70ed602cbb7de1e7908ba837cdd2914944e0443b0c99e773f9c2f4",
+      "view_bytes": 3148,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/receipts/s4-4b7dd76-macos-delivery/DELIVERY.json",
+        "sha256": "792f45997e70ed602cbb7de1e7908ba837cdd2914944e0443b0c99e773f9c2f4",
+        "bytes": 3148
+      }
+    },
+    {
+      "archive_path": "reviews/ide-cooperative-independent-review.md.utf8.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "5930e130175fd23c25f200a1dff0b32ebbe85c8879371104866a578a7516fb69",
+      "view_bytes": 8563,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/reviews/ide-cooperative-independent-review.md.utf8.json",
+        "sha256": "5930e130175fd23c25f200a1dff0b32ebbe85c8879371104866a578a7516fb69",
+        "bytes": 8563
+      }
+    },
+    {
+      "archive_path": "reviews/interrupted-attempt/clock-discontinuity-review-text.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "205aae586ce712680ece4fd35099db1b51799476f062ccd780948b88eb30eb3d",
+      "view_bytes": 6232,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/reviews/interrupted-attempt/clock-discontinuity-review-text.json",
+        "sha256": "205aae586ce712680ece4fd35099db1b51799476f062ccd780948b88eb30eb3d",
+        "bytes": 6232
+      }
+    },
+    {
+      "archive_path": "reviews/interrupted-attempt/clock-discontinuity-review.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "5ba95da994021392d6afb954d20cf1f464d92d580e48c732796fede8452d3552",
+      "view_bytes": 24232,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/reviews/interrupted-attempt/clock-discontinuity-review.json",
+        "sha256": "5ba95da994021392d6afb954d20cf1f464d92d580e48c732796fede8452d3552",
+        "bytes": 24232
+      }
+    },
+    {
+      "archive_path": "reviews/interrupted-attempt/clock-soak1-observation.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "af9b25942c13980cd99f7d773d1c7db59cb7929875e1d06d0ff290a699982555",
+      "view_bytes": 4314,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/reviews/interrupted-attempt/clock-soak1-observation.json",
+        "sha256": "af9b25942c13980cd99f7d773d1c7db59cb7929875e1d06d0ff290a699982555",
+        "bytes": 4314
+      }
+    },
+    {
+      "archive_path": "reviews/k299/c1/gate3-independent-review.json",
+      "representation": "readable-external-reference",
+      "view_sha256": "b8250714a0deb4302123104a74dbe99e8afaa80c00507d03f14e87aa7f884f6e",
+      "view_bytes": 2044,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/reviews/k299/c1/gate3-independent-review.json",
+        "sha256": "0f3e1db54274bf0e1b30cc515a8e051e8370e97271fedd183525dee61d2c6639",
+        "bytes": 26345
+      }
+    },
+    {
+      "archive_path": "reviews/k299/c1/native1-failure-review.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "c13c46d3f50a4a07a7380aeccfc05cbefdc57e75a4cb65c479a14bb40eb956f4",
+      "view_bytes": 6470,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/reviews/k299/c1/native1-failure-review.json",
+        "sha256": "c13c46d3f50a4a07a7380aeccfc05cbefdc57e75a4cb65c479a14bb40eb956f4",
+        "bytes": 6470
+      }
+    },
+    {
+      "archive_path": "reviews/k299/c1/source-security-review.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "af07b32166dccdca235a641d16ba61d959d3b0fd73cb24b3f4d8636a9c817392",
+      "view_bytes": 19190,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/reviews/k299/c1/source-security-review.json",
+        "sha256": "af07b32166dccdca235a641d16ba61d959d3b0fd73cb24b3f4d8636a9c817392",
+        "bytes": 19190
+      }
+    },
+    {
+      "archive_path": "reviews/k299/c2/combined-acceptance-review.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "63a12aa14770c89352ac7afc11aae2a6f3662cc6fe70c3157ba037afd69f070b",
+      "view_bytes": 36275,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/reviews/k299/c2/combined-acceptance-review.json",
+        "sha256": "63a12aa14770c89352ac7afc11aae2a6f3662cc6fe70c3157ba037afd69f070b",
+        "bytes": 36275
+      }
+    },
+    {
+      "archive_path": "reviews/k299/c2/drivers-static-review.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "97536156e22171bd1e9b453fffe3f36fefb4d2b5c38eaa5cbb5d4647e287412d",
+      "view_bytes": 3657,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/reviews/k299/c2/drivers-static-review.json",
+        "sha256": "97536156e22171bd1e9b453fffe3f36fefb4d2b5c38eaa5cbb5d4647e287412d",
+        "bytes": 3657
+      }
+    },
+    {
+      "archive_path": "reviews/k299/c2/gate4-independent-review.json",
+      "representation": "readable-external-reference",
+      "view_sha256": "841b093b0b99940d8396de291c2d930a22f912dcc98c62ff326689e78b57ee74",
+      "view_bytes": 2044,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/reviews/k299/c2/gate4-independent-review.json",
+        "sha256": "7721802141fc4df2c7cf7f4ec5de26bb279c62a8d86bc680dd7df53cf9f9ff1b",
+        "bytes": 23309
+      }
+    },
+    {
+      "archive_path": "reviews/k299/c2/native2-independent-review.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "62583632dc7caa069db226e7d43909a96d0541394561c981aac419f2a2631cef",
+      "view_bytes": 27719,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/reviews/k299/c2/native2-independent-review.json",
+        "sha256": "62583632dc7caa069db226e7d43909a96d0541394561c981aac419f2a2631cef",
+        "bytes": 27719
+      }
+    },
+    {
+      "archive_path": "reviews/k299/c2/source2-security-review.json",
+      "representation": "readable-external-reference",
+      "view_sha256": "83f9803a8ae0fb22ddf702ba141186e1f2de614f047c24d1b4d826f833ab65e7",
+      "view_bytes": 2042,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/reviews/k299/c2/source2-security-review.json",
+        "sha256": "83075e7a9cc331ee5bf2b9d6d05f7e14c26e7c7aea9d8a5c8ac233da5d3858e7",
+        "bytes": 17047
+      }
+    },
+    {
+      "archive_path": "reviews/p19-k298-a57290f-soak-2/independent-metadata-review.json",
+      "representation": "unchanged-original-public-file",
+      "view_sha256": "20cf5436b93a1be906bf268cf3b9b119a6f3925db66e3a9dfc9e39505b431601",
+      "view_bytes": 4220,
+      "original_public_file": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive/reviews/p19-k298-a57290f-soak-2/independent-metadata-review.json",
+        "sha256": "20cf5436b93a1be906bf268cf3b9b119a6f3925db66e3a9dfc9e39505b431601",
+        "bytes": 4220
+      }
+    }
+  ],
+  "note": "The referenced original SELECTION.json preserves all133 entries and270 bindings. This separate view lists actual current payload hashes and explicitly identifies13 external references."
+}

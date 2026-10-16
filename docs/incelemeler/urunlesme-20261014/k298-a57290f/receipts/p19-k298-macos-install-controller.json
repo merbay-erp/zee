@@ -1,0 +1,31 @@
+{
+  "argv": [
+    "python3",
+    "-I",
+    "-B",
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-acceptance-drivers/install-rpc-params/install_acceptance.py",
+    "--repo",
+    "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+    "--sha",
+    "a57290f7a1c1fad07cda3f266b2a221f09aa6404",
+    "--delivery",
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-macos-delivery",
+    "--delivery-sha256",
+    "30c3e97dd2ff1831cc9abc97d9b5197dc5f64021e4efd16afd9899f28671cdcb",
+    "--dil-sha256",
+    "c597b9c1d0ec11e59ab0b3cc4701f1e21a37bcec67b37d4d52f983ddf69d56e2",
+    "--dillsp-sha256",
+    "fc4391569ed45bccc11cb424f1aeb7abaea7133170d8d55f1df95420360302f1",
+    "--out",
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-macos-install"
+  ],
+  "started_ns": 1792109479331452000,
+  "status": "passed",
+  "minimum_free_bytes": 70832738304,
+  "required_free_bytes": 10737418240,
+  "observed_exit": 0,
+  "owned_group_closed_and_reaped": true,
+  "exit": 0,
+  "finished_ns": 1792109481341872000,
+  "elapsed_seconds": 2.0104551250115037
+}

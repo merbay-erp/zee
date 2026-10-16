@@ -1,6 +1,6 @@
 # ADR-136 — JetBrains için proje pinli yerel LSP şablonu (K-278/P19)
 
-- **Durum:** S3 tarihsel dar kabulüne ek olarak [S4](../docs/urunlesme-s4-kabul-20261015.md) exact kaynakta completion/UTF-16 gezinme/rename/tanı/format/shutdown ve iki normal Quit kabulü; popup, UI gecikmesi, Windows/yayın ve tam P19 açık. Önceki başarısız/kısmi kayıtlar korunur.
+- **Durum:** S3/S4 kendi kaynaklarında tarihsel; [K-298](../docs/urunlesme-k298-kabul-20261016.md) a57290f kaynağında completion/UTF-16 gezinme/rename/tanı/format ve iki normal Quit dar kabulü taşır. Ayrı IDE shutdown trace'i yok; completion popup, UI gecikmesi, Windows/yayın ve tam P19 açık.
 
 P19 iç araç eksikliği mevcut dillsp sunucusunun JetBrains kullanıcısına
 bağlanmasıdır. Compiler freeze kapsamında yeni grammar, lint, cache veya
@@ -20,8 +20,11 @@ vakası initialize/shutdown/exit ve aynı BuildJSON'u doğrular; bozuk currentpi
 selector ve dependency lock olumsuzları fallback'i reddeder. `lsp_testi.rs`
 protokol davranışını korur. Bunlar JetBrains UI kurulum, mapping, boşluklu macro
 önizlemesi, gezinme/rename ve kapatmanın gerçek IDE kabulü değildir. Bu kabul
-ve Windows launcher profili açık kalır. Şablon yeni LSP capability ilan etmez;
-LSP format/lint/incremental/p95 kapsamı P19'da ayrıca açık kalır.
+yerel IDE koşularıyla ayrıca kanıtlanır. Native otomatik testler gerçek UI
+kanıtının yerine geçmez. Tarihsel
+S3/S4 ve yeni [K-298](../docs/urunlesme-k298-kabul-20261016.md) gerçek IDE kabulleri kendi exact
+kaynaklarıyla ayrıdır. Windows launcher ve genel P19 açık; şablon yeni
+LSP capability ilan etmez.
 
 GB-094 yerel executable/plugin/operator güven sınırıdır. Proje dosyası ve
 launcher kurulumu bilinçli yerel yürütme yetkisi ister; aynı UID saldırısına
@@ -40,4 +43,14 @@ Actual IntelliJ2025.3.1 IU253.29346.138/LSP4IJ0.21.0 isolatedprofile: template/s
 K-280/ADR-138 takip denemesi POSIX macOS profilinde completion uygulamasını,
 trace-setting restart shutdown/exit ve normal IDE exit0'ı doğruladı. Yukarıdaki
 başarısız ilk deneme tarihsel kayıttır; [takip kararı](138-jetbrains-tamamlama-ve-duzenli-kapanis.md)
-dar IDE etkileşim eksikliğini kapatır. Tam C2/P19 kapsamı açık kalır.
+dar IDE etkileşim eksikliğini kapatır. Genel editör/P19 kapsamı açık kalır.
+
+## K-298 — aynı kaynakla yenilenen gerçek IDE kabulü
+
+[K-298](../docs/urunlesme-k298-kabul-20261016.md) a57290f kanonik teslim/proje launcher'ını
+IDEA 2025.3.1/LSP4IJ oturumunda doğruladı: 111 completion adayı/uygulama,
+ordinary UTF-16 hover/definition/rename/A001 ve format. İlk trace Apply EDT hatası
+ve yanlış cursor definition-null denemesi korundu; doğru 1:12 sorgusu ayrıca
+başarılıdır. İki oturum normal Quit/exit0/reap ile kapandı; ayrı IDE
+shutdown/exit trace'i yakalanmadı. Küratörlü UI gözlemi tam ham trace dışa
+aktarımı veya UI latency ölçümü değildir. S4 shutdown kanıtı devralınmaz.

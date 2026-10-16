@@ -1,0 +1,19 @@
+{
+  "argv": [
+    "python3",
+    "-I",
+    "-B",
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-drivers/measurement/measure-lsp-stdio.py",
+    "--config",
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-drivers/baseline-config.json"
+  ],
+  "started_ns": 1792109225296776000,
+  "status": "passed",
+  "minimum_free_bytes": 71206494208,
+  "required_free_bytes": 10737418240,
+  "observed_exit": 0,
+  "owned_group_closed_and_reaped": true,
+  "exit": 0,
+  "finished_ns": 1792109242428313000,
+  "elapsed_seconds": 17.131641541956924
+}

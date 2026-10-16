@@ -1,0 +1,134 @@
+{
+  "schema": "zee-curated-native-ui-observation-1",
+  "source_sha": "a57290f7a1c1fad07cda3f266b2a221f09aa6404",
+  "interface": "CUA native accessibility and screenshot",
+  "raw_capture_available_in_tool_history": true,
+  "not_full_raw_trace_export": true,
+  "source_binding": "Canonical delivery, project pin, launcher and unchanged bundle hashes. IDE trace omits custom zeeBuild; separate native stdio confirms BuildJSON.",
+  "first_session": {
+    "trace_apply_error_time": "2026-10-16 03:12:50.913 Europe/Istanbul",
+    "error": "LSP4IJ LanguageServerSettings EDT access exception",
+    "external_report_sent": false,
+    "normal_quit": true
+  },
+  "initialize": {
+    "id": 1,
+    "client": "IntelliJ IDEA 2025.3.1 / IU-253.29346.138",
+    "time": "2026-10-16 03:13:20 Europe/Istanbul",
+    "lint": true,
+    "textDocumentSync": 2,
+    "serverInfo_visible": {
+      "name": "dillsp",
+      "version": "0.8.0-dev"
+    },
+    "positionEncodings": [
+      "utf-16"
+    ]
+  },
+  "completion": {
+    "time": "03:13:40",
+    "id": 2,
+    "query": [
+      0,
+      15
+    ],
+    "candidate_count": 111,
+    "candidate_count_method": "Parsed actual full accessibility trace Result JSON in CUA session",
+    "input": "isim \"Ayşe\" ols",
+    "didChange_insert": "un",
+    "editor_result": "isim \"Ayşe\" olsun",
+    "popup_separately_observed": false
+  },
+  "definition": {
+    "time": "03:14:01",
+    "id": 5,
+    "query": [
+      1,
+      12
+    ],
+    "target": [
+      0,
+      0,
+      4
+    ],
+    "editor_position": "1:1",
+    "preceding_cursor_attempt": {
+      "id": 3,
+      "query": [
+        1,
+        13
+      ],
+      "result": null,
+      "boundary": "exclusive end of identifier; not counted as positive use-site case",
+      "client_fallback_id": 4,
+      "client_fallback_query": [
+        0,
+        1
+      ],
+      "client_fallback_target": [
+        0,
+        0,
+        4
+      ]
+    }
+  },
+  "hover": {
+    "time": "03:14:05",
+    "id": 6,
+    "query": [
+      1,
+      12
+    ],
+    "text": "Tanım (satır 1):\nisim \"Ayşe\" olsun",
+    "popup_observed": true
+  },
+  "rename": {
+    "time": "03:14:22",
+    "id": 8,
+    "query": [
+      1,
+      12
+    ],
+    "newName": "ad",
+    "exact_ranges": [
+      [
+        0,
+        0,
+        4
+      ],
+      [
+        1,
+        9,
+        13
+      ]
+    ],
+    "editor_result": "ad \"Ayşe\" olsun\n\"😀\" ile ad yaz\n",
+    "following_diagnostics": []
+  },
+  "diagnostic": {
+    "time": "03:14:28",
+    "code": "A001",
+    "range": [
+      0,
+      11,
+      16
+    ],
+    "input": "\"😀😀\" ile eksik yaz\n"
+  },
+  "formatting": {
+    "time": "03:14:34",
+    "id": 9,
+    "tabSize": 4,
+    "insertSpaces": true,
+    "input": "isim   \"Ayşe\"   olsun\n\"😀😀\"  ile  isim   yaz\n",
+    "newText": "isim \"Ayşe\" olsun\n\"😀😀\" ile isim yaz\n",
+    "editor_result_equal": true,
+    "following_diagnostics": []
+  },
+  "normal_ide_quit": "Both sessions: Cmd+Q, Confirm Exit, Exit; original controller observed_exit=exit=0 and reaped",
+  "IDE_shutdown_trace_separately_observed": false,
+  "shutdown_observation_limit": "Stop/context-menu attempts did not yield a visible shutdown/exit trace; no separate IDE protocol-shutdown claim. Native UTF16 stdio verifies its own normal shutdown/exit.",
+  "IDE_spelling_inspections_remaining": 4,
+  "special_C1_quickfix_claim": false,
+  "UI_latency_claim": false
+}

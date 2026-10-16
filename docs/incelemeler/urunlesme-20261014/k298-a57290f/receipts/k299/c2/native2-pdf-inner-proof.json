@@ -1,0 +1,121 @@
+{
+  "schema": "zee-pdf-plugin-native-tests-1",
+  "status": "passed",
+  "cases": [
+    {
+      "name": "actual-signed-Zee-request-receipt-continuation-and-PDF-text-pages",
+      "passed": true,
+      "pages": 3
+    },
+    {
+      "name": "actual-reject-purpose",
+      "passed": true,
+      "effect": "not_started"
+    },
+    {
+      "name": "actual-reject-key",
+      "passed": true,
+      "effect": "not_started"
+    },
+    {
+      "name": "actual-reject-signature",
+      "passed": true,
+      "effect": "not_started"
+    },
+    {
+      "name": "actual-reject-schema",
+      "passed": true,
+      "effect": "not_started"
+    },
+    {
+      "name": "actual-reject-size",
+      "passed": true,
+      "effect": "not_started"
+    },
+    {
+      "name": "actual-reject-runtime",
+      "passed": true,
+      "effect": "not_started"
+    },
+    {
+      "name": "actual-reject-double",
+      "passed": true,
+      "effect": "produced_client_unconfirmed"
+    },
+    {
+      "name": "actual-reject-unknown",
+      "passed": true,
+      "effect": "unknown"
+    }
+  ],
+  "build": {
+    "schema": "zee-build-v1",
+    "version": "0.8.0-dev",
+    "source_sha": "8178920e03fed782a817d1864b8280fcb80812a3",
+    "source_date": "2026-10-16",
+    "channel": "development",
+    "dirty": false
+  },
+  "binary_sha256": "6777941513148527552a78f7861d01a148634cade5686d95afe2bcbce9ca6cfa",
+  "runtime_sha256": "7a314947596fc484d4ec36ffc28e843b78d6d749c68736f8b5c24e7333f418eb",
+  "verifier_sha256": "ee8df15c4542e18337b237b335f2363f5466fb1deedb7d77d0d7e14c92eb1928",
+  "framework_head": "8178920e03fed782a817d1864b8280fcb80812a3",
+  "PDF_inspection": {
+    "pages": 3,
+    "embedded_font": true,
+    "images": 1
+  },
+  "source_pins_unchanged": true,
+  "source_files": [
+    {
+      "path": "golden/pdf-host/assets/base.pdf",
+      "sha256": "7c25bd391859088307fa0b1816eca1d2c80634e6a950b9018152bf28ffdaf05f"
+    },
+    {
+      "path": "golden/pdf-host/assets/font.ttf",
+      "sha256": "7da195a74c55bef988d0d48f9508bd5d849425c1770dba5d7bfc6ce9ed848954"
+    },
+    {
+      "path": "golden/pdf-host/assets/product.png",
+      "sha256": "9a09e7df94e28fd35c0d255419f254bc1f4b1a51e323a490d758ebd8b711c9d5"
+    },
+    {
+      "path": "golden/pdf-host/assets/LICENSE-DejaVu.txt",
+      "sha256": "f1d7e97481cf4ac81f2d3ab8b14a483fb34b0b4824a3f8d2b1c70a6fa86a3b08"
+    },
+    {
+      "path": "golden/pdf-host/assets/COPYRIGHT-DejaVu.txt",
+      "sha256": "35397e5e2ff231cc777b97c3e18756cc21f4a451f5ade9bf315d552a9a74d25d"
+    },
+    {
+      "path": "scripts/pdf-plugin-host.py",
+      "sha256": "6108d2a2be79fa245e4d9e6326c23a6837e576d179a5ec3521c1571e298a1caf"
+    },
+    {
+      "path": "scripts/tests/pdf-plugin-native.py",
+      "sha256": "72449d567cae60541f01b3bef362ca8150d56ef7825308e9ae6b83bc4cad78ee"
+    },
+    {
+      "path": "scripts/worker-supervisor.py",
+      "sha256": "560bec4e4e36d2aa856936d9d32412bb9106b61b25a871495287e2287e3c6642"
+    },
+    {
+      "path": "scripts/derleyici-secici.py",
+      "sha256": "b2103253fc59be2eeb27e6861e593d56202697f69519a2b158f9232326c07692"
+    },
+    {
+      "path": "scripts/pdf-katalog-host.py",
+      "sha256": "7ef40302bc3a079a129376a8002c1485fdd905bb860c5fda7b4cfb0ec3b5f9f6"
+    },
+    {
+      "path": "golden/pdf-plugin/ana.dil",
+      "sha256": "6724b94271e6dd941c97fa098c95ddf8bca72f179ea342317e47fbafc8da1cd6"
+    }
+  ],
+  "case_count": 9,
+  "failed": 0,
+  "owned_groups_closed": true,
+  "synthetic_private_keys_removed": true,
+  "cancelled": false,
+  "cleanup_errors": []
+}

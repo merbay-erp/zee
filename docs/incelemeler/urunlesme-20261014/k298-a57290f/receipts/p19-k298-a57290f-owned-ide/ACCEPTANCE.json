@@ -1,0 +1,24 @@
+{
+  "schema": "zee-k298-actual-IDE-acceptance-1",
+  "source_sha": "a57290f7a1c1fad07cda3f266b2a221f09aa6404",
+  "status": "passed-narrow-local-IDE",
+  "two_normal_sessions_reaped": true,
+  "canonical_bundle_unchanged": true,
+  "files": {
+    "LAUNCHER-PREPARATION.json": "a7fa4f936267f0d90b9d6f42ac9b2856d1c5cde67e389615e134c825dbef7cf1",
+    "PREPARATION.json": "78f747adb481bb1028388dad06d91f0c6a7efefd206d3d59d505d4eba2b33972",
+    "CLOSED.json": "539a6050047e5fc46f2adb6774869bd27d7c9134c1443d4483b99404a696684d",
+    "restart-CLOSED.json": "bc2d0cb8b3022c69f1d79b35b74d07aba0f97eef2ff67540db8d5b1534962950",
+    "UI-OBSERVATIONS.json": "f673b12b93978f432481bd3357890d9eb60dba9dc19ce267fe79c5de3e29cb85",
+    "controller.py": "20e593f4b68973bd49543a45a9e79b11d3173cb337c691348d075ffa1d57c62f",
+    "controller-restart.py": "a112754bff19e0dd4c7927baf7f1a5b8b5a70de3667b249cbc97456cf2993207"
+  },
+  "limits": [
+    "First trace Apply produced an LSP4IJ EDT exception; no report sent.",
+    "Curated UI observations, not a full raw trace export.",
+    "Completion popup not separately captured.",
+    "Separate IDE shutdown/exit trace not captured; normal IDE exit0 and own-group reap confirmed.",
+    "Four IDE spelling warnings remain.",
+    "Not UI latency, physical Windows or minimum macOS acceptance."
+  ]
+}

@@ -466,7 +466,7 @@ arası ölçüldü; İstemci zamanlaması ve ara çerçeve ayrıştırması göz
 | açık | 1 | 38,488 | 40,458 | 40,605 |
 | açık | 41 | 210,934 | 223,698 | 225,407 |
 
-Lint açık/41 belge kohortunda p95 223,698 ms ile 200 ms hedefi açık kalır.
+Bu tarihsel S4 koşusunda lint açık/41 belge p95 223,698 ms ile 200 ms hedefi karşılanmadı; izleyen K-298 koşu çifti aşağıda ayrı kaydedilir.
 
 P50=`sorted[9]`, p95=`sorted[18]`, max=`sorted[19]`; ham örneklerden
 yeniden hesaplandı. OS/disk cache sıfırlanmadı; paylaşımlı makinenin diğer
@@ -480,20 +480,46 @@ Soak 1800,946 sn/360 örnek: compiler 20112→20032 KiB, LSP 22496→20096 KiB. 
 pencere medyanları; %10 ve 32 MiB birlikte aşılmadı. S3 ölçümleri kendi
 kaynak kimliğiyle yukarıda korunur.
 
-## K-298 — aynı stdio iş yükünde karşılaştırma bekliyor
+## K-298 — yeni temiz kaynakta aynı stdio iş yükü
 
-K-298 bildirim ömürlü açık metin dizini bakımının ölçüm sonucu henüz yoktur.
-Karşılaştırma kaynağı S4 `4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2` ve yukarıdaki
-dört gerçek stdio kohortudur; lint açık/41 belgede p95 223,698 ms gözlenmiştir.
-Yeni temiz exact kaynak ve release ikilisiyle aynı 20.081 satır/40 birim,
-1/41 açık belge × lint kapalı/açık, her kohortta yeni süreç ve 5 ısınma/20 ölçüm
-kullanılır. İlk başarılı yazma→son tam tanı çerçevesi aralığı, completion bariyeri,
-p50/p95 hesaplaması ve ham çerçeve/örnek kaydı değiştirilmez.
+16 Ekim fresh karşılaştırması eski `4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2`
+ve yeni `a57290f7a1c1fad07cda3f266b2a221f09aa6404` kaynaklarını kendi temiz exact ağaç ve kanonik release
+ikili kimlikleriyle ölçtü. Aynı20.081 satır/40 birim, 1/41 belge×lint kapalı/açık,
+her kohortta yeni süreç ve 5 saklanan ısınma/20 ölçüm kullanıldı. İki koşunun fixture
+dosyaları ve ölçüm driver'ı eş; kaynak/ikili/araç zinciri bağı
+[kabul raporundadır](urunlesme-k298-kabul-20261016.md).
 
-Önce/sonra kaynak, ikili ve araç zinciri kimliği, gerçek makine bilgisi ve
-ham dağılımlar ayrıca bağlanır. Kirli geliştirme ölçümü aday gözlemdir;
-temiz kaynak sonucu yerine yazılamaz. ADR-045/049 gereği shared ölçümde hard
-200 ms kapısı açılmaz; `performans-gecmisi-v2.tsv` yeni adanmış taban almaz.
-K-298 yeni kalıcı durum eklemez; yeni kaynağın RSS, RC ve dar IDE/stdio
-kabulleri önceki S4 makbuzlarından devralınmaz. P19 hedefi ve kapsamı yeni
-sonuç doğrulanana kadar açık tutulur.
+| Lint | Belge | Önce p50/p95/max ms | K-298 p50/p95/max ms |
+|---|---:|---|---|
+| kapalı | 1 | 15,281333 / 16,024958 / 16,038833 | 14,936291 / 15,597958 / 15,768666 |
+| kapalı | 41 | 96,558000 / 97,795333 / 98,900166 | 89,578375 / 91,896500 / 94,612625 |
+| açık | 1 | 36,560084 / 37,885125 / 37,964250 | 36,136750 / 37,204458 / 37,387791 |
+| açık | 41 | 202,703958 / 204,880125 / 205,722375 | 186,008333 / 189,885667 / 190,114958 |
+
+Yeni dört p95 de 200 ms altında; en ağır kohortta 204,880125→189,885667 ms ile
+%7,32 düşüş gözlendi. Max 190,114958 ms ayrı örnek istatistiğidir; genel üst sınır
+vaadi değildir. Eski S4'ün 223,697750 ms'si bu fresh çiftin yüzde tabanı yapılmadı.
+p50=`sorted[9]`,p95=`sorted[18]`,max=`sorted[19]`; bağımsız ham doğrulayıcının iki kaynak koşusu
+kaynak başına 80 ölçüm/20 ısınma editini ve 63 dosya manifestini yeniden doğruladı.
+
+Makine macOS 26.6.2 / Apple M4 Pro / 24 GiB, Rust 1.93.1, Python 3.13.3, shared;
+OS/disk cache sıfırlanmadı. Sahipli ağır işler kapandıktan en az 60 saniye sonra iki
+kaynak sırayla ölçüldü; diğer görevlerin yükü değerlendirilmedi. İlk başarılı
+write→son tam tanı çerçevesi aralığı ve ölçüm dışı completion bariyeri değişmedi.
+İstemci zamanlaması/ara ayrıştırma gözlemi etkiler; gönderim öncesi framing ve
+son çerçevenin sonraki doğrulaması ölçüm dışıdır.
+
+`threshold_ms=null`, `hard_200ms_gate_applied=false` ve observation-only korunur.
+ADR-045/049 gereği `performans-gecmisi-v2.tsv` yeni adanmış taban almaz.
+İki ek Cargo sahibinden eski in-process LSP koşusu delivery ile çakıştığı için
+yalnız işlevsel kabul; onun 17,896750/103,663000 ms p95'i bu karşılaştırmaya
+katılmaz. Aynı temiz SHA'da ikinci RSS koşusu 1801,116786 saniye, 360 ham örnek
+ve compiler/LSP için ayrı ayrı 24.072 dönemle geçti. Isınma sonrası ilk/son
+pencere üst medyanı compiler 20.112→20.016 KiB (büyüme sıfıra sınırlanınca %0),
+LSP 19.776→20.800 KiB (+1024 KiB, yukarı yuvarlanmış %6). %10 ve 32 MiB'ı
+birlikte aşma sınırı oluşmadı. Özgün controller exit0/reaped ve ek saat denetimi
+geçti; ilk saat ayrışmalı koşu final sürekli kabulden ayrı tutuldu.
+Aynı exact kaynak RC2 dört explicit ASan hedefinde 1801’er saniye, Miri2+1 ve
+tam RC kapısında 131 Cargo grubu/998 başarılı/0 başarısız/25 atlanan ile geçti.
+K-298 dar kabulü kapalıdır; son belge kapısı takip commit’inin koşuludur. Gerçek IDE işlev kabulü
+UI gecikmesi değildir; P19 ürün/UI/HIR/genel SLA kapsamıyla kısmi kalır.

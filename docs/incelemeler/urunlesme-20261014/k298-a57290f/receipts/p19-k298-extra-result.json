@@ -1,0 +1,96 @@
+{
+  "schema": "zee-p19-extra-two-independent-review-1",
+  "status": "passed",
+  "source_sha": "a57290f7a1c1fad07cda3f266b2a221f09aa6404",
+  "source_tree": "20644b4b6dc735a8cda8a24b7c064d28f12498d4",
+  "evidence_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-extra-1",
+  "controller_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-extra-controller-1.json",
+  "proof_sha256": "41d5fad656de902c3532ab85afd10da4521cbaadce8231db81353b624a71ce47",
+  "controller_sha256": "1ec373fd5cf20f4462ff01a1bb685231394944ec73ef742628315cee85d4f150",
+  "driver_sha256": "287c528bc35c19a22741bcfc3603fb515f321033f28488e23a713002cb7ae513",
+  "verifier_sha256": "20c1d82cdd9d21ebebb296c6df67e7acaab7a615ed7f323d6dcff4d878f8048a",
+  "manifest_files": 36,
+  "manifest_bytes": 413946,
+  "total_bytes_including_proof": 445773,
+  "manifest_complete_and_all_hashes_verified": true,
+  "raw_command_count": 16,
+  "raw_stream_count": 32,
+  "raw_log_bytes": 355388,
+  "source_begin_end_clean_raw_logs_verified": true,
+  "current_selected_source_pins_verified": 22,
+  "current_git_status_independently_executed": false,
+  "current_test_binary_hashes_verified": 2,
+  "controller_and_all_command_closure_receipts_verified": true,
+  "cargo_owners": 2,
+  "pdf": {
+    "cargo_owners": 1,
+    "inner_cases_asserted_by_source_pinned_wrapper": 8,
+    "inner_unittest_stderr_exported": false,
+    "independent_artifact_reinspection": true,
+    "pages": {
+      "catalog": 3,
+      "selected": 2,
+      "generated": 1
+    },
+    "required_catalog_text_present": [
+      "Anonim ürün kataloğu",
+      "Örnek ürün - ŞĞİıÇÖÜ",
+      "OWNED BASE COVER",
+      "OWNED BASE BACK COVER"
+    ],
+    "removed_page_text_absent": true,
+    "selected_original_page_text_preserved": true,
+    "original_page_operators_preserved": true,
+    "embedded_truetype_font": true,
+    "generated_images": 1
+  },
+  "lsp": {
+    "cargo_owners": 1,
+    "cohorts": [
+      {
+        "open_documents": 1,
+        "samples": 20,
+        "warmups": 5,
+        "p50_ms": 16.982666000000002,
+        "p95_ms": 17.89675,
+        "max_ms": 17.898792,
+        "performance_acceptance": false,
+        "functional_owner_acceptance": true
+      },
+      {
+        "open_documents": 41,
+        "samples": 20,
+        "warmups": 5,
+        "p50_ms": 99.328708,
+        "p95_ms": 103.66300000000001,
+        "max_ms": 104.356792,
+        "performance_acceptance": false,
+        "functional_owner_acceptance": true
+      }
+    ],
+    "sample_count": 40,
+    "warmup_count_asserted": 10,
+    "raw_warmup_samples_retained": false,
+    "lint": false,
+    "mode": "in-process"
+  },
+  "acceptance_scope": "functional exact two Cargo owners and retained PDF artifacts only",
+  "performance_acceptance": false,
+  "hard_200ms_acceptance": false,
+  "overlap_context": "Parent reports canonical delivery build overlapped this run; not independently inferred from per-command timing.",
+  "signed_pdf_executed": false,
+  "native_worker_executed": false,
+  "tests_launched_by_verifier": false,
+  "subprocesses_launched_by_verifier": false,
+  "source_or_evidence_written_by_verifier": false,
+  "excluded_claims": [
+    "native stdio latency",
+    "IDE/UI",
+    "RC",
+    "soak",
+    "release",
+    "full P11/P19/P34",
+    "C1/K-288",
+    "P33/K-293"
+  ]
+}

@@ -140,21 +140,21 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-133 | [Sabit owned host PDF backend](133-sabit-host-pdf-backend.md) | **kabul; S nativeemitter+hostPDF8, fullP11/ürün açık** (K-275/GB-091) |
 | ADR-134 | [Linux özel paket taşıyıcısı](134-linux-ozel-paket-tasiyicisi.md) | **kabul; S ownedLinux delivery/install8/carrier4/container6, GB092 dar kapalı** (K-276/GB-092) |
 | ADR-135 | [Sabit native dış etki tüketicisi](135-sabit-native-dis-etki-tuketicisi.md) | **kabul; S ownedloopback11, fullP09/ürün açık** (K-277/GB-093) |
-| ADR-136 | [JetBrains yerel LSP şablonu](136-jetbrains-yerel-lsp-sablonu.md) | **S3 tarihsel; S4 dar IDE kabulü; popup/UI gecikmesi/Windows/yayın/tam P19 açık** (K-278/K-280/K-297/GB-094) |
+| ADR-136 | [JetBrains yerel LSP şablonu](136-jetbrains-yerel-lsp-sablonu.md) | **a57290f dar IDE işlev kabulü; ayrı shutdown trace yok; popup/UI gecikmesi/Windows/yayın/tam P19 açık** (K-278/K-280/K-297/K-298/GB-094) |
 | ADR-137 | [Önceki küçük sürüm korpusu](137-onceki-kucuk-surum-korpusu.md) | **kabul; S Mac/Linux modern49+preflight5, fullP04P05 açık** (K-279/GB-095) |
 | ADR-138 | [JetBrains tamamlama ve düzenli kapanış](138-jetbrains-tamamlama-ve-duzenli-kapanis.md) | **kabul; POSIX macOS dar profil, tam P19 açık** (K-280/GB-096) |
 | ADR-139 | [K-282 sürekli dispatcher ve application-owned adapter](139-surekli-dispatcher-ve-uygulama-adaptoru.md) | **tarihsel S3 dar yerel kabul; ürün/provider/platform kapsamı açık** (K-282/K-295) |
 | ADR-140 | [K-283 sürekli HTTP user service](140-surekli-http-user-service.md) | **S3 dar yerel kabul; üretim/ürün/platform kapsamı açık** (K-283) |
-| ADR-141 | [Purpose-bound imzalı PDF stdio host (K-281/P11)](141-imzali-pdf-stdio-host.md) | **S3 tarihsel; K-299 stdlib9 geçti, yeni native9 bekliyor; ürün/FFI/yayın açık** (K-281/K-299/GB-111) |
+| ADR-141 | [Purpose-bound imzalı PDF stdio host (K-281/P11)](141-imzali-pdf-stdio-host.md) | **S3 tarihsel; K-299 dar kaynak/native/arşiv kapsamı kapalı; toplu commit öncesi son belge kapısı gerekli, stdlib9 ve C2 native9 ayrı; ürün/FFI/yayın açık** (K-281/K-299/GB-111) |
 | ADR-142 | [Opt-in Zee kaynak karar kapsamı](142-zee-kaynak-dal-kapsami.md) | **S3 dar yerel kabul; genel kapsam/ürün kabulü açık** (K-284) |
 | ADR-143 | [Sahipli modül SQL yaşam döngüsü](143-sahipli-modul-sql-yasam-dongusu.md) | **S3 dar yerel kabul; DB+FS atomikliği/ürün kapsamı açık** (K-285) |
 | ADR-144 | [dene içinde sabit native web test köprüsü](144-dene-native-web-test-koprusu.md) | **S3 dar yerel kabul; genel rollback/ürün/platform kapsamı açık** (K-286) |
-| ADR-145 | [Artımlı editör analizi ve lint](145-artimli-editor-analizi-ve-lint.md) | **S3/S4 tarihsel kabul; K-298 bildirim ömürlü yol dizini, yeni ölçüm bekliyor; HIR/type ve ürün açık** (K-287/K-298/GB-103) |
+| ADR-145 | [Artımlı editör analizi ve lint](145-artimli-editor-analizi-ve-lint.md) | **K-298 stdio p95 hedefi dar gözlemsel kabul; aynı SHA ikinci RSS/RC geçti, dar K-298 kapalı; HIR/type ve ürün açık** (K-287/K-298/GB-103) |
 | ADR-147 | [Uygulamaya ait kapalı bileşen ve TR/EN katalog bileşimi](147-composed-tr-en.md) | **S3 dar yerel kabul; gerçek ürün benimsenmesi açık** (K-289) |
 | ADR-148 | [İçerik, yönetim ve medya başlangıcı](148-icerik-yonetim-medya-baslangici.md) | **S3 dar yerel kabul; insan/üretim/platform/ürün kapsamı açık** (K-290) |
 | ADR-149 | [K-291 mixed-code revision için ayrı gerçek kanıt](149-mixed-revision-owned-wave.md) | **S3 dar yerel kabul; SLA/DB şeması/ürün/platform kapsamı açık** (K-291) |
-| ADR-150 | [K-292 native worker fault ve kontrollü resolver-call hazırlığı](150-native-worker-fault-ve-kontrollu-resolver.md) | **S3 tarihsel; K-299 stdlib10 geçti, yeni native2 bekliyor; native DNS/tam fault açık** (K-292/K-299/GB-111) |
+| ADR-150 | [K-292 native worker fault ve kontrollü resolver-call hazırlığı](150-native-worker-fault-ve-kontrollu-resolver.md) | **S3 tarihsel; K-299 dar kaynak/native/arşiv kapsamı kapalı; toplu commit öncesi son belge kapısı gerekli, stdlib10 ve C2 native2 ayrı; native DNS/tam fault açık** (K-292/K-299/GB-111) |
 | ADR-152 | [Metric-only stdio alias için erken sessiz ret](152-native-metrik-stdio-sessiz-ret.md) | **S3 dar yerel kabul; K-294/GB-110 dar kapsamda kapalı** (K-294) |
 | [080 — Özel Gitsrv CI ve Tier-1 kanıt sınırı](080-tier1-kanit-kaynaklari.md) | kabul | K-217 özel CI ve çapraz/gerçek runtime ayrımı |
 
-| ADR-153 | [LSP sınırında UTF-16 konumları](153-lsp-utf16-konum-siniri.md) | **kabul; exact fixed_by ve tam faz 996/0/25** (K-297) |
+| ADR-153 | [LSP sınırında UTF-16 konumları](153-lsp-utf16-konum-siniri.md) | **K-297 exact fixed_by kapalı; a57290f native UTF-16/IDE tazeliği; genel P19 açık** (K-297/K-298) |

@@ -1,0 +1,55 @@
+{
+  "schema": "zee-p19-exact-clean-soak-review-1",
+  "status": "passed",
+  "source_sha": "a57290f7a1c1fad07cda3f266b2a221f09aa6404",
+  "tree": "20644b4b6dc735a8cda8a24b7c064d28f12498d4",
+  "source_tree": "20644b4b6dc735a8cda8a24b7c064d28f12498d4",
+  "out": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-soak-2",
+  "controller_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-soak-2-controller.json",
+  "proof_sha256": "f333bdf3a7130b50d33f3a981a1074485c78e64d9507ab59b544b3f8dcb30a3c",
+  "controller_sha256": "7989661a94812c9486b5de7b3709ae3f920ef001bbb63853fd6b62861fe3ea5d",
+  "verifier_sha256": "a9655c433b48c32ae3e6bcb461ff0521ed948b97b8e39630d19b0952f91ec17d",
+  "original_s4_verifier_sha256": "c8c157b759a7042035bd592686f1f5b1f15c72237a304360ed08bbefdf72b9a1",
+  "inherited_s4_acceptance": false,
+  "actual_seconds": 1801.1167863749433,
+  "requested_seconds": 1800,
+  "window_seconds": 60,
+  "actual_raw_samples": 360,
+  "compiler": {
+    "first_kib": 20112,
+    "last_kib": 20016,
+    "growth_percent": 0,
+    "growth_kib": 0
+  },
+  "dillsp": {
+    "first_kib": 19776,
+    "last_kib": 20800,
+    "growth_percent": 6,
+    "growth_kib": 1024
+  },
+  "compiler_periods": 24072,
+  "lsp_periods": 24072,
+  "raw_sample_median_threshold_recomputed": true,
+  "history_sha256": "a95776208f6ea09114d8a4cf929e170a6a172f9893bfd30cf908e5fdd022052f",
+  "report_sha256": "84140ef207b2fb77642250c63b8346c696b63ff17d9ad9516a28ea958c54aa5c",
+  "binary_pins_unchanged": true,
+  "binary_sha256": {
+    "dillsp": "915ed2c1430bdefdca1e18f533231ca405ce00cd55d2f4fd17171ff72ebaae48",
+    "soak": "9a7e0a5217da67781dc8352b17e8198b59a7d78603351ffbbc1cb5c893cafab8"
+  },
+  "original_and_clone_end_clean": true,
+  "owned_group_closed_and_reaped": true,
+  "input_sha256": {
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-soak-2-controller.json": "7989661a94812c9486b5de7b3709ae3f920ef001bbb63853fd6b62861fe3ea5d",
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-soak-2/PROOF.json": "f333bdf3a7130b50d33f3a981a1074485c78e64d9507ab59b544b3f8dcb30a3c",
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/exact-clean-soak-stage/soak_runner.py": "6f6f59c3a4aa4c9bf176758367d006cef8a6ef2f9c8f83317681f36c2088b360",
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/exact-clean-soak-stage/owned_delivery_helper.py": "509106d70e5e35c1142594c98df022b01e689966415bdd94a8f67feecb8587d8",
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-drivers/verify-soak.py": "a9655c433b48c32ae3e6bcb461ff0521ed948b97b8e39630d19b0952f91ec17d",
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-soak-2/soak-history.tsv": "a95776208f6ea09114d8a4cf929e170a6a172f9893bfd30cf908e5fdd022052f",
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-soak-2/soak-report.md": "84140ef207b2fb77642250c63b8346c696b63ff17d9ad9516a28ea958c54aa5c",
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-soak-2/build.log": "32412effcf0d24b8fcf2ecb689287a90633bfcac8f7be6795bf36c7293d75a68",
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-soak-2/soak.log": "b632a623b84f83186644e911d9b16858d72e74d59ac3af0a5b3c360688c9972d"
+  },
+  "threshold": "both >10percent AND >32768KiB rejects, unchanged",
+  "boundaries": "Actual exact-source local 1800s RSS soak only; no RC, canonical-delivery, install, IDE/UI, Linux, real-product latency, hard 200ms or release acceptance claim."
+}

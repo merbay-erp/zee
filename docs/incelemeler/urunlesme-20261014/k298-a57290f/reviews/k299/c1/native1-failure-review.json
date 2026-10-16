@@ -1,0 +1,115 @@
+{
+  "schema": "zee-k299-native1-failure-review-1",
+  "status": "review-complete-campaign-failed",
+  "timestamp": "2026-10-16 08:26:08 Europe/Istanbul",
+  "source_sha": "90fe778e86b9de28046f0f7bd77b47df138a2212",
+  "source_tree": "3bb1340d68a1073bb9cbda71ce943c222959db24",
+  "campaign_status": "failed",
+  "campaign_end_source_check": "not reached; source_end_clean=false is not proof of a dirty checkout",
+  "controller_exit": 2,
+  "controller_closed_and_reaped": true,
+  "command_count": 16,
+  "passed_cargo_owners": 1,
+  "failed_cargo_owners": 1,
+  "pdf_native_subcases_passed": 9,
+  "service_native_subcases_executed": 0,
+  "manifest_rows": 64,
+  "known_files_including_proof": 65,
+  "manifest_hashes_checked": true,
+  "root_cause": "Rust test wrapper passes an absolute but noncanonical CARGO_MANIFEST_DIR/.. --repo; Python Campaign constructor rejects resolve()!=path before proof/setup/worker creation.",
+  "causality_strength": "Raw stderr intentionally masks the internal reason; exact source/argv plus side-effect-free pathlib resolution prove this required constructor rejection. No instrumented runtime branch trace is claimed.",
+  "lexical_repo": "/private/tmp/zee-p19-k298/k299-validation/compiler/..",
+  "resolved_repo": "/private/tmp/zee-p19-k298/k299-validation",
+  "canonical_path_predicate": false,
+  "service_output_exists": false,
+  "classification": "test-wrapper integration correctness; not compiler/src semantic regression, timeout, worker fault or gate-target preparation failure",
+  "minimal_fix": "Canonicalize root() in compiler/tests/service_fault_testi.rs and fail before spawn if canonicalization fails; preserve strict Python canonical path guard.",
+  "new_test_required": false,
+  "regression_evidence": "Existing exact ignored service_fault_native is a real integration reproducer; rerun both existing native Cargo selectors on fresh exact C2, without bypass or relaxed thresholds.",
+  "optional_test_scope": "If a cheap always-on cross-language guard is desired, feed the actual Rust root into an existing preparation contract and test Campaign constructor before effects; a standalone duplicate canonicalize assertion alone adds little evidence.",
+  "future_work": [
+    "same K299 test-wrapper code and affected documentation in commit C2",
+    "standard source/documentation/security gates with no CARGO_TARGET_DIR override for phase matrix",
+    "fresh native2 campaign exact C2/tree and bindings",
+    "independent final verifier only after a complete passed20/two-owner/public78 result"
+  ],
+  "excluded": [
+    "compiler/src change",
+    "semantic .dil regression case",
+    "direct Python acceptance bypass",
+    "canonical-path guard weakening",
+    "timeout/threshold relaxation",
+    "C1/K-288",
+    "P33/K-293"
+  ],
+  "evidence": [
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k299-native-1/PROOF.json",
+      "bytes": 37858,
+      "sha256": "3aaacce35041bc77132307459fe7ca01d2c5f3116998ed881888d998a9b2b7ae"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k299-native-1/logs/service-fault-testi.stdout.raw",
+      "bytes": 152582,
+      "sha256": "a54da2189781a5b362ef732ff72664c0bafad11d5b816fe903c8d73cc3729379"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k299-native-1/logs/service-fault-testi.stderr.raw",
+      "bytes": 545,
+      "sha256": "0616b7815322161d9cabd0b873eff1c0cda77827ff209cea6e9a810cfd2cbea7"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k299-native-1/logs/pdf-plugin-testi.stdout.raw",
+      "bytes": 152543,
+      "sha256": "54836a6c20fcfb17258d68a382429af2af5f062839f8033091ed549e59b9cef2"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k299-native-1/logs/pdf-plugin-testi.stderr.raw",
+      "bytes": 239,
+      "sha256": "38efcd4cdc842b03fc2301577a30ff8bf8aeae9ade0b734fdc93be77e79beb02"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k299-native-1/logs/pdf-independent-inspection.stdout.raw",
+      "bytes": 490,
+      "sha256": "d9a81a1961bd371451ffa74717982719ac76a23524799cbcb2087f98a9c07863"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k299-native-1/pdf-native/proof.json",
+      "bytes": 3504,
+      "sha256": "e7adea437a5671027c282fafee20db2151e46a3e6ef5d9cce653bce078660fa8"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k299-native-controller-1.json",
+      "bytes": 731,
+      "sha256": "b623c6a5269d7b1e04d1ac5b28158e566e4fc1e0699440d71856b41ad93cf717"
+    },
+    {
+      "path": "/private/tmp/zee-p19-k298/k299-validation/compiler/tests/service_fault_testi.rs",
+      "bytes": 1363,
+      "sha256": "fecfea8a085ce76be25531ff1664ec34499cad1aaf536bfe485ad945538bada6",
+      "campaign_source_pin": "1c998a362f864ab4551cb369f1969372307dbd24926440e4d9bc863521c64ab5",
+      "matches_campaign_source_pin": false,
+      "initial_read_2026_10_16_08_24_50_matched_campaign_pin": true,
+      "later_source_change_observed": "Parent followup edit occurred during review. Causal analysis uses the initial read at the recorded campaign hash; current bytes are not presented as native1 source."
+    },
+    {
+      "path": "/private/tmp/zee-p19-k298/k299-validation/scripts/tests/service-fault-native.py",
+      "bytes": 10774,
+      "sha256": "bb3b5a73abb8161eb17e860487bd763cecc3394136bf68edd5dcc27472dfd0fe",
+      "campaign_source_pin": "bb3b5a73abb8161eb17e860487bd763cecc3394136bf68edd5dcc27472dfd0fe",
+      "matches_campaign_source_pin": true,
+      "initial_read_2026_10_16_08_24_50_matched_campaign_pin": true
+    },
+    {
+      "path": "/private/tmp/zee-p19-k298/k299-validation/scripts/tests/mixed-revision-native.py",
+      "bytes": 20926,
+      "sha256": "f5c10b2e33bacc7f1093a5f68dd5009904f95164567c8d2c29abb11f62cec19c",
+      "campaign_source_pin": "f5c10b2e33bacc7f1093a5f68dd5009904f95164567c8d2c29abb11f62cec19c",
+      "matches_campaign_source_pin": true,
+      "initial_read_2026_10_16_08_24_50_matched_campaign_pin": true
+    }
+  ],
+  "actions": "Read existing public evidence and source; computed pathlib resolution only. No target code import/execution, test, build, key read or R/V/E edit.",
+  "initial_selected_source_read_matches_campaign_pins": true,
+  "later_selected_source_bytes_changed": true
+}

@@ -1,0 +1,1079 @@
+{
+  "schema": "zee-k299-native-two-1",
+  "status": "failed",
+  "source_sha": "90fe778e86b9de28046f0f7bd77b47df138a2212",
+  "source_tree": "3bb1340d68a1073bb9cbda71ce943c222959db24",
+  "source_begin_clean": true,
+  "source_end_clean": false,
+  "driver_sha256": "33b4b94234321843f70d6a2e296eb20fe1c3579752f0d5cfc019537a26de92b1",
+  "lifecycle_sha256": "e76fe65b6103fc4732aafc4468afc5bbf3d0699a0f79d7f74879165636ebb1a9",
+  "commands": [
+    {
+      "label": "begin-head",
+      "argv": [
+        "git",
+        "-C",
+        "/private/tmp/zee-p19-k298/k299-validation",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/private/tmp/zee-p19-k298/k299-validation",
+      "status": "passed",
+      "observed_exit": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "owned_pid": 51139,
+      "cleanup_term_grace_seconds": 0.2,
+      "elapsed_seconds": 0.006703833001665771,
+      "logs": {
+        "stdout": {
+          "path": "logs/begin-head.stdout.raw",
+          "bytes": 41,
+          "sha256": "c738f83587750599dc2f9ee111cce937210d56ad135339d7b83c6dca0aee54e4"
+        },
+        "stderr": {
+          "path": "logs/begin-head.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "capture_complete_to_eof": true
+    },
+    {
+      "label": "begin-tree",
+      "argv": [
+        "git",
+        "-C",
+        "/private/tmp/zee-p19-k298/k299-validation",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "cwd": "/private/tmp/zee-p19-k298/k299-validation",
+      "status": "passed",
+      "observed_exit": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "owned_pid": 51140,
+      "cleanup_term_grace_seconds": 0.2,
+      "elapsed_seconds": 0.006416916963644326,
+      "logs": {
+        "stdout": {
+          "path": "logs/begin-tree.stdout.raw",
+          "bytes": 41,
+          "sha256": "b0bd5c1f15bb43ec41980db928c731492a2c3649156244c390505ccfa1ae863c"
+        },
+        "stderr": {
+          "path": "logs/begin-tree.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "capture_complete_to_eof": true
+    },
+    {
+      "label": "begin-status",
+      "argv": [
+        "git",
+        "-C",
+        "/private/tmp/zee-p19-k298/k299-validation",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "/private/tmp/zee-p19-k298/k299-validation",
+      "status": "passed",
+      "observed_exit": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "owned_pid": 51141,
+      "cleanup_term_grace_seconds": 0.2,
+      "elapsed_seconds": 0.01704841700848192,
+      "logs": {
+        "stdout": {
+          "path": "logs/begin-status.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "logs/begin-status.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "capture_complete_to_eof": true
+    },
+    {
+      "label": "pdf-runtime-preflight",
+      "argv": [
+        "/Users/mustafaerbay/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-I",
+        "-B",
+        "-c",
+        "import json,sys,importlib.metadata as m;import reportlab,pypdf,PIL;print(json.dumps({\"packages\":{n:m.version(n) for n in [\"reportlab\",\"pypdf\",\"Pillow\"]},\"imports\":{\"reportlab\":reportlab.Version,\"pypdf\":pypdf.__version__,\"Pillow\":PIL.__version__},\"python\":sys.version,\"executable\":sys.executable}))"
+      ],
+      "cwd": "/private/tmp/zee-p19-k298/k299-validation",
+      "status": "passed",
+      "observed_exit": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "owned_pid": 51142,
+      "cleanup_term_grace_seconds": 0.2,
+      "elapsed_seconds": 0.2895795420045033,
+      "logs": {
+        "stdout": {
+          "path": "logs/pdf-runtime-preflight.stdout.raw",
+          "bytes": 330,
+          "sha256": "42fc516f4001aa9496ee3302e5ee5a658998db8fd40590d5f294f8b507eb5ede"
+        },
+        "stderr": {
+          "path": "logs/pdf-runtime-preflight.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "capture_complete_to_eof": true
+    },
+    {
+      "label": "locate-rustc",
+      "argv": [
+        "rustup",
+        "which",
+        "--toolchain",
+        "1.93.1",
+        "rustc"
+      ],
+      "cwd": "/private/tmp/zee-p19-k298/k299-validation",
+      "status": "passed",
+      "observed_exit": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "owned_pid": 51143,
+      "cleanup_term_grace_seconds": 0.2,
+      "elapsed_seconds": 0.022813167073763907,
+      "logs": {
+        "stdout": {
+          "path": "logs/locate-rustc.stdout.raw",
+          "bytes": 77,
+          "sha256": "ed42aac96e9db0577438d45fc2a1d2267e9f34928f87d924c2c387ade5a7393b"
+        },
+        "stderr": {
+          "path": "logs/locate-rustc.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "capture_complete_to_eof": true
+    },
+    {
+      "label": "locate-cargo",
+      "argv": [
+        "rustup",
+        "which",
+        "--toolchain",
+        "1.93.1",
+        "cargo"
+      ],
+      "cwd": "/private/tmp/zee-p19-k298/k299-validation",
+      "status": "passed",
+      "observed_exit": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "owned_pid": 51144,
+      "cleanup_term_grace_seconds": 0.2,
+      "elapsed_seconds": 0.010147917084395885,
+      "logs": {
+        "stdout": {
+          "path": "logs/locate-cargo.stdout.raw",
+          "bytes": 77,
+          "sha256": "7a7211c4ae2c30c84a38b50a4454ae3094c460c0545234fa78551157656dc8f2"
+        },
+        "stderr": {
+          "path": "logs/locate-cargo.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "capture_complete_to_eof": true
+    },
+    {
+      "label": "rustc-version",
+      "argv": [
+        "/Users/mustafaerbay/.rustup/toolchains/1.93.1-aarch64-apple-darwin/bin/rustc",
+        "-vV"
+      ],
+      "cwd": "/private/tmp/zee-p19-k298/k299-validation",
+      "status": "passed",
+      "observed_exit": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "owned_pid": 51145,
+      "cleanup_term_grace_seconds": 0.2,
+      "elapsed_seconds": 0.10121850005816668,
+      "logs": {
+        "stdout": {
+          "path": "logs/rustc-version.stdout.raw",
+          "bytes": 192,
+          "sha256": "a09c3fc26c9b56a9da361644dc642164492d8ac440d6330c74c7c989bd0d2099"
+        },
+        "stderr": {
+          "path": "logs/rustc-version.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "capture_complete_to_eof": true
+    },
+    {
+      "label": "cargo-version",
+      "argv": [
+        "/Users/mustafaerbay/.rustup/toolchains/1.93.1-aarch64-apple-darwin/bin/cargo",
+        "-V"
+      ],
+      "cwd": "/private/tmp/zee-p19-k298/k299-validation",
+      "status": "passed",
+      "observed_exit": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "owned_pid": 51150,
+      "cleanup_term_grace_seconds": 0.2,
+      "elapsed_seconds": 0.013458832981996238,
+      "logs": {
+        "stdout": {
+          "path": "logs/cargo-version.stdout.raw",
+          "bytes": 36,
+          "sha256": "57d704d9ad73ec7cc1b1a79aed6703333615865be6e3dc1ce269ea4ca7068227"
+        },
+        "stderr": {
+          "path": "logs/cargo-version.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "capture_complete_to_eof": true
+    },
+    {
+      "label": "cpu",
+      "argv": [
+        "sysctl",
+        "-n",
+        "machdep.cpu.brand_string"
+      ],
+      "cwd": "/private/tmp/zee-p19-k298/k299-validation",
+      "status": "passed",
+      "observed_exit": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "owned_pid": 51155,
+      "cleanup_term_grace_seconds": 0.2,
+      "elapsed_seconds": 0.004332583979703486,
+      "logs": {
+        "stdout": {
+          "path": "logs/cpu.stdout.raw",
+          "bytes": 13,
+          "sha256": "cf8be25367c4600921f057a468612c25380ea7eb82253b1dc25fb2454be26b73"
+        },
+        "stderr": {
+          "path": "logs/cpu.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "capture_complete_to_eof": true
+    },
+    {
+      "label": "ram-bytes",
+      "argv": [
+        "sysctl",
+        "-n",
+        "hw.memsize"
+      ],
+      "cwd": "/private/tmp/zee-p19-k298/k299-validation",
+      "status": "passed",
+      "observed_exit": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "owned_pid": 51156,
+      "cleanup_term_grace_seconds": 0.2,
+      "elapsed_seconds": 0.0029609589837491512,
+      "logs": {
+        "stdout": {
+          "path": "logs/ram-bytes.stdout.raw",
+          "bytes": 12,
+          "sha256": "e15b6050a0ee6ea43f29cb46cec0ddcc207f00fe520854aeecfdceb86a9ea799"
+        },
+        "stderr": {
+          "path": "logs/ram-bytes.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "capture_complete_to_eof": true
+    },
+    {
+      "label": "cargo-metadata",
+      "argv": [
+        "/Users/mustafaerbay/.rustup/toolchains/1.93.1-aarch64-apple-darwin/bin/cargo",
+        "metadata",
+        "--locked",
+        "--offline",
+        "--no-deps",
+        "--format-version",
+        "1"
+      ],
+      "cwd": "/private/tmp/zee-p19-k298/k299-validation/compiler",
+      "status": "passed",
+      "observed_exit": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "owned_pid": 51157,
+      "cleanup_term_grace_seconds": 0.2,
+      "elapsed_seconds": 0.014866834040731192,
+      "logs": {
+        "stdout": {
+          "path": "logs/cargo-metadata.stdout.raw",
+          "bytes": 34865,
+          "sha256": "ac8d685b26693c80a55f46f50f541492569317c41ce6997c7df4e717d2aee0cc"
+        },
+        "stderr": {
+          "path": "logs/cargo-metadata.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "capture_complete_to_eof": true
+    },
+    {
+      "label": "release-test-support-build",
+      "argv": [
+        "/Users/mustafaerbay/.rustup/toolchains/1.93.1-aarch64-apple-darwin/bin/cargo",
+        "build",
+        "--locked",
+        "--offline",
+        "--release",
+        "--jobs",
+        "1",
+        "--message-format=json",
+        "--bin",
+        "dil",
+        "--bin",
+        "surum_artefakti"
+      ],
+      "cwd": "/private/tmp/zee-p19-k298/k299-validation/compiler",
+      "status": "passed",
+      "observed_exit": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "owned_pid": 51158,
+      "cleanup_term_grace_seconds": 0.2,
+      "elapsed_seconds": 156.7318864580011,
+      "logs": {
+        "stdout": {
+          "path": "logs/release-test-support-build.stdout.raw",
+          "bytes": 145904,
+          "sha256": "81bd38955196b8346f5dcdc4aa513efedabbb2a181e43514f831f5c073457fd2"
+        },
+        "stderr": {
+          "path": "logs/release-test-support-build.stderr.raw",
+          "bytes": 4652,
+          "sha256": "b14907a2ec441d3257c37757bc1b3a95e0628f1e6950e5ef8bc8b0e58f9b4e75"
+        }
+      },
+      "capture_complete_to_eof": true
+    },
+    {
+      "label": "cli-build-json",
+      "argv": [
+        "/private/tmp/zee-p19-k298/k299-validation/compiler/target/release/dil",
+        "sürüm",
+        "--json"
+      ],
+      "cwd": "/private/tmp/zee-p19-k298/k299-validation",
+      "status": "passed",
+      "observed_exit": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "owned_pid": 53495,
+      "cleanup_term_grace_seconds": 0.2,
+      "elapsed_seconds": 0.3932404579827562,
+      "logs": {
+        "stdout": {
+          "path": "logs/cli-build-json.stdout.raw",
+          "bytes": 169,
+          "sha256": "c7b3e4979e812d9734ed0fdbc8ed961cfa0569e3d73a9faeacc13034c0a2c32d"
+        },
+        "stderr": {
+          "path": "logs/cli-build-json.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "capture_complete_to_eof": true
+    },
+    {
+      "label": "pdf-plugin-testi",
+      "argv": [
+        "/Users/mustafaerbay/.rustup/toolchains/1.93.1-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "--release",
+        "--jobs",
+        "1",
+        "--message-format=json",
+        "--test",
+        "pdf_plugin_testi",
+        "imzali_pdf_zee_native_istek_yanit_kabulu",
+        "--",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "cwd": "/private/tmp/zee-p19-k298/k299-validation/compiler",
+      "status": "passed",
+      "observed_exit": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "owned_pid": 53498,
+      "cleanup_term_grace_seconds": 0.2,
+      "elapsed_seconds": 17.408472541952506,
+      "logs": {
+        "stdout": {
+          "path": "logs/pdf-plugin-testi.stdout.raw",
+          "bytes": 152543,
+          "sha256": "54836a6c20fcfb17258d68a382429af2af5f062839f8033091ed549e59b9cef2"
+        },
+        "stderr": {
+          "path": "logs/pdf-plugin-testi.stderr.raw",
+          "bytes": 239,
+          "sha256": "38efcd4cdc842b03fc2301577a30ff8bf8aeae9ade0b734fdc93be77e79beb02"
+        }
+      },
+      "capture_complete_to_eof": true
+    },
+    {
+      "label": "pdf-independent-inspection",
+      "argv": [
+        "/Users/mustafaerbay/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-I",
+        "-B",
+        "-c",
+        "import json,sys;from pypdf import PdfReader;p=PdfReader(sys.argv[1]);r=p.pages[1][\"/Resources\"];fonts=[v.get_object() for v in r[\"/Font\"].get_object().values()];print(json.dumps({\"pages\":len(p.pages),\"text\":\"\\n\".join(v.extract_text() for v in p.pages),\"embedded_font\":any(\"/FontFile2\" in v[\"/FontDescriptor\"].get_object() for v in fonts if \"/FontDescriptor\" in v),\"images\":sum(v.get_object().get(\"/Subtype\")==\"/Image\" for v in r[\"/XObject\"].get_object().values())}))",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k299-native-1/pdf-native/pdf/catalog.pdf"
+      ],
+      "cwd": "/private/tmp/zee-p19-k298/k299-validation",
+      "status": "passed",
+      "observed_exit": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "owned_pid": 53806,
+      "cleanup_term_grace_seconds": 0.2,
+      "elapsed_seconds": 0.06560508301481605,
+      "logs": {
+        "stdout": {
+          "path": "logs/pdf-independent-inspection.stdout.raw",
+          "bytes": 490,
+          "sha256": "d9a81a1961bd371451ffa74717982719ac76a23524799cbcb2087f98a9c07863"
+        },
+        "stderr": {
+          "path": "logs/pdf-independent-inspection.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "capture_complete_to_eof": true
+    },
+    {
+      "label": "service-fault-testi",
+      "argv": [
+        "/Users/mustafaerbay/.rustup/toolchains/1.93.1-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "--release",
+        "--jobs",
+        "1",
+        "--message-format=json",
+        "--test",
+        "service_fault_testi",
+        "service_fault_native",
+        "--",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "cwd": "/private/tmp/zee-p19-k298/k299-validation/compiler",
+      "status": "failed",
+      "observed_exit": 101,
+      "cleanup_exit": 101,
+      "owned_group_closed_and_reaped": true,
+      "owned_pid": 53807,
+      "failure_type": "RuntimeError",
+      "cleanup_term_grace_seconds": 90,
+      "elapsed_seconds": 0.6291972500039265,
+      "logs": {
+        "stdout": {
+          "path": "logs/service-fault-testi.stdout.raw",
+          "bytes": 152582,
+          "sha256": "a54da2189781a5b362ef732ff72664c0bafad11d5b816fe903c8d73cc3729379"
+        },
+        "stderr": {
+          "path": "logs/service-fault-testi.stderr.raw",
+          "bytes": 545,
+          "sha256": "0616b7815322161d9cabd0b873eff1c0cda77827ff209cea6e9a810cfd2cbea7"
+        }
+      },
+      "capture_complete_to_eof": true
+    }
+  ],
+  "accepted_selectors": [
+    {
+      "target": "pdf_plugin_testi",
+      "selector": "imzali_pdf_zee_native_istek_yanit_kabulu",
+      "status": "passed",
+      "cargo_cases": 1,
+      "test_binary": "/private/tmp/zee-p19-k298/k299-validation/compiler/target/release/deps/pdf_plugin_testi-2b2a31523fb26928",
+      "test_binary_sha256": "c47149a64810b76cbce18cece191e83e3f9550ad75b147745a4866a35fcde46a"
+    }
+  ],
+  "required_k299_pins": {
+    "scripts/tests/pdf-plugin-native.py": "72449d567cae60541f01b3bef362ca8150d56ef7825308e9ae6b83bc4cad78ee",
+    "scripts/tests/service-fault-native.py": "bb3b5a73abb8161eb17e860487bd763cecc3394136bf68edd5dcc27472dfd0fe",
+    "scripts/tests/pdf-plugin-test.py": "3e0bb17f50b7ea979f5d78353c5c0169cb554f71e2f7ebfeca3f442aa16452a0",
+    "scripts/tests/service-fault-test.py": "75b333fa4c6f6af3c42d234965a6db585d7239bba6d7e7318606f38d5b480fbe",
+    "compiler/tests/pdf_plugin_testi.rs": "796c12e0908e678e4abae813081eeb70eedd1d0da14e61826d0a2ce09d64c18f"
+  },
+  "artifact_scope": "release test artifacts only; not canonical shipping delivery",
+  "outer_watchdog_required_term_grace_seconds": 330,
+  "outer_watchdog_verified_by_driver": false,
+  "bounds": {
+    "campaign_seconds": 1800,
+    "cancel_term_grace_seconds": 90,
+    "normal_terminal_zero_term_grace_seconds": 0.2,
+    "stream_bytes": 8388608,
+    "all_command_log_bytes": 67108864,
+    "proof_bytes": 4194304,
+    "public_output_bytes_including_proof": 134217728,
+    "public_output_files": 4096,
+    "minimum_free_bytes": 10737418240
+  },
+  "excluded_claims": [
+    "canonical shipping delivery",
+    "RC",
+    "soak",
+    "IDE/UI",
+    "LSP/P19 latency",
+    "full P11/P34",
+    "systemd/provider/global fault matrix",
+    "native DNS cancellation",
+    "real product/platform acceptance",
+    "C1/K-288",
+    "P33/K-293"
+  ],
+  "source_pins": {
+    "compiler/Cargo.lock": {
+      "sha256": "dc8d703c3bfd86658c50b1732a4ac1f73096bc4a36c7150c2fc58483ec34fb92",
+      "bytes": 43561
+    },
+    "compiler/Cargo.toml": {
+      "sha256": "a84637b04a5940a75d0856e50c631bf83841bc504c1beb5d037862291262d6aa",
+      "bytes": 1514
+    },
+    "compiler/build.rs": {
+      "sha256": "29c77d86f5c9fb86758280a74596031ceae8a6f813b53517211332eb4ad4c11f",
+      "bytes": 3958
+    },
+    "compiler/rust-toolchain.toml": {
+      "sha256": "3260f10937490e272267a11d1bca85ee76b0ef972022ab8fba8a1df0dbb3b397",
+      "bytes": 372
+    },
+    "compiler/tests/pdf_plugin_testi.rs": {
+      "sha256": "796c12e0908e678e4abae813081eeb70eedd1d0da14e61826d0a2ce09d64c18f",
+      "bytes": 2839
+    },
+    "compiler/tests/service_fault_testi.rs": {
+      "sha256": "1c998a362f864ab4551cb369f1969372307dbd24926440e4d9bc863521c64ab5",
+      "bytes": 1291
+    },
+    "golden/pdf-host/assets/COPYRIGHT-DejaVu.txt": {
+      "sha256": "35397e5e2ff231cc777b97c3e18756cc21f4a451f5ade9bf315d552a9a74d25d",
+      "bytes": 152
+    },
+    "golden/pdf-host/assets/LICENSE-DejaVu.txt": {
+      "sha256": "f1d7e97481cf4ac81f2d3ab8b14a483fb34b0b4824a3f8d2b1c70a6fa86a3b08",
+      "bytes": 4765
+    },
+    "golden/pdf-host/assets/base.pdf": {
+      "sha256": "7c25bd391859088307fa0b1816eca1d2c80634e6a950b9018152bf28ffdaf05f",
+      "bytes": 2550
+    },
+    "golden/pdf-host/assets/font.ttf": {
+      "sha256": "7da195a74c55bef988d0d48f9508bd5d849425c1770dba5d7bfc6ce9ed848954",
+      "bytes": 757076
+    },
+    "golden/pdf-host/assets/product.png": {
+      "sha256": "9a09e7df94e28fd35c0d255419f254bc1f4b1a51e323a490d758ebd8b711c9d5",
+      "bytes": 1578
+    },
+    "golden/pdf-plugin/ana.dil": {
+      "sha256": "6724b94271e6dd941c97fa098c95ddf8bca72f179ea342317e47fbafc8da1cd6",
+      "bytes": 980
+    },
+    "scripts/derleyici-secici.py": {
+      "sha256": "b2103253fc59be2eeb27e6861e593d56202697f69519a2b158f9232326c07692",
+      "bytes": 24586
+    },
+    "scripts/lifecycle_core.py": {
+      "sha256": "e76fe65b6103fc4732aafc4468afc5bbf3d0699a0f79d7f74879165636ebb1a9",
+      "bytes": 3613
+    },
+    "scripts/pdf-katalog-host.py": {
+      "sha256": "7ef40302bc3a079a129376a8002c1485fdd905bb860c5fda7b4cfb0ec3b5f9f6",
+      "bytes": 6846
+    },
+    "scripts/pdf-plugin-host.py": {
+      "sha256": "6108d2a2be79fa245e4d9e6326c23a6837e576d179a5ec3521c1571e298a1caf",
+      "bytes": 13662
+    },
+    "scripts/tests/mixed-revision-native.py": {
+      "sha256": "f5c10b2e33bacc7f1093a5f68dd5009904f95164567c8d2c29abb11f62cec19c",
+      "bytes": 20926
+    },
+    "scripts/tests/pdf-plugin-native.py": {
+      "sha256": "72449d567cae60541f01b3bef362ca8150d56ef7825308e9ae6b83bc4cad78ee",
+      "bytes": 13519
+    },
+    "scripts/tests/pdf-plugin-test.py": {
+      "sha256": "3e0bb17f50b7ea979f5d78353c5c0169cb554f71e2f7ebfeca3f442aa16452a0",
+      "bytes": 13653
+    },
+    "scripts/tests/service-fault-native.py": {
+      "sha256": "bb3b5a73abb8161eb17e860487bd763cecc3394136bf68edd5dcc27472dfd0fe",
+      "bytes": 10774
+    },
+    "scripts/tests/service-fault-test.py": {
+      "sha256": "75b333fa4c6f6af3c42d234965a6db585d7239bba6d7e7318606f38d5b480fbe",
+      "bytes": 9340
+    },
+    "scripts/tests/worker-supervisor-test.py": {
+      "sha256": "447525fd38503c150d6488e394e2ff13e51b5db70bbf9a9517daacadd1e59fe1",
+      "bytes": 26493
+    },
+    "scripts/worker-supervisor.py": {
+      "sha256": "560bec4e4e36d2aa856936d9d32412bb9106b61b25a871495287e2287e3c6642",
+      "bytes": 27169
+    }
+  },
+  "private_tmp": "/private/tmp/zee-k299-native-lf7xinf6",
+  "private_tmp_policy": "never archive or inspect arbitrary payloads; successful final top-level must be public output only",
+  "environment": {
+    "RUSTUP_TOOLCHAIN": "1.93.1",
+    "CARGO_BUILD_JOBS": "1",
+    "RUST_TEST_THREADS": "1",
+    "CARGO_NET_OFFLINE": "true",
+    "CARGO_TERM_COLOR": "never",
+    "CARGO_TARGET_DIR": "/private/tmp/zee-p19-k298/k299-validation/compiler/target",
+    "TMPDIR": "/private/tmp/zee-k299-native-lf7xinf6",
+    "ZEE_PDF_BACKEND_PYTHON": "/Users/mustafaerbay/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3"
+  },
+  "runtime_sha256": "7a314947596fc484d4ec36ffc28e843b78d6d749c68736f8b5c24e7333f418eb",
+  "runtime": {
+    "packages": {
+      "reportlab": "4.4.9",
+      "pypdf": "6.10.0",
+      "Pillow": "12.3.0"
+    },
+    "imports": {
+      "reportlab": "4.4.9",
+      "pypdf": "6.10.0",
+      "Pillow": "12.3.0"
+    },
+    "python": "3.12.14 (main, Aug 25 2026, 13:50:33) [Clang 22.1.3 ]",
+    "executable": "/Users/mustafaerbay/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3"
+  },
+  "toolchain_executables": {
+    "rustc": {
+      "path": "/Users/mustafaerbay/.rustup/toolchains/1.93.1-aarch64-apple-darwin/bin/rustc",
+      "sha256": "34a8f7034eeb844189a3c36ebb3fe36c2193fdb47b60028eb7f9392cb1f62484"
+    },
+    "cargo": {
+      "path": "/Users/mustafaerbay/.rustup/toolchains/1.93.1-aarch64-apple-darwin/bin/cargo",
+      "sha256": "2be8a4e73901a99470d15b793e5ee814005c3b9ebbd3815ccbf9cf0f292238e7"
+    }
+  },
+  "machine": {
+    "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+    "architecture": "arm64",
+    "python": "3.13.3 (v3.13.3:6280bb54784, Apr  8 2025, 10:47:54) [Clang 15.0.0 (clang-1500.3.9.4)]",
+    "rustc_vV": "rustc 1.93.1 (01f6ddf75 2026-02-11)\nbinary: rustc\ncommit-hash: 01f6ddf7588f42ae2d7eb0a2f21d44e8e96674cf\ncommit-date: 2026-02-11\nhost: aarch64-apple-darwin\nrelease: 1.93.1\nLLVM version: 21.1.8\n",
+    "cargo": "cargo 1.93.1 (083ac5135 2025-12-15)",
+    "shared_machine": true,
+    "unowned_machine_work": "not-assessed",
+    "cpu": "Apple M4 Pro",
+    "ram-bytes": "25769803776"
+  },
+  "cargo_target_directory": "/private/tmp/zee-p19-k298/k299-validation/compiler/target",
+  "binary_sha256": {
+    "dil": "405c6eef1ec6239e4be81daf9f14937edc8846caa828715bb635e6ba26ce99ea",
+    "surum_artefakti": "ee8df15c4542e18337b237b335f2363f5466fb1deedb7d77d0d7e14c92eb1928"
+  },
+  "build_identity": {
+    "schema": "zee-build-v1",
+    "version": "0.8.0-dev",
+    "source_sha": "90fe778e86b9de28046f0f7bd77b47df138a2212",
+    "source_date": "2026-10-16",
+    "channel": "development",
+    "dirty": false
+  },
+  "pdf_plugin": {
+    "status": "passed",
+    "cases": 9,
+    "proof_sha256": "e7adea437a5671027c282fafee20db2151e46a3e6ef5d9cce653bce078660fa8",
+    "output": "pdf-native",
+    "public_files": 32,
+    "evidence_scope": "actual inner proof, host metadata and PDF receipt hashes; no full inner stderr export"
+  },
+  "pdf_independent_inspection": {
+    "pages": 3,
+    "text": "OWNED BASE COVER\nAnonymous fixed fixture. Original page operators must be retained.\n\nAnonim ürün kataloğu\nÖrnek ürün - ŞĞİıÇÖÜ\nGörsel, gömülü font ve mevcut sayfalara ekleme sınaması.\nB3 - owned technical fixture / teknik sınama\n\nOWNED BASE BACK COVER\nAnonymous fixed fixture. Original page operators must be retained.\n",
+    "embedded_font": true,
+    "images": 1
+  },
+  "service_environment": {
+    "ZEE_NATIVE_WAVE_SHA": "90fe778e86b9de28046f0f7bd77b47df138a2212",
+    "ZEE_NATIVE_WAVE_BINARY_SHA256": "405c6eef1ec6239e4be81daf9f14937edc8846caa828715bb635e6ba26ce99ea",
+    "ZEE_SERVICE_FAULT_OUT": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k299-native-1/service-native"
+  },
+  "failure_type": "RuntimeError",
+  "failure": "command nonzero: service-fault-testi",
+  "owned_commands_closed_and_reaped": true,
+  "files": [
+    {
+      "path": "logs/begin-head.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/begin-head.stdout.raw",
+      "bytes": 41,
+      "sha256": "c738f83587750599dc2f9ee111cce937210d56ad135339d7b83c6dca0aee54e4"
+    },
+    {
+      "path": "logs/begin-status.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/begin-status.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/begin-tree.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/begin-tree.stdout.raw",
+      "bytes": 41,
+      "sha256": "b0bd5c1f15bb43ec41980db928c731492a2c3649156244c390505ccfa1ae863c"
+    },
+    {
+      "path": "logs/cargo-metadata.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/cargo-metadata.stdout.raw",
+      "bytes": 34865,
+      "sha256": "ac8d685b26693c80a55f46f50f541492569317c41ce6997c7df4e717d2aee0cc"
+    },
+    {
+      "path": "logs/cargo-version.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/cargo-version.stdout.raw",
+      "bytes": 36,
+      "sha256": "57d704d9ad73ec7cc1b1a79aed6703333615865be6e3dc1ce269ea4ca7068227"
+    },
+    {
+      "path": "logs/cli-build-json.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/cli-build-json.stdout.raw",
+      "bytes": 169,
+      "sha256": "c7b3e4979e812d9734ed0fdbc8ed961cfa0569e3d73a9faeacc13034c0a2c32d"
+    },
+    {
+      "path": "logs/cpu.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/cpu.stdout.raw",
+      "bytes": 13,
+      "sha256": "cf8be25367c4600921f057a468612c25380ea7eb82253b1dc25fb2454be26b73"
+    },
+    {
+      "path": "logs/locate-cargo.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/locate-cargo.stdout.raw",
+      "bytes": 77,
+      "sha256": "7a7211c4ae2c30c84a38b50a4454ae3094c460c0545234fa78551157656dc8f2"
+    },
+    {
+      "path": "logs/locate-rustc.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/locate-rustc.stdout.raw",
+      "bytes": 77,
+      "sha256": "ed42aac96e9db0577438d45fc2a1d2267e9f34928f87d924c2c387ade5a7393b"
+    },
+    {
+      "path": "logs/pdf-independent-inspection.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/pdf-independent-inspection.stdout.raw",
+      "bytes": 490,
+      "sha256": "d9a81a1961bd371451ffa74717982719ac76a23524799cbcb2087f98a9c07863"
+    },
+    {
+      "path": "logs/pdf-plugin-testi.stderr.raw",
+      "bytes": 239,
+      "sha256": "38efcd4cdc842b03fc2301577a30ff8bf8aeae9ade0b734fdc93be77e79beb02"
+    },
+    {
+      "path": "logs/pdf-plugin-testi.stdout.raw",
+      "bytes": 152543,
+      "sha256": "54836a6c20fcfb17258d68a382429af2af5f062839f8033091ed549e59b9cef2"
+    },
+    {
+      "path": "logs/pdf-runtime-preflight.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/pdf-runtime-preflight.stdout.raw",
+      "bytes": 330,
+      "sha256": "42fc516f4001aa9496ee3302e5ee5a658998db8fd40590d5f294f8b507eb5ede"
+    },
+    {
+      "path": "logs/ram-bytes.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/ram-bytes.stdout.raw",
+      "bytes": 12,
+      "sha256": "e15b6050a0ee6ea43f29cb46cec0ddcc207f00fe520854aeecfdceb86a9ea799"
+    },
+    {
+      "path": "logs/release-test-support-build.stderr.raw",
+      "bytes": 4652,
+      "sha256": "b14907a2ec441d3257c37757bc1b3a95e0628f1e6950e5ef8bc8b0e58f9b4e75"
+    },
+    {
+      "path": "logs/release-test-support-build.stdout.raw",
+      "bytes": 145904,
+      "sha256": "81bd38955196b8346f5dcdc4aa513efedabbb2a181e43514f831f5c073457fd2"
+    },
+    {
+      "path": "logs/rustc-version.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/rustc-version.stdout.raw",
+      "bytes": 192,
+      "sha256": "a09c3fc26c9b56a9da361644dc642164492d8ac440d6330c74c7c989bd0d2099"
+    },
+    {
+      "path": "logs/service-fault-testi.stderr.raw",
+      "bytes": 545,
+      "sha256": "0616b7815322161d9cabd0b873eff1c0cda77827ff209cea6e9a810cfd2cbea7"
+    },
+    {
+      "path": "logs/service-fault-testi.stdout.raw",
+      "bytes": 152582,
+      "sha256": "a54da2189781a5b362ef732ff72664c0bafad11d5b816fe903c8d73cc3729379"
+    },
+    {
+      "path": "pdf-native/pdf/catalog.pdf",
+      "bytes": 27573,
+      "sha256": "45c6b72ff4d59590c7f5b28f596b72d4fd4282d0e16e4528a1457d070d0184b3"
+    },
+    {
+      "path": "pdf-native/pdf/generated.pdf",
+      "bytes": 26896,
+      "sha256": "c445c201d15b2893c8b52af02778d60a25625ae7ce1b17dda477a9ca18b7fdd3"
+    },
+    {
+      "path": "pdf-native/pdf/selected.pdf",
+      "bytes": 1570,
+      "sha256": "9b46785212b2599f59dd125719de93d9c3456777b5d77113a8c8a1fa97a3d8ba"
+    },
+    {
+      "path": "pdf-native/proof.json",
+      "bytes": 3504,
+      "sha256": "e7adea437a5671027c282fafee20db2151e46a3e6ef5d9cce653bce078660fa8"
+    },
+    {
+      "path": "pdf-native/public-bindings/double/plugin.json",
+      "bytes": 698,
+      "sha256": "8de266425c61fb4d0e9f88b5aaf3baff582508d9ba6facd800a79eebeea68cce"
+    },
+    {
+      "path": "pdf-native/public-bindings/double/plugin.json.zee-imza",
+      "bytes": 467,
+      "sha256": "ff2a0b6205b0cf208f1110f5df8e24c7e98b8cbfa66f0156bad3a43e728fc43e"
+    },
+    {
+      "path": "pdf-native/public-bindings/double/trust.json",
+      "bytes": 335,
+      "sha256": "3df16258fc91896c52ec49580da1122d802f8b4f4e35c46b10e532d44e748fae"
+    },
+    {
+      "path": "pdf-native/public-bindings/key/plugin.json",
+      "bytes": 698,
+      "sha256": "fcf7a5529a0fa867af7229843ab945b9aa8a9d0a684230f64d1156ff520a5605"
+    },
+    {
+      "path": "pdf-native/public-bindings/key/plugin.json.zee-imza",
+      "bytes": 467,
+      "sha256": "e28d9c1456523f315faf4658577854494eff7d202ab6bafc3d2aca8aaaf77a08"
+    },
+    {
+      "path": "pdf-native/public-bindings/key/trust.json",
+      "bytes": 335,
+      "sha256": "cf28ab6e5e874f3f12047e79e0aeb50568dd057a684173e30e6b49f4f81afbe3"
+    },
+    {
+      "path": "pdf-native/public-bindings/positive/plugin.json",
+      "bytes": 698,
+      "sha256": "fcf7a5529a0fa867af7229843ab945b9aa8a9d0a684230f64d1156ff520a5605"
+    },
+    {
+      "path": "pdf-native/public-bindings/positive/plugin.json.zee-imza",
+      "bytes": 467,
+      "sha256": "acec7a666e413f0baedf1f9c81f87f028ac3d0d2951ad273fc43533f4a966ec7"
+    },
+    {
+      "path": "pdf-native/public-bindings/positive/trust.json",
+      "bytes": 335,
+      "sha256": "cf28ab6e5e874f3f12047e79e0aeb50568dd057a684173e30e6b49f4f81afbe3"
+    },
+    {
+      "path": "pdf-native/public-bindings/purpose/plugin.json",
+      "bytes": 698,
+      "sha256": "fcf7a5529a0fa867af7229843ab945b9aa8a9d0a684230f64d1156ff520a5605"
+    },
+    {
+      "path": "pdf-native/public-bindings/purpose/plugin.json.zee-imza",
+      "bytes": 467,
+      "sha256": "acec7a666e413f0baedf1f9c81f87f028ac3d0d2951ad273fc43533f4a966ec7"
+    },
+    {
+      "path": "pdf-native/public-bindings/purpose/trust.json",
+      "bytes": 331,
+      "sha256": "d656ce784edaecfdb2b1af17a559292338989a2c487fb6a61bf0ecf7f66bdd8c"
+    },
+    {
+      "path": "pdf-native/public-bindings/runtime/plugin.json",
+      "bytes": 698,
+      "sha256": "fcf7a5529a0fa867af7229843ab945b9aa8a9d0a684230f64d1156ff520a5605"
+    },
+    {
+      "path": "pdf-native/public-bindings/runtime/plugin.json.zee-imza",
+      "bytes": 467,
+      "sha256": "acec7a666e413f0baedf1f9c81f87f028ac3d0d2951ad273fc43533f4a966ec7"
+    },
+    {
+      "path": "pdf-native/public-bindings/runtime/trust.json",
+      "bytes": 334,
+      "sha256": "c142b98d3426335a8cd5264d6d4d57a9fa7c6bc80016d399b1cbbd706729edd4"
+    },
+    {
+      "path": "pdf-native/public-bindings/schema/plugin.json",
+      "bytes": 698,
+      "sha256": "fcf7a5529a0fa867af7229843ab945b9aa8a9d0a684230f64d1156ff520a5605"
+    },
+    {
+      "path": "pdf-native/public-bindings/schema/plugin.json.zee-imza",
+      "bytes": 467,
+      "sha256": "acec7a666e413f0baedf1f9c81f87f028ac3d0d2951ad273fc43533f4a966ec7"
+    },
+    {
+      "path": "pdf-native/public-bindings/schema/trust.json",
+      "bytes": 335,
+      "sha256": "cf28ab6e5e874f3f12047e79e0aeb50568dd057a684173e30e6b49f4f81afbe3"
+    },
+    {
+      "path": "pdf-native/public-bindings/signature/plugin.json",
+      "bytes": 698,
+      "sha256": "fcf7a5529a0fa867af7229843ab945b9aa8a9d0a684230f64d1156ff520a5605"
+    },
+    {
+      "path": "pdf-native/public-bindings/signature/plugin.json.zee-imza",
+      "bytes": 452,
+      "sha256": "e5e2a1d799dcd11158a617c377367a5b61c69cc5e60a3ec36b42509a9e991ba4"
+    },
+    {
+      "path": "pdf-native/public-bindings/signature/trust.json",
+      "bytes": 335,
+      "sha256": "cf28ab6e5e874f3f12047e79e0aeb50568dd057a684173e30e6b49f4f81afbe3"
+    },
+    {
+      "path": "pdf-native/public-bindings/size/plugin.json",
+      "bytes": 698,
+      "sha256": "fcf7a5529a0fa867af7229843ab945b9aa8a9d0a684230f64d1156ff520a5605"
+    },
+    {
+      "path": "pdf-native/public-bindings/size/plugin.json.zee-imza",
+      "bytes": 467,
+      "sha256": "acec7a666e413f0baedf1f9c81f87f028ac3d0d2951ad273fc43533f4a966ec7"
+    },
+    {
+      "path": "pdf-native/public-bindings/size/trust.json",
+      "bytes": 335,
+      "sha256": "cf28ab6e5e874f3f12047e79e0aeb50568dd057a684173e30e6b49f4f81afbe3"
+    },
+    {
+      "path": "pdf-native/public-bindings/unknown/plugin.json",
+      "bytes": 698,
+      "sha256": "4ccfb6d811e859ac1739660ec1c33435e3ac2763a1ad03c679f8f33fcdca1d4b"
+    },
+    {
+      "path": "pdf-native/public-bindings/unknown/plugin.json.zee-imza",
+      "bytes": 467,
+      "sha256": "a1ac9a53f7575bcab92e6433bcc5bdcd940a460cc412940eaf492ebb4cf8dd08"
+    },
+    {
+      "path": "pdf-native/public-bindings/unknown/trust.json",
+      "bytes": 335,
+      "sha256": "f6d90421896d08cdee52fdc52a87e9fa5ad6bda7c6263a17387396501f04aaad"
+    },
+    {
+      "path": "pdf-native/raw-metadata.json",
+      "bytes": 2098,
+      "sha256": "1230a8095358cda2b12e59a7026a2d2ea71f754acd1f4eb6f7245a20f9fa29de"
+    }
+  ],
+  "artifact_bytes": 567929,
+  "artifact_bytes_semantics": "allowlisted public manifest excludes PROOF.json; final bound includes it",
+  "elapsed_seconds": 175.80060454201885,
+  "closure_scope": "original held command Popen groups; nested groups require actual inner passing proofs",
+  "failure_archive_policy": "only explicit files list plus PROOF.json; never tar output or private scratch wholesale",
+  "private_tmp_retained": true
+}

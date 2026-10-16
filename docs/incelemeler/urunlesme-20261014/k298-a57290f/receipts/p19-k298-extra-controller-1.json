@@ -1,0 +1,23 @@
+{
+  "argv": [
+    "python3",
+    "-I",
+    "-B",
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-drivers/extra-acceptance-two.py",
+    "--repo",
+    "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+    "--sha",
+    "a57290f7a1c1fad07cda3f266b2a221f09aa6404",
+    "--out",
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-extra-1"
+  ],
+  "started_ns": 1792108754254486000,
+  "status": "passed",
+  "minimum_free_bytes": 70927429632,
+  "required_free_bytes": 10737418240,
+  "observed_exit": 0,
+  "owned_group_closed_and_reaped": true,
+  "exit": 0,
+  "finished_ns": 1792108821715831000,
+  "elapsed_seconds": 67.46179395797662
+}

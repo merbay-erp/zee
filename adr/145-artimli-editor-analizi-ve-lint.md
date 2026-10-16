@@ -1,6 +1,6 @@
 # ADR-145 — Artımlı editör eşitlemesi, ayrıştırma önbelleği ve lint
 
-- **Durum:** S3 ve S4 kendi exact kaynaklarında dar kabul taşır; K-298 bildirim ömürlü dizin bakımının yeni kaynak ölçümü ve kabulü açık. Artımlı HIR/type, UI/gerçek ürün/SLA kabulü açık.
+- **Durum:** S3/S4 tarihsel; K-298 `a57290f7a1c1fad07cda3f266b2a221f09aa6404` kaynağında dört stdio p95 hedefinin dar gözlemsel kabulü ve yerel IDE/UTF-16 geçti. Aynı kaynağın ikinci RSS ve RC kabulü geçti; K-298 dar kapsamı kapalı, son belge kapısı takip commit’inin koşuludur; artımlı HIR/type, UI/gerçek ürün/SLA ve tam P19 açık.
 - İş: K-287; K-298 semantic davranışı koruyan performans bakımı; ürün talebi: zee-cekirdek C2/P19.
 - İlişkili kararlar: ADR-019/035/069; RFC-0010; spec/30.
 
@@ -114,18 +114,23 @@ Diskten proje/paket/kilit doğrulaması korunur; kilitli paket metni açık belg
 örtülmez. Bildirimler arasında symlink hedefi yeniden çözülür. Tanı sırası,
 span'ler, lint kipleri, yayın ve kaynak bütçeleri değişmez.
 
-İki dar LSP testinin kapsamı üç URI alias'ından her birinin çatışması ve iki lint kipi
-ile Unix'te symlink hedefinin sonraki bildirimde yeniden çözülmesidir. Testlerin
-başarısı ve yeni exact kaynak stdio ölçümü ayrıca kaydedilecektir;
-S4'ün eski ölçüm ve RC/soak sonuçları bu adaya taşınmaz. Hedef, aynı dört
-stdio kohortunun 5 ısınma/20 ölçüm sözleşmesiyle karşılaştırılmasıdır; ölçüm
-öncesinde 200 ms hedefi ya da tam P19 kapanışı ileri sürülmez.
+İki dar LSP testi üç URI alias'ından her birinin çatışması/iki lint kipi ve
+Unix symlink hedefinin sonraki bildirimde çözümünü korur. Kaynak hazırlık
+kapıları ve maintenance/provenance kaydı geçti. [K-298 kabulü](../docs/urunlesme-k298-kabul-20261016.md)
+`a57290f7a1c1fad07cda3f266b2a221f09aa6404` kaynağında aynı dört stdio kohortunu 5 ısınma/20 ölçümle doğruladı.
+En ağır fresh önce/sonra p95 204,880125→189,885667 ms (%7,32); dört p95 de 200 ms
+altında. Bu shared gözlem hard gate, UI veya genel SLA kabulü değildir.
+Aynı kaynağın native UTF-16/IDE işlev kanıtı ayrı; ikinci RSS koşusu
+1801,116786 saniye/360 örnekle ve compiler %0/LSP +1024 KiB (%6) büyümeyle geçti.
+Aynı kaynakta dört ASan/Miri3 ve tam RC kapısı 131 Cargo grubunda 998/0/25
+ile geçti; K-298 dar kapsamı kapalıdır. Son belge kapısı takip commit’inin koşuludur. S4 makbuzları bu kaynağa taşınmaz; genel P19 kısmi kalır.
 
 Etki incelemesi: grammar, API, tanı, bağımlılık ve normatif spec davranışı
 korunur; bu nedenle yeni RFC/ADR normu veya hata kataloğu girdisi gerekmez.
 Production katman/çevrim, API ve uyumluluk kapıları, test faz sahipliği ve
 belge tazeliği değişikliğin aynı diliminde doğrulanır. ADR-045/049 ile
 `docs/performans-gecmisi-v2.tsv` etkisi incelenir; paylaşımlı stdio gözlemi
-adanmış sabit taban veya hard eşik sayılmaz. Exact kaynak SHA'sı alındıktan
-sonra semantic ve core-freeze kayıtları `maintenance` olarak bağlanır;
-bugfix reproducer/fixed_by kaydı icat edilmez.
+adanmış sabit taban veya hard eşik sayılmaz. Compiler kaynak commit'i `bb4ed951ce5e8e9c1c21d2c58f75cd4ef51d6c59`
+semantic ve core-freeze kayıtlarında `maintenance` olarak bağlıdır; kabul
+SHA'sı a57290f bu provenance takibidir. Bugfix reproducer/fixed_by kaydı
+icat edilmez.

@@ -64,3 +64,12 @@ izleyen değişikliktedir; [kabul raporu](../docs/lsp-utf16-kabul-20261015.md)
 ilk kapanışın tam faz başarısını ve o aşamada RC/soak/IDE yapılmadığı sınırını
 kaydeder. İzleyen [S4 kabulü](../docs/urunlesme-s4-kabul-20261015.md) yeni exact
 kaynakta bu kampanyaları ayrıca doğrular; S3 tarihsel kanıtını taşımaz.
+
+## K-298 kaynağında ordinary UTF-16 tazeliği
+
+[K-298 kabulü](../docs/urunlesme-k298-kabul-20261016.md) a57290f kaynağında 10 native stdio LF/CRLF
+olumlu/olumsuz vakayı ve gerçek IDE hover/definition/rename/A001 aralıklarını
+ayrıca doğruladı. K-297'nin özgün fixed_by kaydı değişmez. Yeni IDE iki normal
+Quit/exit0/reap içerir; ayrı IDE shutdown trace'i yakalanmadı. Native stdio
+protokol kapanışı ayrı kanıttır. Dört stdio p95 gözlemi UI/gecikme SLA veya
+artımlı HIR/type kabulü değildir.
