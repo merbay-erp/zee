@@ -140,6 +140,49 @@ değerini aynen bildirir; temiz exact commit kabulü ayrı tekrar koşusudur.
 B5'in tam işletim/temiz-host kabulü ve P14 socket/drain/overlap garantileri
 açık kalır; bu araç `dil hizmet örnek` komutu eklemez.
 
+## K-301 — Başlamış isteğin kesilmesi için test kanıtı
+
+**Dar test doğruluğu tamamlandı.** `test_real_inflight_request_can_be_interrupted`
+artık TCP yazımı ve kısa uyku yerine handler girişini doğrular; tek `recv`
+parçası yerine tüm sınırlı yanıtı inceler. Yalnız bu teste özel V3 fixture'ı
+`web-oturumu` ile `GET "/csrf"` kullanır. Yardımcı HTTP200 yanıtını, 64 haneli
+hex belirteci ve oturum çerezini doğrular; `Origin`, çerez ve `_csrf` form
+alanıyla `POST "/yavas"` gönderir. `herkese açık` CSRF'yi kapatmaz; normal
+kontrol akışı kullanılır. Handler, `eylem girişi kaydet` üzerinden
+`inflight.entered` dosyasına `entered` ve bir LF baytı yazar. Exact işaret
+iki saniye içinde görülmeden supervisor kapanışı başlatılmaz. Kapanıştan
+sonra yanıt bir saniyelik mutlak süre ve 16 KiB sınırında EOF/reset sonuna
+kadar biriktirilir; `bitti` bütün yanıtta aranır. Timeout başarı sayılmaz.
+
+İlk GET fixture'ının dosya yazımı T045 ile reddedildi; worker1 readiness
+öncesinde başarısız oldu. `k301-fixture-diagnostic-1.log` ve özgün başarısız
+controller korunur. V2 POST/eylem fixture'ının `denetle` kontrolü geçti;
+worker2 yalnız inflight vakada başarısız oldu (25 test/1 hata). Assertion
+ayrıntısı kayıtta yoktur; işaret yokluğu veya HTTP403 gözlemi iddia edilmez.
+POST isteğinde oturum çerezi ve `_csrf` eksikliği kaynak/spec incelemesinin
+bulgusudur. Her iki başarısız koşu kendi sonucu ile korunur.
+
+V3'ün üçüncü gerçek worker koşusu geçti: mevcut tek Cargo sahibi 1/0/0
+(78,28 saniye), Rust wrapper'ın doğruladığı Python sonucu 25/0/0;
+sekiz native ve iki credential vakası dahil. Özgün controller exit0 ve
+reap ile kapandı (79,284 saniye); 11 giriş dosyası pini korundu. V3 için
+ayrıca 10 kontrollü senaryo/20 eski-yeni yöntem karşılaştırması geçti.
+Bu karşılaştırmada HTTP/CSRF yardımcısı mock'tur; gerçek yardımcının kanıtı
+ayrı worker3 kabulüdür. Varsayılan fixture ve diğer modül AST eşliği,
+değişmeyen 25 Python test metodu doğrulandı; test eklenmedi/taşınmadı ve
+yeni Cargo sahibi yoktur. K-300'ün 998/0/25 tam fazı K-301 sonucu değildir.
+
+Üç saniyelik handler karşısında explicit `--stop-grace .2`, başlamış
+isteğin kısa host bütçesi sonunda kesilebildiğini sınar. Genel drain,
+native DNS, tam fault matrisi veya P34 kapanışı değildir. Üretim
+host/worker/compiler davranışı ve varsayılan fixture değişmez.
+
+Etki incelemesi: spec/RFC normları, kullanıcı tanıları, compiler/katman/bağımlılık
+grafiği, kalıcı durum ve performans iş yükü değişmez; yeni compiler beyanı,
+semantic regression, GB veya ADR numarası açılmaz. Son 11 belge/güvenlik
+kapısının geçmesi kayıt commit'inin önkoşuludur.
+[Kabul raporu](urunlesme-k298-kabul-20261016.md) kaynak ve sonuçları ayırır.
+
 ## K-253 güncel Unix drain sınırı
 
 Native Unix worker SIGTERM sonrasında mevcut admitted isteği tamamlar,

@@ -14,6 +14,19 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **Worker inflight test doğruluğu (K-301, dar kapsam tamamlandı):** handler
+  giriş işareti ve tüm sınırlı yanıt kontrolü, üçüncü gerçek worker koşusunda
+  tek Cargo sahibi 1/0/0 ve wrapper'ın 25/0/0 doğrulamasıyla geçti. V3 normal
+  `web-oturumu`/CSRF GET/çerez/form POST ve `eylem` kullanır; CSRF atlanmaz.
+  Ayrı mock karşılaştırması 10 senaryo/20 yöntemdir; gerçek yardımcı worker3'te
+  sınandı. İlk GET fixture'ının T045 reddi ve worker1 başarısızlığı ile ikinci
+  koşunun yalnız inflight hatası (25 test/1 hata) korunur. İkincide assertion
+  ayrıntısı yoktur; CSRF/çerez eksikliği kaynak incelemesidir, HTTP403 gözlemi
+  değildir. Son 11 belge/güvenlik kapısının geçmesi kayıt commit'inin
+  önkoşuludur. Üretim davranışı, 25 vaka/tek Cargo sahibi aynı; genel
+  P34/drain/fault kapanışı veya kullanıcı göçü değildir.
+
+
 - **Mixed-revision kabul koşucusu (K-300, ADR-149/GB-112 dar kapsamda kapalı):**
   Rust kökü kanonikleştirildi; erken iptal, kısmi host sahipliği ve cleanup
   iptalinin başarısız sonuçta korunması tamamlandı. Hazırlık13, C3 öncesi

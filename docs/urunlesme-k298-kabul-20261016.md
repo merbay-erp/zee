@@ -1,6 +1,6 @@
 # Ürünleşme — yerel kabul ve açık teknik işler raporu
 
-> 16 Ekim 2026. K-298, K-299 ve K-300 dar yerel kabul kapsamları tamamlandı.
+> 16 Ekim 2026. K-298, K-299, K-300 ve K-301 dar yerel kabul kapsamları tamamlandı.
 > Genel ürünleşme/V1 ve yayın kapıları açık; belge takip commit’i aşağıdaki dış kapı makbuzlarına bağlıdır.
 
 ## K-300 — Karma sürüm koşucusu: dar kabul tamamlandı
@@ -49,7 +49,12 @@ aynıdır. S3 veya K-298 sonuçları bu yeni kaynağa aktarılmaz.
 | `k300-native-1/PROOF.json` | `499d44f433b95a0fcfefd8844f5d229f9cd69b01b2f06d8d9d3bfce7b02f399b` |
 | `k300-native-controller-1.json` | `a3741c28684d8ffc99c94e3dba2f0cb21e83a946d3faa7b5755427cfa1a59ae0` |
 
-Bu kapanışın son belge/güvenlik kapısı ve takip commit'i ayrıca gereklidir.
+Kapanışın son belge/güvenlik kapısı **11/11** geçti (74,805 sn; özgün
+controller exit0/reaped). Belgeler `7093e0c7d668ff5845cbe513816aba7e64da93fe`
+commit'iyle temiz kaydedildi. Dış `k300-final-docs-1/PROOF.json` SHA-256
+`1c227d67e1e84ba62cc176e8f27e1a210f5b6d7739a56bc0a39006be81f352c8`;
+`k300-final-document-commit.json`
+`cd652353fe6880144d61d328d57bdbb22a8be68875b5b064dddd0600d80e766f`.
 [Koşucu sözleşmesi](mixed-revision-wave.md) ve [ADR-149](../adr/149-mixed-revision-owned-wave.md)
 dar kapsamı taşır. P14 genel SLA, DB şema devri, ürün ve platform kabulü
 kısmi kalır; yeni kaynak RC/soak/IDE kabulü ileri sürülmez.
@@ -58,11 +63,55 @@ kısmi kalır; yeni kaynak RC/soak/IDE kabulü ileri sürülmez.
 ile kaydedilmişti: kendi son belge/güvenlik kapısı 11/11 ve özgün controller
 exit0/reaped. Bu tarihsel kapı K-300 belgelerinin yerine geçmez.
 
-Yerel sıradaki iş K-301/P34 worker testindeki admission ve parçalı yanıt
-oracle'ıdır: 10 kontrollü senaryoda 20 mock karşılaştırması geçti; henüz gerçek
-yeni worker kabulü değildir. Önceki özel Linux VM'si ve PG16.15 geçici kurulumu
-artık yoktur; ilgili testler için yerel ortam yeniden kurulmalıdır. Bu bir
-kullanıcı cihazı/verisi bekleme gerekçesi değildir. Fiziksel platform U2 ayrıdır.
+Sonraki yerel öncelik, silinmiş geçici PostgreSQL16.15 ortamını yeniden
+kurup mevcut TLS8 ve göç1 kabulünü güncel temiz kaynakta çalıştırmaktır.
+Ardından özel Linux ortamı yeniden kurulmalıdır. Bunlar kullanıcı cihazı/verisi
+bekleme gerekçesi değildir; fiziksel platform U2 ayrıdır.
+
+## K-301 — Worker testinde gerçek giriş ve tam yanıt kanıtı
+
+**Dar test doğruluğu işi tamamlandı.** Önceki test handler başlamadan gelen
+EOF'yi veya ilk TCP parçasında bulunmayan `bitti` gövdesini geçirebiliyordu.
+İlgili fixture artık gerçek cookie/CSRF hazırlığından sonra POST/eylem üzerinden
+exact `entered\n` işareti üretir. Test işareti doğruladıktan sonra kapatır;
+yanıtı EOF/reset'e kadar bir saniye/16 KiB sınırında toplar. GET salt okuma,
+eylem, oturum ve CSRF kuralları aynen korunur.
+
+- Son V3 kaynak SHA-256 `15abd88acb28a13c89bbee1d248287953b95d47544594b350628d770dc86d71e`.
+  Mevcut **tek Cargo sahibi geçti** (78,28 sn); wrapper aynı **25 Python
+  vaka/0 hata/0 atlama**, sekiz native vaka ve iki credential bileşimini
+  zorunlu doğrular. Başarılı Cargo günlüğü iç Python çıktısını ayrıca basmaz.
+- Özgün controller **exit0/reaped**, 79,284 sn. Önce/sonra 11 kaynak pini
+  eşittir. Bu çalışma `7093e0c7d668ff5845cbe513816aba7e64da93fe` tabanı
+  üzerindeki test/belge değişikliğinin olağan Cargo kabulüdür; temiz sürüm
+  artefaktı veya yeni kaynak RC/soak/IDE kabulü değildir.
+- V3'ün 10 kontrollü senaryosunda 20 eski/yeni metot karşılaştırması geçti;
+  eksik/yanlış giriş, parçalı tamamlanmış gövde ve timeout olumsuzları kapsanır.
+  HTTP/CSRF yardımcısı mock karşılaştırmada taklittir; gerçek yolu worker3
+  koşusunda geçti. Varsayılan fixture ve diğer metotların AST eşliği, aynı25
+  metot ve tek Cargo sahibi doğrulandı. Yeni/taşınan test sahibi yoktur;
+  K-300'ün 998/0/25 tam faz sonucu K-301'e aktarılmaz.
+- İlk iki gerçek koşu 25 vakada bir inflight hatasıyla reddedildi ve korundu.
+  İlk fixture'ın GET içinde yazması bağımsız native denetimde T045 verdi.
+  İkinci fixture'daki CSRF önkoşulu eksikliği kaynak/spec incelemesinde bulundu;
+  günlük assertion ayrıntısı vermediği için gözlenmiş403 veya eksik işaret
+  sonucu ileri sürülmez. Son koşu doğru POST/eylem/oturum/CSRF akışıyla geçti.
+
+| Özgün makbuz (E altında) | SHA-256 |
+| --- | --- |
+| `k301-worker-inputs-3.json` | `589ea3e5a1b73b387a0cdfb757864e4ff919fa4dd2fa5b31c6d0dee341f41626` |
+| `k301-worker-owner-3.log` | `faf9053769e1e1bfd8ee4803eb9495cf454198e5061f04c2d08e15c7c3bbdb7b` |
+| `k301-worker-owner-controller-3.json` | `9c6b0e793226b3e169a077e5b6484af9c4bc9496e0031465af29dde94a27437d` |
+
+Mock V3 `PROOF.json` SHA-256
+`cad3219d9993df0e8672ea9c60b4cf99612e20c1fa63ebd8e2b0d2f7967f5c19`;
+kalıcı kopyası `E/k301-mock-evidence-3/PROOF.json` altındadır.
+Bu kod ve belge grubunun kayıt commit'i, `E/k301-gates-1/PROOF.json` ile
+özgün `k301-gates-controller-1.json` içindeki 11 belge/güvenlik kapısının
+başarısını ve test edilen son dosya özetlerini önkoşul olarak doğrular.
+Üretim compiler/Host davranışı değişmedi. Genel P34, native DNS, tam fault,
+drain ve SLA kapıları kısmi kalır. Bu yerel iş için kullanıcı girdisi gerekmedi.
+[Host rehberi](worker-supervisor.md) ve K-301 backlog kaydı aynı kapsamı taşır.
 
 ## Sonuç özeti
 
@@ -75,6 +124,7 @@ kullanıcı cihazı/verisi bekleme gerekçesi değildir. Fiziksel platform U2 ay
 | Release-candidate | S kaynağında dört explicit ASan hedefi 1801’er sn, Miri 2+1 ve tam RC güvenlik kapısı geçti: 131 Cargo grubu, 998 geçti/0 başarısız/25 atlanan. |
 | K-299 kabul betikleri | C2 kaynak zincirinde 13 kapı (998/0/25) ve sürekli güvenlik; temiz C2 native PDF9/service2 geçti. Küçük kanıt arşivi doğrulandı; GB-111 dar kapanışı bu belge dalgasında kaydedilir. İlk başarısızlıklar korunur. |
 | K-300 karma sürüm | Hazırlık13, kaynak kapıları13 (998/0/25) ve temiz `549dbe6` native9/160istek/dört dalga geçti; GB-112 dar kapsamda kapalı. |
+| K-301 worker test doğruluğu | Son fixture ile mevcut25 Python vaka/tek Cargo sahibi geçti; mock10/20 ve kaynak pinleri doğrulandı. İlk iki ret korundu. |
 | Genel ürünleşme/V1 | Bütün39 madde kapanmadı; aşağıdaki dış girdiler, takvim ve teknik kapsam açık. |
 
 Compiler bakım commit'i `bb4ed951ce5e8e9c1c21d2c58f75cd4ef51d6c59`, ağaç
@@ -603,7 +653,7 @@ bilgidir; bunlar yeniden karar talebi değildir.
 | P31 — PG/TLS/göç | Dar yerel kabul var; S3 sonuçları tarihsel. | Yeni kaynak/uzak CI ve gerçek ürün kabulü ayrıca değerlendirilir. | Ürün için U1 + U5. |
 | P32 — GitHub kopya teyidi | Harici yanıt yok. | PR refs/cache/Actions temizleme kapsamının GitHub tarafından teyidi gerekiyor. | **U4.** |
 | P33 — Güvenlik kanıt matrisi | **Kısmi; salt okunur matris mevcut.** | Koordineli reproducer reddi nedeniyle tam kapsam açık; istismar gözlenmiş denmiyor. | Ek izinle kapanmaz; aşağıdaki araç sınırı. |
-| P34 — Worker/fault | Kısmi; temiz C2 service2 ve K-299 dar bakım kabulü geçti. S3 ve başarısız ilk C kayıtları ayrı. | Native DNS, tam fault matrisi ve gerçek ürün benimsenmesi açık. | U1 + U5. |
+| P34 — Worker/fault | Kısmi; temiz C2 service2 ve K-299 dar bakım kabulü geçti. S3 ve başarısız ilk C kayıtları ayrı. | K-301 yerel test doğruluğu kapalı: worker25/tekCargo ve mock10/20 geçti. Native DNS, tam fault matrisi ve gerçek ürün benimsenmesi açık. | K-301 için yok; gerçek ürün için U1 + U5. |
 | P35 — Ergonomi/gramer | **Ertelendi; RFC aday.** | İnsan çalışması, tekrarlanan ürün ihtiyacı ve freeze kapısı olmadan yeni syntax yok. | U1 + U3; ayrıca P28. |
 | P36 — Test/ignored kapsamı | S RC 998/0/25 ve S extra2; ayrı C2 gate4 998/0/25/native2 geçti. | S'de 25 ignored sahibin 23'ü bu dalgada ayrıca çalışmadı; C2 sonuçları S'ye eklenmez. | Yeni gerçek kabul kapsamına göre cihaz/ürün/servis girdileri gerekebilir. |
 | P37 — Sürekli kalite kapıları | **Sürekli iş; tek seferde kapanmaz.** Bu dalganın dar kanıt/arşiv kapsamı hazır. | Her değişiklikte ilgili kapılar; belge takip commit’i gerçek dış kapı makbuzuna bağlıdır. | Yerel işler için yok; bağlı dış kapılar ayrı. |

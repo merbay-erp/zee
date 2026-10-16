@@ -17,6 +17,18 @@ Son11 belge kapısının geçmesi takip commit'inin önkoşuludur.
 değiştirmez; genel P14/ürün/platform/SLA kısmi, eski RC/soak/IDE kabulleri
 kendi kaynaklarında kalır.
 
+K-301 worker kesilme testinin dar doğruluk işi tamamlandı: V3 gerçek worker3
+koşusu tek Cargo sahibi 1/0/0, wrapper doğrulaması 25/0/0 ve özgün controller
+exit0/reap ile geçti. Normal `web-oturumu`/CSRF GET/çerez/form POST akışı ve
+`eylem` kullanılır; CSRF atlanmaz. Ayrı mock10/20, gerçek HTTP/CSRF yardımcısı
+kabulü sayılmaz; yardımcı worker3'te sınandı. İlk GET fixture'ının T045 reddi
+ve worker1 başarısızlığı, ikinci koşunun yalnız inflight hatası (25 test/1 hata)
+korunur. İkincide assertion ayrıntısı yoktur; eksik CSRF/çerez kaynak
+incelemesidir, HTTP403 ölçümü değildir. Son 11 belge/güvenlik kapısının
+geçmesi kayıt commit'inin önkoşuludur. Üretim davranışı, mevcut25 test/tek
+Cargo sahibi ve genel P34/drain/fault sınırları korunur. Yeni kullanıcı
+girdisi gerekmez; [worker rehberi](worker-supervisor.md) kapsamı taşır.
+
 Uçtan Uca Master Proje Dokümanı
 Dil • Derleyici • Runtime • Standart Kütüphane • Paket Ekosistemi • Tooling • Eğitim
 “Türkçe düşün. Türkçe yaz. Makine kesin olarak anlasın.”
