@@ -121,7 +121,7 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-113 | [Native Unix SIGTERM drain](113-native-web-sigterm-drain.md) | **kabul, sınırlı Unix yaşam döngüsü** (K-253) |
 | ADR-114 | [Ayrı SQL kira heartbeat](114-ayri-sql-kira-heartbeat.md) | **kabul, dar SQL-only pilot** (K-254/GB-075) |
 | ADR-115 | [TLS1.1 capable-positive kontrol](115-tls11-capable-positive-kontrol.md) | **kabul, owned fixture** (K-256/GB-076) |
-| ADR-116 | [Native sahipli metrik pipe](116-native-owned-metrics-pipe.md) | **kabul, sınırlı metadata profili** (K-257/GB-078) ; K310/GB119 metrics harness cleanup/özgün PG-FD dilimi açık; expected1failure ayrı, kontrollü standalone52/combined16 geçti; source15/clean/native8+distinct nestedlib/final kabulü bekler; P13kısmi |
+| ADR-116 | [Native sahipli metrik pipe](116-native-owned-metrics-pipe.md) | **kabul, sınırlı metadata profili** (K-257/GB-078) ; K310/GB119 exact kaynak 1130569460203049374e16146a955e208da9dd16 dar kapsamda kapalı; tam15/temiz source+metrics8/ikiCargo/frozen kabulü ve exact final11/temiz kapanış commit makbuzları zorunlu; genelP13kısmi |
 | ADR-117 | [Sınırlı SQL dispatcher](117-sinirli-sql-dispatcher.md) | **kabul, SQL-only host pilotu** (K-258/GB-079); K309/GB118 exact kaynak d3d6a9044f1646871954e0933fe1fe43ecd5ac96 dar kapsamda kapalı; tam15/temiz source+tekCargo/job11/frozen kabulü ve exact final11/temiz kapanış commit makbuzları zorunlu; genelP09kısmi |
 | ADR-118 | [Native listener nesil hazırlığı](118-native-listener-nesil-hazirligi.md) | **kabul, sınırlı Unix host profili** (K-259/GB-080) |
 | ADR-119 | [Credential native metrik capability](119-credential-native-metrics-capability.md) | **kabul, tek POSIX metadata capability** (K-260/GB-081) |
