@@ -14,6 +14,8 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **K-307 / GB-116 açık:** Modül SQL kabul harness’inde yapışkan cleanup iptali ve cleanup sonrası sonuç yayını doğruluğu hazırlanıyor; baseline10/inert13/birleşik23 kontrollü yöntem geçti; kaynak/native/son kapı kabulü yok. Üretim SQL/CLI/dil davranışı ve kullanıcı göçü değişmez. [Sınırlar](module-sql-lifecycle.md).
+
 - **K-304/GB-113 dar kapsamda kapalı:** owned web kabulünün geç iptal/deadline
   sonucu, hazırlık22/kaynak kapısı15 ve temiz direct native4 ile doğrulandı.
   Kullanıcı göçü yoktur; [kit ve ayrı köprü kabulü sınırı](owned-web-test-kiti.md).
