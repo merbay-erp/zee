@@ -1,0 +1,154 @@
+{
+  "schema": "zee-k300-derived-acceptance-summary-1",
+  "kind": "derived-summary-not-original-receipt",
+  "date": "2026-10-16",
+  "status": "narrow-acceptance-passed-document-gates-external",
+  "source_sha": "549dbe66a775db17875b47c67948245a6a8fbf60",
+  "source_tree": "833c8cfb7d841e4fd27bcd7f2395e287c1c3bc99",
+  "binary_sha256": "a0fa25443baa9b0ed2ac9a840b9b27eb5c3dd2fb42fb3eac3ddb878a12cedc01",
+  "build": {
+    "schema": "zee-build-v1",
+    "version": "0.8.0-dev",
+    "source_sha": "549dbe66a775db17875b47c67948245a6a8fbf60",
+    "source_date": "2026-10-16",
+    "channel": "development",
+    "dirty": false
+  },
+  "preparation_tests": 13,
+  "old_source_mock_counterexamples": 4,
+  "source_gates_passed": 13,
+  "ordinary_phase": {
+    "passed": 998,
+    "failed": 0,
+    "ignored": 25,
+    "total": 1023
+  },
+  "native_Cargo_owners": 1,
+  "native_inner_cases": 9,
+  "load": {
+    "requests": 160,
+    "concurrency": 2,
+    "rollovers": 4,
+    "status200": 160,
+    "status5xx": 0,
+    "failures": {},
+    "retries": 0,
+    "body_mismatches": 0
+  },
+  "wave_ingress": [
+    {
+      "wave": 1,
+      "queued_before_ACTIVATE": 2,
+      "responses_completed_after_old_TERM": 38,
+      "requests": 40,
+      "load_clients": 2,
+      "additional_old_admitted_request": 1,
+      "additional_new_revision_probe": 1
+    },
+    {
+      "wave": 2,
+      "queued_before_ACTIVATE": 2,
+      "responses_completed_after_old_TERM": 38,
+      "requests": 40,
+      "load_clients": 2,
+      "additional_old_admitted_request": 1,
+      "additional_new_revision_probe": 1
+    },
+    {
+      "wave": 3,
+      "queued_before_ACTIVATE": 2,
+      "responses_completed_after_old_TERM": 38,
+      "requests": 40,
+      "load_clients": 2,
+      "additional_old_admitted_request": 1,
+      "additional_new_revision_probe": 1
+    },
+    {
+      "wave": 4,
+      "queued_before_ACTIVATE": 2,
+      "responses_completed_after_old_TERM": 38,
+      "requests": 40,
+      "load_clients": 2,
+      "additional_old_admitted_request": 1,
+      "additional_new_revision_probe": 1
+    }
+  ],
+  "case_names": [
+    "mixed-code-wave-1",
+    "mixed-code-wave-2",
+    "mixed-code-wave-3",
+    "mixed-code-wave-4",
+    "mixed-revision-shared-revoke-and-quota",
+    "wrong-app-revision-no-admission-old-still-usable",
+    "wrong-activation-no-admission-old-still-usable",
+    "new-invalid-source-never-replaces-active-revision",
+    "same-source-activation-deadline-single-generation-control"
+  ],
+  "owned_cleanup_passed": true,
+  "source_clean_begin_end": true,
+  "production_changed": false,
+  "RC_soak_IDE_transferred": false,
+  "private_runtime_state_read_or_copied": false,
+  "external_evidence_root_alias": "E = ~/.codex/zee-evidence/2026-10-14-urunlesme",
+  "original_receipts": {
+    "k300-source-gates-2/PROOF.json": {
+      "sha256": "5d942c15e9e693d9c6fe2fcc8d663678ebda62e0cffcace85cb1078cd4b27912",
+      "bytes": 85691
+    },
+    "k300-source-gates-controller-2.json": {
+      "sha256": "d30b7eee939a8117edaa2aeaf362ca6186edf501d397aa021ce3579b5cc583c4",
+      "bytes": 860
+    },
+    "k300-source-commit.json": {
+      "sha256": "f7b9cc2be9a6fe2cf885a2c95765ee9a4398dec312e7dccb1c7408b21b825f95",
+      "bytes": 7740
+    },
+    "k300-source-commit-controller.json": {
+      "sha256": "40bac127e15050622332522e5966499952fac8786ccc1392d413353b03c7bd6f",
+      "bytes": 1044
+    },
+    "k300-native-1/PROOF.json": {
+      "sha256": "499d44f433b95a0fcfefd8844f5d229f9cd69b01b2f06d8d9d3bfce7b02f399b",
+      "bytes": 4970
+    },
+    "k300-native-controller-1.json": {
+      "sha256": "a3741c28684d8ffc99c94e3dba2f0cb21e83a946d3faa7b5755427cfa1a59ae0",
+      "bytes": 541
+    },
+    "k300-native-1/native/proof.json": {
+      "sha256": "8fb50d5fd152298fa2baf6d37b2b50efcfc4bf2bf80d2b46a28dff420b9b4f1f",
+      "bytes": 6889
+    },
+    "k300-preparation-2.log": {
+      "sha256": "8b7068ca898ec714c0b7b15769a7a33e0da41134e7ddd29c1cadeb5a5ce8f4c2",
+      "bytes": 112
+    },
+    "k300-preparation-controller-2.json": {
+      "sha256": "c1e280eda63acd573d3cb0b5195923689eea8a269210cab9b903646e2d935e49",
+      "bytes": 442
+    },
+    "k300-before-fix-controller-1.json": {
+      "sha256": "1e236ca0b1c71e92925faf780d47c916cd549b0b6320cd4747b66c79af7d8ee7",
+      "bytes": 399
+    },
+    "k300-source-gates-1/PROOF.json": {
+      "sha256": "032c85f2016a1792e99850c53ac444b8b88537b802ecc7e0f010edf15b1a94c0",
+      "bytes": 43609
+    },
+    "k300-source-gates-controller-1.json": {
+      "sha256": "a2ffcaa1edcd13a5ad3e9a24d65264a6ef208126f9184297bdb16afeab68a4a4",
+      "bytes": 861
+    }
+  },
+  "native_public_file_pins": {
+    "native/proof.json": "8fb50d5fd152298fa2baf6d37b2b50efcfc4bf2bf80d2b46a28dff420b9b4f1f",
+    "native/deadline.json": "9a6a125c47955e4eee6464f90b4e68a12e4a5b59da68501bc99f8f3e941bddc6",
+    "native/revision-0.source": "5d828c6c5b79f0df4b48cc870b850f8ac6719dcc8c2628c00d95bd83f6f77771",
+    "native/revision-1.source": "a860e6728a8895e662a1ce5ac39b5b4e51170f24b68dfc9dbcc51fce9912f98b",
+    "native/revision-2.source": "6d3c4e1ab1605552524db39ce430a565d181c8219c8baf1dec6d604f37d22090",
+    "native/revision-3.source": "ea70815501b201d8d7e75e9871739c074d188e60f998bccd64cd6e19b0bdf3d7",
+    "native/revision-4.source": "3fc53f5de1e19117ec4323ce2d1534d0482637cdf8f5555756b46ff0ef2387d0",
+    "native/revision-5.source": "c8ce5084dc35e98e0fcc33f13f049ab59634adb19878a358806cd2fe888f5ae7"
+  },
+  "scope": "K-300/GB-112 narrow test-harness correctness; P14 product/platform/general SLA remains partial"
+}

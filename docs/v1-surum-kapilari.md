@@ -934,11 +934,16 @@ native kabulü tarihsel kalır. P11/P34/P19 ve tam V1 bu dilimle kapanmaz.
 
 ## K-300 — Mixed-revision kabul koşucusu doğruluğu
 
-**AÇIK (GB-112 düşük):** canonical Rust wrapper kökü, ilk owned komuttan önce
-handler, kısmi setup/host sahipliği ve cleanup iptalinin `passed` sonucuna
-dönüşmemesi [ADR-149](../adr/149-mixed-revision-owned-wave.md) revizyonundadır.
-Hazırlık13 geçti; kaynak kapıları ve temiz exact kaynakta native9 kabulü
-beklenir. Hazırlık alt vakaları yeni Cargo sahibi değildir; dört dalga/160 istek
-ve dokuz native vaka mevcut ayrı kabul kapsamıdır. Üretim compiler/host değişmez.
-Tarihsel S3 ve ayrı C2/S kabulleri yeni kaynağa aktarılmaz; P14 ürün/şema/SLA ve
-platform sınırları açık kalır. [Koşucu rehberi](mixed-revision-wave.md).
+**Dar kaynak/native kabulü KAPALI (GB-112):** canonical Rust wrapper kökü,
+erken handler, kısmi setup/host sahipliği ve cleanup iptalinin `passed`
+sonucuna dönüşmemesi [ADR-149](../adr/149-mixed-revision-owned-wave.md)
+revizyonuyla doğrulandı. Hazırlık13 ve C3 öncesi kaynak kapısı13/tam faz998/0/25
+geçti; Clippy/sürekli güvenlik dahil, ilk ADR metadata kapı başarısızlığı ayrı
+korunur. Temiz C3 `549dbe66a775db17875b47c67948245a6a8fbf60` üzerinde
+mevcut tek Cargo sahibi/native9, dört dalga/160 HTTP200; sıfır
+5xx/retry/body mismatch/failure ve özgün owner exit0/reaped kabulü geçti.
+Son11 belge kapısının geçmesi takip commit'inin önkoşuludur.
+Hazırlık alt vakaları yeni Cargo sahibi değildir; üretim compiler/host
+değişmez. Tarihsel S3 ve ayrı C2/S kabulleri, RC/soak/IDE yeni kaynağa
+aktarılmaz; P14 ürün/şema/SLA ve platform sınırları açık kalır.
+[Koşucu rehberi](mixed-revision-wave.md).

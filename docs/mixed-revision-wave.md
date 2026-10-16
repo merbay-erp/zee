@@ -81,9 +81,10 @@ kopyalanmaz. Yalnız hash/fixed sonuçlar arşivlenir; output parent0700 kalır.
 
 ## K-300 — Kabul koşucusunun kök yolu ve iptal doğruluğu
 
-**Açık — hazırlık13 geçti; kaynak kapıları ve temiz exact kaynakta native9
-kabulü bekleniyor (GB-112).** K-291'in tarihsel hazırlık8 ve S3 native9 sonucu
-korunur; bunlar K-300 düzeltmesinin kabulü değildir.
+**Dar kaynak/native kabulü kapalı; GB-112 kapalı.** K-300 hazırlık13 ve
+C3 `549dbe66a775db17875b47c67948245a6a8fbf60` üzerinde ayrı temiz native9 kabulü
+geçti. Son 11 belge kapısının geçmesi takip commit'inin önkoşuludur.
+K-291'in tarihsel hazırlık8 ve S3 native9 sonucu kendi kaynağında korunur.
 
 Rust test sarmalayıcısının `compiler/..` kökü Python koşucusunun canonical yol
 önkoşulunda reddedilir; bu ret native dalgalar başlamadan oluşur. K-300 bu kökü
@@ -105,6 +106,22 @@ controller exit0/reaped. `k300-preparation-2.log` ve
 `k300-preparation-controller-2.json`, 16 Ekim yerel kanıt kökündedir. Dört
 eski kaynak karşı örneği mock-only koşuda doğrulandı; native başarı değildir.
 Hazırlık başarısı native9 kabulü yerine yazılmaz.
+
+C3 ağaç kimliği `833c8cfb7d841e4fd27bcd7f2395e287c1c3bc99` üzerinde
+`k300-native-1` ayrı olarak geçti: mevcut tek ignored Cargo sahibi, dokuz iç
+vaka ve dört dalgada 160/160 HTTP200; 5xx, retry, body mismatch ve failure
+sayısı sıfırdır. Her dalgada 40 istek, ACTIVATE öncesinde kuyrukta iki istek
+ve eski TERM sonrasında tamamlanan 38 yanıt kaydedildi. Özgün dış controller
+87,295 saniyede exit0/reaped kapandı; başlangıç/son kaynak temizliği, source
+pinleri ve ikili kimliği eşti. Private `.zee` durum dosyaları okunmadı.
+
+C3 commit'inden önce aynı kaynak değişikliklerini içeren a31 tabanlı overlay
+için `k300-source-gates-2` 13/13 geçti: tam faz 998 başarılı, 0 başarısız,
+25 atlanan (778,533 sn); Clippy ve sürekli güvenlik dahil tüm kapı 959,067 sn.
+Bu kaynak kapısı temiz C3 native kampanyasından ayrı kayıttır. İlk kapının
+ADR durum etiketi metadata hatasıyla başarısız sonucu korunur; başarıya
+çevrilmez. [16 Ekim kabul raporu](urunlesme-k298-kabul-20261016.md) exact
+makbuzları bağlar. Son belge/güvenlik 11 kapısının sonucu ayrıca dış makbuzla doğrulanır.
 
 Etki incelemesi: değişiklik test sarmalayıcısı ve kabul koşucusuyla sınırlıdır.
 Üretim compiler, native host, grammar/API/tanı, spec/RFC normları, katman ve

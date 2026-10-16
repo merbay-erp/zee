@@ -1,40 +1,68 @@
 # Ürünleşme — yerel kabul ve açık teknik işler raporu
 
-> 16 Ekim 2026. K-298 ve K-299 dar yerel kabul kapsamları tamamlandı.
+> 16 Ekim 2026. K-298, K-299 ve K-300 dar yerel kabul kapsamları tamamlandı.
 > Genel ürünleşme/V1 ve yayın kapıları açık; belge takip commit’i aşağıdaki dış kapı makbuzlarına bağlıdır.
 
-## K-300 — Öncelikli yerel takip: karma sürüm koşucusu
+## K-300 — Karma sürüm koşucusu: dar kabul tamamlandı
 
-**Durum: uygulama ve kabul sürüyor.** B-001/B-002 gerçek insan verisini
-bekler; B serisinin diğer makine işleri kapalıdır. Mevcut P14/P36 kabul
-koşucusunda bulunan somut arıza, yeni kapasite işinden önce ele alınır.
+**K-300 ve GB-112 kapalıdır.** B-001/B-002 gerçek insan verisini bekler;
+B serisinin diğer makine işleri kapalıdır. P14/P36 kabul koşucusunda bulunan
+somut arıza, yeni kapasite işinden önce kod+test+belgesiyle ele alındı.
 
-Rust wrapper `compiler/..` yolunu kanonikleştirmediği için dedicated native
-kampanyanın giriş kontrolü asıl senaryodan önce reddediyordu. Python
-koşucusunda ilk Git sorgusu sinyal handler'ı ve `finally` kapsamından önceydi;
-kapanış sırasında iptal yok sayılıp başarılı makbuz yazılabiliyordu. Kısmi
-Host kurulumunun sahipli listener temizliği de aynı dar yaşam döngüsü
-incelemesine dahildir. GB-112, K-300 kabulü tamamlanana kadar açıktır.
+Rust wrapper'ın `compiler/..` kökü kanonikleştirildi. Python koşucusu ilk Git
+sorgusundan önce iptal handler'ı kurar; kısmi hazırlık ve Host listener'ı sahipli
+`finally` temizliği kapsamındadır. Host kurulumu sırasında veya kapanışta gelen
+iptal korunur; iptal edilen koşu başarılı makbuz üretemez. Üretim
+compiler/Host/FD protokolü, grammar, zaman aşımı ve native doğrulama ölçütleri
+aynıdır. S3 veya K-298 sonuçları bu yeni kaynağa aktarılmaz.
 
-Kanonik kök, erken handler'lı hazırlık, kısmi setup temizliği ve iptali koruyan
-sonuç kapısı mevcut test sözleşmesini onarır. Son hazırlık13/13 (0,217 sn),
-özgün controller exit0/reaped ile geçti; dört eski kaynak karşı örneği mock-only
-koşuda doğrulandı. Kaynak kapıları ile yeni temiz kaynakta dokuz native vaka /
-160 istek / dört dalga kabulü bekleniyor.
-Üretim compiler/Host/FD protokolü, grammar, zaman aşımı ve native oracle
-ölçütleri değiştirilmez; S3 veya K-298 sonuçları bu yeni kaynağa aktarılmaz.
+- Dört eski kaynak karşı örneği mock-only koşuda doğrulandı. Güncel hazırlık
+  **13/13** geçti (0,217 sn); gerçek erken child iptali, kısmi Host temizliği
+  ve kapanış/yayın sırasında iptal dahil. Bunlar native başarı sayısına eklenmez.
+- Kaynak kapısı2 **13/13** geçti: tam faz **998/1023 başarılı, 0 başarısız,
+  25 ayrı koşulan test**, Clippy, katalog/tazelik, spec, fmt, üç koruk, sır
+  taraması ve sürekli güvenlik. Faz komutu 778,533 sn; tüm kapı sürücüsü
+  959,067 sn. İlk koşu ADR durum başlığında durmuştu; biçim düzeltildi ve
+  başarısız makbuz korundu.
+- Test edilen 16 dosya temiz kaynak
+  `549dbe66a775db17875b47c67948245a6a8fbf60` olarak kaydedildi; ağaç
+  `833c8cfb7d841e4fd27bcd7f2395e287c1c3bc99`.
+- Bu exact temiz kaynakta mevcut **bir ignored Cargo sahibi**, **dokuz native
+  senaryo** ile geçti. Dört dalgada **160/160 HTTP200**, concurrency2; 5xx,
+  retry, taşıma hatası ve body mismatch **0**. Her dalgada 40 istek, ACTIVATE
+  öncesi iki kuyruk isteği ve eski TERM sonrasında 38 tamamlanan yanıt var.
+  Eski başlamış isteğin tamamlanması, oturum/revoke/kota korunması ve üç ret
+  senaryosu ayrıca doğrulandı; native alt vakalar yeni Cargo sahibi değildir.
+- Native ikili SHA-256:
+  `a0fa25443baa9b0ed2ac9a840b9b27eb5c3dd2fb42fb3eac3ddb878a12cedc01`.
+  Başlangıç/son kaynak temiz, kaynak ve ikili pinleri eşit; controller
+  **exit0/reaped**, 87,296 sn. Runtime `.zee` verisi okunmadı/arşivlenmedi.
+
+[Türetilmiş kabul özeti](incelemeler/urunlesme-20261014/k300/ACCEPTANCE.json)
+özgün dış makbuzları hash/baytlarıyla bağlar. `E`, yerel
+`~/.codex/zee-evidence/2026-10-14-urunlesme` kanıt köküdür. Temel makbuzlar:
+
+| Makbuz (E altında) | SHA-256 |
+| --- | --- |
+| `k300-source-gates-2/PROOF.json` | `5d942c15e9e693d9c6fe2fcc8d663678ebda62e0cffcace85cb1078cd4b27912` |
+| `k300-source-commit.json` | `f7b9cc2be9a6fe2cf885a2c95765ee9a4398dec312e7dccb1c7408b21b825f95` |
+| `k300-native-1/PROOF.json` | `499d44f433b95a0fcfefd8844f5d229f9cd69b01b2f06d8d9d3bfce7b02f399b` |
+| `k300-native-controller-1.json` | `a3741c28684d8ffc99c94e3dba2f0cb21e83a946d3faa7b5755427cfa1a59ae0` |
+
+Bu kapanışın son belge/güvenlik kapısı ve takip commit'i ayrıca gereklidir.
 [Koşucu sözleşmesi](mixed-revision-wave.md) ve [ADR-149](../adr/149-mixed-revision-owned-wave.md)
-ayrıntıyı taşır. Henüz yeni native başarı iddiası yoktur.
+dar kapsamı taşır. P14 genel SLA, DB şema devri, ürün ve platform kabulü
+kısmi kalır; yeni kaynak RC/soak/IDE kabulü ileri sürülmez.
 
 Önceki K-298/K-299 belge dalgası `a31f12a41389ad1d447d5f17df6f7be9f1ae75f4`
-ile kaydedildi: son belge/güvenlik kapısı 11/11 geçti ve özgün controller
-exit0 ile toplandı. Bu tarihsel kapının denetlediği belge baytları bu takip
-bölümünden öncedir; K-300 kendi kontrollerini gerektirir.
+ile kaydedilmişti: kendi son belge/güvenlik kapısı 11/11 ve özgün controller
+exit0/reaped. Bu tarihsel kapı K-300 belgelerinin yerine geçmez.
 
-Yerel ortam durumu: önceki özel Linux VM'si ve PG16.15 geçici kurulumu
-artık mevcut değildir. Linux teslim/native ve PG bağımlı testler yeniden
-ortam kurulumu gerektirir; bu, kullanıcıdan cihaz veya canlı veri isteme
-nedeni değildir. Fiziksel platform kabulü U2 olarak ayrıca açık kalır.
+Yerel sıradaki iş K-301/P34 worker testindeki admission ve parçalı yanıt
+oracle'ıdır: 10 kontrollü senaryoda 20 mock karşılaştırması geçti; henüz gerçek
+yeni worker kabulü değildir. Önceki özel Linux VM'si ve PG16.15 geçici kurulumu
+artık yoktur; ilgili testler için yerel ortam yeniden kurulmalıdır. Bu bir
+kullanıcı cihazı/verisi bekleme gerekçesi değildir. Fiziksel platform U2 ayrıdır.
 
 ## Sonuç özeti
 
@@ -46,6 +74,7 @@ nedeni değildir. Fiziksel platform kabulü U2 olarak ayrıca açık kalır.
 | Uzun süreli RSS soak | S kaynağında ikinci koşu geçti: 1801,116786 sn, 360 örnek; compiler büyümesi %0, LSP +1024 KiB ve yukarı yuvarlanmış %6. |
 | Release-candidate | S kaynağında dört explicit ASan hedefi 1801’er sn, Miri 2+1 ve tam RC güvenlik kapısı geçti: 131 Cargo grubu, 998 geçti/0 başarısız/25 atlanan. |
 | K-299 kabul betikleri | C2 kaynak zincirinde 13 kapı (998/0/25) ve sürekli güvenlik; temiz C2 native PDF9/service2 geçti. Küçük kanıt arşivi doğrulandı; GB-111 dar kapanışı bu belge dalgasında kaydedilir. İlk başarısızlıklar korunur. |
+| K-300 karma sürüm | Hazırlık13, kaynak kapıları13 (998/0/25) ve temiz `549dbe6` native9/160istek/dört dalga geçti; GB-112 dar kapsamda kapalı. |
 | Genel ürünleşme/V1 | Bütün39 madde kapanmadı; aşağıdaki dış girdiler, takvim ve teknik kapsam açık. |
 
 Compiler bakım commit'i `bb4ed951ce5e8e9c1c21d2c58f75cd4ef51d6c59`, ağaç
@@ -554,7 +583,7 @@ bilgidir; bunlar yeniden karar talebi değildir.
 | P11 — PDF/FFI | Kısmi; temiz C2 PDF9 ve bağımsız incelemesi geçti, K-299 dar kapsamı kapandı. İlk C başarısızlığı korunur. | Gerçek katalog, genel FFI/sandbox ve yayın ayrı. | Ürün için U1 + U5. |
 | P12 — Göç/ürün betikleri | Kısmi; dar yerel göç/rollback kanıtı var. | Gerçek üründeki Python betiğinin kaldırılması ve göç kabulü açık. | U1 + U5. |
 | P13 — Sürekli HTTP servisi | Kısmi; S3 native HTTP kanıtı tarihsel. | Üretim/pilot benimsenmesi ve platform kabulü açık. | U1 + U5; platform için U2. |
-| P14 — Karma sürüm geçişi | Kısmi; S3 dört dalga/160 istek tarihsel. K-300 koşucu onarımı ve yeni native kabul sürüyor. | Yeni kaynak kabulü, genel SLA, DB şema devri ve gerçek ürün kabulü açık. | Ürün için U1 + U5; K-300 yerelde ilerler. |
+| P14 — Karma sürüm geçişi | Kısmi; temiz K-300 `549dbe6` native9/dört dalga/160 istek geçti. | Genel SLA, DB şema devri ve gerçek ürün kabulü açık. | Ürün için U1 + U5; platform için U2. |
 | P15 — Parola/login | Kısmi; S3 parola/TLS kanıtı tarihsel. | Gerçek login, göç, sağlayıcı ve ürün kabulü açık. | U1 + U5. |
 | P16 — Form/Turnstile | Kısmi; hermetik form testleri mevcut. | Gerçek staging ve tam ürün kabulü açık. | U1 + U5. |
 | P17 — Depolama/IAM | **Ertelendi.** | Gerçek çok sunuculu ihtiyaç kanıtı olmadan yeni kapasite işi açılmıyor. | İhtiyaç doğarsa U1 + U5. |
