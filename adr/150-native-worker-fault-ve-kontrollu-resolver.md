@@ -42,7 +42,12 @@ temizlenir. Cleanup iptali H.CANCELLED'i sıfırlamaz ve passed receipt'e dönü
 sentinel ve worker grupları ilk Popen sahipliğiyle kapanır. Dış owner nested
 cleanup için yeterli grace ayırır; PID keşfi/adoption yapılmaz.
 
-Üç yeni vaka ile stdlib10 geçti. Yeni exact kaynak native2 ve ortak kapılar
-beklenir; GB-111 düşük/açık/K-299 durumundadır. [Kayıt](../docs/kabul-kosuculari-yasam-dongusu-20261016.md)
-actual stdlib makbuz/log hashlerini ve PDF dilimini bağlar. S3 native2 tarihsel
-kalır; kontrollü Python testleri native DNS veya tam fault kanıtı olmaz.
+Üç yeni vaka ile stdlib10 geçti. İlk C native kabulü, Cargo wrapper
+`compiler/..` kökü nedeniyle Python Campaign kanonik yol kontrolünde, iç
+proof oluşmadan reddedildi. Rust test wrapper `root()` yolunun
+kanonikleştirilmesi takip adayındadır; Python sınırı ve worker davranışı
+değişmez. Bu0,04 saniyelik libtest başarısızlığı üç saniyelik worker hazırlık
+timeout’u değildir. GB-111 düşük/açık/K-299; yeni kaynakta kapılar ve native2
+kabulü beklenir. [Kayıt](../docs/kabul-kosuculari-yasam-dongusu-20261016.md)
+ayrı PDF9 başarısını ve birleşik failed sonucu korur. S3 native2 tarihseldir;
+native DNS veya tam fault kabulü ileri sürülmez.

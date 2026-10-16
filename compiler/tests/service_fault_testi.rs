@@ -1,7 +1,10 @@
 use std::path::PathBuf;
 use std::process::Command;
 fn root() -> PathBuf {
-    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("..")
+    PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("..")
+        .canonicalize()
+        .expect("kanonik depo kökü")
 }
 #[test]
 #[cfg_attr(not(unix), ignore = "Unix owned process cancellation preparation")]
