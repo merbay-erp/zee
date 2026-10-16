@@ -166,7 +166,9 @@ class Campaign:
         for row in reversed(self.links):
             p=row['path'];st=p.lstat();self.need((st.st_dev,st.st_ino)==row['identity'] and p.is_symlink() and p.resolve()==row['target'] and D.snapshot(row['target'],65536)==row['sha256'])
             self.need(p.name in self.units)
-            self.system('reset-'+p.name,'reset-failed',p.name)
+            state=self.system('state-'+p.name,'show',p.name,'--property=ActiveState','--value').strip()
+            self.need(state in (b'inactive',b'failed'))
+            if state==b'failed':self.system('reset-'+p.name,'reset-failed',p.name)
             self.need(self.system('inactive-'+p.name,'show',p.name,'--property=ActiveState','--value').strip()==b'inactive')
             st=p.lstat();self.need((st.st_dev,st.st_ino)==row['identity'] and p.is_symlink() and p.resolve()==row['target'] and D.snapshot(row['target'],65536)==row['sha256']);p.unlink()
         names=list(self.units);self.links.clear();self.units.clear();self.system('reload','daemon-reload')
