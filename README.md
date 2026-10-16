@@ -71,9 +71,11 @@ K-304 owned web kabul koşucusunun geç iptal/deadline düzeltmesi ve GB-113
 dar kapsamda kapalı: hazırlık22, kaynak kapısı15 ve temiz native4 geçti.
 [Kaynak, makbuz ve açık kapsam](docs/owned-web-test-kiti.md).
 
-K-305 bridge negatif koşucusunun erken iptal/owned cleanup düzeltmesi kaynak
-hazırlığındadır; GB-114 ve yeni temiz bridge kabulü açıktır.
-[Hazırlık ve kabul sınırı](docs/dene-native-web-koprusu.md).
+K-305 bridge negatif koşucusunun erken iptal/owned cleanup düzeltmesi ve
+GB-114 dar kapsamda kapalı: hazırlık15, kaynak kapısı15 ve temiz exact
+bridge Cargo1 ile unit kaynak kapsamı/native4/altı negatif geçti. Son11 belge
+kapısı kayıt commit önkoşuludur; genel ürün/platform kapsamı kısmi kalır.
+[Kaynak, makbuz ve kapsam sınırı](docs/dene-native-web-koprusu.md).
 
 ## Kaynaktan hızlı başlangıç
 
