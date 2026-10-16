@@ -23,6 +23,12 @@ toplam yaz
 
 ## Mevcut durum
 
+K-311 / GB-120 düşük ve açık: effect kabul harness’inin OperationProxy.close yolunda tek socket-close hatası kalan özgün thread ve COMMIT sahibi cleanup çağrılarını atlayabiliyordu. Child-free karşı örnekte1 beklenen failure/exit1/reaped doğrulandı; bu gerçek OS/PG/SMTP sızıntısı veya diskte PASS gözlemi değildir.
+
+Test-only düzeltme kaynakları start öncesi kaydeder; cleanup arızasında kalan özgün sahipleri de dener, ilk hata kimliğini ve yapışkan iptali korur, tek mutlak cleanup bütçesiyle başarısız yayını sınırlar. Plaintext loopback PG, normal özgün SIGINT/readiness ve FD/command makbuzları için sahip adaptörü eklendi. Eski baseline8, ayrı lifecycle27/PG18, aynı yöntemleri içeren birleşik45 ve eski8+tek wrapper ordinary9 kontrollü olarak geçti; iç sayılar Cargo/native toplamı değildir. Native11/60need/source14/no-replay korunur.
+
+K311/GB120 açık kalır: tam kaynak15 ve temiz kaynak commit’i/bağımsız peer, o exact SHA’da taze native11/normal PG/readiness/retained cleanup ile final11-testedoverlay/temiz kapanış kaydı ayrı kabul önkoşullarıdır. Gerçek PG/SMTP native kabulü bu kontrollü testlerden çıkarılamaz. Effect hâlen tek açık PG tüketicisidir; P09 ve39 plan statüsü, ürün/sağlayıcı/insan/platform sınırları değişmez. Ayrıntılı kaynak/test geçmişi [ADR-135](adr/135-sabit-native-dis-etki-tuketicisi.md) ve [ortak rapordadır](docs/urunlesme-k298-kabul-20261016.md).
+
 K-310 / GB-119 dar kapsamda kapalı: Metrics native kabul harness cleanup/ilk hata, yapışkan iptal/publication ve özgün PG/worker/FD sahipliği dar dilimi. Exact kaynak 1130569460203049374e16146a955e208da9dd16 tam15/temiz commit ve özgün owner makbuzlarıyla doğrulandı. Aynı exact kaynakta metrics8/29 require ve iki ayrı ignored Cargo sahibi frozen kabulü; özgün PG/readiness/FD/cleanup ve beş direct worker/two alias2 doğrulandı. Baseline15, child-free tek beklenen failure ve kontrollü standalone52/combined16 ayrı kapsamda korunur. Yalnız bu dar metrics kabulü gerçekten tamamlandığında effect tek açık PG tüketicisi kalır; genelP13 kısmi ve39plan statüsü mevcut değerlerindedir. Bu dar kapanış yalnız exact belge overlay’inde gerçek tam final11 kabulü ve onu kaydeden temiz kapanış commit’inin kendi özgün dış owner/public makbuzlarıyla geçerlidir. Her gerçek kabul kendi exact başarılı deneme kayıtları ve hash’leriyle izlenir; başarısız önceki deneme kapanış kanıtı değildir. Bu belgeler kendi kapanış commit SHA’sını üretmez; dış makbuzlar izler. [ADR-116](adr/116-native-owned-metrics-pipe.md).
 
 

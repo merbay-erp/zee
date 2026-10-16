@@ -167,4 +167,10 @@ with tempfile.TemporaryDirectory(prefix='k277-owned-cleanup-') as td:
 print('ok')
 '''
   self.assertEqual(H.run([sys.executable,'-I','-B','-c',code,BASE/'scripts/tests/effect-dispatcher-native-test.py'],timeout=6,limit=4096),b'ok\n')
+ def test_plaintext_pg_and_effect_terminal_preflight(self):
+  path=Path(__file__).resolve().with_name('effect-pg-owner-preflight-test.py')
+  raw=H.run([sys.executable,'-I','-B',path],timeout=15,limit=32768)
+  text=raw.decode()
+  self.assertIn('\nRan 45 tests in ',text)
+  self.assertTrue(text.rstrip().endswith('\nOK'))
 if __name__=='__main__':unittest.main(argv=[sys.argv[0]]+REST,verbosity=2)
