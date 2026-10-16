@@ -1,8 +1,8 @@
 # Ürünleşme — yerel kabul ve açık teknik işler raporu
 
-> 16 Ekim 2026. K-298–K-305 dar yerel kabul kapsamları tamamlandı; K-305 son11 ve temiz C11 kayıt zinciri doğrulandı.
-> K-306 / GB-115 açık: birleşik Campaign16/PG18 kontrollü hazırlığı ve public araç zinciri/imaj/aktarım geçti; kaynak kapıları, guest kurulumu ve gerçek Linux kabulü bekleniyor.
-> Genel ürünleşme/V1 ve yayın kapıları açık; yeni belge takip commit’i kendi gerçek dış kapı makbuzuna bağlıdır.
+> **Güncel durum:** K-298–K-305 dar kabulleri tamamlandı. K-306’nın temiz kaynak kaydı, kontrollü modelleri ve gerçek VM/EOF sahiplik denemeleri geçti; K-306/GB-115 açık; sahipli unit kaynak/test dilimi uygulandı; yeni exact-source native kabulü ve kapanış bekleniyor.
+> **Kalan yerel adım:** Uygulanan minimal kaynak+test+belge diliminin tam15 kaynak kapısı ve exact temiz commit kaydı; ardından fresh dispatcher4/HTTP7 kabulü.
+> **Sizden beklenenler:** Beş anonim tam proje ağacı ve kaynak commit’leri; fiziksel Windows ve minimum desteklenen macOS cihazları. İnsan çalışması, sağlayıcı/pilot ve yayın girdileri ilgili aşamalarında ayrıca listeleniyor. 39 maddenin tamamı kapanmış sayılmıyor.
 
 ## K-300 — Karma sürüm koşucusu: dar kabul tamamlandı
 
@@ -71,9 +71,9 @@ altındaki `K298-K299-FINAL-DOCS2-AUDIT.json` dosyasındadır.
 
 K-302 TLS8/göç1, K-303 havuz1, K-304 direct web4 ve K-305 ayrı köprü
 kabulleri kendi exact kaynaklarındadır; K-305 son11/temiz C11 kayıt zinciri
-de tamamlandı. K-306, iki Linux kabul koşucusunun hazırlığı ve iptal/PG
-süreç sahipliği düzeltmesidir; gerçek Linux4+7 henüz çalışmadı. Kalan PG
-tüketicileri, fiziksel platform U2 ve gerçek ürün kabulü ayrı açık işlerdir.
+de tamamlandı. K-306 iki Linux kabul koşucusunun iptal/PG sahipliği
+düzeltmesidir; C12 V3 dispatcher Cargo/libtest sonucu yapılandırılmış dispatcher4 kabulü değildir; HTTP çalışmadı. Yeni exact kaynakta dispatcher4/HTTP7 ve kapanış kapıları bekleniyor. Kalan beş PG tüketicisi, fiziksel platform
+U2 ve gerçek ürün kabulü ayrı açık işlerdir.
 
 ## K-301 — Worker testinde gerçek giriş ve tam yanıt kanıtı
 
@@ -382,13 +382,35 @@ hazırlık senaryoları Rust toplamına eklenmez. Production Rust, Supervisor,
 gömülü kit, grammar/API/tanı/spec/RFC, katman/bağımlılık, semantic regresyon,
 performans iş yükü ve kurulum sözleşmesi değişmez.
 
-## K-306 — Linux kabul koşucusu; hazırlık açık
+## K-306 — Linux kabul koşucusu: açık
 
-**K-306 / GB-115 açık.** İki Rust wrapper’ın canonical repo kökü ve ortak Campaign’in ilk çocuk öncesi handler, yapışkan iptal, kısmi setup/cleanup ve geç makbuz/çıkış doğruluğu düzeltmesi birleşik kaynakta hazır. Foreground PG özgün Popen adaptörü yalnız bu iki test tüketicisine bağlandı; üretim servis API/grammar/compiler davranışı veya mevcut dispatcher4/HTTP7 oracle’ları değişmiyor.
+İki kabul koşucusunun canonical kök/erken handler, yapışkan iptal ve failed-body/tekrar-close doğruluğu; kısmi setup ve foreground PG sahipliği düzeltildi. Üretim compiler/dil/API değişmedi; iki mevcut ignored Cargo sahibi ve dispatcher4/HTTP7 oracle korundu.
 
-- Aynı **16 kontrollü Campaign yöntemi**, eski kaynakta **13 assertion failure/0 error**, adayda **0 failure/0 error** verdi. Ham günlükler ve dış owner exit0/reaped bağı doğrulandı (sürücü 0,319180 sn). Sahte çocuk/sinyal modelleridir; gerçek OS iptal teslimi, süreç sızıntısı veya Linux/PG/systemd kabulü ileri sürülmez.
-- Rust 1.93.1 kanal manifestinin gerçek imza makbuzu ve aynı public anahtarların fingerprint bağı doğrulandı. Altı araç zinciri payload’ı **126.477.864 bayt** olarak indirildi; signed manifestteki exact URL/SHA-256 ve altı HTTP200/no-redirect günlüğü eşleşti. Sürücü 28,072970 sn, dış owner 29,097184 sn exit0/reaped. Installer çalıştırılmadı, arşivler açılmadı.
-- Debian public imajının ikinci indirmesi **341.114.880 bayt**, tarihsel exact SHA-512 ile eşleşti; sürücü 39,374374 sn ve dış owner 40,128441 sn exit0/reaped. İlk deneme resmî URL’nin HTTP302 yönlendirmesini sıfır yönlendirme sınırında reddetti; failed/exit1/reaped makbuzu korunur. Resmî HTTPS HEAD kaydındaki `laotzu.ftp.acc.umu.se` adresine doğrudan HTTPS GET ile ikinci deneme tamamlandı. Yeni detached imaj imzası veya VM/guest çalıştırması iddiası yoktur.
+**Kaynak:** `7d5e4b04391c82d2dec0a73a81d39de09357464e`; tree `803f6698e3926de68093634d40b531f1de4219a4`. Kaynak doğrulaması, ikinci denemenin geçen 12 komutu ile yalnız EOF boşluk düzeltmesinden sonra yeniden geçen beş komuta dayanır; 15 kapının bütünü yeniden çalışmış gösterilmez. Temiz `7d5e4b0` kaynak commit’i ve exact ağaç kayıtlıdır.
+
+**Hazırlık ve gerçek inert ayrımı:** Kontrollü hazırlık Campaign16 ve PG18 yöntem/31 senaryoda geçti. Dış sahiplik hazırlığında core17, CLI9 ve runner5 modeli geçti; bu sayılar Cargo/native vaka toplamına eklenmez. Aynı16 eski Campaign modeli13 assertion failure üretirken aday0 failure verdi. Gerçek inert VM kabulünde normal komut ve EOF olumsuz yolu doğrulandı. EOF iç adımı `failed/control-eof` kaldı; özgün çocuk kapanıp reap edildi. VM normal SIGINT/exit0 ile kapandı, fallback kullanılmadı ve özel host runtime silindi. Bu iki inert prob, Linux native4+7 kabulünün yerine geçmez.
+
+**Gerçek Linux kabulü:** C12 V3 dispatcher Cargo/libtest sahibi geçti; manager-end exit1/degraded nedeniyle kampanya başarısız kaldı, iç proof/günlük dışarı aktarılmadı ve HTTP çalışmadı. Yeni kaynakta gerçek dispatcher4/HTTP7 kabulü henüz yok. C12 VM1–3 başarısız geçmişi korunur; VM4 sonucu aşağıda kendi public kanıtıyla kayıtlıdır. Yeni kaynak ortam kabulü henüz yok. Önceki başarısız VM kampanyalarının özgün owner kapanışları kendi kayıtlarında korunur; yeni kaynakta native PG/çocuk/VM kabulü bekleniyor. Koşullu kaynak düzeltmesi bağımsız incelemesi native kabulü değildir; yeni kaynak ve native zincirinin bağımsız incelemesi ayrıca gerekir.
+
+**Gerçek kampanya başarısızlıkları:** V1 ve V2 ayrı fresh VM denemelerinde 45 bootstrap ve yedi başlangıç kontrolü geçti; 53. komut olan native validator prepare exit1/reaped ile durdu. Her iki VM normal exit0 ile kapandı, bütün özgün sahipler reap edildi ve dış owner exit1/reaped kaldı. Derleme ve native dispatcher4/HTTP7 başlamadı. V1 başarısız prepare ham günlüğü dışarı aktarılmadığı için kök neden bilinmiyor; V2 sonucu V1 için varsayılmaz. V2 dışarı aktarılmış günlükte gerçek `FileNotFoundError: /run/user/501/bus` kaydı vardır; günlük SHA-256 `6d28927ed5c8e7dfd529edc0a3e91ad220dc1d025f25f55f9e29be419a247bf1`. V1/V2 başarısız kanıtları korunur.
+
+**V3 gerçek kampanya — başarısız kapanış:** `E/k306-linux-campaign-3` public kaydında 48 bootstrap ve 18 build komutu geçti. Dispatcher için mevcut tek Cargo/libtest sahibi PASSED verdi (derleme 13,36 sn; libtest 509,65 sn); ardından üç source-end kontrolü geçti. `manager-end` exit1 ve degraded günlük sonucu nedeniyle kampanya başarısız kaldı. HTTP çalışmadı. Dispatcher iç proof/günlük aktarımı 17 adımlık fazın sonunu beklediğinden yapılmadı; bu Cargo sonucu yapılandırılmış dispatcher4 kabulü sayılmaz. Dış süre 872,0194029 sn; bütün özgün sahipler reap edildi, VM normal exit0 ile kapandı, fallback kullanılmadı, dış owner exit1/reaped kaldı ve runtime korundu. Başarısız unit için reset eksikliği yalnız doğrulanmamış hipotezdir; neden kesinleştirilmedi ve reset-failed/oracle atlama yapılmadı.
+
+**Uygulanan kaynak takip dilimi — K-306/GB-115 açık:** VM4 gerçek sonucu: C12 üzerinde E/k306-linux-campaign-4 kaydında 48 bootstrap ve 18 build komutu geçti; dispatcher Cargo sahibi exit0/reaped ve dışarı aktarılmış dört senaryo geçti. Son failed-unit listesi tek sahipli zee-dispatch.service birimini gösterdi; manager-end exit1/degraded ile kampanya durdu, HTTP başlamadı. Host/guest özgün sahiplerin tamamı reap edildi, PostgreSQL ve VM normal exit0 ile kapandı, fallback kullanılmadı; dış owner exit1/reaped kaldı. Bu başarısız kampanya yeni kaynak kabulü veya K-306/GB-115 kapanışı değildir. Doğrulanmış sahipli unit kimliği: manager-failed-end.log içeriği exact `zee-dispatch.service not-found failed failed zee-dispatch.service`; dispatcher unknown/restart senaryosunun aynı kampanya tarafından kurulan birimidir. Kamu proof/log hash ve byte kayıtları T/K306-VM4-OWNED-UNIT-DIAGNOSIS-1.json bağımsız incelemesinde bağlıdır; foreign unit gözlenmedi. Public VM4 `manager-failed-end` kaydıyla kimliği doğrulanan kampanya unit’i için `Campaign.unlink` düzeltildi: mevcut exact stop+cgroup-empty ve symlink inode/hedef/kaynak hash kanıtından sonra yalnız `self.units` üyesi exact `p.name` için reset-failed çağrılır; ActiveState inactive olmalı ve bağlantı kimliği yeniden doğrulanmalıdır. Ardından mevcut unlink/daemon-reload/LoadState not-found zinciri sürer. Global veya foreign reset yasaktır; foreign failed unit genel manager kapısını yine kırar. Yapışkan failure/cancel sonucu, cgroup/path sahipliği, komut/cleanup bütçeleri ve dispatcher4/HTTP7 oracle değişmedi. Bu anlatım yalnız VM4 sahiplik kanıtı, root tarafından doğrulanmış kalıcı21+PG18 sonuçları ve aynı toplu dilimde kaynak kopyasının uygulanması altında geçerlidir.
+
+**Kontrollü model sınırı:** Ayrı altı inert metot root tarafından exit0/reaped ile geçti: bir eski davranış karşı örneği ve beş olumlu metot; eski altı metodun başarısızlığı iddia edilmez. Mevcut 16 Campaign metodu korunup aynı preflight dosyasında ve aynı Cargo sahibi altında beş metot eklendi; toplam21. Kalıcı Campaign21 gerçek sonucu: E/k306-unit-reset-campaign21-controller-1.json ve hash bağlı günlük: 21 metot geçti; özgün owner observed_exit=exit=0, closed/reaped, hata ve iptal yok. Önceki16 metot korunur; beş yeni metot exact sahiplik, inactive durumu, foreign durumun korunması ve yapışkan iptal sınırlarını doğrular. Birleşik PG18 yöntem/31 senaryo gerçek sonucu: E/k306-unit-reset-pg18-controller-2.json ve hash bağlı günlük: 18 metot/31 senaryo geçti; özgün owner observed_exit=exit=0, closed/reaped, hata ve iptal yok. İlk denemenin iki eksik public tüketici fixture hatası korunur; yalnız exact C12 dispatcher/HTTP fixture kopyaları eklendi, oracle değişmedi. Kalıcı21 root kaydı `E/k306-unit-reset-campaign21-controller-1.json` içindedir; PG18 ikinci controller kaydı geçti. İlk PG18 denemesi yalnız iki public tüketici fixture’ı eksik olduğu için başarısız kaldı; exact C12 kopyaları T içine eklenerek tekrarlandı, oracle değişmedi. Bu kontrollü modeller ve koşullu peer incelemesi native düzeltme/kapanış kabulü değildir.
+
+**Kaynak commit’i ve yeni native önkoşulları:** Minimal kaynak, kalıcı test ve açık durumlu14 belge aynı toplu kaynak takip dilimindedir. Tam15 kaynak kapısı `E/k306-source-gates-3/PROOF.json` ve controller3 bu aynı kaynak+test+belge commit’inin önkoşuludur; exact kaynak commit SHA’sı `E/k306-source-commit-2.json` içinde kaydedilir. Belge kendi gelecekteki hash/SHA’sını uydurmaz; bu yollar kapı/commit başarısı iddiası değildir. İki değişen test-harness dosyasına göre source214/source341 pin değerleri, transfer/arşiv ve native zinciri yeniden üretilir; dosya sayıları214/341 ve production175 kapsamı değişmez. Exact temiz kaynak commit’i sonrasında fresh dispatcher4/HTTP7 ve özgün owner/PG/VM kapanışı ayrıca gerekir. C12 kaynak kapılarının 12 tarihsel + 5 yeniden geçen komut birleşimi, VM1–3 başarısızlıkları ve C12 Cargo sonucu yeni kaynak/native kapılarının yerine geçmez. V3’te reset eksikliği hipotezi o başarısız kampanyanın tarihinde doğrulanmamış olarak kalır; VM4 public sonucu yukarıdaki ayrı alandır. Diğer beş PG tüketicisi açık kalır; P09/P13/P36 kısmi, P37 sürekli korunur.
+
+**Son belge ve kapanış:** Bu kaynak+test+belge diliminin commit önkoşulu tam15 kaynak kapısı E/k306-source-gates-3/PROOF.json ve controller3 makbuzlarıdır; exact kaynak commit SHA’sı E/k306-source-commit-2.json ile izlenir. Bu metin kapı veya commit başarısı yerine geçmez. Fresh yeni-kaynak dispatcher4/HTTP7 ve son belge/güvenlik kapanışı ayrıca gerekir. K-306/GB-115 durumunun kapanışa çevrilmesi actual native11 iç vaka, özgün owner/PG/VM kapanışı ve son belge kapısının makbuzlarına bağlıdır. Kaynak takip ve final makbuzları yukarıdaki dış kayıtlarla izlenir; geçmiş kanıtlar yeni kaynak kabulüne taşınmaz.
+
+**Korunan başarısız denemeler:** Kaynak kapısı1 katalog/tazelikte reddedildi; kapı2 ilk12 komutu geçtikten sonra support dosyasının sonundaki ek boş satır nedeniyle diff-check exit2 verdi. Yalnız EOF whitespace düzeltmesinden sonra hazırlık, katalog/tazelik, diff-check, secret-scan ve sürekli güvenlik yeniden geçti. İlk15 tam kapı baştan yeniden koşuldu denmez. İmajın ilk HTTP302 reddi korunur. İnert EOF probunun `failed/control-eof` iç sonucu bilerek korunur; dış kabul, bu olumsuz yolun özgün çocuk ve VM kapanışını doğruladı.
+
+Tarihsel S3 ile K-298–K-305 sonuçları kendi kaynaklarında kalır; farklı SHA sonuçları toplanmaz. P09/P13/P36 kısmi, P37 sürekli; ürün/sağlayıcı benimsenmesi, genel exactly-once ve fiziksel platform U2 açık kalır. C1/P33 reddedilmiş kapsamı yeniden denenmez. Kullanıcıdan bu yerel kampanya için yeni dosya/cihaz istenmiyor.
+
+### Ön hazırlık makbuzları — tarihsel kayıt
+
+Aşağıdaki indirme/model makbuzları kendi aşamalarına aittir; tek başına guest kurulum veya native başarı iddiası taşımaz.
 
 | K-306 hazırlık makbuzu (E altında) | SHA-256 |
 | --- | --- |
@@ -404,9 +426,6 @@ performans iş yükü ve kurulum sözleşmesi değişmez.
 | `k306-linux-image-2/PROOF.json` | `29d7ae3ead5941f64fd20f085c44171aad5acf9d1f37c19cd4afd1fb34a86c8c` |
 | `k306-linux-image-controller-2.json` | `92444499ca064f0a9fe09d962cdcb57d1595bbea23f7fb30ddf1d84f866f0fdb` |
 
-PG hazırlığı: Birleşik kaynakta Campaign16 ve foreground PG18 yöntemi/31 senaryo (29 davranış ve iki tüketici için iki statik oracle kontrolü) 0 failure/0 error/0 skipped ile geçti; özgün dış owner exit0/reaped. Bu kontrollü sınıf modelleri gerçek PostgreSQL/Linux/sinyal kabulü değildir. `E/k306-combined-models-1/PROOF.json` SHA-256 `f249dafb4fb00021a5f9e2c1864ce68c5486c89f5a0ef61a03a08471587e3d91`; outer `d3613083eaf4bcc2c287cc8033aab6d7b82842e0e9872d089e13343356891540`. Kaynak birleşimi: Yedi kod dosyası hazır: iki canonical Rust wrapper, ortak Campaign/OwnedLocalCluster, iki native tüketici ve iki Python hazırlık dosyası. Her iki hazırlık mevcut dispatcher_service_hazirlik sahibine tek kez bağlandı; yeni Cargo sahibi yok. Kaynak/faz kapıları ve temiz kaynak commit’i henüz bekleniyor. Tam kaynak/faz kapıları, guest ortam kurulumu ve yeni temiz kaynakta iki ayrı Linux native4/7 kabulü henüz açık. Public aktarım 183 crate/178 sparse-index kaydı ve Rust girdilerini 191.482.195 bayt olarak kopyaladı; proof `6454ab6ab1b56d547342328fb537ad09f7bbd7344704b1573e4d4719fa2ef5cc`, outer `e1f1f5de57eb05654b6ae6b205dd1aeb4f08ad049b9e0061ebad768086635a35`, exit0/reaped. Guest kopyası/installer yürütmesi/arşiv açılması yapılmadı. Son belge/güvenlik kapısı ve kayıt commit’i ayrıca gerekir; gelecekteki başarı şimdiden yazılmaz.
-
-Tarihsel S3 ve K-305 kabulü yeni kaynağa aktarılmaz. P09/P13/P36 kısmi, P37 sürekli kalır; gerçek ürün/sağlayıcı ve fiziksel platform U2 ayrı kapılardır. Hazırlık için kullanıcıdan yeni girdi istenmiyor. [Dispatcher rehberi](dispatcher-service.md), [HTTP rehberi](http-service.md).
 
 ## Sonuç özeti
 
@@ -424,7 +443,7 @@ Tarihsel S3 ve K-305 kabulü yeni kaynağa aktarılmaz. P09/P13/P36 kısmi, P37 
 | K-303 PG havuzu | Temiz `47812bf` üzerinde tek mevcut Cargo vakası ve 16 metrik kaydı geçti; normal PG kapanışı ve kaynak eşliği doğrulandı. |
 | K-304 owned web | Hazırlık22, kaynak15 kapı ve temiz `abdc5cf` direct native4/19HTTP/6SQL geçti; GB-113 dar kapsamda kapalı. |
 | K-305 ayrı köprü | Kaynak15 ve temiz kaynakta bridge/native4/19HTTP/6SQL/negatif6/coverage5; ardından son11 ve temiz C11 kayıt zinciri doğrulandı. GB-114 dar kapalı. |
-| K-306 Linux koşucusu | Kontrollü Campaign16 ve imzalı manifest bağlı altı Rust payload’ı/public imaj2 doğrulandı. GB-115 açık; birleşik Campaign16/PG18 hazırlığı geçti, kaynak kapıları/guest kurulumu ve gerçek Linux4+7 bekleniyor. |
+| K-306 Linux koşucusu | Temiz7d5e4b0 kaynak12tarihsel+5yeni komutla doğrulandı; model17/9/5 ve gerçek inert2 geçti. C12 V3 dispatcher Cargo/libtest sonucu yapılandırılmış dispatcher4 kabulü değildir; HTTP çalışmadı. Yeni exact kaynakta dispatcher4/HTTP7 ve kapanış kapıları bekleniyor. GB-115 acik; son belge kapısı kayıt koşulu. |
 | Genel ürünleşme/V1 | Bütün39 madde kapanmadı; aşağıdaki dış girdiler, takvim ve teknik kapsam açık. |
 
 Compiler bakım commit'i `bb4ed951ce5e8e9c1c21d2c58f75cd4ef51d6c59`, ağaç
@@ -911,8 +930,12 @@ IO15, web/güvenlik5, proje3, CLI1, LSP1 faz dağılımı; tam isim, komut/ortam
 geçmiş exact SHA ve somut engeller vardır. Bu envanter K-304 native koşusundan
 önce hazırlanmıştır; K-304 direct kabulü ve K-305 ayrı köprü/son11/temiz C11
 kapanışı bu rapordaki exact kaynaklarıyla okunur. S3 tarihsel eşleme yeni Cargo replay’i değildir. Beş PG
-tüketicisinin sahiplik/iptal hazırlığı ve iki Linux sahibinin ortam/kanonik
-kök/erken handler hazırlığı yerel açık iştir; yeni kabul iddiası değildir.
+tüketicisinin sahiplik/iptal hazırlığı yerel açık iştir. İki Linux sahibinin
+C12 kaynak hazırlığı kayıtlıdır; sahipliği VM4 ile doğrulanmış unit için
+minimal kaynak ve kalıcı test düzeltmesi bu belge dilimiyle uygulandı.
+Aynı kaynak+test+belge commit’i tam15 kaynak kapısı ve exact commit kaydına
+bağlıdır; fresh yeni-kaynak dispatcher4/HTTP7 ve kapanış ayrıca açıktır.
+C12 Cargo sonucu native kabul ve K-306/GB-115 kapanışı değildir.
 
 Sizden gereken somut girdiler aşağıdaki altı gruptur. Beş proje ve cihazın
 henüz hazır olmadığı, sınırlı pilotun seçildiği ve lisansın bekletildiği mevcut
@@ -937,11 +960,11 @@ bilgidir; bunlar yeniden karar talebi değildir.
 | P06 — Teslim/kurulum | S macOS teslimi ve kurulum8 kabulü var. | Yeni kaynak Linux/native kabulü, fiziksel platform ve yayın açık. | U2, sonra U6. |
 | P07 — Proje launcher/seçici | Kısmi; yerel launcher ve tarihsel yönetim testleri var. | Gerçek yayıncı güveni, indirme/global PATH, Windows ve tam sürüm yöneticisi kapsamı açık. | U2, U6. |
 | P08 — Gerçek ürün korpusu | Beş tam anonim proje bekleniyor. | Ürün başına gerçek `denetle`/`dene` N/N, süre/RSS kabulü yapılacak. | **U1.** |
-| P09 — Kuyruk/dispatcher | Kısmi; S3 native kanıtı tarihsel, K-306 kontrollü hazırlığı geçti. | K-306 kaynak kapıları/guest kurulumu ve temiz Linux dispatcher4; gerçek ürün/sağlayıcı benimsenmesi ve genel exactly-once açık. | Yerel hazırlık için yok; ürün için U1 + U5. |
+| P09 — Kuyruk/dispatcher | Kısmi; S3 tarihsel. Temiz7d5e4b0 kaynak doğrulandı; C12 V3 Cargo/libtest geçti; iç proof/günlük dışarı aktarılmadığından yapılandırılmış dispatcher4 kabulü yok. | Gerçek ürün/sağlayıcı benimsenmesi ve genel exactly-once açık. Bu kaynak+test+belge diliminin commit önkoşulu tam15 kaynak kapısı E/k306-source-gates-3/PROOF.json ve controller3 makbuzlarıdır; exact kaynak commit SHA’sı E/k306-source-commit-2.json ile izlenir. Bu metin kapı veya commit başarısı yerine geçmez. Fresh yeni-kaynak dispatcher4/HTTP7 ve son belge/güvenlik kapanışı ayrıca gerekir. | Yerel dilim için yok; ürün için U1 + U5. |
 | P10 — SMTP/PG hata sınırları | Kısmi; S3 fault11 tarihsel. | Canlı sağlayıcı, gerçek katalog ve ürün entegrasyonu açık. | U1 + U5. |
 | P11 — PDF/FFI | Kısmi; temiz C2 PDF9 ve bağımsız incelemesi geçti, K-299 dar kapsamı kapandı. İlk C başarısızlığı korunur. | Gerçek katalog, genel FFI/sandbox ve yayın ayrı. | Ürün için U1 + U5. |
 | P12 — Göç/ürün betikleri | Kısmi; dar yerel göç/rollback kanıtı var. | Gerçek üründeki Python betiğinin kaldırılması ve göç kabulü açık. | U1 + U5. |
-| P13 — Sürekli HTTP servisi | Kısmi; K-303 temiz `47812bf` havuz1 geçti, S3 HTTP kanıtı tarihsel. K-306 birleşik kontrollü hazırlığı geçti. | Kaynak kapıları/guest kurulumu ve temiz Linux HTTP7; üretim/pilot benimsenmesi ve platform açık. | Yerel hazırlık için yok; ürün U1 + U5, platform U2. |
+| P13 — Sürekli HTTP servisi | Kısmi; K-303 havuz1 kendi47812bf kaynağında. Temiz7d5e4b0 için C12 V3 HTTP çalışmadı; yeni exact kaynakta HTTP7 bekleniyor. | Üretim/pilot benimsenmesi ve fiziksel platform açık. Bu kaynak+test+belge diliminin commit önkoşulu tam15 kaynak kapısı E/k306-source-gates-3/PROOF.json ve controller3 makbuzlarıdır; exact kaynak commit SHA’sı E/k306-source-commit-2.json ile izlenir. Bu metin kapı veya commit başarısı yerine geçmez. Fresh yeni-kaynak dispatcher4/HTTP7 ve son belge/güvenlik kapanışı ayrıca gerekir. | Ürün U1 + U5, platform U2. |
 | P14 — Karma sürüm geçişi | Kısmi; temiz K-300 `549dbe6` native9/dört dalga/160 istek geçti. | Genel SLA, DB şema devri ve gerçek ürün kabulü açık. | Ürün için U1 + U5; platform için U2. |
 | P15 — Parola/login | Kısmi; S3 parola/TLS kanıtı tarihsel. | Gerçek login, göç, sağlayıcı ve ürün kabulü açık. | U1 + U5. |
 | P16 — Form/Turnstile | Kısmi; hermetik form testleri mevcut. | Gerçek staging ve tam ürün kabulü açık. | U1 + U5. |
@@ -964,14 +987,14 @@ bilgidir; bunlar yeniden karar talebi değildir.
 | P33 — Güvenlik kanıt matrisi | **Kısmi; salt okunur matris mevcut.** | Koordineli reproducer reddi nedeniyle tam kapsam açık; istismar gözlenmiş denmiyor. | Ek izinle kapanmaz; aşağıdaki araç sınırı. |
 | P34 — Worker/fault | Kısmi; temiz C2 service2 ve K-299 dar bakım kabulü geçti. S3 ve başarısız ilk C kayıtları ayrı. | K-301 yerel test doğruluğu kapalı: worker25/tekCargo ve mock10/20 geçti. Native DNS, tam fault matrisi ve gerçek ürün benimsenmesi açık. | K-301 için yok; gerçek ürün için U1 + U5. |
 | P35 — Ergonomi/gramer | **Ertelendi; RFC aday.** | İnsan çalışması, tekrarlanan ürün ihtiyacı ve freeze kapısı olmadan yeni syntax yok. | U1 + U3; ayrıca P28. |
-| P36 — Test/ignored kapsamı | K-302 seçili9/25; K-303 havuz1/25; K-304 directweb1/25; K-305 bridge1/25 ayrı kaynaklarda doğrulandı. | K-306 controlled16 ve public indirmeler Linux native4/7 yerine geçmez; Birleşik PG/Campaign kontrollü hazırlığı geçti; kaynak kapıları ve guest kurulumu açık. Farklı kaynakların sayıları toplanmaz. | Yerel PG/Linux hazırlığı için yok; gerçek cihaz/ürün/servis kabulleri ayrıca girdi ister. |
-| P37 — Sürekli kalite kapıları | **Sürekli iş; tek seferde kapanmaz.** K-305 son11 ve temiz C11 zinciri doğrulandı. | K-306 kaynak/test/belgeleri kendi ilgili kapıları ve yeni gerçek kabul makbuzlarıyla tamamlanacak. | Yerel işler için yok; bağlı dış kapılar ayrı. |
+| P36 — Test/ignored kapsamı | K-302 seçili9, K-303 havuz1, K-304 directweb1, K-305 bridge1 ayrı kaynaklardadır. K-306: K306/GB115acik;C12CargoPASSyapilandirilmisdispatcher4kabuludegil;yenikaynak4+7bekleniyor. | Farklı SHA sonuçları toplanmaz; diğer sahiplerin mevcut kaynak ve ortam bağımlılıkları ayrı açık kalır. | Yerel dilim için yok; gerçek cihaz/ürün/servis ayrıca girdi ister. |
+| P37 — Sürekli kalite kapıları | Sürekli iş. K-306 kaynak12tarihsel+5yeni doğrulaması kayıtlı. Bu kaynak+test+belge diliminin commit önkoşulu tam15 kaynak kapısı E/k306-source-gates-3/PROOF.json ve controller3 makbuzlarıdır; exact kaynak commit SHA’sı E/k306-source-commit-2.json ile izlenir. Bu metin kapı veya commit başarısı yerine geçmez. Fresh yeni-kaynak dispatcher4/HTTP7 ve son belge/güvenlik kapanışı ayrıca gerekir. | Her yeni atomik dilim kendi kaynak/test/belge kapılarını tekrar sağlar. | Yerel işler için yok; bağlı dış kapılar ayrı. |
 | P38 — Backend/WASM/self-hosting | **Ertelendi.** | Native WASM/backend/self-hosting gerçekleştirilmiş sayılmıyor; V1 ve ihtiyaç koşulları korunuyor. | Şimdi yok. |
 | P39 — Lisans/yayın kararı | Kısmi karar: sınırlı pilot seçildi, lisans bekletildi. | Mevcut marka/site korunur; public/yayın kararı henüz verilmedi. | Zamanı gelince **U6.** |
 
 K-298–K-305 dar kabulleri kendi kaynak/ölçüm/native/arşiv ve son belge
-makbuzlarıyla tamamlandı. K-306 hazırlığı açıktır; önceki kaynakların RC/RSS
-sonuçları bu işe aktarılmaz. Yeni kaynak ve belge kapıları ayrıca izlenir. P19'un artımlı HIR/tür ve UI gecikmesi ile tabloda kalan ürün
+makbuzlarıyla tamamlandı. K-306/GB-115 açık; önceki kaynakların
+RC/RSS sonuçları bu işe aktarılmaz. Bu kaynak+test+belge diliminin commit önkoşulu tam15 kaynak kapısı E/k306-source-gates-3/PROOF.json ve controller3 makbuzlarıdır; exact kaynak commit SHA’sı E/k306-source-commit-2.json ile izlenir. Bu metin kapı veya commit başarısı yerine geçmez. Fresh yeni-kaynak dispatcher4/HTTP7 ve son belge/güvenlik kapanışı ayrıca gerekir. P19'un artımlı HIR/tür ve UI gecikmesi ile tabloda kalan ürün
 kapasiteleri ayrıca teknik işlerdir; bütün kalanlar kullanıcı girdisi
 eksikliği değildir. 39 maddenin tamamı kapalı olarak işaretlenmez.
 

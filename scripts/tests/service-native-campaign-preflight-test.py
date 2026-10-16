@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Prepare only. Sixteen Campaign-body models; no real child, signal or socket.
+"""Prepare only. Twenty-one Campaign-body models; no real child, signal or socket.
 
 Run later only with an explicitly reviewed --target support-source copy.
 AST extraction omits all target module imports. Helper loading and every owner
 are fake; this does not test Linux, PG, systemd or real process cleanup.
 """
 import argparse, ast, contextlib, hashlib, json, os, re, shutil, signal, socket
-import stat, subprocess, sys, tempfile, threading, types, unittest
+import stat, subprocess, sys, tempfile, threading, time, types, unittest
 from pathlib import Path
 from unittest import mock
 
@@ -312,6 +312,85 @@ class Cases(unittest.TestCase):
         h.assert_failed_receipt(); h.assert_restored()
         self.assertEqual(len(h.children),before)
         self.assertTrue(all(v['status']=='failed' for v in h.writes))
+
+
+def owned_reset_campaign_class(path,driver):
+    tree=ast.parse(path.read_bytes());original=next(n for n in tree.body if isinstance(n,ast.ClassDef) and n.name=='Campaign')
+    names={'need','stop','unlink','close','__exit__'}
+    cls=ast.ClassDef(name='CampaignModel',bases=[],keywords=[],body=[n for n in original.body if isinstance(n,ast.FunctionDef) and n.name in names],decorator_list=[])
+    env={'D':driver,'Path':Path,'time':time,'signal':signal,'json':json,'stat':stat,'shutil':shutil}
+    exec(compile(ast.fix_missing_locations(ast.Module(body=[cls],type_ignores=[])),'actual-Campaign-methods','exec'),env)
+    return env['CampaignModel']
+
+
+class OwnedUnitResetModels(unittest.TestCase):
+    def setUp(self):
+        for obj,name in ((subprocess,'Popen'),(subprocess,'run'),(socket,'socket'),(socket,'create_connection'),(os,'kill'),(os,'killpg'),(signal,'signal')):
+            patch=mock.patch.object(obj,name,side_effect=AssertionError('real action forbidden: '+name));guard=patch.start();self.addCleanup(patch.stop);self.addCleanup(guard.assert_not_called)
+        self.tmp=tempfile.TemporaryDirectory(prefix='k306-unit-reset-model-');self.addCleanup(self.tmp.cleanup)
+        self.root=Path(self.tmp.name).resolve(strict=True)
+    def fixture(self,foreign=False,reset_error=False,not_inactive=False,empty=False,cancel_on_reset=False,replace_on_reset=False):
+        testroot=self.root/str(len(list(self.root.iterdir())));testroot.mkdir();targetdir=testroot/'runtime';targetdir.mkdir()
+        source=testroot/'zee-dispatch.service';source.write_bytes(b'[Service]\nExecStart=/synthetic/inert\n')
+        link=targetdir/source.name;link.symlink_to(source);info=link.lstat()
+        driver=types.SimpleNamespace(T=types.SimpleNamespace(D=types.SimpleNamespace(CANCELLED=False)),snapshot=lambda p,limit:hashlib.sha256(p.read_bytes()).hexdigest())
+        klass=owned_reset_campaign_class(TARGET,driver);c=klass()
+        c.units={link.name:True};c.links=[{'path':link,'target':source,'identity':(info.st_dev,info.st_ino),'sha256':driver.snapshot(source,65536)}]
+        c.stopped=False;c.cleaning=False;c.deadline=time.monotonic()+120;c.cleanup_deadline=None
+        c.commands=[];c.tempdirs=[];c.clusters=[];c.resources=[];c.previous={};c.finished=True;c.failed_body=False;c.output_created=False
+        c.proof={'status':'running','cases':[{'name':n,'passed':True} for n in ('case1','case2','case3','case4')]}
+        failed={link.name};states={link.name:'failed'};calls=[];events=[]
+        if foreign:failed.add('foreign.service');states['foreign.service']='failed'
+        def system(label,*args,budget=25):
+            calls.append((label,args));events.append(('system',args))
+            if args[0]=='stop':return b''  # Stopped failed unit retains its failed result.
+            if args[0]=='reset-failed':
+                self.assertEqual(len(args),2);self.assertEqual(args[1],link.name)
+                self.assertTrue(link.is_symlink());self.assertEqual(link.resolve(),source)
+                if reset_error:raise ValueError('inert reset rejected')
+                if cancel_on_reset:c.stopped=True;driver.T.D.CANCELLED=True
+                failed.discard(args[1]);states[args[1]]='active' if not_inactive else 'inactive'
+                if replace_on_reset:
+                    alternate=testroot/'other.service';alternate.write_bytes(source.read_bytes());link.unlink();link.symlink_to(alternate)
+                return b''
+            if args[0]=='show':
+                if '--property=ActiveState' in args:return states[args[1]].encode()+b'\n'
+                if '--property=LoadState' in args:return b'loaded\n' if link.is_symlink() else b'not-found\n'
+            if args[0]=='daemon-reload':self.assertFalse(link.is_symlink());return b''
+            raise AssertionError('unexpected system command '+repr(args))
+        def cgroup(name):events.append(('cgroup-empty',name));return not empty
+        c.system=system;c.empty=cgroup
+        return c,failed,calls,events,link,driver
+    def test_candidate_resets_exact_owned_link_after_stop_and_cgroup_before_unlink(self):
+        c,failed,calls,events,link,driver=self.fixture();cases=list(c.proof['cases']);c.__exit__(None,None,None)
+        self.assertEqual(failed,set());self.assertEqual(c.proof['status'],'passed');self.assertEqual(c.proof['cases'],cases)
+        self.assertFalse(link.is_symlink());self.assertFalse(c.units);self.assertFalse(c.links)
+        resets=[args for _,args in calls if args[0]=='reset-failed'];self.assertEqual(resets,[('reset-failed','zee-dispatch.service')])
+        self.assertLess(events.index(('cgroup-empty','zee-dispatch.service')),events.index(('system',resets[0])))
+    def test_foreign_failed_unit_is_never_reset(self):
+        c,failed,calls,events,link,driver=self.fixture(foreign=True);c.__exit__(None,None,None)
+        self.assertEqual(failed,{'foreign.service'});self.assertEqual(c.proof['status'],'passed')
+        self.assertFalse(any('foreign.service' in args for _,args in calls))
+    def test_cgroup_or_owned_path_mismatch_prevents_reset(self):
+        for mode in ('cgroup','hash','target','membership'):
+            with self.subTest(mode=mode):
+                c,failed,calls,events,link,driver=self.fixture(empty=mode=='cgroup')
+                if mode=='hash':c.links[0]['sha256']='0'*64
+                if mode=='target':c.links[0]['target']=self.root/'foreign.service'
+                if mode=='membership':c.units.clear()
+                with self.assertRaises(ValueError):c.unlink()
+                self.assertFalse(any(args[0]=='reset-failed' for _,args in calls));self.assertTrue(link.is_symlink())
+    def test_reset_failure_or_active_state_prevents_success_and_unlink(self):
+        for mode in ('error','active','replacement'):
+            with self.subTest(mode=mode):
+                c,failed,calls,events,link,driver=self.fixture(reset_error=mode=='error',not_inactive=mode=='active',replace_on_reset=mode=='replacement')
+                with self.assertRaisesRegex(ValueError,'owned cleanup failed'):c.__exit__(None,None,None)
+                self.assertEqual(c.proof['status'],'failed');self.assertTrue(c.proof['cleanup_errors']);self.assertTrue(link.is_symlink());self.assertTrue(c.units)
+    def test_cancelled_cleanup_remains_failed_after_exact_reset(self):
+        c,failed,calls,events,link,driver=self.fixture(cancel_on_reset=True)
+        with self.assertRaisesRegex(ValueError,'owned cleanup failed'):c.__exit__(None,None,None)
+        self.assertEqual(c.proof['status'],'failed');self.assertTrue(c.proof['cancelled']);self.assertEqual(failed,set())
+        self.assertFalse(link.is_symlink());self.assertFalse(c.units)
 
 
 if __name__=='__main__':

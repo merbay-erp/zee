@@ -18,7 +18,7 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   sonucu, hazırlık22/kaynak kapısı15 ve temiz direct native4 ile doğrulandı.
   Kullanıcı göçü yoktur; [kit ve ayrı köprü kabulü sınırı](owned-web-test-kiti.md).
 
-- **K-306 hazırlığı / GB-115 açık:** kontrollü Campaign16 adayda geçti; foreground PG18 yöntem/31 kontrollü senaryo da geçti; tam kaynak kapıları ve temiz Linux4+7 bekleniyor. Üretim davranışı veya kullanıcı göçü değişmiyor; [kabul sınırı](dispatcher-service.md).
+- **K-306 — kabul koşucusu:** K-306 / GB-115 açık: temiz `7d5e4b0` kaynak ve 12 tarihsel + 5 yeni komutla kaynak doğrulaması kayıtlı; kontrollü modeller ve iki inert prob geçti. C12 V3 dispatcher Cargo/libtest sonucu yapılandırılmış dispatcher4 kabulü değildir; HTTP çalışmadı. Yeni exact kaynakta dispatcher4/HTTP7 ve kapanış kapıları bekleniyor. Bu kaynak+test+belge diliminin commit önkoşulu tam15 kaynak kapısı E/k306-source-gates-3/PROOF.json ve controller3 makbuzlarıdır; exact kaynak commit SHA’sı E/k306-source-commit-2.json ile izlenir. Bu metin kapı veya commit başarısı yerine geçmez. Fresh yeni-kaynak dispatcher4/HTTP7 ve son belge/güvenlik kapanışı ayrıca gerekir. [Kanıt ve açık sınırlar](urunlesme-k298-kabul-20261016.md).
 
 - **K-305/GB-114 dar kapsamda kapalı:** negatif bridge kabul koşucusunun erken
   iptal/owned cleanup ve final makbuz doğruluğu, hazırlık15/kaynak kapısı15 ve

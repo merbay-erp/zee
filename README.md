@@ -77,7 +77,7 @@ bridge Cargo1 ile unit kaynak kapsamı/native4/altı negatif geçti. Son11 belge
 kapısı kayıt commit önkoşuludur; genel ürün/platform kapsamı kısmi kalır.
 [Kaynak, makbuz ve kapsam sınırı](docs/dene-native-web-koprusu.md).
 
-K-306 / GB-115 açık: Linux kabul koşucusu için kontrollü 16 yöntem adayda geçti; foreground PG18 yöntem/31 kontrollü senaryo da geçti ve iki hazırlık mevcut dispatcher sahibine bağlandı; tam kaynak kapıları ve temiz Linux4+7 bekleniyor. Üretim davranışı değişmiyor; [hazırlık ve kabul sınırı](docs/dispatcher-service.md).
+K-306 / GB-115 açık: temiz `7d5e4b0` kaynak ve 12 tarihsel + 5 yeni komutla kaynak doğrulaması kayıtlı; kontrollü modeller ve iki inert prob geçti. C12 V3 dispatcher Cargo/libtest sonucu yapılandırılmış dispatcher4 kabulü değildir; HTTP çalışmadı. Yeni exact kaynakta dispatcher4/HTTP7 ve kapanış kapıları bekleniyor. Bu kaynak+test+belge diliminin commit önkoşulu tam15 kaynak kapısı E/k306-source-gates-3/PROOF.json ve controller3 makbuzlarıdır; exact kaynak commit SHA’sı E/k306-source-commit-2.json ile izlenir. Bu metin kapı veya commit başarısı yerine geçmez. Fresh yeni-kaynak dispatcher4/HTTP7 ve son belge/güvenlik kapanışı ayrıca gerekir. [Kanıt ve açık sınırlar](docs/urunlesme-k298-kabul-20261016.md).
 
 ## Kaynaktan hızlı başlangıç
 
