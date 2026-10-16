@@ -105,8 +105,8 @@ TERM/KILL/reap edilir. Cleanup hatası passed makbuz bırakamaz.
 `proof.json` status/case/step/fixed failure type+reason, kaynak/ikili/hash kimliği,
 owned cleanup ve DB sayısal gözlemlerini taşır. Raw body, stderr, parola/PHC,
 Cookie/CSRF ve DSN yazılmaz. Yanlış snapshot, yetkisiz bootstrap ve gerçek SIGTERM
-kısa negatifleri ayrı kanıttır. K-304 ile Python hazırlığı 20→22 olarak
-genişletilir; ek iki metot kontrollü finalizasyon karşı örnekleridir. Hazırlık
+kısa negatifleri ayrı kanıttır. K-304 ile Python hazırlığı 20→22 oldu; ek iki
+metot kontrollü finalizasyon karşı örnekleridir. Hazırlık
 TCP/process yardımcıları native Zee kabulü veya source coverage sayılmaz.
 İki mevcut Cargo sahibi korunur: normal hazırlık ve explicit
 `ZEE_OWNED_WEB_KIT_PG_BIN` isteyen ignored gerçek4 kampanya.
@@ -118,27 +118,31 @@ aynı atomik entegrasyonda bağlanmalıdır.
 
 S common içindeki dört gerçek native HTTP+fresh PostgreSQL vakası kabul edildi. [Son rapor](urunlesme-final-kabul-20261015.md) readonly observer ile COMMIT1/actionrollback0/freshcase0 ayrımını ve owned cleanup sınırını kaydeder. Source branch coverage ve gerçek ürün/P08 ayrıca açıktır.
 
-## K-304 — Kaynak hazırlığı; yeni native kabul açık
+## K-304 — Dar kaynak ve native kabulü
 
-GB-113 düşük önemle açık kalır. Kaynak hazırlığı son vaka başarısını cleanup
-bekleyen ara durum olarak tutar; geçici dizin çıkışı ve command-owner cleanup
-sonrasında, proof yazımında ve son need kontrolünde gözlenen iptal/deadline sonucu `failed`
-makbuza ve nonzero çıkışa taşınır. Süreç çıktıktan sonraki sinyal için gözlem
-iddiası yoktur. HTTP/PG algoritması ve Supervisor sahipliği değişmez.
+GB-113 dar kapsamda kapalıdır. Son vaka başarısı cleanup bekleyen ara durum
+olarak tutulur; geçici dizin ve command-owner cleanup sonrasında, proof
+yazımı ve son need kontrolünde gözlenen iptal/deadline `failed` makbuza ve
+nonzero çıkışa taşınır. Süreç çıktıktan sonraki sinyal için gözlem garantisi
+yoktur. HTTP/PG algoritması ve Supervisor sahipliği değişmez.
 
-Dört nokta × cancel/deadline karşı örnekleri gerçek main gövdesini sahte Kit ile
-çalıştırdı: eski kaynak altı alt senaryoda, ilk öneri son need kontrolünde
-iki ek alt senaryoda yanlış passed verdi. V2 sekiz olumsuz alt vaka ve normal
-kontrolü iki metot altında geçti. Popen/socket/connection çağrılmadığı ve özel
-geçici dizinin temizlendiği doğrulandı. Bu kontrollü mock, gerçek OS sinyal
-kabulü veya PG/Zee/HTTP çalışması değildir. Tüm 22 hazırlık metodu, mevcut
-normal Cargo sahibi, kaynak/belge/faz kapıları ve temiz exact native4 yeniden
-kabulü henüz bekleniyor. Yeni kaynak SHA'sı veya native başarı uydurulmaz.
+Özgün kaynağın ilk üç noktadaki altı karşı örneği ve ilk önerinin son need
+kontrolündeki iki ek hatası korunur. V2 dört nokta × cancel/deadline ve normal
+kontrolü iki metot altında geçti. Popen/socket/connection çağrılmadı; özel
+temporary-directory temizliği doğrulandı. Bu kontrollü mock, gerçek OS sinyal
+veya PG/Zee/HTTP kabulü değildir.
 
-Faz fixture'ında yalnız hazırlık açıklaması güncellenir; owner/ek kapsam
-ilişkisi korunur ve iki Python metodu Cargo toplamına eklenmez. GB-113 kapanışı
-bu hazırlıkla yapılmaz. [Ortak rapor](urunlesme-k298-kabul-20261016.md) actual
-kaynak ve sonuçları; [ADR-129](../adr/129-owned-native-web-test-kiti.md) sınırı taşır.
+Tam22 hazırlık ve kaynak öncesi15 kapı geçti: tam faz 998/1023 geçti, 0 başarısız, 25 atlanan; Clippy ve sürekli güvenlik dahil 15 adım 1030,946 sn.
+Temiz `abdc5cf36b4d55021df5edad08cee3a7ad953ebd` (tree `b44b4643b982f8063afedb1e75ada655cc2fe96d`) üzerinde mevcut ignored
+Cargo sahibiyle ayrı direct native4 kabulü geçti: tek Cargo sahibi 1 başarılı/0 başarısız/0 atlanan, dört vaka, 19 HTTP ve 6 SQL gözlemi; iki ayrı PG kümesi.
+Özgün dış controller exit0/reaped, 22,077 sn. Dört vakada worker/PG grupları ve son command grupları boş; üç dış komut exit0/reaped. Özel PG dizini kaldırılması veya çocuk başına normal PG çıkışı bağımsız gözlem olarak ileri sürülmez.
+
+Faz fixture'ı yalnız hazırlık açıklamasıyla güncellendi; owner/ek kapsam
+ilişkisi ve iki Cargo sahibi korunur, Python alt vakaları Cargo toplamına
+eklenmez. Son 11 belge/güvenlik kapısı kayıt commit önkoşuludur; gerçek sonuç E/k304-final-gates-1/PROOF.json ve k304-final-gates-controller-1.json ile izlenir.
+[Ortak rapor](urunlesme-k298-kabul-20261016.md) actual kaynak/makbuzları;
+[ADR-129](../adr/129-owned-native-web-test-kiti.md) dar sınırı taşır.
+Ayrı `dene`/source-coverage sahibinin yeni kaynakta çalıştığı ileri sürülmez.
 
 Etki incelemesi: yeni normatif grammar/spec/RFC, kullanıcı tanısı, public API,
 production Rust modülü/katman/bağımlılık veya sürüm artefaktı sözleşmesi yoktur.

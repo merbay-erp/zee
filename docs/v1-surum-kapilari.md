@@ -991,15 +991,17 @@ kapanışı ileri sürülmez. Son 11 belge/güvenlik kapısının geçmesi kayı
 commit’inin önkoşuludur; [gerçek sonuç ve kapsam](urunlesme-k298-kabul-20261016.md).
 
 
-## K-304 — Owned web finalizasyonu kaynak hazırlığı
+## K-304 — Owned web finalizasyonu dar kabulü
 
-**AÇIK (GB-113, düşük):** geçici dizin/command-owner cleanup ve proof yazımı
-sırasında gözlenen iptal/deadline başarısız sonuçta korunmalıdır. Altı eski
-kaynak ve ilk önerinin iki son need karşı örneği korunur; V2 sekiz olumsuz
-alt vaka ve normal kontrolü iki metotta geçti. Bu kontrollü sonuç gerçek
-PG/Zee/HTTP kabulü sayılmaz. Tam22 hazırlık, mevcut normal Cargo sahibi,
-katalog/tazelik/fmt/tam faz ve sürekli güvenlik kapıları ile temiz exact
-native4 kabulü bekleniyor; kaynak SHA'sı/başarı sonucu henüz atanmaz.
-Python alt vakaları yeni Cargo sahibi değildir. Gömülü kitin `dene`/source
-coverage kabulü ayrı kalır; S/S3 ve K-298 RC/soak/IDE kanıtı aktarılmaz.
-P22/P36 ve genel ürün/platform sınırları [kit rehberinde](owned-web-test-kiti.md).
+**KAPALI (GB-113, dar kapsam):** cleanup/proof/son need sırasında gözlenen
+iptal/deadline başarısız makbuz ve nonzero çıkışta korunur. İlk altı karşı
+örnek ve V1 son need iki hatası tarihçede kalır; V2 sekiz olumsuz alt vaka
+ve normal kontrolü iki mock metotta geçti. Mock, OS sinyal/PG/HTTP kabulü değildir.
+Tam22 hazırlık ve kaynak öncesi15 kapı: tam faz 998/1023 geçti, 0 başarısız, 25 atlanan; Clippy ve sürekli güvenlik dahil 15 adım 1030,946 sn.
+Temiz `abdc5cf36b4d55021df5edad08cee3a7ad953ebd` direct native4: tek Cargo sahibi 1 başarılı/0 başarısız/0 atlanan, dört vaka, 19 HTTP ve 6 SQL gözlemi; iki ayrı PG kümesi.
+Özgün dış controller exit0/reaped, 22,077 sn. Dört vakada worker/PG grupları ve son command grupları boş; üç dış komut exit0/reaped. Özel PG dizini kaldırılması veya çocuk başına normal PG çıkışı bağımsız gözlem olarak ileri sürülmez.
+
+Son 11 belge/güvenlik kapısı kayıt commit önkoşuludur; gerçek sonuç E/k304-final-gates-1/PROOF.json ve k304-final-gates-controller-1.json ile izlenir. Python alt vakaları yeni Cargo sahibi
+değildir; ayrı `dene`/source-coverage ve genel P22/P36/ürün/platform kabulü
+açık kalır. S/S3 ve K-298 RC/soak/IDE kanıtı aktarılmaz.
+[Kit rehberi](owned-web-test-kiti.md), [exact makbuzlar](urunlesme-k298-kabul-20261016.md).

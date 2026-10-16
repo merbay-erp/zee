@@ -26,9 +26,9 @@ K-302 farklı kaynaktadır; sonuçlar birleştirilmez, native metrik tüketicisi
 sekiz vakası bu dilime dahil değildir. Son 11 belge/güvenlik kapısının
 geçmesi kayıt commit’inin önkoşuludur; [kapsam ve makbuzlar](urunlesme-k298-kabul-20261016.md).
 
-K-304, owned web kabulünün final cleanup/proof yazımı sonucunu düzeltmeye
-yönelik kaynak hazırlığıdır; GB-113 ve temiz native4 kabulü açık.
-[Kit sınırı](owned-web-test-kiti.md), [ortak rapor](urunlesme-k298-kabul-20261016.md).
+K-304 ve GB-113 dar kaynak/native kapsamıyla kapalı: hazırlık22, kaynak
+kapısı15 ve temiz direct native4 geçti; ayrı dene/source-coverage ve genel
+P22/P36 açık. [Kit sınırı](owned-web-test-kiti.md), [makbuzlar](urunlesme-k298-kabul-20261016.md).
 
 K-301 worker kesilme testinin dar doğruluk işi tamamlandı: V3 gerçek worker3
 koşusu tek Cargo sahibi 1/0/0, wrapper doğrulaması 25/0/0 ve özgün controller

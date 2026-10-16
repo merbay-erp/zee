@@ -2017,11 +2017,18 @@ kapsamı korunur. [Kaynak ve makbuz](urunlesme-k298-kabul-20261016.md),
 
 ## K-304 — Owned web kabulünde geç iptal sonucu
 
-**AÇIK; GB-113 düşük önem, kaynak hazırlığı.** Final cleanup/proof yayımında
-iptal ve deadline bilgisinin başarısız sonuçta korunması hazırlanıyor. Eski
-kaynağın altı, ilk önerinin son need kontrolündeki iki ek karşı örneği
-korundu; V2 sekiz olumsuz alt vaka ve normal kontrolü iki metotta geçti; gerçek PG/Zee/HTTP veya OS sinyal kabulü değildir.
-Python hazırlığı 20→22; mevcut Cargo sahipleri değişmez. Tam hazırlık,
-kaynak/belge/faz kapıları ve temiz exact kaynakta dört native senaryonun
-kabulü bekleniyor. GB-113 bu hazırlıkla kapanmaz; P22/P36 kısmi kalır.
-[Kapsam](owned-web-test-kiti.md), [karar](../adr/129-owned-native-web-test-kiti.md).
+**TAMAMLANDI — GB-113 dar kaynak/native kapsamıyla kapalı.** Cleanup/proof
+ve son need kontrolünde gözlenen iptal/deadline yanlış passed sonucuna
+dönüşmez. Özgün kaynağın ilk altı karşı örneği ve V1 son need iki hatası
+korunur; V2 sekiz olumsuz alt vaka ve normal kontrolü iki mock metotta geçti.
+Bu mock gerçek OS sinyal/PG/HTTP kabulü değildir.
+
+Tam22 hazırlık ve kaynak öncesi15 kapı: tam faz 998/1023 geçti, 0 başarısız, 25 atlanan; Clippy ve sürekli güvenlik dahil 15 adım 1030,946 sn.
+Temiz `abdc5cf36b4d55021df5edad08cee3a7ad953ebd` üzerinde direct native4 ayrıca geçti:
+tek Cargo sahibi 1 başarılı/0 başarısız/0 atlanan, dört vaka, 19 HTTP ve 6 SQL gözlemi; iki ayrı PG kümesi Özgün dış controller exit0/reaped, 22,077 sn. Dört vakada worker/PG grupları ve son command grupları boş; üç dış komut exit0/reaped. Özel PG dizini kaldırılması veya çocuk başına normal PG çıkışı bağımsız gözlem olarak ileri sürülmez.
+Son 11 belge/güvenlik kapısı kayıt commit önkoşuludur; gerçek sonuç E/k304-final-gates-1/PROOF.json ve k304-final-gates-controller-1.json ile izlenir.
+
+Mevcut Cargo sahipleri korunur. Ayrı `dene`/source-coverage sahibi
+çalıştırılmış sayılmaz; P22/P36 ve ürün/platform kapsamı kısmi kalır.
+[Kit sınırı](owned-web-test-kiti.md), [karar](../adr/129-owned-native-web-test-kiti.md),
+[exact makbuzlar](urunlesme-k298-kabul-20261016.md).

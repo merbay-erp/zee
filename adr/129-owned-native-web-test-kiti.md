@@ -1,6 +1,6 @@
 # ADR-129 — Owned native web test kiti (K-271/P22)
 
-- **Durum:** kabul; temiz S kanıtı tarihsel; K-304/GB-113 kaynak hazırlığı ve yeni temiz native4 kabulü açık; fullP22/ürün/platform açık
+- **Durum:** kabul; K-304/GB-113 dar kaynak/native4 kapsamı kapalı; fullP22/ürün/platform açık, tarihsel S korunur
 - **Tarih:** 15 Ekim 2026
 - **İlgili:** ADR-118/125/127/144; GB-087; K-304/GB-113
 
@@ -26,23 +26,23 @@ S common explicitignored ownedwebPG4 actual freshcluster/nativeHTTP ile geçti. 
 
 ## K-304 — Finalizasyonda gözlenen iptal ve süre aşımı
 
-GB-113 düşük önemle açıktır. K-304 kaynak hazırlığı, son vaka başarısını
-cleanup bekleyen ara durum olarak tutar; geçici dizin ve command-owner
-kapanışından sonra iptal/deadline yeniden denetlenir. Proof yazımı sırasında
-gözlenen iptal veya süre aşımı başarısız makbuz ve nonzero sonuçta korunur.
-Süreç çıktıktan sonra teslim edilen sinyal için gözlem garantisi verilmez.
+GB-113 dar kapsamda kapalıdır. Son vaka başarısı cleanup bekleyen ara durum
+olarak tutulur; geçici dizin ve command-owner kapanışından sonra, proof yazımı
+ve son need kontrolünde gözlenen iptal/deadline başarısız makbuz ve nonzero
+sonuçta korunur. Süreç çıktıktan sonraki sinyal için gözlem garantisi yoktur.
 
-Kontrollü karşı örnek dört finalizasyon noktası × iki durumdan oluşur: geçici
-dizin çıkışı, command-owner cleanup, proof yazımı ve son need kontrolü; cancel
-flag veya deadline.
-Gerçek main gövdesi, sahte Kit ve özel geçici dosyalarla yürütülür; PG/Zee/HTTP
-süreci başlamaz ve gerçek OS sinyal teslimi ölçülmez. Eski kaynak altı karşı
-örnekte yanlış passed üretti; ilk öneride son need için iki ek karşı örnek
-bulundu. V2 sekiz olumsuz alt vakayı ve normal kontrolü iki metot altında geçti.
-Bu dar mock kanıtı, normal hazırlık grubunun veya yeni native4 kabulünün yerine
-geçmez; bunların tamamı ve kaynak/belge kapıları henüz bekleniyor.
+İlk üç noktada özgün kaynağın altı karşı örneği ve ilk önerinin son need
+kontrolündeki iki ek hatası korunur. V2 dört nokta × iki durumu ve normal
+kontrolü iki Python metodu altında geçti. Gerçek main gövdesi sahte Kit ile
+çalıştı; bu mock gerçek OS sinyal teslimi veya PG/Zee/HTTP kabulü değildir.
 
-Python hazırlığı 20→22 olur; iki mevcut Cargo sahibinin adı ve birincil fazı
-değişmez. GB-113 ancak yeni kaynakta hazırlık, kapılar ve temiz exact native4
-kabulü tamamlanınca kapatılır. Gömülü kiti kullanan ADR-144 köprüsünün yeni
-kaynak kabulü ayrıca değerlendirilir; tarihsel S/S3 kanıtı taşınmaz.
+Tam22 hazırlık ve kaynak öncesi15 kapı geçti: tam faz 998/1023 geçti, 0 başarısız, 25 atlanan; Clippy ve sürekli güvenlik dahil 15 adım 1030,946 sn.
+Temiz `abdc5cf36b4d55021df5edad08cee3a7ad953ebd` (tree `b44b4643b982f8063afedb1e75ada655cc2fe96d`) üzerinde mevcut ignored
+Cargo sahibinin direct native4 kabulü ayrıca geçti: tek Cargo sahibi 1 başarılı/0 başarısız/0 atlanan, dört vaka, 19 HTTP ve 6 SQL gözlemi; iki ayrı PG kümesi.
+Özgün dış controller exit0/reaped, 22,077 sn. Dört vakada worker/PG grupları ve son command grupları boş; üç dış komut exit0/reaped. Özel PG dizini kaldırılması veya çocuk başına normal PG çıkışı bağımsız gözlem olarak ileri sürülmez.
+
+İki mevcut Cargo sahibi ve birincil fazı korunur; Python alt vakaları Cargo
+toplamına eklenmez. Son 11 belge/güvenlik kapısı kayıt commit önkoşuludur; gerçek sonuç E/k304-final-gates-1/PROOF.json ve k304-final-gates-controller-1.json ile izlenir.
+[Ortak rapor](../docs/urunlesme-k298-kabul-20261016.md) exact makbuzları taşır.
+Direct kit kabulü ayrı ADR-144 `dene`/source-coverage sahibinin çalıştığı
+anlamına gelmez; tarihsel S/S3 ve önceki RC/soak/IDE kanıtı aktarılmaz.

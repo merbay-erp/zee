@@ -67,9 +67,9 @@ Son11 belge kapısının geçmesi takip commit'inin önkoşuludur. Üretim compi
 değişmez; P14 ve genel ürün/platform/SLA kısmi, eski RC/soak/IDE kabulleri
 kendi kaynaklarında kalır.
 
-K-304 owned web kabul koşucusunun geç iptal/deadline düzeltmesi kaynak
-hazırlığındadır; GB-113 ve temiz native4 kabulü açık.
-[Dar kapsam ve beklenen kanıtlar](docs/owned-web-test-kiti.md).
+K-304 owned web kabul koşucusunun geç iptal/deadline düzeltmesi ve GB-113
+dar kapsamda kapalı: hazırlık22, kaynak kapısı15 ve temiz native4 geçti.
+[Kaynak, makbuz ve açık kapsam](docs/owned-web-test-kiti.md).
 
 ## Kaynaktan hızlı başlangıç
 
