@@ -1749,8 +1749,8 @@ gecikme gözlemini kaydeder; artımlı HIR/type, gerçek ürün/UI/SLA ve tam P1
 Dış girdiler [kullanıcı teslim listesinde](urunlesme-kullanici-girdileri.md)
 ayrıldı. Beş tam proje hazır değil, fiziksel cihaz yok; bu kapılar bekliyor.
 
-## K-307 — modül SQL kabul harness’i: açık
+## K-307 — foreground SQL takip2: açık
 
-K-307 / GB-116 açık: modül SQL native kabul harness’inin cleanup sırasında iptali kaybetmesi ve sonuç yayını sınırı inceleniyor. Kontrollü AST karşı örneği beklenen1 failure/exit1/reaped verdi; gerçek OS/PG sızıntısı gözlemi değildir. Baseline10, inert13 ve birleşik23 kontrollü yöntem geçti; kaynak, fresh native9 ve son kapı kabulü henüz yok; beş PG tüketicisinin foreground sahipliği ve genel P20 kısmi kalır.
+K-307 / GB-116 açık: ilk sticky iptal/yayın dilimindeki baseline10/inert13/birleşik23 kanıtı korunur. Foreground takip2 kapsamında aynı atomik kaynak/test/belge dilimine SQL tüketicisi için özgün PostgreSQL Popen sahibi ve adapter alınır; inert foreground23 ile birleşik ordinary24 gerçek owner makbuzlarıyla geçti. Bu sonuç fresh native9 veya kaynak kabulü değildir. SQL native9, kaynak kapıları/temiz kaynak ve son kapılar bekliyor; diğer dört PG tüketicisi ve genel P20 kısmi kalır.
 
-Kaynak/test/belge aynı atomik dilimde ve exact kaynak/kapı makbuzlarıyla ilerler. K-306 ve önceki SHA sonuçları aktarılmaz. [Kapsam](module-sql-lifecycle.md).
+İlk kaynak15/temiz commit sonrası aynı beş kaynak+test+12belge atomik uygulanır; ardından kendi kaynak kapıları/temiz exact kaynak/fresh native9/son kapılar gerekir. Standalone23 ve ordinary24 Rust/native toplamına eklenmez; production175/spec/RFC/catalog/API/grammar/katman etkilenmez.

@@ -382,28 +382,40 @@ hazırlık senaryoları Rust toplamına eklenmez. Production Rust, Supervisor,
 gömülü kit, grammar/API/tanı/spec/RFC, katman/bağımlılık, semantic regresyon,
 performans iş yükü ve kurulum sözleşmesi değişmez.
 
-## K-307 — kabul harness’i iptal ve yayın doğruluğu: açık
+## K-307 — foreground PostgreSQL takip2: açık
 
-K-307 / GB-116 düşük ve açıktır. `scripts/tests/modul-sql-native.py` cleanup callback’inin exact AST modeli, fake cluster.close içinden fake TERM handler çağrıldığında yeni iptalin kaybolduğunu gösterdi: tek beklenen assertion failure, özgün owner exit1/reaped. Gerçek sinyal, OS/PG süreci veya sızıntı çalıştırılmadı; gerçek PG kaçağı kanıtı değildir.
+K-307 / GB-116 düşük ve açıktır. İlk sticky cleanup iptali/yayın dilimindeki exact AST fakeTERM/fakecluster.close karşı örneği tek beklenen failure/exit1/reaped verdi; gerçek OS/PG sızıntısı gözlemi değildi. Baseline10, V4inert13 ve V5birleşik23 controlled sonuçları kendi makbuzlarıyla korunur; ilk kaynak15 kabulü yalnız kendi tam koşu/owner ve temiz commit makbuzlarıyla değerlendirilir.
 
-Düzeltme kapsamı ayrı yapışkan iptal ledger’ı; cleanup için yalnız H iptal bayrağının geçici maskelenmesi ve her yolda geri yüklenmesi; korumalı kısmi ilk handler kurulumu; tüm handler geri yüklemeleri; ExitStack ve geçici dizin cleanup’ından sonra passed kararı; yayın sırasında iptal/deadline/failure kontrolü ve birincil hatanın korunmasıdır. Diagnostic veya bir handler restore hatası kalan geri yüklemeleri atlayamaz. Mevcut600sn kampanya kabul sınırı ve dokuz native SQL oracle değişmez.
+Bu foreground takip2 anlatımı yalnız reviewed beş kaynak dosyasının aynı atomik kaynak/test/belge diliminde uygulanması altında geçerlidir. Yeni test-only `scripts/tests/native-pg-owner.py` ve preflight dosyası, modül SQL native harness’i ile ordinary/Rust wrapper aynı dilimdedir. SQL harness’i `TLS.LocalCluster` yerine `OwnedLocalCluster` foreground sahibi ve `SqlPgCampaign` adapter’ını kullanır. Yeni PostgreSQL özgün Popen nesnesi korunur; readiness çocuklarının özgün sahipliği ve data-directory/version kimliği doğrulanır. Normal kapanış için aynı özgün PostgreSQL sahibine SIGINT, observed_exit=exit=0/reap ve fallback_used=false gerekir. Belirsiz sahip veya private root kimlik değişiminde private kök silinmez; retained durum sonradan benimsenmez. Bu normal kapanış gerçek PG üzerinde henüz ölçülmüş değildir; helper’ın kabul gereğidir.
 
-T adayV4 inert13 ve T adayV5 birleşik23 yöntemi gerçek özgün owner makbuzlarıyla geçti; baseline10 ayrıca geçti. Eski10 ordinary metot korunup13 inert yöntem aynı `compiler/tests/modul_sql_testi.rs::modul_sql_stdlib_sozlesmesi` sahibi altında birleştirildi. Bu controlled sonuç kaynak veya fresh native kabulü değildir; Kaynak/test/belge uygulaması bu atomik dilimin parçasıdır. Ayrı ignored sahibi `modul_sql_native_crud_goc_yasam_dongusu` ve dokuz alt native vaka korunur; Python yöntem sayısı Cargo/native toplamına eklenmez. Kaynak+test+belge aynı atomik commit, gerekli katalog/tazelik/fmt/faz ve kaynak kapıları, exact temiz kaynak, fresh native9 ve son kapılar kapanış önkoşuludur.
+İlk yapışkan ledger, cleanup sırasında H maskesi, garantili restore, korumalı handler kurulumu, ExitStack sonrası passed ve publication iptal/deadline/failure denetimleri korunur. SqlPgCampaign cleanup90 sınırı kabul600 sınırını uzatmaz; dokuz SQL native oracle, pinler, pending/unknown no-replay, SQL/DB+FS ve üretim semantiği değişmez. Native Rust wrapper ayrıca foreground PG kapanış/readiness sonucunu ister; bu kontrolün varlığı fresh native PASS değildir. `ZEE_MODULE_SQL_NATIVE_OUT` yalnız internal ignored testin taze mutlak çıktı yolu seçimidir; belirtilmediğinde mevcut0700 geçici dizin varsayılanı korunur. Ürün CLI/API kapasitesi açılmaz.
 
-Bu dar harness işi `TLS.LocalCluster` içindeki pg_ctl ile başlatılan detached PostgreSQL ve immediate-stop sahipliğini foreground özgün Popen/normal kapanışa dönüştürmez. Kalan beş PG tüketicisi, genel P20/adoption/platform, DB+FS atomikliği ve unknown no-replay sınırı açıktır. Üretim compiler175/bağımlılık/katman, grammar/API/ABI, normatif spec/RFC, kullanıcı tanısı/katalog kodu, sabit performans iş yükü veya compiler/LSP kalıcı durum değişmez; yeni özellik/RC/soak/IDE kabulü aktarılmaz.
+Gerçek kontrollü hazırlık: aynı helper/preflight baytları üzerinde standalone foreground23 ve takip2 birleşik ordinary24 geçti; özgün owner observed_exit=exit=0/closed/reaped/errors[]/cancelled[]. Standalone23 önceki Tproposal1 yolunda çalıştı; actual hedef/preflight hashleri Tproposal2 ile birebirdir. Birleşik24, önceki23 yöntemi koruyup yeni foreground preflight23’ü içten çalıştıran bir ordinary yöntem ekler; bunlar47 veya yeni Cargo/native toplamı değildir. Mevcut ordinary Cargo sahibi ve ignored native sahibi/dokuz vaka korunur.
 
-Beklenen kaynak kapısı planı (henüz çalışmadı): korumalı özgün Popen/WNOWAIT sahipliğiyle15 adım; preparation yalnız `modul_sql_testi` ordinary23/tek Cargo sahibi ve native1 ignored sonucu, tam faz matrisi22 fazı yeniden yürütür. Counts/summary/katalog-tazelik/spec/fmt/clippy/conformance/semantic/core-freeze/diff/secret/sürekli güvenlik ayrı kontrollerdir. Beklenen kaynak pin domain’i eski341 anahtarın iki SQL script hash’i yenilenip Rust test wrapper’ı eklenmesiyle342’dir; production175 korunur. Bu plan actual kapı sonucu değildir; fresh native9 yalnız ayrıca exact temiz kaynak commit’inden sonra değerlendirilir.
+SQL foreground bağlantısı bu takip dilimindedir; diğer dört PG tüketicisinin foreground dönüşümü bu dilime dahil değildir ve açık kalır. SQL’in kendi fresh native9 kabulü de bekler; beş PG tüketicisinin tamamı kapalı veya tüm sahiplik kabulü geçti denmez. Genel P20 kısmi, ürün/adoption/platform ve C1/K288/P33/K293 retleri korunur. Önce ilk kaynak15/temiz kaynak commit’i gerçek makbuzlarıyla kapanmalı; sonra takip2 beş kaynak+test+12 belge atomik uygulanıp kendi kaynak kapıları/temiz exact commit’i, ayrı fresh native9 ve son kapılar sağlanmalıdır. Sonraki kaynak SHA/tree henüz bilinmiyor; burada üretilmez.
 
-### K-307 mevcut public hazırlık kanıtı
+Etki incelemesi: production Rust175, bağımlılık/katman, grammar/API/ABI, normatif spec/RFC, kullanıcı tanısı/katalog kodu, sabit performans iş yükü ve compiler/LSP kalıcı durum değişmez. Test-only helper/adapter ve native output/proof kontrolleri kullanıcı ürün kapasitesi açmaz; RC/soak/IDE veya geçmiş SHA sonuçları aktarılmaz.
+
+### Takip2 public hazırlık kayıtları
 
 | Kayıt | SHA-256 |
 | --- | --- |
+| `/private/tmp/zee-k300/K307-OPEN-DOCS-PROPOSAL-4.json` | `3eb526fdc0c40865ff3d18261c933a8805a08ddf5dbfd604a74f886ae148ffe3` |
+| `/private/tmp/zee-k300/k307-foreground-proposal-2/PREPARATION.json` | `de3af343ed5332801580895e4c65f40d0e15a1ac58ddbd4d0a7c30844d2eb007` |
+| `/private/tmp/zee-k300/K307-FOREGROUND-PROPOSAL-INDEPENDENT-STATIC-REVIEW-1.json` | `895ada61be4f6e6f845c44d2705d42ec4a861bb91e1af3c662175f358350a443` |
+| `/private/tmp/zee-k300/k307-foreground-proposal-2/scripts/tests/native-pg-owner.py` | `6e5f004a99af5685bcd9625b73df2ae574f21854f0b0bff06dc8013c18b4d9c2` |
+| `/private/tmp/zee-k300/k307-foreground-proposal-2/scripts/tests/native-pg-owner-preflight-test.py` | `e0a5ea63590807e9310ad3eb12bef37defd49d3be7ea57f1390f5f8cae1d4552` |
+| `/private/tmp/zee-k300/k307-foreground-proposal-2/scripts/tests/modul-sql-native.py` | `43fab53de8223c32ed197538e1a78493069a7d6fa85341dcdff360bcb92407e4` |
+| `/private/tmp/zee-k300/k307-foreground-proposal-2/scripts/tests/modul-sql-test.py` | `a49a0071825a9e6761ece34f48e243290b406242d990c270cd3ee3b983ee21f7` |
+| `/private/tmp/zee-k300/k307-foreground-proposal-2/compiler/tests/modul_sql_testi.rs` | `220fbf1e5710bc11c45441a0fc819bd0572857268111d8243fb3e466e7b9adc4` |
+| `/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/k307-foreground-model23-controller-1.json` | `3e78c1613b63b307dbc359546b432f9b7e8c9f13ecee35a769f4c6d8b98e8091` |
+| `/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/k307-foreground-model23-1.log` | `5ef4987aff494d34e03b336f6217b01ef2918aed23a300a13edfda2330564ca8` |
+| `/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/k307-foreground-combined24-controller-1.json` | `10176059abe4f22c1298dd6bdf6c5eaa2c80c1edace99bb17bb29927266a1096` |
+| `/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/k307-foreground-combined24-1.log` | `3373fed733da9bcbfdb3b715639fdfdb126ba835b56c6d8bd20d43d6e4b98b60` |
 | `/private/tmp/zee-k300/K307-MODUL-SQL-CANCELLATION-INDEPENDENT-ASSESSMENT-1.json` | `9ced1b582755f2ba2701c274b6f86ef0c895802156f11541b2e46922252abc77` |
 | `/private/tmp/zee-k300/modul-sql-cleanup-cancel-counterexample-1.py` | `6060f121186a203d86330050f274214120919fd630248eef398ffb3c5eb9b353` |
 | `/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/k307-modul-sql-cancel-counterexample-controller-1.json` | `d0fe1cdd935ccd9e0f4c179795f5ec40192cca313102ffae1d80bfa73a67d701` |
 | `/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/k307-modul-sql-cancel-counterexample-1.log` | `8328e4259037efc7a299b939960c15743d03e4ebfe2ac1eb52a44abae8bef88f` |
-| `/private/tmp/zee-k300/k307-modul-sql-proposal-4/modul-sql-native.py` | `a1db59e4f5e51bd2d7032c6ba3eabca9906d0aac900255c08695df9908c1b5a2` |
-| `/private/tmp/zee-k300/k307-modul-sql-proposal-4/native-cleanup-models.py` | `c8d2301b4bf358a0a1a127764e8aab42af665a03fdd0a6df8edc67b573ff7f2b` |
 | `/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/k307-modul-sql-baseline10-controller-1.json` | `a2fb1a876322d488f2407a14257cb24d13cb77474c87ebc9bf62fae55a644102` |
 | `/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/k307-modul-sql-baseline10-1.log` | `4953417aab84c5f724fae90ef047a24094aedf99179fe4023c23d308d690d15d` |
 | `/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/k307-modul-sql-model13-controller-1.json` | `984504fff0225993c8f6df8b71223fd018c8ce61e940dfc57418b078fe8575f4` |
@@ -411,10 +423,9 @@ Beklenen kaynak kapısı planı (henüz çalışmadı): korumalı özgün Popen/
 | `/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/k307-modul-sql-combined23-controller-1.json` | `09a8eb21d362a483e1cf0229cb7e3ad969635963334fd5ff3b3c1511ea20a10c` |
 | `/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/k307-modul-sql-combined23-1.log` | `01a3361790affbbb7f05249396624d280422febb36bfe07f37a85876115130fc` |
 | `/private/tmp/zee-k300/k307-modul-sql-proposal-5/PREPARATION.json` | `85d72c955ff3555f4b2a2faea973e7609e94c483c87f959775e94dbe6c6b5c63` |
+| `/private/tmp/zee-k300/K307-FOREGROUND-COMBINED2-INDEPENDENT-REVIEW-1.json` | `2c9584264b39b24b92de284163f37721132c905094ee7f4b37b819fa937a35de` |
 
-Gerçek kontrollü sonuçlar ayrı makbuzlarla kayıtlıdır: baseline10, adayV4 inert13 ve adayV5 birleşik23 yöntemi geçti; her özgün owner observed_exit=exit=0/closed/reaped/errors[]/cancelled[]. Birleşik23, korunan10 ordinary ve eklenen13 inert yöntemdir; Cargo/native sayısı değildir. Bu kaynak/test/belge dilimi atomik uygulama kapsamındadır; kaynak kapıları, exact temiz kaynak ve fresh native9/son kapı kabulü bekleniyor.
-
-Candidate/model pinleri T hazırlığı kimliğidir; actual baseline10/inert13/birleşik23 sonuçları ayrı owner/log makbuzlarıdır, native9 veya kaynak kabulü değildir. K-306 kendi exact dar kapanış kaynağında korunur.
+Bu pinler kontrollü hazırlık kaydıdır; kendi başına kaynak/temiz commit veya native9 kabulü değildir. İlk sticky23 ve K306/VM1–7 tarihçesi kendi kaynaklarında korunur.
 
 ## K-306 — Linux kabul koşucusu: dar kapsamda kapalı
 

@@ -14,7 +14,7 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
-- **K-307 / GB-116 açık:** Modül SQL kabul harness’inde yapışkan cleanup iptali ve cleanup sonrası sonuç yayını doğruluğu hazırlanıyor; baseline10/inert13/birleşik23 kontrollü yöntem geçti; kaynak/native/son kapı kabulü yok. Üretim SQL/CLI/dil davranışı ve kullanıcı göçü değişmez. [Sınırlar](module-sql-lifecycle.md).
+- **K-307 / GB-116 foreground takip2 açık:** SQL test harness’i yeni foreground PG helper/adapter’ına aynı kaynak/test/belge diliminde bağlanır. Inert foreground23/birleşik ordinary24 geçti; kaynak/fresh native9/son kapı kabulü bekler. Üretim/dil/API ve kullanıcı göçü değişmez; diğer dört PG ve genel P20 açık. [Sınırlar](module-sql-lifecycle.md).
 
 - **K-304/GB-113 dar kapsamda kapalı:** owned web kabulünün geç iptal/deadline
   sonucu, hazırlık22/kaynak kapısı15 ve temiz direct native4 ile doğrulandı.
