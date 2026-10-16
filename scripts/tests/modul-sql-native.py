@@ -8,6 +8,7 @@ import json
 import os
 from pathlib import Path
 import signal
+import shutil
 import stat
 import socket
 import sys
@@ -30,7 +31,8 @@ def load(name,path):
     spec=importlib.util.spec_from_file_location(name,path);m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m);return m
 M=load('sql_modules',R/'scripts/modul-sql-yoneticisi.py');H=M.BASE['H']
 TLS=load('owned_pg',R/'scripts/postgresql-tls-ci.py')
-roles=['scripts/modul-sql-yoneticisi.py','scripts/modul-yoneticisi.py','scripts/lifecycle_core.py','scripts/tests/modul-sql-native.py','scripts/tests/modul-sql-test.py','scripts/postgresql-tls-ci.py','scripts/postgresql-tls11-control.py','golden/module-sql/news.json','golden/module-sql/stock.json']
+PG=load('native_pg_owner',R/'scripts/tests/native-pg-owner.py')
+roles=['scripts/modul-sql-yoneticisi.py','scripts/modul-yoneticisi.py','scripts/lifecycle_core.py','scripts/tests/modul-sql-native.py','scripts/tests/native-pg-owner.py','scripts/tests/modul-sql-test.py','scripts/postgresql-tls-ci.py','scripts/postgresql-tls11-control.py','golden/module-sql/news.json','golden/module-sql/stock.json']
 pins={n:M.digest(M.BASE['snapshot'](R/n)) for n in roles}
 proof={'schema':'zee-module-sql-native-tests-1','status':'running','cases':[],'source_files':[{'path':n,'sha256':v} for n,v in pins.items()]}
 raw=[];cluster=None;work=None;cleanup=[];oldsignals={}
@@ -92,6 +94,48 @@ def request(port,path,deadline):
             assert time.monotonic()<deadline
             if not block:return out
             out+=block;assert len(out)<=65536
+class SqlPgCampaign:
+    """Only the foreground owner's fixture protocol; no manager or unit actions."""
+    def __init__(self, directory):
+        self.out = a.output
+        self.deadline = campaign_deadline
+        self._cleanup_deadline = None
+        self.clusters = []
+        info = directory.stat()
+        self.tempdirs = [(directory, (info.st_dev, info.st_ino))]
+        self.proof = proof
+        self.pg_pins = {str(a.postgres_bin_dir / name): value for name, value in pgpins.items()}
+
+    @property
+    def stopped(self):
+        return campaign_cancelled or H['CANCELLED']
+
+    @property
+    def cleaning(self):
+        return cleaning
+
+    @property
+    def cleanup_deadline(self):
+        if cleaning and self._cleanup_deadline is None:
+            self._cleanup_deadline = time.monotonic() + 90
+        return self._cleanup_deadline
+
+    def need(self, value):
+        end = self.cleanup_deadline if cleaning else self.deadline
+        if (not value or (not cleaning and self.stopped)
+                or time.monotonic() >= end):
+            raise ValueError('owned SQL PostgreSQL fixture rejected')
+
+    def command(self, label, argv, budget=25, env=None):
+        self.need(True)
+        end = self.cleanup_deadline if cleaning else self.deadline
+        result = H['run'](argv, timeout=min(budget, 30, max(.001, end-time.monotonic())),
+                          limit=65536, env=env)
+        raw.append({'operation': str(Path(str(argv[0])).name),
+                    'output': result.decode('utf8', 'replace')})
+        self.need(True)
+        return result
+
 def publish_proof():
     # Cleanup may mask the command helper flag; the campaign ledger never resets.
     primary_error=sys.exc_info()[1]
@@ -152,11 +196,32 @@ try:
 
     proof['framework_head']=run(['git','-C',R,'rev-parse','HEAD']).strip()
     with contextlib.ExitStack() as stack:
-        td=stack.enter_context(tempfile.TemporaryDirectory(prefix='zms-',dir=Path('/tmp').resolve(strict=True)));work=Path(td).resolve();os.chmod(work,0o700)
+        work=Path(tempfile.mkdtemp(prefix='zms-',dir=Path('/tmp').resolve(strict=True))).resolve(strict=True)
+        PG.private_directory(work.lstat())
+        info=work.lstat();work_identity=(info.st_dev,info.st_ino,info.st_mode,info.st_uid,info.st_gid)
+        def close_work():
+            # Retain uncertain original owners and their private paths; never adopt later.
+            if cluster is not None and (not cluster.closed
+                    or (cluster.child is not None and cluster.child.returncode is None)
+                    or any(row['child'] is not None and row['child'].returncode is None
+                           for row in cluster.probes)):
+                proof['temporary_private_root_preserved_after_uncertain_owner']=True
+                raise ValueError('owned PostgreSQL cleanup incomplete; private root retained')
+            current=work.lstat()
+            if (work.resolve(strict=True)!=work or
+                    (current.st_dev,current.st_ino,current.st_mode,current.st_uid,current.st_gid)!=work_identity):
+                proof['temporary_private_root_preserved_after_identity_change']=True
+                raise ValueError('owned PostgreSQL private root identity changed')
+            PG.private_directory(current)
+            shutil.rmtree(work)
+            assert not work.exists(),'owned PostgreSQL private root remains'
+        stack.callback(close_work)
         certdir=work/'pg';certdir.mkdir(mode=0o700)
         ca,wrong,cert,key=TLS.certificates(certdir)
         (certdir/'pg_hba.conf').write_text('local all all trust\nhostssl all all 127.0.0.1/32 trust\nhostnossl all all 0.0.0.0/0 reject\n')
-        cluster=TLS.LocalCluster(certdir,cert,key,a.postgres_bin_dir)
+        pg_campaign=SqlPgCampaign(certdir)
+        cluster=PG.OwnedLocalCluster(pg_campaign,certdir,cert,key,a.postgres_bin_dir,H)
+        pg_campaign.clusters.append(cluster)
         def close_cluster():
             global cleaning
             previous_cleaning=cleaning;cleaning=True
