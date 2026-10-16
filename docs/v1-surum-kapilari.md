@@ -1086,13 +1086,13 @@ Bilinçli etki incelemesi: production Rust175/bağımlılık/katman, grammar/API
 
 **Kalan yerel işler:** Backlog bağımlılık sırasındaki diğer dört PG tüketicisinin özgün foreground sahiplik/iptal kabulü ve ayrı açık teknik işler sürer; genel P20, ürün/adoption, fiziksel platform ve dış girdiler açık kalır.
 
-## K-311 — effect harness lifecycle: açık
+## K-311 — effect harness lifecycle: dar kapsamda kapalı
 
-K-311 / GB-120 düşük ve açık: effect kabul harness’inin OperationProxy.close yolunda tek socket-close hatası kalan özgün thread ve COMMIT sahibi cleanup çağrılarını atlayabiliyordu. Child-free karşı örnekte1 beklenen failure/exit1/reaped doğrulandı; bu gerçek OS/PG/SMTP sızıntısı veya diskte PASS gözlemi değildir.
+K-311 / GB-120 dar kapsamda kapalı: effect native kabul harness’inin kalan özgün kaynak cleanup denemeleri, ilk hata kimliği, yapışkan iptal/publication ve plaintext PG sahipliği dar dilimi. Exact kaynak ea535fad3dbd4beb2dd7cd7e3b217c041686e89b tam15/temiz commit ve özgün owner makbuzlarıyla doğrulandı. Aynı exact kaynakta tek ignored Cargo/effect11/60need frozen kabulü; özgün plaintext PG/readiness/retained cleanup kanıtlandı, tüm inner host0 iddiası yok.
 
-Test-only düzeltme kaynakları start öncesi kaydeder; cleanup arızasında kalan özgün sahipleri de dener, ilk hata kimliğini ve yapışkan iptali korur, tek mutlak cleanup bütçesiyle başarısız yayını sınırlar. Plaintext loopback PG, normal özgün SIGINT/readiness ve FD/command makbuzları için sahip adaptörü eklendi. Eski baseline8, ayrı lifecycle27/PG18, aynı yöntemleri içeren birleşik45 ve eski8+tek wrapper ordinary9 kontrollü olarak geçti; iç sayılar Cargo/native toplamı değildir. Native11/60need/source14/no-replay korunur.
+Child-free1 expectedFAIL, eski baseline8, ayrı lifecycle27/PG18, aynı yöntemleri içeren selected45 ve eski8+tek wrapper ordinary9 kendi kontrollü kayıtlarında korunur; nested sayılar Cargo/native toplamı değildir. Native11/60need/source14/plaintext loopback196608/no-replay korunur; bu teknik kabul ürün/provider exactly-once sözü değildir.
 
-K311/GB120 açık kalır: tam kaynak15 ve temiz kaynak commit’i/bağımsız peer, o exact SHA’da taze native11/normal PG/readiness/retained cleanup ile final11-testedoverlay/temiz kapanış kaydı ayrı kabul önkoşullarıdır. Gerçek PG/SMTP native kabulü bu kontrollü testlerden çıkarılamaz. Effect hâlen tek açık PG tüketicisidir; P09 ve39 plan statüsü, ürün/sağlayıcı/insan/platform sınırları değişmez. Ayrıntılı kaynak/test geçmişi [ADR-135](../adr/135-sabit-native-dis-etki-tuketicisi.md) ve [ortak rapordadır](urunlesme-k298-kabul-20261016.md).
+Bu dar effect kapanışı gerçekten tamamlanınca beş-harness PG takip kuyruğunda açık tüketici kalmaz; genelP09 ve39 plan statüsü, ürün/sağlayıcı/insan/fiziksel platform/dış girdiler değişmez. Bu dar kapanış yalnız exact belge overlay’inde gerçek tam final11 kabulü ve onu kaydeden temiz kapanış commit’inin kendi özgün dış owner/public makbuzlarıyla geçerlidir. Her kabul kendi exact başarılı deneme kayıtlarıyla izlenir; başarısız önceki deneme kapanış kanıtı değildir. Bu belge kendi kapanış commit SHA’sını üretmez; dış makbuzlar izler. Ayrıntılar [ADR-135](../adr/135-sabit-native-dis-etki-tuketicisi.md) ve [ortak raporda](urunlesme-k298-kabul-20261016.md).
 
 ## K-310 — metrics harness cleanup ve özgün PG/FD sahibi: dar kapsamda kapalı
 
