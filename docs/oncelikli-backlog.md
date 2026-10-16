@@ -1950,12 +1950,15 @@ kalır; ürün/FFI/DNS/fault, C1/P33 ve dış kabul açıklarını kapatmaz.
 
 ## K-300 — Mixed-revision kabul koşucusunda kök ve iptal doğruluğu
 
-**AÇIK — GB-112 düşük; hazırlık13 geçti, kaynak kapıları ve temiz native9
-kabulü bekleniyor.** Başlamış atomik correctness dilimi olarak sıradaki kapasite
-çalışmasından önce tamamlanır. Rust sarmalayıcısının canonical olmayan
-`compiler/..` kökü native senaryolar başlamadan reddedilir. Python koşucusunda
-ilk çocuk komutundan önce handler, finally kapsamındaki kısmi setup, açık
-kısmi host sahipliği ve cleanup iptalinin başarısız sonuçta korunması ele alınır.
+**Dar kaynak/native kabulü KAPALI — GB-112 kapalı; son11 belge kapısı
+takip commit'inin önkoşuludur.** Hazırlık13 geçti. C3
+`549dbe66a775db17875b47c67948245a6a8fbf60` üzerinde mevcut tek Cargo sahibiyle
+dokuz native vaka/dört dalga/160 HTTP200; sıfır 5xx/retry/body mismatch/failure
+ve özgün owner exit0/reaped kabulü geçti. C3 öncesi kaynak kapısı13, tam
+faz998/0/25, Clippy ve sürekli güvenlik geçti; ilk ADR durum etiketi metadata
+başarısızlığı korunur. Rust kökü kanonikleştirildi; ilk çocuk komutundan önce
+handler, finally kapsamındaki kısmi setup/host sahipliği ve cleanup iptalinin
+başarısız sonuçta korunması tamamlandı.
 
 [ADR-149 revizyonu](../adr/149-mixed-revision-owned-wave.md) ve
 [koşucu rehberi](mixed-revision-wave.md) native9/dört dalga/160 istek doğrulama koşullarını

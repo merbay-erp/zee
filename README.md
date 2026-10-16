@@ -60,10 +60,12 @@ için durum: **dar kaynak/native/arşiv kapsamı kapalı; toplu commit öncesi s
 temiz C2 native2 iki Cargo sahibiyle geçti: signed PDF9 ve service-fault2; alt vakalar Cargo owner sayısına eklenmez; C2 öncesi gate4: 13 adım geçti; tam faz 998/1023 geçti, 0 başarısız, 25 atlanan. GB-111: kapalı; toplu commit öncesi son belge kapısı gerekli.
 Üretim compiler/host değişmedi; K-298 RC/soak/IDE/stdio kabulü kendi kaynağında kalır.
 
-[K-300 mixed-revision koşucusu bakımı](docs/mixed-revision-wave.md) için GB-112
-açık; canonical wrapper kökü, erken iptal ve kısmi host temizliği ele alınır.
-Hazırlık13 geçti; kaynak kapıları ve temiz native9 kabulü bekleniyor. Üretim
-compiler/host değişmez; P14 ve genel ürün/platform/SLA kapıları kısmi kalır.
+[K-300 mixed-revision koşucusu bakımının](docs/mixed-revision-wave.md) dar
+kaynak/native kabulü ve GB-112 kapalıdır. Hazırlık13, C3 öncesi kaynak
+kapısı13/tam faz998/0/25 ve temiz C3 native9/dört dalga/160 HTTP200 geçti.
+Son11 belge kapısının geçmesi takip commit'inin önkoşuludur. Üretim compiler/host
+değişmez; P14 ve genel ürün/platform/SLA kısmi, eski RC/soak/IDE kabulleri
+kendi kaynaklarında kalır.
 
 ## Kaynaktan hızlı başlangıç
 

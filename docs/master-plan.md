@@ -8,11 +8,14 @@ Kaynak `8178920e03fed782a817d1864b8280fcb80812a3`: temiz C2 native2 iki Cargo sa
 Üretim compiler/host kapasitesi değişmez; K-298 kaynak S üzerindeki
 RC/soak/IDE/stdio kanıtı yeni kaynak kimliğine taşınmaz.
 
-K-300 mixed-revision kabul koşucusu bakımında **GB-112 açık**: canonical wrapper
-kökü, ilk komuttan önce handler, kısmi host sahipliği ve cleanup iptalinin
-korunması ele alınır. Hazırlık13 geçti; kaynak kapıları ve temiz native9 kabulü
-bekleniyor. [Dar correctness kapsamı](mixed-revision-wave.md) P14'ü veya genel
-ürün/platform/SLA kapılarını kapatmaz; K-299 C2 ve K-298 S kabulleri korunur.
+K-300 mixed-revision koşucusunun **dar kaynak/native kabulü ve GB-112 kapalı**.
+Hazırlık13, C3 öncesi kaynak kapısı13/tam faz998/0/25 ve temiz C3
+`549dbe66a775db17875b47c67948245a6a8fbf60` üzerinde native9/dört dalga/160
+HTTP200 geçti; özgün owner exit0/reaped, kaynak ve ikili kimliği korundu.
+Son11 belge kapısının geçmesi takip commit'inin önkoşuludur.
+[Dar correctness kapsamı](mixed-revision-wave.md) üretim davranışını
+değiştirmez; genel P14/ürün/platform/SLA kısmi, eski RC/soak/IDE kabulleri
+kendi kaynaklarında kalır.
 
 Uçtan Uca Master Proje Dokümanı
 Dil • Derleyici • Runtime • Standart Kütüphane • Paket Ekosistemi • Tooling • Eğitim
