@@ -45,3 +45,38 @@ GB-113'ü dar kapsamda kapatır. `abdc5cf36b4d55021df5edad08cee3a7ad953ebd` nati
 `dene`/source-coverage sahibinin çalıştığı anlamına gelmez. S3 dört vaka/19HTTP
 ve admission retleri kendi exact kaynağında kalır; yeni köprü kabulü veya
 compiler grammar/API/coverage kapasitesi ileri sürülmez.
+
+## K-305 — Negatif kabul koşucusunda erken iptal hazırlığı
+
+**AÇIK (GB-114, düşük):** `scripts/tests/web-test-bridge-test.py`, Supervisor
+sınıfını import eder; Supervisor'ın bağımsız main handler kurulumu burada
+çalışmaz. Varsayılan SIGTERM, harness finally akışını atlayabilir; ayrı
+oturumda başlatılmış özgün child'ın kapanışı bu nedenle garanti edilmez.
+K-305, ilk child öncesinde yalnız bayrak işaretleyen handler, bekleme sırasında
+iptal kontrolü ve original Popen/WNOWAIT üzerinden final cleanup/proof
+sonucunun korunması için dar kaynak hazırlığıdır.
+
+Hazırlık kaydı: Kontrollü hazırlıkta 15 Python metodu ve 27 senaryo geçti; eski sürümde 17 yapısal eksik, iki cleanup hatasında eksik makbuz ve bir terminal süre aşımında yanlış passed ayrıldı. Özgün dış owner eski exit1 ve yeni exit0 ile reaped; gerçek çocuk, OS sinyal teslimi, PG veya ağ kabulü değildir. `K305-PREPARATION.json`
+SHA-256: `e445af8d0a82448488bd72d47e1360bba990751db0354f91061a93603c4918b1`.
+Kontrollü hazırlık, gerçek bridge/PG/HTTP veya OS sinyal teslimi sonucu diye
+sunulmaz; makbuz bu ayrımı ve gerçekten yürütülen kapsamı belirtmelidir.
+Selector oluşturmanın iç run try'si önünde olması tek başına kaçak kanıtı
+değildir: main finally owner cleanup'ını zaten çağırır.
+
+Mevcut normal CLI/admission Cargo sahibi Unix hazırlığını da taşır; eski üç
+CLI guard ve ayrı ignored bridge sahibi korunur. Python alt vakaları yeni
+Cargo sahibi değildir. Tam kaynak/faz/Clippy/güvenlik kapıları, yeni exact
+temiz kaynakta mevcut bridge sahibinin unit/source-coverage, dört native vaka
+ve altı admission negatifi ile kabulü ve son belge kapıları tamamlanmadan
+K-305/GB-114 kapanmaz. Şu an yeni kaynak SHA'sı veya bu kabuller atanmaz.
+
+Bu değişiklik negatif harness/test hazırlığıyla sınırlıdır; production Rust,
+gömülü owned web kiti ve Supervisor davranışı değişmez. S3 köprü ve K-304
+C8 direct kit kabulü kendi kaynaklarında kalır. P22/P36 ve ürün/platform
+kapsamı açıktır. [ADR-144](../adr/144-dene-native-web-test-koprusu.md),
+[ortak rapor](urunlesme-k298-kabul-20261016.md) kanıt sınırını taşır.
+
+Etki incelemesi: grammar/spec/RFC, kullanıcı tanısı, public API, production
+katman/bağımlılık, sürüm artefaktı, performans iş yükü veya compiler/LSP kalıcı
+durum değişmez. Semantic `.dil` regression ve compiler/core beyanı yeni bir
+üretim değişikliği olmadan eklenmez; RC/soak/IDE tarihçesi bu hazırlıkla yenilenmez.

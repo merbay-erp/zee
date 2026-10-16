@@ -51,3 +51,24 @@ Yeni derlemeye gömülen Python baytları değişir; Rust grammar/API/coverage
 sözleşmesi değişmez. Temiz `abdc5cf36b4d55021df5edad08cee3a7ad953ebd` direct native4 kabulü, ayrı
 `dene`/source-coverage sahibinin çalıştığı anlamına gelmez. S3 köprü kabulü
 kendi exact kaynağında kalır; yeni köprü/ürün/platform kabulü ileri sürülmez.
+
+## K-305 — Negatif harness iptal sahipliği
+
+**GB-114 düşük/açık; kaynak hazırlığı.** Ayrı admission negatif harness'i
+Supervisor sınıfını doğrudan kullanır; modül main'inin SIGTERM handler'ı
+kurulmaz. K-305, ilk owned child öncesindeki flag-only handler ve final
+cleanup/proof iptal sonucunun korunması için dar hazırlıktır. Original
+Popen/WNOWAIT yetkisi korunur; PID adoption veya genel servis yönetimi yoktur.
+Selector init'in iç run try'si önünde olması tek başına kanıtlanmış sızıntı
+sayılmaz; main finally mevcut owner cleanup'ını zaten yürütür.
+
+Hazırlık kaydı: Kontrollü hazırlıkta 15 Python metodu ve 27 senaryo geçti; eski sürümde 17 yapısal eksik, iki cleanup hatasında eksik makbuz ve bir terminal süre aşımında yanlış passed ayrıldı. Özgün dış owner eski exit1 ve yeni exit0 ile reaped; gerçek çocuk, OS sinyal teslimi, PG veya ağ kabulü değildir. `K305-PREPARATION.json`
+SHA-256: `e445af8d0a82448488bd72d47e1360bba990751db0354f91061a93603c4918b1`.
+Hazırlık türü/sonucu makbuzun kapsamıyla sınırlıdır; gerçek native köprü veya
+OS sinyal kabulü otomatik çıkarılmaz. Mevcut normal CLI sahibi ve ayrı ignored
+bridge sahibi korunur; yeni Rust test sahibi veya üretim compiler/kit değişimi
+yoktur. Tam kaynak/faz ve güvenlik kapıları, yeni temiz exact kaynakta bridge
+unit/source-coverage + native4 + altı admission negatifi ve son belge kapıları
+beklenir. Bunlar tamamlanmadan K-305/GB-114 açık kalır. S3 ve K-304 kanıtları
+yeni bridge sonucu yerine kullanılamaz; genel P22/P36/ürün/platform açıktır.
+[Koşucu sınırı](../docs/dene-native-web-koprusu.md).
