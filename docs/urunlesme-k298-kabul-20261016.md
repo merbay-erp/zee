@@ -1,5 +1,35 @@
 # Ürünleşme — yerel kabul ve açık teknik işler raporu
 
+## K-311 — effect harness lifecycle: açık
+
+K-311 / GB-120 düşük ve açık: effect kabul harness’inin OperationProxy.close yolunda tek socket-close hatası kalan özgün thread ve COMMIT sahibi cleanup çağrılarını atlayabiliyordu. Child-free karşı örnekte1 beklenen failure/exit1/reaped doğrulandı; bu gerçek OS/PG/SMTP sızıntısı veya diskte PASS gözlemi değildir.
+
+Düzeltme resource-free constructor/start öncesi registration, partial allocation retained ownership, kalan cleanup denemeleri/ilk hata kimliği, yapışkan iptal/handler restore ve failed-only publication sağlar. Work180 ve tek cleanup90 mutlak bütçeleri uzatılmaz; H/WNOWAIT özgün sahipliği, foreign kaynaklara dokunmama, normal foreground PG SIGINT0/reaped/noFallback/readiness/SHOW identity ve private-root tutma sınırları korunur. Bu normal PG yollarının gerçekten kabulü gelecekteki exact-source native kampanyasının konusudur.
+
+PG profili explicit plaintext loopback, TLS kapalı/startup196608; TLS6e5 shared helper’a çevrilmez. SQL/SMTP latch, C029/DATA/ackCOMMIT belirsizliği manualpause/no-replay; native11 gözlemi/60need ve14 sabit source-role değişmez. İç helper ayrıca fixedpin ile tüketilir. Production175/compiler/src/H/ürün API/ABI/grammar/performance değişmez. ZEE_EFFECT_NATIVE_OUT yalnız internal ignored native test için fresh absolute output seçimidir; canonical parent/NotFound kontrolü ve default hedef yolu korunur, ürün CLI kapasitesi değildir.
+
+Child-free1/0.003sn expectedFAIL/exit1/reaped; actualpeer812690ff68322169e9fa96770f397a503418f33c5100b803a432e62459cfdcb9. Yalnız stop.set/owned-sockets.close gözlendi; sonraki beş cleanup eylemi atlandı ve ilk hata korundu. Tarihsel ad-hoc UNVERIFIED kaydı geriye dönük kapanmaz.
+
+Eski baseline8 attempt2:8/0.947sn PASS; peerab299b4506236e838d97de88a87271bdae42b005e17c8a1cd2b4430fda371b1f. İlk precommand driver KeyError ayrı başarısız hazırlıktır. Ordinary9 fixture2:9/1.101sn PASS/özgün owner0/reaped/1.1660061669535935sn; peerc3acfa3ac563a1ad8f91bac982bc29ad3805bdeb59e6fa0605792e509da8ec9d. Fixture1 setup/missing-script hatası testlerden önceydi; source kusuru veya testFAIL değildir.
+
+Lifecycle27:27/0.081sn PASS, peer7cadf3e0bfaaf1a2c08c52d36bb906cd47bd2c4cacd0ad81b01b8049ae2b1d85. Aynı lifecycle27+PG18’i seçen preflight45:45/0.153sn PASS/özgün owner0/reaped/0.27195924997795373sn; peerbcf933e37f25472a49d419ab9415a93e0e89fbe0ce796361a1a17765a216876a. Ordinary9 nested45’i yeniden toplamlatmaz;45/27/18 native veya yeni Cargo sahibi değildir.
+
+Standalone PG18:18/0.051sn PASS, peera6268fd4a1e08e23859d97f8eddf3f02c646f55e638c12da9fcd26f4f37cfcf4. Fake command/readiness/SIGINT/FD/uncertainty modeli; gerçek PG/native yürütümü değildir.
+
+Kaynak/test/belge aynı atomik dilimdedir. Son beş kaynak pininin tam envanteri:
+
+| Kaynak/test dosyası | SHA-256 | Bayt |
+| --- | --- | ---: |
+| `scripts/tests/effect-dispatcher-native-test.py` | `c4a91293f32d8f7463a922f15928c70cd4e058d3e0ca7a922966774f8c1bcf1f` | 46884 |
+| `scripts/tests/effect-dispatcher-test.py` | `3a95add8341e83b934874cab497f64589fc2c2ca99debaa2fb4c9fdcfd7cd0f5` | 11846 |
+| `scripts/tests/effect-pg-owner.py` | `37e72f521260f5dc039840bd413efa405164d0a86ea5601e4c5abfd820e0611e` | 21768 |
+| `scripts/tests/effect-pg-owner-preflight-test.py` | `922d58f149c5bce69d9ef66c6523a61689b0c1c7ba842ae84becbbb826f51cfa` | 41082 |
+| `compiler/tests/native_effect_consumer_testi.rs` | `8e8d3d23016dfefe1d108617602ede6fc920ec4d2d4601a5c0c16dbcf0024fa9` | 4482 |
+
+Rust8e8d output tasarımı45fed bağımsız incelemesine bağlıdır; rootaudit5a788 format/check0-empty ve byteexact sonucunu kaydeder, ayrı formatter raw/owner makbuzu sunulmadığından bu sınırlı root attestation’dır. Prospective source union358/175 için k311-source-pins-DRAFT-1 manifesti türetildi; bu taslak pin envanteri source15/temiz kaynak/native/final kabulü değildir ve frozen değildir.14role içindeki docs/native-effect-consumer.md ürün komutları/semantik değişmediği için kaynak-pinli olarak korunur.
+
+Tam kaynak15/temiz kaynak ve bağımsız sourcepeer; aynı SHA’da özgün dış owner ile native11/60need/normalPG/readiness/retained tüm kaynak cleanup/public proof; ardından exact belge overlay’inde final11 ve temiz kapanış kaydı zorunludur. Native/final kabulü açık; K311/GB120 düşük-açık kalır. K306–K310 dar kapanışları kendi exact kaynaklarında, ilk başarısız denemeler ve tarihsel UNVERIFIED sınırlar yerinde kalır. Effect şu an tek açık PG tüketicisidir; ancak dar effect kapanışı sonrasında bu beş-harness PG kuyruğu tamamlanır.39 statü korunur; P09/P13/P20/P23/P36 kısmi, P37 sürekli, GB046/109 açık. Genel P09/ürün/provider/harici proje/insan/platform, RC/soak/IDE ve C1/K288-P33/K293 ret sınırları değişmez.
+
 > **Güncel durum:** K306/GB115,K307/GB116,K308/GB117 ve K309/GB118 dar kapanışları kendi exact kaynaklarında korunur. K310/GB119 dar kapsamda kapalı; Exact kaynak 1130569460203049374e16146a955e208da9dd16 tam15/temiz commit ve özgün owner makbuzlarıyla doğrulandı. Aynı exact kaynakta metrics8/29 require ve iki ayrı ignored Cargo sahibi frozen kabulü; özgün PG/readiness/FD/cleanup ve beş direct worker/two alias2 doğrulandı.
 > **Kalan yerel adım:** Yalnız gerçek metrics kapanışından sonra effect tek açık PG tüketicisi; diğer teknik/ürün/insan/sağlayıcı/platform/dış girdiler korunur.39iş tamamlanmış sayılmaz.
 > **Kapanış kaydı:** Bu dar kapanış yalnız exact belge overlay’inde gerçek tam final11 kabulü ve onu kaydeden temiz kapanış commit’inin kendi özgün dış owner/public makbuzlarıyla geçerlidir. Her gerçek kabul kendi exact başarılı deneme kayıtları ve hash’leriyle izlenir; başarısız önceki deneme kapanış kanıtı değildir. Bu belgeler kendi kapanış commit SHA’sını üretmez; dış makbuzlar izler.
