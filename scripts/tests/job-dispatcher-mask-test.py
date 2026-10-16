@@ -31,5 +31,17 @@ class MaskedArguments(unittest.TestCase):
         self.check(['--unknown-' + CANARY])
 
 
+class JobLifecycleContracts(unittest.TestCase):
+    def test_child_free_owner_preparation(self):
+        script = Path(__file__).resolve().with_name('job-pg-owner-preflight-test.py')
+        result = subprocess.run([sys.executable, '-I', '-B', str(script)],
+                                capture_output=True, timeout=30)
+        self.assertEqual(result.returncode, 0, result.stderr.decode(errors='replace'))
+        self.assertEqual(result.stdout, b'')
+        report = result.stderr.decode()
+        self.assertIn('\nRan 44 tests in ', report)
+        self.assertTrue(report.rstrip().endswith('\nOK'))
+
+
 if __name__ == '__main__':
     unittest.main()
