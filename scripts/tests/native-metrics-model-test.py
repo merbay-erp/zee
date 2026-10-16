@@ -87,5 +87,15 @@ class Model(unittest.TestCase):
             r,w=os.pipe();c.attach(key,r);os.write(w,record(row=[MAX]*22));c.collect();c.finish(key);os.close(w)
         self.assertEqual(c.snapshot()['native_request'],[MAX]*22)
 
+    def test_metrics_owned_pg_and_lifecycle_preflight(self):
+        import subprocess,sys
+        path=Path(__file__).resolve().with_name('metrics-pg-owner-preflight-test.py')
+        result=subprocess.run([sys.executable,'-I','-B',str(path)],capture_output=True,timeout=30)
+        report=result.stderr.decode()
+        self.assertEqual(result.returncode,0,report)
+        self.assertIn('\nRan 52 tests in ',report)
+        self.assertTrue(report.rstrip().endswith('\nOK'),report)
+        self.assertEqual(result.stdout,b'')
+
 
 if __name__=='__main__':unittest.main()
