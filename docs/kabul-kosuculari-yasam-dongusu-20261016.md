@@ -1,9 +1,11 @@
 # K-299 — Kabul koşucularının iptal ve kapanış sınırı
 
-16 Ekim 2026. **AÇIK: stdlib PDF9/service10 geçti; yeni temiz kaynakta native
-PDF9/service2 ve ortak kaynak/belge kapıları bekleniyor.** Bu kayıt kaynak
-commitinden önceki uygulanmış adayın durumudur; henüz bir K-299 commit SHA'sı
-veya finalclean kabulü ileri sürmez. [Backlog](oncelikli-backlog.md),
+16 Ekim 2026. **AÇIK: K-299 kaynak `90fe778e86b9de28046f0f7bd77b47df138a2212` üzerinde
+ilk birleşik native kabul başarısızdır. PDF9 ve bağımsız PDF incelemesi ayrı
+geçti; service-fault, iç kampanya başlamadan kanonik depo yolu kontrolünde
+reddedildi.** Rust test wrapper kökünün kanonikleştirilmesi takip adayındadır;
+yeni kaynak kimliği ve bu kaynakta ortak kapılar/native yeniden kabul henüz
+yoktur. GB-111 düşük/açık kalır. [Backlog](oncelikli-backlog.md),
 [GB-111](guvenlik-bulgulari-v1.tsv), [ADR-141](../adr/141-imzali-pdf-stdio-host.md)
 ve [ADR-150](../adr/150-native-worker-fault-ve-kontrollu-resolver.md) birlikte izler.
 
@@ -74,6 +76,44 @@ yollardadır. Aşağıdaki aday dosya hashleri belge hazırlığında salt okunu
 | `scripts/tests/pdf-plugin-test.py` | `3e0bb17f50b7ea979f5d78353c5c0169cb554f71e2f7ebfeca3f442aa16452a0` |
 | `scripts/tests/service-fault-test.py` | `75b333fa4c6f6af3c42d234965a6db585d7239bba6d7e7318606f38d5b480fbe` |
 | `compiler/tests/pdf_plugin_testi.rs` | `796c12e0908e678e4abae813081eeb70eedd1d0da14e61826d0a2ce09d64c18f` |
+
+## İlk C native kabulünde kanonik depo yolu reddi
+
+`90fe778e86b9de28046f0f7bd77b47df138a2212` kaynağında native1 kampanyasının
+PDF Cargo seçicisi ve dokuz iç vakası geçti; bağımsız PDF incelemesi de üç
+sayfa, gömülü font ve bir görseli doğruladı. Bu dar PDF sonucu birleşik
+kampanyanın geçtiği anlamına gelmez. Service-fault Cargo seçicisi exit101 ile
+kaldı; libtest bölümünün süresi0,04 saniye, Cargo komutunun toplam süresi
+0,629197 saniyedir. Service iç proof dosyası oluşmadı; iki worker/fault vakası
+çalıştırılmış veya başarısız worker vakaları olarak sayılmaz.
+
+Rust wrapper'ın `CARGO_MANIFEST_DIR.join("..")` sonucu `compiler/..` bileşenini
+taşıyordu. Python Campaign ilk kurulumda `p.resolve() == p` koşulunu zorunlu
+tutar; wrapper'ın bu kanonik olmayan `--repo` değeri iç hazırlıktan önce
+reddedilir. Bu bulgu üç saniyelik worker hazırlık sınırı veya timeout değildir.
+Dar takip adayı `compiler/tests/service_fault_testi.rs` içindeki `root()`
+yolunu kanonikleştirir; Python kabul sınırı gevşetilmez. `compiler/src`,
+worker/host davranışı, Cargo owner sayısı ve native iki-vaka oracle'ı değişmez.
+
+Top proof `failed`, özgün dış controller observed_exit=exit=2 ve reaped=true
+olarak korunur. `source_end_clean=false`, başarı yolundaki son kaynak kontrolüne
+ulaşılmadığını gösterir; tek başına depo kirlenmesi gözlemi değildir. PDF
+başarısı C kimliğinde kalır; takip kaynağına devralınmaz. İlk996/2/25 ve
+ikinci997/1/25 matris başarısızlıkları, sonra C adayında geçen998/0/25 ve
+`--surekli` güvenlik kontrolü ayrı tarihsel kayıtlardır. Bunlar henüz olmayan
+takip kaynağında kapı veya native kabul sayılmaz. GB-111 kapanışı yeni temiz
+source/tree, gerekli ortak kapılar ve native9/2 kabul zincirini bekler.
+
+| Dış gözlem kaydı | Bayt | SHA-256 |
+| --- | ---: | --- |
+| `/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k299-native-1/PROOF.json` | 37858 | `3aaacce35041bc77132307459fe7ca01d2c5f3116998ed881888d998a9b2b7ae` |
+| `/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k299-native-controller-1.json` | 731 | `b623c6a5269d7b1e04d1ac5b28158e566e4fc1e0699440d71856b41ad93cf717` |
+| `/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k299-native-1/pdf-native/proof.json` | 3504 | `e7adea437a5671027c282fafee20db2151e46a3e6ef5d9cce653bce078660fa8` |
+| `/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k299-native-1/logs/service-fault-testi.stderr.raw` | 545 | `0616b7815322161d9cabd0b873eff1c0cda77827ff209cea6e9a810cfd2cbea7` |
+| `/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k299-native-1/logs/service-fault-testi.stdout.raw` | 152582 | `a54da2189781a5b362ef732ff72664c0bafad11d5b816fe903c8d73cc3729379` |
+| `/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k299-native-1/logs/pdf-independent-inspection.stdout.raw` | 490 | `d9a81a1961bd371451ffa74717982719ac76a23524799cbcb2087f98a9c07863` |
+
+Ham loglar dış kanıtta kalır; bu bölüm anahtar baytı/hash’i veya büyük PDF/ikili kopyalamaz.
 
 ## Açık yeniden kabul ve yürütme sınırı
 

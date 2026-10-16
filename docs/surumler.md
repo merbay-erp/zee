@@ -16,8 +16,10 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 - **Kabul koşucularının iptal temizliği (K-299, GB-111 açık):** PDF/service
   native test betiklerinde erken sinyal, yarım keygen/fixture ve nested owner
-  kapanışı ele alındı. Stdlib PDF9/service10 geçti; yeni exact native9/2 ve ortak
-  kapılar bekleniyor. Üretim host/compiler ve kullanıcı kaynakları değişmedi;
+  kapanışı ele alındı. Stdlib PDF9/service10 geçti. İlk C native koşusunda
+  PDF9 ayrı geçti; service-fault kanonik depo yolu reddi aldı, birleşik koşu
+  başarısız kaldı. Rust test wrapper kökü için dar kanonikleştirme ve yeni
+  kaynakta kapılar/native9/2 kabulü bekleniyor. Üretim host/compiler ve kullanıcı kaynakları değişmedi;
   göç yoktur. [Açık kabul kaydı](kabul-kosuculari-yasam-dongusu-20261016.md).
 
 - **LSP açık belge maliyeti (K-298, ADR-145; kabul bekliyor):** aynı bildirimde

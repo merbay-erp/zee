@@ -79,3 +79,12 @@ ve worker handle'ları dışında süreç aranmaz. Üretim Supervisor/native DNS
 davranışı değişmez. Üç yeni kısa vaka ile hazırlık10 geçti; yeni native2 ve ortak
 kapılar beklenir. [GB-111 ve kaynak/koşu kaydı](kabul-kosuculari-yasam-dongusu-20261016.md)
 PDF9/service10 hazırlığını native9/2 kabulünden ayrı izler.
+
+
+İlk C native1 denemesinde Rust wrapper’ın `compiler/..` depo yolu Campaign
+kanonik yol koşulunu sağlamadı; service iç proof oluşmadan Cargo seçicisi
+kaldı (libtest0,04 saniye, Cargo komutu0,629197 saniye). Üç saniyelik worker
+hazırlık sınırı veya timeout değildir. Dar takip, Rust test wrapper `root()`
+kanonikleştirmesidir; yeni Cargo owner veya worker davranışı eklenmez.
+Birleşik native1 failed kalır; PDF9 ayrı C başarısı takip kaynağına
+taşınmaz. Yeni temiz kaynakta ortak kapılar/native2 kabulü henüz yoktur.
