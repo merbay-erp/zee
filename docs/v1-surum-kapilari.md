@@ -969,3 +969,11 @@ taşınmadı, yeni Cargo sahibi yoktur. K-300'ün tam faz998/0/25 sonucu bu
 çalışmaya aktarılmaz. Son 11 belge/güvenlik kapısının geçmesi kayıt commit'inin
 önkoşuludur. Üretim davranışı ve genel P34/native DNS/tam fault/drain/yayın
 sınırları değişmez. [Worker rehberi](worker-supervisor.md).
+
+## K-302 — PG/TLS/göç yerel kabulü
+
+Temiz `e6322dbc0424a54f777a7b14f65d78712cfced1a` üzerinde TLS8/göç1 geçti; mevcut 25 explicit ignored
+vakanın dokuzu bu kaynakta ayrıca doğrulandı. Tam faz/ASan/soak sonucu yeni
+kaynağa aktarılmaz; uzak CI, ürün/provider ve P36 kalan kapsamı açık.
+Son belge/güvenlik kapısı kayıt commit’inin önkoşuludur; sonuç ortak raporun dış makbuzundan izlenir.
+[Makbuz ve kapsam](urunlesme-k298-kabul-20261016.md).
