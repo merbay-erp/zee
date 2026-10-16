@@ -18,6 +18,10 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   sonucu, hazırlık22/kaynak kapısı15 ve temiz direct native4 ile doğrulandı.
   Kullanıcı göçü yoktur; [kit ve ayrı köprü kabulü sınırı](owned-web-test-kiti.md).
 
+- **K-305 kaynak hazırlığı:** negatif bridge kabul koşucusunda erken SIGTERM
+  ve owned cleanup sonucu; GB-114 ve temiz native kabulü açık. Kullanıcı
+  kaynağı göçü yoktur; [köprü rehberi](dene-native-web-koprusu.md).
+
 - **K-303 dar pool kabulü:** temiz `47812bf` üzerinde mevcut tek Cargo sahibi
   1/0/0, 16 metrik anlık görüntüsü, tek timeout ve normal PG kapanışı geçti.
   Üretim davranışı/test sayısı değişmez; K-302’nin `e6322db` üzerindeki

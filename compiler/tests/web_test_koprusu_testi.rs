@@ -21,6 +21,22 @@ fn web_test_koprusu_eksik_yanlis_komut_ve_duplicate_profili_yurutmez() {
         assert!(out.stdout.is_empty());
         assert!(!String::from_utf8_lossy(&out.stderr).contains("PRIVATE_CANARY"));
     }
+    #[cfg(unix)]
+    {
+        let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .parent()
+            .unwrap();
+        let result = std::process::Command::new("python3")
+            .args(["-I", "-B"])
+            .arg(root.join("scripts/tests/web-test-bridge-preflight-test.py"))
+            .current_dir(root)
+            .output()
+            .expect("web bridge lifecycle preparation");
+        let report = String::from_utf8_lossy(&result.stderr);
+        assert!(result.status.success(), "{report}");
+        assert!(report.contains("\nRan 15 tests in ") && report.trim_end().ends_with("\nOK"));
+        assert!(result.stdout.is_empty());
+    }
 }
 
 #[test]

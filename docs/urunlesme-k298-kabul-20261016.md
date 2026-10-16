@@ -69,10 +69,11 @@ ayrı dış süreç makbuzu bulunamadı; bu dar lifecycle alanı **unverified**.
 altındaki `K298-K299-FINAL-DOCS2-AUDIT.json` dosyasındadır.
 
 K-302 TLS8/göç1, K-303 havuz1 ve K-304 direct web4 dar kabulleri kendi
-exact kaynaklarında tamamlandı. Sonraki yerel işler özel Linux ortamının
-yeniden kurulması, kalan PG tüketicilerinin süreç sahipliği hazırlığı ve
-ayrı native kabulleridir. Bunların hepsi kullanıcı girdisi engeli değildir;
-fiziksel platform U2 ve gerçek ürün kabulü ayrıca açık kalır.
+exact kaynaklarında tamamlandı. K-305 ayrı köprü negatiflerinin iptal ve
+makbuz doğruluğu hazırlığıdır; kaynak kapısı ve temiz native kabulü bekler.
+Özel Linux ortamının yeniden kurulması ve kalan PG tüketicilerinin süreç
+sahipliği hazırlığı da yerel iştir. Fiziksel platform U2 ve gerçek ürün
+kabulü ayrıca açık kalır.
 
 ## K-301 — Worker testinde gerçek giriş ve tam yanıt kanıtı
 
@@ -277,14 +278,55 @@ bu kampanyada çalışmadı. Native alt vakalar Cargo toplamına eklenmez.
 Ayrı `dene`/source-coverage sahibi, TLS/göç/havuz, gerçek ürün/platform ve
 önceki RC/soak/IDE kabulleri bu sonuca taşınmaz. P22/P36 kısmi kalır.
 
-Son 11 belge/güvenlik kapısı kayıt commit'inin önkoşuludur; sonuç
-`E/k304-final-gates-1/PROOF.json` / `k304-final-gates-controller-1.json`,
-kayıt `E/k304-final-commit-1.json` ile izlenir.
+Son **11/11 belge/güvenlik kapısı 67,041 sn içinde geçti**; özgün dış süreç
+exit0/reaped. 15 belge, `95236cbe2d34f7497980ea3292b1f8451245a767`
+commit'iyle (tree `5bce8917431491a2ee0276f7ef69771e5ec94418`) kaydedildi;
+205 kaynak pini değişmedi. Bağımsız son inceleme de geçti.
+
+| Son kayıt (E altında) | SHA-256 |
+| --- | --- |
+| `k304-final-gates-1/PROOF.json` | `3329e1dde366ba000c05d6c97f24beb6bd870ef87bb79737170b7c1fda4aa5a0` |
+| `k304-final-gates-controller-1.json` | `fd00745d7344393a17681ce872646e225e346f5051d32bec82c5f059cb91041b` |
+| `k304-final-commit-1.json` | `89c2258d3707ce94ddedf3d29c54e6e84a961d71d02fabeb0f7290a72eeae993` |
+| `k304-final-commit-controller-1.json` | `fc437c54f33492ff1508c3dac36ffbc5a1e84a01b887b41889606b417d65b514` |
+| `k304-final-audits-1/K304-FINAL-CLOSURE-INDEPENDENT-REVIEW.json` | `750863c0ad63ce71c5aac556cff4d0df582bb4fb2ddcf511f2e5d66e90b7a613` |
+
 ADR-129/144, indeks, kit/köprü rehberleri, README/backlog/master/sürümler,
 v1 kapıları, güvenlik/kanıt haritası ve 39-plan güncellendi. Faz açıklaması
 ve üretilen faz belgesi yenilendi; Cargo sahipliği aynı. Üretim Rust,
 grammar/API/tanı/katman/bağımlılık, sabit performans iş yükü, spec/RFC,
 hata kataloğu, RC/soak/performans tarihçesi ve kurulum sözleşmesi değişmedi.
+
+## K-305 — Ayrı köprü negatiflerinde iptal ve makbuz doğruluğu
+
+**AÇIK — kaynak hazırlığı; GB-114 açık.** Mevcut `dene` kabulünün altı
+negatifini yürüten Python koşucusu, özgün Popen sahibini kullanmasına rağmen
+SIGTERM handler kurmuyordu. Varsayılan TERM, ayrı session'daki çocuk için
+finally cleanup yolunu atlayabilir. Bu, kaynakta gösterilen sahiplik riskidir;
+gerçek kaçak süreç veya üretim compiler/HTTP/PG açığı gözlendiği iddia edilmez.
+Selector hazırlığının iç try dışında olması tek başına kaçak kanıtı değildir:
+normal exception dış main finally kapanışına ulaşır.
+
+Dar düzeltme erken flag-only iptal, yeni çocuk başlatmadan önce kontrol,
+özgün child/selector kapanışı ve son makbuzda başarısızlığın korunmasını
+kapsar. Mevcut altı admission oracle ve CLI/coverage davranışı korunur.
+Kontrollü hazırlıkta 15 Python metodu ve 27 senaryo geçti; eski sürümde 17 yapısal eksik, iki cleanup hatasında eksik makbuz ve bir terminal süre aşımında yanlış passed ayrıldı. Özgün dış owner eski exit1 ve yeni exit0 ile reaped; gerçek çocuk, OS sinyal teslimi, PG veya ağ kabulü değildir
+Hazırlık kaydı `E/k305-preparation-1/K305-PREPARATION.json`, SHA-256
+`e445af8d0a82448488bd72d47e1360bba990751db0354f91061a93603c4918b1`. Kontrollü mock/handler hazırlığı gerçek OS sinyal,
+PG/HTTP veya native köprü kabulü değildir.
+
+Mevcut iki Cargo sahibi ve CLI birincil fazı korunur; Unix hazırlığı mevcut
+normal admission sahibine eklenir. Python alt vakaları Cargo toplamına
+katılmaz. Kaynak kapıları/tam faz/Clippy ile yeni temiz exact kaynakta unit +
+source-coverage + dört native vaka + altı admission negatifi ayrıca
+çalıştırılıp son belge/güvenlik kapıları geçmeden K-305/GB-114 kapanmaz. S3 veya K-304 direct kit kabulü bu ayrı
+sahibe taşınmaz; P22/P36 ve gerçek ürün/platform kapsamı açıktır.
+
+Etki incelemesi: ADR-144, köprü rehberi, indeks/kanıt haritası, GB-114,
+backlog/master/sürümler/README/v1/39-plan ve faz kaynak/açıklaması birlikte
+incelendi. Production Rust, Supervisor, gömülü kit, grammar/API/tanı/spec/RFC,
+katman/bağımlılık, semantic regresyon, performans iş yükü ve kurulum sözleşmesi
+değişmez. RC/soak/IDE ve performans tarihçeleri yeni kaynağa aktarılmaz.
 
 ## Sonuç özeti
 
@@ -301,6 +343,7 @@ hata kataloğu, RC/soak/performans tarihçesi ve kurulum sözleşmesi değişmed
 | K-302 PG/TLS/göç | Temiz `e6322db` üzerinde TLS8/göç1, sıfır başarısız/atlanan; üç özel sunucunun normal kapanışı ve kaynak eşliği doğrulandı. |
 | K-303 PG havuzu | Temiz `47812bf` üzerinde tek mevcut Cargo vakası ve 16 metrik kaydı geçti; normal PG kapanışı ve kaynak eşliği doğrulandı. |
 | K-304 owned web | Hazırlık22, kaynak15 kapı ve temiz `abdc5cf` direct native4/19HTTP/6SQL geçti; GB-113 dar kapsamda kapalı. |
+| K-305 ayrı köprü | Negatif harness iptal/makbuz hazırlığı; kaynak kapısı ve temiz native kabulü bekler, GB-114 açık. |
 | Genel ürünleşme/V1 | Bütün39 madde kapanmadı; aşağıdaki dış girdiler, takvim ve teknik kapsam açık. |
 
 Compiler bakım commit'i `bb4ed951ce5e8e9c1c21d2c58f75cd4ef51d6c59`, ağaç
@@ -826,7 +869,7 @@ bilgidir; bunlar yeniden karar talebi değildir.
 | P19 — LSP/editör | **Kısmi; K-298 dar stdio/RSS/RC/IDE kabulü kapandı.** S UTF-16 işlev kanıtı da var. | Artımlı HIR/tür, UI/gerçek ürün gecikmesi, SLA ve Windows/yayın açık. | Teknik kapsamın tümü girdi engeli değil; ürün U1, platform U2. |
 | P20 — SQL modülleri | Kısmi; S3 native modül kabulü tarihsel. | Gerçek ürün kullanımı açık; DB+FS atomikliği ve genel extension point vaadi yok. | U1 + U5. |
 | P21 — TR–EN/bileşen | Kısmi; S3 HTTP/Zee kabulü tarihsel. | Gerçek sayfa/ürün benimsenmesi açık; yerleşik çeviri kapasitesi eklenmedi. | U1 + U5. |
-| P22 — Kaynak kapsamı/test köprüsü | Kısmi; K-304 temiz `abdc5cf` direct native4 geçti, GB-113 dar kapsamda kapalı. | Ayrı dene/source-coverage ve gerçek ürün kabulü açık; fresh DB genel HTTP rollback garantisi değildir. | Yerel devam için yok; ürün için U1 + U5. |
+| P22 — Kaynak kapsamı/test köprüsü | Kısmi; K-304 direct native4 ayrı kapalı. K-305 negatif harness hazırlığı; GB-114 açık. | Yeni kaynak kapısı ve temiz dene/source-coverage kabulü bekler; gerçek ürün kabulü ayrıca açık. | Yerel devam için yok; ürün için U1 + U5. |
 | P23 — İçerik/starter | Kısmi; S3 PG/HTTPS kabulü tarihsel. | Gerçek starter ürünü, insan, üretim ve platform kabulü açık. | U1 + U3 + U5; platform U2. |
 | P24 — Destek politikası | Sınırlı pilot belgesi kabul edilmiş. | Güvenilir yayın imzası, gerçek yayın ve bildirim süreçleri ayrı. | Zamanı gelince U6. |
 | P25 — Sır/credential yaşam döngüsü | Kısmi; önceki dar owned profiller kanıtlı. | Gerçek ürün/sağlayıcı, Windows ve tam sır yaşam döngüsü kabulü açık. | U1 + U5; platform U2. |
