@@ -2001,3 +2001,25 @@ kanıtı tazelendi; P36'nın kalan vakaları, uzak CI ve gerçek ürün kabulü
 ayrı kalır. Son belge/güvenlik kapısı kayıt commit’inin önkoşuludur; sonuç ortak raporun dış makbuzundan izlenir.
 [Sonuç ve kaynak](urunlesme-k298-kabul-20261016.md),
 [teknik sınır](postgresql-tls-ci.md).
+
+## K-303 — Mevcut PostgreSQL pool sahibinin dar kabulü
+
+**Dar pool kabulü geçti; kayıt commit’i son 11 belge/güvenlik kapısına bağlı.**
+Temiz `47812bfe8312d5a5a439931bf49a079a7b0b22db` üzerinde mevcut pool
+Cargo sahibi 1/0/0 verdi. Ham 16 metrik anlık görüntüsü dört kira, beşinci
+bekleyen, iade/toparlanma ve tek timeout sayacını doğruladı. PG16.15/TLS1.2
+kümesi normal SIGINT/exit0/reap ile kapandı; özel geçici kök kaldırıldı.
+Test eklenmedi/taşınmadı: mevcut 25 ignored sahibin yalnız biri bu kaynakta
+ayrıca yürütüldü. K-302’nin `e6322db` üzerindeki dokuz sahibi bu sayıya
+eklenmez; native metrik tüketicisinin sekiz iç vakası ve genel P36 açık
+kapsamı korunur. [Kaynak ve makbuz](urunlesme-k298-kabul-20261016.md),
+[teknik sınır](postgresql-tls-ci.md).
+
+## K-304 — Owned web kabulünde geç iptal sonucu
+
+**AÇIK; GB-113 düşük önem.** `owned-web-tests.py` son başarı ataması ile
+final cleanup/proof yayımı arasında iptal ve deadline bilgisini yeniden
+denetlemiyor. Dar düzeltme, eski/yeni kontrollü karşı örnek, mevcut hazırlık
+grubu ve temiz kaynakta dört native senaryonun yeniden kabulünü gerektirir.
+Üretim davranışı değişmez; yeni kabul çalıştırılmadan kapalı sayılmaz.
+[Kapsam](owned-web-test-kiti.md), [karar](../adr/129-owned-native-web-test-kiti.md).

@@ -14,6 +14,13 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **K-303 dar pool kabulü:** temiz `47812bf` üzerinde mevcut tek Cargo sahibi
+  1/0/0, 16 metrik anlık görüntüsü, tek timeout ve normal PG kapanışı geçti.
+  Üretim davranışı/test sayısı değişmez; K-302’nin `e6322db` üzerindeki
+  TLS8/göç1 sonucu ayrı kalır. Native metrik tüketicisinin sekiz vakası
+  burada yürütülmedi. Son 11 belge/güvenlik kapısı kayıt commit’inin
+  önkoşuludur; [gerçek kapsam ve makbuzlar](urunlesme-k298-kabul-20261016.md).
+
 - **K-302 yerel PG kabulü:** temiz `e6322db` için TLS8/göç1 geçti.
   Production/göç davranışı değişmez; [kaynak ve açık sınır](urunlesme-k298-kabul-20261016.md).
 

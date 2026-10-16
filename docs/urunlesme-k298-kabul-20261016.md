@@ -1,6 +1,6 @@
 # Ürünleşme — yerel kabul ve açık teknik işler raporu
 
-> 16 Ekim 2026. K-298–K-302 dar yerel kabul kapsamları tamamlandı.
+> 16 Ekim 2026. K-298–K-303 dar yerel kabul kapsamları tamamlandı.
 > Genel ürünleşme/V1 ve yayın kapıları açık; belge takip commit’i aşağıdaki dış kapı makbuzlarına bağlıdır.
 
 ## K-300 — Karma sürüm koşucusu: dar kabul tamamlandı
@@ -64,10 +64,11 @@ ile kaydedilmişti: kendi son belge/güvenlik kapısı 11/11 ve özgün controll
 exit0/reaped. Bu tarihsel kapı K-300 belgelerinin yerine geçmez.
 
 K-302 ile özel PostgreSQL16.15 ortamı yeniden kuruldu ve TLS8/göç1
-kabulü tamamlandı. Sonraki yerel inceleme, aynı ortamda mevcut havuz ve
-uygulama kabul testleridir; ardından özel Linux ortamının yeniden kurulması
-gelir. Bunlar kullanıcı cihazı/verisi bekleme gerekçesi değildir; fiziksel
-platform U2 ayrıdır.
+kabulü tamamlandı. K-303 mevcut havuz kabulünü de kapattı. Sonraki yerel
+öncelik, web/SQL koşucusunun kapanışta geç iptali başarıya çevirebilen
+dar doğruluk açığını gidermek ve mevcut dört web senaryosunu çalıştırmaktır.
+Özel Linux ortamının yeniden kurulması da yerel iştir; fiziksel platform
+U2 kabulünün yerine geçmez.
 
 ## K-301 — Worker testinde gerçek giriş ve tam yanıt kanıtı
 
@@ -160,10 +161,12 @@ Production, test kaynakları, grammar ve API değişmedi.
 | `k302-pg-accept-1/PROOF.json` | `47f27bb589efb84304913b417ae89f2662e7a7d0469e343785c3509fd93e2050` |
 | `k302-accept-controller-1.json` | `2beb111c485c5ceb4337c96cb655bc3494c3911eeeebbb684a18f65e731374bb` |
 
-Son belge/güvenlik kapısı kayıt commit'inin önkoşuludur; gerçek sonuç
-`E/k302-gates-1/PROOF.json` ve özgün `k302-gates-controller-1.json`, kayıt
-ise `E/k302-commit-1.json` üzerinden izlenir. Bu belgeler kendi sonraki
-commit kimliğini veya henüz çalışmamış kapı başarısını ileri sürmez.
+Son belge/güvenlik kapısı **11/11 geçti** (69,865 sn); özgün controller
+exit0/reaped. Dokuz belge `47812bfe8312d5a5a439931bf49a079a7b0b22db`
+commit'iyle temiz kaydedildi. `E/k302-gates-1/PROOF.json` SHA-256
+`5157f531e2518ac6305422ccb53ba2eb4af17f6488c72ca67f6fb18888ff5a5d`;
+`E/k302-commit-1.json` SHA-256
+`4d94e63ea38967df1e42817f1204d0509e0c22dc1a0186fcdec3176fdc14a715`.
 
 Belge etki incelemesi: README, master plan, backlog, sürüm kapıları,
 sürüm notları, PG rehberi, kanıt haritası ve ürünleşme planı güncellendi.
@@ -171,6 +174,43 @@ Normatif davranış değişmediğinden spec/RFC/ADR ve indeksleri, tanı katalo�
 compiler/core-freeze/regression kayıtları, katman grafiği, test sayısı/faz
 sahipliği değişmez. Performans iş yükü/ADR-045/049 ve ölçüm tarihçesi,
 RC/soak tarihçesi, artefakt ve kurulum sözleşmesi de değişmez.
+
+## K-303 — Mevcut PostgreSQL havuz kabulü
+
+**Dar yerel kabul tamamlandı.** Temiz kaynak
+`47812bfe8312d5a5a439931bf49a079a7b0b22db`, ağaç
+`b24875e03028e55dd60b73116e67501b536f4ddb` üzerinde mevcut tek havuz
+Cargo vakası **1 başarılı/0 başarısız/0 atlanan** ile geçti (4,38 sn).
+Tüm kabul sürücüsü 14,745 sn; özgün dış controller 15,063 sn, exit0/reaped.
+
+Ham çıktıdaki 16 metrik kaydı dört bağlantı doluyken beşinci isteğin
+beklediğini, bağlantı dönüşünü ve beklenen tek timeout sayacını doğruladı.
+Son durumda dört bağlantı boşta, kullanımda/bekleyen sıfırdı. Bu işlevsel
+kabul, performans eşiği veya genel yük/SLA ölçümü değildir.
+
+Tek özel PG16.15/TLS1.2 sunucusu özgün süreç sahibince normal SIGINT
+kapanışıyla exit0/reaped; geçici veri/anahtar kökü kaldırıldı. Başlangıç/son
+kaynak temiz ve eşit, 12 kaynak pini değişmedi. Ham loglar ve kapanış
+bağımsız olarak doğrulandı. Production veya test kaynakları değişmedi.
+
+| Özgün makbuz (E altında) | SHA-256 |
+| --- | --- |
+| `k303-pg-pool-accept-1/PROOF.json` | `07eb31f5bf6e226251e05bf8dcd4bdd7f9624c3ac0a7d70867b0a830493bf0f6` |
+| `k303-pool-controller-1.json` | `ec1a7eaa406040b53e713292dcd821b90a9b9eccaf98eb0b4bf272c33b4e6042` |
+| `k303-driver-evidence-1/K303-INDEPENDENT-REVIEW.json` | `07308869b2cd48a432a86906767602b45d2fedbc917a8c8ff5f148fe21092dcc` |
+
+Bu kampanya bu kaynakta **25 explicit ignored sahibinden yalnız birini**
+çalıştırdı; kalan24 bu kampanyada çalışmadı. K-302'nin C5 üzerindeki dokuz
+vakasıyla aynı kaynak toplamı yapılmaz. Native metrik tüketicisinin sekiz
+alt vakası, diğer PG tüketicileri, uzak CI/provider/COMMIT veya gerçek ürün
+kabulü çıkarılmaz; P13/P36 genel kapsamı kısmi kalır.
+
+Bu belge grubunun son 11 kapısı kayıt commit'inin önkoşuludur; gerçek sonuç
+`E/k303-gates-1/PROOF.json` / `k303-gates-controller-1.json`, kayıt
+`E/k303-commit-1.json` ile izlenir. Spec/RFC/ADR normları ve indeksleri,
+tanı kataloğu, compiler/core-freeze/regression kayıtları, katman grafiği,
+test sayısı/faz sahipliği, performans/RC/soak tarihçesi ve kurulum sözleşmesi
+incelendi; yalnız mevcut kabulün kaydı olduğundan değişmedi.
 
 ## Sonuç özeti
 
@@ -185,6 +225,7 @@ RC/soak tarihçesi, artefakt ve kurulum sözleşmesi de değişmez.
 | K-300 karma sürüm | Hazırlık13, kaynak kapıları13 (998/0/25) ve temiz `549dbe6` native9/160istek/dört dalga geçti; GB-112 dar kapsamda kapalı. |
 | K-301 worker test doğruluğu | Son fixture ile mevcut25 Python vaka/tek Cargo sahibi geçti; mock10/20 ve kaynak pinleri doğrulandı. İlk iki ret korundu. |
 | K-302 PG/TLS/göç | Temiz `e6322db` üzerinde TLS8/göç1, sıfır başarısız/atlanan; üç özel sunucunun normal kapanışı ve kaynak eşliği doğrulandı. |
+| K-303 PG havuzu | Temiz `47812bf` üzerinde tek mevcut Cargo vakası ve 16 metrik kaydı geçti; normal PG kapanışı ve kaynak eşliği doğrulandı. |
 | Genel ürünleşme/V1 | Bütün39 madde kapanmadı; aşağıdaki dış girdiler, takvim ve teknik kapsam açık. |
 
 Compiler bakım commit'i `bb4ed951ce5e8e9c1c21d2c58f75cd4ef51d6c59`, ağaç
@@ -692,7 +733,7 @@ bilgidir; bunlar yeniden karar talebi değildir.
 | P10 — SMTP/PG hata sınırları | Kısmi; S3 fault11 tarihsel. | Canlı sağlayıcı, gerçek katalog ve ürün entegrasyonu açık. | U1 + U5. |
 | P11 — PDF/FFI | Kısmi; temiz C2 PDF9 ve bağımsız incelemesi geçti, K-299 dar kapsamı kapandı. İlk C başarısızlığı korunur. | Gerçek katalog, genel FFI/sandbox ve yayın ayrı. | Ürün için U1 + U5. |
 | P12 — Göç/ürün betikleri | Kısmi; dar yerel göç/rollback kanıtı var. | Gerçek üründeki Python betiğinin kaldırılması ve göç kabulü açık. | U1 + U5. |
-| P13 — Sürekli HTTP servisi | Kısmi; S3 native HTTP kanıtı tarihsel. | Üretim/pilot benimsenmesi ve platform kabulü açık. | U1 + U5; platform için U2. |
+| P13 — Sürekli HTTP servisi | Kısmi; K-303 temiz `47812bf` havuz1 geçti, S3 HTTP kanıtı kendi kaynağında. | Üretim/pilot benimsenmesi ve platform kabulü açık. | U1 + U5; platform için U2. |
 | P14 — Karma sürüm geçişi | Kısmi; temiz K-300 `549dbe6` native9/dört dalga/160 istek geçti. | Genel SLA, DB şema devri ve gerçek ürün kabulü açık. | Ürün için U1 + U5; platform için U2. |
 | P15 — Parola/login | Kısmi; S3 parola/TLS kanıtı tarihsel. | Gerçek login, göç, sağlayıcı ve ürün kabulü açık. | U1 + U5. |
 | P16 — Form/Turnstile | Kısmi; hermetik form testleri mevcut. | Gerçek staging ve tam ürün kabulü açık. | U1 + U5. |
@@ -715,7 +756,7 @@ bilgidir; bunlar yeniden karar talebi değildir.
 | P33 — Güvenlik kanıt matrisi | **Kısmi; salt okunur matris mevcut.** | Koordineli reproducer reddi nedeniyle tam kapsam açık; istismar gözlenmiş denmiyor. | Ek izinle kapanmaz; aşağıdaki araç sınırı. |
 | P34 — Worker/fault | Kısmi; temiz C2 service2 ve K-299 dar bakım kabulü geçti. S3 ve başarısız ilk C kayıtları ayrı. | K-301 yerel test doğruluğu kapalı: worker25/tekCargo ve mock10/20 geçti. Native DNS, tam fault matrisi ve gerçek ürün benimsenmesi açık. | K-301 için yok; gerçek ürün için U1 + U5. |
 | P35 — Ergonomi/gramer | **Ertelendi; RFC aday.** | İnsan çalışması, tekrarlanan ürün ihtiyacı ve freeze kapısı olmadan yeni syntax yok. | U1 + U3; ayrıca P28. |
-| P36 — Test/ignored kapsamı | S/C2/K-300 sonuçları kendi kaynaklarında; K-302 temiz `e6322db` seçili9/25 geçti. | K-302 kampanyasında kalan16 ayrıca çalışmadı; farklı kaynakların sayıları birleştirilmez. | Yerel PG devamı için yok; diğer kabul kapsamına göre cihaz/ürün/servis girdisi gerekebilir. |
+| P36 — Test/ignored kapsamı | K-302 temiz `e6322db` seçili9/25; K-303 ayrı temiz `47812bf` havuz1/25 geçti. | K-303 kampanyasında kalan24 ayrıca çalışmadı; farklı kaynakların sayıları birleştirilmez. | Yerel PG devamı için yok; diğer kabul kapsamına göre cihaz/ürün/servis girdisi gerekebilir. |
 | P37 — Sürekli kalite kapıları | **Sürekli iş; tek seferde kapanmaz.** Bu dalganın dar kanıt/arşiv kapsamı hazır. | Her değişiklikte ilgili kapılar; belge takip commit’i gerçek dış kapı makbuzuna bağlıdır. | Yerel işler için yok; bağlı dış kapılar ayrı. |
 | P38 — Backend/WASM/self-hosting | **Ertelendi.** | Native WASM/backend/self-hosting gerçekleştirilmiş sayılmıyor; V1 ve ihtiyaç koşulları korunuyor. | Şimdi yok. |
 | P39 — Lisans/yayın kararı | Kısmi karar: sınırlı pilot seçildi, lisans bekletildi. | Mevcut marka/site korunur; public/yayın kararı henüz verilmedi. | Zamanı gelince **U6.** |

@@ -977,3 +977,15 @@ vakanın dokuzu bu kaynakta ayrıca doğrulandı. Tam faz/ASan/soak sonucu yeni
 kaynağa aktarılmaz; uzak CI, ürün/provider ve P36 kalan kapsamı açık.
 Son belge/güvenlik kapısı kayıt commit’inin önkoşuludur; sonuç ortak raporun dış makbuzundan izlenir.
 [Makbuz ve kapsam](urunlesme-k298-kabul-20261016.md).
+
+## K-303 — Tek pool sahibinin yerel kabulü
+
+Temiz `47812bfe8312d5a5a439931bf49a079a7b0b22db` üzerinde mevcut pool
+Cargo sahibi 1 passed / 0 failed / 0 ignored verdi; 16 ham metrik anlık
+görüntüsü, tek timeout sayacı ve normal PG SIGINT/exit0/reap doğrulandı.
+Özel geçici kök kaldırıldı; kaynak başlangıç/son kimliği ve 12 pin eşleşti.
+Mevcut 25 ignored vakanın yalnız biri bu kaynakta ayrıca yürütüldü; test
+sayısı değişmedi. K-302’nin C5 TLS8/göç1 kaydı ayrı kaynaktadır. Native
+metrik tüketicisinin sekiz vakası, genel P36 ve uzak CI/ürün/provider
+kapanışı ileri sürülmez. Son 11 belge/güvenlik kapısının geçmesi kayıt
+commit’inin önkoşuludur; [gerçek sonuç ve kapsam](urunlesme-k298-kabul-20261016.md).

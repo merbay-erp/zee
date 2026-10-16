@@ -148,3 +148,25 @@ korunur. Yayımlanan kaynak zaman damgaları korunan ikinci derleme geçti
 (19 komut, 97,178 saniye); yeni TLS/göç kabulü 35,622 saniyedir. Üç PG süreci
 normal exit0/reap ile kapandı ve geçici özel küme dizini kaldırıldı.
 Son belge/güvenlik kapısı kayıt commit’inin önkoşuludur; sonuç ortak raporun dış makbuzundan izlenir.
+
+## K-303 — Mevcut pool testi için sahipli TLS1.2 kabulü
+
+Temiz `47812bfe8312d5a5a439931bf49a079a7b0b22db` üzerinde
+`postgresql::havuz::testler::izole_pg_pool_metrikleri_wait_timeout_ve_donus_gercek_sinirlar`
+mevcut Cargo sahibi `--lib --exact --ignored --nocapture --test-threads=1`
+ile 1/0/0 geçti. Kanonik `ZEE_K257_FIXTURE_HEDEFI`, `ZEE_K257_FIXTURE_URL`
+ve `ZEE_K257_FIXTURE_URL_TLS_CA_PEM` yalnız yeni sahipli PG16.15/TLS1.2
+kümesine bağlandı. Ham stdout’taki 16 anlık görüntü dört kirayı, beşinci
+bekleyeni, iade/toparlanmayı ve tek timeout sayacını doğruladı; son durum
+`[4,4,0,0,6,1,2035960,8061650]` idi. Libtest 4,38 saniye, toplam kabul
+14,745 saniyedir; bu kayıt bir performans eşiği değildir.
+
+Foreground PG özgün Popen sahibinde kaldı; SIGINT, normal kapanış günlüğü,
+exit0 ve reap sonrasında geçici anahtar/veri kökü kaldırıldı. Başlangıç/son
+clean kaynak ve 12 pin eşleşti. Tam native-metrics tüketici koşucusu veya
+onun sekiz iç vakası çalıştırılmadı; kanonik pg_ctl yaşam döngüsü hakkında
+yeni kabul iddiası yoktur. K-302’nin C5 TLS8/göç1 sonucu kendi kaynağında
+kalır; bu C6 pool1 sonucu ile aynı kaynak toplamı yapılmaz. Üretim/test
+kodu ve mevcut 25 ignored vaka sayısı değişmedi. Son 11 belge/güvenlik
+kapısı kayıt commit’inin önkoşuludur; [ortak rapor](urunlesme-k298-kabul-20261016.md)
+gerçek kaynak, ham makbuz ve bağımsız inceleme bağlantılarını taşır.

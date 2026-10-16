@@ -115,3 +115,11 @@ aynı atomik entegrasyonda bağlanmalıdır.
 ## 15 Ekim 2026 — temiz S yerel kanıt güncellemesi
 
 S common içindeki dört gerçek native HTTP+fresh PostgreSQL vakası kabul edildi. [Son rapor](urunlesme-final-kabul-20261015.md) readonly observer ile COMMIT1/actionrollback0/freshcase0 ayrımını ve owned cleanup sınırını kaydeder. Source branch coverage ve gerçek ürün/P08 ayrıca açıktır.
+
+## K-304 — Açık finalization doğruluğu
+
+GB-113 düşük önemle açıktır: son başarı atamasından sonraki geçici dizin
+kapanışı, final cleanup ve proof yazımı sırasında iptal/deadline guardı
+eksiktir. Tarihsel native sonuçların kapsamı korunur; güncel kaynak için
+geç iptal davranışı düzeltilip olumlu/olumsuz test ve yeni native kabul
+yapılmadan bu sınır kapalı gösterilmez.

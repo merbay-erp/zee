@@ -20,6 +20,12 @@ kendi kaynaklarında kalır.
 K-302, temiz `e6322db` üzerinde mevcut TLS8/göç1 yerel kabulünü
 tazeledi; genel P31/P36 ve ürün/uzak CI sınırları [raporda](urunlesme-k298-kabul-20261016.md).
 
+K-303, temiz `47812bf` üzerinde mevcut pool sahibini 1/0/0 ve 16 metrik
+anlık görüntüsüyle doğruladı; tek timeout ve normal PG kapanışı geçti.
+K-302 farklı kaynaktadır; sonuçlar birleştirilmez, native metrik tüketicisinin
+sekiz vakası bu dilime dahil değildir. Son 11 belge/güvenlik kapısının
+geçmesi kayıt commit’inin önkoşuludur; [kapsam ve makbuzlar](urunlesme-k298-kabul-20261016.md).
+
 K-301 worker kesilme testinin dar doğruluk işi tamamlandı: V3 gerçek worker3
 koşusu tek Cargo sahibi 1/0/0, wrapper doğrulaması 25/0/0 ve özgün controller
 exit0/reap ile geçti. Normal `web-oturumu`/CSRF GET/çerez/form POST akışı ve
