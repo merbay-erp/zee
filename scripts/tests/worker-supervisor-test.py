@@ -137,7 +137,7 @@ class Running:
 
 
 class Fixture:
-    def __init__(self, native=False, mode="normal", ready=True, query="normal", extra=(), app_signal=False, credential=False):
+    def __init__(self, native=False, mode="normal", ready=True, query="normal", extra=(), app_signal=False, credential=False, inflight=False):
         self.temporary = tempfile.TemporaryDirectory(prefix="zee-supervisor-k246-")
         self.root = Path(self.temporary.name).resolve()
         self.project = self.root / "project"
@@ -163,7 +163,18 @@ class Fixture:
                 capabilities.append('dosya-yazma')
                 payload = json.dumps({'schema':'zee-worker-readiness-1','application_revision':REVISION,'ready':True},separators=(',',':'))
                 prefix += '"readiness.json" dosyasına '+json.dumps(payload)+' yaz\n'
-            self.source.write_text(prefix+'8080 kapısında sunucu başlat\n\nGET "/hazir" adresine istek geldiğinde\n    "ok" yanıtını gönder\n\nGET "/yavas" adresine istek geldiğinde\n    3 saniye bekle\n    "bitti" yanıtını gönder\n')
+            inflight_entry = ''
+            slow_method = 'GET'
+            csrf_route = ''
+            if inflight:
+                if 'dosya-yazma' not in capabilities:
+                    capabilities.append('dosya-yazma')
+                prefix += 'eylem girişi kaydet\n    değer döndürmez\n    "inflight.entered" dosyasına "entered" yaz\n\n'
+                capabilities.append('web-oturumu')
+                csrf_route = 'GET "/csrf" adresine istek geldiğinde\n    csrf belirteci yanıtını gönder\n\n'
+                slow_method = 'POST'
+                inflight_entry = '    herkese açık\n    girişi kaydet\n'
+            self.source.write_text(prefix+'8080 kapısında sunucu başlat\n\nGET "/hazir" adresine istek geldiğinde\n    "ok" yanıtını gönder\n\n'+csrf_route+slow_method+' "/yavas" adresine istek geldiğinde\n'+inflight_entry+'    3 saniye bekle\n    "bitti" yanıtını gönder\n')
             (self.project / "proje.dil").write_text('proje "fixture" olsun\nsürüm "0.1.0" olsun\nmorfoloji "zee-tr-1" olsun\ngiriş "program.dil" olsun\nyetkinlikler '+', '.join(json.dumps(x,ensure_ascii=False) for x in capabilities)+' listesi olsun\nağ_hedefleri boş liste olsun\nyerel_bağımlılıklar boş liste olsun\n'+metadata)
         else:
             self.dil = self.root / "fake-dil"
@@ -186,6 +197,33 @@ class Fixture:
             key.chmod(0o400)
             self.args += ['--credential-root',str(credentials),'--credential-env',SYNTHETIC_ENV+'='+'key']
         self.running = None
+
+    def inflight_request(self):
+        import http.client
+        import re
+        connection = http.client.HTTPConnection("127.0.0.1", self.ports[0], timeout=1)
+        try:
+            connection.request("GET", "/csrf", headers={
+                "Host": "fixture.example",
+                "Forwarded": "for=192.0.2.7;proto=https;host=fixture.example",
+                "Connection": "close",
+            })
+            response = connection.getresponse()
+            body = response.read(16385)
+            if response.status != 200 or len(body) > 16384 or re.fullmatch(rb"[0-9a-f]{64}", body) is None:
+                raise AssertionError("bounded CSRF response missing")
+            cookies = [value.split(";", 1)[0] for name, value in response.getheaders() if name.lower() == "set-cookie"]
+            if len(cookies) != 1 or re.fullmatch(r"__Host-zee-oturum=[0-9a-f]{64}", cookies[0]) is None:
+                raise AssertionError("bounded form session cookie missing")
+            form = b"_csrf=" + body
+            request = ("POST /yavas HTTP/1.1\r\nHost: fixture.example\r\n"
+                       "Forwarded: for=192.0.2.7;proto=https;host=fixture.example\r\n"
+                       "Origin: https://fixture.example\r\nCookie: " + cookies[0] + "\r\n"
+                       "Content-Type: application/x-www-form-urlencoded\r\n"
+                       "Content-Length: " + str(len(form)) + "\r\nConnection: close\r\n\r\n").encode("ascii") + form
+            return request
+        finally:
+            connection.close()
 
     def start(self, env=None):
         self.running = Running(self.args, env)
@@ -397,15 +435,35 @@ class Native(unittest.TestCase):
             self.assertEqual(run.finish(), 0)
 
     def test_real_inflight_request_can_be_interrupted(self):
-        with Fixture(native=True) as f:
+        with Fixture(native=True, inflight=True) as f:
             run = f.start()
             run.until(lambda x: x.get("ready") is True)
+            entered = f.project / "inflight.entered"
+            self.assertFalse(entered.exists())
+            request = f.inflight_request()
             with socket.create_connection(("127.0.0.1", f.ports[0]), timeout=1) as s:
-                s.sendall(b'GET /yavas HTTP/1.1\r\nHost: fixture.example\r\nForwarded: for=192.0.2.7;proto=https;host=fixture.example\r\nConnection: close\r\n\r\n')
-                time.sleep(.1)
+                s.sendall(request)
+                deadline = time.monotonic() + 2
+                while not entered.exists() and time.monotonic() < deadline:
+                    time.sleep(.01)
+                self.assertTrue(entered.is_file(), "actual handler entry marker missing")
+                self.assertEqual(entered.read_bytes(), b"entered\n")
                 self.assertEqual(run.finish(), 0)
-                s.settimeout(1)
-                self.assertNotIn(b"bitti", s.recv(4096))
+                reply = bytearray()
+                deadline = time.monotonic() + 1
+                while True:
+                    remaining = deadline - time.monotonic()
+                    self.assertGreater(remaining, 0, "bounded response closure missing")
+                    s.settimeout(remaining)
+                    try:
+                        chunk = s.recv(4096)
+                    except ConnectionResetError:
+                        break
+                    if not chunk:
+                        break
+                    reply.extend(chunk)
+                    self.assertLessEqual(len(reply), 16384)
+                self.assertNotIn(b"bitti", reply)
 
 
 class Launcher(unittest.TestCase):

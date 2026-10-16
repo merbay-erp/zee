@@ -60,3 +60,26 @@ Bağımsız actual Bash probe, shell'in background child'ı explicit wait
 public launcher ortak Python WNOWAIT kontrolcüsünü kullanır. Lider PID
 grup temizliği bitmeden serbest bırakılmaz. Startup probe başarılı olsa
 bile mutlak başlangıç deadline'ı ve güncel generation gate'i ayrıca geçer.
+
+## K-301 test kanıtı takibi
+
+Mevcut inflight kesilme testinin dar doğruluk işi tamamlandı: handler giriş
+işareti ile EOF/reset sonuna kadar sınırlı yanıt okuması doğrulanır. Explicit
+0,2 saniye host grace ile üç saniyelik handler karşılaştırılır; üretim sinyal
+davranışı, varsayılan grace ve mimari karar değişmez. V3 opt-in fixture,
+`web-oturumu` altında CSRF GET/çerez/form POST akışını kullanır; dosya yazımı
+`herkese açık` POST rotasından `eylem girişi kaydet` ile yapılır. CSRF atlanmaz.
+
+İlk GET fixture'ının T045 reddi ve worker1 başarısızlığı korunur. V2 denetimi
+geçti, worker2 yalnız inflight vakada başarısız oldu (25 test/1 hata);
+assertion ayrıntısı yoktur. Eksik CSRF/çerez kaynak incelemesidir, gözlenmiş
+HTTP403 değildir. V3 worker3 kabulü tek Cargo sahibi 1/0/0 ve wrapper'ın
+25/0/0 doğrulamasıyla geçti; özgün controller exit0/reap ile kapandı.
+V3 kontrollü 10 senaryo/20 karşılaştırma ayrı mock kanıtıdır; gerçek
+HTTP/CSRF yardımcısı worker3'te sınandı.
+
+25 Python test metodu ve mevcut tek Cargo sahibi korunur; test eklenmedi
+veya taşınmadı. Genel drain/native DNS/tam fault/P34 ve GB-069 kapsamı
+genişlemez; yeni GB/ADR kararı yoktur. K-300 tam faz sonucu K-301'e aktarılmaz.
+Son 11 belge/güvenlik kapısının geçmesi kayıt commit'inin önkoşuludur.
+Ayrıntı [host rehberindedir](../docs/worker-supervisor.md).

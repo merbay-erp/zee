@@ -947,3 +947,25 @@ Hazırlık alt vakaları yeni Cargo sahibi değildir; üretim compiler/host
 değişmez. Tarihsel S3 ve ayrı C2/S kabulleri, RC/soak/IDE yeni kaynağa
 aktarılmaz; P14 ürün/şema/SLA ve platform sınırları açık kalır.
 [Koşucu rehberi](mixed-revision-wave.md).
+
+## K-301 — Worker inflight test kanıtı
+
+**Dar test doğruluğu tamamlandı.** Handler giriş işareti ve EOF/reset sonuna
+kadar sınırlı yanıt kontrolü mevcut 0,2 saniye host grace/üç saniye handler
+fixture'ında doğrulandı. V3 normal `web-oturumu`/CSRF GET/çerez/form POST
+akışını kullanır; `herkese açık` POST rotasında dosya yazımı `eylem` içindedir.
+CSRF atlanmaz. Worker3 tek Cargo sahibi 1/0/0 (78,28 saniye), wrapper'ın
+25/0/0 doğrulaması ve özgün controller exit0/reap ile geçti. V3 kontrollü
+10 senaryo/20 yöntem karşılaştırması ayrı mock kanıtıdır; HTTP/CSRF
+helper'ının gerçek kabulü worker3 koşusudur.
+
+İlk GET fixture'ının T045 reddi ve worker1 başarısızlığı korunur. V2 denetimi
+geçti, worker2 yalnız inflight vakada başarısız oldu (25 test/1 hata);
+assertion ayrıntısı yoktur. Eksik CSRF/çerez kaynak incelemesidir; gözlenmiş
+HTTP403 veya işaret yokluğu değildir. İki başarısız koşu kendi sonucu ile korunur.
+
+Varsayılan fixture AST'si ve 25 mevcut test metodu korundu; test eklenmedi/
+taşınmadı, yeni Cargo sahibi yoktur. K-300'ün tam faz998/0/25 sonucu bu
+çalışmaya aktarılmaz. Son 11 belge/güvenlik kapısının geçmesi kayıt commit'inin
+önkoşuludur. Üretim davranışı ve genel P34/native DNS/tam fault/drain/yayın
+sınırları değişmez. [Worker rehberi](worker-supervisor.md).

@@ -1965,3 +1965,29 @@ başarısız sonuçta korunması tamamlandı.
 korur. Yeni Python alt vakaları mevcut Cargo sahibindedir; yeni Rust sahibi
 veya compiler özelliği yoktur. Tarihsel S3 ve ayrı K-299 C2 sonuçları yeni kabul
 sayılmaz. P14 ve genel ürün/platform/SLA kapıları kısmi; C1/P33 kapsamı ayrı kalır.
+
+## K-301 — Worker inflight kesilme testinde giriş ve tam yanıt kanıtı
+
+**TAMAMLANDI — dar test doğruluğu; son 11 belge/güvenlik kapısı kayıt
+commit'inin önkoşuludur.** K-300 atomik kapanışından sonra mevcut testte
+TCP yazımı/kısa uyku yerine exact handler giriş işareti, tek yanıt parçası
+yerine mutlak süre/16 KiB sınırında EOF/reset sonuna kadar yanıt doğrulaması
+uygulandı. V3 opt-in fixture normal `web-oturumu`, CSRF GET/çerez/form POST
+akışını kullanır; `herkese açık` POST rotası yazımı `eylem girişi kaydet`
+üzerinden yapar, CSRF atlanmaz.
+
+İlk GET fixture'ı T045 ile reddedildi; worker1 ve diagnostic-1 başarısızlığı
+korunur. V2 diagnostic-2 geçti, worker2 yalnız inflight vakada başarısız oldu
+(25 test/1 hata); assertion ayrıntısı yoktur. Eksik CSRF/çerez kaynak/spec
+incelemesidir; gözlenmiş HTTP403 veya işaret yokluğu iddiası değildir.
+İki başarısız koşu kendi sonucu ile korunur. V3 worker3 tek Cargo sahibi
+1/0/0 (78,28 saniye), wrapper doğrulaması 25/0/0 ile geçti; özgün controller
+exit0/reap ile kapandı. Ayrı V3 mock karşılaştırması 10 senaryo/20 yöntemdir;
+HTTP/CSRF yardımcısı mock'tur, gerçek yardımcı worker3 kabulünde sınandı.
+
+[ADR-106](../adr/106-worker-host-yasam-dongusu.md) ve
+[worker rehberi](worker-supervisor.md) kapsamı taşır. Varsayılan fixture AST'si,
+25 Python metodu ve tek Cargo sahibi korunur; test eklenmedi/taşınmadı.
+Üretim compiler/host/worker değişmez. K-300'ün 998/0/25 tam fazı K-301 kabulü
+sayılmaz. Genel P34/native DNS/tam fault/drain/SLA kapıları açık kalır;
+bu yerel test düzeltmesi için yeni kullanıcı girdisi gerekmez.
