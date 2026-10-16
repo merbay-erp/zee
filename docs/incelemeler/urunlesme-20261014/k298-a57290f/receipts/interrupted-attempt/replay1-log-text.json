@@ -1,0 +1,8 @@
+{
+  "schema": "zee-reversible-utf8-text-envelope-1",
+  "original_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-timeout-replay-1.log",
+  "original_sha256": "fe293be145138d657edeb8fbd41171ce28f1b92a9edcf68b551fa6df0cefae48",
+  "original_bytes": 38,
+  "encoding": "utf-8",
+  "text": "Error: could not find a cargo project\n"
+}

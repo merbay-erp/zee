@@ -1,0 +1,13 @@
+{
+  "schema": "zee-p19-stdio-config-1",
+  "source_sha": "a57290f7a1c1fad07cda3f266b2a221f09aa6404",
+  "source_tree": "20644b4b6dc735a8cda8a24b7c064d28f12498d4",
+  "repo": "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+  "delivery_dir": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-macos-delivery",
+  "delivery_sha256": "30c3e97dd2ff1831cc9abc97d9b5197dc5f64021e4efd16afd9899f28671cdcb",
+  "binary_sha256": {
+    "dil": "c597b9c1d0ec11e59ab0b3cc4701f1e21a37bcec67b37d4d52f983ddf69d56e2",
+    "dillsp": "fc4391569ed45bccc11cb424f1aeb7abaea7133170d8d55f1df95420360302f1"
+  },
+  "measurement_out": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-candidate-stdio-1"
+}

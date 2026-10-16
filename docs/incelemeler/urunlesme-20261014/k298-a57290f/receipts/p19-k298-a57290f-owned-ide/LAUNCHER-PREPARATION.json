@@ -1,0 +1,43 @@
+{
+  "status": "prepared-actual-project-launcher-not-IDE-acceptance",
+  "source_sha": "a57290f7a1c1fad07cda3f266b2a221f09aa6404",
+  "delivery_sha256": "30c3e97dd2ff1831cc9abc97d9b5197dc5f64021e4efd16afd9899f28671cdcb",
+  "binary_sha256": {
+    "dil": "c597b9c1d0ec11e59ab0b3cc4701f1e21a37bcec67b37d4d52f983ddf69d56e2",
+    "dillsp": "fc4391569ed45bccc11cb424f1aeb7abaea7133170d8d55f1df95420360302f1"
+  },
+  "verifier_sha256": "914dd2f49a3a69ca7d3b8f6746e8bc1942c065ac033147f02420123fee7b2d90",
+  "pin": {
+    "schema": "zee-derleyici-pin-1",
+    "version": "0.8.0-dev",
+    "source_sha": "a57290f7a1c1fad07cda3f266b2a221f09aa6404",
+    "channel": "development",
+    "platform": "aarch64-apple-darwin"
+  },
+  "publisher": "sha256:438f25d34b096ced7f5cefdf33fcb94ee51eb44c3a55c9b886f230c64553ba0d",
+  "ephemeral_private_key_deleted": true,
+  "release_signed_or_published": false,
+  "synthetic_signature_only": true,
+  "actual_canonical_delivery_metadata_preserved": true,
+  "bundle_sha256": {
+    "GIT_SHA": "d6fc6b0c6f41ff991dcdcb3f818366b31efb2e84e5cdf55953e39c2fdaca2f9d",
+    "dil": "c597b9c1d0ec11e59ab0b3cc4701f1e21a37bcec67b37d4d52f983ddf69d56e2",
+    "sbom.spdx.json": "810f913537e8fe4a0c48219697483d2db31acbc8918d751a83e1f863c9f772a6",
+    "SHA256SUMS.zee-imza": "1586ac36d29f805fbc3cde05d733fc7ecf4cbdfd93e9f303d18acc7b616c1f38",
+    "provenance.intoto.json": "85c516ab72377f5ecc5a6adb6142dce801c5eb54648e21d7fee9a76c7885b68f",
+    "SHA256SUMS": "03b8dd1d63342219539304f20144cc5a5b442464612e109d5dbaf1782ace5643",
+    "dillsp": "fc4391569ed45bccc11cb424f1aeb7abaea7133170d8d55f1df95420360302f1"
+  },
+  "import": {
+    "schema": "zee-local-publication-1",
+    "published": true,
+    "existing_exact": false
+  },
+  "launcher": {
+    "schema": "zee-local-publication-1",
+    "published": true,
+    "existing_exact": false
+  },
+  "project": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-owned-ide/project with spaces",
+  "source_clean_end": true
+}

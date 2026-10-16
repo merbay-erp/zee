@@ -1,0 +1,8 @@
+{
+  "schema": "zee-reversible-utf8-text-envelope-1",
+  "original_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-soak-2/soak-history.tsv",
+  "original_sha256": "a95776208f6ea09114d8a4cf929e170a6a172f9893bfd30cf908e5fdd022052f",
+  "original_bytes": 429,
+  "encoding": "utf-8",
+  "text": "# zee-soak-gecmisi-1\n# git_sha\ttarih\tplatform\trustc\tsure_sn\tpencere_sn\tderleme_donemi\tlsp_donemi\tderleyici_rss_ilk_kib\tderleyici_rss_son_kib\tdillsp_rss_ilk_kib\tdillsp_rss_son_kib\tderleyici_buyume_yuzde\tdillsp_buyume_yuzde\tazami_buyume_yuzde\tazami_buyume_kib\tsonuc\na57290f7a1c1fad07cda3f266b2a221f09aa6404\t2026-10-16\tmacos-aarch64\trustc 1.93.1 (01f6ddf75 2026-02-11)\t1800\t60\t24072\t24072\t20112\t20016\t19776\t20800\t0\t6\t10\t32768\tgecti\n"
+}

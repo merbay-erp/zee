@@ -1,0 +1,31 @@
+{
+  "argv": [
+    "python3",
+    "-I",
+    "-B",
+    "/private/tmp/zee-p19-k298/k299-security-v1.py",
+    "--repo",
+    "/private/tmp/zee-p19-k298/k299-validation",
+    "--source-sha",
+    "a57290f7a1c1fad07cda3f266b2a221f09aa6404",
+    "--source-tree",
+    "20644b4b6dc735a8cda8a24b7c064d28f12498d4",
+    "--gate-proof",
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k299-gates-3/PROOF.json",
+    "--gate-controller",
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k299-gates-3-controller.json",
+    "--gate-driver",
+    "/private/tmp/zee-p19-k298/k299-gates-v4.py",
+    "--out",
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k299-security-1"
+  ],
+  "started_ns": 1792127899201676000,
+  "status": "passed",
+  "minimum_free_bytes": 63171153920,
+  "required_free_bytes": 10737418240,
+  "observed_exit": 0,
+  "owned_group_closed_and_reaped": true,
+  "exit": 0,
+  "finished_ns": 1792127969470122000,
+  "elapsed_seconds": 70.26825787499547
+}

@@ -1,0 +1,8 @@
+{
+  "schema": "zee-reversible-utf8-text-envelope-1",
+  "original_path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-rc-controller-1.cancel",
+  "original_sha256": "9dadbc2d55eb6d145e4989460f338233835adfb06f8525c067a699a779409b79",
+  "original_bytes": 149,
+  "encoding": "utf-8",
+  "text": "Observed clock discontinuity; first pair failed (lexer timeout, morphology duration mismatch). Preserve all evidence; close original owned campaign.\n"
+}

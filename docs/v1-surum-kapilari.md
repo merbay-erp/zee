@@ -1,6 +1,6 @@
 # zee v1.0 sürüm kapıları
 
-> Son kabul edilen kaynak `4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2` için [S4 yerel kabulü](urunlesme-s4-kabul-20261015.md) korunur. K-298 P19 bakım adayının yeni exact kaynak ölçümü ve kabulü beklenir; 200 ms hedefi açıktır. [S3](urunlesme-s3-kabul-20261015.md) native kabulü tarihsel kaynağında kalır; ürün, insan, fiziksel platform ve yayın kapıları açıktır.
+> `a57290f7a1c1fad07cda3f266b2a221f09aa6404` için [K-298 yerel kabulü](urunlesme-k298-kabul-20261016.md) dört stdio kohortunda gözlemsel p95 200 ms hedefini, macOS teslim/kurulum, ordinary UTF-16 ve dar IDE işlev kabulünü kaydeder. Aynı SHA'da ikinci RSS ve dört ASan/Miri3/tam RC kapısı geçti; K-298 dar kabulü kapalı, P19 kısmi kalır. Belge takip commit’i gerçek dış son kapı makbuzuna bağlıdır. [S4](urunlesme-s4-kabul-20261015.md) ve [S3](urunlesme-s3-kabul-20261015.md) kendi kaynaklarında tarihseldir; ürün, insan, fiziksel platform ve yayın kapıları açıktır.
 
 Bu liste bir dilek listesi değildir: `1.0.0` etiketi bu kapılar kapatılmadan
 atılmaz. Amaç yeni özellik sayısını büyütmek değil, çocuktan profesyonele aynı
@@ -922,14 +922,12 @@ ayrıldı. Beş tam proje hazır değil, fiziksel cihaz yok; bu kapılar bekliyo
 
 ## K-299 — Kabul koşucusu kapanış kapısı
 
-Stdlib PDF9/service10 gerçek kısa koşuları geçti; GB-111 düşük/açık/K-299'dur.
+Stdlib PDF9/service10 gerçek kısa koşuları geçti. Kaynak `8178920e03fed782a817d1864b8280fcb80812a3`,
+tree `1eccf96d1a407880bf161c55bdd55c4d9a144866` için dar sonuç: temiz C2 native2 iki Cargo sahibiyle geçti: signed PDF9 ve service-fault2; alt vakalar Cargo owner sayısına eklenmez;
+C2 öncesi gate4: 13 adım geçti; tam faz 998/1023 geçti, 0 başarısız, 25 atlanan C2 öncesi security2 --surekli geçti; 16 seçili libtest tam faz toplamına eklenmez GB-111: kapalı; toplu commit öncesi son belge kapısı gerekli.
 Erken iptal, kısmi keygen/fixture ve nested owner kapanışı yalnız kabul betiğinde
-düzeltildi. İlk C native1 birleşik kabulü başarısızdır: PDF9 ayrı geçti;
-service-fault kanonik olmayan wrapper repo kökünde iç proof öncesi reddedildi.
-C kaynak öncesi998/0/25 ve --surekli kaydı tarihseldir. Wrapper kökü
-kanonikleştirme takibinin yeni temiz source/tree, ilgili Cargo/faz/katalog/
-tazelik/güvenlik/biçim ve native9/2 kabulü henüz yoktur.
-[Actual kayıt ve kapanış koşulları](kabul-kosuculari-yasam-dongusu-20261016.md)
-geçen hazırlığı pending native kabulden ayırır. Yeni Cargo owner yoktur.
+düzeltildi. [Actual kayıt ve kapanış koşulları](kabul-kosuculari-yasam-dongusu-20261016.md)
+stdlib hazırlığı, C2 native kabulü, kaynak öncesi kapıları ve bağımsız incelemeyi
+ayırır; ilk iki başarısız kapı korunur. Yeni Cargo owner yoktur.
 K-298 kaynağının RC/soak/IDE/stdio kanıtı K-299 HEAD kabulü değildir; eski S3
 native kabulü tarihsel kalır. P11/P34/P19 ve tam V1 bu dilimle kapanmaz.

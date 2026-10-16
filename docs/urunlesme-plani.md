@@ -1,5 +1,11 @@
 # 14 Ekim 2026 onaylı ürünleşme uygulama kaydı
 
+[Güncel K-298 kabul kaydı](urunlesme-k298-kabul-20261016.md) a57290f kaynağındaki dar stdio/IDE,
+macOS teslim/kurulum, UTF-16, ikinci RSS ve geçen RC sonuçlarını izler.
+K-298 ile ayrı C2 kaynağındaki K-299 dar kabulü kapalıdır; son belge kapısı
+takip commit’inin koşuludur. Kaynak kimlikleri raporda ayrıdır;
+39 maddenin bütün ürün/insan/platform kapıları kapanmış değildir.
+
 [Son K-245–K-249 pilot kabulü](urunlesme-pilot-k245-k249.md) ayrı temiz
 exact kaynakta faz/native/host/iki-klon kapılarını kaydeder.
 

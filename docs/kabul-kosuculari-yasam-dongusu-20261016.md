@@ -1,13 +1,13 @@
 # K-299 — Kabul koşucularının iptal ve kapanış sınırı
 
-16 Ekim 2026. **AÇIK: K-299 kaynak `90fe778e86b9de28046f0f7bd77b47df138a2212` üzerinde
-ilk birleşik native kabul başarısızdır. PDF9 ve bağımsız PDF incelemesi ayrı
-geçti; service-fault, iç kampanya başlamadan kanonik depo yolu kontrolünde
-reddedildi.** Rust test wrapper kökünün kanonikleştirilmesi takip adayındadır;
-yeni kaynak kimliği ve bu kaynakta ortak kapılar/native yeniden kabul henüz
-yoktur. GB-111 düşük/açık kalır. [Backlog](oncelikli-backlog.md),
-[GB-111](guvenlik-bulgulari-v1.tsv), [ADR-141](../adr/141-imzali-pdf-stdio-host.md)
-ve [ADR-150](../adr/150-native-worker-fault-ve-kontrollu-resolver.md) birlikte izler.
+16 Ekim 2026. **K-299 dar durum: dar kaynak/native/arşiv kapsamı kapalı; toplu commit öncesi son belge kapısı gerekli; GB-111:
+kapalı; toplu commit öncesi son belge kapısı gerekli.** Kaynak `8178920e03fed782a817d1864b8280fcb80812a3`, tree `1eccf96d1a407880bf161c55bdd55c4d9a144866`.
+temiz C2 native2 iki Cargo sahibiyle geçti: signed PDF9 ve service-fault2; alt vakalar Cargo owner sayısına eklenmez; C2 öncesi gate4: 13 adım geçti; tam faz 998/1023 geçti, 0 başarısız, 25 atlanan
+Birleşik bağımsız inceleme C2 kaynak/gate4/security2/commit/native2 zincirini doğruladı; küçük public arşiv hashleri doğrulandı; toplu commit öncesi son belge kapısı ayrıca gerekli Kaynak öncesi stdlib ve kapı kanıtları ile
+temiz C2 üzerinde çalışan native kabul aşağıda ayrı kayıtlıdır.
+[Backlog](oncelikli-backlog.md), [GB-111](guvenlik-bulgulari-v1.tsv),
+[ADR-141](../adr/141-imzali-pdf-stdio-host.md) ve
+[ADR-150](../adr/150-native-worker-fault-ve-kontrollu-resolver.md) birlikte izler.
 
 ## Bulgu ve değişiklik
 
@@ -55,9 +55,10 @@ normal Cargo wrapper ve iki explicit ignored native wrapper korunur; iç vaka
 sayıları Cargo toplamına eklenmez. PDF wrapper'ın exact iç sayısı7→9 olur.
 Mevcut dedicated native ek_kapsam ilişkileri değişmez.
 
-Makbuzlar kaynak SHA/cwd kaydı taşımaz; tek başlarına temiz commit kabulü
-değildir. Aşağıdaki dosyalar gözlenen yerel aday ve dış koşu kaydını sabitler;
-yeni kaynak kabulünde source/tree/BuildJSON ve binary bağları ayrıca kurulacaktır.
+Bu stdlib makbuzları kaynak SHA/cwd kaydı taşımaz; tek başlarına temiz commit
+kabulü değildir. Aşağıdaki dosyalar gözlenen kaynak öncesi aday ve dış koşu
+kaydını sabitler. Temiz C2 native kabulünün source/tree/BuildJSON/binary bağı
+ayrı makbuzlarla kurulur: [C2 native9/2 makbuzu](incelemeler/urunlesme-20261014/k298-a57290f/receipts/k299/c2/native2-proof.json); [C2 birleşik bağımsız inceleme](incelemeler/urunlesme-20261014/k298-a57290f/reviews/k299/c2/combined-acceptance-review.json).
 
 | Dış kayıt | Bayt | SHA-256 |
 | --- | ---: | --- |
@@ -100,9 +101,10 @@ olarak korunur. `source_end_clean=false`, başarı yolundaki son kaynak kontrol�
 ulaşılmadığını gösterir; tek başına depo kirlenmesi gözlemi değildir. PDF
 başarısı C kimliğinde kalır; takip kaynağına devralınmaz. İlk996/2/25 ve
 ikinci997/1/25 matris başarısızlıkları, sonra C adayında geçen998/0/25 ve
-`--surekli` güvenlik kontrolü ayrı tarihsel kayıtlardır. Bunlar henüz olmayan
-takip kaynağında kapı veya native kabul sayılmaz. GB-111 kapanışı yeni temiz
-source/tree, gerekli ortak kapılar ve native9/2 kabul zincirini bekler.
+`--surekli` güvenlik kontrolü ayrı tarihsel kayıtlardır. Bu tarihsel sonuçlar takip kaynağına kendiliğinden aktarılmaz. Bu tarihsel başarısızlıkların ardından takip kaynağı C2
+`8178920e03fed782a817d1864b8280fcb80812a3` için ayrı durum: dar kaynak/native/arşiv kapsamı kapalı; toplu commit öncesi son belge kapısı gerekli;
+temiz C2 native2 iki Cargo sahibiyle geçti: signed PDF9 ve service-fault2; alt vakalar Cargo owner sayısına eklenmez; C2 öncesi gate4: 13 adım geçti; tam faz 998/1023 geçti, 0 başarısız, 25 atlanan.
+GB-111: kapalı; toplu commit öncesi son belge kapısı gerekli; bağımsız inceleme Birleşik bağımsız inceleme C2 kaynak/gate4/security2/commit/native2 zincirini doğruladı; küçük public arşiv hashleri doğrulandı; toplu commit öncesi son belge kapısı ayrıca gerekli.
 
 | Dış gözlem kaydı | Bayt | SHA-256 |
 | --- | ---: | --- |
@@ -115,15 +117,70 @@ source/tree, gerekli ortak kapılar ve native9/2 kabul zincirini bekler.
 
 Ham loglar dış kanıtta kalır; bu bölüm anahtar baytı/hash’i veya büyük PDF/ikili kopyalamaz.
 
-## Açık yeniden kabul ve yürütme sınırı
+## Exact C2 kabul kaydı ve yürütme sınırı — dar kaynak/native/arşiv kapsamı kapalı; toplu commit öncesi son belge kapısı gerekli
 
-Kaynak ve belge kapıları geçtikten sonra yeni exact temiz SHA/tree ve aynı SHA'dan
-derlenen test ikilisiyle mevcut signed PDF9 ve native service2 ayrı yürütülecek.
-Bu ikili yayımlanan sürüm artefaktı değildir. Gerçek native
-oracles ve vaka sayıları değişmedi. Kaynak/helper/binary başlangıç-son hashleri,
-BuildJSON, failed/cancelled/cleanup alanları ve özgün outer-owner kapanışı
-birlikte kaydedilmeden K-299/GB-111 kapatılmaz. Tam faz, Cargo wrapper, katalog,
-doküman tazeliği, güvenlik ve biçim kapılarının sonucu bu kısa testlerden çıkmaz.
+Temiz kaynak C2 `8178920e03fed782a817d1864b8280fcb80812a3`, tree `1eccf96d1a407880bf161c55bdd55c4d9a144866` ve aynı SHA’dan
+derlenen test ikilisi kullanılır; ikili yayımlanan sürüm artefaktı değildir.
+Native signed PDF sonucu: temiz C2 üzerinde 9/9 iç vaka ve bağımsız PDF içerik/sayfa/font/görsel incelemesi geçti; native service-fault
+sonucu: kanonik test-wrapper köküyle temiz C2 üzerinde 2/2 iç vaka geçti. Bu iki Cargo seçicinin iç9/2 vakası,
+stdlib9/10 veya önceki K-298 extra2 ile toplanmaz.
+Temiz C2 başlangıç/bitiş source/tree, CLI ve iç BuildJSON kimlikleri, 20 gerçek komut, proof dahil 78 public dosya/611082 bayt ve normal exit0/reap bağımsız olarak doğrulandı. İç anahtar temizliği ve worker/sentinel kapanışı hash ile bağlı koşucu kanıtı ve Cargo başarısına dayanır; gizli dizin/anahtar incelenmedi, iç stderr/zaman çizelgelerinin tamamı public kanıtta değildir. Dış 330 saniye iptal payı controller şemasından bağımsız kanıtlanmış sayılmaz Birleşik bağımsız inceleme C2 kaynak/gate4/security2/commit/native2 zincirini doğruladı; küçük public arşiv hashleri doğrulandı; toplu commit öncesi son belge kapısı ayrıca gerekli
+
+Kaynak öncesi takip kapıları: Gate4 üzerinde fmt, depo sayıları, kanıt özeti, tam faz matrisi (998/1023 geçti, 0 başarısız, 25 atlanan), clippy, işlev eğilimi, spec-drift, katalog/tazelik, conformance/semantic-regresyon/core-freeze korukları, diff ve sır taraması olmak üzere 13 gerçek adım geçti; özgün controller normal exit0/reaped kapandı. Bu koşunun makbuzda kayıtlı kaynak tabanı üzerindeki
+end_overlay/source pinleri C2 commit ağacıyla kaynak commit makbuzundaki exact 10 dosya blobu ve bağımsız inceleme ile eşlendi; gate4 ve security2 ilk C artı aynı aday farkında koştu.
+Takip kapıları temiz C2 üzerinde yeniden çalıştırılmış diye yazılmaz. Güvenlik adına
+gerçekte çalıştırılan kontroller: bash scripts/guvenlik-kapisi.sh --surekli gerçek koşusu geçti; compiler ve fuzz için 2 cargo-deny kontrolü, stable fuzz derlemesi ve 5+11=16 libtest başarılı, 0 başarısız/0 atlanan; özgün controller normal exit0/reaped. Bu kaynak öncesi kanıt aynı aday farkının C2 commit bağıyla kayıtlıdır.
+Bundan `guvenlik-kapisi.sh --surum-adayi` veya C2 kaynaklı RC/soak/IDE sonucu
+çıkarılmaz.
+
+İlk son belge kapısı dokuz başarılı kontrolden sonra sır taramasında exit1 ile
+başarısız oldu; `--surekli` adımı çalıştırılmadı. Özgün controller normal
+exit1/reaped ile kapandı. İlk proof ve controller dış `p19-k298-k299-final-docs-1`
+ve `p19-k298-k299-final-docs-controller-1.json` kayıtlarında korunur; bu sonuç
+C2 native9/2 veya S kaynağının RC/RSS kabulünü yeniden sınıflandırmaz.
+Bildirilen 25 eşleşmenin tamamı, 13 public JSON dosyasında üç belge sürümü, iki eski tarama günlüğü ve güvenlik kapısı betiğinin gerçek baytlarından yeniden hesaplanan altı SHA-256 özetine bağlandı. Bu eşleşmeler gizli kimlik bilgisi değildir; inceleme yalnız bildirilen eşleşmeleri sınıflandırır, tam bir bağımsız sır taraması yapmaz ve başarısız kapıyı geçmiş saymaz. Sınıflandırmanın dış kaydı `/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-archive-false-positive-classification.json` yolundadır.
+
+Son belge ve sürekli güvenlik kapısının ikinci gerçek koşusu, uygulanan
+belge/şeffaf dış referans görünümünü ve kaynak pinlerini aynı 11 kontrolle
+denetleyerek dış
+`/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-final-docs-2/PROOF.json`
+makbuzunu üretecek; bu kayıt ile
+`/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-final-docs-controller-2.json`
+üzerindeki özgün controller kapanışı doğrulanmadan toplu commit yapılmaz.
+Son belge kapısının makbuzu arşiv üretiminden sonra dış kanıt köküne yazılır.
+Bu arşiv kendi sonraki kapı makbuzunu veya onun hashini içermez; kapı makbuzu
+hazırlanmış arşiv ve belge pinlerini denetler. Bu kapsam açıklaması kapının
+sonucunu önceden başarılı ilan etmez.
+
+İlk başarısız kapı1 **996/1023 geçti, 2 başarısız, 25 atlanan**, kapı2
+**997/1023 geçti, 1 başarısız, 25 atlanan** olarak korunur. İlkinde iki
+NotFound, ikincisinde nested Rust dogfood executable NotFound vardır.
+K-299’a ait cache relocation üretim kaynak değişikliği değildir. v4 sürücüsü
+miras alınan CARGO_TARGET_DIR değerini kaldırır; özgün v4 hazırlık kaydının
+`prepared-not-executed` değeri geçmişte korunur. Yeni başarı önceki iki
+failure kaydını değiştirmez; tekrarlar case sayılarına eklenmez.
+
+| Yeni C2 kabul kaydı | Exact kaynak/bağ | SHA-256 |
+| --- | --- | --- |
+| Kaynak commit makbuzu | [C2 kaynak commit makbuzu](incelemeler/urunlesme-20261014/k298-a57290f/receipts/k299/c2/source-commit2.json); C2/tree | `cea3e9ebcddb5d75a9dfedaadb81e1dc5c02a2d24754f1d9cd0e6bd25bd8dc3a` |
+| Kaynak öncesi takip kapıları | [Gate4 makbuzu](incelemeler/urunlesme-20261014/k298-a57290f/receipts/k299/c2/gates4-proof.json); overlay→C2 | `0fdf7dc22b5eec715b83104f7d82bdcfcd19881d615f543d8088191e562bc964` |
+| Takip kapıları özgün controller | [Gate4 özgün controller](incelemeler/urunlesme-20261014/k298-a57290f/receipts/k299/c2/gates4-controller.json); exit0/reaped | `be2eacc748cd9da7cdb41440003a447e3c753980dd15e97fa009c3217a44b72e` |
+| C2 native9/2 proof | [C2 native9/2 makbuzu](incelemeler/urunlesme-20261014/k298-a57290f/receipts/k299/c2/native2-proof.json); C2/tree/BuildJSON | `bfca13b42cabd6ff44e4b18b1888b96234644a6001b8bb871116943c1eb148e5` |
+| C2 native özgün controller | [Native2 özgün controller](incelemeler/urunlesme-20261014/k298-a57290f/receipts/k299/c2/native2-controller.json); exit0/reaped | `8bc6ed00260829577ba6a414adb0039f88c258855d8229b8d2c311255caff17c` |
+| Bağımsız inceleme | [C2 birleşik bağımsız inceleme](incelemeler/urunlesme-20261014/k298-a57290f/reviews/k299/c2/combined-acceptance-review.json) | `63a12aa14770c89352ac7afc11aae2a6f3662cc6fe70c3157ba037afd69f070b` |
+| Güvenlik kontrolleri | [Security2 makbuzu](incelemeler/urunlesme-20261014/k298-a57290f/receipts/k299/c2/security2-proof.json) | `6e15fcab9834c13015ea306478699982c548da753cf540e7694112ca701abd56` |
+| Güvenlik özgün controller | [Security2 özgün controller](incelemeler/urunlesme-20261014/k298-a57290f/receipts/k299/c2/security2-controller.json); exit0/reaped | `ab89441f37a5ba88f98051116ef17566f8b8b6a987f941369e3845c5c4080fef` |
+| Önceki iki failed kapı ve relocation | [Başarısız denemelere bağlı görünüm manifesti](incelemeler/urunlesme-20261014/k298-a57290f/CURRENT-ARCHIVE-MANIFEST.json) | `aafb1ac5dfbe2c552f4beab0a5c7dd6245d4b21e3e4403229a1adae0f26edd2f` |
+
+Depodaki küçük kanıt görünümü kopyalanan public kayıtlarla açık dış referans
+kayıtlarını ayırır. Bu görünümde 120 dosya özgün baytlarıyla, 13 dosya okunabilir dış referans olarak bulunur; README, RAW-SCOPE, SELECTION ve manifest yeniden üretilmiştir. Her dış referans, korunmuş özgün dosyanın açık yolunu, SHA-256 değerini ve bayt sayısını verir. Özgün 133 kayıt ve 270 hash bağının tümü bu görünümün kendi içinde bulunmaz; bu bağlar dış özgün seçki üzerinden doğrulanır. Tarayıcı kuralı veya ignore istisnası eklenmez, özgün içerik kodlanarak ya da gizlenerek temsil edilmez.
+Tablodaki makbuz SHA-256 değerleri özgün dosya baytlarına aittir; dış referans
+kaydı kendi manifestindeki ayrı hash'iyle izlenir. Özgün küçük seçki
+`/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-k299-original-small-archive` altında korunur; depodaki görünümün
+manifesti bu seçkinin `6e13b044becd1aee8c4d021bc47e3141c132b295c9e3aec8f6a2679016a1c265`
+hash'iyle karıştırılmaz. Büyük binary/PDF/Cargo logları dış kapsam kaydıyla
+kalır; ephemeral anahtar dosyası, anahtar baytı veya anahtar hash’i okunmaz ya
+da arşivlenmez. [Küçük görünüm ve dışta kalan ham kanıt kapsamı](incelemeler/urunlesme-20261014/k298-a57290f/RAW-SCOPE.json)
 
 Nested çocukları kapatan kabul betiğinin dış sahibi yeterli cooperative kapanış
 payı tanımalıdır. İncelenen bütçe en az45 saniye dış TERM grace ayırır; mevcut

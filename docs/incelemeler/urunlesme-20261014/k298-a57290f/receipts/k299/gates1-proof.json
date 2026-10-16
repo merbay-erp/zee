@@ -1,0 +1,105 @@
+{
+  "schema": "zee-k299-owned-gates-1",
+  "status": "failed",
+  "source_parent": "a57290f7a1c1fad07cda3f266b2a221f09aa6404",
+  "driver_sha256": "92fa86ac65cf3ccc0544373c094355f95de52a72c5bdcd1cc79173e5e1add606",
+  "commands": [
+    {
+      "name": "fmt",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "status": "passed",
+      "observed_exit": 0,
+      "reaped": true,
+      "exit": 0,
+      "seconds": 0.7648129579611123,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "counts",
+      "argv": [
+        "cargo",
+        "run",
+        "--locked",
+        "--bin",
+        "depo_sayilari",
+        "--",
+        "--yaz"
+      ],
+      "status": "passed",
+      "observed_exit": 0,
+      "reaped": true,
+      "exit": 0,
+      "seconds": 0.7668307920685038,
+      "log_sha256": "521ea7c9a43f65281bcc4610188eaa123c4e5021e6ab28c420622d4e0c465dd1"
+    },
+    {
+      "name": "summary",
+      "argv": [
+        "cargo",
+        "run",
+        "--locked",
+        "--",
+        "\u00e7al\u0131\u015ft\u0131r",
+        "../dogfood/kanit-ozeti/kaynak/ana.dil"
+      ],
+      "status": "passed",
+      "observed_exit": 0,
+      "reaped": true,
+      "exit": 0,
+      "seconds": 2.2645456249592826,
+      "log_sha256": "bd38f5b20ca769488242b50bf97dc5b1f5ee84134031a99fca2587a1af52c426"
+    },
+    {
+      "name": "phase-matrix",
+      "argv": [
+        "cargo",
+        "run",
+        "--locked",
+        "--bin",
+        "faz_test_matrisi",
+        "--",
+        "--denetle",
+        "--rapor",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k299-target/faz-test-matrisi-k299.md"
+      ],
+      "status": "failed",
+      "observed_exit": 1,
+      "reaped": true,
+      "exit": 1,
+      "failure_type": "AssertionError",
+      "seconds": 519.989748083055,
+      "log_sha256": "b8dbed5f2b8b88291bcf3a00b1cfe4336ca7fe553debe1f23cf9fa66e1af1874"
+    }
+  ],
+  "repo": "/private/tmp/zee-p19-k298/k299-validation",
+  "target": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k299-target",
+  "mode": "all",
+  "source_tree": "20644b4b6dc735a8cda8a24b7c064d28f12498d4",
+  "environment": {
+    "RUSTUP_TOOLCHAIN": "1.93.1",
+    "CARGO_BUILD_JOBS": "1",
+    "RUST_TEST_THREADS": "1",
+    "CARGO_NET_OFFLINE": "true",
+    "CARGO_TARGET_DIR": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k299-target"
+  },
+  "source_pins": {
+    "scripts/tests/pdf-plugin-native.py": "72449d567cae60541f01b3bef362ca8150d56ef7825308e9ae6b83bc4cad78ee",
+    "scripts/tests/service-fault-native.py": "bb3b5a73abb8161eb17e860487bd763cecc3394136bf68edd5dcc27472dfd0fe",
+    "scripts/tests/pdf-plugin-test.py": "3e0bb17f50b7ea979f5d78353c5c0169cb554f71e2f7ebfeca3f442aa16452a0",
+    "scripts/tests/service-fault-test.py": "75b333fa4c6f6af3c42d234965a6db585d7239bba6d7e7318606f38d5b480fbe",
+    "compiler/tests/pdf_plugin_testi.rs": "796c12e0908e678e4abae813081eeb70eedd1d0da14e61826d0a2ce09d64c18f",
+    "scripts/lifecycle_core.py": "e76fe65b6103fc4732aafc4468afc5bbf3d0699a0f79d7f74879165636ebb1a9",
+    "compiler/Cargo.toml": "a84637b04a5940a75d0856e50c631bf83841bc504c1beb5d037862291262d6aa",
+    "compiler/Cargo.lock": "dc8d703c3bfd86658c50b1732a4ac1f73096bc4a36c7150c2fc58483ec34fb92",
+    "compiler/build.rs": "29c77d86f5c9fb86758280a74596031ceae8a6f813b53517211332eb4ad4c11f",
+    "compiler/rust-toolchain.toml": "3260f10937490e272267a11d1bca85ee76b0ef972022ab8fba8a1df0dbb3b397"
+  },
+  "begin_diff_sha256": "806c6bee90b3695398bc0e2c08e492f25c06cbc43a586c9e0405245bfadf8bdb",
+  "failure_type": "AssertionError"
+}

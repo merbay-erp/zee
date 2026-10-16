@@ -44,8 +44,8 @@ Python stub kanıtıyla bu kapasite kapatılmaz. Native resolver/outer-process D
 fault kabulü ayrı açık kalır. Bu dilim yeni compiler özelliği veya keyfi resolver
 hook'u açmaz; full fault/RSS/provider/retry güveni iddiası yoktur.
 
-S3 native2 tarihsel kabulü aşağıda kayıtlıdır; K-299 sonrası yeni exact native2
-beklenir. Hazırlık10 başarıları native vaka sayısı değildir. Component log/probe
+S3 native2 tarihsel kabulü aşağıda kayıtlıdır; K-299 kaynağı `8178920e03fed782a817d1864b8280fcb80812a3`
+üzerindeki ayrı sonuç: kanonik test-wrapper köküyle temiz C2 üzerinde 2/2 iç vaka geçti. Hazırlık10 başarıları native vaka sayısı değildir. Component log/probe
 turlarında120s cooperative deadline vardır. Dış özgün owner iş timeout
 bütçesinden ayrı en az45s TERM kapanış payı ayırır; mevcut direct watchdog330s
 kullanır. Kısa grace taşıyan ara H.run wrapper kullanılmaz. Yeni temiz kaynak ve
@@ -76,8 +76,8 @@ Campaign kurucusu child açmaz; prepare ilk owned kaynak sorgusu öncesi handler
 kurar. Başarısız borrowed Fixture kurucusunun kendi temporary'si temizlenir.
 Cleanup sırasında iptal bayrağı korunur ve failed receipt üretir; özgün sentinel
 ve worker handle'ları dışında süreç aranmaz. Üretim Supervisor/native DNS
-davranışı değişmez. Üç yeni kısa vaka ile hazırlık10 geçti; yeni native2 ve ortak
-kapılar beklenir. [GB-111 ve kaynak/koşu kaydı](kabul-kosuculari-yasam-dongusu-20261016.md)
+davranışı değişmez. Üç yeni kısa vaka ile hazırlık10 geçti; C2 kaynaklı
+sonuç: kanonik test-wrapper köküyle temiz C2 üzerinde 2/2 iç vaka geçti. C2 öncesi gate4: 13 adım geçti; tam faz 998/1023 geçti, 0 başarısız, 25 atlanan [GB-111 ve kaynak/koşu kaydı](kabul-kosuculari-yasam-dongusu-20261016.md)
 PDF9/service10 hazırlığını native9/2 kabulünden ayrı izler.
 
 
@@ -87,4 +87,6 @@ kaldı (libtest0,04 saniye, Cargo komutu0,629197 saniye). Üç saniyelik worker
 hazırlık sınırı veya timeout değildir. Dar takip, Rust test wrapper `root()`
 kanonikleştirmesidir; yeni Cargo owner veya worker davranışı eklenmez.
 Birleşik native1 failed kalır; PDF9 ayrı C başarısı takip kaynağına
-taşınmaz. Yeni temiz kaynakta ortak kapılar/native2 kabulü henüz yoktur.
+taşınmaz. Takip kaynağı `8178920e03fed782a817d1864b8280fcb80812a3` üzerindeki ayrı sonuç:
+kanonik test-wrapper köküyle temiz C2 üzerinde 2/2 iç vaka geçti; C2 öncesi gate4: 13 adım geçti; tam faz 998/1023 geçti, 0 başarısız, 25 atlanan.
+İlk C başarısız kaydı değiştirilmez; GB-111: kapalı; toplu commit öncesi son belge kapısı gerekli.

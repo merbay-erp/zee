@@ -1,0 +1,18 @@
+{
+  "schema": "zee-temporary-owned-awake-1",
+  "work_item": "K-298",
+  "status": "closed-owned-utility",
+  "utility": "/usr/bin/caffeinate",
+  "argv": [
+    "-i",
+    "-m",
+    "-s",
+    "-t",
+    "18000"
+  ],
+  "bounded_seconds": 18000,
+  "reason": "owned-stop-file",
+  "elapsed_seconds": 2064.142849124968,
+  "owned_original_Popen_reaped": true,
+  "permanent_preference_changed": false
+}

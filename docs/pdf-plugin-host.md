@@ -122,6 +122,8 @@ normal komutun1 saniyelik değeri değişmez. Onu başlatan özgün dış owner 
 cleanup için en az45 saniye TERM payı ayırır; mevcut direct watchdog330 saniye
 kullanır. Kısa grace'li ara wrapper eklenmez; shutdown payı iş timeout'undan ayrıdır.
 
-Stdlib9 geçti; yeni exact kaynakta gerçek native9 ve ortak kapılar bekleniyor.
-Temizlik hatası/iptal passed sayılmaz. [GB-111 ve actual kısa test kaydı](kabul-kosuculari-yasam-dongusu-20261016.md)
-açık kapanış zincirini taşır; eski S3 veya K-298 kabulü yeni kaynak sonucu değildir.
+Stdlib9 geçti; kaynak `8178920e03fed782a817d1864b8280fcb80812a3` üzerindeki ayrı native sonuç:
+temiz C2 üzerinde 9/9 iç vaka ve bağımsız PDF içerik/sayfa/font/görsel incelemesi geçti. C2 öncesi gate4: 13 adım geçti; tam faz 998/1023 geçti, 0 başarısız, 25 atlanan Temizlik hatası/iptal
+passed sayılmaz. [GB-111 ve actual kabul kaydı](kabul-kosuculari-yasam-dongusu-20261016.md)
+durumu kapalı; toplu commit öncesi son belge kapısı gerekli olarak, exact source/tree ve özgün owner kapanışına
+bağlar. Eski S3 veya K-298 kabulü yeni kaynak sonucu değildir.

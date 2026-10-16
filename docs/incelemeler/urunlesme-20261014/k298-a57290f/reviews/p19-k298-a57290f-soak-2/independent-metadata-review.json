@@ -1,0 +1,102 @@
+{
+  "schema": "zee-k298-soak2-independent-metadata-review-1",
+  "status": "passed-read-only-review",
+  "source_sha": "a57290f7a1c1fad07cda3f266b2a221f09aa6404",
+  "source_tree": "20644b4b6dc735a8cda8a24b7c064d28f12498d4",
+  "reviewed_at": "2026-10-16T05:34:39.310703+00:00",
+  "raw_samples": 360,
+  "first_window": 1,
+  "first_window_samples": 12,
+  "last_window": 30,
+  "last_window_samples": 1,
+  "actual_seconds": 1801.1167863749433,
+  "rss_recomputed": [
+    {
+      "first_kib": 20112,
+      "last_kib": 20016,
+      "growth_percent": 0,
+      "growth_kib": 0
+    },
+    {
+      "first_kib": 19776,
+      "last_kib": 20800,
+      "growth_percent": 6,
+      "growth_kib": 1024
+    }
+  ],
+  "periods": [
+    24072,
+    24072
+  ],
+  "clock_recomputed": [
+    {
+      "scope": "build.log",
+      "wall_seconds": 152.180334,
+      "monotonic_seconds": 152.18109104200266,
+      "difference_seconds": -0.0007570420026752345
+    },
+    {
+      "scope": "soak.log",
+      "wall_seconds": 1801.209795,
+      "monotonic_seconds": 1801.1165248330217,
+      "difference_seconds": 0.09327016697830004
+    },
+    {
+      "scope": "outer-controller",
+      "wall_seconds": 1955.47569,
+      "monotonic_seconds": 1955.3830171659356,
+      "difference_seconds": 0.09267283406438764
+    }
+  ],
+  "original_controller_normal_exit0_reaped": true,
+  "producer_and_verifier_binary_pins_equal": true,
+  "inputs": {
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-soak-2-result.json": {
+      "sha256": "727f217adb019b15b652e7b8f997987f49455833fbdee2ab39886c33d32dae0b",
+      "bytes": 3636
+    },
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-soak-2/PROOF.json": {
+      "sha256": "f333bdf3a7130b50d33f3a981a1074485c78e64d9507ab59b544b3f8dcb30a3c",
+      "bytes": 5171
+    },
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-soak-2-controller.json": {
+      "sha256": "7989661a94812c9486b5de7b3709ae3f920ef001bbb63853fd6b62861fe3ea5d",
+      "bytes": 692
+    },
+    "/private/tmp/zee-p19-k298/clock-soak2-acceptance.json": {
+      "sha256": "a12caec04e7b189ddebb3af83152b283aa130c3c8d1564aba2c2b4005a497b94",
+      "bytes": 3920
+    },
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/exact-clean-soak-stage/soak_runner.py": {
+      "sha256": "6f6f59c3a4aa4c9bf176758367d006cef8a6ef2f9c8f83317681f36c2088b360",
+      "bytes": 7748
+    },
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/exact-clean-soak-stage/owned_delivery_helper.py": {
+      "sha256": "509106d70e5e35c1142594c98df022b01e689966415bdd94a8f67feecb8587d8",
+      "bytes": 13061
+    },
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-drivers/verify-soak.py": {
+      "sha256": "a9655c433b48c32ae3e6bcb461ff0521ed948b97b8e39630d19b0952f91ec17d",
+      "bytes": 12128
+    },
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-soak-2/soak-history.tsv": {
+      "sha256": "a95776208f6ea09114d8a4cf929e170a6a172f9893bfd30cf908e5fdd022052f",
+      "bytes": 429
+    },
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-soak-2/soak-report.md": {
+      "sha256": "84140ef207b2fb77642250c63b8346c696b63ff17d9ad9516a28ea958c54aa5c",
+      "bytes": 14736
+    },
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-soak-2/build.log": {
+      "sha256": "32412effcf0d24b8fcf2ecb689287a90633bfcac8f7be6795bf36c7293d75a68",
+      "bytes": 4752
+    },
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-soak-2/soak.log": {
+      "sha256": "b632a623b84f83186644e911d9b16858d72e74d59ac3af0a5b3c360688c9972d",
+      "bytes": 40507
+    }
+  },
+  "limits": "Read-only raw report/history/receipt/input-hash and clock recomputation. Existing completed verifier proves original/clone Git cleanliness and actual binary pins; this review did not rerun git, scan binaries, run tests or import a target driver. Endpoint clocks are supplemental, not proof of uninterrupted CPU activity. No RC/C2/IDE/UI/platform/release acceptance transferred.",
+  "R_V_E_written": false,
+  "target_processes_started": false
+}

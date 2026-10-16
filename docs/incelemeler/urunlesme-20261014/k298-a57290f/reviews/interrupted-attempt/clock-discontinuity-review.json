@@ -1,0 +1,574 @@
+{
+  "schema": "zee-k298-clock-discontinuity-review-1",
+  "reviewed_at": "2026-10-16T08:04:23.846661+03:00",
+  "status": "review-complete-with-acceptance-exclusions",
+  "review_method": "read-only evidence/source inspection and hashing; no tests, campaigns, services or process discovery/signalling",
+  "source_sha": "a57290f7a1c1fad07cda3f266b2a221f09aa6404",
+  "source_tree": "20644b4b6dc735a8cda8a24b7c064d28f12498d4",
+  "source_checks": [
+    {
+      "path": "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+      "sha": "a57290f7a1c1fad07cda3f266b2a221f09aa6404",
+      "tree": "20644b4b6dc735a8cda8a24b7c064d28f12498d4",
+      "porcelain": ""
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-rc/checkout",
+      "sha": "a57290f7a1c1fad07cda3f266b2a221f09aa6404",
+      "tree": "20644b4b6dc735a8cda8a24b7c064d28f12498d4",
+      "porcelain": ""
+    }
+  ],
+  "source_producer_pins": {
+    "scripts/rc-kampanyasi.py": "f401406d8097479c5545597fc09ae81791e20043adccd8b9abb8ad650cf86752",
+    "compiler/fuzz/fuzz_targets/lexer_parser.rs": "bf629e7151fd48c0dc637e297cc90f31607f8408c9839c8b3f6691b480ed77fa",
+    "compiler/fuzz/Cargo.lock": "29fad535f55a17e5e2bda71e887f5c6121e082a181ae19d3aab6b5342f6d99c8",
+    "compiler/src/bin/soak.rs": "5c61171e5a0f97f53d8195902dd0add0ee23807d1f36a22149cdcf560a376b22"
+  },
+  "original_rc": {
+    "result": "failed",
+    "release_gate_closed": false,
+    "controller": {
+      "argv": [
+        "python3",
+        "-I",
+        "-B",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/scripts/rc-kampanyasi.py",
+        "--repo",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+        "--source-sha",
+        "a57290f7a1c1fad07cda3f266b2a221f09aa6404",
+        "--out",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-rc",
+        "--execute-approved-stable-sha"
+      ],
+      "started_ns": 1792109463067464000,
+      "status": "failed",
+      "minimum_free_bytes": 32846188544,
+      "required_free_bytes": 10737418240,
+      "cancellation_reason": "owned-cancel-file",
+      "observed_exit": null,
+      "owned_group_closed_and_reaped": true,
+      "exit": 1,
+      "finished_ns": 1792126367254441000,
+      "elapsed_seconds": 1703.1313856670167
+    },
+    "controller_timing": {
+      "wall_seconds": 16904.186977,
+      "monotonic_seconds": 1703.1313856670167,
+      "wall_minus_monotonic_seconds": 15201.055591332984
+    },
+    "targets": [
+      {
+        "target": "lexer_parser",
+        "command_exit": 1,
+        "command_elapsed_monotonic_seconds": 1327.588,
+        "command_supervisor_failure": null,
+        "libfuzzer_reported_seconds": null,
+        "input_timeout": true,
+        "sanitizer_finding_reported": false,
+        "statistics_passed": false,
+        "recorded_binary_sha256": "82d01a852448fb7e280448382751a61cc82576e060397dbdb9af691ed9b13a08",
+        "log_sha256_verified": true,
+        "manifest_sha256_verified": true,
+        "corpus_seeds_rehashed_by_this_review": false
+      },
+      {
+        "target": "morfoloji",
+        "command_exit": 0,
+        "command_elapsed_monotonic_seconds": 1327.592,
+        "command_supervisor_failure": null,
+        "libfuzzer_reported_seconds": 16526,
+        "input_timeout": false,
+        "sanitizer_finding_reported": false,
+        "statistics_passed": false,
+        "recorded_binary_sha256": "d7ec23c74adf02ab8ba24345a28efd4a1ae48219478ab6ddf20d355b0c10695b",
+        "log_sha256_verified": true,
+        "manifest_sha256_verified": true,
+        "corpus_seeds_rehashed_by_this_review": false
+      },
+      {
+        "target": "http_istegi",
+        "command_exit": -15,
+        "command_elapsed_monotonic_seconds": 138.118,
+        "command_supervisor_failure": "interrupted",
+        "libfuzzer_reported_seconds": null,
+        "input_timeout": false,
+        "sanitizer_finding_reported": false,
+        "statistics_passed": false,
+        "recorded_binary_sha256": "14bc249ed02b9e78eddf13f9ea6b179e47edd0622b84e30ae933b54f3f0b6ed4",
+        "log_sha256_verified": true,
+        "manifest_sha256_verified": true,
+        "corpus_seeds_rehashed_by_this_review": false
+      },
+      {
+        "target": "wasm_abi",
+        "command_exit": -15,
+        "command_elapsed_monotonic_seconds": 115.984,
+        "command_supervisor_failure": "interrupted",
+        "libfuzzer_reported_seconds": null,
+        "input_timeout": false,
+        "sanitizer_finding_reported": false,
+        "statistics_passed": false,
+        "recorded_binary_sha256": "891b498b533b75619567051cc3b32592b52b0bda10edf330d6d7116ec2ae65c6",
+        "log_sha256_verified": true,
+        "manifest_sha256_verified": true,
+        "corpus_seeds_rehashed_by_this_review": false
+      }
+    ],
+    "miri": [
+      {
+        "name": "miri-ondalik",
+        "exit": null,
+        "elapsed_seconds": 0,
+        "supervisor_failure": "interrupted-before-start",
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "passed": false,
+        "actual_tests": 0
+      },
+      {
+        "name": "miri-zaman",
+        "exit": null,
+        "elapsed_seconds": 0,
+        "supervisor_failure": "interrupted-before-start",
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "passed": false,
+        "actual_tests": 0
+      }
+    ],
+    "artifact": {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-rc/targets/lexer_parser/crashes/timeout-82a203ea908bbf545a93e747f86a082777cffd33",
+      "kind": "original-timeout-input",
+      "bytes": 330,
+      "sha256": "c64bc23f74a8683048a8b7897a5a34cc2bfb2b652ce4e8cd22dc6bfadd852888"
+    },
+    "first_timeout_alarm_seconds": 15219,
+    "raw_timeout_log_lines": [
+      16497,
+      16500,
+      16501,
+      16526
+    ],
+    "acceptance": false
+  },
+  "replay": {
+    "first": {
+      "status": "failed-before-target-start",
+      "log": "Error: could not find a cargo project",
+      "controller": {
+        "argv": [
+          "env",
+          "CARGO_NET_OFFLINE=true",
+          "CARGO_BUILD_JOBS=1",
+          "CARGO_INCREMENTAL=0",
+          "RUSTUP_TOOLCHAIN=nightly-2026-08-31",
+          "cargo",
+          "+nightly-2026-08-31",
+          "fuzz",
+          "run",
+          "--sanitizer",
+          "address",
+          "--target",
+          "aarch64-apple-darwin",
+          "--target-dir",
+          "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-rc/fuzz-target",
+          "lexer_parser",
+          "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-rc/targets/lexer_parser/crashes/timeout-82a203ea908bbf545a93e747f86a082777cffd33",
+          "--",
+          "-runs=100",
+          "-timeout=5",
+          "-print_final_stats=1"
+        ],
+        "started_ns": 1792126421337641000,
+        "status": "failed",
+        "minimum_free_bytes": 66318336000,
+        "required_free_bytes": 10737418240,
+        "observed_exit": 1,
+        "owned_group_closed_and_reaped": true,
+        "exit": 1,
+        "finished_ns": 1792126422343415000,
+        "elapsed_seconds": 1.0057554160011932
+      }
+    },
+    "second": {
+      "status": "passed-fixed-input-only",
+      "controller": {
+        "argv": [
+          "python3",
+          "-I",
+          "-B",
+          "-c",
+          "import os,sys;os.chdir(sys.argv[1]);os.execvp(sys.argv[2],sys.argv[2:])",
+          "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-rc/checkout/compiler",
+          "env",
+          "CARGO_NET_OFFLINE=true",
+          "CARGO_BUILD_JOBS=1",
+          "CARGO_INCREMENTAL=0",
+          "RUSTUP_TOOLCHAIN=nightly-2026-08-31",
+          "cargo",
+          "+nightly-2026-08-31",
+          "fuzz",
+          "run",
+          "--sanitizer",
+          "address",
+          "--target",
+          "aarch64-apple-darwin",
+          "--target-dir",
+          "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-rc/fuzz-target",
+          "lexer_parser",
+          "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-rc/targets/lexer_parser/crashes/timeout-82a203ea908bbf545a93e747f86a082777cffd33",
+          "--",
+          "-runs=100",
+          "-timeout=5",
+          "-print_final_stats=1"
+        ],
+        "started_ns": 1792126612207284000,
+        "status": "passed",
+        "minimum_free_bytes": 66223091712,
+        "required_free_bytes": 10737418240,
+        "observed_exit": 0,
+        "owned_group_closed_and_reaped": true,
+        "exit": 0,
+        "finished_ns": 1792126617226142000,
+        "elapsed_seconds": 5.018827334046364
+      },
+      "controller_timing": {
+        "wall_seconds": 5.018858,
+        "monotonic_seconds": 5.018827334046364,
+        "wall_minus_monotonic_seconds": 3.0665953635988785e-05
+      },
+      "fixed_input_runs": 100,
+      "reported_total_execution_ms": 15,
+      "timeout_seconds": 5,
+      "explicit_address_sanitizer": true,
+      "toolchain": "nightly-2026-08-31",
+      "source_sha": "a57290f7a1c1fad07cda3f266b2a221f09aa6404",
+      "original_binary_sha256": "82d01a852448fb7e280448382751a61cc82576e060397dbdb9af691ed9b13a08",
+      "current_binary": {
+        "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-rc/fuzz-target/aarch64-apple-darwin/release/lexer_parser",
+        "kind": "post-replay-current-binary",
+        "bytes": 66557632,
+        "sha256": "ceacd22703793e391042da7ccd216058c14d8cbccb6692d97006fb4bbf0bae76"
+      },
+      "original_binary_bytes_preserved_at_original_path": false,
+      "same_binary_replay_claim": false,
+      "rebuilt_in_log": true,
+      "fuzz_campaign_claim": false
+    },
+    "input_semantics": {
+      "raw_bytes": 330,
+      "raw_sha256": "c64bc23f74a8683048a8b7897a5a34cc2bfb2b652ce4e8cd22dc6bfadd852888",
+      "valid_utf8": false,
+      "first_invalid_byte_offset": 90,
+      "statically_inferred_target_str_prefix_bytes": 90,
+      "prefix_sha256": "086bba9385b96879fbaf359c5635b72601dd0332929568aa94aec4bd182f10a8",
+      "basis": "fuzz target accepts &str; pinned libfuzzer-sys0.4.13 arbitrary_take_rest delegates to arbitrary1.4.2 arbitrary_str, which takes valid_up_to prefix. Static inference, not runtime instrumentation."
+    }
+  },
+  "original_soak": {
+    "producer_status": "passed",
+    "producer_acceptance": true,
+    "controller_status": "passed",
+    "controller_owned_group_closed_and_reaped": true,
+    "controller_timing": {
+      "wall_seconds": 17145.759184,
+      "monotonic_seconds": 1944.7047167500714,
+      "wall_minus_monotonic_seconds": 15201.054467249927
+    },
+    "command_started_utc": "2026-10-16T00:13:25.194728+00:00",
+    "command_finished_utc": "2026-10-16T04:56:47.168216+00:00",
+    "command_wall_seconds": 17001.973488,
+    "command_monotonic_seconds": 1800.9145087499637,
+    "actual_wrapper_monotonic_seconds": 1800.9152828750666,
+    "command_wall_minus_monotonic_seconds": 15201.058979250036,
+    "raw_sample_rows": 360,
+    "sample_seconds_non_decreasing": true,
+    "repeated_1417_second_samples": 4,
+    "largest_adjacent_sample_gap_seconds": 22,
+    "history_row": [
+      "a57290f7a1c1fad07cda3f266b2a221f09aa6404",
+      "2026-10-16",
+      "macos-aarch64",
+      "rustc 1.93.1 (01f6ddf75 2026-02-11)",
+      "1800",
+      "60",
+      "22724",
+      "22724",
+      "19920",
+      "15808",
+      "18832",
+      "15888",
+      "0",
+      "0",
+      "10",
+      "32768",
+      "gecti"
+    ],
+    "source_helpers_binaries_logs_history_report_hashes_verified": true,
+    "continuous_final_acceptance": false,
+    "disposition": "retain producer passed record unchanged; exclude this run from final continuous acceptance because wall/monotonic timeline diverges materially"
+  },
+  "clock_interpretation": {
+    "observation": "RC and soak wall-minus-monotonic differences independently agree at approximately15201.055 seconds",
+    "cause": "not-established",
+    "sleep_or_suspend_proven": false,
+    "compiler_bug_absence_proven": false,
+    "monotonic_is_cpu_time": false,
+    "scope": "Recorded monotonic elapsed is a clock-domain duration, not CPU execution time; neither the wallclock discrepancy nor the bounded replay identifies the underlying cause."
+  },
+  "replacement_runs": {
+    "rc2_started_proof_exists": true,
+    "rc2_campaign_proof_exists": false,
+    "soak2_proof_exists": false,
+    "status_at_review": "pending; no acceptance claimed"
+  },
+  "files": [
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-rc-controller-1.json",
+      "kind": "original-evidence",
+      "bytes": 763,
+      "sha256": "d7f573a7b05d8acf75005e206a07ab8074b21c4e7dd101a7ab4660101bfc8162"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-rc-controller-1.cancel",
+      "kind": "original-evidence",
+      "bytes": 149,
+      "sha256": "9dadbc2d55eb6d145e4989460f338233835adfb06f8525c067a699a779409b79"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-timeout-replay-1.json",
+      "kind": "original-evidence",
+      "bytes": 965,
+      "sha256": "994c70138187b90ecad171ccb178022b8f0eb6b7125e938c90fb49ad881c482d"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-timeout-replay-1.log",
+      "kind": "original-evidence",
+      "bytes": 38,
+      "sha256": "fe293be145138d657edeb8fbd41171ce28f1b92a9edcf68b551fa6df0cefae48"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-timeout-replay-2.json",
+      "kind": "original-evidence",
+      "bytes": 1194,
+      "sha256": "4ffa1b415f8bc502a515e1b2bd9d874578f4b69e5e4174965a9e538dcefcd15a"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-timeout-replay-2.log",
+      "kind": "original-evidence",
+      "bytes": 4150,
+      "sha256": "204d0bd7980bef3b0384bcc8aa1be56e14fd93fafa0907419ac1baabbff0c572"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-soak-controller.json",
+      "kind": "original-evidence",
+      "bytes": 690,
+      "sha256": "9b7acae72e1db3250f1ca6b6c97db47f427d65592d4b02db1426a9dd421f2e8c"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-soak/PROOF.json",
+      "kind": "original-evidence",
+      "bytes": 5163,
+      "sha256": "553c514e1326d12bcc311df2d169fc5e8a8dc0a7d293f76fc750c6c4b7a2bbd8"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-soak/soak-history.tsv",
+      "kind": "original-evidence",
+      "bytes": 429,
+      "sha256": "112f7918c87de8a627f7a3cba108f27ef7b0a8f2224bc78c53b926960d231c7a"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-soak/soak-report.md",
+      "kind": "original-evidence",
+      "bytes": 14768,
+      "sha256": "9b1f3fb2819e8a5ce8d3a18962e1c73900b10166986787e2c417d4e1f09f9d9d"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-soak/soak.log",
+      "kind": "original-evidence",
+      "bytes": 40571,
+      "sha256": "1f5e66488c5baf57426d82cb9e92e062430d303337e5f596a860de961270f80f"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-soak/build.log",
+      "kind": "original-evidence",
+      "bytes": 4748,
+      "sha256": "779729e9dbe841691e1c1d91449fc8d47cfc99c6f619bd71cbf67d770f12e8e4"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-rc/campaign-proof.json",
+      "kind": "original-evidence",
+      "bytes": 12879,
+      "sha256": "2b3a6cbbb0cc7337cbc89b7741868333712548c0d2b5ed36d2a475e9ec9fc24c"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-rc/started-proof.json",
+      "kind": "original-evidence",
+      "bytes": 1586,
+      "sha256": "a9af8d136c07bca76f008fba2837c3c861ea9e218224ce23105bca9b440c9413"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-rc/targets/lexer_parser/run.log",
+      "kind": "raw-log",
+      "bytes": 2051647,
+      "sha256": "e6e86e351dfb12dd952f6982b51e79e348e272e8c74f2fa38731bc3a4481a731"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-rc/targets/lexer_parser/manifest.tsv",
+      "kind": "corpus-manifest-hash-only",
+      "bytes": 266522,
+      "sha256": "56c9d8d9d13ee7c5d9f9a257fcb45c8e4828142608f572389b4364dec585b20d"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-rc/targets/lexer_parser/result.json",
+      "kind": "original-evidence",
+      "bytes": 1841,
+      "sha256": "5934d6ade2807598c93a34b74c15510271b4ce032b4aa7b9ebcf32be2bbf1c7f"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-rc/targets/lexer_parser/initial-manifest.tsv",
+      "kind": "initial-corpus-manifest-hash-only",
+      "bytes": 886,
+      "sha256": "f28aaf89ddc1e8bd81049af90afe96741b33cea97b3a18305e1217301fbb3743"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-rc/targets/morfoloji/run.log",
+      "kind": "raw-log",
+      "bytes": 176512,
+      "sha256": "995e0f51342148930392d19631df01795a4b6fe18d1fc18bb0c5d02104757ce5"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-rc/targets/morfoloji/manifest.tsv",
+      "kind": "corpus-manifest-hash-only",
+      "bytes": 33094,
+      "sha256": "e797399c54cc4958d91cc07283bbb22ca0d0e5bba90c2231b31b4b1d835b9a1f"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-rc/targets/morfoloji/result.json",
+      "kind": "original-evidence",
+      "bytes": 1652,
+      "sha256": "36ffe76d38530e0d5f7dc14ad1d469ba329aed7d22066edb0614c99ab7f4abc4"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-rc/targets/morfoloji/initial-manifest.tsv",
+      "kind": "initial-corpus-manifest-hash-only",
+      "bytes": 552,
+      "sha256": "72948c3d15eb7a6527dc4efaa661e4e6df247c201bcfb0ca50181f5b0cfa5d6d"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-rc/targets/http_istegi/run.log",
+      "kind": "raw-log",
+      "bytes": 219658,
+      "sha256": "1d9d2d65b152ae492160a693431eb38b8d8ae9b2a03057f8995f00cb132ff6c4"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-rc/targets/http_istegi/manifest.tsv",
+      "kind": "corpus-manifest-hash-only",
+      "bytes": 40545,
+      "sha256": "e0d1472a73fb1fc521c716f1ac2ba36a2f7621baa2c8a8df8ed2c69105070a99"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-rc/targets/http_istegi/result.json",
+      "kind": "original-evidence",
+      "bytes": 1674,
+      "sha256": "ca6618d9f94e27799cb6f818e8534ef406669c9301046e543d86eacbdb7f6bfe"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-rc/targets/http_istegi/initial-manifest.tsv",
+      "kind": "initial-corpus-manifest-hash-only",
+      "bytes": 689,
+      "sha256": "0a40253cdebb17959f1d3a25bfbf2c95538f467ea844e891295c2ae4b55fc28c"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-rc/targets/wasm_abi/run.log",
+      "kind": "raw-log",
+      "bytes": 363757,
+      "sha256": "99eaa37f9c6dc535b9c213c095fde6a91318310a54050c50241e37e7a563f578"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-rc/targets/wasm_abi/manifest.tsv",
+      "kind": "corpus-manifest-hash-only",
+      "bytes": 155285,
+      "sha256": "9388b9046af4fbc02b10c207fd66be4504bf28c0a54bc5662e571f05ae436f14"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-rc/targets/wasm_abi/result.json",
+      "kind": "original-evidence",
+      "bytes": 1658,
+      "sha256": "87e9caa439d30a8d5f73f7f35ae62f83f466af762bb08c2e22b65257861d9007"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-rc/targets/wasm_abi/initial-manifest.tsv",
+      "kind": "initial-corpus-manifest-hash-only",
+      "bytes": 631,
+      "sha256": "cc2b45772ca26f45a99ba51da661b755d96654ac7d374e75e7075a567e74c971"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-rc/targets/lexer_parser/crashes/timeout-82a203ea908bbf545a93e747f86a082777cffd33",
+      "kind": "original-timeout-input",
+      "bytes": 330,
+      "sha256": "c64bc23f74a8683048a8b7897a5a34cc2bfb2b652ce4e8cd22dc6bfadd852888"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-rc/fuzz-target/aarch64-apple-darwin/release/lexer_parser",
+      "kind": "post-replay-current-binary",
+      "bytes": 66557632,
+      "sha256": "ceacd22703793e391042da7ccd216058c14d8cbccb6692d97006fb4bbf0bae76"
+    },
+    {
+      "path": "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/scripts/rc-kampanyasi.py",
+      "kind": "source",
+      "bytes": 16962,
+      "sha256": "f401406d8097479c5545597fc09ae81791e20043adccd8b9abb8ad650cf86752"
+    },
+    {
+      "path": "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/compiler/fuzz/fuzz_targets/lexer_parser.rs",
+      "kind": "source",
+      "bytes": 384,
+      "sha256": "bf629e7151fd48c0dc637e297cc90f31607f8408c9839c8b3f6691b480ed77fa"
+    },
+    {
+      "path": "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/compiler/fuzz/Cargo.lock",
+      "kind": "source",
+      "bytes": 44351,
+      "sha256": "29fad535f55a17e5e2bda71e887f5c6121e082a181ae19d3aab6b5342f6d99c8"
+    },
+    {
+      "path": "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/compiler/src/bin/soak.rs",
+      "kind": "source",
+      "bytes": 22335,
+      "sha256": "5c61171e5a0f97f53d8195902dd0add0ee23807d1f36a22149cdcf560a376b22"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/s3-acceptance-drivers/watch-owned.py",
+      "kind": "timing-producer-source",
+      "bytes": 2803,
+      "sha256": "b3595968bd5118bc8d1ef3700c4cc516b2f422a6ae46e8b095dd23146b0a1a34"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/exact-clean-soak-stage/soak_runner.py",
+      "kind": "timing-producer-source",
+      "bytes": 7748,
+      "sha256": "6f6f59c3a4aa4c9bf176758367d006cef8a6ef2f9c8f83317681f36c2088b360"
+    },
+    {
+      "path": "/Users/mustafaerbay/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/libfuzzer-sys-0.4.13/src/lib.rs",
+      "kind": "local-dependency-source",
+      "bytes": 28094,
+      "sha256": "e70094cd270f3098c06c19bd6af1e4f2e987b2159a2c4f20898a9eb78f9fd77d"
+    },
+    {
+      "path": "/Users/mustafaerbay/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/arbitrary-1.4.2/src/foreign/core/str.rs",
+      "kind": "local-dependency-source",
+      "bytes": 1006,
+      "sha256": "add0bc52fcc06adcf294f16bf95f3c513ce07a2fd614d8474976cbf743922e2a"
+    }
+  ],
+  "limitations": [
+    "Original first-RC executable bytes at its recorded path were replaced during the replay build; the original log, hash record, manifests and timeout input remain, not an exact old-binary replay.",
+    "No OS power/suspend logs were inspected and no cause was established.",
+    "No timeout seed minimization, corpus import, new regression case, feature change, source edit or new run was performed by this review.",
+    "Corpus manifest hashes were checked; this review did not independently rehash all listed seeds.",
+    "This is failure/timing analysis, not an RC release gate or continuous soak acceptance."
+  ]
+}

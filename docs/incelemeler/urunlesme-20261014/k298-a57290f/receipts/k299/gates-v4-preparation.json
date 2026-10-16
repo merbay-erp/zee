@@ -1,0 +1,19 @@
+{
+  "schema": "zee-k299-gates-v4-preparation-1",
+  "status": "prepared-not-executed",
+  "timestamp": "2026-10-16T08:04:20.397578+03:00",
+  "source_driver": "/private/tmp/zee-p19-k298/k299-gates-v3.py",
+  "source_driver_sha256": "92fa86ac65cf3ccc0544373c094355f95de52a72c5bdcd1cc79173e5e1add606",
+  "driver": "/private/tmp/zee-p19-k298/k299-gates-v4.py",
+  "driver_sha256": "c9d75400542024cd8e6578c6c15b9c525e5836265e4bea6f31ca78745be1eb87",
+  "patch_sha256": "b7345afbc90c569a454a3a15b31e2a1503a1adf01ea71b3bd332cc4e1d388f33",
+  "ast_parse": true,
+  "all_function_asts_unchanged": true,
+  "main_try_ast_unchanged": true,
+  "only_two_literal_replacements": true,
+  "popen_calls": 1,
+  "environment_change": "Remove inherited CARGO_TARGET_DIR before launching any gate command; record environment.CARGO_TARGET_DIR=null from env.get; all remaining actual child environment fields unchanged.",
+  "target_argument": "Retained in receipt metadata and phase report path; no longer exported to child Cargo processes.",
+  "source_runtime_tests": "not run",
+  "scope": "Only T draft files written; no repository, validation checkout or evidence mutation."
+}

@@ -45,20 +45,20 @@ Ayrıntılar: [Derleme ve bağımlılıklar](docs/derleme-ve-bagimliliklar.md) �
 [V1 sürüm kapıları](docs/v1-surum-kapilari.md) ·
 [Öncelikli backlog](docs/oncelikli-backlog.md).
 
-[S4 yerel kabulü](docs/urunlesme-s4-kabul-20261015.md) `4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2`
-kaynağının RC, soak, macOS teslim/kurulum, gerçek IDE ve stdio gözlemini kaydeder.
-K-298 açık belge bakımının yeni temiz kaynak ölçümü ve kabulü beklenir;
-[P19 200 ms hedefi](docs/olcumler.md) açıktır.
+[K-298 yerel kabulü](docs/urunlesme-k298-kabul-20261016.md) `a57290f7a1c1fad07cda3f266b2a221f09aa6404`
+kaynağında dört stdio kohortunun gözlenen p95 değerlerinin 200 ms hedefini
+karşıladığını, dar IDE/UTF-16 ve macOS teslim/kurulum kabulünü kaydeder. Aynı kaynakta ikinci 1800 saniyelik RSS kabulü geçti;
+RC dört ASan/Miri3 ve 998/0/25 tam kapıyla geçti; K-298 dar kapsamı kapalıdır; [P19](docs/olcumler.md) ürün/UI/HIR kapsamıyla kısmi kalır.
+[S4](docs/urunlesme-s4-kabul-20261015.md) kendi exact kaynağında tarihsel kanıttır.
 [39 maddelik plan](docs/urunlesme-plani.md) ürün, insan ve fiziksel platform
 açıklarını korur; [14 Ekim teslimi](docs/urunlesme-sonucu-20261014.md) tarihseldir.
 [Devam dalgası](docs/urunlesme-devam-20261014.md) native COMMIT hata kanıtını
 ve kaynak arşivi sınırını ayrıca izler.
 
 [K-299 kabul koşucusu bakımı](docs/kabul-kosuculari-yasam-dongusu-20261016.md)
-stdlib PDF9/service10 ile sınandı. İlk C native koşusunda PDF9 ayrı geçti;
-service-fault kanonik depo yolu kontrolünde başlamadan reddedildi ve birleşik
-koşu başarısız kaldı. Test wrapper kökü için dar düzeltme ve yeni kaynak
-kabulü beklenir; GB-111 açıktır. Üretim compiler/host ve önceki kabul kimlikleri korunur.
+için durum: **dar kaynak/native/arşiv kapsamı kapalı; toplu commit öncesi son belge kapısı gerekli**. Kaynak `8178920e03fed782a817d1864b8280fcb80812a3` üzerinde
+temiz C2 native2 iki Cargo sahibiyle geçti: signed PDF9 ve service-fault2; alt vakalar Cargo owner sayısına eklenmez; C2 öncesi gate4: 13 adım geçti; tam faz 998/1023 geçti, 0 başarısız, 25 atlanan. GB-111: kapalı; toplu commit öncesi son belge kapısı gerekli.
+Üretim compiler/host değişmedi; K-298 RC/soak/IDE/stdio kabulü kendi kaynağında kalır.
 
 ## Kaynaktan hızlı başlangıç
 

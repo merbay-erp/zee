@@ -60,3 +60,11 @@ SHA-256 ile disk SHA-256 eşliği commit öncesi ayrıca doğrulanır.
 ## 15 Ekim 2026 — temiz S yerel kanıt güncellemesi
 
 S üzerinde native Zee örneği gerçekten bounded job JSON üretti; equality kontrolünden sonra fixed backend8 koşusu geçti. [Son rapor](urunlesme-final-kabul-20261015.md) exact paket/asset/font notice kimliğini korur. Bu host kabulü Zee içinden resmî signed plugin invocation, keyfi PDF sandbox veya gerçek katalog entegrasyonu değildir.
+
+## 16 Ekim 2026 — a57290f fixed backend kanıtı
+
+[K-298 kabulünde](urunlesme-k298-kabul-20261016.md) aynı fixed host backend'in 8 iç vakasını
+kaynakla pinlenmiş mevcut Cargo wrapper'ı doğruladı; saklanan PDF artefaktları
+bağımsız incelendi. İç unittest stderr'i dışa aktarılmadı. Bu exact kaynakta
+native Zee emitter veya signed PDF yeniden çalıştırılmadı; önceki native
+kanıt kendi tarihsel kaynağında kalır. Ayrı K-299 C2 `8178920e03fed782a817d1864b8280fcb80812a3` kaynağında signed PDF9 kabulü daha sonra geçti; bu sonuç a57290f'ye aktarılmaz. Genel P11/gerçek katalog/FFI/yayın açıktır.

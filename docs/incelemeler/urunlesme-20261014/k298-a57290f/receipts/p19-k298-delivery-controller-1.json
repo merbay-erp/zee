@@ -1,0 +1,23 @@
+{
+  "argv": [
+    "python3",
+    "-I",
+    "-B",
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/local-deliverable-plan-stage/deliverable.py",
+    "--repo",
+    "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+    "--sha",
+    "a57290f7a1c1fad07cda3f266b2a221f09aa6404",
+    "--out",
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-macos-delivery"
+  ],
+  "started_ns": 1792108740137504000,
+  "status": "passed",
+  "minimum_free_bytes": 69688856576,
+  "required_free_bytes": 10737418240,
+  "observed_exit": 0,
+  "owned_group_closed_and_reaped": true,
+  "exit": 0,
+  "finished_ns": 1792109102780640000,
+  "elapsed_seconds": 362.64561699994374
+}
