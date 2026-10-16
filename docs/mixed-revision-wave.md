@@ -78,3 +78,40 @@ kopyalanmaz. Yalnız hash/fixed sonuçlar arşivlenir; output parent0700 kalır.
 ## S3 yerel kabul kanıtı
 
 [Exact S3 kabulü ve açık sınırlar](urunlesme-s3-kabul-20261015.md) gerçek canonical/native/IDE ve ortak kapıları bağlar; genel ürün/platform/yayın kabulü değildir.
+
+## K-300 — Kabul koşucusunun kök yolu ve iptal doğruluğu
+
+**Açık — hazırlık13 geçti; kaynak kapıları ve temiz exact kaynakta native9
+kabulü bekleniyor (GB-112).** K-291'in tarihsel hazırlık8 ve S3 native9 sonucu
+korunur; bunlar K-300 düzeltmesinin kabulü değildir.
+
+Rust test sarmalayıcısının `compiler/..` kökü Python koşucusunun canonical yol
+önkoşulunda reddedilir; bu ret native dalgalar başlamadan oluşur. K-300 bu kökü
+kanonikleştirir. İlk `clean_exact` çocuk komutundan önce iptal handler'ı kurulur;
+kısmi hazırlık da aynı finally temizliği kapsamına alınır. Kısmen kurulmuş host,
+oluşturulduğu anda açıkça koşucuya sahiplenilir; listener veya çocuk oluşturma
+başarısız olsa da temizliği yalnız bu sahiplik üzerinden yapılır.
+
+Cleanup, gerekli owned kapanışı sürdürebilir; fakat gelen iptal kalıcı olarak
+kaydedilir ve sonuç `passed` olamaz. Önceden geçen vaka sonuçları, cleanup
+sırasındaki iptali başarıya çeviremez. Özgün Popen/handle yetkisi korunur;
+PID bulup benimseme veya yabancı süreç temizleme eklenmez. Mevcut native9,
+dört dalga/160 istek, no-retry ve state koruma doğrulama koşulları değişmez.
+
+Yeni Python hazırlık alt vakaları aynı `mixed_revision_hazirlik` Cargo sahibinin
+içindedir; yeni Rust test sahibi değildir. `mixed_revision_native` ayrı ve
+explicit ignored kalır. Son V2 hazırlığı 13/13 geçti (0,217 sn); özgün
+controller exit0/reaped. `k300-preparation-2.log` ve
+`k300-preparation-controller-2.json`, 16 Ekim yerel kanıt kökündedir. Dört
+eski kaynak karşı örneği mock-only koşuda doğrulandı; native başarı değildir.
+Hazırlık başarısı native9 kabulü yerine yazılmaz.
+
+Etki incelemesi: değişiklik test sarmalayıcısı ve kabul koşucusuyla sınırlıdır.
+Üretim compiler, native host, grammar/API/tanı, spec/RFC normları, katman ve
+bağımlılık grafiği, performans iş yükü veya kalıcı durum değişmez. Bu nedenle
+hata kataloğu, semantic regression/compiler beyanları, katman fixture'ı ve
+performans/soak tarihçesi için yeni davranış kaydı gerekmez. Mevcut spec/RFC,
+ADR, faz ve belge tazelik kapıları yine incelenir; Rust biçimi ve tam faz kapısı
+bu test değişikliğinin kabulüne dahildir. Yeni kaynakta koşulmamış RC/soak/IDE
+ve S/C2/S3 kanıtları aktarılmaz. P14 genel SLA, DB şema devri, ürün ve platform
+kapsamıyla kısmi kalır; C1/K-288 ve P33/K-293 retleri bu çalışmanın dışındadır.

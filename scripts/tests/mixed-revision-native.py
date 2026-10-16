@@ -65,16 +65,27 @@ def http(port,path='/revision',client='127.2.0.1',method='GET',cookie=None,csrf=
 
 class Run:
     def __init__(self,args):
-        self.a=args;self.stop=False;self.end=time.monotonic()+300;self.host=None;self.foreign=None;self.gens=[];self.oldhandlers={};self.cases=[];self.revisions=[]
+        self.a=args;self.stop=False;self.end=time.monotonic()+300;self.host=None;self.foreign=None;self.gens=[];self.oldhandlers={};self.cases=[];self.revisions=[];self.output_created=False;self.host_initialized=False
         need(os.name=='posix' and os.geteuid()!=0 and re.fullmatch('[0-9a-f]{40}',args.sha)and re.fullmatch('[0-9a-f]{64}',args.binary_sha256))
         self.repo=Path(args.repo);self.binary=Path(args.dil);self.out=Path(args.out)
         for p in (self.repo,self.binary,self.out):need(p.is_absolute()and p.resolve()==p)
         need(not self.out.exists()and self.out.parent.stat().st_uid==os.geteuid()and stat.S_IMODE(self.out.parent.stat().st_mode)==0o700 and self.repo not in self.out.parents and self.out not in self.repo.parents)
-        self.H=load('revision_lifecycle',self.repo/'scripts/lifecycle_core.py');self.H.clean_exact(self.repo,args.sha);need(snapshot(self.binary)==args.binary_sha256)
-        self.out.mkdir(mode=0o700);self.proof={'schema':'zee-mixed-revision-native-1','source_sha':args.sha,'binary_sha256':args.binary_sha256,'cases':self.cases,'revisions':self.revisions,'status':'running','boundaries':['anonymous same-contract code revisions only','not universal artifact/schema deployment, saturation or zero-downtime SLA','cookie/CSRF/argv/source values not logged']}
+        self.H=load('revision_lifecycle',self.repo/'scripts/lifecycle_core.py')
+        self.proof={'schema':'zee-mixed-revision-native-1','source_sha':args.sha,'binary_sha256':args.binary_sha256,'cases':self.cases,'revisions':self.revisions,'status':'running','boundaries':['anonymous same-contract code revisions only','not universal artifact/schema deployment, saturation or zero-downtime SLA','cookie/CSRF/argv/source values not logged']}
+    def prepare(self):
+        # Construction has no children. Install cancellation before the first
+        # owned query; main's finally also covers incomplete preparation.
+        for n in (signal.SIGTERM,signal.SIGINT):self.oldhandlers[n]=signal.signal(n,self.cancel)
+        self.check();self.H.clean_exact(self.repo,self.a.sha);need(snapshot(self.binary)==self.a.binary_sha256)
+        self.check();self.out.mkdir(mode=0o700);self.output_created=True
         self.source_pins={str(p.relative_to(self.repo)):snapshot(p,262144)for p in [Path(__file__).resolve(),self.repo/'scripts/native-listener-host.py',self.repo/'scripts/worker-supervisor.py',self.repo/'scripts/native-capabilities.py',self.repo/'scripts/lifecycle_core.py',self.repo/'scripts/tests/native-listener-deadline-test.py']}
         self.proof['source_pins_start']=self.source_pins
-        for n in (signal.SIGTERM,signal.SIGINT):self.oldhandlers[n]=signal.signal(n,self.cancel)
+    def host_owned(self,module,build,revision):
+        # Retain the borrowed host even if its constructor fails after opening
+        # the listener. No worker is spawned by this constructor.
+        self.check();self.host=module.Host.__new__(module.Host)
+        module.Host.__init__(self.host,self.binary,self.project,build,revision,self.a.binary_sha256)
+        self.host_initialized=True;self.check()
     def cancel(self,n,f):self.stop=True;self.H.CANCELLED=True
     def check(self):need(not self.stop and time.monotonic()<self.end)
     def request(self,*args,**kwargs):
@@ -139,7 +150,7 @@ class Run:
         self.check();build=json.loads(self.H.run([self.binary,'sürüm','--json'],timeout=min(10,self.end-time.monotonic()),limit=8192));need(build['source_sha']==self.a.sha and build['dirty']is False);self.proof['build']=build
         module=load('mixed_listener_host',self.repo/'scripts/native-listener-host.py');self.project=self.out/'project';self.project.mkdir(mode=0o700)
         (self.project/'proje.dil').write_text('proje "mixed-owned-fixture" olsun\nsürüm "0.1.0" olsun\nmorfoloji "zee-tr-1" olsun\ngiriş "ana.dil" olsun\nyetkinlikler "ağ-sunucusu", "dosya-yazma", "web-oturumu" listesi olsun\n')
-        revision,marker=self.publish(0);self.host=module.Host(self.binary,self.project,build,revision,self.a.binary_sha256);self.foreign=subprocess.Popen([sys.executable,'-c','import time;time.sleep(300)'],start_new_session=True)
+        revision,marker=self.publish(0);self.host_owned(module,build,revision);self.foreign=subprocess.Popen([sys.executable,'-c','import time;time.sleep(300)'],start_new_session=True)
         listener=os.fstat(self.host.listener.fileno());g=self.spawn();self.host.activate(g);need(self.request(self.host.port)[1]==marker.encode())
         status,csrf,guest=self.request(self.host.port,'/csrf');need(status==200 and len(csrf)==64 and guest);status,_,cookie=self.request(self.host.port,'/login',method='POST',cookie=guest,csrf=csrf.decode());need(status==200 and cookie)
         state=self.project/'.zee/web-durumu-v1.json';need(state.exists());self.proof['shared_state_path']='project/.zee/web-durumu-v1.json'
@@ -207,20 +218,31 @@ class Run:
         value=json.loads(deadline.read_text());need(value['passed']and value['response_bytes']==0);self.cases.append({'name':'same-source-activation-deadline-single-generation-control','passed':True,'separate_from_mixed_load':True})
         self.H.clean_exact(self.repo,self.a.sha);need(snapshot(self.binary)==self.a.binary_sha256 and all(snapshot(self.repo/p,262144)==h for p,h in self.source_pins.items()));self.proof.update(status='cases-passed-pending-cleanup',source_pins_end_equal=True,binary_end_equal=True)
     def close(self):
-        for n in self.oldhandlers:signal.signal(n,signal.SIG_IGN)
-        self.H.CANCELLED=False;errors=[]
+        # Preserve cancellation through cleanup; handlers only set flags and
+        # cannot interrupt the original owners' synchronous reaping.
+        errors=[]
         try:
             if self.host is not None:
                 for g in reversed(self.gens):
                     try:self.host.stop(g)
                     except BaseException as e:errors.append(type(e).__name__)
-                try:self.host.cleanup()
+                try:
+                    if self.host_initialized:self.host.cleanup()
+                    elif hasattr(self.host,'owner'):self.host.owner.cleanup()
                 except BaseException as e:errors.append(type(e).__name__)
+                finally:
+                    if hasattr(self.host,'listener'):
+                        try:self.host.listener.close()
+                        except BaseException as e:errors.append(type(e).__name__)
             if self.foreign is not None:
                 try:self.H.stop_owned(self.foreign,grace=.2)
                 except BaseException as e:errors.append(type(e).__name__)
-            self.proof.update(status='passed'if self.proof['status']=='cases-passed-pending-cleanup'and not errors else 'failed',cleanup_errors=errors,foreign_owned_sentinel_reaped=self.foreign is None or self.foreign.returncode is not None)
-            (self.out/'proof.json').write_text(json.dumps(self.proof,indent=2)+'\n')
+            self.proof.update(status='passed'if self.proof['status']=='cases-passed-pending-cleanup'and not self.stop and not errors else 'failed',cancelled=self.stop,cleanup_errors=errors,foreign_owned_sentinel_reaped=self.foreign is None or self.foreign.returncode is not None)
+            if self.output_created:
+                (self.out/'proof.json').write_text(json.dumps(self.proof,indent=2)+'\n')
+                if self.stop and self.proof['status']=='passed':
+                    self.proof.update(status='failed',cancelled=True)
+                    (self.out/'proof.json').write_text(json.dumps(self.proof,indent=2)+'\n')
         finally:
             for n,h in self.oldhandlers.items():signal.signal(n,h)
 
@@ -232,9 +254,11 @@ def main():
     for name in ('repo','dil','out'):p.add_argument('--'+name,type=Path,required=True)
     for name in ('sha','binary-sha256'):p.add_argument('--'+name,required=True)
     a=p.parse_args();run=Run(a)
-    try:run.main()
+    try:
+        run.prepare()
+        run.main()
     finally:run.close()
-    need(run.proof['status']=='passed')
+    need(not run.stop and run.proof['status']=='passed')
 if __name__=='__main__':
     try:main()
     except (Exception,KeyboardInterrupt):sys.stderr.write('owned-mixed-revision-campaign-failed\n');raise SystemExit(2)
