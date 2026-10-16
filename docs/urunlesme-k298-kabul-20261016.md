@@ -1,8 +1,26 @@
 # Ürünleşme — yerel kabul ve açık teknik işler raporu
 
-> **Güncel durum:** K-306/GB115,K-307/GB116,K-308/GB117 dar kabulleri kendi exact kaynaklarında korunur. K-309/GB118 dar kapsamda kapalı; Exact kaynak d3d6a9044f1646871954e0933fe1fe43ecd5ac96 tam15/temiz commit ve özgün owner makbuzlarıyla doğrulandı. Aynı exact kaynakta tek ignored Cargo/job11 frozen kabulü; özgün PG/readiness/cleanup ve yalnız ilk vaka iki host0 gözlemi doğrulandı.
-> **Kalan yerel adım:** Metrics/effect iki PG tüketicisi ve diğer açık teknik işler; ürün/insan/sağlayıcı/platform/dış girdiler açık.39iş tamamlanmış sayılmaz.
-> **Kapanış kaydı:** Bu dar kapanış yalnız exact belge overlay’inde gerçek tam final11 kabulü ve onu kaydeden temiz kapanış commit’inin kendi özgün dış owner/public makbuzlarıyla geçerlidir. Her gerçek kabul kendi exact başarılı deneme kayıtları ve hash’leriyle izlenir; başarısız önceki deneme kapanış kanıtı değildir. Bu belgeler kendi kapanış commit SHA’sını üretmez; dış makbuzlar izler.
+> **Güncel durum:** K306/GB115,K307/GB116,K308/GB117 ve K309/GB118 dar kapanışları kendi exact kaynak/frozen/native/final11/temiz commit kayıtlarında korunur. K309 actual kaynağı d3d6a9044f1646871954e0933fe1fe43ecd5ac96; native11 ve final11Attempt2 sonrası temiz275 kaydı K310 kabulü değildir. K310/GB119 metrics harness dilimi açık; standalone52/combined16 kontrollü PASS ayrı; source15/temiz kaynak/native8+distinctnestedlib/final kabulü henüz yok.
+> **Kalan yerel adım:** Metrics/effect iki PG tüketicisi; yalnız gerçek metrics kapanışından sonra effect tek kalacaktır.39iş tamamlanmış sayılmaz; ürün/insan/sağlayıcı/platform/dış girdiler korunur.
+> **Tarihçe sınırı:** K309 öncekiEOFfailure ve iki-LF onarımı kendi dış makbuzlarında kalır; başarılı kapanışı açık göstermez ve K310’a aktarılmaz.
+
+## K-310 — metrics harness cleanup ve özgün PG/FD sahibi: açık
+
+K-310 / GB-119 açık: Native metrics kabul harness’inin cleanup kısa devresi, yapışkan iptal/publication ve özgün PG/worker/FD sahipliği için dar correctness kaynak/test/belge dilimidir. Exact eski finally child-free karşı örneğinde fake owner.close hatası kalan child/FD/PG/proof denemelerini atladı; gerçek özgün koşu tek beklenen failure/exit1/reaped verdi. Bu kontrollü olay gerçek OS/FD/PG sızıntısı veya diskte kalmış PASS gözlemi değildir. Dört kaynak/test dosyası incelenmiş; standalone52 ve combined16 kontrollü koşuları geçti. Tam kaynak15, temiz exact kaynak, fresh metrics8 ve ayrı mevcut nested libpool kabulü ile final kapılar bekler. Metrics ve effect iki PG tüketicisi halen açıktır; genel P13 kısmi kalır.
+
+Kaynak/test/bu OPEN belgeler aynı atomik uygulama diliminin parçasıdır; kontrollü hazırlık tek başına kaynak15/temiz commit veya native kabulü değildir. Hedef; ilk body/cleanup hata nesnesi korunarak bütün özgün owner/child/pipe/FD/channel/PG kapanışlarının denenmesi, yapışkan iptal ve ayrı terminal cleanup bütçesi, kısmi kurulum/handler restore ve failed-only publication sınırıdır. FD/channel kayıt yetkisi başarılı close’dan önce kaybedilemez; belirsiz owner veya değişen root kimliğinde private kök kaldırılmış gösterilemez. Yalnız elde tutulan özgün handles kullanılır, eski PID/port/runtime benimsenmez. Shared `native-pg-owner.py` exact6e5f helper’ı değişmez; metrics’e özgü adapter mevcut TLS profiliyle kaynak incelemesi ve kontrollü modellerde incelendi, gerçek native kabulü ayrıdır.
+
+**Gerçek kontrollü girdiler ve kaynak hazırlığı:** Gerçek child-free exact finally karşı örneği1test/0.003sn tek beklenen failure/exit1/reaped olarak doğrulandı; static14b25 ve actualpeer8401 kayıtları exacteski8cb/finallyb757 baytlarına bağlıdır. Yalnız owner.close fake olayı görüldü; gerçek OS/FD/PG sızıntısı veya disktePASS gözlenmedi. Mevcut değişmeyen ordinary metrics baseline15 gerçek15test/0.002sn PASS/exit0/reaped/errors[]/cancelled[] verdi. Bu eski baseline kabulüdür; ayrı focused52/combined16 kontrollü yöntemler, kaynak15 veya metrics8/nestedlib native sonucu değildir. Standalone preflight52 yöntemi (korunan genericPG18+metrics34) gerçek0.424sn PASS/exit0/reaped/errors[]/cancelled[] verdi; özgün watcher0.526857375sn, ilk koşu. Bu kontrollü fake-boundary model sonucudur; gerçek PG veya metrics8/nestedlib native kabulü değildir. Birleşik ordinary16 yöntemi (korunan15+tek nested52 preflight wrapper) gerçek0.540sn PASS/exit0/reaped/errors[]/cancelled[] verdi; özgün watcher0.601194875sn, ilk koşu. İçteki52 yeniden toplamlanıp68Cargo/native testi sayılmaz; mevcut Rust ordinary sahibi aynı kalır. Dört kaynak/test dosyası P2 hazırlığında pinlidir: scripts/tests/native-metrics-test.py SHA256=ac4c84f9a2f9948883715f4c96c0bda70f5a02d6194e3bd493e270a66d8159a0 bytes=36531; scripts/tests/native-metrics-model-test.py SHA256=a7233ef5c711fdfb46697a584f663d41473709e311e360ba0c8dc25e99c1d1a3 bytes=5329; scripts/tests/metrics-pg-owner-preflight-test.py SHA256=0db506b67b448b34fcbf990f1fb8c3396e906940e11b65e3f6011abb3183ebcf bytes=52402; compiler/tests/native_metrik_host_testi.rs SHA256=0a8277ceb3908dfd19b50cef7a4140de078adc424c1e33ccd728ce1027f1fc99 bytes=4933. P1 staticpeer e537f73d ve actualmodelpeer 7f418546997cef115a41c75387b4f1957bb432a9c88fd43199029b70e0a56cbc; P2 yalnız Rust biçim delta review dda334664c824bff97336239dee51fb4936bbd91c42927db5090bed3eae1e95c. Kaynak/test/bu OPEN belgeler aynı atomik uygulama dilimidir; bu pinler tek başına kaynak15, temiz commit veya native kabulü değildir. Dört kaynak/test dosyası ve52/16 kontrollü sonuç pinlidir; source pin toplamı yalnız ayrıca doğrulanmış tam manifestten bağlanır, burada tahmin edilmez. Mevcut15 ordinary yöntemi ve mevcut Rust Cargo sahibi korunur; tek yeni nested preflight wrapper ile Rust beklentisi gerçek combined16 sonucuna bağlıdır. Gerçek değişmeyen baseline15/0.002sn PASS/exit0/reaped ayrı kayıttadır; standalone52/combined16 kontrollü kabulü veya native sonucu ile toplanmaz. Python model yöntemleri native vaka veya Cargo sahibi toplamına eklenmez.
+
+**Korunan native sözleşme:** Mevcut metrics8 gözlemi ve29require assertion;200/200/429/404/426/200 response/DB oracleı, actual4lease/5.waiter/timeout/recovery, bounded backpressure/noSIGPIPE, malformed source stdout/stderr alias sessiz ret, iki worker rollup ve credential designated metadata kompozisyonu korunacaktır. Outer ignored `native_metrik_http_pg_ve_fd_sahipligi` ile koşucunun çağırdığı mevcut exact ignored lib seçicisi `postgresql::havuz::testler::izole_pg_pool_metrikleri_wait_timeout_ve_donus_gercek_sinirlar` ayrı gerçek Cargo sahipleridir;8gözlem8Cargo testi değildir, yeni Rust sahibi icat edilmez. Nested `--lib/--exact/--ignored` seçicisinin120sn bütçesi küçültülmez.
+
+Mevcut metrics profili kendi CA/cert’i ve local/loopback-trust HBA ile TLSv1.2 sunucu sınırını kullanır; client `sslmode=require` ve owned CA doğrulaması korunur. Effect’in plaintext196608/scoped COMMIT profili bu dilime aktarılmaz; job11 veya K303 pool kabulü metrics8 yerine geçmez. Ürün metrik protokolü, counter anlamı,512byte atomic/nonblocking FIFO, callback dışı pool örnekleme, credential designated capability ve içeriksiz bounded metadata davranışı değişmez. SMTP/PDF/provider/client delivery/Prometheus endpoint veya genelP13 kabulü açılmaz.
+
+**Açık kabul zinciri:** İncelenmiş kaynak+test+bu OPEN belgeler aynı batch; actual tam kaynak15/originalowner ve temiz tested-source commit; ardından aynı clean SHA/tree üzerinde fresh mevcut metrics8 ile distinct nested libpool exact kabulü, özgün PG/readiness normalSIGINT/observed_exit=exit=0/reaped/noFallback, bütün sahipli worker/FD/channel/private-root cleanup ve bağımsız public raw/root/peer incelemesi; exact final11 belge overlay’i ve temiz kapanış commit/originalowner makbuzları gerekir. Bu gelecek sonuçlardan hiçbiri bu hazırlıkta üretilmiş sayılmaz. K310/GB119 açık kalır. K306–K309 dar kapanışları kendi exact kaynaklarında korunur; K309 kaynakd3/native11/final11Attempt2/temiz275 kayıtları veya öncekiEOFfailure/LFonarım tarihçesi K310 kabulüne taşınmaz.
+
+Metrics ve effect başlangıçta iki açık PG tüketicisidir; yalnız ileride gerçek dar metrics kapanışından sonra effect tek açık tüketici kalacaktır.39plan statüsü mevcut değerlerinde korunur; P09/P13/P20/P23/P36 kısmi ve P37 sürekli değişmez. GB046/GB109 açık; GB115–118 dar kapalı geçmişi aynı kalır. C1/K288 ve P33/K293 retleri yeniden denenmez; yeni izin, dış istem, RC/soak/IDE veya ürün/platform kabulü yoktur.
+
+Bilinçli etki incelemesi: production175, compiler grammar/API/ABI/dependency/katman, spec normatif madde/RFC, kullanıcı tanısı/katalog, sabit performans iş yükü ve compiler/LSP kalıcı durum değişmeyecektir. `docs/native-metrics.md` ürün protokolü/komutları aynı olduğundan bilinçli unchanged; ADR-119 designated capability ve ADR-152 alias reddi aynı mevcut davranışta kalır. ADR-116 ve OPEN kanıt/backlog/plan kayıtları dar koşucu sınırını taşır. Private PHC/parola/cookie/request/cert/key/DSN/credential bytes veya hash’leri public kayda alınmaz; arbitrary çıktı dizini taranıp gelecekteki private dosyalar hash’lenmez. Public source/binary hash’leri yalnız kod kimliğidir.
 
 ## K-309 — job dispatcher harness cleanup ve özgün PG sahibi: dar kapsamda kapalı
 
@@ -1230,3 +1248,89 @@ Kaynak liste: `docs/urunlesme-plan-v1.tsv` P01–P39; teslim ayrıntıları:
 `docs/urunlesme-kullanici-girdileri.md`. Bu tablo raporda belirtilen kaynak ve makbuzlara dayanır; son belge kapısının
 sonucu yukarıdaki dış makbuzdan izlenir.
 <!-- END GENERATED OPEN ITEMS APPENDIX -->
+
+## K-310 kaynak15 ilk denemesi — tarihsel biçim kapısı başarısızlığı ve dar takip
+
+K310 ilk kaynak15 denemesi ilk12 komutu geçti: phase-document, preparation,
+counts, summary, catalog-freshness, spec-drift, fmt, phase-matrix, clippy,
+conformance, semantic-regresyon ve core-freeze. Bu koşunun tam faz raporu
+998/1023 geçti,0 başarısız,25ignored sonucunu verdi; bu sonuç ayrı native
+metrics8 veya nested libpool kabulü değildir.13.komut diff-check exit2 ile
+`scripts/tests/native-metrics-test.py:540` boş satırındaki dört trailing space'i
+reddetti.14.secret-scan ve15.security-continuous çalışmadı. Özgün dış owner
+exit1/observed_exit1 ve owned-group-closed/reaped verdi; tool exec session
+numarası OS süreç kimliği olarak kullanılmaz. İlk koşu başarısızdır; tam15
+kaynak kabulü veya temiz source commit sonucu olarak yeniden adlandırılmaz.
+
+Biçim takip P3 adayı native harness'in yalnız bu dört whitespace baytını
+kaldırır: P2 SHA256 `ac4c84f9a2f9948883715f4c96c0bda70f5a02d6194e3bd493e270a66d8159a0`
+36531byte → P3 SHA256 `b5fd46b70ac21dc4882ef1d4513f0a89836bc4a2453d85528a42ecb2b2dd89f2`
+36527byte. Tam Python AST aynıdır; diğer iki Python ve Rust adayları,
+production175, lifecycle helper ve shared foreground PG helper6e5 değişmez.
+P1/P2 standalone52 ve combined16 kontrollü kanıtları kendi exact baytlarında
+tarihsel kalır; P3 özgün kontrollü koşuları yalnız kendi actual makbuzlarıyla
+değerlendirilir.52/16 veya faz998, Cargo/native sayılarıyla toplanmaz.
+
+Bu ilk başarısız koşu anında K310/GB119 açıktı; fresh tam kaynak15 ve temiz
+exact kaynak commit'i, ardından aynı kaynakta fresh metrics8 ve ayrı mevcut
+nested release libpool sahibi/120sn kabulü, bağımsız frozen incelemesi ve
+final11-tested-overlay/temiz kapanış commit'i zorunlu zincirdir. Bu biçim
+hazırlığı tek başına bu zincirde başarı veya dar kapanış sağlamaz. Metrics ve
+effect PG tüketicilerinin diğer sınırları/P13kısmi/39plan statüleri değişmez.
+
+Public tarihçe pinleri:
+- `/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/k310-source-gates-1/PROOF.json` SHA256 `647dd7cff23ef5723c2b63c19c191528435763028e8f11aa8e044f79df9f2d26`, 63065byte (source_gate).
+- `/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/k310-source-gates-controller-1.json` SHA256 `37d7ffb775ceca81c72b0f47f23d504f3172f5b356e00a497adccf7f31f95319`, 1053byte (owner).
+- `/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/k310-source-gates-driver-1.log` SHA256 `833d438c68f26b15a7805f51cc25048809b4b0a67bd36a295703f483f5cb5a58`, 252byte (owner_log).
+- `/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/k310-source-gates-1/diff-check.log` SHA256 `f76e1f6fdb94d5c840c0db346985fa1260979f38cf156f15a16fbde3f04ad829`, 69byte (diff_check_log).
+- `/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/k310-source-gates-1/phase-matrix-report.md` SHA256 `2a39d6d38455f69da6b70d111a91db6af61424402f58de16fc5717de8b0e331e`, 38262byte (phase_report).
+- `/private/tmp/zee-k300/k310-metrics-proposal-3/PREPARATION.json` SHA256 `25910b5d48f5801c8b47a0ba0e6c2498a38a6570be2393cec04b834b25622dd4`, 64192byte (yalnız biçim takip hazırlığı).
+
+## K-310 kaynak15 ikinci denemesi — tarihsel public-source hash yanlış pozitifi
+
+K310 kaynak15 ikinci denemesi ilk13 komutu geçti. Bu koşunun tam fazı
+998/1023 geçti,0 başarısız,25ignored ve22faz olarak raporlandı;
+phase-matrix1061.532329sn,clippy168.882678sn ve diff-check exit0 ayrı
+komut sonuçlarıdır.14.secret-scan exit1 nedeniyle koşu başarısız kaldı;
+15.security-continuous çalışmadı. Özgün dış owner observed_exit=exit1 ve
+owned-group-closed/reaped verdi; dış süre1300.932722375sn. Önceki ilk denemenin
+dört trailing-space diff-check başarısızlığı da kendi tarihçesinde korunur.
+İlk13 başarı tam15 kaynak kabulü, temiz kaynak commit'i veya native kabulü
+olarak yeniden adlandırılmaz; başarısız iki deneme yeni koşuya taşınmaz.
+
+Root'un16public dosyalık redakte teşhis kesitindeki tek bulgu,
+`metrics-pg-owner-preflight-test.py:816` satırında `generic-api-key` kuralıdır.
+Redakte Match `api_path,'REDACTED'`, Secret `REDACTED` olarak saklanır; gizli
+ham payload burada okunmaz veya yayımlanmaz. İlgili literal gerçekte
+`scripts/native-metrics.py` public kaynak dosyasının SHA256 kimliğidir:
+`d5d12902358591365ff201c13c44b255d265c49c71befabcdef0575fe7e854c4`
+(5009byte). Aynı literal ile `selected(api_path, public-source-hash, ['Channel'])`
+AST seçicisinin kimlik denetimi yapılır; public dosyanın gerçek hash'iyle
+birebir eşitliği doğrulandı. Bu tek bulgu public-source hash yanlış pozitifidir;
+bu kayıttan gerçek credential sızıntısı, yeni güvenlik açığı veya yeni GB
+çıkarılmaz. Bu teşhis bütün deponun başka bulgusuz olduğu iddiası değildir.
+
+P4 takip şekli hash verifier'ı aynı public kaynak kimliğine bağlı tutar:
+named `METRICS_SOURCE_SHA` üst sabiti ve seçicide tek sabit referansı.
+Allowlist, tarayıcı kapatma, kural bastırma, gizli concat veya kontrol
+gevşetmesi bu takip kapsamı değildir. P4 preflight yalnız public kimlik sabitini adlandırır: `scripts/tests/metrics-pg-owner-preflight-test.py` SHA256 `acfa2e28be3731759b0c64f1c1367191a4c68cdc01145496387c1934a7999dc8`,52442byte; native harness `b5fd46b70ac21dc4882ef1d4513f0a89836bc4a2453d85528a42ecb2b2dd89f2` değişmez. `METRICS_SOURCE_SHA` gerçek public d5d129 kaynak hash literalidir; seçicinin exact hash denetimi aynıdır.
+P4 hazırlık `/private/tmp/zee-k300/k310-metrics-proposal-4/PREPARATION.json` SHA256 `a6ffdebd90d9f2edc7b8b1a16cedf41425cb2f99fb2a197217d36a8f5d739dec`,67033byte; independent static peer `5b9576f7a48e1a1adc20129fba7aa491d6ffb625753bc34e2d6cc6320f86fdbf`,3640byte; fixture3 `b625c646bc8bdd429d9d06cc1989a58050a78bb0110fbb598526c11347bef57f`,4817byte ile bağlandı. P4 actual standalone52/0.395sn ve combined16/0.441sn PASS/exit0/reaped/errors[]/cancelled[]; özgün dış süreler0.481812375sn ve0.494281084sn. Actual model peer `2f8e05bcf0c5fed4441cc9700445fa37894d043e79bdf679bdef6b6d923d7b5f`,15528byte, owner/log attempt3 pinlerini bağlar.52=generic18+metrics34;16=old15+tek nested52wrapper,68Cargo/native değildir. Erken default8.30.1 taraması16public proposed dosyada0bulgu/emptyignore verdi (`e0a985151ee0891f0f4afb5885d77bfd5ffdbc64cf04d02386e01a104b2efd49`,3446byte); taranan rapor önceki3NULL DRAFTnote idi, bu FILLEDnote değildir. Bu kesit fullRscan/kaynak15 veya native kabulü değildir.
+
+Bu başarısız ikinci koşu anında K310/GB119 açıktı. P4 kontrollü sonuçları,
+fresh tam kaynak15/özgün owner ve temiz exact source commit'i yalnız kendi
+actual makbuzlarıyla değerlendirilir; ardından aynı kaynakta fresh metrics8
+ve ayrı mevcut nested release libpool/120sn sahibi, bağımsız frozen incelemesi
+ve final11-tested-overlay/temiz kapanış commit zinciri gerekir. Public-source
+hash teşhisi veya isimlendirme hazırlığı bu zincirde PASS/kapanış değildir.
+Metrics/effect iki PG tüketicisi, genelP13kısmi ve39plan statüsü bu notla
+kapanmaz. Production175/sharedH/PG6e5/API/grammar/ürün/RC/soak/IDE sınırları
+aynı kalır; private credential/CA/key/DSN/PHC baytları/hash'leri dışarı alınmaz.
+
+Public teşhis ve başarısızlık pinleri:
+- `/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/k310-source-gates-2/PROOF.json` SHA256 `e20d431d6befffe569e3aeb4b14fae41d585eac425c3add8bd95e720d015f0e3`, 66654byte (failed_source_gate2).
+- `/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/k310-source-gates-controller-2.json` SHA256 `15c379b19dd921174c9bf6a19f60d4dc7ec92902d71b5941363d052aa3958697`, 1059byte (failed_source_owner2).
+- `/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/k310-source-gates-2/phase-matrix-report.md` SHA256 `23a9624abc1fd9e56cb9e800aff29e95a2969ccac5512419ba4fdfb41587cbf4`, 38262byte (source2_phase_report).
+- `/private/tmp/zee-k300/k310-source2-redacted-scan-diagnosis-1/safe-findings.json` SHA256 `9722b13ffa0528162640c9cdb12b32ae7c2353e396030c7076b899edef980b32`, 373byte (safe_findings).
+- `/private/tmp/zee-k300/k310-source2-redacted-scan-diagnosis-1/redacted-report.json` SHA256 `e372a319c844cf73b4971fa686840df3b024202835a86bb8be87495205512419`, 719byte (redacted_report).
+- `/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/scripts/native-metrics.py` SHA256 `d5d12902358591365ff201c13c44b255d265c49c71befabcdef0575fe7e854c4`, 5009byte (public_metrics_source).
+- `/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/scripts/tests/metrics-pg-owner-preflight-test.py` SHA256 `0db506b67b448b34fcbf990f1fb8c3396e906940e11b65e3f6011abb3183ebcf`, 52402byte (pre_P4_preflight_source).
