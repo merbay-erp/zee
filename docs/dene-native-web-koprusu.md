@@ -39,9 +39,9 @@ isteklerine ortak transaction rollback desteği değildir.
 
 ## K-304 etki sınırı
 
-K-304, bu köprüye gömülen owned web kitinin son iptal/deadline sonucunu
-etkiler; bayt değişikliği yeni derlemede yer alır. [Kit kaynak hazırlığı](owned-web-test-kiti.md)
-GB-113'ü açık tutar. Yeni kaynakta bağımsız `dene`/source-coverage native
-sahibi henüz yürütülmedi; direct kit mock veya native4 sonucu tek başına
-köprü kabulü sayılmaz. S3 dört vaka/19 HTTP ve admission retleri tarihsel
-kaynağında kalır; compiler grammar/API ve coverage sözleşmesi değişmez.
+K-304 bu köprüye gömülen kitin son iptal/deadline sonucunu korur; Python
+bayt değişikliği yeni derlemede yer alır. [Direct kit kabulü](owned-web-test-kiti.md)
+GB-113'ü dar kapsamda kapatır. `abdc5cf36b4d55021df5edad08cee3a7ad953ebd` native4 sonucu ayrı
+`dene`/source-coverage sahibinin çalıştığı anlamına gelmez. S3 dört vaka/19HTTP
+ve admission retleri kendi exact kaynağında kalır; yeni köprü kabulü veya
+compiler grammar/API/coverage kapasitesi ileri sürülmez.

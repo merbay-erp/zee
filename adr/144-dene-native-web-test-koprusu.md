@@ -45,9 +45,9 @@ ve kaynak dışı Rust/HTTP guard branch coverage bu işin kapanış iddiası de
 
 ## K-304 — Gömülü kitin finalizasyon etkisi
 
-ADR-129 revizyonu kitin cleanup/proof yazımı sırasında gözlenen iptal ve
-süre aşımının başarısız sonuçta korunmasını hazırlar. Bu Python baytları
-yeni compiler derlemesine gömülür; Rust grammar/API/coverage davranışı
-değişmez. GB-113 ve temiz exact native4 kabulü açıkken eski S3 köprü kabulü
-yeni kaynağa taşınmaz. Direct kitin iki mock metodu veya daha sonra gelecek
-native4 sonucu, ayrı `dene`/source-coverage sahibinin çalıştığı anlamına gelmez.
+ADR-129 revizyonu cleanup/proof yazımı ve son kabul kontrolünde gözlenen
+iptal/deadline sonucunu korur; GB-113 dar direct kit kapsamıyla kapalıdır.
+Yeni derlemeye gömülen Python baytları değişir; Rust grammar/API/coverage
+sözleşmesi değişmez. Temiz `abdc5cf36b4d55021df5edad08cee3a7ad953ebd` direct native4 kabulü, ayrı
+`dene`/source-coverage sahibinin çalıştığı anlamına gelmez. S3 köprü kabulü
+kendi exact kaynağında kalır; yeni köprü/ürün/platform kabulü ileri sürülmez.
