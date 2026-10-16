@@ -23,6 +23,8 @@ toplam yaz
 
 ## Mevcut durum
 
+K-307 / GB-116 açık: modül SQL native kabul harness’inin cleanup sırasında iptali kaybetmesi ve sonuç yayını sınırı inceleniyor. Kontrollü AST karşı örneği beklenen1 failure/exit1/reaped verdi; gerçek OS/PG sızıntısı gözlemi değildir. Baseline10, inert13 ve birleşik23 kontrollü yöntem geçti; kaynak, fresh native9 ve son kapı kabulü henüz yok; beş PG tüketicisinin foreground sahipliği ve genel P20 kısmi kalır. [Dar kapsam](docs/module-sql-lifecycle.md).
+
 Ana geliştirme ve CI deposu [merbay-erp/zee](https://github.com/merbay-erp/zee).
 Enterprise deposu yalnız aynadır.
 

@@ -19,7 +19,7 @@ fn modul_sql_stdlib_sozlesmesi() {
     );
     assert!(result.stdout.is_empty());
     let stderr = String::from_utf8_lossy(&result.stderr);
-    assert!(stderr.contains("\nRan 10 tests in ") && stderr.trim_end().ends_with("\nOK"));
+    assert!(stderr.contains("\nRan 23 tests in ") && stderr.trim_end().ends_with("\nOK"));
 }
 
 #[test]

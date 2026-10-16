@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """Contract negatives without a database or compiler dependency."""
+import ast
 import copy
+import sys
+import types
 import importlib.util
 import json
 import os
@@ -87,4 +90,130 @@ class Contracts(unittest.TestCase):
     def test_old_module_helper_bytes_unchanged_and_new_loader_verified(self):
         self.assertIsNotNone(M.BASE)
         self.assertEqual(M.digest((ROOT/'scripts/modul-yoneticisi.py').read_bytes()),'84752ef56d5c1d347f2e211ebe721def648aa5e496df1bd8bfec2375933237b6')
+TARGET=ROOT/'scripts/tests/modul-sql-native.py'
+
+class NativeCleanupContracts(unittest.TestCase):
+    def environment(self):
+        tree=ast.parse(TARGET.read_bytes())
+        functions=[n for n in ast.walk(tree) if isinstance(n,ast.FunctionDef) and n.name in {'cancel','close_cluster','publish_proof'}]
+        self.assertEqual({n.name for n in functions},{'cancel','close_cluster','publish_proof'})
+        env={'H':{'CANCELLED':False},'campaign_cancelled':False,'cleaning':False,'campaign_started':0,'campaign_deadline':600,'cleanup':[],
+             'proof':{'status':'passed','cases':[{'passed':True} for _ in range(9)]},'raw':[],'json':json,'sys':sys,'now':1,'work_exists':False,
+             'log_exists':False,'writes':{},'on_close':lambda:None,'on_write':lambda name:None,'write_failures':{},'restore_calls':[]}
+        env['time']=types.SimpleNamespace(monotonic=lambda:env['now'])
+        class File:
+            def __init__(self,name):self.name=name
+            def __truediv__(self,name):return File(self.name+'/'+name)
+            def exists(self):
+                env['exists_calls']=env.get('exists_calls',0)+1
+                if env['exists_calls']==env.get('exists_error_at'):
+                    raise OSError('controlled final directory observation')
+                return env['work_exists'] if self.name=='work' else False
+            def is_file(self):return env['log_exists']
+            def write_text(self,text):
+                env['on_write'](self.name)
+                failures=env['write_failures'].get(self.name,[])
+                if failures:raise failures.pop(0)
+                env['writes'][self.name]=text
+            def write_bytes(self,data):env['writes'][self.name]=data
+        class Signal:
+            SIGTERM=15;SIGINT=2
+            def __init__(self):
+                self.original={15:lambda *_:None,2:lambda *_:None};self.handlers=dict(self.original)
+                self.install_count=0;self.fail_install=None;self.fail_restore=None
+            def signal(self,n,handler):
+                if handler is self.original[n]:
+                    env['restore_calls'].append(n)
+                    if n==self.fail_restore:raise OSError('controlled handler restoration')
+                else:
+                    self.install_count+=1
+                    if self.install_count==self.fail_install:raise OSError('controlled partial installation')
+                previous=self.handlers[n];self.handlers[n]=handler;return previous
+        signal=Signal();env['signal']=signal;env['oldsignals']={};env['a']=types.SimpleNamespace(output=File('output'))
+        env['work']=File('work');env['certdir']=File('certdir');env['M']=types.SimpleNamespace(BASE={'snapshot':lambda _:b'public-log'})
+        env['cluster']=types.SimpleNamespace(close=lambda:env['on_close']())
+        exec(compile(ast.Module(body=functions,type_ignores=[]),str(TARGET),'exec'),env)
+        mains=[n for n in tree.body if isinstance(n,ast.Try) and n.body and isinstance(n.body[0],ast.For)]
+        self.assertEqual(len(mains),1)
+        env['install']=lambda:exec(compile(ast.Module(body=[mains[0].body[0]],type_ignores=[]),str(TARGET),'exec'),env)
+        return env
+    def installed(self):
+        e=self.environment();e['install']();return e
+    def assert_failed(self,e,error=ValueError):
+        with self.assertRaises(error):e['publish_proof']()
+        self.assertEqual(e['proof']['status'],'failed')
+        if 'output/proof.json' in e['writes']:self.assertEqual(json.loads(e['writes']['output/proof.json'])['status'],'failed')
+    def test_native_cleanup_uncancelled_success_after_temp_removal(self):
+        e=self.installed();e['close_cluster']();e['publish_proof']()
+        self.assertFalse(e['H']['CANCELLED']);self.assertFalse(e['cleaning'])
+        self.assertEqual(e['proof']['status'],'passed');self.assertEqual(e['restore_calls'],[15,2])
+        self.assertEqual(e['signal'].handlers,e['signal'].original)
+    def test_native_cleanup_term_and_int_remain_sticky(self):
+        for number in (15,2):
+            with self.subTest(signal=number):
+                e=self.installed();observed=[]
+                def close():
+                    e['signal'].handlers[number](number,None);observed.append(e['H']['CANCELLED'])
+                e['on_close']=close;e['close_cluster']()
+                self.assertEqual(observed,[False]);self.assertTrue(e['campaign_cancelled']);self.assertTrue(e['H']['CANCELLED'])
+                self.assertEqual(e['cleanup'],['owned-pg-closed']);self.assert_failed(e)
+    def test_native_cleanup_prior_and_repeated_cancellation_never_reset(self):
+        e=self.installed();e['cancel'](15,None)
+        def close():
+            self.assertFalse(e['H']['CANCELLED'])
+            e['cancel'](15,None);e['cancel'](2,None)
+        e['on_close']=close;e['close_cluster']();self.assertTrue(e['H']['CANCELLED']);self.assert_failed(e)
+    def test_native_cleanup_close_error_does_not_record_success(self):
+        e=self.installed()
+        def close():raise OSError('controlled close failure')
+        e['on_close']=close
+        with self.assertRaises(OSError):e['close_cluster']()
+        self.assertEqual(e['cleanup'],['owned-pg-cleanup-failed']);self.assertFalse(e['cleaning']);self.assert_failed(e)
+    def test_native_cleanup_log_snapshot_failure_restores_state(self):
+        e=self.installed();e['H']['CANCELLED']=True;e['log_exists']=True
+        def snapshot(_):raise OSError('controlled log snapshot')
+        e['M'].BASE['snapshot']=snapshot
+        with self.assertRaises(OSError):e['close_cluster']()
+        self.assertFalse(e['cleaning']);self.assertTrue(e['H']['CANCELLED']);e['proof']['status']='failed';self.assert_failed(e)
+    def test_native_cleanup_partial_install_restores_installed_subset(self):
+        e=self.environment();e['signal'].fail_install=2
+        with self.assertRaises(OSError):e['install']()
+        self.assertEqual(set(e['oldsignals']),{15});e['proof']['status']='failed';self.assert_failed(e)
+        self.assertEqual(e['restore_calls'],[15]);self.assertEqual(e['signal'].handlers,e['signal'].original)
+    def test_native_cleanup_one_restore_failure_attempts_other_handler(self):
+        e=self.installed();e['close_cluster']();e['signal'].fail_restore=15;self.assert_failed(e,OSError)
+        self.assertEqual(e['restore_calls'],[15,2]);self.assertEqual(e['proof']['handler_restore_errors'],['OSError'])
+    def test_native_cleanup_deadline_expiry_blocks_pass(self):
+        e=self.installed();e['on_close']=lambda:e.update(now=600);e['close_cluster']();self.assert_failed(e)
+        self.assertTrue(e['proof']['deadline_expired']);self.assertEqual(e['cleanup'],['owned-pg-closed'])
+    def test_native_cleanup_cancel_during_raw_or_proof_publication(self):
+        for name in ('output/raw.json','output/proof.json'):
+            with self.subTest(file=name):
+                e=self.installed();e['close_cluster']();fired=[]
+                def write(current):
+                    if current==name and not fired:
+                        fired.append(True);e['signal'].handlers[15](15,None)
+                e['on_write']=write;self.assert_failed(e);self.assertTrue(e['proof']['cancelled'])
+    def test_native_cleanup_publication_and_rewrite_errors_keep_first(self):
+        for name in ('output/raw.json','output/proof.json'):
+            with self.subTest(file=name):
+                e=self.installed();e['close_cluster']();first=OSError('first publication error')
+                e['write_failures'][name]=[first]
+                e['write_failures'].setdefault('output/proof.json',[]).extend([RuntimeError('later failed rewrite')])
+                with self.assertRaises(OSError) as observed:e['publish_proof']()
+                self.assertIs(observed.exception,first);self.assertEqual(e['restore_calls'],[15,2]);self.assertEqual(e['proof']['status'],'failed')
+    def test_native_cleanup_body_failure_keeps_original_exception(self):
+        e=self.installed();e['close_cluster']();e['proof']['status']='failed';original=LookupError('original body')
+        try:raise original
+        except LookupError:
+            with self.assertRaises(LookupError) as observed:e['publish_proof']()
+        self.assertIs(observed.exception,original);self.assertEqual(e['restore_calls'],[15,2])
+    def test_native_cleanup_final_directory_check_error_fails_publication(self):
+        e=self.installed();e['close_cluster']();e['exists_error_at']=4
+        self.assert_failed(e,OSError)
+        self.assertEqual(e['proof']['finalization_failure'],'OSError')
+    def test_native_cleanup_remaining_private_directory_blocks_pass(self):
+        e=self.installed();e['close_cluster']();e['work_exists']=True;self.assert_failed(e)
+        self.assertFalse(e['proof']['temporary_private_root_removed'])
+
 if __name__=='__main__':unittest.main()

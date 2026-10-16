@@ -86,3 +86,15 @@ kampanyası ve root gate'leri ayrıca gerekir.
 ## S3 yerel kabul kanıtı
 
 [Exact S3 kabulü ve açık sınırlar](urunlesme-s3-kabul-20261015.md) gerçek canonical/native/IDE ve ortak kapıları bağlar; genel ürün/platform/yayın kabulü değildir.
+
+## K-307 — kabul harness’i iptal ve yayın doğruluğu: açık
+
+K-307 / GB-116 düşük ve açıktır. `scripts/tests/modul-sql-native.py` cleanup callback’inin exact AST modeli, fake cluster.close içinden fake TERM handler çağrıldığında yeni iptalin kaybolduğunu gösterdi: tek beklenen assertion failure, özgün owner exit1/reaped. Gerçek sinyal, OS/PG süreci veya sızıntı çalıştırılmadı; gerçek PG kaçağı kanıtı değildir.
+
+Düzeltme kapsamı ayrı yapışkan iptal ledger’ı; cleanup için yalnız H iptal bayrağının geçici maskelenmesi ve her yolda geri yüklenmesi; korumalı kısmi ilk handler kurulumu; tüm handler geri yüklemeleri; ExitStack ve geçici dizin cleanup’ından sonra passed kararı; yayın sırasında iptal/deadline/failure kontrolü ve birincil hatanın korunmasıdır. Diagnostic veya bir handler restore hatası kalan geri yüklemeleri atlayamaz. Mevcut600sn kampanya kabul sınırı ve dokuz native SQL oracle değişmez.
+
+T adayV4 inert13 ve T adayV5 birleşik23 yöntemi gerçek özgün owner makbuzlarıyla geçti; baseline10 ayrıca geçti. Eski10 ordinary metot korunup13 inert yöntem aynı `compiler/tests/modul_sql_testi.rs::modul_sql_stdlib_sozlesmesi` sahibi altında birleştirildi. Bu controlled sonuç kaynak veya fresh native kabulü değildir; Kaynak/test/belge uygulaması bu atomik dilimin parçasıdır. Ayrı ignored sahibi `modul_sql_native_crud_goc_yasam_dongusu` ve dokuz alt native vaka korunur; Python yöntem sayısı Cargo/native toplamına eklenmez. Kaynak+test+belge aynı atomik commit, gerekli katalog/tazelik/fmt/faz ve kaynak kapıları, exact temiz kaynak, fresh native9 ve son kapılar kapanış önkoşuludur.
+
+Bu dar harness işi `TLS.LocalCluster` içindeki pg_ctl ile başlatılan detached PostgreSQL ve immediate-stop sahipliğini foreground özgün Popen/normal kapanışa dönüştürmez. Kalan beş PG tüketicisi, genel P20/adoption/platform, DB+FS atomikliği ve unknown no-replay sınırı açıktır. Üretim compiler175/bağımlılık/katman, grammar/API/ABI, normatif spec/RFC, kullanıcı tanısı/katalog kodu, sabit performans iş yükü veya compiler/LSP kalıcı durum değişmez; yeni özellik/RC/soak/IDE kabulü aktarılmaz.
+
+Gerçek kontrollü sonuçlar ayrı makbuzlarla kayıtlıdır: baseline10, adayV4 inert13 ve adayV5 birleşik23 yöntemi geçti; her özgün owner observed_exit=exit=0/closed/reaped/errors[]/cancelled[]. Birleşik23, korunan10 ordinary ve eklenen13 inert yöntemdir; Cargo/native sayısı değildir. Bu kaynak/test/belge dilimi atomik uygulama kapsamındadır; kaynak kapıları, exact temiz kaynak ve fresh native9/son kapı kabulü bekleniyor.

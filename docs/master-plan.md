@@ -1748,3 +1748,9 @@ gecikme gözlemini kaydeder; artımlı HIR/type, gerçek ürün/UI/SLA ve tam P1
 
 Dış girdiler [kullanıcı teslim listesinde](urunlesme-kullanici-girdileri.md)
 ayrıldı. Beş tam proje hazır değil, fiziksel cihaz yok; bu kapılar bekliyor.
+
+## K-307 — modül SQL kabul harness’i: açık
+
+K-307 / GB-116 açık: modül SQL native kabul harness’inin cleanup sırasında iptali kaybetmesi ve sonuç yayını sınırı inceleniyor. Kontrollü AST karşı örneği beklenen1 failure/exit1/reaped verdi; gerçek OS/PG sızıntısı gözlemi değildir. Baseline10, inert13 ve birleşik23 kontrollü yöntem geçti; kaynak, fresh native9 ve son kapı kabulü henüz yok; beş PG tüketicisinin foreground sahipliği ve genel P20 kısmi kalır.
+
+Kaynak/test/belge aynı atomik dilimde ve exact kaynak/kapı makbuzlarıyla ilerler. K-306 ve önceki SHA sonuçları aktarılmaz. [Kapsam](module-sql-lifecycle.md).
