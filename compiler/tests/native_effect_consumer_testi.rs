@@ -2,6 +2,9 @@
 #[test]
 #[cfg_attr(not(unix), ignore = "actual Unix owned process capability unavailable")]
 fn native_effect_sekiz_host_hazirlik_vakasi() {
+    // Existing Cargo preparation owner also owns the nested selected-AST preflight.
+    let _ = include_str!("../../scripts/tests/effect-pg-owner-preflight-test.py");
+    let _ = include_str!("../../scripts/tests/effect-pg-owner.py");
     #[cfg(not(unix))]
     panic!("actual Unix owned process capability unavailable");
     #[cfg(unix)]
@@ -20,7 +23,7 @@ fn native_effect_sekiz_host_hazirlik_vakasi() {
         let stderr = String::from_utf8_lossy(&output.stderr);
         assert!(output.status.success(), "{stderr}");
         assert!(output.stdout.is_empty());
-        assert!(stderr.contains("\nRan 8 tests in ") && stderr.trim_end().ends_with("\nOK"));
+        assert!(stderr.contains("\nRan 9 tests in ") && stderr.trim_end().ends_with("\nOK"));
     }
 }
 
@@ -37,15 +40,28 @@ fn native_effect_onbir_sql_smtp_no_replay_vakasi() {
         let postgres =
             std::env::var_os("ZEE_EFFECT_PG_BIN").expect("explicit owned PG16.15 bin directory");
         assert!(std::path::Path::new(&postgres).is_absolute());
-        let output_dir = root.join(format!(
-            "compiler/target/native-effect-{}-{}",
-            std::process::id(),
-            std::time::SystemTime::now()
-                .duration_since(std::time::UNIX_EPOCH)
-                .unwrap()
-                .as_nanos()
-        ));
-        std::fs::create_dir_all(output_dir.parent().unwrap()).unwrap();
+        let output_dir = if let Some(value) = std::env::var_os("ZEE_EFFECT_NATIVE_OUT") {
+            let path = std::path::PathBuf::from(value);
+            assert!(path.is_absolute());
+            let parent = path.parent().expect("fresh public native output parent");
+            assert_eq!(parent.canonicalize().unwrap(), parent);
+            assert!(matches!(
+                std::fs::symlink_metadata(&path),
+                Err(error) if error.kind() == std::io::ErrorKind::NotFound
+            ));
+            path
+        } else {
+            let path = root.join(format!(
+                "compiler/target/native-effect-{}-{}",
+                std::process::id(),
+                std::time::SystemTime::now()
+                    .duration_since(std::time::UNIX_EPOCH)
+                    .unwrap()
+                    .as_nanos()
+            ));
+            std::fs::create_dir_all(path.parent().unwrap()).unwrap();
+            path
+        };
         let output = std::process::Command::new("python3")
             .args(["-I", "-B"])
             .arg(root.join("scripts/tests/effect-dispatcher-native-test.py"))
