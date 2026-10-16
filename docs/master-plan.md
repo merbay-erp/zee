@@ -30,8 +30,12 @@ K-304 ve GB-113 dar kaynak/native kapsamıyla kapalı: hazırlık22, kaynak
 kapısı15 ve temiz direct native4 geçti; ayrı dene/source-coverage ve genel
 P22/P36 açık. [Kit sınırı](owned-web-test-kiti.md), [makbuzlar](urunlesme-k298-kabul-20261016.md).
 
-K-305 negatif bridge harness'inde erken iptal/owned cleanup kaynak hazırlığıdır;
-GB-114, yeni tam kaynak kapıları ve temiz bridge kabulü açık. P22/P36 kısmi.
+K-305 ve GB-114 dar negatif-harness/bridge kapsamıyla kapalı: hazırlık15,
+kaynak kapısı15 ve temiz `40788a3d0a9f0d43083130bb0f062871861787db` üzerinde ayrı bridge Cargo1 ile
+unit kaynak kapsamı (ürün paydası14), native4 ve altı negatif geçti.
+Özgün Popen/WNOWAIT süreç sahipliği ve boş worker/PG/komut grubu makbuzları doğrulandı; dış owner exit0/reaped. Her PG child için bağımsız normal SIGINT/exit veya private runtime dizini kaldırma gözlemi ileri sürülmez; 205 kaynak ve 17 runtime pini korundu Son 11 belge/güvenlik kapısı kayıt commit önkoşuludur; gerçek sonuç E/k305-final-gates-1/PROOF.json ve E/k305-final-gates-controller-1.json ile izlenir. Bu metin kapı sonucu yerine geçmez.
+Unit/worker kapsamları ayrı, P22/P36 ve ürün/platform kısmi kalır; S3/C8 veya
+RC/soak/IDE sonucu yeni kaynağa taşınmaz.
 [Koşucu sınırı](dene-native-web-koprusu.md), [rapor](urunlesme-k298-kabul-20261016.md).
 
 K-301 worker kesilme testinin dar doğruluk işi tamamlandı: V3 gerçek worker3
