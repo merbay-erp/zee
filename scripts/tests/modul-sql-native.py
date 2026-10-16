@@ -35,6 +35,11 @@ pins={n:M.digest(M.BASE['snapshot'](R/n)) for n in roles}
 proof={'schema':'zee-module-sql-native-tests-1','status':'running','cases':[],'source_files':[{'path':n,'sha256':v} for n,v in pins.items()]}
 raw=[];cluster=None;work=None;cleanup=[];oldsignals={}
 campaign_started=time.monotonic();campaign_deadline=campaign_started+600;cleaning=False
+campaign_cancelled=False
+def cancel(*_):
+    global campaign_cancelled
+    campaign_cancelled=True
+    if not cleaning:H['CANCELLED']=True
 original_run=H['run']
 def bounded_run(argv,**kw):
     left=campaign_deadline-time.monotonic()
@@ -67,7 +72,6 @@ def run(argv,**kw):
     raw.append({'operation':str(Path(str(argv[0])).name),'output':result.decode('utf8','replace')})
     return result.decode()
 TLS.run=run
-for sig in [signal.SIGTERM,signal.SIGINT]:oldsignals[sig]=signal.signal(sig,lambda *_:H.__setitem__('CANCELLED',True))
 def record(name):
     proof['cases'].append({'name':name,'passed':True})
     (a.output/'progress.json').write_text(json.dumps({'status':'running','completed_cases':proof['cases']},indent=2)+'\n')
@@ -88,7 +92,56 @@ def request(port,path,deadline):
             assert time.monotonic()<deadline
             if not block:return out
             out+=block;assert len(out)<=65536
+def publish_proof():
+    # Cleanup may mask the command helper flag; the campaign ledger never resets.
+    primary_error=sys.exc_info()[1]
+    def verdict():
+        cancelled=campaign_cancelled or H['CANCELLED']
+        expired=time.monotonic()>=campaign_deadline
+        removed=work is not None and not work.exists()
+        proof.update(elapsed_seconds=time.monotonic()-campaign_started,cleanup=cleanup,
+                     temporary_private_root_removed=removed,cancelled=cancelled,deadline_expired=expired)
+        if cancelled or expired or not removed or cleanup!=['owned-pg-closed']:
+            proof['status']='failed'
+    def write_proof():
+        (a.output/'proof.json').write_text(json.dumps(proof,indent=2,ensure_ascii=False)+'\n')
+    def write_failed():
+        nonlocal primary_error
+        proof['status']='failed'
+        try:write_proof()
+        except BaseException as error:
+            proof.setdefault('failed_proof_write_errors',[]).append(type(error).__name__)
+            if primary_error is None:primary_error=error
+    try:
+        verdict()
+        (a.output/'raw.json').write_text(json.dumps(raw,indent=2,ensure_ascii=False)+'\n')
+        verdict();write_proof();verdict()
+        if proof['status']!='passed':write_failed()
+    except BaseException as error:
+        proof.update(status='failed',publication_failure=type(error).__name__)
+        if primary_error is None:primary_error=error
+        write_failed()
+    finally:
+        # All successful-result writes finish while campaign handlers are active.
+        errors=[]
+        for sig,handler in oldsignals.items():
+            try:signal.signal(sig,handler)
+            except BaseException as error:
+                errors.append(type(error).__name__)
+                if primary_error is None:primary_error=error
+        if errors:proof.update(status='failed',handler_restore_errors=errors)
+    try:verdict()
+    except BaseException as error:
+        proof.update(status='failed',finalization_failure=type(error).__name__)
+        if primary_error is None:primary_error=error
+    # After restoration only a failed diagnostic may be written, never PASS.
+    if proof['status']!='passed':write_failed()
+    if primary_error is not None:raise primary_error
+    if proof['status']!='passed':raise ValueError('owned SQL native acceptance failed')
+
 try:
+    for sig in [signal.SIGTERM,signal.SIGINT]:oldsignals[sig]=signal.signal(sig,cancel)
+    assert not campaign_cancelled and not H['CANCELLED']
     assert run(['git','-C',R,'rev-parse','HEAD']).strip()==a.sha
     if not a.candidate:H['clean_exact'](R,a.sha)
     assert file_pin(a.dil)==a.binary_sha256
@@ -106,15 +159,16 @@ try:
         cluster=TLS.LocalCluster(certdir,cert,key,a.postgres_bin_dir)
         def close_cluster():
             global cleaning
-            cleaning=True
+            previous_cleaning=cleaning;cleaning=True
             previous_cancel=H['CANCELLED'];H['CANCELLED']=False
-            handlers={sig:signal.signal(sig,lambda *_:None) for sig in [signal.SIGTERM,signal.SIGINT]}
             try:cluster.close();cleanup.append('owned-pg-closed')
             except BaseException:cleanup.append('owned-pg-cleanup-failed');raise
             finally:
-                if (certdir/'server.log').is_file():(a.output/'postgres.log').write_bytes(M.BASE['snapshot'](certdir/'server.log'))
-                H['CANCELLED']=previous_cancel
-                for sig,handler in handlers.items():signal.signal(sig,handler)
+                try:
+                    if (certdir/'server.log').is_file():(a.output/'postgres.log').write_bytes(M.BASE['snapshot'](certdir/'server.log'))
+                finally:
+                    cleaning=previous_cleaning
+                    H['CANCELLED']=previous_cancel or campaign_cancelled or H['CANCELLED']
         stack.callback(close_cluster);cluster.start()
         proof['postgres_version']=cluster.version
         assert cluster.version=='postgres (PostgreSQL) 16.15'
@@ -199,13 +253,9 @@ try:
         assert pgpins=={n:file_pin(a.postgres_bin_dir/n) for n in pgpins}
         if not a.candidate:H['clean_exact'](R,a.sha)
         proof['source_end']={'head':a.sha,'clean':not bool(run(['git','-C',R,'status','--porcelain','--untracked-files=all']).strip())}
-        proof.update(status='passed',case_count=len(proof['cases']),failed=0,source_end_unchanged=True,binary_end_unchanged=True,unknown_write_replay_count=0)
+    proof.update(status='passed',case_count=len(proof['cases']),failed=0,source_end_unchanged=True,binary_end_unchanged=True,unknown_write_replay_count=0)
 except BaseException as error:
     proof.update(status='failed',failure_type=type(error).__name__)
     raise
 finally:
-    for sig,handler in oldsignals.items():signal.signal(sig,handler)
-    proof['elapsed_seconds']=time.monotonic()-campaign_started
-    proof['cleanup']=cleanup;proof['temporary_private_root_removed']=work is not None and not work.exists()
-    (a.output/'raw.json').write_text(json.dumps(raw,indent=2,ensure_ascii=False)+'\n')
-    (a.output/'proof.json').write_text(json.dumps(proof,indent=2,ensure_ascii=False)+'\n')
+    publish_proof()

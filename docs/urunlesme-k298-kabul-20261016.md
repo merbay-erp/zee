@@ -382,6 +382,40 @@ hazırlık senaryoları Rust toplamına eklenmez. Production Rust, Supervisor,
 gömülü kit, grammar/API/tanı/spec/RFC, katman/bağımlılık, semantic regresyon,
 performans iş yükü ve kurulum sözleşmesi değişmez.
 
+## K-307 — kabul harness’i iptal ve yayın doğruluğu: açık
+
+K-307 / GB-116 düşük ve açıktır. `scripts/tests/modul-sql-native.py` cleanup callback’inin exact AST modeli, fake cluster.close içinden fake TERM handler çağrıldığında yeni iptalin kaybolduğunu gösterdi: tek beklenen assertion failure, özgün owner exit1/reaped. Gerçek sinyal, OS/PG süreci veya sızıntı çalıştırılmadı; gerçek PG kaçağı kanıtı değildir.
+
+Düzeltme kapsamı ayrı yapışkan iptal ledger’ı; cleanup için yalnız H iptal bayrağının geçici maskelenmesi ve her yolda geri yüklenmesi; korumalı kısmi ilk handler kurulumu; tüm handler geri yüklemeleri; ExitStack ve geçici dizin cleanup’ından sonra passed kararı; yayın sırasında iptal/deadline/failure kontrolü ve birincil hatanın korunmasıdır. Diagnostic veya bir handler restore hatası kalan geri yüklemeleri atlayamaz. Mevcut600sn kampanya kabul sınırı ve dokuz native SQL oracle değişmez.
+
+T adayV4 inert13 ve T adayV5 birleşik23 yöntemi gerçek özgün owner makbuzlarıyla geçti; baseline10 ayrıca geçti. Eski10 ordinary metot korunup13 inert yöntem aynı `compiler/tests/modul_sql_testi.rs::modul_sql_stdlib_sozlesmesi` sahibi altında birleştirildi. Bu controlled sonuç kaynak veya fresh native kabulü değildir; Kaynak/test/belge uygulaması bu atomik dilimin parçasıdır. Ayrı ignored sahibi `modul_sql_native_crud_goc_yasam_dongusu` ve dokuz alt native vaka korunur; Python yöntem sayısı Cargo/native toplamına eklenmez. Kaynak+test+belge aynı atomik commit, gerekli katalog/tazelik/fmt/faz ve kaynak kapıları, exact temiz kaynak, fresh native9 ve son kapılar kapanış önkoşuludur.
+
+Bu dar harness işi `TLS.LocalCluster` içindeki pg_ctl ile başlatılan detached PostgreSQL ve immediate-stop sahipliğini foreground özgün Popen/normal kapanışa dönüştürmez. Kalan beş PG tüketicisi, genel P20/adoption/platform, DB+FS atomikliği ve unknown no-replay sınırı açıktır. Üretim compiler175/bağımlılık/katman, grammar/API/ABI, normatif spec/RFC, kullanıcı tanısı/katalog kodu, sabit performans iş yükü veya compiler/LSP kalıcı durum değişmez; yeni özellik/RC/soak/IDE kabulü aktarılmaz.
+
+Beklenen kaynak kapısı planı (henüz çalışmadı): korumalı özgün Popen/WNOWAIT sahipliğiyle15 adım; preparation yalnız `modul_sql_testi` ordinary23/tek Cargo sahibi ve native1 ignored sonucu, tam faz matrisi22 fazı yeniden yürütür. Counts/summary/katalog-tazelik/spec/fmt/clippy/conformance/semantic/core-freeze/diff/secret/sürekli güvenlik ayrı kontrollerdir. Beklenen kaynak pin domain’i eski341 anahtarın iki SQL script hash’i yenilenip Rust test wrapper’ı eklenmesiyle342’dir; production175 korunur. Bu plan actual kapı sonucu değildir; fresh native9 yalnız ayrıca exact temiz kaynak commit’inden sonra değerlendirilir.
+
+### K-307 mevcut public hazırlık kanıtı
+
+| Kayıt | SHA-256 |
+| --- | --- |
+| `/private/tmp/zee-k300/K307-MODUL-SQL-CANCELLATION-INDEPENDENT-ASSESSMENT-1.json` | `9ced1b582755f2ba2701c274b6f86ef0c895802156f11541b2e46922252abc77` |
+| `/private/tmp/zee-k300/modul-sql-cleanup-cancel-counterexample-1.py` | `6060f121186a203d86330050f274214120919fd630248eef398ffb3c5eb9b353` |
+| `/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/k307-modul-sql-cancel-counterexample-controller-1.json` | `d0fe1cdd935ccd9e0f4c179795f5ec40192cca313102ffae1d80bfa73a67d701` |
+| `/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/k307-modul-sql-cancel-counterexample-1.log` | `8328e4259037efc7a299b939960c15743d03e4ebfe2ac1eb52a44abae8bef88f` |
+| `/private/tmp/zee-k300/k307-modul-sql-proposal-4/modul-sql-native.py` | `a1db59e4f5e51bd2d7032c6ba3eabca9906d0aac900255c08695df9908c1b5a2` |
+| `/private/tmp/zee-k300/k307-modul-sql-proposal-4/native-cleanup-models.py` | `c8d2301b4bf358a0a1a127764e8aab42af665a03fdd0a6df8edc67b573ff7f2b` |
+| `/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/k307-modul-sql-baseline10-controller-1.json` | `a2fb1a876322d488f2407a14257cb24d13cb77474c87ebc9bf62fae55a644102` |
+| `/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/k307-modul-sql-baseline10-1.log` | `4953417aab84c5f724fae90ef047a24094aedf99179fe4023c23d308d690d15d` |
+| `/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/k307-modul-sql-model13-controller-1.json` | `984504fff0225993c8f6df8b71223fd018c8ce61e940dfc57418b078fe8575f4` |
+| `/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/k307-modul-sql-model13-1.log` | `ba4aad699e532fed69331fc1da28feab1a47050f7394977a07c95996ea8a0c8b` |
+| `/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/k307-modul-sql-combined23-controller-1.json` | `09a8eb21d362a483e1cf0229cb7e3ad969635963334fd5ff3b3c1511ea20a10c` |
+| `/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/k307-modul-sql-combined23-1.log` | `01a3361790affbbb7f05249396624d280422febb36bfe07f37a85876115130fc` |
+| `/private/tmp/zee-k300/k307-modul-sql-proposal-5/PREPARATION.json` | `85d72c955ff3555f4b2a2faea973e7609e94c483c87f959775e94dbe6c6b5c63` |
+
+Gerçek kontrollü sonuçlar ayrı makbuzlarla kayıtlıdır: baseline10, adayV4 inert13 ve adayV5 birleşik23 yöntemi geçti; her özgün owner observed_exit=exit=0/closed/reaped/errors[]/cancelled[]. Birleşik23, korunan10 ordinary ve eklenen13 inert yöntemdir; Cargo/native sayısı değildir. Bu kaynak/test/belge dilimi atomik uygulama kapsamındadır; kaynak kapıları, exact temiz kaynak ve fresh native9/son kapı kabulü bekleniyor.
+
+Candidate/model pinleri T hazırlığı kimliğidir; actual baseline10/inert13/birleşik23 sonuçları ayrı owner/log makbuzlarıdır, native9 veya kaynak kabulü değildir. K-306 kendi exact dar kapanış kaynağında korunur.
+
 ## K-306 — Linux kabul koşucusu: dar kapsamda kapalı
 
 İki kabul koşucusunun canonical kök/erken handler, yapışkan iptal ve failed-body/tekrar-close doğruluğu; kısmi setup ve foreground PG sahipliği düzeltildi. Üretim compiler/dil/API değişmedi; iki mevcut ignored Cargo sahibi ve dispatcher4/HTTP7 oracle korundu.
