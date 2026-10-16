@@ -1,6 +1,6 @@
 # ADR-149 — K-291 mixed-code revision için ayrı gerçek kanıt
 
-- **Durum:** K-300 GB-112 açık; hazırlık13 geçti; kaynak kapıları ve temiz exact native9 kabulü bekleniyor.
+- **Durum:** K-300 dar kaynak/native kabulü ve GB-112 kapalı; hazırlık13 ve temiz C3 native9 geçti. Son 11 belge kapısı takip commit'inin önkoşuludur; P14 kısmi.
 - **Tarihsel durum:** [S3](../docs/urunlesme-s3-kabul-20261015.md) (`66e4149e53451111d153f47283c219079a8d1cab`): dokuz native vaka/160 istek/dört dalga ile dar yerel kabul; genel SLA, DB şema devri ve ürün/platform kapsamı açık.
 P14/B6'da inherited listener17 sabit application revision üzerinde kanıttı;
 mixed-code yayınını veya evrensel kesintisizlik/SLA'yı kanıtlamıyordu.
@@ -34,8 +34,13 @@ Cleanup sırasında alınan iptal korunur; tüm vaka kontrolleri daha önce geç
 olsa da iptal edilen koşu `passed` yazamaz. Sahiplik özgün handle üzerinden
 sürer; üretim listener/worker/FD protokolü değiştirilmez.
 
-Ek Python hazırlık vakaları mevcut normal Cargo sahibinde kalır. Native9 aynı
-doğrulama koşullarıyla ayrı exact temiz kaynak kabulü ister; yeni sonuçlar henüz yoktur.
-[GB-112 ve kapsam](../docs/mixed-revision-wave.md)
-K-299'un C2 PDF/service kabulünden ayrıdır. Yeni compiler kapasitesi, grammar,
-API, kalıcı durum veya normatif spec/RFC kararı eklenmez; P14 kısmi kalır.
+Ek Python hazırlık vakaları mevcut normal Cargo sahibinde kalır; hazırlık13
+geçti. C3 `549dbe66a775db17875b47c67948245a6a8fbf60` üzerinde aynı doğrulama
+koşullarıyla ayrı temiz native9/tek Cargo sahibi kabulü geçti: dört dalga,
+160/160 HTTP200 ve sıfır retry/5xx/body mismatch/failure; özgün owner exit0
+ile toplandı. C3 öncesi kaynak kapısı13 ve tam faz998/0/25 ayrıca geçti; ilk
+ADR durum etiketi nedeniyle başarısız kapı tarihsel olarak korunur.
+[GB-112 ve kapsam](../docs/mixed-revision-wave.md) K-299'un C2 PDF/service
+kabulünden ayrıdır. Son 11 belge kapısı takip commit'inin önkoşuludur. Üretim compiler/host,
+grammar/API, kalıcı durum veya normatif spec/RFC kararı değişmez; P14 kısmi
+kalır ve eski RC/soak/IDE kabulleri C3'e aktarılmaz.
