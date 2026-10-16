@@ -132,3 +132,19 @@ ikinci fixture'dadır; native connector minTLS1.2 değişmez. Strict14 vakası
 sahte positivecontrol ve expiry sonrası send'i reddeder; normal Cargo wrapper
 bu14 testi yürütür. Tarihsel dört/beş/yedi vaka kayıtları kendi SHA'sına aittir.
 Final clean exact acceptance ayrıca gerekir; [ADR-115](../adr/115-tls11-capable-positive-kontrol.md).
+
+## K-302 — Güncel kaynakta yerel TLS ve göç kabulü
+
+Temiz `e6322dbc0424a54f777a7b14f65d78712cfced1a` üzerinde sahipli PG16.15 runtime ile mevcut sekiz TLS
+ve bir göç vakası sıfır başarısız/atlamayla geçti. TLS1.1 erişilebilir olumlu
+kontrolü ile native ret, CA/hostname/NULL, bütçe, 40P01/40001 ve göçün
+rol/checksum/atomik sınırları mevcut testlerce doğrulandı. Runtime derlemesi
+ve Zee kabulü ayrı makbuzlardır; kaynak/pin/owned cleanup ve exact sonuçlar
+[ortak rapordadır](urunlesme-k298-kabul-20261016.md). Bu, o kaynakta seçili
+9/25 explicit ignored vakanın dar kabulüdür; tam fazın yeniden çalıştığı,
+uzak CI/provider/ürün veya ASan/soak kabulü anlamına gelmez.
+İlk runtime derlemesinin `utils/errcodes.h` hatası ve başarısız makbuzu
+korunur. Yayımlanan kaynak zaman damgaları korunan ikinci derleme geçti
+(19 komut, 97,178 saniye); yeni TLS/göç kabulü 35,622 saniyedir. Üç PG süreci
+normal exit0/reap ile kapandı ve geçici özel küme dizini kaldırıldı.
+Son belge/güvenlik kapısı kayıt commit’inin önkoşuludur; sonuç ortak raporun dış makbuzundan izlenir.

@@ -1991,3 +1991,13 @@ HTTP/CSRF yardımcısı mock'tur, gerçek yardımcı worker3 kabulünde sınand�
 Üretim compiler/host/worker değişmez. K-300'ün 998/0/25 tam fazı K-301 kabulü
 sayılmaz. Genel P34/native DNS/tam fault/drain/SLA kapıları açık kalır;
 bu yerel test düzeltmesi için yeni kullanıcı girdisi gerekmez.
+
+## K-302 — Yerel PG runtime ve mevcut TLS/göç kabulü
+
+**Dar yerel kabul tamamlandı:** temiz `e6322dbc0424a54f777a7b14f65d78712cfced1a` için özel PG16.15
+runtime ve mevcut TLS8/göç1 kabulü geçti; 9/25 explicit ignored vaka bu
+kaynakta ayrıca yürütüldü. Production ve test sayısı değişmez. P31'in yerel
+kanıtı tazelendi; P36'nın kalan vakaları, uzak CI ve gerçek ürün kabulü
+ayrı kalır. Son belge/güvenlik kapısı kayıt commit’inin önkoşuludur; sonuç ortak raporun dış makbuzundan izlenir.
+[Sonuç ve kaynak](urunlesme-k298-kabul-20261016.md),
+[teknik sınır](postgresql-tls-ci.md).

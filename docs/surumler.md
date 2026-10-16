@@ -14,6 +14,9 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **K-302 yerel PG kabulü:** temiz `e6322db` için TLS8/göç1 geçti.
+  Production/göç davranışı değişmez; [kaynak ve açık sınır](urunlesme-k298-kabul-20261016.md).
+
 - **Worker inflight test doğruluğu (K-301, dar kapsam tamamlandı):** handler
   giriş işareti ve tüm sınırlı yanıt kontrolü, üçüncü gerçek worker koşusunda
   tek Cargo sahibi 1/0/0 ve wrapper'ın 25/0/0 doğrulamasıyla geçti. V3 normal
