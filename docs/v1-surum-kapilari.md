@@ -1029,3 +1029,9 @@ Bu kayıt yeni kaynağın actual bridge sonucudur; S3/K-304 direct kit veya
 RC/soak/IDE aktarımı değildir. Unit/worker paydaları birleştirilmez; genel
 P22/P36, ürün/platform ve C1/P33 kapsamları [köprü rehberinde](dene-native-web-koprusu.md)
 ayrı tutulur. [Ortak rapor](urunlesme-k298-kabul-20261016.md) exact makbuzları taşır.
+
+## K-306 — kaynak hazırlığı; Linux kabulü açık
+
+Kontrollü Campaign sınıf modellerinde aynı 16 yöntem eski kaynakta 13 assertion failure/0 error, adayda 0 failure/0 error üretti; her iki ham günlük ve özgün dış owner exit0/reaped doğrulandı. Gerçek çocuk, OS sinyali, Linux, PostgreSQL veya systemd kabulü değildir. Altı Rust araç zinciri arşivinin imzalı manifest bağları doğrulandı; guest kurulumu veya native kabul değildir.
+
+Birleşik yedi kod dosyası ve mevcut dispatcher sahibi üzerinden Campaign16/PG18 hazırlık bağlantısı hazır; Birleşik kaynakta Campaign16 ve foreground PG18 yöntemi/31 senaryo (29 davranış ve iki tüketici için iki statik oracle kontrolü) 0 failure/0 error/0 skipped ile geçti; özgün dış owner exit0/reaped. Bu kontrollü sınıf modelleri gerçek PostgreSQL/Linux/sinyal kabulü değildir. `E/k306-combined-models-1/PROOF.json` SHA-256 `f249dafb4fb00021a5f9e2c1864ce68c5486c89f5a0ef61a03a08471587e3d91`; outer `d3613083eaf4bcc2c287cc8033aab6d7b82842e0e9872d089e13343356891540`. Tam faz/katalog/tazelik/fmt/Clippy/koruklar/sürekli güvenlik; ardından temiz exact kaynakta ayrı dispatcher4/HTTP7 ve özgün owner/PG kapanışları gerekir. GB-115 açık, genel P09/P13/P36 kısmi ve P37 sürekli kalır. K-305 final11/temiz C11 kabulü korunur. Son belge/güvenlik kapısının geçmesi kayıt commit’inin önkoşuludur; bu hazırlık gelecekteki sonucu ileri sürmez. [Rehber](dispatcher-service.md), [ortak rapor](urunlesme-k298-kabul-20261016.md).

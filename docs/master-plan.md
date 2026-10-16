@@ -30,6 +30,8 @@ K-304 ve GB-113 dar kaynak/native kapsamıyla kapalı: hazırlık22, kaynak
 kapısı15 ve temiz direct native4 geçti; ayrı dene/source-coverage ve genel
 P22/P36 açık. [Kit sınırı](owned-web-test-kiti.md), [makbuzlar](urunlesme-k298-kabul-20261016.md).
 
+K-306 / GB-115 açık: kontrollü Campaign16 adayda geçti; foreground PG18 yöntem/31 kontrollü senaryo da geçti ve iki hazırlık mevcut dispatcher sahibine bağlandı; tam kaynak kapıları ve temiz Linux4+7 bekleniyor. P09/P13/P36 kısmi; [hazırlık sınırı](dispatcher-service.md).
+
 K-305 ve GB-114 dar negatif-harness/bridge kapsamıyla kapalı: hazırlık15,
 kaynak kapısı15 ve temiz `40788a3d0a9f0d43083130bb0f062871861787db` üzerinde ayrı bridge Cargo1 ile
 unit kaynak kapsamı (ürün paydası14), native4 ve altı negatif geçti.

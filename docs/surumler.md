@@ -18,6 +18,8 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
   sonucu, hazırlık22/kaynak kapısı15 ve temiz direct native4 ile doğrulandı.
   Kullanıcı göçü yoktur; [kit ve ayrı köprü kabulü sınırı](owned-web-test-kiti.md).
 
+- **K-306 hazırlığı / GB-115 açık:** kontrollü Campaign16 adayda geçti; foreground PG18 yöntem/31 kontrollü senaryo da geçti; tam kaynak kapıları ve temiz Linux4+7 bekleniyor. Üretim davranışı veya kullanıcı göçü değişmiyor; [kabul sınırı](dispatcher-service.md).
+
 - **K-305/GB-114 dar kapsamda kapalı:** negatif bridge kabul koşucusunun erken
   iptal/owned cleanup ve final makbuz doğruluğu, hazırlık15/kaynak kapısı15 ve
   yeni temiz exact bridge Cargo1 ile unit kaynak kapsamı/native4/altı negatif

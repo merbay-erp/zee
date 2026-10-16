@@ -31,9 +31,9 @@ def main():
     a=p.parse_args()
     with Campaign(a,'K283')as c:
         source=c.repo/'scripts';http=D.load('native_http_host',source/'http-service.py');tls=runpy.run_path(str(source/'postgresql-tls-ci.py'))
-        temporary=c.temporary('z283-');tls['certificates'].__globals__['run']=c.borrowed_run;tls['LocalCluster'].start.__globals__['run']=c.borrowed_run;ca,_,cert,key=tls['certificates'](temporary)
+        temporary=c.temporary('z283-');tls['certificates'].__globals__['run']=c.borrowed_run;ca,_,cert,key=tls['certificates'](temporary)
         (temporary/'pg_hba.conf').write_text('local all all trust\nhostssl all all 127.0.0.1/32 trust\nhostnossl all all 0.0.0.0/0 reject\n')
-        cluster=tls['LocalCluster'](temporary,cert,key,str(a.postgres_bin_dir.resolve(strict=True)));c.clusters.append(cluster);cluster.start();c.need(cluster.version=='postgres (PostgreSQL) 16.15');c.proof['postgres_version']=cluster.version
+        cluster=SUP['OwnedLocalCluster'](c,temporary,cert,key,a.postgres_bin_dir.resolve(strict=True));c.clusters.append(cluster);cluster.start();c.need(cluster.version=='postgres (PostgreSQL) 16.15');c.proof['postgres_version']=cluster.version
         def sql(text,database='postgres'):
             return c.command('sql-observer',cluster.psql+['--host','127.0.0.1','--port',str(cluster.port),'--username','postgres','--dbname',database,'--no-psqlrc','--tuples-only','--no-align','--set','ON_ERROR_STOP=1','--command',text]).decode().strip()
         sql('CREATE ROLE zee_ready LOGIN; ALTER ROLE zee_ready SET default_transaction_read_only=on;');sql('CREATE DATABASE zee_readiness_fixture;')

@@ -12,9 +12,9 @@ def main():
     a=p.parse_args()
     with Campaign(a,'K282')as c:
         source=c.repo/'scripts';host=D.load('native_dispatch',source/'job-dispatcher.py');mod=runpy.run_path(str(source/'is-kuyrugu-ci.py'));tls=mod['TLS']
-        temporary=c.temporary('z282-');tls['certificates'].__globals__['run']=c.borrowed_run;tls['LocalCluster'].start.__globals__['run']=c.borrowed_run;ca,_,cert,key=tls['certificates'](temporary)
+        temporary=c.temporary('z282-');tls['certificates'].__globals__['run']=c.borrowed_run;ca,_,cert,key=tls['certificates'](temporary)
         (temporary/'pg_hba.conf').write_text('local all all trust\nhostssl all all 127.0.0.1/32 trust\nhostnossl all all 0.0.0.0/0 reject\n')
-        cluster=tls['LocalCluster'](temporary,cert,key,str(a.postgres_bin_dir.resolve(strict=True)));c.clusters.append(cluster);cluster.start();c.need(cluster.version=='postgres (PostgreSQL) 16.15');c.proof['postgres_version']=cluster.version
+        cluster=S['OwnedLocalCluster'](c,temporary,cert,key,a.postgres_bin_dir.resolve(strict=True));c.clusters.append(cluster);cluster.start();c.need(cluster.version=='postgres (PostgreSQL) 16.15');c.proof['postgres_version']=cluster.version
         probe=mod['Probe'](temporary,cluster,c.binary,ca,c.fixture('dogfood/zee-cekirdek/is-kuyrugu/kaynak/kuyruk.dil').decode());c.resources.append(probe)
         fixture=c.repo/'dogfood/zee-cekirdek/is-kuyrugu-dispatcher'
         probe.sql=lambda statement:c.command('SQL-observer',probe.psql_command()+['--command',statement],20).decode().strip()
