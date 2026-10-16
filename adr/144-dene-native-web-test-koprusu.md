@@ -42,3 +42,12 @@ ve kaynak dışı Rust/HTTP guard branch coverage bu işin kapanış iddiası de
 ## S3 kanıtı
 
 [İkinci dalga exact S3 kabulü](../docs/urunlesme-s3-kabul-20261015.md) bu kararla ilgili actual kohortu ve açık sınırları kaydeder. C1/P33 retleri ve ürün/insan/platform kapıları bu bağlantıyla kapanmaz.
+
+## K-304 — Gömülü kitin finalizasyon etkisi
+
+ADR-129 revizyonu kitin cleanup/proof yazımı sırasında gözlenen iptal ve
+süre aşımının başarısız sonuçta korunmasını hazırlar. Bu Python baytları
+yeni compiler derlemesine gömülür; Rust grammar/API/coverage davranışı
+değişmez. GB-113 ve temiz exact native4 kabulü açıkken eski S3 köprü kabulü
+yeni kaynağa taşınmaz. Direct kitin iki mock metodu veya daha sonra gelecek
+native4 sonucu, ayrı `dene`/source-coverage sahibinin çalıştığı anlamına gelmez.

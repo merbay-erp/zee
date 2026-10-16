@@ -205,12 +205,52 @@ vakasıyla aynı kaynak toplamı yapılmaz. Native metrik tüketicisinin sekiz
 alt vakası, diğer PG tüketicileri, uzak CI/provider/COMMIT veya gerçek ürün
 kabulü çıkarılmaz; P13/P36 genel kapsamı kısmi kalır.
 
-Bu belge grubunun son 11 kapısı kayıt commit'inin önkoşuludur; gerçek sonuç
-`E/k303-gates-1/PROOF.json` / `k303-gates-controller-1.json`, kayıt
-`E/k303-commit-1.json` ile izlenir. Spec/RFC/ADR normları ve indeksleri,
+Son belge/güvenlik kapısı **11/11 geçti** (70,759 sn); özgün controller
+exit0/reaped. On iki belge `a5cdbc5b3d2c66685e48bd34c320b7b5e0db58ce`
+commit'iyle temiz kaydedildi. `E/k303-gates-1/PROOF.json` SHA-256
+`af9c17e0301f6981af99ba5444f313b951e1075e7cf35ddad08a26e07d6acde9`;
+controller `15f238cc11ee8deb093694aa0c85ca8c6f1e73adbf61c358f930ce138d7c00da`;
+`E/k303-commit-1.json` SHA-256
+`9cf34be78d086481ea2164dafa2e9eee93264efb4ef45b4e0a0fb662cc960f4e`.
+Bağımsız inceleme 11 günlük hash'ini, 12 belgeyi ve kaynak pinlerini doğruladı.
+Spec/RFC/ADR normları ve indeksleri,
 tanı kataloğu, compiler/core-freeze/regression kayıtları, katman grafiği,
 test sayısı/faz sahipliği, performans/RC/soak tarihçesi ve kurulum sözleşmesi
 incelendi; yalnız mevcut kabulün kaydı olduğundan değişmedi.
+
+## K-304 — Owned web koşucusunda geç iptal: kaynak hazırlığı
+
+**AÇIK; GB-113 düşük önem.** Son vaka başarısı, geçici dizin kapanışı ve
+command-owner cleanup tamamlanıncaya kadar ara durumda tutulur. Son makbuz
+yazımı veya nihai kabul kontrolünde gözlenen iptal/süre aşımı `failed`
+makbuz ve nonzero çıkış olarak korunur. Tamamlanan süreçten sonraki sinyal
+hakkında gözlem garantisi verilmez.
+
+Özgün eski kaynak üç kapanış noktasındaki altı kontrollü iptal/deadline
+karşı örneğinde hatalı `passed` üretti. İlk önerinin son `need` kontrolünde
+ayrıca iki karşı örnek bulundu; ilk öneri korunur. Son öneride dört nokta ×
+iki durum ve normal tamamlanma kontrolü iki Python metodu altında geçti.
+Bunlar gerçek main/finally yolunu sahte Kit ile yürütür; native PG/HTTP veya
+OS sinyal teslimi kabulü değildir. Mevcut 20 hazırlığa iki metot eklenir;
+Cargo sahipleri ve toplamı değişmez.
+
+Dar hazırlık makbuzu `E/k304-preparation-2/v2/K304-PREPARATION.json`, SHA-256
+`742ea73df57fd0daeb8109915292475e9234ab836b8b5ae13551b4a29d5f7d8c`
+altında kaynak, ham günlük ve controller hashlerini taşır. Özgün eski/V1
+karşılaştırmalar exit1/reaped, V2 exit0/reaped olarak korunmuştur.
+
+Tam 22 hazırlık, katalog/tazelik/fmt, tam faz, Clippy ve sürekli güvenlik
+kapıları ile kaynak commit'i bekleniyor. Ardından aynı temiz kaynakta dört
+native HTTP/PG senaryosu yeniden çalıştırılacak; GB-113 bu sonuçlar olmadan
+kapatılmaz. Gömülü kit nedeniyle derleme baytları etkilenir; ayrı `dene` ve
+source-coverage native sahibi çalıştırılmadan o kabul aktarılmaz.
+
+Belge etkisi ADR-129/144 ve indeksleri, kit/köprü rehberleri, README, backlog,
+master/sürümler/v1 kapıları, güvenlik/kanıt haritası ve P22/P36 planında
+incelendi. Faz açıklaması ve üretilen faz belgesi yenilenir. Compiler Rust,
+grammar/API/tanı/katman/bağımlılık ve performans iş yükü değişmez; spec/RFC,
+hata kataloğu, kalıcı performans/RC/soak tarihçesi ve kurulum sözleşmesi
+bu bakımda değişmez. Önceki exact kaynakların kabulü yeni kaynağa taşınmaz.
 
 ## Sonuç özeti
 
@@ -742,7 +782,7 @@ bilgidir; bunlar yeniden karar talebi değildir.
 | P19 — LSP/editör | **Kısmi; K-298 dar stdio/RSS/RC/IDE kabulü kapandı.** S UTF-16 işlev kanıtı da var. | Artımlı HIR/tür, UI/gerçek ürün gecikmesi, SLA ve Windows/yayın açık. | Teknik kapsamın tümü girdi engeli değil; ürün U1, platform U2. |
 | P20 — SQL modülleri | Kısmi; S3 native modül kabulü tarihsel. | Gerçek ürün kullanımı açık; DB+FS atomikliği ve genel extension point vaadi yok. | U1 + U5. |
 | P21 — TR–EN/bileşen | Kısmi; S3 HTTP/Zee kabulü tarihsel. | Gerçek sayfa/ürün benimsenmesi açık; yerleşik çeviri kapasitesi eklenmedi. | U1 + U5. |
-| P22 — Kaynak kapsamı/test köprüsü | Kısmi; S3 dar kapsam kanıtı tarihsel. | Gerçek ürün test kapsamı; fresh DB bütün HTTP işlemlerinin rollback'i değildir. | U1 + U5. |
+| P22 — Kaynak kapsamı/test köprüsü | Kısmi; S3 tarihsel. K-304 geç iptal düzeltmesi kaynak hazırlığında, GB-113 açık. | Tam hazırlık ve yeni temiz native4; ayrı dene/source-coverage ve gerçek ürün kabulü açık. | Yerel düzeltme için yok; ürün için U1 + U5. |
 | P23 — İçerik/starter | Kısmi; S3 PG/HTTPS kabulü tarihsel. | Gerçek starter ürünü, insan, üretim ve platform kabulü açık. | U1 + U3 + U5; platform U2. |
 | P24 — Destek politikası | Sınırlı pilot belgesi kabul edilmiş. | Güvenilir yayın imzası, gerçek yayın ve bildirim süreçleri ayrı. | Zamanı gelince U6. |
 | P25 — Sır/credential yaşam döngüsü | Kısmi; önceki dar owned profiller kanıtlı. | Gerçek ürün/sağlayıcı, Windows ve tam sır yaşam döngüsü kabulü açık. | U1 + U5; platform U2. |

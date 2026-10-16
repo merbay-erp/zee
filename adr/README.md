@@ -133,7 +133,7 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-126 | [Sonlu SQL dispatcher timer ve belirsizlik kilidi](126-sonlu-sql-dispatcher-timer.md) | **kabul; S actual ownedLinux timer2, fullP09/ürün açık** (K-268/GB-084) |
 | ADR-127 | [Kopyalanabilir site ve panel başlangıcı](127-kopyalanabilir-site-panel-baslangici.md) | **kabul; temiz S site/panel CLI+nativeHTTP dar kabulü; gerçek kullanıcı/fullP23/platform açık** (K-269/GB-085) |
 | ADR-128 | [Yerel compiler import ve proje launcher](128-yerel-compiler-import-ve-proje-launcher.md) | **kabul, yerel pilot; publisher/platform/live açık** (K-270/GB-086) |
-| ADR-129 | [Owned native web test kiti](129-owned-native-web-test-kiti.md) | **kabul; temiz S normal Cargo+dedicated ownedwebPG4 kabulü; fullP22/ürün/platform açık** (K-271/GB-087) |
+| ADR-129 | [Owned native web test kiti](129-owned-native-web-test-kiti.md) | **kabul; tarihsel S korunur; K-304/GB-113 kaynak hazırlığı ve temiz native4 kabulü açık** (K-271/K-304; fullP22/ürün/platform açık) |
 | ADR-130 | [Sabit TR/EN liste-detay HTTP golden](130-sabit-tr-en-liste-detay-http-golden.md) | **kabul; temiz S Python3.9/3.13 fixed TR/EN HTTPgolden kabulü; ürün/platform/fullP21 açık** (K-272/GB-088) |
 | ADR-131 | [Yönetilen proje modül kompozisyonu](131-yonetilen-modul-kompozisyonu.md) | **kabul; temiz S normal Cargo managedscaffold dar kabulü; DB lifecycle/adoption/platform açık** (K-273/GB-089) |
 | ADR-132 | [Süreli hazırlık ve kontrollü config yenileme](132-sureli-hazirlik-ve-kontrollu-config-yenileme.md) | **kabul; temiz S readinessPG15+TTL5 dar Unix kabulü; sürekli hizmet/adoption/platform açık** (K-274/GB-090) |
@@ -148,7 +148,7 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-141 | [Purpose-bound imzalı PDF stdio host (K-281/P11)](141-imzali-pdf-stdio-host.md) | **S3 tarihsel; K-299 dar kaynak/native/arşiv kapsamı kapalı; toplu commit öncesi son belge kapısı gerekli, stdlib9 ve C2 native9 ayrı; ürün/FFI/yayın açık** (K-281/K-299/GB-111) |
 | ADR-142 | [Opt-in Zee kaynak karar kapsamı](142-zee-kaynak-dal-kapsami.md) | **S3 dar yerel kabul; genel kapsam/ürün kabulü açık** (K-284) |
 | ADR-143 | [Sahipli modül SQL yaşam döngüsü](143-sahipli-modul-sql-yasam-dongusu.md) | **S3 dar yerel kabul; DB+FS atomikliği/ürün kapsamı açık** (K-285) |
-| ADR-144 | [dene içinde sabit native web test köprüsü](144-dene-native-web-test-koprusu.md) | **S3 dar yerel kabul; genel rollback/ürün/platform kapsamı açık** (K-286) |
+| ADR-144 | [dene içinde sabit native web test köprüsü](144-dene-native-web-test-koprusu.md) | **S3 dar yerel kabul tarihsel; K-304 gömülü kit etkisi incelendi, yeni köprü kabulü yok; genel kapsam açık** (K-286/K-304) |
 | ADR-145 | [Artımlı editör analizi ve lint](145-artimli-editor-analizi-ve-lint.md) | **K-298 stdio p95 hedefi dar gözlemsel kabul; aynı SHA ikinci RSS/RC geçti, dar K-298 kapalı; HIR/type ve ürün açık** (K-287/K-298/GB-103) |
 | ADR-147 | [Uygulamaya ait kapalı bileşen ve TR/EN katalog bileşimi](147-composed-tr-en.md) | **S3 dar yerel kabul; gerçek ürün benimsenmesi açık** (K-289) |
 | ADR-148 | [İçerik, yönetim ve medya başlangıcı](148-icerik-yonetim-medya-baslangici.md) | **S3 dar yerel kabul; insan/üretim/platform/ürün kapsamı açık** (K-290) |

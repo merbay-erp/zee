@@ -16,7 +16,7 @@ fn owned_web_kit_yirmi_contract_ve_bounded_helper_vakasi() {
         .expect("owned web kit preparation");
     let report = String::from_utf8_lossy(&result.stderr);
     assert!(result.status.success(), "{report}");
-    assert!(report.contains("\nRan 20 tests in ") && report.trim_end().ends_with("\nOK"));
+    assert!(report.contains("\nRan 22 tests in ") && report.trim_end().ends_with("\nOK"));
     assert!(result.stdout.is_empty());
 }
 

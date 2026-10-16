@@ -2017,9 +2017,11 @@ kapsamı korunur. [Kaynak ve makbuz](urunlesme-k298-kabul-20261016.md),
 
 ## K-304 — Owned web kabulünde geç iptal sonucu
 
-**AÇIK; GB-113 düşük önem.** `owned-web-tests.py` son başarı ataması ile
-final cleanup/proof yayımı arasında iptal ve deadline bilgisini yeniden
-denetlemiyor. Dar düzeltme, eski/yeni kontrollü karşı örnek, mevcut hazırlık
-grubu ve temiz kaynakta dört native senaryonun yeniden kabulünü gerektirir.
-Üretim davranışı değişmez; yeni kabul çalıştırılmadan kapalı sayılmaz.
+**AÇIK; GB-113 düşük önem, kaynak hazırlığı.** Final cleanup/proof yayımında
+iptal ve deadline bilgisinin başarısız sonuçta korunması hazırlanıyor. Eski
+kaynağın altı, ilk önerinin son need kontrolündeki iki ek karşı örneği
+korundu; V2 sekiz olumsuz alt vaka ve normal kontrolü iki metotta geçti; gerçek PG/Zee/HTTP veya OS sinyal kabulü değildir.
+Python hazırlığı 20→22; mevcut Cargo sahipleri değişmez. Tam hazırlık,
+kaynak/belge/faz kapıları ve temiz exact kaynakta dört native senaryonun
+kabulü bekleniyor. GB-113 bu hazırlıkla kapanmaz; P22/P36 kısmi kalır.
 [Kapsam](owned-web-test-kiti.md), [karar](../adr/129-owned-native-web-test-kiti.md).

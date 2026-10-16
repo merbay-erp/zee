@@ -535,7 +535,7 @@ def main(argv=None):
             need(json.loads(kit.command([binary, 'sürüm', '--json'], limit=4096)) == build, 'end_identity')
             if args.unit_receipt is not None:
                 need(sha(Path(sys.executable).resolve()) == proof['unit']['python_sha256'], 'python_changed')
-            proof.update(status='passed', source_pins_unchanged=True, owned_cleanup=True)
+            proof.update(status='cases-passed-pending-cleanup', source_pins_unchanged=True)
     except BaseException as error:
         proof['status'] = 'failed'
         proof['failure_type'] = type(error).__name__
@@ -553,7 +553,22 @@ def main(argv=None):
             proof['owned_cleanup'] = proof['command_groups_empty'] and all(item['worker_groups_empty'] and item['pg_groups_empty'] for item in proof['cleanup'])
             if not proof['owned_cleanup']:
                 proof.update(status='failed', failure_type='CleanupFailure', reason='cleanup_failed')
+            if CANCELLED or time.monotonic() >= END:
+                proof.update(status='failed', failure_type='Rejected', reason='cancelled_or_deadline')
+            elif proof['status'] == 'cases-passed-pending-cleanup':
+                proof['status'] = 'passed'
             (output / 'proof.json').write_text(json.dumps(proof, indent=2) + '\n')
+            # A handler may run while the final receipt is being written.
+            if proof['status'] == 'passed' and (CANCELLED or time.monotonic() >= END):
+                proof.update(status='failed', failure_type='Rejected', reason='cancelled_or_deadline')
+                (output / 'proof.json').write_text(json.dumps(proof, indent=2) + '\n')
+    try:
+        need(proof['status'] == 'passed', 'acceptance_failed')
+    except Rejected as error:
+        if proof['status'] == 'passed':
+            proof.update(status='failed', failure_type='Rejected', reason=str(error))
+            (output / 'proof.json').write_text(json.dumps(proof, indent=2) + '\n')
+        raise
 
 
 if __name__ == '__main__':

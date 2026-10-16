@@ -989,3 +989,17 @@ sayısı değişmedi. K-302’nin C5 TLS8/göç1 kaydı ayrı kaynaktadır. Nati
 metrik tüketicisinin sekiz vakası, genel P36 ve uzak CI/ürün/provider
 kapanışı ileri sürülmez. Son 11 belge/güvenlik kapısının geçmesi kayıt
 commit’inin önkoşuludur; [gerçek sonuç ve kapsam](urunlesme-k298-kabul-20261016.md).
+
+
+## K-304 — Owned web finalizasyonu kaynak hazırlığı
+
+**AÇIK (GB-113, düşük):** geçici dizin/command-owner cleanup ve proof yazımı
+sırasında gözlenen iptal/deadline başarısız sonuçta korunmalıdır. Altı eski
+kaynak ve ilk önerinin iki son need karşı örneği korunur; V2 sekiz olumsuz
+alt vaka ve normal kontrolü iki metotta geçti. Bu kontrollü sonuç gerçek
+PG/Zee/HTTP kabulü sayılmaz. Tam22 hazırlık, mevcut normal Cargo sahibi,
+katalog/tazelik/fmt/tam faz ve sürekli güvenlik kapıları ile temiz exact
+native4 kabulü bekleniyor; kaynak SHA'sı/başarı sonucu henüz atanmaz.
+Python alt vakaları yeni Cargo sahibi değildir. Gömülü kitin `dene`/source
+coverage kabulü ayrı kalır; S/S3 ve K-298 RC/soak/IDE kanıtı aktarılmaz.
+P22/P36 ve genel ürün/platform sınırları [kit rehberinde](owned-web-test-kiti.md).
