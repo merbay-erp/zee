@@ -266,6 +266,16 @@ Sınırlı POSIX [credential host köprüsü](docs/credential-baslat.md),
 [kalıcı iş kuyruğu prototipi](dogfood/zee-cekirdek/is-kuyrugu/README.md)
 teknik pilot dilimleridir; P09/P13/P25 tam ürün kabulü açık kalır.
 
+K-301 worker test doğruluğu dar kapsamda tamamlandı: üçüncü gerçek koşu
+tek Cargo sahibi 1/0/0 ve wrapper'ın 25/0/0 doğrulamasıyla geçti. V3 normal
+`web-oturumu`/CSRF GET/çerez/form POST ve dosya yazan `eylem` kullanır;
+CSRF atlanmaz. İlk GET fixture'ının T045 reddi ile ikinci koşunun yalnız
+inflight hatası (25 test/1 hata) korunur; ikinci kayıtta assertion ayrıntısı
+yoktur, CSRF/çerez eksikliği kaynak incelemesidir. Son 11 belge/güvenlik
+kapısının geçmesi kayıt commit'inin önkoşuludur. Üretim davranışı ve genel
+P34/drain/fault kapsamı değişmez; [worker rehberi](docs/worker-supervisor.md)
+kanıtları ayırır.
+
 K-257–K-260 aday dalgası [native request/DB metriklerini](docs/native-metrics.md),
 [sonlu SQL dispatcher'ı](docs/job-dispatcher.md) ve
 [sahipli listener nesil devrini](docs/native-listener.md) ekler. Descriptor,
