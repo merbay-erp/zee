@@ -23,7 +23,7 @@ toplam yaz
 
 ## Mevcut durum
 
-K-307 / GB-116 açık: ilk sticky iptal/yayın dilimindeki baseline10/inert13/birleşik23 kanıtı korunur. Foreground takip2 kapsamında aynı atomik kaynak/test/belge dilimine SQL tüketicisi için özgün PostgreSQL Popen sahibi ve adapter alınır; inert foreground23 ile birleşik ordinary24 gerçek owner makbuzlarıyla geçti. Bu sonuç fresh native9 veya kaynak kabulü değildir. SQL native9, kaynak kapıları/temiz kaynak ve son kapılar bekliyor; diğer dört PG tüketicisi ve genel P20 kısmi kalır. [Kapsam](docs/module-sql-lifecycle.md).
+K-307 / GB-116 dar kapsamda kapalı: Yeni exact kaynakta mevcut tek ignored Cargo sahibi ve SQL9 dar kabulü geçti; kaynak344 ve foreground PG özgün sahipliği bağımsız frozen kayıtla doğrulandı. Yeni exact ikinci kaynak tam15 kapısı geçti (1118.889 sn); gerçek tam faz998/1023 geçti,0 başarısız,25 ignored. İlk216d7 kaynak15 sonucu bu sonuca eklenmez. Temiz ikinci kaynak 9df1b4abb52372dce86c92255392032b6fa08574, tree e7de0cfc2dce9e9c271979cc963c9629c49263e8; sourcegate2 tested17 overlay ve sourcecommit2 özgün owner makbuzları eşleşti; kaynak344/production175 korundu. K307/GB116 dar kapanışı yalnız exact belge overlay son11 kapısı ve sonraki tested-overlay temiz kayıt commit’i ile iki özgün owner makbuzuna bağlıdır; bu metin kendi başına kapı/commit kanıtı değildir. Diğer dört PG tüketicisi ve genel P20 kısmi kalır. [Kapsam](docs/module-sql-lifecycle.md).
 
 Ana geliştirme ve CI deposu [merbay-erp/zee](https://github.com/merbay-erp/zee).
 Enterprise deposu yalnız aynadır.

@@ -1749,8 +1749,12 @@ gecikme gözlemini kaydeder; artımlı HIR/type, gerçek ürün/UI/SLA ve tam P1
 Dış girdiler [kullanıcı teslim listesinde](urunlesme-kullanici-girdileri.md)
 ayrıldı. Beş tam proje hazır değil, fiziksel cihaz yok; bu kapılar bekliyor.
 
-## K-307 — foreground SQL takip2: açık
+## K-307 — dar SQL harness kabulü: dar kapsamda kapalı
 
-K-307 / GB-116 açık: ilk sticky iptal/yayın dilimindeki baseline10/inert13/birleşik23 kanıtı korunur. Foreground takip2 kapsamında aynı atomik kaynak/test/belge dilimine SQL tüketicisi için özgün PostgreSQL Popen sahibi ve adapter alınır; inert foreground23 ile birleşik ordinary24 gerçek owner makbuzlarıyla geçti. Bu sonuç fresh native9 veya kaynak kabulü değildir. SQL native9, kaynak kapıları/temiz kaynak ve son kapılar bekliyor; diğer dört PG tüketicisi ve genel P20 kısmi kalır.
+K-307 / GB-116 dar kapsamda kapalı: Yeni exact kaynakta mevcut tek ignored Cargo sahibi ve SQL9 dar kabulü geçti; kaynak344 ve foreground PG özgün sahipliği bağımsız frozen kayıtla doğrulandı. Yeni exact ikinci kaynak tam15 kapısı geçti (1118.889 sn); gerçek tam faz998/1023 geçti,0 başarısız,25 ignored. İlk216d7 kaynak15 sonucu bu sonuca eklenmez. Temiz ikinci kaynak 9df1b4abb52372dce86c92255392032b6fa08574, tree e7de0cfc2dce9e9c271979cc963c9629c49263e8; sourcegate2 tested17 overlay ve sourcecommit2 özgün owner makbuzları eşleşti; kaynak344/production175 korundu. K307/GB116 dar kapanışı yalnız exact belge overlay son11 kapısı ve sonraki tested-overlay temiz kayıt commit’i ile iki özgün owner makbuzuna bağlıdır; bu metin kendi başına kapı/commit kanıtı değildir. Diğer dört PG tüketicisi ve genel P20 kısmi kalır.
 
-İlk kaynak15/temiz commit sonrası aynı beş kaynak+test+12belge atomik uygulanır; ardından kendi kaynak kapıları/temiz exact kaynak/fresh native9/son kapılar gerekir. Standalone23 ve ordinary24 Rust/native toplamına eklenmez; production175/spec/RFC/catalog/API/grammar/katman etkilenmez.
+Tarihsel ilk sticky dilimde baseline10, ayrı inert13 ve birleşik23 geçti; exact AST fakeTERM/fakecluster.close karşı örneği tek beklenen failure/exit1/reaped kaldı. Gerçek OS/PG sızıntısı gözlemi değildir. Foreground takip2 standalone23 ve birleşik ordinary24 de kendi özgün owner0/reaped/errors[]/cancelled[] makbuzlarıyla geçti. Birleşik24 önceki23+tek nested foreground23 hazırlık yöntemidir;47, yeni Cargo sahibi veya native vaka toplamı değildir.
+
+**İlk kaynak diliminin gerçek ayrı kanıtı:** Tam15 kaynak kapısı ve tam faz998/0/25 geçti; temiz kaynak `216d7e1a2d3012d8bef7f55030d42d83045b3fff`, tree `002ca4938767884b12b0cb395e94142059eedfbd`. Kaynakgate1/commit1 ve özgün owner makbuzları kendi kaynaklarında korunur; bu ilk kaynak kabulü SQL foreground takip2 native9 veya ikinci kaynak kapısı yerine geçmez.
+
+Backlog bağımlılık sırasındaki diğer dört PG tüketicisinin özgün foreground sahiplik/iptal kabulü ve ayrı açık teknik işler sürer; genel P20, ürün/adoption, fiziksel platform ve dış girdiler açık kalır.

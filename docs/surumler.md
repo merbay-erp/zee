@@ -14,7 +14,7 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
-- **K-307 / GB-116 foreground takip2 açık:** SQL test harness’i yeni foreground PG helper/adapter’ına aynı kaynak/test/belge diliminde bağlanır. Inert foreground23/birleşik ordinary24 geçti; kaynak/fresh native9/son kapı kabulü bekler. Üretim/dil/API ve kullanıcı göçü değişmez; diğer dört PG ve genel P20 açık. [Sınırlar](module-sql-lifecycle.md).
+- **K-307 / GB-116 dar kapsamda kapalı:** Yeni exact kaynakta mevcut tek ignored Cargo sahibi ve SQL9 dar kabulü geçti; kaynak344 ve foreground PG özgün sahipliği bağımsız frozen kayıtla doğrulandı. Yeni exact ikinci kaynak tam15 kapısı geçti (1118.889 sn); gerçek tam faz998/1023 geçti,0 başarısız,25 ignored. İlk216d7 kaynak15 sonucu bu sonuca eklenmez. Temiz ikinci kaynak 9df1b4abb52372dce86c92255392032b6fa08574, tree e7de0cfc2dce9e9c271979cc963c9629c49263e8; sourcegate2 tested17 overlay ve sourcecommit2 özgün owner makbuzları eşleşti; kaynak344/production175 korundu. K307/GB116 dar kapanışı yalnız exact belge overlay son11 kapısı ve sonraki tested-overlay temiz kayıt commit’i ile iki özgün owner makbuzuna bağlıdır; bu metin kendi başına kapı/commit kanıtı değildir. Üretim/dil/API ve kullanıcı göçü değişmez; diğer dört PG ve genel P20 kısmi. [Sınırlar](module-sql-lifecycle.md).
 
 - **K-304/GB-113 dar kapsamda kapalı:** owned web kabulünün geç iptal/deadline
   sonucu, hazırlık22/kaynak kapısı15 ve temiz direct native4 ile doğrulandı.
