@@ -12,6 +12,7 @@ import tempfile
 import threading
 import time
 import unittest
+from unittest import mock
 
 FILES = Path(__file__).resolve().parents[2]
 spec = importlib.util.spec_from_file_location('kit', FILES / 'scripts/owned-web-tests.py')
@@ -140,6 +141,139 @@ class Contract(unittest.TestCase):
         parser = K.HiddenToken()
         with self.assertRaises(K.Rejected):
             parser.feed('<input name=_csrf value="PRIVATE_CANARY">')
+
+    def finalization_with_mocked_native(self, phase=None, action=None):
+        # Execute the real main/finally path; no child, PG or socket is allowed.
+        label = 'normal' if phase is None else phase + '-' + action
+        fixture = self.path / label
+        fixture.mkdir()
+        binary = fixture / 'dil'
+        binary.write_bytes(b'fixture-only binary; never execute\n')
+        pg = fixture / 'pg'
+        pg.mkdir()
+        for name in ('initdb', 'postgres', 'psql'):
+            (pg / name).write_bytes(b'fixture-only runtime; never execute\n')
+        suite = FILES / 'compiler/tests/fixtures/owned-web-kit-suite.json'
+        output = fixture / 'output'
+        build = {'schema': 'zee-build-v1', 'source_sha': '1' * 40, 'dirty': False}
+        events, temporary_paths = [], []
+        triggered = False
+        real_temporary_directory = tempfile.TemporaryDirectory
+        real_write_text = Path.write_text
+        real_need = K.need
+
+        def interrupt(at):
+            nonlocal triggered
+            events.append(at)
+            if at == phase and not triggered:
+                triggered = True
+                if action == 'cancel':
+                    K.CANCELLED = True
+                else:
+                    self.assertEqual(action, 'deadline')
+                    K.END = time.monotonic() - 1
+
+        class Temporary:
+            def __init__(self, *args, **kwargs):
+                kwargs['dir'] = fixture
+                self.actual = real_temporary_directory(*args, **kwargs)
+                temporary_paths.append(Path(self.actual.name))
+
+            def __enter__(self):
+                return self.actual.__enter__()
+
+            def __exit__(self, *args):
+                result = self.actual.__exit__(*args)
+                interrupt('temporary_directory_exit')
+                return result
+
+        class CommandOwner:
+            children = ()
+
+            def cleanup(self):
+                interrupt('command_owner_cleanup')
+
+        class MockKit:
+            def __init__(self, owner, binary, pg, work, pins):
+                self.command_owner = CommandOwner()
+                self.proof = None
+                self.coverage_output = None
+
+            def command(self, argv, **kwargs):
+                events.append('command')
+                if argv[0] == binary:
+                    self_outer.assertEqual(argv, [binary, 'sürüm', '--json'])
+                    return json.dumps(build).encode()
+                self_outer.assertEqual(argv, [pg / 'postgres', '--version'])
+                return b'postgres (PostgreSQL) 16.15\n'
+
+            def case(self, root, case, index, actual_build, proof):
+                self_outer.assertEqual(actual_build, build)
+                events.append('case')
+                proof['cleanup'].append({'id': case['id'], 'worker_groups_empty': True, 'pg_groups_empty': True})
+                return {'id': case['id'], 'passed': True,
+                        'cluster_system_identifier': str(index) if 'database' in case else None,
+                        'observer_readonly': 'database' in case}
+
+        def write_text(path, text, *args, **kwargs):
+            result = real_write_text(path, text, *args, **kwargs)
+            if path == output / 'proof.json':
+                interrupt('proof_write')
+            return result
+
+        def final_need(value, reason='contract'):
+            if reason == 'acceptance_failed':
+                interrupt('final_need')
+            return real_need(value, reason)
+
+        self_outer = self
+        argv = ['--fixture-root', str(self.root), '--suite', str(suite),
+                '--suite-sha256', K.sha(suite), '--dil', str(binary),
+                '--binary-sha256', K.sha(binary), '--expected-source', build['source_sha'],
+                '--postgres-bin-dir', str(pg), '--output', str(output)]
+        rejected = None
+        with mock.patch.object(K, 'Kit', MockKit), \
+                mock.patch.object(K.tempfile, 'TemporaryDirectory', Temporary), \
+                mock.patch.object(K.signal, 'signal') as handlers, \
+                mock.patch.object(K, 'need', final_need), \
+                mock.patch.object(K.subprocess, 'Popen', side_effect=AssertionError('no child')) as popen, \
+                mock.patch.object(K.socket, 'socket', side_effect=AssertionError('no socket')) as socket_call, \
+                mock.patch.object(K.socket, 'create_connection', side_effect=AssertionError('no connection')) as connection, \
+                mock.patch.object(Path, 'write_text', write_text):
+            try:
+                K.main(argv)
+            except K.Rejected as error:
+                rejected = error
+        self.assertEqual(handlers.call_count, 2)
+        popen.assert_not_called()
+        socket_call.assert_not_called()
+        connection.assert_not_called()
+        self.assertEqual(events.count('case'), 4)
+        self.assertEqual(events.count('command_owner_cleanup'), 1)
+        self.assertTrue(temporary_paths)
+        self.assertTrue(all(not path.exists() for path in temporary_paths))
+        self.assertEqual(triggered, phase is not None)
+        proof = json.loads((output / 'proof.json').read_text())
+        self.assertTrue(proof['owned_cleanup'])
+        self.assertTrue(proof['command_groups_empty'])
+        return rejected, proof
+
+    def test_finalization_cancel_or_deadline_never_passes(self):
+        for phase in ('temporary_directory_exit', 'command_owner_cleanup', 'proof_write', 'final_need'):
+            for action in ('cancel', 'deadline'):
+                with self.subTest(phase=phase, action=action):
+                    # main resets its global guard; argv preparation must also start clean.
+                    K.CANCELLED, K.END = False, float('inf')
+                    rejected, proof = self.finalization_with_mocked_native(phase, action)
+                    self.assertEqual(proof['status'], 'failed')
+                    self.assertIsInstance(rejected, K.Rejected)
+                    self.assertEqual(proof['reason'], 'cancelled_or_deadline')
+
+    def test_finalization_without_cancel_keeps_passed(self):
+        rejected, proof = self.finalization_with_mocked_native()
+        self.assertIsNone(rejected)
+        self.assertEqual(proof['status'], 'passed')
+        self.assertEqual(len(proof['cases']), 4)
 
     def kit(self):
         return K.Kit(OWNER, Path(sys.executable), self.path, self.path, {})

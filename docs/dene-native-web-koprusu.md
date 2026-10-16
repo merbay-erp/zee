@@ -36,3 +36,12 @@ isteklerine ortak transaction rollback desteği değildir.
 ## S3 yerel kabul kanıtı
 
 [Exact S3 kabulü ve açık sınırlar](urunlesme-s3-kabul-20261015.md) gerçek canonical/native/IDE ve ortak kapıları bağlar; genel ürün/platform/yayın kabulü değildir.
+
+## K-304 etki sınırı
+
+K-304, bu köprüye gömülen owned web kitinin son iptal/deadline sonucunu
+etkiler; bayt değişikliği yeni derlemede yer alır. [Kit kaynak hazırlığı](owned-web-test-kiti.md)
+GB-113'ü açık tutar. Yeni kaynakta bağımsız `dene`/source-coverage native
+sahibi henüz yürütülmedi; direct kit mock veya native4 sonucu tek başına
+köprü kabulü sayılmaz. S3 dört vaka/19 HTTP ve admission retleri tarihsel
+kaynağında kalır; compiler grammar/API ve coverage sözleşmesi değişmez.
