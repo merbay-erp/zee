@@ -931,3 +931,14 @@ stdlib hazırlığı, C2 native kabulü, kaynak öncesi kapıları ve bağımsı
 ayırır; ilk iki başarısız kapı korunur. Yeni Cargo owner yoktur.
 K-298 kaynağının RC/soak/IDE/stdio kanıtı K-299 HEAD kabulü değildir; eski S3
 native kabulü tarihsel kalır. P11/P34/P19 ve tam V1 bu dilimle kapanmaz.
+
+## K-300 — Mixed-revision kabul koşucusu doğruluğu
+
+**AÇIK (GB-112 düşük):** canonical Rust wrapper kökü, ilk owned komuttan önce
+handler, kısmi setup/host sahipliği ve cleanup iptalinin `passed` sonucuna
+dönüşmemesi [ADR-149](../adr/149-mixed-revision-owned-wave.md) revizyonundadır.
+Hazırlık13 geçti; kaynak kapıları ve temiz exact kaynakta native9 kabulü
+beklenir. Hazırlık alt vakaları yeni Cargo sahibi değildir; dört dalga/160 istek
+ve dokuz native vaka mevcut ayrı kabul kapsamıdır. Üretim compiler/host değişmez.
+Tarihsel S3 ve ayrı C2/S kabulleri yeni kaynağa aktarılmaz; P14 ürün/şema/SLA ve
+platform sınırları açık kalır. [Koşucu rehberi](mixed-revision-wave.md).

@@ -1947,3 +1947,18 @@ kaydının sonucu: Birleşik bağımsız inceleme C2 kaynak/gate4/security2/comm
 İlk gate1 996/1023, 2 başarısız, 25 atlanan; gate2 997/1023, 1 başarısız,
 25 atlanan geçmişte korunur. K-298 RC/soak/IDE/stdio kanıtı kendi kaynağında
 kalır; ürün/FFI/DNS/fault, C1/P33 ve dış kabul açıklarını kapatmaz.
+
+## K-300 — Mixed-revision kabul koşucusunda kök ve iptal doğruluğu
+
+**AÇIK — GB-112 düşük; hazırlık13 geçti, kaynak kapıları ve temiz native9
+kabulü bekleniyor.** Başlamış atomik correctness dilimi olarak sıradaki kapasite
+çalışmasından önce tamamlanır. Rust sarmalayıcısının canonical olmayan
+`compiler/..` kökü native senaryolar başlamadan reddedilir. Python koşucusunda
+ilk çocuk komutundan önce handler, finally kapsamındaki kısmi setup, açık
+kısmi host sahipliği ve cleanup iptalinin başarısız sonuçta korunması ele alınır.
+
+[ADR-149 revizyonu](../adr/149-mixed-revision-owned-wave.md) ve
+[koşucu rehberi](mixed-revision-wave.md) native9/dört dalga/160 istek doğrulama koşullarını
+korur. Yeni Python alt vakaları mevcut Cargo sahibindedir; yeni Rust sahibi
+veya compiler özelliği yoktur. Tarihsel S3 ve ayrı K-299 C2 sonuçları yeni kabul
+sayılmaz. P14 ve genel ürün/platform/SLA kapıları kısmi; C1/P33 kapsamı ayrı kalır.

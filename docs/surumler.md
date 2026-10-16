@@ -14,6 +14,13 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **Mixed-revision kabul koşucusu (K-300, ADR-149/GB-112 açık):** Rust test
+  sarmalayıcısının kökü kanonikleştirilir; Python hazırlığı ilk çocuk komutundan
+  önce iptal handler'ı, kısmi host sahipliği ve cleanup sırasında iptal kaydını
+  korur. Hazırlık13 geçti; kaynak kapıları ve temiz native9 kabulü bekleniyor.
+  Üretim compiler/host ve kullanıcı kaynağı değişmez; göç gerekmez.
+  [Kapsam ve kabul sınırı](mixed-revision-wave.md).
+
 - **Kabul koşucularının iptal temizliği (K-299, dar kaynak/native/arşiv kapsamı kapalı; toplu commit öncesi son belge kapısı gerekli):** PDF/service
   native test betiklerinde erken sinyal, yarım keygen/fixture ve nested owner
   kapanışı ele alındı. Stdlib PDF9/service10 ayrı; `8178920e03fed782a817d1864b8280fcb80812a3` üzerinde

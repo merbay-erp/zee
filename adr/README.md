@@ -152,7 +152,7 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-145 | [Artımlı editör analizi ve lint](145-artimli-editor-analizi-ve-lint.md) | **K-298 stdio p95 hedefi dar gözlemsel kabul; aynı SHA ikinci RSS/RC geçti, dar K-298 kapalı; HIR/type ve ürün açık** (K-287/K-298/GB-103) |
 | ADR-147 | [Uygulamaya ait kapalı bileşen ve TR/EN katalog bileşimi](147-composed-tr-en.md) | **S3 dar yerel kabul; gerçek ürün benimsenmesi açık** (K-289) |
 | ADR-148 | [İçerik, yönetim ve medya başlangıcı](148-icerik-yonetim-medya-baslangici.md) | **S3 dar yerel kabul; insan/üretim/platform/ürün kapsamı açık** (K-290) |
-| ADR-149 | [K-291 mixed-code revision için ayrı gerçek kanıt](149-mixed-revision-owned-wave.md) | **S3 dar yerel kabul; SLA/DB şeması/ürün/platform kapsamı açık** (K-291) |
+| ADR-149 | [K-291 mixed-code revision için ayrı gerçek kanıt](149-mixed-revision-owned-wave.md) | **S3 tarihsel; K-300 hazırlık13 geçti; kaynak kapıları ve temiz native9 kabulü bekleniyor; GB-112 açık, P14 kısmi** (K-291/K-300) |
 | ADR-150 | [K-292 native worker fault ve kontrollü resolver-call hazırlığı](150-native-worker-fault-ve-kontrollu-resolver.md) | **S3 tarihsel; K-299 dar kaynak/native/arşiv kapsamı kapalı; toplu commit öncesi son belge kapısı gerekli, stdlib10 ve C2 native2 ayrı; native DNS/tam fault açık** (K-292/K-299/GB-111) |
 | ADR-152 | [Metric-only stdio alias için erken sessiz ret](152-native-metrik-stdio-sessiz-ret.md) | **S3 dar yerel kabul; K-294/GB-110 dar kapsamda kapalı** (K-294) |
 | [080 — Özel Gitsrv CI ve Tier-1 kanıt sınırı](080-tier1-kanit-kaynaklari.md) | kabul | K-217 özel CI ve çapraz/gerçek runtime ayrımı |

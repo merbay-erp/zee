@@ -1,7 +1,40 @@
-# Ürünleşme — K-298/K-299 tek kabul ve açık işler raporu
+# Ürünleşme — yerel kabul ve açık teknik işler raporu
 
 > 16 Ekim 2026. K-298 ve K-299 dar yerel kabul kapsamları tamamlandı.
 > Genel ürünleşme/V1 ve yayın kapıları açık; belge takip commit’i aşağıdaki dış kapı makbuzlarına bağlıdır.
+
+## K-300 — Öncelikli yerel takip: karma sürüm koşucusu
+
+**Durum: uygulama ve kabul sürüyor.** B-001/B-002 gerçek insan verisini
+bekler; B serisinin diğer makine işleri kapalıdır. Mevcut P14/P36 kabul
+koşucusunda bulunan somut arıza, yeni kapasite işinden önce ele alınır.
+
+Rust wrapper `compiler/..` yolunu kanonikleştirmediği için dedicated native
+kampanyanın giriş kontrolü asıl senaryodan önce reddediyordu. Python
+koşucusunda ilk Git sorgusu sinyal handler'ı ve `finally` kapsamından önceydi;
+kapanış sırasında iptal yok sayılıp başarılı makbuz yazılabiliyordu. Kısmi
+Host kurulumunun sahipli listener temizliği de aynı dar yaşam döngüsü
+incelemesine dahildir. GB-112, K-300 kabulü tamamlanana kadar açıktır.
+
+Kanonik kök, erken handler'lı hazırlık, kısmi setup temizliği ve iptali koruyan
+sonuç kapısı mevcut test sözleşmesini onarır. Son hazırlık13/13 (0,217 sn),
+özgün controller exit0/reaped ile geçti; dört eski kaynak karşı örneği mock-only
+koşuda doğrulandı. Kaynak kapıları ile yeni temiz kaynakta dokuz native vaka /
+160 istek / dört dalga kabulü bekleniyor.
+Üretim compiler/Host/FD protokolü, grammar, zaman aşımı ve native oracle
+ölçütleri değiştirilmez; S3 veya K-298 sonuçları bu yeni kaynağa aktarılmaz.
+[Koşucu sözleşmesi](mixed-revision-wave.md) ve [ADR-149](../adr/149-mixed-revision-owned-wave.md)
+ayrıntıyı taşır. Henüz yeni native başarı iddiası yoktur.
+
+Önceki K-298/K-299 belge dalgası `a31f12a41389ad1d447d5f17df6f7be9f1ae75f4`
+ile kaydedildi: son belge/güvenlik kapısı 11/11 geçti ve özgün controller
+exit0 ile toplandı. Bu tarihsel kapının denetlediği belge baytları bu takip
+bölümünden öncedir; K-300 kendi kontrollerini gerektirir.
+
+Yerel ortam durumu: önceki özel Linux VM'si ve PG16.15 geçici kurulumu
+artık mevcut değildir. Linux teslim/native ve PG bağımlı testler yeniden
+ortam kurulumu gerektirir; bu, kullanıcıdan cihaz veya canlı veri isteme
+nedeni değildir. Fiziksel platform kabulü U2 olarak ayrıca açık kalır.
 
 ## Sonuç özeti
 
@@ -521,7 +554,7 @@ bilgidir; bunlar yeniden karar talebi değildir.
 | P11 — PDF/FFI | Kısmi; temiz C2 PDF9 ve bağımsız incelemesi geçti, K-299 dar kapsamı kapandı. İlk C başarısızlığı korunur. | Gerçek katalog, genel FFI/sandbox ve yayın ayrı. | Ürün için U1 + U5. |
 | P12 — Göç/ürün betikleri | Kısmi; dar yerel göç/rollback kanıtı var. | Gerçek üründeki Python betiğinin kaldırılması ve göç kabulü açık. | U1 + U5. |
 | P13 — Sürekli HTTP servisi | Kısmi; S3 native HTTP kanıtı tarihsel. | Üretim/pilot benimsenmesi ve platform kabulü açık. | U1 + U5; platform için U2. |
-| P14 — Karma sürüm geçişi | Kısmi; S3 dört dalga/160 istek tarihsel. | Genel SLA, DB şema devri ve gerçek ürün kabulü kapanmadı. | U1 + U5. |
+| P14 — Karma sürüm geçişi | Kısmi; S3 dört dalga/160 istek tarihsel. K-300 koşucu onarımı ve yeni native kabul sürüyor. | Yeni kaynak kabulü, genel SLA, DB şema devri ve gerçek ürün kabulü açık. | Ürün için U1 + U5; K-300 yerelde ilerler. |
 | P15 — Parola/login | Kısmi; S3 parola/TLS kanıtı tarihsel. | Gerçek login, göç, sağlayıcı ve ürün kabulü açık. | U1 + U5. |
 | P16 — Form/Turnstile | Kısmi; hermetik form testleri mevcut. | Gerçek staging ve tam ürün kabulü açık. | U1 + U5. |
 | P17 — Depolama/IAM | **Ertelendi.** | Gerçek çok sunuculu ihtiyaç kanıtı olmadan yeni kapasite işi açılmıyor. | İhtiyaç doğarsa U1 + U5. |
