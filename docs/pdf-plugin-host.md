@@ -94,12 +94,13 @@ transaction değildir ve host böyle bir dizini hata diye silmez.
 
 ## Kanıt ve açıklar
 
-Stdlib7 normal test; ayrı explicit ignored actual9 kampanyası gerçek Ed25519,
+Stdlib9 normal test; ayrı explicit ignored actual9 kampanyası gerçek Ed25519,
 Zee request/receipt devamı, PDF sayfa/metin/font/görsel ve purpose/key/signature/
 request schema/size/runtime/double invocation/unknown status negatiflerini yürütür.
 Son iki negatifte signed test backend counter'ı tam1 olur; bunlar keyfi plugin
-kodunun sandboxlandığı iddiası değildir. Normal modeller compiler çalıştırmaz;
-native wrapper gerçek CLI/lexer/parser/çözümleyici/tür/HIR/runtime ve IO kullanır.
+kodunun sandboxlandığı iddiası değildir. Normal stdlib vakaları compiler çalıştırmaz; iki lifecycle vakası inert key
+dosyaları ve sonlu owned Python çocukları kullanır. Native wrapper gerçek
+CLI/lexer/parser/çözümleyici/tür/HIR/runtime ve IO kullanır.
 İki libtest ile alt dokuz senaryo unique test toplamına eklenmez.
 
 K-275 fixed trusted PDF/asset sınırı korunur. Keyfi saldırgan PDF, form/imzalı
@@ -110,3 +111,17 @@ K-281 için önceki clean-S kampanyaları yeni finalclean kabulü değildir.
 ## S3 yerel kabul kanıtı
 
 [Exact S3 kabulü ve açık sınırlar](urunlesme-s3-kabul-20261015.md) gerçek canonical/native/IDE ve ortak kapıları bağlar; genel ürün/platform/yayın kabulü değildir.
+
+## K-299 — Kabul koşucusunun iptal/kapanış gereği
+
+Native kabul betiği ilk owned komuttan önce handler kurar; keygen dahil setup
+finally kapsamındadır. Fresh held directory'nin exact iki key adı tamamlanmamış
+keygen sırasında da temizlenir; private key baytı/hash'i kaydedilmez. Üretim host
+zaten cooperative'dir. Başarısız host komutunun dış kapanış payı10 saniyeye çıkar;
+normal komutun1 saniyelik değeri değişmez. Onu başlatan özgün dış owner nested
+cleanup için en az45 saniye TERM payı ayırır; mevcut direct watchdog330 saniye
+kullanır. Kısa grace'li ara wrapper eklenmez; shutdown payı iş timeout'undan ayrıdır.
+
+Stdlib9 geçti; yeni exact kaynakta gerçek native9 ve ortak kapılar bekleniyor.
+Temizlik hatası/iptal passed sayılmaz. [GB-111 ve actual kısa test kaydı](kabul-kosuculari-yasam-dongusu-20261016.md)
+açık kapanış zincirini taşır; eski S3 veya K-298 kabulü yeni kaynak sonucu değildir.

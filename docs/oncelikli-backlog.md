@@ -1919,3 +1919,20 @@ symlink hedefinin yenilenmesi iki dar testle izlenir.
 `maintenance` kayıtları kaynak commit'ini izler. Başarılı test, yeni temiz stdio
 ölçümü ve gerekli kaynak kabulü kaydedilmeden K-298 kapandı denmez. Gerçek ürün,
 UI, platform ve tam P19; C1/K-288 ve P33/K-293 retleri ayrıca açık kalır.
+
+## K-299 — Kabul koşucularında erken iptal ve kısmi setup temizliği
+
+**AÇIK — stdlib PDF9/service10 geçti; yeni exact native PDF9/service2 ve ortak
+kapılar bekleniyor.** PDF kabul betiği ilk owned komuttan önce handler kurar;
+setup/keygen finally kapsamına alınır, fresh held dirfd'deki iki exact sentetik
+key temizlenir. Başarısız nested host komutunun grace'i10 saniye olur. Service
+prepare handler-before-H.run, kısmi Fixture temizliği ve cleanup sırasında iptal
+bayrağının korunması aynı dar işi tamamlar. Üretim host zaten cooperative'dir;
+compiler/Supervisor/lifecycle veya native oracle değişmez.
+
+[ADR-141](../adr/141-imzali-pdf-stdio-host.md), [ADR-150](../adr/150-native-worker-fault-ve-kontrollu-resolver.md),
+[GB-111 ve actual kısa test kaydı](kabul-kosuculari-yasam-dongusu-20261016.md)
+aynı kaynak dilimindedir. Beş yeni Python iç vaka yeni Cargo owner değildir.
+Sonraki temiz SHA'da iki native seçicinin proof/BuildJSON/hash/owned-close zinciri
+ve ortak kapılar doğrulanmadan kapalı olmaz. K-298 RC/soak/IDE kanıtı kendi
+kaynağında kalır; ürün/FFI/DNS/fault, C1/P33 ve dış kabul açıklarını kapatmaz.

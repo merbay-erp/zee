@@ -30,7 +30,7 @@ başlangıç/sonda kaydedilir; private body/credential/argv makbuza yazılmaz.
 
 ## Kontrollü resolver-call stall: ayrı hazırlık sınırı
 
-Normal hazırlık7, fresh owned Python child içinde `socket.getaddrinfo` bağımlılığını
+Normal hazırlık10, fresh owned Python child içinde `socket.getaddrinfo` bağımlılığını
 bilerek stall eden **test-only** fixture kullanır. Gerçek timeout ve SIGTERM flag
 iptali DB helper'ın child kill/wait/pipe-close zincirini sınar; marker'a gerçekten
 resolver çağrı noktasında ulaşıldığı gözlenir. Global /etc/resolv.conf, DNS service,
@@ -44,10 +44,12 @@ Python stub kanıtıyla bu kapasite kapatılmaz. Native resolver/outer-process D
 fault kabulü ayrı açık kalır. Bu dilim yeni compiler özelliği veya keyfi resolver
 hook'u açmaz; full fault/RSS/provider/retry güveni iddiası yoktur.
 
-Native2 henüz çalıştırılmadı; hazırlık7 başarıları native vaka sayısı değildir.
-Caller180s external owned watchdog uygulamalıdır; component log/probe turlarında
-120s cooperative deadline vardır; root review,
-yeni clean kaynak ve aynı SHA ikili olmadan gerçek kampanya dispatch edilmez.
+S3 native2 tarihsel kabulü aşağıda kayıtlıdır; K-299 sonrası yeni exact native2
+beklenir. Hazırlık10 başarıları native vaka sayısı değildir. Component log/probe
+turlarında120s cooperative deadline vardır. Dış özgün owner iş timeout
+bütçesinden ayrı en az45s TERM kapanış payı ayırır; mevcut direct watchdog330s
+kullanır. Kısa grace taşıyan ara H.run wrapper kullanılmaz. Yeni temiz kaynak ve
+aynı SHA ikili gerçek kampanyanın ayrı önkoşuludur.
 
 Özel fixture BuildJSON kontrolü yalnız sahipli ve bütçeli komut adaptöründen
 geçer; genel helper değiştirilmez. Kaynak listesi exact SHA ile doğrulanır;
@@ -67,3 +69,13 @@ S3 temiz native kabulünde iki vaka geçti.
 ## S3 yerel kabul kanıtı
 
 [Exact S3 kabulü ve açık sınırlar](urunlesme-s3-kabul-20261015.md) gerçek canonical/native/IDE ve ortak kapıları bağlar; genel ürün/platform/yayın kabulü değildir.
+
+## K-299 — Erken hazırlık ve cleanup iptali
+
+Campaign kurucusu child açmaz; prepare ilk owned kaynak sorgusu öncesi handler
+kurar. Başarısız borrowed Fixture kurucusunun kendi temporary'si temizlenir.
+Cleanup sırasında iptal bayrağı korunur ve failed receipt üretir; özgün sentinel
+ve worker handle'ları dışında süreç aranmaz. Üretim Supervisor/native DNS
+davranışı değişmez. Üç yeni kısa vaka ile hazırlık10 geçti; yeni native2 ve ortak
+kapılar beklenir. [GB-111 ve kaynak/koşu kaydı](kabul-kosuculari-yasam-dongusu-20261016.md)
+PDF9/service10 hazırlığını native9/2 kabulünden ayrı izler.

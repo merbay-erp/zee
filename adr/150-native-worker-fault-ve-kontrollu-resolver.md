@@ -32,3 +32,17 @@ S3 temiz native kabulünde iki vaka geçti.
 ## S3 kanıtı
 
 [İkinci dalga exact S3 kabulü](../docs/urunlesme-s3-kabul-20261015.md) bu kararla ilgili actual kohortu ve açık sınırları kaydeder. C1/P33 retleri ve ürün/insan/platform kapıları bu bağlantıyla kapanmaz.
+
+## K-299 — Kabul hazırlığı ve cleanup sırasında iptal
+
+Üretim worker/Supervisor/lifecycle değişmez. Native kabul Campaign kurucusu child
+başlatmaz; prepare ilk H.run/clean_exact öncesi handler kurar ve caller finally
+kapsamındadır. Borrowed fixture kurucusu hata verirse yalnız kendi temporary'si
+temizlenir. Cleanup iptali H.CANCELLED'i sıfırlamaz ve passed receipt'e dönüşmez;
+sentinel ve worker grupları ilk Popen sahipliğiyle kapanır. Dış owner nested
+cleanup için yeterli grace ayırır; PID keşfi/adoption yapılmaz.
+
+Üç yeni vaka ile stdlib10 geçti. Yeni exact kaynak native2 ve ortak kapılar
+beklenir; GB-111 düşük/açık/K-299 durumundadır. [Kayıt](../docs/kabul-kosuculari-yasam-dongusu-20261016.md)
+actual stdlib makbuz/log hashlerini ve PDF dilimini bağlar. S3 native2 tarihsel
+kalır; kontrollü Python testleri native DNS veya tam fault kanıtı olmaz.
