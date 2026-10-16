@@ -1,0 +1,14 @@
+{
+  "scope": "only K299-owned build cache relocated to isolated checkout standard compiler/target path",
+  "from": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k299-target",
+  "to": "/private/tmp/zee-p19-k298/k299-validation/compiler/target",
+  "names": [
+    "debug",
+    "release",
+    "tmp",
+    ".rustc_info.json",
+    "CACHEDIR.TAG"
+  ],
+  "failed_phase_report_retained": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k299-target/faz-test-matrisi-k299.md",
+  "source_code_changed": false
+}

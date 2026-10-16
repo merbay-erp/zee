@@ -1,0 +1,8 @@
+{
+  "status": "clean-accepted-source",
+  "source_commit": "bb4ed951ce5e8e9c1c21d2c58f75cd4ef51d6c59",
+  "accepted_sha": "a57290f7a1c1fad07cda3f266b2a221f09aa6404",
+  "accepted_tree": "20644b4b6dc735a8cda8a24b7c064d28f12498d4",
+  "provenance_gate_sha256": "8e52fdb957e23edb386b7ec99e6a6b1537e2ba965462a00f5ef7d03a05a127d3",
+  "provenance_controller_sha256": "835d19e6529937234bf0aa672aafc71f7b2216e1526c8195574ca78f2fab26f6"
+}

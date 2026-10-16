@@ -1,0 +1,25 @@
+{
+  "argv": [
+    "python3",
+    "-I",
+    "-B",
+    "/private/tmp/zee-p19-k298/k299-gates-v4.py",
+    "--repo",
+    "/private/tmp/zee-p19-k298/k299-validation",
+    "--out",
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k299-gates-3",
+    "--target",
+    "/private/tmp/zee-p19-k298/k299-validation/compiler/target",
+    "--mode",
+    "all"
+  ],
+  "started_ns": 1792127329632611000,
+  "status": "passed",
+  "minimum_free_bytes": 63069544448,
+  "required_free_bytes": 10737418240,
+  "observed_exit": 0,
+  "owned_group_closed_and_reaped": true,
+  "exit": 0,
+  "finished_ns": 1792127865604400000,
+  "elapsed_seconds": 535.9705158750294
+}

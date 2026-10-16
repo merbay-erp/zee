@@ -1,0 +1,186 @@
+{
+  "schema": "zee-p19-utf16-stdio-acceptance-1",
+  "source_sha": "a57290f7a1c1fad07cda3f266b2a221f09aa6404",
+  "source_tree": "20644b4b6dc735a8cda8a24b7c064d28f12498d4",
+  "original_s4_driver_sha256": "b2e40aee992e01bfd37915166f9117cb7182ea2cd97782129e2a89cc1678ea5b",
+  "inherited_s4_acceptance": false,
+  "status": "passed",
+  "acceptance": true,
+  "scope": "Normal K-297 correctness via canonical native stdio; synthetic documents. Separate from actual IDE UI acceptance.",
+  "delivery_report_sha256": "30c3e97dd2ff1831cc9abc97d9b5197dc5f64021e4efd16afd9899f28671cdcb",
+  "binary_sha256": {
+    "dil": "c597b9c1d0ec11e59ab0b3cc4701f1e21a37bcec67b37d4d52f983ddf69d56e2",
+    "dillsp": "fc4391569ed45bccc11cb424f1aeb7abaea7133170d8d55f1df95420360302f1"
+  },
+  "lifecycle_core_sha256": "e76fe65b6103fc4732aafc4468afc5bbf3d0699a0f79d7f74879165636ebb1a9",
+  "driver_sha256": "908f5aba9c0079c6df73670a64a4e2dbfba6d5dbf9882778ef2085f3a4ba324b",
+  "cases": [
+    {
+      "name": "lf-invalid-surrogate-and-outside-query",
+      "passed": true,
+      "null_results": 12
+    },
+    {
+      "name": "lf-1-emoji-hover-definition-rename-didChange",
+      "passed": true,
+      "query_column": 12,
+      "usage_range": {
+        "start": {
+          "line": 1,
+          "character": 9
+        },
+        "end": {
+          "line": 1,
+          "character": 13
+        }
+      },
+      "independent_result": "ad \"Ayşe\" olsun\n\"😀\" ile ad yaz\n"
+    },
+    {
+      "name": "lf-2-emoji-hover-definition-rename-didChange",
+      "passed": true,
+      "query_column": 14,
+      "usage_range": {
+        "start": {
+          "line": 1,
+          "character": 11
+        },
+        "end": {
+          "line": 1,
+          "character": 15
+        }
+      },
+      "independent_result": "ad \"Ayşe\" olsun\n\"😀😀\" ile ad yaz\n"
+    },
+    {
+      "name": "lf-ordinary-A001-after-multiple-emoji",
+      "passed": true,
+      "diagnostic": {
+        "range": {
+          "start": {
+            "line": 0,
+            "character": 11
+          },
+          "end": {
+            "line": 0,
+            "character": 16
+          }
+        },
+        "severity": 1,
+        "code": "A001",
+        "source": "dil",
+        "message": "\"eksik\" adı bu kapsamda tanımlı değil.\nÖneri: Bir değeri kullanmadan önce \"<ad> <değer> olsun\" ile tanımla."
+      }
+    },
+    {
+      "name": "lf-normal-incremental-surrogate-atomic-rollback",
+      "passed": true
+    },
+    {
+      "name": "crlf-invalid-surrogate-and-outside-query",
+      "passed": true,
+      "null_results": 12
+    },
+    {
+      "name": "crlf-1-emoji-hover-definition-rename-didChange",
+      "passed": true,
+      "query_column": 12,
+      "usage_range": {
+        "start": {
+          "line": 1,
+          "character": 9
+        },
+        "end": {
+          "line": 1,
+          "character": 13
+        }
+      },
+      "independent_result": "ad \"Ayşe\" olsun\r\n\"😀\" ile ad yaz\r\n"
+    },
+    {
+      "name": "crlf-2-emoji-hover-definition-rename-didChange",
+      "passed": true,
+      "query_column": 14,
+      "usage_range": {
+        "start": {
+          "line": 1,
+          "character": 11
+        },
+        "end": {
+          "line": 1,
+          "character": 15
+        }
+      },
+      "independent_result": "ad \"Ayşe\" olsun\r\n\"😀😀\" ile ad yaz\r\n"
+    },
+    {
+      "name": "crlf-ordinary-A001-after-multiple-emoji",
+      "passed": true,
+      "diagnostic": {
+        "range": {
+          "start": {
+            "line": 0,
+            "character": 11
+          },
+          "end": {
+            "line": 0,
+            "character": 16
+          }
+        },
+        "severity": 1,
+        "code": "A001",
+        "source": "dil",
+        "message": "\"eksik\" adı bu kapsamda tanımlı değil.\nÖneri: Bir değeri kullanmadan önce \"<ad> <değer> olsun\" ile tanımla."
+      }
+    },
+    {
+      "name": "crlf-normal-incremental-surrogate-atomic-rollback",
+      "passed": true
+    }
+  ],
+  "owned_group_closed_and_reaped": true,
+  "normal_exit_before_cleanup": 0,
+  "cleanup_exit": 0,
+  "shutdown_result": null,
+  "stderr_bytes": 0,
+  "source_end_clean": true,
+  "source_end_sha": "a57290f7a1c1fad07cda3f266b2a221f09aa6404",
+  "source_end_tree": "20644b4b6dc735a8cda8a24b7c064d28f12498d4",
+  "build_identity": {
+    "schema": "zee-build-v1",
+    "version": "0.8.0-dev",
+    "source_sha": "a57290f7a1c1fad07cda3f266b2a221f09aa6404",
+    "source_date": "2026-10-15",
+    "channel": "development",
+    "dirty": false
+  },
+  "cases_passed": 10,
+  "elapsed_seconds": 0.0813356670551002,
+  "files": [
+    {
+      "path": "build-json.log",
+      "sha256": "cdb2aad19dc892839c377f2a1bf4d8c45eb4a5fecf593d73e0d2735fe5859ed1",
+      "bytes": 169
+    },
+    {
+      "path": "messages.json",
+      "sha256": "491481b2f938318a04e268d7f007b24610d519ea0b62368f575ecc42f75c5b42",
+      "bytes": 69582
+    },
+    {
+      "path": "stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "stdin.frames.raw",
+      "sha256": "6a24fcd6e0b4ef5d135c1bdf66d1a69b2cc0e308308b8df1692b6e5558781806",
+      "bytes": 14844
+    },
+    {
+      "path": "stdout.frames.raw",
+      "sha256": "646be041f91f339174598a6883745350f3cb3eeb8c2a6e8f0cffcaffd9462b40",
+      "bytes": 10899
+    }
+  ]
+}

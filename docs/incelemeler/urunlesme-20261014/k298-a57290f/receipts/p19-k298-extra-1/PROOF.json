@@ -1,0 +1,962 @@
+{
+  "schema": "zee-k298-extra-acceptance-two-1",
+  "status": "passed",
+  "source_sha": "a57290f7a1c1fad07cda3f266b2a221f09aa6404",
+  "source_tree": "20644b4b6dc735a8cda8a24b7c064d28f12498d4",
+  "source_begin_clean": true,
+  "source_end_clean": true,
+  "driver_sha256": "287c528bc35c19a22741bcfc3603fb515f321033f28488e23a713002cb7ae513",
+  "lifecycle_sha256": "e76fe65b6103fc4732aafc4468afc5bbf3d0699a0f79d7f74879165636ebb1a9",
+  "commands": [
+    {
+      "label": "begin-head",
+      "argv": [
+        "git",
+        "-C",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+      "status": "passed",
+      "observed_exit": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "owned_pid": 47447,
+      "elapsed_seconds": 0.005985458032228053,
+      "logs": {
+        "stdout": {
+          "path": "logs/begin-head.stdout.raw",
+          "bytes": 41,
+          "sha256": "d6fc6b0c6f41ff991dcdcb3f818366b31efb2e84e5cdf55953e39c2fdaca2f9d"
+        },
+        "stderr": {
+          "path": "logs/begin-head.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "begin-tree",
+      "argv": [
+        "git",
+        "-C",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "cwd": "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+      "status": "passed",
+      "observed_exit": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "owned_pid": 47448,
+      "elapsed_seconds": 0.00588129204697907,
+      "logs": {
+        "stdout": {
+          "path": "logs/begin-tree.stdout.raw",
+          "bytes": 41,
+          "sha256": "87e3318b62d5d4d77818e74862b279fb0cba759698fd968ceb8de775cb899808"
+        },
+        "stderr": {
+          "path": "logs/begin-tree.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "begin-status",
+      "argv": [
+        "git",
+        "-C",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+      "status": "passed",
+      "observed_exit": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "owned_pid": 47449,
+      "elapsed_seconds": 0.014628499979153275,
+      "logs": {
+        "stdout": {
+          "path": "logs/begin-status.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "logs/begin-status.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "pdf-runtime-preflight",
+      "argv": [
+        "/Users/mustafaerbay/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-I",
+        "-B",
+        "-c",
+        "import json,sys,importlib.metadata as m;import reportlab,pypdf,PIL;print(json.dumps({\"packages\":{n:m.version(n) for n in [\"reportlab\",\"pypdf\",\"Pillow\"]},\"imports\":{\"reportlab\":reportlab.Version,\"pypdf\":pypdf.__version__,\"Pillow\":PIL.__version__},\"python\":sys.version,\"executable\":sys.executable}))"
+      ],
+      "cwd": "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+      "status": "passed",
+      "observed_exit": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "owned_pid": 47450,
+      "elapsed_seconds": 0.25074533408042043,
+      "logs": {
+        "stdout": {
+          "path": "logs/pdf-runtime-preflight.stdout.raw",
+          "bytes": 330,
+          "sha256": "42fc516f4001aa9496ee3302e5ee5a658998db8fd40590d5f294f8b507eb5ede"
+        },
+        "stderr": {
+          "path": "logs/pdf-runtime-preflight.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "locate-rustc",
+      "argv": [
+        "rustup",
+        "which",
+        "--toolchain",
+        "1.93.1",
+        "rustc"
+      ],
+      "cwd": "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+      "status": "passed",
+      "observed_exit": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "owned_pid": 47451,
+      "elapsed_seconds": 0.009662333992309868,
+      "logs": {
+        "stdout": {
+          "path": "logs/locate-rustc.stdout.raw",
+          "bytes": 77,
+          "sha256": "ed42aac96e9db0577438d45fc2a1d2267e9f34928f87d924c2c387ade5a7393b"
+        },
+        "stderr": {
+          "path": "logs/locate-rustc.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "locate-cargo",
+      "argv": [
+        "rustup",
+        "which",
+        "--toolchain",
+        "1.93.1",
+        "cargo"
+      ],
+      "cwd": "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+      "status": "passed",
+      "observed_exit": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "owned_pid": 47452,
+      "elapsed_seconds": 0.009072083979845047,
+      "logs": {
+        "stdout": {
+          "path": "logs/locate-cargo.stdout.raw",
+          "bytes": 77,
+          "sha256": "7a7211c4ae2c30c84a38b50a4454ae3094c460c0545234fa78551157656dc8f2"
+        },
+        "stderr": {
+          "path": "logs/locate-cargo.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "rustc-version",
+      "argv": [
+        "/Users/mustafaerbay/.rustup/toolchains/1.93.1-aarch64-apple-darwin/bin/rustc",
+        "-vV"
+      ],
+      "cwd": "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+      "status": "passed",
+      "observed_exit": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "owned_pid": 47453,
+      "elapsed_seconds": 0.009466291987337172,
+      "logs": {
+        "stdout": {
+          "path": "logs/rustc-version.stdout.raw",
+          "bytes": 192,
+          "sha256": "a09c3fc26c9b56a9da361644dc642164492d8ac440d6330c74c7c989bd0d2099"
+        },
+        "stderr": {
+          "path": "logs/rustc-version.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "cargo-version",
+      "argv": [
+        "/Users/mustafaerbay/.rustup/toolchains/1.93.1-aarch64-apple-darwin/bin/cargo",
+        "-V"
+      ],
+      "cwd": "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+      "status": "passed",
+      "observed_exit": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "owned_pid": 47454,
+      "elapsed_seconds": 0.00815824989695102,
+      "logs": {
+        "stdout": {
+          "path": "logs/cargo-version.stdout.raw",
+          "bytes": 36,
+          "sha256": "57d704d9ad73ec7cc1b1a79aed6703333615865be6e3dc1ce269ea4ca7068227"
+        },
+        "stderr": {
+          "path": "logs/cargo-version.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "cpu",
+      "argv": [
+        "sysctl",
+        "-n",
+        "machdep.cpu.brand_string"
+      ],
+      "cwd": "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+      "status": "passed",
+      "observed_exit": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "owned_pid": 47457,
+      "elapsed_seconds": 0.003640208044089377,
+      "logs": {
+        "stdout": {
+          "path": "logs/cpu.stdout.raw",
+          "bytes": 13,
+          "sha256": "cf8be25367c4600921f057a468612c25380ea7eb82253b1dc25fb2454be26b73"
+        },
+        "stderr": {
+          "path": "logs/cpu.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "ram-bytes",
+      "argv": [
+        "sysctl",
+        "-n",
+        "hw.memsize"
+      ],
+      "cwd": "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+      "status": "passed",
+      "observed_exit": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "owned_pid": 47458,
+      "elapsed_seconds": 0.0025666659930720925,
+      "logs": {
+        "stdout": {
+          "path": "logs/ram-bytes.stdout.raw",
+          "bytes": 12,
+          "sha256": "e15b6050a0ee6ea43f29cb46cec0ddcc207f00fe520854aeecfdceb86a9ea799"
+        },
+        "stderr": {
+          "path": "logs/ram-bytes.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "cargo-metadata",
+      "argv": [
+        "/Users/mustafaerbay/.rustup/toolchains/1.93.1-aarch64-apple-darwin/bin/cargo",
+        "metadata",
+        "--locked",
+        "--offline",
+        "--no-deps",
+        "--format-version",
+        "1"
+      ],
+      "cwd": "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/compiler",
+      "status": "passed",
+      "observed_exit": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "owned_pid": 47459,
+      "elapsed_seconds": 0.009430166915990412,
+      "logs": {
+        "stdout": {
+          "path": "logs/cargo-metadata.stdout.raw",
+          "bytes": 36797,
+          "sha256": "ebe8b95dc3bb58063f442c736fd77b35c151bde6db951e83a108947111fdb1fe"
+        },
+        "stderr": {
+          "path": "logs/cargo-metadata.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "pdf-host-testi",
+      "argv": [
+        "/Users/mustafaerbay/.rustup/toolchains/1.93.1-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "--release",
+        "--jobs",
+        "1",
+        "--message-format=json",
+        "--test",
+        "pdf_host_testi",
+        "pdf_sabit_owned_backend_kabulu",
+        "--",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "cwd": "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/compiler",
+      "status": "passed",
+      "observed_exit": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "owned_pid": 47460,
+      "elapsed_seconds": 58.15133895899635,
+      "logs": {
+        "stdout": {
+          "path": "logs/pdf-host-testi.stdout.raw",
+          "bytes": 157932,
+          "sha256": "cdb5ffd60dee8ca3f40e0bb67c67c91002a067074edc2959dcb8611ad3b08387"
+        },
+        "stderr": {
+          "path": "logs/pdf-host-testi.stderr.raw",
+          "bytes": 249,
+          "sha256": "0ddb21f5bdb94fa1ea6cb2b49561a5a88119f1f778f624d46b075feca655e204"
+        }
+      }
+    },
+    {
+      "label": "lsp-artimli-testi",
+      "argv": [
+        "/Users/mustafaerbay/.rustup/toolchains/1.93.1-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "--release",
+        "--jobs",
+        "1",
+        "--message-format=json",
+        "--test",
+        "lsp_artimli_testi",
+        "yirmi_bin_satir_proje_duzenleme_olcumu",
+        "--",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "cwd": "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/compiler",
+      "status": "passed",
+      "observed_exit": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "owned_pid": 48266,
+      "elapsed_seconds": 8.1624617499765,
+      "logs": {
+        "stdout": {
+          "path": "logs/lsp-artimli-testi.stdout.raw",
+          "bytes": 159255,
+          "sha256": "411136dfb39e42496a562afd19fa2b60a32cc0b98d712e75c79a411fa4919ce6"
+        },
+        "stderr": {
+          "path": "logs/lsp-artimli-testi.stderr.raw",
+          "bytes": 254,
+          "sha256": "0bfc56fe895a899199974538ca39e298a106a3cf3d3b9d758016860401aa38f7"
+        }
+      }
+    },
+    {
+      "label": "end-head",
+      "argv": [
+        "git",
+        "-C",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+      "status": "passed",
+      "observed_exit": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "owned_pid": 48333,
+      "elapsed_seconds": 0.011910832952708006,
+      "logs": {
+        "stdout": {
+          "path": "logs/end-head.stdout.raw",
+          "bytes": 41,
+          "sha256": "d6fc6b0c6f41ff991dcdcb3f818366b31efb2e84e5cdf55953e39c2fdaca2f9d"
+        },
+        "stderr": {
+          "path": "logs/end-head.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "end-tree",
+      "argv": [
+        "git",
+        "-C",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "cwd": "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+      "status": "passed",
+      "observed_exit": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "owned_pid": 48334,
+      "elapsed_seconds": 0.007094291970133781,
+      "logs": {
+        "stdout": {
+          "path": "logs/end-tree.stdout.raw",
+          "bytes": 41,
+          "sha256": "87e3318b62d5d4d77818e74862b279fb0cba759698fd968ceb8de775cb899808"
+        },
+        "stderr": {
+          "path": "logs/end-tree.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "end-status",
+      "argv": [
+        "git",
+        "-C",
+        "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+      "status": "passed",
+      "observed_exit": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "owned_pid": 48335,
+      "elapsed_seconds": 0.018133209086954594,
+      "logs": {
+        "stdout": {
+          "path": "logs/end-status.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "logs/end-status.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "accepted_selectors": [
+    {
+      "target": "pdf_host_testi",
+      "selector": "pdf_sabit_owned_backend_kabulu",
+      "status": "passed",
+      "cargo_cases": 1,
+      "test_binary": "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/compiler/target/release/deps/pdf_host_testi-e90d7a80ae086843",
+      "test_binary_sha256": "389d13d9622736d6253c8fc18d43bba0e6a3d23457365208db11d2a966612698"
+    },
+    {
+      "target": "lsp_artimli_testi",
+      "selector": "yirmi_bin_satir_proje_duzenleme_olcumu",
+      "status": "passed",
+      "cargo_cases": 1,
+      "test_binary": "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/compiler/target/release/deps/lsp_artimli_testi-05300f1ceeb12735",
+      "test_binary_sha256": "228d2c05fdce45f719451cc0ae6a85c0bb3aff42819dc036c16bf47128d9f67e"
+    }
+  ],
+  "lsp_cohorts": [
+    {
+      "raw_record": {
+        "budget_ms": 200,
+        "cold_ms": 28.568958,
+        "lines": 20081,
+        "max_ms": 17.898792,
+        "modules": 40,
+        "open_documents": 1,
+        "p95_ms": 17.89675,
+        "samples_ms": [
+          17.898792,
+          16.642833,
+          17.252,
+          16.777583,
+          17.518042,
+          16.125042,
+          17.10625,
+          16.40775,
+          17.89675,
+          15.987874999999999,
+          17.255583,
+          16.982666000000002,
+          17.118042,
+          16.453209,
+          17.587041000000003,
+          17.064415999999998,
+          16.982584,
+          17.294667,
+          16.976083,
+          16.958167
+        ],
+        "schema": "zee-lsp-edit-measurement-1",
+        "scope": "ranged edit + fresh project/lock/loader + token/leaf-parse reuse + fresh binding/type + serialized diagnostics",
+        "unmeasured": "editor transport, arbitrary real products, incremental HIR, lint opt-in",
+        "warmup_edits": 5
+      },
+      "p50_ms_recomputed": 16.982666000000002,
+      "sample_count": 20,
+      "warmup_count": 5,
+      "warmup_raw_samples_retained": false,
+      "lint": false,
+      "hard_200ms_gate_applied": false,
+      "cold_ms_semantics": "in-process sequential document opening duration; not process cold-start"
+    },
+    {
+      "raw_record": {
+        "budget_ms": 200,
+        "cold_ms": 2424.4836250000003,
+        "lines": 20081,
+        "max_ms": 104.356792,
+        "modules": 40,
+        "open_documents": 41,
+        "p95_ms": 103.66300000000001,
+        "samples_ms": [
+          99.657167,
+          99.97645800000001,
+          98.1465,
+          99.446291,
+          99.328708,
+          98.80570800000001,
+          98.52841599999999,
+          98.924542,
+          98.401833,
+          97.44550000000001,
+          98.84958300000001,
+          97.569,
+          98.547333,
+          103.10858400000001,
+          103.66300000000001,
+          103.529584,
+          104.356792,
+          103.44175,
+          101.04050000000001,
+          99.534125
+        ],
+        "schema": "zee-lsp-edit-measurement-1",
+        "scope": "ranged edit + fresh project/lock/loader + token/leaf-parse reuse + fresh binding/type + serialized diagnostics",
+        "unmeasured": "editor transport, arbitrary real products, incremental HIR, lint opt-in",
+        "warmup_edits": 5
+      },
+      "p50_ms_recomputed": 99.328708,
+      "sample_count": 20,
+      "warmup_count": 5,
+      "warmup_raw_samples_retained": false,
+      "lint": false,
+      "hard_200ms_gate_applied": false,
+      "cold_ms_semantics": "in-process sequential document opening duration; not process cold-start"
+    }
+  ],
+  "hard_200ms_gate_applied": false,
+  "observation_acceptance_only": true,
+  "bounds": {
+    "campaign_seconds": 1800,
+    "stream_bytes": 8388608,
+    "all_command_log_bytes": 67108864,
+    "output_bytes_including_proof": 134217728,
+    "proof_bytes": 4194304,
+    "output_files_including_proof": 4096,
+    "minimum_free_bytes": 10737418240
+  },
+  "excluded_claims": [
+    "RC",
+    "soak",
+    "IDE/UI or stdio latency",
+    "real-product SLA",
+    "dedicated benchmark baseline",
+    "full P11/P19/P34",
+    "all 25 ignored cases",
+    "C1/K-288",
+    "P33/K-293",
+    "canonical two-clone delivery",
+    "signed PDF",
+    "native worker/service faults",
+    "native Zee PDF emitter"
+  ],
+  "environment": {
+    "RUSTUP_TOOLCHAIN": "1.93.1",
+    "CARGO_BUILD_JOBS": "1",
+    "RUST_TEST_THREADS": "1",
+    "CARGO_NET_OFFLINE": "true",
+    "CARGO_TERM_COLOR": "never",
+    "CARGO_TARGET_DIR": null,
+    "TMPDIR": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-extra-1/cargo-temp",
+    "ZEE_PDF_BACKEND_PYTHON": "/Users/mustafaerbay/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3"
+  },
+  "source_pins": {
+    "compiler/Cargo.lock": {
+      "sha256": "dc8d703c3bfd86658c50b1732a4ac1f73096bc4a36c7150c2fc58483ec34fb92",
+      "bytes": 43561
+    },
+    "compiler/Cargo.toml": {
+      "sha256": "a84637b04a5940a75d0856e50c631bf83841bc504c1beb5d037862291262d6aa",
+      "bytes": 1514
+    },
+    "compiler/build.rs": {
+      "sha256": "29c77d86f5c9fb86758280a74596031ceae8a6f813b53517211332eb4ad4c11f",
+      "bytes": 3958
+    },
+    "compiler/rust-toolchain.toml": {
+      "sha256": "3260f10937490e272267a11d1bca85ee76b0ef972022ab8fba8a1df0dbb3b397",
+      "bytes": 372
+    },
+    "compiler/src/lsp.rs": {
+      "sha256": "0d43abc3a84663ebb640fcbc4501423ead122d576b31ec12422e0ca6d38b76d0",
+      "bytes": 54222
+    },
+    "compiler/src/lsp/analiz.rs": {
+      "sha256": "1c268277240f8d47c4c4f13e85f583216ecb739c9989baad80935ad2583438e6",
+      "bytes": 9023
+    },
+    "compiler/tests/lsp_artimli_testi.rs": {
+      "sha256": "0dc4af313e919769e6650ed1c725ac659cd144bab69e8dcc3a55fcee81d00bf8",
+      "bytes": 24220
+    },
+    "compiler/tests/pdf_host_testi.rs": {
+      "sha256": "c90024abd95c7772994df25dc5ab7f91f1cc390cdc1df55b39bbfa4de812d4d8",
+      "bytes": 2335
+    },
+    "golden/pdf-host/ASSETS.json": {
+      "sha256": "b65a16ca9db42d79bfd3da9140875f080708ae4f50c703645fcdf01cb4bdfa10",
+      "bytes": 730
+    },
+    "golden/pdf-host/FONT-PROVENANCE.json": {
+      "sha256": "055f64530583c57cc43b807c59ec62a03cf2d0725ce70887f46ed4f0c54a8176",
+      "bytes": 1724
+    },
+    "golden/pdf-host/PRODUCT-PROVENANCE.json": {
+      "sha256": "939753b5e06074fb43428cff35ab8a22053744cb2f7cb82c9dc75febfa77d6d2",
+      "bytes": 930
+    },
+    "golden/pdf-host/README.md": {
+      "sha256": "e18ede05aa87d8eca6e5ff33d692a09928d01940a44261156e096d60487447d2",
+      "bytes": 2349
+    },
+    "golden/pdf-host/ana.dil": {
+      "sha256": "0a9d57fb8e0d504be8dec3e6cafd06b2e3ef545c57e9bb66a2fe4490cc90303b",
+      "bytes": 495
+    },
+    "golden/pdf-host/assets/COPYRIGHT-DejaVu.txt": {
+      "sha256": "35397e5e2ff231cc777b97c3e18756cc21f4a451f5ade9bf315d552a9a74d25d",
+      "bytes": 152
+    },
+    "golden/pdf-host/assets/LICENSE-DejaVu.txt": {
+      "sha256": "f1d7e97481cf4ac81f2d3ab8b14a483fb34b0b4824a3f8d2b1c70a6fa86a3b08",
+      "bytes": 4765
+    },
+    "golden/pdf-host/assets/base.pdf": {
+      "sha256": "7c25bd391859088307fa0b1816eca1d2c80634e6a950b9018152bf28ffdaf05f",
+      "bytes": 2550
+    },
+    "golden/pdf-host/assets/font.ttf": {
+      "sha256": "7da195a74c55bef988d0d48f9508bd5d849425c1770dba5d7bfc6ce9ed848954",
+      "bytes": 757076
+    },
+    "golden/pdf-host/assets/product.png": {
+      "sha256": "9a09e7df94e28fd35c0d255419f254bc1f4b1a51e323a490d758ebd8b711c9d5",
+      "bytes": 1578
+    },
+    "golden/pdf-host/job.json": {
+      "sha256": "a65e73490ab638fef6c16ce6d8f6ee0643e37cfcd700a81442b4e659046238ae",
+      "bytes": 248
+    },
+    "scripts/lifecycle_core.py": {
+      "sha256": "e76fe65b6103fc4732aafc4468afc5bbf3d0699a0f79d7f74879165636ebb1a9",
+      "bytes": 3613
+    },
+    "scripts/pdf-katalog-host.py": {
+      "sha256": "7ef40302bc3a079a129376a8002c1485fdd905bb860c5fda7b4cfb0ec3b5f9f6",
+      "bytes": 6846
+    },
+    "scripts/tests/pdf-backend-acceptance.py": {
+      "sha256": "c508463332ed9be33ec669ccf76b0c78620a4cee3def02d5299b864fbc89dd9f",
+      "bytes": 5797
+    }
+  },
+  "runtime_sha256": "7a314947596fc484d4ec36ffc28e843b78d6d749c68736f8b5c24e7333f418eb",
+  "runtime": {
+    "packages": {
+      "reportlab": "4.4.9",
+      "pypdf": "6.10.0",
+      "Pillow": "12.3.0"
+    },
+    "imports": {
+      "reportlab": "4.4.9",
+      "pypdf": "6.10.0",
+      "Pillow": "12.3.0"
+    },
+    "python": "3.12.14 (main, Aug 25 2026, 13:50:33) [Clang 22.1.3 ]",
+    "executable": "/Users/mustafaerbay/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3"
+  },
+  "toolchain_executables": {
+    "rustc": {
+      "path": "/Users/mustafaerbay/.rustup/toolchains/1.93.1-aarch64-apple-darwin/bin/rustc",
+      "sha256": "34a8f7034eeb844189a3c36ebb3fe36c2193fdb47b60028eb7f9392cb1f62484"
+    },
+    "cargo": {
+      "path": "/Users/mustafaerbay/.rustup/toolchains/1.93.1-aarch64-apple-darwin/bin/cargo",
+      "sha256": "2be8a4e73901a99470d15b793e5ee814005c3b9ebbd3815ccbf9cf0f292238e7"
+    }
+  },
+  "machine": {
+    "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+    "architecture": "arm64",
+    "python": "3.13.3 (v3.13.3:6280bb54784, Apr  8 2025, 10:47:54) [Clang 15.0.0 (clang-1500.3.9.4)]",
+    "rustc_vV": "rustc 1.93.1 (01f6ddf75 2026-02-11)\nbinary: rustc\ncommit-hash: 01f6ddf7588f42ae2d7eb0a2f21d44e8e96674cf\ncommit-date: 2026-02-11\nhost: aarch64-apple-darwin\nrelease: 1.93.1\nLLVM version: 21.1.8\n",
+    "cargo": "cargo 1.93.1 (083ac5135 2025-12-15)",
+    "shared_machine": true,
+    "unowned_machine_work": "not-assessed",
+    "cpu": "Apple M4 Pro",
+    "ram-bytes": "25769803776"
+  },
+  "cargo_target_directory": "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014/compiler/target",
+  "pdf_backend": {
+    "status": "passed",
+    "cases": 8,
+    "evidence_semantics": "successful source-pinned Cargo wrapper asserts inner eight-case result; inner stderr is captured, not exported",
+    "output": "cargo-temp/zee-pdf-backend-48256-1792108812300565000"
+  },
+  "source_pins_unchanged": true,
+  "source_end_sha": "a57290f7a1c1fad07cda3f266b2a221f09aa6404",
+  "source_end_tree": "20644b4b6dc735a8cda8a24b7c064d28f12498d4",
+  "tested_executables_unchanged": true,
+  "accepted_cargo_owners": 2,
+  "files": [
+    {
+      "path": "LSP-MEASUREMENTS.json",
+      "bytes": 2519,
+      "sha256": "8f74f49ac22490444cce3709b5b13b4e54f85489aa53a8928931556f64a67357"
+    },
+    {
+      "path": "cargo-temp/zee-pdf-backend-48256-1792108812300565000/output/pdf/tr/catalog.pdf",
+      "bytes": 27573,
+      "sha256": "45c6b72ff4d59590c7f5b28f596b72d4fd4282d0e16e4528a1457d070d0184b3"
+    },
+    {
+      "path": "cargo-temp/zee-pdf-backend-48256-1792108812300565000/output/pdf/tr/generated.pdf",
+      "bytes": 26896,
+      "sha256": "c445c201d15b2893c8b52af02778d60a25625ae7ce1b17dda477a9ca18b7fdd3"
+    },
+    {
+      "path": "cargo-temp/zee-pdf-backend-48256-1792108812300565000/output/pdf/tr/selected.pdf",
+      "bytes": 1570,
+      "sha256": "9b46785212b2599f59dd125719de93d9c3456777b5d77113a8c8a1fa97a3d8ba"
+    },
+    {
+      "path": "logs/begin-head.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/begin-head.stdout.raw",
+      "bytes": 41,
+      "sha256": "d6fc6b0c6f41ff991dcdcb3f818366b31efb2e84e5cdf55953e39c2fdaca2f9d"
+    },
+    {
+      "path": "logs/begin-status.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/begin-status.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/begin-tree.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/begin-tree.stdout.raw",
+      "bytes": 41,
+      "sha256": "87e3318b62d5d4d77818e74862b279fb0cba759698fd968ceb8de775cb899808"
+    },
+    {
+      "path": "logs/cargo-metadata.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/cargo-metadata.stdout.raw",
+      "bytes": 36797,
+      "sha256": "ebe8b95dc3bb58063f442c736fd77b35c151bde6db951e83a108947111fdb1fe"
+    },
+    {
+      "path": "logs/cargo-version.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/cargo-version.stdout.raw",
+      "bytes": 36,
+      "sha256": "57d704d9ad73ec7cc1b1a79aed6703333615865be6e3dc1ce269ea4ca7068227"
+    },
+    {
+      "path": "logs/cpu.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/cpu.stdout.raw",
+      "bytes": 13,
+      "sha256": "cf8be25367c4600921f057a468612c25380ea7eb82253b1dc25fb2454be26b73"
+    },
+    {
+      "path": "logs/end-head.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/end-head.stdout.raw",
+      "bytes": 41,
+      "sha256": "d6fc6b0c6f41ff991dcdcb3f818366b31efb2e84e5cdf55953e39c2fdaca2f9d"
+    },
+    {
+      "path": "logs/end-status.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/end-status.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/end-tree.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/end-tree.stdout.raw",
+      "bytes": 41,
+      "sha256": "87e3318b62d5d4d77818e74862b279fb0cba759698fd968ceb8de775cb899808"
+    },
+    {
+      "path": "logs/locate-cargo.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/locate-cargo.stdout.raw",
+      "bytes": 77,
+      "sha256": "7a7211c4ae2c30c84a38b50a4454ae3094c460c0545234fa78551157656dc8f2"
+    },
+    {
+      "path": "logs/locate-rustc.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/locate-rustc.stdout.raw",
+      "bytes": 77,
+      "sha256": "ed42aac96e9db0577438d45fc2a1d2267e9f34928f87d924c2c387ade5a7393b"
+    },
+    {
+      "path": "logs/lsp-artimli-testi.stderr.raw",
+      "bytes": 254,
+      "sha256": "0bfc56fe895a899199974538ca39e298a106a3cf3d3b9d758016860401aa38f7"
+    },
+    {
+      "path": "logs/lsp-artimli-testi.stdout.raw",
+      "bytes": 159255,
+      "sha256": "411136dfb39e42496a562afd19fa2b60a32cc0b98d712e75c79a411fa4919ce6"
+    },
+    {
+      "path": "logs/pdf-host-testi.stderr.raw",
+      "bytes": 249,
+      "sha256": "0ddb21f5bdb94fa1ea6cb2b49561a5a88119f1f778f624d46b075feca655e204"
+    },
+    {
+      "path": "logs/pdf-host-testi.stdout.raw",
+      "bytes": 157932,
+      "sha256": "cdb5ffd60dee8ca3f40e0bb67c67c91002a067074edc2959dcb8611ad3b08387"
+    },
+    {
+      "path": "logs/pdf-runtime-preflight.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/pdf-runtime-preflight.stdout.raw",
+      "bytes": 330,
+      "sha256": "42fc516f4001aa9496ee3302e5ee5a658998db8fd40590d5f294f8b507eb5ede"
+    },
+    {
+      "path": "logs/ram-bytes.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/ram-bytes.stdout.raw",
+      "bytes": 12,
+      "sha256": "e15b6050a0ee6ea43f29cb46cec0ddcc207f00fe520854aeecfdceb86a9ea799"
+    },
+    {
+      "path": "logs/rustc-version.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/rustc-version.stdout.raw",
+      "bytes": 192,
+      "sha256": "a09c3fc26c9b56a9da361644dc642164492d8ac440d6330c74c7c989bd0d2099"
+    }
+  ],
+  "artifact_bytes": 413946,
+  "artifact_bytes_semantics": "manifested files excluding PROOF.json; total cap includes written proof",
+  "elapsed_seconds": 66.77137029194273,
+  "owned_commands_closed_and_reaped": true,
+  "closure_scope": "original held Popen command groups, including same-group host PDF subprocesses; no detached test children or foreign process discovery",
+  "final_output_verification": "manifest hashes and total bytes including PROOF.json rechecked after last successful write"
+}

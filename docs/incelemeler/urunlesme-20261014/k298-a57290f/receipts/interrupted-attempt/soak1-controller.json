@@ -1,0 +1,23 @@
+{
+  "argv": [
+    "python3",
+    "-I",
+    "-B",
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/exact-clean-soak-stage/soak_runner.py",
+    "--repo",
+    "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+    "--sha",
+    "a57290f7a1c1fad07cda3f266b2a221f09aa6404",
+    "--out",
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-soak"
+  ],
+  "started_ns": 1792109461974507000,
+  "status": "passed",
+  "minimum_free_bytes": 32846114816,
+  "required_free_bytes": 10737418240,
+  "observed_exit": 0,
+  "owned_group_closed_and_reaped": true,
+  "exit": 0,
+  "finished_ns": 1792126607733691000,
+  "elapsed_seconds": 1944.7047167500714
+}

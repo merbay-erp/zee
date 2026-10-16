@@ -1,0 +1,15 @@
+{
+  "schema": "zee-p19-local-quiet-start-1",
+  "own_heavy_commands_closed": {
+    "p19-k298-source-gates-controller-2.json": "1b68fc83db961b966128275e407fc733e4a2bffd673db3a79f4b9d14bb9eac0d",
+    "p19-k298-provenance-controller-1.json": "835d19e6529937234bf0aa672aafc71f7b2216e1526c8195574ca78f2fab26f6",
+    "p19-k298-delivery-controller-1.json": "10772b80aeb6dc6e219667a6f726d8b1778e1646a90b052c7dc58ecd2d00be7e",
+    "p19-k298-extra-controller-1.json": "1ec373fd5cf20f4462ff01a1bb685231394944ec73ef742628315cee85d4f150"
+  },
+  "quiet_start_monotonic": 593648.696286166,
+  "quiet_start_unix_ns": 1792109148161678000,
+  "minimum_quiet_seconds": 60,
+  "foreign_load_assessed": false,
+  "source_sha": "a57290f7a1c1fad07cda3f266b2a221f09aa6404",
+  "candidate_config_sha256": "b02b88fa0bfb688fe65868b01e6747f4d93d833447bf849599f2b0d412ec2164"
+}

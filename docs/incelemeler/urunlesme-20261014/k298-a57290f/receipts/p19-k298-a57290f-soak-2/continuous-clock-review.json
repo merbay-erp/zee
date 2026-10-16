@@ -1,0 +1,90 @@
+{
+  "schema": "zee-continuous-clock-review-1",
+  "role": "supplemental-endpoint-clock-consistency-review",
+  "source_sha": "a57290f7a1c1fad07cda3f266b2a221f09aa6404",
+  "source_tree": "20644b4b6dc735a8cda8a24b7c064d28f12498d4",
+  "scope": "soak",
+  "mode": "acceptance",
+  "reviewed_utc": "2026-10-16T05:32:20.147797+00:00",
+  "status": "passed",
+  "continuous_acceptance_supported": true,
+  "tolerance_seconds": 5.0,
+  "tolerance_rationale": "Absolute5s permits small clock slew, timestamp rounding and observer bookkeeping over30–90min campaigns; it rejects the observed15201s discontinuity. This practical receipt-review tolerance is not a CPU-activity, performance or product SLA gate.",
+  "producer_statuses_unchanged": true,
+  "target_processes_started": false,
+  "source_or_evidence_modified": false,
+  "driver_sha256": "23a79596ea702e6daae790717b5c7190651cae7a61d33da0b492c0a815ce1942",
+  "original_statuses": {
+    "soak-proof": {
+      "status": "passed",
+      "result": null,
+      "acceptance": true
+    },
+    "soak-controller": {
+      "status": "passed",
+      "result": null,
+      "acceptance": null
+    }
+  },
+  "timings": [
+    {
+      "location": "soak-proof.commands[0]",
+      "clock_pair": "utc-iso8601",
+      "wall_seconds": 152.180334,
+      "monotonic_seconds": 152.18109104200266,
+      "wall_minus_monotonic_seconds": -0.0007570420026752345,
+      "absolute_difference_seconds": 0.0007570420026752345,
+      "tolerance_seconds": 5.0,
+      "clock_consistent": true
+    },
+    {
+      "location": "soak-proof.commands[1]",
+      "clock_pair": "utc-iso8601",
+      "wall_seconds": 1801.209795,
+      "monotonic_seconds": 1801.1165248330217,
+      "wall_minus_monotonic_seconds": 0.09327016697830004,
+      "absolute_difference_seconds": 0.09327016697830004,
+      "tolerance_seconds": 5.0,
+      "clock_consistent": true
+    },
+    {
+      "location": "soak-controller",
+      "clock_pair": "wall-nanoseconds",
+      "wall_seconds": 1955.47569,
+      "monotonic_seconds": 1955.3830171659356,
+      "wall_minus_monotonic_seconds": 0.09267283406438764,
+      "absolute_difference_seconds": 0.09267283406438764,
+      "tolerance_seconds": 5.0,
+      "clock_consistent": true
+    }
+  ],
+  "timing_coverage_limits": [
+    {
+      "location": "soak-proof",
+      "reason": "No same-command complete wall pair plus elapsed_seconds; no invented pairing."
+    }
+  ],
+  "input_files": [
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-soak-2/PROOF.json",
+      "label": "soak-proof",
+      "sha256": "f333bdf3a7130b50d33f3a981a1074485c78e64d9507ab59b544b3f8dcb30a3c",
+      "bytes": 5171
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-soak-2-controller.json",
+      "label": "soak-controller",
+      "sha256": "7989661a94812c9486b5de7b3709ae3f920ef001bbb63853fd6b62861fe3ea5d",
+      "bytes": 692
+    }
+  ],
+  "issues": [],
+  "limitations": [
+    "RC per-target and post-gate command receipts lack wall endpoints; their individual clock consistency is not reconstructed. Outer controllers cover these intervals only in aggregate.",
+    "The soak wrapper top-level actual_elapsed_seconds covers only the soak command and is never paired with build+soak top-level UTC endpoints.",
+    "Matching endpoint clocks cannot rule out short pauses, compensated clock changes, CPU contention, or all system suspension mechanisms; no OS power log was read.",
+    "Soak wrapper receipts contain exact source SHA but no tree field; the declared expected tree is not independently recovered in soak-only scope.",
+    "This verifier does not rerun tests or replace canonical RC artifact/hash/security or raw-soak acceptance checks.",
+    "Observation mode never grants acceptance, including when producer receipts originally say passed. Missing, failed or running final inputs cannot become passed."
+  ]
+}

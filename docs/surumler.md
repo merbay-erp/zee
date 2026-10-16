@@ -1,6 +1,6 @@
 # Sürüm notları
 
-> Son kabul edilen kaynak `4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2` için [S4 yerel kabulü](urunlesme-s4-kabul-20261015.md) korunur. K-298 P19 bakım adayının yeni exact kaynak ölçümü ve kabulü beklenir; 200 ms hedefi açıktır. [S3](urunlesme-s3-kabul-20261015.md) native kabulü tarihsel kaynağında kalır; ürün, insan, fiziksel platform ve yayın kapıları açıktır.
+> `a57290f7a1c1fad07cda3f266b2a221f09aa6404` için [K-298 yerel kabulü](urunlesme-k298-kabul-20261016.md) dört stdio kohortunda gözlemsel p95 200 ms hedefini, macOS teslim/kurulum, ordinary UTF-16 ve dar IDE işlev kabulünü kaydeder. Aynı SHA'da ikinci RSS ve dört ASan/Miri3/tam RC kapısı geçti; K-298 dar kabulü kapalı, P19 kısmi kalır. Belge takip commit’i gerçek dış son kapı makbuzuna bağlıdır. [S4](urunlesme-s4-kabul-20261015.md) ve [S3](urunlesme-s3-kabul-20261015.md) kendi kaynaklarında tarihseldir; ürün, insan, fiziksel platform ve yayın kapıları açıktır.
 
 Her sürüm: ne eklendi, ne değişti, neyin sözü verildi. Kırıcı değişiklik
 sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
@@ -14,19 +14,20 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
-- **Kabul koşucularının iptal temizliği (K-299, GB-111 açık):** PDF/service
+- **Kabul koşucularının iptal temizliği (K-299, dar kaynak/native/arşiv kapsamı kapalı; toplu commit öncesi son belge kapısı gerekli):** PDF/service
   native test betiklerinde erken sinyal, yarım keygen/fixture ve nested owner
-  kapanışı ele alındı. Stdlib PDF9/service10 geçti. İlk C native koşusunda
-  PDF9 ayrı geçti; service-fault kanonik depo yolu reddi aldı, birleşik koşu
-  başarısız kaldı. Rust test wrapper kökü için dar kanonikleştirme ve yeni
-  kaynakta kapılar/native9/2 kabulü bekleniyor. Üretim host/compiler ve kullanıcı kaynakları değişmedi;
-  göç yoktur. [Açık kabul kaydı](kabul-kosuculari-yasam-dongusu-20261016.md).
+  kapanışı ele alındı. Stdlib PDF9/service10 ayrı; `8178920e03fed782a817d1864b8280fcb80812a3` üzerinde
+  temiz C2 native2 iki Cargo sahibiyle geçti: signed PDF9 ve service-fault2; alt vakalar Cargo owner sayısına eklenmez; C2 öncesi gate4: 13 adım geçti; tam faz 998/1023 geçti, 0 başarısız, 25 atlanan GB-111: kapalı; toplu commit öncesi son belge kapısı gerekli.
+  Üretim host/compiler ve kullanıcı kaynakları değişmedi; göç yoktur.
+  [Dar kabul kaydı](kabul-kosuculari-yasam-dongusu-20261016.md).
 
-- **LSP açık belge maliyeti (K-298, ADR-145; kabul bekliyor):** aynı bildirimde
-  açık dosyaların gerçek yol/tutarlı metin dizini paylaşılır; yinelenen yol
-  çözümleme azaltılır; kaynak metinleri ödünç alınır. Alias çatışması, disk/paket doğrulaması ve
-  tanı davranışı korunur. Yeni ayar veya kaynak göçü yoktur; yeni temiz kaynak
-  ölçümü öncesinde 200 ms hedefi karşılandı denmez.
+- **LSP açık belge maliyeti (K-298, ADR-145):** aynı bildirimde açık dosyaların
+  gerçek yol/tutarlı ödünç metin dizini paylaşılır; alias çatışması,
+  disk/paket doğrulaması ve tanı davranışı korunur. Yeni ayar veya kaynak göçü
+  yoktur. [Temiz kaynak gözlemi](urunlesme-k298-kabul-20261016.md) dört stdio kohortunda p95'i
+  200 ms altında buldu; en ağır kohortta yeniden ölçülen eski/yeni değer
+  204,880→189,886 ms (%7,32). Paylaşımlı gözlem hard eşik/SLA değildir;
+  aynı kaynağın ikinci RSS ve RC kabulü geçti; K-298 dar kapsamı kapalıdır, genel P19 açıktır. Son belge kapısı takip commit’inin koşuludur.
 
 - **LSP UTF-16 konumları (K-297, ADR-153):** emoji gibi BMP dışı karakterlerin
   ardından hover/definition/rename imleci ve tanı/düzenleme aralıkları doğru

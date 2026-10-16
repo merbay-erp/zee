@@ -1,12 +1,12 @@
 TÜRKÇE PROGRAMLAMA DİLİ
 
-> Son kabul edilen kaynak `4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2` için [S4 yerel kabulü](urunlesme-s4-kabul-20261015.md) korunur. K-298 P19 bakım adayının yeni exact kaynak ölçümü ve kabulü beklenir; 200 ms hedefi açıktır. [S3](urunlesme-s3-kabul-20261015.md) native kabulü tarihsel kaynağında kalır; ürün, insan, fiziksel platform ve yayın kapıları açıktır.
+> `a57290f7a1c1fad07cda3f266b2a221f09aa6404` için [K-298 yerel kabulü](urunlesme-k298-kabul-20261016.md) dört stdio kohortunda gözlemsel p95 200 ms hedefini, macOS teslim/kurulum, ordinary UTF-16 ve dar IDE işlev kabulünü kaydeder. Aynı SHA'da ikinci RSS ve dört ASan/Miri3/tam RC kapısı geçti; K-298 dar kabulü kapalı, P19 kısmi kalır. Belge takip commit’i gerçek dış son kapı makbuzuna bağlıdır. [S4](urunlesme-s4-kabul-20261015.md) ve [S3](urunlesme-s3-kabul-20261015.md) kendi kaynaklarında tarihseldir; ürün, insan, fiziksel platform ve yayın kapıları açıktır.
 
-K-299 stdlib PDF9/service10 geçti; ilk C native kampanyasında PDF9 ayrı
-geçerken service-fault iç kampanya öncesi kanonik depo yolu reddi aldı.
-Birleşik kabul başarısızdır; test wrapper düzeltmesi ve yeni kaynak kabulü
-beklenir. [GB-111 ve dar kapsam](kabul-kosuculari-yasam-dongusu-20261016.md)
-açıktır. Üretim compiler/host değişmez; K-298 RC/soak/IDE kanıtı devralınmaz.
+K-299 kabul koşucusu bakımının dar durumu: **dar kaynak/native/arşiv kapsamı kapalı; toplu commit öncesi son belge kapısı gerekli**.
+Kaynak `8178920e03fed782a817d1864b8280fcb80812a3`: temiz C2 native2 iki Cargo sahibiyle geçti: signed PDF9 ve service-fault2; alt vakalar Cargo owner sayısına eklenmez; C2 öncesi gate4: 13 adım geçti; tam faz 998/1023 geçti, 0 başarısız, 25 atlanan
+[GB-111 ve dar kapsam](kabul-kosuculari-yasam-dongusu-20261016.md): kapalı; toplu commit öncesi son belge kapısı gerekli.
+Üretim compiler/host kapasitesi değişmez; K-298 kaynak S üzerindeki
+RC/soak/IDE/stdio kanıtı yeni kaynak kimliğine taşınmaz.
 
 Uçtan Uca Master Proje Dokümanı
 Dil • Derleyici • Runtime • Standart Kütüphane • Paket Ekosistemi • Tooling • Eğitim

@@ -1,0 +1,474 @@
+{
+  "schema": "zee-k299-source-security-review-1",
+  "status": "passed-source-security-chain-review",
+  "reviewed_at": "2026-10-16T08:22:04.362697+03:00",
+  "source_commit": "90fe778e86b9de28046f0f7bd77b47df138a2212",
+  "source_tree": "3bb1340d68a1073bb9cbda71ce943c222959db24",
+  "source_parent": "a57290f7a1c1fad07cda3f266b2a221f09aa6404",
+  "source_parent_tree": "20644b4b6dc735a8cda8a24b7c064d28f12498d4",
+  "working_tree_clean": true,
+  "source_receipt_sha256": "88588f4dc0257522ca85aa460ffb297015e6eebca88e596ecf5d8fe73847ccdb",
+  "gate3_independent_review_sha256": "0f3e1db54274bf0e1b30cc515a8e051e8370e97271fedd183525dee61d2c6639",
+  "gate3_proof_sha256": "d4258bce3c365d1690b6ed3c9fe3befacf50caeec09c188580a4282de7d065d4",
+  "gate3_controller_sha256": "f1c53a107cab0186d1dc26a540440a831967a55265c885cc13df2f968090ba9e",
+  "security_proof_sha256": "5118c948ea8b6a35f0b9779ce460496754a07714b9fa315b835c7f14449ae61b",
+  "security_controller_sha256": "3b040681747437b2a84b19a9e2deb58ae6f07f7e9489daeb593c9a6b11356ab1",
+  "security_log_sha256": "5f8869371f45953c4831076941ea57ff0d22e148953212510a1f3c52a844febf",
+  "exact_controller_argv_verified": true,
+  "both_controllers_normal_exit0_reaped": true,
+  "security_command_normal_exit0_reaped": true,
+  "gate3_commands": 13,
+  "gate3_phase_totals": {
+    "passed": 998,
+    "inventory": 1023,
+    "failed": 0,
+    "ignored": 25
+  },
+  "security_actual_checks": {
+    "cargo_deny_success_sets": 2,
+    "stable_fuzz_build_check": true,
+    "libtest_groups": [
+      {
+        "group": "guvenlik_kapisi_testi",
+        "passed": 5,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "group": "tedarik_kapisi_testi",
+        "passed": 11,
+        "failed": 0,
+        "ignored": 0
+      }
+    ],
+    "total_libtest_passed": 16,
+    "mode": "--surekli",
+    "release_candidate_mode": false
+  },
+  "source_snapshots_equal_gate_overlay": true,
+  "source_pin_count": 10,
+  "committed_path_count": 19,
+  "committed_paths": [
+    {
+      "path": "README.md",
+      "git_blob_content_sha256": "aabed0d75c0ff0fb4cdb65cdf6a63ab1ef0206d8e032e7f3152cd7b8894950e2",
+      "bytes": 22161,
+      "working_file_matches": true
+    },
+    {
+      "path": "adr/141-imzali-pdf-stdio-host.md",
+      "git_blob_content_sha256": "ca01354b19d958b75043135c2adceae4b781d094bd877fae7b22a7b7bdd03394",
+      "bytes": 4715,
+      "working_file_matches": true
+    },
+    {
+      "path": "adr/150-native-worker-fault-ve-kontrollu-resolver.md",
+      "git_blob_content_sha256": "56b2333cdf0b53c476a9cd0942bb0f50fb685860d8b578e2e649df59f4ca0684",
+      "bytes": 3363,
+      "working_file_matches": true
+    },
+    {
+      "path": "adr/README.md",
+      "git_blob_content_sha256": "cd26345933c760b1ab371544ac38e38e320cedf8c6ad9f6192d7f03337bb28cf",
+      "bytes": 20312,
+      "working_file_matches": true
+    },
+    {
+      "path": "compiler/tests/pdf_plugin_testi.rs",
+      "git_blob_content_sha256": "796c12e0908e678e4abae813081eeb70eedd1d0da14e61826d0a2ce09d64c18f",
+      "bytes": 2839,
+      "working_file_matches": true
+    },
+    {
+      "path": "docs/guvenlik-bulgulari-v1.tsv",
+      "git_blob_content_sha256": "79a4753356329b17c37809e795f6ad3fa46114797b9a1e9e91658a315f7767cc",
+      "bytes": 45892,
+      "working_file_matches": true
+    },
+    {
+      "path": "docs/kabul-kosuculari-yasam-dongusu-20261016.md",
+      "git_blob_content_sha256": "0690424191f33eb2c1dc5b1d7bcca421cc632a93a9da563b46e3bca2f3d4c294",
+      "bytes": 7119,
+      "working_file_matches": true
+    },
+    {
+      "path": "docs/kanit-haritasi-v1.tsv",
+      "git_blob_content_sha256": "3dd06671674fd30b5d6b233e975de18c67407813bf92bbf1830a919200ee021c",
+      "bytes": 43749,
+      "working_file_matches": true
+    },
+    {
+      "path": "docs/kanit-ozeti.md",
+      "git_blob_content_sha256": "1df587e33128696b00d5d61cedfbb62d7d594f3d208b5d11e1c6e9897b919436",
+      "bytes": 4959,
+      "working_file_matches": true
+    },
+    {
+      "path": "docs/master-plan.md",
+      "git_blob_content_sha256": "b8aa94ab2a5f6db0253c234ebad452b9e9769c89fdfc57891183ba40ab7361de",
+      "bytes": 113314,
+      "working_file_matches": true
+    },
+    {
+      "path": "docs/oncelikli-backlog.md",
+      "git_blob_content_sha256": "64a7aea78fb50a8f89ee920e4d5ce255189e8a0d91ad5d0e15fd723c3e2c1800",
+      "bytes": 146751,
+      "working_file_matches": true
+    },
+    {
+      "path": "docs/pdf-plugin-host.md",
+      "git_blob_content_sha256": "91e114b35a224ed9bf970f0f43a2454febdc3bcd0d41f2b499e6f449fbe2619c",
+      "bytes": 7883,
+      "working_file_matches": true
+    },
+    {
+      "path": "docs/service-fault-wave.md",
+      "git_blob_content_sha256": "e9202fa3961a6045e76a110fb43044cd5142c72e0225fce8296fe8c9dd7c384f",
+      "bytes": 5143,
+      "working_file_matches": true
+    },
+    {
+      "path": "docs/surumler.md",
+      "git_blob_content_sha256": "5ba5fa147229b94d6f5388eb2aec00982743f5e395ee2de00bf12d87f3252448",
+      "bytes": 143634,
+      "working_file_matches": true
+    },
+    {
+      "path": "docs/v1-surum-kapilari.md",
+      "git_blob_content_sha256": "358e8a55ad0b27b9a2350277b6288fd836cbc4f88fd1d566e60b01410ab89509",
+      "bytes": 109931,
+      "working_file_matches": true
+    },
+    {
+      "path": "scripts/tests/pdf-plugin-native.py",
+      "git_blob_content_sha256": "72449d567cae60541f01b3bef362ca8150d56ef7825308e9ae6b83bc4cad78ee",
+      "bytes": 13519,
+      "working_file_matches": true
+    },
+    {
+      "path": "scripts/tests/pdf-plugin-test.py",
+      "git_blob_content_sha256": "3e0bb17f50b7ea979f5d78353c5c0169cb554f71e2f7ebfeca3f442aa16452a0",
+      "bytes": 13653,
+      "working_file_matches": true
+    },
+    {
+      "path": "scripts/tests/service-fault-native.py",
+      "git_blob_content_sha256": "bb3b5a73abb8161eb17e860487bd763cecc3394136bf68edd5dcc27472dfd0fe",
+      "bytes": 10774,
+      "working_file_matches": true
+    },
+    {
+      "path": "scripts/tests/service-fault-test.py",
+      "git_blob_content_sha256": "75b333fa4c6f6af3c42d234965a6db585d7239bba6d7e7318606f38d5b480fbe",
+      "bytes": 9340,
+      "working_file_matches": true
+    }
+  ],
+  "originally_tracked_paths": [
+    "README.md",
+    "adr/141-imzali-pdf-stdio-host.md",
+    "adr/150-native-worker-fault-ve-kontrollu-resolver.md",
+    "adr/README.md",
+    "compiler/tests/pdf_plugin_testi.rs",
+    "docs/guvenlik-bulgulari-v1.tsv",
+    "docs/kanit-haritasi-v1.tsv",
+    "docs/kanit-ozeti.md",
+    "docs/master-plan.md",
+    "docs/oncelikli-backlog.md",
+    "docs/pdf-plugin-host.md",
+    "docs/service-fault-wave.md",
+    "docs/surumler.md",
+    "docs/v1-surum-kapilari.md",
+    "scripts/tests/pdf-plugin-native.py",
+    "scripts/tests/pdf-plugin-test.py",
+    "scripts/tests/service-fault-native.py",
+    "scripts/tests/service-fault-test.py"
+  ],
+  "originally_untracked_paths": [
+    "docs/kabul-kosuculari-yasam-dongusu-20261016.md"
+  ],
+  "original_tracked_diff_sha256": "389042b6def8f4276e237325d3336567531228b7e2e92562076a511d4e541412",
+  "full_committed_diff_sha256": "c1241e6d7cd3cd2cef3aeb6992778a50595f1effe60b29e26134c718dcd8a6de",
+  "new_file_content_hash_verified_separately": true,
+  "compiler_source_changed": false,
+  "security_clock": {
+    "command": {
+      "wall_seconds": 69.362901,
+      "monotonic_seconds": 69.36273387505207,
+      "difference_seconds": 0.00016712494792159305
+    },
+    "driver": {
+      "wall_seconds": 69.541857,
+      "monotonic_seconds": 69.5416214580182,
+      "difference_seconds": 0.00023554198179454033
+    },
+    "controller": {
+      "wall_seconds": 70.268446,
+      "monotonic_seconds": 70.26825787499547,
+      "difference_seconds": 0.0001881250045272509
+    }
+  },
+  "input_files_unchanged_during_review": true,
+  "files": [
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k299-gates-3/PROOF.json",
+      "bytes": 9189,
+      "sha256": "d4258bce3c365d1690b6ed3c9fe3befacf50caeec09c188580a4282de7d065d4"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k299-gates-3-controller.json",
+      "bytes": 659,
+      "sha256": "f1c53a107cab0186d1dc26a540440a831967a55265c885cc13df2f968090ba9e"
+    },
+    {
+      "path": "/private/tmp/zee-p19-k298/k299-gates-v4.py",
+      "bytes": 5266,
+      "sha256": "c9d75400542024cd8e6578c6c15b9c525e5836265e4bea6f31ca78745be1eb87"
+    },
+    {
+      "path": "/private/tmp/zee-p19-k298/k299-validation/scripts/lifecycle_core.py",
+      "bytes": 3613,
+      "sha256": "e76fe65b6103fc4732aafc4468afc5bbf3d0699a0f79d7f74879165636ebb1a9"
+    },
+    {
+      "path": "/private/tmp/zee-p19-k298/k299-security-v1.py",
+      "bytes": 14902,
+      "sha256": "0693477ea1a55702dea45e2f8b404afdb404b284f0580024d40694e1fcc295db"
+    },
+    {
+      "path": "/private/tmp/zee-p19-k298/k299-validation/scripts/guvenlik-kapisi.sh",
+      "bytes": 4334,
+      "sha256": "ab3f6e6a67a631a709e94837638f082fc348ba31b3869a8bf3bf0de3c92690c0"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k299-gates-3/fmt.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k299-gates-3/counts.log",
+      "bytes": 375,
+      "sha256": "90a3abe4dc36b0eaca4382fe69d09cedd949d8adcefdbfbc46b374780e71cf4b"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k299-gates-3/summary.log",
+      "bytes": 280,
+      "sha256": "8491e15786efaa6ea984ae357865b5e5e6dc30a7281ead7155595238cb98a4e4"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k299-gates-3/phase-matrix.log",
+      "bytes": 38186,
+      "sha256": "319fe1245830493d1e54667d1febed890039ed027216b7eed8f98864a60a2399"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k299-gates-3/clippy.log",
+      "bytes": 4298,
+      "sha256": "e852c9f90c61a22f45c8292a8244092b74199309ec725e2245b7f7844c394631"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k299-gates-3/function-trend.log",
+      "bytes": 382,
+      "sha256": "8f68e7145986f4205c4c00a107260a6eafa69e5ea084f00b52af7ee716eb7787"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k299-gates-3/spec-drift.log",
+      "bytes": 374,
+      "sha256": "3b70769c28d805dc84bf7654dd954048ad958ad0641b13200fdb1d774d6dd163"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k299-gates-3/catalog-freshness.log",
+      "bytes": 953,
+      "sha256": "7f38e772b2748951efa94aee9bfaeb8ba008ea4a2551cc6631a1060dffe8cff8"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k299-gates-3/conformance-guard.log",
+      "bytes": 54,
+      "sha256": "17730abed0789c8f25de093a0f67ad168c28248ff056b3778f9ff3e880db7c02"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k299-gates-3/semantic-regresyon-guard.log",
+      "bytes": 92,
+      "sha256": "12dd9c1087653bda006c1223a9ae47a8baee8df99cb49e1146bfcfbf1e45e4c9"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k299-gates-3/core-freeze-guard.log",
+      "bytes": 68,
+      "sha256": "093ea0e89be978fa97a0627647be58889a23ec1a0324e65dceb07f27cc1600ff"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k299-gates-3/diff-check.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k299-gates-3/secret-scan.log",
+      "bytes": 278,
+      "sha256": "16b6aba76396a1fce885eebc9b80aef47e00ba8e74a3d42b59396f6ba756d6e6"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k299-security-1/PROOF.json",
+      "bytes": 15283,
+      "sha256": "5118c948ea8b6a35f0b9779ce460496754a07714b9fa315b835c7f14449ae61b"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k299-security-1-controller.json",
+      "bytes": 1009,
+      "sha256": "3b040681747437b2a84b19a9e2deb58ae6f07f7e9489daeb593c9a6b11356ab1"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k299-gates-3-controller.log",
+      "bytes": 271,
+      "sha256": "845040a514837ff861be4112ca94e75acdbbe2ab4b9d92c2cfbd7ae026a3a199"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k299-security-1-controller.log",
+      "bytes": 176,
+      "sha256": "b84b487b4c16a62e67cfa7b3d640d066221797f8148d8fa3807dd4e83267addf"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k299-security-1/security.log",
+      "bytes": 6881,
+      "sha256": "5f8869371f45953c4831076941ea57ff0d22e148953212510a1f3c52a844febf"
+    },
+    {
+      "path": "/private/tmp/zee-p19-k298/commit-k299.py",
+      "bytes": 8955,
+      "sha256": "dec77a1093d5de6498fe43093bab86a07febd75d9021a0f1bb8fefa17b9f9075"
+    },
+    {
+      "path": "/private/tmp/zee-p19-k298/k299-validation/README.md",
+      "bytes": 22161,
+      "sha256": "aabed0d75c0ff0fb4cdb65cdf6a63ab1ef0206d8e032e7f3152cd7b8894950e2"
+    },
+    {
+      "path": "/private/tmp/zee-p19-k298/k299-validation/adr/141-imzali-pdf-stdio-host.md",
+      "bytes": 4715,
+      "sha256": "ca01354b19d958b75043135c2adceae4b781d094bd877fae7b22a7b7bdd03394"
+    },
+    {
+      "path": "/private/tmp/zee-p19-k298/k299-validation/adr/150-native-worker-fault-ve-kontrollu-resolver.md",
+      "bytes": 3363,
+      "sha256": "56b2333cdf0b53c476a9cd0942bb0f50fb685860d8b578e2e649df59f4ca0684"
+    },
+    {
+      "path": "/private/tmp/zee-p19-k298/k299-validation/adr/README.md",
+      "bytes": 20312,
+      "sha256": "cd26345933c760b1ab371544ac38e38e320cedf8c6ad9f6192d7f03337bb28cf"
+    },
+    {
+      "path": "/private/tmp/zee-p19-k298/k299-validation/compiler/tests/pdf_plugin_testi.rs",
+      "bytes": 2839,
+      "sha256": "796c12e0908e678e4abae813081eeb70eedd1d0da14e61826d0a2ce09d64c18f"
+    },
+    {
+      "path": "/private/tmp/zee-p19-k298/k299-validation/docs/guvenlik-bulgulari-v1.tsv",
+      "bytes": 45892,
+      "sha256": "79a4753356329b17c37809e795f6ad3fa46114797b9a1e9e91658a315f7767cc"
+    },
+    {
+      "path": "/private/tmp/zee-p19-k298/k299-validation/docs/kabul-kosuculari-yasam-dongusu-20261016.md",
+      "bytes": 7119,
+      "sha256": "0690424191f33eb2c1dc5b1d7bcca421cc632a93a9da563b46e3bca2f3d4c294"
+    },
+    {
+      "path": "/private/tmp/zee-p19-k298/k299-validation/docs/kanit-haritasi-v1.tsv",
+      "bytes": 43749,
+      "sha256": "3dd06671674fd30b5d6b233e975de18c67407813bf92bbf1830a919200ee021c"
+    },
+    {
+      "path": "/private/tmp/zee-p19-k298/k299-validation/docs/kanit-ozeti.md",
+      "bytes": 4959,
+      "sha256": "1df587e33128696b00d5d61cedfbb62d7d594f3d208b5d11e1c6e9897b919436"
+    },
+    {
+      "path": "/private/tmp/zee-p19-k298/k299-validation/docs/master-plan.md",
+      "bytes": 113314,
+      "sha256": "b8aa94ab2a5f6db0253c234ebad452b9e9769c89fdfc57891183ba40ab7361de"
+    },
+    {
+      "path": "/private/tmp/zee-p19-k298/k299-validation/docs/oncelikli-backlog.md",
+      "bytes": 146751,
+      "sha256": "64a7aea78fb50a8f89ee920e4d5ce255189e8a0d91ad5d0e15fd723c3e2c1800"
+    },
+    {
+      "path": "/private/tmp/zee-p19-k298/k299-validation/docs/pdf-plugin-host.md",
+      "bytes": 7883,
+      "sha256": "91e114b35a224ed9bf970f0f43a2454febdc3bcd0d41f2b499e6f449fbe2619c"
+    },
+    {
+      "path": "/private/tmp/zee-p19-k298/k299-validation/docs/service-fault-wave.md",
+      "bytes": 5143,
+      "sha256": "e9202fa3961a6045e76a110fb43044cd5142c72e0225fce8296fe8c9dd7c384f"
+    },
+    {
+      "path": "/private/tmp/zee-p19-k298/k299-validation/docs/surumler.md",
+      "bytes": 143634,
+      "sha256": "5ba5fa147229b94d6f5388eb2aec00982743f5e395ee2de00bf12d87f3252448"
+    },
+    {
+      "path": "/private/tmp/zee-p19-k298/k299-validation/docs/v1-surum-kapilari.md",
+      "bytes": 109931,
+      "sha256": "358e8a55ad0b27b9a2350277b6288fd836cbc4f88fd1d566e60b01410ab89509"
+    },
+    {
+      "path": "/private/tmp/zee-p19-k298/k299-validation/scripts/tests/pdf-plugin-native.py",
+      "bytes": 13519,
+      "sha256": "72449d567cae60541f01b3bef362ca8150d56ef7825308e9ae6b83bc4cad78ee"
+    },
+    {
+      "path": "/private/tmp/zee-p19-k298/k299-validation/scripts/tests/pdf-plugin-test.py",
+      "bytes": 13653,
+      "sha256": "3e0bb17f50b7ea979f5d78353c5c0169cb554f71e2f7ebfeca3f442aa16452a0"
+    },
+    {
+      "path": "/private/tmp/zee-p19-k298/k299-validation/scripts/tests/service-fault-native.py",
+      "bytes": 10774,
+      "sha256": "bb3b5a73abb8161eb17e860487bd763cecc3394136bf68edd5dcc27472dfd0fe"
+    },
+    {
+      "path": "/private/tmp/zee-p19-k298/k299-validation/scripts/tests/service-fault-test.py",
+      "bytes": 9340,
+      "sha256": "75b333fa4c6f6af3c42d234965a6db585d7239bba6d7e7318606f38d5b480fbe"
+    },
+    {
+      "path": "/private/tmp/zee-p19-k298/k299-validation/compiler/Cargo.toml",
+      "bytes": 1514,
+      "sha256": "a84637b04a5940a75d0856e50c631bf83841bc504c1beb5d037862291262d6aa"
+    },
+    {
+      "path": "/private/tmp/zee-p19-k298/k299-validation/compiler/Cargo.lock",
+      "bytes": 43561,
+      "sha256": "dc8d703c3bfd86658c50b1732a4ac1f73096bc4a36c7150c2fc58483ec34fb92"
+    },
+    {
+      "path": "/private/tmp/zee-p19-k298/k299-validation/compiler/build.rs",
+      "bytes": 3958,
+      "sha256": "29c77d86f5c9fb86758280a74596031ceae8a6f813b53517211332eb4ad4c11f"
+    },
+    {
+      "path": "/private/tmp/zee-p19-k298/k299-validation/compiler/rust-toolchain.toml",
+      "bytes": 372,
+      "sha256": "3260f10937490e272267a11d1bca85ee76b0ef972022ab8fba8a1df0dbb3b397"
+    },
+    {
+      "path": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k299-source-commit.json",
+      "bytes": 6656,
+      "sha256": "88588f4dc0257522ca85aa460ffb297015e6eebca88e596ecf5d8fe73847ccdb"
+    },
+    {
+      "path": "/private/tmp/zee-p19-k298/k299-gate3-independent-review.json",
+      "bytes": 26345,
+      "sha256": "0f3e1db54274bf0e1b30cc515a8e051e8370e97271fedd183525dee61d2c6639"
+    }
+  ],
+  "new_test_service_or_target_processes_started": false,
+  "read_only_git_queries_performed": true,
+  "native_acceptance": "pending; not inspected by this review",
+  "limits": [
+    "Gate3 and security ran before commit on S plus exact19-file overlay; blob/parent/diff verification binds that overlay to C without claiming those commands were rerun on clean C.",
+    "The25 ignored phase cases remain ignored; security16 tests do not represent signed PDF or service native acceptance.",
+    "K298 exact S RC/soak/IDE/stdio results remain attached to S and are not transferred to C.",
+    "Full committed diff includes the previously untracked new Markdown; original tracked diff is reconstructed only over the18 paths already present in S.",
+    "Native controller, native proof and independent native-review hash must be bound separately after final results."
+  ]
+}

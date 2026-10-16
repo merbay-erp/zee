@@ -1,0 +1,128 @@
+{
+  "schema": "zee-exact-clean-soak-wrapper-1",
+  "source_sha": "a57290f7a1c1fad07cda3f266b2a221f09aa6404",
+  "status": "passed",
+  "acceptance": true,
+  "seconds": 1800,
+  "window_seconds": 60,
+  "threshold_percent": 10,
+  "threshold_kib": 32768,
+  "threshold_operator": "both-exceeded",
+  "helper_sha256": "509106d70e5e35c1142594c98df022b01e689966415bdd94a8f67feecb8587d8",
+  "source_helpers": {
+    "scripts/surum-artefakti.sh": "8a93e67c4285e182a056a59895d04a28aea7d0019cb2df023d7e64131dbbcbe6",
+    "scripts/temiz-kaynak-arsivi.sh": "268a7e0b2541224b2d85216d2ce14481976011ab4f275b90ceb4739abc45558f",
+    "scripts/kaynak-ci-esleme.py": "d9d7ef6031da841d0fa87515de7ceb90cda14f3d253b691041fba35c149a8058",
+    "scripts/rust-arac-zinciri.sh": "b634e533a312fa81f2e0cdadd5082def6ff6dff8d4b434d452d651e320a6f478",
+    "compiler/rust-toolchain.toml": "3260f10937490e272267a11d1bca85ee76b0ef972022ab8fba8a1df0dbb3b397",
+    "compiler/src/bin/soak.rs": "5c61171e5a0f97f53d8195902dd0add0ee23807d1f36a22149cdcf560a376b22",
+    "compiler/src/bin/dillsp.rs": "00de6e5452975467009fc1047eefe1db7719fa0fd1712a395f19a10b34a4f9cb",
+    "compiler/Cargo.lock": "dc8d703c3bfd86658c50b1732a4ac1f73096bc4a36c7150c2fc58483ec34fb92",
+    "compiler/Cargo.toml": "a84637b04a5940a75d0856e50c631bf83841bc504c1beb5d037862291262d6aa"
+  },
+  "external_runner_start_sha256": {
+    "runner": "6f6f59c3a4aa4c9bf176758367d006cef8a6ef2f9c8f83317681f36c2088b360",
+    "owned_helper": "509106d70e5e35c1142594c98df022b01e689966415bdd94a8f67feecb8587d8"
+  },
+  "commands": [
+    {
+      "argv": [
+        "cargo",
+        "+1.93.1",
+        "build",
+        "--locked",
+        "--offline",
+        "--release",
+        "--bin",
+        "dillsp",
+        "--bin",
+        "soak"
+      ],
+      "argv_sha256": "d9d1d6f60291ca174e4552737ab3eabaffa28215c07cb86c1398b429c527a793",
+      "started_utc": "2026-10-16T04:58:46.220791+00:00",
+      "timeout_seconds": 3600,
+      "log": "build.log",
+      "elapsed_seconds": 152.18109104200266,
+      "finished_utc": "2026-10-16T05:01:18.401125+00:00",
+      "log_sha256": "32412effcf0d24b8fcf2ecb689287a90633bfcac8f7be6795bf36c7293d75a68"
+    },
+    {
+      "argv": [
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-soak-2/target/release/soak",
+        "--sure-sn",
+        "1800",
+        "--pencere-sn",
+        "60",
+        "--dillsp",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-soak-2/target/release/dillsp",
+        "--gecmis",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-soak-2/soak-history.tsv",
+        "--rapor",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-a57290f-soak-2/soak-report.md"
+      ],
+      "argv_sha256": "aea034e43fef883c3edcf6aadb71b65ebf9f62ab2fef9b11c0c8649bea82864d",
+      "started_utc": "2026-10-16T05:01:18.434781+00:00",
+      "timeout_seconds": 2100,
+      "log": "soak.log",
+      "elapsed_seconds": 1801.1165248330217,
+      "finished_utc": "2026-10-16T05:31:19.644576+00:00",
+      "log_sha256": "b632a623b84f83186644e911d9b16858d72e74d59ac3af0a5b3c360688c9972d"
+    }
+  ],
+  "started_utc": "2026-10-16T04:58:44.714736+00:00",
+  "machine": {
+    "os": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+    "system": "Darwin",
+    "machine": "arm64",
+    "cpu_count": 14,
+    "python": "3.13.3",
+    "cpu_model": "Apple M4 Pro",
+    "ram_bytes": 25769803776
+  },
+  "toolchain": {
+    "rustc": "rustc 1.93.1 (01f6ddf75 2026-02-11)",
+    "rustc_vV": "rustc 1.93.1 (01f6ddf75 2026-02-11)\nbinary: rustc\ncommit-hash: 01f6ddf7588f42ae2d7eb0a2f21d44e8e96674cf\ncommit-date: 2026-02-11\nhost: aarch64-apple-darwin\nrelease: 1.93.1\nLLVM version: 21.1.8\n",
+    "cargo": "cargo 1.93.1 (083ac5135 2025-12-15)",
+    "profile": "release",
+    "offline": true,
+    "rustflags": "empty",
+    "source_date_epoch": null
+  },
+  "binary_start_sha256": {
+    "dillsp": "915ed2c1430bdefdca1e18f533231ca405ce00cd55d2f4fd17171ff72ebaae48",
+    "soak": "9a7e0a5217da67781dc8352b17e8198b59a7d78603351ffbbc1cb5c893cafab8"
+  },
+  "external_runner_end_sha256": {
+    "runner": "6f6f59c3a4aa4c9bf176758367d006cef8a6ef2f9c8f83317681f36c2088b360",
+    "owned_helper": "509106d70e5e35c1142594c98df022b01e689966415bdd94a8f67feecb8587d8"
+  },
+  "actual_elapsed_seconds": 1801.1167863749433,
+  "binary_end_sha256": {
+    "dillsp": "915ed2c1430bdefdca1e18f533231ca405ce00cd55d2f4fd17171ff72ebaae48",
+    "soak": "9a7e0a5217da67781dc8352b17e8198b59a7d78603351ffbbc1cb5c893cafab8"
+  },
+  "history_row": [
+    "a57290f7a1c1fad07cda3f266b2a221f09aa6404",
+    "2026-10-16",
+    "macos-aarch64",
+    "rustc 1.93.1 (01f6ddf75 2026-02-11)",
+    "1800",
+    "60",
+    "24072",
+    "24072",
+    "20112",
+    "20016",
+    "19776",
+    "20800",
+    "0",
+    "6",
+    "10",
+    "32768",
+    "gecti"
+  ],
+  "history_sha256": "a95776208f6ea09114d8a4cf929e170a6a172f9893bfd30cf908e5fdd022052f",
+  "report_sha256": "84140ef207b2fb77642250c63b8346c696b63ff17d9ad9516a28ea958c54aa5c",
+  "source_end_clean": true,
+  "source_end_sha": "a57290f7a1c1fad07cda3f266b2a221f09aa6404",
+  "finished_utc": "2026-10-16T05:31:19.735260+00:00"
+}

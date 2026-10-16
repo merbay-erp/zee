@@ -1,6 +1,7 @@
 # Ürünleşme: kullanıcı girdileri ve açık kapılar
 
-15 Ekim 2026 başlayan çalışma. [S4 yerel kabulü](urunlesme-s4-kabul-20261015.md),
+15 Ekim 2026 başlayan çalışma. [K-298 dar yerel kabulü](urunlesme-k298-kabul-20261016.md),
+[tarihsel S4 kabulü](urunlesme-s4-kabul-20261015.md),
 [tarihsel S3 teknik kabulü](urunlesme-s3-kabul-20261015.md) ve
 [39 maddelik plan](urunlesme-plan-v1.tsv) için teslim listesi. Bu belge yeni
 ürün, yayın veya destek kararı vermez; eksik kanıtı tamamlanmış göstermez.
@@ -129,14 +130,13 @@ yükseltme/veri göçü/geri dönüş kabulünün sahibidir. Staging erişimi ge
   [açık incelemelerde](urunlesme-acik-incelemeler.md) kalır. Kullanıcıdan ek
   dosya veya tekrar izin istemekle çözülmüş sayılmaz; farklı araç/ajana
   yönlendirilerek ret aşılmaz.
-- **P19 teknik kapsam:** BMP dışı hover/definition/rename/tanı konumu
-  [K-297](lsp-utf16-kabul-20261015.md) ile kapandı; [S4](urunlesme-s4-kabul-20261015.md)
-  yeni kaynakta native stdio ve gerçek IDE kanıtını, 1/41 belge ve lint
-  kapalı/açık gerçek stdio gecikme gözlemini kaydeder. Lint açık/41 belgede
-  p95 223,698 ms ölçüldü; 200 ms hedefi açıktır. Artımlı HIR/tür
-  analizi, UI/gerçek ürün gecikmesi ve genel SLA hâlâ ayrı açık teknik
-  işlerdir. Bunlar kullanıcı girdisi eksikliği sayılmaz; gerçek ürün ölçümü
-  gereken alt kabul P08'e bağlıdır.
+- **P19 teknik kapsam:** BMP dışı sorgu/tanı aralıkları [K-297](lsp-utf16-kabul-20261015.md)
+  ile kapandı; [K-298](urunlesme-k298-kabul-20261016.md) a57290f kaynağında native UTF-16 ve
+  dar gerçek IDE işlev kabulünü yeniledi. Dört stdio p95'i 200 ms altında,
+  en ağır kohort189,885667 ms ölçüldü. Bu shared gözlemsel hedeftir; UI gecikmesi
+  veya genel SLA değildir. Aynı kaynağın ikinci RSS ve RC kabulü geçti; K-298 dar kapsamı kapalıdır. Artımlı HIR/tür,
+  UI/gerçek ürün ve platform teknik kapsamı açık kalır; yalnız gerçek ürün
+  ölçümü P08 girdisine bağlıdır. Bunların tümü kullanıcı girdisi eksikliği sayılmaz.
 - **Destek iddiaları:** genel FFI/hostile PDF sandbox, sağlayıcılar için genel
   exactly-once, DB+FS atomikliği, bütün HTTP işlemleri için rollback, genel
   üretim SLA'sı ve zero downtime mevcut yerel kabulün kapsamına girmez.

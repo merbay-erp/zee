@@ -1,0 +1,25 @@
+{
+  "argv": [
+    "python3",
+    "-I",
+    "-B",
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-drivers/provenance-gates.py",
+    "--repo",
+    "/Users/mustafaerbay/IdeaProjects/zee-urunlesme-20261014",
+    "--source",
+    "bb4ed951ce5e8e9c1c21d2c58f75cd4ef51d6c59",
+    "--base",
+    "e9eafc32e7a64b62790960b7faf2822007b2a7d9",
+    "--out",
+    "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k298-provenance-gates-1"
+  ],
+  "started_ns": 1792108673683128000,
+  "status": "passed",
+  "minimum_free_bytes": 71364464640,
+  "required_free_bytes": 10737418240,
+  "observed_exit": 0,
+  "owned_group_closed_and_reaped": true,
+  "exit": 0,
+  "finished_ns": 1792108715996158000,
+  "elapsed_seconds": 42.31331004202366
+}

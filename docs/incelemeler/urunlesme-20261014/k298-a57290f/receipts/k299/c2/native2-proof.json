@@ -1,0 +1,1289 @@
+{
+  "schema": "zee-k299-native-two-1",
+  "status": "passed",
+  "source_sha": "8178920e03fed782a817d1864b8280fcb80812a3",
+  "source_tree": "1eccf96d1a407880bf161c55bdd55c4d9a144866",
+  "source_begin_clean": true,
+  "source_end_clean": true,
+  "driver_sha256": "be4e5ed657e28c37258f0e39f75ef6dc0c06b6577a828bcd8581ef713188b574",
+  "lifecycle_sha256": "e76fe65b6103fc4732aafc4468afc5bbf3d0699a0f79d7f74879165636ebb1a9",
+  "commands": [
+    {
+      "label": "begin-head",
+      "argv": [
+        "git",
+        "-C",
+        "/private/tmp/zee-p19-k298/k299-validation",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/private/tmp/zee-p19-k298/k299-validation",
+      "status": "passed",
+      "observed_exit": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "owned_pid": 91769,
+      "cleanup_term_grace_seconds": 0.2,
+      "elapsed_seconds": 0.006412541959434748,
+      "logs": {
+        "stdout": {
+          "path": "logs/begin-head.stdout.raw",
+          "bytes": 41,
+          "sha256": "59fc5912ce7faf9575d68bbd4cd78335f1747d0f6ce2e1bc418ef2e5a1ff920f"
+        },
+        "stderr": {
+          "path": "logs/begin-head.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "capture_complete_to_eof": true
+    },
+    {
+      "label": "begin-tree",
+      "argv": [
+        "git",
+        "-C",
+        "/private/tmp/zee-p19-k298/k299-validation",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "cwd": "/private/tmp/zee-p19-k298/k299-validation",
+      "status": "passed",
+      "observed_exit": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "owned_pid": 91770,
+      "cleanup_term_grace_seconds": 0.2,
+      "elapsed_seconds": 0.006443041958846152,
+      "logs": {
+        "stdout": {
+          "path": "logs/begin-tree.stdout.raw",
+          "bytes": 41,
+          "sha256": "b39d40444d645489345e3db48672921a08c398521b5ea47f39f6ae981dde5ca4"
+        },
+        "stderr": {
+          "path": "logs/begin-tree.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "capture_complete_to_eof": true
+    },
+    {
+      "label": "begin-status",
+      "argv": [
+        "git",
+        "-C",
+        "/private/tmp/zee-p19-k298/k299-validation",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "/private/tmp/zee-p19-k298/k299-validation",
+      "status": "passed",
+      "observed_exit": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "owned_pid": 91771,
+      "cleanup_term_grace_seconds": 0.2,
+      "elapsed_seconds": 0.016304583987221122,
+      "logs": {
+        "stdout": {
+          "path": "logs/begin-status.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "logs/begin-status.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "capture_complete_to_eof": true
+    },
+    {
+      "label": "pdf-runtime-preflight",
+      "argv": [
+        "/Users/mustafaerbay/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-I",
+        "-B",
+        "-c",
+        "import json,sys,importlib.metadata as m;import reportlab,pypdf,PIL;print(json.dumps({\"packages\":{n:m.version(n) for n in [\"reportlab\",\"pypdf\",\"Pillow\"]},\"imports\":{\"reportlab\":reportlab.Version,\"pypdf\":pypdf.__version__,\"Pillow\":PIL.__version__},\"python\":sys.version,\"executable\":sys.executable}))"
+      ],
+      "cwd": "/private/tmp/zee-p19-k298/k299-validation",
+      "status": "passed",
+      "observed_exit": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "owned_pid": 91772,
+      "cleanup_term_grace_seconds": 0.2,
+      "elapsed_seconds": 0.14738899993244559,
+      "logs": {
+        "stdout": {
+          "path": "logs/pdf-runtime-preflight.stdout.raw",
+          "bytes": 330,
+          "sha256": "42fc516f4001aa9496ee3302e5ee5a658998db8fd40590d5f294f8b507eb5ede"
+        },
+        "stderr": {
+          "path": "logs/pdf-runtime-preflight.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "capture_complete_to_eof": true
+    },
+    {
+      "label": "locate-rustc",
+      "argv": [
+        "rustup",
+        "which",
+        "--toolchain",
+        "1.93.1",
+        "rustc"
+      ],
+      "cwd": "/private/tmp/zee-p19-k298/k299-validation",
+      "status": "passed",
+      "observed_exit": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "owned_pid": 91773,
+      "cleanup_term_grace_seconds": 0.2,
+      "elapsed_seconds": 0.024747124989517033,
+      "logs": {
+        "stdout": {
+          "path": "logs/locate-rustc.stdout.raw",
+          "bytes": 77,
+          "sha256": "ed42aac96e9db0577438d45fc2a1d2267e9f34928f87d924c2c387ade5a7393b"
+        },
+        "stderr": {
+          "path": "logs/locate-rustc.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "capture_complete_to_eof": true
+    },
+    {
+      "label": "locate-cargo",
+      "argv": [
+        "rustup",
+        "which",
+        "--toolchain",
+        "1.93.1",
+        "cargo"
+      ],
+      "cwd": "/private/tmp/zee-p19-k298/k299-validation",
+      "status": "passed",
+      "observed_exit": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "owned_pid": 91774,
+      "cleanup_term_grace_seconds": 0.2,
+      "elapsed_seconds": 0.023494041990488768,
+      "logs": {
+        "stdout": {
+          "path": "logs/locate-cargo.stdout.raw",
+          "bytes": 77,
+          "sha256": "7a7211c4ae2c30c84a38b50a4454ae3094c460c0545234fa78551157656dc8f2"
+        },
+        "stderr": {
+          "path": "logs/locate-cargo.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "capture_complete_to_eof": true
+    },
+    {
+      "label": "rustc-version",
+      "argv": [
+        "/Users/mustafaerbay/.rustup/toolchains/1.93.1-aarch64-apple-darwin/bin/rustc",
+        "-vV"
+      ],
+      "cwd": "/private/tmp/zee-p19-k298/k299-validation",
+      "status": "passed",
+      "observed_exit": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "owned_pid": 91775,
+      "cleanup_term_grace_seconds": 0.2,
+      "elapsed_seconds": 0.0850544999120757,
+      "logs": {
+        "stdout": {
+          "path": "logs/rustc-version.stdout.raw",
+          "bytes": 192,
+          "sha256": "a09c3fc26c9b56a9da361644dc642164492d8ac440d6330c74c7c989bd0d2099"
+        },
+        "stderr": {
+          "path": "logs/rustc-version.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "capture_complete_to_eof": true
+    },
+    {
+      "label": "cargo-version",
+      "argv": [
+        "/Users/mustafaerbay/.rustup/toolchains/1.93.1-aarch64-apple-darwin/bin/cargo",
+        "-V"
+      ],
+      "cwd": "/private/tmp/zee-p19-k298/k299-validation",
+      "status": "passed",
+      "observed_exit": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "owned_pid": 91776,
+      "cleanup_term_grace_seconds": 0.2,
+      "elapsed_seconds": 0.024033374967984855,
+      "logs": {
+        "stdout": {
+          "path": "logs/cargo-version.stdout.raw",
+          "bytes": 36,
+          "sha256": "57d704d9ad73ec7cc1b1a79aed6703333615865be6e3dc1ce269ea4ca7068227"
+        },
+        "stderr": {
+          "path": "logs/cargo-version.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "capture_complete_to_eof": true
+    },
+    {
+      "label": "cpu",
+      "argv": [
+        "sysctl",
+        "-n",
+        "machdep.cpu.brand_string"
+      ],
+      "cwd": "/private/tmp/zee-p19-k298/k299-validation",
+      "status": "passed",
+      "observed_exit": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "owned_pid": 91779,
+      "cleanup_term_grace_seconds": 0.2,
+      "elapsed_seconds": 0.004945916938595474,
+      "logs": {
+        "stdout": {
+          "path": "logs/cpu.stdout.raw",
+          "bytes": 13,
+          "sha256": "cf8be25367c4600921f057a468612c25380ea7eb82253b1dc25fb2454be26b73"
+        },
+        "stderr": {
+          "path": "logs/cpu.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "capture_complete_to_eof": true
+    },
+    {
+      "label": "ram-bytes",
+      "argv": [
+        "sysctl",
+        "-n",
+        "hw.memsize"
+      ],
+      "cwd": "/private/tmp/zee-p19-k298/k299-validation",
+      "status": "passed",
+      "observed_exit": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "owned_pid": 91780,
+      "cleanup_term_grace_seconds": 0.2,
+      "elapsed_seconds": 0.0027865839656442404,
+      "logs": {
+        "stdout": {
+          "path": "logs/ram-bytes.stdout.raw",
+          "bytes": 12,
+          "sha256": "e15b6050a0ee6ea43f29cb46cec0ddcc207f00fe520854aeecfdceb86a9ea799"
+        },
+        "stderr": {
+          "path": "logs/ram-bytes.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "capture_complete_to_eof": true
+    },
+    {
+      "label": "cargo-metadata",
+      "argv": [
+        "/Users/mustafaerbay/.rustup/toolchains/1.93.1-aarch64-apple-darwin/bin/cargo",
+        "metadata",
+        "--locked",
+        "--offline",
+        "--no-deps",
+        "--format-version",
+        "1"
+      ],
+      "cwd": "/private/tmp/zee-p19-k298/k299-validation/compiler",
+      "status": "passed",
+      "observed_exit": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "owned_pid": 91781,
+      "cleanup_term_grace_seconds": 0.2,
+      "elapsed_seconds": 0.013464624993503094,
+      "logs": {
+        "stdout": {
+          "path": "logs/cargo-metadata.stdout.raw",
+          "bytes": 34865,
+          "sha256": "ac8d685b26693c80a55f46f50f541492569317c41ce6997c7df4e717d2aee0cc"
+        },
+        "stderr": {
+          "path": "logs/cargo-metadata.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "capture_complete_to_eof": true
+    },
+    {
+      "label": "release-test-support-build",
+      "argv": [
+        "/Users/mustafaerbay/.rustup/toolchains/1.93.1-aarch64-apple-darwin/bin/cargo",
+        "build",
+        "--locked",
+        "--offline",
+        "--release",
+        "--jobs",
+        "1",
+        "--message-format=json",
+        "--bin",
+        "dil",
+        "--bin",
+        "surum_artefakti"
+      ],
+      "cwd": "/private/tmp/zee-p19-k298/k299-validation/compiler",
+      "status": "passed",
+      "observed_exit": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "owned_pid": 91782,
+      "cleanup_term_grace_seconds": 0.2,
+      "elapsed_seconds": 51.30193716601934,
+      "logs": {
+        "stdout": {
+          "path": "logs/release-test-support-build.stdout.raw",
+          "bytes": 145744,
+          "sha256": "3256b967cc73b5ec4a70d40bf24d0a0db76b22d9688434b0af3d916b29438940"
+        },
+        "stderr": {
+          "path": "logs/release-test-support-build.stderr.raw",
+          "bytes": 144,
+          "sha256": "2c0573282ece1da7da59d4d57dbd10799f29724f384acc019369e5069b817a98"
+        }
+      },
+      "capture_complete_to_eof": true
+    },
+    {
+      "label": "cli-build-json",
+      "argv": [
+        "/private/tmp/zee-p19-k298/k299-validation/compiler/target/release/dil",
+        "sürüm",
+        "--json"
+      ],
+      "cwd": "/private/tmp/zee-p19-k298/k299-validation",
+      "status": "passed",
+      "observed_exit": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "owned_pid": 92094,
+      "cleanup_term_grace_seconds": 0.2,
+      "elapsed_seconds": 0.4037459590472281,
+      "logs": {
+        "stdout": {
+          "path": "logs/cli-build-json.stdout.raw",
+          "bytes": 169,
+          "sha256": "d097600ab2a1d1461e6b3fe6b953003936659da251b75658a1e7d2b72b14f614"
+        },
+        "stderr": {
+          "path": "logs/cli-build-json.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "capture_complete_to_eof": true
+    },
+    {
+      "label": "pdf-plugin-testi",
+      "argv": [
+        "/Users/mustafaerbay/.rustup/toolchains/1.93.1-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "--release",
+        "--jobs",
+        "1",
+        "--message-format=json",
+        "--test",
+        "pdf_plugin_testi",
+        "imzali_pdf_zee_native_istek_yanit_kabulu",
+        "--",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "cwd": "/private/tmp/zee-p19-k298/k299-validation/compiler",
+      "status": "passed",
+      "observed_exit": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "owned_pid": 92095,
+      "cleanup_term_grace_seconds": 0.2,
+      "elapsed_seconds": 17.849531957996078,
+      "logs": {
+        "stdout": {
+          "path": "logs/pdf-plugin-testi.stdout.raw",
+          "bytes": 152543,
+          "sha256": "b8f161eb1d4b036f131bcf551cff4093462d5ea520b079758ce5d0c062fd1a35"
+        },
+        "stderr": {
+          "path": "logs/pdf-plugin-testi.stderr.raw",
+          "bytes": 239,
+          "sha256": "be380cf266049f83ca547a113f7be4bbd5cd40b7993fc4737cd40db9f7215468"
+        }
+      },
+      "capture_complete_to_eof": true
+    },
+    {
+      "label": "pdf-independent-inspection",
+      "argv": [
+        "/Users/mustafaerbay/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-I",
+        "-B",
+        "-c",
+        "import json,sys;from pypdf import PdfReader;p=PdfReader(sys.argv[1]);r=p.pages[1][\"/Resources\"];fonts=[v.get_object() for v in r[\"/Font\"].get_object().values()];print(json.dumps({\"pages\":len(p.pages),\"text\":\"\\n\".join(v.extract_text() for v in p.pages),\"embedded_font\":any(\"/FontFile2\" in v[\"/FontDescriptor\"].get_object() for v in fonts if \"/FontDescriptor\" in v),\"images\":sum(v.get_object().get(\"/Subtype\")==\"/Image\" for v in r[\"/XObject\"].get_object().values())}))",
+        "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k299-native-2/pdf-native/pdf/catalog.pdf"
+      ],
+      "cwd": "/private/tmp/zee-p19-k298/k299-validation",
+      "status": "passed",
+      "observed_exit": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "owned_pid": 92421,
+      "cleanup_term_grace_seconds": 0.2,
+      "elapsed_seconds": 0.06526100006885827,
+      "logs": {
+        "stdout": {
+          "path": "logs/pdf-independent-inspection.stdout.raw",
+          "bytes": 490,
+          "sha256": "d9a81a1961bd371451ffa74717982719ac76a23524799cbcb2087f98a9c07863"
+        },
+        "stderr": {
+          "path": "logs/pdf-independent-inspection.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "capture_complete_to_eof": true
+    },
+    {
+      "label": "service-fault-testi",
+      "argv": [
+        "/Users/mustafaerbay/.rustup/toolchains/1.93.1-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "--release",
+        "--jobs",
+        "1",
+        "--message-format=json",
+        "--test",
+        "service_fault_testi",
+        "service_fault_native",
+        "--",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "cwd": "/private/tmp/zee-p19-k298/k299-validation/compiler",
+      "status": "passed",
+      "observed_exit": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "owned_pid": 92422,
+      "cleanup_term_grace_seconds": 0.2,
+      "elapsed_seconds": 6.249868874903768,
+      "logs": {
+        "stdout": {
+          "path": "logs/service-fault-testi.stdout.raw",
+          "bytes": 152527,
+          "sha256": "b3aa241b4d061f412ea81e8dc82f034fdf6923ee56eeb0ff24f5bf6894bd9dcb"
+        },
+        "stderr": {
+          "path": "logs/service-fault-testi.stderr.raw",
+          "bytes": 244,
+          "sha256": "098285b7a129345b9a2c1be02dc5a2779638089966586eedd5fc1ab22105e06d"
+        }
+      },
+      "capture_complete_to_eof": true
+    },
+    {
+      "label": "cli-build-json-end",
+      "argv": [
+        "/private/tmp/zee-p19-k298/k299-validation/compiler/target/release/dil",
+        "sürüm",
+        "--json"
+      ],
+      "cwd": "/private/tmp/zee-p19-k298/k299-validation",
+      "status": "passed",
+      "observed_exit": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "owned_pid": 92500,
+      "cleanup_term_grace_seconds": 0.2,
+      "elapsed_seconds": 0.0051440829411149025,
+      "logs": {
+        "stdout": {
+          "path": "logs/cli-build-json-end.stdout.raw",
+          "bytes": 169,
+          "sha256": "d097600ab2a1d1461e6b3fe6b953003936659da251b75658a1e7d2b72b14f614"
+        },
+        "stderr": {
+          "path": "logs/cli-build-json-end.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "capture_complete_to_eof": true
+    },
+    {
+      "label": "end-head",
+      "argv": [
+        "git",
+        "-C",
+        "/private/tmp/zee-p19-k298/k299-validation",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/private/tmp/zee-p19-k298/k299-validation",
+      "status": "passed",
+      "observed_exit": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "owned_pid": 92501,
+      "cleanup_term_grace_seconds": 0.2,
+      "elapsed_seconds": 0.0048867909936234355,
+      "logs": {
+        "stdout": {
+          "path": "logs/end-head.stdout.raw",
+          "bytes": 41,
+          "sha256": "59fc5912ce7faf9575d68bbd4cd78335f1747d0f6ce2e1bc418ef2e5a1ff920f"
+        },
+        "stderr": {
+          "path": "logs/end-head.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "capture_complete_to_eof": true
+    },
+    {
+      "label": "end-tree",
+      "argv": [
+        "git",
+        "-C",
+        "/private/tmp/zee-p19-k298/k299-validation",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "cwd": "/private/tmp/zee-p19-k298/k299-validation",
+      "status": "passed",
+      "observed_exit": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "owned_pid": 92502,
+      "cleanup_term_grace_seconds": 0.2,
+      "elapsed_seconds": 0.0058717080391943455,
+      "logs": {
+        "stdout": {
+          "path": "logs/end-tree.stdout.raw",
+          "bytes": 41,
+          "sha256": "b39d40444d645489345e3db48672921a08c398521b5ea47f39f6ae981dde5ca4"
+        },
+        "stderr": {
+          "path": "logs/end-tree.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "capture_complete_to_eof": true
+    },
+    {
+      "label": "end-status",
+      "argv": [
+        "git",
+        "-C",
+        "/private/tmp/zee-p19-k298/k299-validation",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "/private/tmp/zee-p19-k298/k299-validation",
+      "status": "passed",
+      "observed_exit": 0,
+      "cleanup_exit": 0,
+      "owned_group_closed_and_reaped": true,
+      "owned_pid": 92503,
+      "cleanup_term_grace_seconds": 0.2,
+      "elapsed_seconds": 0.014220333890989423,
+      "logs": {
+        "stdout": {
+          "path": "logs/end-status.stdout.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "logs/end-status.stderr.raw",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "capture_complete_to_eof": true
+    }
+  ],
+  "accepted_selectors": [
+    {
+      "target": "pdf_plugin_testi",
+      "selector": "imzali_pdf_zee_native_istek_yanit_kabulu",
+      "status": "passed",
+      "cargo_cases": 1,
+      "test_binary": "/private/tmp/zee-p19-k298/k299-validation/compiler/target/release/deps/pdf_plugin_testi-2b2a31523fb26928",
+      "test_binary_sha256": "c47149a64810b76cbce18cece191e83e3f9550ad75b147745a4866a35fcde46a"
+    },
+    {
+      "target": "service_fault_testi",
+      "selector": "service_fault_native",
+      "status": "passed",
+      "cargo_cases": 1,
+      "test_binary": "/private/tmp/zee-p19-k298/k299-validation/compiler/target/release/deps/service_fault_testi-a4d7b066669592e3",
+      "test_binary_sha256": "85f70aef1c41bdaa671d6e8e38a81b2bce602d5acd8b3f07b435753a61c3d04e"
+    }
+  ],
+  "required_k299_pins": {
+    "scripts/tests/pdf-plugin-native.py": "72449d567cae60541f01b3bef362ca8150d56ef7825308e9ae6b83bc4cad78ee",
+    "scripts/tests/service-fault-native.py": "bb3b5a73abb8161eb17e860487bd763cecc3394136bf68edd5dcc27472dfd0fe",
+    "scripts/tests/pdf-plugin-test.py": "3e0bb17f50b7ea979f5d78353c5c0169cb554f71e2f7ebfeca3f442aa16452a0",
+    "scripts/tests/service-fault-test.py": "75b333fa4c6f6af3c42d234965a6db585d7239bba6d7e7318606f38d5b480fbe",
+    "compiler/tests/pdf_plugin_testi.rs": "796c12e0908e678e4abae813081eeb70eedd1d0da14e61826d0a2ce09d64c18f",
+    "compiler/tests/service_fault_testi.rs": "fecfea8a085ce76be25531ff1664ec34499cad1aaf536bfe485ad945538bada6"
+  },
+  "artifact_scope": "release test artifacts only; not canonical shipping delivery",
+  "outer_watchdog_required_term_grace_seconds": 330,
+  "outer_watchdog_verified_by_driver": false,
+  "bounds": {
+    "campaign_seconds": 1800,
+    "cancel_term_grace_seconds": 90,
+    "normal_terminal_zero_term_grace_seconds": 0.2,
+    "stream_bytes": 8388608,
+    "all_command_log_bytes": 67108864,
+    "proof_bytes": 4194304,
+    "public_output_bytes_including_proof": 134217728,
+    "public_output_files": 4096,
+    "minimum_free_bytes": 10737418240
+  },
+  "excluded_claims": [
+    "canonical shipping delivery",
+    "RC",
+    "soak",
+    "IDE/UI",
+    "LSP/P19 latency",
+    "full P11/P34",
+    "systemd/provider/global fault matrix",
+    "native DNS cancellation",
+    "real product/platform acceptance",
+    "C1/K-288",
+    "P33/K-293"
+  ],
+  "source_pins": {
+    "compiler/Cargo.lock": {
+      "sha256": "dc8d703c3bfd86658c50b1732a4ac1f73096bc4a36c7150c2fc58483ec34fb92",
+      "bytes": 43561
+    },
+    "compiler/Cargo.toml": {
+      "sha256": "a84637b04a5940a75d0856e50c631bf83841bc504c1beb5d037862291262d6aa",
+      "bytes": 1514
+    },
+    "compiler/build.rs": {
+      "sha256": "29c77d86f5c9fb86758280a74596031ceae8a6f813b53517211332eb4ad4c11f",
+      "bytes": 3958
+    },
+    "compiler/rust-toolchain.toml": {
+      "sha256": "3260f10937490e272267a11d1bca85ee76b0ef972022ab8fba8a1df0dbb3b397",
+      "bytes": 372
+    },
+    "compiler/tests/pdf_plugin_testi.rs": {
+      "sha256": "796c12e0908e678e4abae813081eeb70eedd1d0da14e61826d0a2ce09d64c18f",
+      "bytes": 2839
+    },
+    "compiler/tests/service_fault_testi.rs": {
+      "sha256": "fecfea8a085ce76be25531ff1664ec34499cad1aaf536bfe485ad945538bada6",
+      "bytes": 1363
+    },
+    "golden/pdf-host/assets/COPYRIGHT-DejaVu.txt": {
+      "sha256": "35397e5e2ff231cc777b97c3e18756cc21f4a451f5ade9bf315d552a9a74d25d",
+      "bytes": 152
+    },
+    "golden/pdf-host/assets/LICENSE-DejaVu.txt": {
+      "sha256": "f1d7e97481cf4ac81f2d3ab8b14a483fb34b0b4824a3f8d2b1c70a6fa86a3b08",
+      "bytes": 4765
+    },
+    "golden/pdf-host/assets/base.pdf": {
+      "sha256": "7c25bd391859088307fa0b1816eca1d2c80634e6a950b9018152bf28ffdaf05f",
+      "bytes": 2550
+    },
+    "golden/pdf-host/assets/font.ttf": {
+      "sha256": "7da195a74c55bef988d0d48f9508bd5d849425c1770dba5d7bfc6ce9ed848954",
+      "bytes": 757076
+    },
+    "golden/pdf-host/assets/product.png": {
+      "sha256": "9a09e7df94e28fd35c0d255419f254bc1f4b1a51e323a490d758ebd8b711c9d5",
+      "bytes": 1578
+    },
+    "golden/pdf-plugin/ana.dil": {
+      "sha256": "6724b94271e6dd941c97fa098c95ddf8bca72f179ea342317e47fbafc8da1cd6",
+      "bytes": 980
+    },
+    "scripts/derleyici-secici.py": {
+      "sha256": "b2103253fc59be2eeb27e6861e593d56202697f69519a2b158f9232326c07692",
+      "bytes": 24586
+    },
+    "scripts/lifecycle_core.py": {
+      "sha256": "e76fe65b6103fc4732aafc4468afc5bbf3d0699a0f79d7f74879165636ebb1a9",
+      "bytes": 3613
+    },
+    "scripts/pdf-katalog-host.py": {
+      "sha256": "7ef40302bc3a079a129376a8002c1485fdd905bb860c5fda7b4cfb0ec3b5f9f6",
+      "bytes": 6846
+    },
+    "scripts/pdf-plugin-host.py": {
+      "sha256": "6108d2a2be79fa245e4d9e6326c23a6837e576d179a5ec3521c1571e298a1caf",
+      "bytes": 13662
+    },
+    "scripts/tests/mixed-revision-native.py": {
+      "sha256": "f5c10b2e33bacc7f1093a5f68dd5009904f95164567c8d2c29abb11f62cec19c",
+      "bytes": 20926
+    },
+    "scripts/tests/pdf-plugin-native.py": {
+      "sha256": "72449d567cae60541f01b3bef362ca8150d56ef7825308e9ae6b83bc4cad78ee",
+      "bytes": 13519
+    },
+    "scripts/tests/pdf-plugin-test.py": {
+      "sha256": "3e0bb17f50b7ea979f5d78353c5c0169cb554f71e2f7ebfeca3f442aa16452a0",
+      "bytes": 13653
+    },
+    "scripts/tests/service-fault-native.py": {
+      "sha256": "bb3b5a73abb8161eb17e860487bd763cecc3394136bf68edd5dcc27472dfd0fe",
+      "bytes": 10774
+    },
+    "scripts/tests/service-fault-test.py": {
+      "sha256": "75b333fa4c6f6af3c42d234965a6db585d7239bba6d7e7318606f38d5b480fbe",
+      "bytes": 9340
+    },
+    "scripts/tests/worker-supervisor-test.py": {
+      "sha256": "447525fd38503c150d6488e394e2ff13e51b5db70bbf9a9517daacadd1e59fe1",
+      "bytes": 26493
+    },
+    "scripts/worker-supervisor.py": {
+      "sha256": "560bec4e4e36d2aa856936d9d32412bb9106b61b25a871495287e2287e3c6642",
+      "bytes": 27169
+    }
+  },
+  "private_tmp": "/private/tmp/zee-k299-native-6l4vssko",
+  "private_tmp_policy": "never archive or inspect arbitrary payloads; successful final top-level must be public output only",
+  "environment": {
+    "RUSTUP_TOOLCHAIN": "1.93.1",
+    "CARGO_BUILD_JOBS": "1",
+    "RUST_TEST_THREADS": "1",
+    "CARGO_NET_OFFLINE": "true",
+    "CARGO_TERM_COLOR": "never",
+    "CARGO_TARGET_DIR": "/private/tmp/zee-p19-k298/k299-validation/compiler/target",
+    "TMPDIR": "/private/tmp/zee-k299-native-6l4vssko",
+    "ZEE_PDF_BACKEND_PYTHON": "/Users/mustafaerbay/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3"
+  },
+  "runtime_sha256": "7a314947596fc484d4ec36ffc28e843b78d6d749c68736f8b5c24e7333f418eb",
+  "runtime": {
+    "packages": {
+      "reportlab": "4.4.9",
+      "pypdf": "6.10.0",
+      "Pillow": "12.3.0"
+    },
+    "imports": {
+      "reportlab": "4.4.9",
+      "pypdf": "6.10.0",
+      "Pillow": "12.3.0"
+    },
+    "python": "3.12.14 (main, Aug 25 2026, 13:50:33) [Clang 22.1.3 ]",
+    "executable": "/Users/mustafaerbay/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3"
+  },
+  "toolchain_executables": {
+    "rustc": {
+      "path": "/Users/mustafaerbay/.rustup/toolchains/1.93.1-aarch64-apple-darwin/bin/rustc",
+      "sha256": "34a8f7034eeb844189a3c36ebb3fe36c2193fdb47b60028eb7f9392cb1f62484"
+    },
+    "cargo": {
+      "path": "/Users/mustafaerbay/.rustup/toolchains/1.93.1-aarch64-apple-darwin/bin/cargo",
+      "sha256": "2be8a4e73901a99470d15b793e5ee814005c3b9ebbd3815ccbf9cf0f292238e7"
+    }
+  },
+  "machine": {
+    "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+    "architecture": "arm64",
+    "python": "3.13.3 (v3.13.3:6280bb54784, Apr  8 2025, 10:47:54) [Clang 15.0.0 (clang-1500.3.9.4)]",
+    "rustc_vV": "rustc 1.93.1 (01f6ddf75 2026-02-11)\nbinary: rustc\ncommit-hash: 01f6ddf7588f42ae2d7eb0a2f21d44e8e96674cf\ncommit-date: 2026-02-11\nhost: aarch64-apple-darwin\nrelease: 1.93.1\nLLVM version: 21.1.8\n",
+    "cargo": "cargo 1.93.1 (083ac5135 2025-12-15)",
+    "shared_machine": true,
+    "unowned_machine_work": "not-assessed",
+    "cpu": "Apple M4 Pro",
+    "ram-bytes": "25769803776"
+  },
+  "cargo_target_directory": "/private/tmp/zee-p19-k298/k299-validation/compiler/target",
+  "binary_sha256": {
+    "dil": "6777941513148527552a78f7861d01a148634cade5686d95afe2bcbce9ca6cfa",
+    "surum_artefakti": "ee8df15c4542e18337b237b335f2363f5466fb1deedb7d77d0d7e14c92eb1928"
+  },
+  "build_identity": {
+    "schema": "zee-build-v1",
+    "version": "0.8.0-dev",
+    "source_sha": "8178920e03fed782a817d1864b8280fcb80812a3",
+    "source_date": "2026-10-16",
+    "channel": "development",
+    "dirty": false
+  },
+  "pdf_plugin": {
+    "status": "passed",
+    "cases": 9,
+    "proof_sha256": "0ee78c471f9a76f16640817ef1cf67ae32b7ebfbd6e76bb58934a21ce7404ca2",
+    "output": "pdf-native",
+    "public_files": 32,
+    "evidence_scope": "actual inner proof, host metadata and PDF receipt hashes; no full inner stderr export"
+  },
+  "pdf_independent_inspection": {
+    "pages": 3,
+    "text": "OWNED BASE COVER\nAnonymous fixed fixture. Original page operators must be retained.\n\nAnonim ürün kataloğu\nÖrnek ürün - ŞĞİıÇÖÜ\nGörsel, gömülü font ve mevcut sayfalara ekleme sınaması.\nB3 - owned technical fixture / teknik sınama\n\nOWNED BASE BACK COVER\nAnonymous fixed fixture. Original page operators must be retained.\n",
+    "embedded_font": true,
+    "images": 1
+  },
+  "service_environment": {
+    "ZEE_NATIVE_WAVE_SHA": "8178920e03fed782a817d1864b8280fcb80812a3",
+    "ZEE_NATIVE_WAVE_BINARY_SHA256": "6777941513148527552a78f7861d01a148634cade5686d95afe2bcbce9ca6cfa",
+    "ZEE_SERVICE_FAULT_OUT": "/Users/mustafaerbay/.codex/zee-evidence/2026-10-14-urunlesme/p19-k299-native-2/service-native"
+  },
+  "service_fault": {
+    "status": "passed",
+    "cases": 2,
+    "proof_sha256": "1cc9dfadf5a6a4225faea66ba01deb10f3d09c0f66c7ec3acb9903731fa3ef52",
+    "output": "service-native",
+    "scope": "existing K292/K296 worker-loss and stale-gate cases"
+  },
+  "source_end_sha": "8178920e03fed782a817d1864b8280fcb80812a3",
+  "source_end_tree": "1eccf96d1a407880bf161c55bdd55c4d9a144866",
+  "source_pins_unchanged": true,
+  "tested_executables_unchanged": true,
+  "accepted_cargo_owners": 2,
+  "nested_owned_groups_verified": true,
+  "private_tmp_public_only": true,
+  "native_pdf_cases": 9,
+  "native_service_fault_cases": 2,
+  "owned_commands_closed_and_reaped": true,
+  "files": [
+    {
+      "path": "logs/begin-head.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/begin-head.stdout.raw",
+      "bytes": 41,
+      "sha256": "59fc5912ce7faf9575d68bbd4cd78335f1747d0f6ce2e1bc418ef2e5a1ff920f"
+    },
+    {
+      "path": "logs/begin-status.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/begin-status.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/begin-tree.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/begin-tree.stdout.raw",
+      "bytes": 41,
+      "sha256": "b39d40444d645489345e3db48672921a08c398521b5ea47f39f6ae981dde5ca4"
+    },
+    {
+      "path": "logs/cargo-metadata.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/cargo-metadata.stdout.raw",
+      "bytes": 34865,
+      "sha256": "ac8d685b26693c80a55f46f50f541492569317c41ce6997c7df4e717d2aee0cc"
+    },
+    {
+      "path": "logs/cargo-version.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/cargo-version.stdout.raw",
+      "bytes": 36,
+      "sha256": "57d704d9ad73ec7cc1b1a79aed6703333615865be6e3dc1ce269ea4ca7068227"
+    },
+    {
+      "path": "logs/cli-build-json-end.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/cli-build-json-end.stdout.raw",
+      "bytes": 169,
+      "sha256": "d097600ab2a1d1461e6b3fe6b953003936659da251b75658a1e7d2b72b14f614"
+    },
+    {
+      "path": "logs/cli-build-json.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/cli-build-json.stdout.raw",
+      "bytes": 169,
+      "sha256": "d097600ab2a1d1461e6b3fe6b953003936659da251b75658a1e7d2b72b14f614"
+    },
+    {
+      "path": "logs/cpu.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/cpu.stdout.raw",
+      "bytes": 13,
+      "sha256": "cf8be25367c4600921f057a468612c25380ea7eb82253b1dc25fb2454be26b73"
+    },
+    {
+      "path": "logs/end-head.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/end-head.stdout.raw",
+      "bytes": 41,
+      "sha256": "59fc5912ce7faf9575d68bbd4cd78335f1747d0f6ce2e1bc418ef2e5a1ff920f"
+    },
+    {
+      "path": "logs/end-status.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/end-status.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/end-tree.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/end-tree.stdout.raw",
+      "bytes": 41,
+      "sha256": "b39d40444d645489345e3db48672921a08c398521b5ea47f39f6ae981dde5ca4"
+    },
+    {
+      "path": "logs/locate-cargo.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/locate-cargo.stdout.raw",
+      "bytes": 77,
+      "sha256": "7a7211c4ae2c30c84a38b50a4454ae3094c460c0545234fa78551157656dc8f2"
+    },
+    {
+      "path": "logs/locate-rustc.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/locate-rustc.stdout.raw",
+      "bytes": 77,
+      "sha256": "ed42aac96e9db0577438d45fc2a1d2267e9f34928f87d924c2c387ade5a7393b"
+    },
+    {
+      "path": "logs/pdf-independent-inspection.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/pdf-independent-inspection.stdout.raw",
+      "bytes": 490,
+      "sha256": "d9a81a1961bd371451ffa74717982719ac76a23524799cbcb2087f98a9c07863"
+    },
+    {
+      "path": "logs/pdf-plugin-testi.stderr.raw",
+      "bytes": 239,
+      "sha256": "be380cf266049f83ca547a113f7be4bbd5cd40b7993fc4737cd40db9f7215468"
+    },
+    {
+      "path": "logs/pdf-plugin-testi.stdout.raw",
+      "bytes": 152543,
+      "sha256": "b8f161eb1d4b036f131bcf551cff4093462d5ea520b079758ce5d0c062fd1a35"
+    },
+    {
+      "path": "logs/pdf-runtime-preflight.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/pdf-runtime-preflight.stdout.raw",
+      "bytes": 330,
+      "sha256": "42fc516f4001aa9496ee3302e5ee5a658998db8fd40590d5f294f8b507eb5ede"
+    },
+    {
+      "path": "logs/ram-bytes.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/ram-bytes.stdout.raw",
+      "bytes": 12,
+      "sha256": "e15b6050a0ee6ea43f29cb46cec0ddcc207f00fe520854aeecfdceb86a9ea799"
+    },
+    {
+      "path": "logs/release-test-support-build.stderr.raw",
+      "bytes": 144,
+      "sha256": "2c0573282ece1da7da59d4d57dbd10799f29724f384acc019369e5069b817a98"
+    },
+    {
+      "path": "logs/release-test-support-build.stdout.raw",
+      "bytes": 145744,
+      "sha256": "3256b967cc73b5ec4a70d40bf24d0a0db76b22d9688434b0af3d916b29438940"
+    },
+    {
+      "path": "logs/rustc-version.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/rustc-version.stdout.raw",
+      "bytes": 192,
+      "sha256": "a09c3fc26c9b56a9da361644dc642164492d8ac440d6330c74c7c989bd0d2099"
+    },
+    {
+      "path": "logs/service-fault-testi.stderr.raw",
+      "bytes": 244,
+      "sha256": "098285b7a129345b9a2c1be02dc5a2779638089966586eedd5fc1ab22105e06d"
+    },
+    {
+      "path": "logs/service-fault-testi.stdout.raw",
+      "bytes": 152527,
+      "sha256": "b3aa241b4d061f412ea81e8dc82f034fdf6923ee56eeb0ff24f5bf6894bd9dcb"
+    },
+    {
+      "path": "pdf-native/pdf/catalog.pdf",
+      "bytes": 27573,
+      "sha256": "45c6b72ff4d59590c7f5b28f596b72d4fd4282d0e16e4528a1457d070d0184b3"
+    },
+    {
+      "path": "pdf-native/pdf/generated.pdf",
+      "bytes": 26896,
+      "sha256": "c445c201d15b2893c8b52af02778d60a25625ae7ce1b17dda477a9ca18b7fdd3"
+    },
+    {
+      "path": "pdf-native/pdf/selected.pdf",
+      "bytes": 1570,
+      "sha256": "9b46785212b2599f59dd125719de93d9c3456777b5d77113a8c8a1fa97a3d8ba"
+    },
+    {
+      "path": "pdf-native/proof.json",
+      "bytes": 3504,
+      "sha256": "0ee78c471f9a76f16640817ef1cf67ae32b7ebfbd6e76bb58934a21ce7404ca2"
+    },
+    {
+      "path": "pdf-native/public-bindings/double/plugin.json",
+      "bytes": 698,
+      "sha256": "8de266425c61fb4d0e9f88b5aaf3baff582508d9ba6facd800a79eebeea68cce"
+    },
+    {
+      "path": "pdf-native/public-bindings/double/plugin.json.zee-imza",
+      "bytes": 467,
+      "sha256": "ce37619abcd1c29e5386ed52ddcab8d8e4ad459917a7afb4e43cf523c5d24849"
+    },
+    {
+      "path": "pdf-native/public-bindings/double/trust.json",
+      "bytes": 335,
+      "sha256": "3ccdfa69f0846f6fcf4f035522b146857b3007936a1dfc8554c3c09782828d08"
+    },
+    {
+      "path": "pdf-native/public-bindings/key/plugin.json",
+      "bytes": 698,
+      "sha256": "fcf7a5529a0fa867af7229843ab945b9aa8a9d0a684230f64d1156ff520a5605"
+    },
+    {
+      "path": "pdf-native/public-bindings/key/plugin.json.zee-imza",
+      "bytes": 467,
+      "sha256": "21a8fc28c39050cd7c9961dba02820b42e8df15819753eb2f456ca3eadaa517e"
+    },
+    {
+      "path": "pdf-native/public-bindings/key/trust.json",
+      "bytes": 335,
+      "sha256": "72cdc077c81cf064f9d6b3ea5c277a2aef9922f1e3e3338bed01384dd29f85e3"
+    },
+    {
+      "path": "pdf-native/public-bindings/positive/plugin.json",
+      "bytes": 698,
+      "sha256": "fcf7a5529a0fa867af7229843ab945b9aa8a9d0a684230f64d1156ff520a5605"
+    },
+    {
+      "path": "pdf-native/public-bindings/positive/plugin.json.zee-imza",
+      "bytes": 467,
+      "sha256": "662ae39b2569066de26c0026eb86b177b45c7d9d86758ac2f9db8af3e3fc6e0e"
+    },
+    {
+      "path": "pdf-native/public-bindings/positive/trust.json",
+      "bytes": 335,
+      "sha256": "72cdc077c81cf064f9d6b3ea5c277a2aef9922f1e3e3338bed01384dd29f85e3"
+    },
+    {
+      "path": "pdf-native/public-bindings/purpose/plugin.json",
+      "bytes": 698,
+      "sha256": "fcf7a5529a0fa867af7229843ab945b9aa8a9d0a684230f64d1156ff520a5605"
+    },
+    {
+      "path": "pdf-native/public-bindings/purpose/plugin.json.zee-imza",
+      "bytes": 467,
+      "sha256": "662ae39b2569066de26c0026eb86b177b45c7d9d86758ac2f9db8af3e3fc6e0e"
+    },
+    {
+      "path": "pdf-native/public-bindings/purpose/trust.json",
+      "bytes": 331,
+      "sha256": "f3cf8efdacae1675d7b50e506f561616152a588fa7439d5f98f4853c64630834"
+    },
+    {
+      "path": "pdf-native/public-bindings/runtime/plugin.json",
+      "bytes": 698,
+      "sha256": "fcf7a5529a0fa867af7229843ab945b9aa8a9d0a684230f64d1156ff520a5605"
+    },
+    {
+      "path": "pdf-native/public-bindings/runtime/plugin.json.zee-imza",
+      "bytes": 467,
+      "sha256": "662ae39b2569066de26c0026eb86b177b45c7d9d86758ac2f9db8af3e3fc6e0e"
+    },
+    {
+      "path": "pdf-native/public-bindings/runtime/trust.json",
+      "bytes": 334,
+      "sha256": "fdfe97a8cacd26c78e29ad6acc45cfebd7482e0d174e01fa04f2417a488353cf"
+    },
+    {
+      "path": "pdf-native/public-bindings/schema/plugin.json",
+      "bytes": 698,
+      "sha256": "fcf7a5529a0fa867af7229843ab945b9aa8a9d0a684230f64d1156ff520a5605"
+    },
+    {
+      "path": "pdf-native/public-bindings/schema/plugin.json.zee-imza",
+      "bytes": 467,
+      "sha256": "662ae39b2569066de26c0026eb86b177b45c7d9d86758ac2f9db8af3e3fc6e0e"
+    },
+    {
+      "path": "pdf-native/public-bindings/schema/trust.json",
+      "bytes": 335,
+      "sha256": "72cdc077c81cf064f9d6b3ea5c277a2aef9922f1e3e3338bed01384dd29f85e3"
+    },
+    {
+      "path": "pdf-native/public-bindings/signature/plugin.json",
+      "bytes": 698,
+      "sha256": "fcf7a5529a0fa867af7229843ab945b9aa8a9d0a684230f64d1156ff520a5605"
+    },
+    {
+      "path": "pdf-native/public-bindings/signature/plugin.json.zee-imza",
+      "bytes": 452,
+      "sha256": "2fd3674f50cb3a2d32f865af00e0ca30e95782d06ba5f3ecb4dcc690cc888ac8"
+    },
+    {
+      "path": "pdf-native/public-bindings/signature/trust.json",
+      "bytes": 335,
+      "sha256": "72cdc077c81cf064f9d6b3ea5c277a2aef9922f1e3e3338bed01384dd29f85e3"
+    },
+    {
+      "path": "pdf-native/public-bindings/size/plugin.json",
+      "bytes": 698,
+      "sha256": "fcf7a5529a0fa867af7229843ab945b9aa8a9d0a684230f64d1156ff520a5605"
+    },
+    {
+      "path": "pdf-native/public-bindings/size/plugin.json.zee-imza",
+      "bytes": 467,
+      "sha256": "662ae39b2569066de26c0026eb86b177b45c7d9d86758ac2f9db8af3e3fc6e0e"
+    },
+    {
+      "path": "pdf-native/public-bindings/size/trust.json",
+      "bytes": 335,
+      "sha256": "72cdc077c81cf064f9d6b3ea5c277a2aef9922f1e3e3338bed01384dd29f85e3"
+    },
+    {
+      "path": "pdf-native/public-bindings/unknown/plugin.json",
+      "bytes": 698,
+      "sha256": "4ccfb6d811e859ac1739660ec1c33435e3ac2763a1ad03c679f8f33fcdca1d4b"
+    },
+    {
+      "path": "pdf-native/public-bindings/unknown/plugin.json.zee-imza",
+      "bytes": 467,
+      "sha256": "ff5438e577ca7fb18b5d06ac66181551b6fedba7b69ee3e7b866008a42da9e06"
+    },
+    {
+      "path": "pdf-native/public-bindings/unknown/trust.json",
+      "bytes": 335,
+      "sha256": "b1df1de3020eb3f1923bafde39d591dd18669dfc1bd03beab9837ecf0051dbf3"
+    },
+    {
+      "path": "pdf-native/raw-metadata.json",
+      "bytes": 2098,
+      "sha256": "7a12ff8cf05f84b2387f8bb4b0b7a84ae777588f5ec00d3d9ea2bda4b154b044"
+    },
+    {
+      "path": "service-native/loss-program.dil",
+      "bytes": 353,
+      "sha256": "adc81cc184bb4e0e7ef8ed130b828a653e9e87bb733aa656df7a1b956aeb86f6"
+    },
+    {
+      "path": "service-native/loss-proje.dil",
+      "bytes": 227,
+      "sha256": "5b2e1df569b59d3c817e4753b74a37ab544b246e22e6a1e208be8875181efde6"
+    },
+    {
+      "path": "service-native/proof.json",
+      "bytes": 2283,
+      "sha256": "1cc9dfadf5a6a4225faea66ba01deb10f3d09c0f66c7ec3acb9903731fa3ef52"
+    },
+    {
+      "path": "service-native/stale-program.dil",
+      "bytes": 194,
+      "sha256": "211e35574340408563a3391f3f4ac1d2ee88c8a72b7e68750313b0cfd6e2621d"
+    },
+    {
+      "path": "service-native/stale-proje.dil",
+      "bytes": 212,
+      "sha256": "d6444335117d15ae83281818c79092ebb2482da11a604977afccc72896864403"
+    }
+  ],
+  "artifact_bytes": 566425,
+  "artifact_bytes_semantics": "allowlisted public manifest excludes PROOF.json; final bound includes it",
+  "elapsed_seconds": 76.37619770795573,
+  "closure_scope": "original held command Popen groups; nested groups require actual inner passing proofs",
+  "failure_archive_policy": "only explicit files list plus PROOF.json; never tar output or private scratch wholesale",
+  "private_tmp_retained": true
+}
