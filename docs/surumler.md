@@ -14,6 +14,12 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
+- **Kabul koşucularının iptal temizliği (K-299, GB-111 açık):** PDF/service
+  native test betiklerinde erken sinyal, yarım keygen/fixture ve nested owner
+  kapanışı ele alındı. Stdlib PDF9/service10 geçti; yeni exact native9/2 ve ortak
+  kapılar bekleniyor. Üretim host/compiler ve kullanıcı kaynakları değişmedi;
+  göç yoktur. [Açık kabul kaydı](kabul-kosuculari-yasam-dongusu-20261016.md).
+
 - **LSP açık belge maliyeti (K-298, ADR-145; kabul bekliyor):** aynı bildirimde
   açık dosyaların gerçek yol/tutarlı metin dizini paylaşılır; yinelenen yol
   çözümleme azaltılır; kaynak metinleri ödünç alınır. Alias çatışması, disk/paket doğrulaması ve

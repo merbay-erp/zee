@@ -18,7 +18,7 @@ fn imzali_pdf_host_stdlib_sozlesmesi() {
     let stderr = String::from_utf8_lossy(&result.stderr);
     assert!(result.status.success(), "{stderr}");
     assert!(result.stdout.is_empty());
-    assert!(stderr.contains("\nRan 7 tests in ") && stderr.trim_end().ends_with("\nOK"));
+    assert!(stderr.contains("\nRan 9 tests in ") && stderr.trim_end().ends_with("\nOK"));
 }
 
 #[test]

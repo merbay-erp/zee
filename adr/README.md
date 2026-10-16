@@ -145,7 +145,7 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-138 | [JetBrains tamamlama ve düzenli kapanış](138-jetbrains-tamamlama-ve-duzenli-kapanis.md) | **kabul; POSIX macOS dar profil, tam P19 açık** (K-280/GB-096) |
 | ADR-139 | [K-282 sürekli dispatcher ve application-owned adapter](139-surekli-dispatcher-ve-uygulama-adaptoru.md) | **tarihsel S3 dar yerel kabul; ürün/provider/platform kapsamı açık** (K-282/K-295) |
 | ADR-140 | [K-283 sürekli HTTP user service](140-surekli-http-user-service.md) | **S3 dar yerel kabul; üretim/ürün/platform kapsamı açık** (K-283) |
-| ADR-141 | [Purpose-bound imzalı PDF stdio host (K-281/P11)](141-imzali-pdf-stdio-host.md) | **S3 dar yerel kabul; ürün/sağlayıcı/FFI/yayın kapsamı açık** (K-281) |
+| ADR-141 | [Purpose-bound imzalı PDF stdio host (K-281/P11)](141-imzali-pdf-stdio-host.md) | **S3 tarihsel; K-299 stdlib9 geçti, yeni native9 bekliyor; ürün/FFI/yayın açık** (K-281/K-299/GB-111) |
 | ADR-142 | [Opt-in Zee kaynak karar kapsamı](142-zee-kaynak-dal-kapsami.md) | **S3 dar yerel kabul; genel kapsam/ürün kabulü açık** (K-284) |
 | ADR-143 | [Sahipli modül SQL yaşam döngüsü](143-sahipli-modul-sql-yasam-dongusu.md) | **S3 dar yerel kabul; DB+FS atomikliği/ürün kapsamı açık** (K-285) |
 | ADR-144 | [dene içinde sabit native web test köprüsü](144-dene-native-web-test-koprusu.md) | **S3 dar yerel kabul; genel rollback/ürün/platform kapsamı açık** (K-286) |
@@ -153,7 +153,7 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-147 | [Uygulamaya ait kapalı bileşen ve TR/EN katalog bileşimi](147-composed-tr-en.md) | **S3 dar yerel kabul; gerçek ürün benimsenmesi açık** (K-289) |
 | ADR-148 | [İçerik, yönetim ve medya başlangıcı](148-icerik-yonetim-medya-baslangici.md) | **S3 dar yerel kabul; insan/üretim/platform/ürün kapsamı açık** (K-290) |
 | ADR-149 | [K-291 mixed-code revision için ayrı gerçek kanıt](149-mixed-revision-owned-wave.md) | **S3 dar yerel kabul; SLA/DB şeması/ürün/platform kapsamı açık** (K-291) |
-| ADR-150 | [K-292 native worker fault ve kontrollü resolver-call hazırlığı](150-native-worker-fault-ve-kontrollu-resolver.md) | **S3 dar yerel kabul; native DNS/tam fault kapsamı açık** (K-292) |
+| ADR-150 | [K-292 native worker fault ve kontrollü resolver-call hazırlığı](150-native-worker-fault-ve-kontrollu-resolver.md) | **S3 tarihsel; K-299 stdlib10 geçti, yeni native2 bekliyor; native DNS/tam fault açık** (K-292/K-299/GB-111) |
 | ADR-152 | [Metric-only stdio alias için erken sessiz ret](152-native-metrik-stdio-sessiz-ret.md) | **S3 dar yerel kabul; K-294/GB-110 dar kapsamda kapalı** (K-294) |
 | [080 — Özel Gitsrv CI ve Tier-1 kanıt sınırı](080-tier1-kanit-kaynaklari.md) | kabul | K-217 özel CI ve çapraz/gerçek runtime ayrımı |
 
