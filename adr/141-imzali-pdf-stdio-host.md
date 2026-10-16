@@ -33,8 +33,8 @@ olarak kalır. İkinci çağrı yoktur; unknown status/double invocation hata so
 output silinmez ve otomatik yeniden deneme yapılmaz. Fresh partial output ve
 çok dosyalı fsync belirsizliği K-275 sınırıdır, false rollback/atomicity yoktur.
 
-Model7 ve explicit native9 iki ayrı Cargo vakasının sahibidir. Actual9 ephemeral
-Ed25519+native Zee devamı ve gerçek PDF oracles içerir; normal model7 paket
+Stdlib9 ve explicit native9 iki ayrı Cargo vakasının sahibidir. Actual9 ephemeral
+Ed25519+native Zee devamı ve gerçek PDF oracles içerir; normal stdlib9 paket
 bağımlılığı/native compiler istemez. İlk bundled Python'daki eksik waitid
 preflight adayı hatası cleanup kanıtı kaybetti: ilk failed receipt korunur,
 yabancı PID adoption yapılmaz ve sonraki başarı geçmişi kapatmaz. Host artık
@@ -51,3 +51,18 @@ bilinçli değişmez. Gerçek ürün/adoption/P08/publisher/lisans/platform ayr�
 ## S3 kanıtı
 
 [İkinci dalga exact S3 kabulü](../docs/urunlesme-s3-kabul-20261015.md) bu kararla ilgili actual kohortu ve açık sınırları kaydeder. C1/P33 retleri ve ürün/insan/platform kapıları bu bağlantıyla kapanmaz.
+
+## K-299 — Kabul betiğinin erken iptal temizliği
+
+Üretim host zaten cooperative handler/finally kullanır; bu kararın üretim güven
+sınırı değişmez. Native kabul betiğinde handler ilk owned komuttan önce kurulur,
+setup/keygen finally kapsamına alınır. Fresh0700 dizinin held dirfd'si ve exact
+iki isim yarıda kalmış keygen dosyalarını da temizler; tamamlanmış inode kimliği
+korunur, private key baytları veya hashleri kanıta alınmaz. Yalnız başarısız host
+çağrısının dış grace'i10 saniyedir; normal komut1 saniye kalır. Dış kampanya
+sahibi nested cleanup için ayrıca yeterli pay ayırır.
+
+İki yeni bounded stdlib vaka ile toplam9 geçti; bunlar gerçek Ed25519/PDF native9
+kabulü değildir. GB-111 düşük/açık/K-299; yeni exact native9 ve ortak kapılar
+beklenir. [Kayıt ve dosya/koşu hashleri](../docs/kabul-kosuculari-yasam-dongusu-20261016.md)
+bu bekleyişi ve ayrı service-fault dilimini taşır. S3 kanıtı eski kaynağında kalır.

@@ -2,6 +2,11 @@ TÜRKÇE PROGRAMLAMA DİLİ
 
 > Son kabul edilen kaynak `4b7dd76ad5e10bdf1b16bded82b3ea20ad55a9e2` için [S4 yerel kabulü](urunlesme-s4-kabul-20261015.md) korunur. K-298 P19 bakım adayının yeni exact kaynak ölçümü ve kabulü beklenir; 200 ms hedefi açıktır. [S3](urunlesme-s3-kabul-20261015.md) native kabulü tarihsel kaynağında kalır; ürün, insan, fiziksel platform ve yayın kapıları açıktır.
 
+K-299 kabul koşucusu bakımında stdlib PDF9/service10 geçti; yeni exact native9/2
+ve ortak kapılar bekleniyor. [GB-111 ve dar kapsam](kabul-kosuculari-yasam-dongusu-20261016.md)
+açıktır. Üretim compiler/host kapasitesi değişmez; önceki RC/soak/IDE kanıtı yeni
+kaynak kimliğine taşınmaz.
+
 Uçtan Uca Master Proje Dokümanı
 Dil • Derleyici • Runtime • Standart Kütüphane • Paket Ekosistemi • Tooling • Eğitim
 “Türkçe düşün. Türkçe yaz. Makine kesin olarak anlasın.”

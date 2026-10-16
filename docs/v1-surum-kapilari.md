@@ -919,3 +919,14 @@ gecikme gözlemini kaydeder; artımlı HIR/type, gerçek ürün/UI/SLA ve tam P1
 
 Dış girdiler [kullanıcı teslim listesinde](urunlesme-kullanici-girdileri.md)
 ayrıldı. Beş tam proje hazır değil, fiziksel cihaz yok; bu kapılar bekliyor.
+
+## K-299 — Kabul koşucusu kapanış kapısı
+
+Stdlib PDF9/service10 gerçek kısa koşuları geçti; GB-111 düşük/açık/K-299'dur.
+Erken iptal, kısmi keygen/fixture ve nested owner kapanışı yalnız kabul betiğinde
+düzeltildi. Yeni temiz exact kaynakta native PDF9/service2 ve ortak Cargo/faz,
+katalog, tazelik, güvenlik ve biçim sonuçları henüz beklenir.
+[Actual kayıt ve kapanış koşulları](kabul-kosuculari-yasam-dongusu-20261016.md)
+geçen hazırlığı pending native kabulden ayırır. Yeni Cargo owner yoktur.
+K-298 kaynağının RC/soak/IDE/stdio kanıtı K-299 HEAD kabulü değildir; eski S3
+native kabulü tarihsel kalır. P11/P34/P19 ve tam V1 bu dilimle kapanmaz.
