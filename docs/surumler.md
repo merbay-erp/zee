@@ -14,9 +14,9 @@ olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
 
-- **K-304 kaynak hazırlığı:** owned web kabulünün geç iptal/deadline sonucu
-  için dar düzeltme; GB-113 ve temiz native4 kabulü açık. Kullanıcı kaynağı
-  göçü yoktur; [kit ve kabul sınırı](owned-web-test-kiti.md).
+- **K-304/GB-113 dar kapsamda kapalı:** owned web kabulünün geç iptal/deadline
+  sonucu, hazırlık22/kaynak kapısı15 ve temiz direct native4 ile doğrulandı.
+  Kullanıcı göçü yoktur; [kit ve ayrı köprü kabulü sınırı](owned-web-test-kiti.md).
 
 - **K-303 dar pool kabulü:** temiz `47812bf` üzerinde mevcut tek Cargo sahibi
   1/0/0, 16 metrik anlık görüntüsü, tek timeout ve normal PG kapanışı geçti.
