@@ -2032,3 +2032,21 @@ Mevcut Cargo sahipleri korunur. Ayrı `dene`/source-coverage sahibi
 çalıştırılmış sayılmaz; P22/P36 ve ürün/platform kapsamı kısmi kalır.
 [Kit sınırı](owned-web-test-kiti.md), [karar](../adr/129-owned-native-web-test-kiti.md),
 [exact makbuzlar](urunlesme-k298-kabul-20261016.md).
+
+## K-305 — Bridge admission negatiflerinde iptal sahipliği
+
+**AÇIK — GB-114 düşük, kaynak hazırlığı.** Negatif harness'in ilk child
+öncesinde flag-only SIGTERM handler kurması, original Popen/WNOWAIT cleanup'ı
+ve gözlenen iptalin final proof/çıkış sonucunda korunması hazırlanıyor.
+Selector init yerleşimi tek başına kanıtlı kaçak değildir; mevcut main finally
+cleanup'ı dikkate alınır. Üretim Rust/kit/Supervisor davranışı değişmez.
+
+Hazırlık kaydı: Kontrollü hazırlıkta 15 Python metodu ve 27 senaryo geçti; eski sürümde 17 yapısal eksik, iki cleanup hatasında eksik makbuz ve bir terminal süre aşımında yanlış passed ayrıldı. Özgün dış owner eski exit1 ve yeni exit0 ile reaped; gerçek çocuk, OS sinyal teslimi, PG veya ağ kabulü değildir. `K305-PREPARATION.json`
+SHA-256: `e445af8d0a82448488bd72d47e1360bba990751db0354f91061a93603c4918b1`.
+Mevcut normal CLI sahibi Unix hazırlığını taşır; iki Rust sahibi korunur.
+Tam kaynak/faz/Clippy/güvenlik kapıları, yeni temiz exact bridge sahibinin
+unit/source-coverage + native4 + altı admission negatifi ve son belge kapıları
+tamamlanmadan iş/GB-114 kapanmaz. Hazırlık alt vakaları Cargo toplamına
+katılmaz; S3 ve K-304 sonuçları yeni kaynağa aktarılmaz. P22/P36 kısmi kalır.
+[Rehber](dene-native-web-koprusu.md), [karar](../adr/144-dene-native-web-test-koprusu.md),
+[ortak rapor](urunlesme-k298-kabul-20261016.md).

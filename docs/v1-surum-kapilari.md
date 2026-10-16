@@ -1005,3 +1005,19 @@ Son 11 belge/güvenlik kapısı kayıt commit önkoşuludur; gerçek sonuç E/k3
 değildir; ayrı `dene`/source-coverage ve genel P22/P36/ürün/platform kabulü
 açık kalır. S/S3 ve K-298 RC/soak/IDE kanıtı aktarılmaz.
 [Kit rehberi](owned-web-test-kiti.md), [exact makbuzlar](urunlesme-k298-kabul-20261016.md).
+
+## K-305 — Bridge negatif koşucusu kaynak hazırlığı
+
+**AÇIK (GB-114, düşük):** SIGTERM'in negatif harness finally yolunu atlaması
+nedeniyle detached original-owned child'ın kapanış sınırı ele alınıyor.
+Erken flag-only handler, bekleme iptali ve final cleanup/proof sonucu dar
+hazırlık kapsamıdır. Selector init tek başına leak kanıtı olarak yazılmaz.
+
+Hazırlık kaydı: Kontrollü hazırlıkta 15 Python metodu ve 27 senaryo geçti; eski sürümde 17 yapısal eksik, iki cleanup hatasında eksik makbuz ve bir terminal süre aşımında yanlış passed ayrıldı. Özgün dış owner eski exit1 ve yeni exit0 ile reaped; gerçek çocuk, OS sinyal teslimi, PG veya ağ kabulü değildir. `K305-PREPARATION.json`
+SHA-256: `e445af8d0a82448488bd72d47e1360bba990751db0354f91061a93603c4918b1`.
+Mevcut normal/ignored Cargo sahipleri korunur. Yeni tam kaynak/faz/Clippy ve
+sürekli güvenlik kapıları, exact temiz kaynakta bridge unit/source-coverage,
+dört native vaka ve altı admission negatifi, ardından son belge kapıları
+henüz beklenir; başarı veya kaynak SHA'sı atanmaz. Bu önkoşullar tamamlanmadan
+K-305/GB-114 açık kalır. S3/K-304, RC/soak/IDE sonuçları taşınmaz; P22/P36 ve
+ürün/platform kapsamı [köprü rehberinde](dene-native-web-koprusu.md) ayrıdır.
