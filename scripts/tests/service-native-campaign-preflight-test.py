@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Prepare only. Twenty-one Campaign-body models; no real child, signal or socket.
+"""Prepare only. Twenty-three Campaign-body models; no real child, signal or socket.
 
 Run later only with an explicitly reviewed --target support-source copy.
 AST extraction omits all target module imports. Helper loading and every owner
@@ -329,9 +329,9 @@ class OwnedUnitResetModels(unittest.TestCase):
             patch=mock.patch.object(obj,name,side_effect=AssertionError('real action forbidden: '+name));guard=patch.start();self.addCleanup(patch.stop);self.addCleanup(guard.assert_not_called)
         self.tmp=tempfile.TemporaryDirectory(prefix='k306-unit-reset-model-');self.addCleanup(self.tmp.cleanup)
         self.root=Path(self.tmp.name).resolve(strict=True)
-    def fixture(self,foreign=False,reset_error=False,not_inactive=False,empty=False,cancel_on_reset=False,replace_on_reset=False):
+    def fixture(self,foreign=False,reset_error=False,not_inactive=False,empty=False,cancel_on_reset=False,replace_on_reset=False,unit_name='zee-dispatch.service',initial_state='failed',unloaded=False):
         testroot=self.root/str(len(list(self.root.iterdir())));testroot.mkdir();targetdir=testroot/'runtime';targetdir.mkdir()
-        source=testroot/'zee-dispatch.service';source.write_bytes(b'[Service]\nExecStart=/synthetic/inert\n')
+        source=testroot/unit_name;source.write_bytes(b'[Service]\nExecStart=/synthetic/inert\n')
         link=targetdir/source.name;link.symlink_to(source);info=link.lstat()
         driver=types.SimpleNamespace(T=types.SimpleNamespace(D=types.SimpleNamespace(CANCELLED=False)),snapshot=lambda p,limit:hashlib.sha256(p.read_bytes()).hexdigest())
         klass=owned_reset_campaign_class(TARGET,driver);c=klass()
@@ -339,7 +339,7 @@ class OwnedUnitResetModels(unittest.TestCase):
         c.stopped=False;c.cleaning=False;c.deadline=time.monotonic()+120;c.cleanup_deadline=None
         c.commands=[];c.tempdirs=[];c.clusters=[];c.resources=[];c.previous={};c.finished=True;c.failed_body=False;c.output_created=False
         c.proof={'status':'running','cases':[{'name':n,'passed':True} for n in ('case1','case2','case3','case4')]}
-        failed={link.name};states={link.name:'failed'};calls=[];events=[]
+        failed={link.name} if initial_state=='failed' else set();states={link.name:initial_state};calls=[];events=[]
         if foreign:failed.add('foreign.service');states['foreign.service']='failed'
         def system(label,*args,budget=25):
             calls.append((label,args));events.append(('system',args))
@@ -347,6 +347,7 @@ class OwnedUnitResetModels(unittest.TestCase):
             if args[0]=='reset-failed':
                 self.assertEqual(len(args),2);self.assertEqual(args[1],link.name)
                 self.assertTrue(link.is_symlink());self.assertEqual(link.resolve(),source)
+                if unloaded:raise ValueError('Unit '+link.name+' not loaded')
                 if reset_error:raise ValueError('inert reset rejected')
                 if cancel_on_reset:c.stopped=True;driver.T.D.CANCELLED=True
                 failed.discard(args[1]);states[args[1]]='active' if not_inactive else 'inactive'
@@ -391,6 +392,23 @@ class OwnedUnitResetModels(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'owned cleanup failed'):c.__exit__(None,None,None)
         self.assertEqual(c.proof['status'],'failed');self.assertTrue(c.proof['cancelled']);self.assertEqual(failed,set())
         self.assertFalse(link.is_symlink());self.assertFalse(c.units)
+
+
+    def test_inactive_unloaded_owned_timer_skips_reset_and_releases(self):
+        c,failed,calls,events,link,driver=self.fixture(unit_name='zee-dispatch.timer',initial_state='inactive',unloaded=True)
+        c.__exit__(None,None,None)
+        self.assertEqual(c.proof['status'],'passed');self.assertFalse(link.is_symlink());self.assertFalse(c.units);self.assertFalse(c.links)
+        self.assertEqual(failed,set());self.assertFalse(any(args[0]=='reset-failed' for _,args in calls))
+        states=[args for _,args in calls if args[0]=='show' and '--property=ActiveState' in args]
+        self.assertEqual(states,[('show','zee-dispatch.timer','--property=ActiveState','--value')]*2)
+        self.assertLess(events.index(('cgroup-empty','zee-dispatch.timer')),events.index(('system',states[0])))
+    def test_active_or_unknown_owned_prestate_rejected_without_reset_or_unlink(self):
+        for state in ('active','activating','deactivating','reloading','maintenance','unknown',''):
+            with self.subTest(state=state):
+                c,failed,calls,events,link,driver=self.fixture(initial_state=state)
+                with self.assertRaisesRegex(ValueError,'owned cleanup failed'):c.__exit__(None,None,None)
+                self.assertEqual(c.proof['status'],'failed');self.assertTrue(c.proof['cleanup_errors']);self.assertTrue(link.is_symlink());self.assertTrue(c.units)
+                self.assertFalse(any(args[0]=='reset-failed' for _,args in calls))
 
 
 if __name__=='__main__':
