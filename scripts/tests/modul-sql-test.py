@@ -216,4 +216,18 @@ class NativeCleanupContracts(unittest.TestCase):
         e=self.installed();e['close_cluster']();e['work_exists']=True;self.assert_failed(e)
         self.assertFalse(e['proof']['temporary_private_root_removed'])
 
+
+class ForegroundPostgresContracts(unittest.TestCase):
+    def test_foreground_postgres_owner_preflight(self):
+        import subprocess
+        result = subprocess.run(
+            [sys.executable, '-I', '-B', str(ROOT / 'scripts/tests/native-pg-owner-preflight-test.py')],
+            cwd=ROOT, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=30, check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr.decode('utf-8', 'replace'))
+        self.assertEqual(result.stdout, b'')
+        stderr = result.stderr.decode('utf-8', 'strict')
+        self.assertIn('\nRan 23 tests in ', stderr)
+        self.assertTrue(stderr.rstrip().endswith('\nOK'), stderr)
+
 if __name__=='__main__':unittest.main()
