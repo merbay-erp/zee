@@ -266,6 +266,9 @@ Sınırlı POSIX [credential host köprüsü](docs/credential-baslat.md),
 [kalıcı iş kuyruğu prototipi](dogfood/zee-cekirdek/is-kuyrugu/README.md)
 teknik pilot dilimleridir; P09/P13/P25 tam ürün kabulü açık kalır.
 
+K-302, temiz `e6322db` üzerinde mevcut TLS8/göç1 yerel kabulünü
+tazeledi; genel P31/P36 ve ürün/uzak CI sınırları [raporda](docs/urunlesme-k298-kabul-20261016.md).
+
 K-301 worker test doğruluğu dar kapsamda tamamlandı: üçüncü gerçek koşu
 tek Cargo sahibi 1/0/0 ve wrapper'ın 25/0/0 doğrulamasıyla geçti. V3 normal
 `web-oturumu`/CSRF GET/çerez/form POST ve dosya yazan `eylem` kullanır;
