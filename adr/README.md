@@ -122,7 +122,7 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-114 | [Ayrı SQL kira heartbeat](114-ayri-sql-kira-heartbeat.md) | **kabul, dar SQL-only pilot** (K-254/GB-075) |
 | ADR-115 | [TLS1.1 capable-positive kontrol](115-tls11-capable-positive-kontrol.md) | **kabul, owned fixture** (K-256/GB-076) |
 | ADR-116 | [Native sahipli metrik pipe](116-native-owned-metrics-pipe.md) | **kabul, sınırlı metadata profili** (K-257/GB-078) |
-| ADR-117 | [Sınırlı SQL dispatcher](117-sinirli-sql-dispatcher.md) | **kabul, SQL-only host pilotu** (K-258/GB-079) |
+| ADR-117 | [Sınırlı SQL dispatcher](117-sinirli-sql-dispatcher.md) | **kabul, SQL-only host pilotu** (K-258/GB-079) ; K-309/GB-118 job harness cleanup/foreground PG dilimi açık; child-free expected failure ayrı, standalone44/ordinary3 kontrollü PASS ayrı; source15/temiz kaynak/native11/final kabulü bekler; P09 kısmi |
 | ADR-118 | [Native listener nesil hazırlığı](118-native-listener-nesil-hazirligi.md) | **kabul, sınırlı Unix host profili** (K-259/GB-080) |
 | ADR-119 | [Credential native metrik capability](119-credential-native-metrics-capability.md) | **kabul, tek POSIX metadata capability** (K-260/GB-081) |
 | ADR-121 | [Web oran CLI program argümanları](121-web-oran-cli-program-argumanlari.md) | **kabul, exact source/provenance bugfix** (K-262) |
