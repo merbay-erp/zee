@@ -55,8 +55,10 @@ açıklarını korur; [14 Ekim teslimi](docs/urunlesme-sonucu-20261014.md) tarih
 ve kaynak arşivi sınırını ayrıca izler.
 
 [K-299 kabul koşucusu bakımı](docs/kabul-kosuculari-yasam-dongusu-20261016.md)
-stdlib PDF9/service10 ile sınandı; yeni exact native9/2 ve ortak kapılar bekliyor.
-Üretim compiler/host değişmedi, GB-111 açık kaldı; önceki kaynak kabulü devralınmaz.
+stdlib PDF9/service10 ile sınandı. İlk C native koşusunda PDF9 ayrı geçti;
+service-fault kanonik depo yolu kontrolünde başlamadan reddedildi ve birleşik
+koşu başarısız kaldı. Test wrapper kökü için dar düzeltme ve yeni kaynak
+kabulü beklenir; GB-111 açıktır. Üretim compiler/host ve önceki kabul kimlikleri korunur.
 
 ## Kaynaktan hızlı başlangıç
 

@@ -1922,8 +1922,10 @@ UI, platform ve tam P19; C1/K-288 ve P33/K-293 retleri ayrıca açık kalır.
 
 ## K-299 — Kabul koşucularında erken iptal ve kısmi setup temizliği
 
-**AÇIK — stdlib PDF9/service10 geçti; yeni exact native PDF9/service2 ve ortak
-kapılar bekleniyor.** PDF kabul betiği ilk owned komuttan önce handler kurar;
+**AÇIK — stdlib PDF9/service10 geçti; ilk C native kampanyası başarısız.**
+PDF9 ayrı geçti; service-fault kanonik olmayan depo kökünü iç kampanya öncesi
+reddetti. Cargo test wrapper `root()` kanonikleştirmesi takip adayındadır;
+yeni source/tree ve gerekli kapılar/native9/2 yeniden kabul beklenir. PDF kabul betiği ilk owned komuttan önce handler kurar;
 setup/keygen finally kapsamına alınır, fresh held dirfd'deki iki exact sentetik
 key temizlenir. Başarısız nested host komutunun grace'i10 saniye olur. Service
 prepare handler-before-H.run, kısmi Fixture temizliği ve cleanup sırasında iptal

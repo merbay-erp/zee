@@ -924,8 +924,11 @@ ayrıldı. Beş tam proje hazır değil, fiziksel cihaz yok; bu kapılar bekliyo
 
 Stdlib PDF9/service10 gerçek kısa koşuları geçti; GB-111 düşük/açık/K-299'dur.
 Erken iptal, kısmi keygen/fixture ve nested owner kapanışı yalnız kabul betiğinde
-düzeltildi. Yeni temiz exact kaynakta native PDF9/service2 ve ortak Cargo/faz,
-katalog, tazelik, güvenlik ve biçim sonuçları henüz beklenir.
+düzeltildi. İlk C native1 birleşik kabulü başarısızdır: PDF9 ayrı geçti;
+service-fault kanonik olmayan wrapper repo kökünde iç proof öncesi reddedildi.
+C kaynak öncesi998/0/25 ve --surekli kaydı tarihseldir. Wrapper kökü
+kanonikleştirme takibinin yeni temiz source/tree, ilgili Cargo/faz/katalog/
+tazelik/güvenlik/biçim ve native9/2 kabulü henüz yoktur.
 [Actual kayıt ve kapanış koşulları](kabul-kosuculari-yasam-dongusu-20261016.md)
 geçen hazırlığı pending native kabulden ayırır. Yeni Cargo owner yoktur.
 K-298 kaynağının RC/soak/IDE/stdio kanıtı K-299 HEAD kabulü değildir; eski S3
