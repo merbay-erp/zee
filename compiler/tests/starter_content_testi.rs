@@ -22,7 +22,7 @@ fn icerik_baslangici_stdlib_sozlesmesi() {
     );
     assert!(result.stdout.is_empty());
     let stderr = String::from_utf8_lossy(&result.stderr);
-    assert!(stderr.contains("\nRan 8 tests in ") && stderr.trim_end().ends_with("\nOK"));
+    assert!(stderr.contains("\nRan 27 tests in ") && stderr.trim_end().ends_with("\nOK"));
 }
 
 #[test]
@@ -52,18 +52,29 @@ fn icerik_baslangici_native_crud_medya_yonetim() {
             .iter()
             .map(|byte| format!("{byte:02x}"))
             .collect();
-        let parent = std::env::temp_dir().join(format!(
-            "zee-starter-content-{}-{}",
-            std::process::id(),
-            std::time::SystemTime::now()
-                .duration_since(std::time::UNIX_EPOCH)
-                .unwrap()
-                .as_nanos()
-        ));
-        std::fs::create_dir(&parent).unwrap();
-        std::fs::set_permissions(&parent, std::fs::Permissions::from_mode(0o700)).unwrap();
-        let parent = parent.canonicalize().unwrap();
-        let output = parent.join("native");
+        let output = if let Some(requested) = std::env::var_os("ZEE_STARTER_NATIVE_OUT") {
+            let output = std::path::PathBuf::from(requested);
+            assert!(output.is_absolute());
+            let parent = output
+                .parent()
+                .expect("explicit native starter output parent");
+            assert_eq!(parent.canonicalize().unwrap(), parent);
+            assert!(!output.exists());
+            output
+        } else {
+            let parent = std::env::temp_dir().join(format!(
+                "zee-starter-content-{}-{}",
+                std::process::id(),
+                std::time::SystemTime::now()
+                    .duration_since(std::time::UNIX_EPOCH)
+                    .unwrap()
+                    .as_nanos()
+            ));
+            std::fs::create_dir(&parent).unwrap();
+            std::fs::set_permissions(&parent, std::fs::Permissions::from_mode(0o700)).unwrap();
+            let parent = parent.canonicalize().unwrap();
+            parent.join("native")
+        };
         let result = Command::new("python3")
             .args(["-I", "-B"])
             .arg(root.join("scripts/tests/starter-content-native.py"))
@@ -98,6 +109,40 @@ fn icerik_baslangici_native_crud_medya_yonetim() {
         assert_eq!(
             value["cleanup"],
             serde_json::json!(["owned-front-and-native-closed", "owned-pg-closed"])
+        );
+        assert_eq!(value["cancelled"], false);
+        assert_eq!(value["deadline_expired"], false);
+        let clusters = value["postgres_clusters"]
+            .as_array()
+            .expect("foreground PG owners");
+        assert_eq!(clusters.len(), 1);
+        let cluster = &clusters[0];
+        assert_eq!(cluster["status"], "closed");
+        assert_eq!(cluster["SIGINT_requested"], true);
+        assert_eq!(cluster["normal_shutdown"], true);
+        assert_eq!(cluster["observed_exit"], 0);
+        assert_eq!(cluster["exit"], 0);
+        assert_eq!(cluster["reaped"], true);
+        assert_eq!(cluster["fallback_used"], false);
+        assert_eq!(cluster["owned_child_cleanup_complete"], true);
+        assert_eq!(cluster["cleanup_errors"], serde_json::json!([]));
+        let readiness = cluster["readiness"]
+            .as_array()
+            .expect("owned starter readiness");
+        assert!(!readiness.is_empty() && readiness.len() <= 300);
+        for probe in readiness {
+            assert_eq!(probe["reaped"], true);
+            assert_eq!(probe["exit"], probe["observed_exit"]);
+            assert!(probe["exit"] == 0 || probe["exit"] == 2);
+            assert!(probe["status"] == "passed" || probe["status"] == "readiness-retry");
+        }
+        assert_eq!(value["front_terminal"]["observed_exit"], 0);
+        assert_eq!(value["front_terminal"]["exit"], 0);
+        assert_eq!(value["front_terminal"]["reaped"], true);
+        assert_eq!(value["front_terminal"]["stderr_bytes"], 0);
+        assert_eq!(
+            value["front_terminal"]["stderr_sha256"],
+            "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
         );
     }
 }
