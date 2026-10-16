@@ -77,6 +77,8 @@ bridge Cargo1 ile unit kaynak kapsamı/native4/altı negatif geçti. Son11 belge
 kapısı kayıt commit önkoşuludur; genel ürün/platform kapsamı kısmi kalır.
 [Kaynak, makbuz ve kapsam sınırı](docs/dene-native-web-koprusu.md).
 
+K-306 / GB-115 açık: Linux kabul koşucusu için kontrollü 16 yöntem adayda geçti; foreground PG18 yöntem/31 kontrollü senaryo da geçti ve iki hazırlık mevcut dispatcher sahibine bağlandı; tam kaynak kapıları ve temiz Linux4+7 bekleniyor. Üretim davranışı değişmiyor; [hazırlık ve kabul sınırı](docs/dispatcher-service.md).
+
 ## Kaynaktan hızlı başlangıç
 
 Git, rustup ve platformunun C/linker araçları kurulu olmalı.
