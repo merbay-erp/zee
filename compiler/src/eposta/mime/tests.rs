@@ -112,6 +112,92 @@ fn alternative_mixed_reply_to_ve_unicode_dosya_adi_kodlanir() {
 }
 
 #[test]
+fn html_cid_basvurusu_gorseli_related_icine_gomer_pdf_ek_kalir() {
+    let ayar = ayar();
+    let ileti = ileti();
+    let png = b"\x89PNG\r\n\x1a\n\x00logo";
+    let pdf = b"%PDF-1.7\n";
+    let ekler = [
+        EkDosya {
+            ad: "eposta-logo.png",
+            tur: EkTuru::Png,
+            baytlar: png,
+        },
+        EkDosya {
+            ad: "katalog.pdf",
+            tur: EkTuru::Pdf,
+            baytlar: pdf,
+        },
+        EkDosya {
+            ad: "baska.png",
+            tur: EkTuru::Png,
+            baytlar: png,
+        },
+    ];
+    let secenek = MimeSecenekleri {
+        yanit_adresi: None,
+        html: Some("<img src='cid:eposta-logo.png' alt='Logo'><img src='cid:baska.png2'>"),
+        ekler: &ekler,
+    };
+    let wire = ileti_kur(&ayar, &ileti, &secenek).unwrap();
+    let mixed = wire.find("multipart/mixed").unwrap();
+    let related = wire
+        .find("multipart/related; type=\"multipart/alternative\"")
+        .unwrap();
+    let alt = wire.find("multipart/alternative; boundary").unwrap();
+    assert!(
+        mixed < related && related < alt,
+        "mixed > related > alternative"
+    );
+    assert!(wire.contains("Content-ID: <eposta-logo.png>\r\nContent-Disposition: inline;"));
+    // PDF ve tam adı başvurulmayan görsel eklenti olarak kalır.
+    assert!(wire.contains("Content-Disposition: attachment;\r\n filename*=UTF-8''katalog.pdf"));
+    assert!(wire.contains("Content-Disposition: attachment;\r\n filename*=UTF-8''baska.png"));
+    assert_eq!(wire.matches("Content-ID:").count(), 1);
+    assert!(wire.contains("--zee-fixture123-rel--\r\n"));
+    assert!(wire.contains("--zee-fixture123-mixed--\r\n"));
+
+    // Yalnız gömülü görsel: mixed yok, en dışta related.
+    let tek = [EkDosya {
+        ad: "eposta-logo.png",
+        tur: EkTuru::Png,
+        baytlar: png,
+    }];
+    let secenek = MimeSecenekleri {
+        yanit_adresi: None,
+        html: Some("<img src=\"cid:eposta-logo.png\">"),
+        ekler: &tek,
+    };
+    let wire = ileti_kur(&ayar, &ileti, &secenek).unwrap();
+    assert!(!wire.contains("multipart/mixed"));
+    assert!(wire.contains("\r\nContent-Type: multipart/related; type=\"multipart/alternative\"; boundary=\"zee-fixture123-rel\"\r\n"));
+    assert!(wire.split("\r\n").all(|line| line.len() <= 998));
+
+    // HTML yoksa ya da ad güvenli değilse gömme yapılmaz.
+    let secenek = MimeSecenekleri {
+        yanit_adresi: None,
+        html: None,
+        ekler: &tek,
+    };
+    assert!(!ileti_kur(&ayar, &ileti, &secenek)
+        .unwrap()
+        .contains("Content-ID"));
+    let bosluklu = [EkDosya {
+        ad: "logo 1.png",
+        tur: EkTuru::Png,
+        baytlar: png,
+    }];
+    let secenek = MimeSecenekleri {
+        yanit_adresi: None,
+        html: Some("<img src='cid:logo 1.png'>"),
+        ekler: &bosluklu,
+    };
+    assert!(!ileti_kur(&ayar, &ileti, &secenek)
+        .unwrap()
+        .contains("Content-ID"));
+}
+
+#[test]
 fn baslik_kimlik_ve_ek_adinda_injection_reddedilir() {
     for bad in ["a\r\nBcc: attacker@example.invalid", "a\nb", "a\u{0}"] {
         let mut yanlis = ileti();
