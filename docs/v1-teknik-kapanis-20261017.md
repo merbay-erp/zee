@@ -40,7 +40,7 @@ K-312/A03: yeni dört birleşik LSP testi geçti. Mevcut LSP test grubunda
 Türkçe ekli rename, bağımsız UTF-16 edit uygulaması, NFD ad/kaynak reddi ve
 surrogate ortası atomik paket reddi birlikte sınandı. Production kaynak,
 grammar, tanı veya API değişmedi. Bu dört test gerçek IDE/ürün kabulü değildir.
-A04 ve sonraki teknik kapılar yürütülüyor; sonuç olmadan kapanış yok.
+A04 dar test/koşucu kapsamı kapandı; temiz kaynak ve sonraki teknik kapılar açık.
 V1 etiketi, kullanıcı/dış kapılar açıkken bu çalışmanın sonucu sayılmaz.
 
 ## K-312 kapı sonucu
@@ -61,3 +61,20 @@ temiz commit'li tekrar ayrı kaydedilecektir. Müşteri kaynakları depoya alın
 Kullanıcının açık izniyle alınan dört canlı `proje.dil` SHA-256 özeti özel
 kopyalarla eşleşti; bu bütün kaynak ağacının veya çalışan compiler SHA'sının
 kanıtı değildir. Tam anonim P08 korpusu/ürün adoptionı kapanmış gösterilmez.
+
+## K-313 / A04
+
+Aynı backend PID'sinde tenant A → COMMIT/ROLLBACK → public boş bağlam →
+tenant B → public boş bağlam iki yeni native TLS vakasıyla sınandı.
+Gerçek row-policy RLS, sağlayıcı veya müşteri DB kabulü yerine geçmez.
+Kanonik koşucu on vakayı exact seçer; model kontrolü 15 vakadır.
+
+Native hazırlık 10/10 ve model 15/15 geçti. Kanonik faz 1002/0/27,
+clippy all-targets -D warnings ve katalog/tazelik geçti. Kaynak hazırlık
+turunda kirliydi; temiz exact commit tekrarı sonuçlanmadan temiz RC kanıtı
+sayılmaz. [Makine kaydı](incelemeler/v1-teknik-20261017/k313/sonuc.json).
+
+Bilinçli etki incelemesi: production compiler, grammar/API/ABI, dependency ve
+katman graphı, normatif spec/RFC/ADR kararı, tanı/katalog, benchmark iş yükü ve
+kalıcı compiler/LSP durumu değişmedi. Mevcut ADR/spec davranışının test kanıtı
+genişledi; GB-022 ve IO faz sahipliği güncellendi.

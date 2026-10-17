@@ -2291,3 +2291,15 @@ Production compiler değişmedi; P19 genel ürün/IDE/platform kabulü kısmi.
 [Kanıt ve kapsam](v1-teknik-kapanis-20261017.md).
 
 K-312 toplu kapanış: Kanonik faz 1002 geçti / 0 kaldı / 25 atlandı; Cargo all-targets 1001 geçti / 0 kaldı / 25 atlandı ve ayrı doctest 1/1 geçti. Katalog+tazelik 7/7 ve rustfmt geçti. [Makine kaydı](incelemeler/v1-teknik-20261017/k312/sonuc.json).
+
+## K-313 — Aynı PostgreSQL backend'inde tenant bağlamı temizliği
+
+**Durum: KAPALI — dar test ve koşucu kapsamı.**
+A04 iki yeni explicit ignored TLS vakasıyla COMMIT ve ROLLBACK ardından
+aynı backend PID'sinde public bağlamın boşalmasını ve ikinci tenant'ın
+bağımsız bağlanmasını doğrular. Varsayılan sentetik fixture superuser'ı
+kullanılır; row-policy/RLS veya gerçek ürün tenant kabulü değildir.
+Kanonik TLS koşucusu exact 10 vaka ister; 15 kontrol modeli eksik/eski
+sekiz-vaka sonucunu reddeder. Production compiler değişmez.
+
+K-313: native hazırlık 10/10, kontrol modeli 15/15; kanonik faz 1002 geçti / 0 kaldı / 27 atlandı. Clippy all-targets -D warnings geçti. Temiz commit native tekrarı ve ürün/RC kapıları ayrı açık. [Makine kaydı](incelemeler/v1-teknik-20261017/k313/sonuc.json).

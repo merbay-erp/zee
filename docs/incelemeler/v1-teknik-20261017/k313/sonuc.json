@@ -1,0 +1,135 @@
+{
+  "schema": "zee-k313-same-backend-test-acceptance-1",
+  "status": "passed-worktree-gates",
+  "base_commit": "638971e29b566ca77ff34c83153525d34a9c077b",
+  "production_changed": false,
+  "native_preparation": {
+    "schema": "zee-postgresql-tls-ci-1",
+    "source_sha": "638971e29b566ca77ff34c83153525d34a9c077b",
+    "started_utc": "2026-10-17T05:55:19.645641+00:00",
+    "host": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+    "rustc": "rustc 1.93.1 (01f6ddf75 2026-02-11)",
+    "source_clean": false,
+    "fixture_hashes": {
+      "scripts/postgresql-tls-ci.py": "547af23cef094a6c5871be5619db777b6987751bb7f509bfcb50f9b4774c4d87",
+      "compiler/tests/postgresql_testi.rs": "2aa3622ba3d4944ab7f773e7e9947453eac6284d8e5becab78c03fac6fbac1ef",
+      "scripts/postgresql-tls11-control.py": "cdf477d154f9fe11086c4829b34b9a412156feabdee1404b5bd863026f2ba639"
+    },
+    "engine": "docker",
+    "server": "postgres (PostgreSQL) 16.15 (Debian 16.15-1.pgdg12+2)",
+    "server_identity": {
+      "image": "postgres@sha256:0ea6700a3b4f0ae6ce746519073558aed4d88a79d8d07622a9a644946c7319c4",
+      "platform": "linux/arm64 sha256:0ea6700a3b4f0ae6ce746519073558aed4d88a79d8d07622a9a644946c7319c4"
+    },
+    "ca_sha256": "97bc2c0d0881452b27f372f70bfb1c81a5baaf0e98bd72f18d2cab750dfed903",
+    "tls11_positive_control": {
+      "protocol": "TLSv1.1",
+      "server_protocol": "TLSv1.1",
+      "cipher": "ECDHE-RSA-AES256-SHA",
+      "hostname_verified": true,
+      "certificate_verified": true
+    },
+    "tests": [
+      "izole_tls_dogru_ca_hostname_ve_tls12_ile_baglanir",
+      "izole_tls_baska_ca_gercek_sunucuyu_reddeder",
+      "izole_tls_san_disindaki_ip_hostnameini_reddeder",
+      "izole_tls_null_ve_metin_disini_reddeder_transaction_sagligi_korunur",
+      "izole_tls_sorgu_parametre_sonuc_ve_goc_sinirlarini_bir_fazlasinda_reddeder",
+      "izole_tls_deadlock_40p01_tekrarsiz_rollback_ve_yeni_oturum_sagligi",
+      "izole_tls_serialization_40001_tekrarsiz_rollback_ve_yeni_oturum_sagligi",
+      "izole_tls_11_erisilebilir_legacy_sunucuyu_reddeder",
+      "izole_tls_ayni_backend_istek_commit_public_ve_ikinci_tenant_baglamini_temizler",
+      "izole_tls_ayni_backend_istek_rollback_public_ve_ikinci_tenant_baglamini_temizler"
+    ],
+    "fault_observations": [
+      "K250 deadlock sqlstate=40P01 attempts=4 rejected=1 accepted=1 durable_sum=0 fresh_health=true",
+      "K250 serialization sqlstate=40001 attempts=2 other_value=1 victim_marker=0 fresh_health=true"
+    ],
+    "command": [
+      "cargo",
+      "test",
+      "--locked",
+      "--test",
+      "postgresql_testi",
+      "izole_tls_",
+      "--",
+      "--ignored",
+      "--test-threads=1",
+      "--nocapture"
+    ],
+    "exit": 0,
+    "elapsed_seconds": 18.918,
+    "boundary": "ephemeral loopback-only synthetic CA/key and cluster; TLS1.2 positive, wrong CA/SAN, real NULL/non-text, resource limits and two stock statement-time40P01/40001 fixtures with explicit rollback/no-replay/fresh health; no COMMIT outcome inference; capable TLS1.1 positive control plus native refusal; no provider rotation or production cluster evidence"
+  },
+  "phase": {
+    "passed": 1002,
+    "failed": 0,
+    "ignored": 27
+  },
+  "control_models": 15,
+  "clippy": "passed-all-targets-deny-warnings",
+  "gates": [
+    {
+      "name": "phase",
+      "argv": [
+        "/Users/mustafaerbay/.rustup/toolchains/1.93.1-aarch64-apple-darwin/bin/cargo",
+        "run",
+        "--locked",
+        "--offline",
+        "--bin",
+        "faz_test_matrisi",
+        "--",
+        "--denetle",
+        "--rapor",
+        "/private/tmp/zee-v1-20261017/k313-phase.md"
+      ],
+      "exit": 0,
+      "seconds": 362.6496053339215,
+      "log": "/private/tmp/zee-v1-20261017/k313-phase.log",
+      "reaped": true
+    },
+    {
+      "name": "clippy",
+      "argv": [
+        "/Users/mustafaerbay/.rustup/toolchains/1.93.1-aarch64-apple-darwin/bin/cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "seconds": 23.30339433311019,
+      "log": "/private/tmp/zee-v1-20261017/k313-clippy.log",
+      "reaped": true
+    },
+    {
+      "name": "freshness",
+      "argv": [
+        "/Users/mustafaerbay/.rustup/toolchains/1.93.1-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "--test",
+        "katalog_testi",
+        "--test",
+        "dokuman_tazelik_testi",
+        "--test",
+        "postgresql_tls_kapisi_testi"
+      ],
+      "exit": 0,
+      "seconds": 16.570131957996637,
+      "log": "/private/tmp/zee-v1-20261017/k313-freshness.log",
+      "reaped": true
+    }
+  ],
+  "raw_logs": {
+    "k313-phase.log": "a447198be2801bd405f55e944cd9f2ddcb5c7e2e347fb05b2982d9d82b4c9220",
+    "k313-clippy.log": "6febb1bc6468823602e9e912fb61ad390845fa8546cfacbb5b284a00b98e3fb8",
+    "k313-freshness.log": "17acd96ef571275ee48ff8bfa5477d01435328a986053fc8dd6d0f342c269a7f",
+    "k313-native-preparation.log": "3547cde80ecc110a9256268f505ff7790c568d8368ede6b92554bb1577163823"
+  },
+  "scope": "two synthetic same-PID tenant context tests; no row-policy RLS/customer DB/V1 acceptance; exact clean source repeat required"
+}
