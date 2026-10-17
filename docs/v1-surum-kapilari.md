@@ -1251,3 +1251,11 @@ PHC/parola/cookie/request/cert/key/DSN özel baytları veya bunların hash’ler
 Diğer üç PG tüketicisi, P20/P23 kısmi ve diğer açık ürün/insan/platform/dış girdiler, RC/soak/IDE ve C1/K288/P33/K293 ret sınırları korunur; 39 plan statüsü değişmez. Yeni compiler özelliği yoktur.
 
 Bilinçli etki incelemesi: production Rust175, compiler grammar/API/ABI/dependency/katman, spec normatif madde/RFC, kullanıcı tanısı/katalog, sabit performans iş yükü ve compiler/LSP kalıcı durum değişmez. Native tüketilen `docs/versioned/0.8/icerik-paneli.md` ürün komutları değişmediğinden bilinçli unchanged tutulur; kapanışta source-pinli rehber baytları değiştirilerek native kanıtı bayatlatılmaz. ADR-148 ve bu dar durum kayıtları atomik belge kapsamını taşır.
+
+## 17 Ekim 2026 — kullanıcı kapılarını atlayarak teknik devam
+
+K-312 birleşik UTF-16/NFC/morfoloji ordinary testlerini ekler; P19 genel
+IDE/ürün/platform kabulü kapanmaz. İnsan, lisans, fiziksel cihaz, destek
+teyidi ve freeze takvimi atlandıktan sonra da açık kalır. ürün sunucusunda mevcut
+canlı ürünlerin kabul kaydı [teknik kapanışta](v1-teknik-kapanis-20261017.md)
+izlenir. Bu çalışma V1 etiketi değildir.

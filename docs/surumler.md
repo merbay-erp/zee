@@ -5,6 +5,17 @@
 Her sürüm: ne eklendi, ne değişti, neyin sözü verildi. Kırıcı değişiklik
 sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 
+## 17 Ekim 2026 — V1 teknik kabul çalışmaları
+
+- **K-312, LSP birleşik regresyonları:** Türkçe ekli adları iki emoji
+  sonrasında yeniden adlandırma, UTF-16 edit uygulaması, NFC/NFD ve LF/CRLF
+  davranışları dört yeni testle birlikte korundu. Derleyici davranışı,
+  CLI/API, grammar ve dosya biçimi değişmedi; göç gerekmiyor.
+- **Canlı ürün kapsamı:** Ürün sunucusunda dört Zee projesi doğrulandı. Üç derleyici
+  yolu iki farklı ikili hash'ine karşılık geliyor; exact kaynak kabulü ayrı
+  izleniyor. Kullanıcı katılımı/kararı isteyen V1 kapıları açık bırakıldı.
+- [Teknik kapanış kaydı](v1-teknik-kapanis-20261017.md).
+
 ## v0.7.0 — 1 Eylül 2026
 
 **Tema: editör zekâsı — dil, düzenleyicide de Türkçe düşünüyor.**
