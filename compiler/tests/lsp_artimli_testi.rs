@@ -671,3 +671,205 @@ fn yol_dizini_sonraki_bildirimde_degisen_sembolik_yolu_yeniden_cozer() {
         assert_eq!(p.ac(&mut s, "ana.dil", ANA), json!([]));
     }
 }
+
+// A03 test-only crosscell: one URI, NFC suffixes and non-BMP UTF-16 positions.
+fn a03_rename(s: &mut Sunucu, line: usize, character: usize, new_name: &str) -> Value {
+    let responses = gonder(
+        s,
+        "textDocument/rename",
+        json!({"textDocument":{"uri":"untitled:k287"},
+            "position":{"line":line,"character":character},"newName":new_name}),
+    );
+    assert_eq!(responses.len(), 1);
+    assert_eq!(responses[0]["id"], 9);
+    assert!(responses[0].get("error").is_none(), "{:?}", responses);
+    responses[0].get("result").unwrap().clone()
+}
+
+fn a03_open_clean(s: &mut Sunucu, text: &str) {
+    let responses = gonder(
+        s,
+        "textDocument/didOpen",
+        json!({"textDocument":{"uri":"untitled:k287","text":text,"version":1}}),
+    );
+    a03_clean_diagnostics(&responses);
+}
+
+fn a03_clean_diagnostics(responses: &[Value]) {
+    let published: Vec<_> = responses
+        .iter()
+        .filter(|row| row["method"] == "textDocument/publishDiagnostics")
+        .collect();
+    assert_eq!(published.len(), 1, "{responses:?}");
+    assert_eq!(published[0]["params"]["uri"], "untitled:k287");
+    assert_eq!(published[0]["params"]["diagnostics"], json!([]));
+}
+
+fn a03_exact_edits(s: &mut Sunucu) -> Vec<Value> {
+    let result = a03_rename(s, 1, 12, "kitap");
+    assert_eq!(result, a03_rename(s, 0, 1, "kitap"));
+    let changes = result["changes"].as_object().unwrap();
+    assert_eq!(changes.len(), 1);
+    assert!(changes.contains_key("untitled:k287"));
+    let mut edits = changes["untitled:k287"].as_array().unwrap().clone();
+    assert_eq!(edits.len(), 2);
+    edits.sort_by_key(|edit| {
+        (
+            edit["range"]["start"]["line"].as_u64().unwrap(),
+            edit["range"]["start"]["character"].as_u64().unwrap(),
+        )
+    });
+    assert_eq!(
+        edits,
+        vec![
+            json!({"range":{"start":{"line":0,"character":0},"end":{"line":0,"character":3}},"newText":"kitap"}),
+            json!({"range":{"start":{"line":1,"character":11},"end":{"line":1,"character":15}},"newText":"kitabı"}),
+        ]
+    );
+    edits
+}
+
+fn a03_definition(s: &mut Sunucu, name_len: usize) {
+    assert_eq!(
+        konum_istegi(s, "textDocument/definition", 1, 12),
+        json!({"uri":"untitled:k287","range":{"start":{"line":0,"character":0},"end":{"line":0,"character":name_len}}})
+    );
+}
+
+#[test]
+fn nonbmp_nfc_ekli_rename_exact_utf16_uygulanir() {
+    for eol in ["\n", "\r\n"] {
+        let source = format!("göl \"Ayşe\" olsun{eol}\"😀😀\" ile gölü yaz{eol}\"gölü\" yaz{eol}");
+        let mut s = Sunucu::yeni();
+        a03_open_clean(&mut s, &source);
+        assert!(
+            konum_istegi(&mut s, "textDocument/hover", 1, 12)["contents"]["value"]
+                .as_str()
+                .unwrap()
+                .contains("göl")
+        );
+        a03_definition(&mut s, 3);
+        let edits = a03_exact_edits(&mut s);
+        // Independent client oracle uses Vec<u16>, never server coordinate helpers.
+        let mut lines: Vec<Vec<u16>> = source
+            .split('\n')
+            .map(|line| line.encode_utf16().collect())
+            .collect();
+        for edit in edits.iter().rev() {
+            let start = &edit["range"]["start"];
+            let end = &edit["range"]["end"];
+            assert_eq!(start["line"], end["line"]);
+            let line = start["line"].as_u64().unwrap() as usize;
+            let first = start["character"].as_u64().unwrap() as usize;
+            let last = end["character"].as_u64().unwrap() as usize;
+            lines[line].splice(
+                first..last,
+                edit["newText"].as_str().unwrap().encode_utf16(),
+            );
+        }
+        let applied = lines
+            .iter()
+            .map(|line| String::from_utf16(line).unwrap())
+            .collect::<Vec<_>>()
+            .join("\n");
+        assert_eq!(
+            applied,
+            format!("kitap \"Ayşe\" olsun{eol}\"😀😀\" ile kitabı yaz{eol}\"gölü\" yaz{eol}")
+        );
+        let changes: Vec<Value> = edits
+            .iter()
+            .rev()
+            .map(|edit| json!({"range":edit["range"],"text":edit["newText"]}))
+            .collect();
+        a03_clean_diagnostics(&degistir(&mut s, json!(changes)));
+        a03_definition(&mut s, 5);
+        assert!(
+            konum_istegi(&mut s, "textDocument/hover", 1, 12)["contents"]["value"]
+                .as_str()
+                .unwrap()
+                .contains("kitap")
+        );
+    }
+}
+
+#[test]
+fn nonbmp_nfc_belgede_nfd_yeni_ad_rename_reddedilir() {
+    for eol in ["\n", "\r\n"] {
+        let source = format!("göl \"Ayşe\" olsun{eol}\"😀😀\" ile gölü yaz{eol}\"gölü\" yaz{eol}");
+        let mut s = Sunucu::yeni();
+        a03_open_clean(&mut s, &source);
+        let before = a03_exact_edits(&mut s);
+        assert_eq!(a03_rename(&mut s, 1, 12, "go\u{0308}l"), Value::Null);
+        assert_eq!(a03_exact_edits(&mut s), before);
+        a03_definition(&mut s, 3);
+    }
+}
+
+#[test]
+fn nonbmp_nfd_kaynak_s029_exact_tani_ve_bos_rename() {
+    for eol in ["\n", "\r\n"] {
+        let source = format!("göl \"Ayşe\" olsun{eol}\"😀😀\" ile gölü yaz{eol}\"gölü\" yaz{eol}");
+        let nfd = format!(
+            "göl \"Ayşe\" olsun{eol}\"😀😀\" ile go\u{0308}lu\u{0308} yaz{eol}\"gölü\" yaz{eol}"
+        );
+        let mut s = Sunucu::yeni();
+        a03_open_clean(&mut s, &source);
+        let before = a03_exact_edits(&mut s);
+        let core = dil::kaynagi_derle(&nfd).unwrap_err();
+        assert_eq!(core.kod, "S029");
+        assert_eq!((core.satir, core.sutun, core.uzunluk), (2, 12, 1));
+        let out = degistir(&mut s, json!([{"text":nfd}]));
+        let published: Vec<_> = out
+            .iter()
+            .filter(|row| row["method"] == "textDocument/publishDiagnostics")
+            .collect();
+        assert_eq!(published.len(), 1);
+        assert_eq!(published[0]["params"]["uri"], "untitled:k287");
+        let diagnostics = published[0]["params"]["diagnostics"].as_array().unwrap();
+        assert_eq!(diagnostics.len(), 1);
+        assert_eq!(diagnostics[0]["code"], "S029");
+        assert_eq!(
+            diagnostics[0]["range"],
+            json!({"start":{"line":1,"character":13},"end":{"line":1,"character":14}})
+        );
+        assert_eq!(
+            konum_istegi(&mut s, "textDocument/definition", 1, 12),
+            Value::Null
+        );
+        assert_eq!(a03_rename(&mut s, 1, 12, "kitap"), Value::Null);
+        // No semantic-null promise for hover on this lexically invalid source.
+        a03_clean_diagnostics(&gonder(
+            &mut s,
+            "textDocument/didChange",
+            json!({"textDocument":{"uri":"untitled:k287","version":3},
+                "contentChanges":[{"text":source}]}),
+        ));
+        assert_eq!(a03_exact_edits(&mut s), before);
+        a03_definition(&mut s, 3);
+    }
+}
+
+#[test]
+fn nonbmp_nfc_rename_oncesi_surrogate_paketi_atomik_reddeder() {
+    for eol in ["\n", "\r\n"] {
+        let source = format!("göl \"Ayşe\" olsun{eol}\"😀😀\" ile gölü yaz{eol}\"gölü\" yaz{eol}");
+        let mut s = Sunucu::yeni();
+        a03_open_clean(&mut s, &source);
+        let before = a03_exact_edits(&mut s);
+        for method in ["textDocument/hover", "textDocument/definition"] {
+            assert_eq!(konum_istegi(&mut s, method, 1, 2), Value::Null);
+        }
+        assert_eq!(a03_rename(&mut s, 1, 2, "kitap"), Value::Null);
+        let out = degistir(
+            &mut s,
+            json!([aralik(0, 0, 3, "nehir"), aralik(1, 2, 2, "x")]),
+        );
+        assert_eq!(out.len(), 1, "{out:?}");
+        assert_eq!(out[0]["error"]["code"], -32602);
+        assert!(!out
+            .iter()
+            .any(|row| row["method"] == "textDocument/publishDiagnostics"));
+        assert_eq!(a03_exact_edits(&mut s), before);
+        a03_definition(&mut s, 3);
+    }
+}

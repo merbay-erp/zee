@@ -2279,3 +2279,15 @@ PHC/parola/cookie/request/cert/key/DSN özel baytları veya bunların hash’ler
 Diğer üç PG tüketicisi, P20/P23 kısmi ve diğer açık ürün/insan/platform/dış girdiler, RC/soak/IDE ve C1/K288/P33/K293 ret sınırları korunur; 39 plan statüsü değişmez. Yeni compiler özelliği yoktur.
 
 Bilinçli etki incelemesi: production Rust175, compiler grammar/API/ABI/dependency/katman, spec normatif madde/RFC, kullanıcı tanısı/katalog, sabit performans iş yükü ve compiler/LSP kalıcı durum değişmez. Native tüketilen `docs/versioned/0.8/icerik-paneli.md` ürün komutları değişmediğinden bilinçli unchanged tutulur; kapanışta source-pinli rehber baytları değiştirilerek native kanıtı bayatlatılmaz. ADR-148 ve bu dar durum kayıtları atomik belge kapsamını taşır.
+
+## K-312 — UTF-16, NFC ve morfolojili rename birleşik kabulü
+
+**Durum: KAPALI — dar test kapsamı.**
+A03 hazırlığı mevcut test grubuna dört ordinary vaka olarak alındı.
+Bağımsız istemci oracle'ı editleri UTF-16 birimleriyle uygular; iki emoji
+sonrası ekli kullanım ve LF/CRLF birlikte sınanır. NFD yeni ad ve kaynak,
+surrogate ortası konum ve çoklu değişiklik paketinin atomik reddi korunur.
+Production compiler değişmedi; P19 genel ürün/IDE/platform kabulü kısmi.
+[Kanıt ve kapsam](v1-teknik-kapanis-20261017.md).
+
+K-312 toplu kapanış: Kanonik faz 1002 geçti / 0 kaldı / 25 atlandı; Cargo all-targets 1001 geçti / 0 kaldı / 25 atlandı ve ayrı doctest 1/1 geçti. Katalog+tazelik 7/7 ve rustfmt geçti. [Makine kaydı](incelemeler/v1-teknik-20261017/k312/sonuc.json).

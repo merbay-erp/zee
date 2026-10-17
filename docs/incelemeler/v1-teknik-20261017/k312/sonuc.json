@@ -1,0 +1,73 @@
+{
+  "schema": "zee-k312-lsp-test-acceptance-1",
+  "status": "passed-worktree-gates",
+  "base_commit": "4f3caeeb7e44436f63777043da52473d02417ee0",
+  "production_changed": false,
+  "lsp_group": {
+    "passed": 25,
+    "failed": 0,
+    "ignored": 1,
+    "added_cases": 4
+  },
+  "full_cargo": {
+    "passed": 1001,
+    "failed": 0,
+    "ignored": 25
+  },
+  "doctests": {
+    "passed": 1,
+    "failed": 0
+  },
+  "phase": {
+    "passed": 1002,
+    "failed": 0,
+    "ignored": 25
+  },
+  "freshness_and_catalog": {
+    "passed": 7,
+    "failed": 0
+  },
+  "rustfmt": "passed",
+  "gates": [
+    {
+      "name": "phase",
+      "argv": [
+        "/Users/mustafaerbay/.rustup/toolchains/1.93.1-aarch64-apple-darwin/bin/cargo",
+        "run",
+        "--locked",
+        "--offline",
+        "--bin",
+        "faz_test_matrisi",
+        "--",
+        "--denetle",
+        "--rapor",
+        "/private/tmp/zee-v1-20261017/a03-canonical2-phase.md"
+      ],
+      "exit": 0,
+      "seconds": 397.2800871670479,
+      "log": "/private/tmp/zee-v1-20261017/a03-canonical2-phase.log",
+      "reaped": true
+    },
+    {
+      "name": "full",
+      "argv": [
+        "/Users/mustafaerbay/.rustup/toolchains/1.93.1-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "--all-targets"
+      ],
+      "exit": 0,
+      "seconds": 355.0382772500161,
+      "log": "/private/tmp/zee-v1-20261017/a03-canonical2-full.log",
+      "reaped": true
+    }
+  ],
+  "raw_logs": {
+    "a03-canonical2-full.log": "099d5689354c0d3617ff59a77ec9011f68d705ae635046828b9cb7eec701a5a1",
+    "a03-canonical2-phase.log": "783112bce1ee4a5d57fd40798bc95d4f8157789b3ee2057aed4d7ad0fe0a14c9",
+    "a03-freshness.log": "be269a9f1d2564f4d014fe5a689010a7aa3beeb8c1cc82c587e96c7330a8fb6d"
+  },
+  "initial_custom_target_attempt": "failed two environmental prerequisites; preserved in task temp; canonical retry passed; failures not counted as acceptance",
+  "scope": "four ordinary UTF16/NFC/morphological rename cases; no real IDE/production/V1 closure"
+}
