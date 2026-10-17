@@ -38,3 +38,12 @@ Normatif protokol kaynakları [RFC2045](https://www.rfc-editor.org/rfc/rfc2045),
 [RFC5321](https://www.rfc-editor.org/rfc/rfc5321).
 K-174 syntax gözlem penceresi 14.10.2026–11.11.2026 olarak aynı gün bilinçli
 yeniden hesaplanır; RC/insan review ve canlı ürün kapıları açık kalır.
+
+## Ek: gömülü görsel (cid)
+
+HTML gövdesi bir görsel eki `cid:<dosya-adı>` ile tam adıyla başvuruyorsa (ad yalnız ASCII harf/rakam,
+`.`, `_`, `-`) o ek iletiye gömülür: `multipart/related; type="multipart/alternative"` içinde
+`Content-ID: <dosya-adı>` ve `Content-Disposition: inline`. PDF ve başvurulmayan ekler eklenti kalır;
+ikisi birlikteyse dışta `multipart/mixed`. Kalıp, imza, sınırlar ve yetki değişmez. Gerekçe: dış görsel
+bağlantılarını istemciler gizlilik için engeller; marka logosu gibi küçük görseller iletinin içinde gitmelidir.
+Kanıt: `eposta::mime::tests::html_cid_basvurusu_gorseli_related_icine_gomer_pdf_ek_kalir`.
