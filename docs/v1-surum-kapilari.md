@@ -1259,3 +1259,8 @@ IDE/ürün/platform kabulü kapanmaz. İnsan, lisans, fiziksel cihaz, destek
 teyidi ve freeze takvimi atlandıktan sonra da açık kalır. ürün sunucusunda mevcut
 canlı ürünlerin kabul kaydı [teknik kapanışta](v1-teknik-kapanis-20261017.md)
 izlenir. Bu çalışma V1 etiketi değildir.
+
+K-313 aynı fiziksel PostgreSQL backend'inde tenant bağlamının COMMIT ve
+ROLLBACK sonrası temizliğini iki yeni native testle korur. Koşucu on exact
+TLS vakası ve 15 kontrol modeli ister; yeni grammar/production davranışı
+veya gerçek RLS/ürün kabulü eklenmez.

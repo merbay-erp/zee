@@ -12,12 +12,14 @@ TESTS = MODULE["EXPECTED_TESTS"]
 OBSERVATIONS = MODULE["FAULT_OBSERVATIONS"]
 
 
-def transcript(summary="8 passed; 0 failed; 0 ignored", tests=TESTS, observations=OBSERVATIONS):
+def transcript(summary=None, tests=TESTS, observations=OBSERVATIONS):
+    if summary is None:
+        summary = f"{len(TESTS)} passed; 0 failed; 0 ignored"
     return "\n".join(f"test {test} ... ok" for test in tests) + f"\ntest result: ok. {summary};\n" + "\n".join(observations) + "\n"
 
 
 class StrictGateTests(unittest.TestCase):
-    def test_exact_eight_real_passes(self):
+    def test_exact_required_real_passes(self):
         CHECK(transcript(), 0)
 
     def test_missing_selector_cannot_pass(self):
@@ -26,7 +28,7 @@ class StrictGateTests(unittest.TestCase):
                 CHECK(output, 0)
 
     def test_ignored_case_and_false_summary_cannot_pass(self):
-        for summary in ["7 passed; 0 failed; 1 ignored", "0 passed; 0 failed; 8 ignored", "9 passed; 0 failed; 0 ignored", "5 passed; 0 failed; 0 ignored"]:
+        for summary in [f"{len(TESTS)-1} passed; 0 failed; 1 ignored", f"0 passed; 0 failed; {len(TESTS)} ignored", f"{len(TESTS)+1} passed; 0 failed; 0 ignored", "5 passed; 0 failed; 0 ignored"]:
             with self.assertRaises(ValueError):
                 CHECK(transcript(summary), 0)
 
@@ -34,7 +36,7 @@ class StrictGateTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             CHECK(transcript(), 1)
         with self.assertRaises(ValueError):
-            CHECK(transcript() + "test result: ok. 8 passed; 0 failed; 0 ignored;\n", 0)
+            CHECK(transcript() + f"test result: ok. {len(TESTS)} passed; 0 failed; 0 ignored;\n", 0)
 
     def test_duplicate_or_unexpected_case_cannot_pass(self):
         for tests in [TESTS + (TESTS[0],), TESTS + ("invented_case",), TESTS[:-1] + (TESTS[0],)]:
@@ -44,6 +46,13 @@ class StrictGateTests(unittest.TestCase):
     def test_original_five_without_fault_cases_cannot_pass(self):
         with self.assertRaises(ValueError):
             CHECK(transcript("5 passed; 0 failed; 0 ignored", TESTS[:5]), 0)
+
+    def test_original_eight_or_missing_same_backend_case_cannot_pass(self):
+        self.assertEqual(len(TESTS), 10)
+        for tests in [TESTS[:8], TESTS[:8] + TESTS[8:9], TESTS[:8] + TESTS[9:]]:
+            with self.subTest(tests=tests):
+                with self.assertRaises(ValueError):
+                    CHECK(transcript(f"{len(tests)} passed; 0 failed; 0 ignored", tests), 0)
 
     def test_fault_observation_absent_or_duplicated_cannot_pass(self):
         for observations in [(), OBSERVATIONS[:1], OBSERVATIONS + (OBSERVATIONS[0],)]:

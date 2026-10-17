@@ -1931,3 +1931,8 @@ K-312 mevcut UTF-16/NFC/morfoloji davranışını dört birleşik LSP testiyle
 korur; production özellik eklemez. Kullanıcıya ait canlı Zee ürünleri var;
 eksik olan tam anonim korpus ve exact ikili/kaynak kabul kaydı ürün yokluğu
 olarak yorumlanmaz. [Teknik kapanış](v1-teknik-kapanis-20261017.md).
+
+K-313 iki yeni same-backend native test ve exact on-vaka/15-model koşucusuyla
+mevcut tenant transaction bağlamı temizliğini korur. Production kaynak,
+API/grammar, profil, retry veya kalıcı durum değişmez. Genel P31/ürün ve V1
+sınırları [teknik kapanışta](v1-teknik-kapanis-20261017.md) ayrı izlenir.
