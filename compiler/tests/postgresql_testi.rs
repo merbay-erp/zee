@@ -5,7 +5,7 @@ use dil::yorumlayici::{self, ToplayanIo, VeritabaniHatasi};
 
 // K-222/GB-022: Bunlar yalnız aşağıdaki izolasyon koşucusunun sağladığı
 // geçici sunucuda koşar. Eksik fixture değişkeni başarı/return olamaz.
-// `python3 scripts/postgresql-tls-ci.py` sekiz vakayı --ignored ile zorlar.
+// `python3 scripts/postgresql-tls-ci.py` on vakayı --ignored ile zorlar.
 fn tls_bildirimi(ad: &str) -> dil::veritabani_modeli::VeritabaniBildirimi {
     let degisken = format!("ZEE_POSTGRES_CI_{ad}_URL");
     let hedef = std::env::var(format!("ZEE_POSTGRES_CI_{ad}_HEDEFI"))
@@ -555,4 +555,134 @@ fn izole_tls_11_erisilebilir_legacy_sunucuyu_reddeder() {
         "native TLS minimum1.2 erişilebilir legacy sunucuyu reddetmeli"
     );
     assert!(olumlu.oku("SELECT 'sonra'::text AS health", &[]).is_ok());
+}
+
+// A04: only transaction-local context cleanup on the same physical backend.
+// Default postgres is a synthetic fixture superuser; this is not row-policy RLS evidence.
+#[test]
+#[ignore = "scripts/postgresql-tls-ci.py owned TLS fixture; exact on-vaka allowlist zorunlu"]
+fn izole_tls_ayni_backend_istek_commit_public_ve_ikinci_tenant_baglamini_temizler() {
+    const TENANT_A: &str = "11111111-1111-4111-8111-111111111111";
+    const TENANT_B: &str = "22222222-2222-4222-8222-222222222222";
+    const IDENTITY_SQL: &str = "SELECT pg_backend_pid()::text AS pid, COALESCE(current_setting('app.tenant_id', true), '')::text AS tenant";
+    let mut admin = fault_admin();
+    admin
+        .batch_execute(
+            "CREATE OR REPLACE FUNCTION public.zee_a04_commit_tenant(p_user text)
+             RETURNS TABLE(tenant_id uuid) LANGUAGE sql IMMUTABLE AS $a04$
+             SELECT CASE p_user
+                 WHEN 'synthetic-user-a' THEN '11111111-1111-4111-8111-111111111111'::uuid
+                 WHEN 'synthetic-user-b' THEN '22222222-2222-4222-8222-222222222222'::uuid
+                 ELSE NULL::uuid
+             END
+             $a04$",
+        )
+        .expect("synthetic resolver belongs only to this owned TLS fixture");
+    let identity = |session: &mut dil::postgresql::PostgresqlOturumu| {
+        let rows = session
+            .oku(IDENTITY_SQL, &[])
+            .expect("same-backend identity and request-local setting query");
+        assert_eq!(rows.len(), 1);
+        assert_eq!(rows[0].len(), 2);
+        assert_eq!(rows[0][0].0, "pid");
+        assert_eq!(rows[0][1].0, "tenant");
+        let pid = rows[0][0].1.parse::<i32>().expect("positive backend PID");
+        assert!(pid > 0);
+        (pid, rows[0][1].1.clone())
+    };
+    let mut session = tls_olumlu_oturum();
+    let (pid, public_tenant) = identity(&mut session);
+    assert_eq!(public_tenant, "", "fresh public checkout has no tenant");
+    assert_ne!(TENANT_A, TENANT_B);
+    session
+        .istek_baglamini_baslat("public.zee_a04_commit_tenant", "synthetic-user-a")
+        .expect("authenticated fixture user A resolves to tenant A");
+    assert_eq!(identity(&mut session), (pid, TENANT_A.to_owned()));
+    session
+        .istek_baglamini_tamamla()
+        .expect("tenant A COMMIT must be acknowledged");
+    assert_eq!(
+        identity(&mut session),
+        (pid, String::new()),
+        "acknowledged COMMIT must clear local context on the exact original backend",
+    );
+    session
+        .istek_baglamini_baslat("public.zee_a04_commit_tenant", "synthetic-user-b")
+        .expect("authenticated fixture user B resolves independently");
+    assert_eq!(identity(&mut session), (pid, TENANT_B.to_owned()));
+    session
+        .istek_baglamini_tamamla()
+        .expect("tenant B COMMIT must be acknowledged");
+    assert_eq!(
+        identity(&mut session),
+        (pid, String::new()),
+        "tenant B also returns an empty public context on the same backend",
+    );
+}
+
+// A04: only transaction-local context cleanup on the same physical backend.
+// Default postgres is a synthetic fixture superuser; this is not row-policy RLS evidence.
+#[test]
+#[ignore = "scripts/postgresql-tls-ci.py owned TLS fixture; exact on-vaka allowlist zorunlu"]
+fn izole_tls_ayni_backend_istek_rollback_public_ve_ikinci_tenant_baglamini_temizler() {
+    const TENANT_A: &str = "11111111-1111-4111-8111-111111111111";
+    const TENANT_B: &str = "22222222-2222-4222-8222-222222222222";
+    const IDENTITY_SQL: &str = "SELECT pg_backend_pid()::text AS pid, COALESCE(current_setting('app.tenant_id', true), '')::text AS tenant";
+    let mut admin = fault_admin();
+    admin
+        .batch_execute(
+            "CREATE OR REPLACE FUNCTION public.zee_a04_rollback_tenant(p_user text)
+             RETURNS TABLE(tenant_id uuid) LANGUAGE sql IMMUTABLE AS $a04$
+             SELECT CASE p_user
+                 WHEN 'synthetic-user-a' THEN '11111111-1111-4111-8111-111111111111'::uuid
+                 WHEN 'synthetic-user-b' THEN '22222222-2222-4222-8222-222222222222'::uuid
+                 ELSE NULL::uuid
+             END
+             $a04$",
+        )
+        .expect("synthetic resolver belongs only to this owned TLS fixture");
+    let identity = |session: &mut dil::postgresql::PostgresqlOturumu| {
+        let rows = session
+            .oku(IDENTITY_SQL, &[])
+            .expect("same-backend identity and request-local setting query");
+        assert_eq!(rows.len(), 1);
+        assert_eq!(rows[0].len(), 2);
+        assert_eq!(rows[0][0].0, "pid");
+        assert_eq!(rows[0][1].0, "tenant");
+        let pid = rows[0][0].1.parse::<i32>().expect("positive backend PID");
+        assert!(pid > 0);
+        (pid, rows[0][1].1.clone())
+    };
+    let mut session = tls_olumlu_oturum();
+    let (pid, public_tenant) = identity(&mut session);
+    assert_eq!(public_tenant, "", "fresh public checkout has no tenant");
+    assert_ne!(TENANT_A, TENANT_B);
+    session
+        .istek_baglamini_baslat("public.zee_a04_rollback_tenant", "synthetic-user-a")
+        .expect("authenticated fixture user A resolves to tenant A");
+    assert_eq!(identity(&mut session), (pid, TENANT_A.to_owned()));
+    let error = session
+        .oku("SELECT (1 / 0)::text AS boom", &[])
+        .expect_err("real ordinary PostgreSQL division-by-zero statement error");
+    assert_eq!(fault_sqlstate(&error), "22012");
+    session
+        .istek_baglamini_geri_al()
+        .expect("ordinary statement error must still receive ROLLBACK acknowledgement");
+    assert_eq!(
+        identity(&mut session),
+        (pid, String::new()),
+        "acknowledged ROLLBACK must clear local context on the exact original backend",
+    );
+    session
+        .istek_baglamini_baslat("public.zee_a04_rollback_tenant", "synthetic-user-b")
+        .expect("authenticated fixture user B resolves independently");
+    assert_eq!(identity(&mut session), (pid, TENANT_B.to_owned()));
+    session
+        .istek_baglamini_tamamla()
+        .expect("tenant B COMMIT must be acknowledged");
+    assert_eq!(
+        identity(&mut session),
+        (pid, String::new()),
+        "tenant B also returns an empty public context on the same backend",
+    );
 }

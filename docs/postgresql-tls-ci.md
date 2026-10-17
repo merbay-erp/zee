@@ -1,5 +1,22 @@
 # Hermetik gerçek PostgreSQL TLS kabulü
 
+## K-313 — Güncel kapı: on native vaka ve 15 kontrol modeli
+
+Kanonik koşucu artık önceki sekiz vakaya ek iki same-backend testi zorunlu
+seçer. Tenant A'nın transaction-local bağlamı COMMIT veya gerçek statement
+hatası + onaylı ROLLBACK sonrasında aynı backend PID'sinde boşalır; public
+sorgu boş bağlamı görür, ardından tenant B bağımsız bağlanır ve temizlenir.
+Fixture sentetik superuser kullanır: bu testler row-policy RLS veya gerçek
+ürün/sağlayıcı kabulü değildir. Production connector/transaction davranışı,
+minTLS1.2, otomatik replay yasağı ve dil yüzeyi değişmez.
+
+15 kontrol modeli tam on vaka/tek özet/sıfır-atlama ister; eski sekizli sonuç,
+COMMIT ya da ROLLBACK vakası eksik sonuç reddedilir. Aşağıdaki yedi/sekiz
+vaka kayıtları kendi tarihsel kaynağını anlatır. Yeni native hazırlık on
+vakada geçti; temiz kaynak takibi [teknik kapanışta](v1-teknik-kapanis-20261017.md)
+ayrı izlenir.
+
+
 K-222, GB-022 ve ADR-062 için `scripts/postgresql-tls-ci.py` kendi geçici
 PostgreSQL kümesini, bir günlük deney CA/leaf anahtarını ve ayrı yanlış CA'yı
 üretir. Üretim URL'si, mevcut cluster, ürün verisi ve secrets kullanılmaz.
@@ -36,7 +53,7 @@ Debian Bookworm `postgresql-15` paketi ve GitHub Ubuntu şablonundaki
 sunucu sürümü her raporda kaydedilir, apt sürümü sabit taban diye sunulmaz.
 GitHub Actions'ın açık/kapalı olması bu şablon değişikliğiyle değiştirilmez.
 
-## Yedi gerçek kabul vakası
+## Tarihsel K-250: yedi gerçek kabul vakası
 
 `compiler/tests/postgresql_testi.rs` içindeki `izole_tls_*` vakaları:
 
@@ -123,7 +140,7 @@ ve phase sayısı yenilenmesi gerekir. Yeni compiler davranışı, retry,
 SQLSTATE allowlist'i, desteklenen minimum PG sürümü, geniş fault matrisi veya
 uzak CI/platform/provider kabulü eklenmez. Üretim Rust kaynağı değişmedi.
 
-## K-256 güncel kapı — sekiz native vaka
+## Tarihsel K-256 kapısı — sekiz native vaka
 
 K-250'nin yedi vakası korunur; ek nativeTLS1.1 ret vakasından önce ayrı owned
 legacy cluster'a independent Python/OpenSSL client doğru CA/localhostSAN ile

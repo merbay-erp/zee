@@ -29,6 +29,8 @@ EXPECTED_TESTS = (
     "izole_tls_deadlock_40p01_tekrarsiz_rollback_ve_yeni_oturum_sagligi",
     "izole_tls_serialization_40001_tekrarsiz_rollback_ve_yeni_oturum_sagligi",
     "izole_tls_11_erisilebilir_legacy_sunucuyu_reddeder",
+    "izole_tls_ayni_backend_istek_commit_public_ve_ikinci_tenant_baglamini_temizler",
+    "izole_tls_ayni_backend_istek_rollback_public_ve_ikinci_tenant_baglamini_temizler",
 )
 FAULT_OBSERVATIONS = (
     "K250 deadlock sqlstate=40P01 attempts=4 rejected=1 accepted=1 durable_sum=0 fresh_health=true",
@@ -56,7 +58,7 @@ def check_results(transcript, returncode):
         re.MULTILINE,
     )
     if summaries != [(str(len(EXPECTED_TESTS)), "0", "0")]:
-        raise ValueError(f"TLS gate requires exactly 8 passed/0 failed/0 ignored: {summaries}")
+        raise ValueError(f"TLS gate requires exactly {len(EXPECTED_TESTS)} passed/0 failed/0 ignored: {summaries}")
 
 
 def certificates(directory):
@@ -253,7 +255,7 @@ def main():
             args.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n")
             TLS11["validate_control"](tls11_control)
             check_results(transcript, result.returncode)
-            print(f"PostgreSQL TLS/resource gate: 8/8 passed, 0 ignored; {cluster.version}; report={args.output}")
+            print(f"PostgreSQL TLS/resource gate: {len(EXPECTED_TESTS)}/{len(EXPECTED_TESTS)} passed, 0 ignored; {cluster.version}; report={args.output}")
         finally:
             try:
                 if downgrade is not None:

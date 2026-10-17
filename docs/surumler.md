@@ -7,6 +7,11 @@ sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 
 ## 17 Ekim 2026 — V1 teknik kabul çalışmaları
 
+- **K-313, PostgreSQL tenant bağlamı:** Aynı fiziksel bağlantıda COMMIT ve
+  ROLLBACK sonrasında tenant ayarının temizlenmesini koruyan iki native test
+  eklendi. TLS kabul koşucusu artık exact on vaka ister; eksik/eski sekizli
+  sonuç başarı sayılamaz. Production davranışı değişmedi; göç gerekmiyor.
+
 - **K-312, LSP birleşik regresyonları:** Türkçe ekli adları iki emoji
   sonrasında yeniden adlandırma, UTF-16 edit uygulaması, NFC/NFD ve LF/CRLF
   davranışları dört yeni testle birlikte korundu. Derleyici davranışı,
