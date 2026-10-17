@@ -192,6 +192,50 @@ fn govde_kur(cikti: &mut String, ileti: &Ileti<'_>, secenek: &MimeSecenekleri<'_
     }
 }
 
+/// HTML'nin `cid:<ad>` ile başvurduğu görsel ek iletiye gömülür (multipart/related, Content-ID <ad>).
+/// Ad yalnız ASCII harf/rakam ve `.` `_` `-` taşıyorsa uygundur; PDF ve başvurulmayan ekler eklenti kalır.
+fn gomulu_mu(ek: &EkDosya<'_>, html: Option<&str>) -> bool {
+    ek.tur != EkTuru::Pdf
+        && !ek.ad.is_empty()
+        && ek
+            .ad
+            .bytes()
+            .all(|b| b.is_ascii_alphanumeric() || matches!(b, b'.' | b'_' | b'-'))
+        && html.is_some_and(|h| {
+            let anahtar = format!("cid:{}", ek.ad);
+            h.match_indices(&anahtar).any(|(i, _)| {
+                // Tam ad: "cid:logo.png" başvurusu "cid:logo.png2" gibi daha uzun bir adla eşleşmez.
+                !h[i + anahtar.len()..]
+                    .bytes()
+                    .next()
+                    .is_some_and(|b| b.is_ascii_alphanumeric() || matches!(b, b'.' | b'_' | b'-'))
+            })
+        })
+}
+
+fn ilgili_kur(
+    cikti: &mut String,
+    ileti: &Ileti<'_>,
+    secenek: &MimeSecenekleri<'_>,
+    gomulu: &[&EkDosya<'_>],
+    related: &str,
+    alternative: &str,
+) {
+    if gomulu.is_empty() {
+        govde_kur(cikti, ileti, secenek, alternative);
+        return;
+    }
+    cikti.push_str(&format!(
+        "Content-Type: multipart/related; type=\"multipart/alternative\"; boundary=\"{related}\"\r\n\r\n--{related}\r\n"
+    ));
+    govde_kur(cikti, ileti, secenek, alternative);
+    for ek in gomulu {
+        cikti.push_str(&format!("--{related}\r\nContent-Type: {}\r\nContent-ID: <{}>\r\nContent-Disposition: inline;\r\n filename*=UTF-8''{}\r\nContent-Transfer-Encoding: base64\r\n\r\n", ek.tur.mime(), ek.ad, yuzde_kodla(ek.ad)));
+        cikti.push_str(&bayt_govdesi(ek.baytlar));
+    }
+    cikti.push_str(&format!("--{related}--\r\n"));
+}
+
 /// Only already-authorized bytes enter the codec; this function opens no file.
 pub fn ileti_kur(
     ayar: &EpostaAyari,
@@ -272,14 +316,19 @@ pub fn ileti_kur(
     // '-' never appears in base64 payload; these boundaries cannot collide with parts.
     let mixed = format!("zee-{}-mixed", ileti.kimlik);
     let alternative = format!("zee-{}-alt", ileti.kimlik);
-    if secenek.ekler.is_empty() {
-        govde_kur(&mut cikti, ileti, secenek, &alternative);
+    let related = format!("zee-{}-rel", ileti.kimlik);
+    let (gomulu, ekli): (Vec<&EkDosya<'_>>, Vec<&EkDosya<'_>>) = secenek
+        .ekler
+        .iter()
+        .partition(|ek| gomulu_mu(ek, secenek.html));
+    if ekli.is_empty() {
+        ilgili_kur(&mut cikti, ileti, secenek, &gomulu, &related, &alternative);
     } else {
         cikti.push_str(&format!(
             "Content-Type: multipart/mixed; boundary=\"{mixed}\"\r\n\r\n--{mixed}\r\n"
         ));
-        govde_kur(&mut cikti, ileti, secenek, &alternative);
-        for ek in secenek.ekler {
+        ilgili_kur(&mut cikti, ileti, secenek, &gomulu, &related, &alternative);
+        for ek in ekli {
             cikti.push_str(&format!("--{mixed}\r\nContent-Type: {}\r\nContent-Disposition: attachment;\r\n filename*=UTF-8''{}\r\nContent-Transfer-Encoding: base64\r\n\r\n", ek.tur.mime(), yuzde_kodla(ek.ad)));
             cikti.push_str(&bayt_govdesi(ek.baytlar));
         }
