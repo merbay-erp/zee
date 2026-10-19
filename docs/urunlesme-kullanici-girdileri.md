@@ -6,9 +6,8 @@
 [39 maddelik plan](urunlesme-plan-v1.tsv) için teslim listesi. Bu belge yeni
 ürün, yayın veya destek kararı vermez; eksik kanıtı tamamlanmış göstermez.
 
-Kullanıcı bu görüşmede **beş tam anonim projenin henüz hazır olmadığını** ve
-**fiziksel cihaz bulunmadığını** yeniden teyit etti. P08 ve P29 bu nedenle
-açıktır. Sınırlı pilot desteği seçilmiştir; lisans 19 Ekim 2026'da MIT olarak belirlendi.
+Beş tam anonim proje 19 Ekim 2026'da hazırlandı ve ölçüldü (P08 kanıtlı).
+**Fiziksel cihaz bulunmadığı** için P29 açıktır. Sınırlı pilot desteği seçilmiştir; lisans 19 Ekim 2026'da MIT olarak belirlendi.
 Bu iki mevcut karar teknik çalışmaya devam etmek için yeniden sorulmaz.
 
 ## Öncelik ve teslim özeti
@@ -28,6 +27,7 @@ P30 bütün gerekli ürün, insan, platform, güvenlik ve takvim kapılarını b
 
 ## P08: beş site ve çekirdek teslim kartı
 
+**19 Ekim 2026: teslim edildi ve ölçüldü — [P08 kabulü](urunlesme-p08-kabul-20261019.md).**
 Aşağıdaki tablo bir teslim formudur; yer tutucular sonuç veya provenance
 sayılmaz. Her ürün için gerçek değerlerle doldurulur. Kaynak ve veriler
 anonimleştirilmiş olmalı; müşteri/alan/sunucu kimliği veya canlı sır içermez.
