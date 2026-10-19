@@ -4848,3 +4848,7 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   bozulmaz, Linux'ta durdurma yavaşlar).
 - K-319 eki (Windows faz matrisi): `web_kapanis` ve `web_metrikleri` testleri yalnız Unix'te derlenir;
   seçiciler `@unix` son ekiyle işaretlendi, boş seçici denetimi Unix dışında bunları atlar.
+- K-319 eki (Windows regresyonları): Windows CI 12.10'dan (12c59218) beri koşmamıştı. zee.ayar kesin kök
+  `\\?\C:` önekinde "proje yolu çözülemedi" veriyordu (önek/kök artık ayrı girdi sayılmaz); yalnız Unix
+  native kampanyaları `@unix`; yol ayırıcı ve WSL bash test varsayımları düzeltildi. Windows clippy
+  Mac'te `cargo xwin clippy --target x86_64-pc-windows-msvc` ile önceden denetlenebilir.
