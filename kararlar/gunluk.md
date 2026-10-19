@@ -4840,3 +4840,9 @@ beyanlandı.
 yalnız cihazda kayıt, şablon biçiminde anonim Markdown dışa aktarımı, yazdırılabilir
 onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
 `#` yorum satırları katılımcıya gösterilmez. P27 katılımcı verisi bekler.
+- K-319 eki (süreç yöneticisi): Linux'ta çıkmış ama tutulan (zombi) lider, `killpg(pgid, 0)` için
+  grubu canlı gösterir; `worker-supervisor.py` her durdurmada tam kapanış bütçesini bekleyip gereksiz
+  SIGKILL sayıyordu (başlatıcı sağlık kontrolü 40 denemede >70 sn). Lider çıkmışsa `/proc` üzerinden
+  zombi olmayan grup üyesi aranır. `pdf-plugin-host.py` yardımcı pini güncellendi. Aynı kalıp
+  `lifecycle_core.py`'de de var; pinli kanıt zincirleri nedeniyle ayrı dilimde ele alınacak (doğruluk
+  bozulmaz, Linux'ta durdurma yavaşlar).

@@ -223,6 +223,22 @@ def validate_build(record, a):
     return record
 
 
+def linux_group_has_live_members(pgid):
+    """K-319: /proc'ta süreç grubunda zombi olmayan üye var mı (yalnız Linux)."""
+    for entry in os.listdir("/proc"):
+        if not entry.isdigit():
+            continue
+        try:
+            with open("/proc/" + entry + "/stat", "rb") as stat_file:
+                stat = stat_file.read()
+        except OSError:
+            continue
+        fields = stat[stat.rfind(b")") + 2:].split()
+        if len(fields) > 2 and int(fields[2]) == pgid and fields[0] not in (b"Z", b"X"):
+            return True
+    return False
+
+
 class Supervisor:
     def __init__(self, a, log):
         self.a, self.log = a, log
@@ -284,6 +300,11 @@ class Supervisor:
             while True:
                 try:
                     os.killpg(child.pid, 0)
+                    # Linux: an exited but still held (unreaped) leader keeps the group
+                    # "alive" for killpg. Only the zombie leader left means the group is done.
+                    if sys.platform.startswith("linux") and self.exit_status(child) is not None \
+                            and not linux_group_has_live_members(child.pid):
+                        return False
                     return True
                 except ProcessLookupError:
                     return False
