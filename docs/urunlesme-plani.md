@@ -26,8 +26,8 @@ ayrılır. Açık/ertelenmiş/harici kanıt satırı tamamlanmış özellik değ
 
 ## Kullanıcı kararları ve gerçek dış sınırlar
 
-- Lisans seçimi bekletildi; teknik işlere devam edilir. Kaynak-erişilebilir,
-  açık kaynak veya ticari lisans kullanıcı adına seçilmez.
+- Lisans: 19 Ekim 2026 kullanıcı kararıyla MIT ([ADR-154](../adr/154-mit-lisansi.md));
+  kaynak depo herkese açık. Marka politikası ayrıdır.
 - [Sınırlı pilot destek](urun-destek-politikasi.md) seçildi; güvenlik ve
   uyumluluk kapılarıyla sürüm. LTS veya sabit takvim sözü verilmedi.
 - Kullanıcı gerçek K-161/K-162 oturumu, temiz fiziksel Windows/minimum OS

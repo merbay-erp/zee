@@ -8,7 +8,7 @@
 
 Kullanıcı bu görüşmede **beş tam anonim projenin henüz hazır olmadığını** ve
 **fiziksel cihaz bulunmadığını** yeniden teyit etti. P08 ve P29 bu nedenle
-açıktır. Sınırlı pilot desteği seçilmiştir; lisans kararı bekletilmiştir.
+açıktır. Sınırlı pilot desteği seçilmiştir; lisans 19 Ekim 2026'da MIT olarak belirlendi.
 Bu iki mevcut karar teknik çalışmaya devam etmek için yeniden sorulmaz.
 
 ## Öncelik ve teslim özeti
@@ -18,9 +18,8 @@ Bu iki mevcut karar teknik çalışmaya devam etmek için yeniden sorulmaz.
 | 1 | P08 gerçek ürün korpusu | Beş anonim tam site ve çekirdek kökünün erişilebilir yerel paket yolları; exact ürün kökeni ve compiler pini; çalıştırma/beklenti bilgisi | Paket içeriği ve kökeni incelenir; her ürün için `denetle`/`dene` N/N, süre ve RSS kanıtı ayrı kaydedilir. |
 | Paralel | P27 gerçek insan çalışması | 10 öğrenci/çocuk ve 5 profesyonelin protokole uygun anonim formları | Önceden ilan edilen eşiklerle toplam ve alt grup sayımları yapılır; ilgili RFC ve V1 kapısı gerçek sonuçla güncellenir. |
 | Paralel | P29 fiziksel platform | Temiz fiziksel Windows ve temiz/minimum OS macOS cihazı erişimi veya bu cihazlarda yürütülmüş kabul kayıtları | Exact ikili/kaynak ve ortam bilgisiyle kurulum, program, LSP ve kaldırma doğrulanır. |
-| Paralel | P32 / GB-046 | Hazır GitHub destek talebinin kullanıcı tarafından gönderilmesi; talep kimliği ve kapsamlı yanıtı | Yönetilen PR refs/cache/Actions kopyaları hakkındaki yanıt listedeki kaynak soy ağacıyla karşılaştırılır. |
 | Ürün seçilince | P09–P16, P20–P25 ürün kabulü | Seçilen pilot ürünün anonim kaynağı; ilgili sağlayıcı/staging kapsamı ve beklenen davranış | İlgili mevcut teknik dilimin gerçek üründeki olumlu/olumsuz kabulü ve geri dönüş sınırı doğrulanır. |
-| Yayın aşamasında | P06/P24/P30/P39 | Bekletilen lisans kararı; yayıncı/imza ve dağıtım kanalı kararı; ilgili yayın işlemi yetkisi | [Sürüm runbook'u](surum-runbook.md) sırasıyla bütün kapılar tamamlandıktan sonra yayın hazırlanır. |
+| Yayın aşamasında | P06/P24/P30/P39 | Yayıncı/imza ve dağıtım kanalı kararı (lisans: MIT); ilgili yayın işlemi yetkisi | [Sürüm runbook'u](surum-runbook.md) sırasıyla bütün kapılar tamamlandıktan sonra yayın hazırlanır. |
 
 P08 en çok işi açan veri teslimidir: ürün uyumluluğu, kuyruk/SMTP/PDF,
 login/form, gerçek proje LSP ölçümü, test kapsamı ve starter kabulünün ürün

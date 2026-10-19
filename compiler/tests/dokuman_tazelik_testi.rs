@@ -220,7 +220,7 @@ fn her_normatif_belge_makine_okunur_test_kaniti_tasir() {
     );
     assert_eq!(
         gorulen.len(),
-        212,
+        213,
         "şema-1 belge tabanı beklenmedik biçimde değişti"
     );
 }
@@ -493,4 +493,37 @@ print('K243: snapshot/ZIP, confinement, present/deleted case+normalization alias
             String::from_utf8_lossy(&sonuc.stderr)
         );
     }
+}
+
+#[test]
+fn lisans_mit_ve_paket_bildirimleri_tutarli() {
+    // ADR-154 / K-314: kök LICENSE MIT metnidir; derleyici, fuzz paketi ve VS Code eklentisi aynı lisansı bildirir.
+    let depo = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .parent()
+        .expect("depo kökü");
+    let lisans = std::fs::read_to_string(depo.join("LICENSE")).expect("LICENSE okunmalı");
+    assert!(
+        lisans.starts_with("MIT License\n"),
+        "LICENSE MIT başlığıyla başlamalı"
+    );
+    assert!(lisans.contains("Permission is hereby granted, free of charge"));
+    assert!(lisans.contains("THE SOFTWARE IS PROVIDED \"AS IS\""));
+    for paket in ["compiler/Cargo.toml", "compiler/fuzz/Cargo.toml"] {
+        let metin = std::fs::read_to_string(depo.join(paket)).expect("Cargo.toml okunmalı");
+        assert!(
+            metin
+                .lines()
+                .any(|satir| satir.trim() == "license = \"MIT\""),
+            "{paket} license = \"MIT\" bildirmeli"
+        );
+    }
+    let eklenti = std::fs::read_to_string(depo.join("editors/vscode/package.json"))
+        .expect("package.json okunmalı");
+    assert!(
+        eklenti.contains("\"license\": \"MIT\""),
+        "VS Code eklentisi MIT bildirmeli"
+    );
+    let adr =
+        std::fs::read_to_string(depo.join("adr/154-mit-lisansi.md")).expect("ADR-154 okunmalı");
+    assert!(adr.contains("**MIT lisansıyla**") && adr.contains("Marka"));
 }
