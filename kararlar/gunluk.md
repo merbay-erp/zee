@@ -4812,3 +4812,22 @@ Kimlik `sha256:50149cf7…8456` [sabit dosyada](../docs/yayinci-anahtari-v1.txt)
 doğrulamadan GitHub Releases'e yükleme yapmaz. `scripts/imza-dogrula.sh`
 derlemesiz OpenSSL doğrulaması; `yayin_imzasi_testi` gerçek zinciri ve üç reddi
 sınar. `download-artifact` v8.0.2 pini eklendi. P39 kapandı; P24 kanal düzeyinde.
+
+## K-318 — E-postada gömülü görsel (cid)
+
+19.10.2026 (önceki commit 2746606f): gerçek ürün form bildirimlerinde logo dış
+görsel olarak bağlandığında e-posta istemcileri onu engelliyordu. K-232 ekli ileti
+kalıbı değişmeden, HTML gövdesinin `cid:<ad>` ile tam adıyla başvurduğu PNG/JPEG/
+WebP eki `multipart/related` içinde `Content-ID` ile gömülür; PDF ve başvurulmayan
+ekler eklenti kalır ([RFC-0034 eki](../rfcs/0034-ekli-eposta.md)). Anonim üretici
+`dogfood/zee-cekirdek/mime/gomulu-logo.dil`; birim kanıtı
+`eposta::mime::tests::html_cid_basvurusu_gorseli_related_icine_gomer_pdf_ek_kalir`.
+Semantic ve core-freeze beyanları sonradan eklendi (CI kapısı eksiği yakaladı).
+
+## K-319 — Açık depo CI ortamı
+
+19.10.2026: açık depo GitHub makinelerinde Python testleri `ast.dump` özetleri
+sürüme bağlı olduğu için düşüyordu; CI Python'u yerel kabul ortamıyla aynı
+3.13.3'e sabitlendi (`actions/setup-python` v7.0.0 pinli), Windows'ta `python3`
+komutu sağlanır. Semantic/core-freeze beyanı eksik 2746606 commit'i K-318 ile
+beyanlandı.

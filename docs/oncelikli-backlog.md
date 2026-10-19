@@ -2303,3 +2303,34 @@ Kanonik TLS koşucusu exact 10 vaka ister; 15 kontrol modeli eksik/eski
 sekiz-vaka sonucunu reddeder. Production compiler değişmez.
 
 K-313: native hazırlık 10/10, kontrol modeli 15/15; kanonik faz 1002 geçti / 0 kaldı / 27 atlandı. Clippy all-targets -D warnings geçti. Temiz commit native tekrarı ve ürün/RC kapıları ayrı açık. [Makine kaydı](incelemeler/v1-teknik-20261017/k313/sonuc.json).
+
+## K-314 — Lisans MIT ve açık depo
+
+**Durum: KAPALI.** Kod MIT ([ADR-154](../adr/154-mit-lisansi.md)); kök `LICENSE`,
+Cargo ve VS Code paket bildirimleri, `lisans_mit_ve_paket_bildirimleri_tutarli`
+testi. Depo temiz geçmişle yeniden açık; P32 kapalı.
+
+## K-315 — P08 anonim beş site ve çekirdek korpusu
+
+**Durum: KAPALI.** [Kabul kaydı](urunlesme-p08-kabul-20261019.md): üretim
+commit'lerinden anonim tam paketler, sözlük 0 / gitleaks 0, 2746606 pinli
+derleyiciyle macOS ve Linux'ta `denetle` exit 0, `dene` 343/343, süre ve RSS.
+
+## K-316 — Marka politikası
+
+**Durum: KAPALI.** [Marka politikası](marka-politikasi.md) ve
+[ADR-155](../adr/155-marka-politikasi.md); P39 marka kısmı.
+
+## K-317 — Yayıncı anahtarı ve imzalı yayın kanalı
+
+**Durum: KAPALI — kanal; ilk gerçek yayın P30.** Sabit
+[yayıncı anahtarı](yayinci-anahtari-v1.txt), üç platformlu `surum-adayi`,
+imzayı doğrulamadan yayınlamayan `yayinla` işi, OpenSSL ile
+`scripts/imza-dogrula.sh`, `yayin_imzasi_testi`. Windows temiz klon uzun yol.
+
+## K-318 — E-postada gömülü görsel (cid)
+
+**Durum: KAPALI.** K-232 kalıbında HTML `cid:<ad>` başvurulu görsel ek
+`multipart/related` içinde gömülür ([RFC-0034 eki](../rfcs/0034-ekli-eposta.md)).
+Anonim üretici `dogfood/zee-cekirdek/mime/gomulu-logo.dil`; semantic ve
+core-freeze beyanları 2746606 için eklendi.

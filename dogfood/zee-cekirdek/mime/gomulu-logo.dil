@@ -1,0 +1,14 @@
+# K-318: gerçek ürün form bildirimi — logo dış görsel olunca e-posta istemcileri engelliyordu; HTML cid ile gömülür.
+# Sır ortamdan gelir; ek ürün kaynak kökü altındadır. Canlı ürün dosyası veya SMTP kabulü değildir.
+alici "recipient@example.invalid" olsun
+konu "Yeni iletişim mesajı" olsun
+duz "Ad: Ayşe\nMesaj: Merhaba" olsun
+html "<img src='cid:eposta-logo.png' alt='Site'><p>Ad: Ayşe</p><p>Merhaba</p>" olsun
+yanit "visitor@example.invalid" olsun
+ekler "eposta-logo.png" listesi olsun
+baglanti "" olsun
+sonuc alici konu duz html yanit ekler baglanti ile ekli ileti göndermeyi dene olsun
+sonuc başarılıysa
+    sonucun değeri yaz
+değilse
+    sonucun hatası yaz
