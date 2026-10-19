@@ -6,6 +6,27 @@ bir araya getiren resmî dil platformudur. HTML ve rotalar Zee ile üretilir;
 gerçek derleyici WebAssembly olarak tarayıcıda çalışır. Nginx yalnız TLS,
 statik dosya, güvenlik başlığı ve reverse-proxy sınırının sahibidir.
 
+## 17 Ekim 2026 içerik tazeliği
+
+Ürün sunucusundaki sayfa, görünüm, JS ve CSS dosyalarının dört SHA-256 özeti
+`3160affc67f868f6a2523766f1b39dd5395a0067` site kaynağıyla eşleştirildi.
+Güncelleme bu canlı tasarım üzerinde yapılır; eski mavi/lacivert site dalı
+dağıtım tabanı değildir. Çini/altın kimlik, 16 ders ve mevcut WASM korunur.
+
+Ana sayfanın gelişmeleri, dil turundaki geliştirici araçları, belge araması
+ve yol haritası; `4f3caeeb7e44436f63777043da52473d02417ee0` geliştirme
+kaynağına göre yenilendi. [Geliştirme özeti](../../docs/zeedili-gelistirme-guncellemesi-20261017.md)
+etiket/geliştirme, tarayıcı/native ve yerel kabul/gerçek ürün ayrımını
+açıklar. Exact belge özetleri [icerik-kaynagi.json](icerik-kaynagi.json) içindedir. Üretilen belge sayfası site içi aramadan erişilir; ham Markdown
+kaynağı aynı yayında `/assets/updates/` altında sunulur, yeni belge için
+yayımlanmamış GitHub yolu kullanılmaz. JS önbellek
+sürümü ve değişen rotaların sitemap tarihleri yenilendi.
+
+Etki incelemesi: compiler, grammar, API/ABI, normatif spec, RFC, tanı
+kataloğu ve mimari güven sınırı değişmez. Mevcut ADR-081/test sahipleri,
+README, master plan ve V1 kapılarının site kapsamı korunur; yeni bir V1
+kapısı kapanmaz. Dogfood kaydı ve kanıt özeti aynı içerik diliminde yenilenir.
+
 ## Kimlik ve tasarım (K-203/F005)
 
 Kurucu, mavi/lacivert paletle kurulan önceki iki tasarımı “yapay zekâ ürünü
@@ -76,7 +97,7 @@ Betik belgeleri `uretilen/` ara alanına kopyalar, her belge için
 bütçesi belge başınadır), `/belge/` dizin sayfasını üretir ve bütün iç
 bağlantı ile çapaları denetler. Çıktı git dışıdır; `dagit.sh` her dağıtımda
 yeniden üretir, Nginx `/belge/<ad>/` adreslerini statik olarak sunar.
-204 belge yaklaşık 13 saniyede üretilir; 1.388 iç bağlantının hepsi sağlamdır.
+205 belge ve dizin üretilir; iç bağlantılar üretim sırasında denetlenir.
 
 ## İçerik haritası
 
@@ -266,3 +287,24 @@ Depodaki yollar örnek `/opt/zeedili` ve `/opt/zee/bin/dil` kurulumudur.
 dağıtılmaz. `ZEE_SUNUCU` SSH bağlantısını; `ZEE_ORIGIN_IP` origin adresini;
 `ZEE_CF_KIMLIGI` özel DNS-01 kimlik dosyasını verir. Bu değerler açık
 kaynakta saklanmaz. Bash söz dizimi site doğrulamasının parçasıdır.
+
+## Sürüm notları yayın kapısı
+
+`/belge/surumler/` ana menüdeki **Sürüm notları** sayfasıdır. Tek içerik
+kaynağı [docs/surumler.md](../../docs/surumler.md); en yeni tarih en üsttedir.
+Kullanıcıya görünen her dil/site değişikliği aynı işte tarih, durum,
+eklenen/düzeltilen davranış ve gerekiyorsa göç adımıyla yazılır. Geliştirme
+kaydı yayımlanmış sürüm gibi gösterilmez; geçmiş kayıtlar silinmez.
+
+Site kaynakları, statik dosyaları veya dağıtım betikleri değişince:
+
+1. `docs/surumler.md` içindeki güncel tarihli kayda değişikliği ekle.
+2. `scripts/belgeleri-uret.sh` ile sayfaları ve aynı origin'deki ham kaynağı üret.
+3. `python3 dogfood/zeedili-com/scripts/surum-notlarini-denetle.py --yaz --kayit "17 Ekim 2026 — Geliştirme güncellemeleri"`
+   ile incelenen kayıt/kaynak eşleşmesini yenile (yeni günde yeni başlık kullan).
+4. `scripts/dogrula.sh` çalıştır. Dağıtım bu kapıyı zorunlu çağırır;
+   içerik veya kaynak hash'i bayatsa dağıtım durur.
+
+Bu kapı site ağacının kaydını denetler; dilin tüm değişikliklerinin editoryal
+olarak eksiksiz anlatıldığını kanıtlamaz. Compiler değişikliklerinde kök
+AGENTS.md dokümantasyon kapısı ve insan incelemesi ayrıca zorunludur.

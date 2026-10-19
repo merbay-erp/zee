@@ -9,6 +9,7 @@ DIL_BIN="${DIL_BIN:-$DEPO_KOKU/compiler/target/release/dil}"
 for betik in "$SITE_KOKU"/scripts/*.sh "$SITE_KOKU"/deploy/*.sh; do
   bash -n "$betik"
 done
+python3 "$BETIK_KOKU/surum-notlarini-denetle.py" --denetle
 
 "$DIL_BIN" denetle "$SITE_KOKU"
 "$DIL_BIN" dene "$SITE_KOKU"
