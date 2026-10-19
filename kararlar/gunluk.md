@@ -4785,3 +4785,13 @@ master ve etiketler taşındı; eski depo gizli arşivde kalır, PR ref/cache
 kopyaları yeni depoya geçmedi (P32 kapalı, GitHub destek yanıtı gerekmez).
 Marka politikası, yayıncı/imza anahtarı ve dağıtım kanalı açık kalır; V1 kapıları
 (freeze takvimi, insan oturumları, fiziksel cihaz, anonim tam korpus) değişmez.
+
+## K-315 — P08 anonim beş site ve çekirdek ürün korpusu
+
+19.10.2026: üretimde dağıtılmış exact commit'lerden beş site ve çekirdek kökü anonim
+tam paket olarak hazırlandı ([kabul kaydı](../docs/urunlesme-p08-kabul-20261019.md)).
+Anonimleştirme sözlük kapısı 0, gitleaks 0; özgün/anonim davranış eşliği korundu.
+2746606 pinli derleyiciyle macOS ve Linux üretim ikilisinde `denetle` exit 0,
+`dene` 343/343; süre ve RSS üçer koşuda ölçüldü. Köken özel ürün kaydında.
+P08 kanıtlı; P09–P25 için gerçek kullanım sayımı kayda geçti, o maddelerin
+sağlayıcı/platform/insan sınırları değişmedi.
