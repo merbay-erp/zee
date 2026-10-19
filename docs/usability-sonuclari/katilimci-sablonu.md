@@ -49,8 +49,24 @@ birebir gerekçe.
 - G2 ilk / öğretim sonrası — gerekçe:
 - G3 (gösterildiyse) — gerekçe:
 
+## K-180 — sıra erişimi
+
+- Serbest üretim (birebir):
+- Kör tercih gösterim sırası:
+- Kör tercih — nedeni:
+- Taban sorusu (armut/kiraz/diğer):
+
+## Sesli okuma
+
+- Her program için “sence bu ne yapar?” yanıtı ve takıldığı satırlar (birebir):
+
+## Yazma görevi
+
+- Yazdığı program / icat ettiği sözdizimi (birebir):
+
 ## Genel
 
 - Sesli okumada takıldığı satırlar:
 - En garip satır ve birebir nedeni:
+- Dört soru puanı — doğal / anlaşılır / tekrar ister mi (1–5):
 - Serbest ek not (kişisel bilgi temizlenmiş):

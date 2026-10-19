@@ -10,6 +10,23 @@ K-016'nın teknik bağlamları, kör adayları ve önceden taahhütlü karar eş
 [K-016 karar paketinde](k016-cagri-karar-paketi.md) bağlayıcıdır. Bu kit yalnız
 oturum uygulamasıdır; sonuç geldikten sonra eşik değiştirilmez.
 
+## Oturum yürütücüsü (K-320)
+
+Oturumu kâğıt yerine <https://zeedili.com/assets/oturum/index.html> ile
+yürütebilirsin (tablet veya dizüstü; internet yalnız sayfayı açarken gerekir).
+Sayfa adımları süreyle sırayla gösterir, sabit cümleleri ve kartları birebir
+sunar, yanıtları yalnız o cihazda tutar ve sonunda bu kitin
+[katılımcı şablonu](usability-sonuclari/katilimci-sablonu.md) biçiminde
+`YYYY-AA-GG-C01.md` indirir; sunucuya veri gitmez. Yazdırılabilir
+[onam formu](https://zeedili.com/assets/oturum/onam.html) imzalı olarak
+uygulayıcıda kalır, depoya konmaz.
+
+Kart sırası kimlikten sabit atanır (her sıra beşer kişi):
+A→B→C: C01, C04, C07, C10, P03 · B→C→A: C02, C05, C08, P01, P04 ·
+C→A→B: C03, C06, C09, P02, P05. Sesli okuma programları `golden/`
+dosyalarından üretilir; dosya başındaki `#` yorum satırları (sınanan özelliği
+açıklar) katılımcıya gösterilmez.
+
 ## Oturum düzeni (kişi başı ~33–38 dakika)
 
 1. **Isınma (2 dk):** "Bilgisayara Türkçe komut veren bir dil deniyoruz.
