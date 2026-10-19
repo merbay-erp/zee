@@ -153,7 +153,7 @@ def main():
     project_source = Path(args.project).resolve(strict=True)
     snapshots = Path(args.snapshots).resolve(strict=True)
     require(binary_source.is_file(), 'Explicit native binary required')
-    require(sorted(str(p.relative_to(project_source)) for p in project_source.rglob('*.dil')) == list(SOURCES),
+    require(sorted(p.relative_to(project_source).as_posix() for p in project_source.rglob('*.dil')) == list(SOURCES),
             'Expected exactly four project sources')
     before_sources = inputs(project_source, SOURCES, LIMIT)
     before_snapshots = inputs(snapshots, SNAPSHOTS, 16384)

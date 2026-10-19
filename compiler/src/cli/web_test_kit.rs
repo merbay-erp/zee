@@ -95,6 +95,7 @@ impl Plan {
     fn path(&self, key: &str) -> PathBuf {
         PathBuf::from(&self.values[key])
     }
+    #[cfg_attr(not(unix), allow(clippy::needless_return))]
     fn preflight(&self) -> Result<(), String> {
         #[cfg(not(unix))]
         {

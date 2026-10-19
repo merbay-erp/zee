@@ -143,7 +143,8 @@ fn butun_proje_farklari_sirali_raporlanir_hicbir_kaynak_yazilmaz() {
         .lines()
         .filter(|s| s.starts_with("Biçim farkı:"))
         .collect::<Vec<_>>();
-    assert_eq!(farklar, ["Biçim farkı: ./a.dil", "Biçim farkı: ./z.dil"]);
+    let yerel = |ad: &str| format!("Biçim farkı: {}", Path::new(".").join(ad).display());
+    assert_eq!(farklar, [yerel("a.dil"), yerel("z.dil")]);
     assert_eq!(
         String::from_utf8(sonuc.stdout).unwrap().trim(),
         "4 kaynak denetlendi; 2 dosyada biçim farkı."
@@ -194,7 +195,11 @@ fn dosya_ve_proje_parse_hatasi_onceki_bicim_farkini_da_yazmaz() {
     let girdiler = proje.dosyalar();
     let sonuc = proje.komut(&["biçimle", "--denetle", "."]);
     assert_eq!(sonuc.status.code(), Some(1), "{sonuc:?}");
-    assert!(String::from_utf8_lossy(&sonuc.stderr).contains("Biçimlenemedi: ./z-bozuk.dil"));
+    let bozuk_yolu = format!(
+        "Biçimlenemedi: {}",
+        Path::new(".").join("z-bozuk.dil").display()
+    );
+    assert!(String::from_utf8_lossy(&sonuc.stderr).contains(&bozuk_yolu));
     ayni_kalmali(&yollar, &once);
     assert_eq!(proje.dosyalar(), girdiler);
 }

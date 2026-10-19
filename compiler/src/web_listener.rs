@@ -539,7 +539,10 @@ pub(crate) fn quiet_preflight(args: &[String]) -> Result<(), String> {
         #[cfg(unix)]
         preflight(&profile)?;
         #[cfg(not(unix))]
-        return Err("native listener needs Unix".into());
+        {
+            let _ = profile;
+            return Err("native listener needs Unix".into());
+        }
     }
     Ok(())
 }

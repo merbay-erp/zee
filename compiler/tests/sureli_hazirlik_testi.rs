@@ -3,6 +3,7 @@
 #[allow(dead_code)]
 #[path = "ortak/ozel_ikili.rs"]
 mod ozel_ikili;
+#[cfg(unix)]
 use std::path::Path;
 #[cfg(unix)]
 use std::process::Command;

@@ -103,8 +103,8 @@ yalnız bilinen fazlara ve kendi birincil seçicisine bağlandığını ve bu be
 güncel kaldığını doğrular; ardından fazları ayrı çalıştırıp test sayısı,
 pass/fail/ignored ve duvar süresini dinamik Markdown raporuna yazar. `cfg`
 koşullu testler nedeniyle sayı işletim sistemine göre değişebilir; sahiplik
-kuralı her platformda yeniden kanıtlanır. `@unix` son ekli seçici, modülü yalnız
-Unix'te derlenen testleri gösterir; boş seçici denetimi onu yalnız Unix'te uygular. Derleme
+kuralı her platformda yeniden kanıtlanır. `@unix` son ekli seçici, yalnız
+Unix'te derlenen testleri gösterir; boş seçici ve sıfır test denetimi onu yalnız Unix'te uygular. Derleme
 hatası, sahipsiz/yinelenen test, boş seçici, bayat belge, beklenmeyen test
 sayısı veya başarısız test kapıyı kapatır. CI raporu step summary ve indirilebilir
 artefakt olarak yayımlar; süre gözlemseldir, performans eşiği değildir.

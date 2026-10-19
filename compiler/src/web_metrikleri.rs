@@ -260,6 +260,7 @@ impl Sink {
             });
         })
     }
+    #[cfg_attr(not(unix), allow(dead_code))]
     pub(super) fn db(&self, values: [u64; 8]) {
         self.change(1, |s| {
             for (dst, src) in s.db.iter_mut().zip(values) {
