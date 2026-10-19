@@ -105,6 +105,7 @@
     return `/belge/${ad}/`;
   };
   const documents = [
+    ['17 Ekim geliştirme güncellemesi', 'yeni yenilik 0.8.0-dev zee.ayar utf-16 emoji lsp biçimle denetle göçür kuru durum sql plan freeze', 'docs/zeedili-gelistirme-guncellemesi-20261017.md'],
     ['Başlangıç rehberi', 'kurulum ilk proje cli çalıştırma', 'docs/baslangic.md'],
     ['Dil turu', 'sözdizimi tür liste sözlük işlem yapı desen koşul döngü', 'docs/dil-turu.md'],
     ['Öğretmen rehberi', 'sınıf ders öğrenci çocuk proje', 'docs/ogretmen-rehberi.md'],

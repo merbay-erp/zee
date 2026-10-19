@@ -1,0 +1,14 @@
+{
+  "schema": "zee-site-content-source-1",
+  "reviewed_on": "2026-10-17",
+  "live_site_base": "3160affc67f868f6a2523766f1b39dd5395a0067",
+  "development_source": "4f3caeeb7e44436f63777043da52473d02417ee0",
+  "scope": "Editorial development summary; preserves live design,16lessons,WASM and runtime. Not a compiler release or full V1 acceptance.",
+  "files": {
+    "docs/surumler.md": "34cdc3a840b2a5eb43d4713b8969310b261aaef233599f02a39ef2135e12a410",
+    "docs/urunlesme-plan-v1.tsv": "2fcc80cadc5c48ab6942f2d4f7e65fdff8ca1574d0cce731422d0f8602cb17b5",
+    "docs/zee-ayar.md": "32bc7de986ef33f86ffdcd4c76f71cb7738aa74d77da1f1fb92c0dc1bef8c599",
+    "docs/lsp-utf16-kabul-20261015.md": "7d5741da29b929dc865c433cccadb86f13b896bc4004e1ad2058b9f7189262c6",
+    "sablonlar/README.md": "6093da0a8f540844f45e1fbc84fb9a0695b55eb7e4aacf0ed94075200b812518"
+  }
+}

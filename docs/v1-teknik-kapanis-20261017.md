@@ -6,7 +6,7 @@ işlerin sürdürülmesini istedi. Atlanan kapılar kapalı sayılmaz.
 
 ## Kapsam ve sıra
 
-1. VPS3 canlı ürün envanteri ve exact ikili/source provenance farkı.
+1. Ürün sunucusu canlı ürün envanteri ve exact ikili/source provenance farkı.
 2. A03: mevcut UTF-16/NFC/morfolojili LSP davranışının birleşik regresyonları.
 3. A04: aynı PostgreSQL backend'inde tenant bağlamının COMMIT/ROLLBACK temizliği.
 4. Geri kalan teknik kapılar: mevcut kaynakta test/uyumluluk/dağıtım,

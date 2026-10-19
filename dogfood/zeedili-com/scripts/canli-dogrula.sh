@@ -9,7 +9,7 @@ R=(--resolve "zeedili.com:443:$IP" --resolve "www.zeedili.com:443:$IP" --max-tim
 
 for yol in / /playground/ /dil/ /ogren/ /ornekler/ /belgeler/ /manifesto/ \
   /yol-haritasi/ /topluluk/ /indir/ /canli /hazir /robots.txt /sitemap.xml \
-  /belge/ /belge/dil-turu/ /belge/spec/ /belge/adr-081-resmi-site-ve-uretim-siniri/; do
+  /belge/ /belge/surumler/ /belge/dil-turu/ /belge/spec/ /belge/adr-081-resmi-site-ve-uretim-siniri/; do
   kod="$(curl "${R[@]}" -o /dev/null -w '%{http_code}' "https://zeedili.com$yol")"
   [[ "$kod" == 200 ]] || { echo "$yol → $kod" >&2; exit 1; }
 done

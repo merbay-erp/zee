@@ -5,6 +5,82 @@
 Her sürüm: ne eklendi, ne değişti, neyin sözü verildi. Kırıcı değişiklik
 sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 
+## 19 Ekim 2026 — Geliştirme güncellemeleri
+
+**Durum:** 0.8.0-dev geliştirme hattı; son yayımlanmış etiket 0.7.0.
+Bu kayıt yeni sürüm etiketi veya V1 yayını değildir.
+
+### Eklenenler
+
+- **E-postada gömülü görsel:** `ekli ileti göndermeyi dene` kalıbında HTML
+  gövdesinin `cid:<dosya-adı>` ile tam adıyla başvurduğu PNG/JPEG/WebP eki
+  iletiye gömülü gider (`multipart/related`, `Content-ID`). PDF ve
+  başvurulmayan ekler eklenti olarak kalır. Logo gibi küçük görseller, dış
+  görselleri engelleyen e-posta istemcilerinde de görünür. Kalıp, imza,
+  sınırlar ve yetkiler değişmedi ([RFC-0034](../rfcs/0034-ekli-eposta.md)).
+- **Açık kaynak deposu:** Depo temiz geçmişle yeniden herkese açık;
+  sitedeki kaynak, örnek proje ve geri bildirim bağlantıları çalışıyor.
+
+### Güncellenenler
+
+- **V1 teknik kabul:** PostgreSQL tenant bağlamı (K-313) ve LSP birleşik
+  regresyonları (K-312) testleri ana hatta; [teknik kapanış kaydı](v1-teknik-kapanis-20261017.md)
+  sitede okunabiliyor.
+- **zeedili.com:** Ana sayfa gelişmeleri, dil turu ve yol haritası bu
+  kayda göre güncellendi; site worker'ı güncel geliştirme derleyicisinde.
+- **Belge sayfaları:** Güvenli çalışma bütçesine tek seferde sığmayan
+  büyük belgeler (sürüm notları, master plan, backlog) blok sınırlarından
+  bölünüp ayrı çalıştırmalarda üretiliyor; çıktı tek seferlik üretimle
+  bayt bayt aynı. Satır içi dönüşüm çıktıyı parça listesinde biriktiriyor.
+
+### Uyumluluk ve göç
+
+Dil sözdizimi, 16 tarayıcı dersi ve mevcut projeler değişmedi; göç
+gerekmiyor. Gömülü görsel yalnız HTML gövdesi `cid:` ile başvurduğunda
+devreye girer; mevcut ekli iletiler aynı biçimde gider.
+
+## 17 Ekim 2026 — Geliştirme güncellemeleri
+
+**Durum:** 0.8.0-dev geliştirme hattı; son yayımlanmış etiket 0.7.0.
+Bu kayıt yeni sürüm etiketi veya V1 yayını değildir.
+
+### Eklenenler
+
+- **Geliştirici araçları:** UTF-16 LSP konumları, proje ayarları (`zee.ayar`),
+  `dil sürüm --json` kaynak kimliği, yazmadan biçim denetimi
+  (`dil biçimle --denetle`) ve SQL göç önizlemesi
+  (`dil göçür --durum`, `dil göçür --kuru`) site rehberine eklendi.
+- **Sürüm notları:** Bu sayfa ana menüye taşındı. Dil ve site değişiklikleri
+  aynı günün kaydında eklenenler, düzeltmeler ve uyumluluk başlıklarıyla
+  duyurulur; eski kayıtlar korunur. Site dağıtımı, kaynakla eşleşmeyen sürüm
+  kaydı varsa durur.
+
+### Güncellenenler
+
+- **V1 teknik hazırlığı:** `d781303e6cde` kaynak adayında UTF-16/NFC ve
+  Türkçe ekli yeniden adlandırma birleşimleri ile PostgreSQL tenant
+  bağlamının COMMIT/ROLLBACK sonrası temizliği ek testlerle doğrulandı.
+  macOS ve Linux geliştirme paketleri ikişer temiz klonda aynı SHA-256
+  ile üretildi. Altı özel kaynak kopyasının 248 testi iki pakette de geçti;
+  kaynaklar yayımlanmadı. Linux amd64 paket testi Apple Silicon üzerinde
+  emülasyondur; fiziksel cihaz kabulü değildir.
+- **Ürün sunucusu aday kontrolü:** Yeni paketin özel dizinde kurulumu, CLI/LSP,
+  15 site testi ve geçici portta HTTP karşılaştırması geçti. Bu aşamada
+  canlı derleyici değişmedi. Uzun RC/fuzz ve bellek kapıları sonuçlanmadan
+  aday yayında veya V1 tamamlanmış sayılmaz.
+- Ana sayfa gelişmeleri, belge araması ve yol haritası güncellendi.
+  [Ayrıntılı geliştirme özeti](zeedili-gelistirme-guncellemesi-20261017.md)
+  gerçeklenen araçları ve açık kabul sınırlarını anlatır.
+- Yerel teknik kabul ile gerçek ürün, sağlayıcı ve fiziksel cihaz kabulü
+  ayrı gösteriliyor. 39 maddelik planda 22 kısmi madde sürüyor;
+  14 Ekim–11 Kasım 2026 sözdizimi freeze takvimi açık.
+
+### Uyumluluk ve göç
+
+Compiler, WASM ikilisi, dil sözdizimi ve 16 tarayıcı dersi bu site
+yayınında değişmedi. Mevcut projeler için göç işlemi gerekmiyor.
+Yerel PostgreSQL, native PDF ve SMTP yetenekleri tarayıcıya açılmadı.
+
 ## 17 Ekim 2026 — V1 teknik kabul çalışmaları
 
 - **K-313, PostgreSQL tenant bağlamı:** Aynı fiziksel bağlantıda COMMIT ve
@@ -16,7 +92,7 @@ sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
   sonrasında yeniden adlandırma, UTF-16 edit uygulaması, NFC/NFD ve LF/CRLF
   davranışları dört yeni testle birlikte korundu. Derleyici davranışı,
   CLI/API, grammar ve dosya biçimi değişmedi; göç gerekmiyor.
-- **Canlı ürün kapsamı:** VPS3'te dört Zee projesi doğrulandı. Üç derleyici
+- **Canlı ürün kapsamı:** Ürün sunucusunda dört Zee projesi doğrulandı. Üç derleyici
   yolu iki farklı ikili hash'ine karşılık geliyor; exact kaynak kabulü ayrı
   izleniyor. Kullanıcı katılımı/kararı isteyen V1 kapıları açık bırakıldı.
 - [Teknik kapanış kaydı](v1-teknik-kapanis-20261017.md).
@@ -29,6 +105,14 @@ sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 olgunlaşması, zengin doğrulamalar, morfolojili yeniden adlandırma.)
 
 ## Yolda (v0.8.0'a birikenler)
+
+- **ZeeDili güncel geliştirme özeti (17 Ekim 2026):** Ürün sunucusunda yayındaki
+  çini/altın tasarımın kaynak eşleşmesi korunarak gelişmeler, dil turu,
+  belge araması ve yol haritası yenilendi. UTF-16 LSP konumları, `zee.ayar`,
+  salt biçim denetimi ve SQL göç önizlemesi geliştirme hattı olarak
+  anlatılır. Yerel teknik kabul, gerçek ürün ve V1 yayın sınırları ayrı
+  kalır. [Özet](zeedili-gelistirme-guncellemesi-20261017.md).
+  Compiler ve WASM ikilisi değişmedi; kaynak göçü gerekmez.
 
 ### K-311 — effect test harness lifecycle: dar kapsamda kapalı
 

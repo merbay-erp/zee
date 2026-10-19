@@ -190,3 +190,12 @@ kapanmadan yeni dil özelliği varsayılan olarak öne alınmaz. Başlamış ato
 correctness/güvenlik dilimi önce kod+test+belgesiyle kapatılır; ardından sıradaki
 iş B-001'den başlayarak backlog bağımlılıklarına göre alınır. Tamamlanan her
 madde aynı committe backlog durumunu ve kapanma kanıtını günceller.
+
+## Resmî site sürüm notları
+
+Kullanıcıya görünen her dil/site değişikliği aynı işte `docs/surumler.md`
+içine tarih, geliştirme/yayın durumu, davranış ve gerekiyorsa göç adımıyla
+kaydedilir. Yeni kayıtlar üstte tutulur, geçmiş silinmez. Resmî site
+`/belge/surumler/` sayfası bu tek kaynaktan üretilir. Site değişikliğinde
+`dogfood/zeedili-com/README.md` yayın kapısı sırası izlenir;
+`surum-notlarini-denetle.py --denetle` geçmeden dağıtım yapılmaz.

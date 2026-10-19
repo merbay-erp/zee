@@ -1256,7 +1256,7 @@ Bilinçli etki incelemesi: production Rust175, compiler grammar/API/ABI/dependen
 
 K-312 birleşik UTF-16/NFC/morfoloji ordinary testlerini ekler; P19 genel
 IDE/ürün/platform kabulü kapanmaz. İnsan, lisans, fiziksel cihaz, destek
-teyidi ve freeze takvimi atlandıktan sonra da açık kalır. VPS3'te mevcut
+teyidi ve freeze takvimi atlandıktan sonra da açık kalır. ürün sunucusunda mevcut
 canlı ürünlerin kabul kaydı [teknik kapanışta](v1-teknik-kapanis-20261017.md)
 izlenir. Bu çalışma V1 etiketi değildir.
 
