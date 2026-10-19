@@ -31,7 +31,7 @@ atlanmaz.
 ## Kullanıcı kurulumu
 
 ```bash
-bash scripts/imza-dogrula.sh ~/İndirilenler/zee-surum      # önce imza (OpenSSL 3+)
+bash scripts/imza-dogrula.sh ~/İndirilenler/zee-surum      # önce imza (OpenSSL 3+; macOS: brew install openssl@3)
 bash scripts/kur.sh --artefakt ~/İndirilenler/zee-surum      # ~/.local/bin
 dil sürüm
 bash scripts/kaldir.sh

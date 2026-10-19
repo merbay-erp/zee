@@ -2350,3 +2350,10 @@ Açık kalan: `lifecycle_core.py` Linux zombi lider kalıbı (pinli kanıt zinci
 **Durum: KAPALI — araç; P27 katılımcı verisi bekler.**
 `dogfood/zeedili-com/static/oturum/` yürütücü ve onam formu; kit ve
 katılımcı şablonu uyumlu.
+
+## K-321 — P29 macOS fiziksel cihaz kabulü
+
+**Durum: KAPALI — macOS; fiziksel Windows açık.** Fiziksel Mac (arm64, macOS
+26.6.2) temiz oturumda imzalı aday: imza, kur, program, LSP, kaldır geçti.
+Gatekeeper karantina ve LibreSSL bulguları düzeltildi
+([kayıt](urunlesme-p29-macos-fiziksel-20261019.md)).

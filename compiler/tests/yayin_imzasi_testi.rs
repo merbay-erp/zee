@@ -167,4 +167,9 @@ fn sabit_yayinci_anahtari_ve_yayin_akisi_tutarli() {
         "imzasız yayın reddedilmeli"
     );
     assert!(akis.contains("startsWith(github.ref, 'refs/tags/v')"));
+    let betik = std::fs::read_to_string(depo().join("scripts/imza-dogrula.sh")).unwrap();
+    assert!(
+        betik.contains("LibreSSL Ed25519 doğrulamaz") && betik.contains("openssl@3"),
+        "macOS LibreSSL araç eksikliği imza reddi gibi raporlanmamalı"
+    );
 }
