@@ -2,8 +2,12 @@
 //!
 //! Inventory belongs to the final borrowed AST. Addresses are lookup keys only,
 //! never report identities; an unregistered clone is an invariant error.
+//! Playground (wasm32) yalnız düğüm vuruşlarını no-op geçirir; rapor JSON'u ve
+//! oturum başlatma serde_json'a bağlı olduğu için wasm hedefinin dışındadır.
+#![cfg_attr(target_arch = "wasm32", allow(dead_code))]
 use crate::agac::{Cumle, Ifade, Program};
 use crate::tani::Tani;
+#[cfg(not(target_arch = "wasm32"))]
 use serde::Serialize;
 use std::cell::RefCell;
 use std::collections::{BTreeMap, HashMap};
@@ -15,7 +19,8 @@ pub const AZAMI_DAL: usize = 16_384;
 pub const AZAMI_RAPOR: usize = 2 * 1024 * 1024;
 pub const AZAMI_KAYNAK: usize = 256;
 
-#[derive(Clone, Serialize)]
+#[derive(Clone)]
+#[cfg_attr(not(target_arch = "wasm32"), derive(Serialize))]
 struct Dal {
     id: usize,
     kaynak: String,
@@ -46,6 +51,7 @@ pub struct Nobetci<'a> {
     etkin: bool,
 }
 
+#[cfg(not(target_arch = "wasm32"))]
 pub fn baslat<'a>(
     program: &'a Program,
     ana_koken: &str,
@@ -80,6 +86,7 @@ pub fn baslat<'a>(
 }
 
 // Count JSON without allocating an oversized temporary report or doing IO.
+#[cfg(not(target_arch = "wasm32"))]
 fn serilestirilmis_boyut(value: &impl Serialize) -> Result<usize, String> {
     struct Sayac(usize);
     impl std::io::Write for Sayac {
@@ -100,12 +107,14 @@ fn serilestirilmis_boyut(value: &impl Serialize) -> Result<usize, String> {
     Ok(count.0)
 }
 
+#[cfg(not(target_arch = "wasm32"))]
 #[derive(Serialize)]
 struct Ozet {
     payda: usize,
     vurulan: usize,
     eksik: Vec<usize>,
 }
+#[cfg(not(target_arch = "wasm32"))]
 fn ozet(dallar: &[Dal], test: bool) -> Ozet {
     let secili = dallar.iter().filter(|d| (d.sahip_turu == "test") == test);
     let mut sonuc = Ozet {
@@ -124,6 +133,7 @@ fn ozet(dallar: &[Dal], test: bool) -> Ozet {
     sonuc
 }
 
+#[cfg(not(target_arch = "wasm32"))]
 impl Nobetci<'_> {
     pub fn bitir(mut self, basarili: bool) -> Result<serde_json::Value, String> {
         let sonuc = ETKIN
