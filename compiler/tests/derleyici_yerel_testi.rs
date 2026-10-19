@@ -1,4 +1,7 @@
 //! K-270: owned local import and project launcher; dependency lock is not compiler pin.
+#[allow(dead_code)]
+#[path = "ortak/ozel_ikili.rs"]
+mod ozel_ikili;
 use std::path::Path;
 use std::process::Command;
 
@@ -16,7 +19,14 @@ fn yerel_bundle_import_ve_proje_launcher_kilit_sinirlarini_korur() {
         .arg("-I")
         .arg(root.join("scripts/tests/derleyici-yerel-test.py"))
         .arg("--compiler-dir")
-        .arg(tools)
+        .arg(ozel_ikili::ozel_klasor(
+            "yerel",
+            &[
+                env!("CARGO_BIN_EXE_dil"),
+                env!("CARGO_BIN_EXE_dillsp"),
+                tools.join("surum_artefakti").to_str().unwrap(),
+            ],
+        ))
         .current_dir(root)
         .output()
         .unwrap();

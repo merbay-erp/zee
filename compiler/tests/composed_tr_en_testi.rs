@@ -1,4 +1,7 @@
 //! K289 actual closed-component/catalog TR/EN HTTP application composition.
+#[allow(dead_code)]
+#[path = "ortak/ozel_ikili.rs"]
+mod ozel_ikili;
 use serde_json::Value;
 use std::path::Path;
 use std::time::{SystemTime, UNIX_EPOCH};
@@ -15,13 +18,14 @@ fn bilesen_yerlesim_slot_katalog_tr_en_http_ve_kacis() {
             .unwrap()
             .as_nanos()
     ));
+    let dil = ozel_ikili::ozel_kopya("composed", env!("CARGO_BIN_EXE_dil"));
     let result = std::process::Command::new("python3")
         .args(["-I", "-B"])
         .arg(root.join("scripts/tests/composed-tr-en-test.py"))
         .arg("--framework-root")
         .arg(root)
         .arg("--dil")
-        .arg(env!("CARGO_BIN_EXE_dil"))
+        .arg(&dil)
         .arg("--output")
         .arg(&output)
         .current_dir(root)
