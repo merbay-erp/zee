@@ -4846,3 +4846,5 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   zombi olmayan grup üyesi aranır. `pdf-plugin-host.py` yardımcı pini güncellendi. Aynı kalıp
   `lifecycle_core.py`'de de var; pinli kanıt zincirleri nedeniyle ayrı dilimde ele alınacak (doğruluk
   bozulmaz, Linux'ta durdurma yavaşlar).
+- K-319 eki (Windows faz matrisi): `web_kapanis` ve `web_metrikleri` testleri yalnız Unix'te derlenir;
+  seçiciler `@unix` son ekiyle işaretlendi, boş seçici denetimi Unix dışında bunları atlar.
