@@ -116,7 +116,8 @@ PY
 
 for klon in a b; do
     echo "-- Temiz klon $klon derleniyor"
-    git clone -q --local --no-hardlinks "$depo_koku" "$gecici/$klon"
+    # K-317: Windows 260 karakter yol sınırı (kanıt arşivinde 229+ karakterlik yollar) — uzun yol açık.
+    git clone -c core.longpaths=true -q --local --no-hardlinks "$depo_koku" "$gecici/$klon"
     git -C "$gecici/$klon" checkout -q "$sha"
     klon_temizligini_denetle "$gecici/$klon"
     mkdir -p "$gecici/evidence/$klon"
