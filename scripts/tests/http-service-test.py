@@ -44,7 +44,8 @@ class Cases(unittest.TestCase):
         self.assertNotIn('WantedBy',unit)
     def test_actual_watcher_death_cleans_all_owned_workers_foreign_survives(self):
         c=self.config();children=[];original=M.W.Supervisor.spawn
-        foreign=M.T.D.subprocess.Popen([sys.executable,'-c','import time;time.sleep(30)'],start_new_session=True)
+        # K-319: yavaş CI'da test 30 sn'yi aşınca yabancı süreç kendiliğinden bitip 'öldürüldü' sanılıyordu; finally temizler.
+        foreign=M.T.D.subprocess.Popen([sys.executable,'-c','import time;time.sleep(600)'],start_new_session=True)
         def spawn(owner,*args,**kw):child=original(owner,*args,**kw);children.append(child);return child
         def run(owner):
             workers=[owner.spawn([sys.executable,'-c','import time;time.sleep(30)'])for _ in range(2)]

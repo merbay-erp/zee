@@ -490,12 +490,13 @@ class Launcher(unittest.TestCase):
                 child=subprocess.Popen(['/bin/bash',str(LAUNCHER)],env=env,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,start_new_session=True)
                 try:
                     if curl_ok and front_code is None:
-                        deadline=time.monotonic()+3
+                        deadline=time.monotonic()+15  # K-319: gerçek Node ön kapısı yavaş CI'da 3 sn'yi aşabiliyor
                         front_ready=lambda:listening(front_port) if use_native_node else (root/'front.ready').exists()
                         while time.monotonic()<deadline and not (front_ready() and listening(worker_port)):time.sleep(.02)
                         self.assertTrue(front_ready() and listening(worker_port))
                         child.terminate()
-                    result=child.wait(timeout=10)
+                    # K-319: başarısız sağlık kontrolünde başlatıcı 40 deneme yapar (~1,3 sn/deneme); bekleme bütçesi bunu kapsar.
+                    result=child.wait(timeout=10 if curl_ok else 70)
                     self.assertEqual(result,143 if curl_ok and front_code is None else (front_code if curl_ok else 1))
                     self.assertFalse(listening(worker_port))
                     self.assertFalse(listening(front_port))

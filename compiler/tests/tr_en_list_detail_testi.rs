@@ -1,4 +1,7 @@
 //! K-272 fixed typed TR/EN full-page/list-detail HTTP golden, not product adoption.
+#[allow(dead_code)]
+#[path = "ortak/ozel_ikili.rs"]
+mod ozel_ikili;
 use serde_json::Value;
 use std::path::Path;
 use std::time::{SystemTime, UNIX_EPOCH};
@@ -19,13 +22,14 @@ fn tam_tr_en_liste_detay_http_golden_ve_eski_fragment_korunur() {
             .as_nanos()
     ));
     std::fs::create_dir_all(output.parent().unwrap()).unwrap();
+    let dil = ozel_ikili::ozel_kopya("tr-en", env!("CARGO_BIN_EXE_dil"));
     let result = std::process::Command::new("python3")
         .args(["-I", "-B"])
         .arg(root.join("scripts/tests/tr-en-list-detail-test.py"))
         .arg("--framework-root")
         .arg(root)
         .arg("--dil")
-        .arg(env!("CARGO_BIN_EXE_dil"))
+        .arg(&dil)
         .arg("--output")
         .arg(&output)
         .current_dir(root)

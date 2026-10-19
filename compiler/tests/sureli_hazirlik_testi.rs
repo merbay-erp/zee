@@ -1,5 +1,8 @@
 //! K-274: süreli hazırlık ve finite DB watcher yaşam döngüsü.
 #[cfg(unix)]
+#[allow(dead_code)]
+#[path = "ortak/ozel_ikili.rs"]
+mod ozel_ikili;
 use std::path::Path;
 #[cfg(unix)]
 use std::process::Command;
@@ -49,11 +52,12 @@ fn native_iki_worker_ttl_ve_config_hup_yenileme() {
                 .unwrap()
                 .as_nanos()
         ));
+        let dil = ozel_ikili::ozel_kopya("ttl", env!("CARGO_BIN_EXE_dil"));
         let result = Command::new("python3")
             .args(["-I", "-B"])
             .arg(root.join("scripts/tests/readiness-ttl-native.py"))
             .arg("--dil")
-            .arg(env!("CARGO_BIN_EXE_dil"))
+            .arg(&dil)
             .arg("--output")
             .arg(&output)
             .current_dir(root)
