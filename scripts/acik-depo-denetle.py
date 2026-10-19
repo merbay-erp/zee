@@ -148,6 +148,10 @@ def inspect(path, contents, rules, allowances):
     text = contents.decode("utf-8-sig", "replace")
     if contents.startswith((b"\xff\xfe", b"\xfe\xff")):
         text = contents.decode("utf-16", "replace")
+    elif b"\0" in contents:
+        # NUL baytlı ikili dosya (font, görsel, wasm): rastgele bayt dizisi kısa sözcük
+        # kurallarına yanlış eşleşir; içerik metin sayılmaz, yalnız dosya yolu taranır.
+        text = ""
     used = Counter()
     findings = []
     for number, line in [(0, path)] + list(enumerate(text.splitlines(), 1)):

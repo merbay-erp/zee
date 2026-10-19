@@ -58,6 +58,12 @@ class PublicPrivacyTests(unittest.TestCase):
     def test_utf16_icerigi(self):
         self.assertTrue(INSPECT("a", "Example Client".encode("utf-16"), rules(), {}))
 
+    def test_ikili_icerik_metin_sayilmaz_yol_taranir(self):
+        ikili = b"\x00\x01OS/2" + "Example Client".encode() + b"\x00\xff"
+        self.assertFalse(INSPECT("assets/font.ttf", ikili, rules(), {}))
+        self.assertTrue(INSPECT("assets/example-client.ttf", ikili, rules(), {}))
+        self.assertTrue(INSPECT("a", "Example Client".encode("utf-16"), rules(), {}))
+
     def test_kisa_ad_sozcuk_siniri_ve_ayiricilarla_taranir(self):
         short = dict(rules(), words={DIGEST("xyz")}, word_lengths={3})
         for text in ["XYZ", "X-Y-Z", "xyz.example", "prefix_xyz"]:
