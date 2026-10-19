@@ -4856,3 +4856,8 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   aynı commit'te üç platform iki klon eş hash + resmî yayıncı imzası (koşu 39228406948), artefaktlar
   `imza-dogrula.sh` ile yerelde doğrulandı. V1-P1-25 imzalı aday kanıtı:
   `docs/urunlesme-p125-imzali-surum-20261019.md`. Fiziksel cihaz (P29) ve ilk yayın (P30) açık.
+- K-321 (19.10.2026): P29 macOS kısmı proje sahibinin fiziksel Mac'inde (arm64, macOS 26.6.2) temiz oturumda
+  imzalı 69a6d8f adayıyla kabul edildi (imza/kur/program/LSP/kaldır). Bulgular: karantinalı ad-hoc ikili
+  Gatekeeper'ca öldürülüyordu → `kur.sh` doğrulanmış kopyadan karantinayı kaldırır; macOS LibreSSL Ed25519
+  doğrulamaz → `imza-dogrula.sh` OpenSSL 3+ arar, araç eksikliğini ayrı raporlar. Apple noter onayı ayrı
+  karar; fiziksel Windows açık. Kayıt: `docs/urunlesme-p29-macos-fiziksel-20261019.md`.
