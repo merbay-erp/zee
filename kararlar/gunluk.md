@@ -4852,3 +4852,7 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   `\\?\C:` önekinde "proje yolu çözülemedi" veriyordu (önek/kök artık ayrı girdi sayılmaz); yalnız Unix
   native kampanyaları `@unix`; yol ayırıcı ve WSL bash test varsayımları düzeltildi. Windows clippy
   Mac'te `cargo xwin clippy --target x86_64-pc-windows-msvc` ile önceden denetlenebilir.
+- K-319 kapanış: açık depo `dil` CI 69a6d8fe'de Linux/macOS/Windows yeşil (koşu 39225691714); `surum-adayi`
+  aynı commit'te üç platform iki klon eş hash + resmî yayıncı imzası (koşu 39228406948), artefaktlar
+  `imza-dogrula.sh` ile yerelde doğrulandı. V1-P1-25 imzalı aday kanıtı:
+  `docs/urunlesme-p125-imzali-surum-20261019.md`. Fiziksel cihaz (P29) ve ilk yayın (P30) açık.
