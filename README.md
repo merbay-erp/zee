@@ -203,7 +203,7 @@ Değişikliğe özel test, belge ve güvenlik kapıları [AGENTS.md](AGENTS.md) 
 | Rust + doctest vakası | **1033** |
 | Tanı kimliği | **162 etkin + 3 ayrılmış** |
 | RFC | **34** (2 kabul, 29 geçici kabul, 3 taslak) |
-| ADR | **149** (149 kabul) |
+| ADR | **150** (150 kabul) |
 | Normatif spec bölümü | **30** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
@@ -439,5 +439,6 @@ Kaynak `66e4149e53451111d153f47283c219079a8d1cab` üzerinde ikinci dalganın nat
 zee [MIT lisansıyla](LICENSE) yayımlanır: derleyici, dil sunucusu, standart
 kitaplık, araçlar, belgeler ve örnekler okulda, evde ve işte ücretsiz
 kullanılabilir, değiştirilebilir ve dağıtılabilir. Üçüncü taraf bileşenler
-kendi lisanslarını korur. "zee" adı ve logosu kod lisansından ayrıdır
-([ADR-154](adr/154-mit-lisansi.md)).
+kendi lisanslarını korur. "zee" adı ve logosu kod lisansından ayrıdır:
+[marka politikası](docs/marka-politikasi.md) ([ADR-154](adr/154-mit-lisansi.md),
+[ADR-155](adr/155-marka-politikasi.md)).

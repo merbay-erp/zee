@@ -21,6 +21,8 @@ Bu kayıt yeni sürüm etiketi veya V1 yayını değildir.
 - **Açık kaynak ve MIT lisansı:** Depo temiz geçmişle yeniden herkese açık
   ve kod MIT lisanslı ([LICENSE](../LICENSE), [ADR-154](../adr/154-mit-lisansi.md)).
   Sitedeki kaynak, örnek proje ve geri bildirim bağlantıları çalışıyor.
+- **Marka politikası:** Ad ve logo kod lisansından ayrı; eğitim ve "zee ile
+  yazıldı" serbest ([politika](marka-politikasi.md)).
 
 ### Güncellenenler
 
