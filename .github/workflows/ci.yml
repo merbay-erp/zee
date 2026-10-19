@@ -23,6 +23,16 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
+      # K-319: Python testleri ast.dump çıktısını özetler; sürüm farkı özetleri değiştirir. Yerel kabul ortamıyla aynı sürüm.
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13.3"
+      - name: python3 komutu (Windows)
+        if: runner.os == 'Windows'
+        shell: bash
+        run: |
+          command -v python3 >/dev/null || cp "$(command -v python)" "$(dirname "$(command -v python)")/python3.exe"
+          python3 --version
       - name: Yayımlanmış conformance artefaktları immutable
         if: matrix.os == 'ubuntu-latest'
         shell: bash
