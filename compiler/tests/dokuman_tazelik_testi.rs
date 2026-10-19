@@ -220,7 +220,7 @@ fn her_normatif_belge_makine_okunur_test_kaniti_tasir() {
     );
     assert_eq!(
         gorulen.len(),
-        213,
+        214,
         "şema-1 belge tabanı beklenmedik biçimde değişti"
     );
 }
@@ -526,4 +526,13 @@ fn lisans_mit_ve_paket_bildirimleri_tutarli() {
     let adr =
         std::fs::read_to_string(depo.join("adr/154-mit-lisansi.md")).expect("ADR-154 okunmalı");
     assert!(adr.contains("**MIT lisansıyla**") && adr.contains("Marka"));
+    // ADR-155 / K-316: marka politikası kod lisansından ayrıdır ve README'den bağlanır.
+    let marka = std::fs::read_to_string(depo.join("docs/marka-politikasi.md"))
+        .expect("marka politikası okunmalı");
+    assert!(marka.contains("MIT lisanslıdır") && marka.contains("İzin gerektirenler"));
+    let readme = std::fs::read_to_string(depo.join("README.md")).expect("README okunmalı");
+    assert!(
+        readme.contains("docs/marka-politikasi.md"),
+        "README marka politikasına bağlanmalı"
+    );
 }

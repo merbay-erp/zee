@@ -4795,3 +4795,10 @@ Anonimleştirme sözlük kapısı 0, gitleaks 0; özgün/anonim davranış eşli
 `dene` 343/343; süre ve RSS üçer koşuda ölçüldü. Köken özel ürün kaydında.
 P08 kanıtlı; P09–P25 için gerçek kullanım sayımı kayda geçti, o maddelerin
 sağlayıcı/platform/insan sınırları değişmedi.
+
+## K-316 — Marka politikası
+
+19.10.2026: [marka politikası](../docs/marka-politikasi.md) ve [ADR-155](../adr/155-marka-politikasi.md).
+Kod MIT; ad/logo/alan adı ayrı korunur. Eğitim, yazı, "zee ile yazıldı" ve
+değiştirilmemiş yeniden dağıtım serbest; değiştirilmiş dağıtımın "zee" adıyla
+çıkması ve resmî izlenim izne bağlı. P39 marka kısmı kapandı; imza kanalı açık.
