@@ -14,6 +14,9 @@ python3 "$BETIK_KOKU/surum-notlarini-denetle.py" --denetle
 "$DIL_BIN" denetle "$SITE_KOKU"
 "$DIL_BIN" dene "$SITE_KOKU"
 node --check "$SITE_KOKU/static/site.js"
+node --check "$SITE_KOKU/static/oturum/oturum.js"
+node --check "$SITE_KOKU/static/oturum/programlar.js"
+python3 "$BETIK_KOKU/oturum-programlari-uret.py" --denetle
 node --check "$SITE_KOKU/static/playground.js"
 node --check "$SITE_KOKU/static/zee-motor.js"
 node --check "$BETIK_KOKU/yerel-onkapi.mjs"

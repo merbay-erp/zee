@@ -25,6 +25,10 @@ Bu kayıt yeni sürüm etiketi veya V1 yayını değildir.
   derlenip sabit yayıncı anahtarıyla imzalanır; GitHub Releases'e yalnız imzası
   doğrulanan paket konur. `scripts/imza-dogrula.sh` derleme gerektirmeden
   doğrular ([ADR-156](../adr/156-yayin-kanali-ve-yayinci-anahtari.md)).
+- **Kullanılabilirlik oturum yürütücüsü:** V1 insan oturumları için
+  zeedili.com'da kayıtları yalnız cihazda tutan, anonim form indiren araç
+  ve onam formu ([kit](usability-kiti.md)); stil ve betikler sitenin sıkı
+  güvenlik politikasına uygun ayrı dosyalarda.
 - **Marka politikası:** Ad ve logo kod lisansından ayrı; eğitim ve "zee ile
   yazıldı" serbest ([politika](marka-politikasi.md)).
 

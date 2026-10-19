@@ -2334,3 +2334,14 @@ imzayı doğrulamadan yayınlamayan `yayinla` işi, OpenSSL ile
 `multipart/related` içinde gömülür ([RFC-0034 eki](../rfcs/0034-ekli-eposta.md)).
 Anonim üretici `dogfood/zee-cekirdek/mime/gomulu-logo.dil`; semantic ve
 core-freeze beyanları 2746606 için eklendi.
+
+## K-319 — Açık depo CI ortamı
+
+**Durum: SÜRÜYOR.** Python 3.13.3 pini ve 2746606 beyanı eklendi; GitHub
+makinelerinde kalan platform farkları ayrı ele alınır.
+
+## K-320 — Kullanılabilirlik oturum yürütücüsü
+
+**Durum: KAPALI — araç; P27 katılımcı verisi bekler.**
+`dogfood/zeedili-com/static/oturum/` yürütücü ve onam formu; kit ve
+katılımcı şablonu uyumlu.

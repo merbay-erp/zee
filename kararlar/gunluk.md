@@ -4831,3 +4831,12 @@ sürüme bağlı olduğu için düşüyordu; CI Python'u yerel kabul ortamıyla 
 3.13.3'e sabitlendi (`actions/setup-python` v7.0.0 pinli), Windows'ta `python3`
 komutu sağlanır. Semantic/core-freeze beyanı eksik 2746606 commit'i K-318 ile
 beyanlandı.
+
+## K-320 — Kullanılabilirlik oturum yürütücüsü (P27)
+
+19.10.2026 kullanıcı kararı: oturumları proje sahibi yürütür. Kit protokolü
+(K016-1, K-093, K-180) değişmeden zeedili.com'da çevrim içi açılıp yerelde
+çalışan yürütücü: adım/süre, sabit cümleler ve kartlar, dengeli kart sırası,
+yalnız cihazda kayıt, şablon biçiminde anonim Markdown dışa aktarımı, yazdırılabilir
+onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
+`#` yorum satırları katılımcıya gösterilmez. P27 katılımcı verisi bekler.
