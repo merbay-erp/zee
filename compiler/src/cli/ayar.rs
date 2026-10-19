@@ -263,6 +263,11 @@ fn kesin_kok(yol: &Path) -> Result<PathBuf, String> {
     let mut biriken = PathBuf::new();
     for p in kesin.components() {
         biriken.push(p.as_os_str());
+        // Windows sürücü/UNC öneki (`C:`, `\\?\C:`) ve kök ayırıcı tek başına dosya sistemi
+        // girdisi değildir; sembolik bağ denetimi gerçek dizin adlarında yapılır.
+        if matches!(p, Component::Prefix(_) | Component::RootDir) {
+            continue;
+        }
         let m = fs::symlink_metadata(&biriken).map_err(|_| ret("proje yolu çözülemedi"))?;
         if m.file_type().is_symlink() {
             return Err(ret("ayar taşıyan proje yolunda sembolik bağ yasak"));
