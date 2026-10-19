@@ -54,6 +54,8 @@ struct HedefKimligi {
 struct Secici {
     hedef: HedefKimligi,
     filtre: Option<String>,
+    /// `@unix` son eki: hedef modül yalnız Unix'te derlenir; başka platformda sıfır eşleşme kabul.
+    yalniz_unix: bool,
 }
 
 #[derive(Clone, Debug)]
@@ -166,7 +168,11 @@ fn listeyi_oku(alan: &str) -> Vec<String> {
 }
 
 fn seciciyi_oku(metin: &str) -> Result<Secici, String> {
-    let alanlar = metin.split('|').collect::<Vec<_>>();
+    let (govde, yalniz_unix) = match metin.strip_suffix("@unix") {
+        Some(govde) => (govde, true),
+        None => (metin, false),
+    };
+    let alanlar = govde.split('|').collect::<Vec<_>>();
     let (tur, ad, filtre) = match alanlar.as_slice() {
         ["test", ad] => (HedefTuru::Test, *ad, None),
         ["lib", filtre] => (HedefTuru::Lib, "dil", Some((*filtre).to_string())),
@@ -183,6 +189,7 @@ fn seciciyi_oku(metin: &str) -> Result<Secici, String> {
             ad: ad.to_string(),
         },
         filtre,
+        yalniz_unix,
     })
 }
 
@@ -609,6 +616,9 @@ fn sahipligi_dogrula(
         if secici.hedef.tur == HedefTuru::Test {
             continue;
         }
+        if secici.yalniz_unix && !cfg!(unix) {
+            continue;
+        }
         if secici_eslesmeleri.get(secici).copied().unwrap_or_default() == 0 {
             return Err(format!(
                 "{faz} fazındaki seçici hiçbir testle eşleşmedi: {secici:?}"
@@ -732,7 +742,8 @@ fn kanonik_dokuman(fazlar: &[Faz]) -> String {
          güncel kaldığını doğrular; ardından fazları ayrı çalıştırıp test sayısı,\n\
          pass/fail/ignored ve duvar süresini dinamik Markdown raporuna yazar. `cfg`\n\
          koşullu testler nedeniyle sayı işletim sistemine göre değişebilir; sahiplik\n\
-         kuralı her platformda yeniden kanıtlanır. Derleme\n\
+         kuralı her platformda yeniden kanıtlanır. `@unix` son ekli seçici, modülü yalnız\n\
+         Unix'te derlenen testleri gösterir; boş seçici denetimi onu yalnız Unix'te uygular. Derleme\n\
          hatası, sahipsiz/yinelenen test, boş seçici, bayat belge, beklenmeyen test\n\
          sayısı veya başarısız test kapıyı kapatır. CI raporu step summary ve indirilebilir\n\
          artefakt olarak yayımlar; süre gözlemseldir, performans eşiği değildir.\n",
@@ -1048,6 +1059,10 @@ mod testler {
             Some("hir::testler::")
         );
         assert!(seciciyi_oku("bin|eksik").is_err());
+        let unix = seciciyi_oku("bin|dil|web_kapanis::tests::@unix").expect("unix seçicisi");
+        assert!(unix.yalniz_unix);
+        assert_eq!(unix.filtre.as_deref(), Some("web_kapanis::tests::"));
+        assert!(!seciciyi_oku("lib|hir::testler::").expect("lib").yalniz_unix);
     }
 
     #[test]
