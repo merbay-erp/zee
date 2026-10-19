@@ -105,10 +105,10 @@ Kaynak: `docs/dogfood-projeleri-v1.tsv + dogfood/korpus-v1.tsv`
 | legacy-panel | 6 | 4 | 0 | 7 | 3 | 10 |
 | urun-e | 1 | 0 | 0 | 1 | 0 | 1 |
 | zeedili-com | 0 | 0 | 1 | 1 | 0 | 1 |
-| zee-cekirdek | 9 | 1 | 5 | 15 | 0 | 15 |
+| zee-cekirdek | 10 | 1 | 5 | 16 | 0 | 16 |
 | zee-erp | 2 | 0 | 0 | 2 | 0 | 2 |
 
-Toplam korpus vakası: 56.
+Toplam korpus vakası: 57.
 
 ## Deprecation kayıtları
 
@@ -143,14 +143,14 @@ Kaynak: `docs/compiler-degisiklik-beyanlari-v1.tsv + docs/core-freeze-beyanlari-
 | --- | --- |
 | maintenance | 41 |
 | semantic-bugfix | 10 |
-| semantic-change | 41 |
+| semantic-change | 42 |
 
 | Freeze sınıfı | Beyan |
 | --- | --- |
 | bugfix | 2 |
 | correctness | 16 |
-| dogfood-change | 24 |
+| dogfood-change | 25 |
 | maintenance | 38 |
 | security | 8 |
 
-Toplam: 92 compiler değişiklik beyanı, 88 core freeze beyanı.
+Toplam: 93 compiler değişiklik beyanı, 89 core freeze beyanı.
