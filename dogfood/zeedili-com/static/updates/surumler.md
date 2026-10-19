@@ -24,6 +24,9 @@ Bu kayıt yeni sürüm etiketi veya V1 yayını değildir.
 
 ### Güncellenenler
 
+- **Gerçek ürün korpusu (P08):** Beş üretim sitesi ve çekirdek anonim tam paket
+  olarak ölçüldü: iki platformda `denetle` temiz, `dene` 343/343
+  ([kabul](urunlesme-p08-kabul-20261019.md)).
 - **V1 teknik kabul:** PostgreSQL tenant bağlamı (K-313) ve LSP birleşik
   regresyonları (K-312) testleri ana hatta; [teknik kapanış kaydı](v1-teknik-kapanis-20261017.md)
   sitede okunabiliyor.
