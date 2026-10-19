@@ -36,6 +36,68 @@ istek "DİZİN" e eşitse
     gövde üst ile "<div class='kabuk dar belge-dizin-kabugu'><div class='icerik'>" ile bölümler ile "</div></div>" olsun
     sayfa "Bütün belgeler" ve "/belge/" ve gövde ile sayfayiHazirla olsun
     "../uretilen/belge/index.html" dosyasına sayfa yaz
+değilse istek "PARÇA:" ile başlıyorsa
+    # Büyük belge: blok sınırından bölünmüş tek parçayı dönüştürür (her parça ayrı çalıştırma bütçesiyle).
+    # Girdi "PARÇA:<sıra>:<yol>"; parça ../uretilen/md/<yol>.<sıra>, çıktı ../uretilen/parca/<ad>.<sıra>.html.
+    # İlk parça belgenin başlığını taşır; sonraki parçalara sahte "# " satırı eklenir ki başlık atlama
+    # yalnız onu tüketsin ve gerçek içerik aynen çevrilsin.
+    bilgi isteğin "PARÇA:" yerine "" değişmişi olsun
+    alanlar bilginin ":" ile parçaları olsun
+    sıra alanların ilki olsun
+    sıra_öneki sıra ile ":" olsun
+    yol bilginin sıra_öneki yerine "" değişmişi olsun
+    yol_parçaları yolun "/" ile parçaları olsun
+    dizin "" olsun
+    yol_parça_sayısı yol_parçalarının adedi olsun
+    yol_parça_sayısı 1 den büyükse
+        dizin yol_parçalarının ilki olsun
+    kaynak "../uretilen/md/" ile yol ile "." ile sıra olsun
+    ham_satırlar kaynak dosyasının satırları olsun
+    satırlar ham_satırlar olsun
+    sıra "1" e eşit değilse
+        satırlar "# parça" listesi olsun
+        her ham_satır için
+            satırlara ham_satır ekle
+    gövde satırlar ve dizin ve yollar ile markdownuCevir olsun
+    ad yol için belgeAdi olsun
+    hedef "../uretilen/parca/" ile ad ile "." ile sıra ile ".html" olsun
+    hedef dosyasına gövde yaz
+değilse istek "BİRLEŞİK:" ile başlıyorsa
+    # Parçaları birleştirilmiş büyük belge sayfası: başlık ve içindekiler tüm kaynaktan, gövde parçalardan.
+    yol isteğin "BİRLEŞİK:" yerine "" değişmişi olsun
+    kaynak "../uretilen/md/" ile yol olsun
+    satırlar kaynak dosyasının satırları olsun
+    başlık satırlar için basligiBul olsun
+    menü satırlar için icindekiler olsun
+    ad yol için belgeAdi olsun
+    gövde_yolu "../uretilen/parca/" ile ad ile ".govde.html" olsun
+    gövdeler gövde_yolu dosyasının satırları olsun
+    gövde gövdelerin "\n" ile birleşmişi olsun
+    adres "/belge/" ile ad ile "/" olsun
+    özet "Depodaki " ile yol ile " belgesinden Zee ile üretildi." olsun
+    üst "Belgeler" ve başlık ve özet ile icSayfaBasliginiHazirla olsun
+    kaynak_bağı "<p class='belge-kaynagi'>Kaynak: <a href='https://github.com/merbay-erp/zee/blob/master/" ile yol ile "' rel='noreferrer'>" ile yol ile "</a> · <a href='/belge/'>Bütün belgeler</a></p>" olsun
+    tam üst ile "<div class='kabuk belge-duzeni'>" ile menü ile "<article class='icerik belge-metni'>" ile gövde ile kaynak_bağı ile "</article></div>" olsun
+    sayfa başlık ve adres ve tam ile sayfayiHazirla olsun
+    hedef "../uretilen/belge/" ile ad ile ".html" olsun
+    hedef dosyasına sayfa yaz
+değilse istek "KAYNAK:" ile başlıyorsa
+    # Çalışma bütçesine sığmayan çok büyük belge: başlık + içindekiler + açık depodaki kaynağa yönlendirme.
+    yol isteğin "KAYNAK:" yerine "" değişmişi olsun
+    kaynak "../uretilen/md/" ile yol olsun
+    satırlar kaynak dosyasının satırları olsun
+    başlık satırlar için basligiBul olsun
+    ad yol için belgeAdi olsun
+    adres "/belge/" ile ad ile "/" olsun
+    özet "Depodaki " ile yol ile " belgesi." olsun
+    üst "Belgeler" ve başlık ve özet ile icSayfaBasliginiHazirla olsun
+    bag "https://github.com/merbay-erp/zee/blob/master/" ile yol olsun
+    gövde "<div class='not-kutusu'><b>Bu belge çok uzun.</b> Sitede özetlenemeyecek kadar büyük olduğu için tam metni depodaki kaynağında okunur.</div><p><a class='dugme altin' href='" ile bag html güvenlisi ile "' rel='noreferrer'>Tam metni oku →</a></p>" olsun
+    kaynak_bağı "<p class='belge-kaynagi'>Kaynak: <a href='" ile bag html güvenlisi ile "' rel='noreferrer'>" ile yolun html güvenlisi ile "</a> · <a href='/belge/'>Bütün belgeler</a></p>" olsun
+    tam üst ile "<div class='kabuk dar'><article class='icerik belge-metni'>" ile gövde ile kaynak_bağı ile "</article></div>" olsun
+    sayfa başlık ve adres ve tam ile sayfayiHazirla olsun
+    hedef "../uretilen/belge/" ile ad ile ".html" olsun
+    hedef dosyasına sayfa yaz
 değilse
     kaynak "../uretilen/md/" ile istek olsun
     satırlar kaynak dosyasının satırları olsun

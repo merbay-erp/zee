@@ -93,7 +93,10 @@ işlem satirIciniCevir
     listeyi Metin listesi olarak al
     Metin döndürür
 
-    çıktı "" olsun
+    # Çıktı parça listesinde birikir, sonda bir kez birleşir: harf harf metin uzatmak uzun satırda
+    # çalışma bütçesini karesel tüketiyordu (büyük belgelerde C024).
+    parçalar boş liste olsun
+    parçalara "" ekle
     bağ_metni "" olsun
     kod_parçası "" olsun
     adres "" olsun
@@ -113,7 +116,8 @@ işlem satirIciniCevir
                 önceki_kip "bağ" a eşitse
                     bağ_metni bağ_metni ile kod_html olsun
                 değilse
-                    çıktı çıktı ile kod_html olsun
+                    eklenecek kod_html olsun
+                    parçalara eklenecek ekle
                 kip önceki_kip olsun
                 kod_parçası "" olsun
             değilse
@@ -122,7 +126,8 @@ işlem satirIciniCevir
             işlendi doğru olsun
             harf ")" e eşitse
                 hedef adres ve dizin ve liste ile baglantiyiCevir olsun
-                çıktı çıktı ile "<a href='" ile hedefin html güvenlisi ile "'>" ile bağ_metni ile "</a>" olsun
+                eklenecek "<a href='" ile hedefin html güvenlisi ile "'>" ile bağ_metni ile "</a>" olsun
+                parçalara eklenecek ekle
                 kip "metin" olsun
                 bağ_metni "" olsun
             değilse
@@ -134,7 +139,8 @@ işlem satirIciniCevir
                 kip "adres" olsun
                 adres "" olsun
             değilse
-                çıktı çıktı ile "[" ile bağ_metni ile "]" olsun
+                eklenecek "[" ile bağ_metni ile "]" olsun
+                parçalara eklenecek ekle
                 bağ_metni "" olsun
                 kip "metin" olsun
         işlendi değilse
@@ -154,7 +160,8 @@ işlem satirIciniCevir
                     kip "bağ" a eşitse
                         bağ_metni bağ_metni ile etiket olsun
                     değilse
-                        çıktı çıktı ile etiket olsun
+                        eklenecek etiket olsun
+                        parçalara eklenecek ekle
                 değilse
                     yıldız_bekliyor yanlış olsun
                     etiket "<em>" olsun
@@ -167,7 +174,8 @@ işlem satirIciniCevir
                     kip "bağ" a eşitse
                         bağ_metni bağ_metni ile etiket olsun
                     değilse
-                        çıktı çıktı ile etiket olsun
+                        eklenecek etiket olsun
+                        parçalara eklenecek ekle
         işlendi değilse
             harf "*" e eşitse
                 yıldız_bekliyor doğru olsun
@@ -185,28 +193,37 @@ işlem satirIciniCevir
                 kip "bağ" a eşitse
                     kapanış_bekliyor doğru olsun
                 değilse
-                    çıktı çıktı ile "]" olsun
+                    eklenecek "]" olsun
+                    parçalara eklenecek ekle
             değilse
                 güvenli harfin html güvenlisi olsun
                 kip "bağ" a eşitse
                     bağ_metni bağ_metni ile güvenli olsun
                 değilse
-                    çıktı çıktı ile güvenli olsun
+                    eklenecek güvenli olsun
+                    parçalara eklenecek ekle
     yıldız_bekliyor ise
-        çıktı çıktı ile "*" olsun
+        eklenecek "*" olsun
+        parçalara eklenecek ekle
     kip "kod" a eşitse
-        çıktı çıktı ile "`" ile kod_parçasının html güvenlisi olsun
+        eklenecek "`" ile kod_parçasının html güvenlisi olsun
+        parçalara eklenecek ekle
     değilse kip "adres" e eşitse
-        çıktı çıktı ile "[" ile bağ_metni ile "](" ile adresin html güvenlisi olsun
+        eklenecek "[" ile bağ_metni ile "](" ile adresin html güvenlisi olsun
+        parçalara eklenecek ekle
     değilse kip "bağ" a eşitse
-        çıktı çıktı ile "[" ile bağ_metni olsun
+        eklenecek "[" ile bağ_metni olsun
+        parçalara eklenecek ekle
         kapanış_bekliyor ise
-            çıktı çıktı ile "]" olsun
+            eklenecek "]" olsun
+            parçalara eklenecek ekle
     kalın ise
-        çıktı çıktı ile "</strong>" olsun
+        eklenecek "</strong>" olsun
+        parçalara eklenecek ekle
     eğik ise
-        çıktı çıktı ile "</em>" olsun
-    çıktı döndür
+        eklenecek "</em>" olsun
+        parçalara eklenecek ekle
+    parçaların "" ile birleşmişi döndür
 
 işlem bastanAt
     yazıyı Metin olarak al
