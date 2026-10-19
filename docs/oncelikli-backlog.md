@@ -2361,6 +2361,7 @@ Gatekeeper karantina ve LibreSSL bulguları düzeltildi
 ## K-322 — V1 sürüm adayı (v1.0.0-rc.1)
 
 **Durum: SÜRÜYOR — aday yayımlandı, son V1 kapıları açık.** Proje sahibi
-kararıyla imzalı üç platform ön-sürüm; derleyici `1.0.0-dev`. Son `v1.0.0`
+kararıyla imzalı üç platform ön-sürüm; derleyici `1.0.0-dev`. Etiket aaf9aa88,
+RC kapısı ve yayın kanıtı: [kayıt](surum-v1.0.0-rc.1-kaniti.md). Son `v1.0.0`
 için P27, P28 (11.11.2026), P29 Windows ve kısmi ürün kapıları kapanmalı.
 

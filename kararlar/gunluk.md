@@ -4865,3 +4865,7 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   (GitHub ön-sürüm; tireli etiketler `--prerelease`). Cargo kimliği `1.0.0-dev` serisine alındı (ADR-064:
   X.Y.Z-dev). Son `v1.0.0` P27/P28/P29 ve kısmi P05/P06/P24/P31/P34 kapanınca; 12.11.2026 zamanlanmış görevi
   P28'i kapatıp durumu raporlar.
+- K-322 eki: `v1.0.0-rc.1` aaf9aa88 üzerinde; sürüm adayı güvenlik kapısı dış RC paketiyle geçti (bfe454fa…,
+  4 ASan×1800 sn + 2 Miri; 1022/0/27). GitHub ön-sürümü üç platform imzalı paketle yayında; indirilen paket
+  imza/kur/çalıştır ile doğrulandı. Kayıt `docs/surum-v1.0.0-rc.1-kaniti.md`. Not: rc-kaniti export çıktı
+  yolunda sembolik bağ reddeder; macOS'ta `/tmp` yerine `/private/tmp` kullanılmalı.
