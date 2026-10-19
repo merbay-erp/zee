@@ -4861,3 +4861,7 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   Gatekeeper'ca öldürülüyordu → `kur.sh` doğrulanmış kopyadan karantinayı kaldırır; macOS LibreSSL Ed25519
   doğrulamaz → `imza-dogrula.sh` OpenSSL 3+ arar, araç eksikliğini ayrı raporlar. Apple noter onayı ayrı
   karar; fiziksel Windows açık. Kayıt: `docs/urunlesme-p29-macos-fiziksel-20261019.md`.
+- K-322 (19.10.2026): Proje sahibi kararı — açık V1 kapıları sürerken `v1.0.0-rc.1` sürüm adayı yayımlanır
+  (GitHub ön-sürüm; tireli etiketler `--prerelease`). Cargo kimliği `1.0.0-dev` serisine alındı (ADR-064:
+  X.Y.Z-dev). Son `v1.0.0` P27/P28/P29 ve kısmi P05/P06/P24/P31/P34 kapanınca; 12.11.2026 zamanlanmış görevi
+  P28'i kapatıp durumu raporlar.

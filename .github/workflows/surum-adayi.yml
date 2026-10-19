@@ -94,6 +94,9 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
+          # vX.Y.Z-rc.N gibi tireli etiketler GitHub'da ön-sürüm olarak işaretlenir.
+          on_surum=()
+          [[ "$GITHUB_REF_NAME" == *-* ]] && on_surum=(--prerelease)
           gh release create "$GITHUB_REF_NAME" "$RUNNER_TEMP"/yayin/* --repo "$GITHUB_REPOSITORY" \
-            --title "zee $GITHUB_REF_NAME" --verify-tag \
+            --title "zee $GITHUB_REF_NAME" --verify-tag "${on_surum[@]}" \
             --notes "İmzalı resmî sürüm. Yayıncı anahtarı: docs/yayinci-anahtari-v1.txt · doğrulama: bash scripts/imza-dogrula.sh <açılan-klasör> · notlar: docs/surumler.md"
