@@ -387,6 +387,17 @@ fn gercek_ikililer_kurulur_calisir_kaldirilir_ve_oynanmis_artefakt_reddedilir() 
         std::fs::remove_file(hedef.join(&dillsp_ad)).unwrap();
     }
 
+    // macOS P29: tarayıcıdan inen artefakt karantinalıdır; ad-hoc imzalı ikili
+    // Gatekeeper'ca öldürülmemeli. Kurulum yalnız doğrulanmış kopyadan işareti kaldırır.
+    #[cfg(target_os = "macos")]
+    for ad in [&dil_ad, &dillsp_ad] {
+        let isaret = Command::new("xattr")
+            .args(["-w", "com.apple.quarantine", "0083;00000000;Safari;"])
+            .arg(artefakt.join(ad))
+            .status()
+            .unwrap();
+        assert!(isaret.success());
+    }
     let kur = betik(
         "kur.sh",
         &[
@@ -411,6 +422,18 @@ fn gercek_ikililer_kurulur_calisir_kaldirilir_ve_oynanmis_artefakt_reddedilir() 
         .output()
         .unwrap();
     assert!(String::from_utf8_lossy(&surum.stdout).starts_with("dil "));
+    #[cfg(target_os = "macos")]
+    {
+        let karantina = Command::new("xattr")
+            .args(["-p", "com.apple.quarantine"])
+            .arg(hedef.join(&dil_ad))
+            .output()
+            .unwrap();
+        assert!(
+            !karantina.status.success(),
+            "kurulu ikili karantinasız olmalı"
+        );
+    }
 
     let ikinci = betik(
         "kur.sh",

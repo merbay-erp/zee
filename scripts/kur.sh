@@ -91,6 +91,11 @@ while IFS= read -r satir || [[ -n "$satir" ]]; do
         echo "SHA-256 uyuşmuyor: $ad (beklenen $beklenen, bulunan $bulunan); kurulum iptal." >&2
         exit 1
     fi
+    # macOS: tarayıcıdan inen artefaktın karantina işareti ad-hoc imzalı ikiliyi Gatekeeper'a
+    # öldürtür (SIGKILL). Yalnız SHA-256 doğrulanmış kopyadan, yalnız bu işaret kaldırılır.
+    if [[ "$(uname -s)" == Darwin ]] && command -v xattr >/dev/null 2>&1; then
+        xattr -d com.apple.quarantine "$hazirlik/$ad" 2>/dev/null || true
+    fi
     kurulacak_adlar+=("$ad")
     printf '%s\t%s\t%s\n' "$hedef/$ad" "$bulunan" "$git_sha" >> "$gecici_manifest"
 done < "$artefakt/SHA256SUMS"

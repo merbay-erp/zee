@@ -7,7 +7,7 @@
 ürün, yayın veya destek kararı vermez; eksik kanıtı tamamlanmış göstermez.
 
 Beş tam anonim proje 19 Ekim 2026'da hazırlandı ve ölçüldü (P08 kanıtlı).
-**Fiziksel cihaz bulunmadığı** için P29 açıktır. Sınırlı pilot desteği seçilmiştir; lisans 19 Ekim 2026'da MIT olarak belirlendi.
+P29'un macOS kısmı 19 Ekim 2026'da proje sahibinin fiziksel Mac'inde kabul edildi ([kayıt](urunlesme-p29-macos-fiziksel-20261019.md)); **fiziksel Windows cihazı** bulunmadığı için Windows kısmı açıktır. Sınırlı pilot desteği seçilmiştir; lisans 19 Ekim 2026'da MIT olarak belirlendi.
 Bu iki mevcut karar teknik çalışmaya devam etmek için yeniden sorulmaz.
 
 ## Öncelik ve teslim özeti
@@ -78,7 +78,7 @@ başarı lehine varsayılmaz. Gerçek katılımcı olmadan bu kapı kapanmaz.
 
 ## P29: fiziksel cihaz kaydı
 
-Cihaz şu anda yoktur; kullanıcıdan hemen sonuç üretmesi beklenmez. Cihaz
+macOS kabul edildi; Windows cihazı şu anda yoktur. Cihaz
 hazır olunca aşağıdaki bilgiler yeterli başlangıç girdisidir:
 
 | Alan | Doldurulacak değer |

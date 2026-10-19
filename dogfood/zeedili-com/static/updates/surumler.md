@@ -32,6 +32,20 @@ Bu kayıt yeni sürüm etiketi veya V1 yayını değildir.
 - **Marka politikası:** Ad ve logo kod lisansından ayrı; eğitim ve "zee ile
   yazıldı" serbest ([politika](marka-politikasi.md)).
 
+### Düzeltilenler
+
+- **macOS kurulumu:** Tarayıcıdan indirilen sürüm Mac'te ilk çalıştırmada
+  macOS tarafından durduruluyordu (karantina işareti). Kurulum betiği artık
+  özetini doğruladığı ikiliden bu işareti kaldırıyor; `dil` ve `dillsp`
+  doğrudan çalışıyor ([P29 macOS kabulü](urunlesme-p29-macos-fiziksel-20261019.md)).
+- **İmza doğrulama:** macOS'un yerleşik `openssl`'i Ed25519 doğrulayamadığı
+  için imza yanlışlıkla "geçersiz" görünüyordu. Betik OpenSSL 3'ü
+  (Homebrew `openssl@3` dahil) kendisi buluyor; yoksa ne kurulacağını
+  söylüyor.
+- **Windows ve tarayıcı oyun alanı:** Windows'ta `zee.ayar` taşıyan proje
+  yolu ve tarayıcıdaki oyun alanının derlemesi yeniden çalışıyor; testler
+  Linux, macOS ve Windows'ta yeşil.
+
 ### Güncellenenler
 
 - **Gerçek ürün korpusu (P08):** Beş üretim sitesi ve çekirdek anonim tam paket
