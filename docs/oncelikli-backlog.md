@@ -2337,8 +2337,13 @@ core-freeze beyanları 2746606 için eklendi.
 
 ## K-319 — Açık depo CI ortamı
 
-**Durum: SÜRÜYOR.** Python 3.13.3 pini ve 2746606 beyanı eklendi; GitHub
-makinelerinde kalan platform farkları ayrı ele alınır.
+**Durum: KAPALI.** Açık depo `dil` CI 69a6d8fe'de Linux, macOS ve Windows'ta
+yeşil. Python 3.13.3 pini; Linux native kampanyalarına özel tek bağlantılı ikili;
+worker-supervisor zombi lider düzeltmesi; Windows `zee.ayar` sürücü öneki ve
+`@unix` faz seçicileri; Playground kapsam bağımlılığı. `surum-adayi` aynı
+commit'te üç platform imzalı ([kanıt](urunlesme-p125-imzali-surum-20261019.md)).
+Açık kalan: `lifecycle_core.py` Linux zombi lider kalıbı (pinli kanıt zinciri),
+`acik-depo`/`tedarik` iş akışlarında eski geçmiş bulguları (geçmiş yeniden yazılmaz).
 
 ## K-320 — Kullanılabilirlik oturum yürütücüsü
 
