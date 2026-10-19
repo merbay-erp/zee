@@ -1,4 +1,7 @@
 //! K-233: Cargo kapısı aynı exact build araçlarıyla signed pilot seçiciyi denetler.
+#[allow(dead_code)]
+#[path = "ortak/ozel_ikili.rs"]
+mod ozel_ikili;
 use std::path::Path;
 use std::process::Command;
 
@@ -14,6 +17,11 @@ fn signed_pilot_secici_exact_kripto_ve_proje_kapsamini_korur() {
         "Windows explicit fixture kabulü henüz sağlanmıyor"
     );
     let compiler_dir = Path::new(env!("CARGO_BIN_EXE_dil")).parent().unwrap();
+    let surum_araci = compiler_dir.join(if cfg!(target_os = "windows") {
+        "surum_artefakti.exe"
+    } else {
+        "surum_artefakti"
+    });
     assert!(compiler_dir
         .join(if cfg!(target_os = "windows") {
             "surum_artefakti.exe"
@@ -27,7 +35,14 @@ fn signed_pilot_secici_exact_kripto_ve_proje_kapsamini_korur() {
         .arg("-I")
         .arg(repo.join("scripts/tests/derleyici-secici-test.py"))
         .arg("--compiler-dir")
-        .arg(compiler_dir)
+        .arg(ozel_ikili::ozel_klasor(
+            "secici",
+            &[
+                env!("CARGO_BIN_EXE_dil"),
+                env!("CARGO_BIN_EXE_dillsp"),
+                surum_araci.to_str().unwrap(),
+            ],
+        ))
         .current_dir(repo)
         .output()
         .unwrap();
