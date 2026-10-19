@@ -18,8 +18,9 @@ Bu kayıt yeni sürüm etiketi veya V1 yayını değildir.
   başvurulmayan ekler eklenti olarak kalır. Logo gibi küçük görseller, dış
   görselleri engelleyen e-posta istemcilerinde de görünür. Kalıp, imza,
   sınırlar ve yetkiler değişmedi ([RFC-0034](../rfcs/0034-ekli-eposta.md)).
-- **Açık kaynak deposu:** Depo temiz geçmişle yeniden herkese açık;
-  sitedeki kaynak, örnek proje ve geri bildirim bağlantıları çalışıyor.
+- **Açık kaynak ve MIT lisansı:** Depo temiz geçmişle yeniden herkese açık
+  ve kod MIT lisanslı ([LICENSE](../LICENSE), [ADR-154](../adr/154-mit-lisansi.md)).
+  Sitedeki kaynak, örnek proje ve geri bildirim bağlantıları çalışıyor.
 
 ### Güncellenenler
 
