@@ -40,7 +40,7 @@ kılar. Clippy ölçümü sabit Rust araç zinciriyle üretim `lib` ve `dil` iki
 | `compiler/src/cozumleyici/yetkinlik.rs::cumle_bilgisi#1` | 173→176 (+3/+18) | 8→8 (+0/+2) | PAY İÇİNDE |
 | `compiler/src/cozumleyici/yetkinlik.rs::ifade_bilgisi#1` | 112→112 (+0/+12) | 6→6 (+0/+2) | SABİT |
 | `compiler/src/eposta.rs::gonder_ic#1` | 87→87 (+0/+9) | 7→7 (+0/+2) | SABİT |
-| `compiler/src/eposta/mime.rs::ileti_kur#1` | 93→93 (+0/+10) | 8→8 (+0/+2) | SABİT |
+| `compiler/src/eposta/mime.rs::ileti_kur#1` | 93→98 (+5/+10) | 8→8 (+0/+2) | PAY İÇİNDE |
 | `compiler/src/gorsel.rs::kucult#1` | 82→82 (+0/+9) | 2→2 (+0/+2) | SABİT |
 | `compiler/src/hir/lint.rs::blok#1` | 92→92 (+0/+10) | 17→17 (+0/+4) | SABİT |
 | `compiler/src/hir/lint.rs::uyarilari#1` | 64→64 (+0/+8) | 13→13 (+0/+3) | SABİT |
