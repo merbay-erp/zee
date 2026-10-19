@@ -4802,3 +4802,13 @@ sağlayıcı/platform/insan sınırları değişmedi.
 Kod MIT; ad/logo/alan adı ayrı korunur. Eğitim, yazı, "zee ile yazıldı" ve
 değiştirilmemiş yeniden dağıtım serbest; değiştirilmiş dağıtımın "zee" adıyla
 çıkması ve resmî izlenim izne bağlı. P39 marka kısmı kapandı; imza kanalı açık.
+
+## K-317 — Yayıncı anahtarı ve imzalı yayın kanalı
+
+19.10.2026 kullanıcı kararı: özel anahtar açık deponun Actions sırrında, şifreli
+yedeği proje sahibinde ([ADR-156](../adr/156-yayin-kanali-ve-yayinci-anahtari.md)).
+Kimlik `sha256:50149cf7…8456` [sabit dosyada](../docs/yayinci-anahtari-v1.txt).
+`surum-adayi` üç platformda derler/imzalar; `yayinla` imzayı sabit anahtarla
+doğrulamadan GitHub Releases'e yükleme yapmaz. `scripts/imza-dogrula.sh`
+derlemesiz OpenSSL doğrulaması; `yayin_imzasi_testi` gerçek zinciri ve üç reddi
+sınar. `download-artifact` v8.0.2 pini eklendi. P39 kapandı; P24 kanal düzeyinde.

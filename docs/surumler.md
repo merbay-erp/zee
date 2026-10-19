@@ -21,6 +21,10 @@ Bu kayıt yeni sürüm etiketi veya V1 yayını değildir.
 - **Açık kaynak ve MIT lisansı:** Depo temiz geçmişle yeniden herkese açık
   ve kod MIT lisanslı ([LICENSE](../LICENSE), [ADR-154](../adr/154-mit-lisansi.md)).
   Sitedeki kaynak, örnek proje ve geri bildirim bağlantıları çalışıyor.
+- **İmzalı resmî sürüm kanalı:** Etiketlenen sürüm Linux, macOS ve Windows'ta
+  derlenip sabit yayıncı anahtarıyla imzalanır; GitHub Releases'e yalnız imzası
+  doğrulanan paket konur. `scripts/imza-dogrula.sh` derleme gerektirmeden
+  doğrular ([ADR-156](../adr/156-yayin-kanali-ve-yayinci-anahtari.md)).
 - **Marka politikası:** Ad ve logo kod lisansından ayrı; eğitim ve "zee ile
   yazıldı" serbest ([politika](marka-politikasi.md)).
 

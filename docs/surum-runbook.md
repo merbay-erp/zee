@@ -23,12 +23,15 @@ atlanmaz.
    ve Rust araçları PATH dışında program/LSP provasını taşır. Yerelde
    `bash scripts/kur.sh --artefakt <klasör>` → `dil sürüm` →
    `bash scripts/kaldir.sh`.
-6. **Duyuru.** Sürüm notu, yayıncı anahtar kimliği ve `SHA256SUMS` içeriği
-   yayımlanır; README canlı sayıları `depo_sayilari --yaz` ile yenilenir.
+6. **Duyuru.** `yayinla` işi her platform imzasını sabit
+   [yayıncı anahtarına](yayinci-anahtari-v1.txt) karşı doğrulayıp paketleri GitHub
+   Releases'e koyar (ADR-156); imzasız artefakt yayımlanmaz. Sürüm notu, yayıncı
+   anahtar kimliği ve `SHA256SUMS` içeriği yayımlanır; README canlı sayıları `depo_sayilari --yaz` ile yenilenir.
 
 ## Kullanıcı kurulumu
 
 ```bash
+bash scripts/imza-dogrula.sh ~/İndirilenler/zee-surum      # önce imza (OpenSSL 3+)
 bash scripts/kur.sh --artefakt ~/İndirilenler/zee-surum      # ~/.local/bin
 dil sürüm
 bash scripts/kaldir.sh

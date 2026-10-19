@@ -1,0 +1,4 @@
+# zee resmî sürüm yayıncı anahtarı (zee-surum-imza-v1, Ed25519) — K-317, ADR-156
+# Resmî sürümlerin SHA256SUMS.zee-imza belgesi yalnız bu anahtarla geçerlidir.
+kimlik sha256:50149cf7aa2d3cfff2e326413d704349ad1cd11c84cf4e31a1e428cec7268456
+acik ee5320f7174aab8cb85af77fc1d797e2c20203a9a47718ae5a24a4f202d5ffc5

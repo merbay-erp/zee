@@ -214,3 +214,4 @@ spec/29-test-kapsami.md	kismi	compiler/tests/kaynak_kapsami_testi.rs	K-284 kayna
 adr/153-lsp-utf16-konum-siniri.md	kanitli	compiler/tests/lsp_artimli_testi.rs,compiler/tests/semantic_regresyon_korpusu_testi.rs	K-297 ordinary LSP UTF-16 imleç ve yanıt düzeltmesi; C1/P33 kapsam dışı
 adr/154-mit-lisansi.md	kanitli	compiler/tests/dokuman_tazelik_testi.rs	K-314 kök LICENSE MIT metni, Cargo paketleri ve VS Code eklentisi aynı lisansı bildirir; marka politikası kapsam dışı
 adr/155-marka-politikasi.md	kanitli	compiler/tests/dokuman_tazelik_testi.rs	K-316 marka politikası belgesi ve README/ADR bağı yürürlükte; marka hukuki tescili kapsam dışı
+adr/156-yayin-kanali-ve-yayinci-anahtari.md	kanitli	compiler/tests/yayin_imzasi_testi.rs	K-317 gerçek anahtar/imza/OpenSSL doğrulama ve üç ret; sabit kimlik açık anahtarın SHA-256'sı; yayın akışı imzasızı reddeder. Gerçek uzak yayın P30
