@@ -349,7 +349,7 @@ test "anasayfa cümle çözümlemesi, örnek defteri ve dürüst durum taşır"
     gövde "HATA T002" içermeli
     gövde "Bu site Zee ile yazıldı" içermeli
     sayfa anasayfayiHazirla olsun
-    sayfa "Kaynak herkese açık; lisans kararı bekleniyor." içermeli
+    sayfa "Kaynak herkese açık, MIT lisanslı." içermeli
 
 test "defter sekmesi kaynağı ve çıktıyı kaçışlı taşır"
     sekme "x" ve "\"a\" <b>yaz</b>" ve "<i>" ile defterSekmesi olsun

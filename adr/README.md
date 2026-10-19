@@ -158,3 +158,4 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | [080 — Özel Gitsrv CI ve Tier-1 kanıt sınırı](080-tier1-kanit-kaynaklari.md) | kabul | K-217 özel CI ve çapraz/gerçek runtime ayrımı |
 
 | ADR-153 | [LSP sınırında UTF-16 konumları](153-lsp-utf16-konum-siniri.md) | **K-297 exact fixed_by kapalı; a57290f native UTF-16/IDE tazeliği; genel P19 açık** (K-297/K-298) |
+| ADR-154 | [Kod lisansı: MIT](154-mit-lisansi.md) | **kabul** (K-314; P39 lisans, P32 açık depo) |

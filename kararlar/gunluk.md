@@ -4775,3 +4775,13 @@ sayılmaz; tam P19 ve V1 açık kalır.
 
 Dış girdiler [kullanıcı teslim listesinde](../docs/urunlesme-kullanici-girdileri.md)
 ayrıldı. Beş tam proje hazır değil, fiziksel cihaz yok; bu kapılar bekliyor.
+
+## K-314 — Lisans MIT ve açık depo (P39, P32)
+
+19.10.2026 kullanıcı kararı: kod **MIT** lisanslıdır ([ADR-154](../adr/154-mit-lisansi.md)).
+Kök `LICENSE`, Cargo paketlerinde `license = "MIT"`, VS Code eklentisi `MIT`.
+Kaynak depo aynı gün temiz geçmişle yeniden herkese açıldı: yalnız taranmış
+master ve etiketler taşındı; eski depo gizli arşivde kalır, PR ref/cache
+kopyaları yeni depoya geçmedi (P32 kapalı, GitHub destek yanıtı gerekmez).
+Marka politikası, yayıncı/imza anahtarı ve dağıtım kanalı açık kalır; V1 kapıları
+(freeze takvimi, insan oturumları, fiziksel cihaz, anonim tam korpus) değişmez.

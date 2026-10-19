@@ -4,6 +4,7 @@ version = "0.8.0-dev"
 edition = "2021"
 default-run = "dil"
 description = "Türkçe programlama dili — bootstrap derleyici (Stage 0)"
+license = "MIT"
 publish = false
 
 [[bin]]

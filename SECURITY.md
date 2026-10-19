@@ -22,7 +22,8 @@ tutulur (K-170/ADR-066). Bu dosya bildirim kanalını, önem sözlüğünü ve s
 
 [Sınırlı pilot destek politikası](docs/urun-destek-politikasi.md) desteklenen
 kapsamı ve güvenlik/uyumluluk kapılarına bağlı yayın kararını tanımlar.
-Lisans seçimi, LTS süresi ve düzenli yayın takvimi henüz verilmiş söz değildir.
+Kod MIT lisanslıdır ([LICENSE](LICENSE), [ADR-154](adr/154-mit-lisansi.md)). LTS süresi ve düzenli
+yayın takvimi henüz verilmiş söz değildir.
 
 ## Önem sözlüğü
 
