@@ -254,7 +254,8 @@ fn cli_gozle(kaynak: &str) -> Gozlem {
         cikti: String::from_utf8(gozlenen)
             .expect("CLI seçili çıktı UTF-8")
             .lines()
-            .map(str::to_string)
+            // Sürüm kimliği seriyle değişir; beklenen çıktı `{surum}` yer tutucusu taşır.
+            .map(|satir| satir.replace(env!("CARGO_PKG_VERSION"), "{surum}"))
             .collect(),
     }
 }

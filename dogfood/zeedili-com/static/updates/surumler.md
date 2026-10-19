@@ -5,6 +5,43 @@
 Her sürüm: ne eklendi, ne değişti, neyin sözü verildi. Kırıcı değişiklik
 sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 
+## v1.0.0-rc.1 — 19 Ekim 2026 (sürüm adayı)
+
+**Durum:** V1'in ilk sürüm adayı; GitHub'da ön-sürüm olarak yayımlanır. Bu
+bir V1 yayını değildir: son `v1.0.0`, aşağıdaki açık kapılar kapanınca
+etiketlenir. Derleyici kimliği `1.0.0-dev` serisindedir.
+
+### Ne var
+
+- Linux (x86_64), macOS (arm64) ve Windows (x86_64) için hazır `dil` ve
+  `dillsp`; her platformda iki bağımsız temiz derlemede birebir aynı ikili,
+  SBOM, provenance ve resmî yayıncı imzası
+  ([yayıncı anahtarı](yayinci-anahtari-v1.txt)).
+- Bu adaya kadarki bütün geliştirme güncellemeleri (aşağıdaki 19 ve 17
+  Ekim kayıtları): gömülü e-posta görseli, MIT lisansı, imzalı yayın kanalı,
+  macOS kurulum ve Windows düzeltmeleri.
+
+### Kurulum
+
+İndirilen paketi açın, önce imzayı sonra kurulumu doğrulayın
+([runbook](surum-runbook.md)):
+`bash scripts/imza-dogrula.sh <klasör>` (OpenSSL 3+; macOS'ta
+`brew install openssl@3`) → `bash scripts/kur.sh --artefakt <klasör>` →
+`dil sürüm`. Windows: `powershell -File scripts/kur.ps1 -Artefakt <klasör>`.
+
+### V1 öncesi açık kapılar
+
+- İnsan kullanılabilirlik oturumları (P27): 10 öğrenci/çocuk ve 5 profesyonel.
+- Sözdizimi dondurma penceresi (P28) 11 Kasım 2026'da biter; bu adayda dil
+  sözdizimi değişmedi ve pencere boyunca değişmeyecek.
+- Fiziksel Windows cihaz kabulü (P29); macOS fiziksel kabul tamam.
+- Kısmi ürün kapıları: göç/uyumluluk (P05), teslim (P06), pilot güvenlik (P24),
+  PostgreSQL üretim (P31), worker işletimi (P34).
+
+### Uyumluluk ve göç
+
+0.8.0-dev geliştirme hattından dil ve proje değişikliği yok; göç gerekmiyor.
+
 ## 19 Ekim 2026 — Geliştirme güncellemeleri
 
 **Durum:** 0.8.0-dev geliştirme hattı; son yayımlanmış etiket 0.7.0.

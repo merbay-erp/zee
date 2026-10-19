@@ -300,7 +300,7 @@ dependencies = [
 
 [[package]]
 name = "dil"
-version = "0.8.0-dev"
+version = "1.0.0-dev"
 dependencies = [
  "argon2",
  "bcrypt",

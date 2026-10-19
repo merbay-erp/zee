@@ -2357,3 +2357,10 @@ katılımcı şablonu uyumlu.
 26.6.2) temiz oturumda imzalı aday: imza, kur, program, LSP, kaldır geçti.
 Gatekeeper karantina ve LibreSSL bulguları düzeltildi
 ([kayıt](urunlesme-p29-macos-fiziksel-20261019.md)).
+
+## K-322 — V1 sürüm adayı (v1.0.0-rc.1)
+
+**Durum: SÜRÜYOR — aday yayımlandı, son V1 kapıları açık.** Proje sahibi
+kararıyla imzalı üç platform ön-sürüm; derleyici `1.0.0-dev`. Son `v1.0.0`
+için P27, P28 (11.11.2026), P29 Windows ve kısmi ürün kapıları kapanmalı.
+
