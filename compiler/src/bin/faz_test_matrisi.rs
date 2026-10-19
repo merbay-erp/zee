@@ -54,7 +54,7 @@ struct HedefKimligi {
 struct Secici {
     hedef: HedefKimligi,
     filtre: Option<String>,
-    /// `@unix` son eki: hedef modül yalnız Unix'te derlenir; başka platformda sıfır eşleşme kabul.
+    /// `@unix` son eki: testler yalnız Unix'te derlenir; başka platformda sıfır test kabul.
     yalniz_unix: bool,
 }
 
@@ -742,8 +742,8 @@ fn kanonik_dokuman(fazlar: &[Faz]) -> String {
          güncel kaldığını doğrular; ardından fazları ayrı çalıştırıp test sayısı,\n\
          pass/fail/ignored ve duvar süresini dinamik Markdown raporuna yazar. `cfg`\n\
          koşullu testler nedeniyle sayı işletim sistemine göre değişebilir; sahiplik\n\
-         kuralı her platformda yeniden kanıtlanır. `@unix` son ekli seçici, modülü yalnız\n\
-         Unix'te derlenen testleri gösterir; boş seçici denetimi onu yalnız Unix'te uygular. Derleme\n\
+         kuralı her platformda yeniden kanıtlanır. `@unix` son ekli seçici, yalnız\n\
+         Unix'te derlenen testleri gösterir; boş seçici ve sıfır test denetimi onu yalnız Unix'te uygular. Derleme\n\
          hatası, sahipsiz/yinelenen test, boş seçici, bayat belge, beklenmeyen test\n\
          sayısı veya başarısız test kapıyı kapatır. CI raporu step summary ve indirilebilir\n\
          artefakt olarak yayımlar; süre gözlemseldir, performans eşiği değildir.\n",
@@ -859,7 +859,7 @@ fn fazlari_calistir(
                             }
                         } else {
                             sonuc.beklenen += calisan;
-                            if calisan == 0 {
+                            if calisan == 0 && (cfg!(unix) || !secici.yalniz_unix) {
                                 sonuc.hatalar.push(format!(
                                     "{} entegrasyon hedefi hiç test çalıştırmadı",
                                     seciciyi_yaz(secici)

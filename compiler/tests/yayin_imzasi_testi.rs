@@ -1,6 +1,9 @@
 //! K-317 / ADR-156: resmî sürüm imzası derlemesiz doğrulanır. Gerçek `dil anahtar üret`,
 //! `surum_artefakti imzala` ve `scripts/imza-dogrula.sh` (OpenSSL Ed25519) zinciri; olumsuz
 //! durumlar: değişmiş ikili, değişmiş SHA256SUMS, sabit olmayan yayıncı anahtarı.
+//! Kabuk zinciri POSIX `bash` ister (Windows'ta `bash` WSL'e çözülür); yayın doğrulaması
+//! Linux yayın işinde koşar, tutarlılık denetimi her platformda.
+#![cfg_attr(not(unix), allow(dead_code, unused_imports))]
 
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -70,6 +73,7 @@ fn anahtar_uret(yol: &Path) {
     );
 }
 
+#[cfg(unix)]
 #[test]
 fn resmi_imza_dogrulanir_degisiklik_ve_yabanci_anahtar_reddedilir() {
     let kok_yolu = std::env::temp_dir().join(format!("zee-yayin-imzasi-{}", std::process::id()));
