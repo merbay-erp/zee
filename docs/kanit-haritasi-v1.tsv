@@ -212,3 +212,4 @@ adr/150-native-worker-fault-ve-kontrollu-resolver.md	kismi	compiler/tests/servic
 adr/152-native-metrik-stdio-sessiz-ret.md	kismi	compiler/tests/native_metric_stdio_testi.rs	K-294: S3 exact dar yerel kabul ilgili ADR ve urunlesme-s3-kabul-20261015.md içinde kayıtlı; ürün/platform/genel kapsam açık.
 spec/29-test-kapsami.md	kismi	compiler/tests/kaynak_kapsami_testi.rs	K-284 kaynak sonuç/payda ve rapor sınırları; S3 dar yerel kabul kayıtlı, genel kapsam/gerçek ürün açık.
 adr/153-lsp-utf16-konum-siniri.md	kanitli	compiler/tests/lsp_artimli_testi.rs,compiler/tests/semantic_regresyon_korpusu_testi.rs	K-297 ordinary LSP UTF-16 imleç ve yanıt düzeltmesi; C1/P33 kapsam dışı
+adr/154-mit-lisansi.md	kanitli	compiler/tests/dokuman_tazelik_testi.rs	K-314 kök LICENSE MIT metni, Cargo paketleri ve VS Code eklentisi aynı lisansı bildirir; marka politikası kapsam dışı

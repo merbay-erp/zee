@@ -2,8 +2,8 @@
 
 14 Ekim 2026 kullanıcı kararı; K-224. Zee V1 öncesindedir. Destek modeli
 **sınırlı pilot** olarak seçildi: kayıtlı ürünün doğrulanmış kullanımını,
-güvenlik düzeltmelerini ve mevcut uyumluluk sözünü izler. Lisans seçimi
-bekletildi; yeni lisans, LTS süresi, altı haftalık yayın takvimi veya genel
+güvenlik düzeltmelerini ve mevcut uyumluluk sözünü izler. Kod 19 Ekim 2026'dan
+beri MIT lisanslıdır ([ADR-154](../adr/154-mit-lisansi.md)); LTS süresi, altı haftalık yayın takvimi veya genel
 üretim SLA'sı ilan edilmedi.
 
 ## Destek kapsamı

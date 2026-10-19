@@ -4,7 +4,7 @@
   "description": "Türkçe programlama dili için sözdizimi renklendirme ve düzenleyici desteği (çalışma adı: zee)",
   "version": "0.1.0",
   "publisher": "zee-dil",
-  "license": "SEE LICENSE IN ../../README.md",
+  "license": "MIT",
   "engines": {
     "vscode": "^1.75.0"
   },

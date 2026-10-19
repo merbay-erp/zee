@@ -19,7 +19,8 @@ toplam yaz
 **Başla:** [Kurulum ve ilk proje](docs/baslangic.md) ·
 [Örneklerle dil turu](docs/dil-turu.md) ·
 [Örnek projeler](projeler/) ·
-[Sürüm notları](docs/surumler.md)
+[Sürüm notları](docs/surumler.md) ·
+[Lisans: MIT](LICENSE)
 
 ## Mevcut durum
 
@@ -199,10 +200,10 @@ Değişikliğe özel test, belge ve güvenlik kapıları [AGENTS.md](AGENTS.md) 
 | Ölçüm | Tek kaynaklı değer |
 |---|---:|
 | Golden program | **33/33** |
-| Rust + doctest vakası | **1031** |
+| Rust + doctest vakası | **1033** |
 | Tanı kimliği | **162 etkin + 3 ayrılmış** |
 | RFC | **34** (2 kabul, 29 geçici kabul, 3 taslak) |
-| ADR | **148** (148 kabul) |
+| ADR | **149** (149 kabul) |
 | Normatif spec bölümü | **30** |
 <!-- ZEE-DEPO-SAYILARI:END -->
 
@@ -432,3 +433,11 @@ belgelerinde tutulur. Dar yerel S3 kabulü tamamlandı; resmî sürüm ve açık
 Kaynak `66e4149e53451111d153f47283c219079a8d1cab` üzerinde ikinci dalganın native senaryoları, macOS/Linux için iki temiz klondan teslim ve sekizer kurulum testi, gerçek JetBrains tamamlama/biçimlendirme/tanı/kapanış akışı, 1.800 saniyelik soak, 1 ve 41 açık belge ölçümü, dört ASan hedefi ve seçili Miri testleri geçti. Kanonik kanıt dışa aktarımı ve denetimi ile aynı kaynakta güvenlik kapısı geçti: tam Cargo koşusunda 989 başarılı, 0 başarısız, 25 varsayılan dışı vaka. Bu 25 vaka ayrıca çalıştırılan kampanyalara eşlendi; alt senaryolar Cargo toplamına eklenmez. GB-110 exact regression/native26/RC zinciriyle kapalıdır.
 
 [S3 teknik kabulü](docs/urunlesme-s3-kabul-20261015.md), sonuçları ve önceki başarısız denemeleri ayrı kaydeder. E commitleri belge ve kanıtları kaydeder. C1/K-288 ve P33/K-293 araç retleri; artımlı HIR/type, gerçek ürün/provenance/adoption, insan/takvim, fiziksel Windows/minOS ve yayın/lisans/destek kapıları açıktır. Bu kayıt tam V1 ya da public signed release kabulü değildir.
+
+## Lisans
+
+zee [MIT lisansıyla](LICENSE) yayımlanır: derleyici, dil sunucusu, standart
+kitaplık, araçlar, belgeler ve örnekler okulda, evde ve işte ücretsiz
+kullanılabilir, değiştirilebilir ve dağıtılabilir. Üçüncü taraf bileşenler
+kendi lisanslarını korur. "zee" adı ve logosu kod lisansından ayrıdır
+([ADR-154](adr/154-mit-lisansi.md)).

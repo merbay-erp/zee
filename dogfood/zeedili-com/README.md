@@ -226,8 +226,7 @@ dogfood/zeedili-com/scripts/dogrula.sh
   üretir. Deneysel localhost profili `text/plain` verdiği için yalnız yerel ön
   kapı geliştirme sırasında içerik türünü uyarlar; production Nginx worker'ın
   içerik türünü korur ve daha sıkı site CSP'sini tekilleştirir.
-- Kaynak depo özeldir; lisans seçimi bekler. Kaynak alt bilgisi sınırlı depo
-  erişimini açıkça söyler; site yeniden dağıtım lisansı vaat etmez. K-224
+- Kaynak depo herkese açık ve MIT lisanslıdır (ADR-154); alt bilgi bunu söyler. K-224
   kaynak düzeltmesi yerel kabul içindir; canlı dağıtım yapılmış sayılmaz.
   [Pilot destek politikası](../../docs/urun-destek-politikasi.md), güvenlik ve
   uyumluluk kapılarına bağlı destek kapsamını tanımlar.
