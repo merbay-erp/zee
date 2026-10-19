@@ -19,11 +19,11 @@ veya kaynak otoritesinin yerine geçmez.
 
 ```sh
 python3 -I -B scripts/worker-supervisor.py \
-  --dil /opt/zee/bin/dil --project /srv/uygulama \
+  --dil /opt/zee/bin/dil --project /var/lib/uygulama \
   --origin https://site.example \
   --worker-port 18091 --worker-port 18092 \
   --expected-source DERLEYICI_SHA --application-revision UYGULAMA_SHA \
-  --readiness-file /srv/uygulama/.zee/hazirlik.json \
+  --readiness-file /var/lib/uygulama/.zee/hazirlik.json \
   --health-path /hazir --health-body hazir
 ```
 
@@ -116,7 +116,7 @@ sınırları ve P14 yük/overlap kabulü geçerlidir.
 
 ## Credential bridge ve test
 
-İsteğe bağlı `--credential-root /srv/kimlikler --credential-env APP_KEY=anahtar`
+İsteğe bağlı `--credential-root /var/lib/kimlikler --credential-env APP_KEY=anahtar`
 aynı grup içinde [credential launcher](credential-baslat.md) çağırır. Exact
 dosya/izin/nofollow/boyut ve mevcut Zee yetkinlik kontrolleri korunur.
 Mapped ambient env varsa ret vardır; supervisor başka ambient credential

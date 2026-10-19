@@ -34,10 +34,10 @@ ayrı admin'den kurar, hazırlıkta yalnız SELECT çalıştırır.
 
 ```sh
 python3 -I -B scripts/db-hazirlik.py \
-  --dil /opt/zee/bin/dil --project /srv/probe \
-  --worker-project /srv/uygulama --gate /srv/uygulama/.zee/hazirlik.json \
+  --dil /opt/zee/bin/dil --project /var/lib/probe \
+  --worker-project /var/lib/uygulama --gate /var/lib/uygulama/.zee/hazirlik.json \
   --expected-source DERLEYICI_SHA --application-revision UYGULAMA_SHA \
-  --contract /srv/deployment/readiness-contract.json \
+  --contract /var/lib/dagitim/readiness-contract.json \
   --contract-sha256 CONTRACT_SHA256 --deadline 8
 ```
 
