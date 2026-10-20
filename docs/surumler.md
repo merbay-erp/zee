@@ -5,6 +5,29 @@
 Her sürüm: ne eklendi, ne değişti, neyin sözü verildi. Kırıcı değişiklik
 sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 
+## 20 Ekim 2026 — Geliştirme güncellemeleri
+
+**Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
+Bu kayıt yeni sürüm etiketi değildir.
+
+### Düzeltilenler
+
+- **Tek ağır istek artık sunucuyu düşürmez (K-323):** Web rotasında adım/çıktı
+  (C023) veya heap (C024) bütçesi aşılırsa yalnız o istek “istek güvenli
+  kaynak bütçesini aştı; otomatik tekrar yok” gövdeli 503 alır. Worker süreci
+  çıkmaz; sonraki istek taze bütçeyle çalışır (`--deneysel-web` ve
+  `--web-proxy`). Önceden aşım bütün worker'ı sonlandırıyor, ardından gelen
+  herkes 503 alıyordu.
+- **Döngüde metin biriktirmek bütçeyi karesel tüketmez (K-323):**
+  `x x ile y olsun` hedef metinse yerinde büyür; 64 MiB zarfından yalnız
+  kapasite artışı düşülür. Döngüde HTML kuran birkaç bin satırlık sayfa artık
+  C024 vermez. C024 önerisi liste + `birleşmişi` kalıbını da gösterir.
+
+### Uyumluluk ve göç
+
+Sözdizimi, tanı kimliği ve sınır değerleri değişmedi; göç gerekmiyor. Diğer
+çalışma hataları eskisi gibi yayılır.
+
 ## v1.0.0-rc.1 — 19 Ekim 2026 (sürüm adayı)
 
 **Durum:** V1'in ilk sürüm adayı; GitHub'da ön-sürüm olarak yayımlanır. Bu

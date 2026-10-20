@@ -14,6 +14,7 @@ mod io_izi_veritabani;
 mod io_izi_web;
 mod io_profili;
 mod kaynak;
+mod kendine_ekleme;
 mod kimlik_iletisim;
 mod metin;
 mod siralama;
@@ -34,6 +35,7 @@ use self::ifade::degerlendir_async;
 pub use self::io_izi::{IzKaydedenIo, IzYenidenOynatici, AZAMI_IO_IZ_BAYTI, AZAMI_IO_IZ_OLAYI};
 pub use self::io_profili::{SurumluRastgele, DETERMINISTIK_IO_PROFILI};
 use self::kaynak::*;
+use self::kendine_ekleme::kendine_metin_ekle;
 use self::metin::{csv_yaz, dogrulama_detayi, json_yaz, metne_sinirli};
 use self::siralama::deger_sirasi;
 pub use self::toplayan_io::{GuvenliCerezKaydi, ToplayanIo};
@@ -917,7 +919,9 @@ fn calistir_program_kodla(
                 }
                 Err(tani) => {
                     io.istek_islemini_geri_al();
-                    if let Some(mesaj) = eylem_hatasi::web_mesaji(&tani.kod) {
+                    if let Some(mesaj) = eylem_hatasi::web_mesaji(&tani.kod)
+                        .or_else(|| web_istek::kaynak_butcesi_web_mesaji(&tani.kod))
+                    {
                         io.durum_yaniti_gonder(503, mesaj);
                     } else {
                         return Err(tani);

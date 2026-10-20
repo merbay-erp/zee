@@ -88,3 +88,40 @@ fn gorev_ortami_klonlari_kurulmadan_heap_butcesine_girer() {
     assert_eq!(hata.kod, "C024", "{hata:?}");
     assert!(hata.mesaj.contains("heap sınırını"));
 }
+
+#[test]
+fn kendine_metin_eklemek_heap_butcesini_karesel_tuketmez() {
+    // `x x ile y olsun` yerinde büyür; zarftan yalnız kapasite artışı düşer.
+    // 50.000 × 116 bayt ≈ 5,8 MB sonuç, eski muhasebede ~290 GB sayılırdı.
+    let kaynak = "sayfa \"\" olsun\n50000 kez tekrarla\n    sayfa sayfa ile \"<tr><td>kayıt</td><td>örnek açıklama metni</td><td>12,50</td><td>tamam</td><td>2026-10-20</td><td>-</td></tr>\" olsun\nsayfanın uzunluğu yaz\n";
+    let cikti = dil::kaynagi_calistir(kaynak).expect("yerinde büyüme bütçeyi aşmamalı");
+    assert_eq!(cikti.len(), 1);
+    assert!(
+        cikti[0].parse::<usize>().unwrap() > 50_000 * 100,
+        "{cikti:?}"
+    );
+}
+
+#[test]
+fn kendine_ekleme_metin_ve_heap_sinirlarini_korur() {
+    let metin = "metin \"x\" olsun\n25 kez tekrarla\n    metin metin ile metin olsun\n";
+    let hata = dil::kaynagi_calistir(metin).expect_err("16 MiB metin sınırı korunmalı");
+    assert_eq!(hata.kod, "C024");
+    assert!(hata.mesaj.contains("Metin"), "{hata:?}");
+
+    let birikim = "yük \"x\" olsun\n20 kez tekrarla\n    yük yük ile yük olsun\ndepo boş liste olsun\n70 kez tekrarla\n    depoya yükü ekle\n";
+    let hata = dil::kaynagi_calistir(birikim).expect_err("heap sınırı korunmalı");
+    assert_eq!(hata.kod, "C024");
+    assert!(
+        hata.oneri.as_deref().unwrap_or("").contains("birleşmişi"),
+        "öneri liste+birleştir kalıbını göstermeli: {hata:?}"
+    );
+}
+
+#[test]
+fn baska_adla_baslayan_birlestirme_eski_anlamini_korur() {
+    let kaynak =
+        "baş \"<\" olsun\nson \"\" olsun\n3 kez tekrarla\n    son baş ile son olsun\nson yaz\n";
+    let cikti = dil::kaynagi_calistir(kaynak).expect("çalışmalı");
+    assert_eq!(cikti, ["<<<"]);
+}
