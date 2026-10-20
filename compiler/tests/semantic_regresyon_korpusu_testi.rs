@@ -20,6 +20,8 @@ mod lsp_utf16_fixture;
 mod native_listener_deadline_fixture;
 #[path = "semantic_regresyon/native_metric_stdio.rs"]
 mod native_metric_stdio_fixture;
+#[path = "semantic_regresyon/native_web_kopma.rs"]
+mod native_web_kopma_fixture;
 
 const SEMA: &str = "# zee-semantic-regresyon-2";
 const FAZLAR: &[&str] = &[
@@ -49,6 +51,7 @@ const KIPLER: &[&str] = &[
     "lsp-utf16",
     "native-listener-deadline",
     "native-metric-stdio",
+    "native-web-kopma",
 ];
 
 #[derive(Debug, Clone)]
@@ -210,7 +213,7 @@ fn faz_kipi_kabul_eder(faz: &str, kip: &str) -> bool {
         "concurrency" => kip == "run",
         "security" => matches!(
             kip,
-            "capability" | "web" | "smtp" | "native-listener-deadline"
+            "capability" | "web" | "smtp" | "native-listener-deadline" | "native-web-kopma"
         ),
         "cli" => matches!(kip, "cli" | "native-metric-stdio"),
         "lsp" => matches!(kip, "lsp-uri" | "lsp-utf16"),
@@ -288,6 +291,14 @@ fn vakayi_calistir(vaka: &Vaka, kaynak: &str) -> Gozlem {
     if vaka.kip == "native-metric-stdio" {
         let (cikis, cikti) =
             native_metric_stdio_fixture::calistir(&depo(), &depo().join(&vaka.dosya));
+        return Gozlem {
+            tani: None,
+            cikis,
+            cikti,
+        };
+    }
+    if vaka.kip == "native-web-kopma" {
+        let (cikis, cikti) = native_web_kopma_fixture::calistir(&depo().join(&vaka.dosya));
         return Gozlem {
             tani: None,
             cikis,
@@ -633,7 +644,7 @@ fn duzeltilmis_semantic_buglar_tani_span_cikis_ve_ciktiyi_korur() {
     for vaka in vakalari_oku().into_iter().filter(|vaka| {
         !matches!(
             vaka.kip.as_str(),
-            "native-listener-deadline" | "native-metric-stdio"
+            "native-listener-deadline" | "native-metric-stdio" | "native-web-kopma"
         )
     }) {
         let kaynak = std::fs::read_to_string(depo().join(&vaka.dosya))
@@ -811,5 +822,41 @@ fn native_metric_stdio_regresyonu_gercek_owned_host_ile_korunur() {
         assert_eq!(gozlem.cikis, vaka.cikis);
         assert_eq!(gozlem.cikti, vaka.cikti);
         assert!(gozlem.tani.is_none());
+    }
+}
+
+#[test]
+fn native_web_kopma_kipi_yalniz_security_fazina_aittir() {
+    assert!(KIPLER.contains(&"native-web-kopma"));
+    assert!(faz_kipi_kabul_eder("security", "native-web-kopma"));
+    for faz in FAZLAR.iter().filter(|faz| **faz != "security") {
+        assert!(!faz_kipi_kabul_eder(faz, "native-web-kopma"));
+    }
+}
+
+/// K-327: yanıt yazımı ortasında RST alan gerçek native worker sonraki isteğe
+/// 200 verir. ToplayanIo socket kopmasını taklit edemediği için toplu replay
+/// bu kipi atlar; Unix dışında sahte başarı yoktur.
+#[test]
+#[cfg_attr(not(unix), ignore = "actual Unix owned socket capability unavailable")]
+fn native_web_kopma_regresyonu_gercek_worker_ile_korunur() {
+    let vakalar: Vec<_> = vakalari_oku()
+        .into_iter()
+        .filter(|vaka| vaka.kip == "native-web-kopma")
+        .collect();
+    assert!(
+        !vakalar.is_empty(),
+        "native web kopma regresyonu gerçek manifest vakası olmadan geçemez"
+    );
+    for vaka in vakalar {
+        let kaynak = std::fs::read_to_string(depo().join(&vaka.dosya)).expect("fixture kaynağı");
+        let gozlem = vakayi_calistir(&vaka, &kaynak);
+        assert!(gozlem.tani.is_none());
+        assert_eq!(
+            gozlem.cikis, vaka.cikis,
+            "{}: worker ayakta kalmalı",
+            vaka.ad
+        );
+        assert_eq!(gozlem.cikti, vaka.cikti, "{}: sonraki istek", vaka.ad);
     }
 }
