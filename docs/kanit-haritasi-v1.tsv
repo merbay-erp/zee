@@ -157,6 +157,7 @@ adr/095-postgresql-goc-plani.md	kanitli	compiler/tests/cli_goc_plani_testi.rs,co
 adr/097-surumlu-runtime-ayarlari.md	kanitli	compiler/tests/cli_ayar_testi.rs,compiler/src/cli/ayar.rs	K-234 gerçek CLI config capability tip/kök/override ve effective WebModu testleri
 adr/096-ekli-eposta-ve-mime.md	kanitli	compiler/tests/smtp_mime_testi.rs,compiler/src/eposta/mime/tests.rs	K-232 typed capability trace MIME TLS FIFO native kabulü; live queue Windows sınırı açık
 rfcs/0034-ekli-eposta.md	kanitli	compiler/tests/smtp_mime_testi.rs,compiler/src/eposta/mime/tests.rs	K-232 tek typed MIME intrinsic gerçek ürün ve olumlu/olumsuz testler
+rfcs/0035-web-rota-hata-yalitimi.md	kanitli	compiler/tests/web_testi.rs,compiler/tests/web_cok_surec_testi.rs	K-324: istek-yerel hata sınırı ve operatör günlüğü
 adr/098-yerel-derleyici-secici.md	kanitli	compiler/tests/derleyici_secici_testi.rs	K-233 gerçek Ed25519 verifier iki signed sentetik bundle ve 25 offline ret/kabul testi; release/human/Windows ayrı
 adr/099-smtp-hata-maskelemesi.md	kanitli	compiler/tests/smtp_hata_maskelemesi_testi.rs,compiler/tests/semantic_regresyon_korpusu_testi.rs	K-236 gerçek AUTH535 echo native CLI ve runtime C029 mask kanıtı; ayrı response cap K237
 adr/100-smtp-yanit-okuma-siniri.md	kanitli	compiler/src/eposta/testler.rs,compiler/tests/semantic_regresyon_korpusu_testi.rs	K-237 beş actual helper budget/UTF8/EOF/timeout ve gerçek LF-yok native corpus; old-body negatif kanıt, BufReader/RSS/deadline sınırı ayrı
@@ -215,3 +216,4 @@ adr/153-lsp-utf16-konum-siniri.md	kanitli	compiler/tests/lsp_artimli_testi.rs,co
 adr/154-mit-lisansi.md	kanitli	compiler/tests/dokuman_tazelik_testi.rs	K-314 kök LICENSE MIT metni, Cargo paketleri ve VS Code eklentisi aynı lisansı bildirir; marka politikası kapsam dışı
 adr/155-marka-politikasi.md	kanitli	compiler/tests/dokuman_tazelik_testi.rs	K-316 marka politikası belgesi ve README/ADR bağı yürürlükte; marka hukuki tescili kapsam dışı
 adr/156-yayin-kanali-ve-yayinci-anahtari.md	kanitli	compiler/tests/yayin_imzasi_testi.rs	K-317 gerçek anahtar/imza/OpenSSL doğrulama ve üç ret; sabit kimlik açık anahtarın SHA-256'sı; yayın akışı imzasızı reddeder. Gerçek uzak yayın P30
+adr/157-istek-yerel-hata-siniri.md	kanitli	compiler/tests/web_testi.rs,compiler/tests/web_cok_surec_testi.rs,compiler/tests/io_izi_testi.rs	Rota hatası 500/503/504 ve worker sürekliliği; operatör günlüğü ize girmez

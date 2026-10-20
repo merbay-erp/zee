@@ -4883,3 +4883,30 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   değerlendirilir, zarftan yalnız kapasite artışı düşer. C024 önerisi liste + `birleşmişi` kalıbını gösterir.
   Grammar, tanı kimliği, facade, katman sahipliği değişmedi; yeni `yorumlayici/kendine_ekleme` alt modülü
   100 satır mimari bütçesiyle. `--deneysel-web` ve `--web-proxy` gerçek TCP ile denendi (503, sonra 200).
+
+## K-324 — Web rotasında istek-yerel hata sınırı ve operatör günlüğü (20 Ekim 2026)
+
+- K-324 (20.10.2026): K-323'ün açık bıraktığı iki konu. (1) V1 tek worker/süreç
+  modelinde (ADR-034) rotadaki C000 dışı her çalışma tanısı (`?n=abc` ile C004,
+  C003, C010, C019, D001 …) süreci bitiriyordu; kimliksiz rotada yeniden başlatma
+  döngüsü kuran DoS sınıfı (GB-122). Commitlenmeyen prototip yalnız iki
+  `web_testi` vakasını kırdı; biri ayrı bulguydu: sorgudan gelen CR/LF
+  yönlendirme enjeksiyonu doğru reddediliyor ama C022 sunucuyu kapatıyordu.
+  Seçenekler: izinli kümeyi büyütmek, yalnız “girdiye bağlı” kodlar, süreç
+  yöneticisine bırakmak, her şeyi 503, ret kümesi. Ret kümesi seçildi: C000 ve
+  iç Ç nöbetçileri dışında her tanı taslağı geri alınmış yanıtla yalnız o isteği
+  bitirir; 503/504 aynı, diğerleri “istek işlenemedi; sunucu hatası” gövdeli
+  500. Güvenlik gerekçesi: rota global ortamı yalnız okur (T046), bütçe istek
+  başında yenilenir, eylem/çerez/oturum/yanıt taslağı her hata dalında geri
+  alınır, son tarih yığını Drop nöbetçisiyle temizlenir. (2) İstek düzeyine
+  çevrilen tanılar operatöre görünmüyordu (GB-123); spec/06 sessiz devam
+  yasağı bakımından (1)'in önkoşulu. `GirdiCikti` `#[doc(hidden)]` iç modülde
+  ve `dil::api::v1` dışında olduğundan varsayılanı boş
+  `istek_tanisini_gunlukle` eklendi; `GercekIo` sorgusuz yol ve kaçışlı mesajla
+  4 KiB sınırlı tek stderr satırı yazar, `IzKaydedenIo` olayı kaydetmez.
+  Yorumlayıcıda doğrudan `eprintln!` ADR-046 yönünü ve wasm hedefini bozduğu
+  için reddedildi. İnsan kararları: olay kimliği yok, C018/C025 500, günlük
+  `anahtar=değer`. Gerçek `--web-proxy` worker'ı `?n=gizli-abc` ile 500,
+  ardından 200 verdi; stderr'de tek kayıt var, sorgu yok. Gövde bittikten sonra
+  yanıt commit'inin C022'si kapsam dışında kaldı. Grammar, tanı kimliği, dil
+  yüzeyi ve facade değişmedi; master plan ve v1 kapıları aynı kapsamı korur.

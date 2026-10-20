@@ -28,6 +28,8 @@ pub struct ToplayanIo {
     pub sunucu_yanitlari: Vec<(String, String)>,
     /// Her sahte HTTP yanıtının durum kodu; istek alındığında 200 ile başlar.
     pub sunucu_durumlari: Vec<u16>,
+    /// Operatör günlüğüne düşen istek tanıları: (durum, kod, satır) (K-324).
+    pub istek_tani_gunlugu: Vec<(u16, String, usize)>,
     /// Sahte sensörler (varsayılan kapalı) ve an ölçümü kuyruğu.
     pub sensorler: HashMap<String, bool>,
     pub an_degerleri: VecDeque<i64>,
@@ -83,6 +85,7 @@ impl ToplayanIo {
             guvenli_cerezler: Vec::new(),
             sunucu_yanitlari: Vec::new(),
             sunucu_durumlari: Vec::new(),
+            istek_tani_gunlugu: Vec::new(),
             sensorler: HashMap::new(),
             an_degerleri: VecDeque::new(),
             eylem_baslat_sonuclari: VecDeque::new(),
@@ -574,6 +577,10 @@ impl GirdiCikti for ToplayanIo {
             .pop()
             .ok_or_else(|| EylemHatasi::genel("açık eylem transaction'ı yok"))?;
         Ok(())
+    }
+    fn istek_tanisini_gunlukle(&mut self, durum: u16, tani: &Tani) {
+        self.istek_tani_gunlugu
+            .push((durum, tani.kod.clone(), tani.satir));
     }
     fn sensor_acik_mi(&mut self, ad: &str) -> bool {
         self.sensorler.get(ad).copied().unwrap_or(false)

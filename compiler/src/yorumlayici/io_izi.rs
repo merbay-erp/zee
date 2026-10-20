@@ -711,6 +711,12 @@ impl<T: GirdiCikti> GirdiCikti for IzKaydedenIo<T> {
         sonuc
     }
 
+    /// Operatör günlüğü program tarafından gözlenmez; replay'i etkilememesi
+    /// için olay kaydedilmeden iletilir (K-324/ADR-157).
+    fn istek_tanisini_gunlukle(&mut self, durum: u16, tani: &crate::tani::Tani) {
+        self.ic.istek_tanisini_gunlukle(durum, tani);
+    }
+
     fn sensor_acik_mi(&mut self, ad: &str) -> bool {
         let sonuc = self.ic.sensor_acik_mi(ad);
         self.kaydet("sensor_acik_mi", vec![ad.into()], vec![bool_yaz(sonuc)]);

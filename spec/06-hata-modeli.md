@@ -52,7 +52,9 @@ hata tek tanıdır. Bu bütçe tanı kimliğini veya kodunu değiştirmez.
    biçimi `GENEL` koduyla aynı çıktıyı korur; kodlu üretim
    `"DOSYA_YOK" kodlu "..." hatasını döndür` biçimidir.
 3. **Beklenmeyen çalışma hatası** → C tanısıyla durdurma (taşma C002,
-   sıfıra bölme C003...). Sessiz devam **YASAK**tır.
+   sıfıra bölme C003...). Sessiz devam **YASAK**tır. Uzun yaşayan web
+   sunucusunda durdurulan birim süreç değil, o istektir: spec/11 §5 isteği
+   500/503/504 ile bitirir ve tanıyı operatör günlüğüne yazar (K-324).
 
 `boş`/`yok` ayrımı bilinçlidir: koleksiyonun boşluğu `boşsa`, değerin
 yokluğu Seçenek'tir; `null` kavramı dilde yoktur.

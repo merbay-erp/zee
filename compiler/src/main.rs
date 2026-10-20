@@ -1800,6 +1800,8 @@ struct GercekIo {
     metrik: Option<std::sync::Arc<web_metrikleri::Sink>>,
     bekleyen_baglanti_izni: Option<dil::kaynak_sinirlari::BaglantiIzni>,
     bekleyen_head: bool,
+    /// Operatör günlüğü için son isteğin yöntemi ve hedefi (K-324).
+    son_istek: Option<(String, String)>,
     /// İç içe eylemler için dosya savepoint'leri: yol → çağrı başındaki içerik.
     eylem_yedekleri: Vec<std::collections::HashMap<std::path::PathBuf, EylemDosyaYedegi>>,
     web_guvenligi: dil::web_guvenligi::WebGuvenligi,
@@ -1924,6 +1926,7 @@ impl GercekIo {
             metrik: None,
             bekleyen_baglanti_izni: None,
             bekleyen_head: false,
+            son_istek: None,
             eylem_yedekleri: Vec::new(),
             web_guvenligi,
             web_istek_yedegi: None,
@@ -3152,6 +3155,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             self.bekleyen_akis = Some(akis);
             self.bekleyen_baglanti_izni = Some(baglanti_izni);
             self.bekleyen_head = baslik.yontem().eq_ignore_ascii_case("HEAD");
+            self.son_istek = Some((baslik.yontem().to_string(), baslik.hedef().to_string()));
             let ham = format!(
                 "{} {}\n{}{}",
                 baslik.yontem(),
@@ -3378,6 +3382,16 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             return;
         }
         let _ = self.web_yanit_taslagini_yaz(WebYanitTaslagi::Durum(durum, yanit.to_string()));
+    }
+    fn istek_tanisini_gunlukle(&mut self, durum: u16, tani: &dil::tani::Tani) {
+        let istek = self
+            .son_istek
+            .as_ref()
+            .map(|(yontem, hedef)| (yontem.as_str(), hedef.as_str()));
+        eprintln!(
+            "{}",
+            dil::yorumlayici::istek_tani_gunluk_satiri(durum, tani, istek)
+        );
     }
     fn yonlendir_gonder(&mut self, adres: &str) -> Result<(), String> {
         if !dil::web_guvenligi::yerel_yonlendirme_gecerli(adres) {
