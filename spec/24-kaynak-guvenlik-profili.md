@@ -29,12 +29,22 @@ ZORUNDADIR; yerel sabit yalnız ortak değere bağlı geriye uyum alias'ı olabi
 - Çalışma veya web isteği, ortam/koleksiyon yazımları ve görev ortamı klonları
   için yaklaşık 64 MiB, iade edilmeyen saklanan değer tahsis zarfı taşır.
   Muhafazakâr fazla sayım TANIMLIDIR; aşım C024'tür.
+- Kendisiyle başlayan metin birleştirmesiyle yeniden bağlanan metin değişkenin
+  (`x x ile y olsun`) yerinde büyümesi TANIMLIDIR: zarftan yalnız tampon
+  kapasitesindeki artış tüketilir, böylece döngü birikimi canlı metnin
+  kapasitesiyle sınırlı ve doğrusal kalır. Zarf yine iade edilmez. Sağ
+  parçalar `Birlestir` sırası ve 16 MiB metin tanısıyla değerlendirilir; bütçe tükenirse değişken değişmeden C024 üretilir.
 - `yaz`, soru istemi ve web yanıtı toplam 16 MiB veya 100.000 çıktı olayını
   aşarsa aşan olay IO'ya verilmeden C023 üretilir.
 - Dil programının metin dosyası okuması 16 MiB'ı AŞAMAZ. Atomik append ve
   transaction ön-okuması aynı bounded reader'ı kullanmalıdır.
 
-Uzun yaşayan web sunucusunda her istek bağımsız adım/çıktı bütçesi alır.
+Uzun yaşayan web sunucusunda her istek bağımsız adım/çıktı/heap bütçesi alır.
+Rota yürütmesi C023 veya C024 üretirse istek yanıtı/çerez/oturum taslağı geri
+alınmak, istemciye ayrıntı sızdırmayan “istek güvenli kaynak bütçesini aştı;
+otomatik tekrar yok” gövdeli 503 verilmek ve worker sonraki isteği taze bütçeyle
+kabul etmek ZORUNDADIR. Diğer çalışma hataları spec/11'deki yayılma kuralını
+korur.
 Süreç genelinde kabul edilmiş inbound ve başlatılmış outbound ağ bağlantılarının
 toplamı 64'ü AŞAMAZ. İzin bütün başarı/hata yollarında bırakılmalıdır; aşım
 outbound'da C018 nedeni, inbound'da HTTP 503'tür.
