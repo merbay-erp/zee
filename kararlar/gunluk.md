@@ -4910,3 +4910,15 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   ardından 200 verdi; stderr'de tek kayıt var, sorgu yok. Gövde bittikten sonra
   yanıt commit'inin C022'si kapsam dışında kaldı. Grammar, tanı kimliği, dil
   yüzeyi ve facade değişmedi; master plan ve v1 kapıları aynı kapsamı korur.
+
+## K-325 — dtolnay/rust-toolchain pini 683b588 (20 Ekim 2026)
+
+- Dependabot PR'ı (merbay-erp/zee#1) eski, anonimleştirme öncesi bir master
+  üzerine açıldığından birleştirilmesi ~5600 satırı geri alırdı; kapatıldı ve
+  aynı yükseltme güncel master'da elle yapıldı. `e2a55d2` → `683b588`
+  (upstream master 2026-10-16, "Add 1.99.1 patch release"); kurulan Rust sürümü
+  `rust-toolchain.toml` ile 1.93.1'de kalır, yalnız action kodu değişir.
+  GitHub (4 workflow) ve Forgejo (`zee-ci.yml`) pinleri iki envanterle
+  (`docs/github-actions-pinleri-v1.tsv`, `docs/forgejo-actions-pinleri-v1.tsv`)
+  birlikte güncellendi; `tedarik_kapisi_testi` 11/11 geçti. Derleyici, dil
+  yüzeyi, spec ve sürüm notu değişmez.
