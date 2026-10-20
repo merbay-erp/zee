@@ -82,7 +82,7 @@ kılar. Clippy ölçümü sabit Rust araç zinciriyle üretim `lib` ve `dil` iki
 | `compiler/src/web_listener.rs::extract#1` | 104→89 (-15/+11) | 8→7 (-1/+2) | İYİLEŞTİ |
 | `compiler/src/yorumlayici.rs::gorevleri_calistir#1` | 136→136 (+0/+14) | 2→2 (+0/+2) | SABİT |
 | `compiler/src/yorumlayici.rs::json_nesnesi_ayristir#1` | 96→96 (+0/+10) | 8→8 (+0/+2) | SABİT |
-| `compiler/src/yorumlayici/cumle.rs::blok_calistir_async#1` | 815→823 (+8/+24) | 1→1 (+0/+2) | PAY İÇİNDE |
+| `compiler/src/yorumlayici/cumle.rs::blok_calistir_async#1` | 815→828 (+13/+24) | 1→1 (+0/+2) | PAY İÇİNDE |
 | `compiler/src/yorumlayici/ifade.rs::degerlendir_async#1` | 850→835 (-15/+24) | 1→1 (+0/+2) | İYİLEŞTİ |
 | `compiler/src/yorumlayici/io_izi.rs::olay_semasini_denetle#1` | 149→152 (+3/+15) | 20→20 (+0/+4) | PAY İÇİNDE |
 | `compiler/src/yorumlayici/kaynak.rs::deger_heap_bayti#1` | 101→101 (+0/+11) | 8→8 (+0/+2) | SABİT |
