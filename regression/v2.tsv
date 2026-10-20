@@ -37,3 +37,4 @@ native-metric-stdio-alias	K-294	0083d40c6bfec2c918cb221b59734cac356c7ddd	c20ae6e
 bmp-disi-konum	K-297	71337c0e451b1a653d045a32c652d913c315eebb	-	0.8.0-dev	lsp	lsp-utf16	-	-	0	hover=true;definition=0:0-4;rename=0:0-4,1:9-13	regression/lsp/bmp-disi-konum.dil
 kendine-metin-ekleme-dogrusal	K-323	95d8f04b89aa7b83ddbb9b3b3856a340b96a2068	-	0.8.0-dev	runtime	run	-	-	0	545000	regression/runtime/kendine-metin-ekleme-dogrusal.dil
 istek-butcesi-yalitimi	K-323	95d8f04b89aa7b83ddbb9b3b3856a340b96a2068	-	0.8.0-dev	security	web	-	-	0	503 istek güvenli kaynak bütçesini aştı; otomatik tekrar yok	regression/security/istek-butcesi-yalitimi.dil
+rota-hatasi-yalitimi	K-324	ece6977d41b630acc1e115eec858e0c8e5ca0722	-	0.8.0-dev	security	web	-	-	0	500 istek işlenemedi; sunucu hatası	regression/security/rota-hatasi-yalitimi.dil
