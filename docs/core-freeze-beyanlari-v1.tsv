@@ -93,3 +93,4 @@ c0d9137572cab5d17f6c71b6524983a96d16c867	dogfood-change	zee-cekirdek	K-284	dogfo
 5abf096ce7516157bba53e136a299b9545089d1e	maintenance	-	-	-	-	K-319 yalnız CI faz matrisi aracı: @unix seçici son eki; derleyici/runtime davranışı değişmez.	-
 3edfb27c7f85210bdb04e94288d09ece90bc28bd	maintenance	-	-	-	-	K-319 Windows taşınabilirliği: zee.ayar yol önekinin denetimi, faz matrisi @unix test seçicileri ve Windows cfg temizliği; Unix davranışı ve dil semantiği değişmez.	-
 be9b419f159a7ef56352c793e1bf793d23777f65	maintenance	-	-	-	-	Yeni grammar, kalıp, tanı kodu ya da runtime davranışı yok; kaynak kapsamı rapor yolu (serde_json) wasm hedefinin dışına alındı.	-
+69315e30ecb2de300567a54ed71739bd19b3a97c	security	-	K-323	regression/security/istek-butcesi-yalitimi.dil	-	Yalnız web döngüsünde C023/C024 istek düzeyi 503 eşlemesi ve kendine metin eklemenin yerinde büyümesi; yeni grammar, kalıp, tanı kodu veya bağımlılık yok, sınır değerleri aynı.	adr/033-merkezi-kaynak-butcesi.md

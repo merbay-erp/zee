@@ -1,0 +1,13 @@
+# web-istegi: GET /agir
+# K-323: rotadaki C024 yalnız o isteği 503 ile bitirir; worker süreci çıkmaz.
+
+8080 kapısında sunucu başlat
+
+GET "/agir" adresine istek geldiğinde
+    yük "x" olsun
+    20 kez tekrarla
+        yük yük ile yük olsun
+    depo boş liste olsun
+    70 kez tekrarla
+        depoya yükü ekle
+    "bitmemeliydi" yanıtını gönder

@@ -1,0 +1,7 @@
+# K-323: `x x ile y olsun` döngüde heap zarfını O(n²) tüketip C024 veriyordu.
+# 5000 × 116 bayt yerinde büyür; zarftan yalnız kapasite artışı düşer.
+
+sayfa "" olsun
+5000 kez tekrarla
+    sayfa sayfa ile "<tr><td>kayıt</td><td>örnek açıklama metni</td><td>12,50</td><td>tamam</td><td>2026-10-20</td><td>-</td></tr>" olsun
+sayfanın uzunluğu yaz

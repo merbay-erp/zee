@@ -4869,6 +4869,9 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   4 ASan×1800 sn + 2 Miri; 1022/0/27). GitHub ön-sürümü üç platform imzalı paketle yayında; indirilen paket
   imza/kur/çalıştır ile doğrulandı. Kayıt `docs/surum-v1.0.0-rc.1-kaniti.md`. Not: rc-kaniti export çıktı
   yolunda sembolik bağ reddeder; macOS'ta `/tmp` yerine `/private/tmp` kullanılmalı.
+
+## K-323 — İstek başına kaynak yalıtımı (20 Ekim 2026)
+
 - K-323 (20.10.2026): Harici bir web ürününün performans taramasında döngüde `x x ile y olsun` ile HTML
   kuran birkaç bin satırlık liste sayfaları C024'e takıldı; tek istek bütün worker'ı sonlandırdı, sonraki
   herkes 503 aldı. (1) Web döngüsü yalnız C013/C021/C027'yi istek düzeyinde 503'e çeviriyordu; C023/C024
