@@ -47,10 +47,15 @@ pub(super) fn blok_calistir_async<'a>(
                 Cumle::Olsun {
                     ad, deger, satir, ..
                 } => {
-                    let sonuc =
-                        degerlendir_async(deger, ortam, program, cikti, derinlik, *satir).await?;
-                    ortama_yazma_butcesini_tuket(ortam, ad, &sonuc, *satir)?;
-                    ortam.insert(ad.clone(), sonuc);
+                    if !kendine_metin_ekle(ad, deger, ortam, program, cikti, derinlik, *satir)
+                        .await?
+                    {
+                        let sonuc =
+                            degerlendir_async(deger, ortam, program, cikti, derinlik, *satir)
+                                .await?;
+                        ortama_yazma_butcesini_tuket(ortam, ad, &sonuc, *satir)?;
+                        ortam.insert(ad.clone(), sonuc);
+                    }
                 }
                 Cumle::Gorunum {
                     ad,
