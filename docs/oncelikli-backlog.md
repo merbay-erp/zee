@@ -2391,3 +2391,11 @@ karşılıklarına çevrildi; regression/beyan SHA'ları yeni soya bağlandı,
 ölçüm kayıtları özgün SHA'yı eşlemeyle korur (GB-124, ADR-087). Kanıt:
 [K-326 kaydı](incelemeler/k326/README.md), `acik-depo-test.py`,
 `dogfood_karsilastirma_testi`.
+
+## K-328 — rustls-webpki/webpki-roots RustSec yükseltmesi
+
+**Durum: KAPALI.** 20 Ekim'de yayımlanan RUSTSEC-2026-0382 (rustls-webpki
+0.103.15) ve RUSTSEC-2026-0381 (webpki-roots 1.0.9) güvenlik kapısının
+advisories adımını kırıyordu. Compiler ve fuzz kilitlerinde rustls-webpki
+0.103.16, webpki-roots 1.0.10; ignore yok (GB-125, ADR-038). Kanıt:
+`guvenlik-kapisi.sh --surekli`, `offline-vendor-denetle.sh`.
