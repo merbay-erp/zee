@@ -1,0 +1,9 @@
+# web-istegi: GET /sayi?n=abc
+# K-324: girdiye bağlı çalışma hatası yalnız o isteği 500 ile bitirir; worker süreci çıkmaz.
+
+8080 kapısında sunucu başlat
+
+GET "/sayi" adresine istek geldiğinde
+    girdi isteğin "n" değeri olsun
+    sayı girdinin sayısı olsun
+    "bitmemeliydi" yanıtını gönder
