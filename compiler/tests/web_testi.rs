@@ -420,8 +420,12 @@ GET \"/git\" adresine istek geldiğinde
     let program = dil::kaynagi_derle(kaynak).expect("derlenmeli");
     let mut io = ToplayanIo::yeni(Vec::new());
     io.istekler = vec!["GET /git?hedef=%2Fiyi%0D%0AX-Sahte%3A+evet".to_string()].into();
-    let hata = calistir_io(&program, &mut io).expect_err("enjeksiyon reddedilmeli");
-    assert_eq!(hata.kod, "C022");
+    // K-324: ret doğru ama artık yalnız o isteği bitirir; sunucu kapanmaz.
+    calistir_io(&program, &mut io).expect("enjeksiyon reddi sunucuyu kapatmamalı");
+    assert_eq!(io.sunucu_durumlari, vec![500]);
+    assert_eq!(io.sunucu_yanitlari[0].1, "istek işlenemedi; sunucu hatası");
+    assert!(!io.sunucu_yanitlari[0].1.contains("X-Sahte"));
+    assert_eq!(io.istek_tani_gunlugu, vec![(500, "C022".to_string(), 4)]);
 }
 
 #[test]
@@ -977,18 +981,18 @@ GET \"/korumali\" adresine istek geldiğinde
 
     io.istekler
         .push_back(csrfli_istek_ile("POST /bozuk", &anonim, &csrf));
-    let hata = calistir_io(&program, &mut io).expect_err("rota hatası yayılmalı");
-    assert_eq!(hata.kod, "C003");
-    assert!(io.yazilan_cerezler.is_empty());
-    assert!(io.sunucu_yanitlari[0].1.is_empty());
-
     let sızmış_kimlik = format!("{:064x}", 3);
     io.istekler.push_back(format!(
         "GET /korumali\nçerez __Host-zee-oturum={}",
         sızmış_kimlik
     ));
-    calistir_io(&program, &mut io).expect("sunucu yeniden çalışmalı");
-    assert_eq!(io.sunucu_durumlari[1], 401);
+    // K-324: rota hatası istek-yereldir; aynı worker sonraki isteği alır.
+    calistir_io(&program, &mut io).expect("sunucu rota hatasında sürmeli");
+    assert!(io.yazilan_cerezler.is_empty());
+    assert_eq!(io.sunucu_durumlari, vec![500, 401]);
+    assert_eq!(io.sunucu_yanitlari[0].1, "istek işlenemedi; sunucu hatası");
+    assert!(!io.sunucu_yanitlari[0].1.contains("erken başarı"));
+    assert_eq!(io.istek_tani_gunlugu, vec![(500, "C003".to_string(), 7)]);
 }
 
 #[test]
@@ -1129,4 +1133,146 @@ GET \"/liste\" adresine istek geldiğinde
     let io = sunucuyla(kaynak, vec!["GET /liste"]);
     assert_eq!(io.sunucu_durumlari, vec![200]);
     assert!(io.sunucu_yanitlari[0].1.len() > 5000 * 100);
+}
+
+#[test]
+fn rota_calisma_hatalari_500_olur_ve_worker_yasar() {
+    // K-324/ADR-157: C000 dışı her rota tanısı yalnız o isteği bitirir.
+    let kaynak = "\
+8080 kapısında sunucu başlat
+
+işlem düş
+    sayıyı al
+    sayı 0 a eşitse
+        0 döndür
+    kalan sayı ile 1 in farkı olsun
+    sonuç kalan için düş olsun
+    toplam sonuç ile 1 in toplamı olsun
+    toplamı döndür
+
+GET \"/bol\" adresine istek geldiğinde
+    sonuç 1 in 0 a bölümü olsun
+    \"bitmemeliydi\" yanıtını gönder
+
+GET \"/sayi\" adresine istek geldiğinde
+    girdi isteğin \"n\" değeri olsun
+    sayı girdinin sayısı olsun
+    \"bitmemeliydi\" yanıtını gönder
+
+GET \"/derin\" adresine istek geldiğinde
+    x 600 için düş olsun
+    \"bitmemeliydi\" yanıtını gönder
+
+GET \"/dogrula\" adresine istek geldiğinde
+    1 2 ye eşit olmalı
+    \"bitmemeliydi\" yanıtını gönder
+
+GET \"/saglik\" adresine istek geldiğinde
+    \"ayakta\" yanıtını gönder
+";
+    // C019 debug derlemede resmî yürütme yığınını ister (K-178).
+    let io = std::thread::Builder::new()
+        .stack_size(dil::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI.calistirma_yigin_bayti())
+        .spawn(move || {
+            sunucuyla(
+                kaynak,
+                vec![
+                    "GET /bol",
+                    "GET /sayi?n=abc",
+                    "GET /derin",
+                    "GET /dogrula",
+                    "GET /saglik",
+                ],
+            )
+        })
+        .expect("yürütme iş parçacığı")
+        .join()
+        .expect("yürütme tamamlanmalı");
+    assert_eq!(io.sunucu_durumlari, vec![500, 500, 500, 500, 200]);
+    for (_, yanit) in &io.sunucu_yanitlari[..4] {
+        assert_eq!(yanit, "istek işlenemedi; sunucu hatası");
+    }
+    assert_eq!(io.sunucu_yanitlari[4].1, "ayakta");
+    let kodlar: Vec<&str> = io
+        .istek_tani_gunlugu
+        .iter()
+        .map(|(durum, kod, _)| {
+            assert_eq!(*durum, 500);
+            kod.as_str()
+        })
+        .collect();
+    assert_eq!(kodlar, vec!["C003", "C004", "C019", "D001"]);
+}
+
+#[test]
+fn istek_duzeyi_503_ve_504_operator_gunlugune_duser() {
+    let kaynak = "\
+8080 kapısında sunucu başlat
+
+GET \"/sonsuz\" adresine istek geldiğinde
+    i 0 olsun
+    i 1 den küçük olduğu sürece
+        i 0 olsun
+    \"bitmemeliydi\" yanıtını gönder
+
+GET \"/yavaş\" adresine istek geldiğinde
+    31 saniye bekle
+    \"geç kaldı\" yanıtını gönder
+";
+    let io = sunucuyla(kaynak, vec!["GET /sonsuz", "GET /yavaş"]);
+    assert_eq!(io.sunucu_durumlari, vec![503, 504]);
+    let kodlar: Vec<(u16, &str)> = io
+        .istek_tani_gunlugu
+        .iter()
+        .map(|(durum, kod, _)| (*durum, kod.as_str()))
+        .collect();
+    assert_eq!(kodlar, vec![(503, "C023"), (504, "Ç001")]);
+}
+
+#[test]
+fn istek_hatasi_yaniti_ret_kumesi_yalniz_ic_tutarliliktir() {
+    use dil::yorumlayici::istek_hatasi_yaniti;
+    assert_eq!(istek_hatasi_yaniti("C000"), None);
+    assert_eq!(istek_hatasi_yaniti("Ç000"), None);
+    for kod in ["C013", "C021", "C023", "C024", "C027"] {
+        assert_eq!(
+            istek_hatasi_yaniti(kod).map(|(durum, _)| durum),
+            Some(503),
+            "{kod}"
+        );
+    }
+    for kod in [
+        "C003", "C004", "C010", "C018", "C019", "C020", "C022", "C025", "D001",
+    ] {
+        assert_eq!(
+            istek_hatasi_yaniti(kod),
+            Some((500, "istek işlenemedi; sunucu hatası")),
+            "{kod}"
+        );
+    }
+}
+
+#[test]
+fn operator_gunluk_satiri_sorgusuz_tek_satir_ve_kacislidir() {
+    use dil::tani::Tani;
+    use dil::yorumlayici::istek_tani_gunluk_satiri;
+    let tani = Tani::yeni(
+        "C004",
+        "\"x\r\nzee-web sahte\" sayıya çevrilemedi".to_string(),
+        9,
+        1,
+        1,
+    );
+    let satir = istek_tani_gunluk_satiri(500, &tani, Some(("GET", "/sayi\r\nX: y?n=gizli#parca")));
+    assert_eq!(
+        satir,
+        "zee-web istek-hatası durum=500 kod=C004 satır=9 yöntem=GET \
+         yol=\"/sayi\\r\\nX: y\" mesaj=\"\\\"x\\r\\nzee-web sahte\\\" sayıya çevrilemedi\""
+    );
+    assert!(!satir.contains('\n') && !satir.contains('\r') && !satir.contains("gizli"));
+
+    let uzun = Tani::yeni("C024", "ş".repeat(5000), 1, 1, 1);
+    let kirpik = istek_tani_gunluk_satiri(503, &uzun, None);
+    assert!(kirpik.len() <= 4096 && kirpik.ends_with("…\""));
+    assert!(!kirpik.contains("yöntem="));
 }
