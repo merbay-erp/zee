@@ -13,6 +13,7 @@ mod io_izi;
 mod io_izi_veritabani;
 mod io_izi_web;
 mod io_profili;
+mod istek_gunlugu;
 mod kaynak;
 mod kendine_ekleme;
 mod kimlik_iletisim;
@@ -34,12 +35,14 @@ pub use self::hir_gecisi::{
 use self::ifade::degerlendir_async;
 pub use self::io_izi::{IzKaydedenIo, IzYenidenOynatici, AZAMI_IO_IZ_BAYTI, AZAMI_IO_IZ_OLAYI};
 pub use self::io_profili::{SurumluRastgele, DETERMINISTIK_IO_PROFILI};
+pub use self::istek_gunlugu::istek_tani_gunluk_satiri;
 use self::kaynak::*;
 use self::kendine_ekleme::kendine_metin_ekle;
 use self::metin::{csv_yaz, dogrulama_detayi, json_yaz, metne_sinirli};
 use self::siralama::deger_sirasi;
 pub use self::toplayan_io::{GuvenliCerezKaydi, ToplayanIo};
 pub use self::veritabani::ToplayanVeritabani;
+pub use self::web_istek::istek_hatasi_yaniti;
 use self::web_istek::web_istegini_calistir;
 pub use self::yetkinlik::{GuvenliIo, PolitikaliIo};
 
@@ -427,6 +430,10 @@ pub trait GirdiCikti {
     fn durum_yaniti_gonder(&mut self, _durum: u16, yanit: &str) {
         self.yanit_gonder(yanit);
     }
+    /// Rota tanısı istek düzeyinde yanıta çevrildiğinde yalnız operatör için
+    /// çağrılır (K-324/ADR-157). İstemciye ve programa görünmez; IO izine
+    /// girmez. Varsayılan adaptör hiçbir şey yapmaz.
+    fn istek_tanisini_gunlukle(&mut self, _durum: u16, _tani: &Tani) {}
     /// 303 yönlendirmesi gönderir (K-051).
     fn yonlendir_gonder(&mut self, adres: &str) -> Result<(), String>;
     /// Sonraki yanıta Set-Cookie iliştirir (K-052).
@@ -729,6 +736,9 @@ impl GirdiCikti for PaylasilanIo<'_> {
     fn eylem_geri_al(&mut self) -> Result<(), EylemHatasi> {
         self.ic.borrow_mut().eylem_geri_al()
     }
+    fn istek_tanisini_gunlukle(&mut self, durum: u16, tani: &Tani) {
+        self.ic.borrow_mut().istek_tanisini_gunlukle(durum, tani);
+    }
     fn sensor_acik_mi(&mut self, ad: &str) -> bool {
         self.ic.borrow_mut().sensor_acik_mi(ad)
     }
@@ -912,6 +922,7 @@ fn calistir_program_kodla(
                     let zaman_asimi = crate::kaynak_sinirlari::VARSAYILAN_KAYNAK_SINIRLARI
                         .http()
                         .calistirma_zaman_asimi_ms();
+                    io.istek_tanisini_gunlukle(504, &tani);
                     io.durum_yaniti_gonder(
                         504,
                         &format!("istek {} saniyelik son tarihini aştı", zaman_asimi / 1000),
@@ -919,13 +930,11 @@ fn calistir_program_kodla(
                 }
                 Err(tani) => {
                     io.istek_islemini_geri_al();
-                    if let Some(mesaj) = eylem_hatasi::web_mesaji(&tani.kod)
-                        .or_else(|| web_istek::kaynak_butcesi_web_mesaji(&tani.kod))
-                    {
-                        io.durum_yaniti_gonder(503, mesaj);
-                    } else {
+                    let Some((durum, mesaj)) = web_istek::istek_hatasi_yaniti(&tani.kod) else {
                         return Err(tani);
-                    }
+                    };
+                    io.istek_tanisini_gunlukle(durum, &tani);
+                    io.durum_yaniti_gonder(durum, mesaj);
                 }
             }
         }

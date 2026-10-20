@@ -387,3 +387,61 @@ fn ayarli_bellek_worker_kapasiteyi_asinca_hizmet_eder_ve_kotayi_uygular() {
     assert_eq!(durum(&yanit), 429);
     assert!(!gecici.0.join(".zee/web-durumu-v1.json").exists());
 }
+
+#[test]
+fn rota_hatasi_gercek_worker_ta_500_olur_ve_operator_stderr_satiri_yazar() {
+    // K-324/ADR-157: girdiye bağlı çalışma hatası worker'ı düşürmez; tanı
+    // istemciye değil, sorgusuz ve tek satır olarak operatöre gider.
+    let gecici = GeciciKlasor::yeni();
+    let kapi = bos_kapi();
+    let yol = gecici.0.join("worker.dil");
+    std::fs::write(
+        &yol,
+        "8080 kapısında sunucu başlat\n\nGET \"/sayi\" adresine istek geldiğinde\n    girdi isteğin \"n\" değeri olsun\n    sayı girdinin sayısı olsun\n    \"bitmemeliydi\" yanıtını gönder\n\nGET \"/saglik\" adresine istek geldiğinde\n    \"ayakta\" yanıtını gönder\n",
+    )
+    .expect("worker kaynağı");
+    let kapi_yazisi = kapi.to_string();
+    let mut cocuk = Command::new(env!("CARGO_BIN_EXE_dil"))
+        .args([
+            "çalıştır",
+            "--web-proxy",
+            "https://panel.example",
+            "--web-worker-port",
+            &kapi_yazisi,
+            yol.to_str().expect("UTF-8 kaynak yolu"),
+        ])
+        .stdout(Stdio::null())
+        .stderr(Stdio::piped())
+        .spawn()
+        .expect("web worker süreci");
+
+    let hata = istek(kapi, "203.0.113.9", "GET", "/sayi?n=gizli-abc", None, "");
+    assert_eq!(durum(&hata), 500, "{hata}");
+    assert!(hata.ends_with("istek işlenemedi; sunucu hatası"), "{hata}");
+    assert!(!hata.contains("C004") && !hata.contains("gizli"), "{hata}");
+    let saglik = istek(kapi, "203.0.113.9", "GET", "/saglik", None, "");
+    assert_eq!(durum(&saglik), 200, "worker ilk hatadan sonra yaşamalı");
+    assert!(cocuk.try_wait().expect("worker durumu").is_none());
+
+    cocuk.kill().expect("worker durdurulmalı");
+    let mut stderr = String::new();
+    cocuk
+        .stderr
+        .take()
+        .expect("stderr borusu")
+        .read_to_string(&mut stderr)
+        .expect("stderr okunmalı");
+    cocuk.wait().expect("worker sonucu");
+    let kayitlar: Vec<&str> = stderr
+        .lines()
+        .filter(|satir| satir.starts_with("zee-web istek-hatası "))
+        .collect();
+    assert_eq!(kayitlar.len(), 1, "{stderr}");
+    assert!(
+        kayitlar[0].starts_with(
+            "zee-web istek-hatası durum=500 kod=C004 satır=5 yöntem=GET yol=\"/sayi\" mesaj=\""
+        ),
+        "{stderr}"
+    );
+    assert!(!stderr.contains("n=gizli"), "{stderr}");
+}
