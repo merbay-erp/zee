@@ -2391,3 +2391,14 @@ karşılıklarına çevrildi; regression/beyan SHA'ları yeni soya bağlandı,
 ölçüm kayıtları özgün SHA'yı eşlemeyle korur (GB-124, ADR-087). Kanıt:
 [K-326 kaydı](incelemeler/k326/README.md), `acik-depo-test.py`,
 `dogfood_karsilastirma_testi`.
+## K-327 — Yanıt yazımı sırasında istemci kopması worker'ı düşürmez
+
+**Durum: KAPALI.** ADR-157 eki: zee-cekirdek talebi W1 (P0). Büyük yanıtın
+yazımında RST/EPIPE C022 ile worker'ı sonlandırıyordu (GB-125). Yazım hatası
+artık istek kapsamlı: çerez/oturum commit'i geri alınır, tek stderr satırı
+(`zee-web istemci yanıt sırasında koptu: …`), `final_write_errors` metriği,
+bağlantı izni iade, worker sonraki isteği alır. Kanıt `web_cok_surec_testi`
+(2 MiB + RST, 100 ardışık kopma, izin/RSS sızıntısı yok), regression
+`yanit-yazimi-kopmasi` (`native-web-kopma`). Talepteki W2 (süreç içi
+eşzamanlılık), W3 (rota önbellek başlığı) ve W4 (açılışta tek sefer) açık;
+ayrı karar/PR ister.

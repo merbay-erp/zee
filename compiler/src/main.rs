@@ -1835,6 +1835,14 @@ enum WebYanitTaslagi {
     Yonlendirme(String),
 }
 
+/// Yanıt yazımının istek kapsamlı sonucu (W1). Socket kopması hata değil,
+/// istemcinin yanıtı almadığı bilgisidir.
+#[derive(Debug, PartialEq, Eq)]
+enum YanitTeslimi {
+    Yazildi,
+    IstemciKoptu,
+}
+
 #[derive(Clone)]
 struct EylemDosyaYedegi {
     onceki: Option<Vec<u8>>,
@@ -2097,7 +2105,11 @@ impl GercekIo {
         sonuc
     }
 
-    fn web_yanit_taslagini_yaz(&mut self, taslak: WebYanitTaslagi) -> Result<(), String> {
+    /// Yanıtı socket'e yazar. Socket yazım hatası (EPIPE, ECONNRESET, yazma
+    /// zaman aşımı) istek kapsamlıdır (W1): operatöre tek satır yazılır,
+    /// metrikte final write hatası sayılır ve `IstemciKoptu` döner; worker
+    /// süreci bu yüzden SONLANMAZ. `Err` yalnız iç tutarlılık hatasıdır.
+    fn web_yanit_taslagini_yaz(&mut self, taslak: WebYanitTaslagi) -> Result<YanitTeslimi, String> {
         use std::io::Write;
 
         let mut akis = self
@@ -2169,7 +2181,20 @@ impl GercekIo {
         }
         let result = akis.write_all(&yanit);
         akis.metrik_yanit(status, result.is_ok());
-        result.map_err(|hata| format!("HTTP yanıtı yazılamadı: {}", hata))
+        match result {
+            Ok(()) => Ok(YanitTeslimi::Yazildi),
+            Err(hata) => Ok(self.istemci_kopmasini_gunlukle(status, &hata)),
+        }
+    }
+    /// W1/K-327: socket yazım hatası istek kapsamlıdır; operatöre tek satır.
+    fn istemci_kopmasini_gunlukle(&self, durum: u16, hata: &std::io::Error) -> YanitTeslimi {
+        let istek = self
+            .son_istek
+            .as_ref()
+            .map(|(yontem, hedef)| (yontem.as_str(), hedef.as_str()));
+        let satir = dil::yorumlayici::yanit_kopmasi_gunluk_satiri(durum, &hata.to_string(), istek);
+        eprintln!("{satir}");
+        YanitTeslimi::IstemciKoptu
     }
     /// İstemci kimliği, oturum ve uç nokta oran sınırı kapısı. Başarıda
     /// `çerez ...` satırını (boşsa boş metin) döndürür; hata yanıtı
@@ -3200,10 +3225,12 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                 self.web_guvenligi.istegi_geri_al();
                 self.bekleyen_cerezler = yedek.bekleyen_cerezler;
                 self.bekleyen_silinen_cerezler = yedek.bekleyen_silinen_cerezler;
-                return self.web_yanit_taslagini_yaz(WebYanitTaslagi::Durum(
-                    503,
-                    "web güvenlik durumu güvenle kaydedilemedi".into(),
-                ));
+                return self
+                    .web_yanit_taslagini_yaz(WebYanitTaslagi::Durum(
+                        503,
+                        "web güvenlik durumu güvenle kaydedilemedi".into(),
+                    ))
+                    .map(|_| ());
             }
         };
         if let Some(postgresql) = self.postgresql.as_mut() {
@@ -3225,20 +3252,28 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                 if let Err(geri_alma) = geri_alma {
                     eprintln!("Web oturum commit'i geri alınamadı: {geri_alma}");
                 }
-                return self.web_yanit_taslagini_yaz(WebYanitTaslagi::Durum(503, mesaj.into()));
+                return self
+                    .web_yanit_taslagini_yaz(WebYanitTaslagi::Durum(503, mesaj.into()))
+                    .map(|_| ());
             }
         }
-        if let Err(hata) = self.web_yanit_taslagini_yaz(taslak) {
-            self.bekleyen_cerezler = yedek.bekleyen_cerezler;
-            self.bekleyen_silinen_cerezler = yedek.bekleyen_silinen_cerezler;
-            return match self.web_guvenligi.commiti_geri_al(commit) {
-                Ok(()) => Err(hata),
-                Err(geri_alma) => Err(format!(
-                    "{hata}; web oturum transaction'ı geri alınamadı: {geri_alma}"
-                )),
-            };
+        match self.web_yanit_taslagini_yaz(taslak)? {
+            YanitTeslimi::Yazildi => Ok(()),
+            // İstemci yanıtı almadı: oturum commit'i geri alınır, worker
+            // sonraki isteği kabul eder (W1). Yalnız geri almanın kendisi
+            // başarısızsa güvenlik durumu belirsizdir ve süreç C022 ile biter.
+            YanitTeslimi::IstemciKoptu => {
+                self.bekleyen_cerezler = yedek.bekleyen_cerezler;
+                self.bekleyen_silinen_cerezler = yedek.bekleyen_silinen_cerezler;
+                self.web_guvenligi
+                    .commiti_geri_al(commit)
+                    .map_err(|geri_alma| {
+                        format!(
+                            "istemci yanıt sırasında koptu; web oturum transaction'ı geri alınamadı: {geri_alma}"
+                        )
+                    })
+            }
         }
-        Ok(())
     }
     fn istek_islemini_geri_al(&mut self) {
         if let Some(postgresql) = self.postgresql.as_mut() {
@@ -3406,6 +3441,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             return Ok(());
         }
         self.web_yanit_taslagini_yaz(WebYanitTaslagi::Yonlendirme(adres.to_string()))
+            .map(|_| ())
     }
     fn rota_guvenligini_denetle(
         &mut self,
@@ -4558,7 +4594,9 @@ mod web_profili_testleri {
         io.oturum_ac("Mustafa", "yönetici").unwrap();
         io.yanit_gonder("başarı");
 
-        assert!(io.istek_islemini_tamamla().is_err());
+        // W1/K-327: socket kopması istek kapsamlıdır; worker'ı bitiren Err yok.
+        assert_eq!(io.istek_islemini_tamamla(), Ok(()));
+        assert!(io.bekleyen_akis.is_none() && io.bekleyen_baglanti_izni.is_none());
         let metadata = observed.request_test_state();
         assert_eq!(metadata[1], 1);
         assert_eq!(metadata[3], 1);

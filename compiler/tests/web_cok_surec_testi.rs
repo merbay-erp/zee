@@ -8,6 +8,9 @@ use std::process::{Child, Command, Stdio};
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::{Duration, Instant};
 
+#[path = "semantic_regresyon/native_web_kopma.rs"]
+mod kopma;
+
 static GECICI_SIRA: AtomicU64 = AtomicU64::new(0);
 
 struct GeciciKlasor(PathBuf);
@@ -444,4 +447,111 @@ fn rota_hatasi_gercek_worker_ta_500_olur_ve_operator_stderr_satiri_yazar() {
         "{stderr}"
     );
     assert!(!stderr.contains("n=gizli"), "{stderr}");
+}
+
+/// Her kopma ayrı istemci kimliği taşır; uç nokta oran sınırı bu testin
+/// konusu değildir.
+#[cfg(unix)]
+fn kopar(kapi: u16, sira: u16) {
+    let ilk = kopma::yazim_ortasinda_kopar(
+        kapi,
+        "GET /buyuk",
+        &format!("198.18.{}.{}", sira / 256, sira % 256),
+    );
+    assert!(
+        ilk.starts_with(b"HTTP/1.1 200 OK"),
+        "{}",
+        String::from_utf8_lossy(&ilk)
+    );
+}
+
+#[cfg(unix)]
+fn rss_kib(pid: u32) -> u64 {
+    let cikti = Command::new("ps")
+        .args(["-o", "rss=", "-p", &pid.to_string()])
+        .output()
+        .expect("ps çalışmalı");
+    String::from_utf8_lossy(&cikti.stdout)
+        .trim()
+        .parse()
+        .expect("RSS KiB")
+}
+
+#[cfg(unix)]
+#[test]
+fn yanit_yazimi_sirasinda_kopan_istemci_worker_i_dusurmez_ve_izin_sizdirmaz() {
+    // W1: 2 MiB yanıtın yazımı ortasında gelen RST istek kapsamlıdır; worker
+    // ayakta kalır, sonraki istek 200 olur. 100 ardışık kopma, 64'lük süreç
+    // bağlantı izni sınırını aşar: izin sızsaydı sağlık isteği 503 alırdı.
+    let gecici = GeciciKlasor::yeni();
+    let kapi = bos_kapi();
+    let yol = gecici.0.join("worker.dil");
+    std::fs::write(
+        &yol,
+        "8080 kapısında sunucu başlat\n\nGET \"/buyuk\" adresine istek geldiğinde\n    metin \"x\" olsun\n    21 kez tekrarla\n        metin metin ile metin olsun\n    metin yanıtını gönder\n\nGET \"/saglik\" adresine istek geldiğinde\n    \"ayakta\" yanıtını gönder\n",
+    )
+    .expect("worker kaynağı");
+    let kapi_yazisi = kapi.to_string();
+    let mut cocuk = Command::new(env!("CARGO_BIN_EXE_dil"))
+        .args([
+            "çalıştır",
+            "--web-proxy",
+            "https://panel.example",
+            "--web-worker-port",
+            &kapi_yazisi,
+            yol.to_str().expect("UTF-8 kaynak yolu"),
+        ])
+        .stdout(Stdio::null())
+        .stderr(Stdio::piped())
+        .spawn()
+        .expect("web worker süreci");
+
+    let tam = istek(kapi, "203.0.113.7", "GET", "/buyuk", None, "");
+    assert_eq!(durum(&tam), 200);
+    assert!(tam.ends_with(&"x".repeat(1024)), "tam 2 MiB gövde gelmeli");
+    assert!(tam.len() > 2 * 1024 * 1024, "{}", tam.len());
+
+    kopar(kapi, 0);
+    let saglik = istek(kapi, "203.0.113.7", "GET", "/saglik", None, "");
+    assert_eq!(durum(&saglik), 200, "worker ilk kopmadan sonra yaşamalı");
+    let rss_once = rss_kib(cocuk.id());
+
+    for sira in 1..=100 {
+        kopar(kapi, sira);
+    }
+    let saglik = istek(kapi, "203.0.113.8", "GET", "/saglik", None, "");
+    assert_eq!(
+        durum(&saglik),
+        200,
+        "100 kopmadan sonra izin sızıntısı olmamalı"
+    );
+    assert!(saglik.ends_with("ayakta"), "{saglik}");
+    assert!(cocuk.try_wait().expect("worker durumu").is_none());
+    let rss_sonra = rss_kib(cocuk.id());
+    assert!(
+        rss_sonra <= rss_once + 32 * 1024,
+        "100 kopmada RSS büyümesi 32 MiB'ı aşmamalı: {rss_once} KiB → {rss_sonra} KiB"
+    );
+
+    cocuk.kill().expect("worker durdurulmalı");
+    let mut stderr = String::new();
+    cocuk
+        .stderr
+        .take()
+        .expect("stderr borusu")
+        .read_to_string(&mut stderr)
+        .expect("stderr okunmalı");
+    cocuk.wait().expect("worker sonucu");
+    let kopmalar: Vec<&str> = stderr
+        .lines()
+        .filter(|satir| satir.starts_with("zee-web istemci yanıt sırasında koptu: "))
+        .collect();
+    assert_eq!(kopmalar.len(), 101, "her kopma tek satır: {stderr}");
+    assert!(
+        kopmalar.iter().all(|satir| satir.starts_with(
+            "zee-web istemci yanıt sırasında koptu: durum=200 yöntem=GET yol=\"/buyuk\" hata=\""
+        )),
+        "{stderr}"
+    );
+    assert!(!stderr.contains("C022"), "{stderr}");
 }
