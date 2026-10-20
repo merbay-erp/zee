@@ -93,3 +93,4 @@ f026de34b204b017416e7fa201e24805b1a7e64e	maintenance	-	-	-	-	K-298 mevcut açık
 fb8067cc71f4d40147d5eb96b3b503ff13143930	maintenance	-	-	-	-	K-319 yalnız CI faz matrisi aracı: @unix seçici son eki; derleyici/runtime davranışı değişmez.	-
 51a606a49976f09e230bcd094ce378798515e245	maintenance	-	-	-	-	K-319 Windows taşınabilirliği: zee.ayar yol önekinin denetimi, faz matrisi @unix test seçicileri ve Windows cfg temizliği; Unix davranışı ve dil semantiği değişmez.	-
 4b2398ad646c56790f9368209219ea56306c4aed	maintenance	-	-	-	-	Yeni grammar, kalıp, tanı kodu ya da runtime davranışı yok; kaynak kapsamı rapor yolu (serde_json) wasm hedefinin dışına alındı.	-
+95d8f04b89aa7b83ddbb9b3b3856a340b96a2068	security	-	K-323	regression/security/istek-butcesi-yalitimi.dil	-	Yalnız web döngüsünde C023/C024 istek düzeyi 503 eşlemesi ve kendine metin eklemenin yerinde büyümesi; yeni grammar, kalıp, tanı kodu veya bağımlılık yok, sınır değerleri aynı.	adr/033-merkezi-kaynak-butcesi.md
