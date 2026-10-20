@@ -4869,3 +4869,17 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   4 ASan×1800 sn + 2 Miri; 1022/0/27). GitHub ön-sürümü üç platform imzalı paketle yayında; indirilen paket
   imza/kur/çalıştır ile doğrulandı. Kayıt `docs/surum-v1.0.0-rc.1-kaniti.md`. Not: rc-kaniti export çıktı
   yolunda sembolik bağ reddeder; macOS'ta `/tmp` yerine `/private/tmp` kullanılmalı.
+
+## K-323 — İstek başına kaynak yalıtımı (20 Ekim 2026)
+
+- K-323 (20.10.2026): Harici bir web ürününün performans taramasında döngüde `x x ile y olsun` ile HTML
+  kuran birkaç bin satırlık liste sayfaları C024'e takıldı; tek istek bütün worker'ı sonlandırdı, sonraki
+  herkes 503 aldı. (1) Web döngüsü yalnız C013/C021/C027'yi istek düzeyinde 503'e çeviriyordu; C023/C024
+  artık taslağı geri alıp ayrıntı sızdırmayan 503 verir, worker yaşar. Genel çalışma hataları (C003 vb.)
+  spec/11 ve mevcut test gereği yayılmaya devam eder; ayrı karar ister. (2) Sayım her turda soldaki metnin
+  tam kopyasını yeni değer sayıyordu (5.000 × 116 bayt ≈ 1,45 GB sayım). Eski metni iade etmek ya da yalnız
+  canlı değeri saymak ADR-033 iade-yok ilkesini bozar ve gerçek O(n²) kopyalamayı bırakır; seçilen yol
+  yerinde büyüme: hedefle başlayan `Birlestir` ve hedef metinse sağ parçalar aynı sıra ve 16 MiB tanısıyla
+  değerlendirilir, zarftan yalnız kapasite artışı düşer. C024 önerisi liste + `birleşmişi` kalıbını gösterir.
+  Grammar, tanı kimliği, facade, katman sahipliği değişmedi; yeni `yorumlayici/kendine_ekleme` alt modülü
+  100 satır mimari bütçesiyle. `--deneysel-web` ve `--web-proxy` gerçek TCP ile denendi (503, sonra 200).

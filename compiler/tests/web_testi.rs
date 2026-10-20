@@ -1057,3 +1057,76 @@ fn istemci_adresi_web_disinda_bostur_ve_islem_etkisi_korunur() {
             .unwrap_err();
     assert_eq!(error.kod, "T044");
 }
+
+#[test]
+fn istek_heap_butcesi_asimi_503_olur_ve_worker_temiz_butceyle_yasar() {
+    // Her istek ayrı bütçe alır: tek isteğin C024'ü yalnız o isteği bitirir.
+    let kaynak = "\
+8080 kapısında sunucu başlat
+
+GET \"/agir\" adresine istek geldiğinde
+    yük \"x\" olsun
+    20 kez tekrarla
+        yük yük ile yük olsun
+    depo boş liste olsun
+    70 kez tekrarla
+        depoya yükü ekle
+    \"bitmemeliydi\" yanıtını gönder
+
+GET \"/saglik\" adresine istek geldiğinde
+    yük \"x\" olsun
+    20 kez tekrarla
+        yük yük ile yük olsun
+    depo boş liste olsun
+    40 kez tekrarla
+        depoya yükü ekle
+    \"ayakta\" yanıtını gönder
+";
+    let io = sunucuyla(
+        kaynak,
+        vec!["GET /agir", "GET /saglik", "GET /agir", "GET /saglik"],
+    );
+    assert_eq!(io.sunucu_durumlari, vec![503, 200, 503, 200]);
+    assert_eq!(
+        io.sunucu_yanitlari[0].1,
+        "istek güvenli kaynak bütçesini aştı; otomatik tekrar yok"
+    );
+    assert_eq!(io.sunucu_yanitlari[1].1, "ayakta");
+}
+
+#[test]
+fn istek_adim_butcesi_asimi_503_olur_ve_worker_yasar() {
+    let kaynak = "\
+8080 kapısında sunucu başlat
+
+GET \"/sonsuz\" adresine istek geldiğinde
+    i 0 olsun
+    i 1 den küçük olduğu sürece
+        i 0 olsun
+    \"bitmemeliydi\" yanıtını gönder
+
+GET \"/saglik\" adresine istek geldiğinde
+    \"ayakta\" yanıtını gönder
+";
+    let io = sunucuyla(kaynak, vec!["GET /sonsuz", "GET /saglik"]);
+    assert_eq!(io.sunucu_durumlari, vec![503, 200]);
+    assert_eq!(io.sunucu_yanitlari[1].1, "ayakta");
+}
+
+#[test]
+fn dongude_metin_birlestiren_html_sayfasi_heap_butcesine_takilmaz() {
+    // 5000 satır × ~116 bayt: eski muhasebe her turu yeni kopya sayıp O(n²)
+    // tüketiyordu ve sayfa C024 ile düşüyordu.
+    let kaynak = "\
+8080 kapısında sunucu başlat
+
+GET \"/liste\" adresine istek geldiğinde
+    html \"\" olsun
+    5000 kez tekrarla
+        html html ile \"<tr><td>kayıt</td><td>örnek açıklama metni</td><td>12,50</td><td>tamam</td><td>2026-10-20</td><td>-</td></tr>\" olsun
+    html yanıtını gönder
+";
+    let io = sunucuyla(kaynak, vec!["GET /liste"]);
+    assert_eq!(io.sunucu_durumlari, vec![200]);
+    assert!(io.sunucu_yanitlari[0].1.len() > 5000 * 100);
+}

@@ -28,7 +28,10 @@ kaynaklarla aynı sözleşmeye bağlar.
    1 milyon öğe, eşzamanlı grup başına 1.024 görev taşır.
 4. Normal dil çıktısı çalışma/istek başına 16 MiB ve 100 bin olayla sınırlıdır.
    Aşan olay dış IO'ya gönderilmeden C023 üretir. Uzun yaşayan web sunucusunda
-   her istek yeni çalışma/çıktı zarfı alır.
+   her istek yeni çalışma/çıktı/heap zarfı alır. K-323: rota içindeki C023/C024
+   yalnız o isteği taslak geri alınmış 503 ile bitirir; worker süreci çıkmaz.
+   Aksi hâlde tek ağır istek bütün worker'ı düşürüp sonraki istekleri 503'e
+   çeviriyordu (kullanılabilirlik DoS'u).
 5. Dil programının metin dosyası okuması ve atomik append/rollback ön-okuması
    16 MiB ile sınırlıdır.
 6. LSP en çok 256 açık belge, toplam 128 MiB belge metni ve bir mesaj için
@@ -52,7 +55,13 @@ kaynaklarla aynı sözleşmeye bağlar.
 Saklama fişi gerçek allocator/RSS telemetrisi değildir: değerlerin yaklaşık
 dinamik grafiğini, ortam yazımlarını ve görev klonlarını güvenli tarafta fazla
 sayar; silme veya yeniden bağlamada bütçeyi geri vermez. Böylece canlı grafiğe
-üst sınır olur, fakat profiler sözü vermez. Domain sabit göçü tamamdır. LSP
+üst sınır olur, fakat profiler sözü vermez. K-323: `x x ile y olsun` yeniden
+bağlama değil yerinde büyümedir; soldaki kopya hiç kurulmaz ve yalnız kapasite
+artışı sayılır. İade veya "yalnız canlı değeri say" seçenekleri bu kararın
+iade-yok ilkesini bozacağı ve eski kopyalama işini O(n²) bırakacağı için
+reddedildi; yerinde büyüme hem sayımı hem gerçek kopyalama işini doğrusal yapar.
+Diğer biçimler (`x y ile x olsun`, ara değişken) eski muhafazakâr sayımı korur;
+C024 önerisi liste + `birleşmişi` kalıbını gösterir. Domain sabit göçü tamamdır. LSP
 outbound JSON'u da üretim sırasında bütçelidir; bu sınırla B-025 kapanmıştır.
 Duvar-saati ve iptal anındaki yan etki invariant'ları B-026'da ayrıca izlenir.
 
@@ -69,6 +78,10 @@ Duvar-saati ve iptal anındaki yan etki invariant'ları B-026'da ayrıca izlenir
   C024 olur; saklanan değer ve görev ortamı klonları yaklaşık 64 MiB zarfı
   aşamaz;
 - 64 bağlantı izni doluyken yeni izin reddedilir, bırakılan izin yeniden alınır.
+- K-323: rotada C023/C024 aşan istek 503 alır, sonraki istek aynı worker'da
+  200 döner (`web_testi`); 50.000 turluk kendine metin ekleme heap zarfına
+  takılmaz, 16 MiB metin ve 64 MiB değer sınırları korunur
+  (`kaynak_sinirlari_testi`).
 - Mimari sahiplik testi on bir tüketici modülün sayısal limiti ortak profilden
   okuduğunu ve domain modüllerinin ilanlı satır bütçesinde kaldığını doğrular.
 - LSP sınırlı yazıcı sınırdaki parçayı kabul edip bir bayt fazlasını append
