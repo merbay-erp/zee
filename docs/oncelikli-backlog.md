@@ -2402,3 +2402,11 @@ bağlantı izni iade, worker sonraki isteği alır. Kanıt `web_cok_surec_testi`
 `yanit-yazimi-kopmasi` (`native-web-kopma`). Talepteki W2 (süreç içi
 eşzamanlılık), W3 (rota önbellek başlığı) ve W4 (açılışta tek sefer) açık;
 ayrı karar/PR ister.
+
+## K-328 — rustls-webpki/webpki-roots RustSec yükseltmesi
+
+**Durum: KAPALI.** 20 Ekim'de yayımlanan RUSTSEC-2026-0382 (rustls-webpki
+0.103.15) ve RUSTSEC-2026-0381 (webpki-roots 1.0.9) güvenlik kapısının
+advisories adımını kırıyordu. Compiler ve fuzz kilitlerinde rustls-webpki
+0.103.16, webpki-roots 1.0.10; ignore yok (GB-125, ADR-038). Kanıt:
+`guvenlik-kapisi.sh --surekli`, `offline-vendor-denetle.sh`.
