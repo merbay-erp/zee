@@ -132,12 +132,23 @@ pub(super) fn web_istegini_calistir(
     Ok(None)
 }
 
-/// Adım/çıktı (C023) ve heap (C024) zarfı istek başınadır; aşım yalnız o
-/// isteği ayrıntı sızdırmayan 503 ile bitirir, worker sonraki isteği taze
-/// bütçeyle alır (spec/24). Diğer çalışma hataları eskisi gibi yayılır.
-pub(super) fn kaynak_butcesi_web_mesaji(kod: &str) -> Option<&'static str> {
-    matches!(kod, "C023" | "C024")
-        .then_some("istek güvenli kaynak bütçesini aştı; otomatik tekrar yok")
+/// İstek-yerel hata sınırı (spec/11 §5, K-324/ADR-157): rota tanısı yalnız o
+/// isteği ayrıntı sızdırmayan sabit gövdeyle bitirir, worker sonraki isteği
+/// alır. Geçici/kaynak sınıfı 503, diğer tanılar 500'dür. Ret kümesi yalnız
+/// iç tutarlılıktır (C000, Ç nöbetçileri): `None` süreci tanıyla bitirir.
+pub fn istek_hatasi_yaniti(kod: &str) -> Option<(u16, &'static str)> {
+    if kod == "C000" || kod.starts_with('Ç') {
+        return None;
+    }
+    let gecici = eylem_hatasi::web_mesaji(kod).or_else(|| {
+        // Adım/çıktı (C023) ve heap (C024) zarfı istek başınadır (spec/24).
+        matches!(kod, "C023" | "C024")
+            .then_some("istek güvenli kaynak bütçesini aştı; otomatik tekrar yok")
+    });
+    Some(match gecici {
+        Some(mesaj) => (503, mesaj),
+        None => (500, "istek işlenemedi; sunucu hatası"),
+    })
 }
 
 fn eksik_zorunlu_alan<'a>(govde: &'a [Cumle], veriler: &[(String, String)]) -> Option<&'a str> {

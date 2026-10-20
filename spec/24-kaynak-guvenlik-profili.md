@@ -43,8 +43,9 @@ Uzun yaşayan web sunucusunda her istek bağımsız adım/çıktı/heap bütçes
 Rota yürütmesi C023 veya C024 üretirse istek yanıtı/çerez/oturum taslağı geri
 alınmak, istemciye ayrıntı sızdırmayan “istek güvenli kaynak bütçesini aştı;
 otomatik tekrar yok” gövdeli 503 verilmek ve worker sonraki isteği taze bütçeyle
-kabul etmek ZORUNDADIR. Diğer çalışma hataları spec/11'deki yayılma kuralını
-korur.
+kabul etmek ZORUNDADIR. Diğer çalışma hataları da spec/11 §5'teki
+istek-yerel hata sınırıyla (K-324) 500'e çevrilir; her iki yol operatör
+günlüğüne düşer.
 Süreç genelinde kabul edilmiş inbound ve başlatılmış outbound ağ bağlantılarının
 toplamı 64'ü AŞAMAZ. İzin bütün başarı/hata yollarında bırakılmalıdır; aşım
 outbound'da C018 nedeni, inbound'da HTTP 503'tür.

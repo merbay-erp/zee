@@ -970,6 +970,9 @@ metadata'yı `hazırlanıyor` bırakırken C013 ile worker'ı sonlandırdı. Bu 
 web'de request-local C013 → 503, sıfır retry ve worker survival correctness
 sözünü açtı. Binary hash/upload ve fiziksel silme/orphan tarama F030'da;
 production TLS/pool ise F031'de kapanmıştır.
+K-324/ADR-157 bu tek kodluk sözü genel istek-yerel hata sınırına çevirdi:
+rotada C000 dışı her tanı 500/503/504 ile yalnız o isteği bitirir, worker
+yaşar ve operatör stderr'de tek satırlık kayıt görür.
 Zee `395b2e9` değişikliğinin ardından exact final ürün kanıtı `29d30c8` oldu:
 C013 503/no-retry verirken worker sağlık isteğinde 200 kaldı; eksik dosya
 metadata'sı `hatalı`ya, finalize reddiyle kalan kayıt process restartından

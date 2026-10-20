@@ -2373,3 +2373,12 @@ worker'ı düşürüyordu → istek düzeyinde 503, worker yaşar (spec/24, GB-1
 (ADR-033 iade-yok korunur); C024 önerisi liste + `birleşmişi`. Kanıt
 `web_testi`, `kaynak_sinirlari_testi`, regression `istek-butcesi-yalitimi` ve
 `kendine-metin-ekleme-dogrusal`.
+
+## K-324 — Web rotasında istek-yerel hata sınırı ve operatör günlüğü
+
+**Durum: KAPALI.** RFC-0035/ADR-157: rotada C000 dışı her tanı istek-yerel
+(taslak geri alınır; 503/504 aynı, diğerleri sabit gövdeli 500), worker yaşar
+(GB-122); istek düzeyi tanılar iç `GirdiCikti::istek_tanisini_gunlukle` ile
+kaçışlanmış tek stderr satırına düşer, IO izine girmez (GB-123). Kanıt
+`web_testi`, `web_cok_surec_testi`, `io_izi_testi`, regression
+`rota-hatasi-yalitimi`.

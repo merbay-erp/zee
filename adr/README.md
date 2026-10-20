@@ -161,3 +161,4 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-154 | [Kod lisansı: MIT](154-mit-lisansi.md) | **kabul** (K-314; P39 lisans, P32 açık depo) |
 | ADR-155 | [Marka politikası](155-marka-politikasi.md) | **kabul** (K-316; P39 marka) |
 | ADR-156 | [Resmî yayın kanalı ve yayıncı anahtarı](156-yayin-kanali-ve-yayinci-anahtari.md) | **kabul** (K-317; P24, V1-P1-25 imza) |
+| ADR-157 | [Web rotasında istek-yerel hata sınırı ve operatör günlüğü](157-istek-yerel-hata-siniri.md) | **kabul** (K-324) |
