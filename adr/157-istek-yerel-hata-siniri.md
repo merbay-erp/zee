@@ -69,7 +69,7 @@ aykırıydı.
 ## Ek — K-327: yanıt yazımı sırasında istemci kopması (20 Ekim 2026)
 
 Karar 1'deki “yanıt commit'inden sonra gelen C022” yolu sahada ikinci bir
-DoS sınıfı çıkardı (GB-125): istemci ya da önündeki nginx büyük bir yanıtın
+DoS sınıfı çıkardı (GB-126): istemci ya da önündeki nginx büyük bir yanıtın
 (2,3 MB site haritası) yazımı sırasında bağlantıyı RST ile keserse
 `write_all` EPIPE/ECONNRESET döndürüyor, `istek_islemini_tamamla` bunu C022'ye
 çeviriyor ve worker çıkıyordu; üç worker'ın üçü de aynı istekle düştü. Küçük

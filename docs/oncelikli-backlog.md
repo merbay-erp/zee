@@ -2394,7 +2394,7 @@ karşılıklarına çevrildi; regression/beyan SHA'ları yeni soya bağlandı,
 ## K-327 — Yanıt yazımı sırasında istemci kopması worker'ı düşürmez
 
 **Durum: KAPALI.** ADR-157 eki: zee-cekirdek talebi W1 (P0). Büyük yanıtın
-yazımında RST/EPIPE C022 ile worker'ı sonlandırıyordu (GB-125). Yazım hatası
+yazımında RST/EPIPE C022 ile worker'ı sonlandırıyordu (GB-126). Yazım hatası
 artık istek kapsamlı: çerez/oturum commit'i geri alınır, tek stderr satırı
 (`zee-web istemci yanıt sırasında koptu: …`), `final_write_errors` metriği,
 bağlantı izni iade, worker sonraki isteği alır. Kanıt `web_cok_surec_testi`
