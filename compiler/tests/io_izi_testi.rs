@@ -263,3 +263,22 @@ fn istemci_adresi_izi_sirali_ve_kanonik_ip_olarak_oynatilir() {
         assert!(IzYenidenOynatici::yeni(&trace).is_err());
     }
 }
+
+#[test]
+fn operator_istek_gunlugu_ize_girmez_ve_ic_adaptore_iletilir() {
+    // K-324/ADR-157: program günlüğü gözleyemez; replay baytı değişmemeli.
+    let tani = dil::tani::Tani::yeni("C003", "Sıfıra bölme".into(), 3, 1, 1);
+    let mut kaydeden = IzKaydedenIo::yeni(ToplayanIo::yeni(Vec::new()));
+    let bos_iz = kaydeden.iz_metni().expect("boş iz");
+    kaydeden.istek_tanisini_gunlukle(500, &tani);
+    assert_eq!(kaydeden.olay_sayisi(), 0);
+    assert_eq!(kaydeden.iz_metni().expect("iz"), bos_iz);
+    assert_eq!(
+        kaydeden.ic.istek_tani_gunlugu,
+        vec![(500, "C003".to_string(), 3)]
+    );
+
+    let mut oynatici = IzYenidenOynatici::yeni(&bos_iz).expect("iz okunmalı");
+    oynatici.istek_tanisini_gunlukle(500, &tani);
+    oynatici.bitir().expect("günlük replay olayı tüketmemeli");
+}

@@ -22,11 +22,21 @@ Bu kayıt yeni sürüm etiketi değildir.
   `x x ile y olsun` hedef metinse yerinde büyür; 64 MiB zarfından yalnız
   kapasite artışı düşülür. Döngüde HTML kuran birkaç bin satırlık sayfa artık
   C024 vermez. C024 önerisi liste + `birleşmişi` kalıbını da gösterir.
+- **Rota hatası artık sunucuyu kapatmaz (K-324, RFC-0035/ADR-157):** Web
+  rotasında C000 dışındaki her çalışma tanısı (ör. `?n=abc` ile C004, sıfıra
+  bölme C003, derinlik C019, `olmalı` D001, güvensiz yönlendirme hedefinde
+  C022) yalnız o isteği taslağı geri alınmış “istek işlenemedi; sunucu hatası”
+  gövdeli 500 ile bitirir; worker sonraki isteği kabul eder. Mevcut 503/504
+  yanıtları aynıdır. İstek düzeyine çevrilen her tanı stderr'e tek satır
+  yazılır: `zee-web istek-hatası durum=500 kod=C004 satır=5 yöntem=GET
+  yol="/sayi" mesaj="…"` (sorgu yazılmaz, denetim karakterleri kaçışlanır).
 
 ### Uyumluluk ve göç
 
-Sözdizimi, tanı kimliği ve sınır değerleri değişmedi; göç gerekmiyor. Diğer
-çalışma hataları eskisi gibi yayılır.
+Sözdizimi, tanı kimliği ve sınır değerleri değişmedi. Web rotasındaki çalışma
+hataları artık süreci bitirmez: süreç çıkışını hata sinyali sayan dağıtımlar
+stderr'deki `zee-web istek-hatası` satırlarını izlemelidir. CLI ve `dil dene`
+davranışı değişmedi.
 
 ## v1.0.0-rc.1 — 19 Ekim 2026 (sürüm adayı)
 

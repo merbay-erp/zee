@@ -6,6 +6,7 @@ mod web;
 
 use super::{EylemHatasi, GirdiCikti, VeritabaniHatasi};
 use crate::agac::RotaErisimi;
+use crate::tani::Tani;
 use crate::web_guvenligi::WebReddi;
 use crate::yetkinlik::{Yetkinlik, YetkinlikPolitikasi};
 
@@ -220,6 +221,10 @@ impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
 
     fn eylem_geri_al(&mut self) -> Result<(), EylemHatasi> {
         self.ic.eylem_geri_al()
+    }
+
+    fn istek_tanisini_gunlukle(&mut self, durum: u16, tani: &Tani) {
+        self.ic.istek_tanisini_gunlukle(durum, tani);
     }
 
     fn sensor_acik_mi(&mut self, ad: &str) -> bool {

@@ -141,6 +141,26 @@ yazma hatasında session/cookie/yanıt birlikte geri alınır. TCP'nin yazılmı
 kısmı fiziksel olarak geri alınamaz; bağlantı kapatılır ve eksik
 `Content-Length` başarı sayılmaz.
 
+K-324/ADR-157 uyarınca rota yürütmesi bir tanıyla biterse istek
+taslağı geri alınmak ve worker sonraki bağımsız isteği kabul etmek ZORUNDADIR;
+rota hatası süreci SONLANDIRAMAZ. İstemciye tanı kodu, mesajı, satırı ya da
+değer içeriği SIZDIRILAMAZ. Yanıt tanı kodunun saf işlevidir: Ç001 504; C013,
+C021, C027 bu bölümdeki 503 metinleri; C023/C024 spec/24'teki 503 metni; diğer
+bütün C/D tanıları “istek işlenemedi; sunucu hatası” gövdeli 500'dür. Ret
+kümesi yalnız iç tutarlılıktır: C000 ve iç Ç nöbetçileri süreci tanıyla
+bitirir. Kurtarma rota gövdesini, eylemi ya da yazımı otomatik TEKRARLAYAMAZ.
+Gövde bittikten sonra yanıt commit'inin (`istek_islemini_tamamla`) ürettiği
+C022 bu kuralın dışındadır. `programı N ile bitir` rotada sunucuyu kapatmaya
+devam eder; geçersiz N (C020) 500'dür.
+
+İstek düzeyinde yanıta çevrilen her tanı, yanıt gönderilmeden önce yalnız
+operatöre görünen kanala verilmek ZORUNDADIR (spec/06'daki sessiz devam yasağı).
+Gerçek CLI adaptörü tek satırlık `zee-web istek-hatası durum=… kod=… satır=…
+yöntem=… yol="…" mesaj="…"` kaydını stderr'e yazar; yol sorgu/parça dizgesi
+olmadan yazılır, yol ve mesajdaki tırnak, ters bölü ve denetim karakterleri
+kaçışlanır, satır 4 KiB ile sınırlıdır. Bu kayıt programa görünmez ve
+deterministik IO izine GİREMEZ.
+
 ## 6. Eylem transaction'ı ve iç içe savepoint
 
 Her eylem çağrısı bir transaction/savepoint başlatır:
