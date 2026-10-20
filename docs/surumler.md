@@ -38,6 +38,12 @@ hataları artık süreci bitirmez: süreç çıkışını hata sinyali sayan da�
 stderr'deki `zee-web istek-hatası` satırlarını izlemelidir. CLI ve `dil dene`
 davranışı değişmedi.
 
+Depo geçmişi (K-326): 14–17 Ekim belge sürümlerindeki altyapı izleri
+temizlendi ve ana dal geçmişi yeniden yazıldı; dosyaların son hâli aynıdır.
+Eski bir klonu güncellemek için `git fetch origin` ve ardından
+`git reset --hard origin/master` (yerel değişiklik varsa önce ayrı dala
+alın) ya da yeniden klonlayın. `v1.0.0-rc.1` paketleri ve imzaları değişmedi.
+
 ## v1.0.0-rc.1 — 19 Ekim 2026 (sürüm adayı)
 
 **Durum:** V1'in ilk sürüm adayı; GitHub'da ön-sürüm olarak yayımlanır. Bu

@@ -171,6 +171,11 @@ class PublicPrivacyTests(unittest.TestCase):
             path.parent.mkdir(parents=True); path.write_text("# empty\n")
             with self.assertRaises(ValueError):
                 api["resolve"](api["OLD_MASTER"], root)
+            path = root / "docs/incelemeler/k326/sha-esleme-v1.tsv"
+            path.parent.mkdir(parents=True); path.write_text("# empty\n")
+            for before in api["K326_TIPS"]:
+                with self.assertRaises(ValueError):
+                    api["resolve"](before, root)
 
 
 if __name__ == "__main__":

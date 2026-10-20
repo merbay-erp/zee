@@ -4922,3 +4922,21 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   (`docs/github-actions-pinleri-v1.tsv`, `docs/forgejo-actions-pinleri-v1.tsv`)
   birlikte güncellendi; `tedarik_kapisi_testi` 11/11 geçti. Derleyici, dil
   yüzeyi, spec ve sürüm notu değişmez.
+
+## K-326 — 14–17 Ekim belge geçmişinin anonimleştirilmesi (20 Ekim 2026)
+
+- Açık depo kapısı güncel ağaçta temizken tüm tarihçede 11 konum buluyordu
+  (sunucu adı ve sunucu kök dizini örnek yolları; yalnız belge sürümleri). K-215 gereği
+  istisna eklenmedi; kullanıcı geçmişin yeniden yazılmasını onayladı.
+- Bağımsız klonda tek geçişli fast-export/fast-import: sekiz kesin metin
+  değişimi güncel anonim karşılıkları uygular; regression ve iki beyan
+  manifestindeki kaynak sahibi SHA'lar yeni ataya bağlanır. 98 ana dal
+  commit'i yeni SHA aldı; yeni uç ile eski uç arasında yalnız bu üç kayıttaki
+  38 SHA satırı farklıdır. Ölçüm/provenance kayıtları özgün SHA'yı korur ve
+  [K-326 eşlemesiyle](../docs/incelemeler/k326/README.md) çözülür (GB-124).
+- Seçenekler: `legacy_fingerprints` istisnası (K-215 reddi), filter-repo ile
+  yalnız metin değişimi (kayıt SHA'ları var olmayan commit'e düşer, regresyon
+  koruğu reddeder), üstte düzeltme commit'i (koruk provenance yeniden yazımı
+  sayar). Tek geçiş seçildi. Grammar, tanı, dil yüzeyi, spec ve compiler
+  kaynağı değişmez; `v1.0.0-rc.1` etiket mesajı ve yayın paketleri özgün RC
+  SHA'sını korur.

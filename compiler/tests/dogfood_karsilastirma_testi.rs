@@ -18,7 +18,7 @@ fn oku(goreli: &str) -> String {
         .unwrap_or_else(|hata| panic!("{goreli} okunmalı: {hata}"))
 }
 
-// Tarihi ölçüm özgün SHA'yı korur; K-214/K-215 yalnız kaynak soyunu eşler.
+// Tarihi ölçüm özgün SHA'yı korur; K-214/K-215/K-326 yalnız kaynak soyunu eşler.
 fn tarihi_kanit_kaynagi(kok: &Path, sha: &str) -> Result<String, String> {
     let exact = |s: &str| {
         s.len() == 40
@@ -32,6 +32,7 @@ fn tarihi_kanit_kaynagi(kok: &Path, sha: &str) -> Result<String, String> {
     for yol in [
         "docs/incelemeler/k214/sha-esleme-v1.tsv",
         "docs/incelemeler/k215/sha-esleme-v1.tsv",
+        "docs/incelemeler/k326/sha-esleme-v1.tsv",
     ] {
         let metin = std::fs::read_to_string(kok.join(yol)).map_err(|e| e.to_string())?;
         for satir in metin
@@ -77,6 +78,7 @@ fn tarihsel_kanit_anonim_ata_ister_eski_nesne_ve_rastgele_esleme_kabul_etmez() {
     ));
     std::fs::create_dir_all(kok.join("docs/incelemeler/k214")).unwrap();
     std::fs::create_dir_all(kok.join("docs/incelemeler/k215")).unwrap();
+    std::fs::create_dir_all(kok.join("docs/incelemeler/k326")).unwrap();
     let git = |args: &[&str]| {
         let out = Command::new("git")
             .current_dir(&kok)
@@ -105,7 +107,9 @@ fn tarihsel_kanit_anonim_ata_ister_eski_nesne_ve_rastgele_esleme_kabul_etmez() {
     let eski = "1".repeat(40);
     let k214 = kok.join("docs/incelemeler/k214/sha-esleme-v1.tsv");
     let k215 = kok.join("docs/incelemeler/k215/sha-esleme-v1.tsv");
+    let k326 = kok.join("docs/incelemeler/k326/sha-esleme-v1.tsv");
     std::fs::write(&k214, "# map\n").unwrap();
+    std::fs::write(&k326, "# map\n").unwrap();
     let satir = format!("{eski}\t{ata}\n");
     std::fs::write(&k215, &satir).unwrap();
     assert!(!Command::new("git")
@@ -126,6 +130,12 @@ fn tarihsel_kanit_anonim_ata_ister_eski_nesne_ve_rastgele_esleme_kabul_etmez() {
     assert!(tarihi_kanit_kaynagi(&kok, &eski).is_err());
     std::fs::write(&k214, "# map\n").unwrap();
     std::fs::write(&k215, format!("{eski}\tbozuk\n")).unwrap();
+    assert!(tarihi_kanit_kaynagi(&kok, &eski).is_err());
+    // K-326 eşlemesi de aynı exact ata şartıyla çözülür; ilgisiz dal reddedilir.
+    std::fs::write(&k215, "# map\n").unwrap();
+    std::fs::write(&k326, &satir).unwrap();
+    assert_eq!(tarihi_kanit_kaynagi(&kok, &eski).unwrap(), ata);
+    std::fs::write(&k326, format!("{eski}\t{ayri}\n")).unwrap();
     assert!(tarihi_kanit_kaynagi(&kok, &eski).is_err());
     std::fs::remove_dir_all(kok).unwrap();
 }
