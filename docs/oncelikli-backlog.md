@@ -2382,3 +2382,12 @@ worker'ı düşürüyordu → istek düzeyinde 503, worker yaşar (spec/24, GB-1
 kaçışlanmış tek stderr satırına düşer, IO izine girmez (GB-123). Kanıt
 `web_testi`, `web_cok_surec_testi`, `io_izi_testi`, regression
 `rota-hatasi-yalitimi`.
+
+## K-326 — 14–17 Ekim belge geçmişinin anonimleştirilmesi
+
+**Durum: KAPALI.** Açık depo kapısının tam tarihçede bulduğu 11 konum
+(sunucu adı, sunucu kök dizini örnek yolları) tek geçişli yeniden yazımla güncel anonim
+karşılıklarına çevrildi; regression/beyan SHA'ları yeni soya bağlandı,
+ölçüm kayıtları özgün SHA'yı eşlemeyle korur (GB-124, ADR-087). Kanıt:
+[K-326 kaydı](incelemeler/k326/README.md), `acik-depo-test.py`,
+`dogfood_karsilastirma_testi`.

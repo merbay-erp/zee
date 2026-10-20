@@ -55,6 +55,12 @@ yalnız veri olarak tarar; PR kodu çalıştırılmaz, token salt-okunurdur.
 
 K-215 kapsam/özel ürün dalı sınırı [yeni kayıttadır](../docs/incelemeler/k215/README.md).
 
+K-326 (20 Ekim 2026), 14–17 Ekim belge sürümlerinde kalan sunucu adı ve
+sunucu kök dizini örnek yollarını tarihçede de güncel anonim karşılıklarına çevirir;
+kapı tam tarihçede istisnasız geçer. `ci-taban-kimligi.py` iki eski ana
+dal ucunu (GitHub ve ayna) yalnız [K-326 eşlemesindeki](../docs/incelemeler/k326/README.md)
+exact yeni ataya çevirir; genel force istisnası yine yoktur.
+
 K-239/GB-063, ürünleşme incelemesine yanlışlıkla eklenen üç özel CI ayna
 URL’sini rol ve SHA-256 kayıtlarına dönüştürür. Yalnız 14 Ekim izole iş
 serisinin 15 commit’i yeniden kurulur; ilk iki commit ve be5699c başlangıcı
