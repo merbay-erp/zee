@@ -4956,3 +4956,21 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   olmadan ilk kopmadan sonraki istekte bağlantı reddiyle kırıldı; düzeltmeyle
   100 ardışık kopmada 64'lük izin sınırı aşıldı ve sonraki istek 200 kaldı.
   Grammar, tanı kimliği, dil yüzeyi ve `dil::api::v1` değişmedi.
+
+## K-328 — rustls-webpki/webpki-roots RustSec yükseltmesi (20 Ekim 2026)
+
+- 20.10.2026'da yayımlanan iki RustSec duyurusu değişmeyen master'da
+  `cargo deny` advisories adımını kırdı (ADR-038'in öngördüğü hareketli
+  advisory verisi): RUSTSEC-2026-0382 rustls-webpki 0.103.15 güvenilmezleştirilmiş
+  ara sertifikaları zincirde kabul edebiliyordu; RUSTSEC-2026-0381 webpki-roots
+  1.0.9 güvenilmeyen emSign ara sertifikalarını taşıyordu. İkisi de yalnız
+  native çıkış HTTPS istemcisinin (`ag_istemcisi`, ureq 3.4.0 + rustls) zincir
+  doğrulamasını etkiler; WASM adaptörü ve web sunucusu kullanmaz.
+- Karar: `cargo update -p rustls-webpki -p webpki-roots` compiler ve fuzz
+  kilitlerinde 0.103.16 / 1.0.10'a yükseltir; doğrudan bağımlılık ve
+  `Cargo.toml` değişmez. Reddedilen: `deny.toml` ignore (ignore kümesi boş
+  kalır, K-141), ureq sürüm yükseltmesi (gerek yok, semver uyumlu yama).
+  SBOM `surum-artefakti.sh` içinde `Cargo.lock`'tan üretildiği için bir
+  sonraki sürüm artefaktı yeni sürümleri kendiliğinden taşır; tarihsel
+  `docs/incelemeler/k206/.../sbom.spdx.json` özgün SHA kanıtıdır, değişmez.
+  Compiler kaynağı, grammar, tanı, dil yüzeyi ve spec değişmez (GB-125).
