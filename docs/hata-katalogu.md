@@ -172,7 +172,7 @@ spec/11 §5): istemci ayrıntısız 500 (geçici/kaynak kodlarında 503, son tar
 | C019 | Çağrı derinliği 500'ü aştı | Özyinelemeli adım her seferinde temel duruma yaklaşmalı |
 | C020 | Çıkış kodu 0–255 dışında | `programı 0 ile bitir` … `programı 255 ile bitir` (K-069) |
 | C021 | Eylem transaction'ı başlatılamadı, tamamlanamadı ya da geri alınamadı | Kalıcı kaynağın yol/izin/bağlantı durumunu denetle; write'ı otomatik tekrarlama. Web adaptörü isteği 503 ile kapatıp worker'ı yaşatır; CLI tanıyı yayar |
-| C022 | Web güvenlik adaptörü işlemi reddetti | Güvenli oturum/CSRF desteğini ve başlığa yazılan çerez ya da yerel yönlendirme değerini denetle. Rotadaki ret yalnız o isteği 500 ile bitirir |
+| C022 | Web güvenlik adaptörü işlemi reddetti | Güvenli oturum/CSRF desteğini ve başlığa yazılan çerez ya da yerel yönlendirme değerini denetle. Rotadaki ret yalnız o isteği 500 ile bitirir. İstemcinin yanıt yazımı sırasında kopması C022 değildir: stderr'e tek satır yazılır, worker yaşar (K-327) |
 | C023 | Çalışma adımı, çıktı, koleksiyon ya da eşzamanlı görev kaynak bütçesi aşıldı | Sonsuz döngüyü düzelt; işi, çıktıyı veya koleksiyonu daha küçük sonlu parçalara böl |
 | C024 | Metin ya da saklanan değer heap bütçesi aşıldı | Büyük metin ve değer grafiklerini daha küçük çalışma adımlarına böl; döngüde metin biriktirirken parçaları listeye ekleyip sonda `parçaların "" ile birleşmişi` kullan. Web rotasında aşım yalnız o isteği 503 ile bitirir |
 | C025 | PostgreSQL sorgusu veya değişikliği başarısız | Hatanın `sqlstate`, `kısıt` ve `tablo` verisini incele; sorgu ve parametreyi düzelt. `db.response_frame_limit` için yanıtı küçült; geçersiz transaction’ı temizleyip yeni bir işlem başlat |
