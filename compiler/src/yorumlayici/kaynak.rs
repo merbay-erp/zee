@@ -214,7 +214,7 @@ fn deger_heap_bayti(deger: &Deger, satir: usize) -> Result<usize, Tani> {
     Ok(toplam)
 }
 
-fn heap_butcesini_tuket(bayt: usize, satir: usize) -> Result<(), Tani> {
+pub(super) fn heap_butcesini_tuket(bayt: usize, satir: usize) -> Result<(), Tani> {
     CALISTIRMA_BUTCESI.with(|yuva| {
         let mut yuva = yuva.borrow_mut();
         let Some(butce) = yuva.as_mut() else {
@@ -242,7 +242,9 @@ fn heap_hatasi(bayt: usize, azami: usize, satir: usize) -> Tani {
             bayt,
             azami / 1024 / 1024
         ),
-        "Büyük metin ve koleksiyonları daha küçük çalışma adımlarına böl.",
+        "Büyük metin ve koleksiyonları daha küçük çalışma adımlarına böl; döngüde \
+         metin biriktirmek yerine parçaları listeye ekle ve sonda \
+         `parçaların \"\" ile birleşmişi` ile tek seferde birleştir.",
     )
 }
 

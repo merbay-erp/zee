@@ -37,6 +37,10 @@ sürümü, tehdit modeli ve üst sınırı ayrı RFC ile görünür olur.
 | Tek eşzamanlı grup | 1.024 görev | C023 |
 | Tek üretilen metin | 16 MiB | C024 |
 | Çalışma/istek saklanan değer tahsisi | yaklaşık 64 MiB | C024 |
+
+K-323 eki: web isteğinde C023/C024 yalnız o isteği 503 ile bitirir; worker
+yaşar. `x x ile y olsun` yerinde büyür ve zarftan yalnız kapasite artışını
+tüketir (iade yok, ADR-033).
 | Çalışma/istek çıktısı | 16 MiB ve 100.000 olay | C023 |
 | Süreç genelinde inbound+outbound ağ bağlantısı | 64 | C018 veya HTTP 503 |
 | Dil veri dosyası okuması | 16 MiB | C012/C013 bağlamında görünür hata |

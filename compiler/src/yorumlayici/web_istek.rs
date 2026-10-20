@@ -132,6 +132,14 @@ pub(super) fn web_istegini_calistir(
     Ok(None)
 }
 
+/// Adım/çıktı (C023) ve heap (C024) zarfı istek başınadır; aşım yalnız o
+/// isteği ayrıntı sızdırmayan 503 ile bitirir, worker sonraki isteği taze
+/// bütçeyle alır (spec/24). Diğer çalışma hataları eskisi gibi yayılır.
+pub(super) fn kaynak_butcesi_web_mesaji(kod: &str) -> Option<&'static str> {
+    matches!(kod, "C023" | "C024")
+        .then_some("istek güvenli kaynak bütçesini aştı; otomatik tekrar yok")
+}
+
 fn eksik_zorunlu_alan<'a>(govde: &'a [Cumle], veriler: &[(String, String)]) -> Option<&'a str> {
     govde.iter().find_map(|cumle| match cumle {
         Cumle::RotaAlaniGerekli { ad, .. }

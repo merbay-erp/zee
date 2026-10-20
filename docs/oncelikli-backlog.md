@@ -2365,3 +2365,11 @@ kararıyla imzalı üç platform ön-sürüm; derleyici `1.0.0-dev`. Etiket aaf9
 RC kapısı ve yayın kanıtı: [kayıt](surum-v1.0.0-rc.1-kaniti.md). Son `v1.0.0`
 için P27, P28 (11.11.2026), P29 Windows ve kısmi ürün kapıları kapanmalı.
 
+## K-323 — İstek başına kaynak yalıtımı ve doğrusal metin birikimi
+
+**Durum: KAPALI.** Harici bir web ürününde saha bulgusu: rotada C023/C024
+worker'ı düşürüyordu → istek düzeyinde 503, worker yaşar (spec/24, GB-121).
+`x x ile y olsun` yerinde büyür, heap zarfından yalnız kapasite artışı düşer
+(ADR-033 iade-yok korunur); C024 önerisi liste + `birleşmişi`. Kanıt
+`web_testi`, `kaynak_sinirlari_testi`, regression `istek-butcesi-yalitimi` ve
+`kendine-metin-ekleme-dogrusal`.

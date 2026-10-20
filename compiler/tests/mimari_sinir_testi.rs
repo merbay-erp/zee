@@ -101,6 +101,7 @@ fn handler_modulleri_yeni_domain_icin_sinir_tasir() {
         ("src/yorumlayici/io_izi/tasima.rs", 160),
         ("src/yorumlayici/io_profili.rs", 80),
         ("src/yorumlayici/kaynak.rs", 280),
+        ("src/yorumlayici/kendine_ekleme.rs", 100),
         ("src/yorumlayici/metin.rs", 240),
         ("src/yorumlayici/web_istek.rs", 180),
         ("src/yorumlayici/yetkinlik.rs", 250),
