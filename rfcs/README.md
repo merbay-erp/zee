@@ -61,3 +61,4 @@ canlı dağıtım ve otomatik parola göçü bu işte yapılmaz.
 | RFC-0033 | [Ürün HTTP POST ve başlıklar](0033-http-post-baslik-ve-gizli-ortam.md) | **geçici kabul** (K-220) | ADR-091, spec/23 |
 
 | RFC-0034 | [Ekli e-posta](0034-ekli-eposta.md) | **kabul** (K-232) |
+| RFC-0035 | [Web rotasında çalışma hatası yalıtımı ve operatör günlüğü](0035-web-rota-hata-yalitimi.md) | **geçici kabul** (K-324; ADR-157) |
