@@ -35,3 +35,5 @@ web-oran-program-argumani	K-262	7c56518cbfc6f5c99ac56bfe7767b5bbdc106179	4e351d3
 native-listener-late-eof	K-259	54a8d6dc0efb060ae5644b37546da40ad03ee035	-	0.8.0-dev	security	native-listener-deadline	-	-	0	-	regression/security/native-listener-late-eof.dil
 native-metric-stdio-alias	K-294	382beed1d01440f6f9df28b5ac7a111fbe1f75ee	54a8d6dc0efb060ae5644b37546da40ad03ee035	0.8.0-dev	cli	native-metric-stdio	-	-	2	-	regression/cli/native-metric-stdio-alias.dil
 bmp-disi-konum	K-297	5b910fccad8e694fd26fabb58e1cc39adbfd65ea	-	0.8.0-dev	lsp	lsp-utf16	-	-	0	hover=true;definition=0:0-4;rename=0:0-4,1:9-13	regression/lsp/bmp-disi-konum.dil
+kendine-metin-ekleme-dogrusal	K-323	d9f344027e1eb443ec249ba614d66f39136e9acd	-	0.8.0-dev	runtime	run	-	-	0	545000	regression/runtime/kendine-metin-ekleme-dogrusal.dil
+istek-butcesi-yalitimi	K-323	d9f344027e1eb443ec249ba614d66f39136e9acd	-	0.8.0-dev	security	web	-	-	0	503 istek güvenli kaynak bütçesini aştı; otomatik tekrar yok	regression/security/istek-butcesi-yalitimi.dil

@@ -169,7 +169,7 @@ kalır (ADR-025).
 | C021 | Eylem transaction'ı başlatılamadı, tamamlanamadı ya da geri alınamadı | Kalıcı kaynağın yol/izin/bağlantı durumunu denetle; write'ı otomatik tekrarlama. Web adaptörü isteği 503 ile kapatıp worker'ı yaşatır; CLI tanıyı yayar |
 | C022 | Web güvenlik adaptörü işlemi reddetti | Güvenli oturum/CSRF desteğini ve başlığa yazılan çerez ya da yerel yönlendirme değerini denetle |
 | C023 | Çalışma adımı, çıktı, koleksiyon ya da eşzamanlı görev kaynak bütçesi aşıldı | Sonsuz döngüyü düzelt; işi, çıktıyı veya koleksiyonu daha küçük sonlu parçalara böl |
-| C024 | Metin ya da saklanan değer heap bütçesi aşıldı | Büyük metin ve değer grafiklerini daha küçük çalışma adımlarına böl |
+| C024 | Metin ya da saklanan değer heap bütçesi aşıldı | Büyük metin ve değer grafiklerini daha küçük çalışma adımlarına böl; döngüde metin biriktirirken parçaları listeye ekleyip sonda `parçaların "" ile birleşmişi` kullan. Web rotasında aşım yalnız o isteği 503 ile bitirir |
 | C025 | PostgreSQL sorgusu veya değişikliği başarısız | Hatanın `sqlstate`, `kısıt` ve `tablo` verisini incele; sorgu ve parametreyi düzelt. `db.response_frame_limit` için yanıtı küçült; geçersiz transaction’ı temizleyip yeni bir işlem başlat |
 | C026 | PostgreSQL migration veya bağlantı işlemi başarısız | Exact hedefi, `sslmode`, pinned CA ortam değişkenini, havuz kapasitesini ve değişmez migration geçmişini doğrula |
 | C027 | COMMIT sonucu istemci tarafından doğrulanamadı; otomatik tekrar güvenli değil | Aynı write'ı körlemesine tekrarlama. Yeni bağlantıda kararlı iş anahtarıyla sonucu uzlaştır; varsa mevcut sonucu benimse, yoksa ürünün idempotency politikasına göre yeni girişim başlat |
