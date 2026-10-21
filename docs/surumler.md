@@ -31,6 +31,14 @@ Bu kayıt yeni sürüm etiketi değildir.
   yazılır: `zee-web istek-hatası durum=500 kod=C004 satır=5 yöntem=GET
   yol="/sayi" mesaj="…"` (sorgu yazılmaz, denetim karakterleri kaçışlanır).
 
+- **HTTPS sertifika doğrulama bağımlılıkları güncellendi (K-328):**
+  Native çıkış HTTPS istemcisinin zincir doğrulamasında kullanılan
+  `rustls-webpki` 0.103.16'ya (RUSTSEC-2026-0382: güvenilmezleştirilmiş ara
+  sertifikalar) ve kök sertifika kümesi `webpki-roots` 1.0.10'a
+  (RUSTSEC-2026-0381: güvenilmeyen emSign ara sertifikaları) yükseltildi.
+  Dil davranışı değişmez; artık güvenilmeyen bu ara sertifikalarla kurulan
+  bağlantılar reddedilir.
+
 ### Uyumluluk ve göç
 
 Sözdizimi, tanı kimliği ve sınır değerleri değişmedi. Web rotasındaki çalışma
