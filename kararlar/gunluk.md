@@ -4940,6 +4940,17 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   sayar). Tek geçiş seçildi. Grammar, tanı, dil yüzeyi, spec ve compiler
   kaynağı değişmez; `v1.0.0-rc.1` etiket mesajı ve yayın paketleri özgün RC
   SHA'sını korur.
+- Force-push sonrası (20 Ekim): master `d72a949` üzerinde `tedarik`,
+  `acik-depo` ve üç platform `dil` yeşil. Yeniden yazılan etiketin push
+  koşuları beklenen biçimde kırmızıdır ve bilinçli olarak öyle bırakıldı:
+  `surum-adayi` yayın adımı var olan Release'i ezmeyi reddetti (paketler ve
+  imzalar özgün kalır); `dil` macOS/Windows'ta etiket ağacı (`87598d4d`)
+  K-326 eşlemesini içermediğinden eski ölçüm SHA'sı çözülemez, Ubuntu'da
+  conformance tabanı silinmiş eski etiket nesnesidir. Hata gerçek değildir;
+  yeniden koşmak düzeltmez. İş akışına etiket istisnası eklenmedi (rastgele
+  force push kapıları atlayamaz); etiket yeniden çekilmez.
+- Enterprise ve Git2 aynalarının dal/etiketleri origin ile birebir eşitlendi
+  (K-215 öncesi kalan eski etiketler değiştirildi/silindi).
 
 ## K-328 — rustls-webpki/webpki-roots RustSec yükseltmesi (20 Ekim 2026)
 
