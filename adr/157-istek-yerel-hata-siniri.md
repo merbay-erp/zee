@@ -65,3 +65,33 @@ aykırıydı.
   ret kümesi, günlük kaçışı), `web_cok_surec_testi` (gerçek `--web-proxy`
   worker'ı, 500 ardından 200, tek stderr satırı), `io_izi_testi` (günlük ize
   girmez), regression `security/rota-hatasi-yalitimi`.
+
+## Ek — K-327: yanıt yazımı sırasında istemci kopması (20 Ekim 2026)
+
+Karar 1'deki “yanıt commit'inden sonra gelen C022” yolu sahada ikinci bir
+DoS sınıfı çıkardı (GB-126): istemci ya da önündeki nginx büyük bir yanıtın
+(2,3 MB site haritası) yazımı sırasında bağlantıyı RST ile keserse
+`write_all` EPIPE/ECONNRESET döndürüyor, `istek_islemini_tamamla` bunu C022'ye
+çeviriyor ve worker çıkıyordu; üç worker'ın üçü de aynı istekle düştü. Küçük
+yanıtlarda soket tamponu yazımı yuttuğu için görünmüyordu.
+
+- **Karar.** Socket yazım hatası tanı değil, istemcinin yanıtı almadığı
+  bilgisidir. `web_yanit_taslagini_yaz` yazım hatasında `IstemciKoptu`
+  döndürür; GercekIo stderr'e `yanit_kopmasi_gunluk_satiri` ile tek satır
+  (`zee-web istemci yanıt sırasında koptu: …`) yazar, native metrikte
+  `final_write_errors` (`yanit_yazilamadi`) artar, çerez/oturum commit'i geri
+  alınır ve worker sonraki isteği kabul eder. Bağlantı izni ve socket aynı
+  istekte bırakılır. PostgreSQL istek transaction'ı yazımdan önce tamamlanmış
+  olduğu için geri alınmaz; bu bugünkü davranıştır.
+- **Kalan C022.** Yalnız iç tutarlılık (bekleyen bağlantı yok) ve kopmadan
+  sonra web oturum commit'inin geri alınamaması süreci bitirir: güvenlik
+  durumu belirsizse fail-closed kalınır.
+- **Reddedilen:** yazımı tekrar denemek (TCP'nin yazılmış kısmı geri alınamaz),
+  oturum commit'ini kopmada korumak (istemci Set-Cookie'yi almadı) ve yeni
+  metrik alanı eklemek (`zee-native-metrics-1` şeması K-167 uyumluluk
+  yüzeyidir; mevcut `final_write_errors` sayacı tam bu olaydır).
+- **Kanıt:** `web_cok_surec_testi` (gerçek worker, 2 MiB yanıt + yazım
+  ortasında RST, sonraki istek 200; 64'lük bağlantı izni sınırını aşan 100
+  ardışık kopma sonrası 200 ve RSS artışı ≤ 32 MiB; her kopma tek stderr
+  satırı, C022 yok), regression `security/yanit-yazimi-kopmasi`
+  (`native-web-kopma` kipi).

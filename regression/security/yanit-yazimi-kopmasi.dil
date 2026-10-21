@@ -1,0 +1,14 @@
+# web-istegi: GET /buyuk
+# web-sonraki: GET /saglik
+# K-327: 2 MiB yanıtın yazımı ortasında istemci RST ile koparsa yalnız o istek biter; worker sonraki isteğe 200 verir.
+
+8080 kapısında sunucu başlat
+
+GET "/buyuk" adresine istek geldiğinde
+    metin "x" olsun
+    21 kez tekrarla
+        metin metin ile metin olsun
+    metin yanıtını gönder
+
+GET "/saglik" adresine istek geldiğinde
+    "ayakta" yanıtını gönder

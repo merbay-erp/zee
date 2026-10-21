@@ -4952,6 +4952,23 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
 - Enterprise ve Git2 aynalarının dal/etiketleri origin ile birebir eşitlendi
   (K-215 öncesi kalan eski etiketler değiştirildi/silindi).
 
+## K-327 — Yanıt yazımı sırasında istemci kopması (20 Ekim 2026)
+
+- K-327 (20.10.2026): zee-cekirdek ölçeğinde ölçülen W1 (P0). 2,3 MB site
+  haritasını isteyip ilk baytlardan sonra RST ile kapatmak üç worker'ın üçünü
+  de `C022 … HTTP yanıtı yazılamadı: Broken pipe` ile düşürdü (nginx
+  `proxy_ignore_client_abort on` arkasında da). K-324 bu yolu bilinçli olarak
+  kapsam dışında bırakmıştı. Karar (ADR-157 eki): socket yazım hatası tanı
+  değil, istemcinin yanıtı almadığı bilgisidir; `web_yanit_taslagini_yaz`
+  `YanitTeslimi::IstemciKoptu` döndürür, oturum commit'i geri alınır, stderr'e
+  tek satır, native `final_write_errors` sayacı (yeni şema alanı açılmadı),
+  worker sürer. Kalan C022: iç tutarlılık ve kopma sonrası oturum geri
+  alımının başarısızlığı (fail-closed). Reddedilen: yazımı tekrar denemek,
+  oturum commit'ini korumak, yeni metrik alanı. Gerçek worker testi düzeltme
+  olmadan ilk kopmadan sonraki istekte bağlantı reddiyle kırıldı; düzeltmeyle
+  100 ardışık kopmada 64'lük izin sınırı aşıldı ve sonraki istek 200 kaldı.
+  Grammar, tanı kimliği, dil yüzeyi ve `dil::api::v1` değişmedi.
+
 ## K-328 — rustls-webpki/webpki-roots RustSec yükseltmesi (20 Ekim 2026)
 
 - 20.10.2026'da yayımlanan iki RustSec duyurusu değişmeyen master'da

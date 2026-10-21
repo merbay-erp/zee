@@ -35,7 +35,7 @@ pub use self::hir_gecisi::{
 use self::ifade::degerlendir_async;
 pub use self::io_izi::{IzKaydedenIo, IzYenidenOynatici, AZAMI_IO_IZ_BAYTI, AZAMI_IO_IZ_OLAYI};
 pub use self::io_profili::{SurumluRastgele, DETERMINISTIK_IO_PROFILI};
-pub use self::istek_gunlugu::istek_tani_gunluk_satiri;
+pub use self::istek_gunlugu::{istek_tani_gunluk_satiri, yanit_kopmasi_gunluk_satiri};
 use self::kaynak::*;
 use self::kendine_ekleme::kendine_metin_ekle;
 use self::metin::{csv_yaz, dogrulama_detayi, json_yaz, metne_sinirli};
