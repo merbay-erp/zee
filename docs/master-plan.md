@@ -984,7 +984,9 @@ Native octet-stream 16 KiB parçalarla temp dosyaya ve SHA-256'ya akar;
 no-clobber publish, idempotent silme, listeleme ve hash beklenen hataları
 `Sonuç` olarak taşır. legacy panel 970 Zee LOC/4 modül/10 testte normal yaşam
 döngüsünü ve temp, DB-hazırlama, rename, tombstone kesmelerinin restart
-yakınsamasını PG16.11 üzerinde kanıtladı. F030 kapalıdır. F031/ADR-062 pinned
+yakınsamasını PG16.11 üzerinde kanıtladı. F030 kapalıdır. K-329/ADR-061 eki
+no-clobber publish'i ayrı bind mount'lar arasında da (rename `EXDEV`) hedef
+klasöründe geçici kopya ve atomik adlandırmayla tamamlar. F031/ADR-062 pinned
 CA+hostname, yanlış CA/IP reddi, 4 bağlantılık exhaustion, stale replacement,
 idle/lifetime ve shutdown ölçümüyle production TLS/pool sınırını da gerçek
 PG16.11 üzerinde kapattı. Organik 1000+ LOC bakım kontrolü F032'de kapanmıştır;

@@ -5,6 +5,30 @@
 Her sürüm: ne eklendi, ne değişti, neyin sözü verildi. Kırıcı değişiklik
 sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 
+## 21 Ekim 2026 — Geliştirme güncellemeleri
+
+**Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
+Bu kayıt yeni sürüm etiketi değildir.
+
+### Düzeltilenler
+
+- **Ayrı bağlama noktaları arasında dosya taşıma artık çalışır (K-329,
+  ADR-061 eki):** `kaynak dosyasını hedef yoluna atomik taşımayı dene`
+  yalnız `rename` kullandığı için yükleme dizini (`.zee/yuklemeler`) ile hedef
+  (`medya`, `dosya`) ayrı bağlıyken — örneğin systemd `ProtectSystem=strict`
+  ve her yolu ayrı listeleyen `ReadWritePaths=` ile, aynı disk üzerinde bile —
+  `dosya atomik taşınamadı: Invalid cross-device link (os error 18)` ile
+  başarısız oluyordu. Artık runtime hedef klasöründe geçici kopya, fsync ve
+  atomik adlandırma ile taşır, kaynağı en son siler; dosya izinleri korunur,
+  yarım dosya kalmaz. Diğer taşıma hataları ve var olan hedefin reddi aynıdır.
+
+### Uyumluluk ve göç
+
+Sözdizimi, tanı kimliği ve sınır değerleri değişmedi. Ayrı bağlı yollar
+arasında taşıma artık kopya maliyetini taşır (yükleme başına en çok 16 MiB);
+`ReadWritePaths=…/kaynak` gibi tek bağlama ile hızlı rename yolu korunur.
+Unit'i bu hata yüzünden değiştirmiş dağıtımların geri dönmesi gerekmez.
+
 ## 20 Ekim 2026 — Geliştirme güncellemeleri
 
 **Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
