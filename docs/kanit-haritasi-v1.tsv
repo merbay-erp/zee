@@ -216,4 +216,4 @@ adr/153-lsp-utf16-konum-siniri.md	kanitli	compiler/tests/lsp_artimli_testi.rs,co
 adr/154-mit-lisansi.md	kanitli	compiler/tests/dokuman_tazelik_testi.rs	K-314 kök LICENSE MIT metni, Cargo paketleri ve VS Code eklentisi aynı lisansı bildirir; marka politikası kapsam dışı
 adr/155-marka-politikasi.md	kanitli	compiler/tests/dokuman_tazelik_testi.rs	K-316 marka politikası belgesi ve README/ADR bağı yürürlükte; marka hukuki tescili kapsam dışı
 adr/156-yayin-kanali-ve-yayinci-anahtari.md	kanitli	compiler/tests/yayin_imzasi_testi.rs	K-317 gerçek anahtar/imza/OpenSSL doğrulama ve üç ret; sabit kimlik açık anahtarın SHA-256'sı; yayın akışı imzasızı reddeder. Gerçek uzak yayın P30
-adr/157-istek-yerel-hata-siniri.md	kanitli	compiler/tests/web_testi.rs,compiler/tests/web_cok_surec_testi.rs,compiler/tests/io_izi_testi.rs	Rota hatası 500/503/504 ve worker sürekliliği; operatör günlüğü ize girmez
+adr/157-istek-yerel-hata-siniri.md	kanitli	compiler/tests/web_testi.rs,compiler/tests/web_cok_surec_testi.rs,compiler/tests/io_izi_testi.rs	Rota hatası 500/503/504 ve worker sürekliliği; operatör günlüğü ize girmez; K-327 yanıt yazımında kopma worker sürekliliği

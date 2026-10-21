@@ -200,6 +200,19 @@ tek test `actual Unix owned FD capability unavailable` gerekçesiyle görünür
 ignored durumundadır; eski toplu test ignored yapılmaz. `--ignored` ile
 zorlandığında adaptör desteklenmeyen platformda panic eder; sahte başarı yoktur.
 
+## Native web kopma kipi (K-327)
+
+`security` fazındaki `native-web-kopma` kipi gerçek native `dil` worker'ını
+`--web-proxy` profiliyle başlatır. Fixture'ın `# web-istegi:` başlığındaki
+istek küçük alma tamponlu (SO_RCVBUF) bir socket'ten gönderilir, yanıtın ilk
+baytları okunduktan sonra bağlantı SO_LINGER 0 ile RST olarak kesilir;
+ardından `# web-sonraki:` isteği tam gönderilir. Exit, sonraki istekten sonra
+worker hâlâ çalışıyorsa `0`, değilse sürecin çıkış kodudur; çıktı sonraki
+isteğin `durum gövde` satırıdır. Düzeltme öncesi kaynakta worker C022 ile
+`1` döndürür ve çıktı boştur. ToplayanIo socket kopmasını taklit edemediği
+için toplu replay bu kipi atlar; ayrı native libtest vakası boş listeyi
+reddeder ve Unix dışında görünür ignored durumundadır.
+
 ## Native metric stdio ret kipi (K-294)
 
 `native-metric-stdio` yalnız `cli` fazında kullanılabilir. Manifest uygulama

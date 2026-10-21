@@ -149,9 +149,24 @@ C021, C027 bu bölümdeki 503 metinleri; C023/C024 spec/24'teki 503 metni; diğe
 bütün C/D tanıları “istek işlenemedi; sunucu hatası” gövdeli 500'dür. Ret
 kümesi yalnız iç tutarlılıktır: C000 ve iç Ç nöbetçileri süreci tanıyla
 bitirir. Kurtarma rota gövdesini, eylemi ya da yazımı otomatik TEKRARLAYAMAZ.
-Gövde bittikten sonra yanıt commit'inin (`istek_islemini_tamamla`) ürettiği
-C022 bu kuralın dışındadır. `programı N ile bitir` rotada sunucuyu kapatmaya
-devam eder; geçersiz N (C020) 500'dür.
+Gövde bittikten sonra yanıt commit'inin (`istek_islemini_tamamla`) yalnız
+iç tutarlılık hatası (bekleyen bağlantının yokluğu) ve socket kopmasından
+sonra web oturum commit'inin geri alınamaması C022 ile süreci bitirir; socket
+yazım hatası bu istisnaya GİREMEZ (aşağıdaki K-327 maddesi). `programı N ile
+bitir` rotada sunucuyu kapatmaya devam eder; geçersiz N (C020) 500'dür.
+
+K-327 uyarınca “worker bu istek yüzünden SONLANMAMALI” ilkesi yanıtın socket'e
+yazımını da kapsar: istemci ya da önündeki proxy yanıt yazılırken bağlantıyı
+keserse (EPIPE, ECONNRESET, 10 saniyelik yazma zaman aşımı ve diğer socket
+yazım hataları) hata istek kapsamlı kalmak ve worker sonraki bağımsız isteği
+kabul etmek ZORUNDADIR. Yanıt taslağının çerez ve oturum commit'i geri alınır
+(istemci yanıtı almadı); PostgreSQL istek transaction'ı bu noktada zaten
+tamamlanmıştır ve geri alınmaz. Bağlantı izni ve socket aynı istekte iade
+edilir. Operatör stderr'de tek satırlık `zee-web istemci yanıt sırasında
+koptu: durum=… yöntem=… yol="…" hata="…"` kaydını görür (yol sorgusuz,
+kaçışlı, 4 KiB sınırlı) ve native metrikte kopma `final_write_errors`
+(`yanit_yazilamadi`) sayacına düşer. Kopma tanı değildir; IO izine GİREMEZ ve
+yazım otomatik TEKRARLANAMAZ.
 
 İstek düzeyinde yanıta çevrilen her tanı, yanıt gönderilmeden önce yalnız
 operatöre görünen kanala verilmek ZORUNDADIR (spec/06'daki sessiz devam yasağı).
@@ -181,7 +196,8 @@ ezilmez; geri alma C021 ile görünür biçimde başarısız olur.
 Bir web isteğinde eylem transaction'ının başlaması, tamamlanması veya geri
 alınması C021 üretirse istek yanıtı/çerez/oturum taslağı geri alınmalı, istemciye
 503 verilmelidir. Worker/process bu istek yüzünden SONLANMAMALI ve sonraki
-bağımsız isteği kabul etmelidir. Bu recovery eylem gövdesini veya write'ı
+bağımsız isteği kabul etmelidir; bu ilke 503 yanıtının socket'e yazımını da
+kapsar (§5 K-327 maddesi). Bu recovery eylem gövdesini veya write'ı
 otomatik tekrar EDEMEZ. Transaction adaptörü bozuk bağlantıyı yeniden
 kullanıma bırakmamalı ve yerel savepoint bookkeeping'ini istekten sızdırmamalıdır.
 

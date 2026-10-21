@@ -13,21 +13,30 @@ pub fn istek_tani_gunluk_satiri(durum: u16, tani: &Tani, istek: Option<(&str, &s
         "zee-web istek-hatası durum={durum} kod={} satır={}",
         tani.kod, tani.satir
     );
+    istek_alanlarini_ekle(&mut satir, istek);
+    satir.push_str(&format!(" mesaj=\"{}\"", kacisla(&tani.mesaj)));
+    kirp(satir)
+}
+
+/// İstemci yanıtın yazımı sırasında koptuğunda (W1) yazılan tek satırlık kayıt.
+pub fn yanit_kopmasi_gunluk_satiri(durum: u16, hata: &str, istek: Option<(&str, &str)>) -> String {
+    let mut satir = format!("zee-web istemci yanıt sırasında koptu: durum={durum}");
+    istek_alanlarini_ekle(&mut satir, istek);
+    satir.push_str(&format!(" hata=\"{}\"", kacisla(hata)));
+    kirp(satir)
+}
+
+fn istek_alanlarini_ekle(satir: &mut String, istek: Option<(&str, &str)>) {
     if let Some((yontem, hedef)) = istek {
         let yol = hedef.split(['?', '#']).next().unwrap_or("");
-        satir.push_str(&format!(
-            " yöntem={} yol=\"{}\"",
-            kacisla(yontem),
-            kacisla(yol)
-        ));
+        let (yontem, yol) = (kacisla(yontem), kacisla(yol));
+        satir.push_str(&format!(" yöntem={yontem} yol=\"{yol}\""));
     }
-    satir.push_str(&format!(" mesaj=\"{}\"", kacisla(&tani.mesaj)));
+}
+
+fn kirp(mut satir: String) -> String {
     if satir.len() > AZAMI_SATIR_BAYTI {
-        let mut sinir = AZAMI_SATIR_BAYTI - 4;
-        while !satir.is_char_boundary(sinir) {
-            sinir -= 1;
-        }
-        satir.truncate(sinir);
+        satir.truncate(satir.floor_char_boundary(AZAMI_SATIR_BAYTI - 4));
         satir.push_str("…\"");
     }
     satir

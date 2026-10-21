@@ -12,6 +12,14 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Düzeltilenler
 
+- **Yanıt yazılırken kopan istemci artık sunucuyu düşürmez (K-327, ADR-157
+  eki):** İstemci ya da önündeki proxy büyük bir yanıtın (ör. birkaç MB'lık
+  site haritası) yazımı sırasında bağlantıyı keserse worker önceden
+  `C022 … HTTP yanıtı yazılamadı: Broken pipe` ile çıkıyordu. Artık yalnız o
+  istek etkilenir: çerez/oturum değişikliği geri alınır, stderr'e
+  `zee-web istemci yanıt sırasında koptu: durum=200 yöntem=GET yol="/…"
+  hata="…"` satırı yazılır, native metrikte `final_write_errors` artar ve
+  worker sonraki isteği kabul eder.
 - **Tek ağır istek artık sunucuyu düşürmez (K-323):** Web rotasında adım/çıktı
   (C023) veya heap (C024) bütçesi aşılırsa yalnız o istek “istek güvenli
   kaynak bütçesini aştı; otomatik tekrar yok” gövdeli 503 alır. Worker süreci
@@ -43,7 +51,9 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 Sözdizimi, tanı kimliği ve sınır değerleri değişmedi. Web rotasındaki çalışma
 hataları artık süreci bitirmez: süreç çıkışını hata sinyali sayan dağıtımlar
-stderr'deki `zee-web istek-hatası` satırlarını izlemelidir. CLI ve `dil dene`
+stderr'deki `zee-web istek-hatası` satırlarını izlemelidir. Yanıt yazımında
+kopan istemci de süreci bitirmez; bunun izi `zee-web istemci yanıt sırasında
+koptu` satırı ve `final_write_errors` sayacıdır. CLI ve `dil dene`
 davranışı değişmedi.
 
 Depo geçmişi (K-326): 14–17 Ekim belge sürümlerindeki altyapı izleri

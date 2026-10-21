@@ -38,3 +38,4 @@ bmp-disi-konum	K-297	0e5ddb2669d05da90b55090665148c23182b9390	-	0.8.0-dev	lsp	ls
 kendine-metin-ekleme-dogrusal	K-323	69315e30ecb2de300567a54ed71739bd19b3a97c	-	0.8.0-dev	runtime	run	-	-	0	545000	regression/runtime/kendine-metin-ekleme-dogrusal.dil
 istek-butcesi-yalitimi	K-323	69315e30ecb2de300567a54ed71739bd19b3a97c	-	0.8.0-dev	security	web	-	-	0	503 istek güvenli kaynak bütçesini aştı; otomatik tekrar yok	regression/security/istek-butcesi-yalitimi.dil
 rota-hatasi-yalitimi	K-324	2ed334368e8f80752a8022bd813ec04cc46300aa	-	0.8.0-dev	security	web	-	-	0	500 istek işlenemedi; sunucu hatası	regression/security/rota-hatasi-yalitimi.dil
+yanit-yazimi-kopmasi	K-327	756a2018553486b659fe1d865c0e3dbaf98b7e6a	-	0.8.0-dev	security	native-web-kopma	-	-	0	200 ayakta	regression/security/yanit-yazimi-kopmasi.dil
