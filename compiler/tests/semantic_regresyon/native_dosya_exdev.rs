@@ -7,13 +7,19 @@
 //! taklit edemediği için toplu replay bu kipi atlar.
 #![allow(dead_code)]
 
-use std::path::{Path, PathBuf};
+use std::path::Path;
+#[cfg(target_os = "linux")]
+use std::path::PathBuf;
+#[cfg(target_os = "linux")]
 use std::process::Command;
 
+#[cfg(target_os = "linux")]
 const ICERIK: &[u8] = b"K-329 medya";
 
+#[cfg(target_os = "linux")]
 struct Temizle(Vec<PathBuf>);
 
+#[cfg(target_os = "linux")]
 impl Drop for Temizle {
     fn drop(&mut self) {
         for yol in &self.0 {
