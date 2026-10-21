@@ -37,6 +37,17 @@ içindeki rename görünürlük sınırını kullanır. Silme bulunmayan hedefte
 dosyalarını, göreli ve sıralı verir; symlink/dizin döndürmez. Özetleme en çok
 16 MiB'ı akışla okur.
 
+K-329 uyarınca kaynak ile hedef ayrı bağlama noktalarındaysa (`rename`
+`EXDEV` verir; ör. systemd `ReadWritePaths=` her yolu ayrı bind mount eder)
+runtime taşımayı hedef klasöründeki geçici dosyaya akışlı kopya, kaynağın
+izin/sahip/ACL/xattr bilgisi ve fsync, aynı klasörde atomik adlandırma, hedef
+klasörü fsync ve en son kaynağın silinmesiyle tamamlamak ZORUNDADIR. Hedef
+yine tek adımda bütün olarak görünür; yayından önceki arızada geçici dosya
+silinir ve kaynak korunur, kaynak silinemezse yayımlanan hedef geri çekilir.
+EXDEV dışındaki arızalar ve no-clobber reddi bugünkü C013 sonucunu verir.
+Geri düşüş kopya maliyetini taşır; yükleme dizini ile hedefi aynı bağlama
+altında tutmak hızlı yoldur.
+
 Bu işlemler sırasıyla `dosya-yazma`/`dosya-okuma` yetkinliklerine bağlıdır,
 IO trace/replay'de exact argüman ve sonuçla yer alır ve eylem savepoint'ini
 korur. Aynı eylem içinde PostgreSQL ve dosya yazımı yine YASAKTIR.

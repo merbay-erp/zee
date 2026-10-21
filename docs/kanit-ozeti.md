@@ -15,7 +15,7 @@ Kaynak: `regression/v2.tsv`
 | lsp | 2 |
 | morphology | 2 |
 | parser | 5 |
-| runtime | 7 |
+| runtime | 8 |
 | security | 10 |
 
 | Tanı | Vaka |
@@ -28,9 +28,9 @@ Kaynak: `regression/v2.tsv`
 | S030 | 1 |
 | T017 | 1 |
 | T054 | 2 |
-| - | 28 |
+| - | 29 |
 
-Toplam 39 vaka; `-` tanısız çalışma/eşzamanlılık vakasıdır. Tam 40 karakterlik `fixed_by` commit'i taşıyan vaka: 39/39.
+Toplam 40 vaka; `-` tanısız çalışma/eşzamanlılık vakasıdır. Tam 40 karakterlik `fixed_by` commit'i taşıyan vaka: 40/40.
 
 ## Güvenlik bulguları
 
@@ -77,12 +77,12 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | spec/23-yetkinlik-ve-outbound-guvenligi.md | 26 | 0 | 0 | 26 | 100 |
 | spec/24-kaynak-guvenlik-profili.md | 9 | 0 | 0 | 9 | 100 |
 | spec/25-postgresql-veri-erisimi.md | 7 | 1 | 1 | 9 | 77 |
-| spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md | 2 | 0 | 0 | 2 | 100 |
+| spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md | 3 | 0 | 0 | 3 | 100 |
 | spec/27-uyumluluk-ve-surumleme.md | 11 | 1 | 1 | 13 | 84 |
 | spec/28-gorunum-blogu.md | 2 | 0 | 0 | 2 | 100 |
 | spec/29-test-kapsami.md | 5 | 0 | 0 | 5 | 100 |
 | spec/30-editor-analizi-ve-lint.md | 12 | 0 | 1 | 13 | 92 |
-| **Toplam** | 229 | 5 | 3 | 237 | 96 |
+| **Toplam** | 230 | 5 | 3 | 238 | 96 |
 
 ## Dogfood ürünleri ve korpusu
 
@@ -142,15 +142,15 @@ Kaynak: `docs/compiler-degisiklik-beyanlari-v1.tsv + docs/core-freeze-beyanlari-
 | Değişiklik sınıfı | Beyan |
 | --- | --- |
 | maintenance | 44 |
-| semantic-bugfix | 10 |
+| semantic-bugfix | 11 |
 | semantic-change | 45 |
 
 | Freeze sınıfı | Beyan |
 | --- | --- |
 | bugfix | 2 |
-| correctness | 16 |
+| correctness | 17 |
 | dogfood-change | 25 |
 | maintenance | 41 |
 | security | 11 |
 
-Toplam: 99 compiler değişiklik beyanı, 95 core freeze beyanı.
+Toplam: 100 compiler değişiklik beyanı, 96 core freeze beyanı.

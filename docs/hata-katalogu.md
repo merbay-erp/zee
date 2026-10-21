@@ -163,7 +163,7 @@ spec/11 §5): istemci ayrıntısız 500 (geçici/kaynak kodlarında 503, son tar
 | C010 | Sözlükte anahtar yok | Önce `sözlükte <anahtar> varsa` |
 | C011 | Biçimleyici token güvencesi bozuldu | Dosya yazılmadı; derleyici hatasıdır — bildir |
 | C012 | Dosya okunamadı (düz biçim) | Hata yönetilecekse `... okumayı dene` ile Sonuç al |
-| C013 | Dosyaya yazılamadı | Yol/izin, var olan no-clobber hedef ve owner/group/ACL/xattr desteğini kontrol et. `... dene` yaşam döngüsü yüzeyleri de bu kararlı dosya hata ailesini yapılandırılmış Hata olarak döndürür; doğrudan yazma arızasında web adaptörü ayrıntı sızdırmayan 503 ile worker'ı yaşatır |
+| C013 | Dosyaya yazılamadı | Yol/izin, var olan no-clobber hedef ve owner/group/ACL/xattr desteğini kontrol et. `... dene` yaşam döngüsü yüzeyleri de bu kararlı dosya hata ailesini yapılandırılmış Hata olarak döndürür; doğrudan yazma arızasında web adaptörü ayrıntı sızdırmayan 503 ile worker'ı yaşatır. Ayrı bağlama noktaları arasındaki taşıma (EXDEV) hata değildir; runtime kopya + atomik adlandırmayla tamamlar (K-329) |
 | C014 | **ayrılmış** — eski çalışma zamanı yuvası | Bu kod yeni bir anlam için kullanılamaz |
 | C015 | CSV biçim hatası (boş dosya ya da sütun sayısı uyuşmazlığı) | Başlık satırı + eşit hücreli veri satırları (K-062: hücreler Metin okunur) |
 | C016 | JSON biçim hatası | v0: düz nesne + metin değerler |

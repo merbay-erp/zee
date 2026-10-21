@@ -16,6 +16,8 @@ mod lsp_uri_fixture;
 #[path = "semantic_regresyon/lsp_utf16.rs"]
 mod lsp_utf16_fixture;
 
+#[path = "semantic_regresyon/native_dosya_exdev.rs"]
+mod native_dosya_exdev_fixture;
 #[path = "semantic_regresyon/native_listener_deadline.rs"]
 mod native_listener_deadline_fixture;
 #[path = "semantic_regresyon/native_metric_stdio.rs"]
@@ -52,6 +54,7 @@ const KIPLER: &[&str] = &[
     "native-listener-deadline",
     "native-metric-stdio",
     "native-web-kopma",
+    "native-dosya-exdev",
 ];
 
 #[derive(Debug, Clone)]
@@ -209,7 +212,7 @@ fn faz_kipi_kabul_eder(faz: &str, kip: &str) -> bool {
         "parser" => matches!(kip, "parser" | "diagnostics" | "run"),
         "checker" | "morphology" => matches!(kip, "compile" | "run" | "diagnostics"),
         "hir" => matches!(kip, "hir" | "definition" | "run"),
-        "runtime" => matches!(kip, "run" | "trace"),
+        "runtime" => matches!(kip, "run" | "trace" | "native-dosya-exdev"),
         "concurrency" => kip == "run",
         "security" => matches!(
             kip,
@@ -299,6 +302,14 @@ fn vakayi_calistir(vaka: &Vaka, kaynak: &str) -> Gozlem {
     }
     if vaka.kip == "native-web-kopma" {
         let (cikis, cikti) = native_web_kopma_fixture::calistir(&depo().join(&vaka.dosya));
+        return Gozlem {
+            tani: None,
+            cikis,
+            cikti,
+        };
+    }
+    if vaka.kip == "native-dosya-exdev" {
+        let (cikis, cikti) = native_dosya_exdev_fixture::calistir(&depo().join(&vaka.dosya));
         return Gozlem {
             tani: None,
             cikis,
@@ -644,7 +655,10 @@ fn duzeltilmis_semantic_buglar_tani_span_cikis_ve_ciktiyi_korur() {
     for vaka in vakalari_oku().into_iter().filter(|vaka| {
         !matches!(
             vaka.kip.as_str(),
-            "native-listener-deadline" | "native-metric-stdio" | "native-web-kopma"
+            "native-listener-deadline"
+                | "native-metric-stdio"
+                | "native-web-kopma"
+                | "native-dosya-exdev"
         )
     }) {
         let kaynak = std::fs::read_to_string(depo().join(&vaka.dosya))
@@ -858,5 +872,40 @@ fn native_web_kopma_regresyonu_gercek_worker_ile_korunur() {
             vaka.ad
         );
         assert_eq!(gozlem.cikti, vaka.cikti, "{}: sonraki istek", vaka.ad);
+    }
+}
+
+#[test]
+fn native_dosya_exdev_kipi_yalniz_runtime_fazina_aittir() {
+    assert!(KIPLER.contains(&"native-dosya-exdev"));
+    assert!(faz_kipi_kabul_eder("runtime", "native-dosya-exdev"));
+    for faz in FAZLAR.iter().filter(|faz| **faz != "runtime") {
+        assert!(!faz_kipi_kabul_eder(faz, "native-dosya-exdev"));
+    }
+}
+
+/// K-329: `.zee/yuklemeler` ile `medya` ayrı aygıtlardayken gerçek native
+/// `dil` taşımayı tamamlar. Linux dışında `/dev/shm` aygıt sınırı yoktur; sahte
+/// başarı yerine görünür ignored durumundadır.
+#[test]
+#[cfg_attr(
+    not(target_os = "linux"),
+    ignore = "actual Linux /dev/shm device boundary unavailable"
+)]
+fn native_dosya_exdev_regresyonu_gercek_aygit_siniri_ile_korunur() {
+    let vakalar: Vec<_> = vakalari_oku()
+        .into_iter()
+        .filter(|vaka| vaka.kip == "native-dosya-exdev")
+        .collect();
+    assert!(
+        !vakalar.is_empty(),
+        "native dosya EXDEV regresyonu gerçek manifest vakası olmadan geçemez"
+    );
+    for vaka in vakalar {
+        let kaynak = std::fs::read_to_string(depo().join(&vaka.dosya)).expect("fixture kaynağı");
+        let gozlem = vakayi_calistir(&vaka, &kaynak);
+        assert!(gozlem.tani.is_none());
+        assert_eq!(gozlem.cikis, vaka.cikis, "{}: çıkış", vaka.ad);
+        assert_eq!(gozlem.cikti, vaka.cikti, "{}: taşıma sonucu", vaka.ad);
     }
 }

@@ -4986,3 +4986,19 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   sonraki sürüm artefaktı yeni sürümleri kendiliğinden taşır; tarihsel
   `docs/incelemeler/k206/.../sbom.spdx.json` özgün SHA kanıtıdır, değişmez.
   Compiler kaynağı, grammar, tanı, dil yüzeyi ve spec değişmez (GB-125).
+## K-329 — Ayrı bağlama noktaları arasında atomik taşıma (21 Ekim 2026)
+
+- K-329 (21.10.2026): zee-cekirdek talebi W5 (P1). Üretim unit'lerindeki
+  `ProtectSystem=strict` + yol yol `ReadWritePaths=` her yolu ayrı bind mount
+  ettiği için `.zee/yuklemeler` → `medya` rename'i aynı diskte bile EXDEV
+  verdi; itwise önizlemesinde 4.534 eski medyanın taşınması ve panel
+  yüklemeleri başarısız oldu. Talepteki (a) seçildi (ADR-061 eki):
+  `atomik_tasi` `ErrorKind::CrossesDevices`'ta hedef klasöründe geçici kopya,
+  kaynak metadata'sı, fsync, aynı klasörde atomik adlandırma, klasör fsync ve
+  en son kaynak silme yapar; kaynak silinemezse hedef geri çekilir. (b) ayrı
+  hata türü ve açılış öz-sınaması reddedildi: geri düşüş doğruluğu sağlar,
+  önkoşul yalnız performans konusudur; sınama yeni CLI yüzeyi açar ve keyfi
+  hedefleri kapsayamaz. Regression kipi `native-dosya-exdev` gerçek `dil`
+  sürecini `medya` → `/dev/shm` bağıyla koşar; düzeltme öncesi Linux'ta
+  `taşıma reddedildi`, sonrası `taşındı`. Grammar, tanı kimliği, dil yüzeyi
+  ve `dil::api::v1` değişmedi.

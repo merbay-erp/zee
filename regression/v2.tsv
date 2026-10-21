@@ -39,3 +39,4 @@ kendine-metin-ekleme-dogrusal	K-323	95d8f04b89aa7b83ddbb9b3b3856a340b96a2068	-	0
 istek-butcesi-yalitimi	K-323	95d8f04b89aa7b83ddbb9b3b3856a340b96a2068	-	0.8.0-dev	security	web	-	-	0	503 istek güvenli kaynak bütçesini aştı; otomatik tekrar yok	regression/security/istek-butcesi-yalitimi.dil
 rota-hatasi-yalitimi	K-324	ece6977d41b630acc1e115eec858e0c8e5ca0722	-	0.8.0-dev	security	web	-	-	0	500 istek işlenemedi; sunucu hatası	regression/security/rota-hatasi-yalitimi.dil
 yanit-yazimi-kopmasi	K-327	1d070741685df1087ce82e12514c5d2d61a7a8be	-	0.8.0-dev	security	native-web-kopma	-	-	0	200 ayakta	regression/security/yanit-yazimi-kopmasi.dil
+aygitlar-arasi-tasima	K-329	9001894516923587be73af10ea7c4a59c5fbacaf	-	0.8.0-dev	runtime	native-dosya-exdev	-	-	0	taşındı	regression/runtime/aygitlar-arasi-tasima.dil

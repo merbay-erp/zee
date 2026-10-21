@@ -2410,3 +2410,14 @@ ayrı karar/PR ister.
 advisories adımını kırıyordu. Compiler ve fuzz kilitlerinde rustls-webpki
 0.103.16, webpki-roots 1.0.10; ignore yok (GB-125, ADR-038). Kanıt:
 `guvenlik-kapisi.sh --surekli`, `offline-vendor-denetle.sh`.
+## K-329 — Ayrı bağlama noktaları arasında atomik taşıma (EXDEV)
+
+**Durum: KAPALI.** ADR-061 eki: zee-cekirdek talebi W5 (P1). `atomik_tasi`
+yalnız `rename` kullandığından systemd `ReadWritePaths=` ile ayrı bind mount
+edilen `.zee/yuklemeler` → `medya` taşımaları EXDEV ile C013 veriyordu.
+Rename `CrossesDevices` döndürürse hedef klasöründe geçici kopya + metadata +
+fsync, aynı klasörde atomik adlandırma, klasör fsync, en son kaynak silme;
+hata yolunda yarım dosya ya da çift kopya kalmaz. Açılış öz-sınaması
+gerekçeyle reddedildi. Kanıt: `kalici_dosya::yasam_dongusu` birim testleri
+(EXDEV enjeksiyonu, Linux `/dev/shm` gerçek sınır), regression
+`aygitlar-arasi-tasima` (`native-dosya-exdev`).
