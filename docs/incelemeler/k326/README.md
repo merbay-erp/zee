@@ -56,4 +56,13 @@ CI push tabanı `ci-taban-kimligi.py` ile yalnız iki kayıtlı eski uç için
 
 GitHub'ın yönetilen `refs/pull/*` ve önbellek nesneleri kullanıcı push'u ile
 silinmez; açık PR'lardaki eski nesneler GB-046 destek teyidi kapsamındadır.
-Enterprise/Git2 etiketleri bu işin kapsamı dışında kalır.
+Enterprise ve Git2 aynalarının dal ve etiketleri 20 Ekim'de origin ile birebir
+eşitlendi.
+
+## Etiket koşuları
+
+Yeniden yazılan `v1.0.0-rc.1` etiketinin push koşuları kırmızıdır ve öyle
+bırakılır: `surum-adayi` var olan Release'i ezmeyi reddeder; `dil` testleri
+etiket ağacında (`87598d4d`) henüz bulunmayan K-326 eşlemesi ile silinmiş
+eski etiket tabanı yüzünden kırılır. Aynı kod master `d72a949`'da yeşildir.
+Etikete özel CI istisnası eklenmez, etiket yeniden çekilmez.
