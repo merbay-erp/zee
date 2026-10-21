@@ -1,0 +1,7 @@
+# K-329 (W5): ".zee/yuklemeler" ile "medya" ayrı bağlama noktalarında olsa da (rename EXDEV) taşıma başarılı ve atomik görünür.
+
+sonuç ".zee/yuklemeler/parca" dosyasını "medya/resim.bin" yoluna atomik taşımayı dene olsun
+sonuç başarılıysa
+    "taşındı" yaz
+sonuç başarısızsa
+    "taşıma reddedildi" yaz

@@ -213,6 +213,22 @@ isteğin `durum gövde` satırıdır. Düzeltme öncesi kaynakta worker C022 ile
 için toplu replay bu kipi atlar; ayrı native libtest vakası boş listeyi
 reddeder ve Unix dışında görünür ignored durumundadır.
 
+## Native dosya EXDEV kipi (K-329)
+
+`runtime` fazındaki `native-dosya-exdev` kipi gerçek native `dil` sürecini
+Cargo hedef klasöründe (disk) kurulan geçici bir projede çalıştırır. Projenin
+`medya` klasörü `/dev/shm` (tmpfs) altındaki bir klasöre sembolik bağdır;
+`.zee/yuklemeler/parca` → `medya/…` rename'i bu yüzden `EXDEV` verir. Bu,
+systemd `ReadWritePaths=` ile ayrı bind mount edilen yolların root
+gerektirmeyen eşdeğeridir. Harness önce iki yolun ayrı aygıtta olduğunu ve
+düz rename'in errno 18 verdiğini doğrular; aksi hâlde kanıt üretilemediği için
+kırılır. Çıktı programın stdout satırlarıdır; `taşındı` gözlenirse kaynağın
+silindiği, hedefin tam içerik ve `0640` izinle yazıldığı ve klasörde geçici
+dosya kalmadığı ayrıca denetlenir. Düzeltme öncesi kaynakta çıktı
+`taşıma reddedildi`dir. ToplayanIo aygıt sınırını taklit edemediği için toplu
+replay bu kipi atlar; ayrı native libtest vakası boş listeyi reddeder ve Linux
+dışında görünür ignored durumundadır.
+
 ## Native metric stdio ret kipi (K-294)
 
 `native-metric-stdio` yalnız `cli` fazında kullanılabilir. Manifest uygulama
