@@ -63,7 +63,8 @@ Başarılı `oturuma al` cümlesi:
    ayrı bir 256 bit CSRF belirteci üretir;
 3. depoda oturum kimliğinin yalnız SHA-256 özetini, kullanıcıyı, rolü,
    CSRF belirtecini ve son geçerlilik anını tutar;
-4. oturumu oluşturma anından başlayan mutlak 30 dakika ile sınırlar.
+4. oturumu oluşturma anından başlayan mutlak 30 dakika ile sınırlar; proje
+   bildirimi bu ömrü ve kayar yenilemeyi K-330 bölümündeki sınırlarla seçebilir.
 
 Bu döndürme session fixation saldırısına karşı normatif davranıştır.
 Roller istemciden okunmaz; sunucu oturum kaydından denetlenir. Kimlik
@@ -72,7 +73,7 @@ gerektiren rotaya anonim istek 401, doğru kimlik fakat yanlış rol 403 döner.
 `oturumu kapat` sunucu kaydını iptal eder ve oturum çerezini `Max-Age=0` ile
 sonlandırır. Eski belirteç yeniden kullanılamaz. Süresi dolan kayıt istek
 başında silinir. Geçerli erişim tahliye sırasını günceller ama son geçerlilik
-anını ileri taşımaz; ömür sliding değildir.
+anını ileri taşımaz; proje `oturum_kayar` açmadıkça ömür sliding değildir.
 
 Oturum deposu en çok 4096 toplam oturum tutar. Yalnız kimliği doğrulanmış
 kayıtlarla doluysa yeni giriş, var olan bir kullanıcıyı düşürmek yerine
@@ -283,3 +284,11 @@ TANIMLI: `--web-oran-siniri` 1..1000000 uç nokta isteği/60 saniye, `--web-oran
 TANIMLI: Explicit `en-eski` seçiminde yeni anahtar için kapasite gerektiğinde yalnız en küçük pencere sonuna sahip uç nokta kaydı (eşitlikte hash sırası) tahliye edilir; erişim pencereyi uzatmaz. Tahliye edilmiş uç nokta yeniden gelince kota sıfırlanabilir; kullanıcı ortak proxy saldırı bütçesini sağlamalıdır. Canlı giriş/CSRF kayıtları tahliye edilmez; tüm kayıtlar korunmuşsa yeni anahtar 503 alır, mevcut sayaç kotası sürer.
 
 ZORUNLU: Bellek kayıt/süre/tahliye indeksleri aynı süreçte clone’lar arasında atomik tutulur ve seçilmiş kapasiteyi aşmaz. Süre dolumu ve tahliye ilgili tüm indeksleri temizler; mevcut anahtar artışı kapasite tahliyesi başlatmaz. Aynı IP/uç nokta seçilmiş eşiği aşınca 429 döner ve iç oran kararı kalan pencere süresini taşır; dosya backend’i ve oturum/revoke paylaşımı değişmez.
+
+## K-330 — Proje başına oturum ömrü ve kayar yenileme
+
+TANIMLI: Ana `proje.dil` isteğe bağlı `oturum_ömrü_saniye` (sabit Sayı, 300–2592000) ve `oturum_kayar` (`doğru`/`yanlış`) alanlarını kabul eder; ikisi de `web-oturumu` yetkinliği ister. Sınır dışı ömür ve yetkinliksiz kullanım P015, yanlış tür P001 ile reddedilir. Alan yoksa kimlikli oturum ömrü 1800 sn, kayar kapalıdır. Seçilen ömür ilk oturum çerezinin `Max-Age` değeridir.
+
+ZORUNLU: Kayar açıkken her kimlikli istek, istek başındaki kalıcı depo güncellemesinde son geçerliliği `min(şimdi + ömür, oluşturma + 2592000 sn)` yapar, var olan geçerliliği kısaltmaz ve yanıt aynı belirteçle kalan süreyi `Max-Age` olarak taşıyan oturum çerezini yeniden yazar. Oluşturmadan sayılan 30 günlük mutlak tavan hiçbir erişimle aşılamaz. Yeniden başlatma ve ayrı worker'lar aynı kalıcı kaydı görür.
+
+YASAK: Kayar yenileme anonim (giriş öncesi) oturumu uzatamaz ve yeni belirteç üretemez. Aynı istekte giriş, `oturumu kapat` ya da kendi oturumunun kimlikle iptali varsa yenileme çerezi yazılmaz; çıkış sunucu kaydını commit ile hemen siler ve yanıt yalnız `Max-Age=0` silme çerezini taşır.

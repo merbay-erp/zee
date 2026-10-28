@@ -12,3 +12,5 @@ zee-cekirdek	dogfood/zee-cekirdek	ebca9a6ddcc9c7535ee3204cfe2af3bbb7fc95d7	activ
 urun-e	dogfood/urun-e	79eb72e00ecddd11535a5a9de9c338db1dd6da70	active
 # zeedili-com resmî dil platformudur; koken_commit K-203'ün temiz tabanıdır (ADR-081).
 zeedili-com	dogfood/zeedili-com	12c59218dc84e8e9d4610274c722985ce6a99dae	active
+# urun-g depo dışı gerçek mini ERP ürününün depo içi kanıt aynasıdır; koken_commit harici ürün commit'idir (K-330/ADR-158).
+urun-g	dogfood/urun-g	8e8101cee72b7b3db1b17db97eb49ab5c6fecd8f	active
