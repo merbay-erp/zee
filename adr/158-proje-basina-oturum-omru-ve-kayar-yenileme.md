@@ -4,7 +4,7 @@
 - **Tarih:** 28 Ekim 2026
 - **İlgili kayıt:** K-330, ADR-059 (core freeze), ADR-064 (dil yüzeyi),
   ADR-067 (dogfood korpusu), ADR-018 (mutlak ömür), spec/12 §2–§4, GB-002,
-  GB-127
+  GB-128
 
 ## Bağlam
 
