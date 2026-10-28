@@ -2421,3 +2421,16 @@ hata yolunda yarım dosya ya da çift kopya kalmaz. Açılış öz-sınaması
 gerekçeyle reddedildi. Kanıt: `kalici_dosya::yasam_dongusu` birim testleri
 (EXDEV enjeksiyonu, Linux `/dev/shm` gerçek sınır), regression
 `aygitlar-arasi-tasima` (`native-dosya-exdev`).
+
+## K-330 — Proje başına oturum ömrü ve kayar yenileme
+
+**Durum: KAPALI.** ADR-158: ürün G (mini ERP, `dogfood/urun-g`) talebi.
+Kimlikli oturum mutlak 30 dakikada bitiyordu. `proje.dil`
+`oturum_ömrü_saniye` (300–2592000 sn) ve `oturum_kayar` alanları eklendi;
+kayar kipte her kimlikli istek geçerliliği `şimdi + ömür`e taşır ve çerez
+Max-Age'ini yeniler, oluşturmadan 30 günlük mutlak tavan aşılmaz, anonim
+oturum ve çıkış değişmez (GB-127). Kalıcı ortak depo restart/çok worker
+paylaşımını zaten sağlıyordu; düzeltme gerekmedi. Kanıt: `web_guvenligi`
+birim testleri, `proje_testi`, `web_cok_surec_testi::kayar_oturum_*`.
+Açık: hermetik `dil dene` adaptörü ayarı uygulamaz.
+

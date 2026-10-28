@@ -154,7 +154,10 @@ yalnız rota kapsamındaki `oturum` sözlüğüne açtı; istemci girdisi ve otu
 sırları bu sınırın dışındadır. K-188/ADR-079 aynı gerçek ürünün güvenlik yaşam
 döngüsü için kullanıcı oturumlarını sır taşımayan özet kimlikle listeleme ve
 ortak depoda tekil iptal yüzeyini ekledi; ham bearer/CSRF açılmadı ve syntax
-freeze yeniden başladı. Secret dağıtımı, çok-hostlu backend ve idempotency ayrı deployment/RFC
+freeze yeniden başladı. K-330/ADR-158 gerçek mini ERP (ürün G) talebiyle
+kimlikli oturum ömrünü proje bildirimine (300 sn–30 gün) ve isteğe bağlı kayar
+yenilemeye açtı; 30 günlük mutlak tavan, anonim oturumun mutlaklığı ve sunucu
+tarafı çıkış korunur. Secret dağıtımı, çok-hostlu backend ve idempotency ayrı deployment/RFC
 kapılarıdır.
 # 7. Temel dil yüzeyi
 Değer tanımı: “isim Ayşe olsun”.

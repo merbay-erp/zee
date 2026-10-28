@@ -223,6 +223,7 @@ fn bildirim_gecerli_zee_kaynagidir() {
             eposta_baglanti_degiskeni: None,
             gizli_anahtar_degiskeni: None,
             http_gizli_degiskenleri: Vec::new(),
+            web_oturumu: None,
         }
     );
 }
@@ -1048,4 +1049,75 @@ fn bicimle_komutu_projenin_butun_kaynaklarini_bicimler() {
         std::fs::read_to_string(gecici.yol().join("kaynak/yardimci.dil")).expect("birim"),
         "işlem bir ver\n    1 döndür\n"
     );
+}
+
+const WEB_OTURUMU_BASI: &str = "proje \"erp\" olsun\nsürüm \"1.0.0\" olsun\ngiriş \"ana.dil\" olsun\nyetkinlikler \"ağ-sunucusu\", \"web-oturumu\" listesi olsun\n";
+
+#[test]
+fn oturum_omru_ve_kayar_bildirimi_okunur_sinirlar_runtime_ile_ayni() {
+    let bildirim = bildirimi_oku(&format!(
+        "{WEB_OTURUMU_BASI}oturum_ömrü_saniye 2592000 olsun\noturum_kayar doğru olsun\n"
+    ))
+    .expect("oturum ayarı geçmeli");
+    assert_eq!(
+        bildirim.web_oturumu,
+        Some(dil::proje::WebOturumuBildirimi {
+            omur_saniye: 2_592_000,
+            kayar: true,
+        })
+    );
+    let yalniz_kayar = bildirimi_oku(&format!("{WEB_OTURUMU_BASI}oturum_kayar doğru olsun\n"))
+        .expect("yalnız kayar geçmeli")
+        .web_oturumu
+        .unwrap();
+    assert_eq!(yalniz_kayar.omur_saniye, 30 * 60);
+    let yalniz_omur = bildirimi_oku(&format!("{WEB_OTURUMU_BASI}oturum_ömrü_saniye 300 olsun\n"))
+        .expect("alt sınır geçmeli")
+        .web_oturumu
+        .unwrap();
+    assert!(!yalniz_omur.kayar);
+    assert_eq!(bildirimi_oku(WEB_OTURUMU_BASI).unwrap().web_oturumu, None);
+
+    assert_eq!(
+        dil::proje::OTURUM_OMRU_ALT_SANIYE,
+        dil::web_guvenligi::OTURUM_OMRU_ALT_SANIYE
+    );
+    assert_eq!(
+        dil::proje::OTURUM_OMRU_UST_SANIYE,
+        dil::web_guvenligi::OTURUM_MUTLAK_TAVAN_SANIYE
+    );
+    assert_eq!(
+        dil::proje::OTURUM_OMRU_VARSAYILAN_SANIYE,
+        dil::web_guvenligi::OTURUM_OMRU_SANIYE
+    );
+}
+
+#[test]
+fn oturum_omru_sinir_disi_tur_ve_yetkinlik_hatalari_tani_verir() {
+    for (ek, kod, parca) in [
+        ("oturum_ömrü_saniye 299 olsun\n", "P015", "300 ile 2592000"),
+        (
+            "oturum_ömrü_saniye 2592001 olsun\n",
+            "P015",
+            "300 ile 2592000",
+        ),
+        ("oturum_ömrü_saniye 0 olsun\n", "P015", "300 ile 2592000"),
+        ("oturum_ömrü_saniye \"1800\" olsun\n", "P001", "sabit Sayı"),
+        (
+            "oturum_kayar \"evet\" olsun\n",
+            "P001",
+            "doğru ya da yanlış",
+        ),
+    ] {
+        let tani = bildirimi_oku(&format!("{WEB_OTURUMU_BASI}{ek}")).unwrap_err();
+        assert_eq!(tani.kod, kod, "{ek}");
+        assert!(tani.mesaj.contains(parca), "{ek}: {}", tani.mesaj);
+        assert_eq!(tani.satir, 5, "{ek}");
+    }
+    let tani = bildirimi_oku(
+        "proje \"erp\" olsun\nsürüm \"1.0.0\" olsun\ngiriş \"ana.dil\" olsun\noturum_kayar doğru olsun\n",
+    )
+    .unwrap_err();
+    assert_eq!(tani.kod, "P015");
+    assert!(tani.mesaj.contains("web-oturumu"));
 }

@@ -1630,6 +1630,18 @@ impl KaynakGirdisi {
             .as_ref()
             .map(|proje| proje.ana_bildirim().http_gizli_degiskenleri.clone())
             .unwrap_or_default();
+        if let Some(bildirim) = self
+            .proje
+            .as_ref()
+            .and_then(|proje| proje.ana_bildirim().web_oturumu)
+        {
+            // Bildirim aralığı `proje` katmanında P015 ile denetlendi; burada yalnız savunma.
+            if let Ok(ayar) =
+                dil::web_guvenligi::OturumAyari::yeni(bildirim.omur_saniye, bildirim.kayar)
+            {
+                io.web_guvenligi.oturum_ayarini_belirle(ayar);
+            }
+        }
         io
     }
 
@@ -1805,6 +1817,8 @@ struct GercekIo {
     /// İç içe eylemler için dosya savepoint'leri: yol → çağrı başındaki içerik.
     eylem_yedekleri: Vec<std::collections::HashMap<std::path::PathBuf, EylemDosyaYedegi>>,
     web_guvenligi: dil::web_guvenligi::WebGuvenligi,
+    /// K-330: kayar kipte bu isteğin ham oturum çerezi; yanıtta Max-Age yenilenir.
+    kayar_oturum_belirteci: Option<String>,
     web_istek_yedegi: Option<WebIstekYedegi>,
     bekleyen_web_yaniti: Option<WebYanitTaslagi>,
     politika: dil::yetkinlik::YetkinlikPolitikasi,
@@ -1937,6 +1951,7 @@ impl GercekIo {
             son_istek: None,
             eylem_yedekleri: Vec::new(),
             web_guvenligi,
+            kayar_oturum_belirteci: None,
             web_istek_yedegi: None,
             bekleyen_web_yaniti: None,
             politika,
@@ -2083,6 +2098,29 @@ impl GercekIo {
     fn cerez_basliklarini_al(&mut self) -> String {
         let secure = self.guvenli_proxy_origin().is_some();
         let mut sonuc = String::new();
+        // Kayar yenileme: giriş/çıkış/iptal bu istekte süreyi sıfırladıysa
+        // `kayar_cerez_omru` None döner; yeni oturum çerezi varsa o kazanır.
+        if let (Some(belirtec), Some(omur)) = (
+            self.kayar_oturum_belirteci.take(),
+            self.web_guvenligi.kayar_cerez_omru(),
+        ) {
+            let ad = self.oturum_cerez_adi();
+            if !self.bekleyen_cerezler.iter().any(|cerez| cerez.ad == ad)
+                && !self
+                    .bekleyen_silinen_cerezler
+                    .iter()
+                    .any(|silinen| silinen == ad)
+            {
+                self.bekleyen_cerezler.insert(
+                    0,
+                    BekleyenCerez {
+                        ad: ad.to_string(),
+                        deger: belirtec,
+                        azami_omur_saniye: Some(omur),
+                    },
+                );
+            }
+        }
         for cerez in self.bekleyen_cerezler.drain(..) {
             sonuc.push_str(&format!(
                 "Set-Cookie: {}={}; Path=/; HttpOnly; SameSite=Lax{}{}\r\n",
@@ -2149,6 +2187,7 @@ impl GercekIo {
                 let guvenlik_basliklari = self.guvenlik_basliklari();
                 self.bekleyen_cerezler.clear();
                 self.bekleyen_silinen_cerezler.clear();
+                self.kayar_oturum_belirteci = None;
                 // Gövde `<` ile başlıyorsa HTML hata sayfasıdır (200 yanıtıyla aynı kural, K-210 eki).
                 let tur = if govde.trim_start().starts_with('<') {
                     "text/html"
@@ -2243,10 +2282,16 @@ impl GercekIo {
             bekleyen_silinen_cerezler: self.bekleyen_silinen_cerezler.clone(),
         });
         self.bekleyen_web_yaniti = None;
-        if let Err(hata) = self
+        let baslatma = self
             .web_guvenligi
-            .istegi_baslat_kimlikle(oturum, &istemci_kimligi, an)
-        {
+            .istegi_baslat_kimlikle(oturum, &istemci_kimligi, an);
+        self.kayar_oturum_belirteci = self
+            .web_guvenligi
+            .kayar_cerez_omru()
+            .and(oturum)
+            .filter(|deger| dil::web_guvenligi::cerez_degeri_gecerli(deger))
+            .map(str::to_string);
+        if let Err(hata) = baslatma {
             ham_http_hatasi_gonder(
                 akis,
                 503,

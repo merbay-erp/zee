@@ -91,6 +91,7 @@ impl WebGuvenligi {
         }
         if self.gelen_anahtar.as_deref() == Some(kimlik) {
             self.gelen_oturum = None;
+            self.kayar_cerez_omru = None;
         }
         Ok(1)
     }
