@@ -567,3 +567,206 @@ fn baslik_degerleri_enjeksiyona_kapali() {
     assert!(!yerel_yonlendirme_gecerli("https://kotu.example"));
     assert!(!yerel_yonlendirme_gecerli("//kotu.example"));
 }
+
+fn kayar_depo(omur_saniye: i64) -> WebGuvenligi {
+    let mut depo = WebGuvenligi::yeni();
+    depo.oturum_ayarini_belirle(OturumAyari::yeni(omur_saniye, true).unwrap());
+    depo
+}
+
+#[test]
+fn oturum_ayari_sinir_disi_omru_reddeder() {
+    assert!(OturumAyari::yeni(OTURUM_OMRU_ALT_SANIYE - 1, false).is_err());
+    assert!(OturumAyari::yeni(OTURUM_OMRU_ALT_SANIYE, true).is_ok());
+    assert!(OturumAyari::yeni(OTURUM_MUTLAK_TAVAN_SANIYE, true).is_ok());
+    assert!(OturumAyari::yeni(OTURUM_MUTLAK_TAVAN_SANIYE + 1, true).is_err());
+    assert_eq!(OturumAyari::default().omur_saniye(), OTURUM_OMRU_SANIYE);
+    assert!(!OturumAyari::default().kayar());
+}
+
+#[test]
+fn ayarli_mutlak_omur_cerez_ve_depoya_yansir_erisimle_uzamaz() {
+    let mut depo = WebGuvenligi::yeni();
+    depo.oturum_ayarini_belirle(OturumAyari::yeni(600, false).unwrap());
+    istegi_baslat(&mut depo, None, 0);
+    let yeni = depo
+        .oturum_ac("Zeynep".into(), "okur".into(), 0, uretici())
+        .unwrap();
+    assert_eq!(yeni.azami_omur_saniye, 600);
+    istegi_baslat(&mut depo, Some(&yeni.belirtec), 599_000);
+    assert_eq!(depo.kayar_cerez_omru(), None);
+    assert!(depo
+        .denetle(&RotaErisimi::Oturumlu, None, false, 599_000)
+        .is_ok());
+    istegi_baslat(&mut depo, Some(&yeni.belirtec), 600_001);
+    assert_eq!(
+        depo.denetle(&RotaErisimi::Oturumlu, None, false, 600_001)
+            .unwrap_err()
+            .durum,
+        401
+    );
+}
+
+#[test]
+fn kayar_kimlikli_oturum_her_istekte_uzar_mutlak_tavani_asmaz() {
+    let mut depo = kayar_depo(600);
+    istegi_baslat(&mut depo, None, 0);
+    let yeni = depo
+        .oturum_ac("Zeynep".into(), "okur".into(), 0, uretici())
+        .unwrap();
+    assert_eq!(yeni.azami_omur_saniye, 600);
+    // İlk ömür (600 sn) çoktan geçti ama her 500 sn'de bir istek oturumu taşır.
+    let mut an = 0;
+    while an + 500_000 < OTURUM_MUTLAK_TAVAN_SANIYE * 1000 {
+        an += 500_000;
+        istegi_baslat(&mut depo, Some(&yeni.belirtec), an);
+        assert!(
+            depo.denetle(&RotaErisimi::Oturumlu, None, false, an)
+                .is_ok(),
+            "kayar oturum {an} ms'de geçerli kalmalı"
+        );
+        let bilgi = depo.oturum_bilgisi(an).unwrap();
+        let tavan = OTURUM_MUTLAK_TAVAN_SANIYE * 1000;
+        assert_eq!(bilgi.son_gecerlilik_ms, (an + 600_000).min(tavan));
+        assert_eq!(
+            depo.kayar_cerez_omru(),
+            Some((bilgi.son_gecerlilik_ms - an) / 1000)
+        );
+    }
+    // Sürekli kullanım bile oluşturmadan 30 günü geçemez: sonsuz oturum yok.
+    let tavan_sonrasi = OTURUM_MUTLAK_TAVAN_SANIYE * 1000 + 1;
+    istegi_baslat(&mut depo, Some(&yeni.belirtec), tavan_sonrasi);
+    assert_eq!(depo.kayar_cerez_omru(), None);
+    assert_eq!(
+        depo.denetle(&RotaErisimi::Oturumlu, None, false, tavan_sonrasi)
+            .unwrap_err()
+            .durum,
+        401
+    );
+}
+
+#[test]
+fn kayar_bosta_kalan_oturumu_omur_sonunda_bitirir() {
+    let mut depo = kayar_depo(600);
+    istegi_baslat(&mut depo, None, 0);
+    let yeni = depo
+        .oturum_ac("Zeynep".into(), "okur".into(), 0, uretici())
+        .unwrap();
+    istegi_baslat(&mut depo, Some(&yeni.belirtec), 300_000);
+    assert_eq!(depo.kayar_cerez_omru(), Some(600));
+    istegi_baslat(&mut depo, Some(&yeni.belirtec), 900_001);
+    assert_eq!(depo.kayar_cerez_omru(), None);
+    assert_eq!(
+        depo.denetle(&RotaErisimi::Oturumlu, None, false, 900_001)
+            .unwrap_err()
+            .durum,
+        401
+    );
+}
+
+#[test]
+fn kayar_anonim_oturumu_uzatmaz() {
+    let mut depo = kayar_depo(OTURUM_MUTLAK_TAVAN_SANIYE);
+    istegi_baslat(&mut depo, None, 0);
+    let (csrf, yeni) = depo.csrf_belirteci(0, uretici()).unwrap();
+    let yeni = yeni.expect("anonim oturum");
+    assert_eq!(yeni.azami_omur_saniye, ANONIM_OTURUM_OMRU_SANIYE);
+    let son = ANONIM_OTURUM_OMRU_SANIYE * 1000 - 1;
+    istegi_baslat(&mut depo, Some(&yeni.belirtec), son);
+    assert_eq!(depo.kayar_cerez_omru(), None);
+    assert!(depo
+        .denetle(&RotaErisimi::HerkeseAcik, Some(&csrf), true, son)
+        .is_ok());
+    let sonra = ANONIM_OTURUM_OMRU_SANIYE * 1000 + 1;
+    istegi_baslat(&mut depo, Some(&yeni.belirtec), sonra);
+    assert_eq!(
+        depo.denetle(&RotaErisimi::HerkeseAcik, Some(&csrf), true, sonra)
+            .unwrap_err()
+            .durum,
+        403
+    );
+}
+
+#[test]
+fn kayar_oturum_cikis_ve_iptalde_hemen_biter_cerez_yenilenmez() {
+    let mut depo = kayar_depo(OTURUM_MUTLAK_TAVAN_SANIYE);
+    istegi_baslat(&mut depo, None, 0);
+    let yeni = depo
+        .oturum_ac("Zeynep".into(), "okur".into(), 0, uretici())
+        .unwrap();
+    istegi_baslat(&mut depo, Some(&yeni.belirtec), 1_000);
+    assert!(depo.kayar_cerez_omru().is_some());
+    depo.oturum_kapat();
+    assert_eq!(depo.kayar_cerez_omru(), None);
+    istegi_baslat(&mut depo, Some(&yeni.belirtec), 2_000);
+    assert_eq!(depo.kayar_cerez_omru(), None);
+    assert_eq!(
+        depo.denetle(&RotaErisimi::Oturumlu, None, false, 2_000)
+            .unwrap_err()
+            .durum,
+        401
+    );
+
+    let ikinci = depo
+        .oturum_ac("Zeynep".into(), "okur".into(), 3_000, uretici())
+        .unwrap();
+    istegi_baslat(&mut depo, Some(&ikinci.belirtec), 4_000);
+    let kimlik = depo.oturum_bilgisi(4_000).unwrap().kimlik;
+    assert!(depo.kayar_cerez_omru().is_some());
+    assert_eq!(depo.oturum_kimligini_iptal_et(&kimlik), Ok(1));
+    assert_eq!(depo.kayar_cerez_omru(), None);
+    istegi_baslat(&mut depo, Some(&ikinci.belirtec), 5_000);
+    assert_eq!(
+        depo.denetle(&RotaErisimi::Oturumlu, None, false, 5_000)
+            .unwrap_err()
+            .durum,
+        401
+    );
+}
+
+#[test]
+fn kayar_yenileme_kalici_depoda_iki_surec_ve_yeniden_baslatmada_gorunur() {
+    let kok = std::env::temp_dir().join(format!(
+        "zee-kayar-{}-{}",
+        std::process::id(),
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos()
+    ));
+    let yol = kok.join(".zee/web-durumu-v1.json");
+    let ayar = OturumAyari::yeni(600, true).unwrap();
+    let mut a = WebGuvenligi::kalici(&yol);
+    let mut b = WebGuvenligi::kalici(&yol);
+    a.oturum_ayarini_belirle(ayar);
+    b.oturum_ayarini_belirle(ayar);
+    istegi_baslat(&mut a, None, 0);
+    let yeni = a
+        .oturum_ac("Zeynep".into(), "okur".into(), 0, uretici())
+        .unwrap();
+    a.istegi_tamamla(0).unwrap();
+    // B süreci 500. saniyede kaydırır; A ilk ömrün (600 sn) ötesinde görür.
+    istegi_baslat(&mut b, Some(&yeni.belirtec), 500_000);
+    assert_eq!(b.kayar_cerez_omru(), Some(600));
+    istegi_baslat(&mut a, Some(&yeni.belirtec), 1_000_000);
+    assert!(a
+        .denetle(&RotaErisimi::Oturumlu, None, false, 1_000_000)
+        .is_ok());
+    drop(a);
+    let mut yeniden = WebGuvenligi::kalici(&yol);
+    yeniden.oturum_ayarini_belirle(ayar);
+    istegi_baslat(&mut yeniden, Some(&yeni.belirtec), 1_500_000);
+    assert!(yeniden
+        .denetle(&RotaErisimi::Oturumlu, None, false, 1_500_000)
+        .is_ok());
+    yeniden.oturum_kapat();
+    yeniden.istegi_tamamla(1_500_000).unwrap();
+    istegi_baslat(&mut b, Some(&yeni.belirtec), 1_500_001);
+    assert_eq!(
+        b.denetle(&RotaErisimi::Oturumlu, None, false, 1_500_001)
+            .unwrap_err()
+            .durum,
+        401
+    );
+    let _ = std::fs::remove_dir_all(&kok);
+}

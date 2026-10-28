@@ -224,6 +224,8 @@ koduyla `Parola ve parola özeti Metin olmalı.` bildirir. Bcrypt ve
 Argon2id aynı Metin imzasını kullanır; bozuk hash/yanlış parola tanı
 üretmek yerine `yanlış`tır. K-209 eylem içi IP okuması mevcut T044’tür.
 
+K-330: `oturum_ömrü_saniye` 300–2592000 sn aralığı dışında ya da `web-oturumu` yetkinliği olmadan `oturum_ömrü_saniye`/`oturum_kayar` kullanımı P015, Sayı olmayan ömür ve Mantıksal olmayan `oturum_kayar` P001 verir; yeni tanı kodu yoktur. [Karar](../adr/158-proje-basina-oturum-omru-ve-kayar-yenileme.md).
+
 K-220: yeni HTTP/ortam/JSON işlemlerinin beklenen hatası C018 kodlu Sonuç değeridir; adaptör ayrıntısı gizlenir. T034 argüman türü, T048 eylemde geri alınamaz istek ve P015 proje ortam listesi tanıları mevcut kodları korur. Üst program deadline C020 kalır. [Sözleşme](../adr/091-http-post-baslik-ve-gizli-ortam.md).
 
 K-234 `zee.ayar` okuma/şema/güvenlik hataları tanı kodu üretmeyen CLI

@@ -82,7 +82,13 @@ değerini yapılandırılmış kanonik otoriteyle kurmalıdır.
 | Argon2id parola doğrulaması | 300 sn | 5 | Argon2id çalışmadan 429 |
 
 Oturum 30, anonim form oturumu 10 dakika mutlak ömürlüdür. Erişim ömrü
-kaydırmaz. Toplam oturum 4096, anonim oturum 1024, canlı rate anahtarı 32768
+kaydırmaz. K-330: ana `proje.dil` kimlikli oturum ömrünü
+`oturum_ömrü_saniye N olsun` (300–2592000 sn) ile seçebilir;
+`oturum_kayar doğru olsun` her kimlikli istekte geçerliliği `şimdi + N`e taşır
+ve çerezin `Max-Age`'ini yeniler, ama oluşturmadan sayılan 30 günü aşamaz.
+Anonim oturum ve çıkış davranışı değişmez. Oturumlar `.zee/web-durumu-v1.json`
+içinde kaldığından worker yeniden başlatma ve dağıtım kullanıcıyı düşürmez;
+bu dosyayı dağıtımda silmeyin ([ADR-158](../adr/158-proje-basina-oturum-omru-ve-kayar-yenileme.md)). Toplam oturum 4096, anonim oturum 1024, canlı rate anahtarı 32768
 ile sınırlıdır. Kalıcı depo okunamaz/bozuksa veya kapasite güvenle
 yönetilemiyorsa istek fail-closed 503 olur.
 

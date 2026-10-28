@@ -270,6 +270,8 @@ profil	kaynak-kapsami-karar-profili	aktif	0.8.0-dev	compiler/src/test_kapsami.rs
 profil	kaynak-kapsami-semasi	aktif	0.8.0-dev	compiler/src/test_kapsami.rs	"zee-source-coverage-1"
 profil	managed-owned-module-scaffold-posix-1	aktif	0.8.0-dev	scripts/modul-yoneticisi.py	Managed scaffold pilot
 profil	morfoloji	aktif	0.7.0	compiler/src/morfoloji.rs	pub const MORFOLOJI_PROFILI: &str = "zee-tr-1";
+profil	oturum-kayar-v1	aktif	1.0.0-dev	compiler/src/proje.rs	"oturum_kayar"
+profil	oturum-omru-v1	aktif	1.0.0-dev	compiler/src/proje.rs	"oturum_ömrü_saniye"
 profil	owned-pdf-backend-acceptance	aktif	0.8.0-dev	scripts/tests/pdf-backend-acceptance.py	owned-pdf-backend-acceptance
 profil	owned-pdf-prototype	aktif	0.8.0-dev	scripts/pdf-katalog-host.py	owned-pdf-prototype
 profil	rc-kanit	aktif	0.8.0-dev	scripts/guvenlik-kapisi.sh	--rc-kanit)

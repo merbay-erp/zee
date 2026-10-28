@@ -5002,6 +5002,19 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   sürecini `medya` → `/dev/shm` bağıyla koşar; düzeltme öncesi Linux'ta
   `taşıma reddedildi`, sonrası `taşındı`. Grammar, tanı kimliği, dil yüzeyi
   ve `dil::api::v1` değişmedi.
+## K-330 — Proje başına oturum ömrü ve kayar yenileme (28 Ekim 2026)
+
+- K-330 (28.10.2026): ürün G (zee ile yazılmış mini ERP) sahibinin talebi:
+  30 dakikalık mutlak oturum kullanıcıyı iş ortasında girişe atıyor, oturum
+  çıkışa kadar etkin kalmalı. Core freeze altında dogfood-change: yeni kalıp
+  yerine proje politikası olarak `oturum_ömrü_saniye` (300 sn–30 gün; P015)
+  ve `oturum_kayar` (P001 tür) eklendi. Kayar yalnız kimlikli kayıtta,
+  istek başındaki kalıcı CAS turunda `min(şimdi+ömür, oluşturma+30 gün)`
+  yazar, çerez Max-Age'ini aynı belirteçle yeniler; anonim oturum kaymaz,
+  giriş/çıkış/iptal yenilemeyi düşürür (ADR-158, ADR-018 eki, GB-128).
+  Restart ve çok worker paylaşımı K-137 kalıcı deposuyla zaten vardı; yeni
+  gerçek iki-worker testi kayar kipte de kanıtlar. Ayrı mutlak tavan anahtarı
+  ve `oturumu yenile` kalıbı reddedildi. Ürün adı ADR-087 gereği anonimdir.
 
 ## K-331 — ctutils RustSec yükseltmesi (28 Ekim 2026)
 

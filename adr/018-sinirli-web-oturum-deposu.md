@@ -50,3 +50,10 @@ Sticky session hâlâ ortak revoke veya ortak rate-limit sözünün yerine geçm
 - Üç yeni test anonim LRU tahliyesini, anonimin kimlikli kayda yer açmasını ve
   yalnız kimlikli kayıtlarla dolu deponun fail-closed davranışını korur;
   expiry testi erişimin ömrü kaydırmadığını ayrıca kanıtlar.
+
+## K-330 eki (28 Ekim 2026)
+
+Proje bildirimi `oturum_ömrü_saniye` (300–2592000 sn) ve isteğe bağlı
+`oturum_kayar` seçebilir. Kayar kipte boşta kalma süresi kayar, ama oluşturma
+anından sayılan 30 günlük mutlak tavan aşılamaz; anonim oturum ve varsayılan
+davranış bu ADR'deki gibi mutlak kalır. Gerekçe [ADR-158](158-proje-basina-oturum-omru-ve-kayar-yenileme.md).
