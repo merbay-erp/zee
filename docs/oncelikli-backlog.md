@@ -2421,3 +2421,11 @@ hata yolunda yarım dosya ya da çift kopya kalmaz. Açılış öz-sınaması
 gerekçeyle reddedildi. Kanıt: `kalici_dosya::yasam_dongusu` birim testleri
 (EXDEV enjeksiyonu, Linux `/dev/shm` gerçek sınır), regression
 `aygitlar-arasi-tasima` (`native-dosya-exdev`).
+
+## K-331 — ctutils RustSec yükseltmesi
+
+**Durum: KAPALI.** 28 Ekim'de yayımlanan RUSTSEC-2026-0385 (ctutils 0.4.2:
+sabit zamanlı olmayan maske üretimi ve `u128` karşılaştırmaları) güvenlik
+kapısının advisories adımını master dahil bütün dallarda kırıyordu. Compiler
+ve fuzz kilitlerinde ctutils 0.4.6; ignore yok (GB-127, ADR-038). Kanıt:
+`guvenlik-kapisi.sh --surekli`, `tedarik` iş akışı.
