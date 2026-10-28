@@ -265,6 +265,117 @@ fn iki_worker_kabul(bellek: bool) {
     assert!(gecici.0.join(".zee/web-durumu-v1.json").is_file());
 }
 
+fn cerez_satiri(yanit: &str) -> Option<&str> {
+    yanit
+        .lines()
+        .find(|satir| satir.starts_with("Set-Cookie: __Host-zee-oturum="))
+}
+
+fn max_age(satir: &str) -> i64 {
+    satir
+        .split("; ")
+        .find_map(|parca| parca.strip_prefix("Max-Age="))
+        .and_then(|deger| deger.parse().ok())
+        .expect("Max-Age")
+}
+
+/// K-330: proje bildirimiyle seçilen kayar oturum iki gerçek worker arasında
+/// ve yeniden başlatmada korunur; her kimlikli istek aynı belirteçle çerez
+/// Max-Age'ini yeniler, anonim oturum ve çıkış bundan etkilenmez.
+#[test]
+fn kayar_oturum_iki_worker_restart_ve_cikista_dogru_davranir() {
+    let gecici = GeciciKlasor::yeni();
+    std::fs::write(
+        gecici.0.join("proje.dil"),
+        "proje \"kayar-panel\" olsun\nsürüm \"0.1.0\" olsun\ngiriş \"ana.dil\" olsun\n\
+         yetkinlikler \"dosya-okuma\", \"dosya-yazma\", \"ağ-sunucusu\", \"web-oturumu\", \"kriptografi\" listesi olsun\n\
+         oturum_ömrü_saniye 28800 olsun\noturum_kayar doğru olsun\n",
+    )
+    .expect("proje bildirimi");
+    std::fs::write(
+        gecici.0.join("ana.dil"),
+        include_str!("../../projeler/girisli-panel.dil"),
+    )
+    .expect("proje kaynağı");
+    let kilit = Command::new(env!("CARGO_BIN_EXE_dil"))
+        .args(["kilitle", gecici.0.to_str().expect("UTF-8 yol")])
+        .output()
+        .expect("dil kilitle");
+    assert!(
+        kilit.status.success(),
+        "{}",
+        String::from_utf8_lossy(&kilit.stderr)
+    );
+    let a_kapi = bos_kapi();
+    let b_kapi = bos_kapi();
+    let mut a = sunucuyu_baslat(&gecici.0, a_kapi);
+    let b = sunucuyu_baslat(&gecici.0, b_kapi);
+
+    let form = istek(a_kapi, "203.0.113.8", "GET", "/giris", None, "");
+    assert_eq!(durum(&form), 200);
+    let anonim_satiri = cerez_satiri(&form).expect("anonim çerez").to_string();
+    assert_eq!(
+        max_age(&anonim_satiri),
+        600,
+        "anonim oturum kısa ve mutlak kalır"
+    );
+    let anonim = cerez(&form);
+    let anonim_tekrar = istek(a_kapi, "203.0.113.8", "GET", "/giris", Some(&anonim), "");
+    assert_eq!(durum(&anonim_tekrar), 200);
+    assert!(
+        cerez_satiri(&anonim_tekrar).is_none(),
+        "anonim oturum kayar yenilenmez"
+    );
+    let giris = istek(
+        a_kapi,
+        "203.0.113.8",
+        "POST",
+        "/giris-yap",
+        Some(&anonim),
+        &format!("_csrf={}&parola=zee2026", csrf(&form)),
+    );
+    assert_eq!(durum(&giris), 303);
+    let oturum = cerez(&giris);
+    assert_ne!(oturum, anonim, "giriş oturum kimliğini döndürür");
+    assert_eq!(max_age(cerez_satiri(&giris).unwrap()), 28800);
+
+    let b_okuma = istek(b_kapi, "203.0.113.8", "GET", "/yonet", Some(&oturum), "");
+    assert_eq!(durum(&b_okuma), 200, "B worker A oturumunu görmeli");
+    let yenileme = cerez_satiri(&b_okuma).expect("kayar çerez yenilemesi");
+    assert_eq!(cerez(&b_okuma), oturum, "yenileme aynı belirteci taşır");
+    assert!((28799..=28800).contains(&max_age(yenileme)), "{yenileme}");
+    assert!(yenileme.contains("HttpOnly") && yenileme.contains("Secure"));
+
+    a.0.kill().expect("A worker durdurulmalı");
+    a.0.wait().expect("A worker sonucu");
+    drop(a);
+    let a = sunucuyu_baslat(&gecici.0, a_kapi);
+    let restart = istek(a_kapi, "203.0.113.8", "GET", "/yonet", Some(&oturum), "");
+    assert_eq!(durum(&restart), 200, "restart kayar oturumu kaybetmemeli");
+    assert_eq!(cerez(&restart), oturum);
+
+    let cikis = istek(
+        b_kapi,
+        "203.0.113.8",
+        "POST",
+        "/cikis",
+        Some(&oturum),
+        &format!("_csrf={}", csrf(&restart)),
+    );
+    assert_eq!(durum(&cikis), 303);
+    let cikis_cerezleri = cikis
+        .lines()
+        .filter(|satir| satir.starts_with("Set-Cookie: __Host-zee-oturum="))
+        .collect::<Vec<_>>();
+    assert_eq!(cikis_cerezleri.len(), 1, "{cikis_cerezleri:?}");
+    assert_eq!(max_age(cikis_cerezleri[0]), 0, "çıkış çerezi hemen siler");
+    let iptal = istek(a_kapi, "203.0.113.8", "GET", "/yonet", Some(&oturum), "");
+    assert_eq!(durum(&iptal), 401, "B çıkışı A worker'da hemen görünmeli");
+    assert!(cerez_satiri(&iptal).is_none());
+    drop(a);
+    drop(b);
+}
+
 fn ham_ip_istegi(kapi: u16, basliklar: &str, yol: &str) -> String {
     let adres = SocketAddr::from(([127, 0, 0, 1], kapi));
     let son = Instant::now() + Duration::from_secs(10);

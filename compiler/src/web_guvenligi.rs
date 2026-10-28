@@ -26,6 +26,60 @@ pub const AZAMI_ANONIM_OTURUM_SAYISI: usize = crate::kaynak_sinirlari::VARSAYILA
     .web()
     .anonim_oturum_sayisi();
 
+/// Kayar yenilemenin aşamayacağı, oluşturmadan sayılan mutlak oturum tavanı (30 gün).
+pub const OTURUM_MUTLAK_TAVAN_SANIYE: i64 = 30 * 24 * 60 * 60;
+/// Proje ayarıyla seçilebilecek en kısa kimlikli oturum ömrü (5 dakika).
+pub const OTURUM_OMRU_ALT_SANIYE: i64 = 5 * 60;
+
+/// K-330: kimlikli oturumun ömrü ve kayar yenilemesi. Anonim (giriş öncesi)
+/// oturum bu ayardan etkilenmez; her zaman kısa ve mutlaktır.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct OturumAyari {
+    omur_saniye: i64,
+    kayar: bool,
+}
+
+impl Default for OturumAyari {
+    fn default() -> Self {
+        Self {
+            omur_saniye: OTURUM_OMRU_SANIYE,
+            kayar: false,
+        }
+    }
+}
+
+impl OturumAyari {
+    /// Sınır dışı ömür fail-closed reddedilir; proje bildirimi aynı aralığı tanıyla denetler.
+    pub fn yeni(omur_saniye: i64, kayar: bool) -> Result<Self, String> {
+        if !(OTURUM_OMRU_ALT_SANIYE..=OTURUM_MUTLAK_TAVAN_SANIYE).contains(&omur_saniye) {
+            return Err(format!(
+                "oturum ömrü {omur_saniye} sn; {OTURUM_OMRU_ALT_SANIYE}–{OTURUM_MUTLAK_TAVAN_SANIYE} sn aralığında olmalı"
+            ));
+        }
+        Ok(Self { omur_saniye, kayar })
+    }
+
+    pub const fn omur_saniye(self) -> i64 {
+        self.omur_saniye
+    }
+
+    pub const fn kayar(self) -> bool {
+        self.kayar
+    }
+
+    /// Kayar yenilemede yeni son geçerlilik: `şimdi + ömür`, ama oluşturmadan
+    /// sayılan mutlak tavanı asla aşmaz ve var olan geçerliliği kısaltmaz.
+    fn kaydir(self, oturum: &Oturum, an_ms: i64) -> i64 {
+        let tavan = oturum
+            .olusturma_ms
+            .saturating_add(OTURUM_MUTLAK_TAVAN_SANIYE * 1000);
+        an_ms
+            .saturating_add(self.omur_saniye * 1000)
+            .min(tavan)
+            .max(oturum.son_gecerlilik_ms)
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct WebReddi {
     pub durum: u16,
@@ -122,6 +176,9 @@ pub struct WebGuvenligi {
     bekleyen: BekleyenOturumIslemi,
     azami_oturum: usize,
     azami_anonim_oturum: usize,
+    oturum_ayari: OturumAyari,
+    /// Bu istekte kayar yenileme yapıldıysa çerezin yeni Max-Age değeri.
+    kayar_cerez_omru: Option<i64>,
 }
 
 impl Default for WebGuvenligi {
@@ -135,6 +192,8 @@ impl Default for WebGuvenligi {
             bekleyen: BekleyenOturumIslemi::default(),
             azami_oturum: AZAMI_OTURUM_SAYISI,
             azami_anonim_oturum: AZAMI_ANONIM_OTURUM_SAYISI,
+            oturum_ayari: OturumAyari::default(),
+            kayar_cerez_omru: None,
         }
     }
 }
@@ -170,6 +229,21 @@ impl WebGuvenligi {
         }
     }
 
+    /// Proje bildirimindeki kimlikli oturum ömrü/kayar ayarını uygular.
+    pub fn oturum_ayarini_belirle(&mut self, ayar: OturumAyari) {
+        self.oturum_ayari = ayar;
+    }
+
+    pub fn oturum_ayari(&self) -> OturumAyari {
+        self.oturum_ayari
+    }
+
+    /// Kayar yenileme bu istekte kimlikli oturumun geçerliliğini uzattıysa
+    /// çağıranın aynı belirteçle yeniden yazacağı çerezin Max-Age değeri.
+    pub fn kayar_cerez_omru(&self) -> Option<i64> {
+        self.kayar_cerez_omru
+    }
+
     #[cfg(test)]
     fn sinirli(azami_oturum: usize, azami_anonim_oturum: usize) -> Self {
         Self {
@@ -180,7 +254,8 @@ impl WebGuvenligi {
     }
 
     /// Her istekten önce çağrılır. Süresi dolmuş kayıt aynı anda iptal edilir;
-    /// erişim LRU sırasını günceller ama mutlak geçerlilik anını uzatmaz.
+    /// erişim LRU sırasını günceller. Mutlak kipte geçerlilik anı uzamaz; kayar
+    /// kipte yalnız kimlikli oturum `şimdi + ömür`e (mutlak tavanla) taşınır.
     pub fn istegi_baslat_kimlikle(
         &mut self,
         belirtec: Option<&str>,
@@ -191,6 +266,8 @@ impl WebGuvenligi {
         self.istemci_kimligi = Some(istemci_kimligi.to_string());
         let gelen_anahtar = belirtec.map(anahtar);
         let aranan = gelen_anahtar.clone();
+        let ayar = self.oturum_ayari;
+        let mut kayar_cerez_omru = None;
         // Belirteç yoksa bu kipte oturum deposuna dokunmak gerekmez. Temizlik
         // oturum okuma/commit sırasında yapılır; revoke okumaları önbelleklenmez.
         let oturum = if self.oran_bellek.is_some() && aranan.is_none() {
@@ -203,6 +280,12 @@ impl WebGuvenligi {
                 if let Some(anahtar) = &aranan {
                     if let Some(oturum) = durum.oturumlar.get_mut(anahtar) {
                         oturum.son_erisim_ms = an_ms;
+                        kayar_cerez_omru = None;
+                        if ayar.kayar && oturum.kullanici.is_some() {
+                            oturum.son_gecerlilik_ms = ayar.kaydir(oturum, an_ms);
+                            kayar_cerez_omru =
+                                Some(oturum.son_gecerlilik_ms.saturating_sub(an_ms) / 1000);
+                        }
                         return Ok(Some(oturum.clone()));
                     }
                 }
@@ -211,6 +294,7 @@ impl WebGuvenligi {
         };
         self.gelen_anahtar = gelen_anahtar;
         self.gelen_oturum = oturum;
+        self.kayar_cerez_omru = kayar_cerez_omru;
         Ok(())
     }
 
@@ -327,7 +411,7 @@ impl WebGuvenligi {
         self.oturum_yerini_denetle(false)?;
         let belirtec = uret()?;
         let csrf = uret()?;
-        let omur = OTURUM_OMRU_SANIYE;
+        let omur = self.oturum_ayari.omur_saniye;
         let oturum = Oturum {
             csrf,
             kullanici: Some(kullanici),
@@ -381,6 +465,7 @@ impl WebGuvenligi {
     }
 
     fn gecerli_oturumu_sil(&mut self) {
+        self.kayar_cerez_omru = None;
         if let Some(anahtar) = &self.gelen_anahtar {
             let onceki = self.bekleyen.eklenecekler.len();
             self.bekleyen
@@ -455,6 +540,7 @@ impl WebGuvenligi {
     }
 
     pub fn istegi_geri_al(&mut self) {
+        self.kayar_cerez_omru = None;
         self.bekleyen = BekleyenOturumIslemi::default();
         self.gelen_anahtar = None;
         self.gelen_oturum = None;

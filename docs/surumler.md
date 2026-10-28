@@ -5,6 +5,41 @@
 Her sürüm: ne eklendi, ne değişti, neyin sözü verildi. Kırıcı değişiklik
 sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 
+## 28 Ekim 2026 — Geliştirme güncellemeleri
+
+**Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
+Bu kayıt yeni sürüm etiketi değildir.
+
+### Eklenenler
+
+- **Web oturumu ömrü proje başına seçilebilir, isteğe bağlı kayar (K-330,
+  ADR-158):** Giriş yapan kullanıcının oturumu bugüne kadar oluşturma anından
+  itibaren kesin 30 dakikada bitiyordu; gün boyu açık kalan formlarda
+  kullanıcı iş ortasında girişe düşüyordu. Ana `proje.dil` artık şunları
+  kabul eder:
+
+  ```text
+  oturum_ömrü_saniye 28800 olsun
+  oturum_kayar doğru olsun
+  ```
+
+  `oturum_ömrü_saniye` 300 ile 2592000 saniye (5 dakika – 30 gün) arasında
+  olmalıdır. `oturum_kayar doğru` iken her kimlikli istek oturumu ve çerezini
+  ömür kadar ileri taşır; böylece ömür bir boşta kalma süresine dönüşür.
+  Güvenlik için oturum, oluşturulduğu andan sayılan 30 günü hiçbir kullanımla
+  aşamaz; giriş öncesi form oturumu 10 dakika kalır; `oturumu kapat` oturumu
+  sunucuda hemen bitirir. Oturumlar proje kökündeki `.zee/web-durumu-v1.json`
+  dosyasında bütün worker'larca paylaşılır; worker yeniden başlatma ve dağıtım
+  kullanıcıyı çıkışa düşürmez.
+
+### Uyumluluk ve göç
+
+Alanlar isteğe bağlıdır; eklemeyen projeler aynı kalır (30 dakika, mutlak).
+İki alan da `web-oturumu` yetkinliği ister; sınır dışı ömür ve yetkinliksiz
+kullanım P015, yanlış tür P001 verir. Bu alanları kullanan proje eski
+derleyicide P001 ("proje bildirimi alanı değil") ile reddedilir; önce
+derleyiciyi yükseltin. Dağıtımda `.zee/web-durumu-v1.json` dosyasını silmeyin.
+
 ## 21 Ekim 2026 — Geliştirme güncellemeleri
 
 **Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.

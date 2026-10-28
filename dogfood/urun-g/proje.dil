@@ -1,0 +1,12 @@
+# Ürün G — zee ile yazılmış mini ERP (K-330). Gerçek ürün özel depodadır;
+# bu klasör oturum ömrü gereksiniminin depo içi kanıt aynasıdır.
+# Oturum 8 saat boşta kalınca biter, kullanıldıkça kayar; mutlak tavan 30 gün.
+
+proje "urun-g" olsun
+sürüm "0.1.0" olsun
+morfoloji "zee-tr-1" olsun
+giriş "oturum-gereksinimi.dil" olsun
+yetkinlikler "ağ-sunucusu", "web-oturumu", "kriptografi" listesi olsun
+ağ_hedefleri boş liste olsun
+oturum_ömrü_saniye 28800 olsun
+oturum_kayar doğru olsun

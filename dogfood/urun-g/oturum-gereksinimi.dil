@@ -1,0 +1,32 @@
+# Ürün G sürtünmesi (K-330): ERP kullanıcısı gün boyu formla çalışırken
+# 30 dakikalık mutlak oturum ömrü iş ortasında girişe atıyordu. Proje
+# bildirimi ömrü ve kayar yenilemeyi seçer; kaynakta yeni kalıp yoktur,
+# çıkış oturumu bugünkü gibi hemen bitirir.
+
+8093 kapısında sunucu başlat
+
+GET "/giris" adresine istek geldiğinde
+    csrf csrf belirteci olsun
+    form "<form method=post action=/giris-yap><input type=hidden name=_csrf value=\"" ile csrf ile "\"><input type=password name=parola><button>Gir</button></form>" olsun
+    form yanıtını gönder
+
+POST "/giris-yap" adresine istek geldiğinde
+    herkese açık
+    "parola" alanı gerekli
+    verilen isteğin "parola" değeri olsun
+    verilen "$argon2id$v=19$m=19456,t=2,p=1$1y0i/VrrCbkUGDBIa2N56Q$kilaFFkxE4PKYcBivmYbSvrDT+5bejUsQwQp1zULvxM" ile doğrulanıyorsa
+        "muhasebe" kullanıcısını "kullanıcı" rolüyle oturuma al
+        "/cari" adresine yönlendir
+    değilse
+        "/giris" adresine yönlendir
+
+GET "/cari" adresine istek geldiğinde
+    oturum gerekli
+    csrf csrf belirteci olsun
+    sayfa "<h1>Cari hesaplar</h1><form method=post action=/cikis><input type=hidden name=_csrf value=\"" ile csrf ile "\"><button>çıkış</button></form>" olsun
+    sayfa yanıtını gönder
+
+POST "/cikis" adresine istek geldiğinde
+    oturum gerekli
+    oturumu kapat
+    "/giris" adresine yönlendir
