@@ -5011,8 +5011,20 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   ve `oturum_kayar` (P001 tür) eklendi. Kayar yalnız kimlikli kayıtta,
   istek başındaki kalıcı CAS turunda `min(şimdi+ömür, oluşturma+30 gün)`
   yazar, çerez Max-Age'ini aynı belirteçle yeniler; anonim oturum kaymaz,
-  giriş/çıkış/iptal yenilemeyi düşürür (ADR-158, ADR-018 eki, GB-127).
+  giriş/çıkış/iptal yenilemeyi düşürür (ADR-158, ADR-018 eki, GB-128).
   Restart ve çok worker paylaşımı K-137 kalıcı deposuyla zaten vardı; yeni
   gerçek iki-worker testi kayar kipte de kanıtlar. Ayrı mutlak tavan anahtarı
   ve `oturumu yenile` kalıbı reddedildi. Ürün adı ADR-087 gereği anonimdir.
 
+## K-331 — ctutils RustSec yükseltmesi (28 Ekim 2026)
+
+- RUSTSEC-2026-0385 değişmeyen master'da `cargo deny` advisories adımını
+  kırdı (ADR-038'in öngördüğü hareketli advisory verisi): ctutils 0.4.2
+  maske üretimini ve `u128` karşılaştırmalarını sabit zamanlı yapmıyordu.
+  Paket RustCrypto `digest` 0.11 üzerinden argon2/blake2 (parola özeti),
+  ed25519-dalek (imza), hmac (postgres-protocol SCRAM) ve md-5'e girer;
+  zamanlama yan kanalı teorik, sömürüsü bilinmiyor.
+- Karar: `cargo update -p ctutils` compiler ve fuzz kilitlerinde 0.4.6'ya
+  yükseltir (semver uyumlu yama; `Cargo.toml` ve doğrudan bağımlılık
+  değişmez). Reddedilen: `deny.toml` ignore (ignore kümesi boş kalır, K-141).
+  Compiler kaynağı, grammar, tanı, dil yüzeyi ve spec değişmez (GB-127).

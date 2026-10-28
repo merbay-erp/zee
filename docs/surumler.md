@@ -32,6 +32,14 @@ Bu kayıt yeni sürüm etiketi değildir.
   dosyasında bütün worker'larca paylaşılır; worker yeniden başlatma ve dağıtım
   kullanıcıyı çıkışa düşürmez.
 
+### Düzeltilenler
+
+- **Sabit zamanlı karşılaştırma bağımlılığı güncellendi (K-331):**
+  RustCrypto `digest` zincirinin kullandığı `ctutils` 0.4.6'ya yükseltildi
+  (RUSTSEC-2026-0385: maske üretimi ve `u128` karşılaştırmaları sabit zamanlı
+  değildi). Parola özeti (argon2), imza (ed25519), PostgreSQL SCRAM (hmac) ve
+  özet işlevleri bu zinciri kullanır. Dil davranışı ve çıktılar değişmez.
+
 ### Uyumluluk ve göç
 
 Alanlar isteğe bağlıdır; eklemeyen projeler aynı kalır (30 dakika, mutlak).
