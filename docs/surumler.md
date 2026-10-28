@@ -5,6 +5,17 @@
 Her sürüm: ne eklendi, ne değişti, neyin sözü verildi. Kırıcı değişiklik
 sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 
+## 28 Ekim 2026 — Geliştirme güncellemeleri
+
+**Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
+Bu kayıt yeni sürüm etiketi değildir.
+
+- **Sabit zamanlı karşılaştırma bağımlılığı güncellendi (K-331):**
+  RustCrypto `digest` zincirinin kullandığı `ctutils` 0.4.6'ya yükseltildi
+  (RUSTSEC-2026-0385: maske üretimi ve `u128` karşılaştırmaları sabit zamanlı
+  değildi). Parola özeti (argon2), imza (ed25519), PostgreSQL SCRAM (hmac) ve
+  özet işlevleri bu zinciri kullanır. Dil davranışı ve çıktılar değişmez.
+
 ## 21 Ekim 2026 — Geliştirme güncellemeleri
 
 **Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
