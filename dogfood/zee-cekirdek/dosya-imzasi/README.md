@@ -42,4 +42,4 @@ kanıtı `compiler/tests/proje_testi.rs::dosya_imzasi_gercek_ikili_dosyada_sinir
 
 Ürün rotasının yeni ifadeye bağlanması, `basvuru_e2e.sh` adımının 415
 beklentisine dönmesi ve filo dağıtımı ürün tarafındadır. Polyglot/antivirüs
-denetimi kapsam dışıdır (GB-129).
+denetimi kapsam dışıdır (GB-130).

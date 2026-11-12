@@ -1,0 +1,27 @@
+# K-332: reddedilen (CSRF/oturum 403, 404, kısa gövde) ya da rotaca taşınmayan binary yükleme `.zee/yuklemeler` altında `.parca` bırakmaz; taşıyan rota dosyasını korur.
+
+8080 kapısında sunucu başlat
+
+GET "/form" adresine istek geldiğinde
+    belirtec csrf belirteci olsun
+    belirtec yanıtını gönder
+
+POST "/yukle" adresine istek geldiğinde
+    herkese açık
+    "yukleme_gecici_yolu" alanı gerekli
+    "alındı" yanıtını gönder
+
+eylem yuklemeyiTasi
+    kaynak Metin olarak al
+    TamSayı sonucu döndürür
+    kaynak dosyasını "kalici/yukleme.bin" yoluna atomik taşımayı dene döndür
+
+POST "/tasi" adresine istek geldiğinde
+    herkese açık
+    "yukleme_gecici_yolu" alanı gerekli
+    kaynak isteğin "yukleme_gecici_yolu" değeri olsun
+    sonuç kaynak ile yuklemeyiTasi olsun
+    sonuç başarılıysa
+        "taşındı" yanıtını gönder
+    sonuç başarısızsa
+        "taşınamadı" yanıtını 503 durumuyla gönder

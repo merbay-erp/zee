@@ -28,9 +28,27 @@ Bu kayıt yeni sürüm etiketi değildir.
   normal olmayan dosya ve proje sınırı reddi C013 başarısız Sonuç verir.
   İmza eşleşmesi dosyanın zararsız olduğunu kanıtlamaz.
 
+### Düzeltilenler
+
+- **Reddedilen dosya yüklemeleri artık diskte iz bırakmaz (K-332,
+  GB-129):** `application/octet-stream` gövdesi `.zee/yuklemeler/*.parca`
+  dosyasına akıyor, istek sonra CSRF/oturum eksikliği (403), bulunmayan
+  adres (404/405), kısa gövde (400) ya da rota hatasıyla reddedilse veya rota
+  dosyayı taşımadan yanıt verse bile dosya sunucu yeniden başlayana dek
+  kalıyordu. Oturumsuz bir istemci her istekte 16 MiB'a kadar bırakarak diski
+  doldurabiliyordu. Artık `GET`/`HEAD` dışındaki yükleme `X-Zee-CSRF` başlığı
+  ve oturum çerezi olmadan gövde hiç okunmadan `403` alır; akış yarıda kalan ya
+  da rotaca taşınmayan geçici dosya istek biterken silinir. Dosyayı aynı
+  istekte `atomik taşımayı dene` ile taşıyan rotalar değişmeden çalışır.
+
 ### Uyumluluk ve göç
 
-Yeni ifadedir; mevcut programlar değişmez. Kullanan program eski derleyicide
+K-332: sözdizimi, tanı kimliği ve sınır değerleri değişmedi. `yukleme_gecici_yolu`
+yalnız geldiği istek içinde geçerlidir: dosyayı sonraki bir isteğe saklayan
+rota (bilinen bir kullanım yok) aynı istekte kalıcı bir yola taşımalıdır.
+CSRF başlığı ya da oturum çerezi olmadan yapılan yükleme, adres var olmasa
+bile artık `404` yerine `403` alır.
+K-333: yeni ifadedir; mevcut programlar değişmez. Kullanan program eski derleyicide
 S004 ile reddedilir; önce derleyiciyi yükseltin. Yeni kalıp kelimesi:
 `onaltılık`.
 

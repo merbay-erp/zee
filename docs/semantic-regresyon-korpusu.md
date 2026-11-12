@@ -229,6 +229,22 @@ dosya kalmadığı ayrıca denetlenir. Düzeltme öncesi kaynakta çıktı
 replay bu kipi atlar; ayrı native libtest vakası boş listeyi reddeder ve Linux
 dışında görünür ignored durumundadır.
 
+## Native web yükleme kipi (K-332)
+
+`security` fazındaki `native-web-yukleme` kipi fixture'ı Cargo hedef
+klasöründe geçici bir projeye kopyalar (worker kökü kaynağın klasörüdür; depo
+ağacına `.zee` yazılmaz) ve gerçek native `dil` worker'ını güvenli proxy
+profilinde başlatır. Harness `GET /form` ile oturum çerezi ve CSRF belirteci
+alır, ardından 64 KiB'lık octet-stream gövdesiyle altı senaryo koşar: CSRF ve
+oturumsuz (yalnız başlıklar, yazma yarısı kapalı), sahte oturum, var olmayan
+adres, kısa gövde, dosyayı taşımayan rota ve dosyayı `kalici/` altına taşıyan
+rota. Çıktı her senaryonun `durum ad` satırı, kalan `.parca` sayısı ve taşınan
+dosyanın bayt sayısıdır; taşınan dosya gövdeyle bayt bayt karşılaştırılır.
+Düzeltme öncesi kaynakta ilk senaryo `400` (gövde beklenir) ve `parça 5`
+gözlenir. ToplayanIo gövdeyi diske akıtmadığı için toplu replay bu kipi
+atlar; ayrı native libtest vakası boş listeyi reddeder ve Unix dışında
+görünür ignored durumundadır.
+
 ## Native metric stdio ret kipi (K-294)
 
 `native-metric-stdio` yalnız `cli` fazında kullanılabilir. Manifest uygulama

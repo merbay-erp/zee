@@ -61,8 +61,8 @@ kılar. Clippy ölçümü sabit Rust araç zinciriyle üretim `lib` ve `dil` iki
 | `compiler/src/main.rs::ekle_komutu#1` | 135→135 (+0/+14) | 10→10 (+0/+2) | SABİT |
 | `compiler/src/main.rs::govde#1` | 150→161 (+11/+15) | 17→18 (+1/+4) | PAY İÇİNDE |
 | `compiler/src/main.rs::io_izi_komutu#1` | 108→108 (+0/+11) | 10→10 (+0/+2) | SABİT |
-| `compiler/src/main.rs::istek_al#1` | 113→114 (+1/+12) | 12→12 (+0/+3) | PAY İÇİNDE |
-| `compiler/src/main.rs::istek_govdesini_oku#1` | 79→79 (+0/+8) | 12→12 (+0/+3) | SABİT |
+| `compiler/src/main.rs::istek_al#1` | 113→118 (+5/+12) | 12→12 (+0/+3) | PAY İÇİNDE |
+| `compiler/src/main.rs::istek_govdesini_oku#1` | 79→85 (+6/+8) | 12→13 (+1/+3) | PAY İÇİNDE |
 | `compiler/src/main.rs::web_istegini_baslat#1` | 85→94 (+9/+9) | 6→7 (+1/+2) | PAY İÇİNDE |
 | `compiler/src/main.rs::web_modunu_ayikla#1` | 88→16 (-72/+9) | 4→2 (-2/+2) | İYİLEŞTİ |
 | `compiler/src/main.rs::web_modunu_ayikla_temel#1` | 90→90 (+0/+9) | 4→4 (+0/+2) | SABİT |
