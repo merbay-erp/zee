@@ -16,7 +16,7 @@ Kaynak: `regression/v2.tsv`
 | morphology | 2 |
 | parser | 5 |
 | runtime | 8 |
-| security | 10 |
+| security | 11 |
 
 | Tanı | Vaka |
 | --- | --- |
@@ -28,9 +28,9 @@ Kaynak: `regression/v2.tsv`
 | S030 | 1 |
 | T017 | 1 |
 | T054 | 2 |
-| - | 29 |
+| - | 30 |
 
-Toplam 40 vaka; `-` tanısız çalışma/eşzamanlılık vakasıdır. Tam 40 karakterlik `fixed_by` commit'i taşıyan vaka: 40/40.
+Toplam 41 vaka; `-` tanısız çalışma/eşzamanlılık vakasıdır. Tam 40 karakterlik `fixed_by` commit'i taşıyan vaka: 41/41.
 
 ## Güvenlik bulguları
 
@@ -39,12 +39,12 @@ Kaynak: `docs/guvenlik-bulgulari-v1.tsv`
 | Önem | Kapalı | Kabul | Açık | Toplam |
 | --- | --- | --- | --- | --- |
 | kritik | 1 | 0 | 0 | 1 |
-| yuksek | 16 | 0 | 0 | 16 |
+| yuksek | 17 | 0 | 0 | 17 |
 | orta | 34 | 16 | 1 | 51 |
 | dusuk | 29 | 30 | 1 | 60 |
 
 Kapı: açık kritik/yüksek bulgu 0 → **GEÇTİ** (ADR-066 sürekli kapı koşulu).
-Toplam bulgu: 128.
+Toplam bulgu: 129.
 
 ## Spec maddeleri
 
@@ -77,12 +77,12 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | spec/23-yetkinlik-ve-outbound-guvenligi.md | 26 | 0 | 0 | 26 | 100 |
 | spec/24-kaynak-guvenlik-profili.md | 9 | 0 | 0 | 9 | 100 |
 | spec/25-postgresql-veri-erisimi.md | 7 | 1 | 1 | 9 | 77 |
-| spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md | 3 | 0 | 0 | 3 | 100 |
+| spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md | 4 | 0 | 0 | 4 | 100 |
 | spec/27-uyumluluk-ve-surumleme.md | 11 | 1 | 1 | 13 | 84 |
 | spec/28-gorunum-blogu.md | 2 | 0 | 0 | 2 | 100 |
 | spec/29-test-kapsami.md | 5 | 0 | 0 | 5 | 100 |
 | spec/30-editor-analizi-ve-lint.md | 12 | 0 | 1 | 13 | 92 |
-| **Toplam** | 233 | 5 | 3 | 241 | 96 |
+| **Toplam** | 234 | 5 | 3 | 242 | 96 |
 
 ## Dogfood ürünleri ve korpusu
 
@@ -144,7 +144,7 @@ Kaynak: `docs/compiler-degisiklik-beyanlari-v1.tsv + docs/core-freeze-beyanlari-
 | Değişiklik sınıfı | Beyan |
 | --- | --- |
 | maintenance | 44 |
-| semantic-bugfix | 11 |
+| semantic-bugfix | 12 |
 | semantic-change | 46 |
 
 | Freeze sınıfı | Beyan |
@@ -153,6 +153,6 @@ Kaynak: `docs/compiler-degisiklik-beyanlari-v1.tsv + docs/core-freeze-beyanlari-
 | correctness | 17 |
 | dogfood-change | 26 |
 | maintenance | 41 |
-| security | 11 |
+| security | 12 |
 
-Toplam: 101 compiler değişiklik beyanı, 97 core freeze beyanı.
+Toplam: 102 compiler değişiklik beyanı, 98 core freeze beyanı.
