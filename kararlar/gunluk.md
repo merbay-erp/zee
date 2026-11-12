@@ -5028,3 +5028,21 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   yükseltir (semver uyumlu yama; `Cargo.toml` ve doğrudan bağımlılık
   değişmez). Reddedilen: `deny.toml` ignore (ignore kümesi boş kalır, K-141).
   Compiler kaynağı, grammar, tanı, dil yüzeyi ve spec değişmez (GB-127).
+## K-332 — Reddedilen binary yüklemenin geçici dosyası (12 Kasım 2026)
+
+- K-332 (12.11.2026): zee-cekirdek 1.18.0 ziyaretçiye açık `/basvuru-yukle`
+  rotasını ekledi; uçtan uca sınamada CSRF'siz octet-stream isteği 403 aldı
+  ama tam gövdeli `.parca` diskte kaldı. Kurulu `dil` (24490d6) ile gerçek
+  worker'da beş yol da dosya bıraktı (CSRF yok, sahte oturum, 404, kısa gövde,
+  taşımayan 200: `parça 5`). Gövde yorumlayıcıdaki rota/CSRF denetiminden
+  önce diske aktığı için oturumsuz istemci diski doldurabiliyordu; önem
+  yüksek, aynı dalgada kapandı (GB-129).
+- Karar (ADR-061 eki): geçici dosya isteğe aittir. `AkanYukleme` düşerken
+  kısmi dosyayı, `IstekYuklemesi` koruması istek tamamlanınca ya da geri
+  alınınca tüketilmeyen dosyayı siler. Güvenli olmayan yöntemde CSRF başlığı
+  ya da oturum çerezi yoksa adaptör gövdeyi okumadan 403 döner (yorumlayıcı
+  zaten reddederdi; yok adres 404 yerine 403 alır). Rota tablosunu ve oturum
+  deposunu gövdeden önce çözmek ve geçici yolu istekler arası tutmak
+  reddedildi. spec/26'daki "kısmi dosya silinmek ZORUNDA DEĞİLDİR" maddesi
+  iki ZORUNDA maddesiyle değişti. Grammar, tanı kimliği, dil yüzeyi ve
+  `dil::api::v1` değişmedi.

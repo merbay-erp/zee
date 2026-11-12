@@ -57,3 +57,39 @@ yollarını ayrı bind mount ettiği için aynı disk üzerinde bile rename `EXD
   aygıt sınırı), regression `runtime/aygitlar-arasi-tasima`
   (`native-dosya-exdev` kipi: gerçek `dil` süreci, `medya` tmpfs'e bağ;
   düzeltme öncesi `taşıma reddedildi`).
+
+## Ek — K-332: geçici yükleme dosyası isteğe aittir (12 Kasım 2026)
+
+zee-cekirdek 1.18.0 ziyaretçiye açık CV yükleme rotası (`/basvuru-yukle`)
+ekledi; uçtan uca sınamada CSRF'siz octet-stream isteğinin 403 almasına
+rağmen tam gövdeli `.parca` bıraktığı görüldü. Doğrulamada beş yol da dosya
+bırakıyordu: CSRF/oturum yok, sahte oturum, 404, kısa gövde, rotanın dosyayı
+taşımadan 200 vermesi. Gövde, rota ve güvenlik denetimi yorumlayıcıda
+koşmadan önce diske aktığı için oturumsuz istemci istek başına 16 MiB yetim
+dosya bırakarak diski doldurabiliyordu; temizlik yalnız ürünün açılış
+süpürgesine kalmıştı (GB-129, yüksek).
+
+- **Karar.** Temp spool'un sahibi native adaptör olduğu için silme sözü de
+  onundur. `AkanYukleme` düşerken kısmi dosyayı siler; `tamamla` bir
+  `IstekYuklemesi` koruması döndürür, adaptör onu istek boyunca tutar ve
+  `istek_islemini_tamamla`/`istek_islemini_geri_al` (yedek: sonraki
+  `istek_al`) onu düşürür. Rota dosyayı aynı istekte taşıdıysa yol boştur ve
+  silme etkisizdir; eylem geri alması dosyayı geri getirdiyse silinir.
+- **Ön kapı.** Yorumlayıcı güvenli olmayan her yöntemde CSRF ve oturum ister
+  (`!guvenli()`), bu yüzden `GET`/`HEAD` dışındaki binary yükleme tek ve boş
+  olmayan `X-Zee-CSRF` ile oturum çerezi taşımıyorsa adaptör gövdeyi okumadan
+  403 döner. Belirtecin oturumla karşılaştırılması rota denetiminde kalır;
+  sahte belirteçli istek akar ve istek sonunda silinir. Gözlenebilir fark:
+  böyle bir istek var olmayan adreste 404 yerine 403 alır.
+- **Reddedilen:** rota tablosunu ve oturum deposunu gövdeden önce native
+  katmanda çözmek (yorumlayıcı rota yolu ifadelerini istek anında
+  değerlendirir; güvenlik transaction'ını gövde okumasından önce açmak her
+  okuma hatasında ayrıca geri alma ister), geçici yolu istekler arası
+  tutmak (bilinen tüketici yok; disk sınırı ölçülemez kalır), yalnız açılış
+  süpürgesine güvenmek.
+- **Açık sınır.** Süreç istek ortasında ölürse (ölümcül tanı, sinyal) kalan
+  dosya restart uzlaştırıcısına kalır. Eşzamanlı akan yükleme sayısı bağlantı
+  izni sınırıyla zaten sınırlıdır.
+- **Kanıt:** `web_yukleme` ve `main.rs` birim testleri, regression
+  `security/reddedilen-yukleme-parcasi` (`native-web-yukleme` kipi: gerçek
+  `dil` worker'ı, altı senaryo; düzeltme öncesi `csrf-yok` 400 ve `parça 5`).

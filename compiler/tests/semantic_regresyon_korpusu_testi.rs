@@ -24,6 +24,8 @@ mod native_listener_deadline_fixture;
 mod native_metric_stdio_fixture;
 #[path = "semantic_regresyon/native_web_kopma.rs"]
 mod native_web_kopma_fixture;
+#[path = "semantic_regresyon/native_web_yukleme.rs"]
+mod native_web_yukleme_fixture;
 
 const SEMA: &str = "# zee-semantic-regresyon-2";
 const FAZLAR: &[&str] = &[
@@ -55,6 +57,7 @@ const KIPLER: &[&str] = &[
     "native-metric-stdio",
     "native-web-kopma",
     "native-dosya-exdev",
+    "native-web-yukleme",
 ];
 
 #[derive(Debug, Clone)]
@@ -216,7 +219,12 @@ fn faz_kipi_kabul_eder(faz: &str, kip: &str) -> bool {
         "concurrency" => kip == "run",
         "security" => matches!(
             kip,
-            "capability" | "web" | "smtp" | "native-listener-deadline" | "native-web-kopma"
+            "capability"
+                | "web"
+                | "smtp"
+                | "native-listener-deadline"
+                | "native-web-kopma"
+                | "native-web-yukleme"
         ),
         "cli" => matches!(kip, "cli" | "native-metric-stdio"),
         "lsp" => matches!(kip, "lsp-uri" | "lsp-utf16"),
@@ -302,6 +310,14 @@ fn vakayi_calistir(vaka: &Vaka, kaynak: &str) -> Gozlem {
     }
     if vaka.kip == "native-web-kopma" {
         let (cikis, cikti) = native_web_kopma_fixture::calistir(&depo().join(&vaka.dosya));
+        return Gozlem {
+            tani: None,
+            cikis,
+            cikti,
+        };
+    }
+    if vaka.kip == "native-web-yukleme" {
+        let (cikis, cikti) = native_web_yukleme_fixture::calistir(&depo().join(&vaka.dosya));
         return Gozlem {
             tani: None,
             cikis,
@@ -659,6 +675,7 @@ fn duzeltilmis_semantic_buglar_tani_span_cikis_ve_ciktiyi_korur() {
                 | "native-metric-stdio"
                 | "native-web-kopma"
                 | "native-dosya-exdev"
+                | "native-web-yukleme"
         )
     }) {
         let kaynak = std::fs::read_to_string(depo().join(&vaka.dosya))
@@ -907,5 +924,40 @@ fn native_dosya_exdev_regresyonu_gercek_aygit_siniri_ile_korunur() {
         assert!(gozlem.tani.is_none());
         assert_eq!(gozlem.cikis, vaka.cikis, "{}: çıkış", vaka.ad);
         assert_eq!(gozlem.cikti, vaka.cikti, "{}: taşıma sonucu", vaka.ad);
+    }
+}
+
+#[test]
+fn native_web_yukleme_kipi_yalniz_security_fazina_aittir() {
+    assert!(KIPLER.contains(&"native-web-yukleme"));
+    assert!(faz_kipi_kabul_eder("security", "native-web-yukleme"));
+    for faz in FAZLAR.iter().filter(|faz| **faz != "security") {
+        assert!(!faz_kipi_kabul_eder(faz, "native-web-yukleme"));
+    }
+}
+
+/// K-332: reddedilen ya da tüketilmeyen binary yükleme gerçek native worker'da
+/// `.parca` bırakmaz; taşıyan rota dosyasını bütün olarak korur.
+#[test]
+#[cfg_attr(not(unix), ignore = "actual Unix owned socket capability unavailable")]
+fn native_web_yukleme_regresyonu_gercek_worker_ile_korunur() {
+    let vakalar: Vec<_> = vakalari_oku()
+        .into_iter()
+        .filter(|vaka| vaka.kip == "native-web-yukleme")
+        .collect();
+    assert!(
+        !vakalar.is_empty(),
+        "native web yükleme regresyonu gerçek manifest vakası olmadan geçemez"
+    );
+    for vaka in vakalar {
+        let kaynak = std::fs::read_to_string(depo().join(&vaka.dosya)).expect("fixture kaynağı");
+        let gozlem = vakayi_calistir(&vaka, &kaynak);
+        assert!(gozlem.tani.is_none());
+        assert_eq!(
+            gozlem.cikis, vaka.cikis,
+            "{}: worker ayakta kalmalı",
+            vaka.ad
+        );
+        assert_eq!(gozlem.cikti, vaka.cikti, "{}: yükleme sonucu", vaka.ad);
     }
 }
