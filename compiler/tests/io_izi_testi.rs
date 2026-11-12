@@ -35,6 +35,11 @@ fn dosya_yasam_dongusu_izi_fiziksel_etki_yapmadan_oynatilir() {
         Ok(vec!["temp/orphan.bin".into()])
     );
     let ozet = kaydeden.dosya_sha256("medya/a.bin").unwrap();
+    assert_eq!(
+        kaydeden.dosya_ilk_baytlari("medya/a.bin", 2),
+        Ok("6162".into())
+    );
+    assert!(kaydeden.dosya_ilk_baytlari("yok.bin", 4).is_err());
     assert_eq!(kaydeden.dosya_sil("medya/a.bin"), Ok(1));
     let iz = kaydeden.iz_metni().unwrap();
 
@@ -48,6 +53,11 @@ fn dosya_yasam_dongusu_izi_fiziksel_etki_yapmadan_oynatilir() {
         Ok(vec!["temp/orphan.bin".into()])
     );
     assert_eq!(oynatici.dosya_sha256("medya/a.bin"), Ok(ozet));
+    assert_eq!(
+        oynatici.dosya_ilk_baytlari("medya/a.bin", 2),
+        Ok("6162".into())
+    );
+    assert!(oynatici.dosya_ilk_baytlari("yok.bin", 4).is_err());
     assert_eq!(oynatici.dosya_sil("medya/a.bin"), Ok(1));
     oynatici.bitir().unwrap();
 }

@@ -62,3 +62,4 @@ canlı dağıtım ve otomatik parola göçü bu işte yapılmaz.
 
 | RFC-0034 | [Ekli e-posta](0034-ekli-eposta.md) | **kabul** (K-232) |
 | RFC-0035 | [Web rotasında çalışma hatası yalıtımı ve operatör günlüğü](0035-web-rota-hata-yalitimi.md) | **geçici kabul** (K-324; ADR-157) |
+| RFC-0036 | [Yüklenen dosyanın ilk baytlarını onaltılık okuma](0036-dosya-imzasi-okuma.md) | **kabul** (K-333; ADR-159) |

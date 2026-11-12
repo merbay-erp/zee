@@ -41,6 +41,7 @@ kaynak dosyasını hedef yoluna atomik taşımayı dene
 yol dosyasını silmeyi dene
 dizin yolundaki dosyaları listelemeyi dene
 yol dosyasının sha256 özetini almayı dene
+yol dosyasının ilk N baytını onaltılık okumayı dene
 ```
 
 İlk iki ifade `TamSayı sonucu`, listeleme `Metin listesi sonucu`, özetleme
@@ -61,6 +62,16 @@ silinir ve kaynak korunur, kaynak silinemezse yayımlanan hedef geri çekilir.
 EXDEV dışındaki arızalar ve no-clobber reddi bugünkü C013 sonucunu verir.
 Geri düşüş kopya maliyetini taşır; yükleme dizini ile hedefi aynı bağlama
 altında tutmak hızlı yoldur.
+
+K-333 (RFC-0036, ADR-159) uyarınca imza okuması dosyanın ilk N baytını
+küçük harf, ayraçsız onaltılık `Metin sonucu` olarak verir; dosya daha
+kısaysa olan kadarını, boş dosyada `""` döndürür. N TamSayı olmak
+ZORUNDADIR (aksi T034 tür hatası) ve 1 ile 64 arasında olmak ZORUNDADIR;
+dışındaki değer dosyaya dokunmadan C013 başarısız Sonuç verir. Yol kuralı
+özetlemeyle aynıdır; normal dosya olmayan hedef C013 ile reddedilir. Okuma
+`dosya-okuma` yetkinliğine bağlıdır ve IO izinde `dosya_ilk_baytlari` olayı
+exact yol + N argümanıyla yer alır. İmza eşleşmesi içeriğin zararsız olduğunu
+kanıtlamaz; tür tablosu ve karşılaştırma ürünün sorumluluğundadır.
 
 Bu işlemler sırasıyla `dosya-yazma`/`dosya-okuma` yetkinliklerine bağlıdır,
 IO trace/replay'de exact argüman ve sonuçla yer alır ve eylem savepoint'ini

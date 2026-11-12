@@ -212,6 +212,19 @@ impl GirdiCikti for ToplayanIo {
             .ok_or_else(|| format!("\"{}\" dosyası bulunamadı", yol))?;
         Ok(crate::guvenlik::sha256_hex(icerik.as_bytes()))
     }
+    fn dosya_ilk_baytlari(&mut self, yol: &str, adet: i64) -> Result<String, String> {
+        let icerik = self
+            .dosyalar
+            .get(yol)
+            .ok_or_else(|| format!("\"{}\" dosyası bulunamadı", yol))?;
+        let adet = usize::try_from(adet).unwrap_or(0);
+        Ok(icerik
+            .as_bytes()
+            .iter()
+            .take(adet)
+            .map(|bayt| format!("{bayt:02x}"))
+            .collect())
+    }
     fn simdi(&mut self) -> (i64, u32, u32, u32, u32) {
         self.zaman
     }
