@@ -18,6 +18,15 @@ pub(super) fn intrinsic_degerlendir(
             .dosyalari_listele(dizin)
             .map(|yollar| Deger::Liste(yollar.into_iter().map(Deger::Metin).collect())),
         (DOSYA_SHA256, [Deger::Metin(yol)]) => io.dosya_sha256(yol).map(Deger::Metin),
+        (DOSYA_ILK_BAYTLAR, [Deger::Metin(yol), Deger::TamSayi(adet)]) => {
+            if (1..=DOSYA_ILK_BAYT_SINIRI).contains(adet) {
+                io.dosya_ilk_baytlari(yol, *adet).map(Deger::Metin)
+            } else {
+                Err(format!(
+                    "okunacak bayt sayısı 1 ile {DOSYA_ILK_BAYT_SINIRI} arasında olmalı; {adet} verildi"
+                ))
+            }
+        }
         _ => return Err(ic_hata(satir)),
     };
     Ok(match sonuc {

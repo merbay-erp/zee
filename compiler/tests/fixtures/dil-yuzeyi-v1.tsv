@@ -2,6 +2,7 @@
 # yuzey	oge	durum	giris	kaynak	kayit
 abi	wasm	aktif	0.8.0-dev	compiler/src/wasm_api/abi.rs	pub const DIL_ABI_SURUMU: u32 = 3;
 api	db.response_frame_limit	aktif	0.8.0-dev	compiler/src/postgresql.rs	"db.response_frame_limit"
+api	dosya.ilk_baytlar	aktif	1.0.0-dev	compiler/src/intrinsic.rs	pub const DOSYA_ILK_BAYTLAR: &str = "dosya.ilk_baytlar";
 api	gorsel.kucult	aktif	0.8.0-dev	compiler/src/intrinsic.rs	pub const GORSEL_KUCULT: &str = "gorsel.kucult";
 api	guvenlik.gizli_coz	aktif	0.8.0-dev	compiler/src/intrinsic.rs	pub const GIZLI_COZ: &str = "guvenlik.gizli_coz";
 api	guvenlik.gizli_sifrele	aktif	0.8.0-dev	compiler/src/intrinsic.rs	pub const GIZLI_SIFRELE: &str = "guvenlik.gizli_sifrele";
@@ -11,6 +12,7 @@ api	guvenlik.totp_dogrula	aktif	0.8.0-dev	compiler/src/intrinsic.rs	pub const TO
 api	iletisim.eposta_gonder	aktif	0.8.0-dev	compiler/src/intrinsic.rs	pub const EPOSTA_GONDER: &str = "iletisim.eposta_gonder";
 api	iletisim.eposta_gonder_baglantili	aktif	0.8.0-dev	compiler/src/intrinsic.rs	pub const EPOSTA_GONDER_BAGLANTILI: &str = "iletisim.eposta_gonder_baglantili";
 api	iletisim.eposta_mime_gonder	aktif	0.8.0-dev	compiler/src/intrinsic.rs	pub const EPOSTA_MIME_GONDER: &str = "iletisim.eposta_mime_gonder";
+api	io-izi.dosya_ilk_baytlari	aktif	1.0.0-dev	compiler/src/yorumlayici/io_izi.rs	"dosya_ilk_baytlari"
 api	io-izi.eposta_gonder	aktif	0.8.0-dev	compiler/src/yorumlayici/io_izi.rs	"eposta_gonder"
 api	io-izi.gizli_coz	aktif	0.8.0-dev	compiler/src/yorumlayici/io_izi.rs	"gizli_coz"
 api	io-izi.gizli_sifrele	aktif	0.8.0-dev	compiler/src/yorumlayici/io_izi.rs	"gizli_sifrele"
@@ -160,6 +162,7 @@ kalip	olduğu	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	olmalı	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	olmamalı	aktif	0.7.0	compiler/src/lsp.rs	-
 kalip	olsun	aktif	0.7.0	compiler/src/lsp.rs	-
+kalip	onaltılık	aktif	1.0.0-dev	compiler/src/lsp.rs	-
 kalip	ortam	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	oturum	aktif	0.8.0-dev	compiler/src/lsp.rs	-
 kalip	paketini	aktif	0.8.0-dev	compiler/src/lsp.rs	-

@@ -83,8 +83,8 @@ kılar. Clippy ölçümü sabit Rust araç zinciriyle üretim `lib` ve `dil` iki
 | `compiler/src/yorumlayici.rs::gorevleri_calistir#1` | 136→136 (+0/+14) | 2→2 (+0/+2) | SABİT |
 | `compiler/src/yorumlayici.rs::json_nesnesi_ayristir#1` | 96→96 (+0/+10) | 8→8 (+0/+2) | SABİT |
 | `compiler/src/yorumlayici/cumle.rs::blok_calistir_async#1` | 815→828 (+13/+24) | 1→1 (+0/+2) | PAY İÇİNDE |
-| `compiler/src/yorumlayici/ifade.rs::degerlendir_async#1` | 850→835 (-15/+24) | 1→1 (+0/+2) | İYİLEŞTİ |
-| `compiler/src/yorumlayici/io_izi.rs::olay_semasini_denetle#1` | 149→152 (+3/+15) | 20→20 (+0/+4) | PAY İÇİNDE |
+| `compiler/src/yorumlayici/ifade.rs::degerlendir_async#1` | 850→836 (-14/+24) | 1→1 (+0/+2) | İYİLEŞTİ |
+| `compiler/src/yorumlayici/io_izi.rs::olay_semasini_denetle#1` | 149→159 (+10/+15) | 20→20 (+0/+4) | PAY İÇİNDE |
 | `compiler/src/yorumlayici/kaynak.rs::deger_heap_bayti#1` | 101→101 (+0/+11) | 8→8 (+0/+2) | SABİT |
 | `compiler/src/yorumlayici/kimlik_iletisim.rs::intrinsic_degerlendir#1` | 125→125 (+0/+13) | 4→4 (+0/+2) | SABİT |
 | `compiler/src/yorumlayici/web_istek.rs::web_istegini_calistir#1` | 113→114 (+1/+12) | 9→9 (+0/+2) | PAY İÇİNDE |

@@ -26,7 +26,11 @@ fn intrinsic_kaydi_kimlik_yetkinlik_ve_etkiyi_tekillestirir() {
         .map(|tanim| tanim.kimlik)
         .collect::<HashSet<_>>();
     assert_eq!(kimlikler.len(), intrinsic::TANIMLAR.len());
-    assert_eq!(kimlikler.len(), 25);
+    assert_eq!(kimlikler.len(), 26);
+    let imza = intrinsic::tanim(intrinsic::DOSYA_ILK_BAYTLAR).expect("K-333 imza kaydı");
+    assert_eq!(imza.yetkinlik, Yetkinlik::DosyaOkuma);
+    assert_eq!(imza.etki, IntrinsicEtkisi::DisOkuma);
+    assert_eq!(intrinsic::DOSYA_ILK_BAYT_SINIRI, 64);
 
     for (kimlik, etki) in [
         (intrinsic::HTTP_ISTEK, IntrinsicEtkisi::GeriAlinamaz),

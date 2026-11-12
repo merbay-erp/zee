@@ -58,6 +58,7 @@ fn gecerli_islem(islem: &str) -> bool {
             | "dosya_sil"
             | "dosyalari_listele"
             | "dosya_sha256"
+            | "dosya_ilk_baytlari"
             | "postgresql_oku"
             | "postgresql_degistir"
             | "simdi"
@@ -190,6 +191,13 @@ fn olay_semasini_denetle(olay: &IzOlay) -> Result<(), String> {
         "dosya_sil" => tamsayi_sonuc_semasi(olay, 1),
         "dosyalari_listele" => metin_listesi_sonuc_semasi(olay, 1),
         "dosya_sha256" => metin_sonuc_semasi(olay, 1),
+        "dosya_ilk_baytlari" => {
+            metin_sonuc_semasi(olay, 2)?;
+            olay.argumanlar[1]
+                .parse::<i64>()
+                .map(|_| ())
+                .map_err(|_| "`dosya_ilk_baytlari` bayt sayısı tam sayı olmalı".into())
+        }
         "postgresql_oku" | "postgresql_degistir" => {
             if olay.argumanlar.is_empty() {
                 return Err("PostgreSQL izi sorgu argümanı taşımalı".into());
@@ -454,6 +462,16 @@ impl<T: GirdiCikti> GirdiCikti for IzKaydedenIo<T> {
     fn dosya_sha256(&mut self, yol: &str) -> Result<String, String> {
         let sonuc = self.ic.dosya_sha256(yol);
         self.kaydet("dosya_sha256", vec![yol.into()], metin_sonuc_yaz(&sonuc));
+        sonuc
+    }
+
+    fn dosya_ilk_baytlari(&mut self, yol: &str, adet: i64) -> Result<String, String> {
+        let sonuc = self.ic.dosya_ilk_baytlari(yol, adet);
+        self.kaydet(
+            "dosya_ilk_baytlari",
+            vec![yol.into(), adet.to_string()],
+            metin_sonuc_yaz(&sonuc),
+        );
         sonuc
     }
 

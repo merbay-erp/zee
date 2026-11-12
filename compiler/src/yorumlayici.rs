@@ -50,11 +50,11 @@ use crate::agac::{
     AritmetikIslec, Cumle, HttpYontemi, Ifade, Islec, IslemTuru, Ozellik, Program, RotaErisimi,
 };
 use crate::intrinsic::{
-    self, CSRF_BELIRTECI, DOSYALARI_LISTELE, DOSYA_ATOMIK_TASI, DOSYA_SHA256, DOSYA_SIL,
-    EPOSTA_GONDER, EPOSTA_GONDER_BAGLANTILI, EPOSTA_MIME_GONDER, GIZLI_COZ, GIZLI_SIFRELE,
-    GORSEL_KUCULT, HTTP_GETIR, ISTEMCI_ADRESI, PAROLA_DOGRULA, PAROLA_OZETI, POSTGRESQL_DEGISTIR,
-    POSTGRESQL_OKU, SENSOR_ACIK_MI, TOTP_ANAHTARI, TOTP_DOGRULA, WEB_OTURUMLARINI_LISTELE,
-    WEB_OTURUMUNU_IPTAL_ET,
+    self, CSRF_BELIRTECI, DOSYALARI_LISTELE, DOSYA_ATOMIK_TASI, DOSYA_ILK_BAYTLAR,
+    DOSYA_ILK_BAYT_SINIRI, DOSYA_SHA256, DOSYA_SIL, EPOSTA_GONDER, EPOSTA_GONDER_BAGLANTILI,
+    EPOSTA_MIME_GONDER, GIZLI_COZ, GIZLI_SIFRELE, GORSEL_KUCULT, HTTP_GETIR, ISTEMCI_ADRESI,
+    PAROLA_DOGRULA, PAROLA_OZETI, POSTGRESQL_DEGISTIR, POSTGRESQL_OKU, SENSOR_ACIK_MI,
+    TOTP_ANAHTARI, TOTP_DOGRULA, WEB_OTURUMLARINI_LISTELE, WEB_OTURUMUNU_IPTAL_ET,
 };
 use crate::ondalik::Ondalik;
 use crate::tani::Tani;
@@ -366,6 +366,11 @@ pub trait GirdiCikti {
     fn dosya_sha256(&mut self, _yol: &str) -> Result<String, String> {
         Err("IO adaptörü dosya özetlemeyi desteklemiyor".into())
     }
+    /// K-331: dosyanın ilk `adet` (1..=64) baytını küçük harf onaltılık verir;
+    /// dosya daha kısaysa olan kadarını.
+    fn dosya_ilk_baytlari(&mut self, _yol: &str, _adet: i64) -> Result<String, String> {
+        Err("IO adaptörü dosya imzası okumayı desteklemiyor".into())
+    }
     /// Şimdiki zaman: (yıl, ay, gün, saat, dakika). v0'da UTC.
     fn simdi(&mut self) -> (i64, u32, u32, u32, u32);
     /// Komut satırı argümanları (programa aktarılanlar).
@@ -579,6 +584,9 @@ impl GirdiCikti for PaylasilanIo<'_> {
     }
     fn dosya_sha256(&mut self, yol: &str) -> Result<String, String> {
         self.ic.borrow_mut().dosya_sha256(yol)
+    }
+    fn dosya_ilk_baytlari(&mut self, yol: &str, adet: i64) -> Result<String, String> {
+        self.ic.borrow_mut().dosya_ilk_baytlari(yol, adet)
     }
     fn simdi(&mut self) -> (i64, u32, u32, u32, u32) {
         self.ic.borrow_mut().simdi()

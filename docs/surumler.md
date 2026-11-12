@@ -5,6 +5,35 @@
 Her sürüm: ne eklendi, ne değişti, neyin sözü verildi. Kırıcı değişiklik
 sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 
+## 12 Kasım 2026 — Geliştirme güncellemeleri
+
+**Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
+Bu kayıt yeni sürüm etiketi değildir.
+
+### Eklenenler
+
+- **Yüklenen dosyanın içerik imzası okunabilir (K-333, ADR-159,
+  RFC-0036):** Web'den yüklenen bir dosyanın gerçekten bildirilen türde
+  olup olmadığı (ör. `.pdf` uzantılı dosyanın `%PDF-` ile başlaması) artık
+  kabul anında denetlenebilir:
+
+  ```text
+  imza yol dosyasının ilk 5 baytını onaltılık okumayı dene olsun
+  ```
+
+  Sonuç `Metin sonucu`dur: dosyanın ilk N baytı küçük harf onaltılık
+  (`%PDF-` → `"255044462d"`); dosya daha kısaysa olan kadarı. N 1 ile 64
+  arasında olmalıdır. `dosya-okuma` yetkinliği gerekir; yol kuralları
+  `sha256 özetini almayı dene` ile aynıdır. Sınır dışı sayı, bulunmayan ya da
+  normal olmayan dosya ve proje sınırı reddi C013 başarısız Sonuç verir.
+  İmza eşleşmesi dosyanın zararsız olduğunu kanıtlamaz.
+
+### Uyumluluk ve göç
+
+Yeni ifadedir; mevcut programlar değişmez. Kullanan program eski derleyicide
+S004 ile reddedilir; önce derleyiciyi yükseltin. Yeni kalıp kelimesi:
+`onaltılık`.
+
 ## 28 Ekim 2026 — Geliştirme güncellemeleri
 
 **Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
