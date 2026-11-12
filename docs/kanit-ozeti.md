@@ -41,10 +41,10 @@ Kaynak: `docs/guvenlik-bulgulari-v1.tsv`
 | kritik | 1 | 0 | 0 | 1 |
 | yuksek | 17 | 0 | 0 | 17 |
 | orta | 34 | 16 | 1 | 51 |
-| dusuk | 29 | 30 | 1 | 60 |
+| dusuk | 30 | 30 | 1 | 61 |
 
 Kapı: açık kritik/yüksek bulgu 0 → **GEÇTİ** (ADR-066 sürekli kapı koşulu).
-Toplam bulgu: 129.
+Toplam bulgu: 130.
 
 ## Spec maddeleri
 
@@ -77,12 +77,12 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | spec/23-yetkinlik-ve-outbound-guvenligi.md | 26 | 0 | 0 | 26 | 100 |
 | spec/24-kaynak-guvenlik-profili.md | 9 | 0 | 0 | 9 | 100 |
 | spec/25-postgresql-veri-erisimi.md | 7 | 1 | 1 | 9 | 77 |
-| spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md | 4 | 0 | 0 | 4 | 100 |
+| spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md | 5 | 0 | 0 | 5 | 100 |
 | spec/27-uyumluluk-ve-surumleme.md | 11 | 1 | 1 | 13 | 84 |
 | spec/28-gorunum-blogu.md | 2 | 0 | 0 | 2 | 100 |
 | spec/29-test-kapsami.md | 5 | 0 | 0 | 5 | 100 |
 | spec/30-editor-analizi-ve-lint.md | 12 | 0 | 1 | 13 | 92 |
-| **Toplam** | 234 | 5 | 3 | 242 | 96 |
+| **Toplam** | 235 | 5 | 3 | 243 | 96 |
 
 ## Dogfood ürünleri ve korpusu
 
@@ -107,10 +107,10 @@ Kaynak: `docs/dogfood-projeleri-v1.tsv + dogfood/korpus-v1.tsv`
 | urun-e | 1 | 0 | 0 | 1 | 0 | 1 |
 | urun-g | 1 | 0 | 0 | 1 | 0 | 1 |
 | zeedili-com | 0 | 0 | 1 | 1 | 0 | 1 |
-| zee-cekirdek | 10 | 1 | 5 | 16 | 0 | 16 |
+| zee-cekirdek | 11 | 1 | 5 | 17 | 0 | 17 |
 | zee-erp | 2 | 0 | 0 | 2 | 0 | 2 |
 
-Toplam korpus vakası: 58.
+Toplam korpus vakası: 59.
 
 ## Deprecation kayıtları
 
@@ -143,16 +143,16 @@ Kaynak: `docs/compiler-degisiklik-beyanlari-v1.tsv + docs/core-freeze-beyanlari-
 
 | Değişiklik sınıfı | Beyan |
 | --- | --- |
-| maintenance | 44 |
+| maintenance | 45 |
 | semantic-bugfix | 12 |
-| semantic-change | 46 |
+| semantic-change | 47 |
 
 | Freeze sınıfı | Beyan |
 | --- | --- |
 | bugfix | 2 |
 | correctness | 17 |
-| dogfood-change | 26 |
-| maintenance | 41 |
+| dogfood-change | 27 |
+| maintenance | 42 |
 | security | 12 |
 
-Toplam: 102 compiler değişiklik beyanı, 98 core freeze beyanı.
+Toplam: 104 compiler değişiklik beyanı, 100 core freeze beyanı.

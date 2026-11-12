@@ -10,6 +10,24 @@ sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 **Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
 Bu kayıt yeni sürüm etiketi değildir.
 
+### Eklenenler
+
+- **Yüklenen dosyanın içerik imzası okunabilir (K-333, ADR-159,
+  RFC-0036):** Web'den yüklenen bir dosyanın gerçekten bildirilen türde
+  olup olmadığı (ör. `.pdf` uzantılı dosyanın `%PDF-` ile başlaması) artık
+  kabul anında denetlenebilir:
+
+  ```text
+  imza yol dosyasının ilk 5 baytını onaltılık okumayı dene olsun
+  ```
+
+  Sonuç `Metin sonucu`dur: dosyanın ilk N baytı küçük harf onaltılık
+  (`%PDF-` → `"255044462d"`); dosya daha kısaysa olan kadarı. N 1 ile 64
+  arasında olmalıdır. `dosya-okuma` yetkinliği gerekir; yol kuralları
+  `sha256 özetini almayı dene` ile aynıdır. Sınır dışı sayı, bulunmayan ya da
+  normal olmayan dosya ve proje sınırı reddi C013 başarısız Sonuç verir.
+  İmza eşleşmesi dosyanın zararsız olduğunu kanıtlamaz.
+
 ### Düzeltilenler
 
 - **Reddedilen dosya yüklemeleri artık diskte iz bırakmaz (K-332,
@@ -25,11 +43,14 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Uyumluluk ve göç
 
-Sözdizimi, tanı kimliği ve sınır değerleri değişmedi. `yukleme_gecici_yolu`
+K-332: sözdizimi, tanı kimliği ve sınır değerleri değişmedi. `yukleme_gecici_yolu`
 yalnız geldiği istek içinde geçerlidir: dosyayı sonraki bir isteğe saklayan
 rota (bilinen bir kullanım yok) aynı istekte kalıcı bir yola taşımalıdır.
 CSRF başlığı ya da oturum çerezi olmadan yapılan yükleme, adres var olmasa
 bile artık `404` yerine `403` alır.
+K-333: yeni ifadedir; mevcut programlar değişmez. Kullanan program eski derleyicide
+S004 ile reddedilir; önce derleyiciyi yükseltin. Yeni kalıp kelimesi:
+`onaltılık`.
 
 ## 28 Ekim 2026 — Geliştirme güncellemeleri
 

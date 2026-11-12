@@ -3026,6 +3026,34 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         let ozet = ozet.finalize();
         Ok(ozet.iter().map(|bayt| format!("{bayt:02x}")).collect())
     }
+    fn dosya_ilk_baytlari(&mut self, yol: &str, adet: i64) -> Result<String, String> {
+        use std::io::Read;
+
+        self.politika
+            .gerektir(dil::yetkinlik::Yetkinlik::DosyaOkuma)?;
+        // Yorumlayıcı aralığı IO'dan önce denetler; adaptör sınırı (K-333,
+        // intrinsic::DOSYA_ILK_BAYT_SINIRI) ikinci kez fail-closed tutar.
+        let adet = usize::try_from(adet)
+            .ok()
+            .filter(|adet| (1..=64).contains(adet))
+            .ok_or_else(|| "okunacak bayt sayısı 1 ile 64 arasında olmalı".to_string())?;
+        let gercek_yol = self.dosya_yolu(yol, false)?;
+        let dosya = std::fs::File::open(&gercek_yol)
+            .map_err(|hata| format!("\"{}\" dosyası açılamadı: {}", yol, hata))?;
+        if !dosya
+            .metadata()
+            .map_err(|hata| format!("\"{}\" dosyası okunamadı: {}", yol, hata))?
+            .is_file()
+        {
+            return Err(format!("\"{}\" normal dosya değil", yol));
+        }
+        let mut baytlar = Vec::with_capacity(adet);
+        dosya
+            .take(adet as u64)
+            .read_to_end(&mut baytlar)
+            .map_err(|hata| format!("\"{}\" dosyası okunamadı: {}", yol, hata))?;
+        Ok(baytlar.iter().map(|bayt| format!("{bayt:02x}")).collect())
+    }
     fn simdi(&mut self) -> (i64, u32, u32, u32, u32) {
         // v0: UTC. Yerel saat dilimi desteği stdlib Zaman modülüyle gelecek.
         let saniye = std::time::SystemTime::now()

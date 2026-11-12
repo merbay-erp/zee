@@ -25,6 +25,11 @@ pub const DOSYA_ATOMIK_TASI: &str = "dosya.atomik_tasi";
 pub const DOSYA_SIL: &str = "dosya.sil";
 pub const DOSYALARI_LISTELE: &str = "dosya.listele";
 pub const DOSYA_SHA256: &str = "dosya.sha256";
+/// K-331: `<yol> dosyasının ilk <N> baytını onaltılık okumayı dene` — 1..=64 baytlık
+/// salt-okur içerik imzası (küçük harf hex) → Metin Sonucu.
+pub const DOSYA_ILK_BAYTLAR: &str = "dosya.ilk_baytlar";
+/// K-331: imza okumasının sabit üst sınırı (bayt).
+pub const DOSYA_ILK_BAYT_SINIRI: i64 = 64;
 /// K-210: `<alıcı> <konu> <gövde> ile ileti göndermeyi dene` — SMTP e-posta.
 pub const EPOSTA_GONDER: &str = "iletisim.eposta_gonder";
 /// K-210 eki: `<alıcı> <konu> <gövde> ile <bağlantı> üzerinden ileti göndermeyi dene` —
@@ -84,6 +89,7 @@ pub struct IntrinsicTanimi {
 const METIN: &[IntrinsicTuru] = &[IntrinsicTuru::Metin];
 const IKI_METIN: &[IntrinsicTuru] = &[IntrinsicTuru::Metin, IntrinsicTuru::Metin];
 const YOK: &[IntrinsicTuru] = &[];
+const METIN_VE_SAYI: &[IntrinsicTuru] = &[IntrinsicTuru::Metin, IntrinsicTuru::TamSayi];
 const METIN_VE_METIN_LISTESI: &[IntrinsicTuru] =
     &[IntrinsicTuru::Metin, IntrinsicTuru::MetinListesi];
 const UC_METIN: &[IntrinsicTuru] = &[
@@ -260,6 +266,14 @@ pub const TANIMLAR: &[IntrinsicTanimi] = &[
         donus_turu: IntrinsicTuru::MetinSonucu,
         etki: IntrinsicEtkisi::DisOkuma,
         tur_hatasi: "Özetlenecek dosya yolu Metin olmalı.",
+    },
+    IntrinsicTanimi {
+        kimlik: DOSYA_ILK_BAYTLAR,
+        yetkinlik: Yetkinlik::DosyaOkuma,
+        arguman_turleri: METIN_VE_SAYI,
+        donus_turu: IntrinsicTuru::MetinSonucu,
+        etki: IntrinsicEtkisi::DisOkuma,
+        tur_hatasi: "Okunacak dosya yolu Metin, bayt sayısı TamSayı olmalı.",
     },
     IntrinsicTanimi {
         kimlik: EPOSTA_GONDER,

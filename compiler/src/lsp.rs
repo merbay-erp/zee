@@ -33,7 +33,7 @@ pub const AZAMI_LSP_JSON_DUGUMU: usize = crate::kaynak_sinirlari::VARSAYILAN_KAY
 // ---------- sunucu ----------
 
 /// Tamamlama önerileri: dilin kalıp kelimeleri (kaynağı: ayrıştırıcı yüzeyi).
-const KALIP_KELIMELERI: [&str; 111] = [
+const KALIP_KELIMELERI: [&str; 112] = [
     "yaz",
     "olsun",
     "ise",
@@ -145,12 +145,13 @@ const KALIP_KELIMELERI: [&str; 111] = [
     "görselini",
     "piksele",
     "küçültmeyi",
+    "onaltılık",
 ];
 
 /// Hover açıklamaları: kalıp kelimesi → tek satır Türkçe açıklama + örnek.
 /// (Kaynak: spec/02-dizim ve dil turu; kelime kalıbın son ya da ayırt edici
 /// parçasıdır.)
-const KELIME_ACIKLAMALARI: [(&str, &str); 61] = [
+const KELIME_ACIKLAMALARI: [(&str, &str); 62] = [
     ("yaz", "Cümleyi bitirir: değeri ekrana (ya da `X dosyasına`) yazar.\n\n`\"Merhaba\" ile isim yaz`"),
     ("olsun", "Ad tanımlar ya da var olan ada atar; tür ilk değerden çıkar ve sonra değişmez.\n\n`yaş 10 olsun`"),
     ("ise", "Koşul dalı açar; koşul yüklem-sonludur (`...se/...sa`).\n\n`yaş 8 veya daha büyükse`"),
@@ -211,6 +212,7 @@ const KELIME_ACIKLAMALARI: [(&str, &str); 61] = [
     ("rotalarını", "Birimin üst düzey rotalarını bu satırın yerine, kendi sırasıyla ana programa katar (rota birimleri; büyük ana.dil'i bölmek için). Birimin tanımları da alınır.\n\n`panel_guvenlik rotalarını kullan`"),
     ("şifrelenmişi", "Gizli değeri XChaCha20-Poly1305 ile şifreler (kriptografi yetkinliği + `gizli_anahtar_değişkeni`); çıktı `zee1:` metnidir, veritabanında saklanabilir.\n\n`sifreli parolanın gizli şifrelenmişi olsun`"),
     ("çözmeyi", "`zee1:` metnini gizli anahtarla çözer; anahtar farklı ya da veri bozuksa başarısız Sonuç.\n\n`sonuç sifreli gizli çözmeyi dene olsun`"),
+    ("onaltılık", "Dosyanın ilk 1–64 baytını küçük harf onaltılık Metin Sonucu olarak okur (dosya-okuma); içerik imzası denetimi içindir, dosya daha kısaysa olan kadar.\n\n`imza yol dosyasının ilk 8 baytını onaltılık okumayı dene olsun`"),
     ("küçültmeyi", "Görseli azami kenara küçültüp .jpg/.png/.webp olarak yazar; büyütmez.\n\n`sonuç kaynak görselini hedef dosyasına 1600 piksele küçültmeyi dene olsun`"),
 ];
 

@@ -5046,3 +5046,18 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   reddedildi. spec/26'daki "kısmi dosya silinmek ZORUNDA DEĞİLDİR" maddesi
   iki ZORUNDA maddesiyle değişti. Grammar, tanı kimliği, dil yüzeyi ve
   `dil::api::v1` değişmedi.
+
+## K-333 — Yüklenen dosyanın ilk baytlarını okuma (12 Kasım 2026)
+
+- K-333 (12.11.2026): zee-cekirdek 1.18.0 (`e8beb39`) oturumsuz kariyer
+  başvurusu CV'nin bildirilen türde olduğunu (PDF/OLE/ZIP sihirli bayt) kabul
+  anında denetlemek istedi; spec/26 yalnız taşı/sil/listele/sha256 veriyordu,
+  metin okuma ikili dosyada başarısızdı. Core freeze altında dogfood-change:
+  tek contextual kalıp `ilk N baytını onaltılık okumayı dene` (yeni kalıp
+  kelimesi `onaltılık`), Metin Sonucu, 1–64 bayt, `dosya-okuma`, sha256 ile
+  aynı yol sınırı, normal dosya dışı ret, C013, IO izi. Reddedilen: içerik
+  türü (MIME) döndüren ifade (tür tablosu dilin sözü olur, spec/26 içerik
+  türü doğrulamasını kapsam dışı tutar), genel ikili okuma/Bayt türü, sabit
+  uzunluk. K-174 syntax penceresi 11 Kasım'da sıfır değişiklikle dolmuştu;
+  kalıp pencere sonrası eklendi, freeze özeti güncellendi (ADR-159,
+  RFC-0036, GB-130). Ürün adı ADR-087 gereği anonimdir.

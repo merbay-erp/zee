@@ -2453,3 +2453,17 @@ başlığı ve oturum çerezi olmadan gövde okunmadan 403 alır. Kanıt:
 `web_yukleme`/`main.rs` birim testleri, regression
 `reddedilen-yukleme-parcasi` (`native-web-yukleme`). Açık: süreç istek
 ortasında ölürse orphan restart uzlaştırıcısına kalır.
+
+## K-333 — Yüklenen dosyanın ilk baytlarını okuma (içerik imzası)
+
+**Durum: KAPALI.** ADR-159/RFC-0036: zee-cekirdek (exact `e8beb39`)
+oturumsuz CV yükleme rotası imzayı kabul anında denetleyemiyordu; dilde ikili
+bayt okunamıyordu. `yol dosyasının ilk N baytını onaltılık okumayı dene` →
+`Metin sonucu` (küçük harf, 1 ≤ N ≤ 64, dosya kısaysa olan kadar,
+`dosya-okuma`, sha256 ile aynı yol sınırı, C013, IO izi
+`dosya_ilk_baytlari`). İçerik türü döndüren alternatif tür listesini dilin
+sözü yapacağı için reddedildi (GB-130). Kanıt: `proje_testi::dosya_imzasi_*`,
+`dosya_yasam_dongusu_testi::ilk_baytlar_*`, `io_izi_testi`, dogfood
+`zee-cekirdek/dosya-imzasi`. Açık: ürün rotasının bağlanması ve
+`basvuru_e2e.sh` 415 adımı ürün tarafında; tam gövdeli CSRF reddinin `.parca`
+bırakması K-332'de kapandı.

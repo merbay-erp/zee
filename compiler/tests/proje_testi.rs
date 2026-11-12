@@ -1121,3 +1121,93 @@ fn oturum_omru_sinir_disi_tur_ve_yetkinlik_hatalari_tani_verir() {
     assert_eq!(tani.kod, "P015");
     assert!(tani.mesaj.contains("web-oturumu"));
 }
+
+/// K-331: gerçek IO adaptörü ilk baytları ikili dosyadan okur; proje dosya
+/// sınırı, üst sınır ve yetkinlik `sha256 özetini almayı dene` ile aynıdır.
+#[cfg(unix)]
+#[test]
+fn dosya_imzasi_gercek_ikili_dosyada_sinirli_ve_proje_kokunde_okunur() {
+    let gecici = GeciciKlasor::yeni();
+    let uygulama = gecici.yol().join("uygulama");
+    std::fs::create_dir_all(uygulama.join(".zee/yuklemeler")).unwrap();
+    std::fs::write(gecici.yol().join("gizli.bin"), b"%PDF-gizli").unwrap();
+    std::os::unix::fs::symlink("../gizli.bin", uygulama.join("kacis.pdf")).unwrap();
+    std::fs::write(
+        uygulama.join(".zee/yuklemeler/cv.parca"),
+        b"%PDF-1.7\n\xff\xfe\x00binary",
+    )
+    .unwrap();
+    std::fs::write(uygulama.join("kisa.bin"), [0xd0u8, 0xcf]).unwrap();
+    std::fs::write(uygulama.join("buyuk.bin"), vec![0xabu8; 200]).unwrap();
+    let bildirim = |yetkinlik: &str| {
+        format!("proje \"uygulama\" olsun\nsürüm \"1.0.0\" olsun\ngiriş \"ana.dil\" olsun\nyetkinlikler {yetkinlik} listesi olsun\n")
+    };
+    std::fs::write(uygulama.join("proje.dil"), bildirim("\"dosya-okuma\"")).unwrap();
+    std::fs::write(
+        uygulama.join("ana.dil"),
+        r#"işlem imzaYaz
+    yolu Metin olarak al
+    adedi TamSayı olarak al
+    değer döndürmez
+    sonuç yolu dosyasının ilk adedi baytını onaltılık okumayı dene olsun
+    sonuç başarılıysa
+        sonucun değeri yaz
+    değilse
+        hata sonucun hatası olsun
+        hatanın kodu yaz
+        hatanın mesajı yaz
+
+".zee/yuklemeler/cv.parca" ve 8 ile imzaYaz
+".zee/yuklemeler/cv.parca" ve 12 ile imzaYaz
+"kisa.bin" ve 8 ile imzaYaz
+"buyuk.bin" ve 64 ile imzaYaz
+"buyuk.bin" ve 65 ile imzaYaz
+"buyuk.bin" ve 0 ile imzaYaz
+"../gizli.bin" ve 4 ile imzaYaz
+"kacis.pdf" ve 4 ile imzaYaz
+"yok.pdf" ve 4 ile imzaYaz
+".zee" ve 4 ile imzaYaz
+"#,
+    )
+    .unwrap();
+
+    let cikti = Command::new(env!("CARGO_BIN_EXE_dil"))
+        .args(["çalıştır", uygulama.to_str().unwrap()])
+        .output()
+        .unwrap();
+    let stdout = String::from_utf8_lossy(&cikti.stdout);
+    assert!(
+        cikti.status.success(),
+        "{stdout}\n{}",
+        String::from_utf8_lossy(&cikti.stderr)
+    );
+    let satirlar: Vec<&str> = stdout.lines().collect();
+    assert_eq!(satirlar[0], "255044462d312e37");
+    assert_eq!(satirlar[1], "255044462d312e370afffe00");
+    assert_eq!(satirlar[2], "d0cf", "kısa dosyada olan kadar");
+    assert_eq!(satirlar[3], "ab".repeat(64));
+    assert_eq!(satirlar[4], "C013");
+    assert!(satirlar[5].contains("1 ile 64"), "{stdout}");
+    assert_eq!(satirlar[6], "C013");
+    assert!(satirlar[7].contains("1 ile 64"), "{stdout}");
+    assert_eq!(satirlar[8], "C013");
+    assert!(satirlar[9].contains("kök içinde kalan"), "{stdout}");
+    assert_eq!(satirlar[10], "C013");
+    assert!(satirlar[11].contains("sembolik bağ"), "{stdout}");
+    assert_eq!(satirlar[12], "C013");
+    assert!(satirlar[13].contains("çözülemedi"), "{stdout}");
+    assert_eq!(satirlar[14], "C013");
+    assert!(satirlar[15].contains("normal dosya değil"), "{stdout}");
+    assert_eq!(satirlar.len(), 16, "{stdout}");
+
+    std::fs::write(uygulama.join("proje.dil"), bildirim("\"dosya-yazma\"")).unwrap();
+    let cikti = Command::new(env!("CARGO_BIN_EXE_dil"))
+        .args(["çalıştır", uygulama.to_str().unwrap()])
+        .output()
+        .unwrap();
+    assert!(!cikti.status.success());
+    assert!(
+        String::from_utf8_lossy(&cikti.stderr).contains("T054"),
+        "dosya-okuma olmadan derleme reddi"
+    );
+}

@@ -972,7 +972,10 @@ uzlaştırmada başarıyla tamamlandı. Gerçek dizin çakışmalı dosya yazım
 metadata'yı `hazırlanıyor` bırakırken C013 ile worker'ı sonlandırdı. Bu bulgu
 web'de request-local C013 → 503, sıfır retry ve worker survival correctness
 sözünü açtı. Binary hash/upload ve fiziksel silme/orphan tarama F030'da;
-production TLS/pool ise F031'de kapanmıştır.
+production TLS/pool ise F031'de kapanmıştır. K-333/ADR-159 zee-cekirdek
+oturumsuz CV yüklemesi için kabul anında içerik imzası okumayı (ilk 1–64
+bayt, küçük harf onaltılık, `dosya-okuma`) açtı; tür tablosu üründe kalır,
+antivirüs/polyglot ve içerik türü doğrulaması açık sınırdır.
 K-324/ADR-157 bu tek kodluk sözü genel istek-yerel hata sınırına çevirdi:
 rotada C000 dışı her tanı 500/503/504 ile yalnız o isteği bitirir, worker
 yaşar ve operatör stderr'de tek satırlık kayıt görür. K-327 aynı sözü yanıtın
