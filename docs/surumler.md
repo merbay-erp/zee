@@ -5,6 +5,32 @@
 Her sürüm: ne eklendi, ne değişti, neyin sözü verildi. Kırıcı değişiklik
 sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 
+## 12 Kasım 2026 — Geliştirme güncellemeleri
+
+**Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
+Bu kayıt yeni sürüm etiketi değildir.
+
+### Düzeltilenler
+
+- **Reddedilen dosya yüklemeleri artık diskte iz bırakmaz (K-332,
+  GB-129):** `application/octet-stream` gövdesi `.zee/yuklemeler/*.parca`
+  dosyasına akıyor, istek sonra CSRF/oturum eksikliği (403), bulunmayan
+  adres (404/405), kısa gövde (400) ya da rota hatasıyla reddedilse veya rota
+  dosyayı taşımadan yanıt verse bile dosya sunucu yeniden başlayana dek
+  kalıyordu. Oturumsuz bir istemci her istekte 16 MiB'a kadar bırakarak diski
+  doldurabiliyordu. Artık `GET`/`HEAD` dışındaki yükleme `X-Zee-CSRF` başlığı
+  ve oturum çerezi olmadan gövde hiç okunmadan `403` alır; akış yarıda kalan ya
+  da rotaca taşınmayan geçici dosya istek biterken silinir. Dosyayı aynı
+  istekte `atomik taşımayı dene` ile taşıyan rotalar değişmeden çalışır.
+
+### Uyumluluk ve göç
+
+Sözdizimi, tanı kimliği ve sınır değerleri değişmedi. `yukleme_gecici_yolu`
+yalnız geldiği istek içinde geçerlidir: dosyayı sonraki bir isteğe saklayan
+rota (bilinen bir kullanım yok) aynı istekte kalıcı bir yola taşımalıdır.
+CSRF başlığı ya da oturum çerezi olmadan yapılan yükleme, adres var olmasa
+bile artık `404` yerine `403` alır.
+
 ## 28 Ekim 2026 — Geliştirme güncellemeleri
 
 **Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.

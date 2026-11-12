@@ -2441,3 +2441,15 @@ sabit zamanlı olmayan maske üretimi ve `u128` karşılaştırmaları) güvenli
 kapısının advisories adımını master dahil bütün dallarda kırıyordu. Compiler
 ve fuzz kilitlerinde ctutils 0.4.6; ignore yok (GB-127, ADR-038). Kanıt:
 `guvenlik-kapisi.sh --surekli`, `tedarik` iş akışı.
+
+## K-332 — Reddedilen binary yüklemenin geçici dosyası
+
+**Durum: KAPALI.** ADR-061 eki, GB-129 (yüksek). zee-cekirdek 1.18.0 açık CV
+rotası sınamasında CSRF'siz octet-stream isteğinin 403 aldığı hâlde tam
+gövdeli `.parca` bıraktığı görüldü; doğrulamada 404, sahte oturum, kısa gövde
+ve taşımayan rota da dosya bırakıyordu. Geçici dosya artık isteğe ait Drop
+korumasıyla istek sonunda silinir; `GET`/`HEAD` dışındaki yükleme CSRF
+başlığı ve oturum çerezi olmadan gövde okunmadan 403 alır. Kanıt:
+`web_yukleme`/`main.rs` birim testleri, regression
+`reddedilen-yukleme-parcasi` (`native-web-yukleme`). Açık: süreç istek
+ortasında ölürse orphan restart uzlaştırıcısına kalır.

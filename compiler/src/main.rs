@@ -1811,6 +1811,9 @@ struct GercekIo {
     bekleyen_akis: Option<web_metrikleri::Akis>,
     metrik: Option<std::sync::Arc<web_metrikleri::Sink>>,
     bekleyen_baglanti_izni: Option<dil::kaynak_sinirlari::BaglantiIzni>,
+    /// K-332: bu isteğin binary yükleme geçici dosyası; istek tamamlanınca ya
+    /// da geri alınınca düşer ve rotanın taşımadığı `.parca`'yı siler.
+    bekleyen_yukleme: Option<web_yukleme::IstekYuklemesi>,
     bekleyen_head: bool,
     /// Operatör günlüğü için son isteğin yöntemi ve hedefi (K-324).
     son_istek: Option<(String, String)>,
@@ -1947,6 +1950,7 @@ impl GercekIo {
             bekleyen_akis: None,
             metrik: None,
             bekleyen_baglanti_izni: None,
+            bekleyen_yukleme: None,
             bekleyen_head: false,
             son_istek: None,
             eylem_yedekleri: Vec::new(),
@@ -2670,10 +2674,52 @@ fn govde_zarfini_denetle(
     Some((binary_yukleme, beklenen))
 }
 
+/// K-332: güvenli olmayan yöntemdeki binary yükleme, gövde diske akmadan
+/// önce CSRF başlığı ve oturum çerezi bakımından denetlenir. Yorumlayıcı bu
+/// isteği her durumda 403 ile reddedeceği için (spec/16) 16 MiB'lık gövde
+/// hiç okunmaz; asıl belirteç karşılaştırması rota denetiminde kalır.
+fn yukleme_on_kapisi(
+    baslik: &HttpIstekBasligi<'_>,
+    oturum_cerez_adi: &str,
+) -> Option<&'static str> {
+    let yontem = baslik.yontem();
+    if yontem.eq_ignore_ascii_case("GET") || yontem.eq_ignore_ascii_case("HEAD") {
+        return None;
+    }
+    if tek_http_basligi(baslik, "X-Zee-CSRF").is_none_or(|deger| deger.trim().is_empty()) {
+        return Some("CSRF belirteci eksik");
+    }
+    let oturum_var = baslik.baslik_degerleri("Cookie").iter().any(|cerez| {
+        cerez
+            .split(';')
+            .filter_map(|parca| parca.trim().split_once('='))
+            .any(|(ad, deger)| ad == oturum_cerez_adi && !deger.trim().is_empty())
+    });
+    (!oturum_var).then_some("CSRF doğrulaması için geçerli form oturumu yok")
+}
+
+/// Ön kapı reddinde 403 gönderir ve `None` döner.
+fn yukleme_on_kapisini_uygula(
+    akis: &mut impl WebTasima,
+    baslik: &HttpIstekBasligi<'_>,
+    oturum_cerez_adi: &str,
+    https: bool,
+) -> Option<()> {
+    match yukleme_on_kapisi(baslik, oturum_cerez_adi) {
+        Some(mesaj) => {
+            ham_http_hatasi_gonder(akis, 403, mesaj, false, https);
+            None
+        }
+        None => Some(()),
+    }
+}
+
 /// Gövdeyi Content-Length'e kadar aynı son tarihle okur. Binary yükleme
 /// belleğe alınmadan diske akar ve rotaya yol/özet/boy alanları olarak
 /// verilir; metin gövdesi exact UTF-8 olarak döner. Hata yanıtı
-/// gönderildiyse `None` döner.
+/// gönderildiyse `None` döner. Binary yüklemenin geçici dosyası dönen
+/// korumaya aittir: istek bitince (koruma düşünce) silinir; akış yarıda
+/// kalırsa (K-332) kısmi dosya bu fonksiyondan çıkarken silinir.
 fn istek_govdesini_oku(
     akis: &mut impl WebTasima,
     kok: &std::path::Path,
@@ -2681,8 +2727,12 @@ fn istek_govdesini_oku(
     ilk_govde: &[u8],
     son_tarih: std::time::Instant,
     https: bool,
-) -> Option<String> {
+    oturum_cerez_adi: &str,
+) -> Option<(String, Option<web_yukleme::IstekYuklemesi>)> {
     let (binary_yukleme, beklenen) = govde_zarfini_denetle(akis, baslik, ilk_govde.len(), https)?;
+    if binary_yukleme {
+        yukleme_on_kapisini_uygula(akis, baslik, oturum_cerez_adi, https)?;
+    }
     let mut yukleme = if binary_yukleme {
         match web_yukleme::AkanYukleme::yeni(kok)
             .and_then(|mut yukleme| yukleme.yaz(ilk_govde).map(|()| yukleme))
@@ -2735,11 +2785,14 @@ fn istek_govdesini_oku(
     }
     match yukleme {
         Some(yukleme) => match yukleme.tamamla() {
-            Ok(bilgi) => {
+            Ok((bilgi, koruma)) => {
                 let csrf = tek_http_basligi(baslik, "X-Zee-CSRF").unwrap_or_default();
-                Some(format!(
-                    "_csrf={}&yukleme_gecici_yolu={}&yukleme_sha256={}&yukleme_bayti={}",
-                    csrf, bilgi.goreli_yol, bilgi.sha256, bilgi.bayt
+                Some((
+                    format!(
+                        "_csrf={}&yukleme_gecici_yolu={}&yukleme_sha256={}&yukleme_bayti={}",
+                        csrf, bilgi.goreli_yol, bilgi.sha256, bilgi.bayt
+                    ),
+                    Some(koruma),
                 ))
             }
             Err(hata) => {
@@ -2748,7 +2801,7 @@ fn istek_govdesini_oku(
             }
         },
         None => match govde_metni(&govde_baytlari) {
-            Ok(govde) => Some(govde.to_string()),
+            Ok(govde) => Some((govde.to_string(), None)),
             Err(hata) => {
                 ham_http_hatasi_gonder(
                     akis,
@@ -3119,6 +3172,8 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         Ok(())
     }
     fn istek_al(&mut self) -> Option<String> {
+        // K-332 yedeği: önceki isteğin yüklemesi hiçbir yolda kalmasın.
+        self.bekleyen_yukleme = None;
         #[cfg(unix)]
         if let Some(control) = &mut self.native_control {
             if control
@@ -3209,13 +3264,15 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
                     continue;
                 }
             };
-            let Some(govde) = istek_govdesini_oku(
+            let oturum_cerez_adi = self.oturum_cerez_adi();
+            let Some((govde, yukleme)) = istek_govdesini_oku(
                 &mut akis,
                 &self.kok,
                 &baslik,
                 &tampon[govde_basi..],
                 son_tarih,
                 https,
+                oturum_cerez_adi,
             ) else {
                 continue;
             };
@@ -3224,6 +3281,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
             };
             self.bekleyen_akis = Some(akis);
             self.bekleyen_baglanti_izni = Some(baglanti_izni);
+            self.bekleyen_yukleme = yukleme;
             self.bekleyen_head = baslik.yontem().eq_ignore_ascii_case("HEAD");
             self.son_istek = Some((baslik.yontem().to_string(), baslik.hedef().to_string()));
             let ham = format!(
@@ -3241,6 +3299,9 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         }
     }
     fn istek_islemini_tamamla(&mut self) -> Result<(), String> {
+        // K-332: rotanın taşımadığı yükleme her çıkış yolunda bu çağrıyla
+        // birlikte silinir (red, 404/405, rota hatası, tüketmeden dönüş).
+        let _yukleme = self.bekleyen_yukleme.take();
         let Some(yedek) = self.web_istek_yedegi.take() else {
             return Ok(());
         };
@@ -3321,6 +3382,7 @@ impl dil::yorumlayici::GirdiCikti for GercekIo {
         }
     }
     fn istek_islemini_geri_al(&mut self) {
+        self.bekleyen_yukleme = None;
         if let Some(postgresql) = self.postgresql.as_mut() {
             let sonuc = postgresql.istek_baglamini_geri_al();
             postgresql.metrik_ozetini_yayinla();
@@ -4431,19 +4493,20 @@ mod web_profili_testleri {
         istemci
             .write_all(
                 b"POST /yukle HTTP/1.1\r\nHost: x\r\nContent-Type: application/octet-stream\r\n\
-                  X-Zee-CSRF: belirtec-42\r\nContent-Length: 5\r\n\r\nhello",
+                  Cookie: zee-oturum=o1\r\nX-Zee-CSRF: belirtec-42\r\nContent-Length: 5\r\n\r\nhello",
             )
             .unwrap();
         let (mut sunucu, _) = dinleyici.accept().unwrap();
         let (tampon, govde_basi) = istek_basliklarini_oku(&mut sunucu, son_tarih(), false).unwrap();
         let baslik = HttpIstekBasligi::ayristir(&tampon[..govde_basi]).unwrap();
-        let govde = istek_govdesini_oku(
+        let (govde, koruma) = istek_govdesini_oku(
             &mut sunucu,
             &kok,
             &baslik,
             &tampon[govde_basi..],
             son_tarih(),
             false,
+            "zee-oturum",
         )
         .expect("binary gövde rota alanlarına dönüşmeli");
         let alanlar = govde
@@ -4461,6 +4524,9 @@ mod web_profili_testleri {
             std::fs::read(kok.join(alanlar["yukleme_gecici_yolu"])).unwrap(),
             b"hello"
         );
+        // K-332: istek bitince (koruma düşünce) tüketilmeyen yükleme silinir.
+        drop(koruma);
+        assert!(!kok.join(alanlar["yukleme_gecici_yolu"]).exists());
 
         let mut istemci = std::net::TcpStream::connect(adres).unwrap();
         istemci
@@ -4479,6 +4545,7 @@ mod web_profili_testleri {
             &tampon[govde_basi..],
             son_tarih(),
             false,
+            "zee-oturum",
         )
         .is_none());
         drop(sunucu);
@@ -4486,6 +4553,89 @@ mod web_profili_testleri {
         std::io::Read::read_to_string(&mut istemci, &mut yanit).unwrap();
         assert!(yanit.starts_with("HTTP/1.1 400"), "{yanit}");
         assert!(yanit.contains("birden çok Content-Type"));
+        let _ = std::fs::remove_dir_all(&kok);
+    }
+
+    /// K-332: CSRF başlığı ya da oturum çerezi olmayan güvenli olmayan binary
+    /// yükleme gövde okunmadan 403 alır; akış yarıda kalırsa kısmi `.parca`
+    /// silinir. GET gövdesi ön kapıya takılmaz.
+    #[test]
+    fn reddedilen_binary_yukleme_parca_birakmaz() {
+        let kok = std::env::temp_dir().join(format!("zee-k332-on-kapi-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&kok);
+        std::fs::create_dir_all(&kok).unwrap();
+        let dinleyici = std::net::TcpListener::bind(("127.0.0.1", 0)).unwrap();
+        let adres = dinleyici.local_addr().unwrap();
+        let son_tarih = || std::time::Instant::now() + std::time::Duration::from_secs(5);
+        let parca_sayisi = || {
+            std::fs::read_dir(kok.join(".zee/yuklemeler"))
+                .map(|dizin| dizin.count())
+                .unwrap_or(0)
+        };
+        let dene = |istek: &[u8], kapat: bool| {
+            let mut istemci = std::net::TcpStream::connect(adres).unwrap();
+            istemci.write_all(istek).unwrap();
+            if kapat {
+                istemci.shutdown(std::net::Shutdown::Write).unwrap();
+            }
+            let (mut sunucu, _) = dinleyici.accept().unwrap();
+            let (tampon, govde_basi) =
+                istek_basliklarini_oku(&mut sunucu, son_tarih(), false).unwrap();
+            let baslik = HttpIstekBasligi::ayristir(&tampon[..govde_basi]).unwrap();
+            let sonuc = istek_govdesini_oku(
+                &mut sunucu,
+                &kok,
+                &baslik,
+                &tampon[govde_basi..],
+                son_tarih(),
+                false,
+                "zee-oturum",
+            );
+            drop(sunucu);
+            let mut yanit = String::new();
+            let _ = std::io::Read::read_to_string(&mut istemci, &mut yanit);
+            (sonuc.map(|(_, koruma)| koruma), yanit)
+        };
+
+        for (istek, beklenen) in [
+            (
+                &b"POST /y HTTP/1.1\r\nHost: x\r\nContent-Type: application/octet-stream\r\n\
+                   Cookie: zee-oturum=o1\r\nContent-Length: 4096\r\n\r\n"[..],
+                "CSRF belirteci eksik",
+            ),
+            (
+                &b"PUT /y HTTP/1.1\r\nHost: x\r\nContent-Type: application/octet-stream\r\n\
+                   X-Zee-CSRF: b\r\nCookie: baska=1\r\nContent-Length: 4096\r\n\r\n"[..],
+                "geçerli form oturumu yok",
+            ),
+        ] {
+            let (koruma, yanit) = dene(istek, false);
+            assert!(koruma.is_none());
+            assert!(yanit.starts_with("HTTP/1.1 403"), "{yanit}");
+            assert!(yanit.contains(beklenen), "{yanit}");
+            assert_eq!(parca_sayisi(), 0, "gövde diske akmamalı");
+        }
+
+        // Ön kapıyı geçen ama gövdesi kısa kalan akış kısmi dosyayı siler.
+        let (koruma, yanit) = dene(
+            b"POST /y HTTP/1.1\r\nHost: x\r\nContent-Type: application/octet-stream\r\n\
+              X-Zee-CSRF: b\r\nCookie: zee-oturum=o1\r\nContent-Length: 4096\r\n\r\nyarim",
+            true,
+        );
+        assert!(koruma.is_none());
+        assert!(yanit.starts_with("HTTP/1.1 400"), "{yanit}");
+        assert_eq!(parca_sayisi(), 0, "kısmi .parca kalmamalı");
+
+        // Güvenli yöntem ön kapıya takılmaz; yükleme korumaya bağlanır.
+        let (koruma, _) = dene(
+            b"GET /y HTTP/1.1\r\nHost: x\r\nContent-Type: application/octet-stream\r\n\
+              Content-Length: 3\r\n\r\nabc",
+            false,
+        );
+        let koruma = koruma.expect("GET gövdesi okunur").expect("binary koruma");
+        assert_eq!(parca_sayisi(), 1);
+        drop(koruma);
+        assert_eq!(parca_sayisi(), 0);
         let _ = std::fs::remove_dir_all(&kok);
     }
 
