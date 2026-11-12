@@ -97,6 +97,11 @@ impl GirdiCikti for IzYenidenOynatici {
         self.metin_sonuc("dosya_sha256", sonuc)
     }
 
+    fn dosya_ilk_baytlari(&mut self, yol: &str, adet: i64) -> Result<String, String> {
+        let sonuc = self.siradaki("dosya_ilk_baytlari", vec![yol.into(), adet.to_string()]);
+        self.metin_sonuc("dosya_ilk_baytlari", sonuc)
+    }
+
     fn postgresql_oku(
         &mut self,
         sorgu: &str,

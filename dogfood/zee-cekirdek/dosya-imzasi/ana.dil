@@ -1,0 +1,60 @@
+# K-331: zee-cekirdek seçimli başvuru formu `POST /basvuru-yukle` rotasının
+# anonim kesiti. Bildirilen tür (uzantıdan) ile geçici dosyanın ilk baytları
+# kabul anında eşleşmezse 415 döner ve geçici dosya silinir. Kayıt, form
+# belirteci, oran sınırı ve kalıcı yayın ürün tarafındadır; burada taşınmaz.
+
+işlem basvuruImzasi
+    turu Metin olarak al
+    Metin döndürür
+    turu "pdf" eşitse
+        "255044462d" döndür
+    turu "doc" eşitse
+        "d0cf11e0a1b11ae1" döndür
+    turu "docx" eşitse
+        "504b0304" döndür
+    "" döndür
+
+işlem basvuruImzaBaytlari
+    turu Metin olarak al
+    TamSayı döndürür
+    turu "pdf" eşitse
+        5 döndür
+    turu "doc" eşitse
+        8 döndür
+    4 döndür
+
+işlem imzaUyuyor
+    yolu Metin olarak al
+    turu Metin olarak al
+    Mantıksal döndürür
+    beklenen turu ile basvuruImzasi olsun
+    beklenen boşsa
+        yanlış döndür
+    adet turu ile basvuruImzaBaytlari olsun
+    okuma yolu dosyasının ilk adet baytını onaltılık okumayı dene olsun
+    okuma başarılıysa
+        imza okumanın değeri olsun
+        imza beklenen e eşitse
+            doğru döndür
+    yanlış döndür
+
+eylem geciciDosyayiSil
+    yolu Metin olarak al
+    TamSayı sonucu döndürür
+    yolu dosyasını silmeyi dene döndür
+
+8085 kapısında sunucu başlat
+
+POST "/basvuru-yukle" adresine istek geldiğinde
+    herkese açık
+    "yukleme_gecici_yolu" alanı gerekli
+    gecici_yol isteğin "yukleme_gecici_yolu" değeri olsun
+    tur "pdf" olsun
+    istekte "tur" varsa
+        tur isteğin "tur" değeri olsun
+    uygun gecici_yol ve tur ile imzaUyuyor olsun
+    uygun ise
+        "kabul" yanıtını gönder
+    değilse
+        temizleme gecici_yol ile geciciDosyayiSil olsun
+        "Dosya türü desteklenmiyor." yanıtını 415 durumuyla gönder

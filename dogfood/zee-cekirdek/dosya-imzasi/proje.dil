@@ -1,0 +1,6 @@
+# K-331: oturumsuz CV yüklemesinde kabul anında içerik imzası; anonim kesit.
+proje "basvuru-imzasi" olsun
+sürüm "0.1.0" olsun
+morfoloji "zee-tr-1" olsun
+giriş "ana.dil" olsun
+yetkinlikler "ağ-sunucusu", "web-oturumu", "dosya-okuma", "dosya-yazma" listesi olsun

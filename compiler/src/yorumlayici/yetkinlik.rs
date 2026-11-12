@@ -97,10 +97,13 @@ impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
         self.dosya_yolunu_denetle(dizin, Yetkinlik::DosyaOkuma)?;
         self.ic.dosyalari_listele(dizin)
     }
-
     fn dosya_sha256(&mut self, yol: &str) -> Result<String, String> {
         self.dosya_yolunu_denetle(yol, Yetkinlik::DosyaOkuma)?;
         self.ic.dosya_sha256(yol)
+    }
+    fn dosya_ilk_baytlari(&mut self, yol: &str, adet: i64) -> Result<String, String> {
+        self.dosya_yolunu_denetle(yol, Yetkinlik::DosyaOkuma)?;
+        self.ic.dosya_ilk_baytlari(yol, adet)
     }
     fn simdi(&mut self) -> (i64, u32, u32, u32, u32) {
         self.ic.simdi()

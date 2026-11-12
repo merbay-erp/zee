@@ -58,6 +58,8 @@ Saat/rastgele tohum ve sanal zaman ilerleme algoritması spec/22'deki
 gözlenen çağrı, sonuç ve sırayı korur.
 
 Şema-1'in dosya olayları `dosya_atomik_tasi`, `dosya_sil`,
-`dosyalari_listele` ve `dosya_sha256` işlemlerini de kapsar. Argümanlar exact
-göreli yollar; sonuçlar başarı etiketiyle sayı/liste/özet veya hata mesajıdır.
-Replay hiçbir fiziksel taşıma, silme, listeleme ya da hashing yapmaz.
+`dosyalari_listele`, `dosya_sha256` ve (K-333) `dosya_ilk_baytlari`
+işlemlerini de kapsar. Argümanlar exact göreli yollar (imza okumasında ayrıca
+onluk bayt sayısı); sonuçlar başarı etiketiyle sayı/liste/özet/onaltılık imza
+veya hata mesajıdır. Replay hiçbir fiziksel taşıma, silme, listeleme, hashing
+ya da okuma yapmaz.

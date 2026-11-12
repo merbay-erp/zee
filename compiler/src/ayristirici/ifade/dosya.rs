@@ -67,5 +67,23 @@ pub(super) fn yasam_dongusu_kalibi(tokenlar: &[Token]) -> Result<Option<Ifade>, 
         }));
     }
 
+    // YOL dosyasının ilk N baytını onaltılık okumayı dene. (K-331)
+    if n == 8
+        && kelime(1) == Some("dosyasının")
+        && kelime(2) == Some("ilk")
+        && kelime(4) == Some("baytını")
+        && kelime(5) == Some("onaltılık")
+        && kelime(6) == Some("okumayı")
+        && kelime(7) == Some("dene")
+    {
+        return Ok(Some(Ifade::Intrinsic {
+            kimlik: DOSYA_ILK_BAYTLAR.into(),
+            argumanlar: vec![
+                tekil_ifade(tokenlar[0].clone())?,
+                tekil_ifade(tokenlar[3].clone())?,
+            ],
+        }));
+    }
+
     Ok(None)
 }

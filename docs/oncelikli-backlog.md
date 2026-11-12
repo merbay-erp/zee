@@ -2441,3 +2441,17 @@ sabit zamanlı olmayan maske üretimi ve `u128` karşılaştırmaları) güvenli
 kapısının advisories adımını master dahil bütün dallarda kırıyordu. Compiler
 ve fuzz kilitlerinde ctutils 0.4.6; ignore yok (GB-127, ADR-038). Kanıt:
 `guvenlik-kapisi.sh --surekli`, `tedarik` iş akışı.
+
+## K-333 — Yüklenen dosyanın ilk baytlarını okuma (içerik imzası)
+
+**Durum: KAPALI.** ADR-159/RFC-0036: zee-cekirdek (exact `e8beb39`)
+oturumsuz CV yükleme rotası imzayı kabul anında denetleyemiyordu; dilde ikili
+bayt okunamıyordu. `yol dosyasının ilk N baytını onaltılık okumayı dene` →
+`Metin sonucu` (küçük harf, 1 ≤ N ≤ 64, dosya kısaysa olan kadar,
+`dosya-okuma`, sha256 ile aynı yol sınırı, C013, IO izi
+`dosya_ilk_baytlari`). İçerik türü döndüren alternatif tür listesini dilin
+sözü yapacağı için reddedildi (GB-129). Kanıt: `proje_testi::dosya_imzasi_*`,
+`dosya_yasam_dongusu_testi::ilk_baytlar_*`, `io_izi_testi`, dogfood
+`zee-cekirdek/dosya-imzasi`. Açık: ürün rotasının bağlanması ve
+`basvuru_e2e.sh` 415 adımı ürün tarafında; tam gövdeli CSRF reddinin `.parca`
+bırakması ayrı K-332 işidir.
