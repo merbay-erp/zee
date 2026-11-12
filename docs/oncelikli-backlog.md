@@ -2442,6 +2442,18 @@ kapısının advisories adımını master dahil bütün dallarda kırıyordu. Co
 ve fuzz kilitlerinde ctutils 0.4.6; ignore yok (GB-127, ADR-038). Kanıt:
 `guvenlik-kapisi.sh --surekli`, `tedarik` iş akışı.
 
+## K-332 — Reddedilen binary yüklemenin geçici dosyası
+
+**Durum: KAPALI.** ADR-061 eki, GB-129 (yüksek). zee-cekirdek 1.18.0 açık CV
+rotası sınamasında CSRF'siz octet-stream isteğinin 403 aldığı hâlde tam
+gövdeli `.parca` bıraktığı görüldü; doğrulamada 404, sahte oturum, kısa gövde
+ve taşımayan rota da dosya bırakıyordu. Geçici dosya artık isteğe ait Drop
+korumasıyla istek sonunda silinir; `GET`/`HEAD` dışındaki yükleme CSRF
+başlığı ve oturum çerezi olmadan gövde okunmadan 403 alır. Kanıt:
+`web_yukleme`/`main.rs` birim testleri, regression
+`reddedilen-yukleme-parcasi` (`native-web-yukleme`). Açık: süreç istek
+ortasında ölürse orphan restart uzlaştırıcısına kalır.
+
 ## K-333 — Yüklenen dosyanın ilk baytlarını okuma (içerik imzası)
 
 **Durum: KAPALI.** ADR-159/RFC-0036: zee-cekirdek (exact `e8beb39`)
@@ -2450,8 +2462,8 @@ bayt okunamıyordu. `yol dosyasının ilk N baytını onaltılık okumayı dene`
 `Metin sonucu` (küçük harf, 1 ≤ N ≤ 64, dosya kısaysa olan kadar,
 `dosya-okuma`, sha256 ile aynı yol sınırı, C013, IO izi
 `dosya_ilk_baytlari`). İçerik türü döndüren alternatif tür listesini dilin
-sözü yapacağı için reddedildi (GB-129). Kanıt: `proje_testi::dosya_imzasi_*`,
+sözü yapacağı için reddedildi (GB-130). Kanıt: `proje_testi::dosya_imzasi_*`,
 `dosya_yasam_dongusu_testi::ilk_baytlar_*`, `io_izi_testi`, dogfood
 `zee-cekirdek/dosya-imzasi`. Açık: ürün rotasının bağlanması ve
 `basvuru_e2e.sh` 415 adımı ürün tarafında; tam gövdeli CSRF reddinin `.parca`
-bırakması ayrı K-332 işidir.
+bırakması K-332'de kapandı.

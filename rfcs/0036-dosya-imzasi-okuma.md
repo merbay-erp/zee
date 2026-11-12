@@ -4,7 +4,7 @@
   spec/26 §Beklenen dosya işlemleri, karar ADR-159.
 - **Tarih:** 12 Kasım 2026
 - **İş:** K-333 (kaynak: zee-cekirdek `docs/dil-talepleri/2026-11-12-dosya-imzasi-okuma.md`, exact `e8beb39`)
-- **İlgili belgeler:** spec/21, spec/26, ADR-059, ADR-061, ADR-064, GB-129
+- **İlgili belgeler:** spec/21, spec/26, ADR-059, ADR-061, ADR-064, GB-130
 - **Freeze sınıfı:** `dogfood-change` — tek contextual kalıp, yeni değer türü,
   tanı kodu, bağımlılık veya `dil::api::v1` facade değişikliği yok.
 

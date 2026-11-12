@@ -4,7 +4,7 @@
 - **Tarih:** 12 Kasım 2026
 - **İlgili kayıt:** K-333, RFC-0036, ADR-059 (core freeze), ADR-061 (binary
   yükleme sahipliği), ADR-064 (dil yüzeyi), ADR-067 (dogfood korpusu),
-  spec/26, spec/21, GB-129
+  spec/26, spec/21, GB-130
 
 ## Bağlam
 
@@ -68,7 +68,7 @@ dosyada başarısızdır, proje dışı süreç çağırma yetkinliği yoktur.
 - Ürün kabul anında imzası tutmayan CV'ye 415 döner ve geçici dosyayı siler;
   indirmedeki denetim savunma derinliği olarak kalır.
 - İçerik imzası eşleşmesi dosyanın zararsız olduğunu kanıtlamaz
-  (polyglot dosya); antivirüs/içerik doğrulaması hâlâ spec/26 dışıdır (GB-129).
+  (polyglot dosya); antivirüs/içerik doğrulaması hâlâ spec/26 dışıdır (GB-130).
 - `dil dene` ve playground'un `ToplayanIo` adaptörü bellek içi metni bayt
   olarak verir; gerçek ikili kanıt `proje_testi` CLI vakasındadır.
 - Freeze yüzeyi: yeni kalıp kelimesi `onaltılık`, API `dosya.ilk_baytlar`,

@@ -17,8 +17,22 @@ rota isteği şu alanları görür:
 
 Unsafe rota CSRF belirtecini tek `X-Zee-CSRF` başlığından alır. Birden çok
 `Content-Type`, sınırı aşan `Content-Length`, kısa/fazla gövde ve okuma son
-tarihi mevcut fail-closed HTTP reddini korur. Kesilmiş akışın kısmi dosyası
-silinmek ZORUNDA DEĞİLDİR; restart uzlaştırıcısının görebileceği orphan'dır.
+tarihi mevcut fail-closed HTTP reddini korur.
+
+K-332 uyarınca `GET`/`HEAD` dışındaki binary yükleme tek ve boş olmayan
+`X-Zee-CSRF` başlığı ile boş olmayan oturum çerezi taşımıyorsa, gövde okunmadan
+ve diske hiç akmadan `403` ile reddedilmek ZORUNDADIR; yorumlayıcı bu isteği
+zaten reddedeceği için ön kapı rota eşleşmesinden önce çalışır. Belirtecin
+oturumla sabit zamanlı karşılaştırılması rota denetiminde kalır.
+
+Geçici `.parca` dosyası isteğe aittir ve native adaptör onu silmek ZORUNDADIR:
+akış yarıda kalırsa (kısa gövde, okuma son tarihi, yazma/fsync hatası) hemen;
+tamamlanmış yükleme ise istek bittiğinde — CSRF/oturum/Origin reddi, oran
+sınırı, 404/405, rota tanısı ya da rotanın dosyayı taşımadan yanıt vermesi
+dahil. Rota dosyayı aynı istekte taşıdıysa silme etkisizdir; geçici yol
+sonraki isteklerde geçerli değildir. Yalnız süreç istek ortasında sonlanırsa
+(ölümcül tanı, sinyal, çökme) kalan dosya restart uzlaştırıcısının görebileceği
+orphan'dır.
 
 ## Beklenen dosya işlemleri
 
