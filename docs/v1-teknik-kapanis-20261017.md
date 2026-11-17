@@ -6,7 +6,7 @@ işlerin sürdürülmesini istedi. Atlanan kapılar kapalı sayılmaz.
 
 ## Kapsam ve sıra
 
-1. Ürün sunucusu canlı ürün envanteri ve exact ikili/source provenance farkı.
+1. Canlı ürünlerin exact ikili/source provenance farkı.
 2. A03: mevcut UTF-16/NFC/morfolojili LSP davranışının birleşik regresyonları.
 3. A04: aynı PostgreSQL backend'inde tenant bağlamının COMMIT/ROLLBACK temizliği.
 4. Geri kalan teknik kapılar: mevcut kaynakta test/uyumluluk/dağıtım,
@@ -23,8 +23,8 @@ işlerin sürdürülmesini istedi. Atlanan kapılar kapalı sayılmaz.
 
 ## Canlı ürün gerçeği
 
-17 Ekim 2026 üretim sunucusu salt-okunur incelemesinde dört müşteri sitesinin ve
-zeedili.com'un worker servisleri aktiftir. Dört proje bildirimi bulundu.
+17 Ekim 2026 üretim ortamı salt-okunur incelemesinde Zee ile yazılmış ürünlerin ve
+zeedili.com'un worker servisleri aktiftir; proje bildirimleri bulundu.
 Bu ürünler uygulama yokluğu olarak yazılamaz. Anonim tam korpus ve exact
 kaynak/ikili kabul kaydı farklı kanıtlardır.
 
@@ -53,12 +53,12 @@ katılmadı. [Makine kaydı](incelemeler/v1-teknik-20261017/k312/sonuc.json),
 
 ## Mevcut ürün kaynakları — özel hazırlık kabulü
 
-Beş site ve çekirdeğin özel kaynak kopyaları mevcut aday derleyicide temiz
-denetlendi; toplam 248 hermetik test geçti (50+65+50+31+15+37).
+Ürünlerin ve çekirdeğin özel kaynak kopyaları mevcut aday derleyicide temiz
+denetlendi; hermetik testleri geçti.
 Çekirdeğin katalogları mevcut resmi üreticiyle özel kopyada üretildi.
 Bu ilk tur kirli test çalışma ağacından üretilmiş ikiliyle hazırlıktır;
 temiz commit'li tekrar ayrı kaydedilecektir. Müşteri kaynakları depoya alınmadı.
-Kullanıcının açık izniyle alınan dört canlı `proje.dil` SHA-256 özeti özel
+Kullanıcının açık izniyle alınan canlı `proje.dil` SHA-256 özetleri özel
 kopyalarla eşleşti; bu bütün kaynak ağacının veya çalışan compiler SHA'sının
 kanıtı değildir. Tam anonim P08 korpusu/ürün adoptionı kapanmış gösterilmez.
 

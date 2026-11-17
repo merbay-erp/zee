@@ -3,7 +3,7 @@
 Ürün: zee-cekirdek. Harici kaynak commit'i:
 `1b002e09c3c3fa38d8e88c2d82669618d99cd762`.
 Kaynak: ürün deposu `docs/dil-talepleri/2026-10-13-oran-siniri-yuk/`.
-Python betikleri değiştirilmeden taşınmıştır; Zee kaynağına yalnız korpus sözleşmesinin istediği başlık yorumu eklenmiştir. `itwise.test` sentetik yerel hosttur;
+Python betikleri yalnız sentetik host adı genelleştirilerek (K-334) taşınmıştır; Zee kaynağına yalnız korpus sözleşmesinin istediği başlık yorumu eklenmiştir. `urun.test` sentetik yerel hosttur;
 203.0.113.x ve 198.51.100.x belgeleme IP'leridir. Özel sunucu bilgisi yoktur.
 
 `yuk.dil`: 100 kartlı anonim GET /wiki/ listesi; `yuk.py N C PORT`

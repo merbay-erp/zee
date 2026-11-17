@@ -157,8 +157,8 @@ Yerel PostgreSQL, native PDF ve SMTP yetenekleri tarayıcıya açılmadı.
   sonrasında yeniden adlandırma, UTF-16 edit uygulaması, NFC/NFD ve LF/CRLF
   davranışları dört yeni testle birlikte korundu. Derleyici davranışı,
   CLI/API, grammar ve dosya biçimi değişmedi; göç gerekmiyor.
-- **Canlı ürün kapsamı:** Ürün sunucusunda dört Zee projesi doğrulandı. Üç derleyici
-  yolu iki farklı ikili hash'ine karşılık geliyor; exact kaynak kabulü ayrı
+- **Canlı ürün kapsamı:** Üretimdeki Zee projeleri doğrulandı. Derleyici
+  yolları farklı ikili hash'lerine karşılık geliyor; exact kaynak kabulü ayrı
   izleniyor. Kullanıcı katılımı/kararı isteyen V1 kapıları açık bırakıldı.
 - [Teknik kapanış kaydı](v1-teknik-kapanis-20261017.md).
 

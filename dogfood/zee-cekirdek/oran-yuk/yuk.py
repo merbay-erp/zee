@@ -3,7 +3,7 @@ N=int(sys.argv[1]); C=int(sys.argv[2]); PORT=int(sys.argv[3])
 def one(i):
     c=http.client.HTTPConnection("127.0.0.1",PORT,timeout=30)
     t=time.perf_counter()
-    c.request("GET",f"/wiki/makale-{i}",headers={"Host":"itwise.test","Forwarded":f"for=203.0.113.{i%200+1};proto=https;host=itwise.test"})
+    c.request("GET",f"/wiki/makale-{i}",headers={"Host":"urun.test","Forwarded":f"for=203.0.113.{i%200+1};proto=https;host=urun.test"})
     r=c.getresponse(); r.read(); c.close()
     return r.status, time.perf_counter()-t
 t0=time.perf_counter()

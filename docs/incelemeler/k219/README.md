@@ -34,7 +34,7 @@ CLI ile başlatıp özgün betiği sırayla çalıştırın; yalnız kendi worke
 kapatın, ürün `.zee` durumuna dokunmayın.
 
 ```sh
-dil çalıştır --web-proxy https://itwise.test --web-worker-port 18097 \
+dil çalıştır --web-proxy https://urun.test --web-worker-port 18097 \
   --web-oran-deposu bellek --web-oran-siniri 250 \
   --web-oran-kapasitesi 32768 --web-oran-doluluk en-eski yuk.dil
 python3 yuk2.py 1000 10 18097 100000

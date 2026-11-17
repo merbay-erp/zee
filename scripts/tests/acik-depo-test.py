@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""K-214: gerçek müşteri adları yerine hermetik, sentetik politika."""
+"""K-214/K-334: gerçek müşteri adları yerine hermetik, sentetik HMAC politikası."""
 import json
 import os
 from pathlib import Path
@@ -11,13 +11,39 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
 API = runpy.run_path(str(ROOT / "scripts/acik-depo-denetle.py"))
-NORMALIZE, DIGEST = API["normalize"], API["digest"]
+NORMALIZE, KEYED, KEY_ID = API["normalize"], API["keyed"], API["key_id"]
 INSPECT, SCAN, LOAD = API["inspect"], API["scan"], API["load_policy"]
+BUILD = API["build_policy"]
+# Sentetik test anahtarı; gerçek anahtar yalnız CI sırrında/depo dışındadır.
+KEY = bytes(range(32))
+KEY_HEX = KEY.hex()
+
+
+def DIGEST(text):
+    return KEYED(KEY, text)
 
 
 def rules():
-    return {"terms": {DIGEST(NORMALIZE("Example Client"))},
+    return {"key": KEY, "terms": {DIGEST(NORMALIZE("Example Client"))},
             "paths": {DIGEST("/private-host/")}, "lengths": {13}}
+
+
+def policy_file(directory, base="0" * 40, terms=("Example Client",)):
+    private = Path(directory) / "ozel.json"
+    private.write_text(json.dumps({"schema": "zee-acik-depo-ozel-terimler-1",
+        "rules": [{"kind": "term", "value": t} for t in terms]}))
+    path = Path(directory) / "policy.json"
+    path.write_text(json.dumps(BUILD(private, KEY, base)))
+    return path
+
+
+def run_gate(*args, env_key=None):
+    env = {k: v for k, v in os.environ.items() if k not in {"ZEE_ACIK_DEPO_ANAHTARI", "GITHUB_ACTIONS"}}
+    if env_key is not None:
+        env["ZEE_ACIK_DEPO_ANAHTARI"] = env_key
+    return subprocess.run(["python3", str(ROOT / "scripts/acik-depo-denetle.py"),
+                           "--anahtar-dosyasi", "/nonexistent/zee-key", *args],
+                          capture_output=True, env=env)
 
 
 def git_bash(git_exe):
@@ -74,7 +100,7 @@ class PublicPrivacyTests(unittest.TestCase):
     def test_uzun_kayitta_gomulu_ad_ve_ayri_politika_korunur(self):
         text = "z" * 9000 + "ExampleClient" + "z" * 9000
         self.assertTrue(INSPECT("long.log", text.encode(), rules(), {}))
-        other = {"terms": {DIGEST("anotherclient")}, "paths": set(), "lengths": {13}}
+        other = {"key": KEY, "terms": {DIGEST("anotherclient")}, "paths": set(), "lengths": {13}}
         self.assertFalse(INSPECT("long.log", text.encode(), other, {}))
 
     def test_eski_satir_istisnasi_kopyayi_degistirmeyi_ve_tekrari_kapsamaz(self):
@@ -88,16 +114,59 @@ class PublicPrivacyTests(unittest.TestCase):
         self.assertTrue(INSPECT("old.md", (text + "\n" + text).encode(), rules(), baseline))
 
     def test_politika_bos_yinelenen_ve_gecersiz_hash_reddeder(self):
-        original = json.loads((ROOT / "docs/acik-depo-politikasi-v1.json").read_text())
         with tempfile.TemporaryDirectory() as directory:
-            path = Path(directory) / "policy.json"
+            path = policy_file(directory)
+            original = json.loads(path.read_text())
+            LOAD(path, KEY)
             for change in [{"rules": []}, {"legacy_fingerprints": {"*": 1}},
                            {"legacy_fingerprints": {"a" * 64: 1}}, {"history_scope": "since-base"},
-                           {"history_base": "master"},
-                           {"rules": original["rules"] * 2}]:
+                           {"history_base": "master"}, {"schema": "zee-acik-depo-politikasi-1"},
+                           {"rules": original["rules"] * 2}, {"key_id": ""},
+                           {"rules": [{"kind": "term", "length": 13, "sha256": "a" * 64}]}]:
                 path.write_text(json.dumps(dict(original, **change)))
                 with self.assertRaises(ValueError):
-                    LOAD(path)
+                    LOAD(path, KEY)
+
+    def test_yanlis_anahtar_sessizce_gecmez(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = policy_file(directory)
+            with self.assertRaises(ValueError):
+                LOAD(path, bytes(32))
+
+    def test_acik_politika_duz_metin_ve_tuzsuz_hash_tasimaz(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = policy_file(directory, terms=("Example Client", "Zeta Sample", "Alpha Demo"))
+            text = path.read_text()
+            data = json.loads(text)
+            for plain in ["exampleclient", "zetasample", "alphademo", "Example"]:
+                self.assertNotIn(plain, text)
+                self.assertNotIn(API["digest"](plain), text)
+            values = [r["hmac"] for r in data["rules"]]
+            self.assertEqual(values, sorted(values))
+            self.assertEqual(data["key_id"], KEY_ID(KEY))
+        committed = json.loads((ROOT / "docs/acik-depo-politikasi-v2.json").read_text())
+        self.assertEqual(committed["schema"], "zee-acik-depo-politikasi-2")
+        self.assertTrue(all(set(r) == {"kind", "length", "hmac"} for r in committed["rules"]))
+        self.assertFalse((ROOT / "docs/acik-depo-politikasi-v1.json").exists())
+
+    def test_anahtar_yoksa_hata_ya_da_acikca_atlandi(self):
+        with tempfile.TemporaryDirectory() as directory:
+            subprocess.run(["git", "init", "-q", directory], check=True)
+            path = policy_file(directory)
+            missing = run_gate("--depo", directory, "--politika", str(path), "--yalniz-agac")
+            self.assertEqual(missing.returncode, 3)
+            self.assertNotIn(b"ge\xc3\xa7ti;", missing.stdout)
+            skipped = run_gate("--depo", directory, "--politika", str(path), "--yalniz-agac",
+                               "--anahtar-yoksa", "atla")
+            self.assertEqual(skipped.returncode, 0)
+            self.assertIn("ATLANDI".encode(), skipped.stdout)
+            self.assertNotIn("geçti;".encode(), skipped.stdout)
+            bad = run_gate("--depo", directory, "--politika", str(path), "--yalniz-agac",
+                           env_key="zz")
+            self.assertEqual(bad.returncode, 2)
+            wrong = run_gate("--depo", directory, "--politika", str(path), "--yalniz-agac",
+                             env_key=bytes(32).hex())
+            self.assertEqual(wrong.returncode, 2)
 
     def test_eklenip_silinen_dosya_ve_commit_mesaji_reddedilir(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -126,13 +195,10 @@ class PublicPrivacyTests(unittest.TestCase):
             subprocess.run(["git", "init", "-q", directory], check=True)
             subprocess.run(["git", "-C", directory, "-c", "user.name=Zee Test",
                 "-c", "user.email=zee@example.invalid", "commit", "--allow-empty", "-qm", "base"], check=True)
-            policy = {"schema": "zee-acik-depo-politikasi-1", "history_scope": "all-reachable", "history_base": "0" * 40,
-                      "rules": [{"kind": "term", "length": 13,
-                                 "sha256": DIGEST("exampleclient")}], "legacy_fingerprints": {}}
-            path = root / "policy.json"; path.write_text(json.dumps(policy))
+            path = policy_file(directory)
             (root / "example-client.txt").write_text("Example Client")
-            result = subprocess.run(["python3", str(ROOT / "scripts/acik-depo-denetle.py"),
-                "--depo", directory, "--politika", str(path), "--yalniz-agac"], capture_output=True)
+            result = run_gate("--depo", directory, "--politika", str(path), "--yalniz-agac",
+                              env_key=KEY_HEX)
             self.assertEqual(result.returncode, 1)
             self.assertIn(b"MASKEL", result.stdout + result.stderr)
             self.assertNotIn(b"Example Client", result.stdout + result.stderr)

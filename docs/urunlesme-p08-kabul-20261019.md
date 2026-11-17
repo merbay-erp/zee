@@ -26,7 +26,7 @@ Marka ve kod öneki, alan adı, e-posta, gerçek telefon (testlerin sentetik
 numaraları korunur), yer adı, sunucu adı/yolu/IP ve görseller (aynı adla yer
 tutucu; yazı tipleri korunur) tutarlı biçimde değiştirildi. Doğrulama:
 
-- [Açık depo kapısı](acik-depo-politikasi-v1.json) sözlüğü: altı pakette **0** eşleşme.
+- [Açık depo kapısı](acik-depo-politikasi-v2.json) (o tarihte v1 SHA-256 listesi; K-334 HMAC'e geçirdi) sözlüğü: altı pakette **0** eşleşme.
 - Gitleaks 8.30.1 `dir`: altı pakette **0** bulgu.
 - Davranış eşliği: özgün ve anonim ağaçta `denetle` exit 0 ve `dene` sayıları aynı.
 

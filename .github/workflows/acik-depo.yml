@@ -8,7 +8,7 @@ permissions:
 jobs:
   urun-gizliligi:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - name: Güvenilir ana dal denetleyicisi
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -28,4 +28,10 @@ jobs:
       - name: Sentetik kapı testleri
         run: python3 kontrol/scripts/tests/acik-depo-test.py
       - name: PR kodunu çalıştırmadan müşteri ve altyapı taraması
-        run: python3 kontrol/scripts/acik-depo-denetle.py --depo kaynak --calisma-agaci-yok
+        env:
+          # K-334/ADR-087: HMAC anahtarı fork PR'ına verilmez; verilseydi kapı
+          # dışarıdan aday ad deneyen bir sözlük kâhinine dönüşürdü. Fork PR'ında
+          # kapı açıkça ATLANDI der; içerik birleşmeden sonra push taramasında denetlenir.
+          ZEE_ACIK_DEPO_ANAHTARI: ${{ (github.event_name != 'pull_request_target' || github.event.pull_request.head.repo.full_name == github.repository) && secrets.ZEE_ACIK_DEPO_ANAHTARI || '' }}
+          ANAHTAR_YOKSA: ${{ (github.event_name == 'pull_request_target' && github.event.pull_request.head.repo.full_name != github.repository) && 'atla' || 'hata' }}
+        run: python3 kontrol/scripts/acik-depo-denetle.py --depo kaynak --calisma-agaci-yok --anahtar-yoksa "$ANAHTAR_YOKSA"

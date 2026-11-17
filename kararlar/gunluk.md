@@ -3771,7 +3771,7 @@ Yeni provenance fixture kayıtlarında dört linker kimliği ve Apple/Windows
 SDK sürümü denetlenir. K-196 henüz açık; minimum OS/temiz Windows/macOS
 ve tüm native C build-script araçları ayrıca K-192 sınırıdır.
 
-K-196 Linux tatbikat işi kuruluşun `itwise-gitsrv` koşucusunda başlamadan
+K-196 Linux tatbikat işi kuruluşun özel self-hosted koşucusunda başlamadan
 kuyrukta kaldı. `kurulum-tatbikati` manuel girişindeki `linux_runner`
 seçimi `configured` (mevcut kuruluş ayarı, varsayılan) veya `ubuntu-latest`
 olabilir. Bu koşuya özel seçim kuruluş/repo değişkenlerini değiştirmez;
@@ -4991,7 +4991,7 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
 - K-329 (21.10.2026): zee-cekirdek talebi W5 (P1). Üretim unit'lerindeki
   `ProtectSystem=strict` + yol yol `ReadWritePaths=` her yolu ayrı bind mount
   ettiği için `.zee/yuklemeler` → `medya` rename'i aynı diskte bile EXDEV
-  verdi; itwise önizlemesinde 4.534 eski medyanın taşınması ve panel
+  verdi; bir ürün önizlemesinde eski medyanın taşınması ve panel
   yüklemeleri başarısız oldu. Talepteki (a) seçildi (ADR-061 eki):
   `atomik_tasi` `ErrorKind::CrossesDevices`'ta hedef klasöründe geçici kopya,
   kaynak metadata'sı, fsync, aynı klasörde atomik adlandırma, klasör fsync ve
@@ -5061,3 +5061,17 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   uzunluk. K-174 syntax penceresi 11 Kasım'da sıfır değişiklikle dolmuştu;
   kalıp pencere sonrası eklendi, freeze özeti güncellendi (ADR-159,
   RFC-0036, GB-130). Ürün adı ADR-087 gereği anonimdir.
+
+## K-334 — Açık depo kapısı HMAC ve iz temizliği (17 Kasım 2026)
+
+- K-334 (17.11.2026): dış sızıntı taraması gerçek müşteri kaydı/sır bulmadı;
+  ancak K-214 açık depo politikasının tuzsuz SHA-256 değerleri sözlükle
+  müşteri/proje/altyapı adlarına çözülebiliyordu (GB-131, orta). Karar
+  (ADR-087 eki): HMAC-SHA256 + depo dışı anahtar (CI sırrı) ve depo dışı düz
+  liste; `key_id` yanlış anahtarla sessiz geçişi durdurur; anahtarsız koşu
+  çıkış 3, yalnız fork PR'ında açıkça ATLANDI. Reddedilen: tuzlu ama açık
+  tuzlu SHA-256 (tuz açıkta olduğundan sözlük yine çalışır), listeyi tamamen
+  kaldırmak (kapı korumasız kalır), fork PR'ına anahtar vermek (sözlük
+  kâhini). Güncel ağaçta iç koşucu/önizleme adları ve canlı envanter
+  sayımları genelleştirildi; ayna referansları bilinçli yayın kararıdır.
+  Tarihçe temizliği kullanıcı onaylı ikinci aşamadır.
