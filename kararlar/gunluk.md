@@ -5085,3 +5085,5 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   yeni SHA aldı. Kayıt SHA'ları K-326 yöntemiyle yeni ataya bağlandı; ölçüm
   ve provenance makbuzları özgün SHA'yı korur, `k334/sha-esleme-v1.tsv` ile
   çözülür. Eski SHA adlı canlı ikililer yeniden derlenmez.
+- K-334 son adım (18.11.2026): tarihçe temizliğinden sonra iç koşucunun
+  bileşik adı HMAC politikasına eklendi (23 kural); tam tarihçe kapısı geçti.
