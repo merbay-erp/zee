@@ -13,7 +13,7 @@ permissions:
 jobs:
   sir-taramasi:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -35,7 +35,12 @@ jobs:
       - name: Anonim açık depo politikası olumlu ve olumsuz testleri
         run: python3 scripts/tests/acik-depo-test.py
       - name: Müşteri ve altyapı bilgisi kapısı (tam geçmiş ve çalışma ağacı)
-        run: python3 scripts/acik-depo-denetle.py
+        env:
+          # K-334/ADR-087: anahtarsız fork PR'ı açıkça ATLANDI der; push, zamanlı ve
+          # aynı depo PR koşularında anahtar zorunludur (yoksa çıkış 3).
+          ZEE_ACIK_DEPO_ANAHTARI: ${{ secrets.ZEE_ACIK_DEPO_ANAHTARI }}
+          ANAHTAR_YOKSA: ${{ (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository) && 'atla' || 'hata' }}
+        run: python3 scripts/acik-depo-denetle.py --anahtar-yoksa "$ANAHTAR_YOKSA"
       - name: Tüm Git geçmişi ve çalışma ağacında sır taraması
         run: bash scripts/sir-taramasi.sh
   rust-bagimliliklari:

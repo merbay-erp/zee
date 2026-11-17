@@ -115,10 +115,13 @@ jobs:
           cargo run --locked -- çalıştır ../merhaba.dil
       - name: Gizlilik ve sır araçları
         working-directory: kaynak
+        env:
+          # K-334/ADR-087: özel aynada anahtar sırrı tanımlı değilse kapı açıkça ATLANDI der.
+          ZEE_ACIK_DEPO_ANAHTARI: ${{ secrets.ZEE_ACIK_DEPO_ANAHTARI }}
         run: |
           set -euo pipefail
           python3 scripts/tests/acik-depo-test.py
-          python3 scripts/acik-depo-denetle.py
+          python3 scripts/acik-depo-denetle.py --anahtar-yoksa atla
           mkdir -p compiler/target/ci-araclar
           curl --fail --silent --show-error --location --connect-timeout 20 --max-time 180 --retry 2 --retry-max-time 420 --proto '=https' --tlsv1.2 -o compiler/target/ci-araclar/gitleaks.tar.gz https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz
           echo '551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb  compiler/target/ci-araclar/gitleaks.tar.gz' | sha256sum --check --strict
