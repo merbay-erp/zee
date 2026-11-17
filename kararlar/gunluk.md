@@ -5075,3 +5075,7 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   kâhini). Güncel ağaçta iç koşucu/önizleme adları ve canlı envanter
   sayımları genelleştirildi; ayna referansları bilinçli yayın kararıdır.
   Tarihçe temizliği kullanıcı onaylı ikinci aşamadır.
+- K-334 CI eki: GitHub `ubuntu-latest` 26.04'e geçti; `actions/setup-python`
+  orada K-319'un exact 3.13.3 sürümünü sunmadığı için `dil` iş akışının Linux
+  matrisi `ubuntu-24.04`'e sabitlendi (action pinleri değişmedi). Python
+  sürümünü yükseltmek ast.dump özetlerini yenileyen ayrı bir iştir.
