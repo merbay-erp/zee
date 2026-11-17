@@ -15,7 +15,13 @@ fn oku(goreli: &str) -> String {
 fn public_runner_gecerli(satir: &str) -> bool {
     matches!(
         satir.trim().strip_prefix("runs-on: "),
-        Some("ubuntu-latest" | "windows-latest" | "macos-latest" | "${{ matrix.os }}")
+        Some(
+            "ubuntu-latest"
+                | "ubuntu-24.04"
+                | "windows-latest"
+                | "macos-latest"
+                | "${{ matrix.os }}"
+        )
     )
 }
 

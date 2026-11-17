@@ -16,7 +16,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        # K-334: ubuntu-latest 26.04'e geçti ve setup-python orada K-319'un exact
+        # 3.13.3 sürümünü sunmuyor; ast.dump özetleri sürüme bağlı olduğundan Linux
+        # işi 24.04'e sabitlenir (sürüm yükseltmesi ayrı, özet yenilemeli iştir).
+        os: [ubuntu-24.04, macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -34,7 +37,7 @@ jobs:
           command -v python3 >/dev/null || cp "$(command -v python)" "$(dirname "$(command -v python)")/python3.exe"
           python3 --version
       - name: Yayımlanmış conformance artefaktları immutable
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'ubuntu-24.04'
         shell: bash
         env:
           ZEE_CONFORMANCE_TABANI: ${{ github.event.pull_request.base.sha || github.event.before }}
@@ -42,7 +45,7 @@ jobs:
           ZEE_CONFORMANCE_TABANI="$(python3 scripts/ci-taban-kimligi.py "$ZEE_CONFORMANCE_TABANI")"
           bash scripts/conformance-korugu.sh "$ZEE_CONFORMANCE_TABANI"
       - name: Semantic regresyon vaka soy ağacı kalıcı
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'ubuntu-24.04'
         shell: bash
         env:
           ZEE_REGRESYON_TABANI: ${{ github.event.pull_request.base.sha || github.event.before }}
@@ -50,7 +53,7 @@ jobs:
           ZEE_REGRESYON_TABANI="$(python3 scripts/ci-taban-kimligi.py "$ZEE_REGRESYON_TABANI")"
           bash scripts/semantic-regresyon-korugu.sh "$ZEE_REGRESYON_TABANI"
       - name: Core freeze gerçek dogfood kanıtı olmadan açılamaz
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'ubuntu-24.04'
         shell: bash
         env:
           ZEE_CORE_FREEZE_TABANI: ${{ github.event.pull_request.base.sha || github.event.before }}
@@ -64,7 +67,7 @@ jobs:
           components: clippy,rustfmt
           targets: wasm32-unknown-unknown
       - name: Exact kaynak CI ve deterministik build kimliği izolasyonu
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'ubuntu-24.04'
         shell: bash
         run: |
           python3 scripts/tests/kaynak-ci-esleme-test.py
@@ -74,7 +77,7 @@ jobs:
         shell: bash
         run: cargo run --locked --bin faz_test_matrisi -- --denetle --rapor target/faz-test-matrisi.md
       - name: Hermetik gerçek PostgreSQL TLS CA hostname ve NULL kapısı
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'ubuntu-24.04'
         shell: bash
         run: |
           sudo apt-get update -qq
@@ -121,27 +124,27 @@ jobs:
         working-directory: compiler
         run: cargo fmt --all -- --check
       - name: Kritik işlev büyüme ve karmaşıklık eğilimi temiz
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'ubuntu-24.04'
         working-directory: compiler
         run: cargo run --locked --bin islev_egilimi -- --denetle
       - name: Spec maddeleri exact test kanıtı taşır
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'ubuntu-24.04'
         working-directory: compiler
         run: cargo run --locked --bin spec_drift -- --denetle
       - name: Tanı kalitesi (öneri/işaret/gürültü) sınır içinde
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'ubuntu-24.04'
         working-directory: compiler
         run: cargo run --locked --bin tani_kalitesi -- --denetle
       # K-164/ADR-072: ikinci ürün gerçek CLI ile sayfayı yeniden üretir; bayatsa kırılır.
       - name: Kanıt özeti sayfası ikinci Zee ürünüyle güncel
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'ubuntu-24.04'
         working-directory: compiler
         shell: bash
         run: |
           cargo run --locked -- çalıştır ../dogfood/kanit-ozeti/kaynak/ana.dil
           git diff --exit-code -- ../docs/kanit-ozeti.md
       - name: Fuzz hedefleri stable araç zincirinde derlenir
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'ubuntu-24.04'
         working-directory: compiler
         run: cargo check --manifest-path fuzz/Cargo.toml --locked --bins
       - name: Milestone dosyası çalışıyor
@@ -150,7 +153,7 @@ jobs:
       # Shared runner gürültülüdür: p50/p95 gözlemi yayımlanır, hard eşik yoktur.
       # Eşik yalnız sabitlenmiş adanmış koşucuda açık --esik-yuzde ile istenir.
       - name: Performans p50/p95 gözlemi yayımlanır
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'ubuntu-24.04'
         working-directory: compiler
         shell: bash
         run: |
@@ -168,7 +171,7 @@ jobs:
             --lsp-olcek
           cat target/performans.md >> "$GITHUB_STEP_SUMMARY"
       - name: Performans gözlemi artefaktını yükle
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'ubuntu-24.04'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: performans-${{ github.sha }}
@@ -179,10 +182,10 @@ jobs:
           retention-days: 90
       # Playground çekirdeği wasm hedefinde derlenmeye devam etmeli (K-039/K-040).
       - name: Playground (wasm) derlenir
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'ubuntu-24.04'
         working-directory: compiler
         run: cargo rustc --locked --release --target wasm32-unknown-unknown --lib --crate-type cdylib -- -C link-arg=-zstack-size=16777216
       - name: Playground ABI v3 gerçek wasm hostunda çalışır
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'ubuntu-24.04'
         working-directory: compiler
         run: node ../scripts/wasm-abi-denetle.mjs target/wasm32-unknown-unknown/release/dil.wasm
