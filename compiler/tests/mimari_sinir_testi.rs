@@ -440,7 +440,7 @@ fn faz_test_matrisi_tier1_ci_raporundan_kopamaz() {
         .expect("incelenmiş artifact pini");
     let artifact = format!("uses: actions/upload-artifact@{artifact_pin}");
     for kanit in [
-        "os: [ubuntu-latest, macos-latest, windows-latest]",
+        "os: [ubuntu-24.04, macos-latest, windows-latest]",
         "cargo run --locked --bin faz_test_matrisi -- --denetle --rapor target/faz-test-matrisi.md",
         "cat target/faz-test-matrisi.md >> \"$GITHUB_STEP_SUMMARY\"",
         artifact.as_str(), // Exact pin birebirliği ayrıca tedarik kapısında korunur.

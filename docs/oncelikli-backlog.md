@@ -2467,3 +2467,14 @@ sözü yapacağı için reddedildi (GB-130). Kanıt: `proje_testi::dosya_imzasi_
 `zee-cekirdek/dosya-imzasi`. Açık: ürün rotasının bağlanması ve
 `basvuru_e2e.sh` 415 adımı ürün tarafında; tam gövdeli CSRF reddinin `.parca`
 bırakması K-332'de kapandı.
+
+## K-334 — Açık depo kapısı HMAC ve iz temizliği
+
+**Durum: AÇIK (aşama 1 tamam).** ADR-087 eki, GB-131: 17.11.2026 dış taraması
+tuzsuz SHA-256 politika listesini sözlükle çözdü. Aşama 1: politika v2
+anahtarlı HMAC-SHA256 (`ZEE_ACIK_DEPO_ANAHTARI` sırrı, depo dışı özel liste,
+`key_id`, fork PR'ında açık ATLANDI), iç koşucu/önizleme adları ve canlı
+envanter cümleleri genelleştirildi, noreply yazar kuralı. Kanıt:
+`scripts/tests/acik-depo-test.py` 18 vaka, `guvenlik_kapisi_testi`. Açık:
+aşama 2 tarihçe yeniden yazımı (eski liste, altyapı izi, kurumsal e-posta),
+ayna eşitliği, tüketici pinleri ve GitHub PR ref/önbellek destek teyidi.

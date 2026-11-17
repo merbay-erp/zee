@@ -5,6 +5,27 @@
 Her sürüm: ne eklendi, ne değişti, neyin sözü verildi. Kırıcı değişiklik
 sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 
+## 17 Kasım 2026 — Geliştirme güncellemeleri
+
+**Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
+Bu kayıt yeni sürüm etiketi değildir.
+
+### Güvenlik
+
+- **Açık depo kapısı anahtarlı (K-334, ADR-087, GB-131):** Müşteri/altyapı
+  adlarını yakalayan kapının politikası artık gizli anahtarlı HMAC-SHA256
+  taşır; önceki tuzsuz listenin sözlükle çözülebildiği bir dış taramada
+  görüldü. Dil, derleyici, CLI ve API davranışı değişmedi.
+
+### Uyumluluk ve göç
+
+- Depo katkıcıları kapıyı yerelde çalıştırmak için anahtarı
+  `ZEE_ACIK_DEPO_ANAHTARI` ortam değişkeninde ya da
+  `~/.config/zee/acik-depo-anahtari` dosyasında tutar; anahtarsız koşu
+  "çalışamadı" (çıkış 3) der, fork PR'ında açıkça "ATLANDI" yazar.
+- Commit yazar e-postası olarak GitHub noreply adresi kullanılır
+  (`git config user.email "<id>+<kullanıcı>@users.noreply.github.com"`).
+
 ## 12 Kasım 2026 — Geliştirme güncellemeleri
 
 **Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.

@@ -115,6 +115,10 @@ jobs:
           cargo run --locked -- çalıştır ../merhaba.dil
       - name: Gizlilik ve sır araçları
         working-directory: kaynak
+        env:
+          # K-334/ADR-087: özel aynada anahtar sırrı tanımlı değilse kapı açıkça ATLANDI der.
+          ZEE_ACIK_DEPO_ANAHTARI: ${{ secrets.ZEE_ACIK_DEPO_ANAHTARI }}
+          ZEE_ACIK_DEPO_ANAHTAR_YOKSA: atla
         run: |
           set -euo pipefail
           python3 scripts/tests/acik-depo-test.py

@@ -1,0 +1,119 @@
+{
+  "schema": "zee-acik-depo-politikasi-2",
+  "history_base": "dc1ec0dff184743f410d5cc80d01bbc9a7b3b12c",
+  "key_id": "a19872330513e0ce64c08501c1bc8acbcb42d0dabcfa8140bc11b706bf2f7f94",
+  "rules": [
+    {
+      "kind": "path",
+      "length": 5,
+      "hmac": "f4d59954d62d0d85e6cdb4ddaad5643202cf166d7105ca20e5a80e5a1073e3a4"
+    },
+    {
+      "kind": "term",
+      "length": 9,
+      "hmac": "0865fd8abbfb0cac59bae0f821583f92600791332b130079fffc8e1109294dbc"
+    },
+    {
+      "kind": "term",
+      "length": 11,
+      "hmac": "18e84e8f55d05843760e79ad93972b67b4cd6eb157d32124af7d36eea690a552"
+    },
+    {
+      "kind": "term",
+      "length": 9,
+      "hmac": "41855680fa32fa7108cf8c88789db3d509790675da15195c10ee97cd609eec21"
+    },
+    {
+      "kind": "term",
+      "length": 6,
+      "hmac": "4b8508cdb617973d1ae0ccee307b325a76a5a5b500249fb93401275a79076c9a"
+    },
+    {
+      "kind": "term",
+      "length": 11,
+      "hmac": "5261b1441dd8ac23c463e576482e5aabd9e55cdd4b4d325e7548a8d40585698c"
+    },
+    {
+      "kind": "term",
+      "length": 7,
+      "hmac": "57f02304250d1f008fd32c39e0ecbca36fcd4b819e4cb7aff8d15c5c2660f06b"
+    },
+    {
+      "kind": "term",
+      "length": 12,
+      "hmac": "6eace0b6e9b643a69551402f93f4da202a80c05df1ea3be6e9c89a0be9585a3d"
+    },
+    {
+      "kind": "term",
+      "length": 7,
+      "hmac": "763dfcd5404f210d8654e5cddb2b8be3adbe8cfe442ace0c717c44963517da44"
+    },
+    {
+      "kind": "term",
+      "length": 6,
+      "hmac": "96096eef1b0bcf26202a2d43a4619c7d80025021ee8f6355c4c9223d7a07002a"
+    },
+    {
+      "kind": "term",
+      "length": 13,
+      "hmac": "a3f45fadbbd3ec1213790d022d1e835a5104cf2fadbffa1b152b392daaaf3792"
+    },
+    {
+      "kind": "term",
+      "length": 5,
+      "hmac": "a4332ac56622041d545af665aa1e392eabd6999ff0429795b78b4a4bc9d1d2ab"
+    },
+    {
+      "kind": "term",
+      "length": 8,
+      "hmac": "a7aceb35b72967cd648f63e6129c39bc15ed5ffa5bbe91d6ec07297495989591"
+    },
+    {
+      "kind": "term",
+      "length": 4,
+      "hmac": "aaff882133fa19c8c84cd9413d886e33207ddc2f77060f516067f0f234faf9df"
+    },
+    {
+      "kind": "term",
+      "length": 5,
+      "hmac": "af163b602f3d7780ba3ec8b1970a4690f0dda8c5092a6326910c84e60a76b899"
+    },
+    {
+      "kind": "term",
+      "length": 11,
+      "hmac": "af663b6a7b241d2e217bff2b632df764f4b8cb76b2bca9c88c7bea44fef1d7ec"
+    },
+    {
+      "kind": "term",
+      "length": 10,
+      "hmac": "ce67c62fc3536868233b5bdc638a648f765d324022a1b0b95d86d5e02ce68e8c"
+    },
+    {
+      "kind": "term",
+      "length": 7,
+      "hmac": "d6b075405b7149fffd8a1747946c1218c91c2b4705a3ae25cb31ab81347f45f3"
+    },
+    {
+      "kind": "term",
+      "length": 16,
+      "hmac": "d9a0b8b6778298f41e0872ded26886bc5cc264070bc72e015a8d43b45b546d76"
+    },
+    {
+      "kind": "term",
+      "length": 4,
+      "hmac": "e201d534ef892b1b83ae6832fe4237174822ec888cfef99d0f46e3c96b2a9937"
+    },
+    {
+      "kind": "term",
+      "length": 5,
+      "hmac": "f207aa9037daca2ddfbcfdec2a308081fc619a6375190bf1a7c6aab6937872e9"
+    },
+    {
+      "kind": "word",
+      "length": 3,
+      "hmac": "6aceba39379d364458c0b199e73db302b8926b08d57b8083bf209cd820baad26"
+    }
+  ],
+  "legacy_fingerprints": {},
+  "history_scope": "all-reachable"
+}

@@ -16,13 +16,13 @@ K-208/K-209/K-210–K-213 dogfood kayıtları ve freeze zinciri korunur.
 
 `scripts/acik-depo-denetle.py` izlenen dosya adlarını, içerikleri, yeni dosyaları,
 symlink hedeflerini, ilk commit dahil bütün ata ağaçlarını ve mesajlarını denetler.
-`docs/acik-depo-politikasi-v1.json` yalnız normalize edilmiş terim/yol hash'leri
-taşır. Unicode biçim/harf değişimleri ve ayırıcılar sentetik testle kapsanır.
+`docs/acik-depo-politikasi-v2.json` yalnız normalize edilmiş terim/yol değerlerinin
+gizli anahtarlı HMAC-SHA256 özetlerini taşır (K-334; aşağıya bakın). Unicode biçim/harf değişimleri ve ayırıcılar sentetik testle kapsanır.
 Hata çıktısı değer veya dosya adı yerine dosya SHA-256'sı ve satırı verir.
 Eksik politika ve sığ/kayıp Git geçmişi başarısız olur. Sıkıştırılmış dosyanın
 içini veya görseldeki yazıyı tarama iddiası yoktur; ürün kanıtı metin olarak tutulur.
-Hash'ler sözlük saldırısına karşı sır saklama yöntemi değildir; plaintext listenin
-yanlışlıkla açık belge/loga kopyalanmasını önler. Özel terim listesi açık depoda yoktur.
+K-214'teki tuzsuz SHA-256 listesi sözlük saldırısına açıktı; K-334 bunu
+anahtarlı HMAC ile değiştirdi. Özel terim listesi açık depoda yoktur.
 
 K-215 ile kullanıcı önceki geçişlerin temizliğini de onayladı. Eski kayıt
 istisnaları kaldırıldı: politika `all-reachable` ister, fingerprint listesi
@@ -68,3 +68,70 @@ sabittir. Kaynak/freeze/regression ve sentetik TLS kökenleri yeni exact
 SHA’ya taşınır. Orijinal dal/rapor yayın ağacının dışında saklanır.
 [SHA eşlemesi](../docs/incelemeler/urunlesme-20261014/sanitized-sha-map.tsv)
 özgün derleme ve native checkpoint sonuçlarını yeni SHA’da üretilmiş saymaz.
+
+## K-334 — Anahtarlı politika ve iz temizliği (17 Kasım 2026)
+
+17 Kasım 2026 dış taraması, K-214 politikasındaki tuzsuz SHA-256 değerlerini
+olası müşteri/proje/altyapı adlarıyla sözlük karşılaştırması yaparak eşleştirdi
+(GB-131). Gerçek müşteri kaydı veya sır yayımlanmamıştı; açık olan, adların
+listeden geri kazanılabilmesiydi. Karar:
+
+- Politika `zee-acik-depo-politikasi-2` şemasına ve
+  `docs/acik-depo-politikasi-v2.json` dosyasına taşındı. Her kural yalnız
+  `kind`, `length` ve `hmac` taşır; `hmac` = HMAC-SHA256(anahtar, normalize
+  değer). Kurallar HMAC değerine göre sıralanır, düz metin sırası sızmaz.
+- 32 baytlık anahtar depo dışındadır: GitHub Actions sırrı
+  `ZEE_ACIK_DEPO_ANAHTARI` ve yerelde `~/.config/zee/acik-depo-anahtari`
+  (0600). Düz terim listesi de depo dışındadır
+  (`~/.config/zee/acik-depo-terimleri.json`); politika yalnız
+  `scripts/acik-depo-denetle.py --politika-uret <özel liste>` ile yenilenir.
+  Liste PR metnine, commit mesajına ya da loga yazılmaz.
+- Politika `key_id` = HMAC(anahtar, sabit etiket) taşır. Yanlış anahtar hiçbir
+  terimle eşleşmeyeceği için kapı bu durumda geçmez, çalışamadı (çıkış 2) der.
+- Anahtar yoksa kapı varsayılan olarak çıkış 3 ile durur. `--anahtar-yoksa atla` (CI’da `ZEE_ACIK_DEPO_ANAHTAR_YOKSA=atla`; master denetleyicisi eski bayrak kümesiyle de çalışsın diye)
+  yalnız anahtarın bilinçli verilmediği koşullar içindir ve "ATLANDI … geçti
+  sayılmaz" yazar, GitHub'da uyarı ve adım özeti bırakır.
+- Fork PR'ına anahtar verilmez (`pull_request_target` dahil): anahtarlı kapı
+  dışarıdan gönderilen aday adlara evet/hayır diyen bir sözlük kâhini olurdu.
+  Fork içeriği birleştikten sonra `push` taramasında anahtarla denetlenir;
+  bakımcı fork PR'ını birleştirmeden önce kapıyı yerelde anahtarla çalıştırır.
+  Özel Forgejo aynası sır tanımlı değilse açıkça atlar.
+- K-214'ün bir yol kuralının düz metni yeniden kurulamadığı için HMAC'e
+  taşınmadı; diğer kurallar birebir korundu. Eksik kural özel listeye
+  eklendiğinde politika yeniden üretilir.
+- HMAC hesaplaması önceden hazırlanmış iç/dış durum ve önbellekle yapılır; tam
+  tarihçe taraması eski SHA-256 sürümünden yaklaşık 1,4 kat yavaştır, CI zaman
+  sınırı 20 dakikaya çıkarıldı.
+
+Güncel ağaçta iç koşucu adı, ürün önizleme adı, sentetik host olarak kullanılan
+kuruluş adı ve canlı ürün sayım/envanter cümleleri genel ifadelerle
+değiştirildi. Sunucu etiketleri ve sunucu kök dizini yolları güncel ağaçta yoktu (K-326).
+Sitedeki `dil.wasm` eşleşmesi derleyici bağımlılığının `bitwise` sembolüydü;
+üretilmiş ikili değişmedi.
+
+**Bilinçli yayın kararı — ayna referansları:** `itwise-bilisim/zee` adı,
+K-202'den önceki kanonik kaynak ve bugünkü özel ayna olarak SBOM/provenance
+fixture'larında, tarihsel Actions koşu bağlantılarında ve tedarik belgelerinde
+kalır. Bu adlar exact provenance URI'sinin parçasıdır; değiştirilmeleri
+imzalı/ölçülmüş kanıtı bozar. Kuruluş adı müşteri kimliği değildir; kurucunun
+kendi kuruluşudur ve yayımlanması bilinçlidir. Bu nedenle `itwise` tek başına
+politika terimi değildir; yalnız iç koşucu ve önizleme gibi altyapı bileşik
+adları temizlenir.
+
+**Yazar e-postası:** Bu depoda commit yazarı ve kaydedeni GitHub noreply adresi
+(`<id>+<kullanıcı>@users.noreply.github.com`) kullanır; kurumsal veya kişisel
+e-posta yazılmaz. Katkıcı depo içinde yerel ayar yapar:
+`git config user.email "<id>+<kullanıcı>@users.noreply.github.com"`.
+K-334 öncesi kurumsal adres taşıyan üç commit, ikinci aşamadaki tarihçe
+yeniden yazımında `.mailmap` eşlemesiyle noreply'a çevrilir.
+
+İkinci aşama (kullanıcı onaylı): Aşama 1 birleştikten sonra eski tuzsuz hash
+listesi, altyapı etiketleri ve kurumsal e-posta tarihçeden `git filter-repo` ile
+kaldırılır; tam yedek bundle, force push, ayna eşitlemesi ve tüketici
+`dil-kur@<sha>` pinlerinin taşınması K-326 sırasını izler. GitHub PR ref ve
+önbellek temizliği destek talebi ister; teyit gelene kadar GB-131 açık kalır.
+
+Kanıt: `scripts/tests/acik-depo-test.py` (18 sentetik vaka: yanlış anahtar,
+anahtarsız hata/ATLANDI, düz metin ve tuzsuz hash taşımayan üretim, şema/kural
+reddi) ve
+`compiler/tests/guvenlik_kapisi_testi.rs::acik_depo_kapisi_anonim_politikayi_ve_ci_kablosunu_korur`.

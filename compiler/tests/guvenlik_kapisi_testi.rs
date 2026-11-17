@@ -291,15 +291,30 @@ fn acik_depo_kapisi_anonim_politikayi_ve_ci_kablosunu_korur() {
     assert!(workflow.contains("fetch-depth: 0"));
     assert!(workflow.contains("python3 scripts/tests/acik-depo-test.py"));
     assert!(workflow.contains("python3 scripts/acik-depo-denetle.py"));
+    // K-334: anahtar CI sırrından gelir; anahtarsız koşu yalnız fork PR'ında açıkça atlanır.
+    assert!(workflow.contains("ZEE_ACIK_DEPO_ANAHTARI: ${{ secrets.ZEE_ACIK_DEPO_ANAHTARI }}"));
+    assert!(workflow.contains("ZEE_ACIK_DEPO_ANAHTAR_YOKSA: ${{"));
     let trusted = oku(".github/workflows/acik-depo.yml");
     assert!(trusted.contains("pull_request_target:"));
     assert!(trusted.contains("ref: master"));
     assert!(trusted.contains("python3 kontrol/scripts/acik-depo-denetle.py --depo kaynak"));
+    assert!(trusted
+        .contains("head.repo.full_name == github.repository) && secrets.ZEE_ACIK_DEPO_ANAHTARI"));
+    assert!(trusted.contains("head.repo.full_name != github.repository) && 'atla' || 'hata'"));
     assert!(oku(".github/workflows/ci.yml").contains("ci-taban-kimligi.py"));
     assert!(!workflow.contains("ci-oz-kaynak.sh"));
-    let policy: serde_json::Value = serde_json::from_str(&oku("docs/acik-depo-politikasi-v1.json"))
+    let policy: serde_json::Value = serde_json::from_str(&oku("docs/acik-depo-politikasi-v2.json"))
         .expect("anonim politika JSON");
-    assert_eq!(policy["schema"], "zee-acik-depo-politikasi-1");
+    assert_eq!(policy["schema"], "zee-acik-depo-politikasi-2");
+    assert_eq!(
+        policy["key_id"].as_str().expect("anahtar kimliği").len(),
+        64
+    );
+    assert!(policy["rules"]
+        .as_array()
+        .expect("kurallar")
+        .iter()
+        .all(|kural| kural.get("hmac").is_some() && kural.get("sha256").is_none()));
     assert_eq!(policy["history_base"].as_str().expect("SHA").len(), 40);
     assert!(!policy["rules"].as_array().expect("kurallar").is_empty());
     assert_eq!(policy["history_scope"], "all-reachable");
