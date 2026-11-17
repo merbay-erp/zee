@@ -363,7 +363,10 @@ def main():
     parser.add_argument("--yalniz-agac", action="store_true")
     parser.add_argument("--calisma-agaci-yok", action="store_true")
     parser.add_argument("--anahtar-dosyasi", type=Path)
-    parser.add_argument("--anahtar-yoksa", choices=["hata", "atla"], default="hata",
+    # Ortam değişkeni CI'da master'daki denetleyiciyle dalın workflow'u arasında
+    # bayrak uyumsuzluğu doğurmaz; bilinmeyen değer hata sayılır.
+    parser.add_argument("--anahtar-yoksa", choices=["hata", "atla"],
+                        default=os.environ.get("ZEE_ACIK_DEPO_ANAHTAR_YOKSA") or "hata",
                         help="atla yalnız gizli anahtarın verilmediği fork PR'ı içindir")
     parser.add_argument("--politika-uret", type=Path, metavar="OZEL_TERIMLER",
                         help="depo dışındaki düz terim listesinden HMAC politikası yazar")

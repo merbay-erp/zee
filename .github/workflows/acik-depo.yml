@@ -33,5 +33,5 @@ jobs:
           # dışarıdan aday ad deneyen bir sözlük kâhinine dönüşürdü. Fork PR'ında
           # kapı açıkça ATLANDI der; içerik birleşmeden sonra push taramasında denetlenir.
           ZEE_ACIK_DEPO_ANAHTARI: ${{ (github.event_name != 'pull_request_target' || github.event.pull_request.head.repo.full_name == github.repository) && secrets.ZEE_ACIK_DEPO_ANAHTARI || '' }}
-          ANAHTAR_YOKSA: ${{ (github.event_name == 'pull_request_target' && github.event.pull_request.head.repo.full_name != github.repository) && 'atla' || 'hata' }}
-        run: python3 kontrol/scripts/acik-depo-denetle.py --depo kaynak --calisma-agaci-yok --anahtar-yoksa "$ANAHTAR_YOKSA"
+          ZEE_ACIK_DEPO_ANAHTAR_YOKSA: ${{ (github.event_name == 'pull_request_target' && github.event.pull_request.head.repo.full_name != github.repository) && 'atla' || 'hata' }}
+        run: python3 kontrol/scripts/acik-depo-denetle.py --depo kaynak --calisma-agaci-yok

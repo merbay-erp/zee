@@ -293,7 +293,7 @@ fn acik_depo_kapisi_anonim_politikayi_ve_ci_kablosunu_korur() {
     assert!(workflow.contains("python3 scripts/acik-depo-denetle.py"));
     // K-334: anahtar CI sırrından gelir; anahtarsız koşu yalnız fork PR'ında açıkça atlanır.
     assert!(workflow.contains("ZEE_ACIK_DEPO_ANAHTARI: ${{ secrets.ZEE_ACIK_DEPO_ANAHTARI }}"));
-    assert!(workflow.contains("--anahtar-yoksa \"$ANAHTAR_YOKSA\""));
+    assert!(workflow.contains("ZEE_ACIK_DEPO_ANAHTAR_YOKSA: ${{"));
     let trusted = oku(".github/workflows/acik-depo.yml");
     assert!(trusted.contains("pull_request_target:"));
     assert!(trusted.contains("ref: master"));
