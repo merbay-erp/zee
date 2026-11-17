@@ -150,6 +150,20 @@ class PublicPrivacyTests(unittest.TestCase):
         self.assertTrue(all(set(r) == {"kind", "length", "hmac"} for r in committed["rules"]))
         self.assertFalse((ROOT / "docs/acik-depo-politikasi-v1.json").exists())
 
+    def test_dar_kodlamali_konsolda_turkce_mesaj_cikis_kodunu_bozmaz(self):
+        with tempfile.TemporaryDirectory() as directory:
+            subprocess.run(["git", "init", "-q", directory], check=True)
+            path = policy_file(directory)
+            env = {k: v for k, v in os.environ.items()
+                   if k not in {"ZEE_ACIK_DEPO_ANAHTARI", "GITHUB_ACTIONS", "PYTHONUTF8"}}
+            env["PYTHONIOENCODING"] = "cp1252"
+            result = subprocess.run(["python3", str(ROOT / "scripts/acik-depo-denetle.py"),
+                "--anahtar-dosyasi", "/nonexistent/zee-key", "--depo", directory,
+                "--politika", str(path), "--yalniz-agac", "--anahtar-yoksa", "atla"],
+                capture_output=True, env=env)
+            self.assertEqual(result.returncode, 0, result.stderr.decode("utf-8", "replace"))
+            self.assertIn("ATLANDI".encode(), result.stdout)
+
     def test_anahtar_yoksa_hata_ya_da_acikca_atlandi(self):
         with tempfile.TemporaryDirectory() as directory:
             subprocess.run(["git", "init", "-q", directory], check=True)
@@ -159,7 +173,7 @@ class PublicPrivacyTests(unittest.TestCase):
             self.assertNotIn(b"ge\xc3\xa7ti;", missing.stdout)
             skipped = run_gate("--depo", directory, "--politika", str(path), "--yalniz-agac",
                                "--anahtar-yoksa", "atla")
-            self.assertEqual(skipped.returncode, 0)
+            self.assertEqual(skipped.returncode, 0, skipped.stderr.decode("utf-8", "replace"))
             self.assertIn("ATLANDI".encode(), skipped.stdout)
             self.assertNotIn("geçti;".encode(), skipped.stdout)
             os.environ["ZEE_ACIK_DEPO_ANAHTAR_YOKSA"] = "atla"
@@ -170,7 +184,7 @@ class PublicPrivacyTests(unittest.TestCase):
                     env={k: v for k, v in os.environ.items() if k != "ZEE_ACIK_DEPO_ANAHTARI"})
             finally:
                 del os.environ["ZEE_ACIK_DEPO_ANAHTAR_YOKSA"]
-            self.assertEqual(by_env.returncode, 0)
+            self.assertEqual(by_env.returncode, 0, by_env.stderr.decode("utf-8", "replace"))
             self.assertIn("ATLANDI".encode(), by_env.stdout)
             bad = run_gate("--depo", directory, "--politika", str(path), "--yalniz-agac",
                            env_key="zz")

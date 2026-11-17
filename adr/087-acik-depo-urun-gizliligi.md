@@ -131,7 +131,7 @@ kaldırılır; tam yedek bundle, force push, ayna eşitlemesi ve tüketici
 `dil-kur@<sha>` pinlerinin taşınması K-326 sırasını izler. GitHub PR ref ve
 önbellek temizliği destek talebi ister; teyit gelene kadar GB-131 açık kalır.
 
-Kanıt: `scripts/tests/acik-depo-test.py` (17 sentetik vaka: yanlış anahtar,
+Kanıt: `scripts/tests/acik-depo-test.py` (18 sentetik vaka: yanlış anahtar,
 anahtarsız hata/ATLANDI, düz metin ve tuzsuz hash taşımayan üretim, şema/kural
 reddi) ve
 `compiler/tests/guvenlik_kapisi_testi.rs::acik_depo_kapisi_anonim_politikayi_ve_ci_kablosunu_korur`.
