@@ -39,8 +39,8 @@ jobs:
           # K-334/ADR-087: anahtarsız fork PR'ı açıkça ATLANDI der; push, zamanlı ve
           # aynı depo PR koşularında anahtar zorunludur (yoksa çıkış 3).
           ZEE_ACIK_DEPO_ANAHTARI: ${{ secrets.ZEE_ACIK_DEPO_ANAHTARI }}
-          ANAHTAR_YOKSA: ${{ (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository) && 'atla' || 'hata' }}
-        run: python3 scripts/acik-depo-denetle.py --anahtar-yoksa "$ANAHTAR_YOKSA"
+          ZEE_ACIK_DEPO_ANAHTAR_YOKSA: ${{ (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository) && 'atla' || 'hata' }}
+        run: python3 scripts/acik-depo-denetle.py
       - name: Tüm Git geçmişi ve çalışma ağacında sır taraması
         run: bash scripts/sir-taramasi.sh
   rust-bagimliliklari:

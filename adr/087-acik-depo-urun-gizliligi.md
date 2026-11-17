@@ -88,7 +88,7 @@ listeden geri kazanılabilmesiydi. Karar:
   Liste PR metnine, commit mesajına ya da loga yazılmaz.
 - Politika `key_id` = HMAC(anahtar, sabit etiket) taşır. Yanlış anahtar hiçbir
   terimle eşleşmeyeceği için kapı bu durumda geçmez, çalışamadı (çıkış 2) der.
-- Anahtar yoksa kapı varsayılan olarak çıkış 3 ile durur. `--anahtar-yoksa atla`
+- Anahtar yoksa kapı varsayılan olarak çıkış 3 ile durur. `--anahtar-yoksa atla` (CI’da `ZEE_ACIK_DEPO_ANAHTAR_YOKSA=atla`; master denetleyicisi eski bayrak kümesiyle de çalışsın diye)
   yalnız anahtarın bilinçli verilmediği koşullar içindir ve "ATLANDI … geçti
   sayılmaz" yazar, GitHub'da uyarı ve adım özeti bırakır.
 - Fork PR'ına anahtar verilmez (`pull_request_target` dahil): anahtarlı kapı

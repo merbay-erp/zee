@@ -38,7 +38,8 @@ def policy_file(directory, base="0" * 40, terms=("Example Client",)):
 
 
 def run_gate(*args, env_key=None):
-    env = {k: v for k, v in os.environ.items() if k not in {"ZEE_ACIK_DEPO_ANAHTARI", "GITHUB_ACTIONS"}}
+    env = {k: v for k, v in os.environ.items()
+           if k not in {"ZEE_ACIK_DEPO_ANAHTARI", "ZEE_ACIK_DEPO_ANAHTAR_YOKSA", "GITHUB_ACTIONS"}}
     if env_key is not None:
         env["ZEE_ACIK_DEPO_ANAHTARI"] = env_key
     return subprocess.run(["python3", str(ROOT / "scripts/acik-depo-denetle.py"),
@@ -161,6 +162,16 @@ class PublicPrivacyTests(unittest.TestCase):
             self.assertEqual(skipped.returncode, 0)
             self.assertIn("ATLANDI".encode(), skipped.stdout)
             self.assertNotIn("geçti;".encode(), skipped.stdout)
+            os.environ["ZEE_ACIK_DEPO_ANAHTAR_YOKSA"] = "atla"
+            try:
+                by_env = subprocess.run(["python3", str(ROOT / "scripts/acik-depo-denetle.py"),
+                    "--anahtar-dosyasi", "/nonexistent/zee-key", "--depo", directory,
+                    "--politika", str(path), "--yalniz-agac"], capture_output=True,
+                    env={k: v for k, v in os.environ.items() if k != "ZEE_ACIK_DEPO_ANAHTARI"})
+            finally:
+                del os.environ["ZEE_ACIK_DEPO_ANAHTAR_YOKSA"]
+            self.assertEqual(by_env.returncode, 0)
+            self.assertIn("ATLANDI".encode(), by_env.stdout)
             bad = run_gate("--depo", directory, "--politika", str(path), "--yalniz-agac",
                            env_key="zz")
             self.assertEqual(bad.returncode, 2)
