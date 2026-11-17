@@ -23,6 +23,12 @@ Bu kayıt yeni sürüm etiketi değildir.
   `ZEE_ACIK_DEPO_ANAHTARI` ortam değişkeninde ya da
   `~/.config/zee/acik-depo-anahtari` dosyasında tutar; anahtarsız koşu
   "çalışamadı" (çıkış 3) der, fork PR'ında açıkça "ATLANDI" yazar.
+- **Depo geçmişi yeniden yazıldı (18 Kasım 2026):** 18 Eylül sonrası commit'lerin
+  SHA'ları değişti; eski→yeni karşılık
+  [K-334 eşlemesinde](incelemeler/k334/sha-esleme-v1.tsv). Kod ve davranış
+  aynıdır. `dil-kur@<sha>` gibi SHA'ya sabitlenmiş kullanımlar yeni SHA'ya
+  taşınmalı; eski SHA ile derlenmiş ikililer yeniden derleme gerektirmez.
+  Yerel klonlar `git fetch` + `git reset --hard origin/master` ile güncellenir.
 - Commit yazar e-postası olarak GitHub noreply adresi kullanılır
   (`git config user.email "<id>+<kullanıcı>@users.noreply.github.com"`).
 

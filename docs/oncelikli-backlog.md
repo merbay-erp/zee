@@ -2470,11 +2470,12 @@ bırakması K-332'de kapandı.
 
 ## K-334 — Açık depo kapısı HMAC ve iz temizliği
 
-**Durum: AÇIK (aşama 1 tamam).** ADR-087 eki, GB-131: 17.11.2026 dış taraması
+**Durum: AÇIK (aşama 1 ve tarihçe yeniden yazımı tamam; GitHub destek teyidi bekler).** ADR-087 eki, GB-131: 17.11.2026 dış taraması
 tuzsuz SHA-256 politika listesini sözlükle çözdü. Aşama 1: politika v2
 anahtarlı HMAC-SHA256 (`ZEE_ACIK_DEPO_ANAHTARI` sırrı, depo dışı özel liste,
 `key_id`, fork PR'ında açık ATLANDI), iç koşucu/önizleme adları ve canlı
 envanter cümleleri genelleştirildi, noreply yazar kuralı. Kanıt:
-`scripts/tests/acik-depo-test.py` 18 vaka, `guvenlik_kapisi_testi`. Açık:
-aşama 2 tarihçe yeniden yazımı (eski liste, altyapı izi, kurumsal e-posta),
-ayna eşitliği, tüketici pinleri ve GitHub PR ref/önbellek destek teyidi.
+`scripts/tests/acik-depo-test.py` 18 vaka, `guvenlik_kapisi_testi`. Aşama 2:
+275 commit yeni SHA aldı ([K-334 kaydı](incelemeler/k334/README.md),
+eşleme `docs/incelemeler/k334/sha-esleme-v1.tsv`). Açık: GitHub PR
+ref/önbellek destek teyidi.

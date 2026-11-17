@@ -1,0 +1,13 @@
+# zee-github-ref-gecisi-1
+# ref	onceki_object	yeni_object
+github:refs/heads/dependabot/github_actions/actions/setup-python-7.1.0	832622b88b1c6b5f24efb94dc0a865cafbdd9f1f	8fbbe8f7a1e6270d9e23007befb072afaad61e36
+github:refs/heads/fix/acik-depo-iz-temizligi	c40fdf9026cb4a19a5b215f7fe2c7a4b15c1e58c	5bd6849914ab6907701788ac35b96873d08bea48
+github:refs/heads/fix/reddedilen-yukleme-parca	e3815ba6523b583b97ee8b2a2ba3f8b26ebcc802	cce55be66243564c8c131857522cb2d8a47fe62b
+github:refs/heads/master	5d2fafd73371e38c4f10a1d28e26e34175b96cc6	16cdd1c95e03ac71dfb129a263e4c5e05d6dd5f8
+github:refs/heads/ozellik/dosya-imzasi-okuma	fbbbdfda800d20f1ee1ecd6627f04141bd40c13c	4d4fa38bf30d3fe62f87320014ed46de85373714
+github:refs/tags/dependency-retention/postgres-protocol-a4d74b5d8e1f	-	7eb7d06e12e6ab46c4a38326b1757f5f2ad498c0
+github:refs/tags/dependency-retention/postgres-protocol-a4d7f208bc1b	4c6d10cfcbf72245bcd72393236e62db33dbb480	-
+github:refs/tags/dependency-retention/postgres-protocol-f2d40d217666	806f4424c1c17cbc79d097373b006cbeef5c2609	-
+github:refs/tags/dependency-retention/postgres-protocol-f38dcc34f086	-	9b0261db18fbd3ed5a837c05e5fef6873436d3b6
+github:refs/tags/v1.0.0-rc.1	cd54ea110c6c2cb4342011cf466ff13509a013de	3897a3bfce7846a038af9f35ca23e5f51f77c2fc
+enterprise:refs/heads/master	d3ca6ea7c0d24cf92413ef56242af98d1caa3684	54dee22bd47dd1387ec059aa4e51669ad5ded277

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Yalnız kullanıcının K-214/K-215/K-326 yeniden yazımlarındaki eski dal uçlarını eşler."""
+"""Yalnız kullanıcının K-214/K-215/K-326/K-334 yeniden yazımlarındaki eski dal uçlarını eşler."""
 from pathlib import Path
 import re
 import subprocess
@@ -13,6 +13,10 @@ OLD_TIPS = {FULL_OLD_MASTER, OLD_MASTER, "0a8d1ba197d01fbcf87927ee7a26b896828077
 K326_TIPS = {"e196b6ede4109e59a4202e7503bd1a2387eb9498",
              "bbc9ba4b5ca9c7d89f4bcad8c4b8eb4872c9f85d"}
 OLD_TIPS |= K326_TIPS
+# K-334: GitHub ana dalı (5d2fafd7) ve Enterprise aynası (d3ca6ea7) yeniden yazım öncesi uçları.
+K334_TIPS = {"5d2fafd73371e38c4f10a1d28e26e34175b96cc6",
+             "d3ca6ea7c0d24cf92413ef56242af98d1caa3684"}
+OLD_TIPS |= K334_TIPS
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -20,7 +24,8 @@ def resolve(before, root=ROOT):
     if before not in OLD_TIPS:
         return before
     rows = [line.split("\t") for line in
-            (root / ("docs/incelemeler/k326/sha-esleme-v1.tsv" if before in K326_TIPS
+            (root / ("docs/incelemeler/k334/sha-esleme-v1.tsv" if before in K334_TIPS
+                     else "docs/incelemeler/k326/sha-esleme-v1.tsv" if before in K326_TIPS
                      else "docs/incelemeler/k215/sha-esleme-v1.tsv" if before == FULL_OLD_MASTER
                      else "docs/incelemeler/k214/sha-esleme-v1.tsv")).read_text().splitlines()
             if line and not line.startswith("#")]

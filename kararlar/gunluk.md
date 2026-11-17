@@ -5079,3 +5079,9 @@ onam formu. Golden programları üreticiyle senkron (`dogrula.sh` denetler);
   orada K-319'un exact 3.13.3 sürümünü sunmadığı için `dil` iş akışının Linux
   matrisi `ubuntu-24.04`'e sabitlendi (action pinleri değişmedi). Python
   sürümünü yükseltmek ast.dump özetlerini yenileyen ayrı bir iştir.
+- K-334 aşama 2 (18.11.2026): kullanıcı onaylı tarihçe yeniden yazımı. Eski
+  v1 politika dosyası bütün tarihçeden çıkarıldı; iç altyapı/envanter metinleri
+  ve kurumsal/makine adresli yazar kimlikleri temizlendi; 577 commit'in 275'i
+  yeni SHA aldı. Kayıt SHA'ları K-326 yöntemiyle yeni ataya bağlandı; ölçüm
+  ve provenance makbuzları özgün SHA'yı korur, `k334/sha-esleme-v1.tsv` ile
+  çözülür. Eski SHA adlı canlı ikililer yeniden derlenmez.

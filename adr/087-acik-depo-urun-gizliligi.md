@@ -125,10 +125,11 @@ e-posta yazılmaz. Katkıcı depo içinde yerel ayar yapar:
 K-334 öncesi kurumsal adres taşıyan üç commit, ikinci aşamadaki tarihçe
 yeniden yazımında `.mailmap` eşlemesiyle noreply'a çevrilir.
 
-İkinci aşama (kullanıcı onaylı): Aşama 1 birleştikten sonra eski tuzsuz hash
-listesi, altyapı etiketleri ve kurumsal e-posta tarihçeden `git filter-repo` ile
-kaldırılır; tam yedek bundle, force push, ayna eşitlemesi ve tüketici
-`dil-kur@<sha>` pinlerinin taşınması K-326 sırasını izler. GitHub PR ref ve
+İkinci aşama (kullanıcı onaylı, 18 Kasım 2026): eski tuzsuz hash listesi,
+altyapı/envanter metinleri ve kurumsal/makine adresli yazar kimlikleri
+tarihçeden kaldırıldı; tam yedek bundle, force push, ayna eşitlemesi ve
+tüketici `dil-kur@<sha>` pinlerinin taşınması K-326 sırasını izler
+([K-334 kaydı](../docs/incelemeler/k334/README.md)). GitHub PR ref ve
 önbellek temizliği destek talebi ister; teyit gelene kadar GB-131 açık kalır.
 
 Kanıt: `scripts/tests/acik-depo-test.py` (18 sentetik vaka: yanlış anahtar,
