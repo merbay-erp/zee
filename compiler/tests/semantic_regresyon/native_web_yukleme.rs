@@ -92,7 +92,7 @@ pub fn calistir(kaynak: &Path) -> (i64, Vec<String>) {
     let ana = proje.join("ana.dil");
     std::fs::copy(kaynak, &ana).expect("kaynak kopyası");
     let kapi = bos_kapi();
-    let mut worker = worker_baslat(&ana, kapi, Stdio::null());
+    let mut worker = worker_baslat(&ana, kapi, Stdio::null);
     dinlemeyi_bekle(kapi);
 
     let form = istek(

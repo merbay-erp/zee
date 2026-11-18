@@ -2,7 +2,7 @@
 //! durumunu gerçekten paylaştığı uçtan uca güvenli-proxy kanıtı.
 
 use std::io::{Read, Write};
-use std::net::{SocketAddr, TcpListener, TcpStream};
+use std::net::{SocketAddr, TcpStream};
 use std::path::{Path, PathBuf};
 use std::process::{Child, Command, Stdio};
 use std::sync::atomic::{AtomicU64, Ordering};
@@ -43,11 +43,7 @@ impl Drop for Sunucu {
 }
 
 fn bos_kapi() -> u16 {
-    TcpListener::bind(("127.0.0.1", 0))
-        .expect("boş kapı")
-        .local_addr()
-        .expect("yerel adres")
-        .port()
+    kopma::bos_kapi()
 }
 
 fn sunucuyu_baslat(kaynak: &Path, kapi: u16) -> Sunucu {
@@ -68,22 +64,19 @@ fn sunucuyu_baslat_oranla(kaynak: &Path, kapi: u16, bellek: bool) -> Sunucu {
 
 fn sunucuyu_baslat_ayarlarla(kaynak: &Path, kapi: u16, ayarlar: &[&str]) -> Sunucu {
     let kapi_yazisi = kapi.to_string();
-    let mut komut = Command::new(env!("CARGO_BIN_EXE_dil"));
-    komut.args([
-        "çalıştır",
-        "--web-proxy",
-        "https://panel.example",
-        "--web-worker-port",
-        &kapi_yazisi,
-        kaynak.to_str().expect("UTF-8 kaynak yolu"),
-    ]);
-    komut.args(ayarlar);
-    let cocuk = komut
-        .stdout(Stdio::null())
-        .stderr(Stdio::null())
-        .spawn()
-        .expect("web worker süreci");
-    Sunucu(cocuk)
+    Sunucu(kopma::dinleyene_dek_baslat(|| {
+        let mut komut = Command::new(env!("CARGO_BIN_EXE_dil"));
+        komut.args([
+            "çalıştır",
+            "--web-proxy",
+            "https://panel.example",
+            "--web-worker-port",
+            &kapi_yazisi,
+            kaynak.to_str().expect("UTF-8 kaynak yolu"),
+        ]);
+        komut.args(ayarlar).stderr(Stdio::null());
+        komut
+    }))
 }
 
 fn istek(
@@ -448,18 +441,17 @@ fn istemci_adresi_proxy_ve_socketten_gelir_xff_ve_form_alanindan_gelmez() {
     let direct_kapi = bos_kapi();
     let direct_kaynak = gecici.0.join("socket.dil");
     std::fs::write(&direct_kaynak, format!("{direct_kapi} kapısında sunucu başlat\nGET \"/ip\" adresine istek geldiğinde\n    istemci adresi yanıtını gönder\n")).unwrap();
-    let direct = Sunucu(
-        Command::new(env!("CARGO_BIN_EXE_dil"))
+    let direct = Sunucu(kopma::dinleyene_dek_baslat(|| {
+        let mut komut = Command::new(env!("CARGO_BIN_EXE_dil"));
+        komut
             .args([
                 "çalıştır",
                 "--deneysel-web",
                 direct_kaynak.to_str().unwrap(),
             ])
-            .stdout(Stdio::null())
-            .stderr(Stdio::null())
-            .spawn()
-            .unwrap(),
-    );
+            .stderr(Stdio::null());
+        komut
+    }));
     let response = ham_ip_istegi(direct_kapi, "X-Forwarded-For: 192.0.2.99\r\nForwarded: for=203.0.113.7;proto=https;host=panel.example\r\n", "/ip");
     assert_eq!(durum(&response), 200, "{response}");
     assert_eq!(response.split_once("\r\n\r\n").unwrap().1, "127.0.0.1");
@@ -514,20 +506,7 @@ fn rota_hatasi_gercek_worker_ta_500_olur_ve_operator_stderr_satiri_yazar() {
         "8080 kapısında sunucu başlat\n\nGET \"/sayi\" adresine istek geldiğinde\n    girdi isteğin \"n\" değeri olsun\n    sayı girdinin sayısı olsun\n    \"bitmemeliydi\" yanıtını gönder\n\nGET \"/saglik\" adresine istek geldiğinde\n    \"ayakta\" yanıtını gönder\n",
     )
     .expect("worker kaynağı");
-    let kapi_yazisi = kapi.to_string();
-    let mut cocuk = Command::new(env!("CARGO_BIN_EXE_dil"))
-        .args([
-            "çalıştır",
-            "--web-proxy",
-            "https://panel.example",
-            "--web-worker-port",
-            &kapi_yazisi,
-            yol.to_str().expect("UTF-8 kaynak yolu"),
-        ])
-        .stdout(Stdio::null())
-        .stderr(Stdio::piped())
-        .spawn()
-        .expect("web worker süreci");
+    let mut cocuk = kopma::worker_baslat(&yol, kapi, Stdio::piped);
 
     let hata = istek(kapi, "203.0.113.9", "GET", "/sayi?n=gizli-abc", None, "");
     assert_eq!(durum(&hata), 500, "{hata}");
@@ -602,20 +581,7 @@ fn yanit_yazimi_sirasinda_kopan_istemci_worker_i_dusurmez_ve_izin_sizdirmaz() {
         "8080 kapısında sunucu başlat\n\nGET \"/buyuk\" adresine istek geldiğinde\n    metin \"x\" olsun\n    21 kez tekrarla\n        metin metin ile metin olsun\n    metin yanıtını gönder\n\nGET \"/saglik\" adresine istek geldiğinde\n    \"ayakta\" yanıtını gönder\n",
     )
     .expect("worker kaynağı");
-    let kapi_yazisi = kapi.to_string();
-    let mut cocuk = Command::new(env!("CARGO_BIN_EXE_dil"))
-        .args([
-            "çalıştır",
-            "--web-proxy",
-            "https://panel.example",
-            "--web-worker-port",
-            &kapi_yazisi,
-            yol.to_str().expect("UTF-8 kaynak yolu"),
-        ])
-        .stdout(Stdio::null())
-        .stderr(Stdio::piped())
-        .spawn()
-        .expect("web worker süreci");
+    let mut cocuk = kopma::worker_baslat(&yol, kapi, Stdio::piped);
 
     let tam = istek(kapi, "203.0.113.7", "GET", "/buyuk", None, "");
     assert_eq!(durum(&tam), 200);
@@ -688,13 +654,17 @@ fn grubu_baslat(kaynak: &Path, kapi: u16, isci: u16, saglik: Option<u16>) -> Sun
         komut.args(["--web-saglik-port", &saglik.to_string()]);
     }
     komut.arg(kaynak.to_str().expect("UTF-8 kaynak yolu"));
-    let cocuk = komut
+    komut
         .current_dir(kaynak.parent().expect("kaynak klasörü"))
-        .stdout(Stdio::null())
-        .stderr(Stdio::null())
-        .spawn()
-        .expect("web işçi grubu");
-    Sunucu(cocuk)
+        .stderr(Stdio::null());
+    Sunucu(kopma::dinleyene_dek_baslat(|| {
+        let mut kopya = Command::new(komut.get_program());
+        kopya
+            .args(komut.get_args())
+            .current_dir(kaynak.parent().expect("kaynak klasörü"))
+            .stderr(Stdio::null());
+        kopya
+    }))
 }
 
 #[cfg(unix)]
