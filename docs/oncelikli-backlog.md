@@ -2342,8 +2342,10 @@ yeşil. Python 3.13.3 pini; Linux native kampanyalarına özel tek bağlantılı
 worker-supervisor zombi lider düzeltmesi; Windows `zee.ayar` sürücü öneki ve
 `@unix` faz seçicileri; Playground kapsam bağımlılığı. `surum-adayi` aynı
 commit'te üç platform imzalı ([kanıt](urunlesme-p125-imzali-surum-20261019.md)).
-Açık kalan: `lifecycle_core.py` Linux zombi lider kalıbı (pinli kanıt zinciri),
-`acik-depo`/`tedarik` iş akışlarında eski geçmiş bulguları (geçmiş yeniden yazılmaz).
+`lifecycle_core.py` Linux zombi lider kalıbı 18.11.2026'da kapandı: v1 soy
+kaydı korunarak ayrı v2 kaydıyla zincirlendi, Linux'ta kanıtlandı (eski çekirdek
+3,0 sn bekliyordu, yeni 0,02 sn). Açık kalan: `acik-depo`/`tedarik` iş
+akışlarında eski geçmiş bulguları (geçmiş yeniden yazılmaz).
 
 ## K-320 — Kullanılabilirlik oturum yürütücüsü
 

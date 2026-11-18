@@ -1,5 +1,5 @@
-"""K268 narrow lifecycle core; exact reviewed509106d7 function lineage in LINEAGE.json."""
-import hashlib,os,selectors,signal,subprocess,time
+"""K268 narrow lifecycle core; reviewed509106d7 lineage v1 + K-319 Linux zombie-leader delta in lineage v2."""
+import hashlib,os,selectors,signal,subprocess,sys,time
 from pathlib import Path
 MAX_CAPTURE=8*1024*1024
 CANCELLED=False
@@ -15,14 +15,29 @@ def held_status(child):
     require(child.returncode is None,'lost child authority')
     status=os.waitid(os.P_PID,child.pid,os.WEXITED|os.WNOHANG|os.WNOWAIT)
     return None if status is None else (status.si_status if status.si_code==os.CLD_EXITED else -status.si_status)
+def linux_group_live(pgid):
+    # K-319: a held (unreaped) zombie leader keeps killpg(pgid,0) succeeding on Linux.
+    try:entries=os.listdir('/proc')
+    except OSError:return True
+    for entry in entries:
+        if not entry.isdigit():continue
+        try:
+            with open('/proc/'+entry+'/stat','rb') as stream:stat=stream.read()
+        except OSError:continue
+        fields=stat[stat.rfind(b')')+2:].split()
+        if len(fields)>2 and int(fields[2])==pgid and fields[0] not in (b'Z',b'X'):return True
+    return False
 def stop_owned(child,grace=3):
     deadline=time.monotonic()+grace
     held_status(child)
+    linux=sys.platform.startswith('linux')
     def retry():
         left=deadline-time.monotonic();require(left>0,'owned cleanup permission deadline');time.sleep(min(.001,left))
     def alive():
         while True:
-            try:os.killpg(child.pid,0);return True
+            try:
+                os.killpg(child.pid,0)
+                return not(linux and held_status(child) is not None and not linux_group_live(child.pid))
             except ProcessLookupError:return False
             except PermissionError:
                 if held_status(child) is not None:return False
@@ -36,7 +51,8 @@ def stop_owned(child,grace=3):
                 retry()
     if alive():send(signal.SIGTERM)
     while alive() and time.monotonic()<deadline:time.sleep(min(.02,max(0,deadline-time.monotonic())))
-    if alive():send(signal.SIGKILL)
+    # The held leader still reserves the PGID: on Linux sweep any member a /proc scan raced.
+    if linux or alive():send(signal.SIGKILL)
     return child.wait(timeout=2)
 def controlled_env():
     env={k:v for k,v in os.environ.items() if not k.startswith('GIT_')}

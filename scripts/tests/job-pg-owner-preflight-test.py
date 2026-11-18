@@ -772,7 +772,7 @@ class JobLifecyclePreparation(unittest.TestCase):
         source=CONSUMER_SOURCE.with_name('lifecycle_core.py')
         if not source.exists(): source=SOURCE.parents[1]/'lifecycle_core.py'
         raw=public_source(source)
-        self.assertEqual(sha(raw),'e76fe65b6103fc4732aafc4468afc5bbf3d0699a0f79d7f74879165636ebb1a9')
+        self.assertEqual(sha(raw),'ae1c19b615f4d52f5eb9100fd30cc6d61f881b76a58f39dac43a858d7b03f4bb')
         helper={'CANCELLED':False,'MAX_CAPTURE':1048576,'Reject':type('Reject',(Exception,),{}),'subprocess':types.SimpleNamespace(Popen=reject_real)}
         tree=ast.parse(raw)
         nodes=[n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name in ('require','run')]
