@@ -87,9 +87,55 @@ süpürgesine kalmıştı (GB-129, yüksek).
   okuma hatasında ayrıca geri alma ister), geçici yolu istekler arası
   tutmak (bilinen tüketici yok; disk sınırı ölçülemez kalır), yalnız açılış
   süpürgesine güvenmek.
-- **Açık sınır.** Süreç istek ortasında ölürse (ölümcül tanı, sinyal) kalan
-  dosya restart uzlaştırıcısına kalır. Eşzamanlı akan yükleme sayısı bağlantı
-  izni sınırıyla zaten sınırlıdır.
+- **Açık sınır (18 Kasım 2026 ekiyle kapandı).** Süreç istek ortasında ölürse
+  (ölümcül tanı, sinyal) kalan dosya restart uzlaştırıcısına kalıyordu; aşağıdaki
+  yaş tabanlı süpürme bunu runtime'a alır. Eşzamanlı akan yükleme sayısı
+  bağlantı izni sınırıyla zaten sınırlıdır.
 - **Kanıt:** `web_yukleme` ve `main.rs` birim testleri, regression
   `security/reddedilen-yukleme-parcasi` (`native-web-yukleme` kipi: gerçek
   `dil` worker'ı, altı senaryo; düzeltme öncesi `csrf-yok` 400 ve `parça 5`).
+
+## Ek — K-332: süreç ölümünden kalan yetim `.parca` süpürmesi (18 Kasım 2026)
+
+Drop koruması süreç istek ortasında öldüğünde koşmaz; dosya yalnız ürünün
+açılış uzlaştırıcısına kalıyordu. Bu iki yönden zayıftı: (1) supervisor ölen
+worker'ı hemen yeniden başlattığından ürün süpürgesi ya yetimi göremez ya da
+— yaş bakmadan sildiği için — eşzamanlı başka worker'ın o an akan yüklemesini
+silebilir (zee-cekirdek W4); RFC-0038 açılış birincilliğinde yeniden başlayan
+worker ikincil olduğundan ürün süpürgesi ölen işçinin yetimini bir sonraki
+tam yeniden başlatmaya kadar hiç görmez. (2) Ürün süpürgesi olmayan zee web
+uygulamalarında yetimler diskte birikir (istek başına en çok 16 MiB).
+
+- **Karar.** Spool'un sahibi olan native adaptör kendi adlandırmasındaki
+  yetimleri de süpürür: `sunucu başlat` dinleyiciyi kurduktan sonra ve
+  çalışırken en sık `YETIM_SUPURME_ARALIGI` (5 dk) aralıkla `istek_al`
+  başında, `.zee/yuklemeler` altında yalnız `<64 küçük hex>.parca` adlı,
+  sembolik bağ olmayan, son değişikliği `YETIM_PARCA_YASI`'ndan (15 dk) eski
+  normal dosyalar silinir. Tur başına en çok 10 000 girdi incelenir.
+- **Neden kilit yok.** Canlı bir `.parca`'nın son yazımından sonraki ömrü gövde
+  okuma son tarihi (10 sn), rota çalıştırma bütçesi (30 sn) ve yanıt yazım
+  zaman aşımıyla (10 sn) sınırlıdır; eşik bunun en az on katı olmak zorundadır
+  ve sınırlar büyürse derleme zamanı `assert!` kırılır. Dolayısıyla eşzamanlı
+  worker'ların canlı dosyası yaşla korunur; iki worker aynı turda süpürürse
+  ikincisi `NotFound`'u yok sayar. Bu tasarım RFC-0038 tek-açılış/birincillik
+  profilinden bağımsızdır: birincil/ikincil ayrımına, dosya ya da PG kilidine
+  ihtiyaç duymaz, onunla çakışmaz.
+- **Dokunulmayanlar.** Ürünün kendi adlandırdığı dosyalar (ör. medya hazırlık
+  dosyaları), alt dizinler, bağlar (bağ hedefi dahil) ve gelecek tarihli
+  dosyalar (saat geri alındı) silinmez. Ürün uzlaştırıcısının `.parca`
+  dosyalarını yaş bakmadan silmesi ayrı bir ürün düzeltmesidir; runtime
+  süpürmesi devreye girdiğinde ürün `.parca`'yı kendi taramasından
+  çıkarabilir.
+- **Reddedilen:** açılışta tek sefer süpürme (yeniden başlatma anında yetim
+  henüz genç, eşik altında kalır), worker kimliği/PID taşıyan ad ya da
+  kilit dosyası (PID yeniden kullanımı ve çok host; yeni durum dosyası),
+  `flock` ile canlılık (Windows'ta farklı anlam; yaş sözü yeterli), dil
+  yüzeyine süpürme kalıbı açmak (core freeze; runtime'ın kendi geçici dosyası).
+- **Açık sınır.** Yetim, eşik dolup bir sonraki süpürme turuna kadar (en çok
+  ~20 dk, boşta worker'da ilk isteğe kadar) diskte kalır. Boşta worker yeni
+  yetim de üretmez.
+- **Kanıt:** `web_yukleme` birim testleri (`yetim_supurme_yalniz_yasli_runtime_parcasini_siler`,
+  `canli_akan_yukleme_supurmeden_etkilenmez`), regression
+  `security/yetim-yukleme-parcasi` (`native-web-yukleme` kipi: gerçek `dil`
+  worker'ı açılışta 16 dk'lık yetimi siler, 1 dk'lık canlıyı ve ürün adlı
+  dosyayı korur; düzeltme öncesi `yetim kaldı`). GB-132.

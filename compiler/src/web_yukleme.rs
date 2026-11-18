@@ -4,11 +4,80 @@
 //! `AkanYukleme` düşerken, tamamlanmış yükleme ise istek bittiğinde
 //! `IstekYuklemesi` düşerken dosyayı siler; rota dosyayı taşıdıysa yolda
 //! dosya yoktur ve silme etkisizdir.
+//!
+//! K-332 eki: süreç istek ortasında ölürse Drop koşmaz. Worker açılışta ve
+//! çalışırken en sık `YETIM_SUPURME_ARALIGI`'nda bir, yalnız runtime
+//! adlandırmasına uyan ve `YETIM_PARCA_YASI`'ndan eski `.parca` dosyalarını
+//! süpürür. Canlı yükleme bu yaşa ulaşamadığından eşzamanlı worker'ların
+//! canlı dosyası kilitsiz korunur (ADR-061 eki).
 
 use sha2::{Digest, Sha256};
 use std::fs::{File, OpenOptions};
 use std::io::Write;
 use std::path::{Path, PathBuf};
+use std::time::{Duration, SystemTime};
+
+/// Süreç ölümünden kalan (yetim) `.parca` bu yaştan eskiyse süpürülür.
+pub const YETIM_PARCA_YASI: Duration = Duration::from_secs(15 * 60);
+/// Çalışan worker'da süpürme en sık bu aralıkla tekrarlanır.
+pub const YETIM_SUPURME_ARALIGI: Duration = Duration::from_secs(5 * 60);
+/// Tek süpürmede incelenen en çok dizin girdisi; kalan sonraki tura kalır.
+const YETIM_SUPURME_GIRDISI: usize = 10_000;
+
+// Eşiğin canlı ömrün en az on katı olduğu `main.rs` içinde derleme zamanı
+// denetlenir (HTTP sınırlarının sahibi orasıdır).
+
+/// `AkanYukleme::yeni` adlandırması: 64 küçük onaltılık + `.parca`.
+fn runtime_parca_adi(ad: &str) -> bool {
+    ad.strip_suffix(".parca").is_some_and(|kimlik| {
+        kimlik.len() == 64
+            && kimlik
+                .bytes()
+                .all(|bayt| bayt.is_ascii_digit() || (b'a'..=b'f').contains(&bayt))
+    })
+}
+
+/// `kok/.zee/yuklemeler` altında runtime adlandırmasına uyan, sembolik bağ
+/// olmayan normal dosyalardan son değişikliği `yas`tan eski olanları siler ve
+/// sayısını döndürür. Başka ad, alt dizin, bağ ve gelecek tarihli dosyaya
+/// dokunulmaz; dizin yoksa ya da okunamazsa hiçbir şey yapılmaz.
+pub fn yetim_parcalari_supur(kok: &Path, simdi: SystemTime, yas: Duration) -> usize {
+    let Ok(girdiler) = std::fs::read_dir(kok.join(".zee/yuklemeler")) else {
+        return 0;
+    };
+    let mut silinen = 0;
+    for girdi in girdiler.take(YETIM_SUPURME_GIRDISI).filter_map(Result::ok) {
+        if !girdi.file_name().to_str().is_some_and(runtime_parca_adi) {
+            continue;
+        }
+        // `DirEntry::metadata` sembolik bağı izlemez.
+        let Ok(bilgi) = girdi.metadata() else {
+            continue;
+        };
+        if !bilgi.file_type().is_file() {
+            continue;
+        }
+        let yasli = bilgi
+            .modified()
+            .ok()
+            .and_then(|degisim| simdi.duration_since(degisim).ok())
+            .is_some_and(|gecen| gecen >= yas);
+        if !yasli {
+            continue;
+        }
+        match std::fs::remove_file(girdi.path()) {
+            Ok(()) => silinen += 1,
+            // Başka worker aynı turda sildi.
+            Err(hata) if hata.kind() == std::io::ErrorKind::NotFound => {}
+            Err(hata) => eprintln!(
+                "yetim yükleme geçici dosyası silinemedi ({}): {}",
+                girdi.path().display(),
+                hata
+            ),
+        }
+    }
+    silinen
+}
 
 pub struct YuklemeBilgisi {
     pub goreli_yol: String,
@@ -147,6 +216,104 @@ mod tests {
         );
         drop(koruma);
         assert!(!kok.join(&bilgi.goreli_yol).exists());
+        std::fs::remove_dir_all(kok).unwrap();
+    }
+
+    #[test]
+    fn yetim_supurme_yalniz_yasli_runtime_parcasini_siler() {
+        let kok = std::env::temp_dir().join(format!("zee-k332-yetim-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&kok);
+        let dizin = kok.join(".zee/yuklemeler");
+        // Dizin yoksa süpürme etkisizdir.
+        assert_eq!(
+            yetim_parcalari_supur(&kok, SystemTime::now(), YETIM_PARCA_YASI),
+            0
+        );
+        std::fs::create_dir_all(dizin.join(format!("{}.parca", "c".repeat(64)))).unwrap();
+        let simdi = SystemTime::now();
+        let eski = simdi - YETIM_PARCA_YASI - Duration::from_secs(1);
+        let yaz = |ad: &str, zaman: SystemTime| {
+            let dosya = File::create(dizin.join(ad)).unwrap();
+            dosya.set_modified(zaman).unwrap();
+        };
+        let yetim = format!("{}.parca", "a".repeat(64));
+        let canli = format!("{}.parca", "b".repeat(64));
+        let gelecek = format!("{}.parca", "d".repeat(64));
+        yaz(&yetim, eski);
+        yaz(&canli, simdi - YETIM_PARCA_YASI + Duration::from_secs(60));
+        yaz(&gelecek, simdi + Duration::from_secs(3600));
+        for yabanci in [
+            "urun-eski.parca",
+            &format!("{}.parca", "A".repeat(64)),
+            &format!("{}.bin", "a".repeat(64)),
+            &format!("{}.parca", "e".repeat(63)),
+        ] {
+            yaz(yabanci, eski);
+        }
+        #[cfg(unix)]
+        {
+            let hedef = kok.join("hedef.bin");
+            File::create(&hedef).unwrap().set_modified(eski).unwrap();
+            std::os::unix::fs::symlink(&hedef, dizin.join(format!("{}.parca", "f".repeat(64))))
+                .unwrap();
+        }
+
+        assert_eq!(yetim_parcalari_supur(&kok, simdi, YETIM_PARCA_YASI), 1);
+        assert!(!dizin.join(&yetim).exists(), "yaşlı yetim silinmeli");
+        assert!(
+            dizin.join(&canli).exists(),
+            "eşik altındaki canlı dosya kalmalı"
+        );
+        assert!(
+            dizin.join(&gelecek).exists(),
+            "gelecek tarihli dosyaya dokunulmaz"
+        );
+        assert!(
+            dizin.join("urun-eski.parca").exists(),
+            "ürün adlandırması korunur"
+        );
+        assert!(dizin.join(format!("{}.bin", "a".repeat(64))).exists());
+        assert!(dizin.join(format!("{}.parca", "c".repeat(64))).is_dir());
+        #[cfg(unix)]
+        {
+            assert!(kok.join("hedef.bin").exists(), "bağ hedefi silinmez");
+            assert!(dizin
+                .join(format!("{}.parca", "f".repeat(64)))
+                .symlink_metadata()
+                .is_ok());
+        }
+        // İkinci tur (eşzamanlı başka worker) silecek bir şey bulmaz.
+        assert_eq!(yetim_parcalari_supur(&kok, simdi, YETIM_PARCA_YASI), 0);
+        std::fs::remove_dir_all(kok).unwrap();
+    }
+
+    #[test]
+    fn canli_akan_yukleme_supurmeden_etkilenmez() {
+        let kok = std::env::temp_dir().join(format!("zee-k332-canli-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&kok);
+        std::fs::create_dir_all(&kok).unwrap();
+        let mut yukleme = AkanYukleme::yeni(&kok).unwrap();
+        yukleme.yaz(b"yarim").unwrap();
+        assert_eq!(
+            yetim_parcalari_supur(&kok, SystemTime::now(), YETIM_PARCA_YASI),
+            0
+        );
+        yukleme.yaz(b"-devam").unwrap();
+        let (bilgi, koruma) = yukleme.tamamla().unwrap();
+        assert_eq!(
+            std::fs::read(kok.join(&bilgi.goreli_yol)).unwrap(),
+            b"yarim-devam"
+        );
+        // Aynı dosya eşiği aşmış bir saatle görülürse yetim sayılır.
+        assert_eq!(
+            yetim_parcalari_supur(
+                &kok,
+                SystemTime::now() + YETIM_PARCA_YASI + Duration::from_secs(1),
+                YETIM_PARCA_YASI
+            ),
+            1
+        );
+        drop(koruma);
         std::fs::remove_dir_all(kok).unwrap();
     }
 

@@ -16,7 +16,7 @@ Kaynak: `regression/v2.tsv`
 | morphology | 2 |
 | parser | 5 |
 | runtime | 8 |
-| security | 11 |
+| security | 12 |
 
 | Tanı | Vaka |
 | --- | --- |
@@ -28,9 +28,9 @@ Kaynak: `regression/v2.tsv`
 | S030 | 1 |
 | T017 | 1 |
 | T054 | 2 |
-| - | 30 |
+| - | 31 |
 
-Toplam 41 vaka; `-` tanısız çalışma/eşzamanlılık vakasıdır. Tam 40 karakterlik `fixed_by` commit'i taşıyan vaka: 41/41.
+Toplam 42 vaka; `-` tanısız çalışma/eşzamanlılık vakasıdır. Tam 40 karakterlik `fixed_by` commit'i taşıyan vaka: 42/42.
 
 ## Güvenlik bulguları
 
@@ -41,10 +41,10 @@ Kaynak: `docs/guvenlik-bulgulari-v1.tsv`
 | kritik | 1 | 0 | 0 | 1 |
 | yuksek | 17 | 0 | 0 | 17 |
 | orta | 34 | 16 | 2 | 52 |
-| dusuk | 30 | 30 | 1 | 61 |
+| dusuk | 31 | 30 | 1 | 62 |
 
 Kapı: açık kritik/yüksek bulgu 0 → **GEÇTİ** (ADR-066 sürekli kapı koşulu).
-Toplam bulgu: 131.
+Toplam bulgu: 132.
 
 ## Spec maddeleri
 
@@ -77,12 +77,12 @@ Kaynak: `docs/spec-madde-kaniti-v1.tsv`
 | spec/23-yetkinlik-ve-outbound-guvenligi.md | 26 | 0 | 0 | 26 | 100 |
 | spec/24-kaynak-guvenlik-profili.md | 9 | 0 | 0 | 9 | 100 |
 | spec/25-postgresql-veri-erisimi.md | 7 | 1 | 1 | 9 | 77 |
-| spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md | 5 | 0 | 0 | 5 | 100 |
+| spec/26-binary-yukleme-ve-dosya-yasam-dongusu.md | 6 | 0 | 0 | 6 | 100 |
 | spec/27-uyumluluk-ve-surumleme.md | 11 | 1 | 1 | 13 | 84 |
 | spec/28-gorunum-blogu.md | 2 | 0 | 0 | 2 | 100 |
 | spec/29-test-kapsami.md | 5 | 0 | 0 | 5 | 100 |
 | spec/30-editor-analizi-ve-lint.md | 12 | 0 | 1 | 13 | 92 |
-| **Toplam** | 236 | 5 | 3 | 244 | 96 |
+| **Toplam** | 237 | 5 | 3 | 245 | 96 |
 
 ## Dogfood ürünleri ve korpusu
 
@@ -143,8 +143,8 @@ Kaynak: `docs/compiler-degisiklik-beyanlari-v1.tsv + docs/core-freeze-beyanlari-
 
 | Değişiklik sınıfı | Beyan |
 | --- | --- |
-| maintenance | 45 |
-| semantic-bugfix | 12 |
+| maintenance | 46 |
+| semantic-bugfix | 13 |
 | semantic-change | 48 |
 
 | Freeze sınıfı | Beyan |
@@ -152,7 +152,7 @@ Kaynak: `docs/compiler-degisiklik-beyanlari-v1.tsv + docs/core-freeze-beyanlari-
 | bugfix | 2 |
 | correctness | 18 |
 | dogfood-change | 27 |
-| maintenance | 42 |
-| security | 12 |
+| maintenance | 43 |
+| security | 13 |
 
-Toplam: 105 compiler değişiklik beyanı, 101 core freeze beyanı.
+Toplam: 107 compiler değişiklik beyanı, 103 core freeze beyanı.

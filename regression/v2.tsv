@@ -41,3 +41,4 @@ rota-hatasi-yalitimi	K-324	2ed334368e8f80752a8022bd813ec04cc46300aa	-	0.8.0-dev	
 yanit-yazimi-kopmasi	K-327	756a2018553486b659fe1d865c0e3dbaf98b7e6a	-	0.8.0-dev	security	native-web-kopma	-	-	0	200 ayakta	regression/security/yanit-yazimi-kopmasi.dil
 aygitlar-arasi-tasima	K-329	d07703ddfad5a8a5dfc034a34a8e23c26c0ef700	-	0.8.0-dev	runtime	native-dosya-exdev	-	-	0	taşındı	regression/runtime/aygitlar-arasi-tasima.dil
 reddedilen-yukleme-parcasi	K-332	cf450b02fb490a68eb448b5c0f3e57db057b0a11	-	0.8.0-dev	security	native-web-yukleme	-	-	0	403 csrf-yok\n403 sahte-oturum\n404 rota-yok\n400 kisa-govde\n200 tuketmeyen-rota\n200 tasiyan-rota\nparça 0\ntaşınan 65536	regression/security/reddedilen-yukleme-parcasi.dil
+yetim-yukleme-parcasi	K-332	1e88073cc8bf49227552df30749113de7e9cdb2b	-	0.8.0-dev	security	native-web-yukleme	-	-	0	200 hazır\nyetim silindi\ncanli kaldı\nurun kaldı	regression/security/yetim-yukleme-parcasi.dil
