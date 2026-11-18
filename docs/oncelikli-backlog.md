@@ -2434,7 +2434,9 @@ Max-Age'ini yeniler, oluşturmadan 30 günlük mutlak tavan aşılmaz, anonim
 oturum ve çıkış değişmez (GB-128). Kalıcı ortak depo restart/çok worker
 paylaşımını zaten sağlıyordu; düzeltme gerekmedi. Kanıt: `web_guvenligi`
 birim testleri, `proje_testi`, `web_cok_surec_testi::kayar_oturum_*`.
-Açık: hermetik `dil dene` adaptörü ayarı uygulamaz.
+Hermetik `dil dene` adaptörü de proje ayarını uygular (18 Kasım 2026,
+ADR-158 eki): `proje_testi::dene_hermetik_adaptoru_proje_oturum_omrunu_uygular`,
+`web_testi::hermetik_adaptor_proje_oturum_omrunu_kayar_ve_mutlak_uygular`.
 
 ## K-331 — ctutils RustSec yükseltmesi
 
