@@ -30,6 +30,17 @@ unit mixed kill mode main TERM ile helper iptalini başlatır, son cgroup KILL
 systemd bütçesindedir. Mac üzerindeki kısa helper testleri gerçek Linux cgroup
 ve systemd kabulü değildir. Source/host service kurulmadı veya başlatılmadı.
 
+**K-319 eki (18.11.2026):** Linux'ta WNOWAIT ile tutulan, çıkmış (zombi) lider
+`killpg(pgid, 0)` için grubu canlı gösterdiğinden `stop_owned` her durdurmada
+tam bütçeyi bekleyip SIGKILL gönderiyordu (doğruluk bozulmaz, durdurma yavaşlar).
+Tutulan lider çıkmışsa `/proc` üzerinde zombi olmayan grup üyesi aranır; yoksa
+bekleme biter. Lider reap edilene kadar PGID ayrılmış kaldığından Linux'ta reap
+öncesi grup yine SIGKILL ile süpürülür; TERM/KILL/reap sırası ve sahiplik sınırı
+değişmez. v1 soy kaydı bayt bayt korunur; değişiklik ayrı
+`sonlu-dispatcher-lineage-v2.json` kaydında v1 SHA-256'sına zincirlenir ve
+canlı sabitler yeni çekirdek SHA'sına taşınır. Eski çekirdek SHA'sını taşıyan
+tarihsel kanıtlar kendi exact commit'lerine bağlı kalır, değiştirilmez.
+
 SMTP/PDF effect consumer, send sonucu belirsizken quarantine, provider dedupe/
 ack sözleşmesi ve durable dosya publication ayrı gerçek kod işleridir. Mevcut
 SQL transaction dıştaki e-posta teslimini kapsamaz. Kapsam ve test/reconciliation

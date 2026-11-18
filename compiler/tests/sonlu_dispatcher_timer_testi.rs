@@ -16,7 +16,7 @@ fn sonlu_timer_latch_snapshot_ve_sahipli_surec_sinirlarini_korur() {
         .expect("finite timer preparation");
     let stderr = String::from_utf8_lossy(&result.stderr);
     assert!(result.status.success(), "{stderr}");
-    assert!(stderr.contains("\nRan 37 tests in "), "{stderr}");
+    assert!(stderr.contains("\nRan 39 tests in "), "{stderr}");
     assert!(stderr.trim_end().ends_with("\nOK"), "{stderr}");
     assert!(!stderr.contains("skipped"), "{stderr}");
     assert!(result.stdout.is_empty());

@@ -12,6 +12,12 @@ Bu kayıt yeni sürüm etiketi değildir.
 
 ### Düzeltilenler
 
+- **`dil dene` proje oturum ömrünü uygular (K-330, ADR-158 eki):** Proje
+  `oturum_ömrü_saniye`/`oturum_kayar` bildirdiğinde `dil dene` testleri
+  artık üretimle aynı ömrü görür; önceden test dünyası her zaman 30 dakika
+  mutlak kullanıyordu. Ayarsız projeler ve tek dosya koşuları değişmedi; göç
+  gerekmez, yalnız varsayılan 30 dakikaya dayanan proje testleri yeni ömre
+  göre güncellenmelidir.
 - **zeedili.com belge adları:** Adında nokta bulunan belge (ör.
   `surum-v1.0.0-rc.1-kaniti.md`) sitede açılamıyordu; site yolu yalnız harf,
   rakam ve tire taşıdığı için nokta artık tireye çevrilir

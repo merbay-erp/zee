@@ -5,7 +5,7 @@ try:import fcntl
 except ImportError:fcntl=None
 from pathlib import Path
 HERE=Path(__file__).resolve().parent
-HELPER='e76fe65b6103fc4732aafc4468afc5bbf3d0699a0f79d7f74879165636ebb1a9'
+HELPER='ae1c19b615f4d52f5eb9100fd30cc6d61f881b76a58f39dac43a858d7b03f4bb'
 D=None
 try:
     raw=(HERE/'lifecycle_core.py').read_bytes()

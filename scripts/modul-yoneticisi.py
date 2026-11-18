@@ -18,7 +18,7 @@ try:
                 chunk=os.read(fd,min(4096,16385-len(hb)))
                 if not chunk:break
                 hb+=chunk
-        if stat.S_ISREG(hs.st_mode) and len(hb)<=16384 and hashlib.sha256(hb).hexdigest()=='e76fe65b6103fc4732aafc4468afc5bbf3d0699a0f79d7f74879165636ebb1a9':
+        if stat.S_ISREG(hs.st_mode) and len(hb)<=16384 and hashlib.sha256(hb).hexdigest()=='ae1c19b615f4d52f5eb9100fd30cc6d61f881b76a58f39dac43a858d7b03f4bb':
             H={'__name__':'k273_lifecycle','__file__':str(hp)}; exec(compile(hb,str(hp),'exec'),H)
     finally: os.close(fd)
 except (OSError,ValueError,ImportError): pass

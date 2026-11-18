@@ -605,6 +605,94 @@ fn girisli_panel_oturum_dongusu() {
     assert_eq!(io.guvenli_cerezler.last().unwrap().azami_omur_saniye, 0);
 }
 
+/// K-330/ADR-158 eki: hermetik adaptör proje oturum ayarını gerçek runtime ile
+/// aynı uygular. Kayar kipte kimlikli istek ömrü `şimdi + N`e taşır ve çerezi
+/// yeniler; mutlak kipte erişim ömrü uzatmaz, N dolunca 401 olur.
+#[test]
+fn hermetik_adaptor_proje_oturum_omrunu_kayar_ve_mutlak_uygular() {
+    use dil::web_guvenligi::OturumAyari;
+    let program = dil::kaynagi_derle(
+        r#"
+8080 kapısında sunucu başlat
+
+POST "/gir" adresine istek geldiğinde
+    herkese açık
+    "m" kullanıcısını "k" rolüyle oturuma al
+    "girdi" yanıtını gönder
+
+GET "/cari" adresine istek geldiğinde
+    oturum gerekli
+    "cari" yanıtını gönder
+"#,
+    )
+    .expect("derlenmeli");
+    let tur = |io: &mut ToplayanIo, istek: String| -> u16 {
+        io.istekler = vec![istek].into();
+        calistir_io(&program, io).expect("tur çalışmalı");
+        *io.sunucu_durumlari.last().unwrap()
+    };
+    let giris = |ayar: Option<OturumAyari>| {
+        let mut io = ToplayanIo::yeni(Vec::new());
+        if let Some(ayar) = ayar {
+            io.oturum_ayarini_belirle(ayar);
+        }
+        io.istekler.push_back("GET /__test-csrf".into());
+        assert!(io.istek_al().is_some());
+        let csrf = io.csrf_belirteci().expect("CSRF oturumu");
+        let (_, anonim) = io.yazilan_cerezler[0].clone();
+        io.yanit_gonder("");
+        io.istek_islemini_tamamla().expect("anonim oturum commit'i");
+        assert_eq!(
+            tur(&mut io, csrfli_istek_ile("POST /gir", &anonim, &csrf)),
+            200
+        );
+        let cerez = io.guvenli_cerezler.last().unwrap().clone();
+        (io, cerez)
+    };
+    let cari = |kimlik: &str| format!("GET /cari\nçerez __Host-zee-oturum={kimlik}");
+
+    // Ayarsız: varsayılan 30 dakika mutlak.
+    let (_, cerez) = giris(None);
+    assert_eq!(cerez.azami_omur_saniye, 30 * 60);
+
+    // Kayar: her kimlikli istek 300 sn'yi yeniden başlatır; boşta 300 sn bitirir.
+    let (mut io, cerez) = giris(Some(OturumAyari::yeni(300, true).unwrap()));
+    assert_eq!(cerez.azami_omur_saniye, 300);
+    for _ in 0..3 {
+        io.bekle_ms(200_000);
+        let onceki = io.guvenli_cerezler.len();
+        assert_eq!(
+            tur(&mut io, cari(&cerez.deger)),
+            200,
+            "kayar oturum yaşamalı"
+        );
+        assert_eq!(io.guvenli_cerezler.len(), onceki + 1, "çerez yenilenmeli");
+        let yeni = io.guvenli_cerezler.last().unwrap();
+        assert_eq!(yeni.deger, cerez.deger, "kayar yeni belirteç üretmez");
+        assert_eq!(yeni.azami_omur_saniye, 300);
+    }
+    io.bekle_ms(301_000);
+    assert_eq!(
+        tur(&mut io, cari(&cerez.deger)),
+        401,
+        "boşta kalan oturum biter"
+    );
+
+    // Mutlak: erişim ömrü uzatmaz, çerez yenilenmez; oluşturmadan 300 sn sonra 401.
+    let (mut io, cerez) = giris(Some(OturumAyari::yeni(300, false).unwrap()));
+    assert_eq!(cerez.azami_omur_saniye, 300);
+    io.bekle_ms(200_000);
+    let onceki = io.guvenli_cerezler.len();
+    assert_eq!(tur(&mut io, cari(&cerez.deger)), 200);
+    assert_eq!(
+        io.guvenli_cerezler.len(),
+        onceki,
+        "mutlak kip çerez yenilemez"
+    );
+    io.bekle_ms(101_000);
+    assert_eq!(tur(&mut io, cari(&cerez.deger)), 401, "mutlak ömür uzamaz");
+}
+
 #[test]
 fn dogrulanmis_oturum_kullanici_ve_rolu_rota_ortamina_tasir() {
     let kaynak = r#"

@@ -1,0 +1,49 @@
+{
+  "schema": "zee-k268-lifecycle-lineage-2",
+  "previous": {
+    "path": "compiler/tests/fixtures/sonlu-dispatcher-lineage-v1.json",
+    "sha256": "0bf093964398a75635935ee7dba5668aa7eeb874af062c8447e3a8a0161c692f",
+    "core_sha256": "e76fe65b6103fc4732aafc4468afc5bbf3d0699a0f79d7f74879165636ebb1a9"
+  },
+  "core_sha256": "ae1c19b615f4d52f5eb9100fd30cc6d61f881b76a58f39dac43a858d7b03f4bb",
+  "functions_exact_source_sha256": {
+    "Reject": "cc919f61824ceff49b035982b0641a93c758faaa871b98590cd824a0033adb28",
+    "require": "481d0494b942ed64c6e86e44dc7e436f69f586bb195dd9368785ca77bb1f1a3e",
+    "digest": "a7be032be410758009aac14edbfe54fa6b493815392e0fd5ad15467e77f603e9",
+    "held_status": "b6da8b4ea4c79dd556f0bf9a42060e2a100490b47fa30724906fa75e8698a950",
+    "linux_group_live": "74bfe7cdc09f5bdc6dddbfcd7cee5bf939cc4e650a9b53564ef5589bc6005d75",
+    "stop_owned": "61c994c1448d7922b89bf60eef6d976c0d35bbecadf35cd70b8107b5c5886cf1",
+    "controlled_env": "3bfaf49f18fca36454d4701ec14d34687d8d4825d02bde2bb017e4cd520cc2cc",
+    "run": "3bf79f163a92ffaa2c43548679bf40db8041dff8cad1f98ae5cab4d20e91b466",
+    "git": "e05bdaad91848820eb37c6650c7b5ecb74b34d8ab23fbbc607a41cc548371b02",
+    "clean_exact": "64c48d946272fe6536d33b1a3ef87d809a2dd9751b3d1cba1f0d0b989a188ec7"
+  },
+  "unchanged_from_previous": [
+    "Reject",
+    "require",
+    "digest",
+    "held_status",
+    "controlled_env",
+    "run",
+    "git",
+    "clean_exact"
+  ],
+  "delta": {
+    "K-319": {
+      "changed": [
+        "stop_owned"
+      ],
+      "added": [
+        "linux_group_live"
+      ],
+      "reason": "Linux: an exited but still held (WNOWAIT, unreaped) zombie leader keeps killpg(pgid,0) succeeding, so stop_owned waited the whole grace and always sent SIGKILL. A held exited leader with no non-zombie /proc group member now ends the wait; on Linux a final SIGKILL still sweeps the held PGID before reaping, so a member missed by the /proc scan race cannot survive. Darwin/other POSIX behavior is unchanged."
+    }
+  },
+  "globals_unchanged": [
+    "MAX_CAPTURE=8*1024*1024",
+    "CANCELLED=False"
+  ],
+  "excluded": "all artifact/delivery/zip/bundle/toolchain/CLI code and tomllib",
+  "independent_review_required": true,
+  "historical_source_binding": "v1 record is kept byte-identical; v2 is a separate record chained by the v1 file SHA-256. Historical evidence that pins the v1 core SHA stays bound to its exact commits."
+}

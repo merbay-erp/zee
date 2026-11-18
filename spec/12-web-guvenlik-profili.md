@@ -294,6 +294,8 @@ ZORUNLU: Kayar açıkken her kimlikli istek, istek başındaki kalıcı depo gü
 
 YASAK: Kayar yenileme anonim (giriş öncesi) oturumu uzatamaz ve yeni belirteç üretemez. Aynı istekte giriş, `oturumu kapat` ya da kendi oturumunun kimlikle iptali varsa yenileme çerezi yazılmaz; çıkış sunucu kaydını commit ile hemen siler ve yanıt yalnız `Max-Age=0` silme çerezini taşır.
 
+ZORUNLU: `dil dene` bir proje klasörüyle koşulduğunda her testin hermetik web adaptörü aynı `oturum_ömrü_saniye`/`oturum_kayar` ayarını gerçek runtime ile aynı kurallarla uygular: kimlikli oturum seçilen ömürde biter, kayar kipte kimlikli istek ömrü yeniden başlatır ve aynı belirteçle yenilenmiş `Max-Age` çerezi yazar, mutlak kipte erişim ömrü uzatmaz. Proje bildirimi olmadan koşulan dosya ve gömme `programi_dene` varsayılan 1800 sn mutlak ömürde kalır.
+
 ## 7. Çok işçi profili ve açılış birincilliği (K-336/K-337)
 
 TANIMLI: `dil çalıştır --web-proxy <origin> --web-worker-port P --web-isci-sayisi N [--web-saglik-port S] <kaynak>` (1 ≤ N ≤ 64) bir yönetici süreç açar. Yönetici `127.0.0.1:P` dinleyicisini bir kez bağlar ve aynı açık dinleyiciyi N işçi sürecine devreder; bağlantıyı boştaki işçi `accept` ile alır. Yönetici Zee kaynağını yürütmez; her işçi kaynağı baştan yürüten §5 tek süreç çalışma zamanıdır. SO_REUSEPORT ya da proxy aktarımı kullanılmaz.
