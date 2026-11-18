@@ -157,7 +157,12 @@ ortak depoda tekil iptal yüzeyini ekledi; ham bearer/CSRF açılmadı ve syntax
 freeze yeniden başladı. K-330/ADR-158 gerçek mini ERP (ürün G) talebiyle
 kimlikli oturum ömrünü proje bildirimine (300 sn–30 gün) ve isteğe bağlı kayar
 yenilemeye açtı; 30 günlük mutlak tavan, anonim oturumun mutlaklığı ve sunucu
-tarafı çıkış korunur. Secret dağıtımı, çok-hostlu backend ve idempotency ayrı deployment/RFC
+tarafı çıkış korunur. K-335/ADR-160 zee-cekirdek W3 talebiyle sabit
+`no-store`un tek dar istisnasını açtı: oturumsuz GET/HEAD rotası
+`herkese açık önbelleklenebilir N saniye` (1–86400) ile Set-Cookie'siz 200
+yanıtında `public, max-age=0, s-maxage=N` alır; oturum/CSRF/çerez kullanımı
+T057, diğer yöntem T056'dır. `Vary`, ETag ve önbellek temizleme açık
+sınırdır. Secret dağıtımı, çok-hostlu backend ve idempotency ayrı deployment/RFC
 kapılarıdır.
 # 7. Temel dil yüzeyi
 Değer tanımı: “isim Ayşe olsun”.

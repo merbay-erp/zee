@@ -1,0 +1,29 @@
+# K-335: zee-cekirdek site rotalarının (`GET /robots.txt`, `GET /sitemap.xml`)
+# anonim kesiti. Ürün bu oturumsuz yanıtları ön kapıda Cache-Control eşlemesiyle
+# önbelleğe alıyordu; izin artık rotanın kendisinde durur. Gerçek alan adı ve
+# içerik sorgusu ürün tarafındadır; burada sabit örnek origin kullanılır.
+
+8080 kapısında sunucu başlat
+
+GET "/robots.txt" adresine istek geldiğinde
+    herkese açık önbelleklenebilir 300 saniye
+    kok "https://ornek.example" olsun
+    metin "User-agent: *\nDisallow: /yonet\nDisallow: /giris\nAllow: /\nSitemap: " ile kok ile "/sitemap.xml\n" olsun
+    metin yanıtını gönder
+
+GET "/sitemap.xml" adresine istek geldiğinde
+    herkese açık önbelleklenebilir 300 saniye
+    kok "https://ornek.example" olsun
+    urller "" olsun
+    sabitler "/", "/en/", "/urunler/", "/en/products/" listesi olsun
+    her sabit için
+        urller urller ile "<url><loc>" ile kok ile sabit html güvenlisi ile "</loc></url>" olsun
+    xml "<?xml version=\"1.0\" encoding=\"UTF-8\"?><urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">" ile urller ile "</urlset>" olsun
+    xml yanıtını gönder
+
+# Oturuma bağlı panel girişi önbelleklenebilir değildir: CSRF belirteci
+# anonim oturum ve Set-Cookie üretir (T057 bunu önbellek iznine bağlamayı reddeder).
+GET "/giris" adresine istek geldiğinde
+    belirtec csrf belirteci olsun
+    form "<form method=post action=/giris-yap><input type=hidden name=_csrf value=\"" ile belirtec ile "\"></form>" olsun
+    form yanıtını gönder

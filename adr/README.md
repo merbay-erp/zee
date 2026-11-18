@@ -164,3 +164,4 @@ Güvenlik/mimari sınır değişikliği ADR ister (master plan bölüm 25).
 | ADR-157 | [Web rotasında istek-yerel hata sınırı ve operatör günlüğü](157-istek-yerel-hata-siniri.md) | **kabul** (K-324) |
 | ADR-158 | [Proje başına oturum ömrü ve kayar yenileme](158-proje-basina-oturum-omru-ve-kayar-yenileme.md) | **kabul** (K-330/GB-128) |
 | ADR-159 | [Yüklenen dosyanın ilk baytlarını sınırlı okuma (içerik imzası)](159-dosya-imzasi-okuma.md) | **kabul** (K-333/GB-130) |
+| ADR-160 | [Herkese açık rota için dar önbellek başlığı izni](160-rota-onbellek-basligi.md) | **kabul** (K-335/GB-132) |

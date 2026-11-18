@@ -28,6 +28,8 @@ pub struct ToplayanIo {
     pub sunucu_yanitlari: Vec<(String, String)>,
     /// Her sahte HTTP yanıtının durum kodu; istek alındığında 200 ile başlar.
     pub sunucu_durumlari: Vec<u16>,
+    /// K-335: eşleşen rotanın bildirdiği önbellek izinleri (saniye).
+    pub onbellek_izinleri: Vec<u32>,
     /// Operatör günlüğüne düşen istek tanıları: (durum, kod, satır) (K-324).
     pub istek_tani_gunlugu: Vec<(u16, String, usize)>,
     /// Sahte sensörler (varsayılan kapalı) ve an ölçümü kuyruğu.
@@ -85,6 +87,7 @@ impl ToplayanIo {
             guvenli_cerezler: Vec::new(),
             sunucu_yanitlari: Vec::new(),
             sunucu_durumlari: Vec::new(),
+            onbellek_izinleri: Vec::new(),
             istek_tani_gunlugu: Vec::new(),
             sensorler: HashMap::new(),
             an_degerleri: VecDeque::new(),
@@ -366,6 +369,9 @@ impl GirdiCikti for ToplayanIo {
         self.yazilan_cerezler
             .push((ad.to_string(), "×silindi".to_string()));
         Ok(())
+    }
+    fn yanit_onbellegine_izin_ver(&mut self, saniye: u32) {
+        self.onbellek_izinleri.push(saniye);
     }
     fn rota_guvenligini_denetle(
         &mut self,

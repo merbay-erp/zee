@@ -171,6 +171,9 @@ impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
         self.web_oturumu_gerektir()?;
         self.ic.cerez_sil(ad)
     }
+    fn yanit_onbellegine_izin_ver(&mut self, saniye: u32) {
+        self.ic.yanit_onbellegine_izin_ver(saniye)
+    }
     fn rota_guvenligini_denetle(
         &mut self,
         erisim: &RotaErisimi,
@@ -179,11 +182,9 @@ impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
     ) -> Result<(), WebReddi> {
         web::rota_denetle(self, erisim, csrf, csrf_gerekli)
     }
-
     fn istemci_adresi(&mut self) -> String {
         web::istemci_adresi(self)
     }
-
     fn csrf_belirteci(&mut self) -> Result<String, String> {
         self.web_oturumu_gerektir()?;
         self.ic.csrf_belirteci()
@@ -192,7 +193,6 @@ impl<T: GirdiCikti> GirdiCikti for PolitikaliIo<T> {
         self.web_oturumu_gerektir()?;
         self.ic.oturum_ac(kullanici, rol)
     }
-
     fn oturum_kapat(&mut self) -> Result<(), String> {
         self.web_oturumu_gerektir()?;
         self.ic.oturum_kapat()

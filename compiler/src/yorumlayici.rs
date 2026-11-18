@@ -445,6 +445,10 @@ pub trait GirdiCikti {
     fn cerez_yaz(&mut self, ad: &str, deger: &str) -> Result<(), String>;
     /// Sonraki yanıtla çerezi tarayıcıdan siler (Max-Age=0, K-073).
     fn cerez_sil(&mut self, ad: &str) -> Result<(), String>;
+    /// K-335: eşleşen rota `herkese açık önbelleklenebilir N saniye` taşıyor.
+    /// Adaptör yalnız Set-Cookie'siz 200 GET/HEAD yanıtında `public` yazar;
+    /// varsayılan adaptör izni yok sayar ve `no-store` kalır.
+    fn yanit_onbellegine_izin_ver(&mut self, _saniye: u32) {}
     /// Rota önsözünün kimlik/yetki ve unsafe-method CSRF kapısı (K-088).
     fn rota_guvenligini_denetle(
         &mut self,
@@ -659,6 +663,9 @@ impl GirdiCikti for PaylasilanIo<'_> {
     }
     fn cerez_sil(&mut self, ad: &str) -> Result<(), String> {
         self.ic.borrow_mut().cerez_sil(ad)
+    }
+    fn yanit_onbellegine_izin_ver(&mut self, saniye: u32) {
+        self.ic.borrow_mut().yanit_onbellegine_izin_ver(saniye)
     }
     fn rota_guvenligini_denetle(
         &mut self,

@@ -33,6 +33,8 @@ T050'dir.
 
 GET ve HEAD için politika yazılabilir. Yazılmazsa rota herkese açıktır;
 spec/11'in salt-okuma kanıtı yine geçerlidir.
+GET/HEAD rotası açık politikayı `herkese açık önbelleklenebilir 300 saniye`
+biçiminde de yazabilir; anlamı ve sınırları K-335 bölümündedir.
 
 ## 2. Parola ve oturum açma
 
@@ -194,7 +196,7 @@ zinciri 426; eksik ya da yanlış unsafe Origin ve loopback dışı peer 403'tü
 Dinleyicinin loopback dışına açılması bu güven sözleşmesini bozar ve
 YASAKTIR.
 
-Yanıtlar `no-store`, `nosniff`, `DENY`, `no-referrer`, kısıtlı CSP taşır;
+Yanıtlar `no-store` (tek dar istisnası aşağıdaki K-335 bölümündedir), `nosniff`, `DENY`, `no-referrer`, kısıtlı CSP taşır;
 HTTPS profilinde HSTS de eklenir. 16 KiB başlık, 64 KiB gövde, byte tabanlı
 yalnız-CRLF parser, tek `Content-Length`, origin-form hedef ve
 `Transfer-Encoding` reddi request-smuggling/yığın korkuluklarıdır. Başlık ile
@@ -292,3 +294,13 @@ TANIMLI: Ana `proje.dil` isteğe bağlı `oturum_ömrü_saniye` (sabit Sayı, 30
 ZORUNLU: Kayar açıkken her kimlikli istek, istek başındaki kalıcı depo güncellemesinde son geçerliliği `min(şimdi + ömür, oluşturma + 2592000 sn)` yapar, var olan geçerliliği kısaltmaz ve yanıt aynı belirteçle kalan süreyi `Max-Age` olarak taşıyan oturum çerezini yeniden yazar. Oluşturmadan sayılan 30 günlük mutlak tavan hiçbir erişimle aşılamaz. Yeniden başlatma ve ayrı worker'lar aynı kalıcı kaydı görür.
 
 YASAK: Kayar yenileme anonim (giriş öncesi) oturumu uzatamaz ve yeni belirteç üretemez. Aynı istekte giriş, `oturumu kapat` ya da kendi oturumunun kimlikle iptali varsa yenileme çerezi yazılmaz; çıkış sunucu kaydını commit ile hemen siler ve yanıt yalnız `Max-Age=0` silme çerezini taşır.
+
+## K-335 — Önbelleklenebilir herkese açık rota
+
+TANIMLI: Rota önsözünün politika cümlesi `herkese açık önbelleklenebilir N saniye` biçiminde yazılabilir; N 1–86400 arası sabit TamSayıdır. Bu cümle erişim bakımından `herkese açık` ile aynıdır ve önsözün ilk ve tek politika cümlesi kuralına (T050) uyar. Başka sayı, birim ya da eksik parça S043'tür.
+
+YASAK: Önbelleklenebilir politika GET ve HEAD dışındaki rotada T056 ile reddedilir. Rota gövdesi `oturum` ya da `çerezler` sözlüğünü okuyamaz; gövde ya da gövdenin (geçişli olarak) çağırdığı işlemler `csrf belirteci`, çerez yazma/silme, `oturuma al`, `oturumu kapat` ve web oturumu listeleme/iptal ifadelerini kullanamaz. İhlal T057'dir ve ilk dokunuşun satırını gösterir.
+
+ZORUNLU: Çalışma zamanı önbelleklenebilir rotaya boş `oturum` ve `çerezler` sözlükleri verir. Yanıt yalnız şu koşulların hepsi sağlanınca `Cache-Control: public, max-age=0, s-maxage=N` taşır: istek yöntemi GET ya da HEAD, rota gövdeyle 200 yanıtı gönderdi, yanıt hiçbir `Set-Cookie` başlığı taşımıyor ve istek sırasında oturum yüzeyine dokunulmadı. Diğer her durumda (hata/durum yanıtı, yönlendirme, kayar oturum yenilemesi dahil herhangi bir Set-Cookie) yanıt `no-store` kalır. Diğer güvenlik başlıkları değişmez; `max-age=0` tarayıcı önbelleğini kapalı tutar, ömür yalnız paylaşılan önbelleğe verilir.
+
+AÇIK: `Vary`, ETag/koşullu istek, `stale-while-revalidate` ve önbellek temizleme sözü verilmez. Sorgu dizgisi önbellek anahtarının parçasıdır ve ön kapı tarafından korunmalıdır. Normatif gerekçe: RFC-0037, ADR-160.

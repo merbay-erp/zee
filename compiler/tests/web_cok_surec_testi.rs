@@ -666,3 +666,87 @@ fn yanit_yazimi_sirasinda_kopan_istemci_worker_i_dusurmez_ve_izin_sizdirmaz() {
     );
     assert!(!stderr.contains("C022"), "{stderr}");
 }
+
+fn onbellek_basligi(yanit: &str) -> &str {
+    yanit
+        .lines()
+        .find_map(|satir| satir.strip_prefix("Cache-Control: "))
+        .expect("Cache-Control başlığı")
+        .trim_end()
+}
+
+/// K-335/W3: `herkese açık önbelleklenebilir 300 saniye` gerçek worker'da
+/// yalnız Set-Cookie'siz 200 GET/HEAD yanıtını `public` yapar. Kayar oturum
+/// yenilemesi Set-Cookie ürettiğinde aynı rota `no-store`a düşer; sıradan
+/// rota ve 404 her zaman `no-store` kalır.
+#[test]
+fn onbelleklenebilir_rota_set_cookie_uretince_asla_public_olmaz() {
+    let gecici = GeciciKlasor::yeni();
+    std::fs::write(
+        gecici.0.join("proje.dil"),
+        "proje \"vitrin-panel\" olsun\nsürüm \"0.1.0\" olsun\ngiriş \"ana.dil\" olsun\n\
+         yetkinlikler \"dosya-okuma\", \"dosya-yazma\", \"ağ-sunucusu\", \"web-oturumu\", \"kriptografi\" listesi olsun\n\
+         oturum_ömrü_saniye 28800 olsun\noturum_kayar doğru olsun\n",
+    )
+    .expect("proje bildirimi");
+    let kaynak = format!(
+        "{}\nGET \"/vitrin\" adresine istek geldiğinde\n    herkese açık önbelleklenebilir 300 saniye\n    \"vitrin\" yanıtını gönder\n\
+         \nHEAD \"/vitrin\" adresine istek geldiğinde\n    herkese açık önbelleklenebilir 300 saniye\n    \"vitrin\" yanıtını gönder\n",
+        include_str!("../../projeler/girisli-panel.dil")
+    );
+    std::fs::write(gecici.0.join("ana.dil"), kaynak).expect("proje kaynağı");
+    let kilit = Command::new(env!("CARGO_BIN_EXE_dil"))
+        .args(["kilitle", gecici.0.to_str().expect("UTF-8 yol")])
+        .output()
+        .expect("dil kilitle");
+    assert!(
+        kilit.status.success(),
+        "{}",
+        String::from_utf8_lossy(&kilit.stderr)
+    );
+    let kapi = bos_kapi();
+    let _sunucu = sunucuyu_baslat(&gecici.0, kapi);
+    let public = "public, max-age=0, s-maxage=300";
+
+    let anonim = istek(kapi, "203.0.113.9", "GET", "/vitrin", None, "");
+    assert_eq!(durum(&anonim), 200, "{anonim}");
+    assert!(cerez_satiri(&anonim).is_none(), "{anonim}");
+    assert_eq!(onbellek_basligi(&anonim), public);
+    assert_eq!(anonim.matches("Cache-Control:").count(), 1);
+    let bas = istek(kapi, "203.0.113.9", "HEAD", "/vitrin", None, "");
+    assert_eq!(durum(&bas), 200, "{bas}");
+    assert_eq!(onbellek_basligi(&bas), public);
+
+    let form = istek(kapi, "203.0.113.9", "GET", "/giris", None, "");
+    let anonim_oturum = cerez(&form);
+    let giris = istek(
+        kapi,
+        "203.0.113.9",
+        "POST",
+        "/giris-yap",
+        Some(&anonim_oturum),
+        &format!("_csrf={}&parola=zee2026", csrf(&form)),
+    );
+    assert_eq!(durum(&giris), 303);
+    assert_eq!(onbellek_basligi(&giris), "no-store");
+    let oturum = cerez(&giris);
+    let oturumlu = istek(kapi, "203.0.113.9", "GET", "/vitrin", Some(&oturum), "");
+    assert_eq!(durum(&oturumlu), 200, "{oturumlu}");
+    assert!(
+        cerez_satiri(&oturumlu).is_some(),
+        "kayar yenileme Set-Cookie üretmeli"
+    );
+    assert_eq!(
+        onbellek_basligi(&oturumlu),
+        "no-store",
+        "Set-Cookie'li yanıt public olamaz"
+    );
+    assert!(!oturumlu.contains("public"), "{oturumlu}");
+
+    let duz = istek(kapi, "203.0.113.9", "GET", "/", None, "");
+    assert_eq!(durum(&duz), 200);
+    assert_eq!(onbellek_basligi(&duz), "no-store");
+    let yok = istek(kapi, "203.0.113.9", "GET", "/vitrin-yok", None, "");
+    assert_eq!(durum(&yok), 404);
+    assert_eq!(onbellek_basligi(&yok), "no-store");
+}

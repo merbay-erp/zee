@@ -1276,3 +1276,79 @@ fn operator_gunluk_satiri_sorgusuz_tek_satir_ve_kacislidir() {
     assert!(kirpik.len() <= 4096 && kirpik.ends_with("…\""));
     assert!(!kirpik.contains("yöntem="));
 }
+
+/// K-335: `herkese açık önbelleklenebilir N saniye` yalnız GET/HEAD'de ve
+/// oturum/CSRF/çerez yüzeyine (çağrılan işlem dahil) dokunmayan rotada derlenir.
+#[test]
+fn onbelleklenebilir_rota_yalniz_oturumsuz_get_head_rotasinda_derlenir() {
+    let gecerli = "\
+8080 kapısında sunucu başlat
+GET \"/\" adresine istek geldiğinde
+    herkese açık önbelleklenebilir 300 saniye
+    \"merhaba\" yanıtını gönder
+HEAD \"/\" adresine istek geldiğinde
+    herkese açık önbelleklenebilir 86400 saniye
+    \"merhaba\" yanıtını gönder
+";
+    assert!(dil::kaynagi_derle(gecerli).is_ok());
+
+    let kod = |kaynak: &str| dil::kaynagi_derle(kaynak).expect_err("tanı").kod;
+    for yontem in ["POST", "PUT", "PATCH", "DELETE"] {
+        let kaynak = format!(
+            "{yontem} \"/k\" adresine istek geldiğinde\n    herkese açık önbelleklenebilir 60 saniye\n    \"tamam\" yanıtını gönder\n"
+        );
+        assert_eq!(kod(&kaynak), "T056", "{yontem}");
+    }
+    for govde in [
+        "    b csrf belirteci olsun\n    b yanıtını gönder\n",
+        "    ad oturumun \"kullanıcı\" değeri olsun\n    ad yanıtını gönder\n",
+        "    tema çerezlerin \"tema\" değeri olsun\n    tema yanıtını gönder\n",
+        "    s belirteç ver olsun\n    s yanıtını gönder\n",
+    ] {
+        let kaynak = format!(
+            "işlem belirteç ver\n    csrf belirteci döndür\n\nGET \"/k\" adresine istek geldiğinde\n    herkese açık önbelleklenebilir 60 saniye\n{govde}"
+        );
+        assert_eq!(kod(&kaynak), "T057", "{govde}");
+    }
+    // Çağrılan işlemin `oturum` adlı yereli istek oturumu değildir.
+    let yerel = "\
+işlem selam ver
+    oturum \"misafir\" olsun
+    oturumu döndür
+GET \"/s\" adresine istek geldiğinde
+    herkese açık önbelleklenebilir 60 saniye
+    s selam ver olsun
+    s yanıtını gönder
+";
+    assert!(dil::kaynagi_derle(yerel).is_ok());
+    for bozuk in [
+        "herkese açık önbelleklenebilir 0 saniye",
+        "herkese açık önbelleklenebilir 86401 saniye",
+        "herkese açık önbelleklenebilir saniye",
+        "herkese açık önbelleklenebilir 5 dakika",
+    ] {
+        let kaynak = format!(
+            "GET \"/k\" adresine istek geldiğinde\n    {bozuk}\n    \"x\" yanıtını gönder\n"
+        );
+        assert_eq!(kod(&kaynak), "S043", "{bozuk}");
+    }
+}
+
+/// K-335: önbellek izni yalnız eşleşen önbelleklenebilir rota için adaptöre
+/// iletilir; sıradan rota ve eşleşmeyen istek izin üretmez.
+#[test]
+fn onbellek_izni_yalniz_eslesen_onbelleklenebilir_rotada_adaptore_gider() {
+    let io = sunucuyla(
+        "\
+8080 kapısında sunucu başlat
+GET \"/acik\" adresine istek geldiğinde
+    herkese açık önbelleklenebilir 120 saniye
+    \"herkese\" yanıtını gönder
+GET \"/duz\" adresine istek geldiğinde
+    \"düz\" yanıtını gönder
+",
+        vec!["GET /acik", "GET /duz", "GET /yok", "GET /acik?sayfa=2"],
+    );
+    assert_eq!(io.sunucu_durumlari, vec![200, 200, 404, 200]);
+    assert_eq!(io.onbellek_izinleri, vec![120, 120]);
+}

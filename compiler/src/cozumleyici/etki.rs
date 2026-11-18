@@ -9,6 +9,9 @@ use crate::intrinsic::{self, IntrinsicEtkisi};
 use crate::tani::Tani;
 use std::collections::{HashMap, HashSet};
 
+mod onbellek;
+use onbellek::{onbellekli_rotayi_denetle, OnbellekIzi};
+
 #[derive(Clone, Default)]
 struct Bilgi {
     /// Dosya/donanım gibi uygulama durumu. Web çerezi adaptör durumudur.
@@ -19,6 +22,8 @@ struct Bilgi {
     web: bool,
     /// Transaction adaptörünün geri alamadığı gözlemlenebilir dış etki.
     geri_alinamaz: bool,
+    /// K-335: oturum/CSRF/çerez yüzeyine dokunuş (ADR-160).
+    onbellek: OnbellekIzi,
     cagrilar: HashSet<String>,
 }
 
@@ -28,6 +33,7 @@ impl Bilgi {
         self.durum_yazma |= baska.durum_yazma;
         self.web |= baska.web;
         self.geri_alinamaz |= baska.geri_alinamaz;
+        self.onbellek.birlestir(baska.onbellek);
         self.cagrilar.extend(baska.cagrilar.iter().cloned());
     }
 }
@@ -100,6 +106,7 @@ pub(super) fn denetle(program: &Program) -> Result<(), Tani> {
         rota_onsozunu_denetle(yontem, govde, *satir)?;
         let dogrudan_rota = blok_bilgisi(govde);
         let toplam = toplam_bilgi(&dogrudan_rota, &etkiler);
+        onbellekli_rotayi_denetle(yontem, govde, &dogrudan_rota.onbellek, &toplam.onbellek)?;
 
         if yontem.guvenli() && toplam.durum_yazma {
             return Err(Tani::yeni(
@@ -283,6 +290,7 @@ fn etkileri_yay(dogrudan: &HashMap<String, Bilgi>) -> HashMap<String, Bilgi> {
                         bilgi.durum_yazma,
                         bilgi.web,
                         bilgi.geri_alinamaz,
+                        bilgi.onbellek,
                     );
                     bilgi.birlestir(cagri_bilgisi);
                     degisti |= eski
@@ -291,6 +299,7 @@ fn etkileri_yay(dogrudan: &HashMap<String, Bilgi>) -> HashMap<String, Bilgi> {
                             bilgi.durum_yazma,
                             bilgi.web,
                             bilgi.geri_alinamaz,
+                            bilgi.onbellek,
                         );
                 }
             }
@@ -320,6 +329,7 @@ fn blok_bilgisi(cumleler: &[Cumle]) -> Bilgi {
 }
 
 fn cumle_bilgisi(cumle: &Cumle, bilgi: &mut Bilgi) {
+    bilgi.onbellek.cumle(cumle);
     match cumle {
         Cumle::Yaz { deger, .. } | Cumle::Sor { istem: deger, .. } => {
             bilgi.geri_alinamaz = true;
@@ -556,11 +566,13 @@ fn ifade_bilgisi(ifade: &Ifade, bilgi: &mut Bilgi) {
             ifade_bilgisi(alt, bilgi);
             ifade_bilgisi(ust, bilgi);
         }
+        Ifade::Degisken { ham, satir, .. } => bilgi.onbellek.degisken(ham, *satir),
         Ifade::Intrinsic { kimlik, argumanlar } => {
             for arguman in argumanlar {
                 ifade_bilgisi(arguman, bilgi);
             }
             if let Some(tanim) = intrinsic::tanim(kimlik) {
+                bilgi.onbellek.intrinsic(tanim.yetkinlik, ifade);
                 match tanim.etki {
                     IntrinsicEtkisi::DisYazma => {
                         bilgi.uygulama_yazma = true;
@@ -617,7 +629,6 @@ fn ifade_bilgisi(ifade: &Ifade, bilgi: &mut Bilgi) {
         | Ifade::SayiSabiti(_)
         | Ifade::OndalikSabiti { .. }
         | Ifade::MantiksalSabiti(_)
-        | Ifade::Degisken { .. }
         | Ifade::BosListe
         | Ifade::BosSozluk
         | Ifade::YokSabiti

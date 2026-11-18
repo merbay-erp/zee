@@ -3,6 +3,7 @@ use super::*;
 use crate::agac::GorunumDugumu;
 
 mod gorunum;
+mod onbellek;
 mod web;
 
 impl Ayristirici {
@@ -41,11 +42,16 @@ impl Ayristirici {
             }
         }
 
+        if let Some(politika) = onbellek::onbellekli_politika(&satir_tokenlari, satir_no) {
+            return politika;
+        }
+
         match son_kelime.as_deref() {
             Some("açık") => {
                 if satir_tokenlari.len() == 2 && kelime_mi(&satir_tokenlari[0], "herkese") {
                     Ok(Cumle::RotaPolitikasi {
                         erisim: RotaErisimi::HerkeseAcik,
+                        onbellek_saniye: None,
                         satir: satir_no,
                     })
                 } else {
@@ -63,6 +69,7 @@ impl Ayristirici {
                 if t.len() == 2 && kelime_mi(&t[0], "oturum") {
                     Ok(Cumle::RotaPolitikasi {
                         erisim: RotaErisimi::Oturumlu,
+                        onbellek_saniye: None,
                         satir: satir_no,
                     })
                 } else if t.len() == 3 && kelime_mi(&t[1], "yetkisi") {
@@ -77,6 +84,7 @@ impl Ayristirici {
                     };
                     Ok(Cumle::RotaPolitikasi {
                         erisim: RotaErisimi::Rol(rol.clone()),
+                        onbellek_saniye: None,
                         satir: satir_no,
                     })
                 } else if t.len() == 3 && kelime_mi(&t[1], "alanı") {

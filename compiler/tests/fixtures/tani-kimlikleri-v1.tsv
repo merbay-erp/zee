@@ -112,6 +112,8 @@ aktif	T052	tur.hata_nedeni_verisi	Hata nedeni/verisi yanlış türde ya da yenid
 aktif	T053	tur.gezilen_koleksiyon_degisti	Gezilen kaynak koleksiyonun kendisi değiştiriliyor ya da aynı kaynak iç içe geziliyor
 aktif	T054	tur.yetkinlik_politikasi	Program çalışma politikasında açılmayan yetkinliği ya da outbound origin'i kullanıyor
 aktif	T055	tur.gorunum_ifadesi	Görünüm metni/özniteliği Metin (ya da bayrak için Mantıksal) değil
+aktif	T056	tur.onbellek_yontemi	Önbelleklenebilir rota politikası GET/HEAD dışı rotada
+aktif	T057	tur.onbellek_oturumu	Önbelleklenebilir rota oturum, CSRF belirteci ya da çerez kullanıyor
 aktif	C000	calisma.ic_tutarlilik	İç tutarlılık hatası; AST/HIR invariant ihlalinde faz ve yapısal düğüm yolu da gösterilir
 aktif	C001	calisma.eksik_deger	Değer bulunamadı
 aktif	C002	calisma.tamsayi_tasmasi	TamSayı taşması
