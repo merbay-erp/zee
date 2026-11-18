@@ -1,0 +1,8 @@
+# K-336 ölçüm iş yükü: istek başına sabit CPU işi (~100 ms release), durum yok.
+18300 kapısında sunucu başlat
+
+GET "/is" adresine istek geldiğinde
+    toplam 0 olsun
+    1 den 300000 e kadar her sayı için
+        toplamı sayıyla artır
+    "tamam " ile toplam yanıtını gönder

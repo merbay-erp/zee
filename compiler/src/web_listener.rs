@@ -102,7 +102,7 @@ impl Profile {
     }
 }
 // Shared value walker: quiet detection does not grant an option/profile.
-fn option_has_value(option: &str) -> bool {
+pub(crate) fn option_has_value(option: &str) -> bool {
     matches!(
         option,
         "--web-proxy"
@@ -126,6 +126,8 @@ fn option_has_value(option: &str) -> bool {
             | "--web-activate-fd"
             | "--web-generation"
             | "--web-metrik-fd"
+            | "--web-isci-sayisi"
+            | "--web-saglik-port"
     )
 }
 
@@ -370,6 +372,21 @@ mod unix {
         endpoint(p.listener, p.port)?;
         Ok(())
     }
+    /// K-336: yönetici sürecin devrettiği ortak dinleyiciyi doğrular ve
+    /// sahiplenir. Kontrol pipe'ı yoktur; socket TCP/AF_INET/127.0.0.1:port
+    /// LISTEN olmalı ve stdio ile aynı nesne olmamalıdır.
+    pub(crate) fn adopt_group(fd: i32, port: u16) -> Result<TcpListener, String> {
+        if fd < 3 || aliases_stdio(fd) {
+            return Err(fail());
+        }
+        if option(fd, libc::SOL_SOCKET, libc::SO_TYPE)? != libc::SOCK_STREAM || !listening(fd)? {
+            return Err(fail());
+        }
+        option(fd, libc::IPPROTO_TCP, libc::TCP_NODELAY)?;
+        endpoint(fd, port)?;
+        // SAFETY: validated inherited listener, ownership transferred exactly once.
+        Ok(unsafe { TcpListener::from_raw_fd(fd) })
+    }
     pub(crate) fn install(p: &Profile, port: u16) -> Result<(TcpListener, Control), String> {
         preflight(p)?;
         if option(p.listener, libc::SOL_SOCKET, libc::SO_TYPE)? != libc::SOCK_STREAM
@@ -492,7 +509,7 @@ mod unix {
     }
 }
 #[cfg(unix)]
-pub(crate) use unix::{install, preflight, Control};
+pub(crate) use unix::{adopt_group, install, preflight, Control};
 
 pub(crate) fn quiet_preflight(args: &[String]) -> Result<(), String> {
     #[cfg(unix)]

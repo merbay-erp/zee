@@ -523,3 +523,11 @@ Aynı exact kaynak RC2 dört explicit ASan hedefinde 1801’er saniye, Miri2+1 v
 tam RC kapısında 131 Cargo grubu/998 başarılı/0 başarısız/25 atlanan ile geçti.
 K-298 dar kabulü kapalıdır; son belge kapısı takip commit’inin koşuludur. Gerçek IDE işlev kabulü
 UI gecikmesi değildir; P19 ürün/UI/HIR/genel SLA kapsamıyla kısmi kalır.
+
+## K-336 — Çok işçi profili gözlemi
+
+Yeni CLI profili (ADR-161) sabit `olcum` korpusunu, örnek/ısınma semantiğini
+ve `performans-gecmisi-v2.tsv` tabanını değiştirmez. W2 kabulü ayrı gözlemsel
+iş yüküyle ölçülür: [K-336 kanıtı](incelemeler/k336/README.md). Yönetici
+sabit boyutlu yuva dizisi tutar; derleyici/LSP önbelleği ya da büyüyen tampon
+eklenmediğinden ADR-069 soak koşusu gerekmez. Shared CI'da eşik yoktur.

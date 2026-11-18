@@ -1,0 +1,6 @@
+# K-336/K-337: çok işçi profilinde açılış uzlaştırmasının tekliği; anonim kesit.
+proje "cok-isci-acilis" olsun
+sürüm "0.1.0" olsun
+morfoloji "zee-tr-1" olsun
+giriş "ana.dil" olsun
+yetkinlikler "ağ-sunucusu", "dosya-okuma", "dosya-yazma" listesi olsun

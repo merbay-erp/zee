@@ -10,6 +10,36 @@ sessizce yapılamaz (master plan bölüm 23) — burada duyurulur.
 **Durum:** 1.0.0-dev geliştirme hattı; son yayımlanmış etiket v1.0.0-rc.1.
 Bu kayıt yeni sürüm etiketi değildir.
 
+### Eklenenler
+
+- **Tek komutla çok işçi web sunucusu (K-336, ADR-161):** Unix'te
+  `dil çalıştır --web-proxy https://site.example --web-worker-port 8096
+  --web-isci-sayisi 4 .` dört işçi süreci açar; yönetici `127.0.0.1:8096`
+  dinleyicisini bir kez bağlayıp işçilere devreder, çöken işçiyi yeniden
+  başlatır, SIGTERM'de kabul edilmiş istekleri tamamlatıp kapanır.
+  `--web-saglik-port 8099` ile `http://127.0.0.1:8099/saglik` bütün işçiler
+  yaşıyorsa 200 döner. Oturum, CSRF ve oran sınırı tek süreçle aynı davranır;
+  ölçümde dört işçi eşzamanlı dört istekte tek isteğin yaklaşık dört katı
+  işlem hacmi verdi.
+- **`birincil süreç` (K-337):** Açılış işini (yarım yükleme uzlaştırması gibi)
+  tek işçiye bağlar. Tek süreçte her zaman `doğru`; çok işçide yalnız ilk
+  açılan birincil işçide `doğru`. Diğer işçiler birincil sunucuyu başlatana
+  dek beklenir; yeniden başlatılan işçi açılışı tekrarlamaz.
+
+  ```zee
+  açılış_sahibi birincil süreç olsun
+  açılış_sahibi ise
+      uzlastirma yarım yüklemeleri uzlaştır olsun
+  ```
+
+### Uyumluluk ve göç
+
+- Elle açılan ayrı portlu işçiler (`--web-worker-port 8096`, `8097`, …) aynen
+  çalışır; tek komutluk profile geçince proxy hedef listesi tek porta iner.
+  `--web-oran-deposu bellek` işçi başınadır (etkin sınır işçi sayısı katı).
+- Windows'ta `--web-isci-sayisi` desteklenmez (çıkış 2); ayrı portlu süreçler
+  ve proxy dengelemesi kullanılır.
+
 ### Düzeltilenler
 
 - **zeedili.com belge adları:** Adında nokta bulunan belge (ör.

@@ -275,6 +275,26 @@ fn istemci_adresi_izi_sirali_ve_kanonik_ip_olarak_oynatilir() {
 }
 
 #[test]
+fn birincil_surec_izi_kaydedilir_ve_0_1_olarak_oynatilir() {
+    // K-337: tek süreç varsayılanı doğru; ikincil işçi değeri izden geri gelir.
+    let mut kaydeden = IzKaydedenIo::yeni(ToplayanIo::yeni(Vec::new()));
+    assert!(kaydeden.birincil_surec());
+    let iz = kaydeden.iz_metni().unwrap();
+    assert!(iz.contains("\tbirincil_surec\t0\t1\t31\n"), "{iz}");
+    let mut replay = IzYenidenOynatici::yeni(&iz).unwrap();
+    assert!(replay.birincil_surec());
+    replay.bitir().unwrap();
+    let ikincil = "zee-io-izi\t1\n1\tbirincil_surec\t0\t1\t30\n";
+    let mut replay = IzYenidenOynatici::yeni(ikincil).unwrap();
+    assert!(!replay.birincil_surec());
+    replay.bitir().unwrap();
+    for bozuk in ["32", "", "3130"] {
+        let trace = format!("zee-io-izi\t1\n1\tbirincil_surec\t0\t1\t{bozuk}\n");
+        assert!(IzYenidenOynatici::yeni(&trace).is_err(), "{bozuk}");
+    }
+}
+
+#[test]
 fn operator_istek_gunlugu_ize_girmez_ve_ic_adaptore_iletilir() {
     // K-324/ADR-157: program günlüğü gözleyemez; replay baytı değişmemeli.
     let tani = dil::tani::Tani::yeni("C003", "Sıfıra bölme".into(), 3, 1, 1);

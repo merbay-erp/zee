@@ -666,3 +666,353 @@ fn yanit_yazimi_sirasinda_kopan_istemci_worker_i_dusurmez_ve_izin_sizdirmaz() {
     );
     assert!(!stderr.contains("C022"), "{stderr}");
 }
+
+// K-336 (W2) / K-337 (W4): resmî çok işçi profili. Yönetici süreç tek
+// loopback dinleyiciyi bağlar ve N işçiye devreder; tek komutla başlar.
+
+#[cfg(unix)]
+fn grubu_baslat(kaynak: &Path, kapi: u16, isci: u16, saglik: Option<u16>) -> Sunucu {
+    let kapi_yazisi = kapi.to_string();
+    let isci_yazisi = isci.to_string();
+    let mut komut = Command::new(env!("CARGO_BIN_EXE_dil"));
+    komut.args([
+        "çalıştır",
+        "--web-proxy",
+        "https://panel.example",
+        "--web-worker-port",
+        &kapi_yazisi,
+        "--web-isci-sayisi",
+        &isci_yazisi,
+    ]);
+    if let Some(saglik) = saglik {
+        komut.args(["--web-saglik-port", &saglik.to_string()]);
+    }
+    komut.arg(kaynak.to_str().expect("UTF-8 kaynak yolu"));
+    let cocuk = komut
+        .current_dir(kaynak.parent().expect("kaynak klasörü"))
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .spawn()
+        .expect("web işçi grubu");
+    Sunucu(cocuk)
+}
+
+#[cfg(unix)]
+fn saglik_oku(kapi: u16) -> (u16, String) {
+    let son = Instant::now() + Duration::from_secs(10);
+    loop {
+        if let Ok(mut akis) = TcpStream::connect(("127.0.0.1", kapi)) {
+            akis.set_read_timeout(Some(Duration::from_secs(5))).ok();
+            akis.write_all(b"GET /saglik HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n")
+                .expect("sağlık isteği");
+            let mut yanit = String::new();
+            akis.read_to_string(&mut yanit).expect("sağlık yanıtı");
+            let govde = yanit.split("\r\n\r\n").nth(1).unwrap_or_default();
+            return (durum(&yanit), govde.to_string());
+        }
+        assert!(Instant::now() < son, "sağlık portu açılmadı");
+        std::thread::sleep(Duration::from_millis(20));
+    }
+}
+
+#[cfg(unix)]
+fn saglik_bekle(kapi: u16, kosul: impl Fn(&str) -> bool) -> String {
+    let son = Instant::now() + Duration::from_secs(20);
+    loop {
+        let (kod, govde) = saglik_oku(kapi);
+        if kod == 200 && kosul(&govde) {
+            return govde;
+        }
+        assert!(
+            Instant::now() < son,
+            "grup beklenen sağlığa ulaşmadı: {kod} {govde}"
+        );
+        std::thread::sleep(Duration::from_millis(50));
+    }
+}
+
+#[cfg(unix)]
+fn surecler(govde: &str) -> Vec<u32> {
+    govde
+        .split("\"surecler\":[")
+        .nth(1)
+        .and_then(|k| k.split(']').next())
+        .expect("süreç listesi")
+        .split(',')
+        .filter(|p| !p.is_empty())
+        .map(|p| p.parse().expect("pid"))
+        .collect()
+}
+
+#[cfg(unix)]
+fn sinyal(pid: u32, ad: &str) -> bool {
+    Command::new("kill")
+        .args([ad, &pid.to_string()])
+        .stderr(Stdio::null())
+        .status()
+        .is_ok_and(|s| s.success())
+}
+
+/// Aynı giriş/CSRF/çıkış/oran senaryosu tek süreçte ve üç işçili grupta
+/// aynı durum kodu dizisini üretmelidir (W2 conformance).
+#[cfg(unix)]
+fn panel_senaryosu(isci: Option<u16>) -> Vec<u16> {
+    let gecici = GeciciKlasor::yeni();
+    let kapi = bos_kapi();
+    let yol = gecici.0.join("panel.dil");
+    std::fs::write(&yol, include_str!("../../projeler/girisli-panel.dil")).expect("kaynak");
+    let _sunucu = match isci {
+        Some(n) => grubu_baslat(&yol, kapi, n, None),
+        None => sunucuyu_baslat(&yol, kapi),
+    };
+    let mut durumlar = Vec::new();
+    let form = istek(kapi, "203.0.113.7", "GET", "/giris", None, "");
+    durumlar.push(durum(&form));
+    let anonim = cerez(&form);
+    let giris_csrf = csrf(&form);
+    durumlar.push(durum(&istek(
+        kapi,
+        "203.0.113.7",
+        "POST",
+        "/giris-yap",
+        Some(&anonim),
+        "_csrf=sahte&parola=zee2026",
+    )));
+    let giris = istek(
+        kapi,
+        "203.0.113.7",
+        "POST",
+        "/giris-yap",
+        Some(&anonim),
+        &format!("_csrf={giris_csrf}&parola=zee2026"),
+    );
+    durumlar.push(durum(&giris));
+    let oturum = cerez(&giris);
+    let mut son_okuma = String::new();
+    for _ in 0..8 {
+        son_okuma = istek(kapi, "203.0.113.7", "GET", "/yonet", Some(&oturum), "");
+        durumlar.push(durum(&son_okuma));
+    }
+    durumlar.push(durum(&istek(
+        kapi,
+        "203.0.113.7",
+        "POST",
+        "/cikis",
+        Some(&oturum),
+        &format!("_csrf={}", csrf(&son_okuma)),
+    )));
+    durumlar.push(durum(&istek(
+        kapi,
+        "203.0.113.7",
+        "GET",
+        "/yonet",
+        Some(&oturum),
+        "",
+    )));
+    let oran_form = istek(kapi, "198.51.100.9", "GET", "/giris", None, "");
+    let oran_cerez = cerez(&oran_form);
+    let oran_csrf = csrf(&oran_form);
+    for _ in 0..6 {
+        durumlar.push(durum(&istek(
+            kapi,
+            "198.51.100.9",
+            "POST",
+            "/giris-yap",
+            Some(&oran_cerez),
+            &format!("_csrf={oran_csrf}&parola=yanlis"),
+        )));
+    }
+    durumlar
+}
+
+#[cfg(unix)]
+#[test]
+fn isci_grubu_oturum_csrf_ve_oran_siniri_tek_surecle_ayni() {
+    let tek = panel_senaryosu(None);
+    let grup = panel_senaryosu(Some(3));
+    let mut beklenen = vec![200, 403, 303];
+    beklenen.extend([200; 8]);
+    beklenen.extend([303, 401, 303, 303, 303, 303, 303, 429]);
+    assert_eq!(tek, beklenen, "tek süreç taban davranışı");
+    assert_eq!(grup, tek, "üç işçili grup tek süreçle aynı olmalı");
+}
+
+#[cfg(unix)]
+#[test]
+fn isci_grubu_acilisi_yalniz_birincilde_kosturur_ve_yeniden_baslatmada_tekrarlamaz() {
+    let gecici = GeciciKlasor::yeni();
+    let kapi = bos_kapi();
+    let saglik = bos_kapi();
+    let yol = gecici.0.join("ana.dil");
+    std::fs::write(
+        &yol,
+        format!(
+            "\"acilis.log\" dosyasına \"süreç\" ekle\n\
+             sahip birincil süreç olsun\n\
+             sahip ise\n    \"acilis.log\" dosyasına \"açılış başladı\" ekle\n    \
+             toplam 0 olsun\n    1 den 400000 e kadar her sayı için\n        toplamı sayıyla artır\n    \
+             \"acilis.log\" dosyasına \"açılış bitti\" ekle\n\
+             {kapi} kapısında sunucu başlat\n\n\
+             GET \"/rol\" adresine istek geldiğinde\n    rol birincil süreç olsun\n    rol ise\n        \
+             \"birincil\" yanıtını gönder\n    değilse\n        \"ikincil\" yanıtını gönder\n"
+        ),
+    )
+    .expect("kaynak");
+    let mut grup = grubu_baslat(&yol, kapi, 4, Some(saglik));
+    let govde = saglik_bekle(saglik, |g| g.contains("\"canli\":4"));
+    let ilk = surecler(&govde);
+    assert_eq!(ilk.len(), 4);
+    let gunluk_bekle = |adet: usize| {
+        let son = Instant::now() + Duration::from_secs(20);
+        loop {
+            let gunluk = std::fs::read_to_string(gecici.0.join("acilis.log")).unwrap_or_default();
+            if gunluk.lines().count() >= adet || Instant::now() >= son {
+                return gunluk;
+            }
+            std::thread::sleep(Duration::from_millis(20));
+        }
+    };
+    let gunluk = gunluk_bekle(6);
+    let satirlar = gunluk.lines().collect::<Vec<_>>();
+    assert_eq!(
+        satirlar,
+        vec![
+            "süreç",
+            "açılış başladı",
+            "açılış bitti",
+            "süreç",
+            "süreç",
+            "süreç"
+        ],
+        "ikinciller birincilin açılışı bitmeden başlamamalı"
+    );
+    for _ in 0..12 {
+        let yanit = istek(kapi, "203.0.113.7", "GET", "/rol", None, "");
+        assert_eq!(durum(&yanit), 200);
+    }
+
+    // Birincil öldürülür: ikincil olarak döner, açılış yeniden koşmaz.
+    assert!(sinyal(ilk[0], "-KILL"));
+    let govde = saglik_bekle(saglik, |g| {
+        g.contains("\"canli\":4") && g.contains("\"yeniden_baslatma\":1")
+    });
+    let yeni = surecler(&govde);
+    assert!(!yeni.contains(&ilk[0]));
+    let yanit = istek(kapi, "203.0.113.7", "GET", "/rol", None, "");
+    assert_eq!(durum(&yanit), 200);
+    assert!(
+        yanit.ends_with("ikincil"),
+        "yeniden başlayan işçi birincil olamaz"
+    );
+    let gunluk = gunluk_bekle(7);
+    assert_eq!(gunluk.matches("açılış başladı").count(), 1);
+    assert_eq!(gunluk.matches("süreç").count(), 5);
+
+    // SIGTERM: yönetici işçileri boşaltır ve başarıyla çıkar.
+    assert!(sinyal(grup.0.id(), "-TERM"));
+    let son = Instant::now() + Duration::from_secs(45);
+    let cikis = loop {
+        if let Some(durum) = grup.0.try_wait().expect("grup durumu") {
+            break durum;
+        }
+        assert!(Instant::now() < son, "grup SIGTERM ile kapanmadı");
+        std::thread::sleep(Duration::from_millis(50));
+    };
+    assert!(cikis.success(), "{cikis}");
+    for pid in yeni {
+        assert!(
+            !sinyal(pid, "-0"),
+            "işçi {pid} yöneticiden sonra yaşamamalı"
+        );
+    }
+}
+
+#[cfg(unix)]
+#[test]
+fn isci_grubu_yonetici_olurse_isciler_dinleyiciyi_birakir() {
+    let gecici = GeciciKlasor::yeni();
+    let kapi = bos_kapi();
+    let saglik = bos_kapi();
+    let yol = gecici.0.join("ana.dil");
+    std::fs::write(
+        &yol,
+        format!("{kapi} kapısında sunucu başlat\n\nGET \"/\" adresine istek geldiğinde\n    \"tamam\" yanıtını gönder\n"),
+    )
+    .expect("kaynak");
+    let mut grup = grubu_baslat(&yol, kapi, 2, Some(saglik));
+    let pidler = surecler(&saglik_bekle(saglik, |g| g.contains("\"canli\":2")));
+    grup.0.kill().expect("yönetici SIGKILL");
+    grup.0.wait().expect("yönetici sonucu");
+    let son = Instant::now() + Duration::from_secs(10);
+    while pidler.iter().any(|pid| sinyal(*pid, "-0")) {
+        assert!(Instant::now() < son, "sahipsiz işçiler kapanmadı");
+        std::thread::sleep(Duration::from_millis(50));
+    }
+}
+
+#[test]
+fn isci_grubu_gecersiz_birlesimleri_ve_platform_siniri_reddedilir() {
+    let gecici = GeciciKlasor::yeni();
+    let yol = gecici.0.join("ana.dil");
+    std::fs::write(&yol, "1 yaz\n").expect("kaynak");
+    let kaynak = yol.to_str().expect("UTF-8");
+    let mut vakalar: Vec<Vec<&str>> = vec![
+        vec!["çalıştır", "--web-isci-sayisi", "2", kaynak],
+        vec![
+            "çalıştır",
+            "--deneysel-web",
+            "--web-isci-sayisi",
+            "2",
+            kaynak,
+        ],
+        vec![
+            "çalıştır",
+            "--web-proxy",
+            "https://panel.example",
+            "--web-isci-sayisi",
+            "2",
+            kaynak,
+        ],
+        vec![
+            "çalıştır",
+            "--web-proxy",
+            "https://panel.example",
+            "--web-worker-port",
+            "18091",
+            "--web-isci-sayisi",
+            "0",
+            kaynak,
+        ],
+        vec![
+            "çalıştır",
+            "--web-proxy",
+            "https://panel.example",
+            "--web-worker-port",
+            "18091",
+            "--web-saglik-port",
+            "18092",
+            kaynak,
+        ],
+        vec!["denetle", "--web-isci-sayisi", "2", kaynak],
+    ];
+    if cfg!(windows) {
+        vakalar.push(vec![
+            "çalıştır",
+            "--web-proxy",
+            "https://panel.example",
+            "--web-worker-port",
+            "18091",
+            "--web-isci-sayisi",
+            "2",
+            kaynak,
+        ]);
+    }
+    for vaka in vakalar {
+        let cikti = Command::new(env!("CARGO_BIN_EXE_dil"))
+            .args(&vaka)
+            .output()
+            .expect("dil");
+        assert_eq!(cikti.status.code(), Some(2), "{vaka:?}");
+        assert!(!cikti.stderr.is_empty(), "{vaka:?}");
+    }
+}

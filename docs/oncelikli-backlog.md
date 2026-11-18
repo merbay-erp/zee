@@ -2401,7 +2401,7 @@ bağlantı izni iade, worker sonraki isteği alır. Kanıt `web_cok_surec_testi`
 (2 MiB + RST, 100 ardışık kopma, izin/RSS sızıntısı yok), regression
 `yanit-yazimi-kopmasi` (`native-web-kopma`). Talepteki W2 (süreç içi
 eşzamanlılık), W3 (rota önbellek başlığı) ve W4 (açılışta tek sefer) açık;
-ayrı karar/PR ister.
+ayrı karar/PR ister. W2 K-336'da, W4 K-337'de kapandı (ADR-161).
 
 ## K-328 — rustls-webpki/webpki-roots RustSec yükseltmesi
 
@@ -2479,3 +2479,29 @@ envanter cümleleri genelleştirildi, noreply yazar kuralı. Kanıt:
 275 commit yeni SHA aldı ([K-334 kaydı](incelemeler/k334/README.md),
 eşleme `docs/incelemeler/k334/sha-esleme-v1.tsv`). Açık: GitHub PR
 ref/önbellek destek teyidi.
+
+## K-336 — Resmî çok işçi web profili (zee-cekirdek W2)
+
+**Durum: KAPALI.** ADR-161/RFC-0038: işçi istekleri sıralı işliyordu; ürün
+ölçeği elle açılan ayrı portlu süreçlerle alıyordu. `dil çalıştır --web-proxy …
+--web-worker-port P --web-isci-sayisi N [--web-saglik-port S]` yönetici süreci
+`127.0.0.1:P`'yi bir kez bağlar ve N işçiye devreder (pre-fork; SO_REUSEPORT,
+relay ve süreç içi iş parçacığı yok). Çöken işçi yeniden başlar, SIGTERM
+boşaltılarak iletilir, yönetici kaybolursa işçiler çıkar, loopback
+`/saglik`. Windows'ta çıkış 2 (açık sınır). Kanıt:
+`web_cok_surec_testi::isci_grubu_*` (tek süreçle aynı 21 adımlık
+oturum/CSRF/oran dizisi, yönetici SIGKILL, geçersiz birleşimler),
+`web_isci_grubu::tests`, ölçüm [K-336](incelemeler/k336/README.md) (4 işçi,
+eşzamanlılık 4 / tek istek ≥ 3,5×). GB-132.
+
+## K-337 — Çok süreçte açılış uzlaştırmasının tekliği (zee-cekirdek W4)
+
+**Durum: KAPALI.** ADR-161: ürün açılışı (yarım yükleme uzlaştırması,
+sahipsiz geçici dosya taraması) her işçide koşuyor, yeniden başlayan işçi
+ötekinin yüklediği geçici dosyayı silebiliyordu. `birincil süreç` (Mantıksal,
+`ağ-sunucusu`; tek süreçte doğru, grupta yalnız ilk birincil işçide) ve
+yöneticinin ikincilleri birincil `sunucu başlat`a ulaşınca başlatması;
+yeniden başlatılan işçi ikincildir. Kilit ve yeni koşul biçimi reddedildi.
+Kanıt: `web_cok_surec_testi::isci_grubu_acilisi_*`, `io_izi_testi::birincil_surec_*`,
+dogfood `zee-cekirdek/cok-isci`. Açık: elle kurulan ayrı portlu süreçlerde
+birincillik, `--ayar` alanı.

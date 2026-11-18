@@ -26,7 +26,7 @@ fn intrinsic_kaydi_kimlik_yetkinlik_ve_etkiyi_tekillestirir() {
         .map(|tanim| tanim.kimlik)
         .collect::<HashSet<_>>();
     assert_eq!(kimlikler.len(), intrinsic::TANIMLAR.len());
-    assert_eq!(kimlikler.len(), 26);
+    assert_eq!(kimlikler.len(), 27);
     let imza = intrinsic::tanim(intrinsic::DOSYA_ILK_BAYTLAR).expect("K-333 imza kaydı");
     assert_eq!(imza.yetkinlik, Yetkinlik::DosyaOkuma);
     assert_eq!(imza.etki, IntrinsicEtkisi::DisOkuma);
@@ -51,6 +51,10 @@ fn intrinsic_kaydi_kimlik_yetkinlik_ve_etkiyi_tekillestirir() {
     assert_eq!(ip.yetkinlik, Yetkinlik::AgSunucusu);
     assert_eq!(ip.etki, IntrinsicEtkisi::WebAdaptoru);
     assert!(ip.arguman_turleri.is_empty());
+    let birincil = intrinsic::tanim("web.birincil_surec").expect("K-337 birincil süreç kaydı");
+    assert_eq!(birincil.yetkinlik, Yetkinlik::AgSunucusu);
+    assert_eq!(birincil.etki, IntrinsicEtkisi::WebAdaptoru);
+    assert!(birincil.arguman_turleri.is_empty());
     let csrf = intrinsic::tanim(CSRF_BELIRTECI).expect("CSRF kaydı");
     assert_eq!(csrf.yetkinlik, Yetkinlik::WebOturumu);
     assert_eq!(csrf.etki, IntrinsicEtkisi::WebAdaptoru);
